@@ -1,0 +1,5 @@
+# generated directories
+/.vs/
+/.vscode/
+/build/
+/install/
