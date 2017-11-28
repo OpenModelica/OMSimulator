@@ -44,3 +44,24 @@ sudo ./b2 install
 ```bash
 > make OMSimulator
 ```
+
+### Windows
+
+0. install boost 1.63
+
+* Download and install precompiled boost libs, e.g. from this source:
+  * https://sourceforge.net/projects/boost/files/boost-binaries/
+* Set environment variable `BOOST_ROOT` to install path, e.g:
+  * `BOOST_ROOT=C:\local\boost_1_63_0`
+
+1. configure OMSimulator
+
+```bash
+> configWinVS14.bat
+```
+
+2. build OMSimulator
+
+```bash
+> buildWinVS14.bat
+```
