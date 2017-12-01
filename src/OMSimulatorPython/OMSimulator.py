@@ -7,60 +7,60 @@ class OMSimulator:
       self.obj=cdll.LoadLibrary("OMSimulatorLib.dll")
     else:
       self.obj=cdll.LoadLibrary("libOMSimulatorLib.so")
-      self.setCtypesArguments()
-      self.setResultTypes()
+    self.setCtypesArguments()
+    self.setResultTypes()
 
   def setResultTypes(self):
-    self.obj.oms_newModel.restype = ctypes.c_void_p
-    self.obj.oms_loadModel.restype = ctypes.c_void_p
-    self.obj.oms_getVersion.restype = ctypes.c_char_p
-    self.obj.oms_getBoolean.restype = ctypes.c_int
-    self.obj.oms_getInteger.restype = ctypes.c_int
-    self.obj.oms_getReal.restype = ctypes.c_double
     self.obj.oms_compareSimulationResults.restype = ctypes.c_int
-    self.obj.oms_getNumberOfInterfaces.restype = ctypes.c_int
+    self.obj.oms_getBoolean.restype = ctypes.c_int
+    self.obj.oms_getCurrentTime.restype = ctypes.c_double
+    self.obj.oms_getInteger.restype = ctypes.c_int
     self.obj.oms_getInterfaceName.restype = ctypes.c_char_p
     self.obj.oms_getInterfaceVariable.restype = ctypes.c_char_p
-    self.obj.oms_getCurrentTime.restype = ctypes.c_double
+    self.obj.oms_getNumberOfInterfaces.restype = ctypes.c_int
+    self.obj.oms_getReal.restype = ctypes.c_double
+    self.obj.oms_getVersion.restype = ctypes.c_char_p
+    self.obj.oms_loadModel.restype = ctypes.c_void_p
+    self.obj.oms_newModel.restype = ctypes.c_void_p
 
   def setCtypesArguments(self):
-    self.obj.oms_instantiateFMU.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_addConnection.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_describe.argtypes = [ctypes.c_void_p]
-    self.obj.oms_initialize.argtypes = [ctypes.c_void_p]
-    self.obj.oms_terminate.argtypes = [ctypes.c_void_p]
-    self.obj.oms_unload.argtypes = [ctypes.c_void_p]
-    self.obj.oms_reset.argtypes = [ctypes.c_void_p]
-    self.obj.oms_simulate.argtypes = [ctypes.c_void_p]
-    self.obj.oms_loadModel.argtypes = [ctypes.c_char_p]
-    self.obj.oms_importXML.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
-    self.obj.oms_exportXML.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
-    self.obj.oms_exportDependencyGraph.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
-    self.obj.oms_exportCompositeStructure.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
-    self.obj.oms_getCurrentTime.argtypes = [ctypes.c_void_p]
-    self.obj.oms_stepUntil.argtypes = [ctypes.c_void_p, ctypes.c_double]
-    self.obj.oms_doSteps.argtypes = [ctypes.c_void_p, ctypes.c_int]
-    self.obj.oms_getBoolean.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
-    self.obj.oms_getInteger.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
-    self.obj.oms_getReal.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
-    self.obj.oms_setBoolean.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_int]
-    self.obj.oms_setInteger.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_int]
-    self.obj.oms_setReal.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_double]
-    self.obj.oms_setStartTime.argtypes = [ctypes.c_void_p,ctypes.c_double]
-    self.obj.oms_setStopTime.argtypes = [ctypes.c_void_p,ctypes.c_double]
-    self.obj.oms_setTolerance.argtypes = [ctypes.c_void_p,ctypes.c_double]
-    self.obj.oms_setCommunicationInterval.argtypes = [ctypes.c_void_p,ctypes.c_double]
-    self.obj.oms_setResultFile.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
-    self.obj.oms_setTempDirectory.argtypes = [ctypes.c_char_p]
-    self.obj.oms_setSolverMethod.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_setLogFile.argtypes = [ctypes.c_char_p]
     self.obj.oms_compareSimulationResults.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_double,ctypes.c_double]
-    self.obj.oms_setVariableFilter.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_getNumberOfInterfaces.argtypes = [ctypes.c_void_p]
+    self.obj.oms_describe.argtypes = [ctypes.c_void_p]
+    self.obj.oms_doSteps.argtypes = [ctypes.c_void_p, ctypes.c_int]
+    self.obj.oms_exportCompositeStructure.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
+    self.obj.oms_exportDependencyGraph.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
+    self.obj.oms_exportXML.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
+    self.obj.oms_getBoolean.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
+    self.obj.oms_getCurrentTime.argtypes = [ctypes.c_void_p]
+    self.obj.oms_getInteger.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
     self.obj.oms_getInterfaceCausality.argtypes = [ctypes.c_void_p, ctypes.c_int]
     self.obj.oms_getInterfaceName.argtypes = [ctypes.c_void_p, ctypes.c_int]
     self.obj.oms_getInterfaceVariable.argtypes = [ctypes.c_void_p, ctypes.c_int]
+    self.obj.oms_getNumberOfInterfaces.argtypes = [ctypes.c_void_p]
+    self.obj.oms_getReal.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
+    self.obj.oms_importXML.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
+    self.obj.oms_initialize.argtypes = [ctypes.c_void_p]
+    self.obj.oms_instantiateFMU.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_loadModel.argtypes = [ctypes.c_char_p]
+    self.obj.oms_reset.argtypes = [ctypes.c_void_p]
+    self.obj.oms_setBoolean.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_int]
+    self.obj.oms_setCommunicationInterval.argtypes = [ctypes.c_void_p,ctypes.c_double]
+    self.obj.oms_setInteger.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_int]
+    self.obj.oms_setLogFile.argtypes = [ctypes.c_char_p]
+    self.obj.oms_setReal.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_double]
+    self.obj.oms_setResultFile.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
+    self.obj.oms_setSolverMethod.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_setStartTime.argtypes = [ctypes.c_void_p,ctypes.c_double]
+    self.obj.oms_setStopTime.argtypes = [ctypes.c_void_p,ctypes.c_double]
+    self.obj.oms_setTempDirectory.argtypes = [ctypes.c_char_p]
+    self.obj.oms_setTolerance.argtypes = [ctypes.c_void_p,ctypes.c_double]
+    self.obj.oms_setVariableFilter.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_setWorkingDirectory.argtypes =[ctypes.c_char_p]
+    self.obj.oms_simulate.argtypes = [ctypes.c_void_p]
+    self.obj.oms_stepUntil.argtypes = [ctypes.c_void_p, ctypes.c_double]
+    self.obj.oms_terminate.argtypes = [ctypes.c_void_p]
+    self.obj.oms_unload.argtypes = [ctypes.c_void_p]
 
   def newModel(self):
     return self.obj.oms_newModel()
