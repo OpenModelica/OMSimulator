@@ -24,7 +24,7 @@ IF(WIN32)
   set(Boost_USE_STATIC_RUNTIME OFF)
 ENDIF()
 
-find_package(Boost 1.63.0 COMPONENTS system filesystem program_options REQUIRED)
+find_package(Boost 1.54.0 COMPONENTS system filesystem program_options REQUIRED)
 IF(Boost_FOUND)
   message(STATUS "Found Boost")
   message(STATUS "  Boost_LIBRARIES:    " ${Boost_LIBRARIES})
