@@ -43,7 +43,7 @@
 
 #include <deque>
 #include <string>
-#include <unordered_map>
+#include <map>
 
 class CompositeModel
 {
@@ -98,12 +98,12 @@ private:
 private:
   Settings settings;
   ResultWriter *resultFile;
-  std::unordered_map<std::string, FMUWrapper*> fmuInstances;
-  std::unordered_map<std::string, LookupTable*> lookupTables;
+  std::map<std::string, FMUWrapper*> fmuInstances;
+  std::map<std::string, LookupTable*> lookupTables;
   std::vector< std::pair<std::string, Variable*> > lookupAssignments;
-  std::unordered_map<std::string, double> realParameterList;
-  std::unordered_map<std::string, int> integerParameterList;
-  std::unordered_map<std::string, bool> booleanParameterList;
+  std::map<std::string, double> realParameterList;
+  std::map<std::string, int> integerParameterList;
+  std::map<std::string, bool> booleanParameterList;
   DirectedGraph outputsGraph;
   DirectedGraph initialUnknownsGraph;
   double tcur;

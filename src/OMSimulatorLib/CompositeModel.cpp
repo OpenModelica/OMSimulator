@@ -53,7 +53,7 @@
 #include <sstream>
 #include <stdlib.h>
 #include <string>
-#include <unordered_map>
+#include <map>
 #include <vector>
 
 #include <boost/filesystem.hpp>
@@ -704,7 +704,7 @@ void CompositeModel::describe()
 {
   logTrace();
 
-  std::unordered_map<std::string, FMUWrapper*>::iterator it;
+  std::map<std::string, FMUWrapper*>::iterator it;
 
   std::cout << "# FMU instances" << std::endl;
   for (it=fmuInstances.begin(); it != fmuInstances.end(); it++)
@@ -962,7 +962,7 @@ oms_status_t CompositeModel::doSteps(const int numberOfSteps)
   for(int step=0; step<numberOfSteps; step++)
   {
     // do_step
-    std::unordered_map<std::string, FMUWrapper*>::iterator it;
+    std::map<std::string, FMUWrapper*>::iterator it;
     for (it=fmuInstances.begin(); it != fmuInstances.end(); it++)
       it->second->doStep(tcur+communicationInterval);
     tcur += communicationInterval;
@@ -993,7 +993,7 @@ oms_status_t CompositeModel::stepUntil(const double timeValue)
       tcur = timeValue;
 
     // do_step
-    std::unordered_map<std::string, FMUWrapper*>::iterator it;
+    std::map<std::string, FMUWrapper*>::iterator it;
     for (it=fmuInstances.begin(); it != fmuInstances.end(); it++)
       it->second->doStep(tcur);
     emit();
@@ -1022,7 +1022,7 @@ void CompositeModel::initialize()
 
   // Enter initialization
   modelState = oms_modelState_initialization;
-  std::unordered_map<std::string, FMUWrapper*>::iterator it;
+  std::map<std::string, FMUWrapper*>::iterator it;
   for (it=fmuInstances.begin(); it != fmuInstances.end(); it++)
     it->second->enterInitialization(tcur);
 
@@ -1085,7 +1085,7 @@ void CompositeModel::terminate()
     return;
   }
 
-  std::unordered_map<std::string, FMUWrapper*>::iterator it;
+  std::map<std::string, FMUWrapper*>::iterator it;
   for (it=fmuInstances.begin(); it != fmuInstances.end(); it++)
     it->second->terminate();
 
@@ -1114,7 +1114,7 @@ void CompositeModel::reset()
   logTrace();
   OMS_TOC(globalClocks, GLOBALCLOCK_SIMULATION);
 
-  std::unordered_map<std::string, FMUWrapper*>::iterator it;
+  std::map<std::string, FMUWrapper*>::iterator it;
   for (it=fmuInstances.begin(); it != fmuInstances.end(); it++)
     it->second->reset();
 
@@ -1151,7 +1151,7 @@ void CompositeModel::setVariableFilter(const char* instanceFilter, const char* v
 {
   std::regex exp(instanceFilter);
 
-  std::unordered_map<std::string, FMUWrapper*>::iterator it;
+  std::map<std::string, FMUWrapper*>::iterator it;
   for (it=fmuInstances.begin(); it != fmuInstances.end(); it++)
     if (std::regex_match(it->first, exp))
       it->second->setVariableFilter(variableFilter);
