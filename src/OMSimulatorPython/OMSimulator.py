@@ -17,6 +17,7 @@ class OMSimulator:
     self.obj.oms_getInteger.restype = ctypes.c_int
     self.obj.oms_getInterfaceName.restype = ctypes.c_char_p
     self.obj.oms_getInterfaceVariable.restype = ctypes.c_char_p
+    self.obj.oms_getMaxIterations.restype = ctypes.c_int
     self.obj.oms_getNumberOfInterfaces.restype = ctypes.c_int
     self.obj.oms_getReal.restype = ctypes.c_double
     self.obj.oms_getVersion.restype = ctypes.c_char_p
@@ -37,6 +38,7 @@ class OMSimulator:
     self.obj.oms_getInterfaceCausality.argtypes = [ctypes.c_void_p, ctypes.c_int]
     self.obj.oms_getInterfaceName.argtypes = [ctypes.c_void_p, ctypes.c_int]
     self.obj.oms_getInterfaceVariable.argtypes = [ctypes.c_void_p, ctypes.c_int]
+    self.obj.oms_getMaxIterations.argtypes = [ctypes.c_void_p]
     self.obj.oms_getNumberOfInterfaces.argtypes = [ctypes.c_void_p]
     self.obj.oms_getReal.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
     self.obj.oms_importXML.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
@@ -48,6 +50,7 @@ class OMSimulator:
     self.obj.oms_setCommunicationInterval.argtypes = [ctypes.c_void_p,ctypes.c_double]
     self.obj.oms_setInteger.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_int]
     self.obj.oms_setLogFile.argtypes = [ctypes.c_char_p]
+    self.obj.oms_setMaxIterations.argtypes = [ctypes.c_void_p, ctypes.c_int]
     self.obj.oms_setReal.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_double]
     self.obj.oms_setResultFile.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
     self.obj.oms_setSolverMethod.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p]
@@ -126,6 +129,12 @@ class OMSimulator:
 
   def getInteger(self, model, var):
     return self.obj.oms_getInteger(model,var)
+
+  def getMaxIterations(self, model):
+    return self.obj.oms_getMaxIterations(model)
+
+  def setMaxIterations(self, model, maxIterations):
+    self.obj.oms_setMaxIterations(model, maxIterations)
 
   def getReal(self, model, var):
     return self.obj.oms_getReal(model,var)
