@@ -63,7 +63,8 @@
 
 CompositeModel::CompositeModel()
   : fmuInstances(),
-    resultFile(NULL)
+    resultFile(NULL),
+    maxIterations(100)
 {
   logTrace();
   modelState = oms_modelState_instantiated;
@@ -827,11 +828,18 @@ void CompositeModel::describe()
   std::cout << std::endl;
 }
 
+void CompositeModel::setMaxIterations(int maxIterations)
+{
+  if (maxIterations > 0)
+    this->maxIterations = maxIterations;
+  else
+    logError("CompositeModel::setMaxIterations: Max. number of iterations must be greater than zero.");
+}
+
 void CompositeModel::solveAlgLoop(DirectedGraph& graph, const std::vector< std::pair<int, int> >& SCC)
 {
   const int size = SCC.size();
   const double tolerance = settings.GetTolerance();
-  const int maxIterations = 100;
   double maxRes;
   double *res = new double[size]();
 

@@ -282,6 +282,21 @@ const char* oms_getInterfaceName(void* model, int idx);
  */
 const char* oms_getInterfaceVariable(void* model, int idx);
 
+/**
+ * \brief Returns the max. number of iterations used to solve algebraic loops.
+ *
+ * @param model   [in] Model as opaque pointer.
+ */
+int oms_getMaxIterations(void* model);
+
+/**
+ * \brief Sets the max. number of iterations used to solve algebraic loops.
+ *
+ * @param model           [in] Model as opaque pointer.
+ * @param maxIterations   [in] Max. number of iterations used to solve algebraic loops.
+ */
+void oms_setMaxIterations(void* model, int maxIterations);
+
 #ifdef __cplusplus
 }
 #endif

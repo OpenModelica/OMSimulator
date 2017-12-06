@@ -89,6 +89,9 @@ public:
   const char* getInterfaceName(int idx);
   const char* getInterfaceVariable(int idx);
 
+  int getMaxIterations() {return maxIterations;}
+  void setMaxIterations(int maxIterations);
+
 private:
   void updateInputs(DirectedGraph& graph);
   void emit();
@@ -112,6 +115,8 @@ private:
 
   std::vector<std::string> interfaceNames;
   std::vector<std::string> interfaceVariables;
+
+  int maxIterations;
 };
 
 #endif

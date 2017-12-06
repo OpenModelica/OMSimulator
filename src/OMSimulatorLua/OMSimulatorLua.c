@@ -173,6 +173,20 @@ static int OMSimulatorLua_getInteger(lua_State *L)
   return 1;
 }
 
+//int oms_getMaxIterations(void* model);
+static int OMSimulatorLua_getMaxIterations(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TUSERDATA);
+
+  void *model = topointer(L, 1);
+
+  int value = oms_getMaxIterations(model);
+  lua_pushnumber(L, value);
+  return 1;
+}
+
 //double oms_getBoolean(void* model, const char* var);
 static int OMSimulatorLua_getBoolean(lua_State *L)
 {
@@ -490,6 +504,21 @@ static int OMSimulatorLua_setLogFile(lua_State *L)
   return 0;
 }
 
+//void oms_setMaxIterations(void* model, int maxIterations);
+static int OMSimulatorLua_setMaxIterations(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 arguments");
+  luaL_checktype(L, 1, LUA_TUSERDATA);
+  luaL_checktype(L, 2, LUA_TNUMBER);
+
+  void *model = topointer(L, 1);
+  int maxIterations = lua_tonumber(L, 2);
+
+  oms_setMaxIterations(model, maxIterations);
+  return 0;
+}
+
 //const char* oms_getVersion();
 static int OMSimulatorLua_getVersion(lua_State *L)
 {
@@ -544,26 +573,28 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(compareSimulationResults);
   REGISTER_LUA_CALL(describe);
   REGISTER_LUA_CALL(doSteps);
-  REGISTER_LUA_CALL(exportDependencyGraph);
   REGISTER_LUA_CALL(exportCompositeStructure);
+  REGISTER_LUA_CALL(exportDependencyGraph);
   REGISTER_LUA_CALL(exportXML);
-  REGISTER_LUA_CALL(getCurrentTime);
-  REGISTER_LUA_CALL(getReal);
-  REGISTER_LUA_CALL(getInteger);
   REGISTER_LUA_CALL(getBoolean);
+  REGISTER_LUA_CALL(getCurrentTime);
+  REGISTER_LUA_CALL(getInteger);
+  REGISTER_LUA_CALL(getMaxIterations);
+  REGISTER_LUA_CALL(getReal);
   REGISTER_LUA_CALL(getVersion);
   REGISTER_LUA_CALL(importXML);
   REGISTER_LUA_CALL(initialize);
   REGISTER_LUA_CALL(instantiateFMU);
   REGISTER_LUA_CALL(instantiateTable);
   REGISTER_LUA_CALL(loadModel);
-  REGISTER_LUA_CALL(setLogFile);
   REGISTER_LUA_CALL(newModel);
   REGISTER_LUA_CALL(reset);
-  REGISTER_LUA_CALL(setCommunicationInterval);
-  REGISTER_LUA_CALL(setReal);
-  REGISTER_LUA_CALL(setInteger);
   REGISTER_LUA_CALL(setBoolean);
+  REGISTER_LUA_CALL(setCommunicationInterval);
+  REGISTER_LUA_CALL(setInteger);
+  REGISTER_LUA_CALL(setLogFile);
+  REGISTER_LUA_CALL(setMaxIterations);
+  REGISTER_LUA_CALL(setReal);
   REGISTER_LUA_CALL(setResultFile);
   REGISTER_LUA_CALL(setSolverMethod);
   REGISTER_LUA_CALL(setStartTime);

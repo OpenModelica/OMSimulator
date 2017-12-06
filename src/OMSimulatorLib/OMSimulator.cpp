@@ -498,3 +498,27 @@ const char *oms_getInterfaceVariable(void *model, int idx)
   CompositeModel* pModel = (CompositeModel*)model;
   return pModel->getInterfaceVariable(idx);
 }
+
+int oms_getMaxIterations(void* model)
+{
+  if (!model)
+  {
+    logError("oms_getMaxIterations: invalid pointer");
+    return 0;
+  }
+
+  CompositeModel* pModel = (CompositeModel*)model;
+  return pModel->getMaxIterations();
+}
+
+void oms_setMaxIterations(void* model, int maxIterations)
+{
+  if (!model)
+  {
+    logError("oms_setMaxIterations: invalid pointer");
+    return;
+  }
+
+  CompositeModel* pModel = (CompositeModel*)model;
+  pModel->setMaxIterations(maxIterations);
+}
