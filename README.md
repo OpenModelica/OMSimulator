@@ -24,7 +24,7 @@ OpenModelica FMI &amp; TLM based simulator
    > make config-OMSimulator
    ```
 
-2. build OMSimulator
+1. build OMSimulator
 
    ```bash
    > make OMSimulator
@@ -32,7 +32,7 @@ OpenModelica FMI &amp; TLM based simulator
 
 ### Windows
 
-0. install boost 1.63
+1. install boost 1.63
 
    - Download and install precompiled boost libs, e.g. from [this](https://sourceforge.net/projects/boost/files/boost-binaries/) source
    - Set environment variable `BOOST_ROOT` to install path, e.g:
@@ -44,7 +44,7 @@ OpenModelica FMI &amp; TLM based simulator
    > configWinVS14.bat
    ```
 
-2. build OMSimulator
+1. build OMSimulator
 
    ```bash
    > buildWinVS14.bat
