@@ -53,7 +53,7 @@ COPY %BOOST_ROOT%\lib64-msvc-14.0\boost_filesystem-vc140-mt-gd-1_63.dll install\
 COPY %BOOST_ROOT%\lib64-msvc-14.0\boost_system-vc140-mt-1_63.dll install\bin
 COPY %BOOST_ROOT%\lib64-msvc-14.0\boost_system-vc140-mt-gd-1_63.dll install\bin
 COPY %BOOST_ROOT%\lib64-msvc-14.0\boost_program_options-vc140-mt-1_63.dll install\bin
-COPY %BOOST_ROOT%\lib64-msvc-14.0\boost_program_options-mt-gd-1_63.dll install\bin
+COPY %BOOST_ROOT%\lib64-msvc-14.0\boost_program_options-vc140-mt-gd-1_63.dll install\bin
 
 echo # copy fmil
 COPY 3rdParty\fmil\install\win\lib\fmilib_shared.dll install\bin
