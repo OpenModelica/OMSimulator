@@ -2,6 +2,12 @@ project(OMSimulatorLib)
 
 set(CMAKE_INSTALL_RPATH "$ORIGIN")
 
+# Export all symbols from the DLL on Windows
+IF (WIN32)
+  set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+  add_definitions(-DBOOST_ALL_DYN_LINK)
+ENDIF()
+
 list(APPEND OMSIMULATORLIB_SOURCES Clock.cpp)
 list(APPEND OMSIMULATORLIB_SOURCES Clocks.cpp)
 list(APPEND OMSIMULATORLIB_SOURCES CompositeModel.cpp)
@@ -44,7 +50,6 @@ install(TARGETS OMSimulatorLib_shared DESTINATION lib)
 # Static library version
 add_library(OMSimulatorLib STATIC ${OMSIMULATORLIB_SOURCES})
 set_target_properties(OMSimulatorLib PROPERTIES OUTPUT_NAME OMSimulatorLib)
-# set_property(TARGET OMSimulatorLib PROPERTY CXX_STANDARD 11)
 set_target_properties(OMSimulatorLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
 install(TARGETS OMSimulatorLib DESTINATION lib)
 
