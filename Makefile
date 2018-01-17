@@ -20,7 +20,7 @@ else
 	INSTALL_DIR := install/linux
 endif
 
-.PHONY: OMSimulator config-OMSimulator config-fmil config-lua config-cvode config-kinsol config-3rdParty distclean testsuite doc doc-html doc-doxygen
+.PHONY: OMSimulator config-OMSimulator config-fmil config-lua config-cvode config-kinsol config-gflags config-glog config-ceres-solver config-3rdParty distclean testsuite doc doc-html
 
 OMSimulator:
 	@echo
@@ -29,7 +29,7 @@ OMSimulator:
 	$(RM) $(INSTALL_DIR)
 	@$(MAKE) -C $(BUILD_DIR) install
 
-config-3rdParty: config-fmil config-lua config-cvode config-kinsol
+config-3rdParty: config-fmil config-lua config-cvode config-kinsol config-gflags config-glog config-ceres-solver
 
 config-OMSimulator:
 	@echo
@@ -72,6 +72,33 @@ config-kinsol:
 	$(RM) 3rdParty/kinsol/$(INSTALL_DIR)
 	$(MKDIR) 3rdParty/kinsol/$(BUILD_DIR)
 	cd 3rdParty/kinsol/$(BUILD_DIR) && cmake $(CMAKE_TARGET) -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) ../.. -DEXAMPLES_ENABLE:BOOL="0" -DBUILD_SHARED_LIBS:BOOL="0" -DCMAKE_C_FLAGS="-fPIC" && $(MAKE) install
+
+config-gflags:
+	@echo
+	@echo "# config gflags"
+	@echo
+	$(RM) 3rdParty/gflags/build-linux
+	$(RM) 3rdParty/gflags/$(INSTALL_DIR)
+	$(MKDIR) 3rdParty/gflags/build-linux
+	cd 3rdParty/gflags/build-linux && cmake -DCMAKE_INSTALL_PREFIX=../$(INSTALL_DIR) .. -DBUILD_SHARED_LIBS="OFF" -DBUILD_TESTING="OFF" -DCMAKE_C_FLAGS="-fPIC" -DCMAKE_CXX_FLAGS="-fPIC" -DCMAKE_BUILD_TYPE="Release" && $(MAKE) install
+
+config-glog: config-gflags
+	@echo
+	@echo "# config glog"
+	@echo
+	$(RM) 3rdParty/glog/build-linux
+	$(RM) 3rdParty/glog/$(INSTALL_DIR)
+	$(MKDIR) 3rdParty/glog/build-linux
+	cd 3rdParty/glog/build-linux && cmake -DCMAKE_INSTALL_PREFIX=../$(INSTALL_DIR) .. -DBUILD_SHARED_LIBS="OFF" -DBUILD_TESTING="OFF" -DCMAKE_C_FLAGS="-fPIC" -DCMAKE_CXX_FLAGS="-fPIC" -DCMAKE_BUILD_TYPE="Release" && $(MAKE) install
+
+config-ceres-solver: config-glog
+	@echo
+	@echo "# config ceres-solver"
+	@echo
+	$(RM) 3rdParty/ceres-solver/build-linux
+	$(RM) 3rdParty/ceres-solver/$(INSTALL_DIR)
+	$(MKDIR) 3rdParty/ceres-solver/build-linux
+	cd 3rdParty/ceres-solver/build-linux && cmake -DCMAKE_INSTALL_PREFIX=../$(INSTALL_DIR) -DCXX11="ON" -DEXPORT_BUILD_DIR="ON" -DEIGEN_INCLUDE_DIR_HINTS="../eigen" -DGLOG_INCLUDE_DIR_HINTS="../glog/install/linux/include" -DGLOG_LIBRARY_DIR_HINTS="../glog/install/linux/lib" -DGFLAGS_INCLUDE_DIR_HINTS="../gflags/install/linux/include" -DGFLAGS_LIBRARY_DIR_HINTS="../gflags/install/linux/lib" -DBUILD_EXAMPLES="OFF" -DBUILD_TESTING="OFF" -DCMAKE_BUILD_TYPE="Release" .. && $(MAKE) install
 
 distclean:
 	@echo
