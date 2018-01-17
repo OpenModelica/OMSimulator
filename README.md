@@ -54,11 +54,13 @@ OpenModelica FMI &amp; TLM based simulator
 
 OMSimulator.git is a superproject.
 Clone the project using:
+
 ```bash
 MY_FORK=MyGitHubUserName ; git clone https://github.com/OpenModelica/OMSimulator.git --recursive && (cd OMSimulator && git remote set-url --push origin https://github.com/$MY_FORK/OMSimulator.git && git submodule foreach --recursive 'git remote set-url --push origin `git config --get remote.origin.url | sed s,^.*/,https://github.com/'$MY_FORK'/,`')
 ```
 
 If you are a developer and want to track the latest heads, use:
+
 ```bash
 # After cloning
 git submodule foreach --recursive "git checkout master"
