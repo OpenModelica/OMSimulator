@@ -119,8 +119,13 @@ ELSE()
 ENDIF()
 
 ##########################
+# Configuring for Ceres-Solver
+find_package(Ceres REQUIRED)
+
+##########################
 # Add project modules
 add_subdirectory(src/OMSimulator)
 add_subdirectory(src/OMSimulatorLib)
 add_subdirectory(src/OMSimulatorLua)
 add_subdirectory(src/OMSimulatorPython)
+add_subdirectory(src/OMFitLib)
