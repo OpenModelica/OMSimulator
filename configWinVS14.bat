@@ -47,6 +47,9 @@ CD build\win
 cmake -G "Visual Studio 14 2015 Win64" ..\.. -DBOOST_ROOT=%BOOST_ROOT%
 CD ..\..
 
+echo # create install\bin folder
+IF NOT EXIST "install\bin" MKDIR "install\bin"
+
 echo # copy boost
 COPY %BOOST_ROOT%\lib64-msvc-14.0\boost_filesystem-vc140-mt-1_63.dll install\bin
 COPY %BOOST_ROOT%\lib64-msvc-14.0\boost_filesystem-vc140-mt-gd-1_63.dll install\bin
