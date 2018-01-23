@@ -32,13 +32,20 @@ OpenModelica FMI &amp; TLM based simulator
 
 ### Windows
 
-The batch scripts are developed for *MS Visual Studio 14 2015 Win64*.
+The following versions of MS Visual Studio are supported:
+
+- MS Visual Studio 2015 [Win64]:
+  - configWinVS14.bat
+  - buildWinVS14.bat
+- MS Visual Studio 2017 [Win64]:
+  - configWinVS15.bat
+  - buildWinVS15.bat
 
 It is not strictly required to install the full Visual Studio IDE. The batch
 scripts only require the *Visual C++ 2015 Build Tools* which are also available
-as a leaner standalone package, which can be downloaded from Microsoft (http://landinghub.visualstudio.com/visual-cpp-build-tools).
+as a leaner standalone package, which can be downloaded from [Microsoft](http://landinghub.visualstudio.com/visual-cpp-build-tools).
 
-1. install boost 1.63
+1. install boost 1.63 (or 1.64 for VS 2017)
 
    - Download and install precompiled boost libs, e.g. from [this](https://sourceforge.net/projects/boost/files/boost-binaries/) source
    - Set environment variable `BOOST_ROOT` to install path, e.g:
