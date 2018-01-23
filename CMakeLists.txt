@@ -1,4 +1,11 @@
-cmake_minimum_required(VERSION 3.1)
+IF(WIN32)
+  # VS 2017 requires Boost 1.64 or newer
+  # Boost 1.64 requires CMake 3.8 or newer
+  cmake_minimum_required(VERSION 3.8)
+ELSE()
+  cmake_minimum_required(VERSION 3.1)
+ENDIF()
+
 project(OMSimulator)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/config.cmake/")
