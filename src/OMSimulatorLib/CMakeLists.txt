@@ -46,6 +46,7 @@ add_library(OMSimulatorLib_shared SHARED ${OMSIMULATORLIB_SOURCES})
 set_target_properties(OMSimulatorLib_shared PROPERTIES OUTPUT_NAME OMSimulatorLib)
 target_link_libraries(OMSimulatorLib_shared fmilib_shared sundials_kinsol sundials_cvode sundials_nvecserial ${Boost_LIBRARIES})
 install(TARGETS OMSimulatorLib_shared DESTINATION lib)
+install(TARGETS OMSimulatorLib_shared DESTINATION bin)
 
 # Static library version
 add_library(OMSimulatorLib STATIC ${OMSIMULATORLIB_SOURCES})
