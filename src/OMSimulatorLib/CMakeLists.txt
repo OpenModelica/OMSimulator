@@ -44,7 +44,12 @@ link_directories(${KINSOLLibrary_LIBRARYDIR})
 # Shared library version
 add_library(OMSimulatorLib_shared SHARED ${OMSIMULATORLIB_SOURCES})
 set_target_properties(OMSimulatorLib_shared PROPERTIES OUTPUT_NAME OMSimulatorLib)
-target_link_libraries(OMSimulatorLib_shared fmilib_shared sundials_kinsol sundials_cvode sundials_nvecserial ${Boost_LIBRARIES})
+IF (WIN32 AND MINGW)
+  target_link_libraries(OMSimulatorLib_shared fmilib shlwapi sundials_kinsol sundials_cvode sundials_nvecserial ${Boost_LIBRARIES})
+ELSE()
+  target_link_libraries(OMSimulatorLib_shared fmilib_shared sundials_kinsol sundials_cvode sundials_nvecserial ${Boost_LIBRARIES})
+ENDIF()
+
 install(TARGETS OMSimulatorLib_shared DESTINATION lib)
 install(TARGETS OMSimulatorLib_shared DESTINATION bin)
 
