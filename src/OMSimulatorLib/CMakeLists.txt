@@ -49,7 +49,7 @@ IF(WIN32 AND MSVC)
 ELSEIF (WIN32 AND MINGW)
   target_link_libraries(OMSimulatorLib_shared fmilib shlwapi sundials_kinsol sundials_cvode sundials_nvecserial ${Boost_LIBRARIES})
 ELSE()
-  target_link_libraries(OMSimulatorLib_shared fmilib_shared sundials_kinsol sundials_cvode sundials_nvecserial ${Boost_LIBRARIES})
+  target_link_libraries(OMSimulatorLib_shared fmilib sundials_kinsol sundials_cvode sundials_nvecserial ${Boost_LIBRARIES})
 ENDIF()
 
 install(TARGETS OMSimulatorLib_shared DESTINATION lib)
