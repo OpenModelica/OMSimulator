@@ -16,6 +16,10 @@ link_directories(${CVODELibrary_LIBRARYDIR})
 
 add_executable(OMSimulator main.cpp Options.cpp)
 
-target_link_libraries(OMSimulator lua OMSimulatorLib fmilib_shared sundials_cvode sundials_nvecserial ${Boost_LIBRARIES} ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+IF (WIN32 AND MINGW)
+  target_link_libraries(OMSimulator lua OMSimulatorLib fmilib shlwapi sundials_cvode sundials_nvecserial ${Boost_LIBRARIES} ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+ELSE()
+  target_link_libraries(OMSimulator lua OMSimulatorLib fmilib_shared sundials_cvode sundials_nvecserial ${Boost_LIBRARIES} ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+ENDIF()
 
 install(TARGETS OMSimulator DESTINATION bin)

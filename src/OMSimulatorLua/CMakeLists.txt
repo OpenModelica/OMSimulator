@@ -12,7 +12,9 @@ link_directories(${KINSOLLibrary_LIBRARYDIR})
 
 # Shared library version
 add_library(OMSimulatorLua SHARED OMSimulatorLua.c)
-IF (WIN32 OR APPLE)
+IF (WIN32 AND MINGW)
+  target_link_libraries(OMSimulatorLua OMSimulatorLib_shared fmilib shlwapi sundials_kinsol sundials_cvode sundials_nvecserial lua)
+ELSEIF (WIN32 OR APPLE)
   target_link_libraries(OMSimulatorLua OMSimulatorLib_shared fmilib_shared sundials_kinsol sundials_cvode sundials_nvecserial lua)
 ELSE ()
   target_link_libraries(OMSimulatorLua OMSimulatorLib_shared fmilib_shared sundials_kinsol sundials_cvode sundials_nvecserial)
