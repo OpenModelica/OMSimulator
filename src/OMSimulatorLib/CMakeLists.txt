@@ -3,7 +3,7 @@ project(OMSimulatorLib)
 set(CMAKE_INSTALL_RPATH "$ORIGIN")
 
 # Export all symbols from the DLL on Windows
-IF (WIN32)
+IF (WIN32 AND MSVC)
   set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
   add_definitions(-DBOOST_ALL_DYN_LINK)
 ENDIF()

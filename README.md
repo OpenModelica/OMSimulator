@@ -30,6 +30,21 @@ OpenModelica FMI &amp; TLM based simulator
    make OMSimulator
    ```
 
+### Windows OMDev mingw
+
+1. configure OMSimulator
+
+   ```bash
+   make -f Makefile.omdev.mingw config-3rdParty
+   make -f Makefile.omdev.mingw config-OMSimulator
+   ```
+
+1. build OMSimulator
+
+   ```bash
+   make -f Makefile.omdev.mingw OMSimulator
+   ```
+
 ### Windows
 
 The following versions of MS Visual Studio are supported:
