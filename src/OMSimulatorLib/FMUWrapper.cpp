@@ -595,11 +595,7 @@ void FMUWrapper::getDependencyGraph_outputs()
 
   if (!startIndex)
   {
-    logDebug("FMUWrapper::getDependencyGraph: [" + instanceName + ": " + fmuPath + "] dependencies are not available");
-    /* all outputs depend on all inputs */
-    for (int i = 0; i < allInputs.size(); i++)
-      for (int j = 0; j < allOutputs.size(); j++)
-        outputsGraph.addEdge(allVariables[allInputs[i]], allVariables[allOutputs[j]]);
+    logDebug("FMUWrapper::getDependencyGraph: [" + instanceName + ": " + fmuPath + "] no dependencies");
     return;
   }
 
@@ -638,16 +634,7 @@ void FMUWrapper::getDependencyGraph_initialUnknowns()
 
   if (!startIndex)
   {
-    logDebug("FMUWrapper::getDependencyGraph_initialUnknowns: [" + instanceName + ": " + fmuPath + "] dependencies are not available");
-    /* all outputs depend on all initial unknowns */
-    /* all initial unknowns depend on all inputs */
-    for (int i = 0; i < initialUnknowns.size(); i++)
-    {
-      for (int j = 0; j < allOutputs.size(); j++)
-        initialUnknownsGraph.addEdge(allVariables[initialUnknowns[i] - 1], allVariables[allOutputs[j]]);
-      for (int j = 0; j < allInputs.size(); j++)
-        initialUnknownsGraph.addEdge(allVariables[allInputs[j]], allVariables[initialUnknowns[i] - 1]);
-    }
+    logDebug("FMUWrapper::getDependencyGraph_initialUnknowns: [" + instanceName + ": " + fmuPath + "] no dependencies");
     return;
   }
 
