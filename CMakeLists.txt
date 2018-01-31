@@ -51,8 +51,10 @@ ENDIF()
 
 ##########################
 # Configuring for FMILibrary
-IF(WIN32)
+IF(WIN32 AND MSVC)
   set(FMILibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/FMIL/install/win)
+ELSEIF(WIN32 AND MINGW)
+  set(FMILibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/FMIL/install/mingw)
 ELSEIF(APPLE)
   set(FMILibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/FMIL/install/mac)
 ELSE()
@@ -62,8 +64,10 @@ find_package(FMILibrary REQUIRED)
 
 ##########################
 # Configuring for Lua
-IF(WIN32)
+IF(WIN32 AND MSVC)
   set(LUALibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/Lua/install/win)
+ELSEIF(WIN32 AND MINGW)
+  set(LUALibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/Lua/install/mingw)
 ELSEIF(APPLE)
   set(LUALibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/Lua/install/mac)
 ELSE()
@@ -73,8 +77,10 @@ find_package(LUALibrary REQUIRED)
 
 ##########################
 # Configuring for CVODE
-IF(WIN32)
+IF(WIN32 AND MSVC)
   set(CVODELibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/cvode/install/win)
+ELSEIF(WIN32 AND MINGW)
+  set(CVODELibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/cvode/install/mingw)
 ELSEIF(APPLE)
   set(CVODELibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/cvode/install/mac)
 ELSE()
@@ -84,8 +90,10 @@ find_package(CVODELibrary REQUIRED)
 
 ##########################
 # Configuring for KINSOL
-IF(WIN32)
+IF(WIN32 AND MSVC)
   set(KINSOLLibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/kinsol/install/win)
+ELSEIF(WIN32 AND MINGW)
+  set(KINSOLLibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/kinsol/install/mingw)
 ELSEIF(APPLE)
   set(KINSOLLibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/kinsol/install/mac)
 ELSE()
