@@ -13,7 +13,7 @@ else
 	LIB_EXT := .so
 endif
 
-.PHONY: OMSimulator config config-OMSimulator config-fmil config-lua config-cvode config-kinsol config-3rdParty distclean testsuite doc
+.PHONY: OMSimulator config-OMSimulator config-fmil config-lua config-cvode config-kinsol config-3rdParty distclean testsuite doc
 
 OMSimulator:
 	@echo
@@ -21,7 +21,6 @@ OMSimulator:
 	@echo
 	@$(MAKE) -C $(BUILD_DIR) install
 
-config: config-OMSimulator
 config-3rdParty: config-fmil config-lua config-cvode config-kinsol
 
 config-OMSimulator:
@@ -35,7 +34,6 @@ config-OMSimulator:
 ifeq ($(detected_OS),Darwin)
 	install_name_tool -change libfmilib_shared.dylib "@loader_path/libfmilib_shared.dylib" install/bin/OMSimulator
 endif
-
 
 config-fmil:
 	@echo
@@ -61,19 +59,19 @@ config-cvode:
 	@echo
 	@echo "# config cvode"
 	@echo
-	$(RM) 3rdParty/cvode/build-linux
+	$(RM) 3rdParty/cvode/$(BUILD_DIR)
 	$(RM) 3rdParty/cvode/$(INSTALL_DIR)
-	$(MKDIR) 3rdParty/cvode/build-linux
-	cd 3rdParty/cvode/build-linux && cmake -DCMAKE_INSTALL_PREFIX=../$(INSTALL_DIR) .. -DEXAMPLES_ENABLE:BOOL="0" -DBUILD_SHARED_LIBS:BOOL="0" -DCMAKE_C_FLAGS="-fPIC" && $(MAKE) install
+	$(MKDIR) 3rdParty/cvode/$(BUILD_DIR)
+	cd 3rdParty/cvode/$(BUILD_DIR) && cmake -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) ../.. -DEXAMPLES_ENABLE:BOOL="0" -DBUILD_SHARED_LIBS:BOOL="0" -DCMAKE_C_FLAGS="-fPIC" && $(MAKE) install
 
 config-kinsol:
 	@echo
 	@echo "# config kinsol"
 	@echo
-	$(RM) 3rdParty/kinsol/build-linux
+	$(RM) 3rdParty/kinsol/$(BUILD_DIR)
 	$(RM) 3rdParty/kinsol/$(INSTALL_DIR)
-	$(MKDIR) 3rdParty/kinsol/build-linux
-	cd 3rdParty/kinsol/build-linux && cmake -DCMAKE_INSTALL_PREFIX=../$(INSTALL_DIR) .. -DEXAMPLES_ENABLE:BOOL="0" -DBUILD_SHARED_LIBS:BOOL="0" -DCMAKE_C_FLAGS="-fPIC" && $(MAKE) install
+	$(MKDIR) 3rdParty/kinsol/$(BUILD_DIR)
+	cd 3rdParty/kinsol/$(BUILD_DIR) && cmake -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) ../.. -DEXAMPLES_ENABLE:BOOL="0" -DBUILD_SHARED_LIBS:BOOL="0" -DCMAKE_C_FLAGS="-fPIC" && $(MAKE) install
 
 distclean:
 	@echo
@@ -83,7 +81,7 @@ distclean:
 	$(RM) install
 	$(RM) 3rdParty/FMIL/$(BUILD_DIR)
 	$(RM) 3rdParty/FMIL/$(INSTALL_DIR)
-	$(RM) 3rdParty/cvode/build-linux
+	$(RM) 3rdParty/cvode/$(BUILD_DIR)
 	$(RM) 3rdParty/cvode/$(INSTALL_DIR)
 
 testsuite:
