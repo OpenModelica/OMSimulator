@@ -145,8 +145,10 @@ void CompositeModel::setReal(const std::string& var, double value)
   }
   else if (v && v->isInput())
     fmuInstances[fmuInstance]->setRealInput(fmuVar, value);
+  else if (v)
+    logError("CompositeModel::setReal failed for variable \"" + var + "\" (" + v->getCausalityString() + ")");
   else
-    logError("CompositeModel::setReal failed");
+    logError("CompositeModel::setReal: Couldn't find variable \"" + var + "\"");
 }
 
 bool CompositeModel::setRealInput(Variable& var, double value)
@@ -181,8 +183,10 @@ void CompositeModel::setInteger(const std::string& var, int value)
   }
   else if (v && v->isInput())
     fmuInstances[fmuInstance]->setIntegerInput(fmuVar, value);
+  else if (v)
+    logError("CompositeModel::setInteger failed for variable \"" + var + "\" (" + v->getCausalityString() + ")");
   else
-    logError("CompositeModel::setInteger failed");
+    logError("CompositeModel::setInteger: Couldn't find variable \"" + var + "\"");
 }
 
 void CompositeModel::setBoolean(const std::string& var, bool value)
@@ -212,8 +216,10 @@ void CompositeModel::setBoolean(const std::string& var, bool value)
   }
   else if (v && v->isInput())
     fmuInstances[fmuInstance]->setBooleanInput(fmuVar, value);
+  else if (v)
+    logError("CompositeModel::setBoolean failed for variable \"" + var + "\" (" + v->getCausalityString() + ")");
   else
-    logError("CompositeModel::setBoolean failed");
+    logError("CompositeModel::setBoolean: Couldn't find variable \"" + var + "\"");
 }
 
 double CompositeModel::getReal(const std::string& var)
