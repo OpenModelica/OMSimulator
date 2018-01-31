@@ -78,9 +78,10 @@ distclean:
 	@echo "# make distclean"
 	@echo
 	$(RM) $(BUILD_DIR)
-	$(RM) install
+	$(RM) $(INSTALL_DIR)
 	$(RM) 3rdParty/FMIL/$(BUILD_DIR)
 	$(RM) 3rdParty/FMIL/$(INSTALL_DIR)
+	@$(MAKE) -C 3rdParty/Lua distclean
 	$(RM) 3rdParty/cvode/$(BUILD_DIR)
 	$(RM) 3rdParty/cvode/$(INSTALL_DIR)
 
