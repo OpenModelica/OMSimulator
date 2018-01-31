@@ -313,14 +313,7 @@ FMUWrapper::FMUWrapper(CompositeModel& model, std::string fmuPath, std::string i
 
   // generate internal dependency graphs
   getDependencyGraph_outputs();
-  #ifndef BTH_DEACTIVATE_INITIAL_UNKNOWNS
-  /* 2017-08-11 BThiele: Get a strange error when executing the 'cs_BouncingBall.mos'
-     example from the 'OMSimulatorModelica' testsuite. In the loop in deactivated
-     function below an access to startIndex[0 + 1] results in a strange (very) high
-     number which then leads to an access violation.
-  */
   getDependencyGraph_initialUnknowns();
-  #endif // BTH_DEACTIVATE_INITIAL_UNKNOWNS
 
   OMS_TOC(clocks, CLOCK_INSTANTIATION);
 }
