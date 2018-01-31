@@ -21,24 +21,24 @@ call buildWinVS14.bat
 CD ..\..
 
 echo # config cvode
-if exist "3rdParty\cvode\build-win\" RMDIR /S /Q 3rdParty\cvode\build-win
+if exist "3rdParty\cvode\build\win\" RMDIR /S /Q 3rdParty\cvode\build\win
 if exist "3rdParty\cvode\install\win\" RMDIR /S /Q 3rdParty\cvode\install\win
-MKDIR 3rdParty\cvode\build-win
-CD 3rdParty\cvode\build-win
-cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_INSTALL_PREFIX=..\install\win .. -DEXAMPLES_ENABLE:BOOL="0" -DBUILD_SHARED_LIBS:BOOL="0"
-CD ..\..\..
+MKDIR 3rdParty\cvode\build\win
+CD 3rdParty\cvode\build\win
+cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_INSTALL_PREFIX=..\..\install\win ..\.. -DEXAMPLES_ENABLE:BOOL="0" -DBUILD_SHARED_LIBS:BOOL="0"
+CD ..\..\..\..
 echo # build cvode
-msbuild.exe "3rdParty\cvode\build-win\INSTALL.vcxproj" /t:Build /p:configuration=Release
+msbuild.exe "3rdParty\cvode\build\win\INSTALL.vcxproj" /t:Build /p:configuration=Release
 
 echo # config kinsol
-if exist "3rdParty\kinsol\build-win\" RMDIR /S /Q 3rdParty\kinsol\build-win
+if exist "3rdParty\kinsol\build\win\" RMDIR /S /Q 3rdParty\kinsol\build\win
 if exist "3rdParty\kinsol\install\win\" RMDIR /S /Q 3rdParty\kinsol\install\win
-MKDIR 3rdParty\kinsol\build-win
-CD 3rdParty\kinsol\build-win
-cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_INSTALL_PREFIX=..\install\win .. -DEXAMPLES_ENABLE:BOOL="0" -DBUILD_SHARED_LIBS:BOOL="0"
-CD ..\..\..
+MKDIR 3rdParty\kinsol\build\win
+CD 3rdParty\kinsol\build\win
+cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_INSTALL_PREFIX=..\..\install\win ..\.. -DEXAMPLES_ENABLE:BOOL="0" -DBUILD_SHARED_LIBS:BOOL="0"
+CD ..\..\..\..
 echo # build kinsol
-msbuild.exe "3rdParty\kinsol\build-win\INSTALL.vcxproj" /t:Build /p:configuration=Release
+msbuild.exe "3rdParty\kinsol\build\win\INSTALL.vcxproj" /t:Build /p:configuration=Release
 
 echo # config OMSimulator
 if exist "build\win\" RMDIR /S /Q build\win
@@ -47,20 +47,20 @@ CD build\win
 cmake -G "Visual Studio 14 2015 Win64" ..\.. -DBOOST_ROOT=%BOOST_ROOT%
 CD ..\..
 
-echo # create install\bin folder
-IF NOT EXIST "install\bin" MKDIR "install\bin"
+echo # create install\win\bin folder
+IF NOT EXIST "install\win\bin" MKDIR "install\win\bin"
 
 echo # copy boost
-COPY %BOOST_ROOT%\lib64-msvc-14.0\boost_filesystem-vc140-mt-1_63.dll install\bin
-COPY %BOOST_ROOT%\lib64-msvc-14.0\boost_filesystem-vc140-mt-gd-1_63.dll install\bin
-COPY %BOOST_ROOT%\lib64-msvc-14.0\boost_system-vc140-mt-1_63.dll install\bin
-COPY %BOOST_ROOT%\lib64-msvc-14.0\boost_system-vc140-mt-gd-1_63.dll install\bin
-COPY %BOOST_ROOT%\lib64-msvc-14.0\boost_program_options-vc140-mt-1_63.dll install\bin
-COPY %BOOST_ROOT%\lib64-msvc-14.0\boost_program_options-vc140-mt-gd-1_63.dll install\bin
+COPY %BOOST_ROOT%\lib64-msvc-14.0\boost_filesystem-vc140-mt-1_63.dll install\win\bin
+COPY %BOOST_ROOT%\lib64-msvc-14.0\boost_filesystem-vc140-mt-gd-1_63.dll install\win\bin
+COPY %BOOST_ROOT%\lib64-msvc-14.0\boost_system-vc140-mt-1_63.dll install\win\bin
+COPY %BOOST_ROOT%\lib64-msvc-14.0\boost_system-vc140-mt-gd-1_63.dll install\win\bin
+COPY %BOOST_ROOT%\lib64-msvc-14.0\boost_program_options-vc140-mt-1_63.dll install\win\bin
+COPY %BOOST_ROOT%\lib64-msvc-14.0\boost_program_options-vc140-mt-gd-1_63.dll install\win\bin
 
 echo # copy fmil
-COPY 3rdParty\fmil\install\win\lib\fmilib_shared.dll install\bin
+COPY 3rdParty\fmil\install\win\lib\fmilib_shared.dll install\win\bin
 
 echo # copy lua
-COPY 3rdParty\lua\install\win\lua.dll install\bin
-COPY 3rdParty\lua\install\win\lua.exe install\bin
+COPY 3rdParty\lua\install\win\lua.dll install\win\bin
+COPY 3rdParty\lua\install\win\lua.exe install\win\bin

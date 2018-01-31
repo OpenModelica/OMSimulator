@@ -18,8 +18,16 @@ IF("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
 ENDIF()
 
 IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-  set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/install CACHE PATH "Library installation path (don't change)" FORCE)
-ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+  IF(WIN32 AND MSVC)
+    set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/install/win CACHE PATH "Library installation path (don't change)" FORCE)
+  ELSEIF(WIN32 AND MINGW)
+    set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/install/mingw CACHE PATH "Library installation path (don't change)" FORCE)
+  ELSEIF(APPLE)
+    set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/install/mac CACHE PATH "Library installation path (don't change)" FORCE)
+  ELSE()
+    set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/install/linux CACHE PATH "Library installation path (don't change)" FORCE)
+  ENDIF()
+ENDIF()
 
 # Use C++ 11 for the whole project
 set(CMAKE_CXX_STANDARD 11)
