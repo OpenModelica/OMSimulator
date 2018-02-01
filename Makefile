@@ -84,6 +84,8 @@ distclean:
 	@$(MAKE) -C 3rdParty/Lua distclean
 	$(RM) 3rdParty/cvode/$(BUILD_DIR)
 	$(RM) 3rdParty/cvode/$(INSTALL_DIR)
+	$(RM) 3rdParty/kinsol/$(BUILD_DIR)
+	$(RM) 3rdParty/kinsol/$(INSTALL_DIR)
 
 testsuite:
 	@echo
