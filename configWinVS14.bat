@@ -8,7 +8,7 @@ if exist "3rdParty\FMIL\build\win\" RMDIR /S /Q 3rdParty\FMIL\build\win
 if exist "3rdParty\FMIL\install\win\" RMDIR /S /Q 3rdParty\FMIL\install\win
 MKDIR 3rdParty\FMIL\build\win
 CD 3rdParty\FMIL\build\win
-cmake -G "Visual Studio 14 2015 Win64" -DFMILIB_INSTALL_PREFIX=..\..\install\win -DFMILIB_BUILD_TESTS:BOOL="0" -DFMILIB_GENERATE_DOXYGEN_DOC:BOOL="0" -DFMILIB_BUILD_STATIC_LIB:BOOL="1" -DBUILD_TESTING:BOOL="0" -DFMILIB_BUILD_BEFORE_TESTS:BOOL="0" ..\..
+cmake -G "Visual Studio 14 2015 Win64" -DFMILIB_INSTALL_PREFIX=..\..\install\win -DFMILIB_BUILD_TESTS:BOOL="0" -DFMILIB_GENERATE_DOXYGEN_DOC:BOOL="0" -DFMILIB_BUILD_STATIC_LIB:BOOL="1" -DFMILIB_BUILD_SHARED_LIB:Bool="0" -DBUILD_TESTING:BOOL="0" -DFMILIB_BUILD_BEFORE_TESTS:BOOL="0" ..\..
 CD ..\..\..\..
 echo # build fmil
 @call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x86_amd64
@@ -47,7 +47,8 @@ CD build\win
 cmake -G "Visual Studio 14 2015 Win64" ..\.. -DBOOST_ROOT=%BOOST_ROOT%
 CD ..\..
 
-echo # create install\win\bin folder
+REM create install\win\bin folder
+IF NOT EXIST "install\win\bin" echo # create install\win\bin folder
 IF NOT EXIST "install\win\bin" MKDIR "install\win\bin"
 
 echo # copy boost
@@ -58,9 +59,5 @@ COPY %BOOST_ROOT%\lib64-msvc-14.0\boost_system-vc140-mt-gd-1_63.dll install\win\
 COPY %BOOST_ROOT%\lib64-msvc-14.0\boost_program_options-vc140-mt-1_63.dll install\win\bin
 COPY %BOOST_ROOT%\lib64-msvc-14.0\boost_program_options-vc140-mt-gd-1_63.dll install\win\bin
 
-echo # copy fmil
-COPY 3rdParty\fmil\install\win\lib\fmilib_shared.dll install\win\bin
-
 echo # copy lua
 COPY 3rdParty\lua\install\win\lua.dll install\win\bin
-COPY 3rdParty\lua\install\win\lua.exe install\win\bin
