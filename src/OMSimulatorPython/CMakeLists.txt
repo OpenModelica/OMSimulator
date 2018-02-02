@@ -2,8 +2,10 @@ project(OMSimulatorPython)
 
 install(FILES OMSimulator.py DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 
-IF(WIN32)
+IF(WIN32 AND MSVC)
   install(FILES OMSimulatorPython.bat DESTINATION ${CMAKE_INSTALL_PREFIX}/bin PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ)
+ELSEIF(WIN32 AND MINGW)
+  message(WARNING "OMSimulatorPython is not available on mingw.")
 ELSEIF(APPLE)
   message(WARNING "OMSimulatorPython is not available on Mac OS X.")
 ELSE()
