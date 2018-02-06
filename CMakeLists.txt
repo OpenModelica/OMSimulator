@@ -24,8 +24,6 @@ IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/install/mingw CACHE PATH "Library installation path (don't change)" FORCE)
   ELSEIF(APPLE)
     set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/install/mac CACHE PATH "Library installation path (don't change)" FORCE)
-    set(CMAKE_C_COMPILER clang)
-    set(CMAKE_CXX_COMPILER clang++)
   ELSE()
     set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/install/linux CACHE PATH "Library installation path (don't change)" FORCE)
   ENDIF()
@@ -33,6 +31,7 @@ ENDIF()
 
 # Use C++ 11 for the whole project
 set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 ##########################
 # Configuring for Boost
