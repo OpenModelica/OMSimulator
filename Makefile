@@ -29,7 +29,7 @@ config-OMSimulator:
 	@echo
 	$(RM) $(BUILD_DIR)
 	$(MKDIR) $(BUILD_DIR)
-	cd $(BUILD_DIR) && cmake ../.. && $(MAKE) install
+	cd $(BUILD_DIR) && cmake -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ../.. && $(MAKE) install
 # patch for FMIL linking on Mac
 ifeq ($(detected_OS),Darwin)
 	install_name_tool -change libfmilib_shared.dylib "@loader_path/libfmilib_shared.dylib" install/bin/OMSimulator
