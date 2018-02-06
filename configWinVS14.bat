@@ -11,7 +11,7 @@ CD 3rdParty\FMIL\build\win
 cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DFMILIB_INSTALL_PREFIX=..\..\install\win -DFMILIB_BUILD_TESTS:BOOL="0" -DFMILIB_GENERATE_DOXYGEN_DOC:BOOL="0" -DFMILIB_BUILD_STATIC_LIB:BOOL="1" -DFMILIB_BUILD_SHARED_LIB:Bool="0" -DBUILD_TESTING:BOOL="0" -DFMILIB_BUILD_BEFORE_TESTS:BOOL="0" ..\..
 CD ..\..\..\..
 echo # build fmil
-@call "%VS140COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64
+@call "%VS140COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64 8.1
 msbuild.exe "3rdParty\FMIL\build\win\INSTALL.vcxproj" /t:Build /p:configuration=Release
 
 echo # build Lua
