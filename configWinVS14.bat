@@ -57,7 +57,7 @@ cd %BOOST_ROOT%
 for /d %%d in (lib64-msvc-*) do (
   cd %%d
   for /r %%e in (boost_*system*,boost_program_options*) do (
-     xcopy /F %%e %CRD%\install\win\bin
+     xcopy /-Y /F %%e %CRD%\install\win\bin
   )
 )
 cd %CRD%
