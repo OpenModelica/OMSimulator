@@ -8,7 +8,7 @@ if exist "3rdParty\FMIL\build\win\" RMDIR /S /Q 3rdParty\FMIL\build\win
 if exist "3rdParty\FMIL\install\win\" RMDIR /S /Q 3rdParty\FMIL\install\win
 MKDIR 3rdParty\FMIL\build\win
 CD 3rdParty\FMIL\build\win
-cmake -G "Visual Studio 14 2015 Win64" -DFMILIB_INSTALL_PREFIX=..\..\install\win -DFMILIB_BUILD_TESTS:BOOL="0" -DFMILIB_GENERATE_DOXYGEN_DOC:BOOL="0" -DFMILIB_BUILD_STATIC_LIB:BOOL="1" -DFMILIB_BUILD_SHARED_LIB:Bool="0" -DBUILD_TESTING:BOOL="0" -DFMILIB_BUILD_BEFORE_TESTS:BOOL="0" ..\..
+cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DFMILIB_INSTALL_PREFIX=..\..\install\win -DFMILIB_BUILD_TESTS:BOOL="0" -DFMILIB_GENERATE_DOXYGEN_DOC:BOOL="0" -DFMILIB_BUILD_STATIC_LIB:BOOL="1" -DFMILIB_BUILD_SHARED_LIB:Bool="0" -DBUILD_TESTING:BOOL="0" -DFMILIB_BUILD_BEFORE_TESTS:BOOL="0" ..\..
 CD ..\..\..\..
 echo # build fmil
 @call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x86_amd64
@@ -25,7 +25,7 @@ if exist "3rdParty\cvode\build\win\" RMDIR /S /Q 3rdParty\cvode\build\win
 if exist "3rdParty\cvode\install\win\" RMDIR /S /Q 3rdParty\cvode\install\win
 MKDIR 3rdParty\cvode\build\win
 CD 3rdParty\cvode\build\win
-cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_INSTALL_PREFIX=..\..\install\win ..\.. -DEXAMPLES_ENABLE:BOOL="0" -DBUILD_SHARED_LIBS:BOOL="0"
+cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_INSTALL_PREFIX=..\..\install\win ..\.. -DEXAMPLES_ENABLE:BOOL="0" -DBUILD_SHARED_LIBS:BOOL="0"
 CD ..\..\..\..
 echo # build cvode
 msbuild.exe "3rdParty\cvode\build\win\INSTALL.vcxproj" /t:Build /p:configuration=Release
@@ -35,7 +35,7 @@ if exist "3rdParty\kinsol\build\win\" RMDIR /S /Q 3rdParty\kinsol\build\win
 if exist "3rdParty\kinsol\install\win\" RMDIR /S /Q 3rdParty\kinsol\install\win
 MKDIR 3rdParty\kinsol\build\win
 CD 3rdParty\kinsol\build\win
-cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_INSTALL_PREFIX=..\..\install\win ..\.. -DEXAMPLES_ENABLE:BOOL="0" -DBUILD_SHARED_LIBS:BOOL="0"
+cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_INSTALL_PREFIX=..\..\install\win ..\.. -DEXAMPLES_ENABLE:BOOL="0" -DBUILD_SHARED_LIBS:BOOL="0"
 CD ..\..\..\..
 echo # build kinsol
 msbuild.exe "3rdParty\kinsol\build\win\INSTALL.vcxproj" /t:Build /p:configuration=Release
@@ -44,7 +44,7 @@ echo # config OMSimulator
 if exist "build\win\" RMDIR /S /Q build\win
 MKDIR build\win
 CD build\win
-cmake -G "Visual Studio 14 2015 Win64" ..\.. -DBOOST_ROOT=%BOOST_ROOT%
+cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ..\.. -DBOOST_ROOT=%BOOST_ROOT%
 CD ..\..
 
 REM create install\win\bin folder
