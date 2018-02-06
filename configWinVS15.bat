@@ -53,10 +53,17 @@ REM create install\win\bin folder
 IF NOT EXIST "install\win\bin" echo # create install\win\bin folder
 IF NOT EXIST "install\win\bin" MKDIR "install\win\bin"
 
-echo # copy boost
-XCOPY %BOOST_ROOT%\lib64-msvc-*\boost_filesystem*.dll install\win\bin
-XCOPY %BOOST_ROOT%\lib64-msvc-*\boost_system*.dll install\win\bin
-XCOPY %BOOST_ROOT%\lib64-msvc-*\boost_program_options*.dll install\win\bin
+echo # copy boost using CRAPPY xcopy
+set BOOST_ROOT=C:\local\boost_1_64_0
+set CRD=%CD%
+cd %BOOST_ROOT%
+for /d %%d in (lib64-msvc-*) do (
+  cd %%d
+  for /r %%e in (boost_*system*,boost_program_options*) do (
+     xcopy /F %%e %CRD%\install\win\bin
+  )
+)
+cd %CRD%
 
 echo # copy lua
 COPY 3rdParty\lua\install\win\lua.dll install\win\bin
