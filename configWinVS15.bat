@@ -54,12 +54,9 @@ IF NOT EXIST "install\win\bin" echo # create install\win\bin folder
 IF NOT EXIST "install\win\bin" MKDIR "install\win\bin"
 
 echo # copy boost
-COPY %BOOST_ROOT%\lib64-msvc-14.1\boost_filesystem-vc141-mt-1_64.dll install\win\bin
-COPY %BOOST_ROOT%\lib64-msvc-14.1\boost_filesystem-vc141-mt-gd-1_64.dll install\win\bin
-COPY %BOOST_ROOT%\lib64-msvc-14.1\boost_system-vc141-mt-1_64.dll install\win\bin
-COPY %BOOST_ROOT%\lib64-msvc-14.1\boost_system-vc141-mt-gd-1_64.dll install\win\bin
-COPY %BOOST_ROOT%\lib64-msvc-14.1\boost_program_options-vc141-mt-1_64.dll install\win\bin
-COPY %BOOST_ROOT%\lib64-msvc-14.1\boost_program_options-vc141-mt-gd-1_64.dll install\win\bin
+COPY %BOOST_ROOT%\lib64-msvc-*\boost_filesystem*.dll install\win\bin
+COPY %BOOST_ROOT%\lib64-msvc-*\boost_system*.dll install\win\bin
+COPY %BOOST_ROOT%\lib64-msvc-*\boost_program_options*.dll install\win\bin
 
 echo # copy lua
 COPY 3rdParty\lua\install\win\lua.dll install\win\bin
