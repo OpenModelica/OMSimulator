@@ -3,7 +3,7 @@ IF(WIN32 AND MSVC)
   # Boost 1.64 requires CMake 3.8 or newer
   cmake_minimum_required(VERSION 3.8)
 ELSE()
-  cmake_minimum_required(VERSION 3.1)
+  cmake_minimum_required(VERSION 2.8)
 ENDIF()
 
 project(OMSimulator)
