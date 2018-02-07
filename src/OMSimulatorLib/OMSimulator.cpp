@@ -346,10 +346,10 @@ oms_status_t oms_getCurrentTime(const void* model, double* time)
   return pModel->getCurrentTime(time);
 }
 
-void oms_setTempDirectory(const char* filename)
+void oms_setTempDirectory(const char* path)
 {
   logTrace();
-  GlobalSettings::getInstance().SetTempDirectory(filename);
+  GlobalSettings::getInstance().SetTempDirectory(path);
 }
 
 void oms_setWorkingDirectory(const char* path)
