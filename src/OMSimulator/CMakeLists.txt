@@ -1,6 +1,6 @@
 project(OMSimulator)
 
-set(CMAKE_INSTALL_RPATH "$ORIGIN")
+# set(CMAKE_INSTALL_RPATH "$ORIGIN")
 
 find_package(Threads)
 
