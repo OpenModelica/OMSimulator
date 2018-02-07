@@ -9,10 +9,10 @@ include_directories(../OMSimulatorLua)
 include_directories(${Boost_INCLUDE_DIRS})
 include_directories(${LUALibrary_INCLUDEDIR})
 
-link_directories(${Boost_LIBRARY_DIRS})
 link_directories(${FMILibrary_LIBRARYDIR})
 link_directories(${LUALibrary_LIBRARYDIR})
 link_directories(${CVODELibrary_LIBRARYDIR})
+link_directories(${Boost_LIBRARY_DIRS})
 
 add_executable(OMSimulator main.cpp Options.cpp)
 

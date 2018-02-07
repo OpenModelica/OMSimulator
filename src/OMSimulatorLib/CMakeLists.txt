@@ -30,16 +30,16 @@ list(APPEND OMSIMULATORLIB_SOURCES Variable.cpp)
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Version.cpp.in" "${CMAKE_CURRENT_BINARY_DIR}/Version.cpp" @ONLY)
 list(APPEND OMSIMULATORLIB_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/Version.cpp")
 
-include_directories(${Boost_INCLUDE_DIRS})
 include_directories(${FMILibrary_INCLUDEDIR})
 include_directories(${CVODELibrary_INCLUDEDIR})
 include_directories(${KINSOLLibrary_INCLUDEDIR})
 include_directories(${PUGIXML_INCLUDEDIR})
+include_directories(${Boost_INCLUDE_DIRS})
 
-link_directories(${Boost_LIBRARY_DIRS})
 link_directories(${FMILibrary_LIBRARYDIR})
 link_directories(${CVODELibrary_LIBRARYDIR})
 link_directories(${KINSOLLibrary_LIBRARYDIR})
+link_directories(${Boost_LIBRARY_DIRS})
 
 # Shared library version
 add_library(OMSimulatorLib_shared SHARED ${OMSIMULATORLIB_SOURCES})
