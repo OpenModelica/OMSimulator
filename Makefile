@@ -17,6 +17,7 @@ OMSimulator:
 	@echo
 	@echo "# make OMSimulator"
 	@echo
+	@$(RM) $(INSTALL_DIR)
 	@$(MAKE) -C $(BUILD_DIR) install
 
 config-3rdParty: config-fmil config-lua config-cvode config-kinsol
@@ -25,9 +26,9 @@ config-OMSimulator:
 	@echo
 	@echo "# config OMSimulator"
 	@echo
-	$(RM) $(BUILD_DIR)
-	$(MKDIR) $(BUILD_DIR)
-	cd $(BUILD_DIR) && cmake -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ../.. && $(MAKE) install
+	@$(RM) $(BUILD_DIR)
+	@$(MKDIR) $(BUILD_DIR)
+	@cd $(BUILD_DIR) && cmake -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ../.. && $(MAKE) install
 
 config-fmil:
 	@echo
