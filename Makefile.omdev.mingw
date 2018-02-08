@@ -5,9 +5,9 @@ BUILD_DIR := build/mingw
 INSTALL_DIR := install/mingw
 
 ifeq (MINGW32,$(findstring MINGW32,$(shell uname)))
-MINGW_FMIL_FLAGS=-DFMILIB_FMI_PLATFORM=win32
+	MINGW_FMIL_FLAGS=-DFMILIB_FMI_PLATFORM=win32
 else # mingw64
-MINGW_FMIL_FLAGS=-DFMILIB_FMI_PLATFORM=win64
+	MINGW_FMIL_FLAGS=-DFMILIB_FMI_PLATFORM=win64
 endif
 
 .PHONY: OMSimulator config-OMSimulator config-fmil config-lua config-cvode config-kinsol config-3rdParty distclean testsuite doc
@@ -26,7 +26,7 @@ config-OMSimulator:
 	@echo
 	$(RM) $(BUILD_DIR)
 	$(MKDIR) $(BUILD_DIR)
-	cd $(BUILD_DIR) && cmake -G "MSYS Makefiles" ../.. && $(MAKE) install
+	cd $(BUILD_DIR) && cmake -G "MSYS Makefiles" ../..
 
 config-fmil:
 	@echo
