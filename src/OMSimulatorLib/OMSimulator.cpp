@@ -70,17 +70,17 @@ void oms_unload(void* model)
   delete pModel;
 }
 
-void oms_instantiateFMU(void* model, const char* filename, const char* instanceName)
+oms_status_t oms_instantiateFMU(void* model, const char* filename, const char* instanceName)
 {
   logTrace();
   if (!model)
   {
     logError("oms_instantiateFMU: invalid pointer");
-    return;
+    return oms_status_error;
   }
 
   CompositeModel* pModel = (CompositeModel*)model;
-  pModel->instantiateFMU(filename, instanceName);
+  return pModel->instantiateFMU(filename, instanceName);
 }
 
 void oms_instantiateTable(void* model, const char* filename, const char* instanceName)

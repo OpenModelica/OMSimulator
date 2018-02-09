@@ -99,6 +99,7 @@ public:
   void updateSignalsForResultFile(ResultWriter *resultFile);
 
   void setVariableFilter(const char* variableFilter) {this->variableFilter = variableFilter;}
+  fmi2_boolean_t isInstantiated() {return instantiated;}
 private:
   enum Solver_t { NO_SOLVER, EXPLICIT_EULER, CVODE };
 
@@ -161,6 +162,7 @@ private:
   fmi2_real_t tcur;
   fmi2_real_t relativeTolerance;
   std::string variableFilter;
+  fmi2_boolean_t instantiated;
 
   // ME
   fmi2_boolean_t callEventUpdate;

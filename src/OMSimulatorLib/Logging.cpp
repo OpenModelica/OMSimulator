@@ -182,7 +182,7 @@ void Log::Fatal(const std::string& msg)
       logFile << TimeStr() << " | fatal:   " << msg << endl;
   }
   // Triggers the mutex again...
-  exit(1);
+  //exit(1);
 }
 
 void Log::Trace(const std::string& function, const std::string& file, const long line)

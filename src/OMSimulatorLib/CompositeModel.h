@@ -52,7 +52,7 @@ public:
   CompositeModel(const char* descriptionPath);
   ~CompositeModel();
 
-  void instantiateFMU(const std::string& filename, const std::string& instanceName);
+  oms_status_t instantiateFMU(const std::string& filename, const std::string& instanceName);
   void instantiateTable(const std::string& filename, const std::string& instanceName);
   void setReal(const std::string& var, double value);
   bool setRealInput(Variable& var, double value);

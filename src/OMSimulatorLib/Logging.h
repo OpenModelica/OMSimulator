@@ -55,7 +55,7 @@ public:
   void Debug(const std::string& msg);
   void Warning(const std::string& msg);
   void Error(const std::string& msg);
-  [[noreturn]] void Fatal(const std::string& msg);
+  void Fatal(const std::string& msg);
   void Trace(const std::string& function, const std::string& file, const long line);
 
   void setLogFile(const std::string& filename);
