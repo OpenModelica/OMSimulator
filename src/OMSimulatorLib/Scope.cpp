@@ -64,3 +64,21 @@ oms_status_t oms2::Scope::newFMIModel(const std::string& name)
   scope.fmiModels[name] = oms2::FMICompositeModel::newModel(name);
   return oms_status_ok;
 }
+
+oms_status_t oms2::Scope::unloadModel(const std::string& name)
+{
+  Scope& scope = oms2::Scope::getInstance();
+
+  // check if name is in scope
+  auto it = scope.fmiModels.find(name);
+  if (it == scope.fmiModels.end())
+  {
+    logError("There is no model called \"" + name + "\" in the scope.");
+    return oms_status_error;
+  }
+
+  oms2::FMICompositeModel::deleteModel(it->second);
+  scope.fmiModels.erase(it);
+
+  return oms_status_ok;
+}

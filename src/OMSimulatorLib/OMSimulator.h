@@ -310,6 +310,13 @@ void oms_setMaxIterations(void* model, int maxIterations);
  */
 oms_status_t oms2_newFMIModel(const char* ident);
 
+/**
+ * \brief Unloads a composite model (works for FMI and TLM).
+ *
+ * @param ident   [in] Name of the model instance.
+ */
+oms_status_t oms2_unloadModel(const char* ident);
+
 oms_status_t oms2_loadFMIModel(const char* filename, const char** ident);
 oms_status_t oms2_saveModel(const char* ident, const char* filename);
 oms_status_t oms2_getIconAnnotation(const char* ident, const void** annotation);

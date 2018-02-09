@@ -537,6 +537,12 @@ oms_status_t oms2_newFMIModel(const char* ident)
   return oms2::Scope::newFMIModel(ident);
 }
 
+oms_status_t oms2_unloadModel(const char* ident)
+{
+  logTrace();
+  return oms2::Scope::unloadModel(ident);
+}
+
 oms_status_t oms2_loadFMIModel(const char* filename, const char** ident)
 {
   logTrace();

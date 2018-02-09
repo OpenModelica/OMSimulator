@@ -43,6 +43,7 @@ namespace oms2
   {
   public:
     static oms_status_t newFMIModel(const std::string& name);
+    static oms_status_t unloadModel(const std::string& name);
 
   private:
     Scope();
