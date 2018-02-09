@@ -31,6 +31,7 @@
 
 #include "Logging.h"
 #include "Version.h"
+#include "Types.h"
 
 #include <iostream>
 #include <fstream>
@@ -51,7 +52,7 @@ std::string TimeStr()
   return std::string(buffer);
 }
 
-Log::Log() : filename(""), useStdStream(true), initialized(false)
+Log::Log() : filename(""), useStdStream(true), initialized(false), cb(NULL)
 {
 }
 
@@ -124,6 +125,9 @@ void Log::Info(const std::string& msg)
     cout << "info:    " << msg << endl;
   else
     logFile << TimeStr() << " | info:    " << msg << endl;
+
+  if (cb)
+    cb(oms_message_info, msg.c_str());
 }
 
 void Log::Debug(const std::string& msg)
@@ -137,6 +141,9 @@ void Log::Debug(const std::string& msg)
     cout << "debug:   " << msg << endl;
   else
     logFile << TimeStr() << " | debug:   " << msg << endl;
+
+  if (cb)
+    cb(oms_message_debug, msg.c_str());
 }
 
 void Log::Warning(const std::string& msg)
@@ -151,6 +158,9 @@ void Log::Warning(const std::string& msg)
     cout << "warning: " << msg << endl;
   else
     logFile << TimeStr() << " | warning: " << msg << endl;
+
+  if (cb)
+    cb(oms_message_warning, msg.c_str());
 }
 
 void Log::Error(const std::string& msg)
@@ -165,6 +175,9 @@ void Log::Error(const std::string& msg)
     cerr << "error:   " << msg << endl;
   else
     logFile << TimeStr() << " | error:   " << msg << endl;
+
+  if (cb)
+    cb(oms_message_error, msg.c_str());
 }
 
 void Log::Fatal(const std::string& msg)
@@ -180,7 +193,11 @@ void Log::Fatal(const std::string& msg)
       cerr << "fatal:   " << msg << endl;
     else
       logFile << TimeStr() << " | fatal:   " << msg << endl;
+
+    if (cb)
+      cb(oms_message_fatal, msg.c_str());
   }
+
   // Triggers the mutex again...
   exit(1);
 }
@@ -191,11 +208,15 @@ void Log::Trace(const std::string& function, const std::string& file, const long
     initialize();
 
   std::lock_guard<std::mutex> lock(m);
+  std::string msg = function + " (" + file + ":" + std::to_string(line) + ")";
 
   if (useStdStream)
-    cout << "trace:   " << function << " (" << file << ":" << line << ")" << endl;
+    cout << "trace:   " << msg << endl;
   else
-    logFile << TimeStr() << " | trace:   " << function << " (" << file << ":" << line << ")" << endl;
+    logFile << TimeStr() << " | trace:   " << msg << endl;
+
+  if (cb)
+    cb(oms_message_trace, msg.c_str());
 }
 
 void Log::setLogFile(const std::string& filename)

@@ -32,6 +32,8 @@
 #ifndef _OMS_LOGGING_H_
 #define _OMS_LOGGING_H_
 
+#include "Types.h"
+
 #include <string>
 #include <fstream>
 #include <mutex>
@@ -60,6 +62,8 @@ public:
 
   void setLogFile(const std::string& filename);
 
+  void setLoggingCallback(void (*cb)(oms_message_type_t type, const char* message)) {this->cb = cb;}
+
 private:
   Log();
   ~Log();
@@ -78,6 +82,8 @@ private:
   std::mutex m;
   unsigned int numWarnings;
   unsigned int numErrors;
+
+  void (*cb)(oms_message_type_t type, const char* message);
 };
 
 #define logInfo(msg)    Log::getInstance().Info(msg)

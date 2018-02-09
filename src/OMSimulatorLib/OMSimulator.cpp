@@ -613,8 +613,8 @@ oms_status_t oms2_simulate_asynchronous(const char* ident, void (*cb)(const char
   return oms_status_error;
 }
 
-void oms2_getLastMessages(const oms_message_t** messages, int8_t clear);
+void oms2_setLoggingCallback(void (*cb)(oms_message_type_t type, const char* message))
 {
   logTrace();
-  logError("oms2_getLastMessages: not implemented yet");
+  Log::getInstance().setLoggingCallback(cb);
 }
