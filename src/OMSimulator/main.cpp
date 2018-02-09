@@ -58,7 +58,8 @@ static int do_simulation(void* pModel, std::chrono::duration<double> timeout)
     std::unique_lock<std::mutex> l(m);
     if (cv.wait_for(l, timeout) == std::cv_status::timeout) {
       if (!done && timeout > std::chrono::seconds(0)) {
-        logFatal(phase);
+        logError(phase);
+        exit(1);
       }
     }
   });

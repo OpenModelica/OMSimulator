@@ -144,7 +144,7 @@ double oms_getReal(void *model, const char *var)
   if (!model)
   {
     // TODO: Provide suitable return value to handle unsuccessful calls.
-    logFatal("oms_getReal: invalid pointer");
+    logError("oms_getReal: invalid pointer");
   }
 
   CompositeModel *pModel = (CompositeModel *)model;
@@ -157,7 +157,7 @@ int oms_getInteger(void *model, const char *var)
   if (!model)
   {
     // TODO: Provide suitable return value to handle unsuccessful calls.
-    logFatal("oms_getInteger: invalid pointer");
+    logError("oms_getInteger: invalid pointer");
   }
 
   CompositeModel *pModel = (CompositeModel *)model;
@@ -170,7 +170,7 @@ int oms_getBoolean(void *model, const char *var)
   if (!model)
   {
     // TODO: Provide suitable return value to handle unsuccessful calls.
-    logFatal("oms_getBoolean: invalid pointer");
+    logError("oms_getBoolean: invalid pointer");
   }
 
   CompositeModel *pModel = (CompositeModel *)model;
@@ -361,7 +361,7 @@ void oms_setWorkingDirectory(const char* path)
 
   if (!boost::filesystem::is_directory(path))
   {
-    logFatal("oms_setWorkingDirectory: set working directory to \"" + std::string(path) + "\" failed");
+    logError("oms_setWorkingDirectory: set working directory to \"" + std::string(path) + "\" failed");
   }
 
   boost::filesystem::current_path(path);
@@ -411,7 +411,7 @@ void oms_setSolverMethod(void* model, const char* instanceName, const char* meth
 
 void oms_setLogFile(const char* filename)
 {
-  Log::getInstance().setLogFile(filename);
+  Log::setLogFile(filename);
 }
 
 const char* oms_getVersion()
@@ -636,5 +636,10 @@ oms_status_t oms2_simulate_asynchronous(const char* ident, void (*cb)(const char
 void oms2_setLoggingCallback(void (*cb)(oms_message_type_t type, const char* message))
 {
   logTrace();
-  Log::getInstance().setLoggingCallback(cb);
+  Log::setLoggingCallback(cb);
+}
+
+void oms2_setDebugLogging(int useDebugLogging)
+{
+  Log::setDebugLogging(useDebugLogging);
 }

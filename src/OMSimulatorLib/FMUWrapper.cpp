@@ -90,13 +90,11 @@ void fmiLogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, 
     logWarning("module " + std::string(module) + ": " + std::string(message));
     break;
   case jm_log_level_error:
+  case jm_log_level_fatal:
     logError("module " + std::string(module) + ": " + std::string(message));
     break;
-  case jm_log_level_fatal:
-    logFatal("module " + std::string(module) + ": " + std::string(message));
-    break;
   default:
-    logWarning("[log level " + std::string(jm_log_level_to_string(log_level)) + "] module " + std::string(module) + ": " + std::string(message));
+    logDebug("[log level " + std::string(jm_log_level_to_string(log_level)) + "] module " + std::string(module) + ": " + std::string(message));
   }
 }
 
@@ -119,13 +117,11 @@ void fmi2logger(fmi2_component_environment_t env, fmi2_string_t instanceName, fm
     break;
   case fmi2_status_error:
   case fmi2_status_discard:
+  case fmi2_status_fatal:
     logError(std::string(instanceName) + " (" + category + "): " + msg);
     break;
-  case fmi2_status_fatal:
-    logFatal(std::string(instanceName) + " (" + category + "): " + msg);
-    break;
   default:
-    logWarning("fmiStatus = " + std::string(fmi2_status_to_string(status)) + "; " + instanceName + " (" + category + "): " + msg);
+    logDebug("fmiStatus = " + std::string(fmi2_status_to_string(status)) + "; " + instanceName + " (" + category + "): " + msg);
   }
 }
 
@@ -140,10 +136,10 @@ int cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void *user_data)
   // set states
   fmi2_status_t fmistatus;
   fmistatus = fmi2_import_set_continuous_states(fmu->fmu, fmu->states, fmu->n_states);
-  if (fmi2_status_ok != fmistatus) logFatal("fmi2_import_set_continuous_states failed");
+  if (fmi2_status_ok != fmistatus) logError("fmi2_import_set_continuous_states failed");
   // get state derivatives
   fmistatus = fmi2_import_get_derivatives(fmu->fmu, fmu->states_der, fmu->n_states);
-  if (fmi2_status_ok != fmistatus) logFatal("fmi2_import_get_derivatives failed");
+  if (fmi2_status_ok != fmistatus) logError("fmi2_import_get_derivatives failed");
 
   for (size_t i = 0; i < fmu->n_states; ++i)
     NV_Ith_S(ydot, i) = fmu->states_der[i];
@@ -158,18 +154,14 @@ FMUWrapper::FMUWrapper(CompositeModel& model, std::string fmuPath, std::string i
   OMS_TIC(clocks, CLOCK_INSTANTIATION);
 
   if (!boost::filesystem::exists(fmuPath))
-    logFatal("Specified file name does not exist: \"" + fmuPath + "\"");
+    logError("Specified file name does not exist: \"" + fmuPath + "\"");
 
   callbacks.malloc = malloc;
   callbacks.calloc = calloc;
   callbacks.realloc = realloc;
   callbacks.free = free;
   callbacks.logger = fmiLogger;
-#ifdef OMS_DEBUG_LOGGING
   callbacks.log_level = jm_log_level_all;
-#else
-  callbacks.log_level = jm_log_level_warning;
-#endif
   callbacks.context = 0;
 
   // set temp directory
@@ -189,7 +181,7 @@ FMUWrapper::FMUWrapper(CompositeModel& model, std::string fmuPath, std::string i
   // parse modelDescription.xml
   fmu = fmi2_import_parse_xml(context, tempDir.c_str(), 0);
   if (!fmu)
-    logFatal("Error parsing modelDescription.xml");
+    logError("Error parsing modelDescription.xml");
 
   // check FMU kind (CS or ME)
   fmuKind = fmi2_import_get_fmu_kind(fmu);
@@ -214,7 +206,7 @@ FMUWrapper::FMUWrapper(CompositeModel& model, std::string fmuPath, std::string i
 
     //Load the FMU shared library
     jmstatus = fmi2_import_create_dllfmu(fmu, fmi2_fmu_kind_me, &callBackFunctions);
-    if (jm_status_error == jmstatus) logFatal("Could not create the DLL loading mechanism (C-API). Error: " + std::string(fmi2_import_get_last_error(fmu)));
+    if (jm_status_error == jmstatus) logError("Could not create the DLL loading mechanism (C-API). Error: " + std::string(fmi2_import_get_last_error(fmu)));
 
     logDebug("Version returned from FMU: " + std::string(fmi2_import_get_version(fmu)));
     logDebug("Platform type returned: " + std::string(fmi2_import_get_types_platform(fmu)));
@@ -222,7 +214,7 @@ FMUWrapper::FMUWrapper(CompositeModel& model, std::string fmuPath, std::string i
 
     fmi2_string_t instanceName = "ME-FMU instance";
     jmstatus = fmi2_import_instantiate(fmu, instanceName, fmi2_model_exchange, NULL, fmi2_false);
-    if (jm_status_error == jmstatus) logFatal("fmi2_import_instantiate failed");
+    if (jm_status_error == jmstatus) logError("fmi2_import_instantiate failed");
   }
   else if (fmi2_fmu_kind_cs == fmuKind || fmi2_fmu_kind_me_and_cs == fmuKind)
   {
@@ -230,7 +222,7 @@ FMUWrapper::FMUWrapper(CompositeModel& model, std::string fmuPath, std::string i
 
     //Load the FMU shared library
     jmstatus = fmi2_import_create_dllfmu(fmu, fmi2_fmu_kind_cs, &callBackFunctions);
-    if (jm_status_error == jmstatus) logFatal("Could not create the DLL loading mechanism (C-API). Error: " + std::string(fmi2_import_get_last_error(fmu)));
+    if (jm_status_error == jmstatus) logError("Could not create the DLL loading mechanism (C-API). Error: " + std::string(fmi2_import_get_last_error(fmu)));
 
     logDebug("Version returned from FMU: " + std::string(fmi2_import_get_version(fmu)));
     logDebug("Platform type returned: " + std::string(fmi2_import_get_types_platform(fmu)));
@@ -238,7 +230,7 @@ FMUWrapper::FMUWrapper(CompositeModel& model, std::string fmuPath, std::string i
 
     fmi2_string_t instanceName = "CS-FMU instance";
     jmstatus = fmi2_import_instantiate(fmu, instanceName, fmi2_cosimulation, NULL, fmi2_false);
-    if (jm_status_error == jmstatus) logFatal("fmi2_import_instantiate failed");
+    if (jm_status_error == jmstatus) logError("fmi2_import_instantiate failed");
   }
 
   // create variable list
@@ -344,11 +336,11 @@ double FMUWrapper::getReal(const std::string& var)
 {
   logTrace();
   if (!fmu)
-    logFatal("FMUWrapper::getReal failed");
+    logError("FMUWrapper::getReal failed");
 
   Variable* v = getVariable(var);
   if (!v)
-    logFatal("FMUWrapper::getReal failed");
+    logError("FMUWrapper::getReal failed");
 
   return getReal(*v);
 }
@@ -357,7 +349,7 @@ double FMUWrapper::getReal(const Variable& var)
 {
   logTrace();
   if (!fmu)
-    logFatal("FMUWrapper::getReal failed");
+    logError("FMUWrapper::getReal failed");
 
   double value;
   fmi2_value_reference_t vr = var.getValueReference();
@@ -370,11 +362,11 @@ int FMUWrapper::getInteger(const std::string& var)
 {
   logTrace();
   if (!fmu)
-    logFatal("FMUWrapper::getInteger failed");
+    logError("FMUWrapper::getInteger failed");
 
   Variable* v = getVariable(var);
   if (!v)
-    logFatal("FMUWrapper::getInteger failed");
+    logError("FMUWrapper::getInteger failed");
 
   return getInteger(*v);
 }
@@ -383,7 +375,7 @@ int FMUWrapper::getInteger(const Variable& var)
 {
   logTrace();
   if (!fmu)
-    logFatal("FMUWrapper::getInteger failed");
+    logError("FMUWrapper::getInteger failed");
 
   int value;
   fmi2_value_reference_t vr = var.getValueReference();
@@ -396,11 +388,11 @@ bool FMUWrapper::getBoolean(const std::string& var)
 {
   logTrace();
   if (!fmu)
-    logFatal("FMUWrapper::getBoolean failed");
+    logError("FMUWrapper::getBoolean failed");
 
   Variable* v = getVariable(var);
   if (!v)
-    logFatal("FMUWrapper::getBoolean failed");
+    logError("FMUWrapper::getBoolean failed");
 
   return getBoolean(*v);
 }
@@ -409,7 +401,7 @@ bool FMUWrapper::getBoolean(const Variable& var)
 {
   logTrace();
   if (!fmu)
-    logFatal("FMUWrapper::getBoolean failed");
+    logError("FMUWrapper::getBoolean failed");
 
   int value;
   fmi2_value_reference_t vr = var.getValueReference();
@@ -422,7 +414,7 @@ bool FMUWrapper::setRealInput(const std::string& var, double value)
 {
   logTrace();
   if (!fmu)
-    logFatal("FMUWrapper::setRealInput failed");
+    logError("FMUWrapper::setRealInput failed");
 
   Variable* v = getVariable(var);
   if (v)
@@ -438,7 +430,7 @@ bool FMUWrapper::setRealInput(const Variable& var, double value)
 {
   logTrace();
   if (!fmu)
-    logFatal("FMUWrapper::setRealInput failed");
+    logError("FMUWrapper::setRealInput failed");
 
   if (!var.isInput() || !var.isTypeReal())
   {
@@ -455,7 +447,7 @@ bool FMUWrapper::setIntegerInput(const std::string& var, int value)
 {
   logTrace();
   if (!fmu)
-    logFatal("FMUWrapper::setIntegerInput failed");
+    logError("FMUWrapper::setIntegerInput failed");
 
   Variable* v = getVariable(var);
   if (v)
@@ -471,7 +463,7 @@ bool FMUWrapper::setIntegerInput(const Variable& var, int value)
 {
   logTrace();
   if (!fmu)
-    logFatal("FMUWrapper::setIntegerInput failed");
+    logError("FMUWrapper::setIntegerInput failed");
 
   if (!var.isInput() || !var.isTypeInteger())
   {
@@ -488,7 +480,7 @@ bool FMUWrapper::setBooleanInput(const std::string& var, bool value)
 {
   logTrace();
   if (!fmu)
-    logFatal("FMUWrapper::setBooleanInput failed");
+    logError("FMUWrapper::setBooleanInput failed");
 
   Variable* v = getVariable(var);
   if (v)
@@ -504,7 +496,7 @@ bool FMUWrapper::setBooleanInput(const Variable& var, bool value)
 {
   logTrace();
   if (!fmu)
-    logFatal("FMUWrapper::setBooleanInput failed");
+    logError("FMUWrapper::setBooleanInput failed");
 
   if (!var.isInput() || !var.isTypeBoolean())
   {
@@ -522,7 +514,7 @@ bool FMUWrapper::setRealParameter(const std::string& var, double value)
 {
   logTrace();
   if (!fmu)
-    logFatal("FMUWrapper::setRealParameter failed");
+    logError("FMUWrapper::setRealParameter failed");
 
   Variable* v = getVariable(var);
 
@@ -541,7 +533,7 @@ bool FMUWrapper::setIntegerParameter(const std::string& var, int value)
 {
   logTrace();
   if (!fmu)
-    logFatal("FMUWrapper::setIntegerParameter failed");
+    logError("FMUWrapper::setIntegerParameter failed");
 
   Variable* v = getVariable(var);
 
@@ -560,7 +552,7 @@ bool FMUWrapper::setBooleanParameter(const std::string& var, bool value)
 {
   logTrace();
   if (!fmu)
-    logFatal("FMUWrapper::setBooleanParameter failed");
+    logError("FMUWrapper::setBooleanParameter failed");
 
   Variable* v = getVariable(var);
 
@@ -730,21 +722,21 @@ void FMUWrapper::enterInitialization(double startTime)
   if (fmi2_fmu_kind_me == fmuKind)
   {
     fmistatus = fmi2_import_setup_experiment(fmu, toleranceControlled, relativeTolerance, tcur, StopTimeDefined, tend);
-    if (fmi2_status_ok != fmistatus) logFatal("fmi2_import_setup_experiment failed");
+    if (fmi2_status_ok != fmistatus) logError("fmi2_import_setup_experiment failed");
 
     fmistatus = fmi2_import_enter_initialization_mode(fmu);
-    if (fmi2_status_ok != fmistatus) logFatal("fmi2_import_enter_initialization_mode failed");
+    if (fmi2_status_ok != fmistatus) logError("fmi2_import_enter_initialization_mode failed");
   }
   else if (fmi2_fmu_kind_cs == fmuKind || fmi2_fmu_kind_me_and_cs == fmuKind)
   {
     fmistatus = fmi2_import_setup_experiment(fmu, toleranceControlled, relativeTolerance, tcur, StopTimeDefined, tend);
-    if (fmi2_status_ok != fmistatus) logFatal("fmi2_import_setup_experiment failed");
+    if (fmi2_status_ok != fmistatus) logError("fmi2_import_setup_experiment failed");
 
     fmistatus = fmi2_import_enter_initialization_mode(fmu);
-    if (fmi2_status_ok != fmistatus) logFatal("fmi2_import_enter_initialization_mode failed");
+    if (fmi2_status_ok != fmistatus) logError("fmi2_import_enter_initialization_mode failed");
   }
   else
-    logFatal("Unsupported FMU kind");
+    logError("Unsupported FMU kind");
 }
 
 void FMUWrapper::exitInitialization()
@@ -754,7 +746,7 @@ void FMUWrapper::exitInitialization()
   if (fmi2_fmu_kind_me == fmuKind)
   {
     fmistatus = fmi2_import_exit_initialization_mode(fmu);
-    if (fmi2_status_ok != fmistatus) logFatal("fmi2_import_exit_initialization_mode failed");
+    if (fmi2_status_ok != fmistatus) logError("fmi2_import_exit_initialization_mode failed");
 
     terminateSimulation = fmi2_false;
 
@@ -793,14 +785,14 @@ void FMUWrapper::exitInitialization()
     {
       // get states and state derivatives
       fmistatus = fmi2_import_get_continuous_states(fmu, states, n_states);
-      if (fmi2_status_ok != fmistatus) logFatal("fmi2_import_get_continuous_states failed");
+      if (fmi2_status_ok != fmistatus) logError("fmi2_import_get_continuous_states failed");
       fmistatus = fmi2_import_get_derivatives(fmu, states_der, n_states);
-      if (fmi2_status_ok != fmistatus) logFatal("fmi2_import_get_derivatives failed");
+      if (fmi2_status_ok != fmistatus) logError("fmi2_import_get_derivatives failed");
       fmistatus = fmi2_import_get_nominals_of_continuous_states(fmu, states_nominal, n_states);
-      if (fmi2_status_ok != fmistatus) logFatal("fmi2_import_get_nominals_of_continuous_states failed");
+      if (fmi2_status_ok != fmistatus) logError("fmi2_import_get_nominals_of_continuous_states failed");
     }
     fmistatus = fmi2_import_get_event_indicators(fmu, event_indicators, n_event_indicators);
-    if (fmi2_status_ok != fmistatus) logFatal("fmi2_import_get_event_indicators failed");
+    if (fmi2_status_ok != fmistatus) logError("fmi2_import_get_event_indicators failed");
 
     if (n_states < 1)
     {
@@ -812,7 +804,7 @@ void FMUWrapper::exitInitialization()
     if (NO_SOLVER == solverMethod)
     {
       if (n_states > 0)
-        logFatal("No solver specified for FMU '" + instanceName + "'");
+        logError("No solver specified for FMU '" + instanceName + "'");
     }
     else if (EXPLICIT_EULER == solverMethod)
     {
@@ -820,71 +812,71 @@ void FMUWrapper::exitInitialization()
     else if (CVODE == solverMethod)
     {
       solverData.cvode.y = N_VNew_Serial(static_cast<long>(n_states));
-      if (!solverData.cvode.y) logFatal("SUNDIALS_ERROR: N_VNew_Serial() failed - returned NULL pointer");
+      if (!solverData.cvode.y) logError("SUNDIALS_ERROR: N_VNew_Serial() failed - returned NULL pointer");
       for (size_t i = 0; i < n_states; ++i)
         NV_Ith_S(solverData.cvode.y, i) = states[i];
 
       solverData.cvode.abstol = N_VNew_Serial(static_cast<long>(n_states));
-      if (!solverData.cvode.abstol) logFatal("SUNDIALS_ERROR: N_VNew_Serial() failed - returned NULL pointer");
+      if (!solverData.cvode.abstol) logError("SUNDIALS_ERROR: N_VNew_Serial() failed - returned NULL pointer");
       for (size_t i = 0; i < n_states; ++i)
         NV_Ith_S(solverData.cvode.abstol, i) = 0.01*relativeTolerance*states_nominal[i];
 
       // Call CVodeCreate to create the solver memory and specify the
       // Backward Differentiation Formula and the use of a Newton iteration
       solverData.cvode.mem = CVodeCreate(CV_BDF, CV_NEWTON);
-      if (!solverData.cvode.mem) logFatal("SUNDIALS_ERROR: CVodeCreate() failed - returned NULL pointer");
+      if (!solverData.cvode.mem) logError("SUNDIALS_ERROR: CVodeCreate() failed - returned NULL pointer");
 
       int flag = CVodeSetUserData(solverData.cvode.mem, (void*)this);
-      if (flag < 0) logFatal("SUNDIALS_ERROR: CVodeSetUserData() failed with flag = " + std::to_string(flag));
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetUserData() failed with flag = " + std::to_string(flag));
 
       // Call CVodeInit to initialize the integrator memory and specify the
       // user's right hand side function in y'=cvode_rhs(t,y), the inital time T0, and
       // the initial dependent variable vector y.
       flag = CVodeInit(solverData.cvode.mem, cvode_rhs, tcur, solverData.cvode.y);
-      if (flag < 0) logFatal("SUNDIALS_ERROR: CVodeInit() failed with flag = " + std::to_string(flag));
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeInit() failed with flag = " + std::to_string(flag));
 
       // Call CVodeSVtolerances to specify the scalar relative tolerance
       // and vector absolute tolerances
       flag = CVodeSVtolerances(solverData.cvode.mem, relativeTolerance, solverData.cvode.abstol);
-      if (flag < 0) logFatal("SUNDIALS_ERROR: CVodeSVtolerances() failed with flag = " + std::to_string(flag));
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeSVtolerances() failed with flag = " + std::to_string(flag));
 
       // Call CVDense to specify the CVDENSE dense linear solver */
       flag = CVDense(solverData.cvode.mem, static_cast<long>(n_states));
-      if (flag < 0) logFatal("SUNDIALS_ERROR: CVDense() failed with flag = " + std::to_string(flag));
+      if (flag < 0) logError("SUNDIALS_ERROR: CVDense() failed with flag = " + std::to_string(flag));
 
       double max_h = (model.getSettings().GetStopTime() - model.getSettings().GetStartTime()) / 10.0;
       logInfo("maximum step size for '" + instanceName + "': " + std::to_string(max_h));
       flag = CVodeSetMaxStep(solverData.cvode.mem, max_h);
-      if (flag < 0) logFatal("SUNDIALS_ERROR: CVodeSetMaxStep() failed with flag = " + std::to_string(flag));
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetMaxStep() failed with flag = " + std::to_string(flag));
 
       // further settings from cpp runtime
       flag = CVodeSetInitStep(solverData.cvode.mem, 1e-6);        // INITIAL STEPSIZE
-      if (flag < 0) logFatal("SUNDIALS_ERROR: CVodeSetInitStep() failed with flag = " + std::to_string(flag));
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetInitStep() failed with flag = " + std::to_string(flag));
       flag = CVodeSetMaxOrd(solverData.cvode.mem, 5);             // MAXIMUM ORDER
-      if (flag < 0) logFatal("SUNDIALS_ERROR: CVodeSetMaxOrd() failed with flag = " + std::to_string(flag));
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetMaxOrd() failed with flag = " + std::to_string(flag));
       flag = CVodeSetMaxConvFails(solverData.cvode.mem, 100);     // MAXIMUM NUMBER OF NONLINEAR CONVERGENCE FAILURES
-      if (flag < 0) logFatal("SUNDIALS_ERROR: CVodeSetMaxConvFails() failed with flag = " + std::to_string(flag));
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetMaxConvFails() failed with flag = " + std::to_string(flag));
       flag = CVodeSetStabLimDet(solverData.cvode.mem, TRUE);      // STABILITY DETECTION
-      if (flag < 0) logFatal("SUNDIALS_ERROR: CVodeSetStabLimDet() failed with flag = " + std::to_string(flag));
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetStabLimDet() failed with flag = " + std::to_string(flag));
       flag = CVodeSetMinStep(solverData.cvode.mem, 1e-12);        // MINIMUM STEPSIZE
-      if (flag < 0) logFatal("SUNDIALS_ERROR: CVodeSetMinStep() failed with flag = " + std::to_string(flag));
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetMinStep() failed with flag = " + std::to_string(flag));
       flag = CVodeSetMaxNonlinIters(solverData.cvode.mem, 5);     // MAXIMUM NUMBER OF ITERATIONS
-      if (flag < 0) logFatal("SUNDIALS_ERROR: CVodeSetMaxNonlinIters() failed with flag = " + std::to_string(flag));
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetMaxNonlinIters() failed with flag = " + std::to_string(flag));
       flag = CVodeSetMaxErrTestFails(solverData.cvode.mem, 100);  // MAXIMUM NUMBER OF ERROR TEST FAILURES
-      if (flag < 0) logFatal("SUNDIALS_ERROR: CVodeSetMaxErrTestFails() failed with flag = " + std::to_string(flag));
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetMaxErrTestFails() failed with flag = " + std::to_string(flag));
       flag = CVodeSetMaxNumSteps(solverData.cvode.mem, 1000);     // MAXIMUM NUMBER OF STEPS
-      if (flag < 0) logFatal("SUNDIALS_ERROR: CVodeSetMaxNumSteps() failed with flag = " + std::to_string(flag));
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetMaxNumSteps() failed with flag = " + std::to_string(flag));
     }
     else
-      logFatal("Unknown solver method");
+      logError("Unknown solver method");
   }
   else if (fmi2_fmu_kind_cs == fmuKind || fmi2_fmu_kind_me_and_cs == fmuKind)
   {
     fmistatus = fmi2_import_exit_initialization_mode(fmu);
-    if (fmi2_status_ok != fmistatus) logFatal("fmi2_import_exit_initialization_mode failed");
+    if (fmi2_status_ok != fmistatus) logError("fmi2_import_exit_initialization_mode failed");
   }
   else
-    logFatal("Unsupported FMU kind");
+    logError("Unsupported FMU kind");
 
   OMS_TOC(clocks, CLOCK_INITIALIZATION);
 }
@@ -907,17 +899,17 @@ void FMUWrapper::terminate()
       int flag;
 
       flag = CVodeGetNumSteps(solverData.cvode.mem, &nst);
-      if (flag < 0) logFatal("SUNDIALS_ERROR: CVodeGetNumSteps() failed with flag = " + std::to_string(flag));
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumSteps() failed with flag = " + std::to_string(flag));
       flag = CVodeGetNumRhsEvals(solverData.cvode.mem, &nfe);
-      if (flag < 0) logFatal("SUNDIALS_ERROR: CVodeGetNumRhsEvals() failed with flag = " + std::to_string(flag));
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumRhsEvals() failed with flag = " + std::to_string(flag));
       flag = CVodeGetNumLinSolvSetups(solverData.cvode.mem, &nsetups);
-      if (flag < 0) logFatal("SUNDIALS_ERROR: CVodeGetNumLinSolvSetups() failed with flag = " + std::to_string(flag));
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumLinSolvSetups() failed with flag = " + std::to_string(flag));
       flag = CVodeGetNumErrTestFails(solverData.cvode.mem, &netf);
-      if (flag < 0) logFatal("SUNDIALS_ERROR: CVodeGetNumErrTestFails() failed with flag = " + std::to_string(flag));
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumErrTestFails() failed with flag = " + std::to_string(flag));
       flag = CVodeGetNumNonlinSolvIters(solverData.cvode.mem, &nni);
-      if (flag < 0) logFatal("SUNDIALS_ERROR: CVodeGetNumNonlinSolvIters() failed with flag = " + std::to_string(flag));
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumNonlinSolvIters() failed with flag = " + std::to_string(flag));
       flag = CVodeGetNumNonlinSolvConvFails(solverData.cvode.mem, &ncfn);
-      if (flag < 0) logFatal("SUNDIALS_ERROR: CVodeGetNumNonlinSolvConvFails() failed with flag = " + std::to_string(flag));
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumNonlinSolvConvFails() failed with flag = " + std::to_string(flag));
 
       logInfo("Final Statistics for '" + instanceName + "':");
       logInfo("NumSteps = " + std::to_string(nst) + " NumRhsEvals  = " + std::to_string(nfe) + " NumLinSolvSetups = " + std::to_string(nsetups));
@@ -928,7 +920,7 @@ void FMUWrapper::terminate()
       CVodeFree(&(solverData.cvode.mem));
     }
     else
-      logFatal("Unknown solver method");
+      logError("Unknown solver method");
 
     // free common data
     free(states);
@@ -937,7 +929,7 @@ void FMUWrapper::terminate()
   }
 
   fmi2_status_t fmistatus = fmi2_import_terminate(fmu);
-  if (fmi2_status_ok != fmistatus) logFatal("fmi2_import_terminate failed");
+  if (fmi2_status_ok != fmistatus) logError("fmi2_import_terminate failed");
 }
 
 void FMUWrapper::reset()
@@ -958,7 +950,7 @@ void FMUWrapper::reset()
       CVodeFree(&(solverData.cvode.mem));
     }
     else
-      logFatal("Unknown solver method");
+      logError("Unknown solver method");
 
     free(states);
     free(states_der);
@@ -966,7 +958,7 @@ void FMUWrapper::reset()
   }
 
   fmi2_status_t fmistatus = fmi2_import_reset(fmu);
-  if (fmi2_status_ok != fmistatus) logFatal("fmi2_import_reset failed");
+  if (fmi2_status_ok != fmistatus) logError("fmi2_import_reset failed");
 }
 
 void FMUWrapper::doStep(double stopTime)
@@ -983,7 +975,7 @@ void FMUWrapper::doStep(double stopTime)
     while ((tcur < stopTime) && (!(eventInfo.terminateSimulation || terminateSimulation)))
     {
       fmistatus = fmi2_import_set_time(fmu, tcur);
-      if (fmi2_status_ok != fmistatus) logFatal("fmi2_import_set_time failed");
+      if (fmi2_status_ok != fmistatus) logError("fmi2_import_set_time failed");
 
       // swap event_indicators and event_indicators_prev
       {
@@ -992,7 +984,7 @@ void FMUWrapper::doStep(double stopTime)
         event_indicators_prev = temp;
 
         fmistatus = fmi2_import_get_event_indicators(fmu, event_indicators, n_event_indicators);
-        if (fmi2_status_ok != fmistatus) logFatal("fmi2_import_get_event_indicators failed");
+        if (fmi2_status_ok != fmistatus) logError("fmi2_import_get_event_indicators failed");
       }
 
       // check if an event indicator has triggered
@@ -1011,28 +1003,28 @@ void FMUWrapper::doStep(double stopTime)
       if (callEventUpdate || zero_crossing_event || (eventInfo.nextEventTimeDefined && tcur == eventInfo.nextEventTime))
       {
         fmistatus = fmi2_import_enter_event_mode(fmu);
-        if (fmi2_status_ok != fmistatus) logFatal("fmi2_import_enter_event_mode failed");
+        if (fmi2_status_ok != fmistatus) logError("fmi2_import_enter_event_mode failed");
 
         do_event_iteration();
 
         fmistatus = fmi2_import_enter_continuous_time_mode(fmu);
-        if (fmi2_status_ok != fmistatus) logFatal("fmi2_import_enter_continuous_time_mode failed");
+        if (fmi2_status_ok != fmistatus) logError("fmi2_import_enter_continuous_time_mode failed");
         if (n_states > 0)
         {
           fmistatus = fmi2_import_get_continuous_states(fmu, states, n_states);
-          if (fmi2_status_ok != fmistatus) logFatal("fmi2_import_get_continuous_states failed");
+          if (fmi2_status_ok != fmistatus) logError("fmi2_import_get_continuous_states failed");
           fmistatus = fmi2_import_get_derivatives(fmu, states_der, n_states);
-          if (fmi2_status_ok != fmistatus) logFatal("fmi2_import_get_derivatives failed");
+          if (fmi2_status_ok != fmistatus) logError("fmi2_import_get_derivatives failed");
         }
         fmistatus = fmi2_import_get_event_indicators(fmu, event_indicators, n_event_indicators);
-        if (fmi2_status_ok != fmistatus) logFatal("fmi2_import_get_event_indicators failed");
+        if (fmi2_status_ok != fmistatus) logError("fmi2_import_get_event_indicators failed");
 
         if (CVODE == solverMethod)
         {
           for (size_t i = 0; i < n_states; ++i)
             NV_Ith_S(solverData.cvode.y, i) = states[i];
           int flag = CVodeReInit(solverData.cvode.mem, tcur, solverData.cvode.y);
-          if (flag < 0) logFatal("SUNDIALS_ERROR: CVodeReInit() failed with flag = " + std::to_string(flag));
+          if (flag < 0) logError("SUNDIALS_ERROR: CVodeReInit() failed with flag = " + std::to_string(flag));
         }
       }
       OMS_TOC(clocks, CLOCK_EVENTS);
@@ -1067,26 +1059,26 @@ void FMUWrapper::doStep(double stopTime)
         while (cvode_time < tcur)
         {
           int flag = CVode(solverData.cvode.mem, tcur, solverData.cvode.y, &cvode_time, CV_ONE_STEP);
-          if (flag < 0) logFatal("SUNDIALS_ERROR: CVode() failed with flag = " + std::to_string(flag));
+          if (flag < 0) logError("SUNDIALS_ERROR: CVode() failed with flag = " + std::to_string(flag));
         }
         tcur = cvode_time;
       }
       else
-        logFatal("Unknown solver method");
+        logError("Unknown solver method");
 
       if (NO_SOLVER != solverMethod)
       {
         // set states
         fmistatus = fmi2_import_set_continuous_states(fmu, states, n_states);
-        if (fmi2_status_ok != fmistatus) logFatal("fmi2_import_set_continuous_states failed");
+        if (fmi2_status_ok != fmistatus) logError("fmi2_import_set_continuous_states failed");
         // get state derivatives
         fmistatus = fmi2_import_get_derivatives(fmu, states_der, n_states);
-        if (fmi2_status_ok != fmistatus) logFatal("fmi2_import_get_derivatives failed");
+        if (fmi2_status_ok != fmistatus) logError("fmi2_import_get_derivatives failed");
       }
 
       // step is complete
       fmistatus = fmi2_import_completed_integrator_step(fmu, fmi2_true, &callEventUpdate, &terminateSimulation);
-      if (fmi2_status_ok != fmistatus) logFatal("fmi2_import_completed_integrator_step failed");
+      if (fmi2_status_ok != fmistatus) logError("fmi2_import_completed_integrator_step failed");
     }
   }
   else if (fmi2_fmu_kind_cs == fmuKind || fmi2_fmu_kind_me_and_cs == fmuKind)

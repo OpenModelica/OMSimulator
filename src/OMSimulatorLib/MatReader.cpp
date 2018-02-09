@@ -41,7 +41,7 @@ MatReader::MatReader(const char* filename)
 {
   FILE *pFile = fopen(filename, "rb");
   if (!pFile)
-    logFatal("MatReader::MatReader failed opening file \"" + std::string(filename) + "\"");
+    logError("MatReader::MatReader failed opening file \"" + std::string(filename) + "\"");
   skipMatVer4Matrix(pFile);
   name = readMatVer4Matrix(pFile);
   skipMatVer4Matrix(pFile);
