@@ -612,3 +612,9 @@ oms_status_t oms2_simulate_asynchronous(const char* ident, void (*cb)(const char
   logError("oms2_simulate_asynchronous: not implemented yet");
   return oms_status_error;
 }
+
+void oms2_getLastMessages(const oms_message_t** messages, int8_t clear);
+{
+  logTrace();
+  logError("oms2_getLastMessages: not implemented yet");
+}
