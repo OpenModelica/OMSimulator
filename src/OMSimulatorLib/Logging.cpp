@@ -47,7 +47,7 @@ std::string TimeStr()
 
   time(&rawtime);
   timeinfo = localtime(&rawtime);
-  strftime(buffer, 64, "%a %b %d %T %Y", timeinfo);
+  strftime(buffer, 64, "%a %b %d %H:%M:%S %Y", timeinfo);
   return std::string(buffer);
 }
 
