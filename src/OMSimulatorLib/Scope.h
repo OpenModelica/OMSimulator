@@ -46,6 +46,7 @@ namespace oms2
     static oms_status_t newFMIModel(const std::string& name);
     static oms_status_t newTLMModel(const std::string& name);
     static oms_status_t unloadModel(const std::string& name);
+    static oms_status_t renameModel(const std::string& identOld, const std::string& identNew);
     static Model* getModel(const std::string& name);
 
   private:

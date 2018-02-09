@@ -103,6 +103,32 @@ oms_status_t oms2::Scope::unloadModel(const std::string& name)
   return oms_status_ok;
 }
 
+oms_status_t oms2::Scope::renameModel(const std::string& identOld, const std::string& identNew)
+{
+  Scope& scope = oms2::Scope::getInstance();
+
+  // check if identNew is in scope
+  auto it = scope.models.find(identNew);
+  if (it != scope.models.end())
+  {
+    logError("A model called \"" + identNew + "\" is already in the scope.");
+    return oms_status_error;
+  }
+
+  // check if identOld is in scope
+  if (it == scope.models.end())
+  {
+    logError("There is no model called \"" + identOld + "\" in the scope.");
+    return oms_status_error;
+  }
+
+  it->second->setName(identNew);
+  scope.models[identNew] = it->second;
+  scope.models.erase(it);
+
+  return oms_status_ok;
+}
+
 oms2::Model* oms2::Scope::getModel(const std::string& name)
 {
   Scope& scope = oms2::Scope::getInstance();

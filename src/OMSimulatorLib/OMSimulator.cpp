@@ -550,7 +550,13 @@ oms_status_t oms2_unloadModel(const char* ident)
   return oms2::Scope::unloadModel(ident);
 }
 
-oms_status_t oms2_loadFMIModel(const char* filename, const char** ident)
+oms_status_t oms2_renameModel(const char* identOld, const char* identNew)
+{
+  logTrace();
+  return oms2::Scope::renameModel(identOld, identNew);
+}
+
+oms_status_t oms2_loadModel(const char* filename, const char** ident)
 {
   logTrace();
   logError("oms2_loadFMIModel: not implemented yet");
