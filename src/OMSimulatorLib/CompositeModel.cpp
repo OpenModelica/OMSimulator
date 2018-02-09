@@ -55,6 +55,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <thread>
 
 #include <boost/filesystem.hpp>
 
@@ -963,8 +964,14 @@ void CompositeModel::emit()
   OMS_TOC(globalClocks, GLOBALCLOCK_RESULTFILE);
 }
 
+void doMyStep(std::map<std::string, FMUWrapper*>::iterator it, double time)
+{
+   it->second->doStep(time);
+}
+
 oms_status_t CompositeModel::doSteps(const int numberOfSteps)
 {
+  std::vector<std::thread> threads;
   logTrace();
 
   if (oms_modelState_simulation != modelState)
@@ -978,7 +985,11 @@ oms_status_t CompositeModel::doSteps(const int numberOfSteps)
     // do_step
     std::map<std::string, FMUWrapper*>::iterator it;
     for (it=fmuInstances.begin(); it != fmuInstances.end(); it++)
-      it->second->doStep(tcur+communicationInterval);
+      threads.push_back(std::thread(doMyStep, it, tcur+communicationInterval));
+      // it->second->doStep(tcur+communicationInterval);
+
+    for (std::thread &t: threads)
+      if (t.joinable()) { t.join(); }
     tcur += communicationInterval;
     emit();
 
@@ -992,6 +1003,7 @@ oms_status_t CompositeModel::doSteps(const int numberOfSteps)
 
 oms_status_t CompositeModel::stepUntil(const double timeValue)
 {
+  std::vector<std::thread> threads;
   logTrace();
 
   if (oms_modelState_simulation != modelState)
@@ -1009,7 +1021,13 @@ oms_status_t CompositeModel::stepUntil(const double timeValue)
     // do_step
     std::map<std::string, FMUWrapper*>::iterator it;
     for (it=fmuInstances.begin(); it != fmuInstances.end(); it++)
-      it->second->doStep(tcur);
+      threads.push_back(std::thread(doMyStep,it, tcur));
+      //it->second->doStep(tcur);
+
+    for (int i = 0; i < threads.size(); i++)
+      for (std::thread &t: threads)
+        if (t.joinable()) { t.join(); }
+
     emit();
 
     // input = output
