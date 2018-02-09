@@ -3,3 +3,7 @@
 /.vscode/
 /build/
 /install/
+.cproject
+.project
+.settings/
+
