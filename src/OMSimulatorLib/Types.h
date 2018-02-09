@@ -60,6 +60,38 @@ typedef enum {
   oms_causality_undefined,
 } oms_causality_t;
 
+/* OMSimulator 2.0 */
+typedef enum {
+  oms_component_tlm,  /* TLM model */
+  oms_component_fmi,  /* FMI model */
+  oms_component_fmu,  /* FMU */
+  oms_component_port  /* port */
+} oms_component_type_t;
+
+typedef struct {
+  oms_causality_t causality;
+  const char* name;
+} oms_fmu_port_t;
+
+typedef struct {
+  oms_component_type_t type;
+  const char* name;
+  const oms_fmu_port_t* interfaces;
+} oms_component_t;
+
+typedef enum {
+  oms_connection_fmi,
+  oms_connection_tlm
+} oms_connection_type_t;
+
+typedef struct {
+  oms_connection_type_t type;
+  const char* from;
+  const char* to;
+  /* optional TLM attributes */
+} oms_connection_t;
+
+
 #ifdef __cplusplus
 }
 #endif
