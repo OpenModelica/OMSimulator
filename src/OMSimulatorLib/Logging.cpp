@@ -52,59 +52,17 @@ std::string TimeStr()
   return std::string(buffer);
 }
 
-Log::Log() : filename(""), useStdStream(true), initialized(false), cb(NULL)
+Log::Log() : filename(""), cb(NULL)
 {
-}
-
-void Log::initialize()
-{
-  {
-    std::lock_guard<std::mutex> lock(m);
-    if (initialized) {
-      return;
-    }
-
-    numWarnings = 0;
-    numErrors = 0;
-    initialized = true;
-
-    if (!useStdStream)
-      logFile.open(filename.c_str());
-  }
-
-  Info("Initializing logging (" + std::string(oms_git_version) + ")");
+  numWarnings = 0;
+  numErrors = 0;
+  useDebugLogging = false;
 }
 
 Log::~Log()
 {
-  terminate();
-}
-
-void Log::terminate()
-{
-  if (numWarnings + numErrors > 0)
-  {
-    Info(to_string(numWarnings) + " warnings");
-    Info(to_string(numErrors) + " errors");
-
-    if (!useStdStream)
-    {
-      cout << "info:    " << numWarnings << " warnings" << endl;
-      cout << "info:    " << numErrors << " errors" << endl;
-    }
-  }
-
-  Info("Logging completed properly");
-
-  std::lock_guard<std::mutex> lock(m);
-
-  if (!useStdStream)
-  {
-    // logFile.close();
-    cout << "info:    " << "Logging information has been saved to \"" << filename.c_str() << "\"" << endl;
-  }
-
-  // initialized = false;
+  // close log file
+  setLogFile("");
 }
 
 Log& Log::getInstance()
@@ -116,127 +74,119 @@ Log& Log::getInstance()
 
 void Log::Info(const std::string& msg)
 {
-  if (!initialized)
-    initialize();
+  Log& log = getInstance();
+  std::lock_guard<std::mutex> lock(log.m);
 
-  std::lock_guard<std::mutex> lock(m);
-
-  if (useStdStream)
+  if (!log.logFile.is_open())
     cout << "info:    " << msg << endl;
   else
-    logFile << TimeStr() << " | info:    " << msg << endl;
+    log.logFile << TimeStr() << " | info:    " << msg << endl;
 
-  if (cb)
-    cb(oms_message_info, msg.c_str());
-}
-
-void Log::Debug(const std::string& msg)
-{
-  if (!initialized)
-    initialize();
-
-  std::lock_guard<std::mutex> lock(m);
-
-  if (useStdStream)
-    cout << "debug:   " << msg << endl;
-  else
-    logFile << TimeStr() << " | debug:   " << msg << endl;
-
-  if (cb)
-    cb(oms_message_debug, msg.c_str());
+  if (log.cb)
+    log.cb(oms_message_info, msg.c_str());
 }
 
 void Log::Warning(const std::string& msg)
 {
-  if (!initialized)
-    initialize();
+  Log& log = getInstance();
+  std::lock_guard<std::mutex> lock(log.m);
 
-  std::lock_guard<std::mutex> lock(m);
-
-  numWarnings++;
-  if (useStdStream)
+  log.numWarnings++;
+  if (!log.logFile.is_open())
     cout << "warning: " << msg << endl;
   else
-    logFile << TimeStr() << " | warning: " << msg << endl;
+    log.logFile << TimeStr() << " | warning: " << msg << endl;
 
-  if (cb)
-    cb(oms_message_warning, msg.c_str());
+  if (log.cb)
+    log.cb(oms_message_warning, msg.c_str());
 }
 
 void Log::Error(const std::string& msg)
 {
-  if (!initialized)
-    initialize();
+  Log& log = getInstance();
+  std::lock_guard<std::mutex> lock(log.m);
 
-  std::lock_guard<std::mutex> lock(m);
-
-  numErrors++;
-  if (useStdStream)
+  log.numErrors++;
+  if (!log.logFile.is_open())
     cerr << "error:   " << msg << endl;
   else
-    logFile << TimeStr() << " | error:   " << msg << endl;
+    log.logFile << TimeStr() << " | error:   " << msg << endl;
 
-  if (cb)
-    cb(oms_message_error, msg.c_str());
+  if (log.cb)
+    log.cb(oms_message_error, msg.c_str());
 }
 
-void Log::Fatal(const std::string& msg)
+void Log::Debug(const std::string& msg)
 {
-  if (!initialized)
-    initialize();
+  Log& log = getInstance();
+  std::lock_guard<std::mutex> lock(log.m);
 
-  {
-    std::lock_guard<std::mutex> lock(m);
+  if (!log.useDebugLogging)
+    return;
 
-    numErrors++;
-    if (useStdStream)
-      cerr << "fatal:   " << msg << endl;
-    else
-      logFile << TimeStr() << " | fatal:   " << msg << endl;
+  if (!log.logFile.is_open())
+    cout << "debug:   " << msg << endl;
+  else
+    log.logFile << TimeStr() << " | debug:   " << msg << endl;
 
-    if (cb)
-      cb(oms_message_fatal, msg.c_str());
-  }
-
-  // Triggers the mutex again...
-  exit(1);
+  if (log.cb)
+    log.cb(oms_message_debug, msg.c_str());
 }
 
 void Log::Trace(const std::string& function, const std::string& file, const long line)
 {
-  if (!initialized)
-    initialize();
+  Log& log = getInstance();
+  std::lock_guard<std::mutex> lock(log.m);
 
-  std::lock_guard<std::mutex> lock(m);
+  if (!log.useDebugLogging)
+    return;
+
   std::string msg = function + " (" + file + ":" + std::to_string(line) + ")";
 
-  if (useStdStream)
+  if (!log.logFile.is_open())
     cout << "trace:   " << msg << endl;
   else
-    logFile << TimeStr() << " | trace:   " << msg << endl;
+    log.logFile << TimeStr() << " | trace:   " << msg << endl;
 
-  if (cb)
-    cb(oms_message_trace, msg.c_str());
+  if (log.cb)
+    log.cb(oms_message_trace, msg.c_str());
 }
 
 void Log::setLogFile(const std::string& filename)
 {
-  std::lock_guard<std::mutex> lock(m);
+  Log& log = getInstance();
+  std::lock_guard<std::mutex> lock(log.m);
 
-  if (initialized)
+  if (log.logFile.is_open())
   {
-    Error("Log::setLogFile can only be used before the logging is initialized.");
-    return;
+    log.logFile << TimeStr() << " | info:    " << "Logging completed properly" << endl;
+    log.logFile.close();
+
+    if (log.numWarnings + log.numErrors > 0)
+    {
+      cout << "info:    " << log.numWarnings << " warnings" << endl;
+      cout << "info:    " << log.numErrors << " errors" << endl;
+    }
+    cout << "info:    " << "Logging information has been saved to \"" << log.filename.c_str() << "\"" << endl;
   }
 
-  if (filename.empty())
+  log.numWarnings = 0;
+  log.numErrors = 0;
+  log.filename = filename;
+
+  if (!filename.empty())
   {
-    useStdStream = true;
-    this->filename = "";
+    log.logFile.open(filename.c_str());
+    log.logFile << TimeStr() << " | info:    " << "Initializing logging (" << std::string(oms_git_version) << ")" << endl;
   }
-  else
-  {
-    useStdStream = false;
-    this->filename = filename;
-  }
+}
+
+void Log::setDebugLogging(bool debugLogging)
+{
+#ifdef OMS_DEBUG_LOGGING
+  Log& log = getInstance();
+  log.useDebugLogging = debugLogging;
+#else
+  Warning("Log::setDebugLogging is not available.")
+#endif
 }

@@ -235,7 +235,8 @@ double CompositeModel::getReal(const std::string& var)
   if (fmuInstances.find(fmuInstance) == fmuInstances.end())
   {
     // TODO: Provide suitable return value to handle unsuccessful calls.
-    logFatal("CompositeModel::getReal: FMU instance \"" + fmuInstance + "\" doesn't exist in model");
+    logError("CompositeModel::getReal: FMU instance \"" + fmuInstance + "\" doesn't exist in model");
+    return 0.0;
   }
 
   return fmuInstances[fmuInstance]->getReal(fmuVar);
@@ -254,7 +255,8 @@ int CompositeModel::getInteger(const std::string& var)
   if (fmuInstances.find(fmuInstance) == fmuInstances.end())
   {
     // TODO: Provide suitable return value to handle unsuccessful calls.
-    logFatal("CompositeModel::getInteger: FMU instance \"" + fmuInstance + "\" doesn't exist in model");
+    logError("CompositeModel::getInteger: FMU instance \"" + fmuInstance + "\" doesn't exist in model");
+    return ~0;
   }
 
   return fmuInstances[fmuInstance]->getInteger(fmuVar);
@@ -273,7 +275,8 @@ bool CompositeModel::getBoolean(const std::string& var)
   if (fmuInstances.find(fmuInstance) == fmuInstances.end())
   {
     // TODO: Provide suitable return value to handle unsuccessful calls.
-    logFatal("CompositeModel::getBoolean: FMU instance \"" + fmuInstance + "\" doesn't exist in model");
+    logError("CompositeModel::getBoolean: FMU instance \"" + fmuInstance + "\" doesn't exist in model");
+    return false;
   }
 
   return fmuInstances[fmuInstance]->getBoolean(fmuVar);
@@ -558,7 +561,8 @@ void CompositeModel::importXML(const char* filename)
   pugi::xml_parse_result result = doc.load_file(filename);
   if (!result)
   {
-    logFatal("CompositeModel::importXML: \"" + std::string(filename) + "\" the file is not loaded");
+    logError("CompositeModel::importXML: \"" + std::string(filename) + "\" the file is not loaded");
+    return;
   }
 
   pugi::xml_node root = doc.document_element();
@@ -608,7 +612,10 @@ void CompositeModel::importXML(const char* filename)
         if (filename.length() > 5)
           type = filename.substr(filename.length() - 4);
         else
-          logFatal("CompositeModel::importXML: Invalid filename: " + filename);
+        {
+          logError("CompositeModel::importXML: Invalid filename: " + filename);
+          return;
+        }
       }
       else if (value == "solver")
       {
@@ -884,8 +891,10 @@ void CompositeModel::solveAlgLoop(DirectedGraph& graph, const std::vector< std::
   delete[] res;
 
   if (it >= maxIterations)
-    logFatal("CompositeModel::solveAlgLoop: max. number of iterations (" + std::to_string(maxIterations) + ") exceeded at time = " + std::to_string(tcur));
-
+  {
+    logError("CompositeModel::solveAlgLoop: max. number of iterations (" + std::to_string(maxIterations) + ") exceeded at time = " + std::to_string(tcur));
+    return;
+  }
   logDebug("CompositeModel::solveAlgLoop: maxRes: " + std::to_string(maxRes) + ", iterations: " + std::to_string(it) + " at time = " + std::to_string(tcur));
 }
 
@@ -1028,7 +1037,8 @@ void CompositeModel::initialize()
 
   if (oms_modelState_instantiated != modelState)
   {
-    logFatal("CompositeModel::initialize: Model is already in simulation mode.");
+    logError("CompositeModel::initialize: Model is already in simulation mode.");
+    return;
   }
 
   tcur = settings.GetStartTime();

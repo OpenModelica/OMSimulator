@@ -224,7 +224,6 @@ void oms_setTolerance(void* model, double tolerance);
 void oms_setCommunicationInterval(void* model, double communicationInterval);
 void oms_setResultFile(void* model, const char* filename);
 void oms_setSolverMethod(void* model, const char* instanceName, const char* method);
-void oms_setLogFile(const char* filename);
 
 /**
  * \brief Returns the library's version string.
@@ -350,6 +349,20 @@ oms_status_t oms2_simulate_asynchronous(const char* ident, void (*cb)(const char
  * @param cb   [in] Function pointer that is called for all messages to the logging system.
  */
 void oms2_setLoggingCallback(void (*cb)(oms_message_type_t type, const char* message));
+
+/**
+ * \brief Enables/Disables debug logging (logDebug and logTrace).
+ *
+ * @param useDebugLogging   [in] 0 to disable debug logging, all other values to enable debug logging
+ */
+void oms2_setDebugLogging(int useDebugLogging);
+
+/**
+ * \brief Redirects logging output to file or std streams. The warning/error counters are reset.
+ *
+ * @param filename   [in] "" to redirect to std streams and proper filename to redirect to file.
+ */
+void oms_setLogFile(const char* filename);
 
 #ifdef __cplusplus
 }

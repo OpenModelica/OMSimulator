@@ -38,7 +38,7 @@
 #include <fstream>
 #include <mutex>
 
-//#define OMS_DEBUG_LOGGING
+#define OMS_DEBUG_LOGGING
 
 #ifndef __FUNCTION_NAME__
   #ifdef WIN32   //WINDOWS
@@ -51,33 +51,29 @@
 class Log
 {
 public:
-  static Log& getInstance();
+  static void Info(const std::string& msg);
+  static void Warning(const std::string& msg);
+  static void Error(const std::string& msg);
+  static void Debug(const std::string& msg);
+  static void Trace(const std::string& function, const std::string& file, const long line);
 
-  void Info(const std::string& msg);
-  void Debug(const std::string& msg);
-  void Warning(const std::string& msg);
-  void Error(const std::string& msg);
-  [[noreturn]] void Fatal(const std::string& msg);
-  void Trace(const std::string& function, const std::string& file, const long line);
+  static void setLogFile(const std::string& filename);
 
-  void setLogFile(const std::string& filename);
-
-  void setLoggingCallback(void (*cb)(oms_message_type_t type, const char* message)) {this->cb = cb;}
+  static void setLoggingCallback(void (*cb)(oms_message_type_t type, const char* message)) {getInstance().cb = cb;}
+  static void setDebugLogging(bool debugLogging);
 
 private:
   Log();
   ~Log();
 
-  void initialize();
-  void terminate();
+  static Log& getInstance();
 
   // stop the compiler generating methods copying the object
   Log(Log const& copy);            // not implemented
   Log& operator=(Log const& copy); // not implemented
 
 private:
-  bool initialized;
-  bool useStdStream;
+  bool useDebugLogging;
   std::string filename;
   std::ofstream logFile;
   std::mutex m;
@@ -87,14 +83,13 @@ private:
   void (*cb)(oms_message_type_t type, const char* message);
 };
 
-#define logInfo(msg)    Log::getInstance().Info(msg)
-#define logWarning(msg) Log::getInstance().Warning(msg)
-#define logError(msg)   Log::getInstance().Error(msg)
-#define logFatal(msg)   Log::getInstance().Fatal(msg)
+#define logInfo(msg)    Log::Info(msg)
+#define logWarning(msg) Log::Warning(msg)
+#define logError(msg)   Log::Error(msg)
 
 #ifdef OMS_DEBUG_LOGGING
-  #define logDebug(msg) Log::getInstance().Debug(msg)
-  #define logTrace()    Log::getInstance().Trace(__FUNCTION_NAME__, __FILE__, __LINE__)
+  #define logDebug(msg) Log::Debug(msg)
+  #define logTrace()    Log::Trace(__FUNCTION_NAME__, __FILE__, __LINE__)
 #else
   #define logDebug(msg) ((void)0)
   #define logTrace()    ((void)0)

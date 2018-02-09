@@ -62,7 +62,7 @@ Clocks::Clocks(int numSubClocks)
 Clocks::~Clocks()
 {
   if (activeClocks.size() > 1 || activeClocks.top() != 0)
-    logFatal("Time measurement is corrupted.");
+    logError("Time measurement is corrupted.");
 
   delete[] clocks;
 }
@@ -87,7 +87,7 @@ void Clocks::toc(int index)
   int activeClock = activeClocks.top();
 
   if (activeClock != index)
-    logFatal("Time measurement is corrupted.");
+    logError("Time measurement is corrupted.");
 
   activeClocks.pop();
   activeClock = activeClocks.top();

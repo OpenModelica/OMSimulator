@@ -88,7 +88,7 @@ double LookupTable::getValue(const std::string& var, const double time)
 {
   logTrace();
   if (!resultReader)
-    logFatal("LookupTable::getValue: This table isn't initialized properly.");
+    logError("LookupTable::getValue: This table isn't initialized properly.");
 
   if (series.find(var) == series.end())
     series[var] = resultReader->getSeries(var.c_str());
@@ -105,6 +105,6 @@ double LookupTable::getValue(const std::string& var, const double time)
     }
   }
 
-  logFatal("LookupTable::getValue: Time out of range.");
+  logError("LookupTable::getValue: Time out of range.");
   return 0.0;
 }

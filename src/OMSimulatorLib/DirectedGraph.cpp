@@ -143,7 +143,7 @@ int getEdgeIndex(const std::vector< std::pair<int, int> >& edges, int from, int 
     if (edges[i].first == from && edges[i].second == to)
       return i;
 
-  logFatal("getEdgeIndex failed");
+  logError("getEdgeIndex failed");
   return -1;
 }
 
