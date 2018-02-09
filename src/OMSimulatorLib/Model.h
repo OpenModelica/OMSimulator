@@ -43,6 +43,7 @@ namespace oms2
   public:
     virtual oms_component_type_t getType() = 0;
     const std::string& getName() const {return name;}
+    void setName(const std::string& name) {this->name = name;}
 
     static void deleteModel(Model *model) {if (model) delete model;}
 
@@ -50,6 +51,7 @@ namespace oms2
     Model();
     virtual ~Model();
 
+  private:
     // stop the compiler generating methods copying the object
     Model(Model const& copy);            // not implemented
     Model& operator=(Model const& copy); // not implemented

@@ -324,7 +324,15 @@ oms_status_t oms2_newTLMModel(const char* ident);
  */
 oms_status_t oms2_unloadModel(const char* ident);
 
-oms_status_t oms2_loadFMIModel(const char* filename, const char** ident);
+/**
+ * \brief Unloads a composite model (works for FMI and TLM).
+ *
+ * @param identOld   [in] Name of the model instance to rename.
+ * @param identNew   [in] New name of the model instance.
+ */
+oms_status_t oms2_renameModel(const char* identOld, const char* identNew);
+
+oms_status_t oms2_loadModel(const char* filename, const char** ident);
 oms_status_t oms2_saveModel(const char* ident, const char* filename);
 oms_status_t oms2_getIconAnnotation(const char* ident, const void** annotation);
 oms_status_t oms2_setIconAnnotation(const char* ident, const void* annotation);
