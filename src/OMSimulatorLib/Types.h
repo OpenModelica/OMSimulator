@@ -94,6 +94,19 @@ typedef struct {
   /* optional TLM attributes */
 } oms_connection_t;
 
+typedef enum {
+  oms_message_info,
+  oms_message_warning,
+  oms_message_error,
+  oms_message_fatal,
+  oms_message_debug,
+  oms_message_trace
+} oms_message_type_t;
+
+typedef struct {
+  oms_message_type_t type;
+  const char* message;
+} oms_message_t;
 
 #ifdef __cplusplus
 }

@@ -315,6 +315,7 @@ oms_status_t oms2_getConnections(const char* ident, const oms_component_t** oms_
 oms_status_t oms2_getConnectionAnnotation(const char* identA, const char* identB, const char** annotation);
 oms_status_t oms2_setConnectionAnnotation(const char* identA, const char* identB, const char** annotation);
 oms_status_t oms2_simulate_asynchronous(const char* ident, void (*cb)(const char* ident, double time, oms_status_t status));
+void oms2_getLastMessages(const oms_message_t** messages, int8_t clear);
 
 #ifdef __cplusplus
 }
