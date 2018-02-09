@@ -29,30 +29,30 @@
  *
  */
 
-#ifndef _OMS_FMI_COMPOSITE_MODEL_H_
-#define _OMS_FMI_COMPOSITE_MODEL_H_
+#ifndef _OMS_MODEL_H_
+#define _OMS_MODEL_H_
 
-#include "Model.h"
 #include "Types.h"
 
 #include <string>
 
 namespace oms2
 {
-  class FMICompositeModel : public Model
+  class Model
   {
   public:
-    static FMICompositeModel* newModel(const std::string& name);
+    virtual oms_component_type_t getType() = 0;
+    const std::string& getName() const {return name;}
 
-    oms_component_type_t getType() {return oms_component_fmi;}
+    static void deleteModel(Model *model) {if (model) delete model;}
 
-  private:
-    FMICompositeModel();
-    ~FMICompositeModel();
+  protected:
+    Model();
+    virtual ~Model();
 
     // stop the compiler generating methods copying the object
-    FMICompositeModel(FMICompositeModel const& copy);            // not implemented
-    FMICompositeModel& operator=(FMICompositeModel const& copy); // not implemented
+    Model(Model const& copy);            // not implemented
+    Model& operator=(Model const& copy); // not implemented
 
   private:
     std::string name;

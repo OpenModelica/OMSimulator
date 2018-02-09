@@ -29,8 +29,8 @@
  *
  */
 
-#ifndef _OMS_MODEL_H_
-#define _OMS_MODEL_H_
+#ifndef _OMS_COMPOSITE_MODEL_H_
+#define _OMS_COMPOSITE_MODEL_H_
 
 #include "DirectedGraph.h"
 #include "FMUWrapper.h"

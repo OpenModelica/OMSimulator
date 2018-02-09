@@ -29,34 +29,14 @@
  *
  */
 
-#ifndef _OMS_FMI_COMPOSITE_MODEL_H_
-#define _OMS_FMI_COMPOSITE_MODEL_H_
-
 #include "Model.h"
-#include "Types.h"
+#include "Logging.h"
 
-#include <string>
-
-namespace oms2
+oms2::Model::Model()
 {
-  class FMICompositeModel : public Model
-  {
-  public:
-    static FMICompositeModel* newModel(const std::string& name);
-
-    oms_component_type_t getType() {return oms_component_fmi;}
-
-  private:
-    FMICompositeModel();
-    ~FMICompositeModel();
-
-    // stop the compiler generating methods copying the object
-    FMICompositeModel(FMICompositeModel const& copy);            // not implemented
-    FMICompositeModel& operator=(FMICompositeModel const& copy); // not implemented
-
-  private:
-    std::string name;
-  };
+  logTrace();
 }
 
-#endif
+oms2::Model::~Model()
+{
+}

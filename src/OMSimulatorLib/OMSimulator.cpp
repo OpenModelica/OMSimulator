@@ -38,6 +38,7 @@
 #include "ResultReader.h"
 #include "Scope.h"
 #include "Settings.h"
+#include "TLMCompositeModel.h"
 #include "Types.h"
 #include "Version.h"
 
@@ -535,6 +536,12 @@ oms_status_t oms2_newFMIModel(const char* ident)
 {
   logTrace();
   return oms2::Scope::newFMIModel(ident);
+}
+
+oms_status_t oms2_newTLMModel(const char* ident)
+{
+  logTrace();
+  return oms2::Scope::newTLMModel(ident);
 }
 
 oms_status_t oms2_unloadModel(const char* ident)

@@ -311,6 +311,13 @@ void oms_setMaxIterations(void* model, int maxIterations);
 oms_status_t oms2_newFMIModel(const char* ident);
 
 /**
+ * \brief Creates a new and yet empty TLM composite model.
+ *
+ * @param ident   [in] Name of the new model instance.
+ */
+oms_status_t oms2_newTLMModel(const char* ident);
+
+/**
  * \brief Unloads a composite model (works for FMI and TLM).
  *
  * @param ident   [in] Name of the model instance.

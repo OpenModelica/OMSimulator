@@ -29,8 +29,8 @@
  *
  */
 
-#ifndef _OMS_FMI_COMPOSITE_MODEL_H_
-#define _OMS_FMI_COMPOSITE_MODEL_H_
+#ifndef _OMS_TLM_COMPOSITE_MODEL_H_
+#define _OMS_TLM_COMPOSITE_MODEL_H_
 
 #include "Model.h"
 #include "Types.h"
@@ -39,20 +39,20 @@
 
 namespace oms2
 {
-  class FMICompositeModel : public Model
+  class TLMCompositeModel : public Model
   {
   public:
-    static FMICompositeModel* newModel(const std::string& name);
+    static TLMCompositeModel* newModel(const std::string& name);
 
-    oms_component_type_t getType() {return oms_component_fmi;}
+    oms_component_type_t getType() {return oms_component_tlm;}
 
   private:
-    FMICompositeModel();
-    ~FMICompositeModel();
+    TLMCompositeModel();
+    ~TLMCompositeModel();
 
     // stop the compiler generating methods copying the object
-    FMICompositeModel(FMICompositeModel const& copy);            // not implemented
-    FMICompositeModel& operator=(FMICompositeModel const& copy); // not implemented
+    TLMCompositeModel(TLMCompositeModel const& copy);            // not implemented
+    TLMCompositeModel& operator=(TLMCompositeModel const& copy); // not implemented
 
   private:
     std::string name;
