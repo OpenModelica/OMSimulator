@@ -315,7 +315,13 @@ oms_status_t oms2_getConnections(const char* ident, const oms_component_t** oms_
 oms_status_t oms2_getConnectionAnnotation(const char* identA, const char* identB, const char** annotation);
 oms_status_t oms2_setConnectionAnnotation(const char* identA, const char* identB, const char** annotation);
 oms_status_t oms2_simulate_asynchronous(const char* ident, void (*cb)(const char* ident, double time, oms_status_t status));
-void oms2_getLastMessages(const oms_message_t** messages, int8_t clear);
+
+/**
+ * \brief Sets a callback function for the logging system.
+ *
+ * @param cb   [in] Function pointer that is called for all messages to the logging system.
+ */
+void oms2_setLoggingCallback(void (*cb)(oms_message_type_t type, const char* message));
 
 #ifdef __cplusplus
 }
