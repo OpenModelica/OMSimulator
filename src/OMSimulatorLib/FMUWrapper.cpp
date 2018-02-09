@@ -152,13 +152,16 @@ int cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void *user_data)
 }
 
 FMUWrapper::FMUWrapper(CompositeModel& model, std::string fmuPath, std::string instanceName)
-  : model(model), fmuPath(fmuPath), instanceName(instanceName), solverMethod(EXPLICIT_EULER), clocks(CLOCK_MAX_INDEX), variableFilter(".*")
+  : model(model), fmuPath(fmuPath), instanceName(instanceName), context(0), fmu(0), solverMethod(EXPLICIT_EULER), clocks(CLOCK_MAX_INDEX),
+    variableFilter(".*"), instantiated(false)
 {
   logTrace();
   OMS_TIC(clocks, CLOCK_INSTANTIATION);
 
-  if (!boost::filesystem::exists(fmuPath))
+  if (!boost::filesystem::exists(fmuPath)) {
     logFatal("Specified file name does not exist: \"" + fmuPath + "\"");
+    return;
+  }
 
   callbacks.malloc = malloc;
   callbacks.calloc = calloc;
@@ -188,8 +191,10 @@ FMUWrapper::FMUWrapper(CompositeModel& model, std::string fmuPath, std::string i
 
   // parse modelDescription.xml
   fmu = fmi2_import_parse_xml(context, tempDir.c_str(), 0);
-  if (!fmu)
+  if (!fmu) {
     logFatal("Error parsing modelDescription.xml");
+    return;
+  }
 
   // check FMU kind (CS or ME)
   fmuKind = fmi2_import_get_fmu_kind(fmu);
@@ -199,8 +204,10 @@ FMUWrapper::FMUWrapper(CompositeModel& model, std::string fmuPath, std::string i
     logDebug("FMU CS");
   else if (fmi2_fmu_kind_me_and_cs == fmuKind)
     logDebug("FMU ME & CS");
-  else
+  else {
     logError("Unsupported FMU kind: " + std::string(fmi2_fmu_kind_to_string(fmuKind)));
+    return;
+  }
 
   callBackFunctions.logger = fmi2logger;
   callBackFunctions.allocateMemory = calloc;
@@ -214,15 +221,20 @@ FMUWrapper::FMUWrapper(CompositeModel& model, std::string fmuPath, std::string i
 
     //Load the FMU shared library
     jmstatus = fmi2_import_create_dllfmu(fmu, fmi2_fmu_kind_me, &callBackFunctions);
-    if (jm_status_error == jmstatus) logFatal("Could not create the DLL loading mechanism (C-API). Error: " + std::string(fmi2_import_get_last_error(fmu)));
-
+    if (jm_status_error == jmstatus) {
+      logFatal("Could not create the DLL loading mechanism (C-API). Error: " + std::string(fmi2_import_get_last_error(fmu)));
+      return;
+    }
     logDebug("Version returned from FMU: " + std::string(fmi2_import_get_version(fmu)));
     logDebug("Platform type returned: " + std::string(fmi2_import_get_types_platform(fmu)));
     logDebug("GUID: " + std::string(fmi2_import_get_GUID(fmu)));
 
     fmi2_string_t instanceName = "ME-FMU instance";
     jmstatus = fmi2_import_instantiate(fmu, instanceName, fmi2_model_exchange, NULL, fmi2_false);
-    if (jm_status_error == jmstatus) logFatal("fmi2_import_instantiate failed");
+    if (jm_status_error == jmstatus) {
+      logFatal("fmi2_import_instantiate failed");
+      return;
+    }
   }
   else if (fmi2_fmu_kind_cs == fmuKind || fmi2_fmu_kind_me_and_cs == fmuKind)
   {
@@ -230,7 +242,10 @@ FMUWrapper::FMUWrapper(CompositeModel& model, std::string fmuPath, std::string i
 
     //Load the FMU shared library
     jmstatus = fmi2_import_create_dllfmu(fmu, fmi2_fmu_kind_cs, &callBackFunctions);
-    if (jm_status_error == jmstatus) logFatal("Could not create the DLL loading mechanism (C-API). Error: " + std::string(fmi2_import_get_last_error(fmu)));
+    if (jm_status_error == jmstatus) {
+      logFatal("Could not create the DLL loading mechanism (C-API). Error: " + std::string(fmi2_import_get_last_error(fmu)));
+      return;
+    }
 
     logDebug("Version returned from FMU: " + std::string(fmi2_import_get_version(fmu)));
     logDebug("Platform type returned: " + std::string(fmi2_import_get_types_platform(fmu)));
@@ -238,7 +253,10 @@ FMUWrapper::FMUWrapper(CompositeModel& model, std::string fmuPath, std::string i
 
     fmi2_string_t instanceName = "CS-FMU instance";
     jmstatus = fmi2_import_instantiate(fmu, instanceName, fmi2_cosimulation, NULL, fmi2_false);
-    if (jm_status_error == jmstatus) logFatal("fmi2_import_instantiate failed");
+    if (jm_status_error == jmstatus) {
+      logFatal("fmi2_import_instantiate failed");
+      return;
+    }
   }
 
   // create variable list
@@ -316,16 +334,22 @@ FMUWrapper::FMUWrapper(CompositeModel& model, std::string fmuPath, std::string i
   getDependencyGraph_initialUnknowns();
 
   OMS_TOC(clocks, CLOCK_INSTANTIATION);
+  instantiated = true;
 }
 
 FMUWrapper::~FMUWrapper()
 {
   logTrace();
 
-  fmi2_import_free_instance(fmu);
-  fmi2_import_destroy_dllfmu(fmu);
-  fmi2_import_free(fmu);
-  fmi_import_free_context(context);
+  if (fmu) {
+    fmi2_import_free_instance(fmu);
+    fmi2_import_destroy_dllfmu(fmu);
+    fmi2_import_free(fmu);
+  }
+
+  if (context) {
+    fmi_import_free_context(context);
+  }
   if (boost::filesystem::is_directory(tempDir))
   {
     fmi_import_rmdir(&callbacks, tempDir.c_str());

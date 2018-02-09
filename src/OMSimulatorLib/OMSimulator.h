@@ -69,8 +69,9 @@ void oms_unload(void* model);
  * @param model        Model as opaque pointer.
  * @param filename     Full path to the FMU.
  * @param instanceName Instance name for further access.
+ * @return Error status.
  */
-void oms_instantiateFMU(void* model, const char* filename, const char* instanceName);
+oms_status_t oms_instantiateFMU(void* model, const char* filename, const char* instanceName);
 
 /**
  * \brief Instantiates a lookup table.

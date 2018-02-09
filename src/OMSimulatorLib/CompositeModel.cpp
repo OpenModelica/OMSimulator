@@ -94,16 +94,26 @@ CompositeModel::~CompositeModel()
     delete it->second;
 }
 
-void CompositeModel::instantiateFMU(const std::string& filename, const std::string& instanceName)
+oms_status_t CompositeModel::instantiateFMU(const std::string& filename, const std::string& instanceName)
 {
   logTrace();
   OMS_TIC(globalClocks, GLOBALCLOCK_INSTANTIATION);
 
-  fmuInstances[instanceName] = new FMUWrapper(*this, filename, instanceName);
-  outputsGraph.includeGraph(fmuInstances[instanceName]->getOutputsGraph());
-  initialUnknownsGraph.includeGraph(fmuInstances[instanceName]->getInitialUnknownsGraph());
+  oms_status_t status;
+  FMUWrapper *fMUWrapper = new FMUWrapper(*this, filename, instanceName);
+  if (fMUWrapper->isInstantiated()) {
+    fmuInstances[instanceName] = fMUWrapper;
+    outputsGraph.includeGraph(fmuInstances[instanceName]->getOutputsGraph());
+    initialUnknownsGraph.includeGraph(fmuInstances[instanceName]->getInitialUnknownsGraph());
+    status = oms_status_ok;
+  } else {
+    delete fMUWrapper;
+    status = oms_status_fatal;
+  }
 
   OMS_TOC(globalClocks, GLOBALCLOCK_INSTANTIATION);
+
+  return status;
 }
 
 void CompositeModel::instantiateTable(const std::string& filename, const std::string& instanceName)
