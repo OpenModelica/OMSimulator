@@ -71,10 +71,11 @@ private:
   void initialize();
   void terminate();
 
-  // Stop the compiler generating methods of copy the object
-  Log(Log const& copy);            // Not Implemented
-  Log& operator=(Log const& copy); // Not Implemented
+  // stop the compiler generating methods copying the object
+  Log(Log const& copy);            // not implemented
+  Log& operator=(Log const& copy); // not implemented
 
+private:
   bool initialized;
   bool useStdStream;
   std::string filename;

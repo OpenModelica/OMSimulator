@@ -46,9 +46,3 @@ oms2::FMICompositeModel* oms2::FMICompositeModel::newModel(const std::string& na
   oms2::FMICompositeModel *model = new oms2::FMICompositeModel();
   return model;
 }
-
-void oms2::FMICompositeModel::deleteModel(FMICompositeModel *model)
-{
-  if (model)
-    delete model;
-}

@@ -32,10 +32,11 @@
 #ifndef _OMS_SCOPE_H_
 #define _OMS_SCOPE_H_
 
-#include "FMICompositeModel.h"
+#include "Model.h"
 #include "Types.h"
 
 #include <map>
+#include <string>
 
 namespace oms2
 {
@@ -43,7 +44,9 @@ namespace oms2
   {
   public:
     static oms_status_t newFMIModel(const std::string& name);
+    static oms_status_t newTLMModel(const std::string& name);
     static oms_status_t unloadModel(const std::string& name);
+    static Model* getModel(const std::string& name);
 
   private:
     Scope();
@@ -56,7 +59,7 @@ namespace oms2
     static Scope& getInstance();
 
   private:
-    std::map<std::string, FMICompositeModel*> fmiModels;
+    std::map<std::string, Model*> models;
   };
 }
 
