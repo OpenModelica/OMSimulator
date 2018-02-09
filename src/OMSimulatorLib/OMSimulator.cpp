@@ -522,3 +522,93 @@ void oms_setMaxIterations(void* model, int maxIterations)
   CompositeModel* pModel = (CompositeModel*)model;
   pModel->setMaxIterations(maxIterations);
 }
+
+/* ************************************ */
+/* OMSimulator 2.0                      */
+/*                                      */
+/* TODO: replace prefix oms2 with oms   */
+/* ************************************ */
+
+oms_status_t oms2_newFMIModel(const char* ident)
+{
+  logTrace();
+  logError("oms2_newFMIModel: not implemented yet");
+  return oms_status_error;
+}
+
+oms_status_t oms2_loadFMIModel(const char* filename, const char** ident)
+{
+  logTrace();
+  logError("oms2_loadFMIModel: not implemented yet");
+  return oms_status_error;
+}
+
+oms_status_t oms2_saveModel(const char* ident, const char* filename)
+{
+  logTrace();
+  logError("oms2_saveModel: not implemented yet");
+  return oms_status_error;
+}
+
+oms_status_t oms2_getIconAnnotation(const char* ident, const void** annotation)
+{
+  logTrace();
+  logError("oms2_getIconAnnotation: not implemented yet");
+  return oms_status_error;
+}
+
+oms_status_t oms2_setIconAnnotation(const char* ident, const void* annotation)
+{
+  logTrace();
+  logError("oms2_setIconAnnotation: not implemented yet");
+  return oms_status_error;
+}
+
+oms_status_t oms2_getDiagramAnnotation(const char* ident, const void** annotation)
+{
+  logTrace();
+  logError("oms2_getDiagramAnnotation: not implemented yet");
+  return oms_status_error;
+}
+
+oms_status_t oms2_setDiagramAnnotation(const char* ident, const void* annotation)
+{
+  logTrace();
+  logError("oms2_setDiagramAnnotation: not implemented yet");
+  return oms_status_error;
+}
+
+oms_status_t oms2_getComponents(const char* ident, const oms_component_t** oms_component)
+{
+  logTrace();
+  logError("oms2_getComponents: not implemented yet");
+  return oms_status_error;
+}
+
+oms_status_t oms2_getConnections(const char* ident, const oms_component_t** oms_connections)
+{
+  logTrace();
+  logError("oms2_getConnections: not implemented yet");
+  return oms_status_error;
+}
+
+oms_status_t oms2_getConnectionAnnotation(const char* identA, const char* identB, const char** annotation)
+{
+  logTrace();
+  logError("oms2_getConnectionAnnotation: not implemented yet");
+  return oms_status_error;
+}
+
+oms_status_t oms2_setConnectionAnnotation(const char* identA, const char* identB, const char** annotation)
+{
+  logTrace();
+  logError("oms2_setConnectionAnnotation: not implemented yet");
+  return oms_status_error;
+}
+
+oms_status_t oms2_simulate_asynchronous(const char* ident, void (*cb)(const char* ident, double time, oms_status_t status))
+{
+  logTrace();
+  logError("oms2_simulate_asynchronous: not implemented yet");
+  return oms_status_error;
+}
