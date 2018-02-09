@@ -60,7 +60,10 @@ typedef enum {
   oms_causality_undefined,
 } oms_causality_t;
 
-/* OMSimulator 2.0 */
+/* ************************************ */
+/* OMSimulator 2.0                      */
+/* ************************************ */
+
 typedef enum {
   oms_component_tlm,  /* TLM model */
   oms_component_fmi,  /* FMI model */
