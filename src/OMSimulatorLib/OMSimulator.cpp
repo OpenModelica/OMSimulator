@@ -29,15 +29,17 @@
  *
  */
 
-#include "OMSimulator.h"
 #include "CompositeModel.h"
-#include "Logging.h"
-#include "Settings.h"
+#include "FMICompositeModel.h"
 #include "GlobalSettings.h"
-#include "Version.h"
-#include "Types.h"
-#include "ResultReader.h"
+#include "Logging.h"
 #include "MatReader.h"
+#include "OMSimulator.h"
+#include "ResultReader.h"
+#include "Scope.h"
+#include "Settings.h"
+#include "Types.h"
+#include "Version.h"
 
 #include <string>
 
@@ -532,8 +534,7 @@ void oms_setMaxIterations(void* model, int maxIterations)
 oms_status_t oms2_newFMIModel(const char* ident)
 {
   logTrace();
-  logError("oms2_newFMIModel: not implemented yet");
-  return oms_status_error;
+  return oms2::Scope::newFMIModel(ident);
 }
 
 oms_status_t oms2_loadFMIModel(const char* filename, const char** ident)

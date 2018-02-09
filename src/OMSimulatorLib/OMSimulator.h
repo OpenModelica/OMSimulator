@@ -303,7 +303,13 @@ void oms_setMaxIterations(void* model, int maxIterations);
 /* TODO: replace prefix oms2 with oms   */
 /* ************************************ */
 
+/**
+ * \brief Creates a new and yet empty FMI composite model.
+ *
+ * @param ident   [in] Name of the new model instance.
+ */
 oms_status_t oms2_newFMIModel(const char* ident);
+
 oms_status_t oms2_loadFMIModel(const char* filename, const char** ident);
 oms_status_t oms2_saveModel(const char* ident, const char* filename);
 oms_status_t oms2_getIconAnnotation(const char* ident, const void** annotation);
