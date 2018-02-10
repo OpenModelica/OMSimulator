@@ -11,7 +11,16 @@ BUILDDIR      = build
 
 # User-friendly check for sphinx-build
 ifeq ($(shell which $(SPHINXBUILD) >/dev/null 2>&1; echo $$?), 1)
-$(error The '$(SPHINXBUILD)' command was not found. Make sure you have Sphinx installed, then set the SPHINXBUILD environment variable to point to the full path of the '$(SPHINXBUILD)' executable. Alternatively you can add the directory with the executable to your PATH. If you don't have Sphinx installed, grab it from http://sphinx-doc.org/)
+	$(error The '$(SPHINXBUILD)' command was not found. Make sure you have Sphinx installed, then set the SPHINXBUILD environment variable to point to the full path of the '$(SPHINXBUILD)' executable. Alternatively you can add the directory with the executable to your PATH. If you don't have Sphinx installed, grab it from http://sphinx-doc.org/)
+endif
+
+detected_OS := $(shell uname -s)
+ifeq ($(detected_OS),Darwin)
+	INSTALL_DIR := install/mac
+else ifeq (MINGW,$(findstring MINGW,$(detected_OS)))
+	INSTALL_DIR := install/mingw
+else
+	INSTALL_DIR := install/linux
 endif
 
 # Internal variables.
@@ -181,5 +190,5 @@ pseudoxml:
 all-dep: source/omsimulator-help.inc
 
 source/omsimulator-help.inc:
-	$(OMSIMULATOR_ROOT)/install/bin/OMSimulator --help > "$@.tmp"
+	$(OMSIMULATOR_ROOT)/$(INSTALL_DIR)/bin/OMSimulator --help > "$@.tmp"
 	mv "$@.tmp" "$@"
