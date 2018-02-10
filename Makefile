@@ -11,7 +11,7 @@ else
 	INSTALL_DIR := install/linux
 endif
 
-.PHONY: OMSimulator config-OMSimulator config-fmil config-lua config-cvode config-kinsol config-3rdParty distclean testsuite doc
+.PHONY: OMSimulator config-OMSimulator config-fmil config-lua config-cvode config-kinsol config-3rdParty distclean testsuite doc doc-html
 
 OMSimulator:
 	@echo
@@ -85,5 +85,9 @@ testsuite:
 	@$(MAKE) -C testsuite all
 
 doc:
-	@$(MAKE) -C doc html
 	@$(MAKE) -C doc latexpdf
+	@$(MKDIR) $(INSTALL_DIR)/doc
+	@cp doc/build/latex/OMSimulator.pdf $(INSTALL_DIR)/doc
+
+doc-html:
+	@$(MAKE) -C doc html
