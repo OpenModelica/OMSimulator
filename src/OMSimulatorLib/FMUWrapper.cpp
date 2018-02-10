@@ -29,16 +29,16 @@
  *
  */
 
-#include "FMUWrapper.h"
-#include "Variable.h"
-#include "DirectedGraph.h"
-#include "Logging.h"
-#include "Settings.h"
-#include "GlobalSettings.h"
-#include "CompositeModel.h"
-#include "Util.h"
 #include "Clocks.h"
+#include "CompositeModel.h"
+#include "DirectedGraph.h"
+#include "FMUWrapper.h"
+#include "Logging.h"
 #include "ResultWriter.h"
+#include "Scope.h"
+#include "Settings.h"
+#include "Util.h"
+#include "Variable.h"
 
 #include <fmilib.h>
 #include <JM/jm_portability.h>
@@ -165,7 +165,7 @@ FMUWrapper::FMUWrapper(CompositeModel& model, std::string fmuPath, std::string i
   callbacks.context = 0;
 
   // set temp directory
-  tempDir = fmi_import_mk_temp_dir(&callbacks, GlobalSettings::getInstance().GetTempDirectory().c_str(), "temp_");
+  tempDir = fmi_import_mk_temp_dir(&callbacks, oms2::Scope::GetTempDirectory().c_str(), "temp_");
   logInfo("Using \"" + tempDir + "\" as temp directory for " + instanceName);
 
   context = fmi_import_allocate_context(&callbacks);

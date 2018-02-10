@@ -152,7 +152,7 @@ void Log::Trace(const std::string& function, const std::string& file, const long
     log.cb(oms_message_trace, msg.c_str());
 }
 
-void Log::setLogFile(const std::string& filename)
+oms_status_t Log::setLogFile(const std::string& filename)
 {
   Log& log = getInstance();
   std::lock_guard<std::mutex> lock(log.m);
@@ -177,8 +177,16 @@ void Log::setLogFile(const std::string& filename)
   if (!filename.empty())
   {
     log.logFile.open(filename.c_str());
-    log.logFile << TimeStr() << " | info:    " << "Initializing logging (" << std::string(oms_git_version) << ")" << endl;
+    if (log.logFile.is_open())
+      log.logFile << TimeStr() << " | info:    " << "Initializing logging (" << std::string(oms_git_version) << ")" << endl;
+    else
+    {
+      log.filename = "";
+      return oms_status_error;
+    }
   }
+
+  return oms_status_ok;
 }
 
 void Log::setDebugLogging(bool debugLogging)

@@ -57,7 +57,7 @@ public:
   static void Debug(const std::string& msg);
   static void Trace(const std::string& function, const std::string& file, const long line);
 
-  static void setLogFile(const std::string& filename);
+  static oms_status_t setLogFile(const std::string& filename);
 
   static void setLoggingCallback(void (*cb)(oms_message_type_t type, const char* message)) {getInstance().cb = cb;}
   static void setDebugLogging(bool debugLogging);
