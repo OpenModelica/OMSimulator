@@ -20,7 +20,7 @@ This function defines the temp directory that is used for temporary files, e.g. 
 #CAPI#
 .. code-block:: c
 
-  void oms_setTempDirectory(const char* filename);
+  oms_status_t oms_setTempDirectory(const char* filename);
 #END#
 
 #DESCRIPTION#

@@ -20,7 +20,7 @@ This function sets the log file name.
 #CAPI#
 .. code-block:: c
 
-  void oms_setLogFile(const char* filename);
+  oms_status_t oms_setLogFile(const char* filename);
 #END#
 
 #DESCRIPTION#
