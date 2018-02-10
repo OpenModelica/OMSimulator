@@ -31,6 +31,7 @@
 
 #include "TLMCompositeModel.h"
 #include "Logging.h"
+#include "Model.h"
 
 oms2::TLMCompositeModel::TLMCompositeModel()
 {
@@ -43,6 +44,12 @@ oms2::TLMCompositeModel::~TLMCompositeModel()
 
 oms2::TLMCompositeModel* oms2::TLMCompositeModel::newModel(const std::string& name)
 {
+  if (!oms2::Model::isValidModelIdentifier(name))
+  {
+    logError("\"" + name + "\" is not a valid model name.");
+    return NULL;
+  }
+
   oms2::TLMCompositeModel *model = new oms2::TLMCompositeModel();
   return model;
 }

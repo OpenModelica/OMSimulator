@@ -338,7 +338,7 @@ oms_status_t oms2_setIconAnnotation(const char* ident, const void* annotation);
 oms_status_t oms2_getDiagramAnnotation(const char* ident, const void** annotation);
 oms_status_t oms2_setDiagramAnnotation(const char* ident, const void* annotation);
 oms_status_t oms2_getComponents(const char* ident, const oms_component_t** oms_component);
-oms_status_t oms2_getConnections(const char* ident, const oms_component_t** oms_connections);
+oms_status_t oms2_getConnections(const char* ident, const oms_connection_t** oms_connections);
 oms_status_t oms2_getConnectionAnnotation(const char* identA, const char* identB, const char** annotation);
 oms_status_t oms2_setConnectionAnnotation(const char* identA, const char* identB, const char** annotation);
 oms_status_t oms2_simulate_asynchronous(const char* ident, void (*cb)(const char* ident, double time, oms_status_t status));

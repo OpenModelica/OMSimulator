@@ -31,6 +31,7 @@
 
 #include "FMICompositeModel.h"
 #include "Logging.h"
+#include "Model.h"
 
 oms2::FMICompositeModel::FMICompositeModel()
 {
@@ -43,6 +44,12 @@ oms2::FMICompositeModel::~FMICompositeModel()
 
 oms2::FMICompositeModel* oms2::FMICompositeModel::newModel(const std::string& name)
 {
+  if (!oms2::Model::isValidModelIdentifier(name))
+  {
+    logError("\"" + name + "\" is not a valid model name.");
+    return NULL;
+  }
+
   oms2::FMICompositeModel *model = new oms2::FMICompositeModel();
   return model;
 }

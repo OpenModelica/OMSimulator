@@ -46,6 +46,7 @@ namespace oms2
     void setName(const std::string& name) {this->name = name;}
 
     static void deleteModel(Model *model) {if (model) delete model;}
+    static bool isValidModelIdentifier(const std::string& ident);
 
   protected:
     Model();
