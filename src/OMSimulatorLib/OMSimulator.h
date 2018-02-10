@@ -214,7 +214,6 @@ oms_status_t oms_reset(void* model);
 oms_status_t oms_getCurrentTime(const void* model, double* time);
 
 /* Global settings */
-void oms_setTempDirectory(const char* path);
 void oms_setWorkingDirectory(const char* path);
 
 /* Local settings */
@@ -362,7 +361,14 @@ void oms2_setDebugLogging(int useDebugLogging);
  *
  * @param filename   [in] "" to redirect to std streams and proper filename to redirect to file.
  */
-void oms_setLogFile(const char* filename);
+oms_status_t oms_setLogFile(const char* filename);
+
+/**
+ * \brief Set new temp directory
+ *
+ * @param path   [in] Path to new temp directory.
+ */
+oms_status_t oms_setTempDirectory(const char* path);
 
 #ifdef __cplusplus
 }

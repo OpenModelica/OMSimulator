@@ -31,7 +31,6 @@
 
 #include "CompositeModel.h"
 #include "FMICompositeModel.h"
-#include "GlobalSettings.h"
 #include "Logging.h"
 #include "MatReader.h"
 #include "OMSimulator.h"
@@ -349,10 +348,10 @@ oms_status_t oms_getCurrentTime(const void* model, double* time)
   return pModel->getCurrentTime(time);
 }
 
-void oms_setTempDirectory(const char* path)
+oms_status_t oms_setTempDirectory(const char* path)
 {
   logTrace();
-  GlobalSettings::getInstance().SetTempDirectory(path);
+  return oms2::Scope::SetTempDirectory(path);
 }
 
 void oms_setWorkingDirectory(const char* path)
@@ -409,9 +408,9 @@ void oms_setSolverMethod(void* model, const char* instanceName, const char* meth
   pModel->SetSolverMethod(instanceName, method);
 }
 
-void oms_setLogFile(const char* filename)
+oms_status_t oms_setLogFile(const char* filename)
 {
-  Log::setLogFile(filename);
+  return Log::setLogFile(filename);
 }
 
 const char* oms_getVersion()

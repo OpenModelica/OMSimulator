@@ -49,6 +49,9 @@ namespace oms2
     static oms_status_t renameModel(const std::string& identOld, const std::string& identNew);
     static Model* getModel(const std::string& name);
 
+    static oms_status_t SetTempDirectory(const std::string& newTempDir);
+    static const std::string& GetTempDirectory() {Scope &scope = getInstance(); return scope.tempDir;}
+
   private:
     Scope();
     ~Scope();
@@ -61,6 +64,7 @@ namespace oms2
 
   private:
     std::map<std::string, Model*> models;
+    std::string tempDir;
   };
 }
 

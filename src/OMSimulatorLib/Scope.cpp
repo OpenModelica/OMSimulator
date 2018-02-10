@@ -35,8 +35,12 @@
 #include "TLMCompositeModel.h"
 #include "Types.h"
 
+#include <boost/filesystem.hpp>
+
 oms2::Scope::Scope()
 {
+  boost::filesystem::path tempPath = boost::filesystem::temp_directory_path();
+  tempDir = tempPath.string();
 }
 
 oms2::Scope::~Scope()
@@ -149,4 +153,27 @@ oms2::Model* oms2::Scope::getModel(const std::string& name)
   }
 
   return it->second;
+}
+
+oms_status_t oms2::Scope::SetTempDirectory(const std::string& newTempDir)
+{
+  Scope& scope = oms2::Scope::getInstance();
+
+  if (!boost::filesystem::is_directory(newTempDir))
+  {
+    if (!boost::filesystem::create_directory(newTempDir))
+    {
+      logError("changing working directory to \"" + std::string(newTempDir) + "\" failed");
+      return oms_status_error;
+    }
+    else
+      logInfo("new temp directory has been created: \"" + std::string(newTempDir) + "\"");
+  }
+
+  boost::filesystem::path path(newTempDir.c_str());
+  path = boost::filesystem::canonical(path);
+  scope.tempDir = path.string();
+
+  logInfo("new temp directory: \"" + std::string(scope.tempDir) + "\"");
+  return oms_status_ok;
 }
