@@ -4,8 +4,9 @@ OpenModelica FMI &amp; TLM based simulator
 
 ## Dependencies
 
-- [cmake](http://www.cmake.org)
 - [Boost](http://www.boost.org/) (system, filesystem, program_options)
+- [cmake](http://www.cmake.org)
+- [Sphinx](http://www.sphinx-doc.org/en/stable/)
 - [3rdParty subproject](https://github.com/OpenModelica/OMFMISimulator-3rdParty)
   - FMILibrary
   - Lua
