@@ -57,7 +57,7 @@ oms_status_t oms2::Scope::newFMIModel(const std::string& name)
 {
   Scope& scope = oms2::Scope::getInstance();
 
-    // check if name is in scope
+  // check if name is in scope
   auto it = scope.models.find(name);
   if (it != scope.models.end())
   {
@@ -65,7 +65,11 @@ oms_status_t oms2::Scope::newFMIModel(const std::string& name)
     return oms_status_error;
   }
 
-  scope.models[name] = oms2::FMICompositeModel::newModel(name);
+  Model* model = oms2::FMICompositeModel::newModel(name);
+  if (!model)
+    return oms_status_error;
+
+  scope.models[name] = model;
   return oms_status_ok;
 }
 
@@ -73,7 +77,7 @@ oms_status_t oms2::Scope::newTLMModel(const std::string& name)
 {
   Scope& scope = oms2::Scope::getInstance();
 
-    // check if name is in scope
+  // check if name is in scope
   auto it = scope.models.find(name);
   if (it != scope.models.end())
   {
@@ -81,7 +85,11 @@ oms_status_t oms2::Scope::newTLMModel(const std::string& name)
     return oms_status_error;
   }
 
-  scope.models[name] = oms2::TLMCompositeModel::newModel(name);
+  Model* model = oms2::TLMCompositeModel::newModel(name);
+  if (!model)
+    return oms_status_error;
+
+  scope.models[name] = model;
   return oms_status_ok;
 }
 

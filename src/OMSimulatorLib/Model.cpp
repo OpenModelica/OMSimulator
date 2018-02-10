@@ -32,6 +32,8 @@
 #include "Model.h"
 #include "Logging.h"
 
+#include <regex>
+
 oms2::Model::Model()
 {
   logTrace();
@@ -39,4 +41,10 @@ oms2::Model::Model()
 
 oms2::Model::~Model()
 {
+}
+
+bool oms2::Model::isValidModelIdentifier(const std::string& ident)
+{
+  std::regex re("^[a-zA-Z]+[a-zA-Z0-9_]*$");
+  return std::regex_match(ident, re);
 }
