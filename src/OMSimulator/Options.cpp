@@ -32,141 +32,167 @@
 #include "Options.h"
 
 #include <iostream>
+#include <regex>
+#include <string>
 
-#include <boost/program_options.hpp>
-
-ProgramOptions::ProgramOptions()
+ProgramOptions::ProgramOptions(int argc, char** argv)
 {
+  this->argi = 1;
+  this->argc = argc;
+  this->argv = argv;
+
   describe = false;
   help = false;
   version = false;
-
-  resultFile = "";
-  tempDir = "";
-  workingDir = "";
-  logfile = "";
+  communicationInterval = 1e-1;
   startTime = 0.0;
-  useStartTime = false;
   stopTime = 1.0;
-  useStopTime = false;
   timeout = 0;
   tolerance = 1e-6;
-  useTolerance = false;
-  communicationInterval = 1e-1;
   useCommunicationInterval = false;
-}
+  useStartTime = false;
+  useStopTime = false;
+  useTolerance = false;
 
-bool ProgramOptions::load_flags(int argc, char** argv)
-{
-  boost::program_options::options_description visible_options("Options");
-  boost::program_options::options_description hidden_options;
-  boost::program_options::options_description all_options;
-  boost::program_options::positional_options_description pos_options;
+  std::regex re_integer("(\\+|-)?[[:digit:]]+");
+  std::regex re_double("((\\+|-)?[[:digit:]]+)(\\.(([[:digit:]]+)?))?((e|E)((\\+|-)?)[[:digit:]]+)?");
+  std::regex re_default(".+");
 
-  visible_options.add_options()
-  ("describe,d", "Displays brief summary of given model")
-  ("help,h", "Displays the help text")
-  ("interval,i", boost::program_options::value<double>(&communicationInterval), "Specifies the communication interval size.")
-  ("logFile,l", boost::program_options::value<std::string>(&logfile), "Specifies the logfile (stdout is used if no log file is specified).")
-  ("resultFile,r", boost::program_options::value<std::string>(&resultFile), "Specifies the name of the output result file")
-  ("startTime,s", boost::program_options::value<double>(&startTime), "Specifies the start time.")
-  ("stopTime,t", boost::program_options::value<double>(&stopTime), "Specifies the stop time.")
-  ("timeout", boost::program_options::value<double>(&timeout), "Specifies the maximum allowed time in seconds for running a simulation (0 disables).")
-  ("tempDir", boost::program_options::value<std::string>(&tempDir), "Specifies the temp directory.")
-  ("tolerance", boost::program_options::value<double>(&tolerance), "Specifies the relative tolerance.")
-  ("version,v", "Displays version information.")
-  ("workingDir", boost::program_options::value<std::string>(&workingDir), "Specifies the working directory.");
-
-  hidden_options.add_options()
-  ("file", boost::program_options::value<std::string>(&filename)->required(), "model");
-
-  pos_options.add("file", -1);
-
-  all_options.add(visible_options);
-  all_options.add(hidden_options);
-
-  int oms_style = boost::program_options::command_line_style::allow_short
-                | boost::program_options::command_line_style::short_allow_adjacent
-                | boost::program_options::command_line_style::short_allow_next
-                | boost::program_options::command_line_style::allow_long
-                | boost::program_options::command_line_style::long_allow_adjacent
-                | boost::program_options::command_line_style::long_allow_next
-                | boost::program_options::command_line_style::allow_sticky
-                | boost::program_options::command_line_style::allow_guessing
-                | boost::program_options::command_line_style::allow_dash_for_short;
-
-  boost::program_options::variables_map vm;
-  boost::program_options::command_line_parser clp = boost::program_options::command_line_parser(argc, argv);
-  clp.options(all_options);
-  clp.positional(pos_options);
-
-  clp.style(oms_style);
-
-  try
+  validOptions = true;
+  for (; argi<argc; ++argi)
   {
-    boost::program_options::store(clp.run(), vm);
-    boost::program_options::notify(vm);
-  }
-  catch (const boost::program_options::required_option& e)
-  {
-    /** if help is asked don't print error about missing required input files */
-    if (vm.count("help"))
+    std::string arg(argv[argi]);
+    std::string value;
+
+    if (isOption("--describe", "-d"))
     {
-      printUsage(visible_options);
-      help = true;
-      return true;
+      describe = true;
     }
-
-    /** if version is asked don't print error about missing required input files */
-    if (vm.count("version"))
+    else if (isOption("--help", "-h"))
+    {
+      help = true;
+    }
+    else if (isOptionAndValue("--interval", "-i", value, re_double))
+    {
+      communicationInterval = atof(value.c_str());
+      useCommunicationInterval = true;
+    }
+    else if (isOptionAndValue("--logfile", "-l", value, re_default))
+    {
+      logfile = value;
+    }
+    else if (isOptionAndValue("--resultFile", "-r", value, re_default))
+    {
+      resultFile = value;
+    }
+    else if (isOptionAndValue("--startTime", "-s", value, re_double))
+    {
+      startTime = atof(value.c_str());
+      useStartTime = true;
+    }
+    else if (isOptionAndValue("--stopTime", "-t", value, re_double))
+    {
+      stopTime = atof(value.c_str());
+      useStopTime = true;
+    }
+    else if (isOptionAndValue("--timeout", value, re_double))
+    {
+      timeout = atof(value.c_str());
+    }
+    else if (isOptionAndValue("--tempDir", value, re_default))
+    {
+      tempDir = value;
+    }
+    else if (isOptionAndValue("--tolerance", value, re_double))
+    {
+      tolerance = atof(value.c_str());
+      useTolerance = true;
+    }
+    else if (isOption("--version", "-v"))
     {
       version = true;
-      return true;
     }
-
-    std::cout << "The input file is required." << std::endl;
-    printUsage(visible_options);
-
-    return false;
+    else if (isOptionAndValue("--workingDir", value, re_default))
+    {
+      workingDir = value;
+    }
+    else if (arg.front() != '-' && filename.empty())
+    {
+      filename = arg;
+    }
+    else
+    {
+      std::cout << "Unknown option or missing argument: " << arg << std::endl;
+      validOptions = false;
+    }
   }
 
-  catch (const boost::program_options::error& e)
-  {
-    std::cout << e.what() << std::endl;
-    printUsage(visible_options);
-
-    return false;
-  }
-
-  if (vm.count("help"))
-  {
-    printUsage(visible_options);
-    help = true;
-  }
-
-  if (vm.count("version"))
-    version = true;
-
-  if (vm.count("describe"))
-    describe = true;
-
-  if (vm.count("startTime"))
-    useStartTime = true;
-
-  if (vm.count("stopTime"))
-    useStopTime = true;
-
-  if (vm.count("tolerance"))
-    useTolerance = true;
-
-  if (vm.count("interval"))
-    useCommunicationInterval = true;
-
-  return true;
+  if(!validOptions)
+    std::cout << "Use 'OMSimulator --help' for more information." << std::endl;
 }
 
-void ProgramOptions::printUsage(boost::program_options::options_description& options)
+bool ProgramOptions::isOption(const std::string& name)
 {
-  std::cout << "Usage: OMSimulator [Options] filename" << std::endl;
-  std::cout << options;
+  std::string arg(argv[argi]);
+  return (0 == arg.compare(name));
+}
+
+bool ProgramOptions::isOption(const std::string& name1, const std::string& name2)
+{
+  return isOption(name1) || isOption(name2);
+}
+
+bool ProgramOptions::isOptionAndValue(const std::string& name, std::string& value, std::regex re)
+{
+  std::string arg(argv[argi]);
+  std::string _value;
+
+  if (0 == arg.compare(name))
+  {
+    if (++argi<argc)
+      _value = std::string(argv[argi]);
+    if (!regex_match(_value, re))
+    {
+      argi--;
+      return false;
+    }
+    value = _value;
+    return true;
+  }
+  else if(0 == arg.compare(0, name.length()+1, name + "="))
+  {
+    _value = arg.substr(name.length()+1);
+    if (!regex_match(_value, re))
+    {
+      return false;
+    }
+    value = _value;
+    return true;
+  }
+
+  return false;
+}
+
+bool ProgramOptions::isOptionAndValue(const std::string& name1, const std::string& name2, std::string& value, std::regex re)
+{
+  return isOptionAndValue(name1, value, re) || isOptionAndValue(name2, value, re);
+}
+
+void ProgramOptions::printUsage()
+{
+  std::cout << "Usage: OMSimulator [Options] filename\n" << std::endl;
+
+  std::cout << "Options:" << std::endl;
+  std::cout << "  -d [ --describe ]         Displays brief summary of given model" << std::endl;
+  std::cout << "  -h [ --help ]             Displays the help text" << std::endl;
+  std::cout << "  -i [ --interval ] arg     Specifies the communication interval size." << std::endl;
+  std::cout << "  -l [ --logFile ] arg      Specifies the logfile (stdout is used if no log file is specified)." << std::endl;
+  std::cout << "  -r [ --resultFile ] arg   Specifies the name of the output result file" << std::endl;
+  std::cout << "  -s [ --startTime ] arg    Specifies the start time." << std::endl;
+  std::cout << "  -t [ --stopTime ] arg     Specifies the stop time." << std::endl;
+  std::cout << "  --timeout arg             Specifies the maximum allowed time in seconds for running a simulation (0 disables)." << std::endl;
+  std::cout << "  --tempDir arg             Specifies the temp directory." << std::endl;
+  std::cout << "  --tolerance arg           Specifies the relative tolerance." << std::endl;
+  std::cout << "  -v [ --version ]          Displays version information." << std::endl;
+  std::cout << "  --workingDir arg          Specifies the working directory." << std::endl;
 }

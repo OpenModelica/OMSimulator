@@ -32,21 +32,23 @@
 #ifndef _OMS_OPTIONS_H_
 #define _OMS_OPTIONS_H_
 
-#include <vector>
+#include <regex>
 #include <string>
-
-#include <boost/program_options.hpp>
 
 class ProgramOptions
 {
 public:
-  ProgramOptions();
-  bool load_flags(int argc, char** argv);
+  ProgramOptions(int argc, char** argv);
+  void printUsage();
 
 private:
-  void printUsage(boost::program_options::options_description& options);
+  bool isOption(const std::string& name);
+  bool isOption(const std::string& name1, const std::string& name2);
+  bool isOptionAndValue(const std::string& name, std::string& value, std::regex re);
+  bool isOptionAndValue(const std::string& name1, const std::string& name2, std::string& value, std::regex re);
 
 public:
+  bool validOptions;
   bool describe;
   bool help;
   bool version;
@@ -64,6 +66,11 @@ public:
   std::string workingDir;
   std::string logfile;
   double timeout;
+
+private:
+  int argi;
+  int argc;
+  char** argv;
 };
 
 #endif
