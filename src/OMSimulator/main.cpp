@@ -81,13 +81,16 @@ static int do_simulation(void* pModel, std::chrono::duration<double> timeout)
 
 int main(int argc, char *argv[])
 {
-  ProgramOptions options;
+  ProgramOptions options(argc, argv);
 
-  if (!options.load_flags(argc, argv))
+  if (!options.validOptions)
     return 1;
 
   if (options.help)
+  {
+    options.printUsage();
     return 0;
+  }
 
   if (options.version)
   {
@@ -102,7 +105,7 @@ int main(int argc, char *argv[])
   else
   {
     std::cout << "Not able to process file '" << filename.c_str() << "'" << std::endl;
-    std::cout << "Use OMSimulator --help for more information." << std::endl;
+    std::cout << "Use 'OMSimulator --help' for more information." << std::endl;
     return 1;
   }
 

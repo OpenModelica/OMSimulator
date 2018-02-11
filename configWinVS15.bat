@@ -59,7 +59,7 @@ set CRD=%CD%
 cd %BOOST_ROOT%
 for /d %%d in (lib64-msvc-*) do (
   cd %%d
-  for /r %%e in (boost_*system*,boost_program_options*) do (
+  for /r %%e in (boost_system*,boost_filesystem*) do (
      xcopy /Y /F %%e %CRD%\install\win\bin
   )
 )
