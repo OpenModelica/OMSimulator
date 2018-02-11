@@ -1,6 +1,6 @@
 project(OMSimulator)
 
-set(CMAKE_INSTALL_RPATH "$ORIGIN/../bin:$ORIGIN/:/opt/openmodelica/lib")
+set(CMAKE_INSTALL_RPATH "$ORIGIN/../bin:$ORIGIN/")
 
 find_package(Threads)
 
