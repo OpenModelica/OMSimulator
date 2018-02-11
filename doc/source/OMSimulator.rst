@@ -22,4 +22,4 @@ Examples
 
 .. code-block:: bash
 
-  OMSimulator --alarm 180 example.lua
+  OMSimulator --timeout 180 example.lua
