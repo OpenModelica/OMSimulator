@@ -1,6 +1,6 @@
 project(OMSimulatorLib)
 
-set(CMAKE_INSTALL_RPATH "$ORIGIN/../lib:$ORIGIN/:/opt/openmodelica/lib")
+set(CMAKE_INSTALL_RPATH "$ORIGIN/../lib:$ORIGIN/")
 
 # Export all symbols from the DLL on Windows
 IF (WIN32 AND MSVC)

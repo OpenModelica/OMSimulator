@@ -1,6 +1,6 @@
 project(OMSimulatorLua C)
 
-set(CMAKE_INSTALL_RPATH "$ORIGIN/../lib:$ORIGIN/:/opt/openmodelica/lib")
+set(CMAKE_INSTALL_RPATH "$ORIGIN/../lib:$ORIGIN/")
 
 include_directories(${LUALibrary_INCLUDEDIR} ../OMSimulatorLib)
 
