@@ -166,8 +166,6 @@ oms_status_t oms2::Scope::SetTempDirectory(const std::string& newTempDir)
       logError("changing working directory to \"" + std::string(newTempDir) + "\" failed");
       return oms_status_error;
     }
-    else
-      logInfo("new temp directory has been created: \"" + std::string(newTempDir) + "\"");
   }
 
   boost::filesystem::path path(newTempDir.c_str());
