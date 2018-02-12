@@ -1,6 +1,8 @@
 # OMSimulator
 
-OpenModelica FMI &amp; TLM based simulator
+The OMSimulator project is a FMI-based co-simulation environment that supports ordinary (i.e., non-delayed) and TLM connections.
+
+The latest documentation is avilable as [pdf](https://openmodelica.org/doc/OMSimulator/OMSimulator.pdf) and [html](https://openmodelica.org/doc/OMSimulator/html/introduction.html).
 
 ## Dependencies
 
