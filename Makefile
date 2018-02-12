@@ -91,3 +91,6 @@ doc:
 
 doc-html:
 	@$(MAKE) -C doc html
+	@$(MKDIR) $(INSTALL_DIR)/doc
+	@$(RM) $(INSTALL_DIR)/doc/html
+	@cp -rf doc/build/html/ $(INSTALL_DIR)/doc/html
