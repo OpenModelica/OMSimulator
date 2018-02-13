@@ -57,12 +57,8 @@ The latest documentation is avilable as [pdf](https://openmodelica.org/doc/OMSim
 
 The following versions of Visual Studio are supported:
 
-- Visual Studio 2015 [Win64]:
-  - configWinVS14.bat
-  - buildWinVS14.bat
-- Visual Studio 2017 [Win64]:
-  - configWinVS15.bat
-  - buildWinVS15.bat
+- "VS14-Win64" -> "Visual Studio 14 2015 Win64"
+- "VS15-Win64" -> "Visual Studio 15 2017 Win64"
 
 It is not strictly required to install the full Visual Studio IDE. The batch scripts only require *[Visual C++ Build Tools](http://landinghub.visualstudio.com/visual-cpp-build-tools)*.
 
@@ -75,13 +71,13 @@ It is not strictly required to install the full Visual Studio IDE. The batch scr
 1. configure OMSimulator
 
    ```bash
-   configWinVS15.bat
+   configWinVS.bat VS15-Win64
    ```
 
 1. build OMSimulator
 
    ```bash
-   buildWinVS15.bat
+   buildWinVS.bat VS15-Win64
    ```
 
 ## Working with the repository
