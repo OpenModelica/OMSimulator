@@ -352,9 +352,9 @@ void oms2_setLoggingCallback(void (*cb)(oms_message_type_t type, const char* mes
 /**
  * \brief Enables/Disables debug logging (logDebug and logTrace).
  *
- * @param useDebugLogging   [in] 0 to disable debug logging, all other values to enable debug logging
+ * @param logLevel   [in] 0 default, 1 default+debug, 2 default+debug+trace
  */
-void oms2_setDebugLogging(int useDebugLogging);
+void oms2_setLoggingLevel(int logLevel);
 
 /**
  * \brief Redirects logging output to file or std streams. The warning/error counters are reset.

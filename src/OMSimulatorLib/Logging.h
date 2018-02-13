@@ -60,7 +60,7 @@ public:
   static oms_status_t setLogFile(const std::string& filename);
 
   static void setLoggingCallback(void (*cb)(oms_message_type_t type, const char* message)) {getInstance().cb = cb;}
-  static void setDebugLogging(bool debugLogging);
+  static void setLoggingLevel(int logLevel);
 
 private:
   Log();
@@ -73,7 +73,7 @@ private:
   Log& operator=(Log const& copy); // not implemented
 
 private:
-  bool useDebugLogging;
+  int logLevel;
   std::string filename;
   std::ofstream logFile;
   std::mutex m;

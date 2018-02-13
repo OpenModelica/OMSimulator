@@ -66,6 +66,7 @@ public:
   std::string workingDir;
   std::string logfile;
   double timeout;
+  int logLevel;
 
 private:
   int argi;

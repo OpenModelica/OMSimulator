@@ -56,7 +56,7 @@ Log::Log() : filename(""), cb(NULL)
 {
   numWarnings = 0;
   numErrors = 0;
-  useDebugLogging = false;
+  logLevel = false;
 }
 
 Log::~Log()
@@ -121,7 +121,7 @@ void Log::Debug(const std::string& msg)
   Log& log = getInstance();
   std::lock_guard<std::mutex> lock(log.m);
 
-  if (!log.useDebugLogging)
+  if (log.logLevel < 1)
     return;
 
   if (!log.logFile.is_open())
@@ -138,7 +138,7 @@ void Log::Trace(const std::string& function, const std::string& file, const long
   Log& log = getInstance();
   std::lock_guard<std::mutex> lock(log.m);
 
-  if (!log.useDebugLogging)
+  if (log.logLevel < 2)
     return;
 
   std::string msg = function + " (" + file + ":" + std::to_string(line) + ")";
@@ -189,11 +189,11 @@ oms_status_t Log::setLogFile(const std::string& filename)
   return oms_status_ok;
 }
 
-void Log::setDebugLogging(bool debugLogging)
+void Log::setLoggingLevel(int logLevel)
 {
 #ifdef OMS_DEBUG_LOGGING
   Log& log = getInstance();
-  log.useDebugLogging = debugLogging;
+  log.logLevel = logLevel;
 #else
   Warning("Log::setDebugLogging is not available.")
 #endif
