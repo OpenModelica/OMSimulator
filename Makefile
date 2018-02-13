@@ -1,11 +1,20 @@
 RM=rm -rf
 MKDIR=mkdir -p
 
-# ugly fix for macosx
 detected_OS := $(shell uname -s)
 ifeq ($(detected_OS),Darwin)
 	BUILD_DIR := build/mac
 	INSTALL_DIR := install/mac
+else ifeq (MINGW32,$(findstring MINGW32,$(detected_OS)))
+	BUILD_DIR := build/mingw
+	INSTALL_DIR := install/mingw
+	CMAKE_TARGET=-G "MSYS Makefiles"
+	FMIL_FLAGS=-DFMILIB_FMI_PLATFORM=win32
+else ifeq (MINGW,$(findstring MINGW,$(detected_OS)))
+	BUILD_DIR := build/mingw
+	INSTALL_DIR := install/mingw
+	CMAKE_TARGET=-G "MSYS Makefiles"
+	FMIL_FLAGS=-DFMILIB_FMI_PLATFORM=win64
 else
 	BUILD_DIR := build/linux
 	INSTALL_DIR := install/linux
@@ -28,7 +37,7 @@ config-OMSimulator:
 	@echo
 	$(RM) $(BUILD_DIR)
 	$(MKDIR) $(BUILD_DIR)
-	@cd $(BUILD_DIR) && cmake -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ../..
+	@cd $(BUILD_DIR) && cmake $(CMAKE_TARGET) -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ../..
 
 config-fmil:
 	@echo
@@ -37,7 +46,7 @@ config-fmil:
 	$(RM) 3rdParty/FMIL/$(BUILD_DIR)
 	$(RM) 3rdParty/FMIL/$(INSTALL_DIR)
 	$(MKDIR) 3rdParty/FMIL/$(BUILD_DIR)
-	cd 3rdParty/FMIL/$(BUILD_DIR) && cmake -DFMILIB_INSTALL_PREFIX=../../$(INSTALL_DIR) -DFMILIB_BUILD_TESTS:BOOL="0" -DFMILIB_GENERATE_DOXYGEN_DOC:BOOL="0" -DFMILIB_BUILD_STATIC_LIB:BOOL="1" -DFMILIB_BUILD_SHARED_LIB:Bool="0" -DBUILD_TESTING:BOOL="0" -DFMILIB_BUILD_BEFORE_TESTS:BOOL="0" ../.. && $(MAKE) install
+	cd 3rdParty/FMIL/$(BUILD_DIR) && cmake $(CMAKE_TARGET) -DFMILIB_INSTALL_PREFIX=../../$(INSTALL_DIR) -DFMILIB_BUILD_TESTS:BOOL="0" -DFMILIB_GENERATE_DOXYGEN_DOC:BOOL="0" -DFMILIB_BUILD_STATIC_LIB:BOOL="1" -DFMILIB_BUILD_SHARED_LIB:Bool="0" -DBUILD_TESTING:BOOL="0" -DFMILIB_BUILD_BEFORE_TESTS:BOOL="0" $(FMIL_FLAGS) ../.. && $(MAKE) install
 
 config-lua:
 	@echo
@@ -53,7 +62,7 @@ config-cvode:
 	$(RM) 3rdParty/cvode/$(BUILD_DIR)
 	$(RM) 3rdParty/cvode/$(INSTALL_DIR)
 	$(MKDIR) 3rdParty/cvode/$(BUILD_DIR)
-	cd 3rdParty/cvode/$(BUILD_DIR) && cmake -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) ../.. -DEXAMPLES_ENABLE:BOOL="0" -DBUILD_SHARED_LIBS:BOOL="0" -DCMAKE_C_FLAGS="-fPIC" && $(MAKE) install
+	cd 3rdParty/cvode/$(BUILD_DIR) && cmake $(CMAKE_TARGET) -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) ../.. -DEXAMPLES_ENABLE:BOOL="0" -DBUILD_SHARED_LIBS:BOOL="0" -DCMAKE_C_FLAGS="-fPIC" && $(MAKE) install
 
 config-kinsol:
 	@echo
@@ -62,7 +71,7 @@ config-kinsol:
 	$(RM) 3rdParty/kinsol/$(BUILD_DIR)
 	$(RM) 3rdParty/kinsol/$(INSTALL_DIR)
 	$(MKDIR) 3rdParty/kinsol/$(BUILD_DIR)
-	cd 3rdParty/kinsol/$(BUILD_DIR) && cmake -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) ../.. -DEXAMPLES_ENABLE:BOOL="0" -DBUILD_SHARED_LIBS:BOOL="0" -DCMAKE_C_FLAGS="-fPIC" && $(MAKE) install
+	cd 3rdParty/kinsol/$(BUILD_DIR) && cmake $(CMAKE_TARGET) -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) ../.. -DEXAMPLES_ENABLE:BOOL="0" -DBUILD_SHARED_LIBS:BOOL="0" -DCMAKE_C_FLAGS="-fPIC" && $(MAKE) install
 
 distclean:
 	@echo

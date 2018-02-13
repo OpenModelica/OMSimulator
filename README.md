@@ -18,7 +18,7 @@ The latest documentation is avilable as [pdf](https://openmodelica.org/doc/OMSim
 
 ## Compilation
 
-### Linux
+### Linux / MacOS
 
 1. configure OMSimulator
 
@@ -43,14 +43,14 @@ The latest documentation is avilable as [pdf](https://openmodelica.org/doc/OMSim
 1. configure OMSimulator
 
    ```bash
-   make -f Makefile.omdev.mingw config-3rdParty
-   make -f Makefile.omdev.mingw config-OMSimulator
+   make config-3rdParty
+   make config-OMSimulator
    ```
 
 1. build OMSimulator
 
    ```bash
-   make -f Makefile.omdev.mingw OMSimulator
+   make OMSimulator
    ```
 
 ### Windows (Visual Studio)
