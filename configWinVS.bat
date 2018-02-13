@@ -62,7 +62,7 @@ if exist "3rdParty\gflags\build-win\" RMDIR /S /Q 3rdParty\gflags\build-win
 if exist "3rdParty\gflags\install\win\" RMDIR /S /Q 3rdParty\gflags\install\win
 MKDIR 3rdParty\gflags\build-win
 CD 3rdParty\gflags\build-win
-cmake -G %CMAKE_GENERATOR% -DCMAKE_INSTALL_PREFIX=..\install\win .. -DBUILD_TESTING="OFF" -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE%
+cmake -G %OMS_VS_VERSION% -DCMAKE_INSTALL_PREFIX=..\install\win .. -DBUILD_TESTING="OFF" -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE%
 CD ..\..\..
 echo # build gflags
 msbuild.exe "3rdParty\gflags\build-win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE%
@@ -73,7 +73,7 @@ rem Use name "install-win" instead of "install\win" since file "INSTALL" already
 if exist "3rdParty\glog\install-win\" RMDIR /S /Q 3rdParty\glog\install-win
 MKDIR 3rdParty\glog\build-win
 CD 3rdParty\glog\build-win
-cmake -G %CMAKE_GENERATOR% -DCMAKE_INSTALL_PREFIX=..\install-win .. -DBUILD_TESTING="OFF" -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE%
+cmake -G %OMS_VS_VERSION% -DCMAKE_INSTALL_PREFIX=..\install-win .. -DBUILD_TESTING="OFF" -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE%
 CD ..\..\..
 echo # build glog
 msbuild.exe "3rdParty\glog\build-win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE%
@@ -83,7 +83,7 @@ if exist "3rdParty\ceres-solver\build-win\" RMDIR /S /Q 3rdParty\ceres-solver\bu
 if exist "3rdParty\ceres-solver\install\win\" RMDIR /S /Q 3rdParty\ceres-solver\install\win
 MKDIR 3rdParty\ceres-solver\build-win
 CD 3rdParty\ceres-solver\build-win
-cmake -G %CMAKE_GENERATOR% -DCMAKE_INSTALL_PREFIX=..\install\win .. -DCXX11="ON" -DEXPORT_BUILD_DIR="on" -DEIGEN_INCLUDE_DIR_HINTS="../eigen" -DBUILD_EXAMPLES="OFF" -DBUILD_TESTING="OFF" -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE%
+cmake -G %OMS_VS_VERSION% -DCMAKE_INSTALL_PREFIX=..\install\win .. -DCXX11="ON" -DEXPORT_BUILD_DIR="on" -DEIGEN_INCLUDE_DIR_HINTS="../eigen" -DBUILD_EXAMPLES="OFF" -DBUILD_TESTING="OFF" -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE%
 CD ..\..\..
 echo # build ceres-solver
 msbuild.exe "3rdParty\ceres-solver\build-win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE%
