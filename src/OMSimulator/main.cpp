@@ -98,6 +98,8 @@ int main(int argc, char *argv[])
     return 0;
   }
 
+  oms2_setLoggingLevel(options.logLevel);
+
   std::string filename = options.filename;
   std::string type = "";
   if (filename.length() > 4)

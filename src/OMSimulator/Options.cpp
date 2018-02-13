@@ -53,6 +53,7 @@ ProgramOptions::ProgramOptions(int argc, char** argv)
   useStartTime = false;
   useStopTime = false;
   useTolerance = false;
+  logLevel = 0;
 
   std::regex re_integer("(\\+|-)?[[:digit:]]+");
   std::regex re_double("((\\+|-)?[[:digit:]]+)(\\.(([[:digit:]]+)?))?((e|E)((\\+|-)?)[[:digit:]]+)?");
@@ -80,6 +81,10 @@ ProgramOptions::ProgramOptions(int argc, char** argv)
     else if (isOptionAndValue("--logfile", "-l", value, re_default))
     {
       logfile = value;
+    }
+    else if (isOptionAndValue("--logLevel", value, re_integer))
+    {
+      logLevel = atoi(value.c_str());
     }
     else if (isOptionAndValue("--resultFile", "-r", value, re_default))
     {
@@ -187,6 +192,7 @@ void ProgramOptions::printUsage()
   std::cout << "  -h [ --help ]             Displays the help text" << std::endl;
   std::cout << "  -i [ --interval ] arg     Specifies the communication interval size." << std::endl;
   std::cout << "  -l [ --logFile ] arg      Specifies the logfile (stdout is used if no log file is specified)." << std::endl;
+  std::cout << "  --logLevel arg            0 default, 1 default+debug, 2 default+debug+trace" << std::endl;
   std::cout << "  -r [ --resultFile ] arg   Specifies the name of the output result file" << std::endl;
   std::cout << "  -s [ --startTime ] arg    Specifies the start time." << std::endl;
   std::cout << "  -t [ --stopTime ] arg     Specifies the stop time." << std::endl;

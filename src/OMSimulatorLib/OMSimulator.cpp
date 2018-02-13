@@ -638,7 +638,7 @@ void oms2_setLoggingCallback(void (*cb)(oms_message_type_t type, const char* mes
   Log::setLoggingCallback(cb);
 }
 
-void oms2_setDebugLogging(int useDebugLogging)
+void oms2_setLoggingLevel(int logLevel)
 {
-  Log::setDebugLogging(useDebugLogging);
+  Log::setLoggingLevel(logLevel);
 }
