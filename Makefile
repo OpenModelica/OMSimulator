@@ -4,20 +4,28 @@ MKDIR=mkdir -p
 detected_OS := $(shell uname -s)
 ifeq ($(detected_OS),Darwin)
 	BUILD_DIR := build/mac
+	BUILD_DIR2 := build-mac
 	INSTALL_DIR := install/mac
+	INSTALL_DIR2 := install-mac
 else ifeq (MINGW32,$(findstring MINGW32,$(detected_OS)))
 	BUILD_DIR := build/mingw
+	BUILD_DIR2 := build-mingw
 	INSTALL_DIR := install/mingw
+	INSTALL_DIR2 := install-mingw
 	CMAKE_TARGET=-G "MSYS Makefiles"
 	FMIL_FLAGS=-DFMILIB_FMI_PLATFORM=win32
 else ifeq (MINGW,$(findstring MINGW,$(detected_OS)))
 	BUILD_DIR := build/mingw
+	BUILD_DIR2 := build-mingw
 	INSTALL_DIR := install/mingw
+	INSTALL_DIR2 := install-mingw
 	CMAKE_TARGET=-G "MSYS Makefiles"
 	FMIL_FLAGS=-DFMILIB_FMI_PLATFORM=win64
 else
 	BUILD_DIR := build/linux
+	BUILD_DIR2 := build-linux
 	INSTALL_DIR := install/linux
+	INSTALL_DIR2 := install-linux
 endif
 
 .PHONY: OMSimulator config-OMSimulator config-fmil config-lua config-cvode config-kinsol config-gflags config-glog config-ceres-solver config-3rdParty distclean testsuite doc doc-html
@@ -77,28 +85,28 @@ config-gflags:
 	@echo
 	@echo "# config gflags"
 	@echo
-	$(RM) 3rdParty/gflags/build-linux
-	$(RM) 3rdParty/gflags/$(INSTALL_DIR)
-	$(MKDIR) 3rdParty/gflags/build-linux
-	cd 3rdParty/gflags/build-linux && cmake -DCMAKE_INSTALL_PREFIX=../$(INSTALL_DIR) .. -DBUILD_SHARED_LIBS="OFF" -DBUILD_TESTING="OFF" -DCMAKE_C_FLAGS="-fPIC" -DCMAKE_CXX_FLAGS="-fPIC" -DCMAKE_BUILD_TYPE="Release" && $(MAKE) install
+	$(RM) 3rdParty/gflags/$(BUILD_DIR2)
+	$(RM) 3rdParty/gflags/$(INSTALL_DIR2)
+	$(MKDIR) 3rdParty/gflags/$(BUILD_DIR2)
+	cd 3rdParty/gflags/$(BUILD_DIR2) && cmake $(CMAKE_TARGET) -DCMAKE_INSTALL_PREFIX=../$(INSTALL_DIR2) .. -DBUILD_SHARED_LIBS="OFF" -DBUILD_TESTING="OFF" -DCMAKE_C_FLAGS="-fPIC" -DCMAKE_CXX_FLAGS="-fPIC" -DCMAKE_BUILD_TYPE="Release" && $(MAKE) install
 
 config-glog: config-gflags
 	@echo
 	@echo "# config glog"
 	@echo
-	$(RM) 3rdParty/glog/build-linux
-	$(RM) 3rdParty/glog/$(INSTALL_DIR)
-	$(MKDIR) 3rdParty/glog/build-linux
-	cd 3rdParty/glog/build-linux && cmake -DCMAKE_INSTALL_PREFIX=../$(INSTALL_DIR) .. -DBUILD_SHARED_LIBS="OFF" -DBUILD_TESTING="OFF" -DCMAKE_C_FLAGS="-fPIC" -DCMAKE_CXX_FLAGS="-fPIC" -DCMAKE_BUILD_TYPE="Release" && $(MAKE) install
+	$(RM) 3rdParty/glog/$(BUILD_DIR2)
+	$(RM) 3rdParty/glog/$(INSTALL_DIR2)
+	$(MKDIR) 3rdParty/glog/$(BUILD_DIR2)
+	cd 3rdParty/glog/$(BUILD_DIR2) && cmake $(CMAKE_TARGET) -DCMAKE_INSTALL_PREFIX=../$(INSTALL_DIR2) .. -DBUILD_SHARED_LIBS="OFF" -DBUILD_TESTING="OFF" -DCMAKE_C_FLAGS="-fPIC" -DCMAKE_CXX_FLAGS="-fPIC" -DCMAKE_BUILD_TYPE="Release" && $(MAKE) install
 
 config-ceres-solver: config-glog
 	@echo
 	@echo "# config ceres-solver"
 	@echo
-	$(RM) 3rdParty/ceres-solver/build-linux
-	$(RM) 3rdParty/ceres-solver/$(INSTALL_DIR)
-	$(MKDIR) 3rdParty/ceres-solver/build-linux
-	cd 3rdParty/ceres-solver/build-linux && cmake -DCMAKE_INSTALL_PREFIX=../$(INSTALL_DIR) -DCXX11="ON" -DEXPORT_BUILD_DIR="ON" -DEIGEN_INCLUDE_DIR_HINTS="../eigen" -DGLOG_INCLUDE_DIR_HINTS="../glog/install/linux/include" -DGLOG_LIBRARY_DIR_HINTS="../glog/install/linux/lib" -DGFLAGS_INCLUDE_DIR_HINTS="../gflags/install/linux/include" -DGFLAGS_LIBRARY_DIR_HINTS="../gflags/install/linux/lib" -DBUILD_EXAMPLES="OFF" -DBUILD_TESTING="OFF" -DCMAKE_BUILD_TYPE="Release" .. && $(MAKE) install
+	$(RM) 3rdParty/ceres-solver/$(BUILD_DIR2)
+	$(RM) 3rdParty/ceres-solver/$(INSTALL_DIR2)
+	$(MKDIR) 3rdParty/ceres-solver/$(BUILD_DIR2)
+	cd 3rdParty/ceres-solver/$(BUILD_DIR2) && cmake $(CMAKE_TARGET) -DCMAKE_INSTALL_PREFIX=../$(INSTALL_DIR2) -DCXX11="ON" -DEXPORT_BUILD_DIR="ON" -DEIGEN_INCLUDE_DIR_HINTS="../eigen" -DGLOG_INCLUDE_DIR_HINTS="../glog/install/linux/include" -DGLOG_LIBRARY_DIR_HINTS="../glog/install/linux/lib" -DGFLAGS_INCLUDE_DIR_HINTS="../gflags/install/linux/include" -DGFLAGS_LIBRARY_DIR_HINTS="../gflags/install/linux/lib" -DBUILD_EXAMPLES="OFF" -DBUILD_TESTING="OFF" -DCMAKE_BUILD_TYPE="Release" .. && $(MAKE) install
 
 distclean:
 	@echo
@@ -113,6 +121,12 @@ distclean:
 	$(RM) 3rdParty/cvode/$(INSTALL_DIR)
 	$(RM) 3rdParty/kinsol/$(BUILD_DIR)
 	$(RM) 3rdParty/kinsol/$(INSTALL_DIR)
+	$(RM) 3rdParty/gflags/$(BUILD_DIR2)
+	$(RM) 3rdParty/gflags/$(INSTALL_DIR2)
+	$(RM) 3rdParty/glog/$(BUILD_DIR2)
+	$(RM) 3rdParty/glog/$(INSTALL_DIR2)
+	$(RM) 3rdParty/ceres-solver/$(BUILD_DIR2)
+	$(RM) 3rdParty/ceres-solver/$(INSTALL_DIR2)
 
 testsuite:
 	@echo
