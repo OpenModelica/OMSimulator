@@ -29,22 +29,37 @@
  *
  */
 
-#include "Model.h"
-#include "Logging.h"
+#ifndef _OMS_MODEL_H_
+#define _OMS_MODEL_H_
 
-#include <regex>
+#include "oms2_ComRef.h"
+#include "Types.h"
 
-oms2::Model::Model()
+#include <string>
+
+namespace oms2
 {
-  logTrace();
+  class Model
+  {
+  public:
+    virtual oms_component_type_t getType() = 0;
+    const ComRef& getName() const {return name;}
+    void setName(const ComRef& name) {this->name = name;}
+
+    static void deleteModel(Model *model) {if (model) delete model;}
+
+  protected:
+    Model();
+    virtual ~Model();
+
+  private:
+    // stop the compiler generating methods copying the object
+    Model(Model const& copy);            // not implemented
+    Model& operator=(Model const& copy); // not implemented
+
+  protected:
+    ComRef name;
+  };
 }
 
-oms2::Model::~Model()
-{
-}
-
-bool oms2::Model::isValidModelIdentifier(const std::string& ident)
-{
-  std::regex re("^[a-zA-Z]+[a-zA-Z0-9_]*$");
-  return std::regex_match(ident, re);
-}
+#endif

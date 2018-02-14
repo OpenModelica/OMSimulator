@@ -29,34 +29,41 @@
  *
  */
 
-#ifndef _OMS_TLM_COMPOSITE_MODEL_H_
-#define _OMS_TLM_COMPOSITE_MODEL_H_
+#ifndef _OMS_SIGNAL_REF_H_
+#define _OMS_SIGNAL_REF_H_
 
-#include "Model.h"
-#include "Types.h"
+#include "oms2_ComRef.h"
 
 #include <string>
 
 namespace oms2
 {
-  class TLMCompositeModel : public Model
+  /**
+   * \brief SignalRef - signal reference
+   */
+  class SignalRef
   {
   public:
-    static TLMCompositeModel* newModel(const std::string& name);
+    SignalRef(const ComRef& cref, const std::string& var);
+    ~SignalRef();
 
-    oms_component_type_t getType() {return oms_component_tlm;}
+    // methods to copy the signal reference
+    SignalRef(SignalRef const& copy);
+    SignalRef& operator=(SignalRef const& copy);
+    bool operator<(const SignalRef& rhs);
+
+    std::string toString() const {return cref.toString() + "." + var;}
+
+    const oms2::ComRef& getCref() const {return cref;}
+    const std::string& getVar() const {return var;}
 
   private:
-    TLMCompositeModel();
-    ~TLMCompositeModel();
-
-    // stop the compiler generating methods copying the object
-    TLMCompositeModel(TLMCompositeModel const& copy);            // not implemented
-    TLMCompositeModel& operator=(TLMCompositeModel const& copy); // not implemented
-
-  private:
-    std::string name;
+    oms2::ComRef cref;
+    std::string var;
   };
+
+  inline bool operator==(const SignalRef& lhs, const SignalRef& rhs) {return lhs.toString() == rhs.toString();}
+  inline bool operator!=(const SignalRef& lhs, const SignalRef& rhs) {return !(lhs == rhs);}
 }
 
 #endif

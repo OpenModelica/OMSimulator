@@ -29,33 +29,50 @@
  *
  */
 
-#ifndef _OMS_FMI_COMPOSITE_MODEL_H_
-#define _OMS_FMI_COMPOSITE_MODEL_H_
+#ifndef _OMS_SCOPE_H_
+#define _OMS_SCOPE_H_
 
-#include "Model.h"
+#include "oms2_ComRef.h"
+#include "oms2_Model.h"
 #include "Types.h"
 
+#include <map>
 #include <string>
+
+#define PUGIXML_HEADER_ONLY
+#include <pugixml.hpp>
 
 namespace oms2
 {
-  class FMICompositeModel : public Model
+  class Scope
   {
   public:
-    static FMICompositeModel* newModel(const std::string& name);
+    static oms_status_t newFMIModel(const ComRef& name);
+    static oms_status_t newTLMModel(const ComRef& name);
+    static oms_status_t unloadModel(const ComRef& name);
+    static oms_status_t renameModel(const ComRef& identOld, const ComRef& identNew);
+    static Model* getModel(const ComRef& name);
+    static Model* loadModel(const std::string& filename);
 
-    oms_component_type_t getType() {return oms_component_fmi;}
+    static oms_status_t SetTempDirectory(const std::string& newTempDir);
+    static const std::string& GetTempDirectory() {Scope &scope = getInstance(); return scope.tempDir;}
 
   private:
-    FMICompositeModel();
-    ~FMICompositeModel();
+    Scope();
+    ~Scope();
 
     // stop the compiler generating methods copying the object
-    FMICompositeModel(FMICompositeModel const& copy);            // not implemented
-    FMICompositeModel& operator=(FMICompositeModel const& copy); // not implemented
+    Scope(Scope const& copy);            // not implemented
+    Scope& operator=(Scope const& copy); // not implemented
+
+    static Scope& getInstance();
+
+    static Model* loadFMIModel(const pugi::xml_node& xml);
+    static Model* loadTLMModel(const pugi::xml_node& xml);
 
   private:
-    std::string name;
+    std::map<ComRef, Model*> models;
+    std::string tempDir;
   };
 }
 

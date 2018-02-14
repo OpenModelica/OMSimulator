@@ -29,48 +29,16 @@
  *
  */
 
-#include "Variable.h"
+#include "oms2_Model.h"
 #include "oms2_Logging.h"
-#include "Settings.h"
-#include "FMUWrapper.h"
-#include "Util.h"
 
-#include <fmilib.h>
-#include <JM/jm_portability.h>
+#include <regex>
 
-#include <iostream>
-#include <string>
-
-Variable::Variable(fmi2_import_variable_t *var, FMUWrapper* fmuInstance)
-  : fmuInstance(fmuInstance), is_state(false)
+oms2::Model::Model()
 {
-  // extract the attributes
-  name = fmi2_import_get_variable_name(var);
-  description = fmi2_import_get_variable_description(var) ? fmi2_import_get_variable_description(var) : "";
-  trim(description);
-  fmuInstanceName = fmuInstance->getFMUInstanceName();
-  vr = fmi2_import_get_variable_vr(var);
-  causality = fmi2_import_get_causality(var);
-  initialProperty = fmi2_import_get_initial(var);
-  baseType = fmi2_import_get_variable_base_type(var);
+  logTrace();
 }
 
-Variable::~Variable()
+oms2::Model::~Model()
 {
-}
-
-FMUWrapper* Variable::getFMUInstance() const
-{
-  return fmuInstance;
-}
-
-bool operator==(const Variable& v1, const Variable& v2)
-{
-  return v1.name == v2.name &&
-    v1.fmuInstanceName == v2.fmuInstanceName &&
-    v1.vr == v2.vr;
-}
-bool operator!=(const Variable& v1, const Variable& v2)
-{
-  return !(v1 == v2);
 }

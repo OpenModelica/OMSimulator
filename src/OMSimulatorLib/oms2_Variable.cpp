@@ -29,37 +29,40 @@
  *
  */
 
-#ifndef _OMS_MODEL_H_
-#define _OMS_MODEL_H_
+#include "oms2_Variable.h"
+#include "oms2_Logging.h"
+#include "Settings.h"
+#include "FMUWrapper.h"
+#include "Util.h"
 
-#include "Types.h"
+#include <fmilib.h>
+#include <JM/jm_portability.h>
 
+#include <iostream>
 #include <string>
 
-namespace oms2
+oms2::Variable::Variable(const oms2::ComRef& cref, fmi2_import_variable_t *var)
+  : is_state(false), sr(cref, fmi2_import_get_variable_name(var))
 {
-  class Model
-  {
-  public:
-    virtual oms_component_type_t getType() = 0;
-    const std::string& getName() const {return name;}
-    void setName(const std::string& name) {this->name = name;}
-
-    static void deleteModel(Model *model) {if (model) delete model;}
-    static bool isValidModelIdentifier(const std::string& ident);
-
-  protected:
-    Model();
-    virtual ~Model();
-
-  private:
-    // stop the compiler generating methods copying the object
-    Model(Model const& copy);            // not implemented
-    Model& operator=(Model const& copy); // not implemented
-
-  private:
-    std::string name;
-  };
+  // extract the attributes
+  description = fmi2_import_get_variable_description(var) ? fmi2_import_get_variable_description(var) : "";
+  trim(description);
+  vr = fmi2_import_get_variable_vr(var);
+  causality = fmi2_import_get_causality(var);
+  initialProperty = fmi2_import_get_initial(var);
+  baseType = fmi2_import_get_variable_base_type(var);
 }
 
-#endif
+oms2::Variable::~Variable()
+{
+}
+
+bool oms2::operator==(const oms2::Variable& v1, const oms2::Variable& v2)
+{
+  return v1.sr == v2.sr && v1.vr == v2.vr;
+}
+
+bool oms2::operator!=(const oms2::Variable& v1, const oms2::Variable& v2)
+{
+  return !(v1 == v2);
+}

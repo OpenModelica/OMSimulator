@@ -29,7 +29,7 @@
  *
  */
 
-#include "Logging.h"
+#include "oms2_Logging.h"
 #include "Version.h"
 #include "Types.h"
 

@@ -31,7 +31,7 @@
 
 #include "DirectedGraph.h"
 #include "Variable.h"
-#include "Logging.h"
+#include "oms2_Logging.h"
 #include "Util.h"
 
 #include <iostream>

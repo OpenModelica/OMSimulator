@@ -30,14 +30,15 @@
  */
 
 #include "CompositeModel.h"
-#include "FMICompositeModel.h"
-#include "Logging.h"
+#include "oms2_ComRef.h"
+#include "oms2_FMICompositeModel.h"
+#include "oms2_Logging.h"
 #include "MatReader.h"
 #include "OMSimulator.h"
 #include "ResultReader.h"
-#include "Scope.h"
+#include "oms2_Scope.h"
 #include "Settings.h"
-#include "TLMCompositeModel.h"
+#include "oms2_TLMCompositeModel.h"
 #include "Types.h"
 #include "Version.h"
 
@@ -142,7 +143,7 @@ double oms_getReal(void *model, const char *var)
   logTrace();
   if (!model)
   {
-    // TODO: Provide suitable return value to handle unsuccessful calls.
+    /// \todo Provide suitable return value to handle unsuccessful calls.
     logError("oms_getReal: invalid pointer");
   }
 
@@ -155,7 +156,7 @@ int oms_getInteger(void *model, const char *var)
   logTrace();
   if (!model)
   {
-    // TODO: Provide suitable return value to handle unsuccessful calls.
+    /// \todo Provide suitable return value to handle unsuccessful calls.
     logError("oms_getInteger: invalid pointer");
   }
 
@@ -168,7 +169,7 @@ int oms_getBoolean(void *model, const char *var)
   logTrace();
   if (!model)
   {
-    // TODO: Provide suitable return value to handle unsuccessful calls.
+    /// \todo Provide suitable return value to handle unsuccessful calls.
     logError("oms_getBoolean: invalid pointer");
   }
 
@@ -534,32 +535,37 @@ void oms_setMaxIterations(void* model, int maxIterations)
 oms_status_t oms2_newFMIModel(const char* ident)
 {
   logTrace();
-  return oms2::Scope::newFMIModel(ident);
+  return oms2::Scope::newFMIModel(oms2::ComRef(ident));
 }
 
 oms_status_t oms2_newTLMModel(const char* ident)
 {
   logTrace();
-  return oms2::Scope::newTLMModel(ident);
+  return oms2::Scope::newTLMModel(oms2::ComRef(ident));
 }
 
 oms_status_t oms2_unloadModel(const char* ident)
 {
   logTrace();
-  return oms2::Scope::unloadModel(ident);
+  return oms2::Scope::unloadModel(oms2::ComRef(ident));
 }
 
 oms_status_t oms2_renameModel(const char* identOld, const char* identNew)
 {
   logTrace();
-  return oms2::Scope::renameModel(identOld, identNew);
+  return oms2::Scope::renameModel(oms2::ComRef(identOld), oms2::ComRef(identNew));
 }
 
-oms_status_t oms2_loadModel(const char* filename, const char** ident)
+oms_status_t oms2_loadModel(const char* filename, char** ident)
 {
   logTrace();
-  logError("oms2_loadFMIModel: not implemented yet");
-  return oms_status_error;
+  oms2::Model* model = oms2::Scope::loadModel(filename);
+
+  if (!model)
+    return oms_status_error;
+
+  *ident = const_cast<char*>(model->getName().c_str());
+  return oms_status_ok;
 }
 
 oms_status_t oms2_saveModel(const char* ident, const char* filename)
@@ -641,4 +647,18 @@ void oms2_setLoggingCallback(void (*cb)(oms_message_type_t type, const char* mes
 void oms2_setLoggingLevel(int logLevel)
 {
   Log::setLoggingLevel(logLevel);
+}
+
+oms_status_t oms2_getComponentType(const char* ident, oms_component_type_t* type)
+{
+  logTrace();
+  if (!type)
+  {
+    logError("oms2_getComponentType: type is NULL pointer");
+    return oms_status_error;
+  }
+
+  *type = oms_component_none;
+  logError("oms2_getComponentType: not implemented yet");
+  return oms_status_error;
 }

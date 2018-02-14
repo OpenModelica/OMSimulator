@@ -29,27 +29,33 @@
  *
  */
 
-#include "TLMCompositeModel.h"
-#include "Logging.h"
-#include "Model.h"
+#ifndef _OMS2_OPTION_H_
+#define _OMS2_OPTION_H_
 
-oms2::TLMCompositeModel::TLMCompositeModel()
+namespace oms2
 {
-  logTrace();
-}
-
-oms2::TLMCompositeModel::~TLMCompositeModel()
-{
-}
-
-oms2::TLMCompositeModel* oms2::TLMCompositeModel::newModel(const std::string& name)
-{
-  if (!oms2::Model::isValidModelIdentifier(name))
+  template <typename T>
+  class Option
   {
-    logError("\"" + name + "\" is not a valid model name.");
-    return NULL;
-  }
+  public:
+    Option<T>() :some(false) {}
+    Option<T>(T value) :some(true), value(value) {}
+    Option<T>(Option<T> const& rhs) :some(rhs.some), value(rhs.value) {}
+    ~Option<T>() {}
 
-  oms2::TLMCompositeModel *model = new oms2::TLMCompositeModel();
-  return model;
+    Option<T>& operator=(Option<T> const& rhs) {this->some = rhs.some; this->value = rhs.value; return *this;}
+    Option<T>& operator=(T const& rhs) {this->some = true; this->value = rhs; return *this;}
+
+    inline bool isSome() {return some;}
+    inline bool isNone() {return !isSome();}
+    T getValue() {return value;}
+    void setValue(const T& value) {some = true; this->value = value;}
+    void setNone() {some = false;}
+
+  private:
+    bool some;
+    T value;
+  };
 }
+
+#endif

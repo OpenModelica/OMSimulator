@@ -29,27 +29,14 @@
  *
  */
 
-#include "FMICompositeModel.h"
-#include "Logging.h"
-#include "Model.h"
+#include "oms2_FMISubModel.h"
+#include "oms2_Logging.h"
 
-oms2::FMICompositeModel::FMICompositeModel()
+oms2::FMISubModel::FMISubModel()
 {
   logTrace();
 }
 
-oms2::FMICompositeModel::~FMICompositeModel()
+oms2::FMISubModel::~FMISubModel()
 {
-}
-
-oms2::FMICompositeModel* oms2::FMICompositeModel::newModel(const std::string& name)
-{
-  if (!oms2::Model::isValidModelIdentifier(name))
-  {
-    logError("\"" + name + "\" is not a valid model name.");
-    return NULL;
-  }
-
-  oms2::FMICompositeModel *model = new oms2::FMICompositeModel();
-  return model;
 }

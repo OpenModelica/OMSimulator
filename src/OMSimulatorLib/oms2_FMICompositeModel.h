@@ -29,48 +29,41 @@
  *
  */
 
-#include "Variable.h"
-#include "oms2_Logging.h"
-#include "Settings.h"
-#include "FMUWrapper.h"
-#include "Util.h"
+#ifndef _OMS_FMI_COMPOSITE_MODEL_H_
+#define _OMS_FMI_COMPOSITE_MODEL_H_
 
-#include <fmilib.h>
-#include <JM/jm_portability.h>
+#include "oms2_ComRef.h"
+#include "oms2_SignalRef.h"
+#include "oms2_FMISubModel.h"
+#include "oms2_Model.h"
+#include "Types.h"
 
-#include <iostream>
-#include <string>
+#include <map>
 
-Variable::Variable(fmi2_import_variable_t *var, FMUWrapper* fmuInstance)
-  : fmuInstance(fmuInstance), is_state(false)
+namespace oms2
 {
-  // extract the attributes
-  name = fmi2_import_get_variable_name(var);
-  description = fmi2_import_get_variable_description(var) ? fmi2_import_get_variable_description(var) : "";
-  trim(description);
-  fmuInstanceName = fmuInstance->getFMUInstanceName();
-  vr = fmi2_import_get_variable_vr(var);
-  causality = fmi2_import_get_causality(var);
-  initialProperty = fmi2_import_get_initial(var);
-  baseType = fmi2_import_get_variable_base_type(var);
+  class FMICompositeModel : public Model
+  {
+  public:
+    static FMICompositeModel* newModel(const ComRef& name);
+
+    oms_component_type_t getType() {return oms_component_fmi;}
+    oms_status_t instantiateFMU(const std::string& filename, ComRef cref);
+    oms_status_t instantiateTable(const std::string& filename, ComRef cref);
+
+    oms_status_t setRealParameter(const oms2::SignalRef& sr, double value);
+
+  private:
+    FMICompositeModel(const ComRef& name);
+    ~FMICompositeModel();
+
+    // stop the compiler generating methods copying the object
+    FMICompositeModel(FMICompositeModel const& copy);            // not implemented
+    FMICompositeModel& operator=(FMICompositeModel const& copy); // not implemented
+
+  private:
+    std::map<ComRef, FMISubModel*> subModels;
+  };
 }
 
-Variable::~Variable()
-{
-}
-
-FMUWrapper* Variable::getFMUInstance() const
-{
-  return fmuInstance;
-}
-
-bool operator==(const Variable& v1, const Variable& v2)
-{
-  return v1.name == v2.name &&
-    v1.fmuInstanceName == v2.fmuInstanceName &&
-    v1.vr == v2.vr;
-}
-bool operator!=(const Variable& v1, const Variable& v2)
-{
-  return !(v1 == v2);
-}
+#endif

@@ -29,48 +29,37 @@
  *
  */
 
-#include "Variable.h"
-#include "oms2_Logging.h"
-#include "Settings.h"
-#include "FMUWrapper.h"
-#include "Util.h"
+#include "oms2_SignalRef.h"
 
-#include <fmilib.h>
-#include <JM/jm_portability.h>
-
-#include <iostream>
-#include <string>
-
-Variable::Variable(fmi2_import_variable_t *var, FMUWrapper* fmuInstance)
-  : fmuInstance(fmuInstance), is_state(false)
+oms2::SignalRef::SignalRef(const oms2::ComRef& cref, const std::string& var)
 {
-  // extract the attributes
-  name = fmi2_import_get_variable_name(var);
-  description = fmi2_import_get_variable_description(var) ? fmi2_import_get_variable_description(var) : "";
-  trim(description);
-  fmuInstanceName = fmuInstance->getFMUInstanceName();
-  vr = fmi2_import_get_variable_vr(var);
-  causality = fmi2_import_get_causality(var);
-  initialProperty = fmi2_import_get_initial(var);
-  baseType = fmi2_import_get_variable_base_type(var);
+  this->cref = cref;
+  this->var = var;
 }
 
-Variable::~Variable()
+oms2::SignalRef::~SignalRef()
 {
 }
 
-FMUWrapper* Variable::getFMUInstance() const
+// methods to copy the signal reference
+oms2::SignalRef::SignalRef(oms2::SignalRef const& copy)
 {
-  return fmuInstance;
+  this->cref = copy.cref;
+  this->var = copy.var;
 }
 
-bool operator==(const Variable& v1, const Variable& v2)
+oms2::SignalRef& oms2::SignalRef::operator=(oms2::SignalRef const& copy)
 {
-  return v1.name == v2.name &&
-    v1.fmuInstanceName == v2.fmuInstanceName &&
-    v1.vr == v2.vr;
+  // check for self-assignment
+  if(&copy == this)
+    return *this;
+
+  this->cref = copy.cref;
+  this->var = copy.var;
+  return *this;
 }
-bool operator!=(const Variable& v1, const Variable& v2)
+
+bool oms2::SignalRef::operator<(const oms2::SignalRef& rhs)
 {
-  return !(v1 == v2);
+  return toString() < rhs.toString();
 }
