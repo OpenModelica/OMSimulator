@@ -29,48 +29,28 @@
  *
  */
 
-#include "Variable.h"
+#include "oms2_ComRef.h"
+#include "oms2_TLMCompositeModel.h"
 #include "oms2_Logging.h"
-#include "Settings.h"
-#include "FMUWrapper.h"
-#include "Util.h"
 
-#include <fmilib.h>
-#include <JM/jm_portability.h>
-
-#include <iostream>
-#include <string>
-
-Variable::Variable(fmi2_import_variable_t *var, FMUWrapper* fmuInstance)
-  : fmuInstance(fmuInstance), is_state(false)
+oms2::TLMCompositeModel::TLMCompositeModel(const ComRef& name)
 {
-  // extract the attributes
-  name = fmi2_import_get_variable_name(var);
-  description = fmi2_import_get_variable_description(var) ? fmi2_import_get_variable_description(var) : "";
-  trim(description);
-  fmuInstanceName = fmuInstance->getFMUInstanceName();
-  vr = fmi2_import_get_variable_vr(var);
-  causality = fmi2_import_get_causality(var);
-  initialProperty = fmi2_import_get_initial(var);
-  baseType = fmi2_import_get_variable_base_type(var);
+  logTrace();
+  this->name = name;
 }
 
-Variable::~Variable()
+oms2::TLMCompositeModel::~TLMCompositeModel()
 {
 }
 
-FMUWrapper* Variable::getFMUInstance() const
+oms2::TLMCompositeModel* oms2::TLMCompositeModel::newModel(const ComRef& name)
 {
-  return fmuInstance;
-}
+ if (!name.isValidIdent())
+  {
+    logError("\"" + name + "\" is not a valid model name.");
+    return NULL;
+  }
 
-bool operator==(const Variable& v1, const Variable& v2)
-{
-  return v1.name == v2.name &&
-    v1.fmuInstanceName == v2.fmuInstanceName &&
-    v1.vr == v2.vr;
-}
-bool operator!=(const Variable& v1, const Variable& v2)
-{
-  return !(v1 == v2);
+  oms2::TLMCompositeModel *model = new oms2::TLMCompositeModel(name);
+  return model;
 }

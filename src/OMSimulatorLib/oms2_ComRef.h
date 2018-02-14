@@ -29,43 +29,56 @@
  *
  */
 
-#ifndef _OMS_SCOPE_H_
-#define _OMS_SCOPE_H_
+#ifndef _OMS_COM_REF_H_
+#define _OMS_COM_REF_H_
 
-#include "Model.h"
-#include "Types.h"
-
-#include <map>
+#include <deque>
 #include <string>
 
 namespace oms2
 {
-  class Scope
+  /**
+   * \brief ComRef - component reference
+   */
+  class ComRef
   {
   public:
-    static oms_status_t newFMIModel(const std::string& name);
-    static oms_status_t newTLMModel(const std::string& name);
-    static oms_status_t unloadModel(const std::string& name);
-    static oms_status_t renameModel(const std::string& identOld, const std::string& identNew);
-    static Model* getModel(const std::string& name);
+    ComRef();
+    ComRef(const std::string& path);
+    ~ComRef();
 
-    static oms_status_t SetTempDirectory(const std::string& newTempDir);
-    static const std::string& GetTempDirectory() {Scope &scope = getInstance(); return scope.tempDir;}
+    // methods to copy the component reference
+    ComRef(ComRef const& copy);
+    ComRef& operator=(ComRef const& copy);
+    bool operator<(const ComRef& rhs);
+    ComRef operator+(const ComRef& rhs);
+
+    static bool isValidIdent(const std::string& ident);
+    bool isValidIdent() const;
+    bool isValidQualified() const;
+
+    const char* c_str() const {return isIdent() ? path[0].c_str() : NULL;}
+
+    bool isQualified() const; // true if qualified component name, e.g. a.b.c
+    bool isIdent() const;     // true if non-qualifed component name, e.g. x
+
+    std::string toString() const;
+    ComRef last() const;
+    ComRef& append(const ComRef& cref);
 
   private:
-    Scope();
-    ~Scope();
-
-    // stop the compiler generating methods copying the object
-    Scope(Scope const& copy);            // not implemented
-    Scope& operator=(Scope const& copy); // not implemented
-
-    static Scope& getInstance();
-
-  private:
-    std::map<std::string, Model*> models;
-    std::string tempDir;
+    std::deque<std::string> path;
   };
+
+  static std::string operator+(const std::string& lhs, const ComRef& rhs)
+  {
+    return lhs + rhs.toString();
+  }
+
+  static bool operator<(const ComRef& lhs, const ComRef& rhs)
+  {
+    return lhs.toString() < rhs.toString();
+  }
 }
 
 #endif

@@ -33,7 +33,7 @@
 #include "CompositeModel.h"
 #include "CSVWriter.h"
 #include "DirectedGraph.h"
-#include "Logging.h"
+#include "oms2_Logging.h"
 #include "LookupTable.h"
 #include "MATWriter.h"
 #include "ResultWriter.h"
@@ -234,7 +234,7 @@ double CompositeModel::getReal(const std::string& var)
 
   if (fmuInstances.find(fmuInstance) == fmuInstances.end())
   {
-    // TODO: Provide suitable return value to handle unsuccessful calls.
+    /// \todo Provide suitable return value to handle unsuccessful calls.
     logError("CompositeModel::getReal: FMU instance \"" + fmuInstance + "\" doesn't exist in model");
     return 0.0;
   }
@@ -254,7 +254,7 @@ int CompositeModel::getInteger(const std::string& var)
 
   if (fmuInstances.find(fmuInstance) == fmuInstances.end())
   {
-    // TODO: Provide suitable return value to handle unsuccessful calls.
+    /// \todo Provide suitable return value to handle unsuccessful calls.
     logError("CompositeModel::getInteger: FMU instance \"" + fmuInstance + "\" doesn't exist in model");
     return ~0;
   }
@@ -274,7 +274,7 @@ bool CompositeModel::getBoolean(const std::string& var)
 
   if (fmuInstances.find(fmuInstance) == fmuInstances.end())
   {
-    // TODO: Provide suitable return value to handle unsuccessful calls.
+    /// \todo Provide suitable return value to handle unsuccessful calls.
     logError("CompositeModel::getBoolean: FMU instance \"" + fmuInstance + "\" doesn't exist in model");
     return false;
   }

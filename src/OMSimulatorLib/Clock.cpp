@@ -30,7 +30,7 @@
  */
 
 #include "Clock.h"
-#include "Logging.h"
+#include "oms2_Logging.h"
 
 #include <ctime>
 #include <chrono>

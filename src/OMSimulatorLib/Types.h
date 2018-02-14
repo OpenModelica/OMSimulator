@@ -65,6 +65,7 @@ typedef enum {
 /* ************************************ */
 
 typedef enum {
+  oms_component_none,
   oms_component_tlm,  /* TLM model */
   oms_component_fmi,  /* FMI model */
   oms_component_fmu,  /* FMU */

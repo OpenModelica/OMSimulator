@@ -29,48 +29,50 @@
  *
  */
 
-#include "Variable.h"
-#include "oms2_Logging.h"
-#include "Settings.h"
-#include "FMUWrapper.h"
-#include "Util.h"
+#ifndef _OMS2_FMU_WRAPPER_H_
+#define _OMS2_FMU_WRAPPER_H_
 
-#include <fmilib.h>
-#include <JM/jm_portability.h>
+#include "oms2_ComRef.h"
+#include "oms2_FMISubModel.h"
+#include "oms2_Variable.h"
+#include "oms2_Option.h"
 
-#include <iostream>
+#include <map>
+#include <vector>
 #include <string>
 
-Variable::Variable(fmi2_import_variable_t *var, FMUWrapper* fmuInstance)
-  : fmuInstance(fmuInstance), is_state(false)
+#include <fmilib.h>
+
+namespace oms2
 {
-  // extract the attributes
-  name = fmi2_import_get_variable_name(var);
-  description = fmi2_import_get_variable_description(var) ? fmi2_import_get_variable_description(var) : "";
-  trim(description);
-  fmuInstanceName = fmuInstance->getFMUInstanceName();
-  vr = fmi2_import_get_variable_vr(var);
-  causality = fmi2_import_get_causality(var);
-  initialProperty = fmi2_import_get_initial(var);
-  baseType = fmi2_import_get_variable_base_type(var);
+  class FMUWrapper : public FMISubModel
+  {
+  public:
+    static FMUWrapper* newSubModel(const ComRef& ident, const std::string& filename);
+
+    oms_component_type_t getType() const {return oms_component_fmu;}
+
+    oms_status_t setRealParameter(const std::string& var, double value);
+
+    oms_status_t getReal(const oms2::Variable& var, double& realValue);
+
+  private:
+    FMUWrapper(const ComRef& ident, const std::string& filename);
+    ~FMUWrapper();
+
+    ComRef cref;
+    std::string filename;
+    std::vector<oms2::Variable> allVariables;
+    std::map<std::string, oms2::Option<double>> realParameters;
+
+    std::string tempDir;
+    jm_callbacks callbacks;
+    fmi2_fmu_kind_enu_t fmuKind;
+    fmi2_callback_functions_t callBackFunctions;
+    fmi_import_context_t* context;
+    fmi2_import_t* fmu;
+    fmi2_event_info_t eventInfo;
+  };
 }
 
-Variable::~Variable()
-{
-}
-
-FMUWrapper* Variable::getFMUInstance() const
-{
-  return fmuInstance;
-}
-
-bool operator==(const Variable& v1, const Variable& v2)
-{
-  return v1.name == v2.name &&
-    v1.fmuInstanceName == v2.fmuInstanceName &&
-    v1.vr == v2.vr;
-}
-bool operator!=(const Variable& v1, const Variable& v2)
-{
-  return !(v1 == v2);
-}
+#endif

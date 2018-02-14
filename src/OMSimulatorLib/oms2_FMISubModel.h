@@ -29,48 +29,29 @@
  *
  */
 
-#include "Variable.h"
-#include "oms2_Logging.h"
-#include "Settings.h"
-#include "FMUWrapper.h"
-#include "Util.h"
+#ifndef _OMS_FMI_SUB_MODEL_H_
+#define _OMS_FMI_SUB_MODEL_H_
 
-#include <fmilib.h>
-#include <JM/jm_portability.h>
+#include "oms2_ComRef.h"
+#include "Types.h"
 
-#include <iostream>
-#include <string>
-
-Variable::Variable(fmi2_import_variable_t *var, FMUWrapper* fmuInstance)
-  : fmuInstance(fmuInstance), is_state(false)
+namespace oms2
 {
-  // extract the attributes
-  name = fmi2_import_get_variable_name(var);
-  description = fmi2_import_get_variable_description(var) ? fmi2_import_get_variable_description(var) : "";
-  trim(description);
-  fmuInstanceName = fmuInstance->getFMUInstanceName();
-  vr = fmi2_import_get_variable_vr(var);
-  causality = fmi2_import_get_causality(var);
-  initialProperty = fmi2_import_get_initial(var);
-  baseType = fmi2_import_get_variable_base_type(var);
+  class FMISubModel
+  {
+  public:
+    virtual oms_component_type_t getType() const = 0;
+    static void deleteSubModel(FMISubModel *model) {if (model) delete model;}
+
+  protected:
+    FMISubModel();
+    virtual ~FMISubModel();
+
+  private:
+    // stop the compiler generating methods copying the object
+    FMISubModel(FMISubModel const& copy);            // not implemented
+    FMISubModel& operator=(FMISubModel const& copy); // not implemented
+  };
 }
 
-Variable::~Variable()
-{
-}
-
-FMUWrapper* Variable::getFMUInstance() const
-{
-  return fmuInstance;
-}
-
-bool operator==(const Variable& v1, const Variable& v2)
-{
-  return v1.name == v2.name &&
-    v1.fmuInstanceName == v2.fmuInstanceName &&
-    v1.vr == v2.vr;
-}
-bool operator!=(const Variable& v1, const Variable& v2)
-{
-  return !(v1 == v2);
-}
+#endif

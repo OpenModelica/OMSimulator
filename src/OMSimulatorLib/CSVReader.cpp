@@ -31,7 +31,7 @@
 
 #include "CSVReader.h"
 
-#include "Logging.h"
+#include "oms2_Logging.h"
 #include "Util.h"
 
 #include <string.h>
@@ -67,7 +67,7 @@ CSVReader::CSVReader(const char* filename)
   file.clear();
   file.seekg(0, std::ios::beg);
 
-  // TODO: process sep header properly
+  /// \todo process sep header properly
   if (usingSepHeader)
     std::getline(file, line);
 

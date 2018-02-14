@@ -108,7 +108,7 @@ void oms_setInteger(void *model, const char *var, int value);
  */
 void oms_setBoolean(void *model, const char *var, int value);
 
-// TODO: setString
+/// \todo setString
 
 /**
  * \brief Get real value.
@@ -137,7 +137,7 @@ int oms_getInteger(void *model, const char *var);
  */
 int oms_getBoolean(void *model, const char *var);
 
-// TODO: getString
+/// \todo getString
 
 /**
  * \brief Add a connection from a FMU output to a FMU input.
@@ -330,7 +330,24 @@ oms_status_t oms2_unloadModel(const char* ident);
  */
 oms_status_t oms2_renameModel(const char* identOld, const char* identNew);
 
-oms_status_t oms2_loadModel(const char* filename, const char** ident);
+/**
+ * \brief Returns the type of a given component.
+ *
+ * @param ident   [in] Full identifier of a component.
+ * @param ident   [out] Type of given component.
+ * @return        Error status.
+ */
+oms_status_t oms2_getComponentType(const char* ident, oms_component_type_t* type);
+
+/**
+ * \brief Loads a FMI composite model from xml representation.
+ *
+ * @param filename   [in] Full path to the composite model xml representation.
+ * @param ident      [out] Name of the imported model.
+ * @return           Error status.
+ */
+oms_status_t oms2_loadModel(const char* filename, char** ident);
+
 oms_status_t oms2_saveModel(const char* ident, const char* filename);
 oms_status_t oms2_getIconAnnotation(const char* ident, const void** annotation);
 oms_status_t oms2_setIconAnnotation(const char* ident, const void* annotation);
