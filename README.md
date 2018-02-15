@@ -15,8 +15,8 @@ The latest documentation is avilable as [pdf](https://openmodelica.org/doc/OMSim
   - PugiXML
   - SUNDIALS CVODE
   - SUNDIALS KINSOL
-    gflags
-    glog
+  - gflags
+  - glog
   - Ceres Solver
 
 ## Compilation
@@ -61,6 +61,7 @@ The latest documentation is avilable as [pdf](https://openmodelica.org/doc/OMSim
 The following versions of Visual Studio are supported:
 
 - "VS14-Win64" -> "Visual Studio 14 2015 Win64"
+- "VS14-Win32" -> "Visual Studio 14 2015"
 - "VS15-Win64" -> "Visual Studio 15 2017 Win64"
 
 It is not strictly required to install the full Visual Studio IDE. The batch scripts only require *[Visual C++ Build Tools](http://landinghub.visualstudio.com/visual-cpp-build-tools)*.
@@ -102,3 +103,13 @@ git submodule foreach --recursive "git pull"
 ```
 
 In order to push to the repository, you will push to your own fork of OMSimulator.git, OMSimulator-testsuite.git, etc. You will need to create a fork of each repository that you want to push to (by clicking the Fork button in the GitHub web interface).
+
+
+## The optional parameter estimation module
+
+OMSimulator includes an optional parameter optimization module. It is enabled by default. It can be disabled in order to speed up the compilation process or if it causes compilation problems. It is not supported when using MinGW (and automatically disabled in that case). It can be disabled by using the options `CERES=OFF` (disables building its dependencies) and `OMFIT=OFF`.
+
+```bash
+make config-3rdParty CERES=OFF
+make config-OMSimulator OMFIT=OFF
+```

@@ -120,7 +120,15 @@ ENDIF()
 
 ##########################
 # Configuring for Ceres-Solver
-find_package(Ceres REQUIRED)
+option(OMFIT "Enable the OMFIT module for parameter estimation support." ON)
+IF(OMFIT)
+find_package(Ceres)
+  IF(Ceres_FOUND)
+    message(STATUS "Found Ceres-Solver")
+  ELSE()
+    message(WARNING, "Ceres-Solver not found. Building without parameter estimation module.")
+  ENDIF()
+ENDIF()
 
 ##########################
 # Add project modules
@@ -128,4 +136,6 @@ add_subdirectory(src/OMSimulator)
 add_subdirectory(src/OMSimulatorLib)
 add_subdirectory(src/OMSimulatorLua)
 add_subdirectory(src/OMSimulatorPython)
-add_subdirectory(src/OMFitLib)
+IF (Ceres_FOUND AND OMFIT)
+  add_subdirectory(src/OMFitLib)
+ENDIF()

@@ -6,9 +6,13 @@ if ["%~1"]==["VS14-Win64"] SET OMS_VS_VERSION="Visual Studio 14 2015 Win64"
 if ["%~1"]==["VS14-Win32"] SET OMS_VS_VERSION="Visual Studio 14 2015"
 if ["%~1"]==["VS15-Win64"] SET OMS_VS_VERSION="Visual Studio 15 2017 Win64"
 
-REM exit if no VS version could be recognized
-IF NOT DEFINED OMS_VS_VERSION echo Unsupported VS version.
-IF NOT DEFINED OMS_VS_VERSION exit 1
+
+IF NOT DEFINED OMS_VS_VERSION (
+	echo No argument or unsupported argument given. Supported: VS14-Win64, VS14-Win32, VS15-WIN64
+	echo Default to "Visual Studio 14 2015 Win64".
+	pause
+	SET OMS_VS_VERSION="Visual Studio 14 2015 Win64"
+)
 
 echo Using %OMS_VS_VERSION%
 
@@ -18,7 +22,9 @@ IF NOT DEFINED BOOST_ROOT SET BOOST_ROOT=C:\local\boost_1_64_0
 IF NOT DEFINED CMAKE_BUILD_TYPE SET CMAKE_BUILD_TYPE="Release"
 
 SET "VSCMD_START_DIR=%CD%"
+
 if ["%~1"]==["VS14-Win64"] @call "%VS140COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64 8.1
+if ["%~1"]==["VS14-Win32"] @call "%VS140COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64
 if ["%~1"]==["VS15-Win64"] @call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
 
 echo # config fmil
@@ -57,6 +63,7 @@ CD ..\..\..\..
 echo # build kinsol
 msbuild.exe "3rdParty\kinsol\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE%
 
+
 echo # config gflags
 if exist "3rdParty\gflags\build-win\" RMDIR /S /Q 3rdParty\gflags\build-win
 if exist "3rdParty\gflags\install\win\" RMDIR /S /Q 3rdParty\gflags\install\win
@@ -88,11 +95,12 @@ CD ..\..\..
 echo # build ceres-solver
 msbuild.exe "3rdParty\ceres-solver\build-win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE%
 
+
 echo # config OMSimulator
 if exist "build\win\" RMDIR /S /Q build\win
 MKDIR build\win
 CD build\win
-cmake -G %OMS_VS_VERSION% -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ..\.. -DBOOST_ROOT=%BOOST_ROOT% -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE%
+cmake -G %OMS_VS_VERSION% -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ..\.. -DOMFIT="ON" -DBOOST_ROOT=%BOOST_ROOT% -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE%
 CD ..\..\
 
 REM create install\win\bin folder
@@ -100,6 +108,7 @@ IF NOT EXIST "install\win\bin" echo # create install\win\bin folder
 IF NOT EXIST "install\win\bin" MKDIR "install\win\bin"
 
 echo # copy boost using CRAPPY xcopy
+IF %CMAKE_GENERATOR%=="Visual Studio 14 2015" (SET LIBDIR="lib32") ELSE (SET LIBDIR="lib64")
 set CRD=%CD%
 cd %BOOST_ROOT%
 for /d %%d in (lib*-msvc-*) do (
