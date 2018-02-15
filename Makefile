@@ -1,6 +1,11 @@
 RM=rm -rf
 MKDIR=mkdir -p
 
+# Option to build Ceres-Solver and its dependencies as part of the 3rdParty projects
+CERES ?= ON
+# Option to enable the OMFit parameter estimation module within the OMSimulator project
+OMFIT ?= ON
+
 detected_OS := $(shell uname -s)
 ifeq ($(detected_OS),Darwin)
 	BUILD_DIR := build/mac
@@ -14,6 +19,8 @@ else ifeq (MINGW32,$(findstring MINGW32,$(detected_OS)))
 	INSTALL_DIR2 := install-mingw
 	CMAKE_TARGET=-G "MSYS Makefiles"
 	FMIL_FLAGS=-DFMILIB_FMI_PLATFORM=win32
+	# MINGW detected => NO SUPPORT FOR BUILDING CERES SOLVER
+	CERES := OFF
 else ifeq (MINGW,$(findstring MINGW,$(detected_OS)))
 	BUILD_DIR := build/mingw
 	BUILD_DIR2 := build-mingw
@@ -21,6 +28,8 @@ else ifeq (MINGW,$(findstring MINGW,$(detected_OS)))
 	INSTALL_DIR2 := install-mingw
 	CMAKE_TARGET=-G "MSYS Makefiles"
 	FMIL_FLAGS=-DFMILIB_FMI_PLATFORM=win64
+	# MINGW detected => NO SUPPORT FOR BUILDING CERES SOLVER
+	CERES := OFF
 else
 	BUILD_DIR := build/linux
 	BUILD_DIR2 := build-linux
@@ -37,7 +46,16 @@ OMSimulator:
 	$(RM) $(INSTALL_DIR)
 	@$(MAKE) -C $(BUILD_DIR) install
 
+
+
+ifeq ($(CERES),OFF)
+config-3rdParty: config-fmil config-lua config-cvode config-kinsol
+	@echo
+	@echo "# CERES=OFF => Skipping build of 3rdParty library Ceres-Solver. Ceres-Solver is a dependency of the (optional) parameter estimation module."
+	@echo
+else
 config-3rdParty: config-fmil config-lua config-cvode config-kinsol config-gflags config-glog config-ceres-solver
+endif
 
 config-OMSimulator:
 	@echo
@@ -45,7 +63,7 @@ config-OMSimulator:
 	@echo
 	$(RM) $(BUILD_DIR)
 	$(MKDIR) $(BUILD_DIR)
-	@cd $(BUILD_DIR) && cmake $(CMAKE_TARGET) -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ../..
+	@cd $(BUILD_DIR) && cmake $(CMAKE_TARGET) -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DOMFIT=$(OMFIT) ../..
 
 config-fmil:
 	@echo
@@ -99,14 +117,14 @@ config-glog: config-gflags
 	$(MKDIR) 3rdParty/glog/$(BUILD_DIR2)
 	cd 3rdParty/glog/$(BUILD_DIR2) && cmake $(CMAKE_TARGET) -DCMAKE_INSTALL_PREFIX=../$(INSTALL_DIR2) .. -DBUILD_SHARED_LIBS="OFF" -DBUILD_TESTING="OFF" -DCMAKE_C_FLAGS="-fPIC" -DCMAKE_CXX_FLAGS="-fPIC" -DCMAKE_BUILD_TYPE="Release" && $(MAKE) install
 
-config-ceres-solver: config-glog
+config-ceres-solver: config-glog     
 	@echo
 	@echo "# config ceres-solver"
-	@echo
+	@echo     
 	$(RM) 3rdParty/ceres-solver/$(BUILD_DIR2)
-	$(RM) 3rdParty/ceres-solver/$(INSTALL_DIR2)
+	$(RM) 3rdParty/ceres- solver/$(INSTALL_DIR2)
 	$(MKDIR) 3rdParty/ceres-solver/$(BUILD_DIR2)
-	cd 3rdParty/ceres-solver/$(BUILD_DIR2) && cmake $(CMAKE_TARGET) -DCMAKE_INSTALL_PREFIX=../$(INSTALL_DIR2) -DCXX11="ON" -DEXPORT_BUILD_DIR="ON" -DEIGEN_INCLUDE_DIR_HINTS="../eigen" -DGLOG_INCLUDE_DIR_HINTS="../glog/install/linux/include" -DGLOG_LIBRARY_DIR_HINTS="../glog/install/linux/lib" -DGFLAGS_INCLUDE_DIR_HINTS="../gflags/install/linux/include" -DGFLAGS_LIBRARY_DIR_HINTS="../gflags/install/linux/lib" -DBUILD_EXAMPLES="OFF" -DBUILD_TESTING="OFF" -DCMAKE_BUILD_TYPE="Release" .. && $(MAKE) install
+	cd 3rdParty/ceres-solver/$(BUILD_DIR2) && cmake $(CMAKE_TARGET) -DCMAKE_INSTALL_PREFIX=../$(INSTALL_DIR2) -DCXX11="ON" -DEXPORT_BUILD_DIR="ON" -DEIGEN_INCLUDE_DIR_HINTS="../eigen" -DBUILD_EXAMPLES="OFF" -DBUILD_TESTING="OFF" -DCMAKE_BUILD_TYPE="Release" .. && $(MAKE) install
 
 distclean:
 	@echo
