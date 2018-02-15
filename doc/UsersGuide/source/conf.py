@@ -58,7 +58,7 @@ release = '?.?'
 version = '?.?'
 # The full version, including alpha/beta/rc tags.
 if os.path.exists('../../../.git'):
-  r = git.repo.Repo('../..')
+  r = git.repo.Repo('../../..')
   release = r.git.describe(["--tags", "--abbrev=7", "--match=v*.*"])
   version = r.git.describe(["--tags", "--abbrev=7", "--match=v*.*"])
 
