@@ -20,7 +20,7 @@ else
 	INSTALL_DIR := install/linux
 endif
 
-.PHONY: OMSimulator config-OMSimulator config-fmil config-lua config-cvode config-kinsol config-3rdParty distclean testsuite doc doc-html
+.PHONY: OMSimulator config-OMSimulator config-fmil config-lua config-cvode config-kinsol config-3rdParty distclean testsuite doc doc-html doc-doxygen
 
 OMSimulator:
 	@echo
@@ -94,12 +94,19 @@ testsuite:
 	@$(MAKE) -C testsuite all
 
 doc:
-	@$(MAKE) -C doc latexpdf
+	@$(MAKE) -C doc/UsersGuide latexpdf
 	@$(MKDIR) $(INSTALL_DIR)/doc
-	@cp doc/build/latex/OMSimulator.pdf $(INSTALL_DIR)/doc
+	@cp doc/UsersGuide/build/latex/OMSimulator.pdf $(INSTALL_DIR)/doc
 
 doc-html:
-	@$(MAKE) -C doc html
+	@$(MAKE) -C doc/UsersGuide html
 	@$(MKDIR) $(INSTALL_DIR)/doc
 	@$(RM) $(INSTALL_DIR)/doc/html
-	@cp -rf doc/build/html/ $(INSTALL_DIR)/doc/html
+	@cp -rf doc/UsersGuide/build/html/ $(INSTALL_DIR)/doc/html
+
+doc-doxygen:
+	@$(RM) doc/dev/OMSimulatorLib/
+	@doxygen doc/dev/OMSimulatorLib.doxyfile
+	@$(MKDIR) $(INSTALL_DIR)/doc
+	@$(RM) $(INSTALL_DIR)/doc/OMSimulatorLib
+	@cp -rf doc/dev/OMSimulatorLib/html/ $(INSTALL_DIR)/doc/OMSimulatorLib
