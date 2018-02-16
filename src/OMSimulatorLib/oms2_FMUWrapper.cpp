@@ -50,20 +50,19 @@ void oms2::fmiLogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_l
 {
   switch (log_level)
   {
-  case jm_log_level_info:
+  case jm_log_level_info:    // Informative messages
     logDebug("module " + std::string(module) + ": " + std::string(message));
     break;
-  case jm_log_level_warning:
+  case jm_log_level_warning: // Non-critical issues
     logWarning("module " + std::string(module) + ": " + std::string(message));
     break;
-  case jm_log_level_error:
+  case jm_log_level_error:   // Errors that may be not critical for some FMUs
+  case jm_log_level_fatal:   // Unrecoverable errors
     logError("module " + std::string(module) + ": " + std::string(message));
     break;
-  case jm_log_level_fatal:
-    logError("module " + std::string(module) + ": " + std::string(message));
-    break;
-  default:
-    logWarning("[log level " + std::string(jm_log_level_to_string(log_level)) + "] module " + std::string(module) + ": " + std::string(message));
+  case jm_log_level_verbose: // Verbose messages
+  case jm_log_level_debug:   // Debug messages. Only enabled if library is configured with FMILIB_ENABLE_LOG_LEVEL_DEBUG
+    logDebug("[log level " + std::string(jm_log_level_to_string(log_level)) + "] module " + std::string(module) + ": " + std::string(message));
   }
 }
 
@@ -84,10 +83,8 @@ void oms2::fmi2logger(fmi2_component_environment_t env, fmi2_string_t instanceNa
   case fmi2_status_warning:
     logWarning(std::string(instanceName) + " (" + category + "): " + msg);
     break;
-  case fmi2_status_error:
   case fmi2_status_discard:
-    logError(std::string(instanceName) + " (" + category + "): " + msg);
-    break;
+  case fmi2_status_error:
   case fmi2_status_fatal:
     logError(std::string(instanceName) + " (" + category + "): " + msg);
     break;
