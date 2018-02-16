@@ -66,10 +66,10 @@ msbuild.exe "3rdParty\kinsol\build\win\INSTALL.vcxproj" /t:Build /p:configuratio
 
 echo # config gflags
 if exist "3rdParty\gflags\build-win\" RMDIR /S /Q 3rdParty\gflags\build-win
-if exist "3rdParty\gflags\install\win\" RMDIR /S /Q 3rdParty\gflags\install\win
+if exist "3rdParty\gflags\install-win\" RMDIR /S /Q 3rdParty\gflags\install-win
 MKDIR 3rdParty\gflags\build-win
 CD 3rdParty\gflags\build-win
-cmake -G %OMS_VS_VERSION% -DCMAKE_INSTALL_PREFIX=..\install\win .. -DBUILD_TESTING="OFF" -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE%
+cmake -G %OMS_VS_VERSION% -DCMAKE_INSTALL_PREFIX=..\install-win .. -DBUILD_TESTING="OFF" -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE%
 CD ..\..\..
 echo # build gflags
 msbuild.exe "3rdParty\gflags\build-win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE%
