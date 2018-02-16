@@ -12,6 +12,9 @@ ifeq ($(detected_OS),Darwin)
 	BUILD_DIR2 := build-mac
 	INSTALL_DIR := install/mac
 	INSTALL_DIR2 := install-mac
+	# MINGW detected => NO SUPPORT FOR BUILDING CERES SOLVER (yet)
+	CERES := OFF
+	OMFIT := OFF
 else ifeq (MINGW32,$(findstring MINGW32,$(detected_OS)))
 	BUILD_DIR := build/mingw
 	BUILD_DIR2 := build-mingw
@@ -19,7 +22,7 @@ else ifeq (MINGW32,$(findstring MINGW32,$(detected_OS)))
 	INSTALL_DIR2 := install-mingw
 	CMAKE_TARGET=-G "MSYS Makefiles"
 	FMIL_FLAGS=-DFMILIB_FMI_PLATFORM=win32
-	# MINGW detected => NO SUPPORT FOR BUILDING CERES SOLVER
+	# MINGW detected => NO SUPPORT FOR BUILDING CERES SOLVER  (yet)
 	CERES := OFF
 	OMFIT := OFF
 else ifeq (MINGW,$(findstring MINGW,$(detected_OS)))
@@ -29,7 +32,7 @@ else ifeq (MINGW,$(findstring MINGW,$(detected_OS)))
 	INSTALL_DIR2 := install-mingw
 	CMAKE_TARGET=-G "MSYS Makefiles"
 	FMIL_FLAGS=-DFMILIB_FMI_PLATFORM=win64
-	# MINGW detected => NO SUPPORT FOR BUILDING CERES SOLVER
+	# MINGW detected => NO SUPPORT FOR BUILDING CERES SOLVER  (yet)
 	CERES := OFF
 	OMFIT := OFF
 else
