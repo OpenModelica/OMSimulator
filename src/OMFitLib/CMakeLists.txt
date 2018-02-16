@@ -7,6 +7,15 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 IF (WIN32)
   set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
   add_definitions(-DBOOST_ALL_DYN_LINK)
+  include_directories(
+    ${CMAKE_SOURCE_DIR}/3rdParty/glog/install-win/include
+    ${CMAKE_SOURCE_DIR}/3rdParty/gflags/install/win/include
+  )
+ELSE()
+  include_directories(
+    ${CMAKE_SOURCE_DIR}/3rdParty/glog/install-linux/include
+    ${CMAKE_SOURCE_DIR}/3rdParty/gflags/install/linux/include
+  )
 ENDIF()
 
 include_directories(
@@ -15,16 +24,12 @@ include_directories(
   ${CMAKE_SOURCE_DIR}/src/OMSimulatorLib
   ${FMILibrary_INCLUDEDIR}
   ${CERES_INCLUDE_DIRS}
-  ${CMAKE_SOURCE_DIR}/3rdParty/glog/install-win/include
-  ${CMAKE_SOURCE_DIR}/3rdParty/gflags/install/win/include
-  ${CMAKE_SOURCE_DIR}/3rdParty/glog/install-linux/include
-  ${CMAKE_SOURCE_DIR}/3rdParty/gflags/install/linux/include
 )
 link_directories(
   ${FMILibrary_LIBRARYDIR}
   ${Boost_LIBRARY_DIRS}
   ${CVODELibrary_INCLUDEDIR}
-  ${KINSOLLibrary_LIBRARYDIR} 
+  ${KINSOLLibrary_LIBRARYDIR}
 )
 
 set(OMFITLIB_SOURCES OMFit.cpp FitModel.cpp)
