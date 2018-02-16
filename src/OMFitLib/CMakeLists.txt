@@ -21,7 +21,7 @@ include_directories(
 link_directories(
   ${FMILibrary_LIBRARYDIR}
   ${Boost_LIBRARY_DIRS}
-  ${CVODELibrary_INCLUDEDIR}
+  ${CVODELibrary_LIBRARYDIR}
   ${KINSOLLibrary_LIBRARYDIR}
 )
 
