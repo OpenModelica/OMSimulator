@@ -33,7 +33,7 @@
 
 #include "FitModel.h"
 #include "OMSimulatorLib/OMSimulator.h"
-#include "OMSimulatorLib/Logging.h"
+#include "OMSimulatorLib/oms2_Logging.h"
 
 #include "ceres/ceres.h"
 #include "glog/logging.h"
