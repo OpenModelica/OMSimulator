@@ -46,7 +46,7 @@ const double data_x[] = {1, 0.9, 0.8100000000000001, 0.7290000000000001, 0.6561,
 // Macro for basic assertion testing (works conveniently with ctest, see CMakeLists.txt)
 #define ASSERT(X)  if(!(X)) {fprintf(stderr, "%s:%d Assertion '" #X "' FAILED", __FILE__, __LINE__); exit(1);}
 
-int test_cs_HelloWorld_Fit()
+int test_HelloWorld_cs_Fit()
 {
   const char* version = oms_getVersion();
   oms_status_t status;
@@ -92,5 +92,5 @@ int test_cs_HelloWorld_Fit()
 }
 
 int main() {
-  return test_cs_HelloWorld_Fit();
+  return test_HelloWorld_cs_Fit();
 }

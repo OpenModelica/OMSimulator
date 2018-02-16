@@ -86,7 +86,7 @@ const char* measurementvars[] = {"Lin2DimODE.x1", "Lin2DimODE.x2"};
 const std::vector<std::string> parametervars = {"Lin2DimODE.a11", "Lin2DimODE.a12", "Lin2DimODE.a21", "Lin2DimODE.a22", "Lin2DimODE.x1_start", "Lin2DimODE.x2_start"};
 
 
-int test_cs_Lin2DimODE_Fit()
+int test_Lin2DimODE_cs_Fit()
 {
   const char* version = oms_getVersion();
   oms_status_t status;
@@ -221,5 +221,5 @@ int test_cs_Lin2DimODE_Fit()
 }
 
 int main() {
-  return test_cs_Lin2DimODE_Fit();
+  return test_Lin2DimODE_cs_Fit();
 }

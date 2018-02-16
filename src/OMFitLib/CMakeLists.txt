@@ -16,13 +16,17 @@ include_directories(
   ${FMILibrary_INCLUDEDIR}
   ${CERES_INCLUDE_DIRS}
   ${CMAKE_SOURCE_DIR}/3rdParty/glog/install-win/include
-  ${CMAKE_SOURCE_DIR}//3rdParty/gflags/install/win/include
+  ${CMAKE_SOURCE_DIR}/3rdParty/gflags/install/win/include
+  ${CMAKE_SOURCE_DIR}/3rdParty/glog/install-linux/include
+  ${CMAKE_SOURCE_DIR}/3rdParty/gflags/install/linux/include
 )
 link_directories(
   ${FMILibrary_LIBRARYDIR}
   ${Boost_LIBRARY_DIRS}
   ${CMAKE_SOURCE_DIR}/3rdParty/cvode/install/win/lib
   ${CMAKE_SOURCE_DIR}/3rdParty/kinsol/install/win/lib
+  ${CMAKE_SOURCE_DIR}/3rdParty/cvode/install/linux/lib
+  ${CMAKE_SOURCE_DIR}/3rdParty/kinsol/install/linux/lib  
 )
 
 set(OMFITLIB_SOURCES OMFit.cpp FitModel.cpp)
