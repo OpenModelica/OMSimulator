@@ -63,38 +63,35 @@ CD ..\..\..\..
 echo # build kinsol
 msbuild.exe "3rdParty\kinsol\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE%
 
-
 echo # config gflags
-if exist "3rdParty\gflags\build-win\" RMDIR /S /Q 3rdParty\gflags\build-win
-if exist "3rdParty\gflags\install-win\" RMDIR /S /Q 3rdParty\gflags\install-win
-MKDIR 3rdParty\gflags\build-win
-CD 3rdParty\gflags\build-win
-cmake -G %OMS_VS_VERSION% -DCMAKE_INSTALL_PREFIX=..\install-win .. -DBUILD_TESTING="OFF" -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE%
-CD ..\..\..
+if exist "3rdParty\gflags\build\win\" RMDIR /S /Q 3rdParty\gflags\build\win
+if exist "3rdParty\gflags\install\win\" RMDIR /S /Q 3rdParty\gflags\install\win
+MKDIR 3rdParty\gflags\build\win
+CD 3rdParty\gflags\build\win
+cmake -G %OMS_VS_VERSION% -DCMAKE_INSTALL_PREFIX=..\..\install\win ..\..\gflags -DBUILD_TESTING="OFF" -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE%
+CD ..\..\..\..
 echo # build gflags
-msbuild.exe "3rdParty\gflags\build-win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE%
+msbuild.exe "3rdParty\gflags\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE%
 
 echo # config glog
-if exist "3rdParty\glog\build-win\" RMDIR /S /Q 3rdParty\glog\build-win
-rem Use name "install-win" instead of "install\win" since file "INSTALL" already exists in glog repo
-if exist "3rdParty\glog\install-win\" RMDIR /S /Q 3rdParty\glog\install-win
-MKDIR 3rdParty\glog\build-win
-CD 3rdParty\glog\build-win
-cmake -G %OMS_VS_VERSION% -DCMAKE_INSTALL_PREFIX=..\install-win .. -DBUILD_TESTING="OFF" -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE%
-CD ..\..\..
+if exist "3rdParty\glog\build\win\" RMDIR /S /Q 3rdParty\glog\build\win
+if exist "3rdParty\glog\install\win\" RMDIR /S /Q 3rdParty\glog\install\win
+MKDIR 3rdParty\glog\build\win
+CD 3rdParty\glog\build\win
+cmake -G %OMS_VS_VERSION% -DCMAKE_INSTALL_PREFIX=..\..\install\win ..\..\glog -DBUILD_TESTING="OFF" -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE%
+CD ..\..\..\..
 echo # build glog
-msbuild.exe "3rdParty\glog\build-win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE%
+msbuild.exe "3rdParty\glog\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE%
 
 echo # config ceres-solver
-if exist "3rdParty\ceres-solver\build-win\" RMDIR /S /Q 3rdParty\ceres-solver\build-win
+if exist "3rdParty\ceres-solver\build\win\" RMDIR /S /Q 3rdParty\ceres-solver\build\win
 if exist "3rdParty\ceres-solver\install\win\" RMDIR /S /Q 3rdParty\ceres-solver\install\win
-MKDIR 3rdParty\ceres-solver\build-win
-CD 3rdParty\ceres-solver\build-win
-cmake -G %OMS_VS_VERSION% -DCMAKE_INSTALL_PREFIX=..\install\win .. -DCXX11="ON" -DEXPORT_BUILD_DIR="on" -DEIGEN_INCLUDE_DIR_HINTS="../eigen" -DBUILD_EXAMPLES="OFF" -DBUILD_TESTING="OFF" -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE%
-CD ..\..\..
+MKDIR 3rdParty\ceres-solver\build\win
+CD 3rdParty\ceres-solver\build\win
+cmake -G %OMS_VS_VERSION% -DCMAKE_INSTALL_PREFIX=..\..\install\win ..\..\ceres-solver -DCXX11="ON" -DEXPORT_BUILD_DIR="on" -DEIGEN_INCLUDE_DIR_HINTS="../../eigen/eigen" -DBUILD_EXAMPLES="OFF" -DBUILD_TESTING="OFF" -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE%
+CD ..\..\..\..
 echo # build ceres-solver
-msbuild.exe "3rdParty\ceres-solver\build-win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE%
-
+msbuild.exe "3rdParty\ceres-solver\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE%
 
 echo # config OMSimulator
 if exist "build\win\" RMDIR /S /Q build\win
