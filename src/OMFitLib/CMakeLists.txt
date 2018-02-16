@@ -23,10 +23,8 @@ include_directories(
 link_directories(
   ${FMILibrary_LIBRARYDIR}
   ${Boost_LIBRARY_DIRS}
-  ${CMAKE_SOURCE_DIR}/3rdParty/cvode/install/win/lib
-  ${CMAKE_SOURCE_DIR}/3rdParty/kinsol/install/win/lib
-  ${CMAKE_SOURCE_DIR}/3rdParty/cvode/install/linux/lib
-  ${CMAKE_SOURCE_DIR}/3rdParty/kinsol/install/linux/lib  
+  ${CVODELibrary_INCLUDEDIR}
+  ${KINSOLLibrary_LIBRARYDIR} 
 )
 
 set(OMFITLIB_SOURCES OMFit.cpp FitModel.cpp)
