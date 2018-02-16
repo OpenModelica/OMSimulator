@@ -21,6 +21,7 @@ else ifeq (MINGW32,$(findstring MINGW32,$(detected_OS)))
 	FMIL_FLAGS=-DFMILIB_FMI_PLATFORM=win32
 	# MINGW detected => NO SUPPORT FOR BUILDING CERES SOLVER
 	CERES := OFF
+	OMFIT := OFF
 else ifeq (MINGW,$(findstring MINGW,$(detected_OS)))
 	BUILD_DIR := build/mingw
 	BUILD_DIR2 := build-mingw
@@ -30,6 +31,7 @@ else ifeq (MINGW,$(findstring MINGW,$(detected_OS)))
 	FMIL_FLAGS=-DFMILIB_FMI_PLATFORM=win64
 	# MINGW detected => NO SUPPORT FOR BUILDING CERES SOLVER
 	CERES := OFF
+	OMFIT := OFF
 else
 	BUILD_DIR := build/linux
 	BUILD_DIR2 := build-linux
