@@ -37,7 +37,7 @@ else
 	INSTALL_DIR2 := install-linux
 endif
 
-.PHONY: OMSimulator config-OMSimulator config-fmil config-lua config-cvode config-kinsol config-gflags config-glog config-ceres-solver config-3rdParty distclean testsuite doc doc-html
+.PHONY: OMSimulator config-OMSimulator config-fmil config-lua config-cvode config-kinsol config-gflags config-glog config-ceres-solver config-3rdParty distclean testsuite doc doc-html doc-doxygen
 
 OMSimulator:
 	@echo
@@ -117,10 +117,10 @@ config-glog: config-gflags
 	$(MKDIR) 3rdParty/glog/$(BUILD_DIR2)
 	cd 3rdParty/glog/$(BUILD_DIR2) && cmake $(CMAKE_TARGET) -DCMAKE_INSTALL_PREFIX=../$(INSTALL_DIR2) .. -DBUILD_SHARED_LIBS="OFF" -DBUILD_TESTING="OFF" -DCMAKE_C_FLAGS="-fPIC" -DCMAKE_CXX_FLAGS="-fPIC" -DCMAKE_BUILD_TYPE="Release" && $(MAKE) install
 
-config-ceres-solver: config-glog     
+config-ceres-solver: config-glog
 	@echo
 	@echo "# config ceres-solver"
-	@echo     
+	@echo
 	$(RM) 3rdParty/ceres-solver/$(BUILD_DIR2)
 	$(RM) 3rdParty/ceres- solver/$(INSTALL_DIR2)
 	$(MKDIR) 3rdParty/ceres-solver/$(BUILD_DIR2)
