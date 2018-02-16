@@ -108,7 +108,6 @@ IF NOT EXIST "install\win\bin" echo # create install\win\bin folder
 IF NOT EXIST "install\win\bin" MKDIR "install\win\bin"
 
 echo # copy boost using CRAPPY xcopy
-IF %CMAKE_GENERATOR%=="Visual Studio 14 2015" (SET LIBDIR="lib32") ELSE (SET LIBDIR="lib64")
 set CRD=%CD%
 cd %BOOST_ROOT%
 for /d %%d in (lib*-msvc-*) do (

@@ -131,6 +131,30 @@ find_package(Ceres)
 ENDIF()
 
 ##########################
+# Configuring for glog
+IF(WIN32 AND MSVC)
+  set(GLOG_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/glog/install-win/include)
+ELSEIF(WIN32 AND MINGW)
+  set(GLOG_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/glog/install-mingw/include)
+ELSEIF(APPLE)
+  set(GLOG_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/glog/install-mac/include)
+ELSE()
+  set(GLOG_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/glog/install-linux/include)
+ENDIF()
+
+##########################
+# Configuring for gflags
+IF(WIN32 AND MSVC)
+  set(GFLAGS_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/gflags/install-win/include)
+ELSEIF(WIN32 AND MINGW)
+  set(GFLAGS_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/gflags/install-mingw/include)
+ELSEIF(APPLE)
+  set(GFLAGS_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/gflags/install-mac/include)
+ELSE()
+  set(GFLAGS_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/gflags/install-linux/include)
+ENDIF()
+
+##########################
 # Add project modules
 add_subdirectory(src/OMSimulator)
 add_subdirectory(src/OMSimulatorLib)
