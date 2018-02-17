@@ -41,8 +41,8 @@
 #include <iostream>
 #include <string>
 
-oms2::Variable::Variable(const oms2::ComRef& cref, fmi2_import_variable_t *var)
-  : is_state(false), sr(cref, fmi2_import_get_variable_name(var))
+oms2::Variable::Variable(const oms2::ComRef& cref, fmi2_import_variable_t *var, unsigned int index)
+  : is_state(false), sr(cref, fmi2_import_get_variable_name(var)), index(index)
 {
   // extract the attributes
   description = fmi2_import_get_variable_description(var) ? fmi2_import_get_variable_description(var) : "";

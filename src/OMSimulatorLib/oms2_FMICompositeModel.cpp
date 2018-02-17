@@ -36,9 +36,9 @@
 #include "oms2_SignalRef.h"
 
 oms2::FMICompositeModel::FMICompositeModel(const ComRef& name)
+  : oms2::Model(name)
 {
   logTrace();
-  this->name = name;
 }
 
 oms2::FMICompositeModel::~FMICompositeModel()
@@ -73,7 +73,7 @@ oms_status_t oms2::FMICompositeModel::instantiateFMU(const std::string& filename
     return oms_status_error;
   }
 
-  oms2::FMUWrapper* subModel = oms2::FMUWrapper::newSubModel(cref, filename);
+  oms2::FMUWrapper* subModel = oms2::FMUWrapper::newSubModel(name + cref, filename);
   if (!subModel)
     return oms_status_error;
 
@@ -98,10 +98,22 @@ oms_status_t oms2::FMICompositeModel::setRealParameter(const oms2::SignalRef& sr
 
   if (oms_component_fmu != it->second->getType())
   {
-    logError("oms2::FMICompositeModel::setRealParameter can only be used for FMUs");
+    logError("[oms2::FMICompositeModel::setRealParameter] can only be used for FMUs");
     return oms_status_error;
   }
 
   FMUWrapper* fmu = dynamic_cast<FMUWrapper*>(it->second);
   return fmu->setRealParameter(sr.getVar(), value);
+}
+
+oms_status_t oms2::FMICompositeModel::addConnection(const oms2::SignalRef& sigA, const oms2::SignalRef& sigB)
+{
+  return addConnection(oms2::Connection(sigA, sigB));
+}
+
+oms_status_t oms2::FMICompositeModel::addConnection(const oms2::Connection& connection)
+{
+  /// \todo check the connection
+  connections.push_back(connection);
+  return oms_status_ok;
 }

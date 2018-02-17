@@ -44,6 +44,7 @@ namespace oms2
   class SignalRef
   {
   public:
+    SignalRef(const std::string& signal); ///< format: comp1.comp2.comp3:var
     SignalRef(const ComRef& cref, const std::string& var);
     ~SignalRef();
 
@@ -52,7 +53,7 @@ namespace oms2
     SignalRef& operator=(SignalRef const& copy);
     bool operator<(const SignalRef& rhs);
 
-    std::string toString() const {return cref.toString() + "." + var;}
+    std::string toString() const {return cref.toString() + ":" + var;}
 
     const oms2::ComRef& getCref() const {return cref;}
     const std::string& getVar() const {return var;}

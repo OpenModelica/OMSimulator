@@ -34,9 +34,9 @@
 #include "oms2_Logging.h"
 
 oms2::TLMCompositeModel::TLMCompositeModel(const ComRef& name)
+  : Model(name)
 {
   logTrace();
-  this->name = name;
 }
 
 oms2::TLMCompositeModel::~TLMCompositeModel()

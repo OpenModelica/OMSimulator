@@ -34,9 +34,13 @@
 
 #include <regex>
 
-oms2::Model::Model()
+oms2::Model::Model(const ComRef& cref)
+  : name(cref)
 {
   logTrace();
+  startTime = 0.0;
+  stopTime = 1.0;
+  resultFile = name.toString() + "_res.mat";
 }
 
 oms2::Model::~Model()

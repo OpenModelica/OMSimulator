@@ -121,37 +121,47 @@ int main(int argc, char *argv[])
 
   if (type == "fmu" || type == "xml")
   {
-    void* pModel = NULL;
-    if (type == "fmu")
+    if (options.newAPI)
     {
-      pModel = oms_newModel();
-      oms_instantiateFMU(pModel, filename.c_str(), "fmu");
-    }
-    else
-      pModel = oms_loadModel(filename.c_str());
-
-    if (options.resultFile != "")
-      oms_setResultFile(pModel, options.resultFile.c_str());
-    if (options.useStartTime)
-      oms_setStartTime(pModel, options.startTime);
-    if (options.useStopTime)
-      oms_setStopTime(pModel, options.stopTime);
-    if (options.useTolerance)
-      oms_setTolerance(pModel, options.tolerance);
-    if (options.useCommunicationInterval)
-      oms_setCommunicationInterval(pModel, options.communicationInterval);
-
-    if (options.describe)
-    {
-      // OMSimulator --describe example.xml
-      oms_describe(pModel);
+      char* name = NULL;
+      if (oms_status_ok != oms2_loadModel(filename.c_str(), &name))
+        return 0;
+      oms2_unloadModel(name);
     }
     else
     {
-      return do_simulation(pModel, std::chrono::duration<double>(options.timeout));
-    }
+      void* pModel = NULL;
+      if (type == "fmu")
+      {
+        pModel = oms_newModel();
+        oms_instantiateFMU(pModel, filename.c_str(), "fmu");
+      }
+      else
+        pModel = oms_loadModel(filename.c_str());
 
-    oms_unload(pModel);
+      if (options.resultFile != "")
+        oms_setResultFile(pModel, options.resultFile.c_str());
+      if (options.useStartTime)
+        oms_setStartTime(pModel, options.startTime);
+      if (options.useStopTime)
+        oms_setStopTime(pModel, options.stopTime);
+      if (options.useTolerance)
+        oms_setTolerance(pModel, options.tolerance);
+      if (options.useCommunicationInterval)
+        oms_setCommunicationInterval(pModel, options.communicationInterval);
+
+      if (options.describe)
+      {
+        // OMSimulator --describe example.xml
+        oms_describe(pModel);
+      }
+      else
+      {
+        return do_simulation(pModel, std::chrono::duration<double>(options.timeout));
+      }
+
+      oms_unload(pModel);
+    }
   }
   else if (type == "lua")
   {

@@ -64,6 +64,7 @@ namespace oms2
 
     std::string toString() const;
     ComRef last() const;
+    void popLast();
     ComRef& append(const ComRef& cref);
 
   private:

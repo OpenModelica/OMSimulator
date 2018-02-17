@@ -40,7 +40,6 @@ OMSimulator:
 	@echo
 	@echo "# make OMSimulator"
 	@echo
-	$(RM) $(INSTALL_DIR)
 	@$(MAKE) -C $(BUILD_DIR) install
 
 

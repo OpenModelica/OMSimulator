@@ -29,47 +29,54 @@
  *
  */
 
-#ifndef _OMS_FMI_COMPOSITE_MODEL_H_
-#define _OMS_FMI_COMPOSITE_MODEL_H_
-
-#include "oms2_ComRef.h"
-#include "oms2_SignalRef.h"
-#include "oms2_FMISubModel.h"
-#include "oms2_Model.h"
 #include "oms2_Connection.h"
-#include "Types.h"
 
-#include <map>
-#include <deque>
-
-namespace oms2
+oms2::Connection::Connection(const oms2::ComRef& cref, const std::string& varA, const std::string& varB)
+  : conA(cref, varA), conB(cref, varB)
 {
-  class FMICompositeModel : public Model
-  {
-  public:
-    static FMICompositeModel* newModel(const ComRef& name);
-
-    oms_component_type_t getType() {return oms_component_fmi;}
-    oms_status_t instantiateFMU(const std::string& filename, ComRef cref);
-    oms_status_t instantiateTable(const std::string& filename, ComRef cref);
-
-    oms_status_t setRealParameter(const oms2::SignalRef& sr, double value);
-
-    oms_status_t addConnection(const oms2::Connection& connection);
-    oms_status_t addConnection(const SignalRef& sigA, const SignalRef& sigB);
-
-  private:
-    FMICompositeModel(const ComRef& name);
-    ~FMICompositeModel();
-
-    // stop the compiler generating methods copying the object
-    FMICompositeModel(FMICompositeModel const& copy);            // not implemented
-    FMICompositeModel& operator=(FMICompositeModel const& copy); // not implemented
-
-  private:
-    std::map<ComRef, FMISubModel*> subModels;
-    std::deque<oms2::Connection> connections;
-  };
 }
 
-#endif
+oms2::Connection::Connection(const oms2::SignalRef& conA, const oms2::SignalRef& conB)
+  : conA(conA), conB(conB)
+{
+}
+
+oms2::Connection::~Connection()
+{
+}
+
+oms2::Connection::Connection(const oms2::Connection& rhs)
+  : conA(rhs.conA), conB(rhs.conB)
+{
+}
+
+oms2::Connection& oms2::Connection::operator=(const oms2::Connection& rhs)
+{
+  // check for self-assignment
+  if(&rhs == this)
+    return *this;
+
+  this->conA = rhs.conA;
+  this->conB = rhs.conB;
+  return *this;
+}
+
+oms2::Connection oms2::Connection::FromStrings(const std::string& conA, const std::string& conB)
+{
+  oms2::ComRef A = oms2::ComRef(conA);
+  oms2::ComRef B = oms2::ComRef(conB);
+  std::string varA = A.last().toString();
+  std::string varB = B.last().toString();
+  A.popLast();
+  B.popLast();
+  return oms2::Connection(oms2::SignalRef(A, varA), oms2::SignalRef(B, varB));
+}
+
+oms2::Connection oms2::Connection::FromStrings(const oms2::ComRef& cref, const std::string& conA, const std::string& conB)
+{
+  oms2::ComRef A(cref);
+  A.append(oms2::ComRef(conA));
+  oms2::ComRef B(cref);
+  B.append(oms2::ComRef(conB));
+  return oms2::Connection::FromStrings(A.toString(), B.toString());
+}

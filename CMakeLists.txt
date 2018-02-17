@@ -119,18 +119,6 @@ ELSE()
 ENDIF()
 
 ##########################
-# Configuring for Ceres-Solver
-option(OMFIT "Enable the OMFIT module for parameter estimation support." ON)
-IF(OMFIT)
-find_package(Ceres)
-  IF(Ceres_FOUND)
-    message(STATUS "Found Ceres-Solver")
-  ELSE()
-    message(WARNING, "Ceres-Solver not found. Building without parameter estimation module.")
-  ENDIF()
-ENDIF()
-
-##########################
 # Configuring for glog
 IF(WIN32 AND MSVC)
   set(GLOG_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/glog/install/win/include)
@@ -152,6 +140,21 @@ ELSEIF(APPLE)
   set(GFLAGS_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/gflags/install/mac/include)
 ELSE()
   set(GFLAGS_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/gflags/install/linux/include)
+ENDIF()
+
+##########################
+# Configuring for Ceres-Solver
+option(OMFIT "Enable the OMFIT module for parameter estimation support." ON)
+IF(OMFIT)
+find_package(Ceres)
+  IF(Ceres_FOUND)
+    message(STATUS "Found Ceres-Solver")
+    message(STATUS "  CERES_INCLUDE_DIRS: " ${CERES_INCLUDE_DIRS})
+    message(STATUS "  GLOG_INCLUDEDIR:    " ${GLOG_INCLUDEDIR})
+    message(STATUS "  GFLAGS_INCLUDEDIR:  " ${GFLAGS_INCLUDEDIR})
+  ELSE()
+    message(WARNING, "Ceres-Solver not found. Building without parameter estimation module.")
+  ENDIF()
 ENDIF()
 
 ##########################
