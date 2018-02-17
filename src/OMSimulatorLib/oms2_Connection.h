@@ -29,55 +29,43 @@
  *
  */
 
-#ifndef _OMS2_FMU_WRAPPER_H_
-#define _OMS2_FMU_WRAPPER_H_
+#ifndef _OMS2_CONNECTION_H_
+#define _OMS2_CONNECTION_H_
 
 #include "oms2_ComRef.h"
-#include "oms2_FMISubModel.h"
-#include "oms2_Variable.h"
-#include "oms2_Option.h"
+#include "oms2_SignalRef.h"
 
-#include <map>
 #include <string>
-#include <vector>
-
-#include <fmilib.h>
 
 namespace oms2
 {
-  class FMUWrapper : public FMISubModel
+  /**
+   * \brief Connection
+   */
+  class Connection
   {
   public:
-    static FMUWrapper* newSubModel(const ComRef& cref, const std::string& filename);
+    Connection(const ComRef& cref, const std::string& varA, const std::string& varB);
+    Connection(const SignalRef& conA, const SignalRef& conB);
+    ~Connection();
 
-    oms_component_type_t getType() const { return oms_component_fmu; }
+    static Connection FromStrings(const ComRef& cref, const std::string& conA, const std::string& conB);
+    static Connection FromStrings(const std::string& conA, const std::string& conB);
 
-    oms_status_t setRealParameter(const std::string& var, double value);
-    oms_status_t getRealParameter(const std::string& var, double& value);
-
-  private:
-    oms_status_t setReal(const oms2::Variable& var, double realValue);
-    oms_status_t getReal(const oms2::Variable& var, double& realValue);
-
-    oms2::Variable* getVar(const std::string& var);
+    // methods to copy the object
+    Connection(const Connection& rhs);
+    Connection& operator=(const Connection& rhs);
 
   private:
-    FMUWrapper(const ComRef& ident, const std::string& filename);
-    ~FMUWrapper();
+    oms2::SignalRef conA;
+    oms2::SignalRef conB;
 
-    ComRef cref;
-    std::string filename;
-    std::vector<oms2::Variable> allVariables;
-    std::map<std::string, oms2::Option<double>> realParameters;
-
-    std::string tempDir;
-    jm_callbacks callbacks;
-    fmi2_fmu_kind_enu_t fmuKind;
-    fmi2_callback_functions_t callBackFunctions;
-    fmi_import_context_t* context;
-    fmi2_import_t* fmu;
-    fmi2_event_info_t eventInfo;
+    friend bool operator==(const Connection& lhs, const Connection& rhs);
+    friend bool operator!=(const Connection& lhs, const Connection& rhs);
   };
+
+  inline bool operator==(const Connection& lhs, const Connection& rhs) {return (lhs.conA == rhs.conA && lhs.conB == rhs.conB) || (lhs.conA == rhs.conB && lhs.conB == rhs.conA);}
+  inline bool operator!=(const Connection& lhs, const Connection& rhs) {return !(lhs == rhs);}
 }
 
 #endif

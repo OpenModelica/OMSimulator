@@ -93,9 +93,9 @@ void oms2::fmi2logger(fmi2_component_environment_t env, fmi2_string_t instanceNa
   }
 }
 
-oms2::FMUWrapper::FMUWrapper(const oms2::ComRef& ident, const std::string& filename)
+oms2::FMUWrapper::FMUWrapper(const oms2::ComRef& cref, const std::string& filename)
 {
-  this->cref = ident;
+  this->cref = cref;
   this->filename = filename;
 
   this->context = NULL;
@@ -117,15 +117,15 @@ oms2::FMUWrapper::~FMUWrapper()
   }
 }
 
-oms2::FMUWrapper* oms2::FMUWrapper::newSubModel(const oms2::ComRef& ident, const std::string& filename)
+oms2::FMUWrapper* oms2::FMUWrapper::newSubModel(const oms2::ComRef& cref, const std::string& filename)
 {
-  if (!ident.isValidIdent())
+  if (!cref.isValidQualified())
   {
-    logError("\"" + ident + "\" is not a valid model name.");
+    logError("\"" + cref + "\" is not a valid model name.");
     return NULL;
   }
 
-  oms2::FMUWrapper *model = new oms2::FMUWrapper(ident, filename);
+  oms2::FMUWrapper *model = new oms2::FMUWrapper(cref, filename);
 
   // instantiate FMU
   if (!boost::filesystem::exists(filename))
@@ -145,7 +145,7 @@ oms2::FMUWrapper* oms2::FMUWrapper::newSubModel(const oms2::ComRef& ident, const
 
   // set temp directory
   model->tempDir = fmi_import_mk_temp_dir(&model->callbacks, oms2::Scope::GetTempDirectory().c_str(), "temp_");
-  logInfo("Using \"" + model->tempDir + "\" as temp directory for " + ident);
+  logDebug("Using \"" + model->tempDir + "\" as temp directory for " + cref);
 
   model->context = fmi_import_allocate_context(&model->callbacks);
 
@@ -201,12 +201,11 @@ oms2::FMUWrapper* oms2::FMUWrapper::newSubModel(const oms2::ComRef& ident, const
       return NULL;
     }
 
-    logDebug("Version returned from FMU: " + std::string(fmi2_import_get_version(model->fmu)));
-    logDebug("Platform type returned: " + std::string(fmi2_import_get_types_platform(model->fmu)));
-    logDebug("GUID: " + std::string(fmi2_import_get_GUID(model->fmu)));
+    //logDebug("Version returned from FMU: " + std::string(fmi2_import_get_version(model->fmu)));
+    //logDebug("Platform type returned: " + std::string(fmi2_import_get_types_platform(model->fmu)));
+    //logDebug("GUID: " + std::string(fmi2_import_get_GUID(model->fmu)));
 
-    fmi2_string_t instanceName = "ME-FMU instance";
-    jmstatus = fmi2_import_instantiate(model->fmu, instanceName, fmi2_model_exchange, NULL, fmi2_false);
+    jmstatus = fmi2_import_instantiate(model->fmu, cref.toString().c_str(), fmi2_model_exchange, NULL, fmi2_false);
     if (jm_status_error == jmstatus)
     {
       logError("fmi2_import_instantiate failed");
@@ -227,12 +226,11 @@ oms2::FMUWrapper* oms2::FMUWrapper::newSubModel(const oms2::ComRef& ident, const
       return NULL;
     }
 
-    logDebug("Version returned from FMU: " + std::string(fmi2_import_get_version(model->fmu)));
-    logDebug("Platform type returned: " + std::string(fmi2_import_get_types_platform(model->fmu)));
-    logDebug("GUID: " + std::string(fmi2_import_get_GUID(model->fmu)));
+    //logDebug("Version returned from FMU: " + std::string(fmi2_import_get_version(model->fmu)));
+    //logDebug("Platform type returned: " + std::string(fmi2_import_get_types_platform(model->fmu)));
+    //logDebug("GUID: " + std::string(fmi2_import_get_GUID(model->fmu)));
 
-    fmi2_string_t instanceName = "CS-FMU instance";
-    jmstatus = fmi2_import_instantiate(model->fmu, instanceName, fmi2_cosimulation, NULL, fmi2_false);
+    jmstatus = fmi2_import_instantiate(model->fmu, cref.toString().c_str(), fmi2_cosimulation, NULL, fmi2_false);
     if (jm_status_error == jmstatus)
     {
       logError("fmi2_import_instantiate failed");
@@ -241,14 +239,15 @@ oms2::FMUWrapper* oms2::FMUWrapper::newSubModel(const oms2::ComRef& ident, const
     }
   }
 
-  // create variable lists
+  // create a list of all variables
   fmi2_import_variable_list_t *varList = fmi2_import_get_variable_list(model->fmu, 0);
   size_t varListSize = fmi2_import_get_variable_list_size(varList);
   logDebug(std::to_string(varListSize) + " variables");
+  model->allVariables.reserve(varListSize);
   for (size_t i = 0; i < varListSize; ++i)
   {
     fmi2_import_variable_t* var = fmi2_import_get_variable(varList, i);
-    oms2::Variable v(ident, var);
+    oms2::Variable v(cref, var, i + 1);
     model->allVariables.push_back(v);
   }
   fmi2_import_free_variable_list(varList);
@@ -288,13 +287,22 @@ oms2::FMUWrapper* oms2::FMUWrapper::newSubModel(const oms2::ComRef& ident, const
   fmi2_import_free_variable_list(varList);
 
   // create some special variable maps
-  for (int i = 0; i < model->allVariables.size(); i++)
+  for (auto const &v : model->allVariables)
   {
-    if (model->allVariables[i].isParameter() && fmi2_base_type_real == model->allVariables[i].getBaseType())
-      model->realParameters[model->allVariables[i].getName()] = oms2::Option<double>();
+    if (v.isParameter() && fmi2_base_type_real == v.getBaseType())
+      model->realParameters[v.getName()] = oms2::Option<double>();
   }
 
   return model;
+}
+
+oms2::Variable* oms2::FMUWrapper::getVar(const std::string& var)
+{
+  for (auto &v : allVariables)
+    if (v.getName() == var)
+      return &v;
+
+  return NULL;
 }
 
 oms_status_t oms2::FMUWrapper::setRealParameter(const std::string& var, double value)
@@ -306,8 +314,48 @@ oms_status_t oms2::FMUWrapper::setRealParameter(const std::string& var, double v
     return oms_status_error;
   }
 
-  realParameters[var] = value;
+  it->second = value;
   return oms_status_ok;
+}
+
+oms_status_t oms2::FMUWrapper::getRealParameter(const std::string& var, double& value)
+{
+  auto it = realParameters.find(var);
+  if (realParameters.end() == it)
+  {
+    logError("No such parameter: " + var);
+    return oms_status_error;
+  }
+
+  if (it->second.isNone())
+  {
+    oms2::Variable *v = getVar(var);
+    if (!v)
+      return oms_status_error;
+    if (oms_status_ok != getReal(*v, value))
+      return oms_status_error;
+    it->second = value;
+  }
+  else
+    value = it->second.getValue();
+
+  return oms_status_ok;
+}
+
+oms_status_t oms2::FMUWrapper::setReal(const oms2::Variable& var, double realValue)
+{
+  logTrace();
+  if (!fmu || fmi2_base_type_real != var.getBaseType())
+  {
+    logError("oms2::FMUWrapper::setReal failed");
+    return oms_status_error;
+  }
+
+  fmi2_value_reference_t vr = var.getValueReference();
+  if (fmi2_status_ok != fmi2_import_set_real(fmu, &vr, 1, &realValue))
+    return oms_status_ok;
+
+  return oms_status_error;
 }
 
 oms_status_t oms2::FMUWrapper::getReal(const oms2::Variable& var, double& realValue)

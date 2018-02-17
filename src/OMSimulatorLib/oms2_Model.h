@@ -48,8 +48,15 @@ namespace oms2
 
     static void deleteModel(Model *model) {if (model) delete model;}
 
+    void setStartTime(double value) {startTime = value;}
+    double getStartTime() const {return startTime;}
+    void setStopTime(double value) {stopTime = value;}
+    double getStopTime() const {return stopTime;}
+    void setResultFile(const std::string& value) {resultFile = value;}
+    const std::string& getResultFile() const {return resultFile;}
+
   protected:
-    Model();
+    Model(const ComRef& cref);
     virtual ~Model();
 
   private:
@@ -59,6 +66,9 @@ namespace oms2
 
   protected:
     ComRef name;
+    double startTime;       ///< experiment, default 0.0
+    double stopTime;        ///< experiment, default 1.0
+    std::string resultFile; ///< experiment, default name_res.mat
   };
 }
 

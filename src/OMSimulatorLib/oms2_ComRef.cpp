@@ -144,6 +144,12 @@ oms2::ComRef oms2::ComRef::last() const
   return oms2::ComRef(path.back());
 }
 
+void oms2::ComRef::popLast()
+{
+  if (!path.empty())
+    path.pop_back();
+}
+
 oms2::ComRef& oms2::ComRef::append(const oms2::ComRef& cref)
 {
   for(auto n : cref.path)

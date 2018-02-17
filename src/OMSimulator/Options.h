@@ -67,6 +67,7 @@ public:
   std::string logfile;
   double timeout;
   int logLevel;
+  bool newAPI;
 
 private:
   int argi;

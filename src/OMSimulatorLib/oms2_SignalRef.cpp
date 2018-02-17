@@ -30,6 +30,22 @@
  */
 
 #include "oms2_SignalRef.h"
+#include "oms2_Logging.h"
+
+oms2::SignalRef::SignalRef(const std::string& signal)
+{
+  size_t sep = signal.find(":");
+  if (std::string::npos != sep)
+  {
+    this->cref = oms2::ComRef(signal.substr(0, sep));
+    this->var = signal.substr(sep+1);
+  }
+  else
+  {
+    this->var = signal;
+    logError("Invalid SignalRef: " + signal);
+  }
+}
 
 oms2::SignalRef::SignalRef(const oms2::ComRef& cref, const std::string& var)
 {

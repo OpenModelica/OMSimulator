@@ -53,7 +53,7 @@ oms2::Scope::~Scope()
 {
   // free memory if no one else does
   for (auto it=models.begin(); it != models.end(); it++)
-    oms2::Model::deleteModel(it->second);
+    unloadModel(it->first);
 }
 
 oms2::Scope& oms2::Scope::getInstance()
@@ -111,12 +111,13 @@ oms_status_t oms2::Scope::unloadModel(const ComRef& name)
   auto it = scope.models.find(name);
   if (it == scope.models.end())
   {
-    logError("There is no model called \"" + name + "\" in the scope.");
+    logError("[oms2::Scope::unloadModel] There is no model called \"" + name + "\" in the scope.");
     return oms_status_error;
   }
 
   oms2::Model::deleteModel(it->second);
   scope.models.erase(it);
+  logInfo("Removed model from scope: " + name);
 
   return oms_status_ok;
 }
@@ -163,6 +164,8 @@ oms2::Model* oms2::Scope::getModel(const ComRef& name)
 
 oms2::Model* oms2::Scope::loadModel(const std::string& filename)
 {
+  logTrace();
+
   pugi::xml_document doc;
   pugi::xml_parse_result result = doc.load_file(filename.c_str());
   if (!result)
@@ -173,6 +176,7 @@ oms2::Model* oms2::Scope::loadModel(const std::string& filename)
 
   pugi::xml_node root = doc.document_element();
   oms_component_type_t modelType = oms_component_none;
+  bool defaultExperiment = true;
 
   for(pugi::xml_node_iterator it = root.begin(); it != root.end(); ++it)
   {
@@ -181,6 +185,8 @@ oms2::Model* oms2::Scope::loadModel(const std::string& filename)
       modelType = oms_component_tlm;
     else if (name == "FMIModel" && modelType == oms_component_none)
       modelType = oms_component_fmi;
+    else if (name == "Experiment" && defaultExperiment)
+      defaultExperiment = false;
     else
     {
       logError("[oms2::Scope::loadModel] wrong xml schema detected: \"" + std::string(filename) + "\"");
@@ -188,17 +194,46 @@ oms2::Model* oms2::Scope::loadModel(const std::string& filename)
     }
   }
 
+  oms2::Model* model = NULL;
   if (modelType == oms_component_fmi)
-    return loadFMIModel(root.child("FMIModel"));
+    model = loadFMIModel(root.child("FMIModel"));
   else if (modelType == oms_component_tlm)
-    return loadTLMModel(root.child("TLMModel"));
+    model = loadTLMModel(root.child("TLMModel"));
 
-  logError("[oms2::Scope::loadModel] failed");
-  return NULL;
+  if (!model)
+  {
+    logError("[oms2::Scope::loadModel] failed");
+    return NULL;
+  }
+
+  if (!defaultExperiment)
+  {
+    const pugi::xml_node& experiment = root.child("Experiment");
+    for (auto it = experiment.attributes_begin(); it != experiment.attributes_end(); ++it)
+    {
+      std::string name = it->name();
+      if (name == "StartTime")
+        model->setStartTime(it->as_double());
+      else if (name == "StopTime")
+        model->setStopTime(it->as_double());
+      else if (name == "ResultFile")
+        model->setResultFile(std::string(it->value()));
+      else
+      {
+        logError("[oms2::Scope::loadModel] failed");
+        unloadModel(model->getName());
+        return NULL;
+      }
+    }
+  }
+
+  return model;
 }
 
 oms2::Model* oms2::Scope::loadFMIModel(const pugi::xml_node& xml)
 {
+  logTrace();
+
   // read model name
   std::string ident_;
   for (auto it = xml.attributes_begin(); it != xml.attributes_end(); ++it)
@@ -213,7 +248,7 @@ oms2::Model* oms2::Scope::loadFMIModel(const pugi::xml_node& xml)
   oms_status_t status = newFMIModel(cref_model);
   if (status != oms_status_ok)
   {
-    logError("[oms2::Scope::loadFMIModel]");
+    logError("[oms2::Scope::loadFMIModel] failed");
     return NULL;
   }
 
@@ -295,7 +330,33 @@ oms2::Model* oms2::Scope::loadFMIModel(const pugi::xml_node& xml)
           return NULL;
         }
       }
-    }// instantiate FMUs
+    }// if (node == "SubModel")
+    else if (node == "Connections")
+    {
+      for (auto connection = it->first_child(); connection; connection = connection.next_sibling())
+      {
+        if (std::string(connection.name()) != "Connection")
+        {
+          logError("[oms2::Scope::loadFMIModel] wrong xml schema detected");
+          unloadModel(cref_model);
+          return NULL;
+        }
+
+        std::string sigA = connection.attribute("From").as_string();
+        std::string sigB = connection.attribute("To").as_string();
+        if (oms_status_ok != model->addConnection(SignalRef(sigA), SignalRef(sigB)))
+        {
+          logError("[oms2::Scope::loadFMIModel] wrong xml schema detected");
+          unloadModel(cref_model);
+          return NULL;
+        }
+      }
+    }// if (node == "Connections")
+    else if (node == "Solver")
+    {
+      /// \todo implement xml import for solver settings
+      logWarning("[oms2::Scope::loadFMIModel] Solver");
+    }// if (node == "Solver")
     else
     {
       logError("[oms2::Scope::loadFMIModel] wrong xml schema detected");
