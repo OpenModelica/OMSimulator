@@ -44,6 +44,9 @@
 extern "C"
 {
   #include <OMSimulatorLua.c>
+#ifdef WITH_OMFIT
+  #include <OMFitLua.c>
+#endif
 }
 
 static int do_simulation(void* pModel, std::chrono::duration<double> timeout)
@@ -181,7 +184,9 @@ int main(int argc, char *argv[])
     lua_State *L = luaL_newstate();
     luaL_openlibs(L);
     luaopen_OMSimulatorLua(L);
-
+#ifdef WITH_OMFIT
+    luaopen_OMFitLua(L);
+#endif
     if (luaL_loadfile(L, filename.c_str()))
     {
       std::cout << "FATAL ERROR: luaL_loadfile() failed: " << lua_tostring(L, -1) << std::endl;
