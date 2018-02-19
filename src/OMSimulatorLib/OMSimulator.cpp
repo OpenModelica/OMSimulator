@@ -568,11 +568,10 @@ oms_status_t oms2_loadModel(const char* filename, char** ident)
   return oms_status_ok;
 }
 
-oms_status_t oms2_saveModel(const char* ident, const char* filename)
+oms_status_t oms2_saveModel(const char* filename, const char* ident)
 {
   logTrace();
-  logError("oms2_saveModel: not implemented yet");
-  return oms_status_error;
+  return oms2::Scope::saveModel(filename, oms2::ComRef(ident));
 }
 
 oms_status_t oms2_getIconAnnotation(const char* ident, const void** annotation)

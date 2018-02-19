@@ -46,9 +46,9 @@ namespace oms2
     Option<T>& operator=(Option<T> const& rhs) {this->some = rhs.some; this->value = rhs.value; return *this;}
     Option<T>& operator=(T const& rhs) {this->some = true; this->value = rhs; return *this;}
 
-    inline bool isSome() {return some;}
-    inline bool isNone() {return !isSome();}
-    T getValue() {return value;}
+    inline bool isSome() const {return some;}
+    inline bool isNone() const {return !isSome();}
+    T getValue() const {return value;}
     void setValue(const T& value) {some = true; this->value = value;}
     void setNone() {some = false;}
 

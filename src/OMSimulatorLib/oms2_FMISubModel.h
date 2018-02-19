@@ -43,14 +43,22 @@ namespace oms2
     virtual oms_component_type_t getType() const = 0;
     static void deleteSubModel(FMISubModel *model) {if (model) delete model;}
 
+    const ComRef& getName() const {return cref;}
+    void setGeometry(double x1, double y1, double x2, double y2) {elementGeometry.x1 = x1; elementGeometry.y1 = y1; elementGeometry.x2 = x2; elementGeometry.y2 = y2;}
+    oms_element_geometry_t* getGeometry() {return &elementGeometry;}
+
   protected:
-    FMISubModel();
+    FMISubModel(const ComRef& cref);
     virtual ~FMISubModel();
 
   private:
     // stop the compiler generating methods copying the object
     FMISubModel(FMISubModel const& copy);            // not implemented
     FMISubModel& operator=(FMISubModel const& copy); // not implemented
+
+  protected:
+    ComRef cref;
+    oms_element_geometry_t elementGeometry;
   };
 }
 

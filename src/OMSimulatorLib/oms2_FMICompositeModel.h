@@ -58,6 +58,9 @@ namespace oms2
     oms_status_t addConnection(const oms2::Connection& connection);
     oms_status_t addConnection(const SignalRef& sigA, const SignalRef& sigB);
 
+    const std::map<ComRef, FMISubModel*>& getSubModels() {return subModels;}
+    const std::deque<oms2::Connection>& getConnections() {return connections;}
+
   private:
     FMICompositeModel(const ComRef& name);
     ~FMICompositeModel();

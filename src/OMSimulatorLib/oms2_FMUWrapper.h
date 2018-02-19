@@ -54,6 +54,8 @@ namespace oms2
 
     oms_status_t setRealParameter(const std::string& var, double value);
     oms_status_t getRealParameter(const std::string& var, double& value);
+    const std::string& getFMUPath() const {return filename;}
+    const std::map<std::string, oms2::Option<double>>& getRealParameters() const {return realParameters;}
 
   private:
     oms_status_t setReal(const oms2::Variable& var, double realValue);
@@ -62,10 +64,9 @@ namespace oms2
     oms2::Variable* getVar(const std::string& var);
 
   private:
-    FMUWrapper(const ComRef& ident, const std::string& filename);
+    FMUWrapper(const ComRef& cref, const std::string& filename);
     ~FMUWrapper();
 
-    ComRef cref;
     std::string filename;
     std::vector<oms2::Variable> allVariables;
     std::map<std::string, oms2::Option<double>> realParameters;

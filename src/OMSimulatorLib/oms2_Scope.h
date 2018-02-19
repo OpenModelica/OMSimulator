@@ -34,6 +34,8 @@
 
 #include "oms2_ComRef.h"
 #include "oms2_Model.h"
+#include "oms2_FMICompositeModel.h"
+#include "oms2_TLMCompositeModel.h"
 #include "Types.h"
 
 #include <map>
@@ -53,6 +55,7 @@ namespace oms2
     static oms_status_t renameModel(const ComRef& identOld, const ComRef& identNew);
     static Model* getModel(const ComRef& name);
     static Model* loadModel(const std::string& filename);
+    static oms_status_t saveModel(const std::string& filename, const ComRef& name);
 
     static oms_status_t SetTempDirectory(const std::string& newTempDir);
     static const std::string& GetTempDirectory() {Scope &scope = getInstance(); return scope.tempDir;}
@@ -69,6 +72,9 @@ namespace oms2
 
     static Model* loadFMIModel(const pugi::xml_node& xml);
     static Model* loadTLMModel(const pugi::xml_node& xml);
+
+    oms_status_t saveFMIModel(oms2::FMICompositeModel* model, const std::string& filename);
+    oms_status_t saveTLMModel(oms2::TLMCompositeModel* model, const std::string& filename);
 
   private:
     std::map<ComRef, Model*> models;
