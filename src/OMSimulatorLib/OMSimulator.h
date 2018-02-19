@@ -342,13 +342,21 @@ oms_status_t oms2_getComponentType(const char* ident, oms_component_type_t* type
 /**
  * \brief Loads a FMI composite model from xml representation.
  *
- * @param filename   [in] Full path to the composite model xml representation.
+ * @param filename   [in] Path to the composite model xml representation.
  * @param ident      [out] Name of the imported model.
  * @return           Error status.
  */
 oms_status_t oms2_loadModel(const char* filename, char** ident);
 
-oms_status_t oms2_saveModel(const char* ident, const char* filename);
+/**
+ * \brief Loads a FMI composite model from xml representation.
+ *
+ * @param filename   [in] Path to the xml file; An exisiting file will be overwritten.
+ * @param ident      [in] Name of the imported model.
+ * @return           Error status.
+ */
+oms_status_t oms2_saveModel(const char* filename, const char* ident);
+
 oms_status_t oms2_getIconAnnotation(const char* ident, const void** annotation);
 oms_status_t oms2_setIconAnnotation(const char* ident, const void* annotation);
 oms_status_t oms2_getDiagramAnnotation(const char* ident, const void** annotation);

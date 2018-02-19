@@ -78,11 +78,6 @@ oms2::ComRef& oms2::ComRef::operator=(oms2::ComRef const& copy)
   return *this;
 }
 
-bool oms2::ComRef::operator<(oms2::ComRef const& rhs)
-{
-  return toString() < rhs.toString();
-}
-
 oms2::ComRef oms2::ComRef::operator+(const oms2::ComRef& rhs)
 {
   oms2::ComRef cref = *this;
@@ -156,4 +151,14 @@ oms2::ComRef& oms2::ComRef::append(const oms2::ComRef& cref)
     this->path.push_back(n);
 
   return *this;
+}
+
+std::string oms2::operator+(const std::string& lhs, const oms2::ComRef& rhs)
+{
+  return lhs + rhs.toString();
+}
+
+bool oms2::operator<(const oms2::ComRef& lhs, const oms2::ComRef& rhs)
+{
+  return lhs.toString() < rhs.toString();
 }

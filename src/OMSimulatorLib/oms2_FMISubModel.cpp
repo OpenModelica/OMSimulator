@@ -32,9 +32,14 @@
 #include "oms2_FMISubModel.h"
 #include "oms2_Logging.h"
 
-oms2::FMISubModel::FMISubModel()
+oms2::FMISubModel::FMISubModel(const ComRef& cref)
+  : cref(cref)
 {
   logTrace();
+  elementGeometry.x1 = 0.0;
+  elementGeometry.x2 = 0.0;
+  elementGeometry.y1 = 0.0;
+  elementGeometry.y2 = 0.0;
 }
 
 oms2::FMISubModel::~FMISubModel()

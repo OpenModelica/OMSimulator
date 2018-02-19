@@ -34,6 +34,7 @@
 #include "oms2_Logging.h"
 #include "oms2_Scope.h"
 #include "oms2_TLMCompositeModel.h"
+#include "oms2_FMUWrapper.h"
 #include "Types.h"
 
 #include <iostream>
@@ -183,7 +184,7 @@ oms2::Model* oms2::Scope::loadModel(const std::string& filename)
     std::string name = it->name();
     if (name == "TLMModel" && modelType == oms_component_none)
       modelType = oms_component_tlm;
-    else if (name == "FMIModel" && modelType == oms_component_none)
+    else if (name == "FMICompositeModel" && modelType == oms_component_none)
       modelType = oms_component_fmi;
     else if (name == "Experiment" && defaultExperiment)
       defaultExperiment = false;
@@ -196,7 +197,7 @@ oms2::Model* oms2::Scope::loadModel(const std::string& filename)
 
   oms2::Model* model = NULL;
   if (modelType == oms_component_fmi)
-    model = loadFMIModel(root.child("FMIModel"));
+    model = loadFMIModel(root.child("FMICompositeModel"));
   else if (modelType == oms_component_tlm)
     model = loadTLMModel(root.child("TLMModel"));
 
@@ -239,7 +240,7 @@ oms2::Model* oms2::Scope::loadFMIModel(const pugi::xml_node& xml)
   for (auto it = xml.attributes_begin(); it != xml.attributes_end(); ++it)
   {
     std::string name = it->name();
-    if (name == "Name")
+    if (name == "name")
       ident_ = it->value();
   }
 
@@ -397,3 +398,123 @@ oms_status_t oms2::Scope::SetTempDirectory(const std::string& newTempDir)
   logInfo("new temp directory: \"" + std::string(scope.tempDir) + "\"");
   return oms_status_ok;
 }
+
+oms_status_t oms2::Scope::saveModel(const std::string& filename, const ComRef& name)
+{
+  oms2::Scope& scope = oms2::Scope::getInstance();
+  oms2::Model* model = oms2::Scope::getModel(name);
+  if (!model)
+    return oms_status_error;
+
+  switch (model->getType())
+  {
+  case oms_component_fmi:
+    return scope.saveFMIModel(dynamic_cast<oms2::FMICompositeModel*>(model), filename);
+
+  case oms_component_tlm:
+    return scope.saveTLMModel(dynamic_cast<oms2::TLMCompositeModel*>(model), filename);
+  }
+
+  return oms_status_error;
+}
+
+oms_status_t oms2::Scope::saveFMIModel(oms2::FMICompositeModel* model, const std::string& filename)
+{
+  pugi::xml_document doc;
+  std::string value;
+
+  // generate XML declaration
+  pugi::xml_node declarationNode = doc.append_child(pugi::node_declaration);
+  declarationNode.append_attribute("version") = "1.0";
+  declarationNode.append_attribute("encoding") = "UTF-8";
+  pugi::xml_node compositeModel = doc.append_child("ssd:SystemStructureDescription");
+  pugi::xml_node fmiCompositeModel = compositeModel.append_child("FMICompositeModel");
+  pugi::xml_node experiment = compositeModel.append_child("Experiment");
+
+  // ssd:SystemStructureDescription
+  compositeModel.append_attribute("xmlns:ssc") = "http://www.pmsf.net/xsd/SystemStructureCommonDraft";
+  compositeModel.append_attribute("xmlns:ssd") = "http://www.pmsf.net/xsd/SystemStructureDescriptionDraft";
+  compositeModel.append_attribute("xmlns:xsi") = "http://www.w3.org/2001/XMLSchema-instance";
+  compositeModel.append_attribute("xsi:schemaLocation") = "http://www.pmsf.net/xsd/SystemStructureDescriptionDraft http://www.pmsf.net/xsd/SSP/Draft20170606/SystemStructureDescription.xsd";
+  value = model->getName().toString();
+
+  fmiCompositeModel.append_attribute("name") = value.c_str();
+  const std::map<oms2::ComRef, oms2::FMISubModel*>& subModels = model->getSubModels();
+  for (auto it=subModels.begin(); it != subModels.end(); it++)
+  {
+    pugi::xml_node subModel = fmiCompositeModel.append_child("SubModel");
+    value = it->first.toString();
+    subModel.append_attribute("Name") = value.c_str();
+
+    // ssd:ElementGeometry
+    oms_element_geometry_t* elementGeometry = it->second->getGeometry();
+    if (elementGeometry->y1 != elementGeometry->y2)
+    {
+      pugi::xml_node node = subModel.append_child("ssd:ElementGeometry");
+      value = std::to_string(elementGeometry->x1);
+      subModel.append_attribute("x1") = value.c_str();
+      value = std::to_string(elementGeometry->y1);
+      subModel.append_attribute("y1") = value.c_str();
+      value = std::to_string(elementGeometry->x2);
+      subModel.append_attribute("x2") = value.c_str();
+      value = std::to_string(elementGeometry->y2);
+      subModel.append_attribute("y2") = value.c_str();
+    }
+    if (oms_component_fmu == it->second->getType())
+    {
+      subModel.append_attribute("Type") = "FMU";
+
+      oms2::FMUWrapper* fmuWrapper = dynamic_cast<oms2::FMUWrapper*>(it->second);
+      const std::string& fmuPath = fmuWrapper->getFMUPath();
+      subModel.append_attribute("ModelFile") = fmuPath.c_str();
+
+      const std::map<std::string, oms2::Option<double>>& realParameters = fmuWrapper->getRealParameters();
+      for (auto it=realParameters.begin(); it != realParameters.end(); it++)
+      {
+        if (it->second.isSome())
+        {
+          pugi::xml_node parameter = subModel.append_child("Parameter");
+          parameter.append_attribute("Type") = "Real";
+          value = it->first;
+          parameter.append_attribute("Name") = value.c_str();
+          value = std::to_string(it->second.getValue());
+          parameter.append_attribute("Value") = value.c_str();
+        }
+      }
+    }
+    else
+      logWarning("SubModel is not an FMU");
+  }
+
+  pugi::xml_node nodeConnections = fmiCompositeModel.append_child("Connections");
+  const std::deque<oms2::Connection>& connections = model->getConnections();
+  for (auto const &connection : connections)
+  {
+    pugi::xml_node node = nodeConnections.append_child("Connection");
+    value = connection.getSignalA().toString();
+    node.append_attribute("From") = value.c_str();
+    value = connection.getSignalB().toString();
+    node.append_attribute("To") = value.c_str();
+  }
+
+  // add experiment settings
+  value = std::to_string(model->getStartTime());
+  experiment.append_attribute("StartTime") = value.c_str();
+  value = std::to_string(model->getStopTime());
+  experiment.append_attribute("StopTime") = value.c_str();
+  value = model->getResultFile();
+  experiment.append_attribute("ResultFile") = value.c_str();
+
+  if (!doc.save_file(filename.c_str()))
+  {
+    logError("[oms2::Scope::saveFMIModel] xml export failed for " + filename);
+    return oms_status_error;
+  }
+  return oms_status_ok;
+}
+
+oms_status_t oms2::Scope::saveTLMModel(oms2::TLMCompositeModel* model, const std::string& filename)
+{
+  return oms_status_error;
+}
+

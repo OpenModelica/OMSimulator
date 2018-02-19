@@ -108,6 +108,21 @@ typedef struct {
   const char* message;
 } oms_message_t;
 
+/** ssd:ElementGeometry */
+typedef struct {
+  double x1;
+  double y1;
+  double x2;
+  double y2;
+} oms_element_geometry_t;
+
+/** ssd:ConnectionGeometry */
+typedef struct {
+  double* pointsX;
+  double* pointsY;
+  unsigned int n;
+} oms_connection_geometry_t;
+
 #ifdef __cplusplus
 }
 #endif

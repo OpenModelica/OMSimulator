@@ -94,8 +94,8 @@ void oms2::fmi2logger(fmi2_component_environment_t env, fmi2_string_t instanceNa
 }
 
 oms2::FMUWrapper::FMUWrapper(const oms2::ComRef& cref, const std::string& filename)
+  : oms2::FMISubModel(cref)
 {
-  this->cref = cref;
   this->filename = filename;
 
   this->context = NULL;

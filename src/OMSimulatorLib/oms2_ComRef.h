@@ -50,7 +50,6 @@ namespace oms2
     // methods to copy the component reference
     ComRef(ComRef const& copy);
     ComRef& operator=(ComRef const& copy);
-    bool operator<(const ComRef& rhs);
     ComRef operator+(const ComRef& rhs);
 
     static bool isValidIdent(const std::string& ident);
@@ -71,15 +70,8 @@ namespace oms2
     std::deque<std::string> path;
   };
 
-  static std::string operator+(const std::string& lhs, const ComRef& rhs)
-  {
-    return lhs + rhs.toString();
-  }
-
-  static bool operator<(const ComRef& lhs, const ComRef& rhs)
-  {
-    return lhs.toString() < rhs.toString();
-  }
+  std::string operator+(const std::string& lhs, const ComRef& rhs);
+  bool operator<(const ComRef& lhs, const ComRef& rhs);
 }
 
 #endif

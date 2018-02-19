@@ -56,6 +56,9 @@ namespace oms2
     Connection(const Connection& rhs);
     Connection& operator=(const Connection& rhs);
 
+    const oms2::SignalRef& getSignalA() const {return conA;}
+    const oms2::SignalRef& getSignalB() const {return conB;}
+
   private:
     oms2::SignalRef conA;
     oms2::SignalRef conB;
