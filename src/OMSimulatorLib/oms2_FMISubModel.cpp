@@ -40,6 +40,10 @@ oms2::FMISubModel::FMISubModel(const ComRef& cref)
   geometry.x2 = 0.0;
   geometry.y1 = 0.0;
   geometry.y2 = 0.0;
+
+  component.name = cref.toString().c_str();
+  component.type = oms_component_none;
+  component.interfaces = NULL;
 }
 
 oms2::FMISubModel::~FMISubModel()

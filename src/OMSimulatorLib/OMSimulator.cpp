@@ -586,11 +586,10 @@ oms_status_t oms2_setElementGeometry(const char* cref, const oms_element_geometr
   return oms2::Scope::setElementGeometry(oms2::ComRef(cref), geometry);
 }
 
-oms_status_t oms2_getComponents(const char* cref, const oms_component_t** oms_component)
+oms_status_t oms2_getComponents(const char* cref, oms_component_t*** components)
 {
   logTrace();
-  logError("oms2_getComponents: not implemented yet");
-  return oms_status_error;
+  return oms2::Scope::getComponents(oms2::ComRef(cref), components);
 }
 
 oms_status_t oms2_getConnections(const char* cref, const oms_connection_t** oms_connections)

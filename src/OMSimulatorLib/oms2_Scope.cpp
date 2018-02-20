@@ -629,3 +629,29 @@ oms_status_t oms2::Scope::setElementGeometry(const oms2::ComRef& cref, const oms
   return oms_status_error;
 }
 
+oms_status_t oms2::Scope::getComponents(const oms2::ComRef& cref, oms_component_t*** components)
+{
+  oms2::Scope& scope = oms2::Scope::getInstance();
+
+  if (!components)
+  {
+    logWarning("[oms2::Scope::getComponents] NULL pointer");
+    return oms_status_warning;
+  }
+
+  if (cref.isIdent())
+  {
+    // Model
+    Model* model = scope.getModel(cref);
+    if (!model)
+    {
+      logError("[oms2::Scope::getComponents] failed");
+      return oms_status_error;
+    }
+    *components = model->getComponents();
+    return oms_status_ok;
+  }
+
+  logError("[oms2::Scope::getComponents] is only implemented for FMI models yet");
+  return oms_status_error;
+}
