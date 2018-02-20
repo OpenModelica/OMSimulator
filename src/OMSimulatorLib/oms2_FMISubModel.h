@@ -44,8 +44,9 @@ namespace oms2
     static void deleteSubModel(FMISubModel *model) {if (model) delete model;}
 
     const ComRef& getName() const {return cref;}
-    void setGeometry(double x1, double y1, double x2, double y2) {elementGeometry.x1 = x1; elementGeometry.y1 = y1; elementGeometry.x2 = x2; elementGeometry.y2 = y2;}
-    oms_element_geometry_t* getGeometry() {return &elementGeometry;}
+    void setGeometry(double x1, double y1, double x2, double y2) {geometry.x1 = x1; geometry.y1 = y1; geometry.x2 = x2; geometry.y2 = y2;}
+    void setGeometry(const oms_element_geometry_t& geometry) {this->geometry = geometry;}
+    oms_element_geometry_t* getGeometry() {return &geometry;}
 
   protected:
     FMISubModel(const ComRef& cref);
@@ -58,7 +59,7 @@ namespace oms2
 
   protected:
     ComRef cref;
-    oms_element_geometry_t elementGeometry;
+    oms_element_geometry_t geometry;
   };
 }
 

@@ -50,14 +50,15 @@ namespace oms2
     static FMICompositeModel* newModel(const ComRef& name);
 
     oms_component_type_t getType() {return oms_component_fmi;}
-    oms_status_t instantiateFMU(const std::string& filename, ComRef cref);
-    oms_status_t instantiateTable(const std::string& filename, ComRef cref);
+    oms_status_t instantiateFMU(const std::string& filename, const ComRef& cref);
+    oms_status_t instantiateTable(const std::string& filename, const ComRef& cref);
 
     oms_status_t setRealParameter(const oms2::SignalRef& sr, double value);
 
     oms_status_t addConnection(const oms2::Connection& connection);
     oms_status_t addConnection(const SignalRef& sigA, const SignalRef& sigB);
 
+    FMISubModel* getSubModel(const ComRef& cref);
     const std::map<ComRef, FMISubModel*>& getSubModels() {return subModels;}
     const std::deque<oms2::Connection>& getConnections() {return connections;}
 

@@ -151,10 +151,8 @@ oms_status_t oms2::Scope::renameModel(const ComRef& identOld, const ComRef& iden
 
 oms2::Model* oms2::Scope::getModel(const ComRef& name)
 {
-  Scope& scope = oms2::Scope::getInstance();
-
-  auto it = scope.models.find(name);
-  if (it == scope.models.end())
+  auto it = models.find(name);
+  if (it == models.end())
   {
     logWarning("oms2::Scope::getModel: There is no model called \"" + name + "\" in the scope.");
     return NULL;
@@ -234,6 +232,7 @@ oms2::Model* oms2::Scope::loadModel(const std::string& filename)
 oms2::Model* oms2::Scope::loadFMIModel(const pugi::xml_node& xml)
 {
   logTrace();
+  oms2::Scope& scope = oms2::Scope::getInstance();
 
   // read model name
   std::string ident_;
@@ -254,7 +253,7 @@ oms2::Model* oms2::Scope::loadFMIModel(const pugi::xml_node& xml)
   }
 
   // import components
-  FMICompositeModel* model = dynamic_cast<FMICompositeModel*>(getModel(cref_model));
+  FMICompositeModel* model = dynamic_cast<FMICompositeModel*>(scope.getModel(cref_model));
 
   for (auto it = xml.begin(); it != xml.end(); ++it)
   {
@@ -402,7 +401,7 @@ oms_status_t oms2::Scope::SetTempDirectory(const std::string& newTempDir)
 oms_status_t oms2::Scope::saveModel(const std::string& filename, const ComRef& name)
 {
   oms2::Scope& scope = oms2::Scope::getInstance();
-  oms2::Model* model = oms2::Scope::getModel(name);
+  oms2::Model* model = scope.getModel(name);
   if (!model)
     return oms_status_error;
 
@@ -515,6 +514,118 @@ oms_status_t oms2::Scope::saveFMIModel(oms2::FMICompositeModel* model, const std
 
 oms_status_t oms2::Scope::saveTLMModel(oms2::TLMCompositeModel* model, const std::string& filename)
 {
+  return oms_status_error;
+}
+
+oms_status_t oms2::Scope::getElementGeometry(const oms2::ComRef& cref, const oms_element_geometry_t** geometry)
+{
+  oms2::Scope& scope = oms2::Scope::getInstance();
+
+  if (!geometry)
+  {
+    logWarning("[oms2::Scope::getElementGeometry] NULL pointer");
+    return oms_status_warning;
+  }
+
+  if (cref.isIdent())
+  {
+    // Model
+    Model* model = scope.getModel(cref);
+    if (!model)
+    {
+      logError("[oms2::Scope::getElementGeometry] failed");
+      return oms_status_error;
+    }
+    *geometry = model->getGeometry();
+    return oms_status_ok;
+  }
+  else
+  {
+    // Sub-model
+    ComRef modelCref = cref.first();
+    Model* model = scope.getModel(modelCref);
+    if (!model)
+    {
+      logError("[oms2::Scope::getElementGeometry] failed");
+      return oms_status_error;
+    }
+
+    // FMI model?
+    if (oms_component_fmi == model->getType())
+    {
+      FMICompositeModel* fmiModel = dynamic_cast<FMICompositeModel*>(model);
+      FMISubModel* subModel = fmiModel->getSubModel(cref);
+      if (!subModel)
+      {
+        logError("[oms2::Scope::getElementGeometry] failed");
+        return oms_status_error;
+      }
+      *geometry = subModel->getGeometry();
+      return oms_status_ok;
+    }
+    else
+    {
+      logError("[oms2::Scope::getElementGeometry] is only implemented for FMI models yet");
+      return oms_status_error;
+    }
+  }
+
+  return oms_status_error;
+}
+
+oms_status_t oms2::Scope::setElementGeometry(const oms2::ComRef& cref, const oms_element_geometry_t* geometry)
+{
+  oms2::Scope& scope = oms2::Scope::getInstance();
+
+  if (!geometry)
+  {
+    logWarning("[oms2::Scope::setElementGeometry] NULL pointer");
+    return oms_status_warning;
+  }
+
+  if (cref.isIdent())
+  {
+    // Model
+    Model* model = scope.getModel(cref);
+    if (!model)
+    {
+      logError("[oms2::Scope::setElementGeometry] failed");
+      return oms_status_error;
+    }
+    model->setGeometry(*geometry);
+    return oms_status_ok;
+  }
+  else
+  {
+    // Sub-model
+    ComRef modelCref = cref.first();
+    Model* model = scope.getModel(modelCref);
+    if (!model)
+    {
+      logError("[oms2::Scope::setElementGeometry] failed");
+      return oms_status_error;
+    }
+
+    // FMI model?
+    if (oms_component_fmi == model->getType())
+    {
+      FMICompositeModel* fmiModel = dynamic_cast<FMICompositeModel*>(model);
+      FMISubModel* subModel = fmiModel->getSubModel(cref);
+      if (!subModel)
+      {
+        logError("[oms2::Scope::setElementGeometry] failed");
+        return oms_status_error;
+      }
+      subModel->setGeometry(*geometry);
+      return oms_status_ok;
+    }
+    else
+    {
+      logError("[oms2::Scope::setElementGeometry] is only implemented for FMI models yet");
+      return oms_status_error;
+    }
+  }
+
   return oms_status_error;
 }
 

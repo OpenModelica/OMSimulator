@@ -357,14 +357,15 @@ oms_status_t oms2_loadModel(const char* filename, char** ident);
  */
 oms_status_t oms2_saveModel(const char* filename, const char* ident);
 
-oms_status_t oms2_getIconAnnotation(const char* ident, const void** annotation);
-oms_status_t oms2_setIconAnnotation(const char* ident, const void* annotation);
-oms_status_t oms2_getDiagramAnnotation(const char* ident, const void** annotation);
-oms_status_t oms2_setDiagramAnnotation(const char* ident, const void* annotation);
-oms_status_t oms2_getComponents(const char* ident, const oms_component_t** oms_component);
-oms_status_t oms2_getConnections(const char* ident, const oms_connection_t** oms_connections);
-oms_status_t oms2_getConnectionAnnotation(const char* identA, const char* identB, const char** annotation);
-oms_status_t oms2_setConnectionAnnotation(const char* identA, const char* identB, const char** annotation);
+oms_status_t oms2_getElementGeometry(const char* cref, const oms_element_geometry_t** geometry);
+oms_status_t oms2_setElementGeometry(const char* cref, const oms_element_geometry_t* geometry);
+
+oms_status_t oms2_getComponents(const char* cref, const oms_component_t** oms_component);
+oms_status_t oms2_getConnections(const char* cref, const oms_connection_t** oms_connections);
+
+oms_status_t oms2_getConnectionGeometry(const char* signalA, const char* signalB, const oms_connection_geometry_t** geometry);
+oms_status_t oms2_setConnectionGeometry(const char* signalA, const char* signalB, const oms_connection_geometry_t* geometry);
+
 oms_status_t oms2_simulate_asynchronous(const char* ident, void (*cb)(const char* ident, double time, oms_status_t status));
 
 /**

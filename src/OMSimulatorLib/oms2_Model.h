@@ -55,6 +55,10 @@ namespace oms2
     void setResultFile(const std::string& value) {resultFile = value;}
     const std::string& getResultFile() const {return resultFile;}
 
+    void setGeometry(double x1, double y1, double x2, double y2) {geometry.x1 = x1; geometry.y1 = y1; geometry.x2 = x2; geometry.y2 = y2;}
+    void setGeometry(const oms_element_geometry_t& geometry) {this->geometry = geometry;}
+    oms_element_geometry_t* getGeometry() {return &geometry;}
+
   protected:
     Model(const ComRef& cref);
     virtual ~Model();
@@ -66,6 +70,7 @@ namespace oms2
 
   protected:
     ComRef name;
+    oms_element_geometry_t geometry;
     double startTime;       ///< experiment, default 0.0
     double stopTime;        ///< experiment, default 1.0
     std::string resultFile; ///< experiment, default name_res.mat
