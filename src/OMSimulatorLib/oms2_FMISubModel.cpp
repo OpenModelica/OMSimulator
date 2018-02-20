@@ -36,10 +36,10 @@ oms2::FMISubModel::FMISubModel(const ComRef& cref)
   : cref(cref)
 {
   logTrace();
-  elementGeometry.x1 = 0.0;
-  elementGeometry.x2 = 0.0;
-  elementGeometry.y1 = 0.0;
-  elementGeometry.y2 = 0.0;
+  geometry.x1 = 0.0;
+  geometry.x2 = 0.0;
+  geometry.y1 = 0.0;
+  geometry.y2 = 0.0;
 }
 
 oms2::FMISubModel::~FMISubModel()

@@ -60,7 +60,7 @@ oms2::FMICompositeModel* oms2::FMICompositeModel::newModel(const ComRef& name)
   return model;
 }
 
-oms_status_t oms2::FMICompositeModel::instantiateFMU(const std::string& filename, oms2::ComRef cref)
+oms_status_t oms2::FMICompositeModel::instantiateFMU(const std::string& filename, const oms2::ComRef& cref)
 {
   if (!cref.isValidIdent())
     return oms_status_error;
@@ -81,7 +81,7 @@ oms_status_t oms2::FMICompositeModel::instantiateFMU(const std::string& filename
   return oms_status_ok;
 }
 
-oms_status_t oms2::FMICompositeModel::instantiateTable(const std::string& filename, oms2::ComRef cref)
+oms_status_t oms2::FMICompositeModel::instantiateTable(const std::string& filename, const oms2::ComRef& cref)
 {
   logError("[oms2::FMICompositeModel::instantiateTable] not implemented yet");
   return oms_status_error;
@@ -116,4 +116,16 @@ oms_status_t oms2::FMICompositeModel::addConnection(const oms2::Connection& conn
   /// \todo check the connection
   connections.push_back(connection);
   return oms_status_ok;
+}
+
+oms2::FMISubModel* oms2::FMICompositeModel::getSubModel(const oms2::ComRef& cref)
+{
+  auto it = subModels.find(cref.last());
+  if (it == subModels.end())
+  {
+    logError("No submodel called \"" + cref + "\" found.");
+    return NULL;
+  }
+
+  return it->second;
 }

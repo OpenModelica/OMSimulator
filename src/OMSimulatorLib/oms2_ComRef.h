@@ -62,6 +62,7 @@ namespace oms2
     bool isIdent() const;     // true if non-qualifed component name, e.g. x
 
     std::string toString() const;
+    ComRef first() const;
     ComRef last() const;
     void popLast();
     ComRef& append(const ComRef& cref);

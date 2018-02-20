@@ -574,59 +574,43 @@ oms_status_t oms2_saveModel(const char* filename, const char* ident)
   return oms2::Scope::saveModel(filename, oms2::ComRef(ident));
 }
 
-oms_status_t oms2_getIconAnnotation(const char* ident, const void** annotation)
+oms_status_t oms2_getElementGeometry(const char* cref, const oms_element_geometry_t** geometry)
 {
   logTrace();
-  logError("oms2_getIconAnnotation: not implemented yet");
-  return oms_status_error;
+  return oms2::Scope::getElementGeometry(oms2::ComRef(cref), geometry);
 }
 
-oms_status_t oms2_setIconAnnotation(const char* ident, const void* annotation)
+oms_status_t oms2_setElementGeometry(const char* cref, const oms_element_geometry_t* geometry)
 {
   logTrace();
-  logError("oms2_setIconAnnotation: not implemented yet");
-  return oms_status_error;
+  return oms2::Scope::setElementGeometry(oms2::ComRef(cref), geometry);
 }
 
-oms_status_t oms2_getDiagramAnnotation(const char* ident, const void** annotation)
-{
-  logTrace();
-  logError("oms2_getDiagramAnnotation: not implemented yet");
-  return oms_status_error;
-}
-
-oms_status_t oms2_setDiagramAnnotation(const char* ident, const void* annotation)
-{
-  logTrace();
-  logError("oms2_setDiagramAnnotation: not implemented yet");
-  return oms_status_error;
-}
-
-oms_status_t oms2_getComponents(const char* ident, const oms_component_t** oms_component)
+oms_status_t oms2_getComponents(const char* cref, const oms_component_t** oms_component)
 {
   logTrace();
   logError("oms2_getComponents: not implemented yet");
   return oms_status_error;
 }
 
-oms_status_t oms2_getConnections(const char* ident, const oms_component_t** oms_connections)
+oms_status_t oms2_getConnections(const char* cref, const oms_connection_t** oms_connections)
 {
   logTrace();
   logError("oms2_getConnections: not implemented yet");
   return oms_status_error;
 }
 
-oms_status_t oms2_getConnectionAnnotation(const char* identA, const char* identB, const char** annotation)
+oms_status_t oms2_getConnectionGeometry(const char* signalA, const char* signalB, const oms_connection_geometry_t** geometry)
 {
   logTrace();
-  logError("oms2_getConnectionAnnotation: not implemented yet");
+  logError("oms2_getConnectionGeometry: not implemented yet");
   return oms_status_error;
 }
 
-oms_status_t oms2_setConnectionAnnotation(const char* identA, const char* identB, const char** annotation)
+oms_status_t oms2_setConnectionGeometry(const char* signalA, const char* signalB, const oms_connection_geometry_t* geometry)
 {
   logTrace();
-  logError("oms2_setConnectionAnnotation: not implemented yet");
+  logError("oms2_setConnectionGeometry: not implemented yet");
   return oms_status_error;
 }
 

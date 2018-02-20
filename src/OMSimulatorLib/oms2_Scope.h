@@ -53,12 +53,15 @@ namespace oms2
     static oms_status_t newTLMModel(const ComRef& name);
     static oms_status_t unloadModel(const ComRef& name);
     static oms_status_t renameModel(const ComRef& identOld, const ComRef& identNew);
-    static Model* getModel(const ComRef& name);
+    Model* getModel(const ComRef& name);
     static Model* loadModel(const std::string& filename);
     static oms_status_t saveModel(const std::string& filename, const ComRef& name);
 
     static oms_status_t SetTempDirectory(const std::string& newTempDir);
     static const std::string& GetTempDirectory() {Scope &scope = getInstance(); return scope.tempDir;}
+
+    static oms_status_t getElementGeometry(const ComRef& cref, const oms_element_geometry_t** geometry);
+    static oms_status_t setElementGeometry(const ComRef& cref, const oms_element_geometry_t* geometry);
 
   private:
     Scope();

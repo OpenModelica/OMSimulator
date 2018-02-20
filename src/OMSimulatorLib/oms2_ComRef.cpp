@@ -131,6 +131,14 @@ std::string oms2::ComRef::toString() const
   return buf;
 }
 
+oms2::ComRef oms2::ComRef::first() const
+{
+  if (path.empty())
+    return oms2::ComRef();
+
+  return oms2::ComRef(path.front());
+}
+
 oms2::ComRef oms2::ComRef::last() const
 {
   if (path.empty())
