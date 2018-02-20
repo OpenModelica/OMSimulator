@@ -61,6 +61,7 @@ namespace oms2
     FMISubModel* getSubModel(const ComRef& cref);
     const std::map<ComRef, FMISubModel*>& getSubModels() {return subModels;}
     const std::deque<oms2::Connection>& getConnections() {return connections;}
+    oms_connection_t** getOMSConnections();
 
     void updateComponents();
 
@@ -75,6 +76,7 @@ namespace oms2
   private:
     std::map<ComRef, FMISubModel*> subModels;
     std::deque<oms2::Connection> connections;
+    oms_connection_t** oms_connections;
   };
 }
 

@@ -39,6 +39,8 @@ oms2::FMICompositeModel::FMICompositeModel(const ComRef& name)
   : oms2::Model(name)
 {
   logTrace();
+
+  oms_connections = NULL;
 }
 
 oms2::FMICompositeModel::~FMICompositeModel()
@@ -46,6 +48,13 @@ oms2::FMICompositeModel::~FMICompositeModel()
   // free memory if no one else does
   for (auto it=subModels.begin(); it != subModels.end(); it++)
     oms2::FMISubModel::deleteSubModel(it->second);
+
+  if (oms_connections)
+  {
+    for (oms_connection_t* p = oms_connections[0]; p; p++)
+      delete p;
+    delete[] oms_connections;
+  }
 }
 
 oms2::FMICompositeModel* oms2::FMICompositeModel::newModel(const ComRef& name)
@@ -126,6 +135,14 @@ oms_status_t oms2::FMICompositeModel::addConnection(const oms2::SignalRef& sigA,
 oms_status_t oms2::FMICompositeModel::addConnection(const oms2::Connection& connection)
 {
   /// \todo check the connection
+  if (oms_connections)
+  {
+    for (oms_connection_t* p = oms_connections[0]; p; p++)
+      delete p;
+    delete[] oms_connections;
+    oms_connections = NULL;
+  }
+
   connections.push_back(connection);
   return oms_status_ok;
 }
@@ -155,4 +172,22 @@ void oms2::FMICompositeModel::updateComponents()
   int i=0;
   for (auto& it : subModels)
     components[i++] = it.second->getComponent();
+}
+
+oms_connection_t** oms2::FMICompositeModel::getOMSConnections()
+{
+  if (oms_connections)
+    return oms_connections;
+
+  oms_connections = new oms_connection_t*[connections.size() + 1];
+  oms_connections[connections.size()] = NULL;
+
+  int i=0;
+  for (auto& it : connections)
+  {
+    oms_connections[i] = new oms_connection_t;
+    oms_connections[i]->type = oms_connection_fmi;
+    oms_connections[i]->from = it.getSignalA().toString().c_str();
+    oms_connections[i]->to = it.getSignalB().toString().c_str();
+  }
 }
