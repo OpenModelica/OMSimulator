@@ -118,7 +118,7 @@ oms_status_t omsfit_addMeasurement(void* fitmodel, size_t iSeries, const char* v
 oms_status_t omsfit_addParameter(void* fitmodel, const char* var, double startvalue);
 
 /**
- * \brief Add parameter that should be estimated.
+ * \brief Get parameter that should be estimated.
  *
  * \warning Unless omsfit_solve returned succesfully, estimatedvalue will be garbage
  *
