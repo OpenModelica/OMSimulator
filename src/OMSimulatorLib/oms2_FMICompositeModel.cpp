@@ -77,12 +77,24 @@ oms_status_t oms2::FMICompositeModel::instantiateFMU(const std::string& filename
   if (!subModel)
     return oms_status_error;
 
+  if (components)
+  {
+    delete[] components;
+    components = NULL;
+  }
+
   subModels[cref] = subModel;
   return oms_status_ok;
 }
 
 oms_status_t oms2::FMICompositeModel::instantiateTable(const std::string& filename, const oms2::ComRef& cref)
 {
+  if (components)
+  {
+    delete[] components;
+    components = NULL;
+  }
+
   logError("[oms2::FMICompositeModel::instantiateTable] not implemented yet");
   return oms_status_error;
 }
@@ -128,4 +140,19 @@ oms2::FMISubModel* oms2::FMICompositeModel::getSubModel(const oms2::ComRef& cref
   }
 
   return it->second;
+}
+
+void oms2::FMICompositeModel::updateComponents()
+{
+  logTrace();
+
+  if (components)
+    delete[] components;
+
+  components = new oms_component_t*[subModels.size() + 1];
+  components[subModels.size()] = NULL;
+
+  int i=0;
+  for (auto& it : subModels)
+    components[i++] = it.second->getComponent();
 }

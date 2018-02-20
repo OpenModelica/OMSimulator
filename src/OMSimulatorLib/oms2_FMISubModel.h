@@ -48,6 +48,8 @@ namespace oms2
     void setGeometry(const oms_element_geometry_t& geometry) {this->geometry = geometry;}
     oms_element_geometry_t* getGeometry() {return &geometry;}
 
+    oms_component_t* getComponent() {return &component;}
+
   protected:
     FMISubModel(const ComRef& cref);
     virtual ~FMISubModel();
@@ -60,6 +62,7 @@ namespace oms2
   protected:
     ComRef cref;
     oms_element_geometry_t geometry;
+    oms_component_t component;
   };
 }
 

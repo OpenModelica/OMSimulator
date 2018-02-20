@@ -62,6 +62,8 @@ namespace oms2
     const std::map<ComRef, FMISubModel*>& getSubModels() {return subModels;}
     const std::deque<oms2::Connection>& getConnections() {return connections;}
 
+    void updateComponents();
+
   private:
     FMICompositeModel(const ComRef& name);
     ~FMICompositeModel();

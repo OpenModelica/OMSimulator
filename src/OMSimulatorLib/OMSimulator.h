@@ -357,11 +357,41 @@ oms_status_t oms2_loadModel(const char* filename, char** ident);
  */
 oms_status_t oms2_saveModel(const char* filename, const char* ident);
 
+/**
+ * \brief Get geometry information of a given component (i.e. model or sub-model).
+ *
+ * @param cref       [in] Full identifier of a component.
+ * @param geometry   [out] Geometry information.
+ * @return           Error status.
+ */
 oms_status_t oms2_getElementGeometry(const char* cref, const oms_element_geometry_t** geometry);
+
+/**
+ * \brief Set geometry information of a given component (i.e. model or sub-model).
+ *
+ * @param cref       [in] Full identifier of a component.
+ * @param geometry   [in] Geometry information.
+ * @return           Error status.
+ */
 oms_status_t oms2_setElementGeometry(const char* cref, const oms_element_geometry_t* geometry);
 
-oms_status_t oms2_getComponents(const char* cref, const oms_component_t** oms_component);
-oms_status_t oms2_getConnections(const char* cref, const oms_connection_t** oms_connections);
+/**
+ * \brief Get list of all sub-components of a given component.
+ *
+ * @param cref         [in] Full identifier of a component.
+ * @param components   [out] Array of sub-components (null-terminated array)
+ * @return             Error status.
+ */
+oms_status_t oms2_getComponents(const char* cref, oms_component_t*** components);
+
+/**
+ * \brief Get list of all connections of a given component.
+ *
+ * @param cref          [in] Full identifier of a component.
+ * @param connections   [out] Array of connections (null-terminated array)
+ * @return              Error status.
+ */
+oms_status_t oms2_getConnections(const char* cref, const oms_connection_t** connections);
 
 oms_status_t oms2_getConnectionGeometry(const char* signalA, const char* signalB, const oms_connection_geometry_t** geometry);
 oms_status_t oms2_setConnectionGeometry(const char* signalA, const char* signalB, const oms_connection_geometry_t* geometry);

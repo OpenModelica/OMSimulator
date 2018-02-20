@@ -63,6 +63,7 @@ namespace oms2
     static oms_status_t getElementGeometry(const ComRef& cref, const oms_element_geometry_t** geometry);
     static oms_status_t setElementGeometry(const ComRef& cref, const oms_element_geometry_t* geometry);
 
+    static oms_status_t getComponents(const ComRef& cref, oms_component_t*** components);
   private:
     Scope();
     ~Scope();

@@ -30,6 +30,8 @@
  */
 
 #include "oms2_Model.h"
+
+#include "oms2_FMICompositeModel.h"
 #include "oms2_Logging.h"
 
 #include <regex>
@@ -46,8 +48,30 @@ oms2::Model::Model(const ComRef& cref)
   startTime = 0.0;
   stopTime = 1.0;
   resultFile = name.toString() + "_res.mat";
+
+  components = NULL;
 }
 
 oms2::Model::~Model()
 {
+  if (components)
+    delete[] components;
+}
+
+oms_component_t** oms2::Model::getComponents()
+{
+  logTrace();
+
+  if (components)
+    return components;
+
+  if (oms_component_fmi == getType())
+  {
+    FMICompositeModel* fmiModel = dynamic_cast<FMICompositeModel*>(this);
+    fmiModel->updateComponents();
+    return components;
+  }
+
+  logError("[oms2::Model::getComponents] only implemented for FMI composite models");
+  return NULL;
 }

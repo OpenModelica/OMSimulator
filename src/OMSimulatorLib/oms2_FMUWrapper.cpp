@@ -100,6 +100,9 @@ oms2::FMUWrapper::FMUWrapper(const oms2::ComRef& cref, const std::string& filena
 
   this->context = NULL;
   this->fmu = NULL;
+
+  component.type = oms_component_fmu;
+  component.interfaces = NULL;
 }
 
 oms2::FMUWrapper::~FMUWrapper()
