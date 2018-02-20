@@ -592,11 +592,10 @@ oms_status_t oms2_getComponents(const char* cref, oms_component_t*** components)
   return oms2::Scope::getComponents(oms2::ComRef(cref), components);
 }
 
-oms_status_t oms2_getConnections(const char* cref, const oms_connection_t** oms_connections)
+oms_status_t oms2_getConnections(const char* cref, oms_connection_t*** connections)
 {
   logTrace();
-  logError("oms2_getConnections: not implemented yet");
-  return oms_status_error;
+  return oms2::Scope::getConnections(oms2::ComRef(cref), connections);
 }
 
 oms_status_t oms2_getConnectionGeometry(const char* signalA, const char* signalB, const oms_connection_geometry_t** geometry)

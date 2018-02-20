@@ -391,7 +391,7 @@ oms_status_t oms2_getComponents(const char* cref, oms_component_t*** components)
  * @param connections   [out] Array of connections (null-terminated array)
  * @return              Error status.
  */
-oms_status_t oms2_getConnections(const char* cref, const oms_connection_t** connections);
+oms_status_t oms2_getConnections(const char* cref, oms_connection_t*** connections);
 
 oms_status_t oms2_getConnectionGeometry(const char* signalA, const char* signalB, const oms_connection_geometry_t** geometry);
 oms_status_t oms2_setConnectionGeometry(const char* signalA, const char* signalB, const oms_connection_geometry_t* geometry);

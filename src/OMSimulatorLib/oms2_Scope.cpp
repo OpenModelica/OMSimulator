@@ -655,3 +655,37 @@ oms_status_t oms2::Scope::getComponents(const oms2::ComRef& cref, oms_component_
   logError("[oms2::Scope::getComponents] is only implemented for FMI models yet");
   return oms_status_error;
 }
+
+oms_status_t oms2::Scope::getConnections(const oms2::ComRef& cref, oms_connection_t*** connections)
+{
+  oms2::Scope& scope = oms2::Scope::getInstance();
+
+  if (!connections)
+  {
+    logWarning("[oms2::Scope::getConnections] NULL pointer");
+    return oms_status_warning;
+  }
+
+  if (cref.isIdent())
+  {
+    // Model
+    Model* model = scope.getModel(cref);
+    if (!model)
+    {
+      logError("[oms2::Scope::getConnections] failed");
+      return oms_status_error;
+    }
+
+    if (oms_component_fmi == model->getType())
+    {
+      FMICompositeModel* fmiModel = dynamic_cast<FMICompositeModel*>(model);
+      *connections = fmiModel->getOMSConnections();
+      return oms_status_ok;
+    }
+
+    return oms_status_error;
+  }
+
+  logError("[oms2::Scope::getConnections] is only implemented for FMI models yet");
+  return oms_status_error;
+}
