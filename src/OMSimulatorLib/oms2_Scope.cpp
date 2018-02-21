@@ -665,6 +665,35 @@ oms_status_t oms2::Scope::getConnectionGeometry(const oms2::SignalRef& signalA, 
 
 oms_status_t oms2::Scope::setConnectionGeometry(const oms2::SignalRef& signalA, const oms2::SignalRef& signalB, const oms_connection_geometry_t* geometry)
 {
+  oms2::Scope& scope = oms2::Scope::getInstance();
+
+  oms2::ComRef modelA = signalA.getCref().first();
+  oms2::ComRef modelB = signalB.getCref().first();
+
+  if (modelA == modelB)
+  {
+    // Model
+    Model* model = scope.getModel(modelA);
+    if (!model)
+    {
+      logError("[oms2::Scope::setConnectionGeometry] failed");
+      return oms_status_error;
+    }
+
+    // FMI model?
+    if (oms_component_fmi == model->getType())
+    {
+      FMICompositeModel* fmiModel = dynamic_cast<FMICompositeModel*>(model);
+      oms2::Connection* connection = fmiModel->getConnection(signalA, signalB);
+      if (connection)
+      {
+        connection->setGeometry(geometry);
+        return oms_status_ok;
+      }
+    }
+  }
+
+  logError("[oms2::Scope::setConnectionGeometry] failed");
   return oms_status_error;
 }
 
