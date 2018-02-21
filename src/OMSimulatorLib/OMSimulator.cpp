@@ -601,15 +601,13 @@ oms_status_t oms2_getConnections(const char* cref, oms_connection_t*** connectio
 oms_status_t oms2_getConnectionGeometry(const char* signalA, const char* signalB, const oms_connection_geometry_t** geometry)
 {
   logTrace();
-  logError("oms2_getConnectionGeometry: not implemented yet");
-  return oms_status_error;
+  return oms2::Scope::getConnectionGeometry(oms2::SignalRef(signalA), oms2::SignalRef(signalB), geometry);
 }
 
 oms_status_t oms2_setConnectionGeometry(const char* signalA, const char* signalB, const oms_connection_geometry_t* geometry)
 {
   logTrace();
-  logError("oms2_setConnectionGeometry: not implemented yet");
-  return oms_status_error;
+  return oms2::Scope::setConnectionGeometry(oms2::SignalRef(signalA), oms2::SignalRef(signalB), geometry);
 }
 
 oms_status_t oms2_simulate_asynchronous(const char* ident, void (*cb)(const char* ident, double time, oms_status_t status))

@@ -64,15 +64,30 @@ namespace oms2
     std::string toString() const;
     ComRef first() const;
     ComRef last() const;
+    void popFirst();
     void popLast();
     ComRef& append(const ComRef& cref);
 
+    /**
+     * \brief Can be used to compare crefs.
+     *
+     * x.y.z == x.y.z
+     * x.y.z == z
+     *     z == x.y.z
+     * x.y   != x
+     * x     != x.y
+     */
+    bool match(const ComRef& cref);
+
   private:
     std::deque<std::string> path;
+
+    friend bool operator==(const ComRef& lhs, const ComRef& rhs);
   };
 
   std::string operator+(const std::string& lhs, const ComRef& rhs);
   bool operator<(const ComRef& lhs, const ComRef& rhs);
+  bool operator==(const ComRef& lhs, const ComRef& rhs);
 }
 
 #endif

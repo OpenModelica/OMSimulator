@@ -34,6 +34,7 @@
 
 #include "oms2_ComRef.h"
 #include "oms2_SignalRef.h"
+#include "Types.h"
 
 #include <string>
 
@@ -59,9 +60,12 @@ namespace oms2
     const oms2::SignalRef& getSignalA() const {return conA;}
     const oms2::SignalRef& getSignalB() const {return conB;}
 
+    oms_connection_geometry_t* getGeometry() {return &geometry;}
+
   private:
     oms2::SignalRef conA;
     oms2::SignalRef conB;
+    oms_connection_geometry_t geometry;
 
     friend bool operator==(const Connection& lhs, const Connection& rhs);
     friend bool operator!=(const Connection& lhs, const Connection& rhs);

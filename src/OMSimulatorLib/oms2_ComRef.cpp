@@ -147,6 +147,12 @@ oms2::ComRef oms2::ComRef::last() const
   return oms2::ComRef(path.back());
 }
 
+void oms2::ComRef::popFirst()
+{
+  if (!path.empty())
+    path.pop_front();
+}
+
 void oms2::ComRef::popLast()
 {
   if (!path.empty())
@@ -161,6 +167,14 @@ oms2::ComRef& oms2::ComRef::append(const oms2::ComRef& cref)
   return *this;
 }
 
+bool oms2::ComRef::match(const oms2::ComRef& cref)
+{
+  for (int i=path.size()-1, j=cref.path.size()-1; i >= 0 && j >= 0; --i, --j)
+    if (path[i] != cref.path[i])
+      return false;
+  return true;
+}
+
 std::string oms2::operator+(const std::string& lhs, const oms2::ComRef& rhs)
 {
   return lhs + rhs.toString();
@@ -169,4 +183,16 @@ std::string oms2::operator+(const std::string& lhs, const oms2::ComRef& rhs)
 bool oms2::operator<(const oms2::ComRef& lhs, const oms2::ComRef& rhs)
 {
   return lhs.toString() < rhs.toString();
+}
+
+bool oms2::operator==(const oms2::ComRef& lhs, const oms2::ComRef& rhs)
+{
+  if (lhs.path.size() != rhs.path.size())
+    return false;
+
+  for (int i=0; i<lhs.path.size(); ++i)
+    if (lhs.path[i] != rhs.path[i])
+      return false;
+
+  return true;
 }

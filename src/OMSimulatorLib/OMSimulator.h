@@ -358,7 +358,7 @@ oms_status_t oms2_loadModel(const char* filename, char** ident);
 oms_status_t oms2_saveModel(const char* filename, const char* ident);
 
 /**
- * \brief Get geometry information of a given component (i.e. model or sub-model).
+ * \brief Get geometry information from a given component (i.e. model or sub-model).
  *
  * @param cref       [in] Full identifier of a component.
  * @param geometry   [out] Geometry information.
@@ -367,7 +367,7 @@ oms_status_t oms2_saveModel(const char* filename, const char* ident);
 oms_status_t oms2_getElementGeometry(const char* cref, const oms_element_geometry_t** geometry);
 
 /**
- * \brief Set geometry information of a given component (i.e. model or sub-model).
+ * \brief Set geometry information to a given component (i.e. model or sub-model).
  *
  * @param cref       [in] Full identifier of a component.
  * @param geometry   [in] Geometry information.
@@ -376,7 +376,7 @@ oms_status_t oms2_getElementGeometry(const char* cref, const oms_element_geometr
 oms_status_t oms2_setElementGeometry(const char* cref, const oms_element_geometry_t* geometry);
 
 /**
- * \brief Get list of all sub-components of a given component.
+ * \brief Get list of all sub-components from a given component.
  *
  * @param cref         [in] Full identifier of a component.
  * @param components   [out] Array of sub-components (null-terminated array)
@@ -385,7 +385,7 @@ oms_status_t oms2_setElementGeometry(const char* cref, const oms_element_geometr
 oms_status_t oms2_getComponents(const char* cref, oms_component_t*** components);
 
 /**
- * \brief Get list of all connections of a given component.
+ * \brief Get list of all connections from a given component.
  *
  * @param cref          [in] Full identifier of a component.
  * @param connections   [out] Array of connections (null-terminated array)
@@ -393,7 +393,24 @@ oms_status_t oms2_getComponents(const char* cref, oms_component_t*** components)
  */
 oms_status_t oms2_getConnections(const char* cref, oms_connection_t*** connections);
 
+/**
+ * \brief Get geometry information from a given connection.
+ *
+ * @param signalA    [in] Signal name, e.g. x.y:z
+ * @param signalB    [in] Signal name, e.g. x.y:z
+ * @param geometry   [out] Geometry information.
+ * @return           Error status.
+ */
 oms_status_t oms2_getConnectionGeometry(const char* signalA, const char* signalB, const oms_connection_geometry_t** geometry);
+
+/**
+ * \brief Set geometry information to a given connection.
+ *
+ * @param signalA    [in] Signal name, e.g. x.y:z
+ * @param signalB    [in] Signal name, e.g. x.y:z
+ * @param geometry   [in] Geometry information.
+ * @return           Error status.
+ */
 oms_status_t oms2_setConnectionGeometry(const char* signalA, const char* signalB, const oms_connection_geometry_t* geometry);
 
 oms_status_t oms2_simulate_asynchronous(const char* ident, void (*cb)(const char* ident, double time, oms_status_t status));
