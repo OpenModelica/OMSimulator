@@ -34,15 +34,26 @@
 oms2::Connection::Connection(const oms2::ComRef& cref, const std::string& varA, const std::string& varB)
   : conA(cref, varA), conB(cref, varB)
 {
+  geometry.n = 0;
+  geometry.pointsX = NULL;
+  geometry.pointsY = NULL;
 }
 
 oms2::Connection::Connection(const oms2::SignalRef& conA, const oms2::SignalRef& conB)
   : conA(conA), conB(conB)
 {
+  geometry.n = 0;
+  geometry.pointsX = NULL;
+  geometry.pointsY = NULL;
 }
 
 oms2::Connection::~Connection()
 {
+  if (geometry.n > 0)
+  {
+    delete[] geometry.pointsX;
+    delete[] geometry.pointsY;
+  }
 }
 
 oms2::Connection::Connection(const oms2::Connection& rhs)

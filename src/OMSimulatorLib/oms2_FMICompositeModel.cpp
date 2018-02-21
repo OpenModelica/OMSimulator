@@ -159,6 +159,15 @@ oms2::FMISubModel* oms2::FMICompositeModel::getSubModel(const oms2::ComRef& cref
   return it->second;
 }
 
+oms2::Connection* oms2::FMICompositeModel::getConnection(const oms2::SignalRef& signalA, const oms2::SignalRef& signalB)
+{
+  const oms2::Connection c(signalA, signalB);
+  for (auto& it : connections)
+    if (it == c)
+      return &it;
+  return NULL;
+}
+
 void oms2::FMICompositeModel::updateComponents()
 {
   logTrace();
