@@ -32,6 +32,8 @@
 #include "oms2_FMISubModel.h"
 #include "oms2_Logging.h"
 
+#include <cstring>
+
 oms2::FMISubModel::FMISubModel(const ComRef& cref)
   : cref(cref)
 {
@@ -41,11 +43,14 @@ oms2::FMISubModel::FMISubModel(const ComRef& cref)
   geometry.y1 = 0.0;
   geometry.y2 = 0.0;
 
-  component.name = cref.toString().c_str();
+  component.name = new char[cref.toString().length()+1];
+  strcpy(component.name, cref.toString().c_str());
+
   component.type = oms_component_none;
   component.interfaces = NULL;
 }
 
 oms2::FMISubModel::~FMISubModel()
 {
+  delete[] component.name;
 }

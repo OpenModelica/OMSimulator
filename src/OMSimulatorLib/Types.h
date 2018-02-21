@@ -79,7 +79,7 @@ typedef struct {
 
 typedef struct {
   oms_component_type_t type;
-  const char* name;
+  char* name;
   const oms_fmu_port_t* interfaces;
 } oms_component_t;
 
