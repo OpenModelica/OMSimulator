@@ -115,7 +115,11 @@ oms2::FMUWrapper::~FMUWrapper()
   fmi_import_free_context(context);
   if (!tempDir.empty() && boost::filesystem::is_directory(tempDir))
   {
-    fmi_import_rmdir(&callbacks, tempDir.c_str());
+    /* Use boost::filesystem::remove_all to remove the tempDir instead of fmi_import_rmdir
+     * to avoid showing terminal windows
+     */
+    //fmi_import_rmdir(&callbacks, tempDir.c_str());
+    boost::filesystem::remove_all(tempDir);
     logDebug("removed working directory: \"" + tempDir + "\"");
   }
 }
