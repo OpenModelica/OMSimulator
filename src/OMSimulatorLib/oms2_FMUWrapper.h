@@ -68,7 +68,11 @@ namespace oms2
     ~FMUWrapper();
 
     std::string filename;
+    std::vector<oms2::Variable> inputs;
+    std::vector<oms2::Variable> outputs;
+    std::vector<oms2::Variable> parameters;
     std::vector<oms2::Variable> allVariables;
+
     std::map<std::string, oms2::Option<double>> realParameters;
 
     std::string tempDir;

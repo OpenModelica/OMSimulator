@@ -74,13 +74,13 @@ typedef enum {
 
 typedef struct {
   oms_causality_t causality;
-  const char* name;
+  char* name;
 } oms_fmu_port_t;
 
 typedef struct {
   oms_component_type_t type;
   char* name;
-  const oms_fmu_port_t* interfaces;
+  oms_fmu_port_t** interfaces;
 } oms_component_t;
 
 typedef enum {
