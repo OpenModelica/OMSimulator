@@ -33,7 +33,7 @@ The latest documentation is avilable as [pdf](https://openmodelica.org/doc/OMSim
 1. build OMSimulator
 
    ```bash
-   make OMSimulator
+   make OMSimulator -j4
    ```
 
 ### Windows (OMDev mingw)
@@ -53,7 +53,7 @@ The latest documentation is avilable as [pdf](https://openmodelica.org/doc/OMSim
 1. build OMSimulator
 
    ```bash
-   make OMSimulator
+   make OMSimulator -j4
    ```
 
 ### Windows (Visual Studio)
