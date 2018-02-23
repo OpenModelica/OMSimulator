@@ -109,6 +109,14 @@ oms2::FMUWrapper::~FMUWrapper()
 {
   logTrace();
 
+  int nInterfaces = inputs.size() + outputs.size() + parameters.size();
+  for (int i=0; i<nInterfaces; ++i)
+  {
+    delete[] component.interfaces[i]->name;
+    delete component.interfaces[i];
+  }
+  delete[] component.interfaces;
+
   fmi2_import_free_instance(fmu);
   fmi2_import_destroy_dllfmu(fmu);
   fmi2_import_free(fmu);
@@ -298,6 +306,42 @@ oms2::FMUWrapper* oms2::FMUWrapper::newSubModel(const oms2::ComRef& cref, const 
   {
     if (v.isParameter() && fmi2_base_type_real == v.getBaseType())
       model->realParameters[v.getName()] = oms2::Option<double>();
+
+    if (v.isInput())
+      model->inputs.push_back(v);
+    else if (v.isOutput())
+      model->outputs.push_back(v);
+    else if (v.isParameter())
+      model->parameters.push_back(v);
+  }
+
+  int nInterfaces = model->inputs.size() + model->outputs.size() + model->parameters.size();
+  model->component.interfaces = new oms_fmu_port_t*[nInterfaces + 1];
+  model->component.interfaces[nInterfaces] = NULL;
+  int i=0;
+  for (int j=0; j<model->inputs.size(); ++i, ++j)
+  {
+    const oms2::Variable& v = model->inputs[j];
+    model->component.interfaces[i] = new oms_fmu_port_t;
+    model->component.interfaces[i]->causality = oms_causality_input;
+    model->component.interfaces[i]->name = new char[v.toString().length()+1];
+    strcpy(model->component.interfaces[i]->name, v.toString().c_str());
+  }
+  for (int j=0; j<model->outputs.size(); ++i, ++j)
+  {
+    const oms2::Variable& v = model->outputs[j];
+    model->component.interfaces[i] = new oms_fmu_port_t;
+    model->component.interfaces[i]->causality = oms_causality_output;
+    model->component.interfaces[i]->name = new char[v.toString().length()+1];
+    strcpy(model->component.interfaces[i]->name, v.toString().c_str());
+  }
+  for (int j=0; j<model->parameters.size(); ++i, ++j)
+  {
+    const oms2::Variable& v = model->parameters[j];
+    model->component.interfaces[i] = new oms_fmu_port_t;
+    model->component.interfaces[i]->causality = oms_causality_parameter;
+    model->component.interfaces[i]->name = new char[v.toString().length()+1];
+    strcpy(model->component.interfaces[i]->name, v.toString().c_str());
   }
 
   return model;
