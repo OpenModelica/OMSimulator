@@ -34,6 +34,7 @@
 
 #include "oms2_ComRef.h"
 #include "oms2_SignalRef.h"
+#include "Types.h"
 
 #include <fmilib.h>
 #include <string>
@@ -74,25 +75,25 @@ namespace oms2
     std::string toString() const { return sr.toString(); }
 
     fmi2_value_reference_t getValueReference() const { return vr; }
-    fmi2_base_type_enu_t getBaseType() const { return baseType; }
+    oms_signal_type_t getType() const { return type; }
     const std::string& getDescription() const { return description; }
 
-    bool isTypeReal() const { return fmi2_base_type_real == baseType; }
-    bool isTypeInteger() const { return fmi2_base_type_int == baseType; }
-    bool isTypeBoolean() const { return fmi2_base_type_bool == baseType; }
+    bool isTypeReal() const { return oms_signal_type_real == type; }
+    bool isTypeInteger() const { return oms_signal_type_integer == type; }
+    bool isTypeBoolean() const { return oms_signal_type_boolean == type; }
 
     std::string getCausalityString() { return std::string(fmi2_causality_to_string(causality)); }
 
     unsigned int getIndex() const { return index; }
 
   private:
-    SignalRef sr;
+    oms2::SignalRef sr;
     std::string description;
     fmi2_value_reference_t vr;
     fmi2_causality_enu_t causality;
     fmi2_initial_enu_t initialProperty;
     bool is_state;
-    fmi2_base_type_enu_t baseType;
+    oms_signal_type_t type;
     unsigned int index; ///< index origin = 1
 
     friend bool operator==(const oms2::Variable& v1, const oms2::Variable& v2);

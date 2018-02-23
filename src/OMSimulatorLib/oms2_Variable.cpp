@@ -50,7 +50,28 @@ oms2::Variable::Variable(const oms2::ComRef& cref, fmi2_import_variable_t *var, 
   vr = fmi2_import_get_variable_vr(var);
   causality = fmi2_import_get_causality(var);
   initialProperty = fmi2_import_get_initial(var);
-  baseType = fmi2_import_get_variable_base_type(var);
+  switch (fmi2_import_get_variable_base_type(var))
+  {
+    case fmi2_base_type_real:
+      type = oms_signal_type_real;
+      break;
+    case fmi2_base_type_int:
+      type = oms_signal_type_integer;
+      break;
+    case fmi2_base_type_bool:
+      type = oms_signal_type_boolean;
+      break;
+    case fmi2_base_type_str:
+      type = oms_signal_type_string;
+      break;
+    case fmi2_base_type_enum:
+      type = oms_signal_type_enum;
+      break;
+    default:
+      logError("Unknown fmi base type");
+      type = oms_signal_type_real;
+      break;
+  }
 }
 
 oms2::Variable::~Variable()

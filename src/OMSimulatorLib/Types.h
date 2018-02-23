@@ -72,15 +72,24 @@ typedef enum {
   oms_component_port  /* port */
 } oms_component_type_t;
 
+typedef enum {
+  oms_signal_type_real,
+  oms_signal_type_integer,
+  oms_signal_type_boolean,
+  oms_signal_type_string,
+  oms_signal_type_enum
+} oms_signal_type_t;
+
 typedef struct {
   oms_causality_t causality;
+  oms_signal_type_t type;
   char* name;
-} oms_fmu_port_t;
+} oms_signal_t;
 
 typedef struct {
   oms_component_type_t type;
   char* name;
-  oms_fmu_port_t** interfaces;
+  oms_signal_t** interfaces;
 } oms_component_t;
 
 typedef enum {
