@@ -6,8 +6,6 @@ CERES ?= ON
 # Option to enable the OMFit parameter estimation module within the OMSimulator project
 OMFIT ?= ON
 
-j ?= 1
-
 detected_OS := $(shell uname -s)
 ifeq ($(detected_OS),Darwin)
 	BUILD_DIR := build/mac
@@ -42,7 +40,7 @@ OMSimulator:
 	@echo
 	@echo "# make OMSimulator"
 	@echo
-	@$(MAKE) -C $(BUILD_DIR) install -j$(j)
+	@$(MAKE) -C $(BUILD_DIR) install
 
 
 
