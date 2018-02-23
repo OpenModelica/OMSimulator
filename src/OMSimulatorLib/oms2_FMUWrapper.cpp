@@ -304,7 +304,7 @@ oms2::FMUWrapper* oms2::FMUWrapper::newSubModel(const oms2::ComRef& cref, const 
   // create some special variable maps
   for (auto const &v : model->allVariables)
   {
-    if (v.isParameter() && fmi2_base_type_real == v.getBaseType())
+    if (v.isParameter() && v.isTypeReal())
       model->realParameters[v.getName()] = oms2::Option<double>();
 
     if (v.isInput())
@@ -316,30 +316,33 @@ oms2::FMUWrapper* oms2::FMUWrapper::newSubModel(const oms2::ComRef& cref, const 
   }
 
   int nInterfaces = model->inputs.size() + model->outputs.size() + model->parameters.size();
-  model->component.interfaces = new oms_fmu_port_t*[nInterfaces + 1];
+  model->component.interfaces = new oms_signal_t*[nInterfaces + 1];
   model->component.interfaces[nInterfaces] = NULL;
   int i=0;
   for (int j=0; j<model->inputs.size(); ++i, ++j)
   {
     const oms2::Variable& v = model->inputs[j];
-    model->component.interfaces[i] = new oms_fmu_port_t;
+    model->component.interfaces[i] = new oms_signal_t;
     model->component.interfaces[i]->causality = oms_causality_input;
+    model->component.interfaces[i]->type = v.getType();
     model->component.interfaces[i]->name = new char[v.toString().length()+1];
     strcpy(model->component.interfaces[i]->name, v.toString().c_str());
   }
   for (int j=0; j<model->outputs.size(); ++i, ++j)
   {
     const oms2::Variable& v = model->outputs[j];
-    model->component.interfaces[i] = new oms_fmu_port_t;
+    model->component.interfaces[i] = new oms_signal_t;
     model->component.interfaces[i]->causality = oms_causality_output;
+    model->component.interfaces[i]->type = v.getType();
     model->component.interfaces[i]->name = new char[v.toString().length()+1];
     strcpy(model->component.interfaces[i]->name, v.toString().c_str());
   }
   for (int j=0; j<model->parameters.size(); ++i, ++j)
   {
     const oms2::Variable& v = model->parameters[j];
-    model->component.interfaces[i] = new oms_fmu_port_t;
+    model->component.interfaces[i] = new oms_signal_t;
     model->component.interfaces[i]->causality = oms_causality_parameter;
+    model->component.interfaces[i]->type = v.getType();
     model->component.interfaces[i]->name = new char[v.toString().length()+1];
     strcpy(model->component.interfaces[i]->name, v.toString().c_str());
   }
@@ -396,7 +399,7 @@ oms_status_t oms2::FMUWrapper::getRealParameter(const std::string& var, double& 
 oms_status_t oms2::FMUWrapper::setReal(const oms2::Variable& var, double realValue)
 {
   logTrace();
-  if (!fmu || fmi2_base_type_real != var.getBaseType())
+  if (!fmu || !var.isTypeReal())
   {
     logError("oms2::FMUWrapper::setReal failed");
     return oms_status_error;
@@ -412,7 +415,7 @@ oms_status_t oms2::FMUWrapper::setReal(const oms2::Variable& var, double realVal
 oms_status_t oms2::FMUWrapper::getReal(const oms2::Variable& var, double& realValue)
 {
   logTrace();
-  if (!fmu || fmi2_base_type_real != var.getBaseType())
+  if (!fmu || !var.isTypeReal())
   {
     logError("oms2::FMUWrapper::getReal failed");
     return oms_status_error;
