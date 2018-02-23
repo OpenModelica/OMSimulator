@@ -40,10 +40,10 @@ oms2::Model::Model(const ComRef& cref)
   : name(cref)
 {
   logTrace();
-  geometry.x1 = 0.0;
-  geometry.x2 = 0.0;
-  geometry.y1 = 0.0;
-  geometry.y2 = 0.0;
+  geometry.x1 = -10.0;
+  geometry.y1 = -10.0;
+  geometry.x2 = 10.0;
+  geometry.y2 = 10.0;
 
   startTime = 0.0;
   stopTime = 1.0;
