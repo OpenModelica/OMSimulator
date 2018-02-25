@@ -239,7 +239,7 @@ oms2::Model* oms2::Scope::loadFMIModel(const pugi::xml_node& xml)
   for (auto it = xml.attributes_begin(); it != xml.attributes_end(); ++it)
   {
     std::string name = it->name();
-    if (name == "name")
+    if (name == "Name")
       ident_ = it->value();
   }
 
@@ -248,7 +248,7 @@ oms2::Model* oms2::Scope::loadFMIModel(const pugi::xml_node& xml)
   oms_status_t status = newFMIModel(cref_model);
   if (status != oms_status_ok)
   {
-    logError("[oms2::Scope::loadFMIModel] failed");
+    logError("[oms2::Scope::loadFMIModel] newFMIModel failed");
     return NULL;
   }
 
@@ -275,22 +275,17 @@ oms2::Model* oms2::Scope::loadFMIModel(const pugi::xml_node& xml)
         else if (name == "ModelFile")
         {
           filename = ait->value();
-
-          if (filename.length() > 5)
-            type = filename.substr(filename.length() - 4);
-          else
-          {
-            logError("[oms2::Scope::loadFMIModel] Invalid filename: " + filename);
-            unloadModel(cref_model);
-            return NULL;
-          }
+        }
+        else if (name == "Type")
+        {
+          type = ait->value();
         }
       }
 
       oms2::ComRef cref_submodel = cref_model + ComRef(instancename);
 
       oms_status_t status = oms_status_error;
-      if (type == ".fmu" || type == ".FMU")
+      if (type == "FMU")
         status = model->instantiateFMU(filename, cref_submodel.last());
       else
         status = model->instantiateTable(filename, cref_submodel.last());
@@ -301,33 +296,46 @@ oms2::Model* oms2::Scope::loadFMIModel(const pugi::xml_node& xml)
         return NULL;
       }
 
-      // import parameters
-      for (auto parameter = it->first_child(); parameter; parameter = parameter.next_sibling())
+      oms2::FMISubModel* subModel = model->getSubModel(cref_submodel);
+      if (!subModel)
       {
-        if (std::string(parameter.name()) != "Parameter")
-        {
-          logError("[oms2::Scope::loadFMIModel] wrong xml schema detected");
-          unloadModel(cref_model);
-          return NULL;
-        }
-        std::string _type = parameter.attribute("Type").as_string();
-        std::string _name = parameter.attribute("Name").as_string();
+        unloadModel(cref_model);
+        return NULL;
+      }
 
-        if (_type == "Real")
+      for (auto child = it->first_child(); child; child = child.next_sibling())
+      {
+        // ssd:ElementGeometry
+        if (std::string(child.name()) == "ssd:ElementGeometry")
         {
-          double realValue = parameter.attribute("Value").as_double();
-          if (oms_status_ok != model->setRealParameter(oms2::SignalRef(cref_submodel, _name), realValue))
+          double x1 = child.attribute("x1").as_double();
+          double y1 = child.attribute("y1").as_double();
+          double x2 = child.attribute("x2").as_double();
+          double y2 = child.attribute("y2").as_double();
+          subModel->setGeometry(x1, y1, x2, y2);
+        }
+        // import parameters
+        else if (std::string(child.name()) == "Parameter")
+        {
+          std::string _type = child.attribute("Type").as_string();
+          std::string _name = child.attribute("Name").as_string();
+
+          if (_type == "Real")
           {
-            logError("[oms2::Scope::loadFMIModel] wrong xml schema detected");
+            double realValue = child.attribute("Value").as_double();
+            if (oms_status_ok != model->setRealParameter(oms2::SignalRef(cref_submodel, _name), realValue))
+            {
+              logError("[oms2::Scope::loadFMIModel] wrong xml schema detected (2)");
+              unloadModel(cref_model);
+              return NULL;
+            }
+          }
+          else
+          {
+            logError("[oms2::Scope::loadFMIModel] unsupported parameter type " + _type);
             unloadModel(cref_model);
             return NULL;
           }
-        }
-        else
-        {
-          logError("[oms2::Scope::loadFMIModel] unsupported parameter type " + _type);
-          unloadModel(cref_model);
-          return NULL;
         }
       }
     }// if (node == "SubModel")
@@ -337,7 +345,7 @@ oms2::Model* oms2::Scope::loadFMIModel(const pugi::xml_node& xml)
       {
         if (std::string(connection.name()) != "Connection")
         {
-          logError("[oms2::Scope::loadFMIModel] wrong xml schema detected");
+          logError("[oms2::Scope::loadFMIModel] wrong xml schema detected (3)");
           unloadModel(cref_model);
           return NULL;
         }
@@ -346,7 +354,7 @@ oms2::Model* oms2::Scope::loadFMIModel(const pugi::xml_node& xml)
         std::string sigB = connection.attribute("To").as_string();
         if (oms_status_ok != model->addConnection(SignalRef(sigA), SignalRef(sigB)))
         {
-          logError("[oms2::Scope::loadFMIModel] wrong xml schema detected");
+          logError("[oms2::Scope::loadFMIModel] wrong xml schema detected (4)");
           unloadModel(cref_model);
           return NULL;
         }
@@ -357,9 +365,25 @@ oms2::Model* oms2::Scope::loadFMIModel(const pugi::xml_node& xml)
       /// \todo implement xml import for solver settings
       logWarning("[oms2::Scope::loadFMIModel] Solver");
     }// if (node == "Solver")
+    else if (node == "ssd:ElementGeometry")
+    {
+      double x1 = 0.0;
+      double y1 = 0.0;
+      double x2 = 0.0;
+      double y2 = 0.0;
+      for (auto ait = it->attributes_begin(); ait != it->attributes_end(); ++ait)
+      {
+        std::string name = ait->name();
+        if (name == "x1") x1 = ait->as_double();
+        if (name == "y1") y1 = ait->as_double();
+        if (name == "x2") x2 = ait->as_double();
+        if (name == "y2") y2 = ait->as_double();
+      }
+      model->setGeometry(x1, y1, x2, y2);
+    }// ssd:ElementGeometry
     else
     {
-      logError("[oms2::Scope::loadFMIModel] wrong xml schema detected");
+      logError("[oms2::Scope::loadFMIModel] wrong xml schema detected (5)");
       unloadModel(cref_model);
       return NULL;
     }
@@ -437,7 +461,22 @@ oms_status_t oms2::Scope::saveFMIModel(oms2::FMICompositeModel* model, const std
   compositeModel.append_attribute("xsi:schemaLocation") = "http://www.pmsf.net/xsd/SystemStructureDescriptionDraft http://www.pmsf.net/xsd/SSP/Draft20170606/SystemStructureDescription.xsd";
   value = model->getName().toString();
 
-  fmiCompositeModel.append_attribute("name") = value.c_str();
+  fmiCompositeModel.append_attribute("Name") = value.c_str();
+  // ssd:ElementGeometry
+  oms_element_geometry_t* elementGeometry = model->getGeometry();
+  if (elementGeometry->y1 != elementGeometry->y2)
+  {
+    pugi::xml_node node = fmiCompositeModel.append_child("ssd:ElementGeometry");
+    value = std::to_string(elementGeometry->x1);
+    node.append_attribute("x1") = value.c_str();
+    value = std::to_string(elementGeometry->y1);
+    node.append_attribute("y1") = value.c_str();
+    value = std::to_string(elementGeometry->x2);
+    node.append_attribute("x2") = value.c_str();
+    value = std::to_string(elementGeometry->y2);
+    node.append_attribute("y2") = value.c_str();
+  }
+
   const std::map<oms2::ComRef, oms2::FMISubModel*>& subModels = model->getSubModels();
   for (auto it=subModels.begin(); it != subModels.end(); it++)
   {
@@ -451,13 +490,13 @@ oms_status_t oms2::Scope::saveFMIModel(oms2::FMICompositeModel* model, const std
     {
       pugi::xml_node node = subModel.append_child("ssd:ElementGeometry");
       value = std::to_string(elementGeometry->x1);
-      subModel.append_attribute("x1") = value.c_str();
+      node.append_attribute("x1") = value.c_str();
       value = std::to_string(elementGeometry->y1);
-      subModel.append_attribute("y1") = value.c_str();
+      node.append_attribute("y1") = value.c_str();
       value = std::to_string(elementGeometry->x2);
-      subModel.append_attribute("x2") = value.c_str();
+      node.append_attribute("x2") = value.c_str();
       value = std::to_string(elementGeometry->y2);
-      subModel.append_attribute("y2") = value.c_str();
+      node.append_attribute("y2") = value.c_str();
     }
     if (oms_component_fmu == it->second->getType())
     {
