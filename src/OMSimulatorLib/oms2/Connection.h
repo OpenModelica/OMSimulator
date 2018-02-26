@@ -35,6 +35,7 @@
 #include "ComRef.h"
 #include "SignalRef.h"
 #include "../Types.h"
+#include "ssd/ConnectionGeometry.h"
 
 #include <string>
 
@@ -60,13 +61,13 @@ namespace oms2
     const oms2::SignalRef& getSignalA() const {return conA;}
     const oms2::SignalRef& getSignalB() const {return conB;}
 
-    ssd_connection_geometry_t* getGeometry() {return &geometry;}
-    void setGeometry(const ssd_connection_geometry_t* newGeometry);
+    oms2::ssd::ConnectionGeometry* getGeometry() {return &geometry;}
+    void setGeometry(const oms2::ssd::ConnectionGeometry* newGeometry);
 
   private:
     oms2::SignalRef conA;
     oms2::SignalRef conB;
-    ssd_connection_geometry_t geometry;
+    oms2::ssd::ConnectionGeometry geometry;
 
     friend bool operator==(const Connection& lhs, const Connection& rhs);
     friend bool operator!=(const Connection& lhs, const Connection& rhs);

@@ -37,6 +37,7 @@
 #include "FMUWrapper.h"
 #include "../Types.h"
 #include "ssd/ElementGeometry.h"
+#include "ssd/ConnectionGeometry.h"
 
 #include <iostream>
 
@@ -733,7 +734,7 @@ oms_status_t oms2::Scope::setElementGeometry(const oms2::ComRef& cref, const oms
   return oms_status_error;
 }
 
-oms_status_t oms2::Scope::getConnectionGeometry(const oms2::SignalRef& signalA, const oms2::SignalRef& signalB, const ssd_connection_geometry_t** geometry)
+oms_status_t oms2::Scope::getConnectionGeometry(const oms2::SignalRef& signalA, const oms2::SignalRef& signalB, const oms2::ssd::ConnectionGeometry** geometry)
 {
   oms2::Scope& scope = oms2::Scope::getInstance();
 
@@ -767,7 +768,7 @@ oms_status_t oms2::Scope::getConnectionGeometry(const oms2::SignalRef& signalA, 
   return oms_status_error;
 }
 
-oms_status_t oms2::Scope::setConnectionGeometry(const oms2::SignalRef& signalA, const oms2::SignalRef& signalB, const ssd_connection_geometry_t* geometry)
+oms_status_t oms2::Scope::setConnectionGeometry(const oms2::SignalRef& signalA, const oms2::SignalRef& signalB, const oms2::ssd::ConnectionGeometry* geometry)
 {
   oms2::Scope& scope = oms2::Scope::getInstance();
 
