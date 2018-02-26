@@ -33,7 +33,7 @@
 #include "CompositeModel.h"
 #include "CSVWriter.h"
 #include "DirectedGraph.h"
-#include "oms2_Logging.h"
+#include "oms2/Logging.h"
 #include "LookupTable.h"
 #include "MATWriter.h"
 #include "ResultWriter.h"

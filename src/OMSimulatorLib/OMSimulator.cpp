@@ -30,15 +30,15 @@
  */
 
 #include "CompositeModel.h"
-#include "oms2_ComRef.h"
-#include "oms2_FMICompositeModel.h"
-#include "oms2_Logging.h"
+#include "oms2/ComRef.h"
+#include "oms2/FMICompositeModel.h"
+#include "oms2/Logging.h"
 #include "MatReader.h"
 #include "OMSimulator.h"
 #include "ResultReader.h"
-#include "oms2_Scope.h"
+#include "oms2/Scope.h"
 #include "Settings.h"
-#include "oms2_TLMCompositeModel.h"
+#include "oms2/TLMCompositeModel.h"
 #include "Types.h"
 #include "Version.h"
 

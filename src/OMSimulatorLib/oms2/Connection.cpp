@@ -29,7 +29,7 @@
  *
  */
 
-#include "oms2_Connection.h"
+#include "Connection.h"
 
 #include <cstring>
 

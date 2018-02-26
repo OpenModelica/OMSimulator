@@ -29,41 +29,28 @@
  *
  */
 
-#ifndef _OMS_FMI_SUB_MODEL_H_
-#define _OMS_FMI_SUB_MODEL_H_
+#include "ComRef.h"
+#include "TLMCompositeModel.h"
+#include "Logging.h"
 
-#include "oms2_ComRef.h"
-#include "Types.h"
-
-namespace oms2
+oms2::TLMCompositeModel::TLMCompositeModel(const ComRef& name)
+  : Model(name)
 {
-  class FMISubModel
-  {
-  public:
-    virtual oms_component_type_t getType() const = 0;
-    static void deleteSubModel(FMISubModel *model) {if (model) delete model;}
-
-    const ComRef& getName() const {return cref;}
-    void setGeometry(double x1, double y1, double x2, double y2) {geometry.x1 = x1; geometry.y1 = y1; geometry.x2 = x2; geometry.y2 = y2;}
-    void setGeometry(const oms_element_geometry_t& geometry) {this->geometry = geometry;}
-    oms_element_geometry_t* getGeometry() {return &geometry;}
-
-    oms_component_t* getComponent() {return &component;}
-
-  protected:
-    FMISubModel(const ComRef& cref);
-    virtual ~FMISubModel();
-
-  private:
-    // stop the compiler generating methods copying the object
-    FMISubModel(FMISubModel const& copy);            // not implemented
-    FMISubModel& operator=(FMISubModel const& copy); // not implemented
-
-  protected:
-    ComRef cref;
-    oms_element_geometry_t geometry;
-    oms_component_t component;
-  };
+  logTrace();
 }
 
-#endif
+oms2::TLMCompositeModel::~TLMCompositeModel()
+{
+}
+
+oms2::TLMCompositeModel* oms2::TLMCompositeModel::newModel(const ComRef& name)
+{
+ if (!name.isValidIdent())
+  {
+    logError("\"" + name + "\" is not a valid model name.");
+    return NULL;
+  }
+
+  oms2::TLMCompositeModel *model = new oms2::TLMCompositeModel(name);
+  return model;
+}

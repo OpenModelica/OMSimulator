@@ -29,53 +29,49 @@
  *
  */
 
-#include "oms2_SignalRef.h"
-#include "oms2_Logging.h"
+#include "Model.h"
 
-oms2::SignalRef::SignalRef(const std::string& signal)
+#include "FMICompositeModel.h"
+#include "Logging.h"
+
+#include <regex>
+
+oms2::Model::Model(const ComRef& cref)
+  : name(cref)
 {
-  size_t sep = signal.find(":");
-  if (std::string::npos != sep)
+  logTrace();
+  geometry.x1 = -10.0;
+  geometry.y1 = -10.0;
+  geometry.x2 = 10.0;
+  geometry.y2 = 10.0;
+
+  startTime = 0.0;
+  stopTime = 1.0;
+  resultFile = name.toString() + "_res.mat";
+
+  components = NULL;
+}
+
+oms2::Model::~Model()
+{
+  if (components)
+    delete[] components;
+}
+
+oms_component_t** oms2::Model::getComponents()
+{
+  logTrace();
+
+  if (components)
+    return components;
+
+  if (oms_component_fmi == getType())
   {
-    this->cref = oms2::ComRef(signal.substr(0, sep));
-    this->var = signal.substr(sep+1);
+    FMICompositeModel* fmiModel = dynamic_cast<FMICompositeModel*>(this);
+    fmiModel->updateComponents();
+    return components;
   }
-  else
-  {
-    this->var = signal;
-    logError("Invalid SignalRef: " + signal);
-  }
-}
 
-oms2::SignalRef::SignalRef(const oms2::ComRef& cref, const std::string& var)
-{
-  this->cref = cref;
-  this->var = var;
-}
-
-oms2::SignalRef::~SignalRef()
-{
-}
-
-// methods to copy the signal reference
-oms2::SignalRef::SignalRef(oms2::SignalRef const& copy)
-{
-  this->cref = copy.cref;
-  this->var = copy.var;
-}
-
-oms2::SignalRef& oms2::SignalRef::operator=(oms2::SignalRef const& copy)
-{
-  // check for self-assignment
-  if(&copy == this)
-    return *this;
-
-  this->cref = copy.cref;
-  this->var = copy.var;
-  return *this;
-}
-
-bool oms2::SignalRef::operator<(const oms2::SignalRef& rhs)
-{
-  return toString() < rhs.toString();
+  logError("[oms2::Model::getComponents] only implemented for FMI composite models");
+  return NULL;
 }

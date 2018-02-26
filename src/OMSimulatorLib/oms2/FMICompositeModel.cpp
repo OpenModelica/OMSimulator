@@ -29,11 +29,11 @@
  *
  */
 
-#include "oms2_ComRef.h"
-#include "oms2_FMICompositeModel.h"
-#include "oms2_Logging.h"
-#include "oms2_FMUWrapper.h"
-#include "oms2_SignalRef.h"
+#include "ComRef.h"
+#include "FMICompositeModel.h"
+#include "Logging.h"
+#include "FMUWrapper.h"
+#include "SignalRef.h"
 
 oms2::FMICompositeModel::FMICompositeModel(const ComRef& name)
   : oms2::Model(name)

@@ -29,8 +29,8 @@
  *
  */
 
-#include "oms2_ComRef.h"
-#include "oms2_Logging.h"
+#include "ComRef.h"
+#include "Logging.h"
 
 #include <deque>
 #include <string>

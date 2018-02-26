@@ -29,32 +29,40 @@
  *
  */
 
-#ifndef _OMS_TLM_COMPOSITE_MODEL_H_
-#define _OMS_TLM_COMPOSITE_MODEL_H_
+#ifndef _OMS_FMI_SUB_MODEL_H_
+#define _OMS_FMI_SUB_MODEL_H_
 
-#include "oms2_ComRef.h"
-#include "oms2_Model.h"
-#include "Types.h"
+#include "ComRef.h"
+#include "../Types.h"
 
 namespace oms2
 {
-  class TLMCompositeModel : public Model
+  class FMISubModel
   {
   public:
-    static TLMCompositeModel* newModel(const ComRef& name);
+    virtual oms_component_type_t getType() const = 0;
+    static void deleteSubModel(FMISubModel *model) {if (model) delete model;}
 
-    oms_component_type_t getType() {return oms_component_tlm;}
+    const ComRef& getName() const {return cref;}
+    void setGeometry(double x1, double y1, double x2, double y2) {geometry.x1 = x1; geometry.y1 = y1; geometry.x2 = x2; geometry.y2 = y2;}
+    void setGeometry(const oms_element_geometry_t& geometry) {this->geometry = geometry;}
+    oms_element_geometry_t* getGeometry() {return &geometry;}
+
+    oms_component_t* getComponent() {return &component;}
+
+  protected:
+    FMISubModel(const ComRef& cref);
+    virtual ~FMISubModel();
 
   private:
-    TLMCompositeModel(const ComRef& name);
-    ~TLMCompositeModel();
-
     // stop the compiler generating methods copying the object
-    TLMCompositeModel(TLMCompositeModel const& copy);            // not implemented
-    TLMCompositeModel& operator=(TLMCompositeModel const& copy); // not implemented
+    FMISubModel(FMISubModel const& copy);            // not implemented
+    FMISubModel& operator=(FMISubModel const& copy); // not implemented
 
-  private:
-    ComRef name;
+  protected:
+    ComRef cref;
+    oms_element_geometry_t geometry;
+    oms_component_t component;
   };
 }
 

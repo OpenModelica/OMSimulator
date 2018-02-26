@@ -29,28 +29,53 @@
  *
  */
 
-#include "oms2_FMISubModel.h"
-#include "oms2_Logging.h"
+#include "SignalRef.h"
+#include "Logging.h"
 
-#include <cstring>
-
-oms2::FMISubModel::FMISubModel(const ComRef& cref)
-  : cref(cref)
+oms2::SignalRef::SignalRef(const std::string& signal)
 {
-  logTrace();
-  geometry.x1 = -10.0;
-  geometry.y1 = -10.0;
-  geometry.x2 = 10.0;
-  geometry.y2 = 10.0;
-
-  component.name = new char[cref.toString().length()+1];
-  strcpy(component.name, cref.toString().c_str());
-
-  component.type = oms_component_none;
-  component.interfaces = NULL;
+  size_t sep = signal.find(":");
+  if (std::string::npos != sep)
+  {
+    this->cref = oms2::ComRef(signal.substr(0, sep));
+    this->var = signal.substr(sep+1);
+  }
+  else
+  {
+    this->var = signal;
+    logError("Invalid SignalRef: " + signal);
+  }
 }
 
-oms2::FMISubModel::~FMISubModel()
+oms2::SignalRef::SignalRef(const oms2::ComRef& cref, const std::string& var)
 {
-  delete[] component.name;
+  this->cref = cref;
+  this->var = var;
+}
+
+oms2::SignalRef::~SignalRef()
+{
+}
+
+// methods to copy the signal reference
+oms2::SignalRef::SignalRef(oms2::SignalRef const& copy)
+{
+  this->cref = copy.cref;
+  this->var = copy.var;
+}
+
+oms2::SignalRef& oms2::SignalRef::operator=(oms2::SignalRef const& copy)
+{
+  // check for self-assignment
+  if(&copy == this)
+    return *this;
+
+  this->cref = copy.cref;
+  this->var = copy.var;
+  return *this;
+}
+
+bool oms2::SignalRef::operator<(const oms2::SignalRef& rhs)
+{
+  return toString() < rhs.toString();
 }

@@ -32,7 +32,7 @@
 #ifndef _OMS_LOGGING_H_
 #define _OMS_LOGGING_H_
 
-#include "Types.h"
+#include "../Types.h"
 
 #include <string>
 #include <fstream>
