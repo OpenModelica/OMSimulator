@@ -30,52 +30,27 @@
  */
 
 #include "Connection.h"
+#include "ssd/ConnectionGeometry.h"
 
 #include <cstring>
 
 oms2::Connection::Connection(const oms2::ComRef& cref, const std::string& varA, const std::string& varB)
-  : conA(cref, varA), conB(cref, varB)
+  : conA(cref, varA), conB(cref, varB), geometry()
 {
-  geometry.n = 0;
-  geometry.pointsX = NULL;
-  geometry.pointsY = NULL;
 }
 
 oms2::Connection::Connection(const oms2::SignalRef& conA, const oms2::SignalRef& conB)
-  : conA(conA), conB(conB)
+  : conA(conA), conB(conB), geometry()
 {
-  geometry.n = 0;
-  geometry.pointsX = NULL;
-  geometry.pointsY = NULL;
 }
 
 oms2::Connection::~Connection()
 {
-  if (geometry.n > 0)
-  {
-    delete[] geometry.pointsX;
-    delete[] geometry.pointsY;
-  }
 }
 
 oms2::Connection::Connection(const oms2::Connection& rhs)
-  : conA(rhs.conA), conB(rhs.conB)
+  : conA(rhs.conA), conB(rhs.conB), geometry(rhs.geometry)
 {
-  if (rhs.geometry.n > 0)
-  {
-    this->geometry.n = rhs.geometry.n;
-    this->geometry.pointsX = new double[rhs.geometry.n];
-    this->geometry.pointsY = new double[rhs.geometry.n];
-
-    memcpy(this->geometry.pointsX, rhs.geometry.pointsX, rhs.geometry.n*sizeof(double));
-    memcpy(this->geometry.pointsY, rhs.geometry.pointsY, rhs.geometry.n*sizeof(double));
-  }
-  else
-  {
-    this->geometry.n = 0;
-    this->geometry.pointsX = NULL;
-    this->geometry.pointsY = NULL;
-  }
 }
 
 oms2::Connection& oms2::Connection::operator=(const oms2::Connection& rhs)
@@ -86,22 +61,7 @@ oms2::Connection& oms2::Connection::operator=(const oms2::Connection& rhs)
 
   this->conA = rhs.conA;
   this->conB = rhs.conB;
-
-  if (rhs.geometry.n > 0)
-  {
-    this->geometry.n = rhs.geometry.n;
-    this->geometry.pointsX = new double[rhs.geometry.n];
-    this->geometry.pointsY = new double[rhs.geometry.n];
-
-    memcpy(this->geometry.pointsX, rhs.geometry.pointsX, rhs.geometry.n*sizeof(double));
-    memcpy(this->geometry.pointsY, rhs.geometry.pointsY, rhs.geometry.n*sizeof(double));
-  }
-  else
-  {
-    this->geometry.n = 0;
-    this->geometry.pointsX = NULL;
-    this->geometry.pointsY = NULL;
-  }
+  this->geometry = rhs.geometry;
 
   return *this;
 }
@@ -126,27 +86,7 @@ oms2::Connection oms2::Connection::FromStrings(const oms2::ComRef& cref, const s
   return oms2::Connection::FromStrings(A.toString(), B.toString());
 }
 
-void oms2::Connection::setGeometry(const ssd_connection_geometry_t* newGeometry)
+void oms2::Connection::setGeometry(const oms2::ssd::ConnectionGeometry* newGeometry)
 {
-  if (geometry.n > 0)
-  {
-    delete[] geometry.pointsX;
-    delete[] geometry.pointsY;
-  }
-
-  if (newGeometry && newGeometry->n > 0)
-  {
-    geometry.n = newGeometry->n;
-    geometry.pointsX = new double[newGeometry->n];
-    geometry.pointsY = new double[newGeometry->n];
-
-    memcpy(geometry.pointsX, newGeometry->pointsX, newGeometry->n*sizeof(double));
-    memcpy(geometry.pointsY, newGeometry->pointsY, newGeometry->n*sizeof(double));
-  }
-  else
-  {
-    geometry.n = 0;
-    geometry.pointsX = NULL;
-    geometry.pointsY = NULL;
-  }
+  this->geometry = *newGeometry;
 }
