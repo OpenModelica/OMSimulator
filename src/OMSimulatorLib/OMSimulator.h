@@ -364,7 +364,7 @@ oms_status_t oms2_saveModel(const char* filename, const char* ident);
  * @param geometry   [out] Geometry information.
  * @return           Error status.
  */
-oms_status_t oms2_getElementGeometry(const char* cref, const oms_element_geometry_t** geometry);
+oms_status_t oms2_getElementGeometry(const char* cref, const ssd_element_geometry_t** geometry);
 
 /**
  * \brief Set geometry information to a given component (i.e. model or sub-model).
@@ -373,7 +373,7 @@ oms_status_t oms2_getElementGeometry(const char* cref, const oms_element_geometr
  * @param geometry   [in] Geometry information.
  * @return           Error status.
  */
-oms_status_t oms2_setElementGeometry(const char* cref, const oms_element_geometry_t* geometry);
+oms_status_t oms2_setElementGeometry(const char* cref, const ssd_element_geometry_t* geometry);
 
 /**
  * \brief Get list of all sub-components from a given component.
@@ -401,7 +401,7 @@ oms_status_t oms2_getConnections(const char* cref, oms_connection_t*** connectio
  * @param geometry   [out] Geometry information.
  * @return           Error status.
  */
-oms_status_t oms2_getConnectionGeometry(const char* signalA, const char* signalB, const oms_connection_geometry_t** geometry);
+oms_status_t oms2_getConnectionGeometry(const char* signalA, const char* signalB, const ssd_connection_geometry_t** geometry);
 
 /**
  * \brief Set geometry information to a given connection.
@@ -411,7 +411,7 @@ oms_status_t oms2_getConnectionGeometry(const char* signalA, const char* signalB
  * @param geometry   [in] Geometry information.
  * @return           Error status.
  */
-oms_status_t oms2_setConnectionGeometry(const char* signalA, const char* signalB, const oms_connection_geometry_t* geometry);
+oms_status_t oms2_setConnectionGeometry(const char* signalA, const char* signalB, const ssd_connection_geometry_t* geometry);
 
 oms_status_t oms2_simulate_asynchronous(const char* ident, void (*cb)(const char* ident, double time, oms_status_t status));
 

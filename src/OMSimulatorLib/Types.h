@@ -144,7 +144,7 @@ typedef struct {
    * special coordinate system.
    */
   double y;
-} oms_connector_geometry_t;
+} ssd_connector_geometry_t;
 
 /**
  * 5.2.2 ssd:ElementGeometry
@@ -217,7 +217,7 @@ typedef struct {
    * the aspect ratio fixed.
    */
   bool iconFixedAspectRatio;
-} oms_element_geometry_t;
+} ssd_element_geometry_t;
 
 /**
  * 5.3.2.1 ssd:ConnectionGeometry
@@ -247,7 +247,7 @@ typedef struct {
    * Number of intermediate waypoints.
    */
   unsigned int n;
-} oms_connection_geometry_t;
+} ssd_connection_geometry_t;
 
 /**
  * 5.3.4 ssd:SystemGeometry
@@ -286,7 +286,7 @@ typedef struct {
    * system canvas.
    */
   double y2;
-} oms_system_geometry_t;
+} ssd_system_geometry_t;
 
 #ifdef __cplusplus
 }
