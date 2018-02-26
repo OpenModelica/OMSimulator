@@ -45,7 +45,7 @@ namespace oms2
     static void deleteSubModel(FMISubModel *model) {if (model) delete model;}
 
     const ComRef& getName() const {return cref;}
-    void setGeometry(double x1, double y1, double x2, double y2) {this->geometry.updateSizePosition(x1, y1, x2, y2);}
+    void setGeometry(double x1, double y1, double x2, double y2) {this->geometry.setSizePosition(x1, y1, x2, y2);}
     void setGeometry(const oms2::ssd::ElementGeometry& geometry) {this->geometry = geometry;}
     oms2::ssd::ElementGeometry* getGeometry() {return &geometry;}
 
