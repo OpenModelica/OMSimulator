@@ -29,8 +29,8 @@
  *
  */
 
-#ifndef _SSD_ELEMENT_GEOMETRY_H_
-#define _SSD_ELEMENT_GEOMETRY_H_
+#ifndef _SSD_SYSTEM_GEOMETRY_H_
+#define _SSD_SYSTEM_GEOMETRY_H_
 
 #include "../../Types.h"
 
@@ -40,32 +40,21 @@ namespace oms2
 {
   namespace ssd
   {
-    class ElementGeometry : protected ssd_element_geometry_t
+    class SystemGeometry : protected ssd_system_geometry_t
     {
     public:
-      ElementGeometry();
-      ElementGeometry(const ElementGeometry& rhs);
-      ~ElementGeometry();
+      SystemGeometry();
+      SystemGeometry(const SystemGeometry& rhs);
+      ~SystemGeometry();
 
-      ElementGeometry& operator=(ElementGeometry const& rhs);
+      SystemGeometry& operator=(SystemGeometry const& rhs);
 
       void setSizePosition(double x1, double y1, double x2, double y2) {this->x1 = x1; this->y1 = y1; this->x2 = x2; this->y2 = y2;}
-      void setRotation(double rotation) {this->rotation = rotation;}
-      void setIconSource(std::string iconSource);
-      void setIconRotation(double iconRotation) {this->iconRotation = iconRotation;}
-      void setIconFlip(bool iconFlip) {this->iconFlip = iconFlip;}
-      void setIconFixedAspectRatio(bool iconFixedAspectRatio) {this->iconFixedAspectRatio = iconFixedAspectRatio;}
 
       double getX1() const {return x1;}
       double getY1() const {return y1;}
       double getX2() const {return x2;}
       double getY2() const {return y2;}
-      double getRotation() const {return rotation;}
-      std::string getIconSource() const {return std::string(iconSource);}
-      bool hasIconSource() const {return (NULL != iconSource);}
-      double getIconRotation() const {return iconRotation;}
-      bool getIconFlip() const {return iconFlip;}
-      bool getIconFixedAspectRatio() const {return iconFixedAspectRatio;}
     };
   }
 }
