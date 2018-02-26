@@ -129,7 +129,6 @@ int main(int argc, char *argv[])
       char* name = NULL;
       if (oms_status_ok != oms2_loadModel(filename.c_str(), &name))
         return 0;
-      oms2_saveModel("test-123.xml", name);
       oms2_unloadModel(name);
     }
     else
