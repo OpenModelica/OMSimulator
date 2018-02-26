@@ -37,6 +37,7 @@ list(APPEND OMSIMULATORLIB_SOURCES oms2/SignalRef.cpp)
 list(APPEND OMSIMULATORLIB_SOURCES oms2/TLMCompositeModel.cpp)
 list(APPEND OMSIMULATORLIB_SOURCES oms2/Variable.cpp)
 
+list(APPEND OMSIMULATORLIB_SOURCES oms2/ssd/SystemGeometry.cpp)
 list(APPEND OMSIMULATORLIB_SOURCES oms2/ssd/ElementGeometry.cpp)
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Version.cpp.in" "${CMAKE_CURRENT_BINARY_DIR}/Version.cpp" @ONLY)
