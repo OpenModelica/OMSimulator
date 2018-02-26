@@ -38,6 +38,7 @@ list(APPEND OMSIMULATORLIB_SOURCES oms2/TLMCompositeModel.cpp)
 list(APPEND OMSIMULATORLIB_SOURCES oms2/Variable.cpp)
 
 list(APPEND OMSIMULATORLIB_SOURCES oms2/ssd/ConnectionGeometry.cpp)
+list(APPEND OMSIMULATORLIB_SOURCES oms2/ssd/ConnectorGeometry.cpp)
 list(APPEND OMSIMULATORLIB_SOURCES oms2/ssd/ElementGeometry.cpp)
 list(APPEND OMSIMULATORLIB_SOURCES oms2/ssd/SystemGeometry.cpp)
 
