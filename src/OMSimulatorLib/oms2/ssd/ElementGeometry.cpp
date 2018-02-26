@@ -38,10 +38,10 @@ oms2::ssd::ElementGeometry::ElementGeometry()
 {
   logTrace();
 
-  this->x1 = -10.0;
-  this->y1 = -10.0;
-  this->x2 = 10.0;
-  this->y2 = 10.0;
+  this->x1 = 0.0; // -10.0;
+  this->y1 = 0.0; // -10.0;
+  this->x2 = 0.0; // 10.0;
+  this->y2 = 0.0; // 10.0;
   this->rotation = 0.0;
   this->iconSource = NULL;
   this->iconRotation = 0.0;
@@ -112,4 +112,19 @@ oms2::ssd::ElementGeometry& oms2::ssd::ElementGeometry::operator=(oms2::ssd::Ele
   this->iconFixedAspectRatio = rhs.iconFixedAspectRatio;
 
   return *this;
+}
+
+void oms2::ssd::ElementGeometry::setIconSource(std::string iconSource)
+{
+  if (this->iconSource)
+    delete[] this->iconSource;
+
+  if (iconSource.empty())
+    this->iconSource = NULL;
+  else
+  {
+    size_t size = iconSource.length() + 1;
+    this->iconSource = new char[size];
+    memcpy(this->iconSource, iconSource.c_str(), size*sizeof(char));
+  }
 }

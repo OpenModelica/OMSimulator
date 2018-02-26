@@ -36,6 +36,7 @@
 #include "TLMCompositeModel.h"
 #include "FMUWrapper.h"
 #include "../Types.h"
+#include "ssd/ElementGeometry.h"
 
 #include <iostream>
 
@@ -305,14 +306,32 @@ oms2::Model* oms2::Scope::loadFMIModel(const pugi::xml_node& xml)
 
       for (auto child = it->first_child(); child; child = child.next_sibling())
       {
-        // ssd:ElementGeometry
+        // import ssd:ElementGeometry
         if (std::string(child.name()) == "ssd:ElementGeometry")
         {
+          oms2::ssd::ElementGeometry geometry;
           double x1 = child.attribute("x1").as_double();
           double y1 = child.attribute("y1").as_double();
           double x2 = child.attribute("x2").as_double();
           double y2 = child.attribute("y2").as_double();
-          subModel->setGeometry(x1, y1, x2, y2);
+          geometry.setSizePosition(x1, y1, x2, y2);
+
+          double rotation = child.attribute("rotation").as_double();
+          geometry.setRotation(rotation);
+
+          std::string iconSource = child.attribute("iconSource").as_string();
+          geometry.setIconSource(iconSource);
+
+          double iconRotation = child.attribute("iconRotation").as_double();
+          geometry.setIconRotation(iconRotation);
+
+          bool iconFlip = child.attribute("iconFlip").as_bool();
+          geometry.setIconFlip(iconFlip);
+
+          bool iconFixedAspectRatio = child.attribute("iconFixedAspectRatio").as_bool();
+          geometry.setIconFixedAspectRatio(iconFixedAspectRatio);
+
+          subModel->setGeometry(geometry);
         }
         // import parameters
         else if (std::string(child.name()) == "Parameter")
@@ -367,6 +386,8 @@ oms2::Model* oms2::Scope::loadFMIModel(const pugi::xml_node& xml)
     }// if (node == "Solver")
     else if (node == "ssd:ElementGeometry")
     {
+      // import ssd:ElementGeometry
+      oms2::ssd::ElementGeometry geometry;
       double x1 = 0.0;
       double y1 = 0.0;
       double x2 = 0.0;
@@ -378,8 +399,14 @@ oms2::Model* oms2::Scope::loadFMIModel(const pugi::xml_node& xml)
         if (name == "y1") y1 = ait->as_double();
         if (name == "x2") x2 = ait->as_double();
         if (name == "y2") y2 = ait->as_double();
+        if (name == "rotation") geometry.setRotation(ait->as_double());
+        if (name == "iconSource") geometry.setIconSource(ait->as_string());
+        if (name == "iconRotation") geometry.setIconRotation(ait->as_double());
+        if (name == "iconFlip") geometry.setIconFlip(ait->as_bool());
+        if (name == "iconFixedAspectRatio") geometry.setIconFixedAspectRatio(ait->as_bool());
       }
-      model->setGeometry(x1, y1, x2, y2);
+      geometry.setSizePosition(x1, y1, x2, y2);
+      model->setGeometry(geometry);
     }// ssd:ElementGeometry
     else
     {
@@ -462,7 +489,7 @@ oms_status_t oms2::Scope::saveFMIModel(oms2::FMICompositeModel* model, const std
   value = model->getName().toString();
 
   fmiCompositeModel.append_attribute("Name") = value.c_str();
-  // ssd:ElementGeometry
+  // export ssd:ElementGeometry
   oms2::ssd::ElementGeometry* elementGeometry = model->getGeometry();
   if (elementGeometry->getY1() != elementGeometry->getY2())
   {
@@ -475,6 +502,25 @@ oms_status_t oms2::Scope::saveFMIModel(oms2::FMICompositeModel* model, const std
     node.append_attribute("x2") = value.c_str();
     value = std::to_string(elementGeometry->getY2());
     node.append_attribute("y2") = value.c_str();
+
+    value = std::to_string(elementGeometry->getRotation());
+    node.append_attribute("rotation") = value.c_str();
+
+    if (elementGeometry->hasIconSource())
+      node.append_attribute("iconSource") = elementGeometry->getIconSource().c_str();
+
+    value = std::to_string(elementGeometry->getIconRotation());
+    node.append_attribute("iconRotation") = value.c_str();
+
+    if (elementGeometry->getIconFlip())
+      node.append_attribute("iconFlip") = "true";
+    else
+      node.append_attribute("iconFlip") = "false";
+
+    if (elementGeometry->getIconFixedAspectRatio())
+      node.append_attribute("iconFixedAspectRatio") = "true";
+    else
+      node.append_attribute("iconFixedAspectRatio") = "false";
   }
 
   const std::map<oms2::ComRef, oms2::FMISubModel*>& subModels = model->getSubModels();
@@ -484,7 +530,7 @@ oms_status_t oms2::Scope::saveFMIModel(oms2::FMICompositeModel* model, const std
     value = it->first.toString();
     subModel.append_attribute("Name") = value.c_str();
 
-    // ssd:ElementGeometry
+    // export ssd:ElementGeometry
     oms2::ssd::ElementGeometry* elementGeometry = it->second->getGeometry();
     if (elementGeometry->getY1() != elementGeometry->getY2())
     {
@@ -497,6 +543,25 @@ oms_status_t oms2::Scope::saveFMIModel(oms2::FMICompositeModel* model, const std
       node.append_attribute("x2") = value.c_str();
       value = std::to_string(elementGeometry->getY2());
       node.append_attribute("y2") = value.c_str();
+
+      value = std::to_string(elementGeometry->getRotation());
+      node.append_attribute("rotation") = value.c_str();
+
+      if (elementGeometry->hasIconSource())
+        node.append_attribute("iconSource") = elementGeometry->getIconSource().c_str();
+
+      value = std::to_string(elementGeometry->getIconRotation());
+      node.append_attribute("iconRotation") = value.c_str();
+
+      if (elementGeometry->getIconFlip())
+        node.append_attribute("iconFlip") = "true";
+      else
+        node.append_attribute("iconFlip") = "false";
+
+      if (elementGeometry->getIconFixedAspectRatio())
+        node.append_attribute("iconFixedAspectRatio") = "true";
+      else
+        node.append_attribute("iconFixedAspectRatio") = "false";
     }
     if (oms_component_fmu == it->second->getType())
     {

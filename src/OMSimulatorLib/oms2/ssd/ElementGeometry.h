@@ -47,14 +47,25 @@ namespace oms2
       ElementGeometry(const ElementGeometry& rhs);
       ~ElementGeometry();
 
-      void updateSizePosition(double x1, double y1, double x2, double y2) {this->x1 = x1; this->y1 = y1; this->x2 = x2; this->y2 = y2;}
-
       ElementGeometry& operator=(ElementGeometry const& rhs);
+
+      void setSizePosition(double x1, double y1, double x2, double y2) {this->x1 = x1; this->y1 = y1; this->x2 = x2; this->y2 = y2;}
+      void setRotation(double rotation) {this->rotation = rotation;}
+      void setIconSource(std::string iconSource);
+      void setIconRotation(double iconRotation) {this->iconRotation = iconRotation;}
+      void setIconFlip(bool iconFlip) {this->iconFlip = iconFlip;}
+      void setIconFixedAspectRatio(bool iconFixedAspectRatio) {this->iconFixedAspectRatio = iconFixedAspectRatio;}
 
       double getX1() const {return x1;}
       double getY1() const {return y1;}
       double getX2() const {return x2;}
       double getY2() const {return y2;}
+      double getRotation() const {return rotation;}
+      std::string getIconSource() const {return std::string(iconSource);}
+      bool hasIconSource() const {return (NULL != iconSource);}
+      double getIconRotation() const {return iconRotation;}
+      bool getIconFlip() const {return iconFlip;}
+      bool getIconFixedAspectRatio() const {return iconFixedAspectRatio;}
     };
   }
 }
