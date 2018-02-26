@@ -68,10 +68,10 @@ typedef enum {
 
 typedef enum {
   oms_component_none,
-  oms_component_tlm,  /* TLM model */
-  oms_component_fmi,  /* FMI model */
-  oms_component_fmu,  /* FMU */
-  oms_component_port  /* port */
+  oms_component_tlm,  ///< TLM model
+  oms_component_fmi,  ///< FMI model
+  oms_component_fmu,  ///< FMU
+  oms_component_port  ///< port
 } oms_component_type_t;
 
 typedef enum {
@@ -103,7 +103,7 @@ typedef struct {
   oms_connection_type_t type;
   const char* from;
   const char* to;
-  /* optional TLM attributes */
+  /// \todo optional TLM attributes
 } oms_connection_t;
 
 typedef enum {
@@ -120,7 +120,7 @@ typedef struct {
 } oms_message_t;
 
 /**
- * 5.2.1.1 ssd:ConnectorGeometry
+ * @brief 5.2.1.1 ssd:ConnectorGeometry
  *
  * This optional XML element gives the geometry information of the connector.
  * Note that x and y coordinates are in a special coordinate system, where 0,0
@@ -147,7 +147,7 @@ typedef struct {
 } ssd_connector_geometry_t;
 
 /**
- * 5.2.2 ssd:ElementGeometry
+ * @brief 5.2.2 ssd:ElementGeometry
  *
  * This optional XML element defines the geometry information of the model
  * element, where (x1,y1) and (x2,y2) define the positions of the lower-left
@@ -220,7 +220,7 @@ typedef struct {
 } ssd_element_geometry_t;
 
 /**
- * 5.3.2.1 ssd:ConnectionGeometry
+ * @brief 5.3.2.1 ssd:ConnectionGeometry
  *
  * This optional element defines the geometry information of the connection.
  * The start and end coordinates of the connection are derived automatically
@@ -250,7 +250,7 @@ typedef struct {
 } ssd_connection_geometry_t;
 
 /**
- * 5.3.4 ssd:SystemGeometry
+ * @brief 5.3.4 ssd:SystemGeometry
  *
  * This element defines the extent of the system canvas. (x1,y1) and (x2,y2)
  * define the lower-left and upper-right corner, respectively. Different from
