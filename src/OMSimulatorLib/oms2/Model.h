@@ -32,9 +32,9 @@
 #ifndef _OMS_MODEL_H_
 #define _OMS_MODEL_H_
 
-
-#include "ComRef.h"
 #include "../Types.h"
+#include "ComRef.h"
+#include "ssd/ElementGeometry.h"
 
 #include <string>
 
@@ -56,9 +56,9 @@ namespace oms2
     void setResultFile(const std::string& value) {resultFile = value;}
     const std::string& getResultFile() const {return resultFile;}
 
-    void setGeometry(double x1, double y1, double x2, double y2) {geometry.x1 = x1; geometry.y1 = y1; geometry.x2 = x2; geometry.y2 = y2;}
-    void setGeometry(const oms_element_geometry_t& geometry) {this->geometry = geometry;}
-    oms_element_geometry_t* getGeometry() {return &geometry;}
+    void setGeometry(double x1, double y1, double x2, double y2) {this->geometry.updateSizePosition(x1, y1, x2, y2);}
+    void setGeometry(const oms2::ssd::ElementGeometry& geometry) {this->geometry = geometry;}
+    oms2::ssd::ElementGeometry* getGeometry() {return &geometry;}
 
     oms_component_t** getComponents();
 
@@ -73,7 +73,7 @@ namespace oms2
 
   protected:
     ComRef name;
-    oms_element_geometry_t geometry;
+    oms2::ssd::ElementGeometry geometry;
     double startTime;       ///< experiment, default 0.0
     double stopTime;        ///< experiment, default 1.0
     std::string resultFile; ///< experiment, default name_res.mat

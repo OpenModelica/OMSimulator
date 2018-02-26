@@ -577,13 +577,13 @@ oms_status_t oms2_saveModel(const char* filename, const char* ident)
 oms_status_t oms2_getElementGeometry(const char* cref, const oms_element_geometry_t** geometry)
 {
   logTrace();
-  return oms2::Scope::getElementGeometry(oms2::ComRef(cref), geometry);
+  return oms2::Scope::getElementGeometry(oms2::ComRef(cref), reinterpret_cast<const oms2::ssd::ElementGeometry**>(geometry));
 }
 
 oms_status_t oms2_setElementGeometry(const char* cref, const oms_element_geometry_t* geometry)
 {
   logTrace();
-  return oms2::Scope::setElementGeometry(oms2::ComRef(cref), geometry);
+  return oms2::Scope::setElementGeometry(oms2::ComRef(cref), reinterpret_cast<const oms2::ssd::ElementGeometry*>(geometry));
 }
 
 oms_status_t oms2_getComponents(const char* cref, oms_component_t*** components)

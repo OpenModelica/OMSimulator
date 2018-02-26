@@ -32,6 +32,8 @@
 #ifndef _OMSIMULATOR_TYPES_H_
 #define _OMSIMULATOR_TYPES_H_
 
+#include <stdbool.h>
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -123,6 +125,11 @@ typedef struct {
   double y1;
   double x2;
   double y2;
+  double rotation;
+  char* iconSource;
+  double iconRotation;
+  bool iconFlip;
+  bool iconFixedAspectRatio;
 } oms_element_geometry_t;
 
 /** ssd:ConnectionGeometry */

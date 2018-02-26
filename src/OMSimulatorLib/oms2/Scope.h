@@ -32,11 +32,12 @@
 #ifndef _OMS_SCOPE_H_
 #define _OMS_SCOPE_H_
 
+#include "../Types.h"
 #include "ComRef.h"
 #include "FMICompositeModel.h"
 #include "Model.h"
+#include "ssd/ElementGeometry.h"
 #include "TLMCompositeModel.h"
-#include "../Types.h"
 
 #include <map>
 #include <string>
@@ -60,8 +61,8 @@ namespace oms2
     static oms_status_t SetTempDirectory(const std::string& newTempDir);
     static const std::string& GetTempDirectory() {Scope &scope = getInstance(); return scope.tempDir;}
 
-    static oms_status_t getElementGeometry(const ComRef& cref, const oms_element_geometry_t** geometry);
-    static oms_status_t setElementGeometry(const ComRef& cref, const oms_element_geometry_t* geometry);
+    static oms_status_t getElementGeometry(const ComRef& cref, const oms2::ssd::ElementGeometry** geometry);
+    static oms_status_t setElementGeometry(const ComRef& cref, const oms2::ssd::ElementGeometry* geometry);
 
     static oms_status_t getConnectionGeometry(const SignalRef& signalA, const SignalRef& signalB, const oms_connection_geometry_t** geometry);
     static oms_status_t setConnectionGeometry(const SignalRef& signalA, const SignalRef& signalB, const oms_connection_geometry_t* geometry);
