@@ -32,11 +32,11 @@
 #ifndef _OMS_SCOPE_H_
 #define _OMS_SCOPE_H_
 
-#include "oms2_ComRef.h"
-#include "oms2_Model.h"
-#include "oms2_FMICompositeModel.h"
-#include "oms2_TLMCompositeModel.h"
-#include "Types.h"
+#include "ComRef.h"
+#include "FMICompositeModel.h"
+#include "Model.h"
+#include "TLMCompositeModel.h"
+#include "../Types.h"
 
 #include <map>
 #include <string>

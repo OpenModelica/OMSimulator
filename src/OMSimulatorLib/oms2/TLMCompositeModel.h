@@ -29,28 +29,33 @@
  *
  */
 
-#include "oms2_ComRef.h"
-#include "oms2_TLMCompositeModel.h"
-#include "oms2_Logging.h"
+#ifndef _OMS_TLM_COMPOSITE_MODEL_H_
+#define _OMS_TLM_COMPOSITE_MODEL_H_
 
-oms2::TLMCompositeModel::TLMCompositeModel(const ComRef& name)
-  : Model(name)
-{
-  logTrace();
-}
+#include "ComRef.h"
+#include "Model.h"
+#include "../Types.h"
 
-oms2::TLMCompositeModel::~TLMCompositeModel()
+namespace oms2
 {
-}
-
-oms2::TLMCompositeModel* oms2::TLMCompositeModel::newModel(const ComRef& name)
-{
- if (!name.isValidIdent())
+  class TLMCompositeModel : public Model
   {
-    logError("\"" + name + "\" is not a valid model name.");
-    return NULL;
-  }
+  public:
+    static TLMCompositeModel* newModel(const ComRef& name);
 
-  oms2::TLMCompositeModel *model = new oms2::TLMCompositeModel(name);
-  return model;
+    oms_component_type_t getType() {return oms_component_tlm;}
+
+  private:
+    TLMCompositeModel(const ComRef& name);
+    ~TLMCompositeModel();
+
+    // stop the compiler generating methods copying the object
+    TLMCompositeModel(TLMCompositeModel const& copy);            // not implemented
+    TLMCompositeModel& operator=(TLMCompositeModel const& copy); // not implemented
+
+  private:
+    ComRef name;
+  };
 }
+
+#endif

@@ -29,13 +29,13 @@
  *
  */
 
-#include "oms2_ComRef.h"
-#include "oms2_FMICompositeModel.h"
-#include "oms2_Logging.h"
-#include "oms2_Scope.h"
-#include "oms2_TLMCompositeModel.h"
-#include "oms2_FMUWrapper.h"
-#include "Types.h"
+#include "ComRef.h"
+#include "FMICompositeModel.h"
+#include "Logging.h"
+#include "Scope.h"
+#include "TLMCompositeModel.h"
+#include "FMUWrapper.h"
+#include "../Types.h"
 
 #include <iostream>
 

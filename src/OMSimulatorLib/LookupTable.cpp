@@ -29,7 +29,7 @@
  *
  */
 
-#include "oms2_Logging.h"
+#include "oms2/Logging.h"
 #include "LookupTable.h"
 #include "ResultReader.h"
 

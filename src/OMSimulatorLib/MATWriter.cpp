@@ -32,7 +32,7 @@
 #include "MATWriter.h"
 #include "ResultWriter.h"
 #include "MatVer4.h"
-#include "oms2_Logging.h"
+#include "oms2/Logging.h"
 #include "Util.h"
 
 #include <stdio.h>

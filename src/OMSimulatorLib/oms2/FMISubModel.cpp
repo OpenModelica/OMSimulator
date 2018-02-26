@@ -29,15 +29,13 @@
  *
  */
 
-#include "oms2_Model.h"
+#include "FMISubModel.h"
+#include "Logging.h"
 
-#include "oms2_FMICompositeModel.h"
-#include "oms2_Logging.h"
+#include <cstring>
 
-#include <regex>
-
-oms2::Model::Model(const ComRef& cref)
-  : name(cref)
+oms2::FMISubModel::FMISubModel(const ComRef& cref)
+  : cref(cref)
 {
   logTrace();
   geometry.x1 = -10.0;
@@ -45,33 +43,14 @@ oms2::Model::Model(const ComRef& cref)
   geometry.x2 = 10.0;
   geometry.y2 = 10.0;
 
-  startTime = 0.0;
-  stopTime = 1.0;
-  resultFile = name.toString() + "_res.mat";
+  component.name = new char[cref.toString().length()+1];
+  strcpy(component.name, cref.toString().c_str());
 
-  components = NULL;
+  component.type = oms_component_none;
+  component.interfaces = NULL;
 }
 
-oms2::Model::~Model()
+oms2::FMISubModel::~FMISubModel()
 {
-  if (components)
-    delete[] components;
-}
-
-oms_component_t** oms2::Model::getComponents()
-{
-  logTrace();
-
-  if (components)
-    return components;
-
-  if (oms_component_fmi == getType())
-  {
-    FMICompositeModel* fmiModel = dynamic_cast<FMICompositeModel*>(this);
-    fmiModel->updateComponents();
-    return components;
-  }
-
-  logError("[oms2::Model::getComponents] only implemented for FMI composite models");
-  return NULL;
+  delete[] component.name;
 }

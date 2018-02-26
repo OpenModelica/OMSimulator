@@ -32,12 +32,12 @@
 #ifndef _OMS_FMI_COMPOSITE_MODEL_H_
 #define _OMS_FMI_COMPOSITE_MODEL_H_
 
-#include "oms2_ComRef.h"
-#include "oms2_SignalRef.h"
-#include "oms2_FMISubModel.h"
-#include "oms2_Model.h"
-#include "oms2_Connection.h"
-#include "Types.h"
+#include "ComRef.h"
+#include "SignalRef.h"
+#include "FMISubModel.h"
+#include "Model.h"
+#include "Connection.h"
+#include "../Types.h"
 
 #include <map>
 #include <deque>

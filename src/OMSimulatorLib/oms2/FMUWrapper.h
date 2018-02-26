@@ -32,10 +32,10 @@
 #ifndef _OMS2_FMU_WRAPPER_H_
 #define _OMS2_FMU_WRAPPER_H_
 
-#include "oms2_ComRef.h"
-#include "oms2_FMISubModel.h"
-#include "oms2_Variable.h"
-#include "oms2_Option.h"
+#include "ComRef.h"
+#include "FMISubModel.h"
+#include "Variable.h"
+#include "Option.h"
 
 #include <map>
 #include <string>

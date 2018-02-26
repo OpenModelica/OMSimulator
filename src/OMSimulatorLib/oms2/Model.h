@@ -32,8 +32,9 @@
 #ifndef _OMS_MODEL_H_
 #define _OMS_MODEL_H_
 
-#include "oms2_ComRef.h"
-#include "Types.h"
+
+#include "ComRef.h"
+#include "../Types.h"
 
 #include <string>
 

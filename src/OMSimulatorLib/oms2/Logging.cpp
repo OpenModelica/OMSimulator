@@ -29,9 +29,9 @@
  *
  */
 
-#include "oms2_Logging.h"
-#include "Version.h"
-#include "Types.h"
+#include "Logging.h"
+#include "../Version.h"
+#include "../Types.h"
 
 #include <iostream>
 #include <fstream>

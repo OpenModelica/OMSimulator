@@ -31,7 +31,7 @@
 
 #include "OMFit.h"
 #include "FitModel.h"
-#include "OMSimulatorLib/oms2_Logging.h"
+#include "OMSimulatorLib/oms2/Logging.h"
 
 void* omsfit_newFitModel(void* model)
 {

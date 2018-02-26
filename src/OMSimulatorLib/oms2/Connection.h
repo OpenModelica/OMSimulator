@@ -32,9 +32,9 @@
 #ifndef _OMS2_CONNECTION_H_
 #define _OMS2_CONNECTION_H_
 
-#include "oms2_ComRef.h"
-#include "oms2_SignalRef.h"
-#include "Types.h"
+#include "ComRef.h"
+#include "SignalRef.h"
+#include "../Types.h"
 
 #include <string>
 

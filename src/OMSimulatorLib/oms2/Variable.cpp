@@ -29,11 +29,9 @@
  *
  */
 
-#include "oms2_Variable.h"
-#include "oms2_Logging.h"
-#include "Settings.h"
-#include "FMUWrapper.h"
-#include "Util.h"
+#include "Variable.h"
+#include "Logging.h"
+#include "../Util.h"
 
 #include <fmilib.h>
 #include <JM/jm_portability.h>

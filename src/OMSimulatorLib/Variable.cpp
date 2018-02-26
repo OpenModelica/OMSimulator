@@ -30,7 +30,7 @@
  */
 
 #include "Variable.h"
-#include "oms2_Logging.h"
+#include "oms2/Logging.h"
 #include "Settings.h"
 #include "FMUWrapper.h"
 #include "Util.h"

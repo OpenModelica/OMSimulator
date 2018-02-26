@@ -32,7 +32,7 @@
 #ifndef _OMS_SIGNAL_REF_H_
 #define _OMS_SIGNAL_REF_H_
 
-#include "oms2_ComRef.h"
+#include "ComRef.h"
 
 #include <string>
 
