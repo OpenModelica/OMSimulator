@@ -121,14 +121,54 @@ typedef struct {
 
 /** ssd:ElementGeometry */
 typedef struct {
+  /**
+   * Required attribute giving the x coordinate of the lower left corner of the
+   * model element inside the coordinate system of its parent system.
+   */
   double x1;
+  /**
+   * Required attribute giving the y coordinate of the lower left corner of the
+   * model element inside the coordinate system of its parent system.
+   */
   double y1;
+  /**
+   * Required attribute giving the x coordinate of the upper right corner of the
+   * model element inside the coordinate system of its parent system.
+   */
   double x2;
+  /**
+   * Required attribute giving the y coordinate of the upper right corner of the
+   * model element inside the coordinate system of its parent system.
+   */
   double y2;
+  /**
+   * Optional attribute defines an additional rotation in degrees that is to be
+   * applied after any flipping, where positive numbers indicate left rotation
+   * (x->y).
+   */
   double rotation;
+  /**
+   * Optional attribute defines an icon URI with the same semantics as for the
+   * source attribute of the Component element. If defined, this icon overrides
+   * any icon that may be defined e.g. in an .fmu file (as specified in the
+   * relevant FMI standards).
+   */
   char* iconSource;
+  /**
+   * Optional attribute defines the rotation (in degrees) of the icon, where
+   * positive numbers indicate left rotation (x->y).
+   */
   double iconRotation;
+  /**
+   * Optional attribute defines whether any flipping indicated by (x1,y1),
+   * (x2,y2) shall be applied to the icon graphics, too, or not.
+   */
   bool iconFlip;
+  /**
+   * Optional attribute defines whether the icon shall be fit into the extent
+   * defined by (x1,y1), (x2,y2) with a fixed aspect ratio, or without keeping
+   * the aspect ratio fixed.
+   */
   bool iconFixedAspectRatio;
 } oms_element_geometry_t;
 
