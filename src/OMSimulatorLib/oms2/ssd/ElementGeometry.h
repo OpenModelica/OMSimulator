@@ -29,45 +29,34 @@
  *
  */
 
-#include "Model.h"
+#ifndef _OMS2_SSD_ELEMENT_GEOMETRY_H_
+#define _OMS2_SSD_ELEMENT_GEOMETRY_H_
 
-#include "FMICompositeModel.h"
-#include "Logging.h"
+#include "../../Types.h"
 
-#include <regex>
+#include <string>
 
-oms2::Model::Model(const ComRef& cref)
-  : name(cref), geometry()
+namespace oms2
 {
-  logTrace();
-
-  startTime = 0.0;
-  stopTime = 1.0;
-  resultFile = name.toString() + "_res.mat";
-
-  components = NULL;
-}
-
-oms2::Model::~Model()
-{
-  if (components)
-    delete[] components;
-}
-
-oms_component_t** oms2::Model::getComponents()
-{
-  logTrace();
-
-  if (components)
-    return components;
-
-  if (oms_component_fmi == getType())
+  namespace ssd
   {
-    FMICompositeModel* fmiModel = dynamic_cast<FMICompositeModel*>(this);
-    fmiModel->updateComponents();
-    return components;
-  }
+    class ElementGeometry : protected oms_element_geometry_t
+    {
+    public:
+      ElementGeometry();
+      ElementGeometry(const ElementGeometry& rhs);
+      ~ElementGeometry();
 
-  logError("[oms2::Model::getComponents] only implemented for FMI composite models");
-  return NULL;
+      void updateSizePosition(double x1, double y1, double x2, double y2) {this->x1 = x1; this->y1 = y1; this->x2 = x2; this->y2 = y2;}
+
+      ElementGeometry& operator=(ElementGeometry const& rhs);
+
+      double getX1() const {return x1;}
+      double getY1() const {return y1;}
+      double getX2() const {return x2;}
+      double getY2() const {return y2;}
+    };
+  }
 }
+
+#endif

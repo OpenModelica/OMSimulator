@@ -32,8 +32,9 @@
 #ifndef _OMS_FMI_SUB_MODEL_H_
 #define _OMS_FMI_SUB_MODEL_H_
 
-#include "ComRef.h"
 #include "../Types.h"
+#include "ComRef.h"
+#include "ssd/ElementGeometry.h"
 
 namespace oms2
 {
@@ -44,9 +45,9 @@ namespace oms2
     static void deleteSubModel(FMISubModel *model) {if (model) delete model;}
 
     const ComRef& getName() const {return cref;}
-    void setGeometry(double x1, double y1, double x2, double y2) {geometry.x1 = x1; geometry.y1 = y1; geometry.x2 = x2; geometry.y2 = y2;}
-    void setGeometry(const oms_element_geometry_t& geometry) {this->geometry = geometry;}
-    oms_element_geometry_t* getGeometry() {return &geometry;}
+    void setGeometry(double x1, double y1, double x2, double y2) {this->geometry.updateSizePosition(x1, y1, x2, y2);}
+    void setGeometry(const oms2::ssd::ElementGeometry& geometry) {this->geometry = geometry;}
+    oms2::ssd::ElementGeometry* getGeometry() {return &geometry;}
 
     oms_component_t* getComponent() {return &component;}
 
@@ -61,7 +62,7 @@ namespace oms2
 
   protected:
     ComRef cref;
-    oms_element_geometry_t geometry;
+    oms2::ssd::ElementGeometry geometry;
     oms_component_t component;
   };
 }

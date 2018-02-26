@@ -463,17 +463,17 @@ oms_status_t oms2::Scope::saveFMIModel(oms2::FMICompositeModel* model, const std
 
   fmiCompositeModel.append_attribute("Name") = value.c_str();
   // ssd:ElementGeometry
-  oms_element_geometry_t* elementGeometry = model->getGeometry();
-  if (elementGeometry->y1 != elementGeometry->y2)
+  oms2::ssd::ElementGeometry* elementGeometry = model->getGeometry();
+  if (elementGeometry->getY1() != elementGeometry->getY2())
   {
     pugi::xml_node node = fmiCompositeModel.append_child("ssd:ElementGeometry");
-    value = std::to_string(elementGeometry->x1);
+    value = std::to_string(elementGeometry->getX1());
     node.append_attribute("x1") = value.c_str();
-    value = std::to_string(elementGeometry->y1);
+    value = std::to_string(elementGeometry->getY1());
     node.append_attribute("y1") = value.c_str();
-    value = std::to_string(elementGeometry->x2);
+    value = std::to_string(elementGeometry->getX2());
     node.append_attribute("x2") = value.c_str();
-    value = std::to_string(elementGeometry->y2);
+    value = std::to_string(elementGeometry->getY2());
     node.append_attribute("y2") = value.c_str();
   }
 
@@ -485,17 +485,17 @@ oms_status_t oms2::Scope::saveFMIModel(oms2::FMICompositeModel* model, const std
     subModel.append_attribute("Name") = value.c_str();
 
     // ssd:ElementGeometry
-    oms_element_geometry_t* elementGeometry = it->second->getGeometry();
-    if (elementGeometry->y1 != elementGeometry->y2)
+    oms2::ssd::ElementGeometry* elementGeometry = it->second->getGeometry();
+    if (elementGeometry->getY1() != elementGeometry->getY2())
     {
       pugi::xml_node node = subModel.append_child("ssd:ElementGeometry");
-      value = std::to_string(elementGeometry->x1);
+      value = std::to_string(elementGeometry->getX1());
       node.append_attribute("x1") = value.c_str();
-      value = std::to_string(elementGeometry->y1);
+      value = std::to_string(elementGeometry->getY1());
       node.append_attribute("y1") = value.c_str();
-      value = std::to_string(elementGeometry->x2);
+      value = std::to_string(elementGeometry->getX2());
       node.append_attribute("x2") = value.c_str();
-      value = std::to_string(elementGeometry->y2);
+      value = std::to_string(elementGeometry->getY2());
       node.append_attribute("y2") = value.c_str();
     }
     if (oms_component_fmu == it->second->getType())
@@ -556,7 +556,7 @@ oms_status_t oms2::Scope::saveTLMModel(oms2::TLMCompositeModel* model, const std
   return oms_status_error;
 }
 
-oms_status_t oms2::Scope::getElementGeometry(const oms2::ComRef& cref, const oms_element_geometry_t** geometry)
+oms_status_t oms2::Scope::getElementGeometry(const oms2::ComRef& cref, const oms2::ssd::ElementGeometry** geometry)
 {
   oms2::Scope& scope = oms2::Scope::getInstance();
 
@@ -612,7 +612,7 @@ oms_status_t oms2::Scope::getElementGeometry(const oms2::ComRef& cref, const oms
   return oms_status_error;
 }
 
-oms_status_t oms2::Scope::setElementGeometry(const oms2::ComRef& cref, const oms_element_geometry_t* geometry)
+oms_status_t oms2::Scope::setElementGeometry(const oms2::ComRef& cref, const oms2::ssd::ElementGeometry* geometry)
 {
   oms2::Scope& scope = oms2::Scope::getInstance();
 

@@ -35,13 +35,9 @@
 #include <cstring>
 
 oms2::FMISubModel::FMISubModel(const ComRef& cref)
-  : cref(cref)
+  : cref(cref), geometry()
 {
   logTrace();
-  geometry.x1 = -10.0;
-  geometry.y1 = -10.0;
-  geometry.x2 = 10.0;
-  geometry.y2 = 10.0;
 
   component.name = new char[cref.toString().length()+1];
   strcpy(component.name, cref.toString().c_str());
