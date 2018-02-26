@@ -40,7 +40,7 @@ namespace oms2
 {
   namespace ssd
   {
-    class ElementGeometry : protected oms_element_geometry_t
+    class ElementGeometry : protected ssd_element_geometry_t
     {
     public:
       ElementGeometry();

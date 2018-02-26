@@ -60,13 +60,13 @@ namespace oms2
     const oms2::SignalRef& getSignalA() const {return conA;}
     const oms2::SignalRef& getSignalB() const {return conB;}
 
-    oms_connection_geometry_t* getGeometry() {return &geometry;}
-    void setGeometry(const oms_connection_geometry_t* newGeometry);
+    ssd_connection_geometry_t* getGeometry() {return &geometry;}
+    void setGeometry(const ssd_connection_geometry_t* newGeometry);
 
   private:
     oms2::SignalRef conA;
     oms2::SignalRef conB;
-    oms_connection_geometry_t geometry;
+    ssd_connection_geometry_t geometry;
 
     friend bool operator==(const Connection& lhs, const Connection& rhs);
     friend bool operator!=(const Connection& lhs, const Connection& rhs);

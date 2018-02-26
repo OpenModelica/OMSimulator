@@ -64,8 +64,8 @@ namespace oms2
     static oms_status_t getElementGeometry(const ComRef& cref, const oms2::ssd::ElementGeometry** geometry);
     static oms_status_t setElementGeometry(const ComRef& cref, const oms2::ssd::ElementGeometry* geometry);
 
-    static oms_status_t getConnectionGeometry(const SignalRef& signalA, const SignalRef& signalB, const oms_connection_geometry_t** geometry);
-    static oms_status_t setConnectionGeometry(const SignalRef& signalA, const SignalRef& signalB, const oms_connection_geometry_t* geometry);
+    static oms_status_t getConnectionGeometry(const SignalRef& signalA, const SignalRef& signalB, const ssd_connection_geometry_t** geometry);
+    static oms_status_t setConnectionGeometry(const SignalRef& signalA, const SignalRef& signalB, const ssd_connection_geometry_t* geometry);
 
     static oms_status_t getComponents(const ComRef& cref, oms_component_t*** components);
     static oms_status_t getConnections(const ComRef& cref, oms_connection_t*** connections);

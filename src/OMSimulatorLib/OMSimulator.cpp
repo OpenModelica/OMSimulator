@@ -574,13 +574,13 @@ oms_status_t oms2_saveModel(const char* filename, const char* ident)
   return oms2::Scope::saveModel(filename, oms2::ComRef(ident));
 }
 
-oms_status_t oms2_getElementGeometry(const char* cref, const oms_element_geometry_t** geometry)
+oms_status_t oms2_getElementGeometry(const char* cref, const ssd_element_geometry_t** geometry)
 {
   logTrace();
   return oms2::Scope::getElementGeometry(oms2::ComRef(cref), reinterpret_cast<const oms2::ssd::ElementGeometry**>(geometry));
 }
 
-oms_status_t oms2_setElementGeometry(const char* cref, const oms_element_geometry_t* geometry)
+oms_status_t oms2_setElementGeometry(const char* cref, const ssd_element_geometry_t* geometry)
 {
   logTrace();
   return oms2::Scope::setElementGeometry(oms2::ComRef(cref), reinterpret_cast<const oms2::ssd::ElementGeometry*>(geometry));
@@ -598,13 +598,13 @@ oms_status_t oms2_getConnections(const char* cref, oms_connection_t*** connectio
   return oms2::Scope::getConnections(oms2::ComRef(cref), connections);
 }
 
-oms_status_t oms2_getConnectionGeometry(const char* signalA, const char* signalB, const oms_connection_geometry_t** geometry)
+oms_status_t oms2_getConnectionGeometry(const char* signalA, const char* signalB, const ssd_connection_geometry_t** geometry)
 {
   logTrace();
   return oms2::Scope::getConnectionGeometry(oms2::SignalRef(signalA), oms2::SignalRef(signalB), geometry);
 }
 
-oms_status_t oms2_setConnectionGeometry(const char* signalA, const char* signalB, const oms_connection_geometry_t* geometry)
+oms_status_t oms2_setConnectionGeometry(const char* signalA, const char* signalB, const ssd_connection_geometry_t* geometry)
 {
   logTrace();
   return oms2::Scope::setConnectionGeometry(oms2::SignalRef(signalA), oms2::SignalRef(signalB), geometry);

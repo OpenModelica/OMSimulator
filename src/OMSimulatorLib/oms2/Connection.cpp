@@ -126,7 +126,7 @@ oms2::Connection oms2::Connection::FromStrings(const oms2::ComRef& cref, const s
   return oms2::Connection::FromStrings(A.toString(), B.toString());
 }
 
-void oms2::Connection::setGeometry(const oms_connection_geometry_t* newGeometry)
+void oms2::Connection::setGeometry(const ssd_connection_geometry_t* newGeometry)
 {
   if (geometry.n > 0)
   {
