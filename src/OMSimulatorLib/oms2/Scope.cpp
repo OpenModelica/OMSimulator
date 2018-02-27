@@ -125,6 +125,23 @@ oms_status_enu_t oms2::Scope::unloadModel(const ComRef& name)
   return oms_status_ok;
 }
 
+oms_status_enu_t oms2::Scope::instantiateFMU(const ComRef& modelIdent, const std::string& fmuPath, const ComRef& fmuIdent)
+{
+  Scope& scope = oms2::Scope::getInstance();
+
+  oms2::Model* model = scope.getModel(modelIdent);
+  if (!model)
+    return oms_status_error;
+
+  if (oms_component_fmi != model->getType())
+  {
+    logError("[oms2::Scope::instantiateFMU] \"" + modelIdent + "\" is not a FMI composite model.");
+  }
+
+  FMICompositeModel* fmiModel = dynamic_cast<FMICompositeModel*>(model);
+  return fmiModel->instantiateFMU(fmuPath, fmuIdent);
+}
+
 oms_status_enu_t oms2::Scope::renameModel(const ComRef& identOld, const ComRef& identNew)
 {
   Scope& scope = oms2::Scope::getInstance();

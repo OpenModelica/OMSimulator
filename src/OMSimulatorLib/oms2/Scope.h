@@ -54,6 +54,7 @@ namespace oms2
     static oms_status_enu_t newFMIModel(const ComRef& name);
     static oms_status_enu_t newTLMModel(const ComRef& name);
     static oms_status_enu_t unloadModel(const ComRef& name);
+    static oms_status_enu_t instantiateFMU(const ComRef& modelIdent, const std::string& fmuPath, const ComRef& fmuIdent);
     static oms_status_enu_t renameModel(const ComRef& identOld, const ComRef& identNew);
     Model* getModel(const ComRef& name);
     static Model* loadModel(const std::string& filename);
