@@ -323,10 +323,21 @@ oms_status_enu_t oms2_newTLMModel(const char* ident);
 oms_status_enu_t oms2_unloadModel(const char* ident);
 
 /**
+ * \brief Instantiates a FMU inside a given FMI model.
+ *
+ * @param modelIdent   [in] Identifier of parent model.
+ * @param fmuPath      [in] Full path to FMU.
+ * @param fmuIdent     [in] Identifier of new FMU instance.
+ * @return             Error status.
+ */
+oms_status_enu_t oms2_instantiateFMU(const char* modelIdent, const char* fmuPath, const char* fmuIdent);
+
+/**
  * \brief Unloads a composite model (works for FMI and TLM).
  *
  * @param identOld   [in] Name of the model instance to rename.
  * @param identNew   [in] New name of the model instance.
+ * @return           Error status.
  */
 oms_status_enu_t oms2_renameModel(const char* identOld, const char* identNew);
 

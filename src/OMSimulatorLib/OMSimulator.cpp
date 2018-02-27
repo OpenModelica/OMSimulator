@@ -550,6 +550,12 @@ oms_status_enu_t oms2_unloadModel(const char* ident)
   return oms2::Scope::unloadModel(oms2::ComRef(ident));
 }
 
+oms_status_enu_t oms2_instantiateFMU(const char* modelIdent, const char* fmuPath, const char* fmuIdent)
+{
+  logTrace();
+  return oms2::Scope::instantiateFMU(oms2::ComRef(modelIdent), fmuPath, oms2::ComRef(fmuIdent));
+}
+
 oms_status_enu_t oms2_renameModel(const char* identOld, const char* identNew)
 {
   logTrace();
