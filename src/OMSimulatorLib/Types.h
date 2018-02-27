@@ -106,18 +106,16 @@ typedef struct {
   /// \todo optional TLM attributes
 } oms_connection_t;
 
+/**
+ * @brief Log levels supported by the Logging mechanism.
+ */
 typedef enum {
-  oms_message_info,
-  oms_message_warning,
-  oms_message_error,
-  oms_message_debug,
-  oms_message_trace
+  oms_message_info,    ///< Informative messages.
+  oms_message_warning, ///< Warnings; Non-critical issues.
+  oms_message_error,   ///< Errors; Potentially critical issues.
+  oms_message_debug,   ///< Debug messages. (Only enabled if library is configured with OMS_DEBUG_LOGGING.)
+  oms_message_trace    ///< Trace messages for detailed debugging logs. (Only enabled if library is configured with OMS_DEBUG_LOGGING.)
 } oms_message_type_t;
-
-typedef struct {
-  oms_message_type_t type;
-  const char* message;
-} oms_message_t;
 
 /**
  * @brief 5.2.1.1 ssd:ConnectorGeometry
