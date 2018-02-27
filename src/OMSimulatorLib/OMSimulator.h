@@ -333,13 +333,14 @@ oms_status_enu_t oms2_unloadModel(const char* ident);
 oms_status_enu_t oms2_instantiateFMU(const char* modelIdent, const char* fmuPath, const char* fmuIdent);
 
 /**
- * \brief Unloads a composite model (works for FMI and TLM).
+ * \brief Renames a composite model (works for FMI and TLM) or sub-model (e.g.
+ * FMU instance).
  *
- * @param identOld   [in] Name of the model instance to rename.
- * @param identNew   [in] New name of the model instance.
+ * @param identOld   [in] Name of the instance to rename.
+ * @param identNew   [in] New name of the instance.
  * @return           Error status.
  */
-oms_status_enu_t oms2_renameModel(const char* identOld, const char* identNew);
+oms_status_enu_t oms2_rename(const char* identOld, const char* identNew);
 
 /**
  * \brief Returns the type of a given component.

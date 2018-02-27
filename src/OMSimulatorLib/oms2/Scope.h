@@ -55,8 +55,7 @@ namespace oms2
     static oms_status_enu_t newTLMModel(const ComRef& name);
     static oms_status_enu_t unloadModel(const ComRef& name);
     static oms_status_enu_t instantiateFMU(const ComRef& modelIdent, const std::string& fmuPath, const ComRef& fmuIdent);
-    static oms_status_enu_t renameModel(const ComRef& identOld, const ComRef& identNew);
-    Model* getModel(const ComRef& name);
+    static oms_status_enu_t rename(const ComRef& identOld, const ComRef& identNew);
     static Model* loadModel(const std::string& filename);
     static oms_status_enu_t saveModel(const std::string& filename, const ComRef& name);
 
@@ -71,6 +70,10 @@ namespace oms2
 
     static oms_status_enu_t getComponents(const ComRef& cref, oms_component_t*** components);
     static oms_status_enu_t getConnections(const ComRef& cref, oms_connection_t*** connections);
+
+    oms_status_enu_t renameModel(const ComRef& identOld, const ComRef& identNew);
+    Model* getModel(const ComRef& name);
+
   private:
     Scope();
     ~Scope();

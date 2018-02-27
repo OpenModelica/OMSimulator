@@ -44,7 +44,8 @@ namespace oms2
     virtual oms_component_type_enu_t getType() const = 0;
     static void deleteSubModel(FMISubModel *model) {if (model) delete model;}
 
-    const ComRef& getName() const {return cref;}
+    const ComRef& getName() const {return ident;}
+    void setName(const ComRef& name) {this->ident = name;}
     void setGeometry(double x1, double y1, double x2, double y2) {this->geometry.setSizePosition(x1, y1, x2, y2);}
     void setGeometry(const oms2::ssd::ElementGeometry& geometry) {this->geometry = geometry;}
     oms2::ssd::ElementGeometry* getGeometry() {return &geometry;}
@@ -52,7 +53,7 @@ namespace oms2
     oms_component_t* getComponent() {return &component;}
 
   protected:
-    FMISubModel(const ComRef& cref);
+    FMISubModel(const ComRef& ident);
     virtual ~FMISubModel();
 
   private:
@@ -61,7 +62,7 @@ namespace oms2
     FMISubModel& operator=(FMISubModel const& copy); // not implemented
 
   protected:
-    ComRef cref;
+    ComRef ident;
     oms2::ssd::ElementGeometry geometry;
     oms_component_t component;
   };
