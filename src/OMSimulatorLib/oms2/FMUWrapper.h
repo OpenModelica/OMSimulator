@@ -50,16 +50,16 @@ namespace oms2
   public:
     static FMUWrapper* newSubModel(const ComRef& cref, const std::string& filename);
 
-    oms_component_type_t getType() const { return oms_component_fmu; }
+    oms_component_type_enu_t getType() const { return oms_component_fmu; }
 
-    oms_status_t setRealParameter(const std::string& var, double value);
-    oms_status_t getRealParameter(const std::string& var, double& value);
+    oms_status_enu_t setRealParameter(const std::string& var, double value);
+    oms_status_enu_t getRealParameter(const std::string& var, double& value);
     const std::string& getFMUPath() const {return filename;}
     const std::map<std::string, oms2::Option<double>>& getRealParameters() const {return realParameters;}
 
   private:
-    oms_status_t setReal(const oms2::Variable& var, double realValue);
-    oms_status_t getReal(const oms2::Variable& var, double& realValue);
+    oms_status_enu_t setReal(const oms2::Variable& var, double realValue);
+    oms_status_enu_t getReal(const oms2::Variable& var, double& realValue);
 
     oms2::Variable* getVar(const std::string& var);
 

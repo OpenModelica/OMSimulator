@@ -49,7 +49,7 @@ const double data_x[] = {1, 0.9, 0.8100000000000001, 0.7290000000000001, 0.6561,
 int test_HelloWorld_cs_Fit()
 {
   const char* version = oms_getVersion();
-  oms_status_t status;
+  oms_status_enu_t status;
   //std::cout << version << std::endl;
 
   void* model = oms_newModel();

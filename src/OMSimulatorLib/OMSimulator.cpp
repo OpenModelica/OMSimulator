@@ -190,7 +190,7 @@ void oms_addConnection(void* model, const char* from, const char* to)
   pModel->addConnection(from, to);
 }
 
-oms_status_t oms_simulate(void* model)
+oms_status_enu_t oms_simulate(void* model)
 {
   logTrace();
   if (!model)
@@ -203,7 +203,7 @@ oms_status_t oms_simulate(void* model)
   return pModel->simulate();
 }
 
-oms_status_t oms_doSteps(const void* model, const int numberOfSteps)
+oms_status_enu_t oms_doSteps(const void* model, const int numberOfSteps)
 {
   logTrace();
   if (!model)
@@ -216,7 +216,7 @@ oms_status_t oms_doSteps(const void* model, const int numberOfSteps)
   return pModel->doSteps(numberOfSteps);
 }
 
-oms_status_t oms_stepUntil(const void* model, const double timeValue)
+oms_status_enu_t oms_stepUntil(const void* model, const double timeValue)
 {
   logTrace();
   if (!model)
@@ -294,7 +294,7 @@ void oms_exportCompositeStructure(void* model, const char* filename)
   pModel->exportCompositeStructure(filename);
 }
 
-oms_status_t oms_initialize(void* model)
+oms_status_enu_t oms_initialize(void* model)
 {
   logTrace();
   if (!model)
@@ -308,7 +308,7 @@ oms_status_t oms_initialize(void* model)
   return oms_status_ok;
 }
 
-oms_status_t oms_terminate(void* model)
+oms_status_enu_t oms_terminate(void* model)
 {
   logTrace();
   if (!model)
@@ -322,7 +322,7 @@ oms_status_t oms_terminate(void* model)
   return oms_status_ok;
 }
 
-oms_status_t oms_reset(void* model)
+oms_status_enu_t oms_reset(void* model)
 {
   logTrace();
   if (!model)
@@ -336,7 +336,7 @@ oms_status_t oms_reset(void* model)
   return oms_status_ok;
 }
 
-oms_status_t oms_getCurrentTime(const void* model, double* time)
+oms_status_enu_t oms_getCurrentTime(const void* model, double* time)
 {
   logTrace();
   if (!model)
@@ -349,7 +349,7 @@ oms_status_t oms_getCurrentTime(const void* model, double* time)
   return pModel->getCurrentTime(time);
 }
 
-oms_status_t oms_setTempDirectory(const char* path)
+oms_status_enu_t oms_setTempDirectory(const char* path)
 {
   logTrace();
   return oms2::Scope::SetTempDirectory(path);
@@ -409,7 +409,7 @@ void oms_setSolverMethod(void* model, const char* instanceName, const char* meth
   pModel->SetSolverMethod(instanceName, method);
 }
 
-oms_status_t oms_setLogFile(const char* filename)
+oms_status_enu_t oms_setLogFile(const char* filename)
 {
   return Log::setLogFile(filename);
 }
@@ -467,7 +467,7 @@ int oms_getNumberOfInterfaces(void *model)
   return pModel->getNumberOfInterfaces();
 }
 
-oms_causality_t oms_getInterfaceCausality(void *model, int idx)
+oms_causality_enu_t oms_getInterfaceCausality(void *model, int idx)
 {
   if (!model)
   {
@@ -532,31 +532,31 @@ void oms_setMaxIterations(void* model, int maxIterations)
 /* TODO: replace prefix oms2 with oms   */
 /* ************************************ */
 
-oms_status_t oms2_newFMIModel(const char* ident)
+oms_status_enu_t oms2_newFMIModel(const char* ident)
 {
   logTrace();
   return oms2::Scope::newFMIModel(oms2::ComRef(ident));
 }
 
-oms_status_t oms2_newTLMModel(const char* ident)
+oms_status_enu_t oms2_newTLMModel(const char* ident)
 {
   logTrace();
   return oms2::Scope::newTLMModel(oms2::ComRef(ident));
 }
 
-oms_status_t oms2_unloadModel(const char* ident)
+oms_status_enu_t oms2_unloadModel(const char* ident)
 {
   logTrace();
   return oms2::Scope::unloadModel(oms2::ComRef(ident));
 }
 
-oms_status_t oms2_renameModel(const char* identOld, const char* identNew)
+oms_status_enu_t oms2_renameModel(const char* identOld, const char* identNew)
 {
   logTrace();
   return oms2::Scope::renameModel(oms2::ComRef(identOld), oms2::ComRef(identNew));
 }
 
-oms_status_t oms2_loadModel(const char* filename, char** ident)
+oms_status_enu_t oms2_loadModel(const char* filename, char** ident)
 {
   logTrace();
   oms2::Model* model = oms2::Scope::loadModel(filename);
@@ -568,56 +568,56 @@ oms_status_t oms2_loadModel(const char* filename, char** ident)
   return oms_status_ok;
 }
 
-oms_status_t oms2_saveModel(const char* filename, const char* ident)
+oms_status_enu_t oms2_saveModel(const char* filename, const char* ident)
 {
   logTrace();
   return oms2::Scope::saveModel(filename, oms2::ComRef(ident));
 }
 
-oms_status_t oms2_getElementGeometry(const char* cref, const ssd_element_geometry_t** geometry)
+oms_status_enu_t oms2_getElementGeometry(const char* cref, const ssd_element_geometry_t** geometry)
 {
   logTrace();
   return oms2::Scope::getElementGeometry(oms2::ComRef(cref), reinterpret_cast<const oms2::ssd::ElementGeometry**>(geometry));
 }
 
-oms_status_t oms2_setElementGeometry(const char* cref, const ssd_element_geometry_t* geometry)
+oms_status_enu_t oms2_setElementGeometry(const char* cref, const ssd_element_geometry_t* geometry)
 {
   logTrace();
   return oms2::Scope::setElementGeometry(oms2::ComRef(cref), reinterpret_cast<const oms2::ssd::ElementGeometry*>(geometry));
 }
 
-oms_status_t oms2_getComponents(const char* cref, oms_component_t*** components)
+oms_status_enu_t oms2_getComponents(const char* cref, oms_component_t*** components)
 {
   logTrace();
   return oms2::Scope::getComponents(oms2::ComRef(cref), components);
 }
 
-oms_status_t oms2_getConnections(const char* cref, oms_connection_t*** connections)
+oms_status_enu_t oms2_getConnections(const char* cref, oms_connection_t*** connections)
 {
   logTrace();
   return oms2::Scope::getConnections(oms2::ComRef(cref), connections);
 }
 
-oms_status_t oms2_getConnectionGeometry(const char* signalA, const char* signalB, const ssd_connection_geometry_t** geometry)
+oms_status_enu_t oms2_getConnectionGeometry(const char* signalA, const char* signalB, const ssd_connection_geometry_t** geometry)
 {
   logTrace();
   return oms2::Scope::getConnectionGeometry(oms2::SignalRef(signalA), oms2::SignalRef(signalB), reinterpret_cast<const oms2::ssd::ConnectionGeometry**>(geometry));
 }
 
-oms_status_t oms2_setConnectionGeometry(const char* signalA, const char* signalB, const ssd_connection_geometry_t* geometry)
+oms_status_enu_t oms2_setConnectionGeometry(const char* signalA, const char* signalB, const ssd_connection_geometry_t* geometry)
 {
   logTrace();
   return oms2::Scope::setConnectionGeometry(oms2::SignalRef(signalA), oms2::SignalRef(signalB), reinterpret_cast<const oms2::ssd::ConnectionGeometry*>(geometry));
 }
 
-oms_status_t oms2_simulate_asynchronous(const char* ident, void (*cb)(const char* ident, double time, oms_status_t status))
+oms_status_enu_t oms2_simulate_asynchronous(const char* ident, void (*cb)(const char* ident, double time, oms_status_enu_t status))
 {
   logTrace();
   logError("oms2_simulate_asynchronous: not implemented yet");
   return oms_status_error;
 }
 
-void oms2_setLoggingCallback(void (*cb)(oms_message_type_t type, const char* message))
+void oms2_setLoggingCallback(void (*cb)(oms_message_type_enu_t type, const char* message))
 {
   logTrace();
   Log::setLoggingCallback(cb);
@@ -628,7 +628,7 @@ void oms2_setLoggingLevel(int logLevel)
   Log::setLoggingLevel(logLevel);
 }
 
-oms_status_t oms2_getComponentType(const char* ident, oms_component_type_t* type)
+oms_status_enu_t oms2_getComponentType(const char* ident, oms_component_type_enu_t* type)
 {
   logTrace();
   if (!type)

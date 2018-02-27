@@ -51,25 +51,25 @@ namespace oms2
   class Scope
   {
   public:
-    static oms_status_t newFMIModel(const ComRef& name);
-    static oms_status_t newTLMModel(const ComRef& name);
-    static oms_status_t unloadModel(const ComRef& name);
-    static oms_status_t renameModel(const ComRef& identOld, const ComRef& identNew);
+    static oms_status_enu_t newFMIModel(const ComRef& name);
+    static oms_status_enu_t newTLMModel(const ComRef& name);
+    static oms_status_enu_t unloadModel(const ComRef& name);
+    static oms_status_enu_t renameModel(const ComRef& identOld, const ComRef& identNew);
     Model* getModel(const ComRef& name);
     static Model* loadModel(const std::string& filename);
-    static oms_status_t saveModel(const std::string& filename, const ComRef& name);
+    static oms_status_enu_t saveModel(const std::string& filename, const ComRef& name);
 
-    static oms_status_t SetTempDirectory(const std::string& newTempDir);
+    static oms_status_enu_t SetTempDirectory(const std::string& newTempDir);
     static const std::string& GetTempDirectory() {Scope &scope = getInstance(); return scope.tempDir;}
 
-    static oms_status_t getElementGeometry(const ComRef& cref, const oms2::ssd::ElementGeometry** geometry);
-    static oms_status_t setElementGeometry(const ComRef& cref, const oms2::ssd::ElementGeometry* geometry);
+    static oms_status_enu_t getElementGeometry(const ComRef& cref, const oms2::ssd::ElementGeometry** geometry);
+    static oms_status_enu_t setElementGeometry(const ComRef& cref, const oms2::ssd::ElementGeometry* geometry);
 
-    static oms_status_t getConnectionGeometry(const SignalRef& signalA, const SignalRef& signalB, const oms2::ssd::ConnectionGeometry** geometry);
-    static oms_status_t setConnectionGeometry(const SignalRef& signalA, const SignalRef& signalB, const oms2::ssd::ConnectionGeometry* geometry);
+    static oms_status_enu_t getConnectionGeometry(const SignalRef& signalA, const SignalRef& signalB, const oms2::ssd::ConnectionGeometry** geometry);
+    static oms_status_enu_t setConnectionGeometry(const SignalRef& signalA, const SignalRef& signalB, const oms2::ssd::ConnectionGeometry* geometry);
 
-    static oms_status_t getComponents(const ComRef& cref, oms_component_t*** components);
-    static oms_status_t getConnections(const ComRef& cref, oms_connection_t*** connections);
+    static oms_status_enu_t getComponents(const ComRef& cref, oms_component_t*** components);
+    static oms_status_enu_t getConnections(const ComRef& cref, oms_connection_t*** connections);
   private:
     Scope();
     ~Scope();
@@ -83,8 +83,8 @@ namespace oms2
     static Model* loadFMIModel(const pugi::xml_node& xml);
     static Model* loadTLMModel(const pugi::xml_node& xml);
 
-    oms_status_t saveFMIModel(oms2::FMICompositeModel* model, const std::string& filename);
-    oms_status_t saveTLMModel(oms2::TLMCompositeModel* model, const std::string& filename);
+    oms_status_enu_t saveFMIModel(oms2::FMICompositeModel* model, const std::string& filename);
+    oms_status_enu_t saveTLMModel(oms2::TLMCompositeModel* model, const std::string& filename);
 
   private:
     std::map<ComRef, Model*> models;

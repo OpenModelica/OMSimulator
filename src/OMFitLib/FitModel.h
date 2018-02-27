@@ -83,14 +83,14 @@ public:
   FitModel& operator= (FitModel&& other) noexcept = delete;
 
   std::string toString() const;
-  oms_status_t initialize(size_t nSeries, const double* time, size_t nTime, char const* const* inputvars, size_t nInputvars, char const* const* measurementvars, size_t nMeasurementvars);
-  oms_status_t addParameter(const char* var, double startvalue);
-  oms_status_t addMeasurement(size_t iSeries, const char* var, const double* values, size_t nValues);
+  oms_status_enu_t initialize(size_t nSeries, const double* time, size_t nTime, char const* const* inputvars, size_t nInputvars, char const* const* measurementvars, size_t nMeasurementvars);
+  oms_status_enu_t addParameter(const char* var, double startvalue);
+  oms_status_enu_t addMeasurement(size_t iSeries, const char* var, const double* values, size_t nValues);
   FitModelState getState();
-  oms_status_t getParameter(const char* var, ParameterAttributes& attributes);
+  oms_status_enu_t getParameter(const char* var, ParameterAttributes& attributes);
   bool isDataComplete() const;
   void setOptions_max_num_iterations(size_t max_num_iterations=25);
-  oms_status_t solve(const char* reporttype="BriefReport");
+  oms_status_enu_t solve(const char* reporttype="BriefReport");
 
 private:
   friend std::ostream& operator<< (std::ostream& os, const FitModel& a) { return os << a.toString(); }

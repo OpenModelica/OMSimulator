@@ -136,7 +136,7 @@ class OMFit:
 
     @staticmethod
     def oms_status_str(status):
-        """Mapping of enum C-API status code (oms_status_t) to string.
+        """Mapping of enum C-API status code (oms_status_enu_t) to string.
 
         Args:
             status (int): The C-API status code.
@@ -153,7 +153,7 @@ class OMFit:
               oms_status_error,
               oms_status_fatal,
               oms_status_pending
-            } oms_status_t;
+            } oms_status_enu_t;
 
         """
         oms_status_t_dict = {0: "oms_status_ok", 1: "oms_status_warning", 2: "oms_status_discard", 3: "oms_status_error", 4: "oms_status_fatal", 5: "oms_status_pending"}

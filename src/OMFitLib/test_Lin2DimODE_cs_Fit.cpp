@@ -89,7 +89,7 @@ const std::vector<std::string> parametervars = {"Lin2DimODE.a11", "Lin2DimODE.a1
 int test_Lin2DimODE_cs_Fit()
 {
   const char* version = oms_getVersion();
-  oms_status_t status;
+  oms_status_enu_t status;
   //std::cout << version << std::endl;
 
   // set observation times

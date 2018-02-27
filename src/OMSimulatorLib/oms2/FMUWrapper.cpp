@@ -359,7 +359,7 @@ oms2::Variable* oms2::FMUWrapper::getVar(const std::string& var)
   return NULL;
 }
 
-oms_status_t oms2::FMUWrapper::setRealParameter(const std::string& var, double value)
+oms_status_enu_t oms2::FMUWrapper::setRealParameter(const std::string& var, double value)
 {
   auto it = realParameters.find(var);
   if (realParameters.end() == it)
@@ -372,7 +372,7 @@ oms_status_t oms2::FMUWrapper::setRealParameter(const std::string& var, double v
   return oms_status_ok;
 }
 
-oms_status_t oms2::FMUWrapper::getRealParameter(const std::string& var, double& value)
+oms_status_enu_t oms2::FMUWrapper::getRealParameter(const std::string& var, double& value)
 {
   auto it = realParameters.find(var);
   if (realParameters.end() == it)
@@ -396,7 +396,7 @@ oms_status_t oms2::FMUWrapper::getRealParameter(const std::string& var, double& 
   return oms_status_ok;
 }
 
-oms_status_t oms2::FMUWrapper::setReal(const oms2::Variable& var, double realValue)
+oms_status_enu_t oms2::FMUWrapper::setReal(const oms2::Variable& var, double realValue)
 {
   logTrace();
   if (!fmu || !var.isTypeReal())
@@ -412,7 +412,7 @@ oms_status_t oms2::FMUWrapper::setReal(const oms2::Variable& var, double realVal
   return oms_status_error;
 }
 
-oms_status_t oms2::FMUWrapper::getReal(const oms2::Variable& var, double& realValue)
+oms_status_enu_t oms2::FMUWrapper::getReal(const oms2::Variable& var, double& realValue)
 {
   logTrace();
   if (!fmu || !var.isTypeReal())

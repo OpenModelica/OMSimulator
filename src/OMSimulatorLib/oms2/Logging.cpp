@@ -152,7 +152,7 @@ void Log::Trace(const std::string& function, const std::string& file, const long
     log.cb(oms_message_trace, msg.c_str());
 }
 
-oms_status_t Log::setLogFile(const std::string& filename)
+oms_status_enu_t Log::setLogFile(const std::string& filename)
 {
   Log& log = getInstance();
   std::lock_guard<std::mutex> lock(log.m);

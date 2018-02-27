@@ -75,7 +75,7 @@ namespace oms2
     std::string toString() const { return sr.toString(); }
 
     fmi2_value_reference_t getValueReference() const { return vr; }
-    oms_signal_type_t getType() const { return type; }
+    oms_signal_type_enu_t getType() const { return type; }
     const std::string& getDescription() const { return description; }
 
     bool isTypeReal() const { return oms_signal_type_real == type; }
@@ -93,7 +93,7 @@ namespace oms2
     fmi2_causality_enu_t causality;
     fmi2_initial_enu_t initialProperty;
     bool is_state;
-    oms_signal_type_t type;
+    oms_signal_type_enu_t type;
     unsigned int index; ///< index origin = 1
 
     friend bool operator==(const oms2::Variable& v1, const oms2::Variable& v2);

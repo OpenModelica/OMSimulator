@@ -69,15 +69,15 @@ public:
   void exportXML(const char* filename);
   void importXML(const char* filename);
 
-  oms_status_t simulate();
-  oms_status_t doSteps(const int numberOfSteps);
-  oms_status_t stepUntil(const double timeValue);
+  oms_status_enu_t simulate();
+  oms_status_enu_t doSteps(const int numberOfSteps);
+  oms_status_enu_t stepUntil(const double timeValue);
 
   void initialize();
   void terminate();
   void reset();
 
-  oms_status_t getCurrentTime(double *time);
+  oms_status_enu_t getCurrentTime(double *time);
 
   Settings& getSettings() {return settings;}
   void SetSolverMethod(std::string instanceName, std::string method);
@@ -85,7 +85,7 @@ public:
   void setVariableFilter(const char* instanceFilter, const char* variableFilter);
 
   int getNumberOfInterfaces();
-  oms_causality_t getInterfaceCausality(int idx);
+  oms_causality_enu_t getInterfaceCausality(int idx);
   const char* getInterfaceName(int idx);
   const char* getInterfaceVariable(int idx);
 
@@ -110,7 +110,7 @@ private:
   DirectedGraph outputsGraph;
   DirectedGraph initialUnknownsGraph;
   double tcur;
-  oms_modelState_t modelState;
+  oms_modelState_enu_t modelState;
   double communicationInterval;
 
   std::vector<std::string> interfaceNames;

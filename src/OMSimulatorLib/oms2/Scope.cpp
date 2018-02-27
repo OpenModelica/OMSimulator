@@ -66,7 +66,7 @@ oms2::Scope& oms2::Scope::getInstance()
   return scope;
 }
 
-oms_status_t oms2::Scope::newFMIModel(const ComRef& name)
+oms_status_enu_t oms2::Scope::newFMIModel(const ComRef& name)
 {
   Scope& scope = oms2::Scope::getInstance();
 
@@ -86,7 +86,7 @@ oms_status_t oms2::Scope::newFMIModel(const ComRef& name)
   return oms_status_ok;
 }
 
-oms_status_t oms2::Scope::newTLMModel(const ComRef& name)
+oms_status_enu_t oms2::Scope::newTLMModel(const ComRef& name)
 {
   Scope& scope = oms2::Scope::getInstance();
 
@@ -106,7 +106,7 @@ oms_status_t oms2::Scope::newTLMModel(const ComRef& name)
   return oms_status_ok;
 }
 
-oms_status_t oms2::Scope::unloadModel(const ComRef& name)
+oms_status_enu_t oms2::Scope::unloadModel(const ComRef& name)
 {
   Scope& scope = oms2::Scope::getInstance();
 
@@ -125,7 +125,7 @@ oms_status_t oms2::Scope::unloadModel(const ComRef& name)
   return oms_status_ok;
 }
 
-oms_status_t oms2::Scope::renameModel(const ComRef& identOld, const ComRef& identNew)
+oms_status_enu_t oms2::Scope::renameModel(const ComRef& identOld, const ComRef& identNew)
 {
   Scope& scope = oms2::Scope::getInstance();
 
@@ -176,7 +176,7 @@ oms2::Model* oms2::Scope::loadModel(const std::string& filename)
   }
 
   pugi::xml_node root = doc.document_element();
-  oms_component_type_t modelType = oms_component_none;
+  oms_component_type_enu_t modelType = oms_component_none;
   bool defaultExperiment = true;
 
   for(pugi::xml_node_iterator it = root.begin(); it != root.end(); ++it)
@@ -247,7 +247,7 @@ oms2::Model* oms2::Scope::loadFMIModel(const pugi::xml_node& xml)
 
   // create empty model
   ComRef cref_model(ident_);
-  oms_status_t status = newFMIModel(cref_model);
+  oms_status_enu_t status = newFMIModel(cref_model);
   if (status != oms_status_ok)
   {
     logError("[oms2::Scope::loadFMIModel] newFMIModel failed");
@@ -286,7 +286,7 @@ oms2::Model* oms2::Scope::loadFMIModel(const pugi::xml_node& xml)
 
       oms2::ComRef cref_submodel = cref_model + ComRef(instancename);
 
-      oms_status_t status = oms_status_error;
+      oms_status_enu_t status = oms_status_error;
       if (type == "FMU")
         status = model->instantiateFMU(filename, cref_submodel.last());
       else
@@ -427,7 +427,7 @@ oms2::Model* oms2::Scope::loadTLMModel(const pugi::xml_node& xml)
   return NULL;
 }
 
-oms_status_t oms2::Scope::SetTempDirectory(const std::string& newTempDir)
+oms_status_enu_t oms2::Scope::SetTempDirectory(const std::string& newTempDir)
 {
   Scope& scope = oms2::Scope::getInstance();
 
@@ -450,7 +450,7 @@ oms_status_t oms2::Scope::SetTempDirectory(const std::string& newTempDir)
   return oms_status_ok;
 }
 
-oms_status_t oms2::Scope::saveModel(const std::string& filename, const ComRef& name)
+oms_status_enu_t oms2::Scope::saveModel(const std::string& filename, const ComRef& name)
 {
   oms2::Scope& scope = oms2::Scope::getInstance();
   oms2::Model* model = scope.getModel(name);
@@ -469,7 +469,7 @@ oms_status_t oms2::Scope::saveModel(const std::string& filename, const ComRef& n
   return oms_status_error;
 }
 
-oms_status_t oms2::Scope::saveFMIModel(oms2::FMICompositeModel* model, const std::string& filename)
+oms_status_enu_t oms2::Scope::saveFMIModel(oms2::FMICompositeModel* model, const std::string& filename)
 {
   pugi::xml_document doc;
   std::string value;
@@ -617,12 +617,12 @@ oms_status_t oms2::Scope::saveFMIModel(oms2::FMICompositeModel* model, const std
   return oms_status_ok;
 }
 
-oms_status_t oms2::Scope::saveTLMModel(oms2::TLMCompositeModel* model, const std::string& filename)
+oms_status_enu_t oms2::Scope::saveTLMModel(oms2::TLMCompositeModel* model, const std::string& filename)
 {
   return oms_status_error;
 }
 
-oms_status_t oms2::Scope::getElementGeometry(const oms2::ComRef& cref, const oms2::ssd::ElementGeometry** geometry)
+oms_status_enu_t oms2::Scope::getElementGeometry(const oms2::ComRef& cref, const oms2::ssd::ElementGeometry** geometry)
 {
   oms2::Scope& scope = oms2::Scope::getInstance();
 
@@ -678,7 +678,7 @@ oms_status_t oms2::Scope::getElementGeometry(const oms2::ComRef& cref, const oms
   return oms_status_error;
 }
 
-oms_status_t oms2::Scope::setElementGeometry(const oms2::ComRef& cref, const oms2::ssd::ElementGeometry* geometry)
+oms_status_enu_t oms2::Scope::setElementGeometry(const oms2::ComRef& cref, const oms2::ssd::ElementGeometry* geometry)
 {
   oms2::Scope& scope = oms2::Scope::getInstance();
 
@@ -734,7 +734,7 @@ oms_status_t oms2::Scope::setElementGeometry(const oms2::ComRef& cref, const oms
   return oms_status_error;
 }
 
-oms_status_t oms2::Scope::getConnectionGeometry(const oms2::SignalRef& signalA, const oms2::SignalRef& signalB, const oms2::ssd::ConnectionGeometry** geometry)
+oms_status_enu_t oms2::Scope::getConnectionGeometry(const oms2::SignalRef& signalA, const oms2::SignalRef& signalB, const oms2::ssd::ConnectionGeometry** geometry)
 {
   oms2::Scope& scope = oms2::Scope::getInstance();
 
@@ -768,7 +768,7 @@ oms_status_t oms2::Scope::getConnectionGeometry(const oms2::SignalRef& signalA, 
   return oms_status_error;
 }
 
-oms_status_t oms2::Scope::setConnectionGeometry(const oms2::SignalRef& signalA, const oms2::SignalRef& signalB, const oms2::ssd::ConnectionGeometry* geometry)
+oms_status_enu_t oms2::Scope::setConnectionGeometry(const oms2::SignalRef& signalA, const oms2::SignalRef& signalB, const oms2::ssd::ConnectionGeometry* geometry)
 {
   oms2::Scope& scope = oms2::Scope::getInstance();
 
@@ -802,7 +802,7 @@ oms_status_t oms2::Scope::setConnectionGeometry(const oms2::SignalRef& signalA, 
   return oms_status_error;
 }
 
-oms_status_t oms2::Scope::getComponents(const oms2::ComRef& cref, oms_component_t*** components)
+oms_status_enu_t oms2::Scope::getComponents(const oms2::ComRef& cref, oms_component_t*** components)
 {
   oms2::Scope& scope = oms2::Scope::getInstance();
 
@@ -829,7 +829,7 @@ oms_status_t oms2::Scope::getComponents(const oms2::ComRef& cref, oms_component_
   return oms_status_error;
 }
 
-oms_status_t oms2::Scope::getConnections(const oms2::ComRef& cref, oms_connection_t*** connections)
+oms_status_enu_t oms2::Scope::getConnections(const oms2::ComRef& cref, oms_connection_t*** connections)
 {
   oms2::Scope& scope = oms2::Scope::getInstance();
 

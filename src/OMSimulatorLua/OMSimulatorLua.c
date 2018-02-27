@@ -220,7 +220,7 @@ static int OMSimulatorLua_addConnection(lua_State *L)
   return 0;
 }
 
-//oms_status_t oms_simulate(void* model);
+//oms_status_enu_t oms_simulate(void* model);
 static int OMSimulatorLua_simulate(lua_State *L)
 {
   if (lua_gettop(L) != 1)
@@ -228,12 +228,12 @@ static int OMSimulatorLua_simulate(lua_State *L)
   luaL_checktype(L, 1, LUA_TUSERDATA);
 
   void *model = topointer(L, 1);
-  oms_status_t returnValue = oms_simulate(model);
+  oms_status_enu_t returnValue = oms_simulate(model);
   lua_pushinteger(L, returnValue);
   return 1;
 }
 
-//oms_status_t oms_doSteps(const void* model, const int numberOfSteps);
+//oms_status_enu_t oms_doSteps(const void* model, const int numberOfSteps);
 static int OMSimulatorLua_doSteps(lua_State *L)
 {
   if (lua_gettop(L) != 2)
@@ -243,12 +243,12 @@ static int OMSimulatorLua_doSteps(lua_State *L)
 
   void *model = topointer(L, 1);
   int numberOfSteps = (int)lua_tointeger(L, 2);
-  oms_status_t returnValue = oms_doSteps(model, numberOfSteps);
+  oms_status_enu_t returnValue = oms_doSteps(model, numberOfSteps);
   lua_pushinteger(L, returnValue);
   return 1;
 }
 
-//oms_status_t oms_stepUntil(const void* model, const double timeValue);
+//oms_status_enu_t oms_stepUntil(const void* model, const double timeValue);
 static int OMSimulatorLua_stepUntil(lua_State *L)
 {
   if (lua_gettop(L) != 2)
@@ -258,7 +258,7 @@ static int OMSimulatorLua_stepUntil(lua_State *L)
 
   void *model = topointer(L, 1);
   double timeValue = lua_tonumber(L, 2);
-  oms_status_t returnValue = oms_stepUntil(model, timeValue);
+  oms_status_enu_t returnValue = oms_stepUntil(model, timeValue);
   lua_pushinteger(L, returnValue);
   return 1;
 }
@@ -331,7 +331,7 @@ static int OMSimulatorLua_exportCompositeStructure(lua_State *L)
   return 0;
 }
 
-//oms_status_t oms_initialize(void* model);
+//oms_status_enu_t oms_initialize(void* model);
 static int OMSimulatorLua_initialize(lua_State *L)
 {
   if (lua_gettop(L) != 1)
@@ -343,7 +343,7 @@ static int OMSimulatorLua_initialize(lua_State *L)
   return 0;
 }
 
-//oms_status_t oms_terminate(void* model);
+//oms_status_enu_t oms_terminate(void* model);
 static int OMSimulatorLua_terminate(lua_State *L)
 {
   if (lua_gettop(L) != 1)
@@ -355,7 +355,7 @@ static int OMSimulatorLua_terminate(lua_State *L)
   return 0;
 }
 
-//oms_status_t oms_reset(void* model);
+//oms_status_enu_t oms_reset(void* model);
 static int OMSimulatorLua_reset(lua_State *L)
 {
   if (lua_gettop(L) != 1)
@@ -367,7 +367,7 @@ static int OMSimulatorLua_reset(lua_State *L)
   return 0;
 }
 
-//oms_status_t oms_getCurrentTime(const void* model, double* time);
+//oms_status_enu_t oms_getCurrentTime(const void* model, double* time);
 static int OMSimulatorLua_getCurrentTime(lua_State *L)
 {
   if (lua_gettop(L) != 1)
@@ -377,7 +377,7 @@ static int OMSimulatorLua_getCurrentTime(lua_State *L)
   void *model = topointer(L, 1);
 
   double time = 0.0;
-  oms_status_t status = oms_getCurrentTime(model, &time);
+  oms_status_enu_t status = oms_getCurrentTime(model, &time);
   lua_pushnumber(L, time);
   return 1;
 }

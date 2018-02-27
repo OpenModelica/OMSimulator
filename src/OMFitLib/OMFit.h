@@ -79,7 +79,7 @@ void omsfit_freeFitModel(void* fitmodel);
  * @nMeasurmentvars  [in] Number of observed measurement variables.
  * @return Error status.
  */
-oms_status_t omsfit_initialize(void* fitmodel, size_t nSeries,
+oms_status_enu_t omsfit_initialize(void* fitmodel, size_t nSeries,
   const double* time, size_t nTime,
   char const* const* inputvars, size_t nInputvars,
   char const* const* measurementvars, size_t nMeasurementvars);
@@ -89,7 +89,7 @@ oms_status_t omsfit_initialize(void* fitmodel, size_t nSeries,
  *
  * @param fitmodel [in] Fitting model as opaque pointer.
  */
-oms_status_t omsfit_describe(void* fitmodel);
+oms_status_enu_t omsfit_describe(void* fitmodel);
 
 /**
  * \brief Add measurement values for a fittting variable.
@@ -101,7 +101,7 @@ oms_status_t omsfit_describe(void* fitmodel);
  * @param nValues [in] Length of values array.
  * @return Error status.
  */
-oms_status_t omsfit_addMeasurement(void* fitmodel, size_t iSeries, const char* var, const double* values, size_t nValues);
+oms_status_enu_t omsfit_addMeasurement(void* fitmodel, size_t iSeries, const char* var, const double* values, size_t nValues);
 // Alternatively??
 // void omsfit_addMeasurementSeries(void *fitmodel, int iseries,
 //   double const* const* inputs, size_t dim1Inputs, size_t dim2Inputs,
@@ -115,7 +115,7 @@ oms_status_t omsfit_addMeasurement(void* fitmodel, size_t iSeries, const char* v
  * @param startvalue [in] Start value of parameter.
  * @return Error status.
  */
-oms_status_t omsfit_addParameter(void* fitmodel, const char* var, double startvalue);
+oms_status_enu_t omsfit_addParameter(void* fitmodel, const char* var, double startvalue);
 
 /**
  * \brief Get parameter that should be estimated.
@@ -128,7 +128,7 @@ oms_status_t omsfit_addParameter(void* fitmodel, const char* var, double startva
  * @param estimatedvalue [out] Estimated value of parameter.
  * @return Error status.
  */
-oms_status_t omsfit_getParameter(void* fitmodel, const char* var, double* startvalue, double* estimatedvalue);
+oms_status_enu_t omsfit_getParameter(void* fitmodel, const char* var, double* startvalue, double* estimatedvalue);
 
 /**
  * \brief Solve parameter estimation problem.
@@ -138,7 +138,7 @@ oms_status_t omsfit_getParameter(void* fitmodel, const char* var, double* startv
  *                        Supported report types (NULL or "" denotes no output): {NULL, "", "BriefReport", "FullReport"}.
  * @return Error status.
  */
-oms_status_t omsfit_solve(void* fitmodel, const char* reporttype);
+oms_status_enu_t omsfit_solve(void* fitmodel, const char* reporttype);
 
 /**
  * \brief Set Ceres solver option 'Solver::Options::max_num_iterations'.
@@ -147,7 +147,7 @@ oms_status_t omsfit_solve(void* fitmodel, const char* reporttype);
  * @param max_num_iterations [in] Maximum number of iterations for which the solver should run (default: 25).
  * @return Error status.
  */
-oms_status_t omsfit_setOptions_max_num_iterations(void* fitmodel, size_t max_num_iterations);
+oms_status_enu_t omsfit_setOptions_max_num_iterations(void* fitmodel, size_t max_num_iterations);
 
 /**
  * \brief Get state of fitting model object.
@@ -156,7 +156,7 @@ oms_status_t omsfit_setOptions_max_num_iterations(void* fitmodel, size_t max_num
  * @param state [out] State of fitting model.
  * @return Error status.
  */
-oms_status_t omsfit_getState(void* fitmodel, omsfit_fitmodelstate_t* state);
+oms_status_enu_t omsfit_getState(void* fitmodel, omsfit_fitmodelstate_t* state);
 
 /**
  * \brief TODO Add input values for a model input.
@@ -168,7 +168,7 @@ oms_status_t omsfit_getState(void* fitmodel, omsfit_fitmodelstate_t* state);
  * @param nvalues [in] Length of values array.
  * @return Error status.
  */
-// oms_status_t omsfit_addInput(void* fitmodel, const char* var, const double* time, const double* values, int nvalues);
+// oms_status_enu_t omsfit_addInput(void* fitmodel, const char* var, const double* time, const double* values, int nvalues);
 
 /**
  * \brief TODO? Provide convenience function to "Load reference measurement data from file"?.
@@ -184,7 +184,7 @@ oms_status_t omsfit_getState(void* fitmodel, omsfit_fitmodelstate_t* state);
  * @param varname [in] Variable name.
  * @return Error status.
  */
-// oms_status_t omsfit_loadMeasurement(void* model, const void* filename, const char* varname);
+// oms_status_enu_t omsfit_loadMeasurement(void* model, const void* filename, const char* varname);
 
 
 #ifdef __cplusplus

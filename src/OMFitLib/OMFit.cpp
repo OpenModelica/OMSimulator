@@ -51,7 +51,7 @@ void omsfit_freeFitModel(void* fitmodel)
   delete pFitModel;
 }
 
-oms_status_t omsfit_initialize(void* fitmodel, size_t nSeries,
+oms_status_enu_t omsfit_initialize(void* fitmodel, size_t nSeries,
   const double* time, size_t nTime,
   char const* const* inputvars, size_t nInputvars,
   char const* const* measurementvars, size_t nMeasurementvars)
@@ -65,7 +65,7 @@ oms_status_t omsfit_initialize(void* fitmodel, size_t nSeries,
   return pFitModel->initialize(nSeries, time, nTime, inputvars, nInputvars, measurementvars, nMeasurementvars);
 }
 
-oms_status_t omsfit_describe(void* fitmodel)
+oms_status_enu_t omsfit_describe(void* fitmodel)
 {
   logTrace();
   if (!fitmodel) {
@@ -77,7 +77,7 @@ oms_status_t omsfit_describe(void* fitmodel)
   return oms_status_ok;
 }
 
-oms_status_t omsfit_addParameter(void* fitmodel, const char* var, double startvalue)
+oms_status_enu_t omsfit_addParameter(void* fitmodel, const char* var, double startvalue)
 {
   logTrace();
   if (!fitmodel || !var) {
@@ -89,7 +89,7 @@ oms_status_t omsfit_addParameter(void* fitmodel, const char* var, double startva
   return oms_status_ok;
 }
 
-oms_status_t omsfit_getParameter(void* fitmodel, const char* var, double* startvalue, double* estimatedvalue)
+oms_status_enu_t omsfit_getParameter(void* fitmodel, const char* var, double* startvalue, double* estimatedvalue)
 {
   logTrace();
   if (!fitmodel || !var || !startvalue || !estimatedvalue) {
@@ -98,13 +98,13 @@ oms_status_t omsfit_getParameter(void* fitmodel, const char* var, double* startv
   }
   FitModel* pFitModel = (FitModel*) fitmodel;
   ParameterAttributes attr;
-  oms_status_t ret = pFitModel->getParameter(var, attr);
+  oms_status_enu_t ret = pFitModel->getParameter(var, attr);
   *startvalue = attr.startValue;
   *estimatedvalue = attr.estValue;
   return ret;
 }
 
-oms_status_t omsfit_addMeasurement(void* fitmodel, size_t iSeries, const char* var, const double* values, size_t nValues)
+oms_status_enu_t omsfit_addMeasurement(void* fitmodel, size_t iSeries, const char* var, const double* values, size_t nValues)
 {
   logTrace();
   if (!fitmodel || !var || !values) {
@@ -116,7 +116,7 @@ oms_status_t omsfit_addMeasurement(void* fitmodel, size_t iSeries, const char* v
   return oms_status_ok;
 }
 
-oms_status_t omsfit_setOptions_max_num_iterations(void* fitmodel, size_t max_num_iterations)
+oms_status_enu_t omsfit_setOptions_max_num_iterations(void* fitmodel, size_t max_num_iterations)
 {
   logTrace();
   if (!fitmodel) {
@@ -128,7 +128,7 @@ oms_status_t omsfit_setOptions_max_num_iterations(void* fitmodel, size_t max_num
   return oms_status_ok;
 }
 
-oms_status_t omsfit_solve(void* fitmodel, const char* reporttype)
+oms_status_enu_t omsfit_solve(void* fitmodel, const char* reporttype)
 {
   logTrace();
   if (!fitmodel) {
@@ -139,7 +139,7 @@ oms_status_t omsfit_solve(void* fitmodel, const char* reporttype)
   return pFitModel->solve(reporttype);
 }
 
-oms_status_t omsfit_getState(void* fitmodel, omsfit_fitmodelstate_t* state)
+oms_status_enu_t omsfit_getState(void* fitmodel, omsfit_fitmodelstate_t* state)
 {
   logTrace();
   if (!fitmodel) {

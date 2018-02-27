@@ -47,20 +47,20 @@ typedef enum {
   oms_status_error,
   oms_status_fatal,
   oms_status_pending
-} oms_status_t;
+} oms_status_enu_t;
 
 typedef enum {
   oms_modelState_instantiated,
   oms_modelState_initialization,
   oms_modelState_simulation
-} oms_modelState_t;
+} oms_modelState_enu_t;
 
 typedef enum {
   oms_causality_input,
   oms_causality_output,
   oms_causality_parameter,
   oms_causality_undefined,
-} oms_causality_t;
+} oms_causality_enu_t;
 
 /* ************************************ */
 /* OMSimulator 2.0                      */
@@ -72,7 +72,7 @@ typedef enum {
   oms_component_fmi,  ///< FMI model
   oms_component_fmu,  ///< FMU
   oms_component_port  ///< port
-} oms_component_type_t;
+} oms_component_type_enu_t;
 
 typedef enum {
   oms_signal_type_real,
@@ -80,16 +80,16 @@ typedef enum {
   oms_signal_type_boolean,
   oms_signal_type_string,
   oms_signal_type_enum
-} oms_signal_type_t;
+} oms_signal_type_enu_t;
 
 typedef struct {
-  oms_causality_t causality;
-  oms_signal_type_t type;
+  oms_causality_enu_t causality;
+  oms_signal_type_enu_t type;
   char* name;
 } oms_signal_t;
 
 typedef struct {
-  oms_component_type_t type;
+  oms_component_type_enu_t type;
   char* name;
   oms_signal_t** interfaces;
 } oms_component_t;
@@ -97,10 +97,10 @@ typedef struct {
 typedef enum {
   oms_connection_fmi,
   oms_connection_tlm
-} oms_connection_type_t;
+} oms_connection_type_enu_t;
 
 typedef struct {
-  oms_connection_type_t type;
+  oms_connection_type_enu_t type;
   const char* from;
   const char* to;
   /// \todo optional TLM attributes
@@ -115,7 +115,7 @@ typedef enum {
   oms_message_error,   ///< Errors; Potentially critical issues.
   oms_message_debug,   ///< Debug messages. (Only enabled if library is configured with OMS_DEBUG_LOGGING.)
   oms_message_trace    ///< Trace messages for detailed debugging logs. (Only enabled if library is configured with OMS_DEBUG_LOGGING.)
-} oms_message_type_t;
+} oms_message_type_enu_t;
 
 /**
  * @brief 5.2.1.1 ssd:ConnectorGeometry

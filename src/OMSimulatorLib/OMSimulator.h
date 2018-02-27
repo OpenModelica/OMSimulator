@@ -152,7 +152,7 @@ void oms_addConnection(void* model, const char* from, const char* to);
  * @param model Model as opaque pointer.
  * @return Error status.
  */
-oms_status_t oms_simulate(void* model);
+oms_status_enu_t oms_simulate(void* model);
 
 /**
  * \brief In case of variable step sizes or events we cannot know the final time value.
@@ -161,7 +161,7 @@ oms_status_t oms_simulate(void* model);
  * @param numberOfSteps Number of steps.
  * @return Error status.
  */
-oms_status_t oms_doSteps(const void* model, const int numberOfSteps);
+oms_status_enu_t oms_doSteps(const void* model, const int numberOfSteps);
 
 /**
  * \brief Performs a sub-simulation run from the current time instance to a given time value
@@ -170,7 +170,7 @@ oms_status_t oms_doSteps(const void* model, const int numberOfSteps);
  * @param timeValue
  * @return Error status.
  */
-oms_status_t oms_stepUntil(const void* model, const double timeValue);
+oms_status_enu_t oms_stepUntil(const void* model, const double timeValue);
 
 void oms_describe(void* model);
 void oms_exportXML(void* model, const char* filename);
@@ -184,7 +184,7 @@ void oms_exportCompositeStructure(void* model, const char* filename);
  * @param model Model as opaque pointer.
  * @return Error status.
  */
-oms_status_t oms_initialize(void* model);
+oms_status_enu_t oms_initialize(void* model);
 
 /**
  * \brief Terminate the simulation of a given model.
@@ -192,7 +192,7 @@ oms_status_t oms_initialize(void* model);
  * @param model Model as opaque pointer.
  * @return Error status.
  */
-oms_status_t oms_terminate(void* model);
+oms_status_enu_t oms_terminate(void* model);
 
 /**
  * \brief Reset the FMUs after a simulation run.
@@ -202,7 +202,7 @@ oms_status_t oms_terminate(void* model);
  * @param model Model as opaque pointer.
  * @return Error status.
  */
-oms_status_t oms_reset(void* model);
+oms_status_enu_t oms_reset(void* model);
 
 /**
  * \brief Get current simulation time.
@@ -211,7 +211,7 @@ oms_status_t oms_reset(void* model);
  * @param time  [out] Minimal time value that is reached by all instances.
  * @return Error status.
  */
-oms_status_t oms_getCurrentTime(const void* model, double* time);
+oms_status_enu_t oms_getCurrentTime(const void* model, double* time);
 
 /* Global settings */
 void oms_setWorkingDirectory(const char* path);
@@ -260,7 +260,7 @@ int oms_getNumberOfInterfaces(void* model);
  * @param idx     [in] Interface index
  * @return        Interface causality
  */
-oms_causality_t oms_getInterfaceCausality(void* model, int idx);
+oms_causality_enu_t oms_getInterfaceCausality(void* model, int idx);
 
 /**
  * \brief Returns the name for specified external interface
@@ -306,21 +306,21 @@ void oms_setMaxIterations(void* model, int maxIterations);
  *
  * @param ident   [in] Name of the new model instance.
  */
-oms_status_t oms2_newFMIModel(const char* ident);
+oms_status_enu_t oms2_newFMIModel(const char* ident);
 
 /**
  * \brief Creates a new and yet empty TLM composite model.
  *
  * @param ident   [in] Name of the new model instance.
  */
-oms_status_t oms2_newTLMModel(const char* ident);
+oms_status_enu_t oms2_newTLMModel(const char* ident);
 
 /**
  * \brief Unloads a composite model (works for FMI and TLM).
  *
  * @param ident   [in] Name of the model instance.
  */
-oms_status_t oms2_unloadModel(const char* ident);
+oms_status_enu_t oms2_unloadModel(const char* ident);
 
 /**
  * \brief Unloads a composite model (works for FMI and TLM).
@@ -328,7 +328,7 @@ oms_status_t oms2_unloadModel(const char* ident);
  * @param identOld   [in] Name of the model instance to rename.
  * @param identNew   [in] New name of the model instance.
  */
-oms_status_t oms2_renameModel(const char* identOld, const char* identNew);
+oms_status_enu_t oms2_renameModel(const char* identOld, const char* identNew);
 
 /**
  * \brief Returns the type of a given component.
@@ -337,7 +337,7 @@ oms_status_t oms2_renameModel(const char* identOld, const char* identNew);
  * @param ident   [out] Type of given component.
  * @return        Error status.
  */
-oms_status_t oms2_getComponentType(const char* ident, oms_component_type_t* type);
+oms_status_enu_t oms2_getComponentType(const char* ident, oms_component_type_enu_t* type);
 
 /**
  * \brief Loads a FMI composite model from xml representation.
@@ -346,7 +346,7 @@ oms_status_t oms2_getComponentType(const char* ident, oms_component_type_t* type
  * @param ident      [out] Name of the imported model.
  * @return           Error status.
  */
-oms_status_t oms2_loadModel(const char* filename, char** ident);
+oms_status_enu_t oms2_loadModel(const char* filename, char** ident);
 
 /**
  * \brief Loads a FMI composite model from xml representation.
@@ -355,7 +355,7 @@ oms_status_t oms2_loadModel(const char* filename, char** ident);
  * @param ident      [in] Name of the imported model.
  * @return           Error status.
  */
-oms_status_t oms2_saveModel(const char* filename, const char* ident);
+oms_status_enu_t oms2_saveModel(const char* filename, const char* ident);
 
 /**
  * \brief Get geometry information from a given component (i.e. model or sub-model).
@@ -364,7 +364,7 @@ oms_status_t oms2_saveModel(const char* filename, const char* ident);
  * @param geometry   [out] Geometry information.
  * @return           Error status.
  */
-oms_status_t oms2_getElementGeometry(const char* cref, const ssd_element_geometry_t** geometry);
+oms_status_enu_t oms2_getElementGeometry(const char* cref, const ssd_element_geometry_t** geometry);
 
 /**
  * \brief Set geometry information to a given component (i.e. model or sub-model).
@@ -373,7 +373,7 @@ oms_status_t oms2_getElementGeometry(const char* cref, const ssd_element_geometr
  * @param geometry   [in] Geometry information.
  * @return           Error status.
  */
-oms_status_t oms2_setElementGeometry(const char* cref, const ssd_element_geometry_t* geometry);
+oms_status_enu_t oms2_setElementGeometry(const char* cref, const ssd_element_geometry_t* geometry);
 
 /**
  * \brief Get list of all sub-components from a given component.
@@ -382,7 +382,7 @@ oms_status_t oms2_setElementGeometry(const char* cref, const ssd_element_geometr
  * @param components   [out] Array of sub-components (null-terminated array)
  * @return             Error status.
  */
-oms_status_t oms2_getComponents(const char* cref, oms_component_t*** components);
+oms_status_enu_t oms2_getComponents(const char* cref, oms_component_t*** components);
 
 /**
  * \brief Get list of all connections from a given component.
@@ -391,7 +391,7 @@ oms_status_t oms2_getComponents(const char* cref, oms_component_t*** components)
  * @param connections   [out] Array of connections (null-terminated array)
  * @return              Error status.
  */
-oms_status_t oms2_getConnections(const char* cref, oms_connection_t*** connections);
+oms_status_enu_t oms2_getConnections(const char* cref, oms_connection_t*** connections);
 
 /**
  * \brief Get geometry information from a given connection.
@@ -401,7 +401,7 @@ oms_status_t oms2_getConnections(const char* cref, oms_connection_t*** connectio
  * @param geometry   [out] Geometry information.
  * @return           Error status.
  */
-oms_status_t oms2_getConnectionGeometry(const char* signalA, const char* signalB, const ssd_connection_geometry_t** geometry);
+oms_status_enu_t oms2_getConnectionGeometry(const char* signalA, const char* signalB, const ssd_connection_geometry_t** geometry);
 
 /**
  * \brief Set geometry information to a given connection.
@@ -411,16 +411,16 @@ oms_status_t oms2_getConnectionGeometry(const char* signalA, const char* signalB
  * @param geometry   [in] Geometry information.
  * @return           Error status.
  */
-oms_status_t oms2_setConnectionGeometry(const char* signalA, const char* signalB, const ssd_connection_geometry_t* geometry);
+oms_status_enu_t oms2_setConnectionGeometry(const char* signalA, const char* signalB, const ssd_connection_geometry_t* geometry);
 
-oms_status_t oms2_simulate_asynchronous(const char* ident, void (*cb)(const char* ident, double time, oms_status_t status));
+oms_status_enu_t oms2_simulate_asynchronous(const char* ident, void (*cb)(const char* ident, double time, oms_status_enu_t status));
 
 /**
  * \brief Sets a callback function for the logging system.
  *
  * @param cb   [in] Function pointer that is called for all messages to the logging system.
  */
-void oms2_setLoggingCallback(void (*cb)(oms_message_type_t type, const char* message));
+void oms2_setLoggingCallback(void (*cb)(oms_message_type_enu_t type, const char* message));
 
 /**
  * \brief Enables/Disables debug logging (logDebug and logTrace).
@@ -434,14 +434,14 @@ void oms2_setLoggingLevel(int logLevel);
  *
  * @param filename   [in] "" to redirect to std streams and proper filename to redirect to file.
  */
-oms_status_t oms_setLogFile(const char* filename);
+oms_status_enu_t oms_setLogFile(const char* filename);
 
 /**
  * \brief Set new temp directory
  *
  * @param path   [in] Path to new temp directory.
  */
-oms_status_t oms_setTempDirectory(const char* path);
+oms_status_enu_t oms_setTempDirectory(const char* path);
 
 #ifdef __cplusplus
 }

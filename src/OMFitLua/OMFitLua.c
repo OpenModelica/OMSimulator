@@ -85,7 +85,7 @@ static int OMFitLua_omsfit_freeFitModel(lua_State *L)
 }
 
 //void oms_setReal(void* model, const char* var, double value);
-// oms_status_t omsfit_initialize(void* fitmodel, size_t nSeries, const double* time, size_t nTime, char const* const* inputvars, size_t nInputvars, char const* const* measurementvars, size_t nMeasurementvars);
+// oms_status_enu_t omsfit_initialize(void* fitmodel, size_t nSeries, const double* time, size_t nTime, char const* const* inputvars, size_t nInputvars, char const* const* measurementvars, size_t nMeasurementvars);
 static int OMFitLua_omsfit_initialize(lua_State *L)
 {
   if (lua_gettop(L) != 5)
@@ -130,7 +130,7 @@ static int OMFitLua_omsfit_initialize(lua_State *L)
     lua_pop(L, 1);
   }
 
-  oms_status_t returnValue =
+  oms_status_enu_t returnValue =
     omsfit_initialize(model, nSeries, time, nTime, inputvars, nInputvars, measurementvars, nMeasurementvars);
   lua_pushinteger(L, returnValue);
 
@@ -138,7 +138,7 @@ static int OMFitLua_omsfit_initialize(lua_State *L)
   return 1;
 }
 
-//oms_status_t omsfit_describe(void* fitmodel);
+//oms_status_enu_t omsfit_describe(void* fitmodel);
 static int OMFitLua_omsfit_describe(lua_State *L)
 {
   if (lua_gettop(L) != 1)
@@ -146,12 +146,12 @@ static int OMFitLua_omsfit_describe(lua_State *L)
   luaL_checktype(L, 1, LUA_TUSERDATA);
 
   void *model = topointer2(L, 1);
-  oms_status_t returnValue = omsfit_describe(model);
+  oms_status_enu_t returnValue = omsfit_describe(model);
   lua_pushinteger(L, returnValue);
   return 1;
 }
 
-// oms_status_t omsfit_addMeasurement(void* fitmodel, size_t iSeries, const char* var, const double* values, size_t nValues);
+// oms_status_enu_t omsfit_addMeasurement(void* fitmodel, size_t iSeries, const char* var, const double* values, size_t nValues);
 static int OMFitLua_omsfit_addMeasurement(lua_State *L)
 {
   if (lua_gettop(L) != 4)
@@ -174,7 +174,7 @@ static int OMFitLua_omsfit_addMeasurement(lua_State *L)
     lua_pop(L, 1); // pop value from stack
   }
 
-  oms_status_t returnValue =
+  oms_status_enu_t returnValue =
     omsfit_addMeasurement(model, iSeries, var, values, nValues);
   lua_pushinteger(L, returnValue);
 
@@ -182,7 +182,7 @@ static int OMFitLua_omsfit_addMeasurement(lua_State *L)
   return 1;
 }
 
-// oms_status_t omsfit_addParameter(void* fitmodel, const char* var, double startvalue);
+// oms_status_enu_t omsfit_addParameter(void* fitmodel, const char* var, double startvalue);
 static int OMFitLua_omsfit_addParameter(lua_State *L)
 {
   if (lua_gettop(L) != 3)
@@ -195,13 +195,13 @@ static int OMFitLua_omsfit_addParameter(lua_State *L)
   const char* var = lua_tostring(L, 2);
   double startvalue = lua_tonumber(L, 3);
 
-  oms_status_t returnValue =
+  oms_status_enu_t returnValue =
     omsfit_addParameter(model, var, startvalue);
   lua_pushinteger(L, returnValue);
   return 1;
 }
 
-// oms_status_t omsfit_getParameter(void* fitmodel, const char* var, double* startvalue, double* estimatedvalue);
+// oms_status_enu_t omsfit_getParameter(void* fitmodel, const char* var, double* startvalue, double* estimatedvalue);
 static int OMFitLua_omsfit_getParameter(lua_State *L)
 {
   if (lua_gettop(L) != 2)
@@ -213,7 +213,7 @@ static int OMFitLua_omsfit_getParameter(lua_State *L)
   const char* var = lua_tostring(L, 2);
 
   double startvalue, estimatedvalue;
-  oms_status_t returnValue =
+  oms_status_enu_t returnValue =
     omsfit_getParameter(model, var, &startvalue, &estimatedvalue);
   lua_pushinteger(L, returnValue);
   lua_pushnumber(L, startvalue);
@@ -221,7 +221,7 @@ static int OMFitLua_omsfit_getParameter(lua_State *L)
   return 3;
 }
 
-// oms_status_t omsfit_solve(void* fitmodel, const char* reporttype);
+// oms_status_enu_t omsfit_solve(void* fitmodel, const char* reporttype);
 static int OMFitLua_omsfit_solve(lua_State *L)
 {
   if (lua_gettop(L) != 2)
@@ -232,13 +232,13 @@ static int OMFitLua_omsfit_solve(lua_State *L)
   void *model = topointer2(L, 1);
   const char* reporttype = lua_tostring(L, 2);
 
-  oms_status_t returnValue =
+  oms_status_enu_t returnValue =
     omsfit_solve(model, reporttype);
   lua_pushinteger(L, returnValue);
   return 1;
 }
 
-// oms_status_t omsfit_setOptions_max_num_iterations(void* fitmodel, size_t max_num_iterations);
+// oms_status_enu_t omsfit_setOptions_max_num_iterations(void* fitmodel, size_t max_num_iterations);
 static int OMFitLua_omsfit_setOptions_max_num_iterations(lua_State *L)
 {
   if (lua_gettop(L) != 2)
@@ -249,13 +249,13 @@ static int OMFitLua_omsfit_setOptions_max_num_iterations(lua_State *L)
   void *model = topointer2(L, 1);
   int max_num_iterations = lua_tointeger(L, 2);
 
-  oms_status_t returnValue =
+  oms_status_enu_t returnValue =
     omsfit_setOptions_max_num_iterations(model, max_num_iterations);
   lua_pushinteger(L, returnValue);
   return 1;
 }
 
-// oms_status_t omsfit_getState(void* fitmodel, omsfit_fitmodelstate_t* state);
+// oms_status_enu_t omsfit_getState(void* fitmodel, omsfit_fitmodelstate_t* state);
 static int OMFitLua_omsfit_getState(lua_State *L)
 {
   if (lua_gettop(L) != 1)
@@ -265,7 +265,7 @@ static int OMFitLua_omsfit_getState(lua_State *L)
   void *model = topointer2(L, 1);
 
   omsfit_fitmodelstate_t state;
-  oms_status_t returnValue =
+  oms_status_enu_t returnValue =
     omsfit_getState(model, &state);
   lua_pushinteger(L, returnValue);
   switch (state) {

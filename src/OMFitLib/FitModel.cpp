@@ -120,7 +120,7 @@ struct OdeResidual {
   void* model_;
 };
 
-oms_status_t FitModel::solve(const char* reporttype)
+oms_status_enu_t FitModel::solve(const char* reporttype)
 {
   logTrace();
   if (!(this->isDataComplete())) {
@@ -227,10 +227,10 @@ FitModel::FitModel(void* model) : model_(model)
   state_ = FitModelState::CONSTRUCTED;
 }
 
-oms_status_t FitModel::initialize(size_t nSeries, const double* time, size_t nTime, char const* const* inputvars, size_t nInputvars, char const* const* measurementvars, size_t nMeasurementvars)
+oms_status_enu_t FitModel::initialize(size_t nSeries, const double* time, size_t nTime, char const* const* inputvars, size_t nInputvars, char const* const* measurementvars, size_t nMeasurementvars)
 {
   logTrace();
-  oms_status_t status = oms_status_ok;
+  oms_status_enu_t status = oms_status_ok;
   if (state_ != FitModelState::CONSTRUCTED) {
     logWarning("FitModel::initialize: Reinitialization of initialized object, clearing existing data.");
     status = oms_status_warning;
@@ -267,10 +267,10 @@ oms_status_t FitModel::initialize(size_t nSeries, const double* time, size_t nTi
   return status;
 }
 
-oms_status_t FitModel::addParameter(const char* var, double startvalue)
+oms_status_enu_t FitModel::addParameter(const char* var, double startvalue)
 {
   logTrace();
-  oms_status_t status = oms_status_ok;
+  oms_status_enu_t status = oms_status_ok;
   if (state_ < FitModelState::INITIALIZED) {
     logError("FitModel::addParameter:  Calling method on uninitialized object.");
     return oms_status_error;
@@ -287,10 +287,10 @@ oms_status_t FitModel::addParameter(const char* var, double startvalue)
   return status;
 }
 
-oms_status_t FitModel::addMeasurement(size_t iSeries, const char* var, const double* values, size_t nValues)
+oms_status_enu_t FitModel::addMeasurement(size_t iSeries, const char* var, const double* values, size_t nValues)
 {
   logTrace();
-  oms_status_t status = oms_status_ok;
+  oms_status_enu_t status = oms_status_ok;
   if (state_ < FitModelState::INITIALIZED) {
     logError("FitModel::addMeasurement:  Calling method on uninitialized object.");
     return oms_status_error;
@@ -320,7 +320,7 @@ FitModelState FitModel::getState()
   return state_;
 }
 
-oms_status_t FitModel::getParameter(const char* var, ParameterAttributes& attributes)
+oms_status_enu_t FitModel::getParameter(const char* var, ParameterAttributes& attributes)
 {
   logTrace();
   auto it = parameters_.find(var);

@@ -69,7 +69,7 @@ oms2::FMICompositeModel* oms2::FMICompositeModel::newModel(const ComRef& name)
   return model;
 }
 
-oms_status_t oms2::FMICompositeModel::instantiateFMU(const std::string& filename, const oms2::ComRef& cref)
+oms_status_enu_t oms2::FMICompositeModel::instantiateFMU(const std::string& filename, const oms2::ComRef& cref)
 {
   if (!cref.isValidIdent())
     return oms_status_error;
@@ -96,7 +96,7 @@ oms_status_t oms2::FMICompositeModel::instantiateFMU(const std::string& filename
   return oms_status_ok;
 }
 
-oms_status_t oms2::FMICompositeModel::instantiateTable(const std::string& filename, const oms2::ComRef& cref)
+oms_status_enu_t oms2::FMICompositeModel::instantiateTable(const std::string& filename, const oms2::ComRef& cref)
 {
   if (components)
   {
@@ -108,7 +108,7 @@ oms_status_t oms2::FMICompositeModel::instantiateTable(const std::string& filena
   return oms_status_error;
 }
 
-oms_status_t oms2::FMICompositeModel::setRealParameter(const oms2::SignalRef& sr, double value)
+oms_status_enu_t oms2::FMICompositeModel::setRealParameter(const oms2::SignalRef& sr, double value)
 {
   auto it = subModels.find(sr.getCref().last());
   if (it == subModels.end())
@@ -127,12 +127,12 @@ oms_status_t oms2::FMICompositeModel::setRealParameter(const oms2::SignalRef& sr
   return fmu->setRealParameter(sr.getVar(), value);
 }
 
-oms_status_t oms2::FMICompositeModel::addConnection(const oms2::SignalRef& sigA, const oms2::SignalRef& sigB)
+oms_status_enu_t oms2::FMICompositeModel::addConnection(const oms2::SignalRef& sigA, const oms2::SignalRef& sigB)
 {
   return addConnection(oms2::Connection(sigA, sigB));
 }
 
-oms_status_t oms2::FMICompositeModel::addConnection(const oms2::Connection& connection)
+oms_status_enu_t oms2::FMICompositeModel::addConnection(const oms2::Connection& connection)
 {
   /// \todo check the connection
   if (oms_connections)

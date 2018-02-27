@@ -941,7 +941,7 @@ void CompositeModel::updateInputs(DirectedGraph& graph)
   OMS_TOC(globalClocks, GLOBALCLOCK_COMMUNICATION);
 }
 
-oms_status_t CompositeModel::simulate()
+oms_status_enu_t CompositeModel::simulate()
 {
   logTrace();
 
@@ -972,7 +972,7 @@ void CompositeModel::emit()
   OMS_TOC(globalClocks, GLOBALCLOCK_RESULTFILE);
 }
 
-oms_status_t CompositeModel::doSteps(const int numberOfSteps)
+oms_status_enu_t CompositeModel::doSteps(const int numberOfSteps)
 {
   logTrace();
 
@@ -999,7 +999,7 @@ oms_status_t CompositeModel::doSteps(const int numberOfSteps)
   return oms_status_ok;
 }
 
-oms_status_t CompositeModel::stepUntil(const double timeValue)
+oms_status_enu_t CompositeModel::stepUntil(const double timeValue)
 {
   logTrace();
 
@@ -1145,7 +1145,7 @@ void CompositeModel::reset()
   modelState = oms_modelState_instantiated;
 }
 
-oms_status_t CompositeModel::getCurrentTime(double *time)
+oms_status_enu_t CompositeModel::getCurrentTime(double *time)
 {
   logTrace();
 
@@ -1186,7 +1186,7 @@ int CompositeModel::getNumberOfInterfaces()
   return interfaceNames.size();
 }
 
-oms_causality_t CompositeModel::getInterfaceCausality(int idx)
+oms_causality_enu_t CompositeModel::getInterfaceCausality(int idx)
 {
   std::string variableName = interfaceVariables.at(idx);
   std::string fmuInstance;

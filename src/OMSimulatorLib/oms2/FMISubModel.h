@@ -41,7 +41,7 @@ namespace oms2
   class FMISubModel
   {
   public:
-    virtual oms_component_type_t getType() const = 0;
+    virtual oms_component_type_enu_t getType() const = 0;
     static void deleteSubModel(FMISubModel *model) {if (model) delete model;}
 
     const ComRef& getName() const {return cref;}
