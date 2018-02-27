@@ -66,6 +66,8 @@ namespace oms2
 
     void updateComponents();
 
+    oms_status_enu_t renameSubModel(const ComRef& identOld, const ComRef& identNew);
+
   private:
     FMICompositeModel(const ComRef& name);
     ~FMICompositeModel();

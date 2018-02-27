@@ -34,13 +34,13 @@
 
 #include <cstring>
 
-oms2::FMISubModel::FMISubModel(const ComRef& cref)
-  : cref(cref), geometry()
+oms2::FMISubModel::FMISubModel(const ComRef& ident)
+  : ident(ident.last()), geometry()
 {
   logTrace();
 
-  component.name = new char[cref.toString().length()+1];
-  strcpy(component.name, cref.toString().c_str());
+  component.name = new char[ident.toString().length()+1];
+  strcpy(component.name, ident.toString().c_str());
 
   component.type = oms_component_none;
   component.interfaces = NULL;

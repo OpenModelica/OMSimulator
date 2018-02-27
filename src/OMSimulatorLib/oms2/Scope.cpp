@@ -142,42 +142,41 @@ oms_status_enu_t oms2::Scope::instantiateFMU(const ComRef& modelIdent, const std
   return fmiModel->instantiateFMU(fmuPath, fmuIdent);
 }
 
-oms_status_enu_t oms2::Scope::renameModel(const ComRef& identOld, const ComRef& identNew)
+oms_status_enu_t oms2::Scope::rename(const ComRef& identOld, const ComRef& identNew)
 {
   Scope& scope = oms2::Scope::getInstance();
 
-  // check if identNew is in scope
-  auto it = scope.models.find(identNew);
-  if (it != scope.models.end())
+  // renaming a (root) model or a sub.model?
+  if (identOld.first() == identNew.first())
   {
-    logError("A model called \"" + identNew.toString() + "\" is already in the scope.");
-    return oms_status_error;
+    auto it = scope.models.find(identOld.first());
+    if (it == scope.models.end())
+    {
+      logError("[oms2::Scope::rename] no model called \"" + identOld.first() + "\" in scope.");
+      return oms_status_error;
+    }
+
+    Model* model = it->second;
+
+    // FMI model?
+    if (oms_component_fmi == model->getType())
+    {
+      FMICompositeModel* fmiModel = dynamic_cast<FMICompositeModel*>(model);
+      return fmiModel->renameSubModel(identOld, identNew);
+    }
+    else
+    {
+      logError("[oms2::Scope::rename] is not implemented for TLM sub-models yet");
+      return oms_status_error;
+    }
+  }
+  else // (root) model
+  {
+    return scope.renameModel(identOld, identNew);
   }
 
-  // check if identOld is in scope
-  if (it == scope.models.end())
-  {
-    logError("There is no model called \"" + identOld.toString() + "\" in the scope.");
-    return oms_status_error;
-  }
-
-  it->second->setName(identNew);
-  scope.models[identNew] = it->second;
-  scope.models.erase(it);
-
-  return oms_status_ok;
-}
-
-oms2::Model* oms2::Scope::getModel(const ComRef& name)
-{
-  auto it = models.find(name);
-  if (it == models.end())
-  {
-    logWarning("oms2::Scope::getModel: There is no model called \"" + name + "\" in the scope.");
-    return NULL;
-  }
-
-  return it->second;
+  logError("[oms2::Scope::rename] failed");
+  return oms_status_error;
 }
 
 oms2::Model* oms2::Scope::loadModel(const std::string& filename)
@@ -636,6 +635,7 @@ oms_status_enu_t oms2::Scope::saveFMIModel(oms2::FMICompositeModel* model, const
 
 oms_status_enu_t oms2::Scope::saveTLMModel(oms2::TLMCompositeModel* model, const std::string& filename)
 {
+  logError("[oms2::Scope::saveTLMModel]: not implemented yet");
   return oms_status_error;
 }
 
@@ -878,4 +878,53 @@ oms_status_enu_t oms2::Scope::getConnections(const oms2::ComRef& cref, oms_conne
 
   logError("[oms2::Scope::getConnections] is only implemented for FMI models yet");
   return oms_status_error;
+}
+
+oms_status_enu_t oms2::Scope::renameModel(const ComRef& identOld, const ComRef& identNew)
+{
+  if (!identNew.isValidIdent())
+  {
+    logError("Identifier \"" + identNew + "\" is invalid.");
+    return oms_status_error;
+  }
+
+  if (!identOld.isValidIdent())
+  {
+    logError("Identifier \"" + identOld + "\" is invalid.");
+    return oms_status_error;
+  }
+
+  // check if identNew is in scope
+  auto it = models.find(identNew);
+  if (it != models.end())
+  {
+    logError("A model called \"" + identNew.toString() + "\" is already in scope.");
+    return oms_status_error;
+  }
+
+  // check if identOld is in scope
+  it = models.find(identOld);
+  if (it == models.end())
+  {
+    logError("There is no model called \"" + identOld.toString() + "\" in scope.");
+    return oms_status_error;
+  }
+
+  it->second->setName(identNew);
+  models[identNew] = it->second;
+  models.erase(it);
+
+  return oms_status_ok;
+}
+
+oms2::Model* oms2::Scope::getModel(const ComRef& name)
+{
+  auto it = models.find(name);
+  if (it == models.end())
+  {
+    logWarning("There is no model called \"" + name + "\" in scope.");
+    return NULL;
+  }
+
+  return it->second;
 }

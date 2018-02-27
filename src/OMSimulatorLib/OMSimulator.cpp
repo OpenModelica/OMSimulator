@@ -556,10 +556,10 @@ oms_status_enu_t oms2_instantiateFMU(const char* modelIdent, const char* fmuPath
   return oms2::Scope::instantiateFMU(oms2::ComRef(modelIdent), fmuPath, oms2::ComRef(fmuIdent));
 }
 
-oms_status_enu_t oms2_renameModel(const char* identOld, const char* identNew)
+oms_status_enu_t oms2_rename(const char* identOld, const char* identNew)
 {
   logTrace();
-  return oms2::Scope::renameModel(oms2::ComRef(identOld), oms2::ComRef(identNew));
+  return oms2::Scope::rename(oms2::ComRef(identOld), oms2::ComRef(identNew));
 }
 
 oms_status_enu_t oms2_loadModel(const char* filename, char** ident)

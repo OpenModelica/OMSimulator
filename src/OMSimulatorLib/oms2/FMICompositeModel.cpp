@@ -212,3 +212,43 @@ oms_connection_t** oms2::FMICompositeModel::getOMSConnections()
   }
   return oms_connections;
 }
+
+oms_status_enu_t oms2::FMICompositeModel::renameSubModel(const oms2::ComRef& identOld, const oms2::ComRef& identNew)
+{
+  oms2::ComRef identOld_ = identOld.last();
+  oms2::ComRef identNew_ = identNew.last();
+
+  if (!identNew_.isValidIdent())
+  {
+    logError("Identifier \"" + identNew + "\" is invalid.");
+    return oms_status_error;
+  }
+
+  if (!identOld_.isValidIdent())
+  {
+    logError("Identifier \"" + identOld + "\" is invalid.");
+    return oms_status_error;
+  }
+
+  // check if identNew is in scope
+  auto it = subModels.find(identNew_);
+  if (it != subModels.end())
+  {
+    logError("A sub-model called \"" + identNew.toString() + "\" is already in scope.");
+    return oms_status_error;
+  }
+
+  // check if identOld is in scope
+  it = subModels.find(identOld_);
+  if (it == subModels.end())
+  {
+    logError("There is no sub-model called \"" + identOld.toString() + "\" in scope.");
+    return oms_status_error;
+  }
+
+  it->second->setName(identNew);
+  subModels[identNew_] = it->second;
+  subModels.erase(it);
+
+  return oms_status_ok;
+}
