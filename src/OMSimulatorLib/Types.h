@@ -101,8 +101,8 @@ typedef enum {
 
 typedef struct {
   oms_connection_type_enu_t type;
-  const char* from;
-  const char* to;
+  char* from;
+  char* to;
   /// \todo optional TLM attributes
 } oms_connection_t;
 

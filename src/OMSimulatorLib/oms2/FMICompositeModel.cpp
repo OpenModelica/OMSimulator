@@ -51,8 +51,12 @@ oms2::FMICompositeModel::~FMICompositeModel()
 
   if (oms_connections)
   {
-    for (oms_connection_t* p = oms_connections[0]; p; p++)
+    for (int i = 0 ; oms_connections[i] ; i++) {
+      oms_connection_t* p = oms_connections[i];
+      delete[] p->from;
+      delete[] p->to;
       delete p;
+    }
     delete[] oms_connections;
   }
 }
@@ -137,8 +141,12 @@ oms_status_enu_t oms2::FMICompositeModel::addConnection(const oms2::Connection& 
   /// \todo check the connection
   if (oms_connections)
   {
-    for (oms_connection_t* p = oms_connections[0]; p; p++)
+    for (int i = 0 ; oms_connections[i] ; i++) {
+      oms_connection_t* p = oms_connections[i];
+      delete[] p->from;
+      delete[] p->to;
       delete p;
+    }
     delete[] oms_connections;
     oms_connections = NULL;
   }
@@ -196,7 +204,11 @@ oms_connection_t** oms2::FMICompositeModel::getOMSConnections()
   {
     oms_connections[i] = new oms_connection_t;
     oms_connections[i]->type = oms_connection_fmi;
-    oms_connections[i]->from = it.getSignalA().toString().c_str();
-    oms_connections[i]->to = it.getSignalB().toString().c_str();
+    oms_connections[i]->from = new char[it.getSignalA().toString().length()+1];
+    strcpy(oms_connections[i]->from, it.getSignalA().toString().c_str());
+    oms_connections[i]->to = new char[it.getSignalB().toString().length()+1];
+    strcpy(oms_connections[i]->to, it.getSignalB().toString().c_str());
+    i++;
   }
+  return oms_connections;
 }
