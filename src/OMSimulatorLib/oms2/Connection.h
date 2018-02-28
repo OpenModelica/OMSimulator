@@ -44,31 +44,25 @@ namespace oms2
   /**
    * \brief Connection
    */
-  class Connection
+  class Connection : protected oms_connection_t
   {
   public:
-    Connection(const ComRef& cref, const std::string& varA, const std::string& varB);
-    Connection(const SignalRef& conA, const SignalRef& conB);
+    Connection(const oms2::ComRef& parent, const oms2::SignalRef& conA, const oms2::SignalRef& conB);
     ~Connection();
-
-    static Connection FromStrings(const ComRef& cref, const std::string& conA, const std::string& conB);
-    static Connection FromStrings(const std::string& conA, const std::string& conB);
 
     // methods to copy the object
     Connection(const Connection& rhs);
     Connection& operator=(const Connection& rhs);
 
-    const oms2::SignalRef& getSignalA() const {return conA;}
-    const oms2::SignalRef& getSignalB() const {return conB;}
+    const oms2::SignalRef getSignalA() const {return oms2::SignalRef(conA);}
+    const oms2::SignalRef getSignalB() const {return oms2::SignalRef(conB);}
 
-    const oms2::ssd::ConnectionGeometry* getGeometry() const {return &geometry;}
+    const oms2::ssd::ConnectionGeometry* getGeometry() const {return reinterpret_cast<oms2::ssd::ConnectionGeometry*>(geometry);}
     void setGeometry(const oms2::ssd::ConnectionGeometry* newGeometry);
 
-  private:
-    oms2::SignalRef conA;
-    oms2::SignalRef conB;
-    oms2::ssd::ConnectionGeometry geometry;
+    bool isEqual(const oms2::ComRef& parent, const oms2::SignalRef& signalA, const oms2::SignalRef& signalB) const;
 
+  private:
     friend bool operator==(const Connection& lhs, const Connection& rhs);
     friend bool operator!=(const Connection& lhs, const Connection& rhs);
   };

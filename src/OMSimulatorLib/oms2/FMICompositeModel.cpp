@@ -39,26 +39,23 @@ oms2::FMICompositeModel::FMICompositeModel(const ComRef& name)
   : oms2::Model(name)
 {
   logTrace();
-
-  oms_connections = NULL;
+  connections.push_back(NULL);
+  components = NULL;
 }
 
 oms2::FMICompositeModel::~FMICompositeModel()
 {
+  logTrace();
+
   // free memory if no one else does
+  deleteComponents();
+
+  for (auto& connection : connections)
+    if (connection)
+      delete connection;
+
   for (auto it=subModels.begin(); it != subModels.end(); it++)
     oms2::FMISubModel::deleteSubModel(it->second);
-
-  if (oms_connections)
-  {
-    for (int i = 0 ; oms_connections[i] ; i++) {
-      oms_connection_t* p = oms_connections[i];
-      delete[] p->from;
-      delete[] p->to;
-      delete p;
-    }
-    delete[] oms_connections;
-  }
 }
 
 oms2::FMICompositeModel* oms2::FMICompositeModel::newModel(const ComRef& name)
@@ -90,11 +87,7 @@ oms_status_enu_t oms2::FMICompositeModel::instantiateFMU(const std::string& file
   if (!subModel)
     return oms_status_error;
 
-  if (components)
-  {
-    delete[] components;
-    components = NULL;
-  }
+  deleteComponents();
 
   subModels[cref] = subModel;
   return oms_status_ok;
@@ -102,11 +95,7 @@ oms_status_enu_t oms2::FMICompositeModel::instantiateFMU(const std::string& file
 
 oms_status_enu_t oms2::FMICompositeModel::instantiateTable(const std::string& filename, const oms2::ComRef& cref)
 {
-  if (components)
-  {
-    delete[] components;
-    components = NULL;
-  }
+  deleteComponents();
 
   logError("[oms2::FMICompositeModel::instantiateTable] not implemented yet");
   return oms_status_error;
@@ -131,28 +120,14 @@ oms_status_enu_t oms2::FMICompositeModel::setRealParameter(const oms2::SignalRef
   return fmu->setRealParameter(sr.getVar(), value);
 }
 
-oms_status_enu_t oms2::FMICompositeModel::addConnection(const oms2::SignalRef& sigA, const oms2::SignalRef& sigB)
-{
-  return addConnection(oms2::Connection(sigA, sigB));
-}
-
-oms_status_enu_t oms2::FMICompositeModel::addConnection(const oms2::Connection& connection)
+oms_status_enu_t oms2::FMICompositeModel::addConnection(const oms2::SignalRef& conA, const oms2::SignalRef& conB)
 {
   /// \todo check the connection
-  if (oms_connections)
-  {
-    for (int i = 0 ; oms_connections[i] ; i++) {
-      oms_connection_t* p = oms_connections[i];
-      delete[] p->from;
-      delete[] p->to;
-      delete p;
-    }
-    delete[] oms_connections;
-    oms_connections = NULL;
-  }
-
-  connections.push_back(connection);
+  connections.back() = new oms2::Connection(name, conA, conB);
+  connections.push_back(NULL);
   return oms_status_ok;
+
+  return addConnection(oms2::Connection(name, conA, conB));
 }
 
 oms2::FMISubModel* oms2::FMICompositeModel::getSubModel(const oms2::ComRef& cref)
@@ -169,19 +144,29 @@ oms2::FMISubModel* oms2::FMICompositeModel::getSubModel(const oms2::ComRef& cref
 
 oms2::Connection* oms2::FMICompositeModel::getConnection(const oms2::SignalRef& signalA, const oms2::SignalRef& signalB)
 {
-  const oms2::Connection c(signalA, signalB);
+  const oms2::Connection c(name, signalA, signalB);
   for (auto& it : connections)
-    if (it == c)
-      return &it;
+    if (it->isEqual(name, signalA, signalB))
+      return it;
   return NULL;
+}
+
+void oms2::FMICompositeModel::deleteComponents()
+{
+  logTrace();
+
+  if (this->components)
+  {
+    delete[] components;
+    components = NULL;
+  }
 }
 
 void oms2::FMICompositeModel::updateComponents()
 {
   logTrace();
 
-  if (components)
-    delete[] components;
+  deleteComponents();
 
   components = new oms_component_t*[subModels.size() + 1];
   components[subModels.size()] = NULL;
@@ -189,28 +174,6 @@ void oms2::FMICompositeModel::updateComponents()
   int i=0;
   for (auto& it : subModels)
     components[i++] = it.second->getComponent();
-}
-
-oms_connection_t** oms2::FMICompositeModel::getOMSConnections()
-{
-  if (oms_connections)
-    return oms_connections;
-
-  oms_connections = new oms_connection_t*[connections.size() + 1];
-  oms_connections[connections.size()] = NULL;
-
-  int i=0;
-  for (auto& it : connections)
-  {
-    oms_connections[i] = new oms_connection_t;
-    oms_connections[i]->type = oms_connection_fmi;
-    oms_connections[i]->from = new char[it.getSignalA().toString().length()+1];
-    strcpy(oms_connections[i]->from, it.getSignalA().toString().c_str());
-    oms_connections[i]->to = new char[it.getSignalB().toString().length()+1];
-    strcpy(oms_connections[i]->to, it.getSignalB().toString().c_str());
-    i++;
-  }
-  return oms_connections;
 }
 
 oms_status_enu_t oms2::FMICompositeModel::renameSubModel(const oms2::ComRef& identOld, const oms2::ComRef& identNew)
@@ -251,4 +214,15 @@ oms_status_enu_t oms2::FMICompositeModel::renameSubModel(const oms2::ComRef& ide
   subModels.erase(it);
 
   return oms_status_ok;
+}
+
+oms_component_t** oms2::FMICompositeModel::getComponents()
+{
+  logTrace();
+
+  if (components)
+    return components;
+
+  updateComponents();
+  return components;
 }
