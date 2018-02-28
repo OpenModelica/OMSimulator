@@ -58,6 +58,8 @@ namespace oms2
     const oms2::ComRef& getCref() const {return cref;}
     const std::string& getVar() const {return var;}
 
+    bool isEqual(const char* str) const {return toString().compare(str) == 0;}
+
   private:
     oms2::ComRef cref;
     std::string var;

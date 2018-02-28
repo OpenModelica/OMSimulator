@@ -34,23 +34,55 @@
 
 #include <cstring>
 
-oms2::Connection::Connection(const oms2::ComRef& cref, const std::string& varA, const std::string& varB)
-  : conA(cref, varA), conB(cref, varB), geometry()
+oms2::Connection::Connection(const oms2::ComRef& parent, const oms2::SignalRef& conA, const oms2::SignalRef& conB)
 {
-}
+  std::string str;
 
-oms2::Connection::Connection(const oms2::SignalRef& conA, const oms2::SignalRef& conB)
-  : conA(conA), conB(conB), geometry()
-{
+  this->type = oms_connection_fmi;
+
+  str = parent.toString();
+  this->parent = new char[str.size()+1];
+  strcpy(this->parent, str.c_str());
+
+  str = conA.toString();
+  this->conA = new char[str.size()+1];
+  strcpy(this->conA, str.c_str());
+
+  str = conB.toString();
+  this->conB = new char[str.size()+1];
+  strcpy(this->conB, str.c_str());
+
+  oms2::ssd::ConnectionGeometry* geometry_ = new oms2::ssd::ConnectionGeometry();
+  this->geometry = reinterpret_cast<ssd_connection_geometry_t*>(geometry_);
 }
 
 oms2::Connection::~Connection()
 {
+  if (this->parent) delete[] this->parent;
+  if (this->conA) delete[] this->conA;
+  if (this->conB) delete[] this->conB;
+
+  oms2::ssd::ConnectionGeometry* geometry_ = reinterpret_cast<oms2::ssd::ConnectionGeometry*>(this->geometry);
+  if (geometry_)
+    delete geometry_;
 }
 
 oms2::Connection::Connection(const oms2::Connection& rhs)
-  : conA(rhs.conA), conB(rhs.conB), geometry(rhs.geometry)
 {
+  this->type = rhs.type;
+
+  this->parent = new char[strlen(rhs.parent)+1];
+  strcpy(this->parent, rhs.parent);
+
+  this->conA = new char[strlen(rhs.conA)+1];
+  strcpy(this->conA, rhs.conA);
+
+  this->conB = new char[strlen(rhs.conB)+1];
+  strcpy(this->conB, rhs.conB);
+
+  oms2::ssd::ConnectionGeometry* geometry_ = new oms2::ssd::ConnectionGeometry();
+  *geometry_ = *reinterpret_cast<oms2::ssd::ConnectionGeometry*>(rhs.geometry);
+  this->geometry = reinterpret_cast<ssd_connection_geometry_t*>(geometry_);
 }
 
 oms2::Connection& oms2::Connection::operator=(const oms2::Connection& rhs)
@@ -66,27 +98,16 @@ oms2::Connection& oms2::Connection::operator=(const oms2::Connection& rhs)
   return *this;
 }
 
-oms2::Connection oms2::Connection::FromStrings(const std::string& conA, const std::string& conB)
-{
-  oms2::ComRef A = oms2::ComRef(conA);
-  oms2::ComRef B = oms2::ComRef(conB);
-  std::string varA = A.last().toString();
-  std::string varB = B.last().toString();
-  A.popLast();
-  B.popLast();
-  return oms2::Connection(oms2::SignalRef(A, varA), oms2::SignalRef(B, varB));
-}
-
-oms2::Connection oms2::Connection::FromStrings(const oms2::ComRef& cref, const std::string& conA, const std::string& conB)
-{
-  oms2::ComRef A(cref);
-  A.append(oms2::ComRef(conA));
-  oms2::ComRef B(cref);
-  B.append(oms2::ComRef(conB));
-  return oms2::Connection::FromStrings(A.toString(), B.toString());
-}
-
 void oms2::Connection::setGeometry(const oms2::ssd::ConnectionGeometry* newGeometry)
 {
-  this->geometry = *newGeometry;
+  oms2::ssd::ConnectionGeometry* geometry_ = reinterpret_cast<oms2::ssd::ConnectionGeometry*>(this->geometry);
+  if (geometry_)
+    delete geometry_;
+  geometry_ = new oms2::ssd::ConnectionGeometry(*newGeometry);
+  this->geometry = reinterpret_cast<ssd_connection_geometry_t*>(geometry_);
+}
+
+bool oms2::Connection::isEqual(const oms2::ComRef& parent, const oms2::SignalRef& signalA, const oms2::SignalRef& signalB) const
+{
+  return parent.isEqual(this->parent) && signalA.isEqual(this->conA) && signalB.isEqual(this->conB);
 }

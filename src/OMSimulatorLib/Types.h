@@ -94,20 +94,16 @@ typedef struct {
   oms_signal_t** interfaces;
 } oms_component_t;
 
+/**
+ * \brief Connection type
+ */
 typedef enum {
-  oms_connection_fmi,
-  oms_connection_tlm
+  oms_connection_fmi, ///< FMI conncection (directed & undelayed signal connection)
+  oms_connection_tlm  ///< TLM connection
 } oms_connection_type_enu_t;
 
-typedef struct {
-  oms_connection_type_enu_t type;
-  char* from;
-  char* to;
-  /// \todo optional TLM attributes
-} oms_connection_t;
-
 /**
- * \brief Message types used by the Logging mechanism.
+ * \brief Message types used by the logging mechanism.
  */
 typedef enum {
   oms_message_info,    ///< Informative message.
@@ -285,6 +281,18 @@ typedef struct {
    */
   double y2;
 } ssd_system_geometry_t;
+
+/**
+ * \brief Connection between two connectors.
+ */
+typedef struct {
+  oms_connection_type_enu_t type;      ///< Connection type, e.g. TLM
+  char* parent;                        ///< Name of parent component
+  char* conA;                          ///< Name of connector A
+  char* conB;                          ///< Name of connector B
+  ssd_connection_geometry_t* geometry; ///< Geometry information of the connection
+  /// \todo optional TLM attributes
+} oms_connection_t;
 
 #ifdef __cplusplus
 }

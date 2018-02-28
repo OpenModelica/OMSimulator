@@ -67,7 +67,7 @@ oms2::Scope& oms2::Scope::getInstance()
   return scope;
 }
 
-oms_status_enu_t oms2::Scope::newFMIModel(const ComRef& name)
+oms_status_enu_t oms2::Scope::newFMIModel(const oms2::ComRef& name)
 {
   Scope& scope = oms2::Scope::getInstance();
 
@@ -87,7 +87,7 @@ oms_status_enu_t oms2::Scope::newFMIModel(const ComRef& name)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms2::Scope::newTLMModel(const ComRef& name)
+oms_status_enu_t oms2::Scope::newTLMModel(const oms2::ComRef& name)
 {
   Scope& scope = oms2::Scope::getInstance();
 
@@ -107,8 +107,10 @@ oms_status_enu_t oms2::Scope::newTLMModel(const ComRef& name)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms2::Scope::unloadModel(const ComRef& name)
+oms_status_enu_t oms2::Scope::unloadModel(const oms2::ComRef& name)
 {
+  logTrace();
+
   Scope& scope = oms2::Scope::getInstance();
 
   // check if name is in scope
@@ -126,7 +128,7 @@ oms_status_enu_t oms2::Scope::unloadModel(const ComRef& name)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms2::Scope::instantiateFMU(const ComRef& modelIdent, const std::string& fmuPath, const ComRef& fmuIdent)
+oms_status_enu_t oms2::Scope::instantiateFMU(const oms2::ComRef& modelIdent, const std::string& fmuPath, const oms2::ComRef& fmuIdent)
 {
   Scope& scope = oms2::Scope::getInstance();
 
@@ -143,7 +145,7 @@ oms_status_enu_t oms2::Scope::instantiateFMU(const ComRef& modelIdent, const std
   return fmiModel->instantiateFMU(fmuPath, fmuIdent);
 }
 
-oms_status_enu_t oms2::Scope::rename(const ComRef& identOld, const ComRef& identNew)
+oms_status_enu_t oms2::Scope::rename(const oms2::ComRef& identOld, const oms2::ComRef& identNew)
 {
   Scope& scope = oms2::Scope::getInstance();
 
@@ -502,7 +504,7 @@ oms_status_enu_t oms2::Scope::SetTempDirectory(const std::string& newTempDir)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms2::Scope::saveModel(const std::string& filename, const ComRef& name)
+oms_status_enu_t oms2::Scope::saveModel(const std::string& filename, const oms2::ComRef& name)
 {
   oms2::Scope& scope = oms2::Scope::getInstance();
   oms2::Model* model = scope.getModel(name);
@@ -643,17 +645,17 @@ oms_status_enu_t oms2::Scope::saveFMIModel(oms2::FMICompositeModel* model, const
   }
 
   pugi::xml_node nodeConnections = fmiCompositeModel.append_child("Connections");
-  const std::deque<oms2::Connection>& connections = model->getConnections();
-  for (auto const &connection : connections)
+  oms2::Connection** connections = model->getConnections();
+  for (oms2::Connection* connection = connections[0]; connection; ++connection)
   {
     pugi::xml_node connectionNode = nodeConnections.append_child("Connection");
-    value = connection.getSignalA().toString();
+    value = connection->getSignalA().toString();
     connectionNode.append_attribute("From") = value.c_str();
-    value = connection.getSignalB().toString();
+    value = connection->getSignalB().toString();
     connectionNode.append_attribute("To") = value.c_str();
 
     // export ssd:ConnectionGeometry
-    const oms2::ssd::ConnectionGeometry* connectionGeometry = connection.getGeometry();
+    const oms2::ssd::ConnectionGeometry* connectionGeometry = connection->getGeometry();
     pugi::xml_node node = connectionNode.append_child("ssd:ConnectionGeometry");
     const double* pointsX = connectionGeometry->getPointsX();
     const double* pointsY = connectionGeometry->getPointsY();
@@ -750,6 +752,28 @@ oms_status_enu_t oms2::Scope::getElementGeometry(const oms2::ComRef& cref, const
   return oms_status_error;
 }
 
+oms_status_enu_t oms2::Scope::getComponents(const oms2::ComRef& cref, oms_component_t*** components)
+{
+  oms2::Scope& scope = oms2::Scope::getInstance();
+
+  if (!components)
+  {
+    logWarning("[oms2::Scope::getComponents] NULL pointer");
+    return oms_status_warning;
+  }
+
+  Model* model = scope.getModel(cref);
+  if (model && oms_component_fmi == model->getType())
+  {
+    FMICompositeModel* fmiModel = dynamic_cast<FMICompositeModel*>(model);
+    *components = fmiModel->getComponents();
+    return oms_status_ok;
+  }
+
+  logError("[oms2::Scope::getComponents] is only implemented for FMI models yet");
+  return oms_status_error;
+}
+
 oms_status_enu_t oms2::Scope::setElementGeometry(const oms2::ComRef& cref, const oms2::ssd::ElementGeometry* geometry)
 {
   oms2::Scope& scope = oms2::Scope::getInstance();
@@ -806,102 +830,75 @@ oms_status_enu_t oms2::Scope::setElementGeometry(const oms2::ComRef& cref, const
   return oms_status_error;
 }
 
-oms_status_enu_t oms2::Scope::getConnectionGeometry(const oms2::SignalRef& signalA, const oms2::SignalRef& signalB, const oms2::ssd::ConnectionGeometry** geometry)
-{
-  oms2::Scope& scope = oms2::Scope::getInstance();
+//oms_status_enu_t oms2::Scope::getConnectionGeometry(const oms2::SignalRef& signalA, const oms2::SignalRef& signalB, const oms2::ssd::ConnectionGeometry** geometry)
+//{
+//  oms2::Scope& scope = oms2::Scope::getInstance();
+//
+//  oms2::ComRef modelA = signalA.getCref().first();
+//  oms2::ComRef modelB = signalB.getCref().first();
+//
+//  if (modelA == modelB)
+//  {
+//    // Model
+//    Model* model = scope.getModel(modelA);
+//    if (!model)
+//    {
+//      logError("[oms2::Scope::getConnectionGeometry] failed");
+//      return oms_status_error;
+//    }
+//
+//    // FMI model?
+//    if (oms_component_fmi == model->getType())
+//    {
+//      FMICompositeModel* fmiModel = dynamic_cast<FMICompositeModel*>(model);
+//      oms2::Connection* connection = fmiModel->getConnection(signalA, signalB);
+//      if (connection)
+//      {
+//        *geometry = connection->getGeometry();
+//        return oms_status_ok;
+//      }
+//    }
+//  }
+//
+//  logError("[oms2::Scope::getConnectionGeometry] failed");
+//  return oms_status_error;
+//}
 
-  oms2::ComRef modelA = signalA.getCref().first();
-  oms2::ComRef modelB = signalB.getCref().first();
+//oms_status_enu_t oms2::Scope::setConnectionGeometry(const oms2::SignalRef& signalA, const oms2::SignalRef& signalB, const oms2::ssd::ConnectionGeometry* geometry)
+//{
+//  oms2::Scope& scope = oms2::Scope::getInstance();
+//
+//  oms2::ComRef modelA = signalA.getCref().first();
+//  oms2::ComRef modelB = signalB.getCref().first();
+//
+//  if (modelA == modelB)
+//  {
+//    // Model
+//    Model* model = scope.getModel(modelA);
+//    if (!model)
+//    {
+//      logError("[oms2::Scope::setConnectionGeometry] failed");
+//      return oms_status_error;
+//    }
+//
+//    // FMI model?
+//    if (oms_component_fmi == model->getType())
+//    {
+//      FMICompositeModel* fmiModel = dynamic_cast<FMICompositeModel*>(model);
+//      oms2::Connection* connection = fmiModel->getConnection(signalA, signalB);
+//      if (connection)
+//      {
+//        connection->setGeometry(geometry);
+//        return oms_status_ok;
+//      }
+//    }
+//  }
+//
+//  logError("[oms2::Scope::setConnectionGeometry] failed");
+//  return oms_status_error;
+//}
 
-  if (modelA == modelB)
-  {
-    // Model
-    Model* model = scope.getModel(modelA);
-    if (!model)
-    {
-      logError("[oms2::Scope::getConnectionGeometry] failed");
-      return oms_status_error;
-    }
-
-    // FMI model?
-    if (oms_component_fmi == model->getType())
-    {
-      FMICompositeModel* fmiModel = dynamic_cast<FMICompositeModel*>(model);
-      oms2::Connection* connection = fmiModel->getConnection(signalA, signalB);
-      if (connection)
-      {
-        *geometry = connection->getGeometry();
-        return oms_status_ok;
-      }
-    }
-  }
-
-  logError("[oms2::Scope::getConnectionGeometry] failed");
-  return oms_status_error;
-}
-
-oms_status_enu_t oms2::Scope::setConnectionGeometry(const oms2::SignalRef& signalA, const oms2::SignalRef& signalB, const oms2::ssd::ConnectionGeometry* geometry)
-{
-  oms2::Scope& scope = oms2::Scope::getInstance();
-
-  oms2::ComRef modelA = signalA.getCref().first();
-  oms2::ComRef modelB = signalB.getCref().first();
-
-  if (modelA == modelB)
-  {
-    // Model
-    Model* model = scope.getModel(modelA);
-    if (!model)
-    {
-      logError("[oms2::Scope::setConnectionGeometry] failed");
-      return oms_status_error;
-    }
-
-    // FMI model?
-    if (oms_component_fmi == model->getType())
-    {
-      FMICompositeModel* fmiModel = dynamic_cast<FMICompositeModel*>(model);
-      oms2::Connection* connection = fmiModel->getConnection(signalA, signalB);
-      if (connection)
-      {
-        connection->setGeometry(geometry);
-        return oms_status_ok;
-      }
-    }
-  }
-
-  logError("[oms2::Scope::setConnectionGeometry] failed");
-  return oms_status_error;
-}
-
-oms_status_enu_t oms2::Scope::getComponents(const oms2::ComRef& cref, oms_component_t*** components)
-{
-  oms2::Scope& scope = oms2::Scope::getInstance();
-
-  if (!components)
-  {
-    logWarning("[oms2::Scope::getComponents] NULL pointer");
-    return oms_status_warning;
-  }
-
-  if (cref.isIdent())
-  {
-    // Model
-    Model* model = scope.getModel(cref);
-    if (!model)
-    {
-      logError("[oms2::Scope::getComponents] failed");
-      return oms_status_error;
-    }
-    *components = model->getComponents();
-    return oms_status_ok;
-  }
-
-  logError("[oms2::Scope::getComponents] is only implemented for FMI models yet");
-  return oms_status_error;
-}
-
-oms_status_enu_t oms2::Scope::getConnections(const oms2::ComRef& cref, oms_connection_t*** connections)
+oms_status_enu_t oms2::Scope::getConnections(const oms2::ComRef& cref, oms2::Connection*** connections)
 {
   oms2::Scope& scope = oms2::Scope::getInstance();
 
@@ -924,7 +921,7 @@ oms_status_enu_t oms2::Scope::getConnections(const oms2::ComRef& cref, oms_conne
     if (oms_component_fmi == model->getType())
     {
       FMICompositeModel* fmiModel = dynamic_cast<FMICompositeModel*>(model);
-      *connections = fmiModel->getOMSConnections();
+      *connections = fmiModel->getConnections();
       return oms_status_ok;
     }
 
@@ -935,7 +932,25 @@ oms_status_enu_t oms2::Scope::getConnections(const oms2::ComRef& cref, oms_conne
   return oms_status_error;
 }
 
-oms_status_enu_t oms2::Scope::renameModel(const ComRef& identOld, const ComRef& identNew)
+oms_status_enu_t oms2::Scope::addConnection(const oms2::ComRef& cref, const oms2::Connection* connection)
+{
+  logError("[oms2::Scope::addConnection] not implemented yet");
+  return oms_status_error;
+}
+
+oms_status_enu_t oms2::Scope::deleteConnection(const oms2::ComRef& cref, const oms2::SignalRef& conA, const oms2::SignalRef& conB)
+{
+  logError("[oms2::Scope::deleteConnection] not implemented yet");
+  return oms_status_error;
+}
+
+oms_status_enu_t oms2::Scope::updateConnection(const oms2::ComRef& cref, const oms2::SignalRef& conA, const oms2::SignalRef& conB, const oms2::Connection* connection)
+{
+  logError("[oms2::Scope::updateConnection] not implemented yet");
+  return oms_status_error;
+}
+
+oms_status_enu_t oms2::Scope::renameModel(const oms2::ComRef& identOld, const oms2::ComRef& identNew)
 {
   if (!identNew.isValidIdent())
   {
@@ -972,7 +987,7 @@ oms_status_enu_t oms2::Scope::renameModel(const ComRef& identOld, const ComRef& 
   return oms_status_ok;
 }
 
-oms2::Model* oms2::Scope::getModel(const ComRef& name)
+oms2::Model* oms2::Scope::getModel(const oms2::ComRef& name)
 {
   auto it = models.find(name);
   if (it == models.end())

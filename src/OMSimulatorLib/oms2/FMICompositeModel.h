@@ -40,36 +40,39 @@
 #include "../Types.h"
 
 #include <map>
-#include <deque>
+#include <vector>
 
 namespace oms2
 {
   class FMICompositeModel : public Model
   {
   public:
-    static FMICompositeModel* newModel(const ComRef& name);
+    static FMICompositeModel* newModel(const oms2::ComRef& name);
 
     oms_component_type_enu_t getType() {return oms_component_fmi;}
-    oms_status_enu_t instantiateFMU(const std::string& filename, const ComRef& cref);
-    oms_status_enu_t instantiateTable(const std::string& filename, const ComRef& cref);
+    oms_status_enu_t instantiateFMU(const std::string& filename, const oms2::ComRef& cref);
+    oms_status_enu_t instantiateTable(const std::string& filename, const oms2::ComRef& cref);
 
     oms_status_enu_t setRealParameter(const oms2::SignalRef& sr, double value);
 
     oms_status_enu_t addConnection(const oms2::Connection& connection);
-    oms_status_enu_t addConnection(const SignalRef& signalA, const SignalRef& signalB);
+    oms_status_enu_t addConnection(const oms2::SignalRef& signalA, const oms2::SignalRef& signalB);
 
-    FMISubModel* getSubModel(const ComRef& cref);
+    FMISubModel* getSubModel(const oms2::ComRef& cref);
     const std::map<ComRef, FMISubModel*>& getSubModels() {return subModels;}
-    const std::deque<oms2::Connection>& getConnections() {return connections;}
-    oms_connection_t** getOMSConnections();
+    oms2::Connection** getConnections() {return &connections[0];}
     oms2::Connection* getConnection(const oms2::SignalRef& signalA, const oms2::SignalRef& signalB);
 
+    oms_status_enu_t renameSubModel(const oms2::ComRef& identOld, const oms2::ComRef& identNew);
+
+    oms_component_t** getComponents();
+
+  protected:
+    void deleteComponents();
     void updateComponents();
 
-    oms_status_enu_t renameSubModel(const ComRef& identOld, const ComRef& identNew);
-
   private:
-    FMICompositeModel(const ComRef& name);
+    FMICompositeModel(const oms2::ComRef& name);
     ~FMICompositeModel();
 
     // stop the compiler generating methods copying the object
@@ -77,9 +80,9 @@ namespace oms2
     FMICompositeModel& operator=(FMICompositeModel const& copy); // not implemented
 
   private:
-    std::map<ComRef, FMISubModel*> subModels;
-    std::deque<oms2::Connection> connections;
-    oms_connection_t** oms_connections;
+    std::map<oms2::ComRef, oms2::FMISubModel*> subModels;
+    std::vector<oms2::Connection*> connections;
+    oms_component_t** components;
   };
 }
 

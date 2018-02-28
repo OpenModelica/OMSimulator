@@ -79,6 +79,8 @@ namespace oms2
      */
     bool match(const ComRef& cref);
 
+    bool isEqual(const char* str) const {return toString().compare(str) == 0;}
+
   private:
     std::deque<std::string> path;
 

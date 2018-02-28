@@ -399,31 +399,41 @@ oms_status_enu_t oms2_getComponents(const char* cref, oms_component_t*** compone
 /**
  * \brief Get list of all connections from a given component.
  *
- * \param cref          [in] Full identifier of a component.
+ * \param cref          [in] Full identifier of a component
  * \param connections   [out] Array of connections (null-terminated array)
  * \return              Error status.
  */
 oms_status_enu_t oms2_getConnections(const char* cref, oms_connection_t*** connections);
 
 /**
- * \brief Get geometry information from a given connection.
+ * \brief Adds a new connection to a given parent component.
  *
- * \param signalA    [in] Signal name, e.g. x.y:z
- * \param signalB    [in] Signal name, e.g. x.y:z
- * \param geometry   [out] Geometry information.
- * \return           Error status.
+ * \param cref         [in] Full identifier of a component
+ * \param connection   [in] New connection
+ * \return             Error status
  */
-oms_status_enu_t oms2_getConnectionGeometry(const char* signalA, const char* signalB, const ssd_connection_geometry_t** geometry);
+oms_status_enu_t oms2_addConnection(const char* cref, const oms_connection_t* connection);
 
 /**
- * \brief Set geometry information to a given connection.
+ * \brief Deletes the connection between connectors A and B.
  *
- * \param signalA    [in] Signal name, e.g. x.y:z
- * \param signalB    [in] Signal name, e.g. x.y:z
- * \param geometry   [in] Geometry information.
- * \return           Error status.
+ * \param cref   [in] Full identifier of a component
+ * \param conA   [in] Name of connector A
+ * \param conB   [in] Name of connector B
+ * \return       Error status
  */
-oms_status_enu_t oms2_setConnectionGeometry(const char* signalA, const char* signalB, const ssd_connection_geometry_t* geometry);
+oms_status_enu_t oms2_deleteConnection(const char* cref, const char* conA, const char* conB);
+
+/**
+ * \brief Updates the connection between connectors A and B.
+ *
+ * \param cref         [in] Full identifier of a component
+ * \param conA         [in] Name of connector A
+ * \param conB         [in] Name of connector B
+ * \param connection   [in] New connection
+ * \return             Error status
+ */
+oms_status_enu_t oms2_updateConnection(const char* cref, const char* conA, const char* conB, const oms_connection_t* connection);
 
 oms_status_enu_t oms2_simulate_asynchronous(const char* ident, void (*cb)(const char* ident, double time, oms_status_enu_t status));
 

@@ -34,11 +34,12 @@
 
 #include "../Types.h"
 #include "ComRef.h"
+#include "Connection.h"
 #include "FMICompositeModel.h"
 #include "Model.h"
+#include "ssd/ConnectionGeometry.h"
 #include "ssd/ElementGeometry.h"
 #include "TLMCompositeModel.h"
-#include "ssd/ConnectionGeometry.h"
 
 #include <map>
 #include <string>
@@ -62,14 +63,14 @@ namespace oms2
     static oms_status_enu_t SetTempDirectory(const std::string& newTempDir);
     static const std::string& GetTempDirectory() {Scope &scope = getInstance(); return scope.tempDir;}
 
+    static oms_status_enu_t getComponents(const ComRef& cref, oms_component_t*** components);
     static oms_status_enu_t getElementGeometry(const ComRef& cref, const oms2::ssd::ElementGeometry** geometry);
     static oms_status_enu_t setElementGeometry(const ComRef& cref, const oms2::ssd::ElementGeometry* geometry);
 
-    static oms_status_enu_t getConnectionGeometry(const SignalRef& signalA, const SignalRef& signalB, const oms2::ssd::ConnectionGeometry** geometry);
-    static oms_status_enu_t setConnectionGeometry(const SignalRef& signalA, const SignalRef& signalB, const oms2::ssd::ConnectionGeometry* geometry);
-
-    static oms_status_enu_t getComponents(const ComRef& cref, oms_component_t*** components);
-    static oms_status_enu_t getConnections(const ComRef& cref, oms_connection_t*** connections);
+    static oms_status_enu_t getConnections(const ComRef& cref, oms2::Connection*** connections);
+    static oms_status_enu_t addConnection(const ComRef& cref, const oms2::Connection* connection);
+    static oms_status_enu_t deleteConnection(const ComRef& cref, const SignalRef& conA, const SignalRef& conB);
+    static oms_status_enu_t updateConnection(const ComRef& cref, const SignalRef& conA, const SignalRef& conB, const oms2::Connection* connection);
 
     oms_status_enu_t renameModel(const ComRef& identOld, const ComRef& identNew);
     Model* getModel(const ComRef& name);
