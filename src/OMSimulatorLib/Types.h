@@ -107,7 +107,7 @@ typedef struct {
 } oms_connection_t;
 
 /**
- * @brief Message types used by the Logging mechanism.
+ * \brief Message types used by the Logging mechanism.
  */
 typedef enum {
   oms_message_info,    ///< Informative message.
@@ -118,7 +118,7 @@ typedef enum {
 } oms_message_type_enu_t;
 
 /**
- * @brief 5.2.1.1 ssd:ConnectorGeometry
+ * \brief 5.2.1.1 ssd:ConnectorGeometry
  *
  * This optional XML element gives the geometry information of the connector.
  * Note that x and y coordinates are in a special coordinate system, where 0,0
@@ -145,7 +145,7 @@ typedef struct {
 } ssd_connector_geometry_t;
 
 /**
- * @brief 5.2.2 ssd:ElementGeometry
+ * \brief 5.2.2 ssd:ElementGeometry
  *
  * This optional XML element defines the geometry information of the model
  * element, where (x1,y1) and (x2,y2) define the positions of the lower-left
@@ -218,7 +218,7 @@ typedef struct {
 } ssd_element_geometry_t;
 
 /**
- * @brief 5.3.2.1 ssd:ConnectionGeometry
+ * \brief 5.3.2.1 ssd:ConnectionGeometry
  *
  * This optional element defines the geometry information of the connection.
  * The start and end coordinates of the connection are derived automatically
@@ -248,7 +248,7 @@ typedef struct {
 } ssd_connection_geometry_t;
 
 /**
- * @brief 5.3.4 ssd:SystemGeometry
+ * \brief 5.3.4 ssd:SystemGeometry
  *
  * This element defines the extent of the system canvas. (x1,y1) and (x2,y2)
  * define the lower-left and upper-right corner, respectively. Different from
