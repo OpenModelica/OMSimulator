@@ -40,6 +40,7 @@
 #include "ssd/ConnectionGeometry.h"
 
 #include <iostream>
+#include <sstream>
 
 #include <boost/filesystem.hpp>
 
@@ -378,22 +379,57 @@ oms2::Model* oms2::Scope::loadFMIModel(const pugi::xml_node& xml)
     }// if (node == "SubModel")
     else if (node == "Connections")
     {
-      for (auto connection = it->first_child(); connection; connection = connection.next_sibling())
+      for (auto connectionNode = it->first_child(); connectionNode; connectionNode = connectionNode.next_sibling())
       {
-        if (std::string(connection.name()) != "Connection")
+        if (std::string(connectionNode.name()) != "Connection")
         {
           logError("[oms2::Scope::loadFMIModel] wrong xml schema detected (3)");
           unloadModel(cref_model);
           return NULL;
         }
 
-        std::string sigA = connection.attribute("From").as_string();
-        std::string sigB = connection.attribute("To").as_string();
+        std::string sigA = connectionNode.attribute("From").as_string();
+        std::string sigB = connectionNode.attribute("To").as_string();
         if (oms_status_ok != model->addConnection(SignalRef(sigA), SignalRef(sigB)))
         {
           logError("[oms2::Scope::loadFMIModel] wrong xml schema detected (4)");
           unloadModel(cref_model);
           return NULL;
+        }
+        oms2::Connection* connection = model->getConnection(oms2::SignalRef(sigA), oms2::SignalRef(sigB));
+        if (connection)
+        {
+          for (pugi::xml_node child: connectionNode.children())
+          {
+            // import ssd:ConnectionGeometry
+            if (std::string(child.name()) == "ssd:ConnectionGeometry")
+            {
+              oms2::ssd::ConnectionGeometry geometry;
+              std::string pointsXStr = child.attribute("pointsX").as_string();
+              std::istringstream pointsXStream(pointsXStr);
+              std::vector<std::string> pointsXVector(std::istream_iterator<std::string>{pointsXStream}, std::istream_iterator<std::string>());
+              double* pointsX = new double[pointsXVector.size()];
+              int i = 0;
+              for ( auto &px : pointsXVector ) {
+                pointsX[i++] = std::atof(px.c_str());
+              }
+
+              std::string pointsYStr = child.attribute("pointsY").as_string();
+              std::istringstream pointsYStream(pointsYStr);
+              std::vector<std::string> pointsYVector(std::istream_iterator<std::string>{pointsYStream}, std::istream_iterator<std::string>());
+              double* pointsY = new double[pointsYVector.size()];
+              i = 0;
+              for ( auto &py : pointsYVector ) {
+                pointsY[i++] = std::atof(py.c_str());
+              }
+
+              geometry.setPoints(pointsXVector.size(), pointsX, pointsY);
+              connection->setGeometry(&geometry);
+
+              delete[] pointsX;
+              delete[] pointsY;
+            }
+          }
         }
       }
     }// if (node == "Connections")
@@ -611,11 +647,30 @@ oms_status_enu_t oms2::Scope::saveFMIModel(oms2::FMICompositeModel* model, const
   const std::deque<oms2::Connection>& connections = model->getConnections();
   for (auto const &connection : connections)
   {
-    pugi::xml_node node = nodeConnections.append_child("Connection");
+    pugi::xml_node connectionNode = nodeConnections.append_child("Connection");
     value = connection.getSignalA().toString();
-    node.append_attribute("From") = value.c_str();
+    connectionNode.append_attribute("From") = value.c_str();
     value = connection.getSignalB().toString();
-    node.append_attribute("To") = value.c_str();
+    connectionNode.append_attribute("To") = value.c_str();
+
+    // export ssd:ConnectionGeometry
+    const oms2::ssd::ConnectionGeometry* connectionGeometry = connection.getGeometry();
+    pugi::xml_node node = connectionNode.append_child("ssd:ConnectionGeometry");
+    const double* pointsX = connectionGeometry->getPointsX();
+    const double* pointsY = connectionGeometry->getPointsY();
+    std::string pointsXStr, pointsYStr;
+    for (int i = 0 ; i < connectionGeometry->getLength() ; i++)
+    {
+      pointsXStr += std::to_string(pointsX[i]);
+      pointsYStr += std::to_string(pointsY[i]);
+      if (i != connectionGeometry->getLength() - 1)
+      {
+        pointsXStr += " ";
+        pointsYStr += " ";
+      }
+    }
+    node.append_attribute("pointsX") = pointsXStr.c_str();
+    node.append_attribute("pointsY") = pointsYStr.c_str();
   }
 
   // add experiment settings

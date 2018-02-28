@@ -61,7 +61,7 @@ namespace oms2
     const oms2::SignalRef& getSignalA() const {return conA;}
     const oms2::SignalRef& getSignalB() const {return conB;}
 
-    oms2::ssd::ConnectionGeometry* getGeometry() {return &geometry;}
+    const oms2::ssd::ConnectionGeometry* getGeometry() const {return &geometry;}
     void setGeometry(const oms2::ssd::ConnectionGeometry* newGeometry);
 
   private:
