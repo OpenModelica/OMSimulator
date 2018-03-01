@@ -126,8 +126,6 @@ oms_status_enu_t oms2::FMICompositeModel::addConnection(const oms2::SignalRef& c
   connections.back() = new oms2::Connection(name, conA, conB);
   connections.push_back(NULL);
   return oms_status_ok;
-
-  return addConnection(oms2::Connection(name, conA, conB));
 }
 
 oms2::FMISubModel* oms2::FMICompositeModel::getSubModel(const oms2::ComRef& cref)

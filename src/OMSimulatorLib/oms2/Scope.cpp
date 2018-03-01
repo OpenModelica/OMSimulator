@@ -830,40 +830,6 @@ oms_status_enu_t oms2::Scope::setElementGeometry(const oms2::ComRef& cref, const
   return oms_status_error;
 }
 
-//oms_status_enu_t oms2::Scope::getConnectionGeometry(const oms2::SignalRef& signalA, const oms2::SignalRef& signalB, const oms2::ssd::ConnectionGeometry** geometry)
-//{
-//  oms2::Scope& scope = oms2::Scope::getInstance();
-//
-//  oms2::ComRef modelA = signalA.getCref().first();
-//  oms2::ComRef modelB = signalB.getCref().first();
-//
-//  if (modelA == modelB)
-//  {
-//    // Model
-//    Model* model = scope.getModel(modelA);
-//    if (!model)
-//    {
-//      logError("[oms2::Scope::getConnectionGeometry] failed");
-//      return oms_status_error;
-//    }
-//
-//    // FMI model?
-//    if (oms_component_fmi == model->getType())
-//    {
-//      FMICompositeModel* fmiModel = dynamic_cast<FMICompositeModel*>(model);
-//      oms2::Connection* connection = fmiModel->getConnection(signalA, signalB);
-//      if (connection)
-//      {
-//        *geometry = connection->getGeometry();
-//        return oms_status_ok;
-//      }
-//    }
-//  }
-//
-//  logError("[oms2::Scope::getConnectionGeometry] failed");
-//  return oms_status_error;
-//}
-
 //oms_status_enu_t oms2::Scope::setConnectionGeometry(const oms2::SignalRef& signalA, const oms2::SignalRef& signalB, const oms2::ssd::ConnectionGeometry* geometry)
 //{
 //  oms2::Scope& scope = oms2::Scope::getInstance();
@@ -932,9 +898,43 @@ oms_status_enu_t oms2::Scope::getConnections(const oms2::ComRef& cref, oms2::Con
   return oms_status_error;
 }
 
-oms_status_enu_t oms2::Scope::addConnection(const oms2::ComRef& cref, const oms2::Connection* connection)
+oms2::Connection* oms2::Scope::getConnection(const ComRef& cref, const SignalRef& conA, const SignalRef& conB)
 {
-  logError("[oms2::Scope::addConnection] not implemented yet");
+  oms2::Model* model = getModel(cref);
+  if (!model)
+  {
+    logError("[oms2::Scope::getConnection] failed");
+    return NULL;
+  }
+
+  if (oms_component_fmi == model->getType())
+  {
+    FMICompositeModel* fmiModel = dynamic_cast<FMICompositeModel*>(model);
+    return fmiModel->getConnection(conA, conB);
+  }
+
+  logError("[oms2::Scope::getConnection] only implemented for FMI models");
+  return NULL;
+}
+
+oms_status_enu_t oms2::Scope::addConnection(const oms2::ComRef& cref, const oms2::SignalRef& conA, const oms2::SignalRef& conB)
+{
+  oms2::Scope& scope = oms2::Scope::getInstance();
+
+  oms2::Model* model = scope.getModel(cref);
+  if (!model)
+  {
+    logError("[oms2::Scope::addConnection] failed");
+    return oms_status_error;
+  }
+
+  if (oms_component_fmi == model->getType())
+  {
+    FMICompositeModel* fmiModel = dynamic_cast<FMICompositeModel*>(model);
+    return fmiModel->addConnection(conA, conB);
+  }
+
+  logError("[oms2::Scope::addConnection] only implemented for FMI models");
   return oms_status_error;
 }
 

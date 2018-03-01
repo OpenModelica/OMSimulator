@@ -68,12 +68,13 @@ namespace oms2
     static oms_status_enu_t setElementGeometry(const ComRef& cref, const oms2::ssd::ElementGeometry* geometry);
 
     static oms_status_enu_t getConnections(const ComRef& cref, oms2::Connection*** connections);
-    static oms_status_enu_t addConnection(const ComRef& cref, const oms2::Connection* connection);
+    static oms_status_enu_t addConnection(const ComRef& cref, const SignalRef& conA, const SignalRef& conB);
     static oms_status_enu_t deleteConnection(const ComRef& cref, const SignalRef& conA, const SignalRef& conB);
     static oms_status_enu_t updateConnection(const ComRef& cref, const SignalRef& conA, const SignalRef& conB, const oms2::Connection* connection);
 
     oms_status_enu_t renameModel(const ComRef& identOld, const ComRef& identNew);
     Model* getModel(const ComRef& name);
+    oms2::Connection* getConnection(const ComRef& cref, const SignalRef& conA, const SignalRef& conB);
 
   private:
     Scope();

@@ -412,7 +412,7 @@ oms_status_enu_t oms2_getConnections(const char* cref, oms_connection_t*** conne
  * \param connection   [in] New connection
  * \return             Error status
  */
-oms_status_enu_t oms2_addConnection(const char* cref, const oms_connection_t* connection);
+oms_status_enu_t oms2_addConnection(const char* cref, const char* conA, const char* conB);
 
 /**
  * \brief Deletes the connection between connectors A and B.
