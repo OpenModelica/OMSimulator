@@ -382,16 +382,17 @@ static int OMSimulatorLua_getCurrentTime(lua_State *L)
   return 1;
 }
 
-//void oms_setTempDirectory(const char* filename);
+//oms_status_enu_t oms_setTempDirectory(const char* path);
 static int OMSimulatorLua_setTempDirectory(lua_State *L)
 {
   if (lua_gettop(L) != 1)
     return luaL_error(L, "expecting exactly 1 argument");
   luaL_checktype(L, 1, LUA_TSTRING);
 
-  const char* filename = lua_tostring(L, 1);
-  oms_setTempDirectory(filename);
-  return 0;
+  const char* path = lua_tostring(L, 1);
+  oms_status_enu_t status = oms_setTempDirectory(path);
+  lua_pushinteger(L, status);
+  return 1;
 }
 
 //void oms_setWorkingDirectory(const char* path);
@@ -492,7 +493,7 @@ static int OMSimulatorLua_setSolverMethod(lua_State *L)
   return 0;
 }
 
-//void oms_setLogFile(const char* filename);
+//oms_status_enu_t oms_setLogFile(const char* filename);
 static int OMSimulatorLua_setLogFile(lua_State *L)
 {
   if (lua_gettop(L) != 1)
@@ -500,8 +501,9 @@ static int OMSimulatorLua_setLogFile(lua_State *L)
   luaL_checktype(L, 1, LUA_TSTRING);
 
   const char* filename = lua_tostring(L, 1);
-  oms_setLogFile(filename);
-  return 0;
+  oms_status_enu_t status = oms_setLogFile(filename);
+  lua_pushinteger(L, status);
+  return 1;
 }
 
 //void oms_setMaxIterations(void* model, int maxIterations);
@@ -567,6 +569,175 @@ static int OMSimulatorLua_setVariableFilter(lua_State *L)
   return 0;
 }
 
+/* ************************************ */
+/* OMSimulator 2.0                      */
+/*                                      */
+/* TODO: replace prefix oms2 with oms   */
+/* ************************************ */
+
+//oms_status_enu_t oms2_newFMIModel(const char* ident);
+static int OMSimulatorLua_oms2_newFMIModel(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* ident = lua_tostring(L, 1);
+  oms_status_enu_t status = oms2_newFMIModel(ident);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
+//oms_status_enu_t oms2_newTLMModel(const char* ident);
+static int OMSimulatorLua_oms2_newTLMModel(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* ident = lua_tostring(L, 1);
+  oms_status_enu_t status = oms2_newTLMModel(ident);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
+//oms_status_enu_t oms2_unloadModel(const char* ident);
+static int OMSimulatorLua_oms2_unloadModel(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* ident = lua_tostring(L, 1);
+  oms_status_enu_t status = oms2_unloadModel(ident);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
+//oms_status_enu_t oms2_instantiateFMU(const char* modelIdent, const char* fmuPath, const char* fmuIdent);
+static int OMSimulatorLua_oms2_instantiateFMU(lua_State *L)
+{
+  if (lua_gettop(L) != 3)
+    return luaL_error(L, "expecting exactly 3 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+  luaL_checktype(L, 3, LUA_TSTRING);
+
+  const char* modelIdent = lua_tostring(L, 1);
+  const char* fmuPath = lua_tostring(L, 2);
+  const char* fmuIdent = lua_tostring(L, 3);
+  oms_status_enu_t status = oms2_instantiateFMU(modelIdent, fmuPath, fmuIdent);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
+//oms_status_enu_t oms2_rename(const char* identOld, const char* identNew);
+static int OMSimulatorLua_oms2_rename(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+
+  const char* identOld = lua_tostring(L, 1);
+  const char* identNew = lua_tostring(L, 2);
+  oms_status_enu_t status = oms2_rename(identOld, identNew);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
+// TODO: oms_status_enu_t oms2_getComponentType(const char* ident, oms_component_type_enu_t* type);
+
+//oms_status_enu_t oms2_loadModel(const char* filename, char** ident);
+static int OMSimulatorLua_oms2_loadModel(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* filename = lua_tostring(L, 1);
+  char* ident = NULL;
+  oms_status_enu_t status = oms2_loadModel(filename, &ident);
+
+  lua_pushinteger(L, status);
+  if (ident)
+    lua_pushstring(L, ident);
+  else
+    lua_pushstring(L, "");
+  return 2;
+}
+
+//oms_status_enu_t oms2_saveModel(const char* filename, const char* ident);
+static int OMSimulatorLua_oms2_saveModel(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+
+  const char* filename = lua_tostring(L, 1);
+  const char* ident = lua_tostring(L, 2);
+  oms_status_enu_t status = oms2_saveModel(filename, ident);
+
+  lua_pushinteger(L, status);
+  return 1;
+}
+
+// TODO: oms_status_enu_t oms2_getElementGeometry(const char* cref, const ssd_element_geometry_t** geometry);
+// TODO: oms_status_enu_t oms2_setElementGeometry(const char* cref, const ssd_element_geometry_t* geometry);
+// TODO: oms_status_enu_t oms2_getComponents(const char* cref, oms_component_t*** components);
+// TODO: oms_status_enu_t oms2_getConnections(const char* cref, oms_connection_t*** connections);
+
+//oms_status_enu_t oms2_addConnection(const char* cref, const char* conA, const char* conB);
+static int OMSimulatorLua_oms2_addConnection(lua_State *L)
+{
+  if (lua_gettop(L) != 3)
+    return luaL_error(L, "expecting exactly 3 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+  luaL_checktype(L, 3, LUA_TSTRING);
+
+  const char* cref = lua_tostring(L, 1);
+  const char* conA = lua_tostring(L, 2);
+  const char* conB = lua_tostring(L, 3);
+  oms_status_enu_t status = oms2_addConnection(cref, conA, conB);
+
+  lua_pushinteger(L, status);
+  return 1;
+}
+
+//oms_status_enu_t oms2_deleteConnection(const char* cref, const char* conA, const char* conB);
+static int OMSimulatorLua_oms2_deleteConnection(lua_State *L)
+{
+  if (lua_gettop(L) != 3)
+    return luaL_error(L, "expecting exactly 3 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+  luaL_checktype(L, 3, LUA_TSTRING);
+
+  const char* cref = lua_tostring(L, 1);
+  const char* conA = lua_tostring(L, 2);
+  const char* conB = lua_tostring(L, 3);
+  oms_status_enu_t status = oms2_deleteConnection(cref, conA, conB);
+
+  lua_pushinteger(L, status);
+  return 1;
+}
+
+// TODO: oms_status_enu_t oms2_updateConnection(const char* cref, const char* conA, const char* conB, const oms_connection_t* connection);
+
+//void oms2_setLoggingLevel(int logLevel);
+static int OMSimulatorLua_oms2_setLoggingLevel(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TNUMBER);
+
+  int logLevel = lua_tointeger(L, 1);
+  oms2_setLoggingLevel(logLevel);
+  return 0;
+}
+
 DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
 {
   REGISTER_LUA_CALL(addConnection);
@@ -607,5 +778,22 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(stepUntil);
   REGISTER_LUA_CALL(terminate);
   REGISTER_LUA_CALL(unload);
+
+  /* ************************************ */
+  /* OMSimulator 2.0                      */
+  /*                                      */
+  /* TODO: replace prefix oms2 with oms   */
+  /* ************************************ */
+  REGISTER_LUA_CALL(oms2_newFMIModel);
+  REGISTER_LUA_CALL(oms2_newTLMModel);
+  REGISTER_LUA_CALL(oms2_unloadModel);
+  REGISTER_LUA_CALL(oms2_instantiateFMU);
+  REGISTER_LUA_CALL(oms2_rename);
+  REGISTER_LUA_CALL(oms2_loadModel);
+  REGISTER_LUA_CALL(oms2_saveModel);
+  REGISTER_LUA_CALL(oms2_addConnection);
+  REGISTER_LUA_CALL(oms2_deleteConnection);
+  REGISTER_LUA_CALL(oms2_setLoggingLevel);
+
   return 0;
 }
