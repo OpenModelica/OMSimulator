@@ -906,7 +906,22 @@ oms_status_enu_t oms2::Scope::addConnection(const oms2::ComRef& cref, const oms2
 
 oms_status_enu_t oms2::Scope::deleteConnection(const oms2::ComRef& cref, const oms2::SignalRef& conA, const oms2::SignalRef& conB)
 {
-  logError("[oms2::Scope::deleteConnection] not implemented yet");
+  oms2::Scope& scope = oms2::Scope::getInstance();
+
+  oms2::Model* model = scope.getModel(cref);
+  if (!model)
+  {
+    logError("[oms2::Scope::deleteConnection] failed");
+    return oms_status_error;
+  }
+
+  if (oms_component_fmi == model->getType())
+  {
+    FMICompositeModel* fmiModel = dynamic_cast<FMICompositeModel*>(model);
+    return fmiModel->deleteConnection(conA, conB);
+  }
+
+  logError("[oms2::Scope::deleteConnection] only implemented for FMI models");
   return oms_status_error;
 }
 
