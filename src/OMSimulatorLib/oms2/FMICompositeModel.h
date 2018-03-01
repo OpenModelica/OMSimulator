@@ -55,12 +55,13 @@ namespace oms2
 
     oms_status_enu_t setRealParameter(const oms2::SignalRef& sr, double value);
 
+    oms2::Connection* getConnection(const oms2::SignalRef& conA, const oms2::SignalRef& conB);
     oms_status_enu_t addConnection(const oms2::SignalRef& conA, const oms2::SignalRef& conB);
+    oms_status_enu_t deleteConnection(const oms2::SignalRef& conA, const oms2::SignalRef& conB);
 
     FMISubModel* getSubModel(const oms2::ComRef& cref);
     const std::map<ComRef, FMISubModel*>& getSubModels() {return subModels;}
     oms2::Connection** getConnections() {return &connections[0];}
-    oms2::Connection* getConnection(const oms2::SignalRef& signalA, const oms2::SignalRef& signalB);
 
     oms_status_enu_t renameSubModel(const oms2::ComRef& identOld, const oms2::ComRef& identNew);
 

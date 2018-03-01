@@ -120,12 +120,38 @@ oms_status_enu_t oms2::FMICompositeModel::setRealParameter(const oms2::SignalRef
   return fmu->setRealParameter(sr.getVar(), value);
 }
 
+oms2::Connection* oms2::FMICompositeModel::getConnection(const oms2::SignalRef& conA, const oms2::SignalRef& conB)
+{
+  for (auto& it : connections)
+    if (it && it->isEqual(name, conA, conB))
+      return it;
+  return NULL;
+}
+
 oms_status_enu_t oms2::FMICompositeModel::addConnection(const oms2::SignalRef& conA, const oms2::SignalRef& conB)
 {
   /// \todo check the connection
   connections.back() = new oms2::Connection(name, conA, conB);
   connections.push_back(NULL);
   return oms_status_ok;
+}
+
+oms_status_enu_t oms2::FMICompositeModel::deleteConnection(const oms2::SignalRef& conA, const oms2::SignalRef& conB)
+{
+  const oms2::Connection c(name, conA, conB);
+  for (auto& it : connections)
+    if (it && it->isEqual(name, conA, conB))
+    {
+      delete it;
+
+      connections.pop_back();   // last element is always NULL
+      it = connections.back();
+      connections.back() = NULL;
+
+      return oms_status_ok;
+    }
+
+  return oms_status_error;
 }
 
 oms2::FMISubModel* oms2::FMICompositeModel::getSubModel(const oms2::ComRef& cref)
@@ -138,15 +164,6 @@ oms2::FMISubModel* oms2::FMICompositeModel::getSubModel(const oms2::ComRef& cref
   }
 
   return it->second;
-}
-
-oms2::Connection* oms2::FMICompositeModel::getConnection(const oms2::SignalRef& signalA, const oms2::SignalRef& signalB)
-{
-  const oms2::Connection c(name, signalA, signalB);
-  for (auto& it : connections)
-    if (it->isEqual(name, signalA, signalB))
-      return it;
-  return NULL;
 }
 
 void oms2::FMICompositeModel::deleteComponents()
