@@ -506,7 +506,9 @@ oms_status_enu_t oms2::Scope::SetTempDirectory(const std::string& newTempDir)
 
 oms_status_enu_t oms2::Scope::saveModel(const std::string& filename, const oms2::ComRef& name)
 {
+  logTrace();
   oms2::Scope& scope = oms2::Scope::getInstance();
+
   oms2::Model* model = scope.getModel(name);
   if (!model)
     return oms_status_error;
@@ -525,6 +527,7 @@ oms_status_enu_t oms2::Scope::saveModel(const std::string& filename, const oms2:
 
 oms_status_enu_t oms2::Scope::saveFMIModel(oms2::FMICompositeModel* model, const std::string& filename)
 {
+  logTrace();
   pugi::xml_document doc;
   std::string value;
 
@@ -646,8 +649,9 @@ oms_status_enu_t oms2::Scope::saveFMIModel(oms2::FMICompositeModel* model, const
 
   pugi::xml_node nodeConnections = fmiCompositeModel.append_child("Connections");
   oms2::Connection** connections = model->getConnections();
-  for (oms2::Connection* connection = connections[0]; connection; ++connection)
+  for (int i=0; connections[i]; ++i)
   {
+    oms2::Connection* connection = connections[i];
     pugi::xml_node connectionNode = nodeConnections.append_child("Connection");
     value = connection->getSignalA().toString();
     connectionNode.append_attribute("From") = value.c_str();
