@@ -830,40 +830,6 @@ oms_status_enu_t oms2::Scope::setElementGeometry(const oms2::ComRef& cref, const
   return oms_status_error;
 }
 
-//oms_status_enu_t oms2::Scope::setConnectionGeometry(const oms2::SignalRef& signalA, const oms2::SignalRef& signalB, const oms2::ssd::ConnectionGeometry* geometry)
-//{
-//  oms2::Scope& scope = oms2::Scope::getInstance();
-//
-//  oms2::ComRef modelA = signalA.getCref().first();
-//  oms2::ComRef modelB = signalB.getCref().first();
-//
-//  if (modelA == modelB)
-//  {
-//    // Model
-//    Model* model = scope.getModel(modelA);
-//    if (!model)
-//    {
-//      logError("[oms2::Scope::setConnectionGeometry] failed");
-//      return oms_status_error;
-//    }
-//
-//    // FMI model?
-//    if (oms_component_fmi == model->getType())
-//    {
-//      FMICompositeModel* fmiModel = dynamic_cast<FMICompositeModel*>(model);
-//      oms2::Connection* connection = fmiModel->getConnection(signalA, signalB);
-//      if (connection)
-//      {
-//        connection->setGeometry(geometry);
-//        return oms_status_ok;
-//      }
-//    }
-//  }
-//
-//  logError("[oms2::Scope::setConnectionGeometry] failed");
-//  return oms_status_error;
-//}
-
 oms_status_enu_t oms2::Scope::getConnections(const oms2::ComRef& cref, oms2::Connection*** connections)
 {
   oms2::Scope& scope = oms2::Scope::getInstance();
@@ -946,7 +912,16 @@ oms_status_enu_t oms2::Scope::deleteConnection(const oms2::ComRef& cref, const o
 
 oms_status_enu_t oms2::Scope::updateConnection(const oms2::ComRef& cref, const oms2::SignalRef& conA, const oms2::SignalRef& conB, const oms2::Connection* connection)
 {
-  logError("[oms2::Scope::updateConnection] not implemented yet");
+  oms2::Scope& scope = oms2::Scope::getInstance();
+
+  oms2::Connection* connection_ = scope.getConnection(cref, conA, conB);
+
+  if (connection_)
+  {
+    *connection_ = *connection;
+    return oms_status_ok;
+  }
+
   return oms_status_error;
 }
 
