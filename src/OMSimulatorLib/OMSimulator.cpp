@@ -604,10 +604,10 @@ oms_status_enu_t oms2_getConnections(const char* cref, oms_connection_t*** conne
   return oms2::Scope::getConnections(oms2::ComRef(cref), reinterpret_cast<oms2::Connection***>(connections));
 }
 
-oms_status_enu_t oms2_addConnection(const char* cref, const oms_connection_t* connection)
+oms_status_enu_t oms2_addConnection(const char* cref, const char* conA, const char* conB)
 {
   logTrace();
-  return oms2::Scope::addConnection(oms2::ComRef(cref), reinterpret_cast<const oms2::Connection*>(connection));
+  return oms2::Scope::addConnection(oms2::ComRef(cref), oms2::SignalRef(conA), oms2::SignalRef(conB));
 }
 
 oms_status_enu_t oms2_deleteConnection(const char* cref, const char* conA, const char* conB)
