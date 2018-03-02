@@ -31,6 +31,7 @@
 
 #include "Connection.h"
 #include "ssd/ConnectionGeometry.h"
+#include "Logging.h"
 
 #include <cstring>
 
@@ -60,7 +61,7 @@ oms2::Connection::~Connection()
   if (this->parent) delete[] this->parent;
   if (this->conA) delete[] this->conA;
   if (this->conB) delete[] this->conB;
-  if (this->geometry) delete reinterpret_cast<oms2::ssd::ConnectionGeometry*>(this->geometry);;
+  if (this->geometry) delete reinterpret_cast<oms2::ssd::ConnectionGeometry*>(this->geometry);
 }
 
 oms2::Connection::Connection(const oms2::Connection& rhs)
@@ -87,9 +88,25 @@ oms2::Connection& oms2::Connection::operator=(const oms2::Connection& rhs)
   if(&rhs == this)
     return *this;
 
-  this->conA = rhs.conA;
-  this->conB = rhs.conB;
-  this->geometry = rhs.geometry;
+  if (this->type != rhs.type)
+    logWarning("[oms2::Connection::operator=] changing type of connection");
+  this->type = rhs.type;
+
+  if (this->parent) delete[] this->parent;
+  this->parent = new char[strlen(rhs.parent)+1];
+  strcpy(this->parent, rhs.parent);
+
+  if (this->conA) delete[] this->conA;
+  this->conA = new char[strlen(rhs.conA)+1];
+  strcpy(this->conA, rhs.conA);
+
+  if (this->conB) delete[] this->conB;
+  this->conB = new char[strlen(rhs.conB)+1];
+  strcpy(this->conB, rhs.conB);
+
+  oms2::ssd::ConnectionGeometry* geometry_ = new oms2::ssd::ConnectionGeometry();
+  *geometry_ = *reinterpret_cast<oms2::ssd::ConnectionGeometry*>(rhs.geometry);
+  this->geometry = reinterpret_cast<ssd_connection_geometry_t*>(geometry_);
 
   return *this;
 }
