@@ -614,8 +614,8 @@ static int OMSimulatorLua_oms2_unloadModel(lua_State *L)
   return 1;
 }
 
-//oms_status_enu_t oms2_instantiateFMU(const char* modelIdent, const char* fmuPath, const char* fmuIdent);
-static int OMSimulatorLua_oms2_instantiateFMU(lua_State *L)
+//oms_status_enu_t oms2_addFMU(const char* modelIdent, const char* fmuPath, const char* fmuIdent);
+static int OMSimulatorLua_oms2_addFMU(lua_State *L)
 {
   if (lua_gettop(L) != 3)
     return luaL_error(L, "expecting exactly 3 argument");
@@ -626,7 +626,7 @@ static int OMSimulatorLua_oms2_instantiateFMU(lua_State *L)
   const char* modelIdent = lua_tostring(L, 1);
   const char* fmuPath = lua_tostring(L, 2);
   const char* fmuIdent = lua_tostring(L, 3);
-  oms_status_enu_t status = oms2_instantiateFMU(modelIdent, fmuPath, fmuIdent);
+  oms_status_enu_t status = oms2_addFMU(modelIdent, fmuPath, fmuIdent);
   lua_pushinteger(L, status);
   return 1;
 }
@@ -802,7 +802,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms2_newFMIModel);
   REGISTER_LUA_CALL(oms2_newTLMModel);
   REGISTER_LUA_CALL(oms2_unloadModel);
-  REGISTER_LUA_CALL(oms2_instantiateFMU);
+  REGISTER_LUA_CALL(oms2_addFMU);
   REGISTER_LUA_CALL(oms2_deleteSubModel);
   REGISTER_LUA_CALL(oms2_rename);
   REGISTER_LUA_CALL(oms2_loadModel);

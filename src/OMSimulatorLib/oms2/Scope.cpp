@@ -128,7 +128,7 @@ oms_status_enu_t oms2::Scope::unloadModel(const oms2::ComRef& name)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms2::Scope::instantiateFMU(const oms2::ComRef& modelIdent, const std::string& fmuPath, const oms2::ComRef& fmuIdent)
+oms_status_enu_t oms2::Scope::addFMU(const oms2::ComRef& modelIdent, const std::string& fmuPath, const oms2::ComRef& fmuIdent)
 {
   Scope& scope = oms2::Scope::getInstance();
 
@@ -138,11 +138,11 @@ oms_status_enu_t oms2::Scope::instantiateFMU(const oms2::ComRef& modelIdent, con
 
   if (oms_component_fmi != model->getType())
   {
-    logError("[oms2::Scope::instantiateFMU] \"" + modelIdent + "\" is not a FMI composite model.");
+    logError("[oms2::Scope::addFMU] \"" + modelIdent + "\" is not a FMI composite model.");
   }
 
   FMICompositeModel* fmiModel = dynamic_cast<FMICompositeModel*>(model);
-  return fmiModel->instantiateFMU(fmuPath, fmuIdent);
+  return fmiModel->addFMU(fmuPath, fmuIdent);
 }
 
 oms_status_enu_t oms2::Scope::deleteSubModel(const oms2::ComRef& modelIdent, const oms2::ComRef& subModelIdent)
@@ -324,9 +324,9 @@ oms2::Model* oms2::Scope::loadFMIModel(const pugi::xml_node& xml)
 
       oms_status_enu_t status = oms_status_error;
       if (type == "FMU")
-        status = model->instantiateFMU(filename, cref_submodel.last());
+        status = model->addFMU(filename, cref_submodel.last());
       else
-        status = model->instantiateTable(filename, cref_submodel.last());
+        status = model->addTable(filename, cref_submodel.last());
 
       if (oms_status_ok != status)
       {

@@ -70,7 +70,7 @@ oms2::FMICompositeModel* oms2::FMICompositeModel::newModel(const ComRef& name)
   return model;
 }
 
-oms_status_enu_t oms2::FMICompositeModel::instantiateFMU(const std::string& filename, const oms2::ComRef& cref)
+oms_status_enu_t oms2::FMICompositeModel::addFMU(const std::string& filename, const oms2::ComRef& cref)
 {
   if (!cref.isValidIdent())
     return oms_status_error;
@@ -93,11 +93,11 @@ oms_status_enu_t oms2::FMICompositeModel::instantiateFMU(const std::string& file
   return oms_status_ok;
 }
 
-oms_status_enu_t oms2::FMICompositeModel::instantiateTable(const std::string& filename, const oms2::ComRef& cref)
+oms_status_enu_t oms2::FMICompositeModel::addTable(const std::string& filename, const oms2::ComRef& cref)
 {
   deleteComponents();
 
-  logError("[oms2::FMICompositeModel::instantiateTable] not implemented yet");
+  logError("[oms2::FMICompositeModel::addTable] not implemented yet");
   return oms_status_error;
 }
 

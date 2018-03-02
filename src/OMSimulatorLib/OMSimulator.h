@@ -330,7 +330,7 @@ oms_status_enu_t oms2_unloadModel(const char* ident);
  * \param fmuIdent     [in] Identifier of new FMU instance.
  * \return             Error status.
  */
-oms_status_enu_t oms2_instantiateFMU(const char* modelIdent, const char* fmuPath, const char* fmuIdent);
+oms_status_enu_t oms2_addFMU(const char* modelIdent, const char* fmuPath, const char* fmuIdent);
 
 /**
  * \brief Deletes a sub-model instance, e.g. FMU, inside a given FMI composite model.

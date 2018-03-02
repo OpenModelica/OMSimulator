@@ -50,8 +50,8 @@ namespace oms2
     static FMICompositeModel* newModel(const oms2::ComRef& name);
 
     oms_component_type_enu_t getType() {return oms_component_fmi;}
-    oms_status_enu_t instantiateFMU(const std::string& filename, const oms2::ComRef& cref);
-    oms_status_enu_t instantiateTable(const std::string& filename, const oms2::ComRef& cref);
+    oms_status_enu_t addFMU(const std::string& filename, const oms2::ComRef& cref);
+    oms_status_enu_t addTable(const std::string& filename, const oms2::ComRef& cref);
     oms_status_enu_t deleteSubModel(const oms2::ComRef& cref);
 
     oms_status_enu_t setRealParameter(const oms2::SignalRef& sr, double value);
