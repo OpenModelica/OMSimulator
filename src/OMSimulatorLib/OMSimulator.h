@@ -333,6 +333,15 @@ oms_status_enu_t oms2_unloadModel(const char* ident);
 oms_status_enu_t oms2_instantiateFMU(const char* modelIdent, const char* fmuPath, const char* fmuIdent);
 
 /**
+ * \brief Deletes a sub-model instance, e.g. FMU, inside a given FMI composite model.
+ *
+ * \param modelIdent      [in] Identifier of parent model.
+ * \param subModelIdent   [in] Identifier of sub-model instance.
+ * \return                Error status.
+ */
+oms_status_enu_t oms2_deleteSubModel(const char* modelIdent, const char* subModelIdent);
+
+/**
  * \brief Renames a composite model (works for FMI and TLM) or sub-model (e.g.
  * FMU instance).
  *

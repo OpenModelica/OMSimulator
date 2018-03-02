@@ -101,6 +101,46 @@ oms_status_enu_t oms2::FMICompositeModel::instantiateTable(const std::string& fi
   return oms_status_error;
 }
 
+oms_status_enu_t oms2::FMICompositeModel::deleteSubModel(const oms2::ComRef& cref)
+{
+  auto it = subModels.find(cref);
+  if (it == subModels.end())
+  {
+    logError("No sub-model called \"" + cref + "\" instantiated.");
+    return oms_status_error;
+  }
+  oms2::FMISubModel::deleteSubModel(it->second);
+  subModels.erase(it);
+
+  // delete associated connections
+  for (int i=0; i<connections.size()-1; ++i)
+  {
+    if (!connections[i])
+    {
+      logError("[oms2::FMICompositeModel::deleteSubModel] null pointer");
+      return oms_status_error;
+    }
+    else if(connections[i]->getSignalA().getCref() == (name + cref))
+    {
+      delete connections[i];
+      connections.pop_back();   // last element is always NULL
+      connections[i] = connections.back();
+      connections.back() = NULL;
+    }
+    else if(connections[i]->getSignalB().getCref() == (name + cref))
+    {
+      delete connections[i];
+      connections.pop_back();   // last element is always NULL
+      connections[i] = connections.back();
+      connections.back() = NULL;
+    }
+    else
+      i++;
+  }
+
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms2::FMICompositeModel::setRealParameter(const oms2::SignalRef& sr, double value)
 {
   auto it = subModels.find(sr.getCref().last());
@@ -138,8 +178,8 @@ oms_status_enu_t oms2::FMICompositeModel::addConnection(const oms2::SignalRef& c
 
 oms_status_enu_t oms2::FMICompositeModel::deleteConnection(const oms2::SignalRef& conA, const oms2::SignalRef& conB)
 {
-  const oms2::Connection c(name, conA, conB);
   for (auto& it : connections)
+  {
     if (it && it->isEqual(name, conA, conB))
     {
       delete it;
@@ -150,6 +190,7 @@ oms_status_enu_t oms2::FMICompositeModel::deleteConnection(const oms2::SignalRef
 
       return oms_status_ok;
     }
+  }
 
   return oms_status_error;
 }
