@@ -105,5 +105,13 @@ void oms2::Connection::setGeometry(const oms2::ssd::ConnectionGeometry* newGeome
 
 bool oms2::Connection::isEqual(const oms2::ComRef& parent, const oms2::SignalRef& signalA, const oms2::SignalRef& signalB) const
 {
-  return parent.isEqual(this->parent) && signalA.isEqual(this->conA) && signalB.isEqual(this->conB);
+  return parent.isEqual(this->parent) && ((signalA.isEqual(this->conA) && signalB.isEqual(this->conB)) || (signalA.isEqual(this->conB) && signalB.isEqual(this->conA)));
+}
+
+bool oms2::Connection::isEqual(const oms2::Connection& connection) const
+{
+  const oms2::ComRef& parent_ = connection.getParent();
+  const oms2::SignalRef& conA_ = connection.getSignalA();
+  const oms2::SignalRef& conB_ = connection.getSignalB();
+  return isEqual(parent_, conA_, conB_);
 }

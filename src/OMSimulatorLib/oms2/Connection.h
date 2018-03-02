@@ -54,12 +54,14 @@ namespace oms2
     Connection(const Connection& rhs);
     Connection& operator=(const Connection& rhs);
 
+    const oms2::ComRef getParent() const {return oms2::ComRef(parent);}
     const oms2::SignalRef getSignalA() const {return oms2::SignalRef(conA);}
     const oms2::SignalRef getSignalB() const {return oms2::SignalRef(conB);}
 
     const oms2::ssd::ConnectionGeometry* getGeometry() const {return reinterpret_cast<oms2::ssd::ConnectionGeometry*>(geometry);}
     void setGeometry(const oms2::ssd::ConnectionGeometry* newGeometry);
 
+    bool isEqual(const oms2::Connection& connection) const;
     bool isEqual(const oms2::ComRef& parent, const oms2::SignalRef& signalA, const oms2::SignalRef& signalB) const;
 
   private:
@@ -67,7 +69,7 @@ namespace oms2
     friend bool operator!=(const Connection& lhs, const Connection& rhs);
   };
 
-  inline bool operator==(const Connection& lhs, const Connection& rhs) {return (lhs.conA == rhs.conA && lhs.conB == rhs.conB) || (lhs.conA == rhs.conB && lhs.conB == rhs.conA);}
+  inline bool operator==(const Connection& lhs, const Connection& rhs) {return lhs.isEqual(rhs);}
   inline bool operator!=(const Connection& lhs, const Connection& rhs) {return !(lhs == rhs);}
 }
 
