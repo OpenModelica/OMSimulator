@@ -631,6 +631,21 @@ static int OMSimulatorLua_oms2_instantiateFMU(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms2_deleteSubModel(const char* modelIdent, const char* subModelIdent);
+static int OMSimulatorLua_oms2_deleteSubModel(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+
+  const char* modelIdent = lua_tostring(L, 1);
+  const char* fmuIdent = lua_tostring(L, 2);
+  oms_status_enu_t status = oms2_deleteSubModel(modelIdent, fmuIdent);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
 //oms_status_enu_t oms2_rename(const char* identOld, const char* identNew);
 static int OMSimulatorLua_oms2_rename(lua_State *L)
 {
@@ -788,6 +803,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms2_newTLMModel);
   REGISTER_LUA_CALL(oms2_unloadModel);
   REGISTER_LUA_CALL(oms2_instantiateFMU);
+  REGISTER_LUA_CALL(oms2_deleteSubModel);
   REGISTER_LUA_CALL(oms2_rename);
   REGISTER_LUA_CALL(oms2_loadModel);
   REGISTER_LUA_CALL(oms2_saveModel);
