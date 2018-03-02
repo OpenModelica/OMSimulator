@@ -556,6 +556,12 @@ oms_status_enu_t oms2_instantiateFMU(const char* modelIdent, const char* fmuPath
   return oms2::Scope::instantiateFMU(oms2::ComRef(modelIdent), fmuPath, oms2::ComRef(fmuIdent));
 }
 
+oms_status_enu_t oms2_deleteSubModel(const char* modelIdent, const char* subModelIdent)
+{
+  logTrace();
+  return oms2::Scope::deleteSubModel(oms2::ComRef(modelIdent), oms2::ComRef(subModelIdent));
+}
+
 oms_status_enu_t oms2_rename(const char* identOld, const char* identNew)
 {
   logTrace();
