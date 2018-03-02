@@ -120,22 +120,22 @@ oms_status_enu_t oms2::FMICompositeModel::deleteSubModel(const oms2::ComRef& cre
       logError("[oms2::FMICompositeModel::deleteSubModel] null pointer");
       return oms_status_error;
     }
-    else if(connections[i]->getSignalA().getCref() == (name + cref))
+    else if(connections[i]->getSignalA().getCref() == cref)
     {
       delete connections[i];
       connections.pop_back();   // last element is always NULL
       connections[i] = connections.back();
       connections.back() = NULL;
+      i--;
     }
-    else if(connections[i]->getSignalB().getCref() == (name + cref))
+    else if(connections[i]->getSignalB().getCref() == cref)
     {
       delete connections[i];
       connections.pop_back();   // last element is always NULL
       connections[i] = connections.back();
       connections.back() = NULL;
+      i--;
     }
-    else
-      i++;
   }
 
   return oms_status_ok;
