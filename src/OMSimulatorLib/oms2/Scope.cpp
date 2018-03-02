@@ -660,22 +660,25 @@ oms_status_enu_t oms2::Scope::saveFMIModel(oms2::FMICompositeModel* model, const
 
     // export ssd:ConnectionGeometry
     const oms2::ssd::ConnectionGeometry* connectionGeometry = connection->getGeometry();
-    pugi::xml_node node = connectionNode.append_child("ssd:ConnectionGeometry");
-    const double* pointsX = connectionGeometry->getPointsX();
-    const double* pointsY = connectionGeometry->getPointsY();
-    std::string pointsXStr, pointsYStr;
-    for (int i = 0 ; i < connectionGeometry->getLength() ; i++)
+    if (connectionGeometry && connectionGeometry->getLength() > 0)
     {
-      pointsXStr += std::to_string(pointsX[i]);
-      pointsYStr += std::to_string(pointsY[i]);
-      if (i != connectionGeometry->getLength() - 1)
+      pugi::xml_node node = connectionNode.append_child("ssd:ConnectionGeometry");
+      const double* pointsX = connectionGeometry->getPointsX();
+      const double* pointsY = connectionGeometry->getPointsY();
+      std::string pointsXStr, pointsYStr;
+      for (int i = 0 ; i < connectionGeometry->getLength() ; i++)
       {
-        pointsXStr += " ";
-        pointsYStr += " ";
+        pointsXStr += std::to_string(pointsX[i]);
+        pointsYStr += std::to_string(pointsY[i]);
+        if (i != connectionGeometry->getLength() - 1)
+        {
+          pointsXStr += " ";
+          pointsYStr += " ";
+        }
       }
+      node.append_attribute("pointsX") = pointsXStr.c_str();
+      node.append_attribute("pointsY") = pointsYStr.c_str();
     }
-    node.append_attribute("pointsX") = pointsXStr.c_str();
-    node.append_attribute("pointsY") = pointsYStr.c_str();
   }
 
   // add experiment settings

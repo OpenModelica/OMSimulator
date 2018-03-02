@@ -52,8 +52,7 @@ oms2::Connection::Connection(const oms2::ComRef& parent, const oms2::SignalRef& 
   this->conB = new char[str.size()+1];
   strcpy(this->conB, str.c_str());
 
-  oms2::ssd::ConnectionGeometry* geometry_ = new oms2::ssd::ConnectionGeometry();
-  this->geometry = reinterpret_cast<ssd_connection_geometry_t*>(geometry_);
+  this->geometry = reinterpret_cast<ssd_connection_geometry_t*>(new oms2::ssd::ConnectionGeometry());
 }
 
 oms2::Connection::~Connection()
@@ -61,10 +60,7 @@ oms2::Connection::~Connection()
   if (this->parent) delete[] this->parent;
   if (this->conA) delete[] this->conA;
   if (this->conB) delete[] this->conB;
-
-  oms2::ssd::ConnectionGeometry* geometry_ = reinterpret_cast<oms2::ssd::ConnectionGeometry*>(this->geometry);
-  if (geometry_)
-    delete geometry_;
+  if (this->geometry) delete reinterpret_cast<oms2::ssd::ConnectionGeometry*>(this->geometry);;
 }
 
 oms2::Connection::Connection(const oms2::Connection& rhs)
