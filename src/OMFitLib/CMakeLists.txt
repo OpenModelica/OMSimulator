@@ -35,6 +35,7 @@ set_property(TARGET OMFit_shared PROPERTY CXX_STANDARD 11)
 set_target_properties(OMFit_shared PROPERTIES OUTPUT_NAME OMFit)
 target_link_libraries(OMFit_shared ${OMFITLIB_LIBRARIES})
 install(TARGETS OMFit_shared DESTINATION lib)
+install(TARGETS OMFit_shared DESTINATION bin)
 
 # Static library version
 add_library(OMFit STATIC ${OMFITLIB_SOURCES})
