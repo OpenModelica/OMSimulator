@@ -65,6 +65,7 @@ namespace oms2
     static const std::string& GetTempDirectory() {Scope &scope = getInstance(); return scope.tempDir;}
 
     static oms_status_enu_t getComponents(const ComRef& cref, oms_component_t*** components);
+    static oms_status_enu_t getFMUPath(const ComRef& cref, char** path);
     static oms_status_enu_t getElementGeometry(const ComRef& cref, const oms2::ssd::ElementGeometry** geometry);
     static oms_status_enu_t setElementGeometry(const ComRef& cref, const oms2::ssd::ElementGeometry* geometry);
 

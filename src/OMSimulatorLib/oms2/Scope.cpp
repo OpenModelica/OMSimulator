@@ -798,6 +798,45 @@ oms_status_enu_t oms2::Scope::getComponents(const oms2::ComRef& cref, oms_compon
   return oms_status_error;
 }
 
+oms_status_enu_t oms2::Scope::getFMUPath(const oms2::ComRef& cref, char** path)
+{
+  oms2::Scope& scope = oms2::Scope::getInstance();
+
+  if (!cref.isIdent())
+  {
+    // Sub-model
+    ComRef modelCref = cref.first();
+    Model* model = scope.getModel(modelCref);
+    if (!model)
+    {
+      logError("[oms2::Scope::getFMUPath] failed");
+      return oms_status_error;
+    }
+
+    // FMI model?
+    if (oms_component_fmi == model->getType())
+    {
+      FMICompositeModel* fmiModel = dynamic_cast<FMICompositeModel*>(model);
+      FMISubModel* subModel = fmiModel->getSubModel(cref);
+      if (!subModel)
+      {
+        logError("[oms2::Scope::getFMUPath] failed");
+        return oms_status_error;
+      }
+      oms2::FMUWrapper* fmuWrapper = dynamic_cast<oms2::FMUWrapper*>(subModel);
+      *path = const_cast<char*>(fmuWrapper->getFMUPath().c_str());
+      return oms_status_ok;
+    }
+    else
+    {
+      logError("[oms2::Scope::getFMUPath] is only implemented for FMI models yet");
+      return oms_status_error;
+    }
+  }
+
+  return oms_status_error;
+}
+
 oms_status_enu_t oms2::Scope::setElementGeometry(const oms2::ComRef& cref, const oms2::ssd::ElementGeometry* geometry)
 {
   oms2::Scope& scope = oms2::Scope::getInstance();
