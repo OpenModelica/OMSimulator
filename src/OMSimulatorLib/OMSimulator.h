@@ -406,6 +406,15 @@ oms_status_enu_t oms2_setElementGeometry(const char* cref, const ssd_element_geo
 oms_status_enu_t oms2_getComponents(const char* cref, oms_component_t*** components);
 
 /**
+ * \brief Returns the FMU path of a given component.
+ *
+ * \param cref         [in] Full identifier of a component.
+ * \param path         [out] FMU path.
+ * \return             Error status.
+ */
+oms_status_enu_t oms2_getFMUPath(const char* cref, char** path);
+
+/**
  * \brief Get list of all connections from a given component.
  *
  * \param cref          [in] Full identifier of a component
