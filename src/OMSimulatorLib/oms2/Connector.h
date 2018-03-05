@@ -29,16 +29,39 @@
  *
  */
 
-#include "FMISubModel.h"
-#include "Logging.h"
+#ifndef _OMS2_CONNECTOR_H_
+#define _OMS2_CONNECTOR_H_
 
-#include <cstring>
+#include "ComRef.h"
+#include "SignalRef.h"
+#include "../Types.h"
+#include "ssd/ConnectorGeometry.h"
 
-oms2::FMISubModel::FMISubModel(oms_element_type_enu_t type, const ComRef& cref)
-  : element(type, cref)
+#include <string>
+
+namespace oms2
 {
+  /**
+   * \brief Connector
+   */
+  class Connector : protected oms_connector_t
+  {
+  public:
+    Connector(oms_causality_enu_t causality, oms_signal_type_enu_t type, const oms2::SignalRef& name);
+    ~Connector();
+
+    // methods to copy the object
+    Connector(const Connector& rhs);
+    Connector& operator=(const Connector& rhs);
+
+    void setName(const oms2::SignalRef& name);
+    void setGeometry(const oms2::ssd::ConnectorGeometry* newGeometry);
+
+    const oms_causality_enu_t getCausality() const {return causality;}
+    const oms_signal_type_enu_t getType() const {return type;}
+    const oms2::SignalRef getName() const {return oms2::SignalRef(std::string(name));}
+    const oms2::ssd::ConnectorGeometry* getGeometry() const {return reinterpret_cast<oms2::ssd::ConnectorGeometry*>(geometry);}
+  };
 }
 
-oms2::FMISubModel::~FMISubModel()
-{
-}
+#endif

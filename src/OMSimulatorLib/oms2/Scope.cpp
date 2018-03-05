@@ -212,7 +212,7 @@ oms2::Model* oms2::Scope::loadModel(const std::string& filename)
   }
 
   pugi::xml_node root = doc.document_element();
-  oms_component_type_enu_t modelType = oms_component_none;
+  oms_element_type_enu_t modelType = oms_component_none;
   bool defaultExperiment = true;
 
   for(pugi::xml_node_iterator it = root.begin(); it != root.end(); ++it)
@@ -606,7 +606,7 @@ oms_status_enu_t oms2::Scope::saveFMIModel(oms2::FMICompositeModel* model, const
     subModel.append_attribute("Name") = value.c_str();
 
     // export ssd:ElementGeometry
-    oms2::ssd::ElementGeometry* elementGeometry = it->second->getGeometry();
+    const oms2::ssd::ElementGeometry* elementGeometry = it->second->getGeometry();
     if (elementGeometry->getY1() != elementGeometry->getY2())
     {
       pugi::xml_node node = subModel.append_child("ssd:ElementGeometry");
@@ -776,7 +776,7 @@ oms_status_enu_t oms2::Scope::getElementGeometry(const oms2::ComRef& cref, const
   return oms_status_error;
 }
 
-oms_status_enu_t oms2::Scope::getComponents(const oms2::ComRef& cref, oms_component_t*** components)
+oms_status_enu_t oms2::Scope::getComponents(const oms2::ComRef& cref, oms_element_t*** components)
 {
   oms2::Scope& scope = oms2::Scope::getInstance();
 

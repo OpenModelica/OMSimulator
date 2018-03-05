@@ -35,6 +35,7 @@
 #include "../Types.h"
 #include "ComRef.h"
 #include "ssd/ElementGeometry.h"
+#include "ssd/SystemGeometry.h"
 
 #include <string>
 
@@ -43,7 +44,7 @@ namespace oms2
   class Model
   {
   public:
-    virtual oms_component_type_enu_t getType() = 0;
+    virtual oms_element_type_enu_t getType() = 0;
     const ComRef& getName() const {return name;}
     void setName(const ComRef& name) {this->name = name;}
 

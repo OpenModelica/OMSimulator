@@ -30,6 +30,8 @@
  */
 
 #include "FMUWrapper.h"
+
+#include "Connector.h"
 #include "Logging.h"
 #include "Option.h"
 #include "Scope.h"
@@ -94,28 +96,17 @@ void oms2::fmi2logger(fmi2_component_environment_t env, fmi2_string_t instanceNa
 }
 
 oms2::FMUWrapper::FMUWrapper(const oms2::ComRef& cref, const std::string& filename)
-  : oms2::FMISubModel(cref)
+  : oms2::FMISubModel(oms_component_fmu, cref)
 {
   this->filename = filename;
 
   this->context = NULL;
   this->fmu = NULL;
-
-  component.type = oms_component_fmu;
-  component.interfaces = NULL;
 }
 
 oms2::FMUWrapper::~FMUWrapper()
 {
   logTrace();
-
-  int nInterfaces = inputs.size() + outputs.size() + parameters.size();
-  for (int i=0; i<nInterfaces; ++i)
-  {
-    delete[] component.interfaces[i]->name;
-    delete component.interfaces[i];
-  }
-  delete[] component.interfaces;
 
   fmi2_import_free_instance(fmu);
   fmi2_import_destroy_dllfmu(fmu);
@@ -315,37 +306,23 @@ oms2::FMUWrapper* oms2::FMUWrapper::newSubModel(const oms2::ComRef& cref, const 
       model->parameters.push_back(v);
   }
 
-  int nInterfaces = model->inputs.size() + model->outputs.size() + model->parameters.size();
-  model->component.interfaces = new oms_signal_t*[nInterfaces + 1];
-  model->component.interfaces[nInterfaces] = NULL;
-  int i=0;
-  for (int j=0; j<model->inputs.size(); ++i, ++j)
+  std::vector<oms2::Connector> connectors;
+  for (auto const &v : model->inputs)
   {
-    const oms2::Variable& v = model->inputs[j];
-    model->component.interfaces[i] = new oms_signal_t;
-    model->component.interfaces[i]->causality = oms_causality_input;
-    model->component.interfaces[i]->type = v.getType();
-    model->component.interfaces[i]->name = new char[v.toString().length()+1];
-    strcpy(model->component.interfaces[i]->name, v.toString().c_str());
+    oms2::Connector c(oms_causality_input, v.getType(), v.getSignalRef());
+    connectors.push_back(c);
   }
-  for (int j=0; j<model->outputs.size(); ++i, ++j)
+  for (auto const &v : model->outputs)
   {
-    const oms2::Variable& v = model->outputs[j];
-    model->component.interfaces[i] = new oms_signal_t;
-    model->component.interfaces[i]->causality = oms_causality_output;
-    model->component.interfaces[i]->type = v.getType();
-    model->component.interfaces[i]->name = new char[v.toString().length()+1];
-    strcpy(model->component.interfaces[i]->name, v.toString().c_str());
+    oms2::Connector c(oms_causality_output, v.getType(), v.getSignalRef());
+    connectors.push_back(c);
   }
-  for (int j=0; j<model->parameters.size(); ++i, ++j)
+  for (auto const &v : model->parameters)
   {
-    const oms2::Variable& v = model->parameters[j];
-    model->component.interfaces[i] = new oms_signal_t;
-    model->component.interfaces[i]->causality = oms_causality_parameter;
-    model->component.interfaces[i]->type = v.getType();
-    model->component.interfaces[i]->name = new char[v.toString().length()+1];
-    strcpy(model->component.interfaces[i]->name, v.toString().c_str());
+    oms2::Connector c(oms_causality_parameter, v.getType(), v.getSignalRef());
+    connectors.push_back(c);
   }
+  model->element.setInterfaces(connectors);
 
   return model;
 }

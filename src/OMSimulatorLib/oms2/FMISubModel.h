@@ -34,6 +34,7 @@
 
 #include "../Types.h"
 #include "ComRef.h"
+#include "Element.h"
 #include "ssd/ElementGeometry.h"
 
 namespace oms2
@@ -41,19 +42,18 @@ namespace oms2
   class FMISubModel
   {
   public:
-    virtual oms_component_type_enu_t getType() const = 0;
+    oms_element_type_enu_t getType() {return element.getType();}
     static void deleteSubModel(FMISubModel *model) {if (model) delete model;}
 
-    const ComRef& getName() const {return ident;}
-    void setName(const ComRef& name) {this->ident = name;}
-    void setGeometry(double x1, double y1, double x2, double y2) {this->geometry.setSizePosition(x1, y1, x2, y2);}
-    void setGeometry(const oms2::ssd::ElementGeometry& geometry) {this->geometry = geometry;}
-    oms2::ssd::ElementGeometry* getGeometry() {return &geometry;}
+    void setName(const ComRef& name) {element.setName(name);}
+    void setGeometry(const oms2::ssd::ElementGeometry& geometry) {element.setGeometry(&geometry);}
 
-    oms_component_t* getComponent() {return &component;}
+    const ComRef getName() const {return oms2::ComRef(element.getName());}
+    const oms2::ssd::ElementGeometry* getGeometry() {return element.getGeometry();}
+    oms_element_t* getElement() {return reinterpret_cast<oms_element_t*>(&element);}
 
   protected:
-    FMISubModel(const ComRef& ident);
+    FMISubModel(oms_element_type_enu_t type, const ComRef& cref);
     virtual ~FMISubModel();
 
   private:
@@ -62,9 +62,7 @@ namespace oms2
     FMISubModel& operator=(FMISubModel const& copy); // not implemented
 
   protected:
-    ComRef ident;
-    oms2::ssd::ElementGeometry geometry;
-    oms_component_t component;
+    oms2::Element element;
   };
 }
 

@@ -358,7 +358,7 @@ oms_status_enu_t oms2_rename(const char* identOld, const char* identNew);
  * \param ident   [out] Type of given component.
  * \return        Error status.
  */
-oms_status_enu_t oms2_getComponentType(const char* ident, oms_component_type_enu_t* type);
+oms_status_enu_t oms2_getComponentType(const char* ident, oms_element_type_enu_t* type);
 
 /**
  * \brief Loads a FMI composite model from xml representation.
@@ -403,7 +403,7 @@ oms_status_enu_t oms2_setElementGeometry(const char* cref, const ssd_element_geo
  * \param components   [out] Array of sub-components (null-terminated array)
  * \return             Error status.
  */
-oms_status_enu_t oms2_getComponents(const char* cref, oms_component_t*** components);
+oms_status_enu_t oms2_getComponents(const char* cref, oms_element_t*** components);
 
 /**
  * \brief Returns the FMU path of a given component.
