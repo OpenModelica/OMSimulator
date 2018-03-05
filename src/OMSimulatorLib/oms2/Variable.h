@@ -72,6 +72,7 @@ namespace oms2
 
     const std::string& getName() const { return sr.getVar(); }
     const ComRef& getCref() const { return sr.getCref(); }
+    const SignalRef& getSignalRef() const { return sr; }
     std::string toString() const { return sr.toString(); }
 
     fmi2_value_reference_t getValueReference() const { return vr; }

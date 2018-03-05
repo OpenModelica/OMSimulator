@@ -72,27 +72,16 @@ typedef enum {
   oms_component_fmi,  ///< FMI model
   oms_component_fmu,  ///< FMU
   oms_component_port  ///< port
-} oms_component_type_enu_t;
+} oms_element_type_enu_t;
 
 typedef enum {
   oms_signal_type_real,
   oms_signal_type_integer,
   oms_signal_type_boolean,
   oms_signal_type_string,
-  oms_signal_type_enum
+  oms_signal_type_enum,
+  oms_signal_type_bus
 } oms_signal_type_enu_t;
-
-typedef struct {
-  oms_causality_enu_t causality;
-  oms_signal_type_enu_t type;
-  char* name;
-} oms_signal_t;
-
-typedef struct {
-  oms_component_type_enu_t type;
-  char* name;
-  oms_signal_t** interfaces;
-} oms_component_t;
 
 /**
  * \brief Connection type
@@ -287,12 +276,32 @@ typedef struct {
  */
 typedef struct {
   oms_connection_type_enu_t type;      ///< Connection type, e.g. TLM
-  char* parent;                        ///< Name of parent component
+  char* parent;                        ///< Name of parent element
   char* conA;                          ///< Name of connector A
   char* conB;                          ///< Name of connector B
   ssd_connection_geometry_t* geometry; ///< Geometry information of the connection
   /// \todo optional TLM attributes
 } oms_connection_t;
+
+/**
+ * \brief Signal: input, output, and parameter
+ */
+typedef struct {
+  oms_causality_enu_t causality;      ///< input/output/parameter
+  oms_signal_type_enu_t type;         ///< Type of the conector
+  char* name;                         ///< Name of the connector
+  ssd_connector_geometry_t* geometry; ///< Geometry information of the connector
+} oms_connector_t;
+
+/**
+ * \brief Element
+ */
+typedef struct {
+  oms_element_type_enu_t type;      ///< Element type, e.g. FMU
+  char* name;                       ///< Name of the element
+  oms_connector_t** interfaces;     ///< List (null-terminated array) of all interface variables: inputs, outputs, and parameters.
+  ssd_element_geometry_t* geometry; ///< Geometry information of the element
+} oms_element_t;
 
 #ifdef __cplusplus
 }

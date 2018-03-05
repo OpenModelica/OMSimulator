@@ -43,7 +43,7 @@ namespace oms2
   public:
     static TLMCompositeModel* newModel(const ComRef& name);
 
-    oms_component_type_enu_t getType() {return oms_component_tlm;}
+    oms_element_type_enu_t getType() {return oms_component_tlm;}
 
   private:
     TLMCompositeModel(const ComRef& name);

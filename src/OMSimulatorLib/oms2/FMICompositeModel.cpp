@@ -224,12 +224,12 @@ void oms2::FMICompositeModel::updateComponents()
 
   deleteComponents();
 
-  components = new oms_component_t*[subModels.size() + 1];
+  components = new oms_element_t*[subModels.size() + 1];
   components[subModels.size()] = NULL;
 
   int i=0;
   for (auto& it : subModels)
-    components[i++] = it.second->getComponent();
+    components[i++] = it.second->getElement();
 }
 
 oms_status_enu_t oms2::FMICompositeModel::renameSubModel(const oms2::ComRef& identOld, const oms2::ComRef& identNew)
@@ -272,7 +272,7 @@ oms_status_enu_t oms2::FMICompositeModel::renameSubModel(const oms2::ComRef& ide
   return oms_status_ok;
 }
 
-oms_component_t** oms2::FMICompositeModel::getComponents()
+oms_element_t** oms2::FMICompositeModel::getComponents()
 {
   logTrace();
 

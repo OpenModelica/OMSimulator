@@ -598,7 +598,7 @@ oms_status_enu_t oms2_setElementGeometry(const char* cref, const ssd_element_geo
   return oms2::Scope::setElementGeometry(oms2::ComRef(cref), reinterpret_cast<const oms2::ssd::ElementGeometry*>(geometry));
 }
 
-oms_status_enu_t oms2_getComponents(const char* cref, oms_component_t*** components)
+oms_status_enu_t oms2_getComponents(const char* cref, oms_element_t*** components)
 {
   logTrace();
   return oms2::Scope::getComponents(oms2::ComRef(cref), components);
@@ -652,7 +652,7 @@ void oms2_setLoggingLevel(int logLevel)
   Log::setLoggingLevel(logLevel);
 }
 
-oms_status_enu_t oms2_getComponentType(const char* ident, oms_component_type_enu_t* type)
+oms_status_enu_t oms2_getComponentType(const char* ident, oms_element_type_enu_t* type)
 {
   logTrace();
   if (!type)

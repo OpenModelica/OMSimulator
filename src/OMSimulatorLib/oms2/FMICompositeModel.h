@@ -49,7 +49,7 @@ namespace oms2
   public:
     static FMICompositeModel* newModel(const oms2::ComRef& name);
 
-    oms_component_type_enu_t getType() {return oms_component_fmi;}
+    oms_element_type_enu_t getType() {return oms_component_fmi;}
     oms_status_enu_t addFMU(const std::string& filename, const oms2::ComRef& cref);
     oms_status_enu_t addTable(const std::string& filename, const oms2::ComRef& cref);
     oms_status_enu_t deleteSubModel(const oms2::ComRef& cref);
@@ -66,7 +66,7 @@ namespace oms2
 
     oms_status_enu_t renameSubModel(const oms2::ComRef& identOld, const oms2::ComRef& identNew);
 
-    oms_component_t** getComponents();
+    oms_element_t** getComponents();
 
   protected:
     void deleteComponents();
@@ -83,7 +83,7 @@ namespace oms2
   private:
     std::map<oms2::ComRef, oms2::FMISubModel*> subModels;
     std::vector<oms2::Connection*> connections;
-    oms_component_t** components;
+    oms_element_t** components;
   };
 }
 
