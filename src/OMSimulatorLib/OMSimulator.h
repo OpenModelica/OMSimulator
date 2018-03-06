@@ -466,7 +466,7 @@ void oms2_setLoggingLevel(int logLevel);
  *
  * \param filename   [in] "" to redirect to std streams and proper filename to redirect to file.
  */
-oms_status_enu_t oms_setLogFile(const char* filename);
+oms_status_enu_t oms2_setLogFile(const char* filename);
 
 /**
  * \brief Set new temp directory

@@ -395,7 +395,7 @@ static int OMSimulatorLua_setTempDirectory(lua_State *L)
   return 1;
 }
 
-//void oms2_setWorkingDirectory(const char* path);
+//oms_status_enu_t oms2_setWorkingDirectory(const char* path);
 static int OMSimulatorLua_setWorkingDirectory(lua_State *L)
 {
   if (lua_gettop(L) != 1)
@@ -403,8 +403,9 @@ static int OMSimulatorLua_setWorkingDirectory(lua_State *L)
   luaL_checktype(L, 1, LUA_TSTRING);
 
   const char* path = lua_tostring(L, 1);
-  oms2_setWorkingDirectory(path);
-  return 0;
+  oms_status_enu_t status = oms2_setWorkingDirectory(path);
+  lua_pushinteger(L, status);
+  return 1;
 }
 
 //void oms_setStartTime(void* model, double startTime);
@@ -493,7 +494,7 @@ static int OMSimulatorLua_setSolverMethod(lua_State *L)
   return 0;
 }
 
-//oms_status_enu_t oms_setLogFile(const char* filename);
+//oms_status_enu_t oms2_setLogFile(const char* filename);
 static int OMSimulatorLua_setLogFile(lua_State *L)
 {
   if (lua_gettop(L) != 1)
@@ -501,7 +502,7 @@ static int OMSimulatorLua_setLogFile(lua_State *L)
   luaL_checktype(L, 1, LUA_TSTRING);
 
   const char* filename = lua_tostring(L, 1);
-  oms_status_enu_t status = oms_setLogFile(filename);
+  oms_status_enu_t status = oms2_setLogFile(filename);
   lua_pushinteger(L, status);
   return 1;
 }
@@ -753,6 +754,45 @@ static int OMSimulatorLua_oms2_setLoggingLevel(lua_State *L)
   return 0;
 }
 
+//oms_status_enu_t oms2_setTempDirectory(const char* path);
+static int OMSimulatorLua_oms2_setTempDirectory(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* path = lua_tostring(L, 1);
+  oms_status_enu_t status = oms2_setTempDirectory(path);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
+//oms_status_enu_t oms2_setWorkingDirectory(const char* path);
+static int OMSimulatorLua_oms2_setWorkingDirectory(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* path = lua_tostring(L, 1);
+  oms_status_enu_t status = oms2_setWorkingDirectory(path);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
+//oms_status_enu_t oms2_setLogFile(const char* filename);
+static int OMSimulatorLua_oms2_setLogFile(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* filename = lua_tostring(L, 1);
+  oms_status_enu_t status = oms2_setLogFile(filename);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
 DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
 {
   REGISTER_LUA_CALL(addConnection);
@@ -810,6 +850,9 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms2_addConnection);
   REGISTER_LUA_CALL(oms2_deleteConnection);
   REGISTER_LUA_CALL(oms2_setLoggingLevel);
+  REGISTER_LUA_CALL(oms2_setTempDirectory);
+  REGISTER_LUA_CALL(oms2_setWorkingDirectory);
+  REGISTER_LUA_CALL(oms2_setLogFile);
 
   return 0;
 }

@@ -49,7 +49,7 @@ class OMSimulator:
     self.obj.oms_setBoolean.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_int]
     self.obj.oms_setCommunicationInterval.argtypes = [ctypes.c_void_p, ctypes.c_double]
     self.obj.oms_setInteger.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_int]
-    self.obj.oms_setLogFile.argtypes = [ctypes.c_char_p]
+    self.obj.oms2_setLogFile.argtypes = [ctypes.c_char_p]
     self.obj.oms_setMaxIterations.argtypes = [ctypes.c_void_p, ctypes.c_int]
     self.obj.oms_setReal.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_double]
     self.obj.oms_setResultFile.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
@@ -173,7 +173,7 @@ class OMSimulator:
     self.obj.oms_setSolverMethod(model, str.encode(instanceName), str.encode(method))
 
   def setLogFile(self, filename):
-    self.obj.oms_setLogFile(str.encode(filename))
+    self.obj.oms2_setLogFile(str.encode(filename))
 
   def compareSimulationResults(self, filenameA, filenameB, var, relTol, absTol):
     return self.obj.oms_compareSimulationResults(str.encode(filenameA), str.encode(filenameB), str.encode(var), relTol, absTol)
