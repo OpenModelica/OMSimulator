@@ -65,7 +65,7 @@ namespace oms2
 
     oms_status_enu_t renameSubModel(const oms2::ComRef& identOld, const oms2::ComRef& identNew);
 
-    oms_element_t** getElements();
+    oms2::Element** getElements();
 
   protected:
     void deleteComponents();
@@ -82,7 +82,7 @@ namespace oms2
   private:
     std::map<oms2::ComRef, oms2::FMISubModel*> subModels;
     std::vector<oms2::Connection*> connections;
-    oms_element_t** components;
+    oms2::Element** components;
   };
 }
 

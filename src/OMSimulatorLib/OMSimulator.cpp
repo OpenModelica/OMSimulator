@@ -29,16 +29,18 @@
  *
  */
 
+#include "OMSimulator.h"
+
 #include "CompositeModel.h"
+#include "MatReader.h"
 #include "oms2/ComRef.h"
+#include "oms2/Element.h"
 #include "oms2/FMICompositeModel.h"
 #include "oms2/Logging.h"
-#include "MatReader.h"
-#include "OMSimulator.h"
-#include "ResultReader.h"
 #include "oms2/Scope.h"
-#include "Settings.h"
 #include "oms2/TLMCompositeModel.h"
+#include "ResultReader.h"
+#include "Settings.h"
 #include "Types.h"
 #include "Version.h"
 
@@ -586,10 +588,10 @@ oms_status_enu_t oms2_saveModel(const char* filename, const char* ident)
   return oms2::Scope::saveModel(filename, oms2::ComRef(ident));
 }
 
-oms_status_enu_t oms2_getElementGeometry(const char* cref, const ssd_element_geometry_t** geometry)
+oms_status_enu_t oms2_getElement(const char* cref, oms_element_t** element)
 {
   logTrace();
-  return oms2::Scope::getElementGeometry(oms2::ComRef(cref), reinterpret_cast<const oms2::ssd::ElementGeometry**>(geometry));
+  return oms2::Scope::getElement(oms2::ComRef(cref), reinterpret_cast<oms2::Element**>(element));
 }
 
 oms_status_enu_t oms2_setElementGeometry(const char* cref, const ssd_element_geometry_t* geometry)
@@ -598,10 +600,10 @@ oms_status_enu_t oms2_setElementGeometry(const char* cref, const ssd_element_geo
   return oms2::Scope::setElementGeometry(oms2::ComRef(cref), reinterpret_cast<const oms2::ssd::ElementGeometry*>(geometry));
 }
 
-oms_status_enu_t oms2_getElements(const char* cref, oms_element_t*** components)
+oms_status_enu_t oms2_getElements(const char* cref, oms_element_t*** elements)
 {
   logTrace();
-  return oms2::Scope::getElements(oms2::ComRef(cref), components);
+  return oms2::Scope::getElements(oms2::ComRef(cref), reinterpret_cast<oms2::Element***>(elements));
 }
 
 oms_status_enu_t oms2_getFMUPath(const char* cref, char** path)

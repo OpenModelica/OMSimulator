@@ -150,7 +150,7 @@ void oms_addConnection(void* model, const char* from, const char* to);
 
 /**
  * \param model Model as opaque pointer.
- * \return Error status.
+ * \return Error status
  */
 oms_status_enu_t oms_simulate(void* model);
 
@@ -159,7 +159,7 @@ oms_status_enu_t oms_simulate(void* model);
  *
  * \param model Model as opaque pointer.
  * \param numberOfSteps Number of steps.
- * \return Error status.
+ * \return Error status
  */
 oms_status_enu_t oms_doSteps(const void* model, const int numberOfSteps);
 
@@ -168,7 +168,7 @@ oms_status_enu_t oms_doSteps(const void* model, const int numberOfSteps);
  *
  * \param model Model as opaque pointer.
  * \param timeValue
- * \return Error status.
+ * \return Error status
  */
 oms_status_enu_t oms_stepUntil(const void* model, const double timeValue);
 
@@ -182,7 +182,7 @@ void oms_exportCompositeStructure(void* model, const char* filename);
  * \brief Initialize the simulation of a given model.
  *
  * \param model Model as opaque pointer.
- * \return Error status.
+ * \return Error status
  */
 oms_status_enu_t oms_initialize(void* model);
 
@@ -190,7 +190,7 @@ oms_status_enu_t oms_initialize(void* model);
  * \brief Terminate the simulation of a given model.
  *
  * \param model Model as opaque pointer.
- * \return Error status.
+ * \return Error status
  */
 oms_status_enu_t oms_terminate(void* model);
 
@@ -200,7 +200,7 @@ oms_status_enu_t oms_terminate(void* model);
  * The FMUs go into the same state as after instantiation.
  *
  * \param model Model as opaque pointer.
- * \return Error status.
+ * \return Error status
  */
 oms_status_enu_t oms_reset(void* model);
 
@@ -209,7 +209,7 @@ oms_status_enu_t oms_reset(void* model);
  *
  * \param model [in]  Model as opaque pointer.
  * \param time  [out] Minimal time value that is reached by all instances.
- * \return Error status.
+ * \return Error status
  */
 oms_status_enu_t oms_getCurrentTime(const void* model, double* time);
 
@@ -304,113 +304,117 @@ void oms_setMaxIterations(void* model, int maxIterations);
 /**
  * \brief Creates a new and yet empty FMI composite model.
  *
- * \param ident   [in] Name of the new model instance.
+ * \param ident   [in] Name of the new model instance
+ * \return        Error status
  */
 oms_status_enu_t oms2_newFMIModel(const char* ident);
 
 /**
  * \brief Creates a new and yet empty TLM composite model.
  *
- * \param ident   [in] Name of the new model instance.
+ * \param ident   [in] Name of the new model instance
+ * \return        Error status
  */
 oms_status_enu_t oms2_newTLMModel(const char* ident);
 
 /**
- * \brief Unloads a composite model (works for FMI and TLM).
+ * \brief Unloads a composite model (works for both FMI and TLM).
  *
- * \param ident   [in] Name of the model instance.
+ * \param ident   [in] Name of the model instance
+ * \return        Error status
  */
 oms_status_enu_t oms2_unloadModel(const char* ident);
 
 /**
- * \brief Instantiates a FMU inside a given FMI model.
+ * \brief Adds a new FMU instance to a given FMI model.
  *
- * \param modelIdent   [in] Identifier of parent model.
- * \param fmuPath      [in] Full path to FMU.
- * \param fmuIdent     [in] Identifier of new FMU instance.
- * \return             Error status.
+ * \param modelIdent   [in] Identifier of parent model
+ * \param fmuPath      [in] Full path to FMU
+ * \param fmuIdent     [in] Identifier of new FMU instance
+ * \return             Error status
  */
 oms_status_enu_t oms2_addFMU(const char* modelIdent, const char* fmuPath, const char* fmuIdent);
 
 /**
- * \brief Deletes a sub-model instance, e.g. FMU, inside a given FMI composite model.
+ * \brief Deletes a sub-model instance, e.g. FMU, from a given FMI composite
+ * model.
  *
- * \param modelIdent      [in] Identifier of parent model.
- * \param subModelIdent   [in] Identifier of sub-model instance.
- * \return                Error status.
+ * \param modelIdent      [in] Identifier of parent model
+ * \param subModelIdent   [in] Identifier of sub-model instance
+ * \return                Error status
  */
 oms_status_enu_t oms2_deleteSubModel(const char* modelIdent, const char* subModelIdent);
 
 /**
- * \brief Renames a composite model (works for FMI and TLM) or sub-model (e.g.
- * FMU instance).
+ * \brief Renames a composite model (either FMI or TLM) or sub-model (e.g. FMU
+ * instance).
  *
- * \param identOld   [in] Name of the instance to rename.
- * \param identNew   [in] New name of the instance.
- * \return           Error status.
+ * \param identOld   [in] Name of the instance to rename
+ * \param identNew   [in] New name of the instance
+ * \return           Error status
  */
 oms_status_enu_t oms2_rename(const char* identOld, const char* identNew);
 
 /**
  * \brief Returns the type of a given component.
  *
- * \param ident   [in] Full identifier of a component.
- * \param ident   [out] Type of given component.
- * \return        Error status.
+ * \param ident   [in] Full identifier of a component
+ * \param ident   [out] Type of given component
+ * \return        Error status
  */
 oms_status_enu_t oms2_getComponentType(const char* ident, oms_element_type_enu_t* type);
 
 /**
  * \brief Loads a FMI composite model from xml representation.
  *
- * \param filename   [in] Path to the composite model xml representation.
- * \param ident      [out] Name of the imported model.
- * \return           Error status.
+ * \param filename   [in] Path to the composite model xml representation
+ * \param ident      [out] Name of the imported model
+ * \return           Error status
  */
 oms_status_enu_t oms2_loadModel(const char* filename, char** ident);
 
 /**
  * \brief Loads a FMI composite model from xml representation.
  *
- * \param filename   [in] Path to the xml file; An exisiting file will be overwritten.
- * \param ident      [in] Name of the imported model.
- * \return           Error status.
+ * \param filename   [in] Path to the xml file; An exisiting file will be overwritten
+ * \param ident      [in] Name of the imported model
+ * \return           Error status
  */
 oms_status_enu_t oms2_saveModel(const char* filename, const char* ident);
 
 /**
- * \brief Get geometry information from a given component (i.e. model or sub-model).
+ * \brief Get element information of a model or sub-model.
  *
- * \param cref       [in] Full identifier of a component.
- * \param geometry   [out] Geometry information.
- * \return           Error status.
+ * \param cref      [in] Full identifier of a component
+ * \param element   [out] Geometry information
+ * \return          Error status
  */
-oms_status_enu_t oms2_getElementGeometry(const char* cref, const ssd_element_geometry_t** geometry);
+oms_status_enu_t oms2_getElement(const char* cref, oms_element_t** element);
 
 /**
  * \brief Set geometry information to a given component (i.e. model or sub-model).
  *
- * \param cref       [in] Full identifier of a component.
- * \param geometry   [in] Geometry information.
- * \return           Error status.
+ * \param cref       [in] Full identifier of a component
+ * \param geometry   [in] Geometry information
+ * \return           Error status
  */
 oms_status_enu_t oms2_setElementGeometry(const char* cref, const ssd_element_geometry_t* geometry);
 
 /**
  * \brief Get list of all sub-components from a given component.
  *
- * \param cref         [in] Full identifier of a component.
- * \param components   [out] Array of sub-components (null-terminated array)
- * \return             Error status.
+ * \param cref       [in] Full identifier of a component
+ * \param elements   [out] Array of sub-components (null-terminated array)
+ * \return           Error status
  */
-oms_status_enu_t oms2_getElements(const char* cref, oms_element_t*** components);
+oms_status_enu_t oms2_getElements(const char* cref, oms_element_t*** elements);
 
 /**
  * \brief Returns the FMU path of a given component.
  *
- * \param cref         [in] Full identifier of a component.
- * \param path         [out] FMU path.
- * \return             Error status.
+ * \param cref         [in] Full identifier of a component
+ * \param path         [out] FMU path
+ * \return             Error status
  */
 oms_status_enu_t oms2_getFMUPath(const char* cref, char** path);
 
@@ -419,7 +423,7 @@ oms_status_enu_t oms2_getFMUPath(const char* cref, char** path);
  *
  * \param cref          [in] Full identifier of a component
  * \param connections   [out] Array of connections (null-terminated array)
- * \return              Error status.
+ * \return              Error status
  */
 oms_status_enu_t oms2_getConnections(const char* cref, oms_connection_t*** connections);
 
@@ -458,7 +462,7 @@ oms_status_enu_t oms2_simulate_asynchronous(const char* ident, void (*cb)(const 
 /**
  * \brief Sets a callback function for the logging system.
  *
- * \param cb   [in] Function pointer that is called for all messages to the logging system.
+ * \param cb   [in] Function pointer that is called for all messages to the logging system
  */
 void oms2_setLoggingCallback(void (*cb)(oms_message_type_enu_t type, const char* message));
 
@@ -479,7 +483,7 @@ oms_status_enu_t oms_setLogFile(const char* filename);
 /**
  * \brief Set new temp directory
  *
- * \param path   [in] Path to new temp directory.
+ * \param path   [in] Path to new temp directory
  */
 oms_status_enu_t oms_setTempDirectory(const char* path);
 

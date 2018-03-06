@@ -34,7 +34,7 @@
 #include "Logging.h"
 
 oms2::TLMCompositeModel::TLMCompositeModel(const ComRef& name)
-  : Model(name)
+  : Model(oms_component_tlm, name)
 {
   logTrace();
 }

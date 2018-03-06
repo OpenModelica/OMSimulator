@@ -50,7 +50,7 @@ namespace oms2
 
     const ComRef getName() const {return oms2::ComRef(element.getName());}
     const oms2::ssd::ElementGeometry* getGeometry() {return element.getGeometry();}
-    oms_element_t* getElement() {return reinterpret_cast<oms_element_t*>(&element);}
+    oms2::Element* getElement() {return &element;}
 
   protected:
     FMISubModel(oms_element_type_enu_t type, const ComRef& cref);
