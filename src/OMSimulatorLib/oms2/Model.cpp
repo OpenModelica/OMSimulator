@@ -36,14 +36,14 @@
 
 #include <regex>
 
-oms2::Model::Model(const ComRef& cref)
-  : name(cref), geometry()
+oms2::Model::Model(oms_element_type_enu_t type, const ComRef& cref)
+  : element(type, cref)
 {
   logTrace();
 
   startTime = 0.0;
   stopTime = 1.0;
-  resultFile = name.toString() + "_res.mat";
+  resultFile = cref.toString() + "_res.mat";
 }
 
 oms2::Model::~Model()

@@ -34,6 +34,7 @@
 
 #include "../Types.h"
 #include "ComRef.h"
+#include "Element.h"
 #include "ssd/ElementGeometry.h"
 #include "ssd/SystemGeometry.h"
 
@@ -45,8 +46,6 @@ namespace oms2
   {
   public:
     virtual oms_element_type_enu_t getType() = 0;
-    const ComRef& getName() const {return name;}
-    void setName(const ComRef& name) {this->name = name;}
 
     static void deleteModel(Model *model) {if (model) delete model;}
 
@@ -57,12 +56,15 @@ namespace oms2
     void setResultFile(const std::string& value) {resultFile = value;}
     const std::string& getResultFile() const {return resultFile;}
 
-    void setGeometry(double x1, double y1, double x2, double y2) {this->geometry.setSizePosition(x1, y1, x2, y2);}
-    void setGeometry(const oms2::ssd::ElementGeometry& geometry) {this->geometry = geometry;}
-    oms2::ssd::ElementGeometry* getGeometry() {return &geometry;}
+    const ComRef getName() const {return oms2::ComRef(element.getName());}
+    const oms2::ssd::ElementGeometry* getGeometry() {return element.getGeometry();}
+    oms2::Element* getElement() {return &element;}
+
+    void setName(const ComRef& name) {element.setName(name);}
+    void setGeometry(const oms2::ssd::ElementGeometry& geometry) {element.setGeometry(&geometry);}
 
   protected:
-    Model(const ComRef& cref);
+    Model(oms_element_type_enu_t type, const ComRef& cref);
     virtual ~Model();
 
   private:
@@ -71,8 +73,8 @@ namespace oms2
     Model& operator=(Model const& copy); // not implemented
 
   protected:
-    ComRef name;
-    oms2::ssd::ElementGeometry geometry;
+    oms2::Element element;
+
     double startTime;       ///< experiment, default 0.0
     double stopTime;        ///< experiment, default 1.0
     std::string resultFile; ///< experiment, default name_res.mat
