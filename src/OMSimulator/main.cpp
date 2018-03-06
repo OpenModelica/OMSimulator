@@ -117,10 +117,10 @@ int main(int argc, char *argv[])
   oms_setLogFile(options.logfile.c_str());
 
   if (options.workingDir != "")
-    oms_setWorkingDirectory(options.workingDir.c_str());
+    oms2_setWorkingDirectory(options.workingDir.c_str());
 
   if (options.tempDir != "")
-    oms_setTempDirectory(options.tempDir.c_str());
+    oms2_setTempDirectory(options.tempDir.c_str());
 
   if (type == "fmu" || type == "xml")
   {

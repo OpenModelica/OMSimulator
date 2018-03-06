@@ -64,6 +64,9 @@ namespace oms2
     static oms_status_enu_t SetTempDirectory(const std::string& newTempDir);
     static const std::string& GetTempDirectory() {Scope &scope = getInstance(); return scope.tempDir;}
 
+    static oms_status_enu_t SetWorkingDirectory(const std::string& path);
+    static const std::string& GetWorkingDirectory() {Scope &scope = getInstance(); return scope.workingDir;}
+
     static oms_status_enu_t getElement(const ComRef& cref, oms2::Element** element);
     static oms_status_enu_t getElements(const ComRef& cref, oms2::Element*** elements);
     static oms_status_enu_t getFMUPath(const ComRef& cref, char** path);
@@ -97,6 +100,7 @@ namespace oms2
   private:
     std::map<ComRef, Model*> models;
     std::string tempDir;
+    std::string workingDir;
   };
 }
 

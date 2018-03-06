@@ -506,18 +506,35 @@ oms_status_enu_t oms2::Scope::SetTempDirectory(const std::string& newTempDir)
   {
     if (!boost::filesystem::create_directory(newTempDir))
     {
-      logError("changing working directory to \"" + std::string(newTempDir) + "\" failed");
+      logError("Changing working directory to \"" + std::string(newTempDir) + "\" failed");
       return oms_status_error;
     }
     else
-      logInfo("new temp directory has been created: \"" + std::string(newTempDir) + "\"");
+      logInfo("New temp directory has been created: \"" + std::string(newTempDir) + "\"");
   }
 
   boost::filesystem::path path(newTempDir.c_str());
   path = boost::filesystem::canonical(path);
   scope.tempDir = path.string();
 
-  logInfo("new temp directory: \"" + std::string(scope.tempDir) + "\"");
+  logInfo("New temp directory: \"" + std::string(scope.tempDir) + "\"");
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms2::Scope::SetWorkingDirectory(const std::string& path)
+{
+  logTrace();
+  Scope& scope = oms2::Scope::getInstance();
+
+  boost::filesystem::path path_(path.c_str());
+  if (!boost::filesystem::is_directory(path_))
+  {
+    logError("Set working directory to \"" + path + "\" failed");
+    return oms_status_error;
+  }
+
+  boost::filesystem::current_path(path_);
+  scope.workingDir = path;
   return oms_status_ok;
 }
 

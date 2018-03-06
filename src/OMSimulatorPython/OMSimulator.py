@@ -56,10 +56,10 @@ class OMSimulator:
     self.obj.oms_setSolverMethod.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_setStartTime.argtypes = [ctypes.c_void_p, ctypes.c_double]
     self.obj.oms_setStopTime.argtypes = [ctypes.c_void_p, ctypes.c_double]
-    self.obj.oms_setTempDirectory.argtypes = [ctypes.c_char_p]
+    self.obj.oms2_setTempDirectory.argtypes = [ctypes.c_char_p]
     self.obj.oms_setTolerance.argtypes = [ctypes.c_void_p, ctypes.c_double]
     self.obj.oms_setVariableFilter.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_setWorkingDirectory.argtypes =[ctypes.c_char_p]
+    self.obj.oms2_setWorkingDirectory.argtypes =[ctypes.c_char_p]
     self.obj.oms_simulate.argtypes = [ctypes.c_void_p]
     self.obj.oms_stepUntil.argtypes = [ctypes.c_void_p, ctypes.c_double]
     self.obj.oms_terminate.argtypes = [ctypes.c_void_p]
@@ -152,10 +152,10 @@ class OMSimulator:
     self.obj.oms_setResultFile(model, str.encode(filename))
 
   def setTempDirectory(self, filename):
-    self.obj.oms_setTempDirectory(str.encode(filename))
+    self.obj.oms2_setTempDirectory(str.encode(filename))
 
   def setWorkingDirectory(self, path):
-    self.obj.oms_setWorkingDirectory(str.encode(path))
+    self.obj.oms2_setWorkingDirectory(str.encode(path))
 
   def setStartTime(self, model, startTime):
     self.obj.oms_setStartTime(model, startTime)

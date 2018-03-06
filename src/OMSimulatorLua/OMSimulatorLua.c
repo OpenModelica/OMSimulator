@@ -382,7 +382,7 @@ static int OMSimulatorLua_getCurrentTime(lua_State *L)
   return 1;
 }
 
-//oms_status_enu_t oms_setTempDirectory(const char* path);
+//oms_status_enu_t oms2_setTempDirectory(const char* path);
 static int OMSimulatorLua_setTempDirectory(lua_State *L)
 {
   if (lua_gettop(L) != 1)
@@ -390,12 +390,12 @@ static int OMSimulatorLua_setTempDirectory(lua_State *L)
   luaL_checktype(L, 1, LUA_TSTRING);
 
   const char* path = lua_tostring(L, 1);
-  oms_status_enu_t status = oms_setTempDirectory(path);
+  oms_status_enu_t status = oms2_setTempDirectory(path);
   lua_pushinteger(L, status);
   return 1;
 }
 
-//void oms_setWorkingDirectory(const char* path);
+//void oms2_setWorkingDirectory(const char* path);
 static int OMSimulatorLua_setWorkingDirectory(lua_State *L)
 {
   if (lua_gettop(L) != 1)
@@ -403,7 +403,7 @@ static int OMSimulatorLua_setWorkingDirectory(lua_State *L)
   luaL_checktype(L, 1, LUA_TSTRING);
 
   const char* path = lua_tostring(L, 1);
-  oms_setWorkingDirectory(path);
+  oms2_setWorkingDirectory(path);
   return 0;
 }
 
