@@ -653,17 +653,3 @@ void oms2_setLoggingLevel(int logLevel)
 {
   Log::setLoggingLevel(logLevel);
 }
-
-oms_status_enu_t oms2_getComponentType(const char* ident, oms_element_type_enu_t* type)
-{
-  logTrace();
-  if (!type)
-  {
-    logError("oms2_getComponentType: type is NULL pointer");
-    return oms_status_error;
-  }
-
-  *type = oms_component_none;
-  logError("oms2_getComponentType: not implemented yet");
-  return oms_status_error;
-}

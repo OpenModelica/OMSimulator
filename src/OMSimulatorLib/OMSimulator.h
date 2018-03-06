@@ -356,15 +356,6 @@ oms_status_enu_t oms2_deleteSubModel(const char* modelIdent, const char* subMode
 oms_status_enu_t oms2_rename(const char* identOld, const char* identNew);
 
 /**
- * \brief Returns the type of a given component.
- *
- * \param ident   [in] Full identifier of a component
- * \param ident   [out] Type of given component
- * \return        Error status
- */
-oms_status_enu_t oms2_getComponentType(const char* ident, oms_element_type_enu_t* type);
-
-/**
  * \brief Loads a FMI composite model from xml representation.
  *
  * \param filename   [in] Path to the composite model xml representation
