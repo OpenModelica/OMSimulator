@@ -61,12 +61,11 @@ namespace oms2
     oms_status_enu_t deleteConnection(const oms2::SignalRef& conA, const oms2::SignalRef& conB);
 
     FMISubModel* getSubModel(const oms2::ComRef& cref);
-    const std::map<ComRef, FMISubModel*>& getSubModels() {return subModels;}
     oms2::Connection** getConnections() {return &connections[0];}
 
     oms_status_enu_t renameSubModel(const oms2::ComRef& identOld, const oms2::ComRef& identNew);
 
-    oms_element_t** getComponents();
+    oms_element_t** getElements();
 
   protected:
     void deleteComponents();

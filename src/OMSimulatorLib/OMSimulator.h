@@ -403,7 +403,7 @@ oms_status_enu_t oms2_setElementGeometry(const char* cref, const ssd_element_geo
  * \param components   [out] Array of sub-components (null-terminated array)
  * \return             Error status.
  */
-oms_status_enu_t oms2_getComponents(const char* cref, oms_element_t*** components);
+oms_status_enu_t oms2_getElements(const char* cref, oms_element_t*** components);
 
 /**
  * \brief Returns the FMU path of a given component.

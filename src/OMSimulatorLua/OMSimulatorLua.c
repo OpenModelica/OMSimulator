@@ -700,7 +700,7 @@ static int OMSimulatorLua_oms2_saveModel(lua_State *L)
 
 // TODO: oms_status_enu_t oms2_getElementGeometry(const char* cref, const ssd_element_geometry_t** geometry);
 // TODO: oms_status_enu_t oms2_setElementGeometry(const char* cref, const ssd_element_geometry_t* geometry);
-// TODO: oms_status_enu_t oms2_getComponents(const char* cref, oms_element_t*** components);
+// TODO: oms_status_enu_t oms2_getElements(const char* cref, oms_element_t*** components);
 // TODO: oms_status_enu_t oms2_getConnections(const char* cref, oms_connection_t*** connections);
 
 //oms_status_enu_t oms2_addConnection(const char* cref, const char* conA, const char* conB);

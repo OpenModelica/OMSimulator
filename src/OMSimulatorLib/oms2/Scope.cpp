@@ -598,15 +598,18 @@ oms_status_enu_t oms2::Scope::saveFMIModel(oms2::FMICompositeModel* model, const
       node.append_attribute("iconFixedAspectRatio") = "false";
   }
 
-  const std::map<oms2::ComRef, oms2::FMISubModel*>& subModels = model->getSubModels();
-  for (auto it=subModels.begin(); it != subModels.end(); it++)
+  oms_element_t** elements = model->getElements();
+  for (int i=0; elements[i]; ++i)
   {
+    const oms_element_t* element = elements[i];
+
+    oms2::ComRef cref(element->name);
     pugi::xml_node subModel = fmiCompositeModel.append_child("SubModel");
-    value = it->first.toString();
+    value = cref.last().toString();
     subModel.append_attribute("Name") = value.c_str();
 
     // export ssd:ElementGeometry
-    const oms2::ssd::ElementGeometry* elementGeometry = it->second->getGeometry();
+    const oms2::ssd::ElementGeometry* elementGeometry = reinterpret_cast<oms2::ssd::ElementGeometry*>(element->geometry);
     if (elementGeometry->getY1() != elementGeometry->getY2())
     {
       pugi::xml_node node = subModel.append_child("ssd:ElementGeometry");
@@ -638,11 +641,11 @@ oms_status_enu_t oms2::Scope::saveFMIModel(oms2::FMICompositeModel* model, const
       else
         node.append_attribute("iconFixedAspectRatio") = "false";
     }
-    if (oms_component_fmu == it->second->getType())
+    if (oms_component_fmu == element->type)
     {
       subModel.append_attribute("Type") = "FMU";
 
-      oms2::FMUWrapper* fmuWrapper = dynamic_cast<oms2::FMUWrapper*>(it->second);
+      oms2::FMUWrapper* fmuWrapper = dynamic_cast<oms2::FMUWrapper*>(model->getSubModel(cref));
       const std::string& fmuPath = fmuWrapper->getFMUPath();
       subModel.append_attribute("ModelFile") = fmuPath.c_str();
 
@@ -776,13 +779,13 @@ oms_status_enu_t oms2::Scope::getElementGeometry(const oms2::ComRef& cref, const
   return oms_status_error;
 }
 
-oms_status_enu_t oms2::Scope::getComponents(const oms2::ComRef& cref, oms_element_t*** components)
+oms_status_enu_t oms2::Scope::getElements(const oms2::ComRef& cref, oms_element_t*** components)
 {
   oms2::Scope& scope = oms2::Scope::getInstance();
 
   if (!components)
   {
-    logWarning("[oms2::Scope::getComponents] NULL pointer");
+    logWarning("[oms2::Scope::getElements] NULL pointer");
     return oms_status_warning;
   }
 
@@ -790,11 +793,11 @@ oms_status_enu_t oms2::Scope::getComponents(const oms2::ComRef& cref, oms_elemen
   if (model && oms_component_fmi == model->getType())
   {
     FMICompositeModel* fmiModel = dynamic_cast<FMICompositeModel*>(model);
-    *components = fmiModel->getComponents();
+    *components = fmiModel->getElements();
     return oms_status_ok;
   }
 
-  logError("[oms2::Scope::getComponents] is only implemented for FMI models yet");
+  logError("[oms2::Scope::getElements] is only implemented for FMI models yet");
   return oms_status_error;
 }
 

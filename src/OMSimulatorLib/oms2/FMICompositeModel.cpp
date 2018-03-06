@@ -272,7 +272,7 @@ oms_status_enu_t oms2::FMICompositeModel::renameSubModel(const oms2::ComRef& ide
   return oms_status_ok;
 }
 
-oms_element_t** oms2::FMICompositeModel::getComponents()
+oms_element_t** oms2::FMICompositeModel::getElements()
 {
   logTrace();
 
