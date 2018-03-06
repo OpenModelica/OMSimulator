@@ -405,7 +405,7 @@ void oms_setSolverMethod(void* model, const char* instanceName, const char* meth
   pModel->SetSolverMethod(instanceName, method);
 }
 
-oms_status_enu_t oms_setLogFile(const char* filename)
+oms_status_enu_t oms2_setLogFile(const char* filename)
 {
   return Log::setLogFile(filename);
 }

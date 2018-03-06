@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-  oms_setLogFile(options.logfile.c_str());
+  oms2_setLogFile(options.logfile.c_str());
 
   if (options.workingDir != "")
     oms2_setWorkingDirectory(options.workingDir.c_str());
