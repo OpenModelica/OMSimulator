@@ -99,7 +99,7 @@ int test_Lin2DimODE_cs_Fit()
   }
 
   void* model = oms_newModel();
-  oms_setTempDirectory(".");
+  oms2_setTempDirectory(".");
   oms_instantiateFMU(model, "../FMUs/Lin2DimODE_cs.fmu", "Lin2DimODE");
   oms_setTolerance(model, 1e-5);
   oms_setStopTime(model, data_time[kNumObservations - 1]); // needed?

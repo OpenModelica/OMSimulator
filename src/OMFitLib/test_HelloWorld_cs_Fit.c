@@ -53,7 +53,7 @@ int test_HelloWorld_cs_Fit()
   //std::cout << version << std::endl;
 
   void* model = oms_newModel();
-  oms_setTempDirectory(".");
+  oms2_setTempDirectory(".");
   oms_instantiateFMU(model, "../FMUs/HelloWorld_cs.fmu", "HelloWorld");
   oms_setTolerance(model, 1e-5);
 

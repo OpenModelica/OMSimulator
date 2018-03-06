@@ -351,22 +351,16 @@ oms_status_enu_t oms_getCurrentTime(const void* model, double* time)
   return pModel->getCurrentTime(time);
 }
 
-oms_status_enu_t oms_setTempDirectory(const char* path)
+oms_status_enu_t oms2_setTempDirectory(const char* path)
 {
   logTrace();
   return oms2::Scope::SetTempDirectory(path);
 }
 
-void oms_setWorkingDirectory(const char* path)
+oms_status_enu_t oms2_setWorkingDirectory(const char* path)
 {
   logTrace();
-
-  if (!boost::filesystem::is_directory(path))
-  {
-    logError("oms_setWorkingDirectory: set working directory to \"" + std::string(path) + "\" failed");
-  }
-
-  boost::filesystem::current_path(path);
+  return oms2::Scope::SetWorkingDirectory(path);
 }
 
 void oms_setStartTime(void* model, double startTime)

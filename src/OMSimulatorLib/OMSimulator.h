@@ -213,9 +213,6 @@ oms_status_enu_t oms_reset(void* model);
  */
 oms_status_enu_t oms_getCurrentTime(const void* model, double* time);
 
-/* Global settings */
-void oms_setWorkingDirectory(const char* path);
-
 /* Local settings */
 void oms_setStartTime(void* model, double startTime);
 void oms_setStopTime(void* model, double stopTime);
@@ -476,7 +473,14 @@ oms_status_enu_t oms_setLogFile(const char* filename);
  *
  * \param path   [in] Path to new temp directory
  */
-oms_status_enu_t oms_setTempDirectory(const char* path);
+oms_status_enu_t oms2_setTempDirectory(const char* path);
+
+/**
+ * \brief Set a new working directory
+ *
+ * \param path   [in] Path to new working directory
+ */
+oms_status_enu_t oms2_setWorkingDirectory(const char* path);
 
 #ifdef __cplusplus
 }
