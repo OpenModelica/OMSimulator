@@ -572,7 +572,8 @@ oms_status_enu_t oms2_loadModel(const char* filename, char** ident)
   if (!model)
     return oms_status_error;
 
-  *ident = const_cast<char*>(model->getName().c_str());
+  oms_element_t* element = reinterpret_cast<oms_element_t*>(model->getElement());
+  *ident = element->name;
   return oms_status_ok;
 }
 
