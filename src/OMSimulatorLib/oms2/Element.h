@@ -53,7 +53,7 @@ namespace oms2
     ~Element();
 
     const oms_element_type_enu_t getType() const {return type;}
-    const oms2::ComRef getName() const {return oms2::ComRef(name);}
+    const oms2::ComRef getName() const {return oms2::ComRef(std::string(name));}
     oms_connector_t** getInterfaces() const {return interfaces;}
     const oms2::ssd::ElementGeometry* getGeometry() const {return reinterpret_cast<oms2::ssd::ElementGeometry*>(geometry);}
 
