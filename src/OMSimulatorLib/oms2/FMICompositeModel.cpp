@@ -141,6 +141,8 @@ oms_status_enu_t oms2::FMICompositeModel::deleteSubModel(const oms2::ComRef& cre
     }
   }
 
+  deleteComponents();
+
   return oms_status_ok;
 }
 
