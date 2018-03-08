@@ -1071,3 +1071,85 @@ oms2::Model* oms2::Scope::getModel(const oms2::ComRef& name)
 
   return it->second;
 }
+
+oms_status_enu_t oms2::Scope::getRealParameter(const oms2::SignalRef& signal, double& value)
+{
+  oms2::Scope& scope = oms2::Scope::getInstance();
+  ComRef cref = signal.getCref();
+  std::string var = signal.getVar();
+
+  if (!cref.isIdent())
+  {
+    // Sub-model
+    ComRef modelCref = cref.first();
+    Model* model = scope.getModel(modelCref);
+    if (!model)
+    {
+      logError("[oms2::Scope::getRealParameter] failed");
+      return oms_status_error;
+    }
+
+    // FMI model?
+    if (oms_component_fmi == model->getType())
+    {
+      FMICompositeModel* fmiModel = dynamic_cast<FMICompositeModel*>(model);
+      FMISubModel* subModel = fmiModel->getSubModel(cref);
+      if (!subModel)
+      {
+        logError("[oms2::Scope::getRealParameter] failed");
+        return oms_status_error;
+      }
+      oms2::FMUWrapper* fmuWrapper = dynamic_cast<oms2::FMUWrapper*>(subModel);
+      fmuWrapper->getRealParameter(var, value);
+      return oms_status_ok;
+    }
+    else
+    {
+      logError("[oms2::Scope::getRealParameter] is only implemented for FMI models yet");
+      return oms_status_error;
+    }
+  }
+
+  return oms_status_error;
+}
+
+oms_status_enu_t oms2::Scope::setRealParameter(const oms2::SignalRef& signal, double value)
+{
+  oms2::Scope& scope = oms2::Scope::getInstance();
+  ComRef cref = signal.getCref();
+  std::string var = signal.getVar();
+
+  if (!cref.isIdent())
+  {
+    // Sub-model
+    ComRef modelCref = cref.first();
+    Model* model = scope.getModel(modelCref);
+    if (!model)
+    {
+      logError("[oms2::Scope::setRealParameter] failed");
+      return oms_status_error;
+    }
+
+    // FMI model?
+    if (oms_component_fmi == model->getType())
+    {
+      FMICompositeModel* fmiModel = dynamic_cast<FMICompositeModel*>(model);
+      FMISubModel* subModel = fmiModel->getSubModel(cref);
+      if (!subModel)
+      {
+        logError("[oms2::Scope::setRealParameter] failed");
+        return oms_status_error;
+      }
+      oms2::FMUWrapper* fmuWrapper = dynamic_cast<oms2::FMUWrapper*>(subModel);
+      fmuWrapper->setRealParameter(var, value);
+      return oms_status_ok;
+    }
+    else
+    {
+      logError("[oms2::Scope::setRealParameter] is only implemented for FMI models yet");
+      return oms_status_error;
+    }
+  }
+
+  return oms_status_error;
+}

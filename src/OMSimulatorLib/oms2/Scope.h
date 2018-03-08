@@ -54,12 +54,15 @@ namespace oms2
   public:
     static oms_status_enu_t newFMIModel(const ComRef& name);
     static oms_status_enu_t newTLMModel(const ComRef& name);
-    static oms_status_enu_t unloadModel(const ComRef& name);
-    static oms_status_enu_t addFMU(const ComRef& modelIdent, const std::string& fmuPath, const ComRef& fmuIdent);
-    static oms_status_enu_t deleteSubModel(const ComRef& modelIdent, const ComRef& subModelIdent);
-    static oms_status_enu_t rename(const ComRef& identOld, const ComRef& identNew);
     static Model* loadModel(const std::string& filename);
     static oms_status_enu_t saveModel(const std::string& filename, const ComRef& name);
+
+    static oms_status_enu_t unloadModel(const ComRef& name);
+
+    static oms_status_enu_t addFMU(const ComRef& modelIdent, const std::string& fmuPath, const ComRef& fmuIdent);
+    static oms_status_enu_t deleteSubModel(const ComRef& modelIdent, const ComRef& subModelIdent);
+
+    static oms_status_enu_t rename(const ComRef& identOld, const ComRef& identNew);
 
     static oms_status_enu_t SetTempDirectory(const std::string& newTempDir);
     static const std::string& GetTempDirectory() {Scope &scope = getInstance(); return scope.tempDir;}
@@ -70,9 +73,10 @@ namespace oms2
     static oms_status_enu_t getElement(const ComRef& cref, oms2::Element** element);
     static oms_status_enu_t getElements(const ComRef& cref, oms2::Element*** elements);
     static oms_status_enu_t getFMUPath(const ComRef& cref, char** path);
+    static oms_status_enu_t getConnections(const ComRef& cref, oms2::Connection*** connections);
+
     static oms_status_enu_t setElementGeometry(const ComRef& cref, const oms2::ssd::ElementGeometry* geometry);
 
-    static oms_status_enu_t getConnections(const ComRef& cref, oms2::Connection*** connections);
     static oms_status_enu_t addConnection(const ComRef& cref, const SignalRef& conA, const SignalRef& conB);
     static oms_status_enu_t deleteConnection(const ComRef& cref, const SignalRef& conA, const SignalRef& conB);
     static oms_status_enu_t updateConnection(const ComRef& cref, const SignalRef& conA, const SignalRef& conB, const oms2::Connection* connection);
@@ -80,6 +84,9 @@ namespace oms2
     oms_status_enu_t renameModel(const ComRef& identOld, const ComRef& identNew);
     Model* getModel(const ComRef& name);
     oms2::Connection* getConnection(const ComRef& cref, const SignalRef& conA, const SignalRef& conB);
+
+    static oms_status_enu_t getRealParameter(const oms2::SignalRef& signal, double& value);
+    static oms_status_enu_t setRealParameter(const oms2::SignalRef& signal, double value);
 
   private:
     Scope();
