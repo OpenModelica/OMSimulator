@@ -482,6 +482,24 @@ oms_status_enu_t oms2_setTempDirectory(const char* path);
  */
 oms_status_enu_t oms2_setWorkingDirectory(const char* path);
 
+/**
+ * \brief Get real value of given parameter.
+ *
+ * \param signal   [in] Name of the signal to fetch (e.g. model.fmuA:var)
+ * \param value    [out] Signal value
+ * \return         Error status
+ */
+oms_status_enu_t oms2_getRealParameter(const char* signal, double* value);
+
+/**
+ * \brief Set real value of given parameter.
+ *
+ * \param signal   [in] Name of the signal to fetch (e.g. model.fmuA:var)
+ * \param value    [in] Signal value
+ * \return         Error status
+ */
+oms_status_enu_t oms2_setRealParameter(const char* signal, double value);
+
 #ifdef __cplusplus
 }
 #endif

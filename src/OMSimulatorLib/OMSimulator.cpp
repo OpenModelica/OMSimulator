@@ -648,3 +648,15 @@ void oms2_setLoggingLevel(int logLevel)
 {
   Log::setLoggingLevel(logLevel);
 }
+
+oms_status_enu_t oms2_getRealParameter(const char* signal, double* value)
+{
+  logTrace();
+  return oms2::Scope::getRealParameter(oms2::SignalRef(signal), *value);
+}
+
+oms_status_enu_t oms2_setRealParameter(const char* signal, double value)
+{
+  logTrace();
+  return oms2::Scope::setRealParameter(oms2::SignalRef(signal), value);
+}
