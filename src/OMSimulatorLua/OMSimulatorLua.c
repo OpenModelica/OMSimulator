@@ -701,7 +701,23 @@ static int OMSimulatorLua_oms2_saveModel(lua_State *L)
 
 // TODO: oms_status_enu_t oms2_getElement(const char* cref, const ssd_element_geometry_t** geometry);
 // TODO: oms_status_enu_t oms2_setElementGeometry(const char* cref, const ssd_element_geometry_t* geometry);
-// TODO: oms_status_enu_t oms2_getElements(const char* cref, oms_element_t*** components);
+
+//oms_status_enu_t oms2_getElements(const char* cref, oms_element_t*** components);
+static int OMSimulatorLua_oms2_getElements(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* cref = lua_tostring(L, 1);
+  oms_element_t** components = NULL;
+  oms_status_enu_t status = oms2_getElements(cref, &components);
+
+  lua_pushinteger(L, status);
+  push_pointer(L, components);
+  return 2;
+}
+
 // TODO: oms_status_enu_t oms2_getConnections(const char* cref, oms_connection_t*** connections);
 
 //oms_status_enu_t oms2_addConnection(const char* cref, const char* conA, const char* conB);
@@ -839,20 +855,21 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   /*                                      */
   /* TODO: replace prefix oms2 with oms   */
   /* ************************************ */
+  REGISTER_LUA_CALL(oms2_addConnection);
+  REGISTER_LUA_CALL(oms2_addFMU);
+  REGISTER_LUA_CALL(oms2_deleteConnection);
+  REGISTER_LUA_CALL(oms2_deleteSubModel);
+  REGISTER_LUA_CALL(oms2_getElements);
+  REGISTER_LUA_CALL(oms2_loadModel);
   REGISTER_LUA_CALL(oms2_newFMIModel);
   REGISTER_LUA_CALL(oms2_newTLMModel);
-  REGISTER_LUA_CALL(oms2_unloadModel);
-  REGISTER_LUA_CALL(oms2_addFMU);
-  REGISTER_LUA_CALL(oms2_deleteSubModel);
   REGISTER_LUA_CALL(oms2_rename);
-  REGISTER_LUA_CALL(oms2_loadModel);
   REGISTER_LUA_CALL(oms2_saveModel);
-  REGISTER_LUA_CALL(oms2_addConnection);
-  REGISTER_LUA_CALL(oms2_deleteConnection);
+  REGISTER_LUA_CALL(oms2_setLogFile);
   REGISTER_LUA_CALL(oms2_setLoggingLevel);
   REGISTER_LUA_CALL(oms2_setTempDirectory);
   REGISTER_LUA_CALL(oms2_setWorkingDirectory);
-  REGISTER_LUA_CALL(oms2_setLogFile);
+  REGISTER_LUA_CALL(oms2_unloadModel);
 
   return 0;
 }
