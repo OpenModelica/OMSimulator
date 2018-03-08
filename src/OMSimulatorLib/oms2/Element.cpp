@@ -63,41 +63,6 @@ oms2::Element::~Element()
     delete reinterpret_cast<oms2::ssd::ElementGeometry*>(this->geometry);
 }
 
-oms2::Element& oms2::Element::operator=(const oms2::Element& rhs)
-{
-  // check for self-assignment
-  if(&rhs == this)
-    return *this;
-
-  this->type = rhs.type;
-
-  if (this->name)
-    delete[] this->name;
-  std::string str = rhs.getName().toString();
-  this->name = new char[str.size()+1];
-  strcpy(this->name, str.c_str());
-
-  if (this->interfaces)
-  {
-    for (int i=0; this->interfaces[i]; ++i)
-      delete this->interfaces[i];
-    delete[] this->interfaces;
-  }
-  int nInterfaces = 0;
-  while (rhs.interfaces[nInterfaces]) ++nInterfaces;
-  this->interfaces = reinterpret_cast<oms_connector_t**>(new oms2::Connector*[nInterfaces+1]);
-  this->interfaces[nInterfaces] = NULL;
-  for (int i=0; i<nInterfaces; ++i)
-    this->interfaces[i] = reinterpret_cast<oms_connector_t*>(new oms2::Connector(*reinterpret_cast<oms2::Connector*>(rhs.interfaces[i])));
-
-  oms2::ssd::ElementGeometry* geometry_ = new oms2::ssd::ElementGeometry();
-  *geometry_ = *reinterpret_cast<oms2::ssd::ElementGeometry*>(rhs.geometry);
-  this->geometry = reinterpret_cast<ssd_element_geometry_t*>(geometry_);
-  delete geometry_;
-
-  return *this;
-}
-
 void oms2::Element::setName(const oms2::ComRef& name)
 {
   if (this->name)
@@ -111,16 +76,15 @@ void oms2::Element::setName(const oms2::ComRef& name)
 void oms2::Element::setGeometry(const oms2::ssd::ElementGeometry* newGeometry)
 {
   if (this->geometry)
+  {
     delete reinterpret_cast<oms2::ssd::ElementGeometry*>(this->geometry);
+    this->geometry = NULL;
+  }
 
   if (newGeometry)
   {
-    oms2::ssd::ElementGeometry* geometry_ = new oms2::ssd::ElementGeometry(*newGeometry);
-    this->geometry = reinterpret_cast<ssd_element_geometry_t*>(geometry_);
-    delete geometry_;
+    this->geometry = reinterpret_cast<ssd_element_geometry_t*>(new oms2::ssd::ElementGeometry(*newGeometry));
   }
-  else
-    this->geometry = NULL;
 }
 
 void oms2::Element::setInterfaces(const std::vector<oms2::Connector> newInterfaces)
