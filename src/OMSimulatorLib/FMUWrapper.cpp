@@ -212,8 +212,7 @@ FMUWrapper::FMUWrapper(CompositeModel& model, std::string fmuPath, std::string i
     logDebug("Platform type returned: " + std::string(fmi2_import_get_types_platform(fmu)));
     logDebug("GUID: " + std::string(fmi2_import_get_GUID(fmu)));
 
-    fmi2_string_t instanceName = "ME-FMU instance";
-    jmstatus = fmi2_import_instantiate(fmu, instanceName, fmi2_model_exchange, NULL, fmi2_false);
+    jmstatus = fmi2_import_instantiate(fmu, instanceName.c_str(), fmi2_model_exchange, NULL, fmi2_false);
     if (jm_status_error == jmstatus) logError("fmi2_import_instantiate failed");
   }
   else if (fmi2_fmu_kind_cs == fmuKind || fmi2_fmu_kind_me_and_cs == fmuKind)
@@ -228,8 +227,7 @@ FMUWrapper::FMUWrapper(CompositeModel& model, std::string fmuPath, std::string i
     logDebug("Platform type returned: " + std::string(fmi2_import_get_types_platform(fmu)));
     logDebug("GUID: " + std::string(fmi2_import_get_GUID(fmu)));
 
-    fmi2_string_t instanceName = "CS-FMU instance";
-    jmstatus = fmi2_import_instantiate(fmu, instanceName, fmi2_cosimulation, NULL, fmi2_false);
+    jmstatus = fmi2_import_instantiate(fmu, instanceName.c_str(), fmi2_cosimulation, NULL, fmi2_false);
     if (jm_status_error == jmstatus) logError("fmi2_import_instantiate failed");
   }
 
