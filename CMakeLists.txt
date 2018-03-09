@@ -162,6 +162,11 @@ find_package(Ceres)
 ENDIF()
 
 ##########################
+# Configuration for OMTLMSimulatorLib
+set(OMTLMSIMULATORLIB_INCLUDEDIR ${PROJECT_SOURCE_DIR}/OMTLMSimulator/common/OMTLMSimulatorLib)
+set(OMTLMSIMULATORLIB_LIBRARYDIR ${PROJECT_SOURCE_DIR}/OMTLMSimulator/bin)
+
+##########################
 # Add project modules
 add_subdirectory(src/OMSimulator)
 add_subdirectory(src/OMSimulatorLib)

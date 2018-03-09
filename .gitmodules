@@ -4,3 +4,6 @@
 [submodule "testsuite"]
 	path = testsuite
 	url = https://github.com/OpenModelica/OMSimulator-testsuite.git
+[submodule "OMTLMSimulator"]
+	path = OMTLMSimulator
+	url = https://github.com/OpenModelica/OMTLMSimulator.git
