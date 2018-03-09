@@ -29,8 +29,8 @@
  *
  */
 
-#ifndef _OMS_MODEL_H_
-#define _OMS_MODEL_H_
+#ifndef _OMS2_COMPOSITE_MODEL_H_
+#define _OMS2_COMPOSITE_MODEL_H_
 
 #include "../Types.h"
 #include "ComRef.h"
@@ -42,12 +42,12 @@
 
 namespace oms2
 {
-  class Model
+  class CompositeModel
   {
   public:
     virtual oms_element_type_enu_t getType() = 0;
 
-    static void deleteModel(Model *model) {if (model) delete model;}
+    static void deleteModel(CompositeModel *model) {if (model) delete model;}
 
     void setStartTime(double value) {startTime = value;}
     double getStartTime() const {return startTime;}
@@ -64,13 +64,13 @@ namespace oms2
     void setGeometry(const oms2::ssd::ElementGeometry& geometry) {element.setGeometry(&geometry);}
 
   protected:
-    Model(oms_element_type_enu_t type, const ComRef& cref);
-    virtual ~Model();
+    CompositeModel(oms_element_type_enu_t type, const ComRef& cref);
+    virtual ~CompositeModel();
 
   private:
     // stop the compiler generating methods copying the object
-    Model(Model const& copy);            // not implemented
-    Model& operator=(Model const& copy); // not implemented
+    CompositeModel(CompositeModel const& copy);            // not implemented
+    CompositeModel& operator=(CompositeModel const& copy); // not implemented
 
   protected:
     oms2::Element element;
