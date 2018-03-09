@@ -29,8 +29,8 @@
  *
  */
 
-#ifndef _OMS_SIGNAL_REF_H_
-#define _OMS_SIGNAL_REF_H_
+#ifndef _OMS2_SIGNAL_REF_H_
+#define _OMS2_SIGNAL_REF_H_
 
 #include "ComRef.h"
 

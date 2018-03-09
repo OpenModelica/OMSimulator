@@ -29,8 +29,8 @@
  *
  */
 
-#ifndef _OMS_TLM_COMPOSITE_MODEL_H_
-#define _OMS_TLM_COMPOSITE_MODEL_H_
+#ifndef _OMS2_TLM_COMPOSITE_MODEL_H_
+#define _OMS2_TLM_COMPOSITE_MODEL_H_
 
 #include "ComRef.h"
 #include "CompositeModel.h"

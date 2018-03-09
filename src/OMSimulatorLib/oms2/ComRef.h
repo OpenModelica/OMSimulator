@@ -29,8 +29,8 @@
  *
  */
 
-#ifndef _OMS_COM_REF_H_
-#define _OMS_COM_REF_H_
+#ifndef _OMS2_COM_REF_H_
+#define _OMS2_COM_REF_H_
 
 #include <deque>
 #include <string>
