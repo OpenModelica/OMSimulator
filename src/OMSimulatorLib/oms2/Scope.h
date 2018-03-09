@@ -53,37 +53,31 @@ namespace oms2
   class Scope
   {
   public:
-    static oms_status_enu_t newFMIModel(const ComRef& name);
-    static oms_status_enu_t newTLMModel(const ComRef& name);
-    static Model* loadModel(const std::string& filename);
-    static oms_status_enu_t saveModel(const std::string& filename, const ComRef& name);
+    static Scope& GetInstance();
 
-    static oms_status_enu_t unloadModel(const ComRef& name);
+    oms_status_enu_t newFMIModel(const ComRef& name);
+    oms_status_enu_t newTLMModel(const ComRef& name);
+    oms_status_enu_t unloadModel(const ComRef& name);
+    oms_status_enu_t addFMU(const ComRef& modelIdent, const std::string& fmuPath, const ComRef& fmuIdent);
+    oms_status_enu_t deleteSubModel(const ComRef& modelIdent, const ComRef& subModelIdent);
+    oms_status_enu_t rename(const ComRef& identOld, const ComRef& identNew);
+    Model* loadModel(const std::string& filename);
+    oms_status_enu_t saveModel(const std::string& filename, const ComRef& name);
+    oms_status_enu_t getElement(const ComRef& cref, oms2::Element** element);
+    oms_status_enu_t setElementGeometry(const ComRef& cref, const oms2::ssd::ElementGeometry* geometry);
+    oms_status_enu_t getElements(const ComRef& cref, oms2::Element*** elements);
+    oms_status_enu_t getFMUPath(const ComRef& cref, char** path);
+    oms_status_enu_t getConnections(const ComRef& cref, oms2::Connection*** connections);
+    oms_status_enu_t addConnection(const ComRef& cref, const SignalRef& conA, const SignalRef& conB);
+    oms_status_enu_t deleteConnection(const ComRef& cref, const SignalRef& conA, const SignalRef& conB);
+    oms_status_enu_t updateConnection(const ComRef& cref, const SignalRef& conA, const SignalRef& conB, const oms2::Connection* connection);
+    oms_status_enu_t getRealParameter(const oms2::SignalRef& signal, double& value);
+    oms_status_enu_t setRealParameter(const oms2::SignalRef& signal, double value);
+    oms_status_enu_t setTempDirectory(const std::string& newTempDir);
+    oms_status_enu_t setWorkingDirectory(const std::string& path);
 
-    static oms_status_enu_t addFMU(const ComRef& modelIdent, const std::string& fmuPath, const ComRef& fmuIdent);
-    static oms_status_enu_t deleteSubModel(const ComRef& modelIdent, const ComRef& subModelIdent);
-
-    static oms_status_enu_t rename(const ComRef& identOld, const ComRef& identNew);
-
-    static oms_status_enu_t SetTempDirectory(const std::string& newTempDir);
-    static const std::string& GetTempDirectory() {Scope &scope = getInstance(); return scope.tempDir;}
-
-    static oms_status_enu_t SetWorkingDirectory(const std::string& path);
-    static const std::string& GetWorkingDirectory() {Scope &scope = getInstance(); return scope.workingDir;}
-
-    static oms_status_enu_t getElement(const ComRef& cref, oms2::Element** element);
-    static oms_status_enu_t getElements(const ComRef& cref, oms2::Element*** elements);
-    static oms_status_enu_t getFMUPath(const ComRef& cref, char** path);
-    static oms_status_enu_t getConnections(const ComRef& cref, oms2::Connection*** connections);
-
-    static oms_status_enu_t setElementGeometry(const ComRef& cref, const oms2::ssd::ElementGeometry* geometry);
-
-    static oms_status_enu_t addConnection(const ComRef& cref, const SignalRef& conA, const SignalRef& conB);
-    static oms_status_enu_t deleteConnection(const ComRef& cref, const SignalRef& conA, const SignalRef& conB);
-    static oms_status_enu_t updateConnection(const ComRef& cref, const SignalRef& conA, const SignalRef& conB, const oms2::Connection* connection);
-
-    static oms_status_enu_t getRealParameter(const oms2::SignalRef& signal, double& value);
-    static oms_status_enu_t setRealParameter(const oms2::SignalRef& signal, double value);
+    const std::string& getTempDirectory() {return GetInstance().tempDir;}
+    const std::string& getWorkingDirectory() {return GetInstance().workingDir;}
 
     oms_status_enu_t renameModel(const ComRef& identOld, const ComRef& identNew);
     Model* getModel(const ComRef& name);
@@ -100,16 +94,14 @@ namespace oms2
     Scope(Scope const& copy);            // not implemented
     Scope& operator=(Scope const& copy); // not implemented
 
-    static Scope& getInstance();
-
-    static Model* loadFMIModel(const pugi::xml_node& xml);
-    static Model* loadTLMModel(const pugi::xml_node& xml);
+    Model* loadFMIModel(const pugi::xml_node& xml);
+    Model* loadTLMModel(const pugi::xml_node& xml);
 
     oms_status_enu_t saveFMIModel(oms2::Model* model, const std::string& filename);
     oms_status_enu_t saveTLMModel(oms2::Model* model, const std::string& filename);
 
   private:
-    std::map<ComRef, Model*> models;
+    std::map<oms2::ComRef, oms2::Model*> models;
     std::string tempDir;
     std::string workingDir;
   };

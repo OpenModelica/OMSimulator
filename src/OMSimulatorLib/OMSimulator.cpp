@@ -350,18 +350,6 @@ oms_status_enu_t oms_getCurrentTime(const void* model, double* time)
   return pModel->getCurrentTime(time);
 }
 
-oms_status_enu_t oms2_setTempDirectory(const char* path)
-{
-  logTrace();
-  return oms2::Scope::SetTempDirectory(path);
-}
-
-oms_status_enu_t oms2_setWorkingDirectory(const char* path)
-{
-  logTrace();
-  return oms2::Scope::SetWorkingDirectory(path);
-}
-
 void oms_setStartTime(void* model, double startTime)
 {
   logTrace();
@@ -530,43 +518,43 @@ void oms_setMaxIterations(void* model, int maxIterations)
 oms_status_enu_t oms2_newFMIModel(const char* ident)
 {
   logTrace();
-  return oms2::Scope::newFMIModel(oms2::ComRef(ident));
+  return oms2::Scope::GetInstance().newFMIModel(oms2::ComRef(ident));
 }
 
 oms_status_enu_t oms2_newTLMModel(const char* ident)
 {
   logTrace();
-  return oms2::Scope::newTLMModel(oms2::ComRef(ident));
+  return oms2::Scope::GetInstance().newTLMModel(oms2::ComRef(ident));
 }
 
 oms_status_enu_t oms2_unloadModel(const char* ident)
 {
   logTrace();
-  return oms2::Scope::unloadModel(oms2::ComRef(ident));
+  return oms2::Scope::GetInstance().unloadModel(oms2::ComRef(ident));
 }
 
 oms_status_enu_t oms2_addFMU(const char* modelIdent, const char* fmuPath, const char* fmuIdent)
 {
   logTrace();
-  return oms2::Scope::addFMU(oms2::ComRef(modelIdent), fmuPath, oms2::ComRef(fmuIdent));
+  return oms2::Scope::GetInstance().addFMU(oms2::ComRef(modelIdent), fmuPath, oms2::ComRef(fmuIdent));
 }
 
 oms_status_enu_t oms2_deleteSubModel(const char* modelIdent, const char* subModelIdent)
 {
   logTrace();
-  return oms2::Scope::deleteSubModel(oms2::ComRef(modelIdent), oms2::ComRef(subModelIdent));
+  return oms2::Scope::GetInstance().deleteSubModel(oms2::ComRef(modelIdent), oms2::ComRef(subModelIdent));
 }
 
 oms_status_enu_t oms2_rename(const char* identOld, const char* identNew)
 {
   logTrace();
-  return oms2::Scope::rename(oms2::ComRef(identOld), oms2::ComRef(identNew));
+  return oms2::Scope::GetInstance().rename(oms2::ComRef(identOld), oms2::ComRef(identNew));
 }
 
 oms_status_enu_t oms2_loadModel(const char* filename, char** ident)
 {
   logTrace();
-  oms2::Model* model = oms2::Scope::loadModel(filename);
+  oms2::Model* model = oms2::Scope::GetInstance().loadModel(filename);
 
   if (!model)
     return oms_status_error;
@@ -579,55 +567,55 @@ oms_status_enu_t oms2_loadModel(const char* filename, char** ident)
 oms_status_enu_t oms2_saveModel(const char* filename, const char* ident)
 {
   logTrace();
-  return oms2::Scope::saveModel(filename, oms2::ComRef(ident));
+  return oms2::Scope::GetInstance().saveModel(filename, oms2::ComRef(ident));
 }
 
 oms_status_enu_t oms2_getElement(const char* cref, oms_element_t** element)
 {
   logTrace();
-  return oms2::Scope::getElement(oms2::ComRef(cref), reinterpret_cast<oms2::Element**>(element));
+  return oms2::Scope::GetInstance().getElement(oms2::ComRef(cref), reinterpret_cast<oms2::Element**>(element));
 }
 
 oms_status_enu_t oms2_setElementGeometry(const char* cref, const ssd_element_geometry_t* geometry)
 {
   logTrace();
-  return oms2::Scope::setElementGeometry(oms2::ComRef(cref), reinterpret_cast<const oms2::ssd::ElementGeometry*>(geometry));
+  return oms2::Scope::GetInstance().setElementGeometry(oms2::ComRef(cref), reinterpret_cast<const oms2::ssd::ElementGeometry*>(geometry));
 }
 
 oms_status_enu_t oms2_getElements(const char* cref, oms_element_t*** elements)
 {
   logTrace();
-  return oms2::Scope::getElements(oms2::ComRef(cref), reinterpret_cast<oms2::Element***>(elements));
+  return oms2::Scope::GetInstance().getElements(oms2::ComRef(cref), reinterpret_cast<oms2::Element***>(elements));
 }
 
 oms_status_enu_t oms2_getFMUPath(const char* cref, char** path)
 {
   logTrace();
-  return oms2::Scope::getFMUPath(oms2::ComRef(cref), path);
+  return oms2::Scope::GetInstance().getFMUPath(oms2::ComRef(cref), path);
 }
 
 oms_status_enu_t oms2_getConnections(const char* cref, oms_connection_t*** connections)
 {
   logTrace();
-  return oms2::Scope::getConnections(oms2::ComRef(cref), reinterpret_cast<oms2::Connection***>(connections));
+  return oms2::Scope::GetInstance().getConnections(oms2::ComRef(cref), reinterpret_cast<oms2::Connection***>(connections));
 }
 
 oms_status_enu_t oms2_addConnection(const char* cref, const char* conA, const char* conB)
 {
   logTrace();
-  return oms2::Scope::addConnection(oms2::ComRef(cref), oms2::SignalRef(conA), oms2::SignalRef(conB));
+  return oms2::Scope::GetInstance().addConnection(oms2::ComRef(cref), oms2::SignalRef(conA), oms2::SignalRef(conB));
 }
 
 oms_status_enu_t oms2_deleteConnection(const char* cref, const char* conA, const char* conB)
 {
   logTrace();
-  return oms2::Scope::deleteConnection(oms2::ComRef(cref), oms2::SignalRef(conA), oms2::SignalRef(conB));
+  return oms2::Scope::GetInstance().deleteConnection(oms2::ComRef(cref), oms2::SignalRef(conA), oms2::SignalRef(conB));
 }
 
 oms_status_enu_t oms2_updateConnection(const char* cref, const char* conA, const char* conB, const oms_connection_t* connection)
 {
   logTrace();
-  return oms2::Scope::updateConnection(oms2::ComRef(cref), oms2::SignalRef(conA), oms2::SignalRef(conB), reinterpret_cast<const oms2::Connection*>(connection));
+  return oms2::Scope::GetInstance().updateConnection(oms2::ComRef(cref), oms2::SignalRef(conA), oms2::SignalRef(conB), reinterpret_cast<const oms2::Connection*>(connection));
 }
 
 oms_status_enu_t oms2_simulate_asynchronous(const char* ident, void (*cb)(const char* ident, double time, oms_status_enu_t status))
@@ -651,11 +639,23 @@ void oms2_setLoggingLevel(int logLevel)
 oms_status_enu_t oms2_getRealParameter(const char* signal, double* value)
 {
   logTrace();
-  return oms2::Scope::getRealParameter(oms2::SignalRef(signal), *value);
+  return oms2::Scope::GetInstance().getRealParameter(oms2::SignalRef(signal), *value);
 }
 
 oms_status_enu_t oms2_setRealParameter(const char* signal, double value)
 {
   logTrace();
-  return oms2::Scope::setRealParameter(oms2::SignalRef(signal), value);
+  return oms2::Scope::GetInstance().setRealParameter(oms2::SignalRef(signal), value);
+}
+
+oms_status_enu_t oms2_setTempDirectory(const char* path)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().setTempDirectory(path);
+}
+
+oms_status_enu_t oms2_setWorkingDirectory(const char* path)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().setWorkingDirectory(path);
 }

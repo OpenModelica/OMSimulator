@@ -127,20 +127,13 @@
 
 \begin{tikzpicture}
   \begin{umlpackage}{OMSimulatorLib}
-    \umlclass[x=-1.5, y=11.5]{Scope}{
-      - models: map<ComRef,Model> \\
-      - tempDir: string
-    }{
-      + newFMIModel() \\
-      + newTLMModel() \\
-      + unloadModel() \\
-      + renameModel() \\
-      + getModel() \\
-      + loadModel() \\
-      + saveModel) \\
-      + SetTempDirectory() \\
-      + GetTempDirectory()
-    }
+
+    \umlclass[x=-1.5, y=10]{Scope}{
+      - std::map<oms2::ComRef, oms2::Model*> models; \\
+      - std::string tempDir; \\
+      - std::string workingDir;
+    }{}
+
     \umlclass[x=-1.5, y=5.5]{Model}{
       - geometry: ssd:SystemGeometry \\
       - startTime: double \\
@@ -305,8 +298,8 @@
   \umlinherit[geometry=--]{FMUWrapperME}{FMUWrapper}
   \umlinherit[geometry=--]{FMUWrapperCS}{FMUWrapper}
 
-  \umlnote[x=7,y=11.5, width=3cm]{Scope}{Global scope}
-  \umlnote[x=-12,y=12.5, width=3cm]{OMSimulatorLib}{namespace oms2}
+  \umlnote[x=7,y=10, width=3cm]{Scope}{Global scope}
+  \umlnote[x=-12,y=10, width=3cm]{OMSimulatorLib}{namespace oms2}
 \end{tikzpicture}
 
 \end{document}
