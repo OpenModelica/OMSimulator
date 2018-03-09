@@ -22,7 +22,7 @@ else ifeq (MINGW32,$(findstring MINGW32,$(detected_OS)))
 	# MINGW detected => NO SUPPORT FOR BUILDING CERES SOLVER  (yet)
 	CERES := OFF
 	OMFIT := OFF
-	ABI := WINDOWS32
+	export ABI := WINDOWS32
 else ifeq (MINGW,$(findstring MINGW,$(detected_OS)))
 	BUILD_DIR := build/mingw
 	INSTALL_DIR := install/mingw
@@ -31,11 +31,11 @@ else ifeq (MINGW,$(findstring MINGW,$(detected_OS)))
 	# MINGW detected => NO SUPPORT FOR BUILDING CERES SOLVER  (yet)
 	CERES := OFF
 	OMFIT := OFF
-	ABI := WINDOWS64
+	export ABI := WINDOWS64
 else
 	BUILD_DIR := build/linux
 	INSTALL_DIR := install/linux
-	ABI := LINUX64
+	export ABI := LINUX64
 endif
 
 .PHONY: OMSimulator config-OMSimulator config-fmil config-lua config-cvode config-kinsol config-gflags config-glog config-ceres-solver config-3rdParty distclean testsuite doc doc-html doc-doxygen OMTLMSimulator
