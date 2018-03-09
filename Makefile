@@ -1,4 +1,5 @@
 RM=rm -rf
+CP=cp -rf
 MKDIR=mkdir -p
 
 # Option to build Ceres-Solver and its dependencies as part of the 3rdParty projects
@@ -157,11 +158,13 @@ doc-html:
 	@$(MAKE) -C doc/UsersGuide html
 	@$(MKDIR) $(INSTALL_DIR)/doc
 	@$(RM) $(INSTALL_DIR)/doc/html
-	@cp -rf doc/UsersGuide/build/html/ $(INSTALL_DIR)/doc/html
+	@$(CP) doc/UsersGuide/build/html/ $(INSTALL_DIR)/doc/html
 
 doc-doxygen:
-	@$(RM) doc/dev/OMSimulatorLib/
-	@doxygen doc/dev/OMSimulatorLib.doxyfile
-	@$(MKDIR) $(INSTALL_DIR)/doc
 	@$(RM) $(INSTALL_DIR)/doc/OMSimulatorLib
-	@cp -rf doc/dev/OMSimulatorLib/html/ $(INSTALL_DIR)/doc/OMSimulatorLib
+	@$(MKDIR) $(INSTALL_DIR)/doc/OMSimulatorLib
+	@$(MAKE) -C doc/dev/OMSimulatorLib OMSimulatorLib.png
+	@$(CP) doc/dev/OMSimulatorLib/OMSimulatorLib.png $(INSTALL_DIR)/doc/OMSimulatorLib/
+	@$(MAKE) -C doc/dev/OMSimulatorLib doc-doxygen
+	@$(CP) doc/dev/OMSimulatorLib/html/* $(INSTALL_DIR)/doc/OMSimulatorLib/
+	@$(MAKE) -C doc/dev/OMSimulatorLib clean

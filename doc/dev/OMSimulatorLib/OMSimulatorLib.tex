@@ -1,0 +1,255 @@
+%http://perso.ensta-paristech.fr/~kielbasi/tikzuml/index.php?lang=en
+
+\documentclass[tikz]{standalone}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}% Output font encoding for international characters
+
+% Use the Palatino font by default
+\usepackage{palatino}
+
+% white
+\definecolor{uclwhite}{rgb}{1, 1, 1}
+
+%   UCL style guide colours.
+%   Number refer to level of tint.
+%   100%    1
+%    70%    2
+%    50%    3
+%    20%    4
+
+% UCL style guide dk purple
+\definecolor{ucl1dkpurple}{RGB}{82,66,91}
+\definecolor{ucl2dkpurple}{RGB}{134,122,140}
+\definecolor{ucl3dkpurple}{RGB}{168,160,173}
+\definecolor{ucl4dkpurple}{RGB}{220,217,222}
+
+% UCL style guide dk red
+\definecolor{ucl1dkred}{RGB}{90,27,49}
+\definecolor{ucl2dkred}{RGB}{139,95,110}
+\definecolor{ucl3dkred}{RGB}{172,141,152}
+\definecolor{ucl4dkred}{RGB}{222,209,214}
+
+% UCL style guide dk blue
+\definecolor{ucl1dkblue}{RGB}{0,67,89}
+\definecolor{ucl2dkblue}{RGB}{76,123,138}
+\definecolor{ucl3dkblue}{RGB}{127,161,172}
+\definecolor{ucl4dkblue}{RGB}{204,217,222}
+
+% UCL style guide dk green
+\definecolor{ucl1dkgreen}{RGB}{75,70,32}
+\definecolor{ucl2dkgreen}{RGB}{129,125,98}
+\definecolor{ucl3dkgreen}{RGB}{165,162,143}
+\definecolor{ucl4dkgreen}{RGB}{219,218,210}
+
+% UCL style guide black
+\definecolor{ucl1black}{RGB}{0,0,0}
+\definecolor{ucl2black}{RGB}{75,75,75}
+\definecolor{ucl3black}{RGB}{128,128,128}
+\definecolor{ucl4black}{RGB}{205,205,205}
+
+% UCL style guide pink
+\definecolor{ucl1pink}{RGB}{145,24,83}
+\definecolor{ucl2pink}{RGB}{178,93,134}
+\definecolor{ucl3pink}{RGB}{200,139,169}
+\definecolor{ucl4pink}{RGB}{233,209,221}
+
+% UCL style guide md red
+\definecolor{ucl1mdred}{RGB}{195,58,45}
+\definecolor{ucl2mdred}{RGB}{213,117,108}
+\definecolor{ucl3mdred}{RGB}{225,156,150}
+\definecolor{ucl4mdred}{RGB}{243,216,213}
+
+% UCL style guide md blue
+\definecolor{ucl1mdblue}{RGB}{69,156,189}
+\definecolor{ucl2mdblue}{RGB}{124,186,209}
+\definecolor{ucl3mdblue}{RGB}{162,205,222}
+\definecolor{ucl4mdblue}{RGB}{218,235,242}
+
+% UCL style guide md green
+%\definecolor{ucl1mdgreen}{RGB}{130,141,55}
+%\definecolor{ucl2mdgreen}{RGB}{167,175,115}
+%\definecolor{ucl3mdgreen}{RGB}{192,198,155}
+%\definecolor{ucl4mdgreen}{RGB}{230,232,215}
+\definecolor{ucl1mdgreen}{RGB}{55,141,55}
+\definecolor{ucl2mdgreen}{RGB}{115,175,115}
+\definecolor{ucl3mdgreen}{RGB}{155,198,155}
+\definecolor{ucl4mdgreen}{RGB}{215,232,215}
+
+% UCL style guide orange
+\definecolor{ucl1orange}{RGB}{215,123,35}
+\definecolor{ucl2orange}{RGB}{227,162,101}
+\definecolor{ucl3orange}{RGB}{235,189,145}
+\definecolor{ucl4orange}{RGB}{247,229,211}
+
+% UCL style guide lt purple
+\definecolor{ucl1ltpurple}{RGB}{191,175,188}
+\definecolor{ucl2ltpurple}{RGB}{210,199,208}
+\definecolor{ucl3ltpurple}{RGB}{223,215,221}
+\definecolor{ucl4ltpurple}{RGB}{242,239,242}
+
+% UCL style guide yellow
+\definecolor{ucl1yellow}{RGB}{229,175,0}
+\definecolor{ucl2yellow}{RGB}{237,199,76}
+\definecolor{ucl3yellow}{RGB}{242,215,127}
+\definecolor{ucl4yellow}{RGB}{250,239,204}
+
+% UCL style guide lt blue
+\definecolor{ucl1ltblue}{RGB}{168,192,209}
+\definecolor{ucl2ltblue}{RGB}{194,211,223}
+\definecolor{ucl3ltblue}{RGB}{211,223,232}
+\definecolor{ucl4ltblue}{RGB}{238,242,246}
+
+% UCL style guide brt green
+\definecolor{ucl1brtgreen}{RGB}{204,209,88}
+\definecolor{ucl2brtgreen}{RGB}{219,223,138}
+\definecolor{ucl3brtgreen}{RGB}{229,232,171}
+\definecolor{ucl4brtgreen}{RGB}{245,246,222}
+
+% UCL style guide stone
+\definecolor{ucl1stone}{RGB}{217,214,204}
+\definecolor{ucl2stone}{RGB}{228,226,219}
+\definecolor{ucl3stone}{RGB}{236,234,229}
+\definecolor{ucl4stone}{RGB}{255,255,255}
+
+% UCL style guide lt green
+\definecolor{ucl1ltgreen}{RGB}{185,193,147}
+\definecolor{ucl2ltgreen}{RGB}{206,211,179}
+\definecolor{ucl3ltgreen}{RGB}{220,224,201}
+\definecolor{ucl4ltgreen}{RGB}{241,243,233}
+
+\usepackage{tkz-euclide}
+
+\usepackage[english]{babel}
+\usepackage{tikz-uml}
+
+\begin{document}
+
+\begin{tikzpicture}
+  \begin{umlpackage}{OMSimulatorLib}
+    \umlclass[x=-1.5, y=7]{Scope}{
+      - models: map<ComRef,Model> \\
+      - tempDir: string
+    }{
+      + newFMIModel() \\
+      + newTLMModel() \\
+      + unloadModel() \\
+      + renameModel() \\
+      + getModel() \\
+      + loadModel() \\
+      + saveModel) \\
+      + SetTempDirectory() \\
+      + GetTempDirectory()
+    }
+    \umlclass[x=-1.5, y=0.5, fill=ucl2orange]{Model}{
+      - name: ComRef \\
+      - geometry: ssd:ElementGeometry \\
+      - startTime: double \\
+      - stopTime: double \\
+      - resultFile: string
+    }{
+      + getType() = 0 \\
+      + getName() \\
+      + setName() \\
+      + deleteModel() \\
+      + isValidModelIdentifier() \\
+    }
+    \umlclass[x=-6, y=-6]{TLMCompositeModel}{
+      - fmiModels: map<ComRef, FMICompositeModel> \\
+      - externalModels: map<ComRef, ExternalModel> \\
+      - connections: list<TLMConnection>
+    }{
+      + newModel() \\
+      + /getType() \\
+      - ...
+    }
+    \umlclass[x=3, y=-6]{FMICompositeModel}{
+      - subModels: map<ComRef, FMISubModel> \\
+      - connections: list<Connection> \\
+      - initialUnknowns: DependencyGraph \\
+      - outputs: DependencyGraph
+    }{
+      + newModel() \\
+      + /getType()() \\
+      + instantiateFMU() \\
+      + instantiateTable() \\
+      + setRealParameter() \\
+      + addConnection() \\
+      + getSubModels() \\
+      + getConnections()
+    }
+    \umlclass[x=-6, y=-12]{TLMConnection}{
+      - delay: double \\
+      - ...
+    }{}
+    \umlclass[x=3, y=-12]{Connection}{
+      - sigA: SignalRef \\
+      - sigB: SignalRef \\
+      - geometry: ssd:ConnectionGeometry
+    }{}
+    \umlclass[x=7, y=-1]{DependencyGraph}{}{}
+    \umlclass[x=-13, y=-6]{ExternalModel}{}{}
+    \umlclass[x=11, y=-6, fill=ucl2orange]{FMISubModel}{
+      - cref: ComRef \\
+      - geometry: ssd:ElementGeometry \\
+      - signals: list<SignalRef> \\
+      - initialUnknowns: DependencyGraph \\
+      - outputs: DependencyGraph
+    }{}
+    \umlclass[x=11, y=-12]{SignalRef}{
+      - cref: ComRef \\
+      - var: string
+    }{
+      + SignalRef() \\
+      + ~SignalRef() \\
+      + operator=() \\
+      + operator<() \\
+      + toString() \\
+      + getCref() \\
+      + getVar() \\
+    }
+
+    \umlclass[x=17, y=-1.5]{FMUWrapper}{
+      - fmuPath: string \\
+      - tempDir: string \\
+      - allVariables \\
+      - realParameters \\
+      - fmu: fmi2\_import\_t
+    }{}
+    \umlclass[x=17, y=-4.5]{Table}{}{}
+    \umlclass[x=17, y=-7.5]{ConstReal}{}{}
+    \umlclass[x=17, y=-10.5]{BusPort}{}{}
+
+    \umlclass[x=22, y=0.5]{FMUWrapperME}{}{}
+    \umlclass[x=22, y=-3.5]{FMUWrapperCS}{}{}
+  \end{umlpackage}
+
+  %\umlassoc[geometry=-|-, arg1=tata, mult1=*, pos1=0.3, arg2=toto, mult2=1, pos2=2.9, align2=left]{C}{B}
+  %\umlunicompo[geometry=-|, arg=titi, mult=*, pos=1.7, stereo=vector]{D}{C}
+  %\umlaggreg[mult1=1, mult2=0..*]{Scope}{Model}
+
+  \umlcompo[mult1=1, mult2=0..*]{Scope}{Model}
+  \umlcompo[mult1=1, mult2=0..*]{TLMCompositeModel}{ExternalModel}
+  \umlcompo[mult1=1, mult2=0..*]{TLMCompositeModel}{TLMConnection}
+  \umlcompo[mult1=0..1, mult2=0..*]{TLMCompositeModel}{FMICompositeModel}
+  \umlcompo[mult1=1, mult2=0..*]{FMICompositeModel}{Connection}
+  \umlaggreg[mult1=1, mult2=2]{Connection}{SignalRef}
+  \umlcompo[mult1=1, mult2=0..*]{FMICompositeModel}{FMISubModel}
+  \umlcompo[mult1=1, mult2=2]{FMISubModel}{DependencyGraph}
+  \umlcompo[mult1=1, mult2=2]{FMICompositeModel}{DependencyGraph}
+  \umlcompo[mult1=1, mult2=0..*]{FMISubModel}{SignalRef}
+  \umlinherit[geometry=--]{FMICompositeModel}{Model}
+  \umlinherit[geometry=--]{TLMCompositeModel}{Model}
+  \umlinherit[geometry=--]{TLMConnection}{Connection}
+  \umlinherit[geometry=--]{FMUWrapper}{FMISubModel}
+  \umlinherit[geometry=--]{Table}{FMISubModel}
+  \umlinherit[geometry=--]{ConstReal}{FMISubModel}
+  \umlinherit[geometry=--]{BusPort}{FMISubModel}
+  \umlinherit[geometry=--]{FMUWrapperME}{FMUWrapper}
+  \umlinherit[geometry=--]{FMUWrapperCS}{FMUWrapper}
+
+  \umlnote[x=7,y=7, width=3cm]{Scope}{Global scope}
+  \umlnote[x=-12,y=8.5, width=3cm]{OMSimulatorLib}{namespace oms2}
+\end{tikzpicture}
+
+\end{document}
