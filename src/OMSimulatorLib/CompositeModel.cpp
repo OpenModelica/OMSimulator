@@ -1089,6 +1089,8 @@ void CompositeModel::initialize()
         delete resultFile;
         resultFile = NULL;
       }
+      /// \todo workaround for uninitialized inputs
+      updateInputs(outputsGraph);
       emit();
     }
     OMS_TOC(globalClocks, GLOBALCLOCK_RESULTFILE);
