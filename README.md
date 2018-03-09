@@ -9,6 +9,7 @@ The latest documentation is avilable as [pdf](https://openmodelica.org/doc/OMSim
 - [Boost](http://www.boost.org/) (system, filesystem)
 - [cmake](http://www.cmake.org)
 - [Sphinx](http://www.sphinx-doc.org/en/stable/)
+- [readline (if using Lua)](http://git.savannah.gnu.org/cgit/readline.git)
 - [3rdParty subproject](https://github.com/OpenModelica/OMFMISimulator-3rdParty)
   - FMILibrary
   - Lua
