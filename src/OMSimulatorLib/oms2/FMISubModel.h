@@ -29,8 +29,8 @@
  *
  */
 
-#ifndef _OMS_FMI_SUB_MODEL_H_
-#define _OMS_FMI_SUB_MODEL_H_
+#ifndef _OMS2_FMI_SUB_MODEL_H_
+#define _OMS2_FMI_SUB_MODEL_H_
 
 #include "../Types.h"
 #include "ComRef.h"

@@ -29,8 +29,8 @@
  *
  */
 
-#ifndef _OMS_SCOPE_H_
-#define _OMS_SCOPE_H_
+#ifndef _OMS2_SCOPE_H_
+#define _OMS2_SCOPE_H_
 
 #include "../Types.h"
 #include "ComRef.h"

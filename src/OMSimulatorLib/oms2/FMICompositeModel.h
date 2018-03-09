@@ -29,8 +29,8 @@
  *
  */
 
-#ifndef _OMS_FMI_COMPOSITE_MODEL_H_
-#define _OMS_FMI_COMPOSITE_MODEL_H_
+#ifndef _OMS2_FMI_COMPOSITE_MODEL_H_
+#define _OMS2_FMI_COMPOSITE_MODEL_H_
 
 #include "ComRef.h"
 #include "SignalRef.h"
