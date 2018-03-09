@@ -40,10 +40,6 @@ oms2::CompositeModel::CompositeModel(oms_element_type_enu_t type, const ComRef& 
   : element(type, cref)
 {
   logTrace();
-
-  startTime = 0.0;
-  stopTime = 1.0;
-  resultFile = cref.toString() + "_res.mat";
 }
 
 oms2::CompositeModel::~CompositeModel()

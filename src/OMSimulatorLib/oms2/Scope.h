@@ -33,10 +33,11 @@
 #define _OMS2_SCOPE_H_
 
 #include "../Types.h"
+#include "CompositeModel.h"
 #include "ComRef.h"
 #include "Connection.h"
 #include "FMICompositeModel.h"
-#include "CompositeModel.h"
+#include "Model.h"
 #include "ssd/ConnectionGeometry.h"
 #include "ssd/ElementGeometry.h"
 #include "TLMCompositeModel.h"
@@ -54,7 +55,7 @@ namespace oms2
   public:
     static oms_status_enu_t newFMIModel(const ComRef& name);
     static oms_status_enu_t newTLMModel(const ComRef& name);
-    static CompositeModel* loadModel(const std::string& filename);
+    static Model* loadModel(const std::string& filename);
     static oms_status_enu_t saveModel(const std::string& filename, const ComRef& name);
 
     static oms_status_enu_t unloadModel(const ComRef& name);
@@ -81,12 +82,15 @@ namespace oms2
     static oms_status_enu_t deleteConnection(const ComRef& cref, const SignalRef& conA, const SignalRef& conB);
     static oms_status_enu_t updateConnection(const ComRef& cref, const SignalRef& conA, const SignalRef& conB, const oms2::Connection* connection);
 
-    oms_status_enu_t renameModel(const ComRef& identOld, const ComRef& identNew);
-    CompositeModel* getModel(const ComRef& name);
-    oms2::Connection* getConnection(const ComRef& cref, const SignalRef& conA, const SignalRef& conB);
-
     static oms_status_enu_t getRealParameter(const oms2::SignalRef& signal, double& value);
     static oms_status_enu_t setRealParameter(const oms2::SignalRef& signal, double value);
+
+    oms_status_enu_t renameModel(const ComRef& identOld, const ComRef& identNew);
+    Model* getModel(const ComRef& name);
+    oms2::Connection* getConnection(const ComRef& cref, const SignalRef& conA, const SignalRef& conB);
+
+    FMICompositeModel* getFMICompositeModel(const ComRef& name);
+    TLMCompositeModel* getTLMCompositeModel(const ComRef& name);
 
   private:
     Scope();
@@ -98,14 +102,14 @@ namespace oms2
 
     static Scope& getInstance();
 
-    static CompositeModel* loadFMIModel(const pugi::xml_node& xml);
-    static CompositeModel* loadTLMModel(const pugi::xml_node& xml);
+    static Model* loadFMIModel(const pugi::xml_node& xml);
+    static Model* loadTLMModel(const pugi::xml_node& xml);
 
-    oms_status_enu_t saveFMIModel(oms2::FMICompositeModel* model, const std::string& filename);
-    oms_status_enu_t saveTLMModel(oms2::TLMCompositeModel* model, const std::string& filename);
+    oms_status_enu_t saveFMIModel(oms2::Model* model, const std::string& filename);
+    oms_status_enu_t saveTLMModel(oms2::Model* model, const std::string& filename);
 
   private:
-    std::map<ComRef, CompositeModel*> models;
+    std::map<ComRef, Model*> models;
     std::string tempDir;
     std::string workingDir;
   };
