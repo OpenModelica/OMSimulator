@@ -150,7 +150,7 @@ oms2::FMUWrapper* oms2::FMUWrapper::newSubModel(const oms2::ComRef& cref, const 
   model->callbacks.context = 0;
 
   // set temp directory
-  model->tempDir = fmi_import_mk_temp_dir(&model->callbacks, oms2::Scope::GetTempDirectory().c_str(), "temp_");
+  model->tempDir = fmi_import_mk_temp_dir(&model->callbacks, oms2::Scope::GetInstance().getTempDirectory().c_str(), "temp_");
   logDebug("Using \"" + model->tempDir + "\" as temp directory for " + cref);
 
   model->context = fmi_import_allocate_context(&model->callbacks);

@@ -165,7 +165,7 @@ FMUWrapper::FMUWrapper(CompositeModel& model, std::string fmuPath, std::string i
   callbacks.context = 0;
 
   // set temp directory
-  tempDir = fmi_import_mk_temp_dir(&callbacks, oms2::Scope::GetTempDirectory().c_str(), "temp_");
+  tempDir = fmi_import_mk_temp_dir(&callbacks, oms2::Scope::GetInstance().getTempDirectory().c_str(), "temp_");
   logInfo("Using \"" + tempDir + "\" as temp directory for " + instanceName);
 
   context = fmi_import_allocate_context(&callbacks);

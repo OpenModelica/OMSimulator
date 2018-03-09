@@ -50,18 +50,22 @@
 
 oms2::Scope::Scope()
 {
+  logTrace();
+
   boost::filesystem::path tempPath = boost::filesystem::temp_directory_path();
   tempDir = tempPath.string();
 }
 
 oms2::Scope::~Scope()
 {
+  logTrace();
+
   // free memory if no one else does
   for (auto it=models.begin(); it != models.end(); it++)
     unloadModel(it->first);
 }
 
-oms2::Scope& oms2::Scope::getInstance()
+oms2::Scope& oms2::Scope::GetInstance()
 {
   // the only instance
   static Scope scope;
@@ -70,11 +74,11 @@ oms2::Scope& oms2::Scope::getInstance()
 
 oms_status_enu_t oms2::Scope::newFMIModel(const oms2::ComRef& name)
 {
-  Scope& scope = oms2::Scope::getInstance();
+  logTrace();
 
   // check if name is in scope
-  auto it = scope.models.find(name);
-  if (it != scope.models.end())
+  auto it = models.find(name);
+  if (it != models.end())
   {
     logError("A model called \"" + name + "\" is already in the scope.");
     return oms_status_error;
@@ -84,17 +88,17 @@ oms_status_enu_t oms2::Scope::newFMIModel(const oms2::ComRef& name)
   if (!model)
     return oms_status_error;
 
-  scope.models[name] = model;
+  models[name] = model;
   return oms_status_ok;
 }
 
 oms_status_enu_t oms2::Scope::newTLMModel(const oms2::ComRef& name)
 {
-  Scope& scope = oms2::Scope::getInstance();
+  logTrace();
 
   // check if name is in scope
-  auto it = scope.models.find(name);
-  if (it != scope.models.end())
+  auto it = models.find(name);
+  if (it != models.end())
   {
     logError("A model called \"" + name + "\" is already in the scope.");
     return oms_status_error;
@@ -104,7 +108,7 @@ oms_status_enu_t oms2::Scope::newTLMModel(const oms2::ComRef& name)
   if (!model)
     return oms_status_error;
 
-  scope.models[name] = model;
+  models[name] = model;
   return oms_status_ok;
 }
 
@@ -112,18 +116,16 @@ oms_status_enu_t oms2::Scope::unloadModel(const oms2::ComRef& name)
 {
   logTrace();
 
-  Scope& scope = oms2::Scope::getInstance();
-
   // check if name is in scope
-  auto it = scope.models.find(name);
-  if (it == scope.models.end())
+  auto it = models.find(name);
+  if (it == models.end())
   {
     logError("[oms2::Scope::unloadModel] There is no model called \"" + name + "\" in the scope.");
     return oms_status_error;
   }
 
   oms2::Model::DeleteModel(it->second);
-  scope.models.erase(it);
+  models.erase(it);
   logInfo("Removed model from scope: " + name);
 
   return oms_status_ok;
@@ -131,9 +133,9 @@ oms_status_enu_t oms2::Scope::unloadModel(const oms2::ComRef& name)
 
 oms_status_enu_t oms2::Scope::addFMU(const oms2::ComRef& modelIdent, const std::string& fmuPath, const oms2::ComRef& fmuIdent)
 {
-  Scope& scope = oms2::Scope::getInstance();
+  logTrace();
 
-  oms2::Model* model = scope.getModel(modelIdent);
+  oms2::Model* model = getModel(modelIdent);
   if (!model)
     return oms_status_error;
 
@@ -148,9 +150,9 @@ oms_status_enu_t oms2::Scope::addFMU(const oms2::ComRef& modelIdent, const std::
 
 oms_status_enu_t oms2::Scope::deleteSubModel(const oms2::ComRef& modelIdent, const oms2::ComRef& subModelIdent)
 {
-  Scope& scope = oms2::Scope::getInstance();
+  logTrace();
 
-  oms2::Model* model = scope.getModel(modelIdent);
+  oms2::Model* model = getModel(modelIdent);
   if (!model)
     return oms_status_error;
 
@@ -165,13 +167,13 @@ oms_status_enu_t oms2::Scope::deleteSubModel(const oms2::ComRef& modelIdent, con
 
 oms_status_enu_t oms2::Scope::rename(const oms2::ComRef& identOld, const oms2::ComRef& identNew)
 {
-  Scope& scope = oms2::Scope::getInstance();
+  logTrace();
 
   // renaming a (root) model or a sub.model?
   if (identOld.first() == identNew.first())
   {
-    auto it = scope.models.find(identOld.first());
-    if (it == scope.models.end())
+    auto it = models.find(identOld.first());
+    if (it == models.end())
     {
       logError("[oms2::Scope::rename] no model called \"" + identOld.first() + "\" in scope.");
       return oms_status_error;
@@ -193,7 +195,7 @@ oms_status_enu_t oms2::Scope::rename(const oms2::ComRef& identOld, const oms2::C
   }
   else // (root) model
   {
-    return scope.renameModel(identOld, identNew);
+    return renameModel(identOld, identNew);
   }
 
   logError("[oms2::Scope::rename] failed");
@@ -271,7 +273,6 @@ oms2::Model* oms2::Scope::loadModel(const std::string& filename)
 oms2::Model* oms2::Scope::loadFMIModel(const pugi::xml_node& xml)
 {
   logTrace();
-  oms2::Scope& scope = oms2::Scope::getInstance();
 
   // read model name
   std::string ident_;
@@ -292,7 +293,7 @@ oms2::Model* oms2::Scope::loadFMIModel(const pugi::xml_node& xml)
   }
 
   // import components
-  FMICompositeModel* model = scope.getFMICompositeModel(cref_model);
+  FMICompositeModel* model = getFMICompositeModel(cref_model);
 
   for (auto it = xml.begin(); it != xml.end(); ++it)
   {
@@ -490,18 +491,20 @@ oms2::Model* oms2::Scope::loadFMIModel(const pugi::xml_node& xml)
   }
 
   logInfo("New FMI model in scope: " + cref_model);
-  return scope.getModel(cref_model);
+  return getModel(cref_model);
 }
 
 oms2::Model* oms2::Scope::loadTLMModel(const pugi::xml_node& xml)
 {
+  logTrace();
+
   logError("oms2::Scope::loadTLMModel: not implemented yet");
   return NULL;
 }
 
-oms_status_enu_t oms2::Scope::SetTempDirectory(const std::string& newTempDir)
+oms_status_enu_t oms2::Scope::setTempDirectory(const std::string& newTempDir)
 {
-  Scope& scope = oms2::Scope::getInstance();
+  logTrace();
 
   if (!boost::filesystem::is_directory(newTempDir))
   {
@@ -516,16 +519,15 @@ oms_status_enu_t oms2::Scope::SetTempDirectory(const std::string& newTempDir)
 
   boost::filesystem::path path(newTempDir.c_str());
   path = boost::filesystem::canonical(path);
-  scope.tempDir = path.string();
+  tempDir = path.string();
 
-  logInfo("New temp directory: \"" + std::string(scope.tempDir) + "\"");
+  logInfo("New temp directory: \"" + std::string(tempDir) + "\"");
   return oms_status_ok;
 }
 
-oms_status_enu_t oms2::Scope::SetWorkingDirectory(const std::string& path)
+oms_status_enu_t oms2::Scope::setWorkingDirectory(const std::string& path)
 {
   logTrace();
-  Scope& scope = oms2::Scope::getInstance();
 
   boost::filesystem::path path_(path.c_str());
   if (!boost::filesystem::is_directory(path_))
@@ -535,26 +537,25 @@ oms_status_enu_t oms2::Scope::SetWorkingDirectory(const std::string& path)
   }
 
   boost::filesystem::current_path(path_);
-  scope.workingDir = path;
+  workingDir = path;
   return oms_status_ok;
 }
 
 oms_status_enu_t oms2::Scope::saveModel(const std::string& filename, const oms2::ComRef& name)
 {
   logTrace();
-  oms2::Scope& scope = oms2::Scope::getInstance();
 
-  oms2::Model* model = scope.getModel(name);
+  oms2::Model* model = getModel(name);
   if (!model)
     return oms_status_error;
 
   switch (model->getType())
   {
   case oms_component_fmi:
-    return scope.saveFMIModel(model, filename);
+    return saveFMIModel(model, filename);
 
   case oms_component_tlm:
-    return scope.saveTLMModel(model, filename);
+    return saveTLMModel(model, filename);
   }
 
   return oms_status_error;
@@ -737,13 +738,15 @@ oms_status_enu_t oms2::Scope::saveFMIModel(oms2::Model* model, const std::string
 
 oms_status_enu_t oms2::Scope::saveTLMModel(oms2::Model* model, const std::string& filename)
 {
+  logTrace();
+
   logError("[oms2::Scope::saveTLMModel]: not implemented yet");
   return oms_status_error;
 }
 
 oms_status_enu_t oms2::Scope::getElement(const oms2::ComRef& cref, oms2::Element** element)
 {
-  oms2::Scope& scope = oms2::Scope::getInstance();
+  logTrace();
 
   if (!element)
   {
@@ -754,7 +757,7 @@ oms_status_enu_t oms2::Scope::getElement(const oms2::ComRef& cref, oms2::Element
   if (cref.isIdent())
   {
     // Model
-    Model* model = scope.getModel(cref);
+    Model* model = getModel(cref);
     if (!model)
     {
       logError("[oms2::Scope::getElement] failed");
@@ -767,7 +770,7 @@ oms_status_enu_t oms2::Scope::getElement(const oms2::ComRef& cref, oms2::Element
   {
     // Sub-model
     ComRef modelCref = cref.first();
-    Model* model = scope.getModel(modelCref);
+    Model* model = getModel(modelCref);
     if (!model)
     {
       logError("[oms2::Scope::getElement] failed");
@@ -799,7 +802,7 @@ oms_status_enu_t oms2::Scope::getElement(const oms2::ComRef& cref, oms2::Element
 
 oms_status_enu_t oms2::Scope::getElements(const oms2::ComRef& cref, oms2::Element*** elements)
 {
-  oms2::Scope& scope = oms2::Scope::getInstance();
+  logTrace();
 
   if (!elements)
   {
@@ -807,7 +810,7 @@ oms_status_enu_t oms2::Scope::getElements(const oms2::ComRef& cref, oms2::Elemen
     return oms_status_warning;
   }
 
-  Model* model = scope.getModel(cref);
+  Model* model = getModel(cref);
   if (model && oms_component_fmi == model->getType())
   {
     FMICompositeModel* fmiModel = model->getFMICompositeModel();
@@ -821,13 +824,13 @@ oms_status_enu_t oms2::Scope::getElements(const oms2::ComRef& cref, oms2::Elemen
 
 oms_status_enu_t oms2::Scope::getFMUPath(const oms2::ComRef& cref, char** path)
 {
-  oms2::Scope& scope = oms2::Scope::getInstance();
+  logTrace();
 
   if (!cref.isIdent())
   {
     // Sub-model
     ComRef modelCref = cref.first();
-    Model* model = scope.getModel(modelCref);
+    Model* model = getModel(modelCref);
     if (!model)
     {
       logError("[oms2::Scope::getFMUPath] failed");
@@ -860,7 +863,7 @@ oms_status_enu_t oms2::Scope::getFMUPath(const oms2::ComRef& cref, char** path)
 
 oms_status_enu_t oms2::Scope::setElementGeometry(const oms2::ComRef& cref, const oms2::ssd::ElementGeometry* geometry)
 {
-  oms2::Scope& scope = oms2::Scope::getInstance();
+  logTrace();
 
   if (!geometry)
   {
@@ -871,7 +874,7 @@ oms_status_enu_t oms2::Scope::setElementGeometry(const oms2::ComRef& cref, const
   if (cref.isIdent())
   {
     // Model
-    Model* model = scope.getModel(cref);
+    Model* model = getModel(cref);
     if (!model)
     {
       logError("[oms2::Scope::setElementGeometry] failed");
@@ -889,7 +892,7 @@ oms_status_enu_t oms2::Scope::setElementGeometry(const oms2::ComRef& cref, const
   {
     // Sub-model
     ComRef modelCref = cref.first();
-    Model* model = scope.getModel(modelCref);
+    Model* model = getModel(modelCref);
     if (!model)
     {
       logError("[oms2::Scope::setElementGeometry] failed");
@@ -921,7 +924,7 @@ oms_status_enu_t oms2::Scope::setElementGeometry(const oms2::ComRef& cref, const
 
 oms_status_enu_t oms2::Scope::getConnections(const oms2::ComRef& cref, oms2::Connection*** connections)
 {
-  oms2::Scope& scope = oms2::Scope::getInstance();
+  logTrace();
 
   if (!connections)
   {
@@ -932,7 +935,7 @@ oms_status_enu_t oms2::Scope::getConnections(const oms2::ComRef& cref, oms2::Con
   if (cref.isIdent())
   {
     // Model
-    Model* model = scope.getModel(cref);
+    Model* model = getModel(cref);
     if (!model)
     {
       logError("[oms2::Scope::getConnections] failed");
@@ -955,6 +958,8 @@ oms_status_enu_t oms2::Scope::getConnections(const oms2::ComRef& cref, oms2::Con
 
 oms2::Connection* oms2::Scope::getConnection(const ComRef& cref, const SignalRef& conA, const SignalRef& conB)
 {
+  logTrace();
+
   oms2::Model* model = getModel(cref);
   if (!model)
   {
@@ -974,9 +979,9 @@ oms2::Connection* oms2::Scope::getConnection(const ComRef& cref, const SignalRef
 
 oms_status_enu_t oms2::Scope::addConnection(const oms2::ComRef& cref, const oms2::SignalRef& conA, const oms2::SignalRef& conB)
 {
-  oms2::Scope& scope = oms2::Scope::getInstance();
+  logTrace();
 
-  oms2::Model* model = scope.getModel(cref);
+  oms2::Model* model = getModel(cref);
   if (!model)
   {
     logError("[oms2::Scope::addConnection] failed");
@@ -995,9 +1000,9 @@ oms_status_enu_t oms2::Scope::addConnection(const oms2::ComRef& cref, const oms2
 
 oms_status_enu_t oms2::Scope::deleteConnection(const oms2::ComRef& cref, const oms2::SignalRef& conA, const oms2::SignalRef& conB)
 {
-  oms2::Scope& scope = oms2::Scope::getInstance();
+  logTrace();
 
-  oms2::Model* model = scope.getModel(cref);
+  oms2::Model* model = getModel(cref);
   if (!model)
   {
     logError("[oms2::Scope::deleteConnection] failed");
@@ -1016,9 +1021,9 @@ oms_status_enu_t oms2::Scope::deleteConnection(const oms2::ComRef& cref, const o
 
 oms_status_enu_t oms2::Scope::updateConnection(const oms2::ComRef& cref, const oms2::SignalRef& conA, const oms2::SignalRef& conB, const oms2::Connection* connection)
 {
-  oms2::Scope& scope = oms2::Scope::getInstance();
+  logTrace();
 
-  oms2::Connection* connection_ = scope.getConnection(cref, conA, conB);
+  oms2::Connection* connection_ = getConnection(cref, conA, conB);
 
   if (connection_)
   {
@@ -1031,6 +1036,8 @@ oms_status_enu_t oms2::Scope::updateConnection(const oms2::ComRef& cref, const o
 
 oms_status_enu_t oms2::Scope::renameModel(const oms2::ComRef& identOld, const oms2::ComRef& identNew)
 {
+  logTrace();
+
   if (!identNew.isValidIdent())
   {
     logError("Identifier \"" + identNew + "\" is invalid.");
@@ -1068,6 +1075,8 @@ oms_status_enu_t oms2::Scope::renameModel(const oms2::ComRef& identOld, const om
 
 oms2::Model* oms2::Scope::getModel(const oms2::ComRef& name)
 {
+  logTrace();
+
   auto it = models.find(name);
   if (it == models.end())
   {
@@ -1080,6 +1089,8 @@ oms2::Model* oms2::Scope::getModel(const oms2::ComRef& name)
 
 oms2::FMICompositeModel* oms2::Scope::getFMICompositeModel(const ComRef& name)
 {
+  logTrace();
+
   oms2::Model* model = getModel(name);
   if (!model)
     return NULL;
@@ -1088,6 +1099,8 @@ oms2::FMICompositeModel* oms2::Scope::getFMICompositeModel(const ComRef& name)
 
 oms2::TLMCompositeModel* oms2::Scope::getTLMCompositeModel(const ComRef& name)
 {
+  logTrace();
+
   oms2::Model* model = getModel(name);
   if (!model)
     return NULL;
@@ -1096,7 +1109,7 @@ oms2::TLMCompositeModel* oms2::Scope::getTLMCompositeModel(const ComRef& name)
 
 oms_status_enu_t oms2::Scope::getRealParameter(const oms2::SignalRef& signal, double& value)
 {
-  oms2::Scope& scope = oms2::Scope::getInstance();
+  logTrace();
   ComRef cref = signal.getCref();
   std::string var = signal.getVar();
 
@@ -1104,7 +1117,7 @@ oms_status_enu_t oms2::Scope::getRealParameter(const oms2::SignalRef& signal, do
   {
     // Sub-model
     ComRef modelCref = cref.first();
-    Model* model = scope.getModel(modelCref);
+    Model* model = getModel(modelCref);
     if (!model)
     {
       logError("[oms2::Scope::getRealParameter] failed");
@@ -1137,7 +1150,7 @@ oms_status_enu_t oms2::Scope::getRealParameter(const oms2::SignalRef& signal, do
 
 oms_status_enu_t oms2::Scope::setRealParameter(const oms2::SignalRef& signal, double value)
 {
-  oms2::Scope& scope = oms2::Scope::getInstance();
+  logTrace();
   ComRef cref = signal.getCref();
   std::string var = signal.getVar();
 
@@ -1145,7 +1158,7 @@ oms_status_enu_t oms2::Scope::setRealParameter(const oms2::SignalRef& signal, do
   {
     // Sub-model
     ComRef modelCref = cref.first();
-    Model* model = scope.getModel(modelCref);
+    Model* model = getModel(modelCref);
     if (!model)
     {
       logError("[oms2::Scope::setRealParameter] failed");
