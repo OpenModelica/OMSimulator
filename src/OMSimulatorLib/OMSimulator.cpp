@@ -47,6 +47,8 @@
 #include <string>
 #include <boost/filesystem.hpp>
 
+#include <iostream>
+
 void* oms_newModel()
 {
   logTrace();
@@ -688,4 +690,51 @@ oms_status_enu_t oms2_setWorkingDirectory(const char* path)
 {
   logTrace();
   return oms2::Scope::GetInstance().setWorkingDirectory(path);
+}
+
+oms_status_enu_t oms2_getComponentType(const char* ident, oms_element_type_enu_t* type)
+{
+  logTrace();
+  if (!type)
+  {
+    logError("oms2_getComponentType: type is NULL pointer");
+    return oms_status_error;
+  }
+
+  *type = oms_component_none;
+  logError("oms2_getComponentType: not implemented yet");
+  return oms_status_error;
+}
+
+oms_status_enu_t oms2_describe(const char* cref)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().describeModel(oms2::ComRef(cref));
+}
+
+oms_status_enu_t oms2_addExternalModel(const char *cref, const char *name, const char *modelfile, const char *startscript)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().addExternalModel(oms2::ComRef(cref), oms2::ComRef(name), modelfile, startscript);
+}
+
+oms_status_enu_t oms2_addTLMInterface(const char *cref, const char *subref, const char *name, int dimensions, oms_tlm_causality_t causality, const char *domain)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().addTLMInterface(oms2::ComRef(cref), oms2::ComRef(subref), oms2::ComRef(name),
+                                      dimensions, causality, domain);
+}
+
+oms_status_enu_t oms2_addTLMConnection(const char *cref, const char *from, const char *to,
+                                   double delay, double alpha, double Zf, double Zfr)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().addTLMConnection(oms2::ComRef(cref), oms2::SignalRef(from), oms2::SignalRef(to),
+                                       delay, alpha, Zf, Zfr);
+}
+
+oms_status_enu_t oms2_addFMISubModel(const char *cref, const char *subref)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().addFMISubModel(oms2::ComRef(cref), oms2::ComRef(subref));
 }

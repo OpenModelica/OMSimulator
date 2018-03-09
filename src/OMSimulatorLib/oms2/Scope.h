@@ -93,6 +93,15 @@ namespace oms2
     FMICompositeModel* getFMICompositeModel(const ComRef& name);
     TLMCompositeModel* getTLMCompositeModel(const ComRef& name);
 
+    oms_status_enu_t addFMISubModel(const ComRef& cref, const ComRef& subref);
+    oms_status_enu_t addExternalModel(const ComRef& cref, const ComRef& name,
+                                      const std::string& modelfile, const std::string &startscript);
+    oms_status_enu_t addTLMInterface(const ComRef& cref, const ComRef& subref, const ComRef& name,
+                                     int dimensions, oms_tlm_causality_t causality, std::string domain);
+    oms_status_enu_t addTLMConnection(const ComRef& cref, const SignalRef& from, const SignalRef& to,
+                                      double delay, double alpha, double Zf, double Zfr);
+    oms_status_enu_t describeModel(const ComRef& cref);
+
   private:
     Scope();
     ~Scope();

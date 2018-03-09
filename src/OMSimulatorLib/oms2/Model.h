@@ -74,6 +74,8 @@ namespace oms2
     const ComRef getName() const {return compositeModel->getName();}
     void setName(const ComRef& name) {compositeModel->setName(name);}
 
+    virtual oms_status_enu_t describe() { return oms_status_error; }
+
   private:
     Model(const oms2::ComRef& cref);
     ~Model();
