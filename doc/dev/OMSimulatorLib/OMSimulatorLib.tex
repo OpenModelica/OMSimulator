@@ -127,7 +127,7 @@
 
 \begin{tikzpicture}
   \begin{umlpackage}{OMSimulatorLib}
-    \umlclass[x=-1.5, y=7]{Scope}{
+    \umlclass[x=-1.5, y=11.5]{Scope}{
       - models: map<ComRef,Model> \\
       - tempDir: string
     }{
@@ -141,12 +141,16 @@
       + SetTempDirectory() \\
       + GetTempDirectory()
     }
-    \umlclass[x=-1.5, y=0.5, fill=ucl2orange]{Model}{
-      - name: ComRef \\
-      - geometry: ssd:ElementGeometry \\
+    \umlclass[x=-1.5, y=5.5]{Model}{
+      - geometry: ssd:SystemGeometry \\
       - startTime: double \\
       - stopTime: double \\
       - resultFile: string
+    }{
+    }
+    \umlclass[x=-1.5, y=0.5, fill=ucl2orange]{CompositeModel}{
+      - name: ComRef \\
+      - geometry: ssd:ElementGeometry \\
     }{
       + getType() = 0 \\
       + getName() \\
@@ -229,6 +233,7 @@
   %\umlaggreg[mult1=1, mult2=0..*]{Scope}{Model}
 
   \umlcompo[mult1=1, mult2=0..*]{Scope}{Model}
+  \umlcompo[mult1=1, mult2=1]{Model}{CompositeModel}
   \umlcompo[mult1=1, mult2=0..*]{TLMCompositeModel}{ExternalModel}
   \umlcompo[mult1=1, mult2=0..*]{TLMCompositeModel}{TLMConnection}
   \umlcompo[mult1=0..1, mult2=0..*]{TLMCompositeModel}{FMICompositeModel}
@@ -238,8 +243,8 @@
   \umlcompo[mult1=1, mult2=2]{FMISubModel}{DependencyGraph}
   \umlcompo[mult1=1, mult2=2]{FMICompositeModel}{DependencyGraph}
   \umlcompo[mult1=1, mult2=0..*]{FMISubModel}{SignalRef}
-  \umlinherit[geometry=--]{FMICompositeModel}{Model}
-  \umlinherit[geometry=--]{TLMCompositeModel}{Model}
+  \umlinherit[geometry=--]{FMICompositeModel}{CompositeModel}
+  \umlinherit[geometry=--]{TLMCompositeModel}{CompositeModel}
   \umlinherit[geometry=--]{TLMConnection}{Connection}
   \umlinherit[geometry=--]{FMUWrapper}{FMISubModel}
   \umlinherit[geometry=--]{Table}{FMISubModel}
@@ -248,8 +253,8 @@
   \umlinherit[geometry=--]{FMUWrapperME}{FMUWrapper}
   \umlinherit[geometry=--]{FMUWrapperCS}{FMUWrapper}
 
-  \umlnote[x=7,y=7, width=3cm]{Scope}{Global scope}
-  \umlnote[x=-12,y=8.5, width=3cm]{OMSimulatorLib}{namespace oms2}
+  \umlnote[x=7,y=11.5, width=3cm]{Scope}{Global scope}
+  \umlnote[x=-12,y=12.5, width=3cm]{OMSimulatorLib}{namespace oms2}
 \end{tikzpicture}
 
 \end{document}

@@ -29,45 +29,60 @@
  *
  */
 
-#ifndef _OMS2_COMPOSITE_MODEL_H_
-#define _OMS2_COMPOSITE_MODEL_H_
+#include "Model.h"
 
-#include "../Types.h"
-#include "ComRef.h"
-#include "Element.h"
-#include "ssd/ElementGeometry.h"
-#include "ssd/SystemGeometry.h"
+#include "FMICompositeModel.h"
+#include "TLMCompositeModel.h"
+#include "Logging.h"
 
-#include <string>
+#include <regex>
 
-namespace oms2
+oms2::Model::Model(const oms2::ComRef& cref)
+  : systemGeometry()
 {
-  class CompositeModel
-  {
-  public:
-    virtual oms_element_type_enu_t getType() = 0;
+  logTrace();
 
-    static void DeleteModel(CompositeModel *model) {if (model) delete model;}
+  compositeModel = NULL;
 
-    const ComRef getName() const {return oms2::ComRef(element.getName());}
-    const oms2::ssd::ElementGeometry* getGeometry() {return element.getGeometry();}
-    oms2::Element* getElement() {return &element;}
-
-    void setName(const ComRef& name) {element.setName(name);}
-    void setGeometry(const oms2::ssd::ElementGeometry& geometry) {element.setGeometry(&geometry);}
-
-  protected:
-    CompositeModel(oms_element_type_enu_t type, const ComRef& cref);
-    virtual ~CompositeModel();
-
-  private:
-    // stop the compiler generating methods copying the object
-    CompositeModel(CompositeModel const& copy);            // not implemented
-    CompositeModel& operator=(CompositeModel const& copy); // not implemented
-
-  protected:
-    oms2::Element element;
-  };
+  startTime = 0.0;
+  stopTime = 1.0;
+  resultFile = cref.toString() + "_res.mat";
 }
 
-#endif
+oms2::Model::~Model()
+{
+  if (compositeModel)
+    CompositeModel::DeleteModel(compositeModel);
+}
+
+oms2::Model* oms2::Model::NewModel(oms_element_type_enu_t type, const oms2::ComRef& cref)
+{
+  oms2::Model* model = new oms2::Model(cref);
+
+  if (oms_component_fmi == type)
+    model->compositeModel = oms2::FMICompositeModel::newModel(cref);
+  else if (oms_component_tlm == type)
+    model->compositeModel = oms2::TLMCompositeModel::newModel(cref);
+
+  if (!model->compositeModel)
+  {
+    delete model;
+    model = NULL;
+  }
+
+  return model;
+}
+
+oms2::FMICompositeModel* oms2::Model::getFMICompositeModel()
+{
+  if (oms_component_fmi == getType())
+    return dynamic_cast<FMICompositeModel*>(compositeModel);
+  return NULL;
+}
+
+oms2::TLMCompositeModel* oms2::Model::getTLMCompositeModel()
+{
+  if (oms_component_tlm == getType())
+    return dynamic_cast<TLMCompositeModel*>(compositeModel);
+  return NULL;
+}
