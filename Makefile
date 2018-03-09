@@ -45,14 +45,7 @@ OMSimulator:
 
 
 
-ifeq ($(CERES),OFF)
-config-3rdParty: config-fmil config-lua config-cvode config-kinsol
-	@echo
-	@echo "# CERES=OFF => Skipping build of 3rdParty library Ceres-Solver. Ceres-Solver is a dependency of the (optional) parameter estimation module."
-	@echo
-else
 config-3rdParty: config-fmil config-lua config-cvode config-kinsol config-gflags config-glog config-ceres-solver
-endif
 
 config-OMSimulator:
 	@echo
@@ -60,7 +53,7 @@ config-OMSimulator:
 	@echo
 	$(RM) $(BUILD_DIR)
 	$(MKDIR) $(BUILD_DIR)
-	@cd $(BUILD_DIR) && cmake $(CMAKE_TARGET) -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DOMFIT=$(OMFIT) ../..
+	cd $(BUILD_DIR) && cmake $(CMAKE_TARGET) -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DOMFIT=$(OMFIT) ../..
 
 config-fmil:
 	@echo
@@ -114,6 +107,12 @@ config-glog: config-gflags
 	$(MKDIR) 3rdParty/glog/$(BUILD_DIR)
 	cd 3rdParty/glog/$(BUILD_DIR) && cmake $(CMAKE_TARGET) -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) ../../glog -DBUILD_SHARED_LIBS="OFF" -DBUILD_TESTING="OFF" -DCMAKE_C_FLAGS="-fPIC" -DCMAKE_CXX_FLAGS="-fPIC" -DCMAKE_BUILD_TYPE="Release" && $(MAKE) install
 
+ifeq ($(CERES),OFF)
+config-ceres-solver:
+	@echo
+	@echo "# CERES=OFF => Skipping build of 3rdParty library Ceres-Solver. Ceres-Solver is a dependency of the (optional) parameter estimation module."
+	@echo
+else
 config-ceres-solver: config-glog
 	@echo
 	@echo "# config ceres-solver"
@@ -122,6 +121,7 @@ config-ceres-solver: config-glog
 	$(RM) 3rdParty/ceres- solver/$(INSTALL_DIR)
 	$(MKDIR) 3rdParty/ceres-solver/$(BUILD_DIR)
 	cd 3rdParty/ceres-solver/$(BUILD_DIR) && cmake $(CMAKE_TARGET) -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) -DCXX11="ON" -DEXPORT_BUILD_DIR="ON" -DEIGEN_INCLUDE_DIR_HINTS="../../eigen/eigen" -DBUILD_EXAMPLES="OFF" -DBUILD_TESTING="OFF" -DCMAKE_BUILD_TYPE="Release" ../../ceres-solver && $(MAKE) install
+endif
 
 distclean:
 	@echo
