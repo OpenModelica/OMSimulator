@@ -33,6 +33,7 @@
 
 #include "CompositeModel.h"
 #include "MatReader.h"
+#include "oms2/CompositeModel.h"
 #include "oms2/ComRef.h"
 #include "oms2/Element.h"
 #include "oms2/FMICompositeModel.h"
@@ -567,7 +568,7 @@ oms_status_enu_t oms2_rename(const char* identOld, const char* identNew)
 oms_status_enu_t oms2_loadModel(const char* filename, char** ident)
 {
   logTrace();
-  oms2::Model* model = oms2::Scope::loadModel(filename);
+  oms2::CompositeModel* model = oms2::Scope::loadModel(filename);
 
   if (!model)
     return oms_status_error;

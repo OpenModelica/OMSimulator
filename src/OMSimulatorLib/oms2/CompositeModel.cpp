@@ -29,14 +29,14 @@
  *
  */
 
-#include "Model.h"
+#include "CompositeModel.h"
 
 #include "FMICompositeModel.h"
 #include "Logging.h"
 
 #include <regex>
 
-oms2::Model::Model(oms_element_type_enu_t type, const ComRef& cref)
+oms2::CompositeModel::CompositeModel(oms_element_type_enu_t type, const ComRef& cref)
   : element(type, cref)
 {
   logTrace();
@@ -46,6 +46,6 @@ oms2::Model::Model(oms_element_type_enu_t type, const ComRef& cref)
   resultFile = cref.toString() + "_res.mat";
 }
 
-oms2::Model::~Model()
+oms2::CompositeModel::~CompositeModel()
 {
 }

@@ -33,12 +33,12 @@
 #define _OMS_TLM_COMPOSITE_MODEL_H_
 
 #include "ComRef.h"
-#include "Model.h"
+#include "CompositeModel.h"
 #include "../Types.h"
 
 namespace oms2
 {
-  class TLMCompositeModel : public Model
+  class TLMCompositeModel : public CompositeModel
   {
   public:
     static TLMCompositeModel* newModel(const ComRef& name);

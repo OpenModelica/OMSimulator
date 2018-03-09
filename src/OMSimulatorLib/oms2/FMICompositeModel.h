@@ -35,7 +35,7 @@
 #include "ComRef.h"
 #include "SignalRef.h"
 #include "FMISubModel.h"
-#include "Model.h"
+#include "CompositeModel.h"
 #include "Connection.h"
 #include "../Types.h"
 
@@ -44,7 +44,7 @@
 
 namespace oms2
 {
-  class FMICompositeModel : public Model
+  class FMICompositeModel : public CompositeModel
   {
   public:
     static FMICompositeModel* newModel(const oms2::ComRef& name);

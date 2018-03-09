@@ -38,7 +38,7 @@
 #include "SignalRef.h"
 
 oms2::FMICompositeModel::FMICompositeModel(const ComRef& name)
-  : oms2::Model(oms_component_fmi, name)
+  : oms2::CompositeModel(oms_component_fmi, name)
 {
   logTrace();
   connections.push_back(NULL);
