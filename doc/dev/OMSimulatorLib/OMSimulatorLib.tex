@@ -134,13 +134,15 @@
       - std::string workingDir;
     }{}
 
-    \umlclass[x=-1.5, y=5.5]{Model}{
-      - geometry: ssd:SystemGeometry \\
-      - startTime: double \\
-      - stopTime: double \\
-      - resultFile: string
+    \umlclass[x=-1.5, y=5]{Model}{
+      - oms2::ssd::SystemGeometry systemGeometry; \\
+      - CompositeModel* compositeModel; \\
+      - double startTime; \\
+      - double stopTime; \\
+      - std::string resultFile;
     }{
     }
+
     \umlclass[x=-1.5, y=0.5, fill=ucl2orange]{CompositeModel}{
       - name: ComRef \\
       - geometry: ssd:ElementGeometry \\

@@ -67,16 +67,15 @@ namespace oms2
     const ComRef getName() const {return compositeModel->getName();}
     void setName(const ComRef& name) {compositeModel->setName(name);}
 
-  protected:
+  private:
     Model(const oms2::ComRef& cref);
     ~Model();
 
-  private:
     // stop the compiler generating methods copying the object
     Model(Model const& copy);            // not implemented
     Model& operator=(Model const& copy); // not implemented
 
-  protected:
+  private:
     oms2::ssd::SystemGeometry systemGeometry;
     CompositeModel* compositeModel;
 
