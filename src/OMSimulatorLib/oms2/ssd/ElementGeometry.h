@@ -49,6 +49,10 @@ namespace oms2
 
       ElementGeometry& operator=(ElementGeometry const& rhs);
 
+      void setX1(double x1) {this->x1 = x1;}
+      void setY1(double y1) {this->y1 = y1;}
+      void setX2(double x2) {this->x2 = x2;}
+      void setY2(double y2) {this->y2 = y2;}
       void setSizePosition(double x1, double y1, double x2, double y2) {this->x1 = x1; this->y1 = y1; this->x2 = x2; this->y2 = y2;}
       void setRotation(double rotation) {this->rotation = rotation;}
       void setIconSource(std::string iconSource);

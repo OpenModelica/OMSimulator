@@ -42,6 +42,9 @@
 
 #include <string>
 
+#define PUGIXML_HEADER_ONLY
+#include <pugixml.hpp>
+
 namespace oms2
 {
   class Model
@@ -50,6 +53,7 @@ namespace oms2
     // NewModel() is used instead of a constructor to make sure that only
     // instances with valid names can be created.
     static Model* NewModel(oms_element_type_enu_t type, const ComRef& cref);
+    static Model* LoadModel(const pugi::xml_node& node);
     static void DeleteModel(Model *model) {if (model) delete model;}
 
     void setStartTime(double value) {startTime = value;}

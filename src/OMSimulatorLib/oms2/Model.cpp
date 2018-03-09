@@ -37,6 +37,9 @@
 
 #include <regex>
 
+#define PUGIXML_HEADER_ONLY
+#include <pugixml.hpp>
+
 oms2::Model::Model(const oms2::ComRef& cref)
   : systemGeometry()
 {
@@ -60,14 +63,71 @@ oms2::Model* oms2::Model::NewModel(oms_element_type_enu_t type, const oms2::ComR
   oms2::Model* model = new oms2::Model(cref);
 
   if (oms_component_fmi == type)
-    model->compositeModel = oms2::FMICompositeModel::newModel(cref);
+    model->compositeModel = oms2::FMICompositeModel::NewModel(cref);
   else if (oms_component_tlm == type)
-    model->compositeModel = oms2::TLMCompositeModel::newModel(cref);
+    model->compositeModel = oms2::TLMCompositeModel::NewModel(cref);
 
   if (!model->compositeModel)
   {
     delete model;
     model = NULL;
+  }
+
+  return model;
+}
+
+oms2::Model* oms2::Model::LoadModel(const pugi::xml_node& node)
+{
+  oms_element_type_enu_t modelType = oms_component_none;
+  bool defaultExperiment = true;
+
+  for(pugi::xml_node_iterator it = node.begin(); it != node.end(); ++it)
+  {
+    std::string name = it->name();
+    if (name == "TLMModel" && modelType == oms_component_none)
+      modelType = oms_component_tlm;
+    else if (name == "FMICompositeModel" && modelType == oms_component_none)
+      modelType = oms_component_fmi;
+    else if (name == "Experiment" && defaultExperiment)
+      defaultExperiment = false;
+    else
+    {
+      logError("wrong xml schema detected");
+      return NULL;
+    }
+  }
+
+  oms2::CompositeModel* compositeModel = NULL;
+  if (modelType == oms_component_fmi)
+    compositeModel = oms2::FMICompositeModel::LoadModel(node.child("FMICompositeModel"));
+  else if (modelType == oms_component_tlm)
+    compositeModel = oms2::TLMCompositeModel::LoadModel(node.child("TLMModel"));
+
+  if (!compositeModel)
+    return NULL;
+
+  oms2::Model* model = new oms2::Model(compositeModel->getName());
+  model->compositeModel = compositeModel;
+
+  if (!defaultExperiment)
+  {
+    const pugi::xml_node& experiment = node.child("Experiment");
+    for (auto it = experiment.attributes_begin(); it != experiment.attributes_end(); ++it)
+    {
+      std::string name = it->name();
+      if (name == "StartTime")
+        model->setStartTime(it->as_double());
+      else if (name == "StopTime")
+        model->setStopTime(it->as_double());
+      else if (name == "ResultFile")
+        model->setResultFile(std::string(it->value()));
+      else
+      {
+        logError("Unknown \"Experiment\" attribute: " + name);
+        oms2::Model::DeleteModel(model);
+        return NULL;
+      }
+    }
   }
 
   return model;

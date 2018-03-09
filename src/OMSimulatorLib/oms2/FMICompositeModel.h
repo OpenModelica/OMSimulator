@@ -42,12 +42,16 @@
 #include <map>
 #include <vector>
 
+#define PUGIXML_HEADER_ONLY
+#include <pugixml.hpp>
+
 namespace oms2
 {
   class FMICompositeModel : public CompositeModel
   {
   public:
-    static FMICompositeModel* newModel(const oms2::ComRef& name);
+    static FMICompositeModel* NewModel(const oms2::ComRef& name);
+    static FMICompositeModel* LoadModel(const pugi::xml_node& node);
 
     oms_element_type_enu_t getType() {return oms_component_fmi;}
     oms_status_enu_t addFMU(const std::string& filename, const oms2::ComRef& cref);
@@ -66,6 +70,11 @@ namespace oms2
     oms_status_enu_t renameSubModel(const oms2::ComRef& identOld, const oms2::ComRef& identNew);
 
     oms2::Element** getElements();
+
+  private:
+    oms_status_enu_t loadElementGeometry(const pugi::xml_node& node);
+    oms_status_enu_t loadConnections(const pugi::xml_node& node);
+    oms_status_enu_t loadSubModel(const pugi::xml_node& node);
 
   protected:
     void deleteComponents();

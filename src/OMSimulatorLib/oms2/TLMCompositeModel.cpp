@@ -29,9 +29,13 @@
  *
  */
 
-#include "ComRef.h"
 #include "TLMCompositeModel.h"
+
+#include "ComRef.h"
 #include "Logging.h"
+
+#define PUGIXML_HEADER_ONLY
+#include <pugixml.hpp>
 
 oms2::TLMCompositeModel::TLMCompositeModel(const ComRef& name)
   : CompositeModel(oms_component_tlm, name)
@@ -43,7 +47,7 @@ oms2::TLMCompositeModel::~TLMCompositeModel()
 {
 }
 
-oms2::TLMCompositeModel* oms2::TLMCompositeModel::newModel(const ComRef& name)
+oms2::TLMCompositeModel* oms2::TLMCompositeModel::NewModel(const ComRef& name)
 {
  if (!name.isValidIdent())
   {
@@ -53,4 +57,10 @@ oms2::TLMCompositeModel* oms2::TLMCompositeModel::newModel(const ComRef& name)
 
   oms2::TLMCompositeModel *model = new oms2::TLMCompositeModel(name);
   return model;
+}
+
+oms2::TLMCompositeModel* oms2::TLMCompositeModel::LoadModel(const pugi::xml_node& node)
+{
+  logError("oms2::TLMCompositeModel::LoadModel: not implemented yet");
+  return NULL;
 }

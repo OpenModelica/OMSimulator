@@ -36,12 +36,16 @@
 #include "CompositeModel.h"
 #include "../Types.h"
 
+#define PUGIXML_HEADER_ONLY
+#include <pugixml.hpp>
+
 namespace oms2
 {
   class TLMCompositeModel : public CompositeModel
   {
   public:
-    static TLMCompositeModel* newModel(const ComRef& name);
+    static TLMCompositeModel* NewModel(const ComRef& name);
+    static TLMCompositeModel* LoadModel(const pugi::xml_node& node);
 
     oms_element_type_enu_t getType() {return oms_component_tlm;}
 
