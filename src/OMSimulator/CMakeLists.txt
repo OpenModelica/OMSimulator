@@ -35,6 +35,7 @@ link_directories(${FMILibrary_LIBRARYDIR})
 link_directories(${LUALibrary_LIBRARYDIR})
 link_directories(${CVODELibrary_LIBRARYDIR})
 link_directories(${Boost_LIBRARY_DIRS})
+link_directories(${OMTLMSIMULATORLIB_LIBRARYDIR})
 
 add_executable(OMSimulator main.cpp Options.cpp)
 
@@ -45,11 +46,11 @@ IF (Ceres_FOUND AND OMSYSIDENT)
 ENDIF()
 
 IF(WIN32 AND MSVC)
-  target_link_libraries(OMSimulator lua ${OMSYSIDENT_OPTION} OMSimulatorLib ${FMILibrary_LIBRARY} sundials_cvode sundials_nvecserial ${Boost_LIBRARIES} ${CERES_OPTION} ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+  target_link_libraries(OMSimulator lua ${OMSYSIDENT_OPTION} OMSimulatorLib ${FMILibrary_LIBRARY} sundials_cvode sundials_nvecserial ${Boost_LIBRARIES} ${CERES_OPTION} ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} omtlmsimulator)
 ELSEIF (WIN32 AND MINGW)
-  target_link_libraries(OMSimulator lua ${OMSYSIDENT_OPTION} OMSimulatorLib ${FMILibrary_LIBRARY} shlwapi sundials_cvode sundials_nvecserial ${Boost_LIBRARIES} ${CERES_OPTION} ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+  target_link_libraries(OMSimulator lua ${OMSYSIDENT_OPTION} OMSimulatorLib ${FMILibrary_LIBRARY} shlwapi sundials_cvode sundials_nvecserial ${Boost_LIBRARIES} ${CERES_OPTION} ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} omtlmsimulator)
 ELSE()
-  target_link_libraries(OMSimulator lua ${OMSYSIDENT_OPTION} OMSimulatorLib ${FMILibrary_LIBRARY} sundials_cvode sundials_nvecserial ${Boost_LIBRARIES} ${CERES_OPTION} ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+  target_link_libraries(OMSimulator lua ${OMSYSIDENT_OPTION} OMSimulatorLib ${FMILibrary_LIBRARY} sundials_cvode sundials_nvecserial ${Boost_LIBRARIES} ${CERES_OPTION} ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} omtlmsimulator)
 ENDIF()
 
 IF ((NOT APPLE) AND CMAKE_CXX_COMPILER_ID MATCHES "[Cc]lang|GNU")
