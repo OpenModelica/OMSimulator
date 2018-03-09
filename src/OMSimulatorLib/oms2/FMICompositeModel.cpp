@@ -37,6 +37,11 @@
 #include "Logging.h"
 #include "SignalRef.h"
 
+#define PUGIXML_HEADER_ONLY
+#include <pugixml.hpp>
+
+#include <sstream>
+
 oms2::FMICompositeModel::FMICompositeModel(const ComRef& name)
   : oms2::CompositeModel(oms_component_fmi, name)
 {
@@ -60,7 +65,7 @@ oms2::FMICompositeModel::~FMICompositeModel()
     oms2::FMISubModel::deleteSubModel(it->second);
 }
 
-oms2::FMICompositeModel* oms2::FMICompositeModel::newModel(const ComRef& name)
+oms2::FMICompositeModel* oms2::FMICompositeModel::NewModel(const ComRef& name)
 {
   if (!name.isValidIdent())
   {
@@ -70,6 +75,248 @@ oms2::FMICompositeModel* oms2::FMICompositeModel::newModel(const ComRef& name)
 
   oms2::FMICompositeModel *model = new oms2::FMICompositeModel(name);
   return model;
+}
+
+oms2::FMICompositeModel* oms2::FMICompositeModel::LoadModel(const pugi::xml_node& node)
+{
+  logTrace();
+
+  // read model name
+  std::string ident_;
+  for (auto it = node.attributes_begin(); it != node.attributes_end(); ++it)
+  {
+    std::string name = it->name();
+    if (name == "Name")
+      ident_ = it->value();
+  }
+
+  // create empty model
+  ComRef cref_model(ident_);
+  oms2::FMICompositeModel* model = oms2::FMICompositeModel::NewModel(cref_model);
+  if (!model)
+    return NULL;
+
+  for (auto it = node.begin(); it != node.end(); ++it)
+  {
+    std::string name = it->name();
+    oms_status_enu_t status = oms_status_error;
+
+    if (name == "SubModel")
+      status = model->loadSubModel(*it);
+    else if (name == "Connections")
+      status = model->loadConnections(*it);
+    else if (name == "Solver")
+    {
+      /// \todo implement xml import for solver settings
+      logWarning("[oms2::FMICompositeModel::LoadModel] \"Solver\" not implemented yet");
+    }
+    else if (name == "ssd:ElementGeometry")
+      status = model->loadElementGeometry(*it);
+
+    if (oms_status_ok != status)
+    {
+      logError("[oms2::FMICompositeModel::LoadModel] wrong xml schema detected");
+      oms2::CompositeModel::DeleteModel(model);
+      return NULL;
+    }
+  }
+
+  return model;
+}
+
+oms_status_enu_t oms2::FMICompositeModel::loadElementGeometry(const pugi::xml_node& node)
+{
+  if (std::string(node.name()) != "ssd:ElementGeometry")
+  {
+    logError("[oms2::FMICompositeModel::loadElementGeometry] failed");
+    return oms_status_error;
+  }
+
+  // import ssd:ElementGeometry
+  oms2::ssd::ElementGeometry geometry;
+  for (auto ait = node.attributes_begin(); ait != node.attributes_end(); ++ait)
+  {
+    std::string name = ait->name();
+    if (name == "x1") geometry.setX1(ait->as_double());
+    if (name == "y1") geometry.setY1(ait->as_double());
+    if (name == "x2") geometry.setX2(ait->as_double());
+    if (name == "y2") geometry.setY2(ait->as_double());
+    if (name == "rotation") geometry.setRotation(ait->as_double());
+    if (name == "iconSource") geometry.setIconSource(ait->as_string());
+    if (name == "iconRotation") geometry.setIconRotation(ait->as_double());
+    if (name == "iconFlip") geometry.setIconFlip(ait->as_bool());
+    if (name == "iconFixedAspectRatio") geometry.setIconFixedAspectRatio(ait->as_bool());
+  }
+  this->setGeometry(geometry);
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms2::FMICompositeModel::loadConnections(const pugi::xml_node& node)
+{
+  if (std::string(node.name()) != "Connections")
+  {
+    logError("[oms2::FMICompositeModel::loadConnections] failed");
+    return oms_status_error;
+  }
+
+  for (auto connectionNode = node.first_child(); connectionNode; connectionNode = connectionNode.next_sibling())
+  {
+    if (std::string(connectionNode.name()) != "Connection")
+    {
+      logError("[oms2::FMICompositeModel::loadConnection] wrong xml schema detected (3)");
+      return oms_status_error;
+    }
+
+    std::string sigA = connectionNode.attribute("From").as_string();
+    std::string sigB = connectionNode.attribute("To").as_string();
+    if (oms_status_ok != this->addConnection(SignalRef(sigA), SignalRef(sigB)))
+    {
+      logError("[oms2::FMICompositeModel::loadConnection] wrong xml schema detected (4)");
+      return oms_status_error;
+    }
+    oms2::Connection* connection = this->getConnection(oms2::SignalRef(sigA), oms2::SignalRef(sigB));
+    if (connection)
+    {
+      for (pugi::xml_node child: connectionNode.children())
+      {
+        // import ssd:ConnectionGeometry
+        if (std::string(child.name()) == "ssd:ConnectionGeometry")
+        {
+          oms2::ssd::ConnectionGeometry geometry;
+          std::string pointsXStr = child.attribute("pointsX").as_string();
+          std::istringstream pointsXStream(pointsXStr);
+          std::vector<std::string> pointsXVector(std::istream_iterator<std::string>{pointsXStream}, std::istream_iterator<std::string>());
+
+          std::string pointsYStr = child.attribute("pointsY").as_string();
+          std::istringstream pointsYStream(pointsYStr);
+          std::vector<std::string> pointsYVector(std::istream_iterator<std::string>{pointsYStream}, std::istream_iterator<std::string>());
+
+          if (pointsXVector.size() != pointsYVector.size())
+          {
+            logError("[oms2::FMICompositeModel::loadConnection] wrong xml schema detected (2)");
+            return oms_status_error;
+          }
+
+          double* pointsX = new double[pointsXVector.size()];
+          int i = 0;
+          for ( auto &px : pointsXVector ) {
+            pointsX[i++] = std::atof(px.c_str());
+          }
+
+          double* pointsY = new double[pointsYVector.size()];
+          i = 0;
+          for ( auto &py : pointsYVector ) {
+            pointsY[i++] = std::atof(py.c_str());
+          }
+
+          geometry.setPoints(pointsXVector.size(), pointsX, pointsY);
+          connection->setGeometry(&geometry);
+
+          delete[] pointsX;
+          delete[] pointsY;
+        }
+      }
+    }
+  }
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms2::FMICompositeModel::loadSubModel(const pugi::xml_node& node)
+{
+  if (std::string(node.name()) != "SubModel")
+  {
+    logError("[oms2::FMICompositeModel::loadSubModel] failed");
+    return oms_status_error;
+  }
+
+  std::string instancename;
+  std::string filename;
+  std::string type;
+  for (auto ait = node.attributes_begin(); ait != node.attributes_end(); ++ait)
+  {
+    std::string name = ait->name();
+    if (name == "Name")
+    {
+      instancename = ait->value();
+    }
+    else if (name == "ModelFile")
+    {
+      filename = ait->value();
+    }
+    else if (name == "Type")
+    {
+      type = ait->value();
+    }
+  }
+
+  oms2::ComRef cref_model = getName();
+  oms2::ComRef cref_submodel = cref_model + ComRef(instancename);
+
+  oms_status_enu_t status = oms_status_error;
+  if (type == "FMU")
+    status = this->addFMU(filename, cref_submodel.last());
+  else
+    status = this->addTable(filename, cref_submodel.last());
+
+  if (oms_status_ok != status)
+    return status;
+
+  oms2::FMISubModel* subModel = this->getSubModel(cref_submodel);
+  if (!subModel)
+    return oms_status_error;
+
+  for (auto child = node.first_child(); child; child = child.next_sibling())
+  {
+    // import ssd:ElementGeometry
+    if (std::string(child.name()) == "ssd:ElementGeometry")
+    {
+      oms2::ssd::ElementGeometry geometry;
+      double x1 = child.attribute("x1").as_double();
+      double y1 = child.attribute("y1").as_double();
+      double x2 = child.attribute("x2").as_double();
+      double y2 = child.attribute("y2").as_double();
+      geometry.setSizePosition(x1, y1, x2, y2);
+
+      double rotation = child.attribute("rotation").as_double();
+      geometry.setRotation(rotation);
+
+      std::string iconSource = child.attribute("iconSource").as_string();
+      geometry.setIconSource(iconSource);
+
+      double iconRotation = child.attribute("iconRotation").as_double();
+      geometry.setIconRotation(iconRotation);
+
+      bool iconFlip = child.attribute("iconFlip").as_bool();
+      geometry.setIconFlip(iconFlip);
+
+      bool iconFixedAspectRatio = child.attribute("iconFixedAspectRatio").as_bool();
+      geometry.setIconFixedAspectRatio(iconFixedAspectRatio);
+
+      subModel->setGeometry(geometry);
+    }
+    // import parameters
+    else if (std::string(child.name()) == "Parameter")
+    {
+      std::string _type = child.attribute("Type").as_string();
+      std::string _name = child.attribute("Name").as_string();
+
+      if (_type == "Real")
+      {
+        double realValue = child.attribute("Value").as_double();
+        if (oms_status_ok != this->setRealParameter(oms2::SignalRef(cref_submodel, _name), realValue))
+        {
+          logError("[oms2::FMICompositeModel::loadSubModel] wrong xml schema detected (2)");
+          return oms_status_error;
+        }
+      }
+      else
+      {
+        logError("[oms2::FMICompositeModel::loadSubModel] unsupported parameter type " + _type);
+        return oms_status_error;
+      }
+    }
+  }
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms2::FMICompositeModel::addFMU(const std::string& filename, const oms2::ComRef& cref)

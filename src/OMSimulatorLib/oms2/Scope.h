@@ -53,6 +53,10 @@ namespace oms2
   class Scope
   {
   public:
+    /**
+     * This is instance is used as global scope. It would also be possible to
+     * have several independent local scopes.
+     */
     static Scope& GetInstance();
 
     oms_status_enu_t newFMIModel(const ComRef& name);
@@ -93,9 +97,6 @@ namespace oms2
     // stop the compiler generating methods copying the object
     Scope(Scope const& copy);            // not implemented
     Scope& operator=(Scope const& copy); // not implemented
-
-    Model* loadFMIModel(const pugi::xml_node& xml);
-    Model* loadTLMModel(const pugi::xml_node& xml);
 
     oms_status_enu_t saveFMIModel(oms2::Model* model, const std::string& filename);
     oms_status_enu_t saveTLMModel(oms2::Model* model, const std::string& filename);
