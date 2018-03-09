@@ -50,9 +50,10 @@ ELSE()
   target_link_libraries(OMSimulator lua ${OMFIT_OPTION} OMSimulatorLib ${FMILibrary_LIBRARY} sundials_cvode sundials_nvecserial ${Boost_LIBRARIES} ${CERES_OPTION} ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
 ENDIF()
 
-IF (CMAKE_CXX_COMPILER_ID MATCHES "[Cc]lang|GNU")
+IF ((NOT APPLE) AND CMAKE_CXX_COMPILER_ID MATCHES "[Cc]lang|GNU")
   # Avoid external dependencies; especially useful when cross-compiling
   # embedded ARM Linux systems
+  message(STATUS "Link the executable using static libgcc and libstdc++")
   target_link_libraries(OMSimulator -static-libgcc -static-libstdc++)
 ENDIF()
 
