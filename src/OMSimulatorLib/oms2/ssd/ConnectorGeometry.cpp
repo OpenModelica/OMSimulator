@@ -68,3 +68,9 @@ oms2::ssd::ConnectorGeometry& oms2::ssd::ConnectorGeometry::operator=(oms2::ssd:
 
   return *this;
 }
+
+oms_status_enu_t oms2::ssd::ConnectorGeometry::exportToSSD(pugi::xml_node& root) const
+{
+  logError("oms2::ssd::ConnectorGeometry::exportToSSD not implemented yet");
+  return oms_status_error;
+}

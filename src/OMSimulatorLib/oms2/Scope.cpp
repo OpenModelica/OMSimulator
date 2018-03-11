@@ -225,6 +225,17 @@ oms2::Model* oms2::Scope::loadModel(const std::string& filename)
   return model;
 }
 
+oms_status_enu_t oms2::Scope::saveModel(const std::string& filename, const oms2::ComRef& name)
+{
+  logTrace();
+
+  oms2::Model* model = getModel(name);
+  if (!model)
+    return oms_status_error;
+
+  return model->save(filename);
+}
+
 oms_status_enu_t oms2::Scope::setTempDirectory(const std::string& newTempDir)
 {
   logTrace();
@@ -262,209 +273,6 @@ oms_status_enu_t oms2::Scope::setWorkingDirectory(const std::string& path)
   boost::filesystem::current_path(path_);
   workingDir = path;
   return oms_status_ok;
-}
-
-oms_status_enu_t oms2::Scope::saveModel(const std::string& filename, const oms2::ComRef& name)
-{
-  logTrace();
-
-  oms2::Model* model = getModel(name);
-  if (!model)
-    return oms_status_error;
-
-  switch (model->getType())
-  {
-  case oms_component_fmi:
-    return saveFMIModel(model, filename);
-
-  case oms_component_tlm:
-    return saveTLMModel(model, filename);
-  }
-
-  return oms_status_error;
-}
-
-oms_status_enu_t oms2::Scope::saveFMIModel(oms2::Model* model, const std::string& filename)
-{
-  logTrace();
-  pugi::xml_document doc;
-  std::string value;
-
-  // generate XML declaration
-  pugi::xml_node declarationNode = doc.append_child(pugi::node_declaration);
-  declarationNode.append_attribute("version") = "1.0";
-  declarationNode.append_attribute("encoding") = "UTF-8";
-  pugi::xml_node compositeModel = doc.append_child("ssd:SystemStructureDescription");
-  pugi::xml_node fmiCompositeModel = compositeModel.append_child("FMICompositeModel");
-  pugi::xml_node experiment = compositeModel.append_child("Experiment");
-
-  // ssd:SystemStructureDescription
-  compositeModel.append_attribute("xmlns:ssc") = "http://www.pmsf.net/xsd/SystemStructureCommonDraft";
-  compositeModel.append_attribute("xmlns:ssd") = "http://www.pmsf.net/xsd/SystemStructureDescriptionDraft";
-  compositeModel.append_attribute("xmlns:xsi") = "http://www.w3.org/2001/XMLSchema-instance";
-  compositeModel.append_attribute("xsi:schemaLocation") = "http://www.pmsf.net/xsd/SystemStructureDescriptionDraft http://www.pmsf.net/xsd/SSP/Draft20170606/SystemStructureDescription.xsd";
-  value = model->getName().toString();
-
-  fmiCompositeModel.append_attribute("Name") = value.c_str();
-  // export ssd:ElementGeometry
-  const oms2::ssd::ElementGeometry* elementGeometry = model->getFMICompositeModel()->getGeometry();
-  if (elementGeometry->getY1() != elementGeometry->getY2())
-  {
-    pugi::xml_node node = fmiCompositeModel.append_child("ssd:ElementGeometry");
-    value = std::to_string(elementGeometry->getX1());
-    node.append_attribute("x1") = value.c_str();
-    value = std::to_string(elementGeometry->getY1());
-    node.append_attribute("y1") = value.c_str();
-    value = std::to_string(elementGeometry->getX2());
-    node.append_attribute("x2") = value.c_str();
-    value = std::to_string(elementGeometry->getY2());
-    node.append_attribute("y2") = value.c_str();
-
-    value = std::to_string(elementGeometry->getRotation());
-    node.append_attribute("rotation") = value.c_str();
-
-    if (elementGeometry->hasIconSource())
-      node.append_attribute("iconSource") = elementGeometry->getIconSource().c_str();
-
-    value = std::to_string(elementGeometry->getIconRotation());
-    node.append_attribute("iconRotation") = value.c_str();
-
-    if (elementGeometry->getIconFlip())
-      node.append_attribute("iconFlip") = "true";
-    else
-      node.append_attribute("iconFlip") = "false";
-
-    if (elementGeometry->getIconFixedAspectRatio())
-      node.append_attribute("iconFixedAspectRatio") = "true";
-    else
-      node.append_attribute("iconFixedAspectRatio") = "false";
-  }
-
-  oms2::Element** elements = model->getFMICompositeModel()->getElements();
-  for (int i=0; elements[i]; ++i)
-  {
-    const oms2::Element* element = elements[i];
-
-    oms2::ComRef cref = element->getName();
-    pugi::xml_node subModel = fmiCompositeModel.append_child("SubModel");
-    value = cref.last().toString();
-    subModel.append_attribute("Name") = value.c_str();
-
-    // export ssd:ElementGeometry
-    const oms2::ssd::ElementGeometry* elementGeometry = element->getGeometry();
-    if (elementGeometry->getY1() != elementGeometry->getY2())
-    {
-      pugi::xml_node node = subModel.append_child("ssd:ElementGeometry");
-      value = std::to_string(elementGeometry->getX1());
-      node.append_attribute("x1") = value.c_str();
-      value = std::to_string(elementGeometry->getY1());
-      node.append_attribute("y1") = value.c_str();
-      value = std::to_string(elementGeometry->getX2());
-      node.append_attribute("x2") = value.c_str();
-      value = std::to_string(elementGeometry->getY2());
-      node.append_attribute("y2") = value.c_str();
-
-      value = std::to_string(elementGeometry->getRotation());
-      node.append_attribute("rotation") = value.c_str();
-
-      if (elementGeometry->hasIconSource())
-        node.append_attribute("iconSource") = elementGeometry->getIconSource().c_str();
-
-      value = std::to_string(elementGeometry->getIconRotation());
-      node.append_attribute("iconRotation") = value.c_str();
-
-      if (elementGeometry->getIconFlip())
-        node.append_attribute("iconFlip") = "true";
-      else
-        node.append_attribute("iconFlip") = "false";
-
-      if (elementGeometry->getIconFixedAspectRatio())
-        node.append_attribute("iconFixedAspectRatio") = "true";
-      else
-        node.append_attribute("iconFixedAspectRatio") = "false";
-    }
-    if (oms_component_fmu == element->getType())
-    {
-      subModel.append_attribute("Type") = "FMU";
-
-      oms2::FMUWrapper* fmuWrapper = dynamic_cast<oms2::FMUWrapper*>(model->getFMICompositeModel()->getSubModel(cref));
-      const std::string& fmuPath = fmuWrapper->getFMUPath();
-      subModel.append_attribute("ModelFile") = fmuPath.c_str();
-
-      const std::map<std::string, oms2::Option<double>>& realParameters = fmuWrapper->getRealParameters();
-      for (auto it=realParameters.begin(); it != realParameters.end(); it++)
-      {
-        if (it->second.isSome())
-        {
-          pugi::xml_node parameter = subModel.append_child("Parameter");
-          parameter.append_attribute("Type") = "Real";
-          value = it->first;
-          parameter.append_attribute("Name") = value.c_str();
-          value = std::to_string(it->second.getValue());
-          parameter.append_attribute("Value") = value.c_str();
-        }
-      }
-    }
-    else
-      logWarning("SubModel is not an FMU");
-  }
-
-  pugi::xml_node nodeConnections = fmiCompositeModel.append_child("Connections");
-  oms2::Connection** connections = model->getFMICompositeModel()->getConnections();
-  for (int i=0; connections[i]; ++i)
-  {
-    oms2::Connection* connection = connections[i];
-    pugi::xml_node connectionNode = nodeConnections.append_child("Connection");
-    value = connection->getSignalA().toString();
-    connectionNode.append_attribute("From") = value.c_str();
-    value = connection->getSignalB().toString();
-    connectionNode.append_attribute("To") = value.c_str();
-
-    // export ssd:ConnectionGeometry
-    const oms2::ssd::ConnectionGeometry* connectionGeometry = connection->getGeometry();
-    if (connectionGeometry && connectionGeometry->getLength() > 0)
-    {
-      pugi::xml_node node = connectionNode.append_child("ssd:ConnectionGeometry");
-      const double* pointsX = connectionGeometry->getPointsX();
-      const double* pointsY = connectionGeometry->getPointsY();
-      std::string pointsXStr, pointsYStr;
-      for (int i = 0 ; i < connectionGeometry->getLength() ; i++)
-      {
-        pointsXStr += std::to_string(pointsX[i]);
-        pointsYStr += std::to_string(pointsY[i]);
-        if (i != connectionGeometry->getLength() - 1)
-        {
-          pointsXStr += " ";
-          pointsYStr += " ";
-        }
-      }
-      node.append_attribute("pointsX") = pointsXStr.c_str();
-      node.append_attribute("pointsY") = pointsYStr.c_str();
-    }
-  }
-
-  // add experiment settings
-  value = std::to_string(model->getStartTime());
-  experiment.append_attribute("StartTime") = value.c_str();
-  value = std::to_string(model->getStopTime());
-  experiment.append_attribute("StopTime") = value.c_str();
-  value = model->getResultFile();
-  experiment.append_attribute("ResultFile") = value.c_str();
-
-  if (!doc.save_file(filename.c_str()))
-  {
-    logError("[oms2::Scope::saveFMIModel] xml export failed for " + filename);
-    return oms_status_error;
-  }
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms2::Scope::saveTLMModel(oms2::Model* model, const std::string& filename)
-{
-  logTrace();
-
-  logError("[oms2::Scope::saveTLMModel]: not implemented yet");
-  return oms_status_error;
 }
 
 oms_status_enu_t oms2::Scope::getElement(const oms2::ComRef& cref, oms2::Element** element)

@@ -42,6 +42,8 @@ namespace oms2
   class FMISubModel
   {
   public:
+    virtual oms_status_enu_t exportToSSD(pugi::xml_node& root) const = 0;
+
     oms_element_type_enu_t getType() {return element.getType();}
     static void deleteSubModel(FMISubModel *model) {if (model) delete model;}
 

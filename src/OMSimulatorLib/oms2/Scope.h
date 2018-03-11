@@ -98,9 +98,6 @@ namespace oms2
     Scope(Scope const& copy);            // not implemented
     Scope& operator=(Scope const& copy); // not implemented
 
-    oms_status_enu_t saveFMIModel(oms2::Model* model, const std::string& filename);
-    oms_status_enu_t saveTLMModel(oms2::Model* model, const std::string& filename);
-
   private:
     std::map<oms2::ComRef, oms2::Model*> models;
     std::string tempDir;

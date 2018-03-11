@@ -34,6 +34,9 @@
 
 #include "../../Types.h"
 
+#define PUGIXML_HEADER_ONLY
+#include <pugixml.hpp>
+
 #include <string>
 
 namespace oms2
@@ -70,6 +73,8 @@ namespace oms2
       double getIconRotation() const {return iconRotation;}
       bool getIconFlip() const {return iconFlip;}
       bool getIconFixedAspectRatio() const {return iconFixedAspectRatio;}
+
+      oms_status_enu_t exportToSSD(pugi::xml_node& root) const;
     };
   }
 }

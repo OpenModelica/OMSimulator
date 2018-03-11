@@ -34,6 +34,9 @@
 
 #include "../../Types.h"
 
+#define PUGIXML_HEADER_ONLY
+#include <pugixml.hpp>
+
 #include <string>
 
 namespace oms2
@@ -54,6 +57,8 @@ namespace oms2
       unsigned int getLength() const {return this->n;}
       const double* getPointsX() const {return this->pointsX;}
       const double* getPointsY() const {return this->pointsY;}
+
+      oms_status_enu_t exportToSSD(pugi::xml_node& root) const;
     };
   }
 }

@@ -327,6 +327,39 @@ oms2::FMUWrapper* oms2::FMUWrapper::newSubModel(const oms2::ComRef& cref, const 
   return model;
 }
 
+oms_status_enu_t oms2::FMUWrapper::exportToSSD(pugi::xml_node& root) const
+{
+  oms_status_enu_t status = oms_status_ok;
+
+  oms2::ComRef cref = element.getName();
+  pugi::xml_node subModel = root.append_child("ssd:Component");
+  subModel.append_attribute("name") = cref.last().toString().c_str();
+
+  // export ssd:ElementGeometry
+  status = element.getGeometry()->exportToSSD(subModel);
+  if (oms_status_ok != status)
+    return status;
+
+  subModel.append_attribute("type") = "application/x-fmu-sharedlibrary";
+
+  const std::string& fmuPath = getFMUPath();
+  subModel.append_attribute("source") = fmuPath.c_str();
+
+  const std::map<std::string, oms2::Option<double>>& realParameters = getRealParameters();
+  for (auto it=realParameters.begin(); it != realParameters.end(); it++)
+  {
+    if (it->second.isSome())
+    {
+      pugi::xml_node parameter = subModel.append_child("Parameter");
+      parameter.append_attribute("Type") = "Real";
+      parameter.append_attribute("Name") = it->first.c_str();
+      parameter.append_attribute("Value") = std::to_string(it->second.getValue()).c_str();
+    }
+  }
+
+  return status;
+}
+
 oms2::Variable* oms2::FMUWrapper::getVar(const std::string& var)
 {
   for (auto &v : allVariables)
