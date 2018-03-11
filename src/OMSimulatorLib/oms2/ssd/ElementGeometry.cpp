@@ -128,3 +128,35 @@ void oms2::ssd::ElementGeometry::setIconSource(std::string iconSource)
     memcpy(this->iconSource, iconSource.c_str(), size*sizeof(char));
   }
 }
+
+oms_status_enu_t oms2::ssd::ElementGeometry::exportToSSD(pugi::xml_node& root) const
+{
+  // export ssd:ElementGeometry
+  if (x1 != 0.0 || y1 != 0.0 || x2 != 0.0 || y2 != 0.0)
+  {
+    pugi::xml_node node = root.append_child("ssd:ElementGeometry");
+    node.append_attribute("x1") = std::to_string(x1).c_str();
+    node.append_attribute("y1") = std::to_string(y1).c_str();
+    node.append_attribute("x2") = std::to_string(x2).c_str();
+    node.append_attribute("y2") = std::to_string(y2).c_str();
+
+    node.append_attribute("rotation") = std::to_string(rotation).c_str();
+
+    if (hasIconSource())
+      node.append_attribute("iconSource") = getIconSource().c_str();
+
+    node.append_attribute("iconRotation") = std::to_string(iconRotation).c_str();
+
+    if (getIconFlip())
+      node.append_attribute("iconFlip") = "true";
+    else
+      node.append_attribute("iconFlip") = "false";
+
+    if (getIconFixedAspectRatio())
+      node.append_attribute("iconFixedAspectRatio") = "true";
+    else
+      node.append_attribute("iconFixedAspectRatio") = "false";
+  }
+
+  return oms_status_ok;
+}

@@ -34,6 +34,9 @@
 
 #include "../../Types.h"
 
+#define PUGIXML_HEADER_ONLY
+#include <pugixml.hpp>
+
 #include <string>
 
 namespace oms2
@@ -53,6 +56,8 @@ namespace oms2
 
       double getX() const {return x;}
       double getY() const {return y;}
+
+      oms_status_enu_t exportToSSD(pugi::xml_node& root) const;
     };
   }
 }

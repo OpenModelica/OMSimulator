@@ -129,3 +129,29 @@ void oms2::ssd::ConnectionGeometry::setPoints(unsigned int n_, double* pointsX_,
     this->pointsY = NULL;
   }
 }
+
+oms_status_enu_t oms2::ssd::ConnectionGeometry::exportToSSD(pugi::xml_node& root) const
+{
+  // export ssd:ConnectionGeometry
+  if (getLength() > 0)
+  {
+    pugi::xml_node node = root.append_child("ssd:ConnectionGeometry");
+    const double* pointsX = getPointsX();
+    const double* pointsY = getPointsY();
+    std::string pointsXStr, pointsYStr;
+    for (int i = 0 ; i < getLength() ; i++)
+    {
+      pointsXStr += std::to_string(pointsX[i]);
+      pointsYStr += std::to_string(pointsY[i]);
+      if (i != getLength() - 1)
+      {
+        pointsXStr += " ";
+        pointsYStr += " ";
+      }
+    }
+    node.append_attribute("pointsX") = pointsXStr.c_str();
+    node.append_attribute("pointsY") = pointsYStr.c_str();
+  }
+
+  return oms_status_ok;
+}

@@ -52,6 +52,7 @@ namespace oms2
   public:
     static FMICompositeModel* NewModel(const oms2::ComRef& name);
     static FMICompositeModel* LoadModel(const pugi::xml_node& node);
+    oms_status_enu_t save(pugi::xml_node& node);
 
     oms_element_type_enu_t getType() {return oms_component_fmi;}
     oms_status_enu_t addFMU(const std::string& filename, const oms2::ComRef& cref);

@@ -144,15 +144,19 @@
     }
 
     \umlclass[x=-1.5, y=0.5, fill=ucl2orange]{CompositeModel}{
-      - name: ComRef \\
-      - geometry: ssd:ElementGeometry \\
+      - oms2::Element element;
     }{
-      + getType() = 0 \\
+      \# CompositeModel() \\
+      \# ~CompositeModel() \\
+      + DeleteModel() \\
+      + getElement() \\
+      + getGeometry() \\
       + getName() \\
-      + setName() \\
-      + deleteModel() \\
-      + isValidModelIdentifier() \\
+      + getType() = 0 \\
+      + setGeometry() \\
+      + setName()
     }
+
     \umlclass[x=-6, y=-6]{TLMCompositeModel}{
       - fmiModels: map<ComRef, FMICompositeModel> \\
       - externalModels: map<ComRef, ExternalModel> \\
@@ -189,24 +193,25 @@
       - Zf: double \\
       - Zfr: double
     }{
-	  + TLMConnection();\\
-	  + getTyimeDelay();\\
-	  + getAlpha();\\
-	  + getZf();\\
-	  + getZfr();
-	}
+      + TLMConnection();\\
+      + getTyimeDelay();\\
+      + getAlpha();\\
+      + getZf();\\
+      + getZfr();
+    }
     \umlclass[x=3, y=-12]{Connection}{
       - sigA: SignalRef \\
       - sigB: SignalRef \\
       - geometry: ssd:ConnectionGeometry
     }{}
     \umlclass[x=7, y=-1]{DependencyGraph}{}{}
+
     \umlclass[x=-14, y=-6]{ExternalModel}{
-	  - cref: Comref\\
-	  - geometry: ssd:ElementGeometry\\
-	  - filename: string\\
-	  - startScript: string\\
-	  - realParameters
+      - cref: Comref\\
+      - geometry: ssd:ElementGeometry\\
+      - filename: string\\
+      - startScript: string\\
+      - realParameters
     }{
       + ExternalModel()\\
       + ~ExternalModel()\\
@@ -220,8 +225,8 @@
       + getRealParameters()\\
       + getModelPath()\\
       + getStartScript()
-	}
-    \umlclass[x=-14, y=-15]{TLMInterface}{
+    }
+    \umlclass[x=-14, y=-16]{TLMInterface}{
       - sig: SignalRef\\
       - cref: ComRef\\
       - name: string\\
@@ -237,14 +242,22 @@
       + getCausality()\\
       + getDomain()\\
       + getDimensions()
-	}
+    }
+
     \umlclass[x=11, y=-6, fill=ucl2orange]{FMISubModel}{
-      - cref: ComRef \\
-      - geometry: ssd:ElementGeometry \\
-      - signals: list<SignalRef> \\
-      - initialUnknowns: DependencyGraph \\
-      - outputs: DependencyGraph
-    }{}
+      - oms2::Element element;
+    }{
+      \# FMISubModel() \\
+      \# ~FMISubModel() \\
+      + deleteSubModel() \\
+      + getElement() \\
+      + getGeometry() \\
+      + getName() \\
+      + getType() \\
+      + setGeometry() \\
+      + setName()
+    }
+
     \umlclass[x=11, y=-16]{SignalRef}{
       - cref: ComRef \\
       - var: string

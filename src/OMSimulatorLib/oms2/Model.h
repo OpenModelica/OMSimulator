@@ -56,6 +56,8 @@ namespace oms2
     static Model* LoadModel(const pugi::xml_node& node);
     static void DeleteModel(Model *model) {if (model) delete model;}
 
+    oms_status_enu_t save(const std::string& filename);
+
     void setStartTime(double value) {startTime = value;}
     double getStartTime() const {return startTime;}
     void setStopTime(double value) {stopTime = value;}

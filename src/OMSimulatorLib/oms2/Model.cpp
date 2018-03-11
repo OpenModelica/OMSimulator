@@ -133,6 +133,56 @@ oms2::Model* oms2::Model::LoadModel(const pugi::xml_node& node)
   return model;
 }
 
+oms_status_enu_t oms2::Model::save(const std::string& filename)
+{
+  logTrace();
+  pugi::xml_document doc;
+
+  // generate XML declaration
+  pugi::xml_node declarationNode = doc.append_child(pugi::node_declaration);
+  declarationNode.append_attribute("version") = "1.0";
+  declarationNode.append_attribute("encoding") = "UTF-8";
+  pugi::xml_node ssd = doc.append_child("ssd:SystemStructureDescription");
+
+  // ssd:SystemStructureDescription
+  ssd.append_attribute("name") = getName().toString().c_str();
+  ssd.append_attribute("version") = "Draft20171219";
+  //pugi::xml_node experiment = ssd.append_child("ssd:Enumerations");
+  //pugi::xml_node experiment = ssd.append_child("ssd:Units");
+  //pugi::xml_node experiment = ssd.append_child("ssd:Annotations");
+
+  pugi::xml_node ssd_System = ssd.append_child("ssd:System");
+  ssd_System.append_attribute("name") = getName().toString().c_str();
+
+  oms_status_enu_t status;
+  switch (getType())
+  {
+  case oms_component_fmi:
+    status = getFMICompositeModel()->save(ssd_System);
+    break;
+
+  case oms_component_tlm:
+    logError("xml export isn't implemented yet for TLM composite models");
+    status = oms_status_error;
+    break;
+  }
+
+  if (oms_status_ok != status)
+    return status;
+
+  // ssd:DefaultExperiment
+  pugi::xml_node ssd_DefaultExperiment = ssd.append_child("ssd:DefaultExperiment");
+  ssd_DefaultExperiment.append_attribute("startTime") = std::to_string(startTime).c_str();
+  ssd_DefaultExperiment.append_attribute("stopTime") = std::to_string(stopTime).c_str();
+
+  if (!doc.save_file(filename.c_str()))
+  {
+    logError("xml export failed for \"" + filename + "\" (model \"" + getName() + "\")");
+    return oms_status_error;
+  }
+  return oms_status_ok;
+}
+
 oms2::FMICompositeModel* oms2::Model::getFMICompositeModel()
 {
   if (oms_component_fmi == getType())

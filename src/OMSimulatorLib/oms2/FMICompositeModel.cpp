@@ -124,6 +124,40 @@ oms2::FMICompositeModel* oms2::FMICompositeModel::LoadModel(const pugi::xml_node
   return model;
 }
 
+oms_status_enu_t oms2::FMICompositeModel::save(pugi::xml_node& node)
+{
+  oms_status_enu_t status = element.getGeometry()->exportToSSD(node);
+  if (oms_status_ok != status)
+    return status;
+
+  for (const auto& subModel : subModels)
+  {
+    status = subModel.second->exportToSSD(node);
+    if (oms_status_ok != status)
+      return status;
+  }
+
+  pugi::xml_node nodeConnections = node.append_child("ssd:Connections");
+  for (const auto& connection : connections)
+  {
+    if (!connection)
+      continue;
+
+    pugi::xml_node connectionNode = nodeConnections.append_child("ssd:Connection");
+    connectionNode.append_attribute("startElement") = connection->getSignalA().getCref().toString().c_str();
+    connectionNode.append_attribute("startConnector") = connection->getSignalA().getVar().c_str();
+    connectionNode.append_attribute("endElement") = connection->getSignalB().getCref().toString().c_str();
+    connectionNode.append_attribute("endConnector") = connection->getSignalB().getVar().c_str();
+
+    // export ssd:ConnectionGeometry
+    status = connection->getGeometry()->exportToSSD(node);
+    if (oms_status_ok != status)
+      return status;
+  }
+
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms2::FMICompositeModel::loadElementGeometry(const pugi::xml_node& node)
 {
   if (std::string(node.name()) != "ssd:ElementGeometry")
