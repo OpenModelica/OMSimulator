@@ -9,7 +9,9 @@ find_package(Threads)
 # used for the executable itself.
 
 set(Boost_USE_STATIC_LIBS ON)
+IF(NOT WIN32)
 set(Boost_USE_STATIC_RUNTIME ON)
+ENDIF()
 
 find_package(Boost 1.54.0 COMPONENTS system filesystem REQUIRED)
 IF(Boost_FOUND)
