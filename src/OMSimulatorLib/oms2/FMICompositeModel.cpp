@@ -150,7 +150,7 @@ oms_status_enu_t oms2::FMICompositeModel::save(pugi::xml_node& node)
     connectionNode.append_attribute("endConnector") = connection->getSignalB().getVar().c_str();
 
     // export ssd:ConnectionGeometry
-    status = connection->getGeometry()->exportToSSD(node);
+    status = connection->getGeometry()->exportToSSD(connectionNode);
     if (oms_status_ok != status)
       return status;
   }
