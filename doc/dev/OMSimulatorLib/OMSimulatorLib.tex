@@ -161,10 +161,16 @@
     \umlclass[x=-6, y=-6]{TLMCompositeModel}{
       - fmiModels: map<ComRef, FMICompositeModel> \\
       - externalModels: map<ComRef, ExternalModel> \\
-      - connections: list<TLMConnection>
+      - connections: list<TLMConnection> \\
+      - interfaces: list<TLMInterface>
     }{
       + newModel() \\
       + /getType() \\
+      + addFMIModel() \\
+      + addExternalModel() \\
+      + addInterface() \\
+      + addConnection() \\
+      + setRealParameter()
       - ...
     }
     \umlclass[x=3, y=-6]{FMICompositeModel}{
@@ -184,15 +190,59 @@
     }
     \umlclass[x=-6, y=-12]{TLMConnection}{
       - delay: double \\
-      - ...
-    }{}
+      - alpha: double \\
+      - Zf: double \\
+      - Zfr: double
+    }{
+	  + TLMConnection();\\
+	  + getTyimeDelay();\\
+	  + getAlpha();\\
+	  + getZf();\\
+	  + getZfr();
+	}
     \umlclass[x=3, y=-12]{Connection}{
       - sigA: SignalRef \\
       - sigB: SignalRef \\
       - geometry: ssd:ConnectionGeometry
     }{}
     \umlclass[x=7, y=-1]{DependencyGraph}{}{}
-    \umlclass[x=-13, y=-6]{ExternalModel}{}{}
+    \umlclass[x=-14, y=-6]{ExternalModel}{
+	  - cref: Comref\\
+	  - geometry: ssd:ElementGeometry\\
+	  - filename: string\\
+	  - startScript: string\\
+	  - realParameters
+    }{
+      + ExternalModel()\\
+      + ~ExternalModel()\\
+      + getType()\\
+      + getName()\\
+      + setGeometry()\\
+      + getGeometry()\\
+      + getComponent()\\
+      + setRealParameter()\\
+      + getRealParameter()\\
+      + getRealParameters()\\
+      + getModelPath()\\
+      + getStartScript()
+	}
+    \umlclass[x=-14, y=-15]{TLMInterface}{
+      - sig: SignalRef\\
+      - cref: ComRef\\
+      - name: string\\
+      - causality: enum\\
+      - domain: string\\
+      - dimensions: int\\
+    }{
+      + TLMInterface()\\
+      + ~TLMInterface()\\
+      + getSignal()\\
+      + getSubModelName()\\
+      + getName()\\
+      + getCausality()\\
+      + getDomain()\\
+      + getDimensions()
+	}
     \umlclass[x=11, y=-6, fill=ucl2orange]{FMISubModel}{
       - cref: ComRef \\
       - geometry: ssd:ElementGeometry \\
@@ -200,7 +250,7 @@
       - initialUnknowns: DependencyGraph \\
       - outputs: DependencyGraph
     }{}
-    \umlclass[x=11, y=-12]{SignalRef}{
+    \umlclass[x=11, y=-16]{SignalRef}{
       - cref: ComRef \\
       - var: string
     }{
@@ -235,6 +285,8 @@
   \umlcompo[mult1=1, mult2=0..*]{Scope}{Model}
   \umlcompo[mult1=1, mult2=1]{Model}{CompositeModel}
   \umlcompo[mult1=1, mult2=0..*]{TLMCompositeModel}{ExternalModel}
+  \umlcompo[mult1=1, mult2=0..*]{TLMCompositeModel}{TLMInterface}
+  \umlcompo[mult1=1, mult2=2]{TLMInterface}{SignalRef}
   \umlcompo[mult1=1, mult2=0..*]{TLMCompositeModel}{TLMConnection}
   \umlcompo[mult1=0..1, mult2=0..*]{TLMCompositeModel}{FMICompositeModel}
   \umlcompo[mult1=1, mult2=0..*]{FMICompositeModel}{Connection}
