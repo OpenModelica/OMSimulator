@@ -60,6 +60,8 @@ namespace oms2
     oms_status_enu_t deleteSubModel(const oms2::ComRef& cref);
 
     oms_status_enu_t setRealParameter(const oms2::SignalRef& sr, double value);
+    oms_status_enu_t setIntegerParameter(const oms2::SignalRef& sr, int value);
+    oms_status_enu_t setBooleanParameter(const oms2::SignalRef& sr, int value);
 
     oms2::Connection* getConnection(const oms2::SignalRef& conA, const oms2::SignalRef& conB);
     oms_status_enu_t addConnection(const oms2::SignalRef& conA, const oms2::SignalRef& conB);

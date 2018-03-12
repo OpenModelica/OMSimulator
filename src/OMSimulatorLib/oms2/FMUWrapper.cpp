@@ -297,6 +297,10 @@ oms2::FMUWrapper* oms2::FMUWrapper::newSubModel(const oms2::ComRef& cref, const 
   {
     if (v.isParameter() && v.isTypeReal())
       model->realParameters[v.getName()] = oms2::Option<double>();
+    else if (v.isParameter() && v.isTypeInteger())
+      model->integerParameters[v.getName()] = oms2::Option<int>();
+    else if (v.isParameter() && v.isTypeBoolean())
+      model->booleanParameters[v.getName()] = oms2::Option<int>();
 
     if (v.isInput())
       model->inputs.push_back(v);
@@ -357,6 +361,30 @@ oms_status_enu_t oms2::FMUWrapper::exportToSSD(pugi::xml_node& root) const
     }
   }
 
+  const std::map<std::string, oms2::Option<int>>& integerParameters = getIntegerParameters();
+  for (auto it=integerParameters.begin(); it != integerParameters.end(); it++)
+  {
+    if (it->second.isSome())
+    {
+      pugi::xml_node parameter = subModel.append_child("Parameter");
+      parameter.append_attribute("Type") = "Integer";
+      parameter.append_attribute("Name") = it->first.c_str();
+      parameter.append_attribute("Value") = std::to_string(it->second.getValue()).c_str();
+    }
+  }
+
+  const std::map<std::string, oms2::Option<int>>& booleanParameters = getBooleanParameters();
+  for (auto it=booleanParameters.begin(); it != booleanParameters.end(); it++)
+  {
+    if (it->second.isSome())
+    {
+      pugi::xml_node parameter = subModel.append_child("Parameter");
+      parameter.append_attribute("Type") = "Boolean";
+      parameter.append_attribute("Name") = it->first.c_str();
+      parameter.append_attribute("Value") = std::to_string(it->second.getValue()).c_str();
+    }
+  }
+
   return status;
 }
 
@@ -406,6 +434,80 @@ oms_status_enu_t oms2::FMUWrapper::getRealParameter(const std::string& var, doub
   return oms_status_ok;
 }
 
+oms_status_enu_t oms2::FMUWrapper::setIntegerParameter(const std::string& var, int value)
+{
+  auto it = integerParameters.find(var);
+  if (integerParameters.end() == it)
+  {
+    logError("No such parameter: " + var);
+    return oms_status_error;
+  }
+
+  it->second = value;
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms2::FMUWrapper::getIntegerParameter(const std::string& var, int& value)
+{
+  auto it = integerParameters.find(var);
+  if (integerParameters.end() == it)
+  {
+    logError("No such parameter: " + var);
+    return oms_status_error;
+  }
+
+  if (it->second.isNone())
+  {
+    oms2::Variable *v = getVar(var);
+    if (!v)
+      return oms_status_error;
+    if (oms_status_ok != getInteger(*v, value))
+      return oms_status_error;
+    it->second = value;
+  }
+  else
+    value = it->second.getValue();
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms2::FMUWrapper::setBooleanParameter(const std::string& var, int value)
+{
+  auto it = booleanParameters.find(var);
+  if (booleanParameters.end() == it)
+  {
+    logError("No such parameter: " + var);
+    return oms_status_error;
+  }
+
+  it->second = value;
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms2::FMUWrapper::getBooleanParameter(const std::string& var, int& value)
+{
+  auto it = booleanParameters.find(var);
+  if (booleanParameters.end() == it)
+  {
+    logError("No such parameter: " + var);
+    return oms_status_error;
+  }
+
+  if (it->second.isNone())
+  {
+    oms2::Variable *v = getVar(var);
+    if (!v)
+      return oms_status_error;
+    if (oms_status_ok != getBoolean(*v, value))
+      return oms_status_error;
+    it->second = value;
+  }
+  else
+    value = it->second.getValue();
+
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms2::FMUWrapper::setReal(const oms2::Variable& var, double realValue)
 {
   logTrace();
@@ -438,3 +540,66 @@ oms_status_enu_t oms2::FMUWrapper::getReal(const oms2::Variable& var, double& re
   return oms_status_error;
 }
 
+oms_status_enu_t oms2::FMUWrapper::setInteger(const oms2::Variable& var, int integerValue)
+{
+  logTrace();
+  if (!fmu || !var.isTypeInteger())
+  {
+    logError("oms2::FMUWrapper::setInteger failed");
+    return oms_status_error;
+  }
+
+  fmi2_value_reference_t vr = var.getValueReference();
+  if (fmi2_status_ok != fmi2_import_set_integer(fmu, &vr, 1, &integerValue))
+    return oms_status_ok;
+
+  return oms_status_error;
+}
+
+oms_status_enu_t oms2::FMUWrapper::getInteger(const oms2::Variable& var, int& integerValue)
+{
+  logTrace();
+  if (!fmu || !var.isTypeInteger())
+  {
+    logError("oms2::FMUWrapper::getInteger failed");
+    return oms_status_error;
+  }
+
+  fmi2_value_reference_t vr = var.getValueReference();
+  if (fmi2_status_ok != fmi2_import_get_integer(fmu, &vr, 1, &integerValue))
+    return oms_status_ok;
+
+  return oms_status_error;
+}
+
+oms_status_enu_t oms2::FMUWrapper::setBoolean(const oms2::Variable& var, int booleanValue)
+{
+  logTrace();
+  if (!fmu || !var.isTypeBoolean())
+  {
+    logError("oms2::FMUWrapper::setBoolean failed");
+    return oms_status_error;
+  }
+
+  fmi2_value_reference_t vr = var.getValueReference();
+  if (fmi2_status_ok != fmi2_import_set_boolean(fmu, &vr, 1, &booleanValue))
+    return oms_status_ok;
+
+  return oms_status_error;
+}
+
+oms_status_enu_t oms2::FMUWrapper::getBoolean(const oms2::Variable& var, int& booleanValue)
+{
+  logTrace();
+  if (!fmu || !var.isTypeBoolean())
+  {
+    logError("oms2::FMUWrapper::getBoolean failed");
+    return oms_status_error;
+  }
+
+  fmi2_value_reference_t vr = var.getValueReference();
+  if (fmi2_status_ok != fmi2_import_get_boolean(fmu, &vr, 1, &booleanValue))
+    return oms_status_ok;
+
+  return oms_status_error;
+}
