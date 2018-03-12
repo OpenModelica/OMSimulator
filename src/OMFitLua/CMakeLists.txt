@@ -14,6 +14,7 @@ link_directories(
   ${CVODELibrary_LIBRARYDIR}
   ${KINSOLLibrary_LIBRARYDIR}
   ${LUALibrary_LIBRARYDIR}
+	${OMTLMSIMULATORLIB_LIBRARYDIR}
 )
 
 # Shared library version

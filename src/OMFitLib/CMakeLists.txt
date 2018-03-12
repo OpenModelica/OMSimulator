@@ -23,10 +23,11 @@ link_directories(
   ${Boost_LIBRARY_DIRS}
   ${CVODELibrary_LIBRARYDIR}
   ${KINSOLLibrary_LIBRARYDIR}
+  ${OMTLMSIMULATORLIB_LIBRARYDIR}
 )
 
 set(OMFITLIB_SOURCES OMFit.cpp FitModel.cpp)
-set(OMFITLIB_LIBRARIES OMSimulatorLib ${FMILibrary_LIBRARY} sundials_cvode sundials_nvecserial ${CMAKE_DL_LIBS} ${Boost_LIBRARIES} ${CERES_LIBRARIES})
+set(OMFITLIB_LIBRARIES OMSimulatorLib ${FMILibrary_LIBRARY} sundials_cvode sundials_nvecserial ${CMAKE_DL_LIBS} ${Boost_LIBRARIES} ${CERES_LIBRARIES} omtlmsimulator)
 # set(OMFITLIB_LIBS2 OMSimulatorLib_shared fmilib_shared sundials_cvode sundials_nvecserial)
 
 # Shared library version
