@@ -45,9 +45,6 @@
 
 #include <boost/filesystem.hpp>
 
-#define PUGIXML_HEADER_ONLY
-#include <pugixml.hpp>
-
 oms2::Scope::Scope()
 {
   logTrace();
@@ -206,17 +203,7 @@ oms2::Model* oms2::Scope::loadModel(const std::string& filename)
 {
   logTrace();
 
-  pugi::xml_document doc;
-  pugi::xml_parse_result result = doc.load_file(filename.c_str());
-  if (!result)
-  {
-    logError("loading \"" + std::string(filename) + "\" failed (" + std::string(result.description()) + ")");
-    return NULL;
-  }
-
-  const pugi::xml_node root = doc.document_element();
-
-  oms2::Model* model = oms2::Model::LoadModel(root);
+  oms2::Model* model = oms2::Model::LoadModel(filename);
   if (!model)
     return NULL;
 

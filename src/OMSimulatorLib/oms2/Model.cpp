@@ -76,20 +76,30 @@ oms2::Model* oms2::Model::NewModel(oms_element_type_enu_t type, const oms2::ComR
   return model;
 }
 
-oms2::Model* oms2::Model::LoadModel(const pugi::xml_node& node)
+oms2::Model* oms2::Model::LoadModel(const std::string& filename)
 {
   oms_element_type_enu_t modelType = oms_component_none;
-  bool defaultExperiment = true;
+  bool defaultExperiment = false;
 
-  for(pugi::xml_node_iterator it = node.begin(); it != node.end(); ++it)
+  pugi::xml_document doc;
+  pugi::xml_parse_result result = doc.load_file(filename.c_str());
+  if (!result)
+  {
+    logError("loading \"" + std::string(filename) + "\" failed (" + std::string(result.description()) + ")");
+    return NULL;
+  }
+
+  const pugi::xml_node root = doc.document_element();
+
+  for(pugi::xml_node_iterator it = root.begin(); it != root.end(); ++it)
   {
     std::string name = it->name();
     if (name == "TLMModel" && modelType == oms_component_none)
       modelType = oms_component_tlm;
-    else if (name == "FMICompositeModel" && modelType == oms_component_none)
+    else if (name == "ssd:System" && modelType == oms_component_none)
       modelType = oms_component_fmi;
-    else if (name == "Experiment" && defaultExperiment)
-      defaultExperiment = false;
+    else if (name == "ssd:DefaultExperiment" && !defaultExperiment)
+      defaultExperiment = true;
     else
     {
       logError("wrong xml schema detected");
@@ -99,9 +109,9 @@ oms2::Model* oms2::Model::LoadModel(const pugi::xml_node& node)
 
   oms2::CompositeModel* compositeModel = NULL;
   if (modelType == oms_component_fmi)
-    compositeModel = oms2::FMICompositeModel::LoadModel(node.child("FMICompositeModel"));
+    compositeModel = oms2::FMICompositeModel::LoadModel(root.child("ssd:System"));
   else if (modelType == oms_component_tlm)
-    compositeModel = oms2::TLMCompositeModel::LoadModel(node.child("TLMModel"));
+    compositeModel = oms2::TLMCompositeModel::LoadModel(root.child("TLMModel"));
 
   if (!compositeModel)
     return NULL;
@@ -109,18 +119,16 @@ oms2::Model* oms2::Model::LoadModel(const pugi::xml_node& node)
   oms2::Model* model = new oms2::Model(compositeModel->getName());
   model->compositeModel = compositeModel;
 
-  if (!defaultExperiment)
+  if (defaultExperiment)
   {
-    const pugi::xml_node& experiment = node.child("Experiment");
+    const pugi::xml_node& experiment = root.child("ssd:DefaultExperiment");
     for (auto it = experiment.attributes_begin(); it != experiment.attributes_end(); ++it)
     {
       std::string name = it->name();
-      if (name == "StartTime")
+      if (name == "startTime")
         model->setStartTime(it->as_double());
-      else if (name == "StopTime")
+      else if (name == "stopTime")
         model->setStopTime(it->as_double());
-      else if (name == "ResultFile")
-        model->setResultFile(std::string(it->value()));
       else
       {
         logError("Unknown \"Experiment\" attribute: " + name);
