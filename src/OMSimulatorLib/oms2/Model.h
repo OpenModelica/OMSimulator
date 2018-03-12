@@ -53,7 +53,7 @@ namespace oms2
     // NewModel() is used instead of a constructor to make sure that only
     // instances with valid names can be created.
     static Model* NewModel(oms_element_type_enu_t type, const ComRef& cref);
-    static Model* LoadModel(const pugi::xml_node& node);
+    static Model* LoadModel(const std::string& filename);
     static void DeleteModel(Model *model) {if (model) delete model;}
 
     oms_status_enu_t save(const std::string& filename);

@@ -86,7 +86,7 @@ oms2::FMICompositeModel* oms2::FMICompositeModel::LoadModel(const pugi::xml_node
   for (auto it = node.attributes_begin(); it != node.attributes_end(); ++it)
   {
     std::string name = it->name();
-    if (name == "Name")
+    if (name == "name")
       ident_ = it->value();
   }
 
@@ -101,9 +101,9 @@ oms2::FMICompositeModel* oms2::FMICompositeModel::LoadModel(const pugi::xml_node
     std::string name = it->name();
     oms_status_enu_t status = oms_status_error;
 
-    if (name == "SubModel")
+    if (name == "ssd:Component")
       status = model->loadSubModel(*it);
-    else if (name == "Connections")
+    else if (name == "ssd:Connections")
       status = model->loadConnections(*it);
     else if (name == "Solver")
     {
@@ -187,7 +187,7 @@ oms_status_enu_t oms2::FMICompositeModel::loadElementGeometry(const pugi::xml_no
 
 oms_status_enu_t oms2::FMICompositeModel::loadConnections(const pugi::xml_node& node)
 {
-  if (std::string(node.name()) != "Connections")
+  if (std::string(node.name()) != "ssd:Connections")
   {
     logError("[oms2::FMICompositeModel::loadConnections] failed");
     return oms_status_error;
@@ -195,14 +195,18 @@ oms_status_enu_t oms2::FMICompositeModel::loadConnections(const pugi::xml_node& 
 
   for (auto connectionNode = node.first_child(); connectionNode; connectionNode = connectionNode.next_sibling())
   {
-    if (std::string(connectionNode.name()) != "Connection")
+    if (std::string(connectionNode.name()) != "ssd:Connection")
     {
       logError("[oms2::FMICompositeModel::loadConnection] wrong xml schema detected (3)");
       return oms_status_error;
     }
 
-    std::string sigA = connectionNode.attribute("From").as_string();
-    std::string sigB = connectionNode.attribute("To").as_string();
+    oms2::ComRef startElement = oms2::ComRef(connectionNode.attribute("startElement").as_string());
+    std::string startConnector = connectionNode.attribute("startConnector").as_string();
+    oms2::ComRef endElement = oms2::ComRef(connectionNode.attribute("endElement").as_string());
+    std::string endConnector = connectionNode.attribute("endConnector").as_string();
+    oms2::SignalRef sigA(startElement, startConnector);
+    oms2::SignalRef sigB(endElement, endConnector);
     if (oms_status_ok != this->addConnection(SignalRef(sigA), SignalRef(sigB)))
     {
       logError("[oms2::FMICompositeModel::loadConnection] wrong xml schema detected (4)");
@@ -257,7 +261,7 @@ oms_status_enu_t oms2::FMICompositeModel::loadConnections(const pugi::xml_node& 
 
 oms_status_enu_t oms2::FMICompositeModel::loadSubModel(const pugi::xml_node& node)
 {
-  if (std::string(node.name()) != "SubModel")
+  if (std::string(node.name()) != "ssd:Component")
   {
     logError("[oms2::FMICompositeModel::loadSubModel] failed");
     return oms_status_error;
@@ -269,15 +273,15 @@ oms_status_enu_t oms2::FMICompositeModel::loadSubModel(const pugi::xml_node& nod
   for (auto ait = node.attributes_begin(); ait != node.attributes_end(); ++ait)
   {
     std::string name = ait->name();
-    if (name == "Name")
+    if (name == "name")
     {
       instancename = ait->value();
     }
-    else if (name == "ModelFile")
+    else if (name == "source")
     {
       filename = ait->value();
     }
-    else if (name == "Type")
+    else if (name == "type")
     {
       type = ait->value();
     }
@@ -287,7 +291,7 @@ oms_status_enu_t oms2::FMICompositeModel::loadSubModel(const pugi::xml_node& nod
   oms2::ComRef cref_submodel = cref_model + ComRef(instancename);
 
   oms_status_enu_t status = oms_status_error;
-  if (type == "FMU")
+  if (type == "application/x-fmu-sharedlibrary")
     status = this->addFMU(filename, cref_submodel.last());
   else
     status = this->addTable(filename, cref_submodel.last());
