@@ -347,6 +347,24 @@ oms_status_enu_t oms2::FMICompositeModel::loadSubModel(const pugi::xml_node& nod
           return oms_status_error;
         }
       }
+      else if (_type == "Integer")
+      {
+        int intValue = child.attribute("Value").as_int();
+        if (oms_status_ok != this->setIntegerParameter(oms2::SignalRef(cref_submodel, _name), intValue))
+        {
+          logError("[oms2::FMICompositeModel::loadSubModel] wrong xml schema detected (2)");
+          return oms_status_error;
+        }
+      }
+      else if (_type == "Boolean")
+      {
+        int booleanValue = child.attribute("Value").as_int();
+        if (oms_status_ok != this->setBooleanParameter(oms2::SignalRef(cref_submodel, _name), booleanValue))
+        {
+          logError("[oms2::FMICompositeModel::loadSubModel] wrong xml schema detected (2)");
+          return oms_status_error;
+        }
+      }
       else
       {
         logError("[oms2::FMICompositeModel::loadSubModel] unsupported parameter type " + _type);
@@ -448,6 +466,44 @@ oms_status_enu_t oms2::FMICompositeModel::setRealParameter(const oms2::SignalRef
 
   FMUWrapper* fmu = dynamic_cast<FMUWrapper*>(it->second);
   return fmu->setRealParameter(sr.getVar(), value);
+}
+
+oms_status_enu_t oms2::FMICompositeModel::setIntegerParameter(const oms2::SignalRef& sr, int value)
+{
+  auto it = subModels.find(sr.getCref().last());
+  if (it == subModels.end())
+  {
+    logError("No submodel called \"" + sr.getCref() + "\" found.");
+    return oms_status_error;
+  }
+
+  if (oms_component_fmu != it->second->getType())
+  {
+    logError("[oms2::FMICompositeModel::setIntegerParameter] can only be used for FMUs");
+    return oms_status_error;
+  }
+
+  FMUWrapper* fmu = dynamic_cast<FMUWrapper*>(it->second);
+  return fmu->setIntegerParameter(sr.getVar(), value);
+}
+
+oms_status_enu_t oms2::FMICompositeModel::setBooleanParameter(const oms2::SignalRef& sr, int value)
+{
+  auto it = subModels.find(sr.getCref().last());
+  if (it == subModels.end())
+  {
+    logError("No submodel called \"" + sr.getCref() + "\" found.");
+    return oms_status_error;
+  }
+
+  if (oms_component_fmu != it->second->getType())
+  {
+    logError("[oms2::FMICompositeModel::setBooleanParameter] can only be used for FMUs");
+    return oms_status_error;
+  }
+
+  FMUWrapper* fmu = dynamic_cast<FMUWrapper*>(it->second);
+  return fmu->setBooleanParameter(sr.getVar(), value);
 }
 
 oms2::Connection* oms2::FMICompositeModel::getConnection(const oms2::SignalRef& conA, const oms2::SignalRef& conB)

@@ -500,6 +500,42 @@ oms_status_enu_t oms2_getRealParameter(const char* signal, double* value);
  */
 oms_status_enu_t oms2_setRealParameter(const char* signal, double value);
 
+/**
+ * \brief Get integer value of given parameter.
+ *
+ * \param signal   [in] Name of the signal to fetch (e.g. model.fmuA:var)
+ * \param value    [out] Signal value
+ * \return         Error status
+ */
+oms_status_enu_t oms2_getIntegerParameter(const char* signal, int* value);
+
+/**
+ * \brief Set integer value of given parameter.
+ *
+ * \param signal   [in] Name of the signal to fetch (e.g. model.fmuA:var)
+ * \param value    [in] Signal value
+ * \return         Error status
+ */
+oms_status_enu_t oms2_setIntegerParameter(const char* signal, int value);
+
+/**
+ * \brief Get boolean value of given parameter.
+ *
+ * \param signal   [in] Name of the signal to fetch (e.g. model.fmuA:var)
+ * \param value    [out] Signal value
+ * \return         Error status
+ */
+oms_status_enu_t oms2_getBooleanParameter(const char* signal, int* value);
+
+/**
+ * \brief Set boolean value of given parameter.
+ *
+ * \param signal   [in] Name of the signal to fetch (e.g. model.fmuA:var)
+ * \param value    [in] Signal value
+ * \return         Error status
+ */
+oms_status_enu_t oms2_setBooleanParameter(const char* signal, int value);
+
 #ifdef __cplusplus
 }
 #endif
