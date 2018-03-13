@@ -42,7 +42,6 @@
 #include <map>
 #include <vector>
 
-#define PUGIXML_HEADER_ONLY
 #include <pugixml.hpp>
 
 namespace oms2

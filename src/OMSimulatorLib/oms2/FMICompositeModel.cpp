@@ -37,7 +37,6 @@
 #include "Logging.h"
 #include "SignalRef.h"
 
-#define PUGIXML_HEADER_ONLY
 #include <pugixml.hpp>
 
 #include <sstream>

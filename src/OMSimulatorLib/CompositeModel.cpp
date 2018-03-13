@@ -58,7 +58,6 @@
 
 #include <boost/filesystem.hpp>
 
-#define PUGIXML_HEADER_ONLY
 #include <pugixml.hpp>
 
 CompositeModel::CompositeModel()

@@ -34,7 +34,6 @@
 
 #include "../../Types.h"
 
-#define PUGIXML_HEADER_ONLY
 #include <pugixml.hpp>
 
 #include <string>

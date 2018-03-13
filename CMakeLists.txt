@@ -104,6 +104,7 @@ find_package(KINSOLLibrary REQUIRED)
 
 ##########################
 # Configuring for PUGIXML
+add_definitions(-DPUGIXML_HEADER_ONLY)
 set(PUGIXML_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/PugiXml)
 
 ##########################

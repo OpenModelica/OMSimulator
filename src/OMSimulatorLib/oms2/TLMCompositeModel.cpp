@@ -34,7 +34,6 @@
 #include "ComRef.h"
 #include "Logging.h"
 
-#define PUGIXML_HEADER_ONLY
 #include <pugixml.hpp>
 
 oms2::TLMCompositeModel::TLMCompositeModel(const ComRef& name)

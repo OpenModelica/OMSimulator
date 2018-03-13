@@ -36,7 +36,6 @@
 #include "CompositeModel.h"
 #include "../Types.h"
 
-#define PUGIXML_HEADER_ONLY
 #include <pugixml.hpp>
 
 namespace oms2

@@ -37,7 +37,6 @@
 
 #include <regex>
 
-#define PUGIXML_HEADER_ONLY
 #include <pugixml.hpp>
 
 oms2::Model::Model(const oms2::ComRef& cref)
