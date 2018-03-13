@@ -303,8 +303,7 @@ typedef struct {
   ssd_element_geometry_t* geometry; ///< Geometry information of the element
 } oms_element_t;
 
-typedef enum oms_fmi_kind_enu_t
-{
+typedef enum {
   oms_fmi_kind_unknown = 0,
   oms_fmi_kind_me = 1,       ///< FMI for Model Exchange
   oms_fmi_kind_cs = 2,       ///< FMI for Co-Simulation
