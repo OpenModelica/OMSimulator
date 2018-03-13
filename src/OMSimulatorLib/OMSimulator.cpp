@@ -35,6 +35,7 @@
 #include "MatReader.h"
 #include "oms2/ComRef.h"
 #include "oms2/Element.h"
+#include "oms2/FMUInfo.h"
 #include "oms2/Logging.h"
 #include "oms2/Model.h"
 #include "oms2/Scope.h"
@@ -44,7 +45,6 @@
 #include "Version.h"
 
 #include <string>
-
 #include <boost/filesystem.hpp>
 
 void* oms_newModel()
@@ -594,10 +594,10 @@ oms_status_enu_t oms2_getFMUPath(const char* cref, char** path)
   return oms2::Scope::GetInstance().getFMUPath(oms2::ComRef(cref), path);
 }
 
-oms_status_enu_t oms2_getFMUInfo(const char* cref, oms_fmu_info_t** fmuInfo)
+oms_status_enu_t oms2_getFMUInfo(const char* cref, const oms_fmu_info_t** fmuInfo)
 {
   logTrace();
-  return oms2::Scope::GetInstance().getFMUInfo(oms2::ComRef(cref), fmuInfo);
+  return oms2::Scope::GetInstance().getFMUInfo(oms2::ComRef(cref), reinterpret_cast<const oms2::FMUInfo**>(fmuInfo));
 }
 
 oms_status_enu_t oms2_getConnections(const char* cref, oms_connection_t*** connections)

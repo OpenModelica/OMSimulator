@@ -413,7 +413,7 @@ oms_status_enu_t oms2_getFMUPath(const char* cref, char** path);
  * \param fmuInfo   [out] FMU path
  * \return          Error status
  */
-oms_status_enu_t oms2_getFMUInfo(const char* cref, oms_fmu_info_t** fmuInfo);
+oms_status_enu_t oms2_getFMUInfo(const char* cref, const oms_fmu_info_t** fmuInfo);
 
 /**
  * \brief Get list of all connections from a given component.

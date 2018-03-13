@@ -379,7 +379,7 @@ oms_status_enu_t oms2::Scope::getFMUPath(const oms2::ComRef& cref, char** path)
   return oms_status_error;
 }
 
-oms_status_enu_t oms2::Scope::getFMUInfo(const oms2::ComRef& cref, oms_fmu_info_t** fmuInfo)
+oms_status_enu_t oms2::Scope::getFMUInfo(const oms2::ComRef& cref, const oms2::FMUInfo** fmuInfo)
 {
   logTrace();
 
@@ -405,7 +405,8 @@ oms_status_enu_t oms2::Scope::getFMUInfo(const oms2::ComRef& cref, oms_fmu_info_
         return oms_status_error;
       }
       oms2::FMUWrapper* fmuWrapper = dynamic_cast<oms2::FMUWrapper*>(subModel);
-      return fmuWrapper->getFMUInfo(fmuInfo);
+      *fmuInfo = fmuWrapper->getFMUInfo();
+      return oms_status_ok;
     }
     else
     {

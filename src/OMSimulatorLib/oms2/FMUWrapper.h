@@ -62,7 +62,7 @@ namespace oms2
     oms_status_enu_t setBooleanParameter(const std::string& var, int value);
     oms_status_enu_t getBooleanParameter(const std::string& var, int& value);
     const std::string getFMUPath() const {return fmuInfo.getPath();}
-    oms_status_enu_t getFMUInfo(oms_fmu_info_t** fmuInfo) {*fmuInfo = reinterpret_cast<oms_fmu_info_t*>(&(this->fmuInfo)); return oms_status_ok;}
+    const oms2::FMUInfo* getFMUInfo() const {&(this->fmuInfo);}
     const std::map<std::string, oms2::Option<double>>& getRealParameters() const {return realParameters;}
     const std::map<std::string, oms2::Option<int>>& getIntegerParameters() const {return integerParameters;}
     const std::map<std::string, oms2::Option<int>>& getBooleanParameters() const {return booleanParameters;}
