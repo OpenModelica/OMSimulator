@@ -96,10 +96,8 @@ void oms2::fmi2logger(fmi2_component_environment_t env, fmi2_string_t instanceNa
 }
 
 oms2::FMUWrapper::FMUWrapper(const oms2::ComRef& cref, const std::string& filename)
-  : oms2::FMISubModel(oms_component_fmu, cref)
+  : oms2::FMISubModel(oms_component_fmu, cref), fmuInfo(filename)
 {
-  this->filename = filename;
-
   this->context = NULL;
   this->fmu = NULL;
 }
@@ -173,20 +171,7 @@ oms2::FMUWrapper* oms2::FMUWrapper::newSubModel(const oms2::ComRef& cref, const 
     return NULL;
   }
 
-  // check FMU kind (CS or ME)
-  model->fmuKind = fmi2_import_get_fmu_kind(model->fmu);
-  if (fmi2_fmu_kind_me == model->fmuKind)
-    logDebug("FMU ME");
-  else if (fmi2_fmu_kind_cs == model->fmuKind)
-    logDebug("FMU CS");
-  else if (fmi2_fmu_kind_me_and_cs == model->fmuKind)
-    logDebug("FMU ME & CS");
-  else
-  {
-    logError("Unsupported FMU kind: " + std::string(fmi2_fmu_kind_to_string(model->fmuKind)));
-    delete model;
-    return NULL;
-  }
+  model->fmuInfo.setKind(model->fmu);
 
   model->callBackFunctions.logger = oms2::fmi2logger;
   model->callBackFunctions.allocateMemory = calloc;
@@ -194,7 +179,7 @@ oms2::FMUWrapper* oms2::FMUWrapper::newSubModel(const oms2::ComRef& cref, const 
   model->callBackFunctions.componentEnvironment = model->fmu;
   model->callBackFunctions.stepFinished = NULL;
 
-  if (fmi2_fmu_kind_me == model->fmuKind)
+  if (oms_fmi_kind_me == model->fmuInfo.getKind())
   {
     jm_status_enu_t jmstatus;
 
@@ -207,10 +192,6 @@ oms2::FMUWrapper* oms2::FMUWrapper::newSubModel(const oms2::ComRef& cref, const 
       return NULL;
     }
 
-    //logDebug("Version returned from FMU: " + std::string(fmi2_import_get_version(model->fmu)));
-    //logDebug("Platform type returned: " + std::string(fmi2_import_get_types_platform(model->fmu)));
-    //logDebug("GUID: " + std::string(fmi2_import_get_GUID(model->fmu)));
-
     jmstatus = fmi2_import_instantiate(model->fmu, cref.toString().c_str(), fmi2_model_exchange, NULL, fmi2_false);
     if (jm_status_error == jmstatus)
     {
@@ -218,8 +199,16 @@ oms2::FMUWrapper* oms2::FMUWrapper::newSubModel(const oms2::ComRef& cref, const 
       delete model;
       return NULL;
     }
+
+    // update FMU info
+    if (oms_status_ok != model->fmuInfo.update(model->fmu))
+    {
+      logError("Error importing FMU attributes");
+      delete model;
+      return NULL;
+    }
   }
-  else if (fmi2_fmu_kind_cs == model->fmuKind || fmi2_fmu_kind_me_and_cs == model->fmuKind)
+  else if (oms_fmi_kind_cs == model->fmuInfo.getKind() || oms_fmi_kind_me_and_cs == model->fmuInfo.getKind())
   {
     jm_status_enu_t jmstatus;
 
@@ -232,14 +221,18 @@ oms2::FMUWrapper* oms2::FMUWrapper::newSubModel(const oms2::ComRef& cref, const 
       return NULL;
     }
 
-    //logDebug("Version returned from FMU: " + std::string(fmi2_import_get_version(model->fmu)));
-    //logDebug("Platform type returned: " + std::string(fmi2_import_get_types_platform(model->fmu)));
-    //logDebug("GUID: " + std::string(fmi2_import_get_GUID(model->fmu)));
-
     jmstatus = fmi2_import_instantiate(model->fmu, cref.toString().c_str(), fmi2_cosimulation, NULL, fmi2_false);
     if (jm_status_error == jmstatus)
     {
       logError("fmi2_import_instantiate failed");
+      delete model;
+      return NULL;
+    }
+
+    // update FMU info
+    if (oms_status_ok != model->fmuInfo.update(model->fmu))
+    {
+      logError("Error importing FMU attributes");
       delete model;
       return NULL;
     }

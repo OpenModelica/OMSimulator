@@ -34,8 +34,9 @@
 
 #include "ComRef.h"
 #include "FMISubModel.h"
-#include "Variable.h"
+#include "FMUInfo.h"
 #include "Option.h"
+#include "Variable.h"
 
 #include <map>
 #include <string>
@@ -60,7 +61,8 @@ namespace oms2
     oms_status_enu_t getIntegerParameter(const std::string& var, int& value);
     oms_status_enu_t setBooleanParameter(const std::string& var, int value);
     oms_status_enu_t getBooleanParameter(const std::string& var, int& value);
-    const std::string& getFMUPath() const {return filename;}
+    const std::string getFMUPath() const {return fmuInfo.getPath();}
+    oms_status_enu_t getFMUInfo(oms_fmu_info_t** fmuInfo) {*fmuInfo = reinterpret_cast<oms_fmu_info_t*>(&(this->fmuInfo)); return oms_status_ok;}
     const std::map<std::string, oms2::Option<double>>& getRealParameters() const {return realParameters;}
     const std::map<std::string, oms2::Option<int>>& getIntegerParameters() const {return integerParameters;}
     const std::map<std::string, oms2::Option<int>>& getBooleanParameters() const {return booleanParameters;}
@@ -79,7 +81,7 @@ namespace oms2
     FMUWrapper(const ComRef& cref, const std::string& filename);
     ~FMUWrapper();
 
-    std::string filename;
+    oms2::FMUInfo fmuInfo;
     std::vector<oms2::Variable> inputs;
     std::vector<oms2::Variable> outputs;
     std::vector<oms2::Variable> parameters;
@@ -91,7 +93,6 @@ namespace oms2
 
     std::string tempDir;
     jm_callbacks callbacks;
-    fmi2_fmu_kind_enu_t fmuKind;
     fmi2_callback_functions_t callBackFunctions;
     fmi_import_context_t* context;
     fmi2_import_t* fmu;

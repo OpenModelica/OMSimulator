@@ -594,6 +594,12 @@ oms_status_enu_t oms2_getFMUPath(const char* cref, char** path)
   return oms2::Scope::GetInstance().getFMUPath(oms2::ComRef(cref), path);
 }
 
+oms_status_enu_t oms2_getFMUInfo(const char* cref, oms_fmu_info_t** fmuInfo)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().getFMUInfo(oms2::ComRef(cref), fmuInfo);
+}
+
 oms_status_enu_t oms2_getConnections(const char* cref, oms_connection_t*** connections)
 {
   logTrace();

@@ -68,6 +68,7 @@ namespace oms2
     oms_status_enu_t setElementGeometry(const ComRef& cref, const oms2::ssd::ElementGeometry* geometry);
     oms_status_enu_t getElements(const ComRef& cref, oms2::Element*** elements);
     oms_status_enu_t getFMUPath(const ComRef& cref, char** path);
+    oms_status_enu_t getFMUInfo(const ComRef& cref, oms_fmu_info_t** fmuInfo);
     oms_status_enu_t getConnections(const ComRef& cref, oms2::Connection*** connections);
     oms_status_enu_t addConnection(const ComRef& cref, const SignalRef& conA, const SignalRef& conB);
     oms_status_enu_t deleteConnection(const ComRef& cref, const SignalRef& conA, const SignalRef& conB);
