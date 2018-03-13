@@ -293,7 +293,7 @@ oms2::FMUWrapper* oms2::FMUWrapper::newSubModel(const oms2::ComRef& cref, const 
     else if (v.isParameter() && v.isTypeInteger())
       model->integerParameters[v.getName()] = oms2::Option<int>();
     else if (v.isParameter() && v.isTypeBoolean())
-      model->booleanParameters[v.getName()] = oms2::Option<int>();
+      model->booleanParameters[v.getName()] = oms2::Option<bool>();
 
     if (v.isInput())
       model->inputs.push_back(v);
@@ -342,6 +342,7 @@ oms_status_enu_t oms2::FMUWrapper::exportToSSD(pugi::xml_node& root) const
   const std::string& fmuPath = getFMUPath();
   subModel.append_attribute("source") = fmuPath.c_str();
 
+  // export ssd:ParameterBindings
   const std::map<std::string, oms2::Option<double>>& realParameters = getRealParameters();
   for (auto it=realParameters.begin(); it != realParameters.end(); it++)
   {
@@ -366,7 +367,7 @@ oms_status_enu_t oms2::FMUWrapper::exportToSSD(pugi::xml_node& root) const
     }
   }
 
-  const std::map<std::string, oms2::Option<int>>& booleanParameters = getBooleanParameters();
+  const std::map<std::string, oms2::Option<bool>>& booleanParameters = getBooleanParameters();
   for (auto it=booleanParameters.begin(); it != booleanParameters.end(); it++)
   {
     if (it->second.isSome())
@@ -374,7 +375,7 @@ oms_status_enu_t oms2::FMUWrapper::exportToSSD(pugi::xml_node& root) const
       pugi::xml_node parameter = subModel.append_child("Parameter");
       parameter.append_attribute("Type") = "Boolean";
       parameter.append_attribute("Name") = it->first.c_str();
-      parameter.append_attribute("Value") = std::to_string(it->second.getValue()).c_str();
+      parameter.append_attribute("Value") = it->second.getValue() ? "true" : "false";
     }
   }
 
@@ -464,7 +465,7 @@ oms_status_enu_t oms2::FMUWrapper::getIntegerParameter(const std::string& var, i
   return oms_status_ok;
 }
 
-oms_status_enu_t oms2::FMUWrapper::setBooleanParameter(const std::string& var, int value)
+oms_status_enu_t oms2::FMUWrapper::setBooleanParameter(const std::string& var, bool value)
 {
   auto it = booleanParameters.find(var);
   if (booleanParameters.end() == it)
@@ -477,7 +478,7 @@ oms_status_enu_t oms2::FMUWrapper::setBooleanParameter(const std::string& var, i
   return oms_status_ok;
 }
 
-oms_status_enu_t oms2::FMUWrapper::getBooleanParameter(const std::string& var, int& value)
+oms_status_enu_t oms2::FMUWrapper::getBooleanParameter(const std::string& var, bool& value)
 {
   auto it = booleanParameters.find(var);
   if (booleanParameters.end() == it)
@@ -565,7 +566,7 @@ oms_status_enu_t oms2::FMUWrapper::getInteger(const oms2::Variable& var, int& in
   return oms_status_error;
 }
 
-oms_status_enu_t oms2::FMUWrapper::setBoolean(const oms2::Variable& var, int booleanValue)
+oms_status_enu_t oms2::FMUWrapper::setBoolean(const oms2::Variable& var, bool booleanValue)
 {
   logTrace();
   if (!fmu || !var.isTypeBoolean())
@@ -575,13 +576,14 @@ oms_status_enu_t oms2::FMUWrapper::setBoolean(const oms2::Variable& var, int boo
   }
 
   fmi2_value_reference_t vr = var.getValueReference();
-  if (fmi2_status_ok != fmi2_import_set_boolean(fmu, &vr, 1, &booleanValue))
+  int value = booleanValue;
+  if (fmi2_status_ok != fmi2_import_set_boolean(fmu, &vr, 1, &value))
     return oms_status_ok;
 
   return oms_status_error;
 }
 
-oms_status_enu_t oms2::FMUWrapper::getBoolean(const oms2::Variable& var, int& booleanValue)
+oms_status_enu_t oms2::FMUWrapper::getBoolean(const oms2::Variable& var, bool& booleanValue)
 {
   logTrace();
   if (!fmu || !var.isTypeBoolean())
@@ -591,8 +593,12 @@ oms_status_enu_t oms2::FMUWrapper::getBoolean(const oms2::Variable& var, int& bo
   }
 
   fmi2_value_reference_t vr = var.getValueReference();
-  if (fmi2_status_ok != fmi2_import_get_boolean(fmu, &vr, 1, &booleanValue))
+  int value = 0;
+  if (fmi2_status_ok != fmi2_import_get_boolean(fmu, &vr, 1, &value))
+  {
+    booleanValue = value;
     return oms_status_ok;
+  }
 
   return oms_status_error;
 }

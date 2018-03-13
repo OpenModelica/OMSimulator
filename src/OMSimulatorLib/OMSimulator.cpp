@@ -666,13 +666,13 @@ oms_status_enu_t oms2_setIntegerParameter(const char* signal, int value)
   return oms2::Scope::GetInstance().setIntegerParameter(oms2::SignalRef(signal), value);
 }
 
-oms_status_enu_t oms2_getBooleanParameter(const char* signal, int* value)
+oms_status_enu_t oms2_getBooleanParameter(const char* signal, bool* value)
 {
   logTrace();
   return oms2::Scope::GetInstance().getBooleanParameter(oms2::SignalRef(signal), *value);
 }
 
-oms_status_enu_t oms2_setBooleanParameter(const char* signal, int value)
+oms_status_enu_t oms2_setBooleanParameter(const char* signal, bool value)
 {
   logTrace();
   return oms2::Scope::GetInstance().setBooleanParameter(oms2::SignalRef(signal), value);

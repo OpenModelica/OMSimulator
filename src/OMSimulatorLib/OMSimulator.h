@@ -534,7 +534,7 @@ oms_status_enu_t oms2_setIntegerParameter(const char* signal, int value);
  * \param value    [out] Signal value
  * \return         Error status
  */
-oms_status_enu_t oms2_getBooleanParameter(const char* signal, int* value);
+oms_status_enu_t oms2_getBooleanParameter(const char* signal, bool* value);
 
 /**
  * \brief Set boolean value of given parameter.
@@ -543,7 +543,7 @@ oms_status_enu_t oms2_getBooleanParameter(const char* signal, int* value);
  * \param value    [in] Signal value
  * \return         Error status
  */
-oms_status_enu_t oms2_setBooleanParameter(const char* signal, int value);
+oms_status_enu_t oms2_setBooleanParameter(const char* signal, bool value);
 
 #ifdef __cplusplus
 }

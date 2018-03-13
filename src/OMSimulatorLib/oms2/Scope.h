@@ -78,8 +78,8 @@ namespace oms2
     oms_status_enu_t setRealParameter(const oms2::SignalRef& signal, double value);
     oms_status_enu_t getIntegerParameter(const oms2::SignalRef& signal, int& value);
     oms_status_enu_t setIntegerParameter(const oms2::SignalRef& signal, int value);
-    oms_status_enu_t getBooleanParameter(const oms2::SignalRef& signal, int& value);
-    oms_status_enu_t setBooleanParameter(const oms2::SignalRef& signal, int value);
+    oms_status_enu_t getBooleanParameter(const oms2::SignalRef& signal, bool& value);
+    oms_status_enu_t setBooleanParameter(const oms2::SignalRef& signal, bool value);
     oms_status_enu_t setTempDirectory(const std::string& newTempDir);
     oms_status_enu_t setWorkingDirectory(const std::string& path);
 

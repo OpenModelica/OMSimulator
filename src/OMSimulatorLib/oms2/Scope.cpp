@@ -828,7 +828,7 @@ oms_status_enu_t oms2::Scope::setIntegerParameter(const oms2::SignalRef& signal,
   return oms_status_error;
 }
 
-oms_status_enu_t oms2::Scope::getBooleanParameter(const oms2::SignalRef& signal, int& value)
+oms_status_enu_t oms2::Scope::getBooleanParameter(const oms2::SignalRef& signal, bool& value)
 {
   logTrace();
   ComRef cref = signal.getCref();
@@ -869,7 +869,7 @@ oms_status_enu_t oms2::Scope::getBooleanParameter(const oms2::SignalRef& signal,
   return oms_status_error;
 }
 
-oms_status_enu_t oms2::Scope::setBooleanParameter(const oms2::SignalRef& signal, int value)
+oms_status_enu_t oms2::Scope::setBooleanParameter(const oms2::SignalRef& signal, bool value)
 {
   logTrace();
   ComRef cref = signal.getCref();

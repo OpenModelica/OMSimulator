@@ -59,21 +59,21 @@ namespace oms2
     oms_status_enu_t getRealParameter(const std::string& var, double& value);
     oms_status_enu_t setIntegerParameter(const std::string& var, int value);
     oms_status_enu_t getIntegerParameter(const std::string& var, int& value);
-    oms_status_enu_t setBooleanParameter(const std::string& var, int value);
-    oms_status_enu_t getBooleanParameter(const std::string& var, int& value);
+    oms_status_enu_t setBooleanParameter(const std::string& var, bool value);
+    oms_status_enu_t getBooleanParameter(const std::string& var, bool& value);
     const std::string getFMUPath() const {return fmuInfo.getPath();}
     const oms2::FMUInfo* getFMUInfo() const {return &(this->fmuInfo);}
     const std::map<std::string, oms2::Option<double>>& getRealParameters() const {return realParameters;}
     const std::map<std::string, oms2::Option<int>>& getIntegerParameters() const {return integerParameters;}
-    const std::map<std::string, oms2::Option<int>>& getBooleanParameters() const {return booleanParameters;}
+    const std::map<std::string, oms2::Option<bool>>& getBooleanParameters() const {return booleanParameters;}
 
   private:
     oms_status_enu_t setReal(const oms2::Variable& var, double realValue);
     oms_status_enu_t getReal(const oms2::Variable& var, double& realValue);
     oms_status_enu_t setInteger(const oms2::Variable& var, int integerValue);
     oms_status_enu_t getInteger(const oms2::Variable& var, int& integerValue);
-    oms_status_enu_t setBoolean(const oms2::Variable& var, int booleanValue);
-    oms_status_enu_t getBoolean(const oms2::Variable& var, int& booleanValue);
+    oms_status_enu_t setBoolean(const oms2::Variable& var, bool booleanValue);
+    oms_status_enu_t getBoolean(const oms2::Variable& var, bool& booleanValue);
 
     oms2::Variable* getVar(const std::string& var);
 
@@ -89,7 +89,7 @@ namespace oms2
 
     std::map<std::string, oms2::Option<double>> realParameters;
     std::map<std::string, oms2::Option<int>> integerParameters;
-    std::map<std::string, oms2::Option<int>> booleanParameters;
+    std::map<std::string, oms2::Option<bool>> booleanParameters;
 
     std::string tempDir;
     jm_callbacks callbacks;
