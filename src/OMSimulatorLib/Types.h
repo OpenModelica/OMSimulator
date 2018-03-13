@@ -216,17 +216,17 @@ typedef struct {
  * coordinates are in the coordinate system of the enclosing system.
  */
 typedef struct {
-  /*
+  /**
    * Required attribute giving a list of x coordinates of the intermediate
    * waypoints.
    */
   double* pointsX;
-  /*
+  /**
    * Required attribute giving a list of y coordinates of the intermediate
    * waypoints.
    */
   double* pointsY;
-  /*
+  /**
    * Number of intermediate waypoints.
    */
   unsigned int n;
@@ -249,22 +249,22 @@ typedef struct {
  * instantiated in the parent system after rotation.
  */
 typedef struct {
-  /*
+  /**
    * Required attribute giving the x coordinate of the lower-left corner of the
    * system canvas.
    */
   double x1;
-  /*
+  /**
    * Required attribute giving the y coordinate of the lower-left corner of the
    * system canvas.
    */
   double y1;
-  /*
+  /**
    * Required attribute giving the x coordinate of the upper-right corner of the
    * system canvas.
    */
   double x2;
-  /*
+  /**
    * Required attribute giving the y coordinate of the upper-right corner of the
    * system canvas.
    */
@@ -302,6 +302,129 @@ typedef struct {
   oms_connector_t** interfaces;     ///< List (null-terminated array) of all interface variables: inputs, outputs, and parameters.
   ssd_element_geometry_t* geometry; ///< Geometry information of the element
 } oms_element_t;
+
+typedef enum oms_fmi_kind_enu_t
+{
+  oms_fmi_kind_unknown = 0,
+  oms_fmi_kind_me = 1,       ///< FMI for Model Exchange
+  oms_fmi_kind_cs = 2,       ///< FMI for Co-Simulation
+  oms_fmi_kind_me_and_cs = 3 ///< defined to be equal to (oms_fmi_kind_me|oms_fmi_kind_cs)
+} oms_fmi_kind_enu_t;
+
+/**
+ * \brief FMU specific attributes
+ */
+typedef struct {
+  /**
+   * Optional string with the name and organization of the model author.
+   */
+  char* author;
+  /**
+   * Optional information on the intellectual property copyright for this FMU.
+   * [Example: copyright = "© My Company 2011"].
+   */
+  char* copyright;
+  /**
+   * Optional string with a brief description of the model.
+   */
+  char* description;
+  /**
+   * FMI for Model Exchange or Co-Simulation.
+   */
+  oms_fmi_kind_enu_t fmiKind;
+  /**
+   * Version of "FMI for Model Exchange or Co-Simulation" that was used to
+   * generate the XML file. The value for this version is "2.0". Future minor
+   * revisions are denoted as "2.0.1", "2.0.2", ...
+   */
+  char* fmiVersion;
+  /**
+   * Optional date and time when the XML file was generated. The format is a
+   * subset of "xs:dateTime" and should be: "YYYY-MM-DDThh:mm:ssZ" (with one
+   * "T" between date and time; "Z" characterizes the Zulu time zone, in other
+   * words Greenwich meantime).
+   * [Example: "2009-12-08T14:33:22Z"].
+   */
+  char* generationDateAndTime;
+  /**
+   * Optional name of the tool that generated the XML file.
+   */
+  char* generationTool;
+  /**
+   * The "Globally Unique IDentifier" is a string that is used to check that
+   * the XML file is compatible with the C functions of the FMU. Typically when
+   * generating the XML file, a fingerprint of the "relevant" information is
+   * stored as guid and in the generated C-function.
+   */
+  char* guid;
+  /**
+   * Optional information on the intellectual property licensing for this FMU.
+   * [Example: license = "BSD license <license text or link to license>"].
+   */
+  char* license;
+  /**
+   * The name of the model as used in the modeling environment that generated the
+   * XML file, such as "Modelica.Mechanics.Rotational.Examples.CoupledClutches".
+   */
+  char* modelName;
+  /**
+   * Path to the FMU.
+   */
+  char* path;
+  /**
+   * Optional version of the model, for example "1.0".
+   */
+  char* version;
+  /**
+   * This flag indicates cases (especially for embedded code), where only one
+   * instance per FMU is possible (multiple instantiation is default = false;
+   * if multiple instances are needed and this flag = true, the FMUs must be
+   * instantiated in different processes).
+   */
+  bool canBeInstantiatedOnlyOncePerProcess;
+  /**
+   * If true, the environment can inquire the internal FMU state and can
+   * restore it. That is, functions fmi2GetFMUstate, fmi2SetFMUstate, and
+   * fmi2FreeFMUstate are supported by the FMU.
+   */
+  bool canGetAndSetFMUstate;
+  /**
+   * If true, the FMU uses its own functions for memory allocation and freeing
+   * only. The callback functions allocateMemory and freeMemory given in
+   * fmi2Instantiate are ignored.
+   */
+  bool canNotUseMemoryManagementFunctions;
+  /**
+   * If true, the environment can serialize the internal FMU state, in other
+   * words functions fmi2SerializedFMUstateSize, fmi2SerializeFMUstate,
+   * fmi2DeSerializeFMUstate are supported by the FMU. If this is the case,
+   * then flag canGetAndSetFMUstate must be true as well.
+   */
+  bool canSerializeFMUstate;
+  /**
+   * If true, function fmi2CompletedIntegratorStep need not to be called (which
+   * gives a slightly more efficient integration). If it is called, it has no
+   * effect.
+   * If false (the default), the function must be called after every completed
+   * integrator step, see section 3.2.2.
+   */
+  bool completedIntegratorStepNotNeeded;
+  /**
+   * If true, a tool is needed to execute the model and the FMU just contains
+   * the communication to this tool.
+   * [Typically, this information is only utilized for information purposes.
+   * For example when loading an FMU with needsExecutionTool = true, the
+   * environment can inform the user that a tool has to be available on the
+   * computer where the model is instantiated. The name of the tool can be
+   * taken from attribute generationTool of fmiModelDescription.]
+   */
+  bool needsExecutionTool;
+  /**
+   * If true, the directional derivative of the equations can be computed with
+   * fmi2GetDirectionalDerivative(..).
+   */
+  bool providesDirectionalDerivative;
+} oms_fmu_info_t;
 
 #ifdef __cplusplus
 }

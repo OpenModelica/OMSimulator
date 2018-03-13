@@ -407,6 +407,15 @@ oms_status_enu_t oms2_getElements(const char* cref, oms_element_t*** elements);
 oms_status_enu_t oms2_getFMUPath(const char* cref, char** path);
 
 /**
+ * \brief Returns FMU specific information.
+ *
+ * \param cref      [in] Full identifier of a component
+ * \param fmuInfo   [out] FMU path
+ * \return          Error status
+ */
+oms_status_enu_t oms2_getFMUInfo(const char* cref, oms_fmu_info_t** fmuInfo);
+
+/**
  * \brief Get list of all connections from a given component.
  *
  * \param cref          [in] Full identifier of a component
