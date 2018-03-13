@@ -29,6 +29,9 @@ IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   ENDIF()
 ENDIF()
 
+# Enable verbose output from Makefile builds
+set(CMAKE_VERBOSE_MAKEFILE ON)
+
 # Use C++ 11 for the whole project
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
