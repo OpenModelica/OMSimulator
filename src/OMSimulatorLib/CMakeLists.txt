@@ -5,6 +5,7 @@ set(CMAKE_INSTALL_RPATH "$ORIGIN/../lib:$ORIGIN/")
 
 IF (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.1)
   SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Werror=return-local-addr")
+  SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Werror=return-type")
 ENDIF()
 
 # Export all symbols from the DLL on Windows
