@@ -47,7 +47,15 @@ namespace oms2
   class Connector : protected oms_connector_t
   {
   public:
+    /**
+     * This constructor creates a oms2::Connector without geometry information.
+     */
     Connector(oms_causality_enu_t causality, oms_signal_type_enu_t type, const oms2::SignalRef& name);
+    /**
+     * This constructor is used if the optional SSD element giving the geometry
+     * information of the connector is initialized as well.
+     */
+    Connector(oms_causality_enu_t causality, oms_signal_type_enu_t type, const oms2::SignalRef& name, double height);
     ~Connector();
 
     // methods to copy the object

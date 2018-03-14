@@ -44,7 +44,36 @@ oms2::Connector::Connector(oms_causality_enu_t causality, oms_signal_type_enu_t 
   this->name = new char[str.size()+1];
   strcpy(this->name, str.c_str());
 
-  this->geometry = reinterpret_cast<ssd_connector_geometry_t*>(new oms2::ssd::ConnectorGeometry());
+  this->geometry = NULL;
+}
+
+oms2::Connector::Connector(oms_causality_enu_t causality, oms_signal_type_enu_t type, const oms2::SignalRef& name, double height)
+{
+  this->causality = causality;
+  this->type = type;
+
+  std::string str = name.toString();
+  this->name = new char[str.size()+1];
+  strcpy(this->name, str.c_str());
+
+  double x, y;
+  switch (causality)
+  {
+    case oms_causality_input:
+      // inputs are placed on the left of the component
+      x = 0.0;
+      break;
+    case oms_causality_output:
+      // outputs are placed on the right of the component
+      x = 1.0;
+      break;
+    default:
+      // parameters are placed on the top of the component
+      x = height;
+      y = 1.0;
+      break;
+  }
+  this->geometry = reinterpret_cast<ssd_connector_geometry_t*>(new oms2::ssd::ConnectorGeometry(x, y));
 }
 
 oms2::Connector::~Connector()
@@ -61,7 +90,10 @@ oms2::Connector::Connector(const oms2::Connector& rhs)
   this->name = new char[strlen(rhs.name)+1];
   strcpy(this->name, rhs.name);
 
-  this->geometry = reinterpret_cast<ssd_connector_geometry_t*>(new oms2::ssd::ConnectorGeometry(*reinterpret_cast<oms2::ssd::ConnectorGeometry*>(rhs.geometry)));
+  if (rhs.geometry)
+    *reinterpret_cast<oms2::ssd::ConnectorGeometry*>(this->geometry) = *reinterpret_cast<oms2::ssd::ConnectorGeometry*>(rhs.geometry);
+  else
+    this->geometry = NULL;
 }
 
 oms2::Connector& oms2::Connector::operator=(const oms2::Connector& rhs)
@@ -73,31 +105,34 @@ oms2::Connector& oms2::Connector::operator=(const oms2::Connector& rhs)
   this->causality = rhs.causality;
   this->type = rhs.type;
 
-  if (this->name) delete[] this->name;
+  if (this->name)
+    delete[] this->name;
   this->name = new char[strlen(rhs.name)+1];
   strcpy(this->name, rhs.name);
 
-  oms2::ssd::ConnectorGeometry* geometry_ = new oms2::ssd::ConnectorGeometry();
-  *geometry_ = *reinterpret_cast<oms2::ssd::ConnectorGeometry*>(rhs.geometry);
-  this->geometry = reinterpret_cast<ssd_connector_geometry_t*>(geometry_);
-  delete geometry_;
+  this->setGeometry(reinterpret_cast<oms2::ssd::ConnectorGeometry*>(rhs.geometry));
 
   return *this;
 }
 
 void oms2::Connector::setName(const oms2::SignalRef& name)
 {
+  if (this->name)
+    delete[] this->name;
+
   std::string str = name.toString();
-  if (this->name) delete[] this->name;
   this->name = new char[str.size()+1];
   strcpy(this->name, str.c_str());
 }
 
 void oms2::Connector::setGeometry(const oms2::ssd::ConnectorGeometry* newGeometry)
 {
-  oms2::ssd::ConnectorGeometry* geometry_ = reinterpret_cast<oms2::ssd::ConnectorGeometry*>(this->geometry);
-  if (geometry_)
-    delete geometry_;
-  geometry_ = new oms2::ssd::ConnectorGeometry(*newGeometry);
-  this->geometry = reinterpret_cast<ssd_connector_geometry_t*>(geometry_);
+  if (this->geometry)
+  {
+    delete reinterpret_cast<oms2::ssd::ConnectorGeometry*>(this->geometry);
+    this->geometry = NULL;
+  }
+
+  if (newGeometry)
+    *reinterpret_cast<oms2::ssd::ConnectorGeometry*>(this->geometry) = *newGeometry;
 }
