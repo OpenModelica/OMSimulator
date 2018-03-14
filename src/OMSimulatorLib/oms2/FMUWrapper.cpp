@@ -305,14 +305,14 @@ oms2::FMUWrapper* oms2::FMUWrapper::newSubModel(const oms2::ComRef& cref, const 
 
   std::vector<oms2::Connector> connectors;
   int i = 1;
-  int size = model->inputs.size();
+  int size = 1 + model->inputs.size();
   for (auto const &v : model->inputs)
   {
     oms2::Connector c(oms_causality_input, v.getType(), v.getSignalRef(), i++/(double)size);
     connectors.push_back(c);
   }
   i = 1;
-  size = model->outputs.size();
+  size = 1+ model->outputs.size();
   for (auto const &v : model->outputs)
   {
     oms2::Connector c(oms_causality_output, v.getType(), v.getSignalRef(), i++/(double)size);
@@ -347,6 +347,17 @@ oms_status_enu_t oms2::FMUWrapper::exportToSSD(pugi::xml_node& root) const
     return status;
 
   // export ssd:Connectors
+  oms2::Connector** connectors = element.getConnectors();
+  if (connectors)
+  {
+    pugi::xml_node connectorsNode = subModel.append_child("ssd:Connectors");
+    for (int i=0; connectors[i]; ++i)
+    {
+      status = connectors[i]->exportToSSD(connectorsNode);
+      if (oms_status_ok != status)
+        return status;
+    }
+  }
 
   // export ssd:ParameterBindings
   const std::map<std::string, oms2::Option<double>>& realParameters = getRealParameters();

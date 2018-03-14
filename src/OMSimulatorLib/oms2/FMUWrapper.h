@@ -43,6 +43,7 @@
 #include <vector>
 
 #include <fmilib.h>
+#include <pugixml.hpp>
 
 namespace oms2
 {
