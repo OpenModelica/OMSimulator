@@ -304,14 +304,18 @@ oms2::FMUWrapper* oms2::FMUWrapper::newSubModel(const oms2::ComRef& cref, const 
   }
 
   std::vector<oms2::Connector> connectors;
+  int i = 1;
+  int size = model->inputs.size();
   for (auto const &v : model->inputs)
   {
-    oms2::Connector c(oms_causality_input, v.getType(), v.getSignalRef());
+    oms2::Connector c(oms_causality_input, v.getType(), v.getSignalRef(), i++/(double)size);
     connectors.push_back(c);
   }
+  i = 1;
+  size = model->outputs.size();
   for (auto const &v : model->outputs)
   {
-    oms2::Connector c(oms_causality_output, v.getType(), v.getSignalRef());
+    oms2::Connector c(oms_causality_output, v.getType(), v.getSignalRef(), i++/(double)size);
     connectors.push_back(c);
   }
   for (auto const &v : model->parameters)
@@ -319,7 +323,7 @@ oms2::FMUWrapper* oms2::FMUWrapper::newSubModel(const oms2::ComRef& cref, const 
     oms2::Connector c(oms_causality_parameter, v.getType(), v.getSignalRef());
     connectors.push_back(c);
   }
-  model->element.setInterfaces(connectors);
+  model->element.setConnectors(connectors);
 
   return model;
 }
@@ -332,15 +336,17 @@ oms_status_enu_t oms2::FMUWrapper::exportToSSD(pugi::xml_node& root) const
   pugi::xml_node subModel = root.append_child("ssd:Component");
   subModel.append_attribute("name") = cref.last().toString().c_str();
 
+  subModel.append_attribute("type") = "application/x-fmu-sharedlibrary";
+
+  const std::string& fmuPath = getFMUPath();
+  subModel.append_attribute("source") = fmuPath.c_str();
+
   // export ssd:ElementGeometry
   status = element.getGeometry()->exportToSSD(subModel);
   if (oms_status_ok != status)
     return status;
 
-  subModel.append_attribute("type") = "application/x-fmu-sharedlibrary";
-
-  const std::string& fmuPath = getFMUPath();
-  subModel.append_attribute("source") = fmuPath.c_str();
+  // export ssd:Connectors
 
   // export ssd:ParameterBindings
   const std::map<std::string, oms2::Option<double>>& realParameters = getRealParameters();
