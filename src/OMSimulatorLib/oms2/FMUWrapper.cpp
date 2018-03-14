@@ -512,7 +512,7 @@ oms_status_enu_t oms2::FMUWrapper::setReal(const oms2::Variable& var, double rea
   }
 
   fmi2_value_reference_t vr = var.getValueReference();
-  if (fmi2_status_ok != fmi2_import_set_real(fmu, &vr, 1, &realValue))
+  if (fmi2_status_ok == fmi2_import_set_real(fmu, &vr, 1, &realValue))
     return oms_status_ok;
 
   return oms_status_error;
@@ -528,7 +528,7 @@ oms_status_enu_t oms2::FMUWrapper::getReal(const oms2::Variable& var, double& re
   }
 
   fmi2_value_reference_t vr = var.getValueReference();
-  if (fmi2_status_ok != fmi2_import_get_real(fmu, &vr, 1, &realValue))
+  if (fmi2_status_ok == fmi2_import_get_real(fmu, &vr, 1, &realValue))
     return oms_status_ok;
 
   return oms_status_error;
@@ -544,7 +544,7 @@ oms_status_enu_t oms2::FMUWrapper::setInteger(const oms2::Variable& var, int int
   }
 
   fmi2_value_reference_t vr = var.getValueReference();
-  if (fmi2_status_ok != fmi2_import_set_integer(fmu, &vr, 1, &integerValue))
+  if (fmi2_status_ok == fmi2_import_set_integer(fmu, &vr, 1, &integerValue))
     return oms_status_ok;
 
   return oms_status_error;
@@ -560,7 +560,7 @@ oms_status_enu_t oms2::FMUWrapper::getInteger(const oms2::Variable& var, int& in
   }
 
   fmi2_value_reference_t vr = var.getValueReference();
-  if (fmi2_status_ok != fmi2_import_get_integer(fmu, &vr, 1, &integerValue))
+  if (fmi2_status_ok == fmi2_import_get_integer(fmu, &vr, 1, &integerValue))
     return oms_status_ok;
 
   return oms_status_error;
@@ -577,7 +577,7 @@ oms_status_enu_t oms2::FMUWrapper::setBoolean(const oms2::Variable& var, bool bo
 
   fmi2_value_reference_t vr = var.getValueReference();
   int value = booleanValue;
-  if (fmi2_status_ok != fmi2_import_set_boolean(fmu, &vr, 1, &value))
+  if (fmi2_status_ok == fmi2_import_set_boolean(fmu, &vr, 1, &value))
     return oms_status_ok;
 
   return oms_status_error;
@@ -594,7 +594,7 @@ oms_status_enu_t oms2::FMUWrapper::getBoolean(const oms2::Variable& var, bool& b
 
   fmi2_value_reference_t vr = var.getValueReference();
   int value = 0;
-  if (fmi2_status_ok != fmi2_import_get_boolean(fmu, &vr, 1, &value))
+  if (fmi2_status_ok == fmi2_import_get_boolean(fmu, &vr, 1, &value))
   {
     booleanValue = value;
     return oms_status_ok;

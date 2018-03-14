@@ -692,8 +692,7 @@ oms_status_enu_t oms2::Scope::getRealParameter(const oms2::SignalRef& signal, do
         return oms_status_error;
       }
       oms2::FMUWrapper* fmuWrapper = dynamic_cast<oms2::FMUWrapper*>(subModel);
-      fmuWrapper->getRealParameter(var, value);
-      return oms_status_ok;
+      return fmuWrapper->getRealParameter(var, value);
     }
     else
     {
@@ -733,8 +732,7 @@ oms_status_enu_t oms2::Scope::setRealParameter(const oms2::SignalRef& signal, do
         return oms_status_error;
       }
       oms2::FMUWrapper* fmuWrapper = dynamic_cast<oms2::FMUWrapper*>(subModel);
-      fmuWrapper->setRealParameter(var, value);
-      return oms_status_ok;
+      return fmuWrapper->setRealParameter(var, value);
     }
     else
     {
@@ -774,8 +772,7 @@ oms_status_enu_t oms2::Scope::getIntegerParameter(const oms2::SignalRef& signal,
         return oms_status_error;
       }
       oms2::FMUWrapper* fmuWrapper = dynamic_cast<oms2::FMUWrapper*>(subModel);
-      fmuWrapper->getIntegerParameter(var, value);
-      return oms_status_ok;
+      return fmuWrapper->getIntegerParameter(var, value);
     }
     else
     {
@@ -815,8 +812,7 @@ oms_status_enu_t oms2::Scope::setIntegerParameter(const oms2::SignalRef& signal,
         return oms_status_error;
       }
       oms2::FMUWrapper* fmuWrapper = dynamic_cast<oms2::FMUWrapper*>(subModel);
-      fmuWrapper->setIntegerParameter(var, value);
-      return oms_status_ok;
+      return fmuWrapper->setIntegerParameter(var, value);
     }
     else
     {
@@ -856,8 +852,7 @@ oms_status_enu_t oms2::Scope::getBooleanParameter(const oms2::SignalRef& signal,
         return oms_status_error;
       }
       oms2::FMUWrapper* fmuWrapper = dynamic_cast<oms2::FMUWrapper*>(subModel);
-      fmuWrapper->getBooleanParameter(var, value);
-      return oms_status_ok;
+      return fmuWrapper->getBooleanParameter(var, value);
     }
     else
     {
@@ -897,8 +892,7 @@ oms_status_enu_t oms2::Scope::setBooleanParameter(const oms2::SignalRef& signal,
         return oms_status_error;
       }
       oms2::FMUWrapper* fmuWrapper = dynamic_cast<oms2::FMUWrapper*>(subModel);
-      fmuWrapper->setBooleanParameter(var, value);
-      return oms_status_ok;
+      return fmuWrapper->setBooleanParameter(var, value);
     }
     else
     {
