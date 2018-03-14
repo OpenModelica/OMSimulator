@@ -294,12 +294,12 @@ typedef struct {
 } oms_connector_t;
 
 /**
- * \brief Element
+ * \brief Element (aka ssd:Component)
  */
 typedef struct {
   oms_element_type_enu_t type;      ///< Element type, e.g. FMU
   char* name;                       ///< Name of the element
-  oms_connector_t** interfaces;     ///< List (null-terminated array) of all interface variables: inputs, outputs, and parameters.
+  oms_connector_t** connectors;     ///< List (null-terminated array) of all interface variables: inputs, outputs, and parameters.
   ssd_element_geometry_t* geometry; ///< Geometry information of the element
 } oms_element_t;
 

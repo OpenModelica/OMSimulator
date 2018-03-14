@@ -54,12 +54,12 @@ namespace oms2
 
     const oms_element_type_enu_t getType() const {return type;}
     const oms2::ComRef getName() const {return oms2::ComRef(std::string(name));}
-    oms_connector_t** getInterfaces() const {return interfaces;}
+    oms_connector_t** getConnectors() const {return connectors;}
     const oms2::ssd::ElementGeometry* getGeometry() const {return reinterpret_cast<oms2::ssd::ElementGeometry*>(geometry);}
 
     void setName(const ComRef& name);
     void setGeometry(const oms2::ssd::ElementGeometry* newGeometry);
-    void setInterfaces(const std::vector<oms2::Connector> newInterfaces);
+    void setConnectors(const std::vector<oms2::Connector> newConnectors);
 
   private:
     // methods to copy the object
