@@ -30,7 +30,6 @@
  */
 
 #include "Connector.h"
-#include "ssd/ConnectorGeometry.h"
 #include "Logging.h"
 
 #include <cstring>
@@ -62,10 +61,12 @@ oms2::Connector::Connector(oms_causality_enu_t causality, oms_signal_type_enu_t 
     case oms_causality_input:
       // inputs are placed on the left of the component
       x = 0.0;
+      y = height;
       break;
     case oms_causality_output:
       // outputs are placed on the right of the component
       x = 1.0;
+      y = height;
       break;
     default:
       // parameters are placed on the top of the component
@@ -91,7 +92,7 @@ oms2::Connector::Connector(const oms2::Connector& rhs)
   strcpy(this->name, rhs.name);
 
   if (rhs.geometry)
-    *reinterpret_cast<oms2::ssd::ConnectorGeometry*>(this->geometry) = *reinterpret_cast<oms2::ssd::ConnectorGeometry*>(rhs.geometry);
+    this->geometry = reinterpret_cast<ssd_connector_geometry_t*>(new oms2::ssd::ConnectorGeometry(*reinterpret_cast<oms2::ssd::ConnectorGeometry*>(rhs.geometry)));
   else
     this->geometry = NULL;
 }
@@ -113,6 +114,47 @@ oms2::Connector& oms2::Connector::operator=(const oms2::Connector& rhs)
   this->setGeometry(reinterpret_cast<oms2::ssd::ConnectorGeometry*>(rhs.geometry));
 
   return *this;
+}
+
+oms_status_enu_t oms2::Connector::exportToSSD(pugi::xml_node& root) const
+{
+  if (this->geometry)
+  {
+    pugi::xml_node node = root.append_child("ssd:Connector");
+    node.append_attribute("name") = getName().getVar().c_str();
+    switch (this->causality)
+    {
+    case oms_causality_input:
+      node.append_attribute("kind") = "input";
+      break;
+    case oms_causality_output:
+      node.append_attribute("kind") = "output";
+      break;
+    case oms_causality_parameter:
+      node.append_attribute("kind") = "parameter";
+      break;
+    }
+    switch (this->type)
+    {
+    case oms_signal_type_boolean:
+      node.append_attribute("type") = "Boolean";
+      break;
+    case oms_signal_type_enum:
+      node.append_attribute("type") = "Enumeration";
+      break;
+    case oms_signal_type_integer:
+      node.append_attribute("type") = "Integer";
+      break;
+    case oms_signal_type_real:
+      node.append_attribute("type") = "Real";
+      break;
+    case oms_signal_type_string:
+      node.append_attribute("type") = "String";
+      break;
+    }
+    return reinterpret_cast<oms2::ssd::ConnectorGeometry*>(this->geometry)->exportToSSD(node);
+  }
+  return oms_status_ok;
 }
 
 void oms2::Connector::setName(const oms2::SignalRef& name)

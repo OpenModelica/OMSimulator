@@ -39,6 +39,8 @@
 
 #include <string>
 
+#include <pugixml.hpp>
+
 namespace oms2
 {
   /**
@@ -57,6 +59,8 @@ namespace oms2
      */
     Connector(oms_causality_enu_t causality, oms_signal_type_enu_t type, const oms2::SignalRef& name, double height);
     ~Connector();
+
+    oms_status_enu_t exportToSSD(pugi::xml_node& root) const;
 
     // methods to copy the object
     Connector(const Connector& rhs);
