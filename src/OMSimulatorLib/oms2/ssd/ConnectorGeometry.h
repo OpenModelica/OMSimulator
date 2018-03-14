@@ -45,7 +45,7 @@ namespace oms2
     class ConnectorGeometry : protected ssd_connector_geometry_t
     {
     public:
-      ConnectorGeometry();
+      ConnectorGeometry(double x, double y);
       ConnectorGeometry(const ConnectorGeometry& rhs);
       ~ConnectorGeometry();
 

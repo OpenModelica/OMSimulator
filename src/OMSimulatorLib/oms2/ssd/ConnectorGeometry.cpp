@@ -34,12 +34,12 @@
 
 #include <string.h>
 
-oms2::ssd::ConnectorGeometry::ConnectorGeometry()
+oms2::ssd::ConnectorGeometry::ConnectorGeometry(double x, double y)
 {
   logTrace();
 
-  this->x = 0.0;
-  this->y = 0.0;
+  this->x = x;
+  this->y = y;
 }
 
 oms2::ssd::ConnectorGeometry::ConnectorGeometry(const oms2::ssd::ConnectorGeometry& rhs)
