@@ -62,8 +62,8 @@ namespace oms2
 
   private:
     // stop the compiler generating methods copying the object
-    CompositeModel(CompositeModel const& copy);            // not implemented
-    CompositeModel& operator=(CompositeModel const& copy); // not implemented
+    CompositeModel(CompositeModel const& copy);            ///< not implemented
+    CompositeModel& operator=(CompositeModel const& copy); ///< not implemented
 
   protected:
     oms2::Element element;

@@ -98,8 +98,8 @@ namespace oms2
     ~Scope();
 
     // stop the compiler generating methods copying the object
-    Scope(Scope const& copy);            // not implemented
-    Scope& operator=(Scope const& copy); // not implemented
+    Scope(Scope const& copy);            ///< not implemented
+    Scope& operator=(Scope const& copy); ///< not implemented
 
   private:
     std::map<oms2::ComRef, oms2::Model*> models;

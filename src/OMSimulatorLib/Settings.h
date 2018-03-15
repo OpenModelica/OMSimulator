@@ -56,8 +56,8 @@ public:
 
 private:
   // stop the compiler generating methods for copying the object
-  Settings(Settings const& copy);            // not implemented
-  Settings& operator=(Settings const& copy); // not implemented
+  Settings(Settings const& copy);            ///< not implemented
+  Settings& operator=(Settings const& copy); ///< not implemented
 
   double startTime;
   double stopTime;

@@ -63,8 +63,8 @@ namespace oms2
 
   private:
     // methods to copy the object
-    Element(const Element& rhs);            // not implemented
-    Element& operator=(const Element& rhs); // not implemented
+    Element(const Element& rhs);            ///< not implemented
+    Element& operator=(const Element& rhs); ///< not implemented
   };
 }
 

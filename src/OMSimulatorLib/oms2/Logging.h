@@ -69,8 +69,8 @@ private:
   static Log& getInstance();
 
   // stop the compiler generating methods copying the object
-  Log(Log const& copy);            // not implemented
-  Log& operator=(Log const& copy); // not implemented
+  Log(Log const& copy);            ///< not implemented
+  Log& operator=(Log const& copy); ///< not implemented
 
 private:
   int logLevel;

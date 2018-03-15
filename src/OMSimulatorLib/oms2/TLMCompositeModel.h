@@ -53,8 +53,8 @@ namespace oms2
     ~TLMCompositeModel();
 
     // stop the compiler generating methods copying the object
-    TLMCompositeModel(TLMCompositeModel const& copy);            // not implemented
-    TLMCompositeModel& operator=(TLMCompositeModel const& copy); // not implemented
+    TLMCompositeModel(TLMCompositeModel const& copy);            ///< not implemented
+    TLMCompositeModel& operator=(TLMCompositeModel const& copy); ///< not implemented
 
   private:
     ComRef name;

@@ -56,8 +56,8 @@ namespace oms2
 
   private:
     // methods to copy the object
-    FMUInfo(const FMUInfo& rhs);            // not implemented
-    FMUInfo& operator=(const FMUInfo& rhs); // not implemented
+    FMUInfo(const FMUInfo& rhs);            ///< not implemented
+    FMUInfo& operator=(const FMUInfo& rhs); ///< not implemented
   };
 }
 

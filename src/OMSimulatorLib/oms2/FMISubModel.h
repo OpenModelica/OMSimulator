@@ -60,8 +60,8 @@ namespace oms2
 
   private:
     // stop the compiler generating methods copying the object
-    FMISubModel(FMISubModel const& copy);            // not implemented
-    FMISubModel& operator=(FMISubModel const& copy); // not implemented
+    FMISubModel(FMISubModel const& copy);            ///< not implemented
+    FMISubModel& operator=(FMISubModel const& copy); ///< not implemented
 
   protected:
     oms2::Element element;

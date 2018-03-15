@@ -87,8 +87,8 @@ namespace oms2
     ~FMICompositeModel();
 
     // stop the compiler generating methods copying the object
-    FMICompositeModel(FMICompositeModel const& copy);            // not implemented
-    FMICompositeModel& operator=(FMICompositeModel const& copy); // not implemented
+    FMICompositeModel(FMICompositeModel const& copy);            ///< not implemented
+    FMICompositeModel& operator=(FMICompositeModel const& copy); ///< not implemented
 
   private:
     std::map<oms2::ComRef, oms2::FMISubModel*> subModels;

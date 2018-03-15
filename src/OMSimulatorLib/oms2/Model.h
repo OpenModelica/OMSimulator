@@ -49,8 +49,10 @@ namespace oms2
   class Model
   {
   public:
-    // NewModel() is used instead of a constructor to make sure that only
-    // instances with valid names can be created.
+    /**
+     * NewModel() is used instead of a constructor to make sure that only
+     * instances with valid names can be created.
+     */
     static Model* NewModel(oms_element_type_enu_t type, const ComRef& cref);
     static Model* LoadModel(const std::string& filename);
     static void DeleteModel(Model *model) {if (model) delete model;}
@@ -77,8 +79,8 @@ namespace oms2
     ~Model();
 
     // stop the compiler generating methods copying the object
-    Model(Model const& copy);            // not implemented
-    Model& operator=(Model const& copy); // not implemented
+    Model(Model const& copy);            ///< not implemented
+    Model& operator=(Model const& copy); ///< not implemented
 
   private:
     oms2::ssd::SystemGeometry systemGeometry;
