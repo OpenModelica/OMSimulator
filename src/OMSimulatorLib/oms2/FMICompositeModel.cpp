@@ -36,6 +36,7 @@
 #include "FMUWrapper.h"
 #include "Logging.h"
 #include "SignalRef.h"
+#include "ssd/Tags.h"
 
 #include <pugixml.hpp>
 
@@ -100,16 +101,16 @@ oms2::FMICompositeModel* oms2::FMICompositeModel::LoadModel(const pugi::xml_node
     std::string name = it->name();
     oms_status_enu_t status = oms_status_error;
 
-    if (name == "ssd:Component")
+    if (name == oms2::ssd::ssd_component)
       status = model->loadSubModel(*it);
-    else if (name == "ssd:Connections")
+    else if (name == oms2::ssd::ssd_connections)
       status = model->loadConnections(*it);
     else if (name == "Solver")
     {
       /// \todo implement xml import for solver settings
       logWarning("[oms2::FMICompositeModel::LoadModel] \"Solver\" not implemented yet");
     }
-    else if (name == "ssd:ElementGeometry")
+    else if (name == oms2::ssd::ssd_element_geometry)
       status = model->loadElementGeometry(*it);
 
     if (oms_status_ok != status)
@@ -136,13 +137,13 @@ oms_status_enu_t oms2::FMICompositeModel::save(pugi::xml_node& node)
       return status;
   }
 
-  pugi::xml_node nodeConnections = node.append_child("ssd:Connections");
+  pugi::xml_node nodeConnections = node.append_child(oms2::ssd::ssd_connections);
   for (const auto& connection : connections)
   {
     if (!connection)
       continue;
 
-    pugi::xml_node connectionNode = nodeConnections.append_child("ssd:Connection");
+    pugi::xml_node connectionNode = nodeConnections.append_child(oms2::ssd::ssd_connection);
     connectionNode.append_attribute("startElement") = connection->getSignalA().getCref().toString().c_str();
     connectionNode.append_attribute("startConnector") = connection->getSignalA().getVar().c_str();
     connectionNode.append_attribute("endElement") = connection->getSignalB().getCref().toString().c_str();
@@ -159,7 +160,7 @@ oms_status_enu_t oms2::FMICompositeModel::save(pugi::xml_node& node)
 
 oms_status_enu_t oms2::FMICompositeModel::loadElementGeometry(const pugi::xml_node& node)
 {
-  if (std::string(node.name()) != "ssd:ElementGeometry")
+  if (std::string(node.name()) != oms2::ssd::ssd_element_geometry)
   {
     logError("[oms2::FMICompositeModel::loadElementGeometry] failed");
     return oms_status_error;
@@ -186,7 +187,7 @@ oms_status_enu_t oms2::FMICompositeModel::loadElementGeometry(const pugi::xml_no
 
 oms_status_enu_t oms2::FMICompositeModel::loadConnections(const pugi::xml_node& node)
 {
-  if (std::string(node.name()) != "ssd:Connections")
+  if (std::string(node.name()) != oms2::ssd::ssd_connections)
   {
     logError("[oms2::FMICompositeModel::loadConnections] failed");
     return oms_status_error;
@@ -194,7 +195,7 @@ oms_status_enu_t oms2::FMICompositeModel::loadConnections(const pugi::xml_node& 
 
   for (auto connectionNode = node.first_child(); connectionNode; connectionNode = connectionNode.next_sibling())
   {
-    if (std::string(connectionNode.name()) != "ssd:Connection")
+    if (std::string(connectionNode.name()) != oms2::ssd::ssd_connection)
     {
       logError("[oms2::FMICompositeModel::loadConnection] wrong xml schema detected (3)");
       return oms_status_error;
@@ -217,7 +218,7 @@ oms_status_enu_t oms2::FMICompositeModel::loadConnections(const pugi::xml_node& 
       for (pugi::xml_node child: connectionNode.children())
       {
         // import ssd:ConnectionGeometry
-        if (std::string(child.name()) == "ssd:ConnectionGeometry")
+        if (std::string(child.name()) == oms2::ssd::ssd_connection_geometry)
         {
           oms2::ssd::ConnectionGeometry geometry;
           std::string pointsXStr = child.attribute("pointsX").as_string();
@@ -260,7 +261,7 @@ oms_status_enu_t oms2::FMICompositeModel::loadConnections(const pugi::xml_node& 
 
 oms_status_enu_t oms2::FMICompositeModel::loadSubModel(const pugi::xml_node& node)
 {
-  if (std::string(node.name()) != "ssd:Component")
+  if (std::string(node.name()) != oms2::ssd::ssd_component)
   {
     logError("[oms2::FMICompositeModel::loadSubModel] failed");
     return oms_status_error;
@@ -305,7 +306,7 @@ oms_status_enu_t oms2::FMICompositeModel::loadSubModel(const pugi::xml_node& nod
   for (auto child = node.first_child(); child; child = child.next_sibling())
   {
     // import ssd:ElementGeometry
-    if (std::string(child.name()) == "ssd:ElementGeometry")
+    if (std::string(child.name()) == oms2::ssd::ssd_element_geometry)
     {
       oms2::ssd::ElementGeometry geometry;
       double x1 = child.attribute("x1").as_double();

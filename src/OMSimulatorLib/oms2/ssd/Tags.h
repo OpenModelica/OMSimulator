@@ -29,53 +29,28 @@
  *
  */
 
-#include "ConnectorGeometry.h"
+#ifndef _OMS2_SSD_TAGS_H_
+#define _OMS2_SSD_TAGS_H_
 
-#include "../Logging.h"
-#include "Tags.h"
-
-#include <string.h>
-
-oms2::ssd::ConnectorGeometry::ConnectorGeometry(double x, double y)
+namespace oms2
 {
-  logTrace();
-
-  this->x = x;
-  this->y = y;
+  namespace ssd
+  {
+    extern const char* ssd_annotations;
+    extern const char* ssd_component;
+    extern const char* ssd_connection;
+    extern const char* ssd_connection_geometry;
+    extern const char* ssd_connections;
+    extern const char* ssd_connector;
+    extern const char* ssd_connector_geometry;
+    extern const char* ssd_connectors;
+    extern const char* ssd_default_experiment;
+    extern const char* ssd_element_geometry;
+    extern const char* ssd_enumerations;
+    extern const char* ssd_system;
+    extern const char* ssd_system_structure_description;
+    extern const char* ssd_units;
+  }
 }
 
-oms2::ssd::ConnectorGeometry::ConnectorGeometry(const oms2::ssd::ConnectorGeometry& rhs)
-{
-  logTrace();
-
-  this->x = rhs.x;
-  this->y = rhs.y;
-}
-
-oms2::ssd::ConnectorGeometry::~ConnectorGeometry()
-{
-  logTrace();
-}
-
-oms2::ssd::ConnectorGeometry& oms2::ssd::ConnectorGeometry::operator=(oms2::ssd::ConnectorGeometry const& rhs)
-{
-  logTrace();
-
-  // check for self-assignment
-  if(&rhs == this)
-    return *this;
-
-  this->x = rhs.x;
-  this->y = rhs.y;
-
-  return *this;
-}
-
-oms_status_enu_t oms2::ssd::ConnectorGeometry::exportToSSD(pugi::xml_node& root) const
-{
-  pugi::xml_node node = root.append_child(oms2::ssd::ssd_connector_geometry);
-  node.append_attribute("x") = std::to_string(x).c_str();
-  node.append_attribute("y") = std::to_string(y).c_str();
-
-  return oms_status_ok;
-}
+#endif

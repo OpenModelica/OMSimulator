@@ -29,53 +29,19 @@
  *
  */
 
-#include "ConnectorGeometry.h"
-
-#include "../Logging.h"
 #include "Tags.h"
 
-#include <string.h>
-
-oms2::ssd::ConnectorGeometry::ConnectorGeometry(double x, double y)
-{
-  logTrace();
-
-  this->x = x;
-  this->y = y;
-}
-
-oms2::ssd::ConnectorGeometry::ConnectorGeometry(const oms2::ssd::ConnectorGeometry& rhs)
-{
-  logTrace();
-
-  this->x = rhs.x;
-  this->y = rhs.y;
-}
-
-oms2::ssd::ConnectorGeometry::~ConnectorGeometry()
-{
-  logTrace();
-}
-
-oms2::ssd::ConnectorGeometry& oms2::ssd::ConnectorGeometry::operator=(oms2::ssd::ConnectorGeometry const& rhs)
-{
-  logTrace();
-
-  // check for self-assignment
-  if(&rhs == this)
-    return *this;
-
-  this->x = rhs.x;
-  this->y = rhs.y;
-
-  return *this;
-}
-
-oms_status_enu_t oms2::ssd::ConnectorGeometry::exportToSSD(pugi::xml_node& root) const
-{
-  pugi::xml_node node = root.append_child(oms2::ssd::ssd_connector_geometry);
-  node.append_attribute("x") = std::to_string(x).c_str();
-  node.append_attribute("y") = std::to_string(y).c_str();
-
-  return oms_status_ok;
-}
+const char* oms2::ssd::ssd_annotations                  = "ssd:Annotations";
+const char* oms2::ssd::ssd_component                    = "ssd:Component";
+const char* oms2::ssd::ssd_connection                   = "ssd:Connection";
+const char* oms2::ssd::ssd_connection_geometry          = "ssd:ConnectionGeometry";
+const char* oms2::ssd::ssd_connections                  = "ssd:Connections";
+const char* oms2::ssd::ssd_connector                    = "ssd:Connector";
+const char* oms2::ssd::ssd_connector_geometry           = "ssd:ConnectorGeometry";
+const char* oms2::ssd::ssd_connectors                   = "ssd:Connectors";
+const char* oms2::ssd::ssd_default_experiment           = "ssd:DefaultExperiment";
+const char* oms2::ssd::ssd_element_geometry             = "ssd:ElementGeometry";
+const char* oms2::ssd::ssd_enumerations                 = "ssd:Enumerations";
+const char* oms2::ssd::ssd_system                       = "ssd:System";
+const char* oms2::ssd::ssd_system_structure_description = "ssd:SystemStructureDescription";
+const char* oms2::ssd::ssd_units                        = "ssd:Units";

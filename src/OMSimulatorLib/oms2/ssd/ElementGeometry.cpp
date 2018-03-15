@@ -30,7 +30,9 @@
  */
 
 #include "ElementGeometry.h"
+
 #include "../Logging.h"
+#include "Tags.h"
 
 #include <string.h>
 
@@ -134,7 +136,7 @@ oms_status_enu_t oms2::ssd::ElementGeometry::exportToSSD(pugi::xml_node& root) c
   // export ssd:ElementGeometry
   if (x1 != 0.0 || y1 != 0.0 || x2 != 0.0 || y2 != 0.0)
   {
-    pugi::xml_node node = root.append_child("ssd:ElementGeometry");
+    pugi::xml_node node = root.append_child(oms2::ssd::ssd_element_geometry);
     node.append_attribute("x1") = std::to_string(x1).c_str();
     node.append_attribute("y1") = std::to_string(y1).c_str();
     node.append_attribute("x2") = std::to_string(x2).c_str();
