@@ -36,6 +36,7 @@ cmake -G %OMS_VS_VERSION% -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DFMILIB_INSTALL_PREF
 CD ..\..\..\..
 echo # build fmil
 msbuild.exe "3rdParty\FMIL\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE%
+IF NOT ["%ERRORLEVEL%"]==["0"] goto fail
 
 echo # build Lua
 CD 3rdParty\Lua
@@ -52,6 +53,7 @@ cmake -G %OMS_VS_VERSION% -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_INSTALL_PREFI
 CD ..\..\..\..
 echo # build cvode
 msbuild.exe "3rdParty\cvode\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE%
+IF NOT ["%ERRORLEVEL%"]==["0"] goto fail
 
 echo # config kinsol
 if exist "3rdParty\kinsol\build\win\" RMDIR /S /Q 3rdParty\kinsol\build\win
@@ -62,6 +64,7 @@ cmake -G %OMS_VS_VERSION% -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_INSTALL_PREFI
 CD ..\..\..\..
 echo # build kinsol
 msbuild.exe "3rdParty\kinsol\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE%
+IF NOT ["%ERRORLEVEL%"]==["0"] goto fail
 
 echo # config gflags
 if exist "3rdParty\gflags\build\win\" RMDIR /S /Q 3rdParty\gflags\build\win
@@ -72,6 +75,7 @@ cmake -G %OMS_VS_VERSION% -DCMAKE_INSTALL_PREFIX=..\..\install\win ..\..\gflags 
 CD ..\..\..\..
 echo # build gflags
 msbuild.exe "3rdParty\gflags\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE%
+IF NOT ["%ERRORLEVEL%"]==["0"] goto fail
 
 echo # config glog
 if exist "3rdParty\glog\build\win\" RMDIR /S /Q 3rdParty\glog\build\win
@@ -82,6 +86,7 @@ cmake -G %OMS_VS_VERSION% -DCMAKE_INSTALL_PREFIX=..\..\install\win ..\..\glog -D
 CD ..\..\..\..
 echo # build glog
 msbuild.exe "3rdParty\glog\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE%
+IF NOT ["%ERRORLEVEL%"]==["0"] goto fail
 
 echo # config ceres-solver
 if exist "3rdParty\ceres-solver\build\win\" RMDIR /S /Q 3rdParty\ceres-solver\build\win
@@ -92,6 +97,7 @@ cmake -G %OMS_VS_VERSION% -DCMAKE_INSTALL_PREFIX=..\..\install\win ..\..\ceres-s
 CD ..\..\..\..
 echo # build ceres-solver
 msbuild.exe "3rdParty\ceres-solver\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE%
+IF NOT ["%ERRORLEVEL%"]==["0"] goto fail
 
 echo # config OMSimulator
 if exist "build\win\" RMDIR /S /Q build\win
@@ -117,3 +123,9 @@ cd %CRD%
 
 echo # copy lua
 COPY 3rdParty\lua\install\win\lua.dll install\win\bin
+
+exit /b 0
+
+:fail
+echo "Something went wrong!"
+exit /b 1
