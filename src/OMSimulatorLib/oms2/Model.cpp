@@ -34,6 +34,7 @@
 #include "FMICompositeModel.h"
 #include "TLMCompositeModel.h"
 #include "Logging.h"
+#include "ssd/Tags.h"
 
 #include <regex>
 
@@ -95,9 +96,9 @@ oms2::Model* oms2::Model::LoadModel(const std::string& filename)
     std::string name = it->name();
     if (name == "TLMModel" && modelType == oms_component_none)
       modelType = oms_component_tlm;
-    else if (name == "ssd:System" && modelType == oms_component_none)
+    else if (name == oms2::ssd::ssd_system && modelType == oms_component_none)
       modelType = oms_component_fmi;
-    else if (name == "ssd:DefaultExperiment" && !defaultExperiment)
+    else if (name == oms2::ssd::ssd_default_experiment && !defaultExperiment)
       defaultExperiment = true;
     else
     {
@@ -108,7 +109,7 @@ oms2::Model* oms2::Model::LoadModel(const std::string& filename)
 
   oms2::CompositeModel* compositeModel = NULL;
   if (modelType == oms_component_fmi)
-    compositeModel = oms2::FMICompositeModel::LoadModel(root.child("ssd:System"));
+    compositeModel = oms2::FMICompositeModel::LoadModel(root.child(oms2::ssd::ssd_system));
   else if (modelType == oms_component_tlm)
     compositeModel = oms2::TLMCompositeModel::LoadModel(root.child("TLMModel"));
 
@@ -120,7 +121,7 @@ oms2::Model* oms2::Model::LoadModel(const std::string& filename)
 
   if (defaultExperiment)
   {
-    const pugi::xml_node& experiment = root.child("ssd:DefaultExperiment");
+    const pugi::xml_node& experiment = root.child(oms2::ssd::ssd_default_experiment);
     for (auto it = experiment.attributes_begin(); it != experiment.attributes_end(); ++it)
     {
       std::string name = it->name();
@@ -149,16 +150,16 @@ oms_status_enu_t oms2::Model::save(const std::string& filename)
   pugi::xml_node declarationNode = doc.append_child(pugi::node_declaration);
   declarationNode.append_attribute("version") = "1.0";
   declarationNode.append_attribute("encoding") = "UTF-8";
-  pugi::xml_node ssd = doc.append_child("ssd:SystemStructureDescription");
+  pugi::xml_node ssd = doc.append_child(oms2::ssd::ssd_system_structure_description);
 
   // ssd:SystemStructureDescription
   ssd.append_attribute("name") = getName().toString().c_str();
   ssd.append_attribute("version") = "Draft20171219";
-  //pugi::xml_node experiment = ssd.append_child("ssd:Enumerations");
-  //pugi::xml_node experiment = ssd.append_child("ssd:Units");
-  //pugi::xml_node experiment = ssd.append_child("ssd:Annotations");
+  //pugi::xml_node experiment = ssd.append_child(oms2::ssd::ssd_enumerations);
+  //pugi::xml_node experiment = ssd.append_child(oms2::ssd::ssd_units);
+  //pugi::xml_node experiment = ssd.append_child(oms2::ssd::ssd_annotations);
 
-  pugi::xml_node ssd_System = ssd.append_child("ssd:System");
+  pugi::xml_node ssd_System = ssd.append_child(oms2::ssd::ssd_system);
   ssd_System.append_attribute("name") = getName().toString().c_str();
 
   oms_status_enu_t status;
@@ -178,7 +179,7 @@ oms_status_enu_t oms2::Model::save(const std::string& filename)
     return status;
 
   // ssd:DefaultExperiment
-  pugi::xml_node ssd_DefaultExperiment = ssd.append_child("ssd:DefaultExperiment");
+  pugi::xml_node ssd_DefaultExperiment = ssd.append_child(oms2::ssd::ssd_default_experiment);
   ssd_DefaultExperiment.append_attribute("startTime") = std::to_string(startTime).c_str();
   ssd_DefaultExperiment.append_attribute("stopTime") = std::to_string(stopTime).c_str();
 

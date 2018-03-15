@@ -31,6 +31,7 @@
 
 #include "Connector.h"
 #include "Logging.h"
+#include "ssd/Tags.h"
 
 #include <cstring>
 
@@ -120,7 +121,7 @@ oms_status_enu_t oms2::Connector::exportToSSD(pugi::xml_node& root) const
 {
   if (this->geometry)
   {
-    pugi::xml_node node = root.append_child("ssd:Connector");
+    pugi::xml_node node = root.append_child(oms2::ssd::ssd_connector);
     node.append_attribute("name") = getName().getVar().c_str();
     switch (this->causality)
     {

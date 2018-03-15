@@ -36,6 +36,7 @@
 #include "Option.h"
 #include "Scope.h"
 #include "Variable.h"
+#include "ssd/Tags.h"
 
 #include <fmilib.h>
 #include <JM/jm_portability.h>
@@ -333,7 +334,7 @@ oms_status_enu_t oms2::FMUWrapper::exportToSSD(pugi::xml_node& root) const
   oms_status_enu_t status = oms_status_ok;
 
   oms2::ComRef cref = element.getName();
-  pugi::xml_node subModel = root.append_child("ssd:Component");
+  pugi::xml_node subModel = root.append_child(oms2::ssd::ssd_component);
   subModel.append_attribute("name") = cref.last().toString().c_str();
 
   subModel.append_attribute("type") = "application/x-fmu-sharedlibrary";
@@ -350,7 +351,7 @@ oms_status_enu_t oms2::FMUWrapper::exportToSSD(pugi::xml_node& root) const
   oms2::Connector** connectors = element.getConnectors();
   if (connectors)
   {
-    pugi::xml_node connectorsNode = subModel.append_child("ssd:Connectors");
+    pugi::xml_node connectorsNode = subModel.append_child(oms2::ssd::ssd_connectors);
     for (int i=0; connectors[i]; ++i)
     {
       status = connectors[i]->exportToSSD(connectorsNode);

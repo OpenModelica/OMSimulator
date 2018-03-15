@@ -30,7 +30,9 @@
  */
 
 #include "ConnectionGeometry.h"
+
 #include "../Logging.h"
+#include "Tags.h"
 
 #include <string.h>
 
@@ -135,7 +137,7 @@ oms_status_enu_t oms2::ssd::ConnectionGeometry::exportToSSD(pugi::xml_node& root
   // export ssd:ConnectionGeometry
   if (getLength() > 0)
   {
-    pugi::xml_node node = root.append_child("ssd:ConnectionGeometry");
+    pugi::xml_node node = root.append_child(oms2::ssd::ssd_connection_geometry);
     const double* pointsX = getPointsX();
     const double* pointsY = getPointsY();
     std::string pointsXStr, pointsYStr;
