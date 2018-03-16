@@ -119,8 +119,8 @@ FOR /d %%d in (lib*-msvc-*) do (
   FOR /r %%e in (boost_system*,boost_filesystem*) do (
      xcopy /Y /F %%e %CRD%\install\win\bin
   )
+  CD %CRD%
 )
-CD %CRD%
 
 ECHO # copy lua
 COPY 3rdParty\lua\install\win\lua.dll install\win\bin
