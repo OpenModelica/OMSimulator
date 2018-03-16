@@ -113,14 +113,14 @@ IF NOT EXIST "install\win\bin" MKDIR "install\win\bin"
 
 ECHO # copy boost using CRAPPY xcopy
 SET CRD=%CD%
-CD %BOOST_ROOT%
 FOR /d %%d in (lib*-msvc-*) do (
+  CD %BOOST_ROOT%
   CD %%d
   FOR /r %%e in (boost_system*,boost_filesystem*) do (
      xcopy /Y /F %%e %CRD%\install\win\bin
   )
-  CD %CRD%
 )
+CD %CRD%
 
 ECHO # copy lua
 COPY 3rdParty\lua\install\win\lua.dll install\win\bin
