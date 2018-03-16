@@ -36,7 +36,7 @@ CD 3rdParty\FMIL\build\win
 cmake -G %OMS_VS_VERSION% -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DFMILIB_INSTALL_PREFIX=..\..\install\win -DFMILIB_BUILD_TESTS:BOOL="0" -DFMILIB_GENERATE_DOXYGEN_DOC:BOOL="0" -DFMILIB_BUILD_STATIC_LIB:BOOL="1" -DFMILIB_BUILD_SHARED_LIB:Bool="0" -DBUILD_TESTING:BOOL="0" -DFMILIB_BUILD_BEFORE_TESTS:BOOL="0" ..\..
 CD ..\..\..\..
 ECHO # build fmil
-msbuild.exe "3rdParty\FMIL\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE%
+msbuild.exe "3rdParty\FMIL\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE% /maxcpucount
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 
 ECHO # build Lua
@@ -53,7 +53,7 @@ CD 3rdParty\cvode\build\win
 cmake -G %OMS_VS_VERSION% -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_INSTALL_PREFIX=..\..\install\win ..\.. -DEXAMPLES_ENABLE:BOOL="0" -DBUILD_SHARED_LIBS:BOOL="0"
 CD ..\..\..\..
 ECHO # build cvode
-msbuild.exe "3rdParty\cvode\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE%
+msbuild.exe "3rdParty\cvode\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE% /maxcpucount
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 
 ECHO # config kinsol
@@ -64,7 +64,7 @@ CD 3rdParty\kinsol\build\win
 cmake -G %OMS_VS_VERSION% -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_INSTALL_PREFIX=..\..\install\win ..\.. -DEXAMPLES_ENABLE:BOOL="0" -DBUILD_SHARED_LIBS:BOOL="0"
 CD ..\..\..\..
 ECHO # build kinsol
-msbuild.exe "3rdParty\kinsol\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE%
+msbuild.exe "3rdParty\kinsol\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE% /maxcpucount
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 
 ECHO # config gflags
@@ -75,7 +75,7 @@ CD 3rdParty\gflags\build\win
 cmake -G %OMS_VS_VERSION% -DCMAKE_INSTALL_PREFIX=..\..\install\win ..\..\gflags -DBUILD_TESTING="OFF" -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE%
 CD ..\..\..\..
 ECHO # build gflags
-msbuild.exe "3rdParty\gflags\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE%
+msbuild.exe "3rdParty\gflags\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE% /maxcpucount
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 
 ECHO # config glog
@@ -86,7 +86,7 @@ CD 3rdParty\glog\build\win
 cmake -G %OMS_VS_VERSION% -DCMAKE_INSTALL_PREFIX=..\..\install\win ..\..\glog -DBUILD_TESTING="OFF" -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE%
 CD ..\..\..\..
 ECHO # build glog
-msbuild.exe "3rdParty\glog\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE%
+msbuild.exe "3rdParty\glog\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE% /maxcpucount
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 
 ECHO # config ceres-solver
@@ -97,7 +97,7 @@ CD 3rdParty\ceres-solver\build\win
 cmake -G %OMS_VS_VERSION% -DCMAKE_INSTALL_PREFIX=..\..\install\win ..\..\ceres-solver -DCXX11="ON" -DEXPORT_BUILD_DIR="on" -DEIGEN_INCLUDE_DIR_HINTS="../../eigen/eigen" -DBUILD_EXAMPLES="OFF" -DBUILD_TESTING="OFF" -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE%
 CD ..\..\..\..
 ECHO # build ceres-solver
-msbuild.exe "3rdParty\ceres-solver\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE%
+msbuild.exe "3rdParty\ceres-solver\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE% /maxcpucount
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 
 ECHO # config OMSimulator
