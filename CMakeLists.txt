@@ -50,7 +50,7 @@ IF(Boost_FOUND)
   message(STATUS "  Boost_LIBRARY_DIRS: " ${Boost_LIBRARY_DIRS})
   message(STATUS "  Boost_INCLUDE_DIRS: " ${Boost_INCLUDE_DIRS})
 ELSE()
-  MESSAGE(ERROR, "Boost library not found, please give a hint by setting the cmake variable BOOST_ROOT either in the cmake-gui or the command line, e.g., 'cmake -DBOOST_ROOT=C:/local/boost_1_63_0'")
+  MESSAGE(FATAL_ERROR, "Boost library not found, please give a hint by setting the cmake variable BOOST_ROOT either in the cmake-gui or the command line, e.g., 'cmake -DBOOST_ROOT=C:/local/boost_1_63_0'")
 ENDIF()
 
 ##########################
@@ -157,7 +157,7 @@ IF(OMFIT)
     message(STATUS "  GLOG_INCLUDEDIR:    " ${GLOG_INCLUDEDIR})
     message(STATUS "  GFLAGS_INCLUDEDIR:  " ${GFLAGS_INCLUDEDIR})
   ELSE()
-    message(ERROR, "Ceres-Solver not found. Building without parameter estimation module.")
+    message(FATAL_ERROR, "Ceres-Solver not found.")
   ENDIF()
 ENDIF()
 
