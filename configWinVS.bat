@@ -121,7 +121,7 @@ ECHO # config OMSimulator
 IF EXIST "build\win\" RMDIR /S /Q build\win
 MKDIR build\win
 CD build\win
-cmake -G %OMS_VS_VERSION% -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ..\.. -DOMFIT="ON" -Dglog_DIR:PATH=../../3rdParty/glog/install/win/lib/cmake/glog -DBOOST_ROOT=%BOOST_ROOT% -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE%
+cmake -G %OMS_VS_VERSION% -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ..\.. -DOMFIT="ON" -DBOOST_ROOT=%BOOST_ROOT% -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE%
 CD ..\..\
 :: -- config OMSimulator ------------------------------------------------------
 
