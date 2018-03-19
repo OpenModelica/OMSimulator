@@ -120,7 +120,7 @@ config-ceres-solver: config-glog
 	$(RM) 3rdParty/ceres-solver/$(BUILD_DIR)
 	$(RM) 3rdParty/ceres- solver/$(INSTALL_DIR)
 	$(MKDIR) 3rdParty/ceres-solver/$(BUILD_DIR)
-	cd 3rdParty/ceres-solver/$(BUILD_DIR) && cmake $(CMAKE_TARGET) -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) -DCXX11="ON" -DEXPORT_BUILD_DIR="ON" -DEIGEN_INCLUDE_DIR_HINTS="../../eigen/eigen" -DBUILD_EXAMPLES="OFF" -DBUILD_TESTING="OFF" -DCMAKE_BUILD_TYPE="Release" ../../ceres-solver && $(MAKE) install
+	cd 3rdParty/ceres-solver/$(BUILD_DIR) && cmake $(CMAKE_TARGET) -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) -DCXX11="ON" -DEXPORT_BUILD_DIR="OFF" -DEIGEN_INCLUDE_DIR_HINTS="../../eigen/eigen" -DBUILD_EXAMPLES="OFF" -DBUILD_TESTING="OFF" -DCMAKE_BUILD_TYPE="Release" ../../ceres-solver && $(MAKE) install
 endif
 
 distclean:

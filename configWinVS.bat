@@ -108,7 +108,7 @@ IF EXIST "3rdParty\ceres-solver\build\win\" RMDIR /S /Q 3rdParty\ceres-solver\bu
 IF EXIST "3rdParty\ceres-solver\install\win\" RMDIR /S /Q 3rdParty\ceres-solver\install\win
 MKDIR 3rdParty\ceres-solver\build\win
 CD 3rdParty\ceres-solver\build\win
-cmake -G %OMS_VS_VERSION% -DCMAKE_INSTALL_PREFIX=..\..\install\win ..\..\ceres-solver -DCXX11="ON" -DEXPORT_BUILD_DIR="on" -DEIGEN_INCLUDE_DIR_HINTS="../../eigen/eigen" -DBUILD_EXAMPLES="OFF" -DBUILD_TESTING="OFF" -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE%
+cmake -G %OMS_VS_VERSION% -DCMAKE_INSTALL_PREFIX=..\..\install\win ..\..\ceres-solver -DCXX11="ON" -DEXPORT_BUILD_DIR="OFF" -DEIGEN_INCLUDE_DIR_HINTS="../../eigen/eigen" -DBUILD_EXAMPLES="OFF" -DBUILD_TESTING="OFF" -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE%
 CD ..\..\..\..
 ECHO # build ceres-solver
 msbuild.exe "3rdParty\ceres-solver\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE% /maxcpucount

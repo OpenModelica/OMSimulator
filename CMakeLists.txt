@@ -147,10 +147,19 @@ ELSE()
 ENDIF()
 
 ##########################
-# Configuring for Ceres-Solver
+# Configuring for ceres-solver
 option(OMFIT "Enable the OMFIT module for parameter estimation support." ON)
 IF(OMFIT)
-find_package(Ceres)
+  IF(WIN32 AND MSVC)
+    set(CERES_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/ceres-solver/install/win)
+  ELSEIF(WIN32 AND MINGW)
+    set(CERES_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/ceres-solver/install/mingw)
+  ELSEIF(APPLE)
+    set(CERES_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/ceres-solver/install/mac)
+  ELSE()
+    set(CERES_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/ceres-solver/install/linux)
+  ENDIF()
+  find_package(Ceres REQUIRED PATHS ${CERES_ROOT})
   IF(Ceres_FOUND)
     message(STATUS "Found Ceres-Solver")
     message(STATUS "  CERES_INCLUDE_DIRS: " ${CERES_INCLUDE_DIRS})
