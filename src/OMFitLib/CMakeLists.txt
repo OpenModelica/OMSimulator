@@ -10,13 +10,9 @@ IF (WIN32)
 ENDIF()
 
 include_directories(
-  ${CMAKE_SOURCE_DIR}
-  ${CMAKE_SOURCE_DIR}/src
   ${CMAKE_SOURCE_DIR}/src/OMSimulatorLib
   ${FMILibrary_INCLUDEDIR}
   ${CERES_INCLUDE_DIRS}
-  ${GLOG_INCLUDEDIR}
-  ${GFLAGS_INCLUDEDIR}
 )
 link_directories(
   ${FMILibrary_LIBRARYDIR}
