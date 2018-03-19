@@ -36,6 +36,7 @@ IF EXIST "3rdParty\FMIL\install\win\" RMDIR /S /Q 3rdParty\FMIL\install\win
 MKDIR 3rdParty\FMIL\build\win
 CD 3rdParty\FMIL\build\win
 cmake -G %OMS_VS_VERSION% ..\.. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DFMILIB_INSTALL_PREFIX=..\..\install\win -DFMILIB_BUILD_TESTS:BOOL="0" -DFMILIB_GENERATE_DOXYGEN_DOC:BOOL="0" -DFMILIB_BUILD_STATIC_LIB:BOOL="1" -DFMILIB_BUILD_SHARED_LIB:Bool="0" -DBUILD_TESTING:BOOL="0" -DFMILIB_BUILD_BEFORE_TESTS:BOOL="0" -DCMAKE_EXPORT_NO_PACKAGE_REGISTRY:BOOL=ON -DCMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY:BOOL=ON -DCMAKE_FIND_PACKAGE_NO_SYSTEM_PACKAGE_REGISTRY:BOOL=ON
+IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 CD ..\..\..\..
 ECHO # build fmil
 msbuild.exe "3rdParty\FMIL\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE% /maxcpucount
@@ -57,6 +58,7 @@ IF EXIST "3rdParty\cvode\install\win\" RMDIR /S /Q 3rdParty\cvode\install\win
 MKDIR 3rdParty\cvode\build\win
 CD 3rdParty\cvode\build\win
 cmake -G %OMS_VS_VERSION% ..\.. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_INSTALL_PREFIX=..\..\install\win -DEXAMPLES_ENABLE:BOOL="0" -DBUILD_SHARED_LIBS:BOOL="0" -DCMAKE_EXPORT_NO_PACKAGE_REGISTRY:BOOL=ON -DCMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY:BOOL=ON -DCMAKE_FIND_PACKAGE_NO_SYSTEM_PACKAGE_REGISTRY:BOOL=ON
+IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 CD ..\..\..\..
 ECHO # build cvode
 msbuild.exe "3rdParty\cvode\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE% /maxcpucount
@@ -70,6 +72,7 @@ IF EXIST "3rdParty\kinsol\install\win\" RMDIR /S /Q 3rdParty\kinsol\install\win
 MKDIR 3rdParty\kinsol\build\win
 CD 3rdParty\kinsol\build\win
 cmake -G %OMS_VS_VERSION% ..\.. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_INSTALL_PREFIX=..\..\install\win -DEXAMPLES_ENABLE:BOOL="0" -DBUILD_SHARED_LIBS:BOOL="0" -DCMAKE_EXPORT_NO_PACKAGE_REGISTRY:BOOL=ON -DCMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY:BOOL=ON -DCMAKE_FIND_PACKAGE_NO_SYSTEM_PACKAGE_REGISTRY:BOOL=ON
+IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 CD ..\..\..\..
 ECHO # build kinsol
 msbuild.exe "3rdParty\kinsol\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE% /maxcpucount
@@ -83,6 +86,7 @@ IF EXIST "3rdParty\gflags\install\win\" RMDIR /S /Q 3rdParty\gflags\install\win
 MKDIR 3rdParty\gflags\build\win
 CD 3rdParty\gflags\build\win
 cmake -G %OMS_VS_VERSION% ..\..\gflags -DCMAKE_INSTALL_PREFIX=..\..\install\win -DBUILD_TESTING="OFF" -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE% -DCMAKE_EXPORT_NO_PACKAGE_REGISTRY:BOOL=ON -DCMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY:BOOL=ON -DCMAKE_FIND_PACKAGE_NO_SYSTEM_PACKAGE_REGISTRY:BOOL=ON
+IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 CD ..\..\..\..
 ECHO # build gflags
 msbuild.exe "3rdParty\gflags\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE% /maxcpucount
@@ -96,6 +100,7 @@ IF EXIST "3rdParty\glog\install\win\" RMDIR /S /Q 3rdParty\glog\install\win
 MKDIR 3rdParty\glog\build\win
 CD 3rdParty\glog\build\win
 cmake -G %OMS_VS_VERSION% ..\..\glog -DCMAKE_INSTALL_PREFIX=..\..\install\win -DBUILD_TESTING="OFF" -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE% -DCMAKE_EXPORT_NO_PACKAGE_REGISTRY:BOOL=ON -DCMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY:BOOL=ON -DCMAKE_FIND_PACKAGE_NO_SYSTEM_PACKAGE_REGISTRY:BOOL=ON
+IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 CD ..\..\..\..
 ECHO # build glog
 msbuild.exe "3rdParty\glog\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE% /maxcpucount
@@ -108,7 +113,8 @@ IF EXIST "3rdParty\ceres-solver\build\win\" RMDIR /S /Q 3rdParty\ceres-solver\bu
 IF EXIST "3rdParty\ceres-solver\install\win\" RMDIR /S /Q 3rdParty\ceres-solver\install\win
 MKDIR 3rdParty\ceres-solver\build\win
 CD 3rdParty\ceres-solver\build\win
-cmake -G %OMS_VS_VERSION% ..\..\ceres-solver -DCMAKE_INSTALL_PREFIX=..\..\install\win -DCXX11="ON" -DEXPORT_BUILD_DIR="on" -DEIGEN_INCLUDE_DIR_HINTS="../../eigen/eigen" -DBUILD_EXAMPLES="OFF" -DBUILD_TESTING="OFF" -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE% -DCMAKE_EXPORT_NO_PACKAGE_REGISTRY:BOOL=ON -DCMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY:BOOL=ON -DCMAKE_FIND_PACKAGE_NO_SYSTEM_PACKAGE_REGISTRY:BOOL=ON
+cmake -G %OMS_VS_VERSION% ..\..\ceres-solver -DCMAKE_INSTALL_PREFIX=..\..\install\win -DCXX11="ON" -DGLOG_INCLUDE_DIR=..\..\..\glog\install\win\include -DGLOG_LIBRARY=..\..\..\glog\install\win\lib -DGFLAGS_INCLUDE_DIR=..\..\..\gflags\install\win\include -DGFLAGS_LIBRARY=..\..\..\gflags\install\win\lib -DEIGEN_INCLUDE_DIR_HINTS=..\..\eigen\eigen -DBUILD_EXAMPLES="OFF" -DBUILD_TESTING="OFF" -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE% -DCMAKE_EXPORT_NO_PACKAGE_REGISTRY:BOOL=ON -DCMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY:BOOL=ON -DCMAKE_FIND_PACKAGE_NO_SYSTEM_PACKAGE_REGISTRY:BOOL=ON
+IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 CD ..\..\..\..
 ECHO # build ceres-solver
 msbuild.exe "3rdParty\ceres-solver\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE% /maxcpucount
@@ -121,6 +127,7 @@ IF EXIST "build\win\" RMDIR /S /Q build\win
 MKDIR build\win
 CD build\win
 cmake -G %OMS_VS_VERSION% ..\.. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DOMFIT="ON" -DBOOST_ROOT=%BOOST_ROOT% -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE% -DCMAKE_EXPORT_NO_PACKAGE_REGISTRY:BOOL=ON -DCMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY:BOOL=ON -DCMAKE_FIND_PACKAGE_NO_SYSTEM_PACKAGE_REGISTRY:BOOL=ON
+IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 CD ..\..\
 :: -- config OMSimulator ------------------------------------------------------
 
