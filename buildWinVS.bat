@@ -20,16 +20,19 @@ SET OMS_VS_VERSION
 SET OMS_VS_PLATFORM
 ECHO.
 
-SET "VSCMD_START_DIR=%CD%"
-IF ["%~1"]==["VS14-Win32"] @call "%VS140COMNTOOLS%\..\..\VC\vcvarsall.bat" x86
-IF ["%~1"]==["VS14-Win64"] @call "%VS140COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64 8.1
-IF ["%~1"]==["VS15-Win64"] @call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
+SET VSCMD_START_DIR="%CD%"
+
+IF ["%OMS_VS_TARGET%"]==["VS14-Win32"] @call "%VS140COMNTOOLS%\..\..\VC\vcvarsall.bat" x86
+IF ["%OMS_VS_TARGET%"]==["VS14-Win64"] @call "%VS140COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64 8.1
+IF ["%OMS_VS_TARGET%"]==["VS15-Win64"] @call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
 
 IF NOT DEFINED CMAKE_BUILD_TYPE SET CMAKE_BUILD_TYPE="Release"
 
+:: -- build OMSimulator -------------------------------------------------------
 ECHO # build OMSimulator
 msbuild.exe "build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE% /maxcpucount
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
+:: -- build OMSimulator -------------------------------------------------------
 
 EXIT /b 0
 
