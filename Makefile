@@ -43,8 +43,6 @@ OMSimulator:
 	@echo
 	@$(MAKE) -C $(BUILD_DIR) install
 
-
-
 config-3rdParty: config-fmil config-lua config-cvode config-kinsol config-gflags config-glog config-ceres-solver
 
 config-OMSimulator:
@@ -53,7 +51,7 @@ config-OMSimulator:
 	@echo
 	$(RM) $(BUILD_DIR)
 	$(MKDIR) $(BUILD_DIR)
-	cd $(BUILD_DIR) && cmake $(CMAKE_TARGET) -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DOMFIT=$(OMFIT) ../..
+	cd $(BUILD_DIR) && cmake $(CMAKE_TARGET) ../.. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DOMFIT:BOOL=$(OMFIT)
 
 config-fmil:
 	@echo
@@ -62,7 +60,7 @@ config-fmil:
 	$(RM) 3rdParty/FMIL/$(BUILD_DIR)
 	$(RM) 3rdParty/FMIL/$(INSTALL_DIR)
 	$(MKDIR) 3rdParty/FMIL/$(BUILD_DIR)
-	cd 3rdParty/FMIL/$(BUILD_DIR) && cmake $(CMAKE_TARGET) -DFMILIB_INSTALL_PREFIX=../../$(INSTALL_DIR) -DFMILIB_BUILD_TESTS:BOOL="0" -DFMILIB_GENERATE_DOXYGEN_DOC:BOOL="0" -DFMILIB_BUILD_STATIC_LIB:BOOL="1" -DFMILIB_BUILD_SHARED_LIB:Bool="0" -DBUILD_TESTING:BOOL="0" -DFMILIB_BUILD_BEFORE_TESTS:BOOL="0" $(FMIL_FLAGS) ../.. && $(MAKE) install
+	cd 3rdParty/FMIL/$(BUILD_DIR) && cmake $(CMAKE_TARGET) ../.. -DFMILIB_INSTALL_PREFIX=../../$(INSTALL_DIR) -DFMILIB_BUILD_TESTS:BOOL=0 -DFMILIB_GENERATE_DOXYGEN_DOC:BOOL=0 -DFMILIB_BUILD_STATIC_LIB:BOOL=1 -DFMILIB_BUILD_SHARED_LIB:BOOL=0 -DBUILD_TESTING:BOOL=0 -DFMILIB_BUILD_BEFORE_TESTS:BOOL=0 $(FMIL_FLAGS) && $(MAKE) install
 
 config-lua:
 	@echo
@@ -78,7 +76,7 @@ config-cvode:
 	$(RM) 3rdParty/cvode/$(BUILD_DIR)
 	$(RM) 3rdParty/cvode/$(INSTALL_DIR)
 	$(MKDIR) 3rdParty/cvode/$(BUILD_DIR)
-	cd 3rdParty/cvode/$(BUILD_DIR) && cmake $(CMAKE_TARGET) -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) ../.. -DEXAMPLES_ENABLE:BOOL="0" -DBUILD_SHARED_LIBS:BOOL="0" -DCMAKE_C_FLAGS="-fPIC" && $(MAKE) install
+	cd 3rdParty/cvode/$(BUILD_DIR) && cmake $(CMAKE_TARGET) ../.. -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) -DEXAMPLES_ENABLE:BOOL=0 -DBUILD_SHARED_LIBS:BOOL=0 -DCMAKE_C_FLAGS="-fPIC" && $(MAKE) install
 
 config-kinsol:
 	@echo
@@ -87,7 +85,7 @@ config-kinsol:
 	$(RM) 3rdParty/kinsol/$(BUILD_DIR)
 	$(RM) 3rdParty/kinsol/$(INSTALL_DIR)
 	$(MKDIR) 3rdParty/kinsol/$(BUILD_DIR)
-	cd 3rdParty/kinsol/$(BUILD_DIR) && cmake $(CMAKE_TARGET) -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) ../.. -DEXAMPLES_ENABLE:BOOL="0" -DBUILD_SHARED_LIBS:BOOL="0" -DCMAKE_C_FLAGS="-fPIC" && $(MAKE) install
+	cd 3rdParty/kinsol/$(BUILD_DIR) && cmake $(CMAKE_TARGET) ../.. -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) -DEXAMPLES_ENABLE:BOOL=0 -DBUILD_SHARED_LIBS:BOOL=0 -DCMAKE_C_FLAGS="-fPIC" && $(MAKE) install
 
 config-gflags:
 	@echo
@@ -96,7 +94,7 @@ config-gflags:
 	$(RM) 3rdParty/gflags/$(BUILD_DIR)
 	$(RM) 3rdParty/gflags/$(INSTALL_DIR)
 	$(MKDIR) 3rdParty/gflags/$(BUILD_DIR)
-	cd 3rdParty/gflags/$(BUILD_DIR) && cmake $(CMAKE_TARGET) -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) ../../gflags -DBUILD_SHARED_LIBS="OFF" -DBUILD_TESTING="OFF" -DCMAKE_C_FLAGS="-fPIC" -DCMAKE_CXX_FLAGS="-fPIC" -DCMAKE_BUILD_TYPE="Release" && $(MAKE) install
+	cd 3rdParty/gflags/$(BUILD_DIR) && cmake $(CMAKE_TARGET) ../../gflags -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) -DBUILD_SHARED_LIBS:BOOL=OFF -DBUILD_TESTING:BOOL=OFF -DCMAKE_C_FLAGS="-fPIC" -DCMAKE_CXX_FLAGS="-fPIC" -DCMAKE_BUILD_TYPE="Release" && $(MAKE) install
 
 config-glog: config-gflags
 	@echo
@@ -105,7 +103,7 @@ config-glog: config-gflags
 	$(RM) 3rdParty/glog/$(BUILD_DIR)
 	$(RM) 3rdParty/glog/$(INSTALL_DIR)
 	$(MKDIR) 3rdParty/glog/$(BUILD_DIR)
-	cd 3rdParty/glog/$(BUILD_DIR) && cmake $(CMAKE_TARGET) -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) ../../glog -DBUILD_SHARED_LIBS="OFF" -DBUILD_TESTING="OFF" -DCMAKE_C_FLAGS="-fPIC" -DCMAKE_CXX_FLAGS="-fPIC" -DCMAKE_BUILD_TYPE="Release" && $(MAKE) install
+	cd 3rdParty/glog/$(BUILD_DIR) && cmake $(CMAKE_TARGET) ../../glog -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) -DBUILD_SHARED_LIBS:BOOL=OFF -DBUILD_TESTING:BOOL=OFF -DCMAKE_C_FLAGS="-fPIC" -DCMAKE_CXX_FLAGS="-fPIC" -DCMAKE_BUILD_TYPE="Release" && $(MAKE) install
 
 ifeq ($(CERES),OFF)
 config-ceres-solver:
@@ -120,7 +118,7 @@ config-ceres-solver: config-glog
 	$(RM) 3rdParty/ceres-solver/$(BUILD_DIR)
 	$(RM) 3rdParty/ceres- solver/$(INSTALL_DIR)
 	$(MKDIR) 3rdParty/ceres-solver/$(BUILD_DIR)
-	cd 3rdParty/ceres-solver/$(BUILD_DIR) && cmake $(CMAKE_TARGET) -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) -DCXX11="ON" -DEXPORT_BUILD_DIR="ON" -DEIGEN_INCLUDE_DIR_HINTS="../../eigen/eigen" -DBUILD_EXAMPLES="OFF" -DBUILD_TESTING="OFF" -DCMAKE_BUILD_TYPE="Release" ../../ceres-solver && $(MAKE) install
+	cd 3rdParty/ceres-solver/$(BUILD_DIR) && cmake $(CMAKE_TARGET) ../../ceres-solver -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) -DCXX11:BOOL=ON -DEXPORT_BUILD_DIR=ON -DEIGEN_INCLUDE_DIR_HINTS=../../eigen/eigen -DBUILD_EXAMPLES:BOOL=OFF -DBUILD_TESTING:BOOL=OFF -DCMAKE_BUILD_TYPE="Release" && $(MAKE) install
 endif
 
 distclean:
