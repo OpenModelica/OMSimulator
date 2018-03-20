@@ -28,6 +28,15 @@ IF ["%OMS_VS_TARGET%"]==["VS15-Win64"] @call "C:\Program Files (x86)\Microsoft V
 
 IF NOT DEFINED CMAKE_BUILD_TYPE SET CMAKE_BUILD_TYPE="Release"
 IF NOT DEFINED BOOST_ROOT SET BOOST_ROOT=C:\local\boost_1_64_0
+IF NOT DEFINED CERES SET CERES=OFF
+IF NOT DEFINED OMFIT SET OMFIT=OFF
+
+ECHO.
+SET CMAKE_BUILD_TYPE
+SET BOOST_ROOT
+SET CERES
+SET OMFIT
+ECHO.
 
 :: -- config fmil -------------------------------------------------------------
 ECHO # config fmil
@@ -78,41 +87,53 @@ IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 
 :: -- config gflags -----------------------------------------------------------
 ECHO # config gflags
-IF EXIST "3rdParty\gflags\build\win\" RMDIR /S /Q 3rdParty\gflags\build\win
-IF EXIST "3rdParty\gflags\install\win\" RMDIR /S /Q 3rdParty\gflags\install\win
-MKDIR 3rdParty\gflags\build\win
-CD 3rdParty\gflags\build\win
-cmake -G %OMS_VS_VERSION% -DCMAKE_INSTALL_PREFIX=..\..\install\win ..\..\gflags -DBUILD_TESTING="OFF" -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE%
-CD ..\..\..\..
-ECHO # build gflags
-msbuild.exe "3rdParty\gflags\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE% /maxcpucount
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
+IF ["%CERES%"]==["OFF"] (
+  ECHO CERES=OFF: Skipping build of 3rdParty library gflags, which is a dependency of the optional parameter estimation module.
+) ELSE (
+  IF EXIST "3rdParty\gflags\build\win\" RMDIR /S /Q 3rdParty\gflags\build\win
+  IF EXIST "3rdParty\gflags\install\win\" RMDIR /S /Q 3rdParty\gflags\install\win
+  MKDIR 3rdParty\gflags\build\win
+  CD 3rdParty\gflags\build\win
+  cmake -G %OMS_VS_VERSION% -DCMAKE_INSTALL_PREFIX=..\..\install\win ..\..\gflags -DBUILD_TESTING="OFF" -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE%
+  CD ..\..\..\..
+  ECHO # build gflags
+  msbuild.exe "3rdParty\gflags\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE% /maxcpucount
+  IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
+)
 :: -- config gflags -----------------------------------------------------------
 
 :: -- config glog -------------------------------------------------------------
 ECHO # config glog
-IF EXIST "3rdParty\glog\build\win\" RMDIR /S /Q 3rdParty\glog\build\win
-IF EXIST "3rdParty\glog\install\win\" RMDIR /S /Q 3rdParty\glog\install\win
-MKDIR 3rdParty\glog\build\win
-CD 3rdParty\glog\build\win
-cmake -G %OMS_VS_VERSION% -DCMAKE_INSTALL_PREFIX=..\..\install\win ..\..\glog -DBUILD_TESTING="OFF" -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE%
-CD ..\..\..\..
-ECHO # build glog
-msbuild.exe "3rdParty\glog\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE% /maxcpucount
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
+IF ["%CERES%"]==["OFF"] (
+  ECHO CERES=OFF: Skipping build of 3rdParty library glog, which is a dependency of the optional parameter estimation module.
+) ELSE (
+  IF EXIST "3rdParty\glog\build\win\" RMDIR /S /Q 3rdParty\glog\build\win
+  IF EXIST "3rdParty\glog\install\win\" RMDIR /S /Q 3rdParty\glog\install\win
+  MKDIR 3rdParty\glog\build\win
+  CD 3rdParty\glog\build\win
+  cmake -G %OMS_VS_VERSION% -DCMAKE_INSTALL_PREFIX=..\..\install\win ..\..\glog -DBUILD_TESTING="OFF" -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE%
+  CD ..\..\..\..
+  ECHO # build glog
+  msbuild.exe "3rdParty\glog\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE% /maxcpucount
+  IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
+)
 :: -- config glog -------------------------------------------------------------
 
 :: -- config ceres-solver -----------------------------------------------------
 ECHO # config ceres-solver
-IF EXIST "3rdParty\ceres-solver\build\win\" RMDIR /S /Q 3rdParty\ceres-solver\build\win
-IF EXIST "3rdParty\ceres-solver\install\win\" RMDIR /S /Q 3rdParty\ceres-solver\install\win
-MKDIR 3rdParty\ceres-solver\build\win
-CD 3rdParty\ceres-solver\build\win
-cmake -G %OMS_VS_VERSION% -DCMAKE_INSTALL_PREFIX=..\..\install\win ..\..\ceres-solver -DCXX11="ON" -DEXPORT_BUILD_DIR="on" -DEIGEN_INCLUDE_DIR_HINTS="../../eigen/eigen" -DBUILD_EXAMPLES="OFF" -DBUILD_TESTING="OFF" -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE%
-CD ..\..\..\..
-ECHO # build ceres-solver
-msbuild.exe "3rdParty\ceres-solver\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE% /maxcpucount
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
+IF ["%CERES%"]==["OFF"] (
+  ECHO CERES=OFF: Skipping build of 3rdParty library ceres-solver, which is a dependency of the optional parameter estimation module.
+) ELSE (
+  IF EXIST "3rdParty\ceres-solver\build\win\" RMDIR /S /Q 3rdParty\ceres-solver\build\win
+  IF EXIST "3rdParty\ceres-solver\install\win\" RMDIR /S /Q 3rdParty\ceres-solver\install\win
+  MKDIR 3rdParty\ceres-solver\build\win
+  CD 3rdParty\ceres-solver\build\win
+  cmake -G %OMS_VS_VERSION% -DCMAKE_INSTALL_PREFIX=..\..\install\win ..\..\ceres-solver -DCXX11="ON" -DEXPORT_BUILD_DIR="on" -DEIGEN_INCLUDE_DIR_HINTS="../../eigen/eigen" -DBUILD_EXAMPLES="OFF" -DBUILD_TESTING="OFF" -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE%
+  CD ..\..\..\..
+  ECHO # build ceres-solver
+  msbuild.exe "3rdParty\ceres-solver\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE% /maxcpucount
+  IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
+)
 :: -- config ceres-solver -----------------------------------------------------
 
 :: -- config OMSimulator ------------------------------------------------------
@@ -120,12 +141,11 @@ ECHO # config OMSimulator
 IF EXIST "build\win\" RMDIR /S /Q build\win
 MKDIR build\win
 CD build\win
-cmake -G %OMS_VS_VERSION% -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ..\.. -DOMFIT="ON" -DBOOST_ROOT=%BOOST_ROOT% -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE%
+cmake -G %OMS_VS_VERSION% -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ..\.. -DOMFIT="%OMFIT%" -DBOOST_ROOT=%BOOST_ROOT% -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE%
 CD ..\..\
 :: -- config OMSimulator ------------------------------------------------------
 
 :: -- create install\win\bin folder -------------------------------------------
-REM create install\win\bin folder
 IF NOT EXIST "install\win\bin" (
   ECHO # create install\win\bin folder
   MKDIR "install\win\bin"
@@ -133,7 +153,7 @@ IF NOT EXIST "install\win\bin" (
 :: -- create install\win\bin folder -------------------------------------------
 
 :: -- copy boost --------------------------------------------------------------
-ECHO # copy boost using CRAPPY xcopy
+ECHO # copy boost
 SET CRD=%CD%
 CD %BOOST_ROOT%
 FOR /d %%d in (lib%OMS_VS_PLATFORM%*-msvc-*) do (
