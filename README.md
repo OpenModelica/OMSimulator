@@ -105,6 +105,9 @@ git submodule foreach --recursive "git pull"
 
 In order to push to the repository, you will push to your own fork of OMSimulator.git, OMSimulator-testsuite.git, etc. You will need to create a fork of each repository that you want to push to (by clicking the Fork button in the GitHub web interface).
 
+### Testing
+
+Developers can trigger a [Hudson job](https://test.openmodelica.org/hudson/job/OMSimulator-PR/build?delay=0sec) after creating a pull request to test the changes on different platforms.
 
 ## The optional parameter estimation module
 
