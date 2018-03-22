@@ -63,6 +63,8 @@ namespace oms2
     double getStartTime() const {return startTime;}
     void setStopTime(double value) {stopTime = value;}
     double getStopTime() const {return stopTime;}
+    void setCommunicationInterval(double value) {communicationInterval = value;}
+    double getCommunicationInterval() const {return communicationInterval;}
     void setResultFile(const std::string& value) {resultFile = value;}
     const std::string& getResultFile() const {return resultFile;}
 
@@ -88,9 +90,10 @@ namespace oms2
     oms2::ssd::SystemGeometry systemGeometry;
     CompositeModel* compositeModel;
 
-    double startTime;       ///< experiment, default 0.0
-    double stopTime;        ///< experiment, default 1.0
-    std::string resultFile; ///< experiment, default name_res.mat
+    double startTime;             ///< experiment, default 0.0
+    double stopTime;              ///< experiment, default 1.0
+    double communicationInterval; ///< experiment, default 1.0e-2
+    std::string resultFile; ///< experiment, default <name>_res.mat
   };
 }
 

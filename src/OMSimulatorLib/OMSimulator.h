@@ -617,6 +617,15 @@ oms_status_enu_t oms2_setStartTime(const char* cref, double startTime);
 oms_status_enu_t oms2_setStopTime(const char* cref, double stopTime);
 
 /**
+ * \brief Set the communication interval of the simulation.
+ *
+ * \param cref                    [in] Name of the model instance
+ * \param communicationInterval   [in] Communication interval
+ * \return                        Error status
+ */
+oms_status_enu_t oms2_setCommunicationInterval(const char* cref, double communicationInterval);
+
+/**
  * \brief Set the result file of the simulation.
  *
  * \param cref       [in] Name of the model instance
