@@ -196,6 +196,8 @@ oms2::FMICompositeModel* oms2::Model::getFMICompositeModel()
 {
   if (oms_component_fmi == getType())
     return dynamic_cast<FMICompositeModel*>(compositeModel);
+
+  logError("[oms2::Model::getFMICompositeModel] \"" + getName() + "\" is not a FMI composite model.");
   return NULL;
 }
 
@@ -203,5 +205,7 @@ oms2::TLMCompositeModel* oms2::Model::getTLMCompositeModel()
 {
   if (oms_component_tlm == getType())
     return dynamic_cast<TLMCompositeModel*>(compositeModel);
+
+  logError("[oms2::Model::getTLMCompositeModel] \"" + getName() + "\" is not a TLM composite model.");
   return NULL;
 }

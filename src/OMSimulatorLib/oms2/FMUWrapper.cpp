@@ -130,15 +130,13 @@ oms2::FMUWrapper* oms2::FMUWrapper::newSubModel(const oms2::ComRef& cref, const 
     return NULL;
   }
 
-  oms2::FMUWrapper *model = new oms2::FMUWrapper(cref, filename);
-
-  // instantiate FMU
   if (!boost::filesystem::exists(filename))
   {
     logError("Specified file name does not exist: \"" + filename + "\"");
-    delete model;
     return NULL;
   }
+
+  oms2::FMUWrapper *model = new oms2::FMUWrapper(cref, filename);
 
   model->callbacks.malloc = malloc;
   model->callbacks.calloc = calloc;

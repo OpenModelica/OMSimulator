@@ -333,6 +333,16 @@ oms_status_enu_t oms2_unloadModel(const char* ident);
 oms_status_enu_t oms2_addFMU(const char* modelIdent, const char* fmuPath, const char* fmuIdent);
 
 /**
+ * \brief Adds a new lookup table instance to a given FMI model.
+ *
+ * \param modelIdent   [in] Identifier of parent model
+ * \param tablePath    [in] Full path to lookup table
+ * \param tableIdent   [in] Identifier of new lookup table instance
+ * \return             Error status
+ */
+oms_status_enu_t oms2_addTable(const char* modelIdent, const char* tablePath, const char* tableIdent);
+
+/**
  * \brief Deletes a sub-model instance, e.g. FMU, from a given FMI composite
  * model.
  *

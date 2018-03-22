@@ -538,7 +538,13 @@ oms_status_enu_t oms2_unloadModel(const char* ident)
 oms_status_enu_t oms2_addFMU(const char* modelIdent, const char* fmuPath, const char* fmuIdent)
 {
   logTrace();
-  return oms2::Scope::GetInstance().addFMU(oms2::ComRef(modelIdent), fmuPath, oms2::ComRef(fmuIdent));
+  return oms2::Scope::GetInstance().addFMU(oms2::ComRef(modelIdent), std::string(fmuPath), oms2::ComRef(fmuIdent));
+}
+
+oms_status_enu_t oms2_addTable(const char* modelIdent, const char* tablePath, const char* tableIdent)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().addTable(oms2::ComRef(modelIdent), std::string(tablePath), oms2::ComRef(tableIdent));
 }
 
 oms_status_enu_t oms2_deleteSubModel(const char* modelIdent, const char* subModelIdent)
