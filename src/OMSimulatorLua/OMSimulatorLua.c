@@ -889,6 +889,21 @@ static int OMSimulatorLua_oms2_setResultFile(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms2_exportCompositeStructure(const char* cref, const char* filename);
+static int OMSimulatorLua_oms2_exportCompositeStructure(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+
+  const char* cref = lua_tostring(L, 1);
+  const char* filename = lua_tostring(L, 2);
+  oms_status_enu_t status = oms2_exportCompositeStructure(cref, filename);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
 /* **************************************************** */
 /* OMSysIdent API                                       */
 /* **************************************************** */
@@ -1165,6 +1180,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms2_addFMU);
   REGISTER_LUA_CALL(oms2_deleteConnection);
   REGISTER_LUA_CALL(oms2_deleteSubModel);
+  REGISTER_LUA_CALL(oms2_exportCompositeStructure);
   REGISTER_LUA_CALL(oms2_getElements);
   REGISTER_LUA_CALL(oms2_loadModel);
   REGISTER_LUA_CALL(oms2_newFMIModel);

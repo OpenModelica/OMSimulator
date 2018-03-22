@@ -631,3 +631,78 @@ oms2::Element** oms2::FMICompositeModel::getElements()
   updateComponents();
   return components;
 }
+
+oms2::Variable* oms2::FMICompositeModel::getVariable(const oms2::SignalRef& signal)
+{
+  auto it = subModels.find(signal.getCref().last());
+  if (it == subModels.end())
+  {
+    logError("No submodel called \"" + signal.getCref() + "\" found.");
+    return NULL;
+  }
+
+  return it->second->getVariable(signal.getVar());
+}
+
+oms_status_enu_t oms2::FMICompositeModel::exportCompositeStructure(const std::string& filename)
+{
+  logTrace();
+
+  /*
+   * #dot -Gsplines=none test.dot | neato -n -Gsplines=ortho -Tpng -otest.png
+   * digraph G
+   * {
+   *   graph [rankdir=LR, splines=ortho];
+   *
+   *   node[shape=record];
+   *   A [label="A", height=2, width=2];
+   *   B [label="B", height=2, width=2];
+   *
+   *   A -> B [label="A.y -> B.u"];
+   * }
+   */
+
+  if (!(filename.length() > 5 && filename.substr(filename.length() - 4) == ".dot"))
+  {
+    logError("[oms2::FMICompositeModel::exportCompositeStructure] The filename must have .dot as extension.");
+    return oms_status_error;
+  }
+
+  std::ofstream dotFile(filename);
+  dotFile << "#dot -Gsplines=none " << filename.c_str() << " | neato -n -Gsplines=ortho -Tpng -o" << filename.substr(0, filename.length() - 4).c_str() << ".png" << std::endl;
+  dotFile << "digraph G" << std::endl;
+  dotFile << "{" << std::endl;
+  dotFile << "  graph [rankdir=LR, splines=ortho];\n" << std::endl;
+  dotFile << "  node[shape=record];" << std::endl;
+
+  for (const auto& it : subModels)
+    dotFile << "  " << it.first.toString() << "[label=\"" << it.first.toString() << "\", height=2, width=2];" << std::endl;
+
+  dotFile << std::endl;
+  for (auto& connection : connections)
+  {
+    if (connection)
+    {
+      SignalRef A = connection->getSignalA();
+      SignalRef B = connection->getSignalB();
+
+      oms2::Variable* varA = getVariable(A);
+      oms2::Variable* varB = getVariable(B);
+
+      if (!varA || !varB)
+        return oms_status_error;
+
+      if (varA->isOutput() && varB->isInput())
+        dotFile << "  " << A.getCref().toString() << " -> " << B.getCref().toString() << " [label=\"" << A.getVar() << " -> " << B.getVar() << "\"];" << std::endl;
+      else if (varB->isOutput() && varA->isInput())
+        dotFile << "  " << B.getCref().toString() << " -> " << A.getCref().toString() << " [label=\"" << B.getVar() << " -> " << A.getVar() << "\"];" << std::endl;
+      else
+        return oms_status_error;
+    }
+  }
+
+  dotFile << "}" << std::endl;
+  dotFile.close();
+
+  return oms_status_ok;
+}

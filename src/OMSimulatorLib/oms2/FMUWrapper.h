@@ -76,7 +76,7 @@ namespace oms2
     oms_status_enu_t setBoolean(const oms2::Variable& var, bool booleanValue);
     oms_status_enu_t getBoolean(const oms2::Variable& var, bool& booleanValue);
 
-    oms2::Variable* getVar(const std::string& var);
+    oms2::Variable* getVariable(const std::string& var);
 
   private:
     FMUWrapper(const ComRef& cref, const std::string& filename);

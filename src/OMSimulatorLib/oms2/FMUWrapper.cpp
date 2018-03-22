@@ -400,7 +400,7 @@ oms_status_enu_t oms2::FMUWrapper::exportToSSD(pugi::xml_node& root) const
   return status;
 }
 
-oms2::Variable* oms2::FMUWrapper::getVar(const std::string& var)
+oms2::Variable* oms2::FMUWrapper::getVariable(const std::string& var)
 {
   for (auto &v : allVariables)
     if (v.getName() == var)
@@ -433,7 +433,7 @@ oms_status_enu_t oms2::FMUWrapper::getRealParameter(const std::string& var, doub
 
   if (it->second.isNone())
   {
-    oms2::Variable *v = getVar(var);
+    oms2::Variable *v = getVariable(var);
     if (!v)
       return oms_status_error;
     if (oms_status_ok != getReal(*v, value))
@@ -470,7 +470,7 @@ oms_status_enu_t oms2::FMUWrapper::getIntegerParameter(const std::string& var, i
 
   if (it->second.isNone())
   {
-    oms2::Variable *v = getVar(var);
+    oms2::Variable *v = getVariable(var);
     if (!v)
       return oms_status_error;
     if (oms_status_ok != getInteger(*v, value))
@@ -507,7 +507,7 @@ oms_status_enu_t oms2::FMUWrapper::getBooleanParameter(const std::string& var, b
 
   if (it->second.isNone())
   {
-    oms2::Variable *v = getVar(var);
+    oms2::Variable *v = getVariable(var);
     if (!v)
       return oms_status_error;
     if (oms_status_ok != getBoolean(*v, value))

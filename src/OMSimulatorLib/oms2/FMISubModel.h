@@ -36,6 +36,7 @@
 #include "ComRef.h"
 #include "Element.h"
 #include "ssd/ElementGeometry.h"
+#include "Variable.h"
 
 namespace oms2
 {
@@ -53,6 +54,8 @@ namespace oms2
     const ComRef getName() const {return oms2::ComRef(element.getName());}
     const oms2::ssd::ElementGeometry* getGeometry() {return element.getGeometry();}
     oms2::Element* getElement() {return &element;}
+
+    virtual oms2::Variable* getVariable(const std::string& signal) = 0;
 
   protected:
     FMISubModel(oms_element_type_enu_t type, const ComRef& cref);

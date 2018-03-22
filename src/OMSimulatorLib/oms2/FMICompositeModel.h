@@ -32,12 +32,13 @@
 #ifndef _OMS2_FMI_COMPOSITE_MODEL_H_
 #define _OMS2_FMI_COMPOSITE_MODEL_H_
 
-#include "ComRef.h"
-#include "SignalRef.h"
-#include "FMISubModel.h"
-#include "CompositeModel.h"
-#include "Connection.h"
 #include "../Types.h"
+#include "CompositeModel.h"
+#include "ComRef.h"
+#include "Connection.h"
+#include "FMISubModel.h"
+#include "SignalRef.h"
+#include "Variable.h"
 
 #include <map>
 #include <vector>
@@ -73,10 +74,13 @@ namespace oms2
 
     oms2::Element** getElements();
 
+    oms_status_enu_t exportCompositeStructure(const std::string& filename);
+
   private:
     oms_status_enu_t loadElementGeometry(const pugi::xml_node& node);
     oms_status_enu_t loadConnections(const pugi::xml_node& node);
     oms_status_enu_t loadSubModel(const pugi::xml_node& node);
+    oms2::Variable* getVariable(const oms2::SignalRef& signal);
 
   protected:
     void deleteComponents();

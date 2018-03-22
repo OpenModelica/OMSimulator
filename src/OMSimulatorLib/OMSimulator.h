@@ -365,7 +365,7 @@ oms_status_enu_t oms2_loadModel(const char* filename, char** ident);
  * \brief Loads a FMI composite model from xml representation.
  *
  * \param filename   [in] Path to the xml file; An exisiting file will be overwritten
- * \param ident      [in] Name of the imported model
+ * \param ident      [in] Name of the model to export
  * \return           Error status
  */
 oms_status_enu_t oms2_saveModel(const char* filename, const char* ident);
@@ -633,6 +633,15 @@ oms_status_enu_t oms2_setCommunicationInterval(const char* cref, double communic
  * \return           Error status
  */
 oms_status_enu_t oms2_setResultFile(const char* cref, const char* filename);
+
+/**
+ * \brief Export the composite structure of a given model to a dot file.
+ *
+ * \param cref       [in] Name of the model instance
+ * \param filename   [in] Path to the dot file; An exisiting file will be overwritten
+ * \return           Error status
+ */
+oms_status_enu_t oms2_exportCompositeStructure(const char* cref, const char* filename);
 
 #ifdef __cplusplus
 }
