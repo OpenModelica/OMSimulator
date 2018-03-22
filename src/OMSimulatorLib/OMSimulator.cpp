@@ -762,3 +762,9 @@ oms_status_enu_t oms2_setResultFile(const char* cref, const char* filename)
   logTrace();
   return oms2::Scope::GetInstance().setResultFile(oms2::ComRef(cref), std::string(filename));
 }
+
+oms_status_enu_t oms2_exportCompositeStructure(const char* cref, const char* filename)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().exportCompositeStructure(oms2::ComRef(cref), std::string(filename));
+}

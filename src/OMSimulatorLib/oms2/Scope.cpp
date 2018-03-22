@@ -1070,3 +1070,28 @@ oms_status_enu_t oms2::Scope::setResultFile(const ComRef& cref, const std::strin
   }
   return oms_status_error;
 }
+
+oms_status_enu_t oms2::Scope::exportCompositeStructure(const ComRef& cref, const std::string& filename)
+{
+  if (cref.isIdent())
+  {
+    // Model
+    Model* model = getModel(cref);
+    if (!model)
+    {
+      logError("[oms2::Scope::exportCompositeStructure] failed");
+      return oms_status_error;
+    }
+
+    // FMI model?
+    if (oms_component_fmi == model->getType())
+    {
+      FMICompositeModel* fmiModel = model->getFMICompositeModel();
+      return fmiModel->exportCompositeStructure(filename);
+    }
+
+    logError("[oms2::Scope::exportCompositeStructure] is only implemented for FMI models yet");
+    return oms_status_error;
+  }
+  return oms_status_error;
+}

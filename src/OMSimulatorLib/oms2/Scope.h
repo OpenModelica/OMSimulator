@@ -86,6 +86,7 @@ namespace oms2
     oms_status_enu_t setStopTime(const ComRef& cref, double stopTime);
     oms_status_enu_t setCommunicationInterval(const ComRef& cref, double communicationInterval);
     oms_status_enu_t setResultFile(const ComRef& cref, const std::string& filename);
+    oms_status_enu_t exportCompositeStructure(const ComRef& cref, const std::string& filename);
 
     const std::string& getTempDirectory() {return GetInstance().tempDir;}
     const std::string& getWorkingDirectory() {return GetInstance().workingDir;}
