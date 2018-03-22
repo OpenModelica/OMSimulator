@@ -828,6 +828,52 @@ static int OMSimulatorLua_oms2_setRealParameter(lua_State *L)
   return 1;
 }
 
+
+//oms_status_enu_t oms2_setStartTime(const char* cref, double startTime);
+static int OMSimulatorLua_oms2_setStartTime(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TNUMBER);
+
+  const char* cref = lua_tostring(L, 1);
+  double startTime = lua_tonumber(L, 2);
+  oms_status_enu_t status = oms2_setStartTime(cref, startTime);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
+//oms_status_enu_t oms2_setStopTime(const char* cref, double stopTime);
+static int OMSimulatorLua_oms2_setStopTime(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TNUMBER);
+
+  const char* cref = lua_tostring(L, 1);
+  double startTime = lua_tonumber(L, 2);
+  oms_status_enu_t status = oms2_setStopTime(cref, startTime);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
+//oms_status_enu_t oms2_setResultFile(const char* cref, const char* filename);
+static int OMSimulatorLua_oms2_setResultFile(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+
+  const char* cref = lua_tostring(L, 1);
+  const char* filename = lua_tostring(L, 2);
+  oms_status_enu_t status = oms2_setResultFile(cref, filename);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
 /* **************************************************** */
 /* OMSysIdent API                                       */
 /* **************************************************** */
@@ -1116,6 +1162,9 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms2_setTempDirectory);
   REGISTER_LUA_CALL(oms2_setWorkingDirectory);
   REGISTER_LUA_CALL(oms2_unloadModel);
+  REGISTER_LUA_CALL(oms2_setStartTime);
+  REGISTER_LUA_CALL(oms2_setStopTime);
+  REGISTER_LUA_CALL(oms2_setResultFile);
 
   /* ************************************ */
   /* OMSysIdent API                       */

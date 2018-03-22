@@ -738,3 +738,21 @@ oms_status_enu_t oms2_addFMISubModel(const char *cref, const char *subref)
   logTrace();
   return oms2::Scope::GetInstance().addFMISubModel(oms2::ComRef(cref), oms2::ComRef(subref));
 }
+
+oms_status_enu_t oms2_setStartTime(const char* cref, double startTime)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().setStartTime(oms2::ComRef(cref), startTime);
+}
+
+oms_status_enu_t oms2_setStopTime(const char* cref, double stopTime)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().setStopTime(oms2::ComRef(cref), stopTime);
+}
+
+oms_status_enu_t oms2_setResultFile(const char* cref, const char* filename)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().setResultFile(oms2::ComRef(cref), std::string(filename));
+}
