@@ -35,11 +35,19 @@
 #include "ComRef.h"
 #include "CompositeModel.h"
 #include "../Types.h"
+#include <list>
+#include <map>
 
 #include <pugixml.hpp>
 
 namespace oms2
 {
+  class TLMInterface;
+  class ExternalModel;
+  class TLMConnection;
+  class FMICompositeModel;
+  class SignalRef;
+
   class TLMCompositeModel : public CompositeModel
   {
   public:
@@ -47,6 +55,23 @@ namespace oms2
     static TLMCompositeModel* LoadModel(const pugi::xml_node& node);
 
     oms_element_type_enu_t getType() {return oms_component_tlm;}
+    oms_status_enu_t addFMIModel(FMICompositeModel *model);
+
+    oms_status_enu_t addInterface(oms2::TLMInterface& interface);
+    oms_status_enu_t addInterface(std::string name, int dimensions, oms_tlm_causality_t causality, std::string domain, const ComRef &cref);
+
+    oms_status_enu_t addExternalModel(ExternalModel *externalModel);
+    oms_status_enu_t addExternalModel(std::string modelFile,
+                             std::string startScript, const ComRef& cref);
+
+    oms_status_enu_t addConnection(const oms2::TLMConnection& connection);
+    oms_status_enu_t addConnection(const SignalRef& signalA,
+                                  const SignalRef& signalB,
+                                  double delay,
+                                  double alpha,
+                                  double Zf, double Zfr);
+
+    oms_status_enu_t describe();
 
   private:
     TLMCompositeModel(const ComRef& name);
@@ -58,6 +83,11 @@ namespace oms2
 
   private:
     ComRef name;
+    void* model;
+    std::map<ComRef, FMICompositeModel*> fmiModels;
+    std::map<ComRef, ExternalModel*> externalModels;
+    std::list<TLMConnection> connections;
+    std::list<TLMInterface> interfaces;
   };
 }
 

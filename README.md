@@ -24,6 +24,12 @@ The latest documentation is avilable as [pdf](https://openmodelica.org/doc/OMSim
 
 ### Linux / MacOS
 
+1. install libxml2-dev
+
+   ```bash
+   sudo apt-get install libxml2-dev
+   ```
+
 1. configure OMSimulator
 
    ```bash

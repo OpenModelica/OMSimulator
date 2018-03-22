@@ -68,10 +68,11 @@ typedef enum {
 
 typedef enum {
   oms_component_none,
-  oms_component_tlm,  ///< TLM model
-  oms_component_fmi,  ///< FMI model
-  oms_component_fmu,  ///< FMU
-  oms_component_port  ///< port
+  oms_component_tlm,      ///< TLM model
+  oms_component_fmi,      ///< FMI model
+  oms_component_external, ///< External model
+  oms_component_fmu,      ///< FMU
+  oms_component_port      ///< port
 } oms_element_type_enu_t;
 
 typedef enum {
@@ -304,6 +305,12 @@ typedef struct {
 } oms_element_t;
 
 typedef enum {
+  oms_tlm_causality_input,
+  oms_tlm_causality_output,
+  oms_tlm_causality_bidirecitonal
+} oms_tlm_causality_t;
+
+typedef enum {
   oms_fmi_kind_unknown = 0,
   oms_fmi_kind_me = 1,       ///< FMI for Model Exchange
   oms_fmi_kind_cs = 2,       ///< FMI for Co-Simulation
@@ -424,6 +431,8 @@ typedef struct {
    */
   bool providesDirectionalDerivative;
 } oms_fmu_info_t;
+
+
 
 #ifdef __cplusplus
 }

@@ -23,10 +23,19 @@ ECHO.
 SET VSCMD_START_DIR="%CD%"
 
 IF ["%OMS_VS_TARGET%"]==["VS14-Win32"] @call "%VS140COMNTOOLS%\..\..\VC\vcvarsall.bat" x86
-IF ["%OMS_VS_TARGET%"]==["VS14-Win64"] @call "%VS140COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64 8.1
+IF ["%OMS_VS_TARGET%"]==["VS14-Win64"] @call "%VS140COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64
 IF ["%OMS_VS_TARGET%"]==["VS15-Win64"] @call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
 
 IF NOT DEFINED CMAKE_BUILD_TYPE SET CMAKE_BUILD_TYPE="Release"
+
+:: -- build OMTLMSimulator ----------------------------------------------------
+ECHO # Building OMTLMSimulator
+cd OMTLMSimulator
+call buildWinVS.bat
+cd..
+xcopy /Y OMTLMSimulator\bin\omtlmsimulator.lib install\win\bin
+echo %cd%
+:: -- build OMTLMSimulator ----------------------------------------------------
 
 :: -- build OMSimulator -------------------------------------------------------
 ECHO # build OMSimulator
