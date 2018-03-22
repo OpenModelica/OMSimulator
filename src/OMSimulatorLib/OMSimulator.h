@@ -598,6 +598,33 @@ oms_status_enu_t oms2_getBooleanParameter(const char* signal, bool* value);
  */
 oms_status_enu_t oms2_setBooleanParameter(const char* signal, bool value);
 
+/**
+ * \brief Set the start time of the simulation.
+ *
+ * \param cref        [in] Name of the model instance
+ * \param startTime   [in] Start time
+ * \return            Error status
+ */
+oms_status_enu_t oms2_setStartTime(const char* cref, double startTime);
+
+/**
+ * \brief Set the stop time of the simulation.
+ *
+ * \param cref       [in] Name of the model instance
+ * \param stopTime   [in] Stop time
+ * \return           Error status
+ */
+oms_status_enu_t oms2_setStopTime(const char* cref, double stopTime);
+
+/**
+ * \brief Set the result file of the simulation.
+ *
+ * \param cref       [in] Name of the model instance
+ * \param filename   [in] Result file
+ * \return           Error status
+ */
+oms_status_enu_t oms2_setResultFile(const char* cref, const char* filename);
+
 #ifdef __cplusplus
 }
 #endif

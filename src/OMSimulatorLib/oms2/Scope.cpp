@@ -1002,3 +1002,54 @@ oms_status_enu_t oms2::Scope::describeModel(const oms2::ComRef &cref)
 
   return model->describe();
 }
+
+oms_status_enu_t oms2::Scope::setStartTime(const ComRef& cref, double startTime)
+{
+  if (cref.isIdent())
+  {
+    // Model
+    Model* model = getModel(cref);
+    if (!model)
+    {
+      logError("[oms2::Scope::setStartTime] failed");
+      return oms_status_error;
+    }
+    model->setStartTime(startTime);
+    return oms_status_ok;
+  }
+  return oms_status_error;
+}
+
+oms_status_enu_t oms2::Scope::setStopTime(const ComRef& cref, double stopTime)
+{
+  if (cref.isIdent())
+  {
+    // Model
+    Model* model = getModel(cref);
+    if (!model)
+    {
+      logError("[oms2::Scope::setStartTime] failed");
+      return oms_status_error;
+    }
+    model->setStopTime(stopTime);
+    return oms_status_ok;
+  }
+  return oms_status_error;
+}
+
+oms_status_enu_t oms2::Scope::setResultFile(const ComRef& cref, const std::string& filename)
+{
+  if (cref.isIdent())
+  {
+    // Model
+    Model* model = getModel(cref);
+    if (!model)
+    {
+      logError("[oms2::Scope::setStartTime] failed");
+      return oms_status_error;
+    }
+    model->setResultFile(filename);
+    return oms_status_ok;
+  }
+  return oms_status_error;
+}
