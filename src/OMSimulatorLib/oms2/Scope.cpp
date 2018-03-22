@@ -146,6 +146,21 @@ oms_status_enu_t oms2::Scope::addFMU(const oms2::ComRef& modelIdent, const std::
   return fmiModel->addFMU(fmuPath, fmuIdent);
 }
 
+oms_status_enu_t oms2::Scope::addTable(const ComRef& modelIdent, const std::string& tablePath, const ComRef& tableIdent)
+{
+  logTrace();
+
+  oms2::Model* model = getModel(modelIdent);
+  if (!model)
+    return oms_status_error;
+
+  FMICompositeModel* fmiModel = model->getFMICompositeModel();
+  if (!fmiModel)
+    return oms_status_error;
+
+  return fmiModel->addTable(tablePath, tableIdent);
+}
+
 oms_status_enu_t oms2::Scope::deleteSubModel(const oms2::ComRef& modelIdent, const oms2::ComRef& subModelIdent)
 {
   logTrace();

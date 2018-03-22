@@ -636,6 +636,23 @@ static int OMSimulatorLua_oms2_addFMU(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms2_addTable(const char* modelIdent, const char* tablePath, const char* tableIdent);
+static int OMSimulatorLua_oms2_addTable(lua_State *L)
+{
+  if (lua_gettop(L) != 3)
+    return luaL_error(L, "expecting exactly 3 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+  luaL_checktype(L, 3, LUA_TSTRING);
+
+  const char* modelIdent = lua_tostring(L, 1);
+  const char* tablePath = lua_tostring(L, 2);
+  const char* tableIdent = lua_tostring(L, 3);
+  oms_status_enu_t status = oms2_addTable(modelIdent, tablePath, tableIdent);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
 //oms_status_enu_t oms2_deleteSubModel(const char* modelIdent, const char* subModelIdent);
 static int OMSimulatorLua_oms2_deleteSubModel(lua_State *L)
 {
@@ -1178,6 +1195,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   /* ************************************ */
   REGISTER_LUA_CALL(oms2_addConnection);
   REGISTER_LUA_CALL(oms2_addFMU);
+  REGISTER_LUA_CALL(oms2_addTable);
   REGISTER_LUA_CALL(oms2_deleteConnection);
   REGISTER_LUA_CALL(oms2_deleteSubModel);
   REGISTER_LUA_CALL(oms2_exportCompositeStructure);

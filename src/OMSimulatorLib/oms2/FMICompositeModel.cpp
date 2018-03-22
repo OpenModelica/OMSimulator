@@ -37,6 +37,7 @@
 #include "Logging.h"
 #include "SignalRef.h"
 #include "ssd/Tags.h"
+#include "Table.h"
 
 #include <pugixml.hpp>
 
@@ -401,10 +402,26 @@ oms_status_enu_t oms2::FMICompositeModel::addFMU(const std::string& filename, co
 
 oms_status_enu_t oms2::FMICompositeModel::addTable(const std::string& filename, const oms2::ComRef& cref)
 {
+  if (!cref.isValidIdent())
+    return oms_status_error;
+
+  // check if cref is already used
+  auto it = subModels.find(cref);
+  if (it != subModels.end())
+  {
+    logError("A submodel called \"" + cref + "\" is already instantiated.");
+    return oms_status_error;
+  }
+
+  oms2::ComRef parent = getName();
+  oms2::Table* subModel = oms2::Table::newSubModel(parent + cref, filename);
+  if (!subModel)
+    return oms_status_error;
+
   deleteComponents();
 
-  logError("[oms2::FMICompositeModel::addTable] not implemented yet");
-  return oms_status_error;
+  subModels[cref] = subModel;
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms2::FMICompositeModel::deleteSubModel(const oms2::ComRef& cref)
