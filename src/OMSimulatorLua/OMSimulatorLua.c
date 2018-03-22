@@ -813,6 +813,21 @@ static int OMSimulatorLua_oms2_setLogFile(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms2_setRealParameter(const char* signal, double value);
+static int OMSimulatorLua_oms2_setRealParameter(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TNUMBER);
+
+  const char* signal = lua_tostring(L, 1);
+  double value = lua_tonumber(L, 2);
+  oms_status_enu_t status = oms2_setRealParameter(signal, value);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
 /* **************************************************** */
 /* OMSysIdent API                                       */
 /* **************************************************** */
@@ -1037,9 +1052,7 @@ static int OMSimulatorLua_omsi_getState(lua_State *L)
   }
   return 2;
 }
-
 #endif /* WITH_OMSYSIDENT */
-
 
 DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
 {
@@ -1099,6 +1112,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms2_saveModel);
   REGISTER_LUA_CALL(oms2_setLogFile);
   REGISTER_LUA_CALL(oms2_setLoggingLevel);
+  REGISTER_LUA_CALL(oms2_setRealParameter);
   REGISTER_LUA_CALL(oms2_setTempDirectory);
   REGISTER_LUA_CALL(oms2_setWorkingDirectory);
   REGISTER_LUA_CALL(oms2_unloadModel);
