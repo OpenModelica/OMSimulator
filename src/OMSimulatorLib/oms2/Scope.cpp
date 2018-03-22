@@ -1028,10 +1028,27 @@ oms_status_enu_t oms2::Scope::setStopTime(const ComRef& cref, double stopTime)
     Model* model = getModel(cref);
     if (!model)
     {
-      logError("[oms2::Scope::setStartTime] failed");
+      logError("[oms2::Scope::setStopTime] failed");
       return oms_status_error;
     }
     model->setStopTime(stopTime);
+    return oms_status_ok;
+  }
+  return oms_status_error;
+}
+
+oms_status_enu_t oms2::Scope::setCommunicationInterval(const ComRef& cref, double communicationInterval)
+{
+  if (cref.isIdent())
+  {
+    // Model
+    Model* model = getModel(cref);
+    if (!model)
+    {
+      logError("[oms2::Scope::setCommunicationInterval] failed");
+      return oms_status_error;
+    }
+    model->setCommunicationInterval(communicationInterval);
     return oms_status_ok;
   }
   return oms_status_error;
@@ -1045,7 +1062,7 @@ oms_status_enu_t oms2::Scope::setResultFile(const ComRef& cref, const std::strin
     Model* model = getModel(cref);
     if (!model)
     {
-      logError("[oms2::Scope::setStartTime] failed");
+      logError("[oms2::Scope::setResultFile] failed");
       return oms_status_error;
     }
     model->setResultFile(filename);

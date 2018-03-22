@@ -49,6 +49,7 @@ oms2::Model::Model(const oms2::ComRef& cref)
 
   startTime = 0.0;
   stopTime = 1.0;
+  communicationInterval = 1e-2;
   resultFile = cref.toString() + "_res.mat";
 }
 
