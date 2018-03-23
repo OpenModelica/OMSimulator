@@ -76,6 +76,25 @@ oms2::Variable::~Variable()
 {
 }
 
+oms_causality_enu_t oms2::Variable::getCausality() const
+{
+  switch (causality)
+  {
+  case fmi2_causality_enu_input:
+    return oms_causality_input;
+
+  case fmi2_causality_enu_output:
+    return oms_causality_output;
+
+  case fmi2_causality_enu_parameter:
+    return oms_causality_parameter;
+
+  default:
+    logWarning("[oms2::Variable::getCausality] undefined causality detected");
+    return oms_causality_undefined;
+  }
+}
+
 bool oms2::operator==(const oms2::Variable& v1, const oms2::Variable& v2)
 {
   return v1.sr == v2.sr && v1.vr == v2.vr;

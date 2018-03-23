@@ -51,6 +51,7 @@ oms2::Model::Model(const oms2::ComRef& cref)
   stopTime = 1.0;
   communicationInterval = 1e-2;
   resultFile = cref.toString() + "_res.mat";
+  modelState = oms_modelState_instantiated;
 }
 
 oms2::Model::~Model()
@@ -208,4 +209,22 @@ oms2::TLMCompositeModel* oms2::Model::getTLMCompositeModel()
 
   logError("[oms2::Model::getTLMCompositeModel] \"" + getName() + "\" is not a TLM composite model.");
   return NULL;
+}
+
+oms_status_enu_t oms2::Model::initialize()
+{
+  if (oms_modelState_instantiated != modelState)
+  {
+    logError("[oms2::Model::initialize] Model cannot be initialized, because it isn't in instantiate state.");
+    return oms_status_error;
+  }
+
+  modelState = oms_modelState_initialization;
+  time = startTime;
+
+  oms_status_enu_t status = compositeModel->initialize();
+  if (oms_status_ok != status)
+    modelState = oms_modelState_instantiated;
+
+  return status;
 }

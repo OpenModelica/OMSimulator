@@ -239,6 +239,17 @@ oms_status_enu_t oms2::Scope::saveModel(const std::string& filename, const oms2:
   return model->save(filename);
 }
 
+oms_status_enu_t oms2::Scope::initialize(const ComRef& name)
+{
+  logTrace();
+
+  oms2::Model* model = getModel(name);
+  if (!model)
+    return oms_status_error;
+
+  return model->initialize();
+}
+
 oms_status_enu_t oms2::Scope::setTempDirectory(const std::string& newTempDir)
 {
   logTrace();

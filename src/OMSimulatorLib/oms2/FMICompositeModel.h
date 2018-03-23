@@ -76,11 +76,14 @@ namespace oms2
 
     oms_status_enu_t exportCompositeStructure(const std::string& filename);
 
+    oms_status_enu_t initialize();
+
   private:
     oms_status_enu_t loadElementGeometry(const pugi::xml_node& node);
     oms_status_enu_t loadConnections(const pugi::xml_node& node);
     oms_status_enu_t loadSubModel(const pugi::xml_node& node);
     oms2::Variable* getVariable(const oms2::SignalRef& signal);
+    oms_causality_enu_t getSignalCausality(const oms2::SignalRef& signal);
 
   protected:
     void deleteComponents();

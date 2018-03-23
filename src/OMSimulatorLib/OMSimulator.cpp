@@ -632,6 +632,12 @@ oms_status_enu_t oms2_updateConnection(const char* cref, const char* conA, const
   return oms2::Scope::GetInstance().updateConnection(oms2::ComRef(cref), oms2::SignalRef(conA), oms2::SignalRef(conB), reinterpret_cast<const oms2::Connection*>(connection));
 }
 
+oms_status_enu_t oms2_initialize(const char* ident)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().initialize(oms2::ComRef(ident));
+}
+
 oms_status_enu_t oms2_simulate_asynchronous(const char* ident, void (*cb)(const char* ident, double time, oms_status_enu_t status))
 {
   logTrace();
