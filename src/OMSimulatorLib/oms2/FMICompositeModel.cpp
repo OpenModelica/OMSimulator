@@ -707,7 +707,19 @@ oms_status_enu_t oms2::FMICompositeModel::exportCompositeStructure(const std::st
   dotFile << "  node[shape=record];" << std::endl;
 
   for (const auto& it : subModels)
-    dotFile << "  " << it.first.toString() << "[label=\"" << it.first.toString() << "\", height=2, width=2];" << std::endl;
+  {
+    dotFile << "  " << it.first.toString() << "[label=\"" << it.first.toString();
+    switch (it.second->getType())
+    {
+    case oms_component_table:
+      dotFile << "\\n(table)";
+      break;
+    case oms_component_fmu:
+      dotFile << "\\n(fmu)";
+      break;
+    }
+    dotFile << "\", height=2, width=2];" << std::endl;
+  }
 
   dotFile << std::endl;
   for (auto& connection : connections)
@@ -721,9 +733,9 @@ oms_status_enu_t oms2::FMICompositeModel::exportCompositeStructure(const std::st
       oms_causality_enu_t varB = getSignalCausality(B);
 
       if (oms_causality_output == varA && oms_causality_input == varB)
-        dotFile << "  " << A.getCref().toString() << " -> " << B.getCref().toString() << " [label=\"" << A.getVar() << " -> " << B.getVar() << "\"];" << std::endl;
+        dotFile << "  " << A.getCref().toString() << " -> " << B.getCref().toString() << " [taillabel=\"" << A.getVar() << "\", headlabel=\"" << B.getVar() /*<< "\", label=\"" << A.getVar() << " -> " << B.getVar()*/ << "\"];" << std::endl;
       else if (oms_causality_input == varA && oms_causality_output == varB)
-        dotFile << "  " << B.getCref().toString() << " -> " << A.getCref().toString() << " [label=\"" << B.getVar() << " -> " << A.getVar() << "\"];" << std::endl;
+        dotFile << "  " << B.getCref().toString() << " -> " << A.getCref().toString() << " [taillabel=\"" << B.getVar() << "\", headlabel=\"" << A.getVar() /*<< "\", label=\"" << B.getVar() << " -> " << A.getVar()*/ << "\"];" << std::endl;
       else
         return oms_status_error;
     }
