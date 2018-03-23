@@ -85,6 +85,7 @@ namespace oms2
     bool isTypeBoolean() const { return oms_signal_type_boolean == type; }
 
     std::string getCausalityString() { return std::string(fmi2_causality_to_string(causality)); }
+    oms_causality_enu_t getCausality() const;
 
     unsigned int getIndex() const { return index; }
 

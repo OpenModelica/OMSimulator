@@ -464,6 +464,14 @@ oms_status_enu_t oms2_deleteConnection(const char* cref, const char* conA, const
  */
 oms_status_enu_t oms2_updateConnection(const char* cref, const char* conA, const char* conB, const oms_connection_t* connection);
 
+/**
+ * \brief Initializes a composite model (works for both FMI and TLM).
+ *
+ * \param ident   [in] Name of the model instance
+ * \return        Error status
+ */
+oms_status_enu_t oms2_initialize(const char* ident);
+
 oms_status_enu_t oms2_simulate_asynchronous(const char* ident, void (*cb)(const char* ident, double time, oms_status_enu_t status));
 
 /**

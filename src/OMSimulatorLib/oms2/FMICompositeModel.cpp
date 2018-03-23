@@ -661,6 +661,20 @@ oms2::Variable* oms2::FMICompositeModel::getVariable(const oms2::SignalRef& sign
   return it->second->getVariable(signal.getVar());
 }
 
+oms_causality_enu_t oms2::FMICompositeModel::getSignalCausality(const oms2::SignalRef& signal)
+{
+  auto it = subModels.find(signal.getCref().last());
+  if (it == subModels.end())
+  {
+    logError("No submodel called \"" + signal.getCref() + "\" found.");
+    return oms_causality_undefined;
+  }
+
+  if (oms_component_table == it->second->getType())
+    return oms_causality_output;
+  return it->second->getVariable(signal.getVar())->getCausality();
+}
+
 oms_status_enu_t oms2::FMICompositeModel::exportCompositeStructure(const std::string& filename)
 {
   logTrace();
@@ -703,15 +717,12 @@ oms_status_enu_t oms2::FMICompositeModel::exportCompositeStructure(const std::st
       SignalRef A = connection->getSignalA();
       SignalRef B = connection->getSignalB();
 
-      oms2::Variable* varA = getVariable(A);
-      oms2::Variable* varB = getVariable(B);
+      oms_causality_enu_t varA = getSignalCausality(A);
+      oms_causality_enu_t varB = getSignalCausality(B);
 
-      if (!varA || !varB)
-        return oms_status_error;
-
-      if (varA->isOutput() && varB->isInput())
+      if (oms_causality_output == varA && oms_causality_input == varB)
         dotFile << "  " << A.getCref().toString() << " -> " << B.getCref().toString() << " [label=\"" << A.getVar() << " -> " << B.getVar() << "\"];" << std::endl;
-      else if (varB->isOutput() && varA->isInput())
+      else if (oms_causality_input == varA && oms_causality_output == varB)
         dotFile << "  " << B.getCref().toString() << " -> " << A.getCref().toString() << " [label=\"" << B.getVar() << " -> " << A.getVar() << "\"];" << std::endl;
       else
         return oms_status_error;
@@ -722,4 +733,10 @@ oms_status_enu_t oms2::FMICompositeModel::exportCompositeStructure(const std::st
   dotFile.close();
 
   return oms_status_ok;
+}
+
+oms_status_enu_t oms2::FMICompositeModel::initialize()
+{
+  logError("[oms2::FMICompositeModel::initialize] dependency analysis is missing");
+  return oms_status_error;
 }
