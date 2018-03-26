@@ -1,0 +1,13 @@
+project(OMSysIdentPython)
+
+install(FILES OMSysIdent.py DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+
+IF(WIN32 AND MSVC)
+  install(FILES OMSysIdentPython.bat DESTINATION ${CMAKE_INSTALL_PREFIX}/bin PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ)
+ELSEIF(WIN32 AND MINGW)
+  message(WARNING "OMSysIdentPython is not available on mingw.")
+ELSEIF(APPLE)
+  message(WARNING "OMSysIdentPython is not available on Mac OS X.")
+ELSE()
+  install(FILES OMSysIdentPython DESTINATION ${CMAKE_INSTALL_PREFIX}/bin PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ)
+ENDIF()

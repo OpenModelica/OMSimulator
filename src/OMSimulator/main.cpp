@@ -44,8 +44,8 @@
 extern "C"
 {
   #include <OMSimulatorLua.c>
-#ifdef WITH_OMFIT
-  #include <OMFitLua.c>
+#ifdef WITH_OMSYSIDENT
+  #include <OMSysIdentLua.c>
 #endif
 }
 
@@ -184,8 +184,8 @@ int main(int argc, char *argv[])
     lua_State *L = luaL_newstate();
     luaL_openlibs(L);
     luaopen_OMSimulatorLua(L);
-#ifdef WITH_OMFIT
-    luaopen_OMFitLua(L);
+#ifdef WITH_OMSYSIDENT
+    luaopen_OMSysIdentLua(L);
 #endif
     if (luaL_loadfile(L, filename.c_str()))
     {

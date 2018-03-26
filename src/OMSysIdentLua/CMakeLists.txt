@@ -1,4 +1,4 @@
-project(OMFitLua C)
+project(OMSysIdentLua C)
 
 set(CMAKE_INSTALL_RPATH "$ORIGIN")
 
@@ -6,7 +6,7 @@ include_directories(
   ${CMAKE_SOURCE_DIR}/src
   ${LUALibrary_INCLUDEDIR}
   ${CMAKE_SOURCE_DIR}/src/OMSimulatorLib
-  ${CMAKE_SOURCE_DIR}/src/OMFitLib
+  ${CMAKE_SOURCE_DIR}/src/OMSysIdentLib
 )
 link_directories(
   ${FMILibrary_LIBRARYDIR}
@@ -17,12 +17,12 @@ link_directories(
 )
 
 # Shared library version
-add_library(OMFitLua SHARED OMFitLua.c)
+add_library(OMSysIdentLua SHARED OMSysIdentLua.c)
 IF (WIN32 OR APPLE)
-  target_link_libraries(OMFitLua OMFit_shared lua)
+  target_link_libraries(OMSysIdentLua OMSysIdent_shared lua)
 ELSE ()
-  target_link_libraries(OMFitLua OMFit_shared)
+  target_link_libraries(OMSysIdentLua OMSysIdent_shared)
 ENDIF ()
 
 
-install(TARGETS OMFitLua DESTINATION lib)
+install(TARGETS OMSysIdentLua DESTINATION lib)

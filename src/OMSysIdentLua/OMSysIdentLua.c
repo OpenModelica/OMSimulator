@@ -36,9 +36,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <OMSimulator.h>
-#include <OMFit.h>
+#include <OMSysIdent.h>
 
-#define REGISTER_LUA_CALL_OMFIT(name) lua_register(L, #name, OMFitLua_##name)
+#define REGISTER_LUA_CALL_OMFIT(name) lua_register(L, #name, OMSysIdentLua_##name)
 
 #ifdef _WIN32
   #define DLLEXPORT __declspec(dllexport)
@@ -58,8 +58,8 @@ void* topointer2(lua_State *L, int index)
   return *bp;
 }
 
-//void* omsfit_newFitModel(void* model);
-static int OMFitLua_omsfit_newFitModel(lua_State *L)
+//void* omsi_newSysIdentModel(void* model);
+static int OMSysIdentLua_omsi_newSysIdentModel(lua_State *L)
 {
   if (lua_gettop(L) != 1)
     return luaL_error(L, "expecting exactly 1 argument");
@@ -67,26 +67,26 @@ static int OMFitLua_omsfit_newFitModel(lua_State *L)
 
   void *model = topointer2(L, 1);
 
-  void *pModel = omsfit_newFitModel(model);
+  void *pModel = omsi_newSysIdentModel(model);
   push_pointer2(L, pModel);
   return 1;
 }
 
-//void omsfit_freeFitModel(void* fitmodel);
-static int OMFitLua_omsfit_freeFitModel(lua_State *L)
+//void omsi_freeSysIdentModel(void* fitmodel);
+static int OMSysIdentLua_omsi_freeSysIdentModel(lua_State *L)
 {
   if (lua_gettop(L) != 1)
     return luaL_error(L, "expecting exactly 1 argument");
   luaL_checktype(L, 1, LUA_TUSERDATA);
 
   void *model = topointer2(L, 1);
-  omsfit_freeFitModel(model);
+  omsi_freeSysIdentModel(model);
   return 0;
 }
 
 //void oms_setReal(void* model, const char* var, double value);
-// oms_status_enu_t omsfit_initialize(void* fitmodel, size_t nSeries, const double* time, size_t nTime, char const* const* inputvars, size_t nInputvars, char const* const* measurementvars, size_t nMeasurementvars);
-static int OMFitLua_omsfit_initialize(lua_State *L)
+// oms_status_enu_t omsi_initialize(void* fitmodel, size_t nSeries, const double* time, size_t nTime, char const* const* inputvars, size_t nInputvars, char const* const* measurementvars, size_t nMeasurementvars);
+static int OMSysIdentLua_omsi_initialize(lua_State *L)
 {
   if (lua_gettop(L) != 5)
     return luaL_error(L, "expecting exactly 5 arguments");
@@ -131,28 +131,28 @@ static int OMFitLua_omsfit_initialize(lua_State *L)
   }
 
   oms_status_enu_t returnValue =
-    omsfit_initialize(model, nSeries, time, nTime, inputvars, nInputvars, measurementvars, nMeasurementvars);
+    omsi_initialize(model, nSeries, time, nTime, inputvars, nInputvars, measurementvars, nMeasurementvars);
   lua_pushinteger(L, returnValue);
 
   free(time); free(inputvars); free(measurementvars);
   return 1;
 }
 
-//oms_status_enu_t omsfit_describe(void* fitmodel);
-static int OMFitLua_omsfit_describe(lua_State *L)
+//oms_status_enu_t omsi_describe(void* fitmodel);
+static int OMSysIdentLua_omsi_describe(lua_State *L)
 {
   if (lua_gettop(L) != 1)
     return luaL_error(L, "expecting exactly 1 argument");
   luaL_checktype(L, 1, LUA_TUSERDATA);
 
   void *model = topointer2(L, 1);
-  oms_status_enu_t returnValue = omsfit_describe(model);
+  oms_status_enu_t returnValue = omsi_describe(model);
   lua_pushinteger(L, returnValue);
   return 1;
 }
 
-// oms_status_enu_t omsfit_addMeasurement(void* fitmodel, size_t iSeries, const char* var, const double* values, size_t nValues);
-static int OMFitLua_omsfit_addMeasurement(lua_State *L)
+// oms_status_enu_t omsi_addMeasurement(void* fitmodel, size_t iSeries, const char* var, const double* values, size_t nValues);
+static int OMSysIdentLua_omsi_addMeasurement(lua_State *L)
 {
   if (lua_gettop(L) != 4)
     return luaL_error(L, "expecting exactly 4 arguments");
@@ -175,15 +175,15 @@ static int OMFitLua_omsfit_addMeasurement(lua_State *L)
   }
 
   oms_status_enu_t returnValue =
-    omsfit_addMeasurement(model, iSeries, var, values, nValues);
+    omsi_addMeasurement(model, iSeries, var, values, nValues);
   lua_pushinteger(L, returnValue);
 
   free(values);
   return 1;
 }
 
-// oms_status_enu_t omsfit_addParameter(void* fitmodel, const char* var, double startvalue);
-static int OMFitLua_omsfit_addParameter(lua_State *L)
+// oms_status_enu_t omsi_addParameter(void* fitmodel, const char* var, double startvalue);
+static int OMSysIdentLua_omsi_addParameter(lua_State *L)
 {
   if (lua_gettop(L) != 3)
     return luaL_error(L, "expecting exactly 3 arguments");
@@ -196,13 +196,13 @@ static int OMFitLua_omsfit_addParameter(lua_State *L)
   double startvalue = lua_tonumber(L, 3);
 
   oms_status_enu_t returnValue =
-    omsfit_addParameter(model, var, startvalue);
+    omsi_addParameter(model, var, startvalue);
   lua_pushinteger(L, returnValue);
   return 1;
 }
 
-// oms_status_enu_t omsfit_getParameter(void* fitmodel, const char* var, double* startvalue, double* estimatedvalue);
-static int OMFitLua_omsfit_getParameter(lua_State *L)
+// oms_status_enu_t omsi_getParameter(void* fitmodel, const char* var, double* startvalue, double* estimatedvalue);
+static int OMSysIdentLua_omsi_getParameter(lua_State *L)
 {
   if (lua_gettop(L) != 2)
     return luaL_error(L, "expecting exactly 2 arguments");
@@ -214,15 +214,15 @@ static int OMFitLua_omsfit_getParameter(lua_State *L)
 
   double startvalue, estimatedvalue;
   oms_status_enu_t returnValue =
-    omsfit_getParameter(model, var, &startvalue, &estimatedvalue);
+    omsi_getParameter(model, var, &startvalue, &estimatedvalue);
   lua_pushinteger(L, returnValue);
   lua_pushnumber(L, startvalue);
   lua_pushnumber(L, estimatedvalue);
   return 3;
 }
 
-// oms_status_enu_t omsfit_solve(void* fitmodel, const char* reporttype);
-static int OMFitLua_omsfit_solve(lua_State *L)
+// oms_status_enu_t omsi_solve(void* fitmodel, const char* reporttype);
+static int OMSysIdentLua_omsi_solve(lua_State *L)
 {
   if (lua_gettop(L) != 2)
     return luaL_error(L, "expecting exactly 2 arguments");
@@ -233,13 +233,13 @@ static int OMFitLua_omsfit_solve(lua_State *L)
   const char* reporttype = lua_tostring(L, 2);
 
   oms_status_enu_t returnValue =
-    omsfit_solve(model, reporttype);
+    omsi_solve(model, reporttype);
   lua_pushinteger(L, returnValue);
   return 1;
 }
 
-// oms_status_enu_t omsfit_setOptions_max_num_iterations(void* fitmodel, size_t max_num_iterations);
-static int OMFitLua_omsfit_setOptions_max_num_iterations(lua_State *L)
+// oms_status_enu_t omsi_setOptions_max_num_iterations(void* fitmodel, size_t max_num_iterations);
+static int OMSysIdentLua_omsi_setOptions_max_num_iterations(lua_State *L)
 {
   if (lua_gettop(L) != 2)
     return luaL_error(L, "expecting exactly 2 arguments");
@@ -250,13 +250,13 @@ static int OMFitLua_omsfit_setOptions_max_num_iterations(lua_State *L)
   int max_num_iterations = lua_tointeger(L, 2);
 
   oms_status_enu_t returnValue =
-    omsfit_setOptions_max_num_iterations(model, max_num_iterations);
+    omsi_setOptions_max_num_iterations(model, max_num_iterations);
   lua_pushinteger(L, returnValue);
   return 1;
 }
 
-// oms_status_enu_t omsfit_getState(void* fitmodel, omsfit_fitmodelstate_t* state);
-static int OMFitLua_omsfit_getState(lua_State *L)
+// oms_status_enu_t omsi_getState(void* fitmodel, omsi_fitmodelstate_t* state);
+static int OMSysIdentLua_omsi_getState(lua_State *L)
 {
   if (lua_gettop(L) != 1)
     return luaL_error(L, "expecting exactly 1 argument");
@@ -264,31 +264,31 @@ static int OMFitLua_omsfit_getState(lua_State *L)
 
   void *model = topointer2(L, 1);
 
-  omsfit_fitmodelstate_t state;
+  omsi_simodelstate_t state;
   oms_status_enu_t returnValue =
-    omsfit_getState(model, &state);
+    omsi_getState(model, &state);
   lua_pushinteger(L, returnValue);
   switch (state) {
-    case omsfit_fitmodelstate_constructed: lua_pushstring(L, "constructed"); break;
-    case omsfit_fitmodelstate_initialized: lua_pushstring(L, "initialized"); break;
-    case omsfit_fitmodelstate_convergence: lua_pushstring(L, "convergence"); break;
-    case omsfit_fitmodelstate_no_convergence: lua_pushstring(L, "no_convergence"); break;
-    case omsfit_fitmodelstate_failure: lua_pushstring(L, "failure"); break;
+    case omsi_simodelstate_constructed: lua_pushstring(L, "constructed"); break;
+    case omsi_simodelstate_initialized: lua_pushstring(L, "initialized"); break;
+    case omsi_simodelstate_convergence: lua_pushstring(L, "convergence"); break;
+    case omsi_simodelstate_no_convergence: lua_pushstring(L, "no_convergence"); break;
+    case omsi_simodelstate_failure: lua_pushstring(L, "failure"); break;
   }
   return 2;
 }
 
-DLLEXPORT int luaopen_OMFitLua(lua_State *L)
+DLLEXPORT int luaopen_OMSysIdentLua(lua_State *L)
 {
-  REGISTER_LUA_CALL_OMFIT(omsfit_newFitModel);
-  REGISTER_LUA_CALL_OMFIT(omsfit_freeFitModel);
-  REGISTER_LUA_CALL_OMFIT(omsfit_initialize);
-  REGISTER_LUA_CALL_OMFIT(omsfit_describe);
-  REGISTER_LUA_CALL_OMFIT(omsfit_addMeasurement);
-  REGISTER_LUA_CALL_OMFIT(omsfit_addParameter);
-  REGISTER_LUA_CALL_OMFIT(omsfit_getParameter);
-  REGISTER_LUA_CALL_OMFIT(omsfit_solve);
-  REGISTER_LUA_CALL_OMFIT(omsfit_setOptions_max_num_iterations);
-  REGISTER_LUA_CALL_OMFIT(omsfit_getState);
+  REGISTER_LUA_CALL_OMFIT(omsi_newSysIdentModel);
+  REGISTER_LUA_CALL_OMFIT(omsi_freeSysIdentModel);
+  REGISTER_LUA_CALL_OMFIT(omsi_initialize);
+  REGISTER_LUA_CALL_OMFIT(omsi_describe);
+  REGISTER_LUA_CALL_OMFIT(omsi_addMeasurement);
+  REGISTER_LUA_CALL_OMFIT(omsi_addParameter);
+  REGISTER_LUA_CALL_OMFIT(omsi_getParameter);
+  REGISTER_LUA_CALL_OMFIT(omsi_solve);
+  REGISTER_LUA_CALL_OMFIT(omsi_setOptions_max_num_iterations);
+  REGISTER_LUA_CALL_OMFIT(omsi_getState);
   return 0;
 }

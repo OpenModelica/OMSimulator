@@ -29,74 +29,74 @@
  *
  */
 
-#include "OMFit.h"
+#include "OMSysIdent.h"
 #include "FitModel.h"
 #include "OMSimulatorLib/oms2/Logging.h"
 
-void* omsfit_newFitModel(void* model)
+void* omsi_newSysIdentModel(void* model)
 {
   logTrace();
   FitModel* pFitModel = new FitModel(model);
   return (void*) pFitModel;
 }
 
-void omsfit_freeFitModel(void* fitmodel)
+void omsi_freeSysIdentModel(void* simodel)
 {
   logTrace();
-  if (!fitmodel) {
-    logError("omsfit_freeFitModel: invalid pointer");
+  if (!simodel) {
+    logError("omsi_freeSysIdentModel: invalid pointer");
     return;
   }
-  FitModel* pFitModel = (FitModel*) fitmodel;
+  FitModel* pFitModel = (FitModel*) simodel;
   delete pFitModel;
 }
 
-oms_status_enu_t omsfit_initialize(void* fitmodel, size_t nSeries,
+oms_status_enu_t omsi_initialize(void* simodel, size_t nSeries,
   const double* time, size_t nTime,
   char const* const* inputvars, size_t nInputvars,
   char const* const* measurementvars, size_t nMeasurementvars)
 {
   logTrace();
-  if (!fitmodel) {
-    logError("omsfit_freeFitModel: invalid pointer");
+  if (!simodel) {
+    logError("omsi_initialize: invalid pointer");
     return oms_status_error;
   }
-  FitModel* pFitModel = (FitModel*) fitmodel;
+  FitModel* pFitModel = (FitModel*) simodel;
   return pFitModel->initialize(nSeries, time, nTime, inputvars, nInputvars, measurementvars, nMeasurementvars);
 }
 
-oms_status_enu_t omsfit_describe(void* fitmodel)
+oms_status_enu_t omsi_describe(void* simodel)
 {
   logTrace();
-  if (!fitmodel) {
-    logError("omsfit_toString: invalid pointer");
+  if (!simodel) {
+    logError("omsi_describe: invalid pointer");
     return oms_status_error;
   }
-  FitModel* pFitModel = (FitModel*) fitmodel;
+  FitModel* pFitModel = (FitModel*) simodel;
   std::cout << pFitModel->toString() << std::endl;
   return oms_status_ok;
 }
 
-oms_status_enu_t omsfit_addParameter(void* fitmodel, const char* var, double startvalue)
+oms_status_enu_t omsi_addParameter(void* simodel, const char* var, double startvalue)
 {
   logTrace();
-  if (!fitmodel || !var) {
-    logError("omsfit_addParameter: invalid pointer");
+  if (!simodel || !var) {
+    logError("omsi_addParameter: invalid pointer");
     return oms_status_error;
   }
-  FitModel* pFitModel = (FitModel*) fitmodel;
+  FitModel* pFitModel = (FitModel*) simodel;
   pFitModel->addParameter(var, startvalue);
   return oms_status_ok;
 }
 
-oms_status_enu_t omsfit_getParameter(void* fitmodel, const char* var, double* startvalue, double* estimatedvalue)
+oms_status_enu_t omsi_getParameter(void* simodel, const char* var, double* startvalue, double* estimatedvalue)
 {
   logTrace();
-  if (!fitmodel || !var || !startvalue || !estimatedvalue) {
-    logError("omsfit_addParameter: invalid pointer");
+  if (!simodel || !var || !startvalue || !estimatedvalue) {
+    logError("omsi_addParameter: invalid pointer");
     return oms_status_error;
   }
-  FitModel* pFitModel = (FitModel*) fitmodel;
+  FitModel* pFitModel = (FitModel*) simodel;
   ParameterAttributes attr;
   oms_status_enu_t ret = pFitModel->getParameter(var, attr);
   *startvalue = attr.startValue;
@@ -104,56 +104,56 @@ oms_status_enu_t omsfit_getParameter(void* fitmodel, const char* var, double* st
   return ret;
 }
 
-oms_status_enu_t omsfit_addMeasurement(void* fitmodel, size_t iSeries, const char* var, const double* values, size_t nValues)
+oms_status_enu_t omsi_addMeasurement(void* simodel, size_t iSeries, const char* var, const double* values, size_t nValues)
 {
   logTrace();
-  if (!fitmodel || !var || !values) {
-    logError("omsfit_addMeasurement: invalid pointer");
+  if (!simodel || !var || !values) {
+    logError("omsi_addMeasurement: invalid pointer");
     return oms_status_error;
   }
-  FitModel* pFitModel = (FitModel*) fitmodel;
+  FitModel* pFitModel = (FitModel*) simodel;
   pFitModel->addMeasurement(iSeries, var, values, nValues);
   return oms_status_ok;
 }
 
-oms_status_enu_t omsfit_setOptions_max_num_iterations(void* fitmodel, size_t max_num_iterations)
+oms_status_enu_t omsi_setOptions_max_num_iterations(void* simodel, size_t max_num_iterations)
 {
   logTrace();
-  if (!fitmodel) {
-    logError("omsfit_addMeasurement: invalid pointer");
+  if (!simodel) {
+    logError("omsi_addMeasurement: invalid pointer");
     return oms_status_error;
   }
-  FitModel* pFitModel = (FitModel*) fitmodel;
+  FitModel* pFitModel = (FitModel*) simodel;
   pFitModel->setOptions_max_num_iterations(max_num_iterations);
   return oms_status_ok;
 }
 
-oms_status_enu_t omsfit_solve(void* fitmodel, const char* reporttype)
+oms_status_enu_t omsi_solve(void* simodel, const char* reporttype)
 {
   logTrace();
-  if (!fitmodel) {
-    logError("omsfit_addMeasurement: invalid pointer");
+  if (!simodel) {
+    logError("omsi_solve: invalid pointer");
     return oms_status_error;
   }
-  FitModel* pFitModel = (FitModel*) fitmodel;
+  FitModel* pFitModel = (FitModel*) simodel;
   return pFitModel->solve(reporttype);
 }
 
-oms_status_enu_t omsfit_getState(void* fitmodel, omsfit_fitmodelstate_t* state)
+oms_status_enu_t omsi_getState(void* simodel, omsi_simodelstate_t* state)
 {
   logTrace();
-  if (!fitmodel) {
-    logError("omsfit_addMeasurement: invalid pointer");
+  if (!simodel) {
+    logError("omsi_getState: invalid pointer");
     return oms_status_error;
   }
-  FitModel* pFitModel = (FitModel*) fitmodel;
+  FitModel* pFitModel = (FitModel*) simodel;
   FitModelState modelstate = pFitModel->getState();
   switch (modelstate) {
-    case FitModelState::CONSTRUCTED:    *state = omsfit_fitmodelstate_constructed; break;
-    case FitModelState::INITIALIZED:    *state = omsfit_fitmodelstate_initialized; break;
-    case FitModelState::CONVERGENCE:    *state = omsfit_fitmodelstate_convergence; break;
-    case FitModelState::NO_CONVERGENCE: *state = omsfit_fitmodelstate_no_convergence; break;
-    case FitModelState::FAILURE:        *state = omsfit_fitmodelstate_failure; break;
+    case FitModelState::CONSTRUCTED:    *state = omsi_simodelstate_constructed; break;
+    case FitModelState::INITIALIZED:    *state = omsi_simodelstate_initialized; break;
+    case FitModelState::CONVERGENCE:    *state = omsi_simodelstate_convergence; break;
+    case FitModelState::NO_CONVERGENCE: *state = omsi_simodelstate_no_convergence; break;
+    case FitModelState::FAILURE:        *state = omsi_simodelstate_failure; break;
   }
 
   return oms_status_ok;
