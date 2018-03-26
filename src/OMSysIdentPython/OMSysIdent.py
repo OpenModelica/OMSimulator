@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Python module for parameter estimation based OMSimulator.
+"""Python module for parameter estimation based on OMSimulator.
 
 Todo:
     * Complete documentation, e.g., following the example given at http://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html
@@ -32,7 +32,7 @@ from ctypes import cdll
 # see http://code.activestate.com/lists/python-list/704158/
 
 
-class OMFit:
+class OMSysIdent:
     """Parameter estimation based on OMSimulator (composite) model."""
     def __init__(self,model):
         """Create an em empty model for parameter estimation.
@@ -41,51 +41,51 @@ class OMFit:
             model (object): The OMS (composite) model.
 
         Returns:
-            Fitting model object.
+            SysIdent model object.
 
         """
         if (sys.platform == 'win32'):
-            self.obj=cdll.LoadLibrary("OMFit.dll")
+            self.obj=cdll.LoadLibrary("OMSysIdent.dll")
         else:
-            self.obj=cdll.LoadLibrary("libOMFit.so")
+            self.obj=cdll.LoadLibrary("libOMSysIdent.so")
         self.setCtypesArguments()
         self.setResultTypes()
-        self.fitmodel = self.obj.omsfit_newFitModel(model)
+        self.simodel = self.obj.omsi_newSysIdentModel(model)
 
     def __del__(self):
         """Destructor will free external C object."""
-        self.obj.omsfit_freeFitModel(self.fitmodel)
+        self.obj.omsi_freeSysIdentModel(self.simodel)
 
     def setResultTypes(self):
-        self.obj.omsfit_newFitModel.restype = ctypes.c_void_p
-        self.obj.omsfit_describe.restype = ctypes.c_int
-        self.obj.omsfit_initialize.restype = ctypes.c_int
-        self.obj.omsfit_addMeasurement.restype = ctypes.c_int
-        self.obj.omsfit_addParameter.restype = ctypes.c_int
-        self.obj.omsfit_getParameter.restype = ctypes.c_int
-        self.obj.omsfit_solve.restype = ctypes.c_int
-        self.obj.omsfit_setOptions_max_num_iterations.restype = ctypes.c_int
-        self.obj.omsfit_getState.restype = ctypes.c_int
+        self.obj.omsi_newSysIdentModel.restype = ctypes.c_void_p
+        self.obj.omsi_describe.restype = ctypes.c_int
+        self.obj.omsi_initialize.restype = ctypes.c_int
+        self.obj.omsi_addMeasurement.restype = ctypes.c_int
+        self.obj.omsi_addParameter.restype = ctypes.c_int
+        self.obj.omsi_getParameter.restype = ctypes.c_int
+        self.obj.omsi_solve.restype = ctypes.c_int
+        self.obj.omsi_setOptions_max_num_iterations.restype = ctypes.c_int
+        self.obj.omsi_getState.restype = ctypes.c_int
 
     def setCtypesArguments(self):
-        self.obj.omsfit_newFitModel.argtypes = [ctypes.c_void_p]
-        self.obj.omsfit_freeFitModel.argtypes = [ctypes.c_void_p]
-        self.obj.omsfit_describe.argtypes = [ctypes.c_void_p]
-        self.obj.omsfit_initialize.argtypes = [
+        self.obj.omsi_newSysIdentModel.argtypes = [ctypes.c_void_p]
+        self.obj.omsi_freeSysIdentModel.argtypes = [ctypes.c_void_p]
+        self.obj.omsi_describe.argtypes = [ctypes.c_void_p]
+        self.obj.omsi_initialize.argtypes = [
             ctypes.c_void_p, ctypes.c_int,
             ndpointer(dtype=np.float64,ndim=1,flags='C_CONTIGUOUS'), ctypes.c_int,
             ctypes.POINTER(ctypes.c_char_p), ctypes.c_int,
             ctypes.POINTER(ctypes.c_char_p), ctypes.c_int]
-        self.obj.omsfit_addMeasurement.argtypes = [
+        self.obj.omsi_addMeasurement.argtypes = [
             ctypes.c_void_p, ctypes.c_int, ctypes.c_char_p,
             ndpointer(dtype=np.float64,ndim=1,flags='C_CONTIGUOUS'), ctypes.c_int]
-        self.obj.omsfit_addParameter.argtypes = [
+        self.obj.omsi_addParameter.argtypes = [
             ctypes.c_void_p, ctypes.c_char_p, ctypes.c_double]
-        self.obj.omsfit_getParameter.argtype = [ctypes.c_void_p, ctypes.c_char_p,
+        self.obj.omsi_getParameter.argtype = [ctypes.c_void_p, ctypes.c_char_p,
             ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double)]
-        self.obj.omsfit_solve.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
-        self.obj.omsfit_setOptions_max_num_iterations.argtypes = [ctypes.c_void_p, ctypes.c_int]
-        self.obj.omsfit_getState.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.c_int)]
+        self.obj.omsi_solve.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
+        self.obj.omsi_setOptions_max_num_iterations.argtypes = [ctypes.c_void_p, ctypes.c_int]
+        self.obj.omsi_getState.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.c_int)]
 
 
     def initialize(self, nSeries, time, inputvars, measurementvars):
@@ -93,45 +93,45 @@ class OMFit:
         invars[:] = inputvars
         mesvars = (ctypes.c_char_p * len(measurementvars))()
         mesvars[:] = measurementvars
-        return self.obj.omsfit_initialize(self.fitmodel, nSeries,
+        return self.obj.omsi_initialize(self.simodel, nSeries,
             time, len(time),
             invars, len(inputvars),
             mesvars, len(measurementvars))
 
     def describe(self):
-        """Print summary of fitting model"""
-        return self.obj.omsfit_describe(self.fitmodel)
+        """Print summary of SysIdent model"""
+        return self.obj.omsi_describe(self.simodel)
 
     def addMeasurement(self, iSeries, var, values):
-        return self.obj.omsfit_addMeasurement(self.fitmodel, iSeries,
+        return self.obj.omsi_addMeasurement(self.simodel, iSeries,
             var, values, len(values))
 
     def addParameter(self, var, startvalue):
-        return self.obj.omsfit_addParameter(self.fitmodel, var, startvalue)
+        return self.obj.omsi_addParameter(self.simodel, var, startvalue)
 
     def getParameter(self, var):
         startvalue = ctypes.c_double()
         estimatedvalue = ctypes.c_double()
-        status = self.obj.omsfit_getParameter(
-            self.fitmodel, var, ctypes.byref(startvalue), ctypes.byref(estimatedvalue))
+        status = self.obj.omsi_getParameter(
+            self.simodel, var, ctypes.byref(startvalue), ctypes.byref(estimatedvalue))
         return (status, startvalue.value, estimatedvalue.value)
 
     def solve(self, reporttype):
-        return self.obj.omsfit_solve(self.fitmodel, reporttype)
+        return self.obj.omsi_solve(self.simodel, reporttype)
 
     def setOptions_max_num_iterations(self, max_num_iterations):
-        return self.obj.omsfit_setOptions_max_num_iterations(self.fitmodel, max_num_iterations)
+        return self.obj.omsi_setOptions_max_num_iterations(self.simodel, max_num_iterations)
 
     def getState(self):
-        """Get state of fitting model object.
+        """Get state of SysIdent model object.
 
         Returns:
             int: oms_status code
-            int: omsfit_fitmodelstate code
+            int: omsi_simodelstate code
 
         """
         state = ctypes.c_int()
-        status = self.obj.omsfit_getState(self.fitmodel, ctypes.byref(state))
+        status = self.obj.omsi_getState(self.simodel, ctypes.byref(state))
         return (status, state.value)
 
     @staticmethod
@@ -160,11 +160,11 @@ class OMFit:
         return oms_status_t_dict[status]
 
     @staticmethod
-    def omsfit_fitmodelstate_str(state):
-        """Mapping of enum C-API state code (omsfit_modelstate_t) to string.
+    def omsi_simodelstate_str(state):
+        """Mapping of enum C-API state code (omsi_simodelstate_t) to string.
 
         Args:
-            state (int): State of fitting model.
+            state (int): State of SysIdent model.
 
         Returns:
             String representation of state code.
@@ -172,13 +172,13 @@ class OMFit:
         C enum::
 
             typedef enum {
-              omsfit_fitmodelstate_constructed,    //!< After omsfit_newFitModel
-              omsfit_fitmodelstate_initialized,    //!< After omsfit_initialize
-              omsfit_fitmodelstate_convergence,    //!< After omsfit_solve if Ceres minimizer returned with ceres::TerminationType::CONVERGENCE
-              omsfit_fitmodelstate_no_convergence, //!< After omsfit_solve if Ceres minimizer returned with ceres::TerminationType::NO_CONVERGENCE
-              omsfit_fitmodelstate_failure         //!< After omsfit_solve if Ceres minimizer returned with ceres::TerminationType::FAILURE
-            } omsfit_fitmodelstate_t;
+              omsi_simodelstate_constructed,    //!< After omsi_newSysIdentModel
+              omsi_simodelstate_initialized,    //!< After omsi_initialize
+              omsi_simodelstate_convergence,    //!< After omsi_solve if Ceres minimizer returned with ceres::TerminationType::CONVERGENCE
+              omsi_simodelstate_no_convergence, //!< After omsi_solve if Ceres minimizer returned with ceres::TerminationType::NO_CONVERGENCE
+              omsi_simodelstate_failure         //!< After omsi_solve if Ceres minimizer returned with ceres::TerminationType::FAILURE
+            } omsi_simodelstate_t;
 
         """
-        omsfit_fitmodelstate_t_dict = {0: "omsfit_fitmodelstate_constructed", 1: "omsfit_fitmodelstate_initialized", 2: "omsfit_fitmodelstate_convergence", 3: "omsfit_fitmodelstate_no_convergence", 4: "omsfit_fitmodelstate_failure"}
-        return omsfit_fitmodelstate_t_dict[state]
+        omsi_simodelstate_t_dict = {0: "omsi_simodelstate_constructed", 1: "omsi_simodelstate_initialized", 2: "omsi_simodelstate_convergence", 3: "omsi_simodelstate_no_convergence", 4: "omsi_simodelstate_failure"}
+        return omsi_simodelstate_t_dict[state]

@@ -4,8 +4,8 @@ MKDIR=mkdir -p
 
 # Option to build Ceres-Solver and its dependencies as part of the 3rdParty projects
 CERES ?= ON
-# Option to enable the OMFit parameter estimation module within the OMSimulator project
-OMFIT ?= ON
+# Option to enable the OMSysIdent parameter estimation module within the OMSimulator project
+OMSYSIDENT ?= ON
 
 detected_OS := $(shell uname -s)
 ifeq ($(detected_OS),Darwin)
@@ -13,7 +13,7 @@ ifeq ($(detected_OS),Darwin)
 	INSTALL_DIR := install/mac
 	# MINGW detected => NO SUPPORT FOR BUILDING CERES SOLVER (yet)
 	CERES := OFF
-	OMFIT := OFF
+	OMSYSIDENT := OFF
 else ifeq (MINGW32,$(findstring MINGW32,$(detected_OS)))
 	BUILD_DIR := build/mingw
 	INSTALL_DIR := install/mingw
@@ -21,7 +21,7 @@ else ifeq (MINGW32,$(findstring MINGW32,$(detected_OS)))
 	FMIL_FLAGS=-DFMILIB_FMI_PLATFORM=win32
 	# MINGW detected => NO SUPPORT FOR BUILDING CERES SOLVER  (yet)
 	CERES := OFF
-	OMFIT := OFF
+	OMSYSIDENT := OFF
 else ifeq (MINGW,$(findstring MINGW,$(detected_OS)))
 	BUILD_DIR := build/mingw
 	INSTALL_DIR := install/mingw
@@ -29,7 +29,7 @@ else ifeq (MINGW,$(findstring MINGW,$(detected_OS)))
 	FMIL_FLAGS=-DFMILIB_FMI_PLATFORM=win64
 	# MINGW detected => NO SUPPORT FOR BUILDING CERES SOLVER  (yet)
 	CERES := OFF
-	OMFIT := OFF
+	OMSYSIDENT := OFF
 else
 	BUILD_DIR := build/linux
 	INSTALL_DIR := install/linux
@@ -51,7 +51,7 @@ config-OMSimulator:
 	@echo
 	$(RM) $(BUILD_DIR)
 	$(MKDIR) $(BUILD_DIR)
-	cd $(BUILD_DIR) && cmake $(CMAKE_TARGET) ../.. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DOMFIT:BOOL=$(OMFIT)
+	cd $(BUILD_DIR) && cmake $(CMAKE_TARGET) ../.. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DOMSYSIDENT:BOOL=$(OMSYSIDENT)
 
 config-fmil:
 	@echo
