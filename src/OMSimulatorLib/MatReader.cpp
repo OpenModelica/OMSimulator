@@ -49,6 +49,21 @@ MatReader::MatReader(const char* filename)
   data_1 = readMatVer4Matrix(pFile);
   data_2 = readMatVer4Matrix(pFile);
   fclose(pFile);
+
+  char *var_buffer = new char[name->header.mrows];
+  for (int i = 0; i < name->header.ncols; ++i)
+  {
+    // Fix missing closing \0
+    memcpy(var_buffer, (char*)name->data + name->header.mrows*i, name->header.mrows);
+    for (int i=name->header.mrows-1; i>0 && var_buffer[i] == ' '; i--)
+      var_buffer[i] = '\0';
+
+    signals.push_back(var_buffer);
+  }
+  delete[] var_buffer;
+
+  for (auto& s : signals)
+    logInfo("\"" + s + "\"");
 }
 
 MatReader::~MatReader()

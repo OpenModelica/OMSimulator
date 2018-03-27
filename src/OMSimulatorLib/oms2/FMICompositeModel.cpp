@@ -747,8 +747,154 @@ oms_status_enu_t oms2::FMICompositeModel::exportCompositeStructure(const std::st
   return oms_status_ok;
 }
 
+oms_status_enu_t oms2::FMICompositeModel::exportDependencyGraphs(const std::string& initialization, const std::string& simulation)
+{
+  logTrace();
+  if (!initialization.empty())
+    initialUnknownsGraph.dotExport(initialization);
+  if (!simulation.empty())
+    outputsGraph.dotExport(simulation);
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms2::FMICompositeModel::initialize()
 {
-  logError("[oms2::FMICompositeModel::initialize] dependency analysis is missing");
-  return oms_status_error;
+  initialUnknownsGraph.clear();
+  outputsGraph.clear();
+
+  // Enter initialization
+  for (const auto& it : subModels)
+  {
+    if (oms_status_ok != it.second->enterInitialization(0.0))
+      return logError("[oms2::FMICompositeModel::initialize] failed");
+    else
+    {
+      initialUnknownsGraph.includeGraph(it.second->getInitialUnknownsGraph());
+      outputsGraph.includeGraph(it.second->getOutputsGraph());
+    }
+  }
+
+  for (auto& connection : connections)
+  {
+    if (!connection)
+      continue;
+
+    oms2::Variable *varA = getVariable(connection->getSignalA());
+    oms2::Variable *varB = getVariable(connection->getSignalB());
+    if (varA && varB)
+    {
+      if (varA->isInput() && varB->isOutput())
+      {
+        initialUnknownsGraph.addEdge(*varB, *varA);
+        outputsGraph.addEdge(*varB, *varA);
+      }
+      else
+      {
+        initialUnknownsGraph.addEdge(*varA, *varB);
+        outputsGraph.addEdge(*varA, *varB);
+      }
+    }
+    else
+      return logError("[oms2::FMICompositeModel::initialize] failed for " + connection->getSignalA().toString() + " -> " + connection->getSignalB().toString());
+  }
+
+  updateInputs(initialUnknownsGraph);
+
+  // Exit initialization
+  for (const auto& it : subModels)
+    if (oms_status_ok != it.second->exitInitialization())
+      return logError("[oms2::FMICompositeModel::initialize] failed");
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms2::FMICompositeModel::setReal(const oms2::SignalRef& sr, double value)
+{
+  oms2::FMISubModel* model = getSubModel(sr.getCref());
+  if (!model)
+    return oms_status_error;
+
+  return model->setReal(sr, value);
+}
+
+oms_status_enu_t oms2::FMICompositeModel::getReal(const oms2::SignalRef& sr, double& value)
+{
+  oms2::FMISubModel* model = getSubModel(sr.getCref());
+  if (!model)
+    return oms_status_error;
+
+  return model->getReal(sr, value);
+}
+
+oms_status_enu_t oms2::FMICompositeModel::updateInputs(oms2::DirectedGraph& graph)
+{
+  // input := output
+  const std::vector< std::vector< std::pair<int, int> > >& sortedConnections = graph.getSortedConnections();
+  for(int i=0; i<sortedConnections.size(); i++)
+  {
+    if (sortedConnections[i].size() == 1)
+    {
+      int output = sortedConnections[i][0].first;
+      int input = sortedConnections[i][0].second;
+
+      double value = 0.0;
+      getReal(graph.nodes[output].getSignalRef(), value);
+      setReal(graph.nodes[input].getSignalRef(), value);
+      //std::cout << inputFMU << "." << inputVar << " = " << outputFMU << "." << outputVar << std::endl;
+    }
+    else
+    {
+      solveAlgLoop(graph, sortedConnections[i]);
+    }
+  }
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms2::FMICompositeModel::solveAlgLoop(oms2::DirectedGraph& graph, const std::vector< std::pair<int, int> >& SCC)
+{
+  const int size = SCC.size();
+  const double tolerance = 1e-4;
+  const int maxIterations = 10;
+  double maxRes;
+  double *res = new double[size]();
+  double tcur = 0.0;
+
+  int it=0;
+  do
+  {
+    it++;
+    // get old values
+    for (int i=0; i<size; ++i)
+    {
+      int output = SCC[i].first;
+      getReal(graph.nodes[output].getSignalRef(), res[i]);
+    }
+
+    // update inputs
+    for (int i=0; i<size; ++i)
+    {
+      int input = SCC[i].second;
+      setReal(graph.nodes[input].getSignalRef(), res[i]);
+    }
+
+    // calculate residuals
+    maxRes = 0.0;
+    double value;
+    for (int i=0; i<size; ++i)
+    {
+      int output = SCC[i].first;
+      getReal(graph.nodes[output].getSignalRef(), value);
+      res[i] -= value;
+
+      if (fabs(res[i]) > maxRes)
+        maxRes = fabs(res[i]);
+    }
+  } while(maxRes > tolerance && it < maxIterations);
+
+  delete[] res;
+
+  if (it >= maxIterations)
+    return logError("CompositeModel::solveAlgLoop: max. number of iterations (" + std::to_string(maxIterations) + ") exceeded at time = " + std::to_string(tcur));
+  logDebug("CompositeModel::solveAlgLoop: maxRes: " + std::to_string(maxRes) + ", iterations: " + std::to_string(it) + " at time = " + std::to_string(tcur));
+  return oms_status_ok;
 }

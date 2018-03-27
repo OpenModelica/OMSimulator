@@ -733,16 +733,13 @@ oms_status_enu_t oms2_addExternalModel(const char *cref, const char *name, const
 oms_status_enu_t oms2_addTLMInterface(const char *cref, const char *subref, const char *name, int dimensions, oms_tlm_causality_t causality, const char *domain)
 {
   logTrace();
-  return oms2::Scope::GetInstance().addTLMInterface(oms2::ComRef(cref), oms2::ComRef(subref), oms2::ComRef(name),
-                                      dimensions, causality, domain);
+  return oms2::Scope::GetInstance().addTLMInterface(oms2::ComRef(cref), oms2::ComRef(subref), oms2::ComRef(name), dimensions, causality, domain);
 }
 
-oms_status_enu_t oms2_addTLMConnection(const char *cref, const char *from, const char *to,
-                                   double delay, double alpha, double Zf, double Zfr)
+oms_status_enu_t oms2_addTLMConnection(const char *cref, const char *from, const char *to, double delay, double alpha, double Zf, double Zfr)
 {
   logTrace();
-  return oms2::Scope::GetInstance().addTLMConnection(oms2::ComRef(cref), oms2::SignalRef(from), oms2::SignalRef(to),
-                                       delay, alpha, Zf, Zfr);
+  return oms2::Scope::GetInstance().addTLMConnection(oms2::ComRef(cref), oms2::SignalRef(from), oms2::SignalRef(to), delay, alpha, Zf, Zfr);
 }
 
 oms_status_enu_t oms2_addFMISubModel(const char *cref, const char *subref)
@@ -779,4 +776,10 @@ oms_status_enu_t oms2_exportCompositeStructure(const char* cref, const char* fil
 {
   logTrace();
   return oms2::Scope::GetInstance().exportCompositeStructure(oms2::ComRef(cref), std::string(filename));
+}
+
+oms_status_enu_t oms2_exportDependencyGraphs(const char* cref, const char* initialization, const char* simulation)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().exportDependencyGraphs(oms2::ComRef(cref), std::string(initialization), std::string(simulation));
 }

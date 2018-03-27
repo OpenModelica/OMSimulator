@@ -35,8 +35,9 @@
 #include "Logging.h"
 #include "Option.h"
 #include "Scope.h"
-#include "Variable.h"
+#include "SignalRef.h"
 #include "ssd/Tags.h"
+#include "Variable.h"
 
 #include <boost/filesystem.hpp>
 
@@ -81,7 +82,23 @@ oms2::Table* oms2::Table::newSubModel(const oms2::ComRef& cref, const std::strin
     return NULL;
   }
 
+  for (auto &v : model->resultReader->getAllSignals())
+  {
+    oms2::Variable var(oms2::SignalRef(model->getName(), v), fmi2_causality_enu_output, fmi2_initial_enu_exact, false, oms_signal_type_real);
+    model->outputs.push_back(var);
+  }
   return model;
+}
+
+oms_status_enu_t oms2::Table::enterInitialization(const double time)
+{
+  this->time = time;
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms2::Table::exitInitialization()
+{
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms2::Table::exportToSSD(pugi::xml_node& root) const
@@ -92,7 +109,10 @@ oms_status_enu_t oms2::Table::exportToSSD(pugi::xml_node& root) const
 
 oms2::Variable* oms2::Table::getVariable(const std::string& var)
 {
-  logError("[oms2::Table::getVariable] not supported");
+  for (auto &v : outputs)
+    if (v.getName() == var)
+      return &v;
+
   return NULL;
 }
 
@@ -123,4 +143,14 @@ oms_status_enu_t oms2::Table::getReal(const std::string& var, double& realValue,
   logError("oms2::Table::getReal: Time out of range.");
   realValue = 0.0;
   return oms_status_error;
+}
+
+oms_status_enu_t oms2::Table::setReal(const oms2::SignalRef& sr, double value)
+{
+  return logError("[oms2::Table::setReal] failed");
+}
+
+oms_status_enu_t oms2::Table::getReal(const oms2::SignalRef& sr, double& value)
+{
+  return getReal(sr.getVar(), value, time);
 }

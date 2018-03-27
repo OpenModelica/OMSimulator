@@ -33,6 +33,7 @@
 #define _OMS2_FMU_WRAPPER_H_
 
 #include "ComRef.h"
+#include "DirectedGraph.h"
 #include "FMISubModel.h"
 #include "FMUInfo.h"
 #include "Option.h"
@@ -52,6 +53,10 @@ namespace oms2
   public:
     static FMUWrapper* newSubModel(const ComRef& cref, const std::string& filename);
 
+    oms_status_enu_t enterInitialization(const double time);
+    oms_status_enu_t exitInitialization();
+    void do_event_iteration();
+
     oms_status_enu_t exportToSSD(pugi::xml_node& root) const;
 
     oms_element_type_enu_t getType() const { return oms_component_fmu; }
@@ -68,7 +73,13 @@ namespace oms2
     const std::map<std::string, oms2::Option<int>>& getIntegerParameters() const {return integerParameters;}
     const std::map<std::string, oms2::Option<bool>>& getBooleanParameters() const {return booleanParameters;}
 
+    oms_status_enu_t setReal(const oms2::SignalRef& sr, double value);
+    oms_status_enu_t getReal(const oms2::SignalRef& sr, double& value);
+
   private:
+    oms_status_enu_t initializeDependencyGraph_initialUnknowns();
+    oms_status_enu_t initializeDependencyGraph_outputs();
+
     oms_status_enu_t setReal(const oms2::Variable& var, double realValue);
     oms_status_enu_t getReal(const oms2::Variable& var, double& realValue);
     oms_status_enu_t setInteger(const oms2::Variable& var, int integerValue);
@@ -93,11 +104,26 @@ namespace oms2
     std::map<std::string, oms2::Option<bool>> booleanParameters;
 
     std::string tempDir;
+
+    // ME & CS
     jm_callbacks callbacks;
     fmi2_callback_functions_t callBackFunctions;
     fmi_import_context_t* context;
     fmi2_import_t* fmu;
     fmi2_event_info_t eventInfo;
+    double time;
+    double relativeTolerance;
+
+    // ME
+    fmi2_boolean_t callEventUpdate;
+    fmi2_boolean_t terminateSimulation;
+    size_t n_states;
+    size_t n_event_indicators;
+    double* states;
+    double* states_der;
+    double* states_nominal;
+    double* event_indicators;
+    double* event_indicators_prev;
   };
 }
 
