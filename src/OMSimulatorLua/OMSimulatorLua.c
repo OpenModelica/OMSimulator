@@ -921,6 +921,23 @@ static int OMSimulatorLua_oms2_exportCompositeStructure(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms2_exportDependencyGraphs(const char* cref, const char* initialization, const char* simulation);
+static int OMSimulatorLua_oms2_exportDependencyGraphs(lua_State *L)
+{
+  if (lua_gettop(L) != 3)
+    return luaL_error(L, "expecting exactly 3 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+  luaL_checktype(L, 3, LUA_TSTRING);
+
+  const char* cref = lua_tostring(L, 1);
+  const char* initialization = lua_tostring(L, 2);
+  const char* simulation = lua_tostring(L, 3);
+  oms_status_enu_t status = oms2_exportDependencyGraphs(cref, initialization, simulation);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
 //oms_status_enu_t oms2_initialize(const char* ident);
 static int OMSimulatorLua_oms2_initialize(lua_State *L)
 {
@@ -1212,6 +1229,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms2_deleteConnection);
   REGISTER_LUA_CALL(oms2_deleteSubModel);
   REGISTER_LUA_CALL(oms2_exportCompositeStructure);
+  REGISTER_LUA_CALL(oms2_exportDependencyGraphs);
   REGISTER_LUA_CALL(oms2_getElements);
   REGISTER_LUA_CALL(oms2_initialize);
   REGISTER_LUA_CALL(oms2_loadModel);

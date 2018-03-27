@@ -36,6 +36,7 @@
 #include "CompositeModel.h"
 #include "ComRef.h"
 #include "Connection.h"
+#include "DirectedGraph.h"
 #include "FMISubModel.h"
 #include "SignalRef.h"
 #include "Variable.h"
@@ -75,8 +76,12 @@ namespace oms2
     oms2::Element** getElements();
 
     oms_status_enu_t exportCompositeStructure(const std::string& filename);
+    oms_status_enu_t exportDependencyGraphs(const std::string& initialization, const std::string& simulation);
 
     oms_status_enu_t initialize();
+
+    oms_status_enu_t setReal(const oms2::SignalRef& sr, double value);
+    oms_status_enu_t getReal(const oms2::SignalRef& sr, double& value);
 
   private:
     oms_status_enu_t loadElementGeometry(const pugi::xml_node& node);
@@ -84,6 +89,8 @@ namespace oms2
     oms_status_enu_t loadSubModel(const pugi::xml_node& node);
     oms2::Variable* getVariable(const oms2::SignalRef& signal);
     oms_causality_enu_t getSignalCausality(const oms2::SignalRef& signal);
+    oms_status_enu_t updateInputs(oms2::DirectedGraph& graph);
+    oms_status_enu_t solveAlgLoop(oms2::DirectedGraph& graph, const std::vector< std::pair<int, int> >& SCC);
 
   protected:
     void deleteComponents();
@@ -101,6 +108,9 @@ namespace oms2
     std::map<oms2::ComRef, oms2::FMISubModel*> subModels;
     std::vector<oms2::Connection*> connections;
     oms2::Element** components;
+
+    DirectedGraph initialUnknownsGraph;
+    DirectedGraph outputsGraph;
   };
 }
 

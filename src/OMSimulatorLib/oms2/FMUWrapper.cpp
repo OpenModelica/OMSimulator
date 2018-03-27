@@ -101,6 +101,14 @@ oms2::FMUWrapper::FMUWrapper(const oms2::ComRef& cref, const std::string& filena
 {
   this->context = NULL;
   this->fmu = NULL;
+
+  this->n_states = 0;
+  this->n_event_indicators = 0;
+  this->states = NULL;
+  this->states_der = NULL;
+  this->states_nominal = NULL;
+  this->event_indicators = NULL;
+  this->event_indicators_prev = NULL;
 }
 
 oms2::FMUWrapper::~FMUWrapper()
@@ -297,9 +305,15 @@ oms2::FMUWrapper* oms2::FMUWrapper::newSubModel(const oms2::ComRef& cref, const 
     if (v.isInput())
       model->inputs.push_back(v);
     else if (v.isOutput())
+    {
       model->outputs.push_back(v);
+      model->outputsGraph.addVariable(v);
+    }
     else if (v.isParameter())
       model->parameters.push_back(v);
+
+    if (v.isInitialUnknown())
+      model->initialUnknownsGraph.addVariable(v);
   }
 
   std::vector<oms2::Connector> connectors;
@@ -324,7 +338,186 @@ oms2::FMUWrapper* oms2::FMUWrapper::newSubModel(const oms2::ComRef& cref, const 
   }
   model->element.setConnectors(connectors);
 
+  model->initializeDependencyGraph_initialUnknowns();
+  model->initializeDependencyGraph_outputs();
+
   return model;
+}
+
+oms_status_enu_t oms2::FMUWrapper::initializeDependencyGraph_initialUnknowns()
+{
+  if (initialUnknownsGraph.edges.size() > 0)
+  {
+    logError("oms2::FMUWrapper::initializeDependencyGraph_initialUnknowns: [" + getName() + ": " + getFMUPath() + "] is already initialized.");
+    return oms_status_error;
+  }
+
+  size_t *startIndex=NULL, *dependency=NULL;
+  char* factorKind;
+
+  fmi2_import_get_initial_unknowns_dependencies(fmu, &startIndex, &dependency, &factorKind);
+
+  if (!startIndex)
+    return logError("oms2::FMUWrapper::initializeDependencyGraph_initialUnknowns: [" + getName() + ": " + getFMUPath() + "] no dependencies");
+
+  int N=initialUnknownsGraph.nodes.size();
+  for (int i = 0; i < N; i++)
+  {
+    if (startIndex[i] == startIndex[i + 1])
+    {
+      logDebug("oms2::FMUWrapper::initializeDependencyGraph_initialUnknowns: [" + getName() + ": " + getFMUPath() + "] initial unknown " + initialUnknownsGraph.nodes[i].getName() + " has no dependencies");
+    }
+    else if ((startIndex[i] + 1 == startIndex[i + 1]) && (dependency[startIndex[i]] == 0))
+    {
+      logDebug("oms2::FMUWrapper::initializeDependencyGraph_initialUnknowns: [" + getName() + ": " + getFMUPath() + "] initial unknown " + initialUnknownsGraph.nodes[i].getName() + " depends on all");
+      for (int j = 0; j < outputs.size(); j++)
+        initialUnknownsGraph.addEdge(initialUnknownsGraph.nodes[i], outputs[j]);
+      for (int j = 0; j < inputs.size(); j++)
+        initialUnknownsGraph.addEdge(inputs[j], initialUnknownsGraph.nodes[i]);
+    }
+    else
+    {
+      for (size_t j = startIndex[i]; j < startIndex[i + 1]; j++)
+      {
+        logDebug("oms2::FMUWrapper::initializeDependencyGraph_initialUnknowns: [" + getName() + ": " + getFMUPath() + "] initial unknown " + initialUnknownsGraph.nodes[i].getName() + " depends on " + allVariables[dependency[j] - 1].getName());
+        initialUnknownsGraph.addEdge(allVariables[dependency[j] - 1], initialUnknownsGraph.nodes[i]);
+      }
+    }
+  }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms2::FMUWrapper::initializeDependencyGraph_outputs()
+{
+  if (outputsGraph.edges.size() > 0)
+  {
+    logError("oms2::FMUWrapper::initializeDependencyGraph_outputs: [" + getName() + ": " + getFMUPath() + "] is already initialized.");
+    return oms_status_error;
+  }
+
+  size_t *startIndex=NULL, *dependency=NULL;
+  char* factorKind;
+
+  fmi2_import_get_outputs_dependencies(fmu, &startIndex, &dependency, &factorKind);
+
+  if (!startIndex)
+    return logError("oms2::FMUWrapper::initializeDependencyGraph_outputs: [" + getName() + ": " + getFMUPath() + "] no dependencies");
+
+  int N=outputsGraph.nodes.size();
+  for (int i = 0; i < N; i++)
+  {
+    if (startIndex[i] == startIndex[i + 1])
+    {
+      logDebug("oms2::FMUWrapper::initializeDependencyGraph_outputs: [" + getName() + ": " + getFMUPath() + "] output " + initialUnknownsGraph.nodes[i].getName() + " has no dependencies");
+    }
+    else if ((startIndex[i] + 1 == startIndex[i + 1]) && (dependency[startIndex[i]] == 0))
+    {
+      logDebug("oms2::FMUWrapper::initializeDependencyGraph_outputs: [" + getName() + ": " + getFMUPath() + "] output " + outputs[i].getName() + " depends on all");
+      for (int j = 0; j < inputs.size(); j++)
+        outputsGraph.addEdge(inputs[j], outputs[i]);
+    }
+    else
+    {
+      for (size_t j = startIndex[i]; j < startIndex[i + 1]; j++)
+      {
+        logDebug("oms2::FMUWrapper::initializeDependencyGraph_outputs: [" + getName() + ": " + getFMUPath() + "] output " + outputs[i].getName() + " depends on " + allVariables[dependency[j] - 1].getName());
+        outputsGraph.addEdge(allVariables[dependency[j] - 1], outputs[i]);
+      }
+    }
+  }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms2::FMUWrapper::enterInitialization(const double startTime)
+{
+  relativeTolerance = fmi2_import_get_default_experiment_tolerance(fmu);
+  if (relativeTolerance < 1e-60) relativeTolerance = 1e-4;
+  this->time = startTime;
+
+  const fmi2_boolean_t toleranceControlled = fmi2_true;
+  const fmi2_boolean_t StopTimeDefined = fmi2_false;
+
+  const fmi2_real_t stopTime = 1.0;
+
+  logDebug("start time: " + std::to_string(this->time));
+  logDebug("stop time: " + std::to_string(stopTime));
+  logDebug("relative tolerance: " + std::to_string(relativeTolerance));
+
+  fmi2_status_t fmistatus;
+  if (oms_fmi_kind_me == fmuInfo.getKind())
+  {
+    fmistatus = fmi2_import_setup_experiment(fmu, toleranceControlled, relativeTolerance, this->time, StopTimeDefined, stopTime);
+    if (fmi2_status_ok != fmistatus) return logError("fmi2_import_setup_experiment failed");
+
+    fmistatus = fmi2_import_enter_initialization_mode(fmu);
+    if (fmi2_status_ok != fmistatus) return logError("fmi2_import_enter_initialization_mode failed");
+  }
+  else if (oms_fmi_kind_cs == fmuInfo.getKind() || oms_fmi_kind_me_and_cs == fmuInfo.getKind())
+  {
+    fmistatus = fmi2_import_setup_experiment(fmu, toleranceControlled, relativeTolerance, this->time, StopTimeDefined, stopTime);
+    if (fmi2_status_ok != fmistatus) return logError("fmi2_import_setup_experiment failed");
+
+    fmistatus = fmi2_import_enter_initialization_mode(fmu);
+    if (fmi2_status_ok != fmistatus) return logError("fmi2_import_enter_initialization_mode failed");
+  }
+  else
+    return logError("Unsupported FMU kind");
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms2::FMUWrapper::exitInitialization()
+{
+  fmi2_status_t fmistatus;
+
+  if (oms_fmi_kind_cs == fmuInfo.getKind() || oms_fmi_kind_me_and_cs == fmuInfo.getKind())
+  {
+    fmistatus = fmi2_import_exit_initialization_mode(fmu);
+    if (fmi2_status_ok != fmistatus) return logError("fmi2_import_exit_initialization_mode failed");
+  }
+  else if (oms_fmi_kind_me == fmuInfo.getKind())
+  {
+    fmistatus = fmi2_import_exit_initialization_mode(fmu);
+    if (fmi2_status_ok != fmistatus) return logError("fmi2_import_exit_initialization_mode failed");
+
+    terminateSimulation = fmi2_false;
+
+    eventInfo.newDiscreteStatesNeeded = fmi2_false;
+    eventInfo.terminateSimulation = fmi2_false;
+    eventInfo.nominalsOfContinuousStatesChanged = fmi2_false;
+    eventInfo.valuesOfContinuousStatesChanged = fmi2_true;
+    eventInfo.nextEventTimeDefined = fmi2_false;
+    eventInfo.nextEventTime = -0.0;
+
+    // fmi2_import_exit_initialization_mode leaves FMU in event mode
+    do_event_iteration();
+
+    fmi2_import_enter_continuous_time_mode(fmu);
+
+    callEventUpdate = fmi2_false;
+
+    n_states = fmi2_import_get_number_of_continuous_states(fmu);
+    n_event_indicators = fmi2_import_get_number_of_event_indicators(fmu);
+
+    logDebug(std::to_string(n_states) + " states");
+    logDebug(std::to_string(n_event_indicators) + " event indicators");
+
+    /// \todo initialize solver data
+  }
+  else
+    return logError("Unsupported FMU kind");
+
+  return oms_status_ok;
+}
+
+void oms2::FMUWrapper::do_event_iteration()
+{
+  eventInfo.newDiscreteStatesNeeded = fmi2_true;
+  eventInfo.terminateSimulation = fmi2_false;
+  while (eventInfo.newDiscreteStatesNeeded && !eventInfo.terminateSimulation)
+    fmi2_import_new_discrete_states(fmu, &eventInfo);
 }
 
 oms_status_enu_t oms2::FMUWrapper::exportToSSD(pugi::xml_node& root) const
@@ -411,10 +604,7 @@ oms_status_enu_t oms2::FMUWrapper::setRealParameter(const std::string& var, doub
 {
   auto it = realParameters.find(var);
   if (realParameters.end() == it)
-  {
-    logError("No such parameter: " + var);
-    return oms_status_error;
-  }
+    return logError("No such parameter: " + var);
 
   it->second = value;
   return oms_status_ok;
@@ -424,10 +614,7 @@ oms_status_enu_t oms2::FMUWrapper::getRealParameter(const std::string& var, doub
 {
   auto it = realParameters.find(var);
   if (realParameters.end() == it)
-  {
-    logError("No such parameter: " + var);
-    return oms_status_error;
-  }
+    return logError("No such parameter: " + var);
 
   if (it->second.isNone())
   {
@@ -448,10 +635,7 @@ oms_status_enu_t oms2::FMUWrapper::setIntegerParameter(const std::string& var, i
 {
   auto it = integerParameters.find(var);
   if (integerParameters.end() == it)
-  {
-    logError("No such parameter: " + var);
-    return oms_status_error;
-  }
+    return logError("No such parameter: " + var);
 
   it->second = value;
   return oms_status_ok;
@@ -461,10 +645,7 @@ oms_status_enu_t oms2::FMUWrapper::getIntegerParameter(const std::string& var, i
 {
   auto it = integerParameters.find(var);
   if (integerParameters.end() == it)
-  {
-    logError("No such parameter: " + var);
-    return oms_status_error;
-  }
+    return logError("No such parameter: " + var);
 
   if (it->second.isNone())
   {
@@ -485,10 +666,7 @@ oms_status_enu_t oms2::FMUWrapper::setBooleanParameter(const std::string& var, b
 {
   auto it = booleanParameters.find(var);
   if (booleanParameters.end() == it)
-  {
-    logError("No such parameter: " + var);
-    return oms_status_error;
-  }
+    return logError("No such parameter: " + var);
 
   it->second = value;
   return oms_status_ok;
@@ -498,10 +676,7 @@ oms_status_enu_t oms2::FMUWrapper::getBooleanParameter(const std::string& var, b
 {
   auto it = booleanParameters.find(var);
   if (booleanParameters.end() == it)
-  {
-    logError("No such parameter: " + var);
-    return oms_status_error;
-  }
+    return logError("No such parameter: " + var);
 
   if (it->second.isNone())
   {
@@ -522,10 +697,7 @@ oms_status_enu_t oms2::FMUWrapper::setReal(const oms2::Variable& var, double rea
 {
   logTrace();
   if (!fmu || !var.isTypeReal())
-  {
-    logError("oms2::FMUWrapper::setReal failed");
-    return oms_status_error;
-  }
+    return logError("oms2::FMUWrapper::setReal failed");
 
   fmi2_value_reference_t vr = var.getValueReference();
   if (fmi2_status_ok == fmi2_import_set_real(fmu, &vr, 1, &realValue))
@@ -538,10 +710,7 @@ oms_status_enu_t oms2::FMUWrapper::getReal(const oms2::Variable& var, double& re
 {
   logTrace();
   if (!fmu || !var.isTypeReal())
-  {
-    logError("oms2::FMUWrapper::getReal failed");
-    return oms_status_error;
-  }
+    return logError("oms2::FMUWrapper::getReal failed");
 
   fmi2_value_reference_t vr = var.getValueReference();
   if (fmi2_status_ok == fmi2_import_get_real(fmu, &vr, 1, &realValue))
@@ -554,10 +723,7 @@ oms_status_enu_t oms2::FMUWrapper::setInteger(const oms2::Variable& var, int int
 {
   logTrace();
   if (!fmu || !var.isTypeInteger())
-  {
-    logError("oms2::FMUWrapper::setInteger failed");
-    return oms_status_error;
-  }
+    return logError("oms2::FMUWrapper::setInteger failed");
 
   fmi2_value_reference_t vr = var.getValueReference();
   if (fmi2_status_ok == fmi2_import_set_integer(fmu, &vr, 1, &integerValue))
@@ -570,10 +736,7 @@ oms_status_enu_t oms2::FMUWrapper::getInteger(const oms2::Variable& var, int& in
 {
   logTrace();
   if (!fmu || !var.isTypeInteger())
-  {
-    logError("oms2::FMUWrapper::getInteger failed");
-    return oms_status_error;
-  }
+    return logError("oms2::FMUWrapper::getInteger failed");
 
   fmi2_value_reference_t vr = var.getValueReference();
   if (fmi2_status_ok == fmi2_import_get_integer(fmu, &vr, 1, &integerValue))
@@ -586,10 +749,7 @@ oms_status_enu_t oms2::FMUWrapper::setBoolean(const oms2::Variable& var, bool bo
 {
   logTrace();
   if (!fmu || !var.isTypeBoolean())
-  {
-    logError("oms2::FMUWrapper::setBoolean failed");
-    return oms_status_error;
-  }
+    return logError("oms2::FMUWrapper::setBoolean failed");
 
   fmi2_value_reference_t vr = var.getValueReference();
   int value = booleanValue;
@@ -603,10 +763,7 @@ oms_status_enu_t oms2::FMUWrapper::getBoolean(const oms2::Variable& var, bool& b
 {
   logTrace();
   if (!fmu || !var.isTypeBoolean())
-  {
-    logError("oms2::FMUWrapper::getBoolean failed");
-    return oms_status_error;
-  }
+    return logError("oms2::FMUWrapper::getBoolean failed");
 
   fmi2_value_reference_t vr = var.getValueReference();
   int value = 0;
@@ -617,4 +774,20 @@ oms_status_enu_t oms2::FMUWrapper::getBoolean(const oms2::Variable& var, bool& b
   }
 
   return oms_status_error;
+}
+
+oms_status_enu_t oms2::FMUWrapper::setReal(const oms2::SignalRef& sr, double value)
+{
+  oms2::Variable* var = getVariable(sr.getVar());
+  if (!var)
+    return oms_status_error;
+  return setReal(*var, value);
+}
+
+oms_status_enu_t oms2::FMUWrapper::getReal(const oms2::SignalRef& sr, double& value)
+{
+  oms2::Variable* var = getVariable(sr.getVar());
+  if (!var)
+    return oms_status_error;
+  return getReal(*var, value);
 }

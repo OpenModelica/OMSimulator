@@ -223,7 +223,9 @@ oms_status_enu_t oms2::Model::initialize()
   time = startTime;
 
   oms_status_enu_t status = compositeModel->initialize();
-  if (oms_status_ok != status)
+  if (oms_status_ok == status)
+    modelState = oms_modelState_simulation;
+  else
     modelState = oms_modelState_instantiated;
 
   return status;

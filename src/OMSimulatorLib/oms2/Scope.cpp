@@ -1121,3 +1121,28 @@ oms_status_enu_t oms2::Scope::exportCompositeStructure(const ComRef& cref, const
   }
   return oms_status_error;
 }
+
+oms_status_enu_t oms2::Scope::exportDependencyGraphs(const ComRef& cref, const std::string& initialization, const std::string& simulation)
+{
+  if (cref.isIdent())
+  {
+    // Model
+    Model* model = getModel(cref);
+    if (!model)
+    {
+      logError("[oms2::Scope::exportDependencyGraphs] failed");
+      return oms_status_error;
+    }
+
+    // FMI model?
+    if (oms_component_fmi == model->getType())
+    {
+      FMICompositeModel* fmiModel = model->getFMICompositeModel();
+      return fmiModel->exportDependencyGraphs(initialization, simulation);
+    }
+
+    logError("[oms2::Scope::exportDependencyGraphs] is only implemented for FMI models yet");
+    return oms_status_error;
+  }
+  return oms_status_error;
+}

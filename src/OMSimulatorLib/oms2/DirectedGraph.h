@@ -29,55 +29,50 @@
  *
  */
 
-#ifndef _OMS2_TABLE_H_
-#define _OMS2_TABLE_H_
+#ifndef _OMS2_DIRECTED_GRAPH_H_
+#define _OMS2_DIRECTED_GRAPH_H_
 
-#include "../ResultReader.h"
-#include "ComRef.h"
-#include "FMISubModel.h"
-#include "FMUInfo.h"
-#include "Option.h"
 #include "Variable.h"
 
-#include <map>
+#include <fmilib.h>
 #include <string>
-#include <unordered_map>
 #include <vector>
-
-#include <pugixml.hpp>
+#include <map>
+#include <deque>
+#include <stack>
 
 namespace oms2
 {
-  class Table : public FMISubModel
+  class DirectedGraph
   {
   public:
-    static Table* newSubModel(const ComRef& cref, const std::string& filename);
+    DirectedGraph();
+    ~DirectedGraph();
 
-    oms_status_enu_t enterInitialization(const double time);
-    oms_status_enu_t exitInitialization();
+    void clear();
 
-    oms_status_enu_t exportToSSD(pugi::xml_node& root) const;
+    int addVariable(const oms2::Variable& var);
+    void addEdge(const oms2::Variable& var1, const oms2::Variable& var2);
 
-    oms_element_type_enu_t getType() const { return oms_component_table; }
+    void dotExport(const std::string& filename);
 
-    const std::string& getPath() const {return path;}
+    void includeGraph(const DirectedGraph& graph);
 
-    oms_status_enu_t getReal(const std::string& var, double& realValue, const double time);
-
-    oms2::Variable* getVariable(const std::string& signal);
-
-    oms_status_enu_t setReal(const oms2::SignalRef& sr, double value);
-    oms_status_enu_t getReal(const oms2::SignalRef& sr, double& value);
+    const std::vector< std::vector< std::pair<int, int> > >& getSortedConnections();
+    std::vector<oms2::Variable> nodes;
+    std::vector< std::pair<int, int> > edges;
 
   private:
-    Table(const ComRef& cref, const std::string& filename);
-    ~Table();
+    std::deque< std::vector<int> > getSCCs();
+    void calculateSortedConnections();
+    void strongconnect(int v, std::vector< std::vector<int> > G, int& index, int *d, int *low, std::stack<int>& S, bool *stacked, std::deque< std::vector<int> >& components);
 
-    std::string path;
-    std::vector<oms2::Variable> outputs;
-    ResultReader *resultReader;
-    std::unordered_map<std::string, ResultReader::Series*> series;
-    double time;
+    static int getEdgeIndex(const std::vector< std::pair<int, int> >& edges, int from, int to);
+
+  private:
+    std::vector< std::vector<int> > G;
+    std::vector< std::vector< std::pair<int, int> > > sortedConnections;
+    bool sortedConnectionsAreValid;
   };
 }
 

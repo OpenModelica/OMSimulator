@@ -34,6 +34,7 @@
 
 #include "../Types.h"
 #include "ComRef.h"
+#include "DirectedGraph.h"
 #include "Element.h"
 #include "ssd/ElementGeometry.h"
 #include "Variable.h"
@@ -57,6 +58,15 @@ namespace oms2
 
     virtual oms2::Variable* getVariable(const std::string& signal) = 0;
 
+    virtual oms_status_enu_t enterInitialization(const double time) = 0;
+    virtual oms_status_enu_t exitInitialization() = 0;
+
+    const DirectedGraph& getInitialUnknownsGraph() const {return initialUnknownsGraph;}
+    const DirectedGraph& getOutputsGraph() const {return outputsGraph;}
+
+    virtual oms_status_enu_t setReal(const oms2::SignalRef& sr, double value) = 0;
+    virtual oms_status_enu_t getReal(const oms2::SignalRef& sr, double& value) = 0;
+
   protected:
     FMISubModel(oms_element_type_enu_t type, const ComRef& cref);
     virtual ~FMISubModel();
@@ -68,6 +78,9 @@ namespace oms2
 
   protected:
     oms2::Element element;
+
+    DirectedGraph initialUnknownsGraph;
+    DirectedGraph outputsGraph;
   };
 }
 

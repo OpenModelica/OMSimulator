@@ -32,6 +32,9 @@
 #ifndef _OMS_RESULTREADER_H_
 #define _OMS_RESULTREADER_H_
 
+#include <string>
+#include <vector>
+
 class ResultReader
 {
 public:
@@ -48,6 +51,7 @@ public:
   static ResultReader* newReader(const char* filename);
 
   virtual Series* getSeries(const char* var) = 0;
+  std::vector<std::string>& getAllSignals() {return signals;}
 
   static void deleteSeries(Series** series);
   static bool compareSeries(Series* seriesA, Series* seriesB, double relTol, double absTol);
@@ -56,6 +60,9 @@ private:
   // Stop the compiler generating methods for copying the object
   ResultReader(ResultReader const& copy);            // Not Implemented
   ResultReader& operator=(ResultReader const& copy); // Not Implemented
+
+protected:
+  std::vector<std::string> signals;
 };
 
 #endif

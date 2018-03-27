@@ -39,6 +39,11 @@
 #include <iostream>
 #include <string>
 
+oms2::Variable::Variable(const oms2::SignalRef& sr, fmi2_causality_enu_t causality, fmi2_initial_enu_t initialProperty, bool is_state, oms_signal_type_enu_t type)
+  : sr(sr), index(0), vr(0), causality(causality), initialProperty(initialProperty), is_state(is_state), type(type)
+{
+}
+
 oms2::Variable::Variable(const oms2::ComRef& cref, fmi2_import_variable_t *var, unsigned int index)
   : is_state(false), sr(cref, fmi2_import_get_variable_name(var)), index(index)
 {
