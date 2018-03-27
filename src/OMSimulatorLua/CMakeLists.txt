@@ -2,7 +2,12 @@ project(OMSimulatorLua C)
 
 set(CMAKE_INSTALL_RPATH "$ORIGIN/../lib:$ORIGIN/")
 
-include_directories(${LUALibrary_INCLUDEDIR} ../OMSimulatorLib)
+include_directories(
+  ${CMAKE_SOURCE_DIR}/src # Needed ?
+  ${LUALibrary_INCLUDEDIR}
+  ${CMAKE_SOURCE_DIR}/src/OMSimulatorLib
+  ${CMAKE_SOURCE_DIR}/src/OMSysIdentLib
+)
 
 link_directories(${Boost_LIBRARY_DIRS})
 link_directories(${FMILibrary_LIBRARYDIR})
