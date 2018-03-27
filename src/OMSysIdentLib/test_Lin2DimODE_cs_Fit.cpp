@@ -36,7 +36,7 @@
 #include <vector>
 
 #include "OMSimulator.h"
-#include "OMFit.h"
+#include "OMSysIdent.h"
 #include "Eigen/Core"
 #ifdef ROOT_VERSION
 #include "TCanvas.h"
@@ -120,16 +120,16 @@ int test_Lin2DimODE_cs_Fit()
   }
 
 
-  void* fitmodel = omsfit_newFitModel(model);
+  void* fitmodel = omsi_newSysIdentModel(model);
   double* t_ref = new double[kNumObservations];
   for (int i=0; i<kNumObservations; ++i) t_ref[i] = data_time[i];
-  status = omsfit_initialize(fitmodel, kNumSeries, t_ref, kNumObservations, inputvars, 0,
+  status = omsi_initialize(fitmodel, kNumSeries, t_ref, kNumObservations, inputvars, 0,
   measurementvars, 2);
   ASSERT(status == oms_status_ok);
   delete[] t_ref;
 
   for (int i=0; i<parametervars.size(); ++i) {
-    status = omsfit_addParameter(fitmodel, parametervars[i].c_str(), 1.5*p_ref[i]);
+    status = omsi_addParameter(fitmodel, parametervars[i].c_str(), 1.5*p_ref[i]);
     ASSERT(status == oms_status_ok);
   }
 
@@ -138,25 +138,25 @@ int test_Lin2DimODE_cs_Fit()
     for (int j=0; j<kNumObservations; ++j) {
       x_mes[j] = x_ref(j, i);
     }
-    status = omsfit_addMeasurement(fitmodel, 0, measurementvars[i], x_mes, kNumObservations);
+    status = omsi_addMeasurement(fitmodel, 0, measurementvars[i], x_mes, kNumObservations);
     ASSERT(status == oms_status_ok);
   }
   delete[] x_mes;
 
   // give a summary of the  object
-  omsfit_describe(fitmodel);
+  omsi_describe(fitmodel);
 
-  status = omsfit_solve(fitmodel, "BriefReport");
+  status = omsi_solve(fitmodel, "BriefReport");
   ASSERT(status == oms_status_ok);
-  omsfit_fitmodelstate_t fitmodelstate;
-  status = omsfit_getState(fitmodel, &fitmodelstate);
+  omsi_simodelstate_t fitmodelstate;
+  status = omsi_getState(fitmodel, &fitmodelstate);
   ASSERT(status == oms_status_ok);
-  ASSERT(fitmodelstate == omsfit_fitmodelstate_convergence);
+  ASSERT(fitmodelstate == omsi_simodelstate_convergence);
   std::cout << "parameter\treference\testimated\t(ref - est)/ref\n";
   Vector p_est(parametervars.size());
   for (int i=0; i<parametervars.size(); ++i) {
     double startvalue, estimatedvalue;
-    status = omsfit_getParameter(fitmodel, parametervars[i].c_str(), &startvalue, &estimatedvalue);
+    status = omsi_getParameter(fitmodel, parametervars[i].c_str(), &startvalue, &estimatedvalue);
     ASSERT(status == oms_status_ok);
     std::cout << parametervars[i] << "\t" << p_ref[i] << "\t" << estimatedvalue << "\t" << (p_ref[i] - estimatedvalue) / p_ref[i] << std::endl;
     // Assure that solution is close to the reference up to an (arbitrarily chosen) factor
@@ -215,7 +215,7 @@ int test_Lin2DimODE_cs_Fit()
   leg.DrawClone("Same");
 #endif // ROOT_VERSION
 
-  omsfit_freeFitModel(fitmodel);
+  omsi_freeSysIdentModel(fitmodel);
   oms_unload(model);
   return 0;
 }

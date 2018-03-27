@@ -29,8 +29,8 @@
  *
  */
 
-#ifndef _OMFIT_H_
-#define _OMFIT_H_
+#ifndef _OMSYSIDENT_H_
+#define _OMSYSIDENT_H_
 
 #include <stddef.h>
 #include "Types.h"
@@ -41,35 +41,35 @@ extern "C"
 #endif
 
 /**
- * \brief State of fitting model.
+ * \brief State of SysIdent model.
  */
 typedef enum {
-  omsfit_fitmodelstate_constructed,    //!< After omsfit_newFitModel
-  omsfit_fitmodelstate_initialized,    //!< After omsfit_initialize
-  omsfit_fitmodelstate_convergence,    //!< After omsfit_solve if Ceres minimizer returned with ceres::TerminationType::CONVERGENCE
-  omsfit_fitmodelstate_no_convergence, //!< After omsfit_solve if Ceres minimizer returned with ceres::TerminationType::NO_CONVERGENCE
-  omsfit_fitmodelstate_failure         //!< After omsfit_solve if Ceres minimizer returned with ceres::TerminationType::FAILURE
-} omsfit_fitmodelstate_t;
+  omsi_simodelstate_constructed,    //!< After omsi_newSysIdentModel
+  omsi_simodelstate_initialized,    //!< After omsi_initialize
+  omsi_simodelstate_convergence,    //!< After omsi_solve if Ceres minimizer returned with ceres::TerminationType::CONVERGENCE
+  omsi_simodelstate_no_convergence, //!< After omsi_solve if Ceres minimizer returned with ceres::TerminationType::NO_CONVERGENCE
+  omsi_simodelstate_failure         //!< After omsi_solve if Ceres minimizer returned with ceres::TerminationType::FAILURE
+} omsi_simodelstate_t;
 
 /**
- * \brief Creates an empty model for parameter estimation / curve fitting.
+ * \brief Creates an empty model for parameter estimation.
  *
  * @param model [inout] OMS (composite) model as opaque pointer.
- * @return Fitting model instance as opaque pointer.
+ * @return SysIdent model instance as opaque pointer.
  */
-void* omsfit_newFitModel(void* model);
+void* omsi_newSysIdentModel(void* model);
 
 /**
  * \brief Unloads a model.
  *
- * @param fitmodel [inout] Fitting model as opaque pointer.
+ * @param simodel [inout] SysIdent model as opaque pointer.
  */
-void omsfit_freeFitModel(void* fitmodel);
+void omsi_freeSysIdentModel(void* simodel);
 
 /**
- * \brief Initializes fitting model.
+ * \brief Initializes SysIdent model.
  *
- * @param fitmodel [inout] Fitting model as opaque pointer.
+ * @param simodel [inout] SysIdent model as opaque pointer.
  * @nSeries [in] Number of measurement series.
  * @param time [in] Array of measurement time instants.
  * @param nTime [in] Length of time array.
@@ -79,96 +79,96 @@ void omsfit_freeFitModel(void* fitmodel);
  * @nMeasurmentvars  [in] Number of observed measurement variables.
  * @return Error status.
  */
-oms_status_enu_t omsfit_initialize(void* fitmodel, size_t nSeries,
+oms_status_enu_t omsi_initialize(void* simodel, size_t nSeries,
   const double* time, size_t nTime,
   char const* const* inputvars, size_t nInputvars,
   char const* const* measurementvars, size_t nMeasurementvars);
 
 /**
- * \brief Print summary of fitting model.
+ * \brief Print summary of SysIdent model.
  *
- * @param fitmodel [in] Fitting model as opaque pointer.
+ * @param simodel [in] SysIdent model as opaque pointer.
  */
-oms_status_enu_t omsfit_describe(void* fitmodel);
+oms_status_enu_t omsi_describe(void* simodel);
 
 /**
- * \brief Add measurement values for a fittting variable.
+ * \brief Add measurement values for a fitting variable.
  *
- * @param fitmodel [inout] Fitting model as opaque pointer.
+ * @param simodel [inout] SysIdent model as opaque pointer.
  * @param iSeries [in] Index of measurement series.
  * @param var [in] Name of variable.
  * @param values [in] Array of measured values for respective time instants.
  * @param nValues [in] Length of values array.
  * @return Error status.
  */
-oms_status_enu_t omsfit_addMeasurement(void* fitmodel, size_t iSeries, const char* var, const double* values, size_t nValues);
+oms_status_enu_t omsi_addMeasurement(void* simodel, size_t iSeries, const char* var, const double* values, size_t nValues);
 // Alternatively??
-// void omsfit_addMeasurementSeries(void *fitmodel, int iseries,
+// void omsi_addMeasurementSeries(void *simodel, int iseries,
 //   double const* const* inputs, size_t dim1Inputs, size_t dim2Inputs,
 //   double const* const* measurements, size_t dim1Measurements, size_t dim2Measurements);
 
 /**
  * \brief Add parameter that should be estimated.
  *
- * @param fitmodel [inout] Fitting model as opaque pointer.
+ * @param simodel [inout] SysIdent model as opaque pointer.
  * @param var [in] Name of parameter.
  * @param startvalue [in] Start value of parameter.
  * @return Error status.
  */
-oms_status_enu_t omsfit_addParameter(void* fitmodel, const char* var, double startvalue);
+oms_status_enu_t omsi_addParameter(void* simodel, const char* var, double startvalue);
 
 /**
  * \brief Get parameter that should be estimated.
  *
- * \warning Unless omsfit_solve returned succesfully, estimatedvalue will be garbage
+ * \warning Unless omsi_solve returned succesfully, estimatedvalue will be garbage
  *
- * @param fitmodel [inout] Fitting model as opaque pointer.
+ * @param simodel [inout] SysIdent model as opaque pointer.
  * @param var [in] Name of parameter.
  * @param startvalue [out] start value of parameter.
  * @param estimatedvalue [out] Estimated value of parameter.
  * @return Error status.
  */
-oms_status_enu_t omsfit_getParameter(void* fitmodel, const char* var, double* startvalue, double* estimatedvalue);
+oms_status_enu_t omsi_getParameter(void* simodel, const char* var, double* startvalue, double* estimatedvalue);
 
 /**
  * \brief Solve parameter estimation problem.
  *
- * @param fitmodel [inout] Fitting model as opaque pointer.
+ * @param simodel [inout] SysIdent model as opaque pointer.
  * @param reporttype [in] Print report and progress information after call to Ceres solver.
  *                        Supported report types (NULL or "" denotes no output): {NULL, "", "BriefReport", "FullReport"}.
  * @return Error status.
  */
-oms_status_enu_t omsfit_solve(void* fitmodel, const char* reporttype);
+oms_status_enu_t omsi_solve(void* simodel, const char* reporttype);
 
 /**
  * \brief Set Ceres solver option 'Solver::Options::max_num_iterations'.
  *
- * @param fitmodel [inout] Fitting model as opaque pointer.
+ * @param simodel [inout] SysIdent model as opaque pointer.
  * @param max_num_iterations [in] Maximum number of iterations for which the solver should run (default: 25).
  * @return Error status.
  */
-oms_status_enu_t omsfit_setOptions_max_num_iterations(void* fitmodel, size_t max_num_iterations);
+oms_status_enu_t omsi_setOptions_max_num_iterations(void* simodel, size_t max_num_iterations);
 
 /**
- * \brief Get state of fitting model object.
+ * \brief Get state of SysIdent model object.
  *
- * @param fitmodel [inout] Fitting model as opaque pointer.
- * @param state [out] State of fitting model.
+ * @param simodel [inout] SysIdent model as opaque pointer.
+ * @param state [out] State of SysIdent model.
  * @return Error status.
  */
-oms_status_enu_t omsfit_getState(void* fitmodel, omsfit_fitmodelstate_t* state);
+oms_status_enu_t omsi_getState(void* simodel, omsi_simodelstate_t* state);
 
 /**
  * \brief TODO Add input values for a model input.
  *
- * @param fitmodel [inout] Fitting model as opaque pointer.
+ * @param simodel [inout] SysIdent model as opaque pointer.
  * @param var [in] Name of input variable.
  * @param time [in] Array of input time instants.
  * @param values [in] Array of input values for respective time instants.
  * @param nvalues [in] Length of values array.
  * @return Error status.
  */
-// oms_status_enu_t omsfit_addInput(void* fitmodel, const char* var, const double* time, const double* values, int nvalues);
+// oms_status_enu_t omsi_addInput(void* simodel, const char* var, const double* time, const double* values, int nvalues);
 
 /**
  * \brief TODO? Provide convenience function to "Load reference measurement data from file"?.
@@ -179,16 +179,16 @@ oms_status_enu_t omsfit_getState(void* fitmodel, omsfit_fitmodelstate_t* state);
  * 0.1,0.11,0.21, ..., 0
  * 0.2,0.111,0.211, ..., 0
  *
- * @param fitmodel [inout] Fitting model as opaque pointer.
+ * @param simodel [inout] SysIdent model as opaque pointer.
  * @param filename [in]  Path to file with data in csv format.
  * @param varname [in] Variable name.
  * @return Error status.
  */
-// oms_status_enu_t omsfit_loadMeasurement(void* model, const void* filename, const char* varname);
+// oms_status_enu_t omsi_loadMeasurement(void* model, const void* filename, const char* varname);
 
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* _OMFIT_H_ */
+#endif /* _OMSYSIDENT_H_ */

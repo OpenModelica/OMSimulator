@@ -33,7 +33,7 @@
 #include <stdlib.h>
 
 #include "OMSimulator.h"
-#include "OMFit.h"
+#include "OMSysIdent.h"
 
 // Data generated from simulating HelloWorld.mo for 1.0s with Euler and 0.1s step size
 const int kNumSeries = 1;
@@ -57,36 +57,36 @@ int test_HelloWorld_cs_Fit()
   oms_instantiateFMU(model, "../FMUs/HelloWorld_cs.fmu", "HelloWorld");
   oms_setTolerance(model, 1e-5);
 
-  void* fitmodel = omsfit_newFitModel(model);
-  status = omsfit_initialize(fitmodel, kNumSeries, data_time, kNumObservations, inputvars, 0,
+  void* fitmodel = omsi_newSysIdentModel(model);
+  status = omsi_initialize(fitmodel, kNumSeries, data_time, kNumObservations, inputvars, 0,
   measurementvars, 1);
   ASSERT(status == oms_status_ok);
-  status = omsfit_addParameter(fitmodel, "HelloWorld.x_start", 0.5);
+  status = omsi_addParameter(fitmodel, "HelloWorld.x_start", 0.5);
   ASSERT(status == oms_status_ok);
-  status = omsfit_addParameter(fitmodel, "HelloWorld.a", -0.5);
+  status = omsi_addParameter(fitmodel, "HelloWorld.a", -0.5);
   ASSERT(status == oms_status_ok);
-  status = omsfit_addMeasurement(fitmodel, 0, "HelloWorld.x", data_x, kNumObservations);
+  status = omsi_addMeasurement(fitmodel, 0, "HelloWorld.x", data_x, kNumObservations);
   ASSERT(status == oms_status_ok);
   // give a summary of the  object
-  omsfit_describe(fitmodel);
+  omsi_describe(fitmodel);
 
-  status = omsfit_solve(fitmodel, "BriefReport");
+  status = omsi_solve(fitmodel, "BriefReport");
   ASSERT(status == oms_status_ok);
-  omsfit_fitmodelstate_t fitmodelstate;
-  status = omsfit_getState(fitmodel, &fitmodelstate);
+  omsi_simodelstate_t fitmodelstate;
+  status = omsi_getState(fitmodel, &fitmodelstate);
   ASSERT(status == oms_status_ok);
-  ASSERT(fitmodelstate == omsfit_fitmodelstate_convergence);
+  ASSERT(fitmodelstate == omsi_simodelstate_convergence);
   double startvalue, estimatedvalue;
-  status = omsfit_getParameter(fitmodel, "HelloWorld.x_start", &startvalue, &estimatedvalue);
+  status = omsi_getParameter(fitmodel, "HelloWorld.x_start", &startvalue, &estimatedvalue);
   ASSERT(status == oms_status_ok);
   ASSERT(estimatedvalue > 0.99 && estimatedvalue < 1.01);
   printf("HelloWorld.x_start: startvalue %f, estimatedvalue %f\n", startvalue, estimatedvalue);
-  status = omsfit_getParameter(fitmodel, "HelloWorld.a", &startvalue, &estimatedvalue);
+  status = omsi_getParameter(fitmodel, "HelloWorld.a", &startvalue, &estimatedvalue);
   ASSERT(status == oms_status_ok);
   ASSERT(estimatedvalue > -1.1 && estimatedvalue < -0.9);
   printf("HelloWorld.a: startvalue %f, estimatedvalue %f\n", startvalue, estimatedvalue);
 
-  omsfit_freeFitModel(fitmodel);
+  omsi_freeSysIdentModel(fitmodel);
   oms_unload(model);
   return 0;
 }
