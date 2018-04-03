@@ -471,6 +471,59 @@ void oms2_setLoggingCallback(void (*cb)(oms_message_type_enu_t type, const char*
 void oms2_setLoggingLevel(int logLevel);
 
 /**
+ * \brief Describes model by printing structure to cout.
+ *
+ * @param cref         [in] Full identifier of a component.
+ */
+oms_status_enu_t oms2_describe(const char* cref);
+
+/**
+ * \brief Adds an external model to a TLM composite model
+ *
+ * @param cref         [in] Identifier of parent TLM composite model.
+ * @param name         [in] Identifier of external model
+ * @param modelfile    [in] Absolute path to model file of external model.
+ * @param startscript  [in] Start script of external model.
+ */
+oms_status_enu_t oms2_addExternalModel(const char* cref, const char* name, const char* modelfile, const char* startscript);
+
+/**
+ * \brief Adds an external model to a TLM composite model
+ *
+ * @param cref         [in] Identifier of parent TLM composite model.
+ * @param subref       [in] Identifier of sub FMI composite model.
+ */
+oms_status_enu_t oms2_addFMISubModel(const char* cref, const char* subref);
+
+/**
+ * \brief Adds an external model to a TLM composite model
+ *
+ * @param cref         [in] Identifier of TLM composite model.
+ * @param subref       [in] Identifier of submodel.
+ * @param name         [in] Identifier of TLM interface.
+ * @param dimensions   [in] Number of dimensions of TLM interface (1, 3 or 6)
+ * @param causality    [in] Causality of TLM interface.
+ * @param domain       [in] Domain of TLM interface
+ */
+oms_status_enu_t oms2_addTLMInterface(const char *cref, const char* subref,
+                                  const char *name, int dimensions,
+                                  oms_tlm_causality_t causality, const char* domain);
+
+/**
+ * \brief Adds an external model to a TLM composite model
+ *
+ * @param cref         [in] Identifier of TLM composite model.
+ * @param from         [in] TLM interface (format: submodel:interface)
+ * @param to           [in] TLM interface (format: submodel:interface)
+ * @param delay        [in] Time delay of connection.
+ * @param alpha        [in] Numerical damping factor of connection.
+ * @param Zf           [in] Translational characteristic impedance of connection.
+ * @param Zfr          [in] Rotational characteristic impedance of connection.
+ */
+oms_status_enu_t oms2_addTLMConnection(const char* cref, const char* from, const char* to,
+                                   double delay, double alpha, double Zf, double Zfr);
+
+/**
  * \brief Redirects logging output to file or std streams. The warning/error counters are reset.
  *
  * \param filename   [in] "" to redirect to std streams and proper filename to redirect to file.

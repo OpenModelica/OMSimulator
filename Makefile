@@ -14,6 +14,8 @@ ifeq ($(detected_OS),Darwin)
 	# MINGW detected => NO SUPPORT FOR BUILDING CERES SOLVER (yet)
 	CERES := OFF
 	OMSYSIDENT := OFF
+	export ABI := MAC64
+	FEXT=.dylib
 else ifeq (MINGW32,$(findstring MINGW32,$(detected_OS)))
 	BUILD_DIR := build/mingw
 	INSTALL_DIR := install/mingw
@@ -22,6 +24,9 @@ else ifeq (MINGW32,$(findstring MINGW32,$(detected_OS)))
 	# MINGW detected => NO SUPPORT FOR BUILDING CERES SOLVER  (yet)
 	CERES := OFF
 	OMSYSIDENT := OFF
+	OMFIT := OFF
+	export ABI := WINDOWS32
+	FEXT=.dll
 else ifeq (MINGW,$(findstring MINGW,$(detected_OS)))
 	BUILD_DIR := build/mingw
 	INSTALL_DIR := install/mingw
@@ -30,18 +35,34 @@ else ifeq (MINGW,$(findstring MINGW,$(detected_OS)))
 	# MINGW detected => NO SUPPORT FOR BUILDING CERES SOLVER  (yet)
 	CERES := OFF
 	OMSYSIDENT := OFF
+	export ABI := WINDOWS64
+	FEXT=.dll
 else
 	BUILD_DIR := build/linux
 	INSTALL_DIR := install/linux
+	export ABI := LINUX64
+	FEXT=.so
 endif
 
-.PHONY: OMSimulator config-OMSimulator config-fmil config-lua config-cvode config-kinsol config-gflags config-glog config-ceres-solver config-3rdParty distclean testsuite doc doc-html doc-doxygen
+.PHONY: OMSimulator config-OMSimulator config-fmil config-lua config-cvode config-kinsol config-gflags config-glog config-ceres-solver config-3rdParty distclean testsuite doc doc-html doc-doxygen OMTLMSimulator
 
-OMSimulator:
+OMSimulator: OMTLMSimulator
 	@echo
 	@echo "# make OMSimulator"
 	@echo
+	@echo $(ABI)
 	@$(MAKE) -C $(BUILD_DIR) install
+	test ! `uname` = Darwin || (install_name_tool -change MAC64/libomtlmsimulator.dylib "@loader_path/libomtlmsimulator.dylib" $(INSTALL_DIR)/bin/OMSimulator)
+
+OMTLMSimulator:
+	@echo
+	@echo "# make OMTLMSimulator"
+	@echo
+	@$(MAKE) -C OMTLMSimulator omtlmlib
+	@$(MKDIR) $(INSTALL_DIR)/lib
+	@$(MKDIR) $(INSTALL_DIR)/bin
+	cp OMTLMSimulator/bin/libomtlmsimulator$(FEXT) $(INSTALL_DIR)/lib/
+	cp OMTLMSimulator/bin/libomtlmsimulator$(FEXT) $(INSTALL_DIR)/bin/
 
 config-3rdParty: config-fmil config-lua config-cvode config-kinsol config-gflags config-glog config-ceres-solver
 

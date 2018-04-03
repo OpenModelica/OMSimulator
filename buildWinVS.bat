@@ -23,10 +23,40 @@ ECHO.
 SET VSCMD_START_DIR="%CD%"
 
 IF ["%OMS_VS_TARGET%"]==["VS14-Win32"] @call "%VS140COMNTOOLS%\..\..\VC\vcvarsall.bat" x86
-IF ["%OMS_VS_TARGET%"]==["VS14-Win64"] @call "%VS140COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64 8.1
+IF ["%OMS_VS_TARGET%"]==["VS14-Win64"] @call "%VS140COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64
 IF ["%OMS_VS_TARGET%"]==["VS15-Win64"] @call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
 
 IF NOT DEFINED CMAKE_BUILD_TYPE SET CMAKE_BUILD_TYPE="Release"
+
+mkdir install\win\bin
+
+:: -- building pthread --------------------------------------------------------
+ECHO # Building pthread
+cd 3rdParty\pthread
+call buildWinVS.bat
+cd..
+cd..
+copy /Y 3rdParty\pthread\install\win\lib\pthreadVC2.dll install\win\bin
+:: -- building pthread --------------------------------------------------------
+
+:: -- building libxml2 --------------------------------------------------------
+ECHO # Building libxml2
+cd 3rdParty\libxml2
+call buildWinVS.bat
+cd..
+cd..
+copy /Y 3rdParty\libxml2\install\win\bin\libxml2.dll install\win\bin
+:: -- building libxml2 --------------------------------------------------------
+
+:: -- build OMTLMSimulator ----------------------------------------------------
+ECHO # Building OMTLMSimulator
+cd OMTLMSimulator
+call buildWinVS.bat
+cd..
+copy /Y OMTLMSimulator\bin\omtlmsimulator.lib install\win\bin
+copy /Y OMTLMSimulator\bin\omtlmsimulator.dll install\win\bin
+echo %cd%
+:: -- build OMTLMSimulator ----------------------------------------------------
 
 :: -- build OMSimulator -------------------------------------------------------
 ECHO # build OMSimulator
