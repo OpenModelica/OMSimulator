@@ -230,3 +230,31 @@ oms_status_enu_t oms2::Model::initialize()
 
   return status;
 }
+
+oms_status_enu_t oms2::Model::terminate()
+{
+  if (oms_modelState_initialization != modelState && oms_modelState_simulation != modelState)
+  {
+    logError("[oms2::Model::terminate] Model cannot be terminated, because it isn't in simulation state.");
+    return oms_status_error;
+  }
+
+  modelState = oms_modelState_initialization;
+  time = startTime;
+
+  oms_status_enu_t status = compositeModel->terminate();
+  if (oms_status_ok == status)
+  {
+    modelState = oms_modelState_instantiated;
+    logInfo("Simulation finished.");
+  }
+
+  return status;
+}
+
+oms_status_enu_t oms2::Model::simulate()
+{
+  /// \todo implement me
+  logDebug("oms2::Model::simulate()");
+  return oms_status_ok;
+}

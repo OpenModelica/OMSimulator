@@ -79,6 +79,8 @@ namespace oms2
     oms_status_enu_t exportDependencyGraphs(const std::string& initialization, const std::string& simulation);
 
     oms_status_enu_t initialize();
+    oms_status_enu_t terminate();
+    oms_status_enu_t simulate();
 
     oms_status_enu_t setReal(const oms2::SignalRef& sr, double value);
     oms_status_enu_t getReal(const oms2::SignalRef& sr, double& value);

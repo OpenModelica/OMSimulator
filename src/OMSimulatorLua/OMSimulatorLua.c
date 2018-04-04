@@ -951,6 +951,32 @@ static int OMSimulatorLua_oms2_initialize(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms2_terminate(const char* ident);
+static int OMSimulatorLua_oms2_terminate(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* ident = lua_tostring(L, 1);
+  oms_status_enu_t status = oms2_terminate(ident);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
+//oms_status_enu_t oms2_simulate(const char* ident);
+static int OMSimulatorLua_oms2_simulate(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* ident = lua_tostring(L, 1);
+  oms_status_enu_t status = oms2_simulate(ident);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
 /* **************************************************** */
 /* OMSysIdent API                                       */
 /* **************************************************** */
@@ -1246,6 +1272,8 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms2_setStopTime);
   REGISTER_LUA_CALL(oms2_setTempDirectory);
   REGISTER_LUA_CALL(oms2_setWorkingDirectory);
+  REGISTER_LUA_CALL(oms2_simulate);
+  REGISTER_LUA_CALL(oms2_terminate);
   REGISTER_LUA_CALL(oms2_unloadModel);
 
   /* ************************************ */

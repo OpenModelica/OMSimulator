@@ -250,6 +250,28 @@ oms_status_enu_t oms2::Scope::initialize(const ComRef& name)
   return model->initialize();
 }
 
+oms_status_enu_t oms2::Scope::terminate(const ComRef& name)
+{
+  logTrace();
+
+  oms2::Model* model = getModel(name);
+  if (!model)
+    return oms_status_error;
+
+  return model->terminate();
+}
+
+oms_status_enu_t oms2::Scope::simulate(const ComRef& name)
+{
+  logTrace();
+
+  oms2::Model* model = getModel(name);
+  if (!model)
+    return oms_status_error;
+
+  return model->simulate();
+}
+
 oms_status_enu_t oms2::Scope::setTempDirectory(const std::string& newTempDir)
 {
   logTrace();

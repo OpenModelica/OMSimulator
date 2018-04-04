@@ -78,6 +78,8 @@ namespace oms2
 
     virtual oms_status_enu_t describe() { return oms_status_error; }
     oms_status_enu_t initialize();
+    oms_status_enu_t terminate();
+    oms_status_enu_t simulate();
 
   private:
     Model(const oms2::ComRef& cref);
