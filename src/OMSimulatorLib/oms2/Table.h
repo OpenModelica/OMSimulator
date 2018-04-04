@@ -56,6 +56,8 @@ namespace oms2
     oms_status_enu_t enterInitialization(const double time);
     oms_status_enu_t exitInitialization();
 
+    oms_status_enu_t terminate() {return oms_status_ok;}
+
     oms_status_enu_t exportToSSD(pugi::xml_node& root) const;
 
     oms_element_type_enu_t getType() const { return oms_component_table; }

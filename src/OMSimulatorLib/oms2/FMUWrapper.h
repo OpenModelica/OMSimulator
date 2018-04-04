@@ -56,6 +56,7 @@ namespace oms2
     oms_status_enu_t enterInitialization(const double time);
     oms_status_enu_t exitInitialization();
     void do_event_iteration();
+    oms_status_enu_t terminate();
 
     oms_status_enu_t exportToSSD(pugi::xml_node& root) const;
 

@@ -61,6 +61,8 @@ namespace oms2
     oms_status_enu_t newTLMModel(const ComRef& name);
     oms_status_enu_t unloadModel(const ComRef& name);
     oms_status_enu_t initialize(const ComRef& name);
+    oms_status_enu_t terminate(const ComRef& name);
+    oms_status_enu_t simulate(const ComRef& name);
     oms_status_enu_t addFMU(const ComRef& modelIdent, const std::string& fmuPath, const ComRef& fmuIdent);
     oms_status_enu_t addTable(const ComRef& modelIdent, const std::string& tablePath, const ComRef& tableIdent);
     oms_status_enu_t deleteSubModel(const ComRef& modelIdent, const ComRef& subModelIdent);

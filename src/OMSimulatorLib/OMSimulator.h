@@ -472,6 +472,22 @@ oms_status_enu_t oms2_updateConnection(const char* cref, const char* conA, const
  */
 oms_status_enu_t oms2_initialize(const char* ident);
 
+/**
+ * \brief Simulates a composite model (works for both FMI and TLM).
+ *
+ * \param ident   [in] Name of the model instance
+ * \return        Error status
+ */
+oms_status_enu_t oms2_simulate(const char* ident);
+
+/**
+ * \brief Terminates a composite model (works for both FMI and TLM).
+ *
+ * \param ident   [in] Name of the model instance
+ * \return        Error status
+ */
+oms_status_enu_t oms2_terminate(const char* ident);
+
 oms_status_enu_t oms2_simulate_asynchronous(const char* ident, void (*cb)(const char* ident, double time, oms_status_enu_t status));
 
 /**

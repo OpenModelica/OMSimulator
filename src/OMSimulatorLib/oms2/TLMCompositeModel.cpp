@@ -199,3 +199,15 @@ oms_status_enu_t oms2::TLMCompositeModel::initialize()
   logError("oms2::TLMCompositeModel::initialize: not implemented yet");
   return oms_status_error;
 }
+
+oms_status_enu_t oms2::TLMCompositeModel::terminate()
+{
+  logError("oms2::TLMCompositeModel::terminate: not implemented yet");
+  return oms_status_error;
+}
+
+oms_status_enu_t oms2::TLMCompositeModel::simulate()
+{
+  logError("oms2::TLMCompositeModel::simulate: not implemented yet");
+  return oms_status_error;
+}

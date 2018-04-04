@@ -358,7 +358,10 @@ oms_status_enu_t oms2::FMUWrapper::initializeDependencyGraph_initialUnknowns()
   fmi2_import_get_initial_unknowns_dependencies(fmu, &startIndex, &dependency, &factorKind);
 
   if (!startIndex)
-    return logError("oms2::FMUWrapper::initializeDependencyGraph_initialUnknowns: [" + getName() + ": " + getFMUPath() + "] no dependencies");
+  {
+    logDebug("oms2::FMUWrapper::initializeDependencyGraph_initialUnknowns: [" + getName() + ": " + getFMUPath() + "] no dependencies");
+    return oms_status_ok;
+  }
 
   int N=initialUnknownsGraph.nodes.size();
   for (int i = 0; i < N; i++)
@@ -402,7 +405,10 @@ oms_status_enu_t oms2::FMUWrapper::initializeDependencyGraph_outputs()
   fmi2_import_get_outputs_dependencies(fmu, &startIndex, &dependency, &factorKind);
 
   if (!startIndex)
-    return logError("oms2::FMUWrapper::initializeDependencyGraph_outputs: [" + getName() + ": " + getFMUPath() + "] no dependencies");
+  {
+    logDebug("oms2::FMUWrapper::initializeDependencyGraph_outputs: [" + getName() + ": " + getFMUPath() + "] no dependencies");
+    return oms_status_ok;
+  }
 
   int N=outputsGraph.nodes.size();
   for (int i = 0; i < N; i++)
@@ -518,6 +524,19 @@ void oms2::FMUWrapper::do_event_iteration()
   eventInfo.terminateSimulation = fmi2_false;
   while (eventInfo.newDiscreteStatesNeeded && !eventInfo.terminateSimulation)
     fmi2_import_new_discrete_states(fmu, &eventInfo);
+}
+
+oms_status_enu_t oms2::FMUWrapper::terminate()
+{
+  if (oms_fmi_kind_me == fmuInfo.getKind())
+  {
+    // free solver data
+  }
+
+  fmi2_status_t fmistatus = fmi2_import_terminate(fmu);
+  if (fmi2_status_ok != fmistatus)
+    return logError("fmi2_import_terminate failed");
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms2::FMUWrapper::exportToSSD(pugi::xml_node& root) const

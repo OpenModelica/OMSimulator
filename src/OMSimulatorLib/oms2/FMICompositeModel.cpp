@@ -808,6 +808,21 @@ oms_status_enu_t oms2::FMICompositeModel::initialize()
   return oms_status_ok;
 }
 
+oms_status_enu_t oms2::FMICompositeModel::terminate()
+{
+  logTrace();
+
+  for (const auto& it : subModels)
+    it.second->terminate();
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms2::FMICompositeModel::simulate()
+{
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms2::FMICompositeModel::setReal(const oms2::SignalRef& sr, double value)
 {
   oms2::FMISubModel* model = getSubModel(sr.getCref());
