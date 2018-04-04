@@ -63,6 +63,8 @@ namespace oms2
     double getStartTime() const {return startTime;}
     void setStopTime(double value) {stopTime = value;}
     double getStopTime() const {return stopTime;}
+    void setCommunicationInterval(double value) {communicationInterval = value;}
+    double getCommunicationInterval() const {return communicationInterval;}
     void setResultFile(const std::string& value) {resultFile = value;}
     const std::string& getResultFile() const {return resultFile;}
 
@@ -75,6 +77,9 @@ namespace oms2
     void setName(const ComRef& name) {compositeModel->setName(name);}
 
     virtual oms_status_enu_t describe() { return oms_status_error; }
+    oms_status_enu_t initialize();
+    oms_status_enu_t terminate();
+    oms_status_enu_t simulate();
 
   private:
     Model(const oms2::ComRef& cref);
@@ -88,9 +93,13 @@ namespace oms2
     oms2::ssd::SystemGeometry systemGeometry;
     CompositeModel* compositeModel;
 
-    double startTime;       ///< experiment, default 0.0
-    double stopTime;        ///< experiment, default 1.0
-    std::string resultFile; ///< experiment, default name_res.mat
+    double startTime;             ///< experiment, default 0.0
+    double stopTime;              ///< experiment, default 1.0
+    double communicationInterval; ///< experiment, default 1.0e-2
+    std::string resultFile;       ///< experiment, default <name>_res.mat
+
+    oms_modelState_enu_t modelState; ///< internal model state, e.g. initialization state
+    double time;                     ///< model time
   };
 }
 

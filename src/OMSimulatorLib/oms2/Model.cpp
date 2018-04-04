@@ -49,7 +49,9 @@ oms2::Model::Model(const oms2::ComRef& cref)
 
   startTime = 0.0;
   stopTime = 1.0;
+  communicationInterval = 1e-2;
   resultFile = cref.toString() + "_res.mat";
+  modelState = oms_modelState_instantiated;
 }
 
 oms2::Model::~Model()
@@ -195,6 +197,8 @@ oms2::FMICompositeModel* oms2::Model::getFMICompositeModel()
 {
   if (oms_component_fmi == getType())
     return dynamic_cast<FMICompositeModel*>(compositeModel);
+
+  logError("[oms2::Model::getFMICompositeModel] \"" + getName() + "\" is not a FMI composite model.");
   return NULL;
 }
 
@@ -202,5 +206,55 @@ oms2::TLMCompositeModel* oms2::Model::getTLMCompositeModel()
 {
   if (oms_component_tlm == getType())
     return dynamic_cast<TLMCompositeModel*>(compositeModel);
+
+  logError("[oms2::Model::getTLMCompositeModel] \"" + getName() + "\" is not a TLM composite model.");
   return NULL;
+}
+
+oms_status_enu_t oms2::Model::initialize()
+{
+  if (oms_modelState_instantiated != modelState)
+  {
+    logError("[oms2::Model::initialize] Model cannot be initialized, because it isn't in instantiate state.");
+    return oms_status_error;
+  }
+
+  modelState = oms_modelState_initialization;
+  time = startTime;
+
+  oms_status_enu_t status = compositeModel->initialize();
+  if (oms_status_ok == status)
+    modelState = oms_modelState_simulation;
+  else
+    modelState = oms_modelState_instantiated;
+
+  return status;
+}
+
+oms_status_enu_t oms2::Model::terminate()
+{
+  if (oms_modelState_initialization != modelState && oms_modelState_simulation != modelState)
+  {
+    logError("[oms2::Model::terminate] Model cannot be terminated, because it isn't in simulation state.");
+    return oms_status_error;
+  }
+
+  modelState = oms_modelState_initialization;
+  time = startTime;
+
+  oms_status_enu_t status = compositeModel->terminate();
+  if (oms_status_ok == status)
+  {
+    modelState = oms_modelState_instantiated;
+    logInfo("Simulation finished.");
+  }
+
+  return status;
+}
+
+oms_status_enu_t oms2::Model::simulate()
+{
+  /// \todo implement me
+  logDebug("oms2::Model::simulate()");
+  return oms_status_ok;
 }

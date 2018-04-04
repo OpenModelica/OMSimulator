@@ -39,6 +39,11 @@
 #include <iostream>
 #include <string>
 
+oms2::Variable::Variable(const oms2::SignalRef& sr, fmi2_causality_enu_t causality, fmi2_initial_enu_t initialProperty, bool is_state, oms_signal_type_enu_t type)
+  : sr(sr), index(0), vr(0), causality(causality), initialProperty(initialProperty), is_state(is_state), type(type)
+{
+}
+
 oms2::Variable::Variable(const oms2::ComRef& cref, fmi2_import_variable_t *var, unsigned int index)
   : is_state(false), sr(cref, fmi2_import_get_variable_name(var)), index(index)
 {
@@ -74,6 +79,25 @@ oms2::Variable::Variable(const oms2::ComRef& cref, fmi2_import_variable_t *var, 
 
 oms2::Variable::~Variable()
 {
+}
+
+oms_causality_enu_t oms2::Variable::getCausality() const
+{
+  switch (causality)
+  {
+  case fmi2_causality_enu_input:
+    return oms_causality_input;
+
+  case fmi2_causality_enu_output:
+    return oms_causality_output;
+
+  case fmi2_causality_enu_parameter:
+    return oms_causality_parameter;
+
+  default:
+    logWarning("[oms2::Variable::getCausality] undefined causality detected");
+    return oms_causality_undefined;
+  }
 }
 
 bool oms2::operator==(const oms2::Variable& v1, const oms2::Variable& v2)

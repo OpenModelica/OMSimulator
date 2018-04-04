@@ -45,7 +45,6 @@ public:
   ResultReader::Series* getSeries(const char* var);
 
 private:
-  std::vector<std::string> names;
   double* data;
   unsigned int length;
 };

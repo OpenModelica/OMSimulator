@@ -29,48 +29,50 @@
  *
  */
 
-#ifndef _OMS2_COMPOSITE_MODEL_H_
-#define _OMS2_COMPOSITE_MODEL_H_
+#ifndef _OMS2_DIRECTED_GRAPH_H_
+#define _OMS2_DIRECTED_GRAPH_H_
 
-#include "../Types.h"
-#include "ComRef.h"
-#include "Element.h"
-#include "ssd/ElementGeometry.h"
-#include "ssd/SystemGeometry.h"
+#include "Variable.h"
 
+#include <fmilib.h>
 #include <string>
+#include <vector>
+#include <map>
+#include <deque>
+#include <stack>
 
 namespace oms2
 {
-  class CompositeModel
+  class DirectedGraph
   {
   public:
-    virtual oms_element_type_enu_t getType() = 0;
+    DirectedGraph();
+    ~DirectedGraph();
 
-    static void DeleteModel(CompositeModel *model) {if (model) delete model;}
+    void clear();
 
-    const ComRef getName() const {return oms2::ComRef(element.getName());}
-    const oms2::ssd::ElementGeometry* getGeometry() {return element.getGeometry();}
-    oms2::Element* getElement() {return &element;}
+    int addVariable(const oms2::Variable& var);
+    void addEdge(const oms2::Variable& var1, const oms2::Variable& var2);
 
-    void setName(const ComRef& name) {element.setName(name);}
-    void setGeometry(const oms2::ssd::ElementGeometry& geometry) {element.setGeometry(&geometry);}
+    void dotExport(const std::string& filename);
 
-    virtual oms_status_enu_t initialize() = 0;
-    virtual oms_status_enu_t terminate() = 0;
-    virtual oms_status_enu_t simulate() = 0;
+    void includeGraph(const DirectedGraph& graph);
 
-  protected:
-    CompositeModel(oms_element_type_enu_t type, const ComRef& cref);
-    virtual ~CompositeModel();
+    const std::vector< std::vector< std::pair<int, int> > >& getSortedConnections();
+    std::vector<oms2::Variable> nodes;
+    std::vector< std::pair<int, int> > edges;
 
   private:
-    // stop the compiler generating methods copying the object
-    CompositeModel(CompositeModel const& copy);            ///< not implemented
-    CompositeModel& operator=(CompositeModel const& copy); ///< not implemented
+    std::deque< std::vector<int> > getSCCs();
+    void calculateSortedConnections();
+    void strongconnect(int v, std::vector< std::vector<int> > G, int& index, int *d, int *low, std::stack<int>& S, bool *stacked, std::deque< std::vector<int> >& components);
 
-  protected:
-    oms2::Element element;
+    static int getEdgeIndex(const std::vector< std::pair<int, int> >& edges, int from, int to);
+
+  private:
+    std::vector< std::vector<int> > G;
+    std::vector< std::vector< std::pair<int, int> > > sortedConnections;
+    bool sortedConnectionsAreValid;
   };
 }
 

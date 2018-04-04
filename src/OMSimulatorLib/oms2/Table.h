@@ -29,48 +29,57 @@
  *
  */
 
-#ifndef _OMS2_COMPOSITE_MODEL_H_
-#define _OMS2_COMPOSITE_MODEL_H_
+#ifndef _OMS2_TABLE_H_
+#define _OMS2_TABLE_H_
 
-#include "../Types.h"
+#include "../ResultReader.h"
 #include "ComRef.h"
-#include "Element.h"
-#include "ssd/ElementGeometry.h"
-#include "ssd/SystemGeometry.h"
+#include "FMISubModel.h"
+#include "FMUInfo.h"
+#include "Option.h"
+#include "Variable.h"
 
+#include <map>
 #include <string>
+#include <unordered_map>
+#include <vector>
+
+#include <pugixml.hpp>
 
 namespace oms2
 {
-  class CompositeModel
+  class Table : public FMISubModel
   {
   public:
-    virtual oms_element_type_enu_t getType() = 0;
+    static Table* newSubModel(const ComRef& cref, const std::string& filename);
 
-    static void DeleteModel(CompositeModel *model) {if (model) delete model;}
+    oms_status_enu_t enterInitialization(const double time);
+    oms_status_enu_t exitInitialization();
 
-    const ComRef getName() const {return oms2::ComRef(element.getName());}
-    const oms2::ssd::ElementGeometry* getGeometry() {return element.getGeometry();}
-    oms2::Element* getElement() {return &element;}
+    oms_status_enu_t terminate() {return oms_status_ok;}
 
-    void setName(const ComRef& name) {element.setName(name);}
-    void setGeometry(const oms2::ssd::ElementGeometry& geometry) {element.setGeometry(&geometry);}
+    oms_status_enu_t exportToSSD(pugi::xml_node& root) const;
 
-    virtual oms_status_enu_t initialize() = 0;
-    virtual oms_status_enu_t terminate() = 0;
-    virtual oms_status_enu_t simulate() = 0;
+    oms_element_type_enu_t getType() const { return oms_component_table; }
 
-  protected:
-    CompositeModel(oms_element_type_enu_t type, const ComRef& cref);
-    virtual ~CompositeModel();
+    const std::string& getPath() const {return path;}
+
+    oms_status_enu_t getReal(const std::string& var, double& realValue, const double time);
+
+    oms2::Variable* getVariable(const std::string& signal);
+
+    oms_status_enu_t setReal(const oms2::SignalRef& sr, double value);
+    oms_status_enu_t getReal(const oms2::SignalRef& sr, double& value);
 
   private:
-    // stop the compiler generating methods copying the object
-    CompositeModel(CompositeModel const& copy);            ///< not implemented
-    CompositeModel& operator=(CompositeModel const& copy); ///< not implemented
+    Table(const ComRef& cref, const std::string& filename);
+    ~Table();
 
-  protected:
-    oms2::Element element;
+    std::string path;
+    std::vector<oms2::Variable> outputs;
+    ResultReader *resultReader;
+    std::unordered_map<std::string, ResultReader::Series*> series;
+    double time;
   };
 }
 

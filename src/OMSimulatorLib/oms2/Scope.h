@@ -60,7 +60,11 @@ namespace oms2
     oms_status_enu_t newFMIModel(const ComRef& name);
     oms_status_enu_t newTLMModel(const ComRef& name);
     oms_status_enu_t unloadModel(const ComRef& name);
+    oms_status_enu_t initialize(const ComRef& name);
+    oms_status_enu_t terminate(const ComRef& name);
+    oms_status_enu_t simulate(const ComRef& name);
     oms_status_enu_t addFMU(const ComRef& modelIdent, const std::string& fmuPath, const ComRef& fmuIdent);
+    oms_status_enu_t addTable(const ComRef& modelIdent, const std::string& tablePath, const ComRef& tableIdent);
     oms_status_enu_t deleteSubModel(const ComRef& modelIdent, const ComRef& subModelIdent);
     oms_status_enu_t rename(const ComRef& identOld, const ComRef& identNew);
     Model* loadModel(const std::string& filename);
@@ -82,6 +86,12 @@ namespace oms2
     oms_status_enu_t setBooleanParameter(const oms2::SignalRef& signal, bool value);
     oms_status_enu_t setTempDirectory(const std::string& newTempDir);
     oms_status_enu_t setWorkingDirectory(const std::string& path);
+    oms_status_enu_t setStartTime(const ComRef& cref, double startTime);
+    oms_status_enu_t setStopTime(const ComRef& cref, double stopTime);
+    oms_status_enu_t setCommunicationInterval(const ComRef& cref, double communicationInterval);
+    oms_status_enu_t setResultFile(const ComRef& cref, const std::string& filename);
+    oms_status_enu_t exportCompositeStructure(const ComRef& cref, const std::string& filename);
+    oms_status_enu_t exportDependencyGraphs(const ComRef& cref, const std::string& initialization, const std::string& simulation);
 
     const std::string& getTempDirectory() {return GetInstance().tempDir;}
     const std::string& getWorkingDirectory() {return GetInstance().workingDir;}

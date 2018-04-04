@@ -333,6 +333,16 @@ oms_status_enu_t oms2_unloadModel(const char* ident);
 oms_status_enu_t oms2_addFMU(const char* modelIdent, const char* fmuPath, const char* fmuIdent);
 
 /**
+ * \brief Adds a new lookup table instance to a given FMI model.
+ *
+ * \param modelIdent   [in] Identifier of parent model
+ * \param tablePath    [in] Full path to lookup table
+ * \param tableIdent   [in] Identifier of new lookup table instance
+ * \return             Error status
+ */
+oms_status_enu_t oms2_addTable(const char* modelIdent, const char* tablePath, const char* tableIdent);
+
+/**
  * \brief Deletes a sub-model instance, e.g. FMU, from a given FMI composite
  * model.
  *
@@ -365,7 +375,7 @@ oms_status_enu_t oms2_loadModel(const char* filename, char** ident);
  * \brief Loads a FMI composite model from xml representation.
  *
  * \param filename   [in] Path to the xml file; An exisiting file will be overwritten
- * \param ident      [in] Name of the imported model
+ * \param ident      [in] Name of the model to export
  * \return           Error status
  */
 oms_status_enu_t oms2_saveModel(const char* filename, const char* ident);
@@ -454,6 +464,30 @@ oms_status_enu_t oms2_deleteConnection(const char* cref, const char* conA, const
  */
 oms_status_enu_t oms2_updateConnection(const char* cref, const char* conA, const char* conB, const oms_connection_t* connection);
 
+/**
+ * \brief Initializes a composite model (works for both FMI and TLM).
+ *
+ * \param ident   [in] Name of the model instance
+ * \return        Error status
+ */
+oms_status_enu_t oms2_initialize(const char* ident);
+
+/**
+ * \brief Simulates a composite model (works for both FMI and TLM).
+ *
+ * \param ident   [in] Name of the model instance
+ * \return        Error status
+ */
+oms_status_enu_t oms2_simulate(const char* ident);
+
+/**
+ * \brief Terminates a composite model (works for both FMI and TLM).
+ *
+ * \param ident   [in] Name of the model instance
+ * \return        Error status
+ */
+oms_status_enu_t oms2_terminate(const char* ident);
+
 oms_status_enu_t oms2_simulate_asynchronous(const char* ident, void (*cb)(const char* ident, double time, oms_status_enu_t status));
 
 /**
@@ -473,60 +507,63 @@ void oms2_setLoggingLevel(int logLevel);
 /**
  * \brief Describes model by printing structure to cout.
  *
- * @param cref         [in] Full identifier of a component.
+ * \param cref   [in] Full identifier of a component.
+ * \return       Error status
  */
 oms_status_enu_t oms2_describe(const char* cref);
 
 /**
  * \brief Adds an external model to a TLM composite model
  *
- * @param cref         [in] Identifier of parent TLM composite model.
- * @param name         [in] Identifier of external model
- * @param modelfile    [in] Absolute path to model file of external model.
- * @param startscript  [in] Start script of external model.
+ * \param cref          [in] Identifier of parent TLM composite model.
+ * \param name          [in] Identifier of external model
+ * \param modelfile     [in] Absolute path to model file of external model.
+ * \param startscript   [in] Start script of external model.
+ * \return              Error status
  */
 oms_status_enu_t oms2_addExternalModel(const char* cref, const char* name, const char* modelfile, const char* startscript);
 
 /**
  * \brief Adds an external model to a TLM composite model
  *
- * @param cref         [in] Identifier of parent TLM composite model.
- * @param subref       [in] Identifier of sub FMI composite model.
+ * \param cref     [in] Identifier of parent TLM composite model.
+ * \param subref   [in] Identifier of sub FMI composite model.
+ * \return         Error status
  */
 oms_status_enu_t oms2_addFMISubModel(const char* cref, const char* subref);
 
 /**
  * \brief Adds an external model to a TLM composite model
  *
- * @param cref         [in] Identifier of TLM composite model.
- * @param subref       [in] Identifier of submodel.
- * @param name         [in] Identifier of TLM interface.
- * @param dimensions   [in] Number of dimensions of TLM interface (1, 3 or 6)
- * @param causality    [in] Causality of TLM interface.
- * @param domain       [in] Domain of TLM interface
+ * \param cref         [in] Identifier of TLM composite model.
+ * \param subref       [in] Identifier of submodel.
+ * \param name         [in] Identifier of TLM interface.
+ * \param dimensions   [in] Number of dimensions of TLM interface (1, 3 or 6)
+ * \param causality    [in] Causality of TLM interface.
+ * \param domain       [in] Domain of TLM interface
+ * \return             Error status
  */
-oms_status_enu_t oms2_addTLMInterface(const char *cref, const char* subref,
-                                  const char *name, int dimensions,
-                                  oms_tlm_causality_t causality, const char* domain);
+oms_status_enu_t oms2_addTLMInterface(const char *cref, const char* subref, const char *name, int dimensions, oms_tlm_causality_t causality, const char* domain);
 
 /**
  * \brief Adds an external model to a TLM composite model
  *
- * @param cref         [in] Identifier of TLM composite model.
- * @param from         [in] TLM interface (format: submodel:interface)
- * @param to           [in] TLM interface (format: submodel:interface)
- * @param delay        [in] Time delay of connection.
- * @param alpha        [in] Numerical damping factor of connection.
- * @param Zf           [in] Translational characteristic impedance of connection.
- * @param Zfr          [in] Rotational characteristic impedance of connection.
+ * \param cref    [in] Identifier of TLM composite model.
+ * \param from    [in] TLM interface (format: submodel:interface)
+ * \param to      [in] TLM interface (format: submodel:interface)
+ * \param delay   [in] Time delay of connection.
+ * \param alpha   [in] Numerical damping factor of connection.
+ * \param Zf      [in] Translational characteristic impedance of connection.
+ * \param Zfr     [in] Rotational characteristic impedance of connection.
+ * \return        Error status
  */
-oms_status_enu_t oms2_addTLMConnection(const char* cref, const char* from, const char* to,
-                                   double delay, double alpha, double Zf, double Zfr);
+oms_status_enu_t oms2_addTLMConnection(const char* cref, const char* from, const char* to, double delay, double alpha, double Zf, double Zfr);
 
 /**
  * \brief Redirects logging output to file or std streams. The warning/error counters are reset.
  *
  * \param filename   [in] "" to redirect to std streams and proper filename to redirect to file.
+ * \return           Error status
  */
 oms_status_enu_t oms2_setLogFile(const char* filename);
 
@@ -534,6 +571,7 @@ oms_status_enu_t oms2_setLogFile(const char* filename);
  * \brief Set new temp directory
  *
  * \param path   [in] Path to new temp directory
+ * \return       Error status
  */
 oms_status_enu_t oms2_setTempDirectory(const char* path);
 
@@ -541,6 +579,7 @@ oms_status_enu_t oms2_setTempDirectory(const char* path);
  * \brief Set a new working directory
  *
  * \param path   [in] Path to new working directory
+ * \return       Error status
  */
 oms_status_enu_t oms2_setWorkingDirectory(const char* path);
 
@@ -597,6 +636,61 @@ oms_status_enu_t oms2_getBooleanParameter(const char* signal, bool* value);
  * \return         Error status
  */
 oms_status_enu_t oms2_setBooleanParameter(const char* signal, bool value);
+
+/**
+ * \brief Set the start time of the simulation.
+ *
+ * \param cref        [in] Name of the model instance
+ * \param startTime   [in] Start time
+ * \return            Error status
+ */
+oms_status_enu_t oms2_setStartTime(const char* cref, double startTime);
+
+/**
+ * \brief Set the stop time of the simulation.
+ *
+ * \param cref       [in] Name of the model instance
+ * \param stopTime   [in] Stop time
+ * \return           Error status
+ */
+oms_status_enu_t oms2_setStopTime(const char* cref, double stopTime);
+
+/**
+ * \brief Set the communication interval of the simulation.
+ *
+ * \param cref                    [in] Name of the model instance
+ * \param communicationInterval   [in] Communication interval
+ * \return                        Error status
+ */
+oms_status_enu_t oms2_setCommunicationInterval(const char* cref, double communicationInterval);
+
+/**
+ * \brief Set the result file of the simulation.
+ *
+ * \param cref       [in] Name of the model instance
+ * \param filename   [in] Result file
+ * \return           Error status
+ */
+oms_status_enu_t oms2_setResultFile(const char* cref, const char* filename);
+
+/**
+ * \brief Export the composite structure of a given model to a dot file.
+ *
+ * \param cref       [in] Name of the model instance
+ * \param filename   [in] Path to the dot file; An exisiting file will be overwritten
+ * \return           Error status
+ */
+oms_status_enu_t oms2_exportCompositeStructure(const char* cref, const char* filename);
+
+/**
+ * \brief Export the dependency graphs of a given model to a dot file.
+ *
+ * \param cref             [in] Name of the model instance
+ * \param initialization   [in] Path to the dot file; An exisiting file will be overwritten
+ * \param simulation       [in] Path to the dot file; An exisiting file will be overwritten
+ * \return                 Error status
+ */
+oms_status_enu_t oms2_exportDependencyGraphs(const char* cref, const char* initialization, const char* simulation);
 
 #ifdef __cplusplus
 }

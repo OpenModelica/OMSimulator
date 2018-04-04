@@ -84,7 +84,7 @@ CSVReader::CSVReader(const char* filename)
       trim(name);
       if (!name.empty())
       {
-        names.push_back(name);
+        signals.push_back(name);
         name.clear();
       }
     }
@@ -94,7 +94,7 @@ CSVReader::CSVReader(const char* filename)
       trim(name);
       if (!name.empty())
       {
-        names.push_back(name);
+        signals.push_back(name);
         name.clear();
       }
     }
@@ -103,10 +103,10 @@ CSVReader::CSVReader(const char* filename)
   }
   trim(name);
   if (!name.empty())
-    names.push_back(name);
+    signals.push_back(name);
 
   // read data
-  data = new double[length * names.size()];
+  data = new double[length * signals.size()];
   int row=0;
   int col=0;
   while (std::getline(file, line))
@@ -124,7 +124,7 @@ CSVReader::CSVReader(const char* filename)
           trim(name);
           if (!name.empty())
           {
-            data[row * names.size() + col] = strtod(name.c_str(), NULL);
+            data[row * signals.size() + col] = strtod(name.c_str(), NULL);
             name.clear();
             col++;
           }
@@ -135,7 +135,7 @@ CSVReader::CSVReader(const char* filename)
           trim(name);
           if (!name.empty())
           {
-            data[row * names.size() + col] = strtod(name.c_str(), NULL);
+            data[row * signals.size() + col] = strtod(name.c_str(), NULL);
             name.clear();
             col++;
           }
@@ -146,7 +146,7 @@ CSVReader::CSVReader(const char* filename)
       trim(name);
       if (!name.empty())
       {
-        data[row * names.size() + col] = strtod(name.c_str(), NULL);
+        data[row * signals.size() + col] = strtod(name.c_str(), NULL);
         name.clear();
         col++;
       }
@@ -163,8 +163,8 @@ ResultReader::Series* CSVReader::getSeries(const char* var)
 {
   // find index
   int index = -1;
-  for (int i = 0; i < names.size(); ++i)
-    if (!strcmp(var, names[i].c_str()))
+  for (int i = 0; i < signals.size(); ++i)
+    if (!strcmp(var, signals[i].c_str()))
       index = i;
 
   if (index == -1)
@@ -180,8 +180,8 @@ ResultReader::Series* CSVReader::getSeries(const char* var)
 
   for (unsigned int row = 0; row < series->length; ++row)
   {
-    series->time[row] = data[row * names.size()];
-    series->value[row] = data[row * names.size() + index];
+    series->time[row] = data[row * signals.size()];
+    series->value[row] = data[row * signals.size() + index];
   }
 
   return series;

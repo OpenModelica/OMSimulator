@@ -72,6 +72,7 @@ typedef enum {
   oms_component_fmi,      ///< FMI model
   oms_component_external, ///< External model
   oms_component_fmu,      ///< FMU
+  oms_component_table,    ///< lookup table
   oms_component_port      ///< port
 } oms_element_type_enu_t;
 

@@ -37,6 +37,7 @@
 #include "../Types.h"
 
 #include <fmilib.h>
+
 #include <string>
 #include <vector>
 
@@ -45,6 +46,7 @@ namespace oms2
   class Variable
   {
   public:
+    Variable(const oms2::SignalRef& sr, fmi2_causality_enu_t causality, fmi2_initial_enu_t initialProperty, bool is_state, oms_signal_type_enu_t type);
     Variable(const oms2::ComRef& cref, fmi2_import_variable_t *var, unsigned int index);
     ~Variable();
 
@@ -84,6 +86,7 @@ namespace oms2
     bool isTypeBoolean() const { return oms_signal_type_boolean == type; }
 
     std::string getCausalityString() { return std::string(fmi2_causality_to_string(causality)); }
+    oms_causality_enu_t getCausality() const;
 
     unsigned int getIndex() const { return index; }
 

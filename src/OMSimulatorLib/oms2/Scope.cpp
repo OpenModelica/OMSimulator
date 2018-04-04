@@ -146,6 +146,21 @@ oms_status_enu_t oms2::Scope::addFMU(const oms2::ComRef& modelIdent, const std::
   return fmiModel->addFMU(fmuPath, fmuIdent);
 }
 
+oms_status_enu_t oms2::Scope::addTable(const ComRef& modelIdent, const std::string& tablePath, const ComRef& tableIdent)
+{
+  logTrace();
+
+  oms2::Model* model = getModel(modelIdent);
+  if (!model)
+    return oms_status_error;
+
+  FMICompositeModel* fmiModel = model->getFMICompositeModel();
+  if (!fmiModel)
+    return oms_status_error;
+
+  return fmiModel->addTable(tablePath, tableIdent);
+}
+
 oms_status_enu_t oms2::Scope::deleteSubModel(const oms2::ComRef& modelIdent, const oms2::ComRef& subModelIdent)
 {
   logTrace();
@@ -222,6 +237,39 @@ oms_status_enu_t oms2::Scope::saveModel(const std::string& filename, const oms2:
     return oms_status_error;
 
   return model->save(filename);
+}
+
+oms_status_enu_t oms2::Scope::initialize(const ComRef& name)
+{
+  logTrace();
+
+  oms2::Model* model = getModel(name);
+  if (!model)
+    return oms_status_error;
+
+  return model->initialize();
+}
+
+oms_status_enu_t oms2::Scope::terminate(const ComRef& name)
+{
+  logTrace();
+
+  oms2::Model* model = getModel(name);
+  if (!model)
+    return oms_status_error;
+
+  return model->terminate();
+}
+
+oms_status_enu_t oms2::Scope::simulate(const ComRef& name)
+{
+  logTrace();
+
+  oms2::Model* model = getModel(name);
+  if (!model)
+    return oms_status_error;
+
+  return model->simulate();
 }
 
 oms_status_enu_t oms2::Scope::setTempDirectory(const std::string& newTempDir)
@@ -1001,4 +1049,122 @@ oms_status_enu_t oms2::Scope::describeModel(const oms2::ComRef &cref)
   }
 
   return model->describe();
+}
+
+oms_status_enu_t oms2::Scope::setStartTime(const ComRef& cref, double startTime)
+{
+  if (cref.isIdent())
+  {
+    // Model
+    Model* model = getModel(cref);
+    if (!model)
+    {
+      logError("[oms2::Scope::setStartTime] failed");
+      return oms_status_error;
+    }
+    model->setStartTime(startTime);
+    return oms_status_ok;
+  }
+  return oms_status_error;
+}
+
+oms_status_enu_t oms2::Scope::setStopTime(const ComRef& cref, double stopTime)
+{
+  if (cref.isIdent())
+  {
+    // Model
+    Model* model = getModel(cref);
+    if (!model)
+    {
+      logError("[oms2::Scope::setStopTime] failed");
+      return oms_status_error;
+    }
+    model->setStopTime(stopTime);
+    return oms_status_ok;
+  }
+  return oms_status_error;
+}
+
+oms_status_enu_t oms2::Scope::setCommunicationInterval(const ComRef& cref, double communicationInterval)
+{
+  if (cref.isIdent())
+  {
+    // Model
+    Model* model = getModel(cref);
+    if (!model)
+    {
+      logError("[oms2::Scope::setCommunicationInterval] failed");
+      return oms_status_error;
+    }
+    model->setCommunicationInterval(communicationInterval);
+    return oms_status_ok;
+  }
+  return oms_status_error;
+}
+
+oms_status_enu_t oms2::Scope::setResultFile(const ComRef& cref, const std::string& filename)
+{
+  if (cref.isIdent())
+  {
+    // Model
+    Model* model = getModel(cref);
+    if (!model)
+    {
+      logError("[oms2::Scope::setResultFile] failed");
+      return oms_status_error;
+    }
+    model->setResultFile(filename);
+    return oms_status_ok;
+  }
+  return oms_status_error;
+}
+
+oms_status_enu_t oms2::Scope::exportCompositeStructure(const ComRef& cref, const std::string& filename)
+{
+  if (cref.isIdent())
+  {
+    // Model
+    Model* model = getModel(cref);
+    if (!model)
+    {
+      logError("[oms2::Scope::exportCompositeStructure] failed");
+      return oms_status_error;
+    }
+
+    // FMI model?
+    if (oms_component_fmi == model->getType())
+    {
+      FMICompositeModel* fmiModel = model->getFMICompositeModel();
+      return fmiModel->exportCompositeStructure(filename);
+    }
+
+    logError("[oms2::Scope::exportCompositeStructure] is only implemented for FMI models yet");
+    return oms_status_error;
+  }
+  return oms_status_error;
+}
+
+oms_status_enu_t oms2::Scope::exportDependencyGraphs(const ComRef& cref, const std::string& initialization, const std::string& simulation)
+{
+  if (cref.isIdent())
+  {
+    // Model
+    Model* model = getModel(cref);
+    if (!model)
+    {
+      logError("[oms2::Scope::exportDependencyGraphs] failed");
+      return oms_status_error;
+    }
+
+    // FMI model?
+    if (oms_component_fmi == model->getType())
+    {
+      FMICompositeModel* fmiModel = model->getFMICompositeModel();
+      return fmiModel->exportDependencyGraphs(initialization, simulation);
+    }
+
+    logError("[oms2::Scope::exportDependencyGraphs] is only implemented for FMI models yet");
+    return oms_status_error;
+  }
+  return oms_status_error;
 }

@@ -37,6 +37,7 @@
 #include "Logging.h"
 #include "SignalRef.h"
 #include "ssd/Tags.h"
+#include "Table.h"
 
 #include <pugixml.hpp>
 
@@ -401,10 +402,26 @@ oms_status_enu_t oms2::FMICompositeModel::addFMU(const std::string& filename, co
 
 oms_status_enu_t oms2::FMICompositeModel::addTable(const std::string& filename, const oms2::ComRef& cref)
 {
+  if (!cref.isValidIdent())
+    return oms_status_error;
+
+  // check if cref is already used
+  auto it = subModels.find(cref);
+  if (it != subModels.end())
+  {
+    logError("A submodel called \"" + cref + "\" is already instantiated.");
+    return oms_status_error;
+  }
+
+  oms2::ComRef parent = getName();
+  oms2::Table* subModel = oms2::Table::newSubModel(parent + cref, filename);
+  if (!subModel)
+    return oms_status_error;
+
   deleteComponents();
 
-  logError("[oms2::FMICompositeModel::addTable] not implemented yet");
-  return oms_status_error;
+  subModels[cref] = subModel;
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms2::FMICompositeModel::deleteSubModel(const oms2::ComRef& cref)
@@ -630,4 +647,269 @@ oms2::Element** oms2::FMICompositeModel::getElements()
 
   updateComponents();
   return components;
+}
+
+oms2::Variable* oms2::FMICompositeModel::getVariable(const oms2::SignalRef& signal)
+{
+  auto it = subModels.find(signal.getCref().last());
+  if (it == subModels.end())
+  {
+    logError("No submodel called \"" + signal.getCref() + "\" found.");
+    return NULL;
+  }
+
+  return it->second->getVariable(signal.getVar());
+}
+
+oms_causality_enu_t oms2::FMICompositeModel::getSignalCausality(const oms2::SignalRef& signal)
+{
+  auto it = subModels.find(signal.getCref().last());
+  if (it == subModels.end())
+  {
+    logError("No submodel called \"" + signal.getCref() + "\" found.");
+    return oms_causality_undefined;
+  }
+
+  if (oms_component_table == it->second->getType())
+    return oms_causality_output;
+  return it->second->getVariable(signal.getVar())->getCausality();
+}
+
+oms_status_enu_t oms2::FMICompositeModel::exportCompositeStructure(const std::string& filename)
+{
+  logTrace();
+
+  /*
+   * #dot -Gsplines=none test.dot | neato -n -Gsplines=ortho -Tpng -otest.png
+   * digraph G
+   * {
+   *   graph [rankdir=LR, splines=ortho];
+   *
+   *   node[shape=record];
+   *   A [label="A", height=2, width=2];
+   *   B [label="B", height=2, width=2];
+   *
+   *   A -> B [label="A.y -> B.u"];
+   * }
+   */
+
+  if (!(filename.length() > 5 && filename.substr(filename.length() - 4) == ".dot"))
+  {
+    logError("[oms2::FMICompositeModel::exportCompositeStructure] The filename must have .dot as extension.");
+    return oms_status_error;
+  }
+
+  std::ofstream dotFile(filename);
+  dotFile << "#dot -Gsplines=none " << filename.c_str() << " | neato -n -Gsplines=ortho -Tpng -o" << filename.substr(0, filename.length() - 4).c_str() << ".png" << std::endl;
+  dotFile << "digraph G" << std::endl;
+  dotFile << "{" << std::endl;
+  dotFile << "  graph [rankdir=LR, splines=ortho];\n" << std::endl;
+  dotFile << "  node[shape=record];" << std::endl;
+
+  for (const auto& it : subModels)
+  {
+    dotFile << "  " << it.first.toString() << "[label=\"" << it.first.toString();
+    switch (it.second->getType())
+    {
+    case oms_component_table:
+      dotFile << "\\n(table)";
+      break;
+    case oms_component_fmu:
+      dotFile << "\\n(fmu)";
+      break;
+    }
+    dotFile << "\", height=2, width=2];" << std::endl;
+  }
+
+  dotFile << std::endl;
+  for (auto& connection : connections)
+  {
+    if (connection)
+    {
+      SignalRef A = connection->getSignalA();
+      SignalRef B = connection->getSignalB();
+
+      oms_causality_enu_t varA = getSignalCausality(A);
+      oms_causality_enu_t varB = getSignalCausality(B);
+
+      if (oms_causality_output == varA && oms_causality_input == varB)
+        dotFile << "  " << A.getCref().toString() << " -> " << B.getCref().toString() << " [taillabel=\"" << A.getVar() << "\", headlabel=\"" << B.getVar() /*<< "\", label=\"" << A.getVar() << " -> " << B.getVar()*/ << "\"];" << std::endl;
+      else if (oms_causality_input == varA && oms_causality_output == varB)
+        dotFile << "  " << B.getCref().toString() << " -> " << A.getCref().toString() << " [taillabel=\"" << B.getVar() << "\", headlabel=\"" << A.getVar() /*<< "\", label=\"" << B.getVar() << " -> " << A.getVar()*/ << "\"];" << std::endl;
+      else
+        return oms_status_error;
+    }
+  }
+
+  dotFile << "}" << std::endl;
+  dotFile.close();
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms2::FMICompositeModel::exportDependencyGraphs(const std::string& initialization, const std::string& simulation)
+{
+  logTrace();
+  if (!initialization.empty())
+    initialUnknownsGraph.dotExport(initialization);
+  if (!simulation.empty())
+    outputsGraph.dotExport(simulation);
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms2::FMICompositeModel::initialize()
+{
+  initialUnknownsGraph.clear();
+  outputsGraph.clear();
+
+  // Enter initialization
+  for (const auto& it : subModels)
+  {
+    if (oms_status_ok != it.second->enterInitialization(0.0))
+      return logError("[oms2::FMICompositeModel::initialize] failed");
+    else
+    {
+      initialUnknownsGraph.includeGraph(it.second->getInitialUnknownsGraph());
+      outputsGraph.includeGraph(it.second->getOutputsGraph());
+    }
+  }
+
+  for (auto& connection : connections)
+  {
+    if (!connection)
+      continue;
+
+    oms2::Variable *varA = getVariable(connection->getSignalA());
+    oms2::Variable *varB = getVariable(connection->getSignalB());
+    if (varA && varB)
+    {
+      if (varA->isInput() && varB->isOutput())
+      {
+        initialUnknownsGraph.addEdge(*varB, *varA);
+        outputsGraph.addEdge(*varB, *varA);
+      }
+      else
+      {
+        initialUnknownsGraph.addEdge(*varA, *varB);
+        outputsGraph.addEdge(*varA, *varB);
+      }
+    }
+    else
+      return logError("[oms2::FMICompositeModel::initialize] failed for " + connection->getSignalA().toString() + " -> " + connection->getSignalB().toString());
+  }
+
+  updateInputs(initialUnknownsGraph);
+
+  // Exit initialization
+  for (const auto& it : subModels)
+    if (oms_status_ok != it.second->exitInitialization())
+      return logError("[oms2::FMICompositeModel::initialize] failed");
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms2::FMICompositeModel::terminate()
+{
+  logTrace();
+
+  for (const auto& it : subModels)
+    it.second->terminate();
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms2::FMICompositeModel::simulate()
+{
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms2::FMICompositeModel::setReal(const oms2::SignalRef& sr, double value)
+{
+  oms2::FMISubModel* model = getSubModel(sr.getCref());
+  if (!model)
+    return oms_status_error;
+
+  return model->setReal(sr, value);
+}
+
+oms_status_enu_t oms2::FMICompositeModel::getReal(const oms2::SignalRef& sr, double& value)
+{
+  oms2::FMISubModel* model = getSubModel(sr.getCref());
+  if (!model)
+    return oms_status_error;
+
+  return model->getReal(sr, value);
+}
+
+oms_status_enu_t oms2::FMICompositeModel::updateInputs(oms2::DirectedGraph& graph)
+{
+  // input := output
+  const std::vector< std::vector< std::pair<int, int> > >& sortedConnections = graph.getSortedConnections();
+  for(int i=0; i<sortedConnections.size(); i++)
+  {
+    if (sortedConnections[i].size() == 1)
+    {
+      int output = sortedConnections[i][0].first;
+      int input = sortedConnections[i][0].second;
+
+      double value = 0.0;
+      getReal(graph.nodes[output].getSignalRef(), value);
+      setReal(graph.nodes[input].getSignalRef(), value);
+      //std::cout << inputFMU << "." << inputVar << " = " << outputFMU << "." << outputVar << std::endl;
+    }
+    else
+    {
+      solveAlgLoop(graph, sortedConnections[i]);
+    }
+  }
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms2::FMICompositeModel::solveAlgLoop(oms2::DirectedGraph& graph, const std::vector< std::pair<int, int> >& SCC)
+{
+  const int size = SCC.size();
+  const double tolerance = 1e-4;
+  const int maxIterations = 10;
+  double maxRes;
+  double *res = new double[size]();
+  double tcur = 0.0;
+
+  int it=0;
+  do
+  {
+    it++;
+    // get old values
+    for (int i=0; i<size; ++i)
+    {
+      int output = SCC[i].first;
+      getReal(graph.nodes[output].getSignalRef(), res[i]);
+    }
+
+    // update inputs
+    for (int i=0; i<size; ++i)
+    {
+      int input = SCC[i].second;
+      setReal(graph.nodes[input].getSignalRef(), res[i]);
+    }
+
+    // calculate residuals
+    maxRes = 0.0;
+    double value;
+    for (int i=0; i<size; ++i)
+    {
+      int output = SCC[i].first;
+      getReal(graph.nodes[output].getSignalRef(), value);
+      res[i] -= value;
+
+      if (fabs(res[i]) > maxRes)
+        maxRes = fabs(res[i]);
+    }
+  } while(maxRes > tolerance && it < maxIterations);
+
+  delete[] res;
+
+  if (it >= maxIterations)
+    return logError("CompositeModel::solveAlgLoop: max. number of iterations (" + std::to_string(maxIterations) + ") exceeded at time = " + std::to_string(tcur));
+  logDebug("CompositeModel::solveAlgLoop: maxRes: " + std::to_string(maxRes) + ", iterations: " + std::to_string(it) + " at time = " + std::to_string(tcur));
+  return oms_status_ok;
 }

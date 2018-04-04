@@ -538,7 +538,13 @@ oms_status_enu_t oms2_unloadModel(const char* ident)
 oms_status_enu_t oms2_addFMU(const char* modelIdent, const char* fmuPath, const char* fmuIdent)
 {
   logTrace();
-  return oms2::Scope::GetInstance().addFMU(oms2::ComRef(modelIdent), fmuPath, oms2::ComRef(fmuIdent));
+  return oms2::Scope::GetInstance().addFMU(oms2::ComRef(modelIdent), std::string(fmuPath), oms2::ComRef(fmuIdent));
+}
+
+oms_status_enu_t oms2_addTable(const char* modelIdent, const char* tablePath, const char* tableIdent)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().addTable(oms2::ComRef(modelIdent), std::string(tablePath), oms2::ComRef(tableIdent));
 }
 
 oms_status_enu_t oms2_deleteSubModel(const char* modelIdent, const char* subModelIdent)
@@ -624,6 +630,24 @@ oms_status_enu_t oms2_updateConnection(const char* cref, const char* conA, const
 {
   logTrace();
   return oms2::Scope::GetInstance().updateConnection(oms2::ComRef(cref), oms2::SignalRef(conA), oms2::SignalRef(conB), reinterpret_cast<const oms2::Connection*>(connection));
+}
+
+oms_status_enu_t oms2_initialize(const char* ident)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().initialize(oms2::ComRef(ident));
+}
+
+oms_status_enu_t oms2_simulate(const char* ident)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().simulate(oms2::ComRef(ident));
+}
+
+oms_status_enu_t oms2_terminate(const char* ident)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().terminate(oms2::ComRef(ident));
 }
 
 oms_status_enu_t oms2_simulate_asynchronous(const char* ident, void (*cb)(const char* ident, double time, oms_status_enu_t status))
@@ -721,20 +745,53 @@ oms_status_enu_t oms2_addExternalModel(const char *cref, const char *name, const
 oms_status_enu_t oms2_addTLMInterface(const char *cref, const char *subref, const char *name, int dimensions, oms_tlm_causality_t causality, const char *domain)
 {
   logTrace();
-  return oms2::Scope::GetInstance().addTLMInterface(oms2::ComRef(cref), oms2::ComRef(subref), oms2::ComRef(name),
-                                      dimensions, causality, domain);
+  return oms2::Scope::GetInstance().addTLMInterface(oms2::ComRef(cref), oms2::ComRef(subref), oms2::ComRef(name), dimensions, causality, domain);
 }
 
-oms_status_enu_t oms2_addTLMConnection(const char *cref, const char *from, const char *to,
-                                   double delay, double alpha, double Zf, double Zfr)
+oms_status_enu_t oms2_addTLMConnection(const char *cref, const char *from, const char *to, double delay, double alpha, double Zf, double Zfr)
 {
   logTrace();
-  return oms2::Scope::GetInstance().addTLMConnection(oms2::ComRef(cref), oms2::SignalRef(from), oms2::SignalRef(to),
-                                       delay, alpha, Zf, Zfr);
+  return oms2::Scope::GetInstance().addTLMConnection(oms2::ComRef(cref), oms2::SignalRef(from), oms2::SignalRef(to), delay, alpha, Zf, Zfr);
 }
 
 oms_status_enu_t oms2_addFMISubModel(const char *cref, const char *subref)
 {
   logTrace();
   return oms2::Scope::GetInstance().addFMISubModel(oms2::ComRef(cref), oms2::ComRef(subref));
+}
+
+oms_status_enu_t oms2_setStartTime(const char* cref, double startTime)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().setStartTime(oms2::ComRef(cref), startTime);
+}
+
+oms_status_enu_t oms2_setStopTime(const char* cref, double stopTime)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().setStopTime(oms2::ComRef(cref), stopTime);
+}
+
+oms_status_enu_t oms2_setCommunicationInterval(const char* cref, double communicationInterval)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().setCommunicationInterval(oms2::ComRef(cref), communicationInterval);
+}
+
+oms_status_enu_t oms2_setResultFile(const char* cref, const char* filename)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().setResultFile(oms2::ComRef(cref), std::string(filename));
+}
+
+oms_status_enu_t oms2_exportCompositeStructure(const char* cref, const char* filename)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().exportCompositeStructure(oms2::ComRef(cref), std::string(filename));
+}
+
+oms_status_enu_t oms2_exportDependencyGraphs(const char* cref, const char* initialization, const char* simulation)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().exportDependencyGraphs(oms2::ComRef(cref), std::string(initialization), std::string(simulation));
 }
