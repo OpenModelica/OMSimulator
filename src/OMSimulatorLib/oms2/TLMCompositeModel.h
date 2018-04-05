@@ -73,9 +73,9 @@ namespace oms2
 
     oms_status_enu_t describe();
 
-    oms_status_enu_t initialize();
+    oms_status_enu_t initialize(double startTime);
     oms_status_enu_t terminate();
-    oms_status_enu_t simulate();
+    oms_status_enu_t simulate(double stopTime);
 
   private:
     TLMCompositeModel(const ComRef& name);
