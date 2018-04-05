@@ -209,15 +209,14 @@ oms2::TLMCompositeModel* oms2::TLMCompositeModel::LoadModel(const pugi::xml_node
 oms_status_enu_t oms2::TLMCompositeModel::initialize(double startTime, double tolerance)
 {
   Model* pModel = oms2::Scope::GetInstance().getModel(getName());
-  omtlm_setStartTime(model, pModel->getStartTime());
-  omtlm_setStopTime(model, pModel->getStopTime());
+  omtlm_setStartTime(model, startTime);
   omtlm_setNumLogStep(model, 1000); //Hard-coded for now
 
   //Initialize sub-models
   auto it = fmiModels.begin();
   for(; it!=fmiModels.end(); ++it)
   {
-     it->second->initialize();
+     it->second->initialize(startTime, tolerance);
   }
 
   return oms_status_ok;
@@ -231,6 +230,14 @@ oms_status_enu_t oms2::TLMCompositeModel::terminate()
 
 oms_status_enu_t oms2::TLMCompositeModel::simulate(ResultWriter& resultWriter, double stopTime, double communicationInterval)
 {
-  logError("oms2::TLMCompositeModel::simulate: not implemented yet");
-  return oms_status_error;
+  /// \todo Add simulation of FMI submodels
+  if(!fmiModels.empty()) {
+    logError("oms2::TLMCompositeModel::simulate: Simulation of FMI sub-models is not implemented yet.");
+    return oms_status_error;
+  }
+
+  omtlm_setStopTime(model, stopTime);
+  omtlm_simulate(model);
+
+  return oms_status_ok; //Perhaps omstlm_simulate should return a status instead
 }
