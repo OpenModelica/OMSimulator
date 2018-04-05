@@ -39,6 +39,7 @@
 #include "TLMConnection.h"
 #include "FMICompositeModel.h"
 #include "OMTLMSimulatorLib.h"
+#include "Scope.h"
 #include <list>
 #include <algorithm>
 #include <iostream>
@@ -207,8 +208,19 @@ oms2::TLMCompositeModel* oms2::TLMCompositeModel::LoadModel(const pugi::xml_node
 
 oms_status_enu_t oms2::TLMCompositeModel::initialize(double startTime, double tolerance)
 {
-  logError("oms2::TLMCompositeModel::initialize: not implemented yet");
-  return oms_status_error;
+  Model* pModel = oms2::Scope::GetInstance().getModel(getName());
+  omtlm_setStartTime(model, pModel->getStartTime());
+  omtlm_setStopTime(model, pModel->getStopTime());
+  omtlm_setNumLogStep(model, 1000); //Hard-coded for now
+
+  //Initialize sub-models
+  auto it = fmiModels.begin();
+  for(; it!=fmiModels.end(); ++it)
+  {
+     it->second->initialize();
+  }
+
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms2::TLMCompositeModel::terminate()
