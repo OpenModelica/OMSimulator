@@ -194,7 +194,7 @@ oms2::TLMCompositeModel* oms2::TLMCompositeModel::LoadModel(const pugi::xml_node
   return NULL;
 }
 
-oms_status_enu_t oms2::TLMCompositeModel::initialize(double startTime)
+oms_status_enu_t oms2::TLMCompositeModel::initialize(double startTime, double tolerance)
 {
   logError("oms2::TLMCompositeModel::initialize: not implemented yet");
   return oms_status_error;
@@ -206,7 +206,7 @@ oms_status_enu_t oms2::TLMCompositeModel::terminate()
   return oms_status_error;
 }
 
-oms_status_enu_t oms2::TLMCompositeModel::simulate(double stopTime)
+oms_status_enu_t oms2::TLMCompositeModel::simulate(double stopTime, double communicationInterval)
 {
   logError("oms2::TLMCompositeModel::simulate: not implemented yet");
   return oms_status_error;

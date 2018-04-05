@@ -757,12 +757,13 @@ oms_status_enu_t oms2::FMICompositeModel::exportDependencyGraphs(const std::stri
   return oms_status_ok;
 }
 
-oms_status_enu_t oms2::FMICompositeModel::initialize(double startTime)
+oms_status_enu_t oms2::FMICompositeModel::initialize(double startTime, double tolerance)
 {
   initialUnknownsGraph.clear();
   outputsGraph.clear();
 
   this->time = startTime;
+  this->tolerance = tolerance;
 
   // Enter initialization
   for (const auto& it : subModels)
@@ -820,8 +821,23 @@ oms_status_enu_t oms2::FMICompositeModel::terminate()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms2::FMICompositeModel::simulate(double stopTime)
+oms_status_enu_t oms2::FMICompositeModel::simulate(double stopTime, double communicationInterval)
 {
+  logTrace();
+  while (time < stopTime)
+  {
+    logDebug("doStep: " + std::to_string(time) + " -> " + std::to_string(time+communicationInterval));
+    time += communicationInterval;
+    if (time > stopTime)
+      time = stopTime;
+
+    // do_step
+    for (const auto& it : subModels)
+      it.second->doStep(time);
+
+    // input := output
+    updateInputs(outputsGraph);
+  }
   return oms_status_ok;
 }
 
@@ -831,6 +847,7 @@ oms_status_enu_t oms2::FMICompositeModel::setReal(const oms2::SignalRef& sr, dou
   if (!model)
     return oms_status_error;
 
+  logDebug("setReal: " + sr.toString() + " = " + std::to_string(value));
   return model->setReal(sr, value);
 }
 
@@ -840,7 +857,9 @@ oms_status_enu_t oms2::FMICompositeModel::getReal(const oms2::SignalRef& sr, dou
   if (!model)
     return oms_status_error;
 
-  return model->getReal(sr, value);
+  oms_status_enu_t status = model->getReal(sr, value);
+  logDebug("getReal: " + sr.toString() + " = " + std::to_string(value));
+  return status;
 }
 
 oms_status_enu_t oms2::FMICompositeModel::updateInputs(oms2::DirectedGraph& graph)
@@ -870,7 +889,6 @@ oms_status_enu_t oms2::FMICompositeModel::updateInputs(oms2::DirectedGraph& grap
 oms_status_enu_t oms2::FMICompositeModel::solveAlgLoop(oms2::DirectedGraph& graph, const std::vector< std::pair<int, int> >& SCC)
 {
   const int size = SCC.size();
-  const double tolerance = 1e-4;
   const int maxIterations = 10;
   double maxRes;
   double *res = new double[size]();
