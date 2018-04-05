@@ -977,6 +977,22 @@ static int OMSimulatorLua_oms2_simulate(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms2_getReal(const char* ident, double* value);
+static int OMSimulatorLua_oms2_getReal(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 arguments");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char *ident = lua_tostring(L, 1);
+  double value = 0.0;
+
+  oms_status_enu_t status = oms2_getReal(ident, &value);
+  lua_pushnumber(L, value);
+  lua_pushnumber(L, status);
+  return 2;
+}
+
 /* **************************************************** */
 /* OMSysIdent API                                       */
 /* **************************************************** */
@@ -1257,6 +1273,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms2_exportCompositeStructure);
   REGISTER_LUA_CALL(oms2_exportDependencyGraphs);
   REGISTER_LUA_CALL(oms2_getElements);
+  REGISTER_LUA_CALL(oms2_getReal);
   REGISTER_LUA_CALL(oms2_initialize);
   REGISTER_LUA_CALL(oms2_loadModel);
   REGISTER_LUA_CALL(oms2_newFMIModel);
@@ -1280,16 +1297,16 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   /* OMSysIdent API                       */
   /* ************************************ */
 #ifdef WITH_OMSYSIDENT
-  REGISTER_LUA_CALL(omsi_newSysIdentModel);
-  REGISTER_LUA_CALL(omsi_freeSysIdentModel);
-  REGISTER_LUA_CALL(omsi_initialize);
-  REGISTER_LUA_CALL(omsi_describe);
   REGISTER_LUA_CALL(omsi_addMeasurement);
   REGISTER_LUA_CALL(omsi_addParameter);
+  REGISTER_LUA_CALL(omsi_describe);
+  REGISTER_LUA_CALL(omsi_freeSysIdentModel);
   REGISTER_LUA_CALL(omsi_getParameter);
-  REGISTER_LUA_CALL(omsi_solve);
-  REGISTER_LUA_CALL(omsi_setOptions_max_num_iterations);
   REGISTER_LUA_CALL(omsi_getState);
+  REGISTER_LUA_CALL(omsi_initialize);
+  REGISTER_LUA_CALL(omsi_newSysIdentModel);
+  REGISTER_LUA_CALL(omsi_setOptions_max_num_iterations);
+  REGISTER_LUA_CALL(omsi_solve);
 #endif /* WITH_OMSYSIDENT */
 
   return 0;

@@ -650,6 +650,14 @@ oms_status_enu_t oms2::FMUWrapper::getRealParameter(const std::string& var, doub
   return oms_status_ok;
 }
 
+oms_status_enu_t oms2::FMUWrapper::getReal(const std::string& var, double& value)
+{
+  oms2::Variable* v = getVariable(var);
+  if (!v)
+    return oms_status_error;
+  return getReal(*v, value);
+}
+
 oms_status_enu_t oms2::FMUWrapper::setIntegerParameter(const std::string& var, int value)
 {
   auto it = integerParameters.find(var);
