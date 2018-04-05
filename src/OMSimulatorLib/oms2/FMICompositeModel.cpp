@@ -757,15 +757,17 @@ oms_status_enu_t oms2::FMICompositeModel::exportDependencyGraphs(const std::stri
   return oms_status_ok;
 }
 
-oms_status_enu_t oms2::FMICompositeModel::initialize()
+oms_status_enu_t oms2::FMICompositeModel::initialize(double startTime)
 {
   initialUnknownsGraph.clear();
   outputsGraph.clear();
 
+  this->time = startTime;
+
   // Enter initialization
   for (const auto& it : subModels)
   {
-    if (oms_status_ok != it.second->enterInitialization(0.0))
+    if (oms_status_ok != it.second->enterInitialization(startTime))
       return logError("[oms2::FMICompositeModel::initialize] failed");
     else
     {
@@ -818,7 +820,7 @@ oms_status_enu_t oms2::FMICompositeModel::terminate()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms2::FMICompositeModel::simulate()
+oms_status_enu_t oms2::FMICompositeModel::simulate(double stopTime)
 {
   return oms_status_ok;
 }

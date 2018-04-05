@@ -56,9 +56,9 @@ namespace oms2
     void setName(const ComRef& name) {element.setName(name);}
     void setGeometry(const oms2::ssd::ElementGeometry& geometry) {element.setGeometry(&geometry);}
 
-    virtual oms_status_enu_t initialize() = 0;
+    virtual oms_status_enu_t initialize(double startTime) = 0;
     virtual oms_status_enu_t terminate() = 0;
-    virtual oms_status_enu_t simulate() = 0;
+    virtual oms_status_enu_t simulate(double stopTime) = 0;
 
   protected:
     CompositeModel(oms_element_type_enu_t type, const ComRef& cref);
