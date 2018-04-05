@@ -160,6 +160,17 @@ oms_status_enu_t oms2::TLMCompositeModel::addConnection(const SignalRef &signalA
   return addConnection(oms2::TLMConnection(this->getName(),signalA,signalB,delay,alpha,Zf,Zfr));
 }
 
+oms_status_enu_t oms2::TLMCompositeModel::setSocketData(const std::string& address,
+                                                        int managerPort,
+                                                        int monitorPort)
+{
+  std::cout << "Entering TLMCompositeModel::setSocketData()\n";
+  omtlm_setAddress(model, address);
+  omtlm_setManagerPort(model, managerPort);
+  omtlm_setMonitorPort(model, monitorPort);
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms2::TLMCompositeModel::describe()
 {
   omtlm_printModelStructure(model);

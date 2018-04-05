@@ -533,6 +533,17 @@ oms_status_enu_t oms2_addExternalModel(const char* cref, const char* name, const
 oms_status_enu_t oms2_addFMISubModel(const char* cref, const char* subref);
 
 /**
+ * \brief Sets data for TLM socket communication
+ *
+ * @param cref         [in] Identifier of TLM composite model.
+ * @param address      [in] Address to manager server (format: ###.###.###.###)
+ * @param managerPort  [in] Port number of manager process
+ * @param monitorPort  [in] Port number of monitor process
+ */
+oms_status_enu_t oms2_setTLMSocketData(const char* cref, const char* address,
+                                       int managerPort, int monitorPort);
+
+/**
  * \brief Adds an external model to a TLM composite model
  *
  * \param cref         [in] Identifier of TLM composite model.

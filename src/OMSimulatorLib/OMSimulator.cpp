@@ -766,6 +766,14 @@ oms_status_enu_t oms2_addFMISubModel(const char *cref, const char *subref)
   return oms2::Scope::GetInstance().addFMISubModel(oms2::ComRef(cref), oms2::ComRef(subref));
 }
 
+oms_status_enu_t oms2_setTLMSocketData(const char* cref, const char* address,
+                                       int managerPort, int monitorPort)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().setTLMSocketData(oms2::ComRef(cref), address,
+                                                     managerPort, monitorPort);
+}
+
 oms_status_enu_t oms2_setStartTime(const char* cref, double startTime)
 {
   logTrace();
