@@ -1065,6 +1065,25 @@ oms_status_enu_t oms2::Scope::addTLMConnection(const oms2::ComRef &cref, const o
   return model->getTLMCompositeModel()->addConnection(from, to, delay, alpha, Zf, Zfr);
 }
 
+oms_status_enu_t oms2::Scope::setTLMSocketData(oms2::ComRef modelIdent,
+                                               const std::string& address,
+                                               int managerPort,
+                                               int monitorPort)
+{
+  Model* model = getModel(modelIdent);
+  if (!model) {
+    logError("Model: "+modelIdent.toString()+" not found.");
+    return oms_status_error;
+  }
+  if(model->getType() != oms_component_tlm) {
+    logError("Can only set socket data on TLM models.");
+    return oms_status_error;
+  }
+  TLMCompositeModel *tlmModel = model->getTLMCompositeModel();
+
+  return tlmModel->setSocketData(address, managerPort, monitorPort);
+}
+
 oms_status_enu_t oms2::Scope::describeModel(const oms2::ComRef &cref)
 {
   oms2::Model* model = getModel(cref);
