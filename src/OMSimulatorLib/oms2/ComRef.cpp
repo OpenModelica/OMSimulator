@@ -54,9 +54,6 @@ oms2::ComRef::ComRef(const std::string& path)
     }
   }
   this->path.push_back(buf);
-
-  if (!isValidIdent())
-    logDebug("ComRef: invalid cref: " + toString());
 }
 
 oms2::ComRef::~ComRef()
@@ -87,7 +84,7 @@ oms2::ComRef oms2::ComRef::operator+(const oms2::ComRef& rhs)
 
 bool oms2::ComRef::isValidIdent(const std::string& ident)
 {
-  std::regex re("^[a-zA-Z]+[a-zA-Z0-9_]*$");
+  std::regex re("^[a-zA-Z][a-zA-Z0-9_]*$");
   return std::regex_match(ident, re);
 }
 

@@ -95,11 +95,11 @@ namespace oms2
 
     double startTime;             ///< experiment, default 0.0
     double stopTime;              ///< experiment, default 1.0
+    double tolerance;             ///< experiment, default 1.0e-4
     double communicationInterval; ///< experiment, default 1.0e-2
     std::string resultFile;       ///< experiment, default <name>_res.mat
 
     oms_modelState_enu_t modelState; ///< internal model state, e.g. initialization state
-    double time;                     ///< model time
   };
 }
 

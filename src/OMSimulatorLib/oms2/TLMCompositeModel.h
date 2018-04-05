@@ -32,9 +32,9 @@
 #ifndef _OMS2_TLM_COMPOSITE_MODEL_H_
 #define _OMS2_TLM_COMPOSITE_MODEL_H_
 
-#include "ComRef.h"
-#include "CompositeModel.h"
 #include "../Types.h"
+#include "CompositeModel.h"
+
 #include <list>
 #include <map>
 
@@ -42,11 +42,12 @@
 
 namespace oms2
 {
-  class TLMInterface;
+  class ComRef;
   class ExternalModel;
-  class TLMConnection;
   class FMICompositeModel;
   class SignalRef;
+  class TLMConnection;
+  class TLMInterface;
 
   class TLMCompositeModel : public CompositeModel
   {
@@ -61,21 +62,16 @@ namespace oms2
     oms_status_enu_t addInterface(std::string name, int dimensions, oms_tlm_causality_t causality, std::string domain, const ComRef &cref);
 
     oms_status_enu_t addExternalModel(ExternalModel *externalModel);
-    oms_status_enu_t addExternalModel(std::string modelFile,
-                             std::string startScript, const ComRef& cref);
+    oms_status_enu_t addExternalModel(std::string modelFile, std::string startScript, const ComRef& cref);
 
     oms_status_enu_t addConnection(const oms2::TLMConnection& connection);
-    oms_status_enu_t addConnection(const SignalRef& signalA,
-                                  const SignalRef& signalB,
-                                  double delay,
-                                  double alpha,
-                                  double Zf, double Zfr);
+    oms_status_enu_t addConnection(const SignalRef& signalA, const SignalRef& signalB, double delay, double alpha, double Zf, double Zfr);
 
     oms_status_enu_t describe();
 
-    oms_status_enu_t initialize(double startTime);
+    oms_status_enu_t initialize(double startTime, double tolerance);
     oms_status_enu_t terminate();
-    oms_status_enu_t simulate(double stopTime);
+    oms_status_enu_t simulate(double stopTime, double communicationInterval);
 
   private:
     TLMCompositeModel(const ComRef& name);

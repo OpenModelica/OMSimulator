@@ -55,6 +55,7 @@ namespace oms2
 
     oms_status_enu_t enterInitialization(const double time);
     oms_status_enu_t exitInitialization();
+    oms_status_enu_t doStep(double stopTime);
 
     oms_status_enu_t terminate() {return oms_status_ok;}
 

@@ -49,6 +49,7 @@ oms2::Model::Model(const oms2::ComRef& cref)
 
   startTime = 0.0;
   stopTime = 1.0;
+  tolerance = 1e-4;
   communicationInterval = 1e-2;
   resultFile = cref.toString() + "_res.mat";
   modelState = oms_modelState_instantiated;
@@ -220,9 +221,8 @@ oms_status_enu_t oms2::Model::initialize()
   }
 
   modelState = oms_modelState_initialization;
-  time = startTime;
 
-  oms_status_enu_t status = compositeModel->initialize(startTime);
+  oms_status_enu_t status = compositeModel->initialize(startTime, tolerance);
   if (oms_status_ok == status)
     modelState = oms_modelState_simulation;
   else
@@ -240,7 +240,6 @@ oms_status_enu_t oms2::Model::terminate()
   }
 
   modelState = oms_modelState_initialization;
-  time = startTime;
 
   oms_status_enu_t status = compositeModel->terminate();
   if (oms_status_ok == status)
@@ -254,7 +253,12 @@ oms_status_enu_t oms2::Model::terminate()
 
 oms_status_enu_t oms2::Model::simulate()
 {
-  /// \todo implement me
-  logDebug("oms2::Model::simulate()");
-  return oms_status_ok;
+  if (oms_modelState_simulation != modelState)
+  {
+    logError("[oms2::Model::simulate] Model cannot be simulated, because it isn't initialized.");
+    return oms_status_error;
+  }
+
+  oms_status_enu_t status = compositeModel->simulate(stopTime, communicationInterval);
+  return status;
 }
