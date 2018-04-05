@@ -993,6 +993,112 @@ static int OMSimulatorLua_oms2_getReal(lua_State *L)
   return 2;
 }
 
+//oms_status_enu_t oms2_addExternalModel(const char *cref, const char *name, const char *modelfile, const char *startscript);
+static int OMSimulatorLua_oms2_addExternalModel(lua_State *L)
+{
+  if (lua_gettop(L) != 4)
+    return luaL_error(L, "expecting exactly 4 arguments");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+  luaL_checktype(L, 3, LUA_TSTRING);
+  luaL_checktype(L, 4, LUA_TSTRING);
+
+  const char *cref =        lua_tostring(L, 1);
+  const char *name =        lua_tostring(L, 2);
+  const char *modelfile =   lua_tostring(L, 3);
+  const char *startscript = lua_tostring(L, 4);
+
+  oms_status_enu_t status = oms2_addExternalModel(cref, name, modelfile, startscript);
+  lua_pushnumber(L, status);
+  return 1;
+}
+
+//oms_status_enu_t oms2_addExternalModel(const char *cref, const char *subref);
+static int OMSimulatorLua_oms2_addFMISubModel(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 arguments");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+
+  const char *cref =        lua_tostring(L, 1);
+  const char *subref =        lua_tostring(L, 2);
+
+  oms_status_enu_t status = oms2_addFMISubModel(cref, subref);
+  lua_pushnumber(L, status);
+  return 1;
+}
+
+//oms_status_enu_t oms2_addTLMInterface(const char *cref, const char *subref, const char *name, int dimensions, oms_causality_enu_t causality, const char *domain);
+static int OMSimulatorLua_oms2_addTLMInterface(lua_State *L)
+{
+  if (lua_gettop(L) != 6)
+    return luaL_error(L, "expecting exactly 6 arguments");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+  luaL_checktype(L, 3, LUA_TSTRING);
+  luaL_checktype(L, 4, LUA_TNUMBER);
+  luaL_checktype(L, 5, LUA_TNUMBER);
+  luaL_checktype(L, 6, LUA_TSTRING);
+
+  const char *cref =    lua_tostring(L, 1);
+  const char *subref =  lua_tostring(L, 2);
+  const char *name =    lua_tostring(L, 3);
+  int dimensions =      lua_tonumber(L, 4);
+  int causality =       lua_tonumber(L, 5);
+  const char *domain =  lua_tostring(L, 6);
+
+  oms_status_enu_t status = oms2_addTLMInterface(cref, subref, name, dimensions, (oms_causality_enu_t)causality, domain);
+  lua_pushnumber(L, status);
+  return 1;
+}
+
+//oms_status_enu_t oms2_addTLMConnection(const char *cref, const char *from, const char *to, double delay, double alpha, double Zf, double Zfr)
+static int OMSimulatorLua_oms2_addTLMConnection(lua_State *L)
+{
+  if (lua_gettop(L) != 7)
+    return luaL_error(L, "expecting exactly 7 arguments");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+  luaL_checktype(L, 3, LUA_TSTRING);
+  luaL_checktype(L, 4, LUA_TNUMBER);
+  luaL_checktype(L, 5, LUA_TNUMBER);
+  luaL_checktype(L, 6, LUA_TNUMBER);
+  luaL_checktype(L, 7, LUA_TNUMBER);
+
+  const char *cref =  lua_tostring(L, 1);
+  const char *from =  lua_tostring(L, 2);
+  const char *to =    lua_tostring(L, 3);
+  double delay =      lua_tonumber(L, 4);
+  double alpha =      lua_tonumber(L, 5);
+  double Zf =         lua_tonumber(L, 6);
+  double Zfr =        lua_tonumber(L, 7);
+
+  oms_status_enu_t status = oms2_addTLMConnection(cref, from, to, delay, alpha, Zf, Zfr);
+  lua_pushnumber(L, status);
+  return 1;
+}
+
+//oms_status_enu_t oms2_setTLMSocketData(const char* cref, const char* address, int managerPort, int monitorPort)
+static int OMSimulatorLua_oms2_setTLMSocketData(lua_State *L)
+{
+  if (lua_gettop(L) != 4)
+    return luaL_error(L, "expecting exactly 4 arguments");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+  luaL_checktype(L, 3, LUA_TNUMBER);
+  luaL_checktype(L, 4, LUA_TNUMBER);
+
+  const char *cref =        lua_tostring(L, 1);
+  const char *address =     lua_tostring(L, 2);
+  int managerPort = lua_tonumber(L, 3);
+  int monitorPort =      lua_tonumber(L, 4);
+
+  oms_status_enu_t status = oms2_setTLMSocketData(cref, address, managerPort, monitorPort);
+  lua_pushnumber(L, status);
+  return 1;
+}
+
 /* **************************************************** */
 /* OMSysIdent API                                       */
 /* **************************************************** */
@@ -1292,6 +1398,12 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms2_simulate);
   REGISTER_LUA_CALL(oms2_terminate);
   REGISTER_LUA_CALL(oms2_unloadModel);
+  REGISTER_LUA_CALL(oms2_addExternalModel);
+  REGISTER_LUA_CALL(oms2_addFMISubModel);
+  REGISTER_LUA_CALL(oms2_addTLMInterface);
+  REGISTER_LUA_CALL(oms2_addConnection);
+  REGISTER_LUA_CALL(oms2_addTLMConnection);
+  REGISTER_LUA_CALL(oms2_setTLMSocketData);
 
   /* ************************************ */
   /* OMSysIdent API                       */
@@ -1308,6 +1420,14 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(omsi_setOptions_max_num_iterations);
   REGISTER_LUA_CALL(omsi_solve);
 #endif /* WITH_OMSYSIDENT */
+
+  // Add enumerable constants
+  lua_pushnumber(L, 0);
+  lua_setglobal(L, "input");
+  lua_pushnumber(L, 1);
+  lua_setglobal(L, "output");
+  lua_pushnumber(L, 3);
+  lua_setglobal(L, "bidirectional");
 
   return 0;
 }
