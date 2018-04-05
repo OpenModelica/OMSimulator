@@ -753,6 +753,46 @@ oms_status_enu_t oms2::Scope::getRealParameter(const oms2::SignalRef& signal, do
   return oms_status_error;
 }
 
+oms_status_enu_t oms2::Scope::getReal(const oms2::SignalRef& signal, double& value)
+{
+  logTrace();
+  ComRef cref = signal.getCref();
+  std::string var = signal.getVar();
+
+  if (!cref.isIdent())
+  {
+    // Sub-model
+    ComRef modelCref = cref.first();
+    Model* model = getModel(modelCref);
+    if (!model)
+    {
+      logError("[oms2::Scope::getReal] failed");
+      return oms_status_error;
+    }
+
+    // FMI model?
+    if (oms_component_fmi == model->getType())
+    {
+      FMICompositeModel* fmiModel = model->getFMICompositeModel();
+      FMISubModel* subModel = fmiModel->getSubModel(cref);
+      if (!subModel)
+      {
+        logError("[oms2::Scope::getReal] failed");
+        return oms_status_error;
+      }
+      oms2::FMUWrapper* fmuWrapper = dynamic_cast<oms2::FMUWrapper*>(subModel);
+      return fmuWrapper->getReal(var, value);
+    }
+    else
+    {
+      logError("[oms2::Scope::getReal] is only implemented for FMI models yet");
+      return oms_status_error;
+    }
+  }
+
+  return oms_status_error;
+}
+
 oms_status_enu_t oms2::Scope::setRealParameter(const oms2::SignalRef& signal, double value)
 {
   logTrace();

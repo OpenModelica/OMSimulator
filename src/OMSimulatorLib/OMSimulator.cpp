@@ -674,6 +674,12 @@ oms_status_enu_t oms2_getRealParameter(const char* signal, double* value)
   return oms2::Scope::GetInstance().getRealParameter(oms2::SignalRef(signal), *value);
 }
 
+oms_status_enu_t oms2_getReal(const char* signal, double* value)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().getReal(oms2::SignalRef(signal), *value);
+}
+
 oms_status_enu_t oms2_setRealParameter(const char* signal, double value)
 {
   logTrace();
