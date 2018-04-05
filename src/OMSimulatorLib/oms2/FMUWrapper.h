@@ -64,6 +64,7 @@ namespace oms2
 
     oms_status_enu_t setRealParameter(const std::string& var, double value);
     oms_status_enu_t getRealParameter(const std::string& var, double& value);
+    oms_status_enu_t getReal(const std::string& var, double& value);
     oms_status_enu_t setIntegerParameter(const std::string& var, int value);
     oms_status_enu_t getIntegerParameter(const std::string& var, int& value);
     oms_status_enu_t setBooleanParameter(const std::string& var, bool value);
