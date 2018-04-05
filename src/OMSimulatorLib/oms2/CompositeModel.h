@@ -65,6 +65,8 @@ namespace oms2
     virtual oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultWriter) = 0;
     virtual oms_status_enu_t emit(ResultWriter& resultWriter) = 0;
 
+    virtual oms_status_enu_t describe() { return oms_status_error; }
+
   protected:
     CompositeModel(oms_element_type_enu_t type, const ComRef& cref);
     virtual ~CompositeModel();
