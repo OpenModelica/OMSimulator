@@ -62,6 +62,7 @@ namespace oms2
     virtual oms_status_enu_t exitInitialization() = 0;
 
     virtual oms_status_enu_t terminate() = 0;
+    virtual oms_status_enu_t doStep(double stopTime) = 0;
 
     const DirectedGraph& getInitialUnknownsGraph() const {return initialUnknownsGraph;}
     const DirectedGraph& getOutputsGraph() const {return outputsGraph;}

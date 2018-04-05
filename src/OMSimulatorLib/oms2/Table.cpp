@@ -101,6 +101,12 @@ oms_status_enu_t oms2::Table::exitInitialization()
   return oms_status_ok;
 }
 
+oms_status_enu_t oms2::Table::doStep(double stopTime)
+{
+  this->time = stopTime;
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms2::Table::exportToSSD(pugi::xml_node& root) const
 {
   logError("[oms2::Table::exportToSSD] not implemented yet");

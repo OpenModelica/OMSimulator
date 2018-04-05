@@ -539,6 +539,28 @@ oms_status_enu_t oms2::FMUWrapper::terminate()
   return oms_status_ok;
 }
 
+oms_status_enu_t oms2::FMUWrapper::doStep(double stopTime)
+{
+  fmi2_status_t fmistatus;
+
+  if (oms_fmi_kind_me == fmuInfo.getKind())
+  {
+    return logError("ME not implemented yet");
+  }
+  else if (oms_fmi_kind_cs == fmuInfo.getKind() || oms_fmi_kind_me_and_cs == fmuInfo.getKind())
+  {
+    double hdef = (stopTime-time) / 1.0;
+    while (time < stopTime)
+    {
+      fmistatus = fmi2_import_do_step(fmu, time, hdef, fmi2_true);
+      time += hdef;
+    }
+    time = stopTime;
+  }
+
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms2::FMUWrapper::exportToSSD(pugi::xml_node& root) const
 {
   oms_status_enu_t status = oms_status_ok;
@@ -626,7 +648,11 @@ oms_status_enu_t oms2::FMUWrapper::setRealParameter(const std::string& var, doub
     return logError("No such parameter: " + var);
 
   it->second = value;
-  return oms_status_ok;
+
+  oms2::Variable* v = getVariable(var);
+  if (!v)
+    return oms_status_error;
+  return setReal(*v, value);
 }
 
 oms_status_enu_t oms2::FMUWrapper::getRealParameter(const std::string& var, double& value)
