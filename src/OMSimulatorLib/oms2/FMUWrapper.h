@@ -41,6 +41,7 @@
 
 #include <map>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include <fmilib.h>
@@ -79,6 +80,9 @@ namespace oms2
     oms_status_enu_t setReal(const oms2::SignalRef& sr, double value);
     oms_status_enu_t getReal(const oms2::SignalRef& sr, double& value);
 
+    oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultWriter);
+    oms_status_enu_t emit(ResultWriter& resultWriter);
+
   private:
     oms_status_enu_t initializeDependencyGraph_initialUnknowns();
     oms_status_enu_t initializeDependencyGraph_outputs();
@@ -107,6 +111,8 @@ namespace oms2
     std::map<std::string, oms2::Option<bool>> booleanParameters;
 
     std::string tempDir;
+
+    std::unordered_map<unsigned int /*result file var ID*/, unsigned int /*allVariables ID*/> resultFileMapping;
 
     // ME & CS
     jm_callbacks callbacks;

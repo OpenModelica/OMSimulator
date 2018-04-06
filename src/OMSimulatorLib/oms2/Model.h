@@ -33,6 +33,7 @@
 #define _OMS2_MODEL_H_
 
 #include "../Types.h"
+#include "../ResultWriter.h"
 #include "ComRef.h"
 #include "Element.h"
 #include "CompositeModel.h"
@@ -65,8 +66,8 @@ namespace oms2
     double getStopTime() const {return stopTime;}
     void setCommunicationInterval(double value) {communicationInterval = value;}
     double getCommunicationInterval() const {return communicationInterval;}
-    void setResultFile(const std::string& value) {resultFile = value;}
-    const std::string& getResultFile() const {return resultFile;}
+    void setResultFile(const std::string& value) {resultFilename = value;}
+    const std::string& getResultFile() const {return resultFilename;}
 
     FMICompositeModel* getFMICompositeModel();
     TLMCompositeModel* getTLMCompositeModel();
@@ -97,7 +98,8 @@ namespace oms2
     double stopTime;              ///< experiment, default 1.0
     double tolerance;             ///< experiment, default 1.0e-4
     double communicationInterval; ///< experiment, default 1.0e-2
-    std::string resultFile;       ///< experiment, default <name>_res.mat
+    std::string resultFilename;   ///< experiment, default <name>_res.mat
+    ResultWriter *resultFile;
 
     oms_modelState_enu_t modelState; ///< internal model state, e.g. initialization state
   };

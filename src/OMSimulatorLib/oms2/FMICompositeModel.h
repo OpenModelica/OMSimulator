@@ -46,6 +46,8 @@
 
 #include <pugixml.hpp>
 
+class ResultWriter;
+
 namespace oms2
 {
   class FMICompositeModel : public CompositeModel
@@ -80,7 +82,7 @@ namespace oms2
 
     oms_status_enu_t initialize(double startTime, double tolerance);
     oms_status_enu_t terminate();
-    oms_status_enu_t simulate(double stopTime, double communicationInterval);
+    oms_status_enu_t simulate(ResultWriter& resultWriter, double stopTime, double communicationInterval);
 
     oms_status_enu_t setReal(const oms2::SignalRef& sr, double value);
     oms_status_enu_t getReal(const oms2::SignalRef& sr, double& value);
@@ -93,6 +95,9 @@ namespace oms2
     oms_causality_enu_t getSignalCausality(const oms2::SignalRef& signal);
     oms_status_enu_t updateInputs(oms2::DirectedGraph& graph);
     oms_status_enu_t solveAlgLoop(oms2::DirectedGraph& graph, const std::vector< std::pair<int, int> >& SCC);
+
+    oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultWriter);
+    oms_status_enu_t emit(ResultWriter& resultWriter);
 
   protected:
     void deleteComponents();
