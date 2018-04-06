@@ -543,7 +543,7 @@ oms_status_enu_t oms2_addFMISubModel(const char* cref, const char* subref);
  * \param domain       [in] Domain of TLM interface
  * \return             Error status
  */
-oms_status_enu_t oms2_addTLMInterface(const char *cref, const char* subref, const char *name, int dimensions, oms_tlm_causality_t causality, const char* domain);
+oms_status_enu_t oms2_addTLMInterface(const char *cref, const char* subref, const char *name, int dimensions, oms_causality_enu_t causality, const char* domain);
 
 /**
  * \brief Adds an external model to a TLM composite model

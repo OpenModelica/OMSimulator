@@ -1039,7 +1039,7 @@ oms_status_enu_t oms2::Scope::addExternalModel(const oms2::ComRef &cref, const o
   return oms_status_ok;
 }
 
-oms_status_enu_t oms2::Scope::addTLMInterface(const oms2::ComRef &cref, const oms2::ComRef &subref, const oms2::ComRef &name, int dimensions, oms_tlm_causality_t causality, std::string domain)
+oms_status_enu_t oms2::Scope::addTLMInterface(const oms2::ComRef &cref, const oms2::ComRef &subref, const oms2::ComRef &name, int dimensions, oms_causality_enu_t causality, std::string domain)
 {
   oms2::Model* model = getModel(cref);
   if (!model) {
