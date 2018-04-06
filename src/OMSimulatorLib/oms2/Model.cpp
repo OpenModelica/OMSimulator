@@ -31,6 +31,8 @@
 
 #include "Model.h"
 
+#include "../CSVWriter.h"
+#include "../MATWriter.h"
 #include "FMICompositeModel.h"
 #include "TLMCompositeModel.h"
 #include "Logging.h"
@@ -46,12 +48,13 @@ oms2::Model::Model(const oms2::ComRef& cref)
   logTrace();
 
   compositeModel = NULL;
+  resultFile = NULL;
 
   startTime = 0.0;
   stopTime = 1.0;
   tolerance = 1e-4;
   communicationInterval = 1e-2;
-  resultFile = cref.toString() + "_res.mat";
+  resultFilename = cref.toString() + "_res.mat";
   modelState = oms_modelState_instantiated;
 }
 
@@ -220,11 +223,51 @@ oms_status_enu_t oms2::Model::initialize()
     return oms_status_error;
   }
 
-  modelState = oms_modelState_initialization;
+  if (resultFile)
+  {
+    delete resultFile;
+    resultFile = NULL;
+  }
 
+  if (!resultFilename.empty())
+  {
+    std::string resulttype;
+    if (resultFilename.length() > 5)
+      resulttype = resultFilename.substr(resultFilename.length() - 4);
+
+    if (".csv" == resulttype)
+      resultFile = new CSVWriter(1);
+    else if (".mat" == resulttype)
+      resultFile = new MATWriter(1024);
+    else
+      return logError("Unsupported format of the result file: " + resultFilename);
+  }
+
+  modelState = oms_modelState_initialization;
   oms_status_enu_t status = compositeModel->initialize(startTime, tolerance);
+
   if (oms_status_ok == status)
+  {
     modelState = oms_modelState_simulation;
+
+    if (resultFile)
+    {
+      logInfo("Result file: " + resultFilename);
+
+      // add all signals
+      compositeModel->registerSignalsForResultFile(*resultFile);
+
+      // create result file
+      if (!resultFile->create(resultFilename, startTime, stopTime))
+      {
+        delete resultFile;
+        resultFile = NULL;
+      }
+
+      // dump results
+      compositeModel->emit(*resultFile);
+    }
+  }
   else
     modelState = oms_modelState_instantiated;
 
@@ -259,6 +302,6 @@ oms_status_enu_t oms2::Model::simulate()
     return oms_status_error;
   }
 
-  oms_status_enu_t status = compositeModel->simulate(stopTime, communicationInterval);
+  oms_status_enu_t status = compositeModel->simulate(*resultFile, stopTime, communicationInterval);
   return status;
 }

@@ -33,6 +33,7 @@
 #define _OMS2_TABLE_H_
 
 #include "../ResultReader.h"
+#include "../ResultWriter.h"
 #include "ComRef.h"
 #include "FMISubModel.h"
 #include "FMUInfo.h"
@@ -71,6 +72,9 @@ namespace oms2
 
     oms_status_enu_t setReal(const oms2::SignalRef& sr, double value);
     oms_status_enu_t getReal(const oms2::SignalRef& sr, double& value);
+
+    oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultWriter) {return oms_status_ok;}
+    oms_status_enu_t emit(ResultWriter& resultWriter) {return oms_status_ok;}
 
   private:
     Table(const ComRef& cref, const std::string& filename);
