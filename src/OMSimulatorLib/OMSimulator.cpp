@@ -748,7 +748,7 @@ oms_status_enu_t oms2_addExternalModel(const char *cref, const char *name, const
   return oms2::Scope::GetInstance().addExternalModel(oms2::ComRef(cref), oms2::ComRef(name), modelfile, startscript);
 }
 
-oms_status_enu_t oms2_addTLMInterface(const char *cref, const char *subref, const char *name, int dimensions, oms_tlm_causality_t causality, const char *domain)
+oms_status_enu_t oms2_addTLMInterface(const char *cref, const char *subref, const char *name, int dimensions, oms_causality_enu_t causality, const char *domain)
 {
   logTrace();
   return oms2::Scope::GetInstance().addTLMInterface(oms2::ComRef(cref), oms2::ComRef(subref), oms2::ComRef(name), dimensions, causality, domain);

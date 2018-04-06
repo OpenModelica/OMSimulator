@@ -95,10 +95,10 @@ oms_status_enu_t oms2::TLMCompositeModel::addInterface(oms2::TLMInterface &inter
 
   //Todo: Help function for this
   std::string causality = "Input";
-  if(interface.getCausality() == oms_tlm_causality_output) {
+  if(interface.getCausality() == oms_causality_output) {
     causality = "Output";
   }
-  else if(interface.getCausality() == oms_tlm_causality_bidirecitonal) {
+  else if(interface.getCausality() == oms_causality_bidir) {
     causality = "Bidirectional";
   }
 
@@ -116,7 +116,7 @@ oms_status_enu_t oms2::TLMCompositeModel::addInterface(oms2::TLMInterface &inter
 
 oms_status_enu_t oms2::TLMCompositeModel::addInterface(std::string name,
                                                    int dimensions,
-                                                   oms_tlm_causality_t causality,
+                                                   oms_causality_enu_t causality,
                                                    std::string domain,
                                                    const oms2::ComRef &cref)
 {

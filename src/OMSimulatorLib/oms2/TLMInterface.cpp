@@ -33,7 +33,7 @@
 
 oms2::TLMInterface::TLMInterface(const oms2::ComRef &cref,
                                  const std::string name,
-                                 oms_tlm_causality_t causality,
+                                 oms_causality_enu_t causality,
                                  const std::string domain,
                                  const int dimensions)
   : sig(cref, name)
