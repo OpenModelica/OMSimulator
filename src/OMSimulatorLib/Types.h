@@ -56,10 +56,12 @@ typedef enum {
 } oms_modelState_enu_t;
 
 typedef enum {
-  oms_causality_input,
-  oms_causality_output,
-  oms_causality_parameter,
-  oms_causality_undefined,
+  oms_causality_input,      ///< input
+  oms_causality_output,     ///< output
+  oms_causality_parameter,  ///< REMOVE ME
+  oms_causality_bidir,      ///< bidirecitonal
+  oms_causality_inherited,  ///< inherited
+  oms_causality_undefined   ///< REMOVE ME
 } oms_causality_enu_t;
 
 /* ************************************ */
@@ -304,12 +306,6 @@ typedef struct {
   oms_connector_t** connectors;     ///< List (null-terminated array) of all interface variables: inputs, outputs, and parameters.
   ssd_element_geometry_t* geometry; ///< Geometry information of the element
 } oms_element_t;
-
-typedef enum {
-  oms_tlm_causality_input,
-  oms_tlm_causality_output,
-  oms_tlm_causality_bidirecitonal
-} oms_tlm_causality_t;
 
 typedef enum {
   oms_fmi_kind_unknown = 0,

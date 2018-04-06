@@ -41,13 +41,13 @@ namespace oms2
   class TLMInterface
   {
   public:
-    TLMInterface(const oms2::ComRef& cref, const std::string name, oms_tlm_causality_t causality, const std::string domain, const int dimensions);
+    TLMInterface(const oms2::ComRef& cref, const std::string name, oms_causality_enu_t causality, const std::string domain, const int dimensions);
     ~TLMInterface() {}
 
     oms2::SignalRef getSignal() { return sig; }
     oms2::ComRef getSubModelName() { return cref; }
     std::string getName() { return name; }
-    oms_tlm_causality_t getCausality() { return causality; }
+    oms_causality_enu_t getCausality() { return causality; }
     std::string getDomain() { return domain; }
     int getDimensions() { return dimensions; }
 
@@ -58,7 +58,7 @@ namespace oms2
     SignalRef sig;
     oms2::ComRef cref;
     std::string name;
-    oms_tlm_causality_t causality;
+    oms_causality_enu_t causality;
     std::string domain;
     int dimensions;
   };

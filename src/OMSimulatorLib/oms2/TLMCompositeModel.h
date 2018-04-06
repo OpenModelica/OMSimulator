@@ -59,7 +59,7 @@ namespace oms2
     oms_status_enu_t addFMIModel(FMICompositeModel *model);
 
     oms_status_enu_t addInterface(oms2::TLMInterface& interface);
-    oms_status_enu_t addInterface(std::string name, int dimensions, oms_tlm_causality_t causality, std::string domain, const ComRef &cref);
+    oms_status_enu_t addInterface(std::string name, int dimensions, oms_causality_enu_t causality, std::string domain, const ComRef &cref);
 
     oms_status_enu_t addExternalModel(ExternalModel *externalModel);
     oms_status_enu_t addExternalModel(std::string modelFile, std::string startScript, const ComRef& cref);
