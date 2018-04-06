@@ -40,6 +40,8 @@
 
 #include <string>
 
+class ResultWriter;
+
 namespace oms2
 {
   class CompositeModel
@@ -58,7 +60,10 @@ namespace oms2
 
     virtual oms_status_enu_t initialize(double startTime, double tolerance) = 0;
     virtual oms_status_enu_t terminate() = 0;
-    virtual oms_status_enu_t simulate(double stopTime, double communicationInterval) = 0;
+    virtual oms_status_enu_t simulate(ResultWriter& resultWriter, double stopTime, double communicationInterval) = 0;
+
+    virtual oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultWriter) = 0;
+    virtual oms_status_enu_t emit(ResultWriter& resultWriter) = 0;
 
   protected:
     CompositeModel(oms_element_type_enu_t type, const ComRef& cref);

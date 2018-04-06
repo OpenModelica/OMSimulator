@@ -32,6 +32,7 @@
 #include "FMICompositeModel.h"
 
 #include "../Types.h"
+#include "../ResultWriter.h"
 #include "ComRef.h"
 #include "FMUWrapper.h"
 #include "Logging.h"
@@ -821,7 +822,7 @@ oms_status_enu_t oms2::FMICompositeModel::terminate()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms2::FMICompositeModel::simulate(double stopTime, double communicationInterval)
+oms_status_enu_t oms2::FMICompositeModel::simulate(ResultWriter& resultWriter, double stopTime, double communicationInterval)
 {
   logTrace();
   while (time < stopTime)
@@ -837,6 +838,7 @@ oms_status_enu_t oms2::FMICompositeModel::simulate(double stopTime, double commu
 
     // input := output
     updateInputs(outputsGraph);
+    emit(resultWriter);
   }
   return oms_status_ok;
 }
@@ -931,5 +933,23 @@ oms_status_enu_t oms2::FMICompositeModel::solveAlgLoop(oms2::DirectedGraph& grap
   if (it >= maxIterations)
     return logError("CompositeModel::solveAlgLoop: max. number of iterations (" + std::to_string(maxIterations) + ") exceeded at time = " + std::to_string(tcur));
   logDebug("CompositeModel::solveAlgLoop: maxRes: " + std::to_string(maxRes) + ", iterations: " + std::to_string(it) + " at time = " + std::to_string(tcur));
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms2::FMICompositeModel::registerSignalsForResultFile(ResultWriter& resultWriter)
+{
+  for (const auto& it : subModels)
+    it.second->registerSignalsForResultFile(resultWriter);
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms2::FMICompositeModel::emit(ResultWriter& resultWriter)
+{
+  for (const auto& it : subModels)
+    it.second->emit(resultWriter);
+
+  resultWriter.emit(time);
+
   return oms_status_ok;
 }

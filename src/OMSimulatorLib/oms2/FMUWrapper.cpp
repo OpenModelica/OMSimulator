@@ -844,3 +844,59 @@ oms_status_enu_t oms2::FMUWrapper::getReal(const oms2::SignalRef& sr, double& va
     return oms_status_error;
   return getReal(*var, value);
 }
+
+oms_status_enu_t oms2::FMUWrapper::registerSignalsForResultFile(ResultWriter& resultWriter)
+{
+  unsigned int i=0;
+  for (auto const &var : allVariables)
+  {
+    oms2::ComRef cref = var.getCref();
+    cref.popFirst();
+    std::string name = cref.toString() + "." + var.getName();
+    const std::string& description = var.getDescription();
+    if (var.isParameter())
+    {
+      SignalValue_t value;
+      if (var.isTypeReal())
+      {
+        getReal(var, value.realValue);
+        resultWriter.addParameter(name, description, SignalType_REAL, value);
+      }
+      else
+        logInfo("Parameter " + name + " will not be stored in the result file, because the signal type is not supported");
+    }
+    else
+    {
+      if (var.isTypeReal())
+      {
+        unsigned int ID = resultWriter.addSignal(name, description, SignalType_REAL);
+        resultFileMapping[ID] = i;
+      }
+      else
+        logInfo("Variable " + name + " will not be stored in the result file, because the signal type is not supported");
+    }
+
+    i++;
+  }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms2::FMUWrapper::emit(ResultWriter& resultWriter)
+{
+  for (auto const &it : resultFileMapping)
+  {
+    unsigned int ID = it.first;
+    oms2::Variable& var = allVariables[it.second];
+    logInfo("oms2::FMUWrapper::emit: " + var.toString());
+    SignalValue_t value;
+    if (var.isTypeReal())
+    {
+      getReal(var, value.realValue);
+      logInfo(var.toString() + ": " + std::to_string(value.realValue));
+      resultWriter.updateSignal(ID, value);
+    }
+  }
+
+  return oms_status_ok;
+}

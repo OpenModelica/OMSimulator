@@ -40,6 +40,8 @@
 
 #include <pugixml.hpp>
 
+class ResultWriter;
+
 namespace oms2
 {
   class ComRef;
@@ -71,7 +73,10 @@ namespace oms2
 
     oms_status_enu_t initialize(double startTime, double tolerance);
     oms_status_enu_t terminate();
-    oms_status_enu_t simulate(double stopTime, double communicationInterval);
+    oms_status_enu_t simulate(ResultWriter& resultWriter, double stopTime, double communicationInterval);
+
+    oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultWriter) {return oms_status_ok;}
+    oms_status_enu_t emit(ResultWriter& resultWriter) {return oms_status_ok;}
 
   private:
     TLMCompositeModel(const ComRef& name);

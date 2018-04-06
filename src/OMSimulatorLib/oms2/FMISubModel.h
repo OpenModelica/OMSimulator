@@ -39,6 +39,8 @@
 #include "ssd/ElementGeometry.h"
 #include "Variable.h"
 
+class ResultWriter;
+
 namespace oms2
 {
   class FMISubModel
@@ -69,6 +71,9 @@ namespace oms2
 
     virtual oms_status_enu_t setReal(const oms2::SignalRef& sr, double value) = 0;
     virtual oms_status_enu_t getReal(const oms2::SignalRef& sr, double& value) = 0;
+
+    virtual oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultWriter) = 0;
+    virtual oms_status_enu_t emit(ResultWriter& resultWriter) = 0;
 
   protected:
     FMISubModel(oms_element_type_enu_t type, const ComRef& cref);
