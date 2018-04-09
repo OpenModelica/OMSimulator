@@ -1004,7 +1004,7 @@ oms_status_enu_t oms2::Scope::addFMISubModel(const oms2::ComRef &cref, const oms
     logError("FMI sub-models can only be added to TLM composite models.");
     return oms_status_error;
   }
-  TLMCompositeModel *tlmmodel = dynamic_cast<oms2::TLMCompositeModel*>(model);
+  TLMCompositeModel *tlmmodel = model->getTLMCompositeModel();
   model = getModel(subref);
   if(!model) {
     logError("Model: "+subref.toString()+" not found.");
@@ -1014,7 +1014,7 @@ oms_status_enu_t oms2::Scope::addFMISubModel(const oms2::ComRef &cref, const oms
     logError("Model: "+subref.toString()+" is not an FMI composite model.");
     return oms_status_error;
   }
-  FMICompositeModel *fmimodel = dynamic_cast<oms2::FMICompositeModel*>(model);
+  FMICompositeModel *fmimodel = model->getFMICompositeModel();
 
   return tlmmodel->addFMIModel(fmimodel);
 }
@@ -1030,13 +1030,7 @@ oms_status_enu_t oms2::Scope::addExternalModel(const oms2::ComRef &cref, const o
     logError("External models can only be added to TLM composite models.");
     return oms_status_error;
   }
-  TLMCompositeModel *tlmmodel = dynamic_cast<oms2::TLMCompositeModel*>(model);
-  if(!tlmmodel) {
-    return oms_status_error;    //Should never happen, but check just in case
-  }
-
-  tlmmodel->addExternalModel(modelfile, startscript, name);
-  return oms_status_ok;
+  return model->getTLMCompositeModel()->addExternalModel(modelfile, startscript, name);
 }
 
 oms_status_enu_t oms2::Scope::addTLMInterface(const oms2::ComRef &cref, const oms2::ComRef &subref, const oms2::ComRef &name, int dimensions, oms_causality_enu_t causality, std::string domain)
@@ -1050,12 +1044,8 @@ oms_status_enu_t oms2::Scope::addTLMInterface(const oms2::ComRef &cref, const om
     logError("External models can only be added to TLM composite models.");
     return oms_status_error;
   }
-  TLMCompositeModel *tlmmodel = dynamic_cast<oms2::TLMCompositeModel*>(model);
-  if(!tlmmodel) {
-    return oms_status_error;    //Should never happen, but check just in case
-  }
 
-  return tlmmodel->addInterface(name.toString(), dimensions, causality, domain, subref);
+  return model->getTLMCompositeModel()->addInterface(name.toString(), dimensions, causality, domain, subref);
 }
 
 
@@ -1071,12 +1061,27 @@ oms_status_enu_t oms2::Scope::addTLMConnection(const oms2::ComRef &cref, const o
     logError("External models can only be added to TLM composite models.");
     return oms_status_error;
   }
-  TLMCompositeModel *tlmmodel = dynamic_cast<oms2::TLMCompositeModel*>(model);
-  if(!tlmmodel) {
-    return oms_status_error;    //Should never happen, but check just in case
-  }
 
-  return tlmmodel->addConnection(from, to, delay, alpha, Zf, Zfr);
+  return model->getTLMCompositeModel()->addConnection(from, to, delay, alpha, Zf, Zfr);
+}
+
+oms_status_enu_t oms2::Scope::setTLMSocketData(oms2::ComRef modelIdent,
+                                               const std::string& address,
+                                               int managerPort,
+                                               int monitorPort)
+{
+  Model* model = getModel(modelIdent);
+  if (!model) {
+    logError("Model: "+modelIdent.toString()+" not found.");
+    return oms_status_error;
+  }
+  if(model->getType() != oms_component_tlm) {
+    logError("Can only set socket data on TLM models.");
+    return oms_status_error;
+  }
+  TLMCompositeModel *tlmModel = model->getTLMCompositeModel();
+
+  return tlmModel->setSocketData(address, managerPort, monitorPort);
 }
 
 oms_status_enu_t oms2::Scope::describeModel(const oms2::ComRef &cref)
