@@ -262,6 +262,7 @@ oms_status_enu_t oms2::Model::initialize()
       {
         delete resultFile;
         resultFile = NULL;
+        return logError("Creating result file failed");
       }
 
       // dump results
@@ -289,6 +290,13 @@ oms_status_enu_t oms2::Model::terminate()
   {
     modelState = oms_modelState_instantiated;
     logInfo("Simulation finished.");
+  }
+
+  if (resultFile)
+  {
+    resultFile->close();
+    delete resultFile;
+    resultFile = NULL;
   }
 
   return status;
