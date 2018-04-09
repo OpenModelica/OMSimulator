@@ -134,9 +134,36 @@ oms_status_enu_t oms2::TLMCompositeModel::addExternalModel(oms2::ExternalModel *
     return oms_status_error;
   }
 
+  //Copy external model file to temporary directory
+  std::string modelPath = Scope::GetInstance().getTempDirectory()+"/"+externalModel->getName();
+#ifdef WIN32
+  std::string cmd = "if not exists \""+modelPath+"\" mkdir \""+modelPath+"\"";
+  system(cmd.c_str());
+  cmd = "copy \""+externalModel->getModelPath()+"\" \""+modelPath;
+  system(cmd.c_str());
+#else
+  std::string cmd = "mkdir -p \""+modelPath+"\"";
+  system(cmd.c_str());
+  cmd = "cp \""+externalModel->getModelPath()+"\" \""+modelPath+"\"";
+  system(cmd.c_str());
+#endif
+
+  //Extract file name from path
+  size_t i1 = externalModel->getModelPath().rfind('/', externalModel->getModelPath().length());
+  size_t i2 = externalModel->getModelPath().rfind('\\', externalModel->getModelPath().length());
+  size_t i=std::max(i1,i2);
+  if(i1 == std::string::npos) {
+      i = i2;
+  }
+  else if(i2 == std::string::npos) {
+      i = i1;
+  }
+  std::string fileName = externalModel->getModelPath().substr(i+1, externalModel->getModelPath().length() - i);
+  modelPath = modelPath+"/"+fileName;
+
   omtlm_addSubModel(model,
                     externalModel->getName().c_str(),
-                    externalModel->getModelPath().c_str(),
+                    modelPath.c_str(),
                     externalModel->getStartScript().c_str());
 
   externalModels[externalModel->getName()] = externalModel;
@@ -165,7 +192,6 @@ oms_status_enu_t oms2::TLMCompositeModel::setSocketData(const std::string& addre
                                                         int managerPort,
                                                         int monitorPort)
 {
-  std::cout << "Entering TLMCompositeModel::setSocketData()\n";
   omtlm_setAddress(model, address);
   omtlm_setManagerPort(model, managerPort);
   omtlm_setMonitorPort(model, monitorPort);
