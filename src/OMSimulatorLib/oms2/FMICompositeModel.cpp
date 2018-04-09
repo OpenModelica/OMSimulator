@@ -849,7 +849,6 @@ oms_status_enu_t oms2::FMICompositeModel::setReal(const oms2::SignalRef& sr, dou
   if (!model)
     return oms_status_error;
 
-  logDebug("setReal: " + sr.toString() + " = " + std::to_string(value));
   return model->setReal(sr, value);
 }
 
@@ -860,7 +859,6 @@ oms_status_enu_t oms2::FMICompositeModel::getReal(const oms2::SignalRef& sr, dou
     return oms_status_error;
 
   oms_status_enu_t status = model->getReal(sr, value);
-  logDebug("getReal: " + sr.toString() + " = " + std::to_string(value));
   return status;
 }
 
