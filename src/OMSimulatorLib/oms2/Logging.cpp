@@ -77,10 +77,32 @@ void Log::Info(const std::string& msg)
   Log& log = getInstance();
   std::lock_guard<std::mutex> lock(log.m);
 
-  if (!log.logFile.is_open())
-    cout << "info:    " << msg << endl;
-  else
-    log.logFile << TimeStr() << " | info:    " << msg << endl;
+  std::ostream& stream = log.logFile.is_open() ? log.logFile : cout;
+
+  std::string timeStr;
+  if (log.logFile.is_open())
+  {
+    timeStr = TimeStr();
+    log.logFile << timeStr << " | ";
+  }
+
+  stream << "info:    ";
+  size_t start = 0, end;
+  do
+  {
+    end = msg.substr(start).find("\n");
+    if(std::string::npos == end)
+      stream << msg.substr(start) << endl;
+    else
+    {
+      end++;
+      stream << msg.substr(start, end);
+      if (!timeStr.empty())
+        stream << timeStr << " | ";
+      stream << "         ";
+      start = end;
+    }
+  } while (std::string::npos != end);
 
   if (log.cb)
     log.cb(oms_message_info, msg.c_str());
@@ -92,10 +114,32 @@ void Log::Warning(const std::string& msg)
   std::lock_guard<std::mutex> lock(log.m);
 
   log.numWarnings++;
-  if (!log.logFile.is_open())
-    cout << "warning: " << msg << endl;
-  else
-    log.logFile << TimeStr() << " | warning: " << msg << endl;
+  std::ostream& stream = log.logFile.is_open() ? log.logFile : cout;
+
+  std::string timeStr;
+  if (log.logFile.is_open())
+  {
+    timeStr = TimeStr();
+    log.logFile << timeStr << " | ";
+  }
+
+  stream << "warning: ";
+  size_t start = 0, end;
+  do
+  {
+    end = msg.substr(start).find("\n");
+    if(std::string::npos == end)
+      stream << msg.substr(start) << endl;
+    else
+    {
+      end++;
+      stream << msg.substr(start, end);
+      if (!timeStr.empty())
+        stream << timeStr << " | ";
+      stream << "         ";
+      start = end;
+    }
+  } while (std::string::npos != end);
 
   if (log.cb)
     log.cb(oms_message_warning, msg.c_str());
@@ -107,10 +151,32 @@ oms_status_enu_t Log::Error(const std::string& msg)
   std::lock_guard<std::mutex> lock(log.m);
 
   log.numErrors++;
-  if (!log.logFile.is_open())
-    cerr << "error:   " << msg << endl;
-  else
-    log.logFile << TimeStr() << " | error:   " << msg << endl;
+  std::ostream& stream = log.logFile.is_open() ? log.logFile : cerr;
+
+  std::string timeStr;
+  if (log.logFile.is_open())
+  {
+    timeStr = TimeStr();
+    log.logFile << timeStr << " | ";
+  }
+
+  stream << "error:   ";
+  size_t start = 0, end;
+  do
+  {
+    end = msg.substr(start).find("\n");
+    if(std::string::npos == end)
+      stream << msg.substr(start) << endl;
+    else
+    {
+      end++;
+      stream << msg.substr(start, end);
+      if (!timeStr.empty())
+        stream << timeStr << " | ";
+      stream << "         ";
+      start = end;
+    }
+  } while (std::string::npos != end);
 
   if (log.cb)
     log.cb(oms_message_error, msg.c_str());
@@ -126,10 +192,32 @@ void Log::Debug(const std::string& msg)
   if (log.logLevel < 1)
     return;
 
-  if (!log.logFile.is_open())
-    cout << "debug:   " << msg << endl;
-  else
-    log.logFile << TimeStr() << " | debug:   " << msg << endl;
+  std::ostream& stream = log.logFile.is_open() ? log.logFile : cout;
+
+  std::string timeStr;
+  if (log.logFile.is_open())
+  {
+    timeStr = TimeStr();
+    log.logFile << timeStr << " | ";
+  }
+
+  stream << "debug:   ";
+  size_t start = 0, end;
+  do
+  {
+    end = msg.substr(start).find("\n");
+    if(std::string::npos == end)
+      stream << msg.substr(start) << endl;
+    else
+    {
+      end++;
+      stream << msg.substr(start, end);
+      if (!timeStr.empty())
+        stream << timeStr << " | ";
+      stream << "         ";
+      start = end;
+    }
+  } while (std::string::npos != end);
 
   if (log.cb)
     log.cb(oms_message_debug, msg.c_str());

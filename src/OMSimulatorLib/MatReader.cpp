@@ -61,9 +61,6 @@ MatReader::MatReader(const char* filename)
     signals.push_back(var_buffer);
   }
   delete[] var_buffer;
-
-  for (auto& s : signals)
-    logInfo("\"" + s + "\"");
 }
 
 MatReader::~MatReader()
