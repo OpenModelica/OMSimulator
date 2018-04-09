@@ -103,7 +103,7 @@ bool ResultReader::compareSeries(Series* seriesA, Series* seriesB, double relTol
   if (seriesA->time[0] >= seriesA->time[seriesA->length - 1] ||
     seriesB->time[0] >= seriesB->time[seriesB->length - 1])
   {
-    logWarning("ResultReader::compareSeries: invalid time frame");
+    logError("ResultReader::compareSeries: invalid time frame");
     return false;
   }
 
@@ -144,8 +144,7 @@ bool ResultReader::compareSeries(Series* seriesA, Series* seriesB, double relTol
     valueB = mB*t + bB;
     if (!almostEqualRelativeAndAbs(valueA, valueB, relTol, absTol))
     {
-      logWarning("ResultReader::compareSeries: different values at time " + std::to_string(t));
-      logWarning("ResultReader::compareSeries: valueA: " + std::to_string(valueA) + ", valueB: " + std::to_string(valueB));
+      logError("ResultReader::compareSeries: different values at time " + std::to_string(t) + "\nvalueA: " + std::to_string(valueA) + ", valueB: " + std::to_string(valueB));
       return false;
     }
 

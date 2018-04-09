@@ -888,12 +888,10 @@ oms_status_enu_t oms2::FMUWrapper::emit(ResultWriter& resultWriter)
   {
     unsigned int ID = it.first;
     oms2::Variable& var = allVariables[it.second];
-    logInfo("oms2::FMUWrapper::emit: " + var.toString());
     SignalValue_t value;
     if (var.isTypeReal())
     {
       getReal(var, value.realValue);
-      logInfo(var.toString() + ": " + std::to_string(value.realValue));
       resultWriter.updateSignal(ID, value);
     }
   }
