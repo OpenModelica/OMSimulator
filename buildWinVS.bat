@@ -33,7 +33,7 @@ mkdir install\win\bin
 :: -- build OMTLMSimulator ----------------------------------------------------
 ECHO # Building OMTLMSimulator
 cd OMTLMSimulator
-call buildWinVS.bat
+call buildWinVS.bat %OMS_VS_TARGET%
 cd..
 copy /Y OMTLMSimulator\bin\omtlmsimulator.lib install\win\bin
 copy /Y OMTLMSimulator\bin\omtlmsimulator.dll install\win\bin
