@@ -67,6 +67,7 @@ private:
   ~Log();
 
   static Log& getInstance();
+  void printStringToStream(std::ostream& stream, const std::string& type, const std::string& msg);
 
   // stop the compiler generating methods copying the object
   Log(Log const& copy);            ///< not implemented
@@ -79,6 +80,7 @@ private:
   std::mutex m;
   unsigned int numWarnings;
   unsigned int numErrors;
+  unsigned int numMessages;
 
   void (*cb)(oms_message_type_enu_t type, const char* message);
 };

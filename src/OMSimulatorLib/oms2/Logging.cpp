@@ -56,6 +56,7 @@ Log::Log() : filename(""), cb(NULL)
 {
   numWarnings = 0;
   numErrors = 0;
+  numMessages = 0;
   logLevel = false;
 }
 
@@ -72,21 +73,17 @@ Log& Log::getInstance()
   return instance;
 }
 
-void Log::Info(const std::string& msg)
+void Log::printStringToStream(std::ostream& stream, const std::string& type, const std::string& msg)
 {
-  Log& log = getInstance();
-  std::lock_guard<std::mutex> lock(log.m);
-
-  std::ostream& stream = log.logFile.is_open() ? log.logFile : cout;
-
-  std::string timeStr;
-  if (log.logFile.is_open())
+  std::string timeStamp, padding;
+  if (logFile.is_open())
   {
-    timeStr = TimeStr();
-    log.logFile << timeStr << " | ";
+    timeStamp = TimeStr();
+    padding = std::string(timeStamp.size(), ' ');
+    logFile << timeStamp << " | ";
   }
 
-  stream << "info:    ";
+  stream << type << ": " << std::string(7 - type.size(), ' ');
   size_t start = 0, end;
   do
   {
@@ -97,12 +94,22 @@ void Log::Info(const std::string& msg)
     {
       end++;
       stream << msg.substr(start, end);
-      if (!timeStr.empty())
-        stream << timeStr << " | ";
-      stream << "         ";
+      if (!timeStamp.empty())
+        stream << padding << "  ";
+      stream << "          ";
       start = end;
     }
   } while (std::string::npos != end);
+}
+
+void Log::Info(const std::string& msg)
+{
+  Log& log = getInstance();
+  std::lock_guard<std::mutex> lock(log.m);
+
+  log.numMessages++;
+  std::ostream& stream = log.logFile.is_open() ? log.logFile : cout;
+  log.printStringToStream(stream, "info", msg);
 
   if (log.cb)
     log.cb(oms_message_info, msg.c_str());
@@ -114,32 +121,9 @@ void Log::Warning(const std::string& msg)
   std::lock_guard<std::mutex> lock(log.m);
 
   log.numWarnings++;
+  log.numMessages++;
   std::ostream& stream = log.logFile.is_open() ? log.logFile : cout;
-
-  std::string timeStr;
-  if (log.logFile.is_open())
-  {
-    timeStr = TimeStr();
-    log.logFile << timeStr << " | ";
-  }
-
-  stream << "warning: ";
-  size_t start = 0, end;
-  do
-  {
-    end = msg.substr(start).find("\n");
-    if(std::string::npos == end)
-      stream << msg.substr(start) << endl;
-    else
-    {
-      end++;
-      stream << msg.substr(start, end);
-      if (!timeStr.empty())
-        stream << timeStr << " | ";
-      stream << "         ";
-      start = end;
-    }
-  } while (std::string::npos != end);
+  log.printStringToStream(stream, "warning", msg);
 
   if (log.cb)
     log.cb(oms_message_warning, msg.c_str());
@@ -151,32 +135,9 @@ oms_status_enu_t Log::Error(const std::string& msg)
   std::lock_guard<std::mutex> lock(log.m);
 
   log.numErrors++;
+  log.numMessages++;
   std::ostream& stream = log.logFile.is_open() ? log.logFile : cerr;
-
-  std::string timeStr;
-  if (log.logFile.is_open())
-  {
-    timeStr = TimeStr();
-    log.logFile << timeStr << " | ";
-  }
-
-  stream << "error:   ";
-  size_t start = 0, end;
-  do
-  {
-    end = msg.substr(start).find("\n");
-    if(std::string::npos == end)
-      stream << msg.substr(start) << endl;
-    else
-    {
-      end++;
-      stream << msg.substr(start, end);
-      if (!timeStr.empty())
-        stream << timeStr << " | ";
-      stream << "         ";
-      start = end;
-    }
-  } while (std::string::npos != end);
+  log.printStringToStream(stream, "error", msg);
 
   if (log.cb)
     log.cb(oms_message_error, msg.c_str());
@@ -192,32 +153,9 @@ void Log::Debug(const std::string& msg)
   if (log.logLevel < 1)
     return;
 
+  log.numMessages++;
   std::ostream& stream = log.logFile.is_open() ? log.logFile : cout;
-
-  std::string timeStr;
-  if (log.logFile.is_open())
-  {
-    timeStr = TimeStr();
-    log.logFile << timeStr << " | ";
-  }
-
-  stream << "debug:   ";
-  size_t start = 0, end;
-  do
-  {
-    end = msg.substr(start).find("\n");
-    if(std::string::npos == end)
-      stream << msg.substr(start) << endl;
-    else
-    {
-      end++;
-      stream << msg.substr(start, end);
-      if (!timeStr.empty())
-        stream << timeStr << " | ";
-      stream << "         ";
-      start = end;
-    }
-  } while (std::string::npos != end);
+  log.printStringToStream(stream, "debug", msg);
 
   if (log.cb)
     log.cb(oms_message_debug, msg.c_str());
@@ -231,12 +169,11 @@ void Log::Trace(const std::string& function, const std::string& file, const long
   if (log.logLevel < 2)
     return;
 
+  log.numMessages++;
   std::string msg = function + " (" + file + ":" + std::to_string(line) + ")";
 
-  if (!log.logFile.is_open())
-    cout << "trace:   " << msg << endl;
-  else
-    log.logFile << TimeStr() << " | trace:   " << msg << endl;
+  std::ostream& stream = log.logFile.is_open() ? log.logFile : cout;
+  log.printStringToStream(stream, "trace", msg);
 
   if (log.cb)
     log.cb(oms_message_trace, msg.c_str());
@@ -249,26 +186,27 @@ oms_status_enu_t Log::setLogFile(const std::string& filename)
 
   if (log.logFile.is_open())
   {
-    log.logFile << TimeStr() << " | info:    " << "Logging completed properly" << endl;
+    log.printStringToStream(log.logFile, "info", "Logging completed properly");
     log.logFile.close();
 
     if (log.numWarnings + log.numErrors > 0)
     {
-      cout << "info:    " << log.numWarnings << " warnings" << endl;
-      cout << "info:    " << log.numErrors << " errors" << endl;
+      log.printStringToStream(cout, "info", std::to_string(log.numWarnings) + " warnings");
+      log.printStringToStream(cout, "info", std::to_string(log.numErrors) + " errors");
     }
-    cout << "info:    " << "Logging information has been saved to \"" << log.filename.c_str() << "\"" << endl;
+    log.printStringToStream(cout, "info", "Logging information has been saved to \"" + log.filename + "\"");
   }
 
   log.numWarnings = 0;
   log.numErrors = 0;
+  log.numMessages = 0;
   log.filename = filename;
 
   if (!filename.empty())
   {
     log.logFile.open(filename.c_str());
     if (log.logFile.is_open())
-      log.logFile << TimeStr() << " | info:    " << "Initializing logging (" << std::string(oms_git_version) << ")" << endl;
+      log.printStringToStream(log.logFile, "info", "Initializing logging (" + std::string(oms_git_version) + ")");
     else
     {
       log.filename = "";
