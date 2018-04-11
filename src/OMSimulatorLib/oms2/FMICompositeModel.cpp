@@ -738,7 +738,7 @@ oms_status_enu_t oms2::FMICompositeModel::exportCompositeStructure(const std::st
       else if (oms_causality_input == varA && oms_causality_output == varB)
         dotFile << "  " << B.getCref().toString() << " -> " << A.getCref().toString() << " [taillabel=\"" << B.getVar() << "\", headlabel=\"" << A.getVar() /*<< "\", label=\"" << B.getVar() << " -> " << A.getVar()*/ << "\"];" << std::endl;
       else
-        return oms_status_error;
+        return logError("[oms2::FMICompositeModel::exportCompositeStructure] failed");
     }
   }
 
