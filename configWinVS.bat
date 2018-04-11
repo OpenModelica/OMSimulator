@@ -22,9 +22,9 @@ ECHO.
 
 SET VSCMD_START_DIR="%CD%"
 
-IF ["%OMS_VS_TARGET%"]==["VS14-Win32"] @call "%VS140COMNTOOLS%\..\..\VC\vcvarsall.bat" x86
-IF ["%OMS_VS_TARGET%"]==["VS14-Win64"] @call "%VS140COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64
-IF ["%OMS_VS_TARGET%"]==["VS15-Win64"] @call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
+IF ["%OMS_VS_TARGET%"]==["VS14-Win32"] @CALL "%VS140COMNTOOLS%\..\..\VC\vcvarsall.bat" x86
+IF ["%OMS_VS_TARGET%"]==["VS14-Win64"] @CALL "%VS140COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64
+IF ["%OMS_VS_TARGET%"]==["VS15-Win64"] @CALL "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
 
 IF NOT DEFINED CMAKE_BUILD_TYPE SET CMAKE_BUILD_TYPE="Release"
 IF NOT DEFINED BOOST_ROOT SET BOOST_ROOT=C:\local\boost_1_64_0
@@ -55,7 +55,7 @@ IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 ECHO # build Lua
 CD 3rdParty\Lua
 IF EXIST "install\win\" RMDIR /S /Q install\win
-call buildWinVS.bat "%OMS_VS_TARGET%"
+CALL buildWinVS.bat "%OMS_VS_TARGET%"
 CD ..\..
 :: -- build Lua ---------------------------------------------------------------
 
@@ -136,13 +136,27 @@ IF ["%CERES%"]==["OFF"] (
 )
 :: -- config ceres-solver -----------------------------------------------------
 
+:: -- config pthread ----------------------------------------------------------
+ECHO # config pthread
+CD 3rdParty\pthread
+CALL buildWinVS.bat
+CD ..\..
+:: -- config pthread ----------------------------------------------------------
+
+:: -- config libxml2 ----------------------------------------------------------
+ECHO # config libxml2
+CD 3rdParty\libxml2
+CALL buildWinVS.bat
+CD ..\..
+:: -- config libxml2 ----------------------------------------------------------
+
 :: -- config OMSimulator ------------------------------------------------------
 ECHO # config OMSimulator
 IF EXIST "build\win\" RMDIR /S /Q build\win
 MKDIR build\win
 CD build\win
 cmake -G %OMS_VS_VERSION% ..\.. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DOMFIT="%OMFIT%" -DBOOST_ROOT=%BOOST_ROOT% -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE%
-CD ..\..\
+CD ..\..
 :: -- config OMSimulator ------------------------------------------------------
 
 :: -- create install\win\bin folder -------------------------------------------
@@ -152,6 +166,16 @@ IF NOT EXIST "install\win\bin" (
 )
 :: -- create install\win\bin folder -------------------------------------------
 
+:: -- copy pthread ------------------------------------------------------------
+ECHO # copy pthread
+XCOPY /Y /F 3rdParty\pthread\install\win\lib\pthreadVC2.dll install\win\bin
+:: -- copy pthread ------------------------------------------------------------
+
+:: -- copy libxml2 ------------------------------------------------------------
+ECHO # copy libxml2
+XCOPY /Y /F 3rdParty\libxml2\install\win\bin\libxml2.dll install\win\bin
+:: -- copy libxml2 ------------------------------------------------------------
+
 :: -- copy boost --------------------------------------------------------------
 ECHO # copy boost
 SET CRD=%CD%
@@ -159,7 +183,7 @@ CD %BOOST_ROOT%
 FOR /d %%d in (lib%OMS_VS_PLATFORM%*-msvc-*) do (
   CD %%d
   FOR /r %%e in (boost_system*,boost_filesystem*) do (
-    xcopy /Y /F %%e %CRD%\install\win\bin
+    XCOPY /Y /F %%e %CRD%\install\win\bin
   )
   CD %BOOST_ROOT%
 )
