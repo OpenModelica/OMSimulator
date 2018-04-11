@@ -410,12 +410,11 @@ oms_status_enu_t oms2::FMUWrapper::initializeDependencyGraph_outputs()
     return oms_status_ok;
   }
 
-  int N=outputsGraph.nodes.size();
-  for (int i = 0; i < N; i++)
+  for (int i = 0; i < outputs.size(); i++)
   {
     if (startIndex[i] == startIndex[i + 1])
     {
-      logDebug("oms2::FMUWrapper::initializeDependencyGraph_outputs: [" + getName() + ": " + getFMUPath() + "] output " + initialUnknownsGraph.nodes[i].getName() + " has no dependencies");
+      logDebug("oms2::FMUWrapper::initializeDependencyGraph_outputs: [" + getName() + ": " + getFMUPath() + "] output " + outputs[i].getName() + " has no dependencies");
     }
     else if ((startIndex[i] + 1 == startIndex[i + 1]) && (dependency[startIndex[i]] == 0))
     {
