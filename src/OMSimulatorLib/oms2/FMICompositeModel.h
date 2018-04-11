@@ -40,6 +40,7 @@
 #include "FMISubModel.h"
 #include "SignalRef.h"
 #include "Variable.h"
+#include "TLMInterface.h"
 
 #include <map>
 #include <vector>
@@ -83,9 +84,12 @@ namespace oms2
     oms_status_enu_t initialize(double startTime, double tolerance);
     oms_status_enu_t terminate();
     oms_status_enu_t simulate(ResultWriter& resultWriter, double stopTime, double communicationInterval);
+    oms_status_enu_t simulateTLM(ResultWriter *resultWriter, double stopTime, double communicationInterval, std::string address);
 
     oms_status_enu_t setReal(const oms2::SignalRef& sr, double value);
     oms_status_enu_t getReal(const oms2::SignalRef& sr, double& value);
+
+    oms_status_enu_t addTLMInterface(TLMInterface *ifc);
 
   private:
     oms_status_enu_t loadElementGeometry(const pugi::xml_node& node);
@@ -115,6 +119,7 @@ namespace oms2
     std::map<oms2::ComRef, oms2::FMISubModel*> subModels;
     std::vector<oms2::Connection*> connections;
     oms2::Element** components;
+    std::vector<TLMInterface*> tlmInterfaces;
 
     DirectedGraph initialUnknownsGraph;
     DirectedGraph outputsGraph;

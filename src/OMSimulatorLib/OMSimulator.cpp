@@ -748,10 +748,14 @@ oms_status_enu_t oms2_addExternalModel(const char *cref, const char *name, const
   return oms2::Scope::GetInstance().addExternalModel(oms2::ComRef(cref), oms2::ComRef(name), modelfile, startscript);
 }
 
-oms_status_enu_t oms2_addTLMInterface(const char *cref, const char *subref, const char *name, int dimensions, oms_causality_enu_t causality, const char *domain)
+oms_status_enu_t oms2_addTLMInterface(const char *cref, const char *subref, const char *name, int dimensions, oms_causality_enu_t causality, const char *domain, const char **sigrefs, int nsigrefs)
 {
   logTrace();
-  return oms2::Scope::GetInstance().addTLMInterface(oms2::ComRef(cref), oms2::ComRef(subref), oms2::ComRef(name), dimensions, causality, domain);
+  std::vector<oms2::SignalRef>vSigrefs;
+  for(int i=0; i<nsigrefs; ++i) {
+    vSigrefs.push_back(oms2::SignalRef(sigrefs[i]));
+  }
+  return oms2::Scope::GetInstance().addTLMInterface(oms2::ComRef(cref), oms2::ComRef(subref), oms2::ComRef(name), dimensions, causality, domain, vSigrefs);
 }
 
 oms_status_enu_t oms2_addTLMConnection(const char *cref, const char *from, const char *to, double delay, double alpha, double Zf, double Zfr)

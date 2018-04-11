@@ -39,10 +39,12 @@
 #include "SignalRef.h"
 #include "ssd/Tags.h"
 #include "Table.h"
+#include "Plugin/PluginImplementer.h"
 
 #include <pugixml.hpp>
 
 #include <sstream>
+#include <thread>
 
 oms2::FMICompositeModel::FMICompositeModel(const ComRef& name)
   : oms2::CompositeModel(oms_component_fmi, name)
@@ -843,6 +845,92 @@ oms_status_enu_t oms2::FMICompositeModel::simulate(ResultWriter& resultWriter, d
   return oms_status_ok;
 }
 
+oms_status_enu_t oms2::FMICompositeModel::simulateTLM(ResultWriter* resultWriter, double stopTime, double communicationInterval, std::string server)
+{
+  logTrace();
+
+  logInfo("Starting TLM simulation thread for model "+getName().toString());
+
+  //Limit communication interval to half TLM delay
+  //This is for avoiding extrapolation when running asynchronously.
+  for(TLMInterface* ifc: tlmInterfaces) {
+      if(communicationInterval < ifc->getDelay()*0.5) {
+        communicationInterval = ifc->getDelay()*0.5;
+      }
+  }
+
+  logInfo("Creating plugin instance.");
+
+  TLMPlugin* plugin = TLMPlugin::CreateInstance();
+
+  logInfo("Initializing plugin.");
+
+  if(!plugin->Init(this->getName().toString(),
+                   time,
+                   stopTime,
+                   communicationInterval,
+                   server)) {
+    logError("Error initializing the TLM plugin.");
+    return oms_status_error;
+  }
+
+  logInfo("Registering interfaces.");
+
+  for(TLMInterface *ifc : tlmInterfaces) {
+    oms_status_enu_t status = ifc->doRegister(plugin);
+    if(status == oms_status_error) {
+      return oms_status_error;
+    }
+  }
+
+  logInfo("Starting simulation loop.");
+
+  while (time < stopTime)
+  {
+    logDebug("doStep: " + std::to_string(time) + " -> " + std::to_string(time+communicationInterval));
+
+    // Read input variables from sockets
+    for(TLMInterface *ifc : tlmInterfaces) {
+      if(ifc->getDimensions() == 1 && ifc->getCausality() == oms_causality_input) {
+        double value;
+        plugin->GetValueSignal(ifc->getId(), time, &value);
+        this->setReal(ifc->getSubSignals()[0], value);
+      }
+      /// \todo Support bidirectional connections
+    }
+
+    // Do step in FMUs
+    time += communicationInterval;
+    if (time > stopTime)
+      time = stopTime;
+    for (const auto& it : subModels)
+      it.second->doStep(time);
+
+    // Write output variables to sockets
+    for(TLMInterface *ifc : tlmInterfaces) {
+      if(ifc->getDimensions() == 1 && ifc->getCausality() == oms_causality_output) {
+        double value;
+        this->getReal(ifc->getSubSignals()[0], value);
+        plugin->SetValueSignal(ifc->getId(), time, value);
+      }
+      /// \todo Support bidirectional connections
+    }
+
+    // input := output
+    updateInputs(outputsGraph);
+    emit(*resultWriter);
+  }
+
+  plugin->AwaitClosePermission();
+
+  delete plugin;
+
+  logInfo("Simulation of model "+getName().toString()+" complete.");
+
+  return oms_status_ok;
+}
+
+
 oms_status_enu_t oms2::FMICompositeModel::setReal(const oms2::SignalRef& sr, double value)
 {
   oms2::FMISubModel* model = getSubModel(sr.getCref());
@@ -860,6 +948,12 @@ oms_status_enu_t oms2::FMICompositeModel::getReal(const oms2::SignalRef& sr, dou
 
   oms_status_enu_t status = model->getReal(sr, value);
   return status;
+}
+
+oms_status_enu_t oms2::FMICompositeModel::addTLMInterface(oms2::TLMInterface *ifc)
+{
+  tlmInterfaces.push_back(ifc);
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms2::FMICompositeModel::updateInputs(oms2::DirectedGraph& graph)

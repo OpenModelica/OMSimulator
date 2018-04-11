@@ -35,13 +35,19 @@
 #include "ComRef.h"
 #include "SignalRef.h"
 #include "../Types.h"
+#include "../../OMTLMSimulator/common/Plugin/PluginImplementer.h"
 
 namespace oms2
 {
   class TLMInterface
   {
   public:
-    TLMInterface(const oms2::ComRef& cref, const std::string name, oms_causality_enu_t causality, const std::string domain, const int dimensions);
+    TLMInterface(const oms2::ComRef& cref,
+                 const std::string name,
+                 oms_causality_enu_t causality,
+                 const std::string domain,
+                 const int dimensions,
+                 const std::vector<SignalRef> &sigrefs);
     ~TLMInterface() {}
 
     oms2::SignalRef getSignal() { return sig; }
@@ -50,6 +56,11 @@ namespace oms2
     oms_causality_enu_t getCausality() { return causality; }
     std::string getDomain() { return domain; }
     int getDimensions() { return dimensions; }
+    void setDelay(double delay) { this->delay = delay; }
+    double getDelay() { return this->delay; }
+    std::vector<SignalRef> getSubSignals() { return sigrefs; }
+    oms_status_enu_t doRegister(TLMPlugin *plugin);
+    int getId() { return this->id; }
 
     friend bool operator==(const TLMInterface& lhs, const TLMInterface& rhs);
     friend bool operator!=(const TLMInterface& lhs, const TLMInterface& rhs);
@@ -61,6 +72,9 @@ namespace oms2
     oms_causality_enu_t causality;
     std::string domain;
     int dimensions;
+    std::vector<SignalRef> sigrefs;
+    double delay;
+    int id;
   };
 
   inline bool operator==(const TLMInterface& lhs, const TLMInterface& rhs) {return (lhs.cref.c_str() == rhs.cref.c_str() && lhs.name == rhs.name);}

@@ -554,7 +554,9 @@ oms_status_enu_t oms2_setTLMSocketData(const char* cref, const char* address,
  * \param domain       [in] Domain of TLM interface
  * \return             Error status
  */
-oms_status_enu_t oms2_addTLMInterface(const char *cref, const char* subref, const char *name, int dimensions, oms_causality_enu_t causality, const char* domain);
+oms_status_enu_t oms2_addTLMInterface(const char *cref, const char* subref, const char *name, int dimensions, oms_causality_enu_t causality, const char* domain,
+                                      const char **sigrefs, int nsigrefs);
+
 
 /**
  * \brief Adds an external model to a TLM composite model
