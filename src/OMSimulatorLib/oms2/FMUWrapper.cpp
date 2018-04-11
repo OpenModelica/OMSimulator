@@ -373,8 +373,6 @@ oms_status_enu_t oms2::FMUWrapper::initializeDependencyGraph_initialUnknowns()
     else if ((startIndex[i] + 1 == startIndex[i + 1]) && (dependency[startIndex[i]] == 0))
     {
       logDebug("oms2::FMUWrapper::initializeDependencyGraph_initialUnknowns: [" + getName() + ": " + getFMUPath() + "] initial unknown " + initialUnknownsGraph.nodes[i].getName() + " depends on all");
-      for (int j = 0; j < outputs.size(); j++)
-        initialUnknownsGraph.addEdge(initialUnknownsGraph.nodes[i], outputs[j]);
       for (int j = 0; j < inputs.size(); j++)
         initialUnknownsGraph.addEdge(inputs[j], initialUnknownsGraph.nodes[i]);
     }
