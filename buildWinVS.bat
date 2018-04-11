@@ -30,24 +30,6 @@ IF NOT DEFINED CMAKE_BUILD_TYPE SET CMAKE_BUILD_TYPE="Release"
 
 mkdir install\win\bin
 
-:: -- building pthread --------------------------------------------------------
-ECHO # Building pthread
-cd 3rdParty\pthread
-call buildWinVS.bat
-cd..
-cd..
-copy /Y 3rdParty\pthread\install\win\lib\pthreadVC2.dll install\win\bin
-:: -- building pthread --------------------------------------------------------
-
-:: -- building libxml2 --------------------------------------------------------
-ECHO # Building libxml2
-cd 3rdParty\libxml2
-call buildWinVS.bat
-cd..
-cd..
-copy /Y 3rdParty\libxml2\install\win\bin\libxml2.dll install\win\bin
-:: -- building libxml2 --------------------------------------------------------
-
 :: -- build OMTLMSimulator ----------------------------------------------------
 ECHO # Building OMTLMSimulator
 cd OMTLMSimulator
