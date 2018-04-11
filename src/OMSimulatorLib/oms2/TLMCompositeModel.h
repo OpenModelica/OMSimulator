@@ -60,8 +60,8 @@ namespace oms2
     oms_element_type_enu_t getType() {return oms_component_tlm;}
     oms_status_enu_t addFMIModel(FMICompositeModel *model);
 
-    oms_status_enu_t addInterface(oms2::TLMInterface& interface);
-    oms_status_enu_t addInterface(std::string name, int dimensions, oms_causality_enu_t causality, std::string domain, const ComRef &cref);
+    oms_status_enu_t addInterface(oms2::TLMInterface* ifc);
+    oms_status_enu_t addInterface(std::string name, int dimensions, oms_causality_enu_t causality, std::string domain, const ComRef &cref, std::vector<SignalRef> &sigrefs);
 
     oms_status_enu_t addExternalModel(ExternalModel *externalModel);
     oms_status_enu_t addExternalModel(std::string modelFile, std::string startScript, const ComRef& cref);
@@ -77,7 +77,7 @@ namespace oms2
 
     oms_status_enu_t initialize(double startTime, double tolerance);
     oms_status_enu_t terminate();
-    oms_status_enu_t simulate(ResultWriter& resultWriter, double stopTime, double communicationInterval);
+    oms_status_enu_t simulate(ResultWriter &resultWriter, double stopTime, double communicationInterval);
 
     oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultWriter) {return oms_status_ok;}
     oms_status_enu_t emit(ResultWriter& resultWriter) {return oms_status_ok;}
@@ -93,10 +93,13 @@ namespace oms2
   private:
     ComRef name;
     void* model;
+    double startTime;
     std::map<ComRef, FMICompositeModel*> fmiModels;
     std::map<ComRef, ExternalModel*> externalModels;
     std::list<TLMConnection> connections;
-    std::list<TLMInterface> interfaces;
+    std::list<TLMInterface*> interfaces;
+    std::string address;
+    int managerPort;
   };
 }
 

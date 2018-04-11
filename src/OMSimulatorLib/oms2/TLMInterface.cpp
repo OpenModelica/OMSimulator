@@ -30,12 +30,13 @@
  */
 
 #include "TLMInterface.h"
+#include "Logging.h"
 
 oms2::TLMInterface::TLMInterface(const oms2::ComRef &cref,
                                  const std::string name,
                                  oms_causality_enu_t causality,
                                  const std::string domain,
-                                 const int dimensions)
+                                 const int dimensions, const std::vector<SignalRef> &sigrefs)
   : sig(cref, name)
 {
   this->cref = cref;
@@ -43,4 +44,29 @@ oms2::TLMInterface::TLMInterface(const oms2::ComRef &cref,
   this->causality = causality;
   this->domain = domain;
   this->dimensions = dimensions;
+  this->sigrefs = sigrefs;
+}
+
+oms_status_enu_t oms2::TLMInterface::doRegister(TLMPlugin *plugin)
+{
+
+  //OMTLMSimulator uses degrees of freedom as "dimensions",
+  //so convert to this:
+  int omtlm_dimensions = dimensions;
+
+  if(dimensions == 2) omtlm_dimensions = 3;
+  if(dimensions == 3) omtlm_dimensions = 6;
+
+  std::string omtlm_causality = "Bidirectional";
+
+  if(causality == oms_causality_output) omtlm_causality = "Output";
+  else if(causality == oms_causality_input)  omtlm_causality = "Input";
+
+  this->id = plugin->RegisteTLMInterface(name,omtlm_dimensions,omtlm_causality,domain);
+  if(this->id < 0) {
+    logError("Failed to register TLM interface: "+name);
+    return oms_status_error;
+  }
+
+  return oms_status_ok;
 }
