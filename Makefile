@@ -44,13 +44,19 @@ else
 	FEXT=.so
 endif
 
-.PHONY: OMSimulator config-OMSimulator config-fmil config-lua config-cvode config-kinsol config-gflags config-glog config-ceres-solver config-3rdParty distclean testsuite doc doc-html doc-doxygen OMTLMSimulator
+.PHONY: OMSimulator OMSimulatorCore config-OMSimulator config-fmil config-lua config-cvode config-kinsol config-gflags config-glog config-ceres-solver config-3rdParty distclean testsuite doc doc-html doc-doxygen OMTLMSimulator
 
-OMSimulator: OMTLMSimulator
+OMSimulator:
 	@echo
 	@echo "# make OMSimulator"
 	@echo
-	@echo $(ABI)
+	@$(MAKE) OMTLMSimulator
+	@$(MAKE) OMSimulatorCore
+
+OMSimulatorCore:
+	@echo
+	@echo "# make OMSimulatorCore"
+	@echo
 	@$(MAKE) -C $(BUILD_DIR) install
 	test ! `uname` = Darwin || (install_name_tool -change MAC64/libomtlmsimulator.dylib "@loader_path/libomtlmsimulator.dylib" $(INSTALL_DIR)/bin/OMSimulator)
 
@@ -58,6 +64,7 @@ OMTLMSimulator:
 	@echo
 	@echo "# make OMTLMSimulator"
 	@echo
+	@echo $(ABI)
 	@$(MAKE) -C OMTLMSimulator omtlmlib
 	test ! `uname` != Darwin || $(MAKE) -C OMTLMSimulator/FMIWrapper install
 	@$(MKDIR) $(INSTALL_DIR)/lib

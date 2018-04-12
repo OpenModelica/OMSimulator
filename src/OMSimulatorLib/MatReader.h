@@ -44,6 +44,8 @@ public:
   ResultReader::Series* getSeries(const char* var);
 
 private:
+  bool transposed;
+  MatVer4Matrix* AClass;
   MatVer4Matrix* name;
   MatVer4Matrix* dataInfo;
   MatVer4Matrix* data_1;
