@@ -95,8 +95,8 @@ void Log::printStringToStream(std::ostream& stream, const std::string& type, con
       end++;
       stream << msg.substr(start, end);
       if (!timeStamp.empty())
-        stream << padding << "  ";
-      stream << "          ";
+        stream << padding << "   ";
+      stream << "         ";
       start = end;
     }
   } while (std::string::npos != end);
