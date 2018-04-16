@@ -349,3 +349,11 @@ oms_status_enu_t oms2::TLMCompositeModel::simulate(ResultWriter &resultWriter, d
 
   return oms_status_ok;
 }
+
+void oms2::TLMCompositeModel::simulate_asynchronous(ResultWriter& resultWriter, double stopTime, double communicationInterval, void (*cb)(const char* ident, double time, oms_status_enu_t status))
+{
+  logTrace();
+
+  logError("oms2::TLMCompositeModel::simulate_asynchronous: Function is not implemented, yet.");
+  cb(this->getName().c_str(), 0, oms_status_error);
+}

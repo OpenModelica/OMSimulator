@@ -84,6 +84,7 @@ namespace oms2
     oms_status_enu_t initialize();
     oms_status_enu_t terminate();
     oms_status_enu_t simulate();
+    oms_status_enu_t simulate_asynchronous(void (*cb)(const char* ident, double time, oms_status_enu_t status));
 
   private:
     Model(const oms2::ComRef& cref);
