@@ -651,8 +651,7 @@ oms_status_enu_t oms2_terminate(const char* ident)
 oms_status_enu_t oms2_simulate_asynchronous(const char* ident, void (*cb)(const char* ident, double time, oms_status_enu_t status))
 {
   logTrace();
-  logError("oms2_simulate_asynchronous: not implemented yet");
-  return oms_status_error;
+  return oms2::Scope::GetInstance().simulate_asynchronous(oms2::ComRef(ident), cb);
 }
 
 void oms2_setLoggingCallback(void (*cb)(oms_message_type_enu_t type, const char* message))

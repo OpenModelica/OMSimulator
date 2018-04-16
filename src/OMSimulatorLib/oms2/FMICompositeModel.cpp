@@ -905,6 +905,40 @@ oms_status_enu_t oms2::FMICompositeModel::simulatePCTPL(ResultWriter& resultWrit
   return oms_status_ok;
 }
 
+void oms2::FMICompositeModel::simulate_asynchronous(ResultWriter& resultWriter, double stopTime, double communicationInterval, void (*cb)(const char* ident, double time, oms_status_enu_t status))
+{
+  logTrace();
+
+  auto start = std::chrono::system_clock::now();
+  auto now = std::chrono::system_clock::now();
+  std::chrono::duration<double> elapsed_seconds = now-start;
+  std::chrono::duration<double> elapsed_seconds_previous = now-start;
+
+  while (time < stopTime)
+  {
+    logDebug("doStep: " + std::to_string(time) + " -> " + std::to_string(time+communicationInterval));
+    time += communicationInterval;
+    if (time > stopTime)
+      time = stopTime;
+
+    // do_step
+    for (const auto& it : subModels)
+      it.second->doStep(time);
+
+    // input := output
+    updateInputs(outputsGraph);
+    emit(resultWriter);
+
+    now = std::chrono::system_clock::now();
+    elapsed_seconds = now-start;
+    if ((elapsed_seconds - elapsed_seconds_previous) > std::chrono::duration<double>(1.0)) {
+      // bthiele: FIXME not meaningfull to always return oms_status_ok, but this is consistent with what `simulate` does. Behaviour should be (consistently) changed in `simulate` and `simulate_asynchronous`
+      cb(this->getName().c_str(), time, oms_status_ok);
+    }
+  }
+  cb(this->getName().c_str(), time, oms_status_ok);
+}
+
 oms_status_enu_t oms2::FMICompositeModel::simulateTLM(ResultWriter* resultWriter, double stopTime, double communicationInterval, std::string server)
 {
   logTrace();

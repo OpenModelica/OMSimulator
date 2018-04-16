@@ -39,6 +39,7 @@
 #include "ssd/Tags.h"
 
 #include <regex>
+#include <thread>
 
 #include <pugixml.hpp>
 
@@ -303,4 +304,17 @@ oms_status_enu_t oms2::Model::simulate()
 
   oms_status_enu_t status = compositeModel->simulate(*resultFile, stopTime, communicationInterval, masterAlgorithm);
   return status;
+}
+
+oms_status_enu_t oms2::Model::simulate_asynchronous(void (*cb)(const char* ident, double time, oms_status_enu_t status))
+{
+  if (oms_modelState_simulation != modelState)
+  {
+    logError("[oms2::Model::simulate_asynchronous] Model cannot be simulated, because it isn't initialized.");
+    return oms_status_error;
+  }
+
+  std::thread([=]{compositeModel->simulate_asynchronous(*resultFile, stopTime, communicationInterval, cb);}).detach();
+
+  return oms_status_ok;
 }
