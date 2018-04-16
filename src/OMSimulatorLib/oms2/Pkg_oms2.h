@@ -29,51 +29,29 @@
  *
  */
 
-#ifndef _OMS_OPTIONS_H_
-#define _OMS_OPTIONS_H_
+#ifndef _OMS2_PKG_OMS2_H_
+#define _OMS2_PKG_OMS2_H_
 
-#include <regex>
-#include <string>
+/************************************************************
+ Pkg_oms2 package header
+ ************************************************************/
 
-class ProgramOptions
+/* Package dependency header include                        */
+
+namespace oms2
 {
-public:
-  ProgramOptions(int argc, char** argv);
-  void printUsage();
+  /**
+   * \brief Supported FMI co-simulation master algorithms.
+   */
+  enum class MasterAlgorithm
+  {
+    STANDARD, ///< Single-Core default algorithm
+    PCTPL, ///< Parallel doStep(..) using CTPL task pool library (https://github.com/vit-vit/CTPL)
+    // PMRCHANNELA, ///< Experimental parallel (multi-rate) communication channel approach using ATOMIC variables and polling for synchronization
+    // PMRCHANNELCV, ///< Experimental parallel (multi-rate) communication channel approach using CONDITION variables for synchronization
+    // PMRTASKPOOLA, ///< Experimental parallel (multi-rate) approach using fixed number of tasks and ATOMIC variables and polling for synchronization
+    // PMRTASKPOOLCV ///< Experimental parallel (multi-rate) approach using fixed number of tasks and CONDITION variables for synchronization
+  };
+} // Types defined within the package of namespace oms2
 
-private:
-  bool isOption(const std::string& name);
-  bool isOption(const std::string& name1, const std::string& name2);
-  bool isOptionAndValue(const std::string& name, std::string& value, std::regex re);
-  bool isOptionAndValue(const std::string& name1, const std::string& name2, std::string& value, std::regex re);
-
-public:
-  bool validOptions;
-  bool describe;
-  bool help;
-  bool version;
-  double startTime;
-  bool useStartTime;
-  double stopTime;
-  bool useStopTime;
-  double tolerance;
-  bool useTolerance;
-  double communicationInterval;
-  bool useCommunicationInterval;
-  std::string filename;
-  std::string resultFile;
-  std::string tempDir;
-  std::string workingDir;
-  std::string logfile;
-  double timeout;
-  int logLevel;
-  bool newAPI;
-  std::string masterAlgorithm;
-
-private:
-  int argi;
-  int argc;
-  char** argv;
-};
-
-#endif
+#endif /* _OMS2_PKG_OMS2_H_ */

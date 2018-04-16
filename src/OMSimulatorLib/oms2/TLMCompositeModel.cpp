@@ -316,7 +316,7 @@ oms_status_enu_t oms2::TLMCompositeModel::terminate()
   return oms_status_error;
 }
 
-oms_status_enu_t oms2::TLMCompositeModel::simulate(ResultWriter &resultWriter, double stopTime, double communicationInterval)
+oms_status_enu_t oms2::TLMCompositeModel::simulate(ResultWriter &resultWriter, double stopTime, double communicationInterval, MasterAlgorithm masterAlgorithm)
 {
   /// \todo Add simulation of FMI submodels
 //  if(!fmiModels.empty()) {

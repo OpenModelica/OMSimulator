@@ -32,6 +32,7 @@
 #include "FMICompositeModel.h"
 
 #include "../Types.h"
+#include "Pkg_oms2.h"
 #include "../ResultWriter.h"
 #include "ComRef.h"
 #include "FMUWrapper.h"
@@ -42,6 +43,8 @@
 #include "Plugin/PluginImplementer.h"
 
 #include <pugixml.hpp>
+#include <thread>
+#include <ctpl.h>
 
 #include <sstream>
 #include <thread>
@@ -824,7 +827,24 @@ oms_status_enu_t oms2::FMICompositeModel::terminate()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms2::FMICompositeModel::simulate(ResultWriter& resultWriter, double stopTime, double communicationInterval)
+oms_status_enu_t oms2::FMICompositeModel::simulate(ResultWriter& resultWriter, double stopTime, double communicationInterval, MasterAlgorithm masterAlgorithm)
+{
+  logTrace();
+
+  switch (masterAlgorithm) {
+    case MasterAlgorithm::STANDARD :
+      logInfo("oms2::FMICompositeModel::simulate: Using master algorithm 'standard'\n");
+      return simulateStandard(resultWriter, stopTime, communicationInterval);
+    case MasterAlgorithm::PCTPL :
+      logInfo("oms2::FMICompositeModel::simulate: Using master algorithm 'pctpl'\n");
+      return simulatePCTPL(resultWriter, stopTime, communicationInterval);
+    default :
+      logError("oms2::FMICompositeModel::simulate: Internal error: Request for using unknown master algorithm.");
+      return oms_status_error;
+    }
+}
+
+oms_status_enu_t oms2::FMICompositeModel::simulateStandard(ResultWriter& resultWriter, double stopTime, double communicationInterval)
 {
   logTrace();
   while (time < stopTime)
@@ -837,6 +857,46 @@ oms_status_enu_t oms2::FMICompositeModel::simulate(ResultWriter& resultWriter, d
     // do_step
     for (const auto& it : subModels)
       it.second->doStep(time);
+
+    // input := output
+    updateInputs(outputsGraph);
+    emit(resultWriter);
+  }
+  return oms_status_ok;
+}
+
+/**
+ * \brief Parallel "doStep(..)" execution using task pool CTPL library (https://github.com/vit-vit/CTPL).
+ */
+oms_status_enu_t oms2::FMICompositeModel::simulatePCTPL(ResultWriter& resultWriter, double stopTime, double communicationInterval)
+{
+  logTrace();
+
+  int nFMUs = subModels.size();
+  std::vector<oms2::FMISubModel*> fmus;
+  std::map<oms2::ComRef, oms2::FMISubModel*>::iterator it;
+  for (it=subModels.begin(); it != subModels.end(); ++it)
+    fmus.push_back(it->second);
+
+  int numThreads = nFMUs < std::thread::hardware_concurrency() ? nFMUs : std::thread::hardware_concurrency();
+  logInfo(std::string("oms2::FMICompositeModel::simulatePCTPL: Creating thread pool with ") + std::to_string(numThreads) + std::string(" threads in the pool"));
+  ctpl::thread_pool p(numThreads);
+  std::vector<std::future<void>> results(numThreads);
+
+  while (time < stopTime)
+  {
+    logDebug("doStep: " + std::to_string(time) + " -> " + std::to_string(time+communicationInterval));
+    time += communicationInterval;
+    if (time > stopTime)
+      time = stopTime;
+
+    // do_step
+    for (int i = 0; i < nFMUs; ++i) {
+      auto time_tmp = time;
+      results[i] = p.push([&fmus, i, time_tmp](int){ fmus[i]->doStep(time_tmp); });
+    }
+    for (int i = 0; i < nFMUs; ++i)
+      results[i].get();
 
     // input := output
     updateInputs(outputsGraph);
