@@ -111,6 +111,10 @@ add_definitions(-DPUGIXML_HEADER_ONLY)
 set(PUGIXML_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/PugiXml)
 
 ##########################
+# Configuring for CTPL
+set(CTPL_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/CTPL)
+
+##########################
 # Configuring for Python
 find_package(PythonLibs)
 IF(PYTHONLIBS_FOUND)

@@ -18,6 +18,7 @@ The latest documentation is avilable as [pdf](https://openmodelica.org/doc/OMSim
   - PugiXML
   - SUNDIALS CVODE
   - SUNDIALS KINSOL
+  - CTPL
   - gflags
   - glog
   - Ceres Solver

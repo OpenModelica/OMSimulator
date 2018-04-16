@@ -126,6 +126,10 @@ ProgramOptions::ProgramOptions(int argc, char** argv)
     {
       workingDir = value;
     }
+    else if (isOptionAndValue("--masterAlgorithm", value, re_default))
+    {
+      masterAlgorithm = value;
+    }
     else if (arg.front() != '-' && filename.empty())
     {
       filename = arg;
@@ -206,4 +210,5 @@ void ProgramOptions::printUsage()
   std::cout << "  --tolerance arg           Specifies the relative tolerance." << std::endl;
   std::cout << "  -v [ --version ]          Displays version information." << std::endl;
   std::cout << "  --workingDir arg          Specifies the working directory." << std::endl;
+  std::cout << "  --masterAlgorithm arg     TO BE IMPLEMENTED (currently only supported via scripting API). Specifies the FMI co-simulation master algorithm (default: 'standard')." << std::endl;
 }

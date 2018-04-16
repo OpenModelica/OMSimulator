@@ -906,6 +906,21 @@ static int OMSimulatorLua_oms2_setResultFile(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms2_setMasterAlgorithm(const char* cref, const char* masterAlgorithm);
+static int OMSimulatorLua_oms2_setMasterAlgorithm(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+
+  const char* cref = lua_tostring(L, 1);
+  const char* masterAlgorithm = lua_tostring(L, 2);
+  oms_status_enu_t status = oms2_setMasterAlgorithm(cref, masterAlgorithm);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
 //oms_status_enu_t oms2_exportCompositeStructure(const char* cref, const char* filename);
 static int OMSimulatorLua_oms2_exportCompositeStructure(lua_State *L)
 {
@@ -1426,6 +1441,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms2_setLoggingLevel);
   REGISTER_LUA_CALL(oms2_setRealParameter);
   REGISTER_LUA_CALL(oms2_setResultFile);
+  REGISTER_LUA_CALL(oms2_setMasterAlgorithm);
   REGISTER_LUA_CALL(oms2_setStartTime);
   REGISTER_LUA_CALL(oms2_setStopTime);
   REGISTER_LUA_CALL(oms2_setTempDirectory);

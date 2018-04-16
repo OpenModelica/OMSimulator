@@ -34,6 +34,7 @@
 
 #include "../Types.h"
 #include "../ResultWriter.h"
+#include "Pkg_oms2.h"
 #include "ComRef.h"
 #include "Element.h"
 #include "CompositeModel.h"
@@ -68,6 +69,8 @@ namespace oms2
     double getCommunicationInterval() const {return communicationInterval;}
     void setResultFile(const std::string& value) {resultFilename = value;}
     const std::string& getResultFile() const {return resultFilename;}
+    void setMasterAlgorithm(MasterAlgorithm value) {masterAlgorithm = value;}
+    MasterAlgorithm getMasterAlgorithm() const {return masterAlgorithm;}
 
     FMICompositeModel* getFMICompositeModel();
     TLMCompositeModel* getTLMCompositeModel();
@@ -92,16 +95,17 @@ namespace oms2
 
   private:
     oms2::ssd::SystemGeometry systemGeometry;
-    CompositeModel* compositeModel;
+    CompositeModel* compositeModel = nullptr;
 
-    double startTime;             ///< experiment, default 0.0
-    double stopTime;              ///< experiment, default 1.0
-    double tolerance;             ///< experiment, default 1.0e-4
-    double communicationInterval; ///< experiment, default 1.0e-2
-    std::string resultFilename;   ///< experiment, default <name>_res.mat
-    ResultWriter *resultFile;
+    double startTime = 0.0;                 ///< experiment, default 0.0
+    double stopTime = 1.0;                  ///< experiment, default 1.0
+    double tolerance = 1.0e-4;              ///< experiment, default 1.0e-4
+    double communicationInterval = 1.0e-2;  ///< experiment, default 1.0e-2
+    std::string resultFilename;             ///< experiment, default <name>_res.mat
+    ResultWriter *resultFile = nullptr;
+    MasterAlgorithm masterAlgorithm = MasterAlgorithm::STANDARD;  ///< master algorithm for FMI co-simulation, default MasterAlgorithm::STANDARD
 
-    oms_modelState_enu_t modelState; ///< internal model state, e.g. initialization state
+    oms_modelState_enu_t modelState;  ///< internal model state, e.g. initialization state
   };
 }
 

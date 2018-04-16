@@ -695,6 +695,20 @@ oms_status_enu_t oms2_setCommunicationInterval(const char* cref, double communic
  */
 oms_status_enu_t oms2_setResultFile(const char* cref, const char* filename);
 
+
+/**
+ * \brief Set master algorithm variant that shall be used (default: "standard").
+ *
+ * Supported master algorithms: "standard"
+ *
+ * Experimental master algorithms (no stable API!): "pctpl"
+ *
+ * \param cref              [in] Name of the model instance
+ * \param masterAlgorithm   [in] Master algorithm.
+ * \return                  Error status
+ */
+oms_status_enu_t oms2_setMasterAlgorithm(const char* cref, const char* masterAlgorithm);
+
 /**
  * \brief Export the composite structure of a given model to a dot file.
  *

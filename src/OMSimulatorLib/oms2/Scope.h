@@ -91,6 +91,7 @@ namespace oms2
     oms_status_enu_t setStopTime(const ComRef& cref, double stopTime);
     oms_status_enu_t setCommunicationInterval(const ComRef& cref, double communicationInterval);
     oms_status_enu_t setResultFile(const ComRef& cref, const std::string& filename);
+    oms_status_enu_t setMasterAlgorithm(const ComRef& cref, const std::string& masterAlgorithm);
     oms_status_enu_t exportCompositeStructure(const ComRef& cref, const std::string& filename);
     oms_status_enu_t exportDependencyGraphs(const ComRef& cref, const std::string& initialization, const std::string& simulation);
 

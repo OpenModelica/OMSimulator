@@ -43,18 +43,9 @@
 #include <pugixml.hpp>
 
 oms2::Model::Model(const oms2::ComRef& cref)
-  : systemGeometry()
+  : systemGeometry(), resultFilename(cref.toString() + "_res.mat")
 {
   logTrace();
-
-  compositeModel = NULL;
-  resultFile = NULL;
-
-  startTime = 0.0;
-  stopTime = 1.0;
-  tolerance = 1e-4;
-  communicationInterval = 1e-2;
-  resultFilename = cref.toString() + "_res.mat";
   modelState = oms_modelState_instantiated;
 }
 
@@ -310,6 +301,6 @@ oms_status_enu_t oms2::Model::simulate()
     return oms_status_error;
   }
 
-  oms_status_enu_t status = compositeModel->simulate(*resultFile, stopTime, communicationInterval);
+  oms_status_enu_t status = compositeModel->simulate(*resultFile, stopTime, communicationInterval, masterAlgorithm);
   return status;
 }
