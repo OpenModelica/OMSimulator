@@ -107,6 +107,22 @@ typedef enum {
 } oms_message_type_enu_t;
 
 /**
+ * \brief Vector indices for signal references in 1D signal TLM interfaces
+ */
+typedef enum {
+  oms_tlm_sigref_value  ///< Only used to be consistent with bidirectional interfaces
+} oms_tlm_sigref_signal_t;
+
+/**
+ * \brief Vector indices for signal references in 1D bidirectional TLM interfaces
+ */
+typedef enum {
+  oms_tlm_sigref_1d_state, ///< E.g. position or charge
+  oms_tlm_sigref_1d_flow,  ///< E.g. speed, current or flow
+  oms_tlm_sigref_1d_effort ///< E.g. force, voltage or pressure
+} oms_tlm_sigref_1d_t;
+
+/**
  * \brief 5.2.1.1 ssd:ConnectorGeometry
  *
  * This optional XML element gives the geometry information of the connector.
