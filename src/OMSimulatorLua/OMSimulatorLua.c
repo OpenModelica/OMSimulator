@@ -1032,14 +1032,29 @@ static int OMSimulatorLua_oms2_addFMISubModel(lua_State *L)
 //oms_status_enu_t oms2_addTLMInterface(const char *cref, const char *subref, const char *name, int dimensions, oms_causality_enu_t causality, const char *domain);
 static int OMSimulatorLua_oms2_addTLMInterface(lua_State *L)
 {
-  if (lua_gettop(L) != 6)
-    return luaL_error(L, "expecting exactly 6 arguments");
+  if (lua_gettop(L) != 6 &&
+      lua_gettop(L) != 7 &&
+      lua_gettop(L) != 9 &&
+      lua_gettop(L) != 12)
+    return luaL_error(L, "expecting exactly 6, 7, 9 or 12 arguments");
   luaL_checktype(L, 1, LUA_TSTRING);
   luaL_checktype(L, 2, LUA_TSTRING);
   luaL_checktype(L, 3, LUA_TSTRING);
   luaL_checktype(L, 4, LUA_TNUMBER);
   luaL_checktype(L, 5, LUA_TNUMBER);
   luaL_checktype(L, 6, LUA_TSTRING);
+  if(lua_gettop(L) > 6) {
+    luaL_checktype(L, 7, LUA_TSTRING);
+  }
+  if(lua_gettop(L) > 7) {
+    luaL_checktype(L, 8, LUA_TSTRING);
+    luaL_checktype(L, 9, LUA_TSTRING);
+  }
+  if(lua_gettop(L) > 9) {
+    luaL_checktype(L, 10, LUA_TSTRING);
+    luaL_checktype(L, 11, LUA_TSTRING);
+    luaL_checktype(L, 12, LUA_TSTRING);
+  }
 
   const char *cref =    lua_tostring(L, 1);
   const char *subref =  lua_tostring(L, 2);
@@ -1048,7 +1063,26 @@ static int OMSimulatorLua_oms2_addTLMInterface(lua_State *L)
   int causality =       lua_tonumber(L, 5);
   const char *domain =  lua_tostring(L, 6);
 
-  oms_status_enu_t status = oms2_addTLMInterface(cref, subref, name, dimensions, (oms_causality_enu_t)causality, domain);
+  int nsigrefs = 0;
+  if(lua_gettop(L) == 7) nsigrefs = 1;
+  else if(lua_gettop(L) == 9) nsigrefs = 3;
+  else if(lua_gettop(L) == 12) nsigrefs = 6;
+
+  const char *sigrefs[20];
+  if(lua_gettop(L) > 6) {
+    sigrefs[0] = lua_tostring(L, 7);
+  }
+  if(lua_gettop(L) > 7) {
+    sigrefs[1] = lua_tostring(L, 8);
+    sigrefs[2] = lua_tostring(L, 9);
+  }
+  if(lua_gettop(L) > 9) {
+    sigrefs[3] = lua_tostring(L, 10);
+    sigrefs[4] = lua_tostring(L, 11);
+    sigrefs[5] = lua_tostring(L, 12);
+  }
+
+  oms_status_enu_t status = oms2_addTLMInterface(cref, subref, name, dimensions, (oms_causality_enu_t)causality, domain, sigrefs, nsigrefs);
   lua_pushnumber(L, status);
   return 1;
 }
@@ -1056,6 +1090,7 @@ static int OMSimulatorLua_oms2_addTLMInterface(lua_State *L)
 //oms_status_enu_t oms2_addTLMConnection(const char *cref, const char *from, const char *to, double delay, double alpha, double Zf, double Zfr)
 static int OMSimulatorLua_oms2_addTLMConnection(lua_State *L)
 {
+  /// \todo Cleanup this mess
   if (lua_gettop(L) != 7)
     return luaL_error(L, "expecting exactly 7 arguments");
   luaL_checktype(L, 1, LUA_TSTRING);

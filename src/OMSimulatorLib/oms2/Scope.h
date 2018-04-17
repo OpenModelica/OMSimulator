@@ -108,7 +108,8 @@ namespace oms2
     oms_status_enu_t addExternalModel(const ComRef& cref, const ComRef& name,
                                       const std::string& modelfile, const std::string &startscript);
     oms_status_enu_t addTLMInterface(const ComRef& cref, const ComRef& subref, const ComRef& name,
-                                     int dimensions, oms_causality_enu_t causality, std::string domain);
+                                     int dimensions, oms_causality_enu_t causality, std::string domain,
+                                     std::vector<SignalRef> &sigrefs);
     oms_status_enu_t addTLMConnection(const ComRef& cref, const SignalRef& from, const SignalRef& to,
                                       double delay, double alpha, double Zf, double Zfr);
     oms_status_enu_t setTLMSocketData(ComRef modelIdent, const std::string &address,

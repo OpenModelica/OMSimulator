@@ -43,6 +43,7 @@
 #include <list>
 #include <algorithm>
 #include <iostream>
+#include <thread>
 
 #include <pugixml.hpp>
 
@@ -51,6 +52,7 @@ oms2::TLMCompositeModel::TLMCompositeModel(const ComRef& name)
 {
   logTrace();
   model = omtlm_newModel(name.c_str());
+  omtlm_setLogLevel(model, 1);  /// \todo Make debug log level selectable by user
 }
 
 oms2::TLMCompositeModel::~TLMCompositeModel()
@@ -80,37 +82,77 @@ oms_status_enu_t oms2::TLMCompositeModel::addFMIModel(oms2::FMICompositeModel *f
     return oms_status_error;
   }
 
-  omtlm_addSubModel(model, cref.c_str(), "", "");
+  omtlm_addSubModel(model, cref.c_str(), "", "none"); //Startscript must be "none"
 
   fmiModels[cref] = fmiModel;
 
   return oms_status_ok;
 }
 
-oms_status_enu_t oms2::TLMCompositeModel::addInterface(oms2::TLMInterface &interface)
+oms_status_enu_t oms2::TLMCompositeModel::addInterface(oms2::TLMInterface *ifc)
 {
-  if(std::find(interfaces.begin(), interfaces.end(), interface) != interfaces.end()) {
-    logError("Interface "+interface.getSignal().toString()+" is already added.");
+  if(std::find(interfaces.begin(), interfaces.end(), ifc) != interfaces.end()) {
+    logError("Interface "+ifc->getSignal().toString()+" is already added.");
+    return oms_status_error;
+  }
+
+  FMICompositeModel *pFMISubModel = Scope::GetInstance().getFMICompositeModel(ifc->getSubModelName());
+
+  if(pFMISubModel) {
+    if(ifc->getDimensions() == 1 &&
+       (ifc->getCausality() == oms_causality_input || ifc->getCausality() == oms_causality_output) &&
+       ifc->getSubSignals().size() != 1) {
+      logError("Wrong number of variables for TLM interface (should be 1)");
+      return oms_status_error;
+    }
+    if(ifc->getDimensions() == 1 &&
+       ifc->getCausality() == oms_causality_bidir &&
+       ifc->getSubSignals().size() != 1) {
+      logError("Wrong number of variables for TLM interface (should be 2)");
+      return oms_status_error;
+    }
+    if(ifc->getDimensions() == 2 &&
+       ifc->getCausality() == oms_causality_bidir &&
+       ifc->getSubSignals().size() != 3) {
+      logError("Wrong number of variables for TLM interface (should be 3)");
+      return oms_status_error;
+    }
+    if(ifc->getDimensions() == 3 &&
+       ifc->getCausality() == oms_causality_bidir &&
+       ifc->getSubSignals().size() != 6) {
+      logError("Wrong number of variables for TLM interface (should be 6)");
+      return oms_status_error;
+    }
+  }
+
+  if(externalModels.find(ifc->getSubModelName()) == externalModels.end() &&
+                         (!pFMISubModel ||
+                          fmiModels.find(ifc->getSubModelName()) == fmiModels.end())) {
+    logError("Sub model for TLM interface does not exist in TLM composite model.");
     return oms_status_error;
   }
 
   //Todo: Help function for this
   std::string causality = "Input";
-  if(interface.getCausality() == oms_causality_output) {
+  if(ifc->getCausality() == oms_causality_output) {
     causality = "Output";
   }
-  else if(interface.getCausality() == oms_causality_bidir) {
+  else if(ifc->getCausality() == oms_causality_bidir) {
     causality = "Bidirectional";
   }
 
   omtlm_addInterface(model,
-                     interface.getSubModelName().c_str(),
-                     interface.getName().c_str(),
-                     interface.getDimensions(),
+                     ifc->getSubModelName().c_str(),
+                     ifc->getName().c_str(),
+                     ifc->getDimensions(),
                      causality.c_str(),
-                     interface.getDomain().c_str());
+                     ifc->getDomain().c_str());
 
-  interfaces.push_back(interface);
+  interfaces.push_back(ifc);
+
+  if(pFMISubModel) {
+    pFMISubModel->addTLMInterface(ifc);
+  }
 
   return oms_status_ok;
 }
@@ -119,10 +161,11 @@ oms_status_enu_t oms2::TLMCompositeModel::addInterface(std::string name,
                                                    int dimensions,
                                                    oms_causality_enu_t causality,
                                                    std::string domain,
-                                                   const oms2::ComRef &cref)
+                                                   const oms2::ComRef &cref,
+                                                   std::vector<SignalRef> &sigrefs)
 {
-  oms2::TLMInterface interface(cref,name,causality,domain,dimensions);
-  return addInterface(interface);
+  oms2::TLMInterface *ifc = new TLMInterface(cref,name,causality,domain,dimensions, sigrefs);
+  return addInterface(ifc);
 }
 
 oms_status_enu_t oms2::TLMCompositeModel::addExternalModel(oms2::ExternalModel *externalModel)
@@ -151,7 +194,10 @@ oms_status_enu_t oms2::TLMCompositeModel::addExternalModel(oms2::ExternalModel *
   //Extract file name from path
   size_t i1 = externalModel->getModelPath().rfind('/', externalModel->getModelPath().length());
   size_t i2 = externalModel->getModelPath().rfind('\\', externalModel->getModelPath().length());
-  size_t i=std::max(i1,i2);
+  size_t i = i1;
+  if(i2>i1) {
+    i = i2;   //We cannot use std::max with MSVC for some reason
+  }
   if(i1 == std::string::npos) {
       i = i2;
   }
@@ -192,9 +238,15 @@ oms_status_enu_t oms2::TLMCompositeModel::setSocketData(const std::string& addre
                                                         int managerPort,
                                                         int monitorPort)
 {
+  omtlm_checkPortAvailability(&managerPort);
+  omtlm_checkPortAvailability(&monitorPort);
+
   omtlm_setAddress(model, address);
   omtlm_setManagerPort(model, managerPort);
   omtlm_setMonitorPort(model, monitorPort);
+
+  this->address = address;
+  this->managerPort = managerPort;
   return oms_status_ok;
 }
 
@@ -223,6 +275,14 @@ oms_status_enu_t oms2::TLMCompositeModel::addConnection(const TLMConnection &con
                       con.getZfr(),
                       con.getAlpha());
   connections.push_back(con);
+
+  for(TLMInterface* ifc : interfaces) {
+    if(ifc->getSubModelName().toString()+"."+ifc->getName() == interface1 ||
+       ifc->getSubModelName().toString()+"."+ifc->getName() == interface2) {
+      ifc->setDelay(con.getTimeDelay());
+    }
+  }
+
   return oms_status_ok;
 }
 
@@ -245,6 +305,8 @@ oms_status_enu_t oms2::TLMCompositeModel::initialize(double startTime, double to
      it->second->initialize(startTime, tolerance);
   }
 
+  this->startTime = startTime;
+
   return oms_status_ok;
 }
 
@@ -254,16 +316,36 @@ oms_status_enu_t oms2::TLMCompositeModel::terminate()
   return oms_status_error;
 }
 
-oms_status_enu_t oms2::TLMCompositeModel::simulate(ResultWriter& resultWriter, double stopTime, double communicationInterval)
+oms_status_enu_t oms2::TLMCompositeModel::simulate(ResultWriter &resultWriter, double stopTime, double communicationInterval)
 {
   /// \todo Add simulation of FMI submodels
-  if(!fmiModels.empty()) {
-    logError("oms2::TLMCompositeModel::simulate: Simulation of FMI sub-models is not implemented yet.");
-    return oms_status_error;
+//  if(!fmiModels.empty()) {
+//    logError("oms2::TLMCompositeModel::simulate: Simulation of FMI sub-models is not implemented yet.");
+//    return oms_status_error;
+//  }
+
+  logInfo("Starting submodel threads.");
+  std::string server = address+":"+std::to_string(managerPort);
+  std::vector<std::thread*> fmiModelThreads;
+  for(auto it = fmiModels.begin(); it!=fmiModels.end(); ++it) {
+    std::thread *t = new std::thread(&FMICompositeModel::simulateTLM,
+                                     it->second,
+                                     &resultWriter,
+                                     stopTime,
+                                     communicationInterval,
+                                     server);
+    fmiModelThreads.push_back(t);
   }
 
+  logInfo("Starting OMTLMSimulator in main thread.");
   omtlm_setStopTime(model, stopTime);
   omtlm_simulate(model);
 
-  return oms_status_ok; //Perhaps omstlm_simulate should return a status instead
+  for(size_t i=0; i<fmiModelThreads.size(); ++i) {
+    fmiModelThreads[i]->join();
+  }
+
+  logInfo("Simulation of TLM composite model "+getName().toString()+" complete.");
+
+  return oms_status_ok;
 }
