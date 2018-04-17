@@ -102,20 +102,21 @@ oms_status_enu_t oms2::TLMCompositeModel::addInterface(oms2::TLMInterface *ifc)
     }
     if(ifc->getDimensions() == 1 &&
        ifc->getCausality() == oms_causality_bidir &&
-       ifc->getSubSignals().size() != 1) {
-      logError("Wrong number of variables for TLM interface (should be 2)");
-      return oms_status_error;
-    }
-    if(ifc->getDimensions() == 2 &&
-       ifc->getCausality() == oms_causality_bidir &&
        ifc->getSubSignals().size() != 3) {
       logError("Wrong number of variables for TLM interface (should be 3)");
       return oms_status_error;
     }
+    if(ifc->getDimensions() == 2 &&
+       ifc->getCausality() == oms_causality_bidir &&
+       ifc->getSubSignals().size() != 9) {
+      logError("Wrong number of variables for TLM interface (should be 9)");
+      return oms_status_error;
+    }
     if(ifc->getDimensions() == 3 &&
        ifc->getCausality() == oms_causality_bidir &&
-       ifc->getSubSignals().size() != 6) {
-      logError("Wrong number of variables for TLM interface (should be 6)");
+       ifc->getSubSignals().size() != 18) {
+      logError("Wrong number of variables for TLM interface (should be 18)");
+
       return oms_status_error;
     }
   }

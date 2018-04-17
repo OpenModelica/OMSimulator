@@ -983,7 +983,7 @@ oms_status_enu_t oms2::FMICompositeModel::simulateTLM(ResultWriter* resultWriter
   //Limit communication interval to half TLM delay
   //This is for avoiding extrapolation when running asynchronously.
   for(TLMInterface* ifc: tlmInterfaces) {
-      if(communicationInterval < ifc->getDelay()*0.5) {
+      if(communicationInterval > ifc->getDelay()*0.5) {
         communicationInterval = ifc->getDelay()*0.5;
       }
   }
@@ -1023,9 +1023,25 @@ oms_status_enu_t oms2::FMICompositeModel::simulateTLM(ResultWriter* resultWriter
       if(ifc->getDimensions() == 1 && ifc->getCausality() == oms_causality_input) {
         double value;
         plugin->GetValueSignal(ifc->getId(), time, &value);
-        this->setReal(ifc->getSubSignals()[0], value);
+        this->setReal(ifc->getSubSignal(oms_tlm_sigref_value), value);
       }
-      /// \todo Support bidirectional connections
+      else if(ifc->getDimensions() == 1 && ifc->getCausality() == oms_causality_bidir) {
+        double flow,effort;
+
+        //Read position and speed from FMU
+        this->getReal(ifc->getSubSignal(oms_tlm_sigref_1d_flow), flow);
+
+        //Get interpolated force
+        plugin->GetForce1D(ifc->getId(), time, flow, &effort);
+
+        if(ifc->getDomain() != "Hydraulic") {
+            effort = -effort;
+        }
+
+        //Write force to FMU
+        this->setReal(ifc->getSubSignal(oms_tlm_sigref_1d_effort), effort);
+      }
+      /// \todo Support 3D bidirectional connections
     }
 
     // Do step in FMUs
@@ -1039,10 +1055,22 @@ oms_status_enu_t oms2::FMICompositeModel::simulateTLM(ResultWriter* resultWriter
     for(TLMInterface *ifc : tlmInterfaces) {
       if(ifc->getDimensions() == 1 && ifc->getCausality() == oms_causality_output) {
         double value;
-        this->getReal(ifc->getSubSignals()[0], value);
+        this->getReal(ifc->getSubSignal(oms_tlm_sigref_value), value);
         plugin->SetValueSignal(ifc->getId(), time, value);
       }
-      /// \todo Support bidirectional connections
+      else if(ifc->getDimensions() == 1 && ifc->getCausality() == oms_causality_bidir) {
+        double state, flow, force;
+        this->getReal(ifc->getSubSignal(oms_tlm_sigref_1d_state), state);
+        this->getReal(ifc->getSubSignal(oms_tlm_sigref_1d_flow), flow);
+
+        //Important: OMTLMSimulator assumes that GetForce is called
+        //before SetMotion, in order to calculate the wave variable
+        plugin->GetForce1D(ifc->getId(), time, flow, &force);
+
+        //Send the resulting motion back to master
+        plugin->SetMotion1D(ifc->getId(), time, state, flow);
+      }
+      /// \todo Support 3D bidirectional connections
     }
 
     // input := output

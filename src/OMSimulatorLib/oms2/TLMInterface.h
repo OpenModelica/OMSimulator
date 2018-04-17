@@ -59,6 +59,7 @@ namespace oms2
     void setDelay(double delay) { this->delay = delay; }
     double getDelay() { return this->delay; }
     std::vector<SignalRef> getSubSignals() { return sigrefs; }
+    SignalRef getSubSignal(int i) { return sigrefs[i]; }
     oms_status_enu_t doRegister(TLMPlugin *plugin);
     int getId() { return this->id; }
 
