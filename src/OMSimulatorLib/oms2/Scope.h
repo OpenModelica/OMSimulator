@@ -64,6 +64,8 @@ namespace oms2
     oms_status_enu_t terminate(const ComRef& name);
     oms_status_enu_t simulate(const ComRef& name);
     oms_status_enu_t simulate_asynchronous(const ComRef& name, void (*cb)(const char* ident, double time, oms_status_enu_t status));
+    oms_status_enu_t doSteps(const ComRef& name, const int numberOfSteps);
+    oms_status_enu_t stepUntil(const ComRef& name, const double timeValue);
     oms_status_enu_t addFMU(const ComRef& modelIdent, const std::string& fmuPath, const ComRef& fmuIdent);
     oms_status_enu_t addTable(const ComRef& modelIdent, const std::string& tablePath, const ComRef& tableIdent);
     oms_status_enu_t deleteSubModel(const ComRef& modelIdent, const ComRef& subModelIdent);
@@ -107,15 +109,10 @@ namespace oms2
     TLMCompositeModel* getTLMCompositeModel(const ComRef& name);
 
     oms_status_enu_t addFMISubModel(const ComRef& cref, const ComRef& subref);
-    oms_status_enu_t addExternalModel(const ComRef& cref, const ComRef& name,
-                                      const std::string& modelfile, const std::string &startscript);
-    oms_status_enu_t addTLMInterface(const ComRef& cref, const ComRef& subref, const ComRef& name,
-                                     int dimensions, oms_causality_enu_t causality, std::string domain,
-                                     std::vector<SignalRef> &sigrefs);
-    oms_status_enu_t addTLMConnection(const ComRef& cref, const SignalRef& from, const SignalRef& to,
-                                      double delay, double alpha, double Zf, double Zfr);
-    oms_status_enu_t setTLMSocketData(ComRef modelIdent, const std::string &address,
-                                      int managerPort, int monitorPort);
+    oms_status_enu_t addExternalModel(const ComRef& cref, const ComRef& name, const std::string& modelfile, const std::string &startscript);
+    oms_status_enu_t addTLMInterface(const ComRef& cref, const ComRef& subref, const ComRef& name, int dimensions, oms_causality_enu_t causality, std::string domain, std::vector<SignalRef> &sigrefs);
+    oms_status_enu_t addTLMConnection(const ComRef& cref, const SignalRef& from, const SignalRef& to, double delay, double alpha, double Zf, double Zfr);
+    oms_status_enu_t setTLMSocketData(ComRef modelIdent, const std::string &address, int managerPort, int monitorPort);
     oms_status_enu_t describeModel(const ComRef& cref);
 
   private:

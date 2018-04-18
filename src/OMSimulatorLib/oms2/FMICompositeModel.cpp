@@ -840,29 +840,50 @@ oms_status_enu_t oms2::FMICompositeModel::terminate()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms2::FMICompositeModel::simulate(ResultWriter& resultWriter, double stopTime, double communicationInterval, MasterAlgorithm masterAlgorithm)
+oms_status_enu_t oms2::FMICompositeModel::stepUntil(ResultWriter& resultWriter, double stopTime, double communicationInterval, MasterAlgorithm masterAlgorithm)
 {
   logTrace();
 
-  switch (masterAlgorithm) {
+  switch (masterAlgorithm)
+  {
     case MasterAlgorithm::STANDARD :
-      logInfo("oms2::FMICompositeModel::simulate: Using master algorithm 'standard'\n");
-      return simulateStandard(resultWriter, stopTime, communicationInterval);
+      logInfo("oms2::FMICompositeModel::stepUntil: Using master algorithm 'standard'\n");
+      return stepUntilStandard(resultWriter, stopTime, communicationInterval);
     case MasterAlgorithm::PCTPL :
-      logInfo("oms2::FMICompositeModel::simulate: Using master algorithm 'pctpl'\n");
-      return simulatePCTPL(resultWriter, stopTime, communicationInterval);
+      logInfo("oms2::FMICompositeModel::stepUntil: Using master algorithm 'pctpl'\n");
+      return stepUntilPCTPL(resultWriter, stopTime, communicationInterval);
     default :
-      logError("oms2::FMICompositeModel::simulate: Internal error: Request for using unknown master algorithm.");
+      logError("oms2::FMICompositeModel::stepUntil: Internal error: Request for using unknown master algorithm.");
       return oms_status_error;
     }
 }
 
-oms_status_enu_t oms2::FMICompositeModel::simulateStandard(ResultWriter& resultWriter, double stopTime, double communicationInterval)
+oms_status_enu_t oms2::FMICompositeModel::doSteps(ResultWriter& resultWriter, const int numberOfSteps, double communicationInterval)
 {
   logTrace();
+
+  for(int step=0; step<numberOfSteps; step++)
+  {
+    time += communicationInterval;
+
+    // do_step
+    for (const auto& it : subModels)
+      it.second->doStep(time);
+
+    // input := output
+    updateInputs(outputsGraph);
+    emit(resultWriter);
+  }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms2::FMICompositeModel::stepUntilStandard(ResultWriter& resultWriter, double stopTime, double communicationInterval)
+{
+  logTrace();
+
   while (time < stopTime)
   {
-    logDebug("doStep: " + std::to_string(time) + " -> " + std::to_string(time+communicationInterval));
     time += communicationInterval;
     if (time > stopTime)
       time = stopTime;
@@ -875,13 +896,14 @@ oms_status_enu_t oms2::FMICompositeModel::simulateStandard(ResultWriter& resultW
     updateInputs(outputsGraph);
     emit(resultWriter);
   }
+
   return oms_status_ok;
 }
 
 /**
  * \brief Parallel "doStep(..)" execution using task pool CTPL library (https://github.com/vit-vit/CTPL).
  */
-oms_status_enu_t oms2::FMICompositeModel::simulatePCTPL(ResultWriter& resultWriter, double stopTime, double communicationInterval)
+oms_status_enu_t oms2::FMICompositeModel::stepUntilPCTPL(ResultWriter& resultWriter, double stopTime, double communicationInterval)
 {
   logTrace();
 

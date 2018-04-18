@@ -642,6 +642,18 @@ oms_status_enu_t oms2_simulate(const char* ident)
   return oms2::Scope::GetInstance().simulate(oms2::ComRef(ident));
 }
 
+oms_status_enu_t oms2_doSteps(const char* ident, const int numberOfSteps)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().doSteps(oms2::ComRef(ident), numberOfSteps);
+}
+
+oms_status_enu_t oms2_stepUntil(const char* ident, const double timeValue)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().stepUntil(oms2::ComRef(ident), timeValue);
+}
+
 oms_status_enu_t oms2_terminate(const char* ident)
 {
   logTrace();
