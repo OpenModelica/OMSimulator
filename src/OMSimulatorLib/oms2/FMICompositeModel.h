@@ -122,7 +122,7 @@ namespace oms2
 
   private:
     std::map<oms2::ComRef, oms2::FMISubModel*> subModels;
-    std::vector<oms2::Connection*> connections;
+    std::vector<oms2::Connection*> connections; ///< last element is always NULL
     oms2::Element** components;
     std::vector<TLMInterface*> tlmInterfaces;
 
