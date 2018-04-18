@@ -47,8 +47,8 @@ namespace oms2
   {
     STANDARD, ///< Single-Core default algorithm
     PCTPL, ///< Parallel doStep(..) using CTPL task pool library (https://github.com/vit-vit/CTPL)
-    // PMRCHANNELA, ///< Experimental parallel (multi-rate) communication channel approach using ATOMIC variables and polling for synchronization
-    // PMRCHANNELCV, ///< Experimental parallel (multi-rate) communication channel approach using CONDITION variables for synchronization
+    PMRCHANNELA, ///< Experimental parallel (multi-rate) communication channel approach using ATOMIC variables and polling for synchronization
+    PMRCHANNELCV, ///< Experimental parallel (multi-rate) communication channel approach using CONDITION variables for synchronization
     // PMRTASKPOOLA, ///< Experimental parallel (multi-rate) approach using fixed number of tasks and ATOMIC variables and polling for synchronization
     // PMRTASKPOOLCV ///< Experimental parallel (multi-rate) approach using fixed number of tasks and CONDITION variables for synchronization
   };

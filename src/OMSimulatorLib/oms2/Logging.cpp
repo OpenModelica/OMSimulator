@@ -223,6 +223,6 @@ void Log::setLoggingLevel(int logLevel)
   Log& log = getInstance();
   log.logLevel = logLevel;
 #else
-  Warning("Log::setDebugLogging is not available.")
+  Warning("Log::setDebugLogging is not available.");
 #endif
 }
