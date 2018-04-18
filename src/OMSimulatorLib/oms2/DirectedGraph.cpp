@@ -37,7 +37,6 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-#include <map>
 #include <sstream>
 #include <stdlib.h>
 #include <stack>

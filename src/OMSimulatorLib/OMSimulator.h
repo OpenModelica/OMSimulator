@@ -719,7 +719,7 @@ oms_status_enu_t oms2_setResultFile(const char* cref, const char* filename);
  *
  * Supported master algorithms: "standard"
  *
- * Experimental master algorithms (no stable API!): "pctpl"
+ * Experimental master algorithms (no stable API!): "pctpl", "pmrchannela", "pmrchannelcv"
  *
  * \param cref              [in] Name of the model instance
  * \param masterAlgorithm   [in] Master algorithm.
