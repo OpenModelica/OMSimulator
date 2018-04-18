@@ -992,6 +992,36 @@ static int OMSimulatorLua_oms2_simulate(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms2_doSteps(const char* ident, const int numberOfSteps);
+static int OMSimulatorLua_oms2_doSteps(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TNUMBER);
+
+  const char* ident = lua_tostring(L, 1);
+  const int numberOfSteps = lua_tointeger(L, 2);
+  oms_status_enu_t status = oms2_doSteps(ident, numberOfSteps);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
+//oms_status_enu_t oms2_stepUntil(const char* ident, const double timeValue);
+static int OMSimulatorLua_oms2_stepUntil(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TNUMBER);
+
+  const char* ident = lua_tostring(L, 1);
+  const int timeValue = lua_tonumber(L, 2);
+  oms_status_enu_t status = oms2_stepUntil(ident, timeValue);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
 //oms_status_enu_t oms2_getReal(const char* ident, double* value);
 static int OMSimulatorLua_oms2_getReal(lua_State *L)
 {
