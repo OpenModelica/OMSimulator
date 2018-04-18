@@ -284,6 +284,28 @@ oms_status_enu_t oms2::Scope::simulate_asynchronous(const ComRef& name, void (*c
   return model->simulate_asynchronous(cb);
 }
 
+oms_status_enu_t oms2::Scope::doSteps(const ComRef& name, const int numberOfSteps)
+{
+  logTrace();
+
+  oms2::Model* model = getModel(name);
+  if (!model)
+    return oms_status_error;
+
+  return model->doSteps(numberOfSteps);
+}
+
+oms_status_enu_t oms2::Scope::stepUntil(const ComRef& name, const double timeValue)
+{
+  logTrace();
+
+  oms2::Model* model = getModel(name);
+  if (!model)
+    return oms_status_error;
+
+  return model->stepUntil(timeValue);
+}
+
 oms_status_enu_t oms2::Scope::setTempDirectory(const std::string& newTempDir)
 {
   logTrace();
@@ -1209,7 +1231,7 @@ oms_status_enu_t oms2::Scope::setMasterAlgorithm(const ComRef& cref, const std::
     model->setMasterAlgorithm(oms2::MasterAlgorithm::STANDARD);
     return oms_status_warning;
   }
-  
+
   return oms_status_ok;
 }
 

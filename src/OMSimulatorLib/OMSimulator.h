@@ -481,6 +481,24 @@ oms_status_enu_t oms2_initialize(const char* ident);
 oms_status_enu_t oms2_simulate(const char* ident);
 
 /**
+ * \brief Simulates a composite model for a given number of steps (works for both FMI and TLM).
+ *
+ * \param ident           [in] Name of the model instance
+ * \param numberOfSteps   [in] Number of steps
+ * \return                Error status
+ */
+oms_status_enu_t oms2_doSteps(const char* ident, const int numberOfSteps);
+
+/**
+ * \brief Simulates a composite model until a given time value (works for both FMI and TLM).
+ *
+ * \param ident       [in] Name of the model instance
+ * \param timeValue   [in] time value
+ * \return            Error status
+ */
+oms_status_enu_t oms2_stepUntil(const char* ident, const double timeValue);
+
+/**
  * \brief Terminates a composite model (works for both FMI and TLM).
  *
  * \param ident   [in] Name of the model instance
