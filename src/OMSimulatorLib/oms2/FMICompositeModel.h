@@ -33,6 +33,7 @@
 #define _OMS2_FMI_COMPOSITE_MODEL_H_
 
 #include "../Types.h"
+#include "Pkg_oms2.h"
 #include "CompositeModel.h"
 #include "ComRef.h"
 #include "Connection.h"
@@ -83,7 +84,7 @@ namespace oms2
 
     oms_status_enu_t initialize(double startTime, double tolerance);
     oms_status_enu_t terminate();
-    oms_status_enu_t simulate(ResultWriter& resultWriter, double stopTime, double communicationInterval);
+    oms_status_enu_t simulate(ResultWriter& resultWriter, double stopTime, double communicationInterval, MasterAlgorithm masterAlgorithm);
     oms_status_enu_t simulateTLM(ResultWriter *resultWriter, double stopTime, double communicationInterval, std::string address);
 
     oms_status_enu_t setReal(const oms2::SignalRef& sr, double value);
@@ -102,6 +103,9 @@ namespace oms2
 
     oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultWriter);
     oms_status_enu_t emit(ResultWriter& resultWriter);
+
+    oms_status_enu_t simulateStandard(ResultWriter& resultWriter, double stopTime, double communicationInterval);
+    oms_status_enu_t simulatePCTPL(ResultWriter& resultWriter, double stopTime, double communicationInterval);
 
   protected:
     void deleteComponents();

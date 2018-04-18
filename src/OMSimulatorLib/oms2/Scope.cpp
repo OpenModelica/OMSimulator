@@ -1165,6 +1165,43 @@ oms_status_enu_t oms2::Scope::setResultFile(const ComRef& cref, const std::strin
   return oms_status_error;
 }
 
+oms_status_enu_t oms2::Scope::setMasterAlgorithm(const ComRef& cref, const std::string& masterAlgorithm)
+{
+  if (!cref.isIdent())
+  {
+    logError(std::string("[oms2::Scope::setMasterAlgorithm] require non-qualified component name, but got ") + cref.toString());
+    return oms_status_error;
+  }
+
+  // Model
+  Model* model = getModel(cref);
+  if (!model)
+  {
+    logError("[oms2::Scope::setMasterAlgorithm] failed");
+    return oms_status_error;
+  }
+  oms2::MasterAlgorithm ma_;
+  if (masterAlgorithm == "standard")
+  {
+    model->setMasterAlgorithm(oms2::MasterAlgorithm::STANDARD);
+  }
+  else if (masterAlgorithm == "pctpl")
+  {
+    model->setMasterAlgorithm(oms2::MasterAlgorithm::PCTPL);
+  }
+  else {
+    std::string message = std::string("Unsupported master algorithm ")
+      + masterAlgorithm + std::string("\nFollowing master algorithms are supported:\n")
+      + std::string("standard, pctpl.\n")
+      + std::string("Defaulting to \"standard\"!\n");
+    logWarning(message);
+    model->setMasterAlgorithm(oms2::MasterAlgorithm::STANDARD);
+    return oms_status_warning;
+  }
+  
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms2::Scope::exportCompositeStructure(const ComRef& cref, const std::string& filename)
 {
   if (cref.isIdent())

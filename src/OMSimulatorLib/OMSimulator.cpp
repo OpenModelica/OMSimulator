@@ -47,8 +47,6 @@
 #include <string>
 #include <boost/filesystem.hpp>
 
-#include <iostream>
-
 void* oms_newModel()
 {
   logTrace();
@@ -800,6 +798,12 @@ oms_status_enu_t oms2_setResultFile(const char* cref, const char* filename)
 {
   logTrace();
   return oms2::Scope::GetInstance().setResultFile(oms2::ComRef(cref), std::string(filename));
+}
+
+oms_status_enu_t oms2_setMasterAlgorithm(const char* cref, const char* masterAlgorithm)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().setMasterAlgorithm(oms2::ComRef(cref), std::string(masterAlgorithm));
 }
 
 oms_status_enu_t oms2_exportCompositeStructure(const char* cref, const char* filename)

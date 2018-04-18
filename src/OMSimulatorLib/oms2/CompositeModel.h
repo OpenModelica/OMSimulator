@@ -33,6 +33,7 @@
 #define _OMS2_COMPOSITE_MODEL_H_
 
 #include "../Types.h"
+#include "Pkg_oms2.h"
 #include "ComRef.h"
 #include "Element.h"
 #include "ssd/ElementGeometry.h"
@@ -60,7 +61,7 @@ namespace oms2
 
     virtual oms_status_enu_t initialize(double startTime, double tolerance) = 0;
     virtual oms_status_enu_t terminate() = 0;
-    virtual oms_status_enu_t simulate(ResultWriter& resultWriter, double stopTime, double communicationInterval) = 0;
+    virtual oms_status_enu_t simulate(ResultWriter& resultWriter, double stopTime, double communicationInterval, MasterAlgorithm masterAlgorithm) = 0;
 
     virtual oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultWriter) = 0;
     virtual oms_status_enu_t emit(ResultWriter& resultWriter) = 0;
