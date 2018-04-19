@@ -77,10 +77,7 @@ oms_status_enu_t oms2::TLMCompositeModel::addFMIModel(oms2::FMICompositeModel *f
 
   auto it = fmiModels.find(cref);
   if (it != fmiModels.end())
-  {
-    logError("An FMI submodel called \"" + cref + "\" is already added.");
-    return oms_status_error;
-  }
+    return logError("An FMI submodel called \"" + cref + "\" is already added.");
 
   omtlm_addSubModel(model, cref.c_str(), "", "none"); //Startscript must be "none"
 
@@ -91,10 +88,8 @@ oms_status_enu_t oms2::TLMCompositeModel::addFMIModel(oms2::FMICompositeModel *f
 
 oms_status_enu_t oms2::TLMCompositeModel::addInterface(oms2::TLMInterface *ifc)
 {
-  if(std::find(interfaces.begin(), interfaces.end(), ifc) != interfaces.end()) {
-    logError("Interface "+ifc->getSignal().toString()+" is already added.");
-    return oms_status_error;
-  }
+  if (std::find(interfaces.begin(), interfaces.end(), ifc) != interfaces.end())
+    return logError("Interface " + ifc->getSignal().toString() + " is already added.");
 
   FMICompositeModel *pFMISubModel = Scope::GetInstance().getFMICompositeModel(ifc->getSubModelName());
 
@@ -125,21 +120,15 @@ oms_status_enu_t oms2::TLMCompositeModel::addInterface(oms2::TLMInterface *ifc)
     }
   }
 
-  if(externalModels.find(ifc->getSubModelName()) == externalModels.end() &&
-                         (!pFMISubModel ||
-                          fmiModels.find(ifc->getSubModelName()) == fmiModels.end())) {
-    logError("Sub model for TLM interface does not exist in TLM composite model.");
-    return oms_status_error;
-  }
+  if (externalModels.find(ifc->getSubModelName()) == externalModels.end() && (!pFMISubModel || fmiModels.find(ifc->getSubModelName()) == fmiModels.end()))
+    return logError("Sub model for TLM interface does not exist in TLM composite model.");
 
   //Todo: Help function for this
   std::string causality = "Input";
-  if(ifc->getCausality() == oms_causality_output) {
+  if(ifc->getCausality() == oms_causality_output)
     causality = "Output";
-  }
-  else if(ifc->getCausality() == oms_causality_bidir) {
+  else if(ifc->getCausality() == oms_causality_bidir)
     causality = "Bidirectional";
-  }
 
   omtlm_addInterface(model,
                      ifc->getSubModelName().c_str(),
@@ -150,9 +139,8 @@ oms_status_enu_t oms2::TLMCompositeModel::addInterface(oms2::TLMInterface *ifc)
 
   interfaces.push_back(ifc);
 
-  if(pFMISubModel) {
+  if(pFMISubModel)
     pFMISubModel->addTLMInterface(ifc);
-  }
 
   return oms_status_ok;
 }
@@ -172,10 +160,7 @@ oms_status_enu_t oms2::TLMCompositeModel::addExternalModel(oms2::ExternalModel *
 {
   auto it = externalModels.find(externalModel->getName());
   if (it != externalModels.end())
-  {
-    logError("An external model called \"" + externalModel->getName() + "\" is already added.");
-    return oms_status_error;
-  }
+    return logError("An external model called \"" + externalModel->getName() + "\" is already added.");
 
   //Copy external model file to temporary directory
   std::string modelPath = Scope::GetInstance().getTempDirectory()+"/"+externalModel->getName();
@@ -199,10 +184,10 @@ oms_status_enu_t oms2::TLMCompositeModel::addExternalModel(oms2::ExternalModel *
     i = i2;   //We cannot use std::max with MSVC for some reason
   }
   if(i1 == std::string::npos) {
-      i = i2;
+    i = i2;
   }
   else if(i2 == std::string::npos) {
-      i = i1;
+    i = i1;
   }
   std::string fileName = externalModel->getModelPath().substr(i+1, externalModel->getModelPath().length() - i);
   modelPath = modelPath+"/"+fileName;
@@ -258,11 +243,8 @@ oms_status_enu_t oms2::TLMCompositeModel::describe()
 
 oms_status_enu_t oms2::TLMCompositeModel::addConnection(const TLMConnection &con)
 {
-  if(std::find(connections.begin(), connections.end(), con) != connections.end()) {
-    logError("Connection between "+con.getSignalA().toString()+
-             " and "+con.getSignalB().toString()+" is already added.");
-    return oms_status_error;
-  }
+  if(std::find(connections.begin(), connections.end(), con) != connections.end())
+    return logError("Connection between " + con.getSignalA().toString() + " and " + con.getSignalB().toString() + " is already added.");
 
   std::string interface1 = con.getSignalA().getCref().toString()+"."+con.getSignalA().getVar();
   std::string interface2 = con.getSignalB().getCref().toString()+"."+con.getSignalB().getVar();
@@ -277,8 +259,8 @@ oms_status_enu_t oms2::TLMCompositeModel::addConnection(const TLMConnection &con
   connections.push_back(con);
 
   for(TLMInterface* ifc : interfaces) {
-    if(ifc->getSubModelName().toString()+"."+ifc->getName() == interface1 ||
-       ifc->getSubModelName().toString()+"."+ifc->getName() == interface2) {
+    if(ifc->getSubModelName().toString() + "." + ifc->getName() == interface1 ||
+       ifc->getSubModelName().toString() + "." + ifc->getName() == interface2) {
       ifc->setDelay(con.getTimeDelay());
     }
   }
@@ -299,11 +281,8 @@ oms_status_enu_t oms2::TLMCompositeModel::initialize(double startTime, double to
   omtlm_setNumLogStep(model, 1000); //Hard-coded for now
 
   //Initialize sub-models
-  auto it = fmiModels.begin();
-  for(; it!=fmiModels.end(); ++it)
-  {
-     it->second->initialize(startTime, tolerance);
-  }
+  for(auto it = fmiModels.begin(); it!=fmiModels.end(); ++it)
+    it->second->initialize(startTime, tolerance);
 
   this->startTime = startTime;
 
@@ -312,28 +291,30 @@ oms_status_enu_t oms2::TLMCompositeModel::initialize(double startTime, double to
 
 oms_status_enu_t oms2::TLMCompositeModel::terminate()
 {
-  logError("oms2::TLMCompositeModel::terminate: not implemented yet");
-  return oms_status_error;
+  return logError("oms2::TLMCompositeModel::terminate: not implemented yet");
 }
 
-oms_status_enu_t oms2::TLMCompositeModel::simulate(ResultWriter &resultWriter, double stopTime, double communicationInterval, MasterAlgorithm masterAlgorithm)
+oms_status_enu_t oms2::TLMCompositeModel::simulate(ResultWriter &resultWriter, double stopTime, double communicationInterval, oms2::MasterAlgorithm masterAlgorithm)
 {
-  /// \todo Add simulation of FMI submodels
-//  if(!fmiModels.empty()) {
-//    logError("oms2::TLMCompositeModel::simulate: Simulation of FMI sub-models is not implemented yet.");
-//    return oms_status_error;
-//  }
+  return logError("oms2::TLMCompositeModel::simulate: not implemented yet");
+}
+
+oms_status_enu_t oms2::TLMCompositeModel::doSteps(ResultWriter& resultWriter, const int numberOfSteps, double communicationInterval)
+{
+  return logError("oms2::TLMCompositeModel::doSteps: not implemented yet");
+}
+
+oms_status_enu_t oms2::TLMCompositeModel::stepUntil(ResultWriter &resultWriter, double stopTime, double communicationInterval, oms2::MasterAlgorithm masterAlgorithm)
+{
+  if(fmiModels.empty() && externalModels.empty())
+    logWarning("oms2::TLMCompositeModel::stepUntil: Simulating empty model...");
 
   logInfo("Starting submodel threads.");
-  std::string server = address+":"+std::to_string(managerPort);
+  std::string server = address + ":" + std::to_string(managerPort);
   std::vector<std::thread*> fmiModelThreads;
-  for(auto it = fmiModels.begin(); it!=fmiModels.end(); ++it) {
-    std::thread *t = new std::thread(&FMICompositeModel::simulateTLM,
-                                     it->second,
-                                     &resultWriter,
-                                     stopTime,
-                                     communicationInterval,
-                                     server);
+  for(auto it = fmiModels.begin(); it!=fmiModels.end(); ++it)
+  {
+    std::thread *t = new std::thread(&FMICompositeModel::simulateTLM, it->second, &resultWriter, stopTime, communicationInterval, server);
     fmiModelThreads.push_back(t);
   }
 
@@ -341,9 +322,8 @@ oms_status_enu_t oms2::TLMCompositeModel::simulate(ResultWriter &resultWriter, d
   omtlm_setStopTime(model, stopTime);
   omtlm_simulate(model);
 
-  for(size_t i=0; i<fmiModelThreads.size(); ++i) {
+  for(size_t i=0; i<fmiModelThreads.size(); ++i)
     fmiModelThreads[i]->join();
-  }
 
   logInfo("Simulation of TLM composite model "+getName().toString()+" complete.");
 

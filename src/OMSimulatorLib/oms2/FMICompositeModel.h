@@ -84,7 +84,8 @@ namespace oms2
 
     oms_status_enu_t initialize(double startTime, double tolerance);
     oms_status_enu_t terminate();
-    oms_status_enu_t simulate(ResultWriter& resultWriter, double stopTime, double communicationInterval, MasterAlgorithm masterAlgorithm);
+    oms_status_enu_t doSteps(ResultWriter& resultWriter, const int numberOfSteps, double communicationInterval);
+    oms_status_enu_t stepUntil(ResultWriter& resultWriter, double stopTime, double communicationInterval, MasterAlgorithm masterAlgorithm);
     oms_status_enu_t simulateTLM(ResultWriter *resultWriter, double stopTime, double communicationInterval, std::string address);
     void simulate_asynchronous(ResultWriter& resultWriter, double stopTime, double communicationInterval, void (*cb)(const char* ident, double time, oms_status_enu_t status));
 
@@ -105,8 +106,8 @@ namespace oms2
     oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultWriter);
     oms_status_enu_t emit(ResultWriter& resultWriter);
 
-    oms_status_enu_t simulateStandard(ResultWriter& resultWriter, double stopTime, double communicationInterval);
-    oms_status_enu_t simulatePCTPL(ResultWriter& resultWriter, double stopTime, double communicationInterval);
+    oms_status_enu_t stepUntilStandard(ResultWriter& resultWriter, double stopTime, double communicationInterval);
+    oms_status_enu_t stepUntilPCTPL(ResultWriter& resultWriter, double stopTime, double communicationInterval);
 
   protected:
     void deleteComponents();
@@ -122,7 +123,7 @@ namespace oms2
 
   private:
     std::map<oms2::ComRef, oms2::FMISubModel*> subModels;
-    std::vector<oms2::Connection*> connections;
+    std::vector<oms2::Connection*> connections; ///< last element is always NULL
     oms2::Element** components;
     std::vector<TLMInterface*> tlmInterfaces;
 

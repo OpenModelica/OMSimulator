@@ -540,11 +540,28 @@ oms2::Connection* oms2::FMICompositeModel::getConnection(const oms2::SignalRef& 
 
 oms_status_enu_t oms2::FMICompositeModel::addConnection(const oms2::SignalRef& conA, const oms2::SignalRef& conB)
 {
-  /// \todo check the connection
+  oms2::Variable *varA = getVariable(conA);
+  oms2::Variable *varB = getVariable(conB);
   oms2::ComRef parent = getName();
-  connections.back() = new oms2::Connection(parent, conA, conB);
-  connections.push_back(NULL);
-  return oms_status_ok;
+
+  if (varA && varB)
+  {
+    if (varA->isOutput() && varB->isInput())
+    {
+      connections.back() = new oms2::Connection(parent, conA, conB);
+      connections.push_back(NULL);
+      return oms_status_ok;
+    }
+    else if (varB->isOutput() && varA->isInput())
+    {
+      connections.back() = new oms2::Connection(parent, conB, conA);
+      connections.push_back(NULL);
+      return oms_status_ok;
+    }
+  }
+
+  logError("[oms2::FMICompositeModel::addConnection] failed for " + conA.toString() + " -> " + conB.toString());
+  return oms_status_error;
 }
 
 oms_status_enu_t oms2::FMICompositeModel::deleteConnection(const oms2::SignalRef& conA, const oms2::SignalRef& conB)
@@ -678,6 +695,7 @@ oms_causality_enu_t oms2::FMICompositeModel::getSignalCausality(const oms2::Sign
 
   if (oms_component_table == it->second->getType())
     return oms_causality_output;
+
   return it->second->getVariable(signal.getVar())->getCausality();
 }
 
@@ -740,8 +758,6 @@ oms_status_enu_t oms2::FMICompositeModel::exportCompositeStructure(const std::st
 
       if (oms_causality_output == varA && oms_causality_input == varB)
         dotFile << "  " << A.getCref().toString() << " -> " << B.getCref().toString() << " [taillabel=\"" << A.getVar() << "\", headlabel=\"" << B.getVar() /*<< "\", label=\"" << A.getVar() << " -> " << B.getVar()*/ << "\"];" << std::endl;
-      else if (oms_causality_input == varA && oms_causality_output == varB)
-        dotFile << "  " << B.getCref().toString() << " -> " << A.getCref().toString() << " [taillabel=\"" << B.getVar() << "\", headlabel=\"" << A.getVar() /*<< "\", label=\"" << B.getVar() << " -> " << A.getVar()*/ << "\"];" << std::endl;
       else
         return logError("[oms2::FMICompositeModel::exportCompositeStructure] failed");
     }
@@ -792,16 +808,13 @@ oms_status_enu_t oms2::FMICompositeModel::initialize(double startTime, double to
     oms2::Variable *varB = getVariable(connection->getSignalB());
     if (varA && varB)
     {
-      if (varA->isInput() && varB->isOutput())
-      {
-        initialUnknownsGraph.addEdge(*varB, *varA);
-        outputsGraph.addEdge(*varB, *varA);
-      }
-      else
+      if (varA->isOutput() && varB->isInput())
       {
         initialUnknownsGraph.addEdge(*varA, *varB);
         outputsGraph.addEdge(*varA, *varB);
       }
+      else
+        return logError("[oms2::FMICompositeModel::initialize] failed for " + connection->getSignalA().toString() + " -> " + connection->getSignalB().toString());
     }
     else
       return logError("[oms2::FMICompositeModel::initialize] failed for " + connection->getSignalA().toString() + " -> " + connection->getSignalB().toString());
@@ -827,29 +840,50 @@ oms_status_enu_t oms2::FMICompositeModel::terminate()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms2::FMICompositeModel::simulate(ResultWriter& resultWriter, double stopTime, double communicationInterval, MasterAlgorithm masterAlgorithm)
+oms_status_enu_t oms2::FMICompositeModel::stepUntil(ResultWriter& resultWriter, double stopTime, double communicationInterval, MasterAlgorithm masterAlgorithm)
 {
   logTrace();
 
-  switch (masterAlgorithm) {
+  switch (masterAlgorithm)
+  {
     case MasterAlgorithm::STANDARD :
-      logInfo("oms2::FMICompositeModel::simulate: Using master algorithm 'standard'\n");
-      return simulateStandard(resultWriter, stopTime, communicationInterval);
+      logInfo("oms2::FMICompositeModel::stepUntil: Using master algorithm 'standard'\n");
+      return stepUntilStandard(resultWriter, stopTime, communicationInterval);
     case MasterAlgorithm::PCTPL :
-      logInfo("oms2::FMICompositeModel::simulate: Using master algorithm 'pctpl'\n");
-      return simulatePCTPL(resultWriter, stopTime, communicationInterval);
+      logInfo("oms2::FMICompositeModel::stepUntil: Using master algorithm 'pctpl'\n");
+      return stepUntilPCTPL(resultWriter, stopTime, communicationInterval);
     default :
-      logError("oms2::FMICompositeModel::simulate: Internal error: Request for using unknown master algorithm.");
+      logError("oms2::FMICompositeModel::stepUntil: Internal error: Request for using unknown master algorithm.");
       return oms_status_error;
     }
 }
 
-oms_status_enu_t oms2::FMICompositeModel::simulateStandard(ResultWriter& resultWriter, double stopTime, double communicationInterval)
+oms_status_enu_t oms2::FMICompositeModel::doSteps(ResultWriter& resultWriter, const int numberOfSteps, double communicationInterval)
 {
   logTrace();
+
+  for(int step=0; step<numberOfSteps; step++)
+  {
+    time += communicationInterval;
+
+    // do_step
+    for (const auto& it : subModels)
+      it.second->doStep(time);
+
+    // input := output
+    updateInputs(outputsGraph);
+    emit(resultWriter);
+  }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms2::FMICompositeModel::stepUntilStandard(ResultWriter& resultWriter, double stopTime, double communicationInterval)
+{
+  logTrace();
+
   while (time < stopTime)
   {
-    logDebug("doStep: " + std::to_string(time) + " -> " + std::to_string(time+communicationInterval));
     time += communicationInterval;
     if (time > stopTime)
       time = stopTime;
@@ -862,13 +896,14 @@ oms_status_enu_t oms2::FMICompositeModel::simulateStandard(ResultWriter& resultW
     updateInputs(outputsGraph);
     emit(resultWriter);
   }
+
   return oms_status_ok;
 }
 
 /**
  * \brief Parallel "doStep(..)" execution using task pool CTPL library (https://github.com/vit-vit/CTPL).
  */
-oms_status_enu_t oms2::FMICompositeModel::simulatePCTPL(ResultWriter& resultWriter, double stopTime, double communicationInterval)
+oms_status_enu_t oms2::FMICompositeModel::stepUntilPCTPL(ResultWriter& resultWriter, double stopTime, double communicationInterval)
 {
   logTrace();
 
