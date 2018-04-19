@@ -1080,7 +1080,8 @@ static int OMSimulatorLua_oms2_addTLMInterface(lua_State *L)
   if (lua_gettop(L) != 6 &&
       lua_gettop(L) != 7 &&
       lua_gettop(L) != 9 &&
-      lua_gettop(L) != 12)
+      lua_gettop(L) != 12 &&
+      lua_gettop(L) != 30)
     return luaL_error(L, "expecting exactly 6, 7, 9 or 12 arguments");
   luaL_checktype(L, 1, LUA_TSTRING);
   luaL_checktype(L, 2, LUA_TSTRING);
@@ -1099,6 +1100,26 @@ static int OMSimulatorLua_oms2_addTLMInterface(lua_State *L)
     luaL_checktype(L, 10, LUA_TSTRING);
     luaL_checktype(L, 11, LUA_TSTRING);
     luaL_checktype(L, 12, LUA_TSTRING);
+    luaL_checktype(L, 13, LUA_TSTRING);
+    luaL_checktype(L, 14, LUA_TSTRING);
+    luaL_checktype(L, 15, LUA_TSTRING);
+  }
+  if(lua_gettop(L) > 15) {
+    luaL_checktype(L, 16, LUA_TSTRING);
+    luaL_checktype(L, 17, LUA_TSTRING);
+    luaL_checktype(L, 18, LUA_TSTRING);
+    luaL_checktype(L, 19, LUA_TSTRING);
+    luaL_checktype(L, 20, LUA_TSTRING);
+    luaL_checktype(L, 21, LUA_TSTRING);
+    luaL_checktype(L, 22, LUA_TSTRING);
+    luaL_checktype(L, 23, LUA_TSTRING);
+    luaL_checktype(L, 24, LUA_TSTRING);
+    luaL_checktype(L, 25, LUA_TSTRING);
+    luaL_checktype(L, 26, LUA_TSTRING);
+    luaL_checktype(L, 27, LUA_TSTRING);
+    luaL_checktype(L, 28, LUA_TSTRING);
+    luaL_checktype(L, 29, LUA_TSTRING);
+    luaL_checktype(L, 30, LUA_TSTRING);
   }
 
   const char *cref =    lua_tostring(L, 1);
@@ -1111,9 +1132,10 @@ static int OMSimulatorLua_oms2_addTLMInterface(lua_State *L)
   int nsigrefs = 0;
   if(lua_gettop(L) == 7) nsigrefs = 1;
   else if(lua_gettop(L) == 9) nsigrefs = 3;
-  else if(lua_gettop(L) == 12) nsigrefs = 6;
+  else if(lua_gettop(L) == 15) nsigrefs = 9;
+  else if(lua_gettop(L) == 30) nsigrefs = 24;
 
-  const char *sigrefs[20];
+  const char *sigrefs[30];
   if(lua_gettop(L) > 6) {
     sigrefs[0] = lua_tostring(L, 7);
   }
@@ -1125,6 +1147,26 @@ static int OMSimulatorLua_oms2_addTLMInterface(lua_State *L)
     sigrefs[3] = lua_tostring(L, 10);
     sigrefs[4] = lua_tostring(L, 11);
     sigrefs[5] = lua_tostring(L, 12);
+    sigrefs[6] = lua_tostring(L, 13);
+    sigrefs[7] = lua_tostring(L, 14);
+    sigrefs[8] = lua_tostring(L, 15);
+  }
+  if(lua_gettop(L) > 15) {
+    sigrefs[9] = lua_tostring(L, 16);
+    sigrefs[10] = lua_tostring(L, 17);
+    sigrefs[11] = lua_tostring(L, 18);
+    sigrefs[12] = lua_tostring(L, 19);
+    sigrefs[13] = lua_tostring(L, 20);
+    sigrefs[14] = lua_tostring(L, 21);
+    sigrefs[15] = lua_tostring(L, 22);
+    sigrefs[16] = lua_tostring(L, 23);
+    sigrefs[17] = lua_tostring(L, 24);
+    sigrefs[18] = lua_tostring(L, 25);
+    sigrefs[19] = lua_tostring(L, 26);
+    sigrefs[20] = lua_tostring(L, 27);
+    sigrefs[21] = lua_tostring(L, 28);
+    sigrefs[22] = lua_tostring(L, 29);
+    sigrefs[23] = lua_tostring(L, 30);
   }
 
   oms_status_enu_t status = oms2_addTLMInterface(cref, subref, name, dimensions, (oms_causality_enu_t)causality, domain, sigrefs, nsigrefs);
@@ -1155,6 +1197,7 @@ static int OMSimulatorLua_oms2_addTLMConnection(lua_State *L)
   double Zfr =        lua_tonumber(L, 7);
 
   oms_status_enu_t status = oms2_addTLMConnection(cref, from, to, delay, alpha, Zf, Zfr);
+
   lua_pushnumber(L, status);
   return 1;
 }
