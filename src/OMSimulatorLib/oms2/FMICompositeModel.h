@@ -109,6 +109,11 @@ namespace oms2
     oms_status_enu_t stepUntilStandard(ResultWriter& resultWriter, double stopTime, double communicationInterval);
     oms_status_enu_t stepUntilPCTPL(ResultWriter& resultWriter, double stopTime, double communicationInterval);
 
+    oms_status_enu_t initializeSockets(double stopTime, double &communicationInterval, std::string server);
+    void readFromSockets();
+    void writeToSockets();
+    void finalizeSockets();
+
   protected:
     void deleteComponents();
     void updateComponents();
@@ -126,6 +131,7 @@ namespace oms2
     std::vector<oms2::Connection*> connections; ///< last element is always NULL
     oms2::Element** components;
     std::vector<TLMInterface*> tlmInterfaces;
+    TLMPlugin *plugin;
 
     DirectedGraph initialUnknownsGraph;
     DirectedGraph outputsGraph;

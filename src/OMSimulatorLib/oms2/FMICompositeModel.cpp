@@ -978,6 +978,40 @@ oms_status_enu_t oms2::FMICompositeModel::simulateTLM(ResultWriter* resultWriter
 {
   logTrace();
 
+  initializeSockets(stopTime, communicationInterval, server);
+
+  logInfo("Starting simulation loop.");
+
+  while (time < stopTime)
+  {
+    logDebug("doStep: " + std::to_string(time) + " -> " + std::to_string(time+communicationInterval));
+
+    readFromSockets();
+
+    // Do step in FMUs
+    time += communicationInterval;
+    if (time > stopTime)
+      time = stopTime;
+    for (const auto& it : subModels)
+      it.second->doStep(time);
+
+    writeToSockets();
+
+    // input := output
+    updateInputs(outputsGraph);
+    emit(*resultWriter);
+  }
+
+  finalizeSockets();
+
+  logInfo("Simulation of model "+getName().toString()+" complete.");
+
+  return oms_status_ok;
+}
+
+
+oms_status_enu_t oms2::FMICompositeModel::initializeSockets(double stopTime, double &communicationInterval, std::string server)
+{
   logInfo("Starting TLM simulation thread for model "+getName().toString());
 
   //Limit communication interval to half TLM delay
@@ -990,7 +1024,7 @@ oms_status_enu_t oms2::FMICompositeModel::simulateTLM(ResultWriter* resultWriter
 
   logInfo("Creating plugin instance.");
 
-  TLMPlugin* plugin = TLMPlugin::CreateInstance();
+  plugin = TLMPlugin::CreateInstance();
 
   logInfo("Initializing plugin.");
 
@@ -1012,79 +1046,68 @@ oms_status_enu_t oms2::FMICompositeModel::simulateTLM(ResultWriter* resultWriter
     }
   }
 
-  logInfo("Starting simulation loop.");
+  return oms_status_ok;
+}
 
-  while (time < stopTime)
-  {
-    logDebug("doStep: " + std::to_string(time) + " -> " + std::to_string(time+communicationInterval));
-
-    // Read input variables from sockets
-    for(TLMInterface *ifc : tlmInterfaces) {
-      if(ifc->getDimensions() == 1 && ifc->getCausality() == oms_causality_input) {
-        double value;
-        plugin->GetValueSignal(ifc->getId(), time, &value);
-        this->setReal(ifc->getSubSignal(oms_tlm_sigref_value), value);
-      }
-      else if(ifc->getDimensions() == 1 && ifc->getCausality() == oms_causality_bidir) {
-        double flow,effort;
-
-        //Read position and speed from FMU
-        this->getReal(ifc->getSubSignal(oms_tlm_sigref_1d_flow), flow);
-
-        //Get interpolated force
-        plugin->GetForce1D(ifc->getId(), time, flow, &effort);
-
-        if(ifc->getDomain() != "Hydraulic") {
-            effort = -effort;
-        }
-
-        //Write force to FMU
-        this->setReal(ifc->getSubSignal(oms_tlm_sigref_1d_effort), effort);
-      }
-      /// \todo Support 3D bidirectional connections
+void oms2::FMICompositeModel::readFromSockets()
+{
+  for(TLMInterface *ifc : tlmInterfaces) {
+    if(ifc->getDimensions() == 1 && ifc->getCausality() == oms_causality_input) {
+      double value;
+      plugin->GetValueSignal(ifc->getId(), time, &value);
+      this->setReal(ifc->getSubSignal(oms_tlm_sigref_value), value);
     }
+    else if(ifc->getDimensions() == 1 && ifc->getCausality() == oms_causality_bidir) {
+      double flow,effort;
 
-    // Do step in FMUs
-    time += communicationInterval;
-    if (time > stopTime)
-      time = stopTime;
-    for (const auto& it : subModels)
-      it.second->doStep(time);
+      //Read position and speed from FMU
+      this->getReal(ifc->getSubSignal(oms_tlm_sigref_1d_flow), flow);
 
-    // Write output variables to sockets
-    for(TLMInterface *ifc : tlmInterfaces) {
-      if(ifc->getDimensions() == 1 && ifc->getCausality() == oms_causality_output) {
-        double value;
-        this->getReal(ifc->getSubSignal(oms_tlm_sigref_value), value);
-        plugin->SetValueSignal(ifc->getId(), time, value);
+      //Get interpolated force
+      plugin->GetForce1D(ifc->getId(), time, flow, &effort);
+
+      if(ifc->getDomain() != "Hydraulic") {
+          effort = -effort;
       }
-      else if(ifc->getDimensions() == 1 && ifc->getCausality() == oms_causality_bidir) {
-        double state, flow, force;
-        this->getReal(ifc->getSubSignal(oms_tlm_sigref_1d_state), state);
-        this->getReal(ifc->getSubSignal(oms_tlm_sigref_1d_flow), flow);
 
-        //Important: OMTLMSimulator assumes that GetForce is called
-        //before SetMotion, in order to calculate the wave variable
-        plugin->GetForce1D(ifc->getId(), time, flow, &force);
-
-        //Send the resulting motion back to master
-        plugin->SetMotion1D(ifc->getId(), time, state, flow);
-      }
-      /// \todo Support 3D bidirectional connections
+      //Write force to FMU
+      this->setReal(ifc->getSubSignal(oms_tlm_sigref_1d_effort), effort);
     }
-
-    // input := output
-    updateInputs(outputsGraph);
-    emit(*resultWriter);
+    /// \todo Support 3D bidirectional connections
   }
+}
 
+void oms2::FMICompositeModel::writeToSockets()
+{
+  for(TLMInterface *ifc : tlmInterfaces) {
+    if(ifc->getDimensions() == 1 && ifc->getCausality() == oms_causality_output) {
+      double value;
+      this->getReal(ifc->getSubSignal(oms_tlm_sigref_value), value);
+      plugin->SetValueSignal(ifc->getId(), time, value);
+    }
+    else if(ifc->getDimensions() == 1 && ifc->getCausality() == oms_causality_bidir) {
+      double state, flow, force;
+      this->getReal(ifc->getSubSignal(oms_tlm_sigref_1d_state), state);
+      this->getReal(ifc->getSubSignal(oms_tlm_sigref_1d_flow), flow);
+
+      //Important: OMTLMSimulator assumes that GetForce is called
+      //before SetMotion, in order to calculate the wave variable
+      plugin->GetForce1D(ifc->getId(), time, flow, &force);
+
+      //Send the resulting motion back to master
+      plugin->SetMotion1D(ifc->getId(), time, state, flow);
+    }
+    /// \todo Support 3D bidirectional connections
+  }
+}
+
+void oms2::FMICompositeModel::finalizeSockets()
+{
+  //Wait for close permission, to prevent socket from being
+  //destroyed before master has read all data
   plugin->AwaitClosePermission();
 
   delete plugin;
-
-  logInfo("Simulation of model "+getName().toString()+" complete.");
-
-  return oms_status_ok;
 }
 
 
