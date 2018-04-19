@@ -134,7 +134,7 @@
       - std::string workingDir;
     }{}
 
-    \umlclass[x=-1.5, y=5]{Model}{
+    \umlclass[x=-1.5, y=6]{Model}{
       - oms2::ssd::SystemGeometry systemGeometry; \\
       - CompositeModel* compositeModel; \\
       - double startTime; \\
@@ -147,7 +147,7 @@
       - oms2::Element element;
     }{
       \# CompositeModel() \\
-      \# ~CompositeModel() \\
+      \# \textasciitilde CompositeModel() \\
       + DeleteModel() \\
       + getElement() \\
       + getGeometry() \\
@@ -169,7 +169,7 @@
       + addExternalModel() \\
       + addInterface() \\
       + addConnection() \\
-      + setRealParameter()
+      + setRealParameter() \\
       - ...
     }
     \umlclass[x=3, y=-6]{FMICompositeModel}{
@@ -214,7 +214,7 @@
       - realParameters
     }{
       + ExternalModel()\\
-      + ~ExternalModel()\\
+      + \textasciitilde ExternalModel()\\
       + getType()\\
       + getName()\\
       + setGeometry()\\
@@ -235,7 +235,7 @@
       - dimensions: int\\
     }{
       + TLMInterface()\\
-      + ~TLMInterface()\\
+      + \textasciitilde TLMInterface()\\
       + getSignal()\\
       + getSubModelName()\\
       + getName()\\
@@ -248,7 +248,7 @@
       - oms2::Element element;
     }{
       \# FMISubModel() \\
-      \# ~FMISubModel() \\
+      \# \textasciitilde FMISubModel() \\
       + deleteSubModel() \\
       + getElement() \\
       + getGeometry() \\
@@ -263,7 +263,7 @@
       - var: string
     }{
       + SignalRef() \\
-      + ~SignalRef() \\
+      + \textasciitilde SignalRef() \\
       + operator=() \\
       + operator<() \\
       + toString() \\
@@ -281,9 +281,6 @@
     \umlclass[x=17, y=-4.5]{Table}{}{}
     \umlclass[x=17, y=-7.5]{ConstReal}{}{}
     \umlclass[x=17, y=-10.5]{BusPort}{}{}
-
-    \umlclass[x=22, y=0.5]{FMUWrapperME}{}{}
-    \umlclass[x=22, y=-3.5]{FMUWrapperCS}{}{}
   \end{umlpackage}
 
   %\umlassoc[geometry=-|-, arg1=tata, mult1=*, pos1=0.3, arg2=toto, mult2=1, pos2=2.9, align2=left]{C}{B}
@@ -310,8 +307,6 @@
   \umlinherit[geometry=--]{Table}{FMISubModel}
   \umlinherit[geometry=--]{ConstReal}{FMISubModel}
   \umlinherit[geometry=--]{BusPort}{FMISubModel}
-  \umlinherit[geometry=--]{FMUWrapperME}{FMUWrapper}
-  \umlinherit[geometry=--]{FMUWrapperCS}{FMUWrapper}
 
   \umlnote[x=7,y=10, width=3cm]{Scope}{Global scope}
   \umlnote[x=-12,y=10, width=3cm]{OMSimulatorLib}{namespace oms2}
