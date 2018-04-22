@@ -41,6 +41,7 @@
 #include "ssd/Tags.h"
 #include "Table.h"
 #include "Plugin/PluginImplementer.h"
+#include "PMRChannelMaster.h"
 
 #include <pugixml.hpp>
 #include <thread>
@@ -852,6 +853,12 @@ oms_status_enu_t oms2::FMICompositeModel::stepUntil(ResultWriter& resultWriter, 
     case MasterAlgorithm::PCTPL :
       logInfo("oms2::FMICompositeModel::stepUntil: Using master algorithm 'pctpl'\n");
       return stepUntilPCTPL(resultWriter, stopTime, communicationInterval);
+    case MasterAlgorithm::PMRCHANNELA :
+      logInfo("oms2::FMICompositeModel::stepUntil: Using master algorithm 'pmrchannela'\n");
+      return oms2::stepUntilPMRChannel<oms2::PMRChannelA>(resultWriter, stopTime, communicationInterval, this->getName().toString(), outputsGraph, subModels);
+    case MasterAlgorithm::PMRCHANNELCV :
+      logInfo("oms2::FMICompositeModel::stepUntil: Using master algorithm 'pmrchannelcv'\n");
+      return oms2::stepUntilPMRChannel<oms2::PMRChannelCV>(resultWriter, stopTime, communicationInterval, this->getName().toString(), outputsGraph, subModels);
     default :
       logError("oms2::FMICompositeModel::stepUntil: Internal error: Request for using unknown master algorithm.");
       return oms_status_error;
