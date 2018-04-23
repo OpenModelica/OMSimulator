@@ -49,6 +49,7 @@ namespace oms2
     PCTPL, ///< Parallel doStep(..) using CTPL task pool library (https://github.com/vit-vit/CTPL)
     PMRCHANNELA, ///< Experimental parallel (multi-rate) communication channel approach using ATOMIC variables and polling for synchronization
     PMRCHANNELCV, ///< Experimental parallel (multi-rate) communication channel approach using CONDITION variables for synchronization
+    PMRCHANNELM, ///< Experimental parallel (multi-rate) communication channel approach using MUTEXES for synchronization
     // PMRTASKPOOLA, ///< Experimental parallel (multi-rate) approach using fixed number of tasks and ATOMIC variables and polling for synchronization
     // PMRTASKPOOLCV ///< Experimental parallel (multi-rate) approach using fixed number of tasks and CONDITION variables for synchronization
   };

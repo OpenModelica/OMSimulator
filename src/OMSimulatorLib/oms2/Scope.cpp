@@ -1430,12 +1430,17 @@ oms_status_enu_t oms2::Scope::setMasterAlgorithm(const ComRef& cref, const std::
   {
     model->setMasterAlgorithm(oms2::MasterAlgorithm::PMRCHANNELCV);
   }
+  else if (masterAlgorithm == "pmrchannelm")
+  {
+    model->setMasterAlgorithm(oms2::MasterAlgorithm::PMRCHANNELM);
+  }
   else {
     std::string message = std::string("Unsupported master algorithm ")
       + masterAlgorithm + std::string("\nFollowing master algorithms are supported:\n")
       + std::string("standard, pctpl.\n")
       + std::string("standard, pmrchannela.\n")
       + std::string("standard, pmrchannelcv.\n")
+      + std::string("standard, pmrchannelm.\n")
       + std::string("Defaulting to \"standard\"!\n");
     logWarning(message);
     model->setMasterAlgorithm(oms2::MasterAlgorithm::STANDARD);
