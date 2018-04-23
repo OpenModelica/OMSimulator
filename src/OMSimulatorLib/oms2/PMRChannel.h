@@ -78,7 +78,7 @@ namespace oms2
       is_produced_.store(n_ == k_);
     }
 
-    T read()
+    T read() //!< @TODO Apparently multi-rate logic incomplete if reading task is faster than writing task
     {
       logTrace();
       T v;
@@ -115,7 +115,8 @@ namespace oms2
     PMRChannelCV& operator= (const PMRChannelCV& other) = delete; //!< Copy assignment operator
     PMRChannelCV& operator= (PMRChannelCV&& other) noexcept = delete; //!< Move assignment operator
 
-    void write(T v) {
+    void write(T v)
+    {
       logTrace();
       std::unique_lock<std::mutex> lk(m_);
       while (is_produced_) {
@@ -131,7 +132,8 @@ namespace oms2
       }
     }
 
-    T read() {
+    T read() //!< @TODO Apparently multi-rate logic incomplete if reading task is faster than writing task
+    {
       logTrace();
       T v;
       std::unique_lock<std::mutex> lk(m_);
@@ -154,6 +156,58 @@ namespace oms2
     bool is_produced_;
     std::mutex m_;
     std::condition_variable cv_;
+  };
+
+
+  /**
+   * \brief Parallel Multi-Rate simulation communication Channel using a Mutexes for synchronization.
+   *
+   * \warning Experimental class.
+   *
+   */
+  template <class T>
+  class PMRChannelM
+  {
+  public:
+    explicit PMRChannelM(int k) : k_(k), n_(0) {consumer_.lock();};
+    ~PMRChannelM() noexcept {}
+    PMRChannelM(const PMRChannelM& other) = delete; //!< Copy constructor
+    PMRChannelM (PMRChannelM&& other) noexcept = delete; //!< Move constructor
+    PMRChannelM& operator= (const PMRChannelM& other) = delete; //!< Copy assignment operator
+    PMRChannelM& operator= (PMRChannelM&& other) noexcept = delete; //!< Move assignment operator
+
+    void write(T v)
+    {
+      logTrace();
+      producer_.lock();
+      producer_.unlock();
+
+      v_ = v;
+      n_++;
+      // std::cout << "store n: " << n_ << ", k: " << k_ << std::endl;
+      if (n_ == k_) {
+        producer_.lock();
+        consumer_.unlock();
+      }
+    }
+
+    T read() //!< @TODO Apparently multi-rate logic incomplete if reading task is faster than writing task
+    {
+      logTrace();
+      T v;
+      consumer_.lock();
+      v = v_;
+      n_ = 0;
+      producer_.unlock();
+      return v;
+    }
+
+  private:
+    const int k_; //!< activation ratio
+    int n_; //!< A counter with the property n <= k.
+    T v_; // !< storage place for value
+    std::mutex producer_;
+    std::mutex consumer_;
   };
 }
 
