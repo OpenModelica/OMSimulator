@@ -993,6 +993,13 @@ oms_status_enu_t oms2::FMICompositeModel::simulateTLM(ResultWriter* resultWriter
   {
     logDebug("doStep: " + std::to_string(time) + " -> " + std::to_string(time+communicationInterval));
 
+    std::ofstream outfile;
+    while(!outfile.is_open()) {
+      outfile.open(getName().toString()+".log", std::ios_base::app);
+    }
+    outfile << " --- time: " << time << " ---\n";
+    outfile.close();
+
     readFromSockets();
 
     // Do step in FMUs
@@ -1058,6 +1065,11 @@ oms_status_enu_t oms2::FMICompositeModel::initializeSockets(double stopTime, dou
 
 void oms2::FMICompositeModel::readFromSockets()
 {
+  std::ofstream outfile;
+  while(!outfile.is_open()) {
+    outfile.open(getName().toString()+".log", std::ios_base::app);
+  }
+
   for(TLMInterface *ifc : tlmInterfaces) {
     if(ifc->getDimensions() == 1 && ifc->getCausality() == oms_causality_input) {
       double value;
@@ -1079,13 +1091,23 @@ void oms2::FMICompositeModel::readFromSockets()
 
       //Write force to FMU
       this->setReal(ifc->getSubSignal(oms_tlm_sigref_1d_effort), effort);
+
+      outfile << "f = " << effort << " (v = " << flow << ")\n";
+
     }
     /// \todo Support 3D bidirectional connections
   }
+
+  outfile.close();
 }
 
 void oms2::FMICompositeModel::writeToSockets()
 {
+  std::ofstream outfile;
+  while(!outfile.is_open()) {
+    outfile.open(getName().toString()+".log", std::ios_base::app);
+  }
+
   for(TLMInterface *ifc : tlmInterfaces) {
     if(ifc->getDimensions() == 1 && ifc->getCausality() == oms_causality_output) {
       double value;
@@ -1103,9 +1125,13 @@ void oms2::FMICompositeModel::writeToSockets()
 
       //Send the resulting motion back to master
       plugin->SetMotion1D(ifc->getId(), time, state, flow);
+
+      outfile << "x = " << state << "\n";
+      outfile << "v = " << flow << "\n";
     }
     /// \todo Support 3D bidirectional connections
   }
+  outfile.close();
 }
 
 void oms2::FMICompositeModel::finalizeSockets()
