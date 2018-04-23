@@ -52,7 +52,7 @@ oms2::TLMCompositeModel::TLMCompositeModel(const ComRef& name)
 {
   logTrace();
   model = omtlm_newModel(name.c_str());
-  omtlm_setLogLevel(model, 1);  /// \todo Make debug log level selectable by user
+  omtlm_setLogLevel(model, 3);  /// \todo Make debug log level selectable by user
 }
 
 oms2::TLMCompositeModel::~TLMCompositeModel()
