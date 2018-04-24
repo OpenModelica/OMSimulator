@@ -859,6 +859,9 @@ oms_status_enu_t oms2::FMICompositeModel::stepUntil(ResultWriter& resultWriter, 
     case MasterAlgorithm::PMRCHANNELCV :
       logInfo("oms2::FMICompositeModel::stepUntil: Using master algorithm 'pmrchannelcv'\n");
       return oms2::stepUntilPMRChannel<oms2::PMRChannelCV>(resultWriter, stopTime, communicationInterval, this->getName().toString(), outputsGraph, subModels);
+    case MasterAlgorithm::PMRCHANNELM :
+      logInfo("oms2::FMICompositeModel::stepUntil: Using master algorithm 'pmrchannelm'\n");
+      return oms2::stepUntilPMRChannel<oms2::PMRChannelM>(resultWriter, stopTime, communicationInterval, this->getName().toString(), outputsGraph, subModels);
     default :
       logError("oms2::FMICompositeModel::stepUntil: Internal error: Request for using unknown master algorithm.");
       return oms_status_error;
