@@ -480,6 +480,8 @@ oms_status_enu_t oms2_initialize(const char* ident);
  */
 oms_status_enu_t oms2_simulate(const char* ident);
 
+oms_status_enu_t oms2_simulate_asynchronous(const char* ident, void (*cb)(const char* ident, double time, oms_status_enu_t status));
+
 /**
  * \brief Simulates a composite model for a given number of steps (works for both FMI and TLM).
  *
@@ -499,14 +501,24 @@ oms_status_enu_t oms2_doSteps(const char* ident, const int numberOfSteps);
 oms_status_enu_t oms2_stepUntil(const char* ident, const double timeValue);
 
 /**
+ * \brief Reset the composite model after a simulation run.
+ *
+ * \date 2018-04-24 Implemented for FMI (no TLM support).
+ *
+ * The FMUs go into the same state as after instantiation.
+ *
+ * \param ident       [in] Name of the model instance
+ * \return Error status
+ */
+oms_status_enu_t oms2_reset(const char* ident);
+
+/**
  * \brief Terminates a composite model (works for both FMI and TLM).
  *
  * \param ident   [in] Name of the model instance
  * \return        Error status
  */
 oms_status_enu_t oms2_terminate(const char* ident);
-
-oms_status_enu_t oms2_simulate_asynchronous(const char* ident, void (*cb)(const char* ident, double time, oms_status_enu_t status));
 
 /**
  * \brief Sets a callback function for the logging system.
