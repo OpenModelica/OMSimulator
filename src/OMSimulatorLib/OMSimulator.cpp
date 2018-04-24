@@ -654,6 +654,12 @@ oms_status_enu_t oms2_stepUntil(const char* ident, const double timeValue)
   return oms2::Scope::GetInstance().stepUntil(oms2::ComRef(ident), timeValue);
 }
 
+oms_status_enu_t oms2_reset(const char* ident)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().reset(oms2::ComRef(ident));
+}
+
 oms_status_enu_t oms2_terminate(const char* ident)
 {
   logTrace();
