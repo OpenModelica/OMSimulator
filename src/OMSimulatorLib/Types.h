@@ -64,6 +64,12 @@ typedef enum {
   oms_causality_undefined   ///< REMOVE ME
 } oms_causality_enu_t;
 
+typedef enum {
+  oms_tlm_no_interpolation,
+  oms_tlm_coarse_grained,
+  oms_tlm_fine_grained
+} oms_tlm_interpolation_t;
+
 /* ************************************ */
 /* OMSimulator 2.0                      */
 /* ************************************ */
@@ -121,6 +127,16 @@ typedef enum {
   oms_tlm_sigref_1d_flow   = 1, ///< E.g. speed, current or flow
   oms_tlm_sigref_1d_effort = 2  ///< E.g. force, voltage or pressure
 } oms_tlm_sigref_1d_t;
+
+/**
+ * \brief Vector indices for signal references in 1D bidirectional TLM interfaces
+ */
+typedef enum {
+  oms_tlm_sigref_1d_cg_state     = 0, ///< E.g. position or charge
+  oms_tlm_sigref_1d_cg_flow      = 1, ///< E.g. speed, current or flow
+  oms_tlm_sigref_1d_cg_wave      = 2,  ///< E.g. force, voltage or pressure
+  oms_tlm_sigref_1d_cg_impedance = 3  ///< E.g. force, voltage or pressure
+} oms_tlm_sigref_1d_coarse_grained_t;
 
 /**
  * \brief Vector indices for signal references in 2D bidirectional TLM interfaces
@@ -488,6 +504,11 @@ typedef struct {
    * fmi2GetDirectionalDerivative(..).
    */
   bool providesDirectionalDerivative;
+  /**
+   * The slave is able to interpolate continuous inputs. Calling of
+   * fmi2SetRealInputDerivatives(...) has an effect for the slave.
+   */
+  bool canInterpolateInputs;
 } oms_fmu_info_t;
 
 

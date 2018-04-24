@@ -45,6 +45,10 @@ oms2::TLMInterface::TLMInterface(const oms2::ComRef &cref,
   this->domain = domain;
   this->dimensions = dimensions;
   this->sigrefs = sigrefs;
+  this->interpolationMethod = oms_tlm_no_interpolation;
+  if(this->dimensions == 1 && sigrefs.size() == 4) {
+    this->interpolationMethod = oms_tlm_coarse_grained;
+  }
 }
 
 oms_status_enu_t oms2::TLMInterface::doRegister(TLMPlugin *plugin)
