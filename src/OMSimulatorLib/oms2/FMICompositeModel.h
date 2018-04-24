@@ -93,6 +93,8 @@ namespace oms2
     oms_status_enu_t setReal(const oms2::SignalRef& sr, double value);
     oms_status_enu_t getReal(const oms2::SignalRef& sr, double& value);
 
+    oms_status_enu_t setRealInputDerivatives(const oms2::SignalRef& sr, int order, double value);
+
     oms_status_enu_t addTLMInterface(TLMInterface *ifc);
 
   private:
@@ -139,6 +141,7 @@ namespace oms2
 
     double time;
     double tolerance;
+    double communicationInterval;
   };
 }
 

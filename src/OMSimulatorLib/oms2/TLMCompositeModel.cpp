@@ -105,8 +105,16 @@ oms_status_enu_t oms2::TLMCompositeModel::addInterface(oms2::TLMInterface *ifc)
     }
     if(ifc->getDimensions() == 1 &&
        ifc->getCausality() == oms_causality_bidir &&
+       ifc->getInterpolationMethod() == oms_tlm_no_interpolation &&
        ifc->getSubSignals().size() != 3) {
       logError("Wrong number of variables for TLM interface (should be 3)");
+      return oms_status_error;
+    }
+    if(ifc->getDimensions() == 1 &&
+       ifc->getCausality() == oms_causality_bidir &&
+       ifc->getInterpolationMethod() == oms_tlm_coarse_grained &&
+       ifc->getSubSignals().size() != 4) {
+      logError("Wrong number of variables for TLM interface (should be 4)");
       return oms_status_error;
     }
     if(ifc->getDimensions() == 2 &&

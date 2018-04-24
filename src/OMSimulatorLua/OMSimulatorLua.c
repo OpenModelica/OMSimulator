@@ -1166,11 +1166,12 @@ static int OMSimulatorLua_oms2_addFMISubModel(lua_State *L)
 //oms_status_enu_t oms2_addTLMInterface(const char *cref, const char *subref, const char *name, int dimensions, oms_causality_enu_t causality, const char *domain);
 static int OMSimulatorLua_oms2_addTLMInterface(lua_State *L)
 {
-  if (lua_gettop(L) != 6 &&
-      lua_gettop(L) != 7 &&
-      lua_gettop(L) != 9 &&
-      lua_gettop(L) != 12 &&
-      lua_gettop(L) != 30)
+  if (lua_gettop(L) != 6 &&   //External model (no value references)
+      lua_gettop(L) != 7 &&   //Signal
+      lua_gettop(L) != 9 &&   //1D
+      lua_gettop(L) != 10 &&  //1D with coarse-grained interpolation
+      lua_gettop(L) != 12 &&  //2D
+      lua_gettop(L) != 30)    //3D
     return luaL_error(L, "expecting exactly 6, 7, 9 or 12 arguments");
   luaL_checktype(L, 1, LUA_TSTRING);
   luaL_checktype(L, 2, LUA_TSTRING);
@@ -1187,6 +1188,8 @@ static int OMSimulatorLua_oms2_addTLMInterface(lua_State *L)
   }
   if(lua_gettop(L) > 9) {
     luaL_checktype(L, 10, LUA_TSTRING);
+  }
+  if(lua_gettop(L) > 10) {
     luaL_checktype(L, 11, LUA_TSTRING);
     luaL_checktype(L, 12, LUA_TSTRING);
     luaL_checktype(L, 13, LUA_TSTRING);
@@ -1221,6 +1224,7 @@ static int OMSimulatorLua_oms2_addTLMInterface(lua_State *L)
   int nsigrefs = 0;
   if(lua_gettop(L) == 7) nsigrefs = 1;
   else if(lua_gettop(L) == 9) nsigrefs = 3;
+  else if(lua_gettop(L) == 10) nsigrefs = 4;
   else if(lua_gettop(L) == 15) nsigrefs = 9;
   else if(lua_gettop(L) == 30) nsigrefs = 24;
 
@@ -1234,6 +1238,8 @@ static int OMSimulatorLua_oms2_addTLMInterface(lua_State *L)
   }
   if(lua_gettop(L) > 9) {
     sigrefs[3] = lua_tostring(L, 10);
+  }
+  if(lua_gettop(L) > 10) {
     sigrefs[4] = lua_tostring(L, 11);
     sigrefs[5] = lua_tostring(L, 12);
     sigrefs[6] = lua_tostring(L, 13);

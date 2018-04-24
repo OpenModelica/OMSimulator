@@ -160,3 +160,8 @@ oms_status_enu_t oms2::Table::getReal(const oms2::SignalRef& sr, double& value)
 {
   return getReal(sr.getVar(), value, time);
 }
+
+oms_status_enu_t oms2::Table::setRealInputDerivatives(const oms2::SignalRef &sr, int order, double value)
+{
+  return logError("[oms2::Table::setRealInputDerivatives] failed");
+}

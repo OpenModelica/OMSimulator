@@ -56,6 +56,7 @@ namespace oms2
     oms_causality_enu_t getCausality() { return causality; }
     std::string getDomain() { return domain; }
     int getDimensions() { return dimensions; }
+    oms_tlm_interpolation_t getInterpolationMethod() { return interpolationMethod; }
     void setDelay(double delay) { this->delay = delay; }
     double getDelay() { return this->delay; }
     std::vector<SignalRef> getSubSignals() { return sigrefs; }
@@ -74,6 +75,7 @@ namespace oms2
     std::string domain;
     int dimensions;
     std::vector<SignalRef> sigrefs;
+    oms_tlm_interpolation_t interpolationMethod;
     double delay;
     int id;
   };

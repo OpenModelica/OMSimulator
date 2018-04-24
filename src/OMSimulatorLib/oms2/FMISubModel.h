@@ -72,6 +72,7 @@ namespace oms2
 
     virtual oms_status_enu_t setReal(const oms2::SignalRef& sr, double value) = 0;
     virtual oms_status_enu_t getReal(const oms2::SignalRef& sr, double& value) = 0;
+    virtual oms_status_enu_t setRealInputDerivatives(const oms2::SignalRef& sr, int order, double value) = 0;
 
     virtual oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultWriter) = 0;
     virtual oms_status_enu_t emit(ResultWriter& resultWriter) = 0;
