@@ -81,11 +81,16 @@ namespace oms2
     oms_status_enu_t addConnection(const ComRef& cref, const SignalRef& conA, const SignalRef& conB);
     oms_status_enu_t deleteConnection(const ComRef& cref, const SignalRef& conA, const SignalRef& conB);
     oms_status_enu_t updateConnection(const ComRef& cref, const SignalRef& conA, const SignalRef& conB, const oms2::Connection* connection);
-    oms_status_enu_t getRealParameter(const oms2::SignalRef& signal, double& value);
     oms_status_enu_t getReal(const oms2::SignalRef& signal, double& value);
+    oms_status_enu_t setReal(const oms2::SignalRef& signal, double value);
+    oms_status_enu_t getRealParameter(const oms2::SignalRef& signal, double& value);
     oms_status_enu_t setRealParameter(const oms2::SignalRef& signal, double value);
+    oms_status_enu_t getInteger(const oms2::SignalRef& signal, int& value);
+    oms_status_enu_t setInteger(const oms2::SignalRef& signal, int value);
     oms_status_enu_t getIntegerParameter(const oms2::SignalRef& signal, int& value);
     oms_status_enu_t setIntegerParameter(const oms2::SignalRef& signal, int value);
+    oms_status_enu_t getBoolean(const oms2::SignalRef& signal, bool& value);
+    oms_status_enu_t setBoolean(const oms2::SignalRef& signal, bool value);
     oms_status_enu_t getBooleanParameter(const oms2::SignalRef& signal, bool& value);
     oms_status_enu_t setBooleanParameter(const oms2::SignalRef& signal, bool value);
     oms_status_enu_t setTempDirectory(const std::string& newTempDir);

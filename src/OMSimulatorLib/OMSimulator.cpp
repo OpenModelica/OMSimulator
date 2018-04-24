@@ -677,22 +677,40 @@ void oms2_setLoggingLevel(int logLevel)
   Log::setLoggingLevel(logLevel);
 }
 
-oms_status_enu_t oms2_getRealParameter(const char* signal, double* value)
-{
-  logTrace();
-  return oms2::Scope::GetInstance().getRealParameter(oms2::SignalRef(signal), *value);
-}
-
 oms_status_enu_t oms2_getReal(const char* signal, double* value)
 {
   logTrace();
   return oms2::Scope::GetInstance().getReal(oms2::SignalRef(signal), *value);
 }
 
+oms_status_enu_t oms2_setReal(const char* signal, double value)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().setReal(oms2::SignalRef(signal), value);
+}
+
+oms_status_enu_t oms2_getRealParameter(const char* signal, double* value)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().getRealParameter(oms2::SignalRef(signal), *value);
+}
+
 oms_status_enu_t oms2_setRealParameter(const char* signal, double value)
 {
   logTrace();
   return oms2::Scope::GetInstance().setRealParameter(oms2::SignalRef(signal), value);
+}
+
+oms_status_enu_t oms2_getInteger(const char* signal, int* value)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().getInteger(oms2::SignalRef(signal), *value);
+}
+
+oms_status_enu_t oms2_setInteger(const char* signal, int value)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().setInteger(oms2::SignalRef(signal), value);
 }
 
 oms_status_enu_t oms2_getIntegerParameter(const char* signal, int* value)
@@ -717,6 +735,18 @@ oms_status_enu_t oms2_setBooleanParameter(const char* signal, bool value)
 {
   logTrace();
   return oms2::Scope::GetInstance().setBooleanParameter(oms2::SignalRef(signal), value);
+}
+
+oms_status_enu_t oms2_getBoolean(const char* signal, bool* value)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().getBoolean(oms2::SignalRef(signal), *value);
+}
+
+oms_status_enu_t oms2_setBoolean(const char* signal, bool value)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().setBoolean(oms2::SignalRef(signal), value);
 }
 
 oms_status_enu_t oms2_setTempDirectory(const char* path)

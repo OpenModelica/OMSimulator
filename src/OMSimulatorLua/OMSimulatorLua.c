@@ -845,7 +845,6 @@ static int OMSimulatorLua_oms2_setRealParameter(lua_State *L)
   return 1;
 }
 
-
 //oms_status_enu_t oms2_setStartTime(const char* cref, double startTime);
 static int OMSimulatorLua_oms2_setStartTime(lua_State *L)
 {
@@ -1036,6 +1035,83 @@ static int OMSimulatorLua_oms2_getReal(lua_State *L)
   lua_pushnumber(L, value);
   lua_pushnumber(L, status);
   return 2;
+}
+
+//oms_status_enu_t oms2_setReal(const char* signal, double value);
+static int OMSimulatorLua_oms2_setReal(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TNUMBER);
+
+  const char* signal = lua_tostring(L, 1);
+  double value = lua_tonumber(L, 2);
+  oms_status_enu_t status = oms2_setReal(signal, value);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
+//oms_status_enu_t oms2_getInteger(const char* ident, int* value);
+static int OMSimulatorLua_oms2_getInteger(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 arguments");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char *ident = lua_tostring(L, 1);
+  int value = 0;
+
+  oms_status_enu_t status = oms2_getInteger(ident, &value);
+  lua_pushnumber(L, value);
+  lua_pushnumber(L, status);
+  return 2;
+}
+
+//oms_status_enu_t oms2_setInteger(const char* signal, int value);
+static int OMSimulatorLua_oms2_setInteger(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TNUMBER);
+
+  const char* signal = lua_tostring(L, 1);
+  int value = lua_tointeger(L, 2);
+  oms_status_enu_t status = oms2_setInteger(signal, value);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
+//oms_status_enu_t oms2_getBoolean(const char* ident, bool* value);
+static int OMSimulatorLua_oms2_getBoolean(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 arguments");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char *ident = lua_tostring(L, 1);
+  bool value = false;
+
+  oms_status_enu_t status = oms2_getBoolean(ident, &value);
+  lua_pushnumber(L, value);
+  lua_pushnumber(L, status);
+  return 2;
+}
+
+//oms_status_enu_t oms2_setBoolean(const char* signal, bool value);
+static int OMSimulatorLua_oms2_setBoolean(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TNUMBER);
+
+  const char* signal = lua_tostring(L, 1);
+  bool value = lua_tointeger(L, 2);
+  oms_status_enu_t status = oms2_setBoolean(signal, value);
+  lua_pushinteger(L, status);
+  return 1;
 }
 
 //oms_status_enu_t oms2_addExternalModel(const char *cref, const char *name, const char *modelfile, const char *startscript);
@@ -1460,6 +1536,11 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms2_exportDependencyGraphs);
   REGISTER_LUA_CALL(oms2_getElements);
   REGISTER_LUA_CALL(oms2_getReal);
+  REGISTER_LUA_CALL(oms2_setReal);
+  REGISTER_LUA_CALL(oms2_getInteger);
+  REGISTER_LUA_CALL(oms2_setInteger);
+  REGISTER_LUA_CALL(oms2_getBoolean);
+  REGISTER_LUA_CALL(oms2_setBoolean);
   REGISTER_LUA_CALL(oms2_initialize);
   REGISTER_LUA_CALL(oms2_loadModel);
   REGISTER_LUA_CALL(oms2_newFMIModel);
