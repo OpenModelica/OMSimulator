@@ -296,6 +296,11 @@ oms_status_enu_t oms2::TLMCompositeModel::initialize(double startTime, double to
   return oms_status_ok;
 }
 
+oms_status_enu_t oms2::TLMCompositeModel::reset()
+{
+  return logError("oms2::TLMCompositeModel::reset: not implemented yet");
+}
+
 oms_status_enu_t oms2::TLMCompositeModel::terminate()
 {
   return logError("oms2::TLMCompositeModel::terminate: not implemented yet");

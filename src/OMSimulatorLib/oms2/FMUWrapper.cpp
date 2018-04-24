@@ -523,6 +523,19 @@ void oms2::FMUWrapper::do_event_iteration()
     fmi2_import_new_discrete_states(fmu, &eventInfo);
 }
 
+oms_status_enu_t oms2::FMUWrapper::reset()
+{
+  if (oms_fmi_kind_me == fmuInfo.getKind())
+  {
+    // FIXME bthiele: reset solver data?
+  }
+
+  fmi2_status_t fmistatus = fmi2_import_reset(fmu);
+  if (fmi2_status_ok != fmistatus)
+    return logError("fmi2_import_reset failed");
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms2::FMUWrapper::terminate()
 {
   if (oms_fmi_kind_me == fmuInfo.getKind())

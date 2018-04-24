@@ -58,6 +58,7 @@ namespace oms2
     oms_status_enu_t exitInitialization();
     oms_status_enu_t doStep(double stopTime);
 
+    oms_status_enu_t reset() {return oms_status_ok;}
     oms_status_enu_t terminate() {return oms_status_ok;}
 
     oms_status_enu_t exportToSSD(pugi::xml_node& root) const;

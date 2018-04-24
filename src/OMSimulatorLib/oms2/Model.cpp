@@ -267,6 +267,37 @@ oms_status_enu_t oms2::Model::initialize()
   return status;
 }
 
+oms_status_enu_t oms2::Model::reset()
+{
+
+  if (resultFile)
+  {
+    resultFile->close();
+    delete resultFile;
+    resultFile = NULL;
+  }
+
+  if (!resultFilename.empty())
+  {
+    std::string resulttype;
+    if (resultFilename.length() > 5)
+      resulttype = resultFilename.substr(resultFilename.length() - 4);
+
+    if (".csv" == resulttype)
+      resultFile = new CSVWriter(1);
+    else if (".mat" == resulttype)
+      resultFile = new MATWriter(1024);
+    else
+      return logError("Unsupported format of the result file: " + resultFilename);
+  }
+
+  oms_status_enu_t status = compositeModel->reset();
+
+  modelState = oms_modelState_instantiated;
+
+  return status; // 2018-04-24: Careful, return value is fixed to oms_status_ok 
+}
+
 oms_status_enu_t oms2::Model::terminate()
 {
   if (oms_modelState_initialization != modelState && oms_modelState_simulation != modelState)

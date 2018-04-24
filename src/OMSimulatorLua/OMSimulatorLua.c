@@ -965,6 +965,19 @@ static int OMSimulatorLua_oms2_initialize(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms2_reset(const char* ident);
+static int OMSimulatorLua_oms2_reset(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* ident = lua_tostring(L, 1);
+  oms_status_enu_t status = oms2_reset(ident);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
 //oms_status_enu_t oms2_terminate(const char* ident);
 static int OMSimulatorLua_oms2_terminate(lua_State *L)
 {
