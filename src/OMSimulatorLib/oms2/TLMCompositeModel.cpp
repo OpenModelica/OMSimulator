@@ -114,8 +114,8 @@ oms_status_enu_t oms2::TLMCompositeModel::addInterface(oms2::TLMInterface *ifc)
     }
     if(ifc->getDimensions() == 3 &&
        ifc->getCausality() == oms_causality_bidir &&
-       ifc->getSubSignals().size() != 18) {
-      logError("Wrong number of variables for TLM interface (should be 18)");
+       ifc->getSubSignals().size() != 24) {
+      logError("Wrong number of variables for TLM interface (should be 24)");
 
       return oms_status_error;
     }
@@ -131,10 +131,16 @@ oms_status_enu_t oms2::TLMCompositeModel::addInterface(oms2::TLMInterface *ifc)
   else if(ifc->getCausality() == oms_causality_bidir)
     causality = "Bidirectional";
 
+  int dimensions = ifc->getDimensions();
+  if(ifc->getDimensions() == 2)
+    dimensions = 3;
+  else if(ifc->getDimensions() == 3)
+    dimensions = 6;
+
   omtlm_addInterface(model,
                      ifc->getSubModelName().c_str(),
                      ifc->getName().c_str(),
-                     ifc->getDimensions(),
+                     dimensions,
                      causality.c_str(),
                      ifc->getDomain().c_str());
 
