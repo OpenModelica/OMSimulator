@@ -842,6 +842,38 @@ oms_status_enu_t oms2::FMUWrapper::getReal(const oms2::SignalRef& sr, double& va
   return getReal(*var, value);
 }
 
+oms_status_enu_t oms2::FMUWrapper::setInteger(const oms2::SignalRef& sr, int value)
+{
+  oms2::Variable* var = getVariable(sr.getVar());
+  if (!var)
+    return oms_status_error;
+  return setInteger(*var, value);
+}
+
+oms_status_enu_t oms2::FMUWrapper::getInteger(const oms2::SignalRef& sr, int& value)
+{
+  oms2::Variable* var = getVariable(sr.getVar());
+  if (!var)
+    return oms_status_error;
+  return getInteger(*var, value);
+}
+
+oms_status_enu_t oms2::FMUWrapper::setBoolean(const oms2::SignalRef& sr, bool value)
+{
+  oms2::Variable* var = getVariable(sr.getVar());
+  if (!var)
+    return oms_status_error;
+  return setBoolean(*var, value);
+}
+
+oms_status_enu_t oms2::FMUWrapper::getBoolean(const oms2::SignalRef& sr, bool& value)
+{
+  oms2::Variable* var = getVariable(sr.getVar());
+  if (!var)
+    return oms_status_error;
+  return getBoolean(*var, value);
+}
+
 oms_status_enu_t oms2::FMUWrapper::registerSignalsForResultFile(ResultWriter& resultWriter)
 {
   unsigned int i=0;
