@@ -54,6 +54,11 @@
 // Macro for basic assertion testing (works conveniently with ctest, see CMakeLists.txt)
 #define ASSERT(X)  if(!(X)) {fprintf(stderr, "%s:%d Assertion '" #X "' FAILED\n", __FILE__, __LINE__); exit(1);}
 
+// Macros for brief code
+#define MODELIDENT "test_Lin2DimODE_cs_Fit"
+#define FMUIDENT "Lin2DimODE"
+#define VARCREF(x) MODELIDENT "." FMUIDENT ":" x
+
 using std::abs;
 using Eigen::Dynamic;
 using Eigen::RowMajor;
@@ -61,29 +66,28 @@ typedef Eigen::Matrix<double, Dynamic, 1> Vector;
 typedef Eigen::Matrix<double, Dynamic, Dynamic, RowMajor> Matrix;
 
 
-void the_reference_ode(void* model, const std::vector<std::string>& p_name, const Vector& p, const Vector& t, const std::vector<std::string>& x_name, Matrix& x) {
+void the_reference_ode(const char* oms_modelident, const std::vector<std::string>& p_name, const Vector& p, const Vector& t, const std::vector<std::string>& x_name, Matrix& x) {
   for (int i=0; i < t.size(); ++i) {
     for (int j=0; j < p_name.size(); ++j) {
-        oms_setReal(model, p_name[j].c_str(), p[j]);
+        oms2_setReal(p_name[j].c_str(), p[j]);
     }
-    oms_initialize(model);
+    oms2_initialize(oms_modelident);
 
-    if (t[i] > 0) oms_stepUntil(model, t[i]);
+    if (t[i] > 0) oms2_stepUntil(oms_modelident, t[i]);
 
     for (int j=0; j < x_name.size(); ++j) {
-      x(i, j) = oms_getReal(model, x_name[j].c_str());
+      oms2_getReal(x_name[j].c_str(), &(x(i, j)));
     }
-    oms_reset(model);
+    oms2_reset(oms_modelident);
   }
 }
-
 
 
 const int kNumSeries = 1;
 const int kNumObservations = 11;
 const char* inputvars[] = {""};
-const char* measurementvars[] = {"Lin2DimODE.x1", "Lin2DimODE.x2"};
-const std::vector<std::string> parametervars = {"Lin2DimODE.a11", "Lin2DimODE.a12", "Lin2DimODE.a21", "Lin2DimODE.a22", "Lin2DimODE.x1_start", "Lin2DimODE.x2_start"};
+const char* measurementvars[] = {VARCREF("x1"), VARCREF("x2")};
+const std::vector<std::string> parametervars = {VARCREF("a11"), VARCREF("a12"), VARCREF("a21"), VARCREF("a22"), VARCREF("x1_start"), VARCREF("x2_start")};
 
 
 int test_Lin2DimODE_cs_Fit()
@@ -98,11 +102,16 @@ int test_Lin2DimODE_cs_Fit()
     data_time[i] = data_time[i-1] + 0.1;
   }
 
-  void* model = oms_newModel();
-  oms2_setTempDirectory(".");
-  oms_instantiateFMU(model, "../FMUs/Lin2DimODE_cs.fmu", "Lin2DimODE");
-  oms_setTolerance(model, 1e-5);
-  oms_setStopTime(model, data_time[kNumObservations - 1]); // needed?
+  oms2_setLogFile("test_Lin2DimODE_cs_Fit.log");
+  status = oms2_setTempDirectory(".");
+  ASSERT(status == oms_status_ok);
+
+  const char* oms_modelident = MODELIDENT;
+  status = oms2_newFMIModel(oms_modelident);
+  ASSERT(status == oms_status_ok);
+  status = oms2_addFMU(oms_modelident, "../FMUs/Lin2DimODE_cs.fmu", FMUIDENT);
+  // oms_setTolerance(model, 1e-5); // FIXME How to set the tolerance with the oms2 API?
+  status = oms2_setStopTime(oms_modelident, data_time[kNumObservations - 1]); // needed?
 
   // compute reference
   // der(x1) = a11*x1 + a12*x2;
@@ -113,14 +122,14 @@ int test_Lin2DimODE_cs_Fit()
   p_ref << -1, 0.1, 0.1, -0.9, 1, 1.1;
   const std::vector<std::string> mesvars = std::vector<std::string>(measurementvars, measurementvars+2);
   Matrix x_ref = Matrix::Zero(kNumObservations, mesvars.size());
-  the_reference_ode(model, parametervars, p_ref, data_time, mesvars, x_ref);
+  the_reference_ode(oms_modelident, parametervars, p_ref, data_time, mesvars, x_ref);
   std::cout << "i \t t \t x1 \t x2\n";
   for (int i=0; i < data_time.size(); ++i) {
     std::cout << i << "\t" << data_time[0] << "\t" << x_ref(i, 0) << "\t" << x_ref(i, 1) << std::endl;
   }
 
 
-  void* fitmodel = omsi_newSysIdentModel(model);
+  void* fitmodel = omsi_newSysIdentModel(oms_modelident);
   double* t_ref = new double[kNumObservations];
   for (int i=0; i<kNumObservations; ++i) t_ref[i] = data_time[i];
   status = omsi_initialize(fitmodel, kNumSeries, t_ref, kNumObservations, inputvars, 0,
@@ -168,7 +177,7 @@ int test_Lin2DimODE_cs_Fit()
 #ifdef ROOT_VERSION
   // Solve ODE with estimated parameters
   Matrix x_est = Matrix::Zero(kNumObservations, mesvars.size());
-  the_reference_ode(model, parametervars, p_est, data_time, mesvars, x_est);
+  the_reference_ode(oms_modelident, parametervars, p_est, data_time, mesvars, x_est);
   // Convert to root data structures
   TVectorF t_t_ref(kNumObservations), t_x1_ref(kNumObservations), t_x2_ref(kNumObservations), t_x1_est(kNumObservations), t_x2_est(kNumObservations);
   for (int i=0; i<kNumObservations; ++i) {
@@ -216,7 +225,7 @@ int test_Lin2DimODE_cs_Fit()
 #endif // ROOT_VERSION
 
   omsi_freeSysIdentModel(fitmodel);
-  oms_unload(model);
+  oms2_unloadModel(oms_modelident);
   return 0;
 }
 

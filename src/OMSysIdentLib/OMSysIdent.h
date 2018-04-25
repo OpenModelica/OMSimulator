@@ -54,10 +54,10 @@ typedef enum {
 /**
  * \brief Creates an empty model for parameter estimation.
  *
- * @param model [inout] OMS (composite) model as opaque pointer.
+ * \param ident   [in] Name of the model instance
  * @return SysIdent model instance as opaque pointer.
  */
-void* omsi_newSysIdentModel(void* model);
+void* omsi_newSysIdentModel(const char* ident);
 
 /**
  * \brief Unloads a model.
