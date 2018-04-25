@@ -71,23 +71,25 @@ std::string seriesPropertiesString(std::string var, std::vector<SeriesMap> serie
 
 struct OdeResidual {
   OdeResidual(double t, std::vector<VarValueMap> mes,
-    std::vector<VarValueMap> input, std::set<std::string> params, void* model)
-      : t_(t), mes_(mes), input_(input), params_(params), model_(model) {}
+    std::vector<VarValueMap> input, std::set<std::string> params, const char* oms_modelIdent)
+      : t_(t), mes_(mes), input_(input), params_(params), oms_modelIdent_(oms_modelIdent) {}
 
   bool operator()(double const* const* parameters, double* residual) const {
     {
       int i = 0;
       // precondition: order in 'parameters' corresponds to params_ set order
       for (auto varname: params_) {
-        oms_setReal(model_, varname.c_str(), parameters[i][0]);
+        // oms2_setRealParameter(varname.c_str(), parameters[i][0]);
+        oms2_setReal(varname.c_str(), parameters[i][0]);
+        // std::cout << "OdeResidual: " << varname << " = " << parameters[i][0] << std::endl;
         i++;
       }
     }
-    oms_setStopTime(model_, t_); // needed?
+    oms2_setStopTime(oms_modelIdent_, t_); // needed?
 
-    oms_initialize(model_);
+    oms2_initialize(oms_modelIdent_);
     // TODO Replace below by a loop that sets inputs if inputs are available
-    oms_stepUntil(model_, t_);
+    oms2_stepUntil(oms_modelIdent_, t_);
 
     int nMesVars = mes_.at(0).size();
     // get simulation values of observed variables
@@ -95,7 +97,7 @@ struct OdeResidual {
     {
       int i = 0;
       for (auto& varValue: mes_.at(0)) {
-        x[i] = oms_getReal(model_, varValue.first.c_str());
+        oms2_getReal(varValue.first.c_str(), &(x[i]));
         i++;
       }
     }
@@ -108,7 +110,7 @@ struct OdeResidual {
       }
     }
 
-    oms_reset(model_);
+    oms2_reset(oms_modelIdent_);
     return true;
   }
 
@@ -117,7 +119,8 @@ struct OdeResidual {
   const std::vector<VarValueMap> mes_;
   const std::vector<VarValueMap> input_;
   const std::set<std::string> params_;
-  void* model_;
+  // void* model_; // DELETE
+  const char* oms_modelIdent_;
 };
 
 oms_status_enu_t FitModel::solve(const char* reporttype)
@@ -163,7 +166,7 @@ oms_status_enu_t FitModel::solve(const char* reporttype)
     // use numeric differentiation to obtain the derivative (jacobian).
     DynamicNumericDiffCostFunction<OdeResidual>* cost_function =
       new DynamicNumericDiffCostFunction<OdeResidual>(
-        new OdeResidual(mdata_.time[i], mes, input, params, model_));
+        new OdeResidual(mdata_.time[i], mes, input, params, oms_modelIdent_));
     for (int i=0; i < parameters_.size(); ++i) {
       cost_function->AddParameterBlock(1);
     }
@@ -214,13 +217,9 @@ oms_status_enu_t FitModel::solve(const char* reporttype)
   return oms_status_ok;
 }
 
-FitModel::FitModel(void* model) : model_(model)
+FitModel::FitModel(const char* oms_modelIdent) : oms_modelIdent_(oms_modelIdent)
 {
   logTrace();
-  if (!model) {
-    logError("FitModel::FitModel: Invalid pointer");
-	exit(1);
-  }
   options_.max_num_iterations = 25;
   options_.linear_solver_type = ceres::DENSE_QR;
   options_.minimizer_progress_to_stdout = true;
@@ -275,7 +274,7 @@ oms_status_enu_t FitModel::addParameter(const char* var, double startvalue)
     logError("FitModel::addParameter:  Calling method on uninitialized object.");
     return oms_status_error;
   }
-  oms_setReal(model_, var, startvalue); // FIXME superfluous?
+  oms2_setRealParameter(var, startvalue); // FIXME superfluous?
   if (parameters_.find(var) != parameters_.end()) {
     std::string message = std::string("FitModel::addParameter: ") + var
       +  "already exists in parameter set. Overwriting entry.\n";
