@@ -35,16 +35,22 @@
 #include "OMSimulator.h"
 #include "OMSysIdent.h"
 
+// Macro for basic assertion testing (works conveniently with ctest, see CMakeLists.txt)
+#define ASSERT(X)  if(!(X)) {fprintf(stderr, "%s:%d Assertion '" #X "' FAILED", __FILE__, __LINE__); exit(1);}
+
+// Macros for brief code
+#define MODELIDENT "test_HelloWorld_cs_Fit"
+#define FMUIDENT "HelloWorld"
+#define VARCREF(x) MODELIDENT "." FMUIDENT ":" x
+
+
 // Data generated from simulating HelloWorld.mo for 1.0s with Euler and 0.1s step size
 const int kNumSeries = 1;
 const int kNumObservations = 11;
 const double data_time[] = {0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1};
 const char* inputvars[] = {""};
-const char* measurementvars[] = {"HelloWorld.x"};
+const char* measurementvars[] = {VARCREF("x")};
 const double data_x[] = {1, 0.9, 0.8100000000000001, 0.7290000000000001, 0.6561, 0.5904900000000001, 0.5314410000000001, 0.4782969000000001, 0.43046721, 0.387420489, 0.3486784401};
-
-// Macro for basic assertion testing (works conveniently with ctest, see CMakeLists.txt)
-#define ASSERT(X)  if(!(X)) {fprintf(stderr, "%s:%d Assertion '" #X "' FAILED", __FILE__, __LINE__); exit(1);}
 
 int test_HelloWorld_cs_Fit()
 {
@@ -52,20 +58,24 @@ int test_HelloWorld_cs_Fit()
   oms_status_enu_t status;
   //std::cout << version << std::endl;
 
-  void* model = oms_newModel();
-  oms2_setTempDirectory(".");
-  oms_instantiateFMU(model, "../FMUs/HelloWorld_cs.fmu", "HelloWorld");
-  oms_setTolerance(model, 1e-5);
+  oms2_setLogFile("test_HelloWorld_cs_Fit.log");
+  status = oms2_setTempDirectory(".");
+  ASSERT(status == oms_status_ok);
 
-  void* fitmodel = omsi_newSysIdentModel(model);
+  status = oms2_newFMIModel(MODELIDENT);
+  ASSERT(status == oms_status_ok);
+  status = oms2_addFMU(MODELIDENT, "../FMUs/HelloWorld_cs.fmu", FMUIDENT);
+  // oms_setTolerance(model, 1e-5); // 2018-04-25: Not yet possible to set the tolerance with the oms2 API
+
+  void* fitmodel = omsi_newSysIdentModel(MODELIDENT);
   status = omsi_initialize(fitmodel, kNumSeries, data_time, kNumObservations, inputvars, 0,
   measurementvars, 1);
   ASSERT(status == oms_status_ok);
-  status = omsi_addParameter(fitmodel, "HelloWorld.x_start", 0.5);
+  status = omsi_addParameter(fitmodel, VARCREF("x_start"), 0.5);
   ASSERT(status == oms_status_ok);
-  status = omsi_addParameter(fitmodel, "HelloWorld.a", -0.5);
+  status = omsi_addParameter(fitmodel, VARCREF("a"), -0.5);
   ASSERT(status == oms_status_ok);
-  status = omsi_addMeasurement(fitmodel, 0, "HelloWorld.x", data_x, kNumObservations);
+  status = omsi_addMeasurement(fitmodel, 0, VARCREF("x"), data_x, kNumObservations);
   ASSERT(status == oms_status_ok);
   // give a summary of the  object
   omsi_describe(fitmodel);
@@ -77,17 +87,18 @@ int test_HelloWorld_cs_Fit()
   ASSERT(status == oms_status_ok);
   ASSERT(fitmodelstate == omsi_simodelstate_convergence);
   double startvalue, estimatedvalue;
-  status = omsi_getParameter(fitmodel, "HelloWorld.x_start", &startvalue, &estimatedvalue);
+  status = omsi_getParameter(fitmodel, VARCREF("x_start"), &startvalue, &estimatedvalue);
   ASSERT(status == oms_status_ok);
   ASSERT(estimatedvalue > 0.99 && estimatedvalue < 1.01);
   printf("HelloWorld.x_start: startvalue %f, estimatedvalue %f\n", startvalue, estimatedvalue);
-  status = omsi_getParameter(fitmodel, "HelloWorld.a", &startvalue, &estimatedvalue);
+  status = omsi_getParameter(fitmodel, VARCREF("a"), &startvalue, &estimatedvalue);
   ASSERT(status == oms_status_ok);
   ASSERT(estimatedvalue > -1.1 && estimatedvalue < -0.9);
   printf("HelloWorld.a: startvalue %f, estimatedvalue %f\n", startvalue, estimatedvalue);
 
   omsi_freeSysIdentModel(fitmodel);
-  oms_unload(model);
+  status = oms2_unloadModel(MODELIDENT);
+  ASSERT(status == oms_status_ok);
   return 0;
 }
 

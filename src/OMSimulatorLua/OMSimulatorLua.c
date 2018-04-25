@@ -1316,16 +1316,16 @@ static int OMSimulatorLua_oms2_setTLMSocketData(lua_State *L)
 /* **************************************************** */
 
 #ifdef WITH_OMSYSIDENT
-//void* omsi_newSysIdentModel(void* model);
+//void* omsi_newSysIdentModel(const char* ident);
 static int OMSimulatorLua_omsi_newSysIdentModel(lua_State *L)
 {
   if (lua_gettop(L) != 1)
     return luaL_error(L, "expecting exactly 1 argument");
-  luaL_checktype(L, 1, LUA_TUSERDATA);
+  luaL_checktype(L, 1, LUA_TSTRING);
 
-  void *model = topointer(L, 1);
+  const char* ident = lua_tostring(L, 1);
 
-  void *pModel = omsi_newSysIdentModel(model);
+  void *pModel = omsi_newSysIdentModel(ident);
   push_pointer(L, pModel);
   return 1;
 }

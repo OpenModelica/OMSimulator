@@ -33,10 +33,10 @@
 #include "FitModel.h"
 #include "OMSimulatorLib/oms2/Logging.h"
 
-void* omsi_newSysIdentModel(void* model)
+void* omsi_newSysIdentModel(const char* ident)
 {
   logTrace();
-  FitModel* pFitModel = new FitModel(model);
+  FitModel* pFitModel = new FitModel(ident);
   return (void*) pFitModel;
 }
 

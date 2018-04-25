@@ -71,7 +71,7 @@ enum class FitModelState
 class FitModel
 {
 public:
-  explicit FitModel(void* model);
+  explicit FitModel(const char* oms_modelIdent);
   ~FitModel() noexcept {}
   /** Copy constructor */
   FitModel(const FitModel& other) = delete;
@@ -94,7 +94,8 @@ public:
 
 private:
   friend std::ostream& operator<< (std::ostream& os, const FitModel& a) { return os << a.toString(); }
-  void* model_;
+  // void* model_; // TODO DELETE
+  const char* oms_modelIdent_;
   FitModelState state_;
   ParameterMap parameters_;
   std::vector<double*> parameter_blocks_; // Ceres parameter blocks, will point to elements from parameters_[].estValue
