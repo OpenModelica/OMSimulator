@@ -91,7 +91,10 @@ oms_status_enu_t oms2::TLMCompositeModel::addInterface(oms2::TLMInterface *ifc)
   if (std::find(interfaces.begin(), interfaces.end(), ifc) != interfaces.end())
     return logError("Interface " + ifc->getSignal().toString() + " is already added.");
 
-  FMICompositeModel *pFMISubModel = Scope::GetInstance().getFMICompositeModel(ifc->getSubModelName());
+  FMICompositeModel *pFMISubModel = 0;
+  if(Scope::GetInstance().hasFMICompositeModel(ifc->getSubModelName())) {
+    pFMISubModel = Scope::GetInstance().getFMICompositeModel(ifc->getSubModelName());
+  }
 
   if(pFMISubModel) {
     if(ifc->getDimensions() == 1 &&

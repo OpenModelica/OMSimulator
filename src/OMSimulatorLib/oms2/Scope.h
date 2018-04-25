@@ -105,6 +105,7 @@ namespace oms2
     Model* getModel(const ComRef& name);
     oms2::Connection* getConnection(const ComRef& cref, const SignalRef& conA, const SignalRef& conB);
 
+    bool hasFMICompositeModel(const ComRef& name);
     FMICompositeModel* getFMICompositeModel(const ComRef& name);
     TLMCompositeModel* getTLMCompositeModel(const ComRef& name);
 
