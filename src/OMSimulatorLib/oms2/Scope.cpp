@@ -738,6 +738,13 @@ oms2::Model* oms2::Scope::getModel(const oms2::ComRef& name)
   return it->second;
 }
 
+bool oms2::Scope::hasFMICompositeModel(const oms2::ComRef &name)
+{
+  logTrace();
+
+  return (models.find(name) != models.end());
+}
+
 oms2::FMICompositeModel* oms2::Scope::getFMICompositeModel(const ComRef& name)
 {
   logTrace();
