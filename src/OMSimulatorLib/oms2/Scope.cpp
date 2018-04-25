@@ -833,7 +833,7 @@ oms_status_enu_t oms2::Scope::getReal(const oms2::SignalRef& signal, double& val
         return oms_status_error;
       }
       oms2::FMUWrapper* fmuWrapper = dynamic_cast<oms2::FMUWrapper*>(subModel);
-      return fmuWrapper->getReal(var, value);
+      return fmuWrapper->getReal(signal, value);
     }
     else
     {
@@ -873,7 +873,7 @@ oms_status_enu_t oms2::Scope::setReal(const oms2::SignalRef& signal, double valu
         return oms_status_error;
       }
       oms2::FMUWrapper* fmuWrapper = dynamic_cast<oms2::FMUWrapper*>(subModel);
-      return fmuWrapper->setReal(var, value);
+      return fmuWrapper->setReal(signal, value);
     }
     else
     {
@@ -953,7 +953,7 @@ oms_status_enu_t oms2::Scope::getInteger(const oms2::SignalRef& signal, int& val
         return oms_status_error;
       }
       oms2::FMUWrapper* fmuWrapper = dynamic_cast<oms2::FMUWrapper*>(subModel);
-      return fmuWrapper->getInteger(var, value);
+      return fmuWrapper->getInteger(signal, value);
     }
     else
     {
@@ -993,7 +993,7 @@ oms_status_enu_t oms2::Scope::setInteger(const oms2::SignalRef& signal, int valu
         return oms_status_error;
       }
       oms2::FMUWrapper* fmuWrapper = dynamic_cast<oms2::FMUWrapper*>(subModel);
-      return fmuWrapper->setInteger(var, value);
+      return fmuWrapper->setInteger(signal, value);
     }
     else
     {
@@ -1113,7 +1113,7 @@ oms_status_enu_t oms2::Scope::getBoolean(const oms2::SignalRef& signal, bool& va
         return oms_status_error;
       }
       oms2::FMUWrapper* fmuWrapper = dynamic_cast<oms2::FMUWrapper*>(subModel);
-      return fmuWrapper->getBoolean(var, value);
+      return fmuWrapper->getBoolean(signal, value);
     }
     else
     {
@@ -1153,7 +1153,7 @@ oms_status_enu_t oms2::Scope::setBoolean(const oms2::SignalRef& signal, bool val
         return oms_status_error;
       }
       oms2::FMUWrapper* fmuWrapper = dynamic_cast<oms2::FMUWrapper*>(subModel);
-      return fmuWrapper->setBoolean(var, value);
+      return fmuWrapper->setBoolean(signal, value);
     }
     else
     {
