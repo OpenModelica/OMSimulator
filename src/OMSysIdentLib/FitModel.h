@@ -42,7 +42,6 @@ struct ParameterAttributes {
 };
 typedef std::map<std::string, ParameterAttributes> ParameterMap;
 typedef std::map<std::string, std::vector<double> > SeriesMap;
-
 // TODO? variances for each measurement noise?
 struct MeasurementData
 {
@@ -50,10 +49,13 @@ struct MeasurementData
   std::set<std::string> inputVars;
   std::set<std::string> measurementVars;
   size_t nSeries;
-  std::vector<SeriesMap> inputSeries;
+  std::vector<SeriesMap> inputSeries; //!< So far there is only support for one input series, i.e., inputSeries.size() <= 1
+  // [iSeries](varname -> mes[i]), iSeries \in [0..nSeries], i \in [0..time.size])
   std::vector<SeriesMap> measurementSeries;
 };
 
+typedef std::vector<double> InstantSamples; //!< 1 .. nSeries (measurement) values that correspond to the same logical sampling instant time[i], i \in [0..time.size)
+typedef std::vector<InstantSamples> TimeSeries; //!< ordered series of (measurement) instants i = (0 .. time.size-1)
 typedef std::map<std::string,double> VarValueMap;
 
 enum class FitModelState
@@ -64,6 +66,17 @@ enum class FitModelState
   NO_CONVERGENCE, //!< After calling FitModel::solve if minimizer returned with ceres::TerminationType::NO_CONVERGENCE
   FAILURE //!< After calling FitModel::solve if minimizer returned with ceres::TerminationType::FAILURE
 };
+
+
+/**
+ * \brief Utility function to rearrange representation of sampled mesurement/input data
+ *
+ * \input series The data series in the format as saved in MeasurementData
+ * \input nTimeSample The number of measurement/input instants (e.g., MeasurementData.time.size())
+ * \return Data structure of the form (varname -> data[i][iSeries], i \in [0..time.size], iSeries \in [0..nSeries])
+ */
+std::map<std::string, TimeSeries> to_varname_TimeSeries_Map(std::vector<SeriesMap> series, size_t nTimeSamples);
+
 
 /**
  * \brief Class for setting up a fitting model.
@@ -86,6 +99,7 @@ public:
   oms_status_enu_t initialize(size_t nSeries, const double* time, size_t nTime, char const* const* inputvars, size_t nInputvars, char const* const* measurementvars, size_t nMeasurementvars);
   oms_status_enu_t addParameter(const char* var, double startvalue);
   oms_status_enu_t addMeasurement(size_t iSeries, const char* var, const double* values, size_t nValues);
+  oms_status_enu_t addInput(const char* var, const double* values, size_t nValues);
   FitModelState getState();
   oms_status_enu_t getParameter(const char* var, ParameterAttributes& attributes);
   bool isDataComplete() const;
@@ -94,7 +108,6 @@ public:
 
 private:
   friend std::ostream& operator<< (std::ostream& os, const FitModel& a) { return os << a.toString(); }
-  // void* model_; // TODO DELETE
   const char* oms_modelIdent_;
   FitModelState state_;
   ParameterMap parameters_;
