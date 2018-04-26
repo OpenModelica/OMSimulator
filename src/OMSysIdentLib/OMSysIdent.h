@@ -71,7 +71,7 @@ void omsi_freeSysIdentModel(void* simodel);
  *
  * @param simodel [inout] SysIdent model as opaque pointer.
  * @nSeries [in] Number of measurement series.
- * @param time [in] Array of measurement time instants.
+ * @param time [in] Array of measurement/input time instants.
  * @param nTime [in] Length of time array.
  * @inputvars [in] Names of input variables (NULL if none).
  * @nInputvars [in] Number of external inputs stimulating the system.
@@ -106,6 +106,21 @@ oms_status_enu_t omsi_addMeasurement(void* simodel, size_t iSeries, const char* 
 // void omsi_addMeasurementSeries(void *simodel, int iseries,
 //   double const* const* inputs, size_t dim1Inputs, size_t dim2Inputs,
 //   double const* const* measurements, size_t dim1Measurements, size_t dim2Measurements);
+
+/**
+ * \brief Add input values for external model inputs.
+ *
+ * @note If there are several measurement series, all series need to be conducted
+ * with the same external inputs.
+ *
+ * @param simodel [inout] SysIdent model as opaque pointer.
+ * @param var [in] Name of input variable.
+ * @param time [in] Array of input time instants.
+ * @param values [in] Array of input values corresponding to respective "time" array entries in omsi_initialize().
+ * @param nValues [in] Length of values array.
+ * @return Error status.
+ */
+oms_status_enu_t omsi_addInput(void* simodel, const char* var, const double* values, size_t nValues);
 
 /**
  * \brief Add parameter that should be estimated.
@@ -157,18 +172,6 @@ oms_status_enu_t omsi_setOptions_max_num_iterations(void* simodel, size_t max_nu
  * @return Error status.
  */
 oms_status_enu_t omsi_getState(void* simodel, omsi_simodelstate_t* state);
-
-/**
- * \brief TODO Add input values for a model input.
- *
- * @param simodel [inout] SysIdent model as opaque pointer.
- * @param var [in] Name of input variable.
- * @param time [in] Array of input time instants.
- * @param values [in] Array of input values for respective time instants.
- * @param nvalues [in] Length of values array.
- * @return Error status.
- */
-// oms_status_enu_t omsi_addInput(void* simodel, const char* var, const double* time, const double* values, int nvalues);
 
 /**
  * \brief TODO? Provide convenience function to "Load reference measurement data from file"?.
