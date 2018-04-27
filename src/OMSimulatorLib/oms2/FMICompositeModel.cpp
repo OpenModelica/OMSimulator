@@ -998,6 +998,8 @@ oms_status_enu_t oms2::FMICompositeModel::simulateTLM(ResultWriter* resultWriter
 {
   logTrace();
 
+  this->communicationInterval = communicationInterval;
+
   initializeSockets(stopTime, communicationInterval, server);
 
   logInfo("Starting simulation loop.");
@@ -1077,7 +1079,8 @@ void oms2::FMICompositeModel::readFromSockets()
       plugin->GetValueSignal(ifc->getId(), time, &value);
       this->setReal(ifc->getSubSignal(oms_tlm_sigref_value), value);
     }
-    else if(ifc->getDimensions() == 1 && ifc->getCausality() == oms_causality_bidir) {
+    else if(ifc->getDimensions() == 1 && ifc->getCausality() == oms_causality_bidir &&
+            ifc->getInterpolationMethod() == oms_tlm_no_interpolation) {
       double flow,effort;
 
       //Read position and speed from FMU
@@ -1093,11 +1096,29 @@ void oms2::FMICompositeModel::readFromSockets()
       //Write force to FMU
       this->setReal(ifc->getSubSignal(oms_tlm_sigref_1d_effort), effort);
     }
+    else if(ifc->getDimensions() == 1 && ifc->getCausality() == oms_causality_bidir &&
+            ifc->getInterpolationMethod() == oms_tlm_coarse_grained) {
+      double impedance, wave;
+      plugin->GetWaveImpedance1D(ifc->getId(), time, &impedance, &wave);
+      this->setReal(ifc->getSubSignal(oms_tlm_sigref_1d_cg_wave), wave);
+      this->setReal(ifc->getSubSignal(oms_tlm_sigref_1d_cg_impedance), impedance);
+
+      //ComRef comRef = ifc->getSubSignal(oms_tlm_sigref_1d_effort).getCref();
+      //FMUWrapper* fmu = dynamic_cast<FMUWrapper*>(getSubModel(comRef));
+      //oms_fmu_info_t* fmuInfo = reinterpret_cast<oms_fmu_info_t*>(fmu->getFMUInfo());
+      //if(fmuInfo->canInterpolateInputs) {
+      if(true) {
+        double impedance2, wave2;
+        plugin->GetWaveImpedance1D(ifc->getId(), time+communicationInterval, &impedance2, &wave2);
+
+        double dWave = (wave2-wave)/communicationInterval;
+
+        this->setRealInputDerivatives(ifc->getSubSignal(oms_tlm_sigref_1d_cg_wave), 1, dWave);
+      }
+    }
     else if(ifc->getDimensions() == 3 && ifc->getCausality() == oms_causality_bidir) {
       double v1,v2,v3;
       double w1,w2,w3;
-      double f1,f2,f3;
-      double t1,t2,t3;
       double x[3]; //Dummy, GetForce3D needs it but does not use it
       double A[9]; //Dummy
       double v[3];
@@ -1235,6 +1256,15 @@ oms_status_enu_t oms2::FMICompositeModel::getReal(const oms2::SignalRef& sr, dou
 
   oms_status_enu_t status = model->getReal(sr, value);
   return status;
+}
+
+oms_status_enu_t oms2::FMICompositeModel::setRealInputDerivatives(const oms2::SignalRef &sr, int order, double value)
+{
+  oms2::FMISubModel *model = getSubModel(sr.getCref());
+  if(!model)
+    return oms_status_error;
+
+  return model->setRealInputDerivatives(sr, order, value);
 }
 
 oms_status_enu_t oms2::FMICompositeModel::addTLMInterface(oms2::TLMInterface *ifc)

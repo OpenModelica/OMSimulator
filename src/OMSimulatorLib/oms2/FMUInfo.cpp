@@ -56,6 +56,7 @@ oms2::FMUInfo::FMUInfo(const std::string& path)
   this->completedIntegratorStepNotNeeded = false;
   this->needsExecutionTool = false;
   this->providesDirectionalDerivative = false;
+  this->canInterpolateInputs = false;
 }
 
 oms2::FMUInfo::~FMUInfo()
@@ -144,6 +145,7 @@ oms_status_enu_t oms2::FMUInfo::update(fmi2_import_t* fmu)
     this->completedIntegratorStepNotNeeded = false;
     this->needsExecutionTool = fmi2_import_get_capability(fmu, fmi2_cs_needsExecutionTool) > 0 ? true : false;
     this->providesDirectionalDerivative = fmi2_import_get_capability(fmu, fmi2_cs_providesDirectionalDerivatives) > 0 ? true : false;
+    this->canInterpolateInputs = fmi2_import_get_capability(fmu, fmi2_cs_canInterpolateInputs) > 0 ? true : false;
   }
   else
   {
