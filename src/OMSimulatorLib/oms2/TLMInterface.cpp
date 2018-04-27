@@ -51,6 +51,15 @@ oms2::TLMInterface::TLMInterface(const oms2::ComRef &cref,
   }
 }
 
+std::vector<oms2::SignalRef> oms2::TLMInterface::getSubSignalSet(std::vector<int> ids)
+{
+  std::vector<oms2::SignalRef> retval;
+  for(int i : ids) {
+    retval.push_back(sigrefs[i]);
+  }
+  return retval;
+}
+
 oms_status_enu_t oms2::TLMInterface::doRegister(TLMPlugin *plugin)
 {
 

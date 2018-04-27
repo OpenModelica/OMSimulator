@@ -91,11 +91,14 @@ namespace oms2
     void simulate_asynchronous(ResultWriter& resultWriter, double stopTime, double communicationInterval, void (*cb)(const char* ident, double time, oms_status_enu_t status));
 
     oms_status_enu_t setReal(const oms2::SignalRef& sr, double value);
+    oms_status_enu_t setReals(const std::vector<oms2::SignalRef> &sr, std::vector<double> values);
     oms_status_enu_t getReal(const oms2::SignalRef& sr, double& value);
+    oms_status_enu_t getReals(const std::vector<oms2::SignalRef> &sr, std::vector<double> &values);
 
     oms_status_enu_t setRealInputDerivatives(const oms2::SignalRef& sr, int order, double value);
 
     oms_status_enu_t addTLMInterface(TLMInterface *ifc);
+
 
   private:
     oms_status_enu_t loadElementGeometry(const pugi::xml_node& node);
@@ -142,6 +145,8 @@ namespace oms2
     double time;
     double tolerance;
     double communicationInterval;
+
+    std::vector<SignalRef> tlmSigRefs;
   };
 }
 
