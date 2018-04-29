@@ -1028,7 +1028,7 @@ static int OMSimulatorLua_oms2_stepUntil(lua_State *L)
   luaL_checktype(L, 2, LUA_TNUMBER);
 
   const char* ident = lua_tostring(L, 1);
-  const int timeValue = lua_tonumber(L, 2);
+  const double timeValue = lua_tonumber(L, 2);
   oms_status_enu_t status = oms2_stepUntil(ident, timeValue);
   lua_pushinteger(L, status);
   return 1;
@@ -1585,6 +1585,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms2_setTempDirectory);
   REGISTER_LUA_CALL(oms2_setWorkingDirectory);
   REGISTER_LUA_CALL(oms2_simulate);
+  REGISTER_LUA_CALL(oms2_stepUntil);
   REGISTER_LUA_CALL(oms2_terminate);
   REGISTER_LUA_CALL(oms2_unloadModel);
   REGISTER_LUA_CALL(oms2_addExternalModel);
