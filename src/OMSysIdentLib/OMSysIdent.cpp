@@ -116,6 +116,18 @@ oms_status_enu_t omsi_addMeasurement(void* simodel, size_t iSeries, const char* 
   return oms_status_ok;
 }
 
+oms_status_enu_t omsi_addInput(void* simodel, const char* var, const double* values, size_t nValues)
+{
+  logTrace();
+  if (!simodel || !var || !values) {
+    logError("omsi_addInput: invalid pointer");
+    return oms_status_error;
+  }
+  FitModel* pFitModel = (FitModel*) simodel;
+  pFitModel->addInput(var, values, nValues);
+  return oms_status_ok;
+}
+
 oms_status_enu_t omsi_setOptions_max_num_iterations(void* simodel, size_t max_num_iterations)
 {
   logTrace();

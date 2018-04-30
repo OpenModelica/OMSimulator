@@ -1411,6 +1411,35 @@ static int OMSimulatorLua_omsi_addMeasurement(lua_State *L)
   return 1;
 }
 
+// oms_status_enu_t omsi_addInput(void* simodel, const char* var, const double* values, size_t nValues);
+static int OMSimulatorLua_omsi_addInput(lua_State *L)
+{
+  if (lua_gettop(L) != 3)
+    return luaL_error(L, "expecting exactly 3 arguments");
+  luaL_checktype(L, 1, LUA_TUSERDATA); // fitmodel
+  luaL_checktype(L, 2, LUA_TSTRING);   // var
+  luaL_checktype(L, 3, LUA_TTABLE);    // values
+
+  void *model = topointer(L, 1);
+  const char* var = lua_tostring(L, 2);
+  size_t nValues = luaL_len(L, 3);
+
+  double* values = (double*) malloc(nValues*sizeof(double));
+  int i;
+  for (i=0; i < nValues; ++i) {
+    lua_rawgeti(L, 3, i+1); // push value on stack
+    values[i] = lua_tonumber(L, -1);
+    lua_pop(L, 1); // pop value from stack
+  }
+
+  oms_status_enu_t returnValue =
+    omsi_addInput(model, var, values, nValues);
+  lua_pushinteger(L, returnValue);
+
+  free(values);
+  return 1;
+}
+
 // oms_status_enu_t omsi_addParameter(void* fitmodel, const char* var, double startvalue);
 static int OMSimulatorLua_omsi_addParameter(lua_State *L)
 {
@@ -1600,6 +1629,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   /* ************************************ */
 #ifdef WITH_OMSYSIDENT
   REGISTER_LUA_CALL(omsi_addMeasurement);
+  REGISTER_LUA_CALL(omsi_addInput);
   REGISTER_LUA_CALL(omsi_addParameter);
   REGISTER_LUA_CALL(omsi_describe);
   REGISTER_LUA_CALL(omsi_freeSysIdentModel);
