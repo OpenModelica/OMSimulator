@@ -1116,6 +1116,24 @@ void oms2::FMICompositeModel::readFromSockets()
 
       this->setRealInputDerivatives(ifc->getSubSignal(tlmrefs.c), 1, dWave);
     }
+    else if(ifc->getDimensions() == 1 && ifc->getCausality() == oms_causality_bidir &&
+            ifc->getInterpolationMethod() == oms_tlm_fine_grained) {
+      oms_tlm_sigrefs_1d_fg_t tlmrefs;
+
+      double wave;
+      double impedance;
+
+      double t = time;
+      for(size_t i=0; i<10; ++i) {
+        plugin->GetWaveImpedance1D(ifc->getId(), t, &impedance, &wave);
+        t += communicationInterval/9;
+
+        this->setReal(ifc->getSubSignal(tlmrefs.c[i]), wave);
+        this->setReal(ifc->getSubSignal(tlmrefs.t[i]), t);
+      }
+
+      this->setReal(ifc->getSubSignal(tlmrefs.Z), impedance);
+    }
     else if(ifc->getDimensions() == 3 && ifc->getCausality() == oms_causality_bidir) {
 
       oms_tlm_sigrefs_3d_t tlmrefs;
