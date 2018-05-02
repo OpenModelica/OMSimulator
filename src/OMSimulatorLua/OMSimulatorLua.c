@@ -1210,6 +1210,11 @@ static int OMSimulatorLua_oms2_addTLMInterface(lua_State *L)
           interpolationMethod == 1) {
     nsigrefs = 4;             //4 (1D with coarse-grained interpolation)
   }
+  else if(dimensions == 1 &&
+          causality == oms_causality_bidir &&
+          interpolationMethod == 2) {
+    nsigrefs = 23;             //23 (1D with fine-grained interpolation)
+  }
   else if(dimensions == 3 &&
           causality == oms_causality_bidir) {
     nsigrefs = 24;            //24 (3D bidirectional)

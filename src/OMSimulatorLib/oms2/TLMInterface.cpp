@@ -49,6 +49,9 @@ oms2::TLMInterface::TLMInterface(const oms2::ComRef &cref,
   if(this->dimensions == 1 && sigrefs.size() == 4) {
     this->interpolationMethod = oms_tlm_coarse_grained;
   }
+  if(this->dimensions == 1 && sigrefs.size() == 23) {
+    this->interpolationMethod = oms_tlm_fine_grained;
+  }
 }
 
 std::vector<oms2::SignalRef> oms2::TLMInterface::getSubSignalSet(std::vector<int> ids)
