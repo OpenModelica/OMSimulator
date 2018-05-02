@@ -1075,16 +1075,20 @@ void oms2::FMICompositeModel::readFromSockets()
 {
   for(TLMInterface *ifc : tlmInterfaces) {
     if(ifc->getDimensions() == 1 && ifc->getCausality() == oms_causality_input) {
+      oms_tlm_sigrefs_signal_t tlmrefs;
+
       double value;
       plugin->GetValueSignal(ifc->getId(), time, &value);
-      this->setReal(ifc->getSubSignal(oms_tlm_sigref_value), value);
+      this->setReal(ifc->getSubSignal(tlmrefs.y), value);
     }
     else if(ifc->getDimensions() == 1 && ifc->getCausality() == oms_causality_bidir &&
             ifc->getInterpolationMethod() == oms_tlm_no_interpolation) {
+      oms_tlm_sigrefs_1d_t tlmrefs;
+
       double flow,effort;
 
       //Read position and speed from FMU
-      this->getReal(ifc->getSubSignal(oms_tlm_sigref_1d_flow), flow);
+      this->getReal(ifc->getSubSignal(tlmrefs.v), flow);
 
       //Get interpolated force
       plugin->GetForce1D(ifc->getId(), time, flow, &effort);
@@ -1094,66 +1098,47 @@ void oms2::FMICompositeModel::readFromSockets()
       }
 
       //Write force to FMU
-      this->setReal(ifc->getSubSignal(oms_tlm_sigref_1d_effort), effort);
+      this->setReal(ifc->getSubSignal(tlmrefs.f), effort);
     }
     else if(ifc->getDimensions() == 1 && ifc->getCausality() == oms_causality_bidir &&
             ifc->getInterpolationMethod() == oms_tlm_coarse_grained) {
+      oms_tlm_sigrefs_1d_cg_t tlmrefs;
+
       double impedance, wave;
       plugin->GetWaveImpedance1D(ifc->getId(), time, &impedance, &wave);
-      this->setReal(ifc->getSubSignal(oms_tlm_sigref_1d_cg_wave), wave);
-      this->setReal(ifc->getSubSignal(oms_tlm_sigref_1d_cg_impedance), impedance);
+      this->setReal(ifc->getSubSignal(tlmrefs.c), wave);
+      this->setReal(ifc->getSubSignal(tlmrefs.Z), impedance);
 
-      //ComRef comRef = ifc->getSubSignal(oms_tlm_sigref_1d_effort).getCref();
-      //FMUWrapper* fmu = dynamic_cast<FMUWrapper*>(getSubModel(comRef));
-      //oms_fmu_info_t* fmuInfo = reinterpret_cast<oms_fmu_info_t*>(fmu->getFMUInfo());
-      //if(fmuInfo->canInterpolateInputs) {
-      if(true) {
-        double impedance2, wave2;
-        plugin->GetWaveImpedance1D(ifc->getId(), time+communicationInterval, &impedance2, &wave2);
+      double impedance2, wave2;
+      plugin->GetWaveImpedance1D(ifc->getId(), time+communicationInterval, &impedance2, &wave2);
 
-        double dWave = (wave2-wave)/communicationInterval;
+      double dWave = (wave2-wave)/communicationInterval;
 
-        this->setRealInputDerivatives(ifc->getSubSignal(oms_tlm_sigref_1d_cg_wave), 1, dWave);
-      }
+      this->setRealInputDerivatives(ifc->getSubSignal(tlmrefs.c), 1, dWave);
     }
     else if(ifc->getDimensions() == 3 && ifc->getCausality() == oms_causality_bidir) {
-      double v1,v2,v3;
-      double w1,w2,w3;
-      double x[3]; //Dummy, GetForce3D needs it but does not use it
-      double A[9]; //Dummy
-      double v[3];
-      double w[3];
-      double f[6];
+
+      oms_tlm_sigrefs_3d_t tlmrefs;
+
+      std::vector<double> x(3,0); //Dummy, GetForce3D needs it but does not use it
+      std::vector<double> A(9,0); //Dummy
+      std::vector<double> v(3,0);
+      std::vector<double> w(3,0);
+      std::vector<double> f(6,0);
 
       //Read position and speed from FMU
-      this->getReal(ifc->getSubSignal(oms_tlm_sigref_3d_v1), v1);
-      this->getReal(ifc->getSubSignal(oms_tlm_sigref_3d_v2), v2);
-      this->getReal(ifc->getSubSignal(oms_tlm_sigref_3d_v3), v3);
+      this->getReals(ifc->getSubSignalSet(tlmrefs.v), v);
+      this->getReals(ifc->getSubSignalSet(tlmrefs.w), w);
 
-      this->getReal(ifc->getSubSignal(oms_tlm_sigref_3d_w1), w1);
-      this->getReal(ifc->getSubSignal(oms_tlm_sigref_3d_w2), w2);
-      this->getReal(ifc->getSubSignal(oms_tlm_sigref_3d_w3), w3);
-
-      v[0] = v1;
-      v[1] = v2;
-      v[2] = v3;
-      w[0] = w1;
-      w[1] = w2;
-      w[2] = w3;
       //Get interpolated force
-      plugin->GetForce3D(ifc->getId(), time,x, A, v, w, f);
+      plugin->GetForce3D(ifc->getId(), time,&x[0], &A[0], &v[0], &w[0], &f[0]);
 
       for(size_t i=0; i<6; ++i) {
         f[i] = -f[i];
       }
 
       //Write force to FMU
-      this->setReal(ifc->getSubSignal(oms_tlm_sigref_3d_f1), f[0]);
-      this->setReal(ifc->getSubSignal(oms_tlm_sigref_3d_f2), f[1]);
-      this->setReal(ifc->getSubSignal(oms_tlm_sigref_3d_f3), f[2]);
-      this->setReal(ifc->getSubSignal(oms_tlm_sigref_3d_t1), f[3]);
-      this->setReal(ifc->getSubSignal(oms_tlm_sigref_3d_t2), f[4]);
-      this->setReal(ifc->getSubSignal(oms_tlm_sigref_3d_t3), f[5]);
+      this->setReals(ifc->getSubSignalSet(tlmrefs.f), f);
     }
   }
 }
@@ -1162,14 +1147,16 @@ void oms2::FMICompositeModel::writeToSockets()
 {
   for(TLMInterface *ifc : tlmInterfaces) {
     if(ifc->getDimensions() == 1 && ifc->getCausality() == oms_causality_output) {
+      oms_tlm_sigrefs_signal_t tlmrefs;
       double value;
-      this->getReal(ifc->getSubSignal(oms_tlm_sigref_value), value);
+      this->getReal(ifc->getSubSignal(tlmrefs.y), value);
       plugin->SetValueSignal(ifc->getId(), time, value);
     }
     else if(ifc->getDimensions() == 1 && ifc->getCausality() == oms_causality_bidir) {
+      oms_tlm_sigrefs_1d_t tlmrefs;
       double state, flow, force;
-      this->getReal(ifc->getSubSignal(oms_tlm_sigref_1d_state), state);
-      this->getReal(ifc->getSubSignal(oms_tlm_sigref_1d_flow), flow);
+      this->getReal(ifc->getSubSignal(tlmrefs.x), state);
+      this->getReal(ifc->getSubSignal(tlmrefs.v), flow);
 
       //Important: OMTLMSimulator assumes that GetForce is called
       //before SetMotion, in order to calculate the wave variable
@@ -1179,52 +1166,26 @@ void oms2::FMICompositeModel::writeToSockets()
       plugin->SetMotion1D(ifc->getId(), time, state, flow);
     }
     else if(ifc->getDimensions() == 3 && ifc->getCausality() == oms_causality_bidir) {
-      double x[3], v[3], A[9], w[3], f[6];
-      double x1,x2,x3,v1,v2,v3,A1,A2,A3,A4,A5,A6,A7,A8,A9,w1,w2,w3;
-      this->getReal(ifc->getSubSignal(oms_tlm_sigref_3d_x1), x1);
-      this->getReal(ifc->getSubSignal(oms_tlm_sigref_3d_x2), x2);
-      this->getReal(ifc->getSubSignal(oms_tlm_sigref_3d_x3), x3);
-      this->getReal(ifc->getSubSignal(oms_tlm_sigref_3d_A1), A1);
-      this->getReal(ifc->getSubSignal(oms_tlm_sigref_3d_A2), A2);
-      this->getReal(ifc->getSubSignal(oms_tlm_sigref_3d_A3), A3);
-      this->getReal(ifc->getSubSignal(oms_tlm_sigref_3d_A4), A4);
-      this->getReal(ifc->getSubSignal(oms_tlm_sigref_3d_A5), A5);
-      this->getReal(ifc->getSubSignal(oms_tlm_sigref_3d_A6), A6);
-      this->getReal(ifc->getSubSignal(oms_tlm_sigref_3d_A7), A7);
-      this->getReal(ifc->getSubSignal(oms_tlm_sigref_3d_A8), A8);
-      this->getReal(ifc->getSubSignal(oms_tlm_sigref_3d_A9), A9);
-      this->getReal(ifc->getSubSignal(oms_tlm_sigref_3d_v1), v1);
-      this->getReal(ifc->getSubSignal(oms_tlm_sigref_3d_v2), v2);
-      this->getReal(ifc->getSubSignal(oms_tlm_sigref_3d_v3), v3);
-      this->getReal(ifc->getSubSignal(oms_tlm_sigref_3d_w1), w1);
-      this->getReal(ifc->getSubSignal(oms_tlm_sigref_3d_w2), w2);
-      this->getReal(ifc->getSubSignal(oms_tlm_sigref_3d_w3), w3);
 
-      x[0] = x1;
-      x[1] = x2;
-      x[2] = x3;
-      A[0] = A1;
-      A[1] = A2;
-      A[2] = A3;
-      A[3] = A4;
-      A[4] = A5;
-      A[5] = A6;
-      A[6] = A7;
-      A[7] = A8;
-      A[8] = A9;
-      v[0] = v1;
-      v[1] = v2;
-      v[2] = v3;
-      w[0] = w1;
-      w[1] = w2;
-      w[2] = w3;
+      oms_tlm_sigrefs_3d_t tlmrefs;
+
+      std::vector<double> x(3,0);
+      std::vector<double> A(9,0);
+      std::vector<double> v(3,0);
+      std::vector<double> w(3,0);
+      std::vector<double> f(6,0);
+
+      this->getReals(ifc->getSubSignalSet(tlmrefs.x), x);
+      this->getReals(ifc->getSubSignalSet(tlmrefs.A), A);
+      this->getReals(ifc->getSubSignalSet(tlmrefs.v), v);
+      this->getReals(ifc->getSubSignalSet(tlmrefs.w), w);
 
       //Important: OMTLMSimulator assumes that GetForce is called
       //before SetMotion, in order to calculate the wave variable
-      plugin->GetForce3D(ifc->getId(), time, x, A, v, w, f);
+      plugin->GetForce3D(ifc->getId(), time, &x[0], &A[0], &v[0], &w[0], &f[0]);
 
       //Send the resulting motion back to master
-      plugin->SetMotion3D(ifc->getId(), time, x, A, v, w);
+      plugin->SetMotion3D(ifc->getId(), time, &x[0], &A[0], &v[0], &w[0]);
     }
   }
 }
@@ -1248,6 +1209,19 @@ oms_status_enu_t oms2::FMICompositeModel::setReal(const oms2::SignalRef& sr, dou
   return model->setReal(sr, value);
 }
 
+oms_status_enu_t oms2::FMICompositeModel::setReals(const std::vector<oms2::SignalRef> &sr, std::vector<double> values)
+{
+  oms_status_enu_t status = oms_status_ok;
+  for(size_t i=0; i<sr.size(); ++i) {
+    oms_status_enu_t tempStatus = setReal(sr[i], values[i]);
+    if(tempStatus != oms_status_ok) {
+      status = tempStatus;
+    }
+  }
+
+  return status;
+}
+
 oms_status_enu_t oms2::FMICompositeModel::getReal(const oms2::SignalRef& sr, double& value)
 {
   oms2::FMISubModel* model = getSubModel(sr.getCref());
@@ -1256,6 +1230,20 @@ oms_status_enu_t oms2::FMICompositeModel::getReal(const oms2::SignalRef& sr, dou
 
   oms_status_enu_t status = model->getReal(sr, value);
   return status;
+}
+
+oms_status_enu_t oms2::FMICompositeModel::getReals(const std::vector<oms2::SignalRef> &sr, std::vector<double> &values)
+{
+  oms_status_enu_t status;
+  for(size_t i=0; i<sr.size(); ++i) {
+    oms_status_enu_t status = getReal(sr[i], values[i]);
+    if(status != oms_status_ok) {
+      values.clear();
+      return status;
+    }
+  }
+
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms2::FMICompositeModel::setRealInputDerivatives(const oms2::SignalRef &sr, int order, double value)
