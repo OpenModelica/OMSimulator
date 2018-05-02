@@ -57,6 +57,14 @@ namespace oms2
   } oms_tlm_sigrefs_1d_cg_t;
 
   typedef struct  {
+    int x = 0;
+    int v = 1;
+    std::vector<int> c = {2,3,4,5,6,7,8,9,10,11};
+    std::vector<int> t = {12,13,14,15,16,17,18,19,20,21};
+    int Z = 22;
+  } oms_tlm_sigrefs_1d_fg_t;
+
+  typedef struct  {
     std::vector<int> x = {0,1};
     std::vector<int> phi = {2};
     std::vector<int> v{3,4};
