@@ -37,6 +37,7 @@
 #include <map>
 #include <vector>
 
+#include "Pkg_oms2.h"
 #include "DirectedGraph.h"
 #include "PMRChannel.h"
 #include "Logging.h"
@@ -101,8 +102,9 @@ oms2::PMRChannelMap<PMRChannel>::PMRChannelMap(DirectedGraph* dg) : graph(dg)
       cref_orderedIOAcceses_map[inputFMU].push_back(input);
       output_connectedInputs_map[output].push_back(input);
       int dummy_k = 1; // TODO support multi-rate activation ratio
+      RateTransition dummy_rt = RateTransition::SAME; // TODO support multi-rate activation ratio
       // https://stackoverflow.com/questions/27960325/stdmap-emplace-without-copying-value
-      input_channel_map.emplace(std::piecewise_construct,std::forward_as_tuple(input), std::forward_as_tuple(dummy_k));
+      input_channel_map.emplace(std::piecewise_construct,std::forward_as_tuple(input), std::forward_as_tuple(dummy_rt, dummy_k));
     }
     else
     {
