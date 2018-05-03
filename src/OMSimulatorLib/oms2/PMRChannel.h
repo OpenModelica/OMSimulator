@@ -41,6 +41,7 @@
 #include <thread>
 #include <mutex>
 #include <condition_variable>
+#include "Pkg_oms2.h"
 #include "Logging.h"
 
 namespace oms2
@@ -61,7 +62,7 @@ namespace oms2
   class PMRChannelA
   {
   public:
-    explicit PMRChannelA(int k) : k_(k), n_(0), is_produced_(false) {};
+    explicit PMRChannelA(RateTransition rt, int k) : rt_(rt), k_(k), n_(0), is_produced_(false) {};
     ~PMRChannelA() noexcept {}
     PMRChannelA(const PMRChannelA& other) = delete; //!< Copy constructor
     PMRChannelA (PMRChannelA&& other) noexcept = delete; //!< Move constructor
@@ -72,28 +73,59 @@ namespace oms2
     {
       logTrace();
       while (is_produced_.load()) std::this_thread::yield;
-      v_ = v;
-      n_++;
-      // std::cout << "store n: " << n_ << ", k: " << k_ << std::endl;
-      is_produced_.store(n_ == k_);
+      switch (rt_) {
+        case RateTransition::FASTTOSLOW:
+          v_ = v;
+          n_++;
+          // std::cout << "store n: " << n_ << ", k: " << k_ << std::endl;
+          is_produced_.store(n_ == k_);
+          break;
+        case RateTransition::SLOWTOFAST:
+          v_ = v;
+          n_ = 0;
+          is_produced_.store(true);
+          break;
+        case RateTransition::SAME:
+          v_ = v;
+          is_produced_.store(true);
+          break;
+        default:
+          assert(false);
+      }
     }
 
-    T read() //!< @TODO Apparently multi-rate logic incomplete if reading task is faster than writing task
+    T read()
     {
       logTrace();
       T v;
       while (!is_produced_.load()) std::this_thread::yield;
-      v = v_;
-      n_ = 0;
-      is_produced_.store(false);
+      switch (rt_) {
+        case RateTransition::FASTTOSLOW:
+          v = v_;
+          n_ = 0;
+          is_produced_.store(false);
+          break;
+        case RateTransition::SLOWTOFAST:
+          v = v_;
+          n_++;
+          is_produced_.store( !(n_ == k_) );
+          break;
+        case RateTransition::SAME:
+          v = v_;
+          is_produced_.store(false);
+          break;
+        default:
+          assert(false);
+      }
       return v;
     }
 
   private:
+    const RateTransition rt_; //!< rate transition type
     const int k_; //!< activation ratio
-    int n_; //!< A counter with the property n <= k.
-    T v_; // !< storage place for value
-    std::atomic<bool> is_produced_;
+    int n_; //!< a counter with the property n <= k.
+    T v_; //!< storage place for value
+    std::atomic<bool> is_produced_; //!< process synchronization flag
   };
 
   /**
@@ -108,7 +140,7 @@ namespace oms2
   class PMRChannelCV
   {
   public:
-    explicit PMRChannelCV(int k) : k_(k), n_(0), is_produced_(false) {};
+    explicit PMRChannelCV(RateTransition rt, int k) : rt_(rt), k_(k), n_(0), is_produced_(false) {};
     ~PMRChannelCV() noexcept {}
     PMRChannelCV(const PMRChannelCV& other) = delete; //!< Copy constructor
     PMRChannelCV (PMRChannelCV&& other) noexcept = delete; //!< Move constructor
@@ -123,16 +155,31 @@ namespace oms2
           cv_.wait(lk);
           // if (is_produced_) std::cout << "PMRChannelCV::store: Spurious wake up!\n";
       }
-      v_ = v;
-      n_++;
-      if (n_ == k_) {
-        is_produced_ = n_ == k_;
-        lk.unlock();
-        cv_.notify_one();
+      switch(rt_) {
+        case RateTransition::FASTTOSLOW:
+          v_ = v;
+          n_++;
+          if (n_ == k_) {
+            is_produced_ = n_ == k_;
+          }
+          break;
+        case RateTransition::SLOWTOFAST:
+          v_ = v;
+          n_ = 0;
+          is_produced_ = true;
+          break;
+        case RateTransition::SAME:
+          v_ = v;
+          is_produced_ = true;
+          break;
+        default:
+          assert(false);
       }
+      lk.unlock();
+      cv_.notify_one();
     }
 
-    T read() //!< @TODO Apparently multi-rate logic incomplete if reading task is faster than writing task
+    T read()
     {
       logTrace();
       T v;
@@ -141,15 +188,31 @@ namespace oms2
           cv_.wait(lk);
           // if (!is_produced_) std::cout << "PMRChannelCV::recv: Spurious wake up!\n";
       }
-      v = v_;
-      n_ = 0;
-      is_produced_ = false;
+      switch(rt_) {
+        case RateTransition::FASTTOSLOW:
+          v = v_;
+          n_ = 0;
+          is_produced_ = false;
+          break;
+        case RateTransition::SLOWTOFAST:
+          v = v_;
+          n_++;
+          is_produced_ = !(n_ == k_);
+          break;
+        case RateTransition::SAME:
+          v = v_;
+          is_produced_ = false;
+          break;
+        default:
+          assert(false);
+      }
       lk.unlock();
       cv_.notify_one();
       return v;
     }
 
   private:
+    const RateTransition rt_; //!< rate transition type
     const int k_; //!< activation ratio
     int n_; //!< A counter with the property n <= k.
     T v_; // !< storage place for value
@@ -169,7 +232,7 @@ namespace oms2
   class PMRChannelM
   {
   public:
-    explicit PMRChannelM(int k) : k_(k), n_(0) {consumer_.lock();};
+    explicit PMRChannelM(RateTransition rt, int k) : rt_(rt), k_(k), n_(0) {consumer_.lock();};
     ~PMRChannelM() noexcept {}
     PMRChannelM(const PMRChannelM& other) = delete; //!< Copy constructor
     PMRChannelM (PMRChannelM&& other) noexcept = delete; //!< Move constructor
@@ -180,29 +243,63 @@ namespace oms2
     {
       logTrace();
       producer_.lock();
-      producer_.unlock();
-
-      v_ = v;
-      n_++;
-      // std::cout << "store n: " << n_ << ", k: " << k_ << std::endl;
-      if (n_ == k_) {
-        producer_.lock();
-        consumer_.unlock();
+      switch (rt_) {
+        case RateTransition::FASTTOSLOW:
+          v_ = v;
+          n_++;
+          if (n_ == k_) {
+            consumer_.unlock();
+          } else {
+            producer_.unlock();
+          }
+          break;
+        case RateTransition::SLOWTOFAST:
+          v_ = v;
+          n_ = 0;
+          consumer_.unlock();
+          break;
+        case RateTransition::SAME:
+          v_ = v;
+          consumer_.unlock();
+          break;
+        default:
+          assert(false);
       }
+
     }
 
-    T read() //!< @TODO Apparently multi-rate logic incomplete if reading task is faster than writing task
+    T read()
     {
       logTrace();
       T v;
       consumer_.lock();
-      v = v_;
-      n_ = 0;
-      producer_.unlock();
+      switch(rt_) {
+        case RateTransition::FASTTOSLOW:
+          v = v_;
+          n_ = 0;
+          producer_.unlock();
+          break;
+        case RateTransition::SLOWTOFAST:
+          v = v_;
+          n_++;
+          if (n_ == k_) {
+            producer_.unlock();
+          } else {
+            consumer_.unlock();
+          }
+          break;
+        case RateTransition::SAME:
+          v = v_;
+          producer_.unlock();
+          break;
+        default:
+          assert(false);
+      }
       return v;
     }
 
   private:
+    const RateTransition rt_; //!< rate transition type
     const int k_; //!< activation ratio
     int n_; //!< A counter with the property n <= k.
     T v_; // !< storage place for value
