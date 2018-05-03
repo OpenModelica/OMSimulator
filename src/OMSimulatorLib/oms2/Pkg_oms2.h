@@ -45,14 +45,25 @@ namespace oms2
    */
   enum class MasterAlgorithm
   {
-    STANDARD, ///< Single-Core default algorithm
-    PCTPL, ///< Parallel doStep(..) using CTPL task pool library (https://github.com/vit-vit/CTPL)
-    PMRCHANNELA, ///< Experimental parallel (multi-rate) communication channel approach using ATOMIC variables and polling for synchronization
-    PMRCHANNELCV, ///< Experimental parallel (multi-rate) communication channel approach using CONDITION variables for synchronization
-    PMRCHANNELM, ///< Experimental parallel (multi-rate) communication channel approach using MUTEXES for synchronization
-    // PMRTASKPOOLA, ///< Experimental parallel (multi-rate) approach using fixed number of tasks and ATOMIC variables and polling for synchronization
-    // PMRTASKPOOLCV ///< Experimental parallel (multi-rate) approach using fixed number of tasks and CONDITION variables for synchronization
+    STANDARD, //!< Single-Core default algorithm
+    PCTPL, //!< Parallel doStep(..) using CTPL task pool library (https://github.com/vit-vit/CTPL)
+    PMRCHANNELA, //!< Experimental parallel (multi-rate) communication channel approach using ATOMIC variables and polling for synchronization
+    PMRCHANNELCV, //!< Experimental parallel (multi-rate) communication channel approach using CONDITION variables for synchronization
+    PMRCHANNELM, //!< Experimental parallel (multi-rate) communication channel approach using MUTEXES for synchronization
+    // PMRTASKPOOLA, //!< Experimental parallel (multi-rate) approach using fixed number of tasks and ATOMIC variables and polling for synchronization
+    // PMRTASKPOOLCV //!< Experimental parallel (multi-rate) approach using fixed number of tasks and CONDITION variables for synchronization
   };
+
+  /**
+   * \brief Type of rate transition in multi-rate communication.
+   */
+  enum class RateTransition
+  {
+    FASTTOSLOW, //!< The clock of output y is faster than that of input u
+    SLOWTOFAST, //!< The clock of output y is slower than that of input u
+    SAME        //!< The clocks of y and u run at the same rate.
+  };
+
 } // Types defined within the package of namespace oms2
 
 #endif /* _OMS2_PKG_OMS2_H_ */
