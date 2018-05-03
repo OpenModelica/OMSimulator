@@ -1134,7 +1134,8 @@ void oms2::FMICompositeModel::readFromSockets()
 
       this->setReal(ifc->getSubSignal(tlmrefs.Z), impedance);
     }
-    else if(ifc->getDimensions() == 3 && ifc->getCausality() == oms_causality_bidir) {
+    else if(ifc->getDimensions() == 3 && ifc->getCausality() == oms_causality_bidir &&
+            ifc->getInterpolationMethod() == oms_tlm_no_interpolation) {
 
       oms_tlm_sigrefs_3d_t tlmrefs;
 
@@ -1157,6 +1158,43 @@ void oms2::FMICompositeModel::readFromSockets()
 
       //Write force to FMU
       this->setReals(ifc->getSubSignalSet(tlmrefs.f), f);
+    }
+    else if(ifc->getDimensions() == 3 && ifc->getCausality() == oms_causality_bidir &&
+            ifc->getInterpolationMethod() == oms_tlm_coarse_grained) {
+      oms_tlm_sigrefs_3d_cg_t tlmrefs;
+      std::vector<double> waves(6,0);
+      double impedance;
+      plugin->GetWaveImpedance3D(ifc->getId(), time, &impedance, &waves[0]);
+      this->setReals(ifc->getSubSignalSet(tlmrefs.c), waves);
+      this->setReal(ifc->getSubSignal(tlmrefs.Z), impedance);
+
+      std::vector<double> waves2(6,0);
+      double impedance2;
+      plugin->GetWaveImpedance3D(ifc->getId(), time+communicationInterval, &impedance2, &waves2[0]);
+
+      std::vector<double> dWaves(6,0);
+      for(size_t i=0; i<6; ++i) {
+        double dWave = (waves2[i]-waves[i])/communicationInterval;
+        this->setRealInputDerivatives(ifc->getSubSignal(tlmrefs.c[i]), 1, dWave);
+      }
+    }
+    else if(ifc->getDimensions() == 3 && ifc->getCausality() == oms_causality_bidir &&
+            ifc->getInterpolationMethod() == oms_tlm_fine_grained) {
+      oms_tlm_sigrefs_3d_fg_t tlmrefs;
+
+      std::vector<double> waves;
+      double impedance;
+
+      double t = time;
+      for(size_t i=0; i<10; ++i) {
+        plugin->GetWaveImpedance3D(ifc->getId(), t, &impedance, &waves[0]);
+        t += communicationInterval/9;
+
+        this->setReals(ifc->getSubSignalSet(tlmrefs.c[i]), waves);
+        this->setReal(ifc->getSubSignal(tlmrefs.t[i]), t);
+      }
+
+      this->setReal(ifc->getSubSignal(tlmrefs.Z), impedance);
     }
   }
 }

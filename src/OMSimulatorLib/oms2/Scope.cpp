@@ -1285,7 +1285,7 @@ oms_status_enu_t oms2::Scope::addExternalModel(const oms2::ComRef &cref, const o
   return model->getTLMCompositeModel()->addExternalModel(modelfile, startscript, name);
 }
 
-oms_status_enu_t oms2::Scope::addTLMInterface(const oms2::ComRef &cref, const oms2::ComRef &subref, const oms2::ComRef &name, int dimensions, oms_causality_enu_t causality, std::string domain, std::vector<SignalRef> &sigrefs)
+oms_status_enu_t oms2::Scope::addTLMInterface(const oms2::ComRef &cref, const oms2::ComRef &subref, const oms2::ComRef &name, int dimensions, oms_causality_enu_t causality, std::string domain, oms_tlm_interpolation_t interpolation, std::vector<SignalRef> &sigrefs)
 {
   oms2::Model* model = getModel(cref);
   if (!model) {
@@ -1297,7 +1297,7 @@ oms_status_enu_t oms2::Scope::addTLMInterface(const oms2::ComRef &cref, const om
     return oms_status_error;
   }
 
-  return model->getTLMCompositeModel()->addInterface(name.toString(), dimensions, causality, domain, subref, sigrefs);
+  return model->getTLMCompositeModel()->addInterface(name.toString(), dimensions, causality, domain, interpolation, subref, sigrefs);
 }
 
 
