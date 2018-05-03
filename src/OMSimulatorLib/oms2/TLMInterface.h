@@ -65,20 +65,48 @@ namespace oms2
   } oms_tlm_sigrefs_1d_fg_t;
 
   typedef struct  {
-    std::vector<int> x = {0,1};
+    std::vector<int> x   = {0,1};
     std::vector<int> phi = {2};
-    std::vector<int> v{3,4};
-    std::vector<int> w{5};
-    std::vector<int> f{6,7,8};
+    std::vector<int> v   = {3,4};
+    std::vector<int> w   = {5};
+    std::vector<int> f   = {6,7,8};
   } oms_tlm_sigrefs_2d_t;
 
   typedef struct  {
     std::vector<int> x = {0,1,2};
-    std::vector<int> A{3,4,5,6,7,8,9,10,11};
-    std::vector<int> v{12,13,14};
-    std::vector<int> w{15,16,17};
-    std::vector<int> f{18,19,20,21,22,23};
+    std::vector<int> A = {3,4,5,6,7,8,9,10,11};
+    std::vector<int> v = {12,13,14};
+    std::vector<int> w = {15,16,17};
+    std::vector<int> f = {18,19,20,21,22,23};
   } oms_tlm_sigrefs_3d_t;
+
+  typedef struct  {
+    std::vector<int> x = {0,1,2};
+    std::vector<int> A = {3,4,5,6,7,8,9,10,11};
+    std::vector<int> v = {12,13,14};
+    std::vector<int> w = {15,16,17};
+    std::vector<int> c = {18,19,20,21,22,23};
+    int Z = 24;
+  } oms_tlm_sigrefs_3d_cg_t;
+
+typedef struct  {
+  std::vector<int> x =  {0,1,2};
+  std::vector<int> A =  {3,4,5,6,7,8,9,10,11};
+  std::vector<int> v =  {12,13,14};
+  std::vector<int> w =  {15,16,17};
+  std::vector< std::vector<int> > c = { {18,28,38,48,58,68},
+                                        {19,29,39,49,59,69},
+                                        {20,30,40,50,60,70},
+                                        {21,31,41,51,61,71},
+                                        {22,32,42,52,62,72},
+                                        {23,33,43,53,63,73},
+                                        {24,34,44,54,64,74},
+                                        {25,35,45,55,65,75},
+                                        {26,36,46,56,66,76},
+                                        {27,37,47,57,67,77} };
+  std::vector<int> t = { 78,79,80,81,82,83,84,85,86,87};
+  int Z = 88;
+} oms_tlm_sigrefs_3d_fg_t;
 
   class TLMInterface
   {
@@ -88,6 +116,7 @@ namespace oms2
                  oms_causality_enu_t causality,
                  const std::string domain,
                  const int dimensions,
+                 oms_tlm_interpolation_t interpolation,
                  const std::vector<SignalRef> &sigrefs);
     ~TLMInterface() {}
 

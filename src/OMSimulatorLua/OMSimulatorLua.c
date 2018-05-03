@@ -1184,10 +1184,10 @@ static int OMSimulatorLua_oms2_addTLMInterface(lua_State *L)
   int dimensions =      lua_tonumber(L, 4);
   int causality =       lua_tonumber(L, 5);
   const char *domain =  lua_tostring(L, 6);
-  int interpolationMethod = 0;
+  int interpolation = 0;
   int initialArguments = 6;
   if(lua_gettop(L) >= 7 && lua_type(L, 7) == LUA_TNUMBER) {
-    interpolationMethod = lua_tonumber(L, 7);
+    interpolation = lua_tonumber(L, 7);
     initialArguments++;
   }
 
@@ -1198,26 +1198,25 @@ static int OMSimulatorLua_oms2_addTLMInterface(lua_State *L)
   }
   else if(dimensions == 1 &&
      causality != oms_causality_bidir) {
-    nsigrefs = 1;             //1 (1D signal)
+    nsigrefs = 1;
   }
-  else if(dimensions == 1 &&
-          causality == oms_causality_bidir &&
-          interpolationMethod == 0) {
-    nsigrefs = 3;             //3 (1D bidirectional)
+  else if(dimensions == 1 && causality == oms_causality_bidir && interpolation == oms_tlm_no_interpolation) {
+    nsigrefs = 3;
   }
-  else if(dimensions == 1 &&
-          causality == oms_causality_bidir &&
-          interpolationMethod == 1) {
-    nsigrefs = 4;             //4 (1D with coarse-grained interpolation)
+  else if(dimensions == 1 && causality == oms_causality_bidir && interpolation == oms_tlm_coarse_grained) {
+    nsigrefs = 4;
   }
-  else if(dimensions == 1 &&
-          causality == oms_causality_bidir &&
-          interpolationMethod == 2) {
-    nsigrefs = 23;             //23 (1D with fine-grained interpolation)
+  else if(dimensions == 1 && causality == oms_causality_bidir && interpolation == oms_tlm_fine_grained) {
+    nsigrefs = 23;
   }
-  else if(dimensions == 3 &&
-          causality == oms_causality_bidir) {
-    nsigrefs = 24;            //24 (3D bidirectional)
+  else if(dimensions == 3 && causality == oms_causality_bidir && interpolation == oms_tlm_no_interpolation) {
+    nsigrefs = 24;
+  }
+  else if(dimensions == 3 && causality == oms_causality_bidir && interpolation == oms_tlm_coarse_grained) {
+    nsigrefs = 25;
+  }
+  else if(dimensions == 3 && causality == oms_causality_bidir && interpolation == oms_tlm_fine_grained) {
+    nsigrefs = 89;
   }
 
   if(lua_gettop(L) != initialArguments+nsigrefs) {
@@ -1234,7 +1233,7 @@ static int OMSimulatorLua_oms2_addTLMInterface(lua_State *L)
     sigrefs[i] = lua_tostring(L, initialArguments+i+1);
   }
 
-  oms_status_enu_t status = oms2_addTLMInterface(cref, subref, name, dimensions, (oms_causality_enu_t)causality, domain, sigrefs, nsigrefs);
+  oms_status_enu_t status = oms2_addTLMInterface(cref, subref, name, dimensions, (oms_causality_enu_t)causality, (oms_tlm_interpolation_t)interpolation, domain, sigrefs, nsigrefs);
   lua_pushnumber(L, status);
   return 1;
 }

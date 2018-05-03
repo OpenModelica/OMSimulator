@@ -117,6 +117,13 @@ oms_status_enu_t oms2::TLMCompositeModel::addInterface(oms2::TLMInterface *ifc)
       logError("Wrong number of variables for TLM interface (should be 4)");
       return oms_status_error;
     }
+    if(ifc->getDimensions() == 1 &&
+       ifc->getCausality() == oms_causality_bidir &&
+       ifc->getInterpolationMethod() == oms_tlm_fine_grained &&
+       ifc->getSubSignals().size() != 23) {
+      logError("Wrong number of variables for TLM interface (should be 23)");
+      return oms_status_error;
+    }
     if(ifc->getDimensions() == 2 &&
        ifc->getCausality() == oms_causality_bidir &&
        ifc->getSubSignals().size() != 9) {
@@ -128,6 +135,20 @@ oms_status_enu_t oms2::TLMCompositeModel::addInterface(oms2::TLMInterface *ifc)
        ifc->getSubSignals().size() != 24) {
       logError("Wrong number of variables for TLM interface (should be 24)");
 
+      return oms_status_error;
+    }
+    if(ifc->getDimensions() == 3 &&
+       ifc->getCausality() == oms_causality_bidir &&
+       ifc->getInterpolationMethod() == oms_tlm_coarse_grained &&
+       ifc->getSubSignals().size() != 25) {
+      logError("Wrong number of variables for TLM interface (should be 25)");
+      return oms_status_error;
+    }
+    if(ifc->getDimensions() == 3 &&
+       ifc->getCausality() == oms_causality_bidir &&
+       ifc->getInterpolationMethod() == oms_tlm_fine_grained &&
+       ifc->getSubSignals().size() != 89) {
+      logError("Wrong number of variables for TLM interface (should be 89)");
       return oms_status_error;
     }
   }
@@ -164,13 +185,14 @@ oms_status_enu_t oms2::TLMCompositeModel::addInterface(oms2::TLMInterface *ifc)
 }
 
 oms_status_enu_t oms2::TLMCompositeModel::addInterface(std::string name,
-                                                   int dimensions,
-                                                   oms_causality_enu_t causality,
-                                                   std::string domain,
-                                                   const oms2::ComRef &cref,
-                                                   std::vector<SignalRef> &sigrefs)
+                                                       int dimensions,
+                                                       oms_causality_enu_t causality,
+                                                       std::string domain,
+                                                       oms_tlm_interpolation_t interpolation,
+                                                       const oms2::ComRef &cref,
+                                                       std::vector<SignalRef> &sigrefs)
 {
-  oms2::TLMInterface *ifc = new TLMInterface(cref,name,causality,domain,dimensions, sigrefs);
+  oms2::TLMInterface *ifc = new TLMInterface(cref,name,causality,domain,dimensions,interpolation,sigrefs);
   return addInterface(ifc);
 }
 
