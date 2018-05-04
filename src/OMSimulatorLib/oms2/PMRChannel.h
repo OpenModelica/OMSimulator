@@ -62,7 +62,7 @@ namespace oms2
   class PMRChannelA
   {
   public:
-    explicit PMRChannelA(RateTransition rt, int k) : rt_(rt), k_(k), n_(0), is_produced_(false) {};
+    explicit PMRChannelA(RateTransition rt, int k) : rt_(rt), k_(k), n_(k-1), is_produced_(false) {};
     ~PMRChannelA() noexcept {}
     PMRChannelA(const PMRChannelA& other) = delete; //!< Copy constructor
     PMRChannelA (PMRChannelA&& other) noexcept = delete; //!< Move constructor
@@ -77,12 +77,13 @@ namespace oms2
         case RateTransition::FASTTOSLOW:
           v_ = v;
           n_++;
-          // std::cout << "store n: " << n_ << ", k: " << k_ << std::endl;
+          // std::cout << "FASTTOSLOW write n: " << n_ << ", k: " << k_ << std::endl;
           is_produced_.store(n_ == k_);
           break;
         case RateTransition::SLOWTOFAST:
           v_ = v;
           n_ = 0;
+          // std::cout << "SLOWTOFAST write n: " << n_ << ", k: " << k_ << std::endl;
           is_produced_.store(true);
           break;
         case RateTransition::SAME:
@@ -103,11 +104,13 @@ namespace oms2
         case RateTransition::FASTTOSLOW:
           v = v_;
           n_ = 0;
+          // std::cout << "FASTTOSLOW read n: " << n_ << ", k: " << k_ << std::endl;
           is_produced_.store(false);
           break;
         case RateTransition::SLOWTOFAST:
           v = v_;
           n_++;
+          // std::cout << "SLOWTOFAST read n: " << n_ << ", k: " << k_ << std::endl;
           is_produced_.store( !(n_ == k_) );
           break;
         case RateTransition::SAME:
@@ -140,7 +143,7 @@ namespace oms2
   class PMRChannelCV
   {
   public:
-    explicit PMRChannelCV(RateTransition rt, int k) : rt_(rt), k_(k), n_(0), is_produced_(false) {};
+    explicit PMRChannelCV(RateTransition rt, int k) : rt_(rt), k_(k), n_(k-1), is_produced_(false) {};
     ~PMRChannelCV() noexcept {}
     PMRChannelCV(const PMRChannelCV& other) = delete; //!< Copy constructor
     PMRChannelCV (PMRChannelCV&& other) noexcept = delete; //!< Move constructor

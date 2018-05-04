@@ -853,6 +853,12 @@ oms_status_enu_t oms2_setMasterAlgorithm(const char* cref, const char* masterAlg
   return oms2::Scope::GetInstance().setMasterAlgorithm(oms2::ComRef(cref), std::string(masterAlgorithm));
 }
 
+oms_status_enu_t experimental_setActivationRatio(const char* cref, int k)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().setActivationRatio(oms2::ComRef(cref), k);
+}
+
 oms_status_enu_t oms2_exportCompositeStructure(const char* cref, const char* filename)
 {
   logTrace();

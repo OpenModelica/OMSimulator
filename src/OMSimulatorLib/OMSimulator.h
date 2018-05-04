@@ -792,6 +792,18 @@ oms_status_enu_t oms2_setResultFile(const char* cref, const char* filename);
  */
 oms_status_enu_t oms2_setMasterAlgorithm(const char* cref, const char* masterAlgorithm);
 
+
+/**
+ * \brief Experimental class for setting the activation ratio of FMUs for
+ *  experimenting with multi-rate mater algorithms.
+ *
+ * \param cref      [in] Full identifier of a component
+ * \param k         [in] Activation ratio (k=1 means activate every communicationInterval)
+ * \return          Error status
+ */
+oms_status_enu_t experimental_setActivationRatio(const char* cref, int k);
+
+
 /**
  * \brief Export the composite structure of a given model to a dot file.
  *
