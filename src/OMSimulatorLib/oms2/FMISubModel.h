@@ -38,6 +38,7 @@
 #include "Element.h"
 #include "ssd/ElementGeometry.h"
 #include "Variable.h"
+#include "Pkg_oms2.h"
 
 class ResultWriter;
 
@@ -77,6 +78,9 @@ namespace oms2
     virtual oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultWriter) = 0;
     virtual oms_status_enu_t emit(ResultWriter& resultWriter) = 0;
 
+    void setActivationRatio(int k) {eclock.k  = k;}
+    int getActivationRatio() const {return eclock.k;}
+    
   protected:
     FMISubModel(oms_element_type_enu_t type, const ComRef& cref);
     virtual ~FMISubModel();
@@ -91,6 +95,8 @@ namespace oms2
 
     DirectedGraph initialUnknownsGraph;
     DirectedGraph outputsGraph;
+
+    Experimental_Clock eclock;
   };
 }
 

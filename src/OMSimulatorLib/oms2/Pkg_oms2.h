@@ -64,6 +64,16 @@ namespace oms2
     SAME        //!< The clocks of y and u run at the same rate.
   };
 
+  /**
+   * \brief Experimental class for playing with basic multi-rate stuff.
+   *
+   * A final implementation might approach this quite differently...
+   */
+  struct Experimental_Clock
+  {
+    int k = 1; //!< activation ratio (default 1).
+  };
+
 } // Types defined within the package of namespace oms2
 
 #endif /* _OMS2_PKG_OMS2_H_ */
