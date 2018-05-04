@@ -375,7 +375,7 @@ oms_status_enu_t oms2::TLMCompositeModel::stepUntil(ResultWriter &resultWriter, 
   return oms_status_ok;
 }
 
-void oms2::TLMCompositeModel::simulate_asynchronous(ResultWriter& resultWriter, double stopTime, double communicationInterval, void (*cb)(const char* ident, double time, oms_status_enu_t status))
+void oms2::TLMCompositeModel::simulate_asynchronous(ResultWriter& resultWriter, double stopTime, double communicationInterval, double cbPeriod, void (*cb)(const char* ident, double time, oms_status_enu_t status))
 {
   logTrace();
 

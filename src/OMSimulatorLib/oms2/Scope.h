@@ -64,7 +64,7 @@ namespace oms2
     oms_status_enu_t reset(const ComRef& name);
     oms_status_enu_t terminate(const ComRef& name);
     oms_status_enu_t simulate(const ComRef& name);
-    oms_status_enu_t simulate_asynchronous(const ComRef& name, void (*cb)(const char* ident, double time, oms_status_enu_t status));
+    oms_status_enu_t simulate_asynchronous(const ComRef& name, double cbPeriod, void (*cb)(const char* ident, double time, oms_status_enu_t status));
     oms_status_enu_t doSteps(const ComRef& name, const int numberOfSteps);
     oms_status_enu_t stepUntil(const ComRef& name, const double timeValue);
     oms_status_enu_t addFMU(const ComRef& modelIdent, const std::string& fmuPath, const ComRef& fmuIdent);
