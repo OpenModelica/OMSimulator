@@ -295,7 +295,7 @@ oms_status_enu_t oms2::Model::reset()
 
   modelState = oms_modelState_instantiated;
 
-  return status; // 2018-04-24: Careful, return value is fixed to oms_status_ok 
+  return status; // 2018-04-24: Careful, return value is fixed to oms_status_ok
 }
 
 oms_status_enu_t oms2::Model::terminate()
@@ -352,7 +352,7 @@ oms_status_enu_t oms2::Model::stepUntil(const double timeValue)
   return status;
 }
 
-oms_status_enu_t oms2::Model::simulate_asynchronous(void (*cb)(const char* ident, double time, oms_status_enu_t status))
+oms_status_enu_t oms2::Model::simulate_asynchronous(double cbPeriod, void (*cb)(const char* ident, double time, oms_status_enu_t status))
 {
   if (oms_modelState_simulation != modelState)
   {
@@ -360,7 +360,7 @@ oms_status_enu_t oms2::Model::simulate_asynchronous(void (*cb)(const char* ident
     return oms_status_error;
   }
 
-  std::thread([=]{compositeModel->simulate_asynchronous(*resultFile, stopTime, communicationInterval, cb);}).detach();
+  std::thread([=]{compositeModel->simulate_asynchronous(*resultFile, stopTime, communicationInterval, cbPeriod, cb);}).detach();
 
   return oms_status_ok;
 }
