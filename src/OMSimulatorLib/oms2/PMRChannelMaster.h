@@ -52,9 +52,8 @@ namespace oms2
   /**
    * \brief Thread for communication channel based parallel multi-rate simulation approach.
    *
-   * PMR experiment, clocks not yet supported. Instead all FMUs will run with the same rate / communicationInterval.
+   * PMR experiment, with experimental "clocks".
    *
-   * \TODO Full multi-rate clock support
    */
   template <template<class> class PMRChannel>
   void threadPMRChannel(int tid, std::string subModelCrefStr, oms2::PMRChannelMap<PMRChannel>& channels, oms2::FMISubModel* fmu, double stopTime, double communicationInterval);
@@ -89,8 +88,10 @@ oms_status_enu_t oms2::stepUntilPMRChannel(ResultWriter& resultWriter, double st
     /* Question: Nicer to use actual ComRef objects as key instead of strings? */
     std::string cref_str =  compositeName + std::string(".") + fmuInstName;
     oms2::FMISubModel* fmiSubModel = it->second;
+    int activationRatio = fmiSubModel->getActivationRatio();
     // logInfo(std::string("oms2::simulatePMRChannel: Spawning thread for ") + cref_str);
-    t.push_back(std::thread(threadPMRChannel<PMRChannel>, i, cref_str, std::ref(channels), fmiSubModel, stopTime, communicationInterval));
+    t.push_back(std::thread(threadPMRChannel<PMRChannel>, i, cref_str, std::ref(channels), fmiSubModel,
+      stopTime, communicationInterval*activationRatio));
   }
 
   /* Join the threads with the main thread */
@@ -111,8 +112,9 @@ void oms2::threadPMRChannel(int tid, std::string subModelCrefStr, oms2::PMRChann
 
   std::vector<int> orderedIOAcceses = channels.orderedIOAccess(subModelCrefStr);
   double tcur = 0;
-  while(tcur < stopTime)
+  while(tcur < stopTime - 0.1*communicationInterval) // FIXME seem to need some tolerance, but not sure why?
   {
+    // std::cout << std::string("oms2::threadPMRChannel: step START thread ") + std::to_string(tid) + " for submodule (FMU): " + subModelCrefStr << " tcur=" << tcur << std::endl;
     for (int i: orderedIOAcceses) {
       if (graph->nodes[i].isOutput()) {
         writeOutputToConnectedInputChannels(i, channels, fmu);
@@ -126,7 +128,9 @@ void oms2::threadPMRChannel(int tid, std::string subModelCrefStr, oms2::PMRChann
     if (tcur > stopTime)
       tcur = stopTime;
     fmu->doStep(tcur);
+    // std::cout << std::string("oms2::threadPMRChannel: step END thread ") + std::to_string(tid) + " for submodule (FMU): " + subModelCrefStr << " tcur=" << tcur << std::endl;
   }
+  // std::cout << std::string("oms2::threadPMRChannel: Ending thread ") + std::to_string(tid) + " for submodule (FMU): " + subModelCrefStr + "\n";
 }
 
 template <template<class> class PMRChannel>

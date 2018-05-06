@@ -920,6 +920,21 @@ static int OMSimulatorLua_oms2_setMasterAlgorithm(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t experimental_setActivationRatio(const char* cref, int k);
+static int OMSimulatorLua_experimental_setActivationRatio(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TNUMBER);
+
+  const char* cref = lua_tostring(L, 1);
+  int k = lua_tointeger(L, 2);
+  oms_status_enu_t status = experimental_setActivationRatio(cref, k);
+  lua_pushinteger(L, status);
+  return 0;
+}
+
 //oms_status_enu_t oms2_exportCompositeStructure(const char* cref, const char* filename);
 static int OMSimulatorLua_oms2_exportCompositeStructure(lua_State *L)
 {
@@ -1613,6 +1628,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms2_setRealParameter);
   REGISTER_LUA_CALL(oms2_setResultFile);
   REGISTER_LUA_CALL(oms2_setMasterAlgorithm);
+  REGISTER_LUA_CALL(experimental_setActivationRatio);
   REGISTER_LUA_CALL(oms2_setStartTime);
   REGISTER_LUA_CALL(oms2_setStopTime);
   REGISTER_LUA_CALL(oms2_setTempDirectory);
