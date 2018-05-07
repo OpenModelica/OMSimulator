@@ -73,7 +73,7 @@ MatReader::MatReader(const char* filename)
   delete[] buffer;
 
   // Fix MatVer4Matrix* name
-  char *var_buffer = new char[name->header.mrows+1];
+  char *var_buffer = new char[transposed ? (name->header.mrows+1) : (name->header.ncols+1)];
   for (int i = 0; i < (transposed ? name->header.ncols : name->header.mrows); ++i)
   {
     if (transposed)

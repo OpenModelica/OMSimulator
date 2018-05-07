@@ -111,7 +111,7 @@ oms_status_enu_t oms2::Scope::newTLMModel(const oms2::ComRef& name)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms2::Scope::unloadModel(const oms2::ComRef& name)
+oms_status_enu_t oms2::Scope::unloadModel(const oms2::ComRef name)
 {
   logTrace();
 

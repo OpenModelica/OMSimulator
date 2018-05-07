@@ -59,7 +59,7 @@ namespace oms2
 
     oms_status_enu_t newFMIModel(const ComRef& name);
     oms_status_enu_t newTLMModel(const ComRef& name);
-    oms_status_enu_t unloadModel(const ComRef& name);
+    oms_status_enu_t unloadModel(const ComRef name);
     oms_status_enu_t initialize(const ComRef& name);
     oms_status_enu_t reset(const ComRef& name);
     oms_status_enu_t terminate(const ComRef& name);

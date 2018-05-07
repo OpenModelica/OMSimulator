@@ -56,7 +56,7 @@ oms2::Element::~Element()
   if (this->connectors)
   {
     for (int i=0; this->connectors[i]; ++i)
-      delete this->connectors[i];
+      delete reinterpret_cast<oms2::Connector*>(this->connectors[i]);
     delete[] this->connectors;
   }
   if (this->geometry)
@@ -94,7 +94,7 @@ void oms2::Element::setConnectors(const std::vector<oms2::Connector> newConnecto
   if (this->connectors)
   {
     for (int i=0; this->connectors[i]; ++i)
-      delete this->connectors[i];
+      delete reinterpret_cast<oms2::Connector*>(this->connectors[i]);
     delete[] this->connectors;
   }
 
