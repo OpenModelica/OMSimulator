@@ -284,6 +284,17 @@ oms_status_enu_t oms2::Scope::simulate(const ComRef& name)
   return model->simulate();
 }
 
+oms_status_enu_t oms2::Scope::simulate_realtime(const ComRef& name)
+{
+  logTrace();
+
+  oms2::Model* model = getModel(name);
+  if (!model)
+    return oms_status_error;
+
+  return model->simulate_realtime();
+}
+
 oms_status_enu_t oms2::Scope::simulate_asynchronous(const ComRef& name, void (*cb)(const char* ident, double time, oms_status_enu_t status))
 {
   logTrace();

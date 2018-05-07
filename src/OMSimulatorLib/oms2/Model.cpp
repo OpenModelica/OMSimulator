@@ -330,7 +330,7 @@ oms_status_enu_t oms2::Model::simulate()
   if (oms_modelState_simulation != modelState)
     return logError("[oms2::Model::simulate] Model cannot be simulated, because it isn't initialized.");
 
-  oms_status_enu_t status = compositeModel->stepUntil(*resultFile, stopTime, communicationInterval, masterAlgorithm);
+  oms_status_enu_t status = compositeModel->stepUntil(*resultFile, stopTime, communicationInterval, masterAlgorithm, false);
   return status;
 }
 
@@ -348,7 +348,7 @@ oms_status_enu_t oms2::Model::stepUntil(const double timeValue)
   if (oms_modelState_simulation != modelState)
     return logError("[oms2::Model::stepUntil] Model cannot be simulated, because it isn't initialized.");
 
-  oms_status_enu_t status = compositeModel->stepUntil(*resultFile, timeValue, communicationInterval, masterAlgorithm);
+  oms_status_enu_t status = compositeModel->stepUntil(*resultFile, timeValue, communicationInterval, masterAlgorithm, false);
   return status;
 }
 
@@ -363,4 +363,13 @@ oms_status_enu_t oms2::Model::simulate_asynchronous(void (*cb)(const char* ident
   std::thread([=]{compositeModel->simulate_asynchronous(*resultFile, stopTime, communicationInterval, cb);}).detach();
 
   return oms_status_ok;
+}
+
+oms_status_enu_t oms2::Model::simulate_realtime()
+{
+  if (oms_modelState_simulation != modelState)
+    return logError("[oms2::Model::simulate_realtime] Model cannot be simulated, because it isn't initialized.");
+
+  oms_status_enu_t status = compositeModel->stepUntil(*resultFile, stopTime, communicationInterval, masterAlgorithm, true);
+  return status;
 }

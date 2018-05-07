@@ -86,7 +86,7 @@ namespace oms2
     oms_status_enu_t reset();
     oms_status_enu_t terminate();
     oms_status_enu_t doSteps(ResultWriter& resultWriter, const int numberOfSteps, double communicationInterval);
-    oms_status_enu_t stepUntil(ResultWriter& resultWriter, double stopTime, double communicationInterval, MasterAlgorithm masterAlgorithm);
+    oms_status_enu_t stepUntil(ResultWriter& resultWriter, double stopTime, double communicationInterval, MasterAlgorithm masterAlgorithm, bool realtime_sync);
     oms_status_enu_t simulateTLM(ResultWriter *resultWriter, double stopTime, double communicationInterval, std::string address);
     void simulate_asynchronous(ResultWriter& resultWriter, double stopTime, double communicationInterval, void (*cb)(const char* ident, double time, oms_status_enu_t status));
 
@@ -112,8 +112,8 @@ namespace oms2
     oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultWriter);
     oms_status_enu_t emit(ResultWriter& resultWriter);
 
-    oms_status_enu_t stepUntilStandard(ResultWriter& resultWriter, double stopTime, double communicationInterval);
-    oms_status_enu_t stepUntilPCTPL(ResultWriter& resultWriter, double stopTime, double communicationInterval);
+    oms_status_enu_t stepUntilStandard(ResultWriter& resultWriter, double stopTime, double communicationInterval, bool realtime_sync);
+    oms_status_enu_t stepUntilPCTPL(ResultWriter& resultWriter, double stopTime, double communicationInterval, bool realtime_sync);
 
     oms_status_enu_t initializeSockets(double stopTime, double &communicationInterval, std::string server);
     void readFromSockets();
