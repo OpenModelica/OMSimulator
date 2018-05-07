@@ -851,7 +851,7 @@ oms_status_enu_t oms2::FMICompositeModel::terminate()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms2::FMICompositeModel::stepUntil(ResultWriter& resultWriter, double stopTime, double communicationInterval, MasterAlgorithm masterAlgorithm)
+oms_status_enu_t oms2::FMICompositeModel::stepUntil(ResultWriter& resultWriter, double stopTime, double communicationInterval, MasterAlgorithm masterAlgorithm, bool realtime_sync)
 {
   logTrace();
 
@@ -859,19 +859,19 @@ oms_status_enu_t oms2::FMICompositeModel::stepUntil(ResultWriter& resultWriter, 
   {
     case MasterAlgorithm::STANDARD :
       logInfo("oms2::FMICompositeModel::stepUntil: Using master algorithm 'standard'\n");
-      return stepUntilStandard(resultWriter, stopTime, communicationInterval);
+      return stepUntilStandard(resultWriter, stopTime, communicationInterval, realtime_sync);
     case MasterAlgorithm::PCTPL :
       logInfo("oms2::FMICompositeModel::stepUntil: Using master algorithm 'pctpl'\n");
-      return stepUntilPCTPL(resultWriter, stopTime, communicationInterval);
+      return stepUntilPCTPL(resultWriter, stopTime, communicationInterval, realtime_sync);
     case MasterAlgorithm::PMRCHANNELA :
       logInfo("oms2::FMICompositeModel::stepUntil: Using master algorithm 'pmrchannela'\n");
-      return oms2::stepUntilPMRChannel<oms2::PMRChannelA>(resultWriter, stopTime, communicationInterval, this->getName().toString(), outputsGraph, subModels);
+      return oms2::stepUntilPMRChannel<oms2::PMRChannelA>(resultWriter, stopTime, communicationInterval, this->getName().toString(), outputsGraph, subModels, realtime_sync);
     case MasterAlgorithm::PMRCHANNELCV :
       logInfo("oms2::FMICompositeModel::stepUntil: Using master algorithm 'pmrchannelcv'\n");
-      return oms2::stepUntilPMRChannel<oms2::PMRChannelCV>(resultWriter, stopTime, communicationInterval, this->getName().toString(), outputsGraph, subModels);
+      return oms2::stepUntilPMRChannel<oms2::PMRChannelCV>(resultWriter, stopTime, communicationInterval, this->getName().toString(), outputsGraph, subModels, realtime_sync);
     case MasterAlgorithm::PMRCHANNELM :
       logInfo("oms2::FMICompositeModel::stepUntil: Using master algorithm 'pmrchannelm'\n");
-      return oms2::stepUntilPMRChannel<oms2::PMRChannelM>(resultWriter, stopTime, communicationInterval, this->getName().toString(), outputsGraph, subModels);
+      return oms2::stepUntilPMRChannel<oms2::PMRChannelM>(resultWriter, stopTime, communicationInterval, this->getName().toString(), outputsGraph, subModels, realtime_sync);
     default :
       logError("oms2::FMICompositeModel::stepUntil: Internal error: Request for using unknown master algorithm.");
       return oms_status_error;
@@ -898,12 +898,15 @@ oms_status_enu_t oms2::FMICompositeModel::doSteps(ResultWriter& resultWriter, co
   return oms_status_ok;
 }
 
-oms_status_enu_t oms2::FMICompositeModel::stepUntilStandard(ResultWriter& resultWriter, double stopTime, double communicationInterval)
+
+oms_status_enu_t oms2::FMICompositeModel::stepUntilStandard(ResultWriter& resultWriter, double stopTime, double communicationInterval, bool realtime_sync)
 {
   logTrace();
+  auto start = std::chrono::steady_clock::now();
 
   while (time < stopTime)
   {
+    logDebug("doStep: " + std::to_string(time) + " -> " + std::to_string(time+communicationInterval));
     time += communicationInterval;
     if (time > stopTime)
       time = stopTime;
@@ -911,6 +914,19 @@ oms_status_enu_t oms2::FMICompositeModel::stepUntilStandard(ResultWriter& result
     // do_step
     for (const auto& it : subModels)
       it.second->doStep(time);
+
+    if (realtime_sync)
+    {
+      auto now = std::chrono::steady_clock::now();
+      // seems a cast to a sufficient high resolution of time is necessary for avoiding truncation errors
+      auto next = start + std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(time));
+      std::chrono::duration<double> margin = next - now;
+      // std::cout << "[oms2::FMICompositeModel::stepUntilStandard] doStep: " << std::to_string(time  - communicationInterval) << "s -> " << std::to_string(time) << "s, real-time margin=" << std::to_string(margin.count()) << "s" << std::endl;
+      if (margin < std::chrono::duration<double>(0))
+        logError(std::string("[oms2::FMICompositeModel::stepUntilStandard] real-time frame overrun, time=") + std::to_string(time) + std::string("s, exceeded margin=") + std::to_string(margin.count()) + std::string("s\n"));
+
+      std::this_thread::sleep_until(next);
+    }
 
     // input := output
     updateInputs(outputsGraph);
@@ -923,7 +939,7 @@ oms_status_enu_t oms2::FMICompositeModel::stepUntilStandard(ResultWriter& result
 /**
  * \brief Parallel "doStep(..)" execution using task pool CTPL library (https://github.com/vit-vit/CTPL).
  */
-oms_status_enu_t oms2::FMICompositeModel::stepUntilPCTPL(ResultWriter& resultWriter, double stopTime, double communicationInterval)
+oms_status_enu_t oms2::FMICompositeModel::stepUntilPCTPL(ResultWriter& resultWriter, double stopTime, double communicationInterval, bool realtime_sync)
 {
   logTrace();
 
@@ -934,10 +950,11 @@ oms_status_enu_t oms2::FMICompositeModel::stepUntilPCTPL(ResultWriter& resultWri
     fmus.push_back(it->second);
 
   int numThreads = nFMUs < std::thread::hardware_concurrency() ? nFMUs : std::thread::hardware_concurrency();
-  logInfo(std::string("oms2::FMICompositeModel::simulatePCTPL: Creating thread pool with ") + std::to_string(numThreads) + std::string(" threads in the pool"));
+  logInfo(std::string("oms2::FMICompositeModel::stepUntilPCTPL: Creating thread pool with ") + std::to_string(numThreads) + std::string(" threads in the pool"));
   ctpl::thread_pool p(numThreads);
   std::vector<std::future<void>> results(numThreads);
 
+  auto start = std::chrono::steady_clock::now();
   while (time < stopTime)
   {
     logDebug("doStep: " + std::to_string(time) + " -> " + std::to_string(time+communicationInterval));
@@ -952,6 +969,19 @@ oms_status_enu_t oms2::FMICompositeModel::stepUntilPCTPL(ResultWriter& resultWri
     }
     for (int i = 0; i < nFMUs; ++i)
       results[i].get();
+
+    if (realtime_sync)
+    {
+      auto now = std::chrono::steady_clock::now();
+      // seems a cast to a sufficient high resolution of time is necessary for avoiding truncation errors
+      auto next = start + std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(time));
+      std::chrono::duration<double> margin = next - now;
+      // std::cout << "[oms2::FMICompositeModel::stepUntilStandard] doStep: " << std::to_string(time  - communicationInterval) << "s -> " << std::to_string(time) << "s, real-time margin=" << std::to_string(margin.count()) << "s" << std::endl;
+      if (margin < std::chrono::duration<double>(0))
+        logError(std::string("[oms2::FMICompositeModel::stepUntilPCTPL] real-time frame overrun, time=") + std::to_string(time) + std::string("s, exceeded margin=") + std::to_string(margin.count()) + std::string("s\n"));
+
+      std::this_thread::sleep_until(next);
+    }
 
     // input := output
     updateInputs(outputsGraph);

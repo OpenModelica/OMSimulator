@@ -847,16 +847,22 @@ oms_status_enu_t oms2_setResultFile(const char* cref, const char* filename)
   return oms2::Scope::GetInstance().setResultFile(oms2::ComRef(cref), std::string(filename));
 }
 
-oms_status_enu_t oms2_setMasterAlgorithm(const char* cref, const char* masterAlgorithm)
+oms_status_enu_t oms2_setMasterAlgorithm(const char* ident, const char* masterAlgorithm)
 {
   logTrace();
-  return oms2::Scope::GetInstance().setMasterAlgorithm(oms2::ComRef(cref), std::string(masterAlgorithm));
+  return oms2::Scope::GetInstance().setMasterAlgorithm(oms2::ComRef(ident), std::string(masterAlgorithm));
 }
 
 oms_status_enu_t experimental_setActivationRatio(const char* cref, int k)
 {
   logTrace();
   return oms2::Scope::GetInstance().setActivationRatio(oms2::ComRef(cref), k);
+}
+
+oms_status_enu_t experimental_simulate_realtime(const char* ident)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().simulate_realtime(oms2::ComRef(ident));
 }
 
 oms_status_enu_t oms2_exportCompositeStructure(const char* cref, const char* filename)

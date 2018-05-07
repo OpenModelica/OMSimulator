@@ -932,7 +932,20 @@ static int OMSimulatorLua_experimental_setActivationRatio(lua_State *L)
   int k = lua_tointeger(L, 2);
   oms_status_enu_t status = experimental_setActivationRatio(cref, k);
   lua_pushinteger(L, status);
-  return 0;
+  return 1;
+}
+
+//oms_status_enu_t experimental_simulate_realtime(const char* ident);
+static int OMSimulatorLua_experimental_simulate_realtime(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* ident = lua_tostring(L, 1);
+  oms_status_enu_t status = experimental_simulate_realtime(ident);
+  lua_pushinteger(L, status);
+  return 1;
 }
 
 //oms_status_enu_t oms2_exportCompositeStructure(const char* cref, const char* filename);
@@ -1629,6 +1642,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms2_setResultFile);
   REGISTER_LUA_CALL(oms2_setMasterAlgorithm);
   REGISTER_LUA_CALL(experimental_setActivationRatio);
+  REGISTER_LUA_CALL(experimental_simulate_realtime);
   REGISTER_LUA_CALL(oms2_setStartTime);
   REGISTER_LUA_CALL(oms2_setStopTime);
   REGISTER_LUA_CALL(oms2_setTempDirectory);
