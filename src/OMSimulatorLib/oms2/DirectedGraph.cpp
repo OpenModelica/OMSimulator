@@ -237,6 +237,7 @@ std::deque< std::vector<int> > oms2::DirectedGraph::getSCCs()
   delete[] d;
   delete[] low;
   delete[] scc;
+  delete[] stacked;
 
   return components;
 }
