@@ -158,7 +158,7 @@ bool ResultReader::compareSeries(Series* seriesA, Series* seriesB, double relTol
     else
       do iB++; while (iB < lengthB-1 && seriesB->time[iB] >= seriesB->time[iB + 1]);
 
-  } while (iA < lengthA && iB < lengthB);
+  } while (iA < lengthA-1 && iB < lengthB-1);
 
   return true;
 }
