@@ -6,6 +6,8 @@ MKDIR=mkdir -p
 CERES ?= ON
 # Option to enable the OMSysIdent parameter estimation module within the OMSimulator project
 OMSYSIDENT ?= ON
+# Option to enable AddressSanitizer
+ASAN ?= OFF
 
 detected_OS := $(shell uname -s)
 ifeq ($(detected_OS),Darwin)
@@ -83,7 +85,7 @@ config-OMSimulator:
 	@echo
 	$(RM) $(BUILD_DIR)
 	$(MKDIR) $(BUILD_DIR)
-	cd $(BUILD_DIR) && cmake $(CMAKE_TARGET) ../.. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DOMSYSIDENT:BOOL=$(OMSYSIDENT)
+	cd $(BUILD_DIR) && cmake $(CMAKE_TARGET) ../.. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DOMSYSIDENT:BOOL=$(OMSYSIDENT) -DASAN:BOOL=$(ASAN)
 
 config-fmil:
 	@echo
