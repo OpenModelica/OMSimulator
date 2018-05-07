@@ -230,6 +230,7 @@ std::deque< std::vector<int> > DirectedGraph::getSCCs()
   delete[] d;
   delete[] low;
   delete[] scc;
+  delete[] stacked;
 
   return components;
 }
