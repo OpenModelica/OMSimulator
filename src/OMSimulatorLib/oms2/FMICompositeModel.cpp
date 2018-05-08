@@ -960,14 +960,11 @@ oms_status_enu_t oms2::FMICompositeModel::stepUntilPCTPL(ResultWriter& resultWri
   return oms_status_ok;
 }
 
-void oms2::FMICompositeModel::simulate_asynchronous(ResultWriter& resultWriter, double stopTime, double communicationInterval, double cbPeriod, void (*cb)(const char* ident, double time, oms_status_enu_t status))
+void oms2::FMICompositeModel::simulate_asynchronous(ResultWriter& resultWriter, double stopTime, double communicationInterval, void (*cb)(const char* ident, double time, oms_status_enu_t status))
 {
   logTrace();
-
-  auto start = std::chrono::system_clock::now();
-  auto now = std::chrono::system_clock::now();
-  std::chrono::duration<double> elapsed_seconds = now-start;
-  std::chrono::duration<double> elapsed_seconds_previous = now-start;
+  oms_status_enu_t statusSubModel;
+  oms_status_enu_t status;
 
   while (time < stopTime)
   {
@@ -977,21 +974,19 @@ void oms2::FMICompositeModel::simulate_asynchronous(ResultWriter& resultWriter, 
       time = stopTime;
 
     // do_step
+    status = oms_status_ok;
     for (const auto& it : subModels)
-      it.second->doStep(time);
+    {
+      statusSubModel = it.second->doStep(time);
+      status = statusSubModel > status ? statusSubModel : status;
+    }
 
     // input := output
     updateInputs(outputsGraph);
     emit(resultWriter);
 
-    now = std::chrono::system_clock::now();
-    elapsed_seconds = now-start;
-    if ((elapsed_seconds - elapsed_seconds_previous) > std::chrono::duration<double>(cbPeriod)) {
-      // bthiele: FIXME not meaningfull to always return oms_status_ok, but this is consistent with what `simulate` does. Behaviour should be (consistently) changed in `simulate` and `simulate_asynchronous`
-      cb(this->getName().c_str(), time, oms_status_ok);
-    }
+    cb(this->getName().c_str(), time, status);
   }
-  cb(this->getName().c_str(), time, oms_status_ok);
 }
 
 oms_status_enu_t oms2::FMICompositeModel::simulateTLM(ResultWriter* resultWriter, double stopTime, double communicationInterval, std::string server)

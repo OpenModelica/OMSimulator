@@ -666,10 +666,10 @@ oms_status_enu_t oms2_terminate(const char* ident)
   return oms2::Scope::GetInstance().terminate(oms2::ComRef(ident));
 }
 
-oms_status_enu_t oms2_simulate_asynchronous(const char* ident, double cbPeriod, void (*cb)(const char* ident, double time, oms_status_enu_t status))
+oms_status_enu_t oms2_simulate_asynchronous(const char* ident, void (*cb)(const char* ident, double time, oms_status_enu_t status))
 {
   logTrace();
-  return oms2::Scope::GetInstance().simulate_asynchronous(oms2::ComRef(ident), cbPeriod, cb);
+  return oms2::Scope::GetInstance().simulate_asynchronous(oms2::ComRef(ident), cb);
 }
 
 void oms2_setLoggingCallback(void (*cb)(oms_message_type_enu_t type, const char* message))

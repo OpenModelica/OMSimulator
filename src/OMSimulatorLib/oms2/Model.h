@@ -85,7 +85,7 @@ namespace oms2
     oms_status_enu_t reset();
     oms_status_enu_t terminate();
     oms_status_enu_t simulate();
-    oms_status_enu_t simulate_asynchronous(double cbPeriod, void (*cb)(const char* ident, double time, oms_status_enu_t status));
+    oms_status_enu_t simulate_asynchronous(void (*cb)(const char* ident, double time, oms_status_enu_t status));
     oms_status_enu_t doSteps(const int numberOfSteps);
     oms_status_enu_t stepUntil(const double timeValue);
 
