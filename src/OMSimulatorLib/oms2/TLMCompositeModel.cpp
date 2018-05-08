@@ -57,6 +57,18 @@ oms2::TLMCompositeModel::TLMCompositeModel(const ComRef& name)
 
 oms2::TLMCompositeModel::~TLMCompositeModel()
 {
+    //Cleanup TLM interfaces
+    for(TLMInterface *ifc : interfaces) {
+        delete ifc;
+    }
+    interfaces.clear();
+
+    //Cleanup external models
+    std::map<ComRef, ExternalModel*>::iterator it;
+    for(it = externalModels.begin(); it != externalModels.end(); ++it) {
+        delete it->second;
+    }
+    externalModels.clear();
 }
 
 oms2::TLMCompositeModel* oms2::TLMCompositeModel::NewModel(const ComRef& name)
