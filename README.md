@@ -2,7 +2,7 @@
 
 The OMSimulator project is a FMI-based co-simulation environment that supports ordinary (i.e., non-delayed) and TLM connections.
 
-Pre-compiled binaries are available for [Windows](https://test.openmodelica.org/hudson/job/OMSimulator-Windows-GCC/lastSuccessfulBuild/artifact/OMSimulator/install/mingw/OMSimulator-mingw-master.zip).
+Pre-compiled binaries are available for [Windows-MSVC](https://test.openmodelica.org/hudson/job/OMSimulator-Windows-MSVC/lastSuccessfulBuild/artifact/OMSimulator/install/win/OMSimulator-win-master.zip) and [Windows-GCC](https://test.openmodelica.org/hudson/job/OMSimulator-Windows-GCC/lastSuccessfulBuild/artifact/OMSimulator/install/mingw/OMSimulator-mingw-master.zip).
 
 The latest documentation is avilable as [pdf](https://openmodelica.org/doc/OMSimulator/OMSimulator.pdf) and [html](https://openmodelica.org/doc/OMSimulator/html/).
 
