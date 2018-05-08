@@ -284,7 +284,7 @@ oms_status_enu_t oms2::Scope::simulate(const ComRef& name)
   return model->simulate();
 }
 
-oms_status_enu_t oms2::Scope::simulate_asynchronous(const ComRef& name,  double cbPeriod, void (*cb)(const char* ident, double time, oms_status_enu_t status))
+oms_status_enu_t oms2::Scope::simulate_asynchronous(const ComRef& name, void (*cb)(const char* ident, double time, oms_status_enu_t status))
 {
   logTrace();
 
@@ -292,7 +292,7 @@ oms_status_enu_t oms2::Scope::simulate_asynchronous(const ComRef& name,  double 
   if (!model)
     return oms_status_error;
 
-  return model->simulate_asynchronous(cbPeriod, cb);
+  return model->simulate_asynchronous(cb);
 }
 
 oms_status_enu_t oms2::Scope::doSteps(const ComRef& name, const int numberOfSteps)

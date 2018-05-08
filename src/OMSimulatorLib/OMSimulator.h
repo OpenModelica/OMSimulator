@@ -484,11 +484,10 @@ oms_status_enu_t oms2_simulate(const char* ident);
  * \brief Simulates a composite model in its own thread.
  *
  * \param ident            [in] Name of the model instance
- * \param cbPeriod         [in] Period duration in seconds between calls to callback function cb
- * \param cb               [in] Callback function which to be called periodically
+ * \param cb               [in] Callback function which is called after every completed step of the composite model
  * \return                 Error status
  */
-oms_status_enu_t oms2_simulate_asynchronous(const char* ident, double cbPeriod, void (*cb)(const char* ident, double time, oms_status_enu_t status));
+oms_status_enu_t oms2_simulate_asynchronous(const char* ident, void (*cb)(const char* ident, double time, oms_status_enu_t status));
 
 /**
  * \brief Simulates a composite model for a given number of steps (works for both FMI and TLM).

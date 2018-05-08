@@ -352,7 +352,7 @@ oms_status_enu_t oms2::Model::stepUntil(const double timeValue)
   return status;
 }
 
-oms_status_enu_t oms2::Model::simulate_asynchronous(double cbPeriod, void (*cb)(const char* ident, double time, oms_status_enu_t status))
+oms_status_enu_t oms2::Model::simulate_asynchronous(void (*cb)(const char* ident, double time, oms_status_enu_t status))
 {
   if (oms_modelState_simulation != modelState)
   {
@@ -360,7 +360,7 @@ oms_status_enu_t oms2::Model::simulate_asynchronous(double cbPeriod, void (*cb)(
     return oms_status_error;
   }
 
-  std::thread([=]{compositeModel->simulate_asynchronous(*resultFile, stopTime, communicationInterval, cbPeriod, cb);}).detach();
+  std::thread([=]{compositeModel->simulate_asynchronous(*resultFile, stopTime, communicationInterval, cb);}).detach();
 
   return oms_status_ok;
 }
