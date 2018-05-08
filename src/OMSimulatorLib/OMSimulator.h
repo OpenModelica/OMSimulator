@@ -785,22 +785,35 @@ oms_status_enu_t oms2_setResultFile(const char* cref, const char* filename);
  *
  * Experimental master algorithms (no stable API!): "pctpl", "pmrchannela", "pmrchannelcv", "pmrchannelm"
  *
- * \param cref              [in] Name of the model instance
+ * \param ident              [in] Name of the model instance
  * \param masterAlgorithm   [in] Master algorithm.
  * \return                  Error status
  */
-oms_status_enu_t oms2_setMasterAlgorithm(const char* cref, const char* masterAlgorithm);
+oms_status_enu_t oms2_setMasterAlgorithm(const char* ident, const char* masterAlgorithm);
 
 
 /**
- * \brief Experimental class for setting the activation ratio of FMUs for
- *  experimenting with multi-rate mater algorithms.
+ * \brief Experimental feature for setting the activation ratio of FMUs for
+ *  experimenting with multi-rate master algorithms.
+ *
+ * \warning Not part of the stable API, will be changed or removed without notice.
  *
  * \param cref      [in] Full identifier of a component
  * \param k         [in] Activation ratio (k=1 means activate every communicationInterval)
  * \return          Error status
  */
 oms_status_enu_t experimental_setActivationRatio(const char* cref, int k);
+
+
+/**
+ * \brief Experimental feature for (soft) real-time simulation.
+ *
+ * \warning Not part of the stable API, will be changed or removed without notice.
+ *
+ * \param ident   [in] Name of the model instance
+ * \return        Error status
+ */
+oms_status_enu_t experimental_simulate_realtime(const char* ident);
 
 
 /**

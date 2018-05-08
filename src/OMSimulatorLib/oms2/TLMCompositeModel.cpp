@@ -361,7 +361,7 @@ oms_status_enu_t oms2::TLMCompositeModel::doSteps(ResultWriter& resultWriter, co
   return logError("oms2::TLMCompositeModel::doSteps: not implemented yet");
 }
 
-oms_status_enu_t oms2::TLMCompositeModel::stepUntil(ResultWriter &resultWriter, double stopTime, double communicationInterval, oms2::MasterAlgorithm masterAlgorithm)
+oms_status_enu_t oms2::TLMCompositeModel::stepUntil(ResultWriter &resultWriter, double stopTime, double communicationInterval, oms2::MasterAlgorithm masterAlgorithm, bool realtime_sync)
 {
   if(fmiModels.empty() && externalModels.empty())
     logWarning("oms2::TLMCompositeModel::stepUntil: Simulating empty model...");
