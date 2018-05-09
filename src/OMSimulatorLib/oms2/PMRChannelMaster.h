@@ -29,6 +29,7 @@
  *
  */
 
+#include <limits>
 #include "PMRChannel.h"
 #include "PMRChannelMap.h"
 #include "FMISubModel.h"
@@ -81,7 +82,6 @@ oms_status_enu_t oms2::stepUntilPMRChannel(ResultWriter& resultWriter, double st
   /* Spawn threads */
   std::vector<std::thread> t;
   int i;
-
   std::map<oms2::ComRef, oms2::FMISubModel*>::iterator it;
   for (it=subModels.begin(), i=0; it != subModels.end(); ++it, ++i) {
     std::string fmuInstName = it->first.toString();
@@ -155,29 +155,28 @@ inline void oms2::writeOutputToConnectedInputChannels(int output, oms2::PMRChann
   oms2::DirectedGraph* graph = channels.graph;
   if (graph->nodes[output].isTypeReal())
   {
-      double value = 0;
-      fmu->getReal(graph->nodes[output].getSignalRef(), value);
-      for (int input: channels.connectedInputs(output)) {
-        channels.realChannel(input).write(value);
-      }
+    double value = 0;
+    fmu->getReal(graph->nodes[output].getSignalRef(), value);
+    for (int input: channels.connectedInputs(output)) {
+      channels.realChannel(input).write(value);
+    }
   }
   else if (graph->nodes[output].isTypeInteger())
   {
     int value = 0;
-    logError("writeOutputToConnectedInputChannels: Support for Integer type not implemented, yet");
-    // fmu->getInteger(graph->nodes[output].getSignalRef(), value);
-    // for (int input: channels.connectedInputs(output)) {
-    //   channels.integerChannel(input).write(value);
-    // }
+    fmu->getInteger(graph->nodes[output].getSignalRef(), value);
+    static_assert(sizeof(int) < 7, "Not posssible to store 'int' in 'double' without loosing precission on this platform"); // limited by 52 bit size of mantissa in doubles
+    for (int input: channels.connectedInputs(output)) {
+      channels.realChannel(input).write(static_cast<double>(value));
+    }
   }
   else if (graph->nodes[output].isTypeBoolean())
   {
-    int value = 0; //
-    logError("writeOutputToConnectedInputChannels: Support for Boolean type not implemented, yet");
-    // fmu->getBoolean(graph->nodes[output].getSignalRef(), value);
-    // for (int input: channels.connectedInputs(output)) {
-    //   channels.integerChannel(input).write(value); // also use integer channel for Booleans?
-    // }
+    bool value = 0;
+    fmu->getBoolean(graph->nodes[output].getSignalRef(), value);
+    for (int input: channels.connectedInputs(output)) {
+      channels.realChannel(input).write(static_cast<double>(value));
+    }
   }
   else {
     logError("writeOutputToConnectedInputChannels: Unsupported type");
@@ -196,11 +195,22 @@ inline void oms2::writeInputChannelToFMU(int input, oms2::PMRChannelMap<PMRChann
   }
   else if (graph->nodes[input].isTypeInteger())
   {
-    logError("writeInputChannelToFMU: Support for Integer type not implemented, yet");
+    double value_stored_as_double = channels.realChannel(input).read();
+    if (value_stored_as_double < std::numeric_limits<int>::min() || value_stored_as_double > std::numeric_limits<int>::max())
+    {
+      logError("[oms2::writeInputChannelToFMU] Overflow in conversion from double to int");
+    }
+    else
+    {
+      int value = static_cast<int>(value_stored_as_double);
+      fmu->setInteger(graph->nodes[input].getSignalRef(), value);
+    }
   }
   else if (graph->nodes[input].isTypeBoolean())
   {
-    logError("writeInputChannelToFMU: Support for Boolean type not implemented, yet");
+    double value_stored_as_double = channels.realChannel(input).read();
+    bool value = static_cast<bool>(value_stored_as_double);
+    fmu->setBoolean(graph->nodes[input].getSignalRef(), value);
   }
   else {
     logError("writeInputChannelToFMU: Unsupported type");

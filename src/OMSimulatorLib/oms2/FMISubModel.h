@@ -73,6 +73,10 @@ namespace oms2
 
     virtual oms_status_enu_t setReal(const oms2::SignalRef& sr, double value) = 0;
     virtual oms_status_enu_t getReal(const oms2::SignalRef& sr, double& value) = 0;
+    virtual oms_status_enu_t setInteger(const oms2::SignalRef& sr, int value) = 0;
+    virtual oms_status_enu_t getInteger(const oms2::SignalRef& sr, int& value) = 0;
+    virtual oms_status_enu_t setBoolean(const oms2::SignalRef& sr, bool value) = 0;
+    virtual oms_status_enu_t getBoolean(const oms2::SignalRef& sr, bool& value) = 0;
     virtual oms_status_enu_t setRealInputDerivatives(const oms2::SignalRef& sr, int order, double value) = 0;
 
     virtual oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultWriter) = 0;
@@ -80,7 +84,7 @@ namespace oms2
 
     void setActivationRatio(int k) {eclock.k  = k;}
     int getActivationRatio() const {return eclock.k;}
-    
+
   protected:
     FMISubModel(oms_element_type_enu_t type, const ComRef& cref);
     virtual ~FMISubModel();

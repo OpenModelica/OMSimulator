@@ -165,3 +165,24 @@ oms_status_enu_t oms2::Table::setRealInputDerivatives(const oms2::SignalRef &sr,
 {
   return logError("[oms2::Table::setRealInputDerivatives] failed");
 }
+
+oms_status_enu_t oms2::Table::setInteger(const oms2::SignalRef& sr, int integerValue)
+{
+  return logError("[oms2::Table::setInteger] failed (not (yet) implemented)");
+}
+
+oms_status_enu_t oms2::Table::getInteger(const oms2::SignalRef& sr, int& integerValue)
+{
+
+  return logError("[oms2::Table::getInteger] failed (not (yet) implemented)");
+}
+
+oms_status_enu_t oms2::Table::setBoolean(const oms2::SignalRef& sr, bool booleanValue)
+{
+  return logError("[oms2::Table::setInteger] failed (not (yet) implemented)");
+}
+
+oms_status_enu_t oms2::Table::getBoolean(const oms2::SignalRef& sr, bool& booleanValue)
+{
+  return logError("[oms2::Table::getInteger] failed (not (yet) implemented)");
+}
