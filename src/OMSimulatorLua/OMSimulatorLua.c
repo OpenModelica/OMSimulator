@@ -1615,48 +1615,49 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   /*                                      */
   /* TODO: replace prefix oms2 with oms   */
   /* ************************************ */
+  REGISTER_LUA_CALL(experimental_setActivationRatio);
+  REGISTER_LUA_CALL(experimental_simulate_realtime);
   REGISTER_LUA_CALL(oms2_addConnection);
+  REGISTER_LUA_CALL(oms2_addConnection);
+  REGISTER_LUA_CALL(oms2_addExternalModel);
+  REGISTER_LUA_CALL(oms2_addFMISubModel);
   REGISTER_LUA_CALL(oms2_addFMU);
   REGISTER_LUA_CALL(oms2_addTable);
+  REGISTER_LUA_CALL(oms2_addTLMConnection);
+  REGISTER_LUA_CALL(oms2_addTLMInterface);
   REGISTER_LUA_CALL(oms2_deleteConnection);
   REGISTER_LUA_CALL(oms2_deleteSubModel);
   REGISTER_LUA_CALL(oms2_exportCompositeStructure);
   REGISTER_LUA_CALL(oms2_exportDependencyGraphs);
-  REGISTER_LUA_CALL(oms2_getElements);
-  REGISTER_LUA_CALL(oms2_getReal);
-  REGISTER_LUA_CALL(oms2_setReal);
-  REGISTER_LUA_CALL(oms2_getInteger);
-  REGISTER_LUA_CALL(oms2_setInteger);
   REGISTER_LUA_CALL(oms2_getBoolean);
-  REGISTER_LUA_CALL(oms2_setBoolean);
+  REGISTER_LUA_CALL(oms2_getElements);
+  REGISTER_LUA_CALL(oms2_getInteger);
+  REGISTER_LUA_CALL(oms2_getReal);
   REGISTER_LUA_CALL(oms2_initialize);
   REGISTER_LUA_CALL(oms2_loadModel);
   REGISTER_LUA_CALL(oms2_newFMIModel);
   REGISTER_LUA_CALL(oms2_newTLMModel);
   REGISTER_LUA_CALL(oms2_rename);
+  REGISTER_LUA_CALL(oms2_reset);
   REGISTER_LUA_CALL(oms2_saveModel);
+  REGISTER_LUA_CALL(oms2_setBoolean);
   REGISTER_LUA_CALL(oms2_setCommunicationInterval);
+  REGISTER_LUA_CALL(oms2_setInteger);
   REGISTER_LUA_CALL(oms2_setLogFile);
   REGISTER_LUA_CALL(oms2_setLoggingLevel);
+  REGISTER_LUA_CALL(oms2_setMasterAlgorithm);
+  REGISTER_LUA_CALL(oms2_setReal);
   REGISTER_LUA_CALL(oms2_setRealParameter);
   REGISTER_LUA_CALL(oms2_setResultFile);
-  REGISTER_LUA_CALL(oms2_setMasterAlgorithm);
-  REGISTER_LUA_CALL(experimental_setActivationRatio);
-  REGISTER_LUA_CALL(experimental_simulate_realtime);
   REGISTER_LUA_CALL(oms2_setStartTime);
   REGISTER_LUA_CALL(oms2_setStopTime);
   REGISTER_LUA_CALL(oms2_setTempDirectory);
+  REGISTER_LUA_CALL(oms2_setTLMSocketData);
   REGISTER_LUA_CALL(oms2_setWorkingDirectory);
   REGISTER_LUA_CALL(oms2_simulate);
   REGISTER_LUA_CALL(oms2_stepUntil);
   REGISTER_LUA_CALL(oms2_terminate);
   REGISTER_LUA_CALL(oms2_unloadModel);
-  REGISTER_LUA_CALL(oms2_addExternalModel);
-  REGISTER_LUA_CALL(oms2_addFMISubModel);
-  REGISTER_LUA_CALL(oms2_addTLMInterface);
-  REGISTER_LUA_CALL(oms2_addConnection);
-  REGISTER_LUA_CALL(oms2_addTLMConnection);
-  REGISTER_LUA_CALL(oms2_setTLMSocketData);
 
   /* ************************************ */
   /* OMSysIdent API                       */
