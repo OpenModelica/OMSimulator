@@ -45,9 +45,9 @@ class OMSysIdent:
 
         """
         if (sys.platform == 'win32'):
-            self.obj=cdll.LoadLibrary("OMSysIdent.dll")
+            self.obj=cdll.LoadLibrary("OMSimulatorLib.dll")
         else:
-            self.obj=cdll.LoadLibrary("libOMSysIdent.so")
+            self.obj=cdll.LoadLibrary("libOMSimulatorLib.so")
         self.setCtypesArguments()
         self.setResultTypes()
         self.simodel = self.obj.omsi_newSysIdentModel(model)
