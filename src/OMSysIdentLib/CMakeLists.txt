@@ -30,15 +30,7 @@ set(OMSYSIDENTLIB_SOURCES OMSysIdent.cpp FitModel.cpp)
 set(OMSYSIDENTLIB_LIBRARIES OMSimulatorLib ${FMILibrary_LIBRARY} sundials_cvode sundials_nvecserial ${CMAKE_DL_LIBS} ${Boost_LIBRARIES} ${CERES_LIBRARIES} omtlmsimulator)
 # set(OMSYSIDENTLIB_LIBS2 OMSimulatorLib_shared fmilib_shared sundials_cvode sundials_nvecserial)
 
-# Shared library version
-add_library(OMSysIdent_shared SHARED ${OMSYSIDENTLIB_SOURCES})
-set_property(TARGET OMSysIdent_shared PROPERTY CXX_STANDARD 11)
-set_target_properties(OMSysIdent_shared PROPERTIES OUTPUT_NAME OMSysIdent)
-target_link_libraries(OMSysIdent_shared ${OMSYSIDENTLIB_LIBRARIES})
-install(TARGETS OMSysIdent_shared DESTINATION lib)
-install(TARGETS OMSysIdent_shared DESTINATION bin)
-
-# Static library version
+# Static library, to be linked into the OMSimulatorLib shared library and the OMSimulator executable
 add_library(OMSysIdent STATIC ${OMSYSIDENTLIB_SOURCES})
 set_property(TARGET OMSysIdent PROPERTY CXX_STANDARD 11)
 set_target_properties(OMSysIdent PROPERTIES POSITION_INDEPENDENT_CODE ON)
