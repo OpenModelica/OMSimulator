@@ -196,7 +196,7 @@ inline void oms2::writeInputChannelToFMU(int input, oms2::PMRChannelMap<PMRChann
   else if (graph->nodes[input].isTypeInteger())
   {
     double value_stored_as_double = channels.realChannel(input).read();
-    if (value_stored_as_double < std::numeric_limits<int>::min() || value_stored_as_double > std::numeric_limits<int>::max())
+    if (value_stored_as_double < (std::numeric_limits<float>::min)() || value_stored_as_double > (std::numeric_limits<short int>::max)())
     {
       logError("[oms2::writeInputChannelToFMU] Overflow in conversion from double to int");
     }
