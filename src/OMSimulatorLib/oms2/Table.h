@@ -74,6 +74,10 @@ namespace oms2
     oms_status_enu_t setReal(const oms2::SignalRef& sr, double value);
     oms_status_enu_t getReal(const oms2::SignalRef& sr, double& value);
     oms_status_enu_t setRealInputDerivatives(const SignalRef &sr, int order, double value);
+    oms_status_enu_t setInteger(const oms2::SignalRef& sr, int integerValue);
+    oms_status_enu_t getInteger(const oms2::SignalRef& sr, int& integerValue);
+    oms_status_enu_t setBoolean(const oms2::SignalRef& sr, bool booleanValue);
+    oms_status_enu_t getBoolean(const oms2::SignalRef& sr, bool& booleanValue);
 
     oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultWriter) {return oms_status_ok;}
     oms_status_enu_t emit(ResultWriter& resultWriter) {return oms_status_ok;}

@@ -61,15 +61,13 @@ namespace oms2
 
     const std::vector<int>& orderedIOAccess(std::string modelCref) const {return cref_orderedIOAcceses_map.at(modelCref);}
     const std::vector<int>& connectedInputs(int outputNodeIndex) const {return output_connectedInputs_map.at(outputNodeIndex);}
-    PMRChannel<double>& realChannel(int inputNodeIndex) {return input_channel_map.at(inputNodeIndex);}
-    // TODO `integerChannel(..)` `booleanChannel(..)` ...
-
+    PMRChannel<double>& realChannel(int inputNodeIndex) {return input_channel_real_map.at(inputNodeIndex);}
     DirectedGraph* graph;
 
   private:
     std::map<std::string, std::vector<int> > cref_orderedIOAcceses_map;
     std::map<int, std::vector<int> > output_connectedInputs_map;
-    std::map<int, PMRChannel<double> > input_channel_map;
+    std::map<int, PMRChannel<double> > input_channel_real_map;
   };
 }
 
@@ -106,7 +104,7 @@ oms2::PMRChannelMap<PMRChannel>::PMRChannelMap(DirectedGraph* dg) : graph(dg)
 
       // ********************************************
       // bthiele: Below is rather ugly code to determine the rate transition using the experimental quick-and-dirty facilities.
-      // Should do for experimenting with it, but a more mature implementation should aim for a nicer way.
+      // Should do for experimenting with it, but a more final implementation could do it nicer ...
       int arInput=1, arOutput=1, k=1;
       RateTransition rt;
       Model* model = oms2::Scope::GetInstance().getModel(dg->nodes[input].getCref().first());
@@ -126,6 +124,7 @@ oms2::PMRChannelMap<PMRChannel>::PMRChannelMap(DirectedGraph* dg) : graph(dg)
       {
         logError("[oms2::PMRChannelMap<PMRChannel>::PMRChannelMap] is only implemented for FMI models yet");
       }
+
       if (arOutput < arInput)
       {
         rt = RateTransition::FASTTOSLOW;
@@ -148,7 +147,8 @@ oms2::PMRChannelMap<PMRChannel>::PMRChannelMap(DirectedGraph* dg) : graph(dg)
         }
         k = arOutput / arInput;
       }
-      else {
+      else
+      {
         rt = RateTransition::SAME;
         k = 1;
       }
@@ -159,8 +159,19 @@ oms2::PMRChannelMap<PMRChannel>::PMRChannelMap(DirectedGraph* dg) : graph(dg)
       cref_orderedIOAcceses_map[outputFMU].push_back(output);
       cref_orderedIOAcceses_map[inputFMU].push_back(input);
       output_connectedInputs_map[output].push_back(input);
-      // https://stackoverflow.com/questions/27960325/stdmap-emplace-without-copying-value
-      input_channel_map.emplace(std::piecewise_construct,std::forward_as_tuple(input), std::forward_as_tuple(rt, k));
+
+      // Do without separate channels for real, integers, or booleans and instead map everything to a "double" channel.
+      // This allows interconnections (e.g., integer->real) which seems useful to allow
+      if (dg->nodes[input].isTypeReal() || dg->nodes[input].isTypeInteger() || dg->nodes[input].isTypeBoolean())
+      {
+        // https://stackoverflow.com/questions/27960325/stdmap-emplace-without-copying-value
+        input_channel_real_map.emplace(std::piecewise_construct,std::forward_as_tuple(input), std::forward_as_tuple(rt, k));
+      }
+      else
+      {
+        logError("oms2::PMRChannelMap::PMRChannelMap: Unsupported type");
+      }
+
     }
     else
     {
