@@ -15,6 +15,7 @@
 import sys
 import os
 import git
+import re
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -277,17 +278,26 @@ texinfo_documents = [
 
 OMSimulatorLib = ""
 OMSimulatorLua = ""
+OMSysIdentLua = ""
 
 for filename in os.listdir('api'):
-  OMSimulatorLib = OMSimulatorLib + ".. " + filename + "\n\n"
-  OMSimulatorLib = OMSimulatorLib + ".. include:: api/" + filename + "\n  :start-after: #CAPTION#\n  :end-before: #END#\n\n"
-  OMSimulatorLib = OMSimulatorLib + ".. include:: api/" + filename + "\n  :start-after: #CAPI#\n  :end-before: #END#\n\n"
-  OMSimulatorLib = OMSimulatorLib + ".. include:: api/" + filename + "\n  :start-after: #DESCRIPTION#\n  :end-before: #END#\n\n"
+  m_omsi_api = re.match( r'omsi_', filename)
+  if m_omsi_api:
+    OMSysIdentLua = OMSysIdentLua + ".. " + filename + "\n\n"
+    OMSysIdentLua = OMSysIdentLua + ".. include:: api/" + filename + "\n  :start-after: #CAPTION#\n  :end-before: #END#\n\n"
+    OMSysIdentLua = OMSysIdentLua + ".. include:: api/" + filename + "\n  :start-after: #LUA#\n  :end-before: #END#\n\n"
+    OMSysIdentLua = OMSysIdentLua + ".. include:: api/" + filename + "\n  :start-after: #DESCRIPTION#\n  :end-before: #END#\n\n"
+  else:
+    OMSimulatorLib = OMSimulatorLib + ".. " + filename + "\n\n"
+    OMSimulatorLib = OMSimulatorLib + ".. include:: api/" + filename + "\n  :start-after: #CAPTION#\n  :end-before: #END#\n\n"
+    OMSimulatorLib = OMSimulatorLib + ".. include:: api/" + filename + "\n  :start-after: #CAPI#\n  :end-before: #END#\n\n"
+    OMSimulatorLib = OMSimulatorLib + ".. include:: api/" + filename + "\n  :start-after: #DESCRIPTION#\n  :end-before: #END#\n\n"
 
-  OMSimulatorLua = OMSimulatorLua + ".. " + filename + "\n\n"
-  OMSimulatorLua = OMSimulatorLua + ".. include:: api/" + filename + "\n  :start-after: #CAPTION#\n  :end-before: #END#\n\n"
-  OMSimulatorLua = OMSimulatorLua + ".. include:: api/" + filename + "\n  :start-after: #LUA#\n  :end-before: #END#\n\n"
-  OMSimulatorLua = OMSimulatorLua + ".. include:: api/" + filename + "\n  :start-after: #DESCRIPTION#\n  :end-before: #END#\n\n"
+    OMSimulatorLua = OMSimulatorLua + ".. " + filename + "\n\n"
+    OMSimulatorLua = OMSimulatorLua + ".. include:: api/" + filename + "\n  :start-after: #CAPTION#\n  :end-before: #END#\n\n"
+    OMSimulatorLua = OMSimulatorLua + ".. include:: api/" + filename + "\n  :start-after: #LUA#\n  :end-before: #END#\n\n"
+    OMSimulatorLua = OMSimulatorLua + ".. include:: api/" + filename + "\n  :start-after: #DESCRIPTION#\n  :end-before: #END#\n\n"
 
 open("OMSimulatorLib.inc", "w").write("%s" % OMSimulatorLib)
 open("OMSimulatorLua.inc", "w").write("%s" % OMSimulatorLua)
+open("OMSysIdentLua.inc", "w").write("%s" % OMSysIdentLua)
