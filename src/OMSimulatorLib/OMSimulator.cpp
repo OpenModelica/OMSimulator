@@ -876,3 +876,10 @@ oms_status_enu_t oms2_exportDependencyGraphs(const char* cref, const char* initi
   logTrace();
   return oms2::Scope::GetInstance().exportDependencyGraphs(oms2::ComRef(cref), std::string(initialization), std::string(simulation));
 }
+
+oms_status_enu_t oms2_getCurrentTime(const char* model, double* time)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().getCurrentTime(oms2::ComRef(model), time);
+
+}
