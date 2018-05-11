@@ -1563,3 +1563,29 @@ oms_status_enu_t oms2::Scope::exportDependencyGraphs(const ComRef& cref, const s
   }
   return oms_status_error;
 }
+
+oms_status_enu_t oms2::Scope::getCurrentTime(const oms2::ComRef& cref, double* time)
+{
+  if (cref.isIdent())
+  {
+    // Model
+    Model* model = getModel(cref);
+    if (!model)
+    {
+      logError("[oms2::Scope::exportDependencyGraphs] failed");
+      return oms_status_error;
+    }
+
+    // FMI model?
+    if (oms_component_fmi == model->getType())
+    {
+      FMICompositeModel* fmiModel = model->getFMICompositeModel();
+      *time = fmiModel->getCurrentTime();
+      return oms_status_ok;
+    }
+
+    logError("[oms2::Scope::getCurrentTime] is only implemented for FMI models yet");
+    return oms_status_error;
+  }
+  return oms_status_error;
+}
