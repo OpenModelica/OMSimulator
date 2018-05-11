@@ -99,6 +99,8 @@ namespace oms2
 
     oms_status_enu_t addTLMInterface(TLMInterface *ifc);
 
+    double getCurrentTime() {return time;}
+
 
   private:
     oms_status_enu_t loadElementGeometry(const pugi::xml_node& node);

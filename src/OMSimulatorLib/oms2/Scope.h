@@ -105,6 +105,7 @@ namespace oms2
     oms_status_enu_t setActivationRatio(const ComRef& cref, int k);
     oms_status_enu_t exportCompositeStructure(const ComRef& cref, const std::string& filename);
     oms_status_enu_t exportDependencyGraphs(const ComRef& cref, const std::string& initialization, const std::string& simulation);
+    oms_status_enu_t getCurrentTime(const ComRef& cref, double* time);
 
     const std::string& getTempDirectory() {return GetInstance().tempDir;}
     const std::string& getWorkingDirectory() {return GetInstance().workingDir;}

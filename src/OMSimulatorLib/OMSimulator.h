@@ -835,6 +835,15 @@ oms_status_enu_t oms2_exportCompositeStructure(const char* cref, const char* fil
  */
 oms_status_enu_t oms2_exportDependencyGraphs(const char* cref, const char* initialization, const char* simulation);
 
+/**
+ * \brief Get current simulation time.
+ *
+ * \param model [in]  Name of the model instance
+ * \param time  [out] Minimal time value that is reached by all instances
+ * \return Error status
+ */
+oms_status_enu_t oms2_getCurrentTime(const char* model, double* time);
+
 #ifdef __cplusplus
 }
 #endif

@@ -43,6 +43,12 @@
 
 #include <boost/filesystem.hpp>
 
+#include "cvode/cvode.h"             /* prototypes for CVODE fcts., consts. */
+#include "nvector/nvector_serial.h"  /* serial N_Vector types, fcts., macros */
+#include "cvode/cvode_dense.h"       /* prototype for CVDense */
+#include "sundials/sundials_dense.h" /* definitions DlsMat DENSE_ELEM */
+#include "sundials/sundials_types.h" /* definition of type realtype */
+
 namespace oms2
 {
   void fmiLogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message);
@@ -96,8 +102,30 @@ void oms2::fmi2logger(fmi2_component_environment_t env, fmi2_string_t instanceNa
   }
 }
 
+int oms2::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void *user_data)
+{
+  FMUWrapper *fmu = (FMUWrapper*)user_data;
+
+  // update states in FMU
+  for (size_t i = 0; i < fmu->n_states; ++i)
+    fmu->states[i] = NV_Ith_S(y, i);
+
+  // set states
+  fmi2_status_t fmistatus;
+  fmistatus = fmi2_import_set_continuous_states(fmu->fmu, fmu->states, fmu->n_states);
+  if (fmi2_status_ok != fmistatus) logError("fmi2_import_set_continuous_states failed");
+  // get state derivatives
+  fmistatus = fmi2_import_get_derivatives(fmu->fmu, fmu->states_der, fmu->n_states);
+  if (fmi2_status_ok != fmistatus) logError("fmi2_import_get_derivatives failed");
+
+  for (size_t i = 0; i < fmu->n_states; ++i)
+    NV_Ith_S(ydot, i) = fmu->states_der[i];
+
+  return 0;
+}
+
 oms2::FMUWrapper::FMUWrapper(const oms2::ComRef& cref, const std::string& filename)
-  : oms2::FMISubModel(oms_component_fmu, cref), fmuInfo(filename)
+  : oms2::FMISubModel(oms_component_fmu, cref), fmuInfo(filename), solverMethod(EXPLICIT_EULER)
 {
   this->context = NULL;
   this->fmu = NULL;
@@ -510,7 +538,104 @@ oms_status_enu_t oms2::FMUWrapper::exitInitialization()
     logDebug(std::to_string(n_states) + " states");
     logDebug(std::to_string(n_event_indicators) + " event indicators");
 
-    /// \todo initialize solver data
+    if (n_states < 1)
+      solverMethod = NO_SOLVER;
+
+    states = (double*)calloc(n_states, sizeof(double));
+    states_der = (double*)calloc(n_states, sizeof(double));
+    states_nominal = (double*)calloc(n_states, sizeof(double));
+    event_indicators = (double*)calloc(n_event_indicators, sizeof(double));
+    event_indicators_prev = (double*)calloc(n_event_indicators, sizeof(double));
+
+    if (n_states > 0)
+    {
+      // get states and state derivatives
+      fmistatus = fmi2_import_get_continuous_states(fmu, states, n_states);
+      if (fmi2_status_ok != fmistatus) logError("fmi2_import_get_continuous_states failed");
+      fmistatus = fmi2_import_get_derivatives(fmu, states_der, n_states);
+      if (fmi2_status_ok != fmistatus) logError("fmi2_import_get_derivatives failed");
+      fmistatus = fmi2_import_get_nominals_of_continuous_states(fmu, states_nominal, n_states);
+      if (fmi2_status_ok != fmistatus) logError("fmi2_import_get_nominals_of_continuous_states failed");
+    }
+    fmistatus = fmi2_import_get_event_indicators(fmu, event_indicators, n_event_indicators);
+    if (fmi2_status_ok != fmistatus) logError("fmi2_import_get_event_indicators failed");
+
+    if (n_states < 1)
+    {
+      this->solverMethod = NO_SOLVER;
+      logDebug("FMU '" + getName() + "' doesn't contain any state.");
+    }
+
+    // initialize solver data
+    if (NO_SOLVER == solverMethod)
+    {
+      if (n_states > 0)
+        return logError("No solver specified for FMU '" + getName() + "'");
+    }
+    else if (EXPLICIT_EULER == solverMethod)
+    {
+    }
+    else if (CVODE == solverMethod)
+    {
+      solverData.cvode.y = N_VNew_Serial(static_cast<long>(n_states));
+      if (!solverData.cvode.y) logError("SUNDIALS_ERROR: N_VNew_Serial() failed - returned NULL pointer");
+      for (size_t i = 0; i < n_states; ++i)
+        NV_Ith_S(solverData.cvode.y, i) = states[i];
+
+      solverData.cvode.abstol = N_VNew_Serial(static_cast<long>(n_states));
+      if (!solverData.cvode.abstol) logError("SUNDIALS_ERROR: N_VNew_Serial() failed - returned NULL pointer");
+      for (size_t i = 0; i < n_states; ++i)
+        NV_Ith_S(solverData.cvode.abstol, i) = 0.01*relativeTolerance*states_nominal[i];
+
+      // Call CVodeCreate to create the solver memory and specify the
+      // Backward Differentiation Formula and the use of a Newton iteration
+      solverData.cvode.mem = CVodeCreate(CV_BDF, CV_NEWTON);
+      if (!solverData.cvode.mem) logError("SUNDIALS_ERROR: CVodeCreate() failed - returned NULL pointer");
+
+      int flag = CVodeSetUserData(solverData.cvode.mem, (void*)this);
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetUserData() failed with flag = " + std::to_string(flag));
+
+      // Call CVodeInit to initialize the integrator memory and specify the
+      // user's right hand side function in y'=cvode_rhs(t,y), the inital time T0, and
+      // the initial dependent variable vector y.
+      flag = CVodeInit(solverData.cvode.mem, cvode_rhs, time, solverData.cvode.y);
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeInit() failed with flag = " + std::to_string(flag));
+
+      // Call CVodeSVtolerances to specify the scalar relative tolerance
+      // and vector absolute tolerances
+      flag = CVodeSVtolerances(solverData.cvode.mem, relativeTolerance, solverData.cvode.abstol);
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeSVtolerances() failed with flag = " + std::to_string(flag));
+
+      // Call CVDense to specify the CVDENSE dense linear solver */
+      flag = CVDense(solverData.cvode.mem, static_cast<long>(n_states));
+      if (flag < 0) logError("SUNDIALS_ERROR: CVDense() failed with flag = " + std::to_string(flag));
+
+      const fmi2_real_t stopTime = 1.0;
+      double max_h = (stopTime - time) / 10.0;
+      logInfo("maximum step size for '" + getName() + "': " + std::to_string(max_h));
+      flag = CVodeSetMaxStep(solverData.cvode.mem, max_h);
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetMaxStep() failed with flag = " + std::to_string(flag));
+
+      // further settings from cpp runtime
+      flag = CVodeSetInitStep(solverData.cvode.mem, 1e-6);        // INITIAL STEPSIZE
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetInitStep() failed with flag = " + std::to_string(flag));
+      flag = CVodeSetMaxOrd(solverData.cvode.mem, 5);             // MAXIMUM ORDER
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetMaxOrd() failed with flag = " + std::to_string(flag));
+      flag = CVodeSetMaxConvFails(solverData.cvode.mem, 100);     // MAXIMUM NUMBER OF NONLINEAR CONVERGENCE FAILURES
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetMaxConvFails() failed with flag = " + std::to_string(flag));
+      flag = CVodeSetStabLimDet(solverData.cvode.mem, TRUE);      // STABILITY DETECTION
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetStabLimDet() failed with flag = " + std::to_string(flag));
+      flag = CVodeSetMinStep(solverData.cvode.mem, 1e-12);        // MINIMUM STEPSIZE
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetMinStep() failed with flag = " + std::to_string(flag));
+      flag = CVodeSetMaxNonlinIters(solverData.cvode.mem, 5);     // MAXIMUM NUMBER OF ITERATIONS
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetMaxNonlinIters() failed with flag = " + std::to_string(flag));
+      flag = CVodeSetMaxErrTestFails(solverData.cvode.mem, 100);  // MAXIMUM NUMBER OF ERROR TEST FAILURES
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetMaxErrTestFails() failed with flag = " + std::to_string(flag));
+      flag = CVodeSetMaxNumSteps(solverData.cvode.mem, 1000);     // MAXIMUM NUMBER OF STEPS
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetMaxNumSteps() failed with flag = " + std::to_string(flag));
+    }
+    else
+      logError("Unknown solver method");
   }
   else
     return logError("Unsupported FMU kind");
@@ -530,7 +655,48 @@ oms_status_enu_t oms2::FMUWrapper::reset()
 {
   if (oms_fmi_kind_me == fmuInfo.getKind())
   {
-    // FIXME bthiele: reset solver data?
+    // free solver data
+    if (NO_SOLVER == solverMethod)
+    {
+    }
+    else if (EXPLICIT_EULER == solverMethod)
+    {
+    }
+    else if (CVODE == solverMethod)
+    {
+      long int nst, nfe, nsetups, nni, ncfn, netf;
+      int flag;
+
+      flag = CVodeGetNumSteps(solverData.cvode.mem, &nst);
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumSteps() failed with flag = " + std::to_string(flag));
+      flag = CVodeGetNumRhsEvals(solverData.cvode.mem, &nfe);
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumRhsEvals() failed with flag = " + std::to_string(flag));
+      flag = CVodeGetNumLinSolvSetups(solverData.cvode.mem, &nsetups);
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumLinSolvSetups() failed with flag = " + std::to_string(flag));
+      flag = CVodeGetNumErrTestFails(solverData.cvode.mem, &netf);
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumErrTestFails() failed with flag = " + std::to_string(flag));
+      flag = CVodeGetNumNonlinSolvIters(solverData.cvode.mem, &nni);
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumNonlinSolvIters() failed with flag = " + std::to_string(flag));
+      flag = CVodeGetNumNonlinSolvConvFails(solverData.cvode.mem, &ncfn);
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumNonlinSolvConvFails() failed with flag = " + std::to_string(flag));
+
+      logInfo("Final Statistics for '" + getName() + "':");
+      logInfo("NumSteps = " + std::to_string(nst) + " NumRhsEvals  = " + std::to_string(nfe) + " NumLinSolvSetups = " + std::to_string(nsetups));
+      logInfo("NumNonlinSolvIters = " + std::to_string(nni) + " NumNonlinSolvConvFails = " + std::to_string(ncfn) + " NumErrTestFails = " + std::to_string(netf));
+
+      N_VDestroy_Serial(solverData.cvode.y);
+      N_VDestroy_Serial(solverData.cvode.abstol);
+      CVodeFree(&(solverData.cvode.mem));
+    }
+    else
+      logError("Unknown solver method");
+
+    // free common data
+    free(states);
+    free(states_der);
+    free(states_nominal);
+    free(event_indicators);
+    free(event_indicators_prev);
   }
 
   fmi2_status_t fmistatus = fmi2_import_reset(fmu);
@@ -544,6 +710,47 @@ oms_status_enu_t oms2::FMUWrapper::terminate()
   if (oms_fmi_kind_me == fmuInfo.getKind())
   {
     // free solver data
+    if (NO_SOLVER == solverMethod)
+    {
+    }
+    else if (EXPLICIT_EULER == solverMethod)
+    {
+    }
+    else if (CVODE == solverMethod)
+    {
+      long int nst, nfe, nsetups, nni, ncfn, netf;
+      int flag;
+
+      flag = CVodeGetNumSteps(solverData.cvode.mem, &nst);
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumSteps() failed with flag = " + std::to_string(flag));
+      flag = CVodeGetNumRhsEvals(solverData.cvode.mem, &nfe);
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumRhsEvals() failed with flag = " + std::to_string(flag));
+      flag = CVodeGetNumLinSolvSetups(solverData.cvode.mem, &nsetups);
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumLinSolvSetups() failed with flag = " + std::to_string(flag));
+      flag = CVodeGetNumErrTestFails(solverData.cvode.mem, &netf);
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumErrTestFails() failed with flag = " + std::to_string(flag));
+      flag = CVodeGetNumNonlinSolvIters(solverData.cvode.mem, &nni);
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumNonlinSolvIters() failed with flag = " + std::to_string(flag));
+      flag = CVodeGetNumNonlinSolvConvFails(solverData.cvode.mem, &ncfn);
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumNonlinSolvConvFails() failed with flag = " + std::to_string(flag));
+
+      logInfo("Final Statistics for '" + getName() + "':");
+      logInfo("NumSteps = " + std::to_string(nst) + " NumRhsEvals  = " + std::to_string(nfe) + " NumLinSolvSetups = " + std::to_string(nsetups));
+      logInfo("NumNonlinSolvIters = " + std::to_string(nni) + " NumNonlinSolvConvFails = " + std::to_string(ncfn) + " NumErrTestFails = " + std::to_string(netf));
+
+      N_VDestroy_Serial(solverData.cvode.y);
+      N_VDestroy_Serial(solverData.cvode.abstol);
+      CVodeFree(&(solverData.cvode.mem));
+    }
+    else
+      logError("Unknown solver method");
+
+    // free common data
+    free(states);
+    free(states_der);
+    free(states_nominal);
+    free(event_indicators);
+    free(event_indicators_prev);
   }
 
   fmi2_status_t fmistatus = fmi2_import_terminate(fmu);
@@ -555,14 +762,122 @@ oms_status_enu_t oms2::FMUWrapper::terminate()
 oms_status_enu_t oms2::FMUWrapper::doStep(double stopTime)
 {
   fmi2_status_t fmistatus;
+  double hdef = (stopTime-time) / 1.0;
 
   if (oms_fmi_kind_me == fmuInfo.getKind())
   {
-    return logError("ME not implemented yet");
+    // main simulation loop
+    fmi2_real_t hcur = hdef;
+    fmi2_real_t tlast = time;
+    while ((time < stopTime) && (!(eventInfo.terminateSimulation || terminateSimulation)))
+    {
+      fmistatus = fmi2_import_set_time(fmu, time);
+      if (fmi2_status_ok != fmistatus) logError("fmi2_import_set_time failed");
+
+      // swap event_indicators and event_indicators_prev
+      {
+        fmi2_real_t *temp = event_indicators;
+        event_indicators = event_indicators_prev;
+        event_indicators_prev = temp;
+
+        fmistatus = fmi2_import_get_event_indicators(fmu, event_indicators, n_event_indicators);
+        if (fmi2_status_ok != fmistatus) logError("fmi2_import_get_event_indicators failed");
+      }
+
+      // check if an event indicator has triggered
+      int zero_crossing_event = 0;
+      for (int k = 0; k < n_event_indicators; k++)
+      {
+        if ((event_indicators[k] > 0) != (event_indicators_prev[k] > 0))
+        {
+          zero_crossing_event = 1;
+          break;
+        }
+      }
+
+      // handle events
+      if (callEventUpdate || zero_crossing_event || (eventInfo.nextEventTimeDefined && time == eventInfo.nextEventTime))
+      {
+        fmistatus = fmi2_import_enter_event_mode(fmu);
+        if (fmi2_status_ok != fmistatus) logError("fmi2_import_enter_event_mode failed");
+
+        do_event_iteration();
+
+        fmistatus = fmi2_import_enter_continuous_time_mode(fmu);
+        if (fmi2_status_ok != fmistatus) logError("fmi2_import_enter_continuous_time_mode failed");
+        if (n_states > 0)
+        {
+          fmistatus = fmi2_import_get_continuous_states(fmu, states, n_states);
+          if (fmi2_status_ok != fmistatus) logError("fmi2_import_get_continuous_states failed");
+          fmistatus = fmi2_import_get_derivatives(fmu, states_der, n_states);
+          if (fmi2_status_ok != fmistatus) logError("fmi2_import_get_derivatives failed");
+        }
+        fmistatus = fmi2_import_get_event_indicators(fmu, event_indicators, n_event_indicators);
+        if (fmi2_status_ok != fmistatus) logError("fmi2_import_get_event_indicators failed");
+
+        if (CVODE == solverMethod)
+        {
+          for (size_t i = 0; i < n_states; ++i)
+            NV_Ith_S(solverData.cvode.y, i) = states[i];
+          int flag = CVodeReInit(solverData.cvode.mem, time, solverData.cvode.y);
+          if (flag < 0) logError("SUNDIALS_ERROR: CVodeReInit() failed with flag = " + std::to_string(flag));
+        }
+      }
+
+      // calculate next time step
+      tlast = time;
+      time += hdef;
+      if (eventInfo.nextEventTimeDefined && (time >= eventInfo.nextEventTime))
+        time = eventInfo.nextEventTime;
+
+      hcur = time - tlast;
+
+      if (time > stopTime - hcur / 1e16)
+      {
+        // adjust final step size
+        time = stopTime;
+        hcur = time - tlast;
+      }
+
+      // integrate using specified solver
+      if (NO_SOLVER == solverMethod)
+      {
+      }
+      else if (EXPLICIT_EULER == solverMethod)
+      {
+        for (int k = 0; k < n_states; k++)
+          states[k] = states[k] + hcur*states_der[k];
+      }
+      else if (CVODE == solverMethod)
+      {
+        double cvode_time = tlast;
+        while (cvode_time < time)
+        {
+          int flag = CVode(solverData.cvode.mem, time, solverData.cvode.y, &cvode_time, CV_ONE_STEP);
+          if (flag < 0) logError("SUNDIALS_ERROR: CVode() failed with flag = " + std::to_string(flag));
+        }
+        time = cvode_time;
+      }
+      else
+        logError("Unknown solver method");
+
+      if (NO_SOLVER != solverMethod)
+      {
+        // set states
+        fmistatus = fmi2_import_set_continuous_states(fmu, states, n_states);
+        if (fmi2_status_ok != fmistatus) logError("fmi2_import_set_continuous_states failed");
+        // get state derivatives
+        fmistatus = fmi2_import_get_derivatives(fmu, states_der, n_states);
+        if (fmi2_status_ok != fmistatus) logError("fmi2_import_get_derivatives failed");
+      }
+
+      // step is complete
+      fmistatus = fmi2_import_completed_integrator_step(fmu, fmi2_true, &callEventUpdate, &terminateSimulation);
+      if (fmi2_status_ok != fmistatus) logError("fmi2_import_completed_integrator_step failed");
+    }
   }
   else if (oms_fmi_kind_cs == fmuInfo.getKind() || oms_fmi_kind_me_and_cs == fmuInfo.getKind())
   {
-    double hdef = (stopTime-time) / 1.0;
     while (time < stopTime)
     {
       fmistatus = fmi2_import_do_step(fmu, time, hdef, fmi2_true);

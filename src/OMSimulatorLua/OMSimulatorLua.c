@@ -1155,6 +1155,21 @@ static int OMSimulatorLua_oms2_setBoolean(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms2_getCurrentTime(const char* model, double* time);
+static int OMSimulatorLua_oms2_getCurrentTime(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char *model = lua_tostring(L, 1);
+
+  double time = 0.0;
+  oms_status_enu_t status = oms2_getCurrentTime(model, &time);
+  lua_pushnumber(L, time);
+  return 1;
+}
+
 //oms_status_enu_t oms2_addExternalModel(const char *cref, const char *name, const char *modelfile, const char *startscript);
 static int OMSimulatorLua_oms2_addExternalModel(lua_State *L)
 {
@@ -1630,6 +1645,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms2_exportCompositeStructure);
   REGISTER_LUA_CALL(oms2_exportDependencyGraphs);
   REGISTER_LUA_CALL(oms2_getBoolean);
+  REGISTER_LUA_CALL(oms2_getCurrentTime);
   REGISTER_LUA_CALL(oms2_getElements);
   REGISTER_LUA_CALL(oms2_getInteger);
   REGISTER_LUA_CALL(oms2_getReal);
