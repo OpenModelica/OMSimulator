@@ -67,7 +67,6 @@ public:
   std::string logfile;
   double timeout;
   int logLevel;
-  bool newAPI;
   std::string masterAlgorithm;
 
 private:
