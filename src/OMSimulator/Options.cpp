@@ -54,7 +54,6 @@ ProgramOptions::ProgramOptions(int argc, char** argv)
   useStopTime = false;
   useTolerance = false;
   logLevel = 0;
-  newAPI = false;
 
   std::regex re_integer("(\\+|-)?[[:digit:]]+");
   std::regex re_double("((\\+|-)?[[:digit:]]+)(\\.(([[:digit:]]+)?))?((e|E)((\\+|-)?)[[:digit:]]+)?");
@@ -100,10 +99,6 @@ ProgramOptions::ProgramOptions(int argc, char** argv)
     {
       stopTime = atof(value.c_str());
       useStopTime = true;
-    }
-    else if (isOption("--oms2"))
-    {
-      newAPI = true;
     }
     else if (isOptionAndValue("--timeout", value, re_double))
     {
