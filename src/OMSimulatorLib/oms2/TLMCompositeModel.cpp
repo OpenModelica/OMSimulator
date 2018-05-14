@@ -333,8 +333,12 @@ oms_status_enu_t oms2::TLMCompositeModel::initialize(double startTime, double to
   omtlm_setNumLogStep(model, 1000); //Hard-coded for now
 
   //Initialize sub-models
-  for(auto it = fmiModels.begin(); it!=fmiModels.end(); ++it)
-    it->second->initialize(startTime, tolerance);
+  for(auto it = fmiModels.begin(); it!=fmiModels.end(); ++it) {
+    Model* pSubModel = oms2::Scope::GetInstance().getModel(it->second->getName());
+    pSubModel->setStartTime(startTime);
+    pModel->setTolerance(pModel->getTolerance());
+    pSubModel->initialize();
+  }
 
   this->startTime = startTime;
 
@@ -371,7 +375,9 @@ oms_status_enu_t oms2::TLMCompositeModel::stepUntil(ResultWriter &resultWriter, 
   std::vector<std::thread*> fmiModelThreads;
   for(auto it = fmiModels.begin(); it!=fmiModels.end(); ++it)
   {
-    std::thread *t = new std::thread(&FMICompositeModel::simulateTLM, it->second, &resultWriter, stopTime, communicationInterval, server);
+    Model* pModel = oms2::Scope::GetInstance().getModel(it->second->getName());
+    ResultWriter *pWriter = pModel->getResultWriter();
+    std::thread *t = new std::thread(&FMICompositeModel::simulateTLM, it->second, pWriter, stopTime, communicationInterval, server);
     fmiModelThreads.push_back(t);
   }
 

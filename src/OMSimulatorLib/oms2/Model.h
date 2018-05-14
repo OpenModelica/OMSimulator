@@ -69,8 +69,11 @@ namespace oms2
     double getCommunicationInterval() const {return communicationInterval;}
     void setResultFile(const std::string& value) {resultFilename = value;}
     const std::string& getResultFile() const {return resultFilename;}
+    ResultWriter *getResultWriter() const {return resultFile;}
     void setMasterAlgorithm(MasterAlgorithm value) {masterAlgorithm = value;}
     MasterAlgorithm getMasterAlgorithm() const {return masterAlgorithm;}
+    void setTolerance(double value) {tolerance = value;}
+    double getTolerance() const {return tolerance;}
 
     FMICompositeModel* getFMICompositeModel();
     TLMCompositeModel* getTLMCompositeModel();
