@@ -86,7 +86,8 @@ namespace oms2
     std::vector<int> v = {12,13,14};
     std::vector<int> w = {15,16,17};
     std::vector<int> c = {18,19,20,21,22,23};
-    int Z = 24;
+    int Zt = 24;
+    int Zr = 25;
   } oms_tlm_sigrefs_3d_cg_t;
 
 typedef struct  {
@@ -105,7 +106,8 @@ typedef struct  {
                                         {26,36,46,56,66,76},
                                         {27,37,47,57,67,77} };
   std::vector<int> t = { 78,79,80,81,82,83,84,85,86,87};
-  int Z = 88;
+  int Zt = 88;
+  int Zr = 89;
 } oms_tlm_sigrefs_3d_fg_t;
 
   class TLMInterface

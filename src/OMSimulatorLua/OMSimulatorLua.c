@@ -1256,10 +1256,10 @@ static int OMSimulatorLua_oms2_addTLMInterface(lua_State *L)
     nsigrefs = 24;
   }
   else if(dimensions == 3 && causality == oms_causality_bidir && interpolation == oms_tlm_coarse_grained) {
-    nsigrefs = 25;
+    nsigrefs = 26;
   }
   else if(dimensions == 3 && causality == oms_causality_bidir && interpolation == oms_tlm_fine_grained) {
-    nsigrefs = 89;
+    nsigrefs = 90;
   }
 
   if(lua_gettop(L) != initialArguments+nsigrefs) {
@@ -1271,7 +1271,7 @@ static int OMSimulatorLua_oms2_addTLMInterface(lua_State *L)
     luaL_checktype(L, initialArguments+i, LUA_TSTRING);
   }
 
-  const char *sigrefs[30];
+  const char *sigrefs[100];
   for(int i=0; i<nsigrefs; ++i) {
     sigrefs[i] = lua_tostring(L, initialArguments+i+1);
   }
