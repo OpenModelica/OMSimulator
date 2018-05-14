@@ -1066,8 +1066,10 @@ oms_status_enu_t oms2::FMICompositeModel::initializeSockets(double stopTime, dou
   for(TLMInterface* ifc: tlmInterfaces) {
       if(communicationInterval > ifc->getDelay()*0.5) {
         communicationInterval = ifc->getDelay()*0.5;
+        logInfo("Limiting communicationInterval to "+std::to_string(communicationInterval));
       }
   }
+  this->communicationInterval = communicationInterval;
 
   logInfo("Creating plugin instance.");
 
