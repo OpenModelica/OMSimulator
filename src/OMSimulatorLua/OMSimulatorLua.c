@@ -28,19 +28,25 @@ void* topointer(lua_State *L, int index)
   return *bp;
 }
 
-//const char* oms_getVersion();
-static int OMSimulatorLua_getVersion(lua_State *L)
+/* ************************************ */
+/* OMSimulator 2.0                      */
+/*                                      */
+/* TODO: replace prefix oms2 with oms   */
+/* ************************************ */
+
+//const char* oms2_getVersion();
+static int OMSimulatorLua_oms2_getVersion(lua_State *L)
 {
   if (lua_gettop(L) != 0)
     return luaL_error(L, "expecting no arguments");
 
-  const char* version = oms_getVersion();
+  const char* version = oms2_getVersion();
   lua_pushstring(L, version);
   return 1;
 }
 
-//int oms_compareSimulationResults(const char* filenameA, const char* filenameB, const char* var, double relTol, double absTol);
-static int OMSimulatorLua_compareSimulationResults(lua_State *L)
+//int oms2_compareSimulationResults(const char* filenameA, const char* filenameB, const char* var, double relTol, double absTol);
+static int OMSimulatorLua_oms2_compareSimulationResults(lua_State *L)
 {
   if (lua_gettop(L) != 5)
     return luaL_error(L, "expecting exactly 5 arguments");
@@ -55,16 +61,10 @@ static int OMSimulatorLua_compareSimulationResults(lua_State *L)
   const char *var = lua_tostring(L, 3);
   double relTol = lua_tonumber(L, 4);
   double absTol = lua_tonumber(L, 5);
-  int rc = oms_compareSimulationResults(filenameA, filenameB, var, relTol, absTol);
+  int rc = oms2_compareSimulationResults(filenameA, filenameB, var, relTol, absTol);
   lua_pushinteger(L, rc);
   return 1;
 }
-
-/* ************************************ */
-/* OMSimulator 2.0                      */
-/*                                      */
-/* TODO: replace prefix oms2 with oms   */
-/* ************************************ */
 
 //oms_status_enu_t oms2_newFMIModel(const char* ident);
 static int OMSimulatorLua_oms2_newFMIModel(lua_State *L)
@@ -1072,9 +1072,6 @@ static int OMSimulatorLua_omsi_getState(lua_State *L)
 
 DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
 {
-  REGISTER_LUA_CALL(getVersion);
-  REGISTER_LUA_CALL(compareSimulationResults);
-
   /* ************************************ */
   /* OMSimulator 2.0                      */
   /*                                      */
@@ -1090,6 +1087,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms2_addTable);
   REGISTER_LUA_CALL(oms2_addTLMConnection);
   REGISTER_LUA_CALL(oms2_addTLMInterface);
+  REGISTER_LUA_CALL(oms2_compareSimulationResults);
   REGISTER_LUA_CALL(oms2_deleteConnection);
   REGISTER_LUA_CALL(oms2_deleteSubModel);
   REGISTER_LUA_CALL(oms2_exportCompositeStructure);
@@ -1099,6 +1097,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms2_getElements);
   REGISTER_LUA_CALL(oms2_getInteger);
   REGISTER_LUA_CALL(oms2_getReal);
+  REGISTER_LUA_CALL(oms2_getVersion);
   REGISTER_LUA_CALL(oms2_initialize);
   REGISTER_LUA_CALL(oms2_loadModel);
   REGISTER_LUA_CALL(oms2_newFMIModel);

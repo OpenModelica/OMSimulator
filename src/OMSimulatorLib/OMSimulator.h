@@ -39,23 +39,23 @@ extern "C"
 {
 #endif
 
-/**
- * \brief Returns the library's version string.
- *
- * \return version string
- */
-const char* oms_getVersion();
-
-/**
- * \brief Compares simulation results.
- */
-int oms_compareSimulationResults(const char* filenameA, const char* filenameB, const char* var, double relTol, double absTol);
-
 /* ************************************ */
 /* OMSimulator 2.0                      */
 /*                                      */
 /* TODO: replace prefix oms2 with oms   */
 /* ************************************ */
+
+/**
+ * \brief Returns the library's version string.
+ *
+ * \return version string
+ */
+const char* oms2_getVersion();
+
+/**
+ * \brief Compares simulation results.
+ */
+int oms2_compareSimulationResults(const char* filenameA, const char* filenameB, const char* var, double relTol, double absTol);
 
 /**
  * \brief Creates a new and yet empty FMI composite model.

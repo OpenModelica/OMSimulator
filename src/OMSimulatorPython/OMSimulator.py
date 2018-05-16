@@ -7,188 +7,242 @@ class OMSimulator:
       self.obj=cdll.LoadLibrary("OMSimulatorLib.dll")
     else:
       self.obj=cdll.LoadLibrary("libOMSimulatorLib.so")
-    self.setCtypesArguments()
-    self.setResultTypes()
 
-  def setResultTypes(self):
-    self.obj.oms_compareSimulationResults.restype = ctypes.c_int
-    self.obj.oms_getBoolean.restype = ctypes.c_int
-    self.obj.oms_getCurrentTime.restype = ctypes.c_double
-    self.obj.oms_getInteger.restype = ctypes.c_int
-    self.obj.oms_getInterfaceName.restype = ctypes.c_char_p
-    self.obj.oms_getInterfaceVariable.restype = ctypes.c_char_p
-    self.obj.oms_getMaxIterations.restype = ctypes.c_int
-    self.obj.oms_getNumberOfInterfaces.restype = ctypes.c_int
-    self.obj.oms_getReal.restype = ctypes.c_double
-    self.obj.oms_getVersion.restype = ctypes.c_char_p
-    self.obj.oms_loadModel.restype = ctypes.c_void_p
-    self.obj.oms_newModel.restype = ctypes.c_void_p
+    self.obj.oms2_addConnection.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms2_addConnection.restype = ctypes.c_int
 
-  def setCtypesArguments(self):
-    self.obj.oms_addConnection.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_compareSimulationResults.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_double, ctypes.c_double]
-    self.obj.oms_describe.argtypes = [ctypes.c_void_p]
-    self.obj.oms_doSteps.argtypes = [ctypes.c_void_p, ctypes.c_int]
-    self.obj.oms_exportCompositeStructure.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
-    self.obj.oms_exportDependencyGraph.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
-    self.obj.oms_exportXML.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
-    self.obj.oms_getBoolean.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
-    self.obj.oms_getCurrentTime.argtypes = [ctypes.c_void_p]
-    self.obj.oms_getInteger.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
-    self.obj.oms_getInterfaceCausality.argtypes = [ctypes.c_void_p, ctypes.c_int]
-    self.obj.oms_getInterfaceName.argtypes = [ctypes.c_void_p, ctypes.c_int]
-    self.obj.oms_getInterfaceVariable.argtypes = [ctypes.c_void_p, ctypes.c_int]
-    self.obj.oms_getMaxIterations.argtypes = [ctypes.c_void_p]
-    self.obj.oms_getNumberOfInterfaces.argtypes = [ctypes.c_void_p]
-    self.obj.oms_getReal.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
-    self.obj.oms_importXML.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
-    self.obj.oms_initialize.argtypes = [ctypes.c_void_p]
-    self.obj.oms_instantiateFMU.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_loadModel.argtypes = [ctypes.c_char_p]
-    self.obj.oms_reset.argtypes = [ctypes.c_void_p]
-    self.obj.oms_setBoolean.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_int]
-    self.obj.oms_setCommunicationInterval.argtypes = [ctypes.c_void_p, ctypes.c_double]
-    self.obj.oms_setInteger.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_int]
+    self.obj.oms2_addFMU.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms2_addFMU.restype = ctypes.c_int
+
+    self.obj.oms2_addTable.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms2_addTable.restype = ctypes.c_int
+
+    self.obj.oms2_compareSimulationResults.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_double, ctypes.c_double]
+    self.obj.oms2_compareSimulationResults.restype = ctypes.c_int
+
+    self.obj.oms2_deleteConnection.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms2_deleteConnection.restype = ctypes.c_int
+
+    self.obj.oms2_deleteSubModel.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms2_deleteSubModel.restype = ctypes.c_int
+
+    self.obj.oms2_describe.argtypes = [ctypes.c_char_p]
+    self.obj.oms2_describe.restype = ctypes.c_int
+
+    self.obj.oms2_doSteps.argtypes = [ctypes.c_char_p, ctypes.c_int]
+    self.obj.oms2_doSteps.restype = ctypes.c_int
+
+    self.obj.oms2_exportCompositeStructure.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms2_exportCompositeStructure.restype = ctypes.c_int
+
+    self.obj.oms2_exportDependencyGraphs.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms2_exportDependencyGraphs.restype = ctypes.c_int
+
+    self.obj.oms2_getBoolean.argtypes = [ctypes.c_char_p, ctypes.c_bool]
+    self.obj.oms2_getBoolean.restype = ctypes.c_int
+
+    self.obj.oms2_getBooleanParameter.argtypes = [ctypes.c_char_p, ctypes.c_bool]
+    self.obj.oms2_getBooleanParameter.restype = ctypes.c_int
+
+    self.obj.oms2_getCurrentTime.argtypes = [ctypes.c_char_p]
+    self.obj.oms2_getCurrentTime.restype = ctypes.c_int
+
+    self.obj.oms2_getFMUPath.argtypes = [ctypes.c_char_p]
+    self.obj.oms2_getFMUPath.restype = ctypes.c_int
+
+    self.obj.oms2_getInteger.argtypes = [ctypes.c_char_p, ctypes.c_int]
+    self.obj.oms2_getInteger.restype = ctypes.c_int
+
+    self.obj.oms2_getIntegerParameter.argtypes = [ctypes.c_char_p, ctypes.c_int]
+    self.obj.oms2_getIntegerParameter.restype = ctypes.c_int
+
+    self.obj.oms2_getReal.argtypes = [ctypes.c_char_p]
+    self.obj.oms2_getReal.restype = ctypes.c_int
+
+    self.obj.oms2_getRealParameter.argtypes = [ctypes.c_char_p]
+    self.obj.oms2_getRealParameter.restype = ctypes.c_int
+
+    self.obj.oms2_getVersion.argtypes = None
+    self.obj.oms2_getVersion.restype = ctypes.c_char_p
+
+    self.obj.oms2_initialize.argtypes = [ctypes.c_char_p]
+    self.obj.oms2_initialize.restype = ctypes.c_int
+
+    self.obj.oms2_loadModel.argtypes = [ctypes.c_char_p]
+    self.obj.oms2_loadModel.restype = ctypes.c_int
+
+    self.obj.oms2_newFMIModel.argtypes = [ctypes.c_char_p]
+    self.obj.oms2_newFMIModel.restype = ctypes.c_int
+
+    self.obj.oms2_rename.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms2_rename.restype = ctypes.c_int
+
+    self.obj.oms2_reset.argtypes = [ctypes.c_char_p]
+    self.obj.oms2_reset.restype = ctypes.c_int
+
+    self.obj.oms2_saveModel.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms2_saveModel.restype = ctypes.c_int
+
+    self.obj.oms2_setBoolean.argtypes = [ctypes.c_char_p, ctypes.c_bool]
+    self.obj.oms2_setBoolean.restype = ctypes.c_int
+
+    self.obj.oms2_setBooleanParameter.argtypes = [ctypes.c_char_p, ctypes.c_bool]
+    self.obj.oms2_setBooleanParameter.restype = ctypes.c_int
+
+    self.obj.oms2_setCommunicationInterval.argtypes = [ctypes.c_char_p, ctypes.c_double]
+    self.obj.oms2_setCommunicationInterval.restype = ctypes.c_int
+
+    self.obj.oms2_setInteger.argtypes = [ctypes.c_char_p, ctypes.c_int]
+    self.obj.oms2_setInteger.restype = ctypes.c_int
+
+    self.obj.oms2_setIntegerParameter.argtypes = [ctypes.c_char_p, ctypes.c_int]
+    self.obj.oms2_setIntegerParameter.restype = ctypes.c_int
+
     self.obj.oms2_setLogFile.argtypes = [ctypes.c_char_p]
-    self.obj.oms_setMaxIterations.argtypes = [ctypes.c_void_p, ctypes.c_int]
-    self.obj.oms_setReal.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_double]
-    self.obj.oms_setResultFile.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
-    self.obj.oms_setSolverMethod.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_setStartTime.argtypes = [ctypes.c_void_p, ctypes.c_double]
-    self.obj.oms_setStopTime.argtypes = [ctypes.c_void_p, ctypes.c_double]
+    self.obj.oms2_setLogFile.restype = ctypes.c_int
+
+    self.obj.oms2_setLoggingLevel.argtypes = [ctypes.c_int]
+    self.obj.oms2_setLoggingLevel.restype = None
+
+    self.obj.oms2_setMasterAlgorithm.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms2_setMasterAlgorithm.restype = ctypes.c_int
+
+    self.obj.oms2_setReal.argtypes = [ctypes.c_char_p, ctypes.c_double]
+    self.obj.oms2_setReal.restype = ctypes.c_int
+
+    self.obj.oms2_setRealParameter.argtypes = [ctypes.c_char_p, ctypes.c_double]
+    self.obj.oms2_setRealParameter.restype = ctypes.c_int
+
+    self.obj.oms2_setResultFile.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms2_setResultFile.restype = ctypes.c_int
+
+    self.obj.oms2_setStartTime.argtypes = [ctypes.c_char_p, ctypes.c_double]
+    self.obj.oms2_setStartTime.restype = ctypes.c_int
+
+    self.obj.oms2_setStopTime.argtypes = [ctypes.c_char_p, ctypes.c_double]
+    self.obj.oms2_setStopTime.restype = ctypes.c_int
+
     self.obj.oms2_setTempDirectory.argtypes = [ctypes.c_char_p]
-    self.obj.oms_setTolerance.argtypes = [ctypes.c_void_p, ctypes.c_double]
-    self.obj.oms_setVariableFilter.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms2_setWorkingDirectory.argtypes =[ctypes.c_char_p]
-    self.obj.oms_simulate.argtypes = [ctypes.c_void_p]
-    self.obj.oms_stepUntil.argtypes = [ctypes.c_void_p, ctypes.c_double]
-    self.obj.oms_terminate.argtypes = [ctypes.c_void_p]
-    self.obj.oms_unload.argtypes = [ctypes.c_void_p]
+    self.obj.oms2_setTempDirectory.restype = ctypes.c_int
 
-  def newModel(self):
-    return self.obj.oms_newModel()
+    self.obj.oms2_setWorkingDirectory.argtypes = [ctypes.c_char_p]
+    self.obj.oms2_setWorkingDirectory.restype = ctypes.c_int
 
-  def loadModel(self, filename):
-    return self.obj.oms_loadModel(str.encode(filename))
+    self.obj.oms2_simulate.argtypes = [ctypes.c_char_p]
+    self.obj.oms2_simulate.restype = ctypes.c_int
 
-  def instantiateFMU(self, model, filename, instanceName):
-    self.obj.oms_instantiateFMU(model, str.encode(filename), str.encode(instanceName))
+    self.obj.oms2_stepUntil.argtypes = [ctypes.c_char_p, ctypes.c_double]
+    self.obj.oms2_stepUntil.restype = ctypes.c_int
 
-  def instantiateTable(self, model, filename, instanceName):
-    self.obj.oms_instantiateTable(model, str.encode(filename), str.encode(instanceName))
+    self.obj.oms2_terminate.argtypes = [ctypes.c_char_p]
+    self.obj.oms2_terminate.restype = ctypes.c_int
 
-  def describe(self, model):
-    self.obj.oms_describe(model)
+    self.obj.oms2_unloadModel.argtypes = [ctypes.c_char_p]
+    self.obj.oms2_unloadModel.restype = ctypes.c_int
 
-  def initialize(self, model):
-    self.obj.oms_initialize(model)
-
-  def terminate(self, model):
-    self.obj.oms_terminate(model)
-
-  def unload(self, model):
-    self.obj.oms_unload(model)
-
-  def reset(self, model):
-    self.obj.oms_reset(model)
-
-  def simulate(self, model):
-    self.obj.oms_simulate(model)
-
-  def addConnection(self, model, fromconnection, toconnection):
-    self.obj.oms_addConnection(model, str.encode(fromconnection), str.encode(toconnection))
-
-  def importXML(self, model, filename):
-    self.obj.oms_importXML(model, str.encode(filename))
-
-  def exportXML(self, model, filename):
-    self.obj.oms_exportXML(model, str.encode(filename))
-
-  def exportDependencyGraph(self, model, filename):
-    self.obj.oms_exportDependencyGraph(model, str.encode(filename))
-
-  def exportCompositeStructure(self, model, filename):
-    self.obj.oms_exportCompositeStructure(model, str.encode(filename))
-
-  def getCurrentTime(self, model):
-    time=ctypes.c_double()
-    self.obj.oms_getCurrentTime(model, ctypes.byref(time))
-    return time.value
-
-  def doSteps(self, model, numberOfSteps):
-    self.obj.oms_doSteps(model, numberOfSteps)
-
-  def stepUntil(self, model, timeValue):
-    self.obj.oms_stepUntil(model, timeValue)
-
-  def getVersion(self):
-    return self.obj.oms_getVersion()
-
-  def getBoolean(self, model, var):
-    return self.obj.oms_getBoolean(model, str.encode(var))
-
-  def getInteger(self, model, var):
-    return self.obj.oms_getInteger(model, str.encode(var))
-
-  def getMaxIterations(self, model):
-    return self.obj.oms_getMaxIterations(model)
-
-  def setMaxIterations(self, model, maxIterations):
-    self.obj.oms_setMaxIterations(model, maxIterations)
-
-  def getReal(self, model, var):
-    return self.obj.oms_getReal(model, str.encode(var))
-
-  def setBoolean(self, model, var, value):
-    self.obj.oms_setBoolean(model, str.encode(var), value)
-
-  def setInteger(self, model, var, value):
-    self.obj.oms_setInteger(model, str.encode(var), value)
-
-  def setReal(self, model, var, value):
-    self.obj.oms_setReal(model, str.encode(var), value)
-
-  def setResultFile(self, model, filename):
-    self.obj.oms_setResultFile(model, str.encode(filename))
-
-  def setTempDirectory(self, filename):
-    self.obj.oms2_setTempDirectory(str.encode(filename))
-
-  def setWorkingDirectory(self, path):
-    self.obj.oms2_setWorkingDirectory(str.encode(path))
-
-  def setStartTime(self, model, startTime):
-    self.obj.oms_setStartTime(model, startTime)
-
-  def setStopTime(self, model, stopTime):
-    self.obj.oms_setStopTime(model, stopTime)
-
-  def setTolerance(self, model, tolerance):
-    self.obj.oms_setTolerance(model, tolerance)
-
-  def setCommunicationInterval(self, model, CommunicationInterval):
-    self.obj.oms_setCommunicationInterval(model, CommunicationInterval)
-
-  def setSolverMethod(self, model, instanceName, method):
-    self.obj.oms_setSolverMethod(model, str.encode(instanceName), str.encode(method))
-
-  def setLogFile(self, filename):
-    self.obj.oms2_setLogFile(str.encode(filename))
-
+  def addConnection(self, cref, conA, conB):
+    return self.obj.oms2_addConnection(str.encode(cref), str.encode(conA), str.encode(conB))
+  def addFMU(self, modelIdent, fmuPath, fmuIdent):
+    return self.obj.oms2_addFMU(str.encode(modelIdent), str.encode(fmuPath), str.encode(fmuIdent))
+  def addTable(self, modelIdent, tablePath, tableIdent):
+    return self.obj.oms2_addTable(str.encode(modelIdent), str.encode(tablePath), str.encode(tableIdent))
   def compareSimulationResults(self, filenameA, filenameB, var, relTol, absTol):
-    return self.obj.oms_compareSimulationResults(str.encode(filenameA), str.encode(filenameB), str.encode(var), relTol, absTol)
-
-  def setVariableFilter(self, model, instanceFilter, variableFilter):
-    self.obj.oms_setVariableFilter(model, str.encode(instanceFilter), str.encode(variableFilter))
-
-  def getNumberOfInterfaces(self, model):
-    return self.obj.oms_getNumberOfInterfaces(model)
-
-  def getInterfaceCausality(self, model, idx):
-    self.obj.oms_getInterfaceCausality(model, idx)
-
-  def getInterfaceName(self, model, idx):
-    return self.obj.oms_getInterfaceName(model, idx)
-
-  def getInterfaceVariable(self, model, idx):
-    return self.obj.oms_getInterfaceVariable(model, idx)
+    return self.obj.oms2_compareSimulationResults(str.encode(filenameA), str.encode(filenameB), str.encode(var), relTol, absTol)
+  def deleteConnection(self, cref, conA, conB):
+    return self.obj.oms2_deleteConnection(str.encode(cref), str.encode(conA), str.encode(conB))
+  def deleteSubModel(self, modelIdent, subModelIdent):
+    return self.obj.oms2_deleteSubModel(str.encode(modelIdent), str.encode(subModelIdent))
+  def describe(self, cref):
+    return self.obj.oms2_describe(str.encode(cref))
+  def doSteps(self, ident, numberOfSteps):
+    return self.obj.oms2_doSteps(str.encode(ident), numberOfSteps)
+  def exportCompositeStructure(self, cref, filename):
+    return self.obj.oms2_exportCompositeStructure(str.encode(cref), str.encode(filename))
+  def exportDependencyGraphs(self, cref, initialization, simulation):
+    return self.obj.oms2_exportDependencyGraphs(str.encode(cref), str.encode(initialization), str.encode(simulation))
+  def getBoolean(self, signal):
+    value = ctypes.c_bool()
+    status = self.obj.oms2_getBoolean(str.encode(signal), ctypes.byref(value))
+    return [status, value.value]
+  def getBooleanParameter(self, signal):
+    value = ctypes.c_bool()
+    status = self.obj.oms2_getBooleanParameter(str.encode(signal), ctypes.byref(value))
+    return [status, value.value]
+  def getCurrentTime(self, ident):
+    time = ctypes.c_double()
+    status = self.obj.oms2_getCurrentTime(str.encode(ident), ctypes.byref(time))
+    return [status, time.value]
+  def getFMUPath(self, cref):
+    path = ctypes.c_char_p()
+    status = self.obj.oms2_getFMUPath(str.encode(cref), ctypes.byref(path))
+    return [status, path.value]
+  def getInteger(self, signal):
+    value = ctypes.c_int()
+    status = self.obj.oms2_getInteger(str.encode(signal), ctypes.byref(value))
+    return [status, value.value]
+  def getIntegerParameter(self, signal):
+    value = ctypes.c_int()
+    status = self.obj.oms2_getIntegerParameter(str.encode(signal), ctypes.byref(value))
+    return [status, value.value]
+  def getReal(self, signal):
+    value = ctypes.c_double()
+    status = self.obj.oms2_getReal(str.encode(signal), ctypes.byref(value))
+    return [status, value.value]
+  def getRealParameter(self, signal):
+    value = ctypes.c_double()
+    status = self.obj.oms2_getRealParameter(str.encode(signal), ctypes.byref(value))
+    return [status, value.value]
+  def getVersion(self):
+    return self.obj.oms2_getVersion()
+  def initialize(self, ident):
+    return self.obj.oms2_initialize(str.encode(ident))
+  def loadModel(self, filename):
+    ident = ctypes.c_char_p()
+    status = self.obj.oms2_loadModel(str.encode(filename), ctypes.byref(ident))
+    return [status, ident.value]
+  def newFMIModel(self, ident):
+    return self.obj.oms2_newFMIModel(str.encode(ident))
+  def rename(self, identOld, identNew):
+    return self.obj.oms2_rename(str.encode(identOld), str.encode(identNew))
+  def reset(self, ident):
+    return self.obj.oms2_reset(str.encode(ident))
+  def saveModel(self, filename, ident):
+    return self.obj.oms2_saveModel(str.encode(filename), str.encode(ident))
+  def setBoolean(self, signal, value):
+    return self.obj.oms2_setBoolean(str.encode(signal), value)
+  def setBooleanParameter(self, signal, value):
+    return self.obj.oms2_setBooleanParameter(str.encode(signal), value)
+  def setCommunicationInterval(self, cref, communicationInterval):
+    return self.obj.oms2_setCommunicationInterval(str.encode(cref), communicationInterval)
+  def setInteger(self, signal, value):
+    return self.obj.oms2_setInteger(str.encode(signal), value)
+  def setIntegerParameter(self, signal, value):
+    return self.obj.oms2_setIntegerParameter(str.encode(signal), value)
+  def setLogFile(self, filename):
+    return self.obj.oms2_setLogFile(str.encode(filename))
+  def setLoggingLevel(self, logLevel):
+    return self.obj.oms2_setLoggingLevel(logLevel)
+  def setMasterAlgorithm(self, ident, masterAlgorithm):
+    return self.obj.oms2_setMasterAlgorithm(str.encode(ident), str.encode(masterAlgorithm))
+  def setReal(self, signal, value):
+    return self.obj.oms2_setReal(str.encode(signal), value)
+  def setRealParameter(self, signal, value):
+    return self.obj.oms2_setRealParameter(str.encode(signal), value)
+  def setResultFile(self, cref, filename):
+    return self.obj.oms2_setResultFile(str.encode(cref), str.encode(filename))
+  def setStartTime(self, cref, startTime):
+    return self.obj.oms2_setStartTime(str.encode(cref), startTime)
+  def setStopTime(self, cref, stopTime):
+    return self.obj.oms2_setStopTime(str.encode(cref), stopTime)
+  def setTempDirectory(self, filename):
+    return self.obj.oms2_setTempDirectory(str.encode(filename))
+  def setWorkingDirectory(self, path):
+    return self.obj.oms2_setWorkingDirectory(str.encode(path))
+  def simulate(self, ident):
+    return self.obj.oms2_simulate(str.encode(ident))
+  def stepUntil(self, ident, timeValue):
+    return self.obj.oms2_stepUntil(str.encode(ident), timeValue)
+  def terminate(self, ident):
+    return self.obj.oms2_terminate(str.encode(ident))
+  def unloadModel(self, ident):
+    return self.obj.oms2_unloadModel(str.encode(ident))
