@@ -275,8 +275,10 @@ oms_status_enu_t oms2::TLMCompositeModel::setSocketData(const std::string& addre
                                                         int managerPort,
                                                         int monitorPort)
 {
+#ifndef _WIN32
   omtlm_checkPortAvailability(&managerPort);
   omtlm_checkPortAvailability(&monitorPort);
+#endif
 
   omtlm_setAddress(model, address);
   omtlm_setManagerPort(model, managerPort);
