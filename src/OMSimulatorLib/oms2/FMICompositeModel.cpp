@@ -891,6 +891,7 @@ oms_status_enu_t oms2::FMICompositeModel::doSteps(ResultWriter& resultWriter, co
       it.second->doStep(time);
 
     // input := output
+    emit(resultWriter);
     updateInputs(outputsGraph);
     emit(resultWriter);
   }
@@ -929,6 +930,7 @@ oms_status_enu_t oms2::FMICompositeModel::stepUntilStandard(ResultWriter& result
     }
 
     // input := output
+    emit(resultWriter);
     updateInputs(outputsGraph);
     emit(resultWriter);
   }
@@ -984,6 +986,7 @@ oms_status_enu_t oms2::FMICompositeModel::stepUntilPCTPL(ResultWriter& resultWri
     }
 
     // input := output
+    emit(resultWriter);
     updateInputs(outputsGraph);
     emit(resultWriter);
   }
@@ -1012,6 +1015,7 @@ void oms2::FMICompositeModel::simulate_asynchronous(ResultWriter& resultWriter, 
     }
 
     // input := output
+    emit(resultWriter);
     updateInputs(outputsGraph);
     emit(resultWriter);
 
@@ -1045,6 +1049,7 @@ oms_status_enu_t oms2::FMICompositeModel::simulateTLM(ResultWriter* resultWriter
     writeToSockets();
 
     // input := output
+    emit(*resultWriter);
     updateInputs(outputsGraph);
     emit(*resultWriter);
   }

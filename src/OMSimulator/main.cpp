@@ -46,7 +46,7 @@ extern "C"
   #include <OMSimulatorLua.c>
 }
 
-static int do_simulation(void* pModel, std::chrono::duration<double> timeout)
+static int do_simulation(char* pModel, std::chrono::duration<double> timeout)
 {
   std::mutex m;
   std::condition_variable cv;
@@ -64,17 +64,17 @@ static int do_simulation(void* pModel, std::chrono::duration<double> timeout)
     }
   });
 
-  oms_initialize(pModel);
+  oms2_initialize(pModel);
   phase = "Timeout occurred during simulation";
-  oms_simulate(pModel);
+  oms2_simulate(pModel);
 
   done=1;
 
   cv.notify_one();
   t.join();
 
-  oms_terminate(pModel);
-  oms_unload(pModel);
+  oms2_terminate(pModel);
+  oms2_unloadModel(pModel);
 
   return 0;
 }
@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
 
   if (options.version)
   {
-    std::cout << oms_getVersion() << std::endl;
+    std::cout << oms2_getVersion() << std::endl;
     return 0;
   }
 
@@ -121,47 +121,40 @@ int main(int argc, char *argv[])
 
   if (type == "fmu" || type == "xml")
   {
-    if (options.newAPI)
+    char* name = NULL;
+    const char* defaultName = "model";
+    if (type == "fmu")
     {
-      char* name = NULL;
-      if (oms_status_ok != oms2_loadModel(filename.c_str(), &name))
-        return 0;
-      oms2_unloadModel(name);
+      name = (char*)defaultName;
+      oms2_newFMIModel(name);
+      oms2_addFMU(name, filename.c_str(), "fmu");
+    }
+    else
+      oms2_loadModel(filename.c_str(), &name);
+
+    if (options.resultFile != "")
+      oms2_setResultFile(name, options.resultFile.c_str());
+    if (options.useStartTime)
+      oms2_setStartTime(name, options.startTime);
+    if (options.useStopTime)
+      oms2_setStopTime(name, options.stopTime);
+    if (options.useTolerance)
+      logWarning("--tolerance not supported yet");//oms2_setTolerance(name, options.tolerance);
+    if (options.useCommunicationInterval)
+      oms2_setCommunicationInterval(name, options.communicationInterval);
+
+    if (options.describe)
+    {
+      // OMSimulator --describe example.xml
+      //oms2_describe(name);
+      logWarning("--describe not supported yet");
     }
     else
     {
-      void* pModel = NULL;
-      if (type == "fmu")
-      {
-        pModel = oms_newModel();
-        oms_instantiateFMU(pModel, filename.c_str(), "fmu");
-      }
-      else
-        pModel = oms_loadModel(filename.c_str());
-
-      if (options.resultFile != "")
-        oms_setResultFile(pModel, options.resultFile.c_str());
-      if (options.useStartTime)
-        oms_setStartTime(pModel, options.startTime);
-      if (options.useStopTime)
-        oms_setStopTime(pModel, options.stopTime);
-      if (options.useTolerance)
-        oms_setTolerance(pModel, options.tolerance);
-      if (options.useCommunicationInterval)
-        oms_setCommunicationInterval(pModel, options.communicationInterval);
-
-      if (options.describe)
-      {
-        // OMSimulator --describe example.xml
-        oms_describe(pModel);
-      }
-      else
-      {
-        return do_simulation(pModel, std::chrono::duration<double>(options.timeout));
-      }
-
-      oms_unload(pModel);
+      return do_simulation(name, std::chrono::duration<double>(options.timeout));
     }
+
+    oms2_unloadModel(name);
   }
   else if (type == "lua")
   {
