@@ -397,12 +397,12 @@ oms_status_enu_t oms2_setLogFile(const char* filename)
   return Log::setLogFile(filename);
 }
 
-const char* oms_getVersion()
+const char* oms2_getVersion()
 {
   return oms_git_version;
 }
 
-int oms_compareSimulationResults(const char* filenameA, const char* filenameB, const char* var, double relTol, double absTol)
+int oms2_compareSimulationResults(const char* filenameA, const char* filenameB, const char* var, double relTol, double absTol)
 {
   ResultReader* readerA = ResultReader::newReader(filenameA);
   ResultReader* readerB = ResultReader::newReader(filenameB);

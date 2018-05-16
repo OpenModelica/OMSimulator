@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
 
   if (options.version)
   {
-    std::cout << oms_getVersion() << std::endl;
+    std::cout << oms2_getVersion() << std::endl;
     return 0;
   }
 

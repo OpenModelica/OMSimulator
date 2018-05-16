@@ -68,7 +68,7 @@ class OMSysIdent:
         self.obj.omsi_getState.restype = ctypes.c_int
 
     def setCtypesArguments(self):
-        self.obj.omsi_newSysIdentModel.argtypes = [ctypes.c_void_p]
+        self.obj.omsi_newSysIdentModel.argtypes = [ctypes.c_char_p]
         self.obj.omsi_freeSysIdentModel.argtypes = [ctypes.c_void_p]
         self.obj.omsi_describe.argtypes = [ctypes.c_void_p]
         self.obj.omsi_initialize.argtypes = [

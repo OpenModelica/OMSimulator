@@ -92,7 +92,7 @@ const std::vector<std::string> parametervars = {VARCREF("a11"), VARCREF("a12"), 
 
 int test_Lin2DimODE_cs_Fit()
 {
-  const char* version = oms_getVersion();
+  const char* version = oms2_getVersion();
   oms_status_enu_t status;
   //std::cout << version << std::endl;
 
