@@ -4,6 +4,8 @@ MKDIR=mkdir -p
 
 # Option to build Ceres-Solver and its dependencies as part of the 3rdParty projects
 CERES ?= ON
+# Option to build LIBXML2 as part of the 3rdParty projects
+LIBXML2 ?= ON
 # Option to enable the OMSysIdent parameter estimation module within the OMSimulator project
 OMSYSIDENT ?= ON
 # Option to enable AddressSanitizer
@@ -15,6 +17,7 @@ ifeq ($(detected_OS),Darwin)
 	INSTALL_DIR := install/mac
 	# MINGW detected => NO SUPPORT FOR BUILDING CERES SOLVER (yet)
 	CERES := OFF
+	LIBXML2 := OFF
 	OMSYSIDENT := OFF
 	export ABI := MAC64
 	FEXT=.dylib
@@ -77,7 +80,7 @@ OMTLMSimulator:
 	test ! `uname` != Darwin || cp OMTLMSimulator/bin/StartTLMFmiWrapper $(INSTALL_DIR)/bin/
 	test ! `uname` != Darwin || cp OMTLMSimulator/bin/libfmilib_shared$(FEXT) $(INSTALL_DIR)/lib/
 
-config-3rdParty: config-fmil config-lua config-cvode config-kinsol config-gflags config-glog config-ceres-solver
+config-3rdParty: config-fmil config-lua config-cvode config-kinsol config-gflags config-glog config-ceres-solver config-libxml2
 
 config-OMSimulator:
 	@echo
@@ -153,6 +156,21 @@ config-ceres-solver: config-glog
 	$(RM) 3rdParty/ceres- solver/$(INSTALL_DIR)
 	$(MKDIR) 3rdParty/ceres-solver/$(BUILD_DIR)
 	cd 3rdParty/ceres-solver/$(BUILD_DIR) && cmake $(CMAKE_TARGET) ../../ceres-solver -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) -DCXX11:BOOL=ON -DEXPORT_BUILD_DIR=ON -DEIGEN_INCLUDE_DIR_HINTS=../../eigen/eigen -DBUILD_EXAMPLES:BOOL=OFF -DBUILD_TESTING:BOOL=OFF -DCMAKE_BUILD_TYPE="Release" && $(MAKE) install
+endif
+
+ifeq ($(LIBXML2),OFF)
+config-libxml2:
+	@echo
+	@echo "# LIBXML2=OFF => Skipping build of 3rdParty library libxml2 (must be installed on system instead)."
+	@echo
+else
+config-libxml2:
+	@echo
+	@echo "# config libxml2"
+	@echo
+	$(MKDIR) 3rdParty/libxml2/$(INSTALL_DIR)
+	$(MKDIR) 3rdParty/libxml2/$(INSTALL_DIR)/lib
+	cd 3rdParty/libxml2 && ./autogen.sh prefix=$(PWD)/$(INSTALL_DIR) --without-python && $(MAKE) install 
 endif
 
 distclean:
