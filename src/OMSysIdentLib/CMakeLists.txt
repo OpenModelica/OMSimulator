@@ -1,10 +1,22 @@
 project(OMSysIdentLib)
 
+if (ASAN)
+  set(CMAKE_BUILD_TYPE Debug)
+ENDIF()
 set(CMAKE_INSTALL_RPATH "$ORIGIN")
-set(CMAKE_VERBOSE_MAKEFILE ON)
+
+IF (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.1)
+  SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Werror=return-local-addr")
+  SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Werror=return-type")
+  if (ASAN)
+    message(STATUS "AddressSanitizer enabled")
+    add_compile_options("-fsanitize=address" "-fno-omit-frame-pointer")
+    link_libraries("-fsanitize=address")
+  ENDIF()
+ENDIF()
 
 # Export all symbols from the DLL on Windows
-IF (WIN32)
+IF (WIN32 AND MSVC)
   set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
   add_definitions(-DBOOST_ALL_DYN_LINK)
 ENDIF()
