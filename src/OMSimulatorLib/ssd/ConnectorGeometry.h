@@ -29,10 +29,10 @@
  *
  */
 
-#ifndef _SSD_CONNECTION_GEOMETRY_H_
-#define _SSD_CONNECTION_GEOMETRY_H_
+#ifndef _SSD_CONNECTOR_GEOMETRY_H_
+#define _SSD_CONNECTOR_GEOMETRY_H_
 
-#include "../../Types.h"
+#include "../Types.h"
 
 #include <pugixml.hpp>
 
@@ -42,20 +42,19 @@ namespace oms2
 {
   namespace ssd
   {
-    class ConnectionGeometry : protected ssd_connection_geometry_t
+    class ConnectorGeometry : protected ssd_connector_geometry_t
     {
     public:
-      ConnectionGeometry();
-      ConnectionGeometry(const ConnectionGeometry& rhs);
-      ~ConnectionGeometry();
+      ConnectorGeometry(double x, double y);
+      ConnectorGeometry(const ConnectorGeometry& rhs);
+      ~ConnectorGeometry();
 
-      ConnectionGeometry& operator=(ConnectionGeometry const& rhs);
+      ConnectorGeometry& operator=(ConnectorGeometry const& rhs);
 
-      void setPoints(unsigned int n, double* pointsX, double* pointsY);
+      void setPosition(double x, double y) {this->x = x; this->y = y;}
 
-      unsigned int getLength() const {return this->n;}
-      const double* getPointsX() const {return this->pointsX;}
-      const double* getPointsY() const {return this->pointsY;}
+      double getX() const {return x;}
+      double getY() const {return y;}
 
       oms_status_enu_t exportToSSD(pugi::xml_node& root) const;
     };

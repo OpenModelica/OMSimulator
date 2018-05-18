@@ -31,7 +31,7 @@
 
 #include "Variable.h"
 #include "Logging.h"
-#include "../Util.h"
+#include "Util.h"
 
 #include <fmilib.h>
 #include <JM/jm_portability.h>

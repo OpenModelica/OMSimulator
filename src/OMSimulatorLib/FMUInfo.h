@@ -29,36 +29,36 @@
  *
  */
 
-#ifndef _SSD_CONNECTOR_GEOMETRY_H_
-#define _SSD_CONNECTOR_GEOMETRY_H_
+#ifndef _OMS2_FMU_INFO_H_
+#define _OMS2_FMU_INFO_H_
 
-#include "../../Types.h"
-
-#include <pugixml.hpp>
+#include "Types.h"
 
 #include <string>
+#include <fmilib.h>
 
 namespace oms2
 {
-  namespace ssd
+  /**
+   * \brief FMU info
+   */
+  class FMUInfo : protected oms_fmu_info_t
   {
-    class ConnectorGeometry : protected ssd_connector_geometry_t
-    {
-    public:
-      ConnectorGeometry(double x, double y);
-      ConnectorGeometry(const ConnectorGeometry& rhs);
-      ~ConnectorGeometry();
+  public:
+    FMUInfo(const std::string& path);
+    ~FMUInfo();
 
-      ConnectorGeometry& operator=(ConnectorGeometry const& rhs);
+    oms_status_enu_t setKind(fmi2_import_t* fmu);
+    oms_status_enu_t update(fmi2_import_t* fmu);
 
-      void setPosition(double x, double y) {this->x = x; this->y = y;}
+    std::string getPath() const {return std::string(path);}
+    oms_fmi_kind_enu_t getKind() const {return fmiKind;}
 
-      double getX() const {return x;}
-      double getY() const {return y;}
-
-      oms_status_enu_t exportToSSD(pugi::xml_node& root) const;
-    };
-  }
+  private:
+    // methods to copy the object
+    FMUInfo(const FMUInfo& rhs);            ///< not implemented
+    FMUInfo& operator=(const FMUInfo& rhs); ///< not implemented
+  };
 }
 
 #endif

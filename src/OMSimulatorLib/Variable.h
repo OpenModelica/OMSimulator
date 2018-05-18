@@ -34,7 +34,7 @@
 
 #include "ComRef.h"
 #include "SignalRef.h"
-#include "../Types.h"
+#include "Types.h"
 
 #include <fmilib.h>
 

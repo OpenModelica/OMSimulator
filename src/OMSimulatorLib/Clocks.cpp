@@ -32,7 +32,7 @@
 #include "Clocks.h"
 #include "Clock.h"
 #include "Util.h"
-#include "oms2/Logging.h"
+#include "Logging.h"
 
 #include <string>
 

@@ -32,7 +32,7 @@
 #include "DirectedGraph.h"
 #include "Variable.h"
 #include "Logging.h"
-#include "../Util.h"
+#include "Util.h"
 
 #include <iostream>
 #include <string>
