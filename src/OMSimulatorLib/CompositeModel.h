@@ -32,7 +32,7 @@
 #ifndef _OMS2_COMPOSITE_MODEL_H_
 #define _OMS2_COMPOSITE_MODEL_H_
 
-#include "../Types.h"
+#include "Types.h"
 #include "Pkg_oms2.h"
 #include "ComRef.h"
 #include "Element.h"

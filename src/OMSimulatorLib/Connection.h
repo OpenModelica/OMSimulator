@@ -29,43 +29,48 @@
  *
  */
 
-#ifndef _OMS2_ELEMENT_H_
-#define _OMS2_ELEMENT_H_
+#ifndef _OMS2_CONNECTION_H_
+#define _OMS2_CONNECTION_H_
 
 #include "ComRef.h"
 #include "SignalRef.h"
-#include "Connector.h"
-#include "../Types.h"
-#include "ssd/ElementGeometry.h"
+#include "Types.h"
+#include "ssd/ConnectionGeometry.h"
 
 #include <string>
-#include <vector>
 
 namespace oms2
 {
   /**
-   * \brief Element
+   * \brief Connection
    */
-  class Element : protected oms_element_t
+  class Connection : protected oms_connection_t
   {
   public:
-    Element(oms_element_type_enu_t type, const ComRef& name);
-    ~Element();
+    Connection(const oms2::ComRef& parent, const oms2::SignalRef& conA, const oms2::SignalRef& conB);
+    ~Connection();
 
-    const oms_element_type_enu_t getType() const {return type;}
-    const oms2::ComRef getName() const {return oms2::ComRef(std::string(name));}
-    oms2::Connector** getConnectors() const {return reinterpret_cast<oms2::Connector**>(connectors);}
-    const oms2::ssd::ElementGeometry* getGeometry() const {return reinterpret_cast<oms2::ssd::ElementGeometry*>(geometry);}
+    // methods to copy the object
+    Connection(const Connection& rhs);
+    Connection& operator=(const Connection& rhs);
 
-    void setName(const ComRef& name);
-    void setGeometry(const oms2::ssd::ElementGeometry* newGeometry);
-    void setConnectors(const std::vector<oms2::Connector> newConnectors);
+    const oms2::ComRef getParent() const {return oms2::ComRef(parent);}
+    const oms2::SignalRef getSignalA() const {return oms2::SignalRef(conA);}
+    const oms2::SignalRef getSignalB() const {return oms2::SignalRef(conB);}
+
+    const oms2::ssd::ConnectionGeometry* getGeometry() const {return reinterpret_cast<oms2::ssd::ConnectionGeometry*>(geometry);}
+    void setGeometry(const oms2::ssd::ConnectionGeometry* newGeometry);
+
+    bool isEqual(const oms2::Connection& connection) const;
+    bool isEqual(const oms2::ComRef& parent, const oms2::SignalRef& signalA, const oms2::SignalRef& signalB) const;
 
   private:
-    // methods to copy the object
-    Element(const Element& rhs);            ///< not implemented
-    Element& operator=(const Element& rhs); ///< not implemented
+    friend bool operator==(const Connection& lhs, const Connection& rhs);
+    friend bool operator!=(const Connection& lhs, const Connection& rhs);
   };
+
+  inline bool operator==(const Connection& lhs, const Connection& rhs) {return lhs.isEqual(rhs);}
+  inline bool operator!=(const Connection& lhs, const Connection& rhs) {return !(lhs == rhs);}
 }
 
 #endif

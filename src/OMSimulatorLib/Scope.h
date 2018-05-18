@@ -32,7 +32,7 @@
 #ifndef _OMS2_SCOPE_H_
 #define _OMS2_SCOPE_H_
 
-#include "../Types.h"
+#include "Types.h"
 #include "CompositeModel.h"
 #include "ComRef.h"
 #include "Connection.h"

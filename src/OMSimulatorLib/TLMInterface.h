@@ -34,7 +34,7 @@
 
 #include "ComRef.h"
 #include "SignalRef.h"
-#include "../Types.h"
+#include "Types.h"
 #include "../../OMTLMSimulator/common/Plugin/PluginImplementer.h"
 
 namespace oms2

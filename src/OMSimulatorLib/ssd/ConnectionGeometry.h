@@ -29,36 +29,37 @@
  *
  */
 
-#ifndef _OMS2_FMU_INFO_H_
-#define _OMS2_FMU_INFO_H_
+#ifndef _SSD_CONNECTION_GEOMETRY_H_
+#define _SSD_CONNECTION_GEOMETRY_H_
 
 #include "../Types.h"
 
+#include <pugixml.hpp>
+
 #include <string>
-#include <fmilib.h>
 
 namespace oms2
 {
-  /**
-   * \brief FMU info
-   */
-  class FMUInfo : protected oms_fmu_info_t
+  namespace ssd
   {
-  public:
-    FMUInfo(const std::string& path);
-    ~FMUInfo();
+    class ConnectionGeometry : protected ssd_connection_geometry_t
+    {
+    public:
+      ConnectionGeometry();
+      ConnectionGeometry(const ConnectionGeometry& rhs);
+      ~ConnectionGeometry();
 
-    oms_status_enu_t setKind(fmi2_import_t* fmu);
-    oms_status_enu_t update(fmi2_import_t* fmu);
+      ConnectionGeometry& operator=(ConnectionGeometry const& rhs);
 
-    std::string getPath() const {return std::string(path);}
-    oms_fmi_kind_enu_t getKind() const {return fmiKind;}
+      void setPoints(unsigned int n, double* pointsX, double* pointsY);
 
-  private:
-    // methods to copy the object
-    FMUInfo(const FMUInfo& rhs);            ///< not implemented
-    FMUInfo& operator=(const FMUInfo& rhs); ///< not implemented
-  };
+      unsigned int getLength() const {return this->n;}
+      const double* getPointsX() const {return this->pointsX;}
+      const double* getPointsY() const {return this->pointsY;}
+
+      oms_status_enu_t exportToSSD(pugi::xml_node& root) const;
+    };
+  }
 }
 
 #endif

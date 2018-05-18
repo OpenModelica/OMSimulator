@@ -32,8 +32,8 @@
 #ifndef _OMS2_MODEL_H_
 #define _OMS2_MODEL_H_
 
-#include "../Types.h"
-#include "../ResultWriter.h"
+#include "Types.h"
+#include "ResultWriter.h"
 #include "Pkg_oms2.h"
 #include "ComRef.h"
 #include "Element.h"

@@ -31,9 +31,9 @@
 
 #include "FMICompositeModel.h"
 
-#include "../Types.h"
+#include "Types.h"
 #include "Pkg_oms2.h"
-#include "../ResultWriter.h"
+#include "ResultWriter.h"
 #include "ComRef.h"
 #include "FMUWrapper.h"
 #include "Logging.h"

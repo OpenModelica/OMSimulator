@@ -30,7 +30,7 @@
  */
 
 #include "Options.h"
-#include "oms2/Logging.h"
+#include "Logging.h"
 
 #include <iostream>
 #include <stdlib.h>
