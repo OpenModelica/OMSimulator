@@ -16,6 +16,10 @@ link_directories(${CVODELibrary_LIBRARYDIR})
 link_directories(${KINSOLLibrary_LIBRARYDIR})
 link_directories(${OMTLMSIMULATORLIB_LIBRARYDIR})
 
+IF (Ceres_FOUND AND OMSYSIDENT)
+  add_definitions(-DWITH_OMSYSIDENT)
+ENDIF()
+
 # Shared library version
 add_library(OMSimulatorLua SHARED OMSimulatorLua.c)
 IF(WIN32 AND MSVC)
