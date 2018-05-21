@@ -300,11 +300,11 @@ oms_status_enu_t oms2::Model::reset()
 
 oms_status_enu_t oms2::Model::terminate()
 {
-  if (oms_modelState_initialization != modelState && oms_modelState_simulation != modelState)
-  {
-    logError("[oms2::Model::terminate] Model cannot be terminated, because it isn't in simulation state.");
-    return oms_status_error;
-  }
+  //if (oms_modelState_initialization != modelState && oms_modelState_simulation != modelState)
+  //{
+  //  logError("[oms2::Model::terminate] Model cannot be terminated, because it isn't in simulation state.");
+  //  return oms_status_error;
+  //}
 
   modelState = oms_modelState_initialization;
 
