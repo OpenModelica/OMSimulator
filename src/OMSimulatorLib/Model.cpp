@@ -31,8 +31,8 @@
 
 #include "Model.h"
 
-#include "../CSVWriter.h"
-#include "../MATWriter.h"
+#include "CSVWriter.h"
+#include "MATWriter.h"
 #include "FMICompositeModel.h"
 #include "TLMCompositeModel.h"
 #include "Logging.h"

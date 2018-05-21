@@ -29,58 +29,44 @@
  *
  */
 
-#include "Settings.h"
-#include "oms2/Logging.h"
+#ifndef _OMS2_TLMCONNECTION_H_
+#define _OMS2_TLMCONNECTION_H_
 
-#include <cstring>
+#include "ComRef.h"
+#include "SignalRef.h"
+#include "Types.h"
+#include "Connection.h"
+
 #include <string>
 
-Settings::Settings()
+namespace oms2
 {
-  startTime = 0.0;
-  stopTime = 1.0;
-  tolerance = 1e-4;
-  communicationInterval = 1e-1;
-  resultFile = NULL;
-}
-
-Settings::~Settings()
-{
-  ClearResultFile();
-}
-
-void Settings::SetStartTime(double startTime)
-{
-  this->startTime = startTime;
-}
-
-void Settings::SetStopTime(double stopTime)
-{
-  this->stopTime = stopTime;
-}
-
-void Settings::SetTolerance(double tolerance)
-{
-  this->tolerance = tolerance;
-}
-
-void Settings::SetCommunicationInterval(double communicationInterval)
-{
-  this->communicationInterval = communicationInterval;
-}
-
-void Settings::SetResultFile(const char* resultFile)
-{
-  ClearResultFile();
-  this->resultFile = new char[std::strlen(resultFile) + 1];
-  std::strcpy(this->resultFile, resultFile);
-}
-
-void Settings::ClearResultFile()
-{
-  if (resultFile)
+  /**
+   * \brief Connection
+   */
+  class TLMConnection: public Connection
   {
-    delete[] resultFile;
-    resultFile = NULL;
-  }
+  public:
+    TLMConnection(const ComRef& cref, const oms2::SignalRef &varA, const oms2::SignalRef &varB,
+                  double delay, double alpha, double Zf, double Zfr);
+
+    const double getTimeDelay() const {return delay;}
+    const double getAlpha() const {return alpha;}
+    const double getZf() const {return Zf;}
+    const double getZfr() const {return Zfr;}
+
+    friend bool operator==(const TLMConnection& lhs, const TLMConnection& rhs);
+    friend bool operator!=(const TLMConnection& lhs, const TLMConnection& rhs);
+
+  private:
+    double delay;
+    double alpha;
+    double Zf;
+    double Zfr;
+  };
+
+  inline bool operator==(const TLMConnection& lhs, const TLMConnection& rhs) {return (Connection(lhs) == Connection(rhs));}
+  inline bool operator!=(const TLMConnection& lhs, const TLMConnection& rhs) {return (Connection(lhs) != Connection(rhs));}
 }
+
+#endif

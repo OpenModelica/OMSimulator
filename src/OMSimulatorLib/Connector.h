@@ -29,35 +29,50 @@
  *
  */
 
-#ifndef _OMS2_FMU_INFO_H_
-#define _OMS2_FMU_INFO_H_
+#ifndef _OMS2_CONNECTOR_H_
+#define _OMS2_CONNECTOR_H_
 
-#include "../Types.h"
+#include "ComRef.h"
+#include "SignalRef.h"
+#include "Types.h"
+#include "ssd/ConnectorGeometry.h"
 
 #include <string>
-#include <fmilib.h>
+
+#include <pugixml.hpp>
 
 namespace oms2
 {
   /**
-   * \brief FMU info
+   * \brief Connector
    */
-  class FMUInfo : protected oms_fmu_info_t
+  class Connector : protected oms_connector_t
   {
   public:
-    FMUInfo(const std::string& path);
-    ~FMUInfo();
+    /**
+     * This constructor creates a oms2::Connector without geometry information.
+     */
+    Connector(oms_causality_enu_t causality, oms_signal_type_enu_t type, const oms2::SignalRef& name);
+    /**
+     * This constructor is used if the optional SSD element giving the geometry
+     * information of the connector is initialized as well.
+     */
+    Connector(oms_causality_enu_t causality, oms_signal_type_enu_t type, const oms2::SignalRef& name, double height);
+    ~Connector();
 
-    oms_status_enu_t setKind(fmi2_import_t* fmu);
-    oms_status_enu_t update(fmi2_import_t* fmu);
+    oms_status_enu_t exportToSSD(pugi::xml_node& root) const;
 
-    std::string getPath() const {return std::string(path);}
-    oms_fmi_kind_enu_t getKind() const {return fmiKind;}
-
-  private:
     // methods to copy the object
-    FMUInfo(const FMUInfo& rhs);            ///< not implemented
-    FMUInfo& operator=(const FMUInfo& rhs); ///< not implemented
+    Connector(const Connector& rhs);
+    Connector& operator=(const Connector& rhs);
+
+    void setName(const oms2::SignalRef& name);
+    void setGeometry(const oms2::ssd::ConnectorGeometry* newGeometry);
+
+    const oms_causality_enu_t getCausality() const {return causality;}
+    const oms_signal_type_enu_t getType() const {return type;}
+    const oms2::SignalRef getName() const {return oms2::SignalRef(std::string(name));}
+    const oms2::ssd::ConnectorGeometry* getGeometry() const {return reinterpret_cast<oms2::ssd::ConnectorGeometry*>(geometry);}
   };
 }
 

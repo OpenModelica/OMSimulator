@@ -33,7 +33,7 @@
 
 #include "CSVReader.h"
 #include "MatReader.h"
-#include "oms2/Logging.h"
+#include "Logging.h"
 #include "Util.h"
 
 #include <string.h>

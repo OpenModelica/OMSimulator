@@ -31,7 +31,7 @@
 
 #include "OMSysIdent.h"
 #include "FitModel.h"
-#include "OMSimulatorLib/oms2/Logging.h"
+#include "OMSimulatorLib/Logging.h"
 
 void* omsi_newSysIdentModel(const char* ident)
 {

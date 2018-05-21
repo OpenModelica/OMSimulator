@@ -29,51 +29,36 @@
  *
  */
 
-#ifndef _OMS2_DIRECTED_GRAPH_H_
-#define _OMS2_DIRECTED_GRAPH_H_
+#ifndef _SSD_CONNECTOR_GEOMETRY_H_
+#define _SSD_CONNECTOR_GEOMETRY_H_
 
-#include "Variable.h"
+#include "../Types.h"
 
-#include <fmilib.h>
+#include <pugixml.hpp>
+
 #include <string>
-#include <vector>
-#include <map>
-#include <deque>
-#include <stack>
 
 namespace oms2
 {
-  class DirectedGraph
+  namespace ssd
   {
-  public:
-    DirectedGraph();
-    ~DirectedGraph();
+    class ConnectorGeometry : protected ssd_connector_geometry_t
+    {
+    public:
+      ConnectorGeometry(double x, double y);
+      ConnectorGeometry(const ConnectorGeometry& rhs);
+      ~ConnectorGeometry();
 
-    void clear();
+      ConnectorGeometry& operator=(ConnectorGeometry const& rhs);
 
-    int addVariable(const oms2::Variable& var);
-    void addEdge(const oms2::Variable& var1, const oms2::Variable& var2);
+      void setPosition(double x, double y) {this->x = x; this->y = y;}
 
-    void dotExport(const std::string& filename);
+      double getX() const {return x;}
+      double getY() const {return y;}
 
-    void includeGraph(const DirectedGraph& graph);
-
-    const std::vector< std::vector< std::pair<int, int> > >& getSortedConnections();
-    std::vector<oms2::Variable> nodes;
-    std::vector< std::pair<int, int> > edges;
-
-  private:
-    std::deque< std::vector<int> > getSCCs();
-    void calculateSortedConnections();
-    void strongconnect(int v, std::vector< std::vector<int> > G, int& index, int *d, int *low, std::stack<int>& S, bool *stacked, std::deque< std::vector<int> >& components);
-
-    static int getEdgeIndex(const std::vector< std::pair<int, int> >& edges, int from, int to);
-
-  private:
-    std::vector< std::vector<int> > G;
-    std::vector< std::vector< std::pair<int, int> > > sortedConnections;
-    bool sortedConnectionsAreValid;
-  };
+      oms_status_enu_t exportToSSD(pugi::xml_node& root) const;
+    };
+  }
 }
 
 #endif

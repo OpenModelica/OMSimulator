@@ -29,44 +29,43 @@
  *
  */
 
-#ifndef _OMS2_TLMCONNECTION_H_
-#define _OMS2_TLMCONNECTION_H_
+#ifndef _OMS2_ELEMENT_H_
+#define _OMS2_ELEMENT_H_
 
 #include "ComRef.h"
 #include "SignalRef.h"
-#include "../Types.h"
-#include "Connection.h"
+#include "Connector.h"
+#include "Types.h"
+#include "ssd/ElementGeometry.h"
 
 #include <string>
+#include <vector>
 
 namespace oms2
 {
   /**
-   * \brief Connection
+   * \brief Element
    */
-  class TLMConnection: public Connection
+  class Element : protected oms_element_t
   {
   public:
-    TLMConnection(const ComRef& cref, const oms2::SignalRef &varA, const oms2::SignalRef &varB,
-                  double delay, double alpha, double Zf, double Zfr);
+    Element(oms_element_type_enu_t type, const ComRef& name);
+    ~Element();
 
-    const double getTimeDelay() const {return delay;}
-    const double getAlpha() const {return alpha;}
-    const double getZf() const {return Zf;}
-    const double getZfr() const {return Zfr;}
+    const oms_element_type_enu_t getType() const {return type;}
+    const oms2::ComRef getName() const {return oms2::ComRef(std::string(name));}
+    oms2::Connector** getConnectors() const {return reinterpret_cast<oms2::Connector**>(connectors);}
+    const oms2::ssd::ElementGeometry* getGeometry() const {return reinterpret_cast<oms2::ssd::ElementGeometry*>(geometry);}
 
-    friend bool operator==(const TLMConnection& lhs, const TLMConnection& rhs);
-    friend bool operator!=(const TLMConnection& lhs, const TLMConnection& rhs);
+    void setName(const ComRef& name);
+    void setGeometry(const oms2::ssd::ElementGeometry* newGeometry);
+    void setConnectors(const std::vector<oms2::Connector> newConnectors);
 
   private:
-    double delay;
-    double alpha;
-    double Zf;
-    double Zfr;
+    // methods to copy the object
+    Element(const Element& rhs);            ///< not implemented
+    Element& operator=(const Element& rhs); ///< not implemented
   };
-
-  inline bool operator==(const TLMConnection& lhs, const TLMConnection& rhs) {return (Connection(lhs) == Connection(rhs));}
-  inline bool operator!=(const TLMConnection& lhs, const TLMConnection& rhs) {return (Connection(lhs) != Connection(rhs));}
 }
 
 #endif

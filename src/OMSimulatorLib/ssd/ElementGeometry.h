@@ -32,7 +32,7 @@
 #ifndef _SSD_ELEMENT_GEOMETRY_H_
 #define _SSD_ELEMENT_GEOMETRY_H_
 
-#include "../../Types.h"
+#include "../Types.h"
 
 #include <pugixml.hpp>
 

@@ -29,26 +29,17 @@
  *
  */
 
-#include "Clocks.h"
-#include "CompositeModel.h"
-#include "DirectedGraph.h"
 #include "FMUWrapper.h"
-#include "oms2/Logging.h"
-#include "ResultWriter.h"
-#include "oms2/Scope.h"
-#include "Settings.h"
-#include "Util.h"
+
+#include "Connector.h"
+#include "Logging.h"
+#include "Option.h"
+#include "Scope.h"
 #include "Variable.h"
+#include "ssd/Tags.h"
 
 #include <fmilib.h>
 #include <JM/jm_portability.h>
-
-#include <iostream>
-#include <string>
-#include <map>
-#include <stdlib.h>
-#include <unordered_map>
-#include <regex>
 
 #include <boost/filesystem.hpp>
 
@@ -58,47 +49,33 @@
 #include "sundials/sundials_dense.h" /* definitions DlsMat DENSE_ELEM */
 #include "sundials/sundials_types.h" /* definition of type realtype */
 
-enum ClockIndex_t
+namespace oms2
 {
-  CLOCK_IDLE = 0,
-  CLOCK_INITIALIZATION,
-  CLOCK_DO_STEP,
-  CLOCK_RESULTFILE,
-  CLOCK_INSTANTIATION,
-  CLOCK_EVENTS,
+  void fmiLogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message);
+  void fmi2logger(fmi2_component_environment_t env, fmi2_string_t instanceName, fmi2_status_t status, fmi2_string_t category, fmi2_string_t message, ...);
+}
 
-  CLOCK_MAX_INDEX
-};
-
-const char* ClockNames[CLOCK_MAX_INDEX] = {
-  /* CLOCK_IDLE */           "idle",
-  /* CLOCK_INITIALIZATION */ "initialization",
-  /* CLOCK_DO_STEP */        "do-step",
-  /* CLOCK_RESULTFILE */     "result file",
-  /* CLOCK_INSTANTIATION */  "instantiation",
-  /* CLOCK_EVENTS */         "events"
-};
-
-void fmiLogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message)
+void oms2::fmiLogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message)
 {
   switch (log_level)
   {
-  case jm_log_level_info:
+  case jm_log_level_info:    // Informative messages
     logDebug("module " + std::string(module) + ": " + std::string(message));
     break;
-  case jm_log_level_warning:
+  case jm_log_level_warning: // Non-critical issues
     logWarning("module " + std::string(module) + ": " + std::string(message));
     break;
-  case jm_log_level_error:
-  case jm_log_level_fatal:
+  case jm_log_level_error:   // Errors that may be not critical for some FMUs
+  case jm_log_level_fatal:   // Unrecoverable errors
     logError("module " + std::string(module) + ": " + std::string(message));
     break;
-  default:
+  case jm_log_level_verbose: // Verbose messages
+  case jm_log_level_debug:   // Debug messages. Only enabled if library is configured with FMILIB_ENABLE_LOG_LEVEL_DEBUG
     logDebug("[log level " + std::string(jm_log_level_to_string(log_level)) + "] module " + std::string(module) + ": " + std::string(message));
   }
 }
 
-void fmi2logger(fmi2_component_environment_t env, fmi2_string_t instanceName, fmi2_status_t status, fmi2_string_t category, fmi2_string_t message, ...)
+void oms2::fmi2logger(fmi2_component_environment_t env, fmi2_string_t instanceName, fmi2_status_t status, fmi2_string_t category, fmi2_string_t message, ...)
 {
   int len;
   char msg[1000];
@@ -115,17 +92,17 @@ void fmi2logger(fmi2_component_environment_t env, fmi2_string_t instanceName, fm
   case fmi2_status_warning:
     logWarning(std::string(instanceName) + " (" + category + "): " + msg);
     break;
-  case fmi2_status_error:
   case fmi2_status_discard:
+  case fmi2_status_error:
   case fmi2_status_fatal:
     logError(std::string(instanceName) + " (" + category + "): " + msg);
     break;
   default:
-    logDebug("fmiStatus = " + std::string(fmi2_status_to_string(status)) + "; " + instanceName + " (" + category + "): " + msg);
+    logWarning("fmiStatus = " + std::string(fmi2_status_to_string(status)) + "; " + instanceName + " (" + category + "): " + msg);
   }
 }
 
-int cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void *user_data)
+int oms2::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void *user_data)
 {
   FMUWrapper *fmu = (FMUWrapper*)user_data;
 
@@ -147,106 +124,173 @@ int cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void *user_data)
   return 0;
 }
 
-FMUWrapper::FMUWrapper(CompositeModel& model, std::string fmuPath, std::string instanceName)
-  : model(model), fmuPath(fmuPath), instanceName(instanceName), solverMethod(EXPLICIT_EULER), clocks(CLOCK_MAX_INDEX), variableFilter(".*")
+oms2::FMUWrapper::FMUWrapper(const oms2::ComRef& cref, const std::string& filename)
+  : oms2::FMISubModel(oms_component_fmu, cref), fmuInfo(filename), solverMethod(EXPLICIT_EULER)
+{
+  this->context = NULL;
+  this->fmu = NULL;
+
+  this->n_states = 0;
+  this->n_event_indicators = 0;
+  this->states = NULL;
+  this->states_der = NULL;
+  this->states_nominal = NULL;
+  this->event_indicators = NULL;
+  this->event_indicators_prev = NULL;
+}
+
+oms2::FMUWrapper::~FMUWrapper()
 {
   logTrace();
-  OMS_TIC(clocks, CLOCK_INSTANTIATION);
 
-  if (!boost::filesystem::exists(fmuPath))
-    logError("Specified file name does not exist: \"" + fmuPath + "\"");
+  fmi2_import_free_instance(fmu);
+  fmi2_import_destroy_dllfmu(fmu);
+  fmi2_import_free(fmu);
+  fmi_import_free_context(context);
+  if (!tempDir.empty() && boost::filesystem::is_directory(tempDir))
+  {
+    /* Use boost::filesystem::remove_all to remove the tempDir instead of fmi_import_rmdir
+     * to avoid showing terminal windows
+     */
+    //fmi_import_rmdir(&callbacks, tempDir.c_str());
+    boost::filesystem::remove_all(tempDir);
+    logDebug("removed working directory: \"" + tempDir + "\"");
+  }
+}
 
-  callbacks.malloc = malloc;
-  callbacks.calloc = calloc;
-  callbacks.realloc = realloc;
-  callbacks.free = free;
-  callbacks.logger = fmiLogger;
-  callbacks.log_level = jm_log_level_all;
-  callbacks.context = 0;
+oms2::FMUWrapper* oms2::FMUWrapper::newSubModel(const oms2::ComRef& cref, const std::string& filename)
+{
+  if (!cref.isValidQualified())
+  {
+    logError("\"" + cref + "\" is not a valid model name.");
+    return NULL;
+  }
+
+  if (!boost::filesystem::exists(filename))
+  {
+    logError("Specified file name does not exist: \"" + filename + "\"");
+    return NULL;
+  }
+
+  oms2::FMUWrapper *model = new oms2::FMUWrapper(cref, filename);
+
+  model->callbacks.malloc = malloc;
+  model->callbacks.calloc = calloc;
+  model->callbacks.realloc = realloc;
+  model->callbacks.free = free;
+  model->callbacks.logger = oms2::fmiLogger;
+  model->callbacks.log_level = jm_log_level_all;
+  model->callbacks.context = 0;
 
   // set temp directory
-  char* temp_tempDir = fmi_import_mk_temp_dir(&callbacks, oms2::Scope::GetInstance().getTempDirectory().c_str(), "temp_");
-  tempDir = std::string(temp_tempDir);
+  char* temp_tempDir = fmi_import_mk_temp_dir(&model->callbacks, oms2::Scope::GetInstance().getTempDirectory().c_str(), "temp_");
+  model->tempDir = std::string(temp_tempDir);
   free(temp_tempDir);
-  logInfo("Using \"" + tempDir + "\" as temp directory for " + instanceName);
 
-  context = fmi_import_allocate_context(&callbacks);
+  logDebug("Using \"" + model->tempDir + "\" as temp directory for " + cref);
+
+  model->context = fmi_import_allocate_context(&model->callbacks);
 
   // check version of FMU
-  fmi_version_enu_t version = fmi_import_get_fmi_version(context, fmuPath.c_str(), tempDir.c_str());
+  fmi_version_enu_t version = fmi_import_get_fmi_version(model->context, filename.c_str(), model->tempDir.c_str());
   if (fmi_version_2_0_enu != version)
   {
     logError("Unsupported FMI version: " + std::string(fmi_version_to_string(version)));
-    return;
+    delete model;
+    return NULL;
   }
 
   // parse modelDescription.xml
-  fmu = fmi2_import_parse_xml(context, tempDir.c_str(), 0);
-  if (!fmu)
+  model->fmu = fmi2_import_parse_xml(model->context, model->tempDir.c_str(), 0);
+  if (!model->fmu)
+  {
     logError("Error parsing modelDescription.xml");
+    delete model;
+    return NULL;
+  }
 
-  // check FMU kind (CS or ME)
-  fmuKind = fmi2_import_get_fmu_kind(fmu);
-  if (fmi2_fmu_kind_me == fmuKind)
-    logDebug("FMU ME");
-  else if (fmi2_fmu_kind_cs == fmuKind)
-    logDebug("FMU CS");
-  else if (fmi2_fmu_kind_me_and_cs == fmuKind)
-    logDebug("FMU ME & CS");
-  else
-    logError("Unsupported FMU kind: " + std::string(fmi2_fmu_kind_to_string(fmuKind)));
+  model->fmuInfo.setKind(model->fmu);
 
-  callBackFunctions.logger = fmi2logger;
-  callBackFunctions.allocateMemory = calloc;
-  callBackFunctions.freeMemory = free;
-  callBackFunctions.componentEnvironment = fmu;
-  callBackFunctions.stepFinished = NULL;
+  model->callBackFunctions.logger = oms2::fmi2logger;
+  model->callBackFunctions.allocateMemory = calloc;
+  model->callBackFunctions.freeMemory = free;
+  model->callBackFunctions.componentEnvironment = model->fmu;
+  model->callBackFunctions.stepFinished = NULL;
 
-  if (fmi2_fmu_kind_me == fmuKind)
+  if (oms_fmi_kind_me == model->fmuInfo.getKind())
   {
     jm_status_enu_t jmstatus;
 
-    //Load the FMU shared library
-    jmstatus = fmi2_import_create_dllfmu(fmu, fmi2_fmu_kind_me, &callBackFunctions);
-    if (jm_status_error == jmstatus) logError("Could not create the DLL loading mechanism (C-API). Error: " + std::string(fmi2_import_get_last_error(fmu)));
+    // load the FMU's shared library
+    jmstatus = fmi2_import_create_dllfmu(model->fmu, fmi2_fmu_kind_me, &model->callBackFunctions);
+    if (jm_status_error == jmstatus)
+    {
+      logError("Could not create the DLL loading mechanism (C-API). Error: " + std::string(fmi2_import_get_last_error(model->fmu)));
+      delete model;
+      return NULL;
+    }
 
-    logDebug("Version returned from FMU: " + std::string(fmi2_import_get_version(fmu)));
-    logDebug("Platform type returned: " + std::string(fmi2_import_get_types_platform(fmu)));
-    logDebug("GUID: " + std::string(fmi2_import_get_GUID(fmu)));
+    jmstatus = fmi2_import_instantiate(model->fmu, cref.toString().c_str(), fmi2_model_exchange, NULL, fmi2_false);
+    if (jm_status_error == jmstatus)
+    {
+      logError("fmi2_import_instantiate failed");
+      delete model;
+      return NULL;
+    }
 
-    jmstatus = fmi2_import_instantiate(fmu, instanceName.c_str(), fmi2_model_exchange, NULL, fmi2_false);
-    if (jm_status_error == jmstatus) logError("fmi2_import_instantiate failed");
+    // update FMU info
+    if (oms_status_ok != model->fmuInfo.update(model->fmu))
+    {
+      logError("Error importing FMU attributes");
+      delete model;
+      return NULL;
+    }
   }
-  else if (fmi2_fmu_kind_cs == fmuKind || fmi2_fmu_kind_me_and_cs == fmuKind)
+  else if (oms_fmi_kind_cs == model->fmuInfo.getKind() || oms_fmi_kind_me_and_cs == model->fmuInfo.getKind())
   {
     jm_status_enu_t jmstatus;
 
-    //Load the FMU shared library
-    jmstatus = fmi2_import_create_dllfmu(fmu, fmi2_fmu_kind_cs, &callBackFunctions);
-    if (jm_status_error == jmstatus) logError("Could not create the DLL loading mechanism (C-API). Error: " + std::string(fmi2_import_get_last_error(fmu)));
+    // load the FMU shared library
+    jmstatus = fmi2_import_create_dllfmu(model->fmu, fmi2_fmu_kind_cs, &model->callBackFunctions);
+    if (jm_status_error == jmstatus)
+    {
+      logError("Could not create the DLL loading mechanism (C-API). Error: " + std::string(fmi2_import_get_last_error(model->fmu)));
+      delete model;
+      return NULL;
+    }
 
-    logDebug("Version returned from FMU: " + std::string(fmi2_import_get_version(fmu)));
-    logDebug("Platform type returned: " + std::string(fmi2_import_get_types_platform(fmu)));
-    logDebug("GUID: " + std::string(fmi2_import_get_GUID(fmu)));
+    jmstatus = fmi2_import_instantiate(model->fmu, cref.toString().c_str(), fmi2_cosimulation, NULL, fmi2_false);
+    if (jm_status_error == jmstatus)
+    {
+      logError("fmi2_import_instantiate failed");
+      delete model;
+      return NULL;
+    }
 
-    jmstatus = fmi2_import_instantiate(fmu, instanceName.c_str(), fmi2_cosimulation, NULL, fmi2_false);
-    if (jm_status_error == jmstatus) logError("fmi2_import_instantiate failed");
+    // update FMU info
+    if (oms_status_ok != model->fmuInfo.update(model->fmu))
+    {
+      logError("Error importing FMU attributes");
+      delete model;
+      return NULL;
+    }
   }
 
-  // create variable list
-  fmi2_import_variable_list_t *varList = fmi2_import_get_variable_list(fmu, 0);
+  // create a list of all variables
+  fmi2_import_variable_list_t *varList = fmi2_import_get_variable_list(model->fmu, 0);
   size_t varListSize = fmi2_import_get_variable_list_size(varList);
   logDebug(std::to_string(varListSize) + " variables");
+  model->allVariables.reserve(varListSize);
   for (size_t i = 0; i < varListSize; ++i)
   {
     fmi2_import_variable_t* var = fmi2_import_get_variable(varList, i);
-    Variable v(var, this);
-    allVariables.push_back(v);
+    oms2::Variable v(cref, var, i + 1);
+    model->allVariables.push_back(v);
   }
   fmi2_import_free_variable_list(varList);
 
   // mark states
-  varList = fmi2_import_get_derivatives_list(fmu);
+  varList = fmi2_import_get_derivatives_list(model->fmu);
   varListSize = fmi2_import_get_variable_list_size(varList);
   logDebug(std::to_string(varListSize) + " states");
   for (size_t i = 0; i < varListSize; ++i)
@@ -257,500 +301,223 @@ FMUWrapper::FMUWrapper(CompositeModel& model, std::string fmuPath, std::string i
     if (varState)
     {
       fmi2_value_reference_t state_vr = fmi2_import_get_variable_vr(varState);
-      Variable* state_var = getVariable(state_vr);
+      oms2::Variable* state_var = NULL;
+      for (size_t i = 0; i < model->allVariables.size() && !state_var; i++)
+        if (state_vr == model->allVariables[i].getValueReference())
+          state_var = &model->allVariables[i];
       if (state_var)
         state_var->markAsState();
       else
+      {
         logError("Couldn't find " + std::string(fmi2_import_get_variable_name(varState)));
+        delete model;
+        return NULL;
+      }
     }
     else
+    {
       logError("Couldn't map " + std::string(fmi2_import_get_variable_name(var)) + " to the corresponding state variable");
+      delete model;
+      return NULL;
+    }
   }
   fmi2_import_free_variable_list(varList);
 
   // create some special variable maps
-  for (int i = 0; i < allVariables.size(); i++)
+  for (auto const &v : model->allVariables)
   {
-    if (allVariables[i].isInitialUnknown())
-      initialUnknowns.push_back(i + 1);
-    if (allVariables[i].isInput())
-      allInputs.push_back(i);
-    if (allVariables[i].isOutput())
-      allOutputs.push_back(i);
-    if (allVariables[i].isParameter())
-      allParameters.push_back(i);
+    if (v.isParameter() && v.isTypeReal())
+      model->realParameters[v.getName()] = oms2::Option<double>();
+    else if (v.isParameter() && v.isTypeInteger())
+      model->integerParameters[v.getName()] = oms2::Option<int>();
+    else if (v.isParameter() && v.isTypeBoolean())
+      model->booleanParameters[v.getName()] = oms2::Option<bool>();
 
-    switch (allVariables[i].getBaseType())
+    if (v.isInput())
+      model->inputs.push_back(v);
+    else if (v.isOutput())
     {
-    case fmi2_base_type_real:
-      realVariables.push_back(i + 1);
-      break;
-    case fmi2_base_type_int:
-      intVariables.push_back(i + 1);
-      break;
-    case fmi2_base_type_bool:
-      boolVariables.push_back(i + 1);
-      break;
-    case fmi2_base_type_str:
-      strVariables.push_back(i + 1);
-      break;
-    case fmi2_base_type_enum:
-      enumVariables.push_back(i + 1);
-      break;
-    default:
-      logWarning("FMUWrapper: Unsupported base type");
-      break;
+      model->outputs.push_back(v);
+      model->outputsGraph.addVariable(v);
     }
+    else if (v.isParameter())
+      model->parameters.push_back(v);
+
+    if (v.isInitialUnknown())
+      model->initialUnknownsGraph.addVariable(v);
   }
 
-  // generate internal dependency graphs
-  getDependencyGraph_outputs();
-  getDependencyGraph_initialUnknowns();
-
-  OMS_TOC(clocks, CLOCK_INSTANTIATION);
-}
-
-FMUWrapper::~FMUWrapper()
-{
-  logTrace();
-
-  fmi2_import_free_instance(fmu);
-  fmi2_import_destroy_dllfmu(fmu);
-  fmi2_import_free(fmu);
-  fmi_import_free_context(context);
-  if (boost::filesystem::is_directory(tempDir))
+  std::vector<oms2::Connector> connectors;
+  int i = 1;
+  int size = 1 + model->inputs.size();
+  for (auto const &v : model->inputs)
   {
-    fmi_import_rmdir(&callbacks, tempDir.c_str());
-    logDebug("removed working directory: \"" + tempDir + "\"");
+    oms2::Connector c(oms_causality_input, v.getType(), v.getSignalRef(), i++/(double)size);
+    connectors.push_back(c);
   }
-
-  double cpuStats[CLOCK_MAX_INDEX+1];
-  clocks.getStats(cpuStats, NULL);
-
-  logInfo("time measurement for FMU instance '" + instanceName + "'");
-  for (int i=1; i<CLOCK_MAX_INDEX; ++i)
-    logInfo("  " + std::string(ClockNames[i]) + ": " + std::to_string(cpuStats[i]) + "s");
-}
-
-double FMUWrapper::getReal(const std::string& var)
-{
-  logTrace();
-  if (!fmu)
-    logError("FMUWrapper::getReal failed");
-
-  Variable* v = getVariable(var);
-  if (!v)
-    logError("FMUWrapper::getReal failed");
-
-  return getReal(*v);
-}
-
-double FMUWrapper::getReal(const Variable& var)
-{
-  logTrace();
-  if (!fmu)
-    logError("FMUWrapper::getReal failed");
-
-  double value;
-  fmi2_value_reference_t vr = var.getValueReference();
-  fmi2_import_get_real(fmu, &vr, 1, &value);
-
-  return value;
-}
-
-int FMUWrapper::getInteger(const std::string& var)
-{
-  logTrace();
-  if (!fmu)
-    logError("FMUWrapper::getInteger failed");
-
-  Variable* v = getVariable(var);
-  if (!v)
-    logError("FMUWrapper::getInteger failed");
-
-  return getInteger(*v);
-}
-
-int FMUWrapper::getInteger(const Variable& var)
-{
-  logTrace();
-  if (!fmu)
-    logError("FMUWrapper::getInteger failed");
-
-  int value;
-  fmi2_value_reference_t vr = var.getValueReference();
-  fmi2_import_get_integer(fmu, &vr, 1, &value);
-
-  return value;
-}
-
-bool FMUWrapper::getBoolean(const std::string& var)
-{
-  logTrace();
-  if (!fmu)
-    logError("FMUWrapper::getBoolean failed");
-
-  Variable* v = getVariable(var);
-  if (!v)
-    logError("FMUWrapper::getBoolean failed");
-
-  return getBoolean(*v);
-}
-
-bool FMUWrapper::getBoolean(const Variable& var)
-{
-  logTrace();
-  if (!fmu)
-    logError("FMUWrapper::getBoolean failed");
-
-  int value;
-  fmi2_value_reference_t vr = var.getValueReference();
-  fmi2_import_get_boolean(fmu, &vr, 1, &value);
-
-  return value;
-}
-
-bool FMUWrapper::setRealInput(const std::string& var, double value)
-{
-  logTrace();
-  if (!fmu)
-    logError("FMUWrapper::setRealInput failed");
-
-  Variable* v = getVariable(var);
-  if (v)
-    return setRealInput(*v, value);
-  else
+  i = 1;
+  size = 1+ model->outputs.size();
+  for (auto const &v : model->outputs)
   {
-    logError("FMUWrapper::setRealInput: FMU '" + instanceName + "' doesn't contain input real " + var);
-    return false;
+    oms2::Connector c(oms_causality_output, v.getType(), v.getSignalRef(), i++/(double)size);
+    connectors.push_back(c);
   }
-}
-
-bool FMUWrapper::setRealInput(const Variable& var, double value)
-{
-  logTrace();
-  if (!fmu)
-    logError("FMUWrapper::setRealInput failed");
-
-  if (!var.isInput() || !var.isTypeReal())
+  for (auto const &v : model->parameters)
   {
-    logError("FMUWrapper::setRealInput: FMU '" + instanceName + "' doesn't contain input real " + var.getName());
-    return false;
+    oms2::Connector c(oms_causality_parameter, v.getType(), v.getSignalRef());
+    connectors.push_back(c);
   }
+  model->element.setConnectors(connectors);
 
-  fmi2_value_reference_t vr = var.getValueReference();
-  fmi2_import_set_real(fmu, &vr, 1, &value);
-  return true;
+  model->initializeDependencyGraph_initialUnknowns();
+  model->initializeDependencyGraph_outputs();
+
+  return model;
 }
 
-bool FMUWrapper::setIntegerInput(const std::string& var, int value)
+oms_status_enu_t oms2::FMUWrapper::initializeDependencyGraph_initialUnknowns()
 {
-  logTrace();
-  if (!fmu)
-    logError("FMUWrapper::setIntegerInput failed");
-
-  Variable* v = getVariable(var);
-  if (v)
-    return setIntegerInput(*v, value);
-  else
+  if (initialUnknownsGraph.edges.size() > 0)
   {
-    logError("FMUWrapper::setIntegerInput: FMU '" + instanceName + "' doesn't contain input integer " + var);
-    return false;
-  }
-}
-
-bool FMUWrapper::setIntegerInput(const Variable& var, int value)
-{
-  logTrace();
-  if (!fmu)
-    logError("FMUWrapper::setIntegerInput failed");
-
-  if (!var.isInput() || !var.isTypeInteger())
-  {
-    logError("FMUWrapper::setIntegerInput: FMU '" + instanceName + "' doesn't contain input integer " + var.getName());
-    return false;
+    logError("oms2::FMUWrapper::initializeDependencyGraph_initialUnknowns: [" + getName() + ": " + getFMUPath() + "] is already initialized.");
+    return oms_status_error;
   }
 
-  fmi2_value_reference_t vr = var.getValueReference();
-  fmi2_import_set_integer(fmu, &vr, 1, &value);
-  return true;
-}
-
-bool FMUWrapper::setBooleanInput(const std::string& var, bool value)
-{
-  logTrace();
-  if (!fmu)
-    logError("FMUWrapper::setBooleanInput failed");
-
-  Variable* v = getVariable(var);
-  if (v)
-    return setBooleanInput(*v, value);
-  else
-  {
-    logError("FMUWrapper::setBooleanInput: FMU '" + instanceName + "' doesn't contain input boolean " + var);
-    return false;
-  }
-}
-
-bool FMUWrapper::setBooleanInput(const Variable& var, bool value)
-{
-  logTrace();
-  if (!fmu)
-    logError("FMUWrapper::setBooleanInput failed");
-
-  if (!var.isInput() || !var.isTypeBoolean())
-  {
-    logError("FMUWrapper::setBooleanInput: FMU '" + instanceName + "' doesn't contain input boolean " + var.getName());
-    return false;
-  }
-
-  int value_ = value;
-  fmi2_value_reference_t vr = var.getValueReference();
-  fmi2_import_set_boolean(fmu, &vr, 1, &value_);
-  return true;
-}
-
-bool FMUWrapper::setRealParameter(const std::string& var, double value)
-{
-  logTrace();
-  if (!fmu)
-    logError("FMUWrapper::setRealParameter failed");
-
-  Variable* v = getVariable(var);
-
-  if (!v || !v->isParameter() || !v->isTypeReal())
-  {
-    logError("FMUWrapper::setRealParameter: FMU '" + instanceName + "' doesn't contain parameter real " + var);
-    return false;
-  }
-
-  fmi2_value_reference_t vr = v->getValueReference();
-  fmi2_import_set_real(fmu, &vr, 1, &value);
-  return true;
-}
-
-bool FMUWrapper::setIntegerParameter(const std::string& var, int value)
-{
-  logTrace();
-  if (!fmu)
-    logError("FMUWrapper::setIntegerParameter failed");
-
-  Variable* v = getVariable(var);
-
-  if (!v || !v->isParameter() || !v->isTypeInteger())
-  {
-    logError("FMUWrapper::setIntegerParameter: FMU '" + instanceName + "' doesn't contain parameter integer " + var);
-    return false;
-  }
-
-  fmi2_value_reference_t vr = v->getValueReference();
-  fmi2_import_set_integer(fmu, &vr, 1, &value);
-  return true;
-}
-
-bool FMUWrapper::setBooleanParameter(const std::string& var, bool value)
-{
-  logTrace();
-  if (!fmu)
-    logError("FMUWrapper::setBooleanParameter failed");
-
-  Variable* v = getVariable(var);
-
-  if (!v || !v->isParameter() || !v->isTypeInteger())
-  {
-    logError("FMUWrapper::setBooleanParameter: FMU '" + instanceName + "' doesn't contain parameter boolean " + var);
-    return false;
-  }
-
-  int value_ = value;
-  fmi2_value_reference_t vr = v->getValueReference();
-  fmi2_import_set_boolean(fmu, &vr, 1, &value_);
-  return true;
-}
-
-void FMUWrapper::getDependencyGraph_outputs()
-{
-  size_t *startIndex, *dependency;
+  size_t *startIndex=NULL, *dependency=NULL;
   char* factorKind;
-
-  for (int i = 0; i < allOutputs.size(); i++)
-    outputsGraph.addVariable(allVariables[allOutputs[i]]);
-
-  fmi2_import_get_outputs_dependencies(fmu, &startIndex, &dependency, &factorKind);
-
-  if (!startIndex)
-  {
-    logDebug("FMUWrapper::getDependencyGraph: [" + instanceName + ": " + fmuPath + "] no dependencies");
-    return;
-  }
-
-  for (int i = 0; i < allOutputs.size(); i++)
-  {
-    if (startIndex[i] == startIndex[i + 1])
-    {
-      logDebug("FMUWrapper::getDependencyGraph: [" + instanceName + ": " + fmuPath + "] output " + allVariables[allOutputs[i]].getName() + " has no dependencies");
-    }
-    else if ((startIndex[i] + 1 == startIndex[i + 1]) && (dependency[startIndex[i]] == 0))
-    {
-      logDebug("FMUWrapper::getDependencyGraph: [" + instanceName + ": " + fmuPath + "] output " + allVariables[allOutputs[i]].getName() + " depends on all");
-      for (int j = 0; j < allInputs.size(); j++)
-        outputsGraph.addEdge(allVariables[allInputs[j]], allVariables[allOutputs[i]]);
-    }
-    else
-    {
-      for (size_t j = startIndex[i]; j < startIndex[i + 1]; j++)
-      {
-        logDebug("FMUWrapper::getDependencyGraph: [" + instanceName + ": " + fmuPath + "] output " + allVariables[allOutputs[i]].getName() + " depends on " + allVariables[dependency[j] - 1].getName());
-        outputsGraph.addEdge(allVariables[dependency[j] - 1], allVariables[allOutputs[i]]);
-      }
-    }
-  }
-}
-
-void FMUWrapper::getDependencyGraph_initialUnknowns()
-{
-  size_t *startIndex, *dependency;
-  char* factorKind;
-
-  for (int i = 0; i < initialUnknowns.size(); i++)
-    initialUnknownsGraph.addVariable(allVariables[initialUnknowns[i] - 1]);
 
   fmi2_import_get_initial_unknowns_dependencies(fmu, &startIndex, &dependency, &factorKind);
 
   if (!startIndex)
   {
-    logDebug("FMUWrapper::getDependencyGraph_initialUnknowns: [" + instanceName + ": " + fmuPath + "] no dependencies");
-    return;
+    logDebug("oms2::FMUWrapper::initializeDependencyGraph_initialUnknowns: [" + getName() + ": " + getFMUPath() + "] no dependencies");
+    return oms_status_ok;
   }
 
-  for (int i = 0; i < initialUnknowns.size(); i++)
+  int N=initialUnknownsGraph.nodes.size();
+  for (int i = 0; i < N; i++)
   {
     if (startIndex[i] == startIndex[i + 1])
     {
-      logDebug("FMUWrapper::getDependencyGraph_initialUnknowns: [" + instanceName + ": " + fmuPath + "] initial unknown " + allVariables[initialUnknowns[i] - 1].getName() + " has no dependencies");
+      logDebug("oms2::FMUWrapper::initializeDependencyGraph_initialUnknowns: [" + getName() + ": " + getFMUPath() + "] initial unknown " + initialUnknownsGraph.nodes[i].getName() + " has no dependencies");
     }
     else if ((startIndex[i] + 1 == startIndex[i + 1]) && (dependency[startIndex[i]] == 0))
     {
-      logDebug("FMUWrapper::getDependencyGraph_initialUnknowns: [" + instanceName + ": " + fmuPath + "] initial unknown " + allVariables[initialUnknowns[i] - 1].getName() + " depends on all");
-      for (int j = 0; j < allOutputs.size(); j++)
-        initialUnknownsGraph.addEdge(allVariables[initialUnknowns[i] - 1], allVariables[allOutputs[j]]);
-      for (int j = 0; j < allInputs.size(); j++)
-        initialUnknownsGraph.addEdge(allVariables[allInputs[j]], allVariables[initialUnknowns[i] - 1]);
+      logDebug("oms2::FMUWrapper::initializeDependencyGraph_initialUnknowns: [" + getName() + ": " + getFMUPath() + "] initial unknown " + initialUnknownsGraph.nodes[i].getName() + " depends on all");
+      for (int j = 0; j < inputs.size(); j++)
+        initialUnknownsGraph.addEdge(inputs[j], initialUnknownsGraph.nodes[i]);
     }
     else
     {
       for (size_t j = startIndex[i]; j < startIndex[i + 1]; j++)
       {
-        logDebug("FMUWrapper::getDependencyGraph_initialUnknowns: [" + instanceName + ": " + fmuPath + "] initial unknown " + allVariables[initialUnknowns[i] - 1].getName() + " depends on " + allVariables[dependency[j] - 1].getName());
-        initialUnknownsGraph.addEdge(allVariables[dependency[j] - 1], allVariables[initialUnknowns[i] - 1]);
+        logDebug("oms2::FMUWrapper::initializeDependencyGraph_initialUnknowns: [" + getName() + ": " + getFMUPath() + "] initial unknown " + initialUnknownsGraph.nodes[i].getName() + " depends on " + allVariables[dependency[j] - 1].getName());
+        initialUnknownsGraph.addEdge(allVariables[dependency[j] - 1], initialUnknownsGraph.nodes[i]);
       }
     }
   }
+
+  return oms_status_ok;
 }
 
-Variable* FMUWrapper::getVariable(const std::string& name)
+oms_status_enu_t oms2::FMUWrapper::initializeDependencyGraph_outputs()
 {
-  for (size_t i = 0; i < allVariables.size(); i++)
-    if (name == allVariables[i].getName())
-      return &allVariables[i];
-  return NULL;
+  if (outputsGraph.edges.size() > 0)
+  {
+    logError("oms2::FMUWrapper::initializeDependencyGraph_outputs: [" + getName() + ": " + getFMUPath() + "] is already initialized.");
+    return oms_status_error;
+  }
+
+  size_t *startIndex=NULL, *dependency=NULL;
+  char* factorKind;
+
+  fmi2_import_get_outputs_dependencies(fmu, &startIndex, &dependency, &factorKind);
+
+  if (!startIndex)
+  {
+    logDebug("oms2::FMUWrapper::initializeDependencyGraph_outputs: [" + getName() + ": " + getFMUPath() + "] no dependencies");
+    return oms_status_ok;
+  }
+
+  for (int i = 0; i < outputs.size(); i++)
+  {
+    if (startIndex[i] == startIndex[i + 1])
+    {
+      logDebug("oms2::FMUWrapper::initializeDependencyGraph_outputs: [" + getName() + ": " + getFMUPath() + "] output " + outputs[i].getName() + " has no dependencies");
+    }
+    else if ((startIndex[i] + 1 == startIndex[i + 1]) && (dependency[startIndex[i]] == 0))
+    {
+      logDebug("oms2::FMUWrapper::initializeDependencyGraph_outputs: [" + getName() + ": " + getFMUPath() + "] output " + outputs[i].getName() + " depends on all");
+      for (int j = 0; j < inputs.size(); j++)
+        outputsGraph.addEdge(inputs[j], outputs[i]);
+    }
+    else
+    {
+      for (size_t j = startIndex[i]; j < startIndex[i + 1]; j++)
+      {
+        logDebug("oms2::FMUWrapper::initializeDependencyGraph_outputs: [" + getName() + ": " + getFMUPath() + "] output " + outputs[i].getName() + " depends on " + allVariables[dependency[j] - 1].getName());
+        outputsGraph.addEdge(allVariables[dependency[j] - 1], outputs[i]);
+      }
+    }
+  }
+
+  return oms_status_ok;
 }
 
-Variable* FMUWrapper::getVariable(const fmi2_value_reference_t& state_vr)
+oms_status_enu_t oms2::FMUWrapper::enterInitialization(const double startTime)
 {
-  for (size_t i = 0; i < allVariables.size(); i++)
-    if (state_vr == allVariables[i].getValueReference())
-      return &allVariables[i];
-  return NULL;
-}
-
-std::string FMUWrapper::getFMUKind() const
-{
-  if (fmi2_fmu_kind_me == fmuKind) return "FMI 2.0 ME";
-  if (fmi2_fmu_kind_cs == fmuKind) return "FMI 2.0 CS";
-  if (fmi2_fmu_kind_me_and_cs == fmuKind) return "FMI 2.0 ME & CS";
-  return "Unsupported FMU kind";
-}
-
-bool FMUWrapper::isFMUKindME() const
-{
-  if (fmi2_fmu_kind_me == fmuKind) return true;
-  return false;
-}
-
-std::string FMUWrapper::getGUID() const
-{
-  const char* GUID = fmi2_import_get_GUID(fmu);
-  return std::string(GUID);
-}
-
-std::string FMUWrapper::getGenerationTool() const
-{
-  const char* tool = fmi2_import_get_generation_tool(fmu);
-  if (tool)
-    return std::string(tool);
-  return "<unknown>";
-}
-
-void FMUWrapper::do_event_iteration()
-{
-  OMS_TIC(clocks, CLOCK_EVENTS);
-
-  eventInfo.newDiscreteStatesNeeded = fmi2_true;
-  eventInfo.terminateSimulation = fmi2_false;
-  while (eventInfo.newDiscreteStatesNeeded && !eventInfo.terminateSimulation)
-    fmi2_import_new_discrete_states(fmu, &eventInfo);
-
-  OMS_TOC(clocks, CLOCK_EVENTS);
-}
-
-void FMUWrapper::enterInitialization(double startTime)
-{
-  OMS_TIC(clocks, CLOCK_INITIALIZATION);
-  fmi2_status_t fmistatus;
-
   relativeTolerance = fmi2_import_get_default_experiment_tolerance(fmu);
-  tcur = startTime;
+  if (relativeTolerance < 1e-60) relativeTolerance = 1e-4;
+  this->time = startTime;
+
   const fmi2_boolean_t toleranceControlled = fmi2_true;
   const fmi2_boolean_t StopTimeDefined = fmi2_false;
 
-  const fmi2_real_t tend = model.getSettings().GetStopTime();
+  const fmi2_real_t stopTime = 1.0;
 
-  logDebug("start time: " + std::to_string(tcur));
+  logDebug("start time: " + std::to_string(this->time));
+  logDebug("stop time: " + std::to_string(stopTime));
   logDebug("relative tolerance: " + std::to_string(relativeTolerance));
 
-  if (fmi2_fmu_kind_me == fmuKind)
+  fmi2_status_t fmistatus;
+  if (oms_fmi_kind_me == fmuInfo.getKind())
   {
-    fmistatus = fmi2_import_setup_experiment(fmu, toleranceControlled, relativeTolerance, tcur, StopTimeDefined, tend);
-    if (fmi2_status_ok != fmistatus) logError("fmi2_import_setup_experiment failed");
+    fmistatus = fmi2_import_setup_experiment(fmu, toleranceControlled, relativeTolerance, this->time, StopTimeDefined, stopTime);
+    if (fmi2_status_ok != fmistatus) return logError("fmi2_import_setup_experiment failed");
 
     fmistatus = fmi2_import_enter_initialization_mode(fmu);
-    if (fmi2_status_ok != fmistatus) logError("fmi2_import_enter_initialization_mode failed");
+    if (fmi2_status_ok != fmistatus) return logError("fmi2_import_enter_initialization_mode failed");
   }
-  else if (fmi2_fmu_kind_cs == fmuKind || fmi2_fmu_kind_me_and_cs == fmuKind)
+  else if (oms_fmi_kind_cs == fmuInfo.getKind() || oms_fmi_kind_me_and_cs == fmuInfo.getKind())
   {
-    fmistatus = fmi2_import_setup_experiment(fmu, toleranceControlled, relativeTolerance, tcur, StopTimeDefined, tend);
-    if (fmi2_status_ok != fmistatus) logError("fmi2_import_setup_experiment failed");
+    fmistatus = fmi2_import_setup_experiment(fmu, toleranceControlled, relativeTolerance, this->time, StopTimeDefined, stopTime);
+    if (fmi2_status_ok != fmistatus) return logError("fmi2_import_setup_experiment failed");
 
     fmistatus = fmi2_import_enter_initialization_mode(fmu);
-    if (fmi2_status_ok != fmistatus) logError("fmi2_import_enter_initialization_mode failed");
+    if (fmi2_status_ok != fmistatus) return logError("fmi2_import_enter_initialization_mode failed");
   }
   else
-    logError("Unsupported FMU kind");
+    return logError("Unsupported FMU kind");
+
+  return oms_status_ok;
 }
 
-void FMUWrapper::exitInitialization()
+oms_status_enu_t oms2::FMUWrapper::exitInitialization()
 {
   fmi2_status_t fmistatus;
 
-  if (fmi2_fmu_kind_me == fmuKind)
+  if (oms_fmi_kind_cs == fmuInfo.getKind() || oms_fmi_kind_me_and_cs == fmuInfo.getKind())
   {
     fmistatus = fmi2_import_exit_initialization_mode(fmu);
-    if (fmi2_status_ok != fmistatus) logError("fmi2_import_exit_initialization_mode failed");
+    if (fmi2_status_ok != fmistatus) return logError("fmi2_import_exit_initialization_mode failed");
+  }
+  else if (oms_fmi_kind_me == fmuInfo.getKind())
+  {
+    fmistatus = fmi2_import_exit_initialization_mode(fmu);
+    if (fmi2_status_ok != fmistatus) return logError("fmi2_import_exit_initialization_mode failed");
 
     terminateSimulation = fmi2_false;
 
-    OMS_TIC(clocks, CLOCK_EVENTS);
     eventInfo.newDiscreteStatesNeeded = fmi2_false;
     eventInfo.terminateSimulation = fmi2_false;
     eventInfo.nominalsOfContinuousStatesChanged = fmi2_false;
@@ -760,7 +527,6 @@ void FMUWrapper::exitInitialization()
 
     // fmi2_import_exit_initialization_mode leaves FMU in event mode
     do_event_iteration();
-    OMS_TOC(clocks, CLOCK_EVENTS);
 
     fmi2_import_enter_continuous_time_mode(fmu);
 
@@ -797,14 +563,14 @@ void FMUWrapper::exitInitialization()
     if (n_states < 1)
     {
       this->solverMethod = NO_SOLVER;
-      logDebug("FMU '" + instanceName + "' doesn't contain any state.");
+      logDebug("FMU '" + getName() + "' doesn't contain any state.");
     }
 
     // initialize solver data
     if (NO_SOLVER == solverMethod)
     {
       if (n_states > 0)
-        logError("No solver specified for FMU '" + instanceName + "'");
+        return logError("No solver specified for FMU '" + getName() + "'");
     }
     else if (EXPLICIT_EULER == solverMethod)
     {
@@ -832,7 +598,7 @@ void FMUWrapper::exitInitialization()
       // Call CVodeInit to initialize the integrator memory and specify the
       // user's right hand side function in y'=cvode_rhs(t,y), the inital time T0, and
       // the initial dependent variable vector y.
-      flag = CVodeInit(solverData.cvode.mem, cvode_rhs, tcur, solverData.cvode.y);
+      flag = CVodeInit(solverData.cvode.mem, cvode_rhs, time, solverData.cvode.y);
       if (flag < 0) logError("SUNDIALS_ERROR: CVodeInit() failed with flag = " + std::to_string(flag));
 
       // Call CVodeSVtolerances to specify the scalar relative tolerance
@@ -844,8 +610,9 @@ void FMUWrapper::exitInitialization()
       flag = CVDense(solverData.cvode.mem, static_cast<long>(n_states));
       if (flag < 0) logError("SUNDIALS_ERROR: CVDense() failed with flag = " + std::to_string(flag));
 
-      double max_h = (model.getSettings().GetStopTime() - model.getSettings().GetStartTime()) / 10.0;
-      logInfo("maximum step size for '" + instanceName + "': " + std::to_string(max_h));
+      const fmi2_real_t stopTime = 1.0;
+      double max_h = (stopTime - time) / 10.0;
+      logInfo("maximum step size for '" + getName() + "': " + std::to_string(max_h));
       flag = CVodeSetMaxStep(solverData.cvode.mem, max_h);
       if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetMaxStep() failed with flag = " + std::to_string(flag));
 
@@ -870,25 +637,27 @@ void FMUWrapper::exitInitialization()
     else
       logError("Unknown solver method");
   }
-  else if (fmi2_fmu_kind_cs == fmuKind || fmi2_fmu_kind_me_and_cs == fmuKind)
-  {
-    fmistatus = fmi2_import_exit_initialization_mode(fmu);
-    if (fmi2_status_ok != fmistatus) logError("fmi2_import_exit_initialization_mode failed");
-  }
   else
-    logError("Unsupported FMU kind");
+    return logError("Unsupported FMU kind");
 
-  OMS_TOC(clocks, CLOCK_INITIALIZATION);
+  return oms_status_ok;
 }
 
-void FMUWrapper::terminate()
+void oms2::FMUWrapper::do_event_iteration()
 {
-  if (fmi2_fmu_kind_me == fmuKind)
+  eventInfo.newDiscreteStatesNeeded = fmi2_true;
+  eventInfo.terminateSimulation = fmi2_false;
+  while (eventInfo.newDiscreteStatesNeeded && !eventInfo.terminateSimulation)
+    fmi2_import_new_discrete_states(fmu, &eventInfo);
+}
+
+oms_status_enu_t oms2::FMUWrapper::reset()
+{
+  if (oms_fmi_kind_me == fmuInfo.getKind())
   {
     // free solver data
     if (NO_SOLVER == solverMethod)
     {
-
     }
     else if (EXPLICIT_EULER == solverMethod)
     {
@@ -911,7 +680,61 @@ void FMUWrapper::terminate()
       flag = CVodeGetNumNonlinSolvConvFails(solverData.cvode.mem, &ncfn);
       if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumNonlinSolvConvFails() failed with flag = " + std::to_string(flag));
 
-      logInfo("Final Statistics for '" + instanceName + "':");
+      logInfo("Final Statistics for '" + getName() + "':");
+      logInfo("NumSteps = " + std::to_string(nst) + " NumRhsEvals  = " + std::to_string(nfe) + " NumLinSolvSetups = " + std::to_string(nsetups));
+      logInfo("NumNonlinSolvIters = " + std::to_string(nni) + " NumNonlinSolvConvFails = " + std::to_string(ncfn) + " NumErrTestFails = " + std::to_string(netf));
+
+      N_VDestroy_Serial(solverData.cvode.y);
+      N_VDestroy_Serial(solverData.cvode.abstol);
+      CVodeFree(&(solverData.cvode.mem));
+    }
+    else
+      logError("Unknown solver method");
+
+    // free common data
+    free(states);
+    free(states_der);
+    free(states_nominal);
+    free(event_indicators);
+    free(event_indicators_prev);
+  }
+
+  fmi2_status_t fmistatus = fmi2_import_reset(fmu);
+  if (fmi2_status_ok != fmistatus)
+    return logError("fmi2_import_reset failed");
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms2::FMUWrapper::terminate()
+{
+  if (oms_fmi_kind_me == fmuInfo.getKind())
+  {
+    // free solver data
+    if (NO_SOLVER == solverMethod)
+    {
+    }
+    else if (EXPLICIT_EULER == solverMethod)
+    {
+    }
+    else if (CVODE == solverMethod)
+    {
+      long int nst, nfe, nsetups, nni, ncfn, netf;
+      int flag;
+
+      flag = CVodeGetNumSteps(solverData.cvode.mem, &nst);
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumSteps() failed with flag = " + std::to_string(flag));
+      flag = CVodeGetNumRhsEvals(solverData.cvode.mem, &nfe);
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumRhsEvals() failed with flag = " + std::to_string(flag));
+      flag = CVodeGetNumLinSolvSetups(solverData.cvode.mem, &nsetups);
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumLinSolvSetups() failed with flag = " + std::to_string(flag));
+      flag = CVodeGetNumErrTestFails(solverData.cvode.mem, &netf);
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumErrTestFails() failed with flag = " + std::to_string(flag));
+      flag = CVodeGetNumNonlinSolvIters(solverData.cvode.mem, &nni);
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumNonlinSolvIters() failed with flag = " + std::to_string(flag));
+      flag = CVodeGetNumNonlinSolvConvFails(solverData.cvode.mem, &ncfn);
+      if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumNonlinSolvConvFails() failed with flag = " + std::to_string(flag));
+
+      logInfo("Final Statistics for '" + getName() + "':");
       logInfo("NumSteps = " + std::to_string(nst) + " NumRhsEvals  = " + std::to_string(nfe) + " NumLinSolvSetups = " + std::to_string(nsetups));
       logInfo("NumNonlinSolvIters = " + std::to_string(nni) + " NumNonlinSolvConvFails = " + std::to_string(ncfn) + " NumErrTestFails = " + std::to_string(netf));
 
@@ -931,52 +754,24 @@ void FMUWrapper::terminate()
   }
 
   fmi2_status_t fmistatus = fmi2_import_terminate(fmu);
-  if (fmi2_status_ok != fmistatus) logError("fmi2_import_terminate failed");
+  if (fmi2_status_ok != fmistatus)
+    return logError("fmi2_import_terminate failed");
+  return oms_status_ok;
 }
 
-void FMUWrapper::reset()
+oms_status_enu_t oms2::FMUWrapper::doStep(double stopTime)
 {
-  if (fmi2_fmu_kind_me == fmuKind)
-  {
-    // free solver data
-    if (NO_SOLVER == solverMethod)
-    {
-    }
-    else if (EXPLICIT_EULER == solverMethod)
-    {
-    }
-    else if (CVODE == solverMethod)
-    {
-      N_VDestroy_Serial(solverData.cvode.y);
-      N_VDestroy_Serial(solverData.cvode.abstol);
-      CVodeFree(&(solverData.cvode.mem));
-    }
-    else
-      logError("Unknown solver method");
-
-    free(states);
-    free(states_der);
-    free(states_nominal);
-  }
-
-  fmi2_status_t fmistatus = fmi2_import_reset(fmu);
-  if (fmi2_status_ok != fmistatus) logError("fmi2_import_reset failed");
-}
-
-void FMUWrapper::doStep(double stopTime)
-{
-  OMS_TIC(clocks, CLOCK_DO_STEP);
   fmi2_status_t fmistatus;
-  const fmi2_real_t hdef = model.getSettings().GetCommunicationInterval() / 10;
+  double hdef = (stopTime-time) / 1.0;
 
-  if (fmi2_fmu_kind_me == fmuKind)
+  if (oms_fmi_kind_me == fmuInfo.getKind())
   {
     // main simulation loop
     fmi2_real_t hcur = hdef;
-    fmi2_real_t tlast = tcur;
-    while ((tcur < stopTime) && (!(eventInfo.terminateSimulation || terminateSimulation)))
+    fmi2_real_t tlast = time;
+    while ((time < stopTime) && (!(eventInfo.terminateSimulation || terminateSimulation)))
     {
-      fmistatus = fmi2_import_set_time(fmu, tcur);
+      fmistatus = fmi2_import_set_time(fmu, time);
       if (fmi2_status_ok != fmistatus) logError("fmi2_import_set_time failed");
 
       // swap event_indicators and event_indicators_prev
@@ -1001,8 +796,7 @@ void FMUWrapper::doStep(double stopTime)
       }
 
       // handle events
-      OMS_TIC(clocks, CLOCK_EVENTS);
-      if (callEventUpdate || zero_crossing_event || (eventInfo.nextEventTimeDefined && tcur == eventInfo.nextEventTime))
+      if (callEventUpdate || zero_crossing_event || (eventInfo.nextEventTimeDefined && time == eventInfo.nextEventTime))
       {
         fmistatus = fmi2_import_enter_event_mode(fmu);
         if (fmi2_status_ok != fmistatus) logError("fmi2_import_enter_event_mode failed");
@@ -1025,25 +819,24 @@ void FMUWrapper::doStep(double stopTime)
         {
           for (size_t i = 0; i < n_states; ++i)
             NV_Ith_S(solverData.cvode.y, i) = states[i];
-          int flag = CVodeReInit(solverData.cvode.mem, tcur, solverData.cvode.y);
+          int flag = CVodeReInit(solverData.cvode.mem, time, solverData.cvode.y);
           if (flag < 0) logError("SUNDIALS_ERROR: CVodeReInit() failed with flag = " + std::to_string(flag));
         }
       }
-      OMS_TOC(clocks, CLOCK_EVENTS);
 
       // calculate next time step
-      tlast = tcur;
-      tcur += hdef;
-      if (eventInfo.nextEventTimeDefined && (tcur >= eventInfo.nextEventTime))
-        tcur = eventInfo.nextEventTime;
+      tlast = time;
+      time += hdef;
+      if (eventInfo.nextEventTimeDefined && (time >= eventInfo.nextEventTime))
+        time = eventInfo.nextEventTime;
 
-      hcur = tcur - tlast;
+      hcur = time - tlast;
 
-      if (tcur > stopTime - hcur / 1e16)
+      if (time > stopTime - hcur / 1e16)
       {
         // adjust final step size
-        tcur = stopTime;
-        hcur = tcur - tlast;
+        time = stopTime;
+        hcur = time - tlast;
       }
 
       // integrate using specified solver
@@ -1058,12 +851,12 @@ void FMUWrapper::doStep(double stopTime)
       else if (CVODE == solverMethod)
       {
         double cvode_time = tlast;
-        while (cvode_time < tcur)
+        while (cvode_time < time)
         {
-          int flag = CVode(solverData.cvode.mem, tcur, solverData.cvode.y, &cvode_time, CV_ONE_STEP);
+          int flag = CVode(solverData.cvode.mem, time, solverData.cvode.y, &cvode_time, CV_ONE_STEP);
           if (flag < 0) logError("SUNDIALS_ERROR: CVode() failed with flag = " + std::to_string(flag));
         }
-        tcur = cvode_time;
+        time = cvode_time;
       }
       else
         logError("Unknown solver method");
@@ -1083,107 +876,406 @@ void FMUWrapper::doStep(double stopTime)
       if (fmi2_status_ok != fmistatus) logError("fmi2_import_completed_integrator_step failed");
     }
   }
-  else if (fmi2_fmu_kind_cs == fmuKind || fmi2_fmu_kind_me_and_cs == fmuKind)
+  else if (oms_fmi_kind_cs == fmuInfo.getKind() || oms_fmi_kind_me_and_cs == fmuInfo.getKind())
   {
-    while (tcur < stopTime)
+    while (time < stopTime)
     {
-      fmistatus = fmi2_import_do_step(fmu, tcur, hdef, fmi2_true);
-      tcur += hdef;
+      fmistatus = fmi2_import_do_step(fmu, time, hdef, fmi2_true);
+      time += hdef;
+    }
+    time = stopTime;
+  }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms2::FMUWrapper::exportToSSD(pugi::xml_node& root) const
+{
+  oms_status_enu_t status = oms_status_ok;
+
+  oms2::ComRef cref = element.getName();
+  pugi::xml_node subModel = root.append_child(oms2::ssd::ssd_component);
+  subModel.append_attribute("name") = cref.last().toString().c_str();
+
+  subModel.append_attribute("type") = "application/x-fmu-sharedlibrary";
+
+  const std::string& fmuPath = getFMUPath();
+  subModel.append_attribute("source") = fmuPath.c_str();
+
+  // export ssd:ElementGeometry
+  status = element.getGeometry()->exportToSSD(subModel);
+  if (oms_status_ok != status)
+    return status;
+
+  // export ssd:Connectors
+  oms2::Connector** connectors = element.getConnectors();
+  if (connectors)
+  {
+    pugi::xml_node connectorsNode = subModel.append_child(oms2::ssd::ssd_connectors);
+    for (int i=0; connectors[i]; ++i)
+    {
+      status = connectors[i]->exportToSSD(connectorsNode);
+      if (oms_status_ok != status)
+        return status;
     }
   }
 
-  OMS_TOC(clocks, CLOCK_DO_STEP);
-}
-
-void FMUWrapper::SetSolverMethod(const std::string& solverMethod)
-{
-  if (!isFMUKindME())
+  // export ssd:ParameterBindings
+  const std::map<std::string, oms2::Option<double>>& realParameters = getRealParameters();
+  for (auto it=realParameters.begin(); it != realParameters.end(); it++)
   {
-    logError("FMUWrapper::SetSolverMethod: Solver method can only be specified for FMU ME");
-    return;
-  }
-
-  if (solverMethod == "none")
-    this->solverMethod = NO_SOLVER;
-  else if (solverMethod == "euler")
-    this->solverMethod = EXPLICIT_EULER;
-  else if (solverMethod == "cvode")
-    this->solverMethod = CVODE;
-  else
-    logError("Settings::SetSolverMethod: Unknown solver method '" + solverMethod + "'");
-}
-
-std::string FMUWrapper::GetSolverMethodString() const
-{
-  switch (solverMethod)
-  {
-  case NO_SOLVER:
-    return std::string("none");
-  case EXPLICIT_EULER:
-    return std::string("euler");
-  case CVODE:
-    return std::string("cvode");
-  default:
-    logError("FMUWrapper::GetSolverMethodString: Unknown solver method " + std::to_string(solverMethod));
-    return std::string("unknown");
-  }
-}
-
-void FMUWrapper::registerSignalsForResultFile(ResultWriter *resultFile)
-{
-  OMS_TIC(globalClocks, GLOBALCLOCK_RESULTFILE);
-
-  std::regex exp(variableFilter);
-
-  for (int i=0; i<allVariables.size(); ++i)
-  {
-    Variable& var = allVariables[i];
-    if (std::regex_match(var.getName(), exp))
+    if (it->second.isSome())
     {
-      if (var.isParameter())
+      pugi::xml_node parameter = subModel.append_child("Parameter");
+      parameter.append_attribute("Type") = "Real";
+      parameter.append_attribute("Name") = it->first.c_str();
+      parameter.append_attribute("Value") = std::to_string(it->second.getValue()).c_str();
+    }
+  }
+
+  const std::map<std::string, oms2::Option<int>>& integerParameters = getIntegerParameters();
+  for (auto it=integerParameters.begin(); it != integerParameters.end(); it++)
+  {
+    if (it->second.isSome())
+    {
+      pugi::xml_node parameter = subModel.append_child("Parameter");
+      parameter.append_attribute("Type") = "Integer";
+      parameter.append_attribute("Name") = it->first.c_str();
+      parameter.append_attribute("Value") = std::to_string(it->second.getValue()).c_str();
+    }
+  }
+
+  const std::map<std::string, oms2::Option<bool>>& booleanParameters = getBooleanParameters();
+  for (auto it=booleanParameters.begin(); it != booleanParameters.end(); it++)
+  {
+    if (it->second.isSome())
+    {
+      pugi::xml_node parameter = subModel.append_child("Parameter");
+      parameter.append_attribute("Type") = "Boolean";
+      parameter.append_attribute("Name") = it->first.c_str();
+      parameter.append_attribute("Value") = it->second.getValue() ? "true" : "false";
+    }
+  }
+
+  return status;
+}
+
+oms2::Variable* oms2::FMUWrapper::getVariable(const std::string& var)
+{
+  for (auto &v : allVariables)
+    if (v.getName() == var)
+      return &v;
+
+  return NULL;
+}
+
+oms_status_enu_t oms2::FMUWrapper::setRealParameter(const std::string& var, double value)
+{
+  auto it = realParameters.find(var);
+  if (realParameters.end() == it)
+    return logError("No such parameter: " + var);
+
+  it->second = value;
+
+  oms2::Variable* v = getVariable(var);
+  if (!v)
+    return oms_status_error;
+  return setReal(*v, value);
+}
+
+oms_status_enu_t oms2::FMUWrapper::getRealParameter(const std::string& var, double& value)
+{
+  auto it = realParameters.find(var);
+  if (realParameters.end() == it)
+    return logError("No such parameter: " + var);
+
+  if (it->second.isNone())
+  {
+    oms2::Variable *v = getVariable(var);
+    if (!v)
+      return oms_status_error;
+    if (oms_status_ok != getReal(*v, value))
+      return oms_status_error;
+    it->second = value;
+  }
+  else
+    value = it->second.getValue();
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms2::FMUWrapper::getReal(const std::string& var, double& value)
+{
+  oms2::Variable* v = getVariable(var);
+  if (!v)
+    return oms_status_error;
+  return getReal(*v, value);
+}
+
+oms_status_enu_t oms2::FMUWrapper::setIntegerParameter(const std::string& var, int value)
+{
+  auto it = integerParameters.find(var);
+  if (integerParameters.end() == it)
+    return logError("No such parameter: " + var);
+
+  it->second = value;
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms2::FMUWrapper::getIntegerParameter(const std::string& var, int& value)
+{
+  auto it = integerParameters.find(var);
+  if (integerParameters.end() == it)
+    return logError("No such parameter: " + var);
+
+  if (it->second.isNone())
+  {
+    oms2::Variable *v = getVariable(var);
+    if (!v)
+      return oms_status_error;
+    if (oms_status_ok != getInteger(*v, value))
+      return oms_status_error;
+    it->second = value;
+  }
+  else
+    value = it->second.getValue();
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms2::FMUWrapper::setBooleanParameter(const std::string& var, bool value)
+{
+  auto it = booleanParameters.find(var);
+  if (booleanParameters.end() == it)
+    return logError("No such parameter: " + var);
+
+  it->second = value;
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms2::FMUWrapper::getBooleanParameter(const std::string& var, bool& value)
+{
+  auto it = booleanParameters.find(var);
+  if (booleanParameters.end() == it)
+    return logError("No such parameter: " + var);
+
+  if (it->second.isNone())
+  {
+    oms2::Variable *v = getVariable(var);
+    if (!v)
+      return oms_status_error;
+    if (oms_status_ok != getBoolean(*v, value))
+      return oms_status_error;
+    it->second = value;
+  }
+  else
+    value = it->second.getValue();
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms2::FMUWrapper::setReal(const oms2::Variable& var, double realValue)
+{
+  logTrace();
+  if (!fmu || !var.isTypeReal())
+    return logError("oms2::FMUWrapper::setReal failed");
+
+  fmi2_value_reference_t vr = var.getValueReference();
+  if (fmi2_status_ok == fmi2_import_set_real(fmu, &vr, 1, &realValue))
+    return oms_status_ok;
+
+  return oms_status_error;
+}
+
+oms_status_enu_t oms2::FMUWrapper::getReal(const oms2::Variable& var, double& realValue)
+{
+  logTrace();
+  if (!fmu || !var.isTypeReal())
+    return logError("oms2::FMUWrapper::getReal failed");
+
+  fmi2_value_reference_t vr = var.getValueReference();
+  if (fmi2_status_ok == fmi2_import_get_real(fmu, &vr, 1, &realValue))
+    return oms_status_ok;
+
+  return oms_status_error;
+}
+
+oms_status_enu_t oms2::FMUWrapper::setRealInputDerivatives(const oms2::Variable &var, int order, double realValue)
+{
+  logTrace();
+  if (!fmu || !var.isTypeReal())
+    return logError("oms2::FMUWrapper::setRealInputDerivatives failed");
+
+  fmi2_value_reference_t vr = var.getValueReference();
+  if (fmi2_status_ok == fmi2_import_set_real_input_derivatives(fmu, &vr, 1, &order, &realValue))
+    return oms_status_ok;
+
+  return oms_status_error;
+}
+
+oms_status_enu_t oms2::FMUWrapper::setInteger(const oms2::Variable& var, int integerValue)
+{
+  logTrace();
+  if (!fmu || !var.isTypeInteger())
+    return logError("oms2::FMUWrapper::setInteger failed");
+
+  fmi2_value_reference_t vr = var.getValueReference();
+  if (fmi2_status_ok == fmi2_import_set_integer(fmu, &vr, 1, &integerValue))
+    return oms_status_ok;
+
+  return oms_status_error;
+}
+
+oms_status_enu_t oms2::FMUWrapper::getInteger(const oms2::Variable& var, int& integerValue)
+{
+  logTrace();
+  if (!fmu || !var.isTypeInteger())
+    return logError("oms2::FMUWrapper::getInteger failed");
+
+  fmi2_value_reference_t vr = var.getValueReference();
+  if (fmi2_status_ok == fmi2_import_get_integer(fmu, &vr, 1, &integerValue))
+    return oms_status_ok;
+
+  return oms_status_error;
+}
+
+oms_status_enu_t oms2::FMUWrapper::setBoolean(const oms2::Variable& var, bool booleanValue)
+{
+  logTrace();
+  if (!fmu || !var.isTypeBoolean())
+    return logError("oms2::FMUWrapper::setBoolean failed");
+
+  fmi2_value_reference_t vr = var.getValueReference();
+  int value = booleanValue;
+  if (fmi2_status_ok == fmi2_import_set_boolean(fmu, &vr, 1, &value))
+    return oms_status_ok;
+
+  return oms_status_error;
+}
+
+oms_status_enu_t oms2::FMUWrapper::getBoolean(const oms2::Variable& var, bool& booleanValue)
+{
+  logTrace();
+  if (!fmu || !var.isTypeBoolean())
+    return logError("oms2::FMUWrapper::getBoolean failed");
+
+  fmi2_value_reference_t vr = var.getValueReference();
+  int value = 0;
+  if (fmi2_status_ok == fmi2_import_get_boolean(fmu, &vr, 1, &value))
+  {
+    booleanValue = value;
+    return oms_status_ok;
+  }
+
+  return oms_status_error;
+}
+
+oms_status_enu_t oms2::FMUWrapper::setReal(const oms2::SignalRef& sr, double value)
+{
+  oms2::Variable* var = getVariable(sr.getVar());
+  if (!var)
+    return oms_status_error;
+  return setReal(*var, value);
+}
+
+oms_status_enu_t oms2::FMUWrapper::getReal(const oms2::SignalRef& sr, double& value)
+{
+  oms2::Variable* var = getVariable(sr.getVar());
+  if (!var)
+    return oms_status_error;
+  return getReal(*var, value);
+}
+
+oms_status_enu_t oms2::FMUWrapper::setInteger(const oms2::SignalRef& sr, int value)
+{
+  oms2::Variable* var = getVariable(sr.getVar());
+  if (!var)
+    return oms_status_error;
+  return setInteger(*var, value);
+}
+
+oms_status_enu_t oms2::FMUWrapper::getInteger(const oms2::SignalRef& sr, int& value)
+{
+  oms2::Variable* var = getVariable(sr.getVar());
+  if (!var)
+    return oms_status_error;
+  return getInteger(*var, value);
+}
+
+oms_status_enu_t oms2::FMUWrapper::setBoolean(const oms2::SignalRef& sr, bool value)
+{
+  oms2::Variable* var = getVariable(sr.getVar());
+  if (!var)
+    return oms_status_error;
+  return setBoolean(*var, value);
+}
+
+oms_status_enu_t oms2::FMUWrapper::getBoolean(const oms2::SignalRef& sr, bool& value)
+{
+  oms2::Variable* var = getVariable(sr.getVar());
+  if (!var)
+    return oms_status_error;
+  return getBoolean(*var, value);
+}
+
+oms_status_enu_t oms2::FMUWrapper::setRealInputDerivatives(const oms2::SignalRef &sr, int order, double value)
+{
+  oms2::Variable* var = getVariable(sr.getVar());
+  if(!var)
+    return oms_status_error;
+  return setRealInputDerivatives(*var, order, value);
+}
+
+oms_status_enu_t oms2::FMUWrapper::registerSignalsForResultFile(ResultWriter& resultWriter)
+{
+  unsigned int i=0;
+  for (auto const &var : allVariables)
+  {
+    oms2::ComRef cref = var.getCref();
+    cref.popFirst();
+    std::string name = cref.toString() + "." + var.getName();
+    const std::string& description = var.getDescription();
+    if (var.isParameter())
+    {
+      SignalValue_t value;
+      if (var.isTypeReal())
       {
-        std::string name = var.getFMUInstanceName() + "." + var.getName();
-        const std::string& description = var.getDescription();
-        SignalValue_t value;
-        if (var.isTypeReal())
-        {
-          value.realValue = getReal(var);
-          resultFile->addParameter(name, description, SignalType_REAL, value);
-        }
+        getReal(var, value.realValue);
+        resultWriter.addParameter(name, description, SignalType_REAL, value);
       }
       else
-      {
-        std::string name = var.getFMUInstanceName() + "." + var.getName();
-        const std::string& description = var.getDescription();
-        if (var.isTypeReal())
-        {
-          unsigned int ID = resultFile->addSignal(name, description, SignalType_REAL);
-          resultFileMapping[ID] = i;
-        }
-      }
+        logInfo("Parameter " + name + " will not be stored in the result file, because the signal type is not supported");
     }
+    else
+    {
+      if (var.isTypeReal())
+      {
+        unsigned int ID = resultWriter.addSignal(name, description, SignalType_REAL);
+        resultFileMapping[ID] = i;
+      }
+      else
+        logInfo("Variable " + name + " will not be stored in the result file, because the signal type is not supported");
+    }
+
+    i++;
   }
 
-  OMS_TOC(globalClocks, GLOBALCLOCK_RESULTFILE);
+  return oms_status_ok;
 }
 
-void FMUWrapper::updateSignalsForResultFile(ResultWriter *resultFile)
+oms_status_enu_t oms2::FMUWrapper::emit(ResultWriter& resultWriter)
 {
-  OMS_TIC(globalClocks, GLOBALCLOCK_RESULTFILE);
-
-  for (auto it=resultFileMapping.begin(); it != resultFileMapping.end(); it++)
+  for (auto const &it : resultFileMapping)
   {
-    unsigned int ID = it->first;
-    unsigned int index = it->second;
-    Variable& var = allVariables[index];
+    unsigned int ID = it.first;
+    oms2::Variable& var = allVariables[it.second];
     SignalValue_t value;
     if (var.isTypeReal())
     {
-      value.realValue = getReal(var);
-      resultFile->updateSignal(ID, value);
+      getReal(var, value.realValue);
+      resultWriter.updateSignal(ID, value);
     }
   }
 
-  OMS_TOC(globalClocks, GLOBALCLOCK_RESULTFILE);
+  return oms_status_ok;
 }
-

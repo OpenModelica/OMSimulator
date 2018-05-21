@@ -29,94 +29,61 @@
  *
  */
 
-#ifndef _OMS_COMPOSITE_MODEL_H_
-#define _OMS_COMPOSITE_MODEL_H_
+#ifndef _OMS2_COMPOSITE_MODEL_H_
+#define _OMS2_COMPOSITE_MODEL_H_
 
-#include "DirectedGraph.h"
-#include "FMUWrapper.h"
-#include "LookupTable.h"
-#include "ResultWriter.h"
-#include "Settings.h"
 #include "Types.h"
+#include "Pkg_oms2.h"
+#include "ComRef.h"
+#include "Element.h"
+#include "ssd/ElementGeometry.h"
+#include "ssd/SystemGeometry.h"
 
-#include <fmilib.h>
-
-#include <deque>
 #include <string>
-#include <map>
 
-class CompositeModel
+class ResultWriter;
+
+namespace oms2
 {
-public:
-  CompositeModel();
-  CompositeModel(const char* descriptionPath);
-  ~CompositeModel();
+  class CompositeModel
+  {
+  public:
+    virtual oms_element_type_enu_t getType() = 0;
 
-  void instantiateFMU(const std::string& filename, const std::string& instanceName);
-  void instantiateTable(const std::string& filename, const std::string& instanceName);
-  void setReal(const std::string& var, double value);
-  bool setRealInput(Variable& var, double value);
-  void setInteger(const std::string& var, int value);
-  void setBoolean(const std::string& var, bool value);
-  double getReal(const std::string& var);
-  int getInteger(const std::string& var);
-  bool getBoolean(const std::string& var);
-  void addConnection(const std::string& from, const std::string& to);
-  void exportDependencyGraph(const std::string& prefix);
-  void exportCompositeStructure(const std::string& prefix);
+    static void DeleteModel(CompositeModel *model) {if (model) delete model;}
 
-  void describe();
-  void exportXML(const char* filename);
-  void importXML(const char* filename);
+    const ComRef getName() const {return oms2::ComRef(element.getName());}
+    const oms2::ssd::ElementGeometry* getGeometry() {return element.getGeometry();}
+    oms2::Element* getElement() {return &element;}
 
-  oms_status_enu_t simulate();
-  oms_status_enu_t doSteps(const int numberOfSteps);
-  oms_status_enu_t stepUntil(const double timeValue);
+    void setName(const ComRef& name) {element.setName(name);}
+    void setGeometry(const oms2::ssd::ElementGeometry& geometry) {element.setGeometry(&geometry);}
 
-  void initialize();
-  void terminate();
-  void reset();
+    virtual oms_status_enu_t initialize(double startTime, double tolerance) = 0;
+    virtual oms_status_enu_t reset() = 0;
+    virtual oms_status_enu_t terminate() = 0;
 
-  oms_status_enu_t getCurrentTime(double *time);
+    virtual oms_status_enu_t doSteps(ResultWriter& resultWriter, const int numberOfSteps, double communicationInterval) = 0;
+    virtual oms_status_enu_t stepUntil(ResultWriter& resultWriter, double stopTime, double communicationInterval, MasterAlgorithm masterAlgorithm, bool realtime_sync) = 0;
+    virtual void simulate_asynchronous(ResultWriter& resultWriter, double stopTime, double communicationInterval, void (*cb)(const char* ident, double time, oms_status_enu_t status)) = 0;
 
-  Settings& getSettings() {return settings;}
-  void SetSolverMethod(std::string instanceName, std::string method);
+    virtual oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultWriter) = 0;
+    virtual oms_status_enu_t emit(ResultWriter& resultWriter) = 0;
 
-  void setVariableFilter(const char* instanceFilter, const char* variableFilter);
+    virtual oms_status_enu_t describe() { return oms_status_error; }
 
-  int getNumberOfInterfaces();
-  oms_causality_enu_t getInterfaceCausality(int idx);
-  const char* getInterfaceName(int idx);
-  const char* getInterfaceVariable(int idx);
+  protected:
+    CompositeModel(oms_element_type_enu_t type, const ComRef& cref);
+    virtual ~CompositeModel();
 
-  int getMaxIterations() {return maxIterations;}
-  void setMaxIterations(int maxIterations);
+  private:
+    // stop the compiler generating methods copying the object
+    CompositeModel(CompositeModel const& copy);            ///< not implemented
+    CompositeModel& operator=(CompositeModel const& copy); ///< not implemented
 
-private:
-  void updateInputs(DirectedGraph& graph);
-  void emit();
-  void solveAlgLoop(DirectedGraph& graph, const std::vector< std::pair<int, int> >& SCC);
-  Variable* getVariable(const std::string& varName);
-
-private:
-  Settings settings;
-  ResultWriter *resultFile;
-  std::map<std::string, FMUWrapper*> fmuInstances;
-  std::map<std::string, LookupTable*> lookupTables;
-  std::vector< std::pair<std::string, Variable*> > lookupAssignments;
-  std::map<std::string, double> realParameterList;
-  std::map<std::string, int> integerParameterList;
-  std::map<std::string, bool> booleanParameterList;
-  DirectedGraph outputsGraph;
-  DirectedGraph initialUnknownsGraph;
-  double tcur;
-  oms_modelState_enu_t modelState;
-  double communicationInterval;
-
-  std::vector<std::string> interfaceNames;
-  std::vector<std::string> interfaceVariables;
-
-  int maxIterations;
-};
+  protected:
+    oms2::Element element;
+  };
+}
 
 #endif

@@ -29,70 +29,83 @@
  *
  */
 
-#ifndef _OMS_VARIABLE_H_
-#define _OMS_VARIABLE_H_
+#ifndef _OMS2_VARIABLE_H_
+#define _OMS2_VARIABLE_H_
+
+#include "ComRef.h"
+#include "SignalRef.h"
+#include "Types.h"
 
 #include <fmilib.h>
+
 #include <string>
 #include <vector>
 
-class FMUWrapper;
-
-class Variable
+namespace oms2
 {
-public:
-  Variable(fmi2_import_variable_t *var, FMUWrapper* fmuInstance);
-  ~Variable();
+  class Variable
+  {
+  public:
+    Variable(const oms2::SignalRef& sr, fmi2_causality_enu_t causality, fmi2_initial_enu_t initialProperty, bool is_state, oms_signal_type_enu_t type);
+    Variable(const oms2::ComRef& cref, fmi2_import_variable_t *var, unsigned int index);
+    ~Variable();
 
-  void markAsState() {is_state = true;}
+    void markAsState() { is_state = true; }
 
-  // causality attribute
-  bool isParameter() const {return fmi2_causality_enu_parameter == causality;}
-  bool isCalculatedParameter() const {return fmi2_causality_enu_calculated_parameter == causality;}
-  bool isInput() const {return fmi2_causality_enu_input == causality;}
-  bool isOutput() const {return fmi2_causality_enu_output == causality;}
-  bool isLocal() const {return fmi2_causality_enu_local == causality;}
-  bool isState() const {return is_state;}
-  bool isIndependent() const {return fmi2_causality_enu_independent == causality;}
+    // causality attribute
+    bool isParameter() const { return fmi2_causality_enu_parameter == causality; }
+    bool isCalculatedParameter() const { return fmi2_causality_enu_calculated_parameter == causality; }
+    bool isInput() const { return fmi2_causality_enu_input == causality; }
+    bool isOutput() const { return fmi2_causality_enu_output == causality; }
+    bool isLocal() const { return fmi2_causality_enu_local == causality; }
+    bool isState() const { return is_state; }
+    bool isIndependent() const { return fmi2_causality_enu_independent == causality; }
 
-  // initial attribute
-  bool isExact() const {return fmi2_initial_enu_exact == initialProperty;}
-  bool isApprox() const {return fmi2_initial_enu_approx == initialProperty;}
-  bool isCalculated() const {return fmi2_initial_enu_calculated == initialProperty;}
+    // initial attribute
+    bool isExact() const { return fmi2_initial_enu_exact == initialProperty; }
+    bool isApprox() const { return fmi2_initial_enu_approx == initialProperty; }
+    bool isCalculated() const { return fmi2_initial_enu_calculated == initialProperty; }
 
-  bool isInitialUnknown() const {return (isOutput() && (isApprox() || isCalculated()))
-                              || (isCalculatedParameter())
-                              || (isState() && (isApprox() || isCalculated()));}
+    bool isInitialUnknown() const {
+      return (isOutput() && (isApprox() || isCalculated()))
+        || (isCalculatedParameter())
+        || (isState() && (isApprox() || isCalculated()));
+    }
 
-  const std::string& getName() const {return name;}
-  const std::string& getFMUInstanceName() const {return fmuInstanceName;}
-  FMUWrapper* getFMUInstance() const;
-  fmi2_value_reference_t getValueReference() const {return vr;}
-  fmi2_base_type_enu_t getBaseType() const {return baseType;}
-  const std::string& getDescription() const {return description;}
+    const std::string& getName() const { return sr.getVar(); }
+    const ComRef& getCref() const { return sr.getCref(); }
+    const SignalRef& getSignalRef() const { return sr; }
+    std::string toString() const { return sr.toString(); }
 
-  bool isTypeReal() const {return fmi2_base_type_real == baseType;}
-  bool isTypeInteger() const {return fmi2_base_type_int == baseType;}
-  bool isTypeBoolean() const {return fmi2_base_type_bool == baseType;}
+    fmi2_value_reference_t getValueReference() const { return vr; }
+    oms_signal_type_enu_t getType() const { return type; }
+    const std::string& getDescription() const { return description; }
 
-  std::string getCausalityString() {return std::string(fmi2_causality_to_string(causality));}
+    bool isTypeReal() const { return oms_signal_type_real == type; }
+    bool isTypeInteger() const { return oms_signal_type_integer == type; }
+    bool isTypeBoolean() const { return oms_signal_type_boolean == type; }
 
-protected:
-  std::string name;
-  std::string description;
-  std::string fmuInstanceName;
-  FMUWrapper* fmuInstance;
-  fmi2_value_reference_t vr;
-  fmi2_causality_enu_t causality;
-  fmi2_initial_enu_t initialProperty;
-  bool is_state;
-  fmi2_base_type_enu_t baseType;
+    std::string getCausalityString() { return std::string(fmi2_causality_to_string(causality)); }
+    oms_causality_enu_t getCausality() const;
 
-  friend bool operator==(const Variable& v1, const Variable& v2);
-  friend bool operator!=(const Variable& v1, const Variable& v2);
-};
+    unsigned int getIndex() const { return index; }
 
-bool operator==(const Variable& v1, const Variable& v2);
-bool operator!=(const Variable& v1, const Variable& v2);
+  private:
+    oms2::SignalRef sr;
+    std::string description;
+    fmi2_value_reference_t vr;
+    fmi2_causality_enu_t causality;
+    fmi2_initial_enu_t initialProperty;
+    bool is_state;
+    oms_signal_type_enu_t type;
+    unsigned int index; ///< index origin = 1
+
+    friend bool operator==(const oms2::Variable& v1, const oms2::Variable& v2);
+    friend bool operator!=(const oms2::Variable& v1, const oms2::Variable& v2);
+  };
+
+  bool operator==(const oms2::Variable& v1, const oms2::Variable& v2);
+  bool operator!=(const oms2::Variable& v1, const oms2::Variable& v2);
+}
 
 #endif

@@ -31,7 +31,7 @@
 
 #include "Scope.h"
 
-#include "../Types.h"
+#include "Types.h"
 #include "ComRef.h"
 #include "FMICompositeModel.h"
 #include "FMUWrapper.h"

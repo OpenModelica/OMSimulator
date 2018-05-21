@@ -32,7 +32,7 @@
 #include "MatReader.h"
 #include "MatVer4.h"
 
-#include "oms2/Logging.h"
+#include "Logging.h"
 
 #include <string.h>
 

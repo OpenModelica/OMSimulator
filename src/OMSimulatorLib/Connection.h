@@ -29,51 +29,48 @@
  *
  */
 
-#ifndef _OMS2_CONNECTOR_H_
-#define _OMS2_CONNECTOR_H_
+#ifndef _OMS2_CONNECTION_H_
+#define _OMS2_CONNECTION_H_
 
 #include "ComRef.h"
 #include "SignalRef.h"
-#include "../Types.h"
-#include "ssd/ConnectorGeometry.h"
+#include "Types.h"
+#include "ssd/ConnectionGeometry.h"
 
 #include <string>
-
-#include <pugixml.hpp>
 
 namespace oms2
 {
   /**
-   * \brief Connector
+   * \brief Connection
    */
-  class Connector : protected oms_connector_t
+  class Connection : protected oms_connection_t
   {
   public:
-    /**
-     * This constructor creates a oms2::Connector without geometry information.
-     */
-    Connector(oms_causality_enu_t causality, oms_signal_type_enu_t type, const oms2::SignalRef& name);
-    /**
-     * This constructor is used if the optional SSD element giving the geometry
-     * information of the connector is initialized as well.
-     */
-    Connector(oms_causality_enu_t causality, oms_signal_type_enu_t type, const oms2::SignalRef& name, double height);
-    ~Connector();
-
-    oms_status_enu_t exportToSSD(pugi::xml_node& root) const;
+    Connection(const oms2::ComRef& parent, const oms2::SignalRef& conA, const oms2::SignalRef& conB);
+    ~Connection();
 
     // methods to copy the object
-    Connector(const Connector& rhs);
-    Connector& operator=(const Connector& rhs);
+    Connection(const Connection& rhs);
+    Connection& operator=(const Connection& rhs);
 
-    void setName(const oms2::SignalRef& name);
-    void setGeometry(const oms2::ssd::ConnectorGeometry* newGeometry);
+    const oms2::ComRef getParent() const {return oms2::ComRef(parent);}
+    const oms2::SignalRef getSignalA() const {return oms2::SignalRef(conA);}
+    const oms2::SignalRef getSignalB() const {return oms2::SignalRef(conB);}
 
-    const oms_causality_enu_t getCausality() const {return causality;}
-    const oms_signal_type_enu_t getType() const {return type;}
-    const oms2::SignalRef getName() const {return oms2::SignalRef(std::string(name));}
-    const oms2::ssd::ConnectorGeometry* getGeometry() const {return reinterpret_cast<oms2::ssd::ConnectorGeometry*>(geometry);}
+    const oms2::ssd::ConnectionGeometry* getGeometry() const {return reinterpret_cast<oms2::ssd::ConnectionGeometry*>(geometry);}
+    void setGeometry(const oms2::ssd::ConnectionGeometry* newGeometry);
+
+    bool isEqual(const oms2::Connection& connection) const;
+    bool isEqual(const oms2::ComRef& parent, const oms2::SignalRef& signalA, const oms2::SignalRef& signalB) const;
+
+  private:
+    friend bool operator==(const Connection& lhs, const Connection& rhs);
+    friend bool operator!=(const Connection& lhs, const Connection& rhs);
   };
+
+  inline bool operator==(const Connection& lhs, const Connection& rhs) {return lhs.isEqual(rhs);}
+  inline bool operator!=(const Connection& lhs, const Connection& rhs) {return !(lhs == rhs);}
 }
 
 #endif

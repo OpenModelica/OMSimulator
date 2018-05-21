@@ -29,31 +29,37 @@
  *
  */
 
-#ifndef _OMS_LOOKUP_TABLE_H_
-#define _OMS_LOOKUP_TABLE_H_
+#ifndef _SSD_CONNECTION_GEOMETRY_H_
+#define _SSD_CONNECTION_GEOMETRY_H_
 
-#include "ResultReader.h"
+#include "../Types.h"
+
+#include <pugixml.hpp>
 
 #include <string>
-#include <unordered_map>
 
-class LookupTable
+namespace oms2
 {
-public:
-  LookupTable();
-  ~LookupTable();
+  namespace ssd
+  {
+    class ConnectionGeometry : protected ssd_connection_geometry_t
+    {
+    public:
+      ConnectionGeometry();
+      ConnectionGeometry(const ConnectionGeometry& rhs);
+      ~ConnectionGeometry();
 
-  bool open(const std::string& filename);
-  void close();
+      ConnectionGeometry& operator=(ConnectionGeometry const& rhs);
 
-  double getValue(const std::string& var, const double time);
+      void setPoints(unsigned int n, double* pointsX, double* pointsY);
 
-  const std::string& getFilename() const {return filename;}
+      unsigned int getLength() const {return this->n;}
+      const double* getPointsX() const {return this->pointsX;}
+      const double* getPointsY() const {return this->pointsY;}
 
-private:
-  ResultReader *resultReader;
-  std::unordered_map<std::string, ResultReader::Series*> series;
-  std::string filename;
-};
+      oms_status_enu_t exportToSSD(pugi::xml_node& root) const;
+    };
+  }
+}
 
 #endif

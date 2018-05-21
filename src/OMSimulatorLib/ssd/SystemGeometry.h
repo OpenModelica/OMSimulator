@@ -29,41 +29,34 @@
  *
  */
 
-#ifndef _OMS_SETTINGS_H_
-#define _OMS_SETTINGS_H_
+#ifndef _SSD_SYSTEM_GEOMETRY_H_
+#define _SSD_SYSTEM_GEOMETRY_H_
 
-class Settings
+#include "../Types.h"
+
+#include <string>
+
+namespace oms2
 {
-public:
-  Settings();
-  ~Settings();
+  namespace ssd
+  {
+    class SystemGeometry : protected ssd_system_geometry_t
+    {
+    public:
+      SystemGeometry();
+      SystemGeometry(const SystemGeometry& rhs);
+      ~SystemGeometry();
 
-  void SetStartTime(double startTime);
-  double GetStartTime() const {return startTime;}
+      SystemGeometry& operator=(SystemGeometry const& rhs);
 
-  void SetStopTime(double stopTime);
-  double GetStopTime() const {return stopTime;}
+      void setSizePosition(double x1, double y1, double x2, double y2) {this->x1 = x1; this->y1 = y1; this->x2 = x2; this->y2 = y2;}
 
-  void SetTolerance(double tolerance);
-  double GetTolerance() const {return tolerance;}
-
-  void SetCommunicationInterval(double communicationInterval);
-  double GetCommunicationInterval() const {return communicationInterval;}
-
-  void SetResultFile(const char* resultFile);
-  const char* GetResultFile() const {return resultFile;}
-  void ClearResultFile();
-
-private:
-  // stop the compiler generating methods for copying the object
-  Settings(Settings const& copy);            ///< not implemented
-  Settings& operator=(Settings const& copy); ///< not implemented
-
-  double startTime;
-  double stopTime;
-  double tolerance;
-  double communicationInterval;
-  char* resultFile;
-};
+      double getX1() const {return x1;}
+      double getY1() const {return y1;}
+      double getX2() const {return x2;}
+      double getY2() const {return y2;}
+    };
+  }
+}
 
 #endif

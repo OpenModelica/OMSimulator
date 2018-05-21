@@ -29,151 +29,147 @@
  *
  */
 
-#ifndef _OMS_FMU_H_
-#define _OMS_FMU_H_
+#ifndef _OMS2_FMU_WRAPPER_H_
+#define _OMS2_FMU_WRAPPER_H_
 
-#include "Variable.h"
+#include "ComRef.h"
 #include "DirectedGraph.h"
-#include "Clocks.h"
-#include "ResultWriter.h"
+#include "FMISubModel.h"
+#include "FMUInfo.h"
+#include "Option.h"
+#include "Variable.h"
+
+#include <map>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 #include <fmilib.h>
-#include <string>
-#include <vector>
-#include <map>
-#include <unordered_map>
+#include <pugixml.hpp>
 
 #include "cvode/cvode.h"             /* prototypes for CVODE fcts., consts. */
 #include "nvector/nvector_serial.h"  /* serial N_Vector types, fcts., macros */
 
-class CompositeModel;
-
-class FMUWrapper
+namespace oms2
 {
-public:
-  FMUWrapper(CompositeModel& model, std::string fmuPath, std::string instanceName);
-  ~FMUWrapper();
+  int cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void *user_data);
 
-  double getReal(const std::string& var);
-  double getReal(const Variable& var);
-  int getInteger(const std::string& var);
-  int getInteger(const Variable& var);
-  bool getBoolean(const std::string& var);
-  bool getBoolean(const Variable& var);
-  bool setRealInput(const std::string& var, double value);
-  bool setRealInput(const Variable& var, double value);
-  bool setIntegerInput(const std::string& var, int value);
-  bool setIntegerInput(const Variable& var, int value);
-  bool setBooleanInput(const std::string& var, bool value);
-  bool setBooleanInput(const Variable& var, bool value);
-  bool setRealParameter(const std::string& var, double value);
-  bool setIntegerParameter(const std::string& var, int value);
-  bool setBooleanParameter(const std::string& var, bool value);
-
-  void enterInitialization(double startTime);
-  void exitInitialization();
-  void terminate();
-  void reset();
-  void doStep(double stopTime);
-
-  const DirectedGraph& getOutputsGraph() const {return outputsGraph;}
-  const DirectedGraph& getInitialUnknownsGraph() const {return initialUnknownsGraph;}
-  Variable* getVariable(const std::string& varName);
-  Variable* getVariable(const fmi2_value_reference_t& state_vr);
-
-  const std::string& getFMUPath() const {return fmuPath;}
-  const std::string& getFMUInstanceName() const {return instanceName;}
-  std::string getFMUKind() const;
-  bool isFMUKindME() const;
-  std::string getGUID() const;
-  std::string getGenerationTool() const;
-
-  void SetSolverMethod(const std::string& solverMethod);
-  std::string GetSolverMethodString() const;
-
-  std::vector<Variable>& getAllVariables() {return allVariables;}
-  std::vector<unsigned int>& getAllInputs() {return allInputs;}
-  std::vector<unsigned int>& getAllOutputs() {return allOutputs;}
-
-  void registerSignalsForResultFile(ResultWriter *resultFile);
-  void updateSignalsForResultFile(ResultWriter *resultFile);
-
-  void setVariableFilter(const char* variableFilter) {this->variableFilter = variableFilter;}
-private:
-  enum Solver_t { NO_SOLVER, EXPLICIT_EULER, CVODE };
-
-  struct SolverDataEuler_t
+  class FMUWrapper : public FMISubModel
   {
-    // empty
+  public:
+    static FMUWrapper* newSubModel(const ComRef& cref, const std::string& filename);
+
+    oms_status_enu_t enterInitialization(const double time);
+    oms_status_enu_t exitInitialization();
+    void do_event_iteration();
+    oms_status_enu_t reset();
+    oms_status_enu_t terminate();
+    oms_status_enu_t doStep(double stopTime);
+
+    oms_status_enu_t exportToSSD(pugi::xml_node& root) const;
+
+    oms_element_type_enu_t getType() const { return oms_component_fmu; }
+
+    oms_status_enu_t setRealParameter(const std::string& var, double value);
+    oms_status_enu_t getRealParameter(const std::string& var, double& value);
+    oms_status_enu_t getReal(const std::string& var, double& value);
+    oms_status_enu_t setIntegerParameter(const std::string& var, int value);
+    oms_status_enu_t getIntegerParameter(const std::string& var, int& value);
+    oms_status_enu_t setBooleanParameter(const std::string& var, bool value);
+    oms_status_enu_t getBooleanParameter(const std::string& var, bool& value);
+    const std::string getFMUPath() const {return fmuInfo.getPath();}
+    const oms2::FMUInfo* getFMUInfo() const {return &(this->fmuInfo);}
+    const std::map<std::string, oms2::Option<double>>& getRealParameters() const {return realParameters;}
+    const std::map<std::string, oms2::Option<int>>& getIntegerParameters() const {return integerParameters;}
+    const std::map<std::string, oms2::Option<bool>>& getBooleanParameters() const {return booleanParameters;}
+
+    oms_status_enu_t setReal(const oms2::SignalRef& sr, double value);
+    oms_status_enu_t getReal(const oms2::SignalRef& sr, double& value);
+    oms_status_enu_t setInteger(const oms2::SignalRef& sr, int value);
+    oms_status_enu_t getInteger(const oms2::SignalRef& sr, int& value);
+    oms_status_enu_t setBoolean(const oms2::SignalRef& sr, bool value);
+    oms_status_enu_t getBoolean(const oms2::SignalRef& sr, bool& value);
+    oms_status_enu_t setRealInputDerivatives(const oms2::SignalRef& sr, int order, double value);
+
+    oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultWriter);
+    oms_status_enu_t emit(ResultWriter& resultWriter);
+
+  private:
+    oms_status_enu_t initializeDependencyGraph_initialUnknowns();
+    oms_status_enu_t initializeDependencyGraph_outputs();
+
+    oms_status_enu_t setReal(const oms2::Variable& var, double realValue);
+    oms_status_enu_t getReal(const oms2::Variable& var, double& realValue);
+    oms_status_enu_t setRealInputDerivatives(const oms2::Variable& var, int order, double realValue);
+    oms_status_enu_t setInteger(const oms2::Variable& var, int integerValue);
+    oms_status_enu_t getInteger(const oms2::Variable& var, int& integerValue);
+    oms_status_enu_t setBoolean(const oms2::Variable& var, bool booleanValue);
+    oms_status_enu_t getBoolean(const oms2::Variable& var, bool& booleanValue);
+
+    oms2::Variable* getVariable(const std::string& var);
+
+    enum Solver_t { NO_SOLVER, EXPLICIT_EULER, CVODE };
+
+    struct SolverDataEuler_t
+    {
+      // empty
+    };
+
+    struct SolverDataCVODE_t
+    {
+      void *mem;
+      N_Vector y;
+      N_Vector abstol;
+    };
+
+    union SolverData_t
+    {
+      SolverDataEuler_t euler;
+      SolverDataCVODE_t cvode;
+    };
+
+    friend int oms2::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void *user_data);
+
+  private:
+    FMUWrapper(const ComRef& cref, const std::string& filename);
+    ~FMUWrapper();
+
+    oms2::FMUInfo fmuInfo;
+    std::vector<oms2::Variable> inputs;
+    std::vector<oms2::Variable> outputs;
+    std::vector<oms2::Variable> parameters;
+    std::vector<oms2::Variable> allVariables;
+
+    std::map<std::string, oms2::Option<double>> realParameters;
+    std::map<std::string, oms2::Option<int>> integerParameters;
+    std::map<std::string, oms2::Option<bool>> booleanParameters;
+
+    std::string tempDir;
+
+    std::unordered_map<unsigned int /*result file var ID*/, unsigned int /*allVariables ID*/> resultFileMapping;
+
+    // ME & CS
+    jm_callbacks callbacks;
+    fmi2_callback_functions_t callBackFunctions;
+    fmi_import_context_t* context;
+    fmi2_import_t* fmu;
+    fmi2_event_info_t eventInfo;
+    double time;
+    double relativeTolerance;
+
+    // ME
+    fmi2_boolean_t callEventUpdate;
+    fmi2_boolean_t terminateSimulation;
+    size_t n_states;
+    size_t n_event_indicators;
+    double* states;
+    double* states_der;
+    double* states_nominal;
+    double* event_indicators;
+    double* event_indicators_prev;
+    Solver_t solverMethod;
+    SolverData_t solverData;
   };
-
-  struct SolverDataCVODE_t
-  {
-    void *mem;
-    N_Vector y;
-    N_Vector abstol;
-  };
-
-  union SolverData_t
-  {
-    SolverDataEuler_t euler;
-    SolverDataCVODE_t cvode;
-  };
-
-private:
-  void do_event_iteration();
-  void getDependencyGraph_outputs();
-  void getDependencyGraph_initialUnknowns();
-
-  friend int cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void *user_data);
-
-private:
-  CompositeModel& model;
-  Clocks clocks;
-
-  std::string fmuPath;
-  std::string tempDir;
-  std::string instanceName;
-  jm_callbacks callbacks;
-  fmi2_fmu_kind_enu_t fmuKind;
-  fmi2_callback_functions_t callBackFunctions;
-  fmi_import_context_t* context;
-  fmi2_import_t* fmu;
-  fmi2_event_info_t eventInfo;
-
-  std::vector<Variable> allVariables;
-  std::vector<unsigned int> realVariables;
-  std::vector<unsigned int> intVariables;
-  std::vector<unsigned int> boolVariables;
-  std::vector<unsigned int> strVariables;
-  std::vector<unsigned int> enumVariables;
-  std::vector<unsigned int> allInputs;
-  std::vector<unsigned int> allOutputs;
-  std::vector<unsigned int> allParameters;
-  std::vector<unsigned int> initialUnknowns;
-
-  std::unordered_map<unsigned int /*result file var ID*/, unsigned int /*allVariables ID*/> resultFileMapping;
-
-  DirectedGraph outputsGraph;
-  DirectedGraph initialUnknownsGraph;
-
-  // ME & CS
-  fmi2_real_t tcur;
-  fmi2_real_t relativeTolerance;
-  std::string variableFilter;
-
-  // ME
-  fmi2_boolean_t callEventUpdate;
-  fmi2_boolean_t terminateSimulation;
-  size_t n_states;
-  size_t n_event_indicators;
-  double* states;
-  double* states_der;
-  double* states_nominal;
-  double* event_indicators;
-  double* event_indicators_prev;
-  Solver_t solverMethod;
-  SolverData_t solverData;
-};
+}
 
 #endif

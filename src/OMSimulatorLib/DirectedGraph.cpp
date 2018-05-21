@@ -31,30 +31,37 @@
 
 #include "DirectedGraph.h"
 #include "Variable.h"
-#include "oms2/Logging.h"
+#include "Logging.h"
 #include "Util.h"
 
 #include <iostream>
 #include <string>
 #include <fstream>
-#include <map>
 #include <sstream>
 #include <stdlib.h>
 #include <stack>
 #include <algorithm>
 #include <deque>
 
-DirectedGraph::DirectedGraph()
+oms2::DirectedGraph::DirectedGraph()
 {
   sortedConnectionsAreValid = true;
 }
 
-DirectedGraph::~DirectedGraph()
+oms2::DirectedGraph::~DirectedGraph()
 {
-
 }
 
-int DirectedGraph::addVariable(const Variable& var)
+void oms2::DirectedGraph::clear()
+{
+  G.clear();
+  sortedConnections.clear();
+  nodes.clear();
+  edges.clear();
+  sortedConnectionsAreValid = true;
+}
+
+int oms2::DirectedGraph::addVariable(const oms2::Variable& var)
 {
   nodes.push_back(var);
   std::vector<int> row;
@@ -62,7 +69,7 @@ int DirectedGraph::addVariable(const Variable& var)
   return static_cast<int>(nodes.size()) - 1;
 }
 
-void DirectedGraph::addEdge(const Variable& var1, const Variable& var2)
+void oms2::DirectedGraph::addEdge(const oms2::Variable& var1, const oms2::Variable& var2)
 {
   int index1 = -1;
   int index2 = -1;
@@ -89,7 +96,7 @@ void DirectedGraph::addEdge(const Variable& var1, const Variable& var2)
   sortedConnectionsAreValid = false;
 }
 
-void DirectedGraph::dotExport(const std::string& filename)
+void oms2::DirectedGraph::dotExport(const std::string& filename)
 {
   /*
    * digraph G
@@ -107,7 +114,7 @@ void DirectedGraph::dotExport(const std::string& filename)
   dotFile << "{" << std::endl;
   for (int i = 0; i < nodes.size(); i++)
   {
-    dotFile << "  " << i << " [label=\"" << nodes[i].getFMUInstanceName() << "." << nodes[i].getName() << "\", ";
+    dotFile << "  " << i << " [label=\"" << nodes[i].toString() << "\", ";
     if (nodes[i].isInput())
       dotFile << "color=\"red\", ";
     else if (nodes[i].isOutput())
@@ -128,7 +135,7 @@ void DirectedGraph::dotExport(const std::string& filename)
   dotFile.close();
 }
 
-void DirectedGraph::includeGraph(const DirectedGraph& graph)
+void oms2::DirectedGraph::includeGraph(const oms2::DirectedGraph& graph)
 {
   for (int i = 0; i < graph.nodes.size(); i++)
     addVariable(graph.nodes[i]);
@@ -137,7 +144,7 @@ void DirectedGraph::includeGraph(const DirectedGraph& graph)
     addEdge(graph.nodes[graph.edges[i].first], graph.nodes[graph.edges[i].second]);
 }
 
-int getEdgeIndex(const std::vector< std::pair<int, int> >& edges, int from, int to)
+int oms2::DirectedGraph::getEdgeIndex(const std::vector< std::pair<int, int> >& edges, int from, int to)
 {
   for (int i = 0; i < edges.size(); ++i)
     if (edges[i].first == from && edges[i].second == to)
@@ -147,7 +154,7 @@ int getEdgeIndex(const std::vector< std::pair<int, int> >& edges, int from, int 
   return -1;
 }
 
-void DirectedGraph::strongconnect(int v, std::vector< std::vector<int> > G, int& index, int *d, int *low, std::stack<int>& S, bool *stacked, std::deque< std::vector<int> >& components)
+void oms2::DirectedGraph::strongconnect(int v, std::vector< std::vector<int> > G, int& index, int *d, int *low, std::stack<int>& S, bool *stacked, std::deque< std::vector<int> >& components)
 {
   // Set the depth index for v to the smallest unused index
   d[v] = index;
@@ -195,7 +202,7 @@ void DirectedGraph::strongconnect(int v, std::vector< std::vector<int> > G, int&
   }
 }
 
-std::deque< std::vector<int> > DirectedGraph::getSCCs()
+std::deque< std::vector<int> > oms2::DirectedGraph::getSCCs()
 {
   //std::cout << "Tarjan's strongly connected components algorithm" << std::endl;
 
@@ -235,14 +242,14 @@ std::deque< std::vector<int> > DirectedGraph::getSCCs()
   return components;
 }
 
-const std::vector< std::vector< std::pair<int, int> > >& DirectedGraph::getSortedConnections()
+const std::vector< std::vector< std::pair<int, int> > >& oms2::DirectedGraph::getSortedConnections()
 {
   if (!sortedConnectionsAreValid)
     calculateSortedConnections();
   return sortedConnections;
 }
 
-void DirectedGraph::calculateSortedConnections()
+void oms2::DirectedGraph::calculateSortedConnections()
 {
   std::deque< std::vector<int> > components = getSCCs();
   std::vector< std::pair<int, int> > SCC;

@@ -30,9 +30,7 @@
  */
 
 #include "Variable.h"
-#include "oms2/Logging.h"
-#include "Settings.h"
-#include "FMUWrapper.h"
+#include "Logging.h"
 #include "Util.h"
 
 #include <fmilib.h>
@@ -41,36 +39,73 @@
 #include <iostream>
 #include <string>
 
-Variable::Variable(fmi2_import_variable_t *var, FMUWrapper* fmuInstance)
-  : fmuInstance(fmuInstance), is_state(false)
+oms2::Variable::Variable(const oms2::SignalRef& sr, fmi2_causality_enu_t causality, fmi2_initial_enu_t initialProperty, bool is_state, oms_signal_type_enu_t type)
+  : sr(sr), index(0), vr(0), causality(causality), initialProperty(initialProperty), is_state(is_state), type(type)
+{
+}
+
+oms2::Variable::Variable(const oms2::ComRef& cref, fmi2_import_variable_t *var, unsigned int index)
+  : is_state(false), sr(cref, fmi2_import_get_variable_name(var)), index(index)
 {
   // extract the attributes
-  name = fmi2_import_get_variable_name(var);
   description = fmi2_import_get_variable_description(var) ? fmi2_import_get_variable_description(var) : "";
   trim(description);
-  fmuInstanceName = fmuInstance->getFMUInstanceName();
   vr = fmi2_import_get_variable_vr(var);
   causality = fmi2_import_get_causality(var);
   initialProperty = fmi2_import_get_initial(var);
-  baseType = fmi2_import_get_variable_base_type(var);
+  switch (fmi2_import_get_variable_base_type(var))
+  {
+    case fmi2_base_type_real:
+      type = oms_signal_type_real;
+      break;
+    case fmi2_base_type_int:
+      type = oms_signal_type_integer;
+      break;
+    case fmi2_base_type_bool:
+      type = oms_signal_type_boolean;
+      break;
+    case fmi2_base_type_str:
+      type = oms_signal_type_string;
+      break;
+    case fmi2_base_type_enum:
+      type = oms_signal_type_enum;
+      break;
+    default:
+      logError("Unknown fmi base type");
+      type = oms_signal_type_real;
+      break;
+  }
 }
 
-Variable::~Variable()
+oms2::Variable::~Variable()
 {
 }
 
-FMUWrapper* Variable::getFMUInstance() const
+oms_causality_enu_t oms2::Variable::getCausality() const
 {
-  return fmuInstance;
+  switch (causality)
+  {
+  case fmi2_causality_enu_input:
+    return oms_causality_input;
+
+  case fmi2_causality_enu_output:
+    return oms_causality_output;
+
+  case fmi2_causality_enu_parameter:
+    return oms_causality_parameter;
+
+  default:
+    logWarning("[oms2::Variable::getCausality] undefined causality detected");
+    return oms_causality_undefined;
+  }
 }
 
-bool operator==(const Variable& v1, const Variable& v2)
+bool oms2::operator==(const oms2::Variable& v1, const oms2::Variable& v2)
 {
-  return v1.name == v2.name &&
-    v1.fmuInstanceName == v2.fmuInstanceName &&
-    v1.vr == v2.vr;
+  return v1.sr == v2.sr && v1.vr == v2.vr;
 }
-bool operator!=(const Variable& v1, const Variable& v2)
+
+bool oms2::operator!=(const oms2::Variable& v1, const oms2::Variable& v2)
 {
   return !(v1 == v2);
 }
