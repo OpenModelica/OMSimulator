@@ -69,6 +69,8 @@ oms2::TLMCompositeModel::~TLMCompositeModel()
         delete it->second;
     }
     externalModels.clear();
+
+    delete model;
 }
 
 oms2::TLMCompositeModel* oms2::TLMCompositeModel::NewModel(const ComRef& name)
@@ -389,6 +391,9 @@ oms_status_enu_t oms2::TLMCompositeModel::stepUntil(ResultWriter &resultWriter, 
 
   for(size_t i=0; i<fmiModelThreads.size(); ++i)
     fmiModelThreads[i]->join();
+
+  for(size_t i=0; i<fmiModelThreads.size(); ++i)
+    delete fmiModelThreads[i];
 
   logInfo("Simulation of TLM composite model "+getName().toString()+" complete.");
 
