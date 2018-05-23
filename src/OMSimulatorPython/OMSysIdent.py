@@ -87,37 +87,43 @@ class OMSysIdent:
         self.obj.omsi_getState.restype = ctypes.c_int
 
         self.simodel = self.obj.omsi_newSysIdentModel(ident)
+        self.ident = ident
 
     def __del__(self):
         """Destructor will free external C object."""
         self.obj.omsi_freeSysIdentModel(self.simodel)
 
     def initialize(self, nSeries, time, inputvars, measurementvars):
-        invars = (ctypes.c_char_p * len(inputvars))()
-        invars[:] = inputvars
-        mesvars = (ctypes.c_char_p * len(measurementvars))()
-        mesvars[:] = measurementvars
+        fq_inputvars = list(map(lambda x: self.ident + "." + x, inputvars))
+        invars = (ctypes.c_char_p * len(fq_inputvars))()
+        invars[:] = fq_inputvars
+        fq_measurementvars = list(map(lambda x: self.ident + "." + x, measurementvars))
+        mesvars = (ctypes.c_char_p * len(fq_measurementvars))()
+        mesvars[:] = fq_measurementvars
         return self.obj.omsi_initialize(self.simodel, nSeries,
             time, len(time),
-            invars, len(inputvars),
-            mesvars, len(measurementvars))
+            invars, len(fq_inputvars),
+            mesvars, len(fq_measurementvars))
 
     def describe(self):
         """Print summary of SysIdent model"""
         return self.obj.omsi_describe(self.simodel)
 
     def addMeasurement(self, iSeries, var, values):
+        fq_var = self.ident + "." + var
         return self.obj.omsi_addMeasurement(self.simodel, iSeries,
-            var, values, len(values))
+            fq_var, values, len(values))
 
     def addParameter(self, var, startvalue):
-        return self.obj.omsi_addParameter(self.simodel, var, startvalue)
+        fq_var = self.ident + "." + var
+        return self.obj.omsi_addParameter(self.simodel, fq_var, startvalue)
 
     def getParameter(self, var):
+        fq_var = self.ident + "." + var
         startvalue = ctypes.c_double()
         estimatedvalue = ctypes.c_double()
         status = self.obj.omsi_getParameter(
-            self.simodel, var, ctypes.byref(startvalue), ctypes.byref(estimatedvalue))
+            self.simodel, fq_var, ctypes.byref(startvalue), ctypes.byref(estimatedvalue))
         return (status, startvalue.value, estimatedvalue.value)
 
     def solve(self, reporttype):
