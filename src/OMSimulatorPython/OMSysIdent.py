@@ -34,11 +34,11 @@ from ctypes import cdll
 
 class OMSysIdent:
     """Parameter estimation based on OMSimulator (composite) model."""
-    def __init__(self,model):
+    def __init__(self,ident):
         """Create an em empty model for parameter estimation.
 
         Args:
-            model (object): The OMS (composite) model.
+            ident (string): Name of the model instance.
 
         Returns:
             SysIdent model object.
@@ -48,45 +48,49 @@ class OMSysIdent:
             self.obj=cdll.LoadLibrary("OMSimulatorLib.dll")
         else:
             self.obj=cdll.LoadLibrary("libOMSimulatorLib.so")
-        self.setCtypesArguments()
-        self.setResultTypes()
-        self.simodel = self.obj.omsi_newSysIdentModel(model)
 
-    def __del__(self):
-        """Destructor will free external C object."""
-        self.obj.omsi_freeSysIdentModel(self.simodel)
-
-    def setResultTypes(self):
-        self.obj.omsi_newSysIdentModel.restype = ctypes.c_void_p
-        self.obj.omsi_describe.restype = ctypes.c_int
-        self.obj.omsi_initialize.restype = ctypes.c_int
-        self.obj.omsi_addMeasurement.restype = ctypes.c_int
-        self.obj.omsi_addParameter.restype = ctypes.c_int
-        self.obj.omsi_getParameter.restype = ctypes.c_int
-        self.obj.omsi_solve.restype = ctypes.c_int
-        self.obj.omsi_setOptions_max_num_iterations.restype = ctypes.c_int
-        self.obj.omsi_getState.restype = ctypes.c_int
-
-    def setCtypesArguments(self):
         self.obj.omsi_newSysIdentModel.argtypes = [ctypes.c_char_p]
+        self.obj.omsi_newSysIdentModel.restype = ctypes.c_void_p
+
         self.obj.omsi_freeSysIdentModel.argtypes = [ctypes.c_void_p]
+
         self.obj.omsi_describe.argtypes = [ctypes.c_void_p]
+        self.obj.omsi_describe.restype = ctypes.c_int
+
         self.obj.omsi_initialize.argtypes = [
             ctypes.c_void_p, ctypes.c_int,
             ndpointer(dtype=np.float64,ndim=1,flags='C_CONTIGUOUS'), ctypes.c_int,
             ctypes.POINTER(ctypes.c_char_p), ctypes.c_int,
             ctypes.POINTER(ctypes.c_char_p), ctypes.c_int]
+        self.obj.omsi_initialize.restype = ctypes.c_int
+
         self.obj.omsi_addMeasurement.argtypes = [
             ctypes.c_void_p, ctypes.c_int, ctypes.c_char_p,
             ndpointer(dtype=np.float64,ndim=1,flags='C_CONTIGUOUS'), ctypes.c_int]
+        self.obj.omsi_addMeasurement.restype = ctypes.c_int
+
         self.obj.omsi_addParameter.argtypes = [
             ctypes.c_void_p, ctypes.c_char_p, ctypes.c_double]
+        self.obj.omsi_addParameter.restype = ctypes.c_int
+
         self.obj.omsi_getParameter.argtype = [ctypes.c_void_p, ctypes.c_char_p,
             ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double)]
-        self.obj.omsi_solve.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
-        self.obj.omsi_setOptions_max_num_iterations.argtypes = [ctypes.c_void_p, ctypes.c_int]
-        self.obj.omsi_getState.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.c_int)]
+        self.obj.omsi_getParameter.restype = ctypes.c_int
 
+        self.obj.omsi_solve.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
+        self.obj.omsi_solve.restype = ctypes.c_int
+
+        self.obj.omsi_setOptions_max_num_iterations.argtypes = [ctypes.c_void_p, ctypes.c_int]
+        self.obj.omsi_setOptions_max_num_iterations.restype = ctypes.c_int
+
+        self.obj.omsi_getState.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.c_int)]
+        self.obj.omsi_getState.restype = ctypes.c_int
+
+        self.simodel = self.obj.omsi_newSysIdentModel(ident)
+
+    def __del__(self):
+        """Destructor will free external C object."""
+        self.obj.omsi_freeSysIdentModel(self.simodel)
 
     def initialize(self, nSeries, time, inputvars, measurementvars):
         invars = (ctypes.c_char_p * len(inputvars))()
