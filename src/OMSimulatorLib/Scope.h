@@ -97,7 +97,9 @@ namespace oms2
     oms_status_enu_t setBooleanParameter(const oms2::SignalRef& signal, bool value);
     oms_status_enu_t setTempDirectory(const std::string& newTempDir);
     oms_status_enu_t setWorkingDirectory(const std::string& path);
+    oms_status_enu_t getStartTime(const ComRef& cref, double *startTime);
     oms_status_enu_t setStartTime(const ComRef& cref, double startTime);
+    oms_status_enu_t getStopTime(const ComRef& cref, double *stopTime);
     oms_status_enu_t setStopTime(const ComRef& cref, double stopTime);
     oms_status_enu_t setCommunicationInterval(const ComRef& cref, double communicationInterval);
     oms_status_enu_t setResultFile(const ComRef& cref, const std::string& filename);
