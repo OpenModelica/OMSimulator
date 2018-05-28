@@ -70,8 +70,9 @@ The latest documentation is avilable as [pdf](https://openmodelica.org/doc/OMSim
 
 The following versions of Visual Studio are supported:
 
-- "VS14-Win64" -> "Visual Studio 14 2015 Win64"
 - "VS14-Win32" -> "Visual Studio 14 2015"
+- "VS14-Win64" -> "Visual Studio 14 2015 Win64"
+- "VS15-Win32" -> "Visual Studio 15 2017"
 - "VS15-Win64" -> "Visual Studio 15 2017 Win64"
 
 It is not strictly required to install the full Visual Studio IDE. The batch scripts only require *[Visual C++ Build Tools](http://landinghub.visualstudio.com/visual-cpp-build-tools)*.
