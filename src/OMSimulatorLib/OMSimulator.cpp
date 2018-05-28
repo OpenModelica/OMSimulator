@@ -393,10 +393,22 @@ oms_status_enu_t oms2_setTLMSocketData(const char* cref, const char* address,
                                                      managerPort, monitorPort);
 }
 
+oms_status_enu_t oms2_getStartTime(const char* cref, double *startTime)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().getStartTime(oms2::ComRef(cref), startTime);
+}
+
 oms_status_enu_t oms2_setStartTime(const char* cref, double startTime)
 {
   logTrace();
   return oms2::Scope::GetInstance().setStartTime(oms2::ComRef(cref), startTime);
+}
+
+oms_status_enu_t oms2_getStopTime(const char* cref, double *stopTime)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().getStopTime(oms2::ComRef(cref), stopTime);
 }
 
 oms_status_enu_t oms2_setStopTime(const char* cref, double stopTime)
