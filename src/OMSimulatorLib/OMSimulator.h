@@ -246,7 +246,7 @@ oms_status_enu_t oms2_simulate(const char* ident);
  * \param cb               [in] Callback function which is called after every completed step of the composite model
  * \return                 Error status
  */
-oms_status_enu_t oms2_simulate_asynchronous(const char* ident, void (*cb)(const char* ident, double time, oms_status_enu_t status));
+oms_status_enu_t oms2_simulate_asynchronous(const char* ident, int *terminate, void (*cb)(const char* ident, double time, oms_status_enu_t status));
 
 /**
  * \brief Simulates a composite model for a given number of steps (works for both FMI and TLM).
