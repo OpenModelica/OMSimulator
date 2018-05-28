@@ -501,6 +501,15 @@ oms_status_enu_t oms2_getBooleanParameter(const char* signal, bool* value);
 oms_status_enu_t oms2_setBooleanParameter(const char* signal, bool value);
 
 /**
+ * \brief Get the start time from the model.
+ *
+ * \param cref        [in] Name of the model instance
+ * \param startTime   [out] Start time
+ * \return            Error status
+ */
+oms_status_enu_t oms2_getStartTime(const char* cref, double *startTime);
+
+/**
  * \brief Set the start time of the simulation.
  *
  * \param cref        [in] Name of the model instance
@@ -508,6 +517,15 @@ oms_status_enu_t oms2_setBooleanParameter(const char* signal, bool value);
  * \return            Error status
  */
 oms_status_enu_t oms2_setStartTime(const char* cref, double startTime);
+
+/**
+ * \brief Get the stop time from the model.
+ *
+ * \param cref       [in] Name of the model instance
+ * \param stopTime   [out] Stop time
+ * \return           Error status
+ */
+oms_status_enu_t oms2_getStopTime(const char* cref, double *stopTime);
 
 /**
  * \brief Set the stop time of the simulation.
