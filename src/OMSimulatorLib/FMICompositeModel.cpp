@@ -1100,6 +1100,30 @@ oms_status_enu_t oms2::FMICompositeModel::initializeSockets(double stopTime, dou
     }
   }
 
+  //Apply initial values for signal and effort
+  for(TLMInterface *ifc : tlmInterfaces) {
+    if(ifc->getDimensions() == 1 && ifc->getCausality() == oms_causality_input) {
+      oms_tlm_sigrefs_signal_t tlmrefs;
+      double value;
+      this->getReal(ifc->getSubSignal(tlmrefs.y), value);
+      plugin->SetInitialValue(ifc->getId(), value);
+    }
+    else if(ifc->getDimensions() == 1 && ifc->getCausality() == oms_causality_bidir &&
+            ifc->getInterpolationMethod() == oms_tlm_no_interpolation) {
+      oms_tlm_sigrefs_1d_t tlmrefs;
+      double effort;
+      this->getReal(ifc->getSubSignal(tlmrefs.f), effort);
+      plugin->SetInitialForce1D(ifc->getId(), effort);
+    }
+    else if(ifc->getDimensions() == 3 && ifc->getCausality() == oms_causality_bidir &&
+            ifc->getInterpolationMethod() == oms_tlm_no_interpolation) {
+      oms_tlm_sigrefs_3d_t tlmrefs;
+      std::vector<double> effort(6,0);
+      this->getReals(ifc->getSubSignalSet(tlmrefs.f), effort);
+      plugin->SetInitialForce3D(ifc->getId(), effort[0], effort[1], effort[2], effort[3], effort[4], effort[5]);
+    }
+  }
+
   return oms_status_ok;
 }
 
