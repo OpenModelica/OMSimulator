@@ -73,6 +73,8 @@ namespace oms2
                                    int managerPort,
                                    int monitorPort);
 
+    oms_status_enu_t setTLMInitialValues(const SignalRef &ifc, std::vector<double> value);
+
     oms_status_enu_t describe();
 
     oms_status_enu_t initialize(double startTime, double tolerance);

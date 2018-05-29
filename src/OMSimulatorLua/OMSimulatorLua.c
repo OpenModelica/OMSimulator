@@ -846,6 +846,48 @@ static int OMSimulatorLua_oms2_setTLMSocketData(lua_State *L)
   return 1;
 }
 
+
+//oms_status_enu_t oms2_setTLMInitialValues(const char *cref, const char *ifc, double value1, double value2...));
+static int OMSimulatorLua_oms2_setTLMInitialValues(lua_State *L)
+{
+  //First parse initial arguments (3 or 8)
+  if(lua_gettop(L) != 3 && lua_gettop(L) != 8) {
+    return luaL_error(L, "expecting exactly 3 or 8 arguments");
+  }
+
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+  luaL_checktype(L, 3, LUA_TNUMBER);
+  if(lua_gettop(L) > 3) {
+    luaL_checktype(L, 4, LUA_TNUMBER);
+    luaL_checktype(L, 5, LUA_TNUMBER);
+    luaL_checktype(L, 6, LUA_TNUMBER);
+    luaL_checktype(L, 7, LUA_TNUMBER);
+    luaL_checktype(L, 8, LUA_TNUMBER);
+  }
+
+  oms_status_enu_t status;
+  const char *cref =    lua_tostring(L, 1);
+  const char *subref =  lua_tostring(L, 2);
+  if(lua_gettop(L) == 3) {
+    double values[1];
+    values[0] = lua_tonumber(L,3);
+    status = oms2_setTLMInitialValues(cref, subref, values, 1);
+  }
+  else if(lua_gettop(L) == 3) {
+    double values[6];
+    values[0] = lua_tonumber(L,3);
+    values[1] = lua_tonumber(L,4);
+    values[2] = lua_tonumber(L,5);
+    values[3] = lua_tonumber(L,6);
+    values[4] = lua_tonumber(L,7);
+    values[5] = lua_tonumber(L,8);
+    status = oms2_setTLMInitialValues(cref, subref, values, 6);
+  }
+  lua_pushinteger(L, status);
+  return 1;
+}
+
 /* **************************************************** */
 /* OMSysIdent API                                       */
 /* **************************************************** */
@@ -1118,6 +1160,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms2_addTable);
   REGISTER_LUA_CALL(oms2_addTLMConnection);
   REGISTER_LUA_CALL(oms2_addTLMInterface);
+  REGISTER_LUA_CALL(oms2_setTLMInitialValues);
   REGISTER_LUA_CALL(oms2_compareSimulationResults);
   REGISTER_LUA_CALL(oms2_deleteConnection);
   REGISTER_LUA_CALL(oms2_deleteSubModel);
