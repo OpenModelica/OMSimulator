@@ -116,8 +116,14 @@ class OMSimulator:
     self.obj.oms2_setResultFile.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms2_setResultFile.restype = ctypes.c_int
 
+    self.obj.oms2_getStartTime.argtypes = [ctypes.c_char_p]
+    self.obj.oms2_getStartTime.restype = ctypes.c_int
+
     self.obj.oms2_setStartTime.argtypes = [ctypes.c_char_p, ctypes.c_double]
     self.obj.oms2_setStartTime.restype = ctypes.c_int
+
+    self.obj.oms2_getStopTime.argtypes = [ctypes.c_char_p]
+    self.obj.oms2_getStopTime.restype = ctypes.c_int
 
     self.obj.oms2_setStopTime.argtypes = [ctypes.c_char_p, ctypes.c_double]
     self.obj.oms2_setStopTime.restype = ctypes.c_int
@@ -230,8 +236,16 @@ class OMSimulator:
     return self.obj.oms2_setRealParameter(str.encode(signal), value)
   def setResultFile(self, cref, filename):
     return self.obj.oms2_setResultFile(str.encode(cref), str.encode(filename))
+  def getStartTime(self, ident):
+    startTime = ctypes.c_double()
+    status = self.obj.oms2_getStartTime(str.encode(ident), ctypes.byref(startTime))
+    return [status, startTime.value]
   def setStartTime(self, cref, startTime):
     return self.obj.oms2_setStartTime(str.encode(cref), startTime)
+  def getStopTime(self, ident):
+    stopTime = ctypes.c_double()
+    status = self.obj.oms2_getStopTime(str.encode(ident), ctypes.byref(stopTime))
+    return [status, stopTime.value]
   def setStopTime(self, cref, stopTime):
     return self.obj.oms2_setStopTime(str.encode(cref), stopTime)
   def setTempDirectory(self, filename):
