@@ -507,7 +507,7 @@ oms_status_enu_t oms2_setBooleanParameter(const char* signal, bool value);
  * \param startTime   [out] Start time
  * \return            Error status
  */
-oms_status_enu_t oms2_getStartTime(const char* cref, double *startTime);
+oms_status_enu_t oms2_getStartTime(const char* cref, double* startTime);
 
 /**
  * \brief Set the start time of the simulation.
@@ -525,7 +525,7 @@ oms_status_enu_t oms2_setStartTime(const char* cref, double startTime);
  * \param stopTime   [out] Stop time
  * \return           Error status
  */
-oms_status_enu_t oms2_getStopTime(const char* cref, double *stopTime);
+oms_status_enu_t oms2_getStopTime(const char* cref, double* stopTime);
 
 /**
  * \brief Set the stop time of the simulation.
