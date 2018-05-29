@@ -207,6 +207,18 @@ oms2::TLMCompositeModel* oms2::Model::getTLMCompositeModel()
   return NULL;
 }
 
+oms_status_enu_t oms2::Model::setTLMInitialValues(const oms2::SignalRef &ifc, std::vector<double> values)
+{
+  if(this->getType() != oms_component_tlm) {
+    logError("Can only set initial TLM values on TLM models.");
+    return oms_status_error;
+  }
+
+  TLMCompositeModel *tlmModel = this->getTLMCompositeModel();
+
+  return tlmModel->setTLMInitialValues(ifc, values);
+}
+
 oms_status_enu_t oms2::Model::initialize()
 {
   if (oms_modelState_instantiated != modelState)

@@ -340,6 +340,15 @@ oms_status_enu_t oms2_setTLMSocketData(const char* cref, const char* address,
                                        int managerPort, int monitorPort);
 
 /**
+ * \brief Sets initial value for a TLM interface
+ *
+ * \param cref  [in] Identifier of TLM composite model.
+ * \param from  [in] TLM interface (format: submodel:interface)
+ * \param value [in] Initial variable value
+ */
+oms_status_enu_t oms2_setTLMInitialValues(const char *cref, const char *ifc, const double values[], int nvalues);
+
+/**
  * \brief Adds an external model to a TLM composite model
  *
  * \param cref         [in] Identifier of TLM composite model.

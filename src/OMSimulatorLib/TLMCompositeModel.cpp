@@ -291,6 +291,16 @@ oms_status_enu_t oms2::TLMCompositeModel::setSocketData(const std::string& addre
   return oms_status_ok;
 }
 
+oms_status_enu_t oms2::TLMCompositeModel::setTLMInitialValues(const SignalRef& ifc, std::vector<double> values)
+{
+  FMICompositeModel *pFMISubModel = Scope::GetInstance().getFMICompositeModel(ifc.getCref());
+  if(pFMISubModel) {
+    return pFMISubModel->setTLMInitialValues(ifc.getVar(), values);
+  }
+  logError("In TLMCompositeModel::setTLMInitialValues(): FMI submodel \""+ifc.getCref().toString()+"\" not found.");
+  return oms_status_error;
+}
+
 oms_status_enu_t oms2::TLMCompositeModel::describe()
 {
   omtlm_printModelStructure(model);

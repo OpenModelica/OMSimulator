@@ -1347,6 +1347,17 @@ oms_status_enu_t oms2::Scope::setTLMSocketData(oms2::ComRef modelIdent,
   return tlmModel->setSocketData(address, managerPort, monitorPort);
 }
 
+oms_status_enu_t oms2::Scope::setTLMInitialValues(const oms2::ComRef &cref, const oms2::SignalRef &ifc, std::vector<double> values)
+{
+  Model *model = getModel(cref);
+  if(!model) {
+    logError("In Scope::setTLMSocketData(): Model \""+cref.toString()+"\" not found.");
+    return oms_status_error;
+  }
+
+  return model->setTLMInitialValues(ifc, values);
+}
+
 oms_status_enu_t oms2::Scope::describeModel(const oms2::ComRef &cref)
 {
   oms2::Model* model = getModel(cref);

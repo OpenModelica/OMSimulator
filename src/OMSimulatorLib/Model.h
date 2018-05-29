@@ -83,6 +83,8 @@ namespace oms2
     const ComRef getName() const {return compositeModel->getName();}
     void setName(const ComRef& name) {compositeModel->setName(name);}
 
+    oms_status_enu_t setTLMInitialValues(const SignalRef& ifc, std::vector<double> value);
+
     virtual oms_status_enu_t describe() { return compositeModel->describe(); }
     oms_status_enu_t initialize();
     oms_status_enu_t reset();
