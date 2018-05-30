@@ -67,7 +67,7 @@ namespace oms2
     double getStopTime() const {return stopTime;}
     void setCommunicationInterval(double value) {communicationInterval = value;}
     double getCommunicationInterval() const {return communicationInterval;}
-    void setResultFile(const std::string& value) {resultFilename = value;}
+    void setResultFile(const std::string& value);
     const std::string& getResultFile() const {return resultFilename;}
     ResultWriter *getResultWriter() const {return resultFile;}
     void setMasterAlgorithm(MasterAlgorithm value) {masterAlgorithm = value;}
@@ -103,14 +103,14 @@ namespace oms2
 
   private:
     oms2::ssd::SystemGeometry systemGeometry;
-    CompositeModel* compositeModel = nullptr;
+    CompositeModel* compositeModel = NULL;
 
     double startTime = 0.0;                 ///< experiment, default 0.0
     double stopTime = 1.0;                  ///< experiment, default 1.0
     double tolerance = 1.0e-4;              ///< experiment, default 1.0e-4
     double communicationInterval = 1.0e-2;  ///< experiment, default 1.0e-2
     std::string resultFilename;             ///< experiment, default <name>_res.mat
-    ResultWriter *resultFile = nullptr;
+    ResultWriter *resultFile = NULL;
     MasterAlgorithm masterAlgorithm = MasterAlgorithm::STANDARD;  ///< master algorithm for FMI co-simulation, default MasterAlgorithm::STANDARD
 
     oms_modelState_enu_t modelState;  ///< internal model state, e.g. initialization state
