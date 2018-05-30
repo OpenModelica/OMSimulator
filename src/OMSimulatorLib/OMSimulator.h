@@ -362,6 +362,20 @@ oms_status_enu_t oms2_setTLMInitialValues(const char *cref, const char *ifc, con
 oms_status_enu_t oms2_addTLMInterface(const char *cref, const char* subref, const char *name, int dimensions, oms_causality_enu_t causality, oms_tlm_interpolation_t interpolation, const char* domain,
                                       const char **sigrefs, int nsigrefs);
 
+/**
+ * \brief Sets initial position and orientation for a TLM 3D interface
+ *
+ * \param cref                                [in] Identifier of TLM composite model.
+ * \param ifc                                 [in] Identifier of TLM interface (format: submodel:interface)
+ * \param x1,x2,x3                            [in] Position vector
+ * \param A11,A12,A13,A21,A22,A23,A31,A32,A33 [in] Orientation matrix (3x3)
+ * \return             Error status
+ */
+oms_status_enu_t oms2_setTLMPositionAndOrientation(const char *cref, const char *ifc,
+                                                   double x1, double x2, double x3,
+                                                   double A11, double A12, double A13,
+                                                   double A21, double A22, double A23,
+                                                   double A31, double A32, double A33);
 
 /**
  * \brief Adds an external model to a TLM composite model

@@ -210,6 +210,23 @@ oms_status_enu_t oms2::TLMCompositeModel::addInterface(std::string name,
   return addInterface(ifc);
 }
 
+oms_status_enu_t oms2::TLMCompositeModel::setPositionAndOrientation(const oms2::SignalRef &ifc, std::vector<double> x, std::vector<double> A)
+{
+  if(fmiModels.find(ifc.getCref()) == fmiModels.end() &&
+     externalModels.find(ifc.getCref()) == externalModels.end()) {
+    return logError("In TLMCompositeModel::setPositionAndOrientation(): Sub-model \""+ifc.getCref().toString()+"\" not found.");
+  }
+  std::string ifcname;
+  if(ifc.getVar().empty()) {
+    ifcname = ifc.getCref().toString();   //Apply to component
+  }
+  else {
+    ifcname = ifc.getCref().toString()+"."+ifc.getVar();  //Apply to interface
+  }
+  omtlm_setInitialPositionAndOrientation(model, ifcname.c_str(), x, A);
+  return oms_status_ok; //! @todo Check for success (needs changes to OMTLMSimulator API)
+}
+
 oms_status_enu_t oms2::TLMCompositeModel::addExternalModel(oms2::ExternalModel *externalModel)
 {
   auto it = externalModels.find(externalModel->getName());
