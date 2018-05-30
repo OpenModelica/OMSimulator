@@ -98,6 +98,7 @@ namespace oms2
     oms_status_enu_t setRealInputDerivatives(const oms2::SignalRef& sr, int order, double value);
 
     oms_status_enu_t addTLMInterface(TLMInterface *ifc);
+    oms_status_enu_t setTLMInitialValues(std::string ifc, std::vector<double> value);
 
     double getCurrentTime() {return time;}
 
@@ -149,6 +150,7 @@ namespace oms2
     double communicationInterval;
 
     std::vector<SignalRef> tlmSigRefs;
+    std::map<std::string, std::vector<double> > tlmInitialValues;
   };
 }
 

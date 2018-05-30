@@ -393,6 +393,12 @@ oms_status_enu_t oms2_setTLMSocketData(const char* cref, const char* address,
                                                      managerPort, monitorPort);
 }
 
+oms_status_enu_t oms2_setTLMInitialValues(const char *cref, const char *ifc, const double values[], int nvalues)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().setTLMInitialValues(oms2::ComRef(cref), oms2::SignalRef(ifc), std::vector<double>(values, values+nvalues));
+}
+
 oms_status_enu_t oms2_getStartTime(const char* cref, double* startTime)
 {
   logTrace();

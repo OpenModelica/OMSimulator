@@ -125,6 +125,7 @@ namespace oms2
     oms_status_enu_t addTLMInterface(const ComRef& cref, const ComRef& subref, const ComRef& name, int dimensions, oms_causality_enu_t causality, std::string domain, oms_tlm_interpolation_t interpolation, std::vector<SignalRef> &sigrefs);
     oms_status_enu_t addTLMConnection(const ComRef& cref, const SignalRef& from, const SignalRef& to, double delay, double alpha, double Zf, double Zfr);
     oms_status_enu_t setTLMSocketData(ComRef modelIdent, const std::string &address, int managerPort, int monitorPort);
+    oms_status_enu_t setTLMInitialValues(const ComRef& cref, const SignalRef& ifc, std::vector<double> values);
     oms_status_enu_t describeModel(const ComRef& cref);
 
   private:

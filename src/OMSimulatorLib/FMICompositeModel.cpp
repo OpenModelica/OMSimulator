@@ -1105,22 +1105,53 @@ oms_status_enu_t oms2::FMICompositeModel::initializeSockets(double stopTime, dou
     if(ifc->getDimensions() == 1 && ifc->getCausality() == oms_causality_input) {
       oms_tlm_sigrefs_signal_t tlmrefs;
       double value;
-      this->getReal(ifc->getSubSignal(tlmrefs.y), value);
+      if(tlmInitialValues.find(ifc->getName()) != tlmInitialValues.end()) {
+        value = tlmInitialValues.find(ifc->getName())->second[0];
+      }
+      else {
+        this->getReal(ifc->getSubSignal(tlmrefs.y), value);
+      }
       plugin->SetInitialValue(ifc->getId(), value);
     }
     else if(ifc->getDimensions() == 1 && ifc->getCausality() == oms_causality_bidir &&
             ifc->getInterpolationMethod() == oms_tlm_no_interpolation) {
       oms_tlm_sigrefs_1d_t tlmrefs;
       double effort;
-      this->getReal(ifc->getSubSignal(tlmrefs.f), effort);
+      if(tlmInitialValues.find(ifc->getName()) != tlmInitialValues.end()) {
+        effort = tlmInitialValues.find(ifc->getName())->second[0];
+      }
+      else {
+        this->getReal(ifc->getSubSignal(tlmrefs.f), effort);
+      }
       plugin->SetInitialForce1D(ifc->getId(), effort);
+    }
+    else if(ifc->getDimensions() == 1 && ifc->getCausality() == oms_causality_bidir &&
+            ifc->getInterpolationMethod() != oms_tlm_no_interpolation) {
+      if(tlmInitialValues.find(ifc->getName()) != tlmInitialValues.end()) {
+        double effort = tlmInitialValues.find(ifc->getName())->second[0];
+        plugin->SetInitialForce1D(ifc->getId(), effort);
+      }
     }
     else if(ifc->getDimensions() == 3 && ifc->getCausality() == oms_causality_bidir &&
             ifc->getInterpolationMethod() == oms_tlm_no_interpolation) {
       oms_tlm_sigrefs_3d_t tlmrefs;
       std::vector<double> effort(6,0);
-      this->getReals(ifc->getSubSignalSet(tlmrefs.f), effort);
+      if(tlmInitialValues.find(ifc->getName()) != tlmInitialValues.end()) {
+        effort = tlmInitialValues.find(ifc->getName())->second;
+      }
+      else {
+        this->getReals(ifc->getSubSignalSet(tlmrefs.f), effort);
+      }
       plugin->SetInitialForce3D(ifc->getId(), effort[0], effort[1], effort[2], effort[3], effort[4], effort[5]);
+    }
+    else if(ifc->getDimensions() == 3 && ifc->getCausality() == oms_causality_bidir &&
+            ifc->getInterpolationMethod() != oms_tlm_no_interpolation) {
+      oms_tlm_sigrefs_3d_t tlmrefs;
+      std::vector<double> effort(6,0);
+      if(tlmInitialValues.find(ifc->getName()) != tlmInitialValues.end()) {
+        effort = tlmInitialValues.find(ifc->getName())->second;
+        plugin->SetInitialForce3D(ifc->getId(), effort[0], effort[1], effort[2], effort[3], effort[4], effort[5]);
+      }
     }
   }
 
@@ -1373,6 +1404,39 @@ oms_status_enu_t oms2::FMICompositeModel::setRealInputDerivatives(const oms2::Si
 oms_status_enu_t oms2::FMICompositeModel::addTLMInterface(oms2::TLMInterface *ifc)
 {
   tlmInterfaces.push_back(ifc);
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms2::FMICompositeModel::setTLMInitialValues(std::string ifcname, std::vector<double> values)
+{
+  //Find interface log
+  bool found = false;
+  for(TLMInterface* ifc: tlmInterfaces) {
+    if(ifc->getName() == ifcname) {
+      found = true;
+      if(ifc->getDimensions() == 1) {
+        if(values.size() < 1) {
+          logError("No initial TLM value specified.");
+          return oms_status_error;
+        }
+        tlmInitialValues.insert(std::make_pair(ifcname, values));
+      }
+      else if(ifc->getDimensions() == 3) {
+        if(values.size() < 6) {
+          logError("Too few initial TLM values specified for 3D interface (should be 6).");
+          return oms_status_error;
+        }
+        tlmInitialValues.insert(std::make_pair(ifcname, values));
+      }
+      break;
+    }
+  }
+
+  if(!found) {
+    logError("In FMICompositeModel::setTLMInitialValues(): TLM interface \""+ifcname+"\" not found.");
+    return oms_status_error;
+  }
+
   return oms_status_ok;
 }
 
