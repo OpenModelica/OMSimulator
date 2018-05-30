@@ -142,14 +142,14 @@ IF ["%CERES%"]==["OFF"] (
 :: -- config pthread ----------------------------------------------------------
 ECHO # config pthread
 CD 3rdParty\pthread
-CALL buildWinVS.bat
+CALL buildWinVS.bat "%OMS_VS_TARGET%"
 CD ..\..
 :: -- config pthread ----------------------------------------------------------
 
 :: -- config libxml2 ----------------------------------------------------------
 ECHO # config libxml2
 CD 3rdParty\libxml2
-CALL buildWinVS.bat
+CALL buildWinVS.bat "%OMS_VS_TARGET%"
 CD ..\..
 :: -- config libxml2 ----------------------------------------------------------
 
