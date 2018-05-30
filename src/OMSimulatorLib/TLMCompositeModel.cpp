@@ -70,7 +70,7 @@ oms2::TLMCompositeModel::~TLMCompositeModel()
     }
     externalModels.clear();
 
-    delete model;
+    omtlm_unloadModel(model);
 }
 
 oms2::TLMCompositeModel* oms2::TLMCompositeModel::NewModel(const ComRef& name)
@@ -383,7 +383,11 @@ oms_status_enu_t oms2::TLMCompositeModel::reset()
 
 oms_status_enu_t oms2::TLMCompositeModel::terminate()
 {
-  return logError("oms2::TLMCompositeModel::terminate: not implemented yet");
+  for(auto it = fmiModels.begin(); it!=fmiModels.end(); ++it) {
+    Model* pSubModel = oms2::Scope::GetInstance().getModel(it->second->getName());
+    pSubModel->terminate();
+  }
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms2::TLMCompositeModel::simulate(ResultWriter &resultWriter, double stopTime, double communicationInterval, oms2::MasterAlgorithm masterAlgorithm)
