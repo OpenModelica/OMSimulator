@@ -177,5 +177,5 @@ void oms2::Connector::setGeometry(const oms2::ssd::ConnectorGeometry* newGeometr
   }
 
   if (newGeometry)
-    *reinterpret_cast<oms2::ssd::ConnectorGeometry*>(this->geometry) = *newGeometry;
+    this->geometry = reinterpret_cast<ssd_connector_geometry_t*>(new oms2::ssd::ConnectorGeometry(*newGeometry));
 }
