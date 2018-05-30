@@ -123,6 +123,7 @@ namespace oms2
     oms_status_enu_t addFMISubModel(const ComRef& cref, const ComRef& subref);
     oms_status_enu_t addExternalModel(const ComRef& cref, const ComRef& name, const std::string& modelfile, const std::string &startscript);
     oms_status_enu_t addTLMInterface(const ComRef& cref, const ComRef& subref, const ComRef& name, int dimensions, oms_causality_enu_t causality, std::string domain, oms_tlm_interpolation_t interpolation, std::vector<SignalRef> &sigrefs);
+    oms_status_enu_t setTLMPositionAndOrientation(const ComRef& cref, const SignalRef& ifc, std::vector<double> x, std::vector<double> A);
     oms_status_enu_t addTLMConnection(const ComRef& cref, const SignalRef& from, const SignalRef& to, double delay, double alpha, double Zf, double Zfr);
     oms_status_enu_t setTLMSocketData(ComRef modelIdent, const std::string &address, int managerPort, int monitorPort);
     oms_status_enu_t setTLMInitialValues(const ComRef& cref, const SignalRef& ifc, std::vector<double> values);

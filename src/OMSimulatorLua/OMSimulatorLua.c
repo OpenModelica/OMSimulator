@@ -799,6 +799,41 @@ static int OMSimulatorLua_oms2_addTLMInterface(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms2_setTLMPositionAndOrientation(const char *cref, const char *ifc, double x1, double x2, double x3, double A11, double A12, double A13, double A21, double A22, double A23, double A31, double A32, double A33)
+static int OMSimulatorLua_oms2_setTLMPositionAndOrientation(lua_State *L)
+{
+  if (lua_gettop(L) != 14)
+    return luaL_error(L, "expecting exactly 14 arguments");
+
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+  const char *cref =  lua_tostring(L, 1);
+  const char *ifc = lua_tostring(L, 2);
+
+  //Position
+  double x[3];
+  for(int i=0; i<3; ++i) {
+    luaL_checktype(L, i+3, LUA_TNUMBER);
+    x[i] = lua_tonumber(L, i+3);
+  }
+
+  //Orientation (3x3 matrix, stored as 1x9 vector)
+  double A[9];
+  for(int i=0; i<9; ++i) {
+    luaL_checktype(L, i+6, LUA_TNUMBER);
+    A[i] = lua_tonumber(L, i+6);
+  }
+
+  oms_status_enu_t status = oms2_setTLMPositionAndOrientation(cref, ifc,
+                                                              x[0], x[1], x[2],
+                                                              A[0], A[1], A[2],
+                                                              A[3], A[4], A[5],
+                                                              A[6], A[7], A[8]);
+
+  lua_pushinteger(L, status);
+  return 1;
+}
+
 //oms_status_enu_t oms2_addTLMConnection(const char *cref, const char *from, const char *to, double delay, double alpha, double Zf, double Zfr)
 static int OMSimulatorLua_oms2_addTLMConnection(lua_State *L)
 {
@@ -1162,6 +1197,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms2_addTLMConnection);
   REGISTER_LUA_CALL(oms2_addTLMInterface);
   REGISTER_LUA_CALL(oms2_setTLMInitialValues);
+  REGISTER_LUA_CALL(oms2_setTLMPositionAndOrientation);
   REGISTER_LUA_CALL(oms2_compareSimulationResults);
   REGISTER_LUA_CALL(oms2_deleteConnection);
   REGISTER_LUA_CALL(oms2_deleteSubModel);
