@@ -185,6 +185,15 @@ oms_status_enu_t oms2_getFMUPath(const char* cref, char** path);
 oms_status_enu_t oms2_getFMUInfo(const char* cref, const oms_fmu_info_t** fmuInfo);
 
 /**
+ * \brief Set geometry information to a given connector.
+ *
+ * \param cref       [in] Full identifier of a connector.
+ * \param geometry   [in] Geometry information
+ * \return           Error status
+ */
+oms_status_enu_t oms2_setConnectorGeometry(const char* connector, const ssd_connector_geometry_t* geometry);
+
+/**
  * \brief Get list of all connections from a given component.
  *
  * \param cref          [in] Full identifier of a component

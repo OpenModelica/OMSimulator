@@ -340,6 +340,35 @@ oms_status_enu_t oms2::FMICompositeModel::loadSubModel(const pugi::xml_node& nod
 
       subModel->setGeometry(geometry);
     }
+    // import connectors
+    else if (std::string(child.name()) == oms2::ssd::ssd_connectors)
+    {
+      for (auto connectorNode = child.first_child(); connectorNode; connectorNode = connectorNode.next_sibling())
+      {
+        if (std::string(connectorNode.name()) == oms2::ssd::ssd_connector) {
+          oms2::Element* element = subModel->getElement();
+          if (element)
+          {
+            oms2::Connector** connectors = element->getConnectors();
+            for (int i=0; connectors[i]; ++i)
+            {
+              if (connectors[i]->getName().getVar() == connectorNode.attribute("name").as_string())
+              {
+                for (auto connectorGeometryNode = connectorNode.first_child(); connectorGeometryNode; connectorGeometryNode = connectorGeometryNode.next_sibling())
+                {
+                  if (std::string(connectorGeometryNode.name()) == oms2::ssd::ssd_connector_geometry)
+                  {
+                    oms2::ssd::ConnectorGeometry geometry(0.0, 0.0);
+                    geometry.setPosition(connectorGeometryNode.attribute("x").as_double(), connectorGeometryNode.attribute("y").as_double());
+                    connectors[i]->setGeometry(&geometry);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
     // import parameters
     else if (std::string(child.name()) == "Parameter")
     {
