@@ -176,6 +176,12 @@ oms_status_enu_t oms2_getFMUInfo(const char* cref, const oms_fmu_info_t** fmuInf
   return oms2::Scope::GetInstance().getFMUInfo(oms2::ComRef(cref), reinterpret_cast<const oms2::FMUInfo**>(fmuInfo));
 }
 
+oms_status_enu_t oms2_setConnectorGeometry(const char* connector, const ssd_connector_geometry_t* geometry)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().setConnectorGeometry(oms2::SignalRef(connector), reinterpret_cast<const oms2::ssd::ConnectorGeometry*>(geometry));
+}
+
 oms_status_enu_t oms2_getConnections(const char* cref, oms_connection_t*** connections)
 {
   logTrace();
