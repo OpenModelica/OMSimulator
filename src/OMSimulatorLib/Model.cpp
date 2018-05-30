@@ -373,3 +373,47 @@ oms_status_enu_t oms2::Model::simulate_realtime()
   oms_status_enu_t status = compositeModel->stepUntil(*resultFile, stopTime, communicationInterval, masterAlgorithm, true);
   return status;
 }
+
+void oms2::Model::setResultFile(const std::string& value)
+{
+  resultFilename = value;
+  if (oms_modelState_instantiated != modelState)
+  {
+    if (resultFile)
+    {
+      delete resultFile;
+      resultFile = NULL;
+    }
+
+    if (!resultFilename.empty())
+    {
+      std::string resulttype;
+      if (resultFilename.length() > 5)
+        resulttype = resultFilename.substr(resultFilename.length() - 4);
+
+      if (".csv" == resulttype)
+        resultFile = new CSVWriter(1);
+      else if (".mat" == resulttype)
+        resultFile = new MATWriter(1024);
+      else
+      {
+        logError("Unsupported format of the result file: " + resultFilename);
+        return;
+      }
+
+      logInfo("Result file: " + resultFilename);
+
+      // add all signals
+      compositeModel->registerSignalsForResultFile(*resultFile);
+
+      // create result file
+      if (!resultFile->create(resultFilename, startTime, stopTime))
+      {
+        delete resultFile;
+        resultFile = NULL;
+        logError("Creating result file failed");
+        return;
+      }
+    }
+  }
+}
