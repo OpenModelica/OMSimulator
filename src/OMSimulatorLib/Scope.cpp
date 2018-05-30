@@ -1311,6 +1311,20 @@ oms_status_enu_t oms2::Scope::addTLMInterface(const oms2::ComRef &cref, const om
   return model->getTLMCompositeModel()->addInterface(name.toString(), dimensions, causality, domain, interpolation, subref, sigrefs);
 }
 
+oms_status_enu_t oms2::Scope::setTLMPositionAndOrientation(const oms2::ComRef &cref, const SignalRef &ifc, std::vector<double> x, std::vector<double> A)
+{
+  oms2::Model* model = getModel(cref);
+  if (!model) {
+    logError("In Scope::setTLMPositionAndOrientation(): Model \""+cref.toString()+"\" not found.");
+    return oms_status_error;
+  }
+  if(model->getType() != oms_component_tlm) {
+    logError("In Scope::setTLMPositionAndOrientation(): Not a TLM model.");
+    return oms_status_error;
+  }
+  return model->getTLMCompositeModel()->setPositionAndOrientation(ifc,x,A);
+}
+
 
 oms_status_enu_t oms2::Scope::addTLMConnection(const oms2::ComRef &cref, const oms2::SignalRef &from, const oms2::SignalRef &to,
                                            double delay, double alpha, double Zf, double Zfr)
