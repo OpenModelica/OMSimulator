@@ -1359,7 +1359,7 @@ oms_status_enu_t oms2::Scope::describeModel(const oms2::ComRef &cref)
   return model->describe();
 }
 
-oms_status_enu_t oms2::Scope::getStartTime(const ComRef& cref, double *startTime)
+oms_status_enu_t oms2::Scope::getStartTime(const ComRef& cref, double* startTime)
 {
   if (cref.isIdent())
   {
@@ -1393,7 +1393,7 @@ oms_status_enu_t oms2::Scope::setStartTime(const ComRef& cref, double startTime)
   return oms_status_error;
 }
 
-oms_status_enu_t oms2::Scope::getStopTime(const ComRef& cref, double *stopTime)
+oms_status_enu_t oms2::Scope::getStopTime(const ComRef& cref, double* stopTime)
 {
   if (cref.isIdent())
   {
