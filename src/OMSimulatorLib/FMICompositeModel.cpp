@@ -1022,13 +1022,13 @@ oms_status_enu_t oms2::FMICompositeModel::stepUntilPCTPL(ResultWriter& resultWri
   return oms_status_ok;
 }
 
-void oms2::FMICompositeModel::simulate_asynchronous(ResultWriter& resultWriter, double stopTime, double communicationInterval, void (*cb)(const char* ident, double time, oms_status_enu_t status))
+void oms2::FMICompositeModel::simulate_asynchronous(ResultWriter& resultWriter, double stopTime, double communicationInterval, int *terminate, void (*cb)(const char* ident, double time, oms_status_enu_t status))
 {
   logTrace();
   oms_status_enu_t statusSubModel;
   oms_status_enu_t status;
 
-  while (time < stopTime)
+  while (time < stopTime && *terminate)
   {
     logDebug("doStep: " + std::to_string(time) + " -> " + std::to_string(time+communicationInterval));
     time += communicationInterval;
