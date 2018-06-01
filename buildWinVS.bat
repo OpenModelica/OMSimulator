@@ -31,16 +31,17 @@ IF ["%OMS_VS_TARGET%"]==["VS15-Win64"] @CALL "C:\Program Files (x86)\Microsoft V
 
 IF NOT DEFINED CMAKE_BUILD_TYPE SET CMAKE_BUILD_TYPE="Release"
 
-mkdir install\win\bin
+MKDIR install\win\bin
 
 :: -- build OMTLMSimulator ----------------------------------------------------
 ECHO # Building OMTLMSimulator
-cd OMTLMSimulator
-call buildWinVS.bat %OMS_VS_TARGET%
-cd..
-copy /Y OMTLMSimulator\bin\omtlmsimulator.lib install\win\bin
-copy /Y OMTLMSimulator\bin\omtlmsimulator.dll install\win\bin
-echo %cd%
+CD OMTLMSimulator
+CALL buildWinVS.bat %OMS_VS_TARGET%
+IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
+CD..
+COPY /Y OMTLMSimulator\bin\omtlmsimulator.lib install\win\bin
+COPY /Y OMTLMSimulator\bin\omtlmsimulator.dll install\win\bin
+ECHO %CD%
 :: -- build OMTLMSimulator ----------------------------------------------------
 
 :: -- build OMSimulator -------------------------------------------------------
@@ -48,6 +49,9 @@ ECHO # build OMSimulator
 msbuild.exe "build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE% /maxcpucount
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 :: -- build OMSimulator -------------------------------------------------------
+
+install\win\bin\OMSimulator.exe --version
+IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 
 EXIT /b 0
 
