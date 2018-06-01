@@ -36,7 +36,7 @@ MKDIR install\win\bin
 :: -- build OMTLMSimulator ----------------------------------------------------
 ECHO # Building OMTLMSimulator
 CD OMTLMSimulator
-CALL buildWinVS.bat %OMS_VS_TARGET%
+START /WAIT /B CMD /C "buildWinVS.bat %OMS_VS_TARGET%"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 CD..
 COPY /Y OMTLMSimulator\bin\omtlmsimulator.lib install\win\bin
@@ -52,9 +52,8 @@ IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 
 install\win\bin\OMSimulator.exe --version
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-
-EXIT /b 0
+EXIT /B 0
 
 :fail
 ECHO Build failed!
-EXIT /b 1
+EXIT /B 1
