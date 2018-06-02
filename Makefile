@@ -1,6 +1,7 @@
 RM=rm -rf
 CP=cp -rf
 MKDIR=mkdir -p
+ROOT_DIR=$(shell pwd)
 
 # Option to build Ceres-Solver and its dependencies as part of the 3rdParty projects
 CERES ?= ON
@@ -57,6 +58,7 @@ OMSimulator:
 	@echo
 	@$(MAKE) OMTLMSimulator
 	@$(MAKE) OMSimulatorCore
+	$(INSTALL_DIR)/bin/OMSimulator --version
 
 OMSimulatorCore:
 	@echo
@@ -169,8 +171,8 @@ config-libxml2:
 	@echo "# config libxml2"
 	@echo
 	$(MKDIR) 3rdParty/libxml2/$(INSTALL_DIR)
-	$(MKDIR) 3rdParty/libxml2/$(INSTALL_DIR)/lib
-	cd 3rdParty/libxml2 && ./autogen.sh prefix=$(PWD)/$(INSTALL_DIR) --without-python && $(MAKE) install 
+	cd 3rdParty/libxml2 && ./autogen.sh --prefix="$(ROOT_DIR)/3rdParty/libxml2/$(INSTALL_DIR)" --without-python && $(MAKE) && $(MAKE) install
+	cd 3rdParty/libxml2 && git clean -fdx -e 'install/'
 endif
 
 distclean:
