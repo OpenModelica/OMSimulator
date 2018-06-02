@@ -94,7 +94,7 @@ EXIT /B 0
 :lua
 ECHO # build Lua
 CD 3rdParty\Lua
-START /WAIT /B CMD /C "buildWinVS.bat %OMS_VS_TARGET%"
+START /B /WAIT CMD /C "buildWinVS.bat %OMS_VS_TARGET%"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 CD ..\..
 ECHO # copy lua
@@ -205,7 +205,7 @@ EXIT /B 0
 :pthread
 ECHO # config pthread
 CD 3rdParty\pthread
-START /WAIT /B CMD /C "buildWinVS.bat %OMS_VS_TARGET%"
+START /B /WAIT CMD /C "buildWinVS.bat %OMS_VS_TARGET%"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 CD ..\..
 ECHO # copy pthread
@@ -219,7 +219,7 @@ EXIT /B 0
 :libxml2
 ECHO # config libxml2
 CD 3rdParty\libxml2
-START /WAIT /B CMD /C "buildWinVS.bat %OMS_VS_TARGET%"
+START /B /WAIT CMD /C "buildWinVS.bat %OMS_VS_TARGET%"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 CD ..\..
 ECHO # copy libxml2
@@ -262,29 +262,29 @@ EXIT /B 0
 
 :: -- config all ----------------------
 :all
-START /WAIT /B CMD /C "%~0 %OMS_VS_TARGET% clean"
+START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% clean"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-START /WAIT /B CMD /C "%~0 %OMS_VS_TARGET% fmil"
+START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% fmil"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-START /WAIT /B CMD /C "%~0 %OMS_VS_TARGET% lua"
+START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% lua"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-START /WAIT /B CMD /C "%~0 %OMS_VS_TARGET% cvode"
+START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% cvode"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-START /WAIT /B CMD /C "%~0 %OMS_VS_TARGET% kinsol"
+START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% kinsol"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-START /WAIT /B CMD /C "%~0 %OMS_VS_TARGET% gflags"
+START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% gflags"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-START /WAIT /B CMD /C "%~0 %OMS_VS_TARGET% glog"
+START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% glog"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-START /WAIT /B CMD /C "%~0 %OMS_VS_TARGET% ceres"
+START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% ceres"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-START /WAIT /B CMD /C "%~0 %OMS_VS_TARGET% pthread"
+START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% pthread"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-START /WAIT /B CMD /C "%~0 %OMS_VS_TARGET% libxml2"
+START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% libxml2"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-START /WAIT /B CMD /C "%~0 %OMS_VS_TARGET% boost"
+START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% boost"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-START /WAIT /B CMD /C "%~0 %OMS_VS_TARGET% omsimulator"
+START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% omsimulator"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 EXIT /B 0
 :: -- config all ----------------------
