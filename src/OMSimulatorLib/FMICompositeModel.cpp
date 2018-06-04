@@ -857,6 +857,8 @@ oms_status_enu_t oms2::FMICompositeModel::initialize(double startTime, double to
     if (oms_status_ok != it.second->exitInitialization())
       return logError("[oms2::FMICompositeModel::initialize] failed");
 
+  updateInputs(outputsGraph);
+
   return oms_status_ok;
 }
 
@@ -1483,7 +1485,7 @@ oms_status_enu_t oms2::FMICompositeModel::updateInputs(oms2::DirectedGraph& grap
       double value = 0.0;
       getReal(graph.nodes[output].getSignalRef(), value);
       setReal(graph.nodes[input].getSignalRef(), value);
-      //std::cout << inputFMU << "." << inputVar << " = " << outputFMU << "." << outputVar << std::endl;
+      //std::cout << "[time " << time << "] " << graph.nodes[output].getSignalRef().toString() << " -> " << graph.nodes[input].getSignalRef().toString() << " (value: " << value << ")" << std::endl;
     }
     else
     {
