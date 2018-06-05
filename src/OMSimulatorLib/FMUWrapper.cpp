@@ -1019,7 +1019,11 @@ oms_status_enu_t oms2::FMUWrapper::setIntegerParameter(const std::string& var, i
     return logError("No such parameter: " + var);
 
   it->second = value;
-  return oms_status_ok;
+
+  oms2::Variable* v = getVariable(var);
+  if (!v)
+    return oms_status_error;
+  return setInteger(*v, value);
 }
 
 oms_status_enu_t oms2::FMUWrapper::getIntegerParameter(const std::string& var, int& value)
@@ -1050,7 +1054,11 @@ oms_status_enu_t oms2::FMUWrapper::setBooleanParameter(const std::string& var, b
     return logError("No such parameter: " + var);
 
   it->second = value;
-  return oms_status_ok;
+
+  oms2::Variable* v = getVariable(var);
+  if (!v)
+    return oms_status_error;
+  return setBoolean(*v, value);
 }
 
 oms_status_enu_t oms2::FMUWrapper::getBooleanParameter(const std::string& var, bool& value)
