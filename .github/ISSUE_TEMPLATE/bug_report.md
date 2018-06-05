@@ -4,25 +4,33 @@ about: Create a report to help us improve
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+### Description
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+<!--- A clear and concise description of what the bug is. -->
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+### Steps to reproduce the behavior
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+<!--- This could either be a list of actions or a script file (e.g. Lua). -->
 
-**Desktop (please complete the following information):**
- - OS: [e.g. Win10]
- - Version [`OMSimulator --version`]
+```Lua
+-- Print version string
+version = oms2_getVersion()
+print(version)
 
-**Additional context**
-Add any other context about the problem here.
+...
+```
+
+### Expected behavior
+
+<!--- A clear and concise description of what you expected to happen. -->
+
+### Screenshots
+
+<!--- If applicable, add screenshots to help explain your problem. -->
+
+### Version and OS
+
+<!--- Please complete the following information. -->
+
+- Version: [`OMSimulator --version`]
+- OS: [e.g. Win10, 64bit]
