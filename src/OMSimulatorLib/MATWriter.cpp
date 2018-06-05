@@ -157,8 +157,22 @@ bool MATWriter::createFile(const std::string& filename, double startTime, double
   data_1[(1 + parameters.size())] = stopTime;
   for (int i = 0; i < parameters.size(); ++i)
   {
-    data_1[i + 1] = parameters[i].value.realValue;
-    data_1[(1 + parameters.size()) + i + 1] = parameters[i].value.realValue;
+    switch (parameters[i].signal.type)
+    {
+      case SignalType_REAL:
+      default:
+        data_1[i + 1] = parameters[i].value.realValue;
+        data_1[(1 + parameters.size()) + i + 1] = parameters[i].value.realValue;
+        break;
+      case SignalType_INT:
+        data_1[i + 1] = parameters[i].value.intValue;
+        data_1[(1 + parameters.size()) + i + 1] = parameters[i].value.intValue;
+        break;
+      case SignalType_BOOL:
+        data_1[i + 1] = parameters[i].value.boolValue;
+        data_1[(1 + parameters.size()) + i + 1] = parameters[i].value.boolValue;
+        break;
+    }
   }
   writeMatVer4Matrix(pFile, "data_1", 1 + parameters.size(), 2, data_1, MatVer4Type_DOUBLE);
   delete[] data_1;
