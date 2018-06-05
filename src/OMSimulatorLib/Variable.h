@@ -82,7 +82,7 @@ namespace oms2
     const std::string& getDescription() const { return description; }
 
     bool isTypeReal() const { return oms_signal_type_real == type; }
-    bool isTypeInteger() const { return oms_signal_type_integer == type; }
+    bool isTypeInteger() const { return oms_signal_type_integer == type || oms_signal_type_enum == type; }
     bool isTypeBoolean() const { return oms_signal_type_boolean == type; }
 
     std::string getCausalityString() { return std::string(fmi2_causality_to_string(causality)); }
