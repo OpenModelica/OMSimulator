@@ -80,7 +80,6 @@ OMTLMSimulator:
 	cp OMTLMSimulator/bin/libomtlmsimulator$(FEXT) $(INSTALL_DIR)/bin/
 	test ! `uname` != Darwin || cp OMTLMSimulator/bin/FMIWrapper $(INSTALL_DIR)/bin/
 	test ! `uname` != Darwin || cp OMTLMSimulator/bin/StartTLMFmiWrapper $(INSTALL_DIR)/bin/
-	test ! `uname` != Darwin || cp OMTLMSimulator/bin/libfmilib_shared$(FEXT) $(INSTALL_DIR)/lib/
 
 config-3rdParty: config-fmil config-lua config-cvode config-kinsol config-gflags config-glog config-ceres-solver config-libxml2
 
