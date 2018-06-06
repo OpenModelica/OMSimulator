@@ -12,21 +12,23 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/config.cmake/")
 include(GetGitRevisionDescription)
 git_describe(GIT_VERSION_STRING --tags --abbrev=7 --match=v*.*)
 
+IF(WIN32 AND MSVC)
+  set(PLATFORM_STRING "win")
+ELSEIF(WIN32 AND MINGW)
+  set(PLATFORM_STRING "mingw")
+ELSEIF(APPLE)
+  set(PLATFORM_STRING "mac")
+ELSE()
+  set(PLATFORM_STRING "linux")
+ENDIF()
+
 # Don't allow in-source build
 IF("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
   message(FATAL_ERROR "No in-source builds supported. Change to 'build' sub-directory and do 'cmake ..'.")
 ENDIF()
 
 IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-  IF(WIN32 AND MSVC)
-    set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/install/win CACHE PATH "Library installation path (don't change)" FORCE)
-  ELSEIF(WIN32 AND MINGW)
-    set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/install/mingw CACHE PATH "Library installation path (don't change)" FORCE)
-  ELSEIF(APPLE)
-    set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/install/mac CACHE PATH "Library installation path (don't change)" FORCE)
-  ELSE()
-    set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/install/linux CACHE PATH "Library installation path (don't change)" FORCE)
-  ENDIF()
+  set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/install/${PLATFORM_STRING} CACHE PATH "Library installation path (don't change)" FORCE)
 ENDIF()
 
 # Enable verbose output from Makefile builds
@@ -55,54 +57,22 @@ ENDIF()
 
 ##########################
 # Configuring for FMILibrary
-IF(WIN32 AND MSVC)
-  set(FMILibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/FMIL/install/win)
-ELSEIF(WIN32 AND MINGW)
-  set(FMILibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/FMIL/install/mingw)
-ELSEIF(APPLE)
-  set(FMILibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/FMIL/install/mac)
-ELSE()
-  set(FMILibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/FMIL/install/linux)
-ENDIF()
+set(FMILibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/FMIL/install/${PLATFORM_STRING})
 find_package(FMILibrary REQUIRED)
 
 ##########################
 # Configuring for Lua
-IF(WIN32 AND MSVC)
-  set(LUALibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/Lua/install/win)
-ELSEIF(WIN32 AND MINGW)
-  set(LUALibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/Lua/install/mingw)
-ELSEIF(APPLE)
-  set(LUALibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/Lua/install/mac)
-ELSE()
-  set(LUALibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/Lua/install/linux)
-ENDIF()
+set(LUALibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/Lua/install/${PLATFORM_STRING})
 find_package(LUALibrary REQUIRED)
 
 ##########################
 # Configuring for CVODE
-IF(WIN32 AND MSVC)
-  set(CVODELibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/cvode/install/win)
-ELSEIF(WIN32 AND MINGW)
-  set(CVODELibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/cvode/install/mingw)
-ELSEIF(APPLE)
-  set(CVODELibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/cvode/install/mac)
-ELSE()
-  set(CVODELibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/cvode/install/linux)
-ENDIF()
+set(CVODELibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/cvode/install/${PLATFORM_STRING})
 find_package(CVODELibrary REQUIRED)
 
 ##########################
 # Configuring for KINSOL
-IF(WIN32 AND MSVC)
-  set(KINSOLLibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/kinsol/install/win)
-ELSEIF(WIN32 AND MINGW)
-  set(KINSOLLibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/kinsol/install/mingw)
-ELSEIF(APPLE)
-  set(KINSOLLibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/kinsol/install/mac)
-ELSE()
-  set(KINSOLLibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/kinsol/install/linux)
-ENDIF()
+set(KINSOLLibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/kinsol/install/${PLATFORM_STRING})
 find_package(KINSOLLibrary REQUIRED)
 
 ##########################
@@ -128,27 +98,11 @@ ENDIF()
 
 ##########################
 # Configuring for glog
-IF(WIN32 AND MSVC)
-  set(GLOG_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/glog/install/win/include)
-ELSEIF(WIN32 AND MINGW)
-  set(GLOG_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/glog/install/mingw/include)
-ELSEIF(APPLE)
-  set(GLOG_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/glog/install/mac/include)
-ELSE()
-  set(GLOG_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/glog/install/linux/include)
-ENDIF()
+set(GLOG_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/glog/install/${PLATFORM_STRING}/include)
 
 ##########################
 # Configuring for gflags
-IF(WIN32 AND MSVC)
-  set(GFLAGS_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/gflags/install/win/include)
-ELSEIF(WIN32 AND MINGW)
-  set(GFLAGS_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/gflags/install/mingw/include)
-ELSEIF(APPLE)
-  set(GFLAGS_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/gflags/install/mac/include)
-ELSE()
-  set(GFLAGS_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/gflags/install/linux/include)
-ENDIF()
+set(GFLAGS_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/gflags/install/${PLATFORM_STRING}/include)
 
 ##########################
 # Configuring for Ceres-Solver
