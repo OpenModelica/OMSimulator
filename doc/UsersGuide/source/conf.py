@@ -278,6 +278,7 @@ texinfo_documents = [
 
 OMSimulatorLib = ""
 OMSimulatorLua = ""
+OMSimulatorPython = ""
 OMSysIdentLua = ""
 
 for filename in os.listdir('api'):
@@ -298,6 +299,12 @@ for filename in os.listdir('api'):
     OMSimulatorLua = OMSimulatorLua + ".. include:: api/" + filename + "\n  :start-after: #LUA#\n  :end-before: #END#\n\n"
     OMSimulatorLua = OMSimulatorLua + ".. include:: api/" + filename + "\n  :start-after: #DESCRIPTION#\n  :end-before: #END#\n\n"
 
+    OMSimulatorPython = OMSimulatorPython + ".. " + filename + "\n\n"
+    OMSimulatorPython = OMSimulatorPython + ".. include:: api/" + filename + "\n  :start-after: #CAPTION#\n  :end-before: #END#\n\n"
+    OMSimulatorPython = OMSimulatorPython + ".. include:: api/" + filename + "\n  :start-after: #PYTHON#\n  :end-before: #END#\n\n"
+    OMSimulatorPython = OMSimulatorPython + ".. include:: api/" + filename + "\n  :start-after: #DESCRIPTION#\n  :end-before: #END#\n\n"
+
 open("OMSimulatorLib.inc", "w").write("%s" % OMSimulatorLib)
 open("OMSimulatorLua.inc", "w").write("%s" % OMSimulatorLua)
+open("OMSimulatorPython.inc", "w").write("%s" % OMSimulatorPython)
 open("OMSysIdentLua.inc", "w").write("%s" % OMSysIdentLua)

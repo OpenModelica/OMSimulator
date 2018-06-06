@@ -2,25 +2,28 @@
 getCurrentTime
 --------------
 
-This function returns the current simulation time value.
+Get current simulation time.
 #END#
 
 #LUA#
 .. code-block:: lua
 
-  getCurrentTime(model)
+  time, status = oms2_getCurrentTime(model)
 
-.. csv-table::
-  :header: "Input", "Type", "Description"
-  :widths: 15, 10, 40
+#END#
 
-  "model", "Object", "Opaque pointer to composite model."
+#PYTHON#
+.. code-block:: python
+
+  # not yet available
+
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_t oms_getCurrentTime(const void* model, double* time);
+  oms_status_enu_t oms2_getCurrentTime(const char* model, double* time);
+
 #END#
 
 #DESCRIPTION#

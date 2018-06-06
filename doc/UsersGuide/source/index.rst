@@ -13,6 +13,7 @@ OMSimulator's documentation
   OMSimulator
   OMSimulatorLib
   OMSimulatorLua
+  OMSimulatorPython
   OMSysIdent
 
 

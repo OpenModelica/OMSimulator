@@ -2,25 +2,28 @@
 terminate
 ---------
 
-This function terminates a simulation and resets all FMU instances.
+Terminates a composite model (works for both FMI and TLM).
 #END#
 
 #LUA#
 .. code-block:: lua
 
-  terminate(model)
+  status = oms2_terminate(ident)
 
-.. csv-table::
-  :header: "Input", "Type", "Description"
-  :widths: 15, 10, 40
+#END#
 
-  "model", "Object", "Opaque pointer to composite model."
+#PYTHON#
+.. code-block:: python
+
+  # not yet available
+
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_t oms_terminate(void* model);
+  oms_status_enu_t oms2_terminate(const char* ident);
+
 #END#
 
 #DESCRIPTION#

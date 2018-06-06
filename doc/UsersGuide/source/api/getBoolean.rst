@@ -2,26 +2,28 @@
 getBoolean
 ----------
 
-This function returns a the value of an Boolean variable.
+Get boolean value of given signal.
 #END#
 
 #LUA#
 .. code-block:: lua
 
-  getBoolean(model, var)
+  value, status = oms2_getBoolean(signal)
 
-.. csv-table::
-  :header: "Input", "Type", "Description"
-  :widths: 15, 10, 40
+#END#
 
-  "model", "Object", "Opaque pointer to composite model."
-  "var", "String", "Name of a variable."
+#PYTHON#
+.. code-block:: python
+
+  # not yet available
+
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  double oms_getBoolean(void* model, const char* var);
+  oms_status_enu_t oms2_getBoolean(const char* signal, bool* value);
+
 #END#
 
 #DESCRIPTION#

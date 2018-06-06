@@ -2,20 +2,29 @@
 getVersion
 ----------
 
-This function returns a version string.
+Returns the library's version string.
 #END#
 
 #LUA#
 .. code-block:: lua
 
-  getVersion()
+  version = oms2_getVersion()
+
+#END#
+
+#PYTHON#
+.. code-block:: python
+
+  session = OMSimulator()
+  session.getVersion()
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  const char* oms_getVersion();
+  const char* oms2_getVersion();
+
 #END#
 
 #DESCRIPTION#

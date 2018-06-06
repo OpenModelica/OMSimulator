@@ -2,26 +2,28 @@
 doSteps
 -------
 
-This function executes a given number of communication steps.
+Simulates a composite model for a given number of steps (works for both FMI and TLM).
 #END#
 
 #LUA#
 .. code-block:: lua
 
-  doSteps(model, numberOfSteps);
+  status = oms2_doSteps(ident, numberOfSteps)
 
-.. csv-table::
-  :header: "Input", "Type", "Description"
-  :widths: 15, 10, 40
+#END#
 
-  "model", "Object", "Opaque pointer to composite model."
-  "numberOfSteps", "Number", "Number of communication steps that should be executed."
+#PYTHON#
+.. code-block:: python
+
+  # not yet available
+
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_t oms_doSteps(const void* model, const int numberOfSteps);
+  oms_status_enu_t oms2_doSteps(const char* ident, const int numberOfSteps);
+
 #END#
 
 #DESCRIPTION#

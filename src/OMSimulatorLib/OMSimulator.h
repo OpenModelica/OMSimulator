@@ -53,7 +53,7 @@ extern "C"
 const char* oms2_getVersion();
 
 /**
- * \brief Compares simulation results.
+ * \brief Compares a given signal of two result files within absolute and relative tolerances.
  */
 int oms2_compareSimulationResults(const char* filenameA, const char* filenameB, const char* var, double relTol, double absTol);
 
@@ -310,7 +310,7 @@ void oms2_setLoggingCallback(void (*cb)(oms_message_type_enu_t type, const char*
 void oms2_setLoggingLevel(int logLevel);
 
 /**
- * \brief Describes model by printing structure to cout.
+ * \brief Prints a summary of the given composite model to stdout.
  *
  * \param cref   [in] Full identifier of a component.
  * \return       Error status
@@ -318,7 +318,7 @@ void oms2_setLoggingLevel(int logLevel);
 oms_status_enu_t oms2_describe(const char* cref);
 
 /**
- * \brief Adds an external model to a TLM composite model
+ * \brief Adds an external model to a TLM composite model.
  *
  * \param cref          [in] Identifier of parent TLM composite model.
  * \param name          [in] Identifier of external model
@@ -329,7 +329,7 @@ oms_status_enu_t oms2_describe(const char* cref);
 oms_status_enu_t oms2_addExternalModel(const char* cref, const char* name, const char* modelfile, const char* startscript);
 
 /**
- * \brief Adds an external model to a TLM composite model
+ * \brief Adds an FMI composite model to a TLM composite model.
  *
  * \param cref     [in] Identifier of parent TLM composite model.
  * \param subref   [in] Identifier of sub FMI composite model.

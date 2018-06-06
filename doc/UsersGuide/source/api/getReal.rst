@@ -2,26 +2,28 @@
 getReal
 -------
 
-This function returns a the value of a real variable.
+Get real value.
 #END#
 
 #LUA#
 .. code-block:: lua
 
-  getReal(model, var)
+  value, status = oms2_getReal(signal)
 
-.. csv-table::
-  :header: "Input", "Type", "Description"
-  :widths: 15, 10, 40
+#END#
 
-  "model", "Object", "Opaque pointer to composite model."
-  "var", "String", "Name of a variable."
+#PYTHON#
+.. code-block:: python
+
+  # not yet available
+
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  double oms_getReal(void* model, const char* var);
+  oms_status_enu_t oms2_getReal(const char* signal, double* value);
+
 #END#
 
 #DESCRIPTION#
