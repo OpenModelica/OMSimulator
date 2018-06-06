@@ -2,35 +2,30 @@
 addConnection
 -------------
 
-This function adds a new connection to a composite model.
+Adds a new connection to a given parent component.
 #END#
 
 #LUA#
 .. code-block:: lua
 
-  -- model [ref] Opaque pointer to composite model.
-  -- from  [in]  Name of an output variable.
-  -- to    [in]  Name of an input variable.
-  addConnection(model, from, to)
+  status = oms2_addConnection(cref, conA, conB)
 
-.. csv-table::
-  :header: "Input", "Type", "Description"
-  :widths: 15, 10, 40
+#END#
 
-  "model", "Object", "Opaque pointer to composite model."
-  "from", "String", "Name of an output variable."
-  "to", "String", "Name of an input variable."
+#PYTHON#
+.. code-block:: python
+
+  # not yet available
+
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  // model [ref] Opaque pointer to composite model.
-  // from  [in]  Name of an output variable.
-  // to    [in]  Name of an input variable.
-  void oms_addConnection(void* model, const char* from, const char* to);
+  oms_status_enu_t oms2_addConnection(const char* cref, const char* conA, const char* conB);
+
 #END#
 
 #DESCRIPTION#
-The two arguments `from` and `to` get swapped if necessary.
+The two arguments `from` and `to` get swapped automatically if necessary.
 #END#

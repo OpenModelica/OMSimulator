@@ -8,21 +8,22 @@ This command prints a summary of the given composite model to stdout.
 #LUA#
 .. code-block:: lua
 
-  -- model: Opaque pointer to composite model
-  describe(model)
+  status = oms2_describe(cref)
 
-.. csv-table::
-  :header: "Input", "Type", "Description"
-  :widths: 15, 10, 40
+#END#
 
-  "model", "String", "Opaque pointer to composite model."
+#PYTHON#
+.. code-block:: python
+
+  # not yet available
+
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  // model [in] Opaque pointer to composite model.
-  void oms_describe(void* model);
+  oms_status_enu_t oms2_describe(const char* cref);
+
 #END#
 
 #DESCRIPTION#

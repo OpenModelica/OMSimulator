@@ -2,19 +2,32 @@
 reset
 -----
 
+Reset the composite model after a simulation run.
+
+Implemented for FMI (no TLM support).
+
 The FMUs go into the same state as after instantiation.
 #END#
 
 #LUA#
 .. code-block:: lua
 
-  reset()
+  status = oms2_reset(ident)
+
+#END#
+
+#PYTHON#
+.. code-block:: python
+
+  # not yet available
+
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_t oms_reset(void* model);
+  oms_status_enu_t oms2_reset(const char* ident);
+
 #END#
 
 #DESCRIPTION#

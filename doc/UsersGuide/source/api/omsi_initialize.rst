@@ -21,10 +21,8 @@ This function initializes a given composite model. After this call, the model is
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t omsi_initialize(void* simodel, size_t nSeries,
-    const double* time, size_t nTime,
-    char const* const* inputvars, size_t nInputvars,
-    char const* const* measurementvars, size_t nMeasurementvars);
+  oms_status_enu_t omsi_initialize(void* simodel, size_t nSeries, const double* time, size_t nTime, char const* const* inputvars, size_t nInputvars, char const* const* measurementvars, size_t nMeasurementvars);
+
 #END#
 
 #DESCRIPTION#

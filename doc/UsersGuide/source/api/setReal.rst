@@ -2,27 +2,28 @@
 setReal
 -------
 
-Set parameter and input values of type real.
+Set real value of given signal.
 #END#
 
 #LUA#
 .. code-block:: lua
 
-  setReal(model, var, value)
+  status = oms2_setReal(signal, value)
 
-.. csv-table::
-  :header: "Input", "Type", "Description"
-  :widths: 15, 10, 40
+#END#
 
-  "model", "Object", "Opaque pointer to composite model."
-  "var", "String", ""
-  "value", "Number", ""
+#PYTHON#
+.. code-block:: python
+
+  # not yet available
+
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  void oms_setReal(void* model, const char* var, double value);
+  oms_status_enu_t oms2_setReal(const char* signal, double value);
+
 #END#
 
 #DESCRIPTION#

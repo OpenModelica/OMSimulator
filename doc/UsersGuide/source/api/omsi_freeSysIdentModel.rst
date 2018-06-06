@@ -10,12 +10,14 @@ Unloads a model.
 
   -- simodel [inout] SysIdent model as opaque pointer.
   omsi_freeSysIdentModel(simodel)
+
 #END#
 
 #CAPI#
 .. code-block:: c
 
   void omsi_freeSysIdentModel(void* simodel);
+
 #END#
 
 #DESCRIPTION#

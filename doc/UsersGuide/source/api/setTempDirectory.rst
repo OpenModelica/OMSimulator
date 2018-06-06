@@ -2,25 +2,28 @@
 setTempDirectory
 ----------------
 
-This function defines the temp directory that is used for temporary files, e.g. extracted FMUs.
+Set new temp directory.
 #END#
 
 #LUA#
 .. code-block:: lua
 
-  setTempDirectory(filename)
+  status = oms2_setTempDirectory(path)
 
-.. csv-table::
-  :header: "Input", "Type", "Description"
-  :widths: 15, 10, 40
+#END#
 
-  "filename", "String", ""
+#PYTHON#
+.. code-block:: python
+
+  # not yet available
+
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_t oms_setTempDirectory(const char* filename);
+  oms_status_enu_t oms2_setTempDirectory(const char* path);
+
 #END#
 
 #DESCRIPTION#

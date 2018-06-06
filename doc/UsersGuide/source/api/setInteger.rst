@@ -2,27 +2,28 @@
 setInteger
 ----------
 
-Set parameter and input values of type integer.
+Set integer value of given signal.
 #END#
 
 #LUA#
 .. code-block:: lua
 
-  setInteger(model, var, value)
+  status = oms2_setInteger(signal, value)
 
-.. csv-table::
-  :header: "Input", "Type", "Description"
-  :widths: 15, 10, 40
+#END#
 
-  "model", "Object", "Opaque pointer to composite model."
-  "var", "String", ""
-  "value", "Number", ""
+#PYTHON#
+.. code-block:: python
+
+  # not yet available
+
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  void oms_setInteger(void* model, const char* var, int value);
+  oms_status_enu_t oms2_setInteger(const char* signal, int value);
+
 #END#
 
 #DESCRIPTION#

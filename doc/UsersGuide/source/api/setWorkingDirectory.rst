@@ -2,25 +2,28 @@
 setWorkingDirectory
 -------------------
 
-This function defines the working directory, which is the root of all relative paths used later on.
+Set a new working directory.
 #END#
 
 #LUA#
 .. code-block:: lua
 
-  setWorkingDirectory(path);
+  status = oms2_setWorkingDirectory(path)
 
-.. csv-table::
-  :header: "Input", "Type", "Description"
-  :widths: 15, 10, 40
+#END#
 
-  "path", "String", "Path to the new working directory. This can either be a absolut or relative path."
+#PYTHON#
+.. code-block:: python
+
+  # not yet available
+
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  void oms_setWorkingDirectory(const char* path);
+  oms_status_enu_t oms2_setWorkingDirectory(const char* path);
+
 #END#
 
 #DESCRIPTION#

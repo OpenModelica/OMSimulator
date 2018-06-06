@@ -2,21 +2,28 @@
 loadModel
 ---------
 
-This function loads an composite model from a given xml file.
+Loads a FMI composite model from xml representation.
 #END#
 
 #LUA#
 .. code-block:: lua
 
-  -- filename [in]  Path to xml file.
-  -- model    [out] Opaque pointer to composite model.
-  model = loadModel(filename)
+  ident, status = oms2_loadModel(filename)
+
+#END#
+
+#PYTHON#
+.. code-block:: python
+
+  # not yet available
+
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  void* oms_loadModel(const char* filename);
+  oms_status_enu_t oms2_loadModel(const char* filename, char** ident);
+
 #END#
 
 #DESCRIPTION#

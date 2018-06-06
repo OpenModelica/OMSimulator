@@ -2,26 +2,28 @@
 stepUntil
 ---------
 
-This function performs the simulation from the current time value to a given time value.
+Simulates a composite model until a given time value (works for both FMI and TLM).
 #END#
 
 #LUA#
 .. code-block:: lua
 
-  stepUntil(model, timeValue)
+  status = oms2_stepUntil(ident, timeValue)
 
-.. csv-table::
-  :header: "Input", "Type", "Description"
-  :widths: 15, 10, 40
+#END#
 
-  "model", "Object", "Opaque pointer to composite model."
-  "timeValue", "String", ""
+#PYTHON#
+.. code-block:: python
+
+  # not yet available
+
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_t oms_stepUntil(const void* model, const double timeValue);
+  oms_status_enu_t oms2_stepUntil(const char* ident, const double timeValue);
+
 #END#
 
 #DESCRIPTION#

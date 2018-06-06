@@ -2,27 +2,31 @@
 setLogFile
 ----------
 
-This function sets the log file name.
+Redirects logging output to file or std streams. The warning/error counters are reset.
+
+filename="" to redirect to std streams and proper filename to redirect to file.
 #END#
 
 #LUA#
 .. code-block:: lua
 
-  setLogFile(filename)
+  status = oms2_setLogFile(filename)
 
-.. csv-table::
-  :header: "Input", "Type", "Description"
-  :widths: 15, 10, 40
+#END#
 
-  "filename", "String", ""
+#PYTHON#
+.. code-block:: python
+
+  # not yet available
+
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_t oms_setLogFile(const char* filename);
+  oms_status_enu_t oms2_setLogFile(const char* filename);
+
 #END#
 
 #DESCRIPTION#
-If the filename is an empty string, then the logging information is dumped to stdout.
 #END#

@@ -13,12 +13,14 @@ Set Ceres solver option `Solver::Options::max_num_iterations`.
   --                         should run (default: 25).
   -- status             [out] Error status.
   status = omsi_setOptions_max_num_iterations(simodel, max_num_iterations)
+
 #END#
 
 #CAPI#
 .. code-block:: c
 
   oms_status_enu_t omsi_setOptions_max_num_iterations(void* simodel, size_t max_num_iterations);
+
 #END#
 
 #DESCRIPTION#

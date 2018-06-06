@@ -2,25 +2,28 @@
 simulate
 --------
 
-This function performs the simulation from the current time value to the defined stop time.
+Simulates a composite model (works for both FMI and TLM).
 #END#
 
 #LUA#
 .. code-block:: lua
 
-  simulate(model)
+  status = oms2_simulate(ident)
 
-.. csv-table::
-  :header: "Input", "Type", "Description"
-  :widths: 15, 10, 40
+#END#
 
-  "model", "Object", "Opaque pointer to composite model."
+#PYTHON#
+.. code-block:: python
+
+  # not yet available
+
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_t oms_simulate(void* model);
+  oms_status_enu_t oms2_simulate(const char* ident);
+
 #END#
 
 #DESCRIPTION#
