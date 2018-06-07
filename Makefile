@@ -50,7 +50,7 @@ else
 	FEXT=.so
 endif
 
-.PHONY: OMSimulator OMSimulatorCore config-OMSimulator config-fmil config-lua config-cvode config-kinsol config-gflags config-glog config-ceres-solver config-3rdParty distclean testsuite doc doc-html doc-doxygen OMTLMSimulator
+.PHONY: OMSimulator OMSimulatorCore config-OMSimulator config-fmil config-lua config-cvode config-kinsol config-gflags config-glog config-ceres-solver config-3rdParty distclean testsuite doc doc-html doc-doxygen OMTLMSimulator OMTLMSimulatorClean
 
 OMSimulator:
 	@echo
@@ -88,6 +88,11 @@ OMTLMSimulatorStandalone: config-fmil
 	@echo $(ABI)
 	@$(MAKE) -C OMTLMSimulator install
 
+OMTLMSimulatorClean:
+	@echo
+	@echo "# clean OMTLMSimulator"
+	@echo
+	@$(MAKE) -C OMTLMSimulator clean
 
 config-3rdParty: config-fmil config-lua config-cvode config-kinsol config-gflags config-glog config-ceres-solver config-libxml2
 
@@ -186,6 +191,7 @@ distclean:
 	@echo
 	@echo "# make distclean"
 	@echo
+	@$(MAKE) OMTLMSimulatorClean
 	$(RM) $(BUILD_DIR)
 	$(RM) $(INSTALL_DIR)
 	$(RM) 3rdParty/FMIL/$(BUILD_DIR)
