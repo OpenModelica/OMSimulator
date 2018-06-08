@@ -11,6 +11,8 @@ LIBXML2 ?= ON
 OMSYSIDENT ?= ON
 # Option to enable AddressSanitizer
 ASAN ?= OFF
+# Option to switch between Debug and Release builds
+BUILD_TYPE ?= Release
 
 detected_OS := $(shell uname -s)
 ifeq ($(detected_OS),Darwin)
@@ -102,7 +104,7 @@ config-OMSimulator:
 	@echo
 	$(RM) $(BUILD_DIR)
 	$(MKDIR) $(BUILD_DIR)
-	cd $(BUILD_DIR) && cmake $(CMAKE_TARGET) ../.. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DOMSYSIDENT:BOOL=$(OMSYSIDENT) -DASAN:BOOL=$(ASAN)
+	cd $(BUILD_DIR) && cmake $(CMAKE_TARGET) ../.. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DOMSYSIDENT:BOOL=$(OMSYSIDENT) -DASAN:BOOL=$(ASAN) -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
 
 config-fmil:
 	@echo
