@@ -931,6 +931,25 @@ static int OMSimulatorLua_oms2_setTLMLoggingLevel(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms2_setTLMDataSamples(const char *cref, int samples)
+static int OMSimulatorLua_oms2_setTLMDataSamples(lua_State *L)
+{
+  /// \todo Cleanup this mess
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 arguments");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TNUMBER);
+
+  const char *cref =  lua_tostring(L, 1);
+  int samples =        lua_tointeger(L, 2);
+
+  oms_status_enu_t status = oms2_setTLMDataSamples(cref, samples);
+
+  lua_pushinteger(L, status);
+  return 1;
+}
+
+
 //oms_status_enu_t oms2_addTLMConnection(const char *cref, const char *from, const char *to, double delay, double alpha, double Zf, double Zfr)
 static int OMSimulatorLua_oms2_addTLMConnection(lua_State *L)
 {
@@ -1296,6 +1315,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms2_setTLMInitialValues);
   REGISTER_LUA_CALL(oms2_setTLMPositionAndOrientation);
   REGISTER_LUA_CALL(oms2_setTLMLoggingLevel);
+  REGISTER_LUA_CALL(oms2_setTLMDataSamples);
   REGISTER_LUA_CALL(oms2_compareSimulationResults);
   REGISTER_LUA_CALL(oms2_deleteConnection);
   REGISTER_LUA_CALL(oms2_deleteSubModel);
