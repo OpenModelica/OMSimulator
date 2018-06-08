@@ -495,3 +495,9 @@ oms_status_enu_t oms2_setTLMLoggingLevel(const char *cref, const int level)
   logTrace();
   return oms2::Scope::GetInstance().setTLMLoggingLevel(oms2::ComRef(cref), level);
 }
+
+oms_status_enu_t oms2_setTLMDataSamples(const char *cref, const int samples)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().setTLMDataSamples(oms2::ComRef(cref), samples);
+}
