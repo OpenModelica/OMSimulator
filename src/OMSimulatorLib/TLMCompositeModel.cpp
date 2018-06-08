@@ -52,7 +52,7 @@ oms2::TLMCompositeModel::TLMCompositeModel(const ComRef& name)
 {
   logTrace();
   model = omtlm_newModel(name.c_str());
-  omtlm_setLogLevel(model, 1);  /// \todo Make debug log level selectable by user
+  omtlm_setLogLevel(model, 1);
 }
 
 oms2::TLMCompositeModel::~TLMCompositeModel()
@@ -316,6 +316,11 @@ oms_status_enu_t oms2::TLMCompositeModel::setTLMInitialValues(const SignalRef& i
   }
   logError("In TLMCompositeModel::setTLMInitialValues(): FMI submodel \""+ifc.getCref().toString()+"\" not found.");
   return oms_status_error;
+}
+
+void oms2::TLMCompositeModel::setLoggingLevel(int level)
+{
+  omtlm_setLogLevel(model, level);
 }
 
 oms_status_enu_t oms2::TLMCompositeModel::describe()

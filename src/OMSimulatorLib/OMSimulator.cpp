@@ -489,3 +489,9 @@ oms_status_enu_t oms2_getCurrentTime(const char* model, double* time)
   return oms2::Scope::GetInstance().getCurrentTime(oms2::ComRef(model), time);
 
 }
+
+oms_status_enu_t oms2_setTLMLoggingLevel(const char *cref, const int level)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().setTLMLoggingLevel(oms2::ComRef(cref), level);
+}
