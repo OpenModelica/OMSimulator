@@ -889,19 +889,19 @@ oms_status_enu_t oms2::FMICompositeModel::stepUntil(ResultWriter& resultWriter, 
   switch (masterAlgorithm)
   {
     case MasterAlgorithm::STANDARD :
-      logInfo("oms2::FMICompositeModel::stepUntil: Using master algorithm 'standard'");
+      logDebug("oms2::FMICompositeModel::stepUntil: Using master algorithm 'standard'");
       return stepUntilStandard(resultWriter, stopTime, communicationInterval, realtime_sync);
     case MasterAlgorithm::PCTPL :
-      logInfo("oms2::FMICompositeModel::stepUntil: Using master algorithm 'pctpl'");
+      logDebug("oms2::FMICompositeModel::stepUntil: Using master algorithm 'pctpl'");
       return stepUntilPCTPL(resultWriter, stopTime, communicationInterval, realtime_sync);
     case MasterAlgorithm::PMRCHANNELA :
-      logInfo("oms2::FMICompositeModel::stepUntil: Using master algorithm 'pmrchannela'");
+      logDebug("oms2::FMICompositeModel::stepUntil: Using master algorithm 'pmrchannela'");
       return oms2::stepUntilPMRChannel<oms2::PMRChannelA>(resultWriter, stopTime, communicationInterval, this->getName().toString(), outputsGraph, subModels, realtime_sync);
     case MasterAlgorithm::PMRCHANNELCV :
-      logInfo("oms2::FMICompositeModel::stepUntil: Using master algorithm 'pmrchannelcv'");
+      logDebug("oms2::FMICompositeModel::stepUntil: Using master algorithm 'pmrchannelcv'");
       return oms2::stepUntilPMRChannel<oms2::PMRChannelCV>(resultWriter, stopTime, communicationInterval, this->getName().toString(), outputsGraph, subModels, realtime_sync);
     case MasterAlgorithm::PMRCHANNELM :
-      logInfo("oms2::FMICompositeModel::stepUntil: Using master algorithm 'pmrchannelm'");
+      logDebug("oms2::FMICompositeModel::stepUntil: Using master algorithm 'pmrchannelm'");
       return oms2::stepUntilPMRChannel<oms2::PMRChannelM>(resultWriter, stopTime, communicationInterval, this->getName().toString(), outputsGraph, subModels, realtime_sync);
     default :
       logError("oms2::FMICompositeModel::stepUntil: Internal error: Request for using unknown master algorithm.");
