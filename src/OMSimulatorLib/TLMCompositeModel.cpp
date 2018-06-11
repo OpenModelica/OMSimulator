@@ -52,7 +52,8 @@ oms2::TLMCompositeModel::TLMCompositeModel(const ComRef& name)
 {
   logTrace();
   model = omtlm_newModel(name.c_str());
-  omtlm_setLogLevel(model, 1);  /// \todo Make debug log level selectable by user
+  omtlm_setLogLevel(model, 1);
+  omtlm_setNumLogStep(model, 1000);
 }
 
 oms2::TLMCompositeModel::~TLMCompositeModel()
@@ -318,6 +319,16 @@ oms_status_enu_t oms2::TLMCompositeModel::setTLMInitialValues(const SignalRef& i
   return oms_status_error;
 }
 
+void oms2::TLMCompositeModel::setLoggingLevel(int level)
+{
+  omtlm_setLogLevel(model, level);
+}
+
+void oms2::TLMCompositeModel::setDataSamples(int samples)
+{
+  omtlm_setNumLogStep(model, samples);
+}
+
 oms_status_enu_t oms2::TLMCompositeModel::describe()
 {
   omtlm_printModelStructure(model);
@@ -361,7 +372,6 @@ oms_status_enu_t oms2::TLMCompositeModel::initialize(double startTime, double to
 {
   Model* pModel = oms2::Scope::GetInstance().getModel(getName());
   omtlm_setStartTime(model, startTime);
-  omtlm_setNumLogStep(model, 1000); //Hard-coded for now
 
   //Initialize sub-models
   for(auto it = fmiModels.begin(); it!=fmiModels.end(); ++it) {

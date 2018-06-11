@@ -1433,6 +1433,36 @@ oms_status_enu_t oms2::Scope::setTLMInitialValues(const oms2::ComRef &cref, cons
   return model->setTLMInitialValues(ifc, values);
 }
 
+oms_status_enu_t oms2::Scope::setTLMLoggingLevel(const oms2::ComRef &cref, int level)
+{
+  oms2::Model* model = getModel(cref);
+  if (!model) {
+    logError("In Scope::setTLMLoggingLevel(): Model \""+cref.toString()+"\" not found.");
+    return oms_status_error;
+  }
+  if(model->getType() != oms_component_tlm) {
+    logError("In Scope::setTLMLoggingLevel(): Not a TLM model.");
+    return oms_status_error;
+  }
+  model->getTLMCompositeModel()->setLoggingLevel(level);
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms2::Scope::setTLMDataSamples(const oms2::ComRef &cref, int samples)
+{
+  oms2::Model* model = getModel(cref);
+  if (!model) {
+    logError("In Scope::setTLMDataSamples(): Model \""+cref.toString()+"\" not found.");
+    return oms_status_error;
+  }
+  if(model->getType() != oms_component_tlm) {
+    logError("In Scope::setTLMDataSamples(): Not a TLM model.");
+    return oms_status_error;
+  }
+  model->getTLMCompositeModel()->setDataSamples(samples);
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms2::Scope::describeModel(const oms2::ComRef &cref)
 {
   oms2::Model* model = getModel(cref);

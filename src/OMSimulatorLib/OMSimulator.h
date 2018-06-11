@@ -400,6 +400,25 @@ oms_status_enu_t oms2_setTLMPositionAndOrientation(const char *cref, const char 
  */
 oms_status_enu_t oms2_addTLMConnection(const char* cref, const char* from, const char* to, double delay, double alpha, double Zf, double Zfr);
 
+
+/**
+ * \brief Specifies logging level for OMTLMSimulator
+ *
+ * \param cref    [in] Identifier of TLM composite model.
+ * \param levle   [in] Logging level (0=disabled,1=fatal,2=warning,3=info,4=debug)
+ * \return        Error status
+ */
+oms_status_enu_t oms2_setTLMLoggingLevel(const char* cref, const int level);
+
+/**
+ * \brief Specifies number of data samples for OMTLMSimulator result files
+ *
+ * \param cref    [in] Identifier of TLM composite model.
+ * \param levle   [in] Number of samples
+ * \return        Error status
+ */
+oms_status_enu_t oms2_setTLMDataSamples(const char* cref, const int samples);
+
 /**
  * \brief Redirects logging output to file or std streams. The warning/error counters are reset.
  *
