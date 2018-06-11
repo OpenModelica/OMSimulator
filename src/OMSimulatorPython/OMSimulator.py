@@ -92,6 +92,9 @@ class OMSimulator:
     self.obj.oms2_setCommunicationInterval.argtypes = [ctypes.c_char_p, ctypes.c_double]
     self.obj.oms2_setCommunicationInterval.restype = ctypes.c_int
 
+    self.obj.oms2_setLoggingInterval.argtypes = [ctypes.c_char_p, ctypes.c_double]
+    self.obj.oms2_setLoggingInterval.restype = ctypes.c_int
+
     self.obj.oms2_setInteger.argtypes = [ctypes.c_char_p, ctypes.c_int]
     self.obj.oms2_setInteger.restype = ctypes.c_int
 
@@ -220,6 +223,8 @@ class OMSimulator:
     return self.obj.oms2_setBooleanParameter(str.encode(signal), value)
   def setCommunicationInterval(self, cref, communicationInterval):
     return self.obj.oms2_setCommunicationInterval(str.encode(cref), communicationInterval)
+  def setLoggingInterval(self, cref, loggingInterval):
+    return self.obj.oms2_setLoggingInterval(str.encode(cref), loggingInterval)
   def setInteger(self, signal, value):
     return self.obj.oms2_setInteger(str.encode(signal), value)
   def setIntegerParameter(self, signal, value):
