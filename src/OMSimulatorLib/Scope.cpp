@@ -1560,6 +1560,23 @@ oms_status_enu_t oms2::Scope::setCommunicationInterval(const ComRef& cref, doubl
   return oms_status_error;
 }
 
+oms_status_enu_t oms2::Scope::setLoggingInterval(const ComRef& cref, double loggingInterval)
+{
+  if (cref.isIdent())
+  {
+    // Model
+    Model* model = getModel(cref);
+    if (!model)
+    {
+      logError("[oms2::Scope::setLoggingInterval] failed");
+      return oms_status_error;
+    }
+    model->setLoggingInterval(loggingInterval);
+    return oms_status_ok;
+  }
+  return oms_status_error;
+}
+
 oms_status_enu_t oms2::Scope::setResultFile(const ComRef& cref, const std::string& filename)
 {
   if (cref.isIdent())
