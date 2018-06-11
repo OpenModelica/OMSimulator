@@ -447,6 +447,12 @@ oms_status_enu_t oms2_setCommunicationInterval(const char* cref, double communic
   return oms2::Scope::GetInstance().setCommunicationInterval(oms2::ComRef(cref), communicationInterval);
 }
 
+oms_status_enu_t oms2_setLoggingInterval(const char* cref, double loggingInterval)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().setLoggingInterval(oms2::ComRef(cref), loggingInterval);
+}
+
 oms_status_enu_t oms2_setResultFile(const char* cref, const char* filename)
 {
   logTrace();

@@ -392,6 +392,21 @@ static int OMSimulatorLua_oms2_setCommunicationInterval(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms2_setLoggingInterval(const char* cref, double loggingInterval);
+static int OMSimulatorLua_oms2_setLoggingInterval(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TNUMBER);
+
+  const char* cref = lua_tostring(L, 1);
+  double loggingInterval = lua_tonumber(L, 2);
+  oms_status_enu_t status = oms2_setLoggingInterval(cref, loggingInterval);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
 //oms_status_enu_t oms2_setResultFile(const char* cref, const char* filename);
 static int OMSimulatorLua_oms2_setResultFile(lua_State *L)
 {
@@ -1312,17 +1327,21 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms2_addTable);
   REGISTER_LUA_CALL(oms2_addTLMConnection);
   REGISTER_LUA_CALL(oms2_addTLMInterface);
-  REGISTER_LUA_CALL(oms2_setTLMInitialValues);
-  REGISTER_LUA_CALL(oms2_setTLMPositionAndOrientation);
-  REGISTER_LUA_CALL(oms2_setTLMLoggingLevel);
-  REGISTER_LUA_CALL(oms2_setTLMDataSamples);
   REGISTER_LUA_CALL(oms2_compareSimulationResults);
   REGISTER_LUA_CALL(oms2_deleteConnection);
   REGISTER_LUA_CALL(oms2_deleteSubModel);
   REGISTER_LUA_CALL(oms2_exportCompositeStructure);
   REGISTER_LUA_CALL(oms2_exportDependencyGraphs);
+  REGISTER_LUA_CALL(oms2_getBoolean);
+  REGISTER_LUA_CALL(oms2_getBooleanParameter);
   REGISTER_LUA_CALL(oms2_getCurrentTime);
   REGISTER_LUA_CALL(oms2_getElements);
+  REGISTER_LUA_CALL(oms2_getInteger);
+  REGISTER_LUA_CALL(oms2_getIntegerParameter);
+  REGISTER_LUA_CALL(oms2_getReal);
+  REGISTER_LUA_CALL(oms2_getRealParameter);
+  REGISTER_LUA_CALL(oms2_getStartTime);
+  REGISTER_LUA_CALL(oms2_getStopTime);
   REGISTER_LUA_CALL(oms2_getVersion);
   REGISTER_LUA_CALL(oms2_initialize);
   REGISTER_LUA_CALL(oms2_loadModel);
@@ -1331,28 +1350,25 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms2_rename);
   REGISTER_LUA_CALL(oms2_reset);
   REGISTER_LUA_CALL(oms2_saveModel);
+  REGISTER_LUA_CALL(oms2_setBoolean);
+  REGISTER_LUA_CALL(oms2_setBooleanParameter);
   REGISTER_LUA_CALL(oms2_setCommunicationInterval);
+  REGISTER_LUA_CALL(oms2_setInteger);
+  REGISTER_LUA_CALL(oms2_setIntegerParameter);
   REGISTER_LUA_CALL(oms2_setLogFile);
+  REGISTER_LUA_CALL(oms2_setLoggingInterval);
   REGISTER_LUA_CALL(oms2_setLoggingLevel);
   REGISTER_LUA_CALL(oms2_setMasterAlgorithm);
-  REGISTER_LUA_CALL(oms2_getReal);
   REGISTER_LUA_CALL(oms2_setReal);
-  REGISTER_LUA_CALL(oms2_getRealParameter);
   REGISTER_LUA_CALL(oms2_setRealParameter);
-  REGISTER_LUA_CALL(oms2_getInteger);
-  REGISTER_LUA_CALL(oms2_setInteger);
-  REGISTER_LUA_CALL(oms2_getIntegerParameter);
-  REGISTER_LUA_CALL(oms2_setIntegerParameter);
-  REGISTER_LUA_CALL(oms2_getBoolean);
-  REGISTER_LUA_CALL(oms2_setBoolean);
-  REGISTER_LUA_CALL(oms2_getBooleanParameter);
-  REGISTER_LUA_CALL(oms2_setBooleanParameter);
   REGISTER_LUA_CALL(oms2_setResultFile);
-  REGISTER_LUA_CALL(oms2_getStartTime);
   REGISTER_LUA_CALL(oms2_setStartTime);
-  REGISTER_LUA_CALL(oms2_getStopTime);
   REGISTER_LUA_CALL(oms2_setStopTime);
   REGISTER_LUA_CALL(oms2_setTempDirectory);
+  REGISTER_LUA_CALL(oms2_setTLMDataSamples);
+  REGISTER_LUA_CALL(oms2_setTLMInitialValues);
+  REGISTER_LUA_CALL(oms2_setTLMLoggingLevel);
+  REGISTER_LUA_CALL(oms2_setTLMPositionAndOrientation);
   REGISTER_LUA_CALL(oms2_setTLMSocketData);
   REGISTER_LUA_CALL(oms2_setWorkingDirectory);
   REGISTER_LUA_CALL(oms2_simulate);
