@@ -95,4 +95,17 @@ protected:
   unsigned int nEmits;
 };
 
+class VoidWriter :
+  public ResultWriter
+{
+public:
+  VoidWriter(unsigned int bufferSize) :ResultWriter(bufferSize) {}
+  ~VoidWriter() {}
+
+protected:
+  bool createFile(const std::string& filename, double startTime, double stopTime) {return true;}
+  void closeFile() {}
+  void writeFile() {}
+};
+
 #endif

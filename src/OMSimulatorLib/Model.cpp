@@ -44,7 +44,7 @@
 #include <pugixml.hpp>
 
 oms2::Model::Model(const oms2::ComRef& cref)
-  : systemGeometry(), resultFilename(cref.toString() + "_res.mat")
+  : systemGeometry(), resultFilename(cref.toString() + "_res.mat"), resultFile(NULL)
 {
   logTrace();
   modelState = oms_modelState_instantiated;
@@ -246,6 +246,8 @@ oms_status_enu_t oms2::Model::initialize()
     else
       return logError("Unsupported format of the result file: " + resultFilename);
   }
+  else
+    resultFile = new VoidWriter(1);
 
   modelState = oms_modelState_initialization;
   oms_status_enu_t status = compositeModel->initialize(startTime, tolerance);
@@ -302,6 +304,8 @@ oms_status_enu_t oms2::Model::reset()
     else
       return logError("Unsupported format of the result file: " + resultFilename);
   }
+  else
+    resultFile = new VoidWriter(1);
 
   oms_status_enu_t status = compositeModel->reset();
 
