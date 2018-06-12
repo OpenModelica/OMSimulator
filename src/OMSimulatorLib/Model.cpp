@@ -236,7 +236,7 @@ oms_status_enu_t oms2::Model::initialize()
   if (!resultFilename.empty())
   {
     std::string resulttype;
-    if (resultFilename.length() > 5)
+    if (resultFilename.length() > 4)
       resulttype = resultFilename.substr(resultFilename.length() - 4);
 
     if (".csv" == resulttype)
@@ -294,7 +294,7 @@ oms_status_enu_t oms2::Model::reset()
   if (!resultFilename.empty())
   {
     std::string resulttype;
-    if (resultFilename.length() > 5)
+    if (resultFilename.length() > 4)
       resulttype = resultFilename.substr(resultFilename.length() - 4);
 
     if (".csv" == resulttype)
@@ -404,7 +404,7 @@ void oms2::Model::setResultFile(const std::string& value)
     if (!resultFilename.empty())
     {
       std::string resulttype;
-      if (resultFilename.length() > 5)
+      if (resultFilename.length() > 4)
         resulttype = resultFilename.substr(resultFilename.length() - 4);
 
       if (".csv" == resulttype)
