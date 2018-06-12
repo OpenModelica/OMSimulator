@@ -236,10 +236,13 @@ oms_status_enu_t oms2::TLMCompositeModel::addExternalModel(oms2::ExternalModel *
 
   //Copy external model file to temporary directory
   std::string modelPath = Scope::GetInstance().getTempDirectory()+"/"+externalModel->getName();
+
 #ifdef WIN32
-  std::string cmd = "if not exists \""+modelPath+"\" mkdir \""+modelPath+"\"";
+  std::string cmd = "mkdir \""+modelPath+"\" 2> NUL";
   system(cmd.c_str());
-  cmd = "copy \""+externalModel->getModelPath()+"\" \""+modelPath;
+  std::string externalModelPath = externalModel->getModelPath();
+  std::replace(externalModelPath.begin(), externalModelPath.end(), '/', '\\');
+  cmd = "copy \""+externalModelPath+"\" \""+modelPath;
   system(cmd.c_str());
 #else
   std::string cmd = "mkdir -p \""+modelPath+"\"";
