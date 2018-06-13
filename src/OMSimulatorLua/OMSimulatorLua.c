@@ -144,7 +144,7 @@ static int OMSimulatorLua_oms2_addTable(lua_State *L)
 static int OMSimulatorLua_oms2_deleteSubModel(lua_State *L)
 {
   if (lua_gettop(L) != 2)
-    return luaL_error(L, "expecting exactly 2 argument");
+    return luaL_error(L, "expecting exactly 2 arguments");
   luaL_checktype(L, 1, LUA_TSTRING);
   luaL_checktype(L, 2, LUA_TSTRING);
 
@@ -159,7 +159,7 @@ static int OMSimulatorLua_oms2_deleteSubModel(lua_State *L)
 static int OMSimulatorLua_oms2_rename(lua_State *L)
 {
   if (lua_gettop(L) != 2)
-    return luaL_error(L, "expecting exactly 2 argument");
+    return luaL_error(L, "expecting exactly 2 arguments");
   luaL_checktype(L, 1, LUA_TSTRING);
   luaL_checktype(L, 2, LUA_TSTRING);
 
@@ -195,7 +195,7 @@ static int OMSimulatorLua_oms2_loadModel(lua_State *L)
 static int OMSimulatorLua_oms2_saveModel(lua_State *L)
 {
   if (lua_gettop(L) != 2)
-    return luaL_error(L, "expecting exactly 2 argument");
+    return luaL_error(L, "expecting exactly 2 arguments");
   luaL_checktype(L, 1, LUA_TSTRING);
   luaL_checktype(L, 2, LUA_TSTRING);
 
@@ -336,7 +336,7 @@ static int OMSimulatorLua_oms2_getStartTime(lua_State *L)
 static int OMSimulatorLua_oms2_setStartTime(lua_State *L)
 {
   if (lua_gettop(L) != 2)
-    return luaL_error(L, "expecting exactly 2 argument");
+    return luaL_error(L, "expecting exactly 2 arguments");
   luaL_checktype(L, 1, LUA_TSTRING);
   luaL_checktype(L, 2, LUA_TNUMBER);
 
@@ -366,7 +366,7 @@ static int OMSimulatorLua_oms2_getStopTime(lua_State *L)
 static int OMSimulatorLua_oms2_setStopTime(lua_State *L)
 {
   if (lua_gettop(L) != 2)
-    return luaL_error(L, "expecting exactly 2 argument");
+    return luaL_error(L, "expecting exactly 2 arguments");
   luaL_checktype(L, 1, LUA_TSTRING);
   luaL_checktype(L, 2, LUA_TNUMBER);
 
@@ -381,7 +381,7 @@ static int OMSimulatorLua_oms2_setStopTime(lua_State *L)
 static int OMSimulatorLua_oms2_setCommunicationInterval(lua_State *L)
 {
   if (lua_gettop(L) != 2)
-    return luaL_error(L, "expecting exactly 2 argument");
+    return luaL_error(L, "expecting exactly 2 arguments");
   luaL_checktype(L, 1, LUA_TSTRING);
   luaL_checktype(L, 2, LUA_TNUMBER);
 
@@ -396,7 +396,7 @@ static int OMSimulatorLua_oms2_setCommunicationInterval(lua_State *L)
 static int OMSimulatorLua_oms2_setLoggingInterval(lua_State *L)
 {
   if (lua_gettop(L) != 2)
-    return luaL_error(L, "expecting exactly 2 argument");
+    return luaL_error(L, "expecting exactly 2 arguments");
   luaL_checktype(L, 1, LUA_TSTRING);
   luaL_checktype(L, 2, LUA_TNUMBER);
 
@@ -407,17 +407,24 @@ static int OMSimulatorLua_oms2_setLoggingInterval(lua_State *L)
   return 1;
 }
 
-//oms_status_enu_t oms2_setResultFile(const char* cref, const char* filename);
+//oms_status_enu_t oms2_setResultFile(const char* cref, const char* filename, unsigned int bufferSize);
 static int OMSimulatorLua_oms2_setResultFile(lua_State *L)
 {
-  if (lua_gettop(L) != 2)
-    return luaL_error(L, "expecting exactly 2 argument");
+  if (lua_gettop(L) != 2 && lua_gettop(L) != 3)
+    return luaL_error(L, "expecting exactly 2 or 3 arguments");
   luaL_checktype(L, 1, LUA_TSTRING);
   luaL_checktype(L, 2, LUA_TSTRING);
 
   const char* cref = lua_tostring(L, 1);
   const char* filename = lua_tostring(L, 2);
-  oms_status_enu_t status = oms2_setResultFile(cref, filename);
+
+  unsigned int bufferSize = 1;
+  if (lua_gettop(L) == 3)
+  {
+    luaL_checktype(L, 3, LUA_TNUMBER);
+    bufferSize = lua_tonumber(L, 3);
+  }
+  oms_status_enu_t status = oms2_setResultFile(cref, filename, bufferSize);
   lua_pushinteger(L, status);
   return 1;
 }
@@ -426,7 +433,7 @@ static int OMSimulatorLua_oms2_setResultFile(lua_State *L)
 static int OMSimulatorLua_oms2_setMasterAlgorithm(lua_State *L)
 {
   if (lua_gettop(L) != 2)
-    return luaL_error(L, "expecting exactly 2 argument");
+    return luaL_error(L, "expecting exactly 2 arguments");
   luaL_checktype(L, 1, LUA_TSTRING);
   luaL_checktype(L, 2, LUA_TSTRING);
 
@@ -441,7 +448,7 @@ static int OMSimulatorLua_oms2_setMasterAlgorithm(lua_State *L)
 static int OMSimulatorLua_experimental_setActivationRatio(lua_State *L)
 {
   if (lua_gettop(L) != 2)
-    return luaL_error(L, "expecting exactly 2 argument");
+    return luaL_error(L, "expecting exactly 2 arguments");
   luaL_checktype(L, 1, LUA_TSTRING);
   luaL_checktype(L, 2, LUA_TNUMBER);
 
@@ -469,7 +476,7 @@ static int OMSimulatorLua_experimental_simulate_realtime(lua_State *L)
 static int OMSimulatorLua_oms2_exportCompositeStructure(lua_State *L)
 {
   if (lua_gettop(L) != 2)
-    return luaL_error(L, "expecting exactly 2 argument");
+    return luaL_error(L, "expecting exactly 2 arguments");
   luaL_checktype(L, 1, LUA_TSTRING);
   luaL_checktype(L, 2, LUA_TSTRING);
 
@@ -553,7 +560,7 @@ static int OMSimulatorLua_oms2_simulate(lua_State *L)
 static int OMSimulatorLua_oms2_doSteps(lua_State *L)
 {
   if (lua_gettop(L) != 2)
-    return luaL_error(L, "expecting exactly 2 argument");
+    return luaL_error(L, "expecting exactly 2 arguments");
   luaL_checktype(L, 1, LUA_TSTRING);
   luaL_checktype(L, 2, LUA_TNUMBER);
 
@@ -568,7 +575,7 @@ static int OMSimulatorLua_oms2_doSteps(lua_State *L)
 static int OMSimulatorLua_oms2_stepUntil(lua_State *L)
 {
   if (lua_gettop(L) != 2)
-    return luaL_error(L, "expecting exactly 2 argument");
+    return luaL_error(L, "expecting exactly 2 arguments");
   luaL_checktype(L, 1, LUA_TSTRING);
   luaL_checktype(L, 2, LUA_TNUMBER);
 
@@ -599,7 +606,7 @@ static int OMSimulatorLua_oms2_getReal(lua_State *L)
 static int OMSimulatorLua_oms2_setReal(lua_State *L)
 {
   if (lua_gettop(L) != 2)
-    return luaL_error(L, "expecting exactly 2 argument");
+    return luaL_error(L, "expecting exactly 2 arguments");
   luaL_checktype(L, 1, LUA_TSTRING);
   luaL_checktype(L, 2, LUA_TNUMBER);
 
@@ -630,7 +637,7 @@ static int OMSimulatorLua_oms2_getRealParameter(lua_State *L)
 static int OMSimulatorLua_oms2_setRealParameter(lua_State *L)
 {
   if (lua_gettop(L) != 2)
-    return luaL_error(L, "expecting exactly 2 argument");
+    return luaL_error(L, "expecting exactly 2 arguments");
   luaL_checktype(L, 1, LUA_TSTRING);
   luaL_checktype(L, 2, LUA_TNUMBER);
 
@@ -661,7 +668,7 @@ static int OMSimulatorLua_oms2_getInteger(lua_State *L)
 static int OMSimulatorLua_oms2_setInteger(lua_State *L)
 {
   if (lua_gettop(L) != 2)
-    return luaL_error(L, "expecting exactly 2 argument");
+    return luaL_error(L, "expecting exactly 2 arguments");
   luaL_checktype(L, 1, LUA_TSTRING);
   luaL_checktype(L, 2, LUA_TNUMBER);
 
@@ -692,7 +699,7 @@ static int OMSimulatorLua_oms2_getIntegerParameter(lua_State *L)
 static int OMSimulatorLua_oms2_setIntegerParameter(lua_State *L)
 {
   if (lua_gettop(L) != 2)
-    return luaL_error(L, "expecting exactly 2 argument");
+    return luaL_error(L, "expecting exactly 2 arguments");
   luaL_checktype(L, 1, LUA_TSTRING);
   luaL_checktype(L, 2, LUA_TNUMBER);
 
@@ -723,7 +730,7 @@ static int OMSimulatorLua_oms2_getBoolean(lua_State *L)
 static int OMSimulatorLua_oms2_setBoolean(lua_State *L)
 {
   if (lua_gettop(L) != 2)
-    return luaL_error(L, "expecting exactly 2 argument");
+    return luaL_error(L, "expecting exactly 2 arguments");
   luaL_checktype(L, 1, LUA_TSTRING);
   luaL_checktype(L, 2, LUA_TNUMBER);
 
@@ -754,7 +761,7 @@ static int OMSimulatorLua_oms2_getBooleanParameter(lua_State *L)
 static int OMSimulatorLua_oms2_setBooleanParameter(lua_State *L)
 {
   if (lua_gettop(L) != 2)
-    return luaL_error(L, "expecting exactly 2 argument");
+    return luaL_error(L, "expecting exactly 2 arguments");
   luaL_checktype(L, 1, LUA_TSTRING);
   luaL_checktype(L, 2, LUA_TNUMBER);
 

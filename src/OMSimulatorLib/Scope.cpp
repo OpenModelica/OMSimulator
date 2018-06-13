@@ -1577,7 +1577,7 @@ oms_status_enu_t oms2::Scope::setLoggingInterval(const ComRef& cref, double logg
   return oms_status_error;
 }
 
-oms_status_enu_t oms2::Scope::setResultFile(const ComRef& cref, const std::string& filename)
+oms_status_enu_t oms2::Scope::setResultFile(const ComRef& cref, const std::string& filename, unsigned int bufferSize)
 {
   if (cref.isIdent())
   {
@@ -1588,7 +1588,7 @@ oms_status_enu_t oms2::Scope::setResultFile(const ComRef& cref, const std::strin
       logError("[oms2::Scope::setResultFile] failed");
       return oms_status_error;
     }
-    model->setResultFile(filename);
+    model->setResultFile(filename, bufferSize);
     return oms_status_ok;
   }
   return oms_status_error;
