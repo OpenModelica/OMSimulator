@@ -17,6 +17,9 @@ class OMSimulator:
     self.obj.oms2_addTable.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms2_addTable.restype = ctypes.c_int
 
+    self.obj.oms2_addVariableFilter.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms2_addVariableFilter.restype = ctypes.c_int
+
     self.obj.oms2_compareSimulationResults.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_double, ctypes.c_double]
     self.obj.oms2_compareSimulationResults.restype = ctypes.c_int
 
@@ -73,6 +76,9 @@ class OMSimulator:
 
     self.obj.oms2_newFMIModel.argtypes = [ctypes.c_char_p]
     self.obj.oms2_newFMIModel.restype = ctypes.c_int
+
+    self.obj.oms2_removeVariableFilter.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms2_removeVariableFilter.restype = ctypes.c_int
 
     self.obj.oms2_rename.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms2_rename.restype = ctypes.c_int
@@ -155,6 +161,8 @@ class OMSimulator:
     return self.obj.oms2_addFMU(str.encode(modelIdent), str.encode(fmuPath), str.encode(fmuIdent))
   def addTable(self, modelIdent, tablePath, tableIdent):
     return self.obj.oms2_addTable(str.encode(modelIdent), str.encode(tablePath), str.encode(tableIdent))
+  def addVariableFilter(self, cref, regex):
+    return self.obj.oms2_addVariableFilter(str.encode(cref), str.encode(regex))
   def compareSimulationResults(self, filenameA, filenameB, var, relTol, absTol):
     return self.obj.oms2_compareSimulationResults(str.encode(filenameA), str.encode(filenameB), str.encode(var), relTol, absTol)
   def deleteConnection(self, cref, conA, conB):
@@ -213,6 +221,8 @@ class OMSimulator:
     return self.obj.oms2_newFMIModel(str.encode(ident))
   def rename(self, identOld, identNew):
     return self.obj.oms2_rename(str.encode(identOld), str.encode(identNew))
+  def removeVariableFilter(self, cref, regex):
+    return self.obj.oms2_removeVariableFilter(str.encode(cref), str.encode(regex))
   def reset(self, ident):
     return self.obj.oms2_reset(str.encode(ident))
   def saveModel(self, filename, ident):

@@ -1764,3 +1764,53 @@ oms_status_enu_t oms2::Scope::getCurrentTime(const oms2::ComRef& cref, double* t
   }
   return oms_status_error;
 }
+
+oms_status_enu_t oms2::Scope::addVariableFilter(const ComRef& cref, const std::string& regex)
+{
+  if (cref.isIdent())
+  {
+    // Model
+    Model* model = getModel(cref);
+    if (!model)
+    {
+      logError("[oms2::Scope::addVariableFilter] failed");
+      return oms_status_error;
+    }
+
+    // FMI model?
+    if (oms_component_fmi == model->getType())
+    {
+      FMICompositeModel* fmiModel = model->getFMICompositeModel();
+      return fmiModel->addVariableFilter(regex);
+    }
+
+    logError("[oms2::Scope::addVariableFilter] is only implemented for FMI models yet");
+    return oms_status_error;
+  }
+  return oms_status_error;
+}
+
+oms_status_enu_t oms2::Scope::removeVariableFilter(const ComRef& cref, const std::string& regex)
+{
+  if (cref.isIdent())
+  {
+    // Model
+    Model* model = getModel(cref);
+    if (!model)
+    {
+      logError("[oms2::Scope::removeVariableFilter] failed");
+      return oms_status_error;
+    }
+
+    // FMI model?
+    if (oms_component_fmi == model->getType())
+    {
+      FMICompositeModel* fmiModel = model->getFMICompositeModel();
+      return fmiModel->removeVariableFilter(regex);
+    }
+
+    logError("[oms2::Scope::removeVariableFilter] is only implemented for FMI models yet");
+    return oms_status_error;
+  }
+  return oms_status_error;
+}
