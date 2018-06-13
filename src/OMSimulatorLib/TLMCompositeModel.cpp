@@ -380,7 +380,6 @@ oms_status_enu_t oms2::TLMCompositeModel::initialize(double startTime, double to
   for(auto it = fmiModels.begin(); it!=fmiModels.end(); ++it) {
     Model* pSubModel = oms2::Scope::GetInstance().getModel(it->second->getName());
     pSubModel->setStartTime(startTime);
-    pModel->setTolerance(pModel->getTolerance());
     pSubModel->initialize();
   }
 
