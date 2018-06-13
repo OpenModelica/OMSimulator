@@ -1586,7 +1586,8 @@ oms_status_enu_t oms2::FMICompositeModel::registerSignalsForResultFile(ResultWri
 oms_status_enu_t oms2::FMICompositeModel::emit(ResultWriter& resultWriter)
 {
   for (const auto& it : subModels)
-    it.second->emit(resultWriter);
+    if (oms_status_ok != it.second->emit(resultWriter))
+      return logError("Failed to log simulation results");
 
   resultWriter.emit(time);
 
