@@ -1303,6 +1303,16 @@ oms_status_enu_t oms2::FMUWrapper::emit(ResultWriter& resultWriter)
       getReal(var, value.realValue);
       resultWriter.updateSignal(ID, value);
     }
+    else if (var.isTypeInteger())
+    {
+      getInteger(var, value.intValue);
+      resultWriter.updateSignal(ID, value);
+    }
+    else if (var.isTypeBoolean())
+    {
+      getBoolean(var, value.boolValue);
+      resultWriter.updateSignal(ID, value);
+    }
   }
 
   return oms_status_ok;
