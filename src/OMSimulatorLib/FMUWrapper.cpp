@@ -38,6 +38,7 @@
 #include "Variable.h"
 #include "ssd/Tags.h"
 
+#include <cmath>
 #include <fmilib.h>
 #include <JM/jm_portability.h>
 
@@ -1103,7 +1104,13 @@ oms_status_enu_t oms2::FMUWrapper::getReal(const oms2::Variable& var, double& re
 
   fmi2_value_reference_t vr = var.getValueReference();
   if (fmi2_status_ok == fmi2_import_get_real(fmu, &vr, 1, &realValue))
+  {
+    if (std::isnan(realValue))
+      return logError("getReal returned NAN");
+    if (std::isinf(realValue))
+      return logError("getReal returned +/-inf");
     return oms_status_ok;
+  }
 
   return oms_status_error;
 }
@@ -1300,17 +1307,20 @@ oms_status_enu_t oms2::FMUWrapper::emit(ResultWriter& resultWriter)
     SignalValue_t value;
     if (var.isTypeReal())
     {
-      getReal(var, value.realValue);
+      if (oms_status_ok != getReal(var, value.realValue))
+        return logError("failed to fetch variable " + var.toString());
       resultWriter.updateSignal(ID, value);
     }
     else if (var.isTypeInteger())
     {
-      getInteger(var, value.intValue);
+      if (oms_status_ok != getInteger(var, value.intValue))
+        return logError("failed to fetch variable " + var.toString());
       resultWriter.updateSignal(ID, value);
     }
     else if (var.isTypeBoolean())
     {
-      getBoolean(var, value.boolValue);
+      if (oms_status_ok != getBoolean(var, value.boolValue))
+        return logError("failed to fetch variable " + var.toString());
       resultWriter.updateSignal(ID, value);
     }
   }
