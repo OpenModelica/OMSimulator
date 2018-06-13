@@ -36,6 +36,7 @@
 #include "DirectedGraph.h"
 #include "FMISubModel.h"
 #include "FMUInfo.h"
+#include "Logging.h"
 #include "Option.h"
 #include "Variable.h"
 
@@ -94,6 +95,9 @@ namespace oms2
     oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultWriter);
     oms_status_enu_t emit(ResultWriter& resultWriter);
 
+    void addVariableFilter(const std::string& regex);
+    void removeVariableFilter(const std::string& regex);
+
   private:
     oms_status_enu_t initializeDependencyGraph_initialUnknowns();
     oms_status_enu_t initializeDependencyGraph_outputs();
@@ -139,6 +143,7 @@ namespace oms2
     std::vector<oms2::Variable> outputs;
     std::vector<oms2::Variable> parameters;
     std::vector<oms2::Variable> allVariables;
+    std::vector<bool> varFilter;
 
     std::map<std::string, oms2::Option<double>> realParameters;
     std::map<std::string, oms2::Option<int>> integerParameters;
@@ -150,7 +155,7 @@ namespace oms2
 
     // ME & CS
     jm_callbacks callbacks;
-    fmi2_callback_functions_t callBackFunctions;
+    fmi2_callback_functions_t callbackFunctions;
     fmi_import_context_t* context;
     fmi2_import_t* fmu;
     fmi2_event_info_t eventInfo;
