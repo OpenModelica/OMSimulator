@@ -95,7 +95,18 @@ void ResultWriter::updateSignal(unsigned int id, SignalValue_t value)
   if (!data_2)
     return;
 
-  data_2[nEmits*(signals.size() + 1) + id] = value.realValue;
+  switch (signals[id-1].type)
+  {
+    case SignalType_REAL:
+      data_2[nEmits*(signals.size() + 1) + id] = value.realValue;
+      break;
+    case SignalType_INT:
+      data_2[nEmits*(signals.size() + 1) + id] = value.intValue;
+      break;
+    case SignalType_BOOL:
+      data_2[nEmits*(signals.size() + 1) + id] = value.boolValue;
+      break;
+  }
 }
 
 void ResultWriter::emit(double time)
