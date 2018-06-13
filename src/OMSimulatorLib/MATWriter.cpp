@@ -160,7 +160,6 @@ bool MATWriter::createFile(const std::string& filename, double startTime, double
     switch (parameters[i].signal.type)
     {
       case SignalType_REAL:
-      default:
         data_1[i + 1] = parameters[i].value.realValue;
         data_1[(1 + parameters.size()) + i + 1] = parameters[i].value.realValue;
         break;
