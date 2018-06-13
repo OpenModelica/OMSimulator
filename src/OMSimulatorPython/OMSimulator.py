@@ -116,7 +116,7 @@ class OMSimulator:
     self.obj.oms2_setRealParameter.argtypes = [ctypes.c_char_p, ctypes.c_double]
     self.obj.oms2_setRealParameter.restype = ctypes.c_int
 
-    self.obj.oms2_setResultFile.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms2_setResultFile.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_uint]
     self.obj.oms2_setResultFile.restype = ctypes.c_int
 
     self.obj.oms2_getStartTime.argtypes = [ctypes.c_char_p]
@@ -239,8 +239,8 @@ class OMSimulator:
     return self.obj.oms2_setReal(str.encode(signal), value)
   def setRealParameter(self, signal, value):
     return self.obj.oms2_setRealParameter(str.encode(signal), value)
-  def setResultFile(self, cref, filename):
-    return self.obj.oms2_setResultFile(str.encode(cref), str.encode(filename))
+  def setResultFile(self, cref, filename, bufferSize=1):
+    return self.obj.oms2_setResultFile(str.encode(cref), str.encode(filename), bufferSize)
   def getStartTime(self, ident):
     startTime = ctypes.c_double()
     status = self.obj.oms2_getStartTime(str.encode(ident), ctypes.byref(startTime))

@@ -453,10 +453,10 @@ oms_status_enu_t oms2_setLoggingInterval(const char* cref, double loggingInterva
   return oms2::Scope::GetInstance().setLoggingInterval(oms2::ComRef(cref), loggingInterval);
 }
 
-oms_status_enu_t oms2_setResultFile(const char* cref, const char* filename)
+oms_status_enu_t oms2_setResultFile(const char* cref, const char* filename, int bufferSize)
 {
   logTrace();
-  return oms2::Scope::GetInstance().setResultFile(oms2::ComRef(cref), std::string(filename));
+  return oms2::Scope::GetInstance().setResultFile(oms2::ComRef(cref), std::string(filename), bufferSize);
 }
 
 oms_status_enu_t oms2_setMasterAlgorithm(const char* ident, const char* masterAlgorithm)

@@ -240,9 +240,9 @@ oms_status_enu_t oms2::Model::initialize()
       resulttype = resultFilename.substr(resultFilename.length() - 4);
 
     if (".csv" == resulttype)
-      resultFile = new CSVWriter(1);
+      resultFile = new CSVWriter(bufferSize);
     else if (".mat" == resulttype)
-      resultFile = new MATWriter(1024);
+      resultFile = new MATWriter(bufferSize);
     else
       return logError("Unsupported format of the result file: " + resultFilename);
   }
@@ -298,9 +298,9 @@ oms_status_enu_t oms2::Model::reset()
       resulttype = resultFilename.substr(resultFilename.length() - 4);
 
     if (".csv" == resulttype)
-      resultFile = new CSVWriter(1);
+      resultFile = new CSVWriter(bufferSize);
     else if (".mat" == resulttype)
-      resultFile = new MATWriter(1024);
+      resultFile = new MATWriter(bufferSize);
     else
       return logError("Unsupported format of the result file: " + resultFilename);
   }
@@ -390,9 +390,10 @@ oms_status_enu_t oms2::Model::simulate_realtime()
   return status;
 }
 
-void oms2::Model::setResultFile(const std::string& value)
+void oms2::Model::setResultFile(const std::string& value, unsigned int bufferSize)
 {
   resultFilename = value;
+  this->bufferSize = bufferSize;
   if (oms_modelState_instantiated != modelState)
   {
     if (resultFile)
@@ -408,9 +409,9 @@ void oms2::Model::setResultFile(const std::string& value)
         resulttype = resultFilename.substr(resultFilename.length() - 4);
 
       if (".csv" == resulttype)
-        resultFile = new CSVWriter(1);
+        resultFile = new CSVWriter(bufferSize);
       else if (".mat" == resulttype)
-        resultFile = new MATWriter(96);
+        resultFile = new MATWriter(bufferSize);
       else
       {
         logError("Unsupported format of the result file: " + resultFilename);

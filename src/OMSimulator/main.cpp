@@ -133,7 +133,7 @@ int main(int argc, char *argv[])
       oms2_loadModel(filename.c_str(), &name);
 
     if (options.resultFile != "")
-      oms2_setResultFile(name, options.resultFile.c_str());
+      oms2_setResultFile(name, options.resultFile.c_str(), 1);
     if (options.useStartTime)
       oms2_setStartTime(name, options.startTime);
     if (options.useStopTime)
