@@ -612,7 +612,7 @@ oms_status_enu_t oms2_setLoggingInterval(const char* cref, double loggingInterva
  * \param filename   [in] Result file
  * \return           Error status
  */
-oms_status_enu_t oms2_setResultFile(const char* cref, const char* filename);
+oms_status_enu_t oms2_setResultFile(const char* cref, const char* filename, int bufferSize);
 
 
 /**
