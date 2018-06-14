@@ -536,11 +536,11 @@ oms_status_enu_t oms2_setTLMLoggingLevel(const char *cref, const int level)
 #endif
 }
 
-oms_status_enu_t oms2_setTLMDataSamples(const char *cref, const int samples)
+oms_status_enu_t oms2_setLoggingSamples(const char *cref, const int samples)
 {
   logTrace();
 #if !defined(NO_TLM)
-  return oms2::Scope::GetInstance().setTLMDataSamples(oms2::ComRef(cref), samples);
+  return oms2::Scope::GetInstance().setLoggingSamples(oms2::ComRef(cref), samples);
 #else
   return LOG_NO_TLM();
 #endif

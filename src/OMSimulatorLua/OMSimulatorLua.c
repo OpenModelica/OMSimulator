@@ -1009,8 +1009,8 @@ static int OMSimulatorLua_oms2_setTLMLoggingLevel(lua_State *L)
   return 1;
 }
 
-//oms_status_enu_t oms2_setTLMDataSamples(const char *cref, int samples)
-static int OMSimulatorLua_oms2_setTLMDataSamples(lua_State *L)
+//oms_status_enu_t oms2_setLoggingSamples(const char *cref, int samples)
+static int OMSimulatorLua_oms2_setLoggingSamples(lua_State *L)
 {
   /// \todo Cleanup this mess
   if (lua_gettop(L) != 2)
@@ -1021,7 +1021,7 @@ static int OMSimulatorLua_oms2_setTLMDataSamples(lua_State *L)
   const char *cref =  lua_tostring(L, 1);
   int samples =        lua_tointeger(L, 2);
 
-  oms_status_enu_t status = oms2_setTLMDataSamples(cref, samples);
+  oms_status_enu_t status = oms2_setLoggingSamples(cref, samples);
 
   lua_pushinteger(L, status);
   return 1;
@@ -1431,7 +1431,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms2_setStartTime);
   REGISTER_LUA_CALL(oms2_setStopTime);
   REGISTER_LUA_CALL(oms2_setTempDirectory);
-  REGISTER_LUA_CALL(oms2_setTLMDataSamples);
+  REGISTER_LUA_CALL(oms2_setLoggingSamples);
   REGISTER_LUA_CALL(oms2_setTLMInitialValues);
   REGISTER_LUA_CALL(oms2_setTLMLoggingLevel);
   REGISTER_LUA_CALL(oms2_setTLMPositionAndOrientation);

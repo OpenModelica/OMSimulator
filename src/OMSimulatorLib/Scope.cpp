@@ -1455,18 +1455,18 @@ oms_status_enu_t oms2::Scope::setTLMLoggingLevel(const oms2::ComRef &cref, int l
   return oms_status_ok;
 }
 
-oms_status_enu_t oms2::Scope::setTLMDataSamples(const oms2::ComRef &cref, int samples)
+oms_status_enu_t oms2::Scope::setLoggingSamples(const oms2::ComRef &cref, int samples)
 {
   oms2::Model* model = getModel(cref);
   if (!model) {
-    logError("In Scope::setTLMDataSamples(): Model \""+cref.toString()+"\" not found.");
+    logError("In Scope::setLoggingSamples(): Model \""+cref.toString()+"\" not found.");
     return oms_status_error;
   }
   if(model->getType() != oms_component_tlm) {
-    logError("In Scope::setTLMDataSamples(): Not a TLM model.");
+    logError("In Scope::setLoggingSamples(): Not a TLM model.");
     return oms_status_error;
   }
-  model->getTLMCompositeModel()->setDataSamples(samples);
+  model->getTLMCompositeModel()->setLoggingSamples(samples);
   return oms_status_ok;
 }
 #endif

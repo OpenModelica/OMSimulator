@@ -411,13 +411,13 @@ oms_status_enu_t oms2_addTLMConnection(const char* cref, const char* from, const
 oms_status_enu_t oms2_setTLMLoggingLevel(const char* cref, const int level);
 
 /**
- * \brief Specifies number of data samples for OMTLMSimulator result files
+ * \brief Set the numer of logging samples to use in the simulation.
  *
- * \param cref    [in] Identifier of TLM composite model.
- * \param levle   [in] Number of samples
- * \return        Error status
+ * \param cref              [in] Name of the model instance
+ * \param loggingSamples    [in] Logging samples
+ * \return                  Error status
  */
-oms_status_enu_t oms2_setTLMDataSamples(const char* cref, const int samples);
+oms_status_enu_t oms2_setLoggingSamples(const char* cref, const int loggingSamples);
 
 /**
  * \brief Redirects logging output to file or std streams. The warning/error counters are reset.
