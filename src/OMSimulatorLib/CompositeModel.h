@@ -64,7 +64,7 @@ namespace oms2
     virtual oms_status_enu_t terminate() = 0;
 
     virtual oms_status_enu_t doSteps(ResultWriter& resultWriter, const int numberOfSteps, double communicationInterval, double loggingInterval) = 0;
-    virtual oms_status_enu_t stepUntil(ResultWriter& resultWriter, double stopTime, double communicationInterval, double loggingInterval, MasterAlgorithm masterAlgorithm, bool realtime_sync) = 0;
+    virtual oms_status_enu_t stepUntil(ResultWriter& resultWriter, double stopTime, double communicationInterval, double loggingInterval, int loggingSamples, MasterAlgorithm masterAlgorithm, bool realtime_sync) = 0;
     virtual void simulate_asynchronous(ResultWriter& resultWriter, double stopTime, double communicationInterval, double loggingInterval, void (*cb)(const char* ident, double time, oms_status_enu_t status)) = 0;
 
     virtual oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultWriter) = 0;
