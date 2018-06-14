@@ -885,9 +885,11 @@ oms_status_enu_t oms2::FMICompositeModel::terminate()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms2::FMICompositeModel::stepUntil(ResultWriter& resultWriter, double stopTime, double communicationInterval, double loggingInterval, MasterAlgorithm masterAlgorithm, bool realtime_sync)
+oms_status_enu_t oms2::FMICompositeModel::stepUntil(ResultWriter& resultWriter, double stopTime, double communicationInterval, double loggingInterval, int loggingSamples, MasterAlgorithm masterAlgorithm, bool realtime_sync)
 {
   logTrace();
+
+  (void)loggingSamples; //Unused (implement later)
 
   switch (masterAlgorithm)
   {
