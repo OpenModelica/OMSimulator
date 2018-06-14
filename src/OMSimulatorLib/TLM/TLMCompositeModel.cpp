@@ -327,7 +327,7 @@ void oms2::TLMCompositeModel::setLoggingLevel(int level)
   omtlm_setLogLevel(model, level);
 }
 
-void oms2::TLMCompositeModel::setDataSamples(int samples)
+void oms2::TLMCompositeModel::setLoggingSamples(int samples)
 {
   omtlm_setNumLogStep(model, samples);
 }
