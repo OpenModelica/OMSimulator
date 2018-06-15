@@ -40,7 +40,9 @@
 #include "SignalRef.h"
 #include "ssd/Tags.h"
 #include "Table.h"
+#if !defined(NO_TLM)
 #include "Plugin/PluginImplementer.h"
+#endif
 #include "PMRChannelMaster.h"
 
 #include <pugixml.hpp>
@@ -1080,6 +1082,7 @@ void oms2::FMICompositeModel::simulate_asynchronous(ResultWriter& resultWriter, 
   }
 }
 
+#if !defined(NO_TLM)
 oms_status_enu_t oms2::FMICompositeModel::simulateTLM(ResultWriter* resultWriter, double stopTime, double communicationInterval, double loggingInterval, std::string server)
 {
   logTrace();
@@ -1123,7 +1126,6 @@ oms_status_enu_t oms2::FMICompositeModel::simulateTLM(ResultWriter* resultWriter
 
   return oms_status_ok;
 }
-
 
 oms_status_enu_t oms2::FMICompositeModel::initializeSockets(double stopTime, double &communicationInterval, std::string server)
 {
@@ -1217,7 +1219,6 @@ oms_status_enu_t oms2::FMICompositeModel::initializeSockets(double stopTime, dou
       }
     }
   }
-
   return oms_status_ok;
 }
 
@@ -1407,7 +1408,7 @@ void oms2::FMICompositeModel::finalizeSockets()
 
   delete plugin;
 }
-
+#endif
 
 oms_status_enu_t oms2::FMICompositeModel::setReal(const oms2::SignalRef& sr, double value)
 {
@@ -1464,6 +1465,7 @@ oms_status_enu_t oms2::FMICompositeModel::setRealInputDerivatives(const oms2::Si
   return model->setRealInputDerivatives(sr, order, value);
 }
 
+#if !defined(NO_TLM)
 oms_status_enu_t oms2::FMICompositeModel::addTLMInterface(oms2::TLMInterface *ifc)
 {
   tlmInterfaces.push_back(ifc);
@@ -1502,6 +1504,7 @@ oms_status_enu_t oms2::FMICompositeModel::setTLMInitialValues(std::string ifcnam
 
   return oms_status_ok;
 }
+#endif
 
 oms_status_enu_t oms2::FMICompositeModel::updateInputs(oms2::DirectedGraph& graph)
 {

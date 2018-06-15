@@ -78,7 +78,9 @@ namespace oms2
     double getTolerance() const {return tolerance;}
 
     FMICompositeModel* getFMICompositeModel();
+#if !defined(NO_TLM)
     TLMCompositeModel* getTLMCompositeModel();
+#endif
 
     oms_element_type_enu_t getType() {return compositeModel->getType();}
     oms2::Element* getElement() {return compositeModel->getElement();}

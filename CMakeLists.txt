@@ -121,10 +121,22 @@ ENDIF()
 
 ##########################
 # Configuration for OMTLMSimulatorLib
+option(OMTLM "Enable the OMTLMSimulator module." ON)
+IF(OMTLM)
 set(OMTLMSIMULATOR_INCLUDEDIR ${PROJECT_SOURCE_DIR}/OMTLMSimulator/common)
 set(OMTLMSIMULATORLIB_INCLUDEDIR ${PROJECT_SOURCE_DIR}/OMTLMSimulator/common/OMTLMSimulatorLib)
 set(OMTLMSIMULATORLIB_LIBRARYDIR ${PROJECT_SOURCE_DIR}/OMTLMSimulator/bin)
 set(OMTLMSIMULATOR_3RDPARTY_INCLUDEDIR ${PROJECT_SOURCE_DIR}/OMTLMSimulator/3rdParty/misc/include)
+IF(WIN32)
+  set(OMTLM_LINKFLAGS omtlmsimulator wsock32 ws2_32)
+ELSE()
+  set(OMTLM_LINKFLAGS omtlmsimulator)
+ENDIF()
+  message(STATUS "OMTLMSimulator enabled.")
+ELSE(OMTLM)
+  set(OMTLM_LINKFLAGS)
+  message(STATUS "OMTLMSimulator disabled.")
+ENDIF(OMTLM)
 
 ##########################
 # Add project modules

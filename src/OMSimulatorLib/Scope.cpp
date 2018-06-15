@@ -90,6 +90,7 @@ oms_status_enu_t oms2::Scope::newFMIModel(const oms2::ComRef& name)
   return oms_status_ok;
 }
 
+#if !defined(NO_TLM)
 oms_status_enu_t oms2::Scope::newTLMModel(const oms2::ComRef& name)
 {
   logTrace();
@@ -110,6 +111,7 @@ oms_status_enu_t oms2::Scope::newTLMModel(const oms2::ComRef& name)
 
   return oms_status_ok;
 }
+#endif
 
 oms_status_enu_t oms2::Scope::unloadModel(const oms2::ComRef name)
 {
@@ -544,8 +546,10 @@ oms_status_enu_t oms2::Scope::setElementGeometry(const oms2::ComRef& cref, const
     }
     if (model->getFMICompositeModel())
       model->getFMICompositeModel()->setGeometry(*geometry);
+#if !defined(NO_TLM)
     else if (model->getTLMCompositeModel())
       model->getTLMCompositeModel()->setGeometry(*geometry);
+#endif
     else
       return oms_status_error;
     return oms_status_ok;
@@ -817,6 +821,7 @@ bool oms2::Scope::hasFMICompositeModel(const oms2::ComRef &name)
   return (models.find(name) != models.end());
 }
 
+#if !defined(NO_TLM)
 oms2::FMICompositeModel* oms2::Scope::getFMICompositeModel(const ComRef& name)
 {
   logTrace();
@@ -836,6 +841,7 @@ oms2::TLMCompositeModel* oms2::Scope::getTLMCompositeModel(const ComRef& name)
     return NULL;
   return model->getTLMCompositeModel();
 }
+#endif
 
 oms_status_enu_t oms2::Scope::getRealParameter(const oms2::SignalRef& signal, double& value)
 {
@@ -1317,6 +1323,7 @@ oms_status_enu_t oms2::Scope::setBooleanParameter(const oms2::SignalRef& signal,
   return oms_status_error;
 }
 
+#if !defined(NO_TLM)
 oms_status_enu_t oms2::Scope::addFMISubModel(const oms2::ComRef &cref, const oms2::ComRef &subref)
 {
   Model* model = getModel(cref);
@@ -1462,6 +1469,7 @@ oms_status_enu_t oms2::Scope::setTLMDataSamples(const oms2::ComRef &cref, int sa
   model->getTLMCompositeModel()->setDataSamples(samples);
   return oms_status_ok;
 }
+#endif
 
 oms_status_enu_t oms2::Scope::describeModel(const oms2::ComRef &cref)
 {
