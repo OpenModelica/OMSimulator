@@ -94,7 +94,11 @@ oms_status_enu_t oms2_newFMIModel(const char* ident)
 oms_status_enu_t oms2_newTLMModel(const char* ident)
 {
   logTrace();
+#if !defined(NO_TLM)
   return oms2::Scope::GetInstance().newTLMModel(oms2::ComRef(ident));
+#else
+  return LOG_NO_TLM();
+#endif
 }
 
 oms_status_enu_t oms2_unloadModel(const char* ident)
@@ -132,8 +136,9 @@ oms_status_enu_t oms2_loadModel(const char* filename, char** ident)
   logTrace();
   oms2::Model* model = oms2::Scope::GetInstance().loadModel(filename);
 
-  if (!model)
+  if (!model) {
     return oms_status_error;
+  }
 
   oms_element_t* element = reinterpret_cast<oms_element_t*>(model->getElement());
   *ident = element->name;
@@ -346,15 +351,12 @@ oms_status_enu_t oms2_setWorkingDirectory(const char* path)
 oms_status_enu_t oms2_getComponentType(const char* ident, oms_element_type_enu_t* type)
 {
   logTrace();
-  if (!type)
-  {
-    logError("oms2_getComponentType: type is NULL pointer");
-    return oms_status_error;
+  if (!type) {
+    return logError("oms2_getComponentType: type is NULL pointer");
   }
 
   *type = oms_component_none;
-  logError("oms2_getComponentType: not implemented yet");
-  return oms_status_error;
+  return logError("oms2_getComponentType: not implemented yet");
 }
 
 oms_status_enu_t oms2_describe(const char* cref)
@@ -366,22 +368,31 @@ oms_status_enu_t oms2_describe(const char* cref)
 oms_status_enu_t oms2_addExternalModel(const char *cref, const char *name, const char *modelfile, const char *startscript)
 {
   logTrace();
+#if !defined(NO_TLM)
   return oms2::Scope::GetInstance().addExternalModel(oms2::ComRef(cref), oms2::ComRef(name), modelfile, startscript);
+#else
+  return LOG_NO_TLM();
+#endif
 }
 
 oms_status_enu_t oms2_addTLMInterface(const char *cref, const char *subref, const char *name, int dimensions, oms_causality_enu_t causality, oms_tlm_interpolation_t interpolation, const char *domain, const char **sigrefs, int nsigrefs)
 {
   logTrace();
+#if !defined(NO_TLM)
   std::vector<oms2::SignalRef>vSigrefs;
   for(int i=0; i<nsigrefs; ++i) {
     vSigrefs.push_back(oms2::SignalRef(sigrefs[i]));
   }
   return oms2::Scope::GetInstance().addTLMInterface(oms2::ComRef(cref), oms2::ComRef(subref), oms2::ComRef(name), dimensions, causality, domain, interpolation, vSigrefs);
+#else
+  return LOG_NO_TLM();
+#endif
 }
 
 oms_status_enu_t oms2_setTLMPositionAndOrientation(const char *cref, const char *ifc, double x1, double x2, double x3, double A11, double A12, double A13, double A21, double A22, double A23, double A31, double A32, double A33)
 {
   logTrace();
+#if !defined(NO_TLM)
   std::vector<double> x = {x1,x2,x3};
   std::vector<double> A = {A11,A12,A13,A21,A22,A23,A31,A32,A33};
   std::string ifcstr = ifc;
@@ -389,32 +400,51 @@ oms_status_enu_t oms2_setTLMPositionAndOrientation(const char *cref, const char 
     ifcstr.append(":");
   }
   return oms2::Scope::GetInstance().setTLMPositionAndOrientation(oms2::ComRef(cref), oms2::SignalRef(ifcstr), x, A);
+#else
+  return LOG_NO_TLM();
+#endif
 }
 
 oms_status_enu_t oms2_addTLMConnection(const char *cref, const char *from, const char *to, double delay, double alpha, double Zf, double Zfr)
 {
   logTrace();
+#if !defined(NO_TLM)
   return oms2::Scope::GetInstance().addTLMConnection(oms2::ComRef(cref), oms2::SignalRef(from), oms2::SignalRef(to), delay, alpha, Zf, Zfr);
+#else
+  return LOG_NO_TLM();
+#endif
 }
 
 oms_status_enu_t oms2_addFMISubModel(const char *cref, const char *subref)
 {
   logTrace();
+#if !defined(NO_TLM)
   return oms2::Scope::GetInstance().addFMISubModel(oms2::ComRef(cref), oms2::ComRef(subref));
+#else
+  return LOG_NO_TLM();
+#endif
 }
 
 oms_status_enu_t oms2_setTLMSocketData(const char* cref, const char* address,
                                        int managerPort, int monitorPort)
 {
   logTrace();
+#if !defined(NO_TLM)
   return oms2::Scope::GetInstance().setTLMSocketData(oms2::ComRef(cref), address,
                                                      managerPort, monitorPort);
+#else
+  return LOG_NO_TLM();
+#endif
 }
 
 oms_status_enu_t oms2_setTLMInitialValues(const char *cref, const char *ifc, const double values[], int nvalues)
 {
   logTrace();
+#if !defined(NO_TLM)
   return oms2::Scope::GetInstance().setTLMInitialValues(oms2::ComRef(cref), oms2::SignalRef(ifc), std::vector<double>(values, values+nvalues));
+#else
+  return LOG_NO_TLM();
+#endif
 }
 
 oms_status_enu_t oms2_getStartTime(const char* cref, double* startTime)
@@ -499,11 +529,19 @@ oms_status_enu_t oms2_getCurrentTime(const char* model, double* time)
 oms_status_enu_t oms2_setTLMLoggingLevel(const char *cref, const int level)
 {
   logTrace();
+#if !defined(NO_TLM)
   return oms2::Scope::GetInstance().setTLMLoggingLevel(oms2::ComRef(cref), level);
+#else
+  return LOG_NO_TLM();
+#endif
 }
 
 oms_status_enu_t oms2_setTLMDataSamples(const char *cref, const int samples)
 {
   logTrace();
+#if !defined(NO_TLM)
   return oms2::Scope::GetInstance().setTLMDataSamples(oms2::ComRef(cref), samples);
+#else
+  return LOG_NO_TLM();
+#endif
 }

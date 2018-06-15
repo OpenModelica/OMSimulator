@@ -63,8 +63,11 @@ oms2::Model* oms2::Model::NewModel(oms_element_type_enu_t type, const oms2::ComR
   if (oms_component_fmi == type)
     model->compositeModel = oms2::FMICompositeModel::NewModel(cref);
   else if (oms_component_tlm == type)
+#if !defined(NO_TLM)
     model->compositeModel = oms2::TLMCompositeModel::NewModel(cref);
-
+#else
+    THROW_NO_TLM();
+#endif
   if (!model->compositeModel)
   {
     delete model;
@@ -109,7 +112,11 @@ oms2::Model* oms2::Model::LoadModel(const std::string& filename)
   if (modelType == oms_component_fmi)
     compositeModel = oms2::FMICompositeModel::LoadModel(root.child(oms2::ssd::ssd_system));
   else if (modelType == oms_component_tlm)
+#if !defined(NO_TLM)
     compositeModel = oms2::TLMCompositeModel::LoadModel(root.child("TLMModel"));
+#else
+    THROW_NO_TLM();
+#endif
 
   if (!compositeModel)
     return NULL;
@@ -198,6 +205,7 @@ oms2::FMICompositeModel* oms2::Model::getFMICompositeModel()
   return NULL;
 }
 
+#if !defined(NO_TLM)
 oms2::TLMCompositeModel* oms2::Model::getTLMCompositeModel()
 {
   if (oms_component_tlm == getType())
@@ -218,6 +226,7 @@ oms_status_enu_t oms2::Model::setTLMInitialValues(const oms2::SignalRef &ifc, st
 
   return tlmModel->setTLMInitialValues(ifc, values);
 }
+#endif
 
 oms_status_enu_t oms2::Model::initialize()
 {
