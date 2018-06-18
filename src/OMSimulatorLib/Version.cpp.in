@@ -29,4 +29,4 @@
  *
  */
 
-const char* oms_git_version = "OMSimulator @GIT_VERSION_STRING@-@PLATFORM_STRING@";
+const char* oms_git_version = "OMSimulator @GIT_VERSION_STRING@-@PLATFORM_STRING@@TLM_STRING@";
