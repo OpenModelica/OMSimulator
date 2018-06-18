@@ -1,7 +1,10 @@
 project(OMSimulator)
 
-set(CMAKE_INSTALL_RPATH "$ORIGIN/../bin:$ORIGIN/")
-
+IF(WIN32)
+  set(CMAKE_INSTALL_RPATH "$ORIGIN/../bin:$ORIGIN/")
+ELSE(WIN32)
+  set(CMAKE_INSTALL_RPATH "$ORIGIN/../lib:$ORIGIN/")
+ENDIF(WIN32)
 find_package(Threads)
 
 # Because the shared libraries cannot link to static boost on amd64,
@@ -35,7 +38,9 @@ link_directories(${FMILibrary_LIBRARYDIR})
 link_directories(${LUALibrary_LIBRARYDIR})
 link_directories(${CVODELibrary_LIBRARYDIR})
 link_directories(${Boost_LIBRARY_DIRS})
+IF(OMTLM)
 link_directories(${OMTLMSIMULATORLIB_LIBRARYDIR})
+ENDIF()
 
 add_executable(OMSimulator main.cpp Options.cpp)
 
@@ -46,11 +51,11 @@ IF (Ceres_FOUND AND OMSYSIDENT)
 ENDIF()
 
 IF(WIN32 AND MSVC)
-  target_link_libraries(OMSimulator lua ${OMSYSIDENT_OPTION} OMSimulatorLib ${FMILibrary_LIBRARY} sundials_cvode sundials_nvecserial ${Boost_LIBRARIES} ${CERES_OPTION} ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} omtlmsimulator wsock32 ws2_32)
+  target_link_libraries(OMSimulator lua ${OMSYSIDENT_OPTION} OMSimulatorLib ${FMILibrary_LIBRARY} sundials_cvode sundials_nvecserial ${Boost_LIBRARIES} ${CERES_OPTION} ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} ${OMTLM_LINKFLAGS})
 ELSEIF (WIN32 AND MINGW)
-  target_link_libraries(OMSimulator lua ${OMSYSIDENT_OPTION} OMSimulatorLib ${FMILibrary_LIBRARY} shlwapi sundials_cvode sundials_nvecserial ${Boost_LIBRARIES} ${CERES_OPTION} ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} omtlmsimulator wsock32 ws2_32)
+  target_link_libraries(OMSimulator lua ${OMSYSIDENT_OPTION} OMSimulatorLib ${FMILibrary_LIBRARY} shlwapi sundials_cvode sundials_nvecserial ${Boost_LIBRARIES} ${CERES_OPTION} ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} ${OMTLM_LINKFLAGS})
 ELSE()
-  target_link_libraries(OMSimulator lua ${OMSYSIDENT_OPTION} OMSimulatorLib ${FMILibrary_LIBRARY} sundials_cvode sundials_nvecserial ${Boost_LIBRARIES} ${CERES_OPTION} ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} omtlmsimulator)
+  target_link_libraries(OMSimulator lua ${OMSYSIDENT_OPTION} OMSimulatorLib ${FMILibrary_LIBRARY} sundials_cvode sundials_nvecserial ${Boost_LIBRARIES} ${CERES_OPTION} ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} ${OMTLM_LINKFLAGS})
 ENDIF()
 
 IF ((NOT APPLE) AND CMAKE_CXX_COMPILER_ID MATCHES "[Cc]lang|GNU")

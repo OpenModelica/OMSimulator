@@ -9,6 +9,8 @@ CERES ?= ON
 LIBXML2 ?= ON
 # Option to enable the OMSysIdent parameter estimation module within the OMSimulator project
 OMSYSIDENT ?= ON
+# Option to enable OMTLM
+OMTLM ?= ON
 # Option to enable AddressSanitizer
 ASAN ?= OFF
 # Option to switch between Debug and Release builds
@@ -67,8 +69,9 @@ OMSimulatorCore:
 	@echo "# make OMSimulatorCore"
 	@echo
 	@$(MAKE) -C $(BUILD_DIR) install
-	test ! `uname` = Darwin || (install_name_tool -change MAC64/libomtlmsimulator.dylib "@loader_path/libomtlmsimulator.dylib" $(INSTALL_DIR)/bin/OMSimulator)
+	test ! `uname` = Darwin || (install_name_tool -change MAC64/libomtlmsimulator.dylib "@loader_path/../lib/libomtlmsimulator.dylib" $(INSTALL_DIR)/bin/OMSimulator)
 
+ifeq ($(OMTLM),ON)
 OMTLMSimulator:
 	@echo
 	@echo "# make OMTLMSimulator"
@@ -79,7 +82,8 @@ OMTLMSimulator:
 	@$(MKDIR) $(INSTALL_DIR)/lib
 	@$(MKDIR) $(INSTALL_DIR)/bin
 	cp OMTLMSimulator/bin/libomtlmsimulator$(FEXT) $(INSTALL_DIR)/lib/
-	cp OMTLMSimulator/bin/libomtlmsimulator$(FEXT) $(INSTALL_DIR)/bin/
+	cp OMTLMSimulator/common/$(ABI)/libTLM.a OMTLMSimulator/bin/
+	test ! "$(FEXT)" = ".dll" || cp OMTLMSimulator/bin/libomtlmsimulator$(FEXT) $(INSTALL_DIR)/bin/
 	test ! `uname` != Darwin || cp OMTLMSimulator/bin/FMIWrapper $(INSTALL_DIR)/bin/
 	test ! `uname` != Darwin || cp OMTLMSimulator/bin/StartTLMFmiWrapper $(INSTALL_DIR)/bin/
 
@@ -89,6 +93,10 @@ OMTLMSimulatorStandalone: config-fmil
 	@echo
 	@echo $(ABI)
 	@$(MAKE) -C OMTLMSimulator install
+else
+OMTLMSimulator:
+OMTLMSimulatorStandalone:
+endif
 
 OMTLMSimulatorClean:
 	@echo
@@ -104,7 +112,7 @@ config-OMSimulator:
 	@echo
 	$(RM) $(BUILD_DIR)
 	$(MKDIR) $(BUILD_DIR)
-	cd $(BUILD_DIR) && cmake $(CMAKE_TARGET) ../.. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DOMSYSIDENT:BOOL=$(OMSYSIDENT) -DASAN:BOOL=$(ASAN) -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
+	cd $(BUILD_DIR) && cmake $(CMAKE_TARGET) ../.. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DOMSYSIDENT:BOOL=$(OMSYSIDENT) -DOMTLM:BOOL=$(OMTLM) -DASAN:BOOL=$(ASAN) -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
 
 config-fmil:
 	@echo
