@@ -700,6 +700,15 @@ oms_status_enu_t oms2_addSignalsToResults(const char* cref, const char* regex);
  */
 oms_status_enu_t oms2_removeSignalsFromResults(const char* cref, const char* regex);
 
+/**
+ * \brief Sets special flags.
+ *
+ * \param cref  [in] Name of the model instance
+ * \param flags [in] flags
+ * \return Error status
+ */
+oms_status_enu_t oms2_setFlags(const char* cref, const char* flags);
+
 #ifdef __cplusplus
 }
 #endif

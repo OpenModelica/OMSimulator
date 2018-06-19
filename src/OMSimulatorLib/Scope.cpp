@@ -1814,3 +1814,37 @@ oms_status_enu_t oms2::Scope::removeSignalsFromResults(const ComRef& cref, const
   }
   return oms_status_error;
 }
+
+oms_status_enu_t oms2::Scope::setFlags(const ComRef& cref, const std::string& flags)
+{
+  if (!cref.isIdent())
+  {
+    // Sub-model
+    ComRef modelCref = cref.first();
+    Model* model = getModel(modelCref);
+    if (!model)
+    {
+      logError("[oms2::Scope::setFlags] failed");
+      return oms_status_error;
+    }
+
+    // FMI model?
+    if (oms_component_fmi == model->getType())
+    {
+      FMICompositeModel* fmiModel = model->getFMICompositeModel();
+      FMISubModel* subModel = fmiModel->getSubModel(cref);
+      if (!subModel)
+      {
+        logError("[oms2::Scope::setFlags] failed");
+        return oms_status_error;
+      }
+      return subModel->setFlags(flags);
+    }
+    else
+    {
+      logError("[oms2::Scope::setFlags] is only implemented for FMI models yet");
+      return oms_status_error;
+    }
+  }
+  return oms_status_error;
+}

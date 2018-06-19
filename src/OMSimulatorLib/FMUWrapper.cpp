@@ -770,6 +770,20 @@ oms_status_enu_t oms2::FMUWrapper::doStep(double stopTime)
   fmi2_status_t fmistatus;
   double hdef = (stopTime-time) / 1.0;
 
+  // HACK for certain FMUs
+  if (fetchAllVars)
+  {
+    for (auto &v : allVariables)
+    {
+      if (v.isTypeReal())
+      {
+        double realValue;
+        if (oms_status_ok != getReal(v, realValue))
+          return logError("failed to fetch variable " + v.toString());
+      }
+    }
+  }
+
   if (oms_fmi_kind_me == fmuInfo.getKind())
   {
     // main simulation loop

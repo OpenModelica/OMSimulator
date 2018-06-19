@@ -42,3 +42,14 @@ oms2::FMISubModel::FMISubModel(oms_element_type_enu_t type, const ComRef& cref)
 oms2::FMISubModel::~FMISubModel()
 {
 }
+
+oms_status_enu_t oms2::FMISubModel::setFlags(const std::string& flags)
+{
+  if (flags == "+fetchAllVars")
+    fetchAllVars = true;
+  else if (flags == "-fetchAllVars")
+    fetchAllVars = false;
+  else
+    return oms_status_error;
+  return oms_status_ok;
+}

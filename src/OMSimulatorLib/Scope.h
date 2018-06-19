@@ -114,6 +114,7 @@ namespace oms2
     oms_status_enu_t getCurrentTime(const ComRef& cref, double* time);
     oms_status_enu_t addSignalsToResults(const ComRef& cref, const std::string& regex);
     oms_status_enu_t removeSignalsFromResults(const ComRef& cref, const std::string& regex);
+    oms_status_enu_t setFlags(const ComRef& cref, const std::string& flags);
 
     const std::string& getTempDirectory() {return GetInstance().tempDir;}
     const std::string& getWorkingDirectory() {return GetInstance().workingDir;}
