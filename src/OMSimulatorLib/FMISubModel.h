@@ -88,6 +88,8 @@ namespace oms2
     void setActivationRatio(int k) {eclock.k  = k;}
     int getActivationRatio() const {return eclock.k;}
 
+    oms_status_enu_t setFlags(const std::string& flags);
+
   protected:
     FMISubModel(oms_element_type_enu_t type, const ComRef& cref);
     virtual ~FMISubModel();
@@ -104,6 +106,8 @@ namespace oms2
     DirectedGraph outputsGraph;
 
     Experimental_Clock eclock;
+
+    bool fetchAllVars = false;
   };
 }
 

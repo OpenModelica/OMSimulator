@@ -557,3 +557,9 @@ oms_status_enu_t oms2_removeSignalsFromResults(const char* cref, const char* reg
   logTrace();
   return oms2::Scope::GetInstance().removeSignalsFromResults(oms2::ComRef(cref), std::string(regex));
 }
+
+oms_status_enu_t oms2_setFlags(const char* cref, const char* flags)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().setFlags(oms2::ComRef(cref), std::string(flags));
+}

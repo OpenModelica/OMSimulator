@@ -544,6 +544,20 @@ static int OMSimulatorLua_oms2_addSignalsToResults(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms2_setFlags(const char* cref, const char* flags);
+static int OMSimulatorLua_oms2_setFlags(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* cref = lua_tostring(L, 1);
+  const char* flags = lua_tostring(L, 2);
+  oms_status_enu_t status = oms2_setFlags(cref, flags);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
 //oms_status_enu_t oms2_removeSignalsFromResults(const char* cref, const char* regex);
 static int OMSimulatorLua_oms2_removeSignalsFromResults(lua_State *L)
 {
@@ -1359,10 +1373,10 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms2_addExternalModel);
   REGISTER_LUA_CALL(oms2_addFMISubModel);
   REGISTER_LUA_CALL(oms2_addFMU);
+  REGISTER_LUA_CALL(oms2_addSignalsToResults);
   REGISTER_LUA_CALL(oms2_addTable);
   REGISTER_LUA_CALL(oms2_addTLMConnection);
   REGISTER_LUA_CALL(oms2_addTLMInterface);
-  REGISTER_LUA_CALL(oms2_addSignalsToResults);
   REGISTER_LUA_CALL(oms2_compareSimulationResults);
   REGISTER_LUA_CALL(oms2_deleteConnection);
   REGISTER_LUA_CALL(oms2_deleteSubModel);
@@ -1390,6 +1404,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms2_setBoolean);
   REGISTER_LUA_CALL(oms2_setBooleanParameter);
   REGISTER_LUA_CALL(oms2_setCommunicationInterval);
+  REGISTER_LUA_CALL(oms2_setFlags);
   REGISTER_LUA_CALL(oms2_setInteger);
   REGISTER_LUA_CALL(oms2_setIntegerParameter);
   REGISTER_LUA_CALL(oms2_setLogFile);
