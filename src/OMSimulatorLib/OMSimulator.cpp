@@ -546,14 +546,20 @@ oms_status_enu_t oms2_setTLMDataSamples(const char *cref, const int samples)
 #endif
 }
 
-oms_status_enu_t oms2_addVariableFilter(const char* cref, const char* regex)
+oms_status_enu_t oms2_addSignalsToResults(const char* cref, const char* regex)
 {
   logTrace();
-  return oms2::Scope::GetInstance().addVariableFilter(oms2::ComRef(cref), std::string(regex));
+  return oms2::Scope::GetInstance().addSignalsToResults(oms2::ComRef(cref), std::string(regex));
 }
 
-oms_status_enu_t oms2_removeVariableFilter(const char* cref, const char* regex)
+oms_status_enu_t oms2_removeSignalsFromResults(const char* cref, const char* regex)
 {
   logTrace();
-  return oms2::Scope::GetInstance().removeVariableFilter(oms2::ComRef(cref), std::string(regex));
+  return oms2::Scope::GetInstance().removeSignalsFromResults(oms2::ComRef(cref), std::string(regex));
+}
+
+oms_status_enu_t oms2_setFlags(const char* cref, const char* flags)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().setFlags(oms2::ComRef(cref), std::string(flags));
 }

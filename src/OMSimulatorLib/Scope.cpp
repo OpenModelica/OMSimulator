@@ -1765,7 +1765,7 @@ oms_status_enu_t oms2::Scope::getCurrentTime(const oms2::ComRef& cref, double* t
   return oms_status_error;
 }
 
-oms_status_enu_t oms2::Scope::addVariableFilter(const ComRef& cref, const std::string& regex)
+oms_status_enu_t oms2::Scope::addSignalsToResults(const ComRef& cref, const std::string& regex)
 {
   if (cref.isIdent())
   {
@@ -1773,7 +1773,7 @@ oms_status_enu_t oms2::Scope::addVariableFilter(const ComRef& cref, const std::s
     Model* model = getModel(cref);
     if (!model)
     {
-      logError("[oms2::Scope::addVariableFilter] failed");
+      logError("[oms2::Scope::addSignalsToResults] failed");
       return oms_status_error;
     }
 
@@ -1781,16 +1781,16 @@ oms_status_enu_t oms2::Scope::addVariableFilter(const ComRef& cref, const std::s
     if (oms_component_fmi == model->getType())
     {
       FMICompositeModel* fmiModel = model->getFMICompositeModel();
-      return fmiModel->addVariableFilter(regex);
+      return fmiModel->addSignalsToResults(regex);
     }
 
-    logError("[oms2::Scope::addVariableFilter] is only implemented for FMI models yet");
+    logError("[oms2::Scope::addSignalsToResults] is only implemented for FMI models yet");
     return oms_status_error;
   }
   return oms_status_error;
 }
 
-oms_status_enu_t oms2::Scope::removeVariableFilter(const ComRef& cref, const std::string& regex)
+oms_status_enu_t oms2::Scope::removeSignalsFromResults(const ComRef& cref, const std::string& regex)
 {
   if (cref.isIdent())
   {
@@ -1798,7 +1798,7 @@ oms_status_enu_t oms2::Scope::removeVariableFilter(const ComRef& cref, const std
     Model* model = getModel(cref);
     if (!model)
     {
-      logError("[oms2::Scope::removeVariableFilter] failed");
+      logError("[oms2::Scope::removeSignalsFromResults] failed");
       return oms_status_error;
     }
 
@@ -1806,11 +1806,45 @@ oms_status_enu_t oms2::Scope::removeVariableFilter(const ComRef& cref, const std
     if (oms_component_fmi == model->getType())
     {
       FMICompositeModel* fmiModel = model->getFMICompositeModel();
-      return fmiModel->removeVariableFilter(regex);
+      return fmiModel->removeSignalsFromResults(regex);
     }
 
-    logError("[oms2::Scope::removeVariableFilter] is only implemented for FMI models yet");
+    logError("[oms2::Scope::removeSignalsFromResults] is only implemented for FMI models yet");
     return oms_status_error;
+  }
+  return oms_status_error;
+}
+
+oms_status_enu_t oms2::Scope::setFlags(const ComRef& cref, const std::string& flags)
+{
+  if (!cref.isIdent())
+  {
+    // Sub-model
+    ComRef modelCref = cref.first();
+    Model* model = getModel(modelCref);
+    if (!model)
+    {
+      logError("[oms2::Scope::setFlags] failed");
+      return oms_status_error;
+    }
+
+    // FMI model?
+    if (oms_component_fmi == model->getType())
+    {
+      FMICompositeModel* fmiModel = model->getFMICompositeModel();
+      FMISubModel* subModel = fmiModel->getSubModel(cref);
+      if (!subModel)
+      {
+        logError("[oms2::Scope::setFlags] failed");
+        return oms_status_error;
+      }
+      return subModel->setFlags(flags);
+    }
+    else
+    {
+      logError("[oms2::Scope::setFlags] is only implemented for FMI models yet");
+      return oms_status_error;
+    }
   }
   return oms_status_error;
 }

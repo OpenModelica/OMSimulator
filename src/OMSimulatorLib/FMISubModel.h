@@ -82,11 +82,13 @@ namespace oms2
     virtual oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultWriter) = 0;
     virtual oms_status_enu_t emit(ResultWriter& resultWriter) = 0;
 
-    virtual void addVariableFilter(const std::string& regex) = 0;
-    virtual void removeVariableFilter(const std::string& regex) = 0;
+    virtual void addSignalsToResults(const std::string& regex) = 0;
+    virtual void removeSignalsFromResults(const std::string& regex) = 0;
 
     void setActivationRatio(int k) {eclock.k  = k;}
     int getActivationRatio() const {return eclock.k;}
+
+    oms_status_enu_t setFlags(const std::string& flags);
 
   protected:
     FMISubModel(oms_element_type_enu_t type, const ComRef& cref);
@@ -104,6 +106,8 @@ namespace oms2
     DirectedGraph outputsGraph;
 
     Experimental_Clock eclock;
+
+    bool fetchAllVars = false;
   };
 }
 

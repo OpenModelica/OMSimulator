@@ -328,7 +328,6 @@ oms2::FMUWrapper* oms2::FMUWrapper::newSubModel(const oms2::ComRef& cref, const 
   // create some special variable maps
   for (auto const &v : model->allVariables)
   {
-    bool filter = true;
     if (v.isParameter() && v.isTypeReal())
       model->realParameters[v.getName()] = oms2::Option<double>();
     else if (v.isParameter() && v.isTypeInteger())
@@ -339,13 +338,11 @@ oms2::FMUWrapper* oms2::FMUWrapper::newSubModel(const oms2::ComRef& cref, const 
     if (v.isInput())
     {
       model->inputs.push_back(v);
-      filter = false;
     }
     else if (v.isOutput())
     {
       model->outputs.push_back(v);
       model->outputsGraph.addVariable(v);
-      filter = false;
     }
     else if (v.isParameter())
       model->parameters.push_back(v);
@@ -353,7 +350,7 @@ oms2::FMUWrapper* oms2::FMUWrapper::newSubModel(const oms2::ComRef& cref, const 
     if (v.isInitialUnknown())
       model->initialUnknownsGraph.addVariable(v);
 
-    model->varFilter.push_back(filter);
+    model->exportVariables.push_back(v.isInput() || v.isOutput());
   }
 
   std::vector<oms2::Connector> connectors;
@@ -772,6 +769,20 @@ oms_status_enu_t oms2::FMUWrapper::doStep(double stopTime)
 {
   fmi2_status_t fmistatus;
   double hdef = (stopTime-time) / 1.0;
+
+  // HACK for certain FMUs
+  if (fetchAllVars)
+  {
+    for (auto &v : allVariables)
+    {
+      if (v.isTypeReal())
+      {
+        double realValue;
+        if (oms_status_ok != getReal(v, realValue))
+          return logError("failed to fetch variable " + v.toString());
+      }
+    }
+  }
 
   if (oms_fmi_kind_me == fmuInfo.getKind())
   {
@@ -1253,7 +1264,7 @@ oms_status_enu_t oms2::FMUWrapper::registerSignalsForResultFile(ResultWriter& re
 {
   for (unsigned int i=0; i<allVariables.size(); ++i)
   {
-    if (varFilter[i])
+    if (!exportVariables[i])
       continue;
 
     auto const &var = allVariables[i];
@@ -1337,36 +1348,36 @@ oms_status_enu_t oms2::FMUWrapper::emit(ResultWriter& resultWriter)
   return oms_status_ok;
 }
 
-void oms2::FMUWrapper::addVariableFilter(const std::string& regex)
+void oms2::FMUWrapper::addSignalsToResults(const std::string& regex)
 {
   std::regex exp(regex);
   for (unsigned int i=0; i<allVariables.size(); ++i)
   {
-    if (!varFilter[i])
+    if (exportVariables[i])
       continue;
 
     auto const &var = allVariables[i];
     if(regex_match(var.toString(), exp))
     {
-      logInfo("added to variable filter: " + var.toString());
-      varFilter[i] = false;
+      logInfo("added \"" + var.toString() + "\" to results");
+      exportVariables[i] = true;
     }
   }
 }
 
-void oms2::FMUWrapper::removeVariableFilter(const std::string& regex)
+void oms2::FMUWrapper::removeSignalsFromResults(const std::string& regex)
 {
   std::regex exp(regex);
   for (unsigned int i=0; i<allVariables.size(); ++i)
   {
-    if (varFilter[i])
+    if (!exportVariables[i])
       continue;
 
     auto const &var = allVariables[i];
     if(regex_match(var.toString(), exp))
     {
-      logInfo("removed from variable filter: " + var.toString());
-      varFilter[i] = true;
+      logInfo("removed \"" + var.toString() + "\" from results");
+      exportVariables[i] = false;
     }
   }
 }
