@@ -112,8 +112,8 @@ namespace oms2
     oms_status_enu_t exportCompositeStructure(const ComRef& cref, const std::string& filename);
     oms_status_enu_t exportDependencyGraphs(const ComRef& cref, const std::string& initialization, const std::string& simulation);
     oms_status_enu_t getCurrentTime(const ComRef& cref, double* time);
-    oms_status_enu_t addVariableFilter(const ComRef& cref, const std::string& regex);
-    oms_status_enu_t removeVariableFilter(const ComRef& cref, const std::string& regex);
+    oms_status_enu_t addSignalsToResults(const ComRef& cref, const std::string& regex);
+    oms_status_enu_t removeSignalsFromResults(const ComRef& cref, const std::string& regex);
 
     const std::string& getTempDirectory() {return GetInstance().tempDir;}
     const std::string& getWorkingDirectory() {return GetInstance().workingDir;}

@@ -689,7 +689,7 @@ oms_status_enu_t oms2_getCurrentTime(const char* model, double* time);
  * \param regex [in] Regular expression
  * \return Error status
  */
-oms_status_enu_t oms2_addVariableFilter(const char* cref, const char* regex);
+oms_status_enu_t oms2_addSignalsToResults(const char* cref, const char* regex);
 
 /**
  * \brief Add all variables that match the given regex to the result file.
@@ -698,7 +698,7 @@ oms_status_enu_t oms2_addVariableFilter(const char* cref, const char* regex);
  * \param regex [in] Regular expression
  * \return Error status
  */
-oms_status_enu_t oms2_removeVariableFilter(const char* cref, const char* regex);
+oms_status_enu_t oms2_removeSignalsFromResults(const char* cref, const char* regex);
 
 #ifdef __cplusplus
 }
