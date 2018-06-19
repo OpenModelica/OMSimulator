@@ -95,8 +95,8 @@ namespace oms2
     oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultWriter);
     oms_status_enu_t emit(ResultWriter& resultWriter);
 
-    void addVariableFilter(const std::string& regex);
-    void removeVariableFilter(const std::string& regex);
+    void addSignalsToResults(const std::string& regex);
+    void removeSignalsFromResults(const std::string& regex);
 
   private:
     oms_status_enu_t initializeDependencyGraph_initialUnknowns();
@@ -143,7 +143,7 @@ namespace oms2
     std::vector<oms2::Variable> outputs;
     std::vector<oms2::Variable> parameters;
     std::vector<oms2::Variable> allVariables;
-    std::vector<bool> varFilter;
+    std::vector<bool> exportVariables;
 
     std::map<std::string, oms2::Option<double>> realParameters;
     std::map<std::string, oms2::Option<int>> integerParameters;

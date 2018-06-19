@@ -83,8 +83,8 @@ namespace oms2
     oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultWriter) {return oms_status_ok;}
     oms_status_enu_t emit(ResultWriter& resultWriter) {return oms_status_ok;}
 
-    void addVariableFilter(const std::string& regex) {logWarning("addVariableFilter not implemented for tables");}
-    void removeVariableFilter(const std::string& regex) {logWarning("removeVariableFilter not implemented for tables");}
+    void addSignalsToResults(const std::string& regex) {logWarning("addSignalsToResults not implemented for tables");}
+    void removeSignalsFromResults(const std::string& regex) {logWarning("removeSignalsFromResults not implemented for tables");}
 
   private:
     Table(const ComRef& cref, const std::string& filename);

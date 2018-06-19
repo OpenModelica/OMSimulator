@@ -106,8 +106,8 @@ namespace oms2
 
     double getCurrentTime() {return time;}
 
-    oms_status_enu_t addVariableFilter(const std::string& regex);
-    oms_status_enu_t removeVariableFilter(const std::string& regex);
+    oms_status_enu_t addSignalsToResults(const std::string& regex);
+    oms_status_enu_t removeSignalsFromResults(const std::string& regex);
 
   private:
     oms_status_enu_t loadElementGeometry(const pugi::xml_node& node);
