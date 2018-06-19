@@ -1596,3 +1596,17 @@ oms_status_enu_t oms2::FMICompositeModel::emit(ResultWriter& resultWriter)
 
   return oms_status_ok;
 }
+
+oms_status_enu_t oms2::FMICompositeModel::addVariableFilter(const std::string& regex)
+{
+  for (const auto& it : subModels)
+    it.second->addVariableFilter(regex);
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms2::FMICompositeModel::removeVariableFilter(const std::string& regex)
+{
+  for (const auto& it : subModels)
+    it.second->removeVariableFilter(regex);
+  return oms_status_ok;
+}

@@ -32,12 +32,13 @@
 #ifndef _OMS2_TABLE_H_
 #define _OMS2_TABLE_H_
 
-#include "ResultReader.h"
-#include "ResultWriter.h"
 #include "ComRef.h"
 #include "FMISubModel.h"
 #include "FMUInfo.h"
+#include "Logging.h"
 #include "Option.h"
+#include "ResultReader.h"
+#include "ResultWriter.h"
 #include "Variable.h"
 
 #include <map>
@@ -81,6 +82,9 @@ namespace oms2
 
     oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultWriter) {return oms_status_ok;}
     oms_status_enu_t emit(ResultWriter& resultWriter) {return oms_status_ok;}
+
+    void addVariableFilter(const std::string& regex) {logWarning("addVariableFilter not implemented for tables");}
+    void removeVariableFilter(const std::string& regex) {logWarning("removeVariableFilter not implemented for tables");}
 
   private:
     Table(const ComRef& cref, const std::string& filename);

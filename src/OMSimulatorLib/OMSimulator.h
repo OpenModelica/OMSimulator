@@ -610,6 +610,7 @@ oms_status_enu_t oms2_setLoggingInterval(const char* cref, double loggingInterva
  *
  * \param cref       [in] Name of the model instance
  * \param filename   [in] Result file
+ * \param bufferSize [in] Buffer size to speedup the logging
  * \return           Error status
  */
 oms_status_enu_t oms2_setResultFile(const char* cref, const char* filename, int bufferSize);
@@ -680,6 +681,24 @@ oms_status_enu_t oms2_exportDependencyGraphs(const char* cref, const char* initi
  * \return Error status
  */
 oms_status_enu_t oms2_getCurrentTime(const char* model, double* time);
+
+/**
+ * \brief Add all variables that match the given regex to the result file.
+ *
+ * \param cref  [in] Name of the model instance
+ * \param regex [in] Regular expression
+ * \return Error status
+ */
+oms_status_enu_t oms2_addVariableFilter(const char* cref, const char* regex);
+
+/**
+ * \brief Add all variables that match the given regex to the result file.
+ *
+ * \param cref  [in] Name of the model instance
+ * \param regex [in] Regular expression
+ * \return Error status
+ */
+oms_status_enu_t oms2_removeVariableFilter(const char* cref, const char* regex);
 
 #ifdef __cplusplus
 }

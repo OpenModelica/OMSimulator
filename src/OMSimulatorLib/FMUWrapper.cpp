@@ -39,6 +39,7 @@
 #include "ssd/Tags.h"
 
 #include <cmath>
+#include <regex>
 #include <fmilib.h>
 #include <JM/jm_portability.h>
 
@@ -212,18 +213,18 @@ oms2::FMUWrapper* oms2::FMUWrapper::newSubModel(const oms2::ComRef& cref, const 
 
   model->fmuInfo.setKind(model->fmu);
 
-  model->callBackFunctions.logger = oms2::fmi2logger;
-  model->callBackFunctions.allocateMemory = calloc;
-  model->callBackFunctions.freeMemory = free;
-  model->callBackFunctions.componentEnvironment = model->fmu;
-  model->callBackFunctions.stepFinished = NULL;
+  model->callbackFunctions.logger = oms2::fmi2logger;
+  model->callbackFunctions.allocateMemory = calloc;
+  model->callbackFunctions.freeMemory = free;
+  model->callbackFunctions.componentEnvironment = model->fmu;
+  model->callbackFunctions.stepFinished = NULL;
 
   if (oms_fmi_kind_me == model->fmuInfo.getKind())
   {
     jm_status_enu_t jmstatus;
 
     // load the FMU's shared library
-    jmstatus = fmi2_import_create_dllfmu(model->fmu, fmi2_fmu_kind_me, &model->callBackFunctions);
+    jmstatus = fmi2_import_create_dllfmu(model->fmu, fmi2_fmu_kind_me, &model->callbackFunctions);
     if (jm_status_error == jmstatus)
     {
       logError("Could not create the DLL loading mechanism (C-API). Error: " + std::string(fmi2_import_get_last_error(model->fmu)));
@@ -252,7 +253,7 @@ oms2::FMUWrapper* oms2::FMUWrapper::newSubModel(const oms2::ComRef& cref, const 
     jm_status_enu_t jmstatus;
 
     // load the FMU shared library
-    jmstatus = fmi2_import_create_dllfmu(model->fmu, fmi2_fmu_kind_cs, &model->callBackFunctions);
+    jmstatus = fmi2_import_create_dllfmu(model->fmu, fmi2_fmu_kind_cs, &model->callbackFunctions);
     if (jm_status_error == jmstatus)
     {
       logError("Could not create the DLL loading mechanism (C-API). Error: " + std::string(fmi2_import_get_last_error(model->fmu)));
@@ -327,6 +328,7 @@ oms2::FMUWrapper* oms2::FMUWrapper::newSubModel(const oms2::ComRef& cref, const 
   // create some special variable maps
   for (auto const &v : model->allVariables)
   {
+    bool filter = true;
     if (v.isParameter() && v.isTypeReal())
       model->realParameters[v.getName()] = oms2::Option<double>();
     else if (v.isParameter() && v.isTypeInteger())
@@ -335,17 +337,23 @@ oms2::FMUWrapper* oms2::FMUWrapper::newSubModel(const oms2::ComRef& cref, const 
       model->booleanParameters[v.getName()] = oms2::Option<bool>();
 
     if (v.isInput())
+    {
       model->inputs.push_back(v);
+      filter = false;
+    }
     else if (v.isOutput())
     {
       model->outputs.push_back(v);
       model->outputsGraph.addVariable(v);
+      filter = false;
     }
     else if (v.isParameter())
       model->parameters.push_back(v);
 
     if (v.isInitialUnknown())
       model->initialUnknownsGraph.addVariable(v);
+
+    model->varFilter.push_back(filter);
   }
 
   std::vector<oms2::Connector> connectors;
@@ -357,7 +365,7 @@ oms2::FMUWrapper* oms2::FMUWrapper::newSubModel(const oms2::ComRef& cref, const 
     connectors.push_back(c);
   }
   i = 1;
-  size = 1+ model->outputs.size();
+  size = 1 + model->outputs.size();
   for (auto const &v : model->outputs)
   {
     oms2::Connector c(oms_causality_output, v.getType(), v.getSignalRef(), i++/(double)size);
@@ -1243,9 +1251,12 @@ oms_status_enu_t oms2::FMUWrapper::setRealInputDerivatives(const oms2::SignalRef
 
 oms_status_enu_t oms2::FMUWrapper::registerSignalsForResultFile(ResultWriter& resultWriter)
 {
-  unsigned int i=0;
-  for (auto const &var : allVariables)
+  for (unsigned int i=0; i<allVariables.size(); ++i)
   {
+    if (varFilter[i])
+      continue;
+
+    auto const &var = allVariables[i];
     oms2::ComRef cref = var.getCref();
     cref.popFirst();
     std::string name = cref.toString() + "." + var.getName();
@@ -1291,8 +1302,6 @@ oms_status_enu_t oms2::FMUWrapper::registerSignalsForResultFile(ResultWriter& re
       else
         logInfo("Variable " + name + " will not be stored in the result file, because the signal type is not supported");
     }
-
-    i++;
   }
 
   return oms_status_ok;
@@ -1326,4 +1335,38 @@ oms_status_enu_t oms2::FMUWrapper::emit(ResultWriter& resultWriter)
   }
 
   return oms_status_ok;
+}
+
+void oms2::FMUWrapper::addVariableFilter(const std::string& regex)
+{
+  std::regex exp(regex);
+  for (unsigned int i=0; i<allVariables.size(); ++i)
+  {
+    if (!varFilter[i])
+      continue;
+
+    auto const &var = allVariables[i];
+    if(regex_match(var.toString(), exp))
+    {
+      logInfo("added to variable filter: " + var.toString());
+      varFilter[i] = false;
+    }
+  }
+}
+
+void oms2::FMUWrapper::removeVariableFilter(const std::string& regex)
+{
+  std::regex exp(regex);
+  for (unsigned int i=0; i<allVariables.size(); ++i)
+  {
+    if (varFilter[i])
+      continue;
+
+    auto const &var = allVariables[i];
+    if(regex_match(var.toString(), exp))
+    {
+      logInfo("removed from variable filter: " + var.toString());
+      varFilter[i] = true;
+    }
+  }
 }
