@@ -926,11 +926,10 @@ oms_status_enu_t oms2::FMICompositeModel::doSteps(ResultWriter& resultWriter, co
 
     if (loggingInterval >= 0.0 && time - tLastEmit >= loggingInterval)
     {
-      // input := output
-      emit(resultWriter);
+      if (loggingInterval <= 0.0)
+        emit(resultWriter);
       updateInputs(outputsGraph);
       emit(resultWriter);
-      tLastEmit = time;
     }
     else
       updateInputs(outputsGraph);
@@ -972,11 +971,10 @@ oms_status_enu_t oms2::FMICompositeModel::stepUntilStandard(ResultWriter& result
     // input := output
     if (loggingInterval >= 0.0 && time - tLastEmit >= loggingInterval)
     {
-      // input := output
-      emit(resultWriter);
+      if (loggingInterval <= 0.0)
+        emit(resultWriter);
       updateInputs(outputsGraph);
       emit(resultWriter);
-      tLastEmit = time;
     }
     else
       updateInputs(outputsGraph);
@@ -1034,11 +1032,10 @@ oms_status_enu_t oms2::FMICompositeModel::stepUntilPCTPL(ResultWriter& resultWri
 
     if (loggingInterval >= 0.0 && time - tLastEmit >= loggingInterval)
     {
-      // input := output
-      emit(resultWriter);
+      if (loggingInterval <= 0.0)
+        emit(resultWriter);
       updateInputs(outputsGraph);
       emit(resultWriter);
-      tLastEmit = time;
     }
     else
       updateInputs(outputsGraph);
@@ -1069,11 +1066,10 @@ void oms2::FMICompositeModel::simulate_asynchronous(ResultWriter& resultWriter, 
 
     if (loggingInterval >= 0.0 && time - tLastEmit >= loggingInterval)
     {
-      // input := output
-      emit(resultWriter);
+      if (loggingInterval <= 0.0)
+        emit(resultWriter);
       updateInputs(outputsGraph);
       emit(resultWriter);
-      tLastEmit = time;
     }
     else
       updateInputs(outputsGraph);
@@ -1110,11 +1106,10 @@ oms_status_enu_t oms2::FMICompositeModel::simulateTLM(ResultWriter* resultWriter
 
     if (loggingInterval >= 0.0 && time - tLastEmit >= loggingInterval)
     {
-      // input := output
-      emit(*resultWriter);
+      if (loggingInterval <= 0.0)
+        emit(*resultWriter);
       updateInputs(outputsGraph);
       emit(*resultWriter);
-      tLastEmit = time;
     }
     else
       updateInputs(outputsGraph);
@@ -1593,6 +1588,7 @@ oms_status_enu_t oms2::FMICompositeModel::emit(ResultWriter& resultWriter)
       return logError("Failed to log simulation results");
 
   resultWriter.emit(time);
+  tLastEmit = time;
 
   return oms_status_ok;
 }
