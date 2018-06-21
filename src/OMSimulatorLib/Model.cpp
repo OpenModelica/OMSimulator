@@ -267,7 +267,7 @@ oms_status_enu_t oms2::Model::initialize()
 
     if (resultFile)
     {
-      logInfo("Result file: " + resultFilename);
+      logInfo("Result file: " + resultFilename + " (bufferSize=" + std::to_string(bufferSize) + ")");
 
       // add all signals
       compositeModel->registerSignalsForResultFile(*resultFile);
@@ -295,6 +295,7 @@ oms_status_enu_t oms2::Model::reset()
 
   if (resultFile)
   {
+    compositeModel->emit(*resultFile);
     resultFile->close();
     delete resultFile;
     resultFile = NULL;
@@ -333,18 +334,19 @@ oms_status_enu_t oms2::Model::terminate()
 
   modelState = oms_modelState_initialization;
 
+  if (resultFile)
+  {
+    compositeModel->emit(*resultFile);
+    resultFile->close();
+    delete resultFile;
+    resultFile = NULL;
+  }
+
   oms_status_enu_t status = compositeModel->terminate();
   if (oms_status_ok == status)
   {
     modelState = oms_modelState_instantiated;
     logInfo("Simulation finished.");
-  }
-
-  if (resultFile)
-  {
-    resultFile->close();
-    delete resultFile;
-    resultFile = NULL;
   }
 
   return status;
@@ -427,7 +429,7 @@ void oms2::Model::setResultFile(const std::string& value, unsigned int bufferSiz
         return;
       }
 
-      logInfo("Result file: " + resultFilename);
+      logInfo("Result file: " + resultFilename + " (bufferSize=" + std::to_string(bufferSize) + ")");
 
       // add all signals
       compositeModel->registerSignalsForResultFile(*resultFile);
