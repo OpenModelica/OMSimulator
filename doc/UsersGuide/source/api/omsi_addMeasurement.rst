@@ -14,12 +14,14 @@ Add measurement values for a fitting variable.
   -- values  [in] Array of measured values for respective time instants.
   -- status  [out] Error status.
   status = omsi_addMeasurement(simodel, iSeries, var, values)
+
 #END#
 
 #CAPI#
 .. code-block:: c
 
   oms_status_enu_t omsi_addMeasurement(void* simodel, size_t iSeries, const char* var, const double* values, size_t nValues);
+
 #END#
 
 #DESCRIPTION#

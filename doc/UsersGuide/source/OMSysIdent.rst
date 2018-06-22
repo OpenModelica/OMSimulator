@@ -1,7 +1,7 @@
 .. index:: OMSysIdent
 
 OMSysIdent
-==============================================
+==========
 
 OMSysIdent is a module for the parameter estimation of behavioral models
 (wrapped as FMUs) on top of the OMSimulator API.

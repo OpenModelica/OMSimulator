@@ -14,12 +14,14 @@ Solve parameter estimation problem.
   --                 where "" denotes no output.
   -- status     [out] Error status.
   status = omsi_solve(simodel, reporttype)
+
 #END#
 
 #CAPI#
 .. code-block:: c
 
   oms_status_enu_t omsi_solve(void* simodel, const char* reporttype);
+
 #END#
 
 #DESCRIPTION#

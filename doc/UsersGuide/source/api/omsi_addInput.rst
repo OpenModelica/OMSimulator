@@ -17,12 +17,14 @@ with the same external inputs!
   -- values  [in] Array of input values corresponding to respective "time" array entries in omsi_initialize().
   -- status  [out] Error status.
   status = omsi_addInput(simodel, var, time, values)
+
 #END#
 
 #CAPI#
 .. code-block:: c
 
   oms_status_enu_t omsi_addInput(void* simodel, const char* var, const double* values, size_t nValues);
+
 #END#
 
 #DESCRIPTION#

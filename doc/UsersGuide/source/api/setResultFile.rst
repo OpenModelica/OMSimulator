@@ -2,28 +2,30 @@
 setResultFile
 -------------
 
-This functions defines the result file name of the given composite model.
+Set the result file of the simulation.
 #END#
 
 #LUA#
 .. code-block:: lua
 
-  setResultFile(model, filename)
+  status = oms2_setResultFile(cref, filename)
+  status = oms2_setResultFile(cref, filename, bufferSize)
 
-.. csv-table::
-  :header: "Input", "Type", "Description"
-  :widths: 15, 10, 40
+#END#
 
-  "model", "Object", "Opaque pointer to composite model."
-  "filename", "String", ""
+#PYTHON#
+.. code-block:: python
+
+  # not yet available
+
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  void oms_setResultFile(void* model, const char* filename);
+  oms_status_enu_t oms2_setResultFile(const char* cref, const char* filename, int bufferSize);
+
 #END#
 
 #DESCRIPTION#
-mat files and csv files are supported.
 #END#

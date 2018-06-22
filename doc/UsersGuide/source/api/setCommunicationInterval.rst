@@ -2,26 +2,28 @@
 setCommunicationInterval
 ------------------------
 
-This functions defines the communication interval of the given composite model.
+Set the communication interval of the simulation.
 #END#
 
 #LUA#
 .. code-block:: lua
 
-  setCommunicationInterval(model, communicationInterval)
+  status = oms2_setCommunicationInterval(cref, communicationInterval)
 
-.. csv-table::
-  :header: "Input", "Type", "Description"
-  :widths: 15, 10, 40
+#END#
 
-  "model", "Object", "Opaque pointer to composite model."
-  "communicationInterval", "Number", ""
+#PYTHON#
+.. code-block:: python
+
+  # not yet available
+
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  void oms_setCommunicationInterval(void* model, double communicationInterval);
+  oms_status_enu_t oms2_setCommunicationInterval(const char* cref, double communicationInterval);
+
 #END#
 
 #DESCRIPTION#

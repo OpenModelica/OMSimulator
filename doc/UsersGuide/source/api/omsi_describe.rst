@@ -11,12 +11,14 @@ Print summary of SysIdent model.
   -- simodel [inout] SysIdent model as opaque pointer.
   -- status  [out] Error status.
   status = omsi_describe(simodel)
+
 #END#
 
 #CAPI#
 .. code-block:: c
 
   oms_status_enu_t omsi_describe(void* simodel);
+
 #END#
 
 #DESCRIPTION#

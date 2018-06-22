@@ -2,25 +2,28 @@
 initialize
 ----------
 
-This function initializes a given composite model. After this call, the model is in simulation mode.
+Initializes a composite model (works for both FMI and TLM).
 #END#
 
 #LUA#
 .. code-block:: lua
 
-  initialize(model)
+  status = oms2_initialize(ident)
 
-.. csv-table::
-  :header: "Input", "Type", "Description"
-  :widths: 15, 10, 40
+#END#
 
-  "model", "Object", "Opaque pointer to composite model."
+#PYTHON#
+.. code-block:: python
+
+  # not yet available
+
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_t oms_initialize(void* model);
+  oms_status_enu_t oms2_initialize(const char* ident);
+
 #END#
 
 #DESCRIPTION#

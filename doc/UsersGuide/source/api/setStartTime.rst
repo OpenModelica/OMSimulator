@@ -2,26 +2,28 @@
 setStartTime
 ------------
 
-This function defines the start time of a given composite model.
+Set the start time of the simulation.
 #END#
 
 #LUA#
 .. code-block:: lua
 
-  setStartTime(model, startTime)
+  status = oms2_setStartTime(cref, startTime)
 
-.. csv-table::
-  :header: "Input", "Type", "Description"
-  :widths: 15, 10, 40
+#END#
 
-  "model", "Object", "Opaque pointer to composite model."
-  "startTime", "Number", ""
+#PYTHON#
+.. code-block:: python
+
+  # not yet available
+
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  void oms_setStartTime(void* model, double startTime);
+  oms_status_enu_t oms2_setStartTime(const char* cref, double startTime);
+
 #END#
 
 #DESCRIPTION#

@@ -2,27 +2,28 @@
 setBoolean
 ----------
 
-Set parameter and input values of type boolean.
+Set boolean value of given signal.
 #END#
 
 #LUA#
 .. code-block:: lua
 
-  setBoolean(model, var, value)
+  status = oms2_setBoolean(signal, value)
 
-.. csv-table::
-  :header: "Input", "Type", "Description"
-  :widths: 15, 10, 40
+#END#
 
-  "model", "Object", "Opaque pointer to composite model."
-  "var", "String", ""
-  "value", "Number", ""
+#PYTHON#
+.. code-block:: python
+
+  # not yet available
+
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  void oms_setBoolean(void* model, const char* var, int value);
+  oms_status_enu_t oms2_setBoolean(const char* signal, bool value);
+
 #END#
 
 #DESCRIPTION#

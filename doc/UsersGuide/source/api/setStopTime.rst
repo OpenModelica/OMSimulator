@@ -2,26 +2,28 @@
 setStopTime
 -----------
 
-This function defines the stop time of a given composite model.
+Set the stop time of the simulation.
 #END#
 
 #LUA#
 .. code-block:: lua
 
-  setStopTime(model, stopTime)
+  status = oms2_setStopTime(cref, stopTime)
 
-.. csv-table::
-  :header: "Input", "Type", "Description"
-  :widths: 15, 10, 40
+#END#
 
-  "model", "Object", "Opaque pointer to composite model."
-  "stopTime", "Number", ""
+#PYTHON#
+.. code-block:: python
+
+  # not yet available
+
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  void oms_setStopTime(void* model, double stopTime);
+  oms_status_enu_t oms2_setStopTime(const char* cref, double stopTime);
+
 #END#
 
 #DESCRIPTION#

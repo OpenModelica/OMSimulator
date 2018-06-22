@@ -2,26 +2,28 @@
 exportCompositeStructure
 ------------------------
 
-This function generates a dot file representing the composite structure of a given model.
+Export the composite structure of a given model to a dot file.
 #END#
 
 #LUA#
 .. code-block:: lua
 
-  exportCompositeStructure(model, prefix)
+  status = oms2_exportCompositeStructure(cref, filename)
 
-.. csv-table::
-  :header: "Input", "Type", "Description"
-  :widths: 15, 10, 40
+#END#
 
-  "model", "Object", "Opaque pointer to composite model."
-  "prefix", "String", "Filename prefix."
+#PYTHON#
+.. code-block:: python
+
+  # not yet available
+
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  void oms_exportCompositeStructure(void* model, const char* prefix);
+  oms_status_enu_t oms2_exportCompositeStructure(const char* cref, const char* filename);
+
 #END#
 
 #DESCRIPTION#
