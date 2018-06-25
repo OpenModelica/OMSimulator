@@ -196,6 +196,16 @@ oms_status_enu_t oms2::Model::save(const std::string& filename)
   return oms_status_ok;
 }
 
+void oms2::Model::setLoggingSamples(int value)
+{
+  loggingInterval = (stopTime-startTime)/value;
+}
+
+int oms2::Model::getLoggingSamples()
+{
+  return (stopTime-startTime)/loggingInterval;
+}
+
 oms2::FMICompositeModel* oms2::Model::getFMICompositeModel()
 {
   if (oms_component_fmi == getType())
@@ -357,7 +367,7 @@ oms_status_enu_t oms2::Model::simulate()
   if (oms_modelState_simulation != modelState)
     return logError("[oms2::Model::simulate] Model cannot be simulated, because it isn't initialized.");
 
-  oms_status_enu_t status = compositeModel->stepUntil(*resultFile, stopTime, communicationInterval, loggingInterval, loggingSamples, masterAlgorithm, false);
+  oms_status_enu_t status = compositeModel->stepUntil(*resultFile, stopTime, communicationInterval, loggingInterval, masterAlgorithm, false);
   return status;
 }
 
@@ -375,7 +385,7 @@ oms_status_enu_t oms2::Model::stepUntil(const double timeValue)
   if (oms_modelState_simulation != modelState)
     return logError("[oms2::Model::stepUntil] Model cannot be simulated, because it isn't initialized.");
 
-  oms_status_enu_t status = compositeModel->stepUntil(*resultFile, timeValue, communicationInterval, loggingInterval, loggingSamples, masterAlgorithm, false);
+  oms_status_enu_t status = compositeModel->stepUntil(*resultFile, timeValue, communicationInterval, loggingInterval, masterAlgorithm, false);
   return status;
 }
 
@@ -397,7 +407,7 @@ oms_status_enu_t oms2::Model::simulate_realtime()
   if (oms_modelState_simulation != modelState)
     return logError("[oms2::Model::simulate_realtime] Model cannot be simulated, because it isn't initialized.");
 
-  oms_status_enu_t status = compositeModel->stepUntil(*resultFile, stopTime, communicationInterval, loggingInterval, loggingSamples, masterAlgorithm, true);
+  oms_status_enu_t status = compositeModel->stepUntil(*resultFile, stopTime, communicationInterval, loggingInterval, masterAlgorithm, true);
   return status;
 }
 

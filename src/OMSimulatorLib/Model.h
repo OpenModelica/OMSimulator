@@ -68,8 +68,8 @@ namespace oms2
     void setCommunicationInterval(double value) {communicationInterval = value;}
     void setLoggingInterval(double value) {loggingInterval = value;}
     double getLoggingInterval() const {return loggingInterval;}
-    void setLoggingSamples(int value) {loggingSamples = value;}
-    int getLoggingSamples() const {return loggingSamples;}
+    void setLoggingSamples(int value);
+    int getLoggingSamples();
     double getCommunicationInterval() const {return communicationInterval;}
     void setResultFile(const std::string& value, unsigned int bufferSize);
     const std::string& getResultFile() const {return resultFilename;}
@@ -118,7 +118,6 @@ namespace oms2
     double tolerance = 1.0e-4;              ///< experiment, default 1.0e-4
     double communicationInterval = 1.0e-2;  ///< experiment, default 1.0e-2
     double loggingInterval = 0.0;           ///< experiment, default 0.0
-    int loggingSamples = 0.0;               ///< experiment, default 0.0
     std::string resultFilename;             ///< experiment, default <name>_res.mat
     unsigned int bufferSize = 1;
     ResultWriter *resultFile = NULL;

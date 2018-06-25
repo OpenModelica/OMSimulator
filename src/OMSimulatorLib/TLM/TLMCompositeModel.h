@@ -87,7 +87,7 @@ namespace oms2
     oms_status_enu_t simulate(ResultWriter &resultWriter, double stopTime, double communicationInterval, double loggingLevel, oms2::MasterAlgorithm masterAlgorithm);
     void simulate_asynchronous(ResultWriter& resultWriter, double stopTime, double communicationInterval, double loggingLevel, void (*cb)(const char* ident, double time, oms_status_enu_t status));
     oms_status_enu_t doSteps(ResultWriter& resultWriter, const int numberOfSteps, double communicationInterval, double loggingLevel);
-    oms_status_enu_t stepUntil(ResultWriter &resultWriter, double stopTime, double communicationInterval, double loggingLevel, int loggingSamples, oms2::MasterAlgorithm masterAlgorithm, bool realtime_sync);
+    oms_status_enu_t stepUntil(ResultWriter &resultWriter, double stopTime, double communicationInterval, double loggingLevel, oms2::MasterAlgorithm masterAlgorithm, bool realtime_sync);
 
     oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultWriter) {return oms_status_ok;}
     oms_status_enu_t emit(ResultWriter& resultWriter) {return oms_status_ok;}
