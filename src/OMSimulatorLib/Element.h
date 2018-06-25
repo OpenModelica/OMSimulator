@@ -61,6 +61,8 @@ namespace oms2
     void setGeometry(const oms2::ssd::ElementGeometry* newGeometry);
     void setConnectors(const std::vector<oms2::Connector> newConnectors);
 
+    void describe();
+
   private:
     // methods to copy the object
     Element(const Element& rhs);            ///< not implemented

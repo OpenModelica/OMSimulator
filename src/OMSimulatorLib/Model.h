@@ -89,7 +89,7 @@ namespace oms2
 
     oms_status_enu_t setTLMInitialValues(const SignalRef& ifc, std::vector<double> value);
 
-    virtual oms_status_enu_t describe() { return compositeModel->describe(); }
+    oms_status_enu_t describe() { return compositeModel->describe(); }
     oms_status_enu_t initialize();
     oms_status_enu_t reset();
     oms_status_enu_t terminate();

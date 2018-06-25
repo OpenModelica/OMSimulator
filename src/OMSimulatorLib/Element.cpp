@@ -35,6 +35,7 @@
 #include "Connector.h"
 
 #include <cstring>
+#include <iostream>
 
 oms2::Element::Element(oms_element_type_enu_t type, const oms2::ComRef& name)
 {
@@ -103,4 +104,21 @@ void oms2::Element::setConnectors(const std::vector<oms2::Connector> newConnecto
 
   for (int i=0; i<newConnectors.size(); ++i)
     this->connectors[i] = reinterpret_cast<oms_connector_t*>(new oms2::Connector(newConnectors[i]));
+}
+
+void oms2::Element::describe()
+{
+  std::cout << "FMI sub model \"" + getName() + "\"" << std::endl;
+
+  switch(getType())
+  {
+    case oms_component_none:
+    case oms_component_tlm:      std::cout << "type: TLM model" << std::endl; break;
+    case oms_component_fmi:      std::cout << "type: FMI model" << std::endl; break;
+    case oms_component_external: std::cout << "type: External model" << std::endl; break;
+    case oms_component_fmu:      std::cout << "type: FMU" << std::endl; break;
+    case oms_component_table:    std::cout << "type: lookup table" << std::endl; break;
+    case oms_component_port:     std::cout << "type: port" << std::endl; break;
+    default:                     std::cout << "type: unknown" << std::endl; break;
+  }
 }
