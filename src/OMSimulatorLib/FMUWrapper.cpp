@@ -1268,9 +1268,7 @@ oms_status_enu_t oms2::FMUWrapper::registerSignalsForResultFile(ResultWriter& re
       continue;
 
     auto const &var = allVariables[i];
-    oms2::ComRef cref = var.getCref();
-    cref.popFirst();
-    std::string name = cref.toString() + "." + var.getName();
+    std::string name = var.getCref().toString() + "." + var.getName();
     const std::string& description = var.getDescription();
     if (var.isParameter())
     {

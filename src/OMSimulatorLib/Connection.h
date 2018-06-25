@@ -55,6 +55,7 @@ namespace oms2
     Connection& operator=(const Connection& rhs);
 
     const oms2::ComRef getParent() const {return oms2::ComRef(parent);}
+    void setParent(const oms2::ComRef& parent);
     const oms2::SignalRef getSignalA() const {return oms2::SignalRef(conA);}
     const oms2::SignalRef getSignalB() const {return oms2::SignalRef(conB);}
 
@@ -63,6 +64,8 @@ namespace oms2
 
     bool isEqual(const oms2::Connection& connection) const;
     bool isEqual(const oms2::ComRef& parent, const oms2::SignalRef& signalA, const oms2::SignalRef& signalB) const;
+
+    void describe();
 
   private:
     friend bool operator==(const Connection& lhs, const Connection& rhs);

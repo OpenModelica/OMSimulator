@@ -428,7 +428,7 @@ oms_status_enu_t oms2::FMICompositeModel::addFMU(const std::string& filename, co
   }
 
   oms2::ComRef parent = getName();
-  oms2::FMUWrapper* subModel = oms2::FMUWrapper::newSubModel(parent + cref, filename);
+  oms2::FMUWrapper* subModel = oms2::FMUWrapper::newSubModel(cref, filename);
   if (!subModel)
     return oms_status_error;
 
@@ -452,7 +452,7 @@ oms_status_enu_t oms2::FMICompositeModel::addTable(const std::string& filename, 
   }
 
   oms2::ComRef parent = getName();
-  oms2::Table* subModel = oms2::Table::newSubModel(parent + cref, filename);
+  oms2::Table* subModel = oms2::Table::newSubModel(cref, filename);
   if (!subModel)
     return oms_status_error;
 
@@ -1605,4 +1605,36 @@ oms_status_enu_t oms2::FMICompositeModel::removeSignalsFromResults(const std::st
   for (const auto& it : subModels)
     it.second->removeSignalsFromResults(regex);
   return oms_status_ok;
+}
+
+oms_status_enu_t oms2::FMICompositeModel::describe()
+{
+  std::cout << "# FMI composite model \"" + getName() + "\"" << std::endl;
+
+  oms2::Element** elements = getElements();
+  while(*elements)
+  {
+    oms2::Element* element = *elements;
+    std::cout << "## ";
+    element->describe();
+    elements++;
+  }
+
+  oms2::Connection** connections = getConnections();
+  std::cout << "## Connections" << std::endl;
+  while(*connections)
+  {
+    oms2::Connection* connection = *connections;
+    connection->describe();
+    connections++;
+  }
+
+  return oms_status_ok;
+}
+
+void oms2::FMICompositeModel::setName(const oms2::ComRef& name)
+{
+  for (auto& connection : connections)
+    if (connection)
+      connection->setParent(name);
 }

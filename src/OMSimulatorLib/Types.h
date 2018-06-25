@@ -76,8 +76,8 @@ typedef enum {
 
 typedef enum {
   oms_component_none,
-  oms_component_tlm,      ///< TLM model
-  oms_component_fmi,      ///< FMI model
+  oms_component_tlm,      ///< TLM composite model
+  oms_component_fmi,      ///< FMI composite model
   oms_component_external, ///< External model
   oms_component_fmu,      ///< FMU
   oms_component_table,    ///< lookup table
