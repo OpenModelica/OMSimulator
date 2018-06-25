@@ -56,7 +56,7 @@ namespace oms2
     const oms2::ssd::ElementGeometry* getGeometry() {return element.getGeometry();}
     oms2::Element* getElement() {return &element;}
 
-    void setName(const ComRef& name) {element.setName(name);}
+    void setName(const ComRef& name);
     void setGeometry(const oms2::ssd::ElementGeometry& geometry) {element.setGeometry(&geometry);}
 
     virtual oms_status_enu_t initialize(double startTime, double tolerance) = 0;
@@ -70,7 +70,7 @@ namespace oms2
     virtual oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultWriter) = 0;
     virtual oms_status_enu_t emit(ResultWriter& resultWriter) = 0;
 
-    virtual oms_status_enu_t describe() { return oms_status_error; }
+    virtual oms_status_enu_t describe() = 0;
 
   protected:
     CompositeModel(oms_element_type_enu_t type, const ComRef& cref);

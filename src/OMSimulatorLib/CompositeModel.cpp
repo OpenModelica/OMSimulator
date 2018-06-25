@@ -45,3 +45,14 @@ oms2::CompositeModel::CompositeModel(oms_element_type_enu_t type, const ComRef& 
 oms2::CompositeModel::~CompositeModel()
 {
 }
+
+void oms2::CompositeModel::setName(const ComRef& name)
+{
+  element.setName(name);
+  if (getType() == oms_component_fmi)
+  {
+    // update internal references to the parent FMI composite model
+    FMICompositeModel* fmiModel = dynamic_cast<FMICompositeModel*>(this);
+    fmiModel->setName(name);
+  }
+}

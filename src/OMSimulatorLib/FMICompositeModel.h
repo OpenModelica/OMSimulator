@@ -75,6 +75,7 @@ namespace oms2
     FMISubModel* getSubModel(const oms2::ComRef& cref);
     oms2::Connection** getConnections() {return &connections[0];}
 
+    void setName(const oms2::ComRef& name);
     oms_status_enu_t renameSubModel(const oms2::ComRef& identOld, const oms2::ComRef& identNew);
 
     oms2::Element** getElements();
@@ -108,6 +109,8 @@ namespace oms2
 
     oms_status_enu_t addSignalsToResults(const std::string& regex);
     oms_status_enu_t removeSignalsFromResults(const std::string& regex);
+
+    oms_status_enu_t describe();
 
   private:
     oms_status_enu_t loadElementGeometry(const pugi::xml_node& node);

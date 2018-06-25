@@ -1475,10 +1475,7 @@ oms_status_enu_t oms2::Scope::describeModel(const oms2::ComRef &cref)
 {
   oms2::Model* model = getModel(cref);
   if (!model)
-  {
-    logError("Model: "+cref.toString()+" not found.");
-    return oms_status_error;
-  }
+    return logError("Model: " + cref.toString() + " not found.");
 
   return model->describe();
 }

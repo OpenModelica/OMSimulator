@@ -34,6 +34,7 @@
 #include "Logging.h"
 
 #include <cstring>
+#include <iostream>
 
 oms2::Connection::Connection(const oms2::ComRef& parent, const oms2::SignalRef& conA, const oms2::SignalRef& conB)
 {
@@ -131,4 +132,18 @@ bool oms2::Connection::isEqual(const oms2::Connection& connection) const
   const oms2::SignalRef& conA_ = connection.getSignalA();
   const oms2::SignalRef& conB_ = connection.getSignalB();
   return isEqual(parent_, conA_, conB_);
+}
+
+void oms2::Connection::describe()
+{
+  std::cout << getParent().toString() << ": " << getSignalA().toString() << " -> " << getSignalB().toString() << std::endl;
+}
+
+void oms2::Connection::setParent(const oms2::ComRef& parent)
+{
+  std::string str = parent.toString();
+
+  if (this->parent) delete[] this->parent;
+  this->parent = new char[str.size()+1];
+  strcpy(this->parent, str.c_str());
 }

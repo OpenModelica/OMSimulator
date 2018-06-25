@@ -46,6 +46,20 @@ static int OMSimulatorLua_oms2_getVersion(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms2_describe(const char* cref);
+static int OMSimulatorLua_oms2_describe(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* cref = lua_tostring(L, 1);
+  oms_status_enu_t status = oms2_describe(cref);
+
+  lua_pushinteger(L, status);
+  return 1;
+}
+
 //int oms2_compareSimulationResults(const char* filenameA, const char* filenameB, const char* var, double relTol, double absTol);
 static int OMSimulatorLua_oms2_compareSimulationResults(lua_State *L)
 {
@@ -1369,7 +1383,6 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(experimental_setActivationRatio);
   REGISTER_LUA_CALL(experimental_simulate_realtime);
   REGISTER_LUA_CALL(oms2_addConnection);
-  REGISTER_LUA_CALL(oms2_addConnection);
   REGISTER_LUA_CALL(oms2_addExternalModel);
   REGISTER_LUA_CALL(oms2_addFMISubModel);
   REGISTER_LUA_CALL(oms2_addFMU);
@@ -1380,6 +1393,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms2_compareSimulationResults);
   REGISTER_LUA_CALL(oms2_deleteConnection);
   REGISTER_LUA_CALL(oms2_deleteSubModel);
+  REGISTER_LUA_CALL(oms2_describe);
   REGISTER_LUA_CALL(oms2_exportCompositeStructure);
   REGISTER_LUA_CALL(oms2_exportDependencyGraphs);
   REGISTER_LUA_CALL(oms2_getBoolean);
