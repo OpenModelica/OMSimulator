@@ -196,6 +196,16 @@ oms_status_enu_t oms2::Model::save(const std::string& filename)
   return oms_status_ok;
 }
 
+void oms2::Model::setLoggingSamples(int value)
+{
+  loggingInterval = (stopTime-startTime)/value;
+}
+
+int oms2::Model::getLoggingSamples()
+{
+  return (stopTime-startTime)/loggingInterval;
+}
+
 oms2::FMICompositeModel* oms2::Model::getFMICompositeModel()
 {
   if (oms_component_fmi == getType())

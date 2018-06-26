@@ -68,6 +68,8 @@ namespace oms2
     void setCommunicationInterval(double value) {communicationInterval = value;}
     void setLoggingInterval(double value) {loggingInterval = value;}
     double getLoggingInterval() const {return loggingInterval;}
+    void setLoggingSamples(int value);
+    int getLoggingSamples();
     double getCommunicationInterval() const {return communicationInterval;}
     void setResultFile(const std::string& value, unsigned int bufferSize);
     const std::string& getResultFile() const {return resultFilename;}

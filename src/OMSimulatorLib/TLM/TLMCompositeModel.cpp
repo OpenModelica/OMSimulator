@@ -327,11 +327,6 @@ void oms2::TLMCompositeModel::setLoggingLevel(int level)
   omtlm_setLogLevel(model, level);
 }
 
-void oms2::TLMCompositeModel::setDataSamples(int samples)
-{
-  omtlm_setNumLogStep(model, samples);
-}
-
 oms_status_enu_t oms2::TLMCompositeModel::describe()
 {
   omtlm_printModelStructure(model);
@@ -430,6 +425,7 @@ oms_status_enu_t oms2::TLMCompositeModel::stepUntil(ResultWriter &resultWriter, 
 
   logInfo("Starting OMTLMSimulator in main thread.");
   omtlm_setStopTime(model, stopTime);
+  omtlm_setLogStepSize(model, loggingInterval);
   omtlm_simulate(model);
 
   for(size_t i=0; i<fmiModelThreads.size(); ++i)

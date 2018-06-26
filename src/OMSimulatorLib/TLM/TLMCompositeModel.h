@@ -78,7 +78,6 @@ namespace oms2
     oms_status_enu_t setTLMInitialValues(const SignalRef &ifc, std::vector<double> value);
 
     void setLoggingLevel(int level);
-    void setDataSamples(int samples);
 
     oms_status_enu_t describe();
 
