@@ -127,7 +127,7 @@ int oms2::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void *user_data)
 }
 
 oms2::FMUWrapper::FMUWrapper(const oms2::ComRef& cref, const std::string& filename)
-  : oms2::FMISubModel(oms_component_fmu, cref), fmuInfo(filename), solverMethod(EXPLICIT_EULER)
+  : oms2::FMISubModel(oms_component_fmu, cref), fmuInfo(filename), solverMethod(CVODE)
 {
   this->context = NULL;
   this->fmu = NULL;
