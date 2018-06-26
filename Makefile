@@ -16,11 +16,13 @@ ASAN ?= OFF
 # Option to switch between Debug and Release builds
 BUILD_TYPE ?= Release
 
-detected_OS := $(shell uname -s)
+detected_OS ?= $(shell uname -s)
+
 ifeq ($(detected_OS),Darwin)
 	BUILD_DIR := build/mac
 	INSTALL_DIR := install/mac
-	# MINGW detected => NO SUPPORT FOR BUILDING CERES SOLVER (yet)
+	CMAKE_TARGET=-DCMAKE_SYSTEM_NAME=$(detected_OS)
+	# Darwin detected => NO SUPPORT FOR BUILDING CERES SOLVER (yet)
 	CERES := OFF
 	LIBXML2 := OFF
 	OMSYSIDENT := OFF
@@ -30,7 +32,7 @@ else ifeq (MINGW32,$(findstring MINGW32,$(detected_OS)))
 	BUILD_DIR := build/mingw
 	INSTALL_DIR := install/mingw
 	CMAKE_TARGET=-G "MSYS Makefiles"
-	FMIL_FLAGS=-DFMILIB_FMI_PLATFORM=win32
+	FMIL_FLAGS?=-DFMILIB_FMI_PLATFORM=win32
 	# MINGW detected => NO SUPPORT FOR BUILDING CERES SOLVER  (yet)
 	CERES := OFF
 	OMSYSIDENT := OFF
@@ -41,7 +43,7 @@ else ifeq (MINGW,$(findstring MINGW,$(detected_OS)))
 	BUILD_DIR := build/mingw
 	INSTALL_DIR := install/mingw
 	CMAKE_TARGET=-G "MSYS Makefiles"
-	FMIL_FLAGS=-DFMILIB_FMI_PLATFORM=win64
+	FMIL_FLAGS?=-DFMILIB_FMI_PLATFORM=win64
 	# MINGW detected => NO SUPPORT FOR BUILDING CERES SOLVER  (yet)
 	CERES := OFF
 	OMSYSIDENT := OFF
@@ -50,26 +52,43 @@ else ifeq (MINGW,$(findstring MINGW,$(detected_OS)))
 else
 	BUILD_DIR := build/linux
 	INSTALL_DIR := install/linux
+	CMAKE_TARGET=-DCMAKE_SYSTEM_NAME=$(detected_OS)
 	export ABI := LINUX64
 	FEXT=.so
+endif
+
+ifeq ($(CROSS_TRIPLE),)
+else
+  LUA_EXTRA_FLAGS=CC=$(CC) CXX=$(CXX) RANLIB=$(CROSS_TRIPLE)-ranlib detected_OS=$(detected_OS)
+  OMTLM := OFF
+  CROSS_TRIPLE_DASH = $(CROSS_TRIPLE)-
+  HOST_CROSS_TRIPLE = "--host=$(CROSS_TRIPLE)"
+  FMIL_FLAGS ?=
+endif
+ifeq ($(BOOST_ROOT),)
+else
+CMAKE_BOOST_ROOT="-DBOOST_ROOT=$(BOOST_ROOT)"
 endif
 
 .PHONY: OMSimulator OMSimulatorCore config-OMSimulator config-fmil config-lua config-cvode config-kinsol config-gflags config-glog config-ceres-solver config-3rdParty distclean testsuite doc doc-html doc-doxygen OMTLMSimulator OMTLMSimulatorClean
 
 OMSimulator:
-	@echo
+	@echo OS: $(detected_OS)
+	@echo TLM: $(OMTLM)
+	@echo CERES: $(CERES)
+	@echo LIBXML2: $(LIBXML2)
 	@echo "# make OMSimulator"
 	@echo
 	@$(MAKE) OMTLMSimulator
 	@$(MAKE) OMSimulatorCore
-	$(INSTALL_DIR)/bin/OMSimulator --version
+	test ! -z "$(CROSS_TRIPLE)" || $(INSTALL_DIR)/bin/OMSimulator --version
 
 OMSimulatorCore:
 	@echo
 	@echo "# make OMSimulatorCore"
 	@echo
 	@$(MAKE) -C $(BUILD_DIR) install
-	test ! `uname` = Darwin || (install_name_tool -change MAC64/libomtlmsimulator.dylib "@loader_path/../lib/libomtlmsimulator.dylib" $(INSTALL_DIR)/bin/OMSimulator)
+	test ! "$(detected_OS)" = Darwin || ($(CROSS_TRIPLE_DASH)install_name_tool -change MAC64/libomtlmsimulator.dylib "@loader_path/../lib/libomtlmsimulator.dylib" $(INSTALL_DIR)/bin/OMSimulator)
 
 ifeq ($(OMTLM),ON)
 OMTLMSimulator:
@@ -112,7 +131,7 @@ config-OMSimulator:
 	@echo
 	$(RM) $(BUILD_DIR)
 	$(MKDIR) $(BUILD_DIR)
-	cd $(BUILD_DIR) && cmake $(CMAKE_TARGET) ../.. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DOMSYSIDENT:BOOL=$(OMSYSIDENT) -DOMTLM:BOOL=$(OMTLM) -DASAN:BOOL=$(ASAN) -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
+	cd $(BUILD_DIR) && cmake $(CMAKE_TARGET) ../.. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DOMSYSIDENT:BOOL=$(OMSYSIDENT) -DOMTLM:BOOL=$(OMTLM) -DASAN:BOOL=$(ASAN) -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) $(CMAKE_BOOST_ROOT)
 
 config-fmil:
 	@echo
@@ -128,7 +147,7 @@ config-lua:
 	@echo "# config Lua"
 	@echo
 	$(RM) 3rdParty/Lua/$(INSTALL_DIR)
-	@$(MAKE) -C 3rdParty/Lua
+	$(MAKE) -C 3rdParty/Lua $(LUA_EXTRA_FLAGS)
 
 config-cvode:
 	@echo
@@ -193,7 +212,7 @@ config-libxml2:
 	@echo "# config libxml2"
 	@echo
 	$(MKDIR) 3rdParty/libxml2/$(INSTALL_DIR)
-	cd 3rdParty/libxml2 && ./autogen.sh --prefix="$(ROOT_DIR)/3rdParty/libxml2/$(INSTALL_DIR)" --without-python && $(MAKE) && $(MAKE) install
+	cd 3rdParty/libxml2 && ./autogen.sh --prefix="$(ROOT_DIR)/3rdParty/libxml2/$(INSTALL_DIR)" --without-python $(HOST_CROSS_TRIPLE) && $(MAKE) && $(MAKE) install
 	cd 3rdParty/libxml2 && git clean -fdx -e 'install/'
 endif
 
