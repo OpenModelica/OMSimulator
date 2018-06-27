@@ -51,9 +51,13 @@ IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 :: -- build OMSimulator -------------------------------------------------------
 
 install\win\bin\OMSimulator.exe --version
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
+IF NOT ["%ERRORLEVEL%"]==["0"] GOTO omsfail
 EXIT /B 0
 
 :fail
 ECHO Build failed!
+EXIT /B 1
+
+:omsfail
+ECHO OMSimulator.exe does not start!
 EXIT /B 1

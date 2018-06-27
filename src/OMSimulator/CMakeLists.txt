@@ -34,7 +34,6 @@ include_directories(${LUALibrary_INCLUDEDIR})
 include_directories(../OMSysIdentLib)
 include_directories(../OMSysIdentLua)
 
-
 link_directories(${FMILibrary_LIBRARYDIR})
 link_directories(${LUALibrary_LIBRARYDIR})
 link_directories(${CVODELibrary_LIBRARYDIR})

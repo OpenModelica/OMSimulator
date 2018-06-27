@@ -45,9 +45,9 @@ class OMSysIdent:
 
         """
         if (sys.platform == 'win32'):
-            self.obj=cdll.LoadLibrary("OMSimulatorLib.dll")
+            self.obj=cdll.LoadLibrary("OMSimulator.dll")
         else:
-            self.obj=cdll.LoadLibrary("libOMSimulatorLib.so")
+            self.obj=cdll.LoadLibrary("libOMSimulator.so")
 
         self.obj.omsi_newSysIdentModel.argtypes = [ctypes.c_char_p]
         self.obj.omsi_newSysIdentModel.restype = ctypes.c_void_p
