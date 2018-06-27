@@ -59,7 +59,7 @@ oms2::Scope::~Scope()
 
   // free memory if no one else does
   for (auto it=models.begin(); it != models.end(); it++)
-    unloadModel(it->first);
+    oms2::Model::DeleteModel(it->second);
 }
 
 oms2::Scope& oms2::Scope::GetInstance()
