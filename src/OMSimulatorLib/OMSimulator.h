@@ -692,7 +692,7 @@ oms_status_enu_t oms2_getCurrentTime(const char* model, double* time);
 oms_status_enu_t oms2_addSignalsToResults(const char* cref, const char* regex);
 
 /**
- * \brief Add all variables that match the given regex to the result file.
+ * \brief Removes all variables that match the given regex to the result file.
  *
  * \param cref  [in] Name of the model instance
  * \param regex [in] Regular expression

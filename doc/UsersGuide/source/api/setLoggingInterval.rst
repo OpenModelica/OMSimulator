@@ -1,6 +1,6 @@
 #CAPTION#
-setLoggingLevel
----------------
+setLoggingInterval
+------------------
 
 Set the logging interval of the simulation.
 #END#
@@ -8,7 +8,7 @@ Set the logging interval of the simulation.
 #LUA#
 .. code-block:: lua
 
-  oms2_setLoggingInterval(cref, loggingInterval)
+  status = oms2_setLoggingInterval(cref, loggingInterval)
 
 #END#
 
@@ -22,7 +22,7 @@ Set the logging interval of the simulation.
 #CAPI#
 .. code-block:: c
 
-  void oms2_setLoggingLevel(const char* cref, double loggingInterval);
+  oms_status_enu_t oms2_setLoggingInterval(const char* cref, double loggingInterval);
 
 #END#
 
