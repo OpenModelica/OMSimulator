@@ -6,7 +6,7 @@ ROOT_DIR=$(shell pwd)
 # Option to build Ceres-Solver and its dependencies as part of the 3rdParty projects
 CERES ?= ON
 # Option to build LIBXML2 as part of the 3rdParty projects
-LIBXML2 ?= ON
+LIBXML2 ?= $(OMTLM)
 # Option to enable the OMSysIdent parameter estimation module within the OMSimulator project
 OMSYSIDENT ?= ON
 # Option to enable OMTLM
@@ -89,12 +89,23 @@ ifeq ($(detected_OS),Darwin)
 endif
 
 ifeq ($(CROSS_TRIPLE),)
+  CMAKE=cmake $(CMAKE_TARGET)
 else
-	LUA_EXTRA_FLAGS=CC=$(CC) CXX=$(CXX) RANLIB=$(CROSS_TRIPLE)-ranlib detected_OS=$(detected_OS)
-	OMTLM := OFF
-	CROSS_TRIPLE_DASH = $(CROSS_TRIPLE)-
-	HOST_CROSS_TRIPLE = "--host=$(CROSS_TRIPLE)"
-	FMIL_FLAGS ?=
+  LUA_EXTRA_FLAGS=CC=$(CC) CXX=$(CXX) RANLIB=$(CROSS_TRIPLE)-ranlib detected_OS=$(detected_OS)
+  OMTLM := OFF
+  CERES := OFF
+  OMSYSIDENT := OFF
+  LIBXML2 := OFF
+  CROSS_TRIPLE_DASH = $(CROSS_TRIPLE)-
+  HOST_CROSS_TRIPLE = "--host=$(CROSS_TRIPLE)"
+  FMIL_FLAGS ?=
+  AR ?= $(CROSS_TRIPLE)-ar
+  RANLIB ?= $(CROSS_TRIPLE)-ranlib
+  CMAKE=cmake $(CMAKE_TARGET)
+  ifeq (MINGW,$(findstring MINGW,$(detected_OS)))
+    CMAKE_TARGET=-G "Unix Makefiles" -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_RC_COMPILER=$(CROSS_TRIPLE)-windres
+  endif
+  DISABLE_RUN_OMSIMULATOR_VERSION ?= 1
 endif
 
 ifeq ($(BOOST_ROOT),)
@@ -113,7 +124,7 @@ OMSimulator:
 	@echo
 	@$(MAKE) OMTLMSimulator
 	@$(MAKE) OMSimulatorCore
-	test ! -z "$(CROSS_TRIPLE)" || $(TOP_INSTALL_DIR)/bin/OMSimulator --version
+	test ! -z "$(DISABLE_RUN_OMSIMULATOR_VERSION)" || $(TOP_INSTALL_DIR)/bin/OMSimulator --version
 
 OMSimulatorCore:
 	@echo

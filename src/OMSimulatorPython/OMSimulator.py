@@ -4,9 +4,9 @@ import ctypes, sys
 class OMSimulator:
   def __init__(self):
     if (sys.platform == 'win32'):
-      self.obj=cdll.LoadLibrary("OMSimulatorLib.dll")
+      self.obj=cdll.LoadLibrary("OMSimulator.dll")
     else:
-      self.obj=cdll.LoadLibrary("libOMSimulatorLib.so")
+      self.obj=cdll.LoadLibrary("libOMSimulator.so")
 
     self.obj.oms2_addConnection.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms2_addConnection.restype = ctypes.c_int

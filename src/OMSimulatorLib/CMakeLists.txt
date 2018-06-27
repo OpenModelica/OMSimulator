@@ -129,7 +129,7 @@ ENDIF()
 
 # Shared library version
 add_library(OMSimulatorLib_shared SHARED ${OMSYSIDENT_OPTION} ${OMSIMULATORLIB_SOURCES})
-set_target_properties(OMSimulatorLib_shared PROPERTIES OUTPUT_NAME OMSimulatorLib)
+set_target_properties(OMSimulatorLib_shared PROPERTIES OUTPUT_NAME OMSimulator)
 IF(WIN32 AND MSVC)
   target_link_libraries(OMSimulatorLib_shared fmilib sundials_kinsol sundials_cvode sundials_nvecserial ${Boost_LIBRARIES} ${CERES_OPTION} ${OMTLM_LINKFLAGS})
 ELSEIF(WIN32 AND MINGW)
@@ -139,13 +139,14 @@ ELSE()
 ENDIF()
 
 install(TARGETS OMSimulatorLib_shared DESTINATION lib/${HOST_SHORT})
-IF(WIN32)
+IF(WIN32 AND MSVC)
+  # MinGW can statically link
   install(TARGETS OMSimulatorLib_shared DESTINATION bin)
 ENDIF()
 
 # Static library version
 add_library(OMSimulatorLib STATIC ${OMSIMULATORLIB_SOURCES})
-set_target_properties(OMSimulatorLib PROPERTIES OUTPUT_NAME OMSimulatorLib)
+set_target_properties(OMSimulatorLib PROPERTIES OUTPUT_NAME OMSimulator)
 set_target_properties(OMSimulatorLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
 install(TARGETS OMSimulatorLib DESTINATION lib/${HOST_SHORT})
 install(FILES OMSimulator.h Types.h DESTINATION include)
