@@ -2,11 +2,13 @@
 setTLMSocketData
 ----------------
 
+Sets data for TLM socket communication.
 #END#
 
 #LUA#
 .. code-block:: lua
 
+  status = oms2_setTLMSocketData(cref, address, managerPort, monitorPort)
 
 #END#
 
@@ -20,6 +22,7 @@ setTLMSocketData
 #CAPI#
 .. code-block:: c
 
+  oms_status_enu_t oms2_setTLMSocketData(const char* cref, const char* address, int managerPort, int monitorPort);
 
 #END#
 
