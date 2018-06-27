@@ -804,32 +804,31 @@ oms_status_enu_t oms2::FMICompositeModel::exportCompositeStructure(const std::st
 oms_status_enu_t oms2::FMICompositeModel::exportDependencyGraphs(const std::string& initialization, const std::string& simulation)
 {
   logTrace();
+
+  oms_status_enu_t status = updateDependencyGraphs();
+
   if (!initialization.empty())
     initialUnknownsGraph.dotExport(initialization);
+  else
+    status = logWarning("[exportDependencyGraphs] empty graph for initial unknowns");
+
   if (!simulation.empty())
     outputsGraph.dotExport(simulation);
-  return oms_status_ok;
+  else
+    status = logWarning("[exportDependencyGraphs] empty graph for initial unknowns");
+
+  return status;
 }
 
-oms_status_enu_t oms2::FMICompositeModel::initialize(double startTime, double tolerance)
+oms_status_enu_t oms2::FMICompositeModel::updateDependencyGraphs()
 {
   initialUnknownsGraph.clear();
   outputsGraph.clear();
 
-  this->time = startTime;
-  this->tolerance = tolerance;
-  this->tLastEmit = startTime;
-
-  // Enter initialization
   for (const auto& it : subModels)
   {
-    if (oms_status_ok != it.second->enterInitialization(startTime))
-      return logError("[oms2::FMICompositeModel::initialize] failed");
-    else
-    {
-      initialUnknownsGraph.includeGraph(it.second->getInitialUnknownsGraph());
-      outputsGraph.includeGraph(it.second->getOutputsGraph());
-    }
+    initialUnknownsGraph.includeGraph(it.second->getInitialUnknownsGraph());
+    outputsGraph.includeGraph(it.second->getOutputsGraph());
   }
 
   for (auto& connection : connections)
@@ -850,7 +849,26 @@ oms_status_enu_t oms2::FMICompositeModel::initialize(double startTime, double to
         return logError("[oms2::FMICompositeModel::initialize] failed for " + connection->getSignalA().toString() + " -> " + connection->getSignalB().toString());
     }
     else
-      return logError("[oms2::FMICompositeModel::initialize] failed for " + connection->getSignalA().toString() + " -> " + connection->getSignalB().toString());
+      return logError("[oms2::FMICompositeModel::initialize] failed");
+  }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms2::FMICompositeModel::initialize(double startTime, double tolerance)
+{
+  if (oms_status_error == updateDependencyGraphs())
+    return oms_status_error;
+
+  this->time = startTime;
+  this->tolerance = tolerance;
+  this->tLastEmit = startTime;
+
+  // Enter initialization
+  for (const auto& it : subModels)
+  {
+    if (oms_status_ok != it.second->enterInitialization(startTime))
+      return logError("[oms2::FMICompositeModel::initialize] failed");
   }
 
   updateInputs(initialUnknownsGraph);
