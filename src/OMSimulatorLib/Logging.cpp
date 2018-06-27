@@ -131,7 +131,7 @@ void Log::Info(const std::string& msg)
     log.cb(oms_message_info, msg.c_str());
 }
 
-void Log::Warning(const std::string& msg)
+oms_status_enu_t Log::Warning(const std::string& msg)
 {
   Log& log = getInstance();
   std::lock_guard<std::mutex> lock(log.m);
@@ -143,6 +143,8 @@ void Log::Warning(const std::string& msg)
 
   if (log.cb)
     log.cb(oms_message_warning, msg.c_str());
+
+  return oms_status_warning;
 }
 
 oms_status_enu_t Log::Error(const std::string& msg)

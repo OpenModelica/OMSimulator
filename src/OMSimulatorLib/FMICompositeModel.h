@@ -126,6 +126,7 @@ namespace oms2
 
     oms_status_enu_t stepUntilStandard(ResultWriter& resultWriter, double stopTime, double communicationInterval, double loggingInterval, bool realtime_sync);
     oms_status_enu_t stepUntilPCTPL(ResultWriter& resultWriter, double stopTime, double communicationInterval, double loggingInterval, bool realtime_sync);
+    oms_status_enu_t updateDependencyGraphs();
 
 #if !defined(NO_TLM)
     oms_status_enu_t initializeSockets(double stopTime, double &communicationInterval, std::string server);
