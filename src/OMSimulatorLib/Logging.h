@@ -58,6 +58,7 @@ public:
   static void Trace(const std::string& function, const std::string& file, const long line);
 
   static oms_status_enu_t setLogFile(const std::string& filename);
+  static void setMaxLogFileSize(const unsigned long size) {getInstance().limit=1024*1024*size;}
 
   static void setLoggingCallback(void (*cb)(oms_message_type_enu_t type, const char* message)) {getInstance().cb = cb;}
   static void setLoggingLevel(int logLevel);
@@ -81,6 +82,9 @@ private:
   unsigned int numWarnings;
   unsigned int numErrors;
   unsigned int numMessages;
+
+  unsigned long limit = 1024*1024*50;
+  unsigned long size = 0;
 
   void (*cb)(oms_message_type_enu_t type, const char* message);
 };
