@@ -84,22 +84,38 @@ void Log::printStringToStream(std::ostream& stream, const std::string& type, con
   }
 
   stream << type << ": " << std::string(7 - type.size(), ' ');
-  size_t start = 0, end;
-  do
+  size_t start = 0, end = 0;
+  bool firstLine = true;
+  std::string buffer;
+  while(msg[end])
   {
-    end = msg.substr(start).find("\n");
-    if(std::string::npos == end)
-      stream << msg.substr(start) << endl;
-    else
+    if (msg[end] == '\n' || msg[end] == '\r')
     {
+      buffer = msg.substr(start, end-start);
       end++;
-      stream << msg.substr(start, end);
-      if (!timeStamp.empty())
-        stream << padding << "   ";
-      stream << "         ";
       start = end;
     }
-  } while (std::string::npos != end);
+    else if (msg[end+1] == '\0')
+    {
+      buffer = msg.substr(start);
+    }
+    end++;
+
+    if (!buffer.empty())
+    {
+      if (!firstLine)
+      {
+        stream << "\n";
+        if (!timeStamp.empty())
+          stream << padding << "   ";
+        stream << "         ";
+      }
+      firstLine = false;
+      stream << buffer;
+      buffer.clear();
+    }
+  }
+  stream << endl;
 }
 
 void Log::Info(const std::string& msg)
