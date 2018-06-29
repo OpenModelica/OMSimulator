@@ -63,8 +63,7 @@ namespace oms2
     oms_status_enu_t enterInitialization(const double time);
     oms_status_enu_t exitInitialization();
     void do_event_iteration();
-    oms_status_enu_t reset();
-    oms_status_enu_t terminate();
+    oms_status_enu_t reset(bool terminate);
     oms_status_enu_t doStep(double stopTime);
 
     oms_status_enu_t exportToSSD(pugi::xml_node& root) const;
@@ -156,22 +155,23 @@ namespace oms2
     // ME & CS
     jm_callbacks callbacks;
     fmi2_callback_functions_t callbackFunctions;
-    fmi_import_context_t* context;
-    fmi2_import_t* fmu;
+    fmi_import_context_t* context = NULL;
+    fmi2_import_t* fmu = NULL;
     fmi2_event_info_t eventInfo;
     double time;
     double relativeTolerance;
+    bool initialized = false;
 
     // ME
     fmi2_boolean_t callEventUpdate;
     fmi2_boolean_t terminateSimulation;
-    size_t n_states;
-    size_t n_event_indicators;
-    double* states;
-    double* states_der;
-    double* states_nominal;
-    double* event_indicators;
-    double* event_indicators_prev;
+    size_t n_states = 0;
+    size_t n_event_indicators = 0;
+    double* states = NULL;
+    double* states_der = NULL;
+    double* states_nominal = NULL;
+    double* event_indicators = NULL;
+    double* event_indicators_prev = NULL;
     Solver_t solverMethod;
     SolverData_t solverData;
   };

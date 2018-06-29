@@ -129,22 +129,13 @@ int oms2::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void *user_data)
 oms2::FMUWrapper::FMUWrapper(const oms2::ComRef& cref, const std::string& filename)
   : oms2::FMISubModel(oms_component_fmu, cref), fmuInfo(filename), solverMethod(CVODE)
 {
-  this->context = NULL;
-  this->fmu = NULL;
-
-  this->n_states = 0;
-  this->n_event_indicators = 0;
-  this->states = NULL;
-  this->states_der = NULL;
-  this->states_nominal = NULL;
-  this->event_indicators = NULL;
-  this->event_indicators_prev = NULL;
 }
 
 oms2::FMUWrapper::~FMUWrapper()
 {
   logTrace();
 
+  reset(true);
   fmi2_import_free_instance(fmu);
   fmi2_import_destroy_dllfmu(fmu);
   fmi2_import_free(fmu);
@@ -641,11 +632,12 @@ oms_status_enu_t oms2::FMUWrapper::exitInitialization()
       if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetMaxNumSteps() failed with flag = " + std::to_string(flag));
     }
     else
-      logError("Unknown solver method");
+      return logError("Unknown solver method");
   }
   else
     return logError("Unsupported FMU kind");
 
+  initialized = true;
   return oms_status_ok;
 }
 
@@ -657,8 +649,11 @@ void oms2::FMUWrapper::do_event_iteration()
     fmi2_import_new_discrete_states(fmu, &eventInfo);
 }
 
-oms_status_enu_t oms2::FMUWrapper::reset()
+oms_status_enu_t oms2::FMUWrapper::reset(bool terminate)
 {
+  if (!initialized)
+    return oms_status_ok;
+
   if (oms_fmi_kind_me == fmuInfo.getKind())
   {
     // free solver data
@@ -698,70 +693,27 @@ oms_status_enu_t oms2::FMUWrapper::reset()
       logError("Unknown solver method");
 
     // free common data
-    free(states);
-    free(states_der);
-    free(states_nominal);
-    free(event_indicators);
-    free(event_indicators_prev);
+    free(states); states=NULL;
+    free(states_der); states_der=NULL;
+    free(states_nominal); states_nominal=NULL;
+    free(event_indicators); event_indicators=NULL;
+    free(event_indicators_prev); event_indicators_prev=NULL;
   }
 
-  fmi2_status_t fmistatus = fmi2_import_reset(fmu);
-  if (fmi2_status_ok != fmistatus)
-    return logError("fmi2_import_reset failed");
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms2::FMUWrapper::terminate()
-{
-  if (oms_fmi_kind_me == fmuInfo.getKind())
+  if (terminate)
   {
-    // free solver data
-    if (NO_SOLVER == solverMethod)
-    {
-    }
-    else if (EXPLICIT_EULER == solverMethod)
-    {
-    }
-    else if (CVODE == solverMethod)
-    {
-      long int nst, nfe, nsetups, nni, ncfn, netf;
-      int flag;
-
-      flag = CVodeGetNumSteps(solverData.cvode.mem, &nst);
-      if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumSteps() failed with flag = " + std::to_string(flag));
-      flag = CVodeGetNumRhsEvals(solverData.cvode.mem, &nfe);
-      if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumRhsEvals() failed with flag = " + std::to_string(flag));
-      flag = CVodeGetNumLinSolvSetups(solverData.cvode.mem, &nsetups);
-      if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumLinSolvSetups() failed with flag = " + std::to_string(flag));
-      flag = CVodeGetNumErrTestFails(solverData.cvode.mem, &netf);
-      if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumErrTestFails() failed with flag = " + std::to_string(flag));
-      flag = CVodeGetNumNonlinSolvIters(solverData.cvode.mem, &nni);
-      if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumNonlinSolvIters() failed with flag = " + std::to_string(flag));
-      flag = CVodeGetNumNonlinSolvConvFails(solverData.cvode.mem, &ncfn);
-      if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumNonlinSolvConvFails() failed with flag = " + std::to_string(flag));
-
-      logInfo("Final Statistics for '" + getName() + "':");
-      logInfo("NumSteps = " + std::to_string(nst) + " NumRhsEvals  = " + std::to_string(nfe) + " NumLinSolvSetups = " + std::to_string(nsetups));
-      logInfo("NumNonlinSolvIters = " + std::to_string(nni) + " NumNonlinSolvConvFails = " + std::to_string(ncfn) + " NumErrTestFails = " + std::to_string(netf));
-
-      N_VDestroy_Serial(solverData.cvode.y);
-      N_VDestroy_Serial(solverData.cvode.abstol);
-      CVodeFree(&(solverData.cvode.mem));
-    }
-    else
-      logError("Unknown solver method");
-
-    // free common data
-    free(states);
-    free(states_der);
-    free(states_nominal);
-    free(event_indicators);
-    free(event_indicators_prev);
+    fmi2_status_t fmistatus = fmi2_import_terminate(fmu);
+    if (fmi2_status_ok != fmistatus)
+      return logError("fmi2_import_terminate failed");
+  }
+  else
+  {
+    fmi2_status_t fmistatus = fmi2_import_reset(fmu);
+    if (fmi2_status_ok != fmistatus)
+      return logError("fmi2_import_reset failed");
   }
 
-  fmi2_status_t fmistatus = fmi2_import_terminate(fmu);
-  if (fmi2_status_ok != fmistatus)
-    return logError("fmi2_import_terminate failed");
+  initialized = false;
   return oms_status_ok;
 }
 

@@ -84,8 +84,7 @@ namespace oms2
     oms_status_enu_t exportDependencyGraphs(const std::string& initialization, const std::string& simulation);
 
     oms_status_enu_t initialize(double startTime, double tolerance);
-    oms_status_enu_t reset();
-    oms_status_enu_t terminate();
+    oms_status_enu_t reset(bool terminate);
     oms_status_enu_t doSteps(ResultWriter& resultWriter, const int numberOfSteps, double communicationInterval, double loggingInterval);
     oms_status_enu_t stepUntil(ResultWriter& resultWriter, double stopTime, double communicationInterval, double loggingInterval, MasterAlgorithm masterAlgorithm, bool realtime_sync);
 #if !defined(NO_TLM)
