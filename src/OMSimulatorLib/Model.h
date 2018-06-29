@@ -100,6 +100,7 @@ namespace oms2
     oms_status_enu_t simulate_realtime();
     oms_status_enu_t doSteps(const int numberOfSteps);
     oms_status_enu_t stepUntil(const double timeValue);
+    oms_status_enu_t simulateTLM(const double timeValue, const std::string server);
 
   private:
     Model(const oms2::ComRef& cref);

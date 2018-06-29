@@ -415,11 +415,9 @@ oms_status_enu_t oms2::TLMCompositeModel::stepUntil(ResultWriter &resultWriter, 
   logInfo("Starting submodel threads.");
   std::string server = address + ":" + std::to_string(managerPort);
   std::vector<std::thread*> fmiModelThreads;
-  for(auto it = fmiModels.begin(); it!=fmiModels.end(); ++it)
-  {
+  for(auto it = fmiModels.begin(); it!=fmiModels.end(); ++it) {
     Model* pModel = oms2::Scope::GetInstance().getModel(it->second->getName());
-    ResultWriter *pWriter = pModel->getResultWriter();
-    std::thread *t = new std::thread(&FMICompositeModel::simulateTLM, it->second, pWriter, stopTime, communicationInterval, loggingInterval, server);
+    std::thread *t = new std::thread(&Model::simulateTLM, pModel, stopTime, server);
     fmiModelThreads.push_back(t);
   }
 
