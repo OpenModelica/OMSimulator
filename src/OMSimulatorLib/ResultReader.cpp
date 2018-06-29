@@ -96,7 +96,7 @@ bool ResultReader::compareSeries(Series* seriesA, Series* seriesB, double relTol
 
   if (!almostEqualRelativeAndAbs(seriesA->time[seriesA->length - 1], seriesB->time[seriesB->length - 1], relTol, absTol))
   {
-    logWarning("ResultReader::compareSeries: stop times are different");
+    logWarning("ResultReader::compareSeries: stop times are different (" + std::to_string(seriesA->time[seriesA->length - 1]) + " != " + std::to_string(seriesB->time[seriesB->length - 1]) + ")");
     return false;
   }
 

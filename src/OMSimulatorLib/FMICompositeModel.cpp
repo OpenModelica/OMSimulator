@@ -883,22 +883,12 @@ oms_status_enu_t oms2::FMICompositeModel::initialize(double startTime, double to
   return oms_status_ok;
 }
 
-oms_status_enu_t oms2::FMICompositeModel::reset()
+oms_status_enu_t oms2::FMICompositeModel::reset(bool terminate)
 {
   logTrace();
 
   for (const auto& it : subModels)
-    it.second->reset();
-
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms2::FMICompositeModel::terminate()
-{
-  logTrace();
-
-  for (const auto& it : subModels)
-    it.second->terminate();
+    it.second->reset(terminate);
 
   return oms_status_ok;
 }

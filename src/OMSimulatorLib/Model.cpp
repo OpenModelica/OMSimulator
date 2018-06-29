@@ -53,7 +53,10 @@ oms2::Model::Model(const oms2::ComRef& cref)
 oms2::Model::~Model()
 {
   if (compositeModel)
+  {
+    reset(true);
     CompositeModel::DeleteModel(compositeModel);
+  }
 }
 
 oms2::Model* oms2::Model::NewModel(oms_element_type_enu_t type, const oms2::ComRef& cref)
@@ -300,9 +303,8 @@ oms_status_enu_t oms2::Model::initialize()
   return status;
 }
 
-oms_status_enu_t oms2::Model::reset()
+oms_status_enu_t oms2::Model::reset(bool terminate)
 {
-
   if (resultFile)
   {
     compositeModel->emit(*resultFile);
@@ -311,53 +313,28 @@ oms_status_enu_t oms2::Model::reset()
     resultFile = NULL;
   }
 
-  if (!resultFilename.empty())
+  if (!terminate)
   {
-    std::string resulttype;
-    if (resultFilename.length() > 4)
-      resulttype = resultFilename.substr(resultFilename.length() - 4);
+    if (!resultFilename.empty())
+    {
+      std::string resulttype;
+      if (resultFilename.length() > 4)
+        resulttype = resultFilename.substr(resultFilename.length() - 4);
 
-    if (".csv" == resulttype)
-      resultFile = new CSVWriter(bufferSize);
-    else if (".mat" == resulttype)
-      resultFile = new MATWriter(bufferSize);
+      if (".csv" == resulttype)
+        resultFile = new CSVWriter(bufferSize);
+      else if (".mat" == resulttype)
+        resultFile = new MATWriter(bufferSize);
+      else
+        return logError("Unsupported format of the result file: " + resultFilename);
+    }
     else
-      return logError("Unsupported format of the result file: " + resultFilename);
+      resultFile = new VoidWriter(1);
   }
-  else
-    resultFile = new VoidWriter(1);
 
-  oms_status_enu_t status = compositeModel->reset();
+  oms_status_enu_t status = compositeModel->reset(terminate);
 
   modelState = oms_modelState_instantiated;
-
-  return status; // 2018-04-24: Careful, return value is fixed to oms_status_ok
-}
-
-oms_status_enu_t oms2::Model::terminate()
-{
-  //if (oms_modelState_initialization != modelState && oms_modelState_simulation != modelState)
-  //{
-  //  logError("[oms2::Model::terminate] Model cannot be terminated, because it isn't in simulation state.");
-  //  return oms_status_error;
-  //}
-
-  modelState = oms_modelState_initialization;
-
-  if (resultFile)
-  {
-    compositeModel->emit(*resultFile);
-    resultFile->close();
-    delete resultFile;
-    resultFile = NULL;
-  }
-
-  oms_status_enu_t status = compositeModel->terminate();
-  if (oms_status_ok == status)
-  {
-    modelState = oms_modelState_instantiated;
-    logInfo("Simulation finished.");
-  }
 
   return status;
 }

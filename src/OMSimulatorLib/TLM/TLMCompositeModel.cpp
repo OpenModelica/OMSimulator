@@ -383,18 +383,12 @@ oms_status_enu_t oms2::TLMCompositeModel::initialize(double startTime, double to
   return oms_status_ok;
 }
 
-oms_status_enu_t oms2::TLMCompositeModel::reset()
+oms_status_enu_t oms2::TLMCompositeModel::reset(bool terminate)
 {
-  return logError("oms2::TLMCompositeModel::reset: not implemented yet");
-}
+  if (terminate)
+    return oms_status_ok;
 
-oms_status_enu_t oms2::TLMCompositeModel::terminate()
-{
-  for(auto it = fmiModels.begin(); it!=fmiModels.end(); ++it) {
-    Model* pSubModel = oms2::Scope::GetInstance().getModel(it->second->getName());
-    pSubModel->terminate();
-  }
-  return oms_status_ok;
+  return logError("oms2::TLMCompositeModel::reset: not implemented yet");
 }
 
 oms_status_enu_t oms2::TLMCompositeModel::simulate(ResultWriter &resultWriter, double stopTime, double communicationInterval, double loggingInterval, oms2::MasterAlgorithm masterAlgorithm)
