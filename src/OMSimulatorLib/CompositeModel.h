@@ -60,8 +60,7 @@ namespace oms2
     void setGeometry(const oms2::ssd::ElementGeometry& geometry) {element.setGeometry(&geometry);}
 
     virtual oms_status_enu_t initialize(double startTime, double tolerance) = 0;
-    virtual oms_status_enu_t reset() = 0;
-    virtual oms_status_enu_t terminate() = 0;
+    virtual oms_status_enu_t reset(bool terminate) = 0;
 
     virtual oms_status_enu_t doSteps(ResultWriter& resultWriter, const int numberOfSteps, double communicationInterval, double loggingInterval) = 0;
     virtual oms_status_enu_t stepUntil(ResultWriter& resultWriter, double stopTime, double communicationInterval, double loggingInterval, MasterAlgorithm masterAlgorithm, bool realtime_sync) = 0;

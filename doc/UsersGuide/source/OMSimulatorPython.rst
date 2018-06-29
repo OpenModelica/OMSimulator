@@ -33,7 +33,6 @@ Examples
 
   session.initialize("model")
   session.simulate("model")
-  session.terminate("model")
   session.unloadModel("model")
 
 .. index:: OMSimulatorPython; Scripting Commands

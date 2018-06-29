@@ -64,7 +64,6 @@ namespace oms2
     oms_status_enu_t unloadModel(const ComRef name);
     oms_status_enu_t initialize(const ComRef& name);
     oms_status_enu_t reset(const ComRef& name);
-    oms_status_enu_t terminate(const ComRef& name);
     oms_status_enu_t simulate(const ComRef& name);
     oms_status_enu_t simulate_asynchronous(const ComRef& name, void (*cb)(const char* ident, double time, oms_status_enu_t status));
     oms_status_enu_t simulate_realtime(const ComRef& name);

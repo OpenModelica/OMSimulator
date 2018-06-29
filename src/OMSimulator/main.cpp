@@ -73,7 +73,6 @@ static int do_simulation(char* pModel, std::chrono::duration<double> timeout)
   cv.notify_one();
   t.join();
 
-  oms2_terminate(pModel);
   oms2_unloadModel(pModel);
 
   return 0;

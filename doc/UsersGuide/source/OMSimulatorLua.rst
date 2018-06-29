@@ -32,7 +32,6 @@ Examples
 
   oms2_initialize("model")
   oms2_simulate("model")
-  oms2_terminate("model")
 
   oms2_unloadModel("model")
 

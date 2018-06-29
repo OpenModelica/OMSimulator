@@ -149,9 +149,6 @@ class OMSimulator:
     self.obj.oms2_stepUntil.argtypes = [ctypes.c_char_p, ctypes.c_double]
     self.obj.oms2_stepUntil.restype = ctypes.c_int
 
-    self.obj.oms2_terminate.argtypes = [ctypes.c_char_p]
-    self.obj.oms2_terminate.restype = ctypes.c_int
-
     self.obj.oms2_unloadModel.argtypes = [ctypes.c_char_p]
     self.obj.oms2_unloadModel.restype = ctypes.c_int
 
@@ -271,7 +268,5 @@ class OMSimulator:
     return self.obj.oms2_simulate(str.encode(ident))
   def stepUntil(self, ident, timeValue):
     return self.obj.oms2_stepUntil(str.encode(ident), timeValue)
-  def terminate(self, ident):
-    return self.obj.oms2_terminate(str.encode(ident))
   def unloadModel(self, ident):
     return self.obj.oms2_unloadModel(str.encode(ident))
