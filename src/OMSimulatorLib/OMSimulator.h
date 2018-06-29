@@ -428,6 +428,15 @@ oms_status_enu_t oms2_setLoggingSamples(const char* cref, const int loggingSampl
 oms_status_enu_t oms2_setLogFile(const char* filename);
 
 /**
+ * \brief Sets maximum log file size in MB. If the file exceeds this limit, the
+ * logging will continue on stdout.
+ *
+ * \param size   [in] maximum log file size in MB
+ * \return       Error status
+ */
+void oms2_setMaxLogFileSize(const unsigned long size);
+
+/**
  * \brief Set new temp directory
  *
  * \param path   [in] Path to new temp directory

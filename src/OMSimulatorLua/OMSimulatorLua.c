@@ -331,6 +331,18 @@ static int OMSimulatorLua_oms2_setLogFile(lua_State *L)
   return 1;
 }
 
+//void oms2_setMaxLogFileSize(const unsigned long size);
+static int OMSimulatorLua_oms2_setMaxLogFileSize(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TNUMBER);
+
+  unsigned long size = lua_tointeger(L, 1);
+  oms2_setMaxLogFileSize(size);
+  return 0;
+}
+
 //oms_status_enu_t oms2_getStartTime(const char* cref, double* startTime);
 static int OMSimulatorLua_oms2_getStartTime(lua_State *L)
 {
@@ -1424,14 +1436,15 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms2_setLogFile);
   REGISTER_LUA_CALL(oms2_setLoggingInterval);
   REGISTER_LUA_CALL(oms2_setLoggingLevel);
+  REGISTER_LUA_CALL(oms2_setLoggingSamples);
   REGISTER_LUA_CALL(oms2_setMasterAlgorithm);
+  REGISTER_LUA_CALL(oms2_setMaxLogFileSize);
   REGISTER_LUA_CALL(oms2_setReal);
   REGISTER_LUA_CALL(oms2_setRealParameter);
   REGISTER_LUA_CALL(oms2_setResultFile);
   REGISTER_LUA_CALL(oms2_setStartTime);
   REGISTER_LUA_CALL(oms2_setStopTime);
   REGISTER_LUA_CALL(oms2_setTempDirectory);
-  REGISTER_LUA_CALL(oms2_setLoggingSamples);
   REGISTER_LUA_CALL(oms2_setTLMInitialValues);
   REGISTER_LUA_CALL(oms2_setTLMLoggingLevel);
   REGISTER_LUA_CALL(oms2_setTLMPositionAndOrientation);

@@ -56,6 +56,11 @@ oms_status_enu_t oms2_setLogFile(const char* filename)
   return Log::setLogFile(filename);
 }
 
+void oms2_setMaxLogFileSize(const unsigned long size)
+{
+  Log::setMaxLogFileSize(size);
+}
+
 const char* oms2_getVersion()
 {
   return oms_git_version;
