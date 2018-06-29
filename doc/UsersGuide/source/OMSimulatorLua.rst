@@ -12,30 +12,29 @@ Examples
 
 .. code-block:: lua
 
-  model = newModel()
-  setTempDirectory("./temp/")
+  oms2_setTempDirectory("./temp/")
+  oms2_newFMIModel("model")
 
   -- instantiate FMUs
-  instantiateFMU(model, "FMUs/submodelA.fmu", "A")
-  instantiateFMU(model, "FMUs/submodelB.fmu", "B")
+  oms2_addFMU("model", "FMUs/submodelA.fmu", "A")
+  oms2_addFMU("model", "FMUs/submodelB.fmu", "B")
 
   -- add connections
-  addConnection(model, "A.in1", "B.out1")
-  addConnection(model, "A.in2", "B.out2")
-  addConnection(model, "A.out1", "B.in1")
-  addConnection(model, "A.out2", "B.in2")
+  oms2_addConnection("model", "A:in1", "B:out1")
+  oms2_addConnection("model", "A:in2", "B:out2")
+  oms2_addConnection("model", "A:out1", "B:in1")
+  oms2_addConnection("model", "A:out2", "B:in2")
 
-  describe(model)
+  oms2_describe("model")
 
-  setStopTime(model, 2.0)
-  setTolerance(model, 1e-4)
-  setResultFile(model, "AB_res.mat")
+  oms2_setStopTime("model", 2.0)
+  oms2_setResultFile("model", "results.mat")
 
-  initialize(model)
-  simulate(model)
-  terminate(model)
+  oms2_initialize("model")
+  oms2_simulate("model")
+  oms2_terminate("model")
 
-  unload(model)
+  oms2_unloadModel("model")
 
 .. index:: OMSimulatorLua; Scripting Commands
 
