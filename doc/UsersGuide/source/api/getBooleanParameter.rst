@@ -15,7 +15,7 @@ Get boolean value of given parameter.
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  value, status = session.getBooleanParameter(signal)
 
 #END#
 

@@ -15,7 +15,7 @@ Renames a composite model (either FMI or TLM) or sub-model (e.g. FMU instance).
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  status = session.rename(identOld, identNew)
 
 #END#
 

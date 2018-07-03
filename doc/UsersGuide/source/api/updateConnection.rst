@@ -15,7 +15,7 @@ Updates the connection between connectors A and B.
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  # not available
 
 #END#
 

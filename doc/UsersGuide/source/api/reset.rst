@@ -19,7 +19,7 @@ The FMUs go into the same state as after instantiation.
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  status = session.reset(ident)
 
 #END#
 

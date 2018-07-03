@@ -15,7 +15,7 @@ Set boolean value of given parameter.
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  status = session.setBooleanParameter(signal, value);
 
 #END#
 

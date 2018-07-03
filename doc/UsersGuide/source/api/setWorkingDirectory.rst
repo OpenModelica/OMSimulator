@@ -15,7 +15,7 @@ Set a new working directory.
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  status = session.setWorkingDirectory(path)
 
 #END#
 

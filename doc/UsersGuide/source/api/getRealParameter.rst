@@ -15,7 +15,7 @@ Get real value of given parameter.
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  value, status = session.getRealParameter(signal)
 
 #END#
 

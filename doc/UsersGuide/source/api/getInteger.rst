@@ -15,7 +15,7 @@ Get integer value of given signal.
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  value, status = session.getInteger(signal)
 
 #END#
 

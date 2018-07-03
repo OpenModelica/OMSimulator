@@ -8,14 +8,14 @@ Deletes a sub-model instance, e.g. FMU, from a given FMI composite model.
 #LUA#
 .. code-block:: lua
 
-  version = oms2_deleteSubModel(modelIdent, subModelIdent)
+  status = oms2_deleteSubModel(modelIdent, subModelIdent)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  status = session.deleteSubModel(modelIdent, subModelIdent)
 
 #END#
 

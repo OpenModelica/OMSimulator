@@ -15,7 +15,7 @@ Adds a new lookup table instance to a given FMI model.
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  version = session.addTable(modelIdent, tablePath, tableIdent)
 
 #END#
 

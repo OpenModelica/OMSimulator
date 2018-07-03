@@ -15,7 +15,7 @@ Set the logging interval of the simulation.
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  status = session.setLoggingInterval(cref, loggingInterval)
 
 #END#
 

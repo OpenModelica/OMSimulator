@@ -15,7 +15,7 @@ Creates a new and yet empty TLM composite model.
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  status = session.newTLMModel(ident)
 
 #END#
 

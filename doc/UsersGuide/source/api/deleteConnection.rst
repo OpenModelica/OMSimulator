@@ -15,7 +15,7 @@ Deletes the connection between connectors A and B.
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  status = session.deleteConnection(cref, conA, conB)
 
 #END#
 

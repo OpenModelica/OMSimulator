@@ -15,7 +15,7 @@ Adds an FMI composite model to a TLM composite model.
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  status = session.addFMISubModel(const char* cref, const char* subref);
 
 #END#
 
