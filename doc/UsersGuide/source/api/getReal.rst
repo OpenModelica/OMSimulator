@@ -15,7 +15,7 @@ Get real value.
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  value, status = session.getReal(signal)
 
 #END#
 

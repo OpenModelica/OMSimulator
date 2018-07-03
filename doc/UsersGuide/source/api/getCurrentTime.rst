@@ -15,7 +15,7 @@ Get current simulation time.
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  time, status = session.getCurrentTime(model)
 
 #END#
 

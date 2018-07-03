@@ -15,7 +15,7 @@ Set the number of logging samples to use in the simulation.
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  session.setLoggingSamples(cref, loggingSamples)
 
 #END#
 

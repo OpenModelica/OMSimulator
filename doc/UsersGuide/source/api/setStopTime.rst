@@ -15,7 +15,7 @@ Set the stop time of the simulation.
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  status = session.setStopTime(cref, stopTime)
 
 #END#
 

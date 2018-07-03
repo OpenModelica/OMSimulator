@@ -15,7 +15,7 @@ Set integer value of given signal.
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  status = session.setInteger(signal, value)
 
 #END#
 

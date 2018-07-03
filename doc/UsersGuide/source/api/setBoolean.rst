@@ -15,7 +15,7 @@ Set boolean value of given signal.
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  status = session.setBoolean(signal, value)
 
 #END#
 

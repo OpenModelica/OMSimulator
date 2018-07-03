@@ -15,7 +15,7 @@ Set real value of given signal.
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  status = session.setReal(signal, value)
 
 #END#
 

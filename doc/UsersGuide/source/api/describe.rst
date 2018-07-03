@@ -15,7 +15,7 @@ This command prints a summary of the given composite model to stdout.
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  status = session.describe(cref)
 
 #END#
 

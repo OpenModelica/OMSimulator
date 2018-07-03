@@ -15,7 +15,7 @@ Get the stop time from the model.
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  stopTime, status = session.getStopTime(cref)
 
 #END#
 

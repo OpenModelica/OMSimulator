@@ -15,7 +15,7 @@ Simulates a composite model until a given time value (works for both FMI and TLM
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  status = session.stepUntil(ident, timeValue)
 
 #END#
 

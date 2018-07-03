@@ -8,7 +8,7 @@ This function compares a given signal of two result files within absolute and re
 #LUA#
 .. code-block:: lua
 
-  compareSimulationResults(filenameA, filenameB, var, relTol, absTol)
+  oms2_compareSimulationResults(filenameA, filenameB, var, relTol, absTol)
 
 The following table describes the input values:
 
@@ -35,7 +35,7 @@ The following table describes the return values:
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  session.compareSimulationResults(filenameA, filenameB, var, relTol, absTol)
 
 #END#
 
