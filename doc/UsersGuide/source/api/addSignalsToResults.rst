@@ -15,7 +15,7 @@ Add all variables that match the given regex to the result file.
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  status = session.addSignalsToResults(cref, regex)
 
 #END#
 

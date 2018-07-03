@@ -17,7 +17,7 @@ filename="" to redirect to std streams and proper filename to redirect to file.
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  status = session.setLogFile(filename)
 
 #END#
 

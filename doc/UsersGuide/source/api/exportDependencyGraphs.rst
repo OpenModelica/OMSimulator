@@ -15,7 +15,7 @@ Export the dependency graphs of a given model to a dot file.
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  status = session.exportDependencyGraphs(cref, initialization, simulation)
 
 #END#
 

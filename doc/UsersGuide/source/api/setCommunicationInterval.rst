@@ -15,7 +15,7 @@ Set the communication interval of the simulation.
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  status = session.setCommunicationInterval(cref, communicationInterval)
 
 #END#
 

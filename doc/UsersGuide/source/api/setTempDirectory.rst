@@ -15,7 +15,7 @@ Set new temp directory.
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  status = session.setTempDirectory(path)
 
 #END#
 

@@ -15,7 +15,7 @@ Get the start time from the model.
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  startTime, status = session.getStartTime(cref)
 
 #END#
 

@@ -33,7 +33,7 @@ else ifeq (MINGW32,$(findstring MINGW32,$(detected_OS)))
 	INSTALL_DIR := install/mingw
 	CMAKE_TARGET=-G "MSYS Makefiles"
 	FMIL_FLAGS?=-DFMILIB_FMI_PLATFORM=win32
-	# MINGW detected => NO SUPPORT FOR BUILDING CERES SOLVER  (yet)
+	# MINGW detected => NO SUPPORT FOR BUILDING CERES SOLVER (yet)
 	CERES := OFF
 	OMSYSIDENT := OFF
 	OMFIT := OFF
@@ -44,7 +44,7 @@ else ifeq (MINGW,$(findstring MINGW,$(detected_OS)))
 	INSTALL_DIR := install/mingw
 	CMAKE_TARGET=-G "MSYS Makefiles"
 	FMIL_FLAGS?=-DFMILIB_FMI_PLATFORM=win64
-	# MINGW detected => NO SUPPORT FOR BUILDING CERES SOLVER  (yet)
+	# MINGW detected => NO SUPPORT FOR BUILDING CERES SOLVER (yet)
 	CERES := OFF
 	OMSYSIDENT := OFF
 	export ABI := WINDOWS64

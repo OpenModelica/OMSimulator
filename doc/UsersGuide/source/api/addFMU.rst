@@ -15,7 +15,7 @@ Adds a new FMU instance to a given FMI model.
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  status = session.addFMU(modelIdent, fmuPath, fmuIdent)
 
 #END#
 

@@ -15,7 +15,7 @@ Loads a FMI composite model from xml representation.
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  ident, status = session.loadModel(filename)
 
 #END#
 

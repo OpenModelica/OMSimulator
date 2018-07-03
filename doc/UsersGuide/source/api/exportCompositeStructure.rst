@@ -15,7 +15,7 @@ Export the composite structure of a given model to a dot file.
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  status = session.exportCompositeStructure(cref, filename)
 
 #END#
 

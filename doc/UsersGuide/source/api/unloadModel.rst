@@ -15,7 +15,7 @@ Unloads a composite model (works for both FMI and TLM).
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  status = session.unloadModel(ident)
 
 #END#
 

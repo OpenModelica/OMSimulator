@@ -17,7 +17,7 @@ Enables/Disables debug logging (logDebug and logTrace).
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  session.setLoggingLevel(logLevel)
 
 #END#
 

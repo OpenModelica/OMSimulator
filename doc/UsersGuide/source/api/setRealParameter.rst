@@ -15,7 +15,7 @@ Set real value of given parameter.
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  status = session.setRealParameter(signal, value)
 
 #END#
 

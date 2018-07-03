@@ -15,7 +15,7 @@ Set integer value of given parameter.
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  status = session.setIntegerParameter(signal, value)
 
 #END#
 

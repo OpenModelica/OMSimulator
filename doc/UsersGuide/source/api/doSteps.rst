@@ -15,7 +15,7 @@ Simulates a composite model for a given number of steps (works for both FMI and 
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  status = session.doSteps(ident, numberOfSteps)
 
 #END#
 

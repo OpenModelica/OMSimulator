@@ -15,7 +15,7 @@ Set the start time of the simulation.
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  status = session.setStartTime(cref, startTime)
 
 #END#
 

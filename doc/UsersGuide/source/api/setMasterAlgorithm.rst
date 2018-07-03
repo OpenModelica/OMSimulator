@@ -19,7 +19,7 @@ Experimental master algorithms (no stable API!): "pctpl", "pmrchannela", "pmrcha
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  status = session.setMasterAlgorithm(ident, masterAlgorithm)
 
 #END#
 

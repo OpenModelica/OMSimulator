@@ -1,6 +1,6 @@
 #CAPTION#
 setTLMLoggingLevel
----------------
+------------------
 
 Specifies the debug logging level for OMTLMSimulator
 

@@ -15,7 +15,7 @@ Sets special flags.
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  status = session.setFlags(cref, flags)
 
 #END#
 

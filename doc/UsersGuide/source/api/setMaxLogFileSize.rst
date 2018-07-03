@@ -15,7 +15,7 @@ Sets maximum log file size in MB. If the file exceeds this limit, the logging wi
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  session.setMaxLogFileSize(size)
 
 #END#
 

@@ -15,7 +15,7 @@ Adds an external model to a TLM composite model.
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  status = session.addTLMInterface(cref, subref, name, dimensions, causality, interpolation, domain, sigrefs, nsigrefs)
 
 #END#
 

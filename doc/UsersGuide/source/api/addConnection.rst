@@ -15,7 +15,7 @@ Adds a new connection to a given parent component.
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  status = session.addConnection(cref, conA, conB)
 
 #END#
 

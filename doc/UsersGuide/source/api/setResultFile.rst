@@ -16,7 +16,8 @@ Set the result file of the simulation.
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  status = session.setResultFile(cref, filename)
+  status = session.setResultFile(cref, filename, bufferSize)
 
 #END#
 

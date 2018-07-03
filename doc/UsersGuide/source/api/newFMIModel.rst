@@ -15,7 +15,7 @@ Creates a new and yet empty FMI composite model.
 #PYTHON#
 .. code-block:: python
 
-  # not yet available
+  status = session.newFMIModel(ident)
 
 #END#
 
