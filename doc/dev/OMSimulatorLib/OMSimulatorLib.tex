@@ -187,7 +187,7 @@
       + getSubModels() \\
       + getConnections()
     }
-    \umlclass[x=-6, y=-12]{TLMConnection}{
+    \umlclass[x=-6, y=-13]{TLMConnection}{
       - delay: double \\
       - alpha: double \\
       - Zf: double \\
@@ -199,12 +199,13 @@
       + getZf();\\
       + getZfr();
     }
-    \umlclass[x=3, y=-12]{Connection}{
+    \umlclass[x=3, y=-13]{Connection}{
       - sigA: SignalRef \\
       - sigB: SignalRef \\
       - geometry: ssd:ConnectionGeometry
     }{}
     \umlclass[x=7, y=-1]{DependencyGraph}{}{}
+    \umlclass[x=7, y=-11]{Solver}{}{}
 
     \umlclass[x=-14, y=-6]{ExternalModel}{
       - cref: Comref\\
@@ -299,6 +300,8 @@
   \umlcompo[mult1=1, mult2=0..*]{FMICompositeModel}{FMISubModel}
   \umlcompo[mult1=1, mult2=2]{FMISubModel}{DependencyGraph}
   \umlcompo[mult1=1, mult2=2]{FMICompositeModel}{DependencyGraph}
+  \umlcompo[mult1=1, mult2=0..*]{Solver}{FMISubModel}
+  \umlcompo[mult1=1, mult2=0..*]{FMICompositeModel}{Solver}
   \umlcompo[mult1=1, mult2=0..*]{FMISubModel}{SignalRef}
   \umlinherit[geometry=--]{FMICompositeModel}{CompositeModel}
   \umlinherit[geometry=--]{TLMCompositeModel}{CompositeModel}
