@@ -710,6 +710,9 @@ oms_status_enu_t oms2_removeSignalsFromResults(const char* cref, const char* reg
  */
 oms_status_enu_t oms2_setFlags(const char* cref, const char* flags);
 
+oms_status_enu_t oms2_addSolver(const char* model, const char* name, const char* solver);
+oms_status_enu_t oms2_connectSolver(const char* model, const char* name, const char* fmu);
+
 #ifdef __cplusplus
 }
 #endif
