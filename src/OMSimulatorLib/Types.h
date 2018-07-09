@@ -70,9 +70,11 @@ typedef enum {
   oms_tlm_fine_grained
 } oms_tlm_interpolation_t;
 
-/* ************************************ */
-/* OMSimulator 2.0                      */
-/* ************************************ */
+typedef enum {
+  oms_solver_internal,         ///< internal solver; CS-FMU only
+  oms_solver_explicit_euler,
+  oms_solver_cvode
+} oms_solver_enu_t;
 
 typedef enum {
   oms_component_none,

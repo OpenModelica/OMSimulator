@@ -53,7 +53,7 @@
 
 namespace oms2
 {
-  int cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void *user_data);
+  class Solver;
 
   class FMUWrapper : public FMISubModel
   {
@@ -62,9 +62,8 @@ namespace oms2
 
     oms_status_enu_t enterInitialization(const double time);
     oms_status_enu_t exitInitialization();
-    void do_event_iteration();
     oms_status_enu_t reset(bool terminate);
-    oms_status_enu_t doStep(double stopTime);
+    oms_status_enu_t doStep(double stopTime) {return logError("don't call FMUWrapper::doStep");}
 
     oms_status_enu_t exportToSSD(pugi::xml_node& root) const;
 
@@ -97,6 +96,12 @@ namespace oms2
     void addSignalsToResults(const std::string& regex);
     void removeSignalsFromResults(const std::string& regex);
 
+    void fetchAllVars();
+
+    fmi2_import_t* getFMU() {return fmu;}
+    oms2::Solver* getSolver() {return solver;}
+    void setSolver(Solver* solver) {this->solver = solver;}
+
   private:
     oms_status_enu_t initializeDependencyGraph_initialUnknowns();
     oms_status_enu_t initializeDependencyGraph_outputs();
@@ -110,28 +115,6 @@ namespace oms2
     oms_status_enu_t getBoolean(const oms2::Variable& var, bool& booleanValue);
 
     oms2::Variable* getVariable(const std::string& var);
-
-    enum Solver_t { NO_SOLVER, EXPLICIT_EULER, CVODE };
-
-    struct SolverDataEuler_t
-    {
-      // empty
-    };
-
-    struct SolverDataCVODE_t
-    {
-      void *mem;
-      N_Vector y;
-      N_Vector abstol;
-    };
-
-    union SolverData_t
-    {
-      SolverDataEuler_t euler;
-      SolverDataCVODE_t cvode;
-    };
-
-    friend int oms2::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void *user_data);
 
   private:
     FMUWrapper(const ComRef& cref, const std::string& filename);
@@ -152,28 +135,12 @@ namespace oms2
 
     std::unordered_map<unsigned int /*result file var ID*/, unsigned int /*allVariables ID*/> resultFileMapping;
 
-    // ME & CS
     jm_callbacks callbacks;
     fmi2_callback_functions_t callbackFunctions;
     fmi_import_context_t* context = NULL;
     fmi2_import_t* fmu = NULL;
-    fmi2_event_info_t eventInfo;
-    double time;
-    double relativeTolerance;
     bool initialized = false;
-
-    // ME
-    fmi2_boolean_t callEventUpdate;
-    fmi2_boolean_t terminateSimulation;
-    size_t n_states = 0;
-    size_t n_event_indicators = 0;
-    double* states = NULL;
-    double* states_der = NULL;
-    double* states_nominal = NULL;
-    double* event_indicators = NULL;
-    double* event_indicators_prev = NULL;
-    Solver_t solverMethod;
-    SolverData_t solverData;
+    oms2::Solver* solver = NULL;    ///< Never allocate or free memory for this pointer.
   };
 }
 

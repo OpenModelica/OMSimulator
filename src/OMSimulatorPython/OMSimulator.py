@@ -14,6 +14,12 @@ class OMSimulator:
     self.obj.oms2_addFMU.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms2_addFMU.restype = ctypes.c_int
 
+    self.obj.oms2_addSolver.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms2_addSolver.restype = ctypes.c_int
+
+    self.obj.oms2_connectSolver.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms2_connectSolver.restype = ctypes.c_int
+
     self.obj.oms2_addTable.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms2_addTable.restype = ctypes.c_int
 
@@ -156,6 +162,10 @@ class OMSimulator:
     return self.obj.oms2_addConnection(str.encode(cref), str.encode(conA), str.encode(conB))
   def addFMU(self, modelIdent, fmuPath, fmuIdent):
     return self.obj.oms2_addFMU(str.encode(modelIdent), str.encode(fmuPath), str.encode(fmuIdent))
+  def addSolver(self, modelIdent, solverIdent, method):
+    return self.obj.oms2_addSolver(str.encode(modelIdent), str.encode(solverIdent), str.encode(method))
+  def connectSolver(self, modelIdent, fmuIdent, solverIdent):
+    return self.obj.oms2_connectSolver(str.encode(modelIdent), str.encode(fmuIdent), str.encode(solverIdent))
   def addTable(self, modelIdent, tablePath, tableIdent):
     return self.obj.oms2_addTable(str.encode(modelIdent), str.encode(tablePath), str.encode(tableIdent))
   def addSignalsToResults(self, cref, regex):
