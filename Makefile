@@ -57,17 +57,27 @@ else
 	FEXT=.so
 endif
 
+# Should we install everything into the OMBUILDDIR?
+ifeq ($(OMBUILDDIR),)
+	TOP_INSTALL_DIR=$(INSTALL_DIR)
+	CMAKE_INSTALL_PREFIX=
+else
+	TOP_INSTALL_DIR=$(OMBUILDDIR)
+	CMAKE_INSTALL_PREFIX=-DCMAKE_INSTALL_PREFIX=$(OMBUILDDIR)
+endif
+
 ifeq ($(CROSS_TRIPLE),)
 else
-  LUA_EXTRA_FLAGS=CC=$(CC) CXX=$(CXX) RANLIB=$(CROSS_TRIPLE)-ranlib detected_OS=$(detected_OS)
-  OMTLM := OFF
-  CROSS_TRIPLE_DASH = $(CROSS_TRIPLE)-
-  HOST_CROSS_TRIPLE = "--host=$(CROSS_TRIPLE)"
-  FMIL_FLAGS ?=
+	LUA_EXTRA_FLAGS=CC=$(CC) CXX=$(CXX) RANLIB=$(CROSS_TRIPLE)-ranlib detected_OS=$(detected_OS)
+	OMTLM := OFF
+	CROSS_TRIPLE_DASH = $(CROSS_TRIPLE)-
+	HOST_CROSS_TRIPLE = "--host=$(CROSS_TRIPLE)"
+	FMIL_FLAGS ?=
 endif
+
 ifeq ($(BOOST_ROOT),)
 else
-CMAKE_BOOST_ROOT="-DBOOST_ROOT=$(BOOST_ROOT)"
+	CMAKE_BOOST_ROOT="-DBOOST_ROOT=$(BOOST_ROOT)"
 endif
 
 .PHONY: OMSimulator OMSimulatorCore config-OMSimulator config-fmil config-lua config-cvode config-kinsol config-gflags config-glog config-ceres-solver config-3rdParty distclean testsuite doc doc-html doc-doxygen OMTLMSimulator OMTLMSimulatorClean
@@ -81,14 +91,14 @@ OMSimulator:
 	@echo
 	@$(MAKE) OMTLMSimulator
 	@$(MAKE) OMSimulatorCore
-	test ! -z "$(CROSS_TRIPLE)" || $(INSTALL_DIR)/bin/OMSimulator --version
+	test ! -z "$(CROSS_TRIPLE)" || $(TOP_INSTALL_DIR)/bin/OMSimulator --version
 
 OMSimulatorCore:
 	@echo
 	@echo "# make OMSimulatorCore"
 	@echo
 	@$(MAKE) -C $(BUILD_DIR) install
-	test ! "$(detected_OS)" = Darwin || ($(CROSS_TRIPLE_DASH)install_name_tool -change MAC64/libomtlmsimulator.dylib "@loader_path/../lib/libomtlmsimulator.dylib" $(INSTALL_DIR)/bin/OMSimulator)
+	test ! "$(detected_OS)" = Darwin || ($(CROSS_TRIPLE_DASH)install_name_tool -change MAC64/libomtlmsimulator.dylib "@loader_path/../lib/libomtlmsimulator.dylib" $(TOP_INSTALL_DIR)/bin/OMSimulator)
 
 ifeq ($(OMTLM),ON)
 OMTLMSimulator:
@@ -98,13 +108,12 @@ OMTLMSimulator:
 	@echo $(ABI)
 	@$(MAKE) -C OMTLMSimulator omtlmlib
 	test ! `uname` != Darwin || $(MAKE) -C OMTLMSimulator/FMIWrapper install
-	@$(MKDIR) $(INSTALL_DIR)/lib
-	@$(MKDIR) $(INSTALL_DIR)/bin
-	cp OMTLMSimulator/bin/libomtlmsimulator$(FEXT) $(INSTALL_DIR)/lib/
-	cp OMTLMSimulator/common/$(ABI)/libTLM.a OMTLMSimulator/bin/
-	test ! "$(FEXT)" = ".dll" || cp OMTLMSimulator/bin/libomtlmsimulator$(FEXT) $(INSTALL_DIR)/bin/
-	test ! `uname` != Darwin || cp OMTLMSimulator/bin/FMIWrapper $(INSTALL_DIR)/bin/
-	test ! `uname` != Darwin || cp OMTLMSimulator/bin/StartTLMFmiWrapper $(INSTALL_DIR)/bin/
+	@$(MKDIR) $(TOP_INSTALL_DIR)/lib
+	@$(MKDIR) $(TOP_INSTALL_DIR)/bin
+	cp OMTLMSimulator/bin/libomtlmsimulator$(FEXT) $(TOP_INSTALL_DIR)/lib/
+	test ! "$(FEXT)" = ".dll" || cp OMTLMSimulator/bin/libomtlmsimulator$(FEXT) $(TOP_INSTALL_DIR)/bin/
+	test ! `uname` != Darwin || cp OMTLMSimulator/bin/FMIWrapper $(TOP_INSTALL_DIR)/bin/
+	test ! `uname` != Darwin || cp OMTLMSimulator/bin/StartTLMFmiWrapper $(TOP_INSTALL_DIR)/bin/
 
 OMTLMSimulatorStandalone: config-fmil
 	@echo
@@ -131,7 +140,7 @@ config-OMSimulator:
 	@echo
 	$(RM) $(BUILD_DIR)
 	$(MKDIR) $(BUILD_DIR)
-	cd $(BUILD_DIR) && cmake $(CMAKE_TARGET) ../.. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DOMSYSIDENT:BOOL=$(OMSYSIDENT) -DOMTLM:BOOL=$(OMTLM) -DASAN:BOOL=$(ASAN) -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) $(CMAKE_BOOST_ROOT)
+	cd $(BUILD_DIR) && cmake $(CMAKE_TARGET) ../.. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DOMSYSIDENT:BOOL=$(OMSYSIDENT) -DOMTLM:BOOL=$(OMTLM) -DASAN:BOOL=$(ASAN) -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) $(CMAKE_BOOST_ROOT) $(CMAKE_INSTALL_PREFIX)
 
 config-fmil:
 	@echo
