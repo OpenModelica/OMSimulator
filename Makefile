@@ -222,7 +222,7 @@ config-libxml2:
 	@echo
 	$(MKDIR) 3rdParty/libxml2/$(INSTALL_DIR)
 	cd 3rdParty/libxml2 && ./autogen.sh --prefix="$(ROOT_DIR)/3rdParty/libxml2/$(INSTALL_DIR)" --without-python $(HOST_CROSS_TRIPLE) && $(MAKE) && $(MAKE) install
-	cd 3rdParty/libxml2 && git clean -fdx -e 'install/'
+	cd 3rdParty/libxml2 && git clean -fdx -e 'install/' || true
 endif
 
 distclean:
