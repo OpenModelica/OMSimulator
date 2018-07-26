@@ -1103,7 +1103,7 @@ static int OMSimulatorLua_oms2_setTLMInitialValues(lua_State *L)
     values[0] = lua_tonumber(L,3);
     status = oms2_setTLMInitialValues(cref, subref, values, 1);
   }
-  else if(lua_gettop(L) == 3) {
+  else {
     double values[6];
     values[0] = lua_tonumber(L,3);
     values[1] = lua_tonumber(L,4);
@@ -1170,8 +1170,8 @@ static int OMSimulatorLua_omsi_initialize(lua_State *L)
   size_t nMeasurementvars = luaL_len(L, 5);
   // create buffers
   double* time = (double*) malloc(nTime*sizeof(double));
-  char const* * inputvars = (char const**) malloc(nInputvars*sizeof(char));
-  char const* * measurementvars = (char const**) malloc(nMeasurementvars*sizeof(char));
+  char const* * inputvars = (char const**) malloc(nInputvars*sizeof(char const *));
+  char const* * measurementvars = (char const**) malloc(nMeasurementvars*sizeof(char const *));
 
   //printf("nTime: %d, nInputvars: %d, nMeasurementvars %d\n", (int)nTime, (int)nInputvars, (int)nMeasurementvars);
 
