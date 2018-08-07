@@ -105,8 +105,7 @@ int main(int argc, char *argv[])
     type = filename.substr(filename.length() - 3);
   else
   {
-    std::cout << "Not able to process file '" << filename.c_str() << "'" << std::endl;
-    std::cout << "Use 'OMSimulator --help' for more information." << std::endl;
+    logError("Not able to process file '" + filename + "'\nUse OMSimulator --help for more information.");
     return 1;
   }
 
@@ -127,9 +126,19 @@ int main(int argc, char *argv[])
       name = (char*)defaultName;
       oms2_newFMIModel(name);
       oms2_addFMU(name, filename.c_str(), "fmu");
+
+      if (options.solver != "")
+      {
+        oms2_addSolver(name, "solver", options.solver.c_str());
+        oms2_connectSolver(name, "fmu", "solver");
+      }
     }
     else
+    {
       oms2_loadModel(filename.c_str(), &name);
+      if (options.solver != "")
+        logWarning("--solver can only be used when simulating a single FMU");
+    }
 
     if (options.resultFile != "")
       oms2_setResultFile(name, options.resultFile.c_str(), 1);
@@ -158,19 +167,19 @@ int main(int argc, char *argv[])
   else if (type == "lua")
   {
     if (options.resultFile != "")
-      std::cout << "Ignoring option '--resultFile'" << std::endl;
+      logWarning("Ignoring option '--resultFile'");
     if (options.useStartTime)
-      std::cout << "Ignoring option '--startTime'" << std::endl;
+      logWarning("Ignoring option '--startTime'");
     if (options.useStopTime)
-      std::cout << "Ignoring option '--stopTime'" << std::endl;
+      logWarning("Ignoring option '--stopTime'");
     if (options.useTolerance)
-      std::cout << "Ignoring option '--tolerance'" << std::endl;
+      logWarning("Ignoring option '--tolerance'");
     if (options.describe)
-      std::cout << "Ignoring option '--describe'" << std::endl;
+      logWarning("Ignoring option '--describe'");
     if (options.useCommunicationInterval)
-      std::cout << "Ignoring option '--interval='" << std::endl;
-    if (options.masterAlgorithm != "")
-      std::cout << "Ignoring option '--masterAlgorithm'" << std::endl;
+      logWarning("Ignoring option '--interval'");
+    if (options.solver != "")
+      logWarning("Ignoring option '--solver'");
 
     lua_State *L = luaL_newstate();
     luaL_openlibs(L);
@@ -191,8 +200,7 @@ int main(int argc, char *argv[])
   }
   else
   {
-    std::cout << "Not able to process file '" << filename.c_str() << "'" << std::endl;
-    std::cout << "Use OMSimulator --help for more information." << std::endl;
+    logError("Not able to process file '" + filename + "'\nUse OMSimulator --help for more information.");
     return 1;
   }
 

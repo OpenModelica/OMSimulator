@@ -65,9 +65,9 @@ public:
   std::string tempDir;
   std::string workingDir;
   std::string logfile;
+  std::string solver;
   double timeout;
   int logLevel;
-  std::string masterAlgorithm;
 
 private:
   int argi;
