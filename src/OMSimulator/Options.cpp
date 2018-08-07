@@ -58,6 +58,7 @@ ProgramOptions::ProgramOptions(int argc, char** argv)
   std::regex re_integer("(\\+|-)?[[:digit:]]+");
   std::regex re_double("((\\+|-)?[[:digit:]]+)(\\.(([[:digit:]]+)?))?((e|E)((\\+|-)?)[[:digit:]]+)?");
   std::regex re_default(".+");
+  std::regex re_solver("internal|euler|cvode");
 
   validOptions = true;
   for (; argi<argc; ++argi)
@@ -94,6 +95,10 @@ ProgramOptions::ProgramOptions(int argc, char** argv)
     {
       startTime = atof(value.c_str());
       useStartTime = true;
+    }
+    else if (isOptionAndValue("--solver", value, re_solver))
+    {
+      solver = value;
     }
     else if (isOptionAndValue("--stopTime", "-t", value, re_double))
     {
@@ -195,6 +200,7 @@ void ProgramOptions::printUsage()
   std::cout << "  --logLevel arg            0 default, 1 default+debug, 2 default+debug+trace" << std::endl;
   std::cout << "  -r [ --resultFile ] arg   Specifies the name of the output result file" << std::endl;
   std::cout << "  -s [ --startTime ] arg    Specifies the start time." << std::endl;
+  std::cout << "  --solver arg              Specifies the integration method (internal, euler, cvode)." << std::endl;
   std::cout << "  -t [ --stopTime ] arg     Specifies the stop time." << std::endl;
   std::cout << "  --timeout arg             Specifies the maximum allowed time in seconds for running a simulation (0 disables)." << std::endl;
   std::cout << "  --tempDir arg             Specifies the temp directory." << std::endl;
