@@ -169,8 +169,6 @@ int main(int argc, char *argv[])
       std::cout << "Ignoring option '--describe'" << std::endl;
     if (options.useCommunicationInterval)
       std::cout << "Ignoring option '--interval='" << std::endl;
-    if (options.masterAlgorithm != "")
-      std::cout << "Ignoring option '--masterAlgorithm'" << std::endl;
 
     lua_State *L = luaL_newstate();
     luaL_openlibs(L);
