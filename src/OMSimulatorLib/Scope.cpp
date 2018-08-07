@@ -1836,3 +1836,60 @@ oms_status_enu_t oms2::Scope::setFlags(const ComRef& cref, const std::string& fl
   }
   return oms_status_error;
 }
+
+oms_status_enu_t oms2::Scope::addSolver(const ComRef& modelCref, const ComRef& name, const std::string& solver)
+{
+  // Sub-model
+  Model* model = getModel(modelCref);
+  if (!model)
+  {
+    logError("[oms2::Scope::addSolver] failed");
+    return oms_status_error;
+  }
+
+  // FMI model?
+  if (oms_component_fmi == model->getType())
+  {
+    FMICompositeModel* fmiModel = model->getFMICompositeModel();
+    if (!fmiModel)
+    {
+      logError("[oms2::Scope::addSolver] failed");
+      return oms_status_error;
+    }
+    return fmiModel->addSolver(name, solver);
+  }
+  else
+  {
+    logError("[oms2::Scope::addSolver] is only implemented for FMI models yet");
+    return oms_status_error;
+  }
+}
+
+oms_status_enu_t oms2::Scope::connectSolver(const ComRef& modelCref, const ComRef& name, const ComRef& fmu)
+{
+  // Sub-model
+  Model* model = getModel(modelCref);
+  if (!model)
+  {
+    logError("[oms2::Scope::connectSolver] failed");
+    return oms_status_error;
+  }
+
+  // FMI model?
+  if (oms_component_fmi == model->getType())
+  {
+    FMICompositeModel* fmiModel = model->getFMICompositeModel();
+    if (!fmiModel)
+    {
+      logError("[oms2::Scope::connectSolver] failed");
+      return oms_status_error;
+    }
+    return fmiModel->connectSolver(name, fmu);
+  }
+  else
+  {
+    logError("[oms2::Scope::connectSolver] is only implemented for FMI models yet");
+    return oms_status_error;
+  }
+}
+

@@ -278,6 +278,42 @@ static int OMSimulatorLua_oms2_deleteConnection(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms2_addSolver(const char* model, const char* name, const char* solver);
+static int OMSimulatorLua_oms2_addSolver(lua_State *L)
+{
+  if (lua_gettop(L) != 3)
+    return luaL_error(L, "expecting exactly 3 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+  luaL_checktype(L, 3, LUA_TSTRING);
+
+  const char* model = lua_tostring(L, 1);
+  const char* name = lua_tostring(L, 2);
+  const char* solver = lua_tostring(L, 3);
+  oms_status_enu_t status = oms2_addSolver(model, name, solver);
+
+  lua_pushinteger(L, status);
+  return 1;
+}
+
+//oms_status_enu_t oms2_connectSolver(const char* model, const char* name, const char* fmu);
+static int OMSimulatorLua_oms2_connectSolver(lua_State *L)
+{
+  if (lua_gettop(L) != 3)
+    return luaL_error(L, "expecting exactly 3 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+  luaL_checktype(L, 3, LUA_TSTRING);
+
+  const char* model = lua_tostring(L, 1);
+  const char* name = lua_tostring(L, 2);
+  const char* fmu = lua_tostring(L, 3);
+  oms_status_enu_t status = oms2_connectSolver(model, name, fmu);
+
+  lua_pushinteger(L, status);
+  return 1;
+}
+
 // TODO: oms_status_enu_t oms2_updateConnection(const char* cref, const char* conA, const char* conB, const oms_connection_t* connection);
 
 //void oms2_setLoggingLevel(int logLevel);
@@ -1386,10 +1422,12 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms2_addFMISubModel);
   REGISTER_LUA_CALL(oms2_addFMU);
   REGISTER_LUA_CALL(oms2_addSignalsToResults);
+  REGISTER_LUA_CALL(oms2_addSolver);
   REGISTER_LUA_CALL(oms2_addTable);
   REGISTER_LUA_CALL(oms2_addTLMConnection);
   REGISTER_LUA_CALL(oms2_addTLMInterface);
   REGISTER_LUA_CALL(oms2_compareSimulationResults);
+  REGISTER_LUA_CALL(oms2_connectSolver);
   REGISTER_LUA_CALL(oms2_deleteConnection);
   REGISTER_LUA_CALL(oms2_deleteSubModel);
   REGISTER_LUA_CALL(oms2_describe);

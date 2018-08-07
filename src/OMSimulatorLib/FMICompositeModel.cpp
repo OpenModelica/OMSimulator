@@ -67,6 +67,9 @@ oms2::FMICompositeModel::~FMICompositeModel()
   // free memory if no one else does
   deleteComponents();
 
+  for (auto& solver : solvers)
+    delete solver;
+
   for (auto& connection : connections)
     if (connection)
       delete connection;
@@ -864,6 +867,28 @@ oms_status_enu_t oms2::FMICompositeModel::initialize(double startTime, double to
   this->tolerance = tolerance;
   this->tLastEmit = startTime;
 
+  // check if there is a solver instance assigned to each FMU
+  for (const auto& it : subModels)
+  {
+    if (oms_component_fmu == it.second->getType())
+    {
+      if (!dynamic_cast<FMUWrapper*>(it.second)->getSolver())
+      {
+        std::string solverName = "solver_" + it.first;
+        std::string method = "internal";
+        if (oms_fmi_kind_cs != dynamic_cast<FMUWrapper*>(it.second)->getFMUInfo()->getKind())
+          method = "euler";
+
+        logWarning("No solver instance is assigned to FMU \"" + it.first + "\"; A default solver will be selected: " + method);
+        addSolver(oms2::ComRef(solverName), method);
+        connectSolver(it.first, oms2::ComRef(solverName));
+      }
+    }
+  }
+
+  for (const auto& it : solvers)
+    it->setTime(startTime);
+
   // Enter initialization
   for (const auto& it : subModels)
   {
@@ -878,6 +903,10 @@ oms_status_enu_t oms2::FMICompositeModel::initialize(double startTime, double to
     if (oms_status_ok != it.second->exitInitialization())
       return logError("[oms2::FMICompositeModel::initialize] failed");
 
+  // Initialize solvers
+  for (const auto& it : solvers)
+    it->initializeSolver(startTime);
+
   updateInputs(outputsGraph);
 
   return oms_status_ok;
@@ -886,6 +915,9 @@ oms_status_enu_t oms2::FMICompositeModel::initialize(double startTime, double to
 oms_status_enu_t oms2::FMICompositeModel::reset(bool terminate)
 {
   logTrace();
+
+  for (const auto& it : solvers)
+    it->freeSolver();
 
   for (const auto& it : subModels)
     it.second->reset(terminate);
@@ -928,9 +960,14 @@ oms_status_enu_t oms2::FMICompositeModel::doSteps(ResultWriter& resultWriter, co
   {
     time += communicationInterval;
 
-    // do_step
+    // call doStep, except for FMUs
     for (const auto& it : subModels)
-      it.second->doStep(time);
+      if (oms_component_fmu != it.second->getType())
+        it.second->doStep(time);
+
+    // call doStep for FMUs
+    for (const auto& it : solvers)
+      it->doStep(time);
 
     if (loggingInterval >= 0.0 && time - tLastEmit >= loggingInterval)
     {
@@ -959,9 +996,14 @@ oms_status_enu_t oms2::FMICompositeModel::stepUntilStandard(ResultWriter& result
     if (time > stopTime)
       time = stopTime;
 
-    // do_step
+    // call doStep, except for FMUs
     for (const auto& it : subModels)
-      it.second->doStep(time);
+      if (oms_component_fmu != it.second->getType())
+        it.second->doStep(time);
+
+    // call doStep for FMUs
+    for (const auto& it : solvers)
+      it->doStep(time);
 
     if (realtime_sync)
     {
@@ -998,13 +1040,16 @@ oms_status_enu_t oms2::FMICompositeModel::stepUntilPCTPL(ResultWriter& resultWri
 {
   logTrace();
 
-  int nFMUs = subModels.size();
-  std::vector<oms2::FMISubModel*> fmus;
-  std::map<oms2::ComRef, oms2::FMISubModel*>::iterator it;
-  for (it=subModels.begin(); it != subModels.end(); ++it)
-    fmus.push_back(it->second);
+  std::vector<oms2::FMISubModel*> sub_model;
+  std::vector<oms2::Solver*> _solver(solvers);
+  for (auto it=subModels.begin(); it != subModels.end(); ++it)
+    if (oms_component_fmu != it->second->getType())
+      sub_model.push_back(it->second);
 
-  int numThreads = nFMUs < std::thread::hardware_concurrency() ? nFMUs : std::thread::hardware_concurrency();
+  int numThreads = sub_model.size() + _solver.size();
+  if (numThreads > std::thread::hardware_concurrency())
+    numThreads = std::thread::hardware_concurrency();
+
   logInfo(std::string("oms2::FMICompositeModel::stepUntilPCTPL: Creating thread pool with ") + std::to_string(numThreads) + std::string(" threads in the pool"));
   ctpl::thread_pool p(numThreads);
   std::vector<std::future<void>> results(numThreads);
@@ -1017,12 +1062,17 @@ oms_status_enu_t oms2::FMICompositeModel::stepUntilPCTPL(ResultWriter& resultWri
     if (time > stopTime)
       time = stopTime;
 
-    // do_step
-    for (int i = 0; i < nFMUs; ++i) {
+    // call doStep, except for FMUs
+    for (int i=0; i < sub_model.size(); ++i) {
       auto time_tmp = time;
-      results[i] = p.push([&fmus, i, time_tmp](int){ fmus[i]->doStep(time_tmp); });
+      results[i] = p.push([&sub_model, i, time_tmp](int){ sub_model[i]->doStep(time_tmp); });
     }
-    for (int i = 0; i < nFMUs; ++i)
+    // call doStep for FMUs
+    for (int i=0; i < _solver.size(); ++i) {
+      auto time_tmp = time;
+      results[sub_model.size()+i] = p.push([&_solver, i, time_tmp](int){ _solver[i]->doStep(time_tmp); });
+    }
+    for (int i=0; i < sub_model.size() + _solver.size(); ++i)
       results[i].get();
 
     if (realtime_sync)
@@ -1064,11 +1114,19 @@ void oms2::FMICompositeModel::simulate_asynchronous(ResultWriter& resultWriter, 
     if (time > stopTime)
       time = stopTime;
 
-    // do_step
+    // call doStep, except for FMUs
     status = oms_status_ok;
     for (const auto& it : subModels)
     {
-      statusSubModel = it.second->doStep(time);
+      if (oms_component_fmu != it.second->getType())
+        statusSubModel = it.second->doStep(time);
+      status = statusSubModel > status ? statusSubModel : status;
+    }
+
+    // call doStep for FMUs
+    for (const auto& it : solvers)
+    {
+      statusSubModel = it->doStep(time);
       status = statusSubModel > status ? statusSubModel : status;
     }
 
@@ -1103,12 +1161,18 @@ oms_status_enu_t oms2::FMICompositeModel::simulateTLM(ResultWriter* resultWriter
 
     readFromSockets();
 
-    // Do step in FMUs
     time += communicationInterval;
     if (time > stopTime)
       time = stopTime;
+
+    // call doStep, except for FMUs
     for (const auto& it : subModels)
-      it.second->doStep(time);
+      if (oms_component_fmu != it.second->getType())
+        it.second->doStep(time);
+
+    // call doStep for FMUs
+    for (const auto& it : solvers)
+      it->doStep(time);
 
     writeToSockets();
 
@@ -1646,3 +1710,73 @@ void oms2::FMICompositeModel::setName(const oms2::ComRef& name)
     if (connection)
       connection->setParent(name);
 }
+
+oms_status_enu_t oms2::FMICompositeModel::addSolver(const oms2::ComRef& solverCref, const std::string& methodString)
+{
+  oms_solver_enu_t method;
+
+  if ("internal" == methodString)
+    method = oms_solver_internal;
+  else if("euler" == methodString)
+    method = oms_solver_explicit_euler;
+  else if("cvode" == methodString)
+    method = oms_solver_cvode;
+  else
+    return logError("Unknown solver: " + methodString);
+
+  for (auto& solver : solvers)
+    if (solver->getName() == solverCref)
+      return logError("[oms2::FMICompositeModel::newSolver] composite model contains already a solver named \"" + solverCref + "\"");
+
+  Solver* solver = new Solver(solverCref, method);
+  solvers.push_back(solver);
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms2::FMICompositeModel::deleteSolver(std::string name)
+{
+  for (auto& solver : solvers)
+  {
+    if (solver->getName() == name)
+    {
+      delete solver;
+
+      solver = solvers.back();
+      solvers.pop_back();
+
+      return oms_status_ok;
+    }
+  }
+
+  return oms_status_error;
+}
+
+oms_status_enu_t oms2::FMICompositeModel::setSolverTolerance(std::string solverName, double tolerance)
+{
+  for (auto& solver : solvers)
+    if (solver->getName() == solverName)
+      return solver->setTolerance(tolerance);
+
+  return oms_status_error;
+}
+
+oms_status_enu_t oms2::FMICompositeModel::connectSolver(const oms2::ComRef& fmuCref, const oms2::ComRef& solverCref)
+{
+  oms_status_enu_t status = oms_status_error;
+
+  oms2::FMISubModel* fmu = oms2::FMICompositeModel::getSubModel(fmuCref);
+  if (!fmu || oms_component_fmu != fmu->getType())
+    return logError("Unknown fmu: " + fmuCref);
+
+  for (auto& solver : solvers)
+  {
+    if (solver->getName() == solverCref)
+      status = solver->addFMU(dynamic_cast<FMUWrapper*>(fmu));
+    else
+      solver->removeFMU(fmuCref); // Just make sure each FMU is only connected to a single solver.
+  }
+
+  return status;
+}
+

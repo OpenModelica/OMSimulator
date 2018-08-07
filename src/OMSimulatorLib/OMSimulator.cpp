@@ -562,3 +562,14 @@ oms_status_enu_t oms2_setFlags(const char* cref, const char* flags)
   logTrace();
   return oms2::Scope::GetInstance().setFlags(oms2::ComRef(cref), std::string(flags));
 }
+
+oms_status_enu_t oms2_addSolver(const char* model, const char* name, const char* solver)
+{
+  return oms2::Scope::GetInstance().addSolver(oms2::ComRef(model), oms2::ComRef(name), std::string(solver));
+}
+
+oms_status_enu_t oms2_connectSolver(const char* model, const char* name, const char* fmu)
+{
+  return oms2::Scope::GetInstance().connectSolver(oms2::ComRef(model), oms2::ComRef(name), oms2::ComRef(fmu));
+}
+
