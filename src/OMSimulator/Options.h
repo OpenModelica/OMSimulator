@@ -67,7 +67,6 @@ public:
   std::string logfile;
   double timeout;
   int logLevel;
-  std::string masterAlgorithm;
 
 private:
   int argi;
