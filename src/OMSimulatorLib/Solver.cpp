@@ -70,6 +70,12 @@ int oms2::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void *user_data)
     if (fmi2_status_ok != fmistatus) logError("fmi2_import_set_continuous_states failed");
   }
 
+  // update TLM interpolated effort variables
+  for (int j=0; j < solver->fmus.size(); ++j)
+  {
+    solver->fmus[j]->readFromTLMSockets(t);
+  }
+
   // get state derivatives
   for (int j=0, k=0; j < solver->fmus.size(); ++j)
   {
@@ -325,8 +331,14 @@ oms_status_enu_t oms2::Solver::doStep(double stopTime)
     {
       while (fmuTime[i] < stopTime)
       {
+        // read interpolated TLM effort variables
+        fmus[i]->readFromTLMSockets(fmuTime[i]);
+
         fmistatus = fmi2_import_do_step(fmus[i]->getFMU(), fmuTime[i], hdef, fmi2_true);
         fmuTime[i] += hdef;
+
+        // read interpolated TLM effort variables
+        fmus[i]->writeToTLMSockets(fmuTime[i]);
       }
     }
     time = stopTime;
@@ -340,6 +352,12 @@ oms_status_enu_t oms2::Solver::doStep(double stopTime)
     {
       fmi2_real_t tlast = time;
       fmi2_real_t tnext = time + hdef;
+
+      // read interpolated TLM effort variables
+      for (int j=0; j < fmus.size(); ++j)
+      {
+        fmus[j]->readFromTLMSockets(time);
+      }
 
       // event handling
       for (int i=0; i < fmus.size(); ++i)
@@ -465,6 +483,12 @@ oms_status_enu_t oms2::Solver::doStep(double stopTime)
       {
         fmistatus = fmi2_import_completed_integrator_step(fmus[i]->getFMU(), fmi2_true, &callEventUpdate[i], &terminateSimulation[i]);
         if (fmi2_status_ok != fmistatus) logError("fmi2_import_completed_integrator_step failed");
+      }
+
+      // write TLM flow variables
+      for (int j=0; j < fmus.size(); ++j)
+      {
+        fmus[j]->writeToTLMSockets(time);
       }
     }
     time = stopTime;

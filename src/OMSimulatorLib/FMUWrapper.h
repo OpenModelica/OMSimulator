@@ -58,7 +58,7 @@ namespace oms2
   class FMUWrapper : public FMISubModel
   {
   public:
-    static FMUWrapper* newSubModel(const ComRef& cref, const std::string& filename);
+    static FMUWrapper* newSubModel(const ComRef& cref, const std::string& filename, const ComRef &parent);
 
     oms_status_enu_t enterInitialization(const double time);
     oms_status_enu_t exitInitialization();
@@ -68,6 +68,9 @@ namespace oms2
     oms_status_enu_t exportToSSD(pugi::xml_node& root) const;
 
     oms_element_type_enu_t getType() const { return oms_component_fmu; }
+
+    void readFromTLMSockets(double time);
+    void writeToTLMSockets(double time);
 
     oms_status_enu_t setRealParameter(const std::string& var, double value);
     oms_status_enu_t getRealParameter(const std::string& var, double& value);
@@ -118,8 +121,10 @@ namespace oms2
     oms2::Variable* getVariable(const std::string& var);
 
   private:
-    FMUWrapper(const ComRef& cref, const std::string& filename);
+    FMUWrapper(const ComRef& cref, const std::string& filename, const ComRef& parent);
     ~FMUWrapper();
+
+    ComRef parent;
 
     oms2::FMUInfo fmuInfo;
     std::vector<oms2::Variable> inputs;

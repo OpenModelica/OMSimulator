@@ -38,6 +38,7 @@
 #include "Variable.h"
 #include "ssd/Tags.h"
 #include "Solver.h"
+#include "FMICompositeModel.h"
 
 #include <cmath>
 #include <regex>
@@ -99,9 +100,10 @@ void oms2::fmi2logger(fmi2_component_environment_t env, fmi2_string_t instanceNa
   }
 }
 
-oms2::FMUWrapper::FMUWrapper(const oms2::ComRef& cref, const std::string& filename)
+oms2::FMUWrapper::FMUWrapper(const oms2::ComRef& cref, const std::string& filename, const ComRef &parent)
   : oms2::FMISubModel(oms_component_fmu, cref), fmuInfo(filename)
 {
+  this->parent = parent;
 }
 
 oms2::FMUWrapper::~FMUWrapper()
@@ -124,7 +126,7 @@ oms2::FMUWrapper::~FMUWrapper()
   }
 }
 
-oms2::FMUWrapper* oms2::FMUWrapper::newSubModel(const oms2::ComRef& cref, const std::string& filename)
+oms2::FMUWrapper* oms2::FMUWrapper::newSubModel(const oms2::ComRef& cref, const std::string& filename, const oms2::ComRef& parent)
 {
   if (!cref.isValidQualified())
   {
@@ -138,7 +140,7 @@ oms2::FMUWrapper* oms2::FMUWrapper::newSubModel(const oms2::ComRef& cref, const 
     return NULL;
   }
 
-  oms2::FMUWrapper *model = new oms2::FMUWrapper(cref, filename);
+  oms2::FMUWrapper *model = new oms2::FMUWrapper(cref, filename, parent);
 
   model->callbacks.malloc = malloc;
   model->callbacks.calloc = calloc;
@@ -585,6 +587,18 @@ oms_status_enu_t oms2::FMUWrapper::exportToSSD(pugi::xml_node& root) const
   }
 
   return status;
+}
+
+void oms2::FMUWrapper::readFromTLMSockets(double time)
+{
+  FMICompositeModel *model = oms2::Scope::GetInstance().getFMICompositeModel(parent);
+  model->readFromSockets(time, element.getName().toString());
+}
+
+void oms2::FMUWrapper::writeToTLMSockets(double time)
+{
+  FMICompositeModel *model = oms2::Scope::GetInstance().getFMICompositeModel(parent);
+  model->writeToSockets(time, element.getName().toString());
 }
 
 oms2::Variable* oms2::FMUWrapper::getVariable(const std::string& var)
