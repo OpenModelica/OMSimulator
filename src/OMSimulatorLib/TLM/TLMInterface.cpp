@@ -48,6 +48,11 @@ oms2::TLMInterface::TLMInterface(const oms2::ComRef &cref,
   this->interpolationMethod = interpolation;
 }
 
+oms2::ComRef oms2::TLMInterface::getFMUName()
+{
+  return sigrefs[0].getCref();
+}
+
 std::vector<oms2::SignalRef> oms2::TLMInterface::getSubSignalSet(std::vector<int> ids)
 {
   std::vector<oms2::SignalRef> retval;

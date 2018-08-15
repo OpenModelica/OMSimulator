@@ -124,6 +124,7 @@ typedef struct  {
 
     oms2::SignalRef getSignal() { return sig; }
     oms2::ComRef getSubModelName() { return cref; }
+    oms2::ComRef getFMUName();
     std::string getName() { return name; }
     oms_causality_enu_t getCausality() { return causality; }
     std::string getDomain() { return domain; }

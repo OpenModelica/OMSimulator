@@ -137,9 +137,10 @@ namespace oms2
 #if !defined(NO_TLM)
     oms_status_enu_t setupSockets();
     oms_status_enu_t initializeSockets();
-    void readFromSockets();
-    void writeToSockets();
     void finalizeSockets();
+  public:
+    void readFromSockets(double time, std::string fmu = "");
+    void writeToSockets(double time, std::string fmu = "");
 #endif
   protected:
     void deleteComponents();
