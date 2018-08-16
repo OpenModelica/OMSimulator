@@ -436,7 +436,7 @@ oms_status_enu_t oms2::Scope::getElements(const oms2::ComRef& cref, oms2::Elemen
   return oms_status_error;
 }
 
-oms_status_enu_t oms2::Scope::getFMUPath(const oms2::ComRef& cref, char** path)
+oms_status_enu_t oms2::Scope::getSubModelPath(const oms2::ComRef& cref, char** path)
 {
   logTrace();
 
@@ -447,7 +447,7 @@ oms_status_enu_t oms2::Scope::getFMUPath(const oms2::ComRef& cref, char** path)
     Model* model = getModel(modelCref);
     if (!model)
     {
-      logError("[oms2::Scope::getFMUPath] failed");
+      logError("[oms2::Scope::getSubModelPath] failed");
       return oms_status_error;
     }
 
@@ -458,16 +458,15 @@ oms_status_enu_t oms2::Scope::getFMUPath(const oms2::ComRef& cref, char** path)
       FMISubModel* subModel = fmiModel->getSubModel(cref);
       if (!subModel)
       {
-        logError("[oms2::Scope::getFMUPath] failed");
+        logError("[oms2::Scope::getSubModelPath] failed");
         return oms_status_error;
       }
-      oms2::FMUWrapper* fmuWrapper = dynamic_cast<oms2::FMUWrapper*>(subModel);
-      *path = const_cast<char*>(fmuWrapper->getFMUPath().c_str());
+      *path = const_cast<char*>(subModel->getPath().c_str());
       return oms_status_ok;
     }
     else
     {
-      logError("[oms2::Scope::getFMUPath] is only implemented for FMI models yet");
+      logError("[oms2::Scope::getSubModelPath] is only implemented for FMI models yet");
       return oms_status_error;
     }
   }

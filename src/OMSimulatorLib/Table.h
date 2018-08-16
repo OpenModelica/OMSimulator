@@ -65,7 +65,7 @@ namespace oms2
 
     oms_element_type_enu_t getType() const { return oms_component_table; }
 
-    const std::string& getPath() const {return path;}
+    const std::string getPath() const {return path;}
 
     oms_status_enu_t getReal(const std::string& var, double& realValue, const double time);
 

@@ -56,8 +56,8 @@ class OMSimulator:
     self.obj.oms2_getCurrentTime.argtypes = [ctypes.c_char_p]
     self.obj.oms2_getCurrentTime.restype = ctypes.c_int
 
-    self.obj.oms2_getFMUPath.argtypes = [ctypes.c_char_p]
-    self.obj.oms2_getFMUPath.restype = ctypes.c_int
+    self.obj.oms2_getSubModelPath.argtypes = [ctypes.c_char_p]
+    self.obj.oms2_getSubModelPath.restype = ctypes.c_int
 
     self.obj.oms2_getInteger.argtypes = [ctypes.c_char_p, ctypes.c_int]
     self.obj.oms2_getInteger.restype = ctypes.c_int
@@ -196,9 +196,9 @@ class OMSimulator:
     time = ctypes.c_double()
     status = self.obj.oms2_getCurrentTime(str.encode(ident), ctypes.byref(time))
     return [status, time.value]
-  def getFMUPath(self, cref):
+  def getSubModelPath(self, cref):
     path = ctypes.c_char_p()
-    status = self.obj.oms2_getFMUPath(str.encode(cref), ctypes.byref(path))
+    status = self.obj.oms2_getSubModelPath(str.encode(cref), ctypes.byref(path))
     return [status, path.value]
   def getInteger(self, signal):
     value = ctypes.c_int()
