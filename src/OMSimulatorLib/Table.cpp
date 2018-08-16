@@ -87,6 +87,17 @@ oms2::Table* oms2::Table::newSubModel(const oms2::ComRef& cref, const std::strin
     oms2::Variable var(oms2::SignalRef(model->getName(), v), fmi2_causality_enu_output, fmi2_initial_enu_exact, false, oms_signal_type_real);
     model->outputs.push_back(var);
   }
+
+  std::vector<oms2::Connector> connectors;
+  int i = 1;
+  int size = 1 + model->outputs.size();
+  for (auto const &v : model->outputs)
+  {
+    oms2::Connector c(oms_causality_output, v.getType(), v.getSignalRef(), i++/(double)size);
+    connectors.push_back(c);
+  }
+  model->element.setConnectors(connectors);
+
   return model;
 }
 
