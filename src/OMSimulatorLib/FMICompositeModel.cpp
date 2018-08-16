@@ -359,15 +359,14 @@ oms_status_enu_t oms2::FMICompositeModel::loadSubModel(const pugi::xml_node& nod
             {
               if (connectors[i]->getName().getVar() == connectorNode.attribute("name").as_string())
               {
-                for (auto connectorGeometryNode = connectorNode.first_child(); connectorGeometryNode; connectorGeometryNode = connectorGeometryNode.next_sibling())
+                auto connectorGeometryNode = connectorNode.first_child();
+                if (std::string(connectorGeometryNode.name()) == oms2::ssd::ssd_connector_geometry)
                 {
-                  if (std::string(connectorGeometryNode.name()) == oms2::ssd::ssd_connector_geometry)
-                  {
-                    oms2::ssd::ConnectorGeometry geometry(0.0, 0.0);
-                    geometry.setPosition(connectorGeometryNode.attribute("x").as_double(), connectorGeometryNode.attribute("y").as_double());
-                    connectors[i]->setGeometry(&geometry);
-                  }
+                  oms2::ssd::ConnectorGeometry geometry(0.0, 0.0);
+                  geometry.setPosition(connectorGeometryNode.attribute("x").as_double(), connectorGeometryNode.attribute("y").as_double());
+                  connectors[i]->setGeometry(&geometry);
                 }
+                break;  // since we got the connector we are looking for so quit the loop.
               }
             }
           }
