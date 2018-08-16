@@ -120,8 +120,35 @@ oms_status_enu_t oms2::Table::doStep(double stopTime)
 
 oms_status_enu_t oms2::Table::exportToSSD(pugi::xml_node& root) const
 {
-  logError("[oms2::Table::exportToSSD] not implemented yet");
-  return oms_status_error;
+  oms_status_enu_t status = oms_status_ok;
+
+  oms2::ComRef cref = element.getName();
+  pugi::xml_node subModel = root.append_child(oms2::ssd::ssd_component);
+  subModel.append_attribute("name") = cref.last().toString().c_str();
+
+  subModel.append_attribute("type") = "application/x-table";
+
+  const std::string& path = getPath();
+  subModel.append_attribute("source") = path.c_str();
+
+  // export ssd:ElementGeometry
+  status = element.getGeometry()->exportToSSD(subModel);
+  if (oms_status_ok != status)
+    return status;
+
+  // export ssd:Connectors
+  oms2::Connector** connectors = element.getConnectors();
+  if (connectors)
+  {
+    pugi::xml_node connectorsNode = subModel.append_child(oms2::ssd::ssd_connectors);
+    for (int i=0; connectors[i]; ++i)
+    {
+      status = connectors[i]->exportToSSD(connectorsNode);
+      if (oms_status_ok != status)
+        return status;
+    }
+  }
+  return status;
 }
 
 oms2::Variable* oms2::Table::getVariable(const std::string& var)
