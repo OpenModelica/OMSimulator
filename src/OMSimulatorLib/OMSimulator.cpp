@@ -174,10 +174,10 @@ oms_status_enu_t oms2_getElements(const char* cref, oms_element_t*** elements)
   return oms2::Scope::GetInstance().getElements(oms2::ComRef(cref), reinterpret_cast<oms2::Element***>(elements));
 }
 
-oms_status_enu_t oms2_getFMUPath(const char* cref, char** path)
+oms_status_enu_t oms2_getSubModelPath(const char* cref, char** path)
 {
   logTrace();
-  return oms2::Scope::GetInstance().getFMUPath(oms2::ComRef(cref), path);
+  return oms2::Scope::GetInstance().getSubModelPath(oms2::ComRef(cref), path);
 }
 
 oms_status_enu_t oms2_getFMUInfo(const char* cref, const oms_fmu_info_t** fmuInfo)

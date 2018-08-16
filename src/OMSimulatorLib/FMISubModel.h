@@ -56,6 +56,7 @@ namespace oms2
     void setGeometry(const oms2::ssd::ElementGeometry& geometry) {element.setGeometry(&geometry);}
 
     const ComRef getName() const {return oms2::ComRef(element.getName());}
+    virtual const std::string getPath() const = 0;
     const oms2::ssd::ElementGeometry* getGeometry() {return element.getGeometry();}
     oms2::Element* getElement() {return &element;}
 
