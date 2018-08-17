@@ -2,7 +2,8 @@
 addConnection
 -------------
 
-Adds a new connection to a given parent component.
+Adds a new connection between connectors A and B to a given parent component.
+This command can also be used to connect a solver instance to a given FMU of a FMI composite model.
 #END#
 
 #LUA#

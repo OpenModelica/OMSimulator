@@ -203,16 +203,21 @@ oms_status_enu_t oms2_setConnectorGeometry(const char* connector, const ssd_conn
 oms_status_enu_t oms2_getConnections(const char* cref, oms_connection_t*** connections);
 
 /**
- * \brief Adds a new connection to a given parent component.
+ * \brief Adds a new connection between connectors A and B to a given parent
+ * component.
+ * This command can be used to connects submodels with each other or to attach
+ * a solver to a submodel.
  *
- * \param cref         [in] Full identifier of a component
- * \param connection   [in] New connection
+ * \param cref         [in] Full identifier of a component, e.g. FMI composite model
+ * \param conA         [in] Name of connector A
+ * \param conB         [in] Name of connector B
  * \return             Error status
  */
 oms_status_enu_t oms2_addConnection(const char* cref, const char* conA, const char* conB);
 
 /**
  * \brief Deletes the connection between connectors A and B.
+ * This can also be used to unconnect a solver from a given FMU.
  *
  * \param cref   [in] Full identifier of a component
  * \param conA   [in] Name of connector A
@@ -711,7 +716,6 @@ oms_status_enu_t oms2_removeSignalsFromResults(const char* cref, const char* reg
 oms_status_enu_t oms2_setFlags(const char* cref, const char* flags);
 
 oms_status_enu_t oms2_addSolver(const char* model, const char* name, const char* solver);
-oms_status_enu_t oms2_connectSolver(const char* model, const char* name, const char* fmu);
 
 #ifdef __cplusplus
 }
