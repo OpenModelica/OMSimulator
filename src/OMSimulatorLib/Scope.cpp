@@ -335,7 +335,15 @@ oms_status_enu_t oms2::Scope::setTempDirectory(const std::string& newTempDir)
   }
 
   boost::filesystem::path path(newTempDir.c_str());
-  path = boost::filesystem::canonical(path);
+  try
+  {
+    path = boost::filesystem::canonical(path);
+  }
+  catch(std::exception e)
+  {
+    // do nothing, canonical fails if the directory contains a junction or a symlink!
+    // https://svn.boost.org/trac10/ticket/11138
+  }
   tempDir = path.string();
 
   logInfo("New temp directory: \"" + std::string(tempDir) + "\"");
