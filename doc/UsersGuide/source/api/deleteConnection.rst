@@ -3,6 +3,7 @@ deleteConnection
 ----------------
 
 Deletes the connection between connectors A and B.
+This can also be used to unconnect a solver from a given FMU.
 #END#
 
 #LUA#
@@ -27,4 +28,5 @@ Deletes the connection between connectors A and B.
 #END#
 
 #DESCRIPTION#
+The two arguments `from` and `to` get swapped automatically if necessary.
 #END#

@@ -79,3 +79,15 @@ bool oms2::SignalRef::operator<(const oms2::SignalRef& rhs)
 {
   return toString() < rhs.toString();
 }
+
+bool oms2::SignalRef::isValid(const std::string& signal)
+{
+  size_t sep = signal.find(":");
+  if (std::string::npos != sep)
+  {
+    if(!oms2::ComRef::isValidIdent(signal.substr(0, sep)))
+      return false;
+    return (signal.substr(sep+1).length() > 0);
+  }
+  return false;
+}
