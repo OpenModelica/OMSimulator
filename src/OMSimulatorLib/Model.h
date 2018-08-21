@@ -60,6 +60,7 @@ namespace oms2
     static void DeleteModel(Model *model) {if (model) delete model;}
 
     oms_status_enu_t save(const std::string& filename);
+    oms_status_enu_t list(char** contents);
 
     void setStartTime(double value) {startTime = value;}
     double getStartTime() const {return startTime;}
@@ -107,6 +108,8 @@ namespace oms2
     // stop the compiler generating methods copying the object
     Model(Model const& copy);            ///< not implemented
     Model& operator=(Model const& copy); ///< not implemented
+
+    oms_status_enu_t saveOrList(const std::string& filename, char** contents);
 
   private:
     oms2::ssd::SystemGeometry systemGeometry;
