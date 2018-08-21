@@ -366,6 +366,19 @@ oms_status_enu_t oms2::Model::stepUntil(const double timeValue)
   return status;
 }
 
+oms_status_enu_t oms2::Model::simulateTLM(const double timeValue, const std::string server)
+{
+  if (oms_modelState_simulation != modelState)
+    return logError("[oms2::Model::stepUntil] Model cannot be simulated, because it isn't initialized.");
+
+  if(oms_component_fmi != getType())
+    return logError("[oms2::Model::simulateTLM] Can only be used for FMICompositeModels.");
+
+  oms_status_enu_t status = getFMICompositeModel()->simulateTLM(resultFile, timeValue, communicationInterval, loggingInterval, server);
+
+  return status;
+}
+
 oms_status_enu_t oms2::Model::simulate_asynchronous(void (*cb)(const char* ident, double time, oms_status_enu_t status))
 {
   if (oms_modelState_simulation != modelState)
