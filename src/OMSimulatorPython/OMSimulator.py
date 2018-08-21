@@ -91,6 +91,9 @@ class OMSimulator:
 
     self.obj.oms2_saveModel.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms2_saveModel.restype = ctypes.c_int
+    
+    self.obj.oms2_listModel.argtypes = [ctypes.c_char_p]
+    self.obj.oms2_listModel.restype = ctypes.c_int
 
     self.obj.oms2_setBoolean.argtypes = [ctypes.c_char_p, ctypes.c_bool]
     self.obj.oms2_setBoolean.restype = ctypes.c_int
@@ -229,6 +232,10 @@ class OMSimulator:
     return self.obj.oms2_reset(str.encode(ident))
   def saveModel(self, filename, ident):
     return self.obj.oms2_saveModel(str.encode(filename), str.encode(ident))
+  def listModel(self, ident):
+    contents = ctypes.c_char_p()
+    status = self.obj.oms2_listModel(str.encode(ident), ctypes.byref(contents))
+    return [status, contents.value]
   def setBoolean(self, signal, value):
     return self.obj.oms2_setBoolean(str.encode(signal), value)
   def setBooleanParameter(self, signal, value):
