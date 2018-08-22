@@ -1,6 +1,6 @@
 project(OMSimulatorLua C)
 
-set(CMAKE_INSTALL_RPATH "$ORIGIN/../lib:$ORIGIN/")
+set(CMAKE_INSTALL_RPATH "$ORIGIN/../lib/${HOST_SHORT}:$ORIGIN/")
 
 include_directories(
   ${CMAKE_SOURCE_DIR}/src # Needed ?
@@ -32,4 +32,4 @@ ELSE ()
   target_link_libraries(OMSimulatorLua OMSimulatorLib_shared fmilib sundials_kinsol sundials_cvode sundials_nvecserial)
 ENDIF ()
 
-install(TARGETS OMSimulatorLua DESTINATION lib)
+install(TARGETS OMSimulatorLua DESTINATION lib/${HOST_SHORT})
