@@ -65,7 +65,12 @@ ifeq ($(OMBUILDDIR),)
 else
 	TOP_INSTALL_DIR=$(OMBUILDDIR)
 	CMAKE_INSTALL_PREFIX=-DCMAKE_INSTALL_PREFIX=$(OMBUILDDIR)
-	HOST_SHORT=-DHOST_SHORT=$(host_short)
+ifeq ($(host_short),)
+	HOST_SHORT=
+else
+	HOST_SHORT_OMC=$(host_short)/omc
+	HOST_SHORT=-DHOST_SHORT=$(HOST_SHORT_OMC)
+endif
 endif
 
 ifeq ($(CROSS_TRIPLE),)
@@ -110,9 +115,9 @@ OMTLMSimulator:
 	@echo $(ABI)
 	@$(MAKE) -C OMTLMSimulator omtlmlib
 	test ! `uname` != Darwin || $(MAKE) -C OMTLMSimulator/FMIWrapper install
-	@$(MKDIR) $(TOP_INSTALL_DIR)/lib/$(host_short)
+	@$(MKDIR) $(TOP_INSTALL_DIR)/lib/$(HOST_SHORT_OMC)
 	@$(MKDIR) $(TOP_INSTALL_DIR)/bin
-	cp OMTLMSimulator/bin/libomtlmsimulator$(FEXT) $(TOP_INSTALL_DIR)/lib/$(host_short)
+	cp OMTLMSimulator/bin/libomtlmsimulator$(FEXT) $(TOP_INSTALL_DIR)/lib/$(HOST_SHORT_OMC)
 	test ! "$(FEXT)" = ".dll" || cp OMTLMSimulator/bin/libomtlmsimulator$(FEXT) $(TOP_INSTALL_DIR)/bin/
 	test ! `uname` != Darwin || cp OMTLMSimulator/bin/FMIWrapper $(TOP_INSTALL_DIR)/bin/
 	test ! `uname` != Darwin || cp OMTLMSimulator/bin/StartTLMFmiWrapper $(TOP_INSTALL_DIR)/bin/
