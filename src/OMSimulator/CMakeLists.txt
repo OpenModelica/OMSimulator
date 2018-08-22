@@ -3,7 +3,7 @@ project(OMSimulator)
 IF(WIN32)
   set(CMAKE_INSTALL_RPATH "$ORIGIN/../bin:$ORIGIN/")
 ELSE(WIN32)
-  set(CMAKE_INSTALL_RPATH "$ORIGIN/../lib:$ORIGIN/")
+  set(CMAKE_INSTALL_RPATH "$ORIGIN/../lib/${HOST_SHORT}:$ORIGIN/")
 ENDIF(WIN32)
 find_package(Threads)
 
