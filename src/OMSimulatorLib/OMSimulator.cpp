@@ -201,13 +201,37 @@ oms_status_enu_t oms2_getConnections(const char* cref, oms_connection_t*** conne
 oms_status_enu_t oms2_addConnection(const char* cref, const char* conA, const char* conB)
 {
   logTrace();
-  return oms2::Scope::GetInstance().addConnection(oms2::ComRef(cref), oms2::SignalRef(conA), oms2::SignalRef(conB));
+
+  if(oms2::SignalRef::isValid(conA) && oms2::SignalRef::isValid(conB))
+  {
+    // case 1: FMU:signal1 -> FMU:signal2
+    return oms2::Scope::GetInstance().addConnection(oms2::ComRef(cref), oms2::SignalRef(conA), oms2::SignalRef(conB));
+  }
+  else if(oms2::ComRef::isValidIdent(conA) && oms2::ComRef::isValidIdent(conB))
+  {
+    // case 2: FMU -> solver
+    return oms2::Scope::GetInstance().connectSolver(oms2::ComRef(cref), oms2::ComRef(conA), oms2::ComRef(conB));
+  }
+  else
+    return logWarning("[oms2_addConnection] invalid arguments");
 }
 
 oms_status_enu_t oms2_deleteConnection(const char* cref, const char* conA, const char* conB)
 {
   logTrace();
-  return oms2::Scope::GetInstance().deleteConnection(oms2::ComRef(cref), oms2::SignalRef(conA), oms2::SignalRef(conB));
+
+  if(oms2::SignalRef::isValid(conA) && oms2::SignalRef::isValid(conB))
+  {
+    // case 1: FMU:signal1 -> FMU:signal2
+    return oms2::Scope::GetInstance().deleteConnection(oms2::ComRef(cref), oms2::SignalRef(conA), oms2::SignalRef(conB));
+  }
+  else if(oms2::ComRef::isValidIdent(conA) && oms2::ComRef::isValidIdent(conB))
+  {
+    // case 2: FMU -> solver
+    return oms2::Scope::GetInstance().unconnectSolver(oms2::ComRef(cref), oms2::ComRef(conA), oms2::ComRef(conB));
+  }
+  else
+    return logWarning("[oms2_deleteConnection] invalid arguments");
 }
 
 oms_status_enu_t oms2_updateConnection(const char* cref, const char* conA, const char* conB, const oms_connection_t* connection)
@@ -567,9 +591,3 @@ oms_status_enu_t oms2_addSolver(const char* model, const char* name, const char*
 {
   return oms2::Scope::GetInstance().addSolver(oms2::ComRef(model), oms2::ComRef(name), std::string(solver));
 }
-
-oms_status_enu_t oms2_connectSolver(const char* model, const char* name, const char* fmu)
-{
-  return oms2::Scope::GetInstance().connectSolver(oms2::ComRef(model), oms2::ComRef(name), oms2::ComRef(fmu));
-}
-

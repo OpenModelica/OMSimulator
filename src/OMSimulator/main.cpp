@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
       if (options.solver != "")
       {
         oms2_addSolver(name, "solver", options.solver.c_str());
-        oms2_connectSolver(name, "fmu", "solver");
+        oms2_addConnection(name, "fmu", "solver");
       }
     }
     else

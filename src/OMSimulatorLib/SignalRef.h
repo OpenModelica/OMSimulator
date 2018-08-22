@@ -53,6 +53,8 @@ namespace oms2
     SignalRef& operator=(SignalRef const& copy);
     bool operator<(const SignalRef& rhs);
 
+    static bool isValid(const std::string& signal); ///< checks if a given string is a valid SignalRef according to a simple regex check
+
     std::string toString() const {return cref.toString() + ":" + var;}
 
     const oms2::ComRef& getCref() const {return cref;}
