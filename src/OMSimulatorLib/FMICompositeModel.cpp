@@ -880,6 +880,10 @@ oms_status_enu_t oms2::FMICompositeModel::initialize(double startTime, double to
       return logError("[oms2::FMICompositeModel::initialize] failed");
   }
 
+  if(!tlmServer.empty()) {
+    setupSockets();
+    readFromSockets();
+  }
   updateInputs(initialUnknownsGraph);
 
   // Exit initialization
@@ -1129,13 +1133,20 @@ void oms2::FMICompositeModel::simulate_asynchronous(ResultWriter& resultWriter, 
 }
 
 #if !defined(NO_TLM)
-oms_status_enu_t oms2::FMICompositeModel::simulateTLM(ResultWriter* resultWriter, double stopTime, double communicationInterval, double loggingInterval, std::string server)
+oms_status_enu_t oms2::FMICompositeModel::simulateTLM(double startTime, double stopTime, double tolerance, double commInterval, double loggingInterval, std::string server)
 {
   logTrace();
 
-  this->communicationInterval = communicationInterval;
+  this->tlmServer = server;
+  this->communicationInterval = commInterval;
 
-  initializeSockets(stopTime, communicationInterval, server);
+  Model *model = oms2::Scope::GetInstance().getModel(getName());
+  model->setStartTime(startTime);
+  model->setTolerance(tolerance);
+  model->initialize();
+  ResultWriter *resultWriter = model->getResultWriter();
+
+  initializeSockets();
 
   logInfo("Starting simulation loop.");
 
@@ -1178,7 +1189,7 @@ oms_status_enu_t oms2::FMICompositeModel::simulateTLM(ResultWriter* resultWriter
   return oms_status_ok;
 }
 
-oms_status_enu_t oms2::FMICompositeModel::initializeSockets(double stopTime, double &communicationInterval, std::string server)
+oms_status_enu_t oms2::FMICompositeModel::setupSockets()
 {
   logInfo("Starting TLM simulation thread for model "+getName().toString());
 
@@ -1190,7 +1201,6 @@ oms_status_enu_t oms2::FMICompositeModel::initializeSockets(double stopTime, dou
         logInfo("Limiting communicationInterval to "+std::to_string(communicationInterval));
       }
   }
-  this->communicationInterval = communicationInterval;
 
   logInfo("Creating plugin instance.");
 
@@ -1200,9 +1210,9 @@ oms_status_enu_t oms2::FMICompositeModel::initializeSockets(double stopTime, dou
 
   if(!plugin->Init(this->getName().toString(),
                    time,
-                   stopTime,
+                   1, //Unused argument anyway
                    communicationInterval,
-                   server)) {
+                   tlmServer)) {
     logError("Error initializing the TLM plugin.");
     return oms_status_error;
   }
@@ -1216,6 +1226,11 @@ oms_status_enu_t oms2::FMICompositeModel::initializeSockets(double stopTime, dou
     }
   }
 
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms2::FMICompositeModel::initializeSockets()
+{
   //Apply initial values for signal and effort
   for(TLMInterface *ifc : tlmInterfaces) {
     if(ifc->getDimensions() == 1 && ifc->getCausality() == oms_causality_input) {

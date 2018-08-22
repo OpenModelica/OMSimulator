@@ -89,7 +89,7 @@ namespace oms2
     oms_status_enu_t doSteps(ResultWriter& resultWriter, const int numberOfSteps, double communicationInterval, double loggingInterval);
     oms_status_enu_t stepUntil(ResultWriter& resultWriter, double stopTime, double communicationInterval, double loggingInterval, MasterAlgorithm masterAlgorithm, bool realtime_sync);
 #if !defined(NO_TLM)
-    oms_status_enu_t simulateTLM(ResultWriter *resultWriter, double stopTime, double communicationInterval, double loggingInterval, std::string address);
+    oms_status_enu_t simulateTLM(double startTime, double stopTime, double tolerance, double communicationInterval, double loggingInterval, std::string address);
 #endif
     void simulate_asynchronous(ResultWriter& resultWriter, double stopTime, double communicationInterval, double loggingInterval, void (*cb)(const char* ident, double time, oms_status_enu_t status));
 
@@ -135,7 +135,8 @@ namespace oms2
     oms_status_enu_t updateDependencyGraphs();
 
 #if !defined(NO_TLM)
-    oms_status_enu_t initializeSockets(double stopTime, double &communicationInterval, std::string server);
+    oms_status_enu_t setupSockets();
+    oms_status_enu_t initializeSockets();
     void readFromSockets();
     void writeToSockets();
     void finalizeSockets();
@@ -172,6 +173,7 @@ namespace oms2
     std::vector<oms2::Solver*> solvers;
 
 #if !defined(NO_TLM)
+    std::string tlmServer = "";
     std::vector<SignalRef> tlmSigRefs;
     std::map<std::string, std::vector<double> > tlmInitialValues;
 #endif
