@@ -150,6 +150,20 @@ oms_status_enu_t oms2_loadModel(const char* filename, char** ident)
   return oms_status_ok;
 }
 
+oms_status_enu_t oms2_loadModelFromString(const char* contents, char** ident)
+{
+  logTrace();
+  oms2::Model* model = oms2::Scope::GetInstance().loadModel(contents);
+
+  if (!model) {
+    return oms_status_error;
+  }
+
+  oms_element_t* element = reinterpret_cast<oms_element_t*>(model->getElement());
+  *ident = element->name;
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms2_saveModel(const char* filename, const char* ident)
 {
   logTrace();

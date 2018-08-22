@@ -42,6 +42,7 @@
 #include <thread>
 
 #include <pugixml.hpp>
+#include <boost/filesystem.hpp>
 
 oms2::Model::Model(const oms2::ComRef& cref)
   : systemGeometry(), resultFilename(cref.toString() + "_res.mat"), resultFile(NULL)
@@ -86,11 +87,26 @@ oms2::Model* oms2::Model::LoadModel(const std::string& filename)
   bool defaultExperiment = false;
 
   pugi::xml_document doc;
-  pugi::xml_parse_result result = doc.load_file(filename.c_str());
-  if (!result)
+  /* If the filename is a valid file then we reached via oms2_loadModel
+   * Otherwise oms2_loadModelFromString is called.
+   */
+  if (boost::filesystem::exists(filename))
   {
-    logError("loading \"" + std::string(filename) + "\" failed (" + std::string(result.description()) + ")");
-    return NULL;
+    pugi::xml_parse_result result = doc.load_file(filename.c_str());
+    if (!result)
+    {
+      logError("loading \"" + std::string(filename) + "\" failed (" + std::string(result.description()) + ")");
+      return NULL;
+    }
+  }
+  else
+  {
+    pugi::xml_parse_result result = doc.load_buffer(filename.c_str(), strlen(filename.c_str()));
+    if (!result)
+    {
+      logError("loadModel failed (" + std::string(result.description()) + ")");
+      return NULL;
+    }
   }
 
   const pugi::xml_node root = doc.document_element();

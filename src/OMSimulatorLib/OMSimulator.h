@@ -122,13 +122,22 @@ oms_status_enu_t oms2_deleteSubModel(const char* modelIdent, const char* subMode
 oms_status_enu_t oms2_rename(const char* identOld, const char* identNew);
 
 /**
- * \brief Loads a FMI composite model from xml representation.
+ * \brief Loads a FMI composite model from xml file.
  *
- * \param filename   [in] Path to the composite model xml representation
+ * \param filename   [in] Path to the composite model xml file
  * \param ident      [out] Name of the imported model
  * \return           Error status
  */
 oms_status_enu_t oms2_loadModel(const char* filename, char** ident);
+
+/**
+ * \brief Loads a FMI composite model from xml representation.
+ *
+ * \param contents   [in] Composite model xml contents
+ * \param ident      [out] Name of the imported model
+ * \return           Error status
+ */
+oms_status_enu_t oms2_loadModelFromString(const char* contents, char** ident);
 
 /**
  * \brief Loads a FMI composite model from xml representation.
@@ -682,7 +691,6 @@ oms_status_enu_t oms2_exportCompositeStructure(const char* cref, const char* fil
 /**
  * \brief Export the dependency graphs of a given model to a dot file.
  *
- * \param cref             [in] Name of the model instance
  * \param initialization   [in] Path to the dot file; An existing file will be overwritten
  * \param simulation       [in] Path to the dot file; An existing file will be overwritten
  * \return                 Error status
