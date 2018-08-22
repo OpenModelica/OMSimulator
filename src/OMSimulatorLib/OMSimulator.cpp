@@ -597,3 +597,13 @@ oms_status_enu_t oms2_addSolver(const char* model, const char* name, const char*
 {
   return oms2::Scope::GetInstance().addSolver(oms2::ComRef(model), oms2::ComRef(name), std::string(solver));
 }
+
+oms_status_enu_t oms2_freeMemory(void* obj)
+{
+  logTrace();
+  if (obj)
+  {
+    free(obj);
+  }
+  return oms_status_ok;
+}

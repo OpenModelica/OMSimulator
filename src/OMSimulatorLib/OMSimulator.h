@@ -727,6 +727,14 @@ oms_status_enu_t oms2_setFlags(const char* cref, const char* flags);
 
 oms_status_enu_t oms2_addSolver(const char* model, const char* name, const char* solver);
 
+/**
+ * \brief Free the memory.
+ *
+ * \param obj  [in] Pointer to the object.
+ * \return Error status
+ */
+oms_status_enu_t oms2_freeMemory(void* obj);
+
 #ifdef __cplusplus
 }
 #endif

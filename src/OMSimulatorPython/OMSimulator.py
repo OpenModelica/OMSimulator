@@ -158,6 +158,9 @@ class OMSimulator:
     self.obj.oms2_unloadModel.argtypes = [ctypes.c_char_p]
     self.obj.oms2_unloadModel.restype = ctypes.c_int
 
+    self.obj.oms2_freeMemory.argtypes = [ctypes.c_void_p]
+    self.obj.oms2_freeMemory.restype = ctypes.c_int
+
   def addConnection(self, cref, conA, conB):
     return self.obj.oms2_addConnection(str.encode(cref), str.encode(conA), str.encode(conB))
   def addFMU(self, modelIdent, fmuPath, fmuIdent):
@@ -235,6 +238,7 @@ class OMSimulator:
   def listModel(self, ident):
     contents = ctypes.c_char_p()
     status = self.obj.oms2_listModel(str.encode(ident), ctypes.byref(contents))
+    self.obj.oms2_freeMemory(contents)
     return [status, contents.value]
   def setBoolean(self, signal, value):
     return self.obj.oms2_setBoolean(str.encode(signal), value)
