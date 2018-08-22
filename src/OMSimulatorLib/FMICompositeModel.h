@@ -73,7 +73,7 @@ namespace oms2
     oms_status_enu_t addConnection(const oms2::SignalRef& conA, const oms2::SignalRef& conB);
     oms_status_enu_t deleteConnection(const oms2::SignalRef& conA, const oms2::SignalRef& conB);
 
-    FMISubModel* getSubModel(const oms2::ComRef& cref);
+    FMISubModel* getSubModel(const oms2::ComRef& cref, bool showWarning=true);
     oms2::Connection** getConnections() {return &connections[0];}
 
     void setName(const oms2::ComRef& name);
@@ -143,6 +143,7 @@ namespace oms2
   protected:
     void deleteComponents();
     void updateComponents();
+    bool validAndUnusedCref(const oms2::ComRef& cref, bool showWaring);
 
   private:
     FMICompositeModel(const oms2::ComRef& name);

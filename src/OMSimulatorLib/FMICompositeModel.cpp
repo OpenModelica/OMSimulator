@@ -418,16 +418,8 @@ oms_status_enu_t oms2::FMICompositeModel::loadSubModel(const pugi::xml_node& nod
 
 oms_status_enu_t oms2::FMICompositeModel::addFMU(const std::string& filename, const oms2::ComRef& cref)
 {
-  if (!cref.isValidIdent())
-    return oms_status_error;
-
-  // check if cref is already used
-  auto it = subModels.find(cref);
-  if (it != subModels.end())
-  {
-    logError("A submodel called \"" + cref + "\" is already instantiated.");
-    return oms_status_error;
-  }
+  if (!validAndUnusedCref(cref, true))
+    return logError("[oms2::FMICompositeModel::addFMU] invalid fmu identifier");
 
   oms2::ComRef parent = getName();
   oms2::FMUWrapper* subModel = oms2::FMUWrapper::newSubModel(cref, filename);
@@ -442,16 +434,8 @@ oms_status_enu_t oms2::FMICompositeModel::addFMU(const std::string& filename, co
 
 oms_status_enu_t oms2::FMICompositeModel::addTable(const std::string& filename, const oms2::ComRef& cref)
 {
-  if (!cref.isValidIdent())
-    return oms_status_error;
-
-  // check if cref is already used
-  auto it = subModels.find(cref);
-  if (it != subModels.end())
-  {
-    logError("A submodel called \"" + cref + "\" is already instantiated.");
-    return oms_status_error;
-  }
+  if (!validAndUnusedCref(cref, true))
+    return logError("[oms2::FMICompositeModel::addTable] invalid table identifier");
 
   oms2::ComRef parent = getName();
   oms2::Table* subModel = oms2::Table::newSubModel(cref, filename);
@@ -469,7 +453,7 @@ oms_status_enu_t oms2::FMICompositeModel::deleteSubModel(const oms2::ComRef& cre
   auto it = subModels.find(cref);
   if (it == subModels.end())
   {
-    logError("No sub-model called \"" + cref + "\" instantiated.");
+    logError("No submodel called \"" + cref + "\" instantiated.");
     return oms_status_error;
   }
   oms2::FMISubModel::deleteSubModel(it->second);
@@ -618,12 +602,13 @@ oms_status_enu_t oms2::FMICompositeModel::deleteConnection(const oms2::SignalRef
   return oms_status_error;
 }
 
-oms2::FMISubModel* oms2::FMICompositeModel::getSubModel(const oms2::ComRef& cref)
+oms2::FMISubModel* oms2::FMICompositeModel::getSubModel(const oms2::ComRef& cref, bool showWarning)
 {
   auto it = subModels.find(cref.last());
   if (it == subModels.end())
   {
-    logError("No submodel called \"" + cref + "\" found.");
+    if (showWarning)
+      logWarning("No submodel called \"" + cref + "\" found.");
     return NULL;
   }
 
@@ -1710,10 +1695,41 @@ void oms2::FMICompositeModel::setName(const oms2::ComRef& name)
       connection->setParent(name);
 }
 
+bool oms2::FMICompositeModel::validAndUnusedCref(const oms2::ComRef& cref, bool showWaring)
+{
+  if (!cref.isValidIdent())
+  {
+    if (showWaring)
+      logWarning("Invalid identifier: \"" + cref + "\"");
+    return oms_status_error;
+  }
+
+  // Check if there is a submodel called <cref>
+  if (NULL != getSubModel(cref, false))
+  {
+    if (showWaring)
+      logWarning("The composite model \"" + getName() + "\" contains already a submodel called \"" + cref + "\"");
+    return false;
+  }
+
+  // Check if there is a solver called <cref>
+  for (auto& solver : solvers)
+    if (solver->getName() == cref)
+    {
+      if (showWaring)
+        logWarning("The composite model \"" + getName() + "\" contains already a solver named \"" + cref + "\"");
+      return false;
+    }
+
+  return true;
+}
+
 oms_status_enu_t oms2::FMICompositeModel::addSolver(const oms2::ComRef& solverCref, const std::string& methodString)
 {
-  oms_solver_enu_t method;
+  if (!validAndUnusedCref(solverCref, true))
+    return logError("[oms2::FMICompositeModel::addSolver] invalid solver identifier");
 
+  oms_solver_enu_t method;
   if ("internal" == methodString)
     method = oms_solver_internal;
   else if("euler" == methodString)
@@ -1721,11 +1737,7 @@ oms_status_enu_t oms2::FMICompositeModel::addSolver(const oms2::ComRef& solverCr
   else if("cvode" == methodString)
     method = oms_solver_cvode;
   else
-    return logError("Unknown solver: " + methodString);
-
-  for (auto& solver : solvers)
-    if (solver->getName() == solverCref)
-      return logError("[oms2::FMICompositeModel::newSolver] composite model contains already a solver named \"" + solverCref + "\"");
+    return logError("[oms2::FMICompositeModel::addSolver] Unknown solver: \"" + methodString + "\"");
 
   Solver* solver = new Solver(solverCref, method);
   solvers.push_back(solver);
