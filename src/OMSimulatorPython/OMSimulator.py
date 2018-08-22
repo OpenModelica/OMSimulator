@@ -77,6 +77,9 @@ class OMSimulator:
     self.obj.oms2_loadModel.argtypes = [ctypes.c_char_p]
     self.obj.oms2_loadModel.restype = ctypes.c_int
 
+    self.obj.oms2_loadModelFromString.argtypes = [ctypes.c_char_p]
+    self.obj.oms2_loadModelFromString.restype = ctypes.c_int
+
     self.obj.oms2_newFMIModel.argtypes = [ctypes.c_char_p]
     self.obj.oms2_newFMIModel.restype = ctypes.c_int
 
@@ -224,6 +227,10 @@ class OMSimulator:
   def loadModel(self, filename):
     ident = ctypes.c_char_p()
     status = self.obj.oms2_loadModel(str.encode(filename), ctypes.byref(ident))
+    return [status, ident.value]
+  def loadModelFromString(self, contents):
+    ident = ctypes.c_char_p()
+    status = self.obj.oms2_loadModelFromString(str.encode(contents), ctypes.byref(ident))
     return [status, ident.value]
   def newFMIModel(self, ident):
     return self.obj.oms2_newFMIModel(str.encode(ident))
