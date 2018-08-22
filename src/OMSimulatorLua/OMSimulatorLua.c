@@ -221,6 +221,28 @@ static int OMSimulatorLua_oms2_saveModel(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms2_listModel(const char* ident, char** contents);
+static int OMSimulatorLua_oms2_listModel(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* ident = lua_tostring(L, 1);
+  char* contents = NULL;
+  oms_status_enu_t status = oms2_listModel(ident, &contents);
+
+  lua_pushinteger(L, status);
+  if (contents)
+  {
+    lua_pushstring(L, contents);
+    oms2_freeMemory(contents);
+  }
+  else
+    lua_pushstring(L, "");
+  return 2;
+}
+
 // TODO: oms_status_enu_t oms2_getElement(const char* cref, const ssd_element_geometry_t** geometry);
 // TODO: oms_status_enu_t oms2_setElementGeometry(const char* cref, const ssd_element_geometry_t* geometry);
 
@@ -1433,6 +1455,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms2_rename);
   REGISTER_LUA_CALL(oms2_reset);
   REGISTER_LUA_CALL(oms2_saveModel);
+  REGISTER_LUA_CALL(oms2_listModel);
   REGISTER_LUA_CALL(oms2_setBoolean);
   REGISTER_LUA_CALL(oms2_setBooleanParameter);
   REGISTER_LUA_CALL(oms2_setCommunicationInterval);

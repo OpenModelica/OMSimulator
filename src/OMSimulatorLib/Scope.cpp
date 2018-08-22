@@ -242,6 +242,17 @@ oms_status_enu_t oms2::Scope::saveModel(const std::string& filename, const oms2:
   return model->save(filename);
 }
 
+oms_status_enu_t oms2::Scope::listModel(const oms2::ComRef& name, char** contents)
+{
+  logTrace();
+
+  oms2::Model* model = getModel(name);
+  if (!model)
+    return oms_status_error;
+
+  return model->list(contents);
+}
+
 oms_status_enu_t oms2::Scope::initialize(const ComRef& name)
 {
   logTrace();

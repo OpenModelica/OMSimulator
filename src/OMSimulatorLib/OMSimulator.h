@@ -133,11 +133,21 @@ oms_status_enu_t oms2_loadModel(const char* filename, char** ident);
 /**
  * \brief Loads a FMI composite model from xml representation.
  *
- * \param filename   [in] Path to the xml file; An exisiting file will be overwritten
+ * \param filename   [in] Path to the xml file; An existing file will be overwritten
  * \param ident      [in] Name of the model to export
  * \return           Error status
  */
 oms_status_enu_t oms2_saveModel(const char* filename, const char* ident);
+
+/**
+ * \brief Lists the contents of a composite model.
+ * Memory is allocated for contents. The caller is responsible to call free on it.
+ *
+ * \param ident      [in] Name of the model
+ * \param contents   [out] Contents of the model
+ * \return           Error status
+ */
+oms_status_enu_t oms2_listModel(const char* ident, char** contents);
 
 /**
  * \brief Get element information of a model or sub-model.
@@ -664,7 +674,7 @@ oms_status_enu_t experimental_simulate_realtime(const char* ident);
  * \brief Export the composite structure of a given model to a dot file.
  *
  * \param cref       [in] Name of the model instance
- * \param filename   [in] Path to the dot file; An exisiting file will be overwritten
+ * \param filename   [in] Path to the dot file; An existing file will be overwritten
  * \return           Error status
  */
 oms_status_enu_t oms2_exportCompositeStructure(const char* cref, const char* filename);
@@ -673,8 +683,8 @@ oms_status_enu_t oms2_exportCompositeStructure(const char* cref, const char* fil
  * \brief Export the dependency graphs of a given model to a dot file.
  *
  * \param cref             [in] Name of the model instance
- * \param initialization   [in] Path to the dot file; An exisiting file will be overwritten
- * \param simulation       [in] Path to the dot file; An exisiting file will be overwritten
+ * \param initialization   [in] Path to the dot file; An existing file will be overwritten
+ * \param simulation       [in] Path to the dot file; An existing file will be overwritten
  * \return                 Error status
  */
 oms_status_enu_t oms2_exportDependencyGraphs(const char* cref, const char* initialization, const char* simulation);
@@ -716,6 +726,14 @@ oms_status_enu_t oms2_removeSignalsFromResults(const char* cref, const char* reg
 oms_status_enu_t oms2_setFlags(const char* cref, const char* flags);
 
 oms_status_enu_t oms2_addSolver(const char* model, const char* name, const char* solver);
+
+/**
+ * \brief Free the memory.
+ *
+ * \param obj  [in] Pointer to the object.
+ * \return Error status
+ */
+oms_status_enu_t oms2_freeMemory(void* obj);
 
 #ifdef __cplusplus
 }
