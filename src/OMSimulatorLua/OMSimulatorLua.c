@@ -236,7 +236,7 @@ static int OMSimulatorLua_oms2_listModel(lua_State *L)
   if (contents)
   {
     lua_pushstring(L, contents);
-    free(contents);
+    oms2_freeMemory(contents);
   }
   else
     lua_pushstring(L, "");
