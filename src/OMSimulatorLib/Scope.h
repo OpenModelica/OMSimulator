@@ -116,6 +116,7 @@ namespace oms2
     oms_status_enu_t setFlags(const ComRef& cref, const std::string& flags);
     oms_status_enu_t addSolver(const ComRef& model, const ComRef& name, const std::string& solver);
     oms_status_enu_t connectSolver(const ComRef& model, const ComRef& name, const ComRef& fmu);
+    oms_status_enu_t unconnectSolver(const ComRef& model, const ComRef& name, const ComRef& fmu);
 
     const std::string& getTempDirectory() {return GetInstance().tempDir;}
     const std::string& getWorkingDirectory() {return GetInstance().workingDir;}

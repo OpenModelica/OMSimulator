@@ -1900,3 +1900,31 @@ oms_status_enu_t oms2::Scope::connectSolver(const ComRef& modelCref, const ComRe
   }
 }
 
+oms_status_enu_t oms2::Scope::unconnectSolver(const ComRef& modelCref, const ComRef& name, const ComRef& fmu)
+{
+  // Sub-model
+  Model* model = getModel(modelCref);
+  if (!model)
+  {
+    logError("[oms2::Scope::unconnectSolver] failed");
+    return oms_status_error;
+  }
+
+  // FMI model?
+  if (oms_component_fmi == model->getType())
+  {
+    FMICompositeModel* fmiModel = model->getFMICompositeModel();
+    if (!fmiModel)
+    {
+      logError("[oms2::Scope::unconnectSolver] failed");
+      return oms_status_error;
+    }
+    return fmiModel->unconnectSolver(name, fmu);
+  }
+  else
+  {
+    logError("[oms2::Scope::unconnectSolver] is only implemented for FMI models yet");
+    return oms_status_error;
+  }
+}
+

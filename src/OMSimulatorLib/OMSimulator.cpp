@@ -219,7 +219,19 @@ oms_status_enu_t oms2_addConnection(const char* cref, const char* conA, const ch
 oms_status_enu_t oms2_deleteConnection(const char* cref, const char* conA, const char* conB)
 {
   logTrace();
-  return oms2::Scope::GetInstance().deleteConnection(oms2::ComRef(cref), oms2::SignalRef(conA), oms2::SignalRef(conB));
+
+  if(oms2::SignalRef::isValid(conA) && oms2::SignalRef::isValid(conB))
+  {
+    // case 1: FMU:signal1 -> FMU:signal2
+    return oms2::Scope::GetInstance().deleteConnection(oms2::ComRef(cref), oms2::SignalRef(conA), oms2::SignalRef(conB));
+  }
+  else if(oms2::ComRef::isValidIdent(conA) && oms2::ComRef::isValidIdent(conB))
+  {
+    // case 2: FMU -> solver
+    return oms2::Scope::GetInstance().unconnectSolver(oms2::ComRef(cref), oms2::ComRef(conA), oms2::ComRef(conB));
+  }
+  else
+    return logWarning("[oms2_deleteConnection] invalid arguments");
 }
 
 oms_status_enu_t oms2_updateConnection(const char* cref, const char* conA, const char* conB, const oms_connection_t* connection)
