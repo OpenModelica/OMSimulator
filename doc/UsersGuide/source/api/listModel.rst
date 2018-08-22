@@ -1,9 +1,10 @@
 #CAPTION#
-saveModel
+listModel
 ---------
 
 Lists the contents of a composite model.
-Memory is allocated for contents. The caller is responsible to call free on it.
+Memory is allocated for contents. The caller is responsible to call free if using the C-API.
+The Lua and Python bindings takes care of the memory and the caller doesn't need to call free.
 #END#
 
 #LUA#
