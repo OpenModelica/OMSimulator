@@ -1247,41 +1247,75 @@ oms_status_enu_t oms2::FMICompositeModel::initializeSockets()
     else if(ifc->getDimensions() == 1 && ifc->getCausality() == oms_causality_bidir &&
             ifc->getInterpolationMethod() == oms_tlm_no_interpolation) {
       oms_tlm_sigrefs_1d_t tlmrefs;
-      double effort;
+      double effort,flow;
       if(tlmInitialValues.find(ifc->getName()) != tlmInitialValues.end()) {
         effort = tlmInitialValues.find(ifc->getName())->second[0];
+        flow = tlmInitialValues.find(ifc->getName())->second[1];
       }
       else {
         this->getReal(ifc->getSubSignal(tlmrefs.f), effort);
+        this->getReal(ifc->getSubSignal(tlmrefs.v), flow);
       }
       plugin->SetInitialForce1D(ifc->getId(), effort);
+      plugin->SetInitialFlow1D(ifc->getId(), flow);
     }
     else if(ifc->getDimensions() == 1 && ifc->getCausality() == oms_causality_bidir &&
             ifc->getInterpolationMethod() != oms_tlm_no_interpolation) {
       if(tlmInitialValues.find(ifc->getName()) != tlmInitialValues.end()) {
         double effort = tlmInitialValues.find(ifc->getName())->second[0];
+        double flow = tlmInitialValues.find(ifc->getName())->second[1];
         plugin->SetInitialForce1D(ifc->getId(), effort);
+        plugin->SetInitialFlow1D(ifc->getId(), flow);
       }
     }
     else if(ifc->getDimensions() == 3 && ifc->getCausality() == oms_causality_bidir &&
             ifc->getInterpolationMethod() == oms_tlm_no_interpolation) {
       oms_tlm_sigrefs_3d_t tlmrefs;
       std::vector<double> effort(6,0);
+      std::vector<double> flow(6,0);
       if(tlmInitialValues.find(ifc->getName()) != tlmInitialValues.end()) {
-        effort = tlmInitialValues.find(ifc->getName())->second;
+        effort[0] = tlmInitialValues.find(ifc->getName())->second[0];
+        effort[1] = tlmInitialValues.find(ifc->getName())->second[1];
+        effort[2] = tlmInitialValues.find(ifc->getName())->second[2];
+        effort[3] = tlmInitialValues.find(ifc->getName())->second[3];
+        effort[4] = tlmInitialValues.find(ifc->getName())->second[4];
+        effort[5] = tlmInitialValues.find(ifc->getName())->second[5];
+        flow[0] = tlmInitialValues.find(ifc->getName())->second[6];
+        flow[1] = tlmInitialValues.find(ifc->getName())->second[7];
+        flow[2] = tlmInitialValues.find(ifc->getName())->second[8];
+        flow[3] = tlmInitialValues.find(ifc->getName())->second[9];
+        flow[4] = tlmInitialValues.find(ifc->getName())->second[10];
+        flow[5] = tlmInitialValues.find(ifc->getName())->second[11];
       }
       else {
         this->getReals(ifc->getSubSignalSet(tlmrefs.f), effort);
+        std::vector<int> flowrefs = tlmrefs.v;
+        flowrefs.insert(flowrefs.end(), tlmrefs.w.begin(), tlmrefs.w.end());
+        this->getReals(ifc->getSubSignalSet(flowrefs), flow);
       }
       plugin->SetInitialForce3D(ifc->getId(), effort[0], effort[1], effort[2], effort[3], effort[4], effort[5]);
+      plugin->SetInitialFlow3D(ifc->getId(), flow[0], flow[1], flow[2], flow[3], flow[4], flow[5]);
     }
     else if(ifc->getDimensions() == 3 && ifc->getCausality() == oms_causality_bidir &&
             ifc->getInterpolationMethod() != oms_tlm_no_interpolation) {
       oms_tlm_sigrefs_3d_t tlmrefs;
       std::vector<double> effort(6,0);
+      std::vector<double> flow(6,0);
       if(tlmInitialValues.find(ifc->getName()) != tlmInitialValues.end()) {
-        effort = tlmInitialValues.find(ifc->getName())->second;
+        effort[0] = tlmInitialValues.find(ifc->getName())->second[0];
+        effort[1] = tlmInitialValues.find(ifc->getName())->second[1];
+        effort[2] = tlmInitialValues.find(ifc->getName())->second[2];
+        effort[3] = tlmInitialValues.find(ifc->getName())->second[3];
+        effort[4] = tlmInitialValues.find(ifc->getName())->second[4];
+        effort[5] = tlmInitialValues.find(ifc->getName())->second[5];
+        flow[0] = tlmInitialValues.find(ifc->getName())->second[6];
+        flow[1] = tlmInitialValues.find(ifc->getName())->second[7];
+        flow[2] = tlmInitialValues.find(ifc->getName())->second[8];
+        flow[3] = tlmInitialValues.find(ifc->getName())->second[9];
+        flow[4] = tlmInitialValues.find(ifc->getName())->second[10];
+        flow[5] = tlmInitialValues.find(ifc->getName())->second[11];
         plugin->SetInitialForce3D(ifc->getId(), effort[0], effort[1], effort[2], effort[3], effort[4], effort[5]);
+        plugin->SetInitialFlow3D(ifc->getId(), flow[0], flow[1], flow[2], flow[3], flow[4], flow[5]);
       }
     }
   }
