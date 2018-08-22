@@ -1779,3 +1779,20 @@ oms_status_enu_t oms2::FMICompositeModel::connectSolver(const oms2::ComRef& fmuC
   return status;
 }
 
+oms_status_enu_t oms2::FMICompositeModel::unconnectSolver(const oms2::ComRef& fmuCref, const oms2::ComRef& solverCref)
+{
+  oms_status_enu_t status = oms_status_error;
+
+  oms2::FMISubModel* fmu = oms2::FMICompositeModel::getSubModel(fmuCref);
+  if (!fmu || oms_component_fmu != fmu->getType())
+    return logError("Unknown fmu: " + fmuCref);
+
+  for (auto& solver : solvers)
+  {
+    if (solver->getName() == solverCref)
+      status = solver->removeFMU(fmuCref); // Just make sure each FMU is only connected to a single solver.
+  }
+
+  return status;
+}
+

@@ -116,6 +116,7 @@ namespace oms2
     oms_status_enu_t deleteSolver(std::string name);
     oms_status_enu_t setSolverTolerance(std::string name, double tolerance);
     oms_status_enu_t connectSolver(const oms2::ComRef& fmuCref, const oms2::ComRef& solverCref);
+    oms_status_enu_t unconnectSolver(const oms2::ComRef& fmuCref, const oms2::ComRef& solverCref);
 
   private:
     oms_status_enu_t loadElementGeometry(const pugi::xml_node& node);
