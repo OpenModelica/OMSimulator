@@ -2,7 +2,7 @@
 loadModel
 ---------
 
-Loads a FMI composite model from xml file.
+Loads a FMI composite model from xml file. If a model already exists with the same identifier, it will be updated.
 #END#
 
 #LUA#

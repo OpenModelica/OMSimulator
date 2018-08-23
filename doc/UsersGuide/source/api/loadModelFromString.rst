@@ -2,7 +2,7 @@
 loadModelFromString
 -------------------
 
-Loads a FMI composite model from xml representation.
+Loads a FMI composite model from xml representation. If a model already exists with the same identifier, it will be updated.
 #END#
 
 #LUA#
