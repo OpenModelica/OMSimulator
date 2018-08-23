@@ -807,14 +807,15 @@ oms_status_enu_t oms2::Scope::renameModel(const oms2::ComRef& identOld, const om
   return oms_status_ok;
 }
 
-oms2::Model* oms2::Scope::getModel(const oms2::ComRef& name)
+oms2::Model* oms2::Scope::getModel(const oms2::ComRef& name, bool showWarning)
 {
   logTrace();
 
   auto it = models.find(name);
   if (it == models.end())
   {
-    logWarning("There is no model called \"" + name + "\" in scope.");
+    if (showWarning)
+      logWarning("There is no model called \"" + name + "\" in scope.");
     return NULL;
   }
 

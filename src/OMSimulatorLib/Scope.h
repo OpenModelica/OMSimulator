@@ -123,7 +123,7 @@ namespace oms2
     const std::string& getWorkingDirectory() {return GetInstance().workingDir;}
 
     oms_status_enu_t renameModel(const ComRef& identOld, const ComRef& identNew);
-    Model* getModel(const ComRef& name);
+    Model* getModel(const ComRef& name, bool showWarning=true);
     oms2::Connection* getConnection(const ComRef& cref, const SignalRef& conA, const SignalRef& conB);
 
     bool hasFMICompositeModel(const ComRef& name);

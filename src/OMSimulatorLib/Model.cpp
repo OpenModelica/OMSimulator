@@ -32,11 +32,12 @@
 #include "Model.h"
 
 #include "CSVWriter.h"
-#include "MATWriter.h"
 #include "FMICompositeModel.h"
-#include "TLMCompositeModel.h"
 #include "Logging.h"
+#include "MATWriter.h"
+#include "Scope.h"
 #include "ssd/Tags.h"
+#include "TLMCompositeModel.h"
 
 #include <regex>
 #include <thread>
@@ -140,7 +141,15 @@ oms2::Model* oms2::Model::LoadModel(const std::string& filename)
   if (!compositeModel)
     return NULL;
 
-  oms2::Model* model = new oms2::Model(compositeModel->getName());
+  // check if model already exists
+  oms2::Model* model = oms2::Scope::GetInstance().getModel(compositeModel->getName(), false);
+  if (model)
+  {
+    logInfo("Updating existing model \"" + model->getName() + "\"");
+    oms2::Model::DeleteModel(model);
+  }
+
+  model = new oms2::Model(compositeModel->getName());
   model->compositeModel = compositeModel;
 
   if (defaultExperiment)
