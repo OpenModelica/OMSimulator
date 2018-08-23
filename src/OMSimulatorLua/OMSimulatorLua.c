@@ -1139,8 +1139,8 @@ static int OMSimulatorLua_oms2_setTLMSocketData(lua_State *L)
 static int OMSimulatorLua_oms2_setTLMInitialValues(lua_State *L)
 {
   //First parse initial arguments (3 or 8)
-  if(lua_gettop(L) != 3 && lua_gettop(L) != 8) {
-    return luaL_error(L, "expecting exactly 3 or 8 arguments");
+  if(lua_gettop(L) != 3 && lua_gettop(L) != 4 && lua_gettop(L) != 14) {
+    return luaL_error(L, "expecting exactly 3, 4 or 14 arguments");
   }
 
   luaL_checktype(L, 1, LUA_TSTRING);
@@ -1148,10 +1148,18 @@ static int OMSimulatorLua_oms2_setTLMInitialValues(lua_State *L)
   luaL_checktype(L, 3, LUA_TNUMBER);
   if(lua_gettop(L) > 3) {
     luaL_checktype(L, 4, LUA_TNUMBER);
+  }
+  if(lua_gettop(L) > 4) {
     luaL_checktype(L, 5, LUA_TNUMBER);
     luaL_checktype(L, 6, LUA_TNUMBER);
     luaL_checktype(L, 7, LUA_TNUMBER);
     luaL_checktype(L, 8, LUA_TNUMBER);
+    luaL_checktype(L, 9, LUA_TNUMBER);
+    luaL_checktype(L, 10, LUA_TNUMBER);
+    luaL_checktype(L, 11, LUA_TNUMBER);
+    luaL_checktype(L, 12, LUA_TNUMBER);
+    luaL_checktype(L, 13, LUA_TNUMBER);
+    luaL_checktype(L, 14, LUA_TNUMBER);
   }
 
   oms_status_enu_t status;
@@ -1162,6 +1170,12 @@ static int OMSimulatorLua_oms2_setTLMInitialValues(lua_State *L)
     values[0] = lua_tonumber(L,3);
     status = oms2_setTLMInitialValues(cref, subref, values, 1);
   }
+  else if(lua_gettop(L) == 4) {
+    double values[2];
+    values[0] = lua_tonumber(L,3);
+    values[1] = lua_tonumber(L,4);
+    status = oms2_setTLMInitialValues(cref, subref, values, 2);
+  }
   else {
     double values[6];
     values[0] = lua_tonumber(L,3);
@@ -1170,7 +1184,13 @@ static int OMSimulatorLua_oms2_setTLMInitialValues(lua_State *L)
     values[3] = lua_tonumber(L,6);
     values[4] = lua_tonumber(L,7);
     values[5] = lua_tonumber(L,8);
-    status = oms2_setTLMInitialValues(cref, subref, values, 6);
+    values[6] = lua_tonumber(L,9);
+    values[7] = lua_tonumber(L,10);
+    values[8] = lua_tonumber(L,11);
+    values[9] = lua_tonumber(L,12);
+    values[10] = lua_tonumber(L,13);
+    values[11] = lua_tonumber(L,14);
+    status = oms2_setTLMInitialValues(cref, subref, values, 12);
   }
   lua_pushinteger(L, status);
   return 1;
