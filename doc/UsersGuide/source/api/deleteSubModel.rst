@@ -2,7 +2,7 @@
 deleteSubModel
 --------------
 
-Deletes a sub-model instance, e.g. FMU, from a given FMI composite model.
+Deletes a sub-model instance, e.g. FMU or solver, from a given FMI composite model.
 #END#
 
 #LUA#

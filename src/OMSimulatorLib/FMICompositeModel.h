@@ -74,6 +74,7 @@ namespace oms2
     oms_status_enu_t deleteConnection(const oms2::SignalRef& conA, const oms2::SignalRef& conB);
 
     FMISubModel* getSubModel(const oms2::ComRef& cref, bool showWarning=true);
+    Solver* getSolver(const oms2::ComRef& cref, bool showWarning=true);
     oms2::Connection** getConnections() {return &connections[0];}
 
     void setName(const oms2::ComRef& name);
@@ -113,8 +114,7 @@ namespace oms2
     oms_status_enu_t describe();
 
     oms_status_enu_t addSolver(const oms2::ComRef& solverCref, const std::string& solver);
-    oms_status_enu_t deleteSolver(std::string name);
-    oms_status_enu_t setSolverTolerance(std::string name, double tolerance);
+    oms_status_enu_t setSolverTolerance(const oms2::ComRef& cref, double tolerance);
     oms_status_enu_t connectSolver(const oms2::ComRef& fmuCref, const oms2::ComRef& solverCref);
     oms_status_enu_t unconnectSolver(const oms2::ComRef& fmuCref, const oms2::ComRef& solverCref);
 
@@ -156,6 +156,7 @@ namespace oms2
 
   private:
     std::map<oms2::ComRef, oms2::FMISubModel*> subModels;
+    std::map<oms2::ComRef, oms2::Solver*> solvers;
     std::vector<oms2::Connection*> connections; ///< last element is always NULL
     oms2::Element** components;
 #if !defined(NO_TLM)
@@ -170,7 +171,6 @@ namespace oms2
     double communicationInterval;
     double loggingInterval;
     double tLastEmit;
-    std::vector<oms2::Solver*> solvers;
 
 #if !defined(NO_TLM)
     std::string tlmServer = "";

@@ -93,6 +93,8 @@ oms2::Solver::Solver(const oms2::ComRef& name, oms_solver_enu_t solverMethod)
 
 oms2::Solver::~Solver()
 {
+  for (auto& fmu : fmus)
+    fmu->setSolver(NULL);
 }
 
 oms_status_enu_t oms2::Solver::addFMU(oms2::FMUWrapper* fmu)
