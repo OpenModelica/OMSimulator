@@ -422,7 +422,7 @@ oms_status_enu_t oms2::FMICompositeModel::addFMU(const std::string& filename, co
     return logError("[oms2::FMICompositeModel::addFMU] invalid fmu identifier");
 
   oms2::ComRef parent = getName();
-  oms2::FMUWrapper* subModel = oms2::FMUWrapper::newSubModel(cref, filename);
+  oms2::FMUWrapper* subModel = oms2::FMUWrapper::newSubModel(cref, filename, this->getName());
   if (!subModel)
     return oms_status_error;
 
@@ -905,7 +905,7 @@ oms_status_enu_t oms2::FMICompositeModel::initialize(double startTime, double to
 
   if(!tlmServer.empty()) {
     setupSockets();
-    readFromSockets();
+    readFromSockets(time);
   }
   updateInputs(initialUnknownsGraph);
 
@@ -1180,8 +1180,6 @@ oms_status_enu_t oms2::FMICompositeModel::simulateTLM(double startTime, double s
   {
     logDebug("doStep: " + std::to_string(time) + " -> " + std::to_string(time+communicationInterval));
 
-    readFromSockets();
-
     time += communicationInterval;
     if (time > stopTime)
       time = stopTime;
@@ -1194,8 +1192,6 @@ oms_status_enu_t oms2::FMICompositeModel::simulateTLM(double startTime, double s
     // call doStep for FMUs
     for (const auto& it : solvers)
       it.second->doStep(time);
-
-    writeToSockets();
 
     if (loggingInterval >= 0.0 && time - tLastEmit >= loggingInterval)
     {
@@ -1348,9 +1344,14 @@ oms_status_enu_t oms2::FMICompositeModel::initializeSockets()
   return oms_status_ok;
 }
 
-void oms2::FMICompositeModel::readFromSockets()
+void oms2::FMICompositeModel::readFromSockets(double time, std::string fmu)
 {
   for(TLMInterface *ifc : tlmInterfaces) {
+    if(!fmu.empty() &&
+       fmu != ifc->getFMUName().toString()) {
+      continue; //Ignore FMUs not specified in vector
+    }
+
     if(ifc->getDimensions() == 1 && ifc->getCausality() == oms_causality_input) {
       oms_tlm_sigrefs_signal_t tlmrefs;
 
@@ -1479,9 +1480,14 @@ void oms2::FMICompositeModel::readFromSockets()
   }
 }
 
-void oms2::FMICompositeModel::writeToSockets()
+
+void oms2::FMICompositeModel::writeToSockets(double time, std::string fmu)
 {
   for(TLMInterface *ifc : tlmInterfaces) {
+    if(!fmu.empty() &&
+       fmu != ifc->getFMUName().toString()) {
+      continue; //Ignore FMUs not specified in vector
+    }
     if(ifc->getDimensions() == 1 && ifc->getCausality() == oms_causality_output) {
       oms_tlm_sigrefs_signal_t tlmrefs;
       double value;
