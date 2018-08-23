@@ -1579,16 +1579,23 @@ oms_status_enu_t oms2::FMICompositeModel::setTLMInitialValues(std::string ifcnam
   for(TLMInterface* ifc: tlmInterfaces) {
     if(ifc->getName() == ifcname) {
       found = true;
-      if(ifc->getDimensions() == 1) {
+      if(ifc->getDimensions() == 1 && ifc->getCausality() != oms_causality_bidir) {
         if(values.size() < 1) {
           logError("No initial TLM value specified.");
           return oms_status_error;
         }
         tlmInitialValues.insert(std::make_pair(ifcname, values));
       }
+      else if(ifc->getDimensions() == 1 && ifc->getCausality() == oms_causality_bidir) {
+        if(values.size() < 2) {
+          logError("Too few initial TLM values specified for 1D interface (should be 2, effort and flow).");
+          return oms_status_error;
+        }
+        tlmInitialValues.insert(std::make_pair(ifcname, values));
+      }
       else if(ifc->getDimensions() == 3) {
-        if(values.size() < 6) {
-          logError("Too few initial TLM values specified for 3D interface (should be 6).");
+        if(values.size() < 12) {
+          logError("Too few initial TLM values specified for 3D interface (should be 12, 3 forces, 3 torques, 3 velocities and 3 angular velocities).");
           return oms_status_error;
         }
         tlmInitialValues.insert(std::make_pair(ifcname, values));
