@@ -139,7 +139,7 @@ OMTLMSimulatorClean:
 	@echo
 	@$(MAKE) -C OMTLMSimulator clean
 
-config-3rdParty: config-fmil config-lua config-cvode config-kinsol config-gflags config-glog config-ceres-solver config-libxml2
+config-3rdParty: config-fmil config-lua config-cvode config-kinsol config-ceres-solver config-libxml2
 
 config-OMSimulator:
 	@echo
