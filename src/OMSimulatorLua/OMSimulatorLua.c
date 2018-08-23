@@ -1177,7 +1177,7 @@ static int OMSimulatorLua_oms2_setTLMInitialValues(lua_State *L)
     status = oms2_setTLMInitialValues(cref, subref, values, 2);
   }
   else {
-    double values[6];
+    double values[12];
     values[0] = lua_tonumber(L,3);
     values[1] = lua_tonumber(L,4);
     values[2] = lua_tonumber(L,5);
