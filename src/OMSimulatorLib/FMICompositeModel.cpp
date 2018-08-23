@@ -67,8 +67,8 @@ oms2::FMICompositeModel::~FMICompositeModel()
   // free memory if no one else does
   deleteComponents();
 
-  for (auto& solver : solvers)
-    delete solver;
+  for (auto& it : solvers)
+    delete it.second;
 
   for (auto& connection : connections)
     if (connection)
@@ -450,44 +450,54 @@ oms_status_enu_t oms2::FMICompositeModel::addTable(const std::string& filename, 
 
 oms_status_enu_t oms2::FMICompositeModel::deleteSubModel(const oms2::ComRef& cref)
 {
-  auto it = subModels.find(cref);
-  if (it == subModels.end())
+  // case 1: <cref> is submodel
   {
-    logError("No submodel called \"" + cref + "\" instantiated.");
-    return oms_status_error;
-  }
-  oms2::FMISubModel::deleteSubModel(it->second);
-  subModels.erase(it);
+    auto it = subModels.find(cref);
+    if (it != subModels.end())
+    {
+      oms2::FMISubModel::deleteSubModel(it->second);
+      subModels.erase(it);
 
-  // delete associated connections
-  for (int i=0; i<connections.size()-1; ++i)
+      // delete associated connections
+      for (int i=0; i<connections.size()-1; ++i)
+      {
+        if (!connections[i])
+          return logError("[oms2::FMICompositeModel::deleteSubModel] null pointer");
+        else if(connections[i]->getSignalA().getCref() == cref)
+        {
+          delete connections[i];
+          connections.pop_back();   // last element is always NULL
+          connections[i] = connections.back();
+          connections.back() = NULL;
+          i--;
+        }
+        else if(connections[i]->getSignalB().getCref() == cref)
+        {
+          delete connections[i];
+          connections.pop_back();   // last element is always NULL
+          connections[i] = connections.back();
+          connections.back() = NULL;
+          i--;
+        }
+      }
+
+      deleteComponents();
+      return oms_status_ok;
+    }
+  }
+
+  // case 2: <cref> is solver
   {
-    if (!connections[i])
+    auto it = solvers.find(cref);
+    if (it != solvers.end())
     {
-      logError("[oms2::FMICompositeModel::deleteSubModel] null pointer");
-      return oms_status_error;
-    }
-    else if(connections[i]->getSignalA().getCref() == cref)
-    {
-      delete connections[i];
-      connections.pop_back();   // last element is always NULL
-      connections[i] = connections.back();
-      connections.back() = NULL;
-      i--;
-    }
-    else if(connections[i]->getSignalB().getCref() == cref)
-    {
-      delete connections[i];
-      connections.pop_back();   // last element is always NULL
-      connections[i] = connections.back();
-      connections.back() = NULL;
-      i--;
+      delete it->second;
+      solvers.erase(it);
+      return oms_status_ok;
     }
   }
 
-  deleteComponents();
-
-  return oms_status_ok;
+  return logError("No submodel called \"" + cref + "\" instantiated.");
 }
 
 oms_status_enu_t oms2::FMICompositeModel::setRealParameter(const oms2::SignalRef& sr, double value)
@@ -608,7 +618,20 @@ oms2::FMISubModel* oms2::FMICompositeModel::getSubModel(const oms2::ComRef& cref
   if (it == subModels.end())
   {
     if (showWarning)
-      logWarning("No submodel called \"" + cref + "\" found.");
+      logWarning("composite model \"" + getName() + "\" doesn't contain a submodel called \"" + cref + "\"");
+    return NULL;
+  }
+
+  return it->second;
+}
+
+oms2::Solver* oms2::FMICompositeModel::getSolver(const oms2::ComRef& cref, bool showWarning)
+{
+  auto it = solvers.find(cref.last());
+  if (it == solvers.end())
+  {
+    if (showWarning)
+      logWarning("composite model \"" + getName() + "\" doesn't contain a solver called \"" + cref + "\"");
     return NULL;
   }
 
@@ -871,7 +894,7 @@ oms_status_enu_t oms2::FMICompositeModel::initialize(double startTime, double to
   }
 
   for (const auto& it : solvers)
-    it->setTime(startTime);
+    it.second->setTime(startTime);
 
   // Enter initialization
   for (const auto& it : subModels)
@@ -893,7 +916,7 @@ oms_status_enu_t oms2::FMICompositeModel::initialize(double startTime, double to
 
   // Initialize solvers
   for (const auto& it : solvers)
-    it->initializeSolver(startTime);
+    it.second->initializeSolver(startTime);
 
   updateInputs(outputsGraph);
 
@@ -905,7 +928,7 @@ oms_status_enu_t oms2::FMICompositeModel::reset(bool terminate)
   logTrace();
 
   for (const auto& it : solvers)
-    it->freeSolver();
+    it.second->freeSolver();
 
   for (const auto& it : subModels)
     it.second->reset(terminate);
@@ -955,7 +978,7 @@ oms_status_enu_t oms2::FMICompositeModel::doSteps(ResultWriter& resultWriter, co
 
     // call doStep for FMUs
     for (const auto& it : solvers)
-      it->doStep(time);
+      it.second->doStep(time);
 
     if (loggingInterval >= 0.0 && time - tLastEmit >= loggingInterval)
     {
@@ -991,7 +1014,7 @@ oms_status_enu_t oms2::FMICompositeModel::stepUntilStandard(ResultWriter& result
 
     // call doStep for FMUs
     for (const auto& it : solvers)
-      it->doStep(time);
+      it.second->doStep(time);
 
     if (realtime_sync)
     {
@@ -1029,10 +1052,13 @@ oms_status_enu_t oms2::FMICompositeModel::stepUntilPCTPL(ResultWriter& resultWri
   logTrace();
 
   std::vector<oms2::FMISubModel*> sub_model;
-  std::vector<oms2::Solver*> _solver(solvers);
   for (auto it=subModels.begin(); it != subModels.end(); ++it)
     if (oms_component_fmu != it->second->getType())
       sub_model.push_back(it->second);
+
+  std::vector<oms2::Solver*> _solver;
+  for (auto& it : solvers)
+    _solver.push_back(it.second);
 
   int numThreads = sub_model.size() + _solver.size();
   if (numThreads > std::thread::hardware_concurrency())
@@ -1114,7 +1140,7 @@ void oms2::FMICompositeModel::simulate_asynchronous(ResultWriter& resultWriter, 
     // call doStep for FMUs
     for (const auto& it : solvers)
     {
-      statusSubModel = it->doStep(time);
+      statusSubModel = it.second->doStep(time);
       status = statusSubModel > status ? statusSubModel : status;
     }
 
@@ -1167,7 +1193,7 @@ oms_status_enu_t oms2::FMICompositeModel::simulateTLM(double startTime, double s
 
     // call doStep for FMUs
     for (const auto& it : solvers)
-      it->doStep(time);
+      it.second->doStep(time);
 
     writeToSockets();
 
@@ -1769,20 +1795,19 @@ bool oms2::FMICompositeModel::validAndUnusedCref(const oms2::ComRef& cref, bool 
   }
 
   // Check if there is a solver called <cref>
-  for (auto& solver : solvers)
-    if (solver->getName() == cref)
-    {
-      if (showWaring)
-        logWarning("The composite model \"" + getName() + "\" contains already a solver named \"" + cref + "\"");
-      return false;
-    }
+  if (NULL != getSolver(cref, false))
+  {
+    if (showWaring)
+      logWarning("The composite model \"" + getName() + "\" contains already a solver called \"" + cref + "\"");
+    return false;
+  }
 
   return true;
 }
 
-oms_status_enu_t oms2::FMICompositeModel::addSolver(const oms2::ComRef& solverCref, const std::string& methodString)
+oms_status_enu_t oms2::FMICompositeModel::addSolver(const oms2::ComRef& cref, const std::string& methodString)
 {
-  if (!validAndUnusedCref(solverCref, true))
+  if (!validAndUnusedCref(cref, true))
     return logError("[oms2::FMICompositeModel::addSolver] invalid solver identifier");
 
   oms_solver_enu_t method;
@@ -1795,35 +1820,17 @@ oms_status_enu_t oms2::FMICompositeModel::addSolver(const oms2::ComRef& solverCr
   else
     return logError("[oms2::FMICompositeModel::addSolver] Unknown solver: \"" + methodString + "\"");
 
-  Solver* solver = new Solver(solverCref, method);
-  solvers.push_back(solver);
+  Solver* solver = new Solver(cref, method);
+  solvers[cref] = solver;
 
   return oms_status_ok;
 }
 
-oms_status_enu_t oms2::FMICompositeModel::deleteSolver(std::string name)
+oms_status_enu_t oms2::FMICompositeModel::setSolverTolerance(const oms2::ComRef& cref, double tolerance)
 {
-  for (auto& solver : solvers)
-  {
-    if (solver->getName() == name)
-    {
-      delete solver;
-
-      solver = solvers.back();
-      solvers.pop_back();
-
-      return oms_status_ok;
-    }
-  }
-
-  return oms_status_error;
-}
-
-oms_status_enu_t oms2::FMICompositeModel::setSolverTolerance(std::string solverName, double tolerance)
-{
-  for (auto& solver : solvers)
-    if (solver->getName() == solverName)
-      return solver->setTolerance(tolerance);
+  Solver* solver = getSolver(cref, true);
+  if (solver)
+    return solver->setTolerance(tolerance);
 
   return oms_status_error;
 }
@@ -1838,12 +1845,14 @@ oms_status_enu_t oms2::FMICompositeModel::connectSolver(const oms2::ComRef& fmuC
 
   for (auto& solver : solvers)
   {
-    if (solver->getName() == solverCref)
-      status = solver->addFMU(dynamic_cast<FMUWrapper*>(fmu));
+    if (solver.second->getName() == solverCref)
+      status = solver.second->addFMU(dynamic_cast<FMUWrapper*>(fmu));
     else
-      solver->removeFMU(fmuCref); // Just make sure each FMU is only connected to a single solver.
+      solver.second->removeFMU(fmuCref); // Just make sure each FMU is only connected to a single solver.
   }
 
+  if (oms_status_error == status)
+    logError("connecting solver \"" + solverCref + "\" to FMU \"" + fmuCref + "\" failed");
   return status;
 }
 
@@ -1857,8 +1866,8 @@ oms_status_enu_t oms2::FMICompositeModel::unconnectSolver(const oms2::ComRef& fm
 
   for (auto& solver : solvers)
   {
-    if (solver->getName() == solverCref)
-      status = solver->removeFMU(fmuCref); // Just make sure each FMU is only connected to a single solver.
+    if (solver.second->getName() == solverCref)
+      status = solver.second->removeFMU(fmuCref); // Just make sure each FMU is only connected to a single solver.
   }
 
   return status;
