@@ -609,6 +609,7 @@ oms_status_enu_t oms2_setFlags(const char* cref, const char* flags)
 
 oms_status_enu_t oms2_addSolver(const char* model, const char* name, const char* solver)
 {
+  logTrace();
   return oms2::Scope::GetInstance().addSolver(oms2::ComRef(model), oms2::ComRef(name), std::string(solver));
 }
 
@@ -620,4 +621,10 @@ oms_status_enu_t oms2_freeMemory(void* obj)
     free(obj);
   }
   return oms_status_ok;
+}
+
+int oms2_exists(const char* cref)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().exists(oms2::ComRef(cref)) ? 1 : 0;
 }
