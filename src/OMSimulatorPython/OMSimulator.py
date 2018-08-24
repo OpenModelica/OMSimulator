@@ -94,7 +94,7 @@ class OMSimulator:
 
     self.obj.oms2_saveModel.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms2_saveModel.restype = ctypes.c_int
-    
+
     self.obj.oms2_listModel.argtypes = [ctypes.c_char_p]
     self.obj.oms2_listModel.restype = ctypes.c_int
 
@@ -164,6 +164,9 @@ class OMSimulator:
     self.obj.oms2_freeMemory.argtypes = [ctypes.c_void_p]
     self.obj.oms2_freeMemory.restype = ctypes.c_int
 
+    self.obj.oms2_exists.argtypes = [ctypes.c_char_p]
+    self.obj.oms2_exists.restype = ctypes.c_int
+
   def addConnection(self, cref, conA, conB):
     return self.obj.oms2_addConnection(str.encode(cref), str.encode(conA), str.encode(conB))
   def addFMU(self, modelIdent, fmuPath, fmuIdent):
@@ -184,6 +187,8 @@ class OMSimulator:
     return self.obj.oms2_describe(str.encode(cref))
   def doSteps(self, ident, numberOfSteps):
     return self.obj.oms2_doSteps(str.encode(ident), numberOfSteps)
+  def exists(self, cref):
+    return self.obj.oms2_exists(str.encode(cref))
   def exportCompositeStructure(self, cref, filename):
     return self.obj.oms2_exportCompositeStructure(str.encode(cref), str.encode(filename))
   def exportDependencyGraphs(self, cref, initialization, simulation):

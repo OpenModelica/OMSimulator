@@ -81,6 +81,19 @@ static int OMSimulatorLua_oms2_compareSimulationResults(lua_State *L)
   return 1;
 }
 
+//int oms2_exists(const char* cref);
+static int OMSimulatorLua_oms2_exists(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char *cref = lua_tostring(L, 1);
+  int rc = oms2_exists(cref);
+  lua_pushinteger(L, rc);
+  return 1;
+}
+
 //oms_status_enu_t oms2_newFMIModel(const char* ident);
 static int OMSimulatorLua_oms2_newFMIModel(lua_State *L)
 {
@@ -1473,6 +1486,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms2_deleteConnection);
   REGISTER_LUA_CALL(oms2_deleteSubModel);
   REGISTER_LUA_CALL(oms2_describe);
+  REGISTER_LUA_CALL(oms2_exists);
   REGISTER_LUA_CALL(oms2_exportCompositeStructure);
   REGISTER_LUA_CALL(oms2_exportDependencyGraphs);
   REGISTER_LUA_CALL(oms2_getBoolean);
