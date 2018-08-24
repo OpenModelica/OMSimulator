@@ -90,7 +90,7 @@ namespace oms2
     oms_status_enu_t doSteps(ResultWriter& resultWriter, const int numberOfSteps, double communicationInterval, double loggingInterval);
     oms_status_enu_t stepUntil(ResultWriter& resultWriter, double stopTime, double communicationInterval, double loggingInterval, MasterAlgorithm masterAlgorithm, bool realtime_sync);
 #if !defined(NO_TLM)
-    oms_status_enu_t simulateTLM(double startTime, double stopTime, double tolerance, double communicationInterval, double loggingInterval, std::string address);
+    oms_status_enu_t simulateTLM(double startTime, double stopTime, double tolerance, double loggingInterval, std::string address);
 #endif
     void simulate_asynchronous(ResultWriter& resultWriter, double stopTime, double communicationInterval, double loggingInterval, void (*cb)(const char* ident, double time, oms_status_enu_t status));
 

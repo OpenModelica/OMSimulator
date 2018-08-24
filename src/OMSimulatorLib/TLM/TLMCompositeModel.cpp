@@ -412,7 +412,7 @@ oms_status_enu_t oms2::TLMCompositeModel::stepUntil(ResultWriter &resultWriter, 
   {
     Model* pModel = oms2::Scope::GetInstance().getModel(it->second->getName());
     double tolerance = pModel->getTolerance();
-    std::thread *t = new std::thread(&FMICompositeModel::simulateTLM, it->second, startTime, stopTime, tolerance, communicationInterval, loggingInterval, server);
+    std::thread *t = new std::thread(&FMICompositeModel::simulateTLM, it->second, startTime, stopTime, tolerance, loggingInterval, server);
     fmiModelThreads.push_back(t);
   }
 
