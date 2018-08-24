@@ -743,6 +743,13 @@ oms_status_enu_t oms2_addSolver(const char* model, const char* name, const char*
  */
 oms_status_enu_t oms2_freeMemory(void* obj);
 
+/**
+ * \brief This function returns 1 if a given cref exists in the scope,
+ * otherwise 0. It can be used to check for composite models, sub-models such
+ * as FMUs, and solver instances.
+ */
+int oms2_exists(const char* cref);
+
 #ifdef __cplusplus
 }
 #endif

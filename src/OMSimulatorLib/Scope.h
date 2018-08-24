@@ -72,6 +72,7 @@ namespace oms2
     oms_status_enu_t addFMU(const ComRef& modelIdent, const std::string& fmuPath, const ComRef& fmuIdent);
     oms_status_enu_t addTable(const ComRef& modelIdent, const std::string& tablePath, const ComRef& tableIdent);
     oms_status_enu_t deleteSubModel(const ComRef& modelIdent, const ComRef& subModelIdent);
+    bool exists(const ComRef& cref);
     oms_status_enu_t rename(const ComRef& identOld, const ComRef& identNew);
     Model* loadModel(const std::string& filename);
     oms_status_enu_t saveModel(const std::string& filename, const ComRef& name);
