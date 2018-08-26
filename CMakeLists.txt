@@ -41,7 +41,7 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
   endif()
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
   # require at least clang 3.8.0
-  if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 3.9.0)
+  if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 3.8.0)
     message(WARNING, "Using boost::regex instead of std::regex due to old clang compiler")
     set(BOOST_REGEX regex)
   endif()
