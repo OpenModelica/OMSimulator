@@ -34,7 +34,7 @@
 
 #include <deque>
 #include <string>
-#include <regex>
+#include <RegEx.h>
 
 oms2::ComRef::ComRef()
 {
@@ -84,8 +84,8 @@ oms2::ComRef oms2::ComRef::operator+(const oms2::ComRef& rhs)
 
 bool oms2::ComRef::isValidIdent(const std::string& ident)
 {
-  std::regex re("^[a-zA-Z][a-zA-Z0-9_]*$");
-  return std::regex_match(ident, re);
+  oms_regex re("^[a-zA-Z][a-zA-Z0-9_]*$");
+  return oms_regex_match(ident, re);
 }
 
 bool oms2::ComRef::isValidIdent() const

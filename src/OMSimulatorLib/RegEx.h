@@ -28,51 +28,36 @@
  * See the full OSMC Public License conditions for more details.
  *
  */
+ 
+#ifndef _OMS_REGEX_H_
+#define _OMS_REGEX_H_
+ 
+#include <regex>
 
-#ifndef _OMS_OPTIONS_H_
-#define _OMS_OPTIONS_H_
+// adrpo: crap regex handling
+#if __cplusplus >= 201103L &&                             \
+    (!defined(__GLIBCXX__) || (__cplusplus >= 201402L) || \
+        (defined(_GLIBCXX_REGEX_DFS_QUANTIFIERS_LIMIT) || \
+         defined(_GLIBCXX_REGEX_STATE_LIMIT)           || \
+             (defined(_GLIBCXX_RELEASE)                && \
+             _GLIBCXX_RELEASE > 4)))
 
-#include <RegEx.h>
-#include <string>
+#define OMS_GOOD_REGEX 1
+#else
+#define OMS_GOOD_REGEX 0
+#endif
 
-class ProgramOptions
-{
-public:
-  ProgramOptions(int argc, char** argv);
-  void printUsage();
+#if OMS_GOOD_REGEX || defined(_MSC_VER)
+#define oms_regex std::regex
+#define oms_regex_match std::regex_match
 
-private:
-  bool isOption(const std::string& name);
-  bool isOption(const std::string& name1, const std::string& name2);
-  bool isOptionAndValue(const std::string& name, std::string& value, oms_regex re);
-  bool isOptionAndValue(const std::string& name1, const std::string& name2, std::string& value, oms_regex re);
+#else
 
-public:
-  bool validOptions;
-  bool describe;
-  bool help;
-  bool version;
-  double startTime;
-  bool useStartTime;
-  double stopTime;
-  bool useStopTime;
-  double tolerance;
-  bool useTolerance;
-  double communicationInterval;
-  bool useCommunicationInterval;
-  std::string filename;
-  std::string resultFile;
-  std::string tempDir;
-  std::string workingDir;
-  std::string logfile;
-  std::string solver;
-  double timeout;
-  int logLevel;
-
-private:
-  int argi;
-  int argc;
-  char** argv;
-};
+#include <boost/regex.hpp>
+#define oms_regex boost::regex
+#define oms_regex_match boost::regex_match
 
 #endif
+
+
+#endif // #ifndef _OMS_REGEX_H_
