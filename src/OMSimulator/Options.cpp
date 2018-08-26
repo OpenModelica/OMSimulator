@@ -32,7 +32,6 @@
 #include "Options.h"
 
 #include <iostream>
-#include <regex>
 #include <string>
 
 ProgramOptions::ProgramOptions(int argc, char** argv)
@@ -55,10 +54,10 @@ ProgramOptions::ProgramOptions(int argc, char** argv)
   useTolerance = false;
   logLevel = 0;
 
-  std::regex re_integer("(\\+|-)?[[:digit:]]+");
-  std::regex re_double("((\\+|-)?[[:digit:]]+)(\\.(([[:digit:]]+)?))?((e|E)((\\+|-)?)[[:digit:]]+)?");
-  std::regex re_default(".+");
-  std::regex re_solver("internal|euler|cvode");
+  oms_regex re_integer("(\\+|-)?[[:digit:]]+");
+  oms_regex re_double("((\\+|-)?[[:digit:]]+)(\\.(([[:digit:]]+)?))?((e|E)((\\+|-)?)[[:digit:]]+)?");
+  oms_regex re_default(".+");
+  oms_regex re_solver("internal|euler|cvode");
 
   validOptions = true;
   for (; argi<argc; ++argi)
@@ -152,7 +151,7 @@ bool ProgramOptions::isOption(const std::string& name1, const std::string& name2
   return isOption(name1) || isOption(name2);
 }
 
-bool ProgramOptions::isOptionAndValue(const std::string& name, std::string& value, std::regex re)
+bool ProgramOptions::isOptionAndValue(const std::string& name, std::string& value, oms_regex re)
 {
   std::string arg(argv[argi]);
   std::string _value;
@@ -183,7 +182,7 @@ bool ProgramOptions::isOptionAndValue(const std::string& name, std::string& valu
   return false;
 }
 
-bool ProgramOptions::isOptionAndValue(const std::string& name1, const std::string& name2, std::string& value, std::regex re)
+bool ProgramOptions::isOptionAndValue(const std::string& name1, const std::string& name2, std::string& value, oms_regex re)
 {
   return isOptionAndValue(name1, value, re) || isOptionAndValue(name2, value, re);
 }
