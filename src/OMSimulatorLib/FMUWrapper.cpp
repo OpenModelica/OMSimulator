@@ -41,7 +41,7 @@
 #include "FMICompositeModel.h"
 
 #include <cmath>
-#include <regex>
+#include <RegEx.h>
 #include <fmilib.h>
 #include <JM/jm_portability.h>
 
@@ -969,7 +969,7 @@ oms_status_enu_t oms2::FMUWrapper::emit(ResultWriter& resultWriter)
 
 void oms2::FMUWrapper::addSignalsToResults(const std::string& regex)
 {
-  std::regex exp(regex);
+  oms_regex exp(regex);
   for (unsigned int i=0; i<allVariables.size(); ++i)
   {
     if (exportVariables[i])
@@ -986,7 +986,7 @@ void oms2::FMUWrapper::addSignalsToResults(const std::string& regex)
 
 void oms2::FMUWrapper::removeSignalsFromResults(const std::string& regex)
 {
-  std::regex exp(regex);
+  oms_regex exp(regex);
   for (unsigned int i=0; i<allVariables.size(); ++i)
   {
     if (!exportVariables[i])
