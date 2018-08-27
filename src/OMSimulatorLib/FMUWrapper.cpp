@@ -591,14 +591,22 @@ oms_status_enu_t oms2::FMUWrapper::exportToSSD(pugi::xml_node& root) const
 
 void oms2::FMUWrapper::readFromTLMSockets(double time)
 {
+#if !defined(NO_TLM)
   FMICompositeModel *model = oms2::Scope::GetInstance().getFMICompositeModel(parent);
   model->readFromSockets(time, element.getName().toString());
+#else
+  throw std::runtime_error("Compiled without TLM support");
+#endif
 }
 
 void oms2::FMUWrapper::writeToTLMSockets(double time)
 {
+#if !defined(NO_TLM)
   FMICompositeModel *model = oms2::Scope::GetInstance().getFMICompositeModel(parent);
   model->writeToSockets(time, element.getName().toString());
+#else
+  throw std::runtime_error("Compiled without TLM support");
+#endif
 }
 
 oms2::Variable* oms2::FMUWrapper::getVariable(const std::string& var)

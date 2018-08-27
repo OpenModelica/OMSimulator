@@ -903,10 +903,12 @@ oms_status_enu_t oms2::FMICompositeModel::initialize(double startTime, double to
       return logError("[oms2::FMICompositeModel::initialize] failed");
   }
 
+#if !defined(NO_TLM)
   if(!tlmServer.empty()) {
     setupSockets();
     readFromSockets(time);
   }
+#endif
   updateInputs(initialUnknownsGraph);
 
   // Exit initialization
