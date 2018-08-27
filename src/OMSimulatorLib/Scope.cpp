@@ -1965,8 +1965,10 @@ bool oms2::Scope::exists(const ComRef& cref)
     }
     else
     {
+#if !defined(NO_TLM)
       // case 2b: sub-model (TLM composite model)
       TLMCompositeModel* tlmModel = model->getTLMCompositeModel();
+#endif
       logError("[oms2::Scope::exists] not implemented for TLM composite models");
       return 0;
     }
