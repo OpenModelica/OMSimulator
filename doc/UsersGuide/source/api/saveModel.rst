@@ -2,7 +2,7 @@
 saveModel
 ---------
 
-Loads a FMI composite model from xml representation.
+Dumps SSD representation of a given FMI composite model to a file.
 #END#
 
 #LUA#
