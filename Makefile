@@ -110,7 +110,11 @@ OMSimulatorCore:
 	@echo "# make OMSimulatorCore"
 	@echo
 	@$(MAKE) -C $(BUILD_DIR) install
-	test ! "$(detected_OS)" = Darwin || ($(CROSS_TRIPLE_DASH)install_name_tool -change MAC64/libomtlmsimulator.dylib "@loader_path/../lib/$(HOST_SHORT_OMC)/libomtlmsimulator.dylib" $(TOP_INSTALL_DIR)/bin/OMSimulator)
+	test ! "$(detected_OS)" = Darwin || ($(CROSS_TRIPLE_DASH)install_name_tool -id "@rpath/libOMSimulatorLib.dylib" $(TOP_INSTALL_DIR)/lib/$(HOST_SHORT_OMC)/libOMSimulatorLib.dylib)
+	test ! "$(detected_OS)" = Darwin || ($(CROSS_TRIPLE_DASH)install_name_tool -id "@rpath/libOMSimulatorLua.dylib" $(TOP_INSTALL_DIR)/lib/$(HOST_SHORT_OMC)/libOMSimulatorLua.dylib)
+	test ! "$(detected_OS)" = Darwin || ($(CROSS_TRIPLE_DASH)install_name_tool -change MAC64/libomtlmsimulator.dylib "@rpath/libomtlmsimulator.dylib" $(TOP_INSTALL_DIR)/bin/OMSimulator)
+	test ! "$(detected_OS)" = Darwin || ($(CROSS_TRIPLE_DASH)install_name_tool -add_rpath "@loader_path/../../../../lib/$(HOST_SHORT_OMC)" $(TOP_INSTALL_DIR)/bin/OMSimulator)
+	test ! "$(detected_OS)" = Darwin || ($(CROSS_TRIPLE_DASH)install_name_tool -add_rpath "@loader_path/../lib/$(HOST_SHORT_OMC)" $(TOP_INSTALL_DIR)/bin/OMSimulator)
 
 ifeq ($(OMTLM),ON)
 OMTLMSimulator:
