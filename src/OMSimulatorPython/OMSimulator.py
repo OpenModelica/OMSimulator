@@ -245,8 +245,8 @@ class OMSimulator:
     return self.obj.oms2_removeSignalsFromResults(str.encode(cref), str.encode(regex))
   def reset(self, ident):
     return self.obj.oms2_reset(str.encode(ident))
-  def saveModel(self, filename, ident):
-    return self.obj.oms2_saveModel(str.encode(filename), str.encode(ident))
+  def saveModel(self, ident, filename):
+    return self.obj.oms2_saveModel(str.encode(ident), str.encode(filename))
   def listModel(self, ident):
     contents = ctypes.c_char_p()
     status = self.obj.oms2_listModel(str.encode(ident), ctypes.byref(contents))
