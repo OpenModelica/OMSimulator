@@ -231,7 +231,7 @@ oms2::Model* oms2::Scope::loadModel(const std::string& filename)
   return model;
 }
 
-oms_status_enu_t oms2::Scope::saveModel(const std::string& filename, const oms2::ComRef& name)
+oms_status_enu_t oms2::Scope::saveModel(const oms2::ComRef& name, const std::string& filename)
 {
   logTrace();
 

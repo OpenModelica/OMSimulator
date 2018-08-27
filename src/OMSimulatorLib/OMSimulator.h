@@ -142,11 +142,11 @@ oms_status_enu_t oms2_loadModelFromString(const char* contents, char** ident);
 /**
  * \brief Loads a FMI composite model from xml representation.
  *
- * \param filename   [in] Path to the xml file; An existing file will be overwritten
  * \param ident      [in] Name of the model to export
+ * \param filename   [in] Path to the xml file; An existing file will be overwritten
  * \return           Error status
  */
-oms_status_enu_t oms2_saveModel(const char* filename, const char* ident);
+oms_status_enu_t oms2_saveModel(const char* ident, const char* filename);
 
 /**
  * \brief Lists the contents of a composite model.
