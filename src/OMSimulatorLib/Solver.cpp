@@ -95,12 +95,18 @@ int oms2::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void *user_data)
 oms2::Solver::Solver(const oms2::ComRef& name, oms_solver_enu_t solverMethod)
   : name(name), solverMethod(solverMethod)
 {
+  if (oms_solver_explicit_euler == solverMethod)
+    ;
+  else if (oms_solver_cvode == solverMethod)
+    solverData.cvode.mem = NULL;
 }
 
 oms2::Solver::~Solver()
 {
   for (auto& fmu : fmus)
     fmu->setSolver(NULL);
+
+  freeSolver();
 }
 
 oms_status_enu_t oms2::Solver::addFMU(oms2::FMUWrapper* fmu)
@@ -499,7 +505,7 @@ oms_status_enu_t oms2::Solver::doStep(double stopTime)
 
 oms_status_enu_t oms2::Solver::freeSolver()
 {
-  if (0 == fmus.size())
+  if (0 == fmus.size() || 0 == states.size())
     return oms_status_ok;
 
   if (oms_solver_internal == solverMethod)
@@ -512,7 +518,7 @@ oms_status_enu_t oms2::Solver::freeSolver()
     if (oms_solver_explicit_euler == solverMethod)
     {
     }
-    else if (oms_solver_cvode == solverMethod)
+    else if (oms_solver_cvode == solverMethod && solverData.cvode.mem)
     {
       long int nst, nfe, nsetups, nni, ncfn, netf;
       int flag;
