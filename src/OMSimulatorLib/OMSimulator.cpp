@@ -164,10 +164,10 @@ oms_status_enu_t oms2_loadModelFromString(const char* contents, char** ident)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms2_saveModel(const char* filename, const char* ident)
+oms_status_enu_t oms2_saveModel(const char* ident, const char* filename)
 {
   logTrace();
-  return oms2::Scope::GetInstance().saveModel(filename, oms2::ComRef(ident));
+  return oms2::Scope::GetInstance().saveModel(oms2::ComRef(ident), filename);
 }
 
 oms_status_enu_t oms2_listModel(const char* ident, char** contents)

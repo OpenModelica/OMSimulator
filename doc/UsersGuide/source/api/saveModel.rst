@@ -8,21 +8,21 @@ Dumps SSD representation of a given FMI composite model to a file.
 #LUA#
 .. code-block:: lua
 
-  status = oms2_saveModel(filename, ident)
+  status = oms2_saveModel(ident, filename)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  status = session.saveModel(filename, ident)
+  status = session.saveModel(ident, filename)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms2_saveModel(const char* filename, const char* ident);
+  oms_status_enu_t oms2_saveModel(const char* ident, const char* filename);
 
 #END#
 

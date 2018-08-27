@@ -237,7 +237,7 @@ static int OMSimulatorLua_oms2_loadModelFromString(lua_State *L)
   return 2;
 }
 
-//oms_status_enu_t oms2_saveModel(const char* filename, const char* ident);
+//oms_status_enu_t oms2_saveModel(const char* ident, const char* filename);
 static int OMSimulatorLua_oms2_saveModel(lua_State *L)
 {
   if (lua_gettop(L) != 2)
@@ -245,9 +245,9 @@ static int OMSimulatorLua_oms2_saveModel(lua_State *L)
   luaL_checktype(L, 1, LUA_TSTRING);
   luaL_checktype(L, 2, LUA_TSTRING);
 
-  const char* filename = lua_tostring(L, 1);
-  const char* ident = lua_tostring(L, 2);
-  oms_status_enu_t status = oms2_saveModel(filename, ident);
+  const char* ident = lua_tostring(L, 1);
+  const char* filename = lua_tostring(L, 2);
+  oms_status_enu_t status = oms2_saveModel(ident, filename);
 
   lua_pushinteger(L, status);
   return 1;
