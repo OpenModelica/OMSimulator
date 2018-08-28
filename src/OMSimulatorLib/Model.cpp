@@ -82,6 +82,67 @@ oms2::Model* oms2::Model::NewModel(oms_element_type_enu_t type, const oms2::ComR
   return model;
 }
 
+oms_status_enu_t oms2::Model::ParseString(const std::string& contents, char** ident)
+{
+  oms_element_type_enu_t modelType = oms_component_none;
+  bool defaultExperiment = false;
+
+  pugi::xml_document doc;
+  pugi::xml_parse_result result = doc.load_buffer(contents.c_str(), strlen(contents.c_str()));
+  if (!result)
+  {
+    logError("ParseString failed (" + std::string(result.description()) + ")");
+    return oms_status_error;
+  }
+
+  const pugi::xml_node root = doc.document_element();
+
+  for(pugi::xml_node_iterator it = root.begin(); it != root.end(); ++it)
+  {
+    std::string name = it->name();
+    if (name == "TLMModel" && modelType == oms_component_none)
+      modelType = oms_component_tlm;
+    else if (name == oms2::ssd::ssd_system && modelType == oms_component_none)
+      modelType = oms_component_fmi;
+    else if (name == oms2::ssd::ssd_default_experiment && !defaultExperiment)
+      defaultExperiment = true;
+    else
+    {
+      logError("wrong xml schema detected");
+      return oms_status_error;
+    }
+  }
+
+  if (modelType == oms_component_fmi)
+  {
+    const pugi::xml_node& node = root.child(oms2::ssd::ssd_system);
+    // read model name
+    std::string ident_;
+    for (auto it = node.attributes_begin(); it != node.attributes_end(); ++it)
+    {
+      std::string name = it->name();
+      if (name == "name")
+        ident_ = it->value();
+    }
+    if (!ident_.empty())
+    {
+      *ident = (char*) malloc(strlen(ident_.c_str()) + 1);
+      strcpy(*ident, ident_.c_str());
+    }
+    return oms_status_ok;
+  }
+  else if (modelType == oms_component_tlm)
+  {
+#if !defined(NO_TLM)
+    logError("oms2::Model::ParseString: not implemented for TLM yet");
+    return oms_status_error;
+#else
+    THROW_NO_TLM();
+#endif
+  }
+  return oms_status_error;
+}
+
 oms2::Model* oms2::Model::LoadModel(const std::string& filename)
 {
   oms_element_type_enu_t modelType = oms_component_none;

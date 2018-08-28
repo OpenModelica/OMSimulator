@@ -131,13 +131,23 @@ oms_status_enu_t oms2_rename(const char* identOld, const char* identNew);
 oms_status_enu_t oms2_loadModel(const char* filename, char** ident);
 
 /**
- * \brief Loads a FMI composite model from xml representation.
+ * \brief Parses a composite model from xml representation.
+ * Memory is allocated for ident. The caller is responsible to call free on it.
+ *
+ * \param contents   [in] Composite model xml contents
+ * \param ident      [out] Name of the parsed model
+ * \return           Error status
+ */
+oms_status_enu_t oms2_parseString(const char* contents, char** ident);
+
+/**
+ * \brief Loads a composite model from xml representation.
  *
  * \param contents   [in] Composite model xml contents
  * \param ident      [out] Name of the imported model
  * \return           Error status
  */
-oms_status_enu_t oms2_loadModelFromString(const char* contents, char** ident);
+oms_status_enu_t oms2_loadString(const char* contents, char** ident);
 
 /**
  * \brief Loads a FMI composite model from xml representation.
