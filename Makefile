@@ -53,7 +53,7 @@ else
 	BUILD_DIR := build/linux
 	INSTALL_DIR := install/linux
 	CMAKE_TARGET=-DCMAKE_SYSTEM_NAME=$(detected_OS)
-ifeq ($(host_triple),i686-linux-gnu)
+ifeq ($(host_short),i686-linux-gnu)
 	export ABI := LINUX32
 else
 	export ABI := LINUX64
