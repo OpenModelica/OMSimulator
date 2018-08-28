@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
   if (options.tempDir != "")
     oms2_setTempDirectory(options.tempDir.c_str());
 
-  if (type == "fmu" || type == "xml")
+  if (type == "fmu" || type == "xml" || type == "ssd")
   {
     char* name = NULL;
     const char* defaultName = "model";
