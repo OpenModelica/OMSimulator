@@ -218,8 +218,8 @@ static int OMSimulatorLua_oms2_loadModel(lua_State *L)
   return 2;
 }
 
-//oms_status_enu_t oms2_loadModelFromString(const char* contents, char** ident);
-static int OMSimulatorLua_oms2_loadModelFromString(lua_State *L)
+//oms_status_enu_t oms2_parseString(const char* contents, char** ident);
+static int OMSimulatorLua_oms2_parseString(lua_State *L)
 {
   if (lua_gettop(L) != 1)
     return luaL_error(L, "expecting exactly 1 argument");
@@ -227,7 +227,29 @@ static int OMSimulatorLua_oms2_loadModelFromString(lua_State *L)
 
   const char* contents = lua_tostring(L, 1);
   char* ident = NULL;
-  oms_status_enu_t status = oms2_loadModelFromString(contents, &ident);
+  oms_status_enu_t status = oms2_parseString(contents, &ident);
+
+  lua_pushinteger(L, status);
+  if (ident)
+  {
+    lua_pushstring(L, ident);
+    oms2_freeMemory(ident);
+  }
+  else
+    lua_pushstring(L, "");
+  return 2;
+}
+
+//oms_status_enu_t oms2_loadString(const char* contents, char** ident);
+static int OMSimulatorLua_oms2_loadString(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* contents = lua_tostring(L, 1);
+  char* ident = NULL;
+  oms_status_enu_t status = oms2_loadString(contents, &ident);
 
   lua_pushinteger(L, status);
   if (ident)
@@ -1502,7 +1524,8 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms2_getVersion);
   REGISTER_LUA_CALL(oms2_initialize);
   REGISTER_LUA_CALL(oms2_loadModel);
-  REGISTER_LUA_CALL(oms2_loadModelFromString);
+  REGISTER_LUA_CALL(oms2_parseString);
+  REGISTER_LUA_CALL(oms2_loadString);
   REGISTER_LUA_CALL(oms2_newFMIModel);
   REGISTER_LUA_CALL(oms2_newTLMModel);
   REGISTER_LUA_CALL(oms2_removeSignalsFromResults);

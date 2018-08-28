@@ -74,6 +74,7 @@ namespace oms2
     oms_status_enu_t deleteSubModel(const ComRef& modelIdent, const ComRef& subModelIdent);
     bool exists(const ComRef& cref);
     oms_status_enu_t rename(const ComRef& identOld, const ComRef& identNew);
+    oms_status_enu_t parseString(const std::string& contents, char** ident);
     Model* loadModel(const std::string& filename);
     oms_status_enu_t saveModel(const ComRef& name, const std::string& filename);
     oms_status_enu_t listModel(const ComRef& name, char** contents);

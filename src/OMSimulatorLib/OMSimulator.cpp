@@ -150,7 +150,13 @@ oms_status_enu_t oms2_loadModel(const char* filename, char** ident)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms2_loadModelFromString(const char* contents, char** ident)
+oms_status_enu_t oms2_parseString(const char* contents, char** ident)
+{
+  logTrace();
+  return oms2::Scope::GetInstance().parseString(contents, ident);
+}
+
+oms_status_enu_t oms2_loadString(const char* contents, char** ident)
 {
   logTrace();
   oms2::Model* model = oms2::Scope::GetInstance().loadModel(contents);
