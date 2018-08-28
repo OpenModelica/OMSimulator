@@ -239,6 +239,7 @@ class OMSimulator:
   def parseString(self, contents):
     ident = ctypes.c_char_p()
     status = self.obj.oms2_parseString(str.encode(contents), ctypes.byref(ident))
+    self.obj.oms2_freeMemory(ident)
     return [status, ident.value]
   def loadString(self, contents):
     ident = ctypes.c_char_p()
