@@ -218,6 +218,12 @@ oms_status_enu_t oms2::Scope::rename(const oms2::ComRef& identOld, const oms2::C
   return oms_status_error;
 }
 
+oms_status_enu_t oms2::Scope::parseString(const std::string& contents, char** ident)
+{
+  logTrace();
+  return oms2::Model::ParseString(contents, ident);
+}
+
 oms2::Model* oms2::Scope::loadModel(const std::string& filename)
 {
   logTrace();

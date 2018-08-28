@@ -56,6 +56,7 @@ namespace oms2
      * instances with valid names can be created.
      */
     static Model* NewModel(oms_element_type_enu_t type, const ComRef& cref);
+    static oms_status_enu_t ParseString(const std::string& contents, char** ident);
     static Model* LoadModel(const std::string& filename);
     static void DeleteModel(Model *model) {if (model) delete model;}
 
