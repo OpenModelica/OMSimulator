@@ -90,6 +90,10 @@ oms_status_enu_t oms2::TLMCompositeModel::addFMIModel(oms2::FMICompositeModel *f
 {
   oms2::ComRef cref = fmiModel->getName();
 
+  if(exists(cref)) {
+    return logError("TLMCompositeModel::addFMIModel(): A sub-model named "+cref.toString()+" already exists in "+this->getName().toString());
+  }
+
   auto it = fmiModels.find(cref);
   if (it != fmiModels.end())
     return logError("An FMI submodel called \"" + cref + "\" is already added.");
@@ -279,6 +283,9 @@ oms_status_enu_t oms2::TLMCompositeModel::addExternalModel(oms2::ExternalModel *
 
 oms_status_enu_t oms2::TLMCompositeModel::addExternalModel(std::string modelFile, std::string startScript, const oms2::ComRef &cref)
 {
+  if(exists(cref)) {
+    return logError("TLMCompositeModel::addExternalModel(): A sub-model named "+cref.toString()+" already exists in "+this->getName().toString());
+  }
   ExternalModel *externalModel = new ExternalModel(cref, modelFile, startScript);
   return addExternalModel(externalModel);
 }
@@ -292,6 +299,38 @@ oms_status_enu_t oms2::TLMCompositeModel::addConnection(const SignalRef &signalA
                                                       double Zfr)
 {
   return addConnection(oms2::TLMConnection(this->getName(),signalA,signalB,delay,alpha,Zf,Zfr));
+}
+
+bool oms2::TLMCompositeModel::exists(const oms2::ComRef &cref)
+{
+  if(!cref.isIdent()) {
+    FMICompositeModel *fmiModel = getFMIModel(cref.first());
+    if(NULL != fmiModel) {
+      if(NULL != fmiModel->getSubModel(cref.last(), false))
+        return true;
+      else if(NULL != fmiModel->getSolver(cref.last(), false))
+        return true;
+    }
+    return false;
+  }
+
+  if(externalModels.find(cref) != externalModels.end())
+    return true;
+  if(fmiModels.find(cref) != fmiModels.end())
+    return true;
+
+  return false;
+}
+
+oms2::FMICompositeModel *oms2::TLMCompositeModel::getFMIModel(const oms2::ComRef &cref)
+{
+  auto it = fmiModels.find(cref.last());
+  if (it == fmiModels.end())
+  {
+    return NULL;
+  }
+
+  return it->second;
 }
 
 oms_status_enu_t oms2::TLMCompositeModel::setSocketData(const std::string& address,

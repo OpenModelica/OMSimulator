@@ -71,6 +71,10 @@ namespace oms2
     oms_status_enu_t addConnection(const oms2::TLMConnection& connection);
     oms_status_enu_t addConnection(const SignalRef& signalA, const SignalRef& signalB, double delay, double alpha, double Zf, double Zfr);
 
+    bool exists(const ComRef& subref);
+    FMICompositeModel* getFMIModel(const oms2::ComRef& cref);
+
+
     oms_status_enu_t setSocketData(const std::string &address,
                                    int managerPort,
                                    int monitorPort);
