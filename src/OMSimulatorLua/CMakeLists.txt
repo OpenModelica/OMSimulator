@@ -36,5 +36,5 @@ install(TARGETS OMSimulatorLua DESTINATION lib/${HOST_SHORT})
 
 # install the damn thing MacOS style
 IF(APPLE)
-  execute_process(COMMAND install_name_tool -id "@rpath/libOMSimulatorLua.dylib" "${CMAKE_INSTALL_PREFIX}/lib/${HOST_SHORT}/libOMSimulatorLua.dylib")
+  install(CODE "execute_process(COMMAND install_name_tool -id \"@rpath/libOMSimulatorLua.dylib\" \"${CMAKE_INSTALL_PREFIX}/lib/${HOST_SHORT}/libOMSimulatorLua.dylib\")")
 ENDIF()

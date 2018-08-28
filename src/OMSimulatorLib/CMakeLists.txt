@@ -147,9 +147,8 @@ add_library(OMSimulatorLib STATIC ${OMSIMULATORLIB_SOURCES})
 set_target_properties(OMSimulatorLib PROPERTIES OUTPUT_NAME OMSimulatorLib)
 set_target_properties(OMSimulatorLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
 install(TARGETS OMSimulatorLib DESTINATION lib/${HOST_SHORT})
+install(FILES OMSimulator.h Types.h DESTINATION include)
 
 IF(APPLE)
-  execute_process(COMMAND install_name_tool -id "@rpath/libOMSimulatorLib.dylib" "${CMAKE_INSTALL_PREFIX}/lib/${HOST_SHORT}/libOMSimulatorLib.dylib")
+  install(CODE "execute_process(COMMAND install_name_tool -id \"@rpath/libOMSimulatorLib.dylib\" \"${CMAKE_INSTALL_PREFIX}/lib/${HOST_SHORT}/libOMSimulatorLib.dylib\")")
 ENDIF()
-
-install(FILES OMSimulator.h Types.h DESTINATION include)
