@@ -50,7 +50,7 @@ The latest documentation is avilable as [pdf](https://openmodelica.org/doc/OMSim
 
 1. setup OMDev
 
-   - Checkout OMDev (OpenModelica Development Environment) from [OpenModelica/OMDev](https://github.com/OpenModelica/OMDev)
+   - Checkout OMDev (OpenModelica Development Environment): `git clone https://openmodelica.org/git/OMDev.git`
    - Follow the instructions in `OMDev/INSTALL.txt`
 
 1. configure OMSimulator
