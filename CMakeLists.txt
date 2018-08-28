@@ -47,6 +47,11 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
   endif()
 endif()
 
+# adrpo: for some strange reson we need -latomic on 32bit Linux
+IF("${ABI}" STREQUAL "LINUX32")
+	set(LIB_ATOMIC atomic)
+ENDIF("${ABI}" STREQUAL "LINUX32")
+
 # Enable verbose output from Makefile builds
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
@@ -141,7 +146,11 @@ option(OMTLM "Enable the OMTLMSimulator module." ON)
 IF(OMTLM)
 set(OMTLMSIMULATOR_INCLUDEDIR ${PROJECT_SOURCE_DIR}/OMTLMSimulator/common)
 set(OMTLMSIMULATORLIB_INCLUDEDIR ${PROJECT_SOURCE_DIR}/OMTLMSimulator/common/OMTLMSimulatorLib)
-set(OMTLMSIMULATORLIB_LIBRARYDIR ${PROJECT_SOURCE_DIR}/OMTLMSimulator/bin)
+IF(WIN32 AND MSVC)
+  set(OMTLMSIMULATORLIB_LIBRARYDIR ${PROJECT_SOURCE_DIR}/OMTLMSimulator/bin)
+ELSE() # use it from the install folder where is properly installed for MacOS
+  set(OMTLMSIMULATORLIB_LIBRARYDIR ${CMAKE_INSTALL_PREFIX}/lib/${HOST_SHORT})
+ENDIF()
 set(OMTLMSIMULATOR_3RDPARTY_INCLUDEDIR ${PROJECT_SOURCE_DIR}/OMTLMSimulator/3rdParty/misc/include)
 IF(WIN32)
   set(OMTLM_LINKFLAGS omtlmsimulator wsock32 ws2_32)
