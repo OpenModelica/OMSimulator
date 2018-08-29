@@ -595,7 +595,7 @@ void oms2::FMUWrapper::readFromTLMSockets(double time)
   FMICompositeModel *model = oms2::Scope::GetInstance().getFMICompositeModel(parent);
   model->readFromSockets(time, element.getName().toString());
 #else
-  throw std::runtime_error("Compiled without TLM support");
+  throw std::runtime_error("[oms2::FMUWrapper::readFromTLMSockets] Compiled without TLM support");
 #endif
 }
 
@@ -605,7 +605,7 @@ void oms2::FMUWrapper::writeToTLMSockets(double time)
   FMICompositeModel *model = oms2::Scope::GetInstance().getFMICompositeModel(parent);
   model->writeToSockets(time, element.getName().toString());
 #else
-  throw std::runtime_error("Compiled without TLM support");
+  throw std::runtime_error("[oms2::FMUWrapper::writeToTLMSockets] Compiled without TLM support");
 #endif
 }
 
