@@ -49,7 +49,10 @@ endif()
 
 # adrpo: for some strange reson we need -latomic on 32bit Linux
 IF("${ABI}" STREQUAL "LINUX32")
+    message(WARNING, "Using -latomic for ${ABI}")
 	set(LIB_ATOMIC atomic)
+ELSE()
+    message(STATUS, "ABI is: ${ABI}")
 ENDIF("${ABI}" STREQUAL "LINUX32")
 
 # Enable verbose output from Makefile builds
