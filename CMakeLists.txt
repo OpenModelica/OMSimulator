@@ -33,18 +33,11 @@ IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/install/${PLATFORM_STRING} CACHE PATH "Library installation path (don't change)" FORCE)
 ENDIF()
 
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-  # require at least gcc 4.9.2
-  if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.9.2)
-    message(WARNING, "Using boost::regex instead of std::regex due to old gcc compiler")
+if("${STD_REGEX}" STREQUAL "0")
+    message(WARNING, "Using boost::regex instead of std::regex due to old gcc/clang compiler")
     set(LIB_BOOST_REGEX regex)
-  endif()
-elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-  # require at least clang 3.8.0
-  if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 3.8.0)
-    message(WARNING, "Using boost::regex instead of std::regex due to old clang compiler")
-    set(LIB_BOOST_REGEX regex)
-  endif()
+else()
+    message(WARNING, "Using std::regex, the gcc/clang compiler is good enough")
 endif()
 
 # adrpo: for some strange reson we need -latomic on 32bit Linux
