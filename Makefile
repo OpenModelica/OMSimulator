@@ -39,6 +39,7 @@ else ifeq (MINGW32,$(findstring MINGW32,$(detected_OS)))
 	OMFIT := OFF
 	export ABI := WINDOWS32
 	FEXT=.dll
+	EEXT=.exe
 else ifeq (MINGW,$(findstring MINGW,$(detected_OS)))
 	BUILD_DIR := build/mingw
 	INSTALL_DIR := install/mingw
@@ -49,6 +50,7 @@ else ifeq (MINGW,$(findstring MINGW,$(detected_OS)))
 	OMSYSIDENT := OFF
 	export ABI := WINDOWS64
 	FEXT=.dll
+	EEXT=.exe
 else
 	BUILD_DIR := build/linux
 	INSTALL_DIR := install/linux
@@ -100,7 +102,7 @@ else
 	CMAKE_BOOST_ROOT="-DBOOST_ROOT=$(BOOST_ROOT)"
 endif
 
-.PHONY: OMSimulator OMSimulatorCore config-OMSimulator config-fmil config-lua config-cvode config-kinsol config-gflags config-glog config-ceres-solver config-3rdParty distclean testsuite doc doc-html doc-doxygen OMTLMSimulator OMTLMSimulatorClean
+.PHONY: OMSimulator OMSimulatorCore config-OMSimulator config-fmil config-lua config-cvode config-kinsol config-gflags config-glog config-ceres-solver config-3rdParty distclean testsuite doc doc-html doc-doxygen OMTLMSimulator OMTLMSimulatorClean RegEx
 
 OMSimulator:
 	@echo OS: $(detected_OS)
@@ -122,7 +124,7 @@ OMSimulatorCore:
 	test ! "$(detected_OS)" = Darwin || ($(CROSS_TRIPLE_DASH)install_name_tool -add_rpath "@loader_path/../lib/$(HOST_SHORT_OMC)" $(TOP_INSTALL_DIR)/bin/OMSimulator)
 
 ifeq ($(OMTLM),ON)
-OMTLMSimulator:
+OMTLMSimulator: RegEx
 	@echo
 	@echo "# make OMTLMSimulator"
 	@echo
@@ -137,7 +139,7 @@ OMTLMSimulator:
 	test ! `uname` != Darwin || cp OMTLMSimulator/bin/FMIWrapper $(TOP_INSTALL_DIR)/bin/
 	test ! `uname` != Darwin || cp OMTLMSimulator/bin/StartTLMFmiWrapper $(TOP_INSTALL_DIR)/bin/
 
-OMTLMSimulatorStandalone: config-fmil
+OMTLMSimulatorStandalone: RegEx config-fmil
 	@echo
 	@echo "# make OMTLMSimulator Standalone"
 	@echo
@@ -154,15 +156,21 @@ OMTLMSimulatorClean:
 	@echo
 	@$(MAKE) -C OMTLMSimulator clean
 
+# build our RegEx executable that will tell us if we need to use std::regex or boost::regex
+RegEx: 3rdParty/RegEx/OMSRegEx$(EEXT)
+3rdParty/RegEx/OMSRegEx$(EEXT): 3rdParty/RegEx/RegEx.h 3rdParty/RegEx/OMSRegEx.cpp
+	$(MAKE) -C 3rdParty/RegEx
+	
 config-3rdParty: config-fmil config-lua config-cvode config-kinsol config-ceres-solver config-libxml2
 
-config-OMSimulator:
+config-OMSimulator: RegEx
 	@echo
 	@echo "# config OMSimulator"
 	@echo
+	$(eval STD_REGEX := $(shell 3rdParty/RegEx/OMSRegEx$(EEXT)))
 	$(RM) $(BUILD_DIR)
 	$(MKDIR) $(BUILD_DIR)
-	cd $(BUILD_DIR) && $(CMAKE) $(CMAKE_TARGET) ../.. -DABI=$(ABI) -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DOMSYSIDENT:BOOL=$(OMSYSIDENT) -DOMTLM:BOOL=$(OMTLM) -DASAN:BOOL=$(ASAN) -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) $(CMAKE_BOOST_ROOT) $(CMAKE_INSTALL_PREFIX) $(HOST_SHORT) $(EXTRA_CMAKE)
+	cd $(BUILD_DIR) && $(CMAKE) $(CMAKE_TARGET) ../.. -DABI=$(ABI) -DSTD_REGEX=$(STD_REGEX) -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DOMSYSIDENT:BOOL=$(OMSYSIDENT) -DOMTLM:BOOL=$(OMTLM) -DASAN:BOOL=$(ASAN) -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) $(CMAKE_BOOST_ROOT) $(CMAKE_INSTALL_PREFIX) $(HOST_SHORT) $(EXTRA_CMAKE)
 
 config-fmil:
 	@echo
@@ -256,6 +264,7 @@ distclean:
 	$(RM) 3rdParty/FMIL/$(BUILD_DIR)
 	$(RM) 3rdParty/FMIL/$(INSTALL_DIR)
 	@$(MAKE) -C 3rdParty/Lua distclean
+	$(RM) 3rdParty/RegEx/OMSRegEx$(EEXT)
 	$(RM) 3rdParty/cvode/$(BUILD_DIR)
 	$(RM) 3rdParty/cvode/$(INSTALL_DIR)
 	$(RM) 3rdParty/kinsol/$(BUILD_DIR)

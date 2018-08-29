@@ -26,6 +26,7 @@ ELSE()
   MESSAGE(WARNING, "Boost library not found, please give a hint by setting the cmake variable BOOST_ROOT either in the cmake-gui or the command line, e.g., 'cmake -DBOOST_ROOT=C:/local/boost_1_63_0'")
 ENDIF()
 
+include_directories(../../3rdParty/RegEx)
 include_directories(../OMSimulatorLib)
 include_directories(../OMSimulatorLua)
 include_directories(${Boost_INCLUDE_DIRS})
