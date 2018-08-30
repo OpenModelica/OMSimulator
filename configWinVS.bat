@@ -48,6 +48,12 @@ SET OMFIT
 ECHO.
 :: -- init ----------------------------
 
+IF NOT EXIST build\\ mkdir build
+IF NOT EXIST build\\win\\ mkdir build\\win
+IF NOT EXIST install\\ MKDIR install
+IF NOT EXIST install\\win MKDIR install\\win
+IF NOT EXIST install\\win\\lib MKDIR install\\win\\lib
+
 IF ["%TARGET%"]==["clean"] GOTO clean
 IF ["%TARGET%"]==["fmil"] GOTO fmil
 IF ["%TARGET%"]==["lua"] GOTO lua
