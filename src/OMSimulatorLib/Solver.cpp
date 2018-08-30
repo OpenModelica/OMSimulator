@@ -420,7 +420,7 @@ oms_status_enu_t oms2::Solver::doStep(double stopTime)
             size_t offset=0;
             for (size_t k=0; k < i; ++k)
               offset += nStates[k];
-            for (size_t k=0; k < nStates[k]; ++k)
+            for (size_t k=0; k < nStates[i]; ++k)
               NV_Ith_S(solverData.cvode.y, offset+k) = states[i][k];
             int flag = CVodeReInit(solverData.cvode.mem, time, solverData.cvode.y);
             if (flag < 0) logError("SUNDIALS_ERROR: CVodeReInit() failed with flag = " + std::to_string(flag));
