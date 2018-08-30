@@ -1,3 +1,5 @@
+message("cmake version is: ${CMAKE_VERSION}")
+
 IF(WIN32 AND MSVC)
   # VS 2017 requires Boost 1.64 or newer
   # Boost 1.64 requires CMake 3.8 or newer
