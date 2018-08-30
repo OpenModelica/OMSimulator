@@ -53,8 +53,16 @@ ENDIF("${ABI}" STREQUAL "LINUX32")
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
 # Use C++ 11 for the whole project
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# cmake < 3.1 doesn't know or respect CMAKE_CXX_STANDARD*
+IF (CMAKE_VERSION VERSION_LESS 3.1.0)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+  message(WARNING, "Using CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS} for setting -std=c++11")
+ELSE() # use the freaking CMAKE_CXX_STANDARD*
+  set(CMAKE_CXX_STANDARD 11)
+  set(CMAKE_CXX_STANDARD_REQUIRED ON)
+  message(WARNING, "Using CMAKE_CXX_STANDARD: ${CMAKE_CXX_STANDARD} and CMAKE_CXX_STANDARD_REQUIRED: ${CMAKE_CXX_STANDARD_REQUIRED} for setting -std=c++11")
+ENDIF()
+
 
 ##########################
 # Configuring for Boost
