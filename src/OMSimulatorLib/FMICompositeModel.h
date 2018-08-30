@@ -105,7 +105,7 @@ namespace oms2
 
 #if !defined(NO_TLM)
     oms_status_enu_t addTLMInterface(TLMInterface *ifc);
-    std::vector<TLMInterface*> getTLMInterfaces() const { return tlmInterfaces; }
+    std::vector<TLMInterface*> getTLMInterfaces() { return tlmInterfaces; }
     oms_status_enu_t setTLMInitialValues(std::string ifc, std::vector<double> value);
 #endif
 
@@ -142,6 +142,9 @@ namespace oms2
 #if !defined(NO_TLM)
     oms_status_enu_t updateInitialTLMValues();
     void finalizeTLMSockets();
+    std::string tlmDomainToString(std::string domain, int dimensions, oms_causality_enu_t causality);
+    std::string tlmInterpolationToString(oms_tlm_interpolation_t method);
+
   public:
     oms_status_enu_t setupTLMSockets(double startTime, std::string server);
     void readFromTLMSockets(double time, std::string fmu = "");

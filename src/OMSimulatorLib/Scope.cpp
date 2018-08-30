@@ -1389,7 +1389,7 @@ oms_status_enu_t oms2::Scope::addTLMInterface(const oms2::ComRef &cref, const om
     return oms_status_error;
   }
 
-  return model->getTLMCompositeModel()->addInterface(name.toString(), dimensions, causality, domain, interpolation, subref, sigrefs);
+  return model->getTLMCompositeModel()->addInterface(name, dimensions, causality, domain, interpolation, subref, sigrefs);
 }
 
 oms_status_enu_t oms2::Scope::setTLMPositionAndOrientation(const oms2::ComRef &cref, const SignalRef &ifc, std::vector<double> x, std::vector<double> A)

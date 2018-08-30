@@ -37,6 +37,7 @@ namespace oms2
   namespace ssd
   {
     extern const char* ssd_annotations;
+    extern const char* ssd_annotation;
     extern const char* ssd_component;
     extern const char* ssd_connection;
     extern const char* ssd_connection_geometry;
@@ -50,6 +51,8 @@ namespace oms2
     extern const char* ssd_system;
     extern const char* ssd_system_structure_description;
     extern const char* ssd_units;
+    extern const char* ssd_simulation_information;
+    extern const char* ssd_elements;
   }
 }
 
