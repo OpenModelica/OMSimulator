@@ -444,6 +444,19 @@ oms_status_enu_t oms2::TLMCompositeModel::stepUntil(ResultWriter &resultWriter, 
   if(fmiModels.empty() && externalModels.empty())
     logWarning("oms2::TLMCompositeModel::stepUntil: Simulating empty model...");
 
+  //Check that required FMUs exist for all TLM interfaces
+  for(const auto &fmiModel : fmiModels) {
+    for(TLMInterface *ifc : fmiModel.second->getTLMInterfaces()) {
+      ComRef fmuRef;
+      fmuRef.append(this->getName());
+      fmuRef.append(ifc->getSubModelName());
+      fmuRef.append(ifc->getFMUName());
+      if(!oms2::Scope::GetInstance().exists(fmuRef)) {
+        return logError("[oms2::TLMCompositeModel::stepUntil] Cannot find FMU: "+fmuRef.toString());
+      }
+    }
+  }
+
   logInfo("Starting submodel threads.");
   std::string server = address + ":" + std::to_string(managerPort);
   std::vector<std::thread*> fmiModelThreads;
