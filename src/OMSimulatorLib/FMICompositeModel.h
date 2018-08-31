@@ -103,6 +103,7 @@ namespace oms2
 
 #if !defined(NO_TLM)
     oms_status_enu_t addTLMInterface(TLMInterface *ifc);
+    std::vector<TLMInterface*> getTLMInterfaces() const { return tlmInterfaces; }
     oms_status_enu_t setTLMInitialValues(std::string ifc, std::vector<double> value);
 #endif
 
