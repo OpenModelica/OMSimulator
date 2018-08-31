@@ -152,5 +152,6 @@ install(TARGETS OMSimulatorLib DESTINATION lib/${HOST_SHORT})
 install(FILES OMSimulator.h Types.h DESTINATION include)
 
 IF(APPLE)
-  install(CODE "execute_process(COMMAND install_name_tool -id \"@rpath/libOMSimulatorLib.dylib\" \"${CMAKE_INSTALL_PREFIX}/lib/${HOST_SHORT}/libOMSimulatorLib.dylib\")")
+  get_target_property(LN_OMSLIB OMSimulatorLib_shared OUTPUT_NAME)
+  install(CODE "execute_process(COMMAND install_name_tool -id \"@rpath/lib${LN_OMSLIB}.dylib\" \"${CMAKE_INSTALL_PREFIX}/lib/${HOST_SHORT}/lib${LN_OMSLIB}.dylib\")")
 ENDIF()
