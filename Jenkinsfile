@@ -99,6 +99,25 @@ pipeline {
             }
           }
         }
+        stage('centos6') {
+          agent {
+            dockerfile {
+              additionalBuildArgs '--pull'
+              dir '.CI/centos6'
+              label 'linux'
+            }
+          }
+          environment {
+            SHELLSTART = """
+            export CC="/opt/rh/devtoolset-6/root/usr/bin/gcc"
+            export CXX="/opt/rh/devtoolset-6/root/usr/bin/g++"
+            """
+            OMSFLAGS = "CERES=OFF"
+          }
+          steps {
+            buildOMS()
+          }
+        }
         stage('linux32') {
           agent {
             dockerfile {
@@ -421,12 +440,14 @@ void partest(cache=true, extraArgs='') {
 }
 
 void buildOMS() {
+  echo "${env.NODE_NAME}"
   def nproc = numPhysicalCPU()
   sh """
+  ${env.SHELLSTART ?: ""}
   export HOME="${'$'}PWD"
   git fetch --tags
-  make config-3rdParty ${env.CC ? "CC=" + env.CC : ""} ${env.CXX ? "CXX=" + env.CXX : ""} -j${nproc}
-  make config-OMSimulator -j${nproc} ${env.ASAN ? "ASAN=ON" : ""}
+  make config-3rdParty ${env.CC ? "CC=" + env.CC : ""} ${env.CXX ? "CXX=" + env.CXX : ""} ${env.OMSFLAGS ?: ""} -j${nproc}
+  make config-OMSimulator -j${nproc} ${env.ASAN ? "ASAN=ON" : ""} ${env.OMSFLAGS ?: ""}
   make OMSimulator -j${nproc} ${env.ASAN ? "DISABLE_RUN_OMSIMULATOR_VERSION=1" : ""}
   """
 }
