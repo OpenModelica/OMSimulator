@@ -357,12 +357,16 @@ EXIT /b 1
           agent {
             label 'linux'
           }
+          /*
+          // Does  not pass GIT_BRANCH env.var
           options {
             skipDefaultCheckout()
           }
+          */
           steps {
             unstash name: 'docs'
             sh "test ! -z '${env.GIT_BRANCH}'"
+            sh "test ! '${env.GIT_BRANCH}' = 'null'"
             sshPublisher(publishers: [sshPublisherDesc(configName: 'OMSimulator-doc', transfers: [sshTransfer(execCommand: "rm -rf .tmp/${env.GIT_BRANCH}"), sshTransfer(execCommand: "test ! -z '${env.GIT_BRANCH}' && rm -rf '/var/www/doc/OMSimulator/${env.GIT_BRANCH}' && mkdir -p `dirname '/var/www/doc/OMSimulator/.tmp/${env.GIT_BRANCH}'` && mv '/var/www/doc/OMSimulator/.tmp/${env.GIT_BRANCH}' '/var/www/doc/OMSimulator/${env.GIT_BRANCH}'", remoteDirectory: ".tmp/${env.GIT_BRANCH}", removePrefix: "install/linux/doc", sourceFiles: 'install/linux/doc/**')])])
           }
         }
