@@ -36,7 +36,9 @@ ENDIF ()
 
 # install the damn thing MacOS style
 #IF(APPLE)
-#  install(CODE "execute_process(COMMAND install_name_tool -id \"@rpath/libOMSimulatorLua.dylib\" \"${CMAKE_INSTALL_PREFIX}/lib/${HOST_SHORT}/libOMSimulatorLua.dylib\")")
-#  install(CODE "execute_process(COMMAND install_name_tool -change \"libOMSimulatorLib.dylib\" \"@rpath/libOMSimulatorLib.dylib\" \"${CMAKE_INSTALL_PREFIX}/lib/${HOST_SHORT}/libOMSimulatorLua.dylib\")")
+#  get_target_property(LN_OMSLIB OMSimulatorLib_shared OUTPUT_NAME)
+#  get_target_property(LN_OMSLUALIB OMSimulatorLua_shared OUTPUT_NAME)
+#  install(CODE "execute_process(COMMAND install_name_tool -id \"@rpath/lib${LN_OMSLUALIB}.dylib\" \"${CMAKE_INSTALL_PREFIX}/lib/${HOST_SHORT}/lib${LN_OMSLUALIB}.dylib\")")
+#  install(CODE "execute_process(COMMAND install_name_tool -change \"lib${LN_OMSLIB}.dylib\" \"@rpath/lib${LN_OMSLIB}.dylib\" \"${CMAKE_INSTALL_PREFIX}/lib/${HOST_SHORT}/lib${LN_OMSLUALIB}.dylib\")")
 #ENDIF()
 # install(TARGETS OMSimulatorLua DESTINATION lib/${HOST_SHORT})
