@@ -139,8 +139,7 @@ ELSE()
 ENDIF()
 
 install(TARGETS OMSimulatorLib_shared DESTINATION lib/${HOST_SHORT})
-IF(WIN32 AND MSVC)
-  # MinGW can statically link
+IF(WIN32)
   install(TARGETS OMSimulatorLib_shared DESTINATION bin)
 ENDIF()
 
