@@ -16,7 +16,7 @@ IF(NOT WIN32)
 set(Boost_USE_STATIC_RUNTIME ON)
 ENDIF()
 
-find_package(Boost 1.54.0 COMPONENTS system filesystem ${LIB_BOOST_REGEX} ${LIB_BOOST_ATOMIC} REQUIRED)
+find_package(Boost 1.54.0 COMPONENTS filesystem system ${LIB_BOOST_REGEX} ${LIB_BOOST_ATOMIC} REQUIRED)
 IF(Boost_FOUND)
   message(STATUS "Found Boost static libraries")
   message(STATUS "  Boost_LIBRARIES:    " ${Boost_LIBRARIES})
@@ -62,7 +62,12 @@ IF ((NOT APPLE) AND CMAKE_CXX_COMPILER_ID MATCHES "[Cc]lang|GNU")
   # Avoid external dependencies; especially useful when cross-compiling
   # embedded ARM Linux systems
   message(STATUS "Link the executable using static libgcc and libstdc++")
+IF (WIN32 AND CMAKE_CXX_COMPILER_ID MATCHES "[Cc]lang")
+  target_link_libraries(OMSimulator -static-libgcc -lstdc++)
+ELSE()
   target_link_libraries(OMSimulator -static-libgcc -static-libstdc++)
+ENDIF()
+
 ENDIF()
 
 install(TARGETS OMSimulator DESTINATION bin)
