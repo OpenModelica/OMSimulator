@@ -47,13 +47,7 @@
 
 #include <pugixml.hpp>
 #include <thread>
-#if defined(__hasinclude)
-  #if __has_include(<boost/lockfree/queue.hpph>)
-    #include <ctpl.h>
-    #define HAVE_CTPL 1
-  #endif
-#endif
-
+#include <OMSBoost.h>
 #include <sstream>
 #include <thread>
 
@@ -952,11 +946,9 @@ oms_status_enu_t oms2::FMICompositeModel::stepUntil(ResultWriter& resultWriter, 
     case MasterAlgorithm::STANDARD :
       logDebug("oms2::FMICompositeModel::stepUntil: Using master algorithm 'standard'");
       return stepUntilStandard(resultWriter, stopTime, communicationInterval, loggingInterval, realtime_sync);
-#if HAVE_CTPL
     case MasterAlgorithm::PCTPL :
       logDebug("oms2::FMICompositeModel::stepUntil: Using master algorithm 'pctpl'");
       return stepUntilPCTPL(resultWriter, stopTime, communicationInterval, loggingInterval, realtime_sync);
-#endif
     case MasterAlgorithm::PMRCHANNELA :
       logDebug("oms2::FMICompositeModel::stepUntil: Using master algorithm 'pmrchannela'");
       return oms2::stepUntilPMRChannel<oms2::PMRChannelA>(resultWriter, stopTime, communicationInterval, loggingInterval, this->getName().toString(), outputsGraph, subModels, realtime_sync);
@@ -1058,7 +1050,6 @@ oms_status_enu_t oms2::FMICompositeModel::stepUntilStandard(ResultWriter& result
  */
 oms_status_enu_t oms2::FMICompositeModel::stepUntilPCTPL(ResultWriter& resultWriter, double stopTime, double communicationInterval, double loggingInterval, bool realtime_sync)
 {
-#if defined(HAVE_CTPL)
   logTrace();
 
   std::vector<oms2::FMISubModel*> sub_model;
@@ -1123,9 +1114,6 @@ oms_status_enu_t oms2::FMICompositeModel::stepUntilPCTPL(ResultWriter& resultWri
       updateInputs(outputsGraph);
   }
   return oms_status_ok;
-#else
-  return oms_status_error;
-#endif
 }
 
 void oms2::FMICompositeModel::simulate_asynchronous(ResultWriter& resultWriter, double stopTime, double communicationInterval, double loggingInterval, void (*cb)(const char* ident, double time, oms_status_enu_t status))

@@ -1,7 +1,7 @@
 
-CC=gcc
-CXX=g++
-LINK=$(CXX)
+CC ?= gcc
+CXX ?= g++
+LINK ?= $(CXX)
 
 RM=rm -rf
 CP=cp -rf
@@ -76,8 +76,6 @@ endif
 	FEXT=.so
 	CMAKE_FPIC=-DCMAKE_C_FLAGS="-fPIC"
 endif
-
-CXX ?= g++
 
 # use cmake from above if is set, otherwise cmake
 ifeq ($(CMAKE),)
