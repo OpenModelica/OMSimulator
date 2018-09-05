@@ -42,14 +42,13 @@
 
 #include <iostream>
 #include <sstream>
+#include <OMSBoost.h>
 
-#include <boost/filesystem.hpp>
 
 oms2::Scope::Scope()
 {
   logTrace();
-
-  boost::filesystem::path tempPath = boost::filesystem::temp_directory_path();
+  boost::filesystem::path tempPath = oms2_temp_directory_path();
   tempDir = tempPath.string();
 }
 
@@ -354,7 +353,7 @@ oms_status_enu_t oms2::Scope::setTempDirectory(const std::string& newTempDir)
   boost::filesystem::path path(newTempDir.c_str());
   try
   {
-    path = boost::filesystem::canonical(path);
+    path = oms2_canonical(path);
   }
   catch(std::exception e)
   {
