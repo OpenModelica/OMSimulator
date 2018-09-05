@@ -16,7 +16,7 @@ IF(NOT WIN32)
 set(Boost_USE_STATIC_RUNTIME ON)
 ENDIF()
 
-find_package(Boost 1.54.0 COMPONENTS filesystem system ${LIB_BOOST_REGEX} ${LIB_BOOST_ATOMIC} REQUIRED)
+find_package(Boost 1.41.0 COMPONENTS filesystem system ${LIB_BOOST_REGEX} ${LIB_BOOST_ATOMIC} REQUIRED)
 IF(Boost_FOUND)
   message(STATUS "Found Boost static libraries")
   message(STATUS "  Boost_LIBRARIES:    " ${Boost_LIBRARIES})

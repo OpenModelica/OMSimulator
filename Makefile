@@ -1,7 +1,7 @@
 
-CC=gcc
-CXX=g++
-LINK=$(CXX)
+CC ?= gcc
+CXX ?= g++
+LINK ?= $(CXX)
 
 RM=rm -rf
 CP=cp -rf
@@ -136,7 +136,7 @@ OMSimulator:
 	@echo LIBXML2: $(LIBXML2)
 	@echo "# make OMSimulator"
 	@echo
-	@$(MAKE) OMTLMSimulator
+	@$(MAKE) CC="$(CXX)" CXX="$(CXX)" OMTLMSimulator
 	@$(MAKE) OMSimulatorCore
 	test ! -z "$(DISABLE_RUN_OMSIMULATOR_VERSION)" || $(TOP_INSTALL_DIR)/bin/OMSimulator --version
 
@@ -154,7 +154,7 @@ OMTLMSimulator: RegEx
 	@echo "# make OMTLMSimulator"
 	@echo
 	@echo $(ABI)
-	@$(MAKE) -C OMTLMSimulator omtlmlib
+	$(MAKE) -C OMTLMSimulator omtlmlib
 	test ! `uname` != Darwin || $(MAKE) -C OMTLMSimulator/FMIWrapper install
 	@$(MKDIR) $(TOP_INSTALL_DIR)/lib/$(HOST_SHORT_OMC)
 	@$(MKDIR) $(TOP_INSTALL_DIR)/bin
@@ -185,7 +185,7 @@ OMTLMSimulatorClean:
 RegEx: 3rdParty/RegEx/OMSRegEx$(EEXT)
 3rdParty/RegEx/OMSRegEx$(EEXT): 3rdParty/RegEx/RegEx.h 3rdParty/RegEx/OMSRegEx.cpp
 	$(MAKE) -C 3rdParty/RegEx
-	
+
 config-3rdParty: config-fmil config-lua config-cvode config-kinsol config-ceres-solver config-libxml2
 
 config-OMSimulator: RegEx
@@ -276,7 +276,7 @@ config-libxml2:
 	@echo "# config libxml2"
 	@echo
 	$(MKDIR) 3rdParty/libxml2/$(INSTALL_DIR)
-	cd 3rdParty/libxml2 && $(FPIC) ./autogen.sh --prefix="$(ROOT_DIR)/3rdParty/libxml2/$(INSTALL_DIR)" $(DISABLE_SHARED) --without-python $(HOST_CROSS_TRIPLE) && $(MAKE) && $(MAKE) install
+	cd 3rdParty/libxml2 && $(FPIC) ./autogen.sh --prefix="$(ROOT_DIR)/3rdParty/libxml2/$(INSTALL_DIR)" $(DISABLE_SHARED) --without-python --without-zlib --without-lzma $(HOST_CROSS_TRIPLE) && $(MAKE) && $(MAKE) install
 endif
 
 distclean:

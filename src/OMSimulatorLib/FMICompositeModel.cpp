@@ -47,8 +47,7 @@
 
 #include <pugixml.hpp>
 #include <thread>
-#include <ctpl.h>
-
+#include <OMSBoost.h>
 #include <sstream>
 #include <thread>
 
