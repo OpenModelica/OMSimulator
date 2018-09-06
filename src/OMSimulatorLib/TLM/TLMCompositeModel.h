@@ -37,6 +37,7 @@
 
 #include <list>
 #include <map>
+#include <atomic>
 
 #include <pugixml.hpp>
 
