@@ -457,27 +457,52 @@ oms_status_enu_t oms2::TLMCompositeModel::stepUntil(ResultWriter &resultWriter, 
     }
   }
 
-  logInfo("Starting submodel threads.");
-  std::string server = address + ":" + std::to_string(managerPort);
-  std::vector<std::thread*> fmiModelThreads;
-  for(auto it = fmiModels.begin(); it!=fmiModels.end(); ++it)
-  {
-    Model* pModel = oms2::Scope::GetInstance().getModel(it->second->getName());
-    double tolerance = pModel->getTolerance();
-    std::thread *t = new std::thread(&FMICompositeModel::simulateTLM, it->second, startTime, stopTime, tolerance, loggingInterval, server);
-    fmiModelThreads.push_back(t);
-  }
-
-  logInfo("Starting OMTLMSimulator in main thread.");
+  logInfo("Starting TLM manager in new thread");
   omtlm_setStopTime(model, stopTime);
   omtlm_setLogStepSize(model, loggingInterval);
-  omtlm_simulate(model);
+  std::thread *masterThread = new std::thread(&omtlm_simulate, model);
 
-  for(size_t i=0; i<fmiModelThreads.size(); ++i)
-    fmiModelThreads[i]->join();
+  logInfo("Connecting submodels to managers (threaded)");
+  std::string server = address + ":" + std::to_string(managerPort);
+  std::vector<std::thread> fmiConnectThreads;
+  for(auto it = fmiModels.begin(); it!=fmiModels.end(); ++it) {
+    FMICompositeModel *fmiModel = it->second;
+    fmiConnectThreads.push_back(std::thread(&FMICompositeModel::setupTLMSockets, fmiModel, startTime, server));
+  }
+  for(auto &thread : fmiConnectThreads)
+    thread.join();
+  for(auto it = fmiModels.begin(); it!=fmiModels.end(); ++it) {
+    if(!it->second->isTLMConnected()) {
+      return logError("[oms2::TLMCompositeModel::stepUntil()] failed to connect TLM model: "+it->second->getName().toString());
+    }
+  }
 
-  for(size_t i=0; i<fmiModelThreads.size(); ++i)
-    delete fmiModelThreads[i];
+  logInfo("Initializing TLM submodels (sequential)");
+  std::vector<std::thread> fmiInitializeThreads;
+  for(auto it = fmiModels.begin(); it!=fmiModels.end(); ++it) {
+    Model *subModel = oms2::Scope::GetInstance().getModel(it->second->getName());
+    FMICompositeModel *fmiModel = it->second;
+    double tolerance = subModel->getTolerance();
+    fmiInitializeThreads.push_back(std::thread(&FMICompositeModel::initializeTLM, fmiModel, startTime, tolerance, server));
+  }
+  for(auto &thread : fmiInitializeThreads)
+    thread.join();
+  for(auto it = fmiModels.begin(); it!=fmiModels.end(); ++it) {
+    if(!it->second->isTLMInitialized()) {
+      return logError("[oms2::TLMCompositeModel::stepUntil] Failed to initialize model: "+it->second->getName().toString());
+    }
+  }
+
+  logInfo("Simulating TLM submodels (threaded).");
+  std::vector<std::thread> fmiModelThreads;
+  for(auto it = fmiModels.begin(); it!=fmiModels.end(); ++it) {
+    FMICompositeModel *fmiModel = it->second;
+    fmiModelThreads.push_back(std::thread(&FMICompositeModel::simulateTLM, fmiModel, stopTime, loggingInterval));
+  }
+  for(auto &thread : fmiModelThreads)
+    thread.join();
+
+  masterThread->join();
 
   logInfo("Simulation of TLM composite model "+getName().toString()+" complete.");
 
