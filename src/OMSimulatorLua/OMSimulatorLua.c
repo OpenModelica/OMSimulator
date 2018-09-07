@@ -1002,7 +1002,7 @@ static int OMSimulatorLua_oms2_addTLMInterface(lua_State *L)
   }
 
   //Figure out how many signal references to expect
-  int nsigrefs;
+  int nsigrefs, i;
   if(lua_gettop(L) == initialArguments) {
     nsigrefs = 0;             //None provided (= external tool interface)
   }
@@ -1034,12 +1034,12 @@ static int OMSimulatorLua_oms2_addTLMInterface(lua_State *L)
     sprintf(msg, "expecting exactly %d arguments.", initialArguments+nsigrefs);
     return luaL_error(L, msg);
   }
-  for(int i=1; i<nsigrefs+1; ++i) {
+  for(i=1; i<nsigrefs+1; ++i) {
     luaL_checktype(L, initialArguments+i, LUA_TSTRING);
   }
 
   const char *sigrefs[100];
-  for(int i=0; i<nsigrefs; ++i) {
+  for(i=0; i<nsigrefs; ++i) {
     sigrefs[i] = lua_tostring(L, initialArguments+i+1);
   }
 
@@ -1058,17 +1058,18 @@ static int OMSimulatorLua_oms2_setTLMPositionAndOrientation(lua_State *L)
   luaL_checktype(L, 2, LUA_TSTRING);
   const char *cref =  lua_tostring(L, 1);
   const char *ifc = lua_tostring(L, 2);
+  int i;
 
   //Position
   double x[3];
-  for(int i=0; i<3; ++i) {
+  for(i=0; i<3; ++i) {
     luaL_checktype(L, i+3, LUA_TNUMBER);
     x[i] = lua_tonumber(L, i+3);
   }
 
   //Orientation (3x3 matrix, stored as 1x9 vector)
   double A[9];
-  for(int i=0; i<9; ++i) {
+  for(i=0; i<9; ++i) {
     luaL_checktype(L, i+6, LUA_TNUMBER);
     A[i] = lua_tonumber(L, i+6);
   }
