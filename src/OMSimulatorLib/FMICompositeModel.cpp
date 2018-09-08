@@ -43,7 +43,10 @@
 #if !defined(NO_TLM)
 #include "Plugin/PluginImplementer.h"
 #endif
+
+#if !defined(__arm__) // @adrpo: parallel stuff doesn't work on arm yet
 #include "PMRChannelMaster.h"
+#endif // #if !defined(__arm__)
 
 #include <pugixml.hpp>
 #include <thread>
@@ -949,6 +952,7 @@ oms_status_enu_t oms2::FMICompositeModel::stepUntil(ResultWriter& resultWriter, 
     case MasterAlgorithm::STANDARD :
       logDebug("oms2::FMICompositeModel::stepUntil: Using master algorithm 'standard'");
       return stepUntilStandard(resultWriter, stopTime, communicationInterval, loggingInterval, realtime_sync);
+#if !defined(__arm__)
     case MasterAlgorithm::PCTPL :
       logDebug("oms2::FMICompositeModel::stepUntil: Using master algorithm 'pctpl'");
       return stepUntilPCTPL(resultWriter, stopTime, communicationInterval, loggingInterval, realtime_sync);
@@ -961,6 +965,7 @@ oms_status_enu_t oms2::FMICompositeModel::stepUntil(ResultWriter& resultWriter, 
     case MasterAlgorithm::PMRCHANNELM :
       logDebug("oms2::FMICompositeModel::stepUntil: Using master algorithm 'pmrchannelm'");
       return oms2::stepUntilPMRChannel<oms2::PMRChannelM>(resultWriter, stopTime, communicationInterval, loggingInterval, this->getName().toString(), outputsGraph, subModels, realtime_sync);
+#endif
     default :
       logError("oms2::FMICompositeModel::stepUntil: Internal error: Request for using unknown master algorithm.");
       return oms_status_error;
@@ -1048,6 +1053,8 @@ oms_status_enu_t oms2::FMICompositeModel::stepUntilStandard(ResultWriter& result
   return oms_status_ok;
 }
 
+#if !defined(__arm__)
+
 /**
  * \brief Parallel "doStep(..)" execution using task pool CTPL library (https://github.com/vit-vit/CTPL).
  */
@@ -1118,6 +1125,8 @@ oms_status_enu_t oms2::FMICompositeModel::stepUntilPCTPL(ResultWriter& resultWri
   }
   return oms_status_ok;
 }
+
+#endif // #if !defined(__arm__)
 
 void oms2::FMICompositeModel::simulate_asynchronous(ResultWriter& resultWriter, double stopTime, double communicationInterval, double loggingInterval, void (*cb)(const char* ident, double time, oms_status_enu_t status))
 {
