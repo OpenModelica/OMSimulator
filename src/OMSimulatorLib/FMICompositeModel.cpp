@@ -38,6 +38,7 @@
 #include "FMUWrapper.h"
 #include "Logging.h"
 #include "SignalRef.h"
+#include "Scope.h"
 #include "ssd/Tags.h"
 #include "Table.h"
 #if !defined(NO_TLM)
