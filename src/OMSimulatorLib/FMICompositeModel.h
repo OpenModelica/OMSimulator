@@ -134,7 +134,9 @@ namespace oms2
     oms_status_enu_t emit(ResultWriter& resultWriter);
 
     oms_status_enu_t stepUntilStandard(ResultWriter& resultWriter, double stopTime, double communicationInterval, double loggingInterval, bool realtime_sync);
+#if !defined(__arm__)
     oms_status_enu_t stepUntilPCTPL(ResultWriter& resultWriter, double stopTime, double communicationInterval, double loggingInterval, bool realtime_sync);
+#endif // if !defined(__arm__)
     oms_status_enu_t updateDependencyGraphs();
 
 #if !defined(NO_TLM)
