@@ -164,7 +164,7 @@ oms_status_enu_t Log::Warning(const std::string& msg)
   return oms_status_warning;
 }
 
-oms_status_enu_t Log::Error(const std::string& msg)
+oms_status_enu_t Log::Error(const std::string& msg, const std::string& function)
 {
   Log& log = getInstance();
   std::lock_guard<std::mutex> lock(log.m);
@@ -172,7 +172,7 @@ oms_status_enu_t Log::Error(const std::string& msg)
   log.numErrors++;
   log.numMessages++;
   std::ostream& stream = log.logFile.is_open() ? log.logFile : cerr;
-  log.printStringToStream(stream, "error", msg);
+  log.printStringToStream(stream, "error", "[" + function + "] " + msg);
 
   if (log.cb)
     log.cb(oms_message_error, msg.c_str());

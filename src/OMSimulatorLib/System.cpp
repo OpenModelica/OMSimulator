@@ -29,45 +29,21 @@
  *
  */
 
-#ifndef _OMS2_SIGNAL_REF_H_
-#define _OMS2_SIGNAL_REF_H_
+#include "System.h"
 
-#include "ComRef.h"
-#include <string>
+#include "Component.h"
+#include "Types.h"
 
-namespace oms2
+oms3::System::System(const oms3::ComRef& cref, oms_system_enu_t type)
+  : cref(cref), type(type)
 {
-  /**
-   * \brief SignalRef - signal reference
-   */
-  class SignalRef
-  {
-  public:
-    SignalRef(const std::string& signal); ///< format: comp1.comp2.comp3:var
-    SignalRef(const ComRef& cref, const std::string& var);
-    ~SignalRef();
-
-    // methods to copy the signal reference
-    SignalRef(SignalRef const& copy);
-    SignalRef& operator=(SignalRef const& copy);
-    bool operator<(const SignalRef& rhs);
-
-    static bool isValid(const std::string& signal); ///< checks if a given string is a valid SignalRef according to a simple regex check
-
-    std::string toString() const {return cref.toString() + ":" + var;}
-
-    const oms2::ComRef& getCref() const {return cref;}
-    const std::string& getVar() const {return var;}
-
-    bool isEqual(const char* str) const {return toString().compare(str) == 0;}
-
-  private:
-    oms2::ComRef cref;
-    std::string var;
-  };
-
-  inline bool operator==(const SignalRef& lhs, const SignalRef& rhs) {return lhs.toString() == rhs.toString();}
-  inline bool operator!=(const SignalRef& lhs, const SignalRef& rhs) {return !(lhs == rhs);}
 }
 
-#endif
+oms3::System::~System()
+{
+  for (const auto& component : components)
+    delete component.second;
+
+  for (const auto& subsystem : subsystems)
+    delete subsystem.second;
+}

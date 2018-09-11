@@ -30,11 +30,79 @@
  */
 
 #include "ComRef.h"
+#include "Types.h"
+#include "Identifier.h"
+
+oms3::ComRef::ComRef(const std::string& path)
+{
+  cref = new char[path.size() + 1];
+  strcpy(cref, path.c_str());
+}
+
+oms3::ComRef::~ComRef()
+{
+  delete[] cref;
+}
+
+oms3::ComRef::ComRef(const oms3::ComRef& copy)
+{
+  cref = new char[strlen(copy.c_str()) + 1];
+  strcpy(cref, copy.c_str());
+}
+
+oms3::ComRef& oms3::ComRef::operator=(const oms3::ComRef& copy)
+{
+  // check for self-assignment
+  if(&copy == this)
+    return *this;
+
+  delete[] cref;
+  cref = new char[strlen(copy.c_str()) + 1];
+  strcpy(cref, copy.c_str());
+
+  return *this;
+}
+
+oms3::ComRef oms3::ComRef::operator+(const oms3::ComRef& rhs)
+{
+  return oms3::ComRef(std::string(*this) + std::string(".") + std::string(rhs));
+}
+
+bool oms3::ComRef::isValidIdent(const std::string& ident)
+{
+  return oms_regex_match(ident, regex_ident);
+}
+
+bool oms3::ComRef::isValidIdent() const
+{
+  return isValidIdent(cref);
+}
+
+bool oms3::operator==(const oms3::ComRef& lhs, const oms3::ComRef& rhs)
+{
+  return (0 == strcmp(lhs.c_str(), rhs.c_str()));
+}
+
+bool oms3::operator!=(const oms3::ComRef& lhs, const oms3::ComRef& rhs)
+{
+  return !(lhs == rhs);
+}
+
+bool oms3::operator<(const oms3::ComRef& lhs, const oms3::ComRef& rhs)
+{
+  return (0 < strcmp(lhs.c_str(), rhs.c_str()));
+}
+
+/* ************************************ */
+/* oms2                                 */
+/*                                      */
+/*                                      */
+/* ************************************ */
+
 #include "Logging.h"
 
 #include <deque>
 #include <string>
-#include <RegEx.h>
 
 oms2::ComRef::ComRef()
 {

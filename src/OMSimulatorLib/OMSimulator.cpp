@@ -45,6 +45,64 @@
 #include <string>
 #include <boost/filesystem.hpp>
 
+
+/* ************************************ */
+/* oms3                                 */
+/*                                      */
+/* Experimental API                     */
+/* ************************************ */
+
+const char* oms3_getVersion()
+{
+  return oms_git_version;
+}
+
+oms_status_enu_t oms3_setTempDirectory(const char* newTempDir)
+{
+  return oms3::Scope::GetInstance().setTempDirectory(newTempDir);
+}
+
+oms_status_enu_t oms3_newModel(const char* cref)
+{
+  return oms3::Scope::GetInstance().newModel(oms3::ComRef(cref));
+}
+
+oms_status_enu_t oms3_rename(const char* cref_, const char* newCref_)
+{
+  oms3::ComRef cref(cref_);
+  oms3::ComRef newCref(newCref_);
+
+  if (cref.isValidIdent())
+    return oms3::Scope::GetInstance().renameModel(cref, newCref);
+  else
+    return logError("Only implemented for model identifiers");
+}
+
+oms_status_enu_t oms3_delete(const char* cref_)
+{
+  oms3::ComRef cref(cref_);
+
+  if (cref.isValidIdent())
+    return oms3::Scope::GetInstance().deleteModel(cref);
+  else
+    return logError("Only implemented for model identifiers");
+}
+
+oms_status_enu_t oms3_export(const char* cref_, const char* filename)
+{
+  oms3::ComRef cref(cref_);
+
+  if (cref.isValidIdent())
+    return oms3::Scope::GetInstance().exportModel(cref, std::string(filename));
+  else
+    return logError(std::string(cref) + " is not a valid identifier");
+}
+
+oms_status_enu_t oms3_import(const char* filename, char** cref)
+{
+  return oms3::Scope::GetInstance().importModel(std::string(filename), cref);
+}
+
 /* ************************************ */
 /* OMSimulator 2.0                      */
 /*                                      */

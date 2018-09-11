@@ -31,6 +31,52 @@
 
 #include "Model.h"
 
+#include "System.h"
+
+/* ************************************ */
+/* oms3                                 */
+/*                                      */
+/* Experimental API                     */
+/* ************************************ */
+
+oms3::Model::Model(const oms3::ComRef& cref)
+  : cref(cref)
+{
+}
+
+oms3::Model::~Model()
+{
+  if (system)
+    delete system;
+}
+
+oms3::Model* oms3::Model::NewModel(const oms3::ComRef& cref)
+{
+  if (!cref.isValidIdent())
+  {
+    logError(std::string(cref) + " is not a valid ident");
+    return NULL;
+  }
+
+  oms3::Model* model = new oms3::Model(cref);
+  return model;
+}
+
+oms_status_enu_t oms3::Model::rename(const oms3::ComRef& cref)
+{
+  if (!cref.isValidIdent())
+    return logError(std::string(cref) + " is not a valid ident");
+
+  this->cref = cref;
+  return oms_status_ok;
+}
+
+/* ************************************ */
+/* oms2                                 */
+/*                                      */
+/*                                      */
+/* ************************************ */
+
 #include "CSVWriter.h"
 #include "FMICompositeModel.h"
 #include "Logging.h"
