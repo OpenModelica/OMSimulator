@@ -71,6 +71,12 @@ typedef enum {
 } oms_tlm_interpolation_t;
 
 typedef enum {
+  oms_tlm_connector_type_state,
+  oms_tlm_connector_type_flow,
+  oms_tlm_connector_type_effort
+} oms_tlm_connector_type_enu_t;
+
+typedef enum {
   oms_solver_internal,         ///< internal solver; CS-FMU only
   oms_solver_explicit_euler,
   oms_solver_cvode
@@ -85,6 +91,12 @@ typedef enum {
   oms_component_table,    ///< lookup table
   oms_component_port      ///< port
 } oms_element_type_enu_t;
+
+typedef enum {
+  oms_system_tlm,      ///< TLM System
+  oms_system_wc,       ///< Weakly Coupled System
+  oms_system_sc        ///< Strongly Coupled System
+} oms_system_enu_t;
 
 typedef enum {
   oms_signal_type_real,
@@ -282,6 +294,29 @@ typedef struct {
    */
   double y2;
 } ssd_system_geometry_t;
+
+/**
+ * \brief 5.3.6 ssd:SimulationInformation
+ *
+ * This element provides default information for useful solver/master
+ * algorithms and their default settings for processing the given component or
+ * (sub-)system. The information is purely an optional indicator of useful
+ * settings, any processing tool is free to use, merge, or discard this
+ * information in any way it sees fit.
+ *
+ * Multiple child-elements are allowed here in order to supply different
+ * settings for different kinds of solver/master algorithms.
+ *
+ * Simulation information can be present at multiple hierarchy levels of the
+ * overall system, including individual components. It is up to the processing
+ * tool to decide how best to integrate this information into its overall
+ * solving/simulation strategy. Tools supporting the use of multiple, different
+ * solvers/co-simulation master algorithms inside one simulation can make use
+ * of multiple different settings at different scopes, however this standard
+ * does not presume or require the existence of this functionality.
+ */
+typedef struct {
+} ssd_simulation_information_t;
 
 /**
  * \brief Connection between two connectors.

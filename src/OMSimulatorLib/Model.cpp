@@ -31,6 +31,109 @@
 
 #include "Model.h"
 
+#include "System.h"
+#include "Scope.h"
+
+#include <OMSBoost.h>
+
+/* ************************************ */
+/* oms3                                 */
+/*                                      */
+/* Experimental API                     */
+/* ************************************ */
+
+oms3::Model::Model(const oms3::ComRef& cref, const std::string& tempDir)
+  : cref(cref), tempDir(tempDir)
+{
+  logInfo("New model \"" + std::string(cref) + "\" with corresponding temp directory \"" + tempDir + "\"");
+}
+
+oms3::Model::~Model()
+{
+  if (system)
+    delete system;
+}
+
+oms3::Model* oms3::Model::NewModel(const oms3::ComRef& cref)
+{
+  if (!cref.isValidIdent())
+  {
+    logError("\"" + std::string(cref) + "\" is not a valid ident");
+    return NULL;
+  }
+
+  std::string tempDir = (boost::filesystem::path(Scope::GetInstance().getTempDirectory().c_str()) / boost::filesystem::unique_path(std::string(cref) + "-%%%%")).native();
+  if (boost::filesystem::is_directory(tempDir))
+  {
+    logError("Unique temp directory does already exist. Clean up the temp directory \"" + Scope::GetInstance().getTempDirectory() + "\" and try again.");
+    return NULL;
+  }
+  if (!boost::filesystem::create_directory(tempDir))
+  {
+    logError("Failed to create unique temp directory for the model \"" + std::string(cref) + "\"");
+    return NULL;
+  }
+
+  oms3::Model* model = new oms3::Model(cref, tempDir);
+  return model;
+}
+
+oms_status_enu_t oms3::Model::rename(const oms3::ComRef& cref)
+{
+  if (!cref.isValidIdent())
+    return logError(std::string(cref) + " is not a valid ident");
+
+  this->cref = cref;
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::Model::list(const oms3::ComRef& cref, char** contents)
+{
+  // list model
+  if (cref.isEmpty())
+  {
+    return logError("not implemented");
+  }
+
+  // list system
+  if (!system)
+    return logError("Model \"" + std::string(getName()) + "\" does not contain any system");
+
+  oms3::ComRef tail(cref);
+  oms3::ComRef front = tail.pop_front();
+
+  if (system->getName() == front)
+    return system->list(tail, contents);
+
+  return logError("wrong input \"" + std::string(front) + "\" != \"" + std::string(system->getName()) + "\"");
+}
+
+oms_status_enu_t oms3::Model::addSystem(const oms3::ComRef& cref, oms_system_enu_t type)
+{
+  if (cref.isValidIdent() && !system)
+  {
+    system = System::NewSystem(cref, type, this, NULL);
+    return system ? oms_status_ok : oms_status_error;
+  }
+
+  if (!system)
+    return logError("Model \"" + std::string(getName()) + "\" does not contain any system");
+
+  oms3::ComRef tail(cref);
+  oms3::ComRef front = tail.pop_front();
+
+  if (system->getName() == front)
+    return system->addSystem(tail, type, this, NULL);
+
+  return logError("wrong input \"" + std::string(front) + "\" != \"" + std::string(system->getName()) + "\"");
+}
+
+/* ************************************ */
+/* oms2                                 */
+/*                                      */
+/*                                      */
+/* ************************************ */
+
 #include "CSVWriter.h"
 #include "FMICompositeModel.h"
 #include "Logging.h"

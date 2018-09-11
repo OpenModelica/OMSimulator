@@ -29,45 +29,35 @@
  *
  */
 
-#ifndef _OMS2_SIGNAL_REF_H_
-#define _OMS2_SIGNAL_REF_H_
+#include "SystemSC.h"
 
-#include "ComRef.h"
-#include <string>
+#include "Component.h"
+#include "Model.h"
+#include "Types.h"
 
-namespace oms2
+oms3::SystemSC::SystemSC(const ComRef& cref, Model* parentModel, System* parentSystem)
+  : oms3::System(cref, oms_system_sc, parentModel, parentSystem)
 {
-  /**
-   * \brief SignalRef - signal reference
-   */
-  class SignalRef
-  {
-  public:
-    SignalRef(const std::string& signal); ///< format: comp1.comp2.comp3:var
-    SignalRef(const ComRef& cref, const std::string& var);
-    ~SignalRef();
-
-    // methods to copy the signal reference
-    SignalRef(SignalRef const& copy);
-    SignalRef& operator=(SignalRef const& copy);
-    bool operator<(const SignalRef& rhs);
-
-    static bool isValid(const std::string& signal); ///< checks if a given string is a valid SignalRef according to a simple regex check
-
-    std::string toString() const {return cref.toString() + ":" + var;}
-
-    const oms2::ComRef& getCref() const {return cref;}
-    const std::string& getVar() const {return var;}
-
-    bool isEqual(const char* str) const {return toString().compare(str) == 0;}
-
-  private:
-    oms2::ComRef cref;
-    std::string var;
-  };
-
-  inline bool operator==(const SignalRef& lhs, const SignalRef& rhs) {return lhs.toString() == rhs.toString();}
-  inline bool operator!=(const SignalRef& lhs, const SignalRef& rhs) {return !(lhs == rhs);}
 }
 
-#endif
+oms3::SystemSC::~SystemSC()
+{
+}
+
+oms3::System* oms3::SystemSC::NewSystem(const oms3::ComRef& cref, oms3::Model* parentModel, oms3::System* parentSystem)
+{
+  if (!cref.isValidIdent())
+  {
+    logError("\"" + std::string(cref) + "\" is not a valid ident");
+    return NULL;
+  }
+
+  if ((parentModel && parentSystem) || (!parentModel && !parentSystem))
+  {
+    logError("Internal error");
+    return NULL;
+  }
+
+  System* system = new SystemSC(cref, parentModel, parentSystem);
+  return system;
+}
