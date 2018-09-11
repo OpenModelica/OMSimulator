@@ -29,45 +29,49 @@
  *
  */
 
-#ifndef _OMS2_SIGNAL_REF_H_
-#define _OMS2_SIGNAL_REF_H_
+#ifndef _OMS_SYSTEM_H_
+#define _OMS_SYSTEM_H_
 
 #include "ComRef.h"
-#include <string>
+#include "Types.h"
 
-namespace oms2
+#include <map>
+
+namespace oms3
 {
-  /**
-   * \brief SignalRef - signal reference
-   */
-  class SignalRef
+  class Component;
+  class Model;
+
+  class System
   {
   public:
-    SignalRef(const std::string& signal); ///< format: comp1.comp2.comp3:var
-    SignalRef(const ComRef& cref, const std::string& var);
-    ~SignalRef();
+    virtual ~System();
 
-    // methods to copy the signal reference
-    SignalRef(SignalRef const& copy);
-    SignalRef& operator=(SignalRef const& copy);
-    bool operator<(const SignalRef& rhs);
+    static System* NewSystem(const oms3::ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem);
+    System* getSystem(const oms3::ComRef& cref);
+    Component* getComponent(const oms3::ComRef& cref);
+    const ComRef& getName() const {return cref;}
+    ComRef getFullName();
+    oms_status_enu_t list(const ComRef& cref, char** contents);
+    oms_system_enu_t getType() const {return type;}
+    oms_status_enu_t addSystem(const oms3::ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem);
+    bool validCref(const oms3::ComRef& cref);
 
-    static bool isValid(const std::string& signal); ///< checks if a given string is a valid SignalRef according to a simple regex check
+  protected:
+    System(const ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem);
 
-    std::string toString() const {return cref.toString() + ":" + var;}
-
-    const oms2::ComRef& getCref() const {return cref;}
-    const std::string& getVar() const {return var;}
-
-    bool isEqual(const char* str) const {return toString().compare(str) == 0;}
+    // stop the compiler generating methods copying the object
+    System(System const& copy);            ///< not implemented
+    System& operator=(System const& copy); ///< not implemented
 
   private:
-    oms2::ComRef cref;
-    std::string var;
+    ComRef cref;
+    oms_system_enu_t type;
+    Model* parentModel;
+    System* parentSystem;
+    std::map<ComRef, System*> subsystems;
+    std::map<ComRef, Component*> components;
   };
-
-  inline bool operator==(const SignalRef& lhs, const SignalRef& rhs) {return lhs.toString() == rhs.toString();}
-  inline bool operator!=(const SignalRef& lhs, const SignalRef& rhs) {return !(lhs == rhs);}
 }
 
 #endif
