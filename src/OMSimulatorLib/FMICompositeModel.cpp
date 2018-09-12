@@ -49,9 +49,9 @@
 #include "PMRChannelMaster.h"
 #endif // #if !defined(__arm__)
 
-#include <pugixml.hpp>
-#include <thread>
+#include <iostream>
 #include <OMSBoost.h>
+#include <pugixml.hpp>
 #include <sstream>
 #include <thread>
 
@@ -1788,7 +1788,7 @@ oms_status_enu_t oms2::FMICompositeModel::removeSignalsFromResults(const std::st
 
 oms_status_enu_t oms2::FMICompositeModel::describe()
 {
-  std::cout << "# FMI composite model \"" + getName() + "\"" << std::endl;
+  std::cout << "# FMI composite model \"" << getName().toString() << "\"" << std::endl;
 
   oms2::Element** elements = getElements();
   while(*elements)
