@@ -47,6 +47,31 @@ static int OMSimulatorLua_oms3_getVersion(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms3_setLogFile(const char* filename);
+static int OMSimulatorLua_oms3_setLogFile(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* filename = lua_tostring(L, 1);
+  oms_status_enu_t status = oms3_setLogFile(filename);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
+//void oms3_setMaxLogFileSize(const unsigned long size);
+static int OMSimulatorLua_oms3_setMaxLogFileSize(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TNUMBER);
+
+  unsigned long size = lua_tointeger(L, 1);
+  oms3_setMaxLogFileSize(size);
+  return 0;
+}
+
 //oms_status_enu_t oms3_setTempDirectory(const char* newTempDir);
 static int OMSimulatorLua_oms3_setTempDirectory(lua_State *L)
 {
@@ -56,6 +81,20 @@ static int OMSimulatorLua_oms3_setTempDirectory(lua_State *L)
 
   const char* newTempDir = lua_tostring(L, 1);
   oms_status_enu_t status = oms3_setTempDirectory(newTempDir);
+
+  lua_pushinteger(L, status);
+  return 1;
+}
+
+//oms_status_enu_t oms3_setWorkingDirectory(const char* newWorkingDir);
+static int OMSimulatorLua_oms3_setWorkingDirectory(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* newWorkingDir = lua_tostring(L, 1);
+  oms_status_enu_t status = oms3_setWorkingDirectory(newWorkingDir);
 
   lua_pushinteger(L, status);
   return 1;
@@ -1602,7 +1641,10 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   /* Experimental API                     */
   /* ************************************ */
   REGISTER_LUA_CALL(oms3_getVersion);
+  REGISTER_LUA_CALL(oms3_setLogFile);
+  REGISTER_LUA_CALL(oms3_setMaxLogFileSize);
   REGISTER_LUA_CALL(oms3_setTempDirectory);
+  REGISTER_LUA_CALL(oms3_setWorkingDirectory);
   REGISTER_LUA_CALL(oms3_newModel);
   REGISTER_LUA_CALL(oms3_rename);
   REGISTER_LUA_CALL(oms3_delete);

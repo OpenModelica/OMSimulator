@@ -57,9 +57,24 @@ const char* oms3_getVersion()
   return oms_git_version;
 }
 
+oms_status_enu_t oms3_setLogFile(const char* filename)
+{
+  return Log::setLogFile(filename);
+}
+
+void oms3_setMaxLogFileSize(const unsigned long size)
+{
+  Log::setMaxLogFileSize(size);
+}
+
 oms_status_enu_t oms3_setTempDirectory(const char* newTempDir)
 {
   return oms3::Scope::GetInstance().setTempDirectory(newTempDir);
+}
+
+oms_status_enu_t oms3_setWorkingDirectory(const char* newWorkingDir)
+{
+  return oms3::Scope::GetInstance().setWorkingDirectory(newWorkingDir);
 }
 
 oms_status_enu_t oms3_newModel(const char* cref)

@@ -46,7 +46,10 @@ extern "C"
 /* ************************************ */
 
 const char* oms3_getVersion();
+oms_status_enu_t oms3_setLogFile(const char* filename);
+void oms3_setMaxLogFileSize(const unsigned long size);
 oms_status_enu_t oms3_setTempDirectory(const char* newTempDir);
+oms_status_enu_t oms3_setWorkingDirectory(const char* newWorkingDir);
 oms_status_enu_t oms3_newModel(const char* cref);
 oms_status_enu_t oms3_rename(const char* cref, const char* newCref);
 oms_status_enu_t oms3_delete(const char* cref);
@@ -55,6 +58,7 @@ oms_status_enu_t oms3_import(const char* filename, char** cref);
 
 oms_status_enu_t oms3_addSystem(const char* cref, oms_system_enu_t type);
 oms_status_enu_t oms3_copySystem(const char* source, const char* target);
+
 oms_status_enu_t oms3_getSystemType(const char* cref, oms_system_enu_t* type);
 oms_status_enu_t oms3_addSubModel(const char* cref, const char* fmuPath);
 oms_status_enu_t oms3_addExternalModel(const char* cref, const char* path, const char* startscript);
