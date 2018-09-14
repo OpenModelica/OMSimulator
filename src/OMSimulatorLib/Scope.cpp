@@ -34,11 +34,14 @@
 #include <OMSBoost.h>
 
 oms3::Scope::Scope()
+  : tempDir("."), workingDir(".")
 {
   this->models.push_back(NULL);
 
-  boost::filesystem::path tempDir = oms2_temp_directory_path();
-  this->tempDir = tempDir.string();
+  boost::filesystem::path tempDir = oms2_temp_directory_path() / "omsimulator";
+  setTempDirectory(tempDir.native());
+
+  setWorkingDirectory(".");
 }
 
 oms3::Scope::~Scope()
@@ -139,12 +142,35 @@ oms_status_enu_t oms3::Scope::setTempDirectory(const std::string& newTempDir)
     // do nothing, canonical fails if the directory contains a junction or a symlink!
     // https://svn.boost.org/trac10/ticket/11138
   }
-  this->tempDir = path.string();
 
-  logInfo("New temp directory: \"" + tempDir + "\"");
+  this->tempDir = path.native();
+  logInfo("Set temp directory to    \"" + this->tempDir + "\"");
+
   return oms_status_ok;
 }
 
+oms_status_enu_t oms3::Scope::setWorkingDirectory(const std::string& newWorkingDir)
+{
+  boost::filesystem::path path(newWorkingDir.c_str());
+  if (!boost::filesystem::is_directory(path))
+    return logError("Set working directory to \"" + newWorkingDir + "\" failed");
+
+  boost::filesystem::current_path(path);
+  try
+  {
+    path = oms2_canonical(path);
+  }
+  catch(std::exception e)
+  {
+    // do nothing, canonical fails if the directory contains a junction or a symlink!
+    // https://svn.boost.org/trac10/ticket/11138
+  }
+
+  this->workingDir = path.native();
+  logInfo("Set working directory to \"" + this->workingDir + "\"");
+
+  return oms_status_ok;
+}
 
 oms3::Model* oms3::Scope::getModel(const oms3::ComRef& cref)
 {

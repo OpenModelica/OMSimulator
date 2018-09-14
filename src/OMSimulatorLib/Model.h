@@ -53,7 +53,7 @@ namespace oms3
     oms_status_enu_t rename(const ComRef& cref);
 
   private:
-    Model(const ComRef& cref);
+    Model(const ComRef& cref, const std::string& tempDir);
 
     // stop the compiler generating methods copying the object
     Model(Model const& copy);            ///< not implemented
@@ -62,6 +62,7 @@ namespace oms3
   private:
     ComRef cref;
     System* system = NULL;
+    std::string tempDir;
   };
 }
 

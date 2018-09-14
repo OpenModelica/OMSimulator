@@ -32,6 +32,9 @@
 #include "Model.h"
 
 #include "System.h"
+#include "Scope.h"
+
+#include <OMSBoost.h>
 
 /* ************************************ */
 /* oms3                                 */
@@ -39,9 +42,10 @@
 /* Experimental API                     */
 /* ************************************ */
 
-oms3::Model::Model(const oms3::ComRef& cref)
-  : cref(cref)
+oms3::Model::Model(const oms3::ComRef& cref, const std::string& tempDir)
+  : cref(cref), tempDir(tempDir)
 {
+  logInfo("New model \"" + std::string(cref) + "\" with corresponding temp directory \"" + tempDir + "\"");
 }
 
 oms3::Model::~Model()
@@ -54,11 +58,23 @@ oms3::Model* oms3::Model::NewModel(const oms3::ComRef& cref)
 {
   if (!cref.isValidIdent())
   {
-    logError(std::string(cref) + " is not a valid ident");
+    logError("\"" + std::string(cref) + "\" is not a valid ident");
     return NULL;
   }
 
-  oms3::Model* model = new oms3::Model(cref);
+  std::string tempDir = (boost::filesystem::path(Scope::GetInstance().getTempDirectory().c_str()) / boost::filesystem::unique_path(std::string(cref) + "-%%%%")).native();
+  if (boost::filesystem::is_directory(tempDir))
+  {
+    logError("Unique temp directory does already exist. Clean up the temp directory \"" + Scope::GetInstance().getTempDirectory() + "\" and try again.");
+    return NULL;
+  }
+  if (!boost::filesystem::create_directory(tempDir))
+  {
+    logError("Failed to create unique temp directory for the model \"" + std::string(cref) + "\"");
+    return NULL;
+  }
+
+  oms3::Model* model = new oms3::Model(cref, tempDir);
   return model;
 }
 
