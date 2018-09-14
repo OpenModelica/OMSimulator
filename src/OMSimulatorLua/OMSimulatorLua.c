@@ -175,6 +175,63 @@ static int OMSimulatorLua_oms3_import(lua_State *L)
   return 2;
 }
 
+//oms_status_enu_t oms3_list(const char* cref, char** contents);
+static int OMSimulatorLua_oms3_list(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* cref = lua_tostring(L, 1);
+  char* contents = NULL;
+  oms_status_enu_t status = oms3_list(cref, &contents);
+
+  lua_pushstring(L, contents ? contents : "");
+  lua_pushinteger(L, status);
+
+  if (contents)
+    oms2_freeMemory(contents);
+
+  return 2;
+}
+
+//oms_status_enu_t oms3_parseModelName(const char* contents, char** cref);
+static int OMSimulatorLua_oms3_parseModelName(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* contents = lua_tostring(L, 1);
+  char* cref = NULL;
+  oms_status_enu_t status = oms3_parseModelName(contents, &cref);
+
+  lua_pushstring(L, cref ? cref : "");
+  lua_pushinteger(L, status);
+
+  if (cref)
+    oms2_freeMemory(cref);
+
+  return 2;
+}
+
+//oms_status_enu_t oms3_importString(const char* contents, char** cref);
+static int OMSimulatorLua_oms3_importString(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* contents = lua_tostring(L, 1);
+  char* cref = NULL;
+  oms_status_enu_t status = oms3_importString(contents, &cref);
+
+  lua_pushstring(L, cref ? cref : "");
+  lua_pushinteger(L, status);
+
+  return 2;
+}
+
 /* ************************************ */
 /* OMSimulator 2.0                      */
 /*                                      */
@@ -1650,6 +1707,9 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms3_delete);
   REGISTER_LUA_CALL(oms3_export);
   REGISTER_LUA_CALL(oms3_import);
+  REGISTER_LUA_CALL(oms3_list);
+  REGISTER_LUA_CALL(oms3_parseModelName);
+  REGISTER_LUA_CALL(oms3_importString);
   /* ************************************ */
   /* OMSimulator 2.0                      */
   /*                                      */

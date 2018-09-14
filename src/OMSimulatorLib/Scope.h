@@ -66,7 +66,6 @@ namespace oms3
     oms_status_enu_t importModel(const std::string& filename, char** cref);
     oms_status_enu_t setTempDirectory(const std::string& newTempDir);
     oms_status_enu_t setWorkingDirectory(const std::string& newWorkingDir);
-
     Model* getModel(const ComRef& cref);
 
     const std::string& getTempDirectory() const {return GetInstance().tempDir;}

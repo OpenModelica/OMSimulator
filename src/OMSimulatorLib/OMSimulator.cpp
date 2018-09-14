@@ -45,7 +45,6 @@
 #include <string>
 #include <boost/filesystem.hpp>
 
-
 /* ************************************ */
 /* oms3                                 */
 /*                                      */
@@ -116,6 +115,30 @@ oms_status_enu_t oms3_export(const char* cref_, const char* filename)
 oms_status_enu_t oms3_import(const char* filename, char** cref)
 {
   return oms3::Scope::GetInstance().importModel(std::string(filename), cref);
+}
+
+oms_status_enu_t oms3_list(const char* cref_, char** contents)
+{
+  oms3::ComRef cref(cref_);
+  if (cref.isValidIdent())
+  {
+    oms3::Model* model = oms3::Scope::GetInstance().getModel(cref);
+    if (!model)
+      return logError("Model \"" + std::string(cref) + "\" does not exist in the scope");
+    return model->list(contents);
+  }
+  else
+    return logError("Only implemented for model identifiers");
+}
+
+oms_status_enu_t oms3_parseModelName(const char* contents, char** cref)
+{
+  return logError("not implemented");
+}
+
+oms_status_enu_t oms3_importString(const char* contents, char** cref)
+{
+  return logError("not implemented");
 }
 
 /* ************************************ */

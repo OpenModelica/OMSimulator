@@ -87,6 +87,11 @@ oms_status_enu_t oms3::Model::rename(const oms3::ComRef& cref)
   return oms_status_ok;
 }
 
+oms_status_enu_t oms3::Model::list(char** contents)
+{
+  return oms_status_ok;
+}
+
 /* ************************************ */
 /* oms2                                 */
 /*                                      */

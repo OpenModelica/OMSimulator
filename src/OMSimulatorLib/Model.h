@@ -51,6 +51,7 @@ namespace oms3
     static Model* NewModel(const ComRef& cref);
     const ComRef& getName() const {return cref;}
     oms_status_enu_t rename(const ComRef& cref);
+    oms_status_enu_t list( char** contents);
 
   private:
     Model(const ComRef& cref, const std::string& tempDir);
