@@ -232,6 +232,40 @@ static int OMSimulatorLua_oms3_importString(lua_State *L)
   return 2;
 }
 
+//oms_status_enu_t oms3_addSystem(const char* cref, oms_system_enu_t type);
+static int OMSimulatorLua_oms3_addSystem(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 arguments");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TNUMBER);
+
+  const char* cref = lua_tostring(L, 1);
+  int type = lua_tointeger(L, 2);
+  oms_status_enu_t status = oms3_addSystem(cref, (oms_system_enu_t)type);
+
+  lua_pushinteger(L, status);
+
+  return 1;
+}
+
+//oms_status_enu_t oms3_copySystem(const char* source, const char* target);
+static int OMSimulatorLua_oms3_copySystem(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 arguments");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+
+  const char* source = lua_tostring(L, 1);
+  const char* target = lua_tostring(L, 2);
+  oms_status_enu_t status = oms3_copySystem(source, target);
+
+  lua_pushinteger(L, status);
+
+  return 1;
+}
+
 /* ************************************ */
 /* OMSimulator 2.0                      */
 /*                                      */
@@ -1710,6 +1744,8 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms3_list);
   REGISTER_LUA_CALL(oms3_parseModelName);
   REGISTER_LUA_CALL(oms3_importString);
+  REGISTER_LUA_CALL(oms3_addSystem);
+  REGISTER_LUA_CALL(oms3_copySystem);
   /* ************************************ */
   /* OMSimulator 2.0                      */
   /*                                      */

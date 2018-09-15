@@ -141,6 +141,22 @@ oms_status_enu_t oms3_importString(const char* contents, char** cref)
   return logError("not implemented");
 }
 
+oms_status_enu_t oms3_addSystem(const char* cref_, oms_system_enu_t type)
+{
+  oms3::ComRef cref(cref_);
+  oms3::ComRef modelCref = cref.pop_front();
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
+  if (!model)
+    return logError("Model \"" + std::string(modelCref) + "\" does not exist in the scope");
+
+  return model->addSystem(cref, type);
+}
+
+oms_status_enu_t oms3_copySystem(const char* source, const char* target)
+{
+  return logError("not implemented");
+}
+
 /* ************************************ */
 /* OMSimulator 2.0                      */
 /*                                      */

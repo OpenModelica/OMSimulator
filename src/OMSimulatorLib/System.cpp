@@ -32,10 +32,14 @@
 #include "System.h"
 
 #include "Component.h"
+#include "Model.h"
+#include "SystemSC.h"
+#include "SystemTLM.h"
+#include "SystemWC.h"
 #include "Types.h"
 
-oms3::System::System(const oms3::ComRef& cref, oms_system_enu_t type)
-  : cref(cref), type(type)
+oms3::System::System(const oms3::ComRef& cref, oms_system_enu_t type, oms3::Model* parentModel, oms3::System* parentSystem)
+  : cref(cref), type(type), parentModel(parentModel), parentSystem(parentSystem)
 {
 }
 
@@ -46,4 +50,109 @@ oms3::System::~System()
 
   for (const auto& subsystem : subsystems)
     delete subsystem.second;
+}
+
+oms3::System* oms3::System::NewSystem(const oms3::ComRef& cref, oms_system_enu_t type, oms3::Model* parentModel, oms3::System* parentSystem)
+{
+  if (!cref.isValidIdent())
+  {
+    logError("\"" + std::string(cref) + "\" is not a valid ident");
+    return NULL;
+  }
+
+  if (parentSystem && parentSystem->getSystem(cref))
+  {
+    logError("Name is already in use");
+    return NULL;
+  }
+
+  if (parentSystem && parentSystem->getComponent(cref))
+  {
+    logError("Name is already in use");
+    return NULL;
+  }
+
+  if ((parentModel && parentSystem) || (!parentModel && !parentSystem))
+  {
+    logError("Internal error");
+    return NULL;
+  }
+
+  switch (type)
+  {
+  case oms_system_tlm:
+    return SystemTLM::NewSystem(cref, parentModel, parentSystem);
+
+  case oms_system_wc:
+    return SystemWC::NewSystem(cref, parentModel, parentSystem);
+
+  case oms_system_sc:
+    return SystemSC::NewSystem(cref, parentModel, parentSystem);
+  }
+
+  logError("Internal error");
+  return NULL;
+}
+
+oms3::ComRef oms3::System::getFullName()
+{
+  if (parentSystem)
+    return parentSystem->getFullName() + this->getName();
+  if (parentModel)
+    return ComRef(parentModel->getName()) + this->getName();
+
+  logError("Internal error");
+  return this->getName();
+}
+
+oms3::System* oms3::System::getSystem(const oms3::ComRef& cref)
+{
+  auto it = subsystems.find(cref);
+  if (it == subsystems.end())
+    return NULL;
+
+  return it->second;
+}
+
+oms3::Component* oms3::System::getComponent(const oms3::ComRef& cref)
+{
+  auto it = components.find(cref);
+  if (it == components.end())
+    return NULL;
+
+  return it->second;
+}
+
+bool oms3::System::validCref(const oms3::ComRef& cref)
+{
+  if (!cref.isValidIdent())
+    return false;
+
+  if (getSystem(cref))
+    return false;
+
+  if (getComponent(cref))
+    return false;
+
+  return true;
+}
+
+oms_status_enu_t oms3::System::addSystem(const oms3::ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem)
+{
+  if (cref.isValidIdent())
+  {
+    System* system = System::NewSystem(cref, type, parentModel, parentSystem);
+    if (system)
+      subsystems[cref] = system;
+    return system ? oms_status_ok : oms_status_error;
+  }
+
+  ComRef tail(cref);
+  ComRef front = tail.pop_front();
+
+  System* system = this->getSystem(front);
+  if (!system)
+    return logError("System \"" + std::string(getFullName()) + "\" does not contain system \"" + std::string(front) + "\"");
+
+  return system->addSystem(tail, type, parentModel, parentSystem);
 }

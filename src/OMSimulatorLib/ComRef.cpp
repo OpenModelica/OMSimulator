@@ -78,6 +78,53 @@ bool oms3::ComRef::isValidIdent() const
   return isValidIdent(cref);
 }
 
+oms3::ComRef oms3::ComRef::pop_back()
+{
+  int dot=0;
+
+  for(int i=0; cref[i]; ++i)
+    if(cref[i] == '.')
+      dot = i;
+
+  cref[dot] = '\0';
+  return oms3::ComRef(cref+dot+1);
+}
+
+oms3::ComRef oms3::ComRef::front()
+{
+  int dot=0;
+
+  for(int i=0; cref[i] && dot==0; ++i)
+    if(cref[i] == '.')
+      dot = i;
+
+  if (dot)
+    cref[dot] = '\0';
+
+  oms3::ComRef front(cref);
+
+  if (dot)
+    cref[dot] = '.';
+  return front;
+}
+
+oms3::ComRef oms3::ComRef::pop_front()
+{
+  int i=0;
+  for(; cref[i]; ++i)
+    if(cref[i] == '.')
+    {
+      cref[i] = '\0';
+      i++;
+      break;
+    }
+
+  oms3::ComRef front(cref);
+  *this = oms3::ComRef(cref + i);
+  return front;
+}
+
+
 bool oms3::operator==(const oms3::ComRef& lhs, const oms3::ComRef& rhs)
 {
   return (0 == strcmp(lhs.c_str(), rhs.c_str()));

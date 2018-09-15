@@ -54,6 +54,10 @@ namespace oms3
     static bool isValidIdent(const std::string& ident);
     bool isValidIdent() const;
 
+    ComRef pop_back();
+    ComRef front();
+    ComRef pop_front();
+
     const char* c_str() const {return cref;}
     operator std::string() const {return std::string(cref);}
 

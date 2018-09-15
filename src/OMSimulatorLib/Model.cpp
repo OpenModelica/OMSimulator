@@ -89,7 +89,27 @@ oms_status_enu_t oms3::Model::rename(const oms3::ComRef& cref)
 
 oms_status_enu_t oms3::Model::list(char** contents)
 {
-  return oms_status_ok;
+  return logError("not implemented");
+}
+
+oms_status_enu_t oms3::Model::addSystem(const oms3::ComRef& cref, oms_system_enu_t type)
+{
+  if (cref.isValidIdent() && !system)
+  {
+    system = System::NewSystem(cref, type, this, NULL);
+    return system ? oms_status_ok : oms_status_error;
+  }
+
+  if (!system)
+    return logError("Model \"" + std::string(getName()) + "\" does not contain any system");
+
+  oms3::ComRef tail(cref);
+  oms3::ComRef front = tail.pop_front();
+
+  if (system->getName() == front)
+    return system->addSystem(tail, type, this, NULL);
+
+  return logError("wrong input \"" + std::string(front) + "\" != \"" + std::string(system->getName()) + "\"");
 }
 
 /* ************************************ */
