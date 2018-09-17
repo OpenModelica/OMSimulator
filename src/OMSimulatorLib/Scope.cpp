@@ -114,7 +114,11 @@ oms_status_enu_t oms3::Scope::renameModel(const oms3::ComRef& cref, const oms3::
 
 oms_status_enu_t oms3::Scope::exportModel(const oms3::ComRef& cref, const std::string& filename)
 {
-  return logError("Not implemented");
+  oms3::Model* model = getModel(cref);
+  if (!model)
+    return logError("Model \"" + std::string(cref) + "\" does not exist in the scope");
+
+  return model->exportToFile(filename);
 }
 
 oms_status_enu_t oms3::Scope::importModel(const std::string& filename, char** cref)

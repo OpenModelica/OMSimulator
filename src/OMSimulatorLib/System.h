@@ -35,6 +35,7 @@
 #include "ComRef.h"
 #include "Types.h"
 
+#include <pugixml.hpp>
 #include <map>
 
 namespace oms3
@@ -56,6 +57,7 @@ namespace oms3
     oms_system_enu_t getType() const {return type;}
     oms_status_enu_t addSystem(const oms3::ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem);
     bool validCref(const oms3::ComRef& cref);
+    oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
 
   protected:
     System(const ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem);

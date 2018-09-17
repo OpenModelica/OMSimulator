@@ -104,12 +104,7 @@ oms_status_enu_t oms3_delete(const char* cref_)
 
 oms_status_enu_t oms3_export(const char* cref_, const char* filename)
 {
-  oms3::ComRef cref(cref_);
-
-  if (cref.isValidIdent())
-    return oms3::Scope::GetInstance().exportModel(cref, std::string(filename));
-  else
-    return logError(std::string(cref) + " is not a valid identifier");
+  return oms3::Scope::GetInstance().exportModel(oms3::ComRef(cref_), std::string(filename));
 }
 
 oms_status_enu_t oms3_import(const char* filename, char** cref)
