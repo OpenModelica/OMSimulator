@@ -108,11 +108,19 @@ oms3::ComRef oms3::System::getFullName()
 
 oms3::System* oms3::System::getSystem(const oms3::ComRef& cref)
 {
-  auto it = subsystems.find(cref);
+  oms3::System* system = NULL;
+
+  oms3::ComRef tail(cref);
+  oms3::ComRef front = tail.pop_front();
+
+  auto it = subsystems.find(front);
   if (it == subsystems.end())
     return NULL;
 
-  return it->second;
+  if (tail.isEmpty())
+    return it->second;
+
+  return it->second->getSystem(tail);
 }
 
 oms3::Component* oms3::System::getComponent(const oms3::ComRef& cref)

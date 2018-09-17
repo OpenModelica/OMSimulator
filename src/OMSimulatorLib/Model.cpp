@@ -88,25 +88,65 @@ oms_status_enu_t oms3::Model::rename(const oms3::ComRef& cref)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Model::list(const oms3::ComRef& cref, char** contents)
+oms3::System* oms3::Model::getSystem(const oms3::ComRef& cref)
 {
-  // list model
-  if (cref.isEmpty())
-  {
-    return logError("not implemented");
-  }
-
-  // list system
   if (!system)
-    return logError("Model \"" + std::string(getName()) + "\" does not contain any system");
+    return NULL;
 
   oms3::ComRef tail(cref);
   oms3::ComRef front = tail.pop_front();
 
-  if (system->getName() == front)
-    return system->list(tail, contents);
+  oms3::System* system = NULL;
 
-  return logError("wrong input \"" + std::string(front) + "\" != \"" + std::string(system->getName()) + "\"");
+  if (this->system->getName() == front)
+  {
+    system = this->system;
+
+    if (!tail.isEmpty())
+      system = system->getSystem(tail);
+  }
+
+  return system;
+}
+
+oms_status_enu_t oms3::Model::list(const oms3::ComRef& cref, char** contents)
+{
+  struct xmlStringWriter : pugi::xml_writer
+  {
+    std::string result;
+    virtual void write(const void* data, size_t size)
+    {
+      result += std::string(static_cast<const char*>(data), size);
+    }
+  };
+
+  xmlStringWriter writer;
+  pugi::xml_document doc;
+
+  // list model
+  if (cref.isEmpty())
+  {
+    pugi::xml_node node = doc.append_child(oms2::ssd::ssd_system_structure_description);
+    exportToSSD(node);
+  }
+  else
+  {
+    // list system
+    if (!system)
+      return logError("Model \"" + std::string(getName()) + "\" does not contain any system");
+
+    System* subsystem = getSystem(cref);
+    if (!subsystem)
+      return logError("error");
+
+    pugi::xml_node node = doc.append_child(oms2::ssd::ssd_system);
+    subsystem->exportToSSD(node);
+  }
+
+  doc.save(writer);
+  *contents = (char*) malloc(strlen(writer.result.c_str()) + 1);
+  strcpy(*contents, writer.result.c_str());
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms3::Model::addSystem(const oms3::ComRef& cref, oms_system_enu_t type)
