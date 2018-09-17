@@ -62,7 +62,7 @@ oms3::Model* oms3::Model::NewModel(const oms3::ComRef& cref)
     return NULL;
   }
 
-  std::string tempDir = (boost::filesystem::path(Scope::GetInstance().getTempDirectory().c_str()) / boost::filesystem::unique_path(std::string(cref) + "-%%%%")).native();
+  std::string tempDir = (boost::filesystem::path(Scope::GetInstance().getTempDirectory().c_str()) / boost::filesystem::unique_path(std::string(cref) + "-%%%%")).string();
   if (boost::filesystem::is_directory(tempDir))
   {
     logError("Unique temp directory does already exist. Clean up the temp directory \"" + Scope::GetInstance().getTempDirectory() + "\" and try again.");
