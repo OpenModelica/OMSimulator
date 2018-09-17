@@ -33,6 +33,7 @@
 
 #include "System.h"
 #include "Scope.h"
+#include "ssd/Tags.h"
 
 #include <OMSBoost.h>
 
@@ -126,6 +127,37 @@ oms_status_enu_t oms3::Model::addSystem(const oms3::ComRef& cref, oms_system_enu
     return system->addSystem(tail, type, this, NULL);
 
   return logError("wrong input \"" + std::string(front) + "\" != \"" + std::string(system->getName()) + "\"");
+}
+
+oms_status_enu_t oms3::Model::exportToSSD(pugi::xml_node& node) const
+{
+  node.append_attribute("name") = this->getName().c_str();
+
+  if (system)
+  {
+    pugi::xml_node system_node = node.append_child(oms2::ssd::ssd_system);
+    if (oms_status_ok != system->exportToSSD(system_node))
+      return logError("export of system failed");
+  }
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::Model::exportToFile(const std::string& filename) const
+{
+  pugi::xml_document doc;
+
+  // generate XML declaration
+  pugi::xml_node declarationNode = doc.append_child(pugi::node_declaration);
+  declarationNode.append_attribute("version") = "1.0";
+  declarationNode.append_attribute("encoding") = "UTF-8";
+
+  pugi::xml_node node = doc.append_child(oms2::ssd::ssd_system_structure_description);
+  exportToSSD(node);
+
+  if (!doc.save_file(filename.c_str()))
+    return logError("xml export failed for \"" + filename + "\" (model \"" + std::string(this->getName()) + "\")");
+
+  return oms_status_ok;
 }
 
 /* ************************************ */
