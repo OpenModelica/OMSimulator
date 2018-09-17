@@ -31,10 +31,19 @@
 
 #include "Component.h"
 
-oms3::Component::Component()
+#include "ssd/Tags.h"
+
+oms3::Component::Component(const ComRef& cref)
+  : cref(cref)
 {
 }
 
 oms3::Component::~Component()
 {
+}
+
+oms_status_enu_t oms3::Component::exportToSSD(pugi::xml_node& node) const
+{
+  node.append_attribute("name") = this->getName().c_str();
+  return oms_status_ok;
 }

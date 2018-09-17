@@ -35,6 +35,8 @@
 #include "ComRef.h"
 #include "Types.h"
 
+#include <pugixml.hpp>
+
 namespace oms3
 {
   class System;
@@ -53,6 +55,8 @@ namespace oms3
     oms_status_enu_t rename(const ComRef& cref);
     oms_status_enu_t list(const ComRef& cref, char** contents);
     oms_status_enu_t addSystem(const ComRef& cref, oms_system_enu_t type);
+    oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
+    oms_status_enu_t exportToFile(const std::string& filename) const;
 
   private:
     Model(const ComRef& cref, const std::string& tempDir);
@@ -77,8 +81,6 @@ namespace oms3
 #include "ssd/SystemGeometry.h"
 
 #include <string>
-
-#include <pugixml.hpp>
 
 namespace oms2
 {

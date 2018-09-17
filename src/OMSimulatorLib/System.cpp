@@ -37,6 +37,7 @@
 #include "SystemTLM.h"
 #include "SystemWC.h"
 #include "Types.h"
+#include "ssd/Tags.h"
 
 oms3::System::System(const oms3::ComRef& cref, oms_system_enu_t type, oms3::Model* parentModel, oms3::System* parentSystem)
   : cref(cref), type(type), parentModel(parentModel), parentSystem(parentSystem)
@@ -160,4 +161,25 @@ oms_status_enu_t oms3::System::addSystem(const oms3::ComRef& cref, oms_system_en
 oms_status_enu_t oms3::System::list(const oms3::ComRef& cref, char** contents)
 {
   return logError("not implemented");
+}
+
+oms_status_enu_t oms3::System::exportToSSD(pugi::xml_node& node) const
+{
+  node.append_attribute("name") = this->getName().c_str();
+
+  for (const auto& subsystem : subsystems)
+  {
+    pugi::xml_node system_node = node.append_child(oms2::ssd::ssd_system);
+    if (oms_status_ok != subsystem.second->exportToSSD(system_node))
+      return logError("export of system failed");
+  }
+
+  for (const auto& component : components)
+  {
+    pugi::xml_node component_node = node.append_child(oms2::ssd::ssd_component);
+    if (oms_status_ok != component.second->exportToSSD(component_node))
+      return logError("export of component failed");
+  }
+
+  return oms_status_ok;
 }

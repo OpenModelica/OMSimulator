@@ -33,6 +33,8 @@
 #define _OMS_COMPONENT_H_
 
 #include "ComRef.h"
+#include "Types.h"
+#include <pugixml.hpp>
 
 namespace oms3
 {
@@ -41,14 +43,18 @@ namespace oms3
   public:
     virtual ~Component();
 
+    const ComRef& getName() const {return cref;}
+    oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
+
   protected:
-    Component();
+    Component(const ComRef& cref);
 
     // stop the compiler generating methods copying the object
     Component(Component const&);            ///< not implemented
     Component& operator=(Component const&); ///< not implemented
 
   private:
+    ComRef cref;
   };
 }
 
