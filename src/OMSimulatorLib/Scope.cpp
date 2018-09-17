@@ -39,7 +39,7 @@ oms3::Scope::Scope()
   this->models.push_back(NULL);
 
   boost::filesystem::path tempDir = oms2_temp_directory_path() / "omsimulator";
-  setTempDirectory(tempDir.native());
+  setTempDirectory(tempDir.string());
 
   setWorkingDirectory(".");
 }
@@ -143,7 +143,7 @@ oms_status_enu_t oms3::Scope::setTempDirectory(const std::string& newTempDir)
     // https://svn.boost.org/trac10/ticket/11138
   }
 
-  this->tempDir = path.native();
+  this->tempDir = path.string();
   logInfo("Set temp directory to    \"" + this->tempDir + "\"");
 
   return oms_status_ok;
@@ -166,7 +166,7 @@ oms_status_enu_t oms3::Scope::setWorkingDirectory(const std::string& newWorkingD
     // https://svn.boost.org/trac10/ticket/11138
   }
 
-  this->workingDir = path.native();
+  this->workingDir = path.string();
   logInfo("Set working directory to \"" + this->workingDir + "\"");
 
   return oms_status_ok;
