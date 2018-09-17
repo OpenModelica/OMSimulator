@@ -156,3 +156,8 @@ oms_status_enu_t oms3::System::addSystem(const oms3::ComRef& cref, oms_system_en
 
   return system->addSystem(tail, type, parentModel, parentSystem);
 }
+
+oms_status_enu_t oms3::System::list(const oms3::ComRef& cref, char** contents)
+{
+  return logError("not implemented");
+}

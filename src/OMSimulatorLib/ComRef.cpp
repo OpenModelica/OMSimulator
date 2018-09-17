@@ -78,6 +78,11 @@ bool oms3::ComRef::isValidIdent() const
   return isValidIdent(cref);
 }
 
+bool oms3::ComRef::isEmpty() const
+{
+  return !(cref && cref[0] != '\0');
+}
+
 oms3::ComRef oms3::ComRef::pop_back()
 {
   int dot=0;

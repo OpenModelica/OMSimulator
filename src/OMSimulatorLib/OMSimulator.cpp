@@ -119,16 +119,13 @@ oms_status_enu_t oms3_import(const char* filename, char** cref)
 
 oms_status_enu_t oms3_list(const char* cref_, char** contents)
 {
-  oms3::ComRef cref(cref_);
-  if (cref.isValidIdent())
-  {
-    oms3::Model* model = oms3::Scope::GetInstance().getModel(cref);
-    if (!model)
-      return logError("Model \"" + std::string(cref) + "\" does not exist in the scope");
-    return model->list(contents);
-  }
-  else
-    return logError("Only implemented for model identifiers");
+  oms3::ComRef tail(cref_);
+  oms3::ComRef front = tail.pop_front();
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError("Model \"" + std::string(front) + "\" does not exist in the scope");
+
+  return model->list(tail, contents);
 }
 
 oms_status_enu_t oms3_parseModelName(const char* contents, char** cref)

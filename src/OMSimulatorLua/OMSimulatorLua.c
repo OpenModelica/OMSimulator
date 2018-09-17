@@ -1850,5 +1850,12 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   lua_pushnumber(L, 2);
   lua_setglobal(L, "finegrained");
 
+  lua_pushnumber(L, oms_system_tlm);
+  lua_setglobal(L, "oms_system_tlm");
+  lua_pushnumber(L, oms_system_wc);
+  lua_setglobal(L, "oms_system_wc");
+  lua_pushnumber(L, oms_system_sc);
+  lua_setglobal(L, "oms_system_sc");
+
   return 0;
 }

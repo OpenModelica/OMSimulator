@@ -53,6 +53,7 @@ namespace oms3
 
     static bool isValidIdent(const std::string& ident);
     bool isValidIdent() const;
+    bool isEmpty() const;
 
     ComRef pop_back();
     ComRef front();
