@@ -30,6 +30,191 @@
  */
 
 #include "Scope.h"
+#include "System.h"
+
+#include <OMSBoost.h>
+
+oms3::Scope::Scope()
+  : tempDir("."), workingDir(".")
+{
+  this->models.push_back(NULL);
+
+  boost::filesystem::path tempDir = oms2_temp_directory_path() / "omsimulator";
+  setTempDirectory(tempDir.string());
+
+  setWorkingDirectory(".");
+}
+
+oms3::Scope::~Scope()
+{
+  // free memory if no one else does
+  for (const auto& model : models)
+    if (model)
+      delete model;
+}
+
+oms3::Scope& oms3::Scope::GetInstance()
+{
+  // the only instance
+  static Scope scope;
+  return scope;
+}
+
+oms_status_enu_t oms3::Scope::newModel(const oms3::ComRef& cref)
+{
+  // check if cref is in scope
+  if (getModel(cref))
+    return logError("oms3_newModel failed. A model \"" + std::string(cref) + "\" already exists in the scope");
+
+  Model* model = oms3::Model::NewModel(cref);
+  if (!model)
+    return oms_status_error;
+
+  models.back() = model;
+  models_map[cref] = models.size() - 1;
+  models.push_back(NULL);
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::Scope::deleteModel(const oms3::ComRef& cref)
+{
+  auto it = models_map.find(cref);
+  if (it == models_map.end())
+    return logError("oms3_delete failed. Model \"" + std::string(cref) + "\" does not exist in the scope");
+  delete models[it->second];
+
+  models.pop_back();
+  models[it->second] = models.back();
+  models.back() = NULL;
+
+  // update models_map
+  if (models[it->second])
+    models_map[models[it->second]->getName()] = it->second;
+  models_map.erase(it);
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::Scope::renameModel(const oms3::ComRef& cref, const oms3::ComRef& newCref)
+{
+  auto it = models_map.find(cref);
+  if (it == models_map.end())
+    return logError("oms3_rename failed. Model \"" + std::string(cref) + "\" does not exist in the scope");
+
+  unsigned int index = it->second;
+  oms_status_enu_t status = models[index]->rename(newCref);
+  if (oms_status_ok != status)
+    return status;
+
+  models_map.erase(it);
+  models_map[newCref] = index;
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::Scope::exportModel(const oms3::ComRef& cref, const std::string& filename)
+{
+  oms3::Model* model = getModel(cref);
+  if (!model)
+    return logError("oms3_export failed. Model \"" + std::string(cref) + "\" does not exist in the scope");
+
+  return model->exportToFile(filename);
+}
+
+oms_status_enu_t oms3::Scope::importModel(const std::string& filename, char** cref)
+{
+  return logError("oms3_import not implemented");
+}
+
+oms_status_enu_t oms3::Scope::setTempDirectory(const std::string& newTempDir)
+{
+  if (!boost::filesystem::is_directory(newTempDir))
+  {
+    if (!boost::filesystem::create_directory(newTempDir))
+      return logError("Changing temp directory to \"" + newTempDir + "\" failed");
+    else
+      logInfo("New temp directory has been created: \"" + newTempDir + "\"");
+  }
+
+  boost::filesystem::path path(newTempDir.c_str());
+  try
+  {
+    path = oms2_canonical(path);
+  }
+  catch(std::exception e)
+  {
+    // do nothing, canonical fails if the directory contains a junction or a symlink!
+    // https://svn.boost.org/trac10/ticket/11138
+  }
+
+  this->tempDir = path.string();
+  logInfo("Set temp directory to    \"" + this->tempDir + "\"");
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::Scope::setWorkingDirectory(const std::string& newWorkingDir)
+{
+  boost::filesystem::path path(newWorkingDir.c_str());
+  if (!boost::filesystem::is_directory(path))
+    return logError("Set working directory to \"" + newWorkingDir + "\" failed");
+
+  boost::filesystem::current_path(path);
+  try
+  {
+    path = oms2_canonical(path);
+  }
+  catch(std::exception e)
+  {
+    // do nothing, canonical fails if the directory contains a junction or a symlink!
+    // https://svn.boost.org/trac10/ticket/11138
+  }
+
+  this->workingDir = path.string();
+  logInfo("Set working directory to \"" + this->workingDir + "\"");
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::Scope::getElement(const oms3::ComRef& cref, oms3::Element** element)
+{
+  oms3::ComRef tail(cref);
+  oms3::ComRef front = tail.pop_front();
+  oms3::Model* model = getModel(front);
+  if (!model)
+    return logError("oms3_getElement failed. Model \"" + std::string(front) + "\" does not exist in the scope");
+
+  if (cref.isValidIdent())
+  {
+    *element = model->getElement();
+    return oms_status_ok;
+  }
+  else
+  {
+    oms3::System* system = model->getSystem(tail);
+    if (!system)
+      return logError("oms3_getElement failed. System \"" + std::string(tail) + "\" does not exist in the model \"" + std::string(front) + "\"");
+
+    *element = system->getElement();
+    return oms_status_ok;
+  }
+}
+
+oms3::Model* oms3::Scope::getModel(const oms3::ComRef& cref)
+{
+  auto it = models_map.find(cref);
+  if (it == models_map.end())
+    return NULL;
+
+  return models[it->second];
+}
+
+/* ************************************ */
+/* oms2                                 */
+/*                                      */
+/*                                      */
+/* ************************************ */
 
 #include "Types.h"
 #include "ComRef.h"
@@ -42,8 +227,6 @@
 
 #include <iostream>
 #include <sstream>
-#include <OMSBoost.h>
-
 
 oms2::Scope::Scope()
 {
@@ -343,11 +526,11 @@ oms_status_enu_t oms2::Scope::setTempDirectory(const std::string& newTempDir)
   {
     if (!boost::filesystem::create_directory(newTempDir))
     {
-      logError("Changing working directory to \"" + std::string(newTempDir) + "\" failed");
+      logError("Changing temp directory to \"" + newTempDir + "\" failed");
       return oms_status_error;
     }
     else
-      logInfo("New temp directory has been created: \"" + std::string(newTempDir) + "\"");
+      logInfo("New temp directory has been created: \"" + newTempDir + "\"");
   }
 
   boost::filesystem::path path(newTempDir.c_str());

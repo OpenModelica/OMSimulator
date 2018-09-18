@@ -46,6 +46,115 @@
 #include <boost/filesystem.hpp>
 
 /* ************************************ */
+/* oms3                                 */
+/*                                      */
+/* Experimental API                     */
+/* ************************************ */
+
+const char* oms3_getVersion()
+{
+  return oms_git_version;
+}
+
+oms_status_enu_t oms3_setLogFile(const char* filename)
+{
+  return Log::setLogFile(filename);
+}
+
+void oms3_setMaxLogFileSize(const unsigned long size)
+{
+  Log::setMaxLogFileSize(size);
+}
+
+oms_status_enu_t oms3_setTempDirectory(const char* newTempDir)
+{
+  return oms3::Scope::GetInstance().setTempDirectory(newTempDir);
+}
+
+oms_status_enu_t oms3_setWorkingDirectory(const char* newWorkingDir)
+{
+  return oms3::Scope::GetInstance().setWorkingDirectory(newWorkingDir);
+}
+
+oms_status_enu_t oms3_newModel(const char* cref)
+{
+  return oms3::Scope::GetInstance().newModel(oms3::ComRef(cref));
+}
+
+oms_status_enu_t oms3_rename(const char* cref_, const char* newCref_)
+{
+  oms3::ComRef cref(cref_);
+  oms3::ComRef newCref(newCref_);
+
+  if (cref.isValidIdent())
+    return oms3::Scope::GetInstance().renameModel(cref, newCref);
+  else
+    return logError("oms3_rename failed. Only implemented for model identifiers");
+}
+
+oms_status_enu_t oms3_delete(const char* cref_)
+{
+  oms3::ComRef cref(cref_);
+
+  if (cref.isValidIdent())
+    return oms3::Scope::GetInstance().deleteModel(cref);
+  else
+    return logError("oms3_delete failed. Only implemented for model identifiers");
+}
+
+oms_status_enu_t oms3_export(const char* cref_, const char* filename)
+{
+  return oms3::Scope::GetInstance().exportModel(oms3::ComRef(cref_), std::string(filename));
+}
+
+oms_status_enu_t oms3_import(const char* filename, char** cref)
+{
+  return oms3::Scope::GetInstance().importModel(std::string(filename), cref);
+}
+
+oms_status_enu_t oms3_list(const char* cref_, char** contents)
+{
+  oms3::ComRef tail(cref_);
+  oms3::ComRef front = tail.pop_front();
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError("oms3_list failed. Model \"" + std::string(front) + "\" does not exist in the scope");
+
+  return model->list(tail, contents);
+}
+
+oms_status_enu_t oms3_parseModelName(const char* contents, char** cref)
+{
+  return logError("oms3_parseModelName not implemented");
+}
+
+oms_status_enu_t oms3_importString(const char* contents, char** cref)
+{
+  return logError("oms3_importString not implemented");
+}
+
+oms_status_enu_t oms3_addSystem(const char* cref_, oms_system_enu_t type)
+{
+  oms3::ComRef cref(cref_);
+  oms3::ComRef modelCref = cref.pop_front();
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
+  if (!model)
+    return logError("oms3_addSystem failed. Model \"" + std::string(modelCref) + "\" does not exist in the scope");
+
+  return model->addSystem(cref, type);
+}
+
+oms_status_enu_t oms3_copySystem(const char* source, const char* target)
+{
+  return logError("oms3_copySystem not implemented");
+}
+
+oms_status_enu_t oms3_getElement(const char* cref_, oms3_element_t** element)
+{
+  return oms3::Scope::GetInstance().getElement(oms3::ComRef(cref_), reinterpret_cast<oms3::Element**>(element));
+}
+
+/* ************************************ */
 /* OMSimulator 2.0                      */
 /*                                      */
 /* TODO: replace prefix oms2 with oms   */

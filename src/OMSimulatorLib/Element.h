@@ -41,6 +41,35 @@
 #include <string>
 #include <vector>
 
+namespace oms3
+{
+  /**
+   * \brief Element
+   */
+  class Element : protected oms3_element_t
+  {
+  public:
+    Element(oms3_element_type_enu_t type, const ComRef& name);
+    ~Element();
+
+    const oms3_element_type_enu_t getType() const {return type;}
+    const oms3::ComRef getName() const {return oms3::ComRef(std::string(name));}
+    //oms3::Connector** getConnectors() const {return reinterpret_cast<oms3::Connector**>(connectors);}
+    const oms3::ssd::ElementGeometry* getGeometry() const {return reinterpret_cast<oms3::ssd::ElementGeometry*>(geometry);}
+
+    void setName(const ComRef& name);
+    void setGeometry(const oms3::ssd::ElementGeometry* newGeometry);
+    //void setConnectors(const std::vector<oms3::Connector> newConnectors);
+
+    void describe();
+
+  private:
+    // methods to copy the object
+    Element(const Element& rhs);            ///< not implemented
+    Element& operator=(const Element& rhs); ///< not implemented
+  };
+}
+
 namespace oms2
 {
   /**

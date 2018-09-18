@@ -71,10 +71,26 @@ typedef enum {
 } oms_tlm_interpolation_t;
 
 typedef enum {
+  oms_tlm_connector_type_state,
+  oms_tlm_connector_type_flow,
+  oms_tlm_connector_type_effort
+} oms_tlm_connector_type_enu_t;
+
+typedef enum {
   oms_solver_internal,         ///< internal solver; CS-FMU only
   oms_solver_explicit_euler,
   oms_solver_cvode
 } oms_solver_enu_t;
+
+typedef enum {
+  oms_element_none,
+  oms_element_model,      ///< composite model
+  oms_element_system,     ///< FMI or TLM system
+  oms_element_external, ///< External model
+  oms_element_fmu,      ///< FMU
+  oms_element_table,    ///< lookup table
+  oms_element_port      ///< port
+} oms3_element_type_enu_t;
 
 typedef enum {
   oms_component_none,
@@ -85,6 +101,12 @@ typedef enum {
   oms_component_table,    ///< lookup table
   oms_component_port      ///< port
 } oms_element_type_enu_t;
+
+typedef enum {
+  oms_system_tlm,      ///< TLM System
+  oms_system_wc,       ///< Weakly Coupled System
+  oms_system_sc        ///< Strongly Coupled System
+} oms_system_enu_t;
 
 typedef enum {
   oms_signal_type_real,
@@ -284,6 +306,29 @@ typedef struct {
 } ssd_system_geometry_t;
 
 /**
+ * \brief 5.3.6 ssd:SimulationInformation
+ *
+ * This element provides default information for useful solver/master
+ * algorithms and their default settings for processing the given component or
+ * (sub-)system. The information is purely an optional indicator of useful
+ * settings, any processing tool is free to use, merge, or discard this
+ * information in any way it sees fit.
+ *
+ * Multiple child-elements are allowed here in order to supply different
+ * settings for different kinds of solver/master algorithms.
+ *
+ * Simulation information can be present at multiple hierarchy levels of the
+ * overall system, including individual components. It is up to the processing
+ * tool to decide how best to integrate this information into its overall
+ * solving/simulation strategy. Tools supporting the use of multiple, different
+ * solvers/co-simulation master algorithms inside one simulation can make use
+ * of multiple different settings at different scopes, however this standard
+ * does not presume or require the existence of this functionality.
+ */
+typedef struct {
+} ssd_simulation_information_t;
+
+/**
  * \brief Connection between two connectors.
  */
 typedef struct {
@@ -308,6 +353,13 @@ typedef struct {
 /**
  * \brief Element (aka ssd:Component)
  */
+typedef struct {
+  oms3_element_type_enu_t type;      ///< Element type, e.g. FMU
+  char* name;                       ///< Name of the element
+  oms_connector_t** connectors;     ///< List (null-terminated array) of all interface variables: inputs, outputs, and parameters.
+  ssd_element_geometry_t* geometry; ///< Geometry information of the element
+} oms3_element_t;
+
 typedef struct {
   oms_element_type_enu_t type;      ///< Element type, e.g. FMU
   char* name;                       ///< Name of the element
