@@ -83,6 +83,16 @@ typedef enum {
 } oms_solver_enu_t;
 
 typedef enum {
+  oms_element_none,
+  oms_element_model,      ///< composite model
+  oms_element_system,     ///< FMI or TLM system
+  oms_element_external, ///< External model
+  oms_element_fmu,      ///< FMU
+  oms_element_table,    ///< lookup table
+  oms_element_port      ///< port
+} oms3_element_type_enu_t;
+
+typedef enum {
   oms_component_none,
   oms_component_tlm,      ///< TLM composite model
   oms_component_fmi,      ///< FMI composite model
@@ -343,6 +353,13 @@ typedef struct {
 /**
  * \brief Element (aka ssd:Component)
  */
+typedef struct {
+  oms3_element_type_enu_t type;      ///< Element type, e.g. FMU
+  char* name;                       ///< Name of the element
+  oms_connector_t** connectors;     ///< List (null-terminated array) of all interface variables: inputs, outputs, and parameters.
+  ssd_element_geometry_t* geometry; ///< Geometry information of the element
+} oms3_element_t;
+
 typedef struct {
   oms_element_type_enu_t type;      ///< Element type, e.g. FMU
   char* name;                       ///< Name of the element

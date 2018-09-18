@@ -176,6 +176,16 @@ oms_status_enu_t oms3::Scope::setWorkingDirectory(const std::string& newWorkingD
   return oms_status_ok;
 }
 
+oms_status_enu_t oms3::Scope::getElement(const oms3::ComRef& cref, oms3::Element** element)
+{
+  oms3::Model* model = getModel(cref);
+  if (!model)
+    return logError("Model \"" + std::string(cref) + "\" does not exist in the scope");
+
+  *element = model->getElement();
+  return oms_status_ok;
+}
+
 oms3::Model* oms3::Scope::getModel(const oms3::ComRef& cref)
 {
   auto it = models_map.find(cref);

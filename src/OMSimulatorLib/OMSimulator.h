@@ -74,7 +74,7 @@ oms_status_enu_t oms3_addBus(const char* cref);
 oms_status_enu_t oms3_addTLMBus(const char* cref, const char* domain, const char* dimension, const char* interpolation);
 oms_status_enu_t oms3_addConnectorToBus(const char* busCref, const char* connectorCref);
 oms_status_enu_t oms3_addConnectorToTLMBus(const char* busCref, const char* connectorCref, oms_tlm_connector_type_enu_t type);
-oms_status_enu_t oms3_getElement(const char* cref, oms_element_t** element);
+oms_status_enu_t oms3_getElement(const char* cref, oms3_element_t** element);
 oms_status_enu_t oms3_setElementGeometry(const char* cref, const ssd_element_geometry_t* geometry);
 oms_status_enu_t oms3_getElements(const char* cref, oms_element_t*** elements);
 oms_status_enu_t oms3_getSubModelPath(const char* cref, char** path);
