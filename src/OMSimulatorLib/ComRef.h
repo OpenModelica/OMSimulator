@@ -66,6 +66,7 @@ namespace oms3
     char* cref = NULL;
   };
 
+  std::string operator+(const std::string& lhs, const ComRef& rhs);
   bool operator==(const ComRef& lhs, const ComRef& rhs);
   bool operator!=(const ComRef& lhs, const ComRef& rhs);
   bool operator<(const ComRef& lhs, const ComRef& rhs);

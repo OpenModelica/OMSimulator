@@ -149,6 +149,11 @@ oms_status_enu_t oms3_copySystem(const char* source, const char* target)
   return logError("not implemented");
 }
 
+oms_status_enu_t oms3_getElement(const char* cref_, oms3_element_t** element)
+{
+  return oms3::Scope::GetInstance().getElement(oms3::ComRef(cref_), reinterpret_cast<oms3::Element**>(element));
+}
+
 /* ************************************ */
 /* OMSimulator 2.0                      */
 /*                                      */

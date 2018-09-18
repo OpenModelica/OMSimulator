@@ -38,6 +38,46 @@
 
 #include <string>
 
+namespace oms3
+{
+  namespace ssd
+  {
+    class ElementGeometry : protected ssd_element_geometry_t
+    {
+    public:
+      ElementGeometry();
+      ElementGeometry(const ElementGeometry& rhs);
+      ~ElementGeometry();
+
+      ElementGeometry& operator=(ElementGeometry const& rhs);
+
+      void setX1(double x1) {this->x1 = x1;}
+      void setY1(double y1) {this->y1 = y1;}
+      void setX2(double x2) {this->x2 = x2;}
+      void setY2(double y2) {this->y2 = y2;}
+      void setSizePosition(double x1, double y1, double x2, double y2) {this->x1 = x1; this->y1 = y1; this->x2 = x2; this->y2 = y2;}
+      void setRotation(double rotation) {this->rotation = rotation;}
+      void setIconSource(std::string iconSource);
+      void setIconRotation(double iconRotation) {this->iconRotation = iconRotation;}
+      void setIconFlip(bool iconFlip) {this->iconFlip = iconFlip;}
+      void setIconFixedAspectRatio(bool iconFixedAspectRatio) {this->iconFixedAspectRatio = iconFixedAspectRatio;}
+
+      double getX1() const {return x1;}
+      double getY1() const {return y1;}
+      double getX2() const {return x2;}
+      double getY2() const {return y2;}
+      double getRotation() const {return rotation;}
+      std::string getIconSource() const {return std::string(iconSource);}
+      bool hasIconSource() const {return (NULL != iconSource);}
+      double getIconRotation() const {return iconRotation;}
+      bool getIconFlip() const {return iconFlip;}
+      bool getIconFixedAspectRatio() const {return iconFixedAspectRatio;}
+
+      oms_status_enu_t exportToSSD(pugi::xml_node& root) const;
+    };
+  }
+}
+
 namespace oms2
 {
   namespace ssd
