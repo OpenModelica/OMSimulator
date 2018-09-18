@@ -34,6 +34,7 @@
 
 #include "ComRef.h"
 #include "Types.h"
+#include "Element.h"
 
 #include <pugixml.hpp>
 #include <map>
@@ -53,6 +54,7 @@ namespace oms3
     Component* getComponent(const oms3::ComRef& cref);
     const ComRef& getName() const {return cref;}
     ComRef getFullName();
+    oms3::Element* getElement() {return &element;}
     oms_status_enu_t list(const ComRef& cref, char** contents);
     oms_system_enu_t getType() const {return type;}
     oms_status_enu_t addSystem(const oms3::ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem);
@@ -65,6 +67,8 @@ namespace oms3
     // stop the compiler generating methods copying the object
     System(System const& copy);            ///< not implemented
     System& operator=(System const& copy); ///< not implemented
+
+    oms3::Element element;
 
   private:
     ComRef cref;

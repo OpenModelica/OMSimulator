@@ -40,7 +40,7 @@
 #include "ssd/Tags.h"
 
 oms3::System::System(const oms3::ComRef& cref, oms_system_enu_t type, oms3::Model* parentModel, oms3::System* parentSystem)
-  : cref(cref), type(type), parentModel(parentModel), parentSystem(parentSystem)
+  : element(oms_element_system, cref), cref(cref), type(type), parentModel(parentModel), parentSystem(parentSystem)
 {
 }
 

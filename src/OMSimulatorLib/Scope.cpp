@@ -30,6 +30,7 @@
  */
 
 #include "Scope.h"
+#include "System.h"
 
 #include <OMSBoost.h>
 
@@ -63,7 +64,7 @@ oms_status_enu_t oms3::Scope::newModel(const oms3::ComRef& cref)
 {
   // check if cref is in scope
   if (getModel(cref))
-    return logError("A model \"" + std::string(cref) + "\" already exists in the scope");
+    return logError("oms3_newModel failed. A model \"" + std::string(cref) + "\" already exists in the scope");
 
   Model* model = oms3::Model::NewModel(cref);
   if (!model)
@@ -80,7 +81,7 @@ oms_status_enu_t oms3::Scope::deleteModel(const oms3::ComRef& cref)
 {
   auto it = models_map.find(cref);
   if (it == models_map.end())
-    return logError("Model \"" + std::string(cref) + "\" does not exist in the scope");
+    return logError("oms3_delete failed. Model \"" + std::string(cref) + "\" does not exist in the scope");
   delete models[it->second];
 
   models.pop_back();
@@ -99,7 +100,7 @@ oms_status_enu_t oms3::Scope::renameModel(const oms3::ComRef& cref, const oms3::
 {
   auto it = models_map.find(cref);
   if (it == models_map.end())
-    return logError("Model \"" + std::string(cref) + "\" does not exist in the scope");
+    return logError("oms3_rename failed. Model \"" + std::string(cref) + "\" does not exist in the scope");
 
   unsigned int index = it->second;
   oms_status_enu_t status = models[index]->rename(newCref);
@@ -116,14 +117,14 @@ oms_status_enu_t oms3::Scope::exportModel(const oms3::ComRef& cref, const std::s
 {
   oms3::Model* model = getModel(cref);
   if (!model)
-    return logError("Model \"" + std::string(cref) + "\" does not exist in the scope");
+    return logError("oms3_export failed. Model \"" + std::string(cref) + "\" does not exist in the scope");
 
   return model->exportToFile(filename);
 }
 
 oms_status_enu_t oms3::Scope::importModel(const std::string& filename, char** cref)
 {
-  return logError("Not implemented");
+  return logError("oms3_import not implemented");
 }
 
 oms_status_enu_t oms3::Scope::setTempDirectory(const std::string& newTempDir)
@@ -178,12 +179,26 @@ oms_status_enu_t oms3::Scope::setWorkingDirectory(const std::string& newWorkingD
 
 oms_status_enu_t oms3::Scope::getElement(const oms3::ComRef& cref, oms3::Element** element)
 {
-  oms3::Model* model = getModel(cref);
+  oms3::ComRef tail(cref);
+  oms3::ComRef front = tail.pop_front();
+  oms3::Model* model = getModel(front);
   if (!model)
-    return logError("Model \"" + std::string(cref) + "\" does not exist in the scope");
+    return logError("oms3_getElement failed. Model \"" + std::string(front) + "\" does not exist in the scope");
 
-  *element = model->getElement();
-  return oms_status_ok;
+  if (cref.isValidIdent())
+  {
+    *element = model->getElement();
+    return oms_status_ok;
+  }
+  else
+  {
+    oms3::System* system = model->getSystem(tail);
+    if (!system)
+      return logError("oms3_getElement failed. System \"" + std::string(tail) + "\" does not exist in the model \"" + std::string(front) + "\"");
+
+    *element = system->getElement();
+    return oms_status_ok;
+  }
 }
 
 oms3::Model* oms3::Scope::getModel(const oms3::ComRef& cref)
