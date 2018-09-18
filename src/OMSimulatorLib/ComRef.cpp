@@ -129,6 +129,10 @@ oms3::ComRef oms3::ComRef::pop_front()
   return front;
 }
 
+std::string oms3::operator+(const std::string& lhs, const oms3::ComRef& rhs)
+{
+  return lhs + rhs;
+}
 
 bool oms3::operator==(const oms3::ComRef& lhs, const oms3::ComRef& rhs)
 {
