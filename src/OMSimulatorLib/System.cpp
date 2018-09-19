@@ -206,3 +206,22 @@ oms_status_enu_t oms3::System::exportToSSD(pugi::xml_node& node) const
 
   return oms_status_ok;
 }
+
+oms_status_enu_t oms3::System::addConnector(const oms3::ComRef &cref, oms_causality_enu_t causality, oms_signal_type_enu_t type)
+{
+  oms3::ComRef tail(cref);
+  oms3::ComRef head = tail.pop_front();
+  auto subsystem = subsystems.find(head);
+  if(subsystem != subsystems.end()) {
+    return subsystem->second->addConnector(tail,causality,type);
+  }
+
+  if(!cref.isValidIdent()) {
+    return logError("Not a valid ident: "+std::string(cref));
+  }
+
+  oms3::Connector connector(causality, type, cref);
+  this->getElement()->addConnector(connector);
+
+  return oms_status_ok;
+}

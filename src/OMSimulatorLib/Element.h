@@ -59,7 +59,8 @@ namespace oms3
 
     void setName(const ComRef& name);
     void setGeometry(const oms3::ssd::ElementGeometry* newGeometry);
-    //void setConnectors(const std::vector<oms3::Connector> newConnectors);
+    void setConnectors(const std::vector<oms3::Connector> newConnectors);
+    void addConnector(oms3::Connector connector);
 
   private:
     // methods to copy the object

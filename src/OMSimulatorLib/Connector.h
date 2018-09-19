@@ -41,7 +41,7 @@
 
 #include <pugixml.hpp>
 
-namespace oms2
+namespace oms3
 {
   /**
    * \brief Connector
@@ -50,6 +50,41 @@ namespace oms2
   {
   public:
     /**
+     * This constructor creates a oms2::Connector without geometry information.
+     */
+    Connector(oms_causality_enu_t causality, oms_signal_type_enu_t type, const oms3::ComRef& name);
+    /**
+     * This constructor is used if the optional SSD element giving the geometry
+     * information of the connector is initialized as well.
+     */
+    Connector(oms_causality_enu_t causality, oms_signal_type_enu_t type, const oms3::ComRef& name, double height);
+    ~Connector();
+
+    oms_status_enu_t exportToSSD(pugi::xml_node& root) const;
+
+    // methods to copy the object
+    Connector(const Connector& rhs);
+    Connector& operator=(const Connector& rhs);
+
+    void setName(const oms3::ComRef& name);
+    void setGeometry(const oms2::ssd::ConnectorGeometry* newGeometry);
+
+    const oms_causality_enu_t getCausality() const {return causality;}
+    const oms_signal_type_enu_t getType() const {return type;}
+    const oms3::ComRef getName() const {return oms3::ComRef(std::string(name));}
+    const oms2::ssd::ConnectorGeometry* getGeometry() const {return reinterpret_cast<oms2::ssd::ConnectorGeometry*>(geometry);}
+  };
+}
+
+namespace oms2
+{
+/**
+   * \brief Connector
+   */
+class Connector : protected oms_connector_t
+{
+public:
+  /**
      * This constructor creates a oms2::Connector without geometry information.
      */
     Connector(oms_causality_enu_t causality, oms_signal_type_enu_t type, const oms2::SignalRef& name);
