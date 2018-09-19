@@ -89,7 +89,7 @@ oms_status_enu_t oms3_rename(const char* cref_, const char* newCref_)
   if (cref.isValidIdent())
     return oms3::Scope::GetInstance().renameModel(cref, newCref);
   else
-    return logError("oms3_rename failed. Only implemented for model identifiers");
+    return logError("Only implemented for model identifiers");
 }
 
 oms_status_enu_t oms3_delete(const char* cref_)
@@ -99,7 +99,7 @@ oms_status_enu_t oms3_delete(const char* cref_)
   if (cref.isValidIdent())
     return oms3::Scope::GetInstance().deleteModel(cref);
   else
-    return logError("oms3_delete failed. Only implemented for model identifiers");
+    return logError("Only implemented for model identifiers");
 }
 
 oms_status_enu_t oms3_export(const char* cref_, const char* filename)
@@ -118,19 +118,19 @@ oms_status_enu_t oms3_list(const char* cref_, char** contents)
   oms3::ComRef front = tail.pop_front();
   oms3::Model* model = oms3::Scope::GetInstance().getModel(front);
   if (!model)
-    return logError("oms3_list failed. Model \"" + std::string(front) + "\" does not exist in the scope");
+    return logError("Model \"" + std::string(front) + "\" does not exist in the scope");
 
   return model->list(tail, contents);
 }
 
 oms_status_enu_t oms3_parseModelName(const char* contents, char** cref)
 {
-  return logError("oms3_parseModelName not implemented");
+  return logError("Not implemented");
 }
 
 oms_status_enu_t oms3_importString(const char* contents, char** cref)
 {
-  return logError("oms3_importString not implemented");
+  return logError("Not implemented");
 }
 
 oms_status_enu_t oms3_addSystem(const char* cref_, oms_system_enu_t type)
@@ -139,14 +139,14 @@ oms_status_enu_t oms3_addSystem(const char* cref_, oms_system_enu_t type)
   oms3::ComRef modelCref = cref.pop_front();
   oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
   if (!model)
-    return logError("oms3_addSystem failed. Model \"" + std::string(modelCref) + "\" does not exist in the scope");
+    return logError("Model \"" + std::string(modelCref) + "\" does not exist in the scope");
 
   return model->addSystem(cref, type);
 }
 
 oms_status_enu_t oms3_copySystem(const char* source, const char* target)
 {
-  return logError("oms3_copySystem not implemented");
+  return logError("Not implemented");
 }
 
 oms_status_enu_t oms3_getElement(const char* cref_, oms3_element_t** element)
