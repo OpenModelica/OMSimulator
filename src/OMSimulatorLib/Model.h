@@ -54,7 +54,6 @@ namespace oms3
     static Model* NewModel(const ComRef& cref);
     const ComRef& getName() const {return cref;}
     System* getSystem(const ComRef& cref);
-    oms3::Element* getElement() {return &element;}
     oms_status_enu_t rename(const ComRef& cref);
     oms_status_enu_t list(const ComRef& cref, char** contents);
     oms_status_enu_t addSystem(const ComRef& cref, oms_system_enu_t type);
@@ -72,9 +71,6 @@ namespace oms3
     ComRef cref;
     System* system = NULL;
     std::string tempDir;
-
-  protected:
-    oms3::Element element;
   };
 }
 

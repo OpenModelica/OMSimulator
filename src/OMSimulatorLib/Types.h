@@ -83,14 +83,9 @@ typedef enum {
 } oms_solver_enu_t;
 
 typedef enum {
-  oms_element_none,
-  oms_element_model,      ///< composite model
-  oms_element_system,     ///< FMI or TLM system
-  oms_element_external, ///< External model
-  oms_element_fmu,      ///< FMU
-  oms_element_table,    ///< lookup table
-  oms_element_port      ///< port
-} oms3_element_type_enu_t;
+  oms_element_system,
+  oms_element_component
+} oms3_element_enu_t;
 
 typedef enum {
   oms_component_none,
@@ -107,6 +102,12 @@ typedef enum {
   oms_system_wc,       ///< Weakly Coupled System
   oms_system_sc        ///< Strongly Coupled System
 } oms_system_enu_t;
+
+typedef enum {
+  oms3_component_external, ///< External model
+  oms3_component_fmu,      ///< FMU
+  oms3_component_table     ///< lookup table
+} oms3_component_enu_t;
 
 typedef enum {
   oms_signal_type_real,
@@ -354,7 +355,7 @@ typedef struct {
  * \brief Element (aka ssd:Component)
  */
 typedef struct {
-  oms3_element_type_enu_t type;      ///< Element type, e.g. FMU
+  oms3_element_enu_t type;          ///< Element type, i.e. system or component
   char* name;                       ///< Name of the element
   oms_connector_t** connectors;     ///< List (null-terminated array) of all interface variables: inputs, outputs, and parameters.
   ssd_element_geometry_t* geometry; ///< Geometry information of the element
@@ -493,8 +494,6 @@ typedef struct {
    */
   bool canInterpolateInputs;
 } oms_fmu_info_t;
-
-
 
 #ifdef __cplusplus
 }

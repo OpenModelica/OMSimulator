@@ -183,22 +183,17 @@ oms_status_enu_t oms3::Scope::getElement(const oms3::ComRef& cref, oms3::Element
   oms3::ComRef front = tail.pop_front();
   oms3::Model* model = getModel(front);
   if (!model)
-    return logError("oms3_getElement failed. Model \"" + std::string(front) + "\" does not exist in the scope");
+    return logError("Model \"" + std::string(front) + "\" does not exist in the scope");
 
   if (cref.isValidIdent())
-  {
-    *element = model->getElement();
-    return oms_status_ok;
-  }
-  else
-  {
-    oms3::System* system = model->getSystem(tail);
-    if (!system)
-      return logError("oms3_getElement failed. System \"" + std::string(tail) + "\" does not exist in the model \"" + std::string(front) + "\"");
+    return logError("A model has no element information");
 
-    *element = system->getElement();
-    return oms_status_ok;
-  }
+  oms3::System* system = model->getSystem(tail);
+  if (!system)
+    return logError("System \"" + std::string(tail) + "\" does not exist in the model \"" + std::string(front) + "\"");
+
+  *element = system->getElement();
+  return oms_status_ok;
 }
 
 oms3::Model* oms3::Scope::getModel(const oms3::ComRef& cref)
