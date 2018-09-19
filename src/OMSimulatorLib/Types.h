@@ -327,6 +327,7 @@ typedef struct {
  * does not presume or require the existence of this functionality.
  */
 typedef struct {
+  int dummy; ///< just to make msvc happy
 } ssd_simulation_information_t;
 
 /**
