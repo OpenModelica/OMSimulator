@@ -82,12 +82,27 @@ oms3::System* oms3::System::NewSystem(const oms3::ComRef& cref, oms_system_enu_t
   switch (type)
   {
   case oms_system_tlm:
+    if (parentSystem)
+    {
+      logError("A TLM system must be the the root system of a model.");
+      return NULL;
+    }
     return SystemTLM::NewSystem(cref, parentModel, parentSystem);
 
   case oms_system_wc:
+    if (parentSystem && oms_system_tlm != parentSystem->getType())
+    {
+      logError("A WC system must be the root system or a subsystem of a TLM system.");
+      return NULL;
+    }
     return SystemWC::NewSystem(cref, parentModel, parentSystem);
 
   case oms_system_sc:
+    if (parentSystem && oms_system_wc != parentSystem->getType())
+    {
+      logError("A SC system must be the root system or a subsystem of a WC system.");
+      return NULL;
+    }
     return SystemSC::NewSystem(cref, parentModel, parentSystem);
   }
 
@@ -146,11 +161,11 @@ bool oms3::System::validCref(const oms3::ComRef& cref)
   return true;
 }
 
-oms_status_enu_t oms3::System::addSystem(const oms3::ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem)
+oms_status_enu_t oms3::System::addSubSystem(const oms3::ComRef& cref, oms_system_enu_t type)
 {
   if (cref.isValidIdent())
   {
-    System* system = System::NewSystem(cref, type, parentModel, parentSystem);
+    System* system = System::NewSystem(cref, type, NULL, this);
     if (system)
       subsystems[cref] = system;
     return system ? oms_status_ok : oms_status_error;
@@ -163,7 +178,7 @@ oms_status_enu_t oms3::System::addSystem(const oms3::ComRef& cref, oms_system_en
   if (!system)
     return logError("System \"" + std::string(getFullName()) + "\" does not contain system \"" + std::string(front) + "\"");
 
-  return system->addSystem(tail, type, parentModel, parentSystem);
+  return system->addSubSystem(tail, type);
 }
 
 oms_status_enu_t oms3::System::list(const oms3::ComRef& cref, char** contents)

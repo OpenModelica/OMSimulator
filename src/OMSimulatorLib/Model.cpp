@@ -164,7 +164,7 @@ oms_status_enu_t oms3::Model::addSystem(const oms3::ComRef& cref, oms_system_enu
   oms3::ComRef front = tail.pop_front();
 
   if (system->getName() == front)
-    return system->addSystem(tail, type, this, NULL);
+    return system->addSubSystem(tail, type);
 
   return logError("wrong input \"" + std::string(front) + "\" != \"" + std::string(system->getName()) + "\"");
 }
