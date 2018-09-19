@@ -44,6 +44,9 @@ oms3::System::System(const oms3::ComRef& cref, oms_system_enu_t type, oms3::Mode
 {
   connectors.push_back(NULL);
   element.setConnectors(&connectors[0]);
+
+  subelements.push_back(NULL);
+  element.setSubElements(&subelements[0]);
 }
 
 oms3::System::~System()
@@ -173,8 +176,14 @@ oms_status_enu_t oms3::System::addSubSystem(const oms3::ComRef& cref, oms_system
   {
     System* system = System::NewSystem(cref, type, NULL, this);
     if (system)
+    {
       subsystems[cref] = system;
-    return system ? oms_status_ok : oms_status_error;
+      subelements.back() = reinterpret_cast<oms3_element_t*>(system->getElement());
+      subelements.push_back(NULL);
+      element.setSubElements(&subelements[0]);
+      return oms_status_ok;
+    }
+    return oms_status_error;
   }
 
   ComRef tail(cref);
