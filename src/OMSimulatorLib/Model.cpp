@@ -47,7 +47,6 @@ oms3::Model::Model(const oms3::ComRef& cref, const std::string& tempDir)
   : cref(cref), tempDir(tempDir)
 {
   logInfo("New model \"" + std::string(cref) + "\" with corresponding temp directory \"" + tempDir + "\"");
-  elements = NULL;
 
   elements.push_back(NULL);
   elements.push_back(NULL);

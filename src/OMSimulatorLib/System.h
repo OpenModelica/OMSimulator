@@ -69,9 +69,6 @@ namespace oms3
     System(System const& copy);            ///< not implemented
     System& operator=(System const& copy); ///< not implemented
 
-    oms3::Element element;
-    std::vector<oms3::Connector*> connectors;
-
   private:
     ComRef cref;
     oms_system_enu_t type;
@@ -79,6 +76,10 @@ namespace oms3
     System* parentSystem;
     std::map<ComRef, System*> subsystems;
     std::map<ComRef, Component*> components;
+
+    oms3::Element element;
+    std::vector<oms3::Connector*> connectors;
+    std::vector<oms3_element_t*> subelements;
   };
 }
 
