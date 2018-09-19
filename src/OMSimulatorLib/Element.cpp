@@ -37,7 +37,7 @@
 #include <cstring>
 #include <iostream>
 
-oms3::Element::Element(oms3_element_type_enu_t type, const oms3::ComRef& name)
+oms3::Element::Element(oms3_element_enu_t type, const oms3::ComRef& name)
 {
   this->type = type;
 
@@ -105,23 +105,6 @@ void oms3::Element::setGeometry(const oms3::ssd::ElementGeometry* newGeometry)
 //  for (int i=0; i<newConnectors.size(); ++i)
 //    this->connectors[i] = reinterpret_cast<oms_connector_t*>(new oms2::Connector(newConnectors[i]));
 //}
-
-void oms3::Element::describe()
-{
-  std::cout << "Element \"" + getName() + "\"" << std::endl;
-
-  switch(getType())
-  {
-    case oms_element_none:
-    case oms_element_model:      std::cout << "type: Model" << std::endl; break;
-    case oms_element_system:     std::cout << "type: System" << std::endl; break;
-    case oms_element_external:   std::cout << "type: External model" << std::endl; break;
-    case oms_element_fmu:        std::cout << "type: FMU" << std::endl; break;
-    case oms_element_table:      std::cout << "type: lookup table" << std::endl; break;
-    case oms_element_port:       std::cout << "type: port" << std::endl; break;
-    default:                     std::cout << "type: unknown" << std::endl; break;
-  }
-}
 
 oms2::Element::Element(oms_element_type_enu_t type, const oms2::ComRef& name)
 {
