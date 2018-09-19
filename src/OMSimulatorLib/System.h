@@ -57,7 +57,7 @@ namespace oms3
     oms3::Element* getElement() {return &element;}
     oms_status_enu_t list(const ComRef& cref, char** contents);
     oms_system_enu_t getType() const {return type;}
-    oms_status_enu_t addSystem(const oms3::ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem);
+    oms_status_enu_t addSubSystem(const oms3::ComRef& cref, oms_system_enu_t type);
     bool validCref(const oms3::ComRef& cref);
     oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
 
