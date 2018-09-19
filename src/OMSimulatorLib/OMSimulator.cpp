@@ -41,6 +41,7 @@
 #include "ResultReader.h"
 #include "Types.h"
 #include "Version.h"
+#include "System.h"
 
 #include <string>
 #include <boost/filesystem.hpp>
@@ -157,6 +158,27 @@ oms_status_enu_t oms3_getElement(const char* cref_, oms3_element_t** element)
 oms_status_enu_t oms3_getElements(const char* cref, oms3_element_t*** elements)
 {
   return oms3::Scope::GetInstance().getElements(oms3::ComRef(cref), reinterpret_cast<oms3::Element***>(elements));
+}
+
+oms_status_enu_t oms3_addConnector(const char *cref, oms_causality_enu_t causality, oms_signal_type_enu_t type)
+{
+  logTrace();
+
+  oms3::ComRef tail(cref);
+  oms3::ComRef modelCref = tail.pop_front();
+  oms3::ComRef systemCref = tail.pop_front();
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
+  if(!model) {
+    return logError("Model \"" + std::string(modelCref) + "\" does not exist in the scope");
+  }
+
+  oms3::System* system = model->getSystem(systemCref);
+  if(!system) {
+    return logError("Model \"" + std::string(modelCref) + "\" does not contain system \"" + std::string(systemCref) + "\"");
+  }
+
+  return system->addConnector(tail, causality, type);
 }
 
 /* ************************************ */
@@ -748,3 +770,4 @@ int oms2_exists(const char* cref)
   logTrace();
   return oms2::Scope::GetInstance().exists(oms2::ComRef(cref)) ? 1 : 0;
 }
+
