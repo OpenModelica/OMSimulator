@@ -172,10 +172,11 @@ oms_status_enu_t Log::Error(const std::string& msg, const std::string& function)
   log.numErrors++;
   log.numMessages++;
   std::ostream& stream = log.logFile.is_open() ? log.logFile : cerr;
-  log.printStringToStream(stream, "error", "[" + function + "] " + msg);
+  std::string fullMessage = "[" + function + "] " + msg;
+  log.printStringToStream(stream, "error", fullMessage);
 
   if (log.cb)
-    log.cb(oms_message_error, msg.c_str());
+    log.cb(oms_message_error, fullMessage.c_str());
 
   return oms_status_error;
 }
