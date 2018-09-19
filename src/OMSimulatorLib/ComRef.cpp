@@ -83,18 +83,6 @@ bool oms3::ComRef::isEmpty() const
   return !(cref && cref[0] != '\0');
 }
 
-oms3::ComRef oms3::ComRef::pop_back()
-{
-  int dot=0;
-
-  for(int i=0; cref[i]; ++i)
-    if(cref[i] == '.')
-      dot = i;
-
-  cref[dot] = '\0';
-  return oms3::ComRef(cref+dot+1);
-}
-
 oms3::ComRef oms3::ComRef::front()
 {
   int dot=0;
