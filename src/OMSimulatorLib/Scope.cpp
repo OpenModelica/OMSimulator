@@ -179,6 +179,12 @@ oms_status_enu_t oms3::Scope::setWorkingDirectory(const std::string& newWorkingD
 
 oms_status_enu_t oms3::Scope::getElement(const oms3::ComRef& cref, oms3::Element** element)
 {
+  if (!element)
+  {
+    logWarning("[oms3::Scope::getElement] NULL pointer");
+    return oms_status_warning;
+  }
+
   oms3::ComRef tail(cref);
   oms3::ComRef front = tail.pop_front();
   oms3::Model* model = getModel(front);
@@ -194,6 +200,30 @@ oms_status_enu_t oms3::Scope::getElement(const oms3::ComRef& cref, oms3::Element
 
   *element = system->getElement();
   return oms_status_ok;
+}
+
+oms_status_enu_t oms3::Scope::getElements(const oms3::ComRef& cref, oms3::Element*** elements)
+{
+  if (!elements)
+  {
+    logWarning("[oms3::Scope::getElements] NULL pointer");
+    return oms_status_warning;
+  }
+
+  oms3::ComRef tail(cref);
+  oms3::ComRef front = tail.pop_front();
+  oms3::Model* model = getModel(front);
+  if (!model)
+    return logError("Model \"" + std::string(front) + "\" does not exist in the scope");
+
+  if (cref.isValidIdent())
+  {
+    *elements = model->getElements();
+    return oms_status_ok;
+  }
+
+  return logError("Only implemented for model identifiers");
+  return oms_status_error;
 }
 
 oms3::Model* oms3::Scope::getModel(const oms3::ComRef& cref)

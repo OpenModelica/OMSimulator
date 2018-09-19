@@ -47,10 +47,12 @@ oms3::Model::Model(const oms3::ComRef& cref, const std::string& tempDir)
   : cref(cref), tempDir(tempDir)
 {
   logInfo("New model \"" + std::string(cref) + "\" with corresponding temp directory \"" + tempDir + "\"");
+  elements = NULL;
 }
 
 oms3::Model::~Model()
 {
+  deleteElements();
   if (system)
     delete system;
 }
@@ -198,6 +200,36 @@ oms_status_enu_t oms3::Model::exportToFile(const std::string& filename) const
     return logError("xml export failed for \"" + filename + "\" (model \"" + std::string(this->getName()) + "\")");
 
   return oms_status_ok;
+}
+
+oms3::Element** oms3::Model::getElements()
+{
+  if (elements)
+    return elements;
+
+  updateElements();
+  return elements;
+}
+
+void oms3::Model::deleteElements()
+{
+  if (this->elements)
+  {
+    delete[] elements;
+    elements = NULL;
+  }
+}
+
+void oms3::Model::updateElements()
+{
+  deleteElements();
+
+  if (system)
+  {
+    elements = new oms3::Element*[2];
+    elements[0] = system->getElement();
+    elements[1] = NULL;
+  }
 }
 
 /* ************************************ */

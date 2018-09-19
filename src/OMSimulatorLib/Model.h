@@ -60,6 +60,8 @@ namespace oms3
     oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
     oms_status_enu_t exportToFile(const std::string& filename) const;
 
+    oms3::Element** getElements();
+
   private:
     Model(const ComRef& cref, const std::string& tempDir);
 
@@ -71,6 +73,12 @@ namespace oms3
     ComRef cref;
     System* system = NULL;
     std::string tempDir;
+
+    oms3::Element** elements;
+
+  protected:
+    void deleteElements();
+    void updateElements();
   };
 }
 

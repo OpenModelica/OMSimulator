@@ -154,6 +154,11 @@ oms_status_enu_t oms3_getElement(const char* cref_, oms3_element_t** element)
   return oms3::Scope::GetInstance().getElement(oms3::ComRef(cref_), reinterpret_cast<oms3::Element**>(element));
 }
 
+oms_status_enu_t oms3_getElements(const char* cref, oms3_element_t*** elements)
+{
+  return oms3::Scope::GetInstance().getElements(oms3::ComRef(cref), reinterpret_cast<oms3::Element***>(elements));
+}
+
 /* ************************************ */
 /* OMSimulator 2.0                      */
 /*                                      */
