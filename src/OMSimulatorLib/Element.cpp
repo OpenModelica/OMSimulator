@@ -45,6 +45,7 @@ oms3::Element::Element(oms3_element_enu_t type, const oms3::ComRef& name)
   this->name = new char[str.size()+1];
   strcpy(this->name, str.c_str());
 
+  this->elements = NULL;
   this->connectors = NULL;
 
   this->geometry = reinterpret_cast<ssd_element_geometry_t*>(new oms3::ssd::ElementGeometry());
@@ -54,12 +55,16 @@ oms3::Element::~Element()
 {
   if (this->name)
     delete[] this->name;
+
+  // lochel: don't delete the sub-elements
+
   if (this->connectors)
   {
 //    for (int i=0; this->connectors[i]; ++i)
 //      delete reinterpret_cast<oms3::Connector*>(this->connectors[i]);
     delete[] this->connectors;
   }
+
   if (this->geometry)
     delete reinterpret_cast<oms3::ssd::ElementGeometry*>(this->geometry);
 }
@@ -91,6 +96,11 @@ void oms3::Element::setGeometry(const oms3::ssd::ElementGeometry* newGeometry)
 void oms3::Element::setConnectors(oms3::Connector** newConnectors)
 {
   this->connectors = reinterpret_cast<oms_connector_t**>(newConnectors);
+}
+
+void oms3::Element::setSubElements(oms3_element_t** subelements)
+{
+  this->elements = subelements;
 }
 
 /* ************************************ */

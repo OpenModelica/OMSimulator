@@ -74,7 +74,7 @@ namespace oms3
     System* system = NULL;
     std::string tempDir;
 
-    std::vector<oms3_element_t*> elements;
+    std::vector<oms3::Element*> elements;
   };
 }
 
