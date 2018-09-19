@@ -55,7 +55,6 @@ namespace oms3
     bool isValidIdent() const;
     bool isEmpty() const;
 
-    ComRef pop_back();
     ComRef front();
     ComRef pop_front();
 
