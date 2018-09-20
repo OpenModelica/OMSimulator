@@ -98,6 +98,7 @@ typedef enum {
 } oms_element_type_enu_t;
 
 typedef enum {
+  oms_system_none,
   oms_system_tlm,      ///< TLM System
   oms_system_wc,       ///< Weakly Coupled System
   oms_system_sc        ///< Strongly Coupled System
