@@ -215,6 +215,31 @@ oms_status_enu_t oms3_getSystemType(const char* cref, oms_system_enu_t* type)
   return oms_status_ok;
 }
 
+oms_status_enu_t oms3_addConnection(const char *crefA, const char *crefB)
+{
+  logTrace();
+
+  oms3::ComRef tailA(crefA);
+  oms3::ComRef modelCref = tailA.pop_front();
+  oms3::ComRef systemCref = tailA.pop_front();
+
+  oms3::ComRef tailB(crefB);
+  tailB.pop_front();
+  tailB.pop_front();
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
+  if(!model) {
+    return logError("Model: "+std::string(modelCref)+" not found in scope");
+  }
+
+  oms3::System* system = model->getSystem(systemCref);
+  if(!system) {
+    return logError("System: "+std::string(systemCref)+" not found in scope");
+  }
+
+  return system->addConnection(tailA,tailB);
+}
+
 /* ************************************ */
 /* OMSimulator 2.0                      */
 /*                                      */

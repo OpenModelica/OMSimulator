@@ -39,6 +39,42 @@
 
 #include <string>
 
+namespace oms3
+{
+  /// **
+  // * \brief Connection
+  // * /
+  class Connection : protected oms3_connection_t
+  {
+  public:
+    Connection(const oms3::ComRef& conA, const oms3::ComRef& conB);
+    ~Connection();
+
+    // methods to copy the object
+    Connection(const Connection& rhs);
+    Connection& operator=(const Connection& rhs);
+
+    oms_status_enu_t exportToSSD(pugi::xml_node& root) const;
+
+    const oms3::ComRef getSignalA() const {return oms3::ComRef(conA);}
+    const oms3::ComRef getSignalB() const {return oms3::ComRef(conB);}
+
+    const oms2::ssd::ConnectionGeometry* getGeometry() const {return reinterpret_cast<oms2::ssd::ConnectionGeometry*>(geometry);}
+    void setGeometry(const oms2::ssd::ConnectionGeometry* newGeometry);
+
+    bool isEqual(const oms3::Connection& connection) const;
+    bool isEqual(const oms3::ComRef& signalA, const oms3::ComRef& signalB) const;
+
+  private:
+    friend bool operator==(const Connection& lhs, const Connection& rhs);
+    friend bool operator!=(const Connection& lhs, const Connection& rhs);
+  };
+
+  inline bool operator==(const Connection& lhs, const Connection& rhs) {return lhs.isEqual(rhs);}
+  inline bool operator!=(const Connection& lhs, const Connection& rhs) {return !(lhs == rhs);}
+}
+
+
 namespace oms2
 {
   /**
