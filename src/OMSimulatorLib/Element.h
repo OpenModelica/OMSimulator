@@ -61,6 +61,7 @@ namespace oms3
     void setGeometry(const oms3::ssd::ElementGeometry* newGeometry);
     void setConnectors(const std::vector<oms3::Connector> newConnectors);
     void addConnector(oms3::Connector connector);
+    void getConnectors(std::vector<oms3::Connector> &connectors) const;
 
   private:
     // methods to copy the object

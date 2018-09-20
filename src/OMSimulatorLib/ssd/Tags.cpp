@@ -45,3 +45,4 @@ const char* oms2::ssd::ssd_enumerations                 = "ssd:Enumerations";
 const char* oms2::ssd::ssd_system                       = "ssd:System";
 const char* oms2::ssd::ssd_system_structure_description = "ssd:SystemStructureDescription";
 const char* oms2::ssd::ssd_units                        = "ssd:Units";
+const char* oms2::ssd::ssd_elements                        = "ssd:Elements";
