@@ -91,7 +91,7 @@ private:
 
 #define logInfo(msg)    Log::Info(msg)
 #define logWarning(msg) Log::Warning(msg)
-#define logError(msg)   Log::Error(msg, __FUNCTION_NAME__)
+#define logError(msg)   Log::Error(msg, __func__)
 
 #ifdef OMS_DEBUG_LOGGING
   #define logDebug(msg) Log::Debug(msg)
