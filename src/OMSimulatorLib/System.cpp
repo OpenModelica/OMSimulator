@@ -42,10 +42,16 @@
 oms3::System::System(const oms3::ComRef& cref, oms_system_enu_t type, oms3::Model* parentModel, oms3::System* parentSystem)
   : element(oms_element_system, cref), cref(cref), type(type), parentModel(parentModel), parentSystem(parentSystem)
 {
+  connectors.push_back(NULL);
+  element.setConnectors(&connectors[0]);
 }
 
 oms3::System::~System()
 {
+  for (const auto& connector : connectors)
+    if (connector)
+      delete connector;
+
   for (const auto& component : components)
     delete component.second;
 
@@ -207,11 +213,8 @@ oms_status_enu_t oms3::System::exportToSSD(pugi::xml_node& node) const
   }
 
   pugi::xml_node connectors_node = node.append_child(oms2::ssd::ssd_connectors);
-  std::vector<oms3::Connector> connectors;
-  this->element.getConnectors(connectors);
-  for(auto &connector : connectors) {
-    connector.exportToSSD(connectors_node);
-  }
+  for(const auto& connector : connectors)
+    connector->exportToSSD(connectors_node);
 
   return oms_status_ok;
 }
@@ -229,8 +232,9 @@ oms_status_enu_t oms3::System::addConnector(const oms3::ComRef &cref, oms_causal
     return logError("Not a valid ident: "+std::string(cref));
   }
 
-  oms3::Connector connector(causality, type, cref);
-  this->getElement()->addConnector(connector);
+  oms3::Connector* connector = new oms3::Connector(causality, type, cref);
+  connectors.back() = connector;
+  connectors.push_back(NULL);
 
   return oms_status_ok;
 }

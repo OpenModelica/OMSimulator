@@ -70,6 +70,7 @@ namespace oms3
     System& operator=(System const& copy); ///< not implemented
 
     oms3::Element element;
+    std::vector<oms3::Connector*> connectors;
 
   private:
     ComRef cref;
