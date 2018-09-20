@@ -58,25 +58,25 @@ oms_status_enu_t oms3_import(const char* filename, char** cref);
 oms_status_enu_t oms3_list(const char* cref, char** contents);
 oms_status_enu_t oms3_parseModelName(const char* contents, char** cref);
 oms_status_enu_t oms3_importString(const char* contents, char** cref);
-
 oms_status_enu_t oms3_addSystem(const char* cref, oms_system_enu_t type);
 oms_status_enu_t oms3_copySystem(const char* source, const char* target);
+oms_status_enu_t oms3_getElement(const char* cref, oms3_element_t** element);
+oms_status_enu_t oms3_getElements(const char* cref, oms3_element_t*** elements);
+oms_status_enu_t oms3_addConnector(const char* cref, oms_causality_enu_t causality, oms_signal_type_enu_t type);
 
+/* not implemented yet */
 oms_status_enu_t oms3_getSystemType(const char* cref, oms_system_enu_t* type);
 oms_status_enu_t oms3_addSubModel(const char* cref, const char* fmuPath);
 oms_status_enu_t oms3_addExternalModel(const char* cref, const char* path, const char* startscript);
 oms_status_enu_t oms3_setSimulationInformation(const char* cref, ssd_simulation_information_t* info);
 oms_status_enu_t oms3_getSimulationInformation(const char* cref, ssd_simulation_information_t** info);
-oms_status_enu_t oms3_addConnector(const char* cref, oms_causality_enu_t causality, oms_signal_type_enu_t type);
 oms_status_enu_t oms3_addConnection(const char* crefA, const char* crefB);
 oms_status_enu_t oms3_addTLMConnection(const char* crefA, const char* crefB, double delay, double alpha, double Zf, double Zfr);
 oms_status_enu_t oms3_addBus(const char* cref);
 oms_status_enu_t oms3_addTLMBus(const char* cref, const char* domain, const char* dimension, const char* interpolation);
 oms_status_enu_t oms3_addConnectorToBus(const char* busCref, const char* connectorCref);
 oms_status_enu_t oms3_addConnectorToTLMBus(const char* busCref, const char* connectorCref, oms_tlm_connector_type_enu_t type);
-oms_status_enu_t oms3_getElement(const char* cref, oms3_element_t** element);
 oms_status_enu_t oms3_setElementGeometry(const char* cref, const ssd_element_geometry_t* geometry);
-oms_status_enu_t oms3_getElements(const char* cref, oms3_element_t*** elements);
 oms_status_enu_t oms3_getSubModelPath(const char* cref, char** path);
 oms_status_enu_t oms3_getFMUInfo(const char* cref, const oms_fmu_info_t** fmuInfo);
 oms_status_enu_t oms3_setConnectorGeometry(const char* connector, const ssd_connector_geometry_t* geometry);
