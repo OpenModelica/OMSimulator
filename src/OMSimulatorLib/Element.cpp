@@ -90,14 +90,18 @@ void oms3::Element::setGeometry(const oms3::ssd::ElementGeometry* newGeometry)
 
 void oms3::Element::addConnector(oms3::Connector connector)
 {
-  std::vector<oms3::Connector> vConnectors;
-  for(int i=0; connectors && connectors[i]; ++i) {
-    oms3::Connector *tempCon = reinterpret_cast<oms3::Connector*>(connectors[i]);
-    vConnectors.push_back(*tempCon);
-  }
-  vConnectors.push_back(connector);
+  std::vector<oms3::Connector> tempConnectors;
+  getConnectors(tempConnectors);
+  tempConnectors.push_back(connector);
+  setConnectors(tempConnectors);
+}
 
-  setConnectors(vConnectors);
+void oms3::Element::getConnectors(std::vector<Connector> &connectors) const
+{
+  for(int i=0; this->connectors && this->connectors[i]; ++i) {
+    oms3::Connector *tempCon = reinterpret_cast<oms3::Connector*>(this->connectors[i]);
+    connectors.push_back(*tempCon);
+  }
 }
 
 void oms3::Element::setConnectors(const std::vector<oms3::Connector> newConnectors)
