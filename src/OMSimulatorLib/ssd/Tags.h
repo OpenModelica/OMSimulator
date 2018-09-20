@@ -38,6 +38,7 @@ namespace oms2
   {
     extern const char* ssd_annotation;
     extern const char* ssd_annotations;
+    extern const char* ssd_annotation;
     extern const char* ssd_component;
     extern const char* ssd_connection_geometry;
     extern const char* ssd_connection;

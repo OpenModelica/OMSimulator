@@ -355,6 +355,45 @@ oms_status_enu_t oms3_getConnections(const char *cref, oms3_connection_t ***conn
   return oms_status_ok;
 }
 
+oms_status_enu_t oms3_addBus(const char *cref)
+{
+  logTrace();
+  oms3::ComRef tail(cref);
+  oms3::ComRef modelCref = tail.pop_front();
+  oms3::ComRef systemCref = tail.pop_front();
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
+  if(!model) {
+    return logError("Model \"" + std::string(modelCref) + "\" does not exist in the scope");
+  }
+  oms3::System* system = model->getSystem(systemCref);
+  if(!system) {
+    return logError("Model \"" + std::string(modelCref) + "\" does not contain system \"" + std::string(systemCref) + "\"");
+  }
+  return system->addBus(tail);
+}
+
+oms_status_enu_t oms3_addConnectorToBus(const char *busCref, const char *connectorCref)
+{
+  logTrace();
+  oms3::ComRef busTail(busCref);
+  oms3::ComRef modelCref = busTail.pop_front();
+  oms3::ComRef systemCref = busTail.pop_front();
+  oms3::ComRef connectorTail(connectorCref);
+  if(modelCref != connectorTail.pop_front())
+    return logError("Bus and connector must belong to same model");
+  if(systemCref != connectorTail.pop_front())
+    return logError("Bus and connector must belong to same system");
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
+  if(!model) {
+    return logError("Model \"" + std::string(modelCref) + "\" does not exist in the scope");
+  }
+  oms3::System* system = model->getSystem(systemCref);
+  if(!system) {
+    return logError("Model \"" + std::string(modelCref) + "\" does not contain system \"" + std::string(systemCref) + "\"");
+  }
+  return system->addConnectorToBus(busTail, connectorTail);
+}
+
 /* ************************************ */
 /* OMSimulator 2.0                      */
 /*                                      */

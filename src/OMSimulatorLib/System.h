@@ -37,6 +37,7 @@
 #include "Element.h"
 #include "Connection.h"
 #include "ssd/ConnectorGeometry.h"
+#include "BusConnector.h"
 
 #include <pugixml.hpp>
 #include <map>
@@ -70,6 +71,8 @@ namespace oms3
     oms_status_enu_t addConnection(const oms3::ComRef& crefA, const oms3::ComRef& crefB);
     oms_status_enu_t setConnectorGeometry(const oms3::ComRef& cref, const oms2::ssd::ConnectorGeometry* geometry);
     oms_status_enu_t setConnectionGeometry(const oms3::ComRef &crefA, const oms3::ComRef &crefB, const oms2::ssd::ConnectionGeometry* geometry);
+    oms_status_enu_t addBus(const oms3::ComRef& cref);
+    oms_status_enu_t addConnectorToBus(const oms3::ComRef& busCref, const oms3::ComRef& connectorCref);
 
   protected:
     System(const ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem);
@@ -89,6 +92,7 @@ namespace oms3
     oms3::Element element;
     std::vector<oms3::Connector*> connectors;   ///< last element is always NULL
     std::vector<oms3_element_t*> subelements;   ///< last element is always NULL; don't free it
+    std::vector<oms3::BusConnector*> busconnectors;
     std::vector<oms3::Connection*> connections; ///< last element is always NULL
   };
 }
