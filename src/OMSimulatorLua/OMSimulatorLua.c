@@ -336,6 +336,37 @@ static int OMSimulatorLua_oms3_addConnection(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms3_addBus(const char *cref);
+static int OMSimulatorLua_oms3_addBus(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 arguments");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* cref = lua_tostring(L, 1);
+  oms_status_enu_t status = oms3_addBus(cref);
+
+  lua_pushinteger(L, status);
+
+  return 1;
+}
+
+//oms_status_enu_t oms3_addConnectorToBus(const char *busCref, const char *connectorCref)
+static int OMSimulatorLua_oms3_addConnectorToBus(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 arguments");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+
+  const char* busCref = lua_tostring(L, 1);
+  const char* connectorCref = lua_tostring(L, 2);
+  oms_status_enu_t status = oms3_addConnectorToBus(busCref,connectorCref);
+
+  lua_pushinteger(L, status);
+
+  return 1;
+}
 
 /* ************************************ */
 /* OMSimulator 2.0                      */
@@ -1821,6 +1852,8 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms3_getSystemType);
   REGISTER_LUA_CALL(oms3_addConnector);
   REGISTER_LUA_CALL(oms3_addConnection);
+  REGISTER_LUA_CALL(oms3_addBus);
+  REGISTER_LUA_CALL(oms3_addConnectorToBus);
   /* ************************************ */
   /* OMSimulator 2.0                      */
   /*                                      */
