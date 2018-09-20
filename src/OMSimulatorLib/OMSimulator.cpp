@@ -199,6 +199,8 @@ oms_status_enu_t oms3_getSystemType(const char* cref, oms_system_enu_t* type)
   oms3::ComRef tail(cref);
   oms3::ComRef modelCref = tail.pop_front();
 
+  *type = oms_system_none;
+
   oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
   if (!model) {
     return logError("Model \"" + std::string(modelCref) + "\" does not exist in the scope");
