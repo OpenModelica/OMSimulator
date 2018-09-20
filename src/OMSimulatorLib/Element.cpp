@@ -58,13 +58,6 @@ oms3::Element::~Element()
 
   // lochel: don't delete the sub-elements
 
-  if (this->connectors)
-  {
-//    for (int i=0; this->connectors[i]; ++i)
-//      delete reinterpret_cast<oms3::Connector*>(this->connectors[i]);
-    delete[] this->connectors;
-  }
-
   if (this->geometry)
     delete reinterpret_cast<oms3::ssd::ElementGeometry*>(this->geometry);
 }

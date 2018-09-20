@@ -223,7 +223,8 @@ oms_status_enu_t oms3::System::exportToSSD(pugi::xml_node& node) const
 
   pugi::xml_node connectors_node = node.append_child(oms2::ssd::ssd_connectors);
   for(const auto& connector : connectors)
-    connector->exportToSSD(connectors_node);
+    if (connector)
+      connector->exportToSSD(connectors_node);
 
   return oms_status_ok;
 }
@@ -244,6 +245,7 @@ oms_status_enu_t oms3::System::addConnector(const oms3::ComRef &cref, oms_causal
   oms3::Connector* connector = new oms3::Connector(causality, type, cref);
   connectors.back() = connector;
   connectors.push_back(NULL);
+  element.setConnectors(&connectors[0]);
 
   return oms_status_ok;
 }
