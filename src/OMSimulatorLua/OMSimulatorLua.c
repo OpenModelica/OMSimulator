@@ -266,6 +266,21 @@ static int OMSimulatorLua_oms3_copySystem(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms3_setCommandLineOption(const char* cmd);
+static int OMSimulatorLua_oms3_setCommandLineOption(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* cmd = lua_tostring(L, 1);
+  oms_status_enu_t status = oms3_setCommandLineOption(cmd);
+
+  lua_pushinteger(L, status);
+
+  return 1;
+}
+
 /* ************************************ */
 /* OMSimulator 2.0                      */
 /*                                      */
@@ -1746,6 +1761,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms3_importString);
   REGISTER_LUA_CALL(oms3_addSystem);
   REGISTER_LUA_CALL(oms3_copySystem);
+  REGISTER_LUA_CALL(oms3_setCommandLineOption);
   /* ************************************ */
   /* OMSimulator 2.0                      */
   /*                                      */
