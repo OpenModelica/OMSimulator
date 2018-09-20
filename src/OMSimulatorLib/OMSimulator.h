@@ -63,6 +63,7 @@ oms_status_enu_t oms3_copySystem(const char* source, const char* target);
 oms_status_enu_t oms3_getElement(const char* cref, oms3_element_t** element);
 oms_status_enu_t oms3_getElements(const char* cref, oms3_element_t*** elements);
 oms_status_enu_t oms3_addConnector(const char* cref, oms_causality_enu_t causality, oms_signal_type_enu_t type);
+oms_status_enu_t oms3_setCommandLineOption(const char* cmd);
 
 /* not implemented yet */
 oms_status_enu_t oms3_getSystemType(const char* cref, oms_system_enu_t* type);
