@@ -206,7 +206,7 @@ oms_status_enu_t oms3::Scope::getElement(const oms3::ComRef& cref, oms3::Element
 
   oms3::System* system = model->getSystem(tail);
   if (!system)
-    return logError("System \"" + std::string(tail) + "\" does not exist in the model \"" + std::string(front) + "\"");
+    return logError("Model \"" + std::string(front) + "\" does not contain system \"" + std::string(tail) + "\"");
 
   *element = system->getElement();
   return oms_status_ok;
