@@ -213,8 +213,10 @@ oms_status_enu_t oms3::System::exportToSSD(pugi::xml_node& node) const
   }
 
   pugi::xml_node connectors_node = node.append_child(oms2::ssd::ssd_connectors);
-  for(const auto& connector : connectors)
-    connector->exportToSSD(connectors_node);
+  for(const auto& connector : connectors) {
+    if(connector) //Must check since vector is null-terminated
+      connector->exportToSSD(connectors_node);
+  }
 
   return oms_status_ok;
 }
