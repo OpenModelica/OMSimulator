@@ -30,6 +30,8 @@
  */
 
 #include "Scope.h"
+
+#include "Flags.h"
 #include "System.h"
 
 #include <OMSBoost.h>
@@ -133,7 +135,7 @@ oms_status_enu_t oms3::Scope::setTempDirectory(const std::string& newTempDir)
   {
     if (!boost::filesystem::create_directory(newTempDir))
       return logError("Changing temp directory to \"" + newTempDir + "\" failed");
-    else
+    else if (!Flags::SuppressPath())
       logInfo("New temp directory has been created: \"" + newTempDir + "\"");
   }
 
@@ -149,7 +151,11 @@ oms_status_enu_t oms3::Scope::setTempDirectory(const std::string& newTempDir)
   }
 
   this->tempDir = path.string();
-  logInfo("Set temp directory to    \"" + this->tempDir + "\"");
+
+  if (Flags::SuppressPath())
+    logInfo("Set temp directory to    <suppressed>");
+  else
+    logInfo("Set temp directory to    \"" + this->tempDir + "\"");
 
   return oms_status_ok;
 }
@@ -172,7 +178,11 @@ oms_status_enu_t oms3::Scope::setWorkingDirectory(const std::string& newWorkingD
   }
 
   this->workingDir = path.string();
-  logInfo("Set working directory to \"" + this->workingDir + "\"");
+
+  if (Flags::SuppressPath())
+    logInfo("Set working directory to <suppressed>");
+  else
+    logInfo("Set working directory to \"" + this->workingDir + "\"");
 
   return oms_status_ok;
 }

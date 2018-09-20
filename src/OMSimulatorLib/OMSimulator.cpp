@@ -31,17 +31,18 @@
 
 #include "OMSimulator.h"
 
-#include "MatReader.h"
 #include "ComRef.h"
 #include "Element.h"
+#include "Flags.h"
 #include "FMUInfo.h"
 #include "Logging.h"
+#include "MatReader.h"
 #include "Model.h"
-#include "Scope.h"
 #include "ResultReader.h"
+#include "Scope.h"
+#include "System.h"
 #include "Types.h"
 #include "Version.h"
-#include "System.h"
 
 #include <string>
 #include <boost/filesystem.hpp>
@@ -179,6 +180,18 @@ oms_status_enu_t oms3_addConnector(const char *cref, oms_causality_enu_t causali
   }
 
   return system->addConnector(tail, causality, type);
+}
+
+oms_status_enu_t oms3_setCommandLineOption(const char* cmd)
+{
+  if (std::string(cmd) == "--suppressPath=true")
+    oms3::Flags::SuppressPath(true);
+  else if (std::string(cmd) == "--suppressPath=false")
+    oms3::Flags::SuppressPath(false);
+  else
+    return logError("Unknown flag or option: \"" + std::string(cmd) + "\"");
+
+  return oms_status_ok;
 }
 
 /* ************************************ */
