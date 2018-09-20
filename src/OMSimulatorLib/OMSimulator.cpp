@@ -194,6 +194,26 @@ oms_status_enu_t oms3_setCommandLineOption(const char* cmd)
   return oms_status_ok;
 }
 
+oms_status_enu_t oms3_getSystemType(const char* cref, oms_system_enu_t* type)
+{
+  oms3::ComRef tail(cref);
+  oms3::ComRef modelCref = tail.pop_front();
+  oms3::ComRef systemCref = tail.pop_front();
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
+  if (!model) {
+    return logError("Model \"" + std::string(modelCref) + "\" does not exist in the scope");
+  }
+
+  oms3::System* system = model->getSystem(systemCref);
+  if (!system) {
+    return logError("Model \"" + std::string(modelCref) + "\" does not contain system \"" + std::string(systemCref) + "\"");
+  }
+
+  *type = system->getType();
+  return oms_status_ok;
+}
+
 /* ************************************ */
 /* OMSimulator 2.0                      */
 /*                                      */
