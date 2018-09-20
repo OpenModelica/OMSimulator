@@ -36,6 +36,133 @@
 
 #include <string.h>
 
+oms3::ssd::ElementGeometry::ElementGeometry()
+{
+  logTrace();
+
+  this->x1 = 0.0; // -10.0;
+  this->y1 = 0.0; // -10.0;
+  this->x2 = 0.0; // 10.0;
+  this->y2 = 0.0; // 10.0;
+  this->rotation = 0.0;
+  this->iconSource = NULL;
+  this->iconRotation = 0.0;
+  this->iconFlip = false;
+  this->iconFixedAspectRatio = false;
+}
+
+oms3::ssd::ElementGeometry::ElementGeometry(const oms3::ssd::ElementGeometry& rhs)
+{
+  logTrace();
+
+  this->x1 = rhs.x1;
+  this->y1 = rhs.y1;
+  this->x2 = rhs.x2;
+  this->y2 = rhs.y2;
+  this->rotation = rhs.rotation;
+
+  if (rhs.iconSource)
+  {
+    size_t size = strlen(rhs.iconSource) + 1;
+    this->iconSource = new char[size];
+    memcpy(this->iconSource, rhs.iconSource, size*sizeof(char));
+  }
+  else
+    this->iconSource = NULL;
+
+  this->iconRotation = rhs.iconRotation;
+  this->iconFlip = rhs.iconFlip;
+  this->iconFixedAspectRatio = rhs.iconFixedAspectRatio;
+}
+
+oms3::ssd::ElementGeometry::~ElementGeometry()
+{
+  logTrace();
+
+  if (this->iconSource)
+    delete[] this->iconSource;
+}
+
+oms3::ssd::ElementGeometry& oms3::ssd::ElementGeometry::operator=(oms3::ssd::ElementGeometry const& rhs)
+{
+  logTrace();
+
+  // check for self-assignment
+  if(&rhs == this)
+    return *this;
+
+  this->x1 = rhs.x1;
+  this->y1 = rhs.y1;
+  this->x2 = rhs.x2;
+  this->y2 = rhs.y2;
+  this->rotation = rhs.rotation;
+
+  if (this->iconSource)
+    delete[] this->iconSource;
+
+  if (rhs.iconSource)
+  {
+    size_t size = strlen(rhs.iconSource) + 1;
+    this->iconSource = new char[size];
+    memcpy(this->iconSource, rhs.iconSource, size*sizeof(char));
+  }
+  else
+    this->iconSource = NULL;
+
+  this->iconRotation = rhs.iconRotation;
+  this->iconFlip = rhs.iconFlip;
+  this->iconFixedAspectRatio = rhs.iconFixedAspectRatio;
+
+  return *this;
+}
+
+void oms3::ssd::ElementGeometry::setIconSource(std::string iconSource)
+{
+  if (this->iconSource)
+    delete[] this->iconSource;
+
+  if (iconSource.empty())
+    this->iconSource = NULL;
+  else
+  {
+    size_t size = iconSource.length() + 1;
+    this->iconSource = new char[size];
+    memcpy(this->iconSource, iconSource.c_str(), size*sizeof(char));
+  }
+}
+
+oms_status_enu_t oms3::ssd::ElementGeometry::exportToSSD(pugi::xml_node& root) const
+{
+  // export ssd:ElementGeometry
+  if (x1 != 0.0 || y1 != 0.0 || x2 != 0.0 || y2 != 0.0)
+  {
+    pugi::xml_node node = root.append_child(oms2::ssd::ssd_element_geometry);
+    node.append_attribute("x1") = std::to_string(x1).c_str();
+    node.append_attribute("y1") = std::to_string(y1).c_str();
+    node.append_attribute("x2") = std::to_string(x2).c_str();
+    node.append_attribute("y2") = std::to_string(y2).c_str();
+
+    node.append_attribute("rotation") = std::to_string(rotation).c_str();
+
+    if (hasIconSource())
+      node.append_attribute("iconSource") = getIconSource().c_str();
+
+    node.append_attribute("iconRotation") = std::to_string(iconRotation).c_str();
+
+    if (getIconFlip())
+      node.append_attribute("iconFlip") = "true";
+    else
+      node.append_attribute("iconFlip") = "false";
+
+    if (getIconFixedAspectRatio())
+      node.append_attribute("iconFixedAspectRatio") = "true";
+    else
+      node.append_attribute("iconFixedAspectRatio") = "false";
+  }
+
+  return oms_status_ok;
+}
+
 oms2::ssd::ElementGeometry::ElementGeometry()
 {
   logTrace();

@@ -32,19 +32,63 @@
 #ifndef _OMS2_SCOPE_H_
 #define _OMS2_SCOPE_H_
 
-#include "Types.h"
-#include "CompositeModel.h"
 #include "ComRef.h"
-#include "Connection.h"
-#include "FMICompositeModel.h"
-#include "FMUInfo.h"
 #include "Model.h"
-#include "ssd/ConnectionGeometry.h"
-#include "ssd/ElementGeometry.h"
-#include "TLMCompositeModel.h"
+#include "Types.h"
 
 #include <map>
 #include <string>
+#include <vector>
+
+namespace oms3
+{
+  class Scope
+  {
+  private:
+    Scope();
+    ~Scope();
+
+    // stop the compiler generating methods copying the object
+    Scope(Scope const&);            ///< not implemented
+    Scope& operator=(Scope const&); ///< not implemented
+
+  public:
+    /**
+     * This is instance is used as global scope. It would also be possible to
+     * have several independent local scopes.
+     */
+    static Scope& GetInstance();
+
+    oms_status_enu_t newModel(const ComRef& cref);
+    oms_status_enu_t deleteModel(const ComRef& cref);
+    oms_status_enu_t renameModel(const ComRef& cref, const ComRef& newCref);
+    oms_status_enu_t exportModel(const ComRef& cref, const std::string& filename);
+    oms_status_enu_t importModel(const std::string& filename, char** cref);
+    oms_status_enu_t setTempDirectory(const std::string& newTempDir);
+    oms_status_enu_t setWorkingDirectory(const std::string& newWorkingDir);
+    oms_status_enu_t getElement(const ComRef& cref, oms3::Element** element);
+    oms_status_enu_t getElements(const ComRef& cref, oms3::Element*** elements);
+    Model* getModel(const ComRef& cref);
+
+    const std::string& getTempDirectory() const {return GetInstance().tempDir;}
+    const std::string& getWorkingDirectory() const {return GetInstance().workingDir;}
+
+  private:
+    std::vector<Model*> models; ///< last element is always NULL
+    std::map<ComRef, unsigned int> models_map;
+
+    std::string tempDir;
+    std::string workingDir;
+  };
+}
+
+#include "CompositeModel.h"
+#include "Connection.h"
+#include "FMICompositeModel.h"
+#include "FMUInfo.h"
+#include "ssd/ConnectionGeometry.h"
+#include "ssd/ElementGeometry.h"
+#include "TLMCompositeModel.h"
 
 namespace oms2
 {

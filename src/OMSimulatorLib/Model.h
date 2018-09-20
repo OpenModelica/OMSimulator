@@ -32,10 +32,54 @@
 #ifndef _OMS2_MODEL_H_
 #define _OMS2_MODEL_H_
 
+#include "ComRef.h"
 #include "Types.h"
+#include "Element.h"
+
+#include <pugixml.hpp>
+
+namespace oms3
+{
+  class System;
+
+  class Model
+  {
+  public:
+    ~Model();
+
+    /**
+     * NewModel() is used instead of a constructor to make sure that only
+     * instances with valid names can be created.
+     */
+    static Model* NewModel(const ComRef& cref);
+    const ComRef& getName() const {return cref;}
+    System* getSystem(const ComRef& cref);
+    oms_status_enu_t rename(const ComRef& cref);
+    oms_status_enu_t list(const ComRef& cref, char** contents);
+    oms_status_enu_t addSystem(const ComRef& cref, oms_system_enu_t type);
+    oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
+    oms_status_enu_t exportToFile(const std::string& filename) const;
+
+    oms3::Element** getElements() {return &elements[0];}
+
+  private:
+    Model(const ComRef& cref, const std::string& tempDir);
+
+    // stop the compiler generating methods copying the object
+    Model(Model const& copy);            ///< not implemented
+    Model& operator=(Model const& copy); ///< not implemented
+
+  private:
+    ComRef cref;
+    System* system = NULL;
+    std::string tempDir;
+
+    std::vector<oms3::Element*> elements;
+  };
+}
+
 #include "ResultWriter.h"
 #include "Pkg_oms2.h"
-#include "ComRef.h"
 #include "Element.h"
 #include "CompositeModel.h"
 #include "FMICompositeModel.h"
@@ -43,8 +87,6 @@
 #include "ssd/SystemGeometry.h"
 
 #include <string>
-
-#include <pugixml.hpp>
 
 namespace oms2
 {

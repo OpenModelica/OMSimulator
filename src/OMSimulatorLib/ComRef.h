@@ -32,8 +32,52 @@
 #ifndef _OMS2_COM_REF_H_
 #define _OMS2_COM_REF_H_
 
-#include <deque>
 #include <string>
+#include <cstring>
+
+namespace oms3
+{
+  /**
+   * \brief ComRef - component reference
+   */
+  class ComRef
+  {
+  public:
+    ComRef(const std::string& path);
+    ~ComRef();
+
+    // methods to copy the component reference
+    ComRef(const ComRef& copy);
+    ComRef& operator=(const ComRef& copy);
+    ComRef operator+(const ComRef& rhs);
+
+    static bool isValidIdent(const std::string& ident);
+    bool isValidIdent() const;
+    bool isEmpty() const;
+
+    ComRef front();
+    ComRef pop_front();
+
+    const char* c_str() const {return cref;}
+    operator std::string() const {return std::string(cref);}
+
+  private:
+    char* cref = NULL;
+  };
+
+  std::string operator+(const std::string& lhs, const ComRef& rhs);
+  bool operator==(const ComRef& lhs, const ComRef& rhs);
+  bool operator!=(const ComRef& lhs, const ComRef& rhs);
+  bool operator<(const ComRef& lhs, const ComRef& rhs);
+}
+
+/* ************************************ */
+/* oms2                                 */
+/*                                      */
+/*                                      */
+/* ************************************ */
+
+#include <deque>
 
 namespace oms2
 {

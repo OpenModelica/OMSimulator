@@ -31,6 +31,189 @@
 
 #include "Model.h"
 
+#include "System.h"
+#include "Scope.h"
+#include "ssd/Tags.h"
+
+#include <OMSBoost.h>
+
+/* ************************************ */
+/* oms3                                 */
+/*                                      */
+/* Experimental API                     */
+/* ************************************ */
+
+oms3::Model::Model(const oms3::ComRef& cref, const std::string& tempDir)
+  : cref(cref), tempDir(tempDir)
+{
+  logInfo("New model \"" + std::string(cref) + "\" with corresponding temp directory \"" + tempDir + "\"");
+
+  elements.push_back(NULL);
+  elements.push_back(NULL);
+}
+
+oms3::Model::~Model()
+{
+  if (system)
+    delete system;
+}
+
+oms3::Model* oms3::Model::NewModel(const oms3::ComRef& cref)
+{
+  if (!cref.isValidIdent())
+  {
+    logError("\"" + std::string(cref) + "\" is not a valid ident");
+    return NULL;
+  }
+
+  std::string tempDir = (boost::filesystem::path(Scope::GetInstance().getTempDirectory().c_str()) / boost::filesystem::unique_path(std::string(cref) + "-%%%%")).string();
+  if (boost::filesystem::is_directory(tempDir))
+  {
+    logError("Unique temp directory does already exist. Clean up the temp directory \"" + Scope::GetInstance().getTempDirectory() + "\" and try again.");
+    return NULL;
+  }
+  if (!boost::filesystem::create_directory(tempDir))
+  {
+    logError("Failed to create unique temp directory for the model \"" + std::string(cref) + "\"");
+    return NULL;
+  }
+
+  oms3::Model* model = new oms3::Model(cref, tempDir);
+  return model;
+}
+
+oms_status_enu_t oms3::Model::rename(const oms3::ComRef& cref)
+{
+  if (!cref.isValidIdent())
+    return logError(std::string(cref) + " is not a valid ident");
+
+  this->cref = cref;
+  return oms_status_ok;
+}
+
+oms3::System* oms3::Model::getSystem(const oms3::ComRef& cref)
+{
+  if (!system)
+    return NULL;
+
+  oms3::ComRef tail(cref);
+  oms3::ComRef front = tail.pop_front();
+
+  oms3::System* system = NULL;
+
+  if (this->system->getName() == front)
+  {
+    system = this->system;
+
+    if (!tail.isEmpty())
+      system = system->getSystem(tail);
+  }
+
+  return system;
+}
+
+oms_status_enu_t oms3::Model::list(const oms3::ComRef& cref, char** contents)
+{
+  struct xmlStringWriter : pugi::xml_writer
+  {
+    std::string result;
+    virtual void write(const void* data, size_t size)
+    {
+      result += std::string(static_cast<const char*>(data), size);
+    }
+  };
+
+  xmlStringWriter writer;
+  pugi::xml_document doc;
+
+  // list model
+  if (cref.isEmpty())
+  {
+    pugi::xml_node node = doc.append_child(oms2::ssd::ssd_system_structure_description);
+    exportToSSD(node);
+  }
+  else
+  {
+    // list system
+    if (!system)
+      return logError("Model \"" + std::string(getName()) + "\" does not contain any system");
+
+    System* subsystem = getSystem(cref);
+    if (!subsystem)
+      return logError("error");
+
+    pugi::xml_node node = doc.append_child(oms2::ssd::ssd_system);
+    subsystem->exportToSSD(node);
+  }
+
+  doc.save(writer);
+  *contents = (char*) malloc(strlen(writer.result.c_str()) + 1);
+  strcpy(*contents, writer.result.c_str());
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::Model::addSystem(const oms3::ComRef& cref, oms_system_enu_t type)
+{
+  if (cref.isValidIdent() && !system)
+  {
+    system = System::NewSystem(cref, type, this, NULL);
+    if (system)
+    {
+      elements[0] = system->getElement();
+      return oms_status_ok;
+    }
+    return oms_status_error;
+  }
+
+  if (!system)
+    return logError("Model \"" + std::string(getName()) + "\" does not contain any system");
+
+  oms3::ComRef tail(cref);
+  oms3::ComRef front = tail.pop_front();
+
+  if (system->getName() == front)
+    return system->addSubSystem(tail, type);
+
+  return logError("wrong input \"" + std::string(front) + "\" != \"" + std::string(system->getName()) + "\"");
+}
+
+oms_status_enu_t oms3::Model::exportToSSD(pugi::xml_node& node) const
+{
+  node.append_attribute("name") = this->getName().c_str();
+
+  if (system)
+  {
+    pugi::xml_node system_node = node.append_child(oms2::ssd::ssd_system);
+    if (oms_status_ok != system->exportToSSD(system_node))
+      return logError("export of system failed");
+  }
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::Model::exportToFile(const std::string& filename) const
+{
+  pugi::xml_document doc;
+
+  // generate XML declaration
+  pugi::xml_node declarationNode = doc.append_child(pugi::node_declaration);
+  declarationNode.append_attribute("version") = "1.0";
+  declarationNode.append_attribute("encoding") = "UTF-8";
+
+  pugi::xml_node node = doc.append_child(oms2::ssd::ssd_system_structure_description);
+  exportToSSD(node);
+
+  if (!doc.save_file(filename.c_str()))
+    return logError("xml export failed for \"" + filename + "\" (model \"" + std::string(this->getName()) + "\")");
+
+  return oms_status_ok;
+}
+
+/* ************************************ */
+/* oms2                                 */
+/*                                      */
+/*                                      */
+/* ************************************ */
+
 #include "CSVWriter.h"
 #include "FMICompositeModel.h"
 #include "Logging.h"

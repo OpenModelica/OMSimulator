@@ -30,11 +30,123 @@
  */
 
 #include "ComRef.h"
+#include "Types.h"
+#include "Identifier.h"
+
+oms3::ComRef::ComRef(const std::string& path)
+{
+  cref = new char[path.size() + 1];
+  strcpy(cref, path.c_str());
+}
+
+oms3::ComRef::~ComRef()
+{
+  delete[] cref;
+}
+
+oms3::ComRef::ComRef(const oms3::ComRef& copy)
+{
+  cref = new char[strlen(copy.c_str()) + 1];
+  strcpy(cref, copy.c_str());
+}
+
+oms3::ComRef& oms3::ComRef::operator=(const oms3::ComRef& copy)
+{
+  // check for self-assignment
+  if(&copy == this)
+    return *this;
+
+  delete[] cref;
+  cref = new char[strlen(copy.c_str()) + 1];
+  strcpy(cref, copy.c_str());
+
+  return *this;
+}
+
+oms3::ComRef oms3::ComRef::operator+(const oms3::ComRef& rhs)
+{
+  return oms3::ComRef(std::string(*this) + std::string(".") + std::string(rhs));
+}
+
+bool oms3::ComRef::isValidIdent(const std::string& ident)
+{
+  return oms_regex_match(ident, regex_ident);
+}
+
+bool oms3::ComRef::isValidIdent() const
+{
+  return isValidIdent(cref);
+}
+
+bool oms3::ComRef::isEmpty() const
+{
+  return !(cref && cref[0] != '\0');
+}
+
+oms3::ComRef oms3::ComRef::front()
+{
+  int dot=0;
+
+  for(int i=0; cref[i] && dot==0; ++i)
+    if(cref[i] == '.')
+      dot = i;
+
+  if (dot)
+    cref[dot] = '\0';
+
+  oms3::ComRef front(cref);
+
+  if (dot)
+    cref[dot] = '.';
+  return front;
+}
+
+oms3::ComRef oms3::ComRef::pop_front()
+{
+  int i=0;
+  for(; cref[i]; ++i)
+    if(cref[i] == '.')
+    {
+      cref[i] = '\0';
+      i++;
+      break;
+    }
+
+  oms3::ComRef front(cref);
+  *this = oms3::ComRef(cref + i);
+  return front;
+}
+
+std::string oms3::operator+(const std::string& lhs, const oms3::ComRef& rhs)
+{
+  return lhs + rhs;
+}
+
+bool oms3::operator==(const oms3::ComRef& lhs, const oms3::ComRef& rhs)
+{
+  return (0 == strcmp(lhs.c_str(), rhs.c_str()));
+}
+
+bool oms3::operator!=(const oms3::ComRef& lhs, const oms3::ComRef& rhs)
+{
+  return !(lhs == rhs);
+}
+
+bool oms3::operator<(const oms3::ComRef& lhs, const oms3::ComRef& rhs)
+{
+  return (0 < strcmp(lhs.c_str(), rhs.c_str()));
+}
+
+/* ************************************ */
+/* oms2                                 */
+/*                                      */
+/*                                      */
+/* ************************************ */
+
 #include "Logging.h"
 
 #include <deque>
 #include <string>
-#include <RegEx.h>
 
 oms2::ComRef::ComRef()
 {
