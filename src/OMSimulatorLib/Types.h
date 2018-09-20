@@ -127,6 +127,12 @@ typedef enum {
   oms_connection_tlm  ///< TLM connection
 } oms_connection_type_enu_t;
 
+typedef enum {
+  oms3_connection_single, ///< FMI conncection (directed & undelayed signal connection)
+  oms3_connection_bus,  ///< Bus connection
+  oms3_connection_tlm
+} oms3_connection_type_enu_t;
+
 /**
  * \brief Message types used by the logging mechanism.
  */
@@ -342,6 +348,13 @@ typedef struct {
   ssd_connection_geometry_t* geometry; ///< Geometry information of the connection
   /// \todo optional TLM attributes
 } oms_connection_t;
+
+typedef struct {
+  oms3_connection_type_enu_t type;      ///< Connection type, e.g. TLM
+  char* conA;                          ///< Name of connector A
+  char* conB;                          ///< Name of connector B
+  ssd_connection_geometry_t* geometry; ///< Geometry information of the connection
+} oms3_connection_t;
 
 /**
  * \brief Signal: input, output, and parameter
