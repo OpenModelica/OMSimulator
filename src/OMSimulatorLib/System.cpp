@@ -190,18 +190,27 @@ oms_status_enu_t oms3::System::exportToSSD(pugi::xml_node& node) const
 {
   node.append_attribute("name") = this->getName().c_str();
 
+  pugi::xml_node elements_node = node.append_child(oms2::ssd::ssd_elements);
+
   for (const auto& subsystem : subsystems)
   {
-    pugi::xml_node system_node = node.append_child(oms2::ssd::ssd_system);
+    pugi::xml_node system_node = elements_node.append_child(oms2::ssd::ssd_system);
     if (oms_status_ok != subsystem.second->exportToSSD(system_node))
       return logError("export of system failed");
   }
 
   for (const auto& component : components)
   {
-    pugi::xml_node component_node = node.append_child(oms2::ssd::ssd_component);
+    pugi::xml_node component_node = elements_node.append_child(oms2::ssd::ssd_component);
     if (oms_status_ok != component.second->exportToSSD(component_node))
       return logError("export of component failed");
+  }
+
+  pugi::xml_node connectors_node = node.append_child(oms2::ssd::ssd_connectors);
+  std::vector<oms3::Connector> connectors;
+  this->element.getConnectors(connectors);
+  for(auto &connector : connectors) {
+    connector.exportToSSD(connectors_node);
   }
 
   return oms_status_ok;

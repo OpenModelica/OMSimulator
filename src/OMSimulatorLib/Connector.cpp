@@ -86,40 +86,40 @@ oms3::Connector::~Connector()
 
 oms_status_enu_t oms3::Connector::exportToSSD(pugi::xml_node &root) const
 {
+  pugi::xml_node node = root.append_child(oms2::ssd::ssd_connector);
+  node.append_attribute("name") = std::string(getName()).c_str();
+  switch (this->causality)
+  {
+  case oms_causality_input:
+    node.append_attribute("kind") = "input";
+    break;
+  case oms_causality_output:
+    node.append_attribute("kind") = "output";
+    break;
+  case oms_causality_parameter:
+    node.append_attribute("kind") = "parameter";
+    break;
+  }
+  switch (this->type)
+  {
+  case oms_signal_type_boolean:
+    node.append_attribute("type") = "Boolean";
+    break;
+  case oms_signal_type_enum:
+    node.append_attribute("type") = "Enumeration";
+    break;
+  case oms_signal_type_integer:
+    node.append_attribute("type") = "Integer";
+    break;
+  case oms_signal_type_real:
+    node.append_attribute("type") = "Real";
+    break;
+  case oms_signal_type_string:
+    node.append_attribute("type") = "String";
+    break;
+  }
   if (this->geometry)
   {
-    pugi::xml_node node = root.append_child(oms2::ssd::ssd_connector);
-    node.append_attribute("name") = std::string(getName()).c_str();
-    switch (this->causality)
-    {
-    case oms_causality_input:
-      node.append_attribute("kind") = "input";
-      break;
-    case oms_causality_output:
-      node.append_attribute("kind") = "output";
-      break;
-    case oms_causality_parameter:
-      node.append_attribute("kind") = "parameter";
-      break;
-    }
-    switch (this->type)
-    {
-    case oms_signal_type_boolean:
-      node.append_attribute("type") = "Boolean";
-      break;
-    case oms_signal_type_enum:
-      node.append_attribute("type") = "Enumeration";
-      break;
-    case oms_signal_type_integer:
-      node.append_attribute("type") = "Integer";
-      break;
-    case oms_signal_type_real:
-      node.append_attribute("type") = "Real";
-      break;
-    case oms_signal_type_string:
-      node.append_attribute("type") = "String";
-      break;
-    }
     return reinterpret_cast<oms2::ssd::ConnectorGeometry*>(this->geometry)->exportToSSD(node);
   }
   return oms_status_ok;
