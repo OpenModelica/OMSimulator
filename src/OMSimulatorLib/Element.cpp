@@ -88,39 +88,16 @@ void oms3::Element::setGeometry(const oms3::ssd::ElementGeometry* newGeometry)
   }
 }
 
-void oms3::Element::addConnector(oms3::Connector connector)
+void oms3::Element::setConnectors(oms3::Connector** newConnectors)
 {
-  std::vector<oms3::Connector> tempConnectors;
-  getConnectors(tempConnectors);
-  tempConnectors.push_back(connector);
-  setConnectors(tempConnectors);
+  this->connectors = reinterpret_cast<oms_connector_t**>(newConnectors);
 }
 
-void oms3::Element::getConnectors(std::vector<Connector> &connectors) const
-{
-  for(int i=0; this->connectors && this->connectors[i]; ++i) {
-    oms3::Connector *tempCon = reinterpret_cast<oms3::Connector*>(this->connectors[i]);
-    connectors.push_back(*tempCon);
-  }
-}
-
-void oms3::Element::setConnectors(const std::vector<oms3::Connector> newConnectors)
-{
-  logTrace();
-
-  if (this->connectors)
-  {
-    for (int i=0; this->connectors[i]; ++i)
-      delete reinterpret_cast<oms2::Connector*>(this->connectors[i]);
-    delete[] this->connectors;
-  }
-
-  this->connectors = reinterpret_cast<oms_connector_t**>(new oms3::Connector*[newConnectors.size()+1]);
-  this->connectors[newConnectors.size()] = NULL;
-
-  for (int i=0; i<newConnectors.size(); ++i)
-    this->connectors[i] = reinterpret_cast<oms_connector_t*>(new oms3::Connector(newConnectors[i]));
-}
+/* ************************************ */
+/* oms2                                 */
+/*                                      */
+/*                                      */
+/* ************************************ */
 
 oms2::Element::Element(oms_element_type_enu_t type, const oms2::ComRef& name)
 {
