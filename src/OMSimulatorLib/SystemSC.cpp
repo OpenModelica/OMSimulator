@@ -34,6 +34,7 @@
 #include "Component.h"
 #include "Model.h"
 #include "Types.h"
+#include "ssd/Tags.h"
 
 oms3::SystemSC::SystemSC(const ComRef& cref, Model* parentModel, System* parentSystem)
   : oms3::System(cref, oms_system_sc, parentModel, parentSystem)
@@ -60,4 +61,19 @@ oms3::System* oms3::SystemSC::NewSystem(const oms3::ComRef& cref, oms3::Model* p
 
   System* system = new SystemSC(cref, parentModel, parentSystem);
   return system;
+}
+
+oms_status_enu_t oms3::SystemSC::exportToSSD_SimulationInformation(pugi::xml_node& node) const
+{
+  pugi::xml_node node_simulation_information = node.append_child(oms2::ssd::ssd_simulation_information);
+
+  pugi::xml_node node_solver = node_simulation_information.append_child("VariableStepSolver");
+  node_solver.append_attribute("description") = "e.g. cvode";
+  node_solver.append_attribute("absoluteTolerance") = "1e-4";
+  node_solver.append_attribute("relativeTolerance") = "1e-4";
+  node_solver.append_attribute("minimumStepSize") = "1e-4";
+  node_solver.append_attribute("maximumStepSize") = "1e-1";
+  node_solver.append_attribute("initialStepSize") = "1e-4";
+
+  return oms_status_ok;
 }
