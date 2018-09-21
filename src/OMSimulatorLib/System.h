@@ -35,6 +35,7 @@
 #include "ComRef.h"
 #include "Types.h"
 #include "Element.h"
+#include "Connection.h"
 
 #include <pugixml.hpp>
 #include <map>
@@ -61,6 +62,8 @@ namespace oms3
     bool validCref(const oms3::ComRef& cref);
     oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
     oms_status_enu_t addConnector(const oms3::ComRef& cref, oms_causality_enu_t causality, oms_signal_type_enu_t type);
+    oms3::Connector *getConnector(const oms3::ComRef& cref);
+    oms_status_enu_t addConnection(const oms3::ComRef& crefA, const oms3::ComRef& crefB);
 
   protected:
     System(const ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem);
@@ -80,6 +83,7 @@ namespace oms3
     oms3::Element element;
     std::vector<oms3::Connector*> connectors;
     std::vector<oms3_element_t*> subelements;
+    std::vector<oms3::Connection*> connections; ///< last element is always NULL
   };
 }
 

@@ -55,6 +55,10 @@ oms3::System::~System()
     if (connector)
       delete connector;
 
+  for (const auto& connection : connections)
+    if(connection)
+      delete connection;
+
   for (const auto& component : components)
     delete component.second;
 
@@ -222,9 +226,16 @@ oms_status_enu_t oms3::System::exportToSSD(pugi::xml_node& node) const
   }
 
   pugi::xml_node connectors_node = node.append_child(oms2::ssd::ssd_connectors);
-  for(const auto& connector : connectors)
-    if (connector)
+  for(const auto& connector : connectors) {
+    if(connector)
       connector->exportToSSD(connectors_node);
+  }
+
+  pugi::xml_node connections_node = node.append_child(oms2::ssd::ssd_connections);
+  for (const auto& connection : connections)
+  {
+    connection->exportToSSD(connections_node);
+  }
 
   return oms_status_ok;
 }
@@ -248,4 +259,80 @@ oms_status_enu_t oms3::System::addConnector(const oms3::ComRef &cref, oms_causal
   element.setConnectors(&connectors[0]);
 
   return oms_status_ok;
+}
+
+oms3::Connector *oms3::System::getConnector(const oms3::ComRef &cref)
+{
+  for(auto &connector : connectors) {
+    if(connector && connector->getName() == cref)
+      return connector;
+  }
+  return NULL;
+}
+
+oms_status_enu_t oms3::System::addConnection(const oms3::ComRef &crefA, const oms3::ComRef &crefB)
+{
+  oms3::ComRef tailA(crefA);
+  oms3::ComRef headA = tailA.pop_front();
+
+  oms3::ComRef tailB(crefB);
+  oms3::ComRef headB = tailB.pop_front();
+
+  //If both A and B references the same subsystem, recurse into that subsystem
+  if(headA == headB) {
+    auto subsystem = subsystems.find(headA);
+    if(subsystem != subsystems.end()) {
+      return subsystem->second->addConnection(tailA,tailB);
+    }
+  }
+
+  for(auto &connection : connections) {
+    if(connection->getSignalA() == crefA ||
+       connection->getSignalB() == crefA)
+      return logError("Connector is already connected: "+std::string(crefA));
+    if(connection->getSignalA() == crefB ||
+       connection->getSignalB() == crefB)
+      return logError("Connector is already connected: "+std::string(crefB));
+  }
+
+  //Attempt to create connection inside current system
+  oms3::Connector *conA = 0;
+  oms3::Connector *conB = 0;
+
+  //Look in own connectors
+  if(!conA)
+    conA = this->getConnector(crefA);
+  if(!conB)
+    conB = this->getConnector(crefA);
+
+  //Look in subsystem connectors
+  auto subsystemA = subsystems.find(headA);
+  if(!conA && subsystemA != subsystems.end())
+    conA = subsystemA->second->getConnector(tailA);
+  auto subsystemB = subsystems.find(headB);
+  if(!conB && subsystemB != subsystems.end())
+    conB = subsystemB->second->getConnector(tailB);
+
+  //Look in component connectors
+  auto componentA = components.find(headA);
+  if(!conA && componentA != components.end())
+    conA = componentA->second->getConnector(tailA);
+  auto componentB = components.find(headB);
+  if(!conB && componentB != components.end())
+    conB = componentB->second->getConnector(tailB);
+
+  //todo: Look in bus connectors
+
+  if(conA && conB) {
+    if(conA->getType() != conB->getType())
+      return logError("Type mismatch in connection: "+std::string(crefA)+" -> "+std::string(crefB));
+    if((conA->getCausality() == oms_causality_output && conB->getCausality() != oms_causality_input) ||
+       (conB->getCausality() == oms_causality_output && conA->getCausality() != oms_causality_input))
+      return logError("Causality mismatch in connection: "+std::string(crefA)+" -> "+std::string(crefB));
+
+    connections.push_back(new oms3::Connection(crefA,crefB));
+    return oms_status_ok;
+  }
+
+  return logError("Connector(s) not found in system");
 }

@@ -34,6 +34,7 @@
 
 #include "ComRef.h"
 #include "Types.h"
+#include "Element.h"
 #include <pugixml.hpp>
 
 namespace oms3
@@ -45,6 +46,10 @@ namespace oms3
 
     const ComRef& getName() const {return cref;}
     oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
+    oms3::Element* getElement() {return &element;}
+    oms3::Connector *getConnector(const ComRef &cref);
+
+  protected:
 
   protected:
     Component(const ComRef& cref);
@@ -54,7 +59,9 @@ namespace oms3
     Component& operator=(Component const&); ///< not implemented
 
   private:
-    ComRef cref;
+    oms3::Element element;
+    oms3::ComRef cref;
+    std::vector<oms3::Connector*> connectors;
   };
 }
 

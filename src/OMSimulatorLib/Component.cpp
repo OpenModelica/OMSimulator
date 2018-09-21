@@ -34,16 +34,30 @@
 #include "ssd/Tags.h"
 
 oms3::Component::Component(const ComRef& cref)
-  : cref(cref)
+  : element(oms_element_component, cref), cref(cref)
 {
+  connectors.push_back(NULL);
+  element.setConnectors(&connectors[0]);
 }
 
 oms3::Component::~Component()
 {
+  for (const auto& connector : connectors)
+    if (connector)
+      delete connector;
 }
 
 oms_status_enu_t oms3::Component::exportToSSD(pugi::xml_node& node) const
 {
   node.append_attribute("name") = this->getName().c_str();
   return oms_status_ok;
+}
+
+oms3::Connector *oms3::Component::getConnector(const oms3::ComRef &cref)
+{
+  for(auto &connector : connectors) {
+    if(connector && connector->getName() == cref)
+      return connector;
+  }
+  return NULL;
 }
