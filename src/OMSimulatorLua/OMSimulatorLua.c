@@ -10,6 +10,7 @@
 #endif /* WITH_OMSYSIDENT */
 
 #define REGISTER_LUA_CALL(name) lua_register(L, #name, OMSimulatorLua_##name)
+#define REGISTER_LUA_ENUM(name) lua_pushnumber(L, name); lua_setglobal(L, #name)
 
 #ifdef _WIN32
   #define DLLEXPORT __declspec(dllexport)
@@ -1924,21 +1925,25 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   lua_pushnumber(L, 2);
   lua_setglobal(L, "finegrained");
 
-  lua_pushnumber(L, oms_system_tlm);
-  lua_setglobal(L, "oms_system_tlm");
-  lua_pushnumber(L, oms_system_wc);
-  lua_setglobal(L, "oms_system_wc");
-  lua_pushnumber(L, oms_system_sc);
-  lua_setglobal(L, "oms_system_sc");
+  // oms_system_enu_t
+  REGISTER_LUA_ENUM(oms_system_none);
+  REGISTER_LUA_ENUM(oms_system_tlm);
+  REGISTER_LUA_ENUM(oms_system_wc);
+  REGISTER_LUA_ENUM(oms_system_sc);
 
-  lua_pushnumber(L, oms_signal_type_real);
-  lua_setglobal(L, "oms_signal_type_real");
-  lua_pushnumber(L, oms_signal_type_integer);
-  lua_setglobal(L, "oms_signal_type_integer");
-  lua_pushnumber(L, oms_signal_type_boolean);
-  lua_setglobal(L, "oms_signal_type_boolean");
-  lua_pushnumber(L, oms_signal_type_string);
-  lua_setglobal(L, "oms_signal_type_string");
+  // oms_status_enu_t
+  REGISTER_LUA_ENUM(oms_status_ok);
+  REGISTER_LUA_ENUM(oms_status_warning);
+  REGISTER_LUA_ENUM(oms_status_discard);
+  REGISTER_LUA_ENUM(oms_status_error);
+  REGISTER_LUA_ENUM(oms_status_fatal);
+  REGISTER_LUA_ENUM(oms_status_pending);
+
+  // oms_signal_type_enu_t
+  REGISTER_LUA_ENUM(oms_signal_type_real);
+  REGISTER_LUA_ENUM(oms_signal_type_integer);
+  REGISTER_LUA_ENUM(oms_signal_type_boolean);
+  REGISTER_LUA_ENUM(oms_signal_type_string);
 
   return 0;
 }
