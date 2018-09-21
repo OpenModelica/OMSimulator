@@ -161,6 +161,31 @@ oms_status_enu_t oms3_getElements(const char* cref, oms3_element_t*** elements)
   return oms3::Scope::GetInstance().getElements(oms3::ComRef(cref), reinterpret_cast<oms3::Element***>(elements));
 }
 
+oms_status_enu_t oms3_setElementGeometry(const char* cref, const ssd_element_geometry_t* geometry)
+{
+  if (!geometry)
+  {
+    logWarning("[oms3_setElementGeometry] NULL pointer");
+    return oms_status_warning;
+  }
+
+  oms3::ComRef tail(cref);
+  oms3::ComRef modelCref = tail.pop_front();
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
+  if (!model) {
+    return logError("Model \"" + std::string(modelCref) + "\" does not exist in the scope");
+  }
+
+  oms3::System* system = model->getSystem(tail);
+  if (!system) {
+    return logError("Model \"" + std::string(modelCref) + "\" does not contain system \"" + std::string(tail) + "\"");
+  }
+
+  system->setGeometry(*reinterpret_cast<const oms3::ssd::ElementGeometry*>(geometry));
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms3_addConnector(const char *cref, oms_causality_enu_t causality, oms_signal_type_enu_t type)
 {
   logTrace();
