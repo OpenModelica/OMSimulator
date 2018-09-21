@@ -134,7 +134,7 @@ void oms3::ssd::ElementGeometry::setIconSource(std::string iconSource)
 oms_status_enu_t oms3::ssd::ElementGeometry::exportToSSD(pugi::xml_node& root) const
 {
   // export ssd:ElementGeometry
-  if (x1 != 0.0 || y1 != 0.0 || x2 != 0.0 || y2 != 0.0)
+  if (x1 != 0.0 || y1 != 0.0 || x2 != 0.0 || y2 != 0.0 || rotation != 0.0 || hasIconSource() || iconRotation != 0.0 || getIconFlip() || getIconFixedAspectRatio())
   {
     pugi::xml_node node = root.append_child(oms2::ssd::ssd_element_geometry);
     node.append_attribute("x1") = std::to_string(x1).c_str();
