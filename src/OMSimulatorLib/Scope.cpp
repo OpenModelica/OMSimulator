@@ -126,7 +126,42 @@ oms_status_enu_t oms3::Scope::exportModel(const oms3::ComRef& cref, const std::s
 
 oms_status_enu_t oms3::Scope::importModel(const std::string& filename, char** cref)
 {
-  return logError("Not implemented");
+  if (filename.length() <= 5)
+    return logError("Unsupported type: " + filename);
+
+  std::string ext = filename.substr(filename.length() - 4);
+  if (ext == ".ssd")
+  {
+    pugi::xml_document doc;
+    pugi::xml_parse_result result = doc.load_file(filename.c_str());
+    if (!result)
+      return logError("loading \"" + std::string(filename) + "\" failed (" + std::string(result.description()) + ")");
+
+    const pugi::xml_node root = doc.document_element();
+
+    Model* model = Model::importFromSSD(root);
+    if (!model)
+      return logError("import failed");
+
+    ComRef cref = model->getName();
+    auto it = models_map.find(cref);
+    if (it != models_map.end())
+    {
+      delete model;
+      return logError("A model called \"" + std::string(cref) + "\" is already in the scope.");
+    }
+
+    models.back() = model;
+    models_map[cref] = models.size() - 1;
+    models.push_back(NULL);
+    return oms_status_ok;
+  }
+  else if(ext == ".ssd")
+  {
+    return logError("Not implemented");
+  }
+
+  return logError("Unsupported type: " + filename);
 }
 
 oms_status_enu_t oms3::Scope::setTempDirectory(const std::string& newTempDir)
@@ -293,10 +328,7 @@ oms_status_enu_t oms2::Scope::newFMIModel(const oms2::ComRef& name)
   // check if name is in scope
   auto it = models.find(name);
   if (it != models.end())
-  {
-    logError("A model called \"" + name + "\" is already in the scope.");
-    return oms_status_error;
-  }
+    return logError("A model called \"" + name + "\" is already in the scope.");
 
   Model* model = oms2::Model::NewModel(oms_component_fmi, name);
   if (!model)

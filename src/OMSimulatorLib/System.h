@@ -61,6 +61,7 @@ namespace oms3
     oms_status_enu_t addSubSystem(const oms3::ComRef& cref, oms_system_enu_t type);
     bool validCref(const oms3::ComRef& cref);
     oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
+    virtual oms_status_enu_t exportToSSD_SimulationInformation(pugi::xml_node& node) const = 0;
     void setGeometry(const oms3::ssd::ElementGeometry& geometry) {element.setGeometry(&geometry);}
     oms_status_enu_t addConnector(const oms3::ComRef& cref, oms_causality_enu_t causality, oms_signal_type_enu_t type);
     oms3::Connector *getConnector(const oms3::ComRef& cref);
@@ -82,8 +83,8 @@ namespace oms3
     std::map<ComRef, Component*> components;
 
     oms3::Element element;
-    std::vector<oms3::Connector*> connectors;
-    std::vector<oms3_element_t*> subelements;
+    std::vector<oms3::Connector*> connectors;   ///< last element is always NULL
+    std::vector<oms3_element_t*> subelements;   ///< last element is always NULL; don't free it
     std::vector<oms3::Connection*> connections; ///< last element is always NULL
   };
 }

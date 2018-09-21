@@ -86,6 +86,30 @@ oms3::Model* oms3::Model::NewModel(const oms3::ComRef& cref)
   return model;
 }
 
+oms3::Model* oms3::Model::importFromSSD(const pugi::xml_node& node)
+{
+  std::string name = node.name();
+  logInfo(name);
+
+  for(pugi::xml_node_iterator it = node.begin(); it != node.end(); ++it)
+  {
+    std::string name = it->name();
+    logInfo(name);
+    //if (name == "TLMModel" && modelType == oms_component_none)
+    //  modelType = oms_component_tlm;
+    //else if (name == oms2::ssd::ssd_system && modelType == oms_component_none)
+    //  modelType = oms_component_fmi;
+    //else if (name == oms2::ssd::ssd_default_experiment && !defaultExperiment)
+    //  defaultExperiment = true;
+    //else
+    //{
+    //  logError("wrong xml schema detected");
+    //  return NULL;
+    //}
+  }
+  return NULL;
+}
+
 oms_status_enu_t oms3::Model::rename(const oms3::ComRef& cref)
 {
   if (!cref.isValidIdent())
@@ -184,6 +208,7 @@ oms_status_enu_t oms3::Model::addSystem(const oms3::ComRef& cref, oms_system_enu
 oms_status_enu_t oms3::Model::exportToSSD(pugi::xml_node& node) const
 {
   node.append_attribute("name") = this->getName().c_str();
+  node.append_attribute("version") = "Draft20180219";
 
   if (system)
   {
