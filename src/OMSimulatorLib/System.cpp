@@ -209,6 +209,9 @@ oms_status_enu_t oms3::System::exportToSSD(pugi::xml_node& node) const
 {
   node.append_attribute("name") = this->getName().c_str();
 
+  if (oms_status_ok != element.getGeometry()->exportToSSD(node))
+    return logError("export of system ElementGeometry failed");
+
   pugi::xml_node elements_node = node.append_child(oms2::ssd::ssd_elements);
 
   for (const auto& subsystem : subsystems)
