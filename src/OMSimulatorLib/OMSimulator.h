@@ -69,6 +69,7 @@ oms_status_enu_t oms3_setCommandLineOption(const char* cmd);
 oms_status_enu_t oms3_getSystemType(const char* cref, oms_system_enu_t* type);
 oms_status_enu_t oms3_setConnectorGeometry(const char* connector, const ssd_connector_geometry_t* geometry);
 oms_status_enu_t oms3_setConnectionGeometry(const char* crefA, const char* crefB, const ssd_connection_geometry_t* geometry);
+oms_status_enu_t oms3_getConnections(const char* cref, oms3_connection_t*** connections);
 
 /* not implemented yet */
 oms_status_enu_t oms3_addSubModel(const char* cref, const char* fmuPath);
@@ -83,7 +84,6 @@ oms_status_enu_t oms3_addConnectorToBus(const char* busCref, const char* connect
 oms_status_enu_t oms3_addConnectorToTLMBus(const char* busCref, const char* connectorCref, oms_tlm_connector_type_enu_t type);
 oms_status_enu_t oms3_getSubModelPath(const char* cref, char** path);
 oms_status_enu_t oms3_getFMUInfo(const char* cref, const oms_fmu_info_t** fmuInfo);
-oms_status_enu_t oms3_getConnections(const char* cref, oms_connection_t*** connections);
 
 /* ************************************ */
 /* oms2                                 */
