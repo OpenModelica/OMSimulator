@@ -31,7 +31,7 @@
 
 #include <OMSBoost.h>
 
-boost::filesystem::path oms2_temp_directory_path(void)
+boost::filesystem::path oms_temp_directory_path(void)
 {
 #if (BOOST_VERSION >= 104600) // no temp_directory_path in boost < 1.46
   return boost::filesystem::temp_directory_path();
@@ -64,7 +64,7 @@ boost::filesystem::path oms2_temp_directory_path(void)
 }
 
 
-boost::filesystem::path oms2_canonical(boost::filesystem::path p)
+boost::filesystem::path oms_canonical(boost::filesystem::path p)
 {
 #if (BOOST_VERSION >= 104600) // no temp_directory_path in boost < 1.46
   return boost::filesystem::canonical(p);
@@ -73,6 +73,19 @@ boost::filesystem::path oms2_canonical(boost::filesystem::path p)
 #endif
 }
 
+boost::filesystem::path oms_unique_path(std::string prefix)
+{
+#if (BOOST_VERSION >= 104500) // no temp_directory_path in boost < 1.45
+  return boost::filesystem::unique_path(prefix + "-%%%%");
+#else
+  int i;
+  std::string s = prefix;
+  for(i=0; i<4; i++)
+    s += std::string(1, ('A' + rand()%26));
+  boost::filesystem::path p(s);
+  return p;
+#endif
+}
 
 /*
 

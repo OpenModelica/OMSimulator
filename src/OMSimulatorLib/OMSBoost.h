@@ -49,6 +49,7 @@ extern "C"
 #endif
  
 #include <cstdlib>
+#include <string>
 #include <boost/version.hpp>
 #include <boost/filesystem.hpp>
 
@@ -60,7 +61,8 @@ extern "C"
 #endif
 
 
-boost::filesystem::path oms2_temp_directory_path(void);
-boost::filesystem::path oms2_canonical(boost::filesystem::path p);
+boost::filesystem::path oms_temp_directory_path(void);
+boost::filesystem::path oms_canonical(boost::filesystem::path p);
+boost::filesystem::path oms_unique_path(std::string prefix);
 
 #endif
