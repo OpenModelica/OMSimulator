@@ -115,6 +115,9 @@ oms_status_enu_t oms3::Connection::exportToSSD(pugi::xml_node &root) const
   node.append_attribute("startConnector") = startConnectorRef.c_str();
   node.append_attribute("endElement") = endElementRef.c_str();
   node.append_attribute("endConnector") = endConnectorRef.c_str();
+
+  getGeometry()->exportToSSD(node);
+
   return oms_status_ok;
 }
 

@@ -307,6 +307,31 @@ oms_status_enu_t oms3_setConnectorGeometry(const char *cref, const ssd_connector
   return system->setConnectorGeometry(tail, reinterpret_cast<const oms2::ssd::ConnectorGeometry*>(geometry));
 }
 
+oms_status_enu_t oms3_setConnectionGeometry(const char *crefA, const char *crefB, const ssd_connection_geometry_t *geometry)
+{
+  logTrace();
+
+  oms3::ComRef tailA(crefA);
+  oms3::ComRef modelCref = tailA.pop_front();
+  oms3::ComRef systemCref = tailA.pop_front();
+
+  oms3::ComRef tailB(crefB);
+  tailB.pop_front();
+  tailB.pop_front();
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
+  if(!model) {
+    return logError("Model: "+std::string(modelCref)+" not found in scope");
+  }
+
+  oms3::System* system = model->getSystem(systemCref);
+  if(!system) {
+    return logError("System: "+std::string(systemCref)+" not found in scope");
+  }
+
+  return system->setConnectionGeometry(tailA,tailB, reinterpret_cast<const oms2::ssd::ConnectionGeometry*>(geometry));
+}
+
 /* ************************************ */
 /* OMSimulator 2.0                      */
 /*                                      */
@@ -896,6 +921,4 @@ int oms2_exists(const char* cref)
   logTrace();
   return oms2::Scope::GetInstance().exists(oms2::ComRef(cref)) ? 1 : 0;
 }
-
-
 

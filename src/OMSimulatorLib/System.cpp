@@ -369,3 +369,32 @@ oms_status_enu_t oms3::System::setConnectorGeometry(const oms3::ComRef &cref, co
   }
   return logError("Connector "+std::string(cref)+" not found in system "+std::string(getName()));
 }
+
+oms_status_enu_t oms3::System::setConnectionGeometry(const oms3::ComRef &crefA, const oms3::ComRef &crefB, const oms2::ssd::ConnectionGeometry *geometry)
+{
+  oms3::ComRef tailA(crefA);
+  oms3::ComRef headA = tailA.pop_front();
+
+  oms3::ComRef tailB(crefB);
+  oms3::ComRef headB = tailB.pop_front();
+
+  //If both A and B references the same subsystem, recurse into that subsystem
+  if(headA == headB) {
+    auto subsystem = subsystems.find(headA);
+    if(subsystem != subsystems.end()) {
+      return subsystem->second->setConnectionGeometry(tailA,tailB,geometry);
+    }
+  }
+
+  std::cout << "Setting geometry in " << getName().c_str() << "\n";
+
+  for(auto &connection : connections) {
+    if(connection->getSignalA() == crefA && connection->getSignalB() == crefB ||
+      (connection->getSignalA() == crefB && connection->getSignalB() == crefA)) {
+      connection->setGeometry(geometry);
+      return oms_status_ok;
+    }
+  }
+
+  return logError("Connector(s) not found in system");
+}
