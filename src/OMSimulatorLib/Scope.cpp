@@ -41,7 +41,7 @@ oms3::Scope::Scope()
 {
   this->models.push_back(NULL);
 
-  boost::filesystem::path tempDir = oms2_temp_directory_path() / "omsimulator";
+  boost::filesystem::path tempDir = oms_temp_directory_path() / "omsimulator";
   setTempDirectory(tempDir.string());
 
   setWorkingDirectory(".");
@@ -142,7 +142,7 @@ oms_status_enu_t oms3::Scope::setTempDirectory(const std::string& newTempDir)
   boost::filesystem::path path(newTempDir.c_str());
   try
   {
-    path = oms2_canonical(path);
+    path = oms_canonical(path);
   }
   catch(std::exception e)
   {
@@ -169,7 +169,7 @@ oms_status_enu_t oms3::Scope::setWorkingDirectory(const std::string& newWorkingD
   boost::filesystem::current_path(path);
   try
   {
-    path = oms2_canonical(path);
+    path = oms_canonical(path);
   }
   catch(std::exception e)
   {
@@ -266,7 +266,7 @@ oms3::Model* oms3::Scope::getModel(const oms3::ComRef& cref)
 oms2::Scope::Scope()
 {
   logTrace();
-  boost::filesystem::path tempPath = oms2_temp_directory_path();
+  boost::filesystem::path tempPath = oms_temp_directory_path();
   tempDir = tempPath.string();
 }
 
@@ -571,7 +571,7 @@ oms_status_enu_t oms2::Scope::setTempDirectory(const std::string& newTempDir)
   boost::filesystem::path path(newTempDir.c_str());
   try
   {
-    path = oms2_canonical(path);
+    path = oms_canonical(path);
   }
   catch(std::exception e)
   {
