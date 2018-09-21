@@ -298,6 +298,44 @@ static int OMSimulatorLua_oms3_getSystemType(lua_State *L)
   return 2;
 }
 
+
+//oms_status_enu_t oms3_addConnector(const char *cref, oms_causality_enu_t causality, oms_signal_type_enu_t type);
+static int OMSimulatorLua_oms3_addConnector(lua_State *L)
+{
+  if (lua_gettop(L) != 3)
+    return luaL_error(L, "expecting exactly 3 arguments");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TNUMBER);
+  luaL_checktype(L, 3, LUA_TNUMBER);
+
+  const char* cref = lua_tostring(L, 1);
+  int causality = lua_tointeger(L, 2);
+  int type = lua_tointeger(L, 3);
+  oms_status_enu_t status = oms3_addConnector(cref, (oms_causality_enu_t)causality, (oms_signal_type_enu_t)type);
+
+  lua_pushinteger(L, status);
+
+  return 1;
+}
+
+//oms_status_enu_t oms3_addConnection(const char *crefA, const char *crefB);
+static int OMSimulatorLua_oms3_addConnection(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 arguments");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+
+  const char* crefA = lua_tostring(L, 1);
+  const char* crefB = lua_tostring(L, 2);
+  oms_status_enu_t status = oms3_addConnection(crefA, crefB);
+
+  lua_pushinteger(L, status);
+
+  return 1;
+}
+
+
 /* ************************************ */
 /* OMSimulator 2.0                      */
 /*                                      */
@@ -1780,6 +1818,8 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms3_copySystem);
   REGISTER_LUA_CALL(oms3_setCommandLineOption);
   REGISTER_LUA_CALL(oms3_getSystemType);
+  REGISTER_LUA_CALL(oms3_addConnector);
+  REGISTER_LUA_CALL(oms3_addConnection);
   /* ************************************ */
   /* OMSimulator 2.0                      */
   /*                                      */
@@ -1890,6 +1930,15 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   lua_setglobal(L, "oms_system_wc");
   lua_pushnumber(L, oms_system_sc);
   lua_setglobal(L, "oms_system_sc");
+
+  lua_pushnumber(L, oms_signal_type_real);
+  lua_setglobal(L, "oms_signal_type_real");
+  lua_pushnumber(L, oms_signal_type_integer);
+  lua_setglobal(L, "oms_signal_type_integer");
+  lua_pushnumber(L, oms_signal_type_boolean);
+  lua_setglobal(L, "oms_signal_type_boolean");
+  lua_pushnumber(L, oms_signal_type_string);
+  lua_setglobal(L, "oms_signal_type_string");
 
   return 0;
 }
