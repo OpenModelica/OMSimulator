@@ -341,3 +341,31 @@ oms_status_enu_t oms3::System::addConnection(const oms3::ComRef &crefA, const om
 
   return logError("Connector(s) not found in system");
 }
+
+oms_status_enu_t oms3::System::setConnectorGeometry(const oms3::ComRef &cref, const oms2::ssd::ConnectorGeometry *geometry)
+{
+  oms3::ComRef tail(cref);
+  oms3::ComRef head = tail.pop_front();
+  auto subsystem = subsystems.find(head);
+  if(subsystem != subsystems.end())
+    return subsystem->second->setConnectorGeometry(tail,geometry);
+
+  auto component = components.find(head);
+  if(component != components.end()) {
+    oms3::Connector *connector = component->second->getConnector(tail);
+    if(connector) {
+      connector->setGeometry(geometry);
+      return oms_status_ok;
+    }
+    else {
+      return logError("Connector "+std::string(tail)+" not found in component "+std::string(head));
+    }
+  }
+
+  oms3::Connector* connector = this->getConnector(cref);
+  if(connector) {
+    connector->setGeometry(geometry);
+    return oms_status_ok;
+  }
+  return logError("Connector "+std::string(cref)+" not found in system "+std::string(getName()));
+}
