@@ -207,6 +207,27 @@ oms_status_enu_t oms3_addConnector(const char *cref, oms_causality_enu_t causali
   return system->addConnector(tail, causality, type);
 }
 
+oms_status_enu_t oms3_getConnector(const char* cref, oms_connector_t** connector)
+{
+  oms3::ComRef tail(cref);
+  oms3::ComRef modelCref = tail.pop_front();
+  oms3::ComRef systemCref = tail.pop_front();
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
+  if(!model) {
+    return logError("Model \"" + std::string(modelCref) + "\" does not exist in the scope");
+  }
+
+  oms3::System* system = model->getSystem(systemCref);
+  if(!system) {
+    return logError("Model \"" + std::string(modelCref) + "\" does not contain system \"" + std::string(systemCref) + "\"");
+  }
+
+  oms3::Connector** connector_ = reinterpret_cast<oms3::Connector**>(connector);
+  *connector_ = system->getConnector(tail);
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms3_setCommandLineOption(const char* cmd)
 {
   if (std::string(cmd) == "--suppressPath=true")
