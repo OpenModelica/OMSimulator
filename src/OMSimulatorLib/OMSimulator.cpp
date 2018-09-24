@@ -286,6 +286,75 @@ oms_status_enu_t oms3_addConnection(const char *crefA, const char *crefB)
   return system->addConnection(tailA,tailB);
 }
 
+oms_status_enu_t oms3_setConnectorGeometry(const char *cref, const ssd_connector_geometry_t *geometry)
+{
+  logTrace();
+
+  oms3::ComRef tail(cref);
+  oms3::ComRef modelCref = tail.pop_front();
+  oms3::ComRef systemCref = tail.pop_front();
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
+  if(!model) {
+    return logError("Model \"" + std::string(modelCref) + "\" does not exist in the scope");
+  }
+
+  oms3::System* system = model->getSystem(systemCref);
+  if(!system) {
+    return logError("Model \"" + std::string(modelCref) + "\" does not contain system \"" + std::string(systemCref) + "\"");
+  }
+
+  return system->setConnectorGeometry(tail, reinterpret_cast<const oms2::ssd::ConnectorGeometry*>(geometry));
+}
+
+oms_status_enu_t oms3_setConnectionGeometry(const char *crefA, const char *crefB, const ssd_connection_geometry_t *geometry)
+{
+  logTrace();
+
+  oms3::ComRef tailA(crefA);
+  oms3::ComRef modelCref = tailA.pop_front();
+  oms3::ComRef systemCref = tailA.pop_front();
+
+  oms3::ComRef tailB(crefB);
+  tailB.pop_front();
+  tailB.pop_front();
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
+  if(!model) {
+    return logError("Model: "+std::string(modelCref)+" not found in scope");
+  }
+
+  oms3::System* system = model->getSystem(systemCref);
+  if(!system) {
+    return logError("System: "+std::string(systemCref)+" not found in scope");
+  }
+
+  return system->setConnectionGeometry(tailA,tailB, reinterpret_cast<const oms2::ssd::ConnectionGeometry*>(geometry));
+}
+
+oms_status_enu_t oms3_getConnections(const char *cref, oms3_connection_t ***connections)
+{
+  logTrace();
+
+  oms3::ComRef tail(cref);
+  oms3::ComRef modelCref = tail.pop_front();
+  oms3::ComRef systemCref = tail.pop_front();
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
+  if(!model) {
+    return logError("Model \"" + std::string(modelCref) + "\" does not exist in the scope");
+  }
+
+  oms3::System* system = model->getSystem(systemCref);
+  if(!system) {
+    return logError("Model \"" + std::string(modelCref) + "\" does not contain system \"" + std::string(systemCref) + "\"");
+  }
+
+  (*connections) = reinterpret_cast<oms3_connection_t**>(system->getConnections(tail));
+
+  return oms_status_ok;
+}
+
 /* ************************************ */
 /* OMSimulator 2.0                      */
 /*                                      */
@@ -875,4 +944,5 @@ int oms2_exists(const char* cref)
   logTrace();
   return oms2::Scope::GetInstance().exists(oms2::ComRef(cref)) ? 1 : 0;
 }
+
 

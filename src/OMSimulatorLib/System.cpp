@@ -42,6 +42,8 @@
 oms3::System::System(const oms3::ComRef& cref, oms_system_enu_t type, oms3::Model* parentModel, oms3::System* parentSystem)
   : element(oms_element_system, cref), cref(cref), type(type), parentModel(parentModel), parentSystem(parentSystem)
 {
+  connections.push_back(NULL);
+
   connectors.push_back(NULL);
   element.setConnectors(&connectors[0]);
 
@@ -275,6 +277,19 @@ oms3::Connector *oms3::System::getConnector(const oms3::ComRef &cref)
   return NULL;
 }
 
+oms3::Connection **oms3::System::getConnections(const oms3::ComRef &cref) {
+  if(!cref.isEmpty()) {
+    oms3::ComRef tail(cref);
+    oms3::ComRef head = tail.pop_front();
+    auto subsystem = subsystems.find(head);
+    if(subsystem != subsystems.end()) {
+      return subsystem->second->getConnections(tail);
+    }
+  }
+
+  return &connections[0];
+}
+
 oms_status_enu_t oms3::System::addConnection(const oms3::ComRef &crefA, const oms3::ComRef &crefB)
 {
   oms3::ComRef tailA(crefA);
@@ -292,11 +307,13 @@ oms_status_enu_t oms3::System::addConnection(const oms3::ComRef &crefA, const om
   }
 
   for(auto &connection : connections) {
-    if(connection->getSignalA() == crefA ||
-       connection->getSignalB() == crefA)
+    if(connection &&
+       (connection->getSignalA() == crefA ||
+       connection->getSignalB() == crefA))
       return logError("Connector is already connected: "+std::string(crefA));
-    if(connection->getSignalA() == crefB ||
-       connection->getSignalB() == crefB)
+    if(connection &&
+       (connection->getSignalA() == crefB ||
+       connection->getSignalB() == crefB))
       return logError("Connector is already connected: "+std::string(crefB));
   }
 
@@ -335,8 +352,64 @@ oms_status_enu_t oms3::System::addConnection(const oms3::ComRef &crefA, const om
        (conB->getCausality() == oms_causality_output && conA->getCausality() != oms_causality_input))
       return logError("Causality mismatch in connection: "+std::string(crefA)+" -> "+std::string(crefB));
 
-    connections.push_back(new oms3::Connection(crefA,crefB));
+    connections.back() = new oms3::Connection(crefA,crefB);
+    connections.push_back(NULL);
     return oms_status_ok;
+  }
+
+  return logError("Connector(s) not found in system");
+}
+
+oms_status_enu_t oms3::System::setConnectorGeometry(const oms3::ComRef &cref, const oms2::ssd::ConnectorGeometry *geometry)
+{
+  oms3::ComRef tail(cref);
+  oms3::ComRef head = tail.pop_front();
+  auto subsystem = subsystems.find(head);
+  if(subsystem != subsystems.end())
+    return subsystem->second->setConnectorGeometry(tail,geometry);
+
+  auto component = components.find(head);
+  if(component != components.end()) {
+    oms3::Connector *connector = component->second->getConnector(tail);
+    if(connector) {
+      connector->setGeometry(geometry);
+      return oms_status_ok;
+    }
+    else {
+      return logError("Connector "+std::string(tail)+" not found in component "+std::string(head));
+    }
+  }
+
+  oms3::Connector* connector = this->getConnector(cref);
+  if(connector) {
+    connector->setGeometry(geometry);
+    return oms_status_ok;
+  }
+  return logError("Connector "+std::string(cref)+" not found in system "+std::string(getName()));
+}
+
+oms_status_enu_t oms3::System::setConnectionGeometry(const oms3::ComRef &crefA, const oms3::ComRef &crefB, const oms2::ssd::ConnectionGeometry *geometry)
+{
+  oms3::ComRef tailA(crefA);
+  oms3::ComRef headA = tailA.pop_front();
+
+  oms3::ComRef tailB(crefB);
+  oms3::ComRef headB = tailB.pop_front();
+
+  //If both A and B references the same subsystem, recurse into that subsystem
+  if(headA == headB) {
+    auto subsystem = subsystems.find(headA);
+    if(subsystem != subsystems.end()) {
+      return subsystem->second->setConnectionGeometry(tailA,tailB,geometry);
+    }
+  }
+
+  for(auto &connection : connections) {
+    if((connection && connection->getSignalA() == crefA && connection->getSignalB() == crefB) ||
+       (connection && connection->getSignalA() == crefB && connection->getSignalB() == crefA)) {
+      connection->setGeometry(geometry);
+      return oms_status_ok;
+    }
   }
 
   return logError("Connector(s) not found in system");

@@ -36,6 +36,7 @@
 #include "Types.h"
 #include "Element.h"
 #include "Connection.h"
+#include "ssd/ConnectorGeometry.h"
 
 #include <pugixml.hpp>
 #include <map>
@@ -65,7 +66,10 @@ namespace oms3
     void setGeometry(const oms3::ssd::ElementGeometry& geometry) {element.setGeometry(&geometry);}
     oms_status_enu_t addConnector(const oms3::ComRef& cref, oms_causality_enu_t causality, oms_signal_type_enu_t type);
     oms3::Connector *getConnector(const oms3::ComRef& cref);
+    Connection **getConnections(const ComRef &cref);
     oms_status_enu_t addConnection(const oms3::ComRef& crefA, const oms3::ComRef& crefB);
+    oms_status_enu_t setConnectorGeometry(const oms3::ComRef& cref, const oms2::ssd::ConnectorGeometry* geometry);
+    oms_status_enu_t setConnectionGeometry(const oms3::ComRef &crefA, const oms3::ComRef &crefB, const oms2::ssd::ConnectionGeometry* geometry);
 
   protected:
     System(const ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem);
