@@ -66,6 +66,9 @@ oms3::System::~System()
 
   for (const auto& subsystem : subsystems)
     delete subsystem.second;
+
+  for (const auto& busconnector : busconnectors)
+    delete busconnector;
 }
 
 oms3::System* oms3::System::NewSystem(const oms3::ComRef& cref, oms_system_enu_t type, oms3::Model* parentModel, oms3::System* parentSystem)
