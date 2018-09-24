@@ -52,6 +52,7 @@ namespace oms3
      * instances with valid names can be created.
      */
     static Model* NewModel(const ComRef& cref);
+    static Model* importFromSSD(const pugi::xml_node& node);
     const ComRef& getName() const {return cref;}
     System* getSystem(const ComRef& cref);
     oms_status_enu_t rename(const ComRef& cref);

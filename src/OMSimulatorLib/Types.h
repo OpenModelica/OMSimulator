@@ -83,6 +83,7 @@ typedef enum {
 } oms_solver_enu_t;
 
 typedef enum {
+  oms_element_none,
   oms_element_system,
   oms_element_component
 } oms3_element_enu_t;

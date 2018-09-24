@@ -34,6 +34,7 @@
 #include "Component.h"
 #include "Model.h"
 #include "Types.h"
+#include "ssd/Tags.h"
 
 oms3::SystemWC::SystemWC(const ComRef& cref, Model* parentModel, System* parentSystem)
   : oms3::System(cref, oms_system_wc, parentModel, parentSystem)
@@ -60,4 +61,15 @@ oms3::System* oms3::SystemWC::NewSystem(const oms3::ComRef& cref, oms3::Model* p
 
   System* system = new SystemWC(cref, parentModel, parentSystem);
   return system;
+}
+
+oms_status_enu_t oms3::SystemWC::exportToSSD_SimulationInformation(pugi::xml_node& node) const
+{
+  pugi::xml_node node_simulation_information = node.append_child(oms2::ssd::ssd_simulation_information);
+
+  pugi::xml_node node_solver = node_simulation_information.append_child("FixedStepMaster");
+  node_solver.append_attribute("description") = "oms-ma";
+  node_solver.append_attribute("stepSize") = "1e-1";
+
+  return oms_status_ok;
 }

@@ -91,7 +91,7 @@ oms_status_enu_t oms3_rename(const char* cref_, const char* newCref_)
   if (cref.isValidIdent())
     return oms3::Scope::GetInstance().renameModel(cref, newCref);
   else
-    return logError("Only implemented for model identifiers");
+    return logError_OnlyForModel;
 }
 
 oms_status_enu_t oms3_delete(const char* cref_)
@@ -101,7 +101,7 @@ oms_status_enu_t oms3_delete(const char* cref_)
   if (cref.isValidIdent())
     return oms3::Scope::GetInstance().deleteModel(cref);
   else
-    return logError("Only implemented for model identifiers");
+    return logError_OnlyForModel;
 }
 
 oms_status_enu_t oms3_export(const char* cref_, const char* filename)
@@ -120,19 +120,19 @@ oms_status_enu_t oms3_list(const char* cref_, char** contents)
   oms3::ComRef front = tail.pop_front();
   oms3::Model* model = oms3::Scope::GetInstance().getModel(front);
   if (!model)
-    return logError("Model \"" + std::string(front) + "\" does not exist in the scope");
+    return logError_ModelNotInScope(front);
 
   return model->list(tail, contents);
 }
 
 oms_status_enu_t oms3_parseModelName(const char* contents, char** cref)
 {
-  return logError("Not implemented");
+  return logError_NotImplemented;
 }
 
 oms_status_enu_t oms3_importString(const char* contents, char** cref)
 {
-  return logError("Not implemented");
+  return logError_NotImplemented;
 }
 
 oms_status_enu_t oms3_addSystem(const char* cref_, oms_system_enu_t type)
@@ -141,14 +141,14 @@ oms_status_enu_t oms3_addSystem(const char* cref_, oms_system_enu_t type)
   oms3::ComRef modelCref = cref.pop_front();
   oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
   if (!model)
-    return logError("Model \"" + std::string(modelCref) + "\" does not exist in the scope");
+    return logError_ModelNotInScope(modelCref);
 
   return model->addSystem(cref, type);
 }
 
 oms_status_enu_t oms3_copySystem(const char* source, const char* target)
 {
-  return logError("Not implemented");
+  return logError_NotImplemented;
 }
 
 oms_status_enu_t oms3_getElement(const char* cref_, oms3_element_t** element)
@@ -196,12 +196,12 @@ oms_status_enu_t oms3_addConnector(const char *cref, oms_causality_enu_t causali
 
   oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
   if(!model) {
-    return logError("Model \"" + std::string(modelCref) + "\" does not exist in the scope");
+    return logError_ModelNotInScope(modelCref);
   }
 
   oms3::System* system = model->getSystem(systemCref);
   if(!system) {
-    return logError("Model \"" + std::string(modelCref) + "\" does not contain system \"" + std::string(systemCref) + "\"");
+    return logError_SystemNotInModel(modelCref, systemCref);
   }
 
   return system->addConnector(tail, causality, type);
@@ -249,12 +249,12 @@ oms_status_enu_t oms3_getSystemType(const char* cref, oms_system_enu_t* type)
 
   oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
   if (!model) {
-    return logError("Model \"" + std::string(modelCref) + "\" does not exist in the scope");
+    return logError_ModelNotInScope(modelCref);
   }
 
   oms3::System* system = model->getSystem(tail);
   if (!system) {
-    return logError("Model \"" + std::string(modelCref) + "\" does not contain system \"" + std::string(tail) + "\"");
+    return logError_SystemNotInModel(modelCref, tail);
   }
 
   *type = system->getType();

@@ -209,6 +209,10 @@ oms_status_enu_t oms3::System::exportToSSD(pugi::xml_node& node) const
 {
   node.append_attribute("name") = this->getName().c_str();
 
+  // export ssd:SimulationInformation
+  if (oms_status_ok != this->exportToSSD_SimulationInformation(node))
+    return logError("export of system SimulationInformation failed");
+
   if (oms_status_ok != element.getGeometry()->exportToSSD(node))
     return logError("export of system ElementGeometry failed");
 
@@ -229,16 +233,14 @@ oms_status_enu_t oms3::System::exportToSSD(pugi::xml_node& node) const
   }
 
   pugi::xml_node connectors_node = node.append_child(oms2::ssd::ssd_connectors);
-  for(const auto& connector : connectors) {
+  for(const auto& connector : connectors)
     if(connector)
       connector->exportToSSD(connectors_node);
-  }
 
   pugi::xml_node connections_node = node.append_child(oms2::ssd::ssd_connections);
   for (const auto& connection : connections)
-  {
-    connection->exportToSSD(connections_node);
-  }
+    if (connection)
+      connection->exportToSSD(connections_node);
 
   return oms_status_ok;
 }

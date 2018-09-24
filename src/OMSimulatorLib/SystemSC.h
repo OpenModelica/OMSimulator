@@ -46,6 +46,7 @@ namespace oms3
     virtual ~SystemSC();
 
     static System* NewSystem(const oms3::ComRef& cref, Model* parentModel, System* parentSystem);
+    oms_status_enu_t exportToSSD_SimulationInformation(pugi::xml_node& node) const;
 
   protected:
     SystemSC(const ComRef& cref, Model* parentModel, System* parentSystem);

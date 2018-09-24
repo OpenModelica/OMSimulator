@@ -101,4 +101,10 @@ private:
   #define logTrace()    ((void)0)
 #endif
 
+// Common error messages
+#define logError_OnlyForModel                      logError("Only implemented for model identifiers")
+#define logError_ModelNotInScope(cref)             logError("Model \"" + std::string(cref) + "\" does not exist in the scope")
+#define logError_NotImplemented                    logError("Not implemented")
+#define logError_SystemNotInModel(model, system)   logError("Model \"" + std::string(model) + "\" does not contain system \"" + std::string(system) + "\"")
+
 #endif

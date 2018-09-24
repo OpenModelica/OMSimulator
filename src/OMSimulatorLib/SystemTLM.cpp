@@ -34,6 +34,7 @@
 #include "Component.h"
 #include "Model.h"
 #include "Types.h"
+#include "ssd/Tags.h"
 
 oms3::SystemTLM::SystemTLM(const ComRef& cref, Model* parentModel, System* parentSystem)
   : oms3::System(cref, oms_system_tlm, parentModel, parentSystem)
@@ -60,4 +61,19 @@ oms3::System* oms3::SystemTLM::NewSystem(const oms3::ComRef& cref, oms3::Model* 
 
   System* system = new SystemTLM(cref, parentModel, parentSystem);
   return system;
+}
+
+oms_status_enu_t oms3::SystemTLM::exportToSSD_SimulationInformation(pugi::xml_node& node) const
+{
+  pugi::xml_node node_simulation_information = node.append_child(oms2::ssd::ssd_simulation_information);
+
+  pugi::xml_node node_annotation = node_simulation_information.append_child(oms2::ssd::ssd_annotation);
+  node_annotation.append_attribute("type") = "org.openmodelica";
+
+  pugi::xml_node node_tlm = node_annotation.append_child("tlm:Master");
+  //node_tlm.append_attribute("ip") = ;
+  //node_tlm.append_attribute("managerport") = ;
+  //node_tlm.append_attribute("monitorport") = ;
+
+  return oms_status_ok;
 }
