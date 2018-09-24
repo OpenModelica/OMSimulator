@@ -351,6 +351,31 @@ static int OMSimulatorLua_oms3_addBus(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms3_addTLMBus(const char *cref, const char *domain, const char *dimension, const char *interpolation)
+static int OMSimulatorLua_oms3_addTLMBus(lua_State *L)
+{
+  if (lua_gettop(L) != 3 && lua_gettop(L) != 4)
+    return luaL_error(L, "expecting exactly 3 or 4 arguments");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+  luaL_checktype(L, 3, LUA_TNUMBER);
+  if(lua_gettop(L) > 3)
+    luaL_checktype(L, 4, LUA_TNUMBER);
+
+  const char* cref = lua_tostring(L, 1);
+  const char* domain = lua_tostring(L, 2);
+  int dimensions = lua_tointeger(L, 3);
+  int interpolation = (int)oms_tlm_no_interpolation;
+  if(lua_gettop(L) > 3)
+    interpolation = lua_tointeger(L, 4);
+
+  oms_status_enu_t status = oms3_addTLMBus(cref, domain, dimensions, (oms_tlm_interpolation_t)interpolation);
+
+  lua_pushinteger(L, status);
+
+  return 1;
+}
+
 //oms_status_enu_t oms3_addConnectorToBus(const char *busCref, const char *connectorCref)
 static int OMSimulatorLua_oms3_addConnectorToBus(lua_State *L)
 {
@@ -362,6 +387,25 @@ static int OMSimulatorLua_oms3_addConnectorToBus(lua_State *L)
   const char* busCref = lua_tostring(L, 1);
   const char* connectorCref = lua_tostring(L, 2);
   oms_status_enu_t status = oms3_addConnectorToBus(busCref,connectorCref);
+
+  lua_pushinteger(L, status);
+
+  return 1;
+}
+
+//oms_status_enu_t oms3_addConnectorToTLMBus(const char* busCref, const char* connectorCref, const char* type);
+static int OMSimulatorLua_oms3_addConnectorToTLMBus(lua_State *L)
+{
+  if (lua_gettop(L) != 3)
+    return luaL_error(L, "expecting exactly 3 arguments");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+  luaL_checktype(L, 3, LUA_TSTRING);
+
+  const char* busCref = lua_tostring(L, 1);
+  const char* connectorCref = lua_tostring(L, 2);
+  const char* type = lua_tostring(L, 3);
+  oms_status_enu_t status = oms3_addConnectorToTLMBus(busCref,connectorCref,type);
 
   lua_pushinteger(L, status);
 
@@ -1853,7 +1897,9 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms3_addConnector);
   REGISTER_LUA_CALL(oms3_addConnection);
   REGISTER_LUA_CALL(oms3_addBus);
+  REGISTER_LUA_CALL(oms3_addTLMBus);
   REGISTER_LUA_CALL(oms3_addConnectorToBus);
+  REGISTER_LUA_CALL(oms3_addConnectorToTLMBus);
   /* ************************************ */
   /* OMSimulator 2.0                      */
   /*                                      */
