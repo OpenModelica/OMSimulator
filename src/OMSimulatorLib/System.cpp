@@ -244,6 +244,15 @@ oms_status_enu_t oms3::System::exportToSSD(pugi::xml_node& node) const
     if (connection)
       connection->exportToSSD(connections_node);
 
+  if(!busconnectors.empty()) {
+    pugi::xml_node annotations_node = node.append_child(oms2::ssd::ssd_annotations);
+    pugi::xml_node annotation_node = annotations_node.append_child(oms2::ssd::ssd_annotation);
+    annotation_node.append_attribute("type") = "org.openmodelica";
+    for (const auto& busconnector : busconnectors) {
+      busconnector->exportToSSD(annotation_node);
+    }
+  }
+
   return oms_status_ok;
 }
 
@@ -358,6 +367,43 @@ oms_status_enu_t oms3::System::addConnection(const oms3::ComRef &crefA, const om
   }
 
   return logError("Connector(s) not found in system");
+}
+
+oms_status_enu_t oms3::System::addBus(const oms3::ComRef &cref)
+{
+  oms3::ComRef tail(cref);
+  oms3::ComRef head = tail.pop_front();
+  auto subsystem = subsystems.find(head);
+  if(subsystem != subsystems.end()) {
+    return subsystem->second->addBus(tail);
+  }
+  if(!cref.isValidIdent()) {
+    return logError("Not a valid ident: "+std::string(cref));
+  }
+  oms3::BusConnector* bus = new oms3::BusConnector(cref);
+  busconnectors.push_back(bus);
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::System::addConnectorToBus(const oms3::ComRef &busCref, const oms3::ComRef &connectorCref)
+{
+  oms3::ComRef busTail(busCref);
+  oms3::ComRef busHead = busTail.pop_front();
+  oms3::ComRef connectorTail(connectorCref);
+  oms3::ComRef connectorHead = connectorTail.pop_front();
+  //If both bus and connector references the same subsystem, recurse into that subsystem
+  if(busHead == connectorHead) {
+    auto subsystem = subsystems.find(busHead);
+    if(subsystem != subsystems.end()) {
+      return subsystem->second->addConnectorToBus(busTail,connectorTail);
+    }
+  }
+  for(auto& bus : busconnectors) {
+    if(bus->getName() == busCref) {
+      bus->addConnector(connectorCref);
+    }
+  }
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms3::System::setConnectorGeometry(const oms3::ComRef &cref, const oms2::ssd::ConnectorGeometry *geometry)

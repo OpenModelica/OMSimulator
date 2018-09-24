@@ -368,6 +368,14 @@ typedef struct {
 } oms_connector_t;
 
 /**
+ * /brief Bus connector
+ */
+typedef struct {
+  char* name;
+  ssd_connector_geometry_t* geometry;
+} oms3_busconnector_t;
+
+/**
  * \brief Element (aka ssd:Component)
  */
 typedef struct _oms3_element_t{
