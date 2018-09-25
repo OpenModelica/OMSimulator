@@ -38,11 +38,11 @@
 #include <iostream>
 
 
-oms3::Connection::Connection(const oms3::ComRef& conA, const oms3::ComRef& conB)
+oms3::Connection::Connection(const oms3::ComRef& conA, const oms3::ComRef& conB, oms3_connection_type_enu_t type)
 {
   std::string str;
 
-  this->type = oms3_connection_single;
+  this->type = type;
 
   str = std::string(conA);
   this->conA = new char[str.size()+1];
@@ -104,7 +104,13 @@ oms3::Connection& oms3::Connection::operator=(const oms3::Connection& rhs)
 
 oms_status_enu_t oms3::Connection::exportToSSD(pugi::xml_node &root) const
 {
-  pugi::xml_node node = root.append_child(oms2::ssd::ssd_connection);
+  pugi::xml_node node;
+  if(type == oms3_connection_single) {
+    node = root.append_child(oms2::ssd::ssd_connection);
+  }
+  else if(type == oms3_connection_bus) {
+    node = root.append_child("OMSimulator:BusConnection");
+  }
 
   ComRef startConnectorRef(conA);
   ComRef startElementRef = startConnectorRef.pop_front();

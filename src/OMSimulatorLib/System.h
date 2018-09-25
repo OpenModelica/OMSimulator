@@ -70,6 +70,7 @@ namespace oms3
     void setGeometry(const oms3::ssd::ElementGeometry& geometry) {element.setGeometry(&geometry);}
     oms_status_enu_t addConnector(const oms3::ComRef& cref, oms_causality_enu_t causality, oms_signal_type_enu_t type);
     oms3::Connector *getConnector(const oms3::ComRef& cref);
+    oms3::BusConnector *getBusConnector(const oms3::ComRef& cref);
     Connection **getConnections(const ComRef &cref);
     oms_status_enu_t addConnection(const oms3::ComRef& crefA, const oms3::ComRef& crefB);
     oms_status_enu_t setConnectorGeometry(const oms3::ComRef& cref, const oms2::ssd::ConnectorGeometry* geometry);
