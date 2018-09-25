@@ -39,6 +39,7 @@
 #include "ssd/ConnectorGeometry.h"
 #include "BusConnector.h"
 #include "TLMBusConnector.h"
+#include "ExternalModel.h"
 
 #include <pugixml.hpp>
 #include <map>
@@ -83,6 +84,7 @@ namespace oms3
     oms_status_enu_t addConnectorToTLMBus(const oms3::ComRef& busCref, const oms3::ComRef& connectorCref, const std::string type);
     oms_status_enu_t setBusGeometry(const oms3::ComRef& cref, const oms2::ssd::ConnectorGeometry* geometry);
     oms_status_enu_t setTLMBusGeometry(const oms3::ComRef& cref, const oms2::ssd::ConnectorGeometry* geometry);
+    oms_status_enu_t addExternalModel(const ComRef &cref, std::string path, std::string startscript);
 
   protected:
     System(const ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem);
@@ -98,6 +100,7 @@ namespace oms3
     System* parentSystem;
     std::map<ComRef, System*> subsystems;
     std::map<ComRef, Component*> components;
+    std::map<ComRef, ExternalModel*> externalmodels;
 
     oms3::Element element;
     std::vector<oms3::Connector*> connectors;   ///< last element is always NULL
