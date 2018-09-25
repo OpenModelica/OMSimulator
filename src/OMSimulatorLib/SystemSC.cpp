@@ -68,12 +68,23 @@ oms_status_enu_t oms3::SystemSC::exportToSSD_SimulationInformation(pugi::xml_nod
   pugi::xml_node node_simulation_information = node.append_child(oms2::ssd::ssd_simulation_information);
 
   pugi::xml_node node_solver = node_simulation_information.append_child("VariableStepSolver");
-  node_solver.append_attribute("description") = "e.g. cvode";
-  node_solver.append_attribute("absoluteTolerance") = "1e-4";
-  node_solver.append_attribute("relativeTolerance") = "1e-4";
-  node_solver.append_attribute("minimumStepSize") = "1e-4";
-  node_solver.append_attribute("maximumStepSize") = "1e-1";
-  node_solver.append_attribute("initialStepSize") = "1e-4";
+  node_solver.append_attribute("description") = solverName.c_str();
+  node_solver.append_attribute("absoluteTolerance") = std::to_string(absoluteTolerance).c_str();
+  node_solver.append_attribute("relativeTolerance") = std::to_string(relativeTolerance).c_str();
+  node_solver.append_attribute("minimumStepSize") = std::to_string(minimumStepSize).c_str();
+  node_solver.append_attribute("maximumStepSize") = std::to_string(maximumStepSize).c_str();
+  node_solver.append_attribute("initialStepSize") = std::to_string(initialStepSize).c_str();
 
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::SystemSC::importFromSSD_SimulationInformation(const pugi::xml_node& node)
+{
+  solverName = node.child("VariableStepSolver").attribute("description").as_string();
+  absoluteTolerance = node.child("VariableStepSolver").attribute("absoluteTolerance").as_double();
+  relativeTolerance = node.child("VariableStepSolver").attribute("relativeTolerance").as_double();
+  minimumStepSize = node.child("VariableStepSolver").attribute("minimumStepSize").as_double();
+  maximumStepSize = node.child("VariableStepSolver").attribute("maximumStepSize").as_double();
+  initialStepSize = node.child("VariableStepSolver").attribute("initialStepSize").as_double();
   return oms_status_ok;
 }
