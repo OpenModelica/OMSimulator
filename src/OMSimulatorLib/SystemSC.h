@@ -47,6 +47,7 @@ namespace oms3
 
     static System* NewSystem(const oms3::ComRef& cref, Model* parentModel, System* parentSystem);
     oms_status_enu_t exportToSSD_SimulationInformation(pugi::xml_node& node) const;
+    oms_status_enu_t importFromSSD_SimulationInformation(const pugi::xml_node& node);
 
   protected:
     SystemSC(const ComRef& cref, Model* parentModel, System* parentSystem);
@@ -56,6 +57,12 @@ namespace oms3
     SystemSC& operator=(SystemSC const& copy); ///< not implemented
 
   private:
+    std::string solverName = "cvode";
+    double absoluteTolerance = 1e-4;
+    double relativeTolerance = 1e-4;
+    double minimumStepSize = 1e-4;
+    double maximumStepSize = 1e-1;
+    double initialStepSize = 1e-4;
   };
 }
 

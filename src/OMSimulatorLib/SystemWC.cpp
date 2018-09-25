@@ -68,8 +68,15 @@ oms_status_enu_t oms3::SystemWC::exportToSSD_SimulationInformation(pugi::xml_nod
   pugi::xml_node node_simulation_information = node.append_child(oms2::ssd::ssd_simulation_information);
 
   pugi::xml_node node_solver = node_simulation_information.append_child("FixedStepMaster");
-  node_solver.append_attribute("description") = "oms-ma";
-  node_solver.append_attribute("stepSize") = "1e-1";
+  node_solver.append_attribute("description") = solverName.c_str();
+  node_solver.append_attribute("stepSize") = std::to_string(stepSize).c_str();
 
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::SystemWC::importFromSSD_SimulationInformation(const pugi::xml_node& node)
+{
+  solverName = node.child("FixedStepMaster").attribute("description").as_string();
+  stepSize = node.child("FixedStepMaster").attribute("stepSize").as_double();
   return oms_status_ok;
 }

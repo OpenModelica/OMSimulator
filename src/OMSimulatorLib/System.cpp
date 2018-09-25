@@ -272,7 +272,8 @@ oms_status_enu_t oms3::System::importFromSSD(const pugi::xml_node& node)
     std::string name = it->name();
     if(name == oms2::ssd::ssd_simulation_information)
     {
-      // TODO: import ssd_simulation_information
+      if (oms_status_ok != importFromSSD_SimulationInformation(*it))
+        return logError("Failed to import " + std::string(oms2::ssd::ssd_simulation_information));
     }
     else if(name == oms2::ssd::ssd_connections)
     {

@@ -47,6 +47,7 @@ namespace oms3
 
     static System* NewSystem(const oms3::ComRef& cref, Model* parentModel, System* parentSystem);
     oms_status_enu_t exportToSSD_SimulationInformation(pugi::xml_node& node) const;
+    oms_status_enu_t importFromSSD_SimulationInformation(const pugi::xml_node& node);
 
   protected:
     SystemTLM(const ComRef& cref, Model* parentModel, System* parentSystem);
@@ -56,6 +57,10 @@ namespace oms3
     SystemTLM& operator=(SystemTLM const& copy); ///< not implemented
 
   private:
+    // simulation information
+    // ip
+    // managerport
+    // monitorport
   };
 }
 
