@@ -412,6 +412,30 @@ static int OMSimulatorLua_oms3_addConnectorToTLMBus(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms3_addTLMConnection(const char *crefA, const char *crefB, double delay, double alpha, double Zf, double Zfr)
+static int OMSimulatorLua_oms3_addTLMConnection(lua_State *L)
+{
+  if (lua_gettop(L) != 6)
+    return luaL_error(L, "expecting exactly 6 arguments");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+  luaL_checktype(L, 3, LUA_TNUMBER);
+  luaL_checktype(L, 4, LUA_TNUMBER);
+  luaL_checktype(L, 5, LUA_TNUMBER);
+  luaL_checktype(L, 6, LUA_TNUMBER);
+
+  const char* crefA = lua_tostring(L, 1);
+  const char* crefB = lua_tostring(L, 2);
+  double delay = lua_tonumber(L, 3);
+  double alpha = lua_tonumber(L, 4);
+  double impedance = lua_tonumber(L, 5);
+  double impedancerot = lua_tonumber(L, 6);
+  oms_status_enu_t status = oms3_addTLMConnection(crefA, crefB, delay, alpha, impedance, impedancerot);
+
+  lua_pushinteger(L, status);
+
+  return 1;
+}
 /* ************************************ */
 /* OMSimulator 2.0                      */
 /*                                      */
@@ -1900,6 +1924,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms3_addTLMBus);
   REGISTER_LUA_CALL(oms3_addConnectorToBus);
   REGISTER_LUA_CALL(oms3_addConnectorToTLMBus);
+  REGISTER_LUA_CALL(oms3_addTLMConnection);
   /* ************************************ */
   /* OMSimulator 2.0                      */
   /*                                      */
