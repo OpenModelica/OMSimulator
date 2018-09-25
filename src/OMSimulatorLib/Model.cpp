@@ -86,30 +86,6 @@ oms3::Model* oms3::Model::NewModel(const oms3::ComRef& cref)
   return model;
 }
 
-oms3::Model* oms3::Model::importFromSSD(const pugi::xml_node& node)
-{
-  std::string name = node.name();
-  logInfo(name);
-
-  for(pugi::xml_node_iterator it = node.begin(); it != node.end(); ++it)
-  {
-    std::string name = it->name();
-    logInfo(name);
-    //if (name == "TLMModel" && modelType == oms_component_none)
-    //  modelType = oms_component_tlm;
-    //else if (name == oms2::ssd::ssd_system && modelType == oms_component_none)
-    //  modelType = oms_component_fmi;
-    //else if (name == oms2::ssd::ssd_default_experiment && !defaultExperiment)
-    //  defaultExperiment = true;
-    //else
-    //{
-    //  logError("wrong xml schema detected");
-    //  return NULL;
-    //}
-  }
-  return NULL;
-}
-
 oms_status_enu_t oms3::Model::rename(const oms3::ComRef& cref)
 {
   if (!cref.isValidIdent())
@@ -216,6 +192,43 @@ oms_status_enu_t oms3::Model::exportToSSD(pugi::xml_node& node) const
     if (oms_status_ok != system->exportToSSD(system_node))
       return logError("export of system failed");
   }
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::Model::importFromSSD(const pugi::xml_node& node)
+{
+  for(pugi::xml_node_iterator it = node.begin(); it != node.end(); ++it)
+  {
+    std::string name = it->name();
+    if (name == oms2::ssd::ssd_system)
+    {
+      ComRef systemCref = ComRef(it->attribute("name").as_string());
+
+      // lochel: I guess that can somehow be improved
+      oms_system_enu_t systemType = oms_system_tlm;
+      if (it->child(oms2::ssd::ssd_simulation_information).child("VariableStepSolver").attribute("description").as_string() != "")
+        systemType = oms_system_sc;
+      if (it->child(oms2::ssd::ssd_simulation_information).child("FixedStepSolver").attribute("description").as_string() != "")
+        systemType = oms_system_sc;
+      if (it->child(oms2::ssd::ssd_simulation_information).child("VariableStepMaster").attribute("description").as_string() != "")
+        systemType = oms_system_wc;
+      if (it->child(oms2::ssd::ssd_simulation_information).child("FixedStepMaster").attribute("description").as_string() != "")
+        systemType = oms_system_wc;
+
+      if (oms_status_ok != addSystem(systemCref, systemType))
+        return oms_status_error;
+
+      System* system = getSystem(systemCref);
+      if (!system)
+        return oms_status_error;
+
+      if (oms_status_ok != system->importFromSSD(*it))
+        return oms_status_error;
+    }
+    else
+      return logError("wrong xml schema detected");
+  }
+
   return oms_status_ok;
 }
 

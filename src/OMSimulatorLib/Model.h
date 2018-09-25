@@ -52,13 +52,13 @@ namespace oms3
      * instances with valid names can be created.
      */
     static Model* NewModel(const ComRef& cref);
-    static Model* importFromSSD(const pugi::xml_node& node);
     const ComRef& getName() const {return cref;}
     System* getSystem(const ComRef& cref);
     oms_status_enu_t rename(const ComRef& cref);
     oms_status_enu_t list(const ComRef& cref, char** contents);
     oms_status_enu_t addSystem(const ComRef& cref, oms_system_enu_t type);
     oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
+    oms_status_enu_t importFromSSD(const pugi::xml_node& node);
     oms_status_enu_t exportToFile(const std::string& filename) const;
 
     oms3::Element** getElements() {return &elements[0];}

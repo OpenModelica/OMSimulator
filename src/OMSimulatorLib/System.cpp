@@ -259,6 +259,64 @@ oms_status_enu_t oms3::System::exportToSSD(pugi::xml_node& node) const
   return oms_status_ok;
 }
 
+oms_status_enu_t oms3::System::importFromSSD(const pugi::xml_node& node)
+{
+  for(pugi::xml_node_iterator it = node.begin(); it != node.end(); ++it)
+  {
+    std::string name = it->name();
+    if(name == oms2::ssd::ssd_simulation_information)
+    {
+      // TODO: import ssd_simulation_information
+    }
+    else if(name == oms2::ssd::ssd_connections)
+    {
+      // TODO: import ssd_connections
+    }
+    else if(name == oms2::ssd::ssd_connectors)
+    {
+      // TODO: import ssd_connectors
+    }
+    else if(name == oms2::ssd::ssd_elements)
+    {
+      for(pugi::xml_node_iterator itElements = (*it).begin(); itElements != (*it).end(); ++itElements)
+      {
+        name = itElements->name();
+        if (name == oms2::ssd::ssd_system)
+        {
+          ComRef systemCref = ComRef(itElements->attribute("name").as_string());
+
+          // lochel: I guess that can somehow be improved
+          oms_system_enu_t systemType = oms_system_tlm;
+          if (itElements->child(oms2::ssd::ssd_simulation_information).child("VariableStepSolver").attribute("description").as_string() != "")
+            systemType = oms_system_sc;
+          if (itElements->child(oms2::ssd::ssd_simulation_information).child("FixedStepSolver").attribute("description").as_string() != "")
+            systemType = oms_system_sc;
+          if (itElements->child(oms2::ssd::ssd_simulation_information).child("VariableStepMaster").attribute("description").as_string() != "")
+            systemType = oms_system_wc;
+          if (itElements->child(oms2::ssd::ssd_simulation_information).child("FixedStepMaster").attribute("description").as_string() != "")
+            systemType = oms_system_wc;
+
+          if (oms_status_ok != addSubSystem(systemCref, systemType))
+            return oms_status_error;
+
+          System* system = getSystem(systemCref);
+          if (!system)
+            return oms_status_error;
+
+          if (oms_status_ok != system->importFromSSD(*itElements))
+            return oms_status_error;
+        }
+        else
+          return logError("wrong xml schema detected: " + name);
+      }
+    }
+    else
+      return logError("wrong xml schema detected: " + name);
+  }
+
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms3::System::addConnector(const oms3::ComRef &cref, oms_causality_enu_t causality, oms_signal_type_enu_t type)
 {
   oms3::ComRef tail(cref);
