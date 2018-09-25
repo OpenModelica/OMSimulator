@@ -271,11 +271,48 @@ oms_status_enu_t oms3::System::importFromSSD(const pugi::xml_node& node)
     }
     else if(name == oms2::ssd::ssd_connections)
     {
-      // TODO: import ssd_connections
+      for(pugi::xml_node_iterator itConnectors = (*it).begin(); itConnectors != (*it).end(); ++itConnectors)
+      {
+        ComRef startElement = ComRef(itConnectors->attribute("startElement").as_string());
+        ComRef startConnector = ComRef(itConnectors->attribute("startConnector").as_string());
+        ComRef endElement = ComRef(itConnectors->attribute("endElement").as_string());
+        ComRef endConnector = ComRef(itConnectors->attribute("endConnector").as_string());
+        ComRef crefA = startElement;
+        if (!startConnector.isEmpty())
+          crefA = crefA + startConnector;
+        ComRef crefB = endElement;
+        if (!endConnector.isEmpty())
+          crefB = crefB + endConnector;
+        if (oms_status_ok != addConnection(crefA, crefB))
+          return logError("Failed to import " + std::string(oms2::ssd::ssd_connector));
+      }
     }
     else if(name == oms2::ssd::ssd_connectors)
     {
-      // TODO: import ssd_connectors
+      for(pugi::xml_node_iterator itConnectors = (*it).begin(); itConnectors != (*it).end(); ++itConnectors)
+      {
+        ComRef cref = ComRef(itConnectors->attribute("name").as_string());
+        std::string causalityString = itConnectors->attribute("kind").as_string();
+        std::string typeString = itConnectors->attribute("type").as_string();
+        oms_causality_enu_t causality = oms_causality_undefined;
+        if (causalityString == "input")
+          causality = oms_causality_input;
+        else if (causalityString == "output")
+          causality = oms_causality_output;
+        else
+          return logError("Failed to import " + std::string(oms2::ssd::ssd_connector) + ":causality");
+        oms_signal_type_enu_t type = oms_signal_type_real;
+        if (typeString == "Real")
+          type = oms_signal_type_real;
+        else if (typeString == "Integer")
+          type = oms_signal_type_integer;
+        else if (typeString == "Boolean")
+          type = oms_signal_type_boolean;
+        else
+          return logError("Failed to import " + std::string(oms2::ssd::ssd_connector) + ":type");
+        if (oms_status_ok != addConnector(cref, causality, type))
+          return logError("Failed to import " + std::string(oms2::ssd::ssd_connector));
+      }
     }
     else if(name == oms2::ssd::ssd_elements)
     {
