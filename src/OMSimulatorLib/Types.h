@@ -71,12 +71,6 @@ typedef enum {
 } oms_tlm_interpolation_t;
 
 typedef enum {
-  oms_tlm_connector_type_state,
-  oms_tlm_connector_type_flow,
-  oms_tlm_connector_type_effort
-} oms_tlm_connector_type_enu_t;
-
-typedef enum {
   oms_solver_internal,         ///< internal solver; CS-FMU only
   oms_solver_explicit_euler,
   oms_solver_cvode
@@ -374,6 +368,17 @@ typedef struct {
   char* name;
   ssd_connector_geometry_t* geometry;
 } oms3_busconnector_t;
+
+/**
+ * /brief TLM Bus connector
+ */
+typedef struct {
+  char* name;
+  ssd_connector_geometry_t* geometry;
+  char* domain;
+  int dimensions;
+  oms_tlm_interpolation_t interpolation;
+} oms3_tlmbusconnector_t;
 
 /**
  * \brief Element (aka ssd:Component)

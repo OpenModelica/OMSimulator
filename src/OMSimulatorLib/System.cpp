@@ -69,6 +69,9 @@ oms3::System::~System()
 
   for (const auto& busconnector : busconnectors)
     delete busconnector;
+
+  for (const auto tlmbusconnector : tlmbusconnectors)
+    delete tlmbusconnector;
 }
 
 oms3::System* oms3::System::NewSystem(const oms3::ComRef& cref, oms_system_enu_t type, oms3::Model* parentModel, oms3::System* parentSystem)
@@ -247,12 +250,15 @@ oms_status_enu_t oms3::System::exportToSSD(pugi::xml_node& node) const
     if (connection)
       connection->exportToSSD(connections_node);
 
-  if(!busconnectors.empty()) {
+  if(!busconnectors.empty() || !tlmbusconnectors.empty()) {
     pugi::xml_node annotations_node = node.append_child(oms2::ssd::ssd_annotations);
     pugi::xml_node annotation_node = annotations_node.append_child(oms2::ssd::ssd_annotation);
     annotation_node.append_attribute("type") = "org.openmodelica";
     for (const auto& busconnector : busconnectors) {
       busconnector->exportToSSD(annotation_node);
+    }
+    for (const auto& tlmbusconnector : tlmbusconnectors) {
+      tlmbusconnector->exportToSSD(annotation_node);
     }
   }
 
@@ -388,6 +394,22 @@ oms_status_enu_t oms3::System::addBus(const oms3::ComRef &cref)
   return oms_status_ok;
 }
 
+oms_status_enu_t oms3::System::addTLMBus(const oms3::ComRef &cref, const std::string domain, const int dimensions, const oms_tlm_interpolation_t interpolation)
+{
+  oms3::ComRef tail(cref);
+  oms3::ComRef head = tail.pop_front();
+  auto subsystem = subsystems.find(head);
+  if(subsystem != subsystems.end()) {
+    return subsystem->second->addTLMBus(tail, domain, dimensions, interpolation);
+  }
+  if(!cref.isValidIdent()) {
+    return logError("Not a valid ident: "+std::string(cref));
+  }
+  oms3::TLMBusConnector* bus = new oms3::TLMBusConnector(cref, domain, dimensions, interpolation);
+  tlmbusconnectors.push_back(bus);
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms3::System::addConnectorToBus(const oms3::ComRef &busCref, const oms3::ComRef &connectorCref)
 {
   oms3::ComRef busTail(busCref);
@@ -404,6 +426,38 @@ oms_status_enu_t oms3::System::addConnectorToBus(const oms3::ComRef &busCref, co
   for(auto& bus : busconnectors) {
     if(bus->getName() == busCref) {
       bus->addConnector(connectorCref);
+    }
+  }
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::System::addConnectorToTLMBus(const oms3::ComRef &busCref, const oms3::ComRef &connectorCref, const std::string type)
+{
+  oms3::ComRef busTail(busCref);
+  oms3::ComRef busHead = busTail.pop_front();
+  oms3::ComRef connectorTail(connectorCref);
+  oms3::ComRef connectorHead = connectorTail.pop_front();
+  //If both bus and connector references the same subsystem, recurse into that subsystem
+  if(busHead == connectorHead) {
+    auto subsystem = subsystems.find(busHead);
+    if(subsystem != subsystems.end()) {
+      return subsystem->second->addConnectorToTLMBus(busTail,connectorTail,type);
+    }
+  }
+
+  //Check that connector exists in system
+  bool found = false;
+  for(auto& connector : connectors)
+    if(connector && connector->getName() == connectorCref)
+      found = true;
+  if(!found)
+    return logError("Connector not found in system: "+std::string(connectorCref));
+
+  for(auto& bus : tlmbusconnectors) {
+    if(bus->getName() == busCref) {
+      oms_status_enu_t status = bus->addConnector(connectorCref,type);
+      if(oms_status_ok != status)
+        return status;
     }
   }
   return oms_status_ok;
