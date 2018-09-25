@@ -61,7 +61,7 @@ typedef enum {
   oms_causality_parameter,  ///< REMOVE ME
   oms_causality_bidir,      ///< bidirecitonal
   oms_causality_inherited,  ///< inherited
-  oms_causality_undefined   ///< REMOVE ME
+  oms_causality_undefined
 } oms_causality_enu_t;
 
 typedef enum {
