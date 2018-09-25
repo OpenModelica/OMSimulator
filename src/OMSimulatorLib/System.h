@@ -64,6 +64,7 @@ namespace oms3
     oms_status_enu_t addSubSystem(const oms3::ComRef& cref, oms_system_enu_t type);
     bool validCref(const oms3::ComRef& cref);
     oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
+    oms_status_enu_t importFromSSD(const pugi::xml_node& node);
     virtual oms_status_enu_t exportToSSD_SimulationInformation(pugi::xml_node& node) const = 0;
     void setGeometry(const oms3::ssd::ElementGeometry& geometry) {element.setGeometry(&geometry);}
     oms_status_enu_t addConnector(const oms3::ComRef& cref, oms_causality_enu_t causality, oms_signal_type_enu_t type);
