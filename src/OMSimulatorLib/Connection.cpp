@@ -52,6 +52,7 @@ oms3::Connection::Connection(const oms3::ComRef& conA, const oms3::ComRef& conB,
   this->conB = new char[str.size()+1];
   strcpy(this->conB, str.c_str());
 
+  tlmparameters = NULL;
   this->geometry = reinterpret_cast<ssd_connection_geometry_t*>(new oms2::ssd::ConnectionGeometry());
 }
 
@@ -59,6 +60,7 @@ oms3::Connection::~Connection()
 {
   if (this->conA) delete[] this->conA;
   if (this->conB) delete[] this->conB;
+  if (this->tlmparameters) delete tlmparameters;
   if (this->geometry) delete reinterpret_cast<oms2::ssd::ConnectionGeometry*>(this->geometry);
 }
 
@@ -111,6 +113,9 @@ oms_status_enu_t oms3::Connection::exportToSSD(pugi::xml_node &root) const
   else if(type == oms3_connection_bus) {
     node = root.append_child("OMSimulator:BusConnection");
   }
+  else if(type == oms3_connection_tlm) {
+    node = root.append_child("OMSimulator:TLMBusConnection");
+  }
 
   ComRef startConnectorRef(conA);
   ComRef startElementRef = startConnectorRef.pop_front();
@@ -121,6 +126,13 @@ oms_status_enu_t oms3::Connection::exportToSSD(pugi::xml_node &root) const
   node.append_attribute("startConnector") = startConnectorRef.c_str();
   node.append_attribute("endElement") = endElementRef.c_str();
   node.append_attribute("endConnector") = endConnectorRef.c_str();
+
+  if(type == oms3_connection_tlm) {
+    node.append_attribute("delay") = std::to_string(tlmparameters->delay).c_str();
+    node.append_attribute("alpha") = std::to_string(tlmparameters->alpha).c_str();
+    node.append_attribute("impedance") = std::to_string(tlmparameters->impedance).c_str();
+    node.append_attribute("impedancerot") = std::to_string(tlmparameters->impedancerot).c_str();
+  }
 
   getGeometry()->exportToSSD(node);
 
@@ -135,6 +147,18 @@ void oms3::Connection::setGeometry(const oms2::ssd::ConnectionGeometry* newGeome
   geometry_ = new oms2::ssd::ConnectionGeometry(*newGeometry);
   this->geometry = reinterpret_cast<ssd_connection_geometry_t*>(geometry_);
 }
+
+void oms3::Connection::setTLMParameters(double delay, double alpha, double impedance, double impedancerot)
+{
+  if(!tlmparameters)
+    tlmparameters = new oms3_tlm_connection_parameters_t;
+
+  tlmparameters->delay = delay;
+  tlmparameters->alpha = alpha;
+  tlmparameters->impedance = impedance;
+  tlmparameters->impedancerot = impedancerot;
+}
+
 
 bool oms3::Connection::isEqual(const oms3::ComRef& signalA, const oms3::ComRef& signalB) const
 {

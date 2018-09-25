@@ -62,6 +62,8 @@ namespace oms3
     const oms2::ssd::ConnectionGeometry* getGeometry() const {return reinterpret_cast<oms2::ssd::ConnectionGeometry*>(geometry);}
     void setGeometry(const oms2::ssd::ConnectionGeometry* newGeometry);
 
+    void setTLMParameters(double delay, double alpha, double impedance, double impedancerot);
+
     oms3_connection_type_enu_t getType() const {return type;}
 
     bool isEqual(const oms3::Connection& connection) const;

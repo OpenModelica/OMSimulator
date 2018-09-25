@@ -10,12 +10,18 @@ oms3::BusConnector::BusConnector(const oms3::ComRef &name)
   strcpy(this->name, str.c_str());
 
   this->geometry = NULL;
+  this->connectors = NULL;
 }
 
 oms3::BusConnector::~BusConnector()
 {
   if (this->name) delete[] this->name;
   if (this->geometry) delete reinterpret_cast<oms2::ssd::ConnectorGeometry*>(this->geometry);
+  if (this->connectors) {
+    for (int i=0; connectors[i]; ++i)
+      delete[] connectors[i];
+    delete[] connectors;
+  }
 }
 
 oms_status_enu_t oms3::BusConnector::exportToSSD(pugi::xml_node &root) const
@@ -93,10 +99,9 @@ void oms3::BusConnector::updateConnectors()
   if (connectors)
   {
     for (int i=0; connectors[i]; ++i)
-      delete reinterpret_cast<oms2::Connector*>(connectors[i]);
+      delete[] connectors[i];
     delete[] connectors;
   }
-
   connectors = new char*[conrefs.size()+1];
   connectors[conrefs.size()] = NULL;
 
