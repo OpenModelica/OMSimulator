@@ -77,3 +77,8 @@ oms_status_enu_t oms3::SystemTLM::exportToSSD_SimulationInformation(pugi::xml_no
 
   return oms_status_ok;
 }
+
+oms_status_enu_t oms3::SystemTLM::importFromSSD_SimulationInformation(const pugi::xml_node& node)
+{
+  return oms_status_ok;
+}

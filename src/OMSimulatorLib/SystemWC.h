@@ -47,6 +47,7 @@ namespace oms3
 
     static System* NewSystem(const oms3::ComRef& cref, Model* parentModel, System* parentSystem);
     oms_status_enu_t exportToSSD_SimulationInformation(pugi::xml_node& node) const;
+    oms_status_enu_t importFromSSD_SimulationInformation(const pugi::xml_node& node);
 
   protected:
     SystemWC(const ComRef& cref, Model* parentModel, System* parentSystem);
@@ -56,6 +57,8 @@ namespace oms3
     SystemWC& operator=(SystemWC const& copy); ///< not implemented
 
   private:
+    std::string solverName = "oms-ma";
+    double stepSize = 1e-1;
   };
 }
 

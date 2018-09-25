@@ -124,8 +124,10 @@ oms_status_enu_t oms3::Scope::exportModel(const oms3::ComRef& cref, const std::s
   return model->exportToFile(filename);
 }
 
-oms_status_enu_t oms3::Scope::importModel(const std::string& filename, char** cref)
+oms_status_enu_t oms3::Scope::importModel(const std::string& filename, char** _cref)
 {
+  *_cref = NULL;
+
   if (filename.length() <= 5)
     return logError("Unsupported type: " + filename);
 
@@ -137,28 +139,32 @@ oms_status_enu_t oms3::Scope::importModel(const std::string& filename, char** cr
     if (!result)
       return logError("loading \"" + std::string(filename) + "\" failed (" + std::string(result.description()) + ")");
 
-    const pugi::xml_node root = doc.document_element();
+    const pugi::xml_node node = doc.document_element(); // ssd:SystemStructureDescription
 
-    Model* model = Model::importFromSSD(root);
-    if (!model)
-      return logError("import failed");
+    ComRef cref = ComRef(node.attribute("name").as_string());
+    std::string ssdVersion = node.attribute("version").as_string();
 
-    ComRef cref = model->getName();
-    auto it = models_map.find(cref);
-    if (it != models_map.end())
+    oms_status_enu_t status = newModel(cref);
+    if (oms_status_ok != status)
+      return status;
+
+    if (ssdVersion != "Draft20180219")
+      logWarning("Unknown SSD version: " + ssdVersion);
+
+    Model* model = getModel(cref);
+    if (!model) // that should be impossible
+      return oms_status_error;
+
+    status = model->importFromSSD(node);
+    if (oms_status_ok != status)
     {
-      delete model;
-      return logError("A model called \"" + std::string(cref) + "\" is already in the scope.");
+      deleteModel(cref);
+      return oms_status_error;
     }
 
-    models.back() = model;
-    models_map[cref] = models.size() - 1;
-    models.push_back(NULL);
+    *_cref = (char*)model->getName().c_str();
+
     return oms_status_ok;
-  }
-  else if(ext == ".ssd")
-  {
-    return logError("Not implemented");
   }
 
   return logError("Unsupported type: " + filename);
