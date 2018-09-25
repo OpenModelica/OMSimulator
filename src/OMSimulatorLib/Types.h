@@ -366,6 +366,7 @@ typedef struct {
  */
 typedef struct {
   char* name;
+  char** connectors;
   ssd_connector_geometry_t* geometry;
 } oms3_busconnector_t;
 

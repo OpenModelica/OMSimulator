@@ -24,7 +24,7 @@ oms_status_enu_t oms3::BusConnector::exportToSSD(pugi::xml_node &root) const
   bus_node.append_attribute("name") = name;
 
   pugi::xml_node signals_node = bus_node.append_child("Signals");
-  for(auto& connector : connectors) {
+  for(auto& connector : conrefs) {
     pugi::xml_node signal_node = signals_node.append_child("Signal");
     signal_node.append_attribute("name") = connector.c_str();
   }
@@ -83,6 +83,25 @@ void oms3::BusConnector::setGeometry(const oms2::ssd::ConnectorGeometry *newGeom
 
 oms_status_enu_t oms3::BusConnector::addConnector(const oms3::ComRef &cref)
 {
-  connectors.push_back(cref);
+  conrefs.push_back(cref);
+  updateConnectors();
   return oms_status_ok;
+}
+
+void oms3::BusConnector::updateConnectors()
+{
+  if (connectors)
+  {
+    for (int i=0; connectors[i]; ++i)
+      delete reinterpret_cast<oms2::Connector*>(connectors[i]);
+    delete[] connectors;
+  }
+
+  connectors = new char*[conrefs.size()+1];
+  connectors[conrefs.size()] = NULL;
+
+  for (int i=0; i<conrefs.size(); ++i) {
+    connectors[i] = new char[sizeof(conrefs[i].c_str())+1];
+    strcpy(connectors[i], conrefs[i].c_str());
+  }
 }
