@@ -33,6 +33,7 @@
 
 #include "Component.h"
 #include "Model.h"
+#include "ExternalModel.h"
 #include "SystemSC.h"
 #include "SystemTLM.h"
 #include "SystemWC.h"
@@ -246,6 +247,13 @@ oms_status_enu_t oms3::System::exportToSSD(pugi::xml_node& node) const
     pugi::xml_node component_node = elements_node.append_child(oms2::ssd::ssd_component);
     if (oms_status_ok != component.second->exportToSSD(component_node))
       return logError("export of component failed");
+  }
+
+  for (const auto& externalmodel : externalmodels)
+  {
+    pugi::xml_node component_node = elements_node.append_child(oms2::ssd::ssd_component);
+    if (oms_status_ok != externalmodel.second->exportToSSD(component_node))
+      return logError("export of external model failed");
   }
 
   pugi::xml_node connectors_node = node.append_child(oms2::ssd::ssd_connectors);
@@ -758,6 +766,10 @@ oms_status_enu_t oms3::System::addTLMBus(const oms3::ComRef &cref, const std::st
   if(subsystem != subsystems.end()) {
     return subsystem->second->addTLMBus(tail, domain, dimensions, interpolation);
   }
+  auto externalmodel = externalmodels.find(head);
+  if(externalmodel != externalmodels.end()) {
+    return externalmodel->second->addTLMBus(tail, domain, dimensions, interpolation);
+  }
   if(!cref.isValidIdent()) {
     return logError("Not a valid ident: "+std::string(cref));
   }
@@ -823,6 +835,27 @@ oms_status_enu_t oms3::System::addConnectorToTLMBus(const oms3::ComRef &busCref,
     }
   }
   return oms_status_ok;
+}
+
+oms_status_enu_t oms3::System::addExternalModel(const oms3::ComRef &cref, std::string path, std::string startscript)
+{
+  if(type != oms_system_tlm) {
+    return logError("Only implemented for TLM systems");
+  }
+
+  if (cref.isValidIdent())
+  {
+    oms3::ExternalModel *externalmodel = oms3::ExternalModel::NewModel(cref, path, startscript);
+    if (externalmodel)
+    {
+      externalmodels[cref] = externalmodel;
+      subelements.back() = reinterpret_cast<oms3_element_t*>(externalmodel->getElement());
+      subelements.push_back(NULL);
+      element.setSubElements(&subelements[0]);
+      return oms_status_ok;
+    }
+  }
+return oms_status_error;
 }
 
 oms_status_enu_t oms3::System::setConnectorGeometry(const oms3::ComRef &cref, const oms2::ssd::ConnectorGeometry *geometry)

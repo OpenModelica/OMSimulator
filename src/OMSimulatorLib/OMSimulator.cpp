@@ -538,6 +538,27 @@ oms_status_enu_t oms3_addTLMConnection(const char *crefA, const char *crefB, dou
   return system->addTLMConnection(tailA,tailB,delay,alpha,impedance,impedancerot);
 }
 
+oms_status_enu_t oms3_addExternalModel(const char *cref, const char *path, const char *startscript)
+{
+  logTrace();
+
+  oms3::ComRef tail(cref);
+  oms3::ComRef modelCref = tail.pop_front();
+  oms3::ComRef systemCref = tail.pop_front();
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
+  if(!model) {
+    return logError_ModelNotInScope(modelCref);
+  }
+
+  oms3::System* system = model->getSystem(systemCref);
+  if(!system) {
+    return logError_SystemNotInModel(modelCref, systemCref);
+  }
+
+  return system->addExternalModel(tail, path, startscript);
+}
+
 /* ************************************ */
 /* OMSimulator 2.0                      */
 /*                                      */

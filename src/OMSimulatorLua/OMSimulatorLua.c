@@ -436,6 +436,26 @@ static int OMSimulatorLua_oms3_addTLMConnection(lua_State *L)
 
   return 1;
 }
+
+//oms_status_enu_t oms3_addExternalModel(const char *cref, const char *path, const char *startscript)
+static int OMSimulatorLua_oms3_addExternalModel(lua_State *L)
+{
+  if (lua_gettop(L) != 3)
+    return luaL_error(L, "expecting exactly 3 arguments");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+  luaL_checktype(L, 3, LUA_TSTRING);
+
+  const char* cref = lua_tostring(L, 1);
+  const char* path = lua_tostring(L, 2);
+  const char* startscript = lua_tostring(L, 3);
+  oms_status_enu_t status = oms3_addExternalModel(cref, path, startscript);
+
+  lua_pushinteger(L, status);
+
+  return 1;
+}
+
 /* ************************************ */
 /* OMSimulator 2.0                      */
 /*                                      */
@@ -1925,6 +1945,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms3_addConnectorToBus);
   REGISTER_LUA_CALL(oms3_addConnectorToTLMBus);
   REGISTER_LUA_CALL(oms3_addTLMConnection);
+  REGISTER_LUA_CALL(oms3_addExternalModel);
   /* ************************************ */
   /* OMSimulator 2.0                      */
   /*                                      */

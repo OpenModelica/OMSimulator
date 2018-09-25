@@ -79,7 +79,8 @@ typedef enum {
 typedef enum {
   oms_element_none,
   oms_element_system,
-  oms_element_component
+  oms_element_component,
+  oms_element_externalmodel
 } oms3_element_enu_t;
 
 typedef enum {
