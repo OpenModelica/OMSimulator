@@ -372,10 +372,9 @@ oms_status_enu_t oms3::System::importFromSSD(const pugi::xml_node& node)
           name = itAnnotations->name();
           if (std::string(name) == "OMSimulator:Bus")
           {
+            //Load bus connector
+            std::string busname = itAnnotations->attribute("name").as_string();
             if(std::string(itAnnotations->attribute("type").as_string()) == "tlm") {
-
-              //Load TLM bus connector
-              std::string busname = itAnnotations->attribute("name").as_string();
               std::string domain = itAnnotations->attribute("domain").as_string();
               int dimensions = itAnnotations->attribute("dimensions").as_int();
               std::string interpolationStr = itAnnotations->attribute("interpolation").as_string();
@@ -391,22 +390,29 @@ oms_status_enu_t oms3::System::importFromSSD(const pugi::xml_node& node)
 
               if (oms_status_ok != addTLMBus(busname,domain,dimensions,interpolation))
                 return oms_status_error;
+            }
+            else {
+              if (oms_status_ok != addBus(busname))
+                return oms_status_error;
+            }
 
-              //Load signals
-              pugi::xml_node signals_node = itAnnotations->child("Signals");
-              if(signals_node) {
-                for(pugi::xml_node_iterator itSignals = signals_node.begin(); itSignals != signals_node.end(); ++itSignals)
-                {
-                  name = itSignals->name();
-                  if(name == "Signal") {
-                    std::string signalname = itSignals->attribute("name").as_string();
+            //Load signals
+            pugi::xml_node signals_node = itAnnotations->child("Signals");
+            if(signals_node) {
+              for(pugi::xml_node_iterator itSignals = signals_node.begin(); itSignals != signals_node.end(); ++itSignals) {
+                name = itSignals->name();
+                if(name == "Signal") {
+                  std::string signalname = itSignals->attribute("name").as_string();
+                  if(std::string(itAnnotations->attribute("type").as_string()) == "tlm") {
                     std::string signaltype = itSignals->attribute("type").as_string();
-                    addConnectorToTLMBus(busname,signalname,signaltype);
+                    addConnectorToTLMBus(busname, signalname, signaltype);
+                  }
+                  else {
+                    addConnectorToBus(busname, signalname);
                   }
                 }
               }
             }
-            //Todo: Load normal bus connector if type != tlm
           }
         }
       }
