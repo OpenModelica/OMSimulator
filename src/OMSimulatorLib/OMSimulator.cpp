@@ -372,6 +372,27 @@ oms_status_enu_t oms3_addBus(const char *cref)
   return system->addBus(tail);
 }
 
+oms_status_enu_t oms3_getBus(const char* cref, oms3_busconnector_t** busConnector)
+{
+  oms3::ComRef tail(cref);
+  oms3::ComRef modelCref = tail.pop_front();
+  oms3::ComRef systemCref = tail.pop_front();
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
+  if (!model) {
+    return logError("Model \"" + std::string(modelCref) + "\" does not exist in the scope");
+  }
+
+  oms3::System* system = model->getSystem(systemCref);
+  if (!system) {
+    return logError("Model \"" + std::string(modelCref) + "\" does not contain system \"" + std::string(systemCref) + "\"");
+  }
+
+  oms3::BusConnector** busConnector_ = reinterpret_cast<oms3::BusConnector**>(busConnector);
+  *busConnector_ = system->getBusConnector(tail);
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms3_addTLMBus(const char *cref, const char *domain, const int dimensions, const oms_tlm_interpolation_t interpolation)
 {
   logTrace();
