@@ -44,7 +44,7 @@
 #include <unordered_map>
 
 oms2::Table::Table(const oms2::ComRef& cref, const std::string& filename)
-  : oms2::FMISubModel(oms_component_table, cref), path(filename), resultReader(NULL)
+  : oms2::FMISubModel(oms_component_table_old, cref), path(filename), resultReader(NULL)
 {
 }
 

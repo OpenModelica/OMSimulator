@@ -90,7 +90,7 @@ namespace oms2
                   const std::string& filename,
                   const std::string& startScript);
 
-    oms_element_type_enu_t getType() const {return oms_component_external;}
+    oms_element_type_enu_t getType() const {return oms_component_external_old;}
 
 
     void setName(const ComRef& name) {element.setName(name);}

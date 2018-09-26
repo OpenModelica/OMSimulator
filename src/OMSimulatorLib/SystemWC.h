@@ -43,7 +43,7 @@ namespace oms3
   class SystemWC : public System
   {
   public:
-    virtual ~SystemWC();
+    ~SystemWC();
 
     static System* NewSystem(const oms3::ComRef& cref, Model* parentModel, System* parentSystem);
     oms_status_enu_t exportToSSD_SimulationInformation(pugi::xml_node& node) const;

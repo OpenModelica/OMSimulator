@@ -101,7 +101,7 @@ void oms2::fmi2logger(fmi2_component_environment_t env, fmi2_string_t instanceNa
 }
 
 oms2::FMUWrapper::FMUWrapper(const oms2::ComRef& cref, const std::string& filename, const ComRef &parent)
-  : oms2::FMISubModel(oms_component_fmu, cref), fmuInfo(filename)
+  : oms2::FMISubModel(oms_component_fmu_old, cref), fmuInfo(filename)
 {
   this->parent = parent;
 }

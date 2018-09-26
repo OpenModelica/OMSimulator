@@ -31,10 +31,13 @@
 
 #include "Component.h"
 
+#include "Model.h"
 #include "ssd/Tags.h"
+#include "System.h"
+#include <OMSBoost.h>
 
-oms3::Component::Component(const ComRef& cref)
-  : element(oms_element_component, cref), cref(cref)
+oms3::Component::Component(const ComRef& cref, oms_component_enu_t type, System* parentSystem, const std::string& path)
+  : element(oms_element_component, cref), cref(cref), type(type), parentSystem(parentSystem), path(path)
 {
   connectors.push_back(NULL);
   element.setConnectors(&connectors[0]);
@@ -50,14 +53,34 @@ oms3::Component::~Component()
 oms_status_enu_t oms3::Component::exportToSSD(pugi::xml_node& node) const
 {
   node.append_attribute("name") = this->getName().c_str();
+  node.append_attribute("type") = "application/x-fmu-sharedlibrary";
+  node.append_attribute("source") = path.c_str();
   return oms_status_ok;
 }
 
-oms3::Connector *oms3::Component::getConnector(const oms3::ComRef &cref)
+oms3::Connector* oms3::Component::getConnector(const oms3::ComRef &cref)
 {
   for(auto &connector : connectors) {
     if(connector && connector->getName() == cref)
       return connector;
   }
   return NULL;
+}
+
+oms_status_enu_t oms3::Component::deleteResources()
+{
+  boost::filesystem::path temp_root(parentSystem->getModel()->getTempDirectory());
+  boost::filesystem::path temp_temp = temp_root / "temp";
+  boost::filesystem::path temp_resources = temp_root / "resources";
+
+  boost::filesystem::path relFMUPath = boost::filesystem::path("resources") / (std::string(cref) + ".fmu");
+  boost::filesystem::path absFMUPath = temp_root / relFMUPath;
+
+  // delete resources
+  boost::filesystem::remove(absFMUPath);
+
+  // delete temp directory
+  boost::filesystem::remove(temp_temp / std::string(cref));
+
+  return oms_status_ok;
 }

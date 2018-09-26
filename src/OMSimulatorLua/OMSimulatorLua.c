@@ -456,6 +456,23 @@ static int OMSimulatorLua_oms3_addExternalModel(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms3_addSubModel(const char* cref, const char* fmuPath);
+static int OMSimulatorLua_oms3_addSubModel(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 arguments");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+
+  const char* cref = lua_tostring(L, 1);
+  const char* fmuPath = lua_tostring(L, 2);
+  oms_status_enu_t status = oms3_addSubModel(cref, fmuPath);
+
+  lua_pushinteger(L, status);
+
+  return 1;
+}
+
 /* ************************************ */
 /* OMSimulator 2.0                      */
 /*                                      */
@@ -1921,31 +1938,32 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   /*                                      */
   /* Experimental API                     */
   /* ************************************ */
+  REGISTER_LUA_CALL(oms3_addBus);
+  REGISTER_LUA_CALL(oms3_addConnection);
+  REGISTER_LUA_CALL(oms3_addConnector);
+  REGISTER_LUA_CALL(oms3_addConnectorToBus);
+  REGISTER_LUA_CALL(oms3_addConnectorToTLMBus);
+  REGISTER_LUA_CALL(oms3_addExternalModel);
+  REGISTER_LUA_CALL(oms3_addSubModel);
+  REGISTER_LUA_CALL(oms3_addSystem);
+  REGISTER_LUA_CALL(oms3_addTLMBus);
+  REGISTER_LUA_CALL(oms3_addTLMConnection);
+  REGISTER_LUA_CALL(oms3_copySystem);
+  REGISTER_LUA_CALL(oms3_delete);
+  REGISTER_LUA_CALL(oms3_export);
+  REGISTER_LUA_CALL(oms3_getSystemType);
   REGISTER_LUA_CALL(oms3_getVersion);
+  REGISTER_LUA_CALL(oms3_import);
+  REGISTER_LUA_CALL(oms3_importString);
+  REGISTER_LUA_CALL(oms3_list);
+  REGISTER_LUA_CALL(oms3_newModel);
+  REGISTER_LUA_CALL(oms3_parseModelName);
+  REGISTER_LUA_CALL(oms3_rename);
+  REGISTER_LUA_CALL(oms3_setCommandLineOption);
   REGISTER_LUA_CALL(oms3_setLogFile);
   REGISTER_LUA_CALL(oms3_setMaxLogFileSize);
   REGISTER_LUA_CALL(oms3_setTempDirectory);
   REGISTER_LUA_CALL(oms3_setWorkingDirectory);
-  REGISTER_LUA_CALL(oms3_newModel);
-  REGISTER_LUA_CALL(oms3_rename);
-  REGISTER_LUA_CALL(oms3_delete);
-  REGISTER_LUA_CALL(oms3_export);
-  REGISTER_LUA_CALL(oms3_import);
-  REGISTER_LUA_CALL(oms3_list);
-  REGISTER_LUA_CALL(oms3_parseModelName);
-  REGISTER_LUA_CALL(oms3_importString);
-  REGISTER_LUA_CALL(oms3_addSystem);
-  REGISTER_LUA_CALL(oms3_copySystem);
-  REGISTER_LUA_CALL(oms3_setCommandLineOption);
-  REGISTER_LUA_CALL(oms3_getSystemType);
-  REGISTER_LUA_CALL(oms3_addConnector);
-  REGISTER_LUA_CALL(oms3_addConnection);
-  REGISTER_LUA_CALL(oms3_addBus);
-  REGISTER_LUA_CALL(oms3_addTLMBus);
-  REGISTER_LUA_CALL(oms3_addConnectorToBus);
-  REGISTER_LUA_CALL(oms3_addConnectorToTLMBus);
-  REGISTER_LUA_CALL(oms3_addTLMConnection);
-  REGISTER_LUA_CALL(oms3_addExternalModel);
   /* ************************************ */
   /* OMSimulator 2.0                      */
   /*                                      */
