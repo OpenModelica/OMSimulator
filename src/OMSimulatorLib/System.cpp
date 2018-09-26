@@ -396,7 +396,7 @@ oms_status_enu_t oms3::System::importFromSSD(const pugi::xml_node& node)
                 return oms_status_error;
             }
 
-            //Load signals
+            //Load bus connector signals
             pugi::xml_node signals_node = itAnnotations->child("Signals");
             if(signals_node) {
               for(pugi::xml_node_iterator itSignals = signals_node.begin(); itSignals != signals_node.end(); ++itSignals) {
@@ -412,6 +412,27 @@ oms_status_enu_t oms3::System::importFromSSD(const pugi::xml_node& node)
                   }
                 }
               }
+            }
+          }
+          else if(std::string(name) == "OMSimulator:BusConnections")
+          {
+
+            //Load bus connections
+
+            for(pugi::xml_node_iterator itTLMConnection = itAnnotations->begin(); itTLMConnection != itAnnotations->end(); ++itTLMConnection) {
+
+              //Load TLM bus connection
+
+              oms3::ComRef element1(itTLMConnection->attribute("startElement").as_string());
+              oms3::ComRef connector1(itTLMConnection->attribute("startConnector").as_string());
+              oms3::ComRef element2(itTLMConnection->attribute("endElement").as_string());
+              oms3::ComRef connector2(itTLMConnection->attribute("endConnector").as_string());
+              double delay = itTLMConnection->attribute("delay").as_double();
+              double alpha = itTLMConnection->attribute("alpha").as_double();
+              double impedance = itTLMConnection->attribute("impedance").as_double();
+              double impedancerot = itTLMConnection->attribute("impedancerot").as_double();
+
+              addTLMConnection(element1+connector1, element2+connector2, delay, alpha, impedance, impedancerot);
             }
           }
         }
