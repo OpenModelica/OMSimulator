@@ -512,7 +512,7 @@ oms_status_enu_t oms3::System::addConnection(const oms3::ComRef &crefA, const om
   if(!conA)
     conA = this->getConnector(crefA);
   if(!conB)
-    conB = this->getConnector(crefA);
+    conB = this->getConnector(crefB);
 
   //Look in subsystem connectors
   if(!conA && subsystemA != subsystems.end())
