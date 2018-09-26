@@ -174,12 +174,12 @@ oms_status_enu_t oms3_setElementGeometry(const char* cref, const ssd_element_geo
 
   oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
   if (!model) {
-    return logError("Model \"" + std::string(modelCref) + "\" does not exist in the scope");
+    return logError_ModelNotInScope(modelCref);
   }
 
   oms3::System* system = model->getSystem(tail);
   if (!system) {
-    return logError("Model \"" + std::string(modelCref) + "\" does not contain system \"" + std::string(tail) + "\"");
+    return logError_SystemNotInModel(modelCref, tail);
   }
 
   system->setGeometry(*reinterpret_cast<const oms3::ssd::ElementGeometry*>(geometry));
@@ -214,13 +214,13 @@ oms_status_enu_t oms3_getConnector(const char* cref, oms_connector_t** connector
   oms3::ComRef systemCref = tail.pop_front();
 
   oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
-  if(!model) {
-    return logError("Model \"" + std::string(modelCref) + "\" does not exist in the scope");
+  if (!model) {
+    return logError_ModelNotInScope(modelCref);
   }
 
   oms3::System* system = model->getSystem(systemCref);
-  if(!system) {
-    return logError("Model \"" + std::string(modelCref) + "\" does not contain system \"" + std::string(systemCref) + "\"");
+  if (!system) {
+    return logError_SystemNotInModel(modelCref, tail);
   }
 
   oms3::Connector** connector_ = reinterpret_cast<oms3::Connector**>(connector);
@@ -274,13 +274,13 @@ oms_status_enu_t oms3_addConnection(const char *crefA, const char *crefB)
   tailB.pop_front();
 
   oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
-  if(!model) {
-    return logError("Model: "+std::string(modelCref)+" not found in scope");
+  if (!model) {
+    return logError_ModelNotInScope(modelCref);
   }
 
   oms3::System* system = model->getSystem(systemCref);
-  if(!system) {
-    return logError("System: "+std::string(systemCref)+" not found in scope");
+  if (!system) {
+    return logError_SystemNotInModel(modelCref, systemCref);
   }
 
   return system->addConnection(tailA,tailB);
@@ -295,13 +295,13 @@ oms_status_enu_t oms3_setConnectorGeometry(const char *cref, const ssd_connector
   oms3::ComRef systemCref = tail.pop_front();
 
   oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
-  if(!model) {
-    return logError("Model \"" + std::string(modelCref) + "\" does not exist in the scope");
+  if (!model) {
+    return logError_ModelNotInScope(modelCref);
   }
 
   oms3::System* system = model->getSystem(systemCref);
-  if(!system) {
-    return logError("Model \"" + std::string(modelCref) + "\" does not contain system \"" + std::string(systemCref) + "\"");
+  if (!system) {
+    return logError_SystemNotInModel(modelCref, systemCref);
   }
 
   return system->setConnectorGeometry(tail, reinterpret_cast<const oms2::ssd::ConnectorGeometry*>(geometry));
@@ -320,13 +320,13 @@ oms_status_enu_t oms3_setConnectionGeometry(const char *crefA, const char *crefB
   tailB.pop_front();
 
   oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
-  if(!model) {
-    return logError("Model: "+std::string(modelCref)+" not found in scope");
+  if (!model) {
+    return logError_ModelNotInScope(modelCref);
   }
 
   oms3::System* system = model->getSystem(systemCref);
-  if(!system) {
-    return logError("System: "+std::string(systemCref)+" not found in scope");
+  if (!system) {
+    return logError_SystemNotInModel(modelCref, systemCref);
   }
 
   return system->setConnectionGeometry(tailA,tailB, reinterpret_cast<const oms2::ssd::ConnectionGeometry*>(geometry));
@@ -341,13 +341,13 @@ oms_status_enu_t oms3_getConnections(const char *cref, oms3_connection_t ***conn
   oms3::ComRef systemCref = tail.pop_front();
 
   oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
-  if(!model) {
-    return logError("Model \"" + std::string(modelCref) + "\" does not exist in the scope");
+  if (!model) {
+    return logError_ModelNotInScope(modelCref);
   }
 
   oms3::System* system = model->getSystem(systemCref);
-  if(!system) {
-    return logError("Model \"" + std::string(modelCref) + "\" does not contain system \"" + std::string(systemCref) + "\"");
+  if (!system) {
+    return logError_SystemNotInModel(modelCref, systemCref);
   }
 
   (*connections) = reinterpret_cast<oms3_connection_t**>(system->getConnections(tail));
@@ -362,14 +362,35 @@ oms_status_enu_t oms3_addBus(const char *cref)
   oms3::ComRef modelCref = tail.pop_front();
   oms3::ComRef systemCref = tail.pop_front();
   oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
-  if(!model) {
-    return logError("Model \"" + std::string(modelCref) + "\" does not exist in the scope");
+  if (!model) {
+    return logError_ModelNotInScope(modelCref);
   }
   oms3::System* system = model->getSystem(systemCref);
-  if(!system) {
-    return logError("Model \"" + std::string(modelCref) + "\" does not contain system \"" + std::string(systemCref) + "\"");
+  if (!system) {
+    return logError_SystemNotInModel(modelCref, systemCref);
   }
   return system->addBus(tail);
+}
+
+oms_status_enu_t oms3_getBus(const char* cref, oms3_busconnector_t** busConnector)
+{
+  oms3::ComRef tail(cref);
+  oms3::ComRef modelCref = tail.pop_front();
+  oms3::ComRef systemCref = tail.pop_front();
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
+  if (!model) {
+    return logError_ModelNotInScope(modelCref);
+  }
+
+  oms3::System* system = model->getSystem(systemCref);
+  if (!system) {
+    return logError_SystemNotInModel(modelCref, systemCref);
+  }
+
+  oms3::BusConnector** busConnector_ = reinterpret_cast<oms3::BusConnector**>(busConnector);
+  *busConnector_ = system->getBusConnector(tail);
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms3_addTLMBus(const char *cref, const char *domain, const int dimensions, const oms_tlm_interpolation_t interpolation)
@@ -396,17 +417,17 @@ oms_status_enu_t oms3_addConnectorToBus(const char *busCref, const char *connect
   oms3::ComRef modelCref = busTail.pop_front();
   oms3::ComRef systemCref = busTail.pop_front();
   oms3::ComRef connectorTail(connectorCref);
-  if(modelCref != connectorTail.pop_front())
+  if (modelCref != connectorTail.pop_front())
     return logError("Bus and connector must belong to same model");
-  if(systemCref != connectorTail.pop_front())
+  if (systemCref != connectorTail.pop_front())
     return logError("Bus and connector must belong to same system");
   oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
-  if(!model) {
-    return logError("Model \"" + std::string(modelCref) + "\" does not exist in the scope");
+  if (!model) {
+    return logError_ModelNotInScope(modelCref);
   }
   oms3::System* system = model->getSystem(systemCref);
-  if(!system) {
-    return logError("Model \"" + std::string(modelCref) + "\" does not contain system \"" + std::string(systemCref) + "\"");
+  if (!system) {
+    return logError_SystemNotInModel(modelCref, systemCref);
   }
   return system->addConnectorToBus(busTail, connectorTail);
 }
@@ -418,17 +439,17 @@ oms_status_enu_t oms3_addConnectorToTLMBus(const char *busCref, const char *conn
   oms3::ComRef modelCref = busTail.pop_front();
   oms3::ComRef systemCref = busTail.pop_front();
   oms3::ComRef connectorTail(connectorCref);
-  if(modelCref != connectorTail.pop_front())
+  if (modelCref != connectorTail.pop_front())
     return logError("Bus and connector must belong to same model");
-  if(systemCref != connectorTail.pop_front())
+  if (systemCref != connectorTail.pop_front())
     return logError("Bus and connector must belong to same system");
   oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
-  if(!model) {
-    return logError("Model \"" + std::string(modelCref) + "\" does not exist in the scope");
+  if (!model) {
+    return logError_ModelNotInScope(modelCref);
   }
   oms3::System* system = model->getSystem(systemCref);
-  if(!system) {
-    return logError("Model \"" + std::string(modelCref) + "\" does not contain system \"" + std::string(systemCref) + "\"");
+  if (!system) {
+    return logError_SystemNotInModel(modelCref, systemCref);
   }
   return system->addConnectorToTLMBus(busTail, connectorTail, type);
 }
