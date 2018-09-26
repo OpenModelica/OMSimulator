@@ -512,7 +512,7 @@ oms_status_enu_t oms2::FMICompositeModel::setRealParameter(const oms2::SignalRef
     return oms_status_error;
   }
 
-  if (oms_component_fmu != it->second->getType())
+  if (oms_component_fmu_old != it->second->getType())
   {
     logError("[oms2::FMICompositeModel::setRealParameter] can only be used for FMUs");
     return oms_status_error;
@@ -531,7 +531,7 @@ oms_status_enu_t oms2::FMICompositeModel::setIntegerParameter(const oms2::Signal
     return oms_status_error;
   }
 
-  if (oms_component_fmu != it->second->getType())
+  if (oms_component_fmu_old != it->second->getType())
   {
     logError("[oms2::FMICompositeModel::setIntegerParameter] can only be used for FMUs");
     return oms_status_error;
@@ -550,7 +550,7 @@ oms_status_enu_t oms2::FMICompositeModel::setBooleanParameter(const oms2::Signal
     return oms_status_error;
   }
 
-  if (oms_component_fmu != it->second->getType())
+  if (oms_component_fmu_old != it->second->getType())
   {
     logError("[oms2::FMICompositeModel::setBooleanParameter] can only be used for FMUs");
     return oms_status_error;
@@ -738,7 +738,7 @@ oms_causality_enu_t oms2::FMICompositeModel::getSignalCausality(const oms2::Sign
     return oms_causality_undefined;
   }
 
-  if (oms_component_table == it->second->getType())
+  if (oms_component_table_old == it->second->getType())
     return oms_causality_output;
 
   return it->second->getVariable(signal.getVar())->getCausality();
@@ -780,10 +780,10 @@ oms_status_enu_t oms2::FMICompositeModel::exportCompositeStructure(const std::st
     dotFile << "  " << it.first.toString() << "[label=\"" << it.first.toString();
     switch (it.second->getType())
     {
-    case oms_component_table:
+    case oms_component_table_old:
       dotFile << "\\n(table)";
       break;
-    case oms_component_fmu:
+    case oms_component_fmu_old:
       dotFile << "\\n(fmu)";
       break;
     }
@@ -885,7 +885,7 @@ oms_status_enu_t oms2::FMICompositeModel::initialize(double startTime, double to
   // check if there is a solver instance assigned to each FMU
   for (const auto& it : subModels)
   {
-    if (oms_component_fmu == it.second->getType())
+    if (oms_component_fmu_old == it.second->getType())
     {
       if (!dynamic_cast<FMUWrapper*>(it.second)->getSolver())
       {
@@ -995,7 +995,7 @@ oms_status_enu_t oms2::FMICompositeModel::doSteps(ResultWriter& resultWriter, co
 
     // call doStep, except for FMUs
     for (const auto& it : subModels)
-      if (oms_component_fmu != it.second->getType())
+      if (oms_component_fmu_old != it.second->getType())
         it.second->doStep(time);
 
     // call doStep for FMUs
@@ -1032,7 +1032,7 @@ oms_status_enu_t oms2::FMICompositeModel::stepUntilStandard(ResultWriter& result
 
     // call doStep, except for FMUs
     for (const auto& it : subModels)
-      if (oms_component_fmu != it.second->getType())
+      if (oms_component_fmu_old != it.second->getType())
         it.second->doStep(time);
 
     // call doStep for FMUs
@@ -1078,7 +1078,7 @@ oms_status_enu_t oms2::FMICompositeModel::stepUntilPCTPL(ResultWriter& resultWri
 
   std::vector<oms2::FMISubModel*> sub_model;
   for (auto it=subModels.begin(); it != subModels.end(); ++it)
-    if (oms_component_fmu != it->second->getType())
+    if (oms_component_fmu_old != it->second->getType())
       sub_model.push_back(it->second);
 
   std::vector<oms2::Solver*> _solver;
@@ -1159,7 +1159,7 @@ void oms2::FMICompositeModel::simulate_asynchronous(ResultWriter& resultWriter, 
     status = oms_status_ok;
     for (const auto& it : subModels)
     {
-      if (oms_component_fmu != it.second->getType())
+      if (oms_component_fmu_old != it.second->getType())
         statusSubModel = it.second->doStep(time);
       status = statusSubModel > status ? statusSubModel : status;
     }
@@ -1227,7 +1227,7 @@ oms_status_enu_t oms2::FMICompositeModel::simulateTLM(double stopTime, double lo
 
     // call doStep, except for FMUs
     for (const auto& it : subModels)
-      if (oms_component_fmu != it.second->getType())
+      if (oms_component_fmu_old != it.second->getType())
         it.second->doStep(time);
 
     // call doStep for FMUs
@@ -1901,7 +1901,7 @@ oms_status_enu_t oms2::FMICompositeModel::connectSolver(const oms2::ComRef& fmuC
   oms_status_enu_t status = oms_status_error;
 
   oms2::FMISubModel* fmu = oms2::FMICompositeModel::getSubModel(fmuCref);
-  if (!fmu || oms_component_fmu != fmu->getType())
+  if (!fmu || oms_component_fmu_old != fmu->getType())
     return logError("Unknown fmu: " + fmuCref);
 
   for (auto& solver : solvers)
@@ -1922,7 +1922,7 @@ oms_status_enu_t oms2::FMICompositeModel::unconnectSolver(const oms2::ComRef& fm
   oms_status_enu_t status = oms_status_error;
 
   oms2::FMISubModel* fmu = oms2::FMICompositeModel::getSubModel(fmuCref);
-  if (!fmu || oms_component_fmu != fmu->getType())
+  if (!fmu || oms_component_fmu_old != fmu->getType())
     return logError("Unknown fmu: " + fmuCref);
 
   for (auto& solver : solvers)

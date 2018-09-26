@@ -54,14 +54,18 @@ namespace oms3
     static Model* NewModel(const ComRef& cref);
     const ComRef& getName() const {return cref;}
     System* getSystem(const ComRef& cref);
+    std::string getTempDirectory() const {return tempDir;}
     oms_status_enu_t rename(const ComRef& cref);
     oms_status_enu_t list(const ComRef& cref, char** contents);
     oms_status_enu_t addSystem(const ComRef& cref, oms_system_enu_t type);
     oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
     oms_status_enu_t importFromSSD(const pugi::xml_node& node);
     oms_status_enu_t exportToFile(const std::string& filename) const;
+    void copyResources(bool copy_resources) {this->copy_resources = copy_resources;}
+    bool copyResources() {return copy_resources;}
 
     oms3::Element** getElements() {return &elements[0];}
+    oms_status_enu_t getAllResources(std::vector<std::string>& resources) const;
 
   private:
     Model(const ComRef& cref, const std::string& tempDir);
@@ -76,6 +80,7 @@ namespace oms3
     std::string tempDir;
 
     std::vector<oms3::Element*> elements;
+    bool copy_resources = true;
   };
 }
 

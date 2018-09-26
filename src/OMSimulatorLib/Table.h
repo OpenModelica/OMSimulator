@@ -63,7 +63,7 @@ namespace oms2
 
     oms_status_enu_t exportToSSD(pugi::xml_node& root) const;
 
-    oms_element_type_enu_t getType() const { return oms_component_table; }
+    oms_element_type_enu_t getType() const { return oms_component_table_old; }
 
     const std::string getPath() const {return path;}
 

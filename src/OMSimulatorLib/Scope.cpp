@@ -35,9 +35,10 @@
 #include "System.h"
 
 #include <OMSBoost.h>
+#include <miniunz.h>
 
 oms3::Scope::Scope()
-  : tempDir("."), workingDir(".")
+  : tempDir(".")
 {
   this->models.push_back(NULL);
 
@@ -124,50 +125,96 @@ oms_status_enu_t oms3::Scope::exportModel(const oms3::ComRef& cref, const std::s
   return model->exportToFile(filename);
 }
 
+oms_status_enu_t oms3::Scope::miniunz(const std::string& filename, const std::string& extractdir, bool systemStructure)
+{
+  // Usage: miniunz [-e] [-x] [-v] [-l] [-o] [-p password] file.zip [file_to_extr.] [-d extractdir]
+  //        -e  Extract without pathname (junk paths)
+  //        -x  Extract with pathname
+  //        -v  list files
+  //        -l  list files
+  //        -d  directory to extract into
+  //        -o  overwrite files without prompting
+  //        -p  extract crypted file using password
+
+  std::string cd = Scope::GetInstance().getWorkingDirectory();
+
+  int argc = systemStructure ? 6 : 5;
+  char **argv = new char*[argc];
+  int i=0;
+  argv[i++]="miniunz";
+  argv[i++]="-xo";
+  argv[i++]=(char*)filename.c_str();
+  if (systemStructure)
+    argv[i++]="SystemStructure.ssd";
+  argv[i++]="-d";
+  argv[i++]=(char*)extractdir.c_str();
+  int status = ::miniunz(argc, argv);
+  delete[] argv;
+  std::string cd2 = Scope::GetInstance().getWorkingDirectory();
+  if (cd != cd2)
+    Scope::GetInstance().setWorkingDirectory(cd);
+
+  if (status == 0)
+    return oms_status_ok;
+  return oms_status_error;
+}
+
 oms_status_enu_t oms3::Scope::importModel(const std::string& filename, char** _cref)
 {
   *_cref = NULL;
 
-  if (filename.length() <= 5)
-    return logError("Unsupported type: " + filename);
+  std::string extension = "";
+  if (filename.length() > 5)
+    extension = filename.substr(filename.length() - 4);
 
-  std::string ext = filename.substr(filename.length() - 4);
-  if (ext == ".ssd")
+  if (extension != ".ssp")
+    return logError("filename extension must be \".ssp\"; no other formats are supported");
+
+  // extract SystemStructure.ssd to temp
+  boost::filesystem::path temp_root(getTempDirectory());
+  if (oms_status_ok != oms3::Scope::miniunz(filename, temp_root.string(), true))
+    return logError("failed to extract \"SystemStructure.ssd\" from \"" + filename + "\"");
+
+  pugi::xml_document doc;
+  pugi::xml_parse_result result = doc.load_file((temp_root / "SystemStructure.ssd").string().c_str());
+  if (!result)
+    return logError("loading \"" + std::string(filename) + "\" failed (" + std::string(result.description()) + ")");
+
+  const pugi::xml_node node = doc.document_element(); // ssd:SystemStructureDescription
+
+  ComRef cref = ComRef(node.attribute("name").as_string());
+  std::string ssdVersion = node.attribute("version").as_string();
+
+  oms_status_enu_t status = newModel(cref);
+  if (oms_status_ok != status)
+    return status;
+
+  if (ssdVersion != "Draft20180219")
+    logWarning("Unknown SSD version: " + ssdVersion);
+
+  Model* model = getModel(cref);
+  if (!model) // that should be impossible
+    return oms_status_error;
+
+
+  // extract the ssp file
+  oms3::Scope::miniunz(filename, model->getTempDirectory(), false);
+
+  std::string cd = Scope::GetInstance().getWorkingDirectory();
+  Scope::GetInstance().setWorkingDirectory(model->getTempDirectory());
+  model->copyResources(false);
+  status = model->importFromSSD(node);
+  model->copyResources(true);
+  Scope::GetInstance().setWorkingDirectory(cd);
+  if (oms_status_ok != status)
   {
-    pugi::xml_document doc;
-    pugi::xml_parse_result result = doc.load_file(filename.c_str());
-    if (!result)
-      return logError("loading \"" + std::string(filename) + "\" failed (" + std::string(result.description()) + ")");
-
-    const pugi::xml_node node = doc.document_element(); // ssd:SystemStructureDescription
-
-    ComRef cref = ComRef(node.attribute("name").as_string());
-    std::string ssdVersion = node.attribute("version").as_string();
-
-    oms_status_enu_t status = newModel(cref);
-    if (oms_status_ok != status)
-      return status;
-
-    if (ssdVersion != "Draft20180219")
-      logWarning("Unknown SSD version: " + ssdVersion);
-
-    Model* model = getModel(cref);
-    if (!model) // that should be impossible
-      return oms_status_error;
-
-    status = model->importFromSSD(node);
-    if (oms_status_ok != status)
-    {
-      deleteModel(cref);
-      return oms_status_error;
-    }
-
-    *_cref = (char*)model->getName().c_str();
-
-    return oms_status_ok;
+    deleteModel(cref);
+    return oms_status_error;
   }
 
-  return logError("Unsupported type: " + filename);
+  *_cref = (char*)model->getName().c_str();
+
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms3::Scope::setTempDirectory(const std::string& newTempDir)
@@ -218,14 +265,18 @@ oms_status_enu_t oms3::Scope::setWorkingDirectory(const std::string& newWorkingD
     // https://svn.boost.org/trac10/ticket/11138
   }
 
-  this->workingDir = path.string();
-
   if (Flags::SuppressPath())
     logInfo("Set working directory to <suppressed>");
   else
-    logInfo("Set working directory to \"" + this->workingDir + "\"");
+    logInfo("Set working directory to \"" + newWorkingDir + "\"");
 
   return oms_status_ok;
+}
+
+std::string oms3::Scope::getWorkingDirectory()
+{
+  boost::filesystem::path workingDir(boost::filesystem::current_path());
+  return workingDir.string();
 }
 
 oms_status_enu_t oms3::Scope::getElement(const oms3::ComRef& cref, oms3::Element** element)
