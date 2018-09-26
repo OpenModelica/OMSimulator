@@ -363,6 +363,54 @@ oms_status_enu_t oms3::System::importFromSSD(const pugi::xml_node& node)
           return logError("wrong xml schema detected: " + name);
       }
     }
+    else if(name == oms2::ssd::ssd_annotations)
+    {
+      pugi::xml_node annotation_node = it->child(oms2::ssd::ssd_annotation);
+      if(annotation_node && std::string(annotation_node.attribute("type").as_string()) == "org.openmodelica") {
+        for(pugi::xml_node_iterator itAnnotations = annotation_node.begin(); itAnnotations != annotation_node.end(); ++itAnnotations)
+        {
+          name = itAnnotations->name();
+          if (std::string(name) == "OMSimulator:Bus")
+          {
+            if(std::string(itAnnotations->attribute("type").as_string()) == "tlm") {
+
+              //Load TLM bus connector
+              std::string busname = itAnnotations->attribute("name").as_string();
+              std::string domain = itAnnotations->attribute("domain").as_string();
+              int dimensions = itAnnotations->attribute("dimensions").as_int();
+              std::string interpolationStr = itAnnotations->attribute("interpolation").as_string();
+              oms_tlm_interpolation_t interpolation;
+              if(interpolationStr == "none")
+                interpolation = oms_tlm_no_interpolation;
+              else if(interpolationStr == "coarsegrained")
+                interpolation = oms_tlm_coarse_grained;
+              else if(interpolationStr == "finegrained")
+                interpolation = oms_tlm_fine_grained;
+              else
+                logError("Unsupported interpolation type: "+interpolationStr);
+
+              if (oms_status_ok != addTLMBus(busname,domain,dimensions,interpolation))
+                return oms_status_error;
+
+              //Load signals
+              pugi::xml_node signals_node = itAnnotations->child("Signals");
+              if(signals_node) {
+                for(pugi::xml_node_iterator itSignals = signals_node.begin(); itSignals != signals_node.end(); ++itSignals)
+                {
+                  name = itSignals->name();
+                  if(name == "Signal") {
+                    std::string signalname = itSignals->attribute("name").as_string();
+                    std::string signaltype = itSignals->attribute("type").as_string();
+                    addConnectorToTLMBus(busname,signalname,signaltype);
+                  }
+                }
+              }
+            }
+            //Todo: Load normal bus connector if type != tlm
+          }
+        }
+      }
+    }
     else
       return logError("wrong xml schema detected: " + name);
   }
