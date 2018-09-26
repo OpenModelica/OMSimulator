@@ -414,6 +414,17 @@ oms3::Connector *oms3::System::getConnector(const oms3::ComRef &cref)
 
 oms3::BusConnector *oms3::System::getBusConnector(const oms3::ComRef &cref)
 {
+  oms3::ComRef tail(cref);
+  oms3::ComRef head = tail.pop_front();
+  auto subsystem = subsystems.find(head);
+  if (subsystem != subsystems.end()) {
+    return subsystem->second->getBusConnector(tail);
+  }
+  if (!cref.isValidIdent()) {
+    logError("Not a valid ident: "+std::string(cref));
+    return NULL;
+  }
+
   for(auto &busconnector : busconnectors) {
     if(busconnector && busconnector->getName() == cref)
       return busconnector;

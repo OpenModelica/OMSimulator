@@ -72,6 +72,7 @@ oms_status_enu_t oms3_setConnectionGeometry(const char* crefA, const char* crefB
 oms_status_enu_t oms3_getConnections(const char* cref, oms3_connection_t*** connections);
 oms_status_enu_t oms3_addConnection(const char* crefA, const char* crefB);
 oms_status_enu_t oms3_addBus(const char* cref);
+oms_status_enu_t oms3_getBus(const char* cref, oms3_busconnector_t** busConnector);
 oms_status_enu_t oms3_addConnectorToBus(const char* busCref, const char* connectorCref);
 oms_status_enu_t oms3_addTLMBus(const char* cref, const char* domain, const int dimensions, const oms_tlm_interpolation_t interpolation);
 oms_status_enu_t oms3_addConnectorToTLMBus(const char* busCref, const char* connectorCref, const char *type);
