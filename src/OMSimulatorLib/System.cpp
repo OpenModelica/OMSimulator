@@ -245,12 +245,15 @@ oms_status_enu_t oms3::System::exportToSSD(pugi::xml_node& node) const
     if(connector)
       connector->exportToSSD(connectors_node);
 
+  std::vector<oms3::Connection*> busconnections;
   pugi::xml_node connections_node = node.append_child(oms2::ssd::ssd_connections);
   for (const auto& connection : connections)
-    if (connection)
+    if (connection && connection->getType() == oms3_connection_single)
       connection->exportToSSD(connections_node);
+    else if(connection)
+      busconnections.push_back(connection);
 
-  if(!busconnectors.empty() || !tlmbusconnectors.empty()) {
+  if(!busconnectors.empty() || !tlmbusconnectors.empty() || !busconnections.empty()) {
     pugi::xml_node annotations_node = node.append_child(oms2::ssd::ssd_annotations);
     pugi::xml_node annotation_node = annotations_node.append_child(oms2::ssd::ssd_annotation);
     annotation_node.append_attribute("type") = "org.openmodelica";
@@ -259,6 +262,12 @@ oms_status_enu_t oms3::System::exportToSSD(pugi::xml_node& node) const
     }
     for (const auto& tlmbusconnector : tlmbusconnectors) {
       tlmbusconnector->exportToSSD(annotation_node);
+    }
+    if(!busconnections.empty()) {
+      pugi::xml_node busconnections_node = annotation_node.append_child("OMSimulator:BusConnections");
+      for (const auto& busconnection : busconnections) {
+        busconnection->exportToSSD(busconnections_node);
+      }
     }
   }
 
@@ -391,6 +400,24 @@ oms3::Connector *oms3::System::getConnector(const oms3::ComRef &cref)
   return NULL;
 }
 
+oms3::BusConnector *oms3::System::getBusConnector(const oms3::ComRef &cref)
+{
+  for(auto &busconnector : busconnectors) {
+    if(busconnector && busconnector->getName() == cref)
+      return busconnector;
+  }
+  return NULL;
+}
+
+oms3::TLMBusConnector *oms3::System::getTLMBusConnector(const oms3::ComRef &cref)
+{
+  for(auto &tlmbusconnector : tlmbusconnectors) {
+    if(tlmbusconnector && tlmbusconnector->getName() == cref)
+      return tlmbusconnector;
+  }
+  return NULL;
+}
+
 oms3::Connection **oms3::System::getConnections(const oms3::ComRef &cref) {
   if(!cref.isEmpty()) {
     oms3::ComRef tail(cref);
@@ -432,6 +459,40 @@ oms_status_enu_t oms3::System::addConnection(const oms3::ComRef &crefA, const om
   }
 
   //Attempt to create connection inside current system
+
+  //First check if it is a bus connection
+  BusConnector *busA=0, *busB=0;
+  auto subsystemA = subsystems.find(headA);
+  if(subsystemA != subsystems.end())
+    busA = subsystemA->second->getBusConnector(tailA);
+  auto subsystemB = subsystems.find(headB);
+  if(subsystemB != subsystems.end())
+    busB = subsystemB->second->getBusConnector(tailB);
+  if(busA && busB) {
+    //Verify that all connectors in each bus are connected to a connector in the other bus
+    std::vector<oms3::ComRef> connectorsA = busA->getConnectors();
+    std::vector<oms3::ComRef> connectorsB = busB->getConnectors();
+    if(connectorsA.size() != connectorsB.size())
+      return logError("Can only connect buses with same number of connectors");
+    for(auto &conA : connectorsA) {
+      bool connectedToB = false;
+      for(auto &conB : connectorsB) {
+        for(auto &connection : connections) {
+          if(connection && connection->getSignalA() == headA+conA && connection->getSignalB() == headB+conB)
+            connectedToB = true;
+        }
+      }
+      if(!connectedToB)
+        return logError("All connectors in each bus must be connected to a connector in the other bus before creating bus connection.");
+    }
+
+    //Create bus connection
+    connections.back() = new oms3::Connection(crefA,crefB,oms3_connection_bus);
+    connections.push_back(NULL);
+    return oms_status_ok;
+  }
+
+  //Not a bus connection, attempt normal connection
   oms3::Connector *conA = 0;
   oms3::Connector *conB = 0;
 
@@ -442,10 +503,8 @@ oms_status_enu_t oms3::System::addConnection(const oms3::ComRef &crefA, const om
     conB = this->getConnector(crefA);
 
   //Look in subsystem connectors
-  auto subsystemA = subsystems.find(headA);
   if(!conA && subsystemA != subsystems.end())
     conA = subsystemA->second->getConnector(tailA);
-  auto subsystemB = subsystems.find(headB);
   if(!conB && subsystemB != subsystems.end())
     conB = subsystemB->second->getConnector(tailB);
 
@@ -456,8 +515,6 @@ oms_status_enu_t oms3::System::addConnection(const oms3::ComRef &crefA, const om
   auto componentB = components.find(headB);
   if(!conB && componentB != components.end())
     conB = componentB->second->getConnector(tailB);
-
-  //todo: Look in bus connectors
 
   if(conA && conB) {
     if(conA->getType() != conB->getType())
@@ -472,6 +529,40 @@ oms_status_enu_t oms3::System::addConnection(const oms3::ComRef &crefA, const om
   }
 
   return logError("Connector(s) not found in system");
+}
+
+oms_status_enu_t oms3::System::addTLMConnection(const oms3::ComRef &crefA, const oms3::ComRef &crefB, double delay, double alpha, double impedance, double impedancerot)
+{
+  oms3::ComRef tailA(crefA);
+  oms3::ComRef headA = tailA.pop_front();
+
+  oms3::ComRef tailB(crefB);
+  oms3::ComRef headB = tailB.pop_front();
+
+  //If both A and B references the same subsystem, recurse into that subsystem
+  if(headA == headB) {
+    auto subsystem = subsystems.find(headA);
+    if(subsystem != subsystems.end()) {
+      return subsystem->second->addTLMConnection(tailA,tailB,delay,alpha,impedance,impedancerot);
+    }
+  }
+
+  TLMBusConnector *busA=0, *busB=0;
+  auto subsystemA = subsystems.find(headA);
+  if(subsystemA != subsystems.end())
+    busA = subsystemA->second->getTLMBusConnector(tailA);
+  auto subsystemB = subsystems.find(headB);
+  if(subsystemB != subsystems.end())
+    busB = subsystemB->second->getTLMBusConnector(tailB);
+  if(busA && busB) {
+    //Create bus connection
+    connections.back() = new oms3::Connection(crefA,crefB,oms3_connection_tlm);
+    connections.back()->setTLMParameters(delay,alpha,impedance,impedancerot);
+    connections.push_back(NULL);
+    return oms_status_ok;
+  }
+
+  return logError("TLM bus connector(s) not found in system");
 }
 
 oms_status_enu_t oms3::System::addBus(const oms3::ComRef &cref)
@@ -519,6 +610,10 @@ oms_status_enu_t oms3::System::addConnectorToBus(const oms3::ComRef &busCref, co
       return subsystem->second->addConnectorToBus(busTail,connectorTail);
     }
   }
+
+  if(!busTail.isEmpty() && !connectorTail.isEmpty() && busHead != connectorHead)
+    return logError("Connector and bus must belong to the same system");
+
   for(auto& bus : busconnectors) {
     if(bus->getName() == busCref) {
       bus->addConnector(connectorCref);

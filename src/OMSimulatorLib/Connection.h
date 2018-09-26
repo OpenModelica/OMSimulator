@@ -47,7 +47,7 @@ namespace oms3
   class Connection : protected oms3_connection_t
   {
   public:
-    Connection(const oms3::ComRef& conA, const oms3::ComRef& conB);
+    Connection(const oms3::ComRef& conA, const oms3::ComRef& conB, oms3_connection_type_enu_t type=oms3_connection_single);
     ~Connection();
 
     // methods to copy the object
@@ -61,6 +61,10 @@ namespace oms3
 
     const oms2::ssd::ConnectionGeometry* getGeometry() const {return reinterpret_cast<oms2::ssd::ConnectionGeometry*>(geometry);}
     void setGeometry(const oms2::ssd::ConnectionGeometry* newGeometry);
+
+    void setTLMParameters(double delay, double alpha, double impedance, double impedancerot);
+
+    oms3_connection_type_enu_t getType() const {return type;}
 
     bool isEqual(const oms3::Connection& connection) const;
     bool isEqual(const oms3::ComRef& signalA, const oms3::ComRef& signalB) const;

@@ -433,6 +433,31 @@ oms_status_enu_t oms3_addConnectorToTLMBus(const char *busCref, const char *conn
   return system->addConnectorToTLMBus(busTail, connectorTail, type);
 }
 
+oms_status_enu_t oms3_addTLMConnection(const char *crefA, const char *crefB, double delay, double alpha, double impedance, double impedancerot)
+{
+  logTrace();
+
+  oms3::ComRef tailA(crefA);
+  oms3::ComRef modelCref = tailA.pop_front();
+  oms3::ComRef systemCref = tailA.pop_front();
+
+  oms3::ComRef tailB(crefB);
+  tailB.pop_front();
+  tailB.pop_front();
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
+  if(!model) {
+    return logError_ModelNotInScope(modelCref);
+  }
+
+  oms3::System* system = model->getSystem(systemCref);
+  if(!system) {
+    return logError_SystemNotInModel(modelCref, systemCref);
+  }
+
+  return system->addTLMConnection(tailA,tailB,delay,alpha,impedance,impedancerot);
+}
+
 /* ************************************ */
 /* OMSimulator 2.0                      */
 /*                                      */

@@ -21,6 +21,7 @@ oms3::TLMBusConnector::TLMBusConnector(const oms3::ComRef &name, const std::stri
 oms3::TLMBusConnector::~TLMBusConnector()
 {
   if (this->name) delete[] this->name;
+  if (this->domain) delete[] this->domain;
   if (this->geometry) delete reinterpret_cast<oms2::ssd::ConnectorGeometry*>(this->geometry);
 }
 
