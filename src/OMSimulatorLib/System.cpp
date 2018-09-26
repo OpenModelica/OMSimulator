@@ -393,6 +393,18 @@ oms_status_enu_t oms3::System::addConnector(const oms3::ComRef &cref, oms_causal
 
 oms3::Connector *oms3::System::getConnector(const oms3::ComRef &cref)
 {
+  oms3::ComRef tail(cref);
+  oms3::ComRef head = tail.pop_front();
+  auto subsystem = subsystems.find(head);
+  if (subsystem != subsystems.end()) {
+    return subsystem->second->getConnector(tail);
+  }
+
+  if (!cref.isValidIdent()) {
+    logError("Not a valid ident: "+std::string(cref));
+    return NULL;
+  }
+
   for(auto &connector : connectors) {
     if(connector && connector->getName() == cref)
       return connector;
