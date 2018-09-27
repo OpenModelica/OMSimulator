@@ -400,6 +400,8 @@ typedef struct _oms3_element_t{
   char* name;                        ///< Name of the element
   struct _oms3_element_t** elements; ///< List (null-terminated array) of all sub-elements
   oms_connector_t** connectors;      ///< List (null-terminated array) of all interface variables: inputs, outputs, and parameters.
+  oms3_busconnector_t** busconnectors;  ///< List (null-terminated array) of all bus connectors
+  oms3_tlmbusconnector_t** tlmbusconnectors;  ///< List (null-terminated array) of all TLM bus connectors
   ssd_element_geometry_t* geometry;  ///< Geometry information of the element
 } oms3_element_t;
 

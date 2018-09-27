@@ -35,6 +35,8 @@
 #include "ComRef.h"
 #include "SignalRef.h"
 #include "Connector.h"
+#include "BusConnector.h"
+#include "TLMBusConnector.h"
 #include "Types.h"
 #include "ssd/ElementGeometry.h"
 
@@ -60,6 +62,8 @@ namespace oms3
     void setName(const ComRef& name);
     void setGeometry(const oms3::ssd::ElementGeometry* newGeometry);
     void setConnectors(oms3::Connector** newConnectors);
+    void setBusConnectors(oms3::BusConnector **newBusConnectors);
+    void setTLMBusConnectors(oms3::TLMBusConnector **newTLMBusConnectors);
     void setSubElements(oms3_element_t** subelements);
 
   private:
