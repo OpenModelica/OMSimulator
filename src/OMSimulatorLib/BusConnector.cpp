@@ -35,6 +35,11 @@ oms_status_enu_t oms3::BusConnector::exportToSSD(pugi::xml_node &root) const
     signal_node.append_attribute("name") = connector.c_str();
   }
 
+  if (this->geometry)
+  {
+    return reinterpret_cast<oms2::ssd::ConnectorGeometry*>(this->geometry)->exportToSSD(bus_node);
+  }
+
   return oms_status_ok;
 }
 
