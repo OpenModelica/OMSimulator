@@ -393,6 +393,25 @@ oms_status_enu_t oms3_getBus(const char* cref, oms3_busconnector_t** busConnecto
   return oms_status_ok;
 }
 
+oms_status_enu_t oms3_setBusGeometry(const char* cref, const ssd_connector_geometry_t* geometry)
+{
+  oms3::ComRef tail(cref);
+  oms3::ComRef modelCref = tail.pop_front();
+  oms3::ComRef systemCref = tail.pop_front();
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
+  if (!model) {
+    return logError_ModelNotInScope(modelCref);
+  }
+
+  oms3::System* system = model->getSystem(systemCref);
+  if (!system) {
+    return logError_SystemNotInModel(modelCref, systemCref);
+  }
+
+  return system->setBusGeometry(tail, reinterpret_cast<const oms2::ssd::ConnectorGeometry*>(geometry));
+}
+
 oms_status_enu_t oms3_addTLMBus(const char *cref, const char *domain, const int dimensions, const oms_tlm_interpolation_t interpolation)
 {
   logTrace();
