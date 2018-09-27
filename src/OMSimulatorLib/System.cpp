@@ -806,3 +806,19 @@ oms_status_enu_t oms3::System::setConnectionGeometry(const oms3::ComRef &crefA, 
 
   return logError("Connector(s) not found in system");
 }
+
+oms_status_enu_t oms3::System::setBusGeometry(const oms3::ComRef &cref, const oms2::ssd::ConnectorGeometry *geometry)
+{
+  oms3::ComRef tail(cref);
+  oms3::ComRef head = tail.pop_front();
+  auto subsystem = subsystems.find(head);
+  if (subsystem != subsystems.end())
+    return subsystem->second->setBusGeometry(tail,geometry);
+
+  oms3::BusConnector* busConnector = this->getBusConnector(cref);
+  if (busConnector) {
+    busConnector->setGeometry(geometry);
+    return oms_status_ok;
+  }
+  return logError("Bus "+std::string(cref)+" not found in system "+std::string(getName()));
+}
