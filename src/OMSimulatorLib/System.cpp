@@ -47,6 +47,12 @@ oms3::System::System(const oms3::ComRef& cref, oms_system_enu_t type, oms3::Mode
   connectors.push_back(NULL);
   element.setConnectors(&connectors[0]);
 
+  busconnectors.push_back(NULL);
+  element.setBusConnectors(&busconnectors[0]);
+
+  tlmbusconnectors.push_back(NULL);
+  element.setTLMBusConnectors(&tlmbusconnectors[0]);
+
   subelements.push_back(NULL);
   element.setSubElements(&subelements[0]);
 }
@@ -68,10 +74,12 @@ oms3::System::~System()
     delete subsystem.second;
 
   for (const auto& busconnector : busconnectors)
-    delete busconnector;
+    if(busconnector)
+      delete busconnector;
 
   for (const auto tlmbusconnector : tlmbusconnectors)
-    delete tlmbusconnector;
+    if(tlmbusconnector)
+      delete tlmbusconnector;
 }
 
 oms3::System* oms3::System::NewSystem(const oms3::ComRef& cref, oms_system_enu_t type, oms3::Model* parentModel, oms3::System* parentSystem)
@@ -253,16 +261,16 @@ oms_status_enu_t oms3::System::exportToSSD(pugi::xml_node& node) const
     else if(connection)
       busconnections.push_back(connection);
 
-  if(!busconnectors.empty() || !tlmbusconnectors.empty() || !busconnections.empty()) {
+  if(busconnectors[0] || tlmbusconnectors[0] || !busconnections.empty()) {
     pugi::xml_node annotations_node = node.append_child(oms2::ssd::ssd_annotations);
     pugi::xml_node annotation_node = annotations_node.append_child(oms2::ssd::ssd_annotation);
     annotation_node.append_attribute("type") = "org.openmodelica";
-    for (const auto& busconnector : busconnectors) {
-      busconnector->exportToSSD(annotation_node);
-    }
-    for (const auto& tlmbusconnector : tlmbusconnectors) {
-      tlmbusconnector->exportToSSD(annotation_node);
-    }
+    for (const auto& busconnector : busconnectors)
+      if(busconnector)
+        busconnector->exportToSSD(annotation_node);
+    for (const auto& tlmbusconnector : tlmbusconnectors)
+      if(tlmbusconnector)
+        tlmbusconnector->exportToSSD(annotation_node);
     if(!busconnections.empty()) {
       pugi::xml_node busconnections_node = annotation_node.append_child("OMSimulator:BusConnections");
       for (const auto& busconnection : busconnections) {
@@ -675,7 +683,9 @@ oms_status_enu_t oms3::System::addBus(const oms3::ComRef &cref)
     return logError("Not a valid ident: "+std::string(cref));
   }
   oms3::BusConnector* bus = new oms3::BusConnector(cref);
-  busconnectors.push_back(bus);
+  busconnectors.back() = bus;
+  busconnectors.push_back(NULL);
+  element.setBusConnectors(&busconnectors[0]);
   return oms_status_ok;
 }
 
@@ -691,7 +701,9 @@ oms_status_enu_t oms3::System::addTLMBus(const oms3::ComRef &cref, const std::st
     return logError("Not a valid ident: "+std::string(cref));
   }
   oms3::TLMBusConnector* bus = new oms3::TLMBusConnector(cref, domain, dimensions, interpolation);
-  tlmbusconnectors.push_back(bus);
+  tlmbusconnectors.back() = bus;
+  tlmbusconnectors.push_back(NULL);
+  element.setTLMBusConnectors(&tlmbusconnectors[0]);
   return oms_status_ok;
 }
 
@@ -713,7 +725,7 @@ oms_status_enu_t oms3::System::addConnectorToBus(const oms3::ComRef &busCref, co
     return logError("Connector and bus must belong to the same system");
 
   for(auto& bus : busconnectors) {
-    if(bus->getName() == busCref) {
+    if(bus && bus->getName() == busCref) {
       bus->addConnector(connectorCref);
     }
   }
@@ -743,7 +755,7 @@ oms_status_enu_t oms3::System::addConnectorToTLMBus(const oms3::ComRef &busCref,
     return logError("Connector not found in system: "+std::string(connectorCref));
 
   for(auto& bus : tlmbusconnectors) {
-    if(bus->getName() == busCref) {
+    if(bus && bus->getName() == busCref) {
       oms_status_enu_t status = bus->addConnector(connectorCref,type);
       if(oms_status_ok != status)
         return status;

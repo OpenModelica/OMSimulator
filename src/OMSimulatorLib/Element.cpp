@@ -33,6 +33,7 @@
 #include "ssd/ElementGeometry.h"
 #include "Logging.h"
 #include "Connector.h"
+#include "TLMBusConnector.h"
 
 #include <cstring>
 #include <iostream>
@@ -89,6 +90,16 @@ void oms3::Element::setGeometry(const oms3::ssd::ElementGeometry* newGeometry)
 void oms3::Element::setConnectors(oms3::Connector** newConnectors)
 {
   this->connectors = reinterpret_cast<oms_connector_t**>(newConnectors);
+}
+
+void oms3::Element::setBusConnectors(oms3::BusConnector **newBusConnectors)
+{
+  this->busconnectors = reinterpret_cast<oms3_busconnector_t**>(newBusConnectors);
+}
+
+void oms3::Element::setTLMBusConnectors(oms3::TLMBusConnector **newBusConnectors)
+{
+  this->tlmbusconnectors = reinterpret_cast<oms3_tlmbusconnector_t**>(newBusConnectors);
 }
 
 void oms3::Element::setSubElements(oms3_element_t** subelements)
