@@ -497,8 +497,7 @@ oms_status_enu_t oms2::Model::saveOrList(const std::string& filename, char** con
       break;
 
     case oms_component_tlm:
-      logError("xml export isn't implemented yet for TLM composite models");
-      status = oms_status_error;
+      status = getTLMCompositeModel()->save(ssd_System);
       break;
   }
 

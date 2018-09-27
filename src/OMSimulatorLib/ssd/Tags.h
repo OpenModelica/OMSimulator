@@ -54,6 +54,8 @@ namespace oms2
     extern const char* ssd_system_structure_description;
     extern const char* ssd_system;
     extern const char* ssd_units;
+    extern const char* ssd_simulation_information;
+    extern const char* ssd_elements;
   }
 }
 

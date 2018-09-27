@@ -57,12 +57,13 @@ namespace oms2
   public:
     static TLMCompositeModel* NewModel(const ComRef& name);
     static TLMCompositeModel* LoadModel(const pugi::xml_node& node);
+    oms_status_enu_t save(pugi::xml_node& node);
 
     oms_element_type_enu_t getType() {return oms_component_tlm;}
     oms_status_enu_t addFMIModel(FMICompositeModel *model);
 
     oms_status_enu_t addInterface(oms2::TLMInterface* ifc);
-    oms_status_enu_t addInterface(std::string name, int dimensions, oms_causality_enu_t causality, std::string domain, oms_tlm_interpolation_t interpolation, const ComRef &cref, std::vector<SignalRef> &sigrefs);
+    oms_status_enu_t addInterface(ComRef name, int dimensions, oms_causality_enu_t causality, std::string domain, oms_tlm_interpolation_t interpolation, const ComRef &cref, std::vector<SignalRef> &sigrefs);
 
     oms_status_enu_t setPositionAndOrientation(const SignalRef& ifc, std::vector<double> x, std::vector<double> A);
 
@@ -104,6 +105,9 @@ namespace oms2
     TLMCompositeModel(TLMCompositeModel const& copy);            ///< not implemented
     TLMCompositeModel& operator=(TLMCompositeModel const& copy); ///< not implemented
 
+    std::string causalityToString(oms_causality_enu_t causality);
+    std::string interpolationMethodToString(oms_tlm_interpolation_t method);
+
   private:
     ComRef name;
     void* model;
@@ -114,6 +118,7 @@ namespace oms2
     std::list<TLMInterface*> interfaces;
     std::string address;
     int managerPort;
+    int monitorPort;
   };
 }
 

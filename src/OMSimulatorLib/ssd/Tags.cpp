@@ -33,6 +33,7 @@
 
 const char* oms2::ssd::ssd_annotation                   = "ssd:Annotation";
 const char* oms2::ssd::ssd_annotations                  = "ssd:Annotations";
+const char* oms2::ssd::ssd_annotation                   = "ssd:Annotation";
 const char* oms2::ssd::ssd_component                    = "ssd:Component";
 const char* oms2::ssd::ssd_connection                   = "ssd:Connection";
 const char* oms2::ssd::ssd_connection_geometry          = "ssd:ConnectionGeometry";
@@ -48,3 +49,5 @@ const char* oms2::ssd::ssd_simulation_information       = "ssd:SimulationInforma
 const char* oms2::ssd::ssd_system                       = "ssd:System";
 const char* oms2::ssd::ssd_system_structure_description = "ssd:SystemStructureDescription";
 const char* oms2::ssd::ssd_units                        = "ssd:Units";
+const char* oms2::ssd::ssd_simulation_information       = "ssd:SimulationInformation";
+const char* oms2::ssd::ssd_elements                     = "ssd:Elements";

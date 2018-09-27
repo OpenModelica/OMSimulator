@@ -171,6 +171,16 @@ oms_status_enu_t oms2::FMICompositeModel::save(pugi::xml_node& node)
       return status;
   }
 
+  pugi::xml_node nodeAnnotations = node.append_child(oms2::ssd::ssd_annotations);
+  pugi::xml_node nodeAnnotation = nodeAnnotations.append_child(oms2::ssd::ssd_annotation);
+  nodeAnnotation.append_attribute("type") = "org.openmodelica";
+  for (const TLMInterface *ifc : tlmInterfaces)
+  {
+    status = ifc->exportToSSD(nodeAnnotation);
+    if(oms_status_ok != status)
+      return status;
+  }
+
   return oms_status_ok;
 }
 
@@ -1290,11 +1300,12 @@ oms_status_enu_t oms2::FMICompositeModel::updateInitialTLMValues()
 {
   //Apply initial values for signal and effort
   for(TLMInterface *ifc : tlmInterfaces) {
+    std::string name = ifc->getName().toString();
     if(ifc->getDimensions() == 1 && ifc->getCausality() == oms_causality_input) {
       oms_tlm_sigrefs_signal_t tlmrefs;
       double value;
-      if(tlmInitialValues.find(ifc->getName()) != tlmInitialValues.end()) {
-        value = tlmInitialValues.find(ifc->getName())->second[0];
+      if(tlmInitialValues.find(name) != tlmInitialValues.end()) {
+        value = tlmInitialValues.find(name)->second[0];
       }
       else {
         this->getReal(ifc->getSubSignal(tlmrefs.y), value);
@@ -1305,9 +1316,9 @@ oms_status_enu_t oms2::FMICompositeModel::updateInitialTLMValues()
             ifc->getInterpolationMethod() == oms_tlm_no_interpolation) {
       oms_tlm_sigrefs_1d_t tlmrefs;
       double effort,flow;
-      if(tlmInitialValues.find(ifc->getName()) != tlmInitialValues.end()) {
-        effort = tlmInitialValues.find(ifc->getName())->second[0];
-        flow = tlmInitialValues.find(ifc->getName())->second[1];
+      if(tlmInitialValues.find(name) != tlmInitialValues.end()) {
+        effort = tlmInitialValues.find(name)->second[0];
+        flow = tlmInitialValues.find(name)->second[1];
       }
       else {
         this->getReal(ifc->getSubSignal(tlmrefs.f), effort);
@@ -1318,9 +1329,9 @@ oms_status_enu_t oms2::FMICompositeModel::updateInitialTLMValues()
     }
     else if(ifc->getDimensions() == 1 && ifc->getCausality() == oms_causality_bidir &&
             ifc->getInterpolationMethod() != oms_tlm_no_interpolation) {
-      if(tlmInitialValues.find(ifc->getName()) != tlmInitialValues.end()) {
-        double effort = tlmInitialValues.find(ifc->getName())->second[0];
-        double flow = tlmInitialValues.find(ifc->getName())->second[1];
+      if(tlmInitialValues.find(name) != tlmInitialValues.end()) {
+        double effort = tlmInitialValues.find(name)->second[0];
+        double flow = tlmInitialValues.find(name)->second[1];
         plugin->SetInitialForce1D(ifc->getId(), effort);
         plugin->SetInitialFlow1D(ifc->getId(), flow);
       }
@@ -1330,19 +1341,19 @@ oms_status_enu_t oms2::FMICompositeModel::updateInitialTLMValues()
       oms_tlm_sigrefs_3d_t tlmrefs;
       std::vector<double> effort(6,0);
       std::vector<double> flow(6,0);
-      if(tlmInitialValues.find(ifc->getName()) != tlmInitialValues.end()) {
-        effort[0] = tlmInitialValues.find(ifc->getName())->second[0];
-        effort[1] = tlmInitialValues.find(ifc->getName())->second[1];
-        effort[2] = tlmInitialValues.find(ifc->getName())->second[2];
-        effort[3] = tlmInitialValues.find(ifc->getName())->second[3];
-        effort[4] = tlmInitialValues.find(ifc->getName())->second[4];
-        effort[5] = tlmInitialValues.find(ifc->getName())->second[5];
-        flow[0] = tlmInitialValues.find(ifc->getName())->second[6];
-        flow[1] = tlmInitialValues.find(ifc->getName())->second[7];
-        flow[2] = tlmInitialValues.find(ifc->getName())->second[8];
-        flow[3] = tlmInitialValues.find(ifc->getName())->second[9];
-        flow[4] = tlmInitialValues.find(ifc->getName())->second[10];
-        flow[5] = tlmInitialValues.find(ifc->getName())->second[11];
+      if(tlmInitialValues.find(name) != tlmInitialValues.end()) {
+        effort[0] = tlmInitialValues.find(name)->second[0];
+        effort[1] = tlmInitialValues.find(name)->second[1];
+        effort[2] = tlmInitialValues.find(name)->second[2];
+        effort[3] = tlmInitialValues.find(name)->second[3];
+        effort[4] = tlmInitialValues.find(name)->second[4];
+        effort[5] = tlmInitialValues.find(name)->second[5];
+        flow[0] = tlmInitialValues.find(name)->second[6];
+        flow[1] = tlmInitialValues.find(name)->second[7];
+        flow[2] = tlmInitialValues.find(name)->second[8];
+        flow[3] = tlmInitialValues.find(name)->second[9];
+        flow[4] = tlmInitialValues.find(name)->second[10];
+        flow[5] = tlmInitialValues.find(name)->second[11];
       }
       else {
         this->getReals(ifc->getSubSignalSet(tlmrefs.f), effort);
@@ -1358,19 +1369,19 @@ oms_status_enu_t oms2::FMICompositeModel::updateInitialTLMValues()
       oms_tlm_sigrefs_3d_t tlmrefs;
       std::vector<double> effort(6,0);
       std::vector<double> flow(6,0);
-      if(tlmInitialValues.find(ifc->getName()) != tlmInitialValues.end()) {
-        effort[0] = tlmInitialValues.find(ifc->getName())->second[0];
-        effort[1] = tlmInitialValues.find(ifc->getName())->second[1];
-        effort[2] = tlmInitialValues.find(ifc->getName())->second[2];
-        effort[3] = tlmInitialValues.find(ifc->getName())->second[3];
-        effort[4] = tlmInitialValues.find(ifc->getName())->second[4];
-        effort[5] = tlmInitialValues.find(ifc->getName())->second[5];
-        flow[0] = tlmInitialValues.find(ifc->getName())->second[6];
-        flow[1] = tlmInitialValues.find(ifc->getName())->second[7];
-        flow[2] = tlmInitialValues.find(ifc->getName())->second[8];
-        flow[3] = tlmInitialValues.find(ifc->getName())->second[9];
-        flow[4] = tlmInitialValues.find(ifc->getName())->second[10];
-        flow[5] = tlmInitialValues.find(ifc->getName())->second[11];
+      if(tlmInitialValues.find(name) != tlmInitialValues.end()) {
+        effort[0] = tlmInitialValues.find(name)->second[0];
+        effort[1] = tlmInitialValues.find(name)->second[1];
+        effort[2] = tlmInitialValues.find(name)->second[2];
+        effort[3] = tlmInitialValues.find(name)->second[3];
+        effort[4] = tlmInitialValues.find(name)->second[4];
+        effort[5] = tlmInitialValues.find(name)->second[5];
+        flow[0] = tlmInitialValues.find(name)->second[6];
+        flow[1] = tlmInitialValues.find(name)->second[7];
+        flow[2] = tlmInitialValues.find(name)->second[8];
+        flow[3] = tlmInitialValues.find(name)->second[9];
+        flow[4] = tlmInitialValues.find(name)->second[10];
+        flow[5] = tlmInitialValues.find(name)->second[11];
         plugin->SetInitialForce3D(ifc->getId(), effort[0], effort[1], effort[2], effort[3], effort[4], effort[5]);
         plugin->SetInitialFlow3D(ifc->getId(), flow[0], flow[1], flow[2], flow[3], flow[4], flow[5]);
       }
@@ -1644,7 +1655,7 @@ oms_status_enu_t oms2::FMICompositeModel::setTLMInitialValues(std::string ifcnam
   //Find interface log
   bool found = false;
   for(TLMInterface* ifc: tlmInterfaces) {
-    if(ifc->getName() == ifcname) {
+    if(ifc->getName().toString() == ifcname) {
       found = true;
       if(ifc->getDimensions() == 1 && ifc->getCausality() != oms_causality_bidir) {
         if(values.size() < 1) {

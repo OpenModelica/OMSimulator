@@ -40,6 +40,7 @@
 #include "FMICompositeModel.h"
 #include "OMTLMSimulatorLib.h"
 #include "Scope.h"
+#include "ssd/Tags.h"
 #include <list>
 #include <algorithm>
 #include <iostream>
@@ -176,11 +177,7 @@ oms_status_enu_t oms2::TLMCompositeModel::addInterface(oms2::TLMInterface *ifc)
     return logError("Sub model for TLM interface does not exist in TLM composite model.");
 
   //Todo: Help function for this
-  std::string causality = "Input";
-  if(ifc->getCausality() == oms_causality_output)
-    causality = "Output";
-  else if(ifc->getCausality() == oms_causality_bidir)
-    causality = "Bidirectional";
+  std::string causality = causalityToString(ifc->getCausality());
 
   int dimensions = ifc->getDimensions();
   if(ifc->getDimensions() == 2)
@@ -190,7 +187,7 @@ oms_status_enu_t oms2::TLMCompositeModel::addInterface(oms2::TLMInterface *ifc)
 
   omtlm_addInterface(model,
                      ifc->getSubModelName().c_str(),
-                     ifc->getName().c_str(),
+                     ifc->getName().toString().c_str(),
                      dimensions,
                      causality.c_str(),
                      ifc->getDomain().c_str());
@@ -203,7 +200,7 @@ oms_status_enu_t oms2::TLMCompositeModel::addInterface(oms2::TLMInterface *ifc)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms2::TLMCompositeModel::addInterface(std::string name,
+oms_status_enu_t oms2::TLMCompositeModel::addInterface(ComRef name,
                                                        int dimensions,
                                                        oms_causality_enu_t causality,
                                                        std::string domain,
@@ -348,6 +345,7 @@ oms_status_enu_t oms2::TLMCompositeModel::setSocketData(const std::string& addre
 
   this->address = address;
   this->managerPort = managerPort;
+  this->monitorPort = monitorPort;
   return oms_status_ok;
 }
 
@@ -390,8 +388,8 @@ oms_status_enu_t oms2::TLMCompositeModel::addConnection(const TLMConnection &con
   connections.push_back(con);
 
   for(TLMInterface* ifc : interfaces) {
-    if(ifc->getSubModelName().toString() + "." + ifc->getName() == interface1 ||
-       ifc->getSubModelName().toString() + "." + ifc->getName() == interface2) {
+    if(ifc->getSubModelName().toString() + "." + ifc->getName().toString() == interface1 ||
+       ifc->getSubModelName().toString() + "." + ifc->getName().toString() == interface2) {
       ifc->setDelay(con.getTimeDelay());
     }
   }
@@ -403,6 +401,83 @@ oms2::TLMCompositeModel* oms2::TLMCompositeModel::LoadModel(const pugi::xml_node
 {
   logError("oms2::TLMCompositeModel::LoadModel: not implemented yet");
   return NULL;
+}
+
+oms_status_enu_t oms2::TLMCompositeModel::save(pugi::xml_node &node)
+{
+  //Simulation information
+  pugi::xml_node ssd_SimInfo = node.append_child(oms2::ssd::ssd_simulation_information);
+
+  //Annotations for simulation information
+  pugi::xml_node ssd_SimAnnotations = ssd_SimInfo.append_child(oms2::ssd::ssd_annotations);
+  pugi::xml_node ssd_SimAnnotation = ssd_SimAnnotations.append_child(oms2::ssd::ssd_annotation);
+  ssd_SimAnnotation.append_attribute("type") = "org.openmodelica";
+  pugi::xml_node ssd_tlmMaster = ssd_SimAnnotation.append_child("tlm:Master");
+  ssd_tlmMaster.append_attribute("ip") = address.c_str();
+  ssd_tlmMaster.append_attribute("managerport") = std::to_string(managerPort).c_str();
+  ssd_tlmMaster.append_attribute("monitorport") = std::to_string(monitorPort).c_str();
+
+  //Annotations for TLM system
+  pugi::xml_node ssd_Annotations = node.append_child(oms2::ssd::ssd_annotations);
+  pugi::xml_node ssd_Annotation = ssd_Annotations.append_child(oms2::ssd::ssd_annotation);
+  ssd_Annotation.append_attribute("type") = "org.openmodelica";
+
+  //Save TLM connections
+  pugi::xml_node ssd_tlmConnections = ssd_Annotation.append_child("tlm:Connections");
+  for (const TLMConnection& con : connections)
+  {
+    pugi::xml_node ssd_tlmCon = ssd_tlmConnections.append_child("tlm:Connection");
+    ssd_tlmCon.append_attribute("startElement") = con.getSignalA().getCref().toString().c_str();
+    ssd_tlmCon.append_attribute("startConnector") = con.getSignalA().getVar().c_str();
+    ssd_tlmCon.append_attribute("endElement") = con.getSignalB().getCref().toString().c_str();
+    ssd_tlmCon.append_attribute("endConnector") = con.getSignalB().getVar().c_str();
+    ssd_tlmCon.append_attribute("delay") = con.getTimeDelay();
+    ssd_tlmCon.append_attribute("impedance") = con.getZf();
+    ssd_tlmCon.append_attribute("impedancerot") = con.getZfr();
+    ssd_tlmCon.append_attribute("alpha") = con.getAlpha();
+  }
+
+  //TLM system elements
+  pugi::xml_node ssd_Elements = node.append_child(oms2::ssd::ssd_elements);
+
+  //Save FMI submodels for TLM system
+  for (const auto& fmiModel : fmiModels)
+  {
+    //Save FMI system
+    pugi::xml_node ssd_System = ssd_Elements.append_child(oms2::ssd::ssd_system);
+    ssd_System.append_attribute("name") = fmiModel.second->getName().toString().c_str();
+    if(oms_status_ok != fmiModel.second->save(ssd_System))
+      return logError("[oms2::TLMCompositeModel::save] Failed to save FMI submodel");
+  }
+
+  //Save external TLM models
+  for (const auto &it : externalModels)
+  {
+    ExternalModel *model = it.second;
+    pugi::xml_node ssd_XSystem = node.append_child(oms2::ssd::ssd_system);
+    ssd_XSystem.append_attribute("name") = model->getName().toString().c_str();
+    pugi::xml_node ssd_XAnnotations = ssd_XSystem.append_child(oms2::ssd::ssd_annotations);
+    pugi::xml_node ssd_XAnnotation = ssd_XAnnotations.append_child(oms2::ssd::ssd_annotation);
+    ssd_XAnnotation.append_attribute("type") = "org.openmodelica";
+    pugi::xml_node ssd_tlmXModel = ssd_XAnnotation.append_child("tlm:ExternalModel");
+    ssd_tlmXModel.append_attribute("source") = model->getModelPath().c_str();
+    ssd_tlmXModel.append_attribute("startscript") = model->getStartScript().c_str();
+
+    //Save TLM interfaces as TLM bus connector
+    for(const TLMInterface* ifc : interfaces) {
+      if(ifc->getSubModelName() == model->getName()) {
+        pugi::xml_node ssd_OMSimulatorBus = ssd_XAnnotation.append_child("OMSimulator:Bus");
+        ssd_OMSimulatorBus.append_attribute("name") = ifc->getName().toString().c_str();
+        ssd_OMSimulatorBus.append_attribute("type") = "tlm";
+        ssd_OMSimulatorBus.append_attribute("domain") = ifc->getDomain().c_str();
+        ssd_OMSimulatorBus.append_attribute("dimensions") = std::to_string(ifc->getDimensions()).c_str();
+        ssd_OMSimulatorBus.append_attribute("causality") = causalityToString(ifc->getCausality()).c_str();
+        ssd_OMSimulatorBus.append_attribute("interpolation") = interpolationMethodToString(ifc->getInterpolationMethod()).c_str();
+      }
+    }
+  }
+
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms2::TLMCompositeModel::initialize(double startTime, double tolerance)
@@ -515,4 +590,34 @@ void oms2::TLMCompositeModel::simulate_asynchronous(ResultWriter& resultWriter, 
 
   logError("oms2::TLMCompositeModel::simulate_asynchronous: Function is not implemented, yet.");
   cb(this->getName().c_str(), 0, oms_status_error);
+}
+
+
+std::string oms2::TLMCompositeModel::causalityToString(oms_causality_enu_t causality) {
+  switch(causality) {
+  case oms_causality_bidir:
+    return "Bidirectional";
+  case oms_causality_input:
+    return "Input";
+  case oms_causality_output:
+    return "Output";
+  case oms_causality_inherited:
+    return "Inherited";
+  case oms_causality_parameter:
+    return "Parameter";
+  }
+  return "Undefined";
+}
+
+
+std::string oms2::TLMCompositeModel::interpolationMethodToString(oms_tlm_interpolation_t method) {
+  switch(method) {
+  case oms_tlm_no_interpolation:
+    return "none";
+  case oms_tlm_coarse_grained:
+    return "coarsegrained";
+  case oms_tlm_fine_grained:
+    return "finegrained";
+  }
+  return "undefined";
 }

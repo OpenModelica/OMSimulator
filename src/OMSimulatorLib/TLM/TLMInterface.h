@@ -37,6 +37,8 @@
 #include "Types.h"
 #include "../../OMTLMSimulator/common/Plugin/PluginImplementer.h"
 
+#include <pugixml.hpp>
+
 namespace oms2
 {
   typedef struct  {
@@ -114,7 +116,7 @@ typedef struct  {
   {
   public:
     TLMInterface(const oms2::ComRef& cref,
-                 const std::string name,
+                 const ComRef name,
                  oms_causality_enu_t causality,
                  const std::string domain,
                  const int dimensions,
@@ -122,19 +124,21 @@ typedef struct  {
                  const std::vector<SignalRef> &sigrefs);
     ~TLMInterface() {}
 
-    oms2::SignalRef getSignal() { return sig; }
-    oms2::ComRef getSubModelName() { return cref; }
-    oms2::ComRef getFMUName();
-    std::string getName() { return name; }
-    oms_causality_enu_t getCausality() { return causality; }
-    std::string getDomain() { return domain; }
-    int getDimensions() { return dimensions; }
-    oms_tlm_interpolation_t getInterpolationMethod() { return interpolationMethod; }
+    oms_status_enu_t exportToSSD(pugi::xml_node& root) const;
+
+    oms2::SignalRef getSignal() const { return sig; }
+    oms2::ComRef getSubModelName() const { return cref; }
+    oms2::ComRef getFMUName() const;
+    oms2::ComRef getName() const { return name; }
+    oms_causality_enu_t getCausality() const { return causality; }
+    std::string getDomain() const { return domain; }
+    int getDimensions() const { return dimensions; }
+    oms_tlm_interpolation_t getInterpolationMethod() const { return interpolationMethod; }
     void setDelay(double delay) { this->delay = delay; }
-    double getDelay() { return this->delay; }
-    std::vector<SignalRef> getSubSignals() { return sigrefs; }
+    double getDelay() const { return this->delay; }
+    std::vector<SignalRef> getSubSignals() const { return sigrefs; }
     std::vector<SignalRef> getSubSignalSet(std::vector<int> ids);
-    SignalRef getSubSignal(int i) { return sigrefs[i]; }
+    SignalRef getSubSignal(int i) const { return sigrefs[i]; }
     oms_status_enu_t doRegister(TLMPlugin *plugin);
     int getId() { return this->id; }
 
@@ -144,7 +148,7 @@ typedef struct  {
   private:
     SignalRef sig;
     oms2::ComRef cref;
-    std::string name;
+    ComRef name;
     oms_causality_enu_t causality;
     std::string domain;
     int dimensions;
@@ -152,6 +156,8 @@ typedef struct  {
     oms_tlm_interpolation_t interpolationMethod;
     double delay;
     int id;
+    std::string tlmDomainToString(std::string domain, int dimensions, oms_causality_enu_t causality) const;
+    std::string tlmInterpolationToString(oms_tlm_interpolation_t method) const;
   };
 
   inline bool operator==(const TLMInterface& lhs, const TLMInterface& rhs) {return (lhs.cref.c_str() == rhs.cref.c_str() && lhs.name == rhs.name);}
