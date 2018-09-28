@@ -429,6 +429,27 @@ oms_status_enu_t oms3_addTLMBus(const char *cref, const char *domain, const int 
   return system->addTLMBus(tail, domain, dimensions, interpolation);
 }
 
+oms_status_enu_t oms3_getTLMBus(const char* cref, oms3_tlmbusconnector_t** tlmBusConnector)
+{
+  oms3::ComRef tail(cref);
+  oms3::ComRef modelCref = tail.pop_front();
+  oms3::ComRef systemCref = tail.pop_front();
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
+  if (!model) {
+    return logError_ModelNotInScope(modelCref);
+  }
+
+  oms3::System* system = model->getSystem(systemCref);
+  if (!system) {
+    return logError_SystemNotInModel(modelCref, systemCref);
+  }
+
+  oms3::TLMBusConnector** tlmBusConnector_ = reinterpret_cast<oms3::TLMBusConnector**>(tlmBusConnector);
+  *tlmBusConnector_ = system->getTLMBusConnector(tail);
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms3_addConnectorToBus(const char *busCref, const char *connectorCref)
 {
   logTrace();
