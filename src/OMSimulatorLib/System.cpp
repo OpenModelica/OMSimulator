@@ -292,6 +292,32 @@ oms_status_enu_t oms3::System::importFromSSD(const pugi::xml_node& node)
       if (oms_status_ok != importFromSSD_SimulationInformation(*it))
         return logError("Failed to import " + std::string(oms2::ssd::ssd_simulation_information));
     }
+    else if(name == oms2::ssd::ssd_element_geometry)
+    {
+      oms3::ssd::ElementGeometry geometry;
+      double x1 = (*it).attribute("x1").as_double();
+      double y1 = (*it).attribute("y1").as_double();
+      double x2 = (*it).attribute("x2").as_double();
+      double y2 = (*it).attribute("y2").as_double();
+      geometry.setSizePosition(x1, y1, x2, y2);
+
+      double rotation = (*it).attribute("rotation").as_double();
+      geometry.setRotation(rotation);
+
+      std::string iconSource = (*it).attribute("iconSource").as_string();
+      geometry.setIconSource(iconSource);
+
+      double iconRotation = (*it).attribute("iconRotation").as_double();
+      geometry.setIconRotation(iconRotation);
+
+      bool iconFlip = (*it).attribute("iconFlip").as_bool();
+      geometry.setIconFlip(iconFlip);
+
+      bool iconFixedAspectRatio = (*it).attribute("iconFixedAspectRatio").as_bool();
+      geometry.setIconFixedAspectRatio(iconFixedAspectRatio);
+
+      setGeometry(geometry);
+    }
     else if(name == oms2::ssd::ssd_connections)
     {
       for(pugi::xml_node_iterator itConnectors = (*it).begin(); itConnectors != (*it).end(); ++itConnectors)
@@ -335,6 +361,21 @@ oms_status_enu_t oms3::System::importFromSSD(const pugi::xml_node& node)
           return logError("Failed to import " + std::string(oms2::ssd::ssd_connector) + ":type");
         if (oms_status_ok != addConnector(cref, causality, type))
           return logError("Failed to import " + std::string(oms2::ssd::ssd_connector));
+        else
+        {
+          // Load connector geometry
+          pugi::xml_node connectorGeometryNode = itConnectors->child(oms2::ssd::ssd_connector_geometry);
+          if (connectorGeometryNode)
+          {
+            oms3::Connector* connector = getConnector(cref);
+            if (connector)
+            {
+              oms2::ssd::ConnectorGeometry geometry(0.0, 0.0);
+              geometry.setPosition(connectorGeometryNode.attribute("x").as_double(), connectorGeometryNode.attribute("y").as_double());
+              connector->setGeometry(&geometry);
+            }
+          }
+        }
       }
     }
     else if(name == oms2::ssd::ssd_elements)
@@ -419,6 +460,26 @@ oms_status_enu_t oms3::System::importFromSSD(const pugi::xml_node& node)
                     addConnectorToBus(busname, signalname);
                   }
                 }
+              }
+            }
+
+            // Load bus connector geometry
+            pugi::xml_node connectorGeometryNode = itAnnotations->child(oms2::ssd::ssd_connector_geometry);
+            if (connectorGeometryNode)
+            {
+              oms2::ssd::ConnectorGeometry geometry(0.0, 0.0);
+              geometry.setPosition(connectorGeometryNode.attribute("x").as_double(), connectorGeometryNode.attribute("y").as_double());
+              if (std::string(itAnnotations->attribute("type").as_string()) == "tlm")
+              {
+                oms3::TLMBusConnector* tlmBusConnector = getTLMBusConnector(busname);
+                if (tlmBusConnector)
+                  tlmBusConnector->setGeometry(&geometry);
+              }
+              else
+              {
+                oms3::BusConnector* busConnector = getBusConnector(busname);
+                if (busConnector)
+                  busConnector->setGeometry(&geometry);
               }
             }
           }
@@ -833,4 +894,20 @@ oms_status_enu_t oms3::System::setBusGeometry(const oms3::ComRef &cref, const om
     return oms_status_ok;
   }
   return logError("Bus "+std::string(cref)+" not found in system "+std::string(getName()));
+}
+
+oms_status_enu_t oms3::System::setTLMBusGeometry(const oms3::ComRef &cref, const oms2::ssd::ConnectorGeometry *geometry)
+{
+  oms3::ComRef tail(cref);
+  oms3::ComRef head = tail.pop_front();
+  auto subsystem = subsystems.find(head);
+  if (subsystem != subsystems.end())
+    return subsystem->second->setTLMBusGeometry(tail,geometry);
+
+  oms3::TLMBusConnector* tlmBusConnector = this->getTLMBusConnector(cref);
+  if (tlmBusConnector) {
+    tlmBusConnector->setGeometry(geometry);
+    return oms_status_ok;
+  }
+  return logError("TLM Bus "+std::string(cref)+" not found in system "+std::string(getName()));
 }
