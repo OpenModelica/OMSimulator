@@ -77,3 +77,25 @@ void Clock::reset()
   elapsedCPUTime = 0.0;
   elapsedWallTime = 0.0;
 }
+
+double& Clock::getElapsedCPUTime()
+{
+  if (active)
+  {
+    toc();
+    tic();
+  }
+
+  return elapsedCPUTime;
+}
+
+double& Clock::getElapsedWallTime()
+{
+  if (active)
+  {
+    toc();
+    tic();
+  }
+
+  return elapsedWallTime;
+}
