@@ -928,6 +928,8 @@ oms_status_enu_t oms2::FMICompositeModel::initialize(double startTime, double to
 
   updateInputs(outputsGraph);
 
+  clock.reset();
+
   return oms_status_ok;
 }
 
@@ -947,35 +949,45 @@ oms_status_enu_t oms2::FMICompositeModel::reset(bool terminate)
 oms_status_enu_t oms2::FMICompositeModel::stepUntil(ResultWriter& resultWriter, double stopTime, double communicationInterval, double loggingInterval, MasterAlgorithm masterAlgorithm, bool realtime_sync)
 {
   logTrace();
+  clock.tic();
+  oms_status_enu_t status = oms_status_error;
 
   switch (masterAlgorithm)
   {
-    case MasterAlgorithm::STANDARD :
-      logDebug("oms2::FMICompositeModel::stepUntil: Using master algorithm 'standard'");
-      return stepUntilStandard(resultWriter, stopTime, communicationInterval, loggingInterval, realtime_sync);
+  case MasterAlgorithm::STANDARD :
+    logDebug("oms2::FMICompositeModel::stepUntil: Using master algorithm 'standard'");
+    status = stepUntilStandard(resultWriter, stopTime, communicationInterval, loggingInterval, realtime_sync);
+    break;
 #if !defined(__arm__)
-    case MasterAlgorithm::PCTPL :
-      logDebug("oms2::FMICompositeModel::stepUntil: Using master algorithm 'pctpl'");
-      return stepUntilPCTPL(resultWriter, stopTime, communicationInterval, loggingInterval, realtime_sync);
-    case MasterAlgorithm::PMRCHANNELA :
-      logDebug("oms2::FMICompositeModel::stepUntil: Using master algorithm 'pmrchannela'");
-      return oms2::stepUntilPMRChannel<oms2::PMRChannelA>(resultWriter, stopTime, communicationInterval, loggingInterval, this->getName().toString(), outputsGraph, subModels, realtime_sync);
-    case MasterAlgorithm::PMRCHANNELCV :
-      logDebug("oms2::FMICompositeModel::stepUntil: Using master algorithm 'pmrchannelcv'");
-      return oms2::stepUntilPMRChannel<oms2::PMRChannelCV>(resultWriter, stopTime, communicationInterval, loggingInterval, this->getName().toString(), outputsGraph, subModels, realtime_sync);
-    case MasterAlgorithm::PMRCHANNELM :
-      logDebug("oms2::FMICompositeModel::stepUntil: Using master algorithm 'pmrchannelm'");
-      return oms2::stepUntilPMRChannel<oms2::PMRChannelM>(resultWriter, stopTime, communicationInterval, loggingInterval, this->getName().toString(), outputsGraph, subModels, realtime_sync);
+  case MasterAlgorithm::PCTPL :
+    logDebug("oms2::FMICompositeModel::stepUntil: Using master algorithm 'pctpl'");
+    status = stepUntilPCTPL(resultWriter, stopTime, communicationInterval, loggingInterval, realtime_sync);
+    break;
+  case MasterAlgorithm::PMRCHANNELA :
+    logDebug("oms2::FMICompositeModel::stepUntil: Using master algorithm 'pmrchannela'");
+    status = oms2::stepUntilPMRChannel<oms2::PMRChannelA>(resultWriter, stopTime, communicationInterval, loggingInterval, this->getName().toString(), outputsGraph, subModels, realtime_sync);
+    break;
+  case MasterAlgorithm::PMRCHANNELCV :
+    logDebug("oms2::FMICompositeModel::stepUntil: Using master algorithm 'pmrchannelcv'");
+    status = oms2::stepUntilPMRChannel<oms2::PMRChannelCV>(resultWriter, stopTime, communicationInterval, loggingInterval, this->getName().toString(), outputsGraph, subModels, realtime_sync);
+    break;
+  case MasterAlgorithm::PMRCHANNELM :
+    logDebug("oms2::FMICompositeModel::stepUntil: Using master algorithm 'pmrchannelm'");
+    status = oms2::stepUntilPMRChannel<oms2::PMRChannelM>(resultWriter, stopTime, communicationInterval, loggingInterval, this->getName().toString(), outputsGraph, subModels, realtime_sync);
+    break;
 #endif
-    default :
-      logError("oms2::FMICompositeModel::stepUntil: Internal error: Request for using unknown master algorithm.");
-      return oms_status_error;
-    }
+  default:
+    logError("oms2::FMICompositeModel::stepUntil: Internal error: Request for using unknown master algorithm.");
+  }
+
+  clock.toc();
+  return status;
 }
 
 oms_status_enu_t oms2::FMICompositeModel::doSteps(ResultWriter& resultWriter, const int numberOfSteps, double communicationInterval, double loggingInterval)
 {
   logTrace();
+  clock.tic();
 
   for(int step=0; step<numberOfSteps; step++)
   {
@@ -1001,6 +1013,7 @@ oms_status_enu_t oms2::FMICompositeModel::doSteps(ResultWriter& resultWriter, co
       updateInputs(outputsGraph);
   }
 
+  clock.toc();
   return oms_status_ok;
 }
 
@@ -1754,6 +1767,8 @@ oms_status_enu_t oms2::FMICompositeModel::solveAlgLoop(oms2::DirectedGraph& grap
 
 oms_status_enu_t oms2::FMICompositeModel::registerSignalsForResultFile(ResultWriter& resultWriter)
 {
+  clock_id = resultWriter.addSignal("wallTime", "wall-clock time [s]", SignalType_REAL);
+
   for (const auto& it : subModels)
     it.second->registerSignalsForResultFile(resultWriter);
 
@@ -1762,6 +1777,10 @@ oms_status_enu_t oms2::FMICompositeModel::registerSignalsForResultFile(ResultWri
 
 oms_status_enu_t oms2::FMICompositeModel::emit(ResultWriter& resultWriter)
 {
+  SignalValue_t wallTime;
+  wallTime.realValue = clock.getElapsedWallTime();
+  resultWriter.updateSignal(clock_id, wallTime);
+
   for (const auto& it : subModels)
     if (oms_status_ok != it.second->emit(resultWriter))
       return logError("Failed to log simulation results");
