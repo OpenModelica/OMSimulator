@@ -45,8 +45,8 @@ public:
   void toc();
   void reset();
 
-  double& getElapsedCPUTime() {return elapsedCPUTime;}
-  double& getElapsedWallTime() {return elapsedWallTime;}
+  double& getElapsedCPUTime();
+  double& getElapsedWallTime();
 
 private:
   bool active;
