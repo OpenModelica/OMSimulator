@@ -80,10 +80,10 @@ oms_status_enu_t oms3_getTLMBus(const char* cref, oms3_tlmbusconnector_t** tlmBu
 oms_status_enu_t oms3_addConnectorToTLMBus(const char* busCref, const char* connectorCref, const char *type);
 oms_status_enu_t oms3_setTLMBusGeometry(const char* bus, const ssd_connector_geometry_t* geometry);
 oms_status_enu_t oms3_addTLMConnection(const char* crefA, const char* crefB, double delay, double alpha, double impedance, double impedancerot);
+oms_status_enu_t oms3_addExternalModel(const char* cref, const char* path, const char* startscript);
 
 /* not implemented yet */
 oms_status_enu_t oms3_addSubModel(const char* cref, const char* fmuPath);
-oms_status_enu_t oms3_addExternalModel(const char* cref, const char* path, const char* startscript);
 oms_status_enu_t oms3_setSimulationInformation(const char* cref, ssd_simulation_information_t* info);
 oms_status_enu_t oms3_getSimulationInformation(const char* cref, ssd_simulation_information_t** info);
 oms_status_enu_t oms3_getSubModelPath(const char* cref, char** path);

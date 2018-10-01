@@ -40,6 +40,47 @@
 #include <vector>
 #include <map>
 
+namespace oms3
+{
+  class ExternalModel
+  {
+  public:
+    static ExternalModel* NewModel(const oms3::ComRef& cref, const std::string& path, const std::string& startscript);
+
+    void setName(const ComRef& name) {element.setName(name);}
+    void setGeometry(const oms3::ssd::ElementGeometry& geometry) {element.setGeometry(&geometry);}
+
+    const ComRef getName() const {return oms3::ComRef(element.getName());}
+    const oms3::ssd::ElementGeometry* getGeometry() {return element.getGeometry();}
+    oms3::Element* getElement() {return &element;}
+
+    oms_status_enu_t addTLMBus(const oms3::ComRef& cref, const std::string domain, const int dimensions, const oms_tlm_interpolation_t interpolation);
+    oms3::TLMBusConnector *getTLMBusConnector(const oms3::ComRef &cref);
+    oms_status_enu_t setRealParameter(const std::string& var, double value);
+    oms_status_enu_t getRealParameter(const std::string& var, double& value);
+    const std::string& getModelPath() const {return path;}
+    const std::string& getStartScript() const {return startscript;}
+    const std::map<std::string, oms2::Option<double>>& getRealParameters() const {return realParameters;}
+
+    oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
+
+  protected:
+    ComRef cref;
+    oms3::Element element;
+
+  private:
+    ExternalModel(const oms3::ComRef& cref, const std::string& path, const std::string& startscript);
+    ~ExternalModel();
+
+
+    std::string path;
+    std::string startscript;
+
+    std::map<std::string, oms2::Option<double>> realParameters;
+    std::vector<oms3::TLMBusConnector*> tlmbusconnectors;
+  };
+}
+
 namespace oms2
 {
   class ExternalModel
