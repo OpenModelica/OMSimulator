@@ -14,6 +14,8 @@ The latest documentation is avilable as [pdf](https://openmodelica.org/doc/OMSim
 - [cmake](http://www.cmake.org)
 - [Sphinx](http://www.sphinx-doc.org/en/stable/)
 - [readline (if using Lua)](http://git.savannah.gnu.org/cgit/readline.git)
+- [Python](http://www.python.org/)
+- [GitPython](https://gitpython.readthedocs.io/en/stable/)
 - [3rdParty subproject](https://github.com/OpenModelica/OMFMISimulator-3rdParty)
   - FMILibrary
   - Lua
