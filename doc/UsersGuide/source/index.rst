@@ -15,6 +15,7 @@ OMSimulator's documentation
   OMSimulatorLua
   OMSimulatorPython
   OMSysIdent
+  SSP
 
 
 .. only :: html or epub
