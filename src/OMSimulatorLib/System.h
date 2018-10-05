@@ -75,6 +75,7 @@ namespace oms3
     oms3::TLMBusConnector *getTLMBusConnector(const oms3::ComRef& cref);
     Connection **getConnections(const ComRef &cref);
     oms_status_enu_t addConnection(const oms3::ComRef& crefA, const oms3::ComRef& crefB);
+    oms_status_enu_t updateConnection(const oms3::ComRef& crefA, const oms3::ComRef& crefB, const oms3_connection_t* connection);
     oms_status_enu_t addTLMConnection(const oms3::ComRef& crefA, const oms3::ComRef& crefB, double delay, double alpha, double linearimpedance, double angularimpedance);
     oms_status_enu_t setConnectorGeometry(const oms3::ComRef& cref, const oms2::ssd::ConnectorGeometry* geometry);
     oms_status_enu_t setConnectionGeometry(const oms3::ComRef &crefA, const oms3::ComRef &crefB, const oms2::ssd::ConnectionGeometry* geometry);
