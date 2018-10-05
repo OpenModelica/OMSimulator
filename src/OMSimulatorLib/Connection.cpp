@@ -52,8 +52,9 @@ oms3::Connection::Connection(const oms3::ComRef& conA, const oms3::ComRef& conB,
   this->conB = new char[str.size()+1];
   strcpy(this->conB, str.c_str());
 
-  tlmparameters = NULL;
   this->geometry = reinterpret_cast<ssd_connection_geometry_t*>(new oms2::ssd::ConnectionGeometry());
+
+  tlmparameters = NULL;
 }
 
 oms3::Connection::~Connection()
@@ -77,6 +78,8 @@ oms3::Connection::Connection(const oms3::Connection& rhs)
   oms2::ssd::ConnectionGeometry* geometry_ = new oms2::ssd::ConnectionGeometry();
   *geometry_ = *reinterpret_cast<oms2::ssd::ConnectionGeometry*>(rhs.geometry);
   this->geometry = reinterpret_cast<ssd_connection_geometry_t*>(geometry_);
+
+  tlmparameters = NULL;
 }
 
 oms3::Connection& oms3::Connection::operator=(const oms3::Connection& rhs)
@@ -86,7 +89,7 @@ oms3::Connection& oms3::Connection::operator=(const oms3::Connection& rhs)
     return *this;
 
   if (this->type != rhs.type)
-    logWarning("[oms2::Connection::operator=] changing type of connection");
+    logWarning("[oms3::Connection::operator=] changing type of connection");
   this->type = rhs.type;
 
   if (this->conA) delete[] this->conA;
@@ -100,6 +103,14 @@ oms3::Connection& oms3::Connection::operator=(const oms3::Connection& rhs)
   oms2::ssd::ConnectionGeometry* geometry_ = new oms2::ssd::ConnectionGeometry();
   *geometry_ = *reinterpret_cast<oms2::ssd::ConnectionGeometry*>(rhs.geometry);
   this->geometry = reinterpret_cast<ssd_connection_geometry_t*>(geometry_);
+
+  if (this->tlmparameters) {
+    delete tlmparameters;
+    tlmparameters = NULL;
+  }
+  if (rhs.tlmparameters) {
+    setTLMParameters(rhs.tlmparameters->delay, rhs.tlmparameters->alpha, rhs.tlmparameters->linearimpedance, rhs.tlmparameters->angularimpedance);
+  }
 
   return *this;
 }
