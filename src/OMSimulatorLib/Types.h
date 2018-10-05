@@ -339,8 +339,8 @@ typedef struct {
 typedef struct {
   double delay;
   double alpha;
-  double impedance;
-  double impedancerot;
+  double linearimpedance;
+  double angularimpedance;
 } oms3_tlm_connection_parameters_t;
 
 /**
