@@ -79,7 +79,7 @@ oms_status_enu_t oms3_addTLMBus(const char* cref, const char* domain, const int 
 oms_status_enu_t oms3_getTLMBus(const char* cref, oms3_tlmbusconnector_t** tlmBusConnector);
 oms_status_enu_t oms3_addConnectorToTLMBus(const char* busCref, const char* connectorCref, const char *type);
 oms_status_enu_t oms3_setTLMBusGeometry(const char* bus, const ssd_connector_geometry_t* geometry);
-oms_status_enu_t oms3_addTLMConnection(const char* crefA, const char* crefB, double delay, double alpha, double impedance, double impedancerot);
+oms_status_enu_t oms3_addTLMConnection(const char* crefA, const char* crefB, double delay, double alpha, double linearimpedance, double angularimpedance);
 oms_status_enu_t oms3_addExternalModel(const char* cref, const char* path, const char* startscript);
 
 /* not implemented yet */

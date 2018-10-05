@@ -513,7 +513,7 @@ oms_status_enu_t oms3_setTLMBusGeometry(const char* cref, const ssd_connector_ge
   return system->setTLMBusGeometry(tail, reinterpret_cast<const oms2::ssd::ConnectorGeometry*>(geometry));
 }
 
-oms_status_enu_t oms3_addTLMConnection(const char *crefA, const char *crefB, double delay, double alpha, double impedance, double impedancerot)
+oms_status_enu_t oms3_addTLMConnection(const char *crefA, const char *crefB, double delay, double alpha, double linearimpedance, double angularimpedance)
 {
   logTrace();
 
@@ -535,7 +535,7 @@ oms_status_enu_t oms3_addTLMConnection(const char *crefA, const char *crefB, dou
     return logError_SystemNotInModel(modelCref, systemCref);
   }
 
-  return system->addTLMConnection(tailA,tailB,delay,alpha,impedance,impedancerot);
+  return system->addTLMConnection(tailA,tailB,delay,alpha,linearimpedance,angularimpedance);
 }
 
 oms_status_enu_t oms3_addExternalModel(const char *cref, const char *path, const char *startscript)
