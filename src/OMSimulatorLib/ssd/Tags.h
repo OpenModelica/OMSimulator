@@ -32,6 +32,18 @@
 #ifndef _OMS2_SSD_TAGS_H_
 #define _OMS2_SSD_TAGS_H_
 
+namespace oms
+{
+  extern const char* annotation_type;
+  extern const char* tlm_master;
+  extern const char* bus;
+  extern const char* signals;
+  extern const char* signal;
+  extern const char* bus_connections;
+  extern const char* bus_connection;
+  extern const char* external_model;
+}
+
 namespace oms2
 {
   namespace ssd

@@ -272,7 +272,7 @@ oms_status_enu_t oms3::System::exportToSSD(pugi::xml_node& node) const
   if(busconnectors[0] || tlmbusconnectors[0] || !busconnections.empty()) {
     pugi::xml_node annotations_node = node.append_child(oms2::ssd::ssd_annotations);
     pugi::xml_node annotation_node = annotations_node.append_child(oms2::ssd::ssd_annotation);
-    annotation_node.append_attribute("type") = "org.openmodelica";
+    annotation_node.append_attribute("type") = oms::annotation_type;
     for (const auto& busconnector : busconnectors)
       if(busconnector)
         busconnector->exportToSSD(annotation_node);
@@ -280,7 +280,7 @@ oms_status_enu_t oms3::System::exportToSSD(pugi::xml_node& node) const
       if(tlmbusconnector)
         tlmbusconnector->exportToSSD(annotation_node);
     if(!busconnections.empty()) {
-      pugi::xml_node busconnections_node = annotation_node.append_child("OMSimulator:BusConnections");
+      pugi::xml_node busconnections_node = annotation_node.append_child(oms::bus_connections);
       for (const auto& busconnection : busconnections) {
         busconnection->exportToSSD(busconnections_node);
       }
@@ -423,11 +423,11 @@ oms_status_enu_t oms3::System::importFromSSD(const pugi::xml_node& node)
     else if(name == oms2::ssd::ssd_annotations)
     {
       pugi::xml_node annotation_node = it->child(oms2::ssd::ssd_annotation);
-      if(annotation_node && std::string(annotation_node.attribute("type").as_string()) == "org.openmodelica") {
+      if(annotation_node && std::string(annotation_node.attribute("type").as_string()) == oms::annotation_type) {
         for(pugi::xml_node_iterator itAnnotations = annotation_node.begin(); itAnnotations != annotation_node.end(); ++itAnnotations)
         {
           name = itAnnotations->name();
-          if (std::string(name) == "OMSimulator:Bus")
+          if (std::string(name) == oms::bus)
           {
             //Load bus connector
             std::string busname = itAnnotations->attribute("name").as_string();
@@ -454,11 +454,11 @@ oms_status_enu_t oms3::System::importFromSSD(const pugi::xml_node& node)
             }
 
             //Load bus connector signals
-            pugi::xml_node signals_node = itAnnotations->child("Signals");
+            pugi::xml_node signals_node = itAnnotations->child(oms::signals);
             if(signals_node) {
               for(pugi::xml_node_iterator itSignals = signals_node.begin(); itSignals != signals_node.end(); ++itSignals) {
                 name = itSignals->name();
-                if(name == "Signal") {
+                if(name == oms::signal) {
                   std::string signalname = itSignals->attribute("name").as_string();
                   if(std::string(itAnnotations->attribute("type").as_string()) == "tlm") {
                     std::string signaltype = itSignals->attribute("type").as_string();
@@ -491,7 +491,7 @@ oms_status_enu_t oms3::System::importFromSSD(const pugi::xml_node& node)
               }
             }
           }
-          else if(std::string(name) == "OMSimulator:BusConnections")
+          else if(std::string(name) == oms::bus_connections)
           {
 
             //Load bus connections

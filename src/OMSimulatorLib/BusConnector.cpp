@@ -1,5 +1,6 @@
 #include "BusConnector.h"
 #include "Logging.h"
+#include "ssd/Tags.h"
 #include <iostream>
 #include <cstring>
 
@@ -26,12 +27,12 @@ oms3::BusConnector::~BusConnector()
 
 oms_status_enu_t oms3::BusConnector::exportToSSD(pugi::xml_node &root) const
 {
-  pugi::xml_node bus_node = root.append_child("OMSimulator:Bus");
+  pugi::xml_node bus_node = root.append_child(oms::bus);
   bus_node.append_attribute("name") = name;
 
-  pugi::xml_node signals_node = bus_node.append_child("Signals");
+  pugi::xml_node signals_node = bus_node.append_child(oms::signals);
   for(auto& connector : conrefs) {
-    pugi::xml_node signal_node = signals_node.append_child("Signal");
+    pugi::xml_node signal_node = signals_node.append_child(oms::signal);
     signal_node.append_attribute("name") = connector.c_str();
   }
 
