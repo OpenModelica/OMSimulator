@@ -428,9 +428,9 @@ static int OMSimulatorLua_oms3_addTLMConnection(lua_State *L)
   const char* crefB = lua_tostring(L, 2);
   double delay = lua_tonumber(L, 3);
   double alpha = lua_tonumber(L, 4);
-  double impedance = lua_tonumber(L, 5);
-  double impedancerot = lua_tonumber(L, 6);
-  oms_status_enu_t status = oms3_addTLMConnection(crefA, crefB, delay, alpha, impedance, impedancerot);
+  double linearimpedance = lua_tonumber(L, 5);
+  double angularimpedance = lua_tonumber(L, 6);
+  oms_status_enu_t status = oms3_addTLMConnection(crefA, crefB, delay, alpha, linearimpedance, angularimpedance);
 
   lua_pushinteger(L, status);
 

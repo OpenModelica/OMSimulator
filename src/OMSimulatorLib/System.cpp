@@ -506,10 +506,10 @@ oms_status_enu_t oms3::System::importFromSSD(const pugi::xml_node& node)
               oms3::ComRef connector2(itTLMConnection->attribute("endConnector").as_string());
               double delay = itTLMConnection->attribute("delay").as_double();
               double alpha = itTLMConnection->attribute("alpha").as_double();
-              double impedance = itTLMConnection->attribute("impedance").as_double();
-              double impedancerot = itTLMConnection->attribute("impedancerot").as_double();
+              double linearimpedance = itTLMConnection->attribute("linearimpedance").as_double();
+              double angularimpedance = itTLMConnection->attribute("angularimpedance").as_double();
 
-              addTLMConnection(element1+connector1, element2+connector2, delay, alpha, impedance, impedancerot);
+              addTLMConnection(element1+connector1, element2+connector2, delay, alpha, linearimpedance, angularimpedance);
             }
           }
         }
@@ -706,7 +706,7 @@ oms_status_enu_t oms3::System::addConnection(const oms3::ComRef &crefA, const om
   return logError("Connector(s) not found in system");
 }
 
-oms_status_enu_t oms3::System::addTLMConnection(const oms3::ComRef &crefA, const oms3::ComRef &crefB, double delay, double alpha, double impedance, double impedancerot)
+oms_status_enu_t oms3::System::addTLMConnection(const oms3::ComRef &crefA, const oms3::ComRef &crefB, double delay, double alpha, double linearimpedance, double angularimpedance)
 {
   oms3::ComRef tailA(crefA);
   oms3::ComRef headA = tailA.pop_front();
@@ -718,7 +718,7 @@ oms_status_enu_t oms3::System::addTLMConnection(const oms3::ComRef &crefA, const
   if(headA == headB) {
     auto subsystem = subsystems.find(headA);
     if(subsystem != subsystems.end()) {
-      return subsystem->second->addTLMConnection(tailA,tailB,delay,alpha,impedance,impedancerot);
+      return subsystem->second->addTLMConnection(tailA,tailB,delay,alpha,linearimpedance,angularimpedance);
     }
   }
 
@@ -732,7 +732,7 @@ oms_status_enu_t oms3::System::addTLMConnection(const oms3::ComRef &crefA, const
   if(busA && busB) {
     //Create bus connection
     connections.back() = new oms3::Connection(crefA,crefB,oms3_connection_tlm);
-    connections.back()->setTLMParameters(delay,alpha,impedance,impedancerot);
+    connections.back()->setTLMParameters(delay,alpha,linearimpedance,angularimpedance);
     connections.push_back(NULL);
     return oms_status_ok;
   }

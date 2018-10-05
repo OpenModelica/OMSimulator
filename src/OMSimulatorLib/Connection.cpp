@@ -130,8 +130,8 @@ oms_status_enu_t oms3::Connection::exportToSSD(pugi::xml_node &root) const
   if(type == oms3_connection_tlm) {
     node.append_attribute("delay") = std::to_string(tlmparameters->delay).c_str();
     node.append_attribute("alpha") = std::to_string(tlmparameters->alpha).c_str();
-    node.append_attribute("impedance") = std::to_string(tlmparameters->impedance).c_str();
-    node.append_attribute("impedancerot") = std::to_string(tlmparameters->impedancerot).c_str();
+    node.append_attribute("linearimpedance") = std::to_string(tlmparameters->linearimpedance).c_str();
+    node.append_attribute("angularimpedance") = std::to_string(tlmparameters->angularimpedance).c_str();
   }
 
   getGeometry()->exportToSSD(node);
@@ -148,15 +148,15 @@ void oms3::Connection::setGeometry(const oms2::ssd::ConnectionGeometry* newGeome
   this->geometry = reinterpret_cast<ssd_connection_geometry_t*>(geometry_);
 }
 
-void oms3::Connection::setTLMParameters(double delay, double alpha, double impedance, double impedancerot)
+void oms3::Connection::setTLMParameters(double delay, double alpha, double linearimpedance, double angualrimpedance)
 {
   if(!tlmparameters)
     tlmparameters = new oms3_tlm_connection_parameters_t;
 
   tlmparameters->delay = delay;
   tlmparameters->alpha = alpha;
-  tlmparameters->impedance = impedance;
-  tlmparameters->impedancerot = impedancerot;
+  tlmparameters->linearimpedance = linearimpedance;
+  tlmparameters->angularimpedance = angualrimpedance;
 }
 
 
