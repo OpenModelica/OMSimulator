@@ -70,9 +70,9 @@ oms_status_enu_t oms3::SystemTLM::exportToSSD_SimulationInformation(pugi::xml_no
   pugi::xml_node node_annotations = node_simulation_information.append_child(oms2::ssd::ssd_annotations);
 
   pugi::xml_node node_annotation = node_annotations.append_child(oms2::ssd::ssd_annotation);
-  node_annotation.append_attribute("type") = "org.openmodelica";
+  node_annotation.append_attribute("type") = oms::annotation_type;
 
-  pugi::xml_node node_tlm = node_annotation.append_child("tlm:Master");
+  pugi::xml_node node_tlm = node_annotation.append_child(oms::tlm_master);
   //node_tlm.append_attribute("ip") = ;
   //node_tlm.append_attribute("managerport") = ;
   //node_tlm.append_attribute("monitorport") = ;
