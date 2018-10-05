@@ -706,6 +706,35 @@ oms_status_enu_t oms3::System::addConnection(const oms3::ComRef &crefA, const om
   return logError("Connector(s) not found in system");
 }
 
+oms_status_enu_t oms3::System::updateConnection(const oms3::ComRef &crefA, const oms3::ComRef &crefB, const oms3_connection_t* connection)
+{
+  oms3::ComRef tailA(crefA);
+  oms3::ComRef headA = tailA.pop_front();
+
+  oms3::ComRef tailB(crefB);
+  oms3::ComRef headB = tailB.pop_front();
+
+  //If both A and B references the same subsystem, recurse into that subsystem
+  if(headA == headB) {
+    auto subsystem = subsystems.find(headA);
+    if(subsystem != subsystems.end()) {
+      return subsystem->second->updateConnection(tailA, tailB, connection);
+    }
+  }
+
+  for(auto &connection_ : connections) {
+    if (connection_
+        && connection_->getSignalA() == crefA
+        && connection_->getSignalB() == crefB)
+    {
+      *connection_ = *(reinterpret_cast<const oms3::Connection*>(connection));
+      return oms_status_ok;
+    }
+  }
+
+  return logError("Connection not found in system");
+}
+
 oms_status_enu_t oms3::System::addTLMConnection(const oms3::ComRef &crefA, const oms3::ComRef &crefB, double delay, double alpha, double linearimpedance, double angularimpedance)
 {
   oms3::ComRef tailA(crefA);
