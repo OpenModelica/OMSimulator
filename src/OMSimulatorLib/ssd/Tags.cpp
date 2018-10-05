@@ -31,6 +31,15 @@
 
 #include "Tags.h"
 
+const char* oms::annotation_type                        = "org.openmodelica";
+const char* oms::tlm_master                             = "oms:TlmMaster";
+const char* oms::bus                                    = "oms:Bus";
+const char* oms::signals                                = "oms:Signals";
+const char* oms::signal                                 = "oms:Signal";
+const char* oms::bus_connections                        = "oms:Connections";
+const char* oms::bus_connection                         = "oms:Connection";
+const char* oms::external_model                         = "oms:ExternalModel";
+
 const char* oms2::ssd::ssd_annotation                   = "ssd:Annotation";
 const char* oms2::ssd::ssd_annotations                  = "ssd:Annotations";
 const char* oms2::ssd::ssd_component                    = "ssd:Component";

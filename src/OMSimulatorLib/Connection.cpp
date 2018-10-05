@@ -110,11 +110,8 @@ oms_status_enu_t oms3::Connection::exportToSSD(pugi::xml_node &root) const
   if(type == oms3_connection_single) {
     node = root.append_child(oms2::ssd::ssd_connection);
   }
-  else if(type == oms3_connection_bus) {
-    node = root.append_child("OMSimulator:BusConnection");
-  }
-  else if(type == oms3_connection_tlm) {
-    node = root.append_child("OMSimulator:TLMBusConnection");
+  else if(type == oms3_connection_bus || type == oms3_connection_tlm) {
+    node = root.append_child(oms::bus_connection);
   }
 
   ComRef startConnectorRef(conA);

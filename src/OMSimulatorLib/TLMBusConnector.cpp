@@ -1,5 +1,6 @@
 #include "TLMBusConnector.h"
 #include "Logging.h"
+#include "ssd/Tags.h"
 #include <iostream>
 #include <cstring>
 #include <algorithm>
@@ -27,7 +28,7 @@ oms3::TLMBusConnector::~TLMBusConnector()
 
 oms_status_enu_t oms3::TLMBusConnector::exportToSSD(pugi::xml_node &root) const
 {
-  pugi::xml_node bus_node = root.append_child("OMSimulator:Bus");
+  pugi::xml_node bus_node = root.append_child(oms::bus);
   bus_node.append_attribute("name") = name;
   bus_node.append_attribute("type") = "tlm";
   bus_node.append_attribute("domain") = domain;
@@ -39,9 +40,9 @@ oms_status_enu_t oms3::TLMBusConnector::exportToSSD(pugi::xml_node &root) const
   else if(interpolation == oms_tlm_fine_grained)
     bus_node.append_attribute("interpolation") = "finegrained";
 
-  pugi::xml_node signals_node = bus_node.append_child("Signals");
+  pugi::xml_node signals_node = bus_node.append_child(oms::signals);
   for(auto& connector : connectors) {
-    pugi::xml_node signal_node = signals_node.append_child("Signal");
+    pugi::xml_node signal_node = signals_node.append_child(oms::signal);
     signal_node.append_attribute("name") = connector.first.c_str();
     signal_node.append_attribute("type") = connector.second.c_str();
   }
