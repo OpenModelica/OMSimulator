@@ -153,7 +153,7 @@ void oms3::TLMBusConnector::updateVariableTypes()
                      "A11","A12","A13","A21","A22","A23","A31","A32","A33",
                      "flow1", "flow2", "flow3", "flow4", "flow5", "flow6",
                      "wave1", "wave2", "wave3", "wave4", "wave5", "wave6",
-                     "impedance1", "impedance2"};
+                     "linearimpedance", "angularimpedance"};
   }
   else if(dimensions == 3 && interpolation == oms_tlm_fine_grained) {
     variableTypes = { "state1", "state2", "state3",
@@ -169,6 +169,7 @@ void oms3::TLMBusConnector::updateVariableTypes()
                      "wave8_1",  "wave8_2",  "wave8_3",  "wave8_4",  "wave8_5",  "wave8_6",
                      "wave9_1",  "wave9_2",  "wave9_3",  "wave9_4",  "wave9_5",  "wave9_6",
                      "wave10_1", "wave10_2", "wave10_3", "wave10_4", "wave10_5", "wave10_6",
-                     "impedance1", "impedance2"};
+                      "time1", "time2", "time3", "time4", "time5", "time6", "time7", "time8", "time9", "time10",
+                     "linearimpedance", "angularimpedance"};
   }
 }
