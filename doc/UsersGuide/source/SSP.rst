@@ -174,3 +174,232 @@ The example below shows a TLM system containing two weakly coupled systems, ``wc
       </ssd:Annotation>
     </ssd:Annotations>
   </ssd:System>
+
+
+.. index::SSP; TLM Connector Types
+
+Depending on the type of TLM bus connector (dimension, domain and interpolation), connectors need to be assigned to different tlm variable types. Below is the complete list of supported TLM bus types and their respective connectors.
+
+**1D signal**
+
+=============  ==============
+  tlmType       causality  
+=============  ==============
+ ``"value"``    input/output
+=============  ==============
+
+**1D physical (no interpolation)**
+
+==============  ==============
+  tlmType         causality 
+==============  ==============
+ ``"state"``        output
+ ``"flow"``         output
+ ``"effort"``       input
+==============  ==============
+
+**1D physical (coarse-grained interpolation)**
+
+================  ==============
+  tlmType         causality 
+================  ==============
+ ``"state"``        output
+ ``"flow"``         output
+ ``"wave"``         input
+ ``"impedance"``    input
+================  ==============
+
+**1D physical (fine-grained interpolation)**
+
+================  ==============
+  tlmType         causality 
+================  ==============
+ ``"state"``        output
+ ``"flow"``         output
+ ``"wave1"``        input
+ ``"wave2"``        input
+ ``"wave3"``        input
+ ``"wave4"``        input
+ ``"wave5"``        input
+ ``"wave6"``        input
+ ``"wave7"``        input
+ ``"wave8"``        input
+ ``"wave9"``        input
+ ``"wave10"``       input
+ ``"time1"``        input
+ ``"time2"``        input
+ ``"time3"``        input
+ ``"time4"``        input
+ ``"time5"``        input
+ ``"time6"``        input
+ ``"time7"``        input
+ ``"time8"``        input
+ ``"time9"``        input
+ ``"time10"``       input
+ ``"impedance"``    input
+================  ==============
+
+**3D physical (no interpolation)**
+
+==================  ==============
+  tlmType             causality 
+==================  ==============
+``"state1"``          output
+``"state2"``          output
+``"state3"``          output
+``"A11"``             output
+``"A12"``             output
+``"A13"``             output
+``"A21"``             output
+``"A22"``             output
+``"A23"``             output
+``"A31"``             output
+``"A32"``             output
+``"A33"``             output
+``"flow1"``           output
+``"flow2"``           output
+``"flow3"``           output
+``"flow4"``           output
+``"flow5"``           output
+``"flow6"``           output
+``"effort1"``         input
+``"effort2"``         input
+``"effort3"``         input
+``"effort4"``         input
+``"effort5"``         input
+``"effort6"``         input
+==================  ==============
+
+ 
+
+
+**3D physical (coarse-grained interpolation)**
+
+======================  ==============
+  tlmType                causality 
+======================  ==============
+``"state1"``              output
+``"state2"``              output
+``"state3"``              output
+``"A11"``                 output
+``"A12"``                 output
+``"A13"``                 output
+``"A21"``                 output
+``"A22"``                 output
+``"A23"``                 output
+``"A31"``                 output
+``"A32"``                 output
+``"A33"``                 output
+``"flow1"``               output
+``"flow2"``               output
+``"flow3"``               output
+``"flow4"``               output
+``"flow5"``               output
+``"flow6"``               output
+``"wave1"``               input
+``"wave2"``               input
+``"wave3"``               input
+``"wave4"``               input
+``"wave5"``               input
+``"wave6"``               input
+``"linearimpedance"``     input
+``"angularimpedance"``    input
+======================  ==============
+
+**3D physical (fine-grained interpolation)**
+
+======================  ==============
+  tlmType                causality 
+======================  ==============
+``"state1"``              output
+``"state2"``              output
+``"state3"``              output
+``"A11"``                 output
+``"A12"``                 output
+``"A13"``                 output
+``"A21"``                 output
+``"A22"``                 output
+``"A23"``                 output
+``"A31"``                 output
+``"A32"``                 output
+``"A33"``                 output
+``"flow1"``               output
+``"flow2"``               output
+``"flow3"``               output
+``"flow4"``               output
+``"flow5"``               output
+``"flow6"``               output
+``"wave1_1"``             input
+``"wave1_2"``             input
+``"wave1_3"``             input
+``"wave1_4"``             input
+``"wave1_5"``             input
+``"wave1_6"``             input
+``"wave2_1"``             input
+``"wave2_2"``             input
+``"wave2_3"``             input
+``"wave2_4"``             input
+``"wave2_5"``             input
+``"wave2_6"``             input
+``"wave3_1"``             input
+``"wave3_2"``             input
+``"wave3_3"``             input
+``"wave3_4"``             input
+``"wave3_5"``             input
+``"wave3_6"``             input
+``"wave4_1"``             input
+``"wave4_2"``             input
+``"wave4_3"``             input
+``"wave4_4"``             input
+``"wave4_5"``             input
+``"wave4_6"``             input
+``"wave5_1"``             input
+``"wave5_2"``             input
+``"wave5_3"``             input
+``"wave5_4"``             input
+``"wave5_5"``             input
+``"wave5_6"``             input
+``"wave6_1"``             input
+``"wave6_2"``             input
+``"wave6_3"``             input
+``"wave6_4"``             input
+``"wave6_5"``             input
+``"wave6_6"``             input
+``"wave7_1"``             input
+``"wave7_2"``             input
+``"wave7_3"``             input
+``"wave7_4"``             input
+``"wave7_5"``             input
+``"wave7_6"``             input
+``"wave8_1"``             input
+``"wave8_2"``             input
+``"wave8_3"``             input
+``"wave8_4"``             input
+``"wave8_5"``             input
+``"wave8_6"``             input
+``"wave9_1"``             input
+``"wave9_2"``             input
+``"wave9_3"``             input
+``"wave9_4"``             input
+``"wave9_5"``             input
+``"wave9_6"``             input
+``"wave10_1"``            input
+``"wave10_2"``            input
+``"wave10_3"``            input
+``"wave10_4"``            input
+``"wave10_5"``            input
+``"wave10_6"``            input
+``"time1"``               input
+``"time2"``               input
+``"time3"``               input
+``"time4"``               input
+``"time5"``               input
+``"time6"``               input
+``"time7"``               input
+``"time8"``               input
+``"time9"``               input
+``"time10"``              input
+``"linearimpedance"``     input
+``"angularimpedance"``    input
+======================  ==============
+
