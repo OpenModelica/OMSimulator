@@ -1220,7 +1220,7 @@ oms_status_enu_t oms2::FMICompositeModel::simulateTLM(double stopTime, double lo
   while (time < stopTime)
   {
     logDebug("doStep: " + std::to_string(time) + " -> " + std::to_string(time+communicationInterval));
-
+    clock.tic();
     time += communicationInterval;
     if (time > stopTime)
       time = stopTime;
@@ -1243,6 +1243,7 @@ oms_status_enu_t oms2::FMICompositeModel::simulateTLM(double stopTime, double lo
     }
     else
       updateInputs(outputsGraph);
+    clock.toc();
   }
 
   finalizeTLMSockets();
