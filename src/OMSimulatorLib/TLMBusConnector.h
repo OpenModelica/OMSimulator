@@ -16,6 +16,77 @@
 
 namespace oms3
 {
+typedef struct  {
+    int y = 0;
+} oms_tlm_sigrefs_signal_t;
+
+typedef struct  {
+    int x = 0;
+    int v = 1;
+    int f = 2;
+} oms_tlm_sigrefs_1d_t;
+
+typedef struct  {
+    int x = 0;
+    int v = 1;
+    int c = 2;
+    int Z = 3;
+} oms_tlm_sigrefs_1d_cg_t;
+
+typedef struct  {
+    int x = 0;
+    int v = 1;
+    std::vector<int> c = {2,3,4,5,6,7,8,9,10,11};
+    std::vector<int> t = {12,13,14,15,16,17,18,19,20,21};
+    int Z = 22;
+} oms_tlm_sigrefs_1d_fg_t;
+
+typedef struct  {
+    std::vector<int> x   = {0,1};
+    std::vector<int> phi = {2};
+    std::vector<int> v   = {3,4};
+    std::vector<int> w   = {5};
+    std::vector<int> f   = {6,7,8};
+} oms_tlm_sigrefs_2d_t;
+
+typedef struct  {
+    std::vector<int> x = {0,1,2};
+    std::vector<int> A = {3,4,5,6,7,8,9,10,11};
+    std::vector<int> v = {12,13,14};
+    std::vector<int> w = {15,16,17};
+    std::vector<int> f = {18,19,20,21,22,23};
+} oms_tlm_sigrefs_3d_t;
+
+typedef struct  {
+    std::vector<int> x = {0,1,2};
+    std::vector<int> A = {3,4,5,6,7,8,9,10,11};
+    std::vector<int> v = {12,13,14};
+    std::vector<int> w = {15,16,17};
+    std::vector<int> c = {18,19,20,21,22,23};
+    int Zt = 24;
+    int Zr = 25;
+} oms_tlm_sigrefs_3d_cg_t;
+
+typedef struct  {
+    std::vector<int> x =  {0,1,2};
+    std::vector<int> A =  {3,4,5,6,7,8,9,10,11};
+    std::vector<int> v =  {12,13,14};
+    std::vector<int> w =  {15,16,17};
+    std::vector< std::vector<int> > c = { {18,28,38,48,58,68},
+                                          {19,29,39,49,59,69},
+                                          {20,30,40,50,60,70},
+                                          {21,31,41,51,61,71},
+                                          {22,32,42,52,62,72},
+                                          {23,33,43,53,63,73},
+                                          {24,34,44,54,64,74},
+                                          {25,35,45,55,65,75},
+                                          {26,36,46,56,66,76},
+                                          {27,37,47,57,67,77} };
+    std::vector<int> t = { 78,79,80,81,82,83,84,85,86,87};
+    int Zt = 88;
+    int Zr = 89;
+} oms_tlm_sigrefs_3d_fg_t;
+
   /**
    * \brief TLMBusConnector
    */
@@ -42,14 +113,18 @@ namespace oms3
     const oms2::ssd::ConnectorGeometry* getGeometry() const {return reinterpret_cast<oms2::ssd::ConnectorGeometry*>(geometry);}
 
     oms_status_enu_t addConnector(const oms3::ComRef& cref, std::string vartype);
+    void sortConnectors();
+    int getId() const {return id;}
 
   private:
     void updateVariableTypes();
 
     oms_causality_enu_t causality;
-
-    std::map<oms3::ComRef, std::string> connectors;
+    std::map<std::string, oms3::ComRef> connectors;
+    std::vector<oms3::ComRef> sortedConnectors;
     std::vector<std::string> variableTypes; //Used to keep track of TLM variable types
+
+    int id;
   };
 }
 

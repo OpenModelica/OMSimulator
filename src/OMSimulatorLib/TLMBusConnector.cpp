@@ -50,8 +50,8 @@ oms_status_enu_t oms3::TLMBusConnector::exportToSSD(pugi::xml_node &root) const
   pugi::xml_node signals_node = bus_node.append_child(oms::signals);
   for(auto& connector : connectors) {
     pugi::xml_node signal_node = signals_node.append_child(oms::signal);
-    signal_node.append_attribute("name") = connector.first.c_str();
-    signal_node.append_attribute("type") = connector.second.c_str();
+    signal_node.append_attribute("name") = connector.second.c_str();
+    signal_node.append_attribute("type") = connector.first.c_str();
   }
 
   if (this->geometry)
@@ -128,9 +128,24 @@ oms_status_enu_t oms3::TLMBusConnector::addConnector(const oms3::ComRef &cref, s
   if(std::find(variableTypes.begin(), variableTypes.end(), vartype) == variableTypes.end())
     return logError("Unknown TLM variable type: "+vartype);
 
-  connectors[cref] = vartype;
+  oms3::ComRef tempRef = cref;
+  connectors.insert(std::make_pair(vartype, tempRef));
+
+  sortConnectors();
+
   return oms_status_ok;
 }
+
+void oms3::TLMBusConnector::sortConnectors()
+{
+  if(variableTypes.size() == connectors.size()) {
+    for(const std::string& type : variableTypes) {
+      oms3::ComRef name = connectors.find(type)->second;
+      sortedConnectors.push_back(std::string(name));
+    }
+  }
+}
+
 
 void oms3::TLMBusConnector::updateVariableTypes()
 {
