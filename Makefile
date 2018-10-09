@@ -127,7 +127,7 @@ else
 	CMAKE_BOOST_ROOT="-DBOOST_ROOT=$(BOOST_ROOT)"
 endif
 
-.PHONY: OMSimulator OMSimulatorCore config-OMSimulator config-fmil config-lua config-cvode config-kinsol config-gflags config-glog config-ceres-solver config-3rdParty distclean testsuite doc doc-html doc-doxygen OMTLMSimulator OMTLMSimulatorClean RegEx
+.PHONY: OMSimulator OMSimulatorCore config-OMSimulator config-fmil config-lua config-zlib config-cvode config-kinsol config-gflags config-glog config-ceres-solver config-3rdParty distclean testsuite doc doc-html doc-doxygen OMTLMSimulator OMTLMSimulatorClean RegEx
 
 OMSimulator:
 	@echo OS: $(detected_OS)
@@ -186,7 +186,7 @@ RegEx: 3rdParty/RegEx/OMSRegEx$(EEXT)
 3rdParty/RegEx/OMSRegEx$(EEXT): 3rdParty/RegEx/RegEx.h 3rdParty/RegEx/OMSRegEx.cpp
 	$(MAKE) -C 3rdParty/RegEx
 
-config-3rdParty: config-fmil config-lua config-cvode config-kinsol config-ceres-solver config-libxml2
+config-3rdParty: config-fmil config-lua config-zlib config-cvode config-kinsol config-ceres-solver config-libxml2
 
 config-OMSimulator: RegEx
 	@echo
@@ -212,6 +212,17 @@ config-lua:
 	@echo
 	$(RM) 3rdParty/Lua/$(INSTALL_DIR)
 	$(MAKE) -C 3rdParty/Lua $(LUA_EXTRA_FLAGS)
+
+config-zlib:
+	@echo
+	@echo "# config zlib"
+	@echo
+	$(RM) 3rdParty/zlib/$(BUILD_DIR)
+	$(RM) 3rdParty/zlib/$(INSTALL_DIR)
+	$(MKDIR) 3rdParty/zlib/$(BUILD_DIR)/zlib
+	cd 3rdParty/zlib/$(BUILD_DIR)/zlib && $(CMAKE) $(CMAKE_TARGET) ../../../zlib-1.2.11 -DCMAKE_INSTALL_PREFIX=../../../$(INSTALL_DIR) && $(MAKE) install
+	$(MKDIR) 3rdParty/zlib/$(BUILD_DIR)/minizip
+	cd 3rdParty/zlib/$(BUILD_DIR)/minizip && $(CMAKE) $(CMAKE_TARGET) ../../../minizip -DCMAKE_INSTALL_PREFIX=../../../$(INSTALL_DIR) && $(MAKE) install
 
 config-cvode:
 	@echo
