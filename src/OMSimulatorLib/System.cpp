@@ -40,6 +40,8 @@
 #include "Types.h"
 #include "ssd/Tags.h"
 
+#include <sstream>
+
 oms3::System::System(const oms3::ComRef& cref, oms_system_enu_t type, oms3::Model* parentModel, oms3::System* parentSystem)
   : element(oms_element_system, cref), cref(cref), type(type), parentModel(parentModel), parentSystem(parentSystem)
 {
@@ -342,6 +344,48 @@ oms_status_enu_t oms3::System::importFromSSD(const pugi::xml_node& node)
           crefB = crefB + endConnector;
         if (oms_status_ok != addConnection(crefA, crefB))
           return logError("Failed to import " + std::string(oms2::ssd::ssd_connector));
+        else
+        {
+          // Load connection geometry
+          pugi::xml_node connectionGeometryNode = itConnectors->child(oms2::ssd::ssd_connection_geometry);
+          if (connectionGeometryNode)
+          {
+            oms3::Connection *connection = getConnection(crefA, crefB);
+            if (connection)
+            {
+              oms2::ssd::ConnectionGeometry geometry;
+              std::string pointsXStr = connectionGeometryNode.attribute("pointsX").as_string();
+              std::istringstream pointsXStream(pointsXStr);
+              std::vector<std::string> pointsXVector(std::istream_iterator<std::string>{pointsXStream}, std::istream_iterator<std::string>());
+
+              std::string pointsYStr = connectionGeometryNode.attribute("pointsY").as_string();
+              std::istringstream pointsYStream(pointsYStr);
+              std::vector<std::string> pointsYVector(std::istream_iterator<std::string>{pointsYStream}, std::istream_iterator<std::string>());
+
+              if (pointsXVector.size() != pointsYVector.size()) {
+                return logError("wrong xml schema detected: " + name);
+              }
+
+              double* pointsX = new double[pointsXVector.size()];
+              int i = 0;
+              for (auto &px : pointsXVector) {
+                pointsX[i++] = std::atof(px.c_str());
+              }
+
+              double* pointsY = new double[pointsYVector.size()];
+              i = 0;
+              for (auto &py : pointsYVector) {
+                pointsY[i++] = std::atof(py.c_str());
+              }
+
+              geometry.setPoints(pointsXVector.size(), pointsX, pointsY);
+              connection->setGeometry(&geometry);
+
+              delete[] pointsX;
+              delete[] pointsY;
+            }
+          }
+        }
       }
     }
     else if(name == oms2::ssd::ssd_connectors)
@@ -722,14 +766,10 @@ oms_status_enu_t oms3::System::updateConnection(const oms3::ComRef &crefA, const
     }
   }
 
-  for(auto &connection_ : connections) {
-    if (connection_
-        && connection_->getSignalA() == crefA
-        && connection_->getSignalB() == crefB)
-    {
-      *connection_ = *(reinterpret_cast<const oms3::Connection*>(connection));
-      return oms_status_ok;
-    }
+  oms3::Connection *connection_ = getConnection(crefA, crefB);
+  if (connection_) {
+    *connection_ = *(reinterpret_cast<const oms3::Connection*>(connection));
+    return oms_status_ok;
   }
 
   return logError("Connection not found in system");
@@ -972,4 +1012,14 @@ oms_status_enu_t oms3::System::setTLMBusGeometry(const oms3::ComRef &cref, const
     return oms_status_ok;
   }
   return logError("TLM Bus "+std::string(cref)+" not found in system "+std::string(getName()));
+}
+
+oms3::Connection* oms3::System::getConnection(const oms3::ComRef& crefA, const oms3::ComRef& crefB)
+{
+  for (auto &connection : connections) {
+    if (connection && connection->getSignalA() == crefA && connection->getSignalB() == crefB) {
+      return connection;
+    }
+  }
+  return NULL;
 }
