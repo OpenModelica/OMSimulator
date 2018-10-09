@@ -109,6 +109,8 @@ namespace oms3
     std::vector<oms3::BusConnector*> busconnectors;
     std::vector<oms3::TLMBusConnector*> tlmbusconnectors;
     std::vector<oms3::Connection*> connections; ///< last element is always NULL
+
+    oms3::Connection* getConnection(const oms3::ComRef& crefA, const oms3::ComRef& crefB);
   };
 }
 
