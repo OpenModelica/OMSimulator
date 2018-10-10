@@ -169,7 +169,7 @@ oms_status_enu_t oms2::ExternalModel::getRealParameter(const std::string &var, d
 }
 
 oms2::ExternalModel::ExternalModel(const oms2::ComRef &cref, const std::string &filename, const std::string &startScript)
-  : element(oms_component_external, cref)
+  : element(oms_component_external_old, cref)
 {
   logTrace();
 
@@ -188,7 +188,7 @@ oms2::ExternalModel::ExternalModel(const oms2::ComRef &cref, const std::string &
 //  geometry.y2 = rhs.getGeometry()->y2;
 //  component.name() = rhs.getName();
 
-//  component.type = oms_component_external;
+//  component.type = oms_component_external_old;
 //  component.interfaces = NULL;
 
 //  this->filename = filename;
@@ -204,7 +204,7 @@ oms2::ExternalModel::ExternalModel(const oms2::ComRef &cref, const std::string &
 //  geometry.y2 = rhs.getGeometry()->y2;
 //  component.name() = rhs.getName();
 
-//  component.type = oms_component_external;
+//  component.type = oms_component_external_old;
 //  component.interfaces = NULL;
 
 //  this->filename = filename;
@@ -224,7 +224,7 @@ oms2::ExternalModel::ExternalModel(const oms2::ComRef &cref, const std::string &
 //  geometry.y2 = rhs.getGeometry()->y2;
 //  component.name() = rhs.getName();
 
-//  component.type = oms_component_external;
+//  component.type = oms_component_external_old;
 //  component.interfaces = NULL;
 
 //  this->filename = filename;

@@ -188,12 +188,12 @@ void oms2::Element::describe()
 
   switch(getType())
   {
-    case oms_component_none:
+    case oms_component_none_old:
     case oms_component_tlm:      std::cout << "type: TLM model" << std::endl; break;
     case oms_component_fmi:      std::cout << "type: FMI model" << std::endl; break;
-    case oms_component_external: std::cout << "type: External model" << std::endl; break;
-    case oms_component_fmu:      std::cout << "type: FMU" << std::endl; break;
-    case oms_component_table:    std::cout << "type: lookup table" << std::endl; break;
+    case oms_component_external_old: std::cout << "type: External model" << std::endl; break;
+    case oms_component_fmu_old:      std::cout << "type: FMU" << std::endl; break;
+    case oms_component_table_old:    std::cout << "type: lookup table" << std::endl; break;
     case oms_component_port:     std::cout << "type: port" << std::endl; break;
     default:                     std::cout << "type: unknown" << std::endl; break;
   }

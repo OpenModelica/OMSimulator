@@ -582,6 +582,23 @@ oms_status_enu_t oms3_addExternalModel(const char *cref, const char *path, const
   return system->addExternalModel(tail, path, startscript);
 }
 
+oms_status_enu_t oms3_addSubModel(const char* cref, const char* fmuPath)
+{
+  oms3::ComRef tail(cref);
+  oms3::ComRef front = tail.pop_front();
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  front = tail.pop_front();
+  oms3::System* system = model->getSystem(front);
+  if (!system)
+    return logError_SystemNotInModel(model->getName(), front);
+
+  return system->addSubModel(tail, fmuPath);
+}
+
 /* ************************************ */
 /* OMSimulator 2.0                      */
 /*                                      */
@@ -941,7 +958,7 @@ oms_status_enu_t oms2_getComponentType(const char* ident, oms_element_type_enu_t
     return logError("oms2_getComponentType: type is NULL pointer");
   }
 
-  *type = oms_component_none;
+  *type = oms_component_none_old;
   return logError("oms2_getComponentType: not implemented yet");
 }
 

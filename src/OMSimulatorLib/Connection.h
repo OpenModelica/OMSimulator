@@ -68,6 +68,7 @@ namespace oms3
 
     bool isEqual(const oms3::Connection& connection) const;
     bool isEqual(const oms3::ComRef& signalA, const oms3::ComRef& signalB) const;
+    bool containsSignal(const oms3::ComRef& signal);
 
   private:
     friend bool operator==(const Connection& lhs, const Connection& rhs);

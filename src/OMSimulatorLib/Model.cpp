@@ -37,6 +37,7 @@
 #include "System.h"
 
 #include <OMSBoost.h>
+#include <minizip.h>
 
 /* ************************************ */
 /* oms3                                 */
@@ -70,7 +71,7 @@ oms3::Model* oms3::Model::NewModel(const oms3::ComRef& cref)
     return NULL;
   }
 
-  std::string tempDir = (boost::filesystem::path(Scope::GetInstance().getTempDirectory().c_str()) / oms_unique_path(std::string(cref))).string();
+  boost::filesystem::path tempDir = (boost::filesystem::path(Scope::GetInstance().getTempDirectory().c_str()) / oms_unique_path(std::string(cref))).string();
   if (boost::filesystem::is_directory(tempDir))
   {
     logError("Unique temp directory does already exist. Clean up the temp directory \"" + Scope::GetInstance().getTempDirectory() + "\" and try again.");
@@ -81,8 +82,18 @@ oms3::Model* oms3::Model::NewModel(const oms3::ComRef& cref)
     logError("Failed to create unique temp directory for the model \"" + std::string(cref) + "\"");
     return NULL;
   }
+  if (!boost::filesystem::create_directory(tempDir / "temp"))
+  {
+    logError("Failed to create temp directory for the model \"" + std::string(cref) + "\"");
+    return NULL;
+  }
+  if (!boost::filesystem::create_directory(tempDir / "resources"))
+  {
+    logError("Failed to create resources directory for the model \"" + std::string(cref) + "\"");
+    return NULL;
+  }
 
-  oms3::Model* model = new oms3::Model(cref, tempDir);
+  oms3::Model* model = new oms3::Model(cref, tempDir.string());
   return model;
 }
 
@@ -236,6 +247,13 @@ oms_status_enu_t oms3::Model::exportToFile(const std::string& filename) const
 {
   pugi::xml_document doc;
 
+  std::string extension = "";
+  if (filename.length() > 5)
+    extension = filename.substr(filename.length() - 4);
+
+  if (extension != ".ssp")
+    return logError("filename extension must be \".ssp\"; no other formats are supported");
+
   // generate XML declaration
   pugi::xml_node declarationNode = doc.append_child(pugi::node_declaration);
   declarationNode.append_attribute("version") = "1.0";
@@ -244,9 +262,47 @@ oms_status_enu_t oms3::Model::exportToFile(const std::string& filename) const
   pugi::xml_node node = doc.append_child(oms2::ssd::ssd_system_structure_description);
   exportToSSD(node);
 
-  if (!doc.save_file(filename.c_str()))
-    return logError("xml export failed for \"" + filename + "\" (model \"" + std::string(this->getName()) + "\")");
+  boost::filesystem::path ssdPath = boost::filesystem::path(tempDir) / "SystemStructure.ssd";
+  if (!doc.save_file(ssdPath.string().c_str()))
+    return logError("failed to export \"" + ssdPath.string() + "\" (for model \"" + std::string(this->getName()) + "\")");
 
+  // Usage: minizip [-o] [-a] [-0 to -9] [-p password] [-j] file.zip [files_to_add]
+  //        -o  Overwrite existing file.zip
+  //        -a  Append to existing file.zip
+  //        -0  Store only
+  //        -1  Compress faster
+  //        -9  Compress better
+  //        -j  exclude path. store only the file name
+  std::vector<std::string> resources;
+  if (oms_status_ok != getAllResources(resources))
+    return logError("failed to gather all resources");
+
+  std::string cd = Scope::GetInstance().getWorkingDirectory();
+  Scope::GetInstance().setWorkingDirectory(tempDir);
+  int argc = 4 + resources.size();
+  char **argv = new char*[argc];
+  int i=0;
+  argv[i++]="minizip";
+  argv[i++]="-o";
+  argv[i++]="-1";
+  argv[i++]="temp/model.ssp";
+  for (const auto& file : resources)
+    argv[i++]=(char*)file.c_str();
+  minizip(argc, argv);
+  delete[] argv;
+  Scope::GetInstance().setWorkingDirectory(cd);
+
+  boost::filesystem::path full_path = boost::filesystem::path(tempDir) / "temp/model.ssp";
+  boost::filesystem::copy_file(full_path, boost::filesystem::path(filename), boost::filesystem::copy_option::overwrite_if_exists);
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::Model::getAllResources(std::vector<std::string>& resources) const
+{
+  resources.push_back("SystemStructure.ssd");
+  if (system)
+    return system->getAllResources(resources);
   return oms_status_ok;
 }
 
@@ -309,7 +365,7 @@ oms2::Model* oms2::Model::NewModel(oms_element_type_enu_t type, const oms2::ComR
 
 oms_status_enu_t oms2::Model::ParseString(const std::string& contents, char** ident)
 {
-  oms_element_type_enu_t modelType = oms_component_none;
+  oms_element_type_enu_t modelType = oms_component_none_old;
   bool defaultExperiment = false;
 
   pugi::xml_document doc;
@@ -325,9 +381,9 @@ oms_status_enu_t oms2::Model::ParseString(const std::string& contents, char** id
   for(pugi::xml_node_iterator it = root.begin(); it != root.end(); ++it)
   {
     std::string name = it->name();
-    if (name == "TLMModel" && modelType == oms_component_none)
+    if (name == "TLMModel" && modelType == oms_component_none_old)
       modelType = oms_component_tlm;
-    else if (name == oms2::ssd::ssd_system && modelType == oms_component_none)
+    else if (name == oms2::ssd::ssd_system && modelType == oms_component_none_old)
       modelType = oms_component_fmi;
     else if (name == oms2::ssd::ssd_default_experiment && !defaultExperiment)
       defaultExperiment = true;
@@ -370,7 +426,7 @@ oms_status_enu_t oms2::Model::ParseString(const std::string& contents, char** id
 
 oms2::Model* oms2::Model::LoadModel(const std::string& filename)
 {
-  oms_element_type_enu_t modelType = oms_component_none;
+  oms_element_type_enu_t modelType = oms_component_none_old;
   bool defaultExperiment = false;
 
   pugi::xml_document doc;
@@ -401,9 +457,9 @@ oms2::Model* oms2::Model::LoadModel(const std::string& filename)
   for(pugi::xml_node_iterator it = root.begin(); it != root.end(); ++it)
   {
     std::string name = it->name();
-    if (name == "TLMModel" && modelType == oms_component_none)
+    if (name == "TLMModel" && modelType == oms_component_none_old)
       modelType = oms_component_tlm;
-    else if (name == oms2::ssd::ssd_system && modelType == oms_component_none)
+    else if (name == oms2::ssd::ssd_system && modelType == oms_component_none_old)
       modelType = oms_component_fmi;
     else if (name == oms2::ssd::ssd_default_experiment && !defaultExperiment)
       defaultExperiment = true;

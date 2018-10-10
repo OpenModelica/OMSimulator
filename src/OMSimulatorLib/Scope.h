@@ -71,14 +71,16 @@ namespace oms3
     Model* getModel(const ComRef& cref);
 
     const std::string& getTempDirectory() const {return GetInstance().tempDir;}
-    const std::string& getWorkingDirectory() const {return GetInstance().workingDir;}
+    std::string getWorkingDirectory();
+
+  protected:
+    static oms_status_enu_t miniunz(const std::string& filename, const std::string& extractdir, bool systemStructure);
 
   private:
     std::vector<Model*> models; ///< last element is always NULL
     std::map<ComRef, unsigned int> models_map;
 
     std::string tempDir;
-    std::string workingDir;
   };
 }
 

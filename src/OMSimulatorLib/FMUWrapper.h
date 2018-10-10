@@ -67,7 +67,7 @@ namespace oms2
 
     oms_status_enu_t exportToSSD(pugi::xml_node& root) const;
 
-    oms_element_type_enu_t getType() const { return oms_component_fmu; }
+    oms_element_type_enu_t getType() const { return oms_component_fmu_old; }
 
     void readFromTLMSockets(double time);
     void writeToTLMSockets(double time);

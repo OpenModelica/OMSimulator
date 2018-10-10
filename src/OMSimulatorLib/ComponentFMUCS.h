@@ -29,44 +29,42 @@
  *
  */
 
-#ifndef _OMS_COMPONENT_H_
-#define _OMS_COMPONENT_H_
+#ifndef _OMS_COMPONENT_FMU_CS_H_
+#define _OMS_COMPONENT_FMU_CS_H_
 
 #include "ComRef.h"
-#include "Types.h"
-#include "Element.h"
+#include "Component.h"
+#include <fmilib.h>
+#include <map>
 #include <pugixml.hpp>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 namespace oms3
 {
   class System;
 
-  class Component
+  class ComponentFMUCS : public Component
   {
   public:
-    virtual ~Component();
+    ~ComponentFMUCS();
 
-    const ComRef& getName() const {return cref;}
-    oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
-    oms3::Element* getElement() {return &element;}
-    oms3::Connector* getConnector(const ComRef &cref);
-    oms_status_enu_t deleteResources();
-    oms_status_enu_t getAllResources(std::vector<std::string>& resources) const {resources.push_back(path); return oms_status_ok;}
+    static Component* NewComponent(const oms3::ComRef& cref, System* parentSystem, const std::string& fmuPath);
 
   protected:
-    Component(const ComRef& cref, oms_component_enu_t type, System* parentSystem, const std::string& path);
+    ComponentFMUCS(const ComRef& cref, System* parentSystem, const std::string& fmuPath);
 
     // stop the compiler generating methods copying the object
-    Component(Component const&);            ///< not implemented
-    Component& operator=(Component const&); ///< not implemented
+    ComponentFMUCS(ComponentFMUCS const& copy);            ///< not implemented
+    ComponentFMUCS& operator=(ComponentFMUCS const& copy); ///< not implemented
 
   private:
-    System* parentSystem;
-    oms3::Element element;
-    oms3::ComRef cref;
-    oms_component_enu_t type;
-    std::string path;
-    std::vector<oms3::Connector*> connectors;
+    jm_callbacks callbacks;
+    fmi2_callback_functions_t callbackFunctions;
+    fmi_import_context_t* context = NULL;
+    fmi2_import_t* fmu = NULL;
+    std::string tempDir;
   };
 }
 

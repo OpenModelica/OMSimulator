@@ -43,7 +43,7 @@ namespace oms3
   class SystemTLM : public System
   {
   public:
-    virtual ~SystemTLM();
+    ~SystemTLM();
 
     static System* NewSystem(const oms3::ComRef& cref, Model* parentModel, System* parentSystem);
     oms_status_enu_t exportToSSD_SimulationInformation(pugi::xml_node& node) const;

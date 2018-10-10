@@ -180,7 +180,16 @@ bool oms3::Connection::isEqual(const oms3::Connection& connection) const
   return isEqual(conA_, conB_);
 }
 
+bool oms3::Connection::containsSignal(const oms3::ComRef& signal)
+{
+  return signal == oms3::ComRef(this->conA) || signal == oms3::ComRef(this->conB);
+}
 
+/* ************************************ */
+/* oms2                                 */
+/*                                      */
+/*                                      */
+/* ************************************ */
 
 oms2::Connection::Connection(const oms2::ComRef& parent, const oms2::SignalRef& conA, const oms2::SignalRef& conB)
 {

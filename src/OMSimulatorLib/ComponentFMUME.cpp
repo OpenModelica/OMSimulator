@@ -29,45 +29,33 @@
  *
  */
 
-#ifndef _OMS_COMPONENT_H_
-#define _OMS_COMPONENT_H_
+#include "ComponentFMUME.h"
 
-#include "ComRef.h"
-#include "Types.h"
-#include "Element.h"
-#include <pugixml.hpp>
+#include "Logging.h"
 
-namespace oms3
+oms3::ComponentFMUME::ComponentFMUME(const ComRef& cref, System* parentSystem, const std::string& fmuPath)
+  : oms3::Component(cref, oms_component_fmu, parentSystem, fmuPath)
 {
-  class System;
-
-  class Component
-  {
-  public:
-    virtual ~Component();
-
-    const ComRef& getName() const {return cref;}
-    oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
-    oms3::Element* getElement() {return &element;}
-    oms3::Connector* getConnector(const ComRef &cref);
-    oms_status_enu_t deleteResources();
-    oms_status_enu_t getAllResources(std::vector<std::string>& resources) const {resources.push_back(path); return oms_status_ok;}
-
-  protected:
-    Component(const ComRef& cref, oms_component_enu_t type, System* parentSystem, const std::string& path);
-
-    // stop the compiler generating methods copying the object
-    Component(Component const&);            ///< not implemented
-    Component& operator=(Component const&); ///< not implemented
-
-  private:
-    System* parentSystem;
-    oms3::Element element;
-    oms3::ComRef cref;
-    oms_component_enu_t type;
-    std::string path;
-    std::vector<oms3::Connector*> connectors;
-  };
 }
 
-#endif
+oms3::ComponentFMUME::~ComponentFMUME()
+{
+}
+
+oms3::Component* oms3::ComponentFMUME::NewComponent(const oms3::ComRef& cref, oms3::System* parentSystem, const std::string& fmuPath)
+{
+  if (!cref.isValidIdent())
+  {
+    logError("\"" + std::string(cref) + "\" is not a valid ident");
+    return NULL;
+  }
+
+  if (!parentSystem)
+  {
+    logError("Internal error");
+    return NULL;
+  }
+
+  Component* component = new ComponentFMUME(cref, parentSystem, fmuPath);
+  return component;
+}

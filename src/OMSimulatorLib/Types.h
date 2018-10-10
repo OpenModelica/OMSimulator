@@ -84,13 +84,13 @@ typedef enum {
 } oms3_element_enu_t;
 
 typedef enum {
-  oms_component_none,
-  oms_component_tlm,      ///< TLM composite model
-  oms_component_fmi,      ///< FMI composite model
-  oms_component_external, ///< External model
-  oms_component_fmu,      ///< FMU
-  oms_component_table,    ///< lookup table
-  oms_component_port      ///< port
+  oms_component_none_old,
+  oms_component_tlm,          ///< TLM composite model
+  oms_component_fmi,          ///< FMI composite model
+  oms_component_external_old, ///< External model
+  oms_component_fmu_old,      ///< FMU
+  oms_component_table_old,    ///< lookup table
+  oms_component_port          ///< port
 } oms_element_type_enu_t;
 
 typedef enum {
@@ -99,6 +99,13 @@ typedef enum {
   oms_system_wc,       ///< Weakly Coupled System
   oms_system_sc        ///< Strongly Coupled System
 } oms_system_enu_t;
+
+typedef enum {
+  oms_component_none,
+  oms_component_fmu,      ///< FMU
+  oms_component_table,    ///< lookup table
+  oms_component_external  ///< External model
+} oms_component_enu_t;
 
 typedef enum {
   oms3_component_external, ///< External model
@@ -374,7 +381,7 @@ typedef struct {
 } oms_connector_t;
 
 /**
- * /brief Bus connector
+ * \brief Bus connector
  */
 typedef struct {
   char* name;
@@ -383,7 +390,7 @@ typedef struct {
 } oms3_busconnector_t;
 
 /**
- * /brief TLM Bus connector
+ * \brief TLM Bus connector
  */
 typedef struct {
   char* name;
@@ -397,13 +404,13 @@ typedef struct {
  * \brief Element (aka ssd:Component)
  */
 typedef struct _oms3_element_t{
-  oms3_element_enu_t type;           ///< Element type, i.e. system or component
-  char* name;                        ///< Name of the element
-  struct _oms3_element_t** elements; ///< List (null-terminated array) of all sub-elements
-  oms_connector_t** connectors;      ///< List (null-terminated array) of all interface variables: inputs, outputs, and parameters.
-  oms3_busconnector_t** busconnectors;  ///< List (null-terminated array) of all bus connectors
+  oms3_element_enu_t type;                    ///< Element type, i.e. system or component
+  char* name;                                 ///< Name of the element
+  struct _oms3_element_t** elements;          ///< List (null-terminated array) of all sub-elements
+  oms_connector_t** connectors;               ///< List (null-terminated array) of all interface variables: inputs, outputs, and parameters.
+  oms3_busconnector_t** busconnectors;        ///< List (null-terminated array) of all bus connectors
   oms3_tlmbusconnector_t** tlmbusconnectors;  ///< List (null-terminated array) of all TLM bus connectors
-  ssd_element_geometry_t* geometry;  ///< Geometry information of the element
+  ssd_element_geometry_t* geometry;           ///< Geometry information of the element
 } oms3_element_t;
 
 typedef struct {

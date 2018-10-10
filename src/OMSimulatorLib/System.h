@@ -63,6 +63,7 @@ namespace oms3
     oms_status_enu_t list(const ComRef& cref, char** contents);
     oms_system_enu_t getType() const {return type;}
     oms_status_enu_t addSubSystem(const oms3::ComRef& cref, oms_system_enu_t type);
+    oms_status_enu_t addSubModel(const oms3::ComRef& cref, const std::string& fmuPath);
     bool validCref(const oms3::ComRef& cref);
     oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
     oms_status_enu_t importFromSSD(const pugi::xml_node& node);
@@ -86,6 +87,9 @@ namespace oms3
     oms_status_enu_t setBusGeometry(const oms3::ComRef& cref, const oms2::ssd::ConnectorGeometry* geometry);
     oms_status_enu_t setTLMBusGeometry(const oms3::ComRef& cref, const oms2::ssd::ConnectorGeometry* geometry);
     oms_status_enu_t addExternalModel(const ComRef &cref, std::string path, std::string startscript);
+    Model* getModel();
+    bool copyResources();
+    oms_status_enu_t getAllResources(std::vector<std::string>& resources);
 
   protected:
     System(const ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem);
