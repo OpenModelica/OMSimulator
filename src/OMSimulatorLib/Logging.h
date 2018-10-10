@@ -106,5 +106,8 @@ private:
 #define logError_ModelNotInScope(cref)             logError("Model \"" + std::string(cref) + "\" does not exist in the scope")
 #define logError_NotImplemented                    logError("Not implemented")
 #define logError_SystemNotInModel(model, system)   logError("Model \"" + std::string(model) + "\" does not contain system \"" + std::string(system) + "\"")
+#define logError_NotForTlmSystem                   logError("Not available for TLM systems");
+#define logError_OnlyForTlmSystem                  logError("Only available for TLM systems");
+#define logError_NotForScSystem                    logError("Not available for strongly coupled systems");
 
 #endif
