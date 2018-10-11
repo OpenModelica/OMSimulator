@@ -199,6 +199,9 @@ oms_status_enu_t oms3::System::addSubSystem(const oms3::ComRef& cref, oms_system
 {
   if (cref.isValidIdent())
   {
+    if(this->type == oms_system_sc)
+      return logError_NotForScSystem;
+
     System* system = System::NewSystem(cref, type, NULL, this);
     if (system)
     {
@@ -617,6 +620,8 @@ oms_status_enu_t oms3::System::addConnector(const oms3::ComRef &cref, oms_causal
     return subsystem->second->addConnector(tail,causality,type);
   }
 
+  if(this->type == oms_system_tlm)
+    return logError_NotForTlmSystem;
   if(!cref.isValidIdent()) {
     return logError("Not a valid ident: "+std::string(cref));
   }
@@ -815,6 +820,9 @@ oms_status_enu_t oms3::System::updateConnection(const oms3::ComRef &crefA, const
 
 oms_status_enu_t oms3::System::addTLMConnection(const oms3::ComRef &crefA, const oms3::ComRef &crefB, double delay, double alpha, double linearimpedance, double angularimpedance)
 {
+  if(type != oms_system_tlm)
+    return logError_OnlyForTlmSystem;
+
   oms3::ComRef tailA(crefA);
   oms3::ComRef headA = tailA.pop_front();
 
@@ -855,6 +863,9 @@ oms_status_enu_t oms3::System::addBus(const oms3::ComRef &cref)
   if(subsystem != subsystems.end()) {
     return subsystem->second->addBus(tail);
   }
+
+  if(type == oms_system_tlm)
+    return logError_NotForTlmSystem;
   if(!cref.isValidIdent()) {
     return logError("Not a valid ident: "+std::string(cref));
   }
@@ -877,6 +888,9 @@ oms_status_enu_t oms3::System::addTLMBus(const oms3::ComRef &cref, const std::st
   if(externalmodel != externalmodels.end()) {
     return externalmodel->second->addTLMBus(tail, domain, dimensions, interpolation);
   }
+
+  if(type == oms_system_tlm)
+    return logError_NotForTlmSystem;
   if(!cref.isValidIdent()) {
     return logError("Not a valid ident: "+std::string(cref));
   }
@@ -903,6 +917,8 @@ oms_status_enu_t oms3::System::addConnectorToBus(const oms3::ComRef &busCref, co
 
   if(!busTail.isEmpty() && !connectorTail.isEmpty() && busHead != connectorHead)
     return logError("Connector and bus must belong to the same system");
+  if(type == oms_system_tlm)
+    return logError_NotForTlmSystem;
 
   for(auto& bus : busconnectors) {
     if(bus && bus->getName() == busCref) {
@@ -926,6 +942,9 @@ oms_status_enu_t oms3::System::addConnectorToTLMBus(const oms3::ComRef &busCref,
     }
   }
 
+  if(this->type == oms_system_tlm)
+    return logError_NotForTlmSystem;
+
   //Check that connector exists in system
   bool found = false;
   for(auto& connector : connectors)
@@ -946,9 +965,8 @@ oms_status_enu_t oms3::System::addConnectorToTLMBus(const oms3::ComRef &busCref,
 
 oms_status_enu_t oms3::System::addExternalModel(const oms3::ComRef &cref, std::string path, std::string startscript)
 {
-  if(type != oms_system_tlm) {
-    return logError("Only implemented for TLM systems");
-  }
+  if(type != oms_system_tlm)
+    return logError_OnlyForTlmSystem;
 
   if (cref.isValidIdent())
   {
