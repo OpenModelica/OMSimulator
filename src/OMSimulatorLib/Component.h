@@ -33,13 +33,18 @@
 #define _OMS_COMPONENT_H_
 
 #include "ComRef.h"
-#include "Types.h"
+#include "DirectedGraph.h"
 #include "Element.h"
+#include "Types.h"
+#include <fmilib.h>
 #include <pugixml.hpp>
 
 namespace oms3
 {
   class System;
+
+  void fmiLogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message);
+  void fmi2logger(fmi2_component_environment_t env, fmi2_string_t instanceName, fmi2_status_t status, fmi2_string_t category, fmi2_string_t message, ...);
 
   class Component
   {
@@ -60,13 +65,16 @@ namespace oms3
     Component(Component const&);            ///< not implemented
     Component& operator=(Component const&); ///< not implemented
 
+    DirectedGraph initialUnknownsGraph;
+    DirectedGraph outputsGraph;
+    oms3::Element element;
+    std::vector<oms3::Connector*> connectors;
+
   private:
     System* parentSystem;
-    oms3::Element element;
     oms3::ComRef cref;
     oms_component_enu_t type;
     std::string path;
-    std::vector<oms3::Connector*> connectors;
   };
 }
 

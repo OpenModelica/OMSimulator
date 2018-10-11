@@ -30,14 +30,86 @@
  */
 
 #include "Variable.h"
+
 #include "Logging.h"
 #include "Util.h"
-
 #include <fmilib.h>
-#include <JM/jm_portability.h>
-
 #include <iostream>
+#include <JM/jm_portability.h>
 #include <string>
+
+
+oms3::Variable::Variable(const oms3::ComRef& cref, fmi2_import_variable_t *var, unsigned int index)
+  : is_state(false), cref(cref), name(fmi2_import_get_variable_name(var)), index(index)
+{
+  // extract the attributes
+  description = fmi2_import_get_variable_description(var) ? fmi2_import_get_variable_description(var) : "";
+  trim(description);
+  vr = fmi2_import_get_variable_vr(var);
+  causality = fmi2_import_get_causality(var);
+  initialProperty = fmi2_import_get_initial(var);
+  switch (fmi2_import_get_variable_base_type(var))
+  {
+    case fmi2_base_type_real:
+      type = oms_signal_type_real;
+      break;
+    case fmi2_base_type_int:
+      type = oms_signal_type_integer;
+      break;
+    case fmi2_base_type_bool:
+      type = oms_signal_type_boolean;
+      break;
+    case fmi2_base_type_str:
+      type = oms_signal_type_string;
+      break;
+    case fmi2_base_type_enum:
+      type = oms_signal_type_enum;
+      break;
+    default:
+      logError("Unknown fmi base type");
+      type = oms_signal_type_real;
+      break;
+  }
+}
+
+oms3::Variable::~Variable()
+{
+}
+
+oms_causality_enu_t oms3::Variable::getCausality() const
+{
+  switch (causality)
+  {
+  case fmi2_causality_enu_input:
+    return oms_causality_input;
+
+  case fmi2_causality_enu_output:
+    return oms_causality_output;
+
+  case fmi2_causality_enu_parameter:
+    return oms_causality_parameter;
+
+  default:
+    logWarning("undefined causality detected");
+    return oms_causality_undefined;
+  }
+}
+
+bool oms3::operator==(const oms3::Variable& v1, const oms3::Variable& v2)
+{
+  return v1.cref == v2.cref && v1.name == v2.name && v1.vr == v2.vr;
+}
+
+bool oms3::operator!=(const oms3::Variable& v1, const oms3::Variable& v2)
+{
+  return !(v1 == v2);
+}
+
+/* ************************************ */
+/* oms2                                 */
+/*                                      */
+/*                                      */
+/* ************************************ */
 
 oms2::Variable::Variable(const oms2::SignalRef& sr, fmi2_causality_enu_t causality, fmi2_initial_enu_t initialProperty, bool is_state, oms_signal_type_enu_t type)
   : sr(sr), index(0), vr(0), causality(causality), initialProperty(initialProperty), is_state(is_state), type(type)

@@ -32,8 +32,10 @@
 #ifndef _OMS_COMPONENT_FMU_CS_H_
 #define _OMS_COMPONENT_FMU_CS_H_
 
-#include "ComRef.h"
 #include "Component.h"
+#include "ComRef.h"
+#include "Option.h"
+#include "Variable.h"
 #include <fmilib.h>
 #include <map>
 #include <pugixml.hpp>
@@ -51,6 +53,7 @@ namespace oms3
     ~ComponentFMUCS();
 
     static Component* NewComponent(const oms3::ComRef& cref, System* parentSystem, const std::string& fmuPath);
+    static Component* NewComponent(const pugi::xml_node& node, oms3::System* parentSystem);
 
   protected:
     ComponentFMUCS(const ComRef& cref, System* parentSystem, const std::string& fmuPath);
@@ -65,6 +68,17 @@ namespace oms3
     fmi_import_context_t* context = NULL;
     fmi2_import_t* fmu = NULL;
     std::string tempDir;
+
+    std::vector<Variable> allVariables;
+    std::vector<Variable> inputs;
+    std::vector<Variable> outputs;
+    std::vector<Variable> parameters;
+    std::vector<bool> exportVariables;
+
+    std::map<std::string, Option<double>> realParameters;
+    std::map<std::string, Option<int>> integerParameters;
+    std::map<std::string, Option<bool>> booleanParameters;
+
   };
 }
 

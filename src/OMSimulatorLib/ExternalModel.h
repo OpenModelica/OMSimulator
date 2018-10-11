@@ -60,7 +60,7 @@ namespace oms3
     oms_status_enu_t getRealParameter(const std::string& var, double& value);
     const std::string& getModelPath() const {return path;}
     const std::string& getStartScript() const {return startscript;}
-    const std::map<std::string, oms2::Option<double>>& getRealParameters() const {return realParameters;}
+    const std::map<std::string, oms3::Option<double>>& getRealParameters() const {return realParameters;}
 
     oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
 
@@ -76,7 +76,7 @@ namespace oms3
     std::string path;
     std::string startscript;
 
-    std::map<std::string, oms2::Option<double>> realParameters;
+    std::map<std::string, oms3::Option<double>> realParameters;
     std::vector<oms3::TLMBusConnector*> tlmbusconnectors;
   };
 }
@@ -104,7 +104,7 @@ namespace oms2
     oms_status_enu_t getRealParameter(const std::string& var, double& value);
     const std::string& getModelPath() const {return filename;}
     const std::string& getStartScript() const {return startScript;}
-    const std::map<std::string, oms2::Option<double>>& getRealParameters() const {return realParameters;}
+    const std::map<std::string, oms3::Option<double>>& getRealParameters() const {return realParameters;}
 
   protected:
     ComRef cref;
@@ -115,7 +115,7 @@ namespace oms2
     std::string filename;
     std::string startScript;
 
-    std::map<std::string, oms2::Option<double>> realParameters;
+    std::map<std::string, oms3::Option<double>> realParameters;
   };
 }
 
