@@ -33,6 +33,7 @@
 #define _OMS_SYSTEM_WC_H_
 
 #include "ComRef.h"
+#include "DirectedGraph.h"
 #include "System.h"
 #include "Types.h"
 
@@ -59,6 +60,9 @@ namespace oms3
   private:
     std::string solverName = "oms-ma";
     double stepSize = 1e-1;
+
+    DirectedGraph initialUnknownsGraph;
+    DirectedGraph outputsGraph;
   };
 }
 

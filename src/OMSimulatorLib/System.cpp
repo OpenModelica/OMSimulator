@@ -498,11 +498,16 @@ oms_status_enu_t oms3::System::importFromSSD(const pugi::xml_node& node)
         }
         else if (name == oms2::ssd::ssd_component)
         {
-          ComRef componentCref = ComRef(itElements->attribute("name").as_string());
-          //std::string typeString = itElements->attribute("type").as_string();
-          std::string source = itElements->attribute("source").as_string();
+          Component* component = ComponentFMUCS::NewComponent(*itElements, this);
 
-          if (oms_status_ok != addSubModel(componentCref, source))
+          if (component)
+          {
+            components[cref] = component;
+            subelements.back() = reinterpret_cast<oms3_element_t*>(component->getElement());
+            subelements.push_back(NULL);
+            element.setSubElements(&subelements[0]);
+          }
+          else
             return oms_status_error;
         }
         else
@@ -582,13 +587,10 @@ oms_status_enu_t oms3::System::importFromSSD(const pugi::xml_node& node)
           }
           else if(std::string(name) == oms::bus_connections)
           {
-
             //Load bus connections
-
-            for(pugi::xml_node_iterator itTLMConnection = itAnnotations->begin(); itTLMConnection != itAnnotations->end(); ++itTLMConnection) {
-
+            for(pugi::xml_node_iterator itTLMConnection = itAnnotations->begin(); itTLMConnection != itAnnotations->end(); ++itTLMConnection)
+            {
               //Load TLM bus connection
-
               oms3::ComRef element1(itTLMConnection->attribute("startElement").as_string());
               oms3::ComRef connector1(itTLMConnection->attribute("startConnector").as_string());
               oms3::ComRef element2(itTLMConnection->attribute("endElement").as_string());
@@ -605,7 +607,7 @@ oms_status_enu_t oms3::System::importFromSSD(const pugi::xml_node& node)
       }
     }
     else
-      return logError("wrong xml schema detected: " + name);
+      return logError_WrongSchema(name);
   }
 
   return oms_status_ok;

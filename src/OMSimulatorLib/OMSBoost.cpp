@@ -79,7 +79,7 @@ boost::filesystem::path oms_unique_path(std::string prefix)
   return boost::filesystem::unique_path(prefix + "-%%%%");
 #else
   int i;
-  std::string s = prefix;
+  std::string s = prefix + "-";
   for(i=0; i<4; i++)
     s += std::string(1, ('A' + rand()%26));
   boost::filesystem::path p(s);

@@ -109,5 +109,6 @@ private:
 #define logError_NotForTlmSystem                   logError("Not available for TLM systems");
 #define logError_OnlyForTlmSystem                  logError("Only available for TLM systems");
 #define logError_NotForScSystem                    logError("Not available for strongly coupled systems");
+#define logError_WrongSchema(name)                 logError("Wrong xml schema detected. Unexpected tag \"" + name + "\"")
 
 #endif
