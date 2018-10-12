@@ -149,7 +149,7 @@ oms3::Component* oms3::ComponentFMUCS::NewComponent(const oms3::ComRef& cref, om
   component->tempDir = tempDir.string();
   if (!boost::filesystem::is_directory(tempDir) && !boost::filesystem::create_directory(tempDir))
   {
-    logError("Creating temp directory for component \"" + cref + "\" failed");
+    logError("Creating temp directory for component \"" + std::string(cref) + "\" failed");
     return NULL;
   }
 
