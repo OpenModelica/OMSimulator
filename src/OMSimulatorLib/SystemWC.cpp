@@ -119,3 +119,27 @@ oms_status_enu_t oms3::SystemWC::terminate()
 
   return oms_status_ok;
 }
+
+//Placeholder function
+oms_status_enu_t oms3::SystemWC::setReal(const oms3::ComRef &cref, double value)
+{
+  return oms_status_fatal;
+}
+
+//Placeholder function
+oms_status_enu_t oms3::SystemWC::setReals(const std::vector<oms3::ComRef> &crefs, std::vector<double> values)
+{
+  return oms_status_fatal;
+}
+
+//Placeholder function
+oms_status_enu_t oms3::SystemWC::getReal(const oms3::ComRef &sr, double &value)
+{
+  return oms_status_fatal;
+}
+
+//Placeholder function
+oms_status_enu_t oms3::SystemWC::getReals(const std::vector<oms3::ComRef> &sr, std::vector<double> &values)
+{
+  return oms_status_fatal;
+}
