@@ -212,13 +212,13 @@ oms3::Component* oms3::ComponentFMUCS::NewComponent(const oms3::ComRef& cref, om
   int i = 1;
   int size = 1 + component->inputs.size();
   for (const auto& v : component->inputs)
-    component->connectors.push_back(Connector::NewConnector(oms_causality_input, v.getType(), v.getCref() + ComRef(v.getName()), i++/(double)size));
+    component->connectors.push_back(Connector::NewConnector(oms_causality_input, v.getType(), ComRef(v.getName()), i++/(double)size));
   i = 1;
   size = 1 + component->outputs.size();
   for (const auto& v : component->outputs)
-    component->connectors.push_back(Connector::NewConnector(oms_causality_output, v.getType(), v.getCref() + ComRef(v.getName()), i++/(double)size));
+    component->connectors.push_back(Connector::NewConnector(oms_causality_output, v.getType(), ComRef(v.getName()), i++/(double)size));
   for (const auto& v : component->parameters)
-    component->connectors.push_back(Connector::NewConnector(oms_causality_parameter, v.getType(), v.getCref() + ComRef(v.getName())));
+    component->connectors.push_back(Connector::NewConnector(oms_causality_parameter, v.getType(), ComRef(v.getName())));
   component->connectors.push_back(NULL);
   component->element.setConnectors(&component->connectors[0]);
 
