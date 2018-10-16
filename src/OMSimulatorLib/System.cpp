@@ -428,42 +428,12 @@ oms_status_enu_t oms3::System::importFromSSD(const pugi::xml_node& node)
     {
       for(pugi::xml_node_iterator itConnectors = (*it).begin(); itConnectors != (*it).end(); ++itConnectors)
       {
-        ComRef cref = ComRef(itConnectors->attribute("name").as_string());
-        std::string causalityString = itConnectors->attribute("kind").as_string();
-        std::string typeString = itConnectors->attribute("type").as_string();
-        oms_causality_enu_t causality = oms_causality_undefined;
-        if (causalityString == "input")
-          causality = oms_causality_input;
-        else if (causalityString == "output")
-          causality = oms_causality_output;
+        connectors.back() = oms3::Connector::NewConnector(*itConnectors);
+        if (connectors.back())
+          connectors.push_back(NULL);
         else
-          return logError("Failed to import " + std::string(oms2::ssd::ssd_connector) + ":causality");
-        oms_signal_type_enu_t type = oms_signal_type_real;
-        if (typeString == "Real")
-          type = oms_signal_type_real;
-        else if (typeString == "Integer")
-          type = oms_signal_type_integer;
-        else if (typeString == "Boolean")
-          type = oms_signal_type_boolean;
-        else
-          return logError("Failed to import " + std::string(oms2::ssd::ssd_connector) + ":type");
-        if (oms_status_ok != addConnector(cref, causality, type))
-          return logError("Failed to import " + std::string(oms2::ssd::ssd_connector));
-        else
-        {
-          // Load connector geometry
-          pugi::xml_node connectorGeometryNode = itConnectors->child(oms2::ssd::ssd_connector_geometry);
-          if (connectorGeometryNode)
-          {
-            oms3::Connector* connector = getConnector(cref);
-            if (connector)
-            {
-              oms2::ssd::ConnectorGeometry geometry(0.0, 0.0);
-              geometry.setPosition(connectorGeometryNode.attribute("x").as_double(), connectorGeometryNode.attribute("y").as_double());
-              connector->setGeometry(&geometry);
-            }
-          }
-        }
+          return logError("Failed to import ssd:connector");
+        element.setConnectors(&connectors[0]);
       }
     }
     else if(name == oms2::ssd::ssd_elements)
@@ -625,11 +595,10 @@ oms_status_enu_t oms3::System::addConnector(const oms3::ComRef &cref, oms_causal
   if(this->type == oms_system_tlm)
     return logError_NotForTlmSystem;
   if(!cref.isValidIdent()) {
-    return logError("Not a valid ident: "+std::string(cref));
+    return logError("Not a valid ident: " + std::string(cref));
   }
 
-  oms3::Connector* connector = new oms3::Connector(causality, type, cref);
-  connectors.back() = connector;
+  connectors.back() = oms3::Connector::NewConnector(causality, type, cref);
   connectors.push_back(NULL);
   element.setConnectors(&connectors[0]);
 
@@ -646,7 +615,7 @@ oms3::Connector *oms3::System::getConnector(const oms3::ComRef &cref)
   }
 
   if (!cref.isValidIdent()) {
-    logError("Not a valid ident: "+std::string(cref));
+    logError("Not a valid ident: " + std::string(cref));
     return NULL;
   }
 
@@ -666,7 +635,7 @@ oms3::BusConnector *oms3::System::getBusConnector(const oms3::ComRef &cref)
     return subsystem->second->getBusConnector(tail);
   }
   if (!cref.isValidIdent()) {
-    logError("Not a valid ident: "+std::string(cref));
+    logError("Not a valid ident: " + std::string(cref));
     return NULL;
   }
 
@@ -782,10 +751,10 @@ oms_status_enu_t oms3::System::addConnection(const oms3::ComRef &crefA, const om
 
   if(conA && conB) {
     if(conA->getType() != conB->getType())
-      return logError("Type mismatch in connection: "+std::string(crefA)+" -> "+std::string(crefB));
+      return logError("Type mismatch in connection: " + std::string(crefA)+" -> " + std::string(crefB));
     if((conA->getCausality() == oms_causality_output && conB->getCausality() != oms_causality_input) ||
        (conB->getCausality() == oms_causality_output && conA->getCausality() != oms_causality_input))
-      return logError("Causality mismatch in connection: "+std::string(crefA)+" -> "+std::string(crefB));
+      return logError("Causality mismatch in connection: " + std::string(crefA)+" -> " + std::string(crefB));
 
     connections.back() = new oms3::Connection(crefA,crefB);
     connections.push_back(NULL);
@@ -869,7 +838,7 @@ oms_status_enu_t oms3::System::addBus(const oms3::ComRef &cref)
   if(type == oms_system_tlm)
     return logError_NotForTlmSystem;
   if(!cref.isValidIdent()) {
-    return logError("Not a valid ident: "+std::string(cref));
+    return logError("Not a valid ident: " + std::string(cref));
   }
   oms3::BusConnector* bus = new oms3::BusConnector(cref);
   busconnectors.back() = bus;
@@ -894,7 +863,7 @@ oms_status_enu_t oms3::System::addTLMBus(const oms3::ComRef &cref, const std::st
   if(type == oms_system_tlm)
     return logError_NotForTlmSystem;
   if(!cref.isValidIdent()) {
-    return logError("Not a valid ident: "+std::string(cref));
+    return logError("Not a valid ident: " + std::string(cref));
   }
   oms3::TLMBusConnector* bus = new oms3::TLMBusConnector(cref, domain, dimensions, interpolation);
   tlmbusconnectors.back() = bus;
@@ -953,7 +922,7 @@ oms_status_enu_t oms3::System::addConnectorToTLMBus(const oms3::ComRef &busCref,
     if(connector && connector->getName() == connectorCref)
       found = true;
   if(!found)
-    return logError("Connector not found in system: "+std::string(connectorCref));
+    return logError("Connector not found in system: " + std::string(connectorCref));
 
   for(auto& bus : tlmbusconnectors) {
     if(bus && bus->getName() == busCref) {
@@ -1001,7 +970,7 @@ oms_status_enu_t oms3::System::setConnectorGeometry(const oms3::ComRef &cref, co
       return oms_status_ok;
     }
     else {
-      return logError("Connector "+std::string(tail)+" not found in component "+std::string(head));
+      return logError("Connector " + std::string(tail)+" not found in component " + std::string(head));
     }
   }
 
@@ -1010,7 +979,7 @@ oms_status_enu_t oms3::System::setConnectorGeometry(const oms3::ComRef &cref, co
     connector->setGeometry(geometry);
     return oms_status_ok;
   }
-  return logError("Connector "+std::string(cref)+" not found in system "+std::string(getName()));
+  return logError("Connector " + std::string(cref)+" not found in system " + std::string(getName()));
 }
 
 oms_status_enu_t oms3::System::setConnectionGeometry(const oms3::ComRef &crefA, const oms3::ComRef &crefB, const oms2::ssd::ConnectionGeometry *geometry)
@@ -1052,7 +1021,7 @@ oms_status_enu_t oms3::System::setBusGeometry(const oms3::ComRef &cref, const om
     busConnector->setGeometry(geometry);
     return oms_status_ok;
   }
-  return logError("Bus "+std::string(cref)+" not found in system "+std::string(getName()));
+  return logError("Bus " + std::string(cref)+" not found in system " + std::string(getName()));
 }
 
 oms_status_enu_t oms3::System::setTLMBusGeometry(const oms3::ComRef &cref, const oms2::ssd::ConnectorGeometry *geometry)
@@ -1068,7 +1037,7 @@ oms_status_enu_t oms3::System::setTLMBusGeometry(const oms3::ComRef &cref, const
     tlmBusConnector->setGeometry(geometry);
     return oms_status_ok;
   }
-  return logError("TLM Bus "+std::string(cref)+" not found in system "+std::string(getName()));
+  return logError("TLM Bus " + std::string(cref)+" not found in system " + std::string(getName()));
 }
 
 oms3::Connection* oms3::System::getConnection(const oms3::ComRef& crefA, const oms3::ComRef& crefB)

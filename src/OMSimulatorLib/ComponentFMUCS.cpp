@@ -212,13 +212,13 @@ oms3::Component* oms3::ComponentFMUCS::NewComponent(const oms3::ComRef& cref, om
   int i = 1;
   int size = 1 + component->inputs.size();
   for (const auto& v : component->inputs)
-    component->connectors.push_back(new Connector(oms_causality_input, v.getType(), v.getCref() + ComRef(v.getName()), i++/(double)size));
+    component->connectors.push_back(Connector::NewConnector(oms_causality_input, v.getType(), ComRef(v.getName()), i++/(double)size));
   i = 1;
   size = 1 + component->outputs.size();
   for (const auto& v : component->outputs)
-    component->connectors.push_back(new Connector(oms_causality_output, v.getType(), v.getCref() + ComRef(v.getName()), i++/(double)size));
+    component->connectors.push_back(Connector::NewConnector(oms_causality_output, v.getType(), ComRef(v.getName()), i++/(double)size));
   for (const auto& v : component->parameters)
-    component->connectors.push_back(new Connector(oms_causality_parameter, v.getType(), v.getCref() + ComRef(v.getName())));
+    component->connectors.push_back(Connector::NewConnector(oms_causality_parameter, v.getType(), ComRef(v.getName())));
   component->connectors.push_back(NULL);
   component->element.setConnectors(&component->connectors[0]);
 
@@ -253,57 +253,7 @@ oms3::Component* oms3::ComponentFMUCS::NewComponent(const pugi::xml_node& node, 
       // import connectors
       for(pugi::xml_node_iterator itConnectors = (*it).begin(); itConnectors != (*it).end(); ++itConnectors)
       {
-        ComRef cref = ComRef(itConnectors->attribute("name").as_string());
-        std::string causalityString = itConnectors->attribute("kind").as_string();
-        std::string typeString = itConnectors->attribute("type").as_string();
-        oms_causality_enu_t causality = oms_causality_undefined;
-        if (causalityString == "input")
-          causality = oms_causality_input;
-        else if (causalityString == "output")
-          causality = oms_causality_output;
-        else if (causalityString == "parameter")
-          causality = oms_causality_parameter;
-        else
-        {
-          logError("Failed to import " + std::string(oms2::ssd::ssd_connector) + ":causality");
-          delete component;
-          return NULL;
-        }
-        oms_signal_type_enu_t type = oms_signal_type_real;
-        if (typeString == "Real")
-          type = oms_signal_type_real;
-        else if (typeString == "Integer")
-          type = oms_signal_type_integer;
-        else if (typeString == "Boolean")
-          type = oms_signal_type_boolean;
-        else
-        {
-          logError("Failed to import " + std::string(oms2::ssd::ssd_connector) + ":type");
-          delete component;
-          return NULL;
-        }
-
-        Connector* connector = new Connector(causality, type, cref);
-
-        if (!connector)
-        {
-          logError("Failed to import " + std::string(oms2::ssd::ssd_connector));
-          delete component;
-          return NULL;
-        }
-        else
-        {
-          // Load connector geometry
-          pugi::xml_node connectorGeometryNode = itConnectors->child(oms2::ssd::ssd_connector_geometry);
-          if (connectorGeometryNode)
-          {
-            oms2::ssd::ConnectorGeometry geometry(0.0, 0.0);
-            geometry.setPosition(connectorGeometryNode.attribute("x").as_double(), connectorGeometryNode.attribute("y").as_double());
-            connector->setGeometry(&geometry);
-          }
-        }
-
-        component->connectors.push_back(connector);
+        component->connectors.push_back(oms3::Connector::NewConnector(*itConnectors));
       }
     }
     else
