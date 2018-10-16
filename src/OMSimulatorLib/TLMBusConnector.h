@@ -113,6 +113,8 @@ typedef struct  {
     const oms_tlm_interpolation_t getInterpolation() const {return interpolation;}
     void setDelay(double delay) { this->delay = delay; }
     double getDelay() { return this->delay; }
+    oms3::ComRef getConnector(int id) const;
+    std::vector<oms3::ComRef> getConnectors(std::vector<int> ids) const;
     const oms2::ssd::ConnectorGeometry* getGeometry() const {return reinterpret_cast<oms2::ssd::ConnectorGeometry*>(geometry);}
 
     oms_status_enu_t addConnector(const oms3::ComRef& cref, std::string vartype);

@@ -123,6 +123,20 @@ void oms3::TLMBusConnector::setGeometry(const oms2::ssd::ConnectorGeometry *newG
     this->geometry = reinterpret_cast<ssd_connector_geometry_t*>(new oms2::ssd::ConnectorGeometry(*newGeometry));
 }
 
+oms3::ComRef oms3::TLMBusConnector::getConnector(int id) const
+{
+  return sortedConnectors[id];
+}
+
+std::vector<oms3::ComRef> oms3::TLMBusConnector::getConnectors(std::vector<int> ids) const
+{
+  std::vector<oms3::ComRef> retval;
+  for(int id : ids) {
+    retval.push_back(sortedConnectors[id]);
+  }
+  return retval;
+}
+
 oms_status_enu_t oms3::TLMBusConnector::addConnector(const oms3::ComRef &cref, std::string vartype)
 {
   if(std::find(variableTypes.begin(), variableTypes.end(), vartype) == variableTypes.end())

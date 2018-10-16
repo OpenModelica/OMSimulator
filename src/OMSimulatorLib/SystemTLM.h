@@ -59,6 +59,8 @@ namespace oms3
 
     oms_status_enu_t connectToSockets(const oms3::ComRef cref, std::string server);
     void disconnectFromSockets(const oms3::ComRef cref);
+    oms_status_enu_t setInitialValues(ComRef cref, std::vector<double> values);
+    oms_status_enu_t updateInitialValues(const oms3::ComRef cref);
 
   protected:
     SystemTLM(const ComRef& cref, Model* parentModel, System* parentSystem);
@@ -75,6 +77,8 @@ namespace oms3
 
     std::vector<ComRef> connectedsubsystems;
     std::map<System*, TLMPlugin*> plugins;
+    std::vector<ComRef> initializedsubsystems;
+    std::map<ComRef, std::vector<double> > initialValues;
 
     // simulation information
   };
