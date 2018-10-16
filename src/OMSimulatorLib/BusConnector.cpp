@@ -100,6 +100,18 @@ oms_status_enu_t oms3::BusConnector::addConnector(const oms3::ComRef &cref)
   return oms_status_ok;
 }
 
+oms_status_enu_t oms3::BusConnector::deleteConnector(const oms3::ComRef &cref)
+{
+  for (auto it = conrefs.begin(); it != conrefs.end(); ++it) {
+    if (*it == cref) {
+      conrefs.erase(it);
+      updateConnectors();
+      return oms_status_ok;
+    }
+  }
+  return oms_status_error;
+}
+
 void oms3::BusConnector::updateConnectors()
 {
   if (connectors)
