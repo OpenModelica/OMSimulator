@@ -114,12 +114,13 @@ oms_status_enu_t oms3::ExternalModel::getRealParameter(const std::string &var, d
 
 oms_status_enu_t oms3::ExternalModel::exportToSSD(pugi::xml_node& node) const
 {
-  if(tlmbusconnectors[0]) {
+  if (tlmbusconnectors[0])
+  {
     pugi::xml_node annotations_node = node.append_child(oms2::ssd::ssd_annotations);
     pugi::xml_node annotation_node = annotations_node.append_child(oms2::ssd::ssd_annotation);
     annotation_node.append_attribute("type") = oms::annotation_type;
     for (const auto& tlmbusconnector : tlmbusconnectors)
-      if(tlmbusconnector)
+      if (tlmbusconnector)
         tlmbusconnector->exportToSSD(annotation_node);
   }
 
@@ -133,6 +134,16 @@ oms_status_enu_t oms3::ExternalModel::exportToSSD(pugi::xml_node& node) const
   externalmodel_node.append_attribute("startscript") = this->startscript.c_str();
 
   return oms_status_ok;
+}
+
+oms_status_enu_t oms3::ExternalModel::initialize()
+{
+  return logError_NotImplemented;
+}
+
+oms_status_enu_t oms3::ExternalModel::terminate()
+{
+  return logError_NotImplemented;
 }
 
 /* ************************************ */

@@ -57,6 +57,8 @@ namespace oms3
     const std::map<std::string, oms3::Option<double>>& getRealParameters() const {return realParameters;}
 
     oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
+    oms_status_enu_t initialize();
+    oms_status_enu_t terminate();
 
   protected:
     ExternalModel(const oms3::ComRef& cref, System* parentSystem, const std::string& path, const std::string& startscript);

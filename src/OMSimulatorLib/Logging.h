@@ -103,6 +103,8 @@ private:
 
 // Common error messages
 #define logError_ComponentNotInSystem(system, component)   logError("System \"" + std::string(system->getFullName()) + "\" does not contain component \"" + std::string(component) + "\"")
+#define logError_Initialization(system)                    logError("Initialization of system \"" + std::string(system) + "\" failed")
+#define logError_ModelInWrongState(cref)                   logError("Model \"" + std::string(cref) + "\" is in wrong model state")
 #define logError_ModelNotInScope(cref)                     logError("Model \"" + std::string(cref) + "\" does not exist in the scope")
 #define logError_NotForScSystem                            logError("Not available for strongly coupled systems");
 #define logError_NotForTlmSystem                           logError("Not available for TLM systems");
@@ -111,6 +113,7 @@ private:
 #define logError_OnlyForModel                              logError("Only implemented for model identifiers")
 #define logError_OnlyForTlmSystem                          logError("Only available for TLM systems");
 #define logError_SystemNotInModel(model, system)           logError("Model \"" + std::string(model) + "\" does not contain system \"" + std::string(system) + "\"")
+#define logError_Termination(system)                       logError("Termination of system \"" + std::string(system) + "\" failed")
 #define logError_WrongSchema(name)                         logError("Wrong xml schema detected. Unexpected tag \"" + name + "\"")
 
 #endif
