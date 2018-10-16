@@ -40,21 +40,20 @@ oms3::Connector::Connector(oms_causality_enu_t causality, oms_signal_type_enu_t 
   this->causality = causality;
   this->type = type;
 
-  std::string str(name);
-  this->name = new char[str.size()+1];
-  strcpy(this->name, str.c_str());
+  this->name = new char[strlen(name.c_str())+1];
+  strcpy(this->name, name.c_str());
 
   this->geometry = NULL;
 }
 
-oms3::Connector::Connector(oms_causality_enu_t causality, oms_signal_type_enu_t type, const oms3::ComRef &name, double height)
+oms3::Connector::Connector(oms_causality_enu_t causality, oms_signal_type_enu_t type, const oms3::ComRef& name, double height)
 {
   this->causality = causality;
   this->type = type;
 
   std::string str(name);
-  this->name = new char[str.size()+1];
-  strcpy(this->name, str.c_str());
+  this->name = new char[strlen(name.c_str())+1];
+  strcpy(this->name, name.c_str());
 
   double x, y;
   switch (causality)

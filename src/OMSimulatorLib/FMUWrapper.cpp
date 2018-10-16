@@ -295,11 +295,11 @@ oms2::FMUWrapper* oms2::FMUWrapper::newSubModel(const oms2::ComRef& cref, const 
   for (auto const &v : model->allVariables)
   {
     if (v.isParameter() && v.isTypeReal())
-      model->realParameters[v.getName()] = oms2::Option<double>();
+      model->realParameters[v.getName()] = oms3::Option<double>();
     else if (v.isParameter() && v.isTypeInteger())
-      model->integerParameters[v.getName()] = oms2::Option<int>();
+      model->integerParameters[v.getName()] = oms3::Option<int>();
     else if (v.isParameter() && v.isTypeBoolean())
-      model->booleanParameters[v.getName()] = oms2::Option<bool>();
+      model->booleanParameters[v.getName()] = oms3::Option<bool>();
 
     if (v.isInput())
     {
@@ -550,7 +550,7 @@ oms_status_enu_t oms2::FMUWrapper::exportToSSD(pugi::xml_node& root) const
   }
 
   // export ssd:ParameterBindings
-  const std::map<std::string, oms2::Option<double>>& realParameters = getRealParameters();
+  const std::map<std::string, oms3::Option<double>>& realParameters = getRealParameters();
   for (auto it=realParameters.begin(); it != realParameters.end(); it++)
   {
     if (it->second.isSome())
@@ -562,7 +562,7 @@ oms_status_enu_t oms2::FMUWrapper::exportToSSD(pugi::xml_node& root) const
     }
   }
 
-  const std::map<std::string, oms2::Option<int>>& integerParameters = getIntegerParameters();
+  const std::map<std::string, oms3::Option<int>>& integerParameters = getIntegerParameters();
   for (auto it=integerParameters.begin(); it != integerParameters.end(); it++)
   {
     if (it->second.isSome())
@@ -574,7 +574,7 @@ oms_status_enu_t oms2::FMUWrapper::exportToSSD(pugi::xml_node& root) const
     }
   }
 
-  const std::map<std::string, oms2::Option<bool>>& booleanParameters = getBooleanParameters();
+  const std::map<std::string, oms3::Option<bool>>& booleanParameters = getBooleanParameters();
   for (auto it=booleanParameters.begin(); it != booleanParameters.end(); it++)
   {
     if (it->second.isSome())

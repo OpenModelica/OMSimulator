@@ -74,7 +74,7 @@ oms3::TLMBusConnector *oms3::ExternalModel::getTLMBusConnector(const oms3::ComRe
 
 oms_status_enu_t oms3::ExternalModel::setRealParameter(const std::string &var, double value)
 {
-  std::map<std::string, oms2::Option<double>>::iterator it;
+  std::map<std::string, oms3::Option<double>>::iterator it;
   it = realParameters.find(var);
 
   if(it != realParameters.end()) {
@@ -87,7 +87,7 @@ oms_status_enu_t oms3::ExternalModel::setRealParameter(const std::string &var, d
 
 oms_status_enu_t oms3::ExternalModel::getRealParameter(const std::string &var, double &value)
 {
-  std::map<std::string, oms2::Option<double>>::iterator it;
+  std::map<std::string, oms3::Option<double>>::iterator it;
   it = realParameters.find(var);
 
   if(it != realParameters.end()) {
@@ -144,7 +144,7 @@ oms_status_enu_t oms3::ExternalModel::exportToSSD(pugi::xml_node& node) const
 
 oms_status_enu_t oms2::ExternalModel::setRealParameter(const std::string &var, double value)
 {
-  std::map<std::string, oms2::Option<double>>::iterator it;
+  std::map<std::string, oms3::Option<double>>::iterator it;
   it = realParameters.find(var);
 
   if(it != realParameters.end()) {
@@ -157,7 +157,7 @@ oms_status_enu_t oms2::ExternalModel::setRealParameter(const std::string &var, d
 
 oms_status_enu_t oms2::ExternalModel::getRealParameter(const std::string &var, double &value)
 {
-  std::map<std::string, oms2::Option<double>>::iterator it;
+  std::map<std::string, oms3::Option<double>>::iterator it;
   it = realParameters.find(var);
 
   if(it != realParameters.end()) {

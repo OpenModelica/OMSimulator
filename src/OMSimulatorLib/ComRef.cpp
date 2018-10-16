@@ -63,9 +63,9 @@ oms3::ComRef& oms3::ComRef::operator=(const oms3::ComRef& copy)
   return *this;
 }
 
-oms3::ComRef oms3::ComRef::operator+(const oms3::ComRef& rhs)
+oms3::ComRef oms3::ComRef::operator+(const oms3::ComRef& rhs) const
 {
-  return oms3::ComRef(std::string(*this) + std::string(".") + std::string(rhs));
+  return oms3::ComRef(std::string(*this) + "." + std::string(rhs));
 }
 
 bool oms3::ComRef::isValidIdent(const std::string& ident)
@@ -83,7 +83,7 @@ bool oms3::ComRef::isEmpty() const
   return !(cref && cref[0] != '\0');
 }
 
-oms3::ComRef oms3::ComRef::front()
+oms3::ComRef oms3::ComRef::front() const
 {
   int dot=0;
 
@@ -115,11 +115,6 @@ oms3::ComRef oms3::ComRef::pop_front()
   oms3::ComRef front(cref);
   *this = oms3::ComRef(cref + i);
   return front;
-}
-
-std::string oms3::operator+(const std::string& lhs, const oms3::ComRef& rhs)
-{
-  return lhs + rhs;
 }
 
 bool oms3::operator==(const oms3::ComRef& lhs, const oms3::ComRef& rhs)

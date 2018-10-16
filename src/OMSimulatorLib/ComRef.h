@@ -49,13 +49,13 @@ namespace oms3
     // methods to copy the component reference
     ComRef(const ComRef& copy);
     ComRef& operator=(const ComRef& copy);
-    ComRef operator+(const ComRef& rhs);
+    ComRef operator+(const ComRef& rhs) const;
 
     static bool isValidIdent(const std::string& ident);
     bool isValidIdent() const;
     bool isEmpty() const;
 
-    ComRef front();
+    ComRef front() const;
     ComRef pop_front();
 
     const char* c_str() const {return cref;}
@@ -65,7 +65,6 @@ namespace oms3
     char* cref = NULL;
   };
 
-  std::string operator+(const std::string& lhs, const ComRef& rhs);
   bool operator==(const ComRef& lhs, const ComRef& rhs);
   bool operator!=(const ComRef& lhs, const ComRef& rhs);
   bool operator<(const ComRef& lhs, const ComRef& rhs);

@@ -29,10 +29,10 @@
  *
  */
 
-#ifndef _OMS2_OPTION_H_
-#define _OMS2_OPTION_H_
+#ifndef _OMS_OPTION_H_
+#define _OMS_OPTION_H_
 
-namespace oms2
+namespace oms3
 {
   template <typename T>
   class Option
