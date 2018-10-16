@@ -83,6 +83,67 @@ oms3::Connector::~Connector()
   if (this->geometry) delete reinterpret_cast<oms2::ssd::ConnectorGeometry*>(this->geometry);
 }
 
+oms3::Connector* oms3::Connector::NewConnector(oms_causality_enu_t causality, oms_signal_type_enu_t type, const oms3::ComRef& name)
+{
+  return new Connector(causality, type, name);
+}
+
+oms3::Connector* oms3::Connector::NewConnector(oms_causality_enu_t causality, oms_signal_type_enu_t type, const oms3::ComRef& name, double height)
+{
+  return new Connector(causality, type, name, height);
+}
+
+oms3::Connector* oms3::Connector::NewConnector(const pugi::xml_node& node)
+{
+  ComRef cref = ComRef(node.attribute("name").as_string());
+  std::string causalityString = node.attribute("kind").as_string();
+  std::string typeString = node.attribute("type").as_string();
+  oms_causality_enu_t causality = oms_causality_undefined;
+  if (causalityString == "input")
+    causality = oms_causality_input;
+  else if (causalityString == "output")
+    causality = oms_causality_output;
+  else if (causalityString == "parameter")
+    causality = oms_causality_parameter;
+  else
+  {
+    logError("Failed to import " + std::string(oms2::ssd::ssd_connector) + ":causality");
+    return NULL;
+  }
+  oms_signal_type_enu_t type = oms_signal_type_real;
+  if (typeString == "Real")
+    type = oms_signal_type_real;
+  else if (typeString == "Integer")
+    type = oms_signal_type_integer;
+  else if (typeString == "Boolean")
+    type = oms_signal_type_boolean;
+  else
+  {
+    logError("Failed to import " + std::string(oms2::ssd::ssd_connector) + ":type");
+    return NULL;
+  }
+
+  Connector* connector = Connector::NewConnector(causality, type, cref);
+  if (!connector)
+  {
+    logError("Failed to import " + std::string(oms2::ssd::ssd_connector));
+    return NULL;
+  }
+  else
+  {
+    // Load connector geometry
+    pugi::xml_node connectorGeometryNode = node.child(oms2::ssd::ssd_connector_geometry);
+    if (connectorGeometryNode)
+    {
+      oms2::ssd::ConnectorGeometry geometry(0.0, 0.0);
+      geometry.setPosition(connectorGeometryNode.attribute("x").as_double(), connectorGeometryNode.attribute("y").as_double());
+      connector->setGeometry(&geometry);
+    }
+  }
+
+  return connector;
+}
+
 oms_status_enu_t oms3::Connector::exportToSSD(pugi::xml_node &root) const
 {
   pugi::xml_node node = root.append_child(oms2::ssd::ssd_connector);
@@ -179,6 +240,11 @@ void oms3::Connector::setGeometry(const oms2::ssd::ConnectorGeometry *newGeometr
     this->geometry = reinterpret_cast<ssd_connector_geometry_t*>(new oms2::ssd::ConnectorGeometry(*newGeometry));
 }
 
+/* ************************************ */
+/* oms2                                 */
+/*                                      */
+/*                                      */
+/* ************************************ */
 
 oms2::Connector::Connector(oms_causality_enu_t causality, oms_signal_type_enu_t type, const oms2::SignalRef& name)
 {
