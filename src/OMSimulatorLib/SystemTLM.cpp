@@ -38,6 +38,8 @@
 #include "ssd/Tags.h"
 #include "OMTLMSimulatorLib.h"
 
+#include <algorithm>
+
 oms3::SystemTLM::SystemTLM(const ComRef& cref, Model* parentModel, System* parentSystem)
   : oms3::System(cref, oms_system_tlm, parentModel, parentSystem)
 {
@@ -228,5 +230,157 @@ oms_status_enu_t oms3::SystemTLM::setPositionAndOrientation(const oms3::ComRef &
     ifcname = std::string(head)+"."+std::string(tail);  //Apply to interface
   }
   omtlm_setInitialPositionAndOrientation(model, ifcname.c_str(), x, A);
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::SystemTLM::setInitialValues(ComRef cref, std::vector<double> values)
+{
+  oms3::ComRef tail(cref);
+  oms3::ComRef head = tail.pop_front();
+  SystemWC* system = reinterpret_cast<SystemWC*>(getSystem(head));
+
+  if(system == nullptr)
+    return logError_SubSystemNotInSystem(getName(),cref);
+
+  //Find interface log
+  bool found = false;
+  TLMBusConnector** tlmbuses = system->getTLMBusConnectors();
+  for (int i=0; tlmbuses[i]; ++i)
+  {
+    TLMBusConnector* bus = tlmbuses[i];
+    if(bus->getName() == tail) {
+      found = true;
+      if(bus->getDimensions() == 1 && bus->getCausality() != oms_causality_bidir) {
+        if(values.size() < 1) {
+          return logError("No initial TLM value specified.");
+        }
+        initialValues.insert(std::make_pair(cref, values));
+      }
+      else if(bus->getDimensions() == 1 && bus->getCausality() == oms_causality_bidir) {
+        if(values.size() < 2) {
+          return logError("Too few initial TLM values specified for 1D interface (should be 2, effort and flow).");
+        }
+        initialValues.insert(std::make_pair(cref, values));
+      }
+      else if(bus->getDimensions() == 3) {
+        if(values.size() < 12) {
+          return logError("Too few initial TLM values specified for 3D interface (should be 12, 3 forces, 3 torques, 3 velocities and 3 angular velocities).");
+        }
+        initialValues.insert(std::make_pair(cref, values));
+      }
+      break;
+    }
+  }
+
+  if(!found) {
+    return logError("TLMBusConnector \""+std::string(tail)+"\" not found in system \""+std::string(head)+"\"");
+  }
+
+  return oms_status_ok;
+}
+
+
+oms_status_enu_t oms3::SystemTLM::updateInitialValues(const oms3::ComRef cref)
+{
+  SystemWC* system = reinterpret_cast<SystemWC*>(getSystem(cref));
+  if(system == nullptr)
+    return logError_SubSystemNotInSystem(getName(),cref);
+  if (std::find(connectedsubsystems.begin(), connectedsubsystems.end(), cref) == connectedsubsystems.end())
+    return logError("System not connected to TLM sockets: "+std::string(cref));
+  TLMPlugin* plugin = plugins.find(system)->second;
+
+  //Apply initial values for signal and effort
+  TLMBusConnector** tlmbuses = system->getTLMBusConnectors();
+  for (int i=0; tlmbuses[i]; ++i)
+  {
+    TLMBusConnector* bus = tlmbuses[i];
+
+    if(bus->getDimensions() == 1 && bus->getCausality() == oms_causality_input) {
+      oms_tlm_sigrefs_signal_t tlmrefs;
+      double value;
+      if(initialValues.find(bus->getName()) != initialValues.end()) {
+        value = initialValues.find(bus->getName())->second[0];
+      }
+      else {
+        system->getReal(bus->getConnector(tlmrefs.y), value);
+      }
+      plugin->SetInitialValue(bus->getId(), value);
+    }
+    else if(bus->getDimensions() == 1 && bus->getCausality() == oms_causality_bidir &&
+            bus->getInterpolation() == oms_tlm_no_interpolation) {
+      oms_tlm_sigrefs_1d_t tlmrefs;
+      double effort,flow;
+      if(initialValues.find(bus->getName()) != initialValues.end()) {
+        effort = initialValues.find(bus->getName())->second[0];
+        flow = initialValues.find(bus->getName())->second[1];
+      }
+      else {
+        system->getReal(bus->getConnector(tlmrefs.f), effort);
+        system->getReal(bus->getConnector(tlmrefs.v), flow);
+      }
+      plugin->SetInitialForce1D(bus->getId(), effort);
+      plugin->SetInitialFlow1D(bus->getId(), flow);
+    }
+    else if(bus->getDimensions() == 1 && bus->getCausality() == oms_causality_bidir &&
+            bus->getInterpolation() != oms_tlm_no_interpolation) {
+      if(initialValues.find(bus->getName()) != initialValues.end()) {
+        double effort = initialValues.find(bus->getName())->second[0];
+        double flow = initialValues.find(bus->getName())->second[1];
+        plugin->SetInitialForce1D(bus->getId(), effort);
+        plugin->SetInitialFlow1D(bus->getId(), flow);
+      }
+    }
+    else if(bus->getDimensions() == 3 && bus->getCausality() == oms_causality_bidir &&
+            bus->getInterpolation() == oms_tlm_no_interpolation) {
+      oms_tlm_sigrefs_3d_t tlmrefs;
+      std::vector<double> effort(6,0);
+      std::vector<double> flow(6,0);
+      if(initialValues.find(bus->getName()) != initialValues.end()) {
+        effort[0] = initialValues.find(bus->getName())->second[0];
+        effort[1] = initialValues.find(bus->getName())->second[1];
+        effort[2] = initialValues.find(bus->getName())->second[2];
+        effort[3] = initialValues.find(bus->getName())->second[3];
+        effort[4] = initialValues.find(bus->getName())->second[4];
+        effort[5] = initialValues.find(bus->getName())->second[5];
+        flow[0] = initialValues.find(bus->getName())->second[6];
+        flow[1] = initialValues.find(bus->getName())->second[7];
+        flow[2] = initialValues.find(bus->getName())->second[8];
+        flow[3] = initialValues.find(bus->getName())->second[9];
+        flow[4] = initialValues.find(bus->getName())->second[10];
+        flow[5] = initialValues.find(bus->getName())->second[11];
+      }
+      else {
+        system->getReals(bus->getConnectors(tlmrefs.f), effort);
+        std::vector<int> flowrefs = tlmrefs.v;
+        flowrefs.insert(flowrefs.end(), tlmrefs.w.begin(), tlmrefs.w.end());
+        system->getReals(bus->getConnectors(flowrefs), flow);
+      }
+      plugin->SetInitialForce3D(bus->getId(), effort[0], effort[1], effort[2], effort[3], effort[4], effort[5]);
+      plugin->SetInitialFlow3D(bus->getId(), flow[0], flow[1], flow[2], flow[3], flow[4], flow[5]);
+    }
+    else if(bus->getDimensions() == 3 && bus->getCausality() == oms_causality_bidir &&
+            bus->getInterpolation() != oms_tlm_no_interpolation) {
+      oms_tlm_sigrefs_3d_t tlmrefs;
+      std::vector<double> effort(6,0);
+      std::vector<double> flow(6,0);
+      if(initialValues.find(bus->getName()) != initialValues.end()) {
+        effort[0] = initialValues.find(bus->getName())->second[0];
+        effort[1] = initialValues.find(bus->getName())->second[1];
+        effort[2] = initialValues.find(bus->getName())->second[2];
+        effort[3] = initialValues.find(bus->getName())->second[3];
+        effort[4] = initialValues.find(bus->getName())->second[4];
+        effort[5] = initialValues.find(bus->getName())->second[5];
+        flow[0] = initialValues.find(bus->getName())->second[6];
+        flow[1] = initialValues.find(bus->getName())->second[7];
+        flow[2] = initialValues.find(bus->getName())->second[8];
+        flow[3] = initialValues.find(bus->getName())->second[9];
+        flow[4] = initialValues.find(bus->getName())->second[10];
+        flow[5] = initialValues.find(bus->getName())->second[11];
+        plugin->SetInitialForce3D(bus->getId(), effort[0], effort[1], effort[2], effort[3], effort[4], effort[5]);
+        plugin->SetInitialFlow3D(bus->getId(), flow[0], flow[1], flow[2], flow[3], flow[4], flow[5]);
+      }
+    }
+  }
+
   return oms_status_ok;
 }
