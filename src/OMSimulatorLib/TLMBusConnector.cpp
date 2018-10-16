@@ -16,6 +16,13 @@ oms3::TLMBusConnector::TLMBusConnector(const oms3::ComRef &name, const std::stri
   this->dimensions = dimensions;
   this->interpolation = interpolation;
 
+  if(domain == "input")
+    causality = oms_causality_input;
+  else if(domain == "output")
+    causality = oms_causality_output;
+  else
+    causality = oms_causality_bidir;
+
   updateVariableTypes();
 }
 
