@@ -35,6 +35,7 @@
 #include "ComRef.h"
 #include "DirectedGraph.h"
 #include "Element.h"
+#include "FMUInfo.h"
 #include "Types.h"
 #include <fmilib.h>
 #include <pugixml.hpp>
@@ -59,6 +60,7 @@ namespace oms3
     oms_status_enu_t getAllResources(std::vector<std::string>& resources) const {resources.push_back(path); return oms_status_ok;}
     const std::string& getPath() const {return path;}
     oms_component_enu_t getType() const {return type;}
+    virtual const oms3::FMUInfo* getFMUInfo() const {return NULL;}
 
   protected:
     Component(const ComRef& cref, oms_component_enu_t type, System* parentSystem, const std::string& path);
