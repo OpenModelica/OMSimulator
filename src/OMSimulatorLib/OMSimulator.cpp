@@ -628,6 +628,28 @@ oms_status_enu_t oms3_getSubModelPath(const char* cref, char** path)
 
 oms_status_enu_t oms3_getFMUInfo(const char* cref, const oms_fmu_info_t** fmuInfo)
 {
+  oms3::ComRef tail(cref);
+  oms3::ComRef front = tail.pop_front();
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  front = tail.pop_front();
+  oms3::System* system = model->getSystem(front);
+  if (!system)
+    return logError_SystemNotInModel(model->getName(), front);
+
+  oms3::Component* component = system->getComponent(tail);
+  if (!component)
+    return logError_ComponentNotInSystem(system, tail);
+
+  if (component->getType() == oms_component_fmu)
+  {
+    *reinterpret_cast<const oms3::FMUInfo**>(fmuInfo) = component->getFMUInfo();
+    return oms_status_ok;
+  }
+
   return oms_status_error;
 }
 
@@ -795,7 +817,7 @@ oms_status_enu_t oms2_getSubModelPath(const char* cref, char** path)
 oms_status_enu_t oms2_getFMUInfo(const char* cref, const oms_fmu_info_t** fmuInfo)
 {
   logTrace();
-  return oms2::Scope::GetInstance().getFMUInfo(oms2::ComRef(cref), reinterpret_cast<const oms2::FMUInfo**>(fmuInfo));
+  return oms2::Scope::GetInstance().getFMUInfo(oms2::ComRef(cref), reinterpret_cast<const oms3::FMUInfo**>(fmuInfo));
 }
 
 oms_status_enu_t oms2_setConnectorGeometry(const char* connector, const ssd_connector_geometry_t* geometry)

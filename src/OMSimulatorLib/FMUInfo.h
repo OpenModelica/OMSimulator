@@ -37,7 +37,7 @@
 #include <string>
 #include <fmilib.h>
 
-namespace oms2
+namespace oms3
 {
   /**
    * \brief FMU info
@@ -45,11 +45,11 @@ namespace oms2
   class FMUInfo : protected oms_fmu_info_t
   {
   public:
-    FMUInfo(const std::string& path);
+    FMUInfo(const std::string& path, oms_fmi_kind_enu_t fmuKind);
     ~FMUInfo();
 
-    oms_status_enu_t setKind(fmi2_import_t* fmu);
-    oms_status_enu_t update(fmi2_import_t* fmu);
+    oms_status_enu_t setKind(fmi2_import_t* fmu); ///< TODO remove me! (only needed for oms2)
+    oms_status_enu_t update(fmi_version_enu_t version, fmi2_import_t* fmu);
 
     std::string getPath() const {return std::string(path);}
     oms_fmi_kind_enu_t getKind() const {return fmiKind;}
