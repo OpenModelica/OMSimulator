@@ -37,6 +37,7 @@ namespace oms3
     const oms3::ComRef getName() const {return oms3::ComRef(std::string(name));}
     const std::string getDomain() const {return domain;}
     const int getDimensions() const {return dimensions;}
+    const oms_causality_enu_t getCausality() const {return causality;}
     const oms_tlm_interpolation_t getInterpolation() const {return interpolation;}
     const oms2::ssd::ConnectorGeometry* getGeometry() const {return reinterpret_cast<oms2::ssd::ConnectorGeometry*>(geometry);}
 
@@ -44,6 +45,8 @@ namespace oms3
 
   private:
     void updateVariableTypes();
+
+    oms_causality_enu_t causality;
 
     std::map<oms3::ComRef, std::string> connectors;
     std::vector<std::string> variableTypes; //Used to keep track of TLM variable types
