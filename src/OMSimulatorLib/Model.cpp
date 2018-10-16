@@ -203,6 +203,11 @@ oms_status_enu_t oms3::Model::exportToSSD(pugi::xml_node& node) const
     if (oms_status_ok != system->exportToSSD(system_node))
       return logError("export of system failed");
   }
+
+  pugi::xml_node default_experiment = node.append_child(oms2::ssd::ssd_default_experiment);
+  default_experiment.append_attribute("startTime") = std::to_string(startTime).c_str();
+  default_experiment.append_attribute("stopTime") = std::to_string(stopTime).c_str();
+
   return oms_status_ok;
 }
 
@@ -235,6 +240,11 @@ oms_status_enu_t oms3::Model::importFromSSD(const pugi::xml_node& node)
 
       if (oms_status_ok != system->importFromSSD(*it))
         return oms_status_error;
+    }
+    else if (name == oms2::ssd::ssd_default_experiment)
+    {
+      startTime = it->attribute("startTime").as_double(0.0);
+      stopTime = it->attribute("stopTime").as_double(1.0);
     }
     else
       return logError("wrong xml schema detected");
@@ -304,6 +314,21 @@ oms_status_enu_t oms3::Model::getAllResources(std::vector<std::string>& resource
   if (system)
     return system->getAllResources(resources);
   return oms_status_ok;
+}
+
+oms_status_enu_t oms3::Model::initialize()
+{
+  return logError_NotImplemented;
+}
+
+oms_status_enu_t oms3::Model::simulate()
+{
+  return logError_NotImplemented;
+}
+
+oms_status_enu_t oms3::Model::terminate()
+{
+  return logError_NotImplemented;
 }
 
 /* ************************************ */
