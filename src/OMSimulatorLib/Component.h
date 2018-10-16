@@ -53,7 +53,6 @@ namespace oms3
     virtual ~Component();
 
     const ComRef& getName() const {return cref;}
-    virtual oms_status_enu_t exportToSSD(pugi::xml_node& node) const = 0;
     oms3::Element* getElement() {return &element;}
     oms3::Connector* getConnector(const ComRef &cref);
     oms_status_enu_t deleteResources();
@@ -61,6 +60,11 @@ namespace oms3
     const std::string& getPath() const {return path;}
     oms_component_enu_t getType() const {return type;}
     virtual const oms3::FMUInfo* getFMUInfo() const {return NULL;}
+    System* getParentSystem() const {return parentSystem;};
+
+    virtual oms_status_enu_t exportToSSD(pugi::xml_node& node) const = 0;
+    virtual oms_status_enu_t initialize() = 0;
+    virtual oms_status_enu_t terminate() = 0;
 
   protected:
     Component(const ComRef& cref, oms_component_enu_t type, System* parentSystem, const std::string& path);

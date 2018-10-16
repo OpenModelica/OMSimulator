@@ -74,3 +74,13 @@ oms_status_enu_t oms3::ComponentFMUME::exportToSSD(pugi::xml_node& node) const
         return oms_status_error;
   return oms_status_ok;
 }
+
+oms_status_enu_t oms3::ComponentFMUME::initialize()
+{
+  return logError_NotImplemented;
+}
+
+oms_status_enu_t oms3::ComponentFMUME::terminate()
+{
+  return logError_NotImplemented;
+}

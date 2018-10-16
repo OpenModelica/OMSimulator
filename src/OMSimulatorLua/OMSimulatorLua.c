@@ -473,6 +473,32 @@ static int OMSimulatorLua_oms3_addSubModel(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms3_initialize(const char* ident);
+static int OMSimulatorLua_oms3_initialize(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* ident = lua_tostring(L, 1);
+  oms_status_enu_t status = oms3_initialize(ident);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
+//oms_status_enu_t oms3_terminate(const char* ident);
+static int OMSimulatorLua_oms3_terminate(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* ident = lua_tostring(L, 1);
+  oms_status_enu_t status = oms3_terminate(ident);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
 /* ************************************ */
 /* OMSimulator 2.0                      */
 /*                                      */
@@ -1955,6 +1981,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms3_getVersion);
   REGISTER_LUA_CALL(oms3_import);
   REGISTER_LUA_CALL(oms3_importString);
+  REGISTER_LUA_CALL(oms3_initialize);
   REGISTER_LUA_CALL(oms3_list);
   REGISTER_LUA_CALL(oms3_newModel);
   REGISTER_LUA_CALL(oms3_parseModelName);
@@ -1964,6 +1991,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms3_setMaxLogFileSize);
   REGISTER_LUA_CALL(oms3_setTempDirectory);
   REGISTER_LUA_CALL(oms3_setWorkingDirectory);
+  REGISTER_LUA_CALL(oms3_terminate);
   /* ************************************ */
   /* OMSimulator 2.0                      */
   /*                                      */

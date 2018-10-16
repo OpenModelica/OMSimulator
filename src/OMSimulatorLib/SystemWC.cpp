@@ -80,3 +80,29 @@ oms_status_enu_t oms3::SystemWC::importFromSSD_SimulationInformation(const pugi:
   stepSize = node.child("FixedStepMaster").attribute("stepSize").as_double();
   return oms_status_ok;
 }
+
+oms_status_enu_t oms3::SystemWC::initialize()
+{
+  for (const auto& subsystem : getSubSystems())
+    if (oms_status_ok != subsystem.second->initialize())
+      return oms_status_error;
+
+  for (const auto& component : getComponents())
+    if (oms_status_ok != component.second->initialize())
+      return oms_status_error;
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::SystemWC::terminate()
+{
+  for (const auto& subsystem : getSubSystems())
+    if (oms_status_ok != subsystem.second->terminate())
+      return oms_status_error;
+
+  for (const auto& component : getComponents())
+    if (oms_status_ok != component.second->terminate())
+      return oms_status_error;
+
+  return oms_status_ok;
+}

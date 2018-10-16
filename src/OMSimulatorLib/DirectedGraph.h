@@ -59,8 +59,9 @@ namespace oms3
     void includeGraph(const DirectedGraph& graph);
 
     const std::vector< std::vector< std::pair<int, int> > >& getSortedConnections();
-    std::vector<Variable> nodes;
-    std::vector< std::pair<int, int> > edges;
+
+    const std::vector<Variable>& getNodes() {return nodes;}
+    const std::vector< std::pair<int, int> >& getEdges() {return edges;}
 
   private:
     std::deque< std::vector<int> > getSCCs();
@@ -70,6 +71,9 @@ namespace oms3
     static int getEdgeIndex(const std::vector< std::pair<int, int> >& edges, int from, int to);
 
   private:
+    std::vector<Variable> nodes;
+    std::vector< std::pair<int, int> > edges;
+
     std::vector< std::vector<int> > G;
     std::vector< std::vector< std::pair<int, int> > > sortedConnections;
     bool sortedConnectionsAreValid;

@@ -291,3 +291,40 @@ oms_status_enu_t oms3::ComponentFMUCS::exportToSSD(pugi::xml_node& node) const
         return oms_status_error;
   return oms_status_ok;
 }
+
+oms_status_enu_t oms3::ComponentFMUCS::initialize()
+{
+  // instantiate
+  jm_status_enu_t jmstatus;
+  fmi2_status_t fmistatus;
+
+  // load the FMU shared library
+  jmstatus = fmi2_import_create_dllfmu(fmu, fmi2_fmu_kind_cs, &callbackFunctions);
+  if (jm_status_error == jmstatus)
+    return logError("Could not create the DLL loading mechanism (C-API). Error: " + std::string(fmi2_import_get_last_error(fmu)));
+
+  jmstatus = fmi2_import_instantiate(fmu, getName().c_str(), fmi2_cosimulation, NULL, fmi2_false);
+  if (jm_status_error == jmstatus)
+    return logError("fmi2_import_instantiate failed");
+
+  // enterInitialization
+  fmistatus = fmi2_import_setup_experiment(fmu, fmi2_true, getParentSystem()->getTolerance(), getParentSystem()->getModel()->getStartTime(), fmi2_false, 1.0);
+  if (fmi2_status_ok != fmistatus) return logError("fmi2_import_setup_experiment failed");
+
+  fmistatus = fmi2_import_enter_initialization_mode(fmu);
+  if (fmi2_status_ok != fmistatus) return logError("fmi2_import_enter_initialization_mode failed");
+
+  // exitInitialization
+  fmistatus = fmi2_import_exit_initialization_mode(fmu);
+  if (fmi2_status_ok != fmistatus) return logError("fmi2_import_exit_initialization_mode failed");
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::ComponentFMUCS::terminate()
+{
+  fmi2_status_t fmistatus = fmi2_import_terminate(fmu);
+  if (fmi2_status_ok != fmistatus)
+    return logError_Termination(getName());
+  return oms_status_ok;
+}

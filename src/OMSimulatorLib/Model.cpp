@@ -292,10 +292,10 @@ oms_status_enu_t oms3::Model::exportToFile(const std::string& filename) const
   int argc = 4 + resources.size();
   char **argv = new char*[argc];
   int i=0;
-  argv[i++]="minizip";
-  argv[i++]="-o";
-  argv[i++]="-1";
-  argv[i++]="temp/model.ssp";
+  argv[i++] = (char*)"minizip";
+  argv[i++] = (char*)"-o";
+  argv[i++] = (char*)"-1";
+  argv[i++] = (char*)"temp/model.ssp";
   for (const auto& file : resources)
     argv[i++]=(char*)file.c_str();
   minizip(argc, argv);
@@ -318,7 +318,21 @@ oms_status_enu_t oms3::Model::getAllResources(std::vector<std::string>& resource
 
 oms_status_enu_t oms3::Model::initialize()
 {
-  return logError_NotImplemented;
+  if (oms_modelState_instantiated != modelState)
+    return logError_ModelInWrongState(getName());
+
+  if (!system)
+    return logError("Model doesn't contain a system");
+
+  modelState = oms_modelState_initialization;
+  if (oms_status_ok != system->initialize())
+  {
+    terminate();
+    return logError_Initialization(system->getFullName());
+  }
+
+  modelState = oms_modelState_simulation;
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms3::Model::simulate()
@@ -328,7 +342,17 @@ oms_status_enu_t oms3::Model::simulate()
 
 oms_status_enu_t oms3::Model::terminate()
 {
-  return logError_NotImplemented;
+  if (oms_modelState_instantiated == modelState)
+    return oms_status_ok;
+
+  if (!system)
+    return logError("Model doesn't contain a system");
+
+  if (oms_status_ok != system->terminate())
+    return logError_Termination(system->getFullName());
+
+  modelState = oms_modelState_instantiated;
+  return oms_status_ok;
 }
 
 /* ************************************ */
