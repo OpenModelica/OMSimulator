@@ -86,12 +86,12 @@ oms_status_enu_t oms3_addTLMConnection(const char* crefA, const char* crefB, dou
 oms_status_enu_t oms3_addExternalModel(const char* cref, const char* path, const char* startscript);
 oms_status_enu_t oms3_addSubModel(const char* cref, const char* fmuPath);
 oms_status_enu_t oms3_addExternalModel(const char* cref, const char* path, const char* startscript);
+oms_status_enu_t oms3_getSubModelPath(const char* cref, char** path);
+oms_status_enu_t oms3_getFMUInfo(const char* cref, const oms_fmu_info_t** fmuInfo);
 
 /* not implemented yet */
 oms_status_enu_t oms3_setSimulationInformation(const char* cref, ssd_simulation_information_t* info);
 oms_status_enu_t oms3_getSimulationInformation(const char* cref, ssd_simulation_information_t** info);
-oms_status_enu_t oms3_getSubModelPath(const char* cref, char** path);
-oms_status_enu_t oms3_getFMUInfo(const char* cref, const oms_fmu_info_t** fmuInfo);
 
 /* ************************************ */
 /* oms2                                 */
