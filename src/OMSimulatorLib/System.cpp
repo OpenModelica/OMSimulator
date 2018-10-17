@@ -209,6 +209,8 @@ oms_status_enu_t oms3::System::addSubSystem(const oms3::ComRef& cref, oms_system
       subelements.back() = reinterpret_cast<oms3_element_t*>(system->getElement());
       subelements.push_back(NULL);
       element.setSubElements(&subelements[0]);
+      if(this->type == oms_system_tlm)
+        tlmwrappers[cref] = TLMWrapper::NewTLMWrapperFromSystem((SystemWC*)system);
       return oms_status_ok;
     }
     return oms_status_error;
@@ -948,6 +950,8 @@ oms_status_enu_t oms3::System::addExternalModel(const oms3::ComRef &cref, std::s
       subelements.back() = reinterpret_cast<oms3_element_t*>(externalmodel->getElement());
       subelements.push_back(NULL);
       element.setSubElements(&subelements[0]);
+      if(this->type == oms_system_tlm)
+        tlmwrappers[cref] = TLMWrapper::NewTLMWrapperFromExternalModel(externalmodel);
       return oms_status_ok;
     }
   }

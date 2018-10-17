@@ -40,6 +40,7 @@
 #include "BusConnector.h"
 #include "TLMBusConnector.h"
 #include "ExternalModel.h"
+#include "TLMWrapper.h"
 
 #include <pugixml.hpp>
 #include <map>
@@ -106,6 +107,7 @@ namespace oms3
     std::map<ComRef, System*> subsystems;
     std::map<ComRef, Component*> components;
     std::map<ComRef, ExternalModel*> externalmodels;
+    std::map<ComRef, TLMWrapper*> tlmwrappers;
 
     oms3::Element element;
     std::vector<oms3::Connector*> connectors;   ///< last element is always NULL
