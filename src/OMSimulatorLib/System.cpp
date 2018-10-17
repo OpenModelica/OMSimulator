@@ -896,6 +896,35 @@ oms_status_enu_t oms3::System::addConnectorToBus(const oms3::ComRef &busCref, co
   return oms_status_ok;
 }
 
+oms_status_enu_t oms3::System::deleteConnectorFromBus(const oms3::ComRef& busCref, const oms3::ComRef& connectorCref)
+{
+  oms3::ComRef busTail(busCref);
+  oms3::ComRef busHead = busTail.pop_front();
+  oms3::ComRef connectorTail(connectorCref);
+  oms3::ComRef connectorHead = connectorTail.pop_front();
+  //If both bus and connector references the same subsystem, recurse into that subsystem
+  if(busHead == connectorHead) {
+    auto subsystem = subsystems.find(busHead);
+    if(subsystem != subsystems.end()) {
+      return subsystem->second->deleteConnectorFromBus(busTail,connectorTail);
+    }
+  }
+
+  if(!busTail.isEmpty() && !connectorTail.isEmpty() && busHead != connectorHead)
+    return logError("Connector and bus must belong to the same system");
+  if(type == oms_system_tlm)
+    return logError_NotForTlmSystem;
+
+  for(auto& bus : busconnectors) {
+    if(bus && bus->getName() == busCref) {
+      if (oms_status_ok != bus->deleteConnector(connectorCref)) {
+        return logError("Connector not found: "+std::string(connectorCref));
+      }
+    }
+  }
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms3::System::addConnectorToTLMBus(const oms3::ComRef &busCref, const oms3::ComRef &connectorCref, const std::string type)
 {
   oms3::ComRef busTail(busCref);
