@@ -63,6 +63,8 @@ namespace oms3
     oms_status_enu_t setInitialValues(ComRef cref, std::vector<double> values);
     oms_status_enu_t updateInitialValues(const oms3::ComRef cref);
 
+    oms_status_enu_t initializeSubSystem(ComRef cref);
+    oms_status_enu_t simulateSubSystem(ComRef cref, double stopTime);
     void writeToSockets(oms3::SystemWC *system, double time, Component *component);
     void readFromSockets(SystemWC *system, double time, Component *component);
 

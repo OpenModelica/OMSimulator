@@ -35,9 +35,11 @@
 #include "Model.h"
 #include "SystemWC.h"
 #include "Types.h"
+#include "OMTLMSimulatorLib.h"
 #include "ssd/Tags.h"
 #include "OMTLMSimulatorLib.h"
 
+#include <thread>
 #include <algorithm>
 
 oms3::SystemTLM::SystemTLM(const ComRef& cref, Model* parentModel, System* parentSystem)
@@ -114,7 +116,10 @@ oms_status_enu_t oms3::SystemTLM::importFromSSD_SimulationInformation(const pugi
 
 oms_status_enu_t oms3::SystemTLM::instantiate()
 {
-  return logError_NotImplemented;
+  for (const auto& subsystem : getSubSystems())
+    if (oms_status_ok != subsystem.second->instantiate())
+      return oms_status_error;
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms3::SystemTLM::initialize()
@@ -124,21 +129,70 @@ oms_status_enu_t oms3::SystemTLM::initialize()
   omtlm_checkPortAvailability(&monitorPort);
 #endif
 
-  omtlm_setAddress(model, address);
-  omtlm_setManagerPort(model, managerPort);
-  omtlm_setMonitorPort(model, monitorPort);
-
-  return logError_NotImplemented;
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms3::SystemTLM::terminate()
 {
-  return logError_NotImplemented;
+  for (const auto& subsystem : getSubSystems())
+    if (oms_status_ok != subsystem.second->terminate())
+      return oms_status_error;
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms3::SystemTLM::stepUntil(double stopTime)
 {
-  return logError_NotImplemented;
+  omtlm_setStartTime(model, getModel()->getStartTime());
+  omtlm_setStopTime(model, stopTime);
+
+  if(getSubSystems().empty() && getComponents().empty())
+    logWarning("oms3::TLMCompositeModel::stepUntil: Simulating empty model...");
+
+  logInfo("Starting TLM manager in new thread");
+
+  std::thread *masterThread = new std::thread(&omtlm_simulate, model);
+
+  logInfo("Connecting submodels to managers (threaded)");
+  std::string server = address + ":" + std::to_string(managerPort);
+  std::vector<std::thread> fmiConnectThreads;
+  for(auto it = getSubSystems().begin(); it!=getSubSystems().end(); ++it) {
+    System* subsystem = it->second;
+    fmiConnectThreads.push_back(std::thread(&oms3::SystemTLM::connectToSockets, this, subsystem->getCref(), server));
+  }
+  for(auto &thread : fmiConnectThreads)
+    thread.join();
+  for(auto it = getSubSystems().begin(); it!=getSubSystems().end(); ++it) {
+    if(find(connectedsubsystems.begin(), connectedsubsystems.end(), it->second->getCref()) == connectedsubsystems.end())
+      return logError("Failed to connect TLM subsystem: "+std::string(it->second->getCref()));
+  }
+
+  logInfo("Initializing TLM submodels (sequential)");
+  std::vector<std::thread> fmiInitializeThreads;
+  for(auto it = getSubSystems().begin(); it!=getSubSystems().end(); ++it) {
+    System *subsystem = it->second;
+    fmiInitializeThreads.push_back(std::thread(&oms3::SystemTLM::initializeSubSystem, this, subsystem->getCref()));
+  }
+  for(auto &thread : fmiInitializeThreads)
+    thread.join();
+  for(auto it = getSubSystems().begin(); it!=getSubSystems().end(); ++it) {
+    if(find(initializedsubsystems.begin(), initializedsubsystems.end(), it->second->getCref()) == initializedsubsystems.end())
+      return logError("Failed to initialize TLM subsystem: "+std::string(it->second->getCref()));
+  }
+
+  logInfo("Simulating TLM submodels (threaded).");
+  std::vector<std::thread> fmiModelThreads;
+  for(auto it = getSubSystems().begin(); it!=getSubSystems().end(); ++it) {
+    System* subsystem = it->second;
+    fmiModelThreads.push_back(std::thread(&oms3::SystemTLM::simulateSubSystem, this, subsystem->getCref(), stopTime));
+  }
+  for(auto &thread : fmiModelThreads)
+    thread.join();
+
+  masterThread->join();
+
+  logInfo("Simulation of TLM composite model "+std::string(getCref())+" complete.");
+
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms3::SystemTLM::connectToSockets(const oms3::ComRef cref, std::string server)
@@ -208,6 +262,10 @@ void oms3::SystemTLM::disconnectFromSockets(const oms3::ComRef cref)
 
 oms_status_enu_t oms3::SystemTLM::setSocketData(const std::string &address, int managerPort, int monitorPort)
 {
+  omtlm_setAddress(model, address);
+  omtlm_setManagerPort(model, managerPort);
+  omtlm_setMonitorPort(model, monitorPort);
+
   this->address = address;
   this->managerPort = managerPort;
   this->monitorPort = monitorPort;
@@ -384,6 +442,21 @@ oms_status_enu_t oms3::SystemTLM::updateInitialValues(const oms3::ComRef cref)
   }
 
   return oms_status_ok;
+}
+
+oms_status_enu_t oms3::SystemTLM::initializeSubSystem(oms3::ComRef cref)
+{
+  oms_status_enu_t status = getSubSystem(cref)->initialize();
+  if(status == oms_status_ok) {
+    initializedsubsystems.push_back(cref);
+  }
+  return status;
+}
+
+oms_status_enu_t oms3::SystemTLM::simulateSubSystem(oms3::ComRef cref, double stopTime)
+{
+  oms_status_enu_t status = getSubSystem(cref)->stepUntil(stopTime);
+  return status;
 }
 
 void oms3::SystemTLM::writeToSockets(SystemWC *system, double time, Component* component)
