@@ -52,11 +52,13 @@ namespace oms3
     virtual ~Component();
 
     const ComRef& getName() const {return cref;}
-    oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
+    virtual oms_status_enu_t exportToSSD(pugi::xml_node& node) const = 0;
     oms3::Element* getElement() {return &element;}
     oms3::Connector* getConnector(const ComRef &cref);
     oms_status_enu_t deleteResources();
     oms_status_enu_t getAllResources(std::vector<std::string>& resources) const {resources.push_back(path); return oms_status_ok;}
+    const std::string& getPath() const {return path;}
+    oms_component_enu_t getType() const {return type;}
 
   protected:
     Component(const ComRef& cref, oms_component_enu_t type, System* parentSystem, const std::string& path);

@@ -269,3 +269,17 @@ oms3::Component* oms3::ComponentFMUCS::NewComponent(const pugi::xml_node& node, 
 
   return component;
 }
+
+oms_status_enu_t oms3::ComponentFMUCS::exportToSSD(pugi::xml_node& node) const
+{
+  node.append_attribute("name") = this->getName().c_str();
+  node.append_attribute("type") = "application/x-fmu-sharedlibrary";
+  node.append_attribute("source") = getPath().c_str();
+  pugi::xml_node node_connectors = node.append_child(oms2::ssd::ssd_connectors);
+
+  for (const auto& connector : connectors)
+    if (connector)
+      if (oms_status_ok != connector->exportToSSD(node_connectors))
+        return oms_status_error;
+  return oms_status_ok;
+}
