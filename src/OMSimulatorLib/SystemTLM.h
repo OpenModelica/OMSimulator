@@ -52,6 +52,7 @@ namespace oms3
     oms_status_enu_t importFromSSD_SimulationInformation(const pugi::xml_node& node);
     oms_status_enu_t setSocketData(const std::string& address, int managerPort, int monitorPort);
     oms_status_enu_t setPositionAndOrientation(const ComRef &cref, std::vector<double> x, std::vector<double> A);
+    oms_status_enu_t simulate();
 
     oms_status_enu_t instantiate();
     oms_status_enu_t initialize();
@@ -61,9 +62,10 @@ namespace oms3
     void disconnectFromSockets(const oms3::ComRef cref);
     oms_status_enu_t setInitialValues(ComRef cref, std::vector<double> values);
     oms_status_enu_t updateInitialValues(const oms3::ComRef cref);
-
-    oms_status_enu_t initialize(ComRef cref, double startTime, double tolerance);         ///< not implemented
-    oms_status_enu_t simulate(ComRef cref, double stopTime, double loggingInterval);      ///< not implemented
+    oms_status_enu_t initialize(ComRef cref, double startTime, double tolerance);
+    oms_status_enu_t simulate(ComRef cref, double stopTime, double loggingInterval);
+    oms_status_enu_t initializeSubSystem(ComRef cref);
+    oms_status_enu_t simulateSubSystem(ComRef cref);
     void writeToSockets(oms3::SystemWC *system, double time, std::string fmu);
     void readFromSockets(SystemWC *system, double time, std::string fmu);
 

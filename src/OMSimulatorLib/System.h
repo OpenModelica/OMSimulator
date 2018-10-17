@@ -112,8 +112,6 @@ namespace oms3
     oms_system_enu_t type;
     Model* parentModel;
     System* parentSystem;
-    std::map<ComRef, System*> subsystems;
-    std::map<ComRef, Component*> components;
 
     Element element;
     std::vector<Connector*> connectors;   ///< last element is always NULL
@@ -123,6 +121,10 @@ namespace oms3
     std::vector<Connection*> connections; ///< last element is always NULL
 
     Connection* getConnection(const ComRef& crefA, const ComRef& crefB);
+  protected:
+    std::map<ComRef, System*> subsystems;
+    std::map<ComRef, Component*> components;
+    std::vector<oms3::TLMBusConnector*> tlmbusconnectors;
   };
 }
 

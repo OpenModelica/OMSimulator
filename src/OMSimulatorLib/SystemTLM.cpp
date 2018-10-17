@@ -35,9 +35,11 @@
 #include "Model.h"
 #include "SystemWC.h"
 #include "Types.h"
+#include "OMTLMSimulatorLib.h"
 #include "ssd/Tags.h"
 #include "OMTLMSimulatorLib.h"
 
+#include <thread>
 #include <algorithm>
 
 oms3::SystemTLM::SystemTLM(const ComRef& cref, Model* parentModel, System* parentSystem)
@@ -128,12 +130,78 @@ oms_status_enu_t oms3::SystemTLM::initialize()
   omtlm_setManagerPort(model, managerPort);
   omtlm_setMonitorPort(model, monitorPort);
 
-  return logError_NotImplemented;
+  ///< todo How obtain start time?
+  double startTime = 0;   ///< todo Remove
+
+  omtlm_setStartTime(model, startTime);
+
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms3::SystemTLM::terminate()
 {
   return logError_NotImplemented;
+}
+
+oms_status_enu_t oms3::SystemTLM::simulate()
+{
+  ///< todo: How obtian these variables?
+  double startTime=0;
+  double stopTime=1;        ///< todo: Remove
+  double loggingInterval=0; ///< todo: Remove
+  std::string address="";   ///< todo: Remove
+  int managerPort = 0;      ///< todo: Remove
+  double tolerance = 0;     ///< todo: Remove
+
+  if(subsystems.empty() && components.empty())
+    logWarning("oms2::TLMCompositeModel::stepUntil: Simulating empty model...");
+
+  logInfo("Starting TLM manager in new thread");
+  omtlm_setStopTime(model, stopTime);
+  omtlm_setLogStepSize(model, loggingInterval);
+  std::thread *masterThread = new std::thread(&omtlm_simulate, model);
+
+  logInfo("Connecting submodels to managers (threaded)");
+  std::string server = address + ":" + std::to_string(managerPort);
+  std::vector<std::thread> fmiConnectThreads;
+  for(auto it = subsystems.begin(); it!=subsystems.end(); ++it) {
+    System* subsystem = it->second;
+    fmiConnectThreads.push_back(std::thread(&oms3::SystemTLM::connectToSockets, this, subsystem->getName(), server));
+  }
+  for(auto &thread : fmiConnectThreads)
+    thread.join();
+  for(auto it = subsystems.begin(); it!=subsystems.end(); ++it) {
+    if(find(connectedsubsystems.begin(), connectedsubsystems.end(), it->second->getName()) == connectedsubsystems.end())
+      return logError("Failed to connect TLM subsystem: "+std::string(it->second->getName()));
+  }
+
+  logInfo("Initializing TLM submodels (sequential)");
+  std::vector<std::thread> fmiInitializeThreads;
+  for(auto it = subsystems.begin(); it!=subsystems.end(); ++it) {
+    System *subsystem = it->second;
+    fmiInitializeThreads.push_back(std::thread(&oms3::SystemTLM::initializeSubSystem, this, subsystem->getName()));
+  }
+  for(auto &thread : fmiInitializeThreads)
+    thread.join();
+  for(auto it = subsystems.begin(); it!=subsystems.end(); ++it) {
+    if(find(initializedsubsystems.begin(), initializedsubsystems.end(), it->second->getName()) == initializedsubsystems.end())
+      return logError("Failed to initialize TLM subsystem: "+std::string(it->second->getName()));
+  }
+
+  logInfo("Simulating TLM submodels (threaded).");
+  std::vector<std::thread> fmiModelThreads;
+  for(auto it = subsystems.begin(); it!=subsystems.end(); ++it) {
+    System* subsystem = it->second;
+    fmiModelThreads.push_back(std::thread(&oms3::SystemTLM::simulateSubSystem, this, subsystem->getName()));
+  }
+  for(auto &thread : fmiModelThreads)
+    thread.join();
+
+  masterThread->join();
+
+  logInfo("Simulation of TLM composite model "+std::string(getName())+" complete.");
+
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms3::SystemTLM::connectToSockets(const oms3::ComRef cref, std::string server)
@@ -383,6 +451,20 @@ oms_status_enu_t oms3::SystemTLM::updateInitialValues(const oms3::ComRef cref)
   }
 
   return oms_status_ok;
+}
+
+oms_status_enu_t oms3::SystemTLM::initializeSubSystem(oms3::ComRef cref)
+{
+  ///< todo: Implement when intialize is implemented in SystemWC
+  ///
+  initializedsubsystems.push_back(cref);
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::SystemTLM::simulateSubSystem(oms3::ComRef cref)
+{
+  ///< todo: Implement when simulate is implemented in SystemWC
+  return oms_status_fatal;
 }
 
 void oms3::SystemTLM::writeToSockets(SystemWC *system, double time, std::string fmu)
