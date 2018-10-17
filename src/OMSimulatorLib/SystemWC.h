@@ -56,6 +56,7 @@ namespace oms3
 
     oms_status_enu_t setReal(const oms3::ComRef& cref, double value);
     oms_status_enu_t setReals(const std::vector<oms3::ComRef> &crefs, std::vector<double> values);
+    oms_status_enu_t setRealInputDerivatives(const oms3::ComRef &cref, int order, double value);
     oms_status_enu_t getReal(const oms3::ComRef& sr, double& value);
     oms_status_enu_t getReals(const std::vector<oms3::ComRef> &sr, std::vector<double> &values);
 

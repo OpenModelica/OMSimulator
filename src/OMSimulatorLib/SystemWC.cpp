@@ -133,6 +133,12 @@ oms_status_enu_t oms3::SystemWC::setReals(const std::vector<oms3::ComRef> &crefs
 }
 
 //Placeholder function
+oms_status_enu_t oms3::SystemWC::setRealInputDerivatives(const oms3::ComRef &cref, int order, double value)
+{
+  return oms_status_fatal;
+}
+
+//Placeholder function
 oms_status_enu_t oms3::SystemWC::getReal(const oms3::ComRef &sr, double &value)
 {
   return oms_status_fatal;

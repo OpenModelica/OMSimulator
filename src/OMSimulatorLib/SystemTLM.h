@@ -65,6 +65,7 @@ namespace oms3
     oms_status_enu_t initialize(ComRef cref, double startTime, double tolerance);         ///< not implemented
     oms_status_enu_t simulate(ComRef cref, double stopTime, double loggingInterval);      ///< not implemented
     void writeToSockets(oms3::SystemWC *system, double time, std::string fmu);
+    void readFromSockets(SystemWC *system, double time, std::string fmu);
 
   protected:
     SystemTLM(const ComRef& cref, Model* parentModel, System* parentSystem);
