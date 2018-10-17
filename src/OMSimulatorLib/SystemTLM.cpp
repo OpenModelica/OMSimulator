@@ -384,3 +384,60 @@ oms_status_enu_t oms3::SystemTLM::updateInitialValues(const oms3::ComRef cref)
 
   return oms_status_ok;
 }
+
+void oms3::SystemTLM::writeToSockets(SystemWC *system, double time, std::string fmu)
+{
+  TLMBusConnector** tlmbuses = system->getTLMBusConnectors();
+  for(int i=0; tlmbuses[i]; ++i)
+  {
+    TLMBusConnector* bus = tlmbuses[i];
+
+    ///< todo Re-implement this name check somehow
+//    if(!fmu.empty() &&
+//       fmu != bus->getFMUName().toString()) {
+//      continue; //Ignore FMUs not specified in vector
+//    }
+
+    if(bus->getDimensions() == 1 && bus->getCausality() == oms_causality_output) {
+      oms_tlm_sigrefs_signal_t tlmrefs;
+      double value;
+      system->getReal(bus->getConnector(tlmrefs.y), value);
+      system->getTLMPlugin()->SetValueSignal(bus->getId(), time, value);
+    }
+    else if(bus->getDimensions() == 1 && bus->getCausality() == oms_causality_bidir) {
+      oms_tlm_sigrefs_1d_t tlmrefs;
+      double state, flow, force;
+      system->getReal(bus->getConnector(tlmrefs.x), state);
+      system->getReal(bus->getConnector(tlmrefs.v), flow);
+
+      //Important: OMTLMSimulator assumes that GetForce is called
+      //before SetMotion, in order to calculate the wave variable
+      system->getTLMPlugin()->GetForce1D(bus->getId(), time, flow, &force);
+
+      //Send the resulting motion back to master
+      system->getTLMPlugin()->SetMotion1D(bus->getId(), time, state, flow);
+    }
+    else if(bus->getDimensions() == 3 && bus->getCausality() == oms_causality_bidir) {
+
+      oms_tlm_sigrefs_3d_t tlmrefs;
+
+      std::vector<double> x(3,0);
+      std::vector<double> A(9,0);
+      std::vector<double> v(3,0);
+      std::vector<double> w(3,0);
+      std::vector<double> f(6,0);
+
+      system->getReals(bus->getConnectors(tlmrefs.x), x);
+      system->getReals(bus->getConnectors(tlmrefs.A), A);
+      system->getReals(bus->getConnectors(tlmrefs.v), v);
+      system->getReals(bus->getConnectors(tlmrefs.w), w);
+
+      //Important: OMTLMSimulator assumes that GetForce is called
+      //before SetMotion, in order to calculate the wave variable
+      system->getTLMPlugin()->GetForce3D(bus->getId(), time, &x[0], &A[0], &v[0], &w[0], &f[0]);
+
+      //Send the resulting motion back to master
+      system->getTLMPlugin()->SetMotion3D(bus->getId(), time, &x[0], &A[0], &v[0], &w[0]);
+    }
+  }
+}
