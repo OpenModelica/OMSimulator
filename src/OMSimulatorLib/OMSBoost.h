@@ -51,7 +51,15 @@ extern "C"
 #include <cstdlib>
 #include <string>
 #include <boost/version.hpp>
+// boost version < 1.57 has issues linking boost::filesystem::copy_file
+// https://svn.boost.org/trac10/ticket/6124
+#if (BOOST_VERSION < 105700)
+#define BOOST_NO_CXX11_SCOPED_ENUMS
+#endif // #if (BOOST_VERSION < 105700)
 #include <boost/filesystem.hpp>
+#if (BOOST_VERSION < 105700)
+#undef BOOST_NO_CXX11_SCOPED_ENUMS
+#endif // #if (BOOST_VERSION < 105700)
 
 #if (BOOST_VERSION >= 105300)
 #include <boost/lockfree/queue.hpp>
