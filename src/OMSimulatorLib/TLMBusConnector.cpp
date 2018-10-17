@@ -1,11 +1,13 @@
 #include "TLMBusConnector.h"
+#include "System.h"
 #include "Logging.h"
 #include "ssd/Tags.h"
 #include <iostream>
 #include <cstring>
 #include <algorithm>
 
-oms3::TLMBusConnector::TLMBusConnector(const oms3::ComRef &name, const std::string domain, const int dimensions, const oms_tlm_interpolation_t interpolation)
+oms3::TLMBusConnector::TLMBusConnector(const oms3::ComRef &name, const std::string domain, const int dimensions, const oms_tlm_interpolation_t interpolation, System* parentSystem)
+  : parentSystem(parentSystem)
 {
   std::string str(name);
   this->name = new char[str.size()+1];
@@ -188,6 +190,40 @@ oms_status_enu_t oms3::TLMBusConnector::registerToSockets(TLMPlugin *plugin)
   return oms_status_ok;
 }
 
+/**
+ * \brief Recurse into specified system and find component connected to conA
+ */
+oms3::Component *oms3::TLMBusConnector::getComponent(const ComRef& conA, System* system) const
+{
+  Connection** connections = system->getConnections(ComRef(""));
+  for(int i=0; connections[i]; ++i) {
+    if(connections[i]->getSignalA() == conA) {
+      ComRef conref = connections[i]->getSignalB().front();
+      ComRef sysref = conref.pop_front();
+      System* subsystem = system->getSubSystem(sysref);
+      if(subsystem) {
+        return getComponent(conref, system->getSubSystem(sysref));
+      }
+      return system->getComponent(conref.front());  //Will return NULL if component not found, which is fine
+    }
+  }
+
+  return NULL;
+}
+
+/**
+ * \brief Recursively find component (i.e. FMU) connected to the TLM bus. Return NULL if not found.
+ */
+oms3::Component *oms3::TLMBusConnector::getComponent()
+{
+  if(!parentSystem)
+    return nullptr;
+
+  if(!component)
+    component = getComponent(sortedConnectors[0], parentSystem); //Store pointer for performance reasons
+
+  return component;
+}
 
 void oms3::TLMBusConnector::updateVariableTypes()
 {
