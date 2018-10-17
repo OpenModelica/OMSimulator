@@ -105,7 +105,6 @@ namespace oms3
     System* parentSystem;
     std::map<ComRef, System*> subsystems;
     std::map<ComRef, Component*> components;
-    std::map<ComRef, ExternalModel*> externalmodels;
 
     oms3::Element element;
     std::vector<oms3::Connector*> connectors;   ///< last element is always NULL

@@ -32,50 +32,41 @@
 #ifndef _OMS_EXTERNAL_MODEL_H_
 #define _OMS_EXTERNAL_MODEL_H_
 
+#include "Component.h"
 #include "ComRef.h"
-#include "Option.h"
-#include "Variable.h"
 #include "Element.h"
+#include "Option.h"
 #include "Types.h"
+#include "Variable.h"
 #include <vector>
 #include <map>
 
 namespace oms3
 {
-  class ExternalModel
+  class ExternalModel : public Component
   {
   public:
-    static ExternalModel* NewModel(const oms3::ComRef& cref, const std::string& path, const std::string& startscript);
-
-    void setName(const ComRef& name) {element.setName(name);}
-    void setGeometry(const oms3::ssd::ElementGeometry& geometry) {element.setGeometry(&geometry);}
-
-    const ComRef getName() const {return oms3::ComRef(element.getName());}
-    const oms3::ssd::ElementGeometry* getGeometry() {return element.getGeometry();}
-    oms3::Element* getElement() {return &element;}
+    ~ExternalModel();
+    static ExternalModel* NewComponent(const oms3::ComRef& cref, System* parentSystem, const std::string& path, const std::string& startscript);
 
     oms_status_enu_t addTLMBus(const oms3::ComRef& cref, const std::string domain, const int dimensions, const oms_tlm_interpolation_t interpolation);
     oms3::TLMBusConnector *getTLMBusConnector(const oms3::ComRef &cref);
     oms_status_enu_t setRealParameter(const std::string& var, double value);
     oms_status_enu_t getRealParameter(const std::string& var, double& value);
-    const std::string& getModelPath() const {return path;}
     const std::string& getStartScript() const {return startscript;}
     const std::map<std::string, oms3::Option<double>>& getRealParameters() const {return realParameters;}
 
     oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
 
   protected:
-    ComRef cref;
-    oms3::Element element;
+    ExternalModel(const oms3::ComRef& cref, System* parentSystem, const std::string& path, const std::string& startscript);
+
+    // stop the compiler generating methods copying the object
+    ExternalModel(ExternalModel const& copy);            ///< not implemented
+    ExternalModel& operator=(ExternalModel const& copy); ///< not implemented
 
   private:
-    ExternalModel(const oms3::ComRef& cref, const std::string& path, const std::string& startscript);
-    ~ExternalModel();
-
-
-    std::string path;
     std::string startscript;
-
     std::map<std::string, oms3::Option<double>> realParameters;
     std::vector<oms3::TLMBusConnector*> tlmbusconnectors;
   };

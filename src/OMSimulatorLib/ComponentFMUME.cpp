@@ -31,6 +31,7 @@
 
 #include "ComponentFMUME.h"
 
+#include "ssd/Tags.h"
 #include "Logging.h"
 
 oms3::ComponentFMUME::ComponentFMUME(const ComRef& cref, System* parentSystem, const std::string& fmuPath)
@@ -58,4 +59,18 @@ oms3::Component* oms3::ComponentFMUME::NewComponent(const oms3::ComRef& cref, om
 
   Component* component = new ComponentFMUME(cref, parentSystem, fmuPath);
   return component;
+}
+
+oms_status_enu_t oms3::ComponentFMUME::exportToSSD(pugi::xml_node& node) const
+{
+  node.append_attribute("name") = this->getName().c_str();
+  node.append_attribute("type") = "application/x-fmu-sharedlibrary";
+  node.append_attribute("source") = getPath().c_str();
+  pugi::xml_node node_connectors = node.append_child(oms2::ssd::ssd_connectors);
+
+  for (const auto& connector : connectors)
+    if (connector)
+      if (oms_status_ok != connector->exportToSSD(node_connectors))
+        return oms_status_error;
+  return oms_status_ok;
 }

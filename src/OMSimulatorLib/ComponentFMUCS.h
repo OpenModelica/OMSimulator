@@ -55,6 +55,8 @@ namespace oms3
     static Component* NewComponent(const oms3::ComRef& cref, System* parentSystem, const std::string& fmuPath);
     static Component* NewComponent(const pugi::xml_node& node, oms3::System* parentSystem);
 
+    oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
+
   protected:
     ComponentFMUCS(const ComRef& cref, System* parentSystem, const std::string& fmuPath);
 
