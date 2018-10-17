@@ -59,6 +59,7 @@ namespace oms3
     static System* NewSystem(const ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem);
     System* getSystem(const ComRef& cref);
     Component* getComponent(const ComRef& cref);
+    System* getSubSystem(const ComRef& cref);
     const ComRef& getCref() const {return cref;}
     ComRef getFullCref() const;
     Element* getElement() {return &element;}

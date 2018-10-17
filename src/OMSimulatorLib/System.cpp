@@ -181,6 +181,15 @@ oms3::Component* oms3::System::getComponent(const oms3::ComRef& cref)
   return it->second;
 }
 
+oms3::System *oms3::System::getSubSystem(const oms3::ComRef &cref)
+{
+  auto it = subsystems.find(cref);
+  if (it == subsystems.end())
+    return NULL;
+
+  return it->second;
+}
+
 bool oms3::System::validCref(const oms3::ComRef& cref)
 {
   if (!cref.isValidIdent())
@@ -872,7 +881,7 @@ oms_status_enu_t oms3::System::addTLMBus(const oms3::ComRef& cref, const std::st
   if (!cref.isValidIdent())
     return logError("Not a valid ident: " + std::string(cref));
 
-  oms3::TLMBusConnector* bus = new oms3::TLMBusConnector(cref, domain, dimensions, interpolation);
+  oms3::TLMBusConnector* bus = new oms3::TLMBusConnector(cref, domain, dimensions, interpolation, this);
   tlmbusconnectors.back() = bus;
   tlmbusconnectors.push_back(NULL);
   element.setTLMBusConnectors(&tlmbusconnectors[0]);

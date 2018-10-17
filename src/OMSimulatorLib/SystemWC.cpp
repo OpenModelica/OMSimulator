@@ -193,8 +193,12 @@ oms_status_enu_t oms3::SystemWC::setReals(const std::vector<oms3::ComRef> &crefs
   return logError_NotImplemented;
 }
 
-//Placeholder function
 oms_status_enu_t oms3::SystemWC::getReals(const std::vector<oms3::ComRef> &sr, std::vector<double> &values)
+{
+  return logError_NotImplemented;
+}
+
+oms_status_enu_t oms3::SystemWC::setRealInputDerivatives(const oms3::ComRef &cref, int order, double value)
 {
   return logError_NotImplemented;
 }
