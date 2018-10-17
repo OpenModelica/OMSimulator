@@ -340,6 +340,9 @@ oms_status_enu_t oms2::TLMCompositeModel::setSocketData(const std::string& addre
 #ifndef _WIN32
   omtlm_checkPortAvailability(&managerPort);
   omtlm_checkPortAvailability(&monitorPort);
+  if(managerPort < 0 || monitorPort < 0) {
+    return logError("No available port(s) for socket communication");
+  }
 #endif
 
   omtlm_setAddress(model, address);
