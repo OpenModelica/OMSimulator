@@ -35,6 +35,7 @@
 #include "ComRef.h"
 #include "System.h"
 #include "Types.h"
+#include "TLMWrapper.h"
 
 namespace oms3
 {
