@@ -92,6 +92,7 @@ oms_status_enu_t oms3_instantiate(const char* cref);
 oms_status_enu_t oms3_initialize(const char* cref);
 oms_status_enu_t oms3_simulate(const char* cref);
 oms_status_enu_t oms3_terminate(const char* cref);
+oms_status_enu_t oms3_setTLMSocketData(const char* cref, const char* address, int managerPort, int monitorPort);
 
 /* not implemented yet */
 oms_status_enu_t oms3_setSimulationInformation(const char* cref, ssd_simulation_information_t* info);

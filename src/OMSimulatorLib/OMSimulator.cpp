@@ -42,6 +42,7 @@
 #include "ResultReader.h"
 #include "Scope.h"
 #include "System.h"
+#include "SystemTLM.h"
 #include "Types.h"
 #include "Version.h"
 
@@ -689,6 +690,27 @@ oms_status_enu_t oms3_terminate(const char* cref_)
     return logError_ModelNotInScope(cref);
 
   return model->terminate();
+}
+
+oms_status_enu_t oms3_setTLMSocketData(const char *cref, const char *address, int managerPort, int monitorPort)
+{
+  oms3::ComRef tail(cref);
+  oms3::ComRef front = tail.pop_front();
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(front);
+  if(!model)
+    return logError_ModelNotInScope(front);
+
+  front = tail.pop_front();
+  oms3::System* system = model->getSystem(front);
+  if(!system)
+    return logError_SystemNotInModel(model->getName(), front);
+
+  if(system->getType() != oms_system_tlm)
+    return logError_OnlyForTlmSystem;
+
+  oms3::SystemTLM* tlmsystem = reinterpret_cast<oms3::SystemTLM*>(system);
+  return tlmsystem->setSocketData(address, managerPort, monitorPort);
 }
 
 /* ************************************ */
