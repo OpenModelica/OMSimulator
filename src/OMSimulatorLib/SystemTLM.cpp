@@ -88,6 +88,24 @@ oms_status_enu_t oms3::SystemTLM::exportToSSD_SimulationInformation(pugi::xml_no
 
 oms_status_enu_t oms3::SystemTLM::importFromSSD_SimulationInformation(const pugi::xml_node& node)
 {
+  pugi::xml_node annotationsNode = node.child(oms2::ssd::ssd_annotations);
+  if(annotationsNode) {
+    pugi::xml_node annotationNode = annotationsNode.child(oms2::ssd::ssd_annotation);
+    if(annotationNode && std::string(annotationNode.attribute("type").as_string()) == "org.openmodelica") {
+      pugi::xml_node tlmmasterNode = annotationNode.child("oms:TlmMaster");
+      for (auto it = tlmmasterNode.attributes_begin(); it != tlmmasterNode.attributes_end(); ++it)
+      {
+        std::string name = it->name();
+        if (name == "ip")
+          this->address = it->value();
+        else if(name == "managerport")
+          this->managerPort = tlmmasterNode.attribute("managerport").as_int();
+        else if(name == "monitorport")
+          this->monitorPort = tlmmasterNode.attribute("monitorport").as_int();
+      }
+    }
+  }
+
   return oms_status_ok;
 }
 
