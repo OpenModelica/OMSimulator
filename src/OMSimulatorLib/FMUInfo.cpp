@@ -35,12 +35,12 @@
 
 #include <cstring>
 
-oms2::FMUInfo::FMUInfo(const std::string& path)
+oms3::FMUInfo::FMUInfo(const std::string& path, oms_fmi_kind_enu_t fmuKind)
 {
   this->author = NULL;
   this->copyright = NULL;
   this->description = NULL;
-  this->fmiKind = oms_fmi_kind_unknown;
+  this->fmiKind = fmuKind;
   this->fmiVersion = NULL;
   this->generationDateAndTime = NULL;
   this->generationTool = NULL;
@@ -59,7 +59,7 @@ oms2::FMUInfo::FMUInfo(const std::string& path)
   this->canInterpolateInputs = false;
 }
 
-oms2::FMUInfo::~FMUInfo()
+oms3::FMUInfo::~FMUInfo()
 {
   if (this->author) delete[] this->author;
   if (this->copyright) delete[] this->copyright;
@@ -74,7 +74,7 @@ oms2::FMUInfo::~FMUInfo()
   if (this->version) delete[] this->version;
 }
 
-oms_status_enu_t oms2::FMUInfo::setKind(fmi2_import_t* fmu)
+oms_status_enu_t oms3::FMUInfo::setKind(fmi2_import_t* fmu)
 {
   // read FMU kind
   fmi2_fmu_kind_enu_t fmuKind = fmi2_import_get_fmu_kind(fmu);
@@ -102,7 +102,7 @@ oms_status_enu_t oms2::FMUInfo::setKind(fmi2_import_t* fmu)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms2::FMUInfo::update(fmi2_import_t* fmu)
+oms_status_enu_t oms3::FMUInfo::update(fmi_version_enu_t version, fmi2_import_t* fmu)
 {
   std::string value;
 
@@ -115,7 +115,7 @@ oms_status_enu_t oms2::FMUInfo::update(fmi2_import_t* fmu)
   value = std::string(fmi2_import_get_description(fmu));
   this->description = new char[value.size()+1]; strcpy(this->description, value.c_str());
 
-  value = std::string(fmi2_import_get_version(fmu));
+  value = std::string(fmi_version_to_string(version));
   this->fmiVersion = new char[value.size()+1]; strcpy(this->fmiVersion, value.c_str());
 
   value = std::string(fmi2_import_get_generation_date_and_time(fmu));

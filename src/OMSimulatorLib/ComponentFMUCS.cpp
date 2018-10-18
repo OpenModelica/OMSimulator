@@ -40,7 +40,7 @@
 #include <JM/jm_portability.h>
 
 oms3::ComponentFMUCS::ComponentFMUCS(const ComRef& cref, System* parentSystem, const std::string& fmuPath)
-  : oms3::Component(cref, oms_component_fmu, parentSystem, fmuPath)
+  : oms3::Component(cref, oms_component_fmu, parentSystem, fmuPath), fmuInfo(fmuPath, oms_fmi_kind_cs)
 {
 }
 
@@ -117,6 +117,14 @@ oms3::Component* oms3::ComponentFMUCS::NewComponent(const oms3::ComRef& cref, om
   if (!component->fmu)
   {
     logError("Error parsing modelDescription.xml");
+    delete component;
+    return NULL;
+  }
+
+  // update FMU info
+  if (oms_status_ok != component->fmuInfo.update(version, component->fmu))
+  {
+    logError("Error importing FMU attributes");
     delete component;
     return NULL;
   }

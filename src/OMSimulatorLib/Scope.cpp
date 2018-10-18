@@ -805,7 +805,7 @@ oms_status_enu_t oms2::Scope::getSubModelPath(const oms2::ComRef& cref, char** p
   return oms_status_error;
 }
 
-oms_status_enu_t oms2::Scope::getFMUInfo(const oms2::ComRef& cref, const oms2::FMUInfo** fmuInfo)
+oms_status_enu_t oms2::Scope::getFMUInfo(const oms2::ComRef& cref, const oms3::FMUInfo** fmuInfo)
 {
   logTrace();
 

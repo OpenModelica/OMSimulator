@@ -54,6 +54,7 @@ namespace oms3
 
     static Component* NewComponent(const oms3::ComRef& cref, System* parentSystem, const std::string& fmuPath);
     static Component* NewComponent(const pugi::xml_node& node, oms3::System* parentSystem);
+    const oms3::FMUInfo* getFMUInfo() const {return &(this->fmuInfo);}
 
     oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
 
@@ -81,6 +82,7 @@ namespace oms3
     std::map<std::string, Option<int>> integerParameters;
     std::map<std::string, Option<bool>> booleanParameters;
 
+    oms3::FMUInfo fmuInfo;
   };
 }
 
