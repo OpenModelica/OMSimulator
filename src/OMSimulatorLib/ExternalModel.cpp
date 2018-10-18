@@ -136,6 +136,11 @@ oms_status_enu_t oms3::ExternalModel::exportToSSD(pugi::xml_node& node) const
   return oms_status_ok;
 }
 
+oms_status_enu_t oms3::ExternalModel::instantiate()
+{
+  return logError_NotImplemented;
+}
+
 oms_status_enu_t oms3::ExternalModel::initialize()
 {
   return logError_NotImplemented;

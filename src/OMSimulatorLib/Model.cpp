@@ -59,6 +59,9 @@ oms3::Model::Model(const oms3::ComRef& cref, const std::string& tempDir)
 
 oms3::Model::~Model()
 {
+  if (oms_modelState_terminated != modelState)
+    terminate();
+
   if (system)
     delete system;
 }
@@ -316,6 +319,25 @@ oms_status_enu_t oms3::Model::getAllResources(std::vector<std::string>& resource
   return oms_status_ok;
 }
 
+oms_status_enu_t oms3::Model::instantiate()
+{
+  if (oms_modelState_terminated != modelState)
+    return logError_ModelInWrongState(getName());
+
+  if (!system)
+    return logError("Model doesn't contain a system");
+
+  modelState = oms_modelState_initialization;
+  if (oms_status_ok != system->instantiate())
+  {
+    terminate();
+    return oms_status_error;
+  }
+
+  modelState = oms_modelState_instantiated;
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms3::Model::initialize()
 {
   if (oms_modelState_instantiated != modelState)
@@ -342,8 +364,11 @@ oms_status_enu_t oms3::Model::simulate()
 
 oms_status_enu_t oms3::Model::terminate()
 {
-  if (oms_modelState_instantiated == modelState)
+  if (oms_modelState_terminated == modelState)
     return oms_status_ok;
+
+  if (oms_modelState_instantiated == modelState && oms_status_ok != system->initialize())
+    return logError_Termination(system->getFullName());
 
   if (!system)
     return logError("Model doesn't contain a system");
@@ -351,7 +376,7 @@ oms_status_enu_t oms3::Model::terminate()
   if (oms_status_ok != system->terminate())
     return logError_Termination(system->getFullName());
 
-  modelState = oms_modelState_instantiated;
+  modelState = oms_modelState_terminated;
   return oms_status_ok;
 }
 

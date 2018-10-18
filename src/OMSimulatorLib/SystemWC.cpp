@@ -81,6 +81,19 @@ oms_status_enu_t oms3::SystemWC::importFromSSD_SimulationInformation(const pugi:
   return oms_status_ok;
 }
 
+oms_status_enu_t oms3::SystemWC::instantiate()
+{
+  for (const auto& subsystem : getSubSystems())
+    if (oms_status_ok != subsystem.second->instantiate())
+      return oms_status_error;
+
+  for (const auto& component : getComponents())
+    if (oms_status_ok != component.second->instantiate())
+      return oms_status_error;
+
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms3::SystemWC::initialize()
 {
   for (const auto& subsystem : getSubSystems())
