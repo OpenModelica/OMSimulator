@@ -50,6 +50,7 @@ typedef enum {
 } oms_status_enu_t;
 
 typedef enum {
+  oms_modelState_terminated,
   oms_modelState_instantiated,
   oms_modelState_initialization,
   oms_modelState_simulation

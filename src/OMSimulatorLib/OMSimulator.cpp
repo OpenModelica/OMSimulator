@@ -653,6 +653,17 @@ oms_status_enu_t oms3_getFMUInfo(const char* cref, const oms_fmu_info_t** fmuInf
   return oms_status_error;
 }
 
+oms_status_enu_t oms3_instantiate(const char* cref_)
+{
+  oms3::ComRef cref(cref_);
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(cref);
+  if (!model)
+    return logError_ModelNotInScope(cref);
+
+  return model->instantiate();
+}
+
 oms_status_enu_t oms3_initialize(const char* cref_)
 {
   oms3::ComRef cref(cref_);

@@ -95,6 +95,7 @@ namespace oms3
     const std::map<ComRef, Component*>& getComponents() {return components;}
     double getTolerance() {return 1e-4;}
 
+    virtual oms_status_enu_t instantiate() = 0;
     virtual oms_status_enu_t initialize() = 0;
     virtual oms_status_enu_t terminate() = 0;
 
