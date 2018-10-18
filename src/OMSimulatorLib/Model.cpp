@@ -282,10 +282,10 @@ oms_status_enu_t oms3::Model::exportToFile(const std::string& filename) const
   int argc = 4 + resources.size();
   char **argv = new char*[argc];
   int i=0;
-  argv[i++]="minizip";
-  argv[i++]="-o";
-  argv[i++]="-1";
-  argv[i++]="temp/model.ssp";
+  argv[i++]=(char*)"minizip";
+  argv[i++]=(char*)"-o";
+  argv[i++]=(char*)"-1";
+  argv[i++]=(char*)"temp/model.ssp";
   for (const auto& file : resources)
     argv[i++]=(char*)file.c_str();
   minizip(argc, argv);
