@@ -653,6 +653,33 @@ oms_status_enu_t oms3_getFMUInfo(const char* cref, const oms_fmu_info_t** fmuInf
   return oms_status_error;
 }
 
+oms_status_enu_t oms3_initialize(const char* cref_)
+{
+  oms3::ComRef cref(cref_);
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(cref);
+  if (!model)
+    return logError_ModelNotInScope(cref);
+
+  return model->initialize();
+}
+
+oms_status_enu_t oms3_simulate(const char* cref)
+{
+  return logError_NotImplemented;
+}
+
+oms_status_enu_t oms3_terminate(const char* cref_)
+{
+  oms3::ComRef cref(cref_);
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(cref);
+  if (!model)
+    return logError_ModelNotInScope(cref);
+
+  return model->terminate();
+}
+
 /* ************************************ */
 /* OMSimulator 2.0                      */
 /*                                      */

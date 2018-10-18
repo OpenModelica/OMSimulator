@@ -88,3 +88,13 @@ oms_status_enu_t oms3::SystemSC::importFromSSD_SimulationInformation(const pugi:
   initialStepSize = node.child("VariableStepSolver").attribute("initialStepSize").as_double();
   return oms_status_ok;
 }
+
+oms_status_enu_t oms3::SystemSC::initialize()
+{
+  return logError_NotImplemented;
+}
+
+oms_status_enu_t oms3::SystemSC::terminate()
+{
+  return logError_NotImplemented;
+}

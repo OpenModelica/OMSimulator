@@ -141,13 +141,13 @@ oms_status_enu_t oms3::Scope::miniunz(const std::string& filename, const std::st
   int argc = systemStructure ? 6 : 5;
   char **argv = new char*[argc];
   int i=0;
-  argv[i++]="miniunz";
-  argv[i++]="-xo";
-  argv[i++]=(char*)filename.c_str();
+  argv[i++] = (char*)"miniunz";
+  argv[i++] = (char*)"-xo";
+  argv[i++] = (char*)filename.c_str();
   if (systemStructure)
-    argv[i++]="SystemStructure.ssd";
-  argv[i++]="-d";
-  argv[i++]=(char*)extractdir.c_str();
+    argv[i++] = (char*)"SystemStructure.ssd";
+  argv[i++] = (char*)"-d";
+  argv[i++] = (char*)extractdir.c_str();
   int status = ::miniunz(argc, argv);
   delete[] argv;
   std::string cd2 = Scope::GetInstance().getWorkingDirectory();

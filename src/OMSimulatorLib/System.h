@@ -54,43 +54,49 @@ namespace oms3
   public:
     virtual ~System();
 
-    static System* NewSystem(const oms3::ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem);
-    System* getSystem(const oms3::ComRef& cref);
-    Component* getComponent(const oms3::ComRef& cref);
+    static System* NewSystem(const ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem);
+    System* getSystem(const ComRef& cref);
+    Component* getComponent(const ComRef& cref);
     const ComRef& getName() const {return cref;}
     ComRef getFullName();
-    oms3::Element* getElement() {return &element;}
+    Element* getElement() {return &element;}
     oms_status_enu_t list(const ComRef& cref, char** contents);
     oms_system_enu_t getType() const {return type;}
-    oms_status_enu_t addSubSystem(const oms3::ComRef& cref, oms_system_enu_t type);
-    oms_status_enu_t addSubModel(const oms3::ComRef& cref, const std::string& fmuPath);
-    bool validCref(const oms3::ComRef& cref);
+    oms_status_enu_t addSubSystem(const ComRef& cref, oms_system_enu_t type);
+    oms_status_enu_t addSubModel(const ComRef& cref, const std::string& fmuPath);
+    bool validCref(const ComRef& cref);
     oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
     oms_status_enu_t importFromSSD(const pugi::xml_node& node);
     virtual oms_status_enu_t exportToSSD_SimulationInformation(pugi::xml_node& node) const = 0;
     virtual oms_status_enu_t importFromSSD_SimulationInformation(const pugi::xml_node& node) = 0;
-    void setGeometry(const oms3::ssd::ElementGeometry& geometry) {element.setGeometry(&geometry);}
-    oms_status_enu_t addConnector(const oms3::ComRef& cref, oms_causality_enu_t causality, oms_signal_type_enu_t type);
-    oms3::Connector *getConnector(const oms3::ComRef& cref);
-    oms3::BusConnector *getBusConnector(const oms3::ComRef& cref);
-    oms3::TLMBusConnector *getTLMBusConnector(const oms3::ComRef& cref);
+    void setGeometry(const ssd::ElementGeometry& geometry) {element.setGeometry(&geometry);}
+    oms_status_enu_t addConnector(const ComRef& cref, oms_causality_enu_t causality, oms_signal_type_enu_t type);
+    Connector *getConnector(const ComRef& cref);
+    BusConnector *getBusConnector(const ComRef& cref);
+    TLMBusConnector *getTLMBusConnector(const ComRef& cref);
     Connection **getConnections(const ComRef &cref);
-    oms_status_enu_t addConnection(const oms3::ComRef& crefA, const oms3::ComRef& crefB);
-    oms_status_enu_t updateConnection(const oms3::ComRef& crefA, const oms3::ComRef& crefB, const oms3_connection_t* connection);
-    oms_status_enu_t addTLMConnection(const oms3::ComRef& crefA, const oms3::ComRef& crefB, double delay, double alpha, double linearimpedance, double angularimpedance);
-    oms_status_enu_t setConnectorGeometry(const oms3::ComRef& cref, const oms2::ssd::ConnectorGeometry* geometry);
-    oms_status_enu_t setConnectionGeometry(const oms3::ComRef &crefA, const oms3::ComRef &crefB, const oms2::ssd::ConnectionGeometry* geometry);
-    oms_status_enu_t addBus(const oms3::ComRef& cref);
-    oms_status_enu_t addTLMBus(const oms3::ComRef& cref, const std::string domain, const int dimensions, const oms_tlm_interpolation_t interpolation);
-    oms_status_enu_t addConnectorToBus(const oms3::ComRef& busCref, const oms3::ComRef& connectorCref);
-    oms_status_enu_t deleteConnectorFromBus(const oms3::ComRef& busCref, const oms3::ComRef& connectorCref);
-    oms_status_enu_t addConnectorToTLMBus(const oms3::ComRef& busCref, const oms3::ComRef& connectorCref, const std::string type);
-    oms_status_enu_t setBusGeometry(const oms3::ComRef& cref, const oms2::ssd::ConnectorGeometry* geometry);
-    oms_status_enu_t setTLMBusGeometry(const oms3::ComRef& cref, const oms2::ssd::ConnectorGeometry* geometry);
+    oms_status_enu_t addConnection(const ComRef& crefA, const ComRef& crefB);
+    oms_status_enu_t updateConnection(const ComRef& crefA, const ComRef& crefB, const oms3_connection_t* connection);
+    oms_status_enu_t addTLMConnection(const ComRef& crefA, const ComRef& crefB, double delay, double alpha, double linearimpedance, double angularimpedance);
+    oms_status_enu_t setConnectorGeometry(const ComRef& cref, const oms2::ssd::ConnectorGeometry* geometry);
+    oms_status_enu_t setConnectionGeometry(const ComRef &crefA, const ComRef &crefB, const oms2::ssd::ConnectionGeometry* geometry);
+    oms_status_enu_t addBus(const ComRef& cref);
+    oms_status_enu_t addTLMBus(const ComRef& cref, const std::string domain, const int dimensions, const oms_tlm_interpolation_t interpolation);
+    oms_status_enu_t addConnectorToBus(const ComRef& busCref, const ComRef& connectorCref);
+    oms_status_enu_t deleteConnectorFromBus(const ComRef& busCref, const ComRef& connectorCref);
+    oms_status_enu_t addConnectorToTLMBus(const ComRef& busCref, const ComRef& connectorCref, const std::string type);
+    oms_status_enu_t setBusGeometry(const ComRef& cref, const oms2::ssd::ConnectorGeometry* geometry);
+    oms_status_enu_t setTLMBusGeometry(const ComRef& cref, const oms2::ssd::ConnectorGeometry* geometry);
     oms_status_enu_t addExternalModel(const ComRef &cref, std::string path, std::string startscript);
     Model* getModel();
     bool copyResources();
     oms_status_enu_t getAllResources(std::vector<std::string>& resources);
+    const std::map<ComRef, System*>& getSubSystems() {return subsystems;}
+    const std::map<ComRef, Component*>& getComponents() {return components;}
+    double getTolerance() {return 1e-4;}
+
+    virtual oms_status_enu_t initialize() = 0;
+    virtual oms_status_enu_t terminate() = 0;
 
   protected:
     System(const ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem);
@@ -107,14 +113,14 @@ namespace oms3
     std::map<ComRef, System*> subsystems;
     std::map<ComRef, Component*> components;
 
-    oms3::Element element;
-    std::vector<oms3::Connector*> connectors;   ///< last element is always NULL
+    Element element;
+    std::vector<Connector*> connectors;   ///< last element is always NULL
     std::vector<oms3_element_t*> subelements;   ///< last element is always NULL; don't free it
-    std::vector<oms3::BusConnector*> busconnectors;
-    std::vector<oms3::TLMBusConnector*> tlmbusconnectors;
-    std::vector<oms3::Connection*> connections; ///< last element is always NULL
+    std::vector<BusConnector*> busconnectors;
+    std::vector<TLMBusConnector*> tlmbusconnectors;
+    std::vector<Connection*> connections; ///< last element is always NULL
 
-    oms3::Connection* getConnection(const oms3::ComRef& crefA, const oms3::ComRef& crefB);
+    Connection* getConnection(const ComRef& crefA, const ComRef& crefB);
   };
 }
 
