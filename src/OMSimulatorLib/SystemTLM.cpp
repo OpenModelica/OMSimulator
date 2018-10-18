@@ -85,6 +85,11 @@ oms_status_enu_t oms3::SystemTLM::importFromSSD_SimulationInformation(const pugi
   return oms_status_ok;
 }
 
+oms_status_enu_t oms3::SystemTLM::instantiate()
+{
+  return logError_NotImplemented;
+}
+
 oms_status_enu_t oms3::SystemTLM::initialize()
 {
   return logError_NotImplemented;

@@ -292,9 +292,8 @@ oms_status_enu_t oms3::ComponentFMUCS::exportToSSD(pugi::xml_node& node) const
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::ComponentFMUCS::initialize()
+oms_status_enu_t oms3::ComponentFMUCS::instantiate()
 {
-  // instantiate
   jm_status_enu_t jmstatus;
   fmi2_status_t fmistatus;
 
@@ -313,6 +312,13 @@ oms_status_enu_t oms3::ComponentFMUCS::initialize()
 
   fmistatus = fmi2_import_enter_initialization_mode(fmu);
   if (fmi2_status_ok != fmistatus) return logError("fmi2_import_enter_initialization_mode failed");
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::ComponentFMUCS::initialize()
+{
+  fmi2_status_t fmistatus;
 
   // exitInitialization
   fmistatus = fmi2_import_exit_initialization_mode(fmu);

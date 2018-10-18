@@ -67,6 +67,7 @@ namespace oms3
     oms3::Element** getElements() {return &elements[0];}
     oms_status_enu_t getAllResources(std::vector<std::string>& resources) const;
 
+    oms_status_enu_t instantiate();
     oms_status_enu_t initialize();
     oms_status_enu_t simulate();
     oms_status_enu_t terminate();
@@ -93,7 +94,7 @@ namespace oms3
     std::vector<oms3::Element*> elements;
     bool copy_resources = true;
 
-    oms_modelState_enu_t modelState = oms_modelState_instantiated;
+    oms_modelState_enu_t modelState = oms_modelState_terminated;
 
     // ssd:DefaultExperiment
     double startTime = 0.0;

@@ -57,6 +57,7 @@ namespace oms3
     const oms3::FMUInfo* getFMUInfo() const {return &(this->fmuInfo);}
 
     oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
+    oms_status_enu_t instantiate();
     oms_status_enu_t initialize();
     oms_status_enu_t terminate();
 

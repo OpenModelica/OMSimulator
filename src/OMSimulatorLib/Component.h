@@ -63,6 +63,7 @@ namespace oms3
     System* getParentSystem() const {return parentSystem;};
 
     virtual oms_status_enu_t exportToSSD(pugi::xml_node& node) const = 0;
+    virtual oms_status_enu_t instantiate() = 0;
     virtual oms_status_enu_t initialize() = 0;
     virtual oms_status_enu_t terminate() = 0;
 
