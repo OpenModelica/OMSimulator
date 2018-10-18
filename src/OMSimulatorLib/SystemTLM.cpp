@@ -35,14 +35,20 @@
 #include "Model.h"
 #include "Types.h"
 #include "ssd/Tags.h"
+#include "OMTLMSimulatorLib.h"
 
 oms3::SystemTLM::SystemTLM(const ComRef& cref, Model* parentModel, System* parentSystem)
   : oms3::System(cref, oms_system_tlm, parentModel, parentSystem)
 {
+  logTrace();
+  model = omtlm_newModel(cref.c_str());
+  omtlm_setLogLevel(model, 1);
+  omtlm_setNumLogStep(model, 1000);
 }
 
 oms3::SystemTLM::~SystemTLM()
 {
+  omtlm_unloadModel(model);
 }
 
 oms3::System* oms3::SystemTLM::NewSystem(const oms3::ComRef& cref, oms3::Model* parentModel, oms3::System* parentSystem)
@@ -73,9 +79,9 @@ oms_status_enu_t oms3::SystemTLM::exportToSSD_SimulationInformation(pugi::xml_no
   node_annotation.append_attribute("type") = oms::annotation_type;
 
   pugi::xml_node node_tlm = node_annotation.append_child(oms::tlm_master);
-  //node_tlm.append_attribute("ip") = ;
-  //node_tlm.append_attribute("managerport") = ;
-  //node_tlm.append_attribute("monitorport") = ;
+  node_tlm.append_attribute("ip") = address.c_str();
+  node_tlm.append_attribute("managerport") = std::to_string(managerPort).c_str();
+  node_tlm.append_attribute("monitorport") = std::to_string(monitorPort).c_str();
 
   return oms_status_ok;
 }
@@ -92,10 +98,27 @@ oms_status_enu_t oms3::SystemTLM::instantiate()
 
 oms_status_enu_t oms3::SystemTLM::initialize()
 {
+#ifndef _WIN32
+  omtlm_checkPortAvailability(&managerPort);
+  omtlm_checkPortAvailability(&monitorPort);
+#endif
+
+  omtlm_setAddress(model, address);
+  omtlm_setManagerPort(model, managerPort);
+  omtlm_setMonitorPort(model, monitorPort);
+
   return logError_NotImplemented;
 }
 
 oms_status_enu_t oms3::SystemTLM::terminate()
 {
   return logError_NotImplemented;
+}
+
+oms_status_enu_t oms3::SystemTLM::setSocketData(const std::string &address, int managerPort, int monitorPort)
+{
+  this->address = address;
+  this->managerPort = managerPort;
+  this->monitorPort = monitorPort;
+  return oms_status_ok;
 }

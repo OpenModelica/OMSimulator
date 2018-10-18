@@ -512,6 +512,26 @@ static int OMSimulatorLua_oms3_terminate(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms3_setTLMSocketData(const char* cref, const char* address, int managerPort, int monitorPort)
+static int OMSimulatorLua_oms3_setTLMSocketData(lua_State *L)
+{
+  if (lua_gettop(L) != 4)
+    return luaL_error(L, "expecting exactly 4 arguments");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+  luaL_checktype(L, 3, LUA_TNUMBER);
+  luaL_checktype(L, 4, LUA_TNUMBER);
+
+  const char *cref =    lua_tostring(L, 1);
+  const char *address = lua_tostring(L, 2);
+  int managerPort =     lua_tonumber(L, 3);
+  int monitorPort =     lua_tonumber(L, 4);
+
+  oms_status_enu_t status = oms3_setTLMSocketData(cref, address, managerPort, monitorPort);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
 /* ************************************ */
 /* OMSimulator 2.0                      */
 /*                                      */
@@ -2006,6 +2026,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms3_setTempDirectory);
   REGISTER_LUA_CALL(oms3_setWorkingDirectory);
   REGISTER_LUA_CALL(oms3_terminate);
+  REGISTER_LUA_CALL(oms3_setTLMSocketData);
   /* ************************************ */
   /* OMSimulator 2.0                      */
   /*                                      */

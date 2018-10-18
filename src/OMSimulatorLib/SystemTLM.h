@@ -48,6 +48,7 @@ namespace oms3
     static System* NewSystem(const oms3::ComRef& cref, Model* parentModel, System* parentSystem);
     oms_status_enu_t exportToSSD_SimulationInformation(pugi::xml_node& node) const;
     oms_status_enu_t importFromSSD_SimulationInformation(const pugi::xml_node& node);
+    oms_status_enu_t setSocketData(const std::string& address, int managerPort, int monitorPort);
 
     oms_status_enu_t instantiate();
     oms_status_enu_t initialize();
@@ -61,10 +62,12 @@ namespace oms3
     SystemTLM& operator=(SystemTLM const& copy); ///< not implemented
 
   private:
+    void* model;
+    std::string address = "";
+    int managerPort=0;
+    int monitorPort=0;
+
     // simulation information
-    // ip
-    // managerport
-    // monitorport
   };
 }
 
