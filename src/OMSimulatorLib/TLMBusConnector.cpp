@@ -179,19 +179,15 @@ void oms3::TLMBusConnector::updateVariableTypes()
   }
   else if(dimensions == 3 && interpolation == oms_tlm_fine_grained) {
     variableTypes = { "state1", "state2", "state3",
-                     "A11","A12","A13","A21","A22","A23","A31","A32","A33",
-                     "flow1", "flow2", "flow3", "flow4", "flow5", "flow6",
-                     "wave1_1",  "wave1_2",  "wave1_3",  "wave1_4",  "wave1_5",  "wave1_6",
-                     "wave2_1",  "wave2_2",  "wave2_3",  "wave2_4",  "wave2_5",  "wave2_6",
-                     "wave3_1",  "wave3_2",  "wave3_3",  "wave3_4",  "wave3_5",  "wave3_6",
-                     "wave4_1",  "wave4_2",  "wave4_3",  "wave4_4",  "wave4_5",  "wave4_6",
-                     "wave5_1",  "wave5_2",  "wave5_3",  "wave5_4",  "wave5_5",  "wave5_6",
-                     "wave6_1",  "wave6_2",  "wave6_3",  "wave6_4",  "wave6_5",  "wave6_6",
-                     "wave7_1",  "wave7_2",  "wave7_3",  "wave7_4",  "wave7_5",  "wave7_6",
-                     "wave8_1",  "wave8_2",  "wave8_3",  "wave8_4",  "wave8_5",  "wave8_6",
-                     "wave9_1",  "wave9_2",  "wave9_3",  "wave9_4",  "wave9_5",  "wave9_6",
-                     "wave10_1", "wave10_2", "wave10_3", "wave10_4", "wave10_5", "wave10_6",
+                      "A11","A12","A13","A21","A22","A23","A31","A32","A33",
+                      "flow1", "flow2", "flow3", "flow4", "flow5", "flow6",
+                      "wave1_1", "wave2_1", "wave3_1", "wave4_1", "wave5_1", "wave6_1", "wave7_1", "wave8_1", "wave9_1", "wave 10_1",
+                      "wave1_2", "wave2_2", "wave3_2", "wave4_2", "wave5_2", "wave6_2", "wave7_2", "wave8_2", "wave9_2", "wave 10_2",
+                      "wave1_3", "wave2_3", "wave3_3", "wave4_3", "wave5_3", "wave6_3", "wave7_3", "wave8_3", "wave9_3", "wave 10_3",
+                      "wave1_4", "wave2_4", "wave3_4", "wave4_4", "wave5_4", "wave6_4", "wave7_4", "wave8_4", "wave9_4", "wave 10_4",
+                      "wave1_5", "wave2_5", "wave3_5", "wave4_5", "wave5_5", "wave6_5", "wave7_5", "wave8_5", "wave9_5", "wave 10_5",
+                      "wave1_6", "wave2_6", "wave3_6", "wave4_6", "wave5_6", "wave6_6", "wave7_6", "wave8_6", "wave9_6", "wave 10_6",
                       "time1", "time2", "time3", "time4", "time5", "time6", "time7", "time8", "time9", "time10",
-                     "linearimpedance", "angularimpedance"};
+                      "linearimpedance", "angularimpedance"};
   }
 }
