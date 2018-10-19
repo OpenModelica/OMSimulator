@@ -33,6 +33,7 @@
 #define _OMS_SYSTEM_H_
 
 #include "ComRef.h"
+#include "DirectedGraph.h"
 #include "Types.h"
 #include "Element.h"
 #include "Connection.h"
@@ -48,6 +49,7 @@ namespace oms3
 {
   class Component;
   class Model;
+  class Variable;
 
   class System
   {
@@ -74,6 +76,7 @@ namespace oms3
     Connector* getConnector(const ComRef& cref);
     BusConnector* getBusConnector(const ComRef& cref);
     TLMBusConnector *getTLMBusConnector(const ComRef& cref);
+    Connection* getConnection(const ComRef& crefA, const ComRef& crefB);
     Connection** getConnections(const ComRef &cref);
     oms_status_enu_t addConnection(const ComRef& crefA, const ComRef& crefB);
     oms_status_enu_t updateConnection(const ComRef& crefA, const ComRef& crefB, const oms3_connection_t* connection);
@@ -94,6 +97,10 @@ namespace oms3
     const std::map<ComRef, System*>& getSubSystems() {return subsystems;}
     const std::map<ComRef, Component*>& getComponents() {return components;}
     double getTolerance() {return 1e-4;}
+    oms_status_enu_t updateDependencyGraphs();
+    const DirectedGraph& getInitialUnknownsGraph() {return initialUnknownsGraph;}
+    const DirectedGraph& getOutputsGraph() {return outputsGraph;}
+    oms_status_enu_t exportDependencyGraphs(const std::string& pathInitialization, const std::string& pathSimulation);
 
     virtual oms_status_enu_t instantiate() = 0;
     virtual oms_status_enu_t initialize() = 0;
@@ -121,7 +128,8 @@ namespace oms3
     std::vector<TLMBusConnector*> tlmbusconnectors;
     std::vector<Connection*> connections; ///< last element is always NULL
 
-    Connection* getConnection(const ComRef& crefA, const ComRef& crefB);
+    DirectedGraph initialUnknownsGraph;
+    DirectedGraph outputsGraph;
   };
 }
 

@@ -83,16 +83,6 @@ oms3::Connector::~Connector()
   if (this->geometry) delete reinterpret_cast<oms2::ssd::ConnectorGeometry*>(this->geometry);
 }
 
-oms3::Connector* oms3::Connector::NewConnector(oms_causality_enu_t causality, oms_signal_type_enu_t type, const oms3::ComRef& name)
-{
-  return new Connector(causality, type, name);
-}
-
-oms3::Connector* oms3::Connector::NewConnector(oms_causality_enu_t causality, oms_signal_type_enu_t type, const oms3::ComRef& name, double height)
-{
-  return new Connector(causality, type, name, height);
-}
-
 oms3::Connector* oms3::Connector::NewConnector(const pugi::xml_node& node)
 {
   ComRef cref = ComRef(node.attribute("name").as_string());
@@ -123,7 +113,7 @@ oms3::Connector* oms3::Connector::NewConnector(const pugi::xml_node& node)
     return NULL;
   }
 
-  Connector* connector = Connector::NewConnector(causality, type, cref);
+  Connector* connector = new Connector(causality, type, cref);
   if (!connector)
   {
     logError("Failed to import " + std::string(oms2::ssd::ssd_connector));
@@ -185,7 +175,7 @@ oms_status_enu_t oms3::Connector::exportToSSD(pugi::xml_node &root) const
   return oms_status_ok;
 }
 
-oms3::Connector::Connector(const oms3::Connector &rhs)
+oms3::Connector::Connector(const oms3::Connector& rhs)
 {
   this->causality = rhs.causality;
   this->type = rhs.type;
@@ -199,7 +189,7 @@ oms3::Connector::Connector(const oms3::Connector &rhs)
     this->geometry = NULL;
 }
 
-oms3::Connector &oms3::Connector::operator=(const oms3::Connector &rhs)
+oms3::Connector& oms3::Connector::operator=(const oms3::Connector& rhs)
 {
   // check for self-assignment
   if(&rhs == this)
@@ -218,7 +208,7 @@ oms3::Connector &oms3::Connector::operator=(const oms3::Connector &rhs)
   return *this;
 }
 
-void oms3::Connector::setName(const oms3::ComRef &name)
+void oms3::Connector::setName(const oms3::ComRef& name)
 {
   if (this->name)
     delete[] this->name;
@@ -238,6 +228,23 @@ void oms3::Connector::setGeometry(const oms2::ssd::ConnectorGeometry *newGeometr
 
   if (newGeometry)
     this->geometry = reinterpret_cast<ssd_connector_geometry_t*>(new oms2::ssd::ConnectorGeometry(*newGeometry));
+}
+
+oms3::Connector oms3::Connector::addPrefix(const oms3::ComRef& prefix) const
+{
+  oms3::Connector c(*this);
+  c.setName(prefix + c.getName());
+  return c;
+}
+
+bool oms3::operator==(const oms3::Connector& v1, const oms3::Connector& v2)
+{
+  return v1.getName() == v2.getName() && v1.type == v2.type && v1.causality == v2.causality;
+}
+
+bool oms3::operator!=(const oms3::Connector& v1, const oms3::Connector& v2)
+{
+  return !(v1 == v2);
 }
 
 /* ************************************ */

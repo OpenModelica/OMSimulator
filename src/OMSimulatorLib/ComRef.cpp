@@ -39,6 +39,12 @@ oms3::ComRef::ComRef(const std::string& path)
   strcpy(cref, path.c_str());
 }
 
+oms3::ComRef::ComRef(const char* path)
+{
+  cref = new char[strlen(path) + 1];
+  strcpy(cref, path);
+}
+
 oms3::ComRef::~ComRef()
 {
   delete[] cref;

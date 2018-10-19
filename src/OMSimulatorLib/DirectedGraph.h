@@ -32,6 +32,8 @@
 #ifndef _OMS_DIRECTED_GRAPH_H_
 #define _OMS_DIRECTED_GRAPH_H_
 
+#include "ComRef.h"
+#include "Connector.h"
 #include "Variable.h"
 
 #include <deque>
@@ -51,16 +53,16 @@ namespace oms3
 
     void clear();
 
-    int addVariable(const Variable& var);
-    void addEdge(const Variable& var1, const Variable& var2);
+    int addNode(const Connector& var);
+    void addEdge(const Connector& var1, const Connector& var2);
 
     void dotExport(const std::string& filename);
 
-    void includeGraph(const DirectedGraph& graph);
+    void includeGraph(const DirectedGraph& graph, const ComRef& prefix);
 
     const std::vector< std::vector< std::pair<int, int> > >& getSortedConnections();
 
-    const std::vector<Variable>& getNodes() {return nodes;}
+    const std::vector<Connector>& getNodes() {return nodes;}
     const std::vector< std::pair<int, int> >& getEdges() {return edges;}
 
   private:
@@ -71,7 +73,7 @@ namespace oms3
     static int getEdgeIndex(const std::vector< std::pair<int, int> >& edges, int from, int to);
 
   private:
-    std::vector<Variable> nodes;
+    std::vector<Connector> nodes;
     std::vector< std::pair<int, int> > edges;
 
     std::vector< std::vector<int> > G;

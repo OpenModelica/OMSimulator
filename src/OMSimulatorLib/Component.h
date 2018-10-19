@@ -67,6 +67,9 @@ namespace oms3
     virtual oms_status_enu_t initialize() = 0;
     virtual oms_status_enu_t terminate() = 0;
 
+    const DirectedGraph& getInitialUnknownsGraph() {return initialUnknownsGraph;}
+    const DirectedGraph& getOutputsGraph() {return outputsGraph;}
+
   protected:
     Component(const ComRef& cref, oms_component_enu_t type, System* parentSystem, const std::string& path);
 

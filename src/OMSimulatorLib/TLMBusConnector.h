@@ -106,7 +106,7 @@ typedef struct  {
     void setName(const oms3::ComRef& name);
     void setGeometry(const oms2::ssd::ConnectorGeometry* newGeometry);
 
-    const oms3::ComRef getName() const {return oms3::ComRef(std::string(name));}
+    const oms3::ComRef getName() const {return oms3::ComRef(name);}
     const std::string getDomain() const {return domain;}
     const int getDimensions() const {return dimensions;}
     const oms_causality_enu_t getCausality() const {return causality;}
