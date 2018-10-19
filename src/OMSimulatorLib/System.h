@@ -71,10 +71,10 @@ namespace oms3
     virtual oms_status_enu_t importFromSSD_SimulationInformation(const pugi::xml_node& node) = 0;
     void setGeometry(const ssd::ElementGeometry& geometry) {element.setGeometry(&geometry);}
     oms_status_enu_t addConnector(const ComRef& cref, oms_causality_enu_t causality, oms_signal_type_enu_t type);
-    Connector *getConnector(const ComRef& cref);
-    BusConnector *getBusConnector(const ComRef& cref);
+    Connector* getConnector(const ComRef& cref);
+    BusConnector* getBusConnector(const ComRef& cref);
     TLMBusConnector *getTLMBusConnector(const ComRef& cref);
-    Connection **getConnections(const ComRef &cref);
+    Connection** getConnections(const ComRef &cref);
     oms_status_enu_t addConnection(const ComRef& crefA, const ComRef& crefB);
     oms_status_enu_t updateConnection(const ComRef& crefA, const ComRef& crefB, const oms3_connection_t* connection);
     oms_status_enu_t addTLMConnection(const ComRef& crefA, const ComRef& crefB, double delay, double alpha, double linearimpedance, double angularimpedance);
