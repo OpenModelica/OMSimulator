@@ -196,6 +196,25 @@ static int OMSimulatorLua_oms3_list(lua_State *L)
   return 2;
 }
 
+//oms_status_enu_t oms3_exportDependencyGraphs(const char* cref, const char* initialization, const char* simulation);
+static int OMSimulatorLua_oms3_exportDependencyGraphs(lua_State *L)
+{
+  if (lua_gettop(L) != 3)
+    return luaL_error(L, "expecting exactly 3 arguments");
+
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+  luaL_checktype(L, 3, LUA_TSTRING);
+
+  const char* cref = lua_tostring(L, 1);
+  const char* initialization = lua_tostring(L, 2);
+  const char* simulation = lua_tostring(L, 3);
+
+  oms_status_enu_t status = oms3_exportDependencyGraphs(cref, initialization, simulation);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
 //oms_status_enu_t oms3_parseModelName(const char* contents, char** cref);
 static int OMSimulatorLua_oms3_parseModelName(lua_State *L)
 {
@@ -2046,6 +2065,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms3_copySystem);
   REGISTER_LUA_CALL(oms3_delete);
   REGISTER_LUA_CALL(oms3_export);
+  REGISTER_LUA_CALL(oms3_exportDependencyGraphs);
   REGISTER_LUA_CALL(oms3_getSystemType);
   REGISTER_LUA_CALL(oms3_getVersion);
   REGISTER_LUA_CALL(oms3_import);
@@ -2060,10 +2080,10 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms3_setLogFile);
   REGISTER_LUA_CALL(oms3_setMaxLogFileSize);
   REGISTER_LUA_CALL(oms3_setTempDirectory);
+  REGISTER_LUA_CALL(oms3_setTLMPositionAndOrientation);
+  REGISTER_LUA_CALL(oms3_setTLMSocketData);
   REGISTER_LUA_CALL(oms3_setWorkingDirectory);
   REGISTER_LUA_CALL(oms3_terminate);
-  REGISTER_LUA_CALL(oms3_setTLMSocketData);
-  REGISTER_LUA_CALL(oms3_setTLMPositionAndOrientation);
   /* ************************************ */
   /* OMSimulator 2.0                      */
   /*                                      */

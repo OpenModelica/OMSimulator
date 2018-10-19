@@ -195,12 +195,12 @@ oms_status_enu_t oms3_addConnector(const char *cref, oms_causality_enu_t causali
   oms3::ComRef systemCref = tail.pop_front();
 
   oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
-  if(!model) {
+  if (!model) {
     return logError_ModelNotInScope(modelCref);
   }
 
   oms3::System* system = model->getSystem(systemCref);
-  if(!system) {
+  if (!system) {
     return logError_SystemNotInModel(modelCref, systemCref);
   }
 
@@ -432,11 +432,11 @@ oms_status_enu_t oms3_addTLMBus(const char *cref, const char *domain, const int 
   oms3::ComRef modelCref = tail.pop_front();
   oms3::ComRef systemCref = tail.pop_front();
   oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
-  if(!model) {
+  if (!model) {
     return logError_ModelNotInScope(modelCref);
   }
   oms3::System* system = model->getSystem(systemCref);
-  if(!system) {
+  if (!system) {
     return logError_SystemNotInModel(modelCref, systemCref);
   }
   return system->addTLMBus(tail, domain, dimensions, interpolation);
@@ -557,12 +557,12 @@ oms_status_enu_t oms3_addTLMConnection(const char *crefA, const char *crefB, dou
   tailB.pop_front();
 
   oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
-  if(!model) {
+  if (!model) {
     return logError_ModelNotInScope(modelCref);
   }
 
   oms3::System* system = model->getSystem(systemCref);
-  if(!system) {
+  if (!system) {
     return logError_SystemNotInModel(modelCref, systemCref);
   }
 
@@ -576,12 +576,12 @@ oms_status_enu_t oms3_addExternalModel(const char *cref, const char *path, const
   oms3::ComRef systemCref = tail.pop_front();
 
   oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
-  if(!model) {
+  if (!model) {
     return logError_ModelNotInScope(modelCref);
   }
 
   oms3::System* system = model->getSystem(systemCref);
-  if(!system) {
+  if (!system) {
     return logError_SystemNotInModel(modelCref, systemCref);
   }
 
@@ -698,15 +698,15 @@ oms_status_enu_t oms3_setTLMSocketData(const char *cref, const char *address, in
   oms3::ComRef front = tail.pop_front();
 
   oms3::Model* model = oms3::Scope::GetInstance().getModel(front);
-  if(!model)
+  if (!model)
     return logError_ModelNotInScope(front);
 
   front = tail.pop_front();
   oms3::System* system = model->getSystem(front);
-  if(!system)
+  if (!system)
     return logError_SystemNotInModel(model->getName(), front);
 
-  if(system->getType() != oms_system_tlm)
+  if (system->getType() != oms_system_tlm)
     return logError_OnlyForTlmSystem;
 
   oms3::SystemTLM* tlmsystem = reinterpret_cast<oms3::SystemTLM*>(system);
@@ -719,21 +719,38 @@ oms_status_enu_t oms3_setTLMPositionAndOrientation(const char *cref, double x1, 
   oms3::ComRef front = tail.pop_front();
 
   oms3::Model* model = oms3::Scope::GetInstance().getModel(front);
-  if(!model)
+  if (!model)
     return logError_ModelNotInScope(front);
 
   front = tail.pop_front();
   oms3::System* system = model->getSystem(front);
-  if(!system)
+  if (!system)
     return logError_SystemNotInModel(model->getName(), front);
 
-  if(system->getType() != oms_system_tlm)
+  if (system->getType() != oms_system_tlm)
     return logError_OnlyForTlmSystem;
 
   oms3::SystemTLM* tlmsystem = reinterpret_cast<oms3::SystemTLM*>(system);
   std::vector<double> x = {x1,x2,x3};
   std::vector<double> A = {A11,A12,A13,A21,A22,A23,A31,A32,A33};
   return tlmsystem->setPositionAndOrientation(tail, x, A);
+}
+
+oms_status_enu_t oms3_exportDependencyGraphs(const char* cref, const char* initialization, const char* simulation)
+{
+  oms3::ComRef tail(cref);
+  oms3::ComRef front = tail.pop_front();
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(front);
+
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  oms3::System* system = model->getSystem(tail);
+  if (!system)
+    return logError_SystemNotInModel(model->getName(), tail);
+
+  return system->exportDependencyGraphs(initialization, simulation);
 }
 
 /* ************************************ */
@@ -919,12 +936,12 @@ oms_status_enu_t oms2_addConnection(const char* cref, const char* conA, const ch
 {
   logTrace();
 
-  if(oms2::SignalRef::isValid(conA) && oms2::SignalRef::isValid(conB))
+  if (oms2::SignalRef::isValid(conA) && oms2::SignalRef::isValid(conB))
   {
     // case 1: FMU:signal1 -> FMU:signal2
     return oms2::Scope::GetInstance().addConnection(oms2::ComRef(cref), oms2::SignalRef(conA), oms2::SignalRef(conB));
   }
-  else if(oms2::ComRef::isValidIdent(conA) && oms2::ComRef::isValidIdent(conB))
+  else if (oms2::ComRef::isValidIdent(conA) && oms2::ComRef::isValidIdent(conB))
   {
     // case 2: FMU -> solver
     return oms2::Scope::GetInstance().connectSolver(oms2::ComRef(cref), oms2::ComRef(conA), oms2::ComRef(conB));
@@ -937,12 +954,12 @@ oms_status_enu_t oms2_deleteConnection(const char* cref, const char* conA, const
 {
   logTrace();
 
-  if(oms2::SignalRef::isValid(conA) && oms2::SignalRef::isValid(conB))
+  if (oms2::SignalRef::isValid(conA) && oms2::SignalRef::isValid(conB))
   {
     // case 1: FMU:signal1 -> FMU:signal2
     return oms2::Scope::GetInstance().deleteConnection(oms2::ComRef(cref), oms2::SignalRef(conA), oms2::SignalRef(conB));
   }
-  else if(oms2::ComRef::isValidIdent(conA) && oms2::ComRef::isValidIdent(conB))
+  else if (oms2::ComRef::isValidIdent(conA) && oms2::ComRef::isValidIdent(conB))
   {
     // case 2: FMU -> solver
     return oms2::Scope::GetInstance().unconnectSolver(oms2::ComRef(cref), oms2::ComRef(conA), oms2::ComRef(conB));
@@ -1136,7 +1153,7 @@ oms_status_enu_t oms2_setTLMPositionAndOrientation(const char *cref, const char 
   std::vector<double> x = {x1,x2,x3};
   std::vector<double> A = {A11,A12,A13,A21,A22,A23,A31,A32,A33};
   std::string ifcstr = ifc;
-  if(ifcstr.find(':') == std::string::npos) {
+  if (ifcstr.find(':') == std::string::npos) {
     ifcstr.append(":");
   }
   return oms2::Scope::GetInstance().setTLMPositionAndOrientation(oms2::ComRef(cref), oms2::SignalRef(ifcstr), x, A);

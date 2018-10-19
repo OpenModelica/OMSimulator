@@ -34,8 +34,8 @@
 
 #include "ComRef.h"
 #include "SignalRef.h"
-#include "Types.h"
 #include "ssd/ConnectorGeometry.h"
+#include "Types.h"
 
 #include <string>
 
@@ -49,11 +49,11 @@ namespace oms3
   class Connector : protected oms_connector_t
   {
   public:
+    Connector(oms_causality_enu_t causality, oms_signal_type_enu_t type, const oms3::ComRef& name);
+    Connector(oms_causality_enu_t causality, oms_signal_type_enu_t type, const oms3::ComRef& name, double height);
     ~Connector();
 
-    // You have to free the memory yourself
-    static Connector* NewConnector(oms_causality_enu_t causality, oms_signal_type_enu_t type, const oms3::ComRef& name);
-    static Connector* NewConnector(oms_causality_enu_t causality, oms_signal_type_enu_t type, const oms3::ComRef& name, double height);
+    // you have to free the memory yourself
     static Connector* NewConnector(const pugi::xml_node& node);
 
     oms_status_enu_t exportToSSD(pugi::xml_node& root) const;
@@ -62,25 +62,27 @@ namespace oms3
     Connector(const Connector& rhs);
     Connector& operator=(const Connector& rhs);
 
+    operator std::string() const {return std::string(name);}
+
     void setName(const oms3::ComRef& name);
     void setGeometry(const oms2::ssd::ConnectorGeometry* newGeometry);
 
     const oms_causality_enu_t getCausality() const {return causality;}
     const oms_signal_type_enu_t getType() const {return type;}
-    const oms3::ComRef getName() const {return oms3::ComRef(std::string(name));}
+    const oms3::ComRef getName() const {return oms3::ComRef(name);}
     const oms2::ssd::ConnectorGeometry* getGeometry() const {return reinterpret_cast<oms2::ssd::ConnectorGeometry*>(geometry);}
+    Connector addPrefix(const ComRef& prefix) const;
+
+    bool isInput() const { return oms_causality_input == causality; }
+    bool isOutput() const { return oms_causality_output == causality; }
 
   private:
-    /**
-     * This constructor creates a Connector without geometry information.
-     */
-    Connector(oms_causality_enu_t causality, oms_signal_type_enu_t type, const oms3::ComRef& name);
-    /**
-     * This constructor is used if the optional SSD element giving the geometry
-     * information of the connector is initialized as well.
-     */
-    Connector(oms_causality_enu_t causality, oms_signal_type_enu_t type, const oms3::ComRef& name, double height);
+    friend bool operator==(const Connector& v1, const Connector& v2);
+    friend bool operator!=(const Connector& v1, const Connector& v2);
   };
+
+  bool operator==(const Connector& v1, const Connector& v2);
+  bool operator!=(const Connector& v1, const Connector& v2);
 }
 
 namespace oms2

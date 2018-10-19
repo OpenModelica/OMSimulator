@@ -55,7 +55,7 @@ namespace oms3
     ~Element();
 
     const oms3_element_enu_t getType() const {return type;}
-    const oms3::ComRef getName() const {return oms3::ComRef(std::string(name));}
+    const oms3::ComRef getName() const {return oms3::ComRef(name);}
     oms3::Connector** getConnectors() const {return reinterpret_cast<oms3::Connector**>(connectors);}
     const oms3::ssd::ElementGeometry* getGeometry() const {return reinterpret_cast<oms3::ssd::ElementGeometry*>(geometry);}
 

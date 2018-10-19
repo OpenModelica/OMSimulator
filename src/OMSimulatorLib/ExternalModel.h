@@ -61,6 +61,8 @@ namespace oms3
     oms_status_enu_t initialize();
     oms_status_enu_t terminate();
 
+    oms_status_enu_t updateDependencyGraphs() {return oms_status_error;}
+
   protected:
     ExternalModel(const oms3::ComRef& cref, System* parentSystem, const std::string& path, const std::string& startscript);
 

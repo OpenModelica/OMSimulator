@@ -61,7 +61,7 @@ void oms3::DirectedGraph::clear()
   sortedConnectionsAreValid = true;
 }
 
-int oms3::DirectedGraph::addVariable(const oms3::Variable& var)
+int oms3::DirectedGraph::addNode(const oms3::Connector& var)
 {
   nodes.push_back(var);
   std::vector<int> row;
@@ -69,7 +69,7 @@ int oms3::DirectedGraph::addVariable(const oms3::Variable& var)
   return static_cast<int>(nodes.size()) - 1;
 }
 
-void oms3::DirectedGraph::addEdge(const oms3::Variable& var1, const oms3::Variable& var2)
+void oms3::DirectedGraph::addEdge(const oms3::Connector& var1, const oms3::Connector& var2)
 {
   int index1 = -1;
   int index2 = -1;
@@ -87,9 +87,9 @@ void oms3::DirectedGraph::addEdge(const oms3::Variable& var1, const oms3::Variab
   }
 
   if (-1 == index1)
-    index1 = addVariable(var1);
+    index1 = addNode(var1);
   if (-1 == index2)
-    index2 = addVariable(var2);
+    index2 = addNode(var2);
 
   edges.push_back(std::pair<int, int>(index1, index2));
   G[index1].push_back(index2);
@@ -114,7 +114,7 @@ void oms3::DirectedGraph::dotExport(const std::string& filename)
   dotFile << "{" << std::endl;
   for (int i = 0; i < nodes.size(); i++)
   {
-    dotFile << "  " << i << " [label=\"" << nodes[i].toString() << "\", ";
+    dotFile << "  " << i << " [label=\"" << std::string(nodes[i]) << "\", ";
     if (nodes[i].isInput())
       dotFile << "color=\"red\", ";
     else if (nodes[i].isOutput())
@@ -135,13 +135,13 @@ void oms3::DirectedGraph::dotExport(const std::string& filename)
   dotFile.close();
 }
 
-void oms3::DirectedGraph::includeGraph(const oms3::DirectedGraph& graph)
+void oms3::DirectedGraph::includeGraph(const oms3::DirectedGraph& graph, const oms3::ComRef& prefix)
 {
   for (int i = 0; i < graph.nodes.size(); i++)
-    addVariable(graph.nodes[i]);
+    addNode(graph.nodes[i].addPrefix(prefix));
 
   for (int i = 0; i < graph.edges.size(); i++)
-    addEdge(graph.nodes[graph.edges[i].first], graph.nodes[graph.edges[i].second]);
+    addEdge(graph.nodes[graph.edges[i].first].addPrefix(prefix), graph.nodes[graph.edges[i].second].addPrefix(prefix));
 }
 
 int oms3::DirectedGraph::getEdgeIndex(const std::vector< std::pair<int, int> >& edges, int from, int to)

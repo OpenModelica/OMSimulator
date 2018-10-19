@@ -33,6 +33,7 @@
 #define _OMS_VARIABLE_H_
 
 #include "ComRef.h"
+#include "Connector.h"
 #include "SignalRef.h"
 #include "Types.h"
 #include <fmilib.h>
@@ -45,7 +46,7 @@ namespace oms3
   class Variable
   {
   public:
-    Variable(const oms3::ComRef& cref, fmi2_import_variable_t *var, unsigned int index);
+    Variable(fmi2_import_variable_t *var, unsigned int index);
     ~Variable();
 
     void markAsState() { is_state = true; }
@@ -86,6 +87,7 @@ namespace oms3
     oms_causality_enu_t getCausality() const;
 
     unsigned int getIndex() const { return index; }
+    oms3::Connector makeConnector() const {return oms3::Connector(getCausality(), type, cref);}
 
   private:
     ComRef cref;

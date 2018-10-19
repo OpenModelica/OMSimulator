@@ -143,7 +143,7 @@ oms3::Component* oms3::ComponentFMUCS::NewComponent(const oms3::ComRef& cref, om
   for (size_t i = 0; i < varListSize; ++i)
   {
     fmi2_import_variable_t* var = fmi2_import_get_variable(varList, i);
-    oms3::Variable v(cref, var, i + 1);
+    oms3::Variable v(var, i + 1);
     component->allVariables.push_back(v);
   }
   fmi2_import_free_variable_list(varList);
@@ -199,19 +199,17 @@ oms3::Component* oms3::ComponentFMUCS::NewComponent(const oms3::ComRef& cref, om
       component->booleanParameters[v.getName()] = oms3::Option<bool>();
 
     if (v.isInput())
-    {
       component->inputs.push_back(v);
-    }
     else if (v.isOutput())
     {
       component->outputs.push_back(v);
-      component->outputsGraph.addVariable(v);
+      component->outputsGraph.addNode(Connector(oms_causality_output, v.getType(), v.getCref()));
     }
     else if (v.isParameter())
       component->parameters.push_back(v);
 
     if (v.isInitialUnknown())
-      component->initialUnknownsGraph.addVariable(v);
+      component->initialUnknownsGraph.addNode(Connector(v.getCausality(), v.getType(), v.getCref()));
 
     component->exportVariables.push_back(v.isInput() || v.isOutput());
   }
@@ -220,15 +218,18 @@ oms3::Component* oms3::ComponentFMUCS::NewComponent(const oms3::ComRef& cref, om
   int i = 1;
   int size = 1 + component->inputs.size();
   for (const auto& v : component->inputs)
-    component->connectors.push_back(Connector::NewConnector(oms_causality_input, v.getType(), ComRef(v.getName()), i++/(double)size));
+    component->connectors.push_back(new Connector(oms_causality_input, v.getType(), ComRef(v.getName()), i++/(double)size));
   i = 1;
   size = 1 + component->outputs.size();
   for (const auto& v : component->outputs)
-    component->connectors.push_back(Connector::NewConnector(oms_causality_output, v.getType(), ComRef(v.getName()), i++/(double)size));
+    component->connectors.push_back(new Connector(oms_causality_output, v.getType(), ComRef(v.getName()), i++/(double)size));
   for (const auto& v : component->parameters)
-    component->connectors.push_back(Connector::NewConnector(oms_causality_parameter, v.getType(), ComRef(v.getName())));
+    component->connectors.push_back(new Connector(oms_causality_parameter, v.getType(), ComRef(v.getName())));
   component->connectors.push_back(NULL);
   component->element.setConnectors(&component->connectors[0]);
+
+  component->initializeDependencyGraph_initialUnknowns();
+  component->initializeDependencyGraph_outputs();
 
   return component;
 }
@@ -289,6 +290,96 @@ oms_status_enu_t oms3::ComponentFMUCS::exportToSSD(pugi::xml_node& node) const
     if (connector)
       if (oms_status_ok != connector->exportToSSD(node_connectors))
         return oms_status_error;
+  return oms_status_ok;
+}
+
+
+oms_status_enu_t oms3::ComponentFMUCS::initializeDependencyGraph_initialUnknowns()
+{
+  if (initialUnknownsGraph.getEdges().size() > 0)
+  {
+    logError(std::string(getName()) + ": " + getPath() + " is already initialized");
+    return oms_status_error;
+  }
+
+  size_t *startIndex=NULL, *dependency=NULL;
+  char* factorKind;
+
+  fmi2_import_get_initial_unknowns_dependencies(fmu, &startIndex, &dependency, &factorKind);
+
+  if (!startIndex)
+  {
+    logDebug(std::string(getName()) + ": " + getPath() + " no dependencies");
+    return oms_status_ok;
+  }
+
+  int N=initialUnknownsGraph.getNodes().size();
+  for (int i = 0; i < N; i++)
+  {
+    if (startIndex[i] == startIndex[i + 1])
+    {
+      logDebug(std::string(getName()) + ": " + getPath() + " initial unknown " + std::string(initialUnknownsGraph.getNodes()[i].getName()) + " has no dependencies");
+    }
+    else if ((startIndex[i] + 1 == startIndex[i + 1]) && (dependency[startIndex[i]] == 0))
+    {
+      logDebug(std::string(getName()) + ": " + getPath() + " initial unknown " + std::string(initialUnknownsGraph.getNodes()[i].getName()) + " depends on all");
+      for (int j = 0; j < inputs.size(); j++)
+        initialUnknownsGraph.addEdge(inputs[j].makeConnector(), initialUnknownsGraph.getNodes()[i]);
+    }
+    else
+    {
+      for (size_t j = startIndex[i]; j < startIndex[i + 1]; j++)
+      {
+        logDebug(std::string(getName()) + ": " + getPath() + " initial unknown " + std::string(initialUnknownsGraph.getNodes()[i].getName()) + " depends on " + allVariables[dependency[j] - 1].getName());
+        initialUnknownsGraph.addEdge(allVariables[dependency[j] - 1].makeConnector(), initialUnknownsGraph.getNodes()[i]);
+      }
+    }
+  }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::ComponentFMUCS::initializeDependencyGraph_outputs()
+{
+  if (outputsGraph.getEdges().size() > 0)
+  {
+    logError(std::string(getName()) + ": " + getPath() + " is already initialized.");
+    return oms_status_error;
+  }
+
+  size_t *startIndex=NULL, *dependency=NULL;
+  char* factorKind;
+
+  fmi2_import_get_outputs_dependencies(fmu, &startIndex, &dependency, &factorKind);
+
+  if (!startIndex)
+  {
+    logDebug(std::string(getName()) + ": " + getPath() + " no dependencies");
+    return oms_status_ok;
+  }
+
+  for (int i = 0; i < outputs.size(); i++)
+  {
+    if (startIndex[i] == startIndex[i + 1])
+    {
+      logDebug(std::string(getName()) + ": " + getPath() + " output " + std::string(outputs[i].getName()) + " has no dependencies");
+    }
+    else if ((startIndex[i] + 1 == startIndex[i + 1]) && (dependency[startIndex[i]] == 0))
+    {
+      logDebug(std::string(getName()) + ": " + getPath() + " output " + std::string(outputs[i].getName()) + " depends on all");
+      for (int j = 0; j < inputs.size(); j++)
+        outputsGraph.addEdge(inputs[j].makeConnector(), outputs[i].makeConnector());
+    }
+    else
+    {
+      for (size_t j = startIndex[i]; j < startIndex[i + 1]; j++)
+      {
+        logDebug(std::string(getName()) + ": " + getPath() + " output " + std::string(outputs[i].getName()) + " depends on " + allVariables[dependency[j] - 1].getName());
+        outputsGraph.addEdge(allVariables[dependency[j] - 1].makeConnector(), outputs[i].makeConnector());
+      }
+    }
+  }
+
   return oms_status_ok;
 }
 

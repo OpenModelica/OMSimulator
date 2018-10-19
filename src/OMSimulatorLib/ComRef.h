@@ -44,6 +44,7 @@ namespace oms3
   {
   public:
     ComRef(const std::string& path);
+    ComRef(const char* path);
     ~ComRef();
 
     // methods to copy the component reference
