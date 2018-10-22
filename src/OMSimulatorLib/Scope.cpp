@@ -282,10 +282,7 @@ std::string oms3::Scope::getWorkingDirectory()
 oms_status_enu_t oms3::Scope::getElement(const oms3::ComRef& cref, oms3::Element** element)
 {
   if (!element)
-  {
-    logWarning("[oms3::Scope::getElement] NULL pointer");
-    return oms_status_warning;
-  }
+    return logWarning("[oms3::Scope::getElement] NULL pointer");
 
   oms3::ComRef tail(cref);
   oms3::ComRef front = tail.pop_front();
@@ -297,20 +294,22 @@ oms_status_enu_t oms3::Scope::getElement(const oms3::ComRef& cref, oms3::Element
     return logError("A model has no element information");
 
   oms3::System* system = model->getSystem(tail);
-  if (!system)
-    return logError("Model \"" + std::string(front) + "\" does not contain system \"" + std::string(tail) + "\"");
+  oms3::Component* component = model->getComponent(tail);
+  if (!system && !component)
+    return logError("Model \"" + std::string(front) + "\" does not contain system or component \"" + std::string(tail) + "\"");
 
-  *element = system->getElement();
+  if (system)
+    *element = system->getElement();
+  else
+    *element = component->getElement();
+
   return oms_status_ok;
 }
 
 oms_status_enu_t oms3::Scope::getElements(const oms3::ComRef& cref, oms3::Element*** elements)
 {
   if (!elements)
-  {
-    logWarning("[oms3::Scope::getElements] NULL pointer");
-    return oms_status_warning;
-  }
+    return logWarning("[oms3::Scope::getElements] NULL pointer");
 
   oms3::ComRef tail(cref);
   oms3::ComRef front = tail.pop_front();
