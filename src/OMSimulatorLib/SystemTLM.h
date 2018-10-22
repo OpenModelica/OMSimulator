@@ -35,6 +35,7 @@
 #include "ComRef.h"
 #include "System.h"
 #include "Types.h"
+#include "../../OMTLMSimulator/common/Plugin/PluginImplementer.h"
 
 namespace oms3
 {
@@ -56,6 +57,9 @@ namespace oms3
     oms_status_enu_t terminate();
     oms_status_enu_t stepUntil(double stopTime);
 
+    oms_status_enu_t connectToSockets(const oms3::ComRef cref, std::string server);
+    void disconnectFromSockets(const oms3::ComRef cref);
+
   protected:
     SystemTLM(const ComRef& cref, Model* parentModel, System* parentSystem);
 
@@ -68,6 +72,9 @@ namespace oms3
     std::string address = "";
     int managerPort=0;
     int monitorPort=0;
+
+    std::vector<ComRef> connectedsubsystems;
+    std::map<System*, TLMPlugin*> plugins;
 
     // simulation information
   };
