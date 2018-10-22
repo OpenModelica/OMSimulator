@@ -74,6 +74,7 @@ namespace oms3
     Connector* getConnector(const ComRef& cref);
     BusConnector* getBusConnector(const ComRef& cref);
     TLMBusConnector *getTLMBusConnector(const ComRef& cref);
+    TLMBusConnector **getTLMBusConnectors();
     Connection** getConnections(const ComRef &cref);
     oms_status_enu_t addConnection(const ComRef& crefA, const ComRef& crefB);
     oms_status_enu_t updateConnection(const ComRef& crefA, const ComRef& crefB, const oms3_connection_t* connection);
