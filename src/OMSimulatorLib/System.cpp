@@ -662,6 +662,11 @@ oms3::TLMBusConnector* oms3::System::getTLMBusConnector(const oms3::ComRef& cref
   return NULL;
 }
 
+oms3::TLMBusConnector **oms3::System::getTLMBusConnectors()
+{
+  return &tlmbusconnectors[0];
+}
+
 oms3::Connection** oms3::System::getConnections(const oms3::ComRef& cref)
 {
   if (!cref.isEmpty())
