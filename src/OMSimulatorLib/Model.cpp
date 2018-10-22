@@ -117,17 +117,29 @@ oms3::System* oms3::Model::getSystem(const oms3::ComRef& cref)
   oms3::ComRef tail(cref);
   oms3::ComRef front = tail.pop_front();
 
-  oms3::System* system = NULL;
-
   if (this->system->getName() == front)
   {
-    system = this->system;
-
-    if (!tail.isEmpty())
-      system = system->getSystem(tail);
+    if (tail.isEmpty())
+      return system;
+    else
+      return system->getSystem(tail);
   }
 
-  return system;
+  return NULL;
+}
+
+oms3::Component* oms3::Model::getComponent(const oms3::ComRef& cref)
+{
+  if (!system)
+    return NULL;
+
+  oms3::ComRef tail(cref);
+  oms3::ComRef front = tail.pop_front();
+
+  if (this->system->getName() == front)
+    return system->getComponent(tail);
+
+  return NULL;
 }
 
 oms_status_enu_t oms3::Model::list(const oms3::ComRef& cref, char** contents)
