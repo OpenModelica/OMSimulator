@@ -111,6 +111,8 @@ typedef struct  {
     const int getDimensions() const {return dimensions;}
     const oms_causality_enu_t getCausality() const {return causality;}
     const oms_tlm_interpolation_t getInterpolation() const {return interpolation;}
+    void setDelay(double delay) { this->delay = delay; }
+    double getDelay() { return this->delay; }
     const oms2::ssd::ConnectorGeometry* getGeometry() const {return reinterpret_cast<oms2::ssd::ConnectorGeometry*>(geometry);}
 
     oms_status_enu_t addConnector(const oms3::ComRef& cref, std::string vartype);

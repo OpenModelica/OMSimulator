@@ -398,6 +398,7 @@ typedef struct {
   ssd_connector_geometry_t* geometry;
   char* domain;
   int dimensions;
+  double delay;
   oms_tlm_interpolation_t interpolation;
 } oms3_tlmbusconnector_t;
 
