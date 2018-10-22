@@ -50,6 +50,9 @@ oms3::Element::Element(oms3_element_enu_t type, const oms3::ComRef& name)
   this->connectors = NULL;
 
   this->geometry = reinterpret_cast<ssd_element_geometry_t*>(new oms3::ssd::ElementGeometry());
+
+  this->busconnectors = NULL;
+  this->tlmbusconnectors = NULL;
 }
 
 oms3::Element::~Element()
