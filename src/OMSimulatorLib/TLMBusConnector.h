@@ -7,6 +7,7 @@
 #include "Types.h"
 #include "Connector.h"
 #include "ssd/ConnectorGeometry.h"
+#include "../../OMTLMSimulator/common/Plugin/PluginImplementer.h"
 
 #include <string>
 #include <vector>
@@ -114,6 +115,7 @@ typedef struct  {
 
     oms_status_enu_t addConnector(const oms3::ComRef& cref, std::string vartype);
     void sortConnectors();
+    oms_status_enu_t registerToSockets(TLMPlugin *plugin);
     int getId() const {return id;}
 
   private:
