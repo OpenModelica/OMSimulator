@@ -33,6 +33,7 @@
 
 #include "Component.h"
 #include "Model.h"
+#include "SystemWC.h"
 #include "Types.h"
 #include "ssd/Tags.h"
 #include "OMTLMSimulatorLib.h"
@@ -136,6 +137,71 @@ oms_status_enu_t oms3::SystemTLM::terminate()
 oms_status_enu_t oms3::SystemTLM::stepUntil(double stopTime)
 {
   return logError_NotImplemented;
+}
+
+oms_status_enu_t oms3::SystemTLM::connectToSockets(const oms3::ComRef cref, std::string server)
+{
+  logInfo("Starting TLM simulation thread for model "+std::string(cref));
+
+  SystemWC* system = reinterpret_cast<SystemWC*>(getSystem(cref));
+  if(system == nullptr)
+    return logError_SubSystemNotInSystem(getCref(),cref);
+
+  //Limit communication interval to half TLM delay
+  //This is for avoiding extrapolation when running asynchronously.
+
+  TLMBusConnector** tlmbuses = system->getTLMBusConnectors();
+  for (int i=0; tlmbuses[i]; ++i)
+  {
+      if(system->getStepSize() > tlmbuses[i]->getDelay()*0.5) {
+        system->setStepSize(tlmbuses[i]->getDelay()*0.5);
+        logInfo("Limiting stepSize for "+std::string(getCref())+"."+std::string(tlmbuses[i]->getName())+" to "+std::to_string(system->getStepSize()));
+      }
+  }
+
+  logInfo("Creating TLM plugin instance for "+std::string(cref));
+
+  TLMPlugin* plugin = TLMPlugin::CreateInstance();
+  plugins[system] = plugin;
+
+  logInfo("Initializing plugin for "+std::string(cref));
+
+  if(!plugin->Init(std::string(cref),
+                   system->getTime(),
+                   1, //Unused argument anyway
+                   system->getStepSize(),
+                   server)) {
+    logError("Error initializing the TLM plugin for "+std::string(cref));
+    return oms_status_error;
+  }
+
+  logInfo("Registering interfaces for "+std::string(cref));
+
+  for (int i=0; tlmbuses[i]; ++i)
+  {
+    oms_status_enu_t status = tlmbuses[i]->registerToSockets(plugin);
+    if(status == oms_status_error) {
+      return logError("Failed to register interface "+std::string(cref)+"."+std::string(tlmbuses[i]->getName()));
+    }
+  }
+
+  connectedsubsystems.push_back(cref);
+
+  return oms_status_ok;
+}
+
+void oms3::SystemTLM::disconnectFromSockets(const oms3::ComRef cref)
+{
+  SystemWC* system = reinterpret_cast<SystemWC*>(getSystem(cref));
+  if(system != nullptr)
+  {
+    //Wait for close permission, to prevent socket from being
+    //destroyed before master has read all data
+    TLMPlugin *plugin = plugins.find(system)->second;
+    plugin->AwaitClosePermission();
+    delete plugin;
+    plugins[system] = nullptr;
+  }
 }
 
 oms_status_enu_t oms3::SystemTLM::setSocketData(const std::string &address, int managerPort, int monitorPort)
