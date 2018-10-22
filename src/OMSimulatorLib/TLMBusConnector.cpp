@@ -146,6 +146,34 @@ void oms3::TLMBusConnector::sortConnectors()
   }
 }
 
+oms_status_enu_t oms3::TLMBusConnector::registerToSockets(TLMPlugin *plugin)
+{
+  if(sortedConnectors.empty())
+    return logError("All required connectors not added to TLM bus");
+
+  //OMTLMSimulator uses degrees of freedom as "dimensions",
+  //so convert to this:
+  int omtlm_dimensions = dimensions;
+  if(dimensions == 2) omtlm_dimensions = 3;
+  if(dimensions == 3) omtlm_dimensions = 6;
+
+  //Convert causality to string
+  std::string omtlm_causality = "Bidirectional";
+  if(std::string(domain) == "input")
+    omtlm_causality = "Input";
+  else if(std::string(domain) == "output")
+    omtlm_causality = "Output";
+
+  this->id = plugin->RegisteTLMInterface(name,omtlm_dimensions,omtlm_causality,domain);
+
+  if(this->id < 0) {
+    logError("Failed to register TLM interface: "+std::string(name));
+    return oms_status_error;
+  }
+
+  return oms_status_ok;
+}
+
 
 void oms3::TLMBusConnector::updateVariableTypes()
 {
