@@ -113,6 +113,7 @@ private:
 #define logError_OnlyForModel                              logError("Only implemented for model identifiers")
 #define logError_OnlyForTlmSystem                          logError("Only available for TLM systems");
 #define logError_SystemNotInModel(model, system)           logError("Model \"" + std::string(model) + "\" does not contain system \"" + std::string(system) + "\"")
+#define logError_SubSystemNotInSystem(system, subsystem)   logError("System \"" + std::string(system) + "\" does not contain subsystem \"" + std::string(subsystem) + "\"")
 #define logError_Termination(system)                       logError("Termination of system \"" + std::string(system) + "\" failed")
 #define logError_WrongSchema(name)                         logError("Wrong xml schema detected. Unexpected tag \"" + name + "\"")
 
