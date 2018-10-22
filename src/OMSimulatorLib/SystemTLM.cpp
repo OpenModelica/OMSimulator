@@ -140,3 +140,23 @@ oms_status_enu_t oms3::SystemTLM::setSocketData(const std::string &address, int 
   this->monitorPort = monitorPort;
   return oms_status_ok;
 }
+
+oms_status_enu_t oms3::SystemTLM::setPositionAndOrientation(const oms3::ComRef &cref, std::vector<double> x, std::vector<double> A)
+{
+  ComRef tail = cref;
+  ComRef head = tail.pop_front();
+
+  if(getSubSystems().find(head) == getSubSystems().end() &&
+     getComponents().find(head) == getComponents().end()) {
+    return logError("Sub-model \""+std::string(head)+"\" not found.");
+  }
+  std::string ifcname;
+  if(tail.isEmpty()) {
+    ifcname = std::string(head);   //Apply to component
+  }
+  else {
+    ifcname = std::string(head)+"."+std::string(tail);  //Apply to interface
+  }
+  omtlm_setInitialPositionAndOrientation(model, ifcname.c_str(), x, A);
+  return oms_status_ok;
+}

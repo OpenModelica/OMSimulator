@@ -713,6 +713,29 @@ oms_status_enu_t oms3_setTLMSocketData(const char *cref, const char *address, in
   return tlmsystem->setSocketData(address, managerPort, monitorPort);
 }
 
+oms_status_enu_t oms3_setTLMPositionAndOrientation(const char *cref, double x1, double x2, double x3, double A11, double A12, double A13, double A21, double A22, double A23, double A31, double A32, double A33)
+{
+  oms3::ComRef tail(cref);
+  oms3::ComRef front = tail.pop_front();
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(front);
+  if(!model)
+    return logError_ModelNotInScope(front);
+
+  front = tail.pop_front();
+  oms3::System* system = model->getSystem(front);
+  if(!system)
+    return logError_SystemNotInModel(model->getName(), front);
+
+  if(system->getType() != oms_system_tlm)
+    return logError_OnlyForTlmSystem;
+
+  oms3::SystemTLM* tlmsystem = reinterpret_cast<oms3::SystemTLM*>(system);
+  std::vector<double> x = {x1,x2,x3};
+  std::vector<double> A = {A11,A12,A13,A21,A22,A23,A31,A32,A33};
+  return tlmsystem->setPositionAndOrientation(tail, x, A);
+}
+
 /* ************************************ */
 /* OMSimulator 2.0                      */
 /*                                      */
