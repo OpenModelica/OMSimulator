@@ -192,11 +192,11 @@ oms3::Component* oms3::ComponentFMUCS::NewComponent(const oms3::ComRef& cref, om
   for (auto const& v : component->allVariables)
   {
     if (v.isParameter() && v.isTypeReal())
-      component->realParameters[v.getName()] = oms3::Option<double>();
+      component->realParameters[std::string(v)] = oms3::Option<double>();
     else if (v.isParameter() && v.isTypeInteger())
-      component->integerParameters[v.getName()] = oms3::Option<int>();
+      component->integerParameters[std::string(v)] = oms3::Option<int>();
     else if (v.isParameter() && v.isTypeBoolean())
-      component->booleanParameters[v.getName()] = oms3::Option<bool>();
+      component->booleanParameters[std::string(v)] = oms3::Option<bool>();
 
     if (v.isInput())
       component->inputs.push_back(v);
@@ -218,13 +218,13 @@ oms3::Component* oms3::ComponentFMUCS::NewComponent(const oms3::ComRef& cref, om
   int i = 1;
   int size = 1 + component->inputs.size();
   for (const auto& v : component->inputs)
-    component->connectors.push_back(new Connector(oms_causality_input, v.getType(), ComRef(v.getName()), i++/(double)size));
+    component->connectors.push_back(new Connector(oms_causality_input, v.getType(), v.getCref(), i++/(double)size));
   i = 1;
   size = 1 + component->outputs.size();
   for (const auto& v : component->outputs)
-    component->connectors.push_back(new Connector(oms_causality_output, v.getType(), ComRef(v.getName()), i++/(double)size));
+    component->connectors.push_back(new Connector(oms_causality_output, v.getType(), v.getCref(), i++/(double)size));
   for (const auto& v : component->parameters)
-    component->connectors.push_back(new Connector(oms_causality_parameter, v.getType(), ComRef(v.getName())));
+    component->connectors.push_back(new Connector(oms_causality_parameter, v.getType(), v.getCref()));
   component->connectors.push_back(NULL);
   component->element.setConnectors(&component->connectors[0]);
 
@@ -317,11 +317,11 @@ oms_status_enu_t oms3::ComponentFMUCS::initializeDependencyGraph_initialUnknowns
   {
     if (startIndex[i] == startIndex[i + 1])
     {
-      logDebug(std::string(getName()) + ": " + getPath() + " initial unknown " + std::string(initialUnknownsGraph.getNodes()[i].getName()) + " has no dependencies");
+      logDebug(std::string(getName()) + ": " + getPath() + " initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + " has no dependencies");
     }
     else if ((startIndex[i] + 1 == startIndex[i + 1]) && (dependency[startIndex[i]] == 0))
     {
-      logDebug(std::string(getName()) + ": " + getPath() + " initial unknown " + std::string(initialUnknownsGraph.getNodes()[i].getName()) + " depends on all");
+      logDebug(std::string(getName()) + ": " + getPath() + " initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + " depends on all");
       for (int j = 0; j < inputs.size(); j++)
         initialUnknownsGraph.addEdge(inputs[j].makeConnector(), initialUnknownsGraph.getNodes()[i]);
     }
@@ -329,7 +329,7 @@ oms_status_enu_t oms3::ComponentFMUCS::initializeDependencyGraph_initialUnknowns
     {
       for (size_t j = startIndex[i]; j < startIndex[i + 1]; j++)
       {
-        logDebug(std::string(getName()) + ": " + getPath() + " initial unknown " + std::string(initialUnknownsGraph.getNodes()[i].getName()) + " depends on " + allVariables[dependency[j] - 1].getName());
+        logDebug(std::string(getName()) + ": " + getPath() + " initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + " depends on " + std::string(allVariables[dependency[j] - 1]));
         initialUnknownsGraph.addEdge(allVariables[dependency[j] - 1].makeConnector(), initialUnknownsGraph.getNodes()[i]);
       }
     }
@@ -361,11 +361,11 @@ oms_status_enu_t oms3::ComponentFMUCS::initializeDependencyGraph_outputs()
   {
     if (startIndex[i] == startIndex[i + 1])
     {
-      logDebug(std::string(getName()) + ": " + getPath() + " output " + std::string(outputs[i].getName()) + " has no dependencies");
+      logDebug(std::string(getName()) + ": " + getPath() + " output " + std::string(outputs[i]) + " has no dependencies");
     }
     else if ((startIndex[i] + 1 == startIndex[i + 1]) && (dependency[startIndex[i]] == 0))
     {
-      logDebug(std::string(getName()) + ": " + getPath() + " output " + std::string(outputs[i].getName()) + " depends on all");
+      logDebug(std::string(getName()) + ": " + getPath() + " output " + std::string(outputs[i]) + " depends on all");
       for (int j = 0; j < inputs.size(); j++)
         outputsGraph.addEdge(inputs[j].makeConnector(), outputs[i].makeConnector());
     }
@@ -373,7 +373,7 @@ oms_status_enu_t oms3::ComponentFMUCS::initializeDependencyGraph_outputs()
     {
       for (size_t j = startIndex[i]; j < startIndex[i + 1]; j++)
       {
-        logDebug(std::string(getName()) + ": " + getPath() + " output " + std::string(outputs[i].getName()) + " depends on " + allVariables[dependency[j] - 1].getName());
+        logDebug(std::string(getName()) + ": " + getPath() + " output " + std::string(outputs[i]) + " depends on " + std::string(allVariables[dependency[j] - 1]));
         outputsGraph.addEdge(allVariables[dependency[j] - 1].makeConnector(), outputs[i].makeConnector());
       }
     }
