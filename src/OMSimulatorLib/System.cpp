@@ -144,15 +144,15 @@ oms3::System* oms3::System::NewSystem(const oms3::ComRef& cref, oms_system_enu_t
   return NULL;
 }
 
-oms3::ComRef oms3::System::getFullName() const
+oms3::ComRef oms3::System::getFullCref() const
 {
   if (parentSystem)
-    return parentSystem->getFullName() + this->getName();
+    return parentSystem->getFullCref() + this->getCref();
   if (parentModel)
-    return ComRef(parentModel->getName()) + this->getName();
+    return ComRef(parentModel->getCref()) + this->getCref();
 
   logError("Internal error");
-  return this->getName();
+  return this->getCref();
 }
 
 oms3::System* oms3::System::getSystem(const oms3::ComRef& cref)
@@ -219,7 +219,7 @@ oms_status_enu_t oms3::System::addSubSystem(const oms3::ComRef& cref, oms_system
 
   System* system = this->getSystem(front);
   if (!system)
-    return logError("System \"" + std::string(getFullName()) + "\" does not contain system \"" + std::string(front) + "\"");
+    return logError("System \"" + std::string(getFullCref()) + "\" does not contain system \"" + std::string(front) + "\"");
 
   return system->addSubSystem(tail, type);
 }
@@ -250,7 +250,7 @@ oms_status_enu_t oms3::System::addSubModel(const oms3::ComRef& cref, const std::
 
   System* system = this->getSystem(front);
   if (!system)
-    return logError("System \"" + std::string(getFullName()) + "\" does not contain system \"" + std::string(front) + "\"");
+    return logError("System \"" + std::string(getFullCref()) + "\" does not contain system \"" + std::string(front) + "\"");
 
   return system->addSubModel(tail, fmuPath);
 }
@@ -262,7 +262,7 @@ oms_status_enu_t oms3::System::list(const oms3::ComRef& cref, char** contents)
 
 oms_status_enu_t oms3::System::exportToSSD(pugi::xml_node& node) const
 {
-  node.append_attribute("name") = this->getName().c_str();
+  node.append_attribute("name") = this->getCref().c_str();
 
   // export ssd:SimulationInformation
   if (oms_status_ok != this->exportToSSD_SimulationInformation(node))
@@ -997,7 +997,7 @@ oms_status_enu_t oms3::System::setConnectorGeometry(const oms3::ComRef& cref, co
       return oms_status_ok;
     }
     else {
-      return logError("Connector " + std::string(tail)+" not found in component " + std::string(head));
+      return logError("Connector " + std::string(tail) + " not found in component " + std::string(head));
     }
   }
 
@@ -1007,7 +1007,7 @@ oms_status_enu_t oms3::System::setConnectorGeometry(const oms3::ComRef& cref, co
     connector->setGeometry(geometry);
     return oms_status_ok;
   }
-  return logError("Connector " + std::string(cref)+" not found in system " + std::string(getName()));
+  return logError("Connector " + std::string(cref) + " not found in system " + std::string(getCref()));
 }
 
 oms_status_enu_t oms3::System::setConnectionGeometry(const oms3::ComRef& crefA, const oms3::ComRef& crefB, const oms2::ssd::ConnectionGeometry *geometry)
@@ -1050,7 +1050,7 @@ oms_status_enu_t oms3::System::setBusGeometry(const oms3::ComRef& cref, const om
     busConnector->setGeometry(geometry);
     return oms_status_ok;
   }
-  return logError("Bus " + std::string(cref)+" not found in system " + std::string(getName()));
+  return logError("Bus " + std::string(cref)+" not found in system " + std::string(getCref()));
 }
 
 oms_status_enu_t oms3::System::setTLMBusGeometry(const oms3::ComRef& cref, const oms2::ssd::ConnectorGeometry *geometry)
@@ -1067,7 +1067,7 @@ oms_status_enu_t oms3::System::setTLMBusGeometry(const oms3::ComRef& cref, const
     tlmBusConnector->setGeometry(geometry);
     return oms_status_ok;
   }
-  return logError("TLM Bus " + std::string(cref)+" not found in system " + std::string(getName()));
+  return logError("TLM Bus " + std::string(cref)+" not found in system " + std::string(getCref()));
 }
 
 oms3::Connection* oms3::System::getConnection(const oms3::ComRef& crefA, const oms3::ComRef& crefB)

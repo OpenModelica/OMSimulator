@@ -600,7 +600,7 @@ oms_status_enu_t oms3_addSubModel(const char* cref, const char* fmuPath)
   front = tail.pop_front();
   oms3::System* system = model->getSystem(front);
   if (!system)
-    return logError_SystemNotInModel(model->getName(), front);
+    return logError_SystemNotInModel(model->getCref(), front);
 
   return system->addSubModel(tail, fmuPath);
 }
@@ -617,7 +617,7 @@ oms_status_enu_t oms3_getSubModelPath(const char* cref, char** path)
   front = tail.pop_front();
   oms3::System* system = model->getSystem(front);
   if (!system)
-    return logError_SystemNotInModel(model->getName(), front);
+    return logError_SystemNotInModel(model->getCref(), front);
 
   oms3::Component* component = system->getComponent(tail);
   if (!component)
@@ -639,7 +639,7 @@ oms_status_enu_t oms3_getFMUInfo(const char* cref, const oms_fmu_info_t** fmuInf
   front = tail.pop_front();
   oms3::System* system = model->getSystem(front);
   if (!system)
-    return logError_SystemNotInModel(model->getName(), front);
+    return logError_SystemNotInModel(model->getCref(), front);
 
   oms3::Component* component = system->getComponent(tail);
   if (!component)
@@ -704,7 +704,7 @@ oms_status_enu_t oms3_setTLMSocketData(const char *cref, const char *address, in
   front = tail.pop_front();
   oms3::System* system = model->getSystem(front);
   if (!system)
-    return logError_SystemNotInModel(model->getName(), front);
+    return logError_SystemNotInModel(model->getCref(), front);
 
   if (system->getType() != oms_system_tlm)
     return logError_OnlyForTlmSystem;
@@ -725,7 +725,7 @@ oms_status_enu_t oms3_setTLMPositionAndOrientation(const char *cref, double x1, 
   front = tail.pop_front();
   oms3::System* system = model->getSystem(front);
   if (!system)
-    return logError_SystemNotInModel(model->getName(), front);
+    return logError_SystemNotInModel(model->getCref(), front);
 
   if (system->getType() != oms_system_tlm)
     return logError_OnlyForTlmSystem;
@@ -748,7 +748,7 @@ oms_status_enu_t oms3_exportDependencyGraphs(const char* cref, const char* initi
 
   oms3::System* system = model->getSystem(tail);
   if (!system)
-    return logError_SystemNotInModel(model->getName(), tail);
+    return logError_SystemNotInModel(model->getCref(), tail);
 
   return system->exportDependencyGraphs(initialization, simulation);
 }

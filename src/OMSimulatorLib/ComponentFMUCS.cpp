@@ -281,7 +281,7 @@ oms3::Component* oms3::ComponentFMUCS::NewComponent(const pugi::xml_node& node, 
 
 oms_status_enu_t oms3::ComponentFMUCS::exportToSSD(pugi::xml_node& node) const
 {
-  node.append_attribute("name") = this->getName().c_str();
+  node.append_attribute("name") = this->getCref().c_str();
   node.append_attribute("type") = "application/x-fmu-sharedlibrary";
   node.append_attribute("source") = getPath().c_str();
   pugi::xml_node node_connectors = node.append_child(oms2::ssd::ssd_connectors);
@@ -297,7 +297,7 @@ oms_status_enu_t oms3::ComponentFMUCS::initializeDependencyGraph_initialUnknowns
 {
   if (initialUnknownsGraph.getEdges().size() > 0)
   {
-    logError(std::string(getName()) + ": " + getPath() + " is already initialized");
+    logError(std::string(getCref()) + ": " + getPath() + " is already initialized");
     return oms_status_error;
   }
 
@@ -308,7 +308,7 @@ oms_status_enu_t oms3::ComponentFMUCS::initializeDependencyGraph_initialUnknowns
 
   if (!startIndex)
   {
-    logDebug(std::string(getName()) + ": " + getPath() + " no dependencies");
+    logDebug(std::string(getCref()) + ": " + getPath() + " no dependencies");
     return oms_status_ok;
   }
 
@@ -317,11 +317,11 @@ oms_status_enu_t oms3::ComponentFMUCS::initializeDependencyGraph_initialUnknowns
   {
     if (startIndex[i] == startIndex[i + 1])
     {
-      logDebug(std::string(getName()) + ": " + getPath() + " initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + " has no dependencies");
+      logDebug(std::string(getCref()) + ": " + getPath() + " initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + " has no dependencies");
     }
     else if ((startIndex[i] + 1 == startIndex[i + 1]) && (dependency[startIndex[i]] == 0))
     {
-      logDebug(std::string(getName()) + ": " + getPath() + " initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + " depends on all");
+      logDebug(std::string(getCref()) + ": " + getPath() + " initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + " depends on all");
       for (int j = 0; j < inputs.size(); j++)
         initialUnknownsGraph.addEdge(inputs[j].makeConnector(), initialUnknownsGraph.getNodes()[i]);
     }
@@ -329,7 +329,7 @@ oms_status_enu_t oms3::ComponentFMUCS::initializeDependencyGraph_initialUnknowns
     {
       for (size_t j = startIndex[i]; j < startIndex[i + 1]; j++)
       {
-        logDebug(std::string(getName()) + ": " + getPath() + " initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + " depends on " + std::string(allVariables[dependency[j] - 1]));
+        logDebug(std::string(getCref()) + ": " + getPath() + " initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + " depends on " + std::string(allVariables[dependency[j] - 1]));
         initialUnknownsGraph.addEdge(allVariables[dependency[j] - 1].makeConnector(), initialUnknownsGraph.getNodes()[i]);
       }
     }
@@ -342,7 +342,7 @@ oms_status_enu_t oms3::ComponentFMUCS::initializeDependencyGraph_outputs()
 {
   if (outputsGraph.getEdges().size() > 0)
   {
-    logError(std::string(getName()) + ": " + getPath() + " is already initialized.");
+    logError(std::string(getCref()) + ": " + getPath() + " is already initialized.");
     return oms_status_error;
   }
 
@@ -353,7 +353,7 @@ oms_status_enu_t oms3::ComponentFMUCS::initializeDependencyGraph_outputs()
 
   if (!startIndex)
   {
-    logDebug(std::string(getName()) + ": " + getPath() + " no dependencies");
+    logDebug(std::string(getCref()) + ": " + getPath() + " no dependencies");
     return oms_status_ok;
   }
 
@@ -361,11 +361,11 @@ oms_status_enu_t oms3::ComponentFMUCS::initializeDependencyGraph_outputs()
   {
     if (startIndex[i] == startIndex[i + 1])
     {
-      logDebug(std::string(getName()) + ": " + getPath() + " output " + std::string(outputs[i]) + " has no dependencies");
+      logDebug(std::string(getCref()) + ": " + getPath() + " output " + std::string(outputs[i]) + " has no dependencies");
     }
     else if ((startIndex[i] + 1 == startIndex[i + 1]) && (dependency[startIndex[i]] == 0))
     {
-      logDebug(std::string(getName()) + ": " + getPath() + " output " + std::string(outputs[i]) + " depends on all");
+      logDebug(std::string(getCref()) + ": " + getPath() + " output " + std::string(outputs[i]) + " depends on all");
       for (int j = 0; j < inputs.size(); j++)
         outputsGraph.addEdge(inputs[j].makeConnector(), outputs[i].makeConnector());
     }
@@ -373,7 +373,7 @@ oms_status_enu_t oms3::ComponentFMUCS::initializeDependencyGraph_outputs()
     {
       for (size_t j = startIndex[i]; j < startIndex[i + 1]; j++)
       {
-        logDebug(std::string(getName()) + ": " + getPath() + " output " + std::string(outputs[i]) + " depends on " + std::string(allVariables[dependency[j] - 1]));
+        logDebug(std::string(getCref()) + ": " + getPath() + " output " + std::string(outputs[i]) + " depends on " + std::string(allVariables[dependency[j] - 1]));
         outputsGraph.addEdge(allVariables[dependency[j] - 1].makeConnector(), outputs[i].makeConnector());
       }
     }
@@ -392,7 +392,7 @@ oms_status_enu_t oms3::ComponentFMUCS::instantiate()
   if (jm_status_error == jmstatus)
     return logError("Could not create the DLL loading mechanism (C-API). Error: " + std::string(fmi2_import_get_last_error(fmu)));
 
-  jmstatus = fmi2_import_instantiate(fmu, getName().c_str(), fmi2_cosimulation, NULL, fmi2_false);
+  jmstatus = fmi2_import_instantiate(fmu, getCref().c_str(), fmi2_cosimulation, NULL, fmi2_false);
   if (jm_status_error == jmstatus)
     return logError("fmi2_import_instantiate failed");
 
@@ -421,6 +421,6 @@ oms_status_enu_t oms3::ComponentFMUCS::terminate()
 {
   fmi2_status_t fmistatus = fmi2_import_terminate(fmu);
   if (fmi2_status_ok != fmistatus)
-    return logError_Termination(getName());
+    return logError_Termination(getCref());
   return oms_status_ok;
 }

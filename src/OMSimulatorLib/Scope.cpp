@@ -93,7 +93,7 @@ oms_status_enu_t oms3::Scope::deleteModel(const oms3::ComRef& cref)
 
   // update models_map
   if (models[it->second])
-    models_map[models[it->second]->getName()] = it->second;
+    models_map[models[it->second]->getCref()] = it->second;
   models_map.erase(it);
 
   return oms_status_ok;
@@ -212,7 +212,7 @@ oms_status_enu_t oms3::Scope::importModel(const std::string& filename, char** _c
     return oms_status_error;
   }
 
-  *_cref = (char*)model->getName().c_str();
+  *_cref = (char*)model->getCref().c_str();
 
   return oms_status_ok;
 }

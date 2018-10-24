@@ -63,7 +63,7 @@ oms3::Component* oms3::ComponentFMUME::NewComponent(const oms3::ComRef& cref, om
 
 oms_status_enu_t oms3::ComponentFMUME::exportToSSD(pugi::xml_node& node) const
 {
-  node.append_attribute("name") = this->getName().c_str();
+  node.append_attribute("name") = this->getCref().c_str();
   node.append_attribute("type") = "application/x-fmu-sharedlibrary";
   node.append_attribute("source") = getPath().c_str();
   pugi::xml_node node_connectors = node.append_child(oms2::ssd::ssd_connectors);
