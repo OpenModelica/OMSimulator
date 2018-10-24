@@ -331,6 +331,24 @@ oms_status_enu_t oms3::Model::getAllResources(std::vector<std::string>& resource
   return oms_status_ok;
 }
 
+oms_status_enu_t oms3::Model::setStartTime(double value)
+{
+  if (oms_modelState_terminated != modelState)
+    return logError_ModelInWrongState(getCref());
+
+  startTime = value;
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::Model::setStopTime(double value)
+{
+  if (oms_modelState_terminated != modelState)
+    return logError_ModelInWrongState(getCref());
+
+  stopTime = value;
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms3::Model::instantiate()
 {
   if (oms_modelState_terminated != modelState)
@@ -371,7 +389,13 @@ oms_status_enu_t oms3::Model::initialize()
 
 oms_status_enu_t oms3::Model::simulate()
 {
-  return logError_NotImplemented;
+  if (oms_modelState_simulation != modelState)
+    return logError_ModelInWrongState(getCref());
+
+  if (!system)
+    return logError("Model doesn't contain a system");
+
+  return system->stepUntil(stopTime);
 }
 
 oms_status_enu_t oms3::Model::terminate()

@@ -96,7 +96,6 @@ namespace oms3
     oms_status_enu_t getAllResources(std::vector<std::string>& resources);
     const std::map<ComRef, System*>& getSubSystems() {return subsystems;}
     const std::map<ComRef, Component*>& getComponents() {return components;}
-    double getTolerance() {return 1e-4;}
     oms_status_enu_t updateDependencyGraphs();
     const DirectedGraph& getInitialUnknownsGraph() {return initialUnknownsGraph;}
     const DirectedGraph& getOutputsGraph() {return outputsGraph;}
@@ -105,6 +104,7 @@ namespace oms3
     virtual oms_status_enu_t instantiate() = 0;
     virtual oms_status_enu_t initialize() = 0;
     virtual oms_status_enu_t terminate() = 0;
+    virtual oms_status_enu_t stepUntil(double stopTime) = 0;
 
   protected:
     System(const ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem);

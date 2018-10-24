@@ -32,6 +32,7 @@
 #include "SystemWC.h"
 
 #include "Component.h"
+#include "ComponentFMUCS.h"
 #include "Model.h"
 #include "Types.h"
 #include "ssd/Tags.h"
@@ -118,4 +119,71 @@ oms_status_enu_t oms3::SystemWC::terminate()
       return oms_status_error;
 
   return oms_status_ok;
+}
+
+oms_status_enu_t oms3::SystemWC::stepUntil(double stopTime)
+{
+  while (time < stopTime)
+  {
+    double tNext = time+stepSize;
+    if (tNext > stopTime)
+      tNext = stopTime;
+
+    logDebug("doStep: " + std::to_string(time) + " -> " + std::to_string(tNext));
+
+    for (const auto& subsystem : getSubSystems())
+      if (oms_status_ok != subsystem.second->stepUntil(tNext))
+        return oms_status_error;
+
+    for (const auto& component : getComponents())
+    {
+      if (component.second->getType() != oms_component_fmu)
+        return logError("Unexpected component type");
+
+      if (oms_status_ok != dynamic_cast<ComponentFMUCS*>(component.second)->stepUntil(tNext))
+        return oms_status_error;
+    }
+
+    updateInputs(outputsGraph, false);
+  }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::SystemWC::updateInputs(oms3::DirectedGraph& graph, bool discrete)
+{
+  // input := output
+  const std::vector< std::vector< std::pair<int, int> > >& sortedConnections = graph.getSortedConnections();
+  for(int i=0; i<sortedConnections.size(); i++)
+  {
+    if (sortedConnections[i].size() == 1)
+    {
+      int output = sortedConnections[i][0].first;
+      int input = sortedConnections[i][0].second;
+
+      if (graph.getNodes()[input].getType() == oms_signal_type_real)
+      {
+        double value = 0.0;
+        getReal(graph.getNodes()[output].getName(), value);
+        setReal(graph.getNodes()[input].getName(), value);
+      }
+      else
+        return logError("Only continuous connections are supported yet");
+    }
+    else
+    {
+      return logError("Alg. loops are not supported yet");
+    }
+  }
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::SystemWC::setReal(const oms3::ComRef& cref, double value)
+{
+  return logError_NotImplemented;
+}
+
+oms_status_enu_t oms3::SystemWC::getReal(const oms3::ComRef& cref, double& value)
+{
+  return logError_NotImplemented;
 }

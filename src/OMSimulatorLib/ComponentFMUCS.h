@@ -52,14 +52,16 @@ namespace oms3
   public:
     ~ComponentFMUCS();
 
-    static Component* NewComponent(const oms3::ComRef& cref, System* parentSystem, const std::string& fmuPath);
-    static Component* NewComponent(const pugi::xml_node& node, oms3::System* parentSystem);
-    const oms3::FMUInfo* getFMUInfo() const {return &(this->fmuInfo);}
+    static Component* NewComponent(const ComRef& cref, System* parentSystem, const std::string& fmuPath);
+    static Component* NewComponent(const pugi::xml_node& node, System* parentSystem);
+    const FMUInfo* getFMUInfo() const {return &(this->fmuInfo);}
 
     oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
     oms_status_enu_t instantiate();
     oms_status_enu_t initialize();
     oms_status_enu_t terminate();
+
+    oms_status_enu_t stepUntil(double stopTime);
 
     oms_status_enu_t initializeDependencyGraph_initialUnknowns();
     oms_status_enu_t initializeDependencyGraph_outputs();
@@ -88,7 +90,9 @@ namespace oms3
     std::map<std::string, Option<int>> integerParameters;
     std::map<std::string, Option<bool>> booleanParameters;
 
-    oms3::FMUInfo fmuInfo;
+    FMUInfo fmuInfo;
+
+    double time;
   };
 }
 

@@ -61,7 +61,7 @@ namespace oms3
     const std::string& getPath() const {return path;}
     oms_component_enu_t getType() const {return type;}
     virtual const oms3::FMUInfo* getFMUInfo() const {return NULL;}
-    System* getParentSystem() const {return parentSystem;};
+    System* getParentSystem() const {return parentSystem;}
 
     virtual oms_status_enu_t exportToSSD(pugi::xml_node& node) const = 0;
     virtual oms_status_enu_t instantiate() = 0;

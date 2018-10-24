@@ -76,9 +76,9 @@ namespace oms3
 
     oms_modelState_enu_t getModelState() const {return modelState;}
 
-    void setStartTime(double value) {startTime = value;}
+    oms_status_enu_t setStartTime(double value);
     double getStartTime() const {return startTime;}
-    void setStopTime(double value) {stopTime = value;}
+    oms_status_enu_t setStopTime(double value);
     double getStopTime() const {return stopTime;}
 
   private:

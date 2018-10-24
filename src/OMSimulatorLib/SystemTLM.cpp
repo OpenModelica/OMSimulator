@@ -133,6 +133,11 @@ oms_status_enu_t oms3::SystemTLM::terminate()
   return logError_NotImplemented;
 }
 
+oms_status_enu_t oms3::SystemTLM::stepUntil(double stopTime)
+{
+  return logError_NotImplemented;
+}
+
 oms_status_enu_t oms3::SystemTLM::setSocketData(const std::string &address, int managerPort, int monitorPort)
 {
   this->address = address;

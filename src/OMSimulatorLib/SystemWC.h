@@ -46,13 +46,20 @@ namespace oms3
   public:
     ~SystemWC();
 
-    static System* NewSystem(const oms3::ComRef& cref, Model* parentModel, System* parentSystem);
+    static System* NewSystem(const ComRef& cref, Model* parentModel, System* parentSystem);
     oms_status_enu_t exportToSSD_SimulationInformation(pugi::xml_node& node) const;
     oms_status_enu_t importFromSSD_SimulationInformation(const pugi::xml_node& node);
 
     oms_status_enu_t instantiate();
     oms_status_enu_t initialize();
     oms_status_enu_t terminate();
+    oms_status_enu_t stepUntil(double stopTime);
+
+    double getTolerance() const {return tolerance;}
+
+    oms_status_enu_t updateInputs(DirectedGraph& graph, bool discrete);
+    oms_status_enu_t setReal(const ComRef& cref, double value);
+    oms_status_enu_t getReal(const ComRef& cref, double& value);
 
   protected:
     SystemWC(const ComRef& cref, Model* parentModel, System* parentSystem);
@@ -63,7 +70,9 @@ namespace oms3
 
   private:
     std::string solverName = "oms-ma";
+    double time;
     double stepSize = 1e-1;
+    double tolerance = 1e-4;
 
     DirectedGraph initialUnknownsGraph;
     DirectedGraph outputsGraph;
