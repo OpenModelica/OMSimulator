@@ -605,6 +605,28 @@ oms_status_enu_t oms3_addSubModel(const char* cref, const char* fmuPath)
   return system->addSubModel(tail, fmuPath);
 }
 
+oms_status_enu_t oms3_getComponentType(const char* cref, oms_component_enu_t* type)
+{
+  oms3::ComRef tail(cref);
+  oms3::ComRef front = tail.pop_front();
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  front = tail.pop_front();
+  oms3::System* system = model->getSystem(front);
+  if (!system)
+    return logError_SystemNotInModel(model->getCref(), front);
+
+  oms3::Component* component = system->getComponent(tail);
+  if (!component)
+    return logError_ComponentNotInSystem(system, tail);
+
+  *type = component->getType();
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms3_getSubModelPath(const char* cref, char** path)
 {
   oms3::ComRef tail(cref);
