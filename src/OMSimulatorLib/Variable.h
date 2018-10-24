@@ -71,9 +71,8 @@ namespace oms3
         || (isState() && (isApprox() || isCalculated()));
     }
 
-    const std::string& getName() const { return name; }
     const ComRef& getCref() const { return cref; }
-    std::string toString() const { return std::string(cref) + "." + name; }
+    operator std::string() const {return std::string(cref);}
 
     fmi2_value_reference_t getValueReference() const { return vr; }
     oms_signal_type_enu_t getType() const { return type; }
@@ -91,7 +90,6 @@ namespace oms3
 
   private:
     ComRef cref;
-    std::string name;
     std::string description;
     fmi2_value_reference_t vr;
     fmi2_causality_enu_t causality;

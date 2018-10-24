@@ -40,7 +40,7 @@
 
 
 oms3::Variable::Variable(fmi2_import_variable_t *var, unsigned int index)
-  : is_state(false), name(fmi2_import_get_variable_name(var)), cref(fmi2_import_get_variable_name(var)), index(index)
+  : is_state(false), cref(fmi2_import_get_variable_name(var)), index(index)
 {
   // extract the attributes
   description = fmi2_import_get_variable_description(var) ? fmi2_import_get_variable_description(var) : "";
@@ -96,7 +96,7 @@ oms_causality_enu_t oms3::Variable::getCausality() const
 
 bool oms3::operator==(const oms3::Variable& v1, const oms3::Variable& v2)
 {
-  return v1.cref == v2.cref && v1.name == v2.name && v1.vr == v2.vr;
+  return v1.cref == v2.cref && v1.vr == v2.vr;
 }
 
 bool oms3::operator!=(const oms3::Variable& v1, const oms3::Variable& v2)
