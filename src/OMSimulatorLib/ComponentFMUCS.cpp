@@ -215,6 +215,9 @@ oms3::Component* oms3::ComponentFMUCS::NewComponent(const oms3::ComRef& cref, om
   }
 
   // create connectors
+  while (component->connectors.size() > 0 && NULL == component->connectors.back())
+    component->connectors.pop_back();
+
   int i = 1;
   int size = 1 + component->inputs.size();
   for (const auto& v : component->inputs)
