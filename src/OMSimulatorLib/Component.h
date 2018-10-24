@@ -53,6 +53,7 @@ namespace oms3
     virtual ~Component();
 
     const ComRef& getName() const {return cref;}
+    ComRef getFullName() const;
     oms3::Element* getElement() {return &element;}
     oms3::Connector* getConnector(const ComRef &cref);
     oms_status_enu_t deleteResources();

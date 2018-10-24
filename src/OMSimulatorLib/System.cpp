@@ -144,7 +144,7 @@ oms3::System* oms3::System::NewSystem(const oms3::ComRef& cref, oms_system_enu_t
   return NULL;
 }
 
-oms3::ComRef oms3::System::getFullName()
+oms3::ComRef oms3::System::getFullName() const
 {
   if (parentSystem)
     return parentSystem->getFullName() + this->getName();
@@ -1135,26 +1135,26 @@ oms_status_enu_t oms3::System::updateDependencyGraphs()
     outputsGraph.includeGraph(component.second->getOutputsGraph(), component.first);
   }
 
-  //for (const auto& connection : connections)
-  //{
-  //  if (!connection || connection->getType() != oms3_connection_single)
-  //    continue;
-  //
-  //  Connector* varA = getConnector(connection->getSignalA());
-  //  Connector* varB = getConnector(connection->getSignalB());
-  //  if (varA && varB)
-  //  {
-  //    if (varA->isOutput() && varB->isInput())
-  //    {
-  //      initialUnknownsGraph.addEdge(*varA, *varB);
-  //      outputsGraph.addEdge(*varA, *varB);
-  //    }
-  //    else
-  //      return logError("failed for " + std::string(connection->getSignalA()) + " -> " + std::string(connection->getSignalB()));
-  //  }
-  //  else
-  //    return logError("invalid connection");
-  //}
+  for (const auto& connection : connections)
+  {
+    if (!connection || connection->getType() != oms3_connection_single)
+      continue;
+
+    Connector* varA = getConnector(connection->getSignalA());
+    Connector* varB = getConnector(connection->getSignalB());
+    if (varA && varB)
+    {
+      if (varA->isOutput() && varB->isInput())
+      {
+        initialUnknownsGraph.addEdge(Connector(varA->getCausality(), varA->getType(), connection->getSignalA()), Connector(varB->getCausality(), varB->getType(), connection->getSignalB()));
+        outputsGraph.addEdge(Connector(varA->getCausality(), varA->getType(), connection->getSignalA()), Connector(varB->getCausality(), varB->getType(), connection->getSignalB()));
+      }
+      else
+        return logError("failed for " + std::string(connection->getSignalA()) + " -> " + std::string(connection->getSignalB()));
+    }
+    else
+      return logError("invalid connection");
+  }
 
   return oms_status_ok;
 }

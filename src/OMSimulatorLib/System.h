@@ -60,7 +60,7 @@ namespace oms3
     System* getSystem(const ComRef& cref);
     Component* getComponent(const ComRef& cref);
     const ComRef& getName() const {return cref;}
-    ComRef getFullName();
+    ComRef getFullName() const;
     Element* getElement() {return &element;}
     oms_status_enu_t list(const ComRef& cref, char** contents);
     oms_system_enu_t getType() const {return type;}
