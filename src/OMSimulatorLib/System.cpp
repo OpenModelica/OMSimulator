@@ -463,7 +463,7 @@ oms_status_enu_t oms3::System::importFromSSD(const pugi::xml_node& node)
 
           if (component)
           {
-            components[cref] = component;
+            components[component->getCref()] = component;
             subelements.back() = reinterpret_cast<oms3_element_t*>(component->getElement());
             subelements.push_back(NULL);
             element.setSubElements(&subelements[0]);
