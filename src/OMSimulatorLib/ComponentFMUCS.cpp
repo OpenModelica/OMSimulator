@@ -293,7 +293,6 @@ oms_status_enu_t oms3::ComponentFMUCS::exportToSSD(pugi::xml_node& node) const
   return oms_status_ok;
 }
 
-
 oms_status_enu_t oms3::ComponentFMUCS::initializeDependencyGraph_initialUnknowns()
 {
   if (initialUnknownsGraph.getEdges().size() > 0)
