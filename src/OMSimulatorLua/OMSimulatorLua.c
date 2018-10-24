@@ -531,6 +531,19 @@ static int OMSimulatorLua_oms3_terminate(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms3_simulate(const char* ident);
+static int OMSimulatorLua_oms3_simulate(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* ident = lua_tostring(L, 1);
+  oms_status_enu_t status = oms3_simulate(ident);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
 //oms_status_enu_t oms3_setTLMSocketData(const char* cref, const char* address, int managerPort, int monitorPort)
 static int OMSimulatorLua_oms3_setTLMSocketData(lua_State *L)
 {
@@ -2083,6 +2096,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms3_setTLMPositionAndOrientation);
   REGISTER_LUA_CALL(oms3_setTLMSocketData);
   REGISTER_LUA_CALL(oms3_setWorkingDirectory);
+  REGISTER_LUA_CALL(oms3_simulate);
   REGISTER_LUA_CALL(oms3_terminate);
   /* ************************************ */
   /* OMSimulator 2.0                      */

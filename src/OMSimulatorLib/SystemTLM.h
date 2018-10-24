@@ -54,6 +54,7 @@ namespace oms3
     oms_status_enu_t instantiate();
     oms_status_enu_t initialize();
     oms_status_enu_t terminate();
+    oms_status_enu_t stepUntil(double stopTime);
 
   protected:
     SystemTLM(const ComRef& cref, Model* parentModel, System* parentSystem);

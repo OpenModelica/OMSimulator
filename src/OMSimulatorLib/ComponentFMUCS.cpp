@@ -35,9 +35,10 @@
 #include "Model.h"
 #include "ssd/Tags.h"
 #include "System.h"
-#include <OMSBoost.h>
+#include "SystemWC.h"
 #include <fmilib.h>
 #include <JM/jm_portability.h>
+#include <OMSBoost.h>
 
 oms3::ComponentFMUCS::ComponentFMUCS(const ComRef& cref, System* parentSystem, const std::string& fmuPath)
   : oms3::Component(cref, oms_component_fmu, parentSystem, fmuPath), fmuInfo(fmuPath, oms_fmi_kind_cs)
@@ -397,7 +398,9 @@ oms_status_enu_t oms3::ComponentFMUCS::instantiate()
     return logError("fmi2_import_instantiate failed");
 
   // enterInitialization
-  fmistatus = fmi2_import_setup_experiment(fmu, fmi2_true, getParentSystem()->getTolerance(), getParentSystem()->getModel()->getStartTime(), fmi2_false, 1.0);
+  time = getParentSystem()->getModel()->getStartTime();
+  double tolerance = dynamic_cast<SystemWC*>(getParentSystem())->getTolerance();
+  fmistatus = fmi2_import_setup_experiment(fmu, fmi2_true, tolerance, time, fmi2_false, 1.0);
   if (fmi2_status_ok != fmistatus) return logError("fmi2_import_setup_experiment failed");
 
   fmistatus = fmi2_import_enter_initialization_mode(fmu);
@@ -423,4 +426,9 @@ oms_status_enu_t oms3::ComponentFMUCS::terminate()
   if (fmi2_status_ok != fmistatus)
     return logError_Termination(getCref());
   return oms_status_ok;
+}
+
+oms_status_enu_t oms3::ComponentFMUCS::stepUntil(double stopTime)
+{
+  return logError_NotImplemented;
 }
