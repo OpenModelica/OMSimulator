@@ -124,7 +124,7 @@ oms_status_enu_t oms3::ExternalModel::exportToSSD(pugi::xml_node& node) const
         tlmbusconnector->exportToSSD(annotation_node);
   }
 
-  node.append_attribute("name") = this->getName().c_str();
+  node.append_attribute("name") = this->getCref().c_str();
   node.append_attribute("source") = this->getPath().c_str();
   pugi::xml_node siminfo_node = node.append_child(oms2::ssd::ssd_simulation_information);
   pugi::xml_node annotations_node = siminfo_node.append_child(oms2::ssd::ssd_annotations);

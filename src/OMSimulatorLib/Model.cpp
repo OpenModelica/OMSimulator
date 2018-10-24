@@ -117,7 +117,7 @@ oms3::System* oms3::Model::getSystem(const oms3::ComRef& cref)
   oms3::ComRef tail(cref);
   oms3::ComRef front = tail.pop_front();
 
-  if (this->system->getName() == front)
+  if (this->system->getCref() == front)
   {
     if (tail.isEmpty())
       return system;
@@ -136,7 +136,7 @@ oms3::Component* oms3::Model::getComponent(const oms3::ComRef& cref)
   oms3::ComRef tail(cref);
   oms3::ComRef front = tail.pop_front();
 
-  if (this->system->getName() == front)
+  if (this->system->getCref() == front)
     return system->getComponent(tail);
 
   return NULL;
@@ -166,7 +166,7 @@ oms_status_enu_t oms3::Model::list(const oms3::ComRef& cref, char** contents)
   {
     // list system
     if (!system)
-      return logError("Model \"" + std::string(getName()) + "\" does not contain any system");
+      return logError("Model \"" + std::string(getCref()) + "\" does not contain any system");
 
     System* subsystem = getSystem(cref);
     if (!subsystem)
@@ -196,20 +196,20 @@ oms_status_enu_t oms3::Model::addSystem(const oms3::ComRef& cref, oms_system_enu
   }
 
   if (!system)
-    return logError("Model \"" + std::string(getName()) + "\" does not contain any system");
+    return logError("Model \"" + std::string(getCref()) + "\" does not contain any system");
 
   oms3::ComRef tail(cref);
   oms3::ComRef front = tail.pop_front();
 
-  if (system->getName() == front)
+  if (system->getCref() == front)
     return system->addSubSystem(tail, type);
 
-  return logError("wrong input \"" + std::string(front) + "\" != \"" + std::string(system->getName()) + "\"");
+  return logError("wrong input \"" + std::string(front) + "\" != \"" + std::string(system->getCref()) + "\"");
 }
 
 oms_status_enu_t oms3::Model::exportToSSD(pugi::xml_node& node) const
 {
-  node.append_attribute("name") = this->getName().c_str();
+  node.append_attribute("name") = this->getCref().c_str();
   node.append_attribute("version") = "Draft20180219";
 
   if (system)
@@ -289,7 +289,7 @@ oms_status_enu_t oms3::Model::exportToFile(const std::string& filename) const
 
   boost::filesystem::path ssdPath = boost::filesystem::path(tempDir) / "SystemStructure.ssd";
   if (!doc.save_file(ssdPath.string().c_str()))
-    return logError("failed to export \"" + ssdPath.string() + "\" (for model \"" + std::string(this->getName()) + "\")");
+    return logError("failed to export \"" + ssdPath.string() + "\" (for model \"" + std::string(this->getCref()) + "\")");
 
   // Usage: minizip [-o] [-a] [-0 to -9] [-p password] [-j] file.zip [files_to_add]
   //        -o  Overwrite existing file.zip
@@ -334,7 +334,7 @@ oms_status_enu_t oms3::Model::getAllResources(std::vector<std::string>& resource
 oms_status_enu_t oms3::Model::instantiate()
 {
   if (oms_modelState_terminated != modelState)
-    return logError_ModelInWrongState(getName());
+    return logError_ModelInWrongState(getCref());
 
   if (!system)
     return logError("Model doesn't contain a system");
@@ -353,7 +353,7 @@ oms_status_enu_t oms3::Model::instantiate()
 oms_status_enu_t oms3::Model::initialize()
 {
   if (oms_modelState_instantiated != modelState)
-    return logError_ModelInWrongState(getName());
+    return logError_ModelInWrongState(getCref());
 
   if (!system)
     return logError("Model doesn't contain a system");
@@ -362,7 +362,7 @@ oms_status_enu_t oms3::Model::initialize()
   if (oms_status_ok != system->initialize())
   {
     terminate();
-    return logError_Initialization(system->getFullName());
+    return logError_Initialization(system->getFullCref());
   }
 
   modelState = oms_modelState_simulation;
@@ -380,13 +380,13 @@ oms_status_enu_t oms3::Model::terminate()
     return oms_status_ok;
 
   if (oms_modelState_instantiated == modelState && oms_status_ok != system->initialize())
-    return logError_Termination(system->getFullName());
+    return logError_Termination(system->getFullCref());
 
   if (!system)
     return logError("Model doesn't contain a system");
 
   if (oms_status_ok != system->terminate())
-    return logError_Termination(system->getFullName());
+    return logError_Termination(system->getFullCref());
 
   modelState = oms_modelState_terminated;
   return oms_status_ok;

@@ -53,7 +53,7 @@ namespace oms3
      * instances with valid names can be created.
      */
     static Model* NewModel(const ComRef& cref);
-    const ComRef& getName() const {return cref;}
+    const ComRef& getCref() const {return cref;}
     System* getSystem(const ComRef& cref);
     Component* getComponent(const ComRef& cref);
     std::string getTempDirectory() const {return tempDir;}

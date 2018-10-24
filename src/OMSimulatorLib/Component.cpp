@@ -97,9 +97,9 @@ oms3::Component::~Component()
       delete connector;
 }
 
-oms3::ComRef oms3::Component::getFullName() const
+oms3::ComRef oms3::Component::getFullCref() const
 {
-  return parentSystem->getFullName() + cref;
+  return parentSystem->getFullCref() + cref;
 }
 
 oms3::Connector* oms3::Component::getConnector(const oms3::ComRef &cref)
