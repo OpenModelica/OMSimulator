@@ -34,6 +34,7 @@
 #include "Component.h"
 #include "ComponentFMUCS.h"
 #include "ComponentFMUME.h"
+#include "ComponentTable.h"
 #include "ExternalModel.h"
 #include "Model.h"
 #include "ssd/Tags.h"
@@ -41,7 +42,6 @@
 #include "SystemTLM.h"
 #include "SystemWC.h"
 #include "Types.h"
-
 #include <sstream>
 
 oms3::System::System(const oms3::ComRef& cref, oms_system_enu_t type, oms3::Model* parentModel, oms3::System* parentSystem)
@@ -224,25 +224,33 @@ oms_status_enu_t oms3::System::addSubSystem(const oms3::ComRef& cref, oms_system
   return system->addSubSystem(tail, type);
 }
 
-oms_status_enu_t oms3::System::addSubModel(const oms3::ComRef& cref, const std::string& fmuPath)
+oms_status_enu_t oms3::System::addSubModel(const oms3::ComRef& cref, const std::string& path)
 {
   if (cref.isValidIdent())
   {
     Component* component = NULL;
-    if (oms_system_wc == type)
-      component = ComponentFMUCS::NewComponent(cref, this, fmuPath);
-    else if (oms_system_sc == type)
-      component = ComponentFMUME::NewComponent(cref, this, fmuPath);
 
-    if (component)
-    {
-      components[cref] = component;
-      subelements.back() = reinterpret_cast<oms3_element_t*>(component->getElement());
-      subelements.push_back(NULL);
-      element.setSubElements(&subelements[0]);
-      return oms_status_ok;
-    }
-    return oms_status_error;
+    std::string extension = "";
+    if (path.length() > 5)
+      extension = path.substr(path.length() - 4);
+
+    if (extension == ".fmu" && oms_system_wc == type)
+      component = ComponentFMUCS::NewComponent(cref, this, path);
+    else if (extension == ".fmu" && oms_system_sc == type)
+      component = ComponentFMUME::NewComponent(cref, this, path);
+    else if (extension == ".csv" || extension == ".mat")
+      component = ComponentTable::NewComponent(cref, this, path);
+    else
+      return logError("supported sub-model formats are \".fmu\", \".csv\", \".mat\"");
+
+    if (!component)
+      return oms_status_error;
+
+    components[cref] = component;
+    subelements.back() = reinterpret_cast<oms3_element_t*>(component->getElement());
+    subelements.push_back(NULL);
+    element.setSubElements(&subelements[0]);
+    return oms_status_ok;
   }
 
   ComRef tail(cref);
@@ -252,7 +260,7 @@ oms_status_enu_t oms3::System::addSubModel(const oms3::ComRef& cref, const std::
   if (!system)
     return logError("System \"" + std::string(getFullCref()) + "\" does not contain system \"" + std::string(front) + "\"");
 
-  return system->addSubModel(tail, fmuPath);
+  return system->addSubModel(tail, path);
 }
 
 oms_status_enu_t oms3::System::list(const oms3::ComRef& cref, char** contents)
@@ -716,44 +724,41 @@ oms_status_enu_t oms3::System::addConnection(const oms3::ComRef& crefA, const om
 
   // not a bus connection, attempt normal connection
   oms3::Connector* conA = this->getConnector(crefA);
+  if (!conA) return logError_ConnectorNotInSystem(crefA, this);
   oms3::Connector* conB = this->getConnector(crefB);
+  if (!conB) return logError_ConnectorNotInSystem(crefB, this);
 
-  if (conA && conB)
+  if (conA->getType() != conB->getType())
+    return logError("Type mismatch in connection: " + std::string(crefA) + " -> " + std::string(crefB));
+
+  for (auto& connection : connections)
   {
-    if (conA->getType() != conB->getType())
-      return logError("Type mismatch in connection: " + std::string(crefA)+" -> " + std::string(crefB));
-
-    for (auto& connection : connections)
-    {
-      if (connection && conA->getCausality() == oms_causality_input && connection->containsSignal(crefA))
-        return logError("Connector is already connected: " + std::string(crefA));
-      if (connection && conB->getCausality() == oms_causality_input && connection->containsSignal(crefB))
-        return logError("Connector is already connected: " + std::string(crefB));
-    }
-
-    // system inputs/outputs
-    if (crefA.isValidIdent() && crefB.isValidIdent())
-      return logError("Connections between inputs and outputs of the same system are forbidden: " + std::string(crefA) + " -> " + std::string(crefB));
-    else if (crefA.isValidIdent() || crefB.isValidIdent())
-    {
-      // flipped causality check
-      if ((conA->getCausality() == oms_causality_output && conB->getCausality() != oms_causality_output) ||
-        (conB->getCausality() == oms_causality_input && conA->getCausality() != oms_causality_input))
-        return logError("Causality mismatch in connection: " + std::string(crefA) + " -> " + std::string(crefB));
-    }
-    else
-    {
-      if ((conA->getCausality() == oms_causality_output && conB->getCausality() != oms_causality_input) ||
-        (conB->getCausality() == oms_causality_output && conA->getCausality() != oms_causality_input))
-        return logError("Causality mismatch in connection: " + std::string(crefA) + " -> " + std::string(crefB));
-    }
-
-    connections.back() = new oms3::Connection(crefA,crefB);
-    connections.push_back(NULL);
-    return oms_status_ok;
+    if (connection && conA->getCausality() == oms_causality_input && connection->containsSignal(crefA))
+      return logError("Connector is already connected: " + std::string(crefA));
+    if (connection && conB->getCausality() == oms_causality_input && connection->containsSignal(crefB))
+      return logError("Connector is already connected: " + std::string(crefB));
   }
 
-  return logError("Connector(s) not found in system");
+  // system inputs/outputs
+  if (crefA.isValidIdent() && crefB.isValidIdent())
+    return logError("Connections between inputs and outputs of the same system are forbidden: " + std::string(crefA) + " -> " + std::string(crefB));
+  else if (crefA.isValidIdent() || crefB.isValidIdent())
+  {
+    // flipped causality check
+    if ((conA->getCausality() == oms_causality_output && conB->getCausality() != oms_causality_output) ||
+      (conB->getCausality() == oms_causality_input && conA->getCausality() != oms_causality_input))
+      return logError("Causality mismatch in connection: " + std::string(crefA) + " -> " + std::string(crefB));
+  }
+  else
+  {
+    if ((conA->getCausality() == oms_causality_output && conB->getCausality() != oms_causality_input) ||
+      (conB->getCausality() == oms_causality_output && conA->getCausality() != oms_causality_input))
+      return logError("Causality mismatch in connection: " + std::string(crefA) + " -> " + std::string(crefB));
+  }
+
+  connections.back() = new oms3::Connection(crefA,crefB);
+  connections.push_back(NULL);
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms3::System::updateConnection(const oms3::ComRef& crefA, const oms3::ComRef& crefB, const oms3_connection_t* connection)
@@ -1033,7 +1038,7 @@ oms_status_enu_t oms3::System::setConnectionGeometry(const oms3::ComRef& crefA, 
       return oms_status_ok;
     }
 
-  return logError("Connector(s) not found in system");
+  return logError_ConnectionNotInSystem(crefA, crefB, this);
 }
 
 oms_status_enu_t oms3::System::setBusGeometry(const oms3::ComRef& cref, const oms2::ssd::ConnectorGeometry *geometry)

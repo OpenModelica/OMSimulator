@@ -29,40 +29,45 @@
  *
  */
 
-#ifndef _OMS_RESULTREADER_H_
-#define _OMS_RESULTREADER_H_
+#ifndef _OMS_COMPONENT_TABLE_H_
+#define _OMS_COMPONENT_TABLE_H_
 
+#include "Component.h"
+#include "ComRef.h"
+#include "ResultReader.h"
+#include <fmilib.h>
+#include <map>
+#include <pugixml.hpp>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
-class ResultReader
+namespace oms3
 {
-public:
-  struct Series
+  class ComponentTable : public Component
   {
-    unsigned int length;
-    double* time;
-    double* value;
+  public:
+    ~ComponentTable();
+
+    static Component* NewComponent(const oms3::ComRef& cref, System* parentSystem, const std::string& path);
+    static Component* NewComponent(const pugi::xml_node& node, System* parentSystem);
+
+    oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
+    oms_status_enu_t instantiate();
+    oms_status_enu_t initialize();
+    oms_status_enu_t terminate();
+
+  protected:
+    ComponentTable(const ComRef& cref, System* parentSystem, const std::string& path);
+
+    // stop the compiler generating methods copying the object
+    ComponentTable(ComponentTable const& copy);            ///< not implemented
+    ComponentTable& operator=(ComponentTable const& copy); ///< not implemented
+
+  private:
+    ResultReader* resultReader;
+    std::unordered_map<std::string, ResultReader::Series*> series;
   };
-
-  ResultReader(const char* filename);
-  virtual ~ResultReader();
-
-  static ResultReader* newReader(const char* filename);
-
-  virtual Series* getSeries(const char* var) = 0;
-  const std::vector<std::string>& getAllSignals() const {return signals;}
-
-  static void deleteSeries(Series** series);
-  static bool compareSeries(Series* seriesA, Series* seriesB, double relTol, double absTol);
-
-private:
-  // Stop the compiler generating methods for copying the object
-  ResultReader(ResultReader const& copy);            // Not Implemented
-  ResultReader& operator=(ResultReader const& copy); // Not Implemented
-
-protected:
-  std::vector<std::string> signals;
-};
+}
 
 #endif
