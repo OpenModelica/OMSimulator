@@ -31,11 +31,14 @@
 
 #include "ComponentTable.h"
 
-#include "ssd/Tags.h"
 #include "Logging.h"
+#include "Model.h"
+#include "ssd/Tags.h"
+#include "System.h"
+#include <OMSBoost.h>
 
 oms3::ComponentTable::ComponentTable(const ComRef& cref, System* parentSystem, const std::string& path)
-  : oms3::Component(cref, oms_component_fmu, parentSystem, path), resultReader(NULL)
+  : oms3::Component(cref, oms_component_table, parentSystem, path), resultReader(NULL)
 {
 }
 
@@ -63,7 +66,21 @@ oms3::Component* oms3::ComponentTable::NewComponent(const oms3::ComRef& cref, om
     return NULL;
   }
 
-  ComponentTable* component = new ComponentTable(cref, parentSystem, path);
+  std::string extension = "";
+  if (path.length() > 5)
+    extension = path.substr(path.length() - 4);
+
+  boost::filesystem::path temp_root(parentSystem->getModel()->getTempDirectory());
+  boost::filesystem::path temp_temp = temp_root / "temp";
+  boost::filesystem::path temp_resources = temp_root / "resources";
+
+  boost::filesystem::path relPath = boost::filesystem::path("resources") / (std::string(cref) + extension);
+  boost::filesystem::path absPath = temp_root / relPath;
+
+  ComponentTable* component = new ComponentTable(cref, parentSystem, "resources/" + std::string(cref) + extension);
+
+  if (parentSystem->copyResources())
+    boost::filesystem::copy_file(boost::filesystem::path(path), absPath, boost::filesystem::copy_option::overwrite_if_exists);
 
   component->resultReader = ResultReader::newReader(path.c_str());
   if (!component->resultReader)

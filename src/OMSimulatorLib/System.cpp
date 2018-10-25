@@ -467,7 +467,12 @@ oms_status_enu_t oms3::System::importFromSSD(const pugi::xml_node& node)
         }
         else if (name == oms2::ssd::ssd_component)
         {
-          Component* component = ComponentFMUCS::NewComponent(*itElements, this);
+          Component* component = NULL;
+          std::string type = itElements->attribute("type").as_string();
+          if ("application/x-fmu-sharedlibrary" == type)
+            component = ComponentFMUCS::NewComponent(*itElements, this);
+          else if ("application/table" == type)
+            component = ComponentTable::NewComponent(*itElements, this);
 
           if (component)
           {
