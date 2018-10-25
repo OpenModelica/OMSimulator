@@ -71,9 +71,6 @@ oms3::Component* oms3::ComponentTable::NewComponent(const oms3::ComRef& cref, om
     extension = path.substr(path.length() - 4);
 
   boost::filesystem::path temp_root(parentSystem->getModel()->getTempDirectory());
-  boost::filesystem::path temp_temp = temp_root / "temp";
-  boost::filesystem::path temp_resources = temp_root / "resources";
-
   boost::filesystem::path relPath = boost::filesystem::path("resources") / (std::string(cref) + extension);
   boost::filesystem::path absPath = temp_root / relPath;
 
