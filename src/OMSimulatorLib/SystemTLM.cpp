@@ -241,7 +241,7 @@ oms_status_enu_t oms3::SystemTLM::setInitialValues(ComRef cref, std::vector<doub
   SystemWC* system = reinterpret_cast<SystemWC*>(getSystem(head));
 
   if(system == nullptr)
-    return logError_SubSystemNotInSystem(getName(),cref);
+    return logError_SubSystemNotInSystem(getCref(),cref);
 
   //Find interface log
   bool found = false;
@@ -285,7 +285,7 @@ oms_status_enu_t oms3::SystemTLM::updateInitialValues(const oms3::ComRef cref)
 {
   SystemWC* system = reinterpret_cast<SystemWC*>(getSystem(cref));
   if(system == nullptr)
-    return logError_SubSystemNotInSystem(getName(),cref);
+    return logError_SubSystemNotInSystem(getCref(),cref);
   if (std::find(connectedsubsystems.begin(), connectedsubsystems.end(), cref) == connectedsubsystems.end())
     return logError("System not connected to TLM sockets: "+std::string(cref));
   TLMPlugin* plugin = plugins.find(system)->second;
