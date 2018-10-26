@@ -140,6 +140,8 @@ namespace oms3
 
     DirectedGraph initialUnknownsGraph;
     DirectedGraph outputsGraph;
+
+    oms_status_enu_t importFromSSD_ConnectionGeometry(const pugi::xml_node& node, const ComRef& crefA, const ComRef& crefB);
   };
 }
 

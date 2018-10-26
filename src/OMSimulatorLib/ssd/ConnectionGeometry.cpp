@@ -35,6 +35,8 @@
 #include "Tags.h"
 
 #include <string.h>
+#include <sstream>
+#include <vector>
 
 oms2::ssd::ConnectionGeometry::ConnectionGeometry()
 {
@@ -154,6 +156,37 @@ oms_status_enu_t oms2::ssd::ConnectionGeometry::exportToSSD(pugi::xml_node& root
     node.append_attribute("pointsX") = pointsXStr.c_str();
     node.append_attribute("pointsY") = pointsYStr.c_str();
   }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms2::ssd::ConnectionGeometry::importFromSSD(const pugi::xml_node& node)
+{
+  std::string pointsXStr = node.attribute("pointsX").as_string();
+  std::istringstream pointsXStream(pointsXStr);
+  std::vector<std::string> pointsXVector(std::istream_iterator<std::string>{pointsXStream}, std::istream_iterator<std::string>());
+
+  std::string pointsYStr = node.attribute("pointsY").as_string();
+  std::istringstream pointsYStream(pointsYStr);
+  std::vector<std::string> pointsYVector(std::istream_iterator<std::string>{pointsYStream}, std::istream_iterator<std::string>());
+
+  if (pointsXVector.size() != pointsYVector.size())
+    return logError("wrong xml schema detected: " + std::string(node.name()));
+
+  double* pointsX = new double[pointsXVector.size()];
+  int i = 0;
+  for (auto& px : pointsXVector)
+    pointsX[i++] = std::atof(px.c_str());
+
+  double* pointsY = new double[pointsYVector.size()];
+  i = 0;
+  for (auto& py : pointsYVector)
+    pointsY[i++] = std::atof(py.c_str());
+
+  setPoints(pointsXVector.size(), pointsX, pointsY);
+
+  delete[] pointsX;
+  delete[] pointsY;
 
   return oms_status_ok;
 }

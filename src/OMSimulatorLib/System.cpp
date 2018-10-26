@@ -42,7 +42,6 @@
 #include "SystemTLM.h"
 #include "SystemWC.h"
 #include "Types.h"
-#include <sstream>
 
 oms3::System::System(const oms3::ComRef& cref, oms_system_enu_t type, oms3::Model* parentModel, oms3::System* parentSystem)
   : element(oms_element_system, cref), cref(cref), type(type), parentModel(parentModel), parentSystem(parentSystem)
@@ -390,45 +389,12 @@ oms_status_enu_t oms3::System::importFromSSD(const pugi::xml_node& node)
         if (!endConnector.isEmpty())
           crefB = crefB + endConnector;
         if (oms_status_ok != addConnection(crefA, crefB))
-          return logError("Failed to import " + std::string(oms2::ssd::ssd_connector));
+          return logError("Failed to import " + std::string(oms2::ssd::ssd_connection));
         else
         {
           // Load connection geometry
-          pugi::xml_node connectionGeometryNode = itConnectors->child(oms2::ssd::ssd_connection_geometry);
-          if (connectionGeometryNode)
-          {
-            oms3::Connection *connection = getConnection(crefA, crefB);
-            if (connection)
-            {
-              oms2::ssd::ConnectionGeometry geometry;
-              std::string pointsXStr = connectionGeometryNode.attribute("pointsX").as_string();
-              std::istringstream pointsXStream(pointsXStr);
-              std::vector<std::string> pointsXVector(std::istream_iterator<std::string>{pointsXStream}, std::istream_iterator<std::string>());
-
-              std::string pointsYStr = connectionGeometryNode.attribute("pointsY").as_string();
-              std::istringstream pointsYStream(pointsYStr);
-              std::vector<std::string> pointsYVector(std::istream_iterator<std::string>{pointsYStream}, std::istream_iterator<std::string>());
-
-              if (pointsXVector.size() != pointsYVector.size())
-                return logError("wrong xml schema detected: " + name);
-
-              double* pointsX = new double[pointsXVector.size()];
-              int i = 0;
-              for (auto& px : pointsXVector)
-                pointsX[i++] = std::atof(px.c_str());
-
-              double* pointsY = new double[pointsYVector.size()];
-              i = 0;
-              for (auto& py : pointsYVector)
-                pointsY[i++] = std::atof(py.c_str());
-
-              geometry.setPoints(pointsXVector.size(), pointsX, pointsY);
-              connection->setGeometry(&geometry);
-
-              delete[] pointsX;
-              delete[] pointsY;
-            }
-          }
+          if (oms_status_ok != importFromSSD_ConnectionGeometry(*itConnectors, crefA, crefB))
+            return logError("Failed to import " + std::string(oms2::ssd::ssd_connection_geometry));
         }
       }
     }
@@ -576,19 +542,39 @@ oms_status_enu_t oms3::System::importFromSSD(const pugi::xml_node& node)
           else if (std::string(name) == oms::bus_connections)
           {
             //Load bus connections
-            for(pugi::xml_node_iterator itTLMConnection = itAnnotations->begin(); itTLMConnection != itAnnotations->end(); ++itTLMConnection)
+            for(pugi::xml_node_iterator itConnection = itAnnotations->begin(); itConnection != itAnnotations->end(); ++itConnection)
             {
-              //Load TLM bus connection
-              oms3::ComRef element1(itTLMConnection->attribute("startElement").as_string());
-              oms3::ComRef connector1(itTLMConnection->attribute("startConnector").as_string());
-              oms3::ComRef element2(itTLMConnection->attribute("endElement").as_string());
-              oms3::ComRef connector2(itTLMConnection->attribute("endConnector").as_string());
-              double delay = itTLMConnection->attribute("delay").as_double();
-              double alpha = itTLMConnection->attribute("alpha").as_double();
-              double linearimpedance = itTLMConnection->attribute("linearimpedance").as_double();
-              double angularimpedance = itTLMConnection->attribute("angularimpedance").as_double();
+              //Load bus connection
+              oms3::ComRef element1(itConnection->attribute("startElement").as_string());
+              oms3::ComRef connector1(itConnection->attribute("startConnector").as_string());
+              oms3::ComRef element2(itConnection->attribute("endElement").as_string());
+              oms3::ComRef connector2(itConnection->attribute("endConnector").as_string());
 
-              addTLMConnection(element1+connector1, element2+connector2, delay, alpha, linearimpedance, angularimpedance);
+              oms_status_enu_t status;
+              // Load TLM bus connection
+              if (itConnection->attribute("delay") || itConnection->attribute("alpha")
+                  || itConnection->attribute("linearimpedance") || itConnection->attribute("angularimpedance"))
+              {
+                double delay = itConnection->attribute("delay").as_double();
+                double alpha = itConnection->attribute("alpha").as_double();
+                double linearimpedance = itConnection->attribute("linearimpedance").as_double();
+                double angularimpedance = itConnection->attribute("angularimpedance").as_double();
+
+                status = addTLMConnection(element1+connector1, element2+connector2, delay, alpha, linearimpedance, angularimpedance);
+              }
+              else  // Load bus connection
+              {
+                status = addConnection(element1+connector1, element2+connector2);
+              }
+              // Load the bus connection geometry
+              if (oms_status_ok != status)
+                return logError("Failed to import " + std::string(oms::bus_connection));
+              else
+              {
+                // Load connection geometry
+                if (oms_status_ok != importFromSSD_ConnectionGeometry(*itConnection, element1+connector1, element2+connector2))
+                  return logError("Failed to import " + std::string(oms2::ssd::ssd_connection_geometry));
+              }
             }
           }
         }
@@ -1251,4 +1237,24 @@ oms_status_enu_t oms3::System::setReals(const std::vector<oms3::ComRef> &crefs, 
 oms_status_enu_t oms3::System::setRealInputDerivatives(const oms3::ComRef &cref, int order, double value)
 {
   return logError_NotImplemented;
+}
+
+oms_status_enu_t oms3::System::importFromSSD_ConnectionGeometry(const pugi::xml_node& node, const ComRef& crefA, const ComRef& crefB)
+{
+  pugi::xml_node connectionGeometryNode = node.child(oms2::ssd::ssd_connection_geometry);
+  if (connectionGeometryNode)
+  {
+    oms3::Connection *connection = getConnection(crefA, crefB);
+    if (connection)
+    {
+      oms2::ssd::ConnectionGeometry geometry;
+      geometry.importFromSSD(connectionGeometryNode);
+      connection->setGeometry(&geometry);
+    }
+    else
+    {
+      return oms_status_error;
+    }
+  }
+  return oms_status_ok;
 }
