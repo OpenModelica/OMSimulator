@@ -58,6 +58,7 @@ namespace oms2
       const double* getPointsY() const {return this->pointsY;}
 
       oms_status_enu_t exportToSSD(pugi::xml_node& root) const;
+      oms_status_enu_t importFromSSD(const pugi::xml_node& node);
     };
   }
 }
