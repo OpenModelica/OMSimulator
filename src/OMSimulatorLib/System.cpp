@@ -702,33 +702,20 @@ oms_status_enu_t oms3::System::addConnection(const oms3::ComRef& crefA, const om
   }
 
   // first check if it is a bus connection
-  BusConnector *busA=0, *busB=0;
+  BusConnector* busA = NULL;
   auto subsystemA = subsystems.find(headA);
   if (subsystemA != subsystems.end())
     busA = subsystemA->second->getBusConnector(tailA);
 
+  BusConnector* busB = NULL;
   auto subsystemB = subsystems.find(headB);
   if (subsystemB != subsystems.end())
     busB = subsystemB->second->getBusConnector(tailB);
 
   if (busA && busB)
   {
-    // verify that all connectors in each bus are connected to a connector in the other bus
-    std::vector<oms3::ComRef> connectorsA = busA->getConnectors();
-    std::vector<oms3::ComRef> connectorsB = busB->getConnectors();
-    if (connectorsA.size() != connectorsB.size())
-      return logError("Can only connect buses with same number of connectors");
-
-    for (auto& conA : connectorsA)
-    {
-      bool connectedToB = false;
-      for (auto& conB : connectorsB)
-        for (auto& connection : connections)
-          if (connection && connection->isEqual(headA+conA, headB+conB))
-            connectedToB = true;
-      if (!connectedToB)
-        return logError("All connectors in each bus must be connected to a connector in the other bus before creating bus connection.");
-    }
+    if (getConnection(crefA, crefB))
+      return logError_ConnectionExistsAlready(crefA, crefB, this);
 
     // create bus connection
     connections.back() = new oms3::Connection(crefA, crefB, oms3_connection_bus);
@@ -741,6 +728,9 @@ oms_status_enu_t oms3::System::addConnection(const oms3::ComRef& crefA, const om
   if (!conA) return logError_ConnectorNotInSystem(crefA, this);
   oms3::Connector* conB = this->getConnector(crefB);
   if (!conB) return logError_ConnectorNotInSystem(crefB, this);
+
+  if (getConnection(crefA, crefB))
+    return logError_ConnectionExistsAlready(crefA, crefB, this);
 
   if (conA->getType() != conB->getType())
     return logError("Type mismatch in connection: " + std::string(crefA) + " -> " + std::string(crefB));
@@ -1092,7 +1082,7 @@ oms_status_enu_t oms3::System::setTLMBusGeometry(const oms3::ComRef& cref, const
 oms3::Connection* oms3::System::getConnection(const oms3::ComRef& crefA, const oms3::ComRef& crefB)
 {
   for (auto& connection : connections)
-    if (connection && connection->getSignalA() == crefA && connection->getSignalB() == crefB)
+    if (connection && (connection->getSignalA() == crefA && connection->getSignalB() == crefB || connection->getSignalA() == crefB && connection->getSignalA() == crefB))
       return connection;
   return NULL;
 }
