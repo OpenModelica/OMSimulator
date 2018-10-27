@@ -1168,8 +1168,17 @@ oms_status_enu_t oms3::System::updateDependencyGraphs()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::System::getReal(const ComRef& cref, double& value) const
+oms_status_enu_t oms3::System::getReal(const ComRef& cref, double& value)
 {
+  switch (getModel()->getModelState())
+  {
+    case oms_modelState_instantiated:
+    case oms_modelState_simulation:
+      break;
+    default:
+      return logError_ModelInWrongState(getModel());
+  }
+
   oms3::ComRef tail(cref);
   oms3::ComRef head = tail.pop_front();
 
@@ -1199,6 +1208,15 @@ oms_status_enu_t oms3::System::getReal(const ComRef& cref, double& value) const
 
 oms_status_enu_t oms3::System::setReal(const ComRef& cref, double value)
 {
+  switch (getModel()->getModelState())
+  {
+    case oms_modelState_instantiated:
+    case oms_modelState_simulation:
+      break;
+    default:
+      return logError_ModelInWrongState(getModel());
+  }
+
   oms3::ComRef tail(cref);
   oms3::ComRef head = tail.pop_front();
 
