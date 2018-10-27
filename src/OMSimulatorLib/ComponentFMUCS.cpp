@@ -441,7 +441,7 @@ oms_status_enu_t oms3::ComponentFMUCS::getReal(const ComRef& cref, double& value
   int j=-1;
   for (size_t i = 0; i < allVariables.size(); i++)
   {
-    if (allVariables[i].getCref() == cref)
+    if (allVariables[i].getCref() == cref && allVariables[i].isTypeReal())
     {
       j = i;
       break;
@@ -467,7 +467,7 @@ oms_status_enu_t oms3::ComponentFMUCS::setReal(const ComRef& cref, double value)
   int j=-1;
   for (size_t i = 0; i < allVariables.size(); i++)
   {
-    if (allVariables[i].getCref() == cref)
+    if (allVariables[i].getCref() == cref && allVariables[i].isTypeReal())
     {
       j = i;
       break;
