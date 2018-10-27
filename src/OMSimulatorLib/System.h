@@ -108,7 +108,7 @@ namespace oms3
     virtual oms_status_enu_t terminate() = 0;
     virtual oms_status_enu_t stepUntil(double stopTime) = 0;
 
-    oms_status_enu_t getReal(const ComRef& cref, double& value) const;
+    oms_status_enu_t getReal(const ComRef& cref, double& value);
     oms_status_enu_t setReal(const ComRef& cref, double value);
     oms_status_enu_t getReals(const std::vector<ComRef> &crefs, std::vector<double> &values) const;
     oms_status_enu_t setReals(const std::vector<ComRef> &crefs, std::vector<double> values);

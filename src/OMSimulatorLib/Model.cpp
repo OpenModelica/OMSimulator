@@ -334,7 +334,7 @@ oms_status_enu_t oms3::Model::getAllResources(std::vector<std::string>& resource
 oms_status_enu_t oms3::Model::setStartTime(double value)
 {
   if (oms_modelState_terminated != modelState)
-    return logError_ModelInWrongState(getCref());
+    return logError_ModelInWrongState(this);
 
   startTime = value;
   return oms_status_ok;
@@ -343,7 +343,7 @@ oms_status_enu_t oms3::Model::setStartTime(double value)
 oms_status_enu_t oms3::Model::setStopTime(double value)
 {
   if (oms_modelState_terminated != modelState)
-    return logError_ModelInWrongState(getCref());
+    return logError_ModelInWrongState(this);
 
   stopTime = value;
   return oms_status_ok;
@@ -352,7 +352,7 @@ oms_status_enu_t oms3::Model::setStopTime(double value)
 oms_status_enu_t oms3::Model::instantiate()
 {
   if (oms_modelState_terminated != modelState)
-    return logError_ModelInWrongState(getCref());
+    return logError_ModelInWrongState(this);
 
   if (!system)
     return logError("Model doesn't contain a system");
@@ -371,7 +371,7 @@ oms_status_enu_t oms3::Model::instantiate()
 oms_status_enu_t oms3::Model::initialize()
 {
   if (oms_modelState_instantiated != modelState)
-    return logError_ModelInWrongState(getCref());
+    return logError_ModelInWrongState(this);
 
   if (!system)
     return logError("Model doesn't contain a system");
@@ -390,7 +390,7 @@ oms_status_enu_t oms3::Model::initialize()
 oms_status_enu_t oms3::Model::simulate()
 {
   if (oms_modelState_simulation != modelState)
-    return logError_ModelInWrongState(getCref());
+    return logError_ModelInWrongState(this);
 
   if (!system)
     return logError("Model doesn't contain a system");
