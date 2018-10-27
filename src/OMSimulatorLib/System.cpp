@@ -1167,3 +1167,70 @@ oms_status_enu_t oms3::System::updateDependencyGraphs()
 
   return oms_status_ok;
 }
+
+oms_status_enu_t oms3::System::getReal(const ComRef& cref, double& value) const
+{
+  oms3::ComRef tail(cref);
+  oms3::ComRef head = tail.pop_front();
+
+  auto subsystem = subsystems.find(head);
+  if (subsystem != subsystems.end())
+    return subsystem->second->getReal(tail, value);
+
+  auto component = components.find(head);
+  if (component != components.end())
+    return component->second->getReal(tail, value);
+
+  for (auto& connector : connectors)
+  {
+    if (connector && connector->getName() == cref)
+    {
+      auto realValue = realValues.find(cref);
+      if (realValue != realValues.end())
+        value = realValue->second;
+      else
+        value = 0.0; // default value
+      return oms_status_ok;
+    }
+  }
+
+  return oms_status_error;
+}
+
+oms_status_enu_t oms3::System::setReal(const ComRef& cref, double value)
+{
+  oms3::ComRef tail(cref);
+  oms3::ComRef head = tail.pop_front();
+
+  auto subsystem = subsystems.find(head);
+  if (subsystem != subsystems.end())
+    return subsystem->second->setReal(tail, value);
+
+  auto component = components.find(head);
+  if (component != components.end())
+    return component->second->setReal(tail, value);
+
+  for (auto& connector : connectors)
+    if (connector && connector->getName() == cref)
+    {
+      realValues[cref] = value;
+      return oms_status_ok;
+    }
+
+  return oms_status_error;
+}
+
+oms_status_enu_t oms3::System::getReals(const std::vector<oms3::ComRef> &sr, std::vector<double> &values) const
+{
+  return logError_NotImplemented;
+}
+
+oms_status_enu_t oms3::System::setReals(const std::vector<oms3::ComRef> &crefs, std::vector<double> values)
+{
+  return logError_NotImplemented;
+}
+
+oms_status_enu_t oms3::System::setRealInputDerivatives(const oms3::ComRef &cref, int order, double value)
+{
+  return logError_NotImplemented;
+}

@@ -172,3 +172,13 @@ oms_status_enu_t oms3::ComponentTable::terminate()
 {
   return oms_status_ok;
 }
+
+oms_status_enu_t oms3::ComponentTable::getReal(const oms3::ComRef& cref, double& value) const
+{
+  return logError_NotImplemented;
+}
+
+oms_status_enu_t oms3::ComponentTable::setReal(const oms3::ComRef& cref, double value)
+{
+  return logError_NotImplemented;
+}

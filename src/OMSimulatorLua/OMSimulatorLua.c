@@ -318,6 +318,37 @@ static int OMSimulatorLua_oms3_getSystemType(lua_State *L)
   return 2;
 }
 
+//oms_status_enu_t oms3_getReal(const char* cref, double* value);
+static int OMSimulatorLua_oms3_getReal(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* cref = lua_tostring(L, 1);
+  double value = 0.0;
+
+  oms_status_enu_t status = oms3_getReal(cref, &value);
+  lua_pushnumber(L, value);
+  lua_pushinteger(L, status);
+  return 2;
+}
+
+//oms_status_enu_t oms3_setReal(const char* cref, double* value);
+static int OMSimulatorLua_oms3_setReal(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 arguments");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TNUMBER);
+
+  const char* cref = lua_tostring(L, 1);
+  double value = lua_tointeger(L, 2);
+
+  oms_status_enu_t status = oms3_setReal(cref, value);
+  lua_pushinteger(L, status);
+  return 1;
+}
 
 //oms_status_enu_t oms3_addConnector(const char *cref, oms_causality_enu_t causality, oms_signal_type_enu_t type);
 static int OMSimulatorLua_oms3_addConnector(lua_State *L)
@@ -2140,6 +2171,8 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms3_delete);
   REGISTER_LUA_CALL(oms3_export);
   REGISTER_LUA_CALL(oms3_exportDependencyGraphs);
+  REGISTER_LUA_CALL(oms3_getReal);
+  REGISTER_LUA_CALL(oms3_setReal);
   REGISTER_LUA_CALL(oms3_getSystemType);
   REGISTER_LUA_CALL(oms3_getVersion);
   REGISTER_LUA_CALL(oms3_import);
@@ -2154,9 +2187,9 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms3_setLogFile);
   REGISTER_LUA_CALL(oms3_setMaxLogFileSize);
   REGISTER_LUA_CALL(oms3_setTempDirectory);
+  REGISTER_LUA_CALL(oms3_setTLMInitialValues);
   REGISTER_LUA_CALL(oms3_setTLMPositionAndOrientation);
   REGISTER_LUA_CALL(oms3_setTLMSocketData);
-  REGISTER_LUA_CALL(oms3_setTLMInitialValues);
   REGISTER_LUA_CALL(oms3_setWorkingDirectory);
   REGISTER_LUA_CALL(oms3_simulate);
   REGISTER_LUA_CALL(oms3_terminate);
