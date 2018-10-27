@@ -76,6 +76,10 @@ namespace oms3
     bool isInput() const { return oms_causality_input == causality; }
     bool isOutput() const { return oms_causality_output == causality; }
 
+    bool isTypeReal() const { return oms_signal_type_real == type; }
+    bool isTypeInteger() const { return oms_signal_type_integer == type || oms_signal_type_enum == type; }
+    bool isTypeBoolean() const { return oms_signal_type_boolean == type; }
+
   private:
     friend bool operator==(const Connector& v1, const Connector& v2);
     friend bool operator!=(const Connector& v1, const Connector& v2);

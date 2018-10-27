@@ -1192,7 +1192,7 @@ oms_status_enu_t oms3::System::getReal(const ComRef& cref, double& value)
 
   for (auto& connector : connectors)
   {
-    if (connector && connector->getName() == cref)
+    if (connector && connector->getName() == cref && connector->isTypeReal())
     {
       auto realValue = realValues.find(cref);
       if (realValue != realValues.end())
@@ -1229,7 +1229,7 @@ oms_status_enu_t oms3::System::setReal(const ComRef& cref, double value)
     return component->second->setReal(tail, value);
 
   for (auto& connector : connectors)
-    if (connector && connector->getName() == cref)
+    if (connector && connector->getName() == cref && connector->isTypeReal())
     {
       realValues[cref] = value;
       return oms_status_ok;
