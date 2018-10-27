@@ -71,6 +71,9 @@ namespace oms3
     const DirectedGraph& getInitialUnknownsGraph() {return initialUnknownsGraph;}
     const DirectedGraph& getOutputsGraph() {return outputsGraph;}
 
+    virtual oms_status_enu_t getReal(const ComRef& cref, double& value) const = 0;
+    virtual oms_status_enu_t setReal(const ComRef& cref, double value) = 0;
+
   protected:
     Component(const ComRef& cref, oms_component_enu_t type, System* parentSystem, const std::string& path);
 
