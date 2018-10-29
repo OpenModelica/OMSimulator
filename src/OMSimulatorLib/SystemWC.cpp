@@ -144,6 +144,7 @@ oms_status_enu_t oms3::SystemWC::stepUntil(double stopTime)
         return oms_status_error;
     }
 
+    time = tNext;
     updateInputs(outputsGraph, false);
   }
 
