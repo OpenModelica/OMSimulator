@@ -433,7 +433,16 @@ oms_status_enu_t oms3::ComponentFMUCS::terminate()
 
 oms_status_enu_t oms3::ComponentFMUCS::stepUntil(double stopTime)
 {
-  return logError_NotImplemented;
+  fmi2_status_t fmistatus;
+  double hdef = (stopTime-time) / 1.0;
+
+  while (time < stopTime)
+  {
+    fmistatus = fmi2_import_do_step(fmu, time, hdef, fmi2_true);
+    time += hdef;
+  }
+  time = stopTime;
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms3::ComponentFMUCS::getReal(const ComRef& cref, double& value) const
