@@ -182,3 +182,14 @@ oms_status_enu_t oms3::ComponentTable::setReal(const oms3::ComRef& cref, double 
 {
   return logError_NotImplemented;
 }
+
+oms_status_enu_t oms3::ComponentTable::registerSignalsForResultFile(ResultWriter& resultFile)
+{
+  logInfo("Signals from tables are not copied to the result file for now.");
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::ComponentTable::updateSignals(ResultWriter& resultWriter, double time)
+{
+  return oms_status_ok;
+}

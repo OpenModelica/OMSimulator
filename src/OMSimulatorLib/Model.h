@@ -32,10 +32,11 @@
 #ifndef _OMS2_MODEL_H_
 #define _OMS2_MODEL_H_
 
+#include "Clock.h"
 #include "ComRef.h"
-#include "Types.h"
 #include "Element.h"
-
+#include "ResultWriter.h"
+#include "Types.h"
 #include <pugixml.hpp>
 
 namespace oms3
@@ -81,12 +82,19 @@ namespace oms3
     oms_status_enu_t setStopTime(double value);
     double getStopTime() const {return stopTime;}
 
+    oms_status_enu_t setResultFile(const std::string& filename, int bufferSize);
+    oms_status_enu_t emit(double time);
+    oms_status_enu_t addSignalsToResults(const char* regex);
+    oms_status_enu_t removeSignalsFromResults(const char* regex);
+
   private:
     Model(const ComRef& cref, const std::string& tempDir);
 
     // stop the compiler generating methods copying the object
     Model(Model const& copy);            ///< not implemented
     Model& operator=(Model const& copy); ///< not implemented
+
+    oms_status_enu_t registerSignalsForResultFile();
 
   private:
     ComRef cref;
@@ -101,10 +109,15 @@ namespace oms3
     // ssd:DefaultExperiment
     double startTime = 0.0;
     double stopTime = 1.0;
+
+    ResultWriter* resultFile = NULL;
+    int bufferSize = 10;
+    std::string resultFilename;             ///< experiment, default <name>_res.mat
+    Clock clock;
+    unsigned int clock_id;
   };
 }
 
-#include "ResultWriter.h"
 #include "Pkg_oms2.h"
 #include "Element.h"
 #include "CompositeModel.h"

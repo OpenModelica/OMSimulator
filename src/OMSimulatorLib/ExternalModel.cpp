@@ -161,6 +161,16 @@ oms_status_enu_t oms3::ExternalModel::setReal(const oms3::ComRef& cref, double v
   return logError_NotImplemented;
 }
 
+oms_status_enu_t oms3::ExternalModel::registerSignalsForResultFile(ResultWriter& resultFile)
+{
+  return logError_NotImplemented;
+}
+
+oms_status_enu_t oms3::ExternalModel::updateSignals(ResultWriter& resultWriter, double time)
+{
+  return logError_NotImplemented;
+}
+
 /* ************************************ */
 /* oms2                                 */
 /*                                      */

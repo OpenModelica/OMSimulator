@@ -692,6 +692,56 @@ static int OMSimulatorLua_oms3_setTLMInitialValues(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms3_setResultFile(const char* cref, const char* filename, unsigned int bufferSize);
+static int OMSimulatorLua_oms3_setResultFile(lua_State *L)
+{
+  if (lua_gettop(L) != 2 && lua_gettop(L) != 3)
+    return luaL_error(L, "expecting 2 or 3 arguments");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+
+  const char* cref = lua_tostring(L, 1);
+  const char* filename = lua_tostring(L, 2);
+
+  unsigned int bufferSize = 1;
+  if (lua_gettop(L) == 3)
+  {
+    luaL_checktype(L, 3, LUA_TNUMBER);
+    bufferSize = lua_tonumber(L, 3);
+  }
+  oms_status_enu_t status = oms3_setResultFile(cref, filename, bufferSize);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
+//oms_status_enu_t oms3_addSignalsToResults(const char* cref, const char* regex);
+static int OMSimulatorLua_oms3_addSignalsToResults(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* cref = lua_tostring(L, 1);
+  const char* regex = lua_tostring(L, 2);
+  oms_status_enu_t status = oms3_addSignalsToResults(cref, regex);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
+//oms_status_enu_t oms3_removeSignalsFromResults(const char* cref, const char* regex);
+static int OMSimulatorLua_oms3_removeSignalsFromResults(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* cref = lua_tostring(L, 1);
+  const char* regex = lua_tostring(L, 2);
+  oms_status_enu_t status = oms3_removeSignalsFromResults(cref, regex);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
 /* ************************************ */
 /* OMSimulator 2.0                      */
 /*                                      */
@@ -2163,6 +2213,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms3_addConnectorToBus);
   REGISTER_LUA_CALL(oms3_addConnectorToTLMBus);
   REGISTER_LUA_CALL(oms3_addExternalModel);
+  REGISTER_LUA_CALL(oms3_addSignalsToResults);
   REGISTER_LUA_CALL(oms3_addSubModel);
   REGISTER_LUA_CALL(oms3_addSystem);
   REGISTER_LUA_CALL(oms3_addTLMBus);
@@ -2172,7 +2223,6 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms3_export);
   REGISTER_LUA_CALL(oms3_exportDependencyGraphs);
   REGISTER_LUA_CALL(oms3_getReal);
-  REGISTER_LUA_CALL(oms3_setReal);
   REGISTER_LUA_CALL(oms3_getSystemType);
   REGISTER_LUA_CALL(oms3_getVersion);
   REGISTER_LUA_CALL(oms3_import);
@@ -2182,10 +2232,13 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms3_list);
   REGISTER_LUA_CALL(oms3_newModel);
   REGISTER_LUA_CALL(oms3_parseModelName);
+  REGISTER_LUA_CALL(oms3_removeSignalsFromResults);
   REGISTER_LUA_CALL(oms3_rename);
   REGISTER_LUA_CALL(oms3_setCommandLineOption);
   REGISTER_LUA_CALL(oms3_setLogFile);
   REGISTER_LUA_CALL(oms3_setMaxLogFileSize);
+  REGISTER_LUA_CALL(oms3_setReal);
+  REGISTER_LUA_CALL(oms3_setResultFile);
   REGISTER_LUA_CALL(oms3_setTempDirectory);
   REGISTER_LUA_CALL(oms3_setTLMInitialValues);
   REGISTER_LUA_CALL(oms3_setTLMPositionAndOrientation);

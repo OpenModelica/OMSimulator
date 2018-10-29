@@ -36,6 +36,7 @@
 #include "DirectedGraph.h"
 #include "Element.h"
 #include "FMUInfo.h"
+#include "ResultWriter.h"
 #include "Types.h"
 #include <fmilib.h>
 #include <pugixml.hpp>
@@ -73,6 +74,9 @@ namespace oms3
 
     virtual oms_status_enu_t getReal(const ComRef& cref, double& value) const = 0;
     virtual oms_status_enu_t setReal(const ComRef& cref, double value) = 0;
+
+    virtual oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultFile) = 0;
+    virtual oms_status_enu_t updateSignals(ResultWriter& resultWriter, double time) = 0;
 
   protected:
     Component(const ComRef& cref, oms_component_enu_t type, System* parentSystem, const std::string& path);
