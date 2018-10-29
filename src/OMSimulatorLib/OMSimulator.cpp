@@ -307,6 +307,29 @@ oms_status_enu_t oms3_updateConnection(const char *crefA, const char *crefB, con
   return system->updateConnection(tailA, tailB, connection);
 }
 
+oms_status_enu_t oms3_deleteConnection(const char *crefA, const char *crefB)
+{
+  oms3::ComRef tailA(crefA);
+  oms3::ComRef modelCref = tailA.pop_front();
+  oms3::ComRef systemCref = tailA.pop_front();
+
+  oms3::ComRef tailB(crefB);
+  tailB.pop_front();
+  tailB.pop_front();
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
+  if (!model) {
+    return logError_ModelNotInScope(modelCref);
+  }
+
+  oms3::System* system = model->getSystem(systemCref);
+  if (!system) {
+    return logError_SystemNotInModel(modelCref, systemCref);
+  }
+
+  return system->deleteConnection(tailA,tailB);
+}
+
 oms_status_enu_t oms3_setConnectorGeometry(const char *cref, const ssd_connector_geometry_t *geometry)
 {
   oms3::ComRef tail(cref);

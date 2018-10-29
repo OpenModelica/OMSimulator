@@ -386,6 +386,23 @@ static int OMSimulatorLua_oms3_addConnection(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms3_deleteConnection(const char *crefA, const char *crefB)
+static int OMSimulatorLua_oms3_deleteConnection(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 arguments");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+
+  const char* crefA = lua_tostring(L, 1);
+  const char* crefB = lua_tostring(L, 2);
+  oms_status_enu_t status = oms3_deleteConnection(crefA, crefB);
+
+  lua_pushinteger(L, status);
+
+  return 1;
+}
+
 //oms_status_enu_t oms3_addBus(const char *cref);
 static int OMSimulatorLua_oms3_addBus(lua_State *L)
 {
@@ -2159,6 +2176,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   /* ************************************ */
   REGISTER_LUA_CALL(oms3_addBus);
   REGISTER_LUA_CALL(oms3_addConnection);
+  REGISTER_LUA_CALL(oms3_deleteConnection);
   REGISTER_LUA_CALL(oms3_addConnector);
   REGISTER_LUA_CALL(oms3_addConnectorToBus);
   REGISTER_LUA_CALL(oms3_addConnectorToTLMBus);
