@@ -32,16 +32,15 @@
 #ifndef _OMS_COMPONENT_FMU_ME_H_
 #define _OMS_COMPONENT_FMU_ME_H_
 
-#include "ComRef.h"
 #include "Component.h"
-
+#include "ComRef.h"
+#include "ResultWriter.h"
+#include <fmilib.h>
 #include <map>
+#include <pugixml.hpp>
 #include <string>
 #include <unordered_map>
 #include <vector>
-
-#include <fmilib.h>
-#include <pugixml.hpp>
 
 namespace oms3
 {
@@ -59,6 +58,9 @@ namespace oms3
 
     oms_status_enu_t getReal(const ComRef& cref, double& value) const;
     oms_status_enu_t setReal(const ComRef& cref, double value);
+
+    oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultFile);
+    oms_status_enu_t updateSignals(ResultWriter& resultWriter, double time);
 
   protected:
     ComponentFMUME(const ComRef& cref, System* parentSystem, const std::string& fmuPath);

@@ -100,6 +100,9 @@ oms_status_enu_t oms3_exportDependencyGraphs(const char* cref, const char* initi
 oms_status_enu_t oms3_setTLMInitialValues(const char *cref, const char *ifc, const double values[], int nvalues);
 oms_status_enu_t oms3_getReal(const char* cref, double* value);
 oms_status_enu_t oms3_setReal(const char* cref, double value);
+oms_status_enu_t oms3_setResultFile(const char* cref, const char* filename, int bufferSize);
+oms_status_enu_t oms3_addSignalsToResults(const char* cref, const char* regex);
+oms_status_enu_t oms3_removeSignalsFromResults(const char* cref, const char* regex);
 
 /* not implemented yet */
 oms_status_enu_t oms3_setSimulationInformation(const char* cref, ssd_simulation_information_t* info);

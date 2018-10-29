@@ -859,6 +859,42 @@ oms_status_enu_t oms3_setReal(const char* cref, double value)
   return system->setReal(tail, value);
 }
 
+oms_status_enu_t oms3_setResultFile(const char* cref, const char* filename, int bufferSize)
+{
+  oms3::ComRef tail(cref);
+  oms3::ComRef front = tail.pop_front();
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  return model->setResultFile(filename, bufferSize);
+}
+
+oms_status_enu_t oms3_addSignalsToResults(const char* cref, const char* regex)
+{
+  oms3::ComRef tail(cref);
+  oms3::ComRef front = tail.pop_front();
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  return model->addSignalsToResults(regex);
+}
+
+oms_status_enu_t oms3_removeSignalsFromResults(const char* cref, const char* regex)
+{
+  oms3::ComRef tail(cref);
+  oms3::ComRef front = tail.pop_front();
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  return model->removeSignalsFromResults(regex);
+}
+
 /* ************************************ */
 /* OMSimulator 2.0                      */
 /*                                      */

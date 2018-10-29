@@ -36,6 +36,7 @@
 #include "ComRef.h"
 #include "Element.h"
 #include "Option.h"
+#include "ResultWriter.h"
 #include "Types.h"
 #include "Variable.h"
 #include <vector>
@@ -65,6 +66,9 @@ namespace oms3
 
     oms_status_enu_t getReal(const ComRef& cref, double& value) const;
     oms_status_enu_t setReal(const ComRef& cref, double value);
+
+    oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultFile);
+    oms_status_enu_t updateSignals(ResultWriter& resultWriter, double time);
 
   protected:
     ExternalModel(const oms3::ComRef& cref, System* parentSystem, const std::string& path, const std::string& startscript);

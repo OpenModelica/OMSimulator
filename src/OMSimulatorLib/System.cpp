@@ -37,6 +37,7 @@
 #include "ComponentTable.h"
 #include "ExternalModel.h"
 #include "Model.h"
+#include "ResultWriter.h"
 #include "ssd/Tags.h"
 #include "SystemSC.h"
 #include "SystemTLM.h"
@@ -1289,5 +1290,85 @@ oms_status_enu_t oms3::System::importFromSSD_ConnectionGeometry(const pugi::xml_
       return oms_status_error;
     }
   }
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::System::registerSignalsForResultFile(ResultWriter& resultFile)
+{
+  for (const auto& component : components)
+    if (oms_status_ok != component.second->registerSignalsForResultFile(resultFile))
+      return oms_status_error;
+
+  for (const auto& subsystem : subsystems)
+    if (oms_status_ok != subsystem.second->registerSignalsForResultFile(resultFile))
+      return oms_status_error;
+
+  resultFileMapping.clear();
+  for (unsigned int i=0; i<connectors.size(); ++i)
+  {
+    //if (!exportVariables[i])
+    //  continue;
+
+    if (!connectors[i])
+      continue;
+
+    auto const& connector = connectors[i];
+
+    if (oms_signal_type_real == connector->getType())
+    {
+      unsigned int ID = resultFile.addSignal(std::string(connector->getName()), "Connector", SignalType_REAL);
+      resultFileMapping[ID] = i;
+    }
+    //else if (oms_signal_type_integer == connector->getType())
+    //{
+    //  resultFile.addSignal(std::string(connector->getName()), "Connector", SignalType_INT);
+    //  resultFileMapping[ID] = i;
+    //}
+    //else if (oms_signal_type_boolean == connector->getType())
+    //{
+    //  resultFile.addSignal(std::string(connector->getName()), "Connector", SignalType_BOOL);
+    //  resultFileMapping[ID] = i;
+    //}
+  }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::System::updateSignals(ResultWriter& resultFile, double time)
+{
+  for (const auto& component : components)
+    if (oms_status_ok != component.second->updateSignals(resultFile, time))
+      return oms_status_error;
+
+  for (const auto& subsystem : subsystems)
+    if (oms_status_ok != subsystem.second->updateSignals(resultFile, time))
+      return oms_status_error;
+
+  for (auto const &it : resultFileMapping)
+  {
+    unsigned int ID = it.first;
+    auto const& connector = connectors[it.second];
+    SignalValue_t value;
+    if (oms_signal_type_real == connector->getType())
+    {
+      value.realValue = 0.0;
+      //if (oms_status_ok != getReal(var, value.realValue))
+      //  return logError("failed to fetch variable " + std::string(connector->getName()));
+      resultFile.updateSignal(ID, value);
+    }
+    //else if (oms_signal_type_integer == connector->getType())
+    //{
+    //  if (oms_status_ok != getInteger(var, value.intValue))
+    //    return logError("failed to fetch variable " + std::string(connector->getName()));
+    //  resultFile.updateSignal(ID, value);
+    //}
+    //else if (oms_signal_type_boolean == connector->getType())
+    //{
+    //  if (oms_status_ok != getBoolean(var, value.boolValue))
+    //    return logError("failed to fetch variable " + std::string(connector->getName()));
+    //  resultFile.updateSignal(ID, value);
+    //}
+  }
+
   return oms_status_ok;
 }

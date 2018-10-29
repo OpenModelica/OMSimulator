@@ -99,3 +99,13 @@ oms_status_enu_t oms3::ComponentFMUME::setReal(const ComRef& cref, double value)
 {
   return logError_NotImplemented;
 }
+
+oms_status_enu_t oms3::ComponentFMUME::registerSignalsForResultFile(ResultWriter& resultFile)
+{
+  return logError_NotImplemented;
+}
+
+oms_status_enu_t oms3::ComponentFMUME::updateSignals(ResultWriter& resultWriter, double time)
+{
+  return logError_NotImplemented;
+}

@@ -492,3 +492,91 @@ oms_status_enu_t oms3::ComponentFMUCS::setReal(const ComRef& cref, double value)
 
   return oms_status_ok;
 }
+
+oms_status_enu_t oms3::ComponentFMUCS::registerSignalsForResultFile(ResultWriter& resultFile)
+{
+  resultFileMapping.clear();
+
+  for (unsigned int i=0; i<allVariables.size(); ++i)
+  {
+    //if (!exportVariables[i])
+    //  continue;
+
+    auto const &var = allVariables[i];
+    std::string name = std::string(getFullCref() + var.getCref());
+    const std::string& description = var.getDescription();
+    if (var.isParameter())
+    {
+      SignalValue_t value;
+      if (var.isTypeReal())
+      {
+        getReal(var.getCref(), value.realValue);
+        resultFile.addParameter(name, description, SignalType_REAL, value);
+      }
+      //else if (var.isTypeInteger())
+      //{
+      //  getInteger(var, value.intValue);
+      //  resultFile.addParameter(name, description, SignalType_INT, value);
+      //}
+      //else if (var.isTypeBoolean())
+      //{
+      //  getBoolean(var, value.boolValue);
+      //  resultFile.addParameter(name, description, SignalType_BOOL, value);
+      //}
+      else
+        logInfo("Parameter " + name + " will not be stored in the result file, because the signal type is not supported");
+    }
+    else
+    {
+      if (var.isTypeReal())
+      {
+        unsigned int ID = resultFile.addSignal(name, description, SignalType_REAL);
+        resultFileMapping[ID] = i;
+      }
+      //else if (var.isTypeInteger())
+      //{
+      //  unsigned int ID = resultFile.addSignal(name, description, SignalType_INT);
+      //  resultFileMapping[ID] = i;
+      //}
+      //else if (var.isTypeBoolean())
+      //{
+      //  unsigned int ID = resultFile.addSignal(name, description, SignalType_BOOL);
+      //  resultFileMapping[ID] = i;
+      //}
+      else
+        logInfo("Variable " + name + " will not be stored in the result file, because the signal type is not supported");
+    }
+  }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::ComponentFMUCS::updateSignals(ResultWriter& resultWriter, double time)
+{
+  for (auto const &it : resultFileMapping)
+  {
+    unsigned int ID = it.first;
+    Variable& var = allVariables[it.second];
+    SignalValue_t value;
+    if (var.isTypeReal())
+    {
+        if (oms_status_ok != getReal(var.getCref(), value.realValue))
+        return logError("failed to fetch variable " + std::string(var.getCref()));
+      resultWriter.updateSignal(ID, value);
+    }
+    //else if (var.isTypeInteger())
+    //{
+    //  if (oms_status_ok != getInteger(var.getCref(), value.intValue))
+    //    return logError("failed to fetch variable " + std::string(var.getCref()));
+    //  resultWriter.updateSignal(ID, value);
+    //}
+    //else if (var.isTypeBoolean())
+    //{
+    //  if (oms_status_ok != getBoolean(var.getCref(), value.boolValue))
+    //    return logError("failed to fetch variable " + std::string(var.getCref()));
+    //  resultWriter.updateSignal(ID, value);
+    //}
+  }
+
+  return oms_status_ok;
+}

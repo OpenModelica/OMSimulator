@@ -137,15 +137,22 @@ oms_status_enu_t oms3::SystemWC::stepUntil(double stopTime)
 
     for (const auto& component : getComponents())
     {
-      if (component.second->getType() != oms_component_fmu)
-        return logError("Unexpected component type");
+      oms_status_enu_t status = oms_status_ok;
+      if (oms_component_fmu == component.second->getType())
+        status = dynamic_cast<ComponentFMUCS*>(component.second)->stepUntil(tNext);
+      else if (oms_component_table == component.second->getType())
+        status = oms_status_ok;
 
-      if (oms_status_ok != dynamic_cast<ComponentFMUCS*>(component.second)->stepUntil(tNext))
-        return oms_status_error;
+      if (oms_status_ok != status)
+        return status;
     }
 
     time = tNext;
+    if (isTopLevelSystem())
+      getModel()->emit(time);
     updateInputs(outputsGraph, false);
+    if (isTopLevelSystem())
+      getModel()->emit(time);
   }
 
   return oms_status_ok;

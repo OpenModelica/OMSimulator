@@ -31,7 +31,9 @@
 
 #include "Model.h"
 
+#include "CSVWriter.h"
 #include "Flags.h"
+#include "MATWriter.h"
 #include "Scope.h"
 #include "ssd/Tags.h"
 #include "System.h"
@@ -46,7 +48,7 @@
 /* ************************************ */
 
 oms3::Model::Model(const oms3::ComRef& cref, const std::string& tempDir)
-  : cref(cref), tempDir(tempDir)
+  : cref(cref), tempDir(tempDir), resultFilename(std::string(cref) + "_res.mat")
 {
   if (Flags::SuppressPath())
     logInfo("New model \"" + std::string(cref) + "\" with corresponding temp directory <suppressed>");
@@ -377,25 +379,85 @@ oms_status_enu_t oms3::Model::initialize()
     return logError("Model doesn't contain a system");
 
   modelState = oms_modelState_initialization;
+  clock.reset();
+  clock.tic();
+
+  if (!resultFilename.empty())
+  {
+    std::string resulttype;
+    if (resultFilename.length() > 4)
+      resulttype = resultFilename.substr(resultFilename.length() - 4);
+
+    if (".csv" == resulttype)
+      resultFile = new CSVWriter(bufferSize);
+    else if (".mat" == resulttype)
+      resultFile = new MATWriter(bufferSize);
+    else
+    {
+      clock.toc();
+      return logError("Unsupported format of the result file: " + resultFilename);
+    }
+  }
+  else
+    resultFile = new VoidWriter(1);
+
   if (oms_status_ok != system->initialize())
   {
     terminate();
+    clock.toc();
     return logError_Initialization(system->getFullCref());
   }
 
+  if (resultFile)
+  {
+    logInfo("Result file: " + resultFilename + " (bufferSize=" + std::to_string(bufferSize) + ")");
+
+    // add all signals
+    if (oms_status_ok != registerSignalsForResultFile())
+    {
+      terminate();
+      clock.toc();
+      return logError_Initialization(system->getFullCref());
+    }
+
+    // create result file
+    if (!resultFile->create(resultFilename, startTime, stopTime))
+    {
+      delete resultFile;
+      resultFile = NULL;
+      logError("Creating result file failed");
+      terminate();
+      clock.toc();
+      return logError_Initialization(system->getFullCref());
+    }
+
+    // dump results
+    emit(startTime);
+  }
+
+  clock.toc();
   modelState = oms_modelState_simulation;
   return oms_status_ok;
 }
 
 oms_status_enu_t oms3::Model::simulate()
 {
+  clock.tic();
   if (oms_modelState_simulation != modelState)
+  {
+    clock.toc();
     return logError_ModelInWrongState(this);
+  }
 
   if (!system)
+  {
+    clock.toc();
     return logError("Model doesn't contain a system");
+  }
 
-  return system->stepUntil(stopTime);
+  oms_status_enu_t status = system->stepUntil(stopTime);
+  clock.toc();
+  return status;
 }
 
 oms_status_enu_t oms3::Model::terminate()
@@ -412,8 +474,88 @@ oms_status_enu_t oms3::Model::terminate()
   if (oms_status_ok != system->terminate())
     return logError_Termination(system->getFullCref());
 
+  if (resultFile)
+  {
+    delete resultFile;
+    resultFile = NULL;
+  }
+
   modelState = oms_modelState_terminated;
   return oms_status_ok;
+}
+
+oms_status_enu_t oms3::Model::registerSignalsForResultFile()
+{
+  clock_id = resultFile->addSignal("wallTime", "wall-clock time [s]", SignalType_REAL);
+  if (system)
+    if (oms_status_ok != system->registerSignalsForResultFile(*resultFile))
+      return oms_status_error;
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::Model::emit(double time)
+{
+  SignalValue_t wallTime;
+  wallTime.realValue = clock.getElapsedWallTime();
+  resultFile->updateSignal(clock_id, wallTime);
+  if (system)
+    if (oms_status_ok != system->updateSignals(*resultFile, time))
+      return oms_status_error;
+  resultFile->emit(time);
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::Model::setResultFile(const std::string& filename, int bufferSize)
+{
+  this->resultFilename = filename;
+  this->bufferSize = bufferSize;
+
+  bool createNewResultfile = (resultFile != NULL);
+
+  if (resultFile)
+  {
+    delete resultFile;
+    resultFile = NULL;
+  }
+
+  if (createNewResultfile && !resultFilename.empty())
+  {
+    std::string resulttype;
+    if (resultFilename.length() > 4)
+      resulttype = resultFilename.substr(resultFilename.length() - 4);
+
+    if (".csv" == resulttype)
+      resultFile = new CSVWriter(bufferSize);
+    else if (".mat" == resulttype)
+      resultFile = new MATWriter(bufferSize);
+    else
+      return logError("Unsupported format of the result file: " + resultFilename);
+
+    logInfo("Result file: " + resultFilename + " (bufferSize=" + std::to_string(bufferSize) + ")");
+
+    // add all signals
+    registerSignalsForResultFile();
+
+    // create result file
+    if (!resultFile->create(resultFilename, startTime, stopTime))
+    {
+      delete resultFile;
+      resultFile = NULL;
+      return logError("Creating result file failed");
+    }
+  }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::Model::addSignalsToResults(const char* regex)
+{
+  return logError_NotImplemented;
+}
+
+oms_status_enu_t oms3::Model::removeSignalsFromResults(const char* regex)
+{
+  return logError_NotImplemented;
 }
 
 /* ************************************ */

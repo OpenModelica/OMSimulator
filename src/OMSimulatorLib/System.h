@@ -32,18 +32,19 @@
 #ifndef _OMS_SYSTEM_H_
 #define _OMS_SYSTEM_H_
 
-#include "ComRef.h"
-#include "DirectedGraph.h"
-#include "Types.h"
-#include "Element.h"
-#include "Connection.h"
-#include "ssd/ConnectorGeometry.h"
 #include "BusConnector.h"
-#include "TLMBusConnector.h"
+#include "ComRef.h"
+#include "Connection.h"
+#include "DirectedGraph.h"
+#include "Element.h"
 #include "ExternalModel.h"
-
-#include <pugixml.hpp>
+#include "ResultWriter.h"
+#include "ssd/ConnectorGeometry.h"
+#include "TLMBusConnector.h"
+#include "Types.h"
 #include <map>
+#include <pugixml.hpp>
+#include <unordered_map>
 
 namespace oms3
 {
@@ -115,6 +116,11 @@ namespace oms3
     oms_status_enu_t setReals(const std::vector<ComRef> &crefs, std::vector<double> values);
     oms_status_enu_t setRealInputDerivatives(const ComRef &cref, int order, double value);
 
+    bool isTopLevelSystem() const {return (parentSystem == NULL);}
+
+    oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultFile);
+    oms_status_enu_t updateSignals(ResultWriter& resultFile, double time);
+
   protected:
     System(const ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem);
 
@@ -141,6 +147,8 @@ namespace oms3
 
     DirectedGraph initialUnknownsGraph;
     DirectedGraph outputsGraph;
+
+    std::unordered_map<unsigned int /*result file var ID*/, unsigned int /*allVariables ID*/> resultFileMapping;
 
     oms_status_enu_t importFromSSD_ConnectionGeometry(const pugi::xml_node& node, const ComRef& crefA, const ComRef& crefB);
   };
