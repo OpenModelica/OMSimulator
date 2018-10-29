@@ -69,6 +69,10 @@ class OMSysIdent:
             ndpointer(dtype=np.float64,ndim=1,flags='C_CONTIGUOUS'), ctypes.c_int]
         self.obj.omsi_addMeasurement.restype = ctypes.c_int
 
+        self.obj.omsi_addInput.argtypes = [
+            ctypes.c_void_p, ctypes.c_char_p, ndpointer(dtype=np.float64,ndim=1,flags='C_CONTIGUOUS'), ctypes.c_int]
+        self.obj.omsi_addInput.restype = ctypes.c_int
+
         self.obj.omsi_addParameter.argtypes = [
             ctypes.c_void_p, ctypes.c_char_p, ctypes.c_double]
         self.obj.omsi_addParameter.restype = ctypes.c_int
@@ -113,6 +117,10 @@ class OMSysIdent:
         fq_var = self.ident + "." + var
         return self.obj.omsi_addMeasurement(self.simodel, iSeries,
             fq_var, values, len(values))
+
+    def addInput(self, var, values):
+        fq_var = self.ident + "." + var
+        return self.obj.omsi_addInput(self.simodel, fq_var, values, len(values))
 
     def addParameter(self, var, startvalue):
         fq_var = self.ident + "." + var
