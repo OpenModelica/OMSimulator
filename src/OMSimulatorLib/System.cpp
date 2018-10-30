@@ -774,7 +774,7 @@ oms_status_enu_t oms3::System::updateConnection(const oms3::ComRef& crefA, const
     return oms_status_ok;
   }
 
-  return logError("Connection not found in system");
+  return logError_ConnectionNotInSystem(crefA, crefB, this);
 }
 
 oms_status_enu_t oms3::System::deleteConnection(const oms3::ComRef& crefA, const oms3::ComRef& crefB)
@@ -807,7 +807,7 @@ oms_status_enu_t oms3::System::deleteConnection(const oms3::ComRef& crefA, const
     }
   }
 
-  return logError("Connection not found in system");
+  return logError_ConnectionNotInSystem(crefA, crefB, this);
 }
 
 oms_status_enu_t oms3::System::addTLMConnection(const oms3::ComRef& crefA, const oms3::ComRef& crefB, double delay, double alpha, double linearimpedance, double angularimpedance)
