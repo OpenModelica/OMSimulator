@@ -78,13 +78,17 @@ namespace oms3
   private:
     void* model;
     std::string address = "";
-    int managerPort=0;
-    int monitorPort=0;
+    int desiredManagerPort=0;
+    int desiredMonitorPort=0;
+    int actualManagerPort=0;
+    int actualMonitorPort=0;
 
     std::vector<ComRef> connectedsubsystems;
     std::map<System*, TLMPlugin*> plugins;
     std::vector<ComRef> initializedsubsystems;
     std::map<ComRef, std::vector<double> > initialValues;
+    std::mutex setConnectedMutex;
+    std::mutex setInitializedMutex;
 
     // simulation information
   };

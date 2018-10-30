@@ -879,6 +879,8 @@ oms_status_enu_t oms3::System::addTLMConnection(const oms3::ComRef& crefA, const
     connections.back() = new oms3::Connection(crefA,crefB,oms3_connection_tlm);
     connections.back()->setTLMParameters(delay,alpha,linearimpedance,angularimpedance);
     connections.push_back(NULL);
+    busA->setDelay(delay);
+    busB->setDelay(delay);
     return oms_status_ok;
   }
 

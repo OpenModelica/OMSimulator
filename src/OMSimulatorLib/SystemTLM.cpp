@@ -85,8 +85,8 @@ oms_status_enu_t oms3::SystemTLM::exportToSSD_SimulationInformation(pugi::xml_no
 
   pugi::xml_node node_tlm = node_annotation.append_child(oms::tlm_master);
   node_tlm.append_attribute("ip") = address.c_str();
-  node_tlm.append_attribute("managerport") = std::to_string(managerPort).c_str();
-  node_tlm.append_attribute("monitorport") = std::to_string(monitorPort).c_str();
+  node_tlm.append_attribute("managerport") = std::to_string(desiredManagerPort).c_str();
+  node_tlm.append_attribute("monitorport") = std::to_string(desiredMonitorPort).c_str();
 
   return oms_status_ok;
 }
@@ -104,9 +104,9 @@ oms_status_enu_t oms3::SystemTLM::importFromSSD_SimulationInformation(const pugi
         if (name == "ip")
           this->address = it->value();
         else if(name == "managerport")
-          this->managerPort = tlmmasterNode.attribute("managerport").as_int();
+          this->desiredManagerPort = tlmmasterNode.attribute("managerport").as_int();
         else if(name == "monitorport")
-          this->monitorPort = tlmmasterNode.attribute("monitorport").as_int();
+          this->desiredMonitorPort = tlmmasterNode.attribute("monitorport").as_int();
       }
     }
   }
@@ -124,10 +124,37 @@ oms_status_enu_t oms3::SystemTLM::instantiate()
 
 oms_status_enu_t oms3::SystemTLM::initialize()
 {
+  actualManagerPort = desiredManagerPort;
+  actualMonitorPort = desiredMonitorPort;
 #ifndef _WIN32
-  omtlm_checkPortAvailability(&managerPort);
-  omtlm_checkPortAvailability(&monitorPort);
+  omtlm_checkPortAvailability(&actualManagerPort);
+  omtlm_checkPortAvailability(&actualMonitorPort);
 #endif
+
+  omtlm_setAddress(model, address);
+  omtlm_setManagerPort(model, actualManagerPort);
+  omtlm_setMonitorPort(model, actualMonitorPort);
+
+  for(const auto& subsystem : this->getSubSystems()) {
+    omtlm_addSubModel(model, subsystem.second->getCref().c_str(),"","none");
+    for(int i=0; subsystem.second->getTLMBusConnectors()[i]; ++i) {
+      TLMBusConnector *tlmbus = subsystem.second->getTLMBusConnectors()[i];
+
+      std::string causality = "input";
+      if(tlmbus->getCausality() == oms_causality_output)
+        causality = "output";
+      else if(tlmbus->getCausality() == oms_causality_bidir)
+        causality = "bidirectional";
+
+      omtlm_addInterface(model, subsystem.second->getCref().c_str(), tlmbus->getName().c_str(),tlmbus->getDimensions(), causality.c_str(), tlmbus->getDomain().c_str());
+    }
+  }
+
+  Connection** connections = this->getConnections(ComRef(""));
+  for(int i=0; connections[i]; ++i) {
+    oms3_tlm_connection_parameters_t* tlmpars = connections[i]->getTLMParameters();
+    omtlm_addConnection(model,connections[i]->getSignalA().c_str(),connections[i]->getSignalB().c_str(),tlmpars->delay,tlmpars->linearimpedance,tlmpars->angularimpedance,tlmpars->alpha);
+  }
 
   return oms_status_ok;
 }
@@ -153,7 +180,7 @@ oms_status_enu_t oms3::SystemTLM::stepUntil(double stopTime)
   std::thread *masterThread = new std::thread(&omtlm_simulate, model);
 
   logInfo("Connecting submodels to managers (threaded)");
-  std::string server = address + ":" + std::to_string(managerPort);
+  std::string server = address + ":" + std::to_string(actualManagerPort);
   std::vector<std::thread> fmiConnectThreads;
   for(auto it = getSubSystems().begin(); it!=getSubSystems().end(); ++it) {
     System* subsystem = it->second;
@@ -241,7 +268,9 @@ oms_status_enu_t oms3::SystemTLM::connectToSockets(const oms3::ComRef cref, std:
     }
   }
 
+  setConnectedMutex.lock();
   connectedsubsystems.push_back(cref);
+  setConnectedMutex.unlock();
 
   return oms_status_ok;
 }
@@ -262,13 +291,9 @@ void oms3::SystemTLM::disconnectFromSockets(const oms3::ComRef cref)
 
 oms_status_enu_t oms3::SystemTLM::setSocketData(const std::string &address, int managerPort, int monitorPort)
 {
-  omtlm_setAddress(model, address);
-  omtlm_setManagerPort(model, managerPort);
-  omtlm_setMonitorPort(model, monitorPort);
-
   this->address = address;
-  this->managerPort = managerPort;
-  this->monitorPort = monitorPort;
+  this->desiredManagerPort = managerPort;
+  this->desiredMonitorPort = monitorPort;
   return oms_status_ok;
 }
 
@@ -448,7 +473,9 @@ oms_status_enu_t oms3::SystemTLM::initializeSubSystem(oms3::ComRef cref)
 {
   oms_status_enu_t status = getSubSystem(cref)->initialize();
   if(status == oms_status_ok) {
+    setInitializedMutex.lock();
     initializedsubsystems.push_back(cref);
+    setInitializedMutex.unlock();
   }
   return status;
 }

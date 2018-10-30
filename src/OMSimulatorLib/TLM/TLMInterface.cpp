@@ -72,10 +72,10 @@ oms_status_enu_t oms2::TLMInterface::doRegister(TLMPlugin *plugin)
   if(dimensions == 2) omtlm_dimensions = 3;
   if(dimensions == 3) omtlm_dimensions = 6;
 
-  std::string omtlm_causality = "Bidirectional";
+  std::string omtlm_causality = "bidirectional";
 
-  if(causality == oms_causality_output) omtlm_causality = "Output";
-  else if(causality == oms_causality_input)  omtlm_causality = "Input";
+  if(causality == oms_causality_output) omtlm_causality = "output";
+  else if(causality == oms_causality_input)  omtlm_causality = "input";
 
   this->id = plugin->RegisteTLMInterface(name,omtlm_dimensions,omtlm_causality,domain);
   if(this->id < 0) {

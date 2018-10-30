@@ -99,6 +99,7 @@ namespace oms3
     oms_status_enu_t delete_(const ComRef& cref);
     oms_status_enu_t deleteAllConectionsTo(const ComRef& cref);
     Model* getModel();
+    System* getParentSystem() const {return parentSystem;}
     bool copyResources();
     oms_status_enu_t getAllResources(std::vector<std::string>& resources);
     const std::map<ComRef, System*>& getSubSystems() {return subsystems;}

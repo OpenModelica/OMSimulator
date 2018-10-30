@@ -63,6 +63,7 @@ namespace oms3
     void setGeometry(const oms3::ssd::ConnectionGeometry* newGeometry);
 
     void setTLMParameters(double delay, double alpha, double linearimpedance, double angualrimpedance);
+    oms3_tlm_connection_parameters_t* getTLMParameters() const {return tlmparameters;}
 
     oms3_connection_type_enu_t getType() const {return type;}
 

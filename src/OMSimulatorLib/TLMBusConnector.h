@@ -138,7 +138,7 @@ typedef struct  {
     std::vector<oms3::ComRef> sortedConnectors;
     std::vector<std::string> variableTypes; //Used to keep track of TLM variable types
     System* parentSystem;
-    Component* component;
+    Component* component = nullptr;
 
     int id;
   };
