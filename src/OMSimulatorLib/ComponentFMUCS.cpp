@@ -445,7 +445,7 @@ oms_status_enu_t oms3::ComponentFMUCS::stepUntil(double stopTime)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::ComponentFMUCS::getReal(const ComRef& cref, double& value) const
+oms_status_enu_t oms3::ComponentFMUCS::getReal(const ComRef& cref, double& value)
 {
   int j=-1;
   for (size_t i = 0; i < allVariables.size(); i++)
