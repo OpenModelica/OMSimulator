@@ -36,6 +36,7 @@
 #include "ssd/Tags.h"
 #include "System.h"
 #include "SystemWC.h"
+#include "SystemTLM.h"
 #include <fmilib.h>
 #include <JM/jm_portability.h>
 #include <OMSBoost.h>
@@ -432,14 +433,24 @@ oms_status_enu_t oms3::ComponentFMUCS::terminate()
 }
 
 oms_status_enu_t oms3::ComponentFMUCS::stepUntil(double stopTime)
-{
+{  
+  System *topLevelSystem = getModel()->getTopLevelSystem();
+
   fmi2_status_t fmistatus;
   double hdef = (stopTime-time) / 1.0;
 
   while (time < stopTime)
   {
+    //Read from TLM sockets if top level system is of TLM type
+    if(topLevelSystem->getType() == oms_system_tlm)
+      reinterpret_cast<SystemTLM*>(topLevelSystem)->readFromSockets(reinterpret_cast<SystemWC*>(getParentSystem()),time,this);
+
     fmistatus = fmi2_import_do_step(fmu, time, hdef, fmi2_true);
     time += hdef;
+
+    //Write to TLM sockets if top level system is of TLM type
+    if(topLevelSystem->getType() == oms_system_tlm)
+      reinterpret_cast<SystemTLM*>(topLevelSystem)->writeToSockets(reinterpret_cast<SystemWC*>(getParentSystem()),time,this);
   }
   time = stopTime;
   return oms_status_ok;

@@ -200,11 +200,11 @@ oms_status_enu_t oms3::TLMBusConnector::registerToSockets(TLMPlugin *plugin)
   if(dimensions == 3) omtlm_dimensions = 6;
 
   //Convert causality to string
-  std::string omtlm_causality = "Bidirectional";
+  std::string omtlm_causality = "bidirectional";
   if(std::string(domain) == "input")
-    omtlm_causality = "Input";
+    omtlm_causality = "input";
   else if(std::string(domain) == "output")
-    omtlm_causality = "Output";
+    omtlm_causality = "output";
 
   this->id = plugin->RegisteTLMInterface(name,omtlm_dimensions,omtlm_causality,domain);
 
@@ -219,22 +219,31 @@ oms_status_enu_t oms3::TLMBusConnector::registerToSockets(TLMPlugin *plugin)
 /**
  * \brief Recurse into specified system and find component connected to conA
  */
-oms3::Component *oms3::TLMBusConnector::getComponent(const ComRef& conA, System* system) const
+oms3::Component *oms3::TLMBusConnector::getComponent(const ComRef& con, System* system) const
 {
   Connection** connections = system->getConnections(ComRef(""));
   for(int i=0; connections[i]; ++i) {
-    if(connections[i]->getSignalA() == conA) {
-      ComRef conref = connections[i]->getSignalB().front();
-      ComRef sysref = conref.pop_front();
-      System* subsystem = system->getSubSystem(sysref);
+    if(connections[i]->getSignalA() == con) {
+      ComRef conref = connections[i]->getSignalB();
+      ComRef front = conref.pop_front();
+      System* subsystem = system->getSubSystem(front);
       if(subsystem) {
-        return getComponent(conref, system->getSubSystem(sysref));
+        return getComponent(conref, system->getSubSystem(front));
       }
-      return system->getComponent(conref.front());  //Will return NULL if component not found, which is fine
+      return system->getComponent(front);  //Will return NULL if component not found, which is fine
+    }
+    if(connections[i]->getSignalB() == con) {
+      ComRef conref = connections[i]->getSignalA();
+      ComRef front = conref.pop_front();
+      System* subsystem = system->getSubSystem(front);
+      if(subsystem) {
+        return getComponent(conref, system->getSubSystem(front));
+      }
+      return system->getComponent(front);  //Will return NULL if component not found, which is fine
     }
   }
 
-  return NULL;
+  return nullptr;
 }
 
 /**

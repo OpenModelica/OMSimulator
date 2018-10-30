@@ -176,11 +176,11 @@ oms_status_enu_t oms2::TLMCompositeModel::addInterface(oms2::TLMInterface *ifc)
     return logError("Sub model for TLM interface does not exist in TLM composite model.");
 
   //Todo: Help function for this
-  std::string causality = "Input";
+  std::string causality = "input";
   if(ifc->getCausality() == oms_causality_output)
-    causality = "Output";
+    causality = "output";
   else if(ifc->getCausality() == oms_causality_bidir)
-    causality = "Bidirectional";
+    causality = "bidirectional";
 
   int dimensions = ifc->getDimensions();
   if(ifc->getDimensions() == 2)

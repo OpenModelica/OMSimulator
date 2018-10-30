@@ -34,6 +34,7 @@
 #include "Component.h"
 #include "ComponentFMUCS.h"
 #include "Model.h"
+#include "SystemTLM.h"
 #include "Types.h"
 #include "ssd/Tags.h"
 
@@ -161,6 +162,10 @@ oms_status_enu_t oms3::SystemWC::stepUntil(double stopTime)
     updateInputs(outputsGraph);
     if (isTopLevelSystem())
       getModel()->emit(time);
+  }
+
+  if(getParentSystem() && getParentSystem()->getType() == oms_system_tlm) {
+    reinterpret_cast<SystemTLM*>(getParentSystem())->disconnectFromSockets(this->getCref());
   }
 
   return oms_status_ok;

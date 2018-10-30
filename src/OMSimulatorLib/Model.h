@@ -58,6 +58,7 @@ namespace oms3
     System* getSystem(const ComRef& cref);
     oms_status_enu_t delete_(const ComRef& cref);
     Component* getComponent(const ComRef& cref);
+    System* getTopLevelSystem() const {return system;}
     std::string getTempDirectory() const {return tempDir;}
     oms_status_enu_t rename(const ComRef& cref);
     oms_status_enu_t list(const ComRef& cref, char** contents);
