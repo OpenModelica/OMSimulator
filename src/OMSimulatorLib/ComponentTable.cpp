@@ -165,6 +165,7 @@ oms_status_enu_t oms3::ComponentTable::instantiate()
 
 oms_status_enu_t oms3::ComponentTable::initialize()
 {
+  time = getModel()->getStartTime();
   return oms_status_ok;
 }
 
@@ -173,23 +174,72 @@ oms_status_enu_t oms3::ComponentTable::terminate()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::ComponentTable::getReal(const oms3::ComRef& cref, double& value) const
+oms_status_enu_t oms3::ComponentTable::getReal(const oms3::ComRef& cref, double& value)
 {
-  return logError_NotImplemented;
+  if (!resultReader)
+    logError("the table isn't initialized properly");
+
+  if (series.find(cref) == series.end())
+    series[cref] = resultReader->getSeries(cref.c_str());
+
+  for (int i=1; i<series[cref]->length; ++i)
+  {
+    if (series[cref]->time[i-1] == time)
+    {
+      value = series[cref]->value[i-1];
+      return oms_status_ok;
+    }
+    else if (series[cref]->time[i-1] <= time && series[cref]->time[i] >= time)
+    {
+      double m = (series[cref]->value[i] - series[cref]->value[i-1]) / (series[cref]->time[i] - series[cref]->time[i-1]);
+      value = series[cref]->value[i-1] + (time - series[cref]->time[i-1]) * m;
+      return oms_status_ok;
+    }
+  }
+
+  logError("out of range");
+  value = 0.0;
+  return oms_status_error;
 }
 
 oms_status_enu_t oms3::ComponentTable::setReal(const oms3::ComRef& cref, double value)
 {
-  return logError_NotImplemented;
+  return logError("setReal is not available for lookup tables");
 }
 
 oms_status_enu_t oms3::ComponentTable::registerSignalsForResultFile(ResultWriter& resultFile)
 {
-  logInfo("Signals from tables are not copied to the result file for now.");
+  resultFileMapping.clear();
+
+  for (unsigned int i=0; i<resultReader->getAllSignals().size(); ++i)
+  {
+    //if (!exportVariables[i])
+    //  continue;
+
+    std::string name = std::string(getFullCref()) + "." + resultReader->getAllSignals()[i];
+
+    unsigned int ID = resultFile.addSignal(name, "lookup table", SignalType_REAL);
+    resultFileMapping[ID] = i;
+}
+
+
   return oms_status_ok;
 }
 
 oms_status_enu_t oms3::ComponentTable::updateSignals(ResultWriter& resultWriter, double time)
 {
+  this->time = time;
+
+  for (auto const &it : resultFileMapping)
+  {
+    unsigned int ID = it.first;
+    const std::string& var = resultReader->getAllSignals()[it.second];
+    SignalValue_t value;
+
+    if (oms_status_ok != getReal(var, value.realValue))
+      return logError("failed to fetch variable " + std::string(getFullCref()) + "." + std::string(var));
+    resultWriter.updateSignal(ID, value);
+  }
+
   return oms_status_ok;
 }

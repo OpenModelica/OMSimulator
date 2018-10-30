@@ -71,6 +71,22 @@ namespace oms3
   bool operator<(const ComRef& lhs, const ComRef& rhs);
 }
 
+namespace std
+{
+  template <>
+  struct hash<oms3::ComRef>
+  {
+    std::size_t operator()(const oms3::ComRef& cref) const
+    {
+      using std::size_t;
+      using std::hash;
+      using std::string;
+
+      return hash<string>()(string(cref));
+    }
+  };
+}
+
 /* ************************************ */
 /* oms2                                 */
 /*                                      */

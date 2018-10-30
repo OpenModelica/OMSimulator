@@ -102,6 +102,11 @@ oms3::ComRef oms3::Component::getFullCref() const
   return parentSystem->getFullCref() + cref;
 }
 
+oms3::Model* oms3::Component::getModel() const
+{
+  return parentSystem ? parentSystem->getModel() : NULL;
+}
+
 oms3::Connector* oms3::Component::getConnector(const oms3::ComRef &cref)
 {
   for(auto &connector : connectors) {

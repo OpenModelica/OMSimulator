@@ -67,7 +67,7 @@ namespace oms3
     oms_status_enu_t initializeDependencyGraph_initialUnknowns();
     oms_status_enu_t initializeDependencyGraph_outputs();
 
-    oms_status_enu_t getReal(const ComRef& cref, double& value) const;
+    oms_status_enu_t getReal(const ComRef& cref, double& value);
     oms_status_enu_t setReal(const ComRef& cref, double value);
 
     oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultFile);

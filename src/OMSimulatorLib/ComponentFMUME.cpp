@@ -90,7 +90,7 @@ oms_status_enu_t oms3::ComponentFMUME::terminate()
   return logError_NotImplemented;
 }
 
-oms_status_enu_t oms3::ComponentFMUME::getReal(const ComRef& cref, double& value) const
+oms_status_enu_t oms3::ComponentFMUME::getReal(const ComRef& cref, double& value)
 {
   return logError_NotImplemented;
 }
