@@ -41,6 +41,7 @@ else ifeq (MINGW32,$(findstring MINGW32,$(detected_OS)))
 	FMIL_FLAGS?=-DFMILIB_FMI_PLATFORM=win32
 	# MINGW detected => NO SUPPORT FOR BUILDING CERES SOLVER (yet)
 	CERES := OFF
+	LIBXML2 := OFF
 	OMSYSIDENT := OFF
 	OMFIT := OFF
 	export ABI := WINDOWS32
@@ -56,6 +57,7 @@ else ifeq (MINGW,$(findstring MINGW,$(detected_OS)))
 	FMIL_FLAGS?=-DFMILIB_FMI_PLATFORM=win64
 	# MINGW detected => NO SUPPORT FOR BUILDING CERES SOLVER (yet)
 	CERES := OFF
+	LIBXML2 := OFF
 	OMSYSIDENT := OFF
 	export ABI := WINDOWS64
 	FEXT=.dll
@@ -188,59 +190,70 @@ RegEx: 3rdParty/RegEx/OMSRegEx$(EEXT)
 
 config-3rdParty: config-fmil config-lua config-zlib config-cvode config-kinsol config-ceres-solver config-libxml2
 
-config-OMSimulator: RegEx
+config-OMSimulator: RegEx $(BUILD_DIR)/Makefile
+$(BUILD_DIR)/Makefile: CMakeLists.txt
 	@echo
 	@echo "# config OMSimulator"
 	@echo
 	$(eval STD_REGEX := $(shell 3rdParty/RegEx/OMSRegEx$(EEXT)))
-	$(RM) $(BUILD_DIR)
 	$(MKDIR) $(BUILD_DIR)
 	cd $(BUILD_DIR) && $(CMAKE) $(CMAKE_TARGET) ../.. -DABI=$(ABI) -DSTD_REGEX=$(STD_REGEX) -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DOMSYSIDENT:BOOL=$(OMSYSIDENT) -DOMTLM:BOOL=$(OMTLM) -DASAN:BOOL=$(ASAN) -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) $(CMAKE_BOOST_ROOT) $(CMAKE_INSTALL_PREFIX) $(HOST_SHORT) $(EXTRA_CMAKE)
 
-config-fmil:
+config-fmil: 3rdParty/FMIL/$(INSTALL_DIR)/lib/libfmilib.a
+3rdParty/FMIL/$(INSTALL_DIR)/lib/libfmilib.a: 3rdParty/FMIL/$(BUILD_DIR)/Makefile
+	$(MAKE) -C 3rdParty/FMIL/$(BUILD_DIR)/ install
+3rdParty/FMIL/$(BUILD_DIR)/Makefile: 3rdParty/FMIL/CMakeLists.txt
 	@echo
 	@echo "# config fmil"
 	@echo
-	$(RM) 3rdParty/FMIL/$(BUILD_DIR)
-	$(RM) 3rdParty/FMIL/$(INSTALL_DIR)
 	$(MKDIR) 3rdParty/FMIL/$(BUILD_DIR)
-	cd 3rdParty/FMIL/$(BUILD_DIR) && $(CMAKE) $(CMAKE_TARGET) ../.. -DFMILIB_INSTALL_PREFIX=../../$(INSTALL_DIR) -DFMILIB_BUILD_TESTS:BOOL=0 -DFMILIB_GENERATE_DOXYGEN_DOC:BOOL=0 -DFMILIB_BUILD_STATIC_LIB:BOOL=1 -DFMILIB_BUILD_SHARED_LIB:BOOL=0 -DBUILD_TESTING:BOOL=0 -DFMILIB_BUILD_BEFORE_TESTS:BOOL=0 $(FMIL_FLAGS) && $(MAKE) install
+	$(MKDIR) 3rdParty/FMIL/$(INSTALL_DIR)
+	cd 3rdParty/FMIL/$(BUILD_DIR) && $(CMAKE) $(CMAKE_TARGET) ../.. -DFMILIB_INSTALL_PREFIX=../../$(INSTALL_DIR) -DFMILIB_BUILD_TESTS:BOOL=0 -DFMILIB_GENERATE_DOXYGEN_DOC:BOOL=0 -DFMILIB_BUILD_STATIC_LIB:BOOL=1 -DFMILIB_BUILD_SHARED_LIB:BOOL=0 -DBUILD_TESTING:BOOL=0 -DFMILIB_BUILD_BEFORE_TESTS:BOOL=0 $(FMIL_FLAGS)
 
-config-lua:
+config-lua: 3rdParty/Lua/$(INSTALL_DIR)/liblua.a
+3rdParty/Lua/$(INSTALL_DIR)/liblua.a: 
 	@echo
 	@echo "# config Lua"
 	@echo
-	$(RM) 3rdParty/Lua/$(INSTALL_DIR)
 	$(MAKE) -C 3rdParty/Lua $(LUA_EXTRA_FLAGS)
 
-config-zlib:
+config-zlib: 3rdParty/zlib/$(INSTALL_DIR)/libminizip.a
+3rdParty/zlib/$(INSTALL_DIR)/libzlibstatic.a: 3rdParty/zlib/$(BUILD_DIR)/zlib/Makefile
+	$(MAKE) -C 3rdParty/zlib/$(BUILD_DIR)/zlib/ install
+3rdParty/zlib/$(INSTALL_DIR)/libminizip.a: 3rdParty/zlib/$(INSTALL_DIR)/libzlibstatic.a 3rdParty/zlib/$(BUILD_DIR)/minizip/Makefile
+	$(MAKE) -C 3rdParty/zlib/$(BUILD_DIR)/minizip/ install
+3rdParty/zlib/$(BUILD_DIR)/zlib/Makefile: 
 	@echo
-	@echo "# config zlib"
+	@echo "# config zlib library"
 	@echo
-	$(RM) 3rdParty/zlib/$(BUILD_DIR)
-	$(RM) 3rdParty/zlib/$(INSTALL_DIR)
 	$(MKDIR) 3rdParty/zlib/$(BUILD_DIR)/zlib
-	cd 3rdParty/zlib/$(BUILD_DIR)/zlib && $(CMAKE) $(CMAKE_TARGET) ../../../zlib-1.2.11 -DCMAKE_INSTALL_PREFIX=../../../$(INSTALL_DIR) && $(MAKE) install
+	cd 3rdParty/zlib/$(BUILD_DIR)/zlib && $(CMAKE) $(CMAKE_TARGET) ../../../zlib-1.2.11 -DCMAKE_INSTALL_PREFIX=../../../$(INSTALL_DIR)
+3rdParty/zlib/$(BUILD_DIR)/minizip/Makefile: 
+	@echo
+	@echo "# config zlib minizip"
+	@echo
 	$(MKDIR) 3rdParty/zlib/$(BUILD_DIR)/minizip
-	cd 3rdParty/zlib/$(BUILD_DIR)/minizip && $(CMAKE) $(CMAKE_TARGET) ../../../minizip -DCMAKE_INSTALL_PREFIX=../../../$(INSTALL_DIR) && $(MAKE) install
+	cd 3rdParty/zlib/$(BUILD_DIR)/minizip && $(CMAKE) $(CMAKE_TARGET) ../../../minizip -DCMAKE_INSTALL_PREFIX=../../../$(INSTALL_DIR)
 
-config-cvode:
+config-cvode: 3rdParty/cvode/$(INSTALL_DIR)/lib/libsundials_cvode.a
+3rdParty/cvode/$(INSTALL_DIR)/lib/libsundials_cvode.a: 3rdParty/cvode/$(BUILD_DIR)/Makefile
+	$(MAKE) -C 3rdParty/cvode/$(BUILD_DIR)/ install
+3rdParty/cvode/$(BUILD_DIR)/Makefile: 3rdParty/cvode/CMakeLists.txt
 	@echo
 	@echo "# config cvode"
 	@echo
-	$(RM) 3rdParty/cvode/$(BUILD_DIR)
-	$(RM) 3rdParty/cvode/$(INSTALL_DIR)
 	$(MKDIR) 3rdParty/cvode/$(BUILD_DIR)
-	cd 3rdParty/cvode/$(BUILD_DIR) && $(CMAKE) $(CMAKE_TARGET) ../.. -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) -DEXAMPLES_ENABLE:BOOL=0 -DBUILD_SHARED_LIBS:BOOL=0 $(CMAKE_FPIC) && $(MAKE) install
+	cd 3rdParty/cvode/$(BUILD_DIR) && $(CMAKE) $(CMAKE_TARGET) ../.. -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) -DEXAMPLES_ENABLE:BOOL=0 -DBUILD_SHARED_LIBS:BOOL=0 $(CMAKE_FPIC)
 
-config-kinsol:
+config-kinsol: 3rdParty/kinsol/$(INSTALL_DIR)/lib/libsundials_kinsol.a
+3rdParty/kinsol/$(INSTALL_DIR)/lib/libsundials_kinsol.a: 3rdParty/kinsol/$(BUILD_DIR)/Makefile
+	$(MAKE) -C 3rdParty/kinsol/$(BUILD_DIR)/ install
+3rdParty/kinsol/$(BUILD_DIR)/Makefile: 3rdParty/kinsol/CMakeLists.txt
 	@echo
 	@echo "# config kinsol"
 	@echo
-	$(RM) 3rdParty/kinsol/$(BUILD_DIR)
-	$(RM) 3rdParty/kinsol/$(INSTALL_DIR)
 	$(MKDIR) 3rdParty/kinsol/$(BUILD_DIR)
-	cd 3rdParty/kinsol/$(BUILD_DIR) && $(CMAKE) $(CMAKE_TARGET) ../.. -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) -DEXAMPLES_ENABLE:BOOL=0 -DBUILD_SHARED_LIBS:BOOL=0 $(CMAKE_FPIC) && $(MAKE) install
+	cd 3rdParty/kinsol/$(BUILD_DIR) && $(CMAKE) $(CMAKE_TARGET) ../.. -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) -DEXAMPLES_ENABLE:BOOL=0 -DBUILD_SHARED_LIBS:BOOL=0 $(CMAKE_FPIC)
 
 config-gflags:
 	@echo
@@ -282,12 +295,15 @@ config-libxml2:
 	@echo "# LIBXML2=OFF => Skipping build of 3rdParty library libxml2 (must be installed on system instead)."
 	@echo
 else
-config-libxml2:
+config-libxml2: 3rdParty/libxml2/$(INSTALL_DIR)/lib/libxml2.a
+3rdParty/libxml2/$(INSTALL_DIR)/lib/libxml2.a: 3rdParty/libxml2/Makefile
+	$(MAKE) -C 3rdParty/libxml2/ && $(MAKE) -C 3rdParty/libxml2/ install
+3rdParty/libxml2/Makefile:
 	@echo
 	@echo "# config libxml2"
 	@echo
 	$(MKDIR) 3rdParty/libxml2/$(INSTALL_DIR)
-	cd 3rdParty/libxml2 && $(FPIC) ./autogen.sh --prefix="$(ROOT_DIR)/3rdParty/libxml2/$(INSTALL_DIR)" $(DISABLE_SHARED) --without-python --without-zlib --without-lzma $(HOST_CROSS_TRIPLE) && $(MAKE) && $(MAKE) install
+	cd 3rdParty/libxml2 && $(FPIC) ./autogen.sh --prefix="$(ROOT_DIR)/3rdParty/libxml2/$(INSTALL_DIR)" $(DISABLE_SHARED) --without-python --without-zlib --without-lzma $(HOST_CROSS_TRIPLE)
 endif
 
 distclean:
