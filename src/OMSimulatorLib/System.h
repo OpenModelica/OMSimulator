@@ -121,6 +121,8 @@ namespace oms3
     oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultFile);
     oms_status_enu_t updateSignals(ResultWriter& resultFile, double time);
 
+    virtual oms_status_enu_t setFixedStepSize(double stepSize) {return oms_status_error;}
+
   protected:
     System(const ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem);
 

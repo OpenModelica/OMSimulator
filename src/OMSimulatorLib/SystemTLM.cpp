@@ -210,7 +210,7 @@ oms_status_enu_t oms3::SystemTLM::connectToSockets(const oms3::ComRef cref, std:
   for (int i=0; tlmbuses[i]; ++i)
   {
       if(system->getStepSize() > tlmbuses[i]->getDelay()*0.5) {
-        system->setStepSize(tlmbuses[i]->getDelay()*0.5);
+        system->setFixedStepSize(tlmbuses[i]->getDelay()*0.5);
         logInfo("Limiting stepSize for "+std::string(getCref())+"."+std::string(tlmbuses[i]->getName())+" to "+std::to_string(system->getStepSize()));
       }
   }
