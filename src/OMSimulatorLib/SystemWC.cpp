@@ -105,6 +105,12 @@ oms_status_enu_t oms3::SystemWC::initialize()
     if (oms_status_ok != component.second->initialize())
       return oms_status_error;
 
+  if (oms_status_ok != updateDependencyGraphs())
+    return oms_status_error;
+
+  if (oms_status_ok != updateInputs(initialUnknownsGraph))
+    return oms_status_error;
+
   return oms_status_ok;
 }
 
@@ -150,7 +156,7 @@ oms_status_enu_t oms3::SystemWC::stepUntil(double stopTime)
     time = tNext;
     if (isTopLevelSystem())
       getModel()->emit(time);
-    updateInputs(outputsGraph, false);
+    updateInputs(outputsGraph);
     if (isTopLevelSystem())
       getModel()->emit(time);
   }
@@ -158,7 +164,7 @@ oms_status_enu_t oms3::SystemWC::stepUntil(double stopTime)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::SystemWC::updateInputs(oms3::DirectedGraph& graph, bool discrete)
+oms_status_enu_t oms3::SystemWC::updateInputs(oms3::DirectedGraph& graph)
 {
   // input := output
   const std::vector< std::vector< std::pair<int, int> > >& sortedConnections = graph.getSortedConnections();
