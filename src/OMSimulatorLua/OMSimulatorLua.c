@@ -330,7 +330,7 @@ static int OMSimulatorLua_oms3_getReal(lua_State *L)
 
   oms_status_enu_t status = oms3_getReal(cref, &value);
   lua_pushnumber(L, value);
-  lua_pushinteger(L, status);
+  lua_pushnumber(L, status);
   return 2;
 }
 
@@ -343,7 +343,7 @@ static int OMSimulatorLua_oms3_setReal(lua_State *L)
   luaL_checktype(L, 2, LUA_TNUMBER);
 
   const char* cref = lua_tostring(L, 1);
-  double value = lua_tointeger(L, 2);
+  double value = lua_tonumber(L, 2);
 
   oms_status_enu_t status = oms3_setReal(cref, value);
   lua_pushinteger(L, status);

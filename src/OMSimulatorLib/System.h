@@ -130,6 +130,9 @@ namespace oms3
     System(System const& copy);            ///< not implemented
     System& operator=(System const& copy); ///< not implemented
 
+    DirectedGraph initialUnknownsGraph;
+    DirectedGraph outputsGraph;
+
   private:
     ComRef cref;
     oms_system_enu_t type;
@@ -146,9 +149,6 @@ namespace oms3
     std::vector<BusConnector*> busconnectors;
     std::vector<TLMBusConnector*> tlmbusconnectors;
     std::vector<Connection*> connections;           ///< last element is always NULL
-
-    DirectedGraph initialUnknownsGraph;
-    DirectedGraph outputsGraph;
 
     std::unordered_map<unsigned int /*result file var ID*/, unsigned int /*allVariables ID*/> resultFileMapping;
 

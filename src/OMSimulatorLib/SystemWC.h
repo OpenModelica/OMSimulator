@@ -74,9 +74,6 @@ namespace oms3
     double time;
     double stepSize = 1e-1;
     double tolerance = 1e-4;
-
-    DirectedGraph initialUnknownsGraph;
-    DirectedGraph outputsGraph;
   };
 }
 
