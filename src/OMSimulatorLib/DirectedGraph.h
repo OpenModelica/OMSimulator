@@ -62,8 +62,8 @@ namespace oms3
 
     const std::vector< std::vector< std::pair<int, int> > >& getSortedConnections();
 
-    const std::vector<Connector>& getNodes() {return nodes;}
-    const std::vector< std::pair<int, int> >& getEdges() {return edges;}
+    const std::vector<Connector>& getNodes() const {return nodes;}
+    const std::vector< std::pair<int, int> >& getEdges() const {return edges;}
 
   private:
     std::deque< std::vector<int> > getSCCs();

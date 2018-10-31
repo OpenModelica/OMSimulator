@@ -1193,6 +1193,7 @@ oms_status_enu_t oms3::System::getReal(const ComRef& cref, double& value)
   switch (getModel()->getModelState())
   {
     case oms_modelState_instantiated:
+    case oms_modelState_initialization:
     case oms_modelState_simulation:
       break;
     default:
@@ -1231,6 +1232,7 @@ oms_status_enu_t oms3::System::setReal(const ComRef& cref, double value)
   switch (getModel()->getModelState())
   {
     case oms_modelState_instantiated:
+    case oms_modelState_initialization:
     case oms_modelState_simulation:
       break;
     default:
