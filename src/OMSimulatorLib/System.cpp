@@ -1171,6 +1171,68 @@ oms3::Model* oms3::System::getModel()
   return parentModel;
 }
 
+oms_status_enu_t oms3::System::deleteAllConectionsTo(const oms3::ComRef& cref)
+{
+  for (int i=0; i<connections.size(); ++i)
+  {
+    while (connections[i] && connections[i]->containsSignal(cref))
+    {
+      delete connections[i];
+
+      connections.pop_back();   // last element is always NULL
+      connections[i] = connections.back();
+      connections.back() = NULL;
+    }
+  }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::System::delete_(const oms3::ComRef& cref)
+{
+  oms3::ComRef tail(cref);
+  oms3::ComRef front = tail.pop_front();
+
+  if (tail.isEmpty())
+  {
+    auto subsystem = subsystems.find(front);
+    if (subsystem != subsystems.end())
+    {
+      deleteAllConectionsTo(front);
+      delete subsystem->second;
+      subsystems.erase(subsystem);
+      return oms_status_ok;
+    }
+
+    auto component = components.find(front);
+    if (component != components.end())
+    {
+      deleteAllConectionsTo(front);
+      delete component->second;
+      components.erase(component);
+      return oms_status_ok;
+    }
+
+    for (int i=0; i<connectors.size()-1; ++i)
+      if (connectors[i]->getName() == front)
+      {
+        delete connectors[i];
+        connectors.pop_back();   // last element is always NULL
+        connectors[i] = connectors.back();
+        connectors.back() = NULL;
+        return oms_status_ok;
+      }
+  }
+  else
+  {
+    auto subsystem = subsystems.find(front);
+    if (subsystem != subsystems.end())
+      return subsystem->second->delete_(tail);
+  }
+
+  return oms_status_error;
+}
+
 bool oms3::System::copyResources()
 {
   if (parentSystem)

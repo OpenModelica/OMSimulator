@@ -56,6 +56,7 @@ namespace oms3
     static Model* NewModel(const ComRef& cref);
     const ComRef& getCref() const {return cref;}
     System* getSystem(const ComRef& cref);
+    oms_status_enu_t delete_(const ComRef& cref);
     Component* getComponent(const ComRef& cref);
     std::string getTempDirectory() const {return tempDir;}
     oms_status_enu_t rename(const ComRef& cref);
