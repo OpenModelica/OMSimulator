@@ -130,8 +130,10 @@ oms_status_enu_t oms3::SystemWC::terminate()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::SystemWC::stepUntil(double stopTime)
+oms_status_enu_t oms3::SystemWC::stepUntil(double stopTime, void (*cb)(const char* ident, double time, oms_status_enu_t status))
 {
+  ComRef modelName = this->getModel()->getCref();
+
   while (time < stopTime)
   {
     double tNext = time+stepSize;
@@ -140,20 +142,31 @@ oms_status_enu_t oms3::SystemWC::stepUntil(double stopTime)
 
     logDebug("doStep: " + std::to_string(time) + " -> " + std::to_string(tNext));
 
+    oms_status_enu_t status;
     for (const auto& subsystem : getSubSystems())
-      if (oms_status_ok != subsystem.second->stepUntil(tNext))
-        return oms_status_error;
+    {
+      status = subsystem.second->stepUntil(tNext, NULL);
+      if (oms_status_ok != status)
+      {
+        if (cb)
+          cb(modelName.c_str(), tNext, status);
+        return status;
+      }
+    }
 
     for (const auto& component : getComponents())
     {
-      oms_status_enu_t status = oms_status_ok;
       if (oms_component_fmu == component.second->getType())
         status = dynamic_cast<ComponentFMUCS*>(component.second)->stepUntil(tNext);
       else if (oms_component_table == component.second->getType())
         status = oms_status_ok;
 
       if (oms_status_ok != status)
+      {
+        if (cb)
+          cb(modelName.c_str(), tNext, status);
         return status;
+      }
     }
 
     time = tNext;
@@ -162,6 +175,9 @@ oms_status_enu_t oms3::SystemWC::stepUntil(double stopTime)
     updateInputs(outputsGraph);
     if (isTopLevelSystem())
       getModel()->emit(time);
+
+    if (cb)
+      cb(modelName.c_str(), time, oms_status_ok);
   }
 
   return oms_status_ok;

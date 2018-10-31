@@ -456,6 +456,27 @@ oms_status_enu_t oms3::Model::initialize()
   return oms_status_ok;
 }
 
+oms_status_enu_t oms3::Model::simulate_asynchronous(void (*cb)(const char* cref, double time, oms_status_enu_t status))
+{
+  clock.tic();
+  if (oms_modelState_simulation != modelState)
+  {
+    clock.toc();
+    return logError_ModelInWrongState(this);
+  }
+
+  if (!system)
+  {
+    clock.toc();
+    return logError("Model doesn't contain a system");
+  }
+
+  std::thread([=]{system->stepUntil(stopTime, cb);}).detach();
+  clock.toc();
+
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms3::Model::simulate()
 {
   clock.tic();
@@ -471,7 +492,7 @@ oms_status_enu_t oms3::Model::simulate()
     return logError("Model doesn't contain a system");
   }
 
-  oms_status_enu_t status = system->stepUntil(stopTime);
+  oms_status_enu_t status = system->stepUntil(stopTime, NULL);
   clock.toc();
   return status;
 }

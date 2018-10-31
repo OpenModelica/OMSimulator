@@ -749,6 +749,17 @@ oms_status_enu_t oms3_initialize(const char* cref_)
   return model->initialize();
 }
 
+oms_status_enu_t oms3_simulate_asynchronous(const char* cref_, void (*cb)(const char* cref, double time, oms_status_enu_t status))
+{
+  oms3::ComRef cref(cref_);
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(cref);
+  if (!model)
+    return logError_ModelNotInScope(cref);
+
+  return model->simulate_asynchronous(cb);
+}
+
 oms_status_enu_t oms3_simulate(const char* cref_)
 {
   oms3::ComRef cref(cref_);
