@@ -58,7 +58,7 @@ namespace oms3
     double getTolerance() const {return tolerance;}
     double getTime() const {return time;}
     double getStepSize() const {return stepSize;}
-    void setStepSize(double stepSize) {this->stepSize=stepSize;}
+    oms_status_enu_t setFixedStepSize(double stepSize) {this->stepSize=stepSize; return oms_status_ok;}
 
     oms_status_enu_t updateInputs(DirectedGraph& graph, bool discrete);
 

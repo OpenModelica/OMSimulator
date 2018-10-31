@@ -103,6 +103,11 @@ oms_status_enu_t oms3_setReal(const char* cref, double value);
 oms_status_enu_t oms3_setResultFile(const char* cref, const char* filename, int bufferSize);
 oms_status_enu_t oms3_addSignalsToResults(const char* cref, const char* regex);
 oms_status_enu_t oms3_removeSignalsFromResults(const char* cref, const char* regex);
+oms_status_enu_t oms3_getStartTime(const char* cref, double* startTime);
+oms_status_enu_t oms3_setStartTime(const char* cref, double startTime);
+oms_status_enu_t oms3_getStopTime(const char* cref, double* stopTime);
+oms_status_enu_t oms3_setStopTime(const char* cref, double stopTime);
+oms_status_enu_t oms3_setFixedStepSize(const char* cref, double stepSize);
 
 /* not implemented yet */
 oms_status_enu_t oms3_setSimulationInformation(const char* cref, ssd_simulation_information_t* info);

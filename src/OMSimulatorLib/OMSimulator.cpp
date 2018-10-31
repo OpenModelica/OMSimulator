@@ -895,6 +895,73 @@ oms_status_enu_t oms3_removeSignalsFromResults(const char* cref, const char* reg
   return model->removeSignalsFromResults(regex);
 }
 
+oms_status_enu_t oms3_getStartTime(const char* cref, double* startTime)
+{
+  oms3::ComRef tail(cref);
+  oms3::ComRef front = tail.pop_front();
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  *startTime = model->getStartTime();
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3_setStartTime(const char* cref, double startTime)
+{
+  oms3::ComRef tail(cref);
+  oms3::ComRef front = tail.pop_front();
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  return model->setStartTime(startTime);
+}
+
+oms_status_enu_t oms3_getStopTime(const char* cref, double* stopTime)
+{
+  oms3::ComRef tail(cref);
+  oms3::ComRef front = tail.pop_front();
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  *stopTime = model->getStopTime();
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3_setStopTime(const char* cref, double stopTime)
+{
+  oms3::ComRef tail(cref);
+  oms3::ComRef front = tail.pop_front();
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  return model->setStopTime(stopTime);
+}
+
+oms_status_enu_t oms3_setFixedStepSize(const char* cref, double stepSize)
+{
+  oms3::ComRef tail(cref);
+  oms3::ComRef front = tail.pop_front();
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  front = tail.pop_front();
+  oms3::System* system = model->getSystem(front);
+  if (!system)
+    return logError_SystemNotInModel(model->getCref(), front);
+
+  return system->setFixedStepSize(stepSize);
+}
+
 /* ************************************ */
 /* OMSimulator 2.0                      */
 /*                                      */
