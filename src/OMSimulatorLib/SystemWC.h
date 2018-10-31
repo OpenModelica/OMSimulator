@@ -60,7 +60,7 @@ namespace oms3
     double getStepSize() const {return stepSize;}
     oms_status_enu_t setFixedStepSize(double stepSize) {this->stepSize=stepSize; return oms_status_ok;}
 
-    oms_status_enu_t updateInputs(DirectedGraph& graph, bool discrete);
+    oms_status_enu_t updateInputs(DirectedGraph& graph);
 
   protected:
     SystemWC(const ComRef& cref, Model* parentModel, System* parentSystem);
