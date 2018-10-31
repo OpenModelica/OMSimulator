@@ -74,6 +74,7 @@ namespace oms3
 
     oms_status_enu_t instantiate();
     oms_status_enu_t initialize();
+    oms_status_enu_t simulate_asynchronous(void (*cb)(const char* cref, double time, oms_status_enu_t status));
     oms_status_enu_t simulate();
     oms_status_enu_t terminate();
 

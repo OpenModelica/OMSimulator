@@ -104,7 +104,7 @@ oms_status_enu_t oms3::SystemSC::terminate()
   return logError_NotImplemented;
 }
 
-oms_status_enu_t oms3::SystemSC::stepUntil(double stopTime)
+oms_status_enu_t oms3::SystemSC::stepUntil(double stopTime, void (*cb)(const char* ident, double time, oms_status_enu_t status))
 {
   return logError_NotImplemented;
 }

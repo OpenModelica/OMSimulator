@@ -167,7 +167,7 @@ oms_status_enu_t oms3::SystemTLM::terminate()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::SystemTLM::stepUntil(double stopTime)
+oms_status_enu_t oms3::SystemTLM::stepUntil(double stopTime, void (*cb)(const char* ident, double time, oms_status_enu_t status))
 {
   omtlm_setStartTime(model, getModel()->getStartTime());
   omtlm_setStopTime(model, stopTime);
@@ -495,7 +495,7 @@ oms_status_enu_t oms3::SystemTLM::initializeSubSystem(oms3::ComRef cref)
 
 oms_status_enu_t oms3::SystemTLM::simulateSubSystem(oms3::ComRef cref, double stopTime)
 {
-  oms_status_enu_t status = getSubSystem(cref)->stepUntil(stopTime);
+  oms_status_enu_t status = getSubSystem(cref)->stepUntil(stopTime, NULL);
   return status;
 }
 
