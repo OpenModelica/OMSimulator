@@ -96,6 +96,8 @@ namespace oms3
     oms_status_enu_t setBusGeometry(const ComRef& cref, const oms2::ssd::ConnectorGeometry* geometry);
     oms_status_enu_t setTLMBusGeometry(const ComRef& cref, const oms2::ssd::ConnectorGeometry* geometry);
     oms_status_enu_t addExternalModel(const ComRef &cref, std::string path, std::string startscript);
+    oms_status_enu_t delete_(const ComRef& cref);
+    oms_status_enu_t deleteAllConectionsTo(const ComRef& cref);
     Model* getModel();
     bool copyResources();
     oms_status_enu_t getAllResources(std::vector<std::string>& resources);

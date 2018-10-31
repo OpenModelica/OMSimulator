@@ -144,6 +144,24 @@ oms3::Component* oms3::Model::getComponent(const oms3::ComRef& cref)
   return NULL;
 }
 
+oms_status_enu_t oms3::Model::delete_(const oms3::ComRef& cref)
+{
+  oms3::ComRef tail(cref);
+  oms3::ComRef front = tail.pop_front();
+
+  if (!system || front != system->getCref())
+    return oms_status_error;
+
+  if (tail.isEmpty())
+  {
+    delete system;
+    system = NULL;
+    return oms_status_ok;
+  }
+  else
+    return system->delete_(tail);
+}
+
 oms_status_enu_t oms3::Model::list(const oms3::ComRef& cref, char** contents)
 {
   struct xmlStringWriter : pugi::xml_writer

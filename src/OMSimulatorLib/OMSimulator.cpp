@@ -96,14 +96,19 @@ oms_status_enu_t oms3_rename(const char* cref_, const char* newCref_)
     return logError_OnlyForModel;
 }
 
-oms_status_enu_t oms3_delete(const char* cref_)
+oms_status_enu_t oms3_delete(const char* cref)
 {
-  oms3::ComRef cref(cref_);
+  oms3::ComRef tail(cref);
+  oms3::ComRef front = tail.pop_front();
 
-  if (cref.isValidIdent())
-    return oms3::Scope::GetInstance().deleteModel(cref);
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  if (tail.isEmpty())
+    return oms3::Scope::GetInstance().deleteModel(front);
   else
-    return logError_OnlyForModel;
+    return model->delete_(tail);
 }
 
 oms_status_enu_t oms3_export(const char* cref_, const char* filename)
