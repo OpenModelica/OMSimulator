@@ -119,4 +119,5 @@ private:
 #define logError_SystemNotInModel(model, system)             logError("Model \"" + std::string(model) + "\" does not contain system \"" + std::string(system) + "\"")
 #define logError_Termination(system)                         logError("Termination of system \"" + std::string(system) + "\" failed")
 #define logError_WrongSchema(name)                           logError("Wrong xml schema detected. Unexpected tag \"" + name + "\"")
+#define logError_InvalidIdent(cref)                          logError("\"" + std::string(cref) + "\" is not a valid ident")
 #endif

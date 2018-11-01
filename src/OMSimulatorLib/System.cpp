@@ -91,7 +91,7 @@ oms3::System* oms3::System::NewSystem(const oms3::ComRef& cref, oms_system_enu_t
 {
   if (!cref.isValidIdent())
   {
-    logError("\"" + std::string(cref) + "\" is not a valid ident");
+    logError_InvalidIdent(cref);
     return NULL;
   }
 
@@ -599,7 +599,7 @@ oms_status_enu_t oms3::System::addConnector(const oms3::ComRef& cref, oms_causal
   if (this->type == oms_system_tlm)
     return logError_NotForTlmSystem;
   if (!cref.isValidIdent())
-    return logError("Not a valid ident: " + std::string(cref));
+    return logError_InvalidIdent(cref);
 
   connectors.back() = new oms3::Connector(causality, type, cref);
   connectors.push_back(NULL);
@@ -638,7 +638,7 @@ oms3::BusConnector* oms3::System::getBusConnector(const oms3::ComRef& cref)
 
   if (!cref.isValidIdent())
   {
-    logError("Not a valid ident: " + std::string(cref));
+    logError_InvalidIdent(cref);
     return NULL;
   }
 
@@ -651,6 +651,18 @@ oms3::BusConnector* oms3::System::getBusConnector(const oms3::ComRef& cref)
 
 oms3::TLMBusConnector* oms3::System::getTLMBusConnector(const oms3::ComRef& cref)
 {
+  oms3::ComRef tail(cref);
+  oms3::ComRef head = tail.pop_front();
+  auto subsystem = subsystems.find(head);
+  if (subsystem != subsystems.end())
+    return subsystem->second->getTLMBusConnector(tail);
+
+  if (!cref.isValidIdent())
+  {
+    logError_InvalidIdent(cref);
+    return NULL;
+  }
+
   for(auto& tlmbusconnector : tlmbusconnectors)
     if (tlmbusconnector && tlmbusconnector->getName() == cref)
       return tlmbusconnector;
@@ -860,7 +872,7 @@ oms_status_enu_t oms3::System::addBus(const oms3::ComRef& cref)
   if (type == oms_system_tlm)
     return logError_NotForTlmSystem;
   if (!cref.isValidIdent())
-    return logError("Not a valid ident: " + std::string(cref));
+    return logError_InvalidIdent(cref);
 
   oms3::BusConnector* bus = new oms3::BusConnector(cref);
   busconnectors.back() = bus;
@@ -889,7 +901,7 @@ oms_status_enu_t oms3::System::addTLMBus(const oms3::ComRef& cref, const std::st
   if (type == oms_system_tlm)
     return logError_NotForTlmSystem;
   if (!cref.isValidIdent())
-    return logError("Not a valid ident: " + std::string(cref));
+    return logError_InvalidIdent(cref);
 
   oms3::TLMBusConnector* bus = new oms3::TLMBusConnector(cref, domain, dimensions, interpolation, this);
   tlmbusconnectors.back() = bus;
