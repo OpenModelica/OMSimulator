@@ -178,6 +178,12 @@ oms_status_enu_t oms3::SystemWC::stepUntil(double stopTime, void (*cb)(const cha
 
     if (cb)
       cb(modelName.c_str(), time, oms_status_ok);
+
+    if (isTopLevelSystem() && getModel()->cancelSimulation())
+    {
+      cb(modelName.c_str(), time, oms_status_discard);
+      return oms_status_discard;
+    }
   }
 
   return oms_status_ok;

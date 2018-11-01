@@ -760,6 +760,17 @@ oms_status_enu_t oms3_simulate_asynchronous(const char* cref_, void (*cb)(const 
   return model->simulate_asynchronous(cb);
 }
 
+oms_status_enu_t oms3_cancelSimulation_asynchronous(const char* cref_)
+{
+  oms3::ComRef cref(cref_);
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(cref);
+  if (!model)
+    return logError_ModelNotInScope(cref);
+
+  return model->cancelSimulation_asynchronous();
+}
+
 oms_status_enu_t oms3_simulate(const char* cref_)
 {
   oms3::ComRef cref(cref_);

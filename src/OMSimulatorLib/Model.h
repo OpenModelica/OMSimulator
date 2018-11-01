@@ -90,6 +90,9 @@ namespace oms3
     oms_status_enu_t addSignalsToResults(const char* regex);
     oms_status_enu_t removeSignalsFromResults(const char* regex);
 
+    oms_status_enu_t cancelSimulation_asynchronous();
+    bool cancelSimulation() const {return cancelSim;}
+
   private:
     Model(const ComRef& cref, const std::string& tempDir);
 
@@ -118,6 +121,8 @@ namespace oms3
     std::string resultFilename;             ///< experiment, default <name>_res.mat
     Clock clock;
     unsigned int clock_id;
+
+    bool cancelSim;
   };
 }
 
