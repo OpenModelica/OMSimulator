@@ -36,6 +36,7 @@
 #include "DirectedGraph.h"
 #include "Element.h"
 #include "FMUInfo.h"
+#include "Logging.h"
 #include "ResultWriter.h"
 #include "Types.h"
 #include <fmilib.h>
@@ -74,8 +75,12 @@ namespace oms3
     const DirectedGraph& getInitialUnknownsGraph() {return initialUnknownsGraph;}
     const DirectedGraph& getOutputsGraph() {return outputsGraph;}
 
-    virtual oms_status_enu_t getReal(const ComRef& cref, double& value) = 0;
-    virtual oms_status_enu_t setReal(const ComRef& cref, double value) = 0;
+    virtual oms_status_enu_t getBoolean(const ComRef& cref, bool& value) {return logError_NotImplemented;}
+    virtual oms_status_enu_t getInteger(const ComRef& cref, int& value) {return logError_NotImplemented;}
+    virtual oms_status_enu_t getReal(const ComRef& cref, double& value) {return logError_NotImplemented;}
+    virtual oms_status_enu_t setBoolean(const ComRef& cref, bool value) {return logError_NotImplemented;}
+    virtual oms_status_enu_t setInteger(const ComRef& cref, int value) {return logError_NotImplemented;}
+    virtual oms_status_enu_t setReal(const ComRef& cref, double value) {return logError_NotImplemented;}
 
     virtual oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultFile) = 0;
     virtual oms_status_enu_t updateSignals(ResultWriter& resultWriter, double time) = 0;
