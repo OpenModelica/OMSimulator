@@ -25,6 +25,9 @@ oms3::TLMBusConnector::TLMBusConnector(const oms3::ComRef &name, const std::stri
   else
     causality = oms_causality_bidir;
 
+  connectornames = nullptr;
+  connectortypes = nullptr;
+
   updateVariableTypes();
 }
 
@@ -33,6 +36,16 @@ oms3::TLMBusConnector::~TLMBusConnector()
   if (this->name) delete[] this->name;
   if (this->domain) delete[] this->domain;
   if (this->geometry) delete reinterpret_cast<oms2::ssd::ConnectorGeometry*>(this->geometry);
+  if (this->connectornames) {
+    for (int i=0; connectornames[i]; ++i)
+      delete[] connectornames[i];
+    delete[] connectornames;
+  }
+  if (this->connectortypes) {
+    for (int i=0; connectortypes[i]; ++i)
+      delete[] connectortypes[i];
+    delete[] connectortypes;
+  }
 }
 
 oms_status_enu_t oms3::TLMBusConnector::exportToSSD(pugi::xml_node &root) const
@@ -146,7 +159,7 @@ oms_status_enu_t oms3::TLMBusConnector::addConnector(const oms3::ComRef &cref, s
 
   oms3::ComRef tempRef = cref;
   connectors.insert(std::make_pair(vartype, tempRef));
-
+  updateConnectors();
   sortConnectors();
 
   return oms_status_ok;
@@ -267,5 +280,35 @@ void oms3::TLMBusConnector::updateVariableTypes()
                       "wave1_6", "wave2_6", "wave3_6", "wave4_6", "wave5_6", "wave6_6", "wave7_6", "wave8_6", "wave9_6", "wave 10_6",
                       "time1", "time2", "time3", "time4", "time5", "time6", "time7", "time8", "time9", "time10",
                       "linearimpedance", "angularimpedance"};
+  }
+}
+
+
+void oms3::TLMBusConnector::updateConnectors()
+{
+  if (connectornames)
+  {
+    for (int i=0; connectornames[i]; ++i)
+      delete[] connectornames[i];
+    delete[] connectornames;
+  }
+  if (connectortypes)
+  {
+    for (int i=0; connectortypes[i]; ++i)
+      delete[] connectortypes[i];
+    delete[] connectortypes;
+  }
+  connectornames = new char*[connectors.size()+1];
+  connectornames[connectors.size()] = NULL;
+  connectortypes = new char*[connectors.size()+1];
+  connectortypes[connectors.size()] = NULL;
+
+  int i=0;
+  for (const auto connector : connectors) {
+    connectornames[i] = new char[sizeof(connector.second.c_str())+1];
+    strcpy(connectornames[i], connector.second.c_str());
+    connectortypes[i] = new char[sizeof(connector.first.c_str())+1];
+    strcpy(connectortypes[i], connector.first.c_str());
+    ++i;
   }
 }

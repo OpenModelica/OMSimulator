@@ -392,6 +392,8 @@ typedef struct {
   int dimensions;
   double delay;
   oms_tlm_interpolation_t interpolation;
+  char** connectornames;
+  char** connectortypes;
 } oms3_tlmbusconnector_t;
 
 /**
