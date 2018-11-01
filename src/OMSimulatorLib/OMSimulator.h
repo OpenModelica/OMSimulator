@@ -58,6 +58,7 @@ oms_status_enu_t oms3_addSubModel(const char* cref, const char* fmuPath);
 oms_status_enu_t oms3_addSystem(const char* cref, oms_system_enu_t type);
 oms_status_enu_t oms3_addTLMBus(const char* cref, const char* domain, const int dimensions, const oms_tlm_interpolation_t interpolation);
 oms_status_enu_t oms3_addTLMConnection(const char* crefA, const char* crefB, double delay, double alpha, double linearimpedance, double angularimpedance);
+oms_status_enu_t oms3_cancelSimulation_asynchronous(const char* cref);
 oms_status_enu_t oms3_copySystem(const char* source, const char* target);
 oms_status_enu_t oms3_delete(const char* cref);
 oms_status_enu_t oms3_deleteConnection(const char* crefA, const char* crefB);

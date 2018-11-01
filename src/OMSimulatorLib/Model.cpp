@@ -398,6 +398,8 @@ oms_status_enu_t oms3::Model::initialize()
   clock.reset();
   clock.tic();
 
+  cancelSim = false;
+
   if (!resultFilename.empty())
   {
     std::string resulttype;
@@ -593,6 +595,15 @@ oms_status_enu_t oms3::Model::addSignalsToResults(const char* regex)
 oms_status_enu_t oms3::Model::removeSignalsFromResults(const char* regex)
 {
   return logError_NotImplemented;
+}
+
+oms_status_enu_t oms3::Model::cancelSimulation_asynchronous()
+{
+  if (oms_modelState_simulation != modelState)
+    return logError_ModelInWrongState(this);
+
+  cancelSim = true;
+  return oms_status_ok;
 }
 
 /* ************************************ */
