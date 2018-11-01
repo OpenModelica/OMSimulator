@@ -97,6 +97,8 @@ oms_status_enu_t oms3::SystemWC::instantiate()
 
 oms_status_enu_t oms3::SystemWC::initialize()
 {
+  time = getModel()->getStartTime();
+
   for (const auto& subsystem : getSubSystems())
     if (oms_status_ok != subsystem.second->initialize())
       return oms_status_error;
