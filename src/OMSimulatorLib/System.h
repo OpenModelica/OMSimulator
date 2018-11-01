@@ -110,8 +110,13 @@ namespace oms3
     virtual oms_status_enu_t terminate() = 0;
     virtual oms_status_enu_t stepUntil(double stopTime) = 0;
 
+    oms_status_enu_t getBoolean(const ComRef& cref, bool& value);
+    oms_status_enu_t getInteger(const ComRef& cref, int& value);
     oms_status_enu_t getReal(const ComRef& cref, double& value);
+    oms_status_enu_t setBoolean(const ComRef& cref, bool value);
+    oms_status_enu_t setInteger(const ComRef& cref, int value);
     oms_status_enu_t setReal(const ComRef& cref, double value);
+
     oms_status_enu_t getReals(const std::vector<ComRef> &crefs, std::vector<double> &values) const;
     oms_status_enu_t setReals(const std::vector<ComRef> &crefs, std::vector<double> values);
     oms_status_enu_t setRealInputDerivatives(const ComRef &cref, int order, double value);
@@ -141,7 +146,9 @@ namespace oms3
     std::map<ComRef, System*> subsystems;
     std::map<ComRef, Component*> components;
 
-    std::map<ComRef, double> realValues;            ///< values of the connectors
+    std::map<ComRef, double> realValues;            ///< values of the real connectors
+    std::map<ComRef, int> integerValues;            ///< values of the integer connectors
+    std::map<ComRef, bool> booleanValues;           ///< values of the boolean connectors
 
     Element element;
     std::vector<Connector*> connectors;             ///< last element is always NULL

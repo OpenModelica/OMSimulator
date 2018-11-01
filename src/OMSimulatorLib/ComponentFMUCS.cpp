@@ -445,6 +445,52 @@ oms_status_enu_t oms3::ComponentFMUCS::stepUntil(double stopTime)
   return oms_status_ok;
 }
 
+oms_status_enu_t oms3::ComponentFMUCS::getBoolean(const ComRef& cref, bool& value)
+{
+  int j=-1;
+  for (size_t i = 0; i < allVariables.size(); i++)
+  {
+    if (allVariables[i].getCref() == cref && allVariables[i].isTypeBoolean())
+    {
+      j = i;
+      break;
+    }
+  }
+
+  if (!fmu || j < 0)
+    return oms_status_error;
+
+  fmi2_value_reference_t vr = allVariables[j].getValueReference();
+  int value_;
+  if (fmi2_status_ok != fmi2_import_get_boolean(fmu, &vr, 1, &value_))
+    return oms_status_error;
+
+  value = value_ ? true : false;
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::ComponentFMUCS::getInteger(const ComRef& cref, int& value)
+{
+  int j=-1;
+  for (size_t i = 0; i < allVariables.size(); i++)
+  {
+    if (allVariables[i].getCref() == cref && allVariables[i].isTypeInteger())
+    {
+      j = i;
+      break;
+    }
+  }
+
+  if (!fmu || j < 0)
+    return oms_status_error;
+
+  fmi2_value_reference_t vr = allVariables[j].getValueReference();
+  if (fmi2_status_ok != fmi2_import_get_integer(fmu, &vr, 1, &value))
+    return oms_status_error;
+
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms3::ComponentFMUCS::getReal(const ComRef& cref, double& value)
 {
   int j=-1;
@@ -468,6 +514,51 @@ oms_status_enu_t oms3::ComponentFMUCS::getReal(const ComRef& cref, double& value
     return logError("getReal returned NAN");
   if (std::isinf(value))
     return logError("getReal returned +/-inf");
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::ComponentFMUCS::setBoolean(const ComRef& cref, bool value)
+{
+  int j=-1;
+  for (size_t i = 0; i < allVariables.size(); i++)
+  {
+    if (allVariables[i].getCref() == cref && allVariables[i].isTypeBoolean())
+    {
+      j = i;
+      break;
+    }
+  }
+
+  if (!fmu || j < 0)
+    return oms_status_error;
+
+  fmi2_value_reference_t vr = allVariables[j].getValueReference();
+  int value_ = value ? 1 : 0;
+  if (fmi2_status_ok != fmi2_import_set_boolean(fmu, &vr, 1, &value_))
+    return oms_status_error;
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::ComponentFMUCS::setInteger(const ComRef& cref, int value)
+{
+  int j=-1;
+  for (size_t i = 0; i < allVariables.size(); i++)
+  {
+    if (allVariables[i].getCref() == cref && allVariables[i].isTypeInteger())
+    {
+      j = i;
+      break;
+    }
+  }
+
+  if (!fmu || j < 0)
+    return oms_status_error;
+
+  fmi2_value_reference_t vr = allVariables[j].getValueReference();
+  if (fmi2_status_ok != fmi2_import_set_integer(fmu, &vr, 1, &value))
+    return oms_status_error;
+
   return oms_status_ok;
 }
 

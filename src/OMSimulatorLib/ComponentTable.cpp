@@ -202,11 +202,6 @@ oms_status_enu_t oms3::ComponentTable::getReal(const oms3::ComRef& cref, double&
   return oms_status_error;
 }
 
-oms_status_enu_t oms3::ComponentTable::setReal(const oms3::ComRef& cref, double value)
-{
-  return logError("setReal is not available for lookup tables");
-}
-
 oms_status_enu_t oms3::ComponentTable::registerSignalsForResultFile(ResultWriter& resultFile)
 {
   resultFileMapping.clear();

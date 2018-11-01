@@ -1208,6 +1208,84 @@ oms_status_enu_t oms3::System::updateDependencyGraphs()
   return oms_status_ok;
 }
 
+oms_status_enu_t oms3::System::getBoolean(const ComRef& cref, bool& value)
+{
+  switch (getModel()->getModelState())
+  {
+    case oms_modelState_instantiated:
+    case oms_modelState_initialization:
+    case oms_modelState_simulation:
+      break;
+    default:
+      return logError_ModelInWrongState(getModel());
+  }
+
+  oms3::ComRef tail(cref);
+  oms3::ComRef head = tail.pop_front();
+
+  auto subsystem = subsystems.find(head);
+  if (subsystem != subsystems.end())
+    return subsystem->second->getBoolean(tail, value);
+
+  auto component = components.find(head);
+  if (component != components.end())
+    return component->second->getBoolean(tail, value);
+
+  for (auto& connector : connectors)
+  {
+    if (connector && connector->getName() == cref && connector->isTypeBoolean())
+    {
+      auto booleanValue = booleanValues.find(cref);
+      if (booleanValue != booleanValues.end())
+        value = booleanValue->second;
+      else
+        value = 0; // default value
+      return oms_status_ok;
+    }
+  }
+
+  return oms_status_error;
+}
+
+oms_status_enu_t oms3::System::getInteger(const ComRef& cref, int& value)
+{
+  switch (getModel()->getModelState())
+  {
+    case oms_modelState_instantiated:
+    case oms_modelState_initialization:
+    case oms_modelState_simulation:
+      break;
+    default:
+      return logError_ModelInWrongState(getModel());
+  }
+
+  oms3::ComRef tail(cref);
+  oms3::ComRef head = tail.pop_front();
+
+  auto subsystem = subsystems.find(head);
+  if (subsystem != subsystems.end())
+    return subsystem->second->getInteger(tail, value);
+
+  auto component = components.find(head);
+  if (component != components.end())
+    return component->second->getInteger(tail, value);
+
+  for (auto& connector : connectors)
+  {
+    if (connector && connector->getName() == cref && connector->isTypeInteger())
+    {
+      auto integerValue = integerValues.find(cref);
+      if (integerValue != integerValues.end())
+        value = integerValue->second;
+      else
+        value = 0; // default value
+      return oms_status_ok;
+    }
+  }
+
+  return oms_status_error;
+}
+
 oms_status_enu_t oms3::System::getReal(const ComRef& cref, double& value)
 {
   switch (getModel()->getModelState())
@@ -1243,6 +1321,72 @@ oms_status_enu_t oms3::System::getReal(const ComRef& cref, double& value)
       return oms_status_ok;
     }
   }
+
+  return oms_status_error;
+}
+
+oms_status_enu_t oms3::System::setBoolean(const ComRef& cref, bool value)
+{
+  switch (getModel()->getModelState())
+  {
+    case oms_modelState_instantiated:
+    case oms_modelState_initialization:
+    case oms_modelState_simulation:
+      break;
+    default:
+      return logError_ModelInWrongState(getModel());
+  }
+
+  oms3::ComRef tail(cref);
+  oms3::ComRef head = tail.pop_front();
+
+  auto subsystem = subsystems.find(head);
+  if (subsystem != subsystems.end())
+    return subsystem->second->setBoolean(tail, value);
+
+  auto component = components.find(head);
+  if (component != components.end())
+    return component->second->setBoolean(tail, value);
+
+  for (auto& connector : connectors)
+    if (connector && connector->getName() == cref && connector->isTypeBoolean())
+    {
+      booleanValues[cref] = value;
+      return oms_status_ok;
+    }
+
+  return oms_status_error;
+}
+
+oms_status_enu_t oms3::System::setInteger(const ComRef& cref, int value)
+{
+  switch (getModel()->getModelState())
+  {
+    case oms_modelState_instantiated:
+    case oms_modelState_initialization:
+    case oms_modelState_simulation:
+      break;
+    default:
+      return logError_ModelInWrongState(getModel());
+  }
+
+  oms3::ComRef tail(cref);
+  oms3::ComRef head = tail.pop_front();
+
+  auto subsystem = subsystems.find(head);
+  if (subsystem != subsystems.end())
+    return subsystem->second->setInteger(tail, value);
+
+  auto component = components.find(head);
+  if (component != components.end())
+    return component->second->setInteger(tail, value);
+
+  for (auto& connector : connectors)
+    if (connector && connector->getName() == cref && connector->isTypeInteger())
+    {
+      integerValues[cref] = value;
+      return oms_status_ok;
+    }
 
   return oms_status_error;
 }
