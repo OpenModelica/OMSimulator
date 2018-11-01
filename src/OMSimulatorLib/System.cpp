@@ -1173,7 +1173,11 @@ oms_status_enu_t oms3::System::updateDependencyGraphs()
     Connector* varB = getConnector(connection->getSignalB());
     if (varA && varB)
     {
-      if (varA->isOutput() && varB->isInput())
+      // flip causality checks for connectors (top-level crefs)
+      bool outA = connection->getSignalA().isValidIdent() ? varA->isInput() : varA->isOutput();
+      bool inB = connection->getSignalB().isValidIdent() ? varB->isOutput() : varB->isInput();
+
+      if (outA && inB)
       {
         initialUnknownsGraph.addEdge(Connector(varA->getCausality(), varA->getType(), connection->getSignalA()), Connector(varB->getCausality(), varB->getType(), connection->getSignalB()));
         outputsGraph.addEdge(Connector(varA->getCausality(), varA->getType(), connection->getSignalA()), Connector(varB->getCausality(), varB->getType(), connection->getSignalB()));
@@ -1318,17 +1322,17 @@ oms_status_enu_t oms3::System::registerSignalsForResultFile(ResultWriter& result
 
     if (oms_signal_type_real == connector->getType())
     {
-      unsigned int ID = resultFile.addSignal(std::string(connector->getName()), "Connector", SignalType_REAL);
+      unsigned int ID = resultFile.addSignal(std::string(getFullCref() + connector->getName()), "connector", SignalType_REAL);
       resultFileMapping[ID] = i;
     }
     //else if (oms_signal_type_integer == connector->getType())
     //{
-    //  resultFile.addSignal(std::string(connector->getName()), "Connector", SignalType_INT);
+    //  resultFile.addSignal(std::string(connector->getName()), "connector", SignalType_INT);
     //  resultFileMapping[ID] = i;
     //}
     //else if (oms_signal_type_boolean == connector->getType())
     //{
-    //  resultFile.addSignal(std::string(connector->getName()), "Connector", SignalType_BOOL);
+    //  resultFile.addSignal(std::string(connector->getName()), "connector", SignalType_BOOL);
     //  resultFileMapping[ID] = i;
     //}
   }
