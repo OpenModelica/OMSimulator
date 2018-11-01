@@ -1,6 +1,6 @@
 @ECHO off
 REM run this on wsl using:
-REM cmd.exe /C buildWinVS.bat VS15-Win64
+REM cmd.exe /C SET CMAKE_BUILD_TYPE="Debug" && buildWinVS.bat VS15-Win64
 
 SET OMS_VS_TARGET=%~1
 IF ["%OMS_VS_TARGET%"]==["VS14-Win32"] SET OMS_VS_PLATFORM=32 && SET OMS_VS_VERSION="Visual Studio 14 2015"

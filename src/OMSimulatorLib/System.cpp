@@ -748,18 +748,22 @@ oms_status_enu_t oms3::System::addConnection(const oms3::ComRef& crefA, const om
   else if (crefA.isValidIdent() || crefB.isValidIdent())
   {
     // flipped causality check
-    if ((conA->getCausality() == oms_causality_output && conB->getCausality() != oms_causality_output) ||
-      (conB->getCausality() == oms_causality_input && conA->getCausality() != oms_causality_input))
+    if (!((conA->getCausality() == oms_causality_output && conB->getCausality() == oms_causality_output) ||
+      (conB->getCausality() == oms_causality_input && conA->getCausality() == oms_causality_input)))
       return logError("Causality mismatch in connection: " + std::string(crefA) + " -> " + std::string(crefB));
   }
   else
   {
-    if ((conA->getCausality() == oms_causality_output && conB->getCausality() != oms_causality_input) ||
-      (conB->getCausality() == oms_causality_output && conA->getCausality() != oms_causality_input))
+    if (!((conA->getCausality() == oms_causality_output && conB->getCausality() == oms_causality_input) ||
+      (conB->getCausality() == oms_causality_output && conA->getCausality() == oms_causality_input)))
       return logError("Causality mismatch in connection: " + std::string(crefA) + " -> " + std::string(crefB));
   }
+  if ((crefA.isValidIdent() && conA->getCausality() == oms_causality_input) ||
+      (!crefA.isValidIdent() && conA->getCausality() == oms_causality_output))
+    connections.back() = new oms3::Connection(crefA, crefB);
+  else
+    connections.back() = new oms3::Connection(crefB, crefA);
 
-  connections.back() = new oms3::Connection(crefA,crefB);
   connections.push_back(NULL);
   return oms_status_ok;
 }
