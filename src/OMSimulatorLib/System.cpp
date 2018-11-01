@@ -1357,9 +1357,8 @@ oms_status_enu_t oms3::System::updateSignals(ResultWriter& resultFile, double ti
     SignalValue_t value;
     if (oms_signal_type_real == connector->getType())
     {
-      value.realValue = 0.0;
-      //if (oms_status_ok != getReal(var, value.realValue))
-      //  return logError("failed to fetch variable " + std::string(connector->getName()));
+      if (oms_status_ok != getReal(connector->getName(), value.realValue))
+        return logError("failed to fetch connector " + std::string(connector->getName()));
       resultFile.updateSignal(ID, value);
     }
     //else if (oms_signal_type_integer == connector->getType())
