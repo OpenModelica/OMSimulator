@@ -190,8 +190,8 @@ RegEx: 3rdParty/RegEx/OMSRegEx$(EEXT)
 
 config-3rdParty: config-fmil config-lua config-zlib config-cvode config-kinsol config-ceres-solver config-libxml2
 
-config-OMSimulator: RegEx $(BUILD_DIR)/Makefile
-$(BUILD_DIR)/Makefile: CMakeLists.txt
+config-OMSimulator: $(BUILD_DIR)/Makefile
+$(BUILD_DIR)/Makefile: RegEx CMakeLists.txt
 	@echo
 	@echo "# config OMSimulator"
 	@echo
