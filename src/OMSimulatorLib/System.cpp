@@ -1485,16 +1485,16 @@ oms_status_enu_t oms3::System::registerSignalsForResultFile(ResultWriter& result
       unsigned int ID = resultFile.addSignal(std::string(getFullCref() + connector->getName()), "connector", SignalType_REAL);
       resultFileMapping[ID] = i;
     }
-    //else if (oms_signal_type_integer == connector->getType())
-    //{
-    //  resultFile.addSignal(std::string(connector->getName()), "connector", SignalType_INT);
-    //  resultFileMapping[ID] = i;
-    //}
-    //else if (oms_signal_type_boolean == connector->getType())
-    //{
-    //  resultFile.addSignal(std::string(connector->getName()), "connector", SignalType_BOOL);
-    //  resultFileMapping[ID] = i;
-    //}
+    else if (oms_signal_type_integer == connector->getType())
+    {
+      unsigned int ID = resultFile.addSignal(std::string(connector->getName()), "connector", SignalType_INT);
+      resultFileMapping[ID] = i;
+    }
+    else if (oms_signal_type_boolean == connector->getType())
+    {
+      unsigned int ID = resultFile.addSignal(std::string(connector->getName()), "connector", SignalType_BOOL);
+      resultFileMapping[ID] = i;
+    }
   }
 
   return oms_status_ok;
@@ -1521,18 +1521,18 @@ oms_status_enu_t oms3::System::updateSignals(ResultWriter& resultFile, double ti
         return logError("failed to fetch connector " + std::string(connector->getName()));
       resultFile.updateSignal(ID, value);
     }
-    //else if (oms_signal_type_integer == connector->getType())
-    //{
-    //  if (oms_status_ok != getInteger(var, value.intValue))
-    //    return logError("failed to fetch variable " + std::string(connector->getName()));
-    //  resultFile.updateSignal(ID, value);
-    //}
-    //else if (oms_signal_type_boolean == connector->getType())
-    //{
-    //  if (oms_status_ok != getBoolean(var, value.boolValue))
-    //    return logError("failed to fetch variable " + std::string(connector->getName()));
-    //  resultFile.updateSignal(ID, value);
-    //}
+    else if (oms_signal_type_integer == connector->getType())
+    {
+      if (oms_status_ok != getInteger(connector->getName(), value.intValue))
+        return logError("failed to fetch variable " + std::string(connector->getName()));
+      resultFile.updateSignal(ID, value);
+    }
+    else if (oms_signal_type_boolean == connector->getType())
+    {
+      if (oms_status_ok != getBoolean(connector->getName(), value.boolValue))
+        return logError("failed to fetch variable " + std::string(connector->getName()));
+      resultFile.updateSignal(ID, value);
+    }
   }
 
   return oms_status_ok;
