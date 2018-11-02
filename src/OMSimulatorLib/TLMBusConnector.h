@@ -121,6 +121,7 @@ typedef struct  {
     const oms2::ssd::ConnectorGeometry* getGeometry() const {return reinterpret_cast<oms2::ssd::ConnectorGeometry*>(geometry);}
 
     oms_status_enu_t addConnector(const oms3::ComRef& cref, std::string vartype);
+    oms_status_enu_t deleteConnector(const oms3::ComRef& cref);
     void updateConnectors();
     void sortConnectors();
     oms_status_enu_t registerToSockets(TLMPlugin *plugin);

@@ -165,6 +165,19 @@ oms_status_enu_t oms3::TLMBusConnector::addConnector(const oms3::ComRef &cref, s
   return oms_status_ok;
 }
 
+oms_status_enu_t oms3::TLMBusConnector::deleteConnector(const oms3::ComRef &cref)
+{
+  for (auto it = connectors.begin(); it != connectors.end(); ++it) {
+    if ((*it).second == cref) {
+      connectors.erase(it);
+      updateConnectors();
+      sortConnectors();
+      return oms_status_ok;
+    }
+  }
+  return oms_status_error;
+}
+
 void oms3::TLMBusConnector::sortConnectors()
 {
   if(variableTypes.size() == connectors.size()) {

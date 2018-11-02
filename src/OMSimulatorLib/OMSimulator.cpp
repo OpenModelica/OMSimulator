@@ -493,9 +493,9 @@ oms_status_enu_t oms3_addConnectorToBus(const char *busCref, const char *connect
   oms3::ComRef systemCref = busTail.pop_front();
   oms3::ComRef connectorTail(connectorCref);
   if (modelCref != connectorTail.pop_front())
-    return logError("Bus and connector must belong to same model");
+    return logError_BusAndConnectorNotSameModel;
   if (systemCref != connectorTail.pop_front())
-    return logError("Bus and connector must belong to same system");
+    return logError_BusAndConnectorNotSameSystem;
   oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
   if (!model) {
     return logError_ModelNotInScope(modelCref);
@@ -515,9 +515,9 @@ oms_status_enu_t oms3_deleteConnectorFromBus(const char *busCref, const char *co
   oms3::ComRef systemCref = busTail.pop_front();
   oms3::ComRef connectorTail(connectorCref);
   if (modelCref != connectorTail.pop_front())
-    return logError("Bus and connector must belong to same model");
+    return logError_BusAndConnectorNotSameModel;
   if (systemCref != connectorTail.pop_front())
-    return logError("Bus and connector must belong to same system");
+    return logError_BusAndConnectorNotSameSystem;
   oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
   if (!model) {
     return logError_ModelNotInScope(modelCref);
@@ -536,9 +536,9 @@ oms_status_enu_t oms3_addConnectorToTLMBus(const char *busCref, const char *conn
   oms3::ComRef systemCref = busTail.pop_front();
   oms3::ComRef connectorTail(connectorCref);
   if (modelCref != connectorTail.pop_front())
-    return logError("Bus and connector must belong to same model");
+    return logError_BusAndConnectorNotSameModel;
   if (systemCref != connectorTail.pop_front())
-    return logError("Bus and connector must belong to same system");
+    return logError_BusAndConnectorNotSameSystem;
   oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
   if (!model) {
     return logError_ModelNotInScope(modelCref);
@@ -548,6 +548,28 @@ oms_status_enu_t oms3_addConnectorToTLMBus(const char *busCref, const char *conn
     return logError_SystemNotInModel(modelCref, systemCref);
   }
   return system->addConnectorToTLMBus(busTail, connectorTail, type);
+}
+
+oms_status_enu_t oms3_deleteConnectorFromTLMBus(const char *busCref, const char *connectorCref)
+{
+  logTrace();
+  oms3::ComRef busTail(busCref);
+  oms3::ComRef modelCref = busTail.pop_front();
+  oms3::ComRef systemCref = busTail.pop_front();
+  oms3::ComRef connectorTail(connectorCref);
+  if (modelCref != connectorTail.pop_front())
+    return logError_BusAndConnectorNotSameModel;
+  if (systemCref != connectorTail.pop_front())
+    return logError_BusAndConnectorNotSameSystem;
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
+  if (!model) {
+    return logError_ModelNotInScope(modelCref);
+  }
+  oms3::System* system = model->getSystem(systemCref);
+  if (!system) {
+    return logError_SystemNotInModel(modelCref, systemCref);
+  }
+  return system->deleteConnectorFromTLMBus(busTail, connectorTail);
 }
 
 oms_status_enu_t oms3_setTLMBusGeometry(const char* cref, const ssd_connector_geometry_t* geometry)

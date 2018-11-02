@@ -460,6 +460,23 @@ static int OMSimulatorLua_oms3_addConnectorToBus(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms3_deleteConnectorFromBus(const char *busCref, const char *connectorCref)
+static int OMSimulatorLua_oms3_deleteConnectorFromBus(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 arguments");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+
+  const char* busCref = lua_tostring(L, 1);
+  const char* connectorCref = lua_tostring(L, 2);
+  oms_status_enu_t status = oms3_deleteConnectorFromBus(busCref,connectorCref);
+
+  lua_pushinteger(L, status);
+
+  return 1;
+}
+
 //oms_status_enu_t oms3_addConnectorToTLMBus(const char* busCref, const char* connectorCref, const char* type);
 static int OMSimulatorLua_oms3_addConnectorToTLMBus(lua_State *L)
 {
@@ -473,6 +490,23 @@ static int OMSimulatorLua_oms3_addConnectorToTLMBus(lua_State *L)
   const char* connectorCref = lua_tostring(L, 2);
   const char* type = lua_tostring(L, 3);
   oms_status_enu_t status = oms3_addConnectorToTLMBus(busCref,connectorCref,type);
+
+  lua_pushinteger(L, status);
+
+  return 1;
+}
+
+//oms_status_enu_t oms3_deleteConnectorFromTLMBus(const char *busCref, const char *connectorCref)
+static int OMSimulatorLua_oms3_deleteConnectorFromTLMBus(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 arguments");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+
+  const char* busCref = lua_tostring(L, 1);
+  const char* connectorCref = lua_tostring(L, 2);
+  oms_status_enu_t status = oms3_deleteConnectorFromTLMBus(busCref,connectorCref);
 
   lua_pushinteger(L, status);
 
@@ -2303,7 +2337,9 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms3_addConnection);
   REGISTER_LUA_CALL(oms3_addConnector);
   REGISTER_LUA_CALL(oms3_addConnectorToBus);
+  REGISTER_LUA_CALL(oms3_deleteConnectorFromBus);
   REGISTER_LUA_CALL(oms3_addConnectorToTLMBus);
+  REGISTER_LUA_CALL(oms3_deleteConnectorFromTLMBus);
   REGISTER_LUA_CALL(oms3_addExternalModel);
   REGISTER_LUA_CALL(oms3_addSignalsToResults);
   REGISTER_LUA_CALL(oms3_addSubModel);
