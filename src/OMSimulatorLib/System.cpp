@@ -869,9 +869,14 @@ oms_status_enu_t oms3::System::addBus(const oms3::ComRef& cref)
 {
   oms3::ComRef tail(cref);
   oms3::ComRef head = tail.pop_front();
+
   auto subsystem = subsystems.find(head);
   if (subsystem != subsystems.end())
     return subsystem->second->addBus(tail);
+
+  auto component = components.find(head);
+  if (component != components.end())
+    return logError("Bus connectors cannot be added to components"); ///< TODO: Implement bus connectors for components
 
   if (type == oms_system_tlm)
     return logError_NotForTlmSystem;
