@@ -172,20 +172,27 @@ oms_status_enu_t oms3_setElementGeometry(const char* cref, const ssd_element_geo
   }
 
   oms3::ComRef tail(cref);
-  oms3::ComRef modelCref = tail.pop_front();
+  oms3::ComRef front = tail.pop_front();
 
-  oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
-  if (!model) {
-    return logError_ModelNotInScope(modelCref);
-  }
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
 
   oms3::System* system = model->getSystem(tail);
-  if (!system) {
-    return logError_SystemNotInModel(modelCref, tail);
+  if (system)
+  {
+    system->setGeometry(*reinterpret_cast<const oms3::ssd::ElementGeometry*>(geometry));
+    return oms_status_ok;
   }
 
-  system->setGeometry(*reinterpret_cast<const oms3::ssd::ElementGeometry*>(geometry));
-  return oms_status_ok;
+  oms3::Component* component = model->getComponent(tail);
+  if (component)
+  {
+    component->setGeometry(*reinterpret_cast<const oms3::ssd::ElementGeometry*>(geometry));
+    return oms_status_ok;
+  }
+
+  return logError("Model \"" + std::string(model->getCref()) + "\" does not contain system or component \"" + std::string(tail) + "\"");
 }
 
 oms_status_enu_t oms3_addConnector(const char *cref, oms_causality_enu_t causality, oms_signal_type_enu_t type)
@@ -1573,4 +1580,3 @@ int oms2_exists(const char* cref)
   logTrace();
   return oms2::Scope::GetInstance().exists(oms2::ComRef(cref)) ? 1 : 0;
 }
-

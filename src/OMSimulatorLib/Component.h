@@ -66,6 +66,7 @@ namespace oms3
     virtual const oms3::FMUInfo* getFMUInfo() const {return NULL;}
     System* getParentSystem() const {return parentSystem;}
     Model* getModel() const;
+    void setGeometry(const ssd::ElementGeometry& geometry) {element.setGeometry(&geometry);}
 
     virtual oms_status_enu_t exportToSSD(pugi::xml_node& node) const = 0;
     virtual oms_status_enu_t instantiate() = 0;
