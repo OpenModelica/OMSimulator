@@ -286,6 +286,7 @@ oms_status_enu_t oms3::Scope::getElement(const oms3::ComRef& cref, oms3::Element
 
   oms3::ComRef tail(cref);
   oms3::ComRef front = tail.pop_front();
+
   oms3::Model* model = getModel(front);
   if (!model)
     return logError("Model \"" + std::string(front) + "\" does not exist in the scope");

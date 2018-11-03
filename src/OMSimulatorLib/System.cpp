@@ -174,11 +174,20 @@ oms3::System* oms3::System::getSystem(const oms3::ComRef& cref)
 
 oms3::Component* oms3::System::getComponent(const oms3::ComRef& cref)
 {
-  auto it = components.find(cref);
-  if (it == components.end())
+  oms3::System* system = NULL;
+
+  oms3::ComRef tail(cref);
+  oms3::ComRef front = tail.pop_front();
+
+  auto subsystem = subsystems.find(front);
+  if (subsystem != subsystems.end())
+    return subsystem->second->getComponent(tail);
+
+  auto component = components.find(cref);
+  if (component == components.end())
     return NULL;
 
-  return it->second;
+  return component->second;
 }
 
 oms3::System *oms3::System::getSubSystem(const oms3::ComRef &cref)
