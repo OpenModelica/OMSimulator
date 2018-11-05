@@ -790,6 +790,13 @@ oms_status_enu_t oms3::System::addConnection(const oms3::ComRef& crefA, const om
 
 oms_status_enu_t oms3::System::updateConnection(const oms3::ComRef& crefA, const oms3::ComRef& crefB, const oms3_connection_t* connection)
 {
+  oms3::Connection *connection_ = getConnection(crefA, crefB);
+  if (connection_)
+  {
+    *connection_ = *(reinterpret_cast<const oms3::Connection*>(connection));
+    return oms_status_ok;
+  }
+
   oms3::ComRef tailA(crefA);
   oms3::ComRef headA = tailA.pop_front();
 
@@ -804,32 +811,11 @@ oms_status_enu_t oms3::System::updateConnection(const oms3::ComRef& crefA, const
       return subsystem->second->updateConnection(tailA, tailB, connection);
   }
 
-  oms3::Connection *connection_ = getConnection(crefA, crefB);
-  if (connection_)
-  {
-    *connection_ = *(reinterpret_cast<const oms3::Connection*>(connection));
-    return oms_status_ok;
-  }
-
   return logError_ConnectionNotInSystem(crefA, crefB, this);
 }
 
 oms_status_enu_t oms3::System::deleteConnection(const oms3::ComRef& crefA, const oms3::ComRef& crefB)
 {
-  oms3::ComRef tailA(crefA);
-  oms3::ComRef headA = tailA.pop_front();
-
-  oms3::ComRef tailB(crefB);
-  oms3::ComRef headB = tailB.pop_front();
-
-  //If both A and B references the same subsystem, recurse into that subsystem
-  if (headA == headB)
-  {
-    auto subsystem = subsystems.find(headA);
-    if (subsystem != subsystems.end())
-      return subsystem->second->deleteConnection(tailA, tailB);
-  }
-
   for (auto& connection : connections)
   {
     if (connection && connection->isEqual(crefA, crefB))
@@ -842,6 +828,20 @@ oms_status_enu_t oms3::System::deleteConnection(const oms3::ComRef& crefA, const
 
       return oms_status_ok;
     }
+  }
+
+  oms3::ComRef tailA(crefA);
+  oms3::ComRef headA = tailA.pop_front();
+
+  oms3::ComRef tailB(crefB);
+  oms3::ComRef headB = tailB.pop_front();
+
+  //If both A and B references the same subsystem, recurse into that subsystem
+  if (headA == headB)
+  {
+    auto subsystem = subsystems.find(headA);
+    if (subsystem != subsystems.end())
+      return subsystem->second->deleteConnection(tailA, tailB);
   }
 
   return logError_ConnectionNotInSystem(crefA, crefB, this);
