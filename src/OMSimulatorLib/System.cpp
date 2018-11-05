@@ -1159,7 +1159,7 @@ oms_status_enu_t oms3::System::setTLMBusGeometry(const oms3::ComRef& cref, const
 oms3::Connection* oms3::System::getConnection(const oms3::ComRef& crefA, const oms3::ComRef& crefB)
 {
   for (auto& connection : connections)
-    if (connection && ((connection->getSignalA() == crefA && connection->getSignalB() == crefB) || (connection->getSignalA() == crefB && connection->getSignalB() == crefA)))
+    if (connection && connection->isEqual(crefA, crefB))
       return connection;
   return NULL;
 }
