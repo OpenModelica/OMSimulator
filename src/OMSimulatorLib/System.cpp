@@ -210,11 +210,17 @@ bool oms3::System::validCref(const oms3::ComRef& cref)
   if (getComponent(cref))
     return false;
 
+  if (getConnector(cref))
+    return false;
+
   return true;
 }
 
 oms_status_enu_t oms3::System::addSubSystem(const oms3::ComRef& cref, oms_system_enu_t type)
 {
+  if (cref.isEmpty())
+    return logError_AlreadyInScope(getFullCref());
+
   if (cref.isValidIdent())
   {
     if (this->type == oms_system_sc)
@@ -246,6 +252,9 @@ oms_status_enu_t oms3::System::addSubModel(const oms3::ComRef& cref, const std::
 {
   if (cref.isValidIdent())
   {
+    if (!validCref(cref))
+      return logError_AlreadyInScope(getFullCref() + cref);
+
     Component* component = NULL;
 
     std::string extension = "";
@@ -609,6 +618,8 @@ oms_status_enu_t oms3::System::addConnector(const oms3::ComRef& cref, oms_causal
     return logError_NotForTlmSystem;
   if (!cref.isValidIdent())
     return logError_InvalidIdent(cref);
+  if (!validCref(cref))
+    return logError_AlreadyInScope(getFullCref() + cref);
 
   connectors.back() = new oms3::Connector(causality, type, cref);
   connectors.push_back(NULL);
