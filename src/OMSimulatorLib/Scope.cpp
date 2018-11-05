@@ -67,7 +67,7 @@ oms_status_enu_t oms3::Scope::newModel(const oms3::ComRef& cref)
 {
   // check if cref is in scope
   if (getModel(cref))
-    return logError("A model \"" + std::string(cref) + "\" already exists in the scope");
+    return logError_AlreadyInScope(cref);
 
   Model* model = oms3::Model::NewModel(cref);
   if (!model)

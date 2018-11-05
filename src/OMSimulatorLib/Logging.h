@@ -120,6 +120,7 @@ private:
 #define logError_Termination(system)                         logError("Termination of system \"" + std::string(system) + "\" failed")
 #define logError_WrongSchema(name)                           logError("Wrong xml schema detected. Unexpected tag \"" + name + "\"")
 #define logError_InvalidIdent(cref)                          logError("\"" + std::string(cref) + "\" is not a valid ident")
+#define logError_AlreadyInScope(cref)                        logError("\"" + std::string(cref) + "\" already exists in the scope")
 #define logError_BusAndConnectorNotSameModel                 logError("Bus and connector must belong to same model")
 #define logError_BusAndConnectorNotSameSystem                logError("Bus and connector must belong to same system")
 #endif
