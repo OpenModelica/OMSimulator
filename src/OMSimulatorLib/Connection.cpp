@@ -118,24 +118,23 @@ oms3::Connection& oms3::Connection::operator=(const oms3::Connection& rhs)
 oms_status_enu_t oms3::Connection::exportToSSD(pugi::xml_node &root) const
 {
   pugi::xml_node node;
-  if(type == oms3_connection_single) {
+  if(type == oms3_connection_single)
     node = root.append_child(oms2::ssd::ssd_connection);
-  }
-  else if(type == oms3_connection_bus || type == oms3_connection_tlm) {
+  else if(type == oms3_connection_bus || type == oms3_connection_tlm)
     node = root.append_child(oms::bus_connection);
-  }
 
   ComRef startConnectorRef(conA);
   ComRef startElementRef = startConnectorRef.pop_front();
   ComRef endConnectorRef(conB);
   ComRef endElementRef = endConnectorRef.pop_front();
 
-  node.append_attribute("startElement") = startElementRef.c_str();
-  node.append_attribute("startConnector") = startConnectorRef.c_str();
-  node.append_attribute("endElement") = endElementRef.c_str();
-  node.append_attribute("endConnector") = endConnectorRef.c_str();
+  node.append_attribute("startElement") = startConnectorRef.isEmpty() ? "" : startElementRef.c_str();
+  node.append_attribute("startConnector") = startConnectorRef.isEmpty() ? startElementRef.c_str() : startConnectorRef.c_str();
+  node.append_attribute("endElement") = endConnectorRef.isEmpty() ? "" : endElementRef.c_str();
+  node.append_attribute("endConnector") = endConnectorRef.isEmpty() ? endElementRef.c_str() : endConnectorRef.c_str();
 
-  if(type == oms3_connection_tlm) {
+  if(type == oms3_connection_tlm)
+  {
     node.append_attribute("delay") = std::to_string(tlmparameters->delay).c_str();
     node.append_attribute("alpha") = std::to_string(tlmparameters->alpha).c_str();
     node.append_attribute("linearimpedance") = std::to_string(tlmparameters->linearimpedance).c_str();
