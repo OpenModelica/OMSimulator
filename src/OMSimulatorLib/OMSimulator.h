@@ -113,6 +113,7 @@ oms_status_enu_t oms3_getInteger(const char* cref, int* value);
 oms_status_enu_t oms3_setInteger(const char* cref, int value);
 oms_status_enu_t oms3_getBoolean(const char* cref, bool* value);
 oms_status_enu_t oms3_setBoolean(const char* cref, bool value);
+oms_status_enu_t oms3_getModelState(const char* cref, oms_modelState_enu_t* modelState);
 
 /* not implemented yet */
 oms_status_enu_t oms3_setSimulationInformation(const char* cref, ssd_simulation_information_t* info);
