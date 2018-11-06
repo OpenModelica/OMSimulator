@@ -260,7 +260,7 @@ oms_status_enu_t oms3::SystemTLM::connectToSockets(const oms3::ComRef cref, std:
   logInfo("Initializing plugin for "+std::string(cref));
 
   if(!plugin->Init(std::string(cref),
-                   system->getTime(),
+                   getModel()->getStartTime(),
                    1, //Unused argument anyway
                    system->getStepSize(),
                    server)) {
