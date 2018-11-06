@@ -1064,6 +1064,19 @@ oms_status_enu_t oms3_setFixedStepSize(const char* cref, double stepSize)
   return system->setFixedStepSize(stepSize);
 }
 
+oms_status_enu_t oms3_getModelState(const char* cref, oms_modelState_enu_t* modelState)
+{
+  oms3::ComRef tail(cref);
+  oms3::ComRef front = tail.pop_front();
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  *modelState = model->getModelState();
+  return oms_status_ok;
+}
+
 /* ************************************ */
 /* OMSimulator 2.0                      */
 /*                                      */

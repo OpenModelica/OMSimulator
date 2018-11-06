@@ -690,6 +690,22 @@ static int OMSimulatorLua_oms3_simulate(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms3_getModelState(const char* cref, oms_modelState_enu_t* modelState);
+static int OMSimulatorLua_oms3_getModelState(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* cref = lua_tostring(L, 1);
+  oms_modelState_enu_t modelState = oms_modelState_terminated;
+
+  oms_status_enu_t status = oms3_getModelState(cref, &modelState);
+  lua_pushinteger(L, modelState);
+  lua_pushinteger(L, status);
+  return 2;
+}
+
 //oms_status_enu_t oms3_setTLMSocketData(const char* cref, const char* address, int managerPort, int monitorPort)
 static int OMSimulatorLua_oms3_setTLMSocketData(lua_State *L)
 {
