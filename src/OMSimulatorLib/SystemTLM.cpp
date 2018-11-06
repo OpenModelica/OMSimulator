@@ -225,6 +225,7 @@ oms_status_enu_t oms3::SystemTLM::stepUntil(double stopTime)
     thread.join();
 
   masterThread->join();
+  delete masterThread;
 
   logInfo("Simulation of TLM composite model "+std::string(getCref())+" complete.");
 
