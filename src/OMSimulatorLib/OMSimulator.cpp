@@ -296,29 +296,6 @@ oms_status_enu_t oms3_addConnection(const char *crefA, const char *crefB)
   return system->addConnection(tailA,tailB);
 }
 
-oms_status_enu_t oms3_updateConnection(const char *crefA, const char *crefB, const oms3_connection_t* connection)
-{
-  oms3::ComRef tailA(crefA);
-  oms3::ComRef modelCref = tailA.pop_front();
-  oms3::ComRef systemCref = tailA.pop_front();
-
-  oms3::ComRef tailB(crefB);
-  tailB.pop_front();
-  tailB.pop_front();
-
-  oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
-  if (!model) {
-    return logError_ModelNotInScope(modelCref);
-  }
-
-  oms3::System* system = model->getSystem(systemCref);
-  if (!system) {
-    return logError_SystemNotInModel(modelCref, systemCref);
-  }
-
-  return system->updateConnection(tailA, tailB, connection);
-}
-
 oms_status_enu_t oms3_deleteConnection(const char *crefA, const char *crefB)
 {
   oms3::ComRef tailA(crefA);
@@ -349,14 +326,12 @@ oms_status_enu_t oms3_setConnectorGeometry(const char *cref, const ssd_connector
   oms3::ComRef systemCref = tail.pop_front();
 
   oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
-  if (!model) {
+  if (!model)
     return logError_ModelNotInScope(modelCref);
-  }
 
   oms3::System* system = model->getSystem(systemCref);
-  if (!system) {
+  if (!system)
     return logError_SystemNotInModel(modelCref, systemCref);
-  }
 
   return system->setConnectorGeometry(tail, reinterpret_cast<const oms2::ssd::ConnectorGeometry*>(geometry));
 }
@@ -372,16 +347,35 @@ oms_status_enu_t oms3_setConnectionGeometry(const char *crefA, const char *crefB
   tailB.pop_front();
 
   oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
-  if (!model) {
+  if (!model)
     return logError_ModelNotInScope(modelCref);
-  }
 
   oms3::System* system = model->getSystem(systemCref);
-  if (!system) {
+  if (!system)
     return logError_SystemNotInModel(modelCref, systemCref);
-  }
 
-  return system->setConnectionGeometry(tailA,tailB, reinterpret_cast<const oms3::ssd::ConnectionGeometry*>(geometry));
+  return system->setConnectionGeometry(tailA, tailB, reinterpret_cast<const oms3::ssd::ConnectionGeometry*>(geometry));
+}
+
+oms_status_enu_t oms3_setTLMConnectionParameters(const char* crefA, const char* crefB, const oms3_tlm_connection_parameters_t* parameters)
+{
+  oms3::ComRef tailA(crefA);
+  oms3::ComRef modelCref = tailA.pop_front();
+  oms3::ComRef systemCref = tailA.pop_front();
+
+  oms3::ComRef tailB(crefB);
+  tailB.pop_front();
+  tailB.pop_front();
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
+  if (!model)
+    return logError_ModelNotInScope(modelCref);
+
+  oms3::System* system = model->getSystem(systemCref);
+  if (!system)
+    return logError_SystemNotInModel(modelCref, systemCref);
+
+  return system->setTLMConnectionParameters(tailA, tailB, parameters);
 }
 
 oms_status_enu_t oms3_getConnections(const char *cref, oms3_connection_t ***connections)
