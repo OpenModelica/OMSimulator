@@ -109,6 +109,10 @@ oms_status_enu_t oms3_setStartTime(const char* cref, double startTime);
 oms_status_enu_t oms3_getStopTime(const char* cref, double* stopTime);
 oms_status_enu_t oms3_setStopTime(const char* cref, double stopTime);
 oms_status_enu_t oms3_setFixedStepSize(const char* cref, double stepSize);
+oms_status_enu_t oms3_getInteger(const char* cref, int* value);
+oms_status_enu_t oms3_setInteger(const char* cref, int value);
+oms_status_enu_t oms3_getBoolean(const char* cref, bool* value);
+oms_status_enu_t oms3_setBoolean(const char* cref, bool value);
 
 /* not implemented yet */
 oms_status_enu_t oms3_setSimulationInformation(const char* cref, ssd_simulation_information_t* info);

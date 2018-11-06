@@ -876,6 +876,40 @@ oms_status_enu_t oms3_getReal(const char* cref, double* value)
   return system->getReal(tail, *value);
 }
 
+oms_status_enu_t oms3_getInteger(const char* cref, int* value)
+{
+  oms3::ComRef tail(cref);
+  oms3::ComRef front = tail.pop_front();
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  front = tail.pop_front();
+  oms3::System* system = model->getSystem(front);
+  if (!system)
+    return logError_SystemNotInModel(model->getCref(), front);
+
+  return system->getInteger(tail, *value);
+}
+
+oms_status_enu_t oms3_getBoolean(const char* cref, bool* value)
+{
+  oms3::ComRef tail(cref);
+  oms3::ComRef front = tail.pop_front();
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  front = tail.pop_front();
+  oms3::System* system = model->getSystem(front);
+  if (!system)
+    return logError_SystemNotInModel(model->getCref(), front);
+
+  return system->getBoolean(tail, *value);
+}
+
 oms_status_enu_t oms3_setReal(const char* cref, double value)
 {
   oms3::ComRef tail(cref);
@@ -891,6 +925,40 @@ oms_status_enu_t oms3_setReal(const char* cref, double value)
     return logError_SystemNotInModel(model->getCref(), front);
 
   return system->setReal(tail, value);
+}
+
+oms_status_enu_t oms3_setInteger(const char* cref, int value)
+{
+  oms3::ComRef tail(cref);
+  oms3::ComRef front = tail.pop_front();
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  front = tail.pop_front();
+  oms3::System* system = model->getSystem(front);
+  if (!system)
+    return logError_SystemNotInModel(model->getCref(), front);
+
+  return system->setInteger(tail, value);
+}
+
+oms_status_enu_t oms3_setBoolean(const char* cref, bool value)
+{
+  oms3::ComRef tail(cref);
+  oms3::ComRef front = tail.pop_front();
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  front = tail.pop_front();
+  oms3::System* system = model->getSystem(front);
+  if (!system)
+    return logError_SystemNotInModel(model->getCref(), front);
+
+  return system->setBoolean(tail, value);
 }
 
 oms_status_enu_t oms3_setResultFile(const char* cref, const char* filename, int bufferSize)
