@@ -1056,12 +1056,11 @@ oms_status_enu_t oms3_setFixedStepSize(const char* cref, double stepSize)
   if (!model)
     return logError_ModelNotInScope(front);
 
-  front = tail.pop_front();
-  oms3::System* system = model->getSystem(front);
-  if (!system)
-    return logError_SystemNotInModel(model->getCref(), front);
+  oms3::System* system = model->getSystem(tail);
+  if (system)
+    return system->setFixedStepSize(stepSize);
 
-  return system->setFixedStepSize(stepSize);
+  return logError_SystemNotInModel(model->getCref(), front);
 }
 
 oms_status_enu_t oms3_getModelState(const char* cref, oms_modelState_enu_t* modelState)
