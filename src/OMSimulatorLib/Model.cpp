@@ -50,9 +50,7 @@
 oms3::Model::Model(const oms3::ComRef& cref, const std::string& tempDir)
   : cref(cref), tempDir(tempDir), resultFilename(std::string(cref) + "_res.mat")
 {
-  if (Flags::SuppressPath())
-    logInfo("New model \"" + std::string(cref) + "\" with corresponding temp directory <suppressed>");
-  else
+  if (!Flags::SuppressPath())
     logInfo("New model \"" + std::string(cref) + "\" with corresponding temp directory \"" + tempDir + "\"");
 
   elements.push_back(NULL);

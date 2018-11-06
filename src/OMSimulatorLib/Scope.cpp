@@ -240,9 +240,7 @@ oms_status_enu_t oms3::Scope::setTempDirectory(const std::string& newTempDir)
 
   this->tempDir = path.string();
 
-  if (Flags::SuppressPath())
-    logInfo("Set temp directory to    <suppressed>");
-  else
+  if (!Flags::SuppressPath())
     logInfo("Set temp directory to    \"" + this->tempDir + "\"");
 
   return oms_status_ok;
@@ -265,9 +263,7 @@ oms_status_enu_t oms3::Scope::setWorkingDirectory(const std::string& newWorkingD
     // https://svn.boost.org/trac10/ticket/11138
   }
 
-  if (Flags::SuppressPath())
-    logInfo("Set working directory to <suppressed>");
-  else
+  if (!Flags::SuppressPath())
     logInfo("Set working directory to \"" + newWorkingDir + "\"");
 
   return oms_status_ok;
