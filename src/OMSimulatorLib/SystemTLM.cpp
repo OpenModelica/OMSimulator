@@ -179,7 +179,7 @@ oms_status_enu_t oms3::SystemTLM::stepUntil(double stopTime)
 
   std::thread *masterThread = new std::thread(&omtlm_simulate, model);
 
-  logInfo("Connecting submodels to managers (threaded)");
+  logInfo("Connecting submodels to manager (threaded)");
   std::string server = address + ":" + std::to_string(actualManagerPort);
   std::vector<std::thread> fmiConnectThreads;
   for(auto it = getSubSystems().begin(); it!=getSubSystems().end(); ++it) {
@@ -213,6 +213,15 @@ oms_status_enu_t oms3::SystemTLM::stepUntil(double stopTime)
     fmiModelThreads.push_back(std::thread(&oms3::SystemTLM::simulateSubSystem, this, subsystem->getCref(), stopTime));
   }
   for(auto &thread : fmiModelThreads)
+    thread.join();
+
+  logInfo("Disconnecting submodels from manager (threaded)");
+  std::vector<std::thread> fmiDisconnectThreads;
+  for(auto it = getSubSystems().begin(); it!=getSubSystems().end(); ++it) {
+    System* subsystem = it->second;
+    fmiDisconnectThreads.push_back(std::thread(&oms3::SystemTLM::disconnectFromSockets, this, subsystem->getCref()));
+  }
+  for(auto &thread : fmiDisconnectThreads)
     thread.join();
 
   masterThread->join();
