@@ -59,8 +59,8 @@ namespace oms3
     const oms3::ComRef getSignalA() const {return oms3::ComRef(conA);}
     const oms3::ComRef getSignalB() const {return oms3::ComRef(conB);}
 
-    const oms2::ssd::ConnectionGeometry* getGeometry() const {return reinterpret_cast<oms2::ssd::ConnectionGeometry*>(geometry);}
-    void setGeometry(const oms2::ssd::ConnectionGeometry* newGeometry);
+    const oms3::ssd::ConnectionGeometry* getGeometry() const {return reinterpret_cast<oms3::ssd::ConnectionGeometry*>(geometry);}
+    void setGeometry(const oms3::ssd::ConnectionGeometry* newGeometry);
 
     void setTLMParameters(double delay, double alpha, double linearimpedance, double angualrimpedance);
 
@@ -100,8 +100,8 @@ namespace oms2
     const oms2::SignalRef getSignalA() const {return oms2::SignalRef(conA);}
     const oms2::SignalRef getSignalB() const {return oms2::SignalRef(conB);}
 
-    const oms2::ssd::ConnectionGeometry* getGeometry() const {return reinterpret_cast<oms2::ssd::ConnectionGeometry*>(geometry);}
-    void setGeometry(const oms2::ssd::ConnectionGeometry* newGeometry);
+    const oms3::ssd::ConnectionGeometry* getGeometry() const {return reinterpret_cast<oms3::ssd::ConnectionGeometry*>(geometry);}
+    void setGeometry(const oms3::ssd::ConnectionGeometry* newGeometry);
 
     bool isEqual(const oms2::Connection& connection) const;
     bool isEqual(const oms2::ComRef& parent, const oms2::SignalRef& signalA, const oms2::SignalRef& signalB) const;

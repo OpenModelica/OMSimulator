@@ -86,7 +86,7 @@ namespace oms3
     oms_status_enu_t deleteConnection(const ComRef& crefA, const ComRef& crefB);
     oms_status_enu_t addTLMConnection(const ComRef& crefA, const ComRef& crefB, double delay, double alpha, double linearimpedance, double angularimpedance);
     oms_status_enu_t setConnectorGeometry(const ComRef& cref, const oms2::ssd::ConnectorGeometry* geometry);
-    oms_status_enu_t setConnectionGeometry(const ComRef &crefA, const ComRef &crefB, const oms2::ssd::ConnectionGeometry* geometry);
+    oms_status_enu_t setConnectionGeometry(const ComRef &crefA, const ComRef &crefB, const oms3::ssd::ConnectionGeometry* geometry);
     oms_status_enu_t addBus(const ComRef& cref);
     oms_status_enu_t addTLMBus(const ComRef& cref, const std::string domain, const int dimensions, const oms_tlm_interpolation_t interpolation);
     oms_status_enu_t addConnectorToBus(const ComRef& busCref, const ComRef& connectorCref);

@@ -381,7 +381,7 @@ oms_status_enu_t oms3_setConnectionGeometry(const char *crefA, const char *crefB
     return logError_SystemNotInModel(modelCref, systemCref);
   }
 
-  return system->setConnectionGeometry(tailA,tailB, reinterpret_cast<const oms2::ssd::ConnectionGeometry*>(geometry));
+  return system->setConnectionGeometry(tailA,tailB, reinterpret_cast<const oms3::ssd::ConnectionGeometry*>(geometry));
 }
 
 oms_status_enu_t oms3_getConnections(const char *cref, oms3_connection_t ***connections)

@@ -52,7 +52,7 @@ oms3::Connection::Connection(const oms3::ComRef& conA, const oms3::ComRef& conB,
   this->conB = new char[str.size()+1];
   strcpy(this->conB, str.c_str());
 
-  this->geometry = reinterpret_cast<ssd_connection_geometry_t*>(new oms2::ssd::ConnectionGeometry());
+  this->geometry = reinterpret_cast<ssd_connection_geometry_t*>(new oms3::ssd::ConnectionGeometry());
 
   tlmparameters = NULL;
 }
@@ -62,7 +62,7 @@ oms3::Connection::~Connection()
   if (this->conA) delete[] this->conA;
   if (this->conB) delete[] this->conB;
   if (this->tlmparameters) delete tlmparameters;
-  if (this->geometry) delete reinterpret_cast<oms2::ssd::ConnectionGeometry*>(this->geometry);
+  if (this->geometry) delete reinterpret_cast<oms3::ssd::ConnectionGeometry*>(this->geometry);
 }
 
 oms3::Connection::Connection(const oms3::Connection& rhs)
@@ -75,8 +75,8 @@ oms3::Connection::Connection(const oms3::Connection& rhs)
   this->conB = new char[strlen(rhs.conB)+1];
   strcpy(this->conB, rhs.conB);
 
-  oms2::ssd::ConnectionGeometry* geometry_ = new oms2::ssd::ConnectionGeometry();
-  *geometry_ = *reinterpret_cast<oms2::ssd::ConnectionGeometry*>(rhs.geometry);
+  oms3::ssd::ConnectionGeometry* geometry_ = new oms3::ssd::ConnectionGeometry();
+  *geometry_ = *reinterpret_cast<oms3::ssd::ConnectionGeometry*>(rhs.geometry);
   this->geometry = reinterpret_cast<ssd_connection_geometry_t*>(geometry_);
 
   tlmparameters = NULL;
@@ -100,8 +100,8 @@ oms3::Connection& oms3::Connection::operator=(const oms3::Connection& rhs)
   this->conB = new char[strlen(rhs.conB)+1];
   strcpy(this->conB, rhs.conB);
 
-  oms2::ssd::ConnectionGeometry* geometry_ = new oms2::ssd::ConnectionGeometry();
-  *geometry_ = *reinterpret_cast<oms2::ssd::ConnectionGeometry*>(rhs.geometry);
+  oms3::ssd::ConnectionGeometry* geometry_ = new oms3::ssd::ConnectionGeometry();
+  *geometry_ = *reinterpret_cast<oms3::ssd::ConnectionGeometry*>(rhs.geometry);
   this->geometry = reinterpret_cast<ssd_connection_geometry_t*>(geometry_);
 
   if (this->tlmparameters) {
@@ -146,12 +146,12 @@ oms_status_enu_t oms3::Connection::exportToSSD(pugi::xml_node &root) const
   return oms_status_ok;
 }
 
-void oms3::Connection::setGeometry(const oms2::ssd::ConnectionGeometry* newGeometry)
+void oms3::Connection::setGeometry(const oms3::ssd::ConnectionGeometry* newGeometry)
 {
-  oms2::ssd::ConnectionGeometry* geometry_ = reinterpret_cast<oms2::ssd::ConnectionGeometry*>(this->geometry);
+  oms3::ssd::ConnectionGeometry* geometry_ = reinterpret_cast<oms3::ssd::ConnectionGeometry*>(this->geometry);
   if (geometry_)
     delete geometry_;
-  geometry_ = new oms2::ssd::ConnectionGeometry(*newGeometry);
+  geometry_ = new oms3::ssd::ConnectionGeometry(*newGeometry);
   this->geometry = reinterpret_cast<ssd_connection_geometry_t*>(geometry_);
 }
 
@@ -208,7 +208,7 @@ oms2::Connection::Connection(const oms2::ComRef& parent, const oms2::SignalRef& 
   this->conB = new char[str.size()+1];
   strcpy(this->conB, str.c_str());
 
-  this->geometry = reinterpret_cast<ssd_connection_geometry_t*>(new oms2::ssd::ConnectionGeometry());
+  this->geometry = reinterpret_cast<ssd_connection_geometry_t*>(new oms3::ssd::ConnectionGeometry());
 }
 
 oms2::Connection::~Connection()
@@ -216,7 +216,7 @@ oms2::Connection::~Connection()
   if (this->parent) delete[] this->parent;
   if (this->conA) delete[] this->conA;
   if (this->conB) delete[] this->conB;
-  if (this->geometry) delete reinterpret_cast<oms2::ssd::ConnectionGeometry*>(this->geometry);
+  if (this->geometry) delete reinterpret_cast<oms3::ssd::ConnectionGeometry*>(this->geometry);
 }
 
 oms2::Connection::Connection(const oms2::Connection& rhs)
@@ -232,8 +232,8 @@ oms2::Connection::Connection(const oms2::Connection& rhs)
   this->conB = new char[strlen(rhs.conB)+1];
   strcpy(this->conB, rhs.conB);
 
-  oms2::ssd::ConnectionGeometry* geometry_ = new oms2::ssd::ConnectionGeometry();
-  *geometry_ = *reinterpret_cast<oms2::ssd::ConnectionGeometry*>(rhs.geometry);
+  oms3::ssd::ConnectionGeometry* geometry_ = new oms3::ssd::ConnectionGeometry();
+  *geometry_ = *reinterpret_cast<oms3::ssd::ConnectionGeometry*>(rhs.geometry);
   this->geometry = reinterpret_cast<ssd_connection_geometry_t*>(geometry_);
 }
 
@@ -259,19 +259,19 @@ oms2::Connection& oms2::Connection::operator=(const oms2::Connection& rhs)
   this->conB = new char[strlen(rhs.conB)+1];
   strcpy(this->conB, rhs.conB);
 
-  oms2::ssd::ConnectionGeometry* geometry_ = new oms2::ssd::ConnectionGeometry();
-  *geometry_ = *reinterpret_cast<oms2::ssd::ConnectionGeometry*>(rhs.geometry);
+  oms3::ssd::ConnectionGeometry* geometry_ = new oms3::ssd::ConnectionGeometry();
+  *geometry_ = *reinterpret_cast<oms3::ssd::ConnectionGeometry*>(rhs.geometry);
   this->geometry = reinterpret_cast<ssd_connection_geometry_t*>(geometry_);
 
   return *this;
 }
 
-void oms2::Connection::setGeometry(const oms2::ssd::ConnectionGeometry* newGeometry)
+void oms2::Connection::setGeometry(const oms3::ssd::ConnectionGeometry* newGeometry)
 {
-  oms2::ssd::ConnectionGeometry* geometry_ = reinterpret_cast<oms2::ssd::ConnectionGeometry*>(this->geometry);
+  oms3::ssd::ConnectionGeometry* geometry_ = reinterpret_cast<oms3::ssd::ConnectionGeometry*>(this->geometry);
   if (geometry_)
     delete geometry_;
-  geometry_ = new oms2::ssd::ConnectionGeometry(*newGeometry);
+  geometry_ = new oms3::ssd::ConnectionGeometry(*newGeometry);
   this->geometry = reinterpret_cast<ssd_connection_geometry_t*>(geometry_);
 }
 
