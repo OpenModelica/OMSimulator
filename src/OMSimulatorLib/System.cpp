@@ -788,32 +788,6 @@ oms_status_enu_t oms3::System::addConnection(const oms3::ComRef& crefA, const om
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::System::updateConnection(const oms3::ComRef& crefA, const oms3::ComRef& crefB, const oms3_connection_t* connection)
-{
-  oms3::Connection *connection_ = getConnection(crefA, crefB);
-  if (connection_)
-  {
-    *connection_ = *(reinterpret_cast<const oms3::Connection*>(connection));
-    return oms_status_ok;
-  }
-
-  oms3::ComRef tailA(crefA);
-  oms3::ComRef headA = tailA.pop_front();
-
-  oms3::ComRef tailB(crefB);
-  oms3::ComRef headB = tailB.pop_front();
-
-  //If both A and B references the same subsystem, recurse into that subsystem
-  if (headA == headB)
-  {
-    auto subsystem = subsystems.find(headA);
-    if (subsystem != subsystems.end())
-      return subsystem->second->updateConnection(tailA, tailB, connection);
-  }
-
-  return logError_ConnectionNotInSystem(crefA, crefB, this);
-}
-
 oms_status_enu_t oms3::System::deleteConnection(const oms3::ComRef& crefA, const oms3::ComRef& crefB)
 {
   for (auto& connection : connections)
@@ -876,8 +850,8 @@ oms_status_enu_t oms3::System::addTLMConnection(const oms3::ComRef& crefA, const
   if (busA && busB)
   {
     //Create bus connection
-    connections.back() = new oms3::Connection(crefA,crefB,oms3_connection_tlm);
-    connections.back()->setTLMParameters(delay,alpha,linearimpedance,angularimpedance);
+    connections.back() = new oms3::Connection(crefA, crefB, oms3_connection_tlm);
+    connections.back()->setTLMParameters(delay, alpha, linearimpedance, angularimpedance);
     connections.push_back(NULL);
     busA->setDelay(delay);
     busB->setDelay(delay);
@@ -1129,6 +1103,33 @@ oms_status_enu_t oms3::System::setConnectionGeometry(const oms3::ComRef& crefA, 
     if (connection && connection->isEqual(crefA, crefB))
     {
       connection->setGeometry(geometry);
+      return oms_status_ok;
+    }
+
+  return logError_ConnectionNotInSystem(crefA, crefB, this);
+}
+
+
+oms_status_enu_t oms3::System::setTLMConnectionParameters(const ComRef &crefA, const ComRef &crefB, const oms3_tlm_connection_parameters_t* parameters)
+{
+  oms3::ComRef tailA(crefA);
+  oms3::ComRef headA = tailA.pop_front();
+
+  oms3::ComRef tailB(crefB);
+  oms3::ComRef headB = tailB.pop_front();
+
+  //If both A and B references the same subsystem, recurse into that subsystem
+  if (headA == headB)
+  {
+    auto subsystem = subsystems.find(headA);
+    if (subsystem != subsystems.end())
+      return subsystem->second->setTLMConnectionParameters(tailA, tailB, parameters);
+  }
+
+  for (auto& connection : connections)
+    if (connection && connection->isEqual(crefA, crefB))
+    {
+      connection->setTLMParameters(parameters);
       return oms_status_ok;
     }
 

@@ -104,13 +104,7 @@ oms3::Connection& oms3::Connection::operator=(const oms3::Connection& rhs)
   *geometry_ = *reinterpret_cast<oms3::ssd::ConnectionGeometry*>(rhs.geometry);
   this->geometry = reinterpret_cast<ssd_connection_geometry_t*>(geometry_);
 
-  if (this->tlmparameters) {
-    delete tlmparameters;
-    tlmparameters = NULL;
-  }
-  if (rhs.tlmparameters) {
-    setTLMParameters(rhs.tlmparameters->delay, rhs.tlmparameters->alpha, rhs.tlmparameters->linearimpedance, rhs.tlmparameters->angularimpedance);
-  }
+  setTLMParameters(rhs.tlmparameters);
 
   return *this;
 }
@@ -155,9 +149,21 @@ void oms3::Connection::setGeometry(const oms3::ssd::ConnectionGeometry* newGeome
   this->geometry = reinterpret_cast<ssd_connection_geometry_t*>(geometry_);
 }
 
+void oms3::Connection::setTLMParameters(const oms3_tlm_connection_parameters_t* parameters)
+{
+  if (tlmparameters)
+  {
+    delete tlmparameters;
+    tlmparameters = NULL;
+  }
+
+  if (parameters)
+    setTLMParameters(parameters->delay, parameters->alpha, parameters->linearimpedance, parameters->angularimpedance);
+}
+
 void oms3::Connection::setTLMParameters(double delay, double alpha, double linearimpedance, double angualrimpedance)
 {
-  if(!tlmparameters)
+  if (!tlmparameters)
     tlmparameters = new oms3_tlm_connection_parameters_t;
 
   tlmparameters->delay = delay;
@@ -165,7 +171,6 @@ void oms3::Connection::setTLMParameters(double delay, double alpha, double linea
   tlmparameters->linearimpedance = linearimpedance;
   tlmparameters->angularimpedance = angualrimpedance;
 }
-
 
 bool oms3::Connection::isEqual(const oms3::ComRef& signalA, const oms3::ComRef& signalB) const
 {

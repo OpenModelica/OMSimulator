@@ -356,10 +356,10 @@ typedef struct {
 } oms_connection_t;
 
 typedef struct {
-  oms3_connection_type_enu_t type;      ///< Connection type, e.g. TLM
-  char* conA;                          ///< Name of connector A
-  char* conB;                          ///< Name of connector B
-  ssd_connection_geometry_t* geometry; ///< Geometry information of the connection
+  oms3_connection_type_enu_t type;                 ///< Connection type, e.g. TLM
+  char* conA;                                      ///< Name of connector A
+  char* conB;                                      ///< Name of connector B
+  ssd_connection_geometry_t* geometry;             ///< Geometry information of the connection
   oms3_tlm_connection_parameters_t* tlmparameters; ///< TLM parameters (only for TLM connections)
 } oms3_connection_t;
 
