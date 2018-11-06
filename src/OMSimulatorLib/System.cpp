@@ -401,12 +401,12 @@ oms_status_enu_t oms3::System::importFromSSD(const pugi::xml_node& node)
         ComRef startConnector = ComRef(itConnectors->attribute("startConnector").as_string());
         ComRef endElement = ComRef(itConnectors->attribute("endElement").as_string());
         ComRef endConnector = ComRef(itConnectors->attribute("endConnector").as_string());
-        ComRef crefA = startElement;
-        if (!startConnector.isEmpty())
-          crefA = crefA + startConnector;
-        ComRef crefB = endElement;
-        if (!endConnector.isEmpty())
-          crefB = crefB + endConnector;
+        ComRef crefA = startConnector;
+        if (!startElement.isEmpty())
+          crefA = startElement + startConnector;
+        ComRef crefB = endConnector;
+        if (!endElement.isEmpty())
+          crefB = endElement + endConnector;
         if (oms_status_ok != addConnection(crefA, crefB))
           return logError("Failed to import " + std::string(oms2::ssd::ssd_connection));
         else
