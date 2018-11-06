@@ -1107,7 +1107,7 @@ oms_status_enu_t oms3::System::setConnectorGeometry(const oms3::ComRef& cref, co
   return logError("Connector " + std::string(cref) + " not found in system " + std::string(getCref()));
 }
 
-oms_status_enu_t oms3::System::setConnectionGeometry(const oms3::ComRef& crefA, const oms3::ComRef& crefB, const oms2::ssd::ConnectionGeometry *geometry)
+oms_status_enu_t oms3::System::setConnectionGeometry(const oms3::ComRef& crefA, const oms3::ComRef& crefB, const oms3::ssd::ConnectionGeometry *geometry)
 {
   oms3::ComRef tailA(crefA);
   oms3::ComRef headA = tailA.pop_front();
@@ -1561,7 +1561,7 @@ oms_status_enu_t oms3::System::importFromSSD_ConnectionGeometry(const pugi::xml_
     oms3::Connection *connection = getConnection(crefA, crefB);
     if (connection)
     {
-      oms2::ssd::ConnectionGeometry geometry;
+      oms3::ssd::ConnectionGeometry geometry;
       geometry.importFromSSD(connectionGeometryNode);
       connection->setGeometry(&geometry);
     }

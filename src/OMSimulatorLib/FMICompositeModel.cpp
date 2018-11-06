@@ -236,7 +236,7 @@ oms_status_enu_t oms2::FMICompositeModel::loadConnections(const pugi::xml_node& 
         // import ssd:ConnectionGeometry
         if (std::string(child.name()) == oms2::ssd::ssd_connection_geometry)
         {
-          oms2::ssd::ConnectionGeometry geometry;
+          oms3::ssd::ConnectionGeometry geometry;
           std::string pointsXStr = child.attribute("pointsX").as_string();
           std::istringstream pointsXStream(pointsXStr);
           std::vector<std::string> pointsXVector(std::istream_iterator<std::string>{pointsXStream}, std::istream_iterator<std::string>());
@@ -1730,7 +1730,7 @@ oms_status_enu_t oms2::FMICompositeModel::updateInputs(oms2::DirectedGraph& grap
          getReal(graph.nodes[output].getSignalRef(), value);
          setReal(graph.nodes[input].getSignalRef(), value);
         //std::cout << "[time " << time << "] " << graph.nodes[output].getSignalRef().toString() << " -> " << graph.nodes[input].getSignalRef().toString() << " (value: " << value << ")" << std::endl;
-      } else //if (graph.nodes[output].isTypeInteger()) 
+      } else //if (graph.nodes[output].isTypeInteger())
       {
         int value=0;
         getInteger(graph.nodes[output].getSignalRef(), value);
