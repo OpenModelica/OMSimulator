@@ -114,7 +114,6 @@ oms_status_enu_t oms3_setWorkingDirectory(const char* newWorkingDir);
 oms_status_enu_t oms3_simulate_asynchronous(const char* cref, void (*cb)(const char* cref, double time, oms_status_enu_t status));
 oms_status_enu_t oms3_simulate(const char* cref);
 oms_status_enu_t oms3_terminate(const char* cref);
-oms_status_enu_t oms3_updateConnection(const char* crefA, const char* crefB, const oms3_connection_t* connection);
 
 /* not implemented yet */
 oms_status_enu_t oms3_setSimulationInformation(const char* cref, ssd_simulation_information_t* info);
