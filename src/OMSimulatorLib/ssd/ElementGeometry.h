@@ -74,6 +74,7 @@ namespace oms3
       bool getIconFixedAspectRatio() const {return iconFixedAspectRatio;}
 
       oms_status_enu_t exportToSSD(pugi::xml_node& root) const;
+      oms_status_enu_t importFromSSD(const pugi::xml_node& node);
     };
   }
 }
