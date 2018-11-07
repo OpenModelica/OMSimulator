@@ -184,7 +184,8 @@ oms_status_enu_t oms3::SystemTLM::stepUntil(double stopTime, void (*cb)(const ch
   std::vector<std::thread> fmiConnectThreads;
   for(auto it = getSubSystems().begin(); it!=getSubSystems().end(); ++it) {
     System* subsystem = it->second;
-    fmiConnectThreads.push_back(std::thread(&oms3::SystemTLM::connectToSockets, this, subsystem->getCref(), server));
+    ComRef syscref = subsystem->getCref();
+    fmiConnectThreads.push_back(std::thread(&oms3::SystemTLM::connectToSockets, this, syscref, server));
   }
   for(auto &thread : fmiConnectThreads)
     thread.join();
@@ -193,11 +194,12 @@ oms_status_enu_t oms3::SystemTLM::stepUntil(double stopTime, void (*cb)(const ch
       return logError("Failed to connect TLM subsystem: "+std::string(it->second->getCref()));
   }
 
-  logInfo("Initializing TLM submodels (sequential)");
+  logInfo("Initializing TLM submodels (threaded)");
   std::vector<std::thread> fmiInitializeThreads;
   for(auto it = getSubSystems().begin(); it!=getSubSystems().end(); ++it) {
     System *subsystem = it->second;
-    fmiInitializeThreads.push_back(std::thread(&oms3::SystemTLM::initializeSubSystem, this, subsystem->getCref()));
+    ComRef syscref = subsystem->getCref();
+    fmiInitializeThreads.push_back(std::thread(&oms3::SystemTLM::initializeSubSystem, this, syscref));
   }
   for(auto &thread : fmiInitializeThreads)
     thread.join();
@@ -207,13 +209,17 @@ oms_status_enu_t oms3::SystemTLM::stepUntil(double stopTime, void (*cb)(const ch
   }
 
   logInfo("Simulating TLM submodels (threaded).");
-  std::vector<std::thread> fmiModelThreads;
+  std::vector<std::thread> fmiSimulateThreads;
   for(auto it = getSubSystems().begin(); it!=getSubSystems().end(); ++it) {
     System* subsystem = it->second;
-    fmiModelThreads.push_back(std::thread(&oms3::SystemTLM::simulateSubSystem, this, subsystem->getCref(), stopTime));
+    ComRef syscref = subsystem->getCref();
+    fmiSimulateThreads.push_back(std::thread(&oms3::SystemTLM::simulateSubSystem, this, syscref, stopTime));
   }
-  for(auto &thread : fmiModelThreads)
+  for(auto &thread : fmiSimulateThreads)
     thread.join();
+
+  masterThread->join();
+  delete masterThread;
 
   logInfo("Disconnecting submodels from manager (threaded)");
   std::vector<std::thread> fmiDisconnectThreads;
@@ -223,9 +229,6 @@ oms_status_enu_t oms3::SystemTLM::stepUntil(double stopTime, void (*cb)(const ch
   }
   for(auto &thread : fmiDisconnectThreads)
     thread.join();
-
-  masterThread->join();
-  delete masterThread;
 
   logInfo("Simulation of TLM composite model "+std::string(getCref())+" complete.");
 
@@ -293,7 +296,6 @@ void oms3::SystemTLM::disconnectFromSockets(const oms3::ComRef cref)
     //Wait for close permission, to prevent socket from being
     //destroyed before master has read all data
     TLMPlugin *plugin = plugins.find(system)->second;
-    plugin->AwaitClosePermission();
     delete plugin;
     plugins[system] = nullptr;
   }
@@ -496,11 +498,14 @@ oms_status_enu_t oms3::SystemTLM::initializeSubSystem(oms3::ComRef cref)
 oms_status_enu_t oms3::SystemTLM::simulateSubSystem(oms3::ComRef cref, double stopTime)
 {
   oms_status_enu_t status = getSubSystem(cref)->stepUntil(stopTime, NULL);
+  plugins[getSubSystem(cref)]->AwaitClosePermission();
   return status;
 }
 
 void oms3::SystemTLM::writeToSockets(SystemWC *system, double time, Component* component)
 {
+  socketMutexes[system].lock();
+
   TLMPlugin *plugin = plugins.find(system)->second;
   TLMBusConnector** tlmbuses = system->getTLMBusConnectors();
   for(int i=0; tlmbuses[i]; ++i)
@@ -553,10 +558,14 @@ void oms3::SystemTLM::writeToSockets(SystemWC *system, double time, Component* c
       plugin->SetMotion3D(bus->getId(), time, &x[0], &A[0], &v[0], &w[0]);
     }
   }
+
+  socketMutexes[system].unlock();
 }
 
 void oms3::SystemTLM::readFromSockets(SystemWC* system, double time, Component* component)
 {
+  socketMutexes[system].lock();
+
   TLMPlugin *plugin = plugins.find(system)->second;
   TLMBusConnector** tlmbuses = system->getTLMBusConnectors();
   for(int i=0; tlmbuses[i]; ++i)
@@ -693,4 +702,6 @@ void oms3::SystemTLM::readFromSockets(SystemWC* system, double time, Component* 
       system->setReal(bus->getConnector(tlmrefs.Zr), Zr);
     }
   }
+
+  socketMutexes[system].unlock();
 }

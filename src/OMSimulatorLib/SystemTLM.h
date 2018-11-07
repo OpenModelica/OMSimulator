@@ -89,6 +89,7 @@ namespace oms3
     std::map<ComRef, std::vector<double> > initialValues;
     std::mutex setConnectedMutex;
     std::mutex setInitializedMutex;
+    std::map<System*, std::mutex> socketMutexes;
 
     // simulation information
   };
