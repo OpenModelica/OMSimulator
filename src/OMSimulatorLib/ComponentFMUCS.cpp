@@ -270,6 +270,32 @@ oms3::Component* oms3::ComponentFMUCS::NewComponent(const pugi::xml_node& node, 
         component->connectors.push_back(oms3::Connector::NewConnector(*itConnectors));
       }
     }
+    else if(name == oms2::ssd::ssd_element_geometry)
+    {
+      oms3::ssd::ElementGeometry geometry;
+      double x1 = (*it).attribute("x1").as_double();
+      double y1 = (*it).attribute("y1").as_double();
+      double x2 = (*it).attribute("x2").as_double();
+      double y2 = (*it).attribute("y2").as_double();
+      geometry.setSizePosition(x1, y1, x2, y2);
+
+      double rotation = (*it).attribute("rotation").as_double();
+      geometry.setRotation(rotation);
+
+      std::string iconSource = (*it).attribute("iconSource").as_string();
+      geometry.setIconSource(iconSource);
+
+      double iconRotation = (*it).attribute("iconRotation").as_double();
+      geometry.setIconRotation(iconRotation);
+
+      bool iconFlip = (*it).attribute("iconFlip").as_bool();
+      geometry.setIconFlip(iconFlip);
+
+      bool iconFixedAspectRatio = (*it).attribute("iconFixedAspectRatio").as_bool();
+      geometry.setIconFixedAspectRatio(iconFixedAspectRatio);
+
+      component->setGeometry(geometry);
+    }
     else
     {
       logError_WrongSchema(name);
