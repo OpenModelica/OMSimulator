@@ -151,6 +151,9 @@ oms_status_enu_t oms3::ComponentTable::exportToSSD(pugi::xml_node& node) const
   node.append_attribute("source") = getPath().c_str();
   pugi::xml_node node_connectors = node.append_child(oms2::ssd::ssd_connectors);
 
+  if (element.getGeometry())
+    element.getGeometry()->exportToSSD(node);
+
   for (const auto& connector : connectors)
     if (connector)
       if (oms_status_ok != connector->exportToSSD(node_connectors))
