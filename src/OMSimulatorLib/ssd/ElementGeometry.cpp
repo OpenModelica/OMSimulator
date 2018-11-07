@@ -163,6 +163,25 @@ oms_status_enu_t oms3::ssd::ElementGeometry::exportToSSD(pugi::xml_node& root) c
   return oms_status_ok;
 }
 
+oms_status_enu_t oms3::ssd::ElementGeometry::importFromSSD(const pugi::xml_node& node)
+{
+  x1 = node.attribute("x1").as_double();
+  y1 = node.attribute("y1").as_double();
+  x2 = node.attribute("x2").as_double();
+  y2 = node.attribute("y2").as_double();
+
+  rotation = node.attribute("rotation").as_double();
+
+  std::string iconSource = node.attribute("iconSource").as_string();
+  setIconSource(iconSource);
+
+  iconRotation = node.attribute("iconRotation").as_double();
+  iconFlip = node.attribute("iconFlip").as_bool();
+  iconFixedAspectRatio = node.attribute("iconFixedAspectRatio").as_bool();
+
+  return oms_status_ok;
+}
+
 oms2::ssd::ElementGeometry::ElementGeometry()
 {
   logTrace();
