@@ -429,11 +429,14 @@ oms_status_enu_t oms3::ComponentFMUCS::terminate()
   fmi2_status_t fmistatus = fmi2_import_terminate(fmu);
   if (fmi2_status_ok != fmistatus)
     return logError_Termination(getCref());
+
+  fmi2_import_free_instance(fmu);
+  fmi2_import_destroy_dllfmu(fmu);
   return oms_status_ok;
 }
 
 oms_status_enu_t oms3::ComponentFMUCS::stepUntil(double stopTime)
-{  
+{
   System *topLevelSystem = getModel()->getTopLevelSystem();
 
   fmi2_status_t fmistatus;
