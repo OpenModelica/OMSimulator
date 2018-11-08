@@ -42,15 +42,10 @@
 oms3::ExternalModel::ExternalModel(const oms3::ComRef& cref, System* parentSystem, const std::string& path, const std::string& startscript)
   : oms3::Component(cref, oms_component_external, parentSystem, path), startscript(startscript)
 {
-  tlmbusconnectors.push_back(NULL);
-  element.setTLMBusConnectors(&tlmbusconnectors[0]);
 }
 
 oms3::ExternalModel::~ExternalModel()
 {
-  for (const auto tlmbusconnector : tlmbusconnectors)
-    if(tlmbusconnector)
-      delete tlmbusconnector;
 }
 
 oms3::ExternalModel* oms3::ExternalModel::NewComponent(const oms3::ComRef& cref, System* parentSystem, const std::string& path, const std::string& startscript)
@@ -63,27 +58,6 @@ oms3::ExternalModel* oms3::ExternalModel::NewComponent(const oms3::ComRef& cref,
 
   oms3::ExternalModel* model = new oms3::ExternalModel(cref, parentSystem, path, startscript);
   return model;
-}
-
-oms_status_enu_t oms3::ExternalModel::addTLMBus(const oms3::ComRef &cref, const std::string domain, const int dimensions, const oms_tlm_interpolation_t interpolation)
-{
-  if(!cref.isValidIdent()) {
-    return logError("Not a valid ident: "+std::string(cref));
-  }
-  oms3::TLMBusConnector* bus = new oms3::TLMBusConnector(cref, domain, dimensions, interpolation);
-  tlmbusconnectors.back() = bus;
-  tlmbusconnectors.push_back(NULL);
-  element.setTLMBusConnectors(&tlmbusconnectors[0]);
-  return oms_status_ok;
-}
-
-oms3::TLMBusConnector *oms3::ExternalModel::getTLMBusConnector(const oms3::ComRef &cref)
-{
-  for(auto &tlmbusconnector : tlmbusconnectors) {
-    if(tlmbusconnector && tlmbusconnector->getName() == cref)
-      return tlmbusconnector;
-  }
-  return NULL;
 }
 
 oms_status_enu_t oms3::ExternalModel::setRealParameter(const std::string &var, double value)

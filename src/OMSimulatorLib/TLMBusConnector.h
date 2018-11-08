@@ -97,7 +97,7 @@ typedef struct  {
   class TLMBusConnector : protected oms3_tlmbusconnector_t
   {
   public:
-    TLMBusConnector(const oms3::ComRef& name, const std::string domain, const int dimensions, const oms_tlm_interpolation_t interpolation, System* parentSystem=nullptr);
+    TLMBusConnector(const oms3::ComRef& name, const std::string domain, const int dimensions, const oms_tlm_interpolation_t interpolation, System* parentSystem=nullptr, Component* component=nullptr);
     ~TLMBusConnector();
 
     oms_status_enu_t exportToSSD(pugi::xml_node& root) const;
@@ -108,6 +108,12 @@ typedef struct  {
 
     void setName(const oms3::ComRef& name);
     void setGeometry(const oms2::ssd::ConnectorGeometry* newGeometry);
+
+    void setReal(int i, double value);
+    void getReal(int i, double &value);
+    void setReals(std::vector<int> i, std::vector<double> values);
+    void getReals(std::vector<int> i, std::vector<double>& values);
+    void setRealInputDerivatives(int i, int order, double value);
 
     const oms3::ComRef getName() const {return oms3::ComRef(name);}
     const std::string getDomain() const {return domain;}
@@ -128,10 +134,12 @@ typedef struct  {
     int getId() const {return id;}
 
     oms3::Component* getComponent();
+    oms3::TLMBusConnector* getActualBus();
 
   private:
     void updateVariableTypes();
-    oms3::Component *getComponent(const ComRef &conA, System *system) const;
+    oms3::Component* getComponent(const ComRef &conA, System *system) const;
+    oms3::TLMBusConnector* getActualBus(ComRef cref, System *system);
 
     oms_causality_enu_t causality;
     std::map<std::string, oms3::ComRef> connectors;
@@ -139,6 +147,7 @@ typedef struct  {
     std::vector<std::string> variableTypes; //Used to keep track of TLM variable types
     System* parentSystem;
     Component* component = nullptr;
+    TLMBusConnector *actualBus = nullptr;
 
     int id;
   };

@@ -6,8 +6,8 @@
 #include <cstring>
 #include <algorithm>
 
-oms3::TLMBusConnector::TLMBusConnector(const oms3::ComRef &name, const std::string domain, const int dimensions, const oms_tlm_interpolation_t interpolation, System* parentSystem)
-  : parentSystem(parentSystem)
+oms3::TLMBusConnector::TLMBusConnector(const oms3::ComRef &name, const std::string domain, const int dimensions, const oms_tlm_interpolation_t interpolation, System* parentSystem, Component *component)
+  : parentSystem(parentSystem), component(component)
 {
   std::string str(name);
   this->name = new char[str.size()+1];
@@ -138,6 +138,51 @@ void oms3::TLMBusConnector::setGeometry(const oms2::ssd::ConnectorGeometry *newG
     this->geometry = reinterpret_cast<ssd_connector_geometry_t*>(new oms2::ssd::ConnectorGeometry(*newGeometry));
 }
 
+void oms3::TLMBusConnector::setReal(int i, double value)
+{
+  if(parentSystem)
+    parentSystem->setReal(getConnector(i), value);
+  else
+    getComponent()->setReal(getConnector(i), value);
+}
+
+void oms3::TLMBusConnector::getReal(int i, double &value)
+{
+  if(parentSystem)
+    parentSystem->getReal(getConnector(i), value);
+  else
+    getComponent()->getReal(getConnector(i), value);
+}
+
+void oms3::TLMBusConnector::setReals(std::vector<int> i, std::vector<double> values)
+{
+  if(parentSystem) {
+    for(int j=0; j<i.size(); ++j)
+      parentSystem->setReal(getConnector(i[j]),values[j]);
+  }
+  else {
+    for(int j=0; j<i.size(); ++j)
+      getComponent()->setReal(getConnector(i[j]),values[j]);
+  }
+}
+
+void oms3::TLMBusConnector::getReals(std::vector<int> i, std::vector<double> &values)
+{
+  if(parentSystem) {
+    for(int j=0; j<i.size(); ++j)
+      parentSystem->getReal(getConnector(i[j]),values[j]);
+  }
+  else {
+    for(int j=0; j<i.size(); ++j)
+      getComponent()->getReal(getConnector(i[j]),values[j]);
+  }
+}
+
+void oms3::TLMBusConnector::setRealInputDerivatives(int i, int order, double value)
+{
+  logError_NotImplemented;
+}
+
 oms3::ComRef oms3::TLMBusConnector::getConnector(int id) const
 {
   return sortedConnectors[id];
@@ -190,8 +235,8 @@ void oms3::TLMBusConnector::sortConnectors()
 
 oms_status_enu_t oms3::TLMBusConnector::registerToSockets(TLMPlugin *plugin)
 {
-  if(sortedConnectors.empty())
-    return logError("All required connectors not added to TLM bus");
+  if(sortedConnectors.empty() && (getActualBus() == this))
+    return logError_NoConnectorsInTLMBus(getName());
 
   //OMTLMSimulator uses degrees of freedom as "dimensions",
   //so convert to this:
@@ -219,7 +264,7 @@ oms_status_enu_t oms3::TLMBusConnector::registerToSockets(TLMPlugin *plugin)
 /**
  * \brief Recurse into specified system and find component connected to conA
  */
-oms3::Component *oms3::TLMBusConnector::getComponent(const ComRef& con, System* system) const
+oms3::Component* oms3::TLMBusConnector::getComponent(const ComRef& con, System* system) const
 {
   Connection** connections = system->getConnections(ComRef(""));
   for(int i=0; connections[i]; ++i) {
@@ -249,15 +294,57 @@ oms3::Component *oms3::TLMBusConnector::getComponent(const ComRef& con, System* 
 /**
  * \brief Recursively find component (i.e. FMU) connected to the TLM bus. Return NULL if not found.
  */
-oms3::Component *oms3::TLMBusConnector::getComponent()
+oms3::Component* oms3::TLMBusConnector::getComponent()
 {
-  if(!parentSystem)
+  if(!component && !parentSystem)
     return nullptr;
 
   if(!component)
     component = getComponent(sortedConnectors[0], parentSystem); //Store pointer for performance reasons
 
   return component;
+}
+
+oms3::TLMBusConnector* oms3::TLMBusConnector::getActualBus()
+{
+  if(!actualBus && !parentSystem)
+    actualBus = this;
+  else if(!actualBus)
+    actualBus = getActualBus(getName(), parentSystem);
+
+  return actualBus;
+}
+
+oms3::TLMBusConnector* oms3::TLMBusConnector::getActualBus(ComRef cref, System *system)
+{
+  Connection** connections = system->getConnections(ComRef(""));
+  for(int i=0; connections[i]; ++i) {
+    ComRef subcref = ComRef("");
+    if(connections[i]->getSignalA() == cref) {
+      subcref = connections[i]->getSignalB();
+    }
+    else if(connections[i]->getSignalB() == cref) {
+      subcref = connections[i]->getSignalA();
+    }
+    else {
+      return this;
+    }
+
+    TLMBusConnector* subBus = system->getTLMBusConnector(subcref);
+    if(subBus) {
+      return subBus->getActualBus();
+    }
+    ComRef subhead = subcref.pop_front();
+    System *subSystem = system->getSubSystem(subhead);
+    if(subSystem)
+      return subSystem->getTLMBusConnector(subcref)->getActualBus();
+    Component *component = system->getComponent(subhead);
+    if(component) {
+      return component->getTLMBusConnector(subcref)->getActualBus();
+    }
+  }
+
+  return nullptr; //Should never happen
 }
 
 void oms3::TLMBusConnector::updateVariableTypes()
@@ -327,9 +414,9 @@ void oms3::TLMBusConnector::updateConnectors()
 
   int i=0;
   for (const auto connector : connectors) {
-    connectornames[i] = new char[sizeof(connector.second.c_str())+1];
+    connectornames[i] = new char[strlen(connector.second.c_str())+1];
     strcpy(connectornames[i], connector.second.c_str());
-    connectortypes[i] = new char[sizeof(connector.first.c_str())+1];
+    connectortypes[i] = new char[strlen(connector.first.c_str())+1];
     strcpy(connectortypes[i], connector.first.c_str());
     ++i;
   }
