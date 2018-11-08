@@ -1947,6 +1947,10 @@ oms_status_enu_t oms2::Scope::setMasterAlgorithm(const ComRef& cref, const std::
   {
     model->setMasterAlgorithm(oms2::MasterAlgorithm::PMRCHANNELM);
   }
+  else if (masterAlgorithm == "assc")
+  {
+    model->setMasterAlgorithm(oms2::MasterAlgorithm::ASSC);
+  }
   else {
     std::string message = std::string("Unsupported master algorithm ")
       + masterAlgorithm + std::string("\nFollowing master algorithms are supported:\n")
@@ -1963,6 +1967,116 @@ oms_status_enu_t oms2::Scope::setMasterAlgorithm(const ComRef& cref, const std::
   return oms_status_ok;
 }
 
+oms_status_enu_t oms2::Scope::addEventIndicator(const oms2::SignalRef& signal)
+{
+  logTrace();
+  ComRef cref=signal.getCref();
+
+  if (!cref.isIdent()) {
+    ComRef modelCref=cref.first();
+    Model* model=getModel(modelCref);
+    if (!model)
+      return logError_ModelNotInScope(cref.toString());   
+    
+    model -> addEventIndicator(signal);
+    
+    return oms_status_ok;
+  }
+
+  return oms_status_error;
+}
+
+oms_status_enu_t oms2::Scope::addTimeIndicator(const oms2::SignalRef& signal)
+{
+  logTrace();
+  ComRef cref=signal.getCref();
+
+  if (!cref.isIdent()) {
+    ComRef modelCref=cref.first();
+    Model* model=getModel(modelCref);
+    if (!model)
+      return logError_ModelNotInScope(cref.toString());
+    
+    model -> addTimeIndicator(signal);
+    
+    return oms_status_ok;
+  }
+
+  return oms_status_error;
+}
+
+oms_status_enu_t oms2::Scope::addStaticValueIndicator(const oms2::SignalRef& signal, double lower, double upper, double stepSize) 
+{
+  logTrace();
+  ComRef cref=signal.getCref();
+
+  if (!cref.isIdent()) {
+    ComRef modelCref=cref.first();
+    Model* model=getModel(modelCref);
+    if (!model)
+      return logError_ModelNotInScope(cref.toString());
+    
+    model -> addStaticValueIndicator(signal,lower,upper,stepSize);
+    
+    return oms_status_ok;
+  }
+
+  return oms_status_error;
+}
+
+oms_status_enu_t oms2::Scope::addDynamicValueIndicator(const oms2::SignalRef& signal, const oms2::SignalRef& lower, const oms2::SignalRef& upper, double stepSize)
+{
+  logTrace();
+  ComRef cref=signal.getCref();
+
+  if (!cref.isIdent()) {
+    ComRef modelCref=cref.first();
+    Model* model=getModel(modelCref);
+    if (!model)
+      return logError_ModelNotInScope(cref.toString());
+    
+    model -> addDynamicValueIndicator(signal,lower,upper,stepSize);
+    
+    return oms_status_ok;
+  }
+
+  return oms_status_error;
+}
+   
+
+oms_status_enu_t oms2::Scope::setMinimalStepSize(const ComRef& cref, double min)
+{
+  logTrace();
+
+  if (cref.isIdent()) {
+    Model* model = getModel(cref);
+    if (!model)
+      return logError_ModelNotInScope(cref.toString());
+
+    model -> setMinimalStepSize(min);
+
+    return oms_status_ok;
+  }
+
+  return oms_status_error;
+}
+
+oms_status_enu_t oms2::Scope::setMaximalStepSize(const ComRef& cref, double max)
+{
+  logTrace();
+
+  if (cref.isIdent()) {
+    Model* model = getModel(cref);
+    if (!model)
+      return logError_ModelNotInScope(cref.toString());
+
+    model -> setMaximalStepSize(max);
+
+    return oms_status_ok;
+  }
+
+  return oms_status_error;
+}
 
 oms_status_enu_t oms2::Scope::setActivationRatio(const ComRef& cref, int k)
 {

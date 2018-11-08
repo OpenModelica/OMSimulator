@@ -37,6 +37,8 @@
 #include "Element.h"
 #include "ResultWriter.h"
 #include "Types.h"
+#include "StepSizeConfiguration.h"
+
 #include <pugixml.hpp>
 
 namespace oms3
@@ -137,8 +139,10 @@ namespace oms3
 #include "FMICompositeModel.h"
 #include "TLMCompositeModel.h"
 #include "ssd/SystemGeometry.h"
+#include "SignalRef.h"
 
 #include <string>
+#include <vector>
 
 namespace oms2
 {
@@ -172,6 +176,17 @@ namespace oms2
     oms3::ResultWriter *getResultWriter() const {return resultFile;}
     void setMasterAlgorithm(MasterAlgorithm value) {masterAlgorithm = value;}
     MasterAlgorithm getMasterAlgorithm() const {return masterAlgorithm;}
+    //Functions for configuring adaptive step size control
+    StepSizeConfiguration getStepSizeConfiguration() {return stepSizeConfiguration;};
+    void setMinimalStepSize(double min) {stepSizeConfiguration.setMinimalStepSize(min);}
+    void setMaximalStepSize(double max) {stepSizeConfiguration.setMaximalStepSize(max);}
+    void addEventIndicator(const oms2::SignalRef& signal) {stepSizeConfiguration.addEventIndicator(signal);};
+    void addTimeIndicator(const oms2::SignalRef& signal) {stepSizeConfiguration.addTimeIndicator(signal);};
+    void addStaticValueIndicator(const oms2::SignalRef& signal, double lowerBound, double upperBound, double stepSize)
+      {stepSizeConfiguration.addStaticValueIndicator(signal,lowerBound,upperBound,stepSize);};
+    void addDynamicValueIndicator(const oms2::SignalRef& signal,const oms2::SignalRef& lower,const oms2::SignalRef& upper,double stepSize)
+      {stepSizeConfiguration.addDynamicValueIndicator(signal,lower,upper,stepSize);};
+    //
     void setTolerance(double value) {tolerance = value;}
     double getTolerance() const {return tolerance;}
 
@@ -219,6 +234,7 @@ namespace oms2
     unsigned int bufferSize = 1;
     oms3::ResultWriter *resultFile = NULL;
     MasterAlgorithm masterAlgorithm = MasterAlgorithm::STANDARD;  ///< master algorithm for FMI co-simulation, default MasterAlgorithm::STANDARD
+    StepSizeConfiguration stepSizeConfiguration;//Configuration data structure for step size control
 
     oms_modelState_enu_t modelState;  ///< internal model state, e.g. initialization state
   };
