@@ -156,6 +156,12 @@ namespace oms2
     oms_status_enu_t setLoggingInterval(const ComRef& cref, double loggingInterval);
     oms_status_enu_t setResultFile(const ComRef& cref, const std::string& filename, unsigned int bufferSize);
     oms_status_enu_t setMasterAlgorithm(const ComRef& cref, const std::string& masterAlgorithm);
+    oms_status_enu_t addEventIndicator(const oms2::SignalRef& signal);
+    oms_status_enu_t addTimeIndicator(const oms2::SignalRef& signal);
+    oms_status_enu_t addStaticValueIndicator(const oms2::SignalRef& signal, double lower, double upper, double stepSize);
+    oms_status_enu_t addDynamicValueIndicator(const oms2::SignalRef& signal, const oms2::SignalRef& lower, const oms2::SignalRef& upper, double stepSize);
+    oms_status_enu_t setMinimalStepSize(const ComRef& cref, double min);
+    oms_status_enu_t setMaximalStepSize(const ComRef& cref, double max); 
     oms_status_enu_t setActivationRatio(const ComRef& cref, int k);
     oms_status_enu_t exportCompositeStructure(const ComRef& cref, const std::string& filename);
     oms_status_enu_t exportDependencyGraphs(const ComRef& cref, const std::string& initialization, const std::string& simulation);

@@ -976,6 +976,10 @@ oms_status_enu_t oms2::FMICompositeModel::stepUntil(oms3::ResultWriter& resultWr
     status = oms2::stepUntilPMRChannel<oms2::PMRChannelM>(resultWriter, stopTime, communicationInterval, loggingInterval, this->getName().toString(), outputsGraph, subModels, realtime_sync);
     break;
 #endif
+  case MasterAlgorithm::ASSC :
+    logDebug("oms2::FMICompositeModel::stepUntil: Using master algorithm 'assc'");
+    status = stepUntilASSC(resultWriter, stopTime,communicationInterval,loggingInterval,realtime_sync);
+    break;
   default:
     logError("oms2::FMICompositeModel::stepUntil: Internal error: Request for using unknown master algorithm.");
   }
@@ -1141,6 +1145,173 @@ oms_status_enu_t oms2::FMICompositeModel::stepUntilPCTPL(oms3::ResultWriter& res
 }
 
 #endif // #if !defined(__arm__)
+
+oms_status_enu_t oms2::FMICompositeModel::stepUntilASSC(oms3::ResultWriter& resultWriter, double stopTime, double communicationInterval, double loggingInterval, bool realtime_sync)
+{
+  logTrace();
+  auto start = std::chrono::steady_clock::now();
+
+  StepSizeConfiguration ssc=oms2::Scope::GetInstance().getModel(getName())->getStepSizeConfiguration();
+  //store previous values of eventIndicators by type
+  std::vector<std::pair<oms2::SignalRef,double>> prevDoubleValues;
+  std::vector<std::pair<oms2::SignalRef,int>> prevIntValues;
+  std::vector<std::pair<oms2::SignalRef,bool>> prevBoolValues;
+  //get inital values of eventIndicators
+  for (auto const& sr: ssc.getEventIndicators()) {
+    oms2::Variable* var = getVariable(sr);
+    if (var->isTypeReal()) {
+      double value;
+      this -> getReal(sr,value);
+      prevDoubleValues.push_back(std::pair<oms2::SignalRef,double>(sr, value));
+    } else if (var->isTypeInteger()) {
+      int value;
+      this -> getInteger(sr,value);
+      prevIntValues.push_back(std::pair<oms2::SignalRef,int>(sr, value));
+    } else {//if its a bool value
+      bool value;
+      this -> getBoolean(sr,value);
+      prevBoolValues.push_back(std::pair<oms2::SignalRef,bool>(sr, value));
+    }
+  }
+  //global lower and upper bound
+  double min=ssc.getMinimalStepSize();
+  double max=ssc.getMaximalStepSize();
+
+  //start simulation
+  while (time<stopTime) {
+    double nextStepSize=max;
+    //detect events
+    bool event=false;
+    for (auto& pair:prevDoubleValues) {
+      double currVal;
+      this -> getReal(pair.first,currVal);
+      if (currVal != pair.second)
+      {
+        event=true;
+        pair.second=currVal;
+      }
+    }
+    for (auto& pair:prevIntValues) {
+      int currVal;
+      this -> getInteger(pair.first,currVal);
+      if (currVal != pair.second)
+      {
+        event=true;
+        pair.second=currVal;
+      }
+    }
+    for (auto& pair:prevBoolValues) {
+      bool currVal;
+      this -> getBoolean(pair.first,currVal);
+      if (currVal != pair.second)
+      {
+        event=true;
+        pair.second=currVal;
+      }
+    }
+
+    //if event was detected change step size to minimal, otherwise see other configuration parameters
+    if (event)
+    {
+      nextStepSize=min;
+    } else {
+      //check the next timed event
+      for (const auto& var:ssc.getTimeIndicators()) {
+        double nextEvent;
+        this -> getReal(var,nextEvent);
+        if (nextEvent>=time) //smaller values indicate inactivity
+        {
+          if (nextEvent-time<nextStepSize) {
+            nextStepSize=nextEvent-time;
+          }
+        } 
+      }
+
+      //check values for threshold crossing detection
+
+      for (const auto& pair:ssc.getStaticThresholds())
+      {
+        double sigval;
+        this -> getReal(pair.first,sigval);
+        for (const auto& interval:pair.second)
+        {
+          if (sigval>interval.lower && sigval <interval.upper)
+          {
+            if (interval.stepSize<nextStepSize)
+            {
+              nextStepSize=interval.stepSize;
+            }
+          }
+        }
+      }
+
+      for (const auto& pair:ssc.getDynamicThresholds())
+      {
+        double sigval;
+        this -> getReal(pair.first,sigval);
+        for (const auto& interval:pair.second)
+        {
+          double lower;
+          this -> getReal(interval.lower,lower);
+          double upper;
+          this -> getReal(interval.upper, upper);
+          if (sigval>lower && sigval<upper)
+          {
+            if (interval.stepSize<nextStepSize)
+            {
+              nextStepSize=interval.stepSize;
+            }
+          }
+        }
+      }
+
+
+      //ensure global bounds
+      if (nextStepSize<min) nextStepSize=min;
+      if (nextStepSize>max) nextStepSize=max;
+    }
+
+    time+=nextStepSize;
+    if (time>stopTime) {
+      time=stopTime;
+    }
+  
+    //copied from standard algorithm
+    for (const auto& it : subModels)
+      if (oms_component_fmu_old != it.second->getType())
+        it.second->doStep(time);
+
+    for (const auto& it : solvers)
+      it.second->doStep(time);
+    
+    if (realtime_sync)
+    {
+      auto now = std::chrono::steady_clock::now();
+      // seems a cast to a sufficient high resolution of time is necessary for avoiding truncation errors
+      auto next = start + std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(time));
+      std::chrono::duration<double> margin = next - now;
+      // std::cout << "[oms2::FMICompositeModel::stepUntilStandard] doStep: " << std::to_string(time  - communicationInterval) << "s -> " << std::to_string(time) << "s, real-time margin=" << std::to_string(margin.count()) << "s" << std::endl;
+      if (margin < std::chrono::duration<double>(0))
+        logError(std::string("[oms2::FMICompositeModel::stepUntilStandard] real-time frame overrun, time=") + std::to_string(time) + std::string("s, exceeded margin=") + std::to_string(margin.count()) + std::string("s\n"));
+
+      std::this_thread::sleep_until(next);
+    }
+
+    // input := output
+    if (loggingInterval >= 0.0 && time - tLastEmit >= loggingInterval)
+    {
+      if (loggingInterval <= 0.0)
+        emit(resultWriter);
+      updateInputs(outputsGraph);
+      emit(resultWriter);
+    }
+    else
+      updateInputs(outputsGraph);
+
+  }
+  
+  return oms_status_ok;
+}
 
 void oms2::FMICompositeModel::simulate_asynchronous(oms3::ResultWriter& resultWriter, double stopTime, double communicationInterval, double loggingInterval, void (*cb)(const char* ident, double time, oms_status_enu_t status))
 {
@@ -1610,6 +1781,24 @@ oms_status_enu_t oms2::FMICompositeModel::getInteger(const oms2::SignalRef& sr, 
   return status;
 }
 
+oms_status_enu_t oms2::FMICompositeModel::setBoolean(const oms2::SignalRef& sr, bool value)
+{
+  oms2::FMISubModel* model = getSubModel(sr.getCref());
+  if (!model)
+    return oms_status_error;
+
+  return model->setBoolean(sr, value);
+}
+
+oms_status_enu_t oms2::FMICompositeModel::getBoolean(const oms2::SignalRef& sr, bool& value)
+{
+  oms2::FMISubModel* model = getSubModel(sr.getCref());
+  if (!model)
+    return oms_status_error;
+
+  oms_status_enu_t status = model->getBoolean(sr, value);
+  return status;
+}
 
 oms_status_enu_t oms2::FMICompositeModel::setReal(const oms2::SignalRef& sr, double value)
 {

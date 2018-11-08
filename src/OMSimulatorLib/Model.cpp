@@ -688,6 +688,7 @@ oms_status_enu_t oms3::Model::cancelSimulation_asynchronous()
 #include "Scope.h"
 #include "ssd/Tags.h"
 #include "TLMCompositeModel.h"
+#include "StepSizeConfiguration.h"
 
 #include <regex>
 #include <thread>
@@ -696,7 +697,7 @@ oms_status_enu_t oms3::Model::cancelSimulation_asynchronous()
 #include <boost/filesystem.hpp>
 
 oms2::Model::Model(const oms2::ComRef& cref)
-  : systemGeometry(), resultFilename(cref.toString() + "_res.mat"), resultFile(NULL)
+  : systemGeometry(), resultFilename(cref.toString() + "_res.mat"), resultFile(NULL), stepSizeConfiguration()
 {
   logTrace();
   modelState = oms_modelState_instantiated;

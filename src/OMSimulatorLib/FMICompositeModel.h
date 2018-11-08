@@ -103,6 +103,9 @@ namespace oms2
     oms_status_enu_t setInteger(const oms2::SignalRef& sr, int value);
     oms_status_enu_t getInteger(const oms2::SignalRef& sr, int& value);
 
+    oms_status_enu_t setBoolean(const oms2::SignalRef& sr, bool value);
+    oms_status_enu_t getBoolean(const oms2::SignalRef& sr, bool& value);
+
     oms_status_enu_t setReal(const oms2::SignalRef& sr, double value);
     oms_status_enu_t setReals(const std::vector<oms2::SignalRef> &sr, std::vector<double> values);
     oms_status_enu_t getReal(const oms2::SignalRef& sr, double& value);
@@ -144,6 +147,7 @@ namespace oms2
 #if !defined(__arm__)
     oms_status_enu_t stepUntilPCTPL(oms3::ResultWriter& resultWriter, double stopTime, double communicationInterval, double loggingInterval, bool realtime_sync);
 #endif // if !defined(__arm__)
+    oms_status_enu_t stepUntilASSC(oms3::ResultWriter& resultWriter, double stopTime, double communicationInterval, double loggingInterval, bool realtime_sync);
     oms_status_enu_t updateDependencyGraphs();
 
 #if !defined(NO_TLM)

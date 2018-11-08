@@ -52,6 +52,7 @@ namespace oms2
     PMRCHANNELM, //!< Experimental parallel (multi-rate) communication channel approach using MUTEXES for synchronization
     // PMRTASKPOOLA, //!< Experimental parallel (multi-rate) approach using fixed number of tasks and ATOMIC variables and polling for synchronization
     // PMRTASKPOOLCV //!< Experimental parallel (multi-rate) approach using fixed number of tasks and CONDITION variables for synchronization
+    ASSC //!< Algorithm with adaptive step size control
   };
 
   /**
