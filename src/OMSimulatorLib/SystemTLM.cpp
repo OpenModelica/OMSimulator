@@ -277,9 +277,10 @@ oms_status_enu_t oms3::SystemTLM::connectToSockets(const oms3::ComRef cref, std:
 
   for (int i=0; tlmbuses[i]; ++i)
   {
-    oms_status_enu_t status = tlmbuses[i]->registerToSockets(plugin);
+    TLMBusConnector* bus = tlmbuses[i];
+    oms_status_enu_t status = bus->registerToSockets(plugin);
     if(status == oms_status_error) {
-      return logError("Failed to register interface "+std::string(cref)+"."+std::string(tlmbuses[i]->getName()));
+      return logError("Failed to register interface "+std::string(bus->getName()));
     }
   }
 
@@ -515,29 +516,32 @@ void oms3::SystemTLM::writeToSockets(SystemWC *system, double time, Component* c
   for(int i=0; tlmbuses[i]; ++i)
   {
     TLMBusConnector* bus = tlmbuses[i];
+    int id = bus->getId();      //Need socket ID from top-level bus
+    bus = bus->getActualBus();  //Communicate with actual bus
 
     if(component && component != bus->getComponent()) {
       continue; //Ignore FMUs not specified in vector
     }
+    component = bus->getComponent();
 
     if(bus->getDimensions() == 1 && bus->getCausality() == oms_causality_output) {
       oms_tlm_sigrefs_signal_t tlmrefs;
       double value;
       system->getReal(bus->getConnector(tlmrefs.y), value);
-      plugin->SetValueSignal(bus->getId(), time, value);
+      plugin->SetValueSignal(id, time, value);
     }
     else if(bus->getDimensions() == 1 && bus->getCausality() == oms_causality_bidir) {
       oms_tlm_sigrefs_1d_t tlmrefs;
       double state, flow, force;
-      system->getReal(bus->getConnector(tlmrefs.x), state);
-      system->getReal(bus->getConnector(tlmrefs.v), flow);
+      bus->getReal(tlmrefs.x, state);
+      bus->getReal(tlmrefs.v, flow);
 
       //Important: OMTLMSimulator assumes that GetForce is called
       //before SetMotion, in order to calculate the wave variable
-      plugin->GetForce1D(bus->getId(), time, flow, &force);
+      plugin->GetForce1D(id, time, flow, &force);
 
       //Send the resulting motion back to master
-      plugin->SetMotion1D(bus->getId(), time, state, flow);
+      plugin->SetMotion1D(id, time, state, flow);
     }
     else if(bus->getDimensions() == 3 && bus->getCausality() == oms_causality_bidir) {
 
@@ -556,10 +560,10 @@ void oms3::SystemTLM::writeToSockets(SystemWC *system, double time, Component* c
 
       //Important: OMTLMSimulator assumes that GetForce is called
       //before SetMotion, in order to calculate the wave variable
-      plugin->GetForce3D(bus->getId(), time, &x[0], &A[0], &v[0], &w[0], &f[0]);
+      plugin->GetForce3D(id, time, &x[0], &A[0], &v[0], &w[0], &f[0]);
 
       //Send the resulting motion back to master
-      plugin->SetMotion3D(bus->getId(), time, &x[0], &A[0], &v[0], &w[0]);
+      plugin->SetMotion3D(id, time, &x[0], &A[0], &v[0], &w[0]);
     }
   }
 
@@ -575,17 +579,20 @@ void oms3::SystemTLM::readFromSockets(SystemWC* system, double time, Component* 
   for(int i=0; tlmbuses[i]; ++i)
   {
     TLMBusConnector* bus = tlmbuses[i];
+    int id = bus->getId();      //Need socket ID from top-level bus
+    bus = bus->getActualBus();  //Communicate with actual bus
 
     if(component && component != bus->getComponent()) {
       continue; //Ignore FMUs not specified in vector
     }
+    component = bus->getComponent();
 
     if(bus->getDimensions() == 1 && bus->getCausality() == oms_causality_input) {
       oms_tlm_sigrefs_signal_t tlmrefs;
 
       double value;
-      plugin->GetValueSignal(bus->getId(), time, &value);
-      system->setReal(bus->getConnector(tlmrefs.y), value);
+      plugin->GetValueSignal(id, time, &value);
+      bus->setReal(tlmrefs.y, value);
     }
     else if(bus->getDimensions() == 1 && bus->getCausality() == oms_causality_bidir &&
             bus->getInterpolation() == oms_tlm_no_interpolation) {
@@ -594,33 +601,33 @@ void oms3::SystemTLM::readFromSockets(SystemWC* system, double time, Component* 
       double flow,effort;
 
       //Read position and speed from FMU
-      system->getReal(bus->getConnector(tlmrefs.v), flow);
+      bus->getReal(tlmrefs.v, flow);
 
       //Get interpolated force
-      plugin->GetForce1D(bus->getId(), time, flow, &effort);
+      plugin->GetForce1D(id, time, flow, &effort);
 
       if(bus->getDomain() != "hydraulic") {
           effort = -effort;
       }
 
       //Write force to FMU
-      system->setReal(bus->getConnector(tlmrefs.f), effort);
+      bus->setReal(tlmrefs.f, effort);
     }
     else if(bus->getDimensions() == 1 && bus->getCausality() == oms_causality_bidir &&
             bus->getInterpolation() == oms_tlm_coarse_grained) {
       oms_tlm_sigrefs_1d_cg_t tlmrefs;
 
       double impedance, wave;
-      plugin->GetWaveImpedance1D(bus->getId(), time, &impedance, &wave);
-      system->setReal(bus->getConnector(tlmrefs.c), wave);
-      system->setReal(bus->getConnector(tlmrefs.Z), impedance);
+      plugin->GetWaveImpedance1D(id, time, &impedance, &wave);
+      bus->setReal(tlmrefs.c, wave);
+      bus->setReal(tlmrefs.Z, impedance);
 
       double impedance2, wave2;
-      plugin->GetWaveImpedance1D(bus->getId(), time+system->getStepSize(), &impedance2, &wave2);
+      plugin->GetWaveImpedance1D(id, time+system->getStepSize(), &impedance2, &wave2);
 
       double dWave = (wave2-wave)/system->getStepSize();
 
-      system->setRealInputDerivatives(bus->getConnector(tlmrefs.c), 1, dWave);
+      bus->setRealInputDerivatives(tlmrefs.c, 1, dWave);
     }
     else if(bus->getDimensions() == 1 && bus->getCausality() == oms_causality_bidir &&
             bus->getInterpolation() == oms_tlm_fine_grained) {
@@ -631,14 +638,14 @@ void oms3::SystemTLM::readFromSockets(SystemWC* system, double time, Component* 
 
       double t = time;
       for(size_t i=0; i<10; ++i) {
-        plugin->GetWaveImpedance1D(bus->getId(), t, &impedance, &wave);
+        plugin->GetWaveImpedance1D(id, t, &impedance, &wave);
         t += system->getStepSize()/9;
 
-        system->setReal(bus->getConnector(tlmrefs.c[i]), wave);
-        system->setReal(bus->getConnector(tlmrefs.t[i]), t);
+        bus->setReal(tlmrefs.c[i], wave);
+        bus->setReal(tlmrefs.t[i], t);
       }
 
-      system->setReal(bus->getConnector(tlmrefs.Z), impedance);
+      bus->setReal(tlmrefs.Z, impedance);
     }
     else if(bus->getDimensions() == 3 && bus->getCausality() == oms_causality_bidir &&
             bus->getInterpolation() == oms_tlm_no_interpolation) {
@@ -652,37 +659,37 @@ void oms3::SystemTLM::readFromSockets(SystemWC* system, double time, Component* 
       std::vector<double> f(6,0);
 
       //Read position and speed from FMU
-      system->getReals(bus->getConnectors(tlmrefs.v), v);
-      system->getReals(bus->getConnectors(tlmrefs.w), w);
+      bus->getReals(tlmrefs.v, v);
+      bus->getReals(tlmrefs.w, w);
 
       //Get interpolated force
-      plugin->GetForce3D(bus->getId(), time,&x[0], &A[0], &v[0], &w[0], &f[0]);
+      plugin->GetForce3D(id, time,&x[0], &A[0], &v[0], &w[0], &f[0]);
 
       for(size_t i=0; i<6; ++i) {
         f[i] = -f[i];
       }
 
       //Write force to FMU
-      system->setReals(bus->getConnectors(tlmrefs.f), f);
+      bus->setReals(tlmrefs.f, f);
     }
     else if(bus->getDimensions() == 3 && bus->getCausality() == oms_causality_bidir &&
             bus->getInterpolation() == oms_tlm_coarse_grained) {
       oms_tlm_sigrefs_3d_cg_t tlmrefs;
       std::vector<double> waves(6,0);
       double Zt, Zr;
-      plugin->GetWaveImpedance3D(bus->getId(), time, &Zt, &Zr, &waves[0]);
-      system->setReals(bus->getConnectors(tlmrefs.c), waves);
-      system->setReal(bus->getConnector(tlmrefs.Zt), Zt);
-      system->setReal(bus->getConnector(tlmrefs.Zr), Zr);
+      plugin->GetWaveImpedance3D(id, time, &Zt, &Zr, &waves[0]);
+      bus->setReals(tlmrefs.c, waves);
+      bus->setReal(tlmrefs.Zt, Zt);
+      bus->setReal(tlmrefs.Zr, Zr);
 
       std::vector<double> waves2(6,0);
       double Zt2, Zr2;
-      plugin->GetWaveImpedance3D(bus->getId(), time+system->getStepSize(), &Zt2, &Zr2, &waves2[0]);
+      plugin->GetWaveImpedance3D(id, time+system->getStepSize(), &Zt2, &Zr2, &waves2[0]);
 
       std::vector<double> dWaves(6,0);
       for(size_t i=0; i<6; ++i) {
         double dWave = (waves2[i]-waves[i])/system->getStepSize();
-        system->setRealInputDerivatives(bus->getConnector(tlmrefs.c[i]), 1, dWave);
+        bus->setRealInputDerivatives(tlmrefs.c[i], 1, dWave);
       }
     }
     else if(bus->getDimensions() == 3 && bus->getCausality() == oms_causality_bidir &&
@@ -695,15 +702,15 @@ void oms3::SystemTLM::readFromSockets(SystemWC* system, double time, Component* 
       double t = time;
 
       for(size_t i=0; i<10; ++i) {
-        plugin->GetWaveImpedance3D(bus->getId(), t, &Zt, &Zr, &waves[0]);
+        plugin->GetWaveImpedance3D(id, t, &Zt, &Zr, &waves[0]);
         t += system->getStepSize()/9;
 
-        system->setReals(bus->getConnectors(tlmrefs.c[i]), waves);
-        system->setReal(bus->getConnector(tlmrefs.t[i]), t);
+        bus->setReals(tlmrefs.c[i], waves);
+        bus->setReal(tlmrefs.t[i], t);
       }
 
-      system->setReal(bus->getConnector(tlmrefs.Zt), Zt);
-      system->setReal(bus->getConnector(tlmrefs.Zr), Zr);
+      bus->setReal(tlmrefs.Zt, Zt);
+      bus->setReal(tlmrefs.Zr, Zr);
     }
   }
 

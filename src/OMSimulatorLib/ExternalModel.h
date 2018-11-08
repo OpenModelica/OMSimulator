@@ -50,8 +50,6 @@ namespace oms3
     ~ExternalModel();
     static ExternalModel* NewComponent(const oms3::ComRef& cref, System* parentSystem, const std::string& path, const std::string& startscript);
 
-    oms_status_enu_t addTLMBus(const oms3::ComRef& cref, const std::string domain, const int dimensions, const oms_tlm_interpolation_t interpolation);
-    oms3::TLMBusConnector *getTLMBusConnector(const oms3::ComRef &cref);
     oms_status_enu_t setRealParameter(const std::string& var, double value);
     oms_status_enu_t getRealParameter(const std::string& var, double& value);
     const std::string& getStartScript() const {return startscript;}
@@ -77,7 +75,6 @@ namespace oms3
   private:
     std::string startscript;
     std::map<std::string, oms3::Option<double>> realParameters;
-    std::vector<oms3::TLMBusConnector*> tlmbusconnectors;
   };
 }
 

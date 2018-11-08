@@ -727,6 +727,9 @@ oms3::TLMBusConnector* oms3::System::getTLMBusConnector(const oms3::ComRef& cref
   auto subsystem = subsystems.find(head);
   if (subsystem != subsystems.end())
     return subsystem->second->getTLMBusConnector(tail);
+  auto component = components.find(head);
+  if (component != components.end())
+    return component->second->getTLMBusConnector(tail);
 
   if (!cref.isValidIdent())
   {
@@ -769,6 +772,20 @@ oms_status_enu_t oms3::System::addConnection(const oms3::ComRef& crefA, const om
     auto subsystem = subsystems.find(headA);
     if (subsystem != subsystems.end())
       return subsystem->second->addConnection(tailA,tailB);
+  }
+
+  // check if it is an internal connection between TLM buses
+  TLMBusConnector* tlmA = getTLMBusConnector(crefA);
+  TLMBusConnector* tlmB = getTLMBusConnector(crefB);
+  if(tlmA && tlmB)
+  {
+    if (getConnection(crefA, crefB))
+      return logError_ConnectionExistsAlready(crefA, crefB, this);
+
+    // create connection between TLM buses (NOT a TLM connection)
+    connections.back() = new oms3::Connection(crefA, crefB, oms3_connection_bus);
+    connections.push_back(NULL);
+    return oms_status_ok;
   }
 
   // first check if it is a bus connection
@@ -948,12 +965,10 @@ oms_status_enu_t oms3::System::addTLMBus(const oms3::ComRef& cref, const std::st
   if (subsystem != subsystems.end())
     return subsystem->second->addTLMBus(tail, domain, dimensions, interpolation);
 
-  auto externalmodel = components.find(head);
-  if (externalmodel != components.end())
+  auto component = components.find(head);
+  if (component != components.end())
   {
-    if (oms_component_external != externalmodel->second->getType())
-      return logError_OnlyForExternalModels;
-    return dynamic_cast<ExternalModel*>(externalmodel->second)->addTLMBus(tail, domain, dimensions, interpolation);
+    return component->second->addTLMBus(tail, domain, dimensions, interpolation);
   }
 
   if (type == oms_system_tlm)
@@ -1035,6 +1050,10 @@ oms_status_enu_t oms3::System::addConnectorToTLMBus(const oms3::ComRef& busCref,
     auto subsystem = subsystems.find(busHead);
     if (subsystem != subsystems.end())
       return subsystem->second->addConnectorToTLMBus(busTail,connectorTail,type);
+
+    auto component = components.find(busHead);
+    if (component != components.end())
+      return component->second->addConnectorToTLMBus(busTail,connectorTail,type);
   }
 
   if (this->type == oms_system_tlm)
@@ -1072,6 +1091,10 @@ oms_status_enu_t oms3::System::deleteConnectorFromTLMBus(const oms3::ComRef& bus
     auto subsystem = subsystems.find(busHead);
     if(subsystem != subsystems.end())
       return subsystem->second->deleteConnectorFromTLMBus(busTail,connectorTail);
+
+    auto component = components.find(busHead);
+    if(component != components.end())
+      return component->second->deleteConnectorFromTLMBus(busTail,connectorTail);
   }
 
   if(!busTail.isEmpty() && !connectorTail.isEmpty() && busHead != connectorHead)
