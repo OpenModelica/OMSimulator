@@ -136,8 +136,10 @@ typedef struct  {
     oms3::Component* getComponent();
     oms3::TLMBusConnector* getActualBus();
 
+    static std::vector<std::string>  getVariableTypes(std::string domain, int dimensions, oms_tlm_interpolation_t interpolation);
+    static std::vector<std::string>  getVariableDescriptions(std::string domain, int dimensions, oms_tlm_interpolation_t interpolation);
+
   private:
-    void updateVariableTypes();
     oms3::Component* getComponent(const ComRef &conA, System *system) const;
     oms3::TLMBusConnector* getActualBus(ComRef cref, System *system);
 
