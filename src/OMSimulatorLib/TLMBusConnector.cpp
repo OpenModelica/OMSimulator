@@ -28,7 +28,7 @@ oms3::TLMBusConnector::TLMBusConnector(const oms3::ComRef &name, const std::stri
   connectornames = nullptr;
   connectortypes = nullptr;
 
-  updateVariableTypes();
+  variableTypes = TLMBusConnector::getVariableTypes(domain, dimensions, interpolation);
 }
 
 oms3::TLMBusConnector::~TLMBusConnector()
@@ -91,7 +91,7 @@ oms3::TLMBusConnector::TLMBusConnector(const oms3::TLMBusConnector &rhs)
   else
     this->geometry = NULL;
 
-  updateVariableTypes();
+  variableTypes = TLMBusConnector::getVariableTypes(domain, dimensions, interpolation);
 }
 
 oms3::TLMBusConnector &oms3::TLMBusConnector::operator=(const oms3::TLMBusConnector &rhs)
@@ -111,7 +111,7 @@ oms3::TLMBusConnector &oms3::TLMBusConnector::operator=(const oms3::TLMBusConnec
 
   this->setGeometry(reinterpret_cast<oms2::ssd::ConnectorGeometry*>(rhs.geometry));
 
-  updateVariableTypes();
+  variableTypes = TLMBusConnector::getVariableTypes(domain, dimensions, interpolation);
 
   return *this;
 }
@@ -347,49 +347,205 @@ oms3::TLMBusConnector* oms3::TLMBusConnector::getActualBus(ComRef cref, System *
   return nullptr; //Should never happen
 }
 
-void oms3::TLMBusConnector::updateVariableTypes()
+std::vector<std::string> oms3::TLMBusConnector::getVariableTypes(std::string domain, int dimensions, oms_tlm_interpolation_t interpolation)
 {
+  std::vector<std::string> types;
   if(std::string(domain) == "input" || std::string(domain) == "output") {
-    variableTypes = { "value" };
+    types = { "value" };
   }
   else if(dimensions == 1 && interpolation == oms_tlm_no_interpolation) {
-    variableTypes = { "state", "flow", "effort" };
+    types = { "state", "flow", "effort" };
   }
   else if(dimensions == 1 && interpolation == oms_tlm_coarse_grained) {
-    variableTypes = { "state", "flow", "wave", "impedance" };
+    types = { "state", "flow", "wave", "impedance" };
   }
   else if(dimensions == 1 && interpolation == oms_tlm_fine_grained) {
-    variableTypes = { "state", "flow",
-                     "wave1", "wave2", "wave3", "wave4", "wave5", "wave6", "wave7", "wave8", "wave9", "wave10",
-                     "time1", "time2", "time3", "time4", "time5", "time6", "time7", "time8", "time9", "time10",
-                     "impedance" };
+    types = { "state", "flow",
+              "wave1", "wave2", "wave3", "wave4", "wave5", "wave6", "wave7", "wave8", "wave9", "wave10",
+              "time1", "time2", "time3", "time4", "time5", "time6", "time7", "time8", "time9", "time10",
+              "impedance" };
   }
   else if(dimensions == 3 && interpolation == oms_tlm_no_interpolation) {
-    variableTypes = { "state1", "state2", "state3",
-                     "A11","A12","A13","A21","A22","A23","A31","A32","A33",
-                     "flow1", "flow2", "flow3", "flow4", "flow5", "flow6",
-                     "effort1", "effort2", "effort3", "effort4", "effort5", "effort6"};
+    types = { "state1", "state2", "state3",
+              "A11","A12","A13","A21","A22","A23","A31","A32","A33",
+              "flow1", "flow2", "flow3", "flow4", "flow5", "flow6",
+              "effort1", "effort2", "effort3", "effort4", "effort5", "effort6"};
   }
   else if(dimensions == 3 && interpolation == oms_tlm_coarse_grained) {
-    variableTypes = { "state1", "state2", "state3",
-                     "A11","A12","A13","A21","A22","A23","A31","A32","A33",
-                     "flow1", "flow2", "flow3", "flow4", "flow5", "flow6",
-                     "wave1", "wave2", "wave3", "wave4", "wave5", "wave6",
-                     "linearimpedance", "angularimpedance"};
+    types = { "state1", "state2", "state3",
+              "A11","A12","A13","A21","A22","A23","A31","A32","A33",
+              "flow1", "flow2", "flow3", "flow4", "flow5", "flow6",
+              "wave1", "wave2", "wave3", "wave4", "wave5", "wave6",
+              "linearimpedance", "angularimpedance"};
   }
   else if(dimensions == 3 && interpolation == oms_tlm_fine_grained) {
-    variableTypes = { "state1", "state2", "state3",
-                      "A11","A12","A13","A21","A22","A23","A31","A32","A33",
-                      "flow1", "flow2", "flow3", "flow4", "flow5", "flow6",
-                      "wave1_1", "wave2_1", "wave3_1", "wave4_1", "wave5_1", "wave6_1", "wave7_1", "wave8_1", "wave9_1", "wave 10_1",
-                      "wave1_2", "wave2_2", "wave3_2", "wave4_2", "wave5_2", "wave6_2", "wave7_2", "wave8_2", "wave9_2", "wave 10_2",
-                      "wave1_3", "wave2_3", "wave3_3", "wave4_3", "wave5_3", "wave6_3", "wave7_3", "wave8_3", "wave9_3", "wave 10_3",
-                      "wave1_4", "wave2_4", "wave3_4", "wave4_4", "wave5_4", "wave6_4", "wave7_4", "wave8_4", "wave9_4", "wave 10_4",
-                      "wave1_5", "wave2_5", "wave3_5", "wave4_5", "wave5_5", "wave6_5", "wave7_5", "wave8_5", "wave9_5", "wave 10_5",
-                      "wave1_6", "wave2_6", "wave3_6", "wave4_6", "wave5_6", "wave6_6", "wave7_6", "wave8_6", "wave9_6", "wave 10_6",
-                      "time1", "time2", "time3", "time4", "time5", "time6", "time7", "time8", "time9", "time10",
-                      "linearimpedance", "angularimpedance"};
+    types = { "state1", "state2", "state3",
+              "A11","A12","A13","A21","A22","A23","A31","A32","A33",
+              "flow1", "flow2", "flow3", "flow4", "flow5", "flow6",
+              "wave1_1", "wave2_1", "wave3_1", "wave4_1", "wave5_1", "wave6_1", "wave7_1", "wave8_1", "wave9_1", "wave 10_1",
+              "wave1_2", "wave2_2", "wave3_2", "wave4_2", "wave5_2", "wave6_2", "wave7_2", "wave8_2", "wave9_2", "wave 10_2",
+              "wave1_3", "wave2_3", "wave3_3", "wave4_3", "wave5_3", "wave6_3", "wave7_3", "wave8_3", "wave9_3", "wave 10_3",
+              "wave1_4", "wave2_4", "wave3_4", "wave4_4", "wave5_4", "wave6_4", "wave7_4", "wave8_4", "wave9_4", "wave 10_4",
+              "wave1_5", "wave2_5", "wave3_5", "wave4_5", "wave5_5", "wave6_5", "wave7_5", "wave8_5", "wave9_5", "wave 10_5",
+              "wave1_6", "wave2_6", "wave3_6", "wave4_6", "wave5_6", "wave6_6", "wave7_6", "wave8_6", "wave9_6", "wave 10_6",
+              "time1", "time2", "time3", "time4", "time5", "time6", "time7", "time8", "time9", "time10",
+              "linearimpedance", "angularimpedance"};
   }
+
+  return types;
+}
+
+std::vector<std::string> oms3::TLMBusConnector::getVariableDescriptions(std::string domain, int dimensions, oms_tlm_interpolation_t interpolation)
+{
+  std::string value = "variable";
+  std::string state = "state";
+  std::string flow = "flow";
+  std::string rotflow = "flow";
+  std::string effort = "effort";
+  std::string roteffort = "effort";
+  std::string wave = "wave variable";
+  std::string rotwave = "rotational wave";
+  std::string impedance = "impedance";
+  std::string rotimpedance = "rotational impedance";
+  std::string time = "time sample";
+  if(domain == "input") {
+    value = "input variable";
+  }
+  else if(domain == "output") {
+    value = "output variable";
+  }
+  else if(domain == "mechanical") {
+    state = "position";
+    flow = "speed";
+    rotflow = "angular speed";
+    effort = "force";
+    roteffort = "torque";
+    wave = "wave";
+    rotwave = "rotational wave";
+    impedance = "impedance";
+    rotimpedance = "rotational impedance";
+    time = "time sample";
+  }
+  else if(domain == "rotational") {
+    state = "angle";
+    flow = "angular speed";
+    effort = "torque";
+    wave = "wave";
+    impedance = "impedance";
+    time = "time sample";
+  }
+  else if(domain == "hydraulic") {
+    state = "volume";
+    flow = "volume flow";
+    effort = "pressure";
+    wave = "wave";
+    impedance = "impedance";
+    time = "time sample";
+  }
+  else if(domain == "electric") {
+    state = "charge";
+    flow = "current";
+    effort = "potential";
+    wave = "wave";
+    impedance = "impedance";
+    time = "time sample";
+  }
+
+  std::vector<std::string> types;
+  if(std::string(domain) == "input" || std::string(domain) == "output") {
+    types = { "Value variable" };
+  }
+  else if(dimensions == 1 && interpolation == oms_tlm_no_interpolation) {
+    types = { state, flow, effort };
+  }
+  else if(dimensions == 1 && interpolation == oms_tlm_coarse_grained) {
+    types = { state, flow, wave, impedance };
+  }
+  else if(dimensions == 1 && interpolation == oms_tlm_fine_grained) {
+    types = { state, flow };
+    for(int i=1; i<=10; ++i) {
+      types.push_back(wave + " at t = time("+std::to_string(i)+")");
+    }
+    for(int i=1; i<=10; ++i) {
+      types.push_back(time + " for interpolation");
+    }
+    types.push_back(impedance);
+  }
+  else if(dimensions == 3 && interpolation == oms_tlm_no_interpolation) {
+    types = { state+" (x-axis)", state+" (y-axis)", state+" (z-axis)"};
+    for(int i=1; i<=3; ++i)
+      for(int j=1;j<=3; ++j)
+        types.push_back("My cool Orientation matrix ["+std::to_string(i)+","+std::to_string(j)+"]");
+    types.push_back(flow+" (x-axis)");
+    types.push_back(flow+" (y-axis)");
+    types.push_back(flow+" (z-axis)");
+    types.push_back(rotflow+" (x-axis)");
+    types.push_back(rotflow+" (y-axis)");
+    types.push_back(rotflow+" (z-axis)");
+    types.push_back(effort+" (x-axis)");
+    types.push_back(effort+" (y-axis)");
+    types.push_back(effort+" (z-axis)");
+    types.push_back(roteffort+" (x-axis)");
+    types.push_back(roteffort+" (y-axis)");
+    types.push_back(roteffort+" (z-axis)");
+  }
+  else if(dimensions == 3 && interpolation == oms_tlm_coarse_grained) {
+    types = { state+" (x-axis)", state+" (y-axis)", state+" (z-axis)"};
+    for(int i=1; i<=3; ++i)
+      for(int j=1;j<=3; ++j)
+        types.push_back("Orientation matrix ["+std::to_string(i)+","+std::to_string(j)+"]");
+    types.push_back(flow+" (x-axis)");
+    types.push_back(flow+" (y-axis)");
+    types.push_back(flow+" (z-axis)");
+    types.push_back(rotflow+" (x-axis)");
+    types.push_back(rotflow+" (y-axis)");
+    types.push_back(rotflow+" (z-axis)");
+    types.push_back(wave+" (x-axis)");
+    types.push_back(wave+" (y-axis)");
+    types.push_back(wave+" (z-axis)");
+    types.push_back(rotwave+" (x-axis)");
+    types.push_back(rotwave+" (y-axis)");
+    types.push_back(rotwave+" (z-axis)");
+    types.push_back(impedance);
+    types.push_back(rotimpedance);
+  }
+  else if(dimensions == 3 && interpolation == oms_tlm_fine_grained) {
+    types = { state+" (x-axis)", state+" (y-axis)", state+" (z-axis)"};
+    for(int i=1; i<=3; ++i)
+      for(int j=1;j<=3; ++j)
+        types.push_back("Orientation matrix ["+std::to_string(i)+","+std::to_string(j)+"]");
+    types.push_back(flow+" (x-axis)");
+    types.push_back(flow+" (y-axis)");
+    types.push_back(flow+" (z-axis)");
+    types.push_back(rotflow+" (x-axis)");
+    types.push_back(rotflow+" (y-axis)");
+    types.push_back(rotflow+" (z-axis)");
+    for(int i=1; i<=10; ++i) {
+      types.push_back(wave + " at t = time"+std::to_string(i)+" (x-axis)");
+    }
+    for(int i=1; i<=10; ++i) {
+      types.push_back(wave + " at t = time"+std::to_string(i)+" (y-axis)");
+    }
+    for(int i=1; i<=10; ++i) {
+      types.push_back(wave + " at t = time"+std::to_string(i)+" (z-axis)");
+    }
+    for(int i=1; i<=10; ++i) {
+      types.push_back(rotwave + " at t = time"+std::to_string(i)+" (x-axis)");
+    }
+    for(int i=1; i<=10; ++i) {
+      types.push_back(rotwave + " at t = time"+std::to_string(i)+" (y-axis)");
+    }
+    for(int i=1; i<=10; ++i) {
+      types.push_back(rotwave + " at t = time"+std::to_string(i)+" (z-axis)");
+    }
+    for(int i=1; i<=10; ++i) {
+      types.push_back(time + " for interpolation");
+    }
+    types.push_back(impedance);
+    types.push_back(rotimpedance);
+  }
+
+  return types;
 }
 
 

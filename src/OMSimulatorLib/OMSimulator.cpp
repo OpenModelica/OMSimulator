@@ -45,6 +45,7 @@
 #include "SystemTLM.h"
 #include "Types.h"
 #include "Version.h"
+#include "TLMBusConnector.h"
 
 #include <string>
 #include <boost/filesystem.hpp>
@@ -1107,6 +1108,27 @@ oms_status_enu_t oms3_getModelState(const char* cref, oms_modelState_enu_t* mode
   return oms_status_ok;
 }
 
+oms_status_enu_t oms3_getTLMVariableTypes(const char *domain, const int dimensions, const oms_tlm_interpolation_t interpolation, char ***types, char ***descriptions)
+{
+  std::vector<std::string> variableTypes = oms3::TLMBusConnector::getVariableTypes(domain, dimensions, interpolation);
+  (*types) = new char*[variableTypes.size()+1];
+  for(int i=0; i<variableTypes.size(); ++i) {
+    (*types)[i] = new char[variableTypes[i].size()+1];
+    strcpy((*types)[i], variableTypes[i].c_str());
+  }
+  (*types)[variableTypes.size()] = NULL;
+
+  std::vector<std::string> variableDescriptions = oms3::TLMBusConnector::getVariableDescriptions(domain, dimensions, interpolation);
+  (*descriptions) = new char*[variableDescriptions.size()+1];
+  for(int i=0; i<variableDescriptions.size(); ++i) {
+    (*descriptions)[i] = new char[variableDescriptions[i].size()+1];
+    strcpy((*descriptions)[i], variableDescriptions[i].c_str());
+  }
+  (*descriptions)[variableDescriptions.size()] = NULL;
+
+  return oms_status_ok;
+}
+
 /* ************************************ */
 /* OMSimulator 2.0                      */
 /*                                      */
@@ -1696,3 +1718,4 @@ int oms2_exists(const char* cref)
   logTrace();
   return oms2::Scope::GetInstance().exists(oms2::ComRef(cref)) ? 1 : 0;
 }
+
