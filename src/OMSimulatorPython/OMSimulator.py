@@ -415,8 +415,6 @@ class OMSimulator:
     return self.obj.oms3_addTLMConnection(self.checkstring(crefA), self.checkstring(crefB), delay, alpha, linearimpedance, angularimpedance)
   def oms3_addExternalModel(self, cref, path, startscript):
     return self.obj.oms3_addExternalModel(self.checkstring(cref), self.checkstring(path), self.checkstring(startscript))
-  def oms3_addSubModel(self, cref, fmuPath):
-    return self.obj.oms3_addSubModel(self.checkstring(cref), self.checkstring(fmuPath))
   def oms3_instantiate(self, cref):
     return self.obj.oms3_instantiate(self.checkstring(cref))
   def oms3_initialize(self, cref):
