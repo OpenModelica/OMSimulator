@@ -386,53 +386,53 @@ class OMSimulator:
     #self.obj.oms2_freeMemory(contents)
     return [status, contents.value]
   def oms3_addSystem(self, ident, type):
-    return self.obj.oms3_addSystem(self.checkstring(ident), type);
+    return self.obj.oms3_addSystem(self.checkstring(ident), type)
   def oms3_copySystem(self, source, target):
     return self.obj.oms3_copySystem(self.checkstring(source), self.checkstring(target))
   def oms3_addSubModel(self, cref, fmuPath):
     return self.obj.oms3_addSubModel(self.checkstring(cref), self.checkstring(fmuPath))
   def oms3_addConnector(self, cref, causality, type):
-    return self.obj.oms3_addConnector(self.checkstring(cref), causality, type);
+    return self.obj.oms3_addConnector(self.checkstring(cref), causality, type)
   def oms3_setCommandLineOption(self, cmd):
-    return self.obj.oms3_setCommandLineOption(self.checkstring(cmd));
+    return self.obj.oms3_setCommandLineOption(self.checkstring(cmd))
   def oms3_addConnection(self, crefA, crefB):
-    return self.obj.oms3_addConnection(self.checkstring(crefA), self.checkstring(crefB));
+    return self.obj.oms3_addConnection(self.checkstring(crefA), self.checkstring(crefB))
   def oms3_deleteConnection(self, crefA, crefB):
-    return self.obj.oms3_deleteConnection(self.checkstring(crefA), self.checkstring(crefB));
+    return self.obj.oms3_deleteConnection(self.checkstring(crefA), self.checkstring(crefB))
   def oms3_addBus(self, crefA):
-    return self.obj.oms3_addBus(self.checkstring(crefA));
+    return self.obj.oms3_addBus(self.checkstring(crefA))
   def oms3_addConnectorToBus(self, busCref, connectorCref):
-    return self.obj.oms3_addConnectorToBus(self.checkstring(busCref), self.checkstring(connectorCref));
+    return self.obj.oms3_addConnectorToBus(self.checkstring(busCref), self.checkstring(connectorCref))
   def oms3_deleteConnectorFromBus(self, busCref, connectorCref):
-    return self.obj.oms3_deleteConnectorFromBus(self.checkstring(busCref), self.checkstring(connectorCref));
+    return self.obj.oms3_deleteConnectorFromBus(self.checkstring(busCref), self.checkstring(connectorCref))
   def oms3_addTLMBus(self, cref, domain, dimensions, interpolation):
-    return self.obj.oms3_addTLMBus(self.checkstring(cref), self.checkstring(domain), dimensions, interpolation);
+    return self.obj.oms3_addTLMBus(self.checkstring(cref), self.checkstring(domain), dimensions, interpolation)
   def oms3_addConnectorToTLMBus(self, busCref, connectorCref, type):
-    return self.obj.oms3_addConnectorToTLMBus(self.checkstring(busCref), self.checkstring(connectorCref), self.checkstring(type));
+    return self.obj.oms3_addConnectorToTLMBus(self.checkstring(busCref), self.checkstring(connectorCref), self.checkstring(type))
   def oms3_deleteConnectorFromTLMBus(self, busCref, connectorCref):
-    return self.obj.oms3_addConnectorToBus(self.checkstring(busCref), self.checkstring(connectorCref));
+    return self.obj.oms3_addConnectorToBus(self.checkstring(busCref), self.checkstring(connectorCref))
   def oms3_addTLMConnection(self, crefA, crefB, delay, alpha, linearimpedance, angularimpedance):
-    return self.obj.oms3_addTLMConnection(self.checkstring(crefA), self.checkstring(crefB), delay, alpha, linearimpedance, angularimpedance);
+    return self.obj.oms3_addTLMConnection(self.checkstring(crefA), self.checkstring(crefB), delay, alpha, linearimpedance, angularimpedance)
   def oms3_addExternalModel(self, cref, path, startscript):
     return self.obj.oms3_addExternalModel(self.checkstring(cref), self.checkstring(path), self.checkstring(startscript))
   def oms3_addSubModel(self, cref, fmuPath):
-    return self.obj.oms3_addSubModel(self.checkstring(cref), self.checkstring(fmuPath));
+    return self.obj.oms3_addSubModel(self.checkstring(cref), self.checkstring(fmuPath))
   def oms3_instantiate(self, cref):
-    return self.obj.oms3_instantiate(self.checkstring(cref));
+    return self.obj.oms3_instantiate(self.checkstring(cref))
   def oms3_initialize(self, cref):
-    return self.obj.oms3_initialize(self.checkstring(cref));
+    return self.obj.oms3_initialize(self.checkstring(cref))
   def oms3_simulate(self, cref):
-    return self.obj.oms3_simulate(self.checkstring(cref));
+    return self.obj.oms3_simulate(self.checkstring(cref))
   def oms3_terminate(self, cref):
-    return self.obj.oms3_terminate(self.checkstring(cref));
+    return self.obj.oms3_terminate(self.checkstring(cref))
   def oms3_setTLMSocketData(self, cref, address, managerPort, monitorPort):
-    return self.obj.oms3_setTLMSocketData(self.checkstring(cref), self.checkstring(address), managerPort, monitorPort);
+    return self.obj.oms3_setTLMSocketData(self.checkstring(cref), self.checkstring(address), managerPort, monitorPort)
   def oms3_setTLMPositionAndOrientation(self, cref, x1, x2, x3, A11, A12, A13, A21, A22, A23, A31, A32, A33):
-    return self.obj.oms3_setTLMPositionAndOrientation(self.checkstring(cref), x1, x2, x3, A11, A12, A13, A21, A22, A23, A31, A32, A33);
+    return self.obj.oms3_setTLMPositionAndOrientation(self.checkstring(cref), x1, x2, x3, A11, A12, A13, A21, A22, A23, A31, A32, A33)
   def oms3_exportDependencyGraphs(self, cref, initialization, simulation):
-    return self.obj.oms3_addExternalModel(self.checkstring(cref), self.checkstring(initialization), self.checkstring(simulation));
+    return self.obj.oms3_addExternalModel(self.checkstring(cref), self.checkstring(initialization), self.checkstring(simulation))
   def oms3_setTLMInitialValues(self, cref, ifc, values, nvalues):
-    return self.obj.oms3_setTLMInitialValues(self.checkstring(cref), self.checkstring(initialization), values, nvalues);
+    return self.obj.oms3_setTLMInitialValues(self.checkstring(cref), self.checkstring(initialization), values, nvalues)
   def oms3_getReal(self, cref):
     value = ctypes.c_double()
     status = self.obj.oms3_getReal(self.checkstring(cref), ctypes.byref(value))
