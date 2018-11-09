@@ -102,11 +102,17 @@ private:
 #endif
 
 // Common error messages
+#define logError_AlreadyInScope(cref)                        logError("\"" + std::string(cref) + "\" already exists in the scope")
+#define logError_BusAndConnectorNotSameModel                 logError("Bus and connector must belong to same model")
+#define logError_BusAndConnectorNotSameSystem                logError("Bus and connector must belong to same system")
 #define logError_ComponentNotInSystem(system, component)     logError("System \"" + std::string(system->getFullCref()) + "\" does not contain component \"" + std::string(component) + "\"")
-#define logError_ConnectionNotInSystem(crefA, crefB, system) logError("Connection <\"" + std::string(crefA) + "\", \"" + std::string(crefB) + "\"> not found in system \"" + std::string(system->getFullCref()) + "\"")
 #define logError_ConnectionExistsAlready(crefA, crefB, system) logError("Connection <\"" + std::string(crefA) + "\", \"" + std::string(crefB) + "\"> exists already in system \"" + std::string(system->getFullCref()) + "\"")
+#define logError_ConnectionNotInSystem(crefA, crefB, system) logError("Connection <\"" + std::string(crefA) + "\", \"" + std::string(crefB) + "\"> not found in system \"" + std::string(system->getFullCref()) + "\"")
 #define logError_ConnectorNotInSystem(cref, system)          logError("Connector \"" + std::string(cref) + "\" not found in system \"" + std::string(system->getFullCref()) + "\"")
+#define logError_FMUCall(call, fmu)                          logError(std::string(call) + " failed for FMU \"" + std::string(fmu->getFullCref()) + "\"")
 #define logError_Initialization(system)                      logError("Initialization of system \"" + std::string(system) + "\" failed")
+#define logError_InternalError                               logError("internal error")
+#define logError_InvalidIdent(cref)                          logError("\"" + std::string(cref) + "\" is not a valid ident")
 #define logError_ModelInWrongState(model)                    logError("Model \"" + std::string(model->getCref()) + "\" is in wrong model state")
 #define logError_ModelNotInScope(cref)                       logError("Model \"" + std::string(cref) + "\" does not exist in the scope")
 #define logError_NotForScSystem                              logError("Not available for strongly coupled systems")
@@ -119,8 +125,4 @@ private:
 #define logError_SystemNotInModel(model, system)             logError("Model \"" + std::string(model) + "\" does not contain system \"" + std::string(system) + "\"")
 #define logError_Termination(system)                         logError("Termination of system \"" + std::string(system) + "\" failed")
 #define logError_WrongSchema(name)                           logError("Wrong xml schema detected. Unexpected tag \"" + name + "\"")
-#define logError_InvalidIdent(cref)                          logError("\"" + std::string(cref) + "\" is not a valid ident")
-#define logError_AlreadyInScope(cref)                        logError("\"" + std::string(cref) + "\" already exists in the scope")
-#define logError_BusAndConnectorNotSameModel                 logError("Bus and connector must belong to same model")
-#define logError_BusAndConnectorNotSameSystem                logError("Bus and connector must belong to same system")
 #endif

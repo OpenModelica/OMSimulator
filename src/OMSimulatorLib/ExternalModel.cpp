@@ -57,7 +57,7 @@ oms3::ExternalModel* oms3::ExternalModel::NewComponent(const oms3::ComRef& cref,
 {
   if (!cref.isValidIdent())
   {
-    logError("\"" + std::string(cref) + "\" is not a valid ident");
+    logError_InvalidIdent(cref);
     return NULL;
   }
 
