@@ -218,6 +218,11 @@ oms_status_enu_t oms3::SystemSC::terminate()
   terminateSimulation.clear();
   nStates.clear();
   nEventIndicators.clear();
+  states.clear();
+  states_der.clear();
+  states_nominal.clear();
+  event_indicators.clear();
+  event_indicators_prev.clear();
 
   return oms_status_ok;
 }
