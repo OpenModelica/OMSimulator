@@ -3,7 +3,8 @@
 SCRIPT=$(readlink -f "$0")
 SCRIPTPATH=$(dirname "$SCRIPT")
 
-export PYTHONPATH=$SCRIPTPATH/../lib:$PYTHONPATH
-export LD_LIBRARY_PATH=$SCRIPTPATH/../lib:$LD_LIBRARY_PATH
+if [ -z "$PYTHONPATH" ]; then export PYTHONPATH=$SCRIPTPATH/../lib; else export PYTHONPATH=$SCRIPTPATH/../lib:$PYTHONPATH; fi
+if [ -z "$LD_LIBRARY_PATH" ]; then export LD_LIBRARY_PATH=$SCRIPTPATH/../lib; else export LD_LIBRARY_PATH=$SCRIPTPATH/../lib:$LD_LIBRARY_PATH; fi
+if [ -z "$PATH" ]; then export PATH=$SCRIPTPATH/../lib; else export PATH=$SCRIPTPATH/../lib:$PATH; fi
 
 python $@
