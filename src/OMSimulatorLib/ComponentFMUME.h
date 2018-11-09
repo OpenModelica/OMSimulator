@@ -34,7 +34,9 @@
 
 #include "Component.h"
 #include "ComRef.h"
+#include "Option.h"
 #include "ResultWriter.h"
+#include "Variable.h"
 #include <fmilib.h>
 #include <map>
 #include <pugixml.hpp>
@@ -50,17 +52,39 @@ namespace oms3
     ~ComponentFMUME();
 
     static Component* NewComponent(const oms3::ComRef& cref, System* parentSystem, const std::string& fmuPath);
+    static Component* NewComponent(const pugi::xml_node& node, System* parentSystem);
+    const FMUInfo* getFMUInfo() const {return &(this->fmuInfo);}
 
     oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
     oms_status_enu_t instantiate();
     oms_status_enu_t initialize();
     oms_status_enu_t terminate();
 
+    oms_status_enu_t initializeDependencyGraph_initialUnknowns();
+    oms_status_enu_t initializeDependencyGraph_outputs();
+
+    oms_status_enu_t getBoolean(const ComRef& cref, bool& value);
+    oms_status_enu_t getInteger(const ComRef& cref, int& value);
     oms_status_enu_t getReal(const ComRef& cref, double& value);
+    oms_status_enu_t setBoolean(const ComRef& cref, bool value);
+    oms_status_enu_t setInteger(const ComRef& cref, int value);
     oms_status_enu_t setReal(const ComRef& cref, double value);
 
     oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultFile);
     oms_status_enu_t updateSignals(ResultWriter& resultWriter, double time);
+
+    oms_status_enu_t doEventIteration();
+
+    size_t getNumberOfContinuousStates() const {return nContinuousStates;}
+    size_t getNumberOfEventIndicators() const {return nEventIndicators;}
+    oms_status_enu_t getContinuousStates(double* states);
+    oms_status_enu_t setContinuousStates(double* states);
+    oms_status_enu_t getDerivatives(double* derivatives);
+    oms_status_enu_t getNominalsOfContinuousStates(double* nominals);
+    oms_status_enu_t getEventindicators(double* eventindicators);
+
+    fmi2_import_t* getFMU() {return fmu;}
+    fmi2_event_info_t* getEventInfo() {return &eventInfo;}
 
   protected:
     ComponentFMUME(const ComRef& cref, System* parentSystem, const std::string& fmuPath);
@@ -68,6 +92,31 @@ namespace oms3
     // stop the compiler generating methods copying the object
     ComponentFMUME(ComponentFMUME const& copy);            ///< not implemented
     ComponentFMUME& operator=(ComponentFMUME const& copy); ///< not implemented
+
+  private:
+    jm_callbacks callbacks;
+    fmi2_callback_functions_t callbackFunctions;
+    fmi_import_context_t* context = NULL;
+    fmi2_import_t* fmu = NULL;
+    std::string tempDir;
+
+    fmi2_event_info_t eventInfo;
+    size_t nContinuousStates;
+    size_t nEventIndicators;
+
+    FMUInfo fmuInfo;
+
+    std::vector<Variable> allVariables;
+    std::vector<Variable> inputs;
+    std::vector<Variable> outputs;
+    std::vector<Variable> parameters;
+    std::vector<bool> exportVariables;
+
+    std::map<std::string, Option<double>> realParameters;
+    std::map<std::string, Option<int>> integerParameters;
+    std::map<std::string, Option<bool>> booleanParameters;
+
+    std::unordered_map<unsigned int /*result file var ID*/, unsigned int /*allVariables ID*/> resultFileMapping;
   };
 }
 

@@ -64,7 +64,7 @@ oms3::Component* oms3::ComponentFMUCS::NewComponent(const oms3::ComRef& cref, om
 {
   if (!cref.isValidIdent())
   {
-    logError("\"" + std::string(cref) + "\" is not a valid ident");
+    logError_InvalidIdent(cref);
     return NULL;
   }
 
