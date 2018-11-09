@@ -70,7 +70,7 @@ oms3::Component* oms3::ComponentFMUCS::NewComponent(const oms3::ComRef& cref, om
 
   if (!parentSystem)
   {
-    logError("Internal error");
+    logError_InternalError;
     return NULL;
   }
 
@@ -408,16 +408,16 @@ oms_status_enu_t oms3::ComponentFMUCS::instantiate()
 
   jmstatus = fmi2_import_instantiate(fmu, getCref().c_str(), fmi2_cosimulation, NULL, fmi2_false);
   if (jm_status_error == jmstatus)
-    return logError("fmi2_import_instantiate failed");
+    return logError_FMUCall("fmi2_import_instantiate", this);
 
   // enterInitialization
   time = getParentSystem()->getModel()->getStartTime();
   double tolerance = dynamic_cast<SystemWC*>(getParentSystem())->getTolerance();
   fmistatus = fmi2_import_setup_experiment(fmu, fmi2_true, tolerance, time, fmi2_false, 1.0);
-  if (fmi2_status_ok != fmistatus) return logError("fmi2_import_setup_experiment failed");
+  if (fmi2_status_ok != fmistatus) return logError_FMUCall("fmi2_import_setup_experiment", this);
 
   fmistatus = fmi2_import_enter_initialization_mode(fmu);
-  if (fmi2_status_ok != fmistatus) return logError("fmi2_import_enter_initialization_mode failed");
+  if (fmi2_status_ok != fmistatus) return logError_FMUCall("fmi2_import_enter_initialization_mode", this);
 
   return oms_status_ok;
 }
@@ -428,7 +428,7 @@ oms_status_enu_t oms3::ComponentFMUCS::initialize()
 
   // exitInitialization
   fmistatus = fmi2_import_exit_initialization_mode(fmu);
-  if (fmi2_status_ok != fmistatus) return logError("fmi2_import_exit_initialization_mode failed");
+  if (fmi2_status_ok != fmistatus) return logError_FMUCall("fmi2_import_exit_initialization_mode", this);
 
   return oms_status_ok;
 }

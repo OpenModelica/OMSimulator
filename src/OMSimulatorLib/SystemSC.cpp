@@ -50,13 +50,13 @@ oms3::System* oms3::SystemSC::NewSystem(const oms3::ComRef& cref, oms3::Model* p
 {
   if (!cref.isValidIdent())
   {
-    logError("\"" + std::string(cref) + "\" is not a valid ident");
+    logError_InvalidIdent(cref);
     return NULL;
   }
 
   if ((parentModel && parentSystem) || (!parentModel && !parentSystem))
   {
-    logError("Internal error");
+    logError_InternalError;
     return NULL;
   }
 
@@ -154,7 +154,7 @@ oms_status_enu_t oms3::SystemSC::instantiate()
   else if (oms_solver_cvode == solverMethod)
     solverData.cvode.mem = NULL;
   else
-    return logError("Internal error");
+    return logError_InternalError;
 
   return oms_status_ok;
 }
@@ -244,7 +244,7 @@ oms_status_enu_t oms3::SystemSC::stepUntil(double stopTime, void (*cb)(const cha
     for (int i=0; i < fmus.size(); ++i)
     {
       fmistatus = fmi2_import_set_time(fmus[i]->getFMU(), time);
-      if (fmi2_status_ok != fmistatus) logError("fmi2_import_set_time failed");
+      if (fmi2_status_ok != fmistatus) logError_FMUCall("fmi2_import_set_time", fmus[i]);
 
       // swap event_indicators and event_indicators_prev
       {
@@ -253,7 +253,7 @@ oms_status_enu_t oms3::SystemSC::stepUntil(double stopTime, void (*cb)(const cha
         event_indicators_prev[i] = temp;
 
         fmistatus = fmi2_import_get_event_indicators(fmus[i]->getFMU(), event_indicators[i], nEventIndicators[i]);
-        if (fmi2_status_ok != fmistatus) logError("fmi2_import_get_event_indicators failed");
+        if (fmi2_status_ok != fmistatus) logError_FMUCall("fmi2_import_get_event_indicators", fmus[i]);
       }
 
       // check if an event indicator has triggered
@@ -271,12 +271,12 @@ oms_status_enu_t oms3::SystemSC::stepUntil(double stopTime, void (*cb)(const cha
       if (callEventUpdate[i] || zero_crossing_event || (fmus[i]->getEventInfo()->nextEventTimeDefined && time == fmus[i]->getEventInfo()->nextEventTime))
       {
         fmistatus = fmi2_import_enter_event_mode(fmus[i]->getFMU());
-        if (fmi2_status_ok != fmistatus) logError("fmi2_import_enter_event_mode failed");
+        if (fmi2_status_ok != fmistatus) logError_FMUCall("fmi2_import_enter_event_mode", fmus[i]);
 
         fmus[i]->doEventIteration();
 
         fmistatus = fmi2_import_enter_continuous_time_mode(fmus[i]->getFMU());
-        if (fmi2_status_ok != fmistatus) logError("fmi2_import_enter_continuous_time_mode failed");
+        if (fmi2_status_ok != fmistatus) logError_FMUCall("fmi2_import_enter_continuous_time_mode", fmus[i]);
         if (nStates[i] > 0)
         {
           status = fmus[i]->getContinuousStates(states[i]);
@@ -345,7 +345,7 @@ oms_status_enu_t oms3::SystemSC::stepUntil(double stopTime, void (*cb)(const cha
     for (int i=0; i < fmus.size(); ++i)
     {
       fmistatus = fmi2_import_completed_integrator_step(fmus[i]->getFMU(), fmi2_true, &callEventUpdate[i], &terminateSimulation[i]);
-      if (fmi2_status_ok != fmistatus) logError("fmi2_import_completed_integrator_step failed");
+      if (fmi2_status_ok != fmistatus) logError_FMUCall("fmi2_import_completed_integrator_step", fmus[i]);
     }
 
     if (isTopLevelSystem())

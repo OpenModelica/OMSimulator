@@ -69,7 +69,7 @@ oms3::Component* oms3::ComponentFMUME::NewComponent(const oms3::ComRef& cref, om
 
   if (!parentSystem)
   {
-    logError("Internal error");
+    logError_InternalError;
     return NULL;
   }
 
@@ -410,16 +410,16 @@ oms_status_enu_t oms3::ComponentFMUME::instantiate()
 
   jmstatus = fmi2_import_instantiate(fmu, getCref().c_str(), fmi2_model_exchange, NULL, fmi2_false);
   if (jm_status_error == jmstatus)
-    return logError("fmi2_import_instantiate failed");
+    return logError_FMUCall("fmi2_import_instantiate", this);
 
   // enterInitialization
   const double& startTime = getParentSystem()->getModel()->getStartTime();
   const double& tolerance = dynamic_cast<SystemSC*>(getParentSystem())->getTolerance();
   fmistatus = fmi2_import_setup_experiment(fmu, fmi2_true, tolerance, startTime, fmi2_false, 1.0);
-  if (fmi2_status_ok != fmistatus) return logError("fmi2_import_setup_experiment failed");
+  if (fmi2_status_ok != fmistatus) return logError_FMUCall("fmi2_import_setup_experiment", this);
 
   fmistatus = fmi2_import_enter_initialization_mode(fmu);
-  if (fmi2_status_ok != fmistatus) return logError("fmi2_import_enter_initialization_mode failed");
+  if (fmi2_status_ok != fmistatus) return logError_FMUCall("fmi2_import_enter_initialization_mode", this);
 
   eventInfo.newDiscreteStatesNeeded = fmi2_false;
   eventInfo.terminateSimulation = fmi2_false;
@@ -439,7 +439,7 @@ oms_status_enu_t oms3::ComponentFMUME::doEventIteration()
   while (eventInfo.newDiscreteStatesNeeded && !eventInfo.terminateSimulation)
   {
     fmistatus = fmi2_import_new_discrete_states(fmu, &eventInfo);
-    if (fmi2_status_ok != fmistatus) return logError("fmi2_import_new_discrete_states failed");
+    if (fmi2_status_ok != fmistatus) return logError_FMUCall("fmi2_import_new_discrete_states", this);
   }
   return oms_status_ok;
 }
@@ -450,14 +450,14 @@ oms_status_enu_t oms3::ComponentFMUME::initialize()
 
   // exitInitialization
   fmistatus = fmi2_import_exit_initialization_mode(fmu);
-  if (fmi2_status_ok != fmistatus) return logError("fmi2_import_exit_initialization_mode failed");
+  if (fmi2_status_ok != fmistatus) return logError_FMUCall("fmi2_import_exit_initialization_mode", this);
 
   // fmi2_import_exit_initialization_mode leaves FMU in event mode
   if (oms_status_ok != doEventIteration())
     return oms_status_error;
 
   fmistatus = fmi2_import_enter_continuous_time_mode(fmu);
-  if (fmi2_status_ok != fmistatus) return logError("fmi2_import_enter_continuous_time_mode failed");
+  if (fmi2_status_ok != fmistatus) return logError_FMUCall("fmi2_import_enter_continuous_time_mode", this);
 
   return oms_status_ok;
 }
@@ -704,7 +704,7 @@ oms_status_enu_t oms3::ComponentFMUME::getContinuousStates(double* states)
 {
   fmi2_status_t fmistatus = fmi2_import_get_continuous_states(fmu, states, nContinuousStates);
   if (fmi2_status_ok != fmistatus)
-    return logError("fmi2_import_get_continuous_states failed for FMU \"" + std::string(getFullCref()) + "\"");
+    return logError_FMUCall("fmi2_import_get_continuous_states", this);
   return oms_status_ok;
 }
 
@@ -712,7 +712,7 @@ oms_status_enu_t oms3::ComponentFMUME::setContinuousStates(double* states)
 {
   fmi2_status_t fmistatus = fmi2_import_set_continuous_states(fmu, states, nContinuousStates);
   if (fmi2_status_ok != fmistatus)
-    return logError("fmi2_import_set_continuous_states failed for FMU \"" + std::string(getFullCref()) + "\"");
+    return logError_FMUCall("fmi2_import_set_continuous_states", this);
   return oms_status_ok;
 }
 
@@ -720,7 +720,7 @@ oms_status_enu_t oms3::ComponentFMUME::getDerivatives(double* derivatives)
 {
   fmi2_status_t fmistatus = fmi2_import_get_derivatives(fmu, derivatives, nContinuousStates);
   if (fmi2_status_ok != fmistatus)
-    return logError("fmi2_import_get_derivatives failed for FMU \"" + std::string(getFullCref()) + "\"");
+    return logError_FMUCall("fmi2_import_get_derivatives", this);
   return oms_status_ok;
 }
 
@@ -728,7 +728,7 @@ oms_status_enu_t oms3::ComponentFMUME::getNominalsOfContinuousStates(double* nom
 {
   fmi2_status_t fmistatus = fmi2_import_get_nominals_of_continuous_states(fmu, nominals, nContinuousStates);
   if (fmi2_status_ok != fmistatus)
-    return logError("fmi2_import_get_nominals_of_continuous_states failed for FMU \"" + std::string(getFullCref()) + "\"");
+    return logError_FMUCall("fmi2_import_get_nominals_of_continuous_states", this);
   return oms_status_ok;
 }
 
@@ -736,6 +736,6 @@ oms_status_enu_t oms3::ComponentFMUME::getEventindicators(double* eventindicator
 {
   fmi2_status_t fmistatus = fmi2_import_get_event_indicators(fmu, eventindicators, nEventIndicators);
   if (fmi2_status_ok != fmistatus)
-    return logError("fmi2_import_get_event_indicators failed for FMU \"" + std::string(getFullCref()) + "\"");
+    return logError_FMUCall("fmi2_import_get_event_indicators", this);
   return oms_status_ok;
 }

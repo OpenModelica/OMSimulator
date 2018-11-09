@@ -109,7 +109,7 @@ oms3::System* oms3::System::NewSystem(const oms3::ComRef& cref, oms_system_enu_t
 
   if ((parentModel && parentSystem) || (!parentModel && !parentSystem))
   {
-    logError("Internal error");
+    logError_InternalError;
     return NULL;
   }
 
@@ -140,7 +140,7 @@ oms3::System* oms3::System::NewSystem(const oms3::ComRef& cref, oms_system_enu_t
     return SystemSC::NewSystem(cref, parentModel, parentSystem);
   }
 
-  logError("Internal error");
+  logError_InternalError;
   return NULL;
 }
 
@@ -151,7 +151,7 @@ oms3::ComRef oms3::System::getFullCref() const
   if (parentModel)
     return ComRef(parentModel->getCref()) + this->getCref();
 
-  logError("Internal error");
+  logError_InternalError;
   return this->getCref();
 }
 
