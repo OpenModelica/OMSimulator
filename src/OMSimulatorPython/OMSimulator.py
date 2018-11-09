@@ -254,7 +254,7 @@ class OMSimulator:
     self.obj.oms3_addConnectorToTLMBus.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms3_addConnectorToTLMBus.restype = ctypes.c_int
 
-    self.obj.oms3_deleteConnectorFromTLMBus.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms3_deleteConnectorFromTLMBus.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms3_deleteConnectorFromTLMBus.restype = ctypes.c_int
 
     self.obj.oms3_addTLMConnection.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_double, ctypes.c_double, ctypes.c_double]
@@ -293,8 +293,8 @@ class OMSimulator:
     self.obj.oms3_getReal.argtypes = [ctypes.c_char_p]
     self.obj.oms3_getReal.restype = ctypes.c_int
 
-    self.obj.oms2_setReal.argtypes = [ctypes.c_char_p, ctypes.c_double]
-    self.obj.oms2_setReal.restype = ctypes.c_int
+    self.obj.oms3_setReal.argtypes = [ctypes.c_char_p, ctypes.c_double]
+    self.obj.oms3_setReal.restype = ctypes.c_int
 
     self.obj.oms3_setResultFile.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int]
     self.obj.oms3_setResultFile.restype = ctypes.c_int
@@ -410,7 +410,7 @@ class OMSimulator:
   def oms3_addConnectorToTLMBus(self, busCref, connectorCref, type):
     return self.obj.oms3_addConnectorToTLMBus(self.checkstring(busCref), self.checkstring(connectorCref), self.checkstring(type))
   def oms3_deleteConnectorFromTLMBus(self, busCref, connectorCref):
-    return self.obj.oms3_addConnectorToBus(self.checkstring(busCref), self.checkstring(connectorCref))
+    return self.obj.oms3_deleteConnectorFromTLMBus(self.checkstring(busCref), self.checkstring(connectorCref))
   def oms3_addTLMConnection(self, crefA, crefB, delay, alpha, linearimpedance, angularimpedance):
     return self.obj.oms3_addTLMConnection(self.checkstring(crefA), self.checkstring(crefB), delay, alpha, linearimpedance, angularimpedance)
   def oms3_addExternalModel(self, cref, path, startscript):
@@ -428,13 +428,13 @@ class OMSimulator:
   def oms3_setTLMPositionAndOrientation(self, cref, x1, x2, x3, A11, A12, A13, A21, A22, A23, A31, A32, A33):
     return self.obj.oms3_setTLMPositionAndOrientation(self.checkstring(cref), x1, x2, x3, A11, A12, A13, A21, A22, A23, A31, A32, A33)
   def oms3_exportDependencyGraphs(self, cref, initialization, simulation):
-    return self.obj.oms3_addExternalModel(self.checkstring(cref), self.checkstring(initialization), self.checkstring(simulation))
+    return self.obj.oms3_exportDependencyGraphs(self.checkstring(cref), self.checkstring(initialization), self.checkstring(simulation))
   def oms3_setTLMInitialValues(self, cref, ifc, values, nvalues):
     return self.obj.oms3_setTLMInitialValues(self.checkstring(cref), self.checkstring(ifc), values, nvalues)
   def oms3_getReal(self, cref):
     value = ctypes.c_double()
     status = self.obj.oms3_getReal(self.checkstring(cref), ctypes.byref(value))
-    return [status, value.value]
+    return [value.value, status]
   def oms3_setReal(self, signal, value):
     return self.obj.oms3_setReal(self.checkstring(signal), value)
   def oms3_setResultFile(self, cref, filename, bufferSize):
@@ -446,13 +446,13 @@ class OMSimulator:
   def oms3_getStartTime(self, cref):
     startTime = ctypes.c_double()
     status = self.obj.oms3_getStartTime(self.checkstring(cref), ctypes.byref(startTime))
-    return [status, startTime.value]
+    return [startTime.value, status]
   def oms3_setStartTime(self, cref, startTime):
     return self.obj.oms3_setStartTime(self.checkstring(cref), startTime)
   def oms3_getStopTime(self, cref):
     stopTime = ctypes.c_double()
     status = self.obj.oms3_getStopTime(self.checkstring(cref), ctypes.byref(stopTime))
-    return [status, stopTime.value]
+    return [stopTime.value, status]
   def oms3_setStopTime(self, cref, stopTime):
     return self.obj.oms3_setStopTime(self.checkstring(cref), stopTime)
   def oms3_setFixedStepSize(self, cref, stepSize):
