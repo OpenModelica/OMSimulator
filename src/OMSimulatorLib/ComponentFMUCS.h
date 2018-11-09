@@ -91,6 +91,8 @@ namespace oms3
     fmi2_import_t* fmu = NULL;
     std::string tempDir;
 
+    FMUInfo fmuInfo;
+
     std::vector<Variable> allVariables;
     std::vector<Variable> inputs;
     std::vector<Variable> outputs;
@@ -102,8 +104,6 @@ namespace oms3
     std::map<std::string, Option<bool>> booleanParameters;
 
     std::unordered_map<unsigned int /*result file var ID*/, unsigned int /*allVariables ID*/> resultFileMapping;
-
-    FMUInfo fmuInfo;
 
     double time;
   };

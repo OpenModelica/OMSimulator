@@ -36,9 +36,13 @@
 #include "System.h"
 #include "Types.h"
 
+#include "cvode/cvode.h"             /* prototypes for CVODE fcts., consts. */
+#include "nvector/nvector_serial.h"  /* serial N_Vector types, fcts., macros */
+
 namespace oms3
 {
   class Model;
+  class ComponentFMUME;
 
   class SystemSC : public System
   {
@@ -54,6 +58,16 @@ namespace oms3
     oms_status_enu_t terminate();
     oms_status_enu_t stepUntil(double stopTime, void (*cb)(const char* ident, double time, oms_status_enu_t status));
 
+    double getTolerance() const {return relativeTolerance;}
+    double getTime() const {return time;}
+
+    oms_status_enu_t updateInputs(DirectedGraph& graph);
+
+    std::string getSolverName() const;
+    oms_status_enu_t setSolverMethod(std::string);
+
+    oms_status_enu_t setFixedStepSize(double stepSize) {this->maximumStepSize=stepSize; return oms_status_ok;}
+
   protected:
     SystemSC(const ComRef& cref, Model* parentModel, System* parentSystem);
 
@@ -62,12 +76,43 @@ namespace oms3
     SystemSC& operator=(SystemSC const& copy); ///< not implemented
 
   private:
-    std::string solverName = "cvode";
+    oms_solver_enu_t solverMethod = oms_solver_explicit_euler;
+    double time;
     double absoluteTolerance = 1e-4;
     double relativeTolerance = 1e-4;
     double minimumStepSize = 1e-4;
     double maximumStepSize = 1e-1;
     double initialStepSize = 1e-4;
+
+    std::vector<ComponentFMUME*> fmus;
+
+    std::vector<fmi2_boolean_t> callEventUpdate;
+    std::vector<fmi2_boolean_t> terminateSimulation;
+    std::vector<size_t> nStates;
+    std::vector<size_t> nEventIndicators;
+
+    std::vector<double*> states;
+    std::vector<double*> states_der;
+    std::vector<double*> states_nominal;
+    std::vector<double*> event_indicators;
+    std::vector<double*> event_indicators_prev;
+
+    struct SolverDataEuler_t
+    {
+    };
+
+    struct SolverDataCVODE_t
+    {
+      void *mem;
+      N_Vector y;
+      N_Vector abstol;
+    };
+
+    union SolverData_t
+    {
+      SolverDataEuler_t euler;
+      SolverDataCVODE_t cvode;
+    } solverData;
   };
 }
 
