@@ -430,7 +430,7 @@ class OMSimulator:
   def oms3_exportDependencyGraphs(self, cref, initialization, simulation):
     return self.obj.oms3_addExternalModel(self.checkstring(cref), self.checkstring(initialization), self.checkstring(simulation))
   def oms3_setTLMInitialValues(self, cref, ifc, values, nvalues):
-    return self.obj.oms3_setTLMInitialValues(self.checkstring(cref), self.checkstring(initialization), values, nvalues)
+    return self.obj.oms3_setTLMInitialValues(self.checkstring(cref), self.checkstring(ifc), values, nvalues)
   def oms3_getReal(self, cref):
     value = ctypes.c_double()
     status = self.obj.oms3_getReal(self.checkstring(cref), ctypes.byref(value))
