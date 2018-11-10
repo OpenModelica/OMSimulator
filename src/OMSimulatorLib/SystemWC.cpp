@@ -206,8 +206,20 @@ oms_status_enu_t oms3::SystemWC::updateInputs(oms3::DirectedGraph& graph)
         getReal(graph.getNodes()[output].getName(), value);
         setReal(graph.getNodes()[input].getName(), value);
       }
+      else if (graph.getNodes()[input].getType() == oms_signal_type_integer)
+      {
+        int value = 0.0;
+        getInteger(graph.getNodes()[output].getName(), value);
+        setInteger(graph.getNodes()[input].getName(), value);
+      }
+      else if (graph.getNodes()[input].getType() == oms_signal_type_boolean)
+      {
+        bool value = 0.0;
+        getBoolean(graph.getNodes()[output].getName(), value);
+        setBoolean(graph.getNodes()[input].getName(), value);
+      }
       else
-        return logError("Only continuous connections are supported yet");
+        return logError_InternalError;
     }
     else
     {
