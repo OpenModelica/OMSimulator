@@ -33,13 +33,16 @@
 
 #include "Flags.h"
 #include "System.h"
-
-#include <OMSBoost.h>
 #include <miniunz.h>
+#include <OMSBoost.h>
+#include <time.h>
 
 oms3::Scope::Scope()
   : tempDir(".")
 {
+  // initialize random seed
+  srand(time(NULL));
+
   this->models.push_back(NULL);
 
   boost::filesystem::path tempDir = oms_temp_directory_path() / "omsimulator";
