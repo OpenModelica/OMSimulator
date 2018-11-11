@@ -258,7 +258,9 @@ oms_status_enu_t oms3::SystemTLM::connectToSockets(const oms3::ComRef cref, std:
   logInfo("Creating TLM plugin instance for "+std::string(cref));
 
   TLMPlugin* plugin = TLMPlugin::CreateInstance();
+  pluginsMutex.lock();
   plugins[system] = plugin;
+  pluginsMutex.unlock();
 
   logInfo("Initializing plugin for "+std::string(cref));
 
@@ -297,7 +299,9 @@ void oms3::SystemTLM::disconnectFromSockets(const oms3::ComRef cref)
     //destroyed before master has read all data
     TLMPlugin *plugin = plugins.find(system)->second;
     delete plugin;
+    pluginsMutex.lock();
     plugins[system] = nullptr;
+    pluginsMutex.unlock();
   }
 }
 

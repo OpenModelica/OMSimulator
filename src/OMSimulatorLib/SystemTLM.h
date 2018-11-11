@@ -87,6 +87,7 @@ namespace oms3
     std::map<System*, TLMPlugin*> plugins;
     std::vector<ComRef> initializedsubsystems;
     std::map<ComRef, std::vector<double> > initialValues;
+    std::mutex pluginsMutex;
     std::mutex setConnectedMutex;
     std::mutex setInitializedMutex;
     std::map<System*, std::mutex> socketMutexes;
