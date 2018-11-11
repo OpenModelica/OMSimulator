@@ -213,6 +213,12 @@ bool oms3::System::validCref(const oms3::ComRef& cref)
   if (getConnector(cref))
     return false;
 
+  if (getBusConnector(cref))
+    return false;
+
+  if (getTLMBusConnector(cref))
+    return false;
+
   return true;
 }
 
@@ -858,6 +864,8 @@ oms_status_enu_t oms3::System::addBus(const oms3::ComRef& cref)
     return logError_NotForTlmSystem;
   if (!cref.isValidIdent())
     return logError_InvalidIdent(cref);
+  if (!validCref(cref))
+    return logError_AlreadyInScope(getFullCref() + cref);
 
   oms3::BusConnector* bus = new oms3::BusConnector(cref);
   busconnectors.back() = bus;
@@ -887,6 +895,8 @@ oms_status_enu_t oms3::System::addTLMBus(const oms3::ComRef& cref, const std::st
     return logError_NotForTlmSystem;
   if (!cref.isValidIdent())
     return logError_InvalidIdent(cref);
+  if (!validCref(cref))
+    return logError_AlreadyInScope(getFullCref() + cref);
 
   oms3::TLMBusConnector* bus = new oms3::TLMBusConnector(cref, domain, dimensions, interpolation, this);
   tlmbusconnectors.back() = bus;
