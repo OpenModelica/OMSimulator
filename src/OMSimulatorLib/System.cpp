@@ -1306,6 +1306,10 @@ oms_status_enu_t oms3::System::delete_(const oms3::ComRef& cref)
     auto subsystem = subsystems.find(front);
     if (subsystem != subsystems.end())
       return subsystem->second->delete_(tail);
+
+    auto component = components.find(front);
+    if (component != components.end())
+      return component->second->deleteConnector(tail);
   }
 
   return oms_status_error;

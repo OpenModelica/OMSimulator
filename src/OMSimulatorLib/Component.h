@@ -57,13 +57,14 @@ namespace oms3
 
     const ComRef& getCref() const {return cref;}
     ComRef getFullCref() const;
-    oms3::Element* getElement() {return &element;}
-    oms3::Connector* getConnector(const ComRef &cref);
+    Element* getElement() {return &element;}
+    Connector* getConnector(const ComRef& cref);
+    oms_status_enu_t deleteConnector(const ComRef& cref);
     oms_status_enu_t deleteResources();
     oms_status_enu_t getAllResources(std::vector<std::string>& resources) const {resources.push_back(path); return oms_status_ok;}
     const std::string& getPath() const {return path;}
     oms_component_enu_t getType() const {return type;}
-    virtual const oms3::FMUInfo* getFMUInfo() const {return NULL;}
+    virtual const FMUInfo* getFMUInfo() const {return NULL;}
     System* getParentSystem() const {return parentSystem;}
     Model* getModel() const;
     void setGeometry(const ssd::ElementGeometry& geometry) {element.setGeometry(&geometry);}
@@ -95,12 +96,12 @@ namespace oms3
 
     DirectedGraph initialUnknownsGraph;
     DirectedGraph outputsGraph;
-    oms3::Element element;
-    std::vector<oms3::Connector*> connectors;
+    Element element;
+    std::vector<Connector*> connectors;
 
   private:
     System* parentSystem;
-    oms3::ComRef cref;
+    ComRef cref;
     oms_component_enu_t type;
     std::string path;
   };

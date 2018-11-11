@@ -107,13 +107,33 @@ oms3::Model* oms3::Component::getModel() const
   return parentSystem ? parentSystem->getModel() : NULL;
 }
 
-oms3::Connector* oms3::Component::getConnector(const oms3::ComRef &cref)
+oms3::Connector* oms3::Component::getConnector(const ComRef& cref)
 {
-  for(auto &connector : connectors) {
-    if(connector && connector->getName() == cref)
+  for (auto &connector : connectors)
+  {
+    if (connector && connector->getName() == cref)
       return connector;
   }
+
   return NULL;
+}
+
+oms_status_enu_t oms3::Component::deleteConnector(const ComRef& cref)
+{
+  for (int i=0; i<connectors.size(); ++i)
+  {
+    if (connectors[i] && connectors[i]->getName() == cref)
+    {
+      delete connectors[i];
+      connectors.pop_back();
+      connectors[i] = connectors.back();
+      connectors.back() = NULL;
+      element.setConnectors(&connectors[0]);
+      return oms_status_ok;
+    }
+  }
+
+  return oms_status_error;
 }
 
 oms_status_enu_t oms3::Component::deleteResources()
