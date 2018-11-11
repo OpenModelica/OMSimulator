@@ -65,6 +65,7 @@ namespace oms3
     ComRef getFullCref() const;
     Element* getElement() {return &element;}
     oms_status_enu_t list(const ComRef& cref, char** contents);
+    oms_status_enu_t listUnconnectedConnectors(char** contents) const;
     oms_system_enu_t getType() const {return type;}
     oms_status_enu_t addSubSystem(const ComRef& cref, oms_system_enu_t type);
     oms_status_enu_t addSubModel(const ComRef& cref, const std::string& fmuPath);
@@ -98,6 +99,7 @@ namespace oms3
     oms_status_enu_t addExternalModel(const ComRef &cref, std::string path, std::string startscript);
     oms_status_enu_t delete_(const ComRef& cref);
     oms_status_enu_t deleteAllConectionsTo(const ComRef& cref);
+    bool isConnected(const ComRef& cref) const;
     Model* getModel();
     System* getParentSystem() const {return parentSystem;}
     bool copyResources();

@@ -132,6 +132,21 @@ oms_status_enu_t oms3_list(const char* cref_, char** contents)
   return model->list(tail, contents);
 }
 
+oms_status_enu_t oms3_listUnconnectedConnectors(const char* cref_, char** contents)
+{
+  oms3::ComRef tail(cref_);
+  oms3::ComRef front = tail.pop_front();
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  oms3::System* system = model->getSystem(tail);
+  if (!system)
+    return logError_SystemNotInModel(front, tail);
+
+  return system->listUnconnectedConnectors(contents);
+}
+
 oms_status_enu_t oms3_parseModelName(const char* contents, char** cref)
 {
   return logError_NotImplemented;
