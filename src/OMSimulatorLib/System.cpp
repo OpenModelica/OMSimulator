@@ -301,6 +301,71 @@ oms_status_enu_t oms3::System::list(const oms3::ComRef& cref, char** contents)
   return logError("not implemented");
 }
 
+oms_status_enu_t oms3::System::listUnconnectedConnectors(char** contents) const
+{
+  if (!contents)
+    return oms_status_error;
+
+  std::vector<ComRef> unconnectedInputs;
+  std::vector<ComRef> unconnectedOutputs;
+  std::vector<ComRef> unconnectedBuses;
+
+  for (const auto& component : components)
+  {
+    Element* element = component.second->getElement();
+    Connector** connectors = element->getConnectors();
+    for (int i=0; connectors[i]; ++i)
+    {
+      ComRef cref(component.second->getCref() + connectors[i]->getName());
+      if (!isConnected(cref))
+      {
+        if (connectors[i]->isInput())
+          unconnectedInputs.push_back(getFullCref() + cref);
+        if (connectors[i]->isOutput())
+          unconnectedOutputs.push_back(getFullCref() + cref);
+      }
+    }
+  }
+
+  for (const auto& connector : connectors)
+  {
+    if (connector && !isConnected(connector->getName()))
+    {
+      const ComRef& cref = connector->getName();
+      if (!isConnected(cref))
+      {
+        if (connector->isInput())
+          unconnectedInputs.push_back(getFullCref() + cref);
+        if (connector->isOutput())
+          unconnectedOutputs.push_back(getFullCref() + cref);
+      }
+    }
+  }
+
+  for (const auto& busconnector : busconnectors)
+    if (busconnector && !isConnected(busconnector->getName()))
+      unconnectedBuses.push_back(getFullCref() + busconnector->getName());
+
+  for (const auto& tlmbusconnector : tlmbusconnectors)
+    if (tlmbusconnector && !isConnected(tlmbusconnector->getName()))
+      unconnectedBuses.push_back(getFullCref() + tlmbusconnector->getName());
+
+  std::string msg;
+  for (const auto& unconnectedInput : unconnectedInputs)
+    msg += "input " + std::string(unconnectedInput) + "\n";
+  for (const auto& unconnectedOutput : unconnectedOutputs)
+    msg += "output " + std::string(unconnectedOutput) + "\n";
+  for (const auto& unconnectedBus : unconnectedBuses)
+    msg += "bus " + std::string(unconnectedBus) + "\n";
+
+  if (!msg.empty())
+  {
+    *contents = (char*) malloc(msg.length() + 1);
+    strcpy(*contents, msg.c_str());
+  }
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms3::System::exportToSSD(pugi::xml_node& node) const
 {
   node.append_attribute("name") = this->getCref().c_str();
@@ -1190,6 +1255,15 @@ oms_status_enu_t oms3::System::deleteAllConectionsTo(const oms3::ComRef& cref)
   }
 
   return oms_status_ok;
+}
+
+bool oms3::System::isConnected(const ComRef& cref) const
+{
+  for (int i=0; i<connections.size(); ++i)
+    if (connections[i] && connections[i]->containsSignal(cref))
+      return true;
+
+  return false;
 }
 
 oms_status_enu_t oms3::System::delete_(const oms3::ComRef& cref)

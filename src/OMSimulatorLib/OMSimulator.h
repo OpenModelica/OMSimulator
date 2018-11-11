@@ -87,6 +87,7 @@ oms_status_enu_t oms3_importString(const char* contents, char** cref);
 oms_status_enu_t oms3_initialize(const char* cref);
 oms_status_enu_t oms3_instantiate(const char* cref);
 oms_status_enu_t oms3_list(const char* cref, char** contents);
+oms_status_enu_t oms3_listUnconnectedConnectors(const char* cref, char** contents);
 oms_status_enu_t oms3_newModel(const char* cref);
 oms_status_enu_t oms3_parseModelName(const char* contents, char** cref);
 oms_status_enu_t oms3_removeSignalsFromResults(const char* cref, const char* regex);
