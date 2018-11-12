@@ -66,6 +66,11 @@ oms_status_enu_t oms3_setLogFile(const char* filename)
   return Log::setLogFile(filename);
 }
 
+oms_status_enu_t oms3_setLoggingLevel(int logLevel)
+{
+  return Log::setLoggingLevel(logLevel);
+}
+
 void oms3_setMaxLogFileSize(const unsigned long size)
 {
   Log::setMaxLogFileSize(size);

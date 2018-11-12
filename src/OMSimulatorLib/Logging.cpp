@@ -254,12 +254,17 @@ oms_status_enu_t Log::setLogFile(const std::string& filename)
   return oms_status_ok;
 }
 
-void Log::setLoggingLevel(int logLevel)
+oms_status_enu_t Log::setLoggingLevel(int logLevel)
 {
+  if (logLevel < 0 || logLevel > 2)
+    return oms_status_error;
+
 #ifdef OMS_DEBUG_LOGGING
   Log& log = getInstance();
   log.logLevel = logLevel;
 #else
   Warning("Log::setDebugLogging is not available.");
 #endif
+
+return oms_status_ok;
 }
