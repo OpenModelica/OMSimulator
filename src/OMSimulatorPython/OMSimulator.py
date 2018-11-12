@@ -290,9 +290,6 @@ class OMSimulator:
     self.obj.oms3_exportDependencyGraphs.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms3_exportDependencyGraphs.restype = ctypes.c_int
 
-    self.obj.oms3_setTLMInitialValues.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.Array, ctypes.c_int]
-    self.obj.oms3_setTLMInitialValues.restype = ctypes.c_int
-
     self.obj.oms3_getReal.argtypes = [ctypes.c_char_p]
     self.obj.oms3_getReal.restype = ctypes.c_int
 
@@ -432,8 +429,6 @@ class OMSimulator:
     return self.obj.oms3_setTLMPositionAndOrientation(self.checkstring(cref), x1, x2, x3, A11, A12, A13, A21, A22, A23, A31, A32, A33)
   def oms3_exportDependencyGraphs(self, cref, initialization, simulation):
     return self.obj.oms3_exportDependencyGraphs(self.checkstring(cref), self.checkstring(initialization), self.checkstring(simulation))
-  def oms3_setTLMInitialValues(self, cref, ifc, values, nvalues):
-    return self.obj.oms3_setTLMInitialValues(self.checkstring(cref), self.checkstring(ifc), values, nvalues)
   def oms3_getReal(self, cref):
     value = ctypes.c_double()
     status = self.obj.oms3_getReal(self.checkstring(cref), ctypes.byref(value))

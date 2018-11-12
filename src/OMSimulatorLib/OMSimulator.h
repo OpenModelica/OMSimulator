@@ -108,7 +108,6 @@ oms_status_enu_t oms3_setStopTime(const char* cref, double stopTime);
 oms_status_enu_t oms3_setTempDirectory(const char* newTempDir);
 oms_status_enu_t oms3_setTLMBusGeometry(const char* bus, const ssd_connector_geometry_t* geometry);
 oms_status_enu_t oms3_setTLMConnectionParameters(const char* crefA, const char* crefB, const oms3_tlm_connection_parameters_t* parameters);
-oms_status_enu_t oms3_setTLMInitialValues(const char *cref, const char *ifc, const double values[], int nvalues);
 oms_status_enu_t oms3_setTLMPositionAndOrientation(const char *cref, double x1, double x2, double x3, double A11, double A12, double A13, double A21, double A22, double A23, double A31, double A32, double A33);
 oms_status_enu_t oms3_setTLMSocketData(const char* cref, const char* address, int managerPort, int monitorPort);
 oms_status_enu_t oms3_setWorkingDirectory(const char* newWorkingDir);

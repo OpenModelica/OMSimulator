@@ -870,27 +870,6 @@ oms_status_enu_t oms3_exportDependencyGraphs(const char* cref, const char* initi
   return system->exportDependencyGraphs(initialization, simulation);
 }
 
-oms_status_enu_t oms3_setTLMInitialValues(const char *cref, const char *ifc, const double values[], int nvalues)
-{
-  oms3::ComRef tail(cref);
-  oms3::ComRef front = tail.pop_front();
-
-  oms3::Model* model = oms3::Scope::GetInstance().getModel(front);
-  if (!model)
-    return logError_ModelNotInScope(front);
-
-  front = tail.pop_front();
-  oms3::System* system = model->getSystem(front);
-  if (!system)
-    return logError_SystemNotInModel(model->getCref(), front);
-
-  if (system->getType() != oms_system_tlm)
-    return logError_OnlyForTlmSystem;
-
-  oms3::SystemTLM* tlmsystem = reinterpret_cast<oms3::SystemTLM*>(system);
-  return tlmsystem->setInitialValues(tail, std::vector<double>(values, values+nvalues));
-}
-
 oms_status_enu_t oms3_getReal(const char* cref, double* value)
 {
   oms3::ComRef tail(cref);
