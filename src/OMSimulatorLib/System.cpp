@@ -1632,14 +1632,26 @@ oms_status_enu_t oms3::System::setReal(const ComRef& cref, double value)
   return oms_status_error;
 }
 
-oms_status_enu_t oms3::System::getReals(const std::vector<oms3::ComRef> &sr, std::vector<double> &values) const
+oms_status_enu_t oms3::System::getReals(const std::vector<oms3::ComRef> &sr, std::vector<double> &values)
 {
-  return logError_NotImplemented;
+  oms_status_enu_t status;
+  for(int i=0; i<sr.size(); ++i) {
+    status = getReal(sr[i],values[i]);
+    if(status != oms_status_ok)
+      break;
+  }
+  return status;
 }
 
 oms_status_enu_t oms3::System::setReals(const std::vector<oms3::ComRef> &crefs, std::vector<double> values)
 {
-  return logError_NotImplemented;
+  oms_status_enu_t status;
+  for(int i=0; i<crefs.size(); ++i) {
+    status = setReal(crefs[i],values[i]);
+    if(status != oms_status_ok)
+      break;
+  }
+  return status;
 }
 
 oms_status_enu_t oms3::System::setRealInputDerivatives(const oms3::ComRef &cref, int order, double value)
