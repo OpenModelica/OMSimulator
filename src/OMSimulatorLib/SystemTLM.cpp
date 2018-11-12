@@ -146,7 +146,13 @@ oms_status_enu_t oms3::SystemTLM::initialize()
       else if(tlmbus->getCausality() == oms_causality_bidir)
         causality = "bidirectional";
 
-      omtlm_addInterface(model, subsystem.second->getCref().c_str(), tlmbus->getName().c_str(),tlmbus->getDimensions(), causality.c_str(), tlmbus->getDomain().c_str());
+      //OMTLMSimulator uses degrees of freedom as "dimensions",
+      //so convert to this:
+      int dimensions = tlmbus->getDimensions();
+      if(dimensions == 2) dimensions = 3;
+      if(dimensions == 3) dimensions = 6;
+
+      omtlm_addInterface(model, subsystem.second->getCref().c_str(), tlmbus->getName().c_str(),dimensions, causality.c_str(), tlmbus->getDomain().c_str());
     }
   }
 
