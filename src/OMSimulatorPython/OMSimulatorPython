@@ -3,8 +3,17 @@
 SCRIPT=$(readlink -f "$0")
 SCRIPTPATH=$(dirname "$SCRIPT")
 
-if [ -z "$PYTHONPATH" ]; then export PYTHONPATH=$SCRIPTPATH/../lib; else export PYTHONPATH=$SCRIPTPATH/../lib:$PYTHONPATH; fi
-if [ -z "$LD_LIBRARY_PATH" ]; then export LD_LIBRARY_PATH=$SCRIPTPATH/../lib; else export LD_LIBRARY_PATH=$SCRIPTPATH/../lib:$LD_LIBRARY_PATH; fi
-if [ -z "$PATH" ]; then export PATH=$SCRIPTPATH/../lib; else export PATH=$SCRIPTPATH/../lib:$PATH; fi
+detected_OS="$(uname -s)"
+case "${detected_OS}" in
+  (Linux*)
+    if [ -z "$PYTHONPATH" ]; then export PYTHONPATH="$SCRIPTPATH/../lib"; else export PYTHONPATH="$SCRIPTPATH/../lib":$PYTHONPATH; fi
+    if [ -z "$LD_LIBRARY_PATH" ]; then export LD_LIBRARY_PATH="$SCRIPTPATH/../lib"; else export LD_LIBRARY_PATH="$SCRIPTPATH/../lib":$LD_LIBRARY_PATH; fi
+    ;;
+  (MINGW*)
+    if [ -z "$PYTHONPATH" ]; then export PYTHONPATH="$SCRIPTPATH/../lib"; else export PYTHONPATH="$SCRIPTPATH/../lib":$PYTHONPATH; fi
+    if [ -z "$LD_LIBRARY_PATH" ]; then export LD_LIBRARY_PATH="$SCRIPTPATH/../lib"; else export LD_LIBRARY_PATH="$SCRIPTPATH/../lib":$LD_LIBRARY_PATH; fi
+    if [ -z "$PATH" ]; then export PATH="$SCRIPTPATH/../lib"; else export PATH="$SCRIPTPATH/../lib":$PATH; fi
+    ;;
+esac
 
 python $@
