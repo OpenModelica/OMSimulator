@@ -6,6 +6,9 @@ pipeline {
   options {
     newContainerPerStage()
   }
+  parameters {
+    booleanParam(name: 'MSVC64', defaultValue: false, description: 'Build with MSVC64 (often hangs)')
+  }
   stages {
     stage('build') {
       parallel {
@@ -307,6 +310,10 @@ pipeline {
         }
 
         stage('msvc64') {
+          when {
+            expression { return params.MSVC64 }
+            beforeAgent true
+          }
           agent {
             label 'omsimulator-windows'
           }
