@@ -44,7 +44,6 @@
 /* ************************************ */
 /* oms3                                 */
 /*                                      */
-/* Experimental API                     */
 /* ************************************ */
 
 oms3::Model::Model(const oms3::ComRef& cref, const std::string& tempDir)
