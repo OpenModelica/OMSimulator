@@ -43,6 +43,7 @@ namespace oms3
 {
   class Model;
   class ComponentFMUME;
+  int cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data);
 
   class SystemSC : public System
   {
@@ -76,7 +77,7 @@ namespace oms3
     SystemSC& operator=(SystemSC const& copy); ///< not implemented
 
   private:
-    oms_solver_enu_t solverMethod = oms_solver_explicit_euler;
+    oms_solver_enu_t solverMethod = oms_solver_cvode;
     double time;
     double absoluteTolerance = 1e-4;
     double relativeTolerance = 1e-4;
@@ -113,6 +114,8 @@ namespace oms3
       SolverDataEuler_t euler;
       SolverDataCVODE_t cvode;
     } solverData;
+
+    friend int oms3::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data);
   };
 }
 
