@@ -49,7 +49,6 @@ private:
 
 public:
   bool validOptions;
-  bool describe;
   bool help;
   bool version;
   double startTime;
@@ -68,6 +67,7 @@ public:
   std::string solver;
   double timeout;
   int logLevel;
+  bool cs;
 
 private:
   int argi;

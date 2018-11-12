@@ -199,7 +199,6 @@ oms_status_enu_t oms3::Scope::importModel(const std::string& filename, char** _c
   if (!model) // that should be impossible
     return oms_status_error;
 
-
   // extract the ssp file
   oms3::Scope::miniunz(filename, model->getTempDirectory(), false);
 
@@ -256,15 +255,6 @@ oms_status_enu_t oms3::Scope::setWorkingDirectory(const std::string& newWorkingD
     return logError("Set working directory to \"" + newWorkingDir + "\" failed");
 
   boost::filesystem::current_path(path);
-  try
-  {
-    path = oms_canonical(path);
-  }
-  catch(std::exception e)
-  {
-    // do nothing, canonical fails if the directory contains a junction or a symlink!
-    // https://svn.boost.org/trac10/ticket/11138
-  }
 
   if (!Flags::SuppressPath())
     logInfo("Set working directory to \"" + newWorkingDir + "\"");

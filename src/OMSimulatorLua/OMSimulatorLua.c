@@ -33,7 +33,6 @@ void* topointer(lua_State *L, int index)
 /* ************************************ */
 /* oms3                                 */
 /*                                      */
-/* Experimental API                     */
 /* ************************************ */
 
 //const char* oms3_getVersion();
@@ -2370,7 +2369,6 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   /* ************************************ */
   /* oms3                                 */
   /*                                      */
-  /* Experimental API                     */
   /* ************************************ */
   REGISTER_LUA_CALL(oms3_addBus);
   REGISTER_LUA_CALL(oms3_addConnection);

@@ -46,34 +46,36 @@ extern "C"
   #include <OMSimulatorLua.c>
 }
 
-static int do_simulation(char* pModel, std::chrono::duration<double> timeout)
+static int do_simulation(std::string model, std::chrono::duration<double> timeout)
 {
   std::mutex m;
   std::condition_variable cv;
   int done=0;
-  std::string phase = "Timeout occurred during initialization";
+  std::string phase = "Timeout occurred during instantiation";
 
-  std::thread t([&m, &cv, &done, &phase, timeout]() // OMSimulator example.xml
+  std::thread t([&m, &cv, &done, &phase, timeout]()
   {
     std::unique_lock<std::mutex> l(m);
-    if (cv.wait_for(l, timeout) == std::cv_status::timeout) {
-      if (!done && timeout > std::chrono::seconds(0)) {
+    if (cv.wait_for(l, timeout) == std::cv_status::timeout)
+    {
+      if (!done && timeout > std::chrono::seconds(0))
+      {
         logError(phase);
         exit(1);
       }
     }
   });
 
-  oms2_initialize(pModel);
+  oms3_instantiate(model.c_str());
+  phase = "Timeout occurred during initialization";
+  oms3_initialize(model.c_str());
   phase = "Timeout occurred during simulation";
-  oms2_simulate(pModel);
+  oms3_simulate(model.c_str());
 
   done=1;
 
   cv.notify_one();
   t.join();
-
-  oms2_unloadModel(pModel);
 
   return 0;
 }
@@ -93,11 +95,11 @@ int main(int argc, char *argv[])
 
   if (options.version)
   {
-    std::cout << oms2_getVersion() << std::endl;
+    std::cout << oms3_getVersion() << std::endl;
     return 0;
   }
 
-  oms2_setLoggingLevel(options.logLevel);
+  //oms3_setLoggingLevel(options.logLevel);
 
   std::string filename = options.filename;
   std::string type = "";
@@ -109,60 +111,77 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-  oms2_setLogFile(options.logfile.c_str());
+  oms3_setLogFile(options.logfile.c_str());
 
   if (options.workingDir != "")
-    oms2_setWorkingDirectory(options.workingDir.c_str());
+    oms3_setWorkingDirectory(options.workingDir.c_str());
 
   if (options.tempDir != "")
-    oms2_setTempDirectory(options.tempDir.c_str());
+    oms3_setTempDirectory(options.tempDir.c_str());
 
-  if (type == "fmu" || type == "xml" || type == "ssd")
+  if (type == "fmu")
   {
-    char* name = NULL;
-    const char* defaultName = "model";
-    if (type == "fmu")
-    {
-      name = (char*)defaultName;
-      oms2_newFMIModel(name);
-      oms2_addFMU(name, filename.c_str(), "fmu");
+    std::string modelName("model");
+    std::string systemName = modelName + ".root";
+    std::string fmuName = systemName + ".fmu";
+    oms_fmi_kind_enu_t kind;
+    oms_status_enu_t status;
 
-      if (options.solver != "")
-      {
-        oms2_addSolver(name, "solver", options.solver.c_str());
-        oms2_addConnection(name, "fmu", "solver");
-      }
-    }
+    status = oms3_extractFMIKind(filename.c_str(), &kind);
+    if (oms_status_ok != status) return logError("oms3_extractFMIKind failed");
+
+    status = oms3_newModel(modelName.c_str());
+    if (oms_status_ok != status) return logError("oms3_newModel failed");
+
+    if (kind == oms_fmi_kind_me_and_cs)
+      status = oms3_addSystem(systemName.c_str(), options.cs ? oms_system_wc : oms_system_sc);
     else
-    {
-      oms2_loadModel(filename.c_str(), &name);
-      if (options.solver != "")
-        logWarning("--solver can only be used when simulating a single FMU");
-    }
+      status = oms3_addSystem(systemName.c_str(), (kind == oms_fmi_kind_cs) ? oms_system_wc : oms_system_sc);
+    if (oms_status_ok != status) return logError("oms3_addSystem failed");
+
+    status = oms3_addSubModel(fmuName.c_str(), filename.c_str());
+    if (oms_status_ok != status) return logError("oms3_addSubModel failed");
 
     if (options.resultFile != "")
-      oms2_setResultFile(name, options.resultFile.c_str(), 1);
+      oms3_setResultFile(modelName.c_str(), options.resultFile.c_str(), 1);
     if (options.useStartTime)
-      oms2_setStartTime(name, options.startTime);
+      oms3_setStartTime(modelName.c_str(), options.startTime);
     if (options.useStopTime)
-      oms2_setStopTime(name, options.stopTime);
+      oms3_setStopTime(modelName.c_str(), options.stopTime);
     if (options.useTolerance)
-      logWarning("--tolerance not supported yet");//oms2_setTolerance(name, options.tolerance);
+      oms3_setTolerance(systemName.c_str(), options.tolerance);
     if (options.useCommunicationInterval)
-      oms2_setCommunicationInterval(name, options.communicationInterval);
+      oms3_setFixedStepSize(systemName.c_str(), options.communicationInterval);
+    if (options.solver != "")
+      oms3_setSolver(systemName.c_str(), options.solver.c_str());
 
-    if (options.describe)
-    {
-      // OMSimulator --describe example.xml
-      //oms2_describe(name);
-      logWarning("--describe not supported yet");
-    }
-    else
-    {
-      return do_simulation(name, std::chrono::duration<double>(options.timeout));
-    }
+    int rc = do_simulation(modelName, std::chrono::duration<double>(options.timeout));
+    oms3_terminate(modelName.c_str());
+    oms3_delete(modelName.c_str());
+    return rc;
+  }
+  else if (type == "ssp")
+  {
+    char* cref;
+    oms3_import(filename.c_str(), &cref);
 
-    oms2_unloadModel(name);
+    if (options.resultFile != "")
+      oms3_setResultFile(cref, options.resultFile.c_str(), 1);
+    if (options.useStartTime)
+      oms3_setStartTime(cref, options.startTime);
+    if (options.useStopTime)
+      oms3_setStopTime(cref, options.stopTime);
+    if (options.useTolerance)
+      logWarning("Ignoring option '--tolerance'");
+    if (options.useCommunicationInterval)
+      logWarning("Ignoring option '--interval'");
+    if (options.solver != "")
+      logWarning("Ignoring option '--solver'");
+
+    int rc = do_simulation(std::string(cref), std::chrono::duration<double>(options.timeout));
+    oms3_terminate(cref);
+    oms3_delete(cref);
+    return rc;
   }
   else if (type == "lua")
   {
@@ -174,8 +193,6 @@ int main(int argc, char *argv[])
       logWarning("Ignoring option '--stopTime'");
     if (options.useTolerance)
       logWarning("Ignoring option '--tolerance'");
-    if (options.describe)
-      logWarning("Ignoring option '--describe'");
     if (options.useCommunicationInterval)
       logWarning("Ignoring option '--interval'");
     if (options.solver != "")

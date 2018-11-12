@@ -43,17 +43,17 @@
 #include "Scope.h"
 #include "System.h"
 #include "SystemTLM.h"
+#include "TLMBusConnector.h"
 #include "Types.h"
 #include "Version.h"
-#include "TLMBusConnector.h"
-
-#include <string>
 #include <boost/filesystem.hpp>
+#include <miniunz.h>
+#include <pugixml.hpp>
+#include <string>
 
 /* ************************************ */
 /* oms3                                 */
 /*                                      */
-/* Experimental API                     */
 /* ************************************ */
 
 const char* oms3_getVersion()
@@ -1106,6 +1106,72 @@ oms_status_enu_t oms3_getTLMVariableTypes(const char *domain, const int dimensio
   (*descriptions)[variableDescriptions.size()] = NULL;
 
   return oms_status_ok;
+}
+
+oms_status_enu_t oms3_extractFMIKind(const char* filename, oms_fmi_kind_enu_t* kind)
+{
+  if (!kind)
+    return logError("Invalid argument \"kind=NULL\"");
+
+  // Usage: miniunz [-e] [-x] [-v] [-l] [-o] [-p password] file.zip [file_to_extr.] [-d extractdir]
+  //        -e  Extract without pathname (junk paths)
+  //        -x  Extract with pathname
+  //        -v  list files
+  //        -l  list files
+  //        -d  directory to extract into
+  //        -o  overwrite files without prompting
+  //        -p  extract crypted file using password
+
+  std::string cd = oms3::Scope::GetInstance().getWorkingDirectory();
+  int argc = 6;
+  char **argv = new char*[argc];
+  int i=0;
+  argv[i++] = (char*)"miniunz";
+  argv[i++] = (char*)"-xo";
+  argv[i++] = (char*)filename;
+  argv[i++] = (char*)"modelDescription.xml";
+  argv[i++] = (char*)"-d";
+  argv[i++] = (char*)oms3::Scope::GetInstance().getTempDirectory().c_str();
+  int status = ::miniunz(argc, argv);
+  delete[] argv;
+  oms3::Scope::GetInstance().setWorkingDirectory(cd);
+
+  if (status != 0)
+    return logError("failed to extract modelDescription.xml from \"" + std::string(filename) + "\"");
+
+  std::string xml_file = oms3::Scope::GetInstance().getTempDirectory() + "/modelDescription.xml";
+  pugi::xml_document doc;
+  pugi::xml_parse_result result = doc.load_file(xml_file.c_str());
+  if (!result)
+    return logError("loading \"" + xml_file + "\" failed (" + std::string(result.description()) + ")");
+  const pugi::xml_node node = doc.document_element(); // ssd:SystemStructureDescription
+
+  bool cs = (node.child("CoSimulation").attribute("modelIdentifier").as_string() != "");
+  bool me = (node.child("ModelExchange").attribute("modelIdentifier").as_string() != "");
+
+  if (me && cs)
+    *kind = oms_fmi_kind_me_and_cs;
+  else if (me)
+    *kind = oms_fmi_kind_me;
+  else if (cs)
+    *kind = oms_fmi_kind_cs;
+  else
+  {
+    *kind = oms_fmi_kind_unknown;
+    return oms_status_error;
+  }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3_setSolver(const char* cref, const char* solver)
+{
+  return logError_NotImplemented;
+}
+
+oms_status_enu_t oms3_setTolerance(const char* cref, double tolerance)
+{
+  return logError_NotImplemented;
 }
 
 /* ************************************ */
