@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
     return 0;
   }
 
-  //oms3_setLoggingLevel(options.logLevel);
+  oms3_setLoggingLevel(options.logLevel);
 
   std::string filename = options.filename;
   std::string type = "";

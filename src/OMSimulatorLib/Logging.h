@@ -61,7 +61,7 @@ public:
   static void setMaxLogFileSize(const unsigned long size) {getInstance().limit=1024*1024*size;}
 
   static void setLoggingCallback(void (*cb)(oms_message_type_enu_t type, const char* message)) {getInstance().cb = cb;}
-  static void setLoggingLevel(int logLevel);
+  static oms_status_enu_t setLoggingLevel(int logLevel);
 
 private:
   Log();

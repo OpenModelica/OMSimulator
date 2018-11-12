@@ -102,6 +102,7 @@ oms_status_enu_t oms3_setElementGeometry(const char* cref, const ssd_element_geo
 oms_status_enu_t oms3_setFixedStepSize(const char* cref, double stepSize);
 oms_status_enu_t oms3_setInteger(const char* cref, int value);
 oms_status_enu_t oms3_setLogFile(const char* filename);
+oms_status_enu_t oms3_setLoggingLevel(int logLevel);
 oms_status_enu_t oms3_setReal(const char* cref, double value);
 oms_status_enu_t oms3_setResultFile(const char* cref, const char* filename, int bufferSize);
 oms_status_enu_t oms3_setSolver(const char* cref, const char* solver);
