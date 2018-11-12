@@ -36,6 +36,52 @@
 #include "Model.h"
 #include "Types.h"
 #include "ssd/Tags.h"
+#include "cvode/cvode.h"             /* prototypes for CVODE fcts., consts. */
+#include "nvector/nvector_serial.h"  /* serial N_Vector types, fcts., macros */
+#include "cvode/cvode_dense.h"       /* prototype for CVDense */
+#include "sundials/sundials_dense.h" /* definitions DlsMat DENSE_ELEM */
+#include "sundials/sundials_types.h" /* definition of type realtype */
+
+int oms3::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
+{
+  //std::cout << "\n[oms2::cvode_rhs] t=" << t << std::endl;
+  SystemSC* system = (SystemSC*)user_data;
+  oms_status_enu_t status;
+
+  // update states in FMUs
+  for (int i=0, j=0; i < system->fmus.size(); ++i)
+  {
+    if (0 == system->nStates[i])
+      continue;
+
+    for (int k = 0; k < system->nStates[i]; k++, j++)
+      system->states[i][k] = NV_Ith_S(y, j);
+
+    // set states
+    status = system->fmus[i]->setContinuousStates(system->states[i]);
+    if (oms_status_ok != status) return status;
+  }
+  //std::cout << "[oms3::cvode_rhs] y" << std::endl;
+  //N_VPrint_Serial(y);
+
+  system->updateInputs(system->outputsGraph);
+
+  // get state derivatives
+  for (int j=0, k=0; j < system->fmus.size(); ++j)
+  {
+    if (0 == system->nStates[j])
+      continue;
+
+    // get state derivatives
+    status = system->fmus[j]->getDerivatives(system->states_der[j]);
+    if (oms_status_ok != status) return status;
+
+    for (size_t i=0; i < system->nStates[j]; ++i, ++k)
+      NV_Ith_S(ydot, k) = system->states_der[j][i];
+  }
+
+  return 0;
+}
 
 oms3::SystemSC::SystemSC(const ComRef& cref, Model* parentModel, System* parentSystem)
   : oms3::System(cref, oms_system_sc, parentModel, parentSystem)
@@ -185,6 +231,74 @@ oms_status_enu_t oms3::SystemSC::initialize()
     if (oms_status_ok != status) return status;
   }
 
+  if (oms_solver_cvode == solverMethod)
+  {
+    size_t n_states = 0;
+    for (int i=0; i < fmus.size(); ++i)
+      n_states += nStates[i];
+
+    solverData.cvode.y = N_VNew_Serial(static_cast<long>(n_states));
+    if (!solverData.cvode.y) logError("SUNDIALS_ERROR: N_VNew_Serial() failed - returned NULL pointer");
+    for (int j=0, k=0; j < fmus.size(); ++j)
+      for (size_t i=0; i < nStates[j]; ++i, ++k)
+        NV_Ith_S(solverData.cvode.y, k) = states[j][i];
+    //N_VPrint_Serial(solverData.cvode.y);
+
+    solverData.cvode.abstol = N_VNew_Serial(static_cast<long>(n_states));
+    if (!solverData.cvode.abstol) logError("SUNDIALS_ERROR: N_VNew_Serial() failed - returned NULL pointer");
+    for (int j=0, k=0; j < fmus.size(); ++j)
+      for (size_t i=0; i < nStates[j]; ++i, ++k)
+        NV_Ith_S(solverData.cvode.abstol, k) = 0.01*relativeTolerance*states_nominal[j][i];
+    //N_VPrint_Serial(solverData.cvode.abstol);
+
+    // Call CVodeCreate to create the solver memory and specify the
+    // Backward Differentiation Formula and the use of a Newton iteration
+    solverData.cvode.mem = CVodeCreate(CV_BDF, CV_NEWTON);
+    if (!solverData.cvode.mem) logError("SUNDIALS_ERROR: CVodeCreate() failed - returned NULL pointer");
+
+    int flag = CVodeSetUserData(solverData.cvode.mem, (void*)this);
+    if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetUserData() failed with flag = " + std::to_string(flag));
+
+    // Call CVodeInit to initialize the integrator memory and specify the
+    // user's right hand side function in y'=cvode_rhs(t,y), the inital time T0, and
+    // the initial dependent variable vector y.
+    flag = CVodeInit(solverData.cvode.mem, cvode_rhs, time, solverData.cvode.y);
+    if (flag < 0) logError("SUNDIALS_ERROR: CVodeInit() failed with flag = " + std::to_string(flag));
+
+    // Call CVodeSVtolerances to specify the scalar relative tolerance
+    // and vector absolute tolerances
+    flag = CVodeSVtolerances(solverData.cvode.mem, relativeTolerance, solverData.cvode.abstol);
+    if (flag < 0) logError("SUNDIALS_ERROR: CVodeSVtolerances() failed with flag = " + std::to_string(flag));
+
+    // Call CVDense to specify the CVDENSE dense linear solver */
+    flag = CVDense(solverData.cvode.mem, static_cast<long>(n_states));
+    if (flag < 0) logError("SUNDIALS_ERROR: CVDense() failed with flag = " + std::to_string(flag));
+
+    const fmi2_real_t stopTime = 1.0;
+    double max_h = (stopTime - time) / 10.0;
+    logInfo("maximum step size for '" + std::string(getFullCref()) + "': " + std::to_string(max_h));
+    flag = CVodeSetMaxStep(solverData.cvode.mem, max_h);
+    if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetMaxStep() failed with flag = " + std::to_string(flag));
+
+    // further settings from cpp runtime
+    flag = CVodeSetInitStep(solverData.cvode.mem, 1e-6);        // INITIAL STEPSIZE
+    if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetInitStep() failed with flag = " + std::to_string(flag));
+    flag = CVodeSetMaxOrd(solverData.cvode.mem, 5);             // MAXIMUM ORDER
+    if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetMaxOrd() failed with flag = " + std::to_string(flag));
+    flag = CVodeSetMaxConvFails(solverData.cvode.mem, 100);     // MAXIMUM NUMBER OF NONLINEAR CONVERGENCE FAILURES
+    if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetMaxConvFails() failed with flag = " + std::to_string(flag));
+    flag = CVodeSetStabLimDet(solverData.cvode.mem, TRUE);      // STABILITY DETECTION
+    if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetStabLimDet() failed with flag = " + std::to_string(flag));
+    flag = CVodeSetMinStep(solverData.cvode.mem, 1e-12);        // MINIMUM STEPSIZE
+    if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetMinStep() failed with flag = " + std::to_string(flag));
+    flag = CVodeSetMaxNonlinIters(solverData.cvode.mem, 5);     // MAXIMUM NUMBER OF ITERATIONS
+    if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetMaxNonlinIters() failed with flag = " + std::to_string(flag));
+    flag = CVodeSetMaxErrTestFails(solverData.cvode.mem, 100);  // MAXIMUM NUMBER OF ERROR TEST FAILURES
+    if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetMaxErrTestFails() failed with flag = " + std::to_string(flag));
+    flag = CVodeSetMaxNumSteps(solverData.cvode.mem, 1000);     // MAXIMUM NUMBER OF STEPS
+    if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetMaxNumSteps() failed with flag = " + std::to_string(flag));
+  }
+
   if (oms_status_ok != updateDependencyGraphs())
     return oms_status_error;
 
@@ -203,6 +317,34 @@ oms_status_enu_t oms3::SystemSC::terminate()
   for (const auto& component : getComponents())
     if (oms_status_ok != component.second->terminate())
       return oms_status_error;
+
+  if (oms_solver_cvode == solverMethod && solverData.cvode.mem)
+  {
+    long int nst, nfe, nsetups, nni, ncfn, netf;
+    int flag;
+
+    flag = CVodeGetNumSteps(solverData.cvode.mem, &nst);
+    if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumSteps() failed with flag = " + std::to_string(flag));
+    flag = CVodeGetNumRhsEvals(solverData.cvode.mem, &nfe);
+    if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumRhsEvals() failed with flag = " + std::to_string(flag));
+    flag = CVodeGetNumLinSolvSetups(solverData.cvode.mem, &nsetups);
+    if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumLinSolvSetups() failed with flag = " + std::to_string(flag));
+    flag = CVodeGetNumErrTestFails(solverData.cvode.mem, &netf);
+    if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumErrTestFails() failed with flag = " + std::to_string(flag));
+    flag = CVodeGetNumNonlinSolvIters(solverData.cvode.mem, &nni);
+    if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumNonlinSolvIters() failed with flag = " + std::to_string(flag));
+    flag = CVodeGetNumNonlinSolvConvFails(solverData.cvode.mem, &ncfn);
+    if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumNonlinSolvConvFails() failed with flag = " + std::to_string(flag));
+
+    std::string msg = "Final Statistics for '" + std::string(getFullCref()) + "':\n";
+    msg += "NumSteps = " + std::to_string(nst) + " NumRhsEvals  = " + std::to_string(nfe) + " NumLinSolvSetups = " + std::to_string(nsetups) + "\n";
+    msg += "NumNonlinSolvIters = " + std::to_string(nni) + " NumNonlinSolvConvFails = " + std::to_string(ncfn) + " NumErrTestFails = " + std::to_string(netf);
+    logInfo(msg);
+
+    N_VDestroy_Serial(solverData.cvode.y);
+    N_VDestroy_Serial(solverData.cvode.abstol);
+    CVodeFree(&(solverData.cvode.mem));
+  }
 
   for (size_t i=0; i<fmus.size(); ++i)
   {
@@ -311,12 +453,11 @@ oms_status_enu_t oms3::SystemSC::stepUntil(double stopTime, void (*cb)(const cha
 
     // adjust time step
     fmi2_real_t hcur = tnext - tlast;
-    time = tnext;
     if (tnext > stopTime - hcur / 1e16)
     {
       // adjust final step size
-      time = stopTime;
-      hcur = time - tlast;
+      tnext = stopTime;
+      hcur = tnext - tlast;
     }
 
     // integrate using specified solver
@@ -338,10 +479,32 @@ oms_status_enu_t oms3::SystemSC::stepUntil(double stopTime, void (*cb)(const cha
         status = fmus[i]->setContinuousStates(states[i]);
         if (oms_status_ok != status) return status;
       }
+
+      // set time
+      time = tnext;
     }
     else if (oms_solver_cvode == solverMethod)
     {
-      logError_NotImplemented;
+      double cvode_time = tlast;
+      int flag = CVode(solverData.cvode.mem, tnext, solverData.cvode.y, &cvode_time, CV_NORMAL);
+      if (flag < 0) logError("SUNDIALS_ERROR: CVode() failed with flag = " + std::to_string(flag));
+
+      // set states
+      for (int i=0, j=0; i < fmus.size(); ++i)
+      {
+        if (0 == nStates[i])
+          continue;
+
+        for (int k = 0; k < nStates[i]; k++, j++)
+          states[i][k] = NV_Ith_S(solverData.cvode.y, j);
+
+        // set states
+        status = fmus[i]->setContinuousStates(states[i]);
+        if (oms_status_ok != status) return status;
+      }
+
+      // set time
+      time = cvode_time;
     }
     else
       logError("Unknown solver method");
@@ -353,8 +516,6 @@ oms_status_enu_t oms3::SystemSC::stepUntil(double stopTime, void (*cb)(const cha
       if (fmi2_status_ok != fmistatus) logError_FMUCall("fmi2_import_completed_integrator_step", fmus[i]);
     }
 
-    if (isTopLevelSystem())
-      getModel()->emit(time);
     updateInputs(outputsGraph);
     if (isTopLevelSystem())
       getModel()->emit(time);
@@ -368,8 +529,8 @@ oms_status_enu_t oms3::SystemSC::stepUntil(double stopTime, void (*cb)(const cha
       return oms_status_discard;
     }
   }
-  time = stopTime;
 
+  time = stopTime;
   return oms_status_ok;
 }
 
