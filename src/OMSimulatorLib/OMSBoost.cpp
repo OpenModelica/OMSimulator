@@ -73,18 +73,17 @@ boost::filesystem::path oms_canonical(boost::filesystem::path p)
 #endif
 }
 
-boost::filesystem::path oms_unique_path(std::string prefix)
+boost::filesystem::path oms_unique_path(const std::string& prefix)
 {
-#if (BOOST_VERSION >= 104500) // no temp_directory_path in boost < 1.45
-  return boost::filesystem::unique_path(prefix + "-%%%%");
-#else
-  int i;
+  const char lt[] = "0123456789abcdefghijklmnopqrstuvwxyz";
+  int size = strlen(lt);
+
   std::string s = prefix + "-";
-  for(i=0; i<4; i++)
-    s += std::string(1, ('A' + rand()%26));
+  for(int i=0; i<8; i++)
+    s += std::string(1, lt[rand() % size]);
+
   boost::filesystem::path p(s);
   return p;
-#endif
 }
 
 /*
