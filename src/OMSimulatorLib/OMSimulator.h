@@ -117,6 +117,7 @@ oms_status_enu_t oms3_setTolerance(const char* cref, double tolerance);
 oms_status_enu_t oms3_setWorkingDirectory(const char* newWorkingDir);
 oms_status_enu_t oms3_simulate_asynchronous(const char* cref, void (*cb)(const char* cref, double time, oms_status_enu_t status));
 oms_status_enu_t oms3_simulate(const char* cref);
+oms_status_enu_t oms3_stepUntil(const char* cref, double stopTime);
 oms_status_enu_t oms3_terminate(const char* cref);
 
 /* not implemented yet */

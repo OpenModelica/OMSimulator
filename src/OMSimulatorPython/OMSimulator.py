@@ -278,6 +278,9 @@ class OMSimulator:
     self.obj.oms3_simulate.argtypes = [ctypes.c_char_p]
     self.obj.oms3_simulate.restype = ctypes.c_int
 
+    self.obj.oms3_stepUntil.argtypes = [ctypes.c_char_p, ctypes.c_double]
+    self.obj.oms3_stepUntil.restype = ctypes.c_int
+
     self.obj.oms3_terminate.argtypes = [ctypes.c_char_p]
     self.obj.oms3_terminate.restype = ctypes.c_int
 
@@ -421,6 +424,8 @@ class OMSimulator:
     return self.obj.oms3_initialize(self.checkstring(cref))
   def oms3_simulate(self, cref):
     return self.obj.oms3_simulate(self.checkstring(cref))
+  def oms3_stepUntil(self, cref, stopTime):
+    return self.obj.oms3_stepUntil(self.checkstring(cref), stopTime)
   def oms3_terminate(self, cref):
     return self.obj.oms3_terminate(self.checkstring(cref))
   def oms3_setTLMSocketData(self, cref, address, managerPort, monitorPort):
