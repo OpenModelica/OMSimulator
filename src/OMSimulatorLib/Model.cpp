@@ -498,6 +498,26 @@ oms_status_enu_t oms3::Model::simulate()
   return status;
 }
 
+oms_status_enu_t oms3::Model::stepUntil(double stopTime)
+{
+  clock.tic();
+  if (oms_modelState_simulation != modelState)
+  {
+    clock.toc();
+    return logError_ModelInWrongState(this);
+  }
+
+  if (!system)
+  {
+    clock.toc();
+    return logError("Model doesn't contain a system");
+  }
+
+  oms_status_enu_t status = system->stepUntil(stopTime, NULL);
+  clock.toc();
+  return status;
+}
+
 oms_status_enu_t oms3::Model::terminate()
 {
   if (oms_modelState_terminated == modelState)

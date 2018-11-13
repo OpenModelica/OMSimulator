@@ -39,25 +39,22 @@ boost::filesystem::path oms_temp_directory_path(void)
 #else
 
 #if (_WIN32)
+  char* val = (char*)malloc(sizeof(char)*(MAX_PATH + 1));
+  GetTempPath(MAX_PATH, val);
 
- char* val = (char*)malloc(sizeof(char)*(MAX_PATH + 1));
- GetTempPath(MAX_PATH, val);
-
- boost::filesystem::path p((val!=0) ? val : "/tmp");
- if (val) free(val);
- return p;
-
+  boost::filesystem::path p((val!=0) ? val : "/tmp");
+  if (val) free(val);
+  return p;
 #else
+  const char* val = 0;
 
- const char* val = 0;
+  (val = std::getenv("TMPDIR" )) ||
+  (val = std::getenv("TMP"    )) ||
+  (val = std::getenv("TEMP"   )) ||
+  (val = std::getenv("TEMPDIR"));
 
- (val = std::getenv("TMPDIR" )) ||
- (val = std::getenv("TMP"    )) ||
- (val = std::getenv("TEMP"   )) ||
- (val = std::getenv("TEMPDIR"));
-
- boost::filesystem::path p((val!=0) ? val : "/tmp");
- return p;
+  boost::filesystem::path p((val!=0) ? val : "/tmp");
+  return p;
 #endif // win32
 
 #endif // boost version
