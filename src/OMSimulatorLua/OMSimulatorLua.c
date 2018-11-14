@@ -696,6 +696,19 @@ static int OMSimulatorLua_oms3_terminate(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms3_reset(const char* ident);
+static int OMSimulatorLua_oms3_reset(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* ident = lua_tostring(L, 1);
+  oms_status_enu_t status = oms3_reset(ident);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
 //oms_status_enu_t oms3_simulate(const char* cref);
 static int OMSimulatorLua_oms3_simulate(lua_State *L)
 {
@@ -2420,6 +2433,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms3_parseModelName);
   REGISTER_LUA_CALL(oms3_removeSignalsFromResults);
   REGISTER_LUA_CALL(oms3_rename);
+  REGISTER_LUA_CALL(oms3_reset);
   REGISTER_LUA_CALL(oms3_setBoolean);
   REGISTER_LUA_CALL(oms3_setCommandLineOption);
   REGISTER_LUA_CALL(oms3_setFixedStepSize);

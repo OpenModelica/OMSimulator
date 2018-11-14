@@ -483,6 +483,15 @@ oms_status_enu_t oms3::ComponentFMUME::terminate()
   return oms_status_ok;
 }
 
+oms_status_enu_t oms3::ComponentFMUME::reset()
+{
+  fmi2_status_t fmistatus = fmi2_import_reset(fmu);
+  if (fmi2_status_ok != fmistatus)
+    return logError_ResetFailed(getCref());
+
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms3::ComponentFMUME::getBoolean(const ComRef& cref, bool& value)
 {
   int j=-1;
