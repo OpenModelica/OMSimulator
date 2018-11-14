@@ -344,6 +344,7 @@ oms_status_enu_t oms3::SystemSC::terminate()
     N_VDestroy_Serial(solverData.cvode.y);
     N_VDestroy_Serial(solverData.cvode.abstol);
     CVodeFree(&(solverData.cvode.mem));
+    solverData.cvode.mem = NULL;
   }
 
   for (size_t i=0; i<fmus.size(); ++i)
@@ -405,27 +406,8 @@ oms_status_enu_t oms3::SystemSC::reset()
     N_VDestroy_Serial(solverData.cvode.y);
     N_VDestroy_Serial(solverData.cvode.abstol);
     CVodeFree(&(solverData.cvode.mem));
+    solverData.cvode.mem = NULL;
   }
-
-  for (size_t i=0; i<fmus.size(); ++i)
-  {
-    free(states[i]);
-    free(states_der[i]);
-    free(states_nominal[i]);
-    free(event_indicators[i]);
-    free(event_indicators_prev[i]);
-  }
-
-  fmus.clear();
-  callEventUpdate.clear();
-  terminateSimulation.clear();
-  nStates.clear();
-  nEventIndicators.clear();
-  states.clear();
-  states_der.clear();
-  states_nominal.clear();
-  event_indicators.clear();
-  event_indicators_prev.clear();
 
   return oms_status_ok;
 }

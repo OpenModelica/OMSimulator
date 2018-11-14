@@ -489,6 +489,22 @@ oms_status_enu_t oms3::ComponentFMUME::reset()
   if (fmi2_status_ok != fmistatus)
     return logError_ResetFailed(getCref());
 
+  // enterInitialization
+  const double& startTime = getParentSystem()->getModel()->getStartTime();
+  const double& tolerance = dynamic_cast<SystemSC*>(getParentSystem())->getTolerance();
+  fmistatus = fmi2_import_setup_experiment(fmu, fmi2_true, tolerance, startTime, fmi2_false, 1.0);
+  if (fmi2_status_ok != fmistatus) return logError_FMUCall("fmi2_import_setup_experiment", this);
+
+  fmistatus = fmi2_import_enter_initialization_mode(fmu);
+  if (fmi2_status_ok != fmistatus) return logError_FMUCall("fmi2_import_enter_initialization_mode", this);
+
+  eventInfo.newDiscreteStatesNeeded = fmi2_false;
+  eventInfo.terminateSimulation = fmi2_false;
+  eventInfo.nominalsOfContinuousStatesChanged = fmi2_false;
+  eventInfo.valuesOfContinuousStatesChanged = fmi2_true;
+  eventInfo.nextEventTimeDefined = fmi2_false;
+  eventInfo.nextEventTime = -0.0;
+
   return oms_status_ok;
 }
 
