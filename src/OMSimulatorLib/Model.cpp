@@ -416,7 +416,7 @@ oms_status_enu_t oms3::Model::initialize()
     }
   }
   else
-    resultFile = new VoidWriter(1);
+    logInfo("No result file will be created");
 
   if (oms_status_ok != system->initialize())
   {
@@ -544,6 +544,9 @@ oms_status_enu_t oms3::Model::terminate()
 
 oms_status_enu_t oms3::Model::registerSignalsForResultFile()
 {
+  if (!resultFile)
+    return oms_status_ok;
+
   clock_id = resultFile->addSignal("wallTime", "wall-clock time [s]", SignalType_REAL);
   if (system)
     if (oms_status_ok != system->registerSignalsForResultFile(*resultFile))
@@ -553,6 +556,9 @@ oms_status_enu_t oms3::Model::registerSignalsForResultFile()
 
 oms_status_enu_t oms3::Model::emit(double time)
 {
+  if (!resultFile)
+    return oms_status_ok;
+
   SignalValue_t wallTime;
   wallTime.realValue = clock.getElapsedWallTime();
   resultFile->updateSignal(clock_id, wallTime);
