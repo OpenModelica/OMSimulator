@@ -369,6 +369,67 @@ oms_status_enu_t oms3::SystemSC::terminate()
   return oms_status_ok;
 }
 
+oms_status_enu_t oms3::SystemSC::reset()
+{
+  for (const auto& subsystem : getSubSystems())
+    if (oms_status_ok != subsystem.second->reset())
+      return oms_status_error;
+
+  for (const auto& component : getComponents())
+    if (oms_status_ok != component.second->reset())
+      return oms_status_error;
+
+  if (oms_solver_cvode == solverMethod && solverData.cvode.mem)
+  {
+    long int nst, nfe, nsetups, nni, ncfn, netf;
+    int flag;
+
+    flag = CVodeGetNumSteps(solverData.cvode.mem, &nst);
+    if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumSteps() failed with flag = " + std::to_string(flag));
+    flag = CVodeGetNumRhsEvals(solverData.cvode.mem, &nfe);
+    if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumRhsEvals() failed with flag = " + std::to_string(flag));
+    flag = CVodeGetNumLinSolvSetups(solverData.cvode.mem, &nsetups);
+    if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumLinSolvSetups() failed with flag = " + std::to_string(flag));
+    flag = CVodeGetNumErrTestFails(solverData.cvode.mem, &netf);
+    if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumErrTestFails() failed with flag = " + std::to_string(flag));
+    flag = CVodeGetNumNonlinSolvIters(solverData.cvode.mem, &nni);
+    if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumNonlinSolvIters() failed with flag = " + std::to_string(flag));
+    flag = CVodeGetNumNonlinSolvConvFails(solverData.cvode.mem, &ncfn);
+    if (flag < 0) logError("SUNDIALS_ERROR: CVodeGetNumNonlinSolvConvFails() failed with flag = " + std::to_string(flag));
+
+    std::string msg = "Final Statistics for '" + std::string(getFullCref()) + "':\n";
+    msg += "NumSteps = " + std::to_string(nst) + " NumRhsEvals  = " + std::to_string(nfe) + " NumLinSolvSetups = " + std::to_string(nsetups) + "\n";
+    msg += "NumNonlinSolvIters = " + std::to_string(nni) + " NumNonlinSolvConvFails = " + std::to_string(ncfn) + " NumErrTestFails = " + std::to_string(netf);
+    logInfo(msg);
+
+    N_VDestroy_Serial(solverData.cvode.y);
+    N_VDestroy_Serial(solverData.cvode.abstol);
+    CVodeFree(&(solverData.cvode.mem));
+  }
+
+  for (size_t i=0; i<fmus.size(); ++i)
+  {
+    free(states[i]);
+    free(states_der[i]);
+    free(states_nominal[i]);
+    free(event_indicators[i]);
+    free(event_indicators_prev[i]);
+  }
+
+  fmus.clear();
+  callEventUpdate.clear();
+  terminateSimulation.clear();
+  nStates.clear();
+  nEventIndicators.clear();
+  states.clear();
+  states_der.clear();
+  states_nominal.clear();
+  event_indicators.clear();
+  event_indicators_prev.clear();
+
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms3::SystemSC::stepUntil(double stopTime, void (*cb)(const char* ident, double time, oms_status_enu_t status))
 {
   if (0 == fmus.size())

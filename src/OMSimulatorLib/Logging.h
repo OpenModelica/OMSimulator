@@ -124,6 +124,7 @@ private:
 #define logError_SubSystemNotInSystem(system, subsystem)     logError("System \"" + std::string(system) + "\" does not contain subsystem \"" + std::string(subsystem) + "\"")
 #define logError_SystemNotInModel(model, system)             logError("Model \"" + std::string(model) + "\" does not contain system \"" + std::string(system) + "\"")
 #define logError_Termination(system)                         logError("Termination of system \"" + std::string(system) + "\" failed")
+#define logError_ResetFailed(system)                         logError("failed to reset system \"" + std::string(system) + "\" to instantiation mode")
 #define logError_WrongSchema(name)                           logError("Wrong xml schema detected. Unexpected tag \"" + name + "\"")
 #define logError_InvalidIdent(cref)                          logError("\"" + std::string(cref) + "\" is not a valid ident")
 #define logError_AlreadyInScope(cref)                        logError("\"" + std::string(cref) + "\" already exists in the scope")

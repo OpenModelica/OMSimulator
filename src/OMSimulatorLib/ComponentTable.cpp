@@ -167,19 +167,9 @@ oms_status_enu_t oms3::ComponentTable::exportToSSD(pugi::xml_node& node) const
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::ComponentTable::instantiate()
-{
-  return oms_status_ok;
-}
-
 oms_status_enu_t oms3::ComponentTable::initialize()
 {
   time = getModel()->getStartTime();
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms3::ComponentTable::terminate()
-{
   return oms_status_ok;
 }
 

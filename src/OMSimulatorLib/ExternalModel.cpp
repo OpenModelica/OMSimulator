@@ -125,6 +125,11 @@ oms_status_enu_t oms3::ExternalModel::terminate()
   return logError_NotImplemented;
 }
 
+oms_status_enu_t oms3::ExternalModel::reset()
+{
+  return logError_NotImplemented;
+}
+
 oms_status_enu_t oms3::ExternalModel::registerSignalsForResultFile(ResultWriter& resultFile)
 {
   return logError_NotImplemented;

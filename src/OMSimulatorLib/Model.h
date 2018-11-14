@@ -78,6 +78,7 @@ namespace oms3
     oms_status_enu_t simulate();
     oms_status_enu_t stepUntil(double stopTime);
     oms_status_enu_t terminate();
+    oms_status_enu_t reset();
 
     oms_modelState_enu_t getModelState() const {return modelState;}
 

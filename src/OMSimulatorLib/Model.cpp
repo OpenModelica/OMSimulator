@@ -542,6 +542,27 @@ oms_status_enu_t oms3::Model::terminate()
   return oms_status_ok;
 }
 
+oms_status_enu_t oms3::Model::reset()
+{
+  if (oms_modelState_simulation != modelState)
+    return logError_ModelInWrongState(this);
+
+  if (!system)
+    return logError("Model doesn't contain a system");
+
+  if (oms_status_ok != system->reset())
+    return logError_ResetFailed(system->getFullCref());
+
+  if (resultFile)
+  {
+    delete resultFile;
+    resultFile = NULL;
+  }
+
+  modelState = oms_modelState_instantiated;
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms3::Model::registerSignalsForResultFile()
 {
   if (!resultFile)

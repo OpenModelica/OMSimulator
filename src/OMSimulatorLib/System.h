@@ -114,6 +114,7 @@ namespace oms3
     virtual oms_status_enu_t instantiate() = 0;
     virtual oms_status_enu_t initialize() = 0;
     virtual oms_status_enu_t terminate() = 0;
+    virtual oms_status_enu_t reset() = 0;
     virtual oms_status_enu_t stepUntil(double stopTime, void (*cb)(const char* ident, double time, oms_status_enu_t status)) = 0;
 
     oms_status_enu_t getBoolean(const ComRef& cref, bool& value);

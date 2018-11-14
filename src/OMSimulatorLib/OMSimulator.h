@@ -93,6 +93,7 @@ oms_status_enu_t oms3_newModel(const char* cref);
 oms_status_enu_t oms3_parseModelName(const char* contents, char** cref);
 oms_status_enu_t oms3_removeSignalsFromResults(const char* cref, const char* regex);
 oms_status_enu_t oms3_rename(const char* cref, const char* newCref);
+oms_status_enu_t oms3_reset(const char* cref);
 oms_status_enu_t oms3_setBoolean(const char* cref, bool value);
 oms_status_enu_t oms3_setBusGeometry(const char* bus, const ssd_connector_geometry_t* geometry);
 oms_status_enu_t oms3_setCommandLineOption(const char* cmd);

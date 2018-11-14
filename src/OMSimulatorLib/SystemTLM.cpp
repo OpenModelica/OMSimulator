@@ -173,6 +173,14 @@ oms_status_enu_t oms3::SystemTLM::terminate()
   return oms_status_ok;
 }
 
+oms_status_enu_t oms3::SystemTLM::reset()
+{
+  for (const auto& subsystem : getSubSystems())
+    if (oms_status_ok != subsystem.second->reset())
+      return oms_status_error;
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms3::SystemTLM::stepUntil(double stopTime, void (*cb)(const char* ident, double time, oms_status_enu_t status))
 {
   omtlm_setStartTime(model, getModel()->getStartTime());

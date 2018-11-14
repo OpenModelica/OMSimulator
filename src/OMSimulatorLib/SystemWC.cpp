@@ -130,6 +130,19 @@ oms_status_enu_t oms3::SystemWC::terminate()
   return oms_status_ok;
 }
 
+oms_status_enu_t oms3::SystemWC::reset()
+{
+  for (const auto& subsystem : getSubSystems())
+    if (oms_status_ok != subsystem.second->reset())
+      return oms_status_error;
+
+  for (const auto& component : getComponents())
+    if (oms_status_ok != component.second->reset())
+      return oms_status_error;
+
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms3::SystemWC::stepUntil(double stopTime, void (*cb)(const char* ident, double time, oms_status_enu_t status))
 {
   ComRef modelName = this->getModel()->getCref();
