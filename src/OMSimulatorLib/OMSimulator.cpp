@@ -66,6 +66,22 @@ oms_status_enu_t oms3_setLogFile(const char* filename)
   return Log::setLogFile(filename);
 }
 
+oms_status_enu_t oms3_setLoggingInterval(const char* cref_, double loggingInterval)
+{
+  oms3::ComRef cref(cref_);
+
+  if (cref.isValidIdent())
+  {
+    oms3::Model* model = oms3::Scope::GetInstance().getModel(cref);
+    if (!model)
+      return logError_ModelNotInScope(cref);
+
+    return model->setLoggingInterval(loggingInterval);
+  }
+  else
+    return logError_OnlyForModel;
+}
+
 oms_status_enu_t oms3_setLoggingLevel(int logLevel)
 {
   return Log::setLoggingLevel(logLevel);
@@ -999,16 +1015,20 @@ oms_status_enu_t oms3_setBoolean(const char* cref, bool value)
   return system->setBoolean(tail, value);
 }
 
-oms_status_enu_t oms3_setResultFile(const char* cref, const char* filename, int bufferSize)
+oms_status_enu_t oms3_setResultFile(const char* cref_, const char* filename, int bufferSize)
 {
-  oms3::ComRef tail(cref);
-  oms3::ComRef front = tail.pop_front();
+  oms3::ComRef cref(cref_);
 
-  oms3::Model* model = oms3::Scope::GetInstance().getModel(front);
-  if (!model)
-    return logError_ModelNotInScope(front);
+  if (cref.isValidIdent())
+  {
+    oms3::Model* model = oms3::Scope::GetInstance().getModel(cref);
+    if (!model)
+      return logError_ModelNotInScope(cref);
 
-  return model->setResultFile(filename, bufferSize);
+    return model->setResultFile(filename, bufferSize);
+  }
+  else
+    return logError_OnlyForModel;
 }
 
 oms_status_enu_t oms3_addSignalsToResults(const char* cref, const char* regex)

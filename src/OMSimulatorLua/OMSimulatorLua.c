@@ -60,6 +60,21 @@ static int OMSimulatorLua_oms3_setLogFile(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms3_setLoggingInterval(const char* cref, double loggingInterval);
+static int OMSimulatorLua_oms3_setLoggingInterval(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 arguments");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TNUMBER);
+
+  const char* cref = lua_tostring(L, 1);
+  double loggingInterval = lua_tonumber(L, 2);
+  oms_status_enu_t status = oms3_setLoggingInterval(cref, loggingInterval);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
 //void oms3_setMaxLogFileSize(const unsigned long size);
 static int OMSimulatorLua_oms3_setMaxLogFileSize(lua_State *L)
 {
@@ -2439,6 +2454,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms3_setFixedStepSize);
   REGISTER_LUA_CALL(oms3_setInteger);
   REGISTER_LUA_CALL(oms3_setLogFile);
+  REGISTER_LUA_CALL(oms3_setLoggingInterval);
   REGISTER_LUA_CALL(oms3_setMaxLogFileSize);
   REGISTER_LUA_CALL(oms3_setReal);
   REGISTER_LUA_CALL(oms3_setResultFile);

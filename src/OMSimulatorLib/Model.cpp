@@ -398,6 +398,7 @@ oms_status_enu_t oms3::Model::initialize()
   clock.tic();
 
   cancelSim = false;
+  lastEmit = startTime;
 
   if (!resultFilename.empty())
   {
@@ -563,6 +564,14 @@ oms_status_enu_t oms3::Model::reset()
   return oms_status_ok;
 }
 
+oms_status_enu_t oms3::Model::setLoggingInterval(double loggingInterval)
+{
+  if (loggingInterval < 0.0)
+    this->loggingInterval = 0.0;
+  this->loggingInterval = loggingInterval;
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms3::Model::registerSignalsForResultFile()
 {
   if (!resultFile)
@@ -586,7 +595,12 @@ oms_status_enu_t oms3::Model::emit(double time)
   if (system)
     if (oms_status_ok != system->updateSignals(*resultFile, time))
       return oms_status_error;
+
+  if (time > startTime && time < stopTime && time < lastEmit + loggingInterval)
+    return oms_status_ok;
+
   resultFile->emit(time);
+  lastEmit = time;
   return oms_status_ok;
 }
 

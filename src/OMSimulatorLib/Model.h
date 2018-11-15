@@ -87,6 +87,7 @@ namespace oms3
     oms_status_enu_t setStopTime(double value);
     double getStopTime() const {return stopTime;}
 
+    oms_status_enu_t setLoggingInterval(double loggingInterval);
     oms_status_enu_t setResultFile(const std::string& filename, int bufferSize);
     oms_status_enu_t emit(double time);
     oms_status_enu_t addSignalsToResults(const char* regex);
@@ -119,8 +120,10 @@ namespace oms3
     double stopTime = 1.0;
 
     ResultWriter* resultFile = NULL;
+    double lastEmit;
+    double loggingInterval = 0.0;
     int bufferSize = 10;
-    std::string resultFilename;             ///< experiment, default <name>_res.mat
+    std::string resultFilename;             ///< default <name>_res.mat
     Clock clock;
     unsigned int clock_id;
 
