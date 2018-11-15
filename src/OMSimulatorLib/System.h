@@ -131,7 +131,7 @@ namespace oms3
     bool isTopLevelSystem() const {return (parentSystem == NULL);}
 
     oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultFile);
-    oms_status_enu_t updateSignals(ResultWriter& resultFile, double time);
+    oms_status_enu_t updateSignals(ResultWriter& resultFile);
 
     virtual oms_status_enu_t setFixedStepSize(double stepSize) {return oms_status_error;}
 

@@ -135,7 +135,7 @@ oms_status_enu_t oms3::ExternalModel::registerSignalsForResultFile(ResultWriter&
   return logError_NotImplemented;
 }
 
-oms_status_enu_t oms3::ExternalModel::updateSignals(ResultWriter& resultWriter, double time)
+oms_status_enu_t oms3::ExternalModel::updateSignals(ResultWriter& resultWriter)
 {
   return logError_NotImplemented;
 }

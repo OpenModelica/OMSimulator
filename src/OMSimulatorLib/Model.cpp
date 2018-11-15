@@ -588,16 +588,15 @@ oms_status_enu_t oms3::Model::emit(double time)
 {
   if (!resultFile)
     return oms_status_ok;
+  if (time > lastEmit && time < stopTime && time < lastEmit + loggingInterval)
+    return oms_status_ok;
 
   SignalValue_t wallTime;
   wallTime.realValue = clock.getElapsedWallTime();
   resultFile->updateSignal(clock_id, wallTime);
   if (system)
-    if (oms_status_ok != system->updateSignals(*resultFile, time))
+    if (oms_status_ok != system->updateSignals(*resultFile))
       return oms_status_error;
-
-  if (time > startTime && time < stopTime && time < lastEmit + loggingInterval)
-    return oms_status_ok;
 
   resultFile->emit(time);
   lastEmit = time;
