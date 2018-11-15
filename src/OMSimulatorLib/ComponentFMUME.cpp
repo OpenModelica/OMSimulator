@@ -39,6 +39,7 @@
 #include <fmilib.h>
 #include <JM/jm_portability.h>
 #include <OMSBoost.h>
+#include <RegEx.h>
 
 oms3::ComponentFMUME::ComponentFMUME(const ComRef& cref, System* parentSystem, const std::string& fmuPath)
   : oms3::Component(cref, oms_component_fmu, parentSystem, fmuPath), fmuInfo(fmuPath, oms_fmi_kind_me)
@@ -152,11 +153,13 @@ oms3::Component* oms3::ComponentFMUME::NewComponent(const oms3::ComRef& cref, om
   size_t varListSize = fmi2_import_get_variable_list_size(varList);
   logDebug(std::to_string(varListSize) + " variables");
   component->allVariables.reserve(varListSize);
+  component->exportVariables.reserve(varListSize);
   for (size_t i = 0; i < varListSize; ++i)
   {
     fmi2_import_variable_t* var = fmi2_import_get_variable(varList, i);
     oms3::Variable v(var, i + 1);
     component->allVariables.push_back(v);
+    component->exportVariables.push_back(true);
   }
   fmi2_import_free_variable_list(varList);
 
@@ -661,8 +664,8 @@ oms_status_enu_t oms3::ComponentFMUME::registerSignalsForResultFile(ResultWriter
 
   for (unsigned int i=0; i<allVariables.size(); ++i)
   {
-    //if (!exportVariables[i])
-    //  continue;
+    if (!exportVariables[i])
+      continue;
 
     auto const &var = allVariables[i];
     std::string name = std::string(getFullCref() + var.getCref());
@@ -780,5 +783,43 @@ oms_status_enu_t oms3::ComponentFMUME::getEventindicators(double* eventindicator
   fmi2_status_t fmistatus = fmi2_import_get_event_indicators(fmu, eventindicators, nEventIndicators);
   if (fmi2_status_ok != fmistatus)
     return logError_FMUCall("fmi2_import_get_event_indicators", this);
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::ComponentFMUME::addSignalsToResults(const char* regex)
+{
+  oms_regex exp(regex);
+  for (unsigned int i=0; i<allVariables.size(); ++i)
+  {
+    if (exportVariables[i])
+      continue;
+
+    auto const &var = allVariables[i];
+    if(regex_match(std::string(getFullCref() + var.getCref()), exp))
+    {
+      //logInfo("added \"" + std::string(getFullCref() + var.getCref()) + "\" to results");
+      exportVariables[i] = true;
+    }
+  }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::ComponentFMUME::removeSignalsFromResults(const char* regex)
+{
+  oms_regex exp(regex);
+  for (unsigned int i=0; i<allVariables.size(); ++i)
+  {
+    if (!exportVariables[i])
+      continue;
+
+    auto const &var = allVariables[i];
+    if(regex_match(std::string(getFullCref() + var.getCref()), exp))
+    {
+      //logInfo("removed \"" + std::string(getFullCref() + var.getCref()) + "\" from results");
+      exportVariables[i] = false;
+    }
+  }
+
   return oms_status_ok;
 }

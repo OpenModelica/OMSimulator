@@ -95,6 +95,8 @@ namespace oms3
 
     virtual oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultFile) = 0;
     virtual oms_status_enu_t updateSignals(ResultWriter& resultWriter) = 0;
+    virtual oms_status_enu_t addSignalsToResults(const char* regex) = 0;
+    virtual oms_status_enu_t removeSignalsFromResults(const char* regex) = 0;
 
   protected:
     Component(const ComRef& cref, oms_component_enu_t type, System* parentSystem, const std::string& path);

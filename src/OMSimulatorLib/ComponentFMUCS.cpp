@@ -35,11 +35,12 @@
 #include "Model.h"
 #include "ssd/Tags.h"
 #include "System.h"
-#include "SystemWC.h"
 #include "SystemTLM.h"
+#include "SystemWC.h"
 #include <fmilib.h>
 #include <JM/jm_portability.h>
 #include <OMSBoost.h>
+#include <RegEx.h>
 
 oms3::ComponentFMUCS::ComponentFMUCS(const ComRef& cref, System* parentSystem, const std::string& fmuPath)
   : oms3::Component(cref, oms_component_fmu, parentSystem, fmuPath), fmuInfo(fmuPath, oms_fmi_kind_cs)
@@ -150,11 +151,13 @@ oms3::Component* oms3::ComponentFMUCS::NewComponent(const oms3::ComRef& cref, om
   size_t varListSize = fmi2_import_get_variable_list_size(varList);
   logDebug(std::to_string(varListSize) + " variables");
   component->allVariables.reserve(varListSize);
+  component->exportVariables.reserve(varListSize);
   for (size_t i = 0; i < varListSize; ++i)
   {
     fmi2_import_variable_t* var = fmi2_import_get_variable(varList, i);
     oms3::Variable v(var, i + 1);
     component->allVariables.push_back(v);
+    component->exportVariables.push_back(true);
   }
   fmi2_import_free_variable_list(varList);
 
@@ -649,8 +652,8 @@ oms_status_enu_t oms3::ComponentFMUCS::registerSignalsForResultFile(ResultWriter
 
   for (unsigned int i=0; i<allVariables.size(); ++i)
   {
-    //if (!exportVariables[i])
-    //  continue;
+    if (!exportVariables[i])
+      continue;
 
     auto const &var = allVariables[i];
     std::string name = std::string(getFullCref() + var.getCref());
@@ -725,6 +728,44 @@ oms_status_enu_t oms3::ComponentFMUCS::updateSignals(ResultWriter& resultWriter)
       if (oms_status_ok != getBoolean(var.getCref(), value.boolValue))
         return logError("failed to fetch variable " + std::string(var.getCref()));
       resultWriter.updateSignal(ID, value);
+    }
+  }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::ComponentFMUCS::addSignalsToResults(const char* regex)
+{
+  oms_regex exp(regex);
+  for (unsigned int i=0; i<allVariables.size(); ++i)
+  {
+    if (exportVariables[i])
+      continue;
+
+    auto const &var = allVariables[i];
+    if(regex_match(std::string(getFullCref() + var.getCref()), exp))
+    {
+      //logInfo("added \"" + std::string(getFullCref() + var.getCref()) + "\" to results");
+      exportVariables[i] = true;
+    }
+  }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::ComponentFMUCS::removeSignalsFromResults(const char* regex)
+{
+  oms_regex exp(regex);
+  for (unsigned int i=0; i<allVariables.size(); ++i)
+  {
+    if (!exportVariables[i])
+      continue;
+
+    auto const &var = allVariables[i];
+    if(regex_match(std::string(getFullCref() + var.getCref()), exp))
+    {
+      //logInfo("removed \"" + std::string(getFullCref() + var.getCref()) + "\" from results");
+      exportVariables[i] = false;
     }
   }
 

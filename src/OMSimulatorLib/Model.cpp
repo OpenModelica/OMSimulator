@@ -648,12 +648,18 @@ oms_status_enu_t oms3::Model::setResultFile(const std::string& filename, int buf
 
 oms_status_enu_t oms3::Model::addSignalsToResults(const char* regex)
 {
-  return logError_NotImplemented;
+  if (system)
+    if (oms_status_ok != system->addSignalsToResults(regex))
+      return oms_status_error;
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms3::Model::removeSignalsFromResults(const char* regex)
 {
-  return logError_NotImplemented;
+  if (system)
+    if (oms_status_ok != system->removeSignalsFromResults(regex))
+      return oms_status_error;
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms3::Model::cancelSimulation_asynchronous()
