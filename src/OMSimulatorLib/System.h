@@ -132,6 +132,8 @@ namespace oms3
 
     oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultFile);
     oms_status_enu_t updateSignals(ResultWriter& resultFile);
+    oms_status_enu_t addSignalsToResults(const char* regex);
+    oms_status_enu_t removeSignalsFromResults(const char* regex);
 
     virtual oms_status_enu_t setFixedStepSize(double stepSize) {return oms_status_error;}
 
@@ -165,6 +167,7 @@ namespace oms3
     std::vector<Connection*> connections;           ///< last element is always NULL
 
     std::unordered_map<unsigned int /*result file var ID*/, unsigned int /*allVariables ID*/> resultFileMapping;
+    std::unordered_map<ComRef, bool> exportConnectors;
 
     oms_status_enu_t importFromSSD_ConnectionGeometry(const pugi::xml_node& node, const ComRef& crefA, const ComRef& crefB);
   };

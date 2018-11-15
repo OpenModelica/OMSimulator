@@ -77,6 +77,8 @@ namespace oms3
 
     oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultFile);
     oms_status_enu_t updateSignals(ResultWriter& resultWriter);
+    oms_status_enu_t addSignalsToResults(const char* regex);
+    oms_status_enu_t removeSignalsFromResults(const char* regex);
 
   protected:
     ComponentFMUCS(const ComRef& cref, System* parentSystem, const std::string& fmuPath);

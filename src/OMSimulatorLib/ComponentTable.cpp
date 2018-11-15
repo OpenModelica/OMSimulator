@@ -36,6 +36,7 @@
 #include "ssd/Tags.h"
 #include "System.h"
 #include <OMSBoost.h>
+#include <RegEx.h>
 
 oms3::ComponentTable::ComponentTable(const ComRef& cref, System* parentSystem, const std::string& path)
   : oms3::Component(cref, oms_component_table, parentSystem, path), resultReader(NULL)
@@ -91,6 +92,7 @@ oms3::Component* oms3::ComponentTable::NewComponent(const oms3::ComRef& cref, om
   int size = 1 + component->resultReader->getAllSignals().size();
   for (auto const &signal : component->resultReader->getAllSignals())
   {
+    component->exportSeries[component->getFullCref() + ComRef(signal)] = true;
     component->connectors.back() = new Connector(oms_causality_output, oms_signal_type_real, ComRef(signal), i++/(double)size);
     component->connectors.push_back(NULL);
   }
@@ -207,15 +209,14 @@ oms_status_enu_t oms3::ComponentTable::registerSignalsForResultFile(ResultWriter
 
   for (unsigned int i=0; i<resultReader->getAllSignals().size(); ++i)
   {
-    //if (!exportVariables[i])
-    //  continue;
+    if (!exportSeries[ComRef(resultReader->getAllSignals()[i])])
+      continue;
 
     std::string name = std::string(getFullCref()) + "." + resultReader->getAllSignals()[i];
 
     unsigned int ID = resultFile.addSignal(name, "lookup table", SignalType_REAL);
     resultFileMapping[ID] = i;
-}
-
+  }
 
   return oms_status_ok;
 }
@@ -231,6 +232,42 @@ oms_status_enu_t oms3::ComponentTable::updateSignals(ResultWriter& resultWriter)
     if (oms_status_ok != getReal(var, value.realValue))
       return logError("failed to fetch variable " + std::string(getFullCref()) + "." + std::string(var));
     resultWriter.updateSignal(ID, value);
+  }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::ComponentTable::addSignalsToResults(const char* regex)
+{
+  oms_regex exp(regex);
+  for (auto& x: exportSeries)
+  {
+    if (x.second)
+      continue;
+
+    if (regex_match(std::string(x.first), exp))
+    {
+      //logInfo("added \"" + std::string(x.first) + "\" to results");
+      x.second = true;
+    }
+  }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::ComponentTable::removeSignalsFromResults(const char* regex)
+{
+  oms_regex exp(regex);
+  for (auto& x: exportSeries)
+  {
+    if (!x.second)
+      continue;
+
+    if (regex_match(std::string(x.first), exp))
+    {
+      //logInfo("removed \"" + std::string(x.first) + "\" from results");
+      x.second = false;
+    }
   }
 
   return oms_status_ok;

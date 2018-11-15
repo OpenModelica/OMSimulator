@@ -43,6 +43,7 @@
 #include "SystemTLM.h"
 #include "SystemWC.h"
 #include "Types.h"
+#include <RegEx.h>
 
 oms3::System::System(const oms3::ComRef& cref, oms_system_enu_t type, oms3::Model* parentModel, oms3::System* parentSystem)
   : element(oms_element_system, cref), cref(cref), type(type), parentModel(parentModel), parentSystem(parentSystem)
@@ -474,7 +475,10 @@ oms_status_enu_t oms3::System::importFromSSD(const pugi::xml_node& node)
       {
         connectors.back() = oms3::Connector::NewConnector(*itConnectors);
         if (connectors.back())
+        {
+          exportConnectors[getFullCref() + connectors.back()->getName()] = true;
           connectors.push_back(NULL);
+        }
         else
           return logError("Failed to import ssd:connector");
         element.setConnectors(&connectors[0]);
@@ -673,6 +677,7 @@ oms_status_enu_t oms3::System::addConnector(const oms3::ComRef& cref, oms_causal
     return logError_AlreadyInScope(getFullCref() + cref);
 
   connectors.back() = new oms3::Connector(causality, type, cref);
+  exportConnectors[getFullCref() + connectors.back()->getName()] = true;
   connectors.push_back(NULL);
   element.setConnectors(&connectors[0]);
 
@@ -1317,6 +1322,7 @@ oms_status_enu_t oms3::System::delete_(const oms3::ComRef& cref)
     for (int i=0; i<connectors.size()-1; ++i)
       if (connectors[i]->getName() == front)
       {
+        exportConnectors.erase(getFullCref() + front);
         delete connectors[i];
         connectors.pop_back();   // last element is always NULL
         connectors[i] = connectors.back();
@@ -1692,10 +1698,9 @@ oms_status_enu_t oms3::System::registerSignalsForResultFile(ResultWriter& result
   resultFileMapping.clear();
   for (unsigned int i=0; i<connectors.size(); ++i)
   {
-    //if (!exportVariables[i])
-    //  continue;
-
     if (!connectors[i])
+      continue;
+    if (!exportConnectors[connectors[i]->getName()])
       continue;
 
     auto const& connector = connectors[i];
@@ -1752,6 +1757,58 @@ oms_status_enu_t oms3::System::updateSignals(ResultWriter& resultFile)
       if (oms_status_ok != getBoolean(connector->getName(), value.boolValue))
         return logError("failed to fetch variable " + std::string(connector->getName()));
       resultFile.updateSignal(ID, value);
+    }
+  }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::System::addSignalsToResults(const char* regex)
+{
+  for (const auto& component : components)
+    if (oms_status_ok != component.second->addSignalsToResults(regex))
+      return oms_status_error;
+
+  for (const auto& subsystem : subsystems)
+    if (oms_status_ok != subsystem.second->addSignalsToResults(regex))
+      return oms_status_error;
+
+  oms_regex exp(regex);
+  for (auto& x: exportConnectors)
+  {
+    if (x.second)
+      continue;
+
+    if (regex_match(std::string(x.first), exp))
+    {
+      //logInfo("added \"" + std::string(x.first) + "\" to results");
+      x.second = true;
+    }
+  }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::System::removeSignalsFromResults(const char* regex)
+{
+  for (const auto& component : components)
+    if (oms_status_ok != component.second->removeSignalsFromResults(regex))
+      return oms_status_error;
+
+  for (const auto& subsystem : subsystems)
+    if (oms_status_ok != subsystem.second->removeSignalsFromResults(regex))
+      return oms_status_error;
+
+  oms_regex exp(regex);
+  for (auto& x: exportConnectors)
+  {
+    if (!x.second)
+      continue;
+
+    if (regex_match(std::string(x.first), exp))
+    {
+      //logInfo("removed \"" + std::string(x.first) + "\" from results");
+      x.second = false;
     }
   }
 
