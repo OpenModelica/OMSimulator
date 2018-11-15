@@ -220,10 +220,8 @@ oms_status_enu_t oms3::ComponentTable::registerSignalsForResultFile(ResultWriter
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::ComponentTable::updateSignals(ResultWriter& resultWriter, double time)
+oms_status_enu_t oms3::ComponentTable::updateSignals(ResultWriter& resultWriter)
 {
-  this->time = time;
-
   for (auto const &it : resultFileMapping)
   {
     unsigned int ID = it.first;

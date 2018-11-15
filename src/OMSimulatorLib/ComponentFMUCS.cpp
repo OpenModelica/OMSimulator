@@ -701,7 +701,7 @@ oms_status_enu_t oms3::ComponentFMUCS::registerSignalsForResultFile(ResultWriter
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::ComponentFMUCS::updateSignals(ResultWriter& resultWriter, double time)
+oms_status_enu_t oms3::ComponentFMUCS::updateSignals(ResultWriter& resultWriter)
 {
   for (auto const &it : resultFileMapping)
   {

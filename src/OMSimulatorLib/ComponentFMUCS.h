@@ -76,7 +76,7 @@ namespace oms3
     oms_status_enu_t setReal(const ComRef& cref, double value);
 
     oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultFile);
-    oms_status_enu_t updateSignals(ResultWriter& resultWriter, double time);
+    oms_status_enu_t updateSignals(ResultWriter& resultWriter);
 
   protected:
     ComponentFMUCS(const ComRef& cref, System* parentSystem, const std::string& fmuPath);

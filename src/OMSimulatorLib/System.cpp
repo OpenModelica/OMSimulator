@@ -1720,14 +1720,14 @@ oms_status_enu_t oms3::System::registerSignalsForResultFile(ResultWriter& result
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::System::updateSignals(ResultWriter& resultFile, double time)
+oms_status_enu_t oms3::System::updateSignals(ResultWriter& resultFile)
 {
   for (const auto& component : components)
-    if (oms_status_ok != component.second->updateSignals(resultFile, time))
+    if (oms_status_ok != component.second->updateSignals(resultFile))
       return oms_status_error;
 
   for (const auto& subsystem : subsystems)
-    if (oms_status_ok != subsystem.second->updateSignals(resultFile, time))
+    if (oms_status_ok != subsystem.second->updateSignals(resultFile))
       return oms_status_error;
 
   for (auto const &it : resultFileMapping)

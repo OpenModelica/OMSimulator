@@ -169,11 +169,7 @@ oms_status_enu_t oms3::SystemWC::stepUntil(double stopTime, void (*cb)(const cha
 
     for (const auto& component : getComponents())
     {
-      if (oms_component_fmu == component.second->getType())
-        status = dynamic_cast<ComponentFMUCS*>(component.second)->stepUntil(tNext);
-      else if (oms_component_table == component.second->getType())
-        status = oms_status_ok;
-
+      status = component.second->stepUntil(tNext);
       if (oms_status_ok != status)
       {
         if (cb)
