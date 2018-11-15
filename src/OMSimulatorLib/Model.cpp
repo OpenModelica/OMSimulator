@@ -290,7 +290,7 @@ oms_status_enu_t oms3::Model::exportToFile(const std::string& filename) const
   pugi::xml_document doc;
 
   std::string extension = "";
-  if (filename.length() > 5)
+  if (filename.length() > 4)
     extension = filename.substr(filename.length() - 4);
 
   if (extension != ".ssp")

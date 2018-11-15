@@ -67,7 +67,7 @@ oms3::Component* oms3::ComponentTable::NewComponent(const oms3::ComRef& cref, om
   }
 
   std::string extension = "";
-  if (path.length() > 5)
+  if (path.length() > 4)
     extension = path.substr(path.length() - 4);
 
   boost::filesystem::path temp_root(parentSystem->getModel()->getTempDirectory());

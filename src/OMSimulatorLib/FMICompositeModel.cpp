@@ -762,7 +762,7 @@ oms_status_enu_t oms2::FMICompositeModel::exportCompositeStructure(const std::st
    * }
    */
 
-  if (!(filename.length() > 5 && filename.substr(filename.length() - 4) == ".dot"))
+  if (!(filename.length() > 4 && filename.substr(filename.length() - 4) == ".dot"))
   {
     logError("[oms2::FMICompositeModel::exportCompositeStructure] The filename must have .dot as extension.");
     return oms_status_error;
