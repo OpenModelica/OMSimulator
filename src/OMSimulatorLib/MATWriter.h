@@ -37,21 +37,24 @@
 #include <stdio.h>
 #include <string>
 
-class MATWriter :
-  public ResultWriter
+namespace oms3
 {
-public:
-  MATWriter(unsigned int bufferSize);
-  ~MATWriter();
+  class MATWriter :
+    public ResultWriter
+  {
+  public:
+    MATWriter(unsigned int bufferSize);
+    ~MATWriter();
 
-protected:
-  bool createFile(const std::string& filename, double startTime, double stopTime);
-  void closeFile();
-  void writeFile();
+  protected:
+    bool createFile(const std::string& filename, double startTime, double stopTime);
+    void closeFile();
+    void writeFile();
 
-private:
-  FILE *pFile;
-  long pos_data_2;
-};
+  private:
+    FILE *pFile;
+    long pos_data_2;
+  };
+}
 
 #endif

@@ -36,7 +36,7 @@
 
 #include <string.h>
 
-CSVReader::CSVReader(const char* filename)
+oms3::CSVReader::CSVReader(const char* filename)
   : ResultReader(filename)
 {
   std::ifstream file(filename);
@@ -154,12 +154,12 @@ CSVReader::CSVReader(const char* filename)
     }
 }
 
-CSVReader::~CSVReader()
+oms3::CSVReader::~CSVReader()
 {
   delete[] data;
 }
 
-ResultReader::Series* CSVReader::getSeries(const char* var)
+oms3::ResultReader::Series* oms3::CSVReader::getSeries(const char* var)
 {
   // find index
   int index = -1;

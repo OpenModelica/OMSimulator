@@ -40,7 +40,10 @@
 #include "Variable.h"
 #include "Pkg_oms2.h"
 
-class ResultWriter;
+namespace oms3
+{
+  class ResultWriter;
+}
 
 namespace oms2
 {
@@ -79,8 +82,8 @@ namespace oms2
     virtual oms_status_enu_t getBoolean(const oms2::SignalRef& sr, bool& value) = 0;
     virtual oms_status_enu_t setRealInputDerivatives(const oms2::SignalRef& sr, int order, double value) = 0;
 
-    virtual oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultWriter) = 0;
-    virtual oms_status_enu_t emit(ResultWriter& resultWriter) = 0;
+    virtual oms_status_enu_t registerSignalsForResultFile(oms3::ResultWriter& resultWriter) = 0;
+    virtual oms_status_enu_t emit(oms3::ResultWriter& resultWriter) = 0;
 
     virtual void addSignalsToResults(const std::string& regex) = 0;
     virtual void removeSignalsFromResults(const std::string& regex) = 0;

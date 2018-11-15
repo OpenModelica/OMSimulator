@@ -79,8 +79,8 @@ namespace oms2
     oms_status_enu_t setBoolean(const oms2::SignalRef& sr, bool booleanValue);
     oms_status_enu_t getBoolean(const oms2::SignalRef& sr, bool& booleanValue);
 
-    oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultWriter) {return oms_status_ok;}
-    oms_status_enu_t emit(ResultWriter& resultWriter) {return oms_status_ok;}
+    oms_status_enu_t registerSignalsForResultFile(oms3::ResultWriter& resultWriter) {return oms_status_ok;}
+    oms_status_enu_t emit(oms3::ResultWriter& resultWriter) {return oms_status_ok;}
 
     void addSignalsToResults(const std::string& regex) {logWarning("addSignalsToResults not implemented for tables");}
     void removeSignalsFromResults(const std::string& regex) {logWarning("removeSignalsFromResults not implemented for tables");}
@@ -91,8 +91,8 @@ namespace oms2
 
     std::string path;
     std::vector<oms2::Variable> outputs;
-    ResultReader *resultReader;
-    std::unordered_map<std::string, ResultReader::Series*> series;
+    oms3::ResultReader *resultReader;
+    std::unordered_map<std::string, oms3::ResultReader::Series*> series;
     double time;
   };
 }

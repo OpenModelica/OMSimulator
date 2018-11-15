@@ -1006,14 +1006,14 @@ oms_status_enu_t oms2::Model::initialize()
       resulttype = resultFilename.substr(resultFilename.length() - 4);
 
     if (".csv" == resulttype)
-      resultFile = new CSVWriter(bufferSize);
+      resultFile = new oms3::CSVWriter(bufferSize);
     else if (".mat" == resulttype)
-      resultFile = new MATWriter(bufferSize);
+      resultFile = new oms3::MATWriter(bufferSize);
     else
       return logError("Unsupported format of the result file: " + resultFilename);
   }
   else
-    resultFile = new VoidWriter(1);
+    resultFile = new oms3::VoidWriter(1);
 
   modelState = oms_modelState_initialization;
   oms_status_enu_t status = compositeModel->initialize(startTime, tolerance);
@@ -1066,14 +1066,14 @@ oms_status_enu_t oms2::Model::reset(bool terminate)
         resulttype = resultFilename.substr(resultFilename.length() - 4);
 
       if (".csv" == resulttype)
-        resultFile = new CSVWriter(bufferSize);
+        resultFile = new oms3::CSVWriter(bufferSize);
       else if (".mat" == resulttype)
-        resultFile = new MATWriter(bufferSize);
+        resultFile = new oms3::MATWriter(bufferSize);
       else
         return logError("Unsupported format of the result file: " + resultFilename);
     }
     else
-      resultFile = new VoidWriter(1);
+      resultFile = new oms3::VoidWriter(1);
   }
 
   oms_status_enu_t status = compositeModel->reset(terminate);
@@ -1151,9 +1151,9 @@ void oms2::Model::setResultFile(const std::string& value, unsigned int bufferSiz
         resulttype = resultFilename.substr(resultFilename.length() - 4);
 
       if (".csv" == resulttype)
-        resultFile = new CSVWriter(bufferSize);
+        resultFile = new oms3::CSVWriter(bufferSize);
       else if (".mat" == resulttype)
-        resultFile = new MATWriter(bufferSize);
+        resultFile = new oms3::MATWriter(bufferSize);
       else
       {
         logError("Unsupported format of the result file: " + resultFilename);

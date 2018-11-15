@@ -35,9 +35,8 @@
 #include <stdio.h>
 #include <stddef.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+namespace oms3
+{
 
 typedef enum MatVer4Type_t
 {
@@ -72,8 +71,6 @@ void freeMatVer4Matrix(MatVer4Matrix** matrix);
 
 void skipMatVer4Matrix(FILE* file);
 
-#ifdef __cplusplus
 }
-#endif
 
 #endif

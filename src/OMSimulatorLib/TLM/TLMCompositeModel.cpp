@@ -432,17 +432,17 @@ oms_status_enu_t oms2::TLMCompositeModel::reset(bool terminate)
   return logError("oms2::TLMCompositeModel::reset: not implemented yet");
 }
 
-oms_status_enu_t oms2::TLMCompositeModel::simulate(ResultWriter &resultWriter, double stopTime, double communicationInterval, double loggingInterval, oms2::MasterAlgorithm masterAlgorithm)
+oms_status_enu_t oms2::TLMCompositeModel::simulate(oms3::ResultWriter &resultWriter, double stopTime, double communicationInterval, double loggingInterval, oms2::MasterAlgorithm masterAlgorithm)
 {
   return logError("oms2::TLMCompositeModel::simulate: not implemented yet");
 }
 
-oms_status_enu_t oms2::TLMCompositeModel::doSteps(ResultWriter& resultWriter, const int numberOfSteps, double communicationInterval, double loggingInterval)
+oms_status_enu_t oms2::TLMCompositeModel::doSteps(oms3::ResultWriter& resultWriter, const int numberOfSteps, double communicationInterval, double loggingInterval)
 {
   return logError("oms2::TLMCompositeModel::doSteps: not implemented yet");
 }
 
-oms_status_enu_t oms2::TLMCompositeModel::stepUntil(ResultWriter &resultWriter, double stopTime, double communicationInterval, double loggingInterval, oms2::MasterAlgorithm masterAlgorithm, bool realtime_sync)
+oms_status_enu_t oms2::TLMCompositeModel::stepUntil(oms3::ResultWriter &resultWriter, double stopTime, double communicationInterval, double loggingInterval, oms2::MasterAlgorithm masterAlgorithm, bool realtime_sync)
 {
   if(fmiModels.empty() && externalModels.empty())
     logWarning("oms2::TLMCompositeModel::stepUntil: Simulating empty model...");
@@ -512,7 +512,7 @@ oms_status_enu_t oms2::TLMCompositeModel::stepUntil(ResultWriter &resultWriter, 
   return oms_status_ok;
 }
 
-void oms2::TLMCompositeModel::simulate_asynchronous(ResultWriter& resultWriter, double stopTime, double communicationInterval, double loggingInterval, void (*cb)(const char* ident, double time, oms_status_enu_t status))
+void oms2::TLMCompositeModel::simulate_asynchronous(oms3::ResultWriter& resultWriter, double stopTime, double communicationInterval, double loggingInterval, void (*cb)(const char* ident, double time, oms_status_enu_t status))
 {
   logTrace();
 

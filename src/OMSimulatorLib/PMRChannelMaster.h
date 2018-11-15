@@ -48,7 +48,7 @@ namespace oms2
    * It spawns threads with the function threadPMRChannel().
    */
   template <template<class> class PMRChannel>
-  oms_status_enu_t stepUntilPMRChannel(ResultWriter& resultWriter, double stopTime, double communicationInterval, double loggingInterval, std::string compositeName, oms2::DirectedGraph& outputsGraph, std::map<oms2::ComRef, oms2::FMISubModel*>& subModels, bool realtime_sync);
+  oms_status_enu_t stepUntilPMRChannel(oms3::ResultWriter& resultWriter, double stopTime, double communicationInterval, double loggingInterval, std::string compositeName, oms2::DirectedGraph& outputsGraph, std::map<oms2::ComRef, oms2::FMISubModel*>& subModels, bool realtime_sync);
 
   /**
    * \brief Thread for communication channel based parallel multi-rate simulation approach.
@@ -73,7 +73,7 @@ namespace oms2
 /* ************************************ */
 
 template <template<class> class PMRChannel>
-oms_status_enu_t oms2::stepUntilPMRChannel(ResultWriter& resultWriter, double stopTime, double communicationInterval, double loggingInterval, std::string compositeName, oms2::DirectedGraph& outputsGraph, std::map<oms2::ComRef, oms2::FMISubModel*>& subModels, bool realtime_sync)
+oms_status_enu_t oms2::stepUntilPMRChannel(oms3::ResultWriter& resultWriter, double stopTime, double communicationInterval, double loggingInterval, std::string compositeName, oms2::DirectedGraph& outputsGraph, std::map<oms2::ComRef, oms2::FMISubModel*>& subModels, bool realtime_sync)
 {
   logTrace();
 

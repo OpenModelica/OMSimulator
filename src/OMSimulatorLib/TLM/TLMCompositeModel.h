@@ -41,7 +41,10 @@
 
 #include <pugixml.hpp>
 
-class ResultWriter;
+namespace oms3
+{
+  class ResultWriter;
+}
 
 namespace oms2
 {
@@ -88,13 +91,13 @@ namespace oms2
 
     oms_status_enu_t initialize(double startTime, double tolerance);
     oms_status_enu_t reset(bool terminate);
-    oms_status_enu_t simulate(ResultWriter &resultWriter, double stopTime, double communicationInterval, double loggingLevel, oms2::MasterAlgorithm masterAlgorithm);
-    void simulate_asynchronous(ResultWriter& resultWriter, double stopTime, double communicationInterval, double loggingLevel, void (*cb)(const char* ident, double time, oms_status_enu_t status));
-    oms_status_enu_t doSteps(ResultWriter& resultWriter, const int numberOfSteps, double communicationInterval, double loggingLevel);
-    oms_status_enu_t stepUntil(ResultWriter &resultWriter, double stopTime, double communicationInterval, double loggingLevel, oms2::MasterAlgorithm masterAlgorithm, bool realtime_sync);
+    oms_status_enu_t simulate(oms3::ResultWriter &resultWriter, double stopTime, double communicationInterval, double loggingLevel, oms2::MasterAlgorithm masterAlgorithm);
+    void simulate_asynchronous(oms3::ResultWriter& resultWriter, double stopTime, double communicationInterval, double loggingLevel, void (*cb)(const char* ident, double time, oms_status_enu_t status));
+    oms_status_enu_t doSteps(oms3::ResultWriter& resultWriter, const int numberOfSteps, double communicationInterval, double loggingLevel);
+    oms_status_enu_t stepUntil(oms3::ResultWriter &resultWriter, double stopTime, double communicationInterval, double loggingLevel, oms2::MasterAlgorithm masterAlgorithm, bool realtime_sync);
 
-    oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultWriter) {return oms_status_ok;}
-    oms_status_enu_t emit(ResultWriter& resultWriter) {return oms_status_ok;}
+    oms_status_enu_t registerSignalsForResultFile(oms3::ResultWriter& resultWriter) {return oms_status_ok;}
+    oms_status_enu_t emit(oms3::ResultWriter& resultWriter) {return oms_status_ok;}
 
   private:
     TLMCompositeModel(const ComRef& name);

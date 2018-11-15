@@ -166,7 +166,7 @@ namespace oms2
     double getCommunicationInterval() const {return communicationInterval;}
     void setResultFile(const std::string& value, unsigned int bufferSize);
     const std::string& getResultFile() const {return resultFilename;}
-    ResultWriter *getResultWriter() const {return resultFile;}
+    oms3::ResultWriter *getResultWriter() const {return resultFile;}
     void setMasterAlgorithm(MasterAlgorithm value) {masterAlgorithm = value;}
     MasterAlgorithm getMasterAlgorithm() const {return masterAlgorithm;}
     void setTolerance(double value) {tolerance = value;}
@@ -214,7 +214,7 @@ namespace oms2
     double loggingInterval = 0.0;           ///< experiment, default 0.0
     std::string resultFilename;             ///< experiment, default <name>_res.mat
     unsigned int bufferSize = 1;
-    ResultWriter *resultFile = NULL;
+    oms3::ResultWriter *resultFile = NULL;
     MasterAlgorithm masterAlgorithm = MasterAlgorithm::STANDARD;  ///< master algorithm for FMI co-simulation, default MasterAlgorithm::STANDARD
 
     oms_modelState_enu_t modelState;  ///< internal model state, e.g. initialization state
