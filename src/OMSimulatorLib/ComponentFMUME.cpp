@@ -122,6 +122,14 @@ oms3::Component* oms3::ComponentFMUME::NewComponent(const oms3::ComRef& cref, om
     return NULL;
   }
 
+  fmi2_fmu_kind_enu_t fmuKind = fmi2_import_get_fmu_kind(component->fmu);
+  if (!(fmi2_fmu_kind_me == fmuKind || fmi2_fmu_kind_me_and_cs == fmuKind))
+  {
+    logError("FMU \"" + std::string(cref) + "\" doesn't support model-exchange mode.");
+    delete component;
+    return NULL;
+  }
+
   // update FMU info
   if (oms_status_ok != component->fmuInfo.update(version, component->fmu))
   {
