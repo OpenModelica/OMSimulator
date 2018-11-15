@@ -30,6 +30,7 @@
  */
 
 #include <OMSBoost.h>
+#include <cstring>
 
 boost::filesystem::path oms_temp_directory_path(void)
 {
