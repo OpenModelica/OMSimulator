@@ -38,10 +38,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 const char isBigEndian()
 {
   union
@@ -52,7 +48,7 @@ const char isBigEndian()
   return (1 == test.i8[0]);
 }
 
-size_t sizeofMatVer4Type(MatVer4Type_t type)
+size_t oms3::sizeofMatVer4Type(MatVer4Type_t type)
 {
   switch (type)
   {
@@ -71,7 +67,7 @@ size_t sizeofMatVer4Type(MatVer4Type_t type)
   }
 }
 
-void writeMatVer4Matrix(FILE* file, const char* name, size_t rows, size_t cols, const void* matrixData, MatVer4Type_t type)
+void oms3::writeMatVer4Matrix(FILE* file, const char* name, size_t rows, size_t cols, const void* matrixData, MatVer4Type_t type)
 {
   MatVer4Header header;
   size_t size = sizeofMatVer4Type(type);
@@ -87,7 +83,7 @@ void writeMatVer4Matrix(FILE* file, const char* name, size_t rows, size_t cols, 
   fwrite(matrixData, size, rows * cols, file);
 }
 
-void appendMatVer4Matrix(FILE* file, long position, const char* name, size_t rows, size_t cols, const void* matrixData, MatVer4Type_t type)
+void oms3::appendMatVer4Matrix(FILE* file, long position, const char* name, size_t rows, size_t cols, const void* matrixData, MatVer4Type_t type)
 {
   MatVer4Header header;
   size_t size = sizeofMatVer4Type(type);
@@ -109,7 +105,7 @@ void appendMatVer4Matrix(FILE* file, long position, const char* name, size_t row
   fwrite(matrixData, size, rows * cols, file);
 }
 
-MatVer4Matrix* readMatVer4Matrix(FILE* file)
+oms3::MatVer4Matrix* oms3::readMatVer4Matrix(FILE* file)
 {
   MatVer4Matrix *matrix = (MatVer4Matrix*) malloc(sizeof(MatVer4Matrix));
   if (!matrix)
@@ -128,7 +124,7 @@ MatVer4Matrix* readMatVer4Matrix(FILE* file)
   return matrix;
 }
 
-void freeMatVer4Matrix(MatVer4Matrix** matrix)
+void oms3::freeMatVer4Matrix(MatVer4Matrix** matrix)
 {
   if (*matrix)
   {
@@ -139,7 +135,7 @@ void freeMatVer4Matrix(MatVer4Matrix** matrix)
   }
 }
 
-void skipMatVer4Matrix(FILE* file)
+void oms3::skipMatVer4Matrix(FILE* file)
 {
   MatVer4Header header;
   fread(&header, sizeof(MatVer4Header), 1, file);
@@ -152,7 +148,3 @@ void skipMatVer4Matrix(FILE* file)
   size_t size = sizeofMatVer4Type(type);
   fseek(file, header.mrows*header.ncols*size, SEEK_CUR);
 }
-
-#ifdef __cplusplus
-}
-#endif

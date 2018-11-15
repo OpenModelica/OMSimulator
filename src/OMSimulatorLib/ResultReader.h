@@ -35,34 +35,37 @@
 #include <string>
 #include <vector>
 
-class ResultReader
+namespace oms3
 {
-public:
-  struct Series
+  class ResultReader
   {
-    unsigned int length;
-    double* time;
-    double* value;
+  public:
+    struct Series
+    {
+      unsigned int length;
+      double* time;
+      double* value;
+    };
+
+    ResultReader(const char* filename);
+    virtual ~ResultReader();
+
+    static ResultReader* newReader(const char* filename);
+
+    virtual Series* getSeries(const char* var) = 0;
+    const std::vector<std::string>& getAllSignals() const {return signals;}
+
+    static void deleteSeries(Series** series);
+    static bool compareSeries(Series* seriesA, Series* seriesB, double relTol, double absTol);
+
+  private:
+    // Stop the compiler generating methods for copying the object
+    ResultReader(ResultReader const& copy);            // Not Implemented
+    ResultReader& operator=(ResultReader const& copy); // Not Implemented
+
+  protected:
+    std::vector<std::string> signals;
   };
-
-  ResultReader(const char* filename);
-  virtual ~ResultReader();
-
-  static ResultReader* newReader(const char* filename);
-
-  virtual Series* getSeries(const char* var) = 0;
-  const std::vector<std::string>& getAllSignals() const {return signals;}
-
-  static void deleteSeries(Series** series);
-  static bool compareSeries(Series* seriesA, Series* seriesB, double relTol, double absTol);
-
-private:
-  // Stop the compiler generating methods for copying the object
-  ResultReader(ResultReader const& copy);            // Not Implemented
-  ResultReader& operator=(ResultReader const& copy); // Not Implemented
-
-protected:
-  std::vector<std::string> signals;
-};
+}
 
 #endif

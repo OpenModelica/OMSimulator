@@ -35,18 +35,18 @@
 #include <stdio.h>
 #include <string>
 
-CSVWriter::CSVWriter(unsigned int bufferSize)
+oms3::CSVWriter::CSVWriter(unsigned int bufferSize)
   : ResultWriter(bufferSize),
     pFile(NULL)
 {
 }
 
-CSVWriter::~CSVWriter()
+oms3::CSVWriter::~CSVWriter()
 {
   closeFile();
 }
 
-bool CSVWriter::createFile(const std::string& filename, double startTime, double stopTime)
+bool oms3::CSVWriter::createFile(const std::string& filename, double startTime, double stopTime)
 {
   if (pFile)
     return false;
@@ -64,7 +64,7 @@ bool CSVWriter::createFile(const std::string& filename, double startTime, double
   return true;
 }
 
-void CSVWriter::closeFile()
+void oms3::CSVWriter::closeFile()
 {
   if (pFile)
   {
@@ -74,7 +74,7 @@ void CSVWriter::closeFile()
   }
 }
 
-void CSVWriter::writeFile()
+void oms3::CSVWriter::writeFile()
 {
   for (int i = 0; i < nEmits; ++i)
   {

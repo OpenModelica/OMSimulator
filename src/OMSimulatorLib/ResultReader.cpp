@@ -40,15 +40,15 @@
 
 #include <boost/filesystem.hpp>
 
-ResultReader::ResultReader(const char* filename)
+oms3::ResultReader::ResultReader(const char* filename)
 {
 }
 
-ResultReader::~ResultReader()
+oms3::ResultReader::~ResultReader()
 {
 }
 
-ResultReader* ResultReader::newReader(const char* filename)
+oms3::ResultReader* oms3::ResultReader::newReader(const char* filename)
 {
   std::string extension = boost::filesystem::extension(filename);
   ResultReader* resultReader = NULL;
@@ -63,7 +63,7 @@ ResultReader* ResultReader::newReader(const char* filename)
   return resultReader;
 }
 
-void ResultReader::deleteSeries(Series** series)
+void oms3::ResultReader::deleteSeries(Series** series)
 {
   if (*series)
   {
@@ -76,7 +76,7 @@ void ResultReader::deleteSeries(Series** series)
   }
 }
 
-bool ResultReader::compareSeries(Series* seriesA, Series* seriesB, double relTol, double absTol)
+bool oms3::ResultReader::compareSeries(Series* seriesA, Series* seriesB, double relTol, double absTol)
 {
   if (!seriesA || !seriesA->time || !seriesA->value || seriesA->length < 2 ||
     !seriesB || !seriesB->time || !seriesB->value || seriesB->length < 2)

@@ -94,8 +94,8 @@ namespace oms2
     oms_status_enu_t getBoolean(const oms2::SignalRef& sr, bool& value);
     oms_status_enu_t setRealInputDerivatives(const oms2::SignalRef& sr, int order, double value);
 
-    oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultWriter);
-    oms_status_enu_t emit(ResultWriter& resultWriter);
+    oms_status_enu_t registerSignalsForResultFile(oms3::ResultWriter& resultWriter);
+    oms_status_enu_t emit(oms3::ResultWriter& resultWriter);
 
     void addSignalsToResults(const std::string& regex);
     void removeSignalsFromResults(const std::string& regex);

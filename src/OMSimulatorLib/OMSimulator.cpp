@@ -1224,21 +1224,21 @@ const char* oms2_getVersion()
 
 int oms2_compareSimulationResults(const char* filenameA, const char* filenameB, const char* var, double relTol, double absTol)
 {
-  ResultReader* readerA = ResultReader::newReader(filenameA);
-  ResultReader* readerB = ResultReader::newReader(filenameB);
+  oms3::ResultReader* readerA = oms3::ResultReader::newReader(filenameA);
+  oms3::ResultReader* readerB = oms3::ResultReader::newReader(filenameB);
 
-  ResultReader::Series* seriesA = readerA->getSeries(var);
-  ResultReader::Series* seriesB = readerB->getSeries(var);
+  oms3::ResultReader::Series* seriesA = readerA->getSeries(var);
+  oms3::ResultReader::Series* seriesB = readerB->getSeries(var);
 
   //for (int i=0; i<seriesA->length; ++i)
   //  std::cout << seriesA->time[i] << " - " << seriesA->value[i] << std::endl;
   //for (int i=0; i<seriesB->length; ++i)
   //  std::cout << seriesB->time[i] << " - " << seriesB->value[i] << std::endl;
 
-  bool rc = ResultReader::compareSeries(seriesA, seriesB, relTol, absTol);
+  bool rc = oms3::ResultReader::compareSeries(seriesA, seriesB, relTol, absTol);
 
-  ResultReader::deleteSeries(&seriesA);
-  ResultReader::deleteSeries(&seriesB);
+  oms3::ResultReader::deleteSeries(&seriesA);
+  oms3::ResultReader::deleteSeries(&seriesB);
 
   delete readerA;
   delete readerB;

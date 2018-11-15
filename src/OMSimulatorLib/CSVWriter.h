@@ -37,20 +37,23 @@
 #include <stdio.h>
 #include <string>
 
-class CSVWriter :
-  public ResultWriter
+namespace oms3
 {
-public:
-  CSVWriter(unsigned int bufferSize);
-  ~CSVWriter();
+  class CSVWriter :
+    public ResultWriter
+  {
+  public:
+    CSVWriter(unsigned int bufferSize);
+    ~CSVWriter();
 
-protected:
-  bool createFile(const std::string& filename, double startTime, double stopTime);
-  void closeFile();
-  void writeFile();
+  protected:
+    bool createFile(const std::string& filename, double startTime, double stopTime);
+    void closeFile();
+    void writeFile();
 
-private:
-  FILE *pFile;
-};
+  private:
+    FILE *pFile;
+  };
+}
 
 #endif

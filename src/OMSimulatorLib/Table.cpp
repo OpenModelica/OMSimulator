@@ -51,7 +51,7 @@ oms2::Table::Table(const oms2::ComRef& cref, const std::string& filename)
 oms2::Table::~Table()
 {
   for (auto it=series.begin(); it != series.end(); it++)
-    ResultReader::deleteSeries(&it->second);
+    oms3::ResultReader::deleteSeries(&it->second);
   series.clear();
 
   if (resultReader)
@@ -74,7 +74,7 @@ oms2::Table* oms2::Table::newSubModel(const oms2::ComRef& cref, const std::strin
 
   oms2::Table *model = new oms2::Table(cref, filename);
 
-  model->resultReader = ResultReader::newReader(filename.c_str());
+  model->resultReader = oms3::ResultReader::newReader(filename.c_str());
   if (!model->resultReader)
   {
     logError("Could not load lookup table: " + filename);

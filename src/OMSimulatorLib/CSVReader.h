@@ -36,17 +36,20 @@
 #include <vector>
 #include <string>
 
-class CSVReader : public ResultReader
+namespace oms3
 {
-public:
-  CSVReader(const char* filename);
-  ~CSVReader();
+  class CSVReader : public ResultReader
+  {
+  public:
+    CSVReader(const char* filename);
+    ~CSVReader();
 
-  ResultReader::Series* getSeries(const char* var);
+    ResultReader::Series* getSeries(const char* var);
 
-private:
-  double* data;
-  unsigned int length;
-};
+  private:
+    double* data;
+    unsigned int length;
+  };
+}
 
 #endif

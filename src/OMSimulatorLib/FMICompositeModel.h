@@ -51,7 +51,10 @@
 
 #include <pugixml.hpp>
 
-class ResultWriter;
+namespace oms3
+{
+  class ResultWriter;
+}
 
 namespace oms2
 {
@@ -89,13 +92,13 @@ namespace oms2
 
     oms_status_enu_t initialize(double startTime, double tolerance);
     oms_status_enu_t reset(bool terminate);
-    oms_status_enu_t doSteps(ResultWriter& resultWriter, const int numberOfSteps, double communicationInterval, double loggingInterval);
-    oms_status_enu_t stepUntil(ResultWriter& resultWriter, double stopTime, double communicationInterval, double loggingInterval, MasterAlgorithm masterAlgorithm, bool realtime_sync);
+    oms_status_enu_t doSteps(oms3::ResultWriter& resultWriter, const int numberOfSteps, double communicationInterval, double loggingInterval);
+    oms_status_enu_t stepUntil(oms3::ResultWriter& resultWriter, double stopTime, double communicationInterval, double loggingInterval, MasterAlgorithm masterAlgorithm, bool realtime_sync);
 #if !defined(NO_TLM)
     oms_status_enu_t initializeTLM(double startTime, double tolerance, std::string address);
     oms_status_enu_t simulateTLM(double stopTime, double loggingInterval);
 #endif
-    void simulate_asynchronous(ResultWriter& resultWriter, double stopTime, double communicationInterval, double loggingInterval, void (*cb)(const char* ident, double time, oms_status_enu_t status));
+    void simulate_asynchronous(oms3::ResultWriter& resultWriter, double stopTime, double communicationInterval, double loggingInterval, void (*cb)(const char* ident, double time, oms_status_enu_t status));
 
     oms_status_enu_t setInteger(const oms2::SignalRef& sr, int value);
     oms_status_enu_t getInteger(const oms2::SignalRef& sr, int& value);
@@ -134,12 +137,12 @@ namespace oms2
     oms_status_enu_t updateInputs(oms2::DirectedGraph& graph);
     oms_status_enu_t solveAlgLoop(oms2::DirectedGraph& graph, const std::vector< std::pair<int, int> >& SCC);
 
-    oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultWriter);
-    oms_status_enu_t emit(ResultWriter& resultWriter);
+    oms_status_enu_t registerSignalsForResultFile(oms3::ResultWriter& resultWriter);
+    oms_status_enu_t emit(oms3::ResultWriter& resultWriter);
 
-    oms_status_enu_t stepUntilStandard(ResultWriter& resultWriter, double stopTime, double communicationInterval, double loggingInterval, bool realtime_sync);
+    oms_status_enu_t stepUntilStandard(oms3::ResultWriter& resultWriter, double stopTime, double communicationInterval, double loggingInterval, bool realtime_sync);
 #if !defined(__arm__)
-    oms_status_enu_t stepUntilPCTPL(ResultWriter& resultWriter, double stopTime, double communicationInterval, double loggingInterval, bool realtime_sync);
+    oms_status_enu_t stepUntilPCTPL(oms3::ResultWriter& resultWriter, double stopTime, double communicationInterval, double loggingInterval, bool realtime_sync);
 #endif // if !defined(__arm__)
     oms_status_enu_t updateDependencyGraphs();
 

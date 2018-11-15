@@ -31,20 +31,20 @@
 
 #include "ResultWriter.h"
 
-ResultWriter::ResultWriter(unsigned int bufferSize)
+oms3::ResultWriter::ResultWriter(unsigned int bufferSize)
   : bufferSize(bufferSize),
     nEmits(0),
     data_2(NULL)
 {
 }
 
-ResultWriter::~ResultWriter()
+oms3::ResultWriter::~ResultWriter()
 {
   if (data_2)
     delete[] data_2;
 }
 
-unsigned int ResultWriter::addSignal(const std::string& name, const std::string& description, SignalType_t type)
+unsigned int oms3::ResultWriter::addSignal(const std::string& name, const std::string& description, SignalType_t type)
 {
   Signal signal;
   signal.name = name;
@@ -55,7 +55,7 @@ unsigned int ResultWriter::addSignal(const std::string& name, const std::string&
   return (unsigned int) signals.size();
 }
 
-void ResultWriter::addParameter(const std::string& name, const std::string& description, SignalType_t type, SignalValue_t value)
+void oms3::ResultWriter::addParameter(const std::string& name, const std::string& description, SignalType_t type, SignalValue_t value)
 {
   Parameter parameter;
   parameter.signal.name = name;
@@ -66,7 +66,7 @@ void ResultWriter::addParameter(const std::string& name, const std::string& desc
   parameters.push_back(parameter);
 }
 
-bool ResultWriter::create(const std::string& filename, double startTime, double stopTime)
+bool oms3::ResultWriter::create(const std::string& filename, double startTime, double stopTime)
 {
   if (!createFile(filename, startTime, stopTime))
     return false;
@@ -76,7 +76,7 @@ bool ResultWriter::create(const std::string& filename, double startTime, double 
   return true;
 }
 
-void ResultWriter::close()
+void oms3::ResultWriter::close()
 {
   closeFile();
 
@@ -90,7 +90,7 @@ void ResultWriter::close()
   parameters.clear();
 }
 
-void ResultWriter::updateSignal(unsigned int id, SignalValue_t value)
+void oms3::ResultWriter::updateSignal(unsigned int id, SignalValue_t value)
 {
   if (!data_2)
     return;
@@ -109,7 +109,7 @@ void ResultWriter::updateSignal(unsigned int id, SignalValue_t value)
   }
 }
 
-void ResultWriter::emit(double time)
+void oms3::ResultWriter::emit(double time)
 {
   if (!data_2)
     return;

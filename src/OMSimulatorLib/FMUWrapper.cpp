@@ -889,7 +889,7 @@ oms_status_enu_t oms2::FMUWrapper::setRealInputDerivatives(const oms2::SignalRef
   return setRealInputDerivatives(*var, order, value);
 }
 
-oms_status_enu_t oms2::FMUWrapper::registerSignalsForResultFile(ResultWriter& resultWriter)
+oms_status_enu_t oms2::FMUWrapper::registerSignalsForResultFile(oms3::ResultWriter& resultWriter)
 {
   for (unsigned int i=0; i<allVariables.size(); ++i)
   {
@@ -901,21 +901,21 @@ oms_status_enu_t oms2::FMUWrapper::registerSignalsForResultFile(ResultWriter& re
     const std::string& description = var.getDescription();
     if (var.isParameter())
     {
-      SignalValue_t value;
+      oms3::SignalValue_t value;
       if (var.isTypeReal())
       {
         getReal(var, value.realValue);
-        resultWriter.addParameter(name, description, SignalType_REAL, value);
+        resultWriter.addParameter(name, description, oms3::SignalType_REAL, value);
       }
       else if (var.isTypeInteger())
       {
         getInteger(var, value.intValue);
-        resultWriter.addParameter(name, description, SignalType_INT, value);
+        resultWriter.addParameter(name, description, oms3::SignalType_INT, value);
       }
       else if (var.isTypeBoolean())
       {
         getBoolean(var, value.boolValue);
-        resultWriter.addParameter(name, description, SignalType_BOOL, value);
+        resultWriter.addParameter(name, description, oms3::SignalType_BOOL, value);
       }
       else
         logInfo("Parameter " + name + " will not be stored in the result file, because the signal type is not supported");
@@ -924,17 +924,17 @@ oms_status_enu_t oms2::FMUWrapper::registerSignalsForResultFile(ResultWriter& re
     {
       if (var.isTypeReal())
       {
-        unsigned int ID = resultWriter.addSignal(name, description, SignalType_REAL);
+        unsigned int ID = resultWriter.addSignal(name, description, oms3::SignalType_REAL);
         resultFileMapping[ID] = i;
       }
       else if (var.isTypeInteger())
       {
-        unsigned int ID = resultWriter.addSignal(name, description, SignalType_INT);
+        unsigned int ID = resultWriter.addSignal(name, description, oms3::SignalType_INT);
         resultFileMapping[ID] = i;
       }
       else if (var.isTypeBoolean())
       {
-        unsigned int ID = resultWriter.addSignal(name, description, SignalType_BOOL);
+        unsigned int ID = resultWriter.addSignal(name, description, oms3::SignalType_BOOL);
         resultFileMapping[ID] = i;
       }
       else
@@ -945,13 +945,13 @@ oms_status_enu_t oms2::FMUWrapper::registerSignalsForResultFile(ResultWriter& re
   return oms_status_ok;
 }
 
-oms_status_enu_t oms2::FMUWrapper::emit(ResultWriter& resultWriter)
+oms_status_enu_t oms2::FMUWrapper::emit(oms3::ResultWriter& resultWriter)
 {
   for (auto const &it : resultFileMapping)
   {
     unsigned int ID = it.first;
     oms2::Variable& var = allVariables[it.second];
-    SignalValue_t value;
+    oms3::SignalValue_t value;
     if (var.isTypeReal())
     {
       if (oms_status_ok != getReal(var, value.realValue))

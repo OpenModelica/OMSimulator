@@ -36,7 +36,7 @@
 
 #include <string.h>
 
-MatReader::MatReader(const char* filename)
+oms3::MatReader::MatReader(const char* filename)
   : ResultReader(filename), transposed(true)
 {
   FILE *pFile = fopen(filename, "rb");
@@ -96,7 +96,7 @@ MatReader::MatReader(const char* filename)
   delete[] var_buffer;
 }
 
-MatReader::~MatReader()
+oms3::MatReader::~MatReader()
 {
   freeMatVer4Matrix(&AClass);
   freeMatVer4Matrix(&name);
@@ -105,7 +105,7 @@ MatReader::~MatReader()
   freeMatVer4Matrix(&data_2);
 }
 
-ResultReader::Series* MatReader::getSeries(const char* var)
+oms3::ResultReader::Series* oms3::MatReader::getSeries(const char* var)
 {
   // find index
   int index = -1;

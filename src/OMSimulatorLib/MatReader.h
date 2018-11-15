@@ -35,21 +35,24 @@
 #include "MatVer4.h"
 #include "ResultReader.h"
 
-class MatReader : public ResultReader
+namespace oms3
 {
-public:
-  MatReader(const char* filename);
-  ~MatReader();
+  class MatReader : public ResultReader
+  {
+  public:
+    MatReader(const char* filename);
+    ~MatReader();
 
-  ResultReader::Series* getSeries(const char* var);
+    ResultReader::Series* getSeries(const char* var);
 
-private:
-  bool transposed;
-  MatVer4Matrix* AClass;
-  MatVer4Matrix* name;
-  MatVer4Matrix* dataInfo;
-  MatVer4Matrix* data_1;
-  MatVer4Matrix* data_2;
-};
+  private:
+    bool transposed;
+    MatVer4Matrix* AClass;
+    MatVer4Matrix* name;
+    MatVer4Matrix* dataInfo;
+    MatVer4Matrix* data_1;
+    MatVer4Matrix* data_2;
+  };
+}
 
 #endif

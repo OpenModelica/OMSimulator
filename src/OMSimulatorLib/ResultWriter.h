@@ -35,77 +35,80 @@
 #include <string>
 #include <vector>
 
-enum SignalType_t
+namespace oms3
 {
-  SignalType_REAL,
-  SignalType_INT,
-  SignalType_BOOL
-};
+  enum SignalType_t
+  {
+    SignalType_REAL,
+    SignalType_INT,
+    SignalType_BOOL
+  };
 
-union SignalValue_t
-{
-  double realValue;
-  int intValue;
-  bool boolValue;
-};
+  union SignalValue_t
+  {
+    double realValue;
+    int intValue;
+    bool boolValue;
+  };
 
-struct Signal
-{
-  std::string name;
-  std::string description;
-  SignalType_t type;
-};
+  struct Signal
+  {
+    std::string name;
+    std::string description;
+    SignalType_t type;
+  };
 
-struct Parameter
-{
-  Signal signal;
-  SignalValue_t value;
-};
+  struct Parameter
+  {
+    Signal signal;
+    SignalValue_t value;
+  };
 
-class ResultWriter
-{
-public:
-  ResultWriter(unsigned int bufferSize);
-  virtual ~ResultWriter();
+  class ResultWriter
+  {
+  public:
+    ResultWriter(unsigned int bufferSize);
+    virtual ~ResultWriter();
 
-  unsigned int addSignal(const std::string& name, const std::string& description, SignalType_t type);
-  void addParameter(const std::string& name, const std::string& description, SignalType_t type, SignalValue_t value);
+    unsigned int addSignal(const std::string& name, const std::string& description, SignalType_t type);
+    void addParameter(const std::string& name, const std::string& description, SignalType_t type, SignalValue_t value);
 
-  bool create(const std::string& filename, double startTime, double stopTime);
-  void close();
+    bool create(const std::string& filename, double startTime, double stopTime);
+    void close();
 
-  void updateSignal(unsigned int id, SignalValue_t value);
-  void emit(double time);
+    void updateSignal(unsigned int id, SignalValue_t value);
+    void emit(double time);
 
-private:
-  // Stop the compiler generating methods for copying the object
-  ResultWriter(ResultWriter const& copy);            // Not Implemented
-  ResultWriter& operator=(ResultWriter const& copy); // Not Implemented
+  private:
+    // Stop the compiler generating methods for copying the object
+    ResultWriter(ResultWriter const& copy);            // Not Implemented
+    ResultWriter& operator=(ResultWriter const& copy); // Not Implemented
 
-protected:
-  virtual bool createFile(const std::string& filename, double startTime, double stopTime) = 0;
-  virtual void closeFile() = 0;
-  virtual void writeFile() = 0;
+  protected:
+    virtual bool createFile(const std::string& filename, double startTime, double stopTime) = 0;
+    virtual void closeFile() = 0;
+    virtual void writeFile() = 0;
 
-  std::vector<Signal> signals;
-  std::vector<Parameter> parameters;
+    std::vector<Signal> signals;
+    std::vector<Parameter> parameters;
 
-  double* data_2;
-  unsigned int bufferSize;
-  unsigned int nEmits;
-};
+    double* data_2;
+    unsigned int bufferSize;
+    unsigned int nEmits;
+  };
 
-class VoidWriter :
-  public ResultWriter
-{
-public:
-  VoidWriter(unsigned int bufferSize) :ResultWriter(bufferSize) {}
-  ~VoidWriter() {}
+  class VoidWriter :
+    public ResultWriter
+  {
+  public:
+    VoidWriter(unsigned int bufferSize) :ResultWriter(bufferSize) {}
+    ~VoidWriter() {}
 
-protected:
-  bool createFile(const std::string& filename, double startTime, double stopTime) {return true;}
-  void closeFile() {}
-  void writeFile() {}
-};
+  protected:
+    bool createFile(const std::string& filename, double startTime, double stopTime) {return true;}
+    void closeFile() {}
+    void writeFile() {}
+  };
+}
 
 #endif
