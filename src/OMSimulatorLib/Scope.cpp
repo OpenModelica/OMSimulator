@@ -167,7 +167,7 @@ oms_status_enu_t oms3::Scope::importModel(const std::string& filename, char** _c
   *_cref = NULL;
 
   std::string extension = "";
-  if (filename.length() > 5)
+  if (filename.length() > 4)
     extension = filename.substr(filename.length() - 4);
 
   if (extension != ".ssp")

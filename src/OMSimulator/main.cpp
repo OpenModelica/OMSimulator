@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
   std::string filename = options.filename;
   std::string type = "";
   if (filename.length() > 4)
-    type = filename.substr(filename.length() - 3);
+    type = filename.substr(filename.length() - 4);
   else
   {
     logError("Not able to process file '" + filename + "'\nUse OMSimulator --help for more information.");
@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
   if (options.tempDir != "")
     oms3_setTempDirectory(options.tempDir.c_str());
 
-  if (type == "fmu")
+  if (type == ".fmu")
   {
     std::string modelName("model");
     std::string systemName = modelName + ".root";
@@ -160,7 +160,7 @@ int main(int argc, char *argv[])
     oms3_delete(modelName.c_str());
     return rc;
   }
-  else if (type == "ssp")
+  else if (type == ".ssp")
   {
     char* cref;
     oms3_import(filename.c_str(), &cref);
@@ -183,7 +183,7 @@ int main(int argc, char *argv[])
     oms3_delete(cref);
     return rc;
   }
-  else if (type == "lua")
+  else if (type == ".lua")
   {
     if (options.resultFile != "")
       logWarning("Ignoring option '--resultFile'");

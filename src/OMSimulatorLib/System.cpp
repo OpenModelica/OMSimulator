@@ -264,7 +264,7 @@ oms_status_enu_t oms3::System::addSubModel(const oms3::ComRef& cref, const std::
     Component* component = NULL;
 
     std::string extension = "";
-    if (path.length() > 5)
+    if (path.length() > 4)
       extension = path.substr(path.length() - 4);
 
     if (extension == ".fmu" && oms_system_wc == type)
