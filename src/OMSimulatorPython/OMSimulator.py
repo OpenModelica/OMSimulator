@@ -188,6 +188,9 @@ class OMSimulator:
     self.obj.oms3_setLogFile.argtypes = [ctypes.c_char_p]
     self.obj.oms3_setLogFile.restype = ctypes.c_int
 
+    self.obj.oms3_setLoggingInterval.argtypes = [ctypes.c_char_p, ctypes.c_double]
+    self.obj.oms3_setLoggingInterval.restype = ctypes.c_int
+
     self.obj.oms3_setMaxLogFileSize.argtypes = [ctypes.c_ulong]
     self.obj.oms3_setMaxLogFileSize.restype = None
 
@@ -358,6 +361,8 @@ class OMSimulator:
     return [status, type.value]
   def oms3_setLogFile(self, filename):
     return self.obj.oms3_setLogFile(self.checkstring(filename))
+  def oms3_setLoggingInterval(self, cref, loggingInterval):
+    return self.obj.oms3_setLoggingInterval(self.checkstring(cref), loggingInterval)
   def oms3_setMaxLogFileSize(self, size):
     return self.obj.oms3_setMaxLogFileSize(size)
   def oms3_setTempDirectory(self, newTempDir):
