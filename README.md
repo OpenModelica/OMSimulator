@@ -4,7 +4,7 @@ The OMSimulator project is a FMI-based co-simulation environment that supports o
 
 [![License: OSMC-PL](https://img.shields.io/badge/license-OSMC--PL-lightgrey.svg)](OSMC-License.txt)
 
-Pre-compiled binaries are available for [Windows-MSVC](https://test.openmodelica.org/hudson/job/OMSimulator-Windows-MSVC/lastSuccessfulBuild/artifact/OMSimulator/install/win/OMSimulator-win-master.zip) and [Windows-GCC](https://test.openmodelica.org/hudson/job/OMSimulator-Windows-GCC/lastSuccessfulBuild/artifact/OMSimulator/install/mingw/OMSimulator-mingw-master.zip).
+Pre-compiled binaries are available for [Windows-MSVC (32bit)](https://test.openmodelica.org/hudson/job/OMSimulator-Windows-MSVC32/lastSuccessfulBuild/artifact/OMSimulator/install/win/OMSimulator-win-master.zip), [Windows-MSVC (64bit)](https://test.openmodelica.org/hudson/job/OMSimulator-Windows-MSVC/lastSuccessfulBuild/artifact/OMSimulator/install/win/OMSimulator-win-master.zip), and [Windows-GCC (64bit)](https://test.openmodelica.org/hudson/job/OMSimulator-Windows-GCC/lastSuccessfulBuild/artifact/OMSimulator/install/mingw/OMSimulator-mingw-master.zip).
 
 The latest documentation is avilable as [pdf](https://openmodelica.org/doc/OMSimulator/OMSimulator.pdf) and [html](https://openmodelica.org/doc/OMSimulator/html/).
 
