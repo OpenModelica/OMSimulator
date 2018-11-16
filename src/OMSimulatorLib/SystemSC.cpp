@@ -577,7 +577,7 @@ oms_status_enu_t oms3::SystemSC::stepUntil(double stopTime, void (*cb)(const cha
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::SystemSC::updateInputs(oms3::DirectedGraph& graph)
+oms_status_enu_t oms3::SystemSC::updateInputs(DirectedGraph& graph)
 {
   // input := output
   const std::vector< std::vector< std::pair<int, int> > >& sortedConnections = graph.getSortedConnections();
@@ -591,28 +591,87 @@ oms_status_enu_t oms3::SystemSC::updateInputs(oms3::DirectedGraph& graph)
       if (graph.getNodes()[input].getType() == oms_signal_type_real)
       {
         double value = 0.0;
-        getReal(graph.getNodes()[output].getName(), value);
-        setReal(graph.getNodes()[input].getName(), value);
+        if (oms_status_ok != getReal(graph.getNodes()[output].getName(), value)) return oms_status_error;
+        if (oms_status_ok != setReal(graph.getNodes()[input].getName(), value)) return oms_status_error;
       }
       else if (graph.getNodes()[input].getType() == oms_signal_type_integer)
       {
         int value = 0.0;
-        getInteger(graph.getNodes()[output].getName(), value);
-        setInteger(graph.getNodes()[input].getName(), value);
+        if (oms_status_ok != getInteger(graph.getNodes()[output].getName(), value)) return oms_status_error;
+        if (oms_status_ok != setInteger(graph.getNodes()[input].getName(), value)) return oms_status_error;
       }
       else if (graph.getNodes()[input].getType() == oms_signal_type_boolean)
       {
         bool value = 0.0;
-        getBoolean(graph.getNodes()[output].getName(), value);
-        setBoolean(graph.getNodes()[input].getName(), value);
+        if (oms_status_ok != getBoolean(graph.getNodes()[output].getName(), value)) return oms_status_error;
+        if (oms_status_ok != setBoolean(graph.getNodes()[input].getName(), value)) return oms_status_error;
       }
       else
         return logError_InternalError;
     }
     else
     {
-      return logError("Alg. loops are not supported yet");
+      if (oms_status_ok != solveAlgLoop(graph, sortedConnections[i])) return oms_status_error;
     }
   }
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::SystemSC::solveAlgLoop(DirectedGraph& graph, const std::vector< std::pair<int, int> >& SCC)
+{
+  const int size = SCC.size();
+  const int maxIterations = 10;
+  double maxRes;
+  double *res = new double[size]();
+
+  int it=0;
+  do
+  {
+    it++;
+    // get old values
+    for (int i=0; i<size; ++i)
+    {
+      int output = SCC[i].first;
+      if (oms_status_ok != getReal(graph.getNodes()[output].getName(), res[i]))
+      {
+        delete[] res;
+        return oms_status_error;
+      }
+    }
+
+    // update inputs
+    for (int i=0; i<size; ++i)
+    {
+      int input = SCC[i].second;
+      if (oms_status_ok != setReal(graph.getNodes()[input].getName(), res[i]))
+      {
+        delete[] res;
+        return oms_status_error;
+      }
+    }
+
+    // calculate residuals
+    maxRes = 0.0;
+    double value;
+    for (int i=0; i<size; ++i)
+    {
+      int output = SCC[i].first;
+      if (oms_status_ok != getReal(graph.getNodes()[output].getName(), value))
+      {
+        delete[] res;
+        return oms_status_error;
+      }
+      res[i] -= value;
+
+      if (fabs(res[i]) > maxRes)
+        maxRes = fabs(res[i]);
+    }
+  } while(maxRes > absoluteTolerance && it < maxIterations);
+
+  delete[] res;
+
+  if (it >= maxIterations)
+    return logError("max. number of iterations (" + std::to_string(maxIterations) + ") exceeded at time = " + std::to_string(getTime()));
+  logDebug("CompositeModel::solveAlgLoop: maxRes: " + std::to_string(maxRes) + ", iterations: " + std::to_string(it) + " at time = " + std::to_string(getTime()));
   return oms_status_ok;
 }
