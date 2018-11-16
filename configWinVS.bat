@@ -267,7 +267,7 @@ ECHO # copy boost
 IF NOT EXIST "install\win\bin" MKDIR install\win\bin
 SET CRD=%CD%
 CD %BOOST_ROOT%
-FOR /d %%d in (lib%OMS_VS_PLATFORM%*-msvc-*) do (
+FOR /d %%d in (lib%OMS_VS_PLATFORM%-msvc-*) do (
   CD %%d
   FOR /r %%e in (boost_system*,boost_filesystem*) do (
     XCOPY /Y /F %%e %CRD%\install\win\bin
