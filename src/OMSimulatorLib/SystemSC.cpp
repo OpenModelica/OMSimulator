@@ -170,6 +170,7 @@ oms_status_enu_t oms3::SystemSC::instantiate()
     if (oms_status_ok != subsystem.second->instantiate())
       return oms_status_error;
 
+  size_t n_states = 0;
   for (const auto& component : getComponents())
   {
     if (oms_status_ok != component.second->instantiate())
@@ -182,6 +183,7 @@ oms_status_enu_t oms3::SystemSC::instantiate()
       callEventUpdate.push_back(fmi2_false);
       terminateSimulation.push_back(fmi2_false);
       nStates.push_back(fmus.back()->getNumberOfContinuousStates());
+      n_states += nStates.back();
       nEventIndicators.push_back(fmus.back()->getNumberOfEventIndicators());
 
       states.push_back((double*)calloc(nStates.back(), sizeof(double)));
@@ -192,8 +194,11 @@ oms_status_enu_t oms3::SystemSC::instantiate()
     }
   }
 
-  if (fmus.size() == 0)
+  if (n_states == 0)
+  {
     solverMethod = oms_solver_explicit_euler;
+    logInfo("model doesn't contain any continuous state");
+  }
 
   if (oms_solver_explicit_euler == solverMethod)
     ;
@@ -221,14 +226,20 @@ oms_status_enu_t oms3::SystemSC::initialize()
   for (size_t i=0; i<fmus.size(); ++i)
   {
     // get states and state derivatives
-    status = fmus[i]->getContinuousStates(states[i]);
-    if (oms_status_ok != status) return status;
-    status = fmus[i]->getDerivatives(states_der[i]);
-    if (oms_status_ok != status) return status;
-    status = fmus[i]->getNominalsOfContinuousStates(states_nominal[i]);
-    if (oms_status_ok != status) return status;
-    status = fmus[i]->getEventindicators(event_indicators[i]);
-    if (oms_status_ok != status) return status;
+    if (fmus[i]->getNumberOfContinuousStates() > 0)
+    {
+      status = fmus[i]->getContinuousStates(states[i]);
+      if (oms_status_ok != status) return status;
+      status = fmus[i]->getDerivatives(states_der[i]);
+      if (oms_status_ok != status) return status;
+      status = fmus[i]->getNominalsOfContinuousStates(states_nominal[i]);
+      if (oms_status_ok != status) return status;
+    }
+    if (fmus[i]->getNumberOfEventIndicators() > 0)
+    {
+      status = fmus[i]->getEventindicators(event_indicators[i]);
+      if (oms_status_ok != status) return status;
+    }
   }
 
   if (oms_solver_cvode == solverMethod)
