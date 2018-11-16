@@ -42,12 +42,12 @@ ProgramOptions::ProgramOptions(int argc, char** argv)
 
   help = false;
   version = false;
-  communicationInterval = 1e-1;
+  intervals = 1e-1;
   startTime = 0.0;
   stopTime = 1.0;
   timeout = 0;
   tolerance = 1e-6;
-  useCommunicationInterval = false;
+  useIntervals = false;
   useStartTime = false;
   useStopTime = false;
   useTolerance = false;
@@ -55,6 +55,7 @@ ProgramOptions::ProgramOptions(int argc, char** argv)
   cs = true;
 
   oms_regex re_integer("(\\+|-)?[[:digit:]]+");
+  oms_regex re_number("[[:digit:]]+");
   oms_regex re_double("((\\+|-)?[[:digit:]]+)(\\.(([[:digit:]]+)?))?((e|E)((\\+|-)?)[[:digit:]]+)?");
   oms_regex re_default(".+");
   oms_regex re_solver("internal|euler|cvode");
@@ -70,16 +71,22 @@ ProgramOptions::ProgramOptions(int argc, char** argv)
     {
       help = true;
     }
-    else if (isOptionAndValue("--interval", "-i", value, re_double))
+    else if (isOptionAndValue("--intervals", "-i", value, re_number))
     {
-      communicationInterval = atof(value.c_str());
-      useCommunicationInterval = true;
+      intervals = atoi(value.c_str());
+      useIntervals = true;
+
+      if (intervals < 2)
+      {
+        std::cout << "Invalid argument: " << arg << std::endl;
+        validOptions = false;
+      }
     }
     else if (isOptionAndValue("--logfile", "-l", value, re_default))
     {
       logfile = value;
     }
-    else if (isOptionAndValue("--logLevel", value, re_integer))
+    else if (isOptionAndValue("--logLevel", value, re_number))
     {
       logLevel = atoi(value.c_str());
     }
@@ -197,7 +204,7 @@ void ProgramOptions::printUsage()
 
   std::cout << "Options:" << std::endl;
   std::cout << "  -h [ --help ]             Displays the help text" << std::endl;
-  std::cout << "  -i [ --interval ] arg     Specifies the communication interval size." << std::endl;
+  std::cout << "  -i [ --intervals ] arg    Specifies the number of communication points (arg > 1)." << std::endl;
   std::cout << "  -l [ --logFile ] arg      Specifies the logfile (stdout is used if no log file is specified)." << std::endl;
   std::cout << "  --logLevel arg            0 default, 1 default+debug, 2 default+debug+trace" << std::endl;
   std::cout << "  -m [ --mode ] arg         Forces a certain FMI mode iff the FMU provides cs and me [arg: cs (default) or me]" << std::endl;

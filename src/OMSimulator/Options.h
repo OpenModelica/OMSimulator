@@ -57,8 +57,8 @@ public:
   bool useStopTime;
   double tolerance;
   bool useTolerance;
-  double communicationInterval;
-  bool useCommunicationInterval;
+  int intervals;
+  bool useIntervals;
   std::string filename;
   std::string resultFile;
   std::string tempDir;

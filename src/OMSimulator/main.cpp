@@ -150,8 +150,8 @@ int main(int argc, char *argv[])
       oms3_setStopTime(modelName.c_str(), options.stopTime);
     if (options.useTolerance)
       oms3_setTolerance(systemName.c_str(), options.tolerance);
-    if (options.useCommunicationInterval)
-      oms3_setFixedStepSize(systemName.c_str(), options.communicationInterval);
+    if (options.useIntervals)
+      oms3_setFixedStepSize(systemName.c_str(), (options.stopTime - options.startTime) / (options.intervals-1));
     if (options.solver != "")
       oms3_setSolver(systemName.c_str(), options.solver.c_str());
 
@@ -173,7 +173,7 @@ int main(int argc, char *argv[])
       oms3_setStopTime(cref, options.stopTime);
     if (options.useTolerance)
       logWarning("Ignoring option '--tolerance'");
-    if (options.useCommunicationInterval)
+    if (options.useIntervals)
       logWarning("Ignoring option '--interval'");
     if (options.solver != "")
       logWarning("Ignoring option '--solver'");
@@ -193,7 +193,7 @@ int main(int argc, char *argv[])
       logWarning("Ignoring option '--stopTime'");
     if (options.useTolerance)
       logWarning("Ignoring option '--tolerance'");
-    if (options.useCommunicationInterval)
+    if (options.useIntervals)
       logWarning("Ignoring option '--interval'");
     if (options.solver != "")
       logWarning("Ignoring option '--solver'");
