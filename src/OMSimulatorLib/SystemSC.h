@@ -64,6 +64,7 @@ namespace oms3
     double getTime() const {return time;}
 
     oms_status_enu_t updateInputs(DirectedGraph& graph);
+    oms_status_enu_t solveAlgLoop(DirectedGraph& graph, const std::vector< std::pair<int, int> >& SCC);
 
     std::string getSolverName() const;
     oms_status_enu_t setSolverMethod(std::string);

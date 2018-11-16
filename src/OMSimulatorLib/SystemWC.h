@@ -62,6 +62,7 @@ namespace oms3
     oms_status_enu_t setFixedStepSize(double stepSize) {this->stepSize=stepSize; return oms_status_ok;}
 
     oms_status_enu_t updateInputs(DirectedGraph& graph);
+    oms_status_enu_t solveAlgLoop(DirectedGraph& graph, const std::vector< std::pair<int, int> >& SCC);
 
   protected:
     SystemWC(const ComRef& cref, Model* parentModel, System* parentSystem);
