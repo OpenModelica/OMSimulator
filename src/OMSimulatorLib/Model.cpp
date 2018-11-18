@@ -588,7 +588,7 @@ oms_status_enu_t oms3::Model::emit(double time)
 {
   if (!resultFile)
     return oms_status_ok;
-  if (time > lastEmit && time < stopTime && time < lastEmit + loggingInterval)
+  if (time != stopTime && time < lastEmit + loggingInterval)
     return oms_status_ok;
 
   SignalValue_t wallTime;
