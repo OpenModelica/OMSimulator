@@ -56,8 +56,10 @@ oms3::System::System(const oms3::ComRef& cref, oms_system_enu_t type, oms3::Mode
   busconnectors.push_back(NULL);
   element.setBusConnectors(&busconnectors[0]);
 
+#if !defined(NO_TLM)
   tlmbusconnectors.push_back(NULL);
   element.setTLMBusConnectors(&tlmbusconnectors[0]);
+#endif
 
   subelements.push_back(NULL);
   element.setSubElements(&subelements[0]);
@@ -83,9 +85,11 @@ oms3::System::~System()
     if (busconnector)
       delete busconnector;
 
+#if !defined(NO_TLM)
   for (const auto tlmbusconnector : tlmbusconnectors)
     if (tlmbusconnector)
       delete tlmbusconnector;
+#endif
 }
 
 oms3::System* oms3::System::NewSystem(const oms3::ComRef& cref, oms_system_enu_t type, oms3::Model* parentModel, oms3::System* parentSystem)
@@ -122,7 +126,11 @@ oms3::System* oms3::System::NewSystem(const oms3::ComRef& cref, oms_system_enu_t
       logError("A TLM system must be the the root system of a model.");
       return NULL;
     }
+#if !defined(NO_TLM)
     return SystemTLM::NewSystem(cref, parentModel, parentSystem);
+#else
+    return nullptr;
+#endif
 
   case oms_system_wc:
     if (parentSystem && oms_system_tlm != parentSystem->getType())
@@ -217,8 +225,10 @@ bool oms3::System::validCref(const oms3::ComRef& cref)
   if (getBusConnector(cref))
     return false;
 
+#if !defined(NO_TLM)
   if (getTLMBusConnector(cref))
     return false;
+#endif
 
   return true;
 }
@@ -347,9 +357,11 @@ oms_status_enu_t oms3::System::listUnconnectedConnectors(char** contents) const
     if (busconnector && !isConnected(busconnector->getName()))
       unconnectedBuses.push_back(getFullCref() + busconnector->getName());
 
+#if !defined(NO_TLM)
   for (const auto& tlmbusconnector : tlmbusconnectors)
     if (tlmbusconnector && !isConnected(tlmbusconnector->getName()))
       unconnectedBuses.push_back(getFullCref() + tlmbusconnector->getName());
+#endif
 
   std::string msg;
   for (const auto& unconnectedInput : unconnectedInputs)
@@ -407,7 +419,11 @@ oms_status_enu_t oms3::System::exportToSSD(pugi::xml_node& node) const
     else if (connection)
       busconnections.push_back(connection);
 
+#if !defined(NO_TLM)
   if (busconnectors[0] || tlmbusconnectors[0] || !busconnections.empty())
+#else
+  if (busconnectors[0] || !busconnections.empty())
+#endif
   {
     pugi::xml_node annotations_node = node.append_child(oms2::ssd::ssd_annotations);
     pugi::xml_node annotation_node = annotations_node.append_child(oms2::ssd::ssd_annotation);
@@ -415,9 +431,11 @@ oms_status_enu_t oms3::System::exportToSSD(pugi::xml_node& node) const
     for (const auto& busconnector : busconnectors)
       if (busconnector)
         busconnector->exportToSSD(annotation_node);
+#if !defined(NO_TLM)
     for (const auto& tlmbusconnector : tlmbusconnectors)
       if (tlmbusconnector)
         tlmbusconnector->exportToSSD(annotation_node);
+#endif
     if (!busconnections.empty())
     {
       pugi::xml_node busconnections_node = annotation_node.append_child(oms::bus_connections);
@@ -601,9 +619,13 @@ oms_status_enu_t oms3::System::importFromSSD(const pugi::xml_node& node)
               geometry.setPosition(connectorGeometryNode.attribute("x").as_double(), connectorGeometryNode.attribute("y").as_double());
               if (std::string(itAnnotations->attribute("type").as_string()) == "tlm")
               {
+#if !defined(NO_TLM)
                 oms3::TLMBusConnector* tlmBusConnector = getTLMBusConnector(busname);
                 if (tlmBusConnector)
                   tlmBusConnector->setGeometry(&geometry);
+#else
+                return LOG_NO_TLM();
+#endif
               }
               else
               {
@@ -629,12 +651,16 @@ oms_status_enu_t oms3::System::importFromSSD(const pugi::xml_node& node)
               if (itConnection->attribute("delay") || itConnection->attribute("alpha")
                   || itConnection->attribute("linearimpedance") || itConnection->attribute("angularimpedance"))
               {
+#if !defined(NO_TLM)
                 double delay = itConnection->attribute("delay").as_double();
                 double alpha = itConnection->attribute("alpha").as_double();
                 double linearimpedance = itConnection->attribute("linearimpedance").as_double();
                 double angularimpedance = itConnection->attribute("angularimpedance").as_double();
 
                 status = addTLMConnection(element1+connector1, element2+connector2, delay, alpha, linearimpedance, angularimpedance);
+#else
+                return LOG_NO_TLM();
+#endif
               }
               else  // Load bus connection
               {
@@ -725,6 +751,7 @@ oms3::BusConnector* oms3::System::getBusConnector(const oms3::ComRef& cref)
   return NULL;
 }
 
+#if !defined(NO_TLM)
 oms3::TLMBusConnector* oms3::System::getTLMBusConnector(const oms3::ComRef& cref)
 {
   oms3::ComRef tail(cref);
@@ -748,6 +775,7 @@ oms3::TLMBusConnector* oms3::System::getTLMBusConnector(const oms3::ComRef& cref
 
   return NULL;
 }
+#endif
 
 oms3::Connection** oms3::System::getConnections(const oms3::ComRef& cref)
 {
@@ -779,6 +807,7 @@ oms_status_enu_t oms3::System::addConnection(const oms3::ComRef& crefA, const om
       return subsystem->second->addConnection(tailA,tailB);
   }
 
+#if !defined(NO_TLM)
   // check if it is an internal connection between TLM buses
   TLMBusConnector* tlmA = getTLMBusConnector(crefA);
   TLMBusConnector* tlmB = getTLMBusConnector(crefB);
@@ -792,6 +821,7 @@ oms_status_enu_t oms3::System::addConnection(const oms3::ComRef& crefA, const om
     connections.push_back(NULL);
     return oms_status_ok;
   }
+#endif
 
   // first check if it is a bus connection
   BusConnector* busA = NULL;
@@ -896,6 +926,7 @@ oms_status_enu_t oms3::System::deleteConnection(const oms3::ComRef& crefA, const
 
 oms_status_enu_t oms3::System::addTLMConnection(const oms3::ComRef& crefA, const oms3::ComRef& crefB, double delay, double alpha, double linearimpedance, double angularimpedance)
 {
+#if !defined(NO_TLM)
   if (type != oms_system_tlm)
     return logError_OnlyForTlmSystem;
 
@@ -932,6 +963,9 @@ oms_status_enu_t oms3::System::addTLMConnection(const oms3::ComRef& crefA, const
   }
 
   return logError("TLM bus connector(s) not found in system");
+#else
+    return LOG_NO_TLM();
+#endif
 }
 
 oms_status_enu_t oms3::System::addBus(const oms3::ComRef& cref)
@@ -963,6 +997,7 @@ oms_status_enu_t oms3::System::addBus(const oms3::ComRef& cref)
 
 oms_status_enu_t oms3::System::addTLMBus(const oms3::ComRef& cref, const std::string domain, const int dimensions, const oms_tlm_interpolation_t interpolation)
 {
+#if !defined(NO_TLM)
   oms3::ComRef tail(cref);
   oms3::ComRef head = tail.pop_front();
 
@@ -988,6 +1023,9 @@ oms_status_enu_t oms3::System::addTLMBus(const oms3::ComRef& cref, const std::st
   tlmbusconnectors.push_back(NULL);
   element.setTLMBusConnectors(&tlmbusconnectors[0]);
   return oms_status_ok;
+#else
+    return LOG_NO_TLM();
+#endif
 }
 
 oms_status_enu_t oms3::System::addConnectorToBus(const oms3::ComRef& busCref, const oms3::ComRef& connectorCref)
@@ -1045,6 +1083,7 @@ oms_status_enu_t oms3::System::deleteConnectorFromBus(const oms3::ComRef& busCre
 
 oms_status_enu_t oms3::System::addConnectorToTLMBus(const oms3::ComRef& busCref, const oms3::ComRef& connectorCref, const std::string type)
 {
+#if !defined(NO_TLM)
   oms3::ComRef busTail(busCref);
   oms3::ComRef busHead = busTail.pop_front();
   oms3::ComRef connectorTail(connectorCref);
@@ -1082,10 +1121,14 @@ oms_status_enu_t oms3::System::addConnectorToTLMBus(const oms3::ComRef& busCref,
     }
   }
   return oms_status_ok;
+#else
+    return LOG_NO_TLM();
+#endif
 }
 
 oms_status_enu_t oms3::System::deleteConnectorFromTLMBus(const oms3::ComRef& busCref, const oms3::ComRef& connectorCref)
 {
+#if !defined(NO_TLM)
   oms3::ComRef busTail(busCref);
   oms3::ComRef busHead = busTail.pop_front();
   oms3::ComRef connectorTail(connectorCref);
@@ -1113,10 +1156,14 @@ oms_status_enu_t oms3::System::deleteConnectorFromTLMBus(const oms3::ComRef& bus
         return logError_ConnectorNotInSystem(connectorCref, this);
 
   return oms_status_ok;
+#else
+    return LOG_NO_TLM();
+#endif
 }
 
 oms_status_enu_t oms3::System::addExternalModel(const oms3::ComRef& cref, std::string path, std::string startscript)
 {
+#if !defined(NO_TLM)
   if (type != oms_system_tlm)
     return logError_OnlyForTlmSystem;
 
@@ -1133,6 +1180,9 @@ oms_status_enu_t oms3::System::addExternalModel(const oms3::ComRef& cref, std::s
   element.setSubElements(&subelements[0]);
 
   return oms_status_ok;
+#else
+    return LOG_NO_TLM();
+#endif
 }
 
 oms_status_enu_t oms3::System::setConnectorGeometry(const oms3::ComRef& cref, const oms2::ssd::ConnectorGeometry *geometry)
@@ -1195,6 +1245,7 @@ oms_status_enu_t oms3::System::setConnectionGeometry(const oms3::ComRef& crefA, 
 
 oms_status_enu_t oms3::System::setTLMConnectionParameters(const ComRef &crefA, const ComRef &crefB, const oms3_tlm_connection_parameters_t* parameters)
 {
+#if !defined(NO_TLM)
   oms3::ComRef tailA(crefA);
   oms3::ComRef headA = tailA.pop_front();
 
@@ -1217,6 +1268,9 @@ oms_status_enu_t oms3::System::setTLMConnectionParameters(const ComRef &crefA, c
     }
 
   return logError_ConnectionNotInSystem(crefA, crefB, this);
+#else
+    return LOG_NO_TLM();
+#endif
 }
 
 oms_status_enu_t oms3::System::setBusGeometry(const oms3::ComRef& cref, const oms2::ssd::ConnectorGeometry *geometry)
@@ -1238,6 +1292,7 @@ oms_status_enu_t oms3::System::setBusGeometry(const oms3::ComRef& cref, const om
 
 oms_status_enu_t oms3::System::setTLMBusGeometry(const oms3::ComRef& cref, const oms2::ssd::ConnectorGeometry *geometry)
 {
+#if !defined(NO_TLM)
   oms3::ComRef tail(cref);
   oms3::ComRef head = tail.pop_front();
   auto subsystem = subsystems.find(head);
@@ -1251,6 +1306,9 @@ oms_status_enu_t oms3::System::setTLMBusGeometry(const oms3::ComRef& cref, const
     return oms_status_ok;
   }
   return logError("TLM Bus " + std::string(cref)+" not found in system " + std::string(getCref()));
+#else
+    return LOG_NO_TLM();
+#endif
 }
 
 oms3::Connection* oms3::System::getConnection(const oms3::ComRef& crefA, const oms3::ComRef& crefB)

@@ -305,6 +305,7 @@ oms3::Component* oms3::ComponentFMUME::NewComponent(const pugi::xml_node& node, 
 
 oms_status_enu_t oms3::ComponentFMUME::exportToSSD(pugi::xml_node& node) const
 {
+#if !defined(NO_TLM)
   if (tlmbusconnectors[0])
   {
     pugi::xml_node annotations_node = node.append_child(oms2::ssd::ssd_annotations);
@@ -314,6 +315,7 @@ oms_status_enu_t oms3::ComponentFMUME::exportToSSD(pugi::xml_node& node) const
       if (tlmbusconnector)
         tlmbusconnector->exportToSSD(annotation_node);
   }
+#endif
 
   node.append_attribute("name") = this->getCref().c_str();
   node.append_attribute("type") = "application/x-fmu-sharedlibrary";

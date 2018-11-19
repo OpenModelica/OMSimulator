@@ -33,6 +33,7 @@
 
 #include "Flags.h"
 #include "System.h"
+#include "Component.h"
 #include <miniunz.h>
 #include <OMSBoost.h>
 #include <time.h>

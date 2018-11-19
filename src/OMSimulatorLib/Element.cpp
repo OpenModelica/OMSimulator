@@ -33,7 +33,9 @@
 #include "ssd/ElementGeometry.h"
 #include "Logging.h"
 #include "Connector.h"
+#if !defined(NO_TLM)
 #include "TLMBusConnector.h"
+#endif
 
 #include <cstring>
 #include <iostream>
@@ -52,7 +54,10 @@ oms3::Element::Element(oms3_element_enu_t type, const oms3::ComRef& name)
   this->geometry = reinterpret_cast<ssd_element_geometry_t*>(new oms3::ssd::ElementGeometry());
 
   this->busconnectors = NULL;
+
+#if !defined(NO_TLM)
   this->tlmbusconnectors = NULL;
+#endif
 }
 
 oms3::Element::~Element()
@@ -100,10 +105,12 @@ void oms3::Element::setBusConnectors(oms3::BusConnector **newBusConnectors)
   this->busconnectors = reinterpret_cast<oms3_busconnector_t**>(newBusConnectors);
 }
 
+#if !defined(NO_TLM)
 void oms3::Element::setTLMBusConnectors(oms3::TLMBusConnector **newBusConnectors)
 {
   this->tlmbusconnectors = reinterpret_cast<oms3_tlmbusconnector_t**>(newBusConnectors);
 }
+#endif
 
 void oms3::Element::setSubElements(oms3_element_t** subelements)
 {

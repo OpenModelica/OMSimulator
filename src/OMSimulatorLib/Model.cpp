@@ -37,6 +37,7 @@
 #include "Scope.h"
 #include "ssd/Tags.h"
 #include "System.h"
+#include "Component.h"
 
 #include <OMSBoost.h>
 #include <minizip.h>

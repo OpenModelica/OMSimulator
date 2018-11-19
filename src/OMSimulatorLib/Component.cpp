@@ -34,6 +34,7 @@
 #include "Model.h"
 #include "System.h"
 #include <OMSBoost.h>
+#include "TLMBusConnector.h"
 
 
 void oms3::fmiLogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message)
@@ -89,8 +90,10 @@ oms3::Component::Component(const ComRef& cref, oms_component_enu_t type, System*
   connectors.push_back(NULL);
   element.setConnectors(&connectors[0]);
 
+#if !defined(NO_TLM)
   tlmbusconnectors.push_back(NULL);
   element.setTLMBusConnectors(&tlmbusconnectors[0]);
+#endif
 }
 
 oms3::Component::~Component()
@@ -99,9 +102,11 @@ oms3::Component::~Component()
     if (connector)
       delete connector;
 
+#if !defined(NO_TLM)
   for (const auto tlmbusconnector : tlmbusconnectors)
     if(tlmbusconnector)
       delete tlmbusconnector;
+#endif
 }
 
 oms3::ComRef oms3::Component::getFullCref() const
@@ -116,6 +121,7 @@ oms3::Model* oms3::Component::getModel() const
 
 oms_status_enu_t oms3::Component::addTLMBus(const oms3::ComRef &cref, const std::string domain, const int dimensions, const oms_tlm_interpolation_t interpolation)
 {
+#if !defined(NO_TLM)
   if(!cref.isValidIdent()) {
     return logError("Not a valid ident: "+std::string(cref));
   }
@@ -124,8 +130,12 @@ oms_status_enu_t oms3::Component::addTLMBus(const oms3::ComRef &cref, const std:
   tlmbusconnectors.push_back(NULL);
   element.setTLMBusConnectors(&tlmbusconnectors[0]);
   return oms_status_ok;
+#else
+  return LOG_NO_TLM();
+#endif
 }
 
+#if !defined(NO_TLM)
 oms3::TLMBusConnector *oms3::Component::getTLMBusConnector(const oms3::ComRef &cref)
 {
   for(auto &tlmbusconnector : tlmbusconnectors) {
@@ -134,9 +144,11 @@ oms3::TLMBusConnector *oms3::Component::getTLMBusConnector(const oms3::ComRef &c
   }
   return NULL;
 }
+#endif
 
 oms_status_enu_t oms3::Component::addConnectorToTLMBus(const oms3::ComRef& busCref, const oms3::ComRef& connectorCref, const std::string type)
 {
+#if !defined(NO_TLM)
   if (this->type == oms_component_external)
     return logError_NotForExternalModels;
 
@@ -158,10 +170,14 @@ oms_status_enu_t oms3::Component::addConnectorToTLMBus(const oms3::ComRef& busCr
     }
   }
   return oms_status_ok;
+#else
+  return LOG_NO_TLM();
+#endif
 }
 
 oms_status_enu_t oms3::Component::deleteConnectorFromTLMBus(const oms3::ComRef& busCref, const oms3::ComRef& connectorCref)
 {
+#if !defined(NO_TLM)
   if(type == oms_component_external)
     return logError_NotForExternalModels;
 
@@ -171,6 +187,9 @@ oms_status_enu_t oms3::Component::deleteConnectorFromTLMBus(const oms3::ComRef& 
         return logError_ConnectorNotInComponent(connectorCref, this);
 
   return oms_status_ok;
+#else
+  return LOG_NO_TLM();
+#endif
 }
 
 oms3::Connector* oms3::Component::getConnector(const ComRef& cref)
