@@ -136,6 +136,7 @@ namespace oms3
     oms_status_enu_t removeSignalsFromResults(const char* regex);
 
     virtual oms_status_enu_t setFixedStepSize(double stepSize) {return oms_status_error;}
+    virtual oms_status_enu_t setTolerance(double tolerance) {return oms_status_error;}
 
   protected:
     System(const ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem);

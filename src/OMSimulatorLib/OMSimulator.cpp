@@ -1218,7 +1218,18 @@ oms_status_enu_t oms3_setSolver(const char* cref, const char* solver)
 
 oms_status_enu_t oms3_setTolerance(const char* cref, double tolerance)
 {
-  return logError_NotImplemented;
+  oms3::ComRef tail(cref);
+  oms3::ComRef front = tail.pop_front();
+
+  oms3::Model* model = oms3::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  oms3::System* system = model->getSystem(tail);
+  if (system)
+    return system->setTolerance(tolerance);
+
+  return logError_SystemNotInModel(model->getCref(), front);
 }
 
 /* ************************************ */

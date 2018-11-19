@@ -70,6 +70,7 @@ namespace oms3
     oms_status_enu_t setSolverMethod(std::string);
 
     oms_status_enu_t setFixedStepSize(double stepSize) {this->maximumStepSize=stepSize; return oms_status_ok;}
+    oms_status_enu_t setTolerance(double tolerance) {this->absoluteTolerance=this->relativeTolerance=tolerance; return oms_status_ok;}
 
   protected:
     SystemSC(const ComRef& cref, Model* parentModel, System* parentSystem);
