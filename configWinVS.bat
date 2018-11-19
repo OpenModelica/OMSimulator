@@ -1,6 +1,6 @@
 @ECHO off
 REM run this on wsl using:
-REM cmd.exe /C configWinVS.bat VS15-Win64
+REM cmd.exe /C "SET CMAKE_BUILD_TYPE=Debug && configWinVS.bat VS15-Win64"
 
 SET OMS_VS_TARGET=%~1
 SET TARGET=%~2
