@@ -70,8 +70,10 @@ namespace oms3
     void setGeometry(const ssd::ElementGeometry& geometry) {element.setGeometry(&geometry);}
 
     oms_status_enu_t addTLMBus(const oms3::ComRef& cref, const std::string domain, const int dimensions, const oms_tlm_interpolation_t interpolation);
+#if !defined(NO_TLM)
     oms3::TLMBusConnector *getTLMBusConnector(const oms3::ComRef &cref);
     TLMBusConnector **getTLMBusConnectors() {return &tlmbusconnectors[0];}
+#endif
     oms_status_enu_t addConnectorToTLMBus(const ComRef& busCref, const ComRef& connectorCref, const std::string type);
     oms_status_enu_t deleteConnectorFromTLMBus(const ComRef& busCref, const ComRef& connectorCref);
 
@@ -109,7 +111,9 @@ namespace oms3
     DirectedGraph outputsGraph;
     Element element;
     std::vector<Connector*> connectors;
+#if !defined(NO_TLM)
     std::vector<TLMBusConnector*> tlmbusconnectors;
+#endif
 
   private:
     System* parentSystem;

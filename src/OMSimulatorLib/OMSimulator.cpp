@@ -42,8 +42,10 @@
 #include "ResultReader.h"
 #include "Scope.h"
 #include "System.h"
+#if !defined(NO_TLM)
 #include "SystemTLM.h"
 #include "TLMBusConnector.h"
+#endif
 #include "Types.h"
 #include "Version.h"
 #include <boost/filesystem.hpp>
@@ -396,6 +398,7 @@ oms_status_enu_t oms3_setConnectionGeometry(const char *crefA, const char *crefB
 
 oms_status_enu_t oms3_setTLMConnectionParameters(const char* crefA, const char* crefB, const oms3_tlm_connection_parameters_t* parameters)
 {
+#if !defined(NO_TLM)
   oms3::ComRef tailA(crefA);
   oms3::ComRef modelCref = tailA.pop_front();
   oms3::ComRef systemCref = tailA.pop_front();
@@ -413,6 +416,9 @@ oms_status_enu_t oms3_setTLMConnectionParameters(const char* crefA, const char* 
     return logError_SystemNotInModel(modelCref, systemCref);
 
   return system->setTLMConnectionParameters(tailA, tailB, parameters);
+#else
+  return LOG_NO_TLM();
+#endif
 }
 
 oms_status_enu_t oms3_getConnections(const char *cref, oms3_connection_t ***connections)
@@ -494,6 +500,7 @@ oms_status_enu_t oms3_setBusGeometry(const char* cref, const ssd_connector_geome
 
 oms_status_enu_t oms3_addTLMBus(const char *cref, const char *domain, const int dimensions, const oms_tlm_interpolation_t interpolation)
 {
+#if !defined(NO_TLM)
   oms3::ComRef tail(cref);
   oms3::ComRef modelCref = tail.pop_front();
   oms3::ComRef systemCref = tail.pop_front();
@@ -506,10 +513,14 @@ oms_status_enu_t oms3_addTLMBus(const char *cref, const char *domain, const int 
     return logError_SystemNotInModel(modelCref, systemCref);
   }
   return system->addTLMBus(tail, domain, dimensions, interpolation);
+#else
+    return LOG_NO_TLM();
+#endif
 }
 
 oms_status_enu_t oms3_getTLMBus(const char* cref, oms3_tlmbusconnector_t** tlmBusConnector)
 {
+#if !defined(NO_TLM)
   oms3::ComRef tail(cref);
   oms3::ComRef modelCref = tail.pop_front();
   oms3::ComRef systemCref = tail.pop_front();
@@ -527,6 +538,9 @@ oms_status_enu_t oms3_getTLMBus(const char* cref, oms3_tlmbusconnector_t** tlmBu
   oms3::TLMBusConnector** tlmBusConnector_ = reinterpret_cast<oms3::TLMBusConnector**>(tlmBusConnector);
   *tlmBusConnector_ = system->getTLMBusConnector(tail);
   return oms_status_ok;
+#else
+  return LOG_NO_TLM();
+#endif
 }
 
 oms_status_enu_t oms3_addConnectorToBus(const char *busCref, const char *connectorCref)
@@ -574,6 +588,7 @@ oms_status_enu_t oms3_deleteConnectorFromBus(const char *busCref, const char *co
 
 oms_status_enu_t oms3_addConnectorToTLMBus(const char *busCref, const char *connectorCref, const char* type)
 {
+#if !defined(NO_TLM)
   oms3::ComRef busTail(busCref);
   oms3::ComRef modelCref = busTail.pop_front();
   oms3::ComRef systemCref = busTail.pop_front();
@@ -591,10 +606,14 @@ oms_status_enu_t oms3_addConnectorToTLMBus(const char *busCref, const char *conn
     return logError_SystemNotInModel(modelCref, systemCref);
   }
   return system->addConnectorToTLMBus(busTail, connectorTail, type);
+#else
+  return LOG_NO_TLM();
+#endif
 }
 
 oms_status_enu_t oms3_deleteConnectorFromTLMBus(const char *busCref, const char *connectorCref)
 {
+#if !defined(NO_TLM)
   logTrace();
   oms3::ComRef busTail(busCref);
   oms3::ComRef modelCref = busTail.pop_front();
@@ -613,10 +632,14 @@ oms_status_enu_t oms3_deleteConnectorFromTLMBus(const char *busCref, const char 
     return logError_SystemNotInModel(modelCref, systemCref);
   }
   return system->deleteConnectorFromTLMBus(busTail, connectorTail);
+#else
+  return LOG_NO_TLM();
+#endif
 }
 
 oms_status_enu_t oms3_setTLMBusGeometry(const char* cref, const ssd_connector_geometry_t* geometry)
 {
+#if !defined(NO_TLM)
   oms3::ComRef tail(cref);
   oms3::ComRef modelCref = tail.pop_front();
   oms3::ComRef systemCref = tail.pop_front();
@@ -632,10 +655,14 @@ oms_status_enu_t oms3_setTLMBusGeometry(const char* cref, const ssd_connector_ge
   }
 
   return system->setTLMBusGeometry(tail, reinterpret_cast<const oms2::ssd::ConnectorGeometry*>(geometry));
+#else
+  return LOG_NO_TLM();
+#endif
 }
 
 oms_status_enu_t oms3_addTLMConnection(const char *crefA, const char *crefB, double delay, double alpha, double linearimpedance, double angularimpedance)
 {
+#if !defined(NO_TLM)
   oms3::ComRef tailA(crefA);
   oms3::ComRef modelCref = tailA.pop_front();
   oms3::ComRef systemCref = tailA.pop_front();
@@ -655,10 +682,14 @@ oms_status_enu_t oms3_addTLMConnection(const char *crefA, const char *crefB, dou
   }
 
   return system->addTLMConnection(tailA,tailB,delay,alpha,linearimpedance,angularimpedance);
+#else
+  return LOG_NO_TLM();
+#endif
 }
 
 oms_status_enu_t oms3_addExternalModel(const char *cref, const char *path, const char *startscript)
 {
+#if !defined(NO_TLM)
   oms3::ComRef tail(cref);
   oms3::ComRef modelCref = tail.pop_front();
   oms3::ComRef systemCref = tail.pop_front();
@@ -674,6 +705,9 @@ oms_status_enu_t oms3_addExternalModel(const char *cref, const char *path, const
   }
 
   return system->addExternalModel(tail, path, startscript);
+#else
+  return LOG_NO_TLM();
+#endif
 }
 
 oms_status_enu_t oms3_addSubModel(const char* cref, const char* fmuPath)
@@ -854,6 +888,7 @@ oms_status_enu_t oms3_terminate(const char* cref_)
 
 oms_status_enu_t oms3_setTLMSocketData(const char *cref, const char *address, int managerPort, int monitorPort)
 {
+#if !defined(NO_TLM)
   oms3::ComRef tail(cref);
   oms3::ComRef front = tail.pop_front();
 
@@ -871,10 +906,14 @@ oms_status_enu_t oms3_setTLMSocketData(const char *cref, const char *address, in
 
   oms3::SystemTLM* tlmsystem = reinterpret_cast<oms3::SystemTLM*>(system);
   return tlmsystem->setSocketData(address, managerPort, monitorPort);
+#else
+  return LOG_NO_TLM();
+#endif
 }
 
 oms_status_enu_t oms3_setTLMPositionAndOrientation(const char *cref, double x1, double x2, double x3, double A11, double A12, double A13, double A21, double A22, double A23, double A31, double A32, double A33)
 {
+#if !defined(NO_TLM)
   oms3::ComRef tail(cref);
   oms3::ComRef front = tail.pop_front();
 
@@ -894,6 +933,9 @@ oms_status_enu_t oms3_setTLMPositionAndOrientation(const char *cref, double x1, 
   std::vector<double> x = {x1,x2,x3};
   std::vector<double> A = {A11,A12,A13,A21,A22,A23,A31,A32,A33};
   return tlmsystem->setPositionAndOrientation(tail, x, A);
+#else
+  return LOG_NO_TLM();
+#endif
 }
 
 oms_status_enu_t oms3_exportDependencyGraphs(const char* cref, const char* initialization, const char* simulation)
@@ -1136,6 +1178,7 @@ oms_status_enu_t oms3_getModelState(const char* cref, oms_modelState_enu_t* mode
 
 oms_status_enu_t oms3_getTLMVariableTypes(const char *domain, const int dimensions, const oms_tlm_interpolation_t interpolation, char ***types, char ***descriptions)
 {
+#if !defined(NO_TLM)
   std::vector<std::string> variableTypes = oms3::TLMBusConnector::getVariableTypes(domain, dimensions, interpolation);
   (*types) = new char*[variableTypes.size()+1];
   for(int i=0; i<variableTypes.size(); ++i) {
@@ -1153,6 +1196,9 @@ oms_status_enu_t oms3_getTLMVariableTypes(const char *domain, const int dimensio
   (*descriptions)[variableDescriptions.size()] = NULL;
 
   return oms_status_ok;
+#else
+  return LOG_NO_TLM();
+#endif
 }
 
 oms_status_enu_t oms3_extractFMIKind(const char* filename, oms_fmi_kind_enu_t* kind)

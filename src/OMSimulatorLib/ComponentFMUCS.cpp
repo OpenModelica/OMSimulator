@@ -303,6 +303,7 @@ oms3::Component* oms3::ComponentFMUCS::NewComponent(const pugi::xml_node& node, 
 
 oms_status_enu_t oms3::ComponentFMUCS::exportToSSD(pugi::xml_node& node) const
 {
+#if !defined(NO_TLM)
   if (tlmbusconnectors[0])
   {
     pugi::xml_node annotations_node = node.append_child(oms2::ssd::ssd_annotations);
@@ -312,6 +313,7 @@ oms_status_enu_t oms3::ComponentFMUCS::exportToSSD(pugi::xml_node& node) const
       if (tlmbusconnector)
         tlmbusconnector->exportToSSD(annotation_node);
   }
+#endif
 
   node.append_attribute("name") = this->getCref().c_str();
   node.append_attribute("type") = "application/x-fmu-sharedlibrary";
@@ -492,16 +494,20 @@ oms_status_enu_t oms3::ComponentFMUCS::stepUntil(double stopTime)
 
   while (time < stopTime)
   {
+#if !defined(NO_TLM)
     //Read from TLM sockets if top level system is of TLM type
     if(topLevelSystem->getType() == oms_system_tlm)
       reinterpret_cast<SystemTLM*>(topLevelSystem)->readFromSockets(reinterpret_cast<SystemWC*>(getParentSystem()),time,this);
+#endif
 
     fmistatus = fmi2_import_do_step(fmu, time, hdef, fmi2_true);
     time += hdef;
 
+#if !defined(NO_TLM)
     //Write to TLM sockets if top level system is of TLM type
     if(topLevelSystem->getType() == oms_system_tlm)
       reinterpret_cast<SystemTLM*>(topLevelSystem)->writeToSockets(reinterpret_cast<SystemWC*>(getParentSystem()),time,this);
+#endif
   }
   time = stopTime;
   return oms_status_ok;
