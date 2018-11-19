@@ -474,6 +474,7 @@ oms_status_enu_t oms3::Model::simulate_asynchronous(void (*cb)(const char* cref,
   }
 
   std::thread([=]{system->stepUntil(stopTime, cb);}).detach();
+  emit(stopTime, true);
   clock.toc();
 
   return oms_status_ok;
@@ -495,6 +496,7 @@ oms_status_enu_t oms3::Model::simulate()
   }
 
   oms_status_enu_t status = system->stepUntil(stopTime, NULL);
+  emit(stopTime, true);
   clock.toc();
   return status;
 }
