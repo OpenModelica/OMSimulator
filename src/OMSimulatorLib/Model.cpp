@@ -450,7 +450,7 @@ oms_status_enu_t oms3::Model::initialize()
     }
 
     // dump results
-    emit(startTime);
+    emit(startTime, true);
   }
 
   clock.toc();
@@ -515,6 +515,7 @@ oms_status_enu_t oms3::Model::stepUntil(double stopTime)
   }
 
   oms_status_enu_t status = system->stepUntil(stopTime, NULL);
+  emit(stopTime, true);
   clock.toc();
   return status;
 }
@@ -584,11 +585,11 @@ oms_status_enu_t oms3::Model::registerSignalsForResultFile()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Model::emit(double time)
+oms_status_enu_t oms3::Model::emit(double time, bool force)
 {
   if (!resultFile)
     return oms_status_ok;
-  if (time != stopTime && time < lastEmit + loggingInterval)
+  if (!force && time < lastEmit + loggingInterval)
     return oms_status_ok;
 
   SignalValue_t wallTime;
