@@ -60,6 +60,7 @@ namespace oms3
     double getTime() const {return time;}
     double getStepSize() const {return stepSize;}
     oms_status_enu_t setFixedStepSize(double stepSize) {this->stepSize=stepSize; return oms_status_ok;}
+    oms_status_enu_t setTolerance(double tolerance) {this->tolerance=tolerance; return oms_status_ok;}
 
     oms_status_enu_t updateInputs(DirectedGraph& graph);
     oms_status_enu_t solveAlgLoop(DirectedGraph& graph, const std::vector< std::pair<int, int> >& SCC);
