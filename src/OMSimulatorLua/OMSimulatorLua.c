@@ -101,6 +101,22 @@ static int OMSimulatorLua_oms3_setTempDirectory(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms3_setTolerance(const char* cref, double tolerance);
+static int OMSimulatorLua_oms3_setTolerance(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 arguments");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TNUMBER);
+
+  const char* cref = lua_tostring(L, 1);
+  double tolerance = lua_tonumber(L, 2);
+
+  oms_status_enu_t status = oms3_setTolerance(cref, tolerance);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
 //oms_status_enu_t oms3_setWorkingDirectory(const char* newWorkingDir);
 static int OMSimulatorLua_oms3_setWorkingDirectory(lua_State *L)
 {
@@ -2463,6 +2479,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms3_setTempDirectory);
   REGISTER_LUA_CALL(oms3_setTLMPositionAndOrientation);
   REGISTER_LUA_CALL(oms3_setTLMSocketData);
+  REGISTER_LUA_CALL(oms3_setTolerance);
   REGISTER_LUA_CALL(oms3_setWorkingDirectory);
   REGISTER_LUA_CALL(oms3_simulate);
   REGISTER_LUA_CALL(oms3_stepUntil);
