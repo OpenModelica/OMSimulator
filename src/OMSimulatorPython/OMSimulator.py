@@ -362,7 +362,7 @@ class OMSimulator:
     self.oms_tlm_domain_electric = 5
 
   def oms3_getVersion(self):
-    return self.obj.oms3_getVersion()
+    return self.checkstring(self.obj.oms3_getVersion())
   def oms3_getSystemType(self, cref):
     type = ctypes.c_int()
     status = self.obj.oms3_getSystemType(self.checkstring(cref), ctypes.byref(type))
