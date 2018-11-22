@@ -152,7 +152,7 @@ oms_status_enu_t oms3::SystemTLM::initialize()
       if(dimensions == 2) dimensions = 3;
       if(dimensions == 3) dimensions = 6;
 
-      omtlm_addInterface(model, subsystem.second->getCref().c_str(), tlmbus->getName().c_str(),dimensions, causality.c_str(), tlmbus->getDomain().c_str());
+      omtlm_addInterface(model, subsystem.second->getCref().c_str(), tlmbus->getName().c_str(),dimensions, causality.c_str(), tlmbus->getDomainString().c_str());
     }
   }
 
@@ -553,7 +553,7 @@ void oms3::SystemTLM::readFromSockets(SystemWC* system, double time, Component* 
       //Get interpolated force
       plugin->GetForce1D(id, time, flow, &effort);
 
-      if(bus->getDomain() != "hydraulic") {
+      if(bus->getDomain() != oms_tlm_domain_hydraulic) {
           effort = -effort;
       }
 

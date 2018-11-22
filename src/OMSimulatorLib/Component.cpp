@@ -119,7 +119,7 @@ oms3::Model* oms3::Component::getModel() const
   return parentSystem ? parentSystem->getModel() : NULL;
 }
 
-oms_status_enu_t oms3::Component::addTLMBus(const oms3::ComRef &cref, const std::string domain, const int dimensions, const oms_tlm_interpolation_t interpolation)
+oms_status_enu_t oms3::Component::addTLMBus(const oms3::ComRef &cref, oms_tlm_domain_t domain, const int dimensions, const oms_tlm_interpolation_t interpolation)
 {
 #if !defined(NO_TLM)
   if(!cref.isValidIdent()) {

@@ -498,7 +498,7 @@ oms_status_enu_t oms3_setBusGeometry(const char* cref, const ssd_connector_geome
   return system->setBusGeometry(tail, reinterpret_cast<const oms2::ssd::ConnectorGeometry*>(geometry));
 }
 
-oms_status_enu_t oms3_addTLMBus(const char *cref, const char *domain, const int dimensions, const oms_tlm_interpolation_t interpolation)
+oms_status_enu_t oms3_addTLMBus(const char *cref, oms_tlm_domain_t domain, const int dimensions, const oms_tlm_interpolation_t interpolation)
 {
 #if !defined(NO_TLM)
   oms3::ComRef tail(cref);
@@ -1176,7 +1176,7 @@ oms_status_enu_t oms3_getModelState(const char* cref, oms_modelState_enu_t* mode
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3_getTLMVariableTypes(const char *domain, const int dimensions, const oms_tlm_interpolation_t interpolation, char ***types, char ***descriptions)
+oms_status_enu_t oms3_getTLMVariableTypes(oms_tlm_domain_t domain, const int dimensions, const oms_tlm_interpolation_t interpolation, char ***types, char ***descriptions)
 {
 #if !defined(NO_TLM)
   std::vector<std::string> variableTypes = oms3::TLMBusConnector::getVariableTypes(domain, dimensions, interpolation);

@@ -569,18 +569,34 @@ oms_status_enu_t oms3::System::importFromSSD(const pugi::xml_node& node)
             std::string busname = itAnnotations->attribute("name").as_string();
             if (std::string(itAnnotations->attribute("type").as_string()) == "tlm")
             {
-              std::string domain = itAnnotations->attribute("domain").as_string();
+              std::string domainstr = itAnnotations->attribute("domain").as_string();
               int dimensions = itAnnotations->attribute("dimensions").as_int();
-              std::string interpolationStr = itAnnotations->attribute("interpolation").as_string();
+              std::string interpolationstr = itAnnotations->attribute("interpolation").as_string();
               oms_tlm_interpolation_t interpolation;
-              if (interpolationStr == "none")
+              if (interpolationstr == "none")
                 interpolation = oms_tlm_no_interpolation;
-              else if (interpolationStr == "coarsegrained")
+              else if (interpolationstr == "coarsegrained")
                 interpolation = oms_tlm_coarse_grained;
-              else if (interpolationStr == "finegrained")
+              else if (interpolationstr == "finegrained")
                 interpolation = oms_tlm_fine_grained;
               else
-                logError("Unsupported interpolation type: "+interpolationStr);
+                return logError("Unsupported interpolation type: "+interpolationstr);
+
+              oms_tlm_domain_t domain;
+              if(domainstr == "input")
+                domain = oms_tlm_domain_input;
+              else if(domainstr == "output")
+                domain = oms_tlm_domain_output;
+              else if(domainstr == "mechanical")
+                domain = oms_tlm_domain_mechanical;
+              else if(domainstr == "rotational")
+                domain = oms_tlm_domain_rotational;
+              else if(domainstr == "hydraulic")
+                domain = oms_tlm_domain_hydraulic;
+              else if(domainstr == "electric")
+                domain = oms_tlm_domain_electric;
+              else
+                return logError("Unsupported TLM domain: "+domainstr);
 
               if (oms_status_ok != addTLMBus(busname,domain,dimensions,interpolation))
                 return oms_status_error;
@@ -995,7 +1011,7 @@ oms_status_enu_t oms3::System::addBus(const oms3::ComRef& cref)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::System::addTLMBus(const oms3::ComRef& cref, const std::string domain, const int dimensions, const oms_tlm_interpolation_t interpolation)
+oms_status_enu_t oms3::System::addTLMBus(const oms3::ComRef& cref, oms_tlm_domain_t domain, const int dimensions, const oms_tlm_interpolation_t interpolation)
 {
 #if !defined(NO_TLM)
   oms3::ComRef tail(cref);

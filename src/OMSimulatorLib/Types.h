@@ -71,6 +71,15 @@ typedef enum {
 } oms_tlm_interpolation_t;
 
 typedef enum {
+  oms_tlm_domain_input,
+  oms_tlm_domain_output,
+  oms_tlm_domain_mechanical,
+  oms_tlm_domain_rotational,
+  oms_tlm_domain_hydraulic,
+  oms_tlm_domain_electric
+} oms_tlm_domain_t;
+
+typedef enum {
   oms_solver_internal,         ///< internal solver; CS-FMU only
   oms_solver_explicit_euler,
   oms_solver_cvode
@@ -388,7 +397,7 @@ typedef struct {
 typedef struct {
   char* name;
   ssd_connector_geometry_t* geometry;
-  char* domain;
+  oms_tlm_domain_t domain;
   int dimensions;
   double delay;
   oms_tlm_interpolation_t interpolation;
