@@ -97,7 +97,7 @@ typedef struct  {
   class TLMBusConnector : protected oms3_tlmbusconnector_t
   {
   public:
-    TLMBusConnector(const oms3::ComRef& name, const std::string domain, const int dimensions, const oms_tlm_interpolation_t interpolation, System* parentSystem=nullptr, Component* component=nullptr);
+    TLMBusConnector(const oms3::ComRef& name, oms_tlm_domain_t domain, const int dimensions, const oms_tlm_interpolation_t interpolation, System* parentSystem=nullptr, Component* component=nullptr);
     ~TLMBusConnector();
 
     oms_status_enu_t exportToSSD(pugi::xml_node& root) const;
@@ -116,7 +116,8 @@ typedef struct  {
     void setRealInputDerivatives(int i, int order, double value);
 
     const oms3::ComRef getName() const {return oms3::ComRef(name);}
-    const std::string getDomain() const {return domain;}
+    oms_tlm_domain_t getDomain() const {return domain;}
+    const std::string getDomainString() const;
     const int getDimensions() const {return dimensions;}
     const oms_causality_enu_t getCausality() const {return causality;}
     const oms_tlm_interpolation_t getInterpolation() const {return interpolation;}
@@ -136,8 +137,8 @@ typedef struct  {
     oms3::Component* getComponent();
     oms3::TLMBusConnector* getActualBus();
 
-    static std::vector<std::string>  getVariableTypes(std::string domain, int dimensions, oms_tlm_interpolation_t interpolation);
-    static std::vector<std::string>  getVariableDescriptions(std::string domain, int dimensions, oms_tlm_interpolation_t interpolation);
+    static std::vector<std::string>  getVariableTypes(oms_tlm_domain_t domain, int dimensions, oms_tlm_interpolation_t interpolation);
+    static std::vector<std::string>  getVariableDescriptions(oms_tlm_domain_t domain, int dimensions, oms_tlm_interpolation_t interpolation);
 
   private:
     oms3::Component* getComponent(const ComRef &conA, System *system) const;

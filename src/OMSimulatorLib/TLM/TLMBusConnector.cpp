@@ -6,21 +6,20 @@
 #include <cstring>
 #include <algorithm>
 
-oms3::TLMBusConnector::TLMBusConnector(const oms3::ComRef &name, const std::string domain, const int dimensions, const oms_tlm_interpolation_t interpolation, System* parentSystem, Component *component)
+oms3::TLMBusConnector::TLMBusConnector(const oms3::ComRef &name, oms_tlm_domain_t domain, const int dimensions, const oms_tlm_interpolation_t interpolation, System* parentSystem, Component *component)
   : parentSystem(parentSystem), component(component)
 {
   std::string str(name);
   this->name = new char[str.size()+1];
   strcpy(this->name, str.c_str());
   this->geometry = NULL;
-  this->domain = new char[domain.size()+1];
-  strcpy(this->domain, domain.c_str());
+  this->domain = domain;
   this->dimensions = dimensions;
   this->interpolation = interpolation;
 
-  if(domain == "input")
+  if(domain == oms_tlm_domain_input)
     causality = oms_causality_input;
-  else if(domain == "output")
+  else if(domain == oms_tlm_domain_output)
     causality = oms_causality_output;
   else
     causality = oms_causality_bidir;
@@ -34,7 +33,6 @@ oms3::TLMBusConnector::TLMBusConnector(const oms3::ComRef &name, const std::stri
 oms3::TLMBusConnector::~TLMBusConnector()
 {
   if (this->name) delete[] this->name;
-  if (this->domain) delete[] this->domain;
   if (this->geometry) delete reinterpret_cast<oms2::ssd::ConnectorGeometry*>(this->geometry);
   if (this->connectornames) {
     for (int i=0; connectornames[i]; ++i)
@@ -53,7 +51,7 @@ oms_status_enu_t oms3::TLMBusConnector::exportToSSD(pugi::xml_node &root) const
   pugi::xml_node bus_node = root.append_child(oms::bus);
   bus_node.append_attribute("name") = name;
   bus_node.append_attribute("type") = "tlm";
-  bus_node.append_attribute("domain") = domain;
+  bus_node.append_attribute("domain") = getDomainString().c_str();
   bus_node.append_attribute("dimensions") = std::to_string(dimensions).c_str();
   if(interpolation == oms_tlm_no_interpolation)
     bus_node.append_attribute("interpolation") = "none";
@@ -81,8 +79,7 @@ oms3::TLMBusConnector::TLMBusConnector(const oms3::TLMBusConnector &rhs)
 {
   this->name = new char[strlen(rhs.name)+1];
   strcpy(this->name, rhs.name);
-  this->domain = new char[strlen(rhs.domain)+1];
-  strcpy(this->domain, rhs.domain);
+  this->domain = rhs.domain;
   this->dimensions = rhs.dimensions;
   this->interpolation = rhs.interpolation;
 
@@ -104,8 +101,7 @@ oms3::TLMBusConnector &oms3::TLMBusConnector::operator=(const oms3::TLMBusConnec
     delete[] this->name;
   this->name = new char[strlen(rhs.name)+1];
   strcpy(this->name, rhs.name);
-  this->domain = new char[strlen(rhs.domain)+1];
-  strcpy(this->domain, rhs.domain);
+  this->domain = rhs.domain;
   this->dimensions = rhs.dimensions;
   this->interpolation = rhs.interpolation;
 
@@ -180,7 +176,22 @@ void oms3::TLMBusConnector::getReals(std::vector<int> i, std::vector<double> &va
 
 void oms3::TLMBusConnector::setRealInputDerivatives(int i, int order, double value)
 {
-  logError_NotImplemented;
+    logError_NotImplemented;
+}
+
+const std::string oms3::TLMBusConnector::getDomainString() const
+{
+  switch(domain)
+  {
+    case oms_tlm_domain_input: return "input";
+    case oms_tlm_domain_output: return "output";
+    case oms_tlm_domain_mechanical: return "mechanical";
+    case oms_tlm_domain_rotational: return "rotational";
+    case oms_tlm_domain_hydraulic: return "hydraulic";
+    case oms_tlm_domain_electric: return "electric";
+  }
+
+  return "";
 }
 
 oms3::ComRef oms3::TLMBusConnector::getConnector(int id) const
@@ -246,12 +257,12 @@ oms_status_enu_t oms3::TLMBusConnector::registerToSockets(TLMPlugin *plugin)
 
   //Convert causality to string
   std::string omtlm_causality = "bidirectional";
-  if(std::string(domain) == "input")
+  if(domain == oms_tlm_domain_input)
     omtlm_causality = "input";
-  else if(std::string(domain) == "output")
+  else if(domain == oms_tlm_domain_output)
     omtlm_causality = "output";
 
-  this->id = plugin->RegisteTLMInterface(name,omtlm_dimensions,omtlm_causality,domain);
+  this->id = plugin->RegisteTLMInterface(name,omtlm_dimensions,omtlm_causality,getDomainString());
 
   if(this->id < 0) {
     logError("Failed to register TLM interface: "+std::string(name));
@@ -347,10 +358,10 @@ oms3::TLMBusConnector* oms3::TLMBusConnector::getActualBus(ComRef cref, System *
   return nullptr; //Should never happen
 }
 
-std::vector<std::string> oms3::TLMBusConnector::getVariableTypes(std::string domain, int dimensions, oms_tlm_interpolation_t interpolation)
+std::vector<std::string> oms3::TLMBusConnector::getVariableTypes(oms_tlm_domain_t domain, int dimensions, oms_tlm_interpolation_t interpolation)
 {
   std::vector<std::string> types;
-  if(std::string(domain) == "input" || std::string(domain) == "output") {
+  if(domain == oms_tlm_domain_input || domain == oms_tlm_domain_output) {
     types = { "value" };
   }
   else if(dimensions == 1 && interpolation == oms_tlm_no_interpolation) {
@@ -395,7 +406,7 @@ std::vector<std::string> oms3::TLMBusConnector::getVariableTypes(std::string dom
   return types;
 }
 
-std::vector<std::string> oms3::TLMBusConnector::getVariableDescriptions(std::string domain, int dimensions, oms_tlm_interpolation_t interpolation)
+std::vector<std::string> oms3::TLMBusConnector::getVariableDescriptions(oms_tlm_domain_t domain, int dimensions, oms_tlm_interpolation_t interpolation)
 {
   std::string value = "variable";
   std::string state = "state";
@@ -408,13 +419,13 @@ std::vector<std::string> oms3::TLMBusConnector::getVariableDescriptions(std::str
   std::string impedance = "impedance";
   std::string rotimpedance = "rotational impedance";
   std::string time = "time sample";
-  if(domain == "input") {
+  if(domain == oms_tlm_domain_input) {
     value = "input variable";
   }
-  else if(domain == "output") {
+  else if(domain == oms_tlm_domain_output) {
     value = "output variable";
   }
-  else if(domain == "mechanical") {
+  else if(domain == oms_tlm_domain_mechanical) {
     state = "position";
     flow = "speed";
     rotflow = "angular speed";
@@ -426,7 +437,7 @@ std::vector<std::string> oms3::TLMBusConnector::getVariableDescriptions(std::str
     rotimpedance = "rotational impedance";
     time = "time sample";
   }
-  else if(domain == "rotational") {
+  else if(domain == oms_tlm_domain_rotational) {
     state = "angle";
     flow = "angular speed";
     effort = "torque";
@@ -434,7 +445,7 @@ std::vector<std::string> oms3::TLMBusConnector::getVariableDescriptions(std::str
     impedance = "impedance";
     time = "time sample";
   }
-  else if(domain == "hydraulic") {
+  else if(domain == oms_tlm_domain_hydraulic) {
     state = "volume";
     flow = "volume flow";
     effort = "pressure";
@@ -442,7 +453,7 @@ std::vector<std::string> oms3::TLMBusConnector::getVariableDescriptions(std::str
     impedance = "impedance";
     time = "time sample";
   }
-  else if(domain == "electric") {
+  else if(domain == oms_tlm_domain_electric) {
     state = "charge";
     flow = "current";
     effort = "potential";
@@ -452,7 +463,7 @@ std::vector<std::string> oms3::TLMBusConnector::getVariableDescriptions(std::str
   }
 
   std::vector<std::string> types;
-  if(std::string(domain) == "input" || std::string(domain) == "output") {
+  if(domain == oms_tlm_domain_input || domain == oms_tlm_domain_output) {
     types = { "Value variable" };
   }
   else if(dimensions == 1 && interpolation == oms_tlm_no_interpolation) {

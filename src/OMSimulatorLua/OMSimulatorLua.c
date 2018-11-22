@@ -532,25 +532,25 @@ static int OMSimulatorLua_oms3_addBus(lua_State *L)
   return 1;
 }
 
-//oms_status_enu_t oms3_addTLMBus(const char *cref, const char *domain, const char *dimension, const char *interpolation)
+//oms_status_enu_t oms3_addTLMBus(const char *cref, oms_tlm_domain_t domain, const char *dimension, const char *interpolation)
 static int OMSimulatorLua_oms3_addTLMBus(lua_State *L)
 {
   if (lua_gettop(L) != 3 && lua_gettop(L) != 4)
     return luaL_error(L, "expecting exactly 3 or 4 arguments");
   luaL_checktype(L, 1, LUA_TSTRING);
-  luaL_checktype(L, 2, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TNUMBER);
   luaL_checktype(L, 3, LUA_TNUMBER);
   if(lua_gettop(L) > 3)
     luaL_checktype(L, 4, LUA_TNUMBER);
 
   const char* cref = lua_tostring(L, 1);
-  const char* domain = lua_tostring(L, 2);
+  int domain = lua_tointeger(L, 2);
   int dimensions = lua_tointeger(L, 3);
   int interpolation = (int)oms_tlm_no_interpolation;
   if(lua_gettop(L) > 3)
     interpolation = lua_tointeger(L, 4);
 
-  oms_status_enu_t status = oms3_addTLMBus(cref, domain, dimensions, (oms_tlm_interpolation_t)interpolation);
+  oms_status_enu_t status = oms3_addTLMBus(cref, (oms_tlm_domain_t)domain, dimensions, (oms_tlm_interpolation_t)interpolation);
 
   lua_pushinteger(L, status);
 
@@ -2607,6 +2607,14 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_ENUM(oms_signal_type_integer);
   REGISTER_LUA_ENUM(oms_signal_type_boolean);
   REGISTER_LUA_ENUM(oms_signal_type_string);
+
+  // oms_tlm_domain_t
+  REGISTER_LUA_ENUM(oms_tlm_domain_input);
+  REGISTER_LUA_ENUM(oms_tlm_domain_output);
+  REGISTER_LUA_ENUM(oms_tlm_domain_mechanical);
+  REGISTER_LUA_ENUM(oms_tlm_domain_rotational);
+  REGISTER_LUA_ENUM(oms_tlm_domain_hydraulic);
+  REGISTER_LUA_ENUM(oms_tlm_domain_electric);
 
   return 0;
 }

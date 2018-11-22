@@ -15,6 +15,7 @@ class OMSimulator:
     self.oms_causality()
     self.oms_signal_type()
     self.oms_tlm_interpolation()
+    self.oms_tlm_domain()
 
     self.obj.oms2_addConnection.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms2_addConnection.restype = ctypes.c_int
@@ -254,7 +255,7 @@ class OMSimulator:
     self.obj.oms3_deleteConnectorFromBus.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms3_deleteConnectorFromBus.restype = ctypes.c_int
 
-    self.obj.oms3_addTLMBus.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_int]
+    self.obj.oms3_addTLMBus.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_int]
     self.obj.oms3_addTLMBus.restype = ctypes.c_int
 
     self.obj.oms3_addConnectorToTLMBus.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
@@ -352,6 +353,13 @@ class OMSimulator:
     self.default = 0
     self.coarsegrained = 1
     self.finegrained = 2
+  def oms_tlm_domain(self):
+    self.oms_tlm_domain_input = 0
+    self.oms_tlm_domain_output = 1
+    self.oms_tlm_domain_mechanical = 2
+    self.oms_tlm_domain_rotational = 3
+    self.oms_tlm_domain_hydraulic = 4
+    self.oms_tlm_domain_electric = 5
 
   def oms3_getVersion(self):
     return self.obj.oms3_getVersion()
