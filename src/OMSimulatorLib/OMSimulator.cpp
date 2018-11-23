@@ -63,6 +63,11 @@ const char* oms3_getVersion()
   return oms_git_version;
 }
 
+void oms3_setLoggingCallback(void (*cb)(oms_message_type_enu_t type, const char* message))
+{
+  Log::setLoggingCallback(cb);
+}
+
 oms_status_enu_t oms3_setLogFile(const char* filename)
 {
   return Log::setLogFile(filename);
