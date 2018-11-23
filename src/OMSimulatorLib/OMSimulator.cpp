@@ -550,9 +550,9 @@ oms_status_enu_t oms3_addConnectorToBus(const char *busCref, const char *connect
   oms3::ComRef systemCref = busTail.pop_front();
   oms3::ComRef connectorTail(connectorCref);
   if (modelCref != connectorTail.pop_front())
-    return logError_BusAndConnectorNotSameModel;
+    return logError_BusAndConnectorNotSameModel(busCref, connectorCref);
   if (systemCref != connectorTail.pop_front())
-    return logError_BusAndConnectorNotSameSystem;
+    return logError_BusAndConnectorNotSameSystem(busCref, connectorCref);
   oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
   if (!model) {
     return logError_ModelNotInScope(modelCref);
@@ -572,9 +572,9 @@ oms_status_enu_t oms3_deleteConnectorFromBus(const char *busCref, const char *co
   oms3::ComRef systemCref = busTail.pop_front();
   oms3::ComRef connectorTail(connectorCref);
   if (modelCref != connectorTail.pop_front())
-    return logError_BusAndConnectorNotSameModel;
+    return logError_BusAndConnectorNotSameModel(busCref, connectorCref);
   if (systemCref != connectorTail.pop_front())
-    return logError_BusAndConnectorNotSameSystem;
+    return logError_BusAndConnectorNotSameSystem(busCref, connectorCref);
   oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
   if (!model) {
     return logError_ModelNotInScope(modelCref);
@@ -594,9 +594,9 @@ oms_status_enu_t oms3_addConnectorToTLMBus(const char *busCref, const char *conn
   oms3::ComRef systemCref = busTail.pop_front();
   oms3::ComRef connectorTail(connectorCref);
   if (modelCref != connectorTail.pop_front())
-    return logError_BusAndConnectorNotSameModel;
+    return logError_BusAndConnectorNotSameModel(busCref, connectorCref);
   if (systemCref != connectorTail.pop_front())
-    return logError_BusAndConnectorNotSameSystem;
+    return logError_BusAndConnectorNotSameSystem(busCref, connectorCref);
   oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
   if (!model) {
     return logError_ModelNotInScope(modelCref);
@@ -620,9 +620,9 @@ oms_status_enu_t oms3_deleteConnectorFromTLMBus(const char *busCref, const char 
   oms3::ComRef systemCref = busTail.pop_front();
   oms3::ComRef connectorTail(connectorCref);
   if (modelCref != connectorTail.pop_front())
-    return logError_BusAndConnectorNotSameModel;
+    return logError_BusAndConnectorNotSameModel(busCref, connectorCref);
   if (systemCref != connectorTail.pop_front())
-    return logError_BusAndConnectorNotSameSystem;
+    return logError_BusAndConnectorNotSameSystem(busCref, connectorCref);
   oms3::Model* model = oms3::Scope::GetInstance().getModel(modelCref);
   if (!model) {
     return logError_ModelNotInScope(modelCref);

@@ -149,8 +149,6 @@ oms3::TLMBusConnector *oms3::Component::getTLMBusConnector(const oms3::ComRef &c
 oms_status_enu_t oms3::Component::addConnectorToTLMBus(const oms3::ComRef& busCref, const oms3::ComRef& connectorCref, const std::string type)
 {
 #if !defined(NO_TLM)
-  if (this->type == oms_component_external)
-    return logError_NotForExternalModels;
 
   //Check that connector exists in component
   bool found = false;
@@ -164,12 +162,10 @@ oms_status_enu_t oms3::Component::addConnectorToTLMBus(const oms3::ComRef& busCr
   {
     if (bus && bus->getName() == busCref)
     {
-      oms_status_enu_t status = bus->addConnector(connectorCref,type);
-      if (oms_status_ok != status)
-        return status;
+      return bus->addConnector(connectorCref,type);
     }
   }
-  return oms_status_ok;
+  return logError_TlmBusNotInComponent(busCref, this);
 #else
   return LOG_NO_TLM();
 #endif
@@ -178,15 +174,11 @@ oms_status_enu_t oms3::Component::addConnectorToTLMBus(const oms3::ComRef& busCr
 oms_status_enu_t oms3::Component::deleteConnectorFromTLMBus(const oms3::ComRef& busCref, const oms3::ComRef& connectorCref)
 {
 #if !defined(NO_TLM)
-  if(type == oms_component_external)
-    return logError_NotForExternalModels;
-
   for(auto& bus : tlmbusconnectors)
     if(bus && bus->getName() == busCref)
-      if (oms_status_ok != bus->deleteConnector(connectorCref))
-        return logError_ConnectorNotInComponent(connectorCref, this);
+      return bus->deleteConnector(connectorCref);
 
-  return oms_status_ok;
+  return logError_BusNotInComponent(busCref, this);
 #else
   return LOG_NO_TLM();
 #endif

@@ -1059,15 +1059,13 @@ oms_status_enu_t oms3::System::addConnectorToBus(const oms3::ComRef& busCref, co
   }
 
   if (!busTail.isEmpty() && !connectorTail.isEmpty() && busHead != connectorHead)
-    return logError_BusAndConnectorNotSameSystem;
-  if (type == oms_system_tlm)
-    return logError_NotForTlmSystem;
+    return logError_BusAndConnectorNotSameSystem(busCref, connectorCref);
 
   for(auto& bus : busconnectors)
     if (bus && bus->getName() == busCref)
-      bus->addConnector(connectorCref);
+      return bus->addConnector(connectorCref);
 
-  return oms_status_ok;
+  return logError_BusNotInSystem(busCref, this);
 }
 
 oms_status_enu_t oms3::System::deleteConnectorFromBus(const oms3::ComRef& busCref, const oms3::ComRef& connectorCref)
@@ -1085,16 +1083,13 @@ oms_status_enu_t oms3::System::deleteConnectorFromBus(const oms3::ComRef& busCre
   }
 
   if(!busTail.isEmpty() && !connectorTail.isEmpty() && busHead != connectorHead)
-    return logError_BusAndConnectorNotSameSystem;
-  if(type == oms_system_tlm)
-    return logError_NotForTlmSystem;
+    return logError_BusAndConnectorNotSameSystem(busCref, connectorCref);
 
   for(auto& bus : busconnectors)
     if(bus && bus->getName() == busCref)
-      if (oms_status_ok != bus->deleteConnector(connectorCref))
-        return logError_ConnectorNotInSystem(connectorCref, this);
+      return bus->deleteConnector(connectorCref);
 
-  return oms_status_ok;
+  return logError_BusNotInSystem(busCref, this);
 }
 
 oms_status_enu_t oms3::System::addConnectorToTLMBus(const oms3::ComRef& busCref, const oms3::ComRef& connectorCref, const std::string type)
@@ -1116,9 +1111,6 @@ oms_status_enu_t oms3::System::addConnectorToTLMBus(const oms3::ComRef& busCref,
       return component->second->addConnectorToTLMBus(busTail,connectorTail,type);
   }
 
-  if (this->type == oms_system_tlm)
-    return logError_NotForTlmSystem;
-
   //Check that connector exists in system
   bool found = false;
   for(auto& connector : connectors)
@@ -1130,13 +1122,10 @@ oms_status_enu_t oms3::System::addConnectorToTLMBus(const oms3::ComRef& busCref,
   for(auto& bus : tlmbusconnectors)
   {
     if (bus && bus->getName() == busCref)
-    {
-      oms_status_enu_t status = bus->addConnector(connectorCref,type);
-      if (oms_status_ok != status)
-        return status;
-    }
+      return bus->addConnector(connectorCref,type);
   }
-  return oms_status_ok;
+
+  return logError_TlmBusNotInSystem(busCref, this);
 #else
     return LOG_NO_TLM();
 #endif
@@ -1162,16 +1151,12 @@ oms_status_enu_t oms3::System::deleteConnectorFromTLMBus(const oms3::ComRef& bus
   }
 
   if(!busTail.isEmpty() && !connectorTail.isEmpty() && busHead != connectorHead)
-    return logError_BusAndConnectorNotSameSystem;
-  if(type == oms_system_tlm)
-    return logError_NotForTlmSystem;
-
+    return logError_BusAndConnectorNotSameSystem(busCref, connectorCref);
   for(auto& bus : tlmbusconnectors)
     if(bus && bus->getName() == busCref)
-      if (oms_status_ok != bus->deleteConnector(connectorCref))
-        return logError_ConnectorNotInSystem(connectorCref, this);
+      return bus->deleteConnector(connectorCref);
 
-  return oms_status_ok;
+  return logError_TlmBusNotInSystem(busCref, this);
 #else
     return LOG_NO_TLM();
 #endif
