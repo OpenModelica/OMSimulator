@@ -44,8 +44,6 @@ extern "C"
 /*                                      */
 /* ************************************ */
 
-const char* oms3_getVersion();
-void oms3_setMaxLogFileSize(const unsigned long size);
 oms_status_enu_t oms3_addBus(const char* cref);
 oms_status_enu_t oms3_addConnection(const char* crefA, const char* crefB);
 oms_status_enu_t oms3_addConnector(const char* cref, oms_causality_enu_t causality, oms_signal_type_enu_t type);
@@ -83,6 +81,7 @@ oms_status_enu_t oms3_getSubModelPath(const char* cref, char** path);
 oms_status_enu_t oms3_getSystemType(const char* cref, oms_system_enu_t* type);
 oms_status_enu_t oms3_getTLMBus(const char* cref, oms3_tlmbusconnector_t** tlmBusConnector);
 oms_status_enu_t oms3_getTLMVariableTypes(oms_tlm_domain_t domain, const int dimensions, const oms_tlm_interpolation_t interpolation, char ***types, char ***descriptions);
+const char* oms3_getVersion();
 oms_status_enu_t oms3_import(const char* filename, char** cref);
 oms_status_enu_t oms3_importString(const char* contents, char** cref);
 oms_status_enu_t oms3_initialize(const char* cref);
@@ -102,9 +101,11 @@ oms_status_enu_t oms3_setConnectorGeometry(const char* cref, const ssd_connector
 oms_status_enu_t oms3_setElementGeometry(const char* cref, const ssd_element_geometry_t* geometry);
 oms_status_enu_t oms3_setFixedStepSize(const char* cref, double stepSize);
 oms_status_enu_t oms3_setInteger(const char* cref, int value);
+void oms3_setLoggingCallback(void (*cb)(oms_message_type_enu_t type, const char* message));
 oms_status_enu_t oms3_setLogFile(const char* filename);
 oms_status_enu_t oms3_setLoggingInterval(const char* cref, double loggingInterval);
 oms_status_enu_t oms3_setLoggingLevel(int logLevel);
+void oms3_setMaxLogFileSize(const unsigned long size);
 oms_status_enu_t oms3_setReal(const char* cref, double value);
 oms_status_enu_t oms3_setResultFile(const char* cref, const char* filename, int bufferSize);
 oms_status_enu_t oms3_setSolver(const char* cref, const char* solver);
