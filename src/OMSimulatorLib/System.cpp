@@ -961,12 +961,24 @@ oms_status_enu_t oms3::System::addTLMConnection(const oms3::ComRef& crefA, const
   }
 
   TLMBusConnector *busA=0, *busB=0;
-  auto subsystemA = subsystems.find(headA);
-  if (subsystemA != subsystems.end())
-    busA = subsystemA->second->getTLMBusConnector(tailA);
-  auto subsystemB = subsystems.find(headB);
-  if (subsystemB != subsystems.end())
-    busB = subsystemB->second->getTLMBusConnector(tailB);
+  auto subsystemA = getSubSystem(headA);
+  if(subsystemA)
+    busA = subsystemA->getTLMBusConnector(tailA);
+  if(!busA) {
+    auto componentA = getComponent(headA);
+    if(componentA)
+      busA = componentA->getTLMBusConnector(tailA);
+  }
+
+  auto subsystemB = getSubSystem(headB);
+  if(subsystemB)
+    busB = subsystemB->getTLMBusConnector(tailB);
+  if(!busB) {
+    auto componentB = getComponent(headB);
+    if(componentB)
+      busB = componentB->getTLMBusConnector(tailB);
+  }
+
   if (busA && busB)
   {
     //Create bus connection
