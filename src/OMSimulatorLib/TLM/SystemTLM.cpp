@@ -156,6 +156,67 @@ oms_status_enu_t oms3::SystemTLM::initialize()
     }
   }
 
+  for(const auto& component : this->getComponents()) {
+    if(component.second->getType() != oms_component_external)
+      continue;
+
+    ExternalModel* externalmodel = reinterpret_cast<ExternalModel*>(component.second);
+
+    //Copy external model file to temporary directory
+    std::string tempModelPath = getModel()->getTempDirectory()+"/"+std::string(externalmodel->getCref());
+
+  #ifdef WIN32
+    std::string cmd = "mkdir \""+tempModelPath+"\" 2> NUL";
+    system(cmd.c_str());
+    std::string externalModelPath = externalmodel->getPath();
+    std::replace(externalModelPath.begin(), externalModelPath.end(), '/', '\\');
+    cmd = "copy \""+externalModelPath+"\" \""+tempModelPath;
+    system(cmd.c_str());
+  #else
+    std::string cmd = "mkdir -p \""+tempModelPath+"\"";
+    system(cmd.c_str());
+    cmd = "cp \""+externalmodel->getPath()+"\" \""+tempModelPath+"\"";
+    system(cmd.c_str());
+  #endif
+
+    //Extract file name from path
+    size_t i1 = externalmodel->getPath().rfind('/', externalmodel->getPath().length());
+    size_t i2 = externalmodel->getPath().rfind('\\', externalmodel->getPath().length());
+    size_t i = i1;
+    if(i2>i1) {
+      i = i2;   //We cannot use std::max with MSVC for some reason
+    }
+    if(i1 == std::string::npos) {
+      i = i2;
+    }
+    else if(i2 == std::string::npos) {
+      i = i1;
+    }
+    std::string fileName = externalmodel->getPath().substr(i+1, externalmodel->getPath().length() - i);
+    tempModelPath = tempModelPath+"/"+fileName;
+
+    //Registser external model for OMTLMSimulator
+    omtlm_addSubModel(model, externalmodel->getCref().c_str(), tempModelPath.c_str(), externalmodel->getStartScript().c_str());
+
+    for(int i=0; component.second->getTLMBusConnectors()[i]; ++i) {
+      TLMBusConnector *tlmbus = component.second->getTLMBusConnectors()[i];
+
+      std::string causality = "input";
+      if(tlmbus->getCausality() == oms_causality_output)
+        causality = "output";
+      else if(tlmbus->getCausality() == oms_causality_bidir)
+        causality = "bidirectional";
+
+      //OMTLMSimulator uses degrees of freedom as "dimensions",
+      //so convert to this:
+      int dimensions = tlmbus->getDimensions();
+      if(dimensions == 2) dimensions = 3;
+      if(dimensions == 3) dimensions = 6;
+
+      omtlm_addInterface(model, component.second->getCref().c_str(), tlmbus->getName().c_str(),dimensions, causality.c_str(), tlmbus->getDomainString().c_str());
+    }
+  }
+
   Connection** connections = this->getConnections(ComRef(""));
   for(int i=0; connections[i]; ++i) {
     oms3_tlm_connection_parameters_t* tlmpars = connections[i]->getTLMParameters();

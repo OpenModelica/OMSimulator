@@ -112,7 +112,7 @@ oms_status_enu_t oms3::ExternalModel::exportToSSD(pugi::xml_node& node) const
 
 oms_status_enu_t oms3::ExternalModel::instantiate()
 {
-  return logError_NotImplemented;
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms3::ExternalModel::initialize()
@@ -122,7 +122,7 @@ oms_status_enu_t oms3::ExternalModel::initialize()
 
 oms_status_enu_t oms3::ExternalModel::terminate()
 {
-  return logError_NotImplemented;
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms3::ExternalModel::reset()
@@ -132,12 +132,12 @@ oms_status_enu_t oms3::ExternalModel::reset()
 
 oms_status_enu_t oms3::ExternalModel::registerSignalsForResultFile(ResultWriter& resultFile)
 {
-  return logError_NotImplemented;
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms3::ExternalModel::updateSignals(ResultWriter& resultWriter)
 {
-  return logError_NotImplemented;
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms3::ExternalModel::addSignalsToResults(const char* regex)
