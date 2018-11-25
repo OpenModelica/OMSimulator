@@ -101,13 +101,14 @@ oms_status_enu_t oms3_setConnectorGeometry(const char* cref, const ssd_connector
 oms_status_enu_t oms3_setElementGeometry(const char* cref, const ssd_element_geometry_t* geometry);
 oms_status_enu_t oms3_setFixedStepSize(const char* cref, double stepSize);
 oms_status_enu_t oms3_setInteger(const char* cref, int value);
-void oms3_setLoggingCallback(void (*cb)(oms_message_type_enu_t type, const char* message));
 oms_status_enu_t oms3_setLogFile(const char* filename);
+void oms3_setLoggingCallback(void (*cb)(oms_message_type_enu_t type, const char* message));
 oms_status_enu_t oms3_setLoggingInterval(const char* cref, double loggingInterval);
 oms_status_enu_t oms3_setLoggingLevel(int logLevel);
 void oms3_setMaxLogFileSize(const unsigned long size);
 oms_status_enu_t oms3_setReal(const char* cref, double value);
 oms_status_enu_t oms3_setResultFile(const char* cref, const char* filename, int bufferSize);
+oms_status_enu_t oms3_setSignalFilter(const char* cref, const char* regex);
 oms_status_enu_t oms3_setSolver(const char* cref, const char* solver);
 oms_status_enu_t oms3_setStartTime(const char* cref, double startTime);
 oms_status_enu_t oms3_setStopTime(const char* cref, double stopTime);
@@ -754,9 +755,9 @@ oms_status_enu_t oms2_setMasterAlgorithm(const char* ident, const char* masterAl
 
 /**
  * \brief Add signal to the set of event indicators for step size control
- * 
+ *
  * A change in the value of the signal indicates a discrete event.
- * 
+ *
  * \param signal    [in] Name of event indicator signal
  * \return          Error status
  */
@@ -764,9 +765,9 @@ oms_status_enu_t oms2_addEventIndicator(const char* signal);
 
 /**
  * \brief Add signal to the set of time indicators for step size control
- * 
- * The signal must be real-valued. The value indicated the time of the next expected discrete event. 
- * 
+ *
+ * The signal must be real-valued. The value indicated the time of the next expected discrete event.
+ *
  * \param signal    [in] Name of time indicator signal
  * \return          Error status
  */
@@ -774,10 +775,10 @@ oms_status_enu_t oms2_addTimeIndicator(const char* signal);
 
 /**
  * \brief Add an interval to the static value indicator for step size control
- * 
- * The signal must be real valued. 
+ *
+ * The signal must be real valued.
  * When the signal's value is in the specified interval, the step size is at most the specified value.
- * 
+ *
  * \param signal    [in] Name of value indicator signal
  * \param lower     [in] Lower bound of interval
  * \param upper     [in] Upper bound of interval
@@ -788,22 +789,22 @@ oms_status_enu_t oms2_addStaticValueIndicator(const char* signal, double lower, 
 
 /**
  * \brief Add an interval to the dynamic value indicator for step size control
- * 
- * The signals must be real valued. 
+ *
+ * The signals must be real valued.
  * The current bounds of the interval are specified by the value of lower and upper.
  * When the signals value is in the specified interval, the step size is at most the specified value.
- * 
+ *
  * \param signal    [in] Name of value indicator signal
  * \param lower     [in] Name of signal specifying lower bound of interval
  * \param upper     [in] Name of signal specifying upper bound of interval
  * \param stepSize  [in] Step size to set when the signal's value is within the bounds of the interval
  * \return          Error status
  */
-oms_status_enu_t oms2_addDynamicValueIndicator(const char* signal, const char* lower, const char* upper, double stepSize);   
+oms_status_enu_t oms2_addDynamicValueIndicator(const char* signal, const char* lower, const char* upper, double stepSize);
 
 /**
  * \brief Set minimal step size of simulation with variable step sizes
- * 
+ *
  * \param ident     [in] Name of the model instance
  * \param min       [in] Minimal step size
  * \return          Error status
@@ -812,7 +813,7 @@ oms_status_enu_t oms2_setMinimalStepSize(const char* ident, double min);
 
 /**
  * \brief Set maximal step size of simulation with variable step sizes
- * 
+ *
  * \param ident     [in] Name of the model instance
  * \param max       [in] Maximal step size
  * \return          Error status

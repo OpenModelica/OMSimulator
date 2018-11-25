@@ -309,6 +309,9 @@ class OMSimulator:
     self.obj.oms3_setResultFile.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int]
     self.obj.oms3_setResultFile.restype = ctypes.c_int
 
+    self.obj.oms3_setSignalFilter.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms3_setSignalFilter.restype = ctypes.c_int
+
     self.obj.oms3_addSignalsToResults.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms3_addSignalsToResults.restype = ctypes.c_int
 
@@ -460,6 +463,8 @@ class OMSimulator:
     return self.obj.oms3_setReal(self.checkstring(signal), value)
   def oms3_setResultFile(self, cref, filename, bufferSize):
     return self.obj.oms3_setResultFile(self.checkstring(cref), self.checkstring(filename), bufferSize)
+  def oms3_setSignalFilter(self, cref, regex):
+    return self.obj.oms3_setSignalFilter(self.checkstring(cref), self.checkstring(regex))
   def oms3_addSignalsToResults(self, cref, regex):
     return self.obj.oms3_addSignalsToResults(self.checkstring(cref), self.checkstring(regex))
   def oms3_removeSignalsFromResults(self, cref, regex):
