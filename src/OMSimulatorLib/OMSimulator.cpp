@@ -1078,6 +1078,19 @@ oms_status_enu_t oms3_setResultFile(const char* cref_, const char* filename, int
     return logError_OnlyForModel;
 }
 
+oms_status_enu_t oms3_setSignalFilter(const char* cref, const char* regex)
+{
+  oms_status_enu_t status;
+
+  status = oms3_removeSignalsFromResults(cref, ".*");
+  if (oms_status_ok != status) return status;
+
+  status = oms3_addSignalsToResults(cref, regex);
+  if (oms_status_ok != status) return status;
+
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms3_addSignalsToResults(const char* cref, const char* regex)
 {
   oms3::ComRef tail(cref);
@@ -1782,13 +1795,13 @@ oms_status_enu_t oms2_setMasterAlgorithm(const char* ident, const char* masterAl
   return oms2::Scope::GetInstance().setMasterAlgorithm(oms2::ComRef(ident), std::string(masterAlgorithm));
 }
 
-oms_status_enu_t oms2_addEventIndicator(const char* signal) 
+oms_status_enu_t oms2_addEventIndicator(const char* signal)
 {
   logTrace();
   return oms2::Scope::GetInstance().addEventIndicator(oms2::SignalRef(signal));
 }
 
-oms_status_enu_t oms2_addTimeIndicator(const char* signal) 
+oms_status_enu_t oms2_addTimeIndicator(const char* signal)
 {
   logTrace();
   return oms2::Scope::GetInstance().addTimeIndicator(oms2::SignalRef(signal));
@@ -1806,7 +1819,7 @@ oms_status_enu_t oms2_addDynamicValueIndicator(const char* signal, const char* l
   return oms2::Scope::GetInstance().addDynamicValueIndicator(oms2::SignalRef(signal), oms2::SignalRef(lower), oms2::SignalRef(upper), stepSize);
 }
 
-oms_status_enu_t oms2_setMinimalStepSize(const char* ident, double min) 
+oms_status_enu_t oms2_setMinimalStepSize(const char* ident, double min)
 {
   logTrace();
   return oms2::Scope::GetInstance().setMinimalStepSize(oms2::ComRef(ident),min);

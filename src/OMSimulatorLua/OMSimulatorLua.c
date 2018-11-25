@@ -860,6 +860,20 @@ static int OMSimulatorLua_oms3_setResultFile(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms3_setSignalFilter(const char* cref, const char* regex)
+static int OMSimulatorLua_oms3_setSignalFilter(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* cref = lua_tostring(L, 1);
+  const char* regex = lua_tostring(L, 2);
+  oms_status_enu_t status = oms3_setSignalFilter(cref, regex);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
 //oms_status_enu_t oms3_addSignalsToResults(const char* cref, const char* regex);
 static int OMSimulatorLua_oms3_addSignalsToResults(lua_State *L)
 {
@@ -1509,7 +1523,7 @@ static int OMSimulatorLua_oms2_addEventIndicator(lua_State *L)
   oms_status_enu_t status=oms2_addEventIndicator(ident);
 
   lua_pushinteger(L,status);
-  return 1;  
+  return 1;
 }
 
 //oms_status_enu_t oms2_addTimeIndicator(const char* signal);
@@ -1523,7 +1537,7 @@ static int OMSimulatorLua_oms2_addTimeIndicator(lua_State *L)
   oms_status_enu_t status=oms2_addTimeIndicator(ident);
 
   lua_pushinteger(L,status);
-  return 1;  
+  return 1;
 }
 
 //oms_status_enu_t oms2_addStaticValueIndicator(const char* signal, double lower, double upper, double stepSize);
@@ -1564,9 +1578,9 @@ static int OMSimulatorLua_oms2_addDynamicValueIndicator(lua_State *L)
 
   lua_pushinteger(L,status);
   return 1;
-}   
+}
 
-//oms_status_enu_t oms2_setMinimalStepSize(const char* ident, double min); 
+//oms_status_enu_t oms2_setMinimalStepSize(const char* ident, double min);
 static int OMSimulatorLua_oms2_setMinimalStepSize(lua_State *L)
 {
   if (lua_gettop(L) != 2)
@@ -2570,6 +2584,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms3_setMaxLogFileSize);
   REGISTER_LUA_CALL(oms3_setReal);
   REGISTER_LUA_CALL(oms3_setResultFile);
+  REGISTER_LUA_CALL(oms3_setSignalFilter);
   REGISTER_LUA_CALL(oms3_setStartTime);
   REGISTER_LUA_CALL(oms3_setStopTime);
   REGISTER_LUA_CALL(oms3_setTempDirectory);
