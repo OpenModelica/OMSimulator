@@ -811,23 +811,21 @@ static int OMSimulatorLua_oms3_setTLMPositionAndOrientation(lua_State *L)
     return luaL_error(L, "expecting exactly 13 arguments");
 
   luaL_checktype(L, 1, LUA_TSTRING);
-  luaL_checktype(L, 2, LUA_TSTRING);
   const char *cref =  lua_tostring(L, 1);
-  const char *ifc = lua_tostring(L, 2);
   int i;
 
   //Position
   double x[3];
   for(i=0; i<3; ++i) {
-    luaL_checktype(L, i+3, LUA_TNUMBER);
-    x[i] = lua_tonumber(L, i+3);
+    luaL_checktype(L, i+2, LUA_TNUMBER);
+    x[i] = lua_tonumber(L, i+2);
   }
 
   //Orientation (3x3 matrix, stored as 1x9 vector)
   double A[9];
   for(i=0; i<9; ++i) {
-    luaL_checktype(L, i+6, LUA_TNUMBER);
-    A[i] = lua_tonumber(L, i+6);
+    luaL_checktype(L, i+5, LUA_TNUMBER);
+    A[i] = lua_tonumber(L, i+5);
   }
 
   oms_status_enu_t status = oms3_setTLMPositionAndOrientation(cref,
