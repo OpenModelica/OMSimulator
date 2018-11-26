@@ -211,7 +211,11 @@ std::vector<oms3::ComRef> oms3::TLMBusConnector::getConnectors(std::vector<int> 
 oms_status_enu_t oms3::TLMBusConnector::addConnector(const oms3::ComRef &cref, std::string vartype)
 {
   if(std::find(variableTypes.begin(), variableTypes.end(), vartype) == variableTypes.end())
-    return logError("Unknown TLM variable type: "+vartype);
+    return logError_UnknownTLMVariableType(vartype);
+
+  if(connectors.find(vartype) != connectors.end()) {
+    return logError_VariableTypeAlreadyInTLMBus(this->getName(), vartype);
+  }
 
   oms3::ComRef tempRef = cref;
   connectors.insert(std::make_pair(vartype, tempRef));

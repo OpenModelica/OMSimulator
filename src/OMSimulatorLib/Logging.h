@@ -135,4 +135,6 @@ private:
 #define logError_TlmBusNotInSystem(cref, system)             logError("TLM bus connector \"" + std::string(cref) + "\" not found in system \"" + std::string(system->getFullCref()) + "\"")
 #define logError_BusNotInComponent(cref, component)          logError("Bus connector \"" + std::string(cref) + "\" not found in component \"" + std::string(component->getFullCref()) + "\"")
 #define logError_TlmBusNotInComponent(cref, component)       logError("TLM bus connector \"" + std::string(cref) + "\" not found in component \"" + std::string(component->getFullCref()) + "\"")
+#define logError_UnknownTLMVariableType(vartype)             logError("Unknown TLM variable type: \""+vartype+"\"")
+#define logError_VariableTypeAlreadyInTLMBus(cref,vartype)   logError("TLM bus connector \"" + std::string(cref) + "\" already contains a variable with type \"" + vartype + "\"")
 #endif
