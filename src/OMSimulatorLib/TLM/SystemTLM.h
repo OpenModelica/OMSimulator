@@ -67,6 +67,12 @@ namespace oms3
     oms_status_enu_t simulateSubSystem(ComRef cref, double stopTime);
     void writeToSockets(oms3::SystemWC *system, double time, Component *component);
     void readFromSockets(SystemWC *system, double time, Component *component);
+    void sendValueToLogger(int varId, double time, double value);
+    int registerLogVariable();
+    void registerLogVariables(System* system, ResultWriter& resultFile);
+    void sendValuesToLogger(System* system, double time);
+    oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultFile);
+    oms_status_enu_t updateSignals(ResultWriter& resultFile);
 
   protected:
     SystemTLM(const ComRef& cref, Model* parentModel, System* parentSystem);
@@ -76,6 +82,13 @@ namespace oms3
     SystemTLM& operator=(SystemTLM const& copy); ///< not implemented
 
   private:
+    double interpolate(double t1, double t2, double x1, double x2, double t)
+    {
+      if(t2 == t1)
+        return x2;
+      return x1 + (x2-x1)/(t2-t1)*(t-t1);
+    }
+
     void* model;
     std::string address = "";
     int desiredManagerPort=0;
@@ -90,6 +103,15 @@ namespace oms3
     std::mutex setConnectedMutex;
     std::mutex setInitializedMutex;
     std::map<System*, std::mutex> socketMutexes;
+    std::mutex logMutex;
+
+    int numLogVars = 0;
+    std::map<int, std::vector<std::pair<double,double> > > logBuffer;
+    double nextLogTime;
+    double logTime;
+    double logStep = 1e-2;
+    std::map<TLMBusConnector*, int> busLogIds;
+    std::map<Connector*, int> connectorLogIds;
 
     // simulation information
   };

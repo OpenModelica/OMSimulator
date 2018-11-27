@@ -60,6 +60,7 @@ namespace oms3
     ComRef getFullCref() const;
     Element* getElement() {return &element;}
     Connector* getConnector(const ComRef& cref);
+    Connector** getConnectors() {return &connectors[0];}
     oms_status_enu_t deleteConnector(const ComRef& cref);
     oms_status_enu_t deleteResources();
     oms_status_enu_t getAllResources(std::vector<std::string>& resources) const {resources.push_back(path); return oms_status_ok;}

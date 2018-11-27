@@ -80,6 +80,7 @@ namespace oms3
     void setGeometry(const ssd::ElementGeometry& geometry) {element.setGeometry(&geometry);}
     oms_status_enu_t addConnector(const ComRef& cref, oms_causality_enu_t causality, oms_signal_type_enu_t type);
     Connector* getConnector(const ComRef& cref);
+    Connector** getConnectors() {return &connectors[0];}
     BusConnector* getBusConnector(const ComRef& cref);
     oms_status_enu_t addTLMConnection(const ComRef& crefA, const ComRef& crefB, double delay, double alpha, double linearimpedance, double angularimpedance);
     oms_status_enu_t setTLMConnectionParameters(const ComRef &crefA, const ComRef &crefB, const oms3_tlm_connection_parameters_t* parameters);
@@ -135,8 +136,8 @@ namespace oms3
 
     bool isTopLevelSystem() const {return (parentSystem == NULL);}
 
-    oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultFile);
-    oms_status_enu_t updateSignals(ResultWriter& resultFile);
+    virtual oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultFile);
+    virtual oms_status_enu_t updateSignals(ResultWriter& resultFile);
     oms_status_enu_t addSignalsToResults(const char* regex);
     oms_status_enu_t removeSignalsFromResults(const char* regex);
 

@@ -90,6 +90,7 @@ namespace oms3
     double getStopTime() const {return stopTime;}
 
     oms_status_enu_t setLoggingInterval(double loggingInterval);
+    double getLoggingInterval() const {return loggingInterval;}
     oms_status_enu_t setResultFile(const std::string& filename, int bufferSize);
     oms_status_enu_t emit(double time, bool force=false);
     oms_status_enu_t addSignalsToResults(const char* regex);
