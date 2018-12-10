@@ -32,6 +32,7 @@
 #ifndef _OMS_COMPONENT_H_
 #define _OMS_COMPONENT_H_
 
+#include "Clock.h"
 #include "ComRef.h"
 #include "DirectedGraph.h"
 #include "Element.h"
@@ -114,6 +115,9 @@ namespace oms3
 #if !defined(NO_TLM)
     std::vector<TLMBusConnector*> tlmbusconnectors;
 #endif
+
+    Clock clock;
+    unsigned int clock_id;
 
   private:
     System* parentSystem;

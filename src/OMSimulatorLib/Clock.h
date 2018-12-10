@@ -48,12 +48,25 @@ public:
   double& getElapsedCPUTime();
   double& getElapsedWallTime();
 
+  bool& isActive() {return active;}
+
 private:
   bool active;
   std::clock_t startCPUTime;
   std::chrono::system_clock::time_point startWallTime;
   double elapsedCPUTime;
   double elapsedWallTime;
+};
+
+class CallClock
+{
+public:
+  CallClock(Clock& clock) : clock(clock), active(clock.isActive()) {clock.tic();}
+  ~CallClock() {if (!active) clock.toc();}
+
+private:
+  Clock& clock;
+  bool active;
 };
 
 #endif

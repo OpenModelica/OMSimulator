@@ -33,6 +33,7 @@
 #define _OMS_SYSTEM_H_
 
 #include "BusConnector.h"
+#include "Clock.h"
 #include "ComRef.h"
 #include "Connection.h"
 #include "DirectedGraph.h"
@@ -151,6 +152,9 @@ namespace oms3
 
     DirectedGraph initialUnknownsGraph;
     DirectedGraph outputsGraph;
+
+    Clock clock;
+    unsigned int clock_id;
 
   private:
     ComRef cref;

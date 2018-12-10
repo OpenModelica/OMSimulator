@@ -447,6 +447,9 @@ oms_status_enu_t oms3::ComponentFMUCS::instantiate()
 
 oms_status_enu_t oms3::ComponentFMUCS::initialize()
 {
+  clock.reset();
+  CallClock callClock(clock);
+
   fmi2_status_t fmistatus;
 
   // exitInitialization
@@ -487,6 +490,7 @@ oms_status_enu_t oms3::ComponentFMUCS::reset()
 
 oms_status_enu_t oms3::ComponentFMUCS::stepUntil(double stopTime)
 {
+  CallClock callClock(clock);
   System *topLevelSystem = getModel()->getTopLevelSystem();
 
   fmi2_status_t fmistatus;
@@ -497,7 +501,7 @@ oms_status_enu_t oms3::ComponentFMUCS::stepUntil(double stopTime)
 #if !defined(NO_TLM)
     //Read from TLM sockets if top level system is of TLM type
     if(topLevelSystem->getType() == oms_system_tlm)
-      reinterpret_cast<SystemTLM*>(topLevelSystem)->readFromSockets(reinterpret_cast<SystemWC*>(getParentSystem()),time,this);
+      reinterpret_cast<SystemTLM*>(topLevelSystem)->readFromSockets(reinterpret_cast<SystemWC*>(getParentSystem()), time, this);
 #endif
 
     fmistatus = fmi2_import_do_step(fmu, time, hdef, fmi2_true);
@@ -506,7 +510,7 @@ oms_status_enu_t oms3::ComponentFMUCS::stepUntil(double stopTime)
 #if !defined(NO_TLM)
     //Write to TLM sockets if top level system is of TLM type
     if(topLevelSystem->getType() == oms_system_tlm)
-      reinterpret_cast<SystemTLM*>(topLevelSystem)->writeToSockets(reinterpret_cast<SystemWC*>(getParentSystem()),time,this);
+      reinterpret_cast<SystemTLM*>(topLevelSystem)->writeToSockets(reinterpret_cast<SystemWC*>(getParentSystem()), time, this);
 #endif
   }
   time = stopTime;
@@ -515,6 +519,7 @@ oms_status_enu_t oms3::ComponentFMUCS::stepUntil(double stopTime)
 
 oms_status_enu_t oms3::ComponentFMUCS::getBoolean(const ComRef& cref, bool& value)
 {
+  CallClock callClock(clock);
   int j=-1;
   for (size_t i = 0; i < allVariables.size(); i++)
   {
@@ -539,6 +544,7 @@ oms_status_enu_t oms3::ComponentFMUCS::getBoolean(const ComRef& cref, bool& valu
 
 oms_status_enu_t oms3::ComponentFMUCS::getInteger(const ComRef& cref, int& value)
 {
+  CallClock callClock(clock);
   int j=-1;
   for (size_t i = 0; i < allVariables.size(); i++)
   {
@@ -561,6 +567,7 @@ oms_status_enu_t oms3::ComponentFMUCS::getInteger(const ComRef& cref, int& value
 
 oms_status_enu_t oms3::ComponentFMUCS::getReal(const ComRef& cref, double& value)
 {
+  CallClock callClock(clock);
   int j=-1;
   for (size_t i = 0; i < allVariables.size(); i++)
   {
@@ -587,6 +594,7 @@ oms_status_enu_t oms3::ComponentFMUCS::getReal(const ComRef& cref, double& value
 
 oms_status_enu_t oms3::ComponentFMUCS::setBoolean(const ComRef& cref, bool value)
 {
+  CallClock callClock(clock);
   int j=-1;
   for (size_t i = 0; i < allVariables.size(); i++)
   {
@@ -610,6 +618,7 @@ oms_status_enu_t oms3::ComponentFMUCS::setBoolean(const ComRef& cref, bool value
 
 oms_status_enu_t oms3::ComponentFMUCS::setInteger(const ComRef& cref, int value)
 {
+  CallClock callClock(clock);
   int j=-1;
   for (size_t i = 0; i < allVariables.size(); i++)
   {
@@ -632,6 +641,7 @@ oms_status_enu_t oms3::ComponentFMUCS::setInteger(const ComRef& cref, int value)
 
 oms_status_enu_t oms3::ComponentFMUCS::setReal(const ComRef& cref, double value)
 {
+  CallClock callClock(clock);
   int j=-1;
   for (size_t i = 0; i < allVariables.size(); i++)
   {
@@ -656,6 +666,7 @@ oms_status_enu_t oms3::ComponentFMUCS::registerSignalsForResultFile(ResultWriter
 {
   resultFileMapping.clear();
 
+  clock_id = resultFile.addSignal(std::string(getFullCref() + ComRef("$wallTime")), "wall-clock time [s]", SignalType_REAL);
   for (unsigned int i=0; i<allVariables.size(); ++i)
   {
     if (!exportVariables[i])
@@ -712,6 +723,11 @@ oms_status_enu_t oms3::ComponentFMUCS::registerSignalsForResultFile(ResultWriter
 
 oms_status_enu_t oms3::ComponentFMUCS::updateSignals(ResultWriter& resultWriter)
 {
+  CallClock callClock(clock);
+  SignalValue_t wallTime;
+  wallTime.realValue = clock.getElapsedWallTime();
+  resultWriter.updateSignal(clock_id, wallTime);
+
   for (auto const &it : resultFileMapping)
   {
     unsigned int ID = it.first;
