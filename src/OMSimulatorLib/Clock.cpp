@@ -50,7 +50,7 @@ void Clock::tic()
     return;
 
   active = true;
-  startCPUTime = std::clock();
+  //startCPUTime = std::clock();
   startWallTime = std::chrono::system_clock::now();
 }
 
@@ -62,8 +62,8 @@ void Clock::toc()
     return;
   }
 
-  double cpuTimeDuration = (std::clock() - startCPUTime) / (double)CLOCKS_PER_SEC;
-  elapsedCPUTime += cpuTimeDuration;
+  //double cpuTimeDuration = (std::clock() - startCPUTime) / (double)CLOCKS_PER_SEC;
+  //elapsedCPUTime += cpuTimeDuration;
 
   std::chrono::duration<double> wallTimeDuration = (std::chrono::system_clock::now() - startWallTime);
   elapsedWallTime += wallTimeDuration.count();

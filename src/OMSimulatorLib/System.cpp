@@ -1758,6 +1758,8 @@ oms_status_enu_t oms3::System::importFromSSD_ConnectionGeometry(const pugi::xml_
 
 oms_status_enu_t oms3::System::registerSignalsForResultFile(ResultWriter& resultFile)
 {
+  clock_id = resultFile.addSignal(std::string(getFullCref() + ComRef("$wallTime")), "wall-clock time [s]", SignalType_REAL);
+
   for (const auto& component : components)
     if (oms_status_ok != component.second->registerSignalsForResultFile(resultFile))
       return oms_status_error;
@@ -1798,6 +1800,10 @@ oms_status_enu_t oms3::System::registerSignalsForResultFile(ResultWriter& result
 
 oms_status_enu_t oms3::System::updateSignals(ResultWriter& resultFile)
 {
+  SignalValue_t wallTime;
+  wallTime.realValue = clock.getElapsedWallTime();
+  resultFile.updateSignal(clock_id, wallTime);
+
   for (const auto& component : components)
     if (oms_status_ok != component.second->updateSignals(resultFile))
       return oms_status_error;

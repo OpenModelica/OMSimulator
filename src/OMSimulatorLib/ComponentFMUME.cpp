@@ -456,6 +456,7 @@ oms_status_enu_t oms3::ComponentFMUME::instantiate()
 
 oms_status_enu_t oms3::ComponentFMUME::doEventIteration()
 {
+  CallClock callClock(clock);
   fmi2_status_t fmistatus;
   eventInfo.newDiscreteStatesNeeded = fmi2_true;
   eventInfo.terminateSimulation = fmi2_false;
@@ -469,6 +470,9 @@ oms_status_enu_t oms3::ComponentFMUME::doEventIteration()
 
 oms_status_enu_t oms3::ComponentFMUME::initialize()
 {
+  clock.reset();
+  CallClock callClock(clock);
+
   fmi2_status_t fmistatus;
 
   // exitInitialization
@@ -523,6 +527,7 @@ oms_status_enu_t oms3::ComponentFMUME::reset()
 
 oms_status_enu_t oms3::ComponentFMUME::getBoolean(const ComRef& cref, bool& value)
 {
+  CallClock callClock(clock);
   int j=-1;
   for (size_t i = 0; i < allVariables.size(); i++)
   {
@@ -547,6 +552,7 @@ oms_status_enu_t oms3::ComponentFMUME::getBoolean(const ComRef& cref, bool& valu
 
 oms_status_enu_t oms3::ComponentFMUME::getInteger(const ComRef& cref, int& value)
 {
+  CallClock callClock(clock);
   int j=-1;
   for (size_t i = 0; i < allVariables.size(); i++)
   {
@@ -569,6 +575,7 @@ oms_status_enu_t oms3::ComponentFMUME::getInteger(const ComRef& cref, int& value
 
 oms_status_enu_t oms3::ComponentFMUME::getReal(const ComRef& cref, double& value)
 {
+  CallClock callClock(clock);
   int j=-1;
   for (size_t i = 0; i < allVariables.size(); i++)
   {
@@ -595,6 +602,7 @@ oms_status_enu_t oms3::ComponentFMUME::getReal(const ComRef& cref, double& value
 
 oms_status_enu_t oms3::ComponentFMUME::setBoolean(const ComRef& cref, bool value)
 {
+  CallClock callClock(clock);
   int j=-1;
   for (size_t i = 0; i < allVariables.size(); i++)
   {
@@ -618,6 +626,7 @@ oms_status_enu_t oms3::ComponentFMUME::setBoolean(const ComRef& cref, bool value
 
 oms_status_enu_t oms3::ComponentFMUME::setInteger(const ComRef& cref, int value)
 {
+  CallClock callClock(clock);
   int j=-1;
   for (size_t i = 0; i < allVariables.size(); i++)
   {
@@ -640,6 +649,7 @@ oms_status_enu_t oms3::ComponentFMUME::setInteger(const ComRef& cref, int value)
 
 oms_status_enu_t oms3::ComponentFMUME::setReal(const ComRef& cref, double value)
 {
+  CallClock callClock(clock);
   int j=-1;
   for (size_t i = 0; i < allVariables.size(); i++)
   {
@@ -664,6 +674,7 @@ oms_status_enu_t oms3::ComponentFMUME::registerSignalsForResultFile(ResultWriter
 {
   resultFileMapping.clear();
 
+  clock_id = resultFile.addSignal(std::string(getFullCref() + ComRef("$wallTime")), "wall-clock time [s]", SignalType_REAL);
   for (unsigned int i=0; i<allVariables.size(); ++i)
   {
     if (!exportVariables[i])
@@ -720,6 +731,11 @@ oms_status_enu_t oms3::ComponentFMUME::registerSignalsForResultFile(ResultWriter
 
 oms_status_enu_t oms3::ComponentFMUME::updateSignals(ResultWriter& resultWriter)
 {
+  CallClock callClock(clock);
+  SignalValue_t wallTime;
+  wallTime.realValue = clock.getElapsedWallTime();
+  resultWriter.updateSignal(clock_id, wallTime);
+
   for (auto const &it : resultFileMapping)
   {
     unsigned int ID = it.first;
@@ -750,6 +766,7 @@ oms_status_enu_t oms3::ComponentFMUME::updateSignals(ResultWriter& resultWriter)
 
 oms_status_enu_t oms3::ComponentFMUME::getContinuousStates(double* states)
 {
+  CallClock callClock(clock);
   fmi2_status_t fmistatus = fmi2_import_get_continuous_states(fmu, states, nContinuousStates);
   if (fmi2_status_ok != fmistatus)
     return logError_FMUCall("fmi2_import_get_continuous_states", this);
@@ -758,6 +775,7 @@ oms_status_enu_t oms3::ComponentFMUME::getContinuousStates(double* states)
 
 oms_status_enu_t oms3::ComponentFMUME::setContinuousStates(double* states)
 {
+  CallClock callClock(clock);
   fmi2_status_t fmistatus = fmi2_import_set_continuous_states(fmu, states, nContinuousStates);
   if (fmi2_status_ok != fmistatus)
     return logError_FMUCall("fmi2_import_set_continuous_states", this);
@@ -766,6 +784,7 @@ oms_status_enu_t oms3::ComponentFMUME::setContinuousStates(double* states)
 
 oms_status_enu_t oms3::ComponentFMUME::getDerivatives(double* derivatives)
 {
+  CallClock callClock(clock);
   fmi2_status_t fmistatus = fmi2_import_get_derivatives(fmu, derivatives, nContinuousStates);
   if (fmi2_status_ok != fmistatus)
     return logError_FMUCall("fmi2_import_get_derivatives", this);
@@ -774,6 +793,7 @@ oms_status_enu_t oms3::ComponentFMUME::getDerivatives(double* derivatives)
 
 oms_status_enu_t oms3::ComponentFMUME::getNominalsOfContinuousStates(double* nominals)
 {
+  CallClock callClock(clock);
   fmi2_status_t fmistatus = fmi2_import_get_nominals_of_continuous_states(fmu, nominals, nContinuousStates);
   if (fmi2_status_ok != fmistatus)
     return logError_FMUCall("fmi2_import_get_nominals_of_continuous_states", this);
@@ -782,6 +802,7 @@ oms_status_enu_t oms3::ComponentFMUME::getNominalsOfContinuousStates(double* nom
 
 oms_status_enu_t oms3::ComponentFMUME::getEventindicators(double* eventindicators)
 {
+  CallClock callClock(clock);
   fmi2_status_t fmistatus = fmi2_import_get_event_indicators(fmu, eventindicators, nEventIndicators);
   if (fmi2_status_ok != fmistatus)
     return logError_FMUCall("fmi2_import_get_event_indicators", this);

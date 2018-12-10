@@ -98,6 +98,9 @@ oms_status_enu_t oms3::SystemWC::instantiate()
 
 oms_status_enu_t oms3::SystemWC::initialize()
 {
+  clock.reset();
+  CallClock callClock(clock);
+
   time = getModel()->getStartTime();
 
   for (const auto& subsystem : getSubSystems())
@@ -145,6 +148,7 @@ oms_status_enu_t oms3::SystemWC::reset()
 
 oms_status_enu_t oms3::SystemWC::stepUntil(double stopTime, void (*cb)(const char* ident, double time, oms_status_enu_t status))
 {
+  CallClock callClock(clock);
   ComRef modelName = this->getModel()->getCref();
 
   while (time < stopTime)
@@ -200,6 +204,8 @@ oms_status_enu_t oms3::SystemWC::stepUntil(double stopTime, void (*cb)(const cha
 
 oms_status_enu_t oms3::SystemWC::updateInputs(oms3::DirectedGraph& graph)
 {
+  CallClock callClock(clock);
+
   // input := output
   const std::vector< std::vector< std::pair<int, int> > >& sortedConnections = graph.getSortedConnections();
   for(int i=0; i<sortedConnections.size(); i++)
@@ -241,6 +247,8 @@ oms_status_enu_t oms3::SystemWC::updateInputs(oms3::DirectedGraph& graph)
 
 oms_status_enu_t oms3::SystemWC::solveAlgLoop(DirectedGraph& graph, const std::vector< std::pair<int, int> >& SCC)
 {
+  CallClock callClock(clock);
+
   const int size = SCC.size();
   const int maxIterations = 10;
   double maxRes;
