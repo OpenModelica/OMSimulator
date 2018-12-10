@@ -35,9 +35,8 @@
 #include "Model.h"
 #include "SystemWC.h"
 #include "Types.h"
-#include "OMTLMSimulatorLib.h"
+#include "OMTLMSimulatorLib/OMTLMSimulatorLib.h"
 #include "ssd/Tags.h"
-#include "OMTLMSimulatorLib.h"
 
 #include <thread>
 #include <algorithm>
@@ -48,7 +47,6 @@ oms3::SystemTLM::SystemTLM(const ComRef& cref, Model* parentModel, System* paren
   logTrace();
   model = omtlm_newModel(cref.c_str());
   omtlm_setLogLevel(model, 1);
-  omtlm_setNumLogStep(model, 1000);
 }
 
 oms3::SystemTLM::~SystemTLM()
@@ -124,6 +122,8 @@ oms_status_enu_t oms3::SystemTLM::instantiate()
 
 oms_status_enu_t oms3::SystemTLM::initialize()
 {
+  omtlm_setLogStepSize(model, getModel()->getLoggingInterval());
+
   actualManagerPort = desiredManagerPort;
   actualMonitorPort = desiredMonitorPort;
 #ifndef _WIN32
@@ -223,7 +223,7 @@ oms_status_enu_t oms3::SystemTLM::initialize()
     omtlm_addConnection(model,connections[i]->getSignalA().c_str(),connections[i]->getSignalB().c_str(),tlmpars->delay,tlmpars->linearimpedance,tlmpars->angularimpedance,tlmpars->alpha);
   }
 
-  logStep = getModel()->getLoggingInterval();
+  logStep = (getModel()->getLoggingInterval() > 0) ? getModel()->getLoggingInterval() : 1e-3;
   nextLogTime = getModel()->getStartTime()+logStep;
 
   return oms_status_ok;
