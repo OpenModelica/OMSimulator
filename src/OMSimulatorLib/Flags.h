@@ -32,6 +32,9 @@
 #ifndef _OMS3_FLAGS_H_
 #define _OMS3_FLAGS_H_
 
+#include "Types.h"
+#include <string>
+
 namespace oms3
 {
   class Flags
@@ -49,6 +52,7 @@ namespace oms3
   public:
     static bool SuppressPath() {return GetInstance().suppressPath;}
     static void SuppressPath(bool value) {GetInstance().suppressPath = value;}
+    static oms_status_enu_t SetCommandLineOption(const std::string& cmd);
 
   private:
     bool suppressPath;
