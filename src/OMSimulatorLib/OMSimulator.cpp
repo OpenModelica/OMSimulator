@@ -286,14 +286,7 @@ oms_status_enu_t oms3_getConnector(const char* cref, oms_connector_t** connector
 
 oms_status_enu_t oms3_setCommandLineOption(const char* cmd)
 {
-  if (std::string(cmd) == "--suppressPath=true")
-    oms3::Flags::SuppressPath(true);
-  else if (std::string(cmd) == "--suppressPath=false")
-    oms3::Flags::SuppressPath(false);
-  else
-    return logError("Unknown flag or option: \"" + std::string(cmd) + "\"");
-
-  return oms_status_ok;
+  return oms3::Flags::SetCommandLineOption(std::string(cmd));
 }
 
 oms_status_enu_t oms3_getSystemType(const char* cref, oms_system_enu_t* type)

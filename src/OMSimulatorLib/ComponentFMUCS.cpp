@@ -504,6 +504,20 @@ oms_status_enu_t oms3::ComponentFMUCS::stepUntil(double stopTime)
       reinterpret_cast<SystemTLM*>(topLevelSystem)->readFromSockets(reinterpret_cast<SystemWC*>(getParentSystem()), time, this);
 #endif
 
+    // HACK for certain FMUs
+    if (fetchAllVars_)
+    {
+      for (auto &v : allVariables)
+      {
+        if (v.isTypeReal())
+        {
+          double realValue;
+          if (oms_status_ok != getReal(v.getCref(), realValue))
+            logError("failed to fetch variable " + std::string(v));
+        }
+      }
+    }
+
     fmistatus = fmi2_import_do_step(fmu, time, hdef, fmi2_true);
     time += hdef;
 

@@ -66,6 +66,7 @@ namespace oms3
     const std::string& getPath() const {return path;}
     oms_component_enu_t getType() const {return type;}
     virtual const FMUInfo* getFMUInfo() const {return NULL;}
+    void fetchAllVars() {fetchAllVars_ = true;}
     System* getParentSystem() const {return parentSystem;}
     Model* getModel() const;
     void setGeometry(const ssd::ElementGeometry& geometry) {element.setGeometry(&geometry);}
@@ -118,6 +119,7 @@ namespace oms3
 
     Clock clock;
     unsigned int clock_id;
+    bool fetchAllVars_ = false;
 
   private:
     System* parentSystem;
