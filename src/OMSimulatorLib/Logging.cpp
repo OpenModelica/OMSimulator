@@ -57,7 +57,7 @@ Log::Log() : filename(""), cb(NULL)
   numWarnings = 0;
   numErrors = 0;
   numMessages = 0;
-  logLevel = false;
+  logLevel = 0;
 }
 
 Log::~Log()
@@ -257,13 +257,14 @@ oms_status_enu_t Log::setLogFile(const std::string& filename)
 oms_status_enu_t Log::setLoggingLevel(int logLevel)
 {
   if (logLevel < 0 || logLevel > 2)
-    return oms_status_error;
+    return logError("Invalid logging level");
 
-#ifdef OMS_DEBUG_LOGGING
   Log& log = getInstance();
   log.logLevel = logLevel;
-#else
-  Warning("Log::setDebugLogging is not available.");
+
+#ifndef OMS_DEBUG_LOGGING
+  if (logLevel > 1)
+    Warning("debug logging is not available");
 #endif
 
 return oms_status_ok;
