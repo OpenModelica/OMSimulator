@@ -33,10 +33,11 @@
 
 #include "Component.h"
 #include "ComponentFMUCS.h"
+#include "Flags.h"
 #include "Model.h"
+#include "ssd/Tags.h"
 #include "SystemTLM.h"
 #include "Types.h"
-#include "ssd/Tags.h"
 
 oms3::SystemWC::SystemWC(const ComRef& cref, Model* parentModel, System* parentSystem)
   : oms3::System(cref, oms_system_wc, parentModel, parentSystem)
@@ -151,6 +152,11 @@ oms_status_enu_t oms3::SystemWC::stepUntil(double stopTime, void (*cb)(const cha
   CallClock callClock(clock);
   ComRef modelName = this->getModel()->getCref();
 
+  double startTime=time;
+
+  if (Flags::ProgressBar())
+    logInfo("stepUntil [" + std::to_string(startTime) + "; " + std::to_string(stopTime) + "]");
+
   while (time < stopTime)
   {
     double tNext = time+stepSize;
@@ -192,6 +198,9 @@ oms_status_enu_t oms3::SystemWC::stepUntil(double stopTime, void (*cb)(const cha
     if (cb)
       cb(modelName.c_str(), time, oms_status_ok);
 
+    if (Flags::ProgressBar())
+      Log::ProgressBar(startTime, stopTime, time);
+
     if (isTopLevelSystem() && getModel()->cancelSimulation())
     {
       cb(modelName.c_str(), time, oms_status_discard);
@@ -199,6 +208,11 @@ oms_status_enu_t oms3::SystemWC::stepUntil(double stopTime, void (*cb)(const cha
     }
   }
 
+  if (Flags::ProgressBar())
+  {
+    Log::ProgressBar(startTime, stopTime, time);
+    Log::TerminateBar();
+  }
   return oms_status_ok;
 }
 
