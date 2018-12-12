@@ -57,6 +57,9 @@ public:
   static void Debug(const std::string& msg);
   static void Trace(const std::string& function, const std::string& file, const long line);
 
+  static void ProgressBar(double start, double stop, double value);
+  static void TerminateBar();
+
   static oms_status_enu_t setLogFile(const std::string& filename);
   static void setMaxLogFileSize(const unsigned long size) {getInstance().limit=1024*1024*size;}
 
@@ -85,6 +88,9 @@ private:
 
   unsigned long limit = 1024*1024*50;
   unsigned long size = 0;
+
+  bool progress = false;
+  int percent;
 
   void (*cb)(oms_message_type_enu_t type, const char* message);
 };

@@ -33,6 +33,7 @@
 
 #include "Component.h"
 #include "ComponentFMUME.h"
+#include "Flags.h"
 #include "Model.h"
 #include "Types.h"
 #include "ssd/Tags.h"
@@ -439,6 +440,10 @@ oms_status_enu_t oms3::SystemSC::stepUntil(double stopTime, void (*cb)(const cha
   double hdef = maximumStepSize;
 
   fmi2_boolean_enu_t terminate_sim = fmi2_false;
+  double startTime=time;
+
+  if (Flags::ProgressBar())
+    logInfo("stepUntil [" + std::to_string(startTime) + "; " + std::to_string(stopTime) + "]");
 
   // main simulation loop
   while (time < stopTime && !terminate_sim)
@@ -582,6 +587,9 @@ oms_status_enu_t oms3::SystemSC::stepUntil(double stopTime, void (*cb)(const cha
     if (cb)
       cb(modelName.c_str(), time, oms_status_ok);
 
+    if (Flags::ProgressBar())
+      Log::ProgressBar(startTime, stopTime, time);
+
     if (isTopLevelSystem() && getModel()->cancelSimulation())
     {
       cb(modelName.c_str(), time, oms_status_discard);
@@ -590,6 +598,11 @@ oms_status_enu_t oms3::SystemSC::stepUntil(double stopTime, void (*cb)(const cha
   }
 
   time = stopTime;
+  if (Flags::ProgressBar())
+  {
+    Log::ProgressBar(startTime, stopTime, time);
+    Log::TerminateBar();
+  }
   return oms_status_ok;
 }
 

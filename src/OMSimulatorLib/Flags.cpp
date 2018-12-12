@@ -40,7 +40,6 @@
 #include <RegEx.h>
 
 oms3::Flags::Flags()
-  : suppressPath(false)
 {
 }
 
@@ -79,6 +78,8 @@ oms_status_enu_t oms3::Flags::SetCommandLineOption(const std::string& cmd)
 
   if (isOptionAndValue(cmd, "--suppressPath", value, re_bool))
     oms3::Flags::SuppressPath(value == "true");
+  else if (isOptionAndValue(cmd, "--progressBar", value, re_bool))
+    GetInstance().progressBar = (value == "true");
   else if (isOptionAndValue(cmd, "--fetchAllVars", value, re_default))
   {
     oms3::ComRef tail(value);

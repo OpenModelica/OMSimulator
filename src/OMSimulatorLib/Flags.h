@@ -50,12 +50,15 @@ namespace oms3
     static Flags& GetInstance();
 
   public:
-    static bool SuppressPath() {return GetInstance().suppressPath;}
-    static void SuppressPath(bool value) {GetInstance().suppressPath = value;}
     static oms_status_enu_t SetCommandLineOption(const std::string& cmd);
 
+    static bool SuppressPath() {return GetInstance().suppressPath;}
+    static void SuppressPath(bool value) {GetInstance().suppressPath = value;}
+    static bool ProgressBar() {return GetInstance().progressBar;}
+
   private:
-    bool suppressPath;
+    bool suppressPath = false;
+    bool progressBar = false;
   };
 }
 
