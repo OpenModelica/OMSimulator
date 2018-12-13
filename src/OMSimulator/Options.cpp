@@ -31,6 +31,7 @@
 
 #include "Options.h"
 
+#include <OMSimulator.h>
 #include <iostream>
 #include <string>
 
@@ -54,12 +55,13 @@ ProgramOptions::ProgramOptions(int argc, char** argv)
   logLevel = 0;
   cs = true;
 
-  oms_regex re_integer("(\\+|-)?[[:digit:]]+");
-  oms_regex re_number("[[:digit:]]+");
-  oms_regex re_double("((\\+|-)?[[:digit:]]+)(\\.(([[:digit:]]+)?))?((e|E)((\\+|-)?)[[:digit:]]+)?");
-  oms_regex re_default(".+");
-  oms_regex re_solver("internal|euler|cvode");
-  oms_regex re_mode("me|cs");
+  const oms_regex re_bool("true|false");
+  const oms_regex re_default(".+");
+  const oms_regex re_double("((\\+|-)?[[:digit:]]+)(\\.(([[:digit:]]+)?))?((e|E)((\\+|-)?)[[:digit:]]+)?");
+  const oms_regex re_integer("(\\+|-)?[[:digit:]]+");
+  const oms_regex re_mode("me|cs");
+  const oms_regex re_number("[[:digit:]]+");
+  const oms_regex re_solver("internal|euler|cvode");
 
   validOptions = true;
   for (; argi<argc; ++argi)
@@ -109,6 +111,11 @@ ProgramOptions::ProgramOptions(int argc, char** argv)
         cs = false;
       else
         cs = true;
+    }
+    else if (isOptionAndValue("--progressBar", value, re_bool))
+    {
+      std::string cmd = "--progressBar=" + value;
+      oms3_setCommandLineOption(cmd.c_str());
     }
     else if (isOptionAndValue("--stopTime", "-t", value, re_double))
     {
@@ -203,18 +210,19 @@ void ProgramOptions::printUsage()
   std::cout << "Usage: OMSimulator [Options] filename\n" << std::endl;
 
   std::cout << "Options:" << std::endl;
-  std::cout << "  -h [ --help ]             Displays the help text" << std::endl;
-  std::cout << "  -i [ --intervals ] arg    Specifies the number of communication points (arg > 1)." << std::endl;
-  std::cout << "  -l [ --logFile ] arg      Specifies the logfile (stdout is used if no log file is specified)." << std::endl;
+  std::cout << "  --help [ -h ]             Displays the help text" << std::endl;
+  std::cout << "  --intervals [ -i ] arg    Specifies the number of communication points (arg > 1)" << std::endl;
+  std::cout << "  --logFile [ -l ] arg      Specifies the logfile (stdout is used if no log file is specified)" << std::endl;
   std::cout << "  --logLevel arg            0 default, 1 default+debug, 2 default+debug+trace" << std::endl;
-  std::cout << "  -m [ --mode ] arg         Forces a certain FMI mode iff the FMU provides cs and me [arg: cs (default) or me]" << std::endl;
-  std::cout << "  -r [ --resultFile ] arg   Specifies the name of the output result file" << std::endl;
-  std::cout << "  -s [ --startTime ] arg    Specifies the start time." << std::endl;
-  std::cout << "  --solver arg              Specifies the integration method (internal, euler, cvode)." << std::endl;
-  std::cout << "  -t [ --stopTime ] arg     Specifies the stop time." << std::endl;
-  std::cout << "  --tempDir arg             Specifies the temp directory." << std::endl;
-  std::cout << "  --timeout arg             Specifies the maximum allowed time in seconds for running a simulation (0 disables)." << std::endl;
-  std::cout << "  --tolerance arg           Specifies the relative tolerance." << std::endl;
-  std::cout << "  -v [ --version ]          Displays version information." << std::endl;
-  std::cout << "  --workingDir arg          Specifies the working directory." << std::endl;
+  std::cout << "  --mode [ -m ] arg         Forces a certain FMI mode iff the FMU provides cs and me [arg: cs (default) or me]" << std::endl;
+  std::cout << "  --resultFile [ -r ] arg   Specifies the name of the output result file" << std::endl;
+  std::cout << "  --progressBar arg         Enables/disables the progress bar" << std::endl;
+  std::cout << "  --solver arg              Specifies the integration method (internal, euler, cvode)" << std::endl;
+  std::cout << "  --startTime [ -s ] arg    Specifies the start time" << std::endl;
+  std::cout << "  --stopTime [ -t ] arg     Specifies the stop time" << std::endl;
+  std::cout << "  --tempDir arg             Specifies the temp directory" << std::endl;
+  std::cout << "  --timeout arg             Specifies the maximum allowed time in seconds for running a simulation (0 disables)" << std::endl;
+  std::cout << "  --tolerance arg           Specifies the relative tolerance" << std::endl;
+  std::cout << "  --version [ -v ]          Displays version information" << std::endl;
+  std::cout << "  --workingDir arg          Specifies the working directory" << std::endl;
 }
