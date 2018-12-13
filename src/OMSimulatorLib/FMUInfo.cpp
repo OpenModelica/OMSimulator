@@ -57,6 +57,7 @@ oms3::FMUInfo::FMUInfo(const std::string& path, oms_fmi_kind_enu_t fmuKind)
   this->needsExecutionTool = false;
   this->providesDirectionalDerivative = false;
   this->canInterpolateInputs = false;
+  this->maxOutputDerivativeOrder = 0;
 }
 
 oms3::FMUInfo::~FMUInfo()
@@ -138,24 +139,25 @@ oms_status_enu_t oms3::FMUInfo::update(fmi_version_enu_t version, fmi2_import_t*
 
   if (oms_fmi_kind_cs == fmiKind)
   {
-    this->canBeInstantiatedOnlyOncePerProcess = fmi2_import_get_capability(fmu, fmi2_cs_canBeInstantiatedOnlyOncePerProcess) > 0 ? true : false;
-    this->canGetAndSetFMUstate = fmi2_import_get_capability(fmu, fmi2_cs_canGetAndSetFMUstate) > 0 ? true : false;
-    this->canNotUseMemoryManagementFunctions = fmi2_import_get_capability(fmu, fmi2_cs_canNotUseMemoryManagementFunctions) > 0 ? true : false;
-    this->canSerializeFMUstate = fmi2_import_get_capability(fmu, fmi2_cs_canSerializeFMUstate) > 0 ? true : false;
+    this->canBeInstantiatedOnlyOncePerProcess = fmi2_import_get_capability(fmu, fmi2_cs_canBeInstantiatedOnlyOncePerProcess) > 0;
+    this->canGetAndSetFMUstate = fmi2_import_get_capability(fmu, fmi2_cs_canGetAndSetFMUstate) > 0;
+    this->canNotUseMemoryManagementFunctions = fmi2_import_get_capability(fmu, fmi2_cs_canNotUseMemoryManagementFunctions) > 0;
+    this->canSerializeFMUstate = fmi2_import_get_capability(fmu, fmi2_cs_canSerializeFMUstate) > 0;
     this->completedIntegratorStepNotNeeded = false;
-    this->needsExecutionTool = fmi2_import_get_capability(fmu, fmi2_cs_needsExecutionTool) > 0 ? true : false;
-    this->providesDirectionalDerivative = fmi2_import_get_capability(fmu, fmi2_cs_providesDirectionalDerivatives) > 0 ? true : false;
-    this->canInterpolateInputs = fmi2_import_get_capability(fmu, fmi2_cs_canInterpolateInputs) > 0 ? true : false;
+    this->needsExecutionTool = fmi2_import_get_capability(fmu, fmi2_cs_needsExecutionTool) > 0;
+    this->providesDirectionalDerivative = fmi2_import_get_capability(fmu, fmi2_cs_providesDirectionalDerivatives) > 0;
+    this->canInterpolateInputs = fmi2_import_get_capability(fmu, fmi2_cs_canInterpolateInputs) > 0;
+    this->maxOutputDerivativeOrder = fmi2_import_get_capability(fmu, fmi2_cs_maxOutputDerivativeOrder);
   }
   else
   {
-    this->canBeInstantiatedOnlyOncePerProcess = fmi2_import_get_capability(fmu, fmi2_me_canBeInstantiatedOnlyOncePerProcess) > 0 ? true : false;
-    this->canGetAndSetFMUstate = fmi2_import_get_capability(fmu, fmi2_me_canGetAndSetFMUstate) > 0 ? true : false;
-    this->canNotUseMemoryManagementFunctions = fmi2_import_get_capability(fmu, fmi2_me_canNotUseMemoryManagementFunctions) > 0 ? true : false;
-    this->canSerializeFMUstate = fmi2_import_get_capability(fmu, fmi2_me_canSerializeFMUstate) > 0 ? true : false;
-    this->completedIntegratorStepNotNeeded = fmi2_import_get_capability(fmu, fmi2_me_completedIntegratorStepNotNeeded) > 0 ? true : false;
-    this->needsExecutionTool = fmi2_import_get_capability(fmu, fmi2_me_needsExecutionTool) > 0 ? true : false;
-    this->providesDirectionalDerivative = fmi2_import_get_capability(fmu, fmi2_me_providesDirectionalDerivatives) > 0 ? true : false;
+    this->canBeInstantiatedOnlyOncePerProcess = fmi2_import_get_capability(fmu, fmi2_me_canBeInstantiatedOnlyOncePerProcess) > 0;
+    this->canGetAndSetFMUstate = fmi2_import_get_capability(fmu, fmi2_me_canGetAndSetFMUstate) > 0;
+    this->canNotUseMemoryManagementFunctions = fmi2_import_get_capability(fmu, fmi2_me_canNotUseMemoryManagementFunctions) > 0;
+    this->canSerializeFMUstate = fmi2_import_get_capability(fmu, fmi2_me_canSerializeFMUstate) > 0;
+    this->completedIntegratorStepNotNeeded = fmi2_import_get_capability(fmu, fmi2_me_completedIntegratorStepNotNeeded) > 0;
+    this->needsExecutionTool = fmi2_import_get_capability(fmu, fmi2_me_needsExecutionTool) > 0;
+    this->providesDirectionalDerivative = fmi2_import_get_capability(fmu, fmi2_me_providesDirectionalDerivatives) > 0;
   }
 
   return oms_status_ok;

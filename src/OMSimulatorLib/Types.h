@@ -550,6 +550,12 @@ typedef struct {
    * fmi2SetRealInputDerivatives(...) has an effect for the slave.
    */
   bool canInterpolateInputs;
+  /**
+   * The slave is able to provide derivatives of outputs with maximum order.
+   * Calling of fmi2GetRealOutputDerivatives(...) is allowed up to the order
+   * defined by maxOutputDerivativeOrder.
+   */
+  unsigned int maxOutputDerivativeOrder;
 } oms_fmu_info_t;
 
 #ifdef __cplusplus
