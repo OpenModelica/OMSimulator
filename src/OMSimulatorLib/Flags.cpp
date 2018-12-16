@@ -80,6 +80,8 @@ oms_status_enu_t oms3::Flags::SetCommandLineOption(const std::string& cmd)
     oms3::Flags::SuppressPath(value == "true");
   else if (isOptionAndValue(cmd, "--progressBar", value, re_bool))
     GetInstance().progressBar = (value == "true");
+  else if (isOptionAndValue(cmd, "--setInputDerivatives", value, re_bool))
+    GetInstance().inputDerivatives = (value == "true");
   else if (isOptionAndValue(cmd, "--fetchAllVars", value, re_default))
   {
     oms3::ComRef tail(value);
@@ -102,6 +104,7 @@ oms_status_enu_t oms3::Flags::SetCommandLineOption(const std::string& cmd)
       return oms_status_error;
 
     component->fetchAllVars();
+    logDebug("--fetchAllVars is enabled for " + value);
   }
   else
     return logError("Unknown flag or option: \"" + cmd + "\"");

@@ -78,6 +78,9 @@ namespace oms3
     oms_status_enu_t setInteger(const ComRef& cref, int value);
     oms_status_enu_t setReal(const ComRef& cref, double value);
 
+    oms_status_enu_t getRealOutputDerivative(const ComRef& cref, double*& value);
+    oms_status_enu_t setRealInputDerivative(const ComRef& cref, double* value, unsigned int order);
+
     oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultFile);
     oms_status_enu_t updateSignals(ResultWriter& resultWriter);
     oms_status_enu_t addSignalsToResults(const char* regex);
