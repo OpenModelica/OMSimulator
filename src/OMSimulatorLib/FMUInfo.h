@@ -54,6 +54,8 @@ namespace oms3
     std::string getPath() const {return std::string(path);}
     oms_fmi_kind_enu_t getKind() const {return fmiKind;}
 
+    unsigned int getMaxOutputDerivativeOrder() const {return maxOutputDerivativeOrder;}
+
   private:
     // methods to copy the object
     FMUInfo(const FMUInfo& rhs);            ///< not implemented

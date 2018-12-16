@@ -628,6 +628,64 @@ oms_status_enu_t oms3::ComponentFMUCS::getReal(const ComRef& cref, double& value
   return getReal(vr, value);
 }
 
+oms_status_enu_t oms3::ComponentFMUCS::getRealOutputDerivative(const ComRef& cref, double*& value)
+{
+  CallClock callClock(clock);
+  int j=-1;
+  for (size_t i = 0; i < allVariables.size(); i++)
+  {
+    if (allVariables[i].getCref() == cref && allVariables[i].isTypeReal() && allVariables[i].isOutput())
+    {
+      j = i;
+      break;
+    }
+  }
+
+  if (!fmu || j < 0)
+    return oms_status_error;
+
+  fmi2_value_reference_t vr = allVariables[j].getValueReference();
+  fmi2_integer_t order = getFMUInfo()->getMaxOutputDerivativeOrder();
+  if (order > 0)
+  {
+    if (fmi2_status_ok != fmi2_import_get_real_output_derivatives(fmu, &vr, 1, &order, value))
+      return oms_status_error;
+
+    if (std::isnan(value[0]))
+      return logError("getRealOutputDerivative returned NAN");
+    if (std::isinf(value[0]))
+      return logError("getRealOutputDerivative returned +/-inf");
+  }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::ComponentFMUCS::setRealInputDerivative(const ComRef& cref, double* value, unsigned int order)
+{
+  CallClock callClock(clock);
+  int j=-1;
+  for (size_t i = 0; i < allVariables.size(); i++)
+  {
+    if (allVariables[i].getCref() == cref && allVariables[i].isTypeReal() && allVariables[i].isInput())
+    {
+      j = i;
+      break;
+    }
+  }
+
+  if (!fmu || j < 0)
+    return oms_status_error;
+
+  fmi2_value_reference_t vr = allVariables[j].getValueReference();
+  if (order > 0)
+  {
+    if (fmi2_status_ok != fmi2_import_set_real_input_derivatives(fmu, &vr, 1, (fmi2_integer_t*)&order, value))
+      return oms_status_error;
+  }
+
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms3::ComponentFMUCS::setBoolean(const ComRef& cref, bool value)
 {
   CallClock callClock(clock);

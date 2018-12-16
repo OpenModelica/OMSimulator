@@ -46,6 +46,8 @@ oms3::SystemWC::SystemWC(const ComRef& cref, Model* parentModel, System* parentS
 
 oms3::SystemWC::~SystemWC()
 {
+  if (derBuffer)
+    delete[] derBuffer;
 }
 
 oms3::System* oms3::SystemWC::NewSystem(const oms3::ComRef& cref, oms3::Model* parentModel, oms3::System* parentSystem)
@@ -97,6 +99,20 @@ oms_status_enu_t oms3::SystemWC::instantiate()
   return oms_status_ok;
 }
 
+unsigned int oms3::SystemWC::getMaxOutputDerivativeOrder()
+{
+  unsigned int order = 0;
+
+  for (auto& component : getComponents())
+  {
+    if (oms_component_fmu == component.second->getType())
+      if (order < component.second->getFMUInfo()->getMaxOutputDerivativeOrder())
+        order = component.second->getFMUInfo()->getMaxOutputDerivativeOrder();
+  }
+
+  return order;
+}
+
 oms_status_enu_t oms3::SystemWC::initialize()
 {
   clock.reset();
@@ -111,6 +127,12 @@ oms_status_enu_t oms3::SystemWC::initialize()
   for (const auto& component : getComponents())
     if (oms_status_ok != component.second->initialize())
       return oms_status_error;
+
+  if (derBuffer)
+    delete[] derBuffer;
+  derBuffer = NULL;
+  if (Flags::InputDerivatives())
+    derBuffer = new double[getMaxOutputDerivativeOrder()];
 
   if (oms_status_ok != updateDependencyGraphs())
     return oms_status_error;
@@ -216,6 +238,64 @@ oms_status_enu_t oms3::SystemWC::stepUntil(double stopTime, void (*cb)(const cha
   return oms_status_ok;
 }
 
+oms_status_enu_t oms3::SystemWC::getRealOutputDerivative(const ComRef& cref, double*& value, unsigned int& order)
+{
+  if (!value)
+    return oms_status_ok;
+
+  switch (getModel()->getModelState())
+  {
+    case oms_modelState_initialization:
+      return oms_status_error;
+    case oms_modelState_instantiated:
+    case oms_modelState_simulation:
+      break;
+    default:
+      return logError_ModelInWrongState(getModel());
+  }
+
+  oms3::ComRef tail(cref);
+  oms3::ComRef head = tail.pop_front();
+
+  auto component = getComponents().find(head);
+  if (component != getComponents().end() && oms_component_fmu == component->second->getType())
+  {
+    order = component->second->getFMUInfo()->getMaxOutputDerivativeOrder();
+    if (order > 0)
+      return dynamic_cast<ComponentFMUCS*>(component->second)->getRealOutputDerivative(tail, value);
+  }
+
+  return oms_status_error;
+}
+
+oms_status_enu_t oms3::SystemWC::setRealInputDerivative(const ComRef& cref, double* value, unsigned int order)
+{
+  if (!value)
+    return oms_status_ok;
+
+  switch (getModel()->getModelState())
+  {
+    case oms_modelState_instantiated:
+    case oms_modelState_initialization:
+    case oms_modelState_simulation:
+      break;
+    default:
+      return logError_ModelInWrongState(getModel());
+  }
+
+  oms3::ComRef tail(cref);
+  oms3::ComRef head = tail.pop_front();
+
+  auto component = getComponents().find(head);
+  if (component != getComponents().end() && oms_component_fmu == component->second->getType())
+  {
+    if (order > 0)
+      return dynamic_cast<ComponentFMUCS*>(component->second)->setRealInputDerivative(tail, value, order);
+  }
+
+  return oms_status_error;
+}
+
 oms_status_enu_t oms3::SystemWC::updateInputs(oms3::DirectedGraph& graph)
 {
   CallClock callClock(clock);
@@ -234,6 +314,17 @@ oms_status_enu_t oms3::SystemWC::updateInputs(oms3::DirectedGraph& graph)
         double value = 0.0;
         if (oms_status_ok != getReal(graph.getNodes()[output].getName(), value)) return oms_status_error;
         if (oms_status_ok != setReal(graph.getNodes()[input].getName(), value)) return oms_status_error;
+
+        // derivatives
+        if (derBuffer)
+        {
+          unsigned int order;
+          if (oms_status_ok == getRealOutputDerivative(graph.getNodes()[output].getName(), derBuffer, order))
+          {
+            //logInfo(graph.getNodes()[output].getName() + " -> " + graph.getNodes()[input].getName() + ": " + std::to_string(derBuffer[0]));
+            if (oms_status_ok != setRealInputDerivative(graph.getNodes()[input].getName(), derBuffer, order)) return oms_status_error;
+          }
+        }
       }
       else if (graph.getNodes()[input].getType() == oms_signal_type_integer)
       {

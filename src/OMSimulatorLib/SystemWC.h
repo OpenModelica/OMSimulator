@@ -65,6 +65,10 @@ namespace oms3
     oms_status_enu_t updateInputs(DirectedGraph& graph);
     oms_status_enu_t solveAlgLoop(DirectedGraph& graph, const std::vector< std::pair<int, int> >& SCC);
 
+    oms_status_enu_t getRealOutputDerivative(const ComRef& cref, double*& value, unsigned int& order);
+    oms_status_enu_t setRealInputDerivative(const ComRef& cref, double* value, unsigned int order);
+    unsigned int getMaxOutputDerivativeOrder();
+
   protected:
     SystemWC(const ComRef& cref, Model* parentModel, System* parentSystem);
 
@@ -77,6 +81,8 @@ namespace oms3
     double time;
     double stepSize = 1e-1;
     double tolerance = 1e-4;
+
+    double* derBuffer = NULL;
   };
 }
 

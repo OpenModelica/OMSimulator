@@ -55,10 +55,12 @@ namespace oms3
     static bool SuppressPath() {return GetInstance().suppressPath;}
     static void SuppressPath(bool value) {GetInstance().suppressPath = value;}
     static bool ProgressBar() {return GetInstance().progressBar;}
+    static bool InputDerivatives() {return GetInstance().inputDerivatives;}
 
   private:
     bool suppressPath = false;
     bool progressBar = false;
+    bool inputDerivatives = false;
   };
 }
 
