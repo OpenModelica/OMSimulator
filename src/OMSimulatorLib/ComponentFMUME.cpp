@@ -525,6 +525,18 @@ oms_status_enu_t oms3::ComponentFMUME::reset()
   return oms_status_ok;
 }
 
+oms_status_enu_t oms3::ComponentFMUME::getBoolean(const fmi2_value_reference_t& vr, bool& value)
+{
+  CallClock callClock(clock);
+
+  int value_;
+  if (fmi2_status_ok != fmi2_import_get_boolean(fmu, &vr, 1, &value_))
+    return oms_status_error;
+
+  value = value_ ? true : false;
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms3::ComponentFMUME::getBoolean(const ComRef& cref, bool& value)
 {
   CallClock callClock(clock);
@@ -542,11 +554,16 @@ oms_status_enu_t oms3::ComponentFMUME::getBoolean(const ComRef& cref, bool& valu
     return oms_status_error;
 
   fmi2_value_reference_t vr = allVariables[j].getValueReference();
-  int value_;
-  if (fmi2_status_ok != fmi2_import_get_boolean(fmu, &vr, 1, &value_))
+  return getBoolean(vr, value);
+}
+
+oms_status_enu_t oms3::ComponentFMUME::getInteger(const fmi2_value_reference_t& vr, int& value)
+{
+  CallClock callClock(clock);
+
+  if (fmi2_status_ok != fmi2_import_get_integer(fmu, &vr, 1, &value))
     return oms_status_error;
 
-  value = value_ ? true : false;
   return oms_status_ok;
 }
 
@@ -567,8 +584,20 @@ oms_status_enu_t oms3::ComponentFMUME::getInteger(const ComRef& cref, int& value
     return oms_status_error;
 
   fmi2_value_reference_t vr = allVariables[j].getValueReference();
-  if (fmi2_status_ok != fmi2_import_get_integer(fmu, &vr, 1, &value))
+  return getInteger(vr, value);
+}
+
+oms_status_enu_t oms3::ComponentFMUME::getReal(const fmi2_value_reference_t& vr, double& value)
+{
+  CallClock callClock(clock);
+
+  if (fmi2_status_ok != fmi2_import_get_real(fmu, &vr, 1, &value))
     return oms_status_error;
+
+  if (std::isnan(value))
+    return logError("getReal returned NAN");
+  if (std::isinf(value))
+    return logError("getReal returned +/-inf");
 
   return oms_status_ok;
 }
@@ -590,14 +619,7 @@ oms_status_enu_t oms3::ComponentFMUME::getReal(const ComRef& cref, double& value
     return oms_status_error;
 
   fmi2_value_reference_t vr = allVariables[j].getValueReference();
-  if (fmi2_status_ok != fmi2_import_get_real(fmu, &vr, 1, &value))
-    return oms_status_error;
-
-  if (std::isnan(value))
-    return logError("getReal returned NAN");
-  if (std::isinf(value))
-    return logError("getReal returned +/-inf");
-  return oms_status_ok;
+  return getReal(vr, value);
 }
 
 oms_status_enu_t oms3::ComponentFMUME::setBoolean(const ComRef& cref, bool value)
@@ -740,22 +762,23 @@ oms_status_enu_t oms3::ComponentFMUME::updateSignals(ResultWriter& resultWriter)
   {
     unsigned int ID = it.first;
     Variable& var = allVariables[it.second];
+    fmi2_value_reference_t vr = var.getValueReference();
     SignalValue_t value;
     if (var.isTypeReal())
     {
-        if (oms_status_ok != getReal(var.getCref(), value.realValue))
+      if (oms_status_ok != getReal(vr, value.realValue))
         return logError("failed to fetch variable " + std::string(var.getCref()));
       resultWriter.updateSignal(ID, value);
     }
     else if (var.isTypeInteger())
     {
-      if (oms_status_ok != getInteger(var.getCref(), value.intValue))
+      if (oms_status_ok != getInteger(vr, value.intValue))
         return logError("failed to fetch variable " + std::string(var.getCref()));
       resultWriter.updateSignal(ID, value);
     }
     else if (var.isTypeBoolean())
     {
-      if (oms_status_ok != getBoolean(var.getCref(), value.boolValue))
+      if (oms_status_ok != getBoolean(vr, value.boolValue))
         return logError("failed to fetch variable " + std::string(var.getCref()));
       resultWriter.updateSignal(ID, value);
     }
