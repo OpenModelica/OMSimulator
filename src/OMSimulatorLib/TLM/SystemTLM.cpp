@@ -46,7 +46,12 @@ oms3::SystemTLM::SystemTLM(const ComRef& cref, Model* parentModel, System* paren
 {
   logTrace();
   model = omtlm_newModel(cref.c_str());
-  omtlm_setLogLevel(model, 1);
+
+  omtlm_setLogLevel(model, TLMLogLevel::Fatal);
+  if(Log::getLoggingLevel() == 1)
+    omtlm_setLogLevel(model, TLMLogLevel::Info);
+  else if(Log::getLoggingLevel() == 2)
+    omtlm_setLogLevel(model, TLMLogLevel::Debug);
 }
 
 oms3::SystemTLM::~SystemTLM()

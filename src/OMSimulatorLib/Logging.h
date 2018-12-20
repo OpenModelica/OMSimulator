@@ -65,6 +65,7 @@ public:
 
   static void setLoggingCallback(void (*cb)(oms_message_type_enu_t type, const char* message)) {getInstance().cb = cb;}
   static oms_status_enu_t setLoggingLevel(int logLevel);
+  static const int getLoggingLevel();
 
 private:
   Log();

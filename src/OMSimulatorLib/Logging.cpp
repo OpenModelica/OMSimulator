@@ -270,7 +270,13 @@ oms_status_enu_t Log::setLoggingLevel(int logLevel)
     Warning("debug logging is not available");
 #endif
 
-return oms_status_ok;
+  return oms_status_ok;
+}
+
+const int Log::getLoggingLevel()
+{
+  Log& log = getInstance();
+  return log.logLevel;
 }
 
 void Log::ProgressBar(double start, double stop, double value)
