@@ -29,16 +29,9 @@
  *
  */
 
-#include "Options.h"
-#include "Logging.h"
-
+#include <cstring>
 #include <iostream>
-#include <stdlib.h>
-#include <chrono>
-#include <thread>
-#include <mutex>
-#include <condition_variable>
-
+#include <Logging.h>
 #include <OMSimulator.h>
 
 extern "C"
@@ -46,179 +39,56 @@ extern "C"
   #include <OMSimulatorLua.c>
 }
 
-static int do_simulation(std::string model, std::chrono::duration<double> timeout)
+bool isLuaScript(const char* filename)
 {
-  std::mutex m;
-  std::condition_variable cv;
-  int done=0;
-  std::string phase = "Timeout occurred during instantiation";
+  size_t len = strlen(filename);
+  if (len < 5)
+    return false;
 
-  std::thread t([&m, &cv, &done, &phase, timeout]()
-  {
-    std::unique_lock<std::mutex> l(m);
-    if (cv.wait_for(l, timeout) == std::cv_status::timeout)
-    {
-      if (!done && timeout > std::chrono::seconds(0))
-      {
-        logError(phase);
-        exit(1);
-      }
-    }
-  });
-
-  oms3_instantiate(model.c_str());
-  phase = "Timeout occurred during initialization";
-  oms3_initialize(model.c_str());
-  phase = "Timeout occurred during simulation";
-  oms3_simulate(model.c_str());
-
-  done=1;
-
-  cv.notify_one();
-  t.join();
-
-  return 0;
+  if (filename[0] != '-' &&
+      filename[len-4] == '.' &&
+      filename[len-3] == 'l' &&
+      filename[len-2] == 'u' &&
+      filename[len-1] == 'a')
+    return true;
+  return false;
 }
 
 int main(int argc, char *argv[])
 {
-  ProgramOptions options(argc, argv);
-
-  if (!options.validOptions)
-    return 1;
-
-  if (options.help)
+  for (int i=1; i<argc; ++i)
   {
-    options.printUsage();
-    return 0;
-  }
-
-  if (options.version)
-  {
-    std::cout << oms3_getVersion() << std::endl;
-    return 0;
-  }
-
-  oms3_setLoggingLevel(options.logLevel);
-
-  std::string filename = options.filename;
-  std::string type = "";
-  if (filename.length() > 4)
-    type = filename.substr(filename.length() - 4);
-  else
-  {
-    logError("Not able to process file '" + filename + "'\nUse OMSimulator --help for more information.");
-    return 1;
-  }
-
-  oms3_setLogFile(options.logfile.c_str());
-
-  if (options.workingDir != "")
-    oms3_setWorkingDirectory(options.workingDir.c_str());
-
-  if (options.tempDir != "")
-    oms3_setTempDirectory(options.tempDir.c_str());
-
-  if (type == ".fmu")
-  {
-    std::string modelName("model");
-    std::string systemName = modelName + ".root";
-    std::string fmuName = systemName + ".fmu";
-    oms_fmi_kind_enu_t kind;
-    oms_status_enu_t status;
-
-    status = oms3_extractFMIKind(filename.c_str(), &kind);
-    if (oms_status_ok != status) return logError("oms3_extractFMIKind failed");
-
-    status = oms3_newModel(modelName.c_str());
-    if (oms_status_ok != status) return logError("oms3_newModel failed");
-
-    if (kind == oms_fmi_kind_me_and_cs)
-      status = oms3_addSystem(systemName.c_str(), options.cs ? oms_system_wc : oms_system_sc);
-    else
-      status = oms3_addSystem(systemName.c_str(), (kind == oms_fmi_kind_cs) ? oms_system_wc : oms_system_sc);
-    if (oms_status_ok != status) return logError("oms3_addSystem failed");
-
-    status = oms3_addSubModel(fmuName.c_str(), filename.c_str());
-    if (oms_status_ok != status) return logError("oms3_addSubModel failed");
-
-    if (options.resultFile != "")
-      oms3_setResultFile(modelName.c_str(), options.resultFile.c_str(), 1);
-    if (options.useStartTime)
-      oms3_setStartTime(modelName.c_str(), options.startTime);
-    if (options.useStopTime)
-      oms3_setStopTime(modelName.c_str(), options.stopTime);
-    if (options.useTolerance)
-      oms3_setTolerance(systemName.c_str(), options.tolerance);
-    if (options.useIntervals)
-      oms3_setFixedStepSize(systemName.c_str(), (options.stopTime - options.startTime) / (options.intervals-1));
-    if (options.solver != "")
-      oms3_setSolver(systemName.c_str(), options.solver.c_str());
-
-    int rc = do_simulation(modelName, std::chrono::duration<double>(options.timeout));
-    oms3_terminate(modelName.c_str());
-    oms3_delete(modelName.c_str());
-    return rc;
-  }
-  else if (type == ".ssp")
-  {
-    char* cref;
-    oms3_import(filename.c_str(), &cref);
-
-    if (options.resultFile != "")
-      oms3_setResultFile(cref, options.resultFile.c_str(), 1);
-    if (options.useStartTime)
-      oms3_setStartTime(cref, options.startTime);
-    if (options.useStopTime)
-      oms3_setStopTime(cref, options.stopTime);
-    if (options.useTolerance)
-      logWarning("Ignoring option '--tolerance'");
-    if (options.useIntervals)
-      logWarning("Ignoring option '--interval'");
-    if (options.solver != "")
-      logWarning("Ignoring option '--solver'");
-
-    int rc = do_simulation(std::string(cref), std::chrono::duration<double>(options.timeout));
-    oms3_terminate(cref);
-    oms3_delete(cref);
-    return rc;
-  }
-  else if (type == ".lua")
-  {
-    if (options.resultFile != "")
-      logWarning("Ignoring option '--resultFile'");
-    if (options.useStartTime)
-      logWarning("Ignoring option '--startTime'");
-    if (options.useStopTime)
-      logWarning("Ignoring option '--stopTime'");
-    if (options.useTolerance)
-      logWarning("Ignoring option '--tolerance'");
-    if (options.useIntervals)
-      logWarning("Ignoring option '--interval'");
-    if (options.solver != "")
-      logWarning("Ignoring option '--solver'");
-
-    lua_State *L = luaL_newstate();
-    luaL_openlibs(L);
-    luaopen_OMSimulatorLua(L);
-    if (luaL_loadfile(L, filename.c_str()))
+    if (0 == strcmp(argv[i], "--help") || 0 == strcmp(argv[i], "-h"))
     {
-      std::cout << "FATAL ERROR: luaL_loadfile() failed: " << lua_tostring(L, -1) << std::endl;
-      return 1;
+      logInfo("Usage: OMSimulator [Options|Lua script]");
+      oms3_setCommandLineOption(argv[i]);
+      return 0;
     }
-
-    if (lua_pcall(L, 0, 0, 0))
-    {
-      std::cout << "FATAL ERROR: lua_pcall() failed: " << lua_tostring(L, -1) << std::endl;
-      return 1;
-    }
-
-    lua_close(L);
   }
-  else
+
+  for (int i=1; i<argc; ++i)
   {
-    logError("Not able to process file '" + filename + "'\nUse OMSimulator --help for more information.");
-    return 1;
+    if (isLuaScript(argv[i]))
+    {
+      lua_State *L = luaL_newstate();
+      luaL_openlibs(L);
+      luaopen_OMSimulatorLua(L);
+      if (luaL_loadfile(L, argv[i]))
+      {
+        logError(lua_tostring(L, -1));
+        return 1;
+      }
+
+      if (lua_pcall(L, 0, 0, 0))
+      {
+        logError(lua_tostring(L, -1));
+        return 1;
+      }
+
+      lua_close(L);
+    }
+    else if (oms_status_ok != oms3_setCommandLineOption(argv[i]))
+      return 1;
   }
 
   return 0;
