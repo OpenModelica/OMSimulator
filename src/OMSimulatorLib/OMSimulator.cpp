@@ -43,8 +43,8 @@
 #include "Scope.h"
 #include "System.h"
 #if !defined(NO_TLM)
-#include "SystemTLM.h"
-#include "TLMBusConnector.h"
+  #include "SystemTLM.h"
+  #include "TLMBusConnector.h"
 #endif
 #include "Types.h"
 #include "Version.h"
@@ -52,6 +52,12 @@
 #include <miniunz.h>
 #include <pugixml.hpp>
 #include <string>
+
+#include <iostream>
+#include <chrono>
+#include <thread>
+#include <mutex>
+#include <condition_variable>
 
 /* ************************************ */
 /* oms3                                 */
@@ -871,6 +877,107 @@ oms_status_enu_t oms3_reset(const char* cref_)
     return logError_ModelNotInScope(cref);
 
   return model->reset();
+}
+
+static int do_simulation(std::string model, std::chrono::duration<double> timeout)
+{
+  std::mutex m;
+  std::condition_variable cv;
+  int done=0;
+  std::string phase = "Timeout occurred during instantiation";
+
+  std::thread t([&m, &cv, &done, &phase, timeout]()
+  {
+    std::unique_lock<std::mutex> l(m);
+    if (cv.wait_for(l, timeout) == std::cv_status::timeout)
+    {
+      if (!done && timeout > std::chrono::seconds(0))
+      {
+        logError(phase);
+        exit(1);
+      }
+    }
+  });
+
+  oms3_instantiate(model.c_str());
+  phase = "Timeout occurred during initialization";
+  oms3_initialize(model.c_str());
+  phase = "Timeout occurred during simulation";
+  oms3_simulate(model.c_str());
+
+  done=1;
+
+  cv.notify_one();
+  t.join();
+
+  return 0;
+}
+
+oms_status_enu_t oms3_RunFile(const char* filename_)
+{
+  oms_status_enu_t status;
+  std::string filename(filename_);
+  std::string type = "";
+  if (filename.length() > 4)
+    type = filename.substr(filename.length() - 4);
+  else
+    return logError("Not able to process file '" + filename + "'\nUse OMSimulator --help for more information.");
+
+  if (type == ".fmu")
+  {
+    std::string modelName("model");
+    std::string systemName = modelName + ".root";
+    std::string fmuName = systemName + ".fmu";
+    oms_fmi_kind_enu_t kind;
+
+    status = oms3_extractFMIKind(filename.c_str(), &kind);
+    if (oms_status_ok != status) return logError("oms3_extractFMIKind failed");
+
+    status = oms3_newModel(modelName.c_str());
+    if (oms_status_ok != status) return logError("oms3_newModel failed");
+
+    if (kind == oms_fmi_kind_me_and_cs)
+      status = oms3_addSystem(systemName.c_str(), oms3::Flags::DefaultModeIsCS() ? oms_system_wc : oms_system_sc);
+    else
+      status = oms3_addSystem(systemName.c_str(), (kind == oms_fmi_kind_cs) ? oms_system_wc : oms_system_sc);
+    if (oms_status_ok != status) return logError("oms3_addSystem failed");
+
+    status = oms3_addSubModel(fmuName.c_str(), filename.c_str());
+    if (oms_status_ok != status) return logError("oms3_addSubModel failed");
+
+    if (oms3::Flags::ResultFile() != "<default>")
+      oms3_setResultFile(modelName.c_str(), oms3::Flags::ResultFile().c_str(), 1);
+    oms3_setStartTime(modelName.c_str(), oms3::Flags::StartTime());
+    oms3_setStopTime(modelName.c_str(), oms3::Flags::StopTime());
+    oms3_setTolerance(modelName.c_str(), oms3::Flags::Tolerance());
+    oms3_setFixedStepSize(systemName.c_str(), (oms3::Flags::StopTime() - oms3::Flags::StartTime()) / (oms3::Flags::Intervals()-1));
+    oms3_setSolver(systemName.c_str(), oms3::Flags::Solver().c_str());
+
+    status = do_simulation(modelName, std::chrono::duration<double>(oms3::Flags::Timeout())) ? oms_status_error : oms_status_ok;
+    oms3_terminate(modelName.c_str());
+    oms3_delete(modelName.c_str());
+    return status;
+  }
+  else if (type == ".ssp")
+  {
+    char* cref;
+    oms3_import(filename.c_str(), &cref);
+
+    if (oms3::Flags::ResultFile() != "<default>")
+      oms3_setResultFile(cref, oms3::Flags::ResultFile().c_str(), 1);
+    oms3_setStartTime(cref, oms3::Flags::StartTime());
+    oms3_setStopTime(cref, oms3::Flags::StopTime());
+    oms3_setTolerance(cref, oms3::Flags::Tolerance());
+
+    status = do_simulation(std::string(cref), std::chrono::duration<double>(oms3::Flags::Timeout())) ? oms_status_error : oms_status_ok;
+    oms3_terminate(cref);
+    oms3_delete(cref);
+    return status;
+  }
+  else
+    return logError("Not able to process file '" + filename + "'\nUse OMSimulator --help for more information.");
+
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms3_terminate(const char* cref_)
