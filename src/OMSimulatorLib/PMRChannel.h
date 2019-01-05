@@ -72,7 +72,7 @@ namespace oms2
     void write(T v)
     {
       logTrace();
-      while (is_produced_.load()) std::this_thread::yield;
+      while (is_produced_.load()) std::this_thread::yield();
       switch (rt_) {
         case RateTransition::FASTTOSLOW:
           v_ = v;
@@ -99,7 +99,7 @@ namespace oms2
     {
       logTrace();
       T v;
-      while (!is_produced_.load()) std::this_thread::yield;
+      while (!is_produced_.load()) std::this_thread::yield();
       switch (rt_) {
         case RateTransition::FASTTOSLOW:
           v = v_;
