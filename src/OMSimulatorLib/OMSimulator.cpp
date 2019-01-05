@@ -1357,8 +1357,8 @@ oms_status_enu_t oms3_extractFMIKind(const char* filename, oms_fmi_kind_enu_t* k
     return logError("loading \"" + xml_file + "\" failed (" + std::string(result.description()) + ")");
   const pugi::xml_node node = doc.document_element(); // ssd:SystemStructureDescription
 
-  bool cs = (node.child("CoSimulation").attribute("modelIdentifier").as_string() != "");
-  bool me = (node.child("ModelExchange").attribute("modelIdentifier").as_string() != "");
+  bool cs = (std::string(node.child("CoSimulation").attribute("modelIdentifier").as_string()) != "");
+  bool me = (std::string(node.child("ModelExchange").attribute("modelIdentifier").as_string()) != "");
 
   if (me && cs)
     *kind = oms_fmi_kind_me_and_cs;

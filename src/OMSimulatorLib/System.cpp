@@ -513,13 +513,13 @@ oms_status_enu_t oms3::System::importFromSSD(const pugi::xml_node& node)
 
           // lochel: I guess that can somehow be improved
           oms_system_enu_t systemType = oms_system_tlm;
-          if (itElements->child(oms2::ssd::ssd_simulation_information).child("VariableStepSolver").attribute("description").as_string() != "")
+          if (std::string(itElements->child(oms2::ssd::ssd_simulation_information).child("VariableStepSolver").attribute("description").as_string()) != "")
             systemType = oms_system_sc;
-          if (itElements->child(oms2::ssd::ssd_simulation_information).child("FixedStepSolver").attribute("description").as_string() != "")
+          if (std::string(itElements->child(oms2::ssd::ssd_simulation_information).child("FixedStepSolver").attribute("description").as_string()) != "")
             systemType = oms_system_sc;
-          if (itElements->child(oms2::ssd::ssd_simulation_information).child("VariableStepMaster").attribute("description").as_string() != "")
+          if (std::string(itElements->child(oms2::ssd::ssd_simulation_information).child("VariableStepMaster").attribute("description").as_string()) != "")
             systemType = oms_system_wc;
-          if (itElements->child(oms2::ssd::ssd_simulation_information).child("FixedStepMaster").attribute("description").as_string() != "")
+          if (std::string(itElements->child(oms2::ssd::ssd_simulation_information).child("FixedStepMaster").attribute("description").as_string()) != "")
             systemType = oms_system_wc;
 
           if (oms_status_ok != addSubSystem(systemCref, systemType))
