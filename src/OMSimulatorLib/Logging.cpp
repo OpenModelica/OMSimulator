@@ -184,6 +184,12 @@ oms_status_enu_t Log::Error(const std::string& msg, const std::string& function)
   return oms_status_error;
 }
 
+bool Log::DebugEnabled()
+{
+  Log& log = getInstance();
+  return log.logLevel >= 1;
+}
+
 void Log::Debug(const std::string& msg)
 {
   Log& log = getInstance();
@@ -198,6 +204,12 @@ void Log::Debug(const std::string& msg)
 
   if (log.cb)
     log.cb(oms_message_debug, msg.c_str());
+}
+
+bool Log::TraceEnabled()
+{
+  Log& log = getInstance();
+  return log.logLevel >= 2;
 }
 
 void Log::Trace(const std::string& function, const std::string& file, const long line)

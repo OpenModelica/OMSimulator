@@ -59,6 +59,12 @@ void oms3::fmiLogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_l
 
 void oms3::fmi2logger(fmi2_component_environment_t env, fmi2_string_t instanceName, fmi2_status_t status, fmi2_string_t category, fmi2_string_t message, ...)
 {
+  if ((status == fmi2_status_ok || status == fmi2_status_pending) && !logDebugEnabled())
+  {
+    // When frequently called for debug logging during simulation, avoid costly formatting.
+    return;
+  }
+
   int len;
   char msg[1000];
   va_list argp;

@@ -67,6 +67,9 @@ public:
   static oms_status_enu_t setLoggingLevel(int logLevel);
   static const int getLoggingLevel();
 
+  static bool DebugEnabled();
+  static bool TraceEnabled();
+
 private:
   Log();
   ~Log();
@@ -101,9 +104,16 @@ private:
 #define logError(msg)   Log::Error(msg, __func__)
 
 #ifdef OMS_DEBUG_LOGGING
+  // In case some preparation is required
+  #define logDebugEnabled() Log::DebugEnabled()
+  #define logTraceEnabled() Log::TraceEnabled()
+
   #define logDebug(msg) Log::Debug(msg)
   #define logTrace()    Log::Trace(__FUNCTION_NAME__, __FILE__, __LINE__)
 #else
+  #define logDebugEnabled() (0)
+  #define logTraceEnabled() (0)
+
   #define logDebug(msg) ((void)0)
   #define logTrace()    ((void)0)
 #endif
