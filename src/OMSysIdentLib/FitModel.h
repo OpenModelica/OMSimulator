@@ -32,7 +32,7 @@
 #include <vector>
 #include <map>
 #include <memory>
-#include "OMSimulatorLib/OMSimulator.h"
+#include <OMSimulator.h>
 #include "ceres/ceres.h"
 
 // TODO? upper and lower bounds, confidence intervals?

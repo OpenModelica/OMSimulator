@@ -2,17 +2,19 @@ project(OMSimulator)
 
 set(CMAKE_INSTALL_RPATH "$ORIGIN/../lib/${HOST_SHORT}:$ORIGIN/")
 
-include_directories(../OMSimulatorLib)
-include_directories(../OMSysIdentLib)
-include_directories(../OMSimulatorLua)
-include_directories(${LUALibrary_INCLUDEDIR})
+include_directories(
+  ../OMSimulatorLib
+  ../OMSysIdentLib
+  ../OMSimulatorLua
+  ${LUALibrary_INCLUDEDIR})
 
-link_directories(${FMILibrary_LIBRARYDIR})
-link_directories(${LUALibrary_LIBRARYDIR})
-link_directories(${CVODELibrary_LIBRARYDIR})
-link_directories(${KINSOLLibrary_LIBRARYDIR})
-link_directories(${Boost_LIBRARY_DIRS})
-link_directories(${MINIZIP_LIBRARYDIR})
+link_directories(
+  ${FMILibrary_LIBRARYDIR}
+  ${LUALibrary_LIBRARYDIR}
+  ${CVODELibrary_LIBRARYDIR}
+  ${KINSOLLibrary_LIBRARYDIR}
+  ${Boost_LIBRARY_DIRS}
+  ${MINIZIP_LIBRARYDIR})
 IF (OMTLM)
   link_directories(${OMTLMSIMULATORLIB_LIBRARYDIR})
 ENDIF ()
@@ -21,6 +23,7 @@ add_executable(OMSimulator main.cpp)
 
 IF (Ceres_FOUND AND OMSYSIDENT)
   add_definitions(-DWITH_OMSYSIDENT)
+  set(OMSYSIDENT_OPTION OMSysIdent_static)
 ENDIF()
 
 IF (WIN32 AND MINGW)
@@ -28,6 +31,6 @@ IF (WIN32 AND MINGW)
 ENDIF ()
 
 add_definitions(-DOMS_STATIC)
-target_link_libraries(OMSimulator OMSimulatorLib_static lua)
+target_link_libraries(OMSimulator OMSimulatorLib_static lua ${OMSYSIDENT_OPTION})
 
 install(TARGETS OMSimulator DESTINATION bin)
