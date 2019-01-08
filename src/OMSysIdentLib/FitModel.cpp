@@ -32,8 +32,8 @@
 #include <chrono>
 
 #include "FitModel.h"
-#include "OMSimulatorLib/OMSimulator.h"
-#include "OMSimulatorLib/Logging.h"
+#include <OMSimulator.h>
+#include <Logging.h>
 
 #include "ceres/ceres.h"
 #include "glog/logging.h"

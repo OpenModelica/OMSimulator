@@ -186,4 +186,3 @@ IF (Ceres_FOUND AND OMSYSIDENT)
   add_subdirectory(src/OMSysIdentLib)
 ENDIF()
 
-ADD_DEPENDENCIES(OMSimulator OMSimulatorLib)

@@ -4,16 +4,17 @@ set(CMAKE_INSTALL_RPATH "$ORIGIN/../lib/${HOST_SHORT}:$ORIGIN/")
 
 include_directories(
   ${LUALibrary_INCLUDEDIR}
-  ${CMAKE_SOURCE_DIR}/src/OMSimulatorLib
-  ${CMAKE_SOURCE_DIR}/src/OMSysIdentLib
+  ../OMSimulatorLib
+  ../OMSysIdentLib
 )
 
-link_directories(${Boost_LIBRARY_DIRS})
-link_directories(${FMILibrary_LIBRARYDIR})
-link_directories(${LUALibrary_LIBRARYDIR})
-link_directories(${CVODELibrary_LIBRARYDIR})
-link_directories(${KINSOLLibrary_LIBRARYDIR})
-link_directories(${OMTLMSIMULATORLIB_LIBRARYDIR})
+link_directories(
+  ${Boost_LIBRARY_DIRS}
+  ${FMILibrary_LIBRARYDIR}
+  ${LUALibrary_LIBRARYDIR}
+  ${CVODELibrary_LIBRARYDIR}
+  ${KINSOLLibrary_LIBRARYDIR}
+  ${OMTLMSIMULATORLIB_LIBRARYDIR})
 
 IF (Ceres_FOUND AND OMSYSIDENT)
   add_definitions(-DWITH_OMSYSIDENT)
@@ -30,3 +31,5 @@ ELSEIF (WIN32 AND MINGW)
 ELSEIF (APPLE)
   target_link_libraries(OMSimulatorLua lua)
 ENDIF ()
+
+install(TARGETS OMSimulatorLua DESTINATION lib/${HOST_SHORT})

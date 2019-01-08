@@ -15,23 +15,15 @@ IF (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.1)
   ENDIF()
 ENDIF()
 
-# Export all symbols from the DLL on Windows
-IF (WIN32 AND MSVC)
-  set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-  add_definitions(-DBOOST_ALL_DYN_LINK)
-ENDIF()
-
 include_directories(
-  ${CMAKE_SOURCE_DIR}
-  ${CMAKE_SOURCE_DIR}/src
-  ${CMAKE_SOURCE_DIR}/src/OMSimulatorLib
+  ../OMSimulatorLib
   ${FMILibrary_INCLUDEDIR}
   ${CERES_INCLUDE_DIRS}
   ${GLOG_INCLUDEDIR}
   ${GFLAGS_INCLUDEDIR}
 )
+
 link_directories(
-  ${LUALibrary_LIBRARYDIR}
   ${FMILibrary_LIBRARYDIR}
   ${Boost_LIBRARY_DIRS}
   ${CVODELibrary_LIBRARYDIR}
@@ -41,21 +33,21 @@ link_directories(
 )
 
 set(OMSYSIDENTLIB_SOURCES OMSysIdent.cpp FitModel.cpp)
-set(OMSYSIDENTLIB_LIBRARIES OMSimulatorLib ${FMILibrary_LIBRARY} sundials_cvode sundials_nvecserial ${CMAKE_DL_LIBS} ${Boost_LIBRARIES} ${CERES_LIBRARIES} ${OMTLM_LINKFLAGS})
+set(OMSYSIDENTLIB_LIBRARIES OMSimulatorLib ${FMILibrary_LIBRARY} sundials_cvode sundials_nvecserial ${CMAKE_DL_LIBS} ${Boost_LIBRARIES} ${OMTLM_LINKFLAGS})
 
 # Static library, to be linked into the OMSimulator executable
-add_library(OMSysIdent STATIC ${OMSYSIDENTLIB_SOURCES})
+add_library(OMSysIdent_static STATIC ${OMSYSIDENTLIB_SOURCES})
+set_property(TARGET OMSysIdent_static PROPERTY CXX_STANDARD 11)
+set_target_properties(OMSysIdent_static PROPERTIES POSITION_INDEPENDENT_CODE ON)
+set_target_properties(OMSysIdent_static PROPERTIES COMPILE_DEFINITIONS "OMS_STATIC")
+target_link_libraries(OMSysIdent_static ${CERES_LIBRARIES})
+
+add_library(OMSysIdent SHARED ${OMSYSIDENTLIB_SOURCES})
 set_property(TARGET OMSysIdent PROPERTY CXX_STANDARD 11)
 set_target_properties(OMSysIdent PROPERTIES POSITION_INDEPENDENT_CODE ON)
-target_link_libraries(OMSysIdent ${OMSYSIDENTLIB_LIBRARIES})
+target_link_libraries(OMSysIdent ${CERES_LIBRARIES} OMSimulatorLib)
+
 install(TARGETS OMSysIdent DESTINATION lib)
-
-# CMake object library, to be linked into the OMSimulatorLib shared library
-# (workaround since simply linking the static library into the shared library doesn't work as intended)
-add_library(OMSysIdentObj OBJECT ${OMSYSIDENTLIB_SOURCES})
-set_property(TARGET OMSysIdentObj PROPERTY CXX_STANDARD 11)
-set_target_properties(OMSysIdentObj PROPERTIES POSITION_INDEPENDENT_CODE ON)
-
 install(FILES OMSysIdent.h DESTINATION include)
 
 #############
@@ -69,7 +61,7 @@ enable_testing()
 # for showing the stdout output for all test cases, alternatively, for a specific test,
 # make test ARGS="-V -R some-specific-test"
 
-set(OMSYSIDENTTEST_LIBRARIES OMSysIdent ${OMSYSIDENTLIB_LIBRARIES})
+set(OMSYSIDENTTEST_LIBRARIES OMSysIdent_static ${OMSYSIDENTLIB_LIBRARIES})
 
 add_executable(test_HelloWorld_cs_Fit test_HelloWorld_cs_Fit.c)
 target_link_libraries(test_HelloWorld_cs_Fit ${OMSYSIDENTTEST_LIBRARIES})

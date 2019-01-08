@@ -35,6 +35,25 @@
 #include <stddef.h>
 #include "Types.h"
 
+/* define OMSysIdent_EXPORTS *only* when building the DLL */
+#if defined(OMS_STATIC)
+  #define OMSAPI
+  #define OMSCALL
+#else
+  #if defined(_MSC_VER) || defined(__MINGW32__)
+    #ifdef OMSysIdent_EXPORTS
+      #define OMSAPI __declspec(dllexport)
+      #define OMSCALL __cdecl
+    #else
+      #define OMSAPI __declspec(dllimport)
+      #define OMSCALL __cdecl
+    #endif
+  #else
+    #define OMSAPI
+    #define OMSCALL
+  #endif
+#endif
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -49,7 +68,7 @@ typedef enum {
   omsi_simodelstate_convergence,    //!< After omsi_solve if Ceres minimizer returned with ceres::TerminationType::CONVERGENCE
   omsi_simodelstate_no_convergence, //!< After omsi_solve if Ceres minimizer returned with ceres::TerminationType::NO_CONVERGENCE
   omsi_simodelstate_failure         //!< After omsi_solve if Ceres minimizer returned with ceres::TerminationType::FAILURE
-} omsi_simodelstate_t;
+}omsi_simodelstate_t;
 
 /**
  * \brief Creates an empty model for parameter estimation.
@@ -57,14 +76,14 @@ typedef enum {
  * \param ident   [in] Name of the model instance
  * @return SysIdent model instance as opaque pointer.
  */
-void* omsi_newSysIdentModel(const char* ident);
+OMSAPI void* OMSCALL omsi_newSysIdentModel(const char* ident);
 
 /**
  * \brief Unloads a model.
  *
  * @param simodel [inout] SysIdent model as opaque pointer.
  */
-void omsi_freeSysIdentModel(void* simodel);
+OMSAPI void OMSCALL omsi_freeSysIdentModel(void* simodel);
 
 /**
  * \brief Initializes SysIdent model.
@@ -79,7 +98,7 @@ void omsi_freeSysIdentModel(void* simodel);
  * @nMeasurmentvars  [in] Number of observed measurement variables.
  * @return Error status.
  */
-oms_status_enu_t omsi_initialize(void* simodel, size_t nSeries,
+OMSAPI oms_status_enu_t OMSCALL omsi_initialize(void* simodel, size_t nSeries,
   const double* time, size_t nTime,
   char const* const* inputvars, size_t nInputvars,
   char const* const* measurementvars, size_t nMeasurementvars);
@@ -89,7 +108,7 @@ oms_status_enu_t omsi_initialize(void* simodel, size_t nSeries,
  *
  * @param simodel [in] SysIdent model as opaque pointer.
  */
-oms_status_enu_t omsi_describe(void* simodel);
+OMSAPI oms_status_enu_t OMSCALL omsi_describe(void* simodel);
 
 /**
  * \brief Add measurement values for a fitting variable.
@@ -101,7 +120,7 @@ oms_status_enu_t omsi_describe(void* simodel);
  * @param nValues [in] Length of values array.
  * @return Error status.
  */
-oms_status_enu_t omsi_addMeasurement(void* simodel, size_t iSeries, const char* var, const double* values, size_t nValues);
+OMSAPI oms_status_enu_t OMSCALL omsi_addMeasurement(void* simodel, size_t iSeries, const char* var, const double* values, size_t nValues);
 // Alternatively??
 // void omsi_addMeasurementSeries(void *simodel, int iseries,
 //   double const* const* inputs, size_t dim1Inputs, size_t dim2Inputs,
@@ -120,7 +139,7 @@ oms_status_enu_t omsi_addMeasurement(void* simodel, size_t iSeries, const char* 
  * @param nValues [in] Length of values array.
  * @return Error status.
  */
-oms_status_enu_t omsi_addInput(void* simodel, const char* var, const double* values, size_t nValues);
+OMSAPI oms_status_enu_t OMSCALL omsi_addInput(void* simodel, const char* var, const double* values, size_t nValues);
 
 /**
  * \brief Add parameter that should be estimated.
@@ -143,7 +162,7 @@ oms_status_enu_t omsi_addParameter(void* simodel, const char* var, double startv
  * @param estimatedvalue [out] Estimated value of parameter.
  * @return Error status.
  */
-oms_status_enu_t omsi_getParameter(void* simodel, const char* var, double* startvalue, double* estimatedvalue);
+OMSAPI oms_status_enu_t OMSCALL omsi_getParameter(void* simodel, const char* var, double* startvalue, double* estimatedvalue);
 
 /**
  * \brief Solve parameter estimation problem.
@@ -153,7 +172,7 @@ oms_status_enu_t omsi_getParameter(void* simodel, const char* var, double* start
  *                        Supported report types (NULL or "" denotes no output): {NULL, "", "BriefReport", "FullReport"}.
  * @return Error status.
  */
-oms_status_enu_t omsi_solve(void* simodel, const char* reporttype);
+OMSAPI oms_status_enu_t OMSCALL omsi_solve(void* simodel, const char* reporttype);
 
 /**
  * \brief Set Ceres solver option 'Solver::Options::max_num_iterations'.
@@ -162,7 +181,7 @@ oms_status_enu_t omsi_solve(void* simodel, const char* reporttype);
  * @param max_num_iterations [in] Maximum number of iterations for which the solver should run (default: 25).
  * @return Error status.
  */
-oms_status_enu_t omsi_setOptions_max_num_iterations(void* simodel, size_t max_num_iterations);
+OMSAPI oms_status_enu_t OMSCALL omsi_setOptions_max_num_iterations(void* simodel, size_t max_num_iterations);
 
 /**
  * \brief Get state of SysIdent model object.
@@ -171,7 +190,7 @@ oms_status_enu_t omsi_setOptions_max_num_iterations(void* simodel, size_t max_nu
  * @param state [out] State of SysIdent model.
  * @return Error status.
  */
-oms_status_enu_t omsi_getState(void* simodel, omsi_simodelstate_t* state);
+OMSAPI oms_status_enu_t OMSCALL omsi_getState(void* simodel, omsi_simodelstate_t* state);
 
 /**
  * \brief TODO? Provide convenience function to "Load reference measurement data from file"?.
