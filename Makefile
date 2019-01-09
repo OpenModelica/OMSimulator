@@ -147,8 +147,6 @@ OMSimulatorCore:
 	@echo "# make OMSimulatorCore"
 	@echo
 	@$(MAKE) -C $(BUILD_DIR) install
-	test ! "$(detected_OS)" = Darwin || ($(CROSS_TRIPLE_DASH)install_name_tool -add_rpath "@loader_path/../../../../lib/$(HOST_SHORT_OMC)" $(TOP_INSTALL_DIR)/bin/OMSimulator)
-	test ! "$(detected_OS)" = Darwin || ($(CROSS_TRIPLE_DASH)install_name_tool -add_rpath "@loader_path/../lib/$(HOST_SHORT_OMC)" $(TOP_INSTALL_DIR)/bin/OMSimulator)
 
 ifeq ($(OMTLM),ON)
 OMTLMSimulator: RegEx
@@ -211,7 +209,7 @@ config-fmil: 3rdParty/FMIL/$(INSTALL_DIR)/lib/libfmilib.a
 	cd 3rdParty/FMIL/$(BUILD_DIR) && $(CMAKE) $(CMAKE_TARGET) ../.. -DFMILIB_INSTALL_PREFIX=../../$(INSTALL_DIR) -DFMILIB_BUILD_TESTS:BOOL=0 -DFMILIB_GENERATE_DOXYGEN_DOC:BOOL=0 -DFMILIB_BUILD_STATIC_LIB:BOOL=1 -DFMILIB_BUILD_SHARED_LIB:BOOL=0 -DBUILD_TESTING:BOOL=0 -DFMILIB_BUILD_BEFORE_TESTS:BOOL=0 $(FMIL_FLAGS)
 
 config-lua: 3rdParty/Lua/$(INSTALL_DIR)/liblua.a
-3rdParty/Lua/$(INSTALL_DIR)/liblua.a: 
+3rdParty/Lua/$(INSTALL_DIR)/liblua.a:
 	@echo
 	@echo "# config Lua"
 	@echo
@@ -222,13 +220,13 @@ config-zlib: 3rdParty/zlib/$(INSTALL_DIR)/libminizip.a
 	$(MAKE) -C 3rdParty/zlib/$(BUILD_DIR)/zlib/ install
 3rdParty/zlib/$(INSTALL_DIR)/libminizip.a: 3rdParty/zlib/$(INSTALL_DIR)/libzlibstatic.a 3rdParty/zlib/$(BUILD_DIR)/minizip/Makefile
 	$(MAKE) -C 3rdParty/zlib/$(BUILD_DIR)/minizip/ install
-3rdParty/zlib/$(BUILD_DIR)/zlib/Makefile: 
+3rdParty/zlib/$(BUILD_DIR)/zlib/Makefile:
 	@echo
 	@echo "# config zlib library"
 	@echo
 	$(MKDIR) 3rdParty/zlib/$(BUILD_DIR)/zlib
 	cd 3rdParty/zlib/$(BUILD_DIR)/zlib && $(CMAKE) $(CMAKE_TARGET) ../../../zlib-1.2.11 -DCMAKE_INSTALL_PREFIX=../../../$(INSTALL_DIR)
-3rdParty/zlib/$(BUILD_DIR)/minizip/Makefile: 
+3rdParty/zlib/$(BUILD_DIR)/minizip/Makefile:
 	@echo
 	@echo "# config zlib minizip"
 	@echo
