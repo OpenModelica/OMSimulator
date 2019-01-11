@@ -749,6 +749,10 @@ oms_status_enu_t oms3::ComponentFMUCS::setReal(const ComRef& cref, double value)
   if (!fmu || j < 0)
     return oms_status_error;
 
+  if (oms_modelState_initialization == getModel()->getModelState())
+    if (allVariables[j].isCalculated() || allVariables[j].isIndependent())
+      return logWarning("It is not allowed to provide a start value if initial=\"calculated\" or causality=\"independent\".");
+
   fmi2_value_reference_t vr = allVariables[j].getValueReference();
   if (fmi2_status_ok != fmi2_import_set_real(fmu, &vr, 1, &value))
     return oms_status_error;
