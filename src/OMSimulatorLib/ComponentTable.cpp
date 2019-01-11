@@ -169,7 +169,13 @@ oms_status_enu_t oms3::ComponentTable::exportToSSD(pugi::xml_node& node) const
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::ComponentTable::initialize()
+oms_status_enu_t oms3::ComponentTable::instantiate()
+{
+  time = getModel()->getStartTime();
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::ComponentTable::reset()
 {
   time = getModel()->getStartTime();
   return oms_status_ok;
@@ -198,7 +204,7 @@ oms_status_enu_t oms3::ComponentTable::getReal(const oms3::ComRef& cref, double&
     }
   }
 
-  logError("out of range");
+  logError("out of range (cref=" + std::string(cref) + ", time=" + std::to_string(time) + ")");
   value = 0.0;
   return oms_status_error;
 }

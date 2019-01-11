@@ -166,6 +166,8 @@ oms_status_enu_t oms3::SystemSC::importFromSSD_SimulationInformation(const pugi:
 
 oms_status_enu_t oms3::SystemSC::instantiate()
 {
+  time = getModel()->getStartTime();
+
   // there shouldn't be any substem
   for (const auto& subsystem : getSubSystems())
     if (oms_status_ok != subsystem.second->instantiate())
@@ -216,7 +218,11 @@ oms_status_enu_t oms3::SystemSC::initialize()
   clock.reset();
   CallClock callClock(clock);
 
-  time = getModel()->getStartTime();
+  if (oms_status_ok != updateDependencyGraphs())
+    return oms_status_error;
+
+  if (oms_status_ok != updateInputs(initialUnknownsGraph))
+    return oms_status_error;
 
   for (const auto& subsystem : getSubSystems())
     if (oms_status_ok != subsystem.second->initialize())
@@ -313,12 +319,6 @@ oms_status_enu_t oms3::SystemSC::initialize()
     flag = CVodeSetMaxNumSteps(solverData.cvode.mem, 1000);     // MAXIMUM NUMBER OF STEPS
     if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetMaxNumSteps() failed with flag = " + std::to_string(flag));
   }
-
-  if (oms_status_ok != updateDependencyGraphs())
-    return oms_status_error;
-
-  if (oms_status_ok != updateInputs(initialUnknownsGraph))
-    return oms_status_error;
 
   return oms_status_ok;
 }

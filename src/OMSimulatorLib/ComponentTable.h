@@ -54,10 +54,10 @@ namespace oms3
     static Component* NewComponent(const pugi::xml_node& node, System* parentSystem);
 
     oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
-    oms_status_enu_t instantiate() {return oms_status_ok;}
-    oms_status_enu_t initialize();
+    oms_status_enu_t instantiate();
+    oms_status_enu_t initialize() {return oms_status_ok;}
     oms_status_enu_t terminate() {return oms_status_ok;}
-    oms_status_enu_t reset() {return oms_status_ok;}
+    oms_status_enu_t reset();
 
     oms_status_enu_t stepUntil(double stopTime) {time = stopTime; return oms_status_ok;}
 

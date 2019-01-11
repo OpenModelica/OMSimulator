@@ -88,6 +88,8 @@ oms_status_enu_t oms3::SystemWC::importFromSSD_SimulationInformation(const pugi:
 
 oms_status_enu_t oms3::SystemWC::instantiate()
 {
+  time = getModel()->getStartTime();
+
   for (const auto& subsystem : getSubSystems())
     if (oms_status_ok != subsystem.second->instantiate())
       return oms_status_error;
@@ -118,7 +120,11 @@ oms_status_enu_t oms3::SystemWC::initialize()
   clock.reset();
   CallClock callClock(clock);
 
-  time = getModel()->getStartTime();
+  if (oms_status_ok != updateDependencyGraphs())
+    return oms_status_error;
+
+  if (oms_status_ok != updateInputs(initialUnknownsGraph))
+    return oms_status_error;
 
   for (const auto& subsystem : getSubSystems())
     if (oms_status_ok != subsystem.second->initialize())
@@ -133,12 +139,6 @@ oms_status_enu_t oms3::SystemWC::initialize()
   derBuffer = NULL;
   if (Flags::InputDerivatives())
     derBuffer = new double[getMaxOutputDerivativeOrder()];
-
-  if (oms_status_ok != updateDependencyGraphs())
-    return oms_status_error;
-
-  if (oms_status_ok != updateInputs(initialUnknownsGraph))
-    return oms_status_error;
 
   return oms_status_ok;
 }
