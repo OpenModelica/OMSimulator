@@ -43,6 +43,7 @@
 #include "SystemTLM.h"
 #include "SystemWC.h"
 #include "Types.h"
+#include <boost/filesystem.hpp>
 #include <RegEx.h>
 
 oms3::System::System(const oms3::ComRef& cref, oms_system_enu_t type, oms3::Model* parentModel, oms3::System* parentSystem)
@@ -271,6 +272,9 @@ oms_status_enu_t oms3::System::addSubModel(const oms3::ComRef& cref, const std::
   {
     if (!validCref(cref))
       return logError_AlreadyInScope(getFullCref() + cref);
+
+    if (!boost::filesystem::exists(path))
+      return logError("file does not exist: \"" + path + "\"");
 
     Component* component = NULL;
 
