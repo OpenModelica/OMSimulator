@@ -1595,7 +1595,7 @@ oms_status_enu_t oms::System::getReal(const ComRef& cref, double& value)
 
 oms_status_enu_t oms::System::setBoolean(const ComRef& cref, bool value)
 {
-  if (!getModel()->validState(oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
+  if (!getModel()->validState(oms_modelState_virgin|oms_modelState_enterInstantiation|oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
     return logError_ModelInWrongState(getModel());
 
   oms::ComRef tail(cref);
@@ -1621,7 +1621,7 @@ oms_status_enu_t oms::System::setBoolean(const ComRef& cref, bool value)
 
 oms_status_enu_t oms::System::setInteger(const ComRef& cref, int value)
 {
-  if (!getModel()->validState(oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
+  if (!getModel()->validState(oms_modelState_virgin|oms_modelState_enterInstantiation|oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
     return logError_ModelInWrongState(getModel());
 
   oms::ComRef tail(cref);
@@ -1647,7 +1647,7 @@ oms_status_enu_t oms::System::setInteger(const ComRef& cref, int value)
 
 oms_status_enu_t oms::System::setReal(const ComRef& cref, double value)
 {
-  if (!getModel()->validState(oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
+  if (!getModel()->validState(oms_modelState_virgin|oms_modelState_enterInstantiation|oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
     return logError_ModelInWrongState(getModel());
 
   oms::ComRef tail(cref);

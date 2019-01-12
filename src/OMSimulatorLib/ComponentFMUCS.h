@@ -108,9 +108,9 @@ namespace oms
     std::vector<Variable> parameters;
     std::vector<bool> exportVariables;
 
-    std::map<std::string, Option<double>> realParameters;
-    std::map<std::string, Option<int>> integerParameters;
-    std::map<std::string, Option<bool>> booleanParameters;
+    std::map<ComRef, double> realStartValues;  ///< parameters and start values defined before instantiating the FMU
+    std::map<ComRef, int> integerStartValues;  ///< parameters and start values defined before instantiating the FMU
+    std::map<ComRef, bool> booleanStartValues; ///< parameters and start values defined before instantiating the FMU
 
     std::unordered_map<unsigned int /*result file var ID*/, unsigned int /*allVariables ID*/> resultFileMapping;
 

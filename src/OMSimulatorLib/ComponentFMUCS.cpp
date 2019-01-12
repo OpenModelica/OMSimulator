@@ -204,13 +204,6 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::
   // create some special variable maps
   for (auto const& v : component->allVariables)
   {
-    if (v.isParameter() && v.isTypeReal())
-      component->realParameters[std::string(v)] = oms::Option<double>();
-    else if (v.isParameter() && v.isTypeInteger())
-      component->integerParameters[std::string(v)] = oms::Option<int>();
-    else if (v.isParameter() && v.isTypeBoolean())
-      component->booleanParameters[std::string(v)] = oms::Option<bool>();
-
     if (v.isInput())
       component->inputs.push_back(v);
     else if (v.isOutput())
@@ -432,6 +425,26 @@ oms_status_enu_t oms::ComponentFMUCS::instantiate()
   jmstatus = fmi2_import_instantiate(fmu, getCref().c_str(), fmi2_cosimulation, NULL, fmi2_false);
   if (jm_status_error == jmstatus)
     return logError_FMUCall("fmi2_import_instantiate", this);
+
+  // set start values
+  for (const auto& v : booleanStartValues)
+  {
+    if (oms_status_ok != setBoolean(v.first, v.second))
+      return logError("Failed to set start value for " + std::string(v.first));
+  }
+  booleanStartValues.clear();
+  for (const auto& v : integerStartValues)
+  {
+    if (oms_status_ok != setInteger(v.first, v.second))
+      return logError("Failed to set start value for " + std::string(v.first));
+  }
+  integerStartValues.clear();
+  for (const auto& v : realStartValues)
+  {
+    if (oms_status_ok != setReal(v.first, v.second))
+      return logError("Failed to set start value for " + std::string(v.first));
+  }
+  realStartValues.clear();
 
   // enterInitialization
   time = getModel()->getStartTime();
@@ -704,10 +717,15 @@ oms_status_enu_t oms::ComponentFMUCS::setBoolean(const ComRef& cref, bool value)
   if (!fmu || j < 0)
     return oms_status_error;
 
-  fmi2_value_reference_t vr = allVariables[j].getValueReference();
-  int value_ = value ? 1 : 0;
-  if (fmi2_status_ok != fmi2_import_set_boolean(fmu, &vr, 1, &value_))
-    return oms_status_error;
+  if (oms_modelState_virgin == getModel()->getModelState())
+    booleanStartValues[allVariables[j].getCref()] = value;
+  else
+  {
+    fmi2_value_reference_t vr = allVariables[j].getValueReference();
+    int value_ = value ? 1 : 0;
+    if (fmi2_status_ok != fmi2_import_set_boolean(fmu, &vr, 1, &value_))
+      return oms_status_error;
+  }
 
   return oms_status_ok;
 }
@@ -728,9 +746,14 @@ oms_status_enu_t oms::ComponentFMUCS::setInteger(const ComRef& cref, int value)
   if (!fmu || j < 0)
     return oms_status_error;
 
-  fmi2_value_reference_t vr = allVariables[j].getValueReference();
-  if (fmi2_status_ok != fmi2_import_set_integer(fmu, &vr, 1, &value))
-    return oms_status_error;
+  if (oms_modelState_virgin == getModel()->getModelState())
+    integerStartValues[allVariables[j].getCref()] = value;
+  else
+  {
+    fmi2_value_reference_t vr = allVariables[j].getValueReference();
+    if (fmi2_status_ok != fmi2_import_set_integer(fmu, &vr, 1, &value))
+      return oms_status_error;
+  }
 
   return oms_status_ok;
 }
@@ -751,13 +774,18 @@ oms_status_enu_t oms::ComponentFMUCS::setReal(const ComRef& cref, double value)
   if (!fmu || j < 0)
     return oms_status_error;
 
-  if (getModel()->validState(oms_modelState_initialization))
+  if (getModel()->validState(oms_modelState_virgin|oms_modelState_enterInstantiation|oms_modelState_instantiated))
     if (allVariables[j].isCalculated() || allVariables[j].isIndependent())
       return logWarning("It is not allowed to provide a start value if initial=\"calculated\" or causality=\"independent\".");
 
-  fmi2_value_reference_t vr = allVariables[j].getValueReference();
-  if (fmi2_status_ok != fmi2_import_set_real(fmu, &vr, 1, &value))
-    return oms_status_error;
+  if (oms_modelState_virgin == getModel()->getModelState())
+    realStartValues[allVariables[j].getCref()] = value;
+  else
+  {
+    fmi2_value_reference_t vr = allVariables[j].getValueReference();
+    if (fmi2_status_ok != fmi2_import_set_real(fmu, &vr, 1, &value))
+      return oms_status_error;
+  }
 
   return oms_status_ok;
 }
