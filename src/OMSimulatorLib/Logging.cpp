@@ -91,7 +91,7 @@ void Log::printStringToStream(std::ostream& stream, const std::string& type, con
   bool firstLine = true;
   std::string buffer;
   unsigned int nLines = 1;
-  while(msg[end])
+  while(end < msg.size())
   {
     if (msg[end] == '\n' || msg[end] == '\r')
     {
