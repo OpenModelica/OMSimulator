@@ -277,7 +277,7 @@ oms_status_enu_t Log::setLoggingLevel(int logLevel)
   Log& log = getInstance();
   log.logLevel = logLevel;
 
-#ifndef OMS_DEBUG_LOGGING
+#if defined(NDEBUG)
   if (logLevel > 1)
     Warning("debug logging is not available");
 #endif

@@ -145,8 +145,8 @@ typedef enum {
   oms_message_info,    ///< Informative message.
   oms_message_warning, ///< Warning; Non-critical issues.
   oms_message_error,   ///< Error; Potentially critical issues.
-  oms_message_debug,   ///< Debug message. (Only enabled if library is configured with OMS_DEBUG_LOGGING.)
-  oms_message_trace    ///< Trace message for detailed debug logging. (Only enabled if library is configured with OMS_DEBUG_LOGGING.)
+  oms_message_debug,   ///< Debug message. (only in debug configuration)
+  oms_message_trace    ///< Trace message for detailed debug logging. (only in debug configuration)
 } oms_message_type_enu_t;
 
 /**
