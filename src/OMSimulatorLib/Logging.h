@@ -38,8 +38,6 @@
 #include <fstream>
 #include <mutex>
 
-#define OMS_DEBUG_LOGGING
-
 #ifndef __FUNCTION_NAME__
   #ifdef WIN32   //WINDOWS
     #define __FUNCTION_NAME__ __FUNCTION__
@@ -103,7 +101,7 @@ private:
 #define logWarning(msg) Log::Warning(msg)
 #define logError(msg)   Log::Error(msg, __func__)
 
-#ifdef OMS_DEBUG_LOGGING
+#if !defined(NDEBUG)
   // In case some preparation is required
   #define logDebugEnabled() Log::DebugEnabled()
   #define logTraceEnabled() Log::TraceEnabled()

@@ -1,6 +1,6 @@
 @ECHO off
 REM run this on wsl using:
-REM cmd.exe /C "SET CMAKE_BUILD_TYPE=Debug && configWinVS.bat VS15-Win64"
+REM cmd.exe /C "configWinVS.bat VS15-Win64"
 
 SET OMS_VS_TARGET=%~1
 SET TARGET=%~2
@@ -91,7 +91,7 @@ cmake.exe -G %OMS_VS_VERSION% ..\.. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DFMILIB_IN
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 CD ..\..\..\..
 ECHO # build fmil
-msbuild.exe "3rdParty\FMIL\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE% /maxcpucount
+msbuild.exe "3rdParty\FMIL\build\win\INSTALL.vcxproj" /t:Build /p:configuration=Release /maxcpucount
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 EXIT /B 0
 :: -- config fmil ---------------------
@@ -127,10 +127,10 @@ cmake.exe -G %OMS_VS_VERSION% ..\..\..\minizip\ -DCMAKE_INSTALL_PREFIX=..\..\..\
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 CD ..\..\..\..\..
 ECHO # build zlib
-msbuild.exe "3rdParty\zlib\build\win\zlib\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE% /maxcpucount
+msbuild.exe "3rdParty\zlib\build\win\zlib\INSTALL.vcxproj" /t:Build /p:configuration=Release /maxcpucount
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 ECHO # build minizip
-msbuild.exe "3rdParty\zlib\build\win\minizip\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE% /maxcpucount
+msbuild.exe "3rdParty\zlib\build\win\minizip\INSTALL.vcxproj" /t:Build /p:configuration=Release /maxcpucount
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 EXIT /B 0
 :: -- build zlib ----------------------
@@ -147,7 +147,7 @@ cmake.exe -G %OMS_VS_VERSION% ..\.. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_INS
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 CD ..\..\..\..
 ECHO # build cvode
-msbuild.exe "3rdParty\cvode\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE% /maxcpucount
+msbuild.exe "3rdParty\cvode\build\win\INSTALL.vcxproj" /t:Build /p:configuration=Release /maxcpucount
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 EXIT /B 0
 :: -- config cvode --------------------
@@ -164,7 +164,7 @@ cmake.exe -G %OMS_VS_VERSION% ..\.. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_INS
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 CD ..\..\..\..
 ECHO # build kinsol
-msbuild.exe "3rdParty\kinsol\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE% /maxcpucount
+msbuild.exe "3rdParty\kinsol\build\win\INSTALL.vcxproj" /t:Build /p:configuration=Release /maxcpucount
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 EXIT /B 0
 :: -- config kinsol -------------------
@@ -180,11 +180,11 @@ IF ["%CERES%"]==["OFF"] (
   IF EXIST "3rdParty\gflags\install\win\" RMDIR /S /Q 3rdParty\gflags\install\win
   MKDIR 3rdParty\gflags\build\win
   CD 3rdParty\gflags\build\win
-  cmake.exe -G %OMS_VS_VERSION% ..\..\gflags -DCMAKE_INSTALL_PREFIX=..\..\install\win -DBUILD_TESTING:BOOL=OFF -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE%
+  cmake.exe -G %OMS_VS_VERSION% ..\..\gflags -DCMAKE_INSTALL_PREFIX=..\..\install\win -DBUILD_TESTING:BOOL=OFF -DCMAKE_BUILD_TYPE=Release
   IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
   CD ..\..\..\..
   ECHO # build gflags
-  msbuild.exe "3rdParty\gflags\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE% /maxcpucount
+  msbuild.exe "3rdParty\gflags\build\win\INSTALL.vcxproj" /t:Build /p:configuration=Release /maxcpucount
   IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 )
 EXIT /B 0
@@ -201,11 +201,11 @@ IF ["%CERES%"]==["OFF"] (
   IF EXIST "3rdParty\glog\install\win\" RMDIR /S /Q 3rdParty\glog\install\win
   MKDIR 3rdParty\glog\build\win
   CD 3rdParty\glog\build\win
-  cmake.exe -G %OMS_VS_VERSION% ..\..\glog -DCMAKE_INSTALL_PREFIX=..\..\install\win -DBUILD_TESTING:BOOL=OFF -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE%
+  cmake.exe -G %OMS_VS_VERSION% ..\..\glog -DCMAKE_INSTALL_PREFIX=..\..\install\win -DBUILD_TESTING:BOOL=OFF -DCMAKE_BUILD_TYPE=Release
   IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
   CD ..\..\..\..
   ECHO # build glog
-  msbuild.exe "3rdParty\glog\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE% /maxcpucount
+  msbuild.exe "3rdParty\glog\build\win\INSTALL.vcxproj" /t:Build /p:configuration=Release /maxcpucount
   IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 )
 EXIT /B 0
@@ -222,11 +222,11 @@ IF ["%CERES%"]==["OFF"] (
   IF EXIST "3rdParty\ceres-solver\install\win\" RMDIR /S /Q 3rdParty\ceres-solver\install\win
   MKDIR 3rdParty\ceres-solver\build\win
   CD 3rdParty\ceres-solver\build\win
-  cmake.exe -G %OMS_VS_VERSION% ..\..\ceres-solver -DCMAKE_INSTALL_PREFIX=..\..\install\win -DCXX11:BOOL=ON -DEXPORT_BUILD_DIR:BOOL=ON -DEIGEN_INCLUDE_DIR_HINTS="../../eigen/eigen" -DBUILD_EXAMPLES:BOOL=OFF -DBUILD_TESTING:BOOL=OFF -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE%
+  cmake.exe -G %OMS_VS_VERSION% ..\..\ceres-solver -DCMAKE_INSTALL_PREFIX=..\..\install\win -DCXX11:BOOL=ON -DEXPORT_BUILD_DIR:BOOL=ON -DEIGEN_INCLUDE_DIR_HINTS="../../eigen/eigen" -DBUILD_EXAMPLES:BOOL=OFF -DBUILD_TESTING:BOOL=OFF -DCMAKE_BUILD_TYPE=Release
   IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
   CD ..\..\..\..
   ECHO # build ceres-solver
-  msbuild.exe "3rdParty\ceres-solver\build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_TYPE% /maxcpucount
+  msbuild.exe "3rdParty\ceres-solver\build\win\INSTALL.vcxproj" /t:Build /p:configuration=Release /maxcpucount
   IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 )
 EXIT /B 0
@@ -285,7 +285,7 @@ ECHO # config OMSimulator
 IF EXIST "build\win\" RMDIR /S /Q build\win
 MKDIR build\win
 CD build\win
-cmake.exe -G %OMS_VS_VERSION% ..\.. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DOMFIT="%OMFIT%" -DBOOST_ROOT=%BOOST_ROOT% -DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE%
+cmake.exe -G %OMS_VS_VERSION% ..\.. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DOMFIT="%OMFIT%" -DBOOST_ROOT=%BOOST_ROOT% -DCMAKE_BUILD_TYPE:STRING=%CMAKE_BUILD_TYPE%
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 CD ..\..
 EXIT /B 0
