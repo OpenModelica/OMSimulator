@@ -353,7 +353,7 @@ oms_status_enu_t oms::Model::getAllResources(std::vector<std::string>& resources
 
 oms_status_enu_t oms::Model::setStartTime(double value)
 {
-  if (!validState(oms_modelState_virgin|oms_modelState_instantiated))
+  if (!validState(oms_modelState_virgin|oms_modelState_enterInstantiation|oms_modelState_instantiated))
     return logError_ModelInWrongState(this);
 
   startTime = value;
@@ -362,7 +362,7 @@ oms_status_enu_t oms::Model::setStartTime(double value)
 
 oms_status_enu_t oms::Model::setStopTime(double value)
 {
-  if (!validState(oms_modelState_virgin|oms_modelState_instantiated))
+  if (!validState(oms_modelState_virgin|oms_modelState_enterInstantiation|oms_modelState_instantiated))
     return logError_ModelInWrongState(this);
 
   stopTime = value;
@@ -371,20 +371,20 @@ oms_status_enu_t oms::Model::setStopTime(double value)
 
 oms_status_enu_t oms::Model::instantiate()
 {
-  if (!validState(oms_modelState_virgin))
+  if (!validState(oms_modelState_virgin|oms_modelState_enterInstantiation))
     return logError_ModelInWrongState(this);
 
   if (!system)
     return logError("Model doesn't contain a system");
 
-  modelState = oms_modelState_virgin;
+  modelState = oms_modelState_enterInstantiation;
   if (oms_status_ok != system->instantiate())
   {
     terminate();
     return oms_status_error;
   }
-
   modelState = oms_modelState_instantiated;
+
   return oms_status_ok;
 }
 
