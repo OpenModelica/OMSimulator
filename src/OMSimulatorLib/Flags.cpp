@@ -187,6 +187,12 @@ oms_status_enu_t oms3::Flags::Help(const std::string& value)
   return oms_status_ok;
 }
 
+oms_status_enu_t oms3::Flags::IgnoreInitialUnknowns(const std::string& value)
+{
+  GetInstance().ignoreInitialUnknowns = (value == "true");
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms3::Flags::Intervals(const std::string& value)
 {
   GetInstance().intervals = atoi(value.c_str());

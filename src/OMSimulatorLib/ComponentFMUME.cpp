@@ -31,6 +31,7 @@
 
 #include "ComponentFMUME.h"
 
+#include "Flags.h"
 #include "Logging.h"
 #include "Model.h"
 #include "ssd/Tags.h"
@@ -338,6 +339,18 @@ oms_status_enu_t oms3::ComponentFMUME::initializeDependencyGraph_initialUnknowns
   {
     logError(std::string(getCref()) + ": " + getPath() + " is already initialized");
     return oms_status_error;
+  }
+
+  if (Flags::IgnoreInitialUnknowns())
+  {
+    int N=initialUnknownsGraph.getNodes().size();
+    for (int i = 0; i < N; i++)
+    {
+      logDebug(std::string(getCref()) + ": " + getPath() + " initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + " depends on all");
+      for (int j = 0; j < inputs.size(); j++)
+        initialUnknownsGraph.addEdge(inputs[j].makeConnector(), initialUnknownsGraph.getNodes()[i]);
+    }
+    return oms_status_ok;
   }
 
   size_t *startIndex=NULL, *dependency=NULL;

@@ -55,6 +55,7 @@ namespace oms3
     static oms_status_enu_t SetCommandLineOption(const std::string& cmd);
 
     static bool DefaultModeIsCS() {return GetInstance().defaultModeIsCS;}
+    static bool IgnoreInitialUnknowns() {return GetInstance().ignoreInitialUnknowns;}
     static bool InputDerivatives() {return GetInstance().inputDerivatives;}
     static bool ProgressBar() {return GetInstance().progressBar;}
     static bool SuppressPath() {return GetInstance().suppressPath;}
@@ -69,6 +70,7 @@ namespace oms3
     static void SuppressPath(bool value) {GetInstance().suppressPath = value;}
 
   private:
+    bool ignoreInitialUnknowns = false;
     bool suppressPath = false;
     bool progressBar = false;
     bool inputDerivatives = false;
@@ -106,6 +108,7 @@ namespace oms3
       {"", "", "FMU or SSP file", re_filename, Flags::Filename, false},
       {"--fetchAllVars", "", "", re_default, Flags::FetchAllVars, false},
       {"--help", "-h", "Displays the help text", re_void, Flags::Help, true},
+      {"--ignoreInitialUnknowns", "", "Ignore the initial unknowns from the modelDesction.xml", re_bool, Flags::IgnoreInitialUnknowns, false},
       {"--intervals", "-i", "Specifies the number of communication points (arg > 1)", re_number, Flags::Intervals, false},
       {"--logFile", "-l", "Specifies the logfile (stdout is used if no log file is specified)", re_default, Flags::LogFile, false},
       {"--logLevel", "", "0 default, 1 default+debug, 2 default+debug+trace", re_number, Flags::LogLevel, false},
@@ -128,6 +131,7 @@ namespace oms3
     static oms_status_enu_t FetchAllVars(const std::string& value);
     static oms_status_enu_t Filename(const std::string& value);
     static oms_status_enu_t Help(const std::string& value);
+    static oms_status_enu_t IgnoreInitialUnknowns(const std::string& value);
     static oms_status_enu_t Intervals(const std::string& value);
     static oms_status_enu_t LogFile(const std::string& value);
     static oms_status_enu_t LogLevel(const std::string& value);
