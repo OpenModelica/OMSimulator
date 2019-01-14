@@ -417,8 +417,6 @@ oms_status_enu_t oms3::Model::initialize()
       return logError("Unsupported format of the result file: " + resultFilename);
     }
   }
-  else
-    logInfo("No result file will be created");
 
   if (oms_status_ok != system->initialize())
   {
@@ -453,6 +451,8 @@ oms_status_enu_t oms3::Model::initialize()
     // dump results
     emit(startTime, true);
   }
+  else
+    logInfo("No result file will be created");
 
   clock.toc();
   modelState = oms_modelState_simulation;
