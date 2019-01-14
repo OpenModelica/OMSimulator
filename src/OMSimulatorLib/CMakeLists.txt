@@ -108,8 +108,6 @@ ENDIF (OMTLM)
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Version.cpp.in" "${CMAKE_CURRENT_BINARY_DIR}/Version.cpp" @ONLY)
 list(APPEND OMSIMULATORLIB_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/Version.cpp")
 
-include_directories(".")
-include_directories("../../3rdParty/RegEx/")
 include_directories(${FMILibrary_INCLUDEDIR})
 include_directories(${CVODELibrary_INCLUDEDIR})
 include_directories(${KINSOLLibrary_INCLUDEDIR})
