@@ -68,10 +68,12 @@ ENDIF()
 
 ##########################
 # Configuring for Boost
-IF(WIN32)
-  set(Boost_USE_STATIC_LIBS ON)
+set(Boost_USE_STATIC_LIBS ON)
+IF (WIN32)
   set(Boost_USE_STATIC_RUNTIME OFF)
-ENDIF()
+ELSE ()
+  set(Boost_USE_STATIC_RUNTIME ON)
+ENDIF ()
 
 find_package(Boost 1.41.0 COMPONENTS filesystem system ${LIB_BOOST_REGEX} ${LIB_BOOST_ATOMIC} REQUIRED)
 IF(Boost_FOUND)
