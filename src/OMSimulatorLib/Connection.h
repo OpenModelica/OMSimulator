@@ -29,11 +29,10 @@
  *
  */
 
-#ifndef _OMS2_CONNECTION_H_
-#define _OMS2_CONNECTION_H_
+#ifndef _OMS_CONNECTION_H_
+#define _OMS_CONNECTION_H_
 
 #include "ComRef.h"
-#include "SignalRef.h"
 #include "Types.h"
 #include "ssd/ConnectionGeometry.h"
 
@@ -70,44 +69,6 @@ namespace oms3
     bool isEqual(const oms3::Connection& connection) const;
     bool isEqual(const oms3::ComRef& signalA, const oms3::ComRef& signalB) const;
     bool containsSignal(const oms3::ComRef& signal);
-
-  private:
-    friend bool operator==(const Connection& lhs, const Connection& rhs);
-    friend bool operator!=(const Connection& lhs, const Connection& rhs);
-  };
-
-  inline bool operator==(const Connection& lhs, const Connection& rhs) {return lhs.isEqual(rhs);}
-  inline bool operator!=(const Connection& lhs, const Connection& rhs) {return !(lhs == rhs);}
-}
-
-
-namespace oms2
-{
-  /**
-   * \brief Connection
-   */
-  class Connection : protected oms_connection_t
-  {
-  public:
-    Connection(const oms2::ComRef& parent, const oms2::SignalRef& conA, const oms2::SignalRef& conB);
-    ~Connection();
-
-    // methods to copy the object
-    Connection(const Connection& rhs);
-    Connection& operator=(const Connection& rhs);
-
-    const oms2::ComRef getParent() const {return oms2::ComRef(parent);}
-    void setParent(const oms2::ComRef& parent);
-    const oms2::SignalRef getSignalA() const {return oms2::SignalRef(conA);}
-    const oms2::SignalRef getSignalB() const {return oms2::SignalRef(conB);}
-
-    const oms3::ssd::ConnectionGeometry* getGeometry() const {return reinterpret_cast<oms3::ssd::ConnectionGeometry*>(geometry);}
-    void setGeometry(const oms3::ssd::ConnectionGeometry* newGeometry);
-
-    bool isEqual(const oms2::Connection& connection) const;
-    bool isEqual(const oms2::ComRef& parent, const oms2::SignalRef& signalA, const oms2::SignalRef& signalB) const;
-
-    void describe();
 
   private:
     friend bool operator==(const Connection& lhs, const Connection& rhs);

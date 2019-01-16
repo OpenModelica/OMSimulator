@@ -29,8 +29,8 @@
  *
  */
 
-#ifndef _OMS2_FMU_INFO_H_
-#define _OMS2_FMU_INFO_H_
+#ifndef _OMS_FMU_INFO_H_
+#define _OMS_FMU_INFO_H_
 
 #include "Types.h"
 
@@ -48,7 +48,6 @@ namespace oms3
     FMUInfo(const std::string& path, oms_fmi_kind_enu_t fmuKind);
     ~FMUInfo();
 
-    oms_status_enu_t setKind(fmi2_import_t* fmu); ///< TODO remove me! (only needed for oms2)
     oms_status_enu_t update(fmi_version_enu_t version, fmi2_import_t* fmu);
 
     std::string getPath() const {return std::string(path);}

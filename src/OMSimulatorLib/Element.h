@@ -29,11 +29,10 @@
  *
  */
 
-#ifndef _OMS2_ELEMENT_H_
-#define _OMS2_ELEMENT_H_
+#ifndef _OMS_ELEMENT_H_
+#define _OMS_ELEMENT_H_
 
 #include "ComRef.h"
-#include "SignalRef.h"
 #include "Connector.h"
 #include "BusConnector.h"
 #if !defined(NO_TLM)
@@ -69,35 +68,6 @@ namespace oms3
     void setTLMBusConnectors(oms3::TLMBusConnector **newTLMBusConnectors);
 #endif
     void setSubElements(oms3_element_t** subelements);
-
-  private:
-    // methods to copy the object
-    Element(const Element& rhs);            ///< not implemented
-    Element& operator=(const Element& rhs); ///< not implemented
-  };
-}
-
-namespace oms2
-{
-  /**
-   * \brief Element
-   */
-  class Element : protected oms_element_t
-  {
-  public:
-    Element(oms_element_type_enu_t type, const ComRef& name);
-    ~Element();
-
-    const oms_element_type_enu_t getType() const {return type;}
-    const oms2::ComRef getName() const {return oms2::ComRef(std::string(name));}
-    oms2::Connector** getConnectors() const {return reinterpret_cast<oms2::Connector**>(connectors);}
-    const oms2::ssd::ElementGeometry* getGeometry() const {return reinterpret_cast<oms2::ssd::ElementGeometry*>(geometry);}
-
-    void setName(const ComRef& name);
-    void setGeometry(const oms2::ssd::ElementGeometry* newGeometry);
-    void setConnectors(const std::vector<oms2::Connector> newConnectors);
-
-    void describe();
 
   private:
     // methods to copy the object

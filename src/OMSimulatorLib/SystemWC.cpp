@@ -70,7 +70,7 @@ oms3::System* oms3::SystemWC::NewSystem(const oms3::ComRef& cref, oms3::Model* p
 
 oms_status_enu_t oms3::SystemWC::exportToSSD_SimulationInformation(pugi::xml_node& node) const
 {
-  pugi::xml_node node_simulation_information = node.append_child(oms2::ssd::ssd_simulation_information);
+  pugi::xml_node node_simulation_information = node.append_child(oms::ssd::ssd_simulation_information);
 
   pugi::xml_node node_solver = node_simulation_information.append_child("FixedStepMaster");
   node_solver.append_attribute("description") = solverName.c_str();
@@ -165,6 +165,8 @@ oms_status_enu_t oms3::SystemWC::reset()
   for (const auto& component : getComponents())
     if (oms_status_ok != component.second->reset())
       return oms_status_error;
+
+  time = getModel()->getStartTime();
 
   return oms_status_ok;
 }

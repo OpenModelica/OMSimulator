@@ -29,11 +29,10 @@
  *
  */
 
-#ifndef _OMS2_CONNECTOR_H_
-#define _OMS2_CONNECTOR_H_
+#ifndef _OMS_CONNECTOR_H_
+#define _OMS_CONNECTOR_H_
 
 #include "ComRef.h"
-#include "SignalRef.h"
 #include "ssd/ConnectorGeometry.h"
 #include "Types.h"
 
@@ -65,12 +64,12 @@ namespace oms3
     operator std::string() const {return std::string(name);}
 
     void setName(const oms3::ComRef& name);
-    void setGeometry(const oms2::ssd::ConnectorGeometry* newGeometry);
+    void setGeometry(const oms3::ssd::ConnectorGeometry* newGeometry);
 
     const oms_causality_enu_t getCausality() const {return causality;}
     const oms_signal_type_enu_t getType() const {return type;}
     const oms3::ComRef getName() const {return oms3::ComRef(name);}
-    const oms2::ssd::ConnectorGeometry* getGeometry() const {return reinterpret_cast<oms2::ssd::ConnectorGeometry*>(geometry);}
+    const oms3::ssd::ConnectorGeometry* getGeometry() const {return reinterpret_cast<oms3::ssd::ConnectorGeometry*>(geometry);}
     Connector addPrefix(const ComRef& prefix) const;
 
     bool isInput() const { return oms_causality_input == causality; }
@@ -87,41 +86,6 @@ namespace oms3
 
   bool operator==(const Connector& v1, const Connector& v2);
   bool operator!=(const Connector& v1, const Connector& v2);
-}
-
-namespace oms2
-{
-/**
-   * \brief Connector
-   */
-class Connector : protected oms_connector_t
-{
-public:
-  /**
-     * This constructor creates a oms2::Connector without geometry information.
-     */
-    Connector(oms_causality_enu_t causality, oms_signal_type_enu_t type, const oms2::SignalRef& name);
-    /**
-     * This constructor is used if the optional SSD element giving the geometry
-     * information of the connector is initialized as well.
-     */
-    Connector(oms_causality_enu_t causality, oms_signal_type_enu_t type, const oms2::SignalRef& name, double height);
-    ~Connector();
-
-    oms_status_enu_t exportToSSD(pugi::xml_node& root) const;
-
-    // methods to copy the object
-    Connector(const Connector& rhs);
-    Connector& operator=(const Connector& rhs);
-
-    void setName(const oms2::SignalRef& name);
-    void setGeometry(const oms2::ssd::ConnectorGeometry* newGeometry);
-
-    const oms_causality_enu_t getCausality() const {return causality;}
-    const oms_signal_type_enu_t getType() const {return type;}
-    const oms2::SignalRef getName() const {return oms2::SignalRef(std::string(name));}
-    const oms2::ssd::ConnectorGeometry* getGeometry() const {return reinterpret_cast<oms2::ssd::ConnectorGeometry*>(geometry);}
-  };
 }
 
 #endif

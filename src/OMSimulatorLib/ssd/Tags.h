@@ -29,8 +29,8 @@
  *
  */
 
-#ifndef _OMS2_SSD_TAGS_H_
-#define _OMS2_SSD_TAGS_H_
+#ifndef _OMS_SSD_TAGS_H_
+#define _OMS_SSD_TAGS_H_
 
 namespace oms
 {
@@ -42,10 +42,7 @@ namespace oms
   extern const char* bus_connections;
   extern const char* bus_connection;
   extern const char* external_model;
-}
 
-namespace oms2
-{
   namespace ssd
   {
     extern const char* ssd_annotation;

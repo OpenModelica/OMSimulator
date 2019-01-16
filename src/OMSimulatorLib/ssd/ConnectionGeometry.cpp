@@ -139,7 +139,7 @@ oms_status_enu_t oms3::ssd::ConnectionGeometry::exportToSSD(pugi::xml_node& root
   // export ssd:ConnectionGeometry
   if (getLength() > 0)
   {
-    pugi::xml_node node = root.append_child(oms2::ssd::ssd_connection_geometry);
+    pugi::xml_node node = root.append_child(oms::ssd::ssd_connection_geometry);
     const double* pointsX = getPointsX();
     const double* pointsY = getPointsY();
     std::string pointsXStr, pointsYStr;

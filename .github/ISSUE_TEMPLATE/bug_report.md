@@ -14,7 +14,7 @@ about: Create a report to help us improve
 
 ```Lua
 -- Print version string
-version = oms2_getVersion()
+version = oms3_getVersion()
 print(version)
 
 ...

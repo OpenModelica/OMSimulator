@@ -75,34 +75,6 @@ oms3::FMUInfo::~FMUInfo()
   if (this->version) delete[] this->version;
 }
 
-oms_status_enu_t oms3::FMUInfo::setKind(fmi2_import_t* fmu)
-{
-  // read FMU kind
-  fmi2_fmu_kind_enu_t fmuKind = fmi2_import_get_fmu_kind(fmu);
-  if (fmi2_fmu_kind_me == fmuKind)
-  {
-    logDebug("FMU ME");
-    this->fmiKind = oms_fmi_kind_me;
-  }
-  else if (fmi2_fmu_kind_cs == fmuKind)
-  {
-    logDebug("FMU CS");
-    this->fmiKind = oms_fmi_kind_cs;
-  }
-  else if (fmi2_fmu_kind_me_and_cs == fmuKind)
-  {
-    logDebug("FMU ME & CS");
-    this->fmiKind = oms_fmi_kind_me_and_cs;
-  }
-  else
-  {
-    logError("Unsupported FMU kind: " + std::string(fmi2_fmu_kind_to_string(fmuKind)));
-    return oms_status_error;
-  }
-
-  return oms_status_ok;
-}
-
 oms_status_enu_t oms3::FMUInfo::update(fmi_version_enu_t version, fmi2_import_t* fmu)
 {
   std::string value;

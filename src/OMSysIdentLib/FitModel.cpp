@@ -79,15 +79,15 @@ struct OdeResidual {
       int i = 0;
       // precondition: order in 'parameters' corresponds to params_ set order
       for (auto varname: params_) {
-        oms2_setReal(varname.c_str(), parameters[i][0]);
+        oms3_setReal(varname.c_str(), parameters[i][0]);
         // std::cout << "OdeResidual: " << varname << " = " << parameters[i][0] << std::endl;
         i++;
       }
     }
 
-    // oms2_setStopTime(oms_modelIdent_, t_.back()); // needed?
+    // oms3_setStopTime(oms_modelIdent_, t_.back()); // needed?
 
-    oms2_initialize(oms_modelIdent_);
+    oms3_initialize(oms_modelIdent_);
 
     if (!input_.empty()) {
       // Set inputs if inputs are available
@@ -96,13 +96,13 @@ struct OdeResidual {
         for (auto& varData : input_) {
           std::string varname = varData.first;
           std::vector<double> data = varData.second;
-          oms2_setReal(varname.c_str(), data[i]);
-          // std::cout << "OdeResidual oms2_setReal i="<<i<<", varname="<<varname<<", data[i]="<<data[i]<<", t_[i]="<<t_[i]<<std::endl;
+          oms3_setReal(varname.c_str(), data[i]);
+          // std::cout << "OdeResidual oms3_setReal i="<<i<<", varname="<<varname<<", data[i]="<<data[i]<<", t_[i]="<<t_[i]<<std::endl;
         }
-        oms2_stepUntil(oms_modelIdent_, t_[i]);
+        oms3_stepUntil(oms_modelIdent_, t_[i]);
       }
     } else {
-      oms2_stepUntil(oms_modelIdent_, t_.back());
+      oms3_stepUntil(oms_modelIdent_, t_.back());
     }
 
     int nMesVars = mes_.size();
@@ -113,7 +113,7 @@ struct OdeResidual {
       int i = 0;
       //for (auto& varValue: mes_.at(0)) {
       for (auto& varValues: mes_) {
-        oms2_getReal(varValues.first.c_str(), &(x[i]));
+        oms3_getReal(varValues.first.c_str(), &(x[i]));
         i++;
       }
     }
@@ -132,11 +132,15 @@ struct OdeResidual {
       }
     }
 
-    oms2_reset(oms_modelIdent_);
+    // TODO: use oms3_reset
+    //oms3_reset(oms_modelIdent_);
+    oms3_terminate(oms_modelIdent_);
+    oms3_instantiate(oms_modelIdent_);
+
     return true;
   }
 
- private:
+private:
   const std::vector<double> t_;
   // (varname -> mes[iSeries],  iSeries \in [0..nSeries])
   const std::map<std::string, InstantSamples> mes_;
@@ -177,21 +181,21 @@ std::map<std::string, TimeSeries> to_varname_TimeSeries_Map(std::vector<SeriesMa
 oms_status_enu_t FitModel::solve(const char* reporttype)
 {
   logTrace();
-  if (!(this->isDataComplete())) {
-    logError("FitModel::solve: Incomplete data, please check measurements etc.");
-    return oms_status_error;
-  }
+
+  oms3_instantiate(oms_modelIdent_);
+
+  if (!this->isDataComplete())
+    return logError("FitModel::solve: Incomplete data, please check measurements etc.");
 
   std::string report = reporttype ? std::string(reporttype) : std::string("");
   if ( !(report == "" || report == "FullReport" || report == "BriefReport") ) {
-    logError(std::string("FitModel::solve: Invalid argument reporttype=")+report);
-    return oms_status_error;
+    return logError(std::string("FitModel::solve: Invalid argument reporttype=")+report);
   }
-  if (report == "") {
+
+  if (report == "")
     options_.logging_type = ceres::SILENT;
-  } else {
+  else
     options_.logging_type = ceres::PER_MINIMIZER_ITERATION;
-  }
 
   std::set<std::string> params;
   {
@@ -277,13 +281,11 @@ oms_status_enu_t FitModel::solve(const char* reporttype)
     case ceres::TerminationType::NO_CONVERGENCE: state_=FitModelState::NO_CONVERGENCE; break;
     case ceres::TerminationType::FAILURE: {
       state_=FitModelState::FAILURE;
-      logError("FitModel::solve: Ceres solver returned with TerminationType::FAILURE");
-      return oms_status_error;
+      return logError("FitModel::solve: Ceres solver returned with TerminationType::FAILURE");
     }
     default: {
-      logError(std::string("FitModel::solve: Ceres solver returned with unhandled summary.termination_type=") +
+      return logError(std::string("FitModel::solve: Ceres solver returned with unhandled summary.termination_type=") +
         std::to_string(summary.termination_type));
-      return oms_status_error;
     }
   }
   return oms_status_ok;
@@ -313,19 +315,16 @@ oms_status_enu_t FitModel::initialize(size_t nSeries, const double* time, size_t
   mdata_.inputVars.clear();
   for (int i=0; i < nInputvars; ++i) {
     auto ret = mdata_.inputVars.insert(std::string(inputvars[i]));
-    if (!ret.second) {
-      logError("FitModel::initialize: Duplicate element '"+std::string(inputvars[i])+"' in inputvars.");
-      return oms_status_error;
-    }
+    if (!ret.second)
+      return logError("FitModel::initialize: Duplicate element '"+std::string(inputvars[i])+"' in inputvars.");
   }
 
   mdata_.measurementVars.clear();
-  for (int i=0; i < nMeasurementvars; ++i) {
+  for (int i=0; i < nMeasurementvars; ++i)
+  {
     auto ret = mdata_.measurementVars.insert(std::string(measurementvars[i]));
-    if (!ret.second) {
-      logError("FitModel::initialize: Duplicate element '"+std::string(inputvars[i])+"' in measurementvars.");
-      return oms_status_error;
-    }
+    if (!ret.second)
+      return logError("FitModel::initialize: Duplicate element '"+std::string(inputvars[i])+"' in measurementvars.");
   }
 
   mdata_.nSeries = nSeries;
@@ -342,19 +341,16 @@ oms_status_enu_t FitModel::addParameter(const char* var, double startvalue)
 {
   logTrace();
   oms_status_enu_t status = oms_status_ok;
-  if (state_ < FitModelState::INITIALIZED) {
-    logError("FitModel::addParameter:  Calling method on uninitialized object.");
-    return oms_status_error;
-  }
-  oms2_setRealParameter(var, startvalue); // FIXME superfluous?
-  if (parameters_.find(var) != parameters_.end()) {
-    std::string message = std::string("FitModel::addParameter: ") + var
-      +  "already exists in parameter set. Overwriting entry.\n";
-    logWarning(message);
-    status = oms_status_warning;
-  }
-  parameters_[var] = ParameterAttributes {startvalue, startvalue};
+  if (state_ < FitModelState::INITIALIZED)
+    return logError("FitModel::addParameter:  Calling method on uninitialized object.");
 
+  if (parameters_.find(var) != parameters_.end())
+  {
+    std::string message = std::string("FitModel::addParameter: ") + var + "already exists in parameter set. Overwriting entry.\n";
+    status = logWarning(message);
+  }
+
+  parameters_[var] = ParameterAttributes {startvalue, startvalue};
   return status;
 }
 
@@ -367,8 +363,7 @@ oms_status_enu_t FitModel::addMeasurement(size_t iSeries, const char* var, const
     return oms_status_error;
   }
   if (iSeries >= mdata_.nSeries) {
-    logError(std::string("FitModel::addMeasurement: index iSeries="+std::to_string(iSeries)+" out of range."));
-    return oms_status_error;
+    return logError(std::string("FitModel::addMeasurement: index iSeries="+std::to_string(iSeries)+" out of range."));
   }
 
   auto it = mdata_.measurementSeries[iSeries].find(var);
@@ -390,8 +385,7 @@ oms_status_enu_t FitModel::addInput(const char* var, const double* values, size_
   logTrace();
   oms_status_enu_t status = oms_status_ok;
   if (state_ < FitModelState::INITIALIZED) {
-    logError("FitModel::addInput:  Calling method on uninitialized object.");
-    return oms_status_error;
+    return logError("FitModel::addInput:  Calling method on uninitialized object.");
   }
 
   auto it = mdata_.inputSeries[0].find(var);
@@ -417,10 +411,8 @@ oms_status_enu_t FitModel::getParameter(const char* var, ParameterAttributes& at
 {
   logTrace();
   auto it = parameters_.find(var);
-  if (it == parameters_.end()) {
-    logError(std::string("FitModel::getParameter: Cannot find parameter '") + var);
-    return oms_status_error;
-  }
+  if (it == parameters_.end())
+    return logError(std::string("FitModel::getParameter: Cannot find parameter '") + var);
   attributes = it->second;
   return oms_status_ok;
 }
@@ -508,90 +500,3 @@ std::string FitModel::toString() const
   ss << "],\ndataComplete = " << (this->isDataComplete() ? "TRUE" : "FALSE") << "\n)";
   return ss.str();
 }
-
-// Forget about below ...
-
-struct OdeResidual_Backup {
-  OdeResidual_Backup(std::vector<double> t, const std::map<std::string, std::vector<double>> mes /* std::vector<VarValueMap> mes */,
-    std::vector<VarValueMap> input, std::set<std::string> params, const char* oms_modelIdent)
-      : t_(t), mes_(mes), input_(input), params_(params), oms_modelIdent_(oms_modelIdent) {}
-
-  bool operator()(double const* const* parameters, double* residual) const {
-    {
-      int i = 0;
-      // precondition: order in 'parameters' corresponds to params_ set order
-      for (auto varname: params_) {
-        oms2_setReal(varname.c_str(), parameters[i][0]);
-        // std::cout << "OdeResidual: " << varname << " = " << parameters[i][0] << std::endl;
-        i++;
-      }
-    }
-    oms2_setStopTime(oms_modelIdent_, t_.back()); // needed?
-
-    oms2_initialize(oms_modelIdent_);
-    // if (!input_.back().empty()) {
-    //     // Set inputs if inputs are available
-    //     const int num = t_.size();
-    //     for (int i=0; i < num; ++i) {
-    //         // set inputs at t[i]
-    //         // FIXME Problem: We would need to run the simulation for each
-    //         // input series individually. Current approach only has one simulation run
-    //         // and computes residuals from all measurement series in one go.
-    //         // This is efficient, but breaks down if one assumes that every measurement
-    //         // series corresponds to a (different) input series
-    //         oms2_stepUntil(oms_modelIdent_, t_[i]);
-    //     }
-    //
-    // } else {
-    //     oms2_stepUntil(oms_modelIdent_, t_.back());
-    // }
-    oms2_stepUntil(oms_modelIdent_, t_.back());
-
-    // int nMesVars = mes_.at(0).size();
-    int nMesVars = mes_.size();
-    // std::cout << "nMesVars: " << nMesVars << std::endl;
-    // get simulation values of observed variables
-    std::vector<double> x(nMesVars);
-    {
-      int i = 0;
-      //for (auto& varValue: mes_.at(0)) {
-      for (auto& varValues: mes_) {
-        oms2_getReal(varValues.first.c_str(), &(x[i]));
-        i++;
-      }
-    }
-    // Compute residual by subtracting simulation value from measured value
-    // for (int i=0; i < mes_.size(); ++i) {
-    //   int j = 0;
-    //   for (auto& varValue : mes_.at(i)) {
-    //     residual[i*nMesVars + j] = varValue.second - x.at(j);
-    //     j++;
-    //   }
-    // }
-    {
-      int i = 0;
-      for (auto& varValues: mes_) {
-        // std::cout << "var: " << varValues.first << std::endl;
-        for (int j=0; j < varValues.second.size(); ++j) {
-          // std::cout << "Computing residual j=" << j << std::endl;
-          // std::cout << "residual[i + (j*nMesVars)] = residual[" << i + (j*nMesVars) << "] = " << varValues.second[j] - x.at(i) << std::endl;
-          residual[i + (j*nMesVars)] = varValues.second[j] - x.at(i);
-          //std::cout << "Computing residual: done\n";
-        }
-        i++;
-      }
-    }
-
-    oms2_reset(oms_modelIdent_);
-    return true;
-  }
-
- private:
-  const std::vector<double> t_;
-  // (varname -> input[iSeries],  iSeries \in [0..nSeries])
-  const std::map<std::string, std::vector<double>> mes_;
-  // const std::vector<VarValueMap> mes_;
-  const std::vector<VarValueMap> input_;
-  const std::set<std::string> params_;
-  const char* oms_modelIdent_;
-};

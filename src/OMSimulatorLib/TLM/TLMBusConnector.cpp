@@ -33,7 +33,7 @@ oms3::TLMBusConnector::TLMBusConnector(const oms3::ComRef &name, oms_tlm_domain_
 oms3::TLMBusConnector::~TLMBusConnector()
 {
   if (this->name) delete[] this->name;
-  if (this->geometry) delete reinterpret_cast<oms2::ssd::ConnectorGeometry*>(this->geometry);
+  if (this->geometry) delete reinterpret_cast<oms3::ssd::ConnectorGeometry*>(this->geometry);
   if (this->connectornames) {
     for (int i=0; connectornames[i]; ++i)
       delete[] connectornames[i];
@@ -69,7 +69,7 @@ oms_status_enu_t oms3::TLMBusConnector::exportToSSD(pugi::xml_node &root) const
 
   if (this->geometry)
   {
-    return reinterpret_cast<oms2::ssd::ConnectorGeometry*>(this->geometry)->exportToSSD(bus_node);
+    return reinterpret_cast<oms3::ssd::ConnectorGeometry*>(this->geometry)->exportToSSD(bus_node);
   }
 
   return oms_status_ok;
@@ -84,7 +84,7 @@ oms3::TLMBusConnector::TLMBusConnector(const oms3::TLMBusConnector &rhs)
   this->interpolation = rhs.interpolation;
 
   if (rhs.geometry)
-    this->geometry = reinterpret_cast<ssd_connector_geometry_t*>(new oms2::ssd::ConnectorGeometry(*reinterpret_cast<oms2::ssd::ConnectorGeometry*>(rhs.geometry)));
+    this->geometry = reinterpret_cast<ssd_connector_geometry_t*>(new oms3::ssd::ConnectorGeometry(*reinterpret_cast<oms3::ssd::ConnectorGeometry*>(rhs.geometry)));
   else
     this->geometry = NULL;
 
@@ -105,7 +105,7 @@ oms3::TLMBusConnector &oms3::TLMBusConnector::operator=(const oms3::TLMBusConnec
   this->dimensions = rhs.dimensions;
   this->interpolation = rhs.interpolation;
 
-  this->setGeometry(reinterpret_cast<oms2::ssd::ConnectorGeometry*>(rhs.geometry));
+  this->setGeometry(reinterpret_cast<oms3::ssd::ConnectorGeometry*>(rhs.geometry));
 
   variableTypes = TLMBusConnector::getVariableTypes(domain, dimensions, interpolation);
 
@@ -122,16 +122,16 @@ void oms3::TLMBusConnector::setName(const oms3::ComRef &name)
   strcpy(this->name, str.c_str());
 }
 
-void oms3::TLMBusConnector::setGeometry(const oms2::ssd::ConnectorGeometry *newGeometry)
+void oms3::TLMBusConnector::setGeometry(const oms3::ssd::ConnectorGeometry *newGeometry)
 {
   if (this->geometry)
   {
-    delete reinterpret_cast<oms2::ssd::ConnectorGeometry*>(this->geometry);
+    delete reinterpret_cast<oms3::ssd::ConnectorGeometry*>(this->geometry);
     this->geometry = NULL;
   }
 
   if (newGeometry)
-    this->geometry = reinterpret_cast<ssd_connector_geometry_t*>(new oms2::ssd::ConnectorGeometry(*newGeometry));
+    this->geometry = reinterpret_cast<ssd_connector_geometry_t*>(new oms3::ssd::ConnectorGeometry(*newGeometry));
 }
 
 void oms3::TLMBusConnector::setReal(int i, double value)

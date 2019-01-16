@@ -273,7 +273,7 @@ oms3::Component* oms3::ComponentFMUCS::NewComponent(const pugi::xml_node& node, 
   for(pugi::xml_node_iterator it = node.begin(); it != node.end(); ++it)
   {
     std::string name = it->name();
-    if(name == oms2::ssd::ssd_connectors)
+    if(name == oms::ssd::ssd_connectors)
     {
       // import connectors
       for(pugi::xml_node_iterator itConnectors = (*it).begin(); itConnectors != (*it).end(); ++itConnectors)
@@ -281,7 +281,7 @@ oms3::Component* oms3::ComponentFMUCS::NewComponent(const pugi::xml_node& node, 
         component->connectors.push_back(oms3::Connector::NewConnector(*itConnectors));
       }
     }
-    else if(name == oms2::ssd::ssd_element_geometry)
+    else if(name == oms::ssd::ssd_element_geometry)
     {
       oms3::ssd::ElementGeometry geometry;
       geometry.importFromSSD(*it);
@@ -306,8 +306,8 @@ oms_status_enu_t oms3::ComponentFMUCS::exportToSSD(pugi::xml_node& node) const
 #if !defined(NO_TLM)
   if (tlmbusconnectors[0])
   {
-    pugi::xml_node annotations_node = node.append_child(oms2::ssd::ssd_annotations);
-    pugi::xml_node annotation_node = annotations_node.append_child(oms2::ssd::ssd_annotation);
+    pugi::xml_node annotations_node = node.append_child(oms::ssd::ssd_annotations);
+    pugi::xml_node annotation_node = annotations_node.append_child(oms::ssd::ssd_annotation);
     annotation_node.append_attribute("type") = oms::annotation_type;
     for (const auto& tlmbusconnector : tlmbusconnectors)
       if (tlmbusconnector)
@@ -318,7 +318,7 @@ oms_status_enu_t oms3::ComponentFMUCS::exportToSSD(pugi::xml_node& node) const
   node.append_attribute("name") = this->getCref().c_str();
   node.append_attribute("type") = "application/x-fmu-sharedlibrary";
   node.append_attribute("source") = getPath().c_str();
-  pugi::xml_node node_connectors = node.append_child(oms2::ssd::ssd_connectors);
+  pugi::xml_node node_connectors = node.append_child(oms::ssd::ssd_connectors);
 
   if (element.getGeometry())
     element.getGeometry()->exportToSSD(node);
@@ -434,7 +434,7 @@ oms_status_enu_t oms3::ComponentFMUCS::instantiate()
     return logError_FMUCall("fmi2_import_instantiate", this);
 
   // enterInitialization
-  time = getParentSystem()->getModel()->getStartTime();
+  time = getModel()->getStartTime();
   double tolerance = dynamic_cast<SystemWC*>(getParentSystem())->getTolerance();
   fmistatus = fmi2_import_setup_experiment(fmu, fmi2_true, tolerance, time, fmi2_false, 1.0);
   if (fmi2_status_ok != fmistatus) return logError_FMUCall("fmi2_import_setup_experiment", this);
@@ -477,7 +477,7 @@ oms_status_enu_t oms3::ComponentFMUCS::reset()
     return logError_ResetFailed(getCref());
 
   // enterInitialization
-  time = getParentSystem()->getModel()->getStartTime();
+  time = getModel()->getStartTime();
   double tolerance = dynamic_cast<SystemWC*>(getParentSystem())->getTolerance();
   fmistatus = fmi2_import_setup_experiment(fmu, fmi2_true, tolerance, time, fmi2_false, 1.0);
   if (fmi2_status_ok != fmistatus) return logError_FMUCall("fmi2_import_setup_experiment", this);

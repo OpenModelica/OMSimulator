@@ -45,7 +45,7 @@
 
 int oms3::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
-  //std::cout << "\n[oms2::cvode_rhs] t=" << t << std::endl;
+  //std::cout << "\n[oms3::cvode_rhs] t=" << t << std::endl;
   SystemSC* system = (SystemSC*)user_data;
   oms_status_enu_t status;
 
@@ -138,7 +138,7 @@ oms_status_enu_t oms3::SystemSC::setSolverMethod(std::string solver)
 
 oms_status_enu_t oms3::SystemSC::exportToSSD_SimulationInformation(pugi::xml_node& node) const
 {
-  pugi::xml_node node_simulation_information = node.append_child(oms2::ssd::ssd_simulation_information);
+  pugi::xml_node node_simulation_information = node.append_child(oms::ssd::ssd_simulation_information);
 
   pugi::xml_node node_solver = node_simulation_information.append_child("VariableStepSolver");
   node_solver.append_attribute("description") = getSolverName().c_str();
@@ -394,6 +394,8 @@ oms_status_enu_t oms3::SystemSC::reset()
   for (const auto& component : getComponents())
     if (oms_status_ok != component.second->reset())
       return oms_status_error;
+
+  time = getModel()->getStartTime();
 
   if (oms_solver_cvode == solverMethod && solverData.cvode.mem)
   {

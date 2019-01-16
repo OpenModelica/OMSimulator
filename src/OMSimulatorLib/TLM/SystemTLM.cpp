@@ -79,11 +79,11 @@ oms3::System* oms3::SystemTLM::NewSystem(const oms3::ComRef& cref, oms3::Model* 
 
 oms_status_enu_t oms3::SystemTLM::exportToSSD_SimulationInformation(pugi::xml_node& node) const
 {
-  pugi::xml_node node_simulation_information = node.append_child(oms2::ssd::ssd_simulation_information);
+  pugi::xml_node node_simulation_information = node.append_child(oms::ssd::ssd_simulation_information);
 
-  pugi::xml_node node_annotations = node_simulation_information.append_child(oms2::ssd::ssd_annotations);
+  pugi::xml_node node_annotations = node_simulation_information.append_child(oms::ssd::ssd_annotations);
 
-  pugi::xml_node node_annotation = node_annotations.append_child(oms2::ssd::ssd_annotation);
+  pugi::xml_node node_annotation = node_annotations.append_child(oms::ssd::ssd_annotation);
   node_annotation.append_attribute("type") = oms::annotation_type;
 
   pugi::xml_node node_tlm = node_annotation.append_child(oms::tlm_master);
@@ -96,9 +96,9 @@ oms_status_enu_t oms3::SystemTLM::exportToSSD_SimulationInformation(pugi::xml_no
 
 oms_status_enu_t oms3::SystemTLM::importFromSSD_SimulationInformation(const pugi::xml_node& node)
 {
-  pugi::xml_node annotationsNode = node.child(oms2::ssd::ssd_annotations);
+  pugi::xml_node annotationsNode = node.child(oms::ssd::ssd_annotations);
   if(annotationsNode) {
-    pugi::xml_node annotationNode = annotationsNode.child(oms2::ssd::ssd_annotation);
+    pugi::xml_node annotationNode = annotationsNode.child(oms::ssd::ssd_annotation);
     if(annotationNode && std::string(annotationNode.attribute("type").as_string()) == "org.openmodelica") {
       pugi::xml_node tlmmasterNode = annotationNode.child("oms:TlmMaster");
       for (auto it = tlmmasterNode.attributes_begin(); it != tlmmasterNode.attributes_end(); ++it)

@@ -36,7 +36,7 @@
 
 #include <string>
 
-namespace oms2
+namespace oms3
 {
   namespace ssd
   {

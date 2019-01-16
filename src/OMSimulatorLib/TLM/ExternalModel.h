@@ -81,42 +81,4 @@ namespace oms3
   };
 }
 
-namespace oms2
-{
-  class ExternalModel
-  {
-  public:
-    ExternalModel(const ComRef& cref,
-                  const std::string& filename,
-                  const std::string& startScript);
-
-    oms_element_type_enu_t getType() const {return oms_component_external_old;}
-
-
-    void setName(const ComRef& name) {element.setName(name);}
-    void setGeometry(const oms2::ssd::ElementGeometry& geometry) {element.setGeometry(&geometry);}
-
-    const ComRef getName() const {return oms2::ComRef(element.getName());}
-    const oms2::ssd::ElementGeometry* getGeometry() {return element.getGeometry();}
-    oms2::Element* getElement() {return &element;}
-
-    oms_status_enu_t setRealParameter(const std::string& var, double value);
-    oms_status_enu_t getRealParameter(const std::string& var, double& value);
-    const std::string& getModelPath() const {return filename;}
-    const std::string& getStartScript() const {return startScript;}
-    const std::map<std::string, oms3::Option<double>>& getRealParameters() const {return realParameters;}
-
-  protected:
-    ComRef cref;
-    oms2::Element element;
-
-  private:
-
-    std::string filename;
-    std::string startScript;
-
-    std::map<std::string, oms3::Option<double>> realParameters;
-  };
-}
-
 #endif

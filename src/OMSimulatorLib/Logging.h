@@ -29,8 +29,8 @@
  *
  */
 
-#ifndef _OMS2_LOGGING_H_
-#define _OMS2_LOGGING_H_
+#ifndef _OMS_LOGGING_H_
+#define _OMS_LOGGING_H_
 
 #include "Types.h"
 
