@@ -2,27 +2,27 @@
 simulate
 --------
 
-Simulates a composite model (works for both FMI and TLM).
+Simulates a composite model.
 #END#
 
 #LUA#
 .. code-block:: lua
 
-  status = oms2_simulate(ident)
+  status = oms3_simulate(cref)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  status = session.simulate(ident)
+  status = session.oms3_simulate(cref)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms2_simulate(const char* ident);
+  oms_status_enu_t oms3_simulate(const char* cref);
 
 #END#
 

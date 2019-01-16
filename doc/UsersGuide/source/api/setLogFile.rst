@@ -2,7 +2,8 @@
 setLogFile
 ----------
 
-Redirects logging output to file or std streams. The warning/error counters are reset.
+Redirects logging output to file or std streams. The warning/error counters are
+reset.
 
 filename="" to redirect to std streams and proper filename to redirect to file.
 #END#
@@ -10,21 +11,21 @@ filename="" to redirect to std streams and proper filename to redirect to file.
 #LUA#
 .. code-block:: lua
 
-  status = oms2_setLogFile(filename)
+  status = oms3_setLogFile(filename)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  status = session.setLogFile(filename)
+  status = session.oms3_setLogFile(filename)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms2_setLogFile(const char* filename);
+  oms_status_enu_t oms3_setLogFile(const char* filename);
 
 #END#
 

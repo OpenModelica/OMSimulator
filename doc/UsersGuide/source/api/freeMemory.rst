@@ -2,28 +2,29 @@
 freeMemory
 ----------
 
-Free the memory allocated by some other API. Pass the object for which memory is allocated.
-You can directly call free on the object or can use this function.
+Free the memory allocated by some other API. Pass the object for which memory
+is allocated. You can directly call free on the object or can use this
+function.
 #END#
 
 #LUA#
 .. code-block:: lua
 
-  oms2_freeMemory(obj)
+  oms3_freeMemory(obj)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  session.freeMemory(cref)
+  session.oms3_freeMemory(obj)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms2_freeMemory(void* obj);
+  oms_status_enu_t oms3_freeMemory(void* obj);
 
 #END#
 

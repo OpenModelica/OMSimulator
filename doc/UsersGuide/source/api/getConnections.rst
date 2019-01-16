@@ -22,7 +22,7 @@ Get list of all connections from a given component.
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms2_getConnections(const char* cref, oms_connection_t*** connections);
+  oms_status_enu_t oms3_getConnections(const char* cref, oms3_connection_t*** connections);
 
 #END#
 

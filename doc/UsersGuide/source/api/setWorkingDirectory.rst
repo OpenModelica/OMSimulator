@@ -8,21 +8,21 @@ Set a new working directory.
 #LUA#
 .. code-block:: lua
 
-  status = oms2_setWorkingDirectory(path)
+  status = oms3_setWorkingDirectory(newWorkingDir)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  status = session.setWorkingDirectory(path)
+  status = session.oms3_setWorkingDirectory(newWorkingDir)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms2_setWorkingDirectory(const char* path);
+  oms_status_enu_t oms3_setWorkingDirectory(const char* newWorkingDir);
 
 #END#
 

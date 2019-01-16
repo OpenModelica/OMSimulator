@@ -2,27 +2,27 @@
 stepUntil
 ---------
 
-Simulates a composite model until a given time value (works for both FMI and TLM).
+Simulates a composite model until a given time value.
 #END#
 
 #LUA#
 .. code-block:: lua
 
-  status = oms2_stepUntil(ident, timeValue)
+  status = oms3_stepUntil(cref, stopTime)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  status = session.stepUntil(ident, timeValue)
+  status = session.oms3_stepUntil(cref, stopTime)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms2_stepUntil(const char* ident, const double timeValue);
+  oms_status_enu_t oms3_stepUntil(const char* cref, double stopTime);
 
 #END#
 

@@ -20,8 +20,8 @@ the scripting API. In addition there are examples which directly use
 the C API within the module's source code folder (`src/OMSysIdentLib`).
 
 Below is a basic example from the testsuite (`HelloWorld_cs_Fit.lua`) which
-uses the Lua scripting API. It determines the parameters for the following "hello world"
-style Modelica model:
+uses the Lua scripting API. It determines the parameters for the following
+"hello world" style Modelica model:
 
 .. code-block:: Modelica
 
@@ -36,63 +36,63 @@ style Modelica model:
 The goal is to estimate the value of the coefficent `a` and the initial value
 `x_start` of the state variable `x`. Instead of real measurements, the script
 simply uses simulation data generated from the `HelloWorld` examples as
-measurement data. The array `data_time` contains the time instants at which a sample is
-taken and the array `data_x` contains the value of `x` that corresponds to the
-respective time instant.
+measurement data. The array `data_time` contains the time instants at which a
+sample is taken and the array `data_x` contains the value of `x` that
+corresponds to the respective time instant.
 
-The estimation parameters are defined by calls to function `omsi_addParameter(..)`
-in which the name of the parameter and a first guess for the parameter's
-value is stated.
+The estimation parameters are defined by calls to function
+`omsi_addParameter(..)` in which the name of the parameter and a first guess
+for the parameter's value is stated.
 
 .. code-block:: lua
   :caption: HelloWorld_cs_Fit.lua
   :name: HelloWorld_cs_Fit-lua
 
-  oms2_setLogFile("HelloWorld_cs_Fit.log")
-  oms2_setTempDirectory(".")
-  oms2_newFMIModel("HelloWorld_cs_Fit")
-  -- instantiate FMU
+  oms3_setTempDirectory("./HelloWorld_cs_Fit/")
+  oms3_newModel("HelloWorld_cs_Fit")
+  oms3_addSystem("HelloWorld_cs_Fit.root", oms_system_wc)
+
   -- add FMU
-  status = oms2_addFMU("HelloWorld_cs_Fit", "../FMUs/HelloWorld_cs.fmu", "HelloWorld")
+  oms3_addSubModel("HelloWorld_cs_Fit.root.HelloWorld", "../FMUs/HelloWorld.fmu")
 
   -- create system identification model for model
   simodel = omsi_newSysIdentModel("HelloWorld_cs_Fit");
-  -- omsi_describe(simodel)
 
   -- Data generated from simulating HelloWorld.mo for 1.0s with Euler and 0.1s step size
   kNumSeries = 1;
   kNumObservations = 11;
   data_time = {0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1};
   inputvars = {};
-  measurementvars = {"HelloWorld_cs_Fit.HelloWorld:x"};
+  measurementvars = {"HelloWorld_cs_Fit.root.HelloWorld.x"};
   data_x = {1, 0.9, 0.8100000000000001, 0.7290000000000001, 0.6561, 0.5904900000000001, 0.5314410000000001, 0.4782969000000001, 0.43046721, 0.387420489, 0.3486784401};
 
-  omsi_initialize(simodel, kNumSeries, data_time, inputvars,
-    measurementvars)
+  omsi_initialize(simodel, kNumSeries, data_time, inputvars, measurementvars)
   -- omsi_describe(simodel)
 
-  omsi_addParameter(simodel, "HelloWorld_cs_Fit.HelloWorld:x_start", 0.5);
-  omsi_addParameter(simodel, "HelloWorld_cs_Fit.HelloWorld:a", -0.5);
-  omsi_addMeasurement(simodel, 0, "HelloWorld_cs_Fit.HelloWorld:x", data_x);
+  omsi_addParameter(simodel, "HelloWorld_cs_Fit.root.HelloWorld.x_start", 0.5);
+  omsi_addParameter(simodel, "HelloWorld_cs_Fit.root.HelloWorld.a", -0.5);
+  omsi_addMeasurement(simodel, 0, "HelloWorld_cs_Fit.root.HelloWorld.x", data_x);
   -- omsi_describe(simodel)
 
   omsi_setOptions_max_num_iterations(simodel, 25)
   omsi_solve(simodel, "BriefReport")
 
   status, simodelstate = omsi_getState(simodel);
-  print(status, simodelstate)
+  -- print(status, simodelstate)
 
-  status, startvalue1, estimatedvalue1 = omsi_getParameter(simodel, "HelloWorld_cs_Fit.HelloWorld:a")
-  status, startvalue2, estimatedvalue2 = omsi_getParameter(simodel, "HelloWorld_cs_Fit.HelloWorld:x_start")
-  print("HelloWorld.a startvalue=" .. startvalue1 .. ", estimatedvalue=" .. estimatedvalue1)
-  print("HelloWorld.x_start startvalue=" .. startvalue2 .. ", estimatedvalue=" .. estimatedvalue2)
+  status, startvalue1, estimatedvalue1 = omsi_getParameter(simodel, "HelloWorld_cs_Fit.root.HelloWorld.a")
+  status, startvalue2, estimatedvalue2 = omsi_getParameter(simodel, "HelloWorld_cs_Fit.root.HelloWorld.x_start")
+  -- print("HelloWorld.a startvalue=" .. startvalue1 .. ", estimatedvalue=" .. estimatedvalue1)
+  -- print("HelloWorld.x_start startvalue=" .. startvalue2 .. ", estimatedvalue=" .. estimatedvalue2)
   is_OK1 = estimatedvalue1 > -1.1 and estimatedvalue1 < -0.9
   is_OK2 = estimatedvalue2 > 0.9 and estimatedvalue2 < 1.1
   print("HelloWorld.a estimation is OK: " .. tostring(is_OK1))
   print("HelloWorld.x_start estimation is OK: " .. tostring(is_OK2))
 
   omsi_freeSysIdentModel(simodel)
-  oms2_unloadModel("HelloWorld_cs_Fit")
+
+  oms3_terminate("HelloWorld_cs_Fit")
+  oms3_delete("HelloWorld_cs_Fit")
 
 Running the script generates the following console output:
 

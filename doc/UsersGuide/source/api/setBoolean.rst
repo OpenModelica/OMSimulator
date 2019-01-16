@@ -8,21 +8,21 @@ Set boolean value of given signal.
 #LUA#
 .. code-block:: lua
 
-  status = oms2_setBoolean(signal, value)
+  status = oms3_setBoolean(cref, value)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  status = session.setBoolean(signal, value)
+  status = session.oms3_setBoolean(cref, value)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms2_setBoolean(const char* signal, bool value);
+  oms_status_enu_t oms3_setBoolean(const char* cref, bool value);
 
 #END#
 

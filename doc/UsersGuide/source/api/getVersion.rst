@@ -8,7 +8,7 @@ Returns the library's version string.
 #LUA#
 .. code-block:: lua
 
-  version = oms2_getVersion()
+  version = oms3_getVersion()
 
 #END#
 
@@ -16,14 +16,14 @@ Returns the library's version string.
 .. code-block:: python
 
   session = OMSimulator()
-  session.getVersion()
+  session.oms3_getVersion()
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  const char* oms2_getVersion();
+  const char* oms3_getVersion();
 
 #END#
 

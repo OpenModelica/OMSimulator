@@ -2,28 +2,27 @@
 addTLMConnection
 ----------------
 
-Adds an external model to a TLM composite model.
+Connects two TLM connectors.
 #END#
 
 #LUA#
 .. code-block:: lua
 
-  status = oms2_addTLMConnection(cref, from, to, delay, alpha, Zf, Zfr)
+  status = oms3_addTLMConnection(crefA, crefB, delay, alpha, linearimpedance, angularimpedance)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  status = session.addTLMConnection(cref, from, to, delay, alpha, Zf, Zfr)
+  status = session.oms3_addTLMConnection(crefA, crefB, delay, alpha, linearimpedance, angularimpedance)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms2_addTLMConnection(const char* cref, const char* from, const char* to, double delay, double alpha, double Zf, double Zfr);
-
+  oms_status_enu_t oms3_addTLMConnection(const char* crefA, const char* crefB, double delay, double alpha, double linearimpedance, double angularimpedance);
 
 #END#
 
