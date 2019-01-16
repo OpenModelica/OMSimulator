@@ -2,7 +2,7 @@
 setElementGeometry
 ------------------
 
-Set geometry information to a given component (i.e. model or sub-model).
+Set geometry information to a given component.
 #END#
 
 #LUA#
@@ -22,7 +22,7 @@ Set geometry information to a given component (i.e. model or sub-model).
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms2_setElementGeometry(const char* cref, const ssd_element_geometry_t* geometry);
+  oms_status_enu_t oms3_setElementGeometry(const char* cref, const ssd_element_geometry_t* geometry);
 
 #END#
 

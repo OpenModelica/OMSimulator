@@ -2,31 +2,31 @@
 addConnection
 -------------
 
-Adds a new connection between connectors A and B to a given parent component.
-This command can also be used to connect a solver instance to a given FMU of a FMI composite model.
+Adds a new connection between connectors `A` and `B`. The connectors need to be
+specified as fully qualified component references, e.g., `"model.system.component.signal"`.
 #END#
 
 #LUA#
 .. code-block:: lua
 
-  status = oms2_addConnection(cref, conA, conB)
+  status = oms3_addConnection(crefA, crefB)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  status = session.addConnection(cref, conA, conB)
+  status = session.oms3_addConnection(crefA, crefB)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms2_addConnection(const char* cref, const char* conA, const char* conB);
+  oms_status_enu_t oms3_addConnection(const char* crefA, const char* crefB);
 
 #END#
 
 #DESCRIPTION#
-The two arguments `from` and `to` get swapped automatically if necessary.
+The two arguments `crefA` and `crefB` get swapped automatically if necessary.
 #END#

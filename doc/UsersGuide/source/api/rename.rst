@@ -2,27 +2,27 @@
 rename
 ------
 
-Renames a composite model (either FMI or TLM) or sub-model (e.g. FMU instance).
+Renames a model, system, or component.
 #END#
 
 #LUA#
 .. code-block:: lua
 
-  status = oms2_rename(identOld, identNew)
+  status = oms3_rename(cref, newCref)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  status = session.rename(identOld, identNew)
+  status = session.oms3_rename(cref, newCref)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms2_rename(const char* identOld, const char* identNew);
+  oms_status_enu_t oms3_rename(const char* cref, const char* newCref);
 
 #END#
 

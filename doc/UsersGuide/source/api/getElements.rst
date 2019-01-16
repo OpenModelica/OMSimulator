@@ -2,7 +2,7 @@
 getElements
 -----------
 
-Get list of all sub-components from a given component.
+Get list of all sub-components of a given component reference.
 #END#
 
 #LUA#
@@ -22,7 +22,7 @@ Get list of all sub-components from a given component.
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms2_getElements(const char* cref, oms_element_t*** elements);
+  oms_status_enu_t oms3_getElements(const char* cref, oms3_element_t*** elements);
 
 #END#
 

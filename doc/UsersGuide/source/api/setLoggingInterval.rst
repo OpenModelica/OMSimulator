@@ -8,21 +8,21 @@ Set the logging interval of the simulation.
 #LUA#
 .. code-block:: lua
 
-  status = oms2_setLoggingInterval(cref, loggingInterval)
+  status = oms3_setLoggingInterval(cref, loggingInterval)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  status = session.setLoggingInterval(cref, loggingInterval)
+  status = oms3_setLoggingInterval(cref, loggingInterval)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms2_setLoggingInterval(const char* cref, double loggingInterval);
+  oms_status_enu_t oms3_setLoggingInterval(const char* cref, double loggingInterval);
 
 #END#
 

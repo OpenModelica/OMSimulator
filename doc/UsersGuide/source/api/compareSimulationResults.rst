@@ -2,13 +2,14 @@
 compareSimulationResults
 ------------------------
 
-This function compares a given signal of two result files within absolute and relative tolerances.
+This function compares a given signal of two result files within absolute and
+relative tolerances.
 #END#
 
 #LUA#
 .. code-block:: lua
 
-  oms2_compareSimulationResults(filenameA, filenameB, var, relTol, absTol)
+  oms3_compareSimulationResults(filenameA, filenameB, var, relTol, absTol)
 
 The following table describes the input values:
 
@@ -35,14 +36,14 @@ The following table describes the return values:
 #PYTHON#
 .. code-block:: python
 
-  session.compareSimulationResults(filenameA, filenameB, var, relTol, absTol)
+  session.oms3_compareSimulationResults(filenameA, filenameB, var, relTol, absTol)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  int oms2_compareSimulationResults(const char* filenameA, const char* filenameB, const char* var, double relTol, double absTol);
+  int oms3_compareSimulationResults(const char* filenameA, const char* filenameB, const char* var, double relTol, double absTol);
 
 #END#
 

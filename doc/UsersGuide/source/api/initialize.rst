@@ -2,27 +2,27 @@
 initialize
 ----------
 
-Initializes a composite model (works for both FMI and TLM).
+Initializes a composite model.
 #END#
 
 #LUA#
 .. code-block:: lua
 
-  status = oms2_initialize(ident)
+  status = oms3_initialize(cref)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  status = session.initialize(ident)
+  status = session.oms3_initialize(cref)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms2_initialize(const char* ident);
+  oms_status_enu_t oms3_initialize(const char* cref);
 
 #END#
 

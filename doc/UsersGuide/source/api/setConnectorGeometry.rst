@@ -22,7 +22,7 @@ Set geometry information to a given connector.
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms2_setConnectorGeometry(const char* connector, const ssd_connector_geometry_t* geometry);
+  oms_status_enu_t oms3_setConnectorGeometry(const char* cref, const ssd_connector_geometry_t* geometry);
 
 #END#
 

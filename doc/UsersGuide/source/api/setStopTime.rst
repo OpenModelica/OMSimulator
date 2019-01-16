@@ -8,21 +8,21 @@ Set the stop time of the simulation.
 #LUA#
 .. code-block:: lua
 
-  status = oms2_setStopTime(cref, stopTime)
+  status = oms3_setStopTime(cref, stopTime)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  status = session.setStopTime(cref, stopTime)
+  status = session.oms3_setStopTime(cref, stopTime)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms2_setStopTime(const char* cref, double stopTime);
+  oms_status_enu_t oms3_setStopTime(const char* cref, double stopTime);
 
 #END#
 

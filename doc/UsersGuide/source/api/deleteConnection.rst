@@ -2,31 +2,30 @@
 deleteConnection
 ----------------
 
-Deletes the connection between connectors A and B.
-This can also be used to unconnect a solver from a given FMU.
+Deletes the connection between connectors `crefA` and `crefB`.
 #END#
 
 #LUA#
 .. code-block:: lua
 
-  status = oms2_deleteConnection(cref, conA, conB)
+  status = oms3_deleteConnection(crefA, crefB)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  status = session.deleteConnection(cref, conA, conB)
+  status = session.oms3_deleteConnection(crefA, crefB)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms2_deleteConnection(const char* cref, const char* conA, const char* conB);
+  oms_status_enu_t oms3_deleteConnection(const char* crefA, const char* crefB);
 
 #END#
 
 #DESCRIPTION#
-The two arguments `from` and `to` get swapped automatically if necessary.
+The two arguments `crefA` and `crefB` get swapped automatically if necessary.
 #END#

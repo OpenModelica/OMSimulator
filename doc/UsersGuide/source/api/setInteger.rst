@@ -8,21 +8,21 @@ Set integer value of given signal.
 #LUA#
 .. code-block:: lua
 
-  status = oms2_setInteger(signal, value)
+  status = oms3_setInteger(cref, value)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  status = session.setInteger(signal, value)
+  status = session.oms3_setInteger(cref, value)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms2_setInteger(const char* signal, int value);
+  oms_status_enu_t oms3_setInteger(const char* cref, int value);
 
 #END#
 

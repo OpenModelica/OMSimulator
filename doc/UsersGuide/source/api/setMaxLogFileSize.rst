@@ -2,27 +2,28 @@
 setMaxLogFileSize
 -----------------
 
-Sets maximum log file size in MB. If the file exceeds this limit, the logging will continue on stdout.
+Sets maximum log file size in MB. If the file exceeds this limit, the logging
+will continue on stdout.
 #END#
 
 #LUA#
 .. code-block:: lua
 
-  oms2_setMaxLogFileSize(size)
+  oms3_setMaxLogFileSize(size)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  session.setMaxLogFileSize(size)
+  session.oms3_setMaxLogFileSize(size)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  void oms2_setMaxLogFileSize(const unsigned long size);
+  void oms3_setMaxLogFileSize(const unsigned long size);
 
 #END#
 

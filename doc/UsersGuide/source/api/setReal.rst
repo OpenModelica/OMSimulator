@@ -8,21 +8,21 @@ Set real value of given signal.
 #LUA#
 .. code-block:: lua
 
-  status = oms2_setReal(signal, value)
+  status = oms3_setReal(cref, value)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  status = session.setReal(signal, value)
+  status = session.oms3_setReal(cref, value)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms2_setReal(const char* signal, double value);
+  oms_status_enu_t oms3_setReal(const char* cref, double value);
 
 #END#
 

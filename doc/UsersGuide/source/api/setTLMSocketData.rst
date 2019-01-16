@@ -8,7 +8,7 @@ Sets data for TLM socket communication.
 #LUA#
 .. code-block:: lua
 
-  status = oms2_setTLMSocketData(cref, address, managerPort, monitorPort)
+  status = oms3_setTLMSocketData(cref, address, managerPort, monitorPort)
 
 #END#
 
@@ -22,7 +22,7 @@ Sets data for TLM socket communication.
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms2_setTLMSocketData(const char* cref, const char* address, int managerPort, int monitorPort);
+  oms_status_enu_t oms3_setTLMSocketData(const char* cref, const char* address, int managerPort, int monitorPort);
 
 #END#
 
