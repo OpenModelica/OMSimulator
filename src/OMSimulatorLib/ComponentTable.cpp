@@ -126,13 +126,13 @@ oms3::Component* oms3::ComponentTable::NewComponent(const pugi::xml_node& node, 
   for(pugi::xml_node_iterator it = node.begin(); it != node.end(); ++it)
   {
     std::string name = it->name();
-    if(name == oms2::ssd::ssd_connectors)
+    if(name == oms::ssd::ssd_connectors)
     {
       // import connectors
       for(pugi::xml_node_iterator itConnectors = (*it).begin(); itConnectors != (*it).end(); ++itConnectors)
         component->connectors.push_back(oms3::Connector::NewConnector(*itConnectors));
     }
-    else if(name == oms2::ssd::ssd_element_geometry)
+    else if(name == oms::ssd::ssd_element_geometry)
     {
       oms3::ssd::ElementGeometry geometry;
       geometry.importFromSSD(*it);
@@ -157,7 +157,7 @@ oms_status_enu_t oms3::ComponentTable::exportToSSD(pugi::xml_node& node) const
   node.append_attribute("name") = this->getCref().c_str();
   node.append_attribute("type") = "application/table";
   node.append_attribute("source") = getPath().c_str();
-  pugi::xml_node node_connectors = node.append_child(oms2::ssd::ssd_connectors);
+  pugi::xml_node node_connectors = node.append_child(oms::ssd::ssd_connectors);
 
   if (element.getGeometry())
     element.getGeometry()->exportToSSD(node);

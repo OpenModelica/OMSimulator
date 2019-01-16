@@ -3,7 +3,6 @@
 
 
 #include "ComRef.h"
-#include "SignalRef.h"
 #include "Types.h"
 #include "Connector.h"
 #include "ssd/ConnectorGeometry.h"
@@ -31,10 +30,10 @@ namespace oms3
     BusConnector& operator=(const BusConnector& rhs);
 
     void setName(const oms3::ComRef& name);
-    void setGeometry(const oms2::ssd::ConnectorGeometry* newGeometry);
+    void setGeometry(const oms3::ssd::ConnectorGeometry* newGeometry);
 
     const oms3::ComRef getName() const {return oms3::ComRef(name);}
-    const oms2::ssd::ConnectorGeometry* getGeometry() const {return reinterpret_cast<oms2::ssd::ConnectorGeometry*>(geometry);}
+    const oms3::ssd::ConnectorGeometry* getGeometry() const {return reinterpret_cast<oms3::ssd::ConnectorGeometry*>(geometry);}
 
     oms_status_enu_t addConnector(const oms3::ComRef& cref);
     oms_status_enu_t deleteConnector(const oms3::ComRef& cref);

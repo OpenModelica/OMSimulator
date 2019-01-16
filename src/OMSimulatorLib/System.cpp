@@ -394,29 +394,29 @@ oms_status_enu_t oms3::System::exportToSSD(pugi::xml_node& node) const
   if (oms_status_ok != element.getGeometry()->exportToSSD(node))
     return logError("export of system ElementGeometry failed");
 
-  pugi::xml_node elements_node = node.append_child(oms2::ssd::ssd_elements);
+  pugi::xml_node elements_node = node.append_child(oms::ssd::ssd_elements);
 
   for (const auto& subsystem : subsystems)
   {
-    pugi::xml_node system_node = elements_node.append_child(oms2::ssd::ssd_system);
+    pugi::xml_node system_node = elements_node.append_child(oms::ssd::ssd_system);
     if (oms_status_ok != subsystem.second->exportToSSD(system_node))
       return logError("export of system failed");
   }
 
   for (const auto& component : components)
   {
-    pugi::xml_node component_node = elements_node.append_child(oms2::ssd::ssd_component);
+    pugi::xml_node component_node = elements_node.append_child(oms::ssd::ssd_component);
     if (oms_status_ok != component.second->exportToSSD(component_node))
       return logError("export of component failed");
   }
 
-  pugi::xml_node connectors_node = node.append_child(oms2::ssd::ssd_connectors);
+  pugi::xml_node connectors_node = node.append_child(oms::ssd::ssd_connectors);
   for(const auto& connector : connectors)
     if (connector)
       connector->exportToSSD(connectors_node);
 
   std::vector<oms3::Connection*> busconnections;
-  pugi::xml_node connections_node = node.append_child(oms2::ssd::ssd_connections);
+  pugi::xml_node connections_node = node.append_child(oms::ssd::ssd_connections);
   for (const auto& connection : connections)
     if (connection && connection->getType() == oms3_connection_single)
       connection->exportToSSD(connections_node);
@@ -429,8 +429,8 @@ oms_status_enu_t oms3::System::exportToSSD(pugi::xml_node& node) const
   if (busconnectors[0] || !busconnections.empty())
 #endif
   {
-    pugi::xml_node annotations_node = node.append_child(oms2::ssd::ssd_annotations);
-    pugi::xml_node annotation_node = annotations_node.append_child(oms2::ssd::ssd_annotation);
+    pugi::xml_node annotations_node = node.append_child(oms::ssd::ssd_annotations);
+    pugi::xml_node annotation_node = annotations_node.append_child(oms::ssd::ssd_annotation);
     annotation_node.append_attribute("type") = oms::annotation_type;
     for (const auto& busconnector : busconnectors)
       if (busconnector)
@@ -456,18 +456,18 @@ oms_status_enu_t oms3::System::importFromSSD(const pugi::xml_node& node)
   for(pugi::xml_node_iterator it = node.begin(); it != node.end(); ++it)
   {
     std::string name = it->name();
-    if (name == oms2::ssd::ssd_simulation_information)
+    if (name == oms::ssd::ssd_simulation_information)
     {
       if (oms_status_ok != importFromSSD_SimulationInformation(*it))
-        return logError("Failed to import " + std::string(oms2::ssd::ssd_simulation_information));
+        return logError("Failed to import " + std::string(oms::ssd::ssd_simulation_information));
     }
-    else if (name == oms2::ssd::ssd_element_geometry)
+    else if (name == oms::ssd::ssd_element_geometry)
     {
       oms3::ssd::ElementGeometry geometry;
       geometry.importFromSSD(*it);
       setGeometry(geometry);
     }
-    else if (name == oms2::ssd::ssd_connections)
+    else if (name == oms::ssd::ssd_connections)
     {
       for(pugi::xml_node_iterator itConnectors = (*it).begin(); itConnectors != (*it).end(); ++itConnectors)
       {
@@ -482,16 +482,16 @@ oms_status_enu_t oms3::System::importFromSSD(const pugi::xml_node& node)
         if (!endElement.isEmpty())
           crefB = endElement + endConnector;
         if (oms_status_ok != addConnection(crefA, crefB))
-          return logError("Failed to import " + std::string(oms2::ssd::ssd_connection));
+          return logError("Failed to import " + std::string(oms::ssd::ssd_connection));
         else
         {
           // Load connection geometry
           if (oms_status_ok != importFromSSD_ConnectionGeometry(*itConnectors, crefA, crefB))
-            return logError("Failed to import " + std::string(oms2::ssd::ssd_connection_geometry));
+            return logError("Failed to import " + std::string(oms::ssd::ssd_connection_geometry));
         }
       }
     }
-    else if (name == oms2::ssd::ssd_connectors)
+    else if (name == oms::ssd::ssd_connectors)
     {
       for(pugi::xml_node_iterator itConnectors = (*it).begin(); itConnectors != (*it).end(); ++itConnectors)
       {
@@ -506,24 +506,24 @@ oms_status_enu_t oms3::System::importFromSSD(const pugi::xml_node& node)
         element.setConnectors(&connectors[0]);
       }
     }
-    else if (name == oms2::ssd::ssd_elements)
+    else if (name == oms::ssd::ssd_elements)
     {
       for(pugi::xml_node_iterator itElements = (*it).begin(); itElements != (*it).end(); ++itElements)
       {
         name = itElements->name();
-        if (name == oms2::ssd::ssd_system)
+        if (name == oms::ssd::ssd_system)
         {
           ComRef systemCref = ComRef(itElements->attribute("name").as_string());
 
           // lochel: I guess that can somehow be improved
           oms_system_enu_t systemType = oms_system_tlm;
-          if (std::string(itElements->child(oms2::ssd::ssd_simulation_information).child("VariableStepSolver").attribute("description").as_string()) != "")
+          if (std::string(itElements->child(oms::ssd::ssd_simulation_information).child("VariableStepSolver").attribute("description").as_string()) != "")
             systemType = oms_system_sc;
-          if (std::string(itElements->child(oms2::ssd::ssd_simulation_information).child("FixedStepSolver").attribute("description").as_string()) != "")
+          if (std::string(itElements->child(oms::ssd::ssd_simulation_information).child("FixedStepSolver").attribute("description").as_string()) != "")
             systemType = oms_system_sc;
-          if (std::string(itElements->child(oms2::ssd::ssd_simulation_information).child("VariableStepMaster").attribute("description").as_string()) != "")
+          if (std::string(itElements->child(oms::ssd::ssd_simulation_information).child("VariableStepMaster").attribute("description").as_string()) != "")
             systemType = oms_system_wc;
-          if (std::string(itElements->child(oms2::ssd::ssd_simulation_information).child("FixedStepMaster").attribute("description").as_string()) != "")
+          if (std::string(itElements->child(oms::ssd::ssd_simulation_information).child("FixedStepMaster").attribute("description").as_string()) != "")
             systemType = oms_system_wc;
 
           if (oms_status_ok != addSubSystem(systemCref, systemType))
@@ -536,7 +536,7 @@ oms_status_enu_t oms3::System::importFromSSD(const pugi::xml_node& node)
           if (oms_status_ok != system->importFromSSD(*itElements))
             return oms_status_error;
         }
-        else if (name == oms2::ssd::ssd_component)
+        else if (name == oms::ssd::ssd_component)
         {
           Component* component = NULL;
           std::string type = itElements->attribute("type").as_string();
@@ -559,9 +559,9 @@ oms_status_enu_t oms3::System::importFromSSD(const pugi::xml_node& node)
           return logError("wrong xml schema detected: " + name);
       }
     }
-    else if (name == oms2::ssd::ssd_annotations)
+    else if (name == oms::ssd::ssd_annotations)
     {
-      pugi::xml_node annotation_node = it->child(oms2::ssd::ssd_annotation);
+      pugi::xml_node annotation_node = it->child(oms::ssd::ssd_annotation);
       if (annotation_node && std::string(annotation_node.attribute("type").as_string()) == oms::annotation_type)
       {
         for(pugi::xml_node_iterator itAnnotations = annotation_node.begin(); itAnnotations != annotation_node.end(); ++itAnnotations)
@@ -632,10 +632,10 @@ oms_status_enu_t oms3::System::importFromSSD(const pugi::xml_node& node)
             }
 
             // Load bus connector geometry
-            pugi::xml_node connectorGeometryNode = itAnnotations->child(oms2::ssd::ssd_connector_geometry);
+            pugi::xml_node connectorGeometryNode = itAnnotations->child(oms::ssd::ssd_connector_geometry);
             if (connectorGeometryNode)
             {
-              oms2::ssd::ConnectorGeometry geometry(0.0, 0.0);
+              oms3::ssd::ConnectorGeometry geometry(0.0, 0.0);
               geometry.setPosition(connectorGeometryNode.attribute("x").as_double(), connectorGeometryNode.attribute("y").as_double());
               if (std::string(itAnnotations->attribute("type").as_string()) == "tlm")
               {
@@ -693,7 +693,7 @@ oms_status_enu_t oms3::System::importFromSSD(const pugi::xml_node& node)
               {
                 // Load connection geometry
                 if (oms_status_ok != importFromSSD_ConnectionGeometry(*itConnection, element1+connector1, element2+connector2))
-                  return logError("Failed to import " + std::string(oms2::ssd::ssd_connection_geometry));
+                  return logError("Failed to import " + std::string(oms::ssd::ssd_connection_geometry));
               }
             }
           }
@@ -1202,7 +1202,7 @@ oms_status_enu_t oms3::System::addExternalModel(const oms3::ComRef& cref, std::s
 #endif
 }
 
-oms_status_enu_t oms3::System::setConnectorGeometry(const oms3::ComRef& cref, const oms2::ssd::ConnectorGeometry *geometry)
+oms_status_enu_t oms3::System::setConnectorGeometry(const oms3::ComRef& cref, const oms3::ssd::ConnectorGeometry *geometry)
 {
   oms3::ComRef tail(cref);
   oms3::ComRef head = tail.pop_front();
@@ -1290,7 +1290,7 @@ oms_status_enu_t oms3::System::setTLMConnectionParameters(const ComRef &crefA, c
 #endif
 }
 
-oms_status_enu_t oms3::System::setBusGeometry(const oms3::ComRef& cref, const oms2::ssd::ConnectorGeometry *geometry)
+oms_status_enu_t oms3::System::setBusGeometry(const oms3::ComRef& cref, const oms3::ssd::ConnectorGeometry *geometry)
 {
   oms3::ComRef tail(cref);
   oms3::ComRef head = tail.pop_front();
@@ -1307,7 +1307,7 @@ oms_status_enu_t oms3::System::setBusGeometry(const oms3::ComRef& cref, const om
   return logError("Bus " + std::string(cref)+" not found in system " + std::string(getCref()));
 }
 
-oms_status_enu_t oms3::System::setTLMBusGeometry(const oms3::ComRef& cref, const oms2::ssd::ConnectorGeometry *geometry)
+oms_status_enu_t oms3::System::setTLMBusGeometry(const oms3::ComRef& cref, const oms3::ssd::ConnectorGeometry *geometry)
 {
 #if !defined(NO_TLM)
   oms3::ComRef tail(cref);
@@ -1742,7 +1742,7 @@ oms_status_enu_t oms3::System::setRealInputDerivatives(const oms3::ComRef &cref,
 
 oms_status_enu_t oms3::System::importFromSSD_ConnectionGeometry(const pugi::xml_node& node, const ComRef& crefA, const ComRef& crefB)
 {
-  pugi::xml_node connectionGeometryNode = node.child(oms2::ssd::ssd_connection_geometry);
+  pugi::xml_node connectionGeometryNode = node.child(oms::ssd::ssd_connection_geometry);
   if (connectionGeometryNode)
   {
     oms3::Connection *connection = getConnection(crefA, crefB);

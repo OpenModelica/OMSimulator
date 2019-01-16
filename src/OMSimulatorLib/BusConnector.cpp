@@ -17,7 +17,7 @@ oms3::BusConnector::BusConnector(const oms3::ComRef &name)
 oms3::BusConnector::~BusConnector()
 {
   if (this->name) delete[] this->name;
-  if (this->geometry) delete reinterpret_cast<oms2::ssd::ConnectorGeometry*>(this->geometry);
+  if (this->geometry) delete reinterpret_cast<oms3::ssd::ConnectorGeometry*>(this->geometry);
   if (this->connectors) {
     for (int i=0; connectors[i]; ++i)
       delete[] connectors[i];
@@ -38,7 +38,7 @@ oms_status_enu_t oms3::BusConnector::exportToSSD(pugi::xml_node &root) const
 
   if (this->geometry)
   {
-    return reinterpret_cast<oms2::ssd::ConnectorGeometry*>(this->geometry)->exportToSSD(bus_node);
+    return reinterpret_cast<oms3::ssd::ConnectorGeometry*>(this->geometry)->exportToSSD(bus_node);
   }
 
   return oms_status_ok;
@@ -50,7 +50,7 @@ oms3::BusConnector::BusConnector(const oms3::BusConnector &rhs)
   strcpy(this->name, rhs.name);
 
   if (rhs.geometry)
-    this->geometry = reinterpret_cast<ssd_connector_geometry_t*>(new oms2::ssd::ConnectorGeometry(*reinterpret_cast<oms2::ssd::ConnectorGeometry*>(rhs.geometry)));
+    this->geometry = reinterpret_cast<ssd_connector_geometry_t*>(new oms3::ssd::ConnectorGeometry(*reinterpret_cast<oms3::ssd::ConnectorGeometry*>(rhs.geometry)));
   else
     this->geometry = NULL;
 }
@@ -66,7 +66,7 @@ oms3::BusConnector &oms3::BusConnector::operator=(const oms3::BusConnector &rhs)
   this->name = new char[strlen(rhs.name)+1];
   strcpy(this->name, rhs.name);
 
-  this->setGeometry(reinterpret_cast<oms2::ssd::ConnectorGeometry*>(rhs.geometry));
+  this->setGeometry(reinterpret_cast<oms3::ssd::ConnectorGeometry*>(rhs.geometry));
 
   return *this;
 }
@@ -81,16 +81,16 @@ void oms3::BusConnector::setName(const oms3::ComRef &name)
   strcpy(this->name, str.c_str());
 }
 
-void oms3::BusConnector::setGeometry(const oms2::ssd::ConnectorGeometry *newGeometry)
+void oms3::BusConnector::setGeometry(const oms3::ssd::ConnectorGeometry *newGeometry)
 {
   if (this->geometry)
   {
-    delete reinterpret_cast<oms2::ssd::ConnectorGeometry*>(this->geometry);
+    delete reinterpret_cast<oms3::ssd::ConnectorGeometry*>(this->geometry);
     this->geometry = NULL;
   }
 
   if (newGeometry)
-    this->geometry = reinterpret_cast<ssd_connector_geometry_t*>(new oms2::ssd::ConnectorGeometry(*newGeometry));
+    this->geometry = reinterpret_cast<ssd_connector_geometry_t*>(new oms3::ssd::ConnectorGeometry(*newGeometry));
 }
 
 oms_status_enu_t oms3::BusConnector::addConnector(const oms3::ComRef &cref)

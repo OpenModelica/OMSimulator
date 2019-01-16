@@ -3,7 +3,6 @@
 
 
 #include "ComRef.h"
-#include "SignalRef.h"
 #include "Types.h"
 #include "Connector.h"
 #include "ssd/ConnectorGeometry.h"
@@ -107,7 +106,7 @@ typedef struct  {
     TLMBusConnector& operator=(const TLMBusConnector& rhs);
 
     void setName(const oms3::ComRef& name);
-    void setGeometry(const oms2::ssd::ConnectorGeometry* newGeometry);
+    void setGeometry(const oms3::ssd::ConnectorGeometry* newGeometry);
 
     void setReal(int i, double value);
     void getReal(int i, double &value);
@@ -125,7 +124,7 @@ typedef struct  {
     double getDelay() { return this->delay; }
     oms3::ComRef getConnector(int id) const;
     std::vector<oms3::ComRef> getConnectors(std::vector<int> ids) const;
-    const oms2::ssd::ConnectorGeometry* getGeometry() const {return reinterpret_cast<oms2::ssd::ConnectorGeometry*>(geometry);}
+    const oms3::ssd::ConnectorGeometry* getGeometry() const {return reinterpret_cast<oms3::ssd::ConnectorGeometry*>(geometry);}
 
     oms_status_enu_t addConnector(const oms3::ComRef& cref, std::string vartype);
     oms_status_enu_t deleteConnector(const oms3::ComRef& cref);

@@ -29,8 +29,8 @@
  *
  */
 
-#ifndef _OMS2_COM_REF_H_
-#define _OMS2_COM_REF_H_
+#ifndef _OMS_COM_REF_H_
+#define _OMS_COM_REF_H_
 
 #include <string>
 #include <cstring>
@@ -86,70 +86,4 @@ namespace std
     }
   };
 }
-
-/* ************************************ */
-/* oms2                                 */
-/*                                      */
-/*                                      */
-/* ************************************ */
-
-#include <deque>
-
-namespace oms2
-{
-  /**
-   * \brief ComRef - component reference
-   */
-  class ComRef
-  {
-  public:
-    ComRef();
-    ComRef(const std::string& path);
-    ~ComRef();
-
-    // methods to copy the component reference
-    ComRef(ComRef const& copy);
-    ComRef& operator=(ComRef const& copy);
-    ComRef operator+(const ComRef& rhs);
-
-    static bool isValidIdent(const std::string& ident);
-    bool isValidIdent() const;
-    bool isValidQualified() const;
-
-    const char* c_str() const {return isIdent() ? path[0].c_str() : NULL;}
-
-    bool isQualified() const; // true if qualified component name, e.g. a.b.c
-    bool isIdent() const;     // true if non-qualifed component name, e.g. x
-
-    std::string toString() const;
-    ComRef first() const;
-    ComRef last() const;
-    void popFirst();
-    void popLast();
-    ComRef& append(const ComRef& cref);
-
-    /**
-     * \brief Can be used to compare crefs.
-     *
-     * x.y.z == x.y.z
-     * x.y.z == z
-     *     z == x.y.z
-     * x.y   != x
-     * x     != x.y
-     */
-    bool match(const ComRef& cref);
-
-    bool isEqual(const char* str) const {return toString().compare(str) == 0;}
-
-  private:
-    std::deque<std::string> path;
-
-    friend bool operator==(const ComRef& lhs, const ComRef& rhs);
-  };
-
-  std::string operator+(const std::string& lhs, const ComRef& rhs);
-  bool operator<(const ComRef& lhs, const ComRef& rhs);
-  bool operator==(const ComRef& lhs, const ComRef& rhs);
-}
-
 #endif
