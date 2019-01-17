@@ -15,7 +15,7 @@ Deletes a connector from a given bus.
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms_deleteConnectorFromBus(busCref, connectorCref)
+  status = oms.deleteConnectorFromBus(busCref, connectorCref)
 
 #END#
 

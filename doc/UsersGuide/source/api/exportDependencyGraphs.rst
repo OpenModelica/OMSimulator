@@ -15,7 +15,7 @@ Export the dependency graphs of a given model to dot files.
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms_exportDependencyGraphs(cref, initialization, simulation)
+  status = oms.exportDependencyGraphs(cref, initialization, simulation)
 
 #END#
 

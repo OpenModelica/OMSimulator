@@ -198,8 +198,8 @@ static int OMSimulatorLua_oms_export(lua_State *L)
   return 1;
 }
 
-//oms_status_enu_t oms_import(const char* filename, const char** cref);
-static int OMSimulatorLua_oms_import(lua_State *L)
+//oms_status_enu_t oms_importFile(const char* filename, const char** cref);
+static int OMSimulatorLua_oms_importFile(lua_State *L)
 {
   if (lua_gettop(L) != 1)
     return luaL_error(L, "expecting exactly 1 argument");
@@ -207,7 +207,7 @@ static int OMSimulatorLua_oms_import(lua_State *L)
 
   const char* filename = lua_tostring(L, 1);
   char* cref = NULL;
-  oms_status_enu_t status = oms_import(filename, &cref);
+  oms_status_enu_t status = oms_importFile(filename, &cref);
 
   lua_pushstring(L, cref ? cref : "");
   lua_pushinteger(L, status);
@@ -1289,7 +1289,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms_getStopTime);
   REGISTER_LUA_CALL(oms_getSystemType);
   REGISTER_LUA_CALL(oms_getVersion);
-  REGISTER_LUA_CALL(oms_import);
+  REGISTER_LUA_CALL(oms_importFile);
   REGISTER_LUA_CALL(oms_importString);
   REGISTER_LUA_CALL(oms_initialize);
   REGISTER_LUA_CALL(oms_instantiate);

@@ -15,7 +15,7 @@ Set a new working directory.
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms_setWorkingDirectory(newWorkingDir)
+  status = oms.setWorkingDirectory(newWorkingDir)
 
 #END#
 

@@ -15,7 +15,7 @@ Adds a (sub-)system to a model or system.
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms_addSystem(cref, type)
+  status = oms.addSystem(cref, type)
 
 #END#
 

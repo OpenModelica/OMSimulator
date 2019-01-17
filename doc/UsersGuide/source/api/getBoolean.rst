@@ -15,7 +15,7 @@ Get boolean value of given signal.
 #PYTHON#
 .. code-block:: python
 
-  value, status = session.oms_getBoolean(cref)
+  value, status = oms.getBoolean(cref)
 
 #END#
 

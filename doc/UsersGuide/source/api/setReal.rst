@@ -15,7 +15,7 @@ Set real value of given signal.
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms_setReal(cref, value)
+  status = oms.setReal(cref, value)
 
 #END#
 

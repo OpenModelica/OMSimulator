@@ -15,7 +15,7 @@ Add all variables that match the given regex to the result file.
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms_addSignalsToResults(cref, regex)
+  status = oms.addSignalsToResults(cref, regex)
 
 #END#
 

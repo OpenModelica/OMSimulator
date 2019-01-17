@@ -15,7 +15,7 @@ Copies a system.
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms_copySystem(source, target)
+  status = oms.copySystem(source, target)
 
 #END#
 

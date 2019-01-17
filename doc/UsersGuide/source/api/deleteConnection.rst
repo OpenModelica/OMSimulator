@@ -15,7 +15,7 @@ Deletes the connection between connectors `crefA` and `crefB`.
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms_deleteConnection(crefA, crefB)
+  status = oms.deleteConnection(crefA, crefB)
 
 #END#
 

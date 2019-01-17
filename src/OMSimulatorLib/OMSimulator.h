@@ -98,7 +98,7 @@ OMSAPI oms_status_enu_t OMSCALL oms_getSystemType(const char* cref, oms_system_e
 OMSAPI oms_status_enu_t OMSCALL oms_getTLMBus(const char* cref, oms_tlmbusconnector_t** tlmBusConnector);
 OMSAPI oms_status_enu_t OMSCALL oms_getTLMVariableTypes(oms_tlm_domain_t domain, const int dimensions, const oms_tlm_interpolation_t interpolation, char ***types, char ***descriptions);
 OMSAPI const char* OMSCALL oms_getVersion();
-OMSAPI oms_status_enu_t OMSCALL oms_import(const char* filename, char** cref);
+OMSAPI oms_status_enu_t OMSCALL oms_importFile(const char* filename, char** cref);
 OMSAPI oms_status_enu_t OMSCALL oms_importString(const char* contents, char** cref);
 OMSAPI oms_status_enu_t OMSCALL oms_initialize(const char* cref);
 OMSAPI oms_status_enu_t OMSCALL oms_instantiate(const char* cref);

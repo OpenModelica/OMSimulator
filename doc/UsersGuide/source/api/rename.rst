@@ -15,7 +15,7 @@ Renames a model, system, or component.
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms_rename(cref, newCref)
+  status = oms.rename(cref, newCref)
 
 #END#
 

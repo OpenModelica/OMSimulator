@@ -17,7 +17,7 @@ systems.
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms_setFixedStepSize(cref, stepSize)
+  status = oms.setFixedStepSize(cref, stepSize)
 
 #END#
 

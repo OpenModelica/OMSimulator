@@ -15,7 +15,7 @@ Adds a bus to a given component.
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms_addBus(cref)
+  status = oms.addBus(cref)
 
 #END#
 

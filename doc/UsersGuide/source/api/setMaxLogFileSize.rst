@@ -16,7 +16,7 @@ will continue on stdout.
 #PYTHON#
 .. code-block:: python
 
-  session.oms_setMaxLogFileSize(size)
+  oms.setMaxLogFileSize(size)
 
 #END#
 

@@ -15,7 +15,7 @@ Terminates a given composite model.
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms_terminate(cref)
+  status = oms.terminate(cref)
 
 #END#
 

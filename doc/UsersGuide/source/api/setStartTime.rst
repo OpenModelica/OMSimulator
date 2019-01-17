@@ -15,7 +15,7 @@ Set the start time of the simulation.
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms_setStartTime(cref, startTime)
+  status = oms.setStartTime(cref, startTime)
 
 #END#
 

@@ -16,7 +16,7 @@ specified as fully qualified component references, e.g., `"model.system.componen
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms_addConnection(crefA, crefB)
+  status = oms.addConnection(crefA, crefB)
 
 #END#
 

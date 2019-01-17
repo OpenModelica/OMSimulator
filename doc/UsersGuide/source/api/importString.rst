@@ -15,7 +15,7 @@ Imports a composite model from a string.
 #PYTHON#
 .. code-block:: python
 
-  cref, oms_status_enu_t session.oms_importString(contents)
+  cref, oms_status_enu_t oms.importString(contents)
 
 #END#
 

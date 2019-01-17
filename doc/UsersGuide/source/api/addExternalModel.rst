@@ -15,7 +15,7 @@ Adds an external model to a TLM system.
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms_addExternalModel(cref, path, startscript)
+  status = oms.addExternalModel(cref, path, startscript)
 
 #END#
 

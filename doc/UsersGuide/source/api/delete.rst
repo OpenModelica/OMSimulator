@@ -15,7 +15,7 @@ Deletes a connector, component, system, or model object.
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms_delete(cref)
+  status = oms.delete(cref)
 
 #END#
 

@@ -15,7 +15,7 @@ Exports a composite model to a SPP file.
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms_export(cref, filename)
+  status = oms.export(cref, filename)
 
 #END#
 

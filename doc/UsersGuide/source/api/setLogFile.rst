@@ -18,7 +18,7 @@ filename="" to redirect to std streams and proper filename to redirect to file.
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms_setLogFile(filename)
+  status = oms.setLogFile(filename)
 
 #END#
 

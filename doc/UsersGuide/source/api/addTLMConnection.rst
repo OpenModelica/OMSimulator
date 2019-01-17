@@ -15,7 +15,7 @@ Connects two TLM connectors.
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms_addTLMConnection(crefA, crefB, delay, alpha, linearimpedance, angularimpedance)
+  status = oms.addTLMConnection(crefA, crefB, delay, alpha, linearimpedance, angularimpedance)
 
 #END#
 

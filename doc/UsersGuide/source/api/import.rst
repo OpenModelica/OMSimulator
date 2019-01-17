@@ -8,21 +8,21 @@ Imports a composite model from a SSP file.
 #LUA#
 .. code-block:: lua
 
-  cref, status = oms_import(filename)
+  cref, status = oms_importFile(filename)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  cref, status = session.oms_import(filename)
+  cref, status = oms.importFile(filename)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms_import(const char* filename, char** cref);
+  oms_status_enu_t oms_importFile(const char* filename, char** cref);
 
 #END#
 

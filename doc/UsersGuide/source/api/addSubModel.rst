@@ -15,7 +15,7 @@ Adds a component to a system.
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms_addSubModel(cref, fmuPath)
+  status = oms.addSubModel(cref, fmuPath)
 
 #END#
 

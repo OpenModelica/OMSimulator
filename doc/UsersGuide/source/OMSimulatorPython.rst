@@ -13,27 +13,27 @@ Examples
 .. code-block:: python
 
   from OMSimulator import OMSimulator
-  session = OMSimulator()
+  oms = OMSimulator()
 
-  session.newFMIModel("model")
+  oms.newFMIModel("model")
 
   # instantiate FMUs
-  session.addFMU("model", "FMUs/submodelA.fmu", "A")
-  session.addFMU("model", "FMUs/submodelB.fmu", "B")
+  oms.addFMU("model", "FMUs/submodelA.fmu", "A")
+  oms.addFMU("model", "FMUs/submodelB.fmu", "B")
 
   # add connections
-  session.addConnection("model", "A:in1", "B:out1")
-  session.addConnection("model", "A:in2", "B:out2")
-  session.addConnection("model", "A:out1", "B:in1")
-  session.addConnection("model", "A:out2", "B:in2")
+  oms.addConnection("model", "A:in1", "B:out1")
+  oms.addConnection("model", "A:in2", "B:out2")
+  oms.addConnection("model", "A:out1", "B:in1")
+  oms.addConnection("model", "A:out2", "B:in2")
 
-  session.setStopTime("model", 2.0)
-  session.setCommunicationInterval("model", 1e-5)
-  session.setResultFile("model", "AB_res.mat")
+  oms.setStopTime("model", 2.0)
+  oms.setCommunicationInterval("model", 1e-5)
+  oms.setResultFile("model", "AB_res.mat")
 
-  session.initialize("model")
-  session.simulate("model")
-  session.unloadModel("model")
+  oms.initialize("model")
+  oms.simulate("model")
+  oms.unloadModel("model")
 
 .. index:: OMSimulatorPython; Scripting Commands
 

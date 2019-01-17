@@ -15,7 +15,7 @@ Sets the tolerance for a given system or component.
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms_setTolerance(cref, tolerance)
+  status = oms.setTolerance(cref, tolerance)
 
 #END#
 

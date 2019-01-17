@@ -15,7 +15,7 @@ Simulates a composite model.
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms_simulate(cref)
+  status = oms.simulate(cref)
 
 #END#
 

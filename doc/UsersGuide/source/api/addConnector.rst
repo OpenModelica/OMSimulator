@@ -15,7 +15,7 @@ Adds a connector to a given component.
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms_addConnector(cref, causality, type)
+  status = oms.addConnector(cref, causality, type)
 
 #END#
 

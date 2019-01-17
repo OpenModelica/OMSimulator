@@ -15,7 +15,7 @@ Get integer value of given signal.
 #PYTHON#
 .. code-block:: python
 
-  value, status = session.oms_getInteger(cref)
+  value, status = oms.getInteger(cref)
 
 #END#
 
