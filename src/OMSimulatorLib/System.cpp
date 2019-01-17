@@ -311,11 +311,6 @@ oms_status_enu_t oms::System::addSubModel(const oms::ComRef& cref, const std::st
   return system->addSubModel(tail, path);
 }
 
-oms_status_enu_t oms::System::list(const oms::ComRef& cref, char** contents)
-{
-  return logError("not implemented");
-}
-
 oms_status_enu_t oms::System::listUnconnectedConnectors(char** contents) const
 {
   if (!contents)

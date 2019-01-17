@@ -67,7 +67,6 @@ namespace oms
     const ComRef& getCref() const {return cref;}
     ComRef getFullCref() const;
     Element* getElement() {return &element;}
-    oms_status_enu_t list(const ComRef& cref, char** contents);
     oms_status_enu_t listUnconnectedConnectors(char** contents) const;
     oms_system_enu_t getType() const {return type;}
     oms_status_enu_t addSubSystem(const ComRef& cref, oms_system_enu_t type);
