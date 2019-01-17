@@ -15,7 +15,7 @@ Adds a connector to a bus.
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms_addConnectorToBus(busCref, connectorCref)
+  status = oms.addConnectorToBus(busCref, connectorCref)
 
 #END#
 

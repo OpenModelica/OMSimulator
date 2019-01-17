@@ -15,7 +15,7 @@ Deletes a connector from a given TLM bus.
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms_deleteConnectorFromTLMBus(busCref, connectorCref)
+  status = oms.deleteConnectorFromTLMBus(busCref, connectorCref)
 
 #END#
 

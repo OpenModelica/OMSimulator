@@ -15,7 +15,7 @@ Get the stop time from the model.
 #PYTHON#
 .. code-block:: python
 
-  stopTime, status = session.oms_getStopTime(cref)
+  stopTime, status = oms.getStopTime(cref)
 
 #END#
 

@@ -15,7 +15,7 @@ Set the stop time of the simulation.
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms_setStopTime(cref, stopTime)
+  status = oms.setStopTime(cref, stopTime)
 
 #END#
 

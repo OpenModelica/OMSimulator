@@ -15,7 +15,7 @@ Adds a connector to a TLM bus.
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms_addConnectorToTLMBus(busCref, connectorCref, type)
+  status = oms.addConnectorToTLMBus(busCref, connectorCref, type)
 
 #END#
 

@@ -15,7 +15,7 @@ Set boolean value of given signal.
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms_setBoolean(cref, value)
+  status = oms.setBoolean(cref, value)
 
 #END#
 

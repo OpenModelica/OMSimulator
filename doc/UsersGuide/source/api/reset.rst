@@ -17,7 +17,7 @@ The FMUs go into the same state as after instantiation.
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms_reset(cref)
+  status = oms.reset(cref)
 
 #END#
 

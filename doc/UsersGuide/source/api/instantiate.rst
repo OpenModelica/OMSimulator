@@ -15,7 +15,7 @@ Instantiates a given composite model.
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms_instantiate(cref)
+  status = oms.instantiate(cref)
 
 #END#
 

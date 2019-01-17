@@ -17,7 +17,7 @@ Enables/Disables debug logging (logDebug and logTrace).
 #PYTHON#
 .. code-block:: python
 
-  session.oms_setLoggingLevel(logLevel)
+  oms.setLoggingLevel(logLevel)
 
 #END#
 

@@ -170,7 +170,7 @@ oms_status_enu_t oms_export(const char* cref_, const char* filename)
   return oms::Scope::GetInstance().exportModel(oms::ComRef(cref_), std::string(filename));
 }
 
-oms_status_enu_t oms_import(const char* filename, char** cref)
+oms_status_enu_t oms_importFile(const char* filename, char** cref)
 {
   return oms::Scope::GetInstance().importModel(std::string(filename), cref);
 }
@@ -988,7 +988,7 @@ oms_status_enu_t oms_RunFile(const char* filename_)
   else if (type == ".ssp")
   {
     char* cref;
-    oms_import(filename.c_str(), &cref);
+    oms_importFile(filename.c_str(), &cref);
 
     if (oms::Flags::ResultFile() != "<default>")
       oms_setResultFile(cref, oms::Flags::ResultFile().c_str(), 1);

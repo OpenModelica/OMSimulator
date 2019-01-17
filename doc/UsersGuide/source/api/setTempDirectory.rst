@@ -15,7 +15,7 @@ Set new temp directory.
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms_setTempDirectory(newTempDir)
+  status = oms.setTempDirectory(newTempDir)
 
 #END#
 

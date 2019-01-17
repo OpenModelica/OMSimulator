@@ -15,7 +15,7 @@ Removes all variables that match the given regex to the result file.
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms_removeSignalsFromResults(cref, regex)
+  status = oms.removeSignalsFromResults(cref, regex)
 
 #END#
 

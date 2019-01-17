@@ -15,7 +15,7 @@ Simulates a composite model until a given time value.
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms_stepUntil(cref, stopTime)
+  status = oms.stepUntil(cref, stopTime)
 
 #END#
 

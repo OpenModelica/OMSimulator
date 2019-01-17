@@ -19,7 +19,7 @@ caller doesn't need to call free.
 #PYTHON#
 .. code-block:: python
 
-  contents, status = session.oms_list(cref)
+  contents, status = oms.list(cref)
 
 #END#
 

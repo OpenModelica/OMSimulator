@@ -15,7 +15,7 @@ Returns the path of a given component.
 #PYTHON#
 .. code-block:: python
 
-  path, status = session.oms_getSubModelPath(cref)
+  path, status = oms.getSubModelPath(cref)
 
 #END#
 

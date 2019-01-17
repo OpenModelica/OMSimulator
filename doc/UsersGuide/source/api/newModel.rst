@@ -15,7 +15,7 @@ Creates a new and yet empty composite model.
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms_newModel(cref)
+  status = oms.newModel(cref)
 
 #END#
 

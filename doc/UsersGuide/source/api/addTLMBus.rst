@@ -15,7 +15,7 @@ Adds a TLM bus.
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms_addTLMBus(cref, domain, dimensions, interpolation)
+  status = oms.addTLMBus(cref, domain, dimensions, interpolation)
 
 #END#
 

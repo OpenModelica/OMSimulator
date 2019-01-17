@@ -11,11 +11,11 @@ class OMSimulator:
     else:
       self.obj=cdll.LoadLibrary("libOMSimulator.so")
 
-    self.oms_system()
-    self.oms_causality()
-    self.oms_signal_type()
-    self.oms_tlm_interpolation()
-    self.oms_tlm_domain()
+    self.system()
+    self.causality()
+    self.signal_type()
+    self.tlm_interpolation()
+    self.tlm_domain()
 
     self.obj.oms_getVersion.argtypes = None
     self.obj.oms_getVersion.restype = ctypes.c_char_p
@@ -50,8 +50,8 @@ class OMSimulator:
     self.obj.oms_export.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_export.restype = ctypes.c_int
 
-    self.obj.oms_import.argtypes = [ctypes.c_char_p]
-    self.obj.oms_import.restype = ctypes.c_int
+    self.obj.oms_importFile.argtypes = [ctypes.c_char_p]
+    self.obj.oms_importFile.restype = ctypes.c_int
 
     self.obj.oms_list.argtypes = [ctypes.c_char_p]
     self.obj.oms_list.restype = ctypes.c_int
@@ -171,154 +171,154 @@ class OMSimulator:
     self.obj.oms_setFixedStepSize.restype = ctypes.c_int
 
   ## define enum types for accesing typedef enum from c
-  def oms_system(self):
-    self.oms_system_none = 0
-    self.oms_system_tlm = 1
-    self.oms_system_wc = 2
-    self.oms_system_sc = 3
-  def oms_causality(self):
+  def system(self):
+    self.system_none = 0
+    self.system_tlm = 1
+    self.system_wc = 2
+    self.system_sc = 3
+  def causality(self):
     self.input = 0
     self.output = 1
     self.parameter = 2
     self.bidir = 3
     self.undefined = 4
-  def oms_signal_type(self):
-    self.oms_signal_type_real = 0
-    self.oms_signal_type_integer = 1
-    self.oms_signal_type_boolean = 2
-    self.oms_signal_type_string = 3
-    self.oms_signal_type_enum = 4
-    self.oms_signal_type_bus = 5
-  def oms_tlm_interpolation(self):
+  def signal_type(self):
+    self.signal_type_real = 0
+    self.signal_type_integer = 1
+    self.signal_type_boolean = 2
+    self.signal_type_string = 3
+    self.signal_type_enum = 4
+    self.signal_type_bus = 5
+  def tlm_interpolation(self):
     self.default = 0
     self.coarsegrained = 1
     self.finegrained = 2
-  def oms_tlm_domain(self):
-    self.oms_tlm_domain_input = 0
-    self.oms_tlm_domain_output = 1
-    self.oms_tlm_domain_mechanical = 2
-    self.oms_tlm_domain_rotational = 3
-    self.oms_tlm_domain_hydraulic = 4
-    self.oms_tlm_domain_electric = 5
+  def tlm_domain(self):
+    self.tlm_domain_input = 0
+    self.tlm_domain_output = 1
+    self.tlm_domain_mechanical = 2
+    self.tlm_domain_rotational = 3
+    self.tlm_domain_hydraulic = 4
+    self.tlm_domain_electric = 5
 
-  def oms_getVersion(self):
+  def getVersion(self):
     return self.checkstring(self.obj.oms_getVersion())
-  def oms_getSystemType(self, cref):
+  def getSystemType(self, cref):
     type = ctypes.c_int()
     status = self.obj.oms_getSystemType(self.checkstring(cref), ctypes.byref(type))
     return [status, type.value]
-  def oms_setLogFile(self, filename):
+  def setLogFile(self, filename):
     return self.obj.oms_setLogFile(self.checkstring(filename))
-  def oms_setLoggingInterval(self, cref, loggingInterval):
+  def setLoggingInterval(self, cref, loggingInterval):
     return self.obj.oms_setLoggingInterval(self.checkstring(cref), loggingInterval)
-  def oms_setMaxLogFileSize(self, size):
+  def setMaxLogFileSize(self, size):
     return self.obj.oms_setMaxLogFileSize(size)
-  def oms_setTempDirectory(self, newTempDir):
+  def setTempDirectory(self, newTempDir):
     return self.obj.oms_setTempDirectory(self.checkstring(newTempDir))
-  def oms_setWorkingDirectory(self, path):
+  def setWorkingDirectory(self, path):
     return self.obj.oms_setWorkingDirectory(self.checkstring(path))
-  def oms_newModel(self, cref):
+  def newModel(self, cref):
     return self.obj.oms_newModel(self.checkstring(cref))
-  def oms_rename(self, cref, newcref):
+  def rename(self, cref, newcref):
     return self.obj.oms_rename(self.checkstring(cref), self.checkstring(newcref))
-  def oms_delete(self, cref):
+  def delete(self, cref):
     return self.obj.oms_delete(self.checkstring(cref))
-  def oms_export(self, cref, filename):
+  def export(self, cref, filename):
     return self.obj.oms_export(self.checkstring(cref), self.checkstring(filename))
-  def oms_import(self, filename):
+  def importFile(self, filename):
     contents = ctypes.c_char_p()
-    status = self.obj.oms_import(self.checkstring(filename), ctypes.byref(contents))
+    status = self.obj.oms_importFile(self.checkstring(filename), ctypes.byref(contents))
     return [status, contents.value]
-  def oms_list(self, ident):
+  def list(self, ident):
     contents = ctypes.c_char_p()
     status = self.obj.oms_list(self.checkstring(ident), ctypes.byref(contents))
     #self.obj.oms_freeMemory(contents)
     return [status, contents.value]
-  def oms_parseModelName(self, ident):
+  def parseModelName(self, ident):
     contents = ctypes.c_char_p()
     status = self.obj.oms_parseModelName(self.checkstring(ident), ctypes.byref(contents))
     #self.obj.oms_freeMemory(contents)
     return [status, contents.value]
-  def oms_importString(self, ident):
+  def importString(self, ident):
     contents = ctypes.c_char_p()
     status = self.obj.oms_importString(self.checkstring(ident), ctypes.byref(contents))
     #self.obj.oms_freeMemory(contents)
     return [status, contents.value]
-  def oms_addSystem(self, ident, type):
+  def addSystem(self, ident, type):
     return self.obj.oms_addSystem(self.checkstring(ident), type)
-  def oms_copySystem(self, source, target):
+  def copySystem(self, source, target):
     return self.obj.oms_copySystem(self.checkstring(source), self.checkstring(target))
-  def oms_addSubModel(self, cref, fmuPath):
+  def addSubModel(self, cref, fmuPath):
     return self.obj.oms_addSubModel(self.checkstring(cref), self.checkstring(fmuPath))
-  def oms_addConnector(self, cref, causality, type):
+  def addConnector(self, cref, causality, type):
     return self.obj.oms_addConnector(self.checkstring(cref), causality, type)
-  def oms_setCommandLineOption(self, cmd):
+  def setCommandLineOption(self, cmd):
     return self.obj.oms_setCommandLineOption(self.checkstring(cmd))
-  def oms_addConnection(self, crefA, crefB):
+  def addConnection(self, crefA, crefB):
     return self.obj.oms_addConnection(self.checkstring(crefA), self.checkstring(crefB))
-  def oms_deleteConnection(self, crefA, crefB):
+  def deleteConnection(self, crefA, crefB):
     return self.obj.oms_deleteConnection(self.checkstring(crefA), self.checkstring(crefB))
-  def oms_addBus(self, crefA):
+  def addBus(self, crefA):
     return self.obj.oms_addBus(self.checkstring(crefA))
-  def oms_addConnectorToBus(self, busCref, connectorCref):
+  def addConnectorToBus(self, busCref, connectorCref):
     return self.obj.oms_addConnectorToBus(self.checkstring(busCref), self.checkstring(connectorCref))
-  def oms_deleteConnectorFromBus(self, busCref, connectorCref):
+  def deleteConnectorFromBus(self, busCref, connectorCref):
     return self.obj.oms_deleteConnectorFromBus(self.checkstring(busCref), self.checkstring(connectorCref))
-  def oms_addTLMBus(self, cref, domain, dimensions, interpolation):
+  def addTLMBus(self, cref, domain, dimensions, interpolation):
     return self.obj.oms_addTLMBus(self.checkstring(cref), self.checkstring(domain), dimensions, interpolation)
-  def oms_addConnectorToTLMBus(self, busCref, connectorCref, type):
+  def addConnectorToTLMBus(self, busCref, connectorCref, type):
     return self.obj.oms_addConnectorToTLMBus(self.checkstring(busCref), self.checkstring(connectorCref), self.checkstring(type))
-  def oms_deleteConnectorFromTLMBus(self, busCref, connectorCref):
+  def deleteConnectorFromTLMBus(self, busCref, connectorCref):
     return self.obj.oms_deleteConnectorFromTLMBus(self.checkstring(busCref), self.checkstring(connectorCref))
-  def oms_addTLMConnection(self, crefA, crefB, delay, alpha, linearimpedance, angularimpedance):
+  def addTLMConnection(self, crefA, crefB, delay, alpha, linearimpedance, angularimpedance):
     return self.obj.oms_addTLMConnection(self.checkstring(crefA), self.checkstring(crefB), delay, alpha, linearimpedance, angularimpedance)
-  def oms_addExternalModel(self, cref, path, startscript):
+  def addExternalModel(self, cref, path, startscript):
     return self.obj.oms_addExternalModel(self.checkstring(cref), self.checkstring(path), self.checkstring(startscript))
-  def oms_instantiate(self, cref):
+  def instantiate(self, cref):
     return self.obj.oms_instantiate(self.checkstring(cref))
-  def oms_initialize(self, cref):
+  def initialize(self, cref):
     return self.obj.oms_initialize(self.checkstring(cref))
-  def oms_simulate(self, cref):
+  def simulate(self, cref):
     return self.obj.oms_simulate(self.checkstring(cref))
-  def oms_stepUntil(self, cref, stopTime):
+  def stepUntil(self, cref, stopTime):
     return self.obj.oms_stepUntil(self.checkstring(cref), stopTime)
-  def oms_terminate(self, cref):
+  def terminate(self, cref):
     return self.obj.oms_terminate(self.checkstring(cref))
-  def oms_reset(self, cref):
+  def reset(self, cref):
     return self.obj.oms_reset(self.checkstring(cref))
-  def oms_setTLMSocketData(self, cref, address, managerPort, monitorPort):
+  def setTLMSocketData(self, cref, address, managerPort, monitorPort):
     return self.obj.oms_setTLMSocketData(self.checkstring(cref), self.checkstring(address), managerPort, monitorPort)
-  def oms_setTLMPositionAndOrientation(self, cref, x1, x2, x3, A11, A12, A13, A21, A22, A23, A31, A32, A33):
+  def setTLMPositionAndOrientation(self, cref, x1, x2, x3, A11, A12, A13, A21, A22, A23, A31, A32, A33):
     return self.obj.oms_setTLMPositionAndOrientation(self.checkstring(cref), x1, x2, x3, A11, A12, A13, A21, A22, A23, A31, A32, A33)
-  def oms_exportDependencyGraphs(self, cref, initialization, simulation):
+  def exportDependencyGraphs(self, cref, initialization, simulation):
     return self.obj.oms_exportDependencyGraphs(self.checkstring(cref), self.checkstring(initialization), self.checkstring(simulation))
-  def oms_getReal(self, cref):
+  def getReal(self, cref):
     value = ctypes.c_double()
     status = self.obj.oms_getReal(self.checkstring(cref), ctypes.byref(value))
     return [value.value, status]
-  def oms_setReal(self, signal, value):
+  def setReal(self, signal, value):
     return self.obj.oms_setReal(self.checkstring(signal), value)
-  def oms_setResultFile(self, cref, filename, bufferSize):
+  def setResultFile(self, cref, filename, bufferSize):
     return self.obj.oms_setResultFile(self.checkstring(cref), self.checkstring(filename), bufferSize)
-  def oms_setSignalFilter(self, cref, regex):
+  def setSignalFilter(self, cref, regex):
     return self.obj.oms_setSignalFilter(self.checkstring(cref), self.checkstring(regex))
-  def oms_addSignalsToResults(self, cref, regex):
+  def addSignalsToResults(self, cref, regex):
     return self.obj.oms_addSignalsToResults(self.checkstring(cref), self.checkstring(regex))
-  def oms_removeSignalsFromResults(self, cref, regex):
+  def removeSignalsFromResults(self, cref, regex):
     return self.obj.oms_removeSignalsFromResults(self.checkstring(cref), self.checkstring(regex))
-  def oms_getStartTime(self, cref):
+  def getStartTime(self, cref):
     startTime = ctypes.c_double()
     status = self.obj.oms_getStartTime(self.checkstring(cref), ctypes.byref(startTime))
     return [startTime.value, status]
-  def oms_setStartTime(self, cref, startTime):
+  def setStartTime(self, cref, startTime):
     return self.obj.oms_setStartTime(self.checkstring(cref), startTime)
-  def oms_getStopTime(self, cref):
+  def getStopTime(self, cref):
     stopTime = ctypes.c_double()
     status = self.obj.oms_getStopTime(self.checkstring(cref), ctypes.byref(stopTime))
     return [stopTime.value, status]
-  def oms_setStopTime(self, cref, stopTime):
+  def setStopTime(self, cref, stopTime):
     return self.obj.oms_setStopTime(self.checkstring(cref), stopTime)
-  def oms_setFixedStepSize(self, cref, stepSize):
+  def setFixedStepSize(self, cref, stepSize):
     return self.obj.oms_setFixedStepSize(self.checkstring(cref), stepSize)
   def checkstring(self, ident):
     if isinstance(ident, bytes):

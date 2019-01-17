@@ -19,7 +19,7 @@ doesn't need to call free.
 #PYTHON#
 .. code-block:: python
 
-  ident, status = session.oms_parseModelName(contents)
+  ident, status = oms.parseModelName(contents)
 
 #END#
 

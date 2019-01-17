@@ -15,7 +15,7 @@ Lists all unconnected connectors of a given system.
 #PYTHON#
 .. code-block:: python
 
-  contents, status = session.oms_listUnconnectedConnectors(cref)
+  contents, status = oms.listUnconnectedConnectors(cref)
 
 #END#
 

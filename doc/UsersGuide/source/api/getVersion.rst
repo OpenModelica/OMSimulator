@@ -15,8 +15,8 @@ Returns the library's version string.
 #PYTHON#
 .. code-block:: python
 
-  session = OMSimulator()
-  session.oms_getVersion()
+  oms = OMSimulator()
+  oms.getVersion()
 
 #END#
 

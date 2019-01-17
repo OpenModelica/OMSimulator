@@ -17,7 +17,7 @@ function.
 #PYTHON#
 .. code-block:: python
 
-  session.oms_freeMemory(obj)
+  oms.freeMemory(obj)
 
 #END#
 

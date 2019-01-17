@@ -16,8 +16,8 @@ Set the result file of the simulation.
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms_setResultFile(cref, filename)
-  status = session.oms_setResultFile(cref, filename, bufferSize)
+  status = oms.setResultFile(cref, filename)
+  status = oms.setResultFile(cref, filename, bufferSize)
 
 #END#
 

@@ -15,7 +15,7 @@ Get the start time from the model.
 #PYTHON#
 .. code-block:: python
 
-  startTime, status = session.oms_getStartTime(cref)
+  startTime, status = oms.getStartTime(cref)
 
 #END#
 

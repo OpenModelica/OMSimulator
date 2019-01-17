@@ -15,7 +15,7 @@ Set integer value of given signal.
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms_setInteger(cref, value)
+  status = oms.setInteger(cref, value)
 
 #END#
 

@@ -15,7 +15,7 @@ Sets the solver method for the given system.
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms_setSolver(cref, solver)
+  status = oms.setSolver(cref, solver)
 
 #END#
 

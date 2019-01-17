@@ -36,7 +36,7 @@ The following table describes the return values:
 #PYTHON#
 .. code-block:: python
 
-  session.oms_compareSimulationResults(filenameA, filenameB, var, relTol, absTol)
+  oms.compareSimulationResults(filenameA, filenameB, var, relTol, absTol)
 
 #END#
 

@@ -14,7 +14,7 @@ setSignalFilter
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms_setSignalFilter(cref, regex)
+  status = oms.setSignalFilter(cref, regex)
 
 #END#
 

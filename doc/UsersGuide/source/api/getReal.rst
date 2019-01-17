@@ -15,7 +15,7 @@ Get real value.
 #PYTHON#
 .. code-block:: python
 
-  value, status = session.oms_getReal(cref)
+  value, status = oms.getReal(cref)
 
 #END#
 
