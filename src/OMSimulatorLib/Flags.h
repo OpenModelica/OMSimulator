@@ -44,6 +44,7 @@ namespace oms3
   private:
     Flags();
     ~Flags();
+    void setDefaults();
 
     // stop the compiler generating methods copying the object
     Flags(Flags const&);            ///< not implemented
@@ -70,18 +71,18 @@ namespace oms3
     static void SuppressPath(bool value) {GetInstance().suppressPath = value;}
 
   private:
-    bool ignoreInitialUnknowns = false;
-    bool suppressPath = false;
-    bool progressBar = false;
-    bool inputDerivatives = false;
-    bool defaultModeIsCS = false;
-    unsigned int intervals = 100;
-    double startTime = 0.0;
-    double stopTime = 1.0;
-    double timeout = 0.0;
-    double tolerance = 1e-4;
-    std::string solver = "cvode";
-    std::string resultFile = "<default>";
+    bool ignoreInitialUnknowns;
+    bool suppressPath;
+    bool progressBar;
+    bool inputDerivatives;
+    bool defaultModeIsCS;
+    unsigned int intervals;
+    double startTime;
+    double stopTime;
+    double timeout;
+    double tolerance;
+    std::string solver;
+    std::string resultFile;
 
     struct Flag
     {
@@ -106,6 +107,7 @@ namespace oms3
 
     const std::vector<Flag> flags = {
       {"", "", "FMU or SSP file", re_filename, Flags::Filename, false},
+      {"--clearAllOptions", "", "Reset all flags to efault vlaues", re_void, Flags::ClearAllOptions, false},
       {"--fetchAllVars", "", "", re_default, Flags::FetchAllVars, false},
       {"--help", "-h", "Displays the help text", re_void, Flags::Help, true},
       {"--ignoreInitialUnknowns", "", "Ignore the initial unknowns from the modelDesction.xml", re_bool, Flags::IgnoreInitialUnknowns, false},
@@ -128,6 +130,7 @@ namespace oms3
     };
 
   private:
+    static oms_status_enu_t ClearAllOptions(const std::string& value);
     static oms_status_enu_t FetchAllVars(const std::string& value);
     static oms_status_enu_t Filename(const std::string& value);
     static oms_status_enu_t Help(const std::string& value);
