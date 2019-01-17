@@ -1,6 +1,6 @@
 #CAPTION#
-import
-------
+importFile
+----------
 
 Imports a composite model from a SSP file.
 #END#
