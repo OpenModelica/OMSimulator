@@ -182,11 +182,21 @@ oms_status_enu_t oms::Model::list(const oms::ComRef& cref, char** contents)
       return logError("Model \"" + std::string(getCref()) + "\" does not contain any system");
 
     System* subsystem = getSystem(cref);
-    if (!subsystem)
-      return logError("error");
+    if (subsystem)
+    {
+      pugi::xml_node node = doc.append_child(oms::ssd::ssd_system);
+      subsystem->exportToSSD(node);
+    }
+    else
+    {
+      // list component
+      Component* component = getComponent(cref);
+      if (!component)
+        return logError("error");
 
-    pugi::xml_node node = doc.append_child(oms::ssd::ssd_system);
-    subsystem->exportToSSD(node);
+      pugi::xml_node node = doc.append_child(oms::ssd::ssd_system);
+      component->exportToSSD(node);
+    }
   }
 
   doc.save(writer);
