@@ -118,7 +118,7 @@ int test_Lin2DimODE_cs_Fit()
   status = oms_addSystem(oms_systemident.c_str(), oms_system_wc);
   ASSERT(status == oms_status_ok);
   status = oms_addSubModel(oms_fmuident.c_str(), "../FMUs/Lin2DimODE_cs.fmu");
-  oms_setTolerance(oms_systemident.c_str(), 1e-5);
+  oms_setTolerance(oms_systemident.c_str(), 1e-5, 1e-5);
   status = oms_setStopTime(oms_modelident, data_time[kNumObservations - 1]); // needed?
 
   // compute reference

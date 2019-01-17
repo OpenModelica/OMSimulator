@@ -60,7 +60,6 @@ namespace oms
     oms_status_enu_t reset();
     oms_status_enu_t stepUntil(double stopTime, void (*cb)(const char* ident, double time, oms_status_enu_t status));
 
-    double getTolerance() const {return relativeTolerance;}
     double getTime() const {return time;}
 
     oms_status_enu_t updateInputs(DirectedGraph& graph);
@@ -69,8 +68,7 @@ namespace oms
     std::string getSolverName() const;
     oms_status_enu_t setSolverMethod(std::string);
 
-    oms_status_enu_t setFixedStepSize(double stepSize) {this->maximumStepSize=stepSize; return oms_status_ok;}
-    oms_status_enu_t setTolerance(double tolerance) {this->absoluteTolerance=this->relativeTolerance=tolerance; return oms_status_ok;}
+    oms_status_enu_t setSolver(oms_solver_enu_t solver) {if (solver > oms_solver_sc_min && solver < oms_solver_sc_max) {solverMethod=solver; return oms_status_ok;} return oms_status_error;}
 
   protected:
     SystemSC(const ComRef& cref, Model* parentModel, System* parentSystem);
@@ -80,13 +78,7 @@ namespace oms
     SystemSC& operator=(SystemSC const& copy); ///< not implemented
 
   private:
-    oms_solver_enu_t solverMethod = oms_solver_cvode;
     double time;
-    double absoluteTolerance = 1e-4;
-    double relativeTolerance = 1e-4;
-    double minimumStepSize = 1e-4;
-    double maximumStepSize = 1e-1;
-    double initialStepSize = 1e-4;
 
     std::vector<ComponentFMUME*> fmus;
 

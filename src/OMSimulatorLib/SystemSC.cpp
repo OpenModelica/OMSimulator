@@ -85,7 +85,7 @@ int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
 }
 
 oms::SystemSC::SystemSC(const ComRef& cref, Model* parentModel, System* parentSystem)
-  : oms::System(cref, oms_system_sc, parentModel, parentSystem)
+  : oms::System(cref, oms_system_sc, parentModel, parentSystem, oms_solver_sc_cvode)
 {
 }
 
@@ -115,9 +115,9 @@ std::string oms::SystemSC::getSolverName() const
 {
   switch (solverMethod)
   {
-    case oms_solver_explicit_euler:
+    case oms_solver_sc_explicit_euler:
       return std::string("euler");
-    case oms_solver_cvode:
+    case oms_solver_sc_cvode:
       return std::string("cvode");
   }
 
@@ -127,9 +127,9 @@ std::string oms::SystemSC::getSolverName() const
 oms_status_enu_t oms::SystemSC::setSolverMethod(std::string solver)
 {
   if (std::string("euler") == solver)
-    solverMethod = oms_solver_explicit_euler;
+    solverMethod = oms_solver_sc_explicit_euler;
   else if (std::string("cvode") == solver)
-    solverMethod = oms_solver_cvode;
+    solverMethod = oms_solver_sc_cvode;
   else
     return oms_status_error;
 
@@ -199,13 +199,13 @@ oms_status_enu_t oms::SystemSC::instantiate()
 
   if (n_states == 0)
   {
-    solverMethod = oms_solver_explicit_euler;
+    solverMethod = oms_solver_sc_explicit_euler;
     logInfo("model doesn't contain any continuous state");
   }
 
-  if (oms_solver_explicit_euler == solverMethod)
+  if (oms_solver_sc_explicit_euler == solverMethod)
     ;
-  else if (oms_solver_cvode == solverMethod)
+  else if (oms_solver_sc_cvode == solverMethod)
     solverData.cvode.mem = NULL;
   else
     return logError_InternalError;
@@ -252,7 +252,7 @@ oms_status_enu_t oms::SystemSC::initialize()
     }
   }
 
-  if (oms_solver_cvode == solverMethod)
+  if (oms_solver_sc_cvode == solverMethod)
   {
     size_t n_states = 0;
     for (int i=0; i < fmus.size(); ++i)
@@ -333,7 +333,7 @@ oms_status_enu_t oms::SystemSC::terminate()
     if (oms_status_ok != component.second->terminate())
       return oms_status_error;
 
-  if (oms_solver_cvode == solverMethod && solverData.cvode.mem)
+  if (oms_solver_sc_cvode == solverMethod && solverData.cvode.mem)
   {
     long int nst, nfe, nsetups, nni, ncfn, netf;
     int flag;
@@ -397,7 +397,7 @@ oms_status_enu_t oms::SystemSC::reset()
 
   time = getModel()->getStartTime();
 
-  if (oms_solver_cvode == solverMethod && solverData.cvode.mem)
+  if (oms_solver_sc_cvode == solverMethod && solverData.cvode.mem)
   {
     long int nst, nfe, nsetups, nni, ncfn, netf;
     int flag;
@@ -500,7 +500,7 @@ oms_status_enu_t oms::SystemSC::stepUntil(double stopTime, void (*cb)(const char
         status = fmus[i]->getEventindicators(event_indicators[i]);
         if (oms_status_ok != status) return status;
 
-        if (oms_solver_cvode == solverMethod)
+        if (oms_solver_sc_cvode == solverMethod)
         {
           size_t offset=0;
           for (size_t k=0; k < i; ++k)
@@ -527,7 +527,7 @@ oms_status_enu_t oms::SystemSC::stepUntil(double stopTime, void (*cb)(const char
     }
 
     // integrate using specified solver
-    if (oms_solver_explicit_euler == solverMethod)
+    if (oms_solver_sc_explicit_euler == solverMethod)
     {
       for (int i=0; i < fmus.size(); ++i)
       {
@@ -549,7 +549,7 @@ oms_status_enu_t oms::SystemSC::stepUntil(double stopTime, void (*cb)(const char
       // set time
       time = tnext;
     }
-    else if (oms_solver_cvode == solverMethod)
+    else if (oms_solver_sc_cvode == solverMethod)
     {
       double cvode_time = tlast;
       int flag = CVode(solverData.cvode.mem, tnext, solverData.cvode.y, &cvode_time, CV_NORMAL);

@@ -71,7 +71,8 @@ void oms::Flags::setDefaults()
   stopTime = 1.0;
   timeout = 0.0;
   tolerance = 1e-4;
-  solver = "cvode";
+  solver = oms_solver_sc_cvode;
+  masterAlgorithm = oms_solver_wc_ma;
   resultFile = "<default>";
 }
 
@@ -261,7 +262,12 @@ oms_status_enu_t oms::Flags::SetInputDerivatives(const std::string& value)
 
 oms_status_enu_t oms::Flags::Solver(const std::string& value)
 {
-  GetInstance().solver = value;
+  if (value == "euler")
+    GetInstance().solver = oms_solver_sc_explicit_euler;
+  else if (value == "cvode")
+    GetInstance().solver = oms_solver_sc_cvode;
+  else
+    return oms_status_error;
   return oms_status_ok;
 }
 

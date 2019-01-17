@@ -450,8 +450,9 @@ oms_status_enu_t oms::ComponentFMUME::instantiate()
 
   // enterInitialization
   const double& startTime = getParentSystem()->getModel()->getStartTime();
-  const double& tolerance = dynamic_cast<SystemSC*>(getParentSystem())->getTolerance();
-  fmistatus = fmi2_import_setup_experiment(fmu, fmi2_true, tolerance, startTime, fmi2_false, 1.0);
+  double relativeTolerance = 0.0;
+  dynamic_cast<SystemSC*>(getParentSystem())->getTolerance(NULL, &relativeTolerance);
+  fmistatus = fmi2_import_setup_experiment(fmu, fmi2_true, relativeTolerance, startTime, fmi2_false, 1.0);
   if (fmi2_status_ok != fmistatus) return logError_FMUCall("fmi2_import_setup_experiment", this);
 
   fmistatus = fmi2_import_enter_initialization_mode(fmu);
@@ -521,8 +522,9 @@ oms_status_enu_t oms::ComponentFMUME::reset()
 
   // enterInitialization
   const double& startTime = getParentSystem()->getModel()->getStartTime();
-  const double& tolerance = dynamic_cast<SystemSC*>(getParentSystem())->getTolerance();
-  fmistatus = fmi2_import_setup_experiment(fmu, fmi2_true, tolerance, startTime, fmi2_false, 1.0);
+  double relativeTolerance = 0.0;
+  dynamic_cast<SystemSC*>(getParentSystem())->getTolerance(NULL, &relativeTolerance);
+  fmistatus = fmi2_import_setup_experiment(fmu, fmi2_true, relativeTolerance, startTime, fmi2_false, 1.0);
   if (fmi2_status_ok != fmistatus) return logError_FMUCall("fmi2_import_setup_experiment", this);
 
   fmistatus = fmi2_import_enter_initialization_mode(fmu);
