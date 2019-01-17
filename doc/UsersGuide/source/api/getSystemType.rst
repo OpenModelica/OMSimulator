@@ -22,7 +22,7 @@ Gets the type of the given system.
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms3_getSystemType(const char* cref, oms_system_enu_t* type);
+  oms_status_enu_t oms_getSystemType(const char* cref, oms_system_enu_t* type);
 
 #END#
 

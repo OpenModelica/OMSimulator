@@ -40,18 +40,18 @@
 #include <cstring>
 #include <errno.h>
 
-oms3::MATWriter::MATWriter(unsigned int bufferSize)
+oms::MATWriter::MATWriter(unsigned int bufferSize)
   : ResultWriter(bufferSize),
     pFile(NULL)
 {
 }
 
-oms3::MATWriter::~MATWriter()
+oms::MATWriter::~MATWriter()
 {
   closeFile();
 }
 
-bool oms3::MATWriter::createFile(const std::string& filename, double startTime, double stopTime)
+bool oms::MATWriter::createFile(const std::string& filename, double startTime, double stopTime)
 {
   if (pFile)
   {
@@ -188,7 +188,7 @@ bool oms3::MATWriter::createFile(const std::string& filename, double startTime, 
   return true;
 }
 
-void oms3::MATWriter::closeFile()
+void oms::MATWriter::closeFile()
 {
   if (pFile)
   {
@@ -198,7 +198,7 @@ void oms3::MATWriter::closeFile()
   }
 }
 
-void oms3::MATWriter::writeFile()
+void oms::MATWriter::writeFile()
 {
   appendMatVer4Matrix(pFile, pos_data_2, "data_2", 1 + signals.size(), nEmits, data_2, MatVer4Type_DOUBLE);
 }

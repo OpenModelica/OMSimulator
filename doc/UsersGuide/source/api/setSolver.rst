@@ -8,21 +8,21 @@ Sets the solver method for the given system.
 #LUA#
 .. code-block:: lua
 
-  status = oms3_setSolver(cref, solver)
+  status = oms_setSolver(cref, solver)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms3_setSolver(cref, solver)
+  status = session.oms_setSolver(cref, solver)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms3_setSolver(const char* cref, const char* solver);
+  oms_status_enu_t oms_setSolver(const char* cref, const char* solver);
 
 #END#
 

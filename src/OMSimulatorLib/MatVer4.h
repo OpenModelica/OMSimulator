@@ -35,7 +35,7 @@
 #include <stdio.h>
 #include <stddef.h>
 
-namespace oms3
+namespace oms
 {
 
 typedef enum MatVer4Type_t

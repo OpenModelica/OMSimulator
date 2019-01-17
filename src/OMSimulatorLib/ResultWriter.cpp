@@ -31,20 +31,20 @@
 
 #include "ResultWriter.h"
 
-oms3::ResultWriter::ResultWriter(unsigned int bufferSize)
+oms::ResultWriter::ResultWriter(unsigned int bufferSize)
   : bufferSize(bufferSize),
     nEmits(0),
     data_2(NULL)
 {
 }
 
-oms3::ResultWriter::~ResultWriter()
+oms::ResultWriter::~ResultWriter()
 {
   if (data_2)
     delete[] data_2;
 }
 
-unsigned int oms3::ResultWriter::addSignal(const std::string& name, const std::string& description, SignalType_t type)
+unsigned int oms::ResultWriter::addSignal(const std::string& name, const std::string& description, SignalType_t type)
 {
   Signal signal;
   signal.name = name;
@@ -55,7 +55,7 @@ unsigned int oms3::ResultWriter::addSignal(const std::string& name, const std::s
   return (unsigned int) signals.size();
 }
 
-void oms3::ResultWriter::addParameter(const std::string& name, const std::string& description, SignalType_t type, SignalValue_t value)
+void oms::ResultWriter::addParameter(const std::string& name, const std::string& description, SignalType_t type, SignalValue_t value)
 {
   Parameter parameter;
   parameter.signal.name = name;
@@ -66,7 +66,7 @@ void oms3::ResultWriter::addParameter(const std::string& name, const std::string
   parameters.push_back(parameter);
 }
 
-bool oms3::ResultWriter::create(const std::string& filename, double startTime, double stopTime)
+bool oms::ResultWriter::create(const std::string& filename, double startTime, double stopTime)
 {
   if (!createFile(filename, startTime, stopTime))
     return false;
@@ -76,7 +76,7 @@ bool oms3::ResultWriter::create(const std::string& filename, double startTime, d
   return true;
 }
 
-void oms3::ResultWriter::close()
+void oms::ResultWriter::close()
 {
   closeFile();
 
@@ -90,7 +90,7 @@ void oms3::ResultWriter::close()
   parameters.clear();
 }
 
-void oms3::ResultWriter::updateSignal(unsigned int id, SignalValue_t value)
+void oms::ResultWriter::updateSignal(unsigned int id, SignalValue_t value)
 {
   if (!data_2)
     return;
@@ -109,7 +109,7 @@ void oms3::ResultWriter::updateSignal(unsigned int id, SignalValue_t value)
   }
 }
 
-void oms3::ResultWriter::emit(double time)
+void oms::ResultWriter::emit(double time)
 {
   if (!data_2)
     return;

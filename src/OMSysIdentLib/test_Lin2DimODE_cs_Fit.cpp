@@ -68,20 +68,20 @@ typedef Eigen::Matrix<double, Dynamic, Dynamic, RowMajor> Matrix;
 
 void the_reference_ode(const char* oms_modelident, const std::vector<std::string>& p_name, const Vector& p, const Vector& t, const std::vector<std::string>& x_name, Matrix& x)
 {
-  oms3_instantiate(oms_modelident);
+  oms_instantiate(oms_modelident);
 
   for (int i=0; i < t.size(); ++i) {
     for (int j=0; j < p_name.size(); ++j) {
-        oms3_setReal(p_name[j].c_str(), p[j]);
+        oms_setReal(p_name[j].c_str(), p[j]);
     }
-    oms3_initialize(oms_modelident);
+    oms_initialize(oms_modelident);
 
-    if (t[i] > 0) oms3_stepUntil(oms_modelident, t[i]);
+    if (t[i] > 0) oms_stepUntil(oms_modelident, t[i]);
 
     for (int j=0; j < x_name.size(); ++j) {
-      oms3_getReal(x_name[j].c_str(), &(x(i, j)));
+      oms_getReal(x_name[j].c_str(), &(x(i, j)));
     }
-    oms3_reset(oms_modelident);
+    oms_reset(oms_modelident);
   }
 }
 
@@ -95,7 +95,7 @@ const std::vector<std::string> parametervars = {VARCREF("a11"), VARCREF("a12"), 
 
 int test_Lin2DimODE_cs_Fit()
 {
-  const char* version = oms3_getVersion();
+  const char* version = oms_getVersion();
   oms_status_enu_t status;
   //std::cout << version << std::endl;
 
@@ -105,21 +105,21 @@ int test_Lin2DimODE_cs_Fit()
     data_time[i] = data_time[i-1] + 0.1;
   }
 
-  oms3_setLogFile("test_Lin2DimODE_cs_Fit.log");
-  status = oms3_setTempDirectory(".");
+  oms_setLogFile("test_Lin2DimODE_cs_Fit.log");
+  status = oms_setTempDirectory(".");
   ASSERT(status == oms_status_ok);
 
   const char* oms_modelident = MODELIDENT;
   std::string oms_systemident = std::string(MODELIDENT) + ".root";
   std::string oms_fmuident = oms_systemident + "." + std::string(FMUIDENT);
 
-  status = oms3_newModel(oms_modelident);
+  status = oms_newModel(oms_modelident);
   ASSERT(status == oms_status_ok);
-  status = oms3_addSystem(oms_systemident.c_str(), oms_system_wc);
+  status = oms_addSystem(oms_systemident.c_str(), oms_system_wc);
   ASSERT(status == oms_status_ok);
-  status = oms3_addSubModel(oms_fmuident.c_str(), "../FMUs/Lin2DimODE_cs.fmu");
-  oms3_setTolerance(oms_systemident.c_str(), 1e-5);
-  status = oms3_setStopTime(oms_modelident, data_time[kNumObservations - 1]); // needed?
+  status = oms_addSubModel(oms_fmuident.c_str(), "../FMUs/Lin2DimODE_cs.fmu");
+  oms_setTolerance(oms_systemident.c_str(), 1e-5);
+  status = oms_setStopTime(oms_modelident, data_time[kNumObservations - 1]); // needed?
 
   // compute reference
   // der(x1) = a11*x1 + a12*x2;
@@ -233,8 +233,8 @@ int test_Lin2DimODE_cs_Fit()
 #endif // ROOT_VERSION
 
   omsi_freeSysIdentModel(fitmodel);
-  oms3_terminate(oms_modelident);
-  oms3_delete(oms_modelident);
+  oms_terminate(oms_modelident);
+  oms_delete(oms_modelident);
   return 0;
 }
 

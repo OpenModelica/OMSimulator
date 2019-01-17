@@ -22,7 +22,7 @@ Gets the model state of the given model cref.
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms3_getModelState(const char* cref, oms_modelState_enu_t* modelState);
+  oms_status_enu_t oms_getModelState(const char* cref, oms_modelState_enu_t* modelState);
 
 #END#
 

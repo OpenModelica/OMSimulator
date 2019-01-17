@@ -12,21 +12,21 @@ doesn't need to call free.
 #LUA#
 .. code-block:: lua
 
-  ident, status = oms3_parseModelName(contents)
+  ident, status = oms_parseModelName(contents)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  ident, status = session.oms3_parseModelName(contents)
+  ident, status = session.oms_parseModelName(contents)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms3_parseModelName(const char* contents, char** cref);
+  oms_status_enu_t oms_parseModelName(const char* contents, char** cref);
 
 #END#
 

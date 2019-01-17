@@ -32,7 +32,7 @@
 #ifndef _OMS_OPTION_H_
 #define _OMS_OPTION_H_
 
-namespace oms3
+namespace oms
 {
   template <typename T>
   class Option

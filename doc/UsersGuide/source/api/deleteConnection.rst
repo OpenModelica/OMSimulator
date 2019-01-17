@@ -8,21 +8,21 @@ Deletes the connection between connectors `crefA` and `crefB`.
 #LUA#
 .. code-block:: lua
 
-  status = oms3_deleteConnection(crefA, crefB)
+  status = oms_deleteConnection(crefA, crefB)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms3_deleteConnection(crefA, crefB)
+  status = session.oms_deleteConnection(crefA, crefB)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms3_deleteConnection(const char* crefA, const char* crefB);
+  oms_status_enu_t oms_deleteConnection(const char* crefA, const char* crefB);
 
 #END#
 

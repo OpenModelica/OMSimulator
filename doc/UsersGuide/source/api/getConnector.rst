@@ -22,7 +22,7 @@ Gets the connector object of the given connector cref.
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms3_getConnector(const char* cref, oms_connector_t** connector);
+  oms_status_enu_t oms_getConnector(const char* cref, oms_connector_t** connector);
 
 #END#
 

@@ -40,7 +40,7 @@
 #include <string>
 #include <vector>
 
-namespace oms3
+namespace oms
 {
   class Scope
   {
@@ -66,8 +66,8 @@ namespace oms3
     oms_status_enu_t importModel(const std::string& filename, char** cref);
     oms_status_enu_t setTempDirectory(const std::string& newTempDir);
     oms_status_enu_t setWorkingDirectory(const std::string& newWorkingDir);
-    oms_status_enu_t getElement(const ComRef& cref, oms3::Element** element);
-    oms_status_enu_t getElements(const ComRef& cref, oms3::Element*** elements);
+    oms_status_enu_t getElement(const ComRef& cref, oms::Element** element);
+    oms_status_enu_t getElements(const ComRef& cref, oms::Element*** elements);
     Model* getModel(const ComRef& cref);
 
     const std::string& getTempDirectory() const {return GetInstance().tempDir;}

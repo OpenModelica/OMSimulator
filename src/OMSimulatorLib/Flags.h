@@ -29,15 +29,15 @@
  *
  */
 
-#ifndef _OMS3_FLAGS_H_
-#define _OMS3_FLAGS_H_
+#ifndef _OMS_FLAGS_H_
+#define _OMS_FLAGS_H_
 
 #include "Types.h"
 #include <string>
 #include <vector>
 #include <map>
 
-namespace oms3
+namespace oms
 {
   class Flags
   {
@@ -84,6 +84,7 @@ namespace oms3
     std::string solver;
     std::string resultFile;
 
+  private:
     struct Flag
     {
       const std::string name;
@@ -103,7 +104,6 @@ namespace oms3
     const std::string re_double = "((\\+|-)?[[:digit:]]+)(\\.(([[:digit:]]+)?))?((e|E)((\\+|-)?)[[:digit:]]+)?";
     const std::string re_number = "[[:digit:]]+";
     const std::string re_filename = ".+(\\.fmu|\\.ssp)";
-
 
     const std::vector<Flag> flags = {
       {"", "", "FMU or SSP file", re_filename, Flags::Filename, false},
@@ -129,7 +129,6 @@ namespace oms3
       {"--workingDir", "", "Specifies the working directory", re_default, Flags::WorkingDir, false}
     };
 
-  private:
     static oms_status_enu_t ClearAllOptions(const std::string& value);
     static oms_status_enu_t FetchAllVars(const std::string& value);
     static oms_status_enu_t Filename(const std::string& value);

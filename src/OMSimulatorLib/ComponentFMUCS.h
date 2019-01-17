@@ -44,7 +44,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace oms3
+namespace oms
 {
   class System;
 

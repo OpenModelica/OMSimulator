@@ -10,21 +10,21 @@ systems.
 #LUA#
 .. code-block:: lua
 
-  status = oms3_setFixedStepSize(cref, stepSize)
+  status = oms_setFixedStepSize(cref, stepSize)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms3_setFixedStepSize(cref, stepSize)
+  status = session.oms_setFixedStepSize(cref, stepSize)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms3_setFixedStepSize(const char* cref, double stepSize);
+  oms_status_enu_t oms_setFixedStepSize(const char* cref, double stepSize);
 
 #END#
 

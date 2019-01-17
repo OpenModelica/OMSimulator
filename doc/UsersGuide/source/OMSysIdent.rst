@@ -48,12 +48,12 @@ for the parameter's value is stated.
   :caption: HelloWorld_cs_Fit.lua
   :name: HelloWorld_cs_Fit-lua
 
-  oms3_setTempDirectory("./HelloWorld_cs_Fit/")
-  oms3_newModel("HelloWorld_cs_Fit")
-  oms3_addSystem("HelloWorld_cs_Fit.root", oms_system_wc)
+  oms_setTempDirectory("./HelloWorld_cs_Fit/")
+  oms_newModel("HelloWorld_cs_Fit")
+  oms_addSystem("HelloWorld_cs_Fit.root", oms_system_wc)
 
   -- add FMU
-  oms3_addSubModel("HelloWorld_cs_Fit.root.HelloWorld", "../FMUs/HelloWorld.fmu")
+  oms_addSubModel("HelloWorld_cs_Fit.root.HelloWorld", "../FMUs/HelloWorld.fmu")
 
   -- create system identification model for model
   simodel = omsi_newSysIdentModel("HelloWorld_cs_Fit");
@@ -91,8 +91,8 @@ for the parameter's value is stated.
 
   omsi_freeSysIdentModel(simodel)
 
-  oms3_terminate("HelloWorld_cs_Fit")
-  oms3_delete("HelloWorld_cs_Fit")
+  oms_terminate("HelloWorld_cs_Fit")
+  oms_delete("HelloWorld_cs_Fit")
 
 Running the script generates the following console output:
 

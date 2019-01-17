@@ -4,7 +4,7 @@
 #include <iostream>
 #include <cstring>
 
-oms3::BusConnector::BusConnector(const oms3::ComRef &name)
+oms::BusConnector::BusConnector(const oms::ComRef &name)
 {
   std::string str(name);
   this->name = new char[str.size()+1];
@@ -14,10 +14,10 @@ oms3::BusConnector::BusConnector(const oms3::ComRef &name)
   this->connectors = NULL;
 }
 
-oms3::BusConnector::~BusConnector()
+oms::BusConnector::~BusConnector()
 {
   if (this->name) delete[] this->name;
-  if (this->geometry) delete reinterpret_cast<oms3::ssd::ConnectorGeometry*>(this->geometry);
+  if (this->geometry) delete reinterpret_cast<oms::ssd::ConnectorGeometry*>(this->geometry);
   if (this->connectors) {
     for (int i=0; connectors[i]; ++i)
       delete[] connectors[i];
@@ -25,7 +25,7 @@ oms3::BusConnector::~BusConnector()
   }
 }
 
-oms_status_enu_t oms3::BusConnector::exportToSSD(pugi::xml_node &root) const
+oms_status_enu_t oms::BusConnector::exportToSSD(pugi::xml_node &root) const
 {
   pugi::xml_node bus_node = root.append_child(oms::bus);
   bus_node.append_attribute("name") = name;
@@ -38,24 +38,24 @@ oms_status_enu_t oms3::BusConnector::exportToSSD(pugi::xml_node &root) const
 
   if (this->geometry)
   {
-    return reinterpret_cast<oms3::ssd::ConnectorGeometry*>(this->geometry)->exportToSSD(bus_node);
+    return reinterpret_cast<oms::ssd::ConnectorGeometry*>(this->geometry)->exportToSSD(bus_node);
   }
 
   return oms_status_ok;
 }
 
-oms3::BusConnector::BusConnector(const oms3::BusConnector &rhs)
+oms::BusConnector::BusConnector(const oms::BusConnector &rhs)
 {
   this->name = new char[strlen(rhs.name)+1];
   strcpy(this->name, rhs.name);
 
   if (rhs.geometry)
-    this->geometry = reinterpret_cast<ssd_connector_geometry_t*>(new oms3::ssd::ConnectorGeometry(*reinterpret_cast<oms3::ssd::ConnectorGeometry*>(rhs.geometry)));
+    this->geometry = reinterpret_cast<ssd_connector_geometry_t*>(new oms::ssd::ConnectorGeometry(*reinterpret_cast<oms::ssd::ConnectorGeometry*>(rhs.geometry)));
   else
     this->geometry = NULL;
 }
 
-oms3::BusConnector &oms3::BusConnector::operator=(const oms3::BusConnector &rhs)
+oms::BusConnector &oms::BusConnector::operator=(const oms::BusConnector &rhs)
 {
   // check for self-assignment
   if(&rhs == this)
@@ -66,12 +66,12 @@ oms3::BusConnector &oms3::BusConnector::operator=(const oms3::BusConnector &rhs)
   this->name = new char[strlen(rhs.name)+1];
   strcpy(this->name, rhs.name);
 
-  this->setGeometry(reinterpret_cast<oms3::ssd::ConnectorGeometry*>(rhs.geometry));
+  this->setGeometry(reinterpret_cast<oms::ssd::ConnectorGeometry*>(rhs.geometry));
 
   return *this;
 }
 
-void oms3::BusConnector::setName(const oms3::ComRef &name)
+void oms::BusConnector::setName(const oms::ComRef &name)
 {
   if (this->name)
     delete[] this->name;
@@ -81,26 +81,26 @@ void oms3::BusConnector::setName(const oms3::ComRef &name)
   strcpy(this->name, str.c_str());
 }
 
-void oms3::BusConnector::setGeometry(const oms3::ssd::ConnectorGeometry *newGeometry)
+void oms::BusConnector::setGeometry(const oms::ssd::ConnectorGeometry *newGeometry)
 {
   if (this->geometry)
   {
-    delete reinterpret_cast<oms3::ssd::ConnectorGeometry*>(this->geometry);
+    delete reinterpret_cast<oms::ssd::ConnectorGeometry*>(this->geometry);
     this->geometry = NULL;
   }
 
   if (newGeometry)
-    this->geometry = reinterpret_cast<ssd_connector_geometry_t*>(new oms3::ssd::ConnectorGeometry(*newGeometry));
+    this->geometry = reinterpret_cast<ssd_connector_geometry_t*>(new oms::ssd::ConnectorGeometry(*newGeometry));
 }
 
-oms_status_enu_t oms3::BusConnector::addConnector(const oms3::ComRef &cref)
+oms_status_enu_t oms::BusConnector::addConnector(const oms::ComRef &cref)
 {
   conrefs.push_back(cref);
   updateConnectors();
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::BusConnector::deleteConnector(const oms3::ComRef &cref)
+oms_status_enu_t oms::BusConnector::deleteConnector(const oms::ComRef &cref)
 {
   for (auto it = conrefs.begin(); it != conrefs.end(); ++it) {
     if (*it == cref) {
@@ -112,7 +112,7 @@ oms_status_enu_t oms3::BusConnector::deleteConnector(const oms3::ComRef &cref)
   return oms_status_error;
 }
 
-void oms3::BusConnector::updateConnectors()
+void oms::BusConnector::updateConnectors()
 {
   if (connectors)
   {

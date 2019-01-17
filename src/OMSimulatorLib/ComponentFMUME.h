@@ -44,14 +44,14 @@
 #include <unordered_map>
 #include <vector>
 
-namespace oms3
+namespace oms
 {
   class ComponentFMUME : public Component
   {
   public:
     ~ComponentFMUME();
 
-    static Component* NewComponent(const oms3::ComRef& cref, System* parentSystem, const std::string& fmuPath);
+    static Component* NewComponent(const oms::ComRef& cref, System* parentSystem, const std::string& fmuPath);
     static Component* NewComponent(const pugi::xml_node& node, System* parentSystem);
     const FMUInfo* getFMUInfo() const {return &(this->fmuInfo);}
 

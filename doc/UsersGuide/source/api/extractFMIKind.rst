@@ -22,7 +22,7 @@ Extracts the FMI kind of a given FMU from the file system.
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms3_extractFMIKind(const char* filename, oms_fmi_kind_enu_t* kind);
+  oms_status_enu_t oms_extractFMIKind(const char* filename, oms_fmi_kind_enu_t* kind);
 
 #END#
 

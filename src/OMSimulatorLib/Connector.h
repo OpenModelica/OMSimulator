@@ -40,7 +40,7 @@
 
 #include <pugixml.hpp>
 
-namespace oms3
+namespace oms
 {
   /**
    * \brief Connector
@@ -48,8 +48,8 @@ namespace oms3
   class Connector : protected oms_connector_t
   {
   public:
-    Connector(oms_causality_enu_t causality, oms_signal_type_enu_t type, const oms3::ComRef& name);
-    Connector(oms_causality_enu_t causality, oms_signal_type_enu_t type, const oms3::ComRef& name, double height);
+    Connector(oms_causality_enu_t causality, oms_signal_type_enu_t type, const oms::ComRef& name);
+    Connector(oms_causality_enu_t causality, oms_signal_type_enu_t type, const oms::ComRef& name, double height);
     ~Connector();
 
     // you have to free the memory yourself
@@ -63,13 +63,13 @@ namespace oms3
 
     operator std::string() const {return std::string(name);}
 
-    void setName(const oms3::ComRef& name);
-    void setGeometry(const oms3::ssd::ConnectorGeometry* newGeometry);
+    void setName(const oms::ComRef& name);
+    void setGeometry(const oms::ssd::ConnectorGeometry* newGeometry);
 
     const oms_causality_enu_t getCausality() const {return causality;}
     const oms_signal_type_enu_t getType() const {return type;}
-    const oms3::ComRef getName() const {return oms3::ComRef(name);}
-    const oms3::ssd::ConnectorGeometry* getGeometry() const {return reinterpret_cast<oms3::ssd::ConnectorGeometry*>(geometry);}
+    const oms::ComRef getName() const {return oms::ComRef(name);}
+    const oms::ssd::ConnectorGeometry* getGeometry() const {return reinterpret_cast<oms::ssd::ConnectorGeometry*>(geometry);}
     Connector addPrefix(const ComRef& prefix) const;
 
     bool isInput() const { return oms_causality_input == causality; }

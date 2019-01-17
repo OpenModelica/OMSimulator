@@ -48,7 +48,7 @@ const char isBigEndian()
   return (1 == test.i8[0]);
 }
 
-size_t oms3::sizeofMatVer4Type(MatVer4Type_t type)
+size_t oms::sizeofMatVer4Type(MatVer4Type_t type)
 {
   switch (type)
   {
@@ -67,7 +67,7 @@ size_t oms3::sizeofMatVer4Type(MatVer4Type_t type)
   }
 }
 
-void oms3::writeMatVer4Matrix(FILE* file, const char* name, size_t rows, size_t cols, const void* matrixData, MatVer4Type_t type)
+void oms::writeMatVer4Matrix(FILE* file, const char* name, size_t rows, size_t cols, const void* matrixData, MatVer4Type_t type)
 {
   MatVer4Header header;
   size_t size = sizeofMatVer4Type(type);
@@ -83,7 +83,7 @@ void oms3::writeMatVer4Matrix(FILE* file, const char* name, size_t rows, size_t 
   fwrite(matrixData, size, rows * cols, file);
 }
 
-void oms3::appendMatVer4Matrix(FILE* file, long position, const char* name, size_t rows, size_t cols, const void* matrixData, MatVer4Type_t type)
+void oms::appendMatVer4Matrix(FILE* file, long position, const char* name, size_t rows, size_t cols, const void* matrixData, MatVer4Type_t type)
 {
   MatVer4Header header;
   size_t size = sizeofMatVer4Type(type);
@@ -105,7 +105,7 @@ void oms3::appendMatVer4Matrix(FILE* file, long position, const char* name, size
   fwrite(matrixData, size, rows * cols, file);
 }
 
-oms3::MatVer4Matrix* oms3::readMatVer4Matrix(FILE* file)
+oms::MatVer4Matrix* oms::readMatVer4Matrix(FILE* file)
 {
   MatVer4Matrix *matrix = (MatVer4Matrix*) malloc(sizeof(MatVer4Matrix));
   if (!matrix)
@@ -124,7 +124,7 @@ oms3::MatVer4Matrix* oms3::readMatVer4Matrix(FILE* file)
   return matrix;
 }
 
-void oms3::freeMatVer4Matrix(MatVer4Matrix** matrix)
+void oms::freeMatVer4Matrix(MatVer4Matrix** matrix)
 {
   if (*matrix)
   {
@@ -135,7 +135,7 @@ void oms3::freeMatVer4Matrix(MatVer4Matrix** matrix)
   }
 }
 
-void oms3::skipMatVer4Matrix(FILE* file)
+void oms::skipMatVer4Matrix(FILE* file)
 {
   MatVer4Header header;
   fread(&header, sizeof(MatVer4Header), 1, file);

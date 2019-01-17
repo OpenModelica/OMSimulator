@@ -37,7 +37,7 @@
 #include <string>
 #include <fmilib.h>
 
-namespace oms3
+namespace oms
 {
   /**
    * \brief FMU info

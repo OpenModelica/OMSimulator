@@ -22,7 +22,7 @@ Cancels a running asynchronous simulation.
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms3_cancelSimulation_asynchronous(const char* cref);
+  oms_status_enu_t oms_cancelSimulation_asynchronous(const char* cref);
 
 #END#
 

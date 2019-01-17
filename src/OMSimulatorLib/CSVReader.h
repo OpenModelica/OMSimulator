@@ -36,7 +36,7 @@
 #include <vector>
 #include <string>
 
-namespace oms3
+namespace oms
 {
   class CSVReader : public ResultReader
   {

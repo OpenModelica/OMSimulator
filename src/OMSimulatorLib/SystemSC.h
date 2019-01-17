@@ -39,7 +39,7 @@
 #include "cvode/cvode.h"             /* prototypes for CVODE fcts., consts. */
 #include "nvector/nvector_serial.h"  /* serial N_Vector types, fcts., macros */
 
-namespace oms3
+namespace oms
 {
   class Model;
   class ComponentFMUME;
@@ -50,7 +50,7 @@ namespace oms3
   public:
     ~SystemSC();
 
-    static System* NewSystem(const oms3::ComRef& cref, Model* parentModel, System* parentSystem);
+    static System* NewSystem(const oms::ComRef& cref, Model* parentModel, System* parentSystem);
     oms_status_enu_t exportToSSD_SimulationInformation(pugi::xml_node& node) const;
     oms_status_enu_t importFromSSD_SimulationInformation(const pugi::xml_node& node);
 
@@ -118,7 +118,7 @@ namespace oms3
       SolverDataCVODE_t cvode;
     } solverData;
 
-    friend int oms3::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data);
+    friend int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data);
   };
 }
 

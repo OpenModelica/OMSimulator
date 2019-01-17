@@ -35,7 +35,7 @@
 #include "MatVer4.h"
 #include "ResultReader.h"
 
-namespace oms3
+namespace oms
 {
   class MatReader : public ResultReader
   {

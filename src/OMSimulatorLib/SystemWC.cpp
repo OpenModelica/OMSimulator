@@ -39,18 +39,18 @@
 #include "SystemTLM.h"
 #include "Types.h"
 
-oms3::SystemWC::SystemWC(const ComRef& cref, Model* parentModel, System* parentSystem)
-  : oms3::System(cref, oms_system_wc, parentModel, parentSystem)
+oms::SystemWC::SystemWC(const ComRef& cref, Model* parentModel, System* parentSystem)
+  : oms::System(cref, oms_system_wc, parentModel, parentSystem)
 {
 }
 
-oms3::SystemWC::~SystemWC()
+oms::SystemWC::~SystemWC()
 {
   if (derBuffer)
     delete[] derBuffer;
 }
 
-oms3::System* oms3::SystemWC::NewSystem(const oms3::ComRef& cref, oms3::Model* parentModel, oms3::System* parentSystem)
+oms::System* oms::SystemWC::NewSystem(const oms::ComRef& cref, oms::Model* parentModel, oms::System* parentSystem)
 {
   if (!cref.isValidIdent())
   {
@@ -68,7 +68,7 @@ oms3::System* oms3::SystemWC::NewSystem(const oms3::ComRef& cref, oms3::Model* p
   return system;
 }
 
-oms_status_enu_t oms3::SystemWC::exportToSSD_SimulationInformation(pugi::xml_node& node) const
+oms_status_enu_t oms::SystemWC::exportToSSD_SimulationInformation(pugi::xml_node& node) const
 {
   pugi::xml_node node_simulation_information = node.append_child(oms::ssd::ssd_simulation_information);
 
@@ -79,14 +79,14 @@ oms_status_enu_t oms3::SystemWC::exportToSSD_SimulationInformation(pugi::xml_nod
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::SystemWC::importFromSSD_SimulationInformation(const pugi::xml_node& node)
+oms_status_enu_t oms::SystemWC::importFromSSD_SimulationInformation(const pugi::xml_node& node)
 {
   solverName = node.child("FixedStepMaster").attribute("description").as_string();
   stepSize = node.child("FixedStepMaster").attribute("stepSize").as_double();
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::SystemWC::instantiate()
+oms_status_enu_t oms::SystemWC::instantiate()
 {
   time = getModel()->getStartTime();
 
@@ -101,7 +101,7 @@ oms_status_enu_t oms3::SystemWC::instantiate()
   return oms_status_ok;
 }
 
-unsigned int oms3::SystemWC::getMaxOutputDerivativeOrder()
+unsigned int oms::SystemWC::getMaxOutputDerivativeOrder()
 {
   unsigned int order = 0;
 
@@ -115,7 +115,7 @@ unsigned int oms3::SystemWC::getMaxOutputDerivativeOrder()
   return order;
 }
 
-oms_status_enu_t oms3::SystemWC::initialize()
+oms_status_enu_t oms::SystemWC::initialize()
 {
   clock.reset();
   CallClock callClock(clock);
@@ -143,7 +143,7 @@ oms_status_enu_t oms3::SystemWC::initialize()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::SystemWC::terminate()
+oms_status_enu_t oms::SystemWC::terminate()
 {
   for (const auto& subsystem : getSubSystems())
     if (oms_status_ok != subsystem.second->terminate())
@@ -156,7 +156,7 @@ oms_status_enu_t oms3::SystemWC::terminate()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::SystemWC::reset()
+oms_status_enu_t oms::SystemWC::reset()
 {
   for (const auto& subsystem : getSubSystems())
     if (oms_status_ok != subsystem.second->reset())
@@ -171,7 +171,7 @@ oms_status_enu_t oms3::SystemWC::reset()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::SystemWC::stepUntil(double stopTime, void (*cb)(const char* ident, double time, oms_status_enu_t status))
+oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char* ident, double time, oms_status_enu_t status))
 {
   CallClock callClock(clock);
   ComRef modelName = this->getModel()->getCref();
@@ -240,7 +240,7 @@ oms_status_enu_t oms3::SystemWC::stepUntil(double stopTime, void (*cb)(const cha
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::SystemWC::getRealOutputDerivative(const ComRef& cref, double*& value, unsigned int& order)
+oms_status_enu_t oms::SystemWC::getRealOutputDerivative(const ComRef& cref, double*& value, unsigned int& order)
 {
   if (!value)
     return oms_status_ok;
@@ -256,8 +256,8 @@ oms_status_enu_t oms3::SystemWC::getRealOutputDerivative(const ComRef& cref, dou
       return logError_ModelInWrongState(getModel());
   }
 
-  oms3::ComRef tail(cref);
-  oms3::ComRef head = tail.pop_front();
+  oms::ComRef tail(cref);
+  oms::ComRef head = tail.pop_front();
 
   auto component = getComponents().find(head);
   if (component != getComponents().end() && oms_component_fmu == component->second->getType())
@@ -270,7 +270,7 @@ oms_status_enu_t oms3::SystemWC::getRealOutputDerivative(const ComRef& cref, dou
   return oms_status_error;
 }
 
-oms_status_enu_t oms3::SystemWC::setRealInputDerivative(const ComRef& cref, double* value, unsigned int order)
+oms_status_enu_t oms::SystemWC::setRealInputDerivative(const ComRef& cref, double* value, unsigned int order)
 {
   if (!value)
     return oms_status_ok;
@@ -285,8 +285,8 @@ oms_status_enu_t oms3::SystemWC::setRealInputDerivative(const ComRef& cref, doub
       return logError_ModelInWrongState(getModel());
   }
 
-  oms3::ComRef tail(cref);
-  oms3::ComRef head = tail.pop_front();
+  oms::ComRef tail(cref);
+  oms::ComRef head = tail.pop_front();
 
   auto component = getComponents().find(head);
   if (component != getComponents().end() && oms_component_fmu == component->second->getType())
@@ -298,7 +298,7 @@ oms_status_enu_t oms3::SystemWC::setRealInputDerivative(const ComRef& cref, doub
   return oms_status_error;
 }
 
-oms_status_enu_t oms3::SystemWC::updateInputs(oms3::DirectedGraph& graph)
+oms_status_enu_t oms::SystemWC::updateInputs(oms::DirectedGraph& graph)
 {
   CallClock callClock(clock);
 
@@ -352,7 +352,7 @@ oms_status_enu_t oms3::SystemWC::updateInputs(oms3::DirectedGraph& graph)
 }
 
 
-oms_status_enu_t oms3::SystemWC::solveAlgLoop(DirectedGraph& graph, const std::vector< std::pair<int, int> >& SCC)
+oms_status_enu_t oms::SystemWC::solveAlgLoop(DirectedGraph& graph, const std::vector< std::pair<int, int> >& SCC)
 {
   CallClock callClock(clock);
 

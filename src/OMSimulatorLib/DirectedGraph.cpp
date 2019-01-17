@@ -43,16 +43,16 @@
 #include <algorithm>
 #include <deque>
 
-oms3::DirectedGraph::DirectedGraph()
+oms::DirectedGraph::DirectedGraph()
 {
   sortedConnectionsAreValid = true;
 }
 
-oms3::DirectedGraph::~DirectedGraph()
+oms::DirectedGraph::~DirectedGraph()
 {
 }
 
-void oms3::DirectedGraph::clear()
+void oms::DirectedGraph::clear()
 {
   G.clear();
   sortedConnections.clear();
@@ -61,7 +61,7 @@ void oms3::DirectedGraph::clear()
   sortedConnectionsAreValid = true;
 }
 
-int oms3::DirectedGraph::addNode(const oms3::Connector& var)
+int oms::DirectedGraph::addNode(const oms::Connector& var)
 {
   nodes.push_back(var);
   std::vector<int> row;
@@ -69,7 +69,7 @@ int oms3::DirectedGraph::addNode(const oms3::Connector& var)
   return static_cast<int>(nodes.size()) - 1;
 }
 
-void oms3::DirectedGraph::addEdge(const oms3::Connector& var1, const oms3::Connector& var2)
+void oms::DirectedGraph::addEdge(const oms::Connector& var1, const oms::Connector& var2)
 {
   int index1 = -1;
   int index2 = -1;
@@ -96,7 +96,7 @@ void oms3::DirectedGraph::addEdge(const oms3::Connector& var1, const oms3::Conne
   sortedConnectionsAreValid = false;
 }
 
-void oms3::DirectedGraph::dotExport(const std::string& filename)
+void oms::DirectedGraph::dotExport(const std::string& filename)
 {
   /*
    * digraph G
@@ -135,7 +135,7 @@ void oms3::DirectedGraph::dotExport(const std::string& filename)
   dotFile.close();
 }
 
-void oms3::DirectedGraph::includeGraph(const oms3::DirectedGraph& graph, const oms3::ComRef& prefix)
+void oms::DirectedGraph::includeGraph(const oms::DirectedGraph& graph, const oms::ComRef& prefix)
 {
   for (int i = 0; i < graph.nodes.size(); i++)
     addNode(graph.nodes[i].addPrefix(prefix));
@@ -144,7 +144,7 @@ void oms3::DirectedGraph::includeGraph(const oms3::DirectedGraph& graph, const o
     addEdge(graph.nodes[graph.edges[i].first].addPrefix(prefix), graph.nodes[graph.edges[i].second].addPrefix(prefix));
 }
 
-int oms3::DirectedGraph::getEdgeIndex(const std::vector< std::pair<int, int> >& edges, int from, int to)
+int oms::DirectedGraph::getEdgeIndex(const std::vector< std::pair<int, int> >& edges, int from, int to)
 {
   for (int i = 0; i < edges.size(); ++i)
     if (edges[i].first == from && edges[i].second == to)
@@ -154,7 +154,7 @@ int oms3::DirectedGraph::getEdgeIndex(const std::vector< std::pair<int, int> >& 
   return -1;
 }
 
-void oms3::DirectedGraph::strongconnect(int v, std::vector< std::vector<int> > G, int& index, int *d, int *low, std::stack<int>& S, bool *stacked, std::deque< std::vector<int> >& components)
+void oms::DirectedGraph::strongconnect(int v, std::vector< std::vector<int> > G, int& index, int *d, int *low, std::stack<int>& S, bool *stacked, std::deque< std::vector<int> >& components)
 {
   // Set the depth index for v to the smallest unused index
   d[v] = index;
@@ -202,7 +202,7 @@ void oms3::DirectedGraph::strongconnect(int v, std::vector< std::vector<int> > G
   }
 }
 
-std::deque< std::vector<int> > oms3::DirectedGraph::getSCCs()
+std::deque< std::vector<int> > oms::DirectedGraph::getSCCs()
 {
   //std::cout << "Tarjan's strongly connected components algorithm" << std::endl;
 
@@ -242,14 +242,14 @@ std::deque< std::vector<int> > oms3::DirectedGraph::getSCCs()
   return components;
 }
 
-const std::vector< std::vector< std::pair<int, int> > >& oms3::DirectedGraph::getSortedConnections()
+const std::vector< std::vector< std::pair<int, int> > >& oms::DirectedGraph::getSortedConnections()
 {
   if (!sortedConnectionsAreValid)
     calculateSortedConnections();
   return sortedConnections;
 }
 
-void oms3::DirectedGraph::calculateSortedConnections()
+void oms::DirectedGraph::calculateSortedConnections()
 {
   std::deque< std::vector<int> > components = getSCCs();
   std::vector< std::pair<int, int> > SCC;

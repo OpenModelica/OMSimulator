@@ -8,21 +8,21 @@ Sets special flags.
 #LUA#
 .. code-block:: lua
 
-  status = oms3_setCommandLineOption(cmd)
+  status = oms_setCommandLineOption(cmd)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  status = oms3_setCommandLineOption(cmd)
+  status = oms_setCommandLineOption(cmd)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms3_setCommandLineOption(const char* cmd);
+  oms_status_enu_t oms_setCommandLineOption(const char* cmd);
 
 #END#
 

@@ -9,21 +9,21 @@ specified as fully qualified component references, e.g., `"model.system.componen
 #LUA#
 .. code-block:: lua
 
-  status = oms3_addConnection(crefA, crefB)
+  status = oms_addConnection(crefA, crefB)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms3_addConnection(crefA, crefB)
+  status = session.oms_addConnection(crefA, crefB)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms3_addConnection(const char* crefA, const char* crefB);
+  oms_status_enu_t oms_addConnection(const char* crefA, const char* crefB);
 
 #END#
 

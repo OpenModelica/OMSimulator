@@ -22,7 +22,7 @@ Sets a callback function for the logging system.
 #CAPI#
 .. code-block:: c
 
-  void oms3_setLoggingCallback(void (*cb)(oms_message_type_enu_t type, const char* message));
+  void oms_setLoggingCallback(void (*cb)(oms_message_type_enu_t type, const char* message));
 
 #END#
 

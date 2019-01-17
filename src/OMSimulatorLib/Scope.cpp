@@ -38,7 +38,7 @@
 #include <OMSBoost.h>
 #include <time.h>
 
-oms3::Scope::Scope()
+oms::Scope::Scope()
   : tempDir(".")
 {
   // initialize random seed
@@ -52,7 +52,7 @@ oms3::Scope::Scope()
   setWorkingDirectory(".");
 }
 
-oms3::Scope::~Scope()
+oms::Scope::~Scope()
 {
   // free memory if no one else does
   for (const auto& model : models)
@@ -60,20 +60,20 @@ oms3::Scope::~Scope()
       delete model;
 }
 
-oms3::Scope& oms3::Scope::GetInstance()
+oms::Scope& oms::Scope::GetInstance()
 {
   // the only instance
   static Scope scope;
   return scope;
 }
 
-oms_status_enu_t oms3::Scope::newModel(const oms3::ComRef& cref)
+oms_status_enu_t oms::Scope::newModel(const oms::ComRef& cref)
 {
   // check if cref is in scope
   if (getModel(cref))
     return logError_AlreadyInScope(cref);
 
-  Model* model = oms3::Model::NewModel(cref);
+  Model* model = oms::Model::NewModel(cref);
   if (!model)
     return oms_status_error;
 
@@ -84,7 +84,7 @@ oms_status_enu_t oms3::Scope::newModel(const oms3::ComRef& cref)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Scope::deleteModel(const oms3::ComRef& cref)
+oms_status_enu_t oms::Scope::deleteModel(const oms::ComRef& cref)
 {
   auto it = models_map.find(cref);
   if (it == models_map.end())
@@ -103,7 +103,7 @@ oms_status_enu_t oms3::Scope::deleteModel(const oms3::ComRef& cref)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Scope::renameModel(const oms3::ComRef& cref, const oms3::ComRef& newCref)
+oms_status_enu_t oms::Scope::renameModel(const oms::ComRef& cref, const oms::ComRef& newCref)
 {
   auto it = models_map.find(cref);
   if (it == models_map.end())
@@ -120,16 +120,16 @@ oms_status_enu_t oms3::Scope::renameModel(const oms3::ComRef& cref, const oms3::
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Scope::exportModel(const oms3::ComRef& cref, const std::string& filename)
+oms_status_enu_t oms::Scope::exportModel(const oms::ComRef& cref, const std::string& filename)
 {
-  oms3::Model* model = getModel(cref);
+  oms::Model* model = getModel(cref);
   if (!model)
     return logError("Model \"" + std::string(cref) + "\" does not exist in the scope");
 
   return model->exportToFile(filename);
 }
 
-oms_status_enu_t oms3::Scope::miniunz(const std::string& filename, const std::string& extractdir, bool systemStructure)
+oms_status_enu_t oms::Scope::miniunz(const std::string& filename, const std::string& extractdir, bool systemStructure)
 {
   // Usage: miniunz [-e] [-x] [-v] [-l] [-o] [-p password] file.zip [file_to_extr.] [-d extractdir]
   //        -e  Extract without pathname (junk paths)
@@ -163,7 +163,7 @@ oms_status_enu_t oms3::Scope::miniunz(const std::string& filename, const std::st
   return oms_status_error;
 }
 
-oms_status_enu_t oms3::Scope::importModel(const std::string& filename, char** _cref)
+oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cref)
 {
   *_cref = NULL;
 
@@ -176,7 +176,7 @@ oms_status_enu_t oms3::Scope::importModel(const std::string& filename, char** _c
 
   // extract SystemStructure.ssd to temp
   boost::filesystem::path temp_root(getTempDirectory());
-  if (oms_status_ok != oms3::Scope::miniunz(filename, temp_root.string(), true))
+  if (oms_status_ok != oms::Scope::miniunz(filename, temp_root.string(), true))
     return logError("failed to extract \"SystemStructure.ssd\" from \"" + filename + "\"");
 
   pugi::xml_document doc;
@@ -201,7 +201,7 @@ oms_status_enu_t oms3::Scope::importModel(const std::string& filename, char** _c
     return oms_status_error;
 
   // extract the ssp file
-  oms3::Scope::miniunz(filename, model->getTempDirectory(), false);
+  oms::Scope::miniunz(filename, model->getTempDirectory(), false);
 
   std::string cd = Scope::GetInstance().getWorkingDirectory();
   Scope::GetInstance().setWorkingDirectory(model->getTempDirectory());
@@ -220,7 +220,7 @@ oms_status_enu_t oms3::Scope::importModel(const std::string& filename, char** _c
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Scope::setTempDirectory(const std::string& newTempDir)
+oms_status_enu_t oms::Scope::setTempDirectory(const std::string& newTempDir)
 {
   if (!boost::filesystem::is_directory(newTempDir))
   {
@@ -249,7 +249,7 @@ oms_status_enu_t oms3::Scope::setTempDirectory(const std::string& newTempDir)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Scope::setWorkingDirectory(const std::string& newWorkingDir)
+oms_status_enu_t oms::Scope::setWorkingDirectory(const std::string& newWorkingDir)
 {
   boost::filesystem::path path(newWorkingDir.c_str());
   if (!boost::filesystem::is_directory(path))
@@ -263,29 +263,29 @@ oms_status_enu_t oms3::Scope::setWorkingDirectory(const std::string& newWorkingD
   return oms_status_ok;
 }
 
-std::string oms3::Scope::getWorkingDirectory()
+std::string oms::Scope::getWorkingDirectory()
 {
   boost::filesystem::path workingDir(boost::filesystem::current_path());
   return workingDir.string();
 }
 
-oms_status_enu_t oms3::Scope::getElement(const oms3::ComRef& cref, oms3::Element** element)
+oms_status_enu_t oms::Scope::getElement(const oms::ComRef& cref, oms::Element** element)
 {
   if (!element)
-    return logWarning("[oms3::Scope::getElement] NULL pointer");
+    return logWarning("[oms::Scope::getElement] NULL pointer");
 
-  oms3::ComRef tail(cref);
-  oms3::ComRef front = tail.pop_front();
+  oms::ComRef tail(cref);
+  oms::ComRef front = tail.pop_front();
 
-  oms3::Model* model = getModel(front);
+  oms::Model* model = getModel(front);
   if (!model)
     return logError("Model \"" + std::string(front) + "\" does not exist in the scope");
 
   if (cref.isValidIdent())
     return logError("A model has no element information");
 
-  oms3::System* system = model->getSystem(tail);
-  oms3::Component* component = model->getComponent(tail);
+  oms::System* system = model->getSystem(tail);
+  oms::Component* component = model->getComponent(tail);
   if (!system && !component)
     return logError("Model \"" + std::string(front) + "\" does not contain system or component \"" + std::string(tail) + "\"");
 
@@ -297,14 +297,14 @@ oms_status_enu_t oms3::Scope::getElement(const oms3::ComRef& cref, oms3::Element
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Scope::getElements(const oms3::ComRef& cref, oms3::Element*** elements)
+oms_status_enu_t oms::Scope::getElements(const oms::ComRef& cref, oms::Element*** elements)
 {
   if (!elements)
-    return logWarning("[oms3::Scope::getElements] NULL pointer");
+    return logWarning("[oms::Scope::getElements] NULL pointer");
 
-  oms3::ComRef tail(cref);
-  oms3::ComRef front = tail.pop_front();
-  oms3::Model* model = getModel(front);
+  oms::ComRef tail(cref);
+  oms::ComRef front = tail.pop_front();
+  oms::Model* model = getModel(front);
   if (!model)
     return logError("Model \"" + std::string(front) + "\" does not exist in the scope");
 
@@ -318,7 +318,7 @@ oms_status_enu_t oms3::Scope::getElements(const oms3::ComRef& cref, oms3::Elemen
   return oms_status_error;
 }
 
-oms3::Model* oms3::Scope::getModel(const oms3::ComRef& cref)
+oms::Model* oms::Scope::getModel(const oms::ComRef& cref)
 {
   auto it = models_map.find(cref);
   if (it == models_map.end())

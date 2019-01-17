@@ -9,7 +9,7 @@ relative tolerances.
 #LUA#
 .. code-block:: lua
 
-  oms3_compareSimulationResults(filenameA, filenameB, var, relTol, absTol)
+  oms_compareSimulationResults(filenameA, filenameB, var, relTol, absTol)
 
 The following table describes the input values:
 
@@ -36,14 +36,14 @@ The following table describes the return values:
 #PYTHON#
 .. code-block:: python
 
-  session.oms3_compareSimulationResults(filenameA, filenameB, var, relTol, absTol)
+  session.oms_compareSimulationResults(filenameA, filenameB, var, relTol, absTol)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  int oms3_compareSimulationResults(const char* filenameA, const char* filenameB, const char* var, double relTol, double absTol);
+  int oms_compareSimulationResults(const char* filenameA, const char* filenameB, const char* var, double relTol, double absTol);
 
 #END#
 

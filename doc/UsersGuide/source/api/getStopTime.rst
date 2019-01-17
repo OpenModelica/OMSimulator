@@ -8,21 +8,21 @@ Get the stop time from the model.
 #LUA#
 .. code-block:: lua
 
-  stopTime, status = oms3_getStopTime(cref)
+  stopTime, status = oms_getStopTime(cref)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  stopTime, status = session.oms3_getStopTime(cref)
+  stopTime, status = session.oms_getStopTime(cref)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms3_getStopTime(const char* cref, double* stopTime);
+  oms_status_enu_t oms_getStopTime(const char* cref, double* stopTime);
 
 #END#
 

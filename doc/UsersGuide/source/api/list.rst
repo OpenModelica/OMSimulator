@@ -12,21 +12,21 @@ caller doesn't need to call free.
 #LUA#
 .. code-block:: lua
 
-  contents, status = oms3_list(cref)
+  contents, status = oms_list(cref)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  contents, status = session.oms3_list(cref)
+  contents, status = session.oms_list(cref)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms3_list(const char* cref, char** contents);
+  oms_status_enu_t oms_list(const char* cref, char** contents);
 
 #END#
 

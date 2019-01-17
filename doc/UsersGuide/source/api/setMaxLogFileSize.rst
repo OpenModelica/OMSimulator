@@ -9,21 +9,21 @@ will continue on stdout.
 #LUA#
 .. code-block:: lua
 
-  oms3_setMaxLogFileSize(size)
+  oms_setMaxLogFileSize(size)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  session.oms3_setMaxLogFileSize(size)
+  session.oms_setMaxLogFileSize(size)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  void oms3_setMaxLogFileSize(const unsigned long size);
+  void oms_setMaxLogFileSize(const unsigned long size);
 
 #END#
 

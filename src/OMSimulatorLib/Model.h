@@ -40,7 +40,7 @@
 
 #include <pugixml.hpp>
 
-namespace oms3
+namespace oms
 {
   class Component;
   class System;
@@ -70,7 +70,7 @@ namespace oms3
     void copyResources(bool copy_resources) {this->copy_resources = copy_resources;}
     bool copyResources() {return copy_resources;}
 
-    oms3::Element** getElements() {return &elements[0];}
+    oms::Element** getElements() {return &elements[0];}
     oms_status_enu_t getAllResources(std::vector<std::string>& resources) const;
 
     oms_status_enu_t instantiate();
@@ -112,7 +112,7 @@ namespace oms3
     System* system = NULL;
     std::string tempDir;
 
-    std::vector<oms3::Element*> elements;
+    std::vector<oms::Element*> elements;
     bool copy_resources = true;
 
     oms_modelState_enu_t modelState = oms_modelState_terminated;

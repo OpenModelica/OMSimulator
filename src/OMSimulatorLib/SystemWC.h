@@ -37,7 +37,7 @@
 #include "System.h"
 #include "Types.h"
 
-namespace oms3
+namespace oms
 {
   class Model;
 

@@ -8,21 +8,21 @@ Export the dependency graphs of a given model to dot files.
 #LUA#
 .. code-block:: lua
 
-  status = oms3_exportDependencyGraphs(cref, initialization, simulation)
+  status = oms_exportDependencyGraphs(cref, initialization, simulation)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms3_exportDependencyGraphs(cref, initialization, simulation)
+  status = session.oms_exportDependencyGraphs(cref, initialization, simulation)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms3_exportDependencyGraphs(const char* cref, const char* initialization, const char* simulation);
+  oms_status_enu_t oms_exportDependencyGraphs(const char* cref, const char* initialization, const char* simulation);
 
 #END#
 

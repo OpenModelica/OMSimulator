@@ -8,21 +8,21 @@ Add all variables that match the given regex to the result file.
 #LUA#
 .. code-block:: lua
 
-  status = oms3_addSignalsToResults(cref, regex)
+  status = oms_addSignalsToResults(cref, regex)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms3_addSignalsToResults(cref, regex)
+  status = session.oms_addSignalsToResults(cref, regex)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms3_addSignalsToResults(const char* cref, const char* regex);
+  oms_status_enu_t oms_addSignalsToResults(const char* cref, const char* regex);
 
 #END#
 

@@ -21,7 +21,7 @@ setBusGeometry
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms3_setBusGeometry(const char* bus, const ssd_connector_geometry_t* geometry);
+  oms_status_enu_t oms_setBusGeometry(const char* bus, const ssd_connector_geometry_t* geometry);
 
 #END#
 

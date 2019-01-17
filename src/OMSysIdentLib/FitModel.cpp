@@ -79,15 +79,15 @@ struct OdeResidual {
       int i = 0;
       // precondition: order in 'parameters' corresponds to params_ set order
       for (auto varname: params_) {
-        oms3_setReal(varname.c_str(), parameters[i][0]);
+        oms_setReal(varname.c_str(), parameters[i][0]);
         // std::cout << "OdeResidual: " << varname << " = " << parameters[i][0] << std::endl;
         i++;
       }
     }
 
-    // oms3_setStopTime(oms_modelIdent_, t_.back()); // needed?
+    // oms_setStopTime(oms_modelIdent_, t_.back()); // needed?
 
-    oms3_initialize(oms_modelIdent_);
+    oms_initialize(oms_modelIdent_);
 
     if (!input_.empty()) {
       // Set inputs if inputs are available
@@ -96,13 +96,13 @@ struct OdeResidual {
         for (auto& varData : input_) {
           std::string varname = varData.first;
           std::vector<double> data = varData.second;
-          oms3_setReal(varname.c_str(), data[i]);
-          // std::cout << "OdeResidual oms3_setReal i="<<i<<", varname="<<varname<<", data[i]="<<data[i]<<", t_[i]="<<t_[i]<<std::endl;
+          oms_setReal(varname.c_str(), data[i]);
+          // std::cout << "OdeResidual oms_setReal i="<<i<<", varname="<<varname<<", data[i]="<<data[i]<<", t_[i]="<<t_[i]<<std::endl;
         }
-        oms3_stepUntil(oms_modelIdent_, t_[i]);
+        oms_stepUntil(oms_modelIdent_, t_[i]);
       }
     } else {
-      oms3_stepUntil(oms_modelIdent_, t_.back());
+      oms_stepUntil(oms_modelIdent_, t_.back());
     }
 
     int nMesVars = mes_.size();
@@ -113,7 +113,7 @@ struct OdeResidual {
       int i = 0;
       //for (auto& varValue: mes_.at(0)) {
       for (auto& varValues: mes_) {
-        oms3_getReal(varValues.first.c_str(), &(x[i]));
+        oms_getReal(varValues.first.c_str(), &(x[i]));
         i++;
       }
     }
@@ -132,10 +132,10 @@ struct OdeResidual {
       }
     }
 
-    // TODO: use oms3_reset
-    //oms3_reset(oms_modelIdent_);
-    oms3_terminate(oms_modelIdent_);
-    oms3_instantiate(oms_modelIdent_);
+    // TODO: use oms_reset
+    //oms_reset(oms_modelIdent_);
+    oms_terminate(oms_modelIdent_);
+    oms_instantiate(oms_modelIdent_);
 
     return true;
   }
@@ -182,7 +182,7 @@ oms_status_enu_t FitModel::solve(const char* reporttype)
 {
   logTrace();
 
-  oms3_instantiate(oms_modelIdent_);
+  oms_instantiate(oms_modelIdent_);
 
   if (!this->isDataComplete())
     return logError("FitModel::solve: Incomplete data, please check measurements etc.");

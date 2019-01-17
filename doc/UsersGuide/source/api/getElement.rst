@@ -22,7 +22,7 @@ Get element information of a given component reference.
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms3_getElement(const char* cref, oms3_element_t** element);
+  oms_status_enu_t oms_getElement(const char* cref, oms_element_t** element);
 
 #END#
 

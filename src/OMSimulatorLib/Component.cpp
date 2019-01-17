@@ -37,7 +37,7 @@
 #include "TLMBusConnector.h"
 
 
-void oms3::fmiLogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message)
+void oms::fmiLogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message)
 {
   switch (log_level)
   {
@@ -57,7 +57,7 @@ void oms3::fmiLogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_l
   }
 }
 
-void oms3::fmi2logger(fmi2_component_environment_t env, fmi2_string_t instanceName, fmi2_status_t status, fmi2_string_t category, fmi2_string_t message, ...)
+void oms::fmi2logger(fmi2_component_environment_t env, fmi2_string_t instanceName, fmi2_status_t status, fmi2_string_t category, fmi2_string_t message, ...)
 {
   if ((status == fmi2_status_ok || status == fmi2_status_pending) && !logDebugEnabled())
   {
@@ -90,7 +90,7 @@ void oms3::fmi2logger(fmi2_component_environment_t env, fmi2_string_t instanceNa
   }
 }
 
-oms3::Component::Component(const ComRef& cref, oms_component_enu_t type, System* parentSystem, const std::string& path)
+oms::Component::Component(const ComRef& cref, oms_component_enu_t type, System* parentSystem, const std::string& path)
   : element(oms_element_component, cref), cref(cref), type(type), parentSystem(parentSystem), path(path)
 {
   connectors.push_back(NULL);
@@ -102,7 +102,7 @@ oms3::Component::Component(const ComRef& cref, oms_component_enu_t type, System*
 #endif
 }
 
-oms3::Component::~Component()
+oms::Component::~Component()
 {
   for (const auto& connector : connectors)
     if (connector)
@@ -115,23 +115,23 @@ oms3::Component::~Component()
 #endif
 }
 
-oms3::ComRef oms3::Component::getFullCref() const
+oms::ComRef oms::Component::getFullCref() const
 {
   return parentSystem->getFullCref() + cref;
 }
 
-oms3::Model* oms3::Component::getModel() const
+oms::Model* oms::Component::getModel() const
 {
   return parentSystem ? parentSystem->getModel() : NULL;
 }
 
-oms_status_enu_t oms3::Component::addTLMBus(const oms3::ComRef &cref, oms_tlm_domain_t domain, const int dimensions, const oms_tlm_interpolation_t interpolation)
+oms_status_enu_t oms::Component::addTLMBus(const oms::ComRef &cref, oms_tlm_domain_t domain, const int dimensions, const oms_tlm_interpolation_t interpolation)
 {
 #if !defined(NO_TLM)
   if(!cref.isValidIdent()) {
     return logError("Not a valid ident: "+std::string(cref));
   }
-  oms3::TLMBusConnector* bus = new oms3::TLMBusConnector(cref, domain, dimensions, interpolation,nullptr,this);
+  oms::TLMBusConnector* bus = new oms::TLMBusConnector(cref, domain, dimensions, interpolation,nullptr,this);
   tlmbusconnectors.back() = bus;
   tlmbusconnectors.push_back(NULL);
   element.setTLMBusConnectors(&tlmbusconnectors[0]);
@@ -142,7 +142,7 @@ oms_status_enu_t oms3::Component::addTLMBus(const oms3::ComRef &cref, oms_tlm_do
 }
 
 #if !defined(NO_TLM)
-oms3::TLMBusConnector *oms3::Component::getTLMBusConnector(const oms3::ComRef &cref)
+oms::TLMBusConnector *oms::Component::getTLMBusConnector(const oms::ComRef &cref)
 {
   for(auto &tlmbusconnector : tlmbusconnectors) {
     if(tlmbusconnector && tlmbusconnector->getName() == cref)
@@ -152,7 +152,7 @@ oms3::TLMBusConnector *oms3::Component::getTLMBusConnector(const oms3::ComRef &c
 }
 #endif
 
-oms_status_enu_t oms3::Component::addConnectorToTLMBus(const oms3::ComRef& busCref, const oms3::ComRef& connectorCref, const std::string type)
+oms_status_enu_t oms::Component::addConnectorToTLMBus(const oms::ComRef& busCref, const oms::ComRef& connectorCref, const std::string type)
 {
 #if !defined(NO_TLM)
 
@@ -177,7 +177,7 @@ oms_status_enu_t oms3::Component::addConnectorToTLMBus(const oms3::ComRef& busCr
 #endif
 }
 
-oms_status_enu_t oms3::Component::deleteConnectorFromTLMBus(const oms3::ComRef& busCref, const oms3::ComRef& connectorCref)
+oms_status_enu_t oms::Component::deleteConnectorFromTLMBus(const oms::ComRef& busCref, const oms::ComRef& connectorCref)
 {
 #if !defined(NO_TLM)
   for(auto& bus : tlmbusconnectors)
@@ -190,7 +190,7 @@ oms_status_enu_t oms3::Component::deleteConnectorFromTLMBus(const oms3::ComRef& 
 #endif
 }
 
-oms3::Connector* oms3::Component::getConnector(const ComRef& cref)
+oms::Connector* oms::Component::getConnector(const ComRef& cref)
 {
   for (auto &connector : connectors)
   {
@@ -201,7 +201,7 @@ oms3::Connector* oms3::Component::getConnector(const ComRef& cref)
   return NULL;
 }
 
-oms_status_enu_t oms3::Component::deleteConnector(const ComRef& cref)
+oms_status_enu_t oms::Component::deleteConnector(const ComRef& cref)
 {
   for (int i=0; i<connectors.size(); ++i)
   {
@@ -219,7 +219,7 @@ oms_status_enu_t oms3::Component::deleteConnector(const ComRef& cref)
   return oms_status_error;
 }
 
-oms_status_enu_t oms3::Component::deleteResources()
+oms_status_enu_t oms::Component::deleteResources()
 {
   boost::filesystem::path temp_root(parentSystem->getModel()->getTempDirectory());
   boost::filesystem::path temp_temp = temp_root / "temp";

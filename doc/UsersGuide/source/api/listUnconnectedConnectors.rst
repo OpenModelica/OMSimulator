@@ -8,21 +8,21 @@ Lists all unconnected connectors of a given system.
 #LUA#
 .. code-block:: lua
 
-  contents, status = oms3_listUnconnectedConnectors(cref)
+  contents, status = oms_listUnconnectedConnectors(cref)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  contents, status = session.oms3_listUnconnectedConnectors(cref)
+  contents, status = session.oms_listUnconnectedConnectors(cref)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms3_listUnconnectedConnectors(const char* cref, char** contents);
+  oms_status_enu_t oms_listUnconnectedConnectors(const char* cref, char** contents);
 
 #END#
 

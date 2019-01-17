@@ -33,30 +33,30 @@
 #include "Types.h"
 #include "Identifier.h"
 
-oms3::ComRef::ComRef(const std::string& path)
+oms::ComRef::ComRef(const std::string& path)
 {
   cref = new char[path.size() + 1];
   strcpy(cref, path.c_str());
 }
 
-oms3::ComRef::ComRef(const char* path)
+oms::ComRef::ComRef(const char* path)
 {
   cref = new char[strlen(path) + 1];
   strcpy(cref, path);
 }
 
-oms3::ComRef::~ComRef()
+oms::ComRef::~ComRef()
 {
   delete[] cref;
 }
 
-oms3::ComRef::ComRef(const oms3::ComRef& copy)
+oms::ComRef::ComRef(const oms::ComRef& copy)
 {
   cref = new char[strlen(copy.c_str()) + 1];
   strcpy(cref, copy.c_str());
 }
 
-oms3::ComRef& oms3::ComRef::operator=(const oms3::ComRef& copy)
+oms::ComRef& oms::ComRef::operator=(const oms::ComRef& copy)
 {
   // check for self-assignment
   if(&copy == this)
@@ -69,27 +69,27 @@ oms3::ComRef& oms3::ComRef::operator=(const oms3::ComRef& copy)
   return *this;
 }
 
-oms3::ComRef oms3::ComRef::operator+(const oms3::ComRef& rhs) const
+oms::ComRef oms::ComRef::operator+(const oms::ComRef& rhs) const
 {
-  return oms3::ComRef(std::string(*this) + "." + std::string(rhs));
+  return oms::ComRef(std::string(*this) + "." + std::string(rhs));
 }
 
-bool oms3::ComRef::isValidIdent(const std::string& ident)
+bool oms::ComRef::isValidIdent(const std::string& ident)
 {
   return oms_regex_match(ident, regex_ident);
 }
 
-bool oms3::ComRef::isValidIdent() const
+bool oms::ComRef::isValidIdent() const
 {
   return isValidIdent(cref);
 }
 
-bool oms3::ComRef::isEmpty() const
+bool oms::ComRef::isEmpty() const
 {
   return !(cref && cref[0] != '\0');
 }
 
-oms3::ComRef oms3::ComRef::front() const
+oms::ComRef oms::ComRef::front() const
 {
   int dot=0;
 
@@ -100,14 +100,14 @@ oms3::ComRef oms3::ComRef::front() const
   if (dot)
     cref[dot] = '\0';
 
-  oms3::ComRef front(cref);
+  oms::ComRef front(cref);
 
   if (dot)
     cref[dot] = '.';
   return front;
 }
 
-oms3::ComRef oms3::ComRef::pop_front()
+oms::ComRef oms::ComRef::pop_front()
 {
   int i=0;
   for(; cref[i]; ++i)
@@ -118,22 +118,22 @@ oms3::ComRef oms3::ComRef::pop_front()
       break;
     }
 
-  oms3::ComRef front(cref);
-  *this = oms3::ComRef(cref + i);
+  oms::ComRef front(cref);
+  *this = oms::ComRef(cref + i);
   return front;
 }
 
-bool oms3::operator==(const oms3::ComRef& lhs, const oms3::ComRef& rhs)
+bool oms::operator==(const oms::ComRef& lhs, const oms::ComRef& rhs)
 {
   return (0 == strcmp(lhs.c_str(), rhs.c_str()));
 }
 
-bool oms3::operator!=(const oms3::ComRef& lhs, const oms3::ComRef& rhs)
+bool oms::operator!=(const oms::ComRef& lhs, const oms::ComRef& rhs)
 {
   return !(lhs == rhs);
 }
 
-bool oms3::operator<(const oms3::ComRef& lhs, const oms3::ComRef& rhs)
+bool oms::operator<(const oms::ComRef& lhs, const oms::ComRef& rhs)
 {
   return (0 < strcmp(lhs.c_str(), rhs.c_str()));
 }

@@ -8,21 +8,21 @@ Simulates a composite model.
 #LUA#
 .. code-block:: lua
 
-  status = oms3_simulate(cref)
+  status = oms_simulate(cref)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms3_simulate(cref)
+  status = session.oms_simulate(cref)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms3_simulate(const char* cref);
+  oms_status_enu_t oms_simulate(const char* cref);
 
 #END#
 
