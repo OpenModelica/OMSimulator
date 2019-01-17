@@ -98,6 +98,8 @@ namespace oms
     oms_status_enu_t cancelSimulation_asynchronous();
     bool cancelSimulation() const {return cancelSim;}
 
+    bool validState(int validStates) const {return (modelState & validStates);}
+
   private:
     Model(const ComRef& cref, const std::string& tempDir);
 
@@ -115,7 +117,7 @@ namespace oms
     std::vector<oms::Element*> elements;
     bool copy_resources = true;
 
-    oms_modelState_enu_t modelState = oms_modelState_terminated;
+    oms_modelState_enu_t modelState = oms_modelState_virgin;
 
     // ssd:DefaultExperiment
     double startTime = 0.0;

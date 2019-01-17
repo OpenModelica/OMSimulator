@@ -1494,15 +1494,8 @@ oms_status_enu_t oms::System::updateDependencyGraphs()
 
 oms_status_enu_t oms::System::getBoolean(const ComRef& cref, bool& value)
 {
-  switch (getModel()->getModelState())
-  {
-    case oms_modelState_instantiated:
-    case oms_modelState_initialization:
-    case oms_modelState_simulation:
-      break;
-    default:
-      return logError_ModelInWrongState(getModel());
-  }
+  if (!getModel()->validState(oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
+    return logError_ModelInWrongState(getModel());
 
   oms::ComRef tail(cref);
   oms::ComRef head = tail.pop_front();
@@ -1533,15 +1526,8 @@ oms_status_enu_t oms::System::getBoolean(const ComRef& cref, bool& value)
 
 oms_status_enu_t oms::System::getInteger(const ComRef& cref, int& value)
 {
-  switch (getModel()->getModelState())
-  {
-    case oms_modelState_instantiated:
-    case oms_modelState_initialization:
-    case oms_modelState_simulation:
-      break;
-    default:
-      return logError_ModelInWrongState(getModel());
-  }
+  if (!getModel()->validState(oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
+    return logError_ModelInWrongState(getModel());
 
   oms::ComRef tail(cref);
   oms::ComRef head = tail.pop_front();
@@ -1572,15 +1558,8 @@ oms_status_enu_t oms::System::getInteger(const ComRef& cref, int& value)
 
 oms_status_enu_t oms::System::getReal(const ComRef& cref, double& value)
 {
-  switch (getModel()->getModelState())
-  {
-    case oms_modelState_instantiated:
-    case oms_modelState_initialization:
-    case oms_modelState_simulation:
-      break;
-    default:
-      return logError_ModelInWrongState(getModel());
-  }
+  if (!getModel()->validState(oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
+    return logError_ModelInWrongState(getModel());
 
   oms::ComRef tail(cref);
   oms::ComRef head = tail.pop_front();
@@ -1611,15 +1590,8 @@ oms_status_enu_t oms::System::getReal(const ComRef& cref, double& value)
 
 oms_status_enu_t oms::System::setBoolean(const ComRef& cref, bool value)
 {
-  switch (getModel()->getModelState())
-  {
-    case oms_modelState_instantiated:
-    case oms_modelState_initialization:
-    case oms_modelState_simulation:
-      break;
-    default:
-      return logError_ModelInWrongState(getModel());
-  }
+  if (!getModel()->validState(oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
+    return logError_ModelInWrongState(getModel());
 
   oms::ComRef tail(cref);
   oms::ComRef head = tail.pop_front();
@@ -1644,15 +1616,8 @@ oms_status_enu_t oms::System::setBoolean(const ComRef& cref, bool value)
 
 oms_status_enu_t oms::System::setInteger(const ComRef& cref, int value)
 {
-  switch (getModel()->getModelState())
-  {
-    case oms_modelState_instantiated:
-    case oms_modelState_initialization:
-    case oms_modelState_simulation:
-      break;
-    default:
-      return logError_ModelInWrongState(getModel());
-  }
+  if (!getModel()->validState(oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
+    return logError_ModelInWrongState(getModel());
 
   oms::ComRef tail(cref);
   oms::ComRef head = tail.pop_front();
@@ -1677,15 +1642,8 @@ oms_status_enu_t oms::System::setInteger(const ComRef& cref, int value)
 
 oms_status_enu_t oms::System::setReal(const ComRef& cref, double value)
 {
-  switch (getModel()->getModelState())
-  {
-    case oms_modelState_instantiated:
-    case oms_modelState_initialization:
-    case oms_modelState_simulation:
-      break;
-    default:
-      return logError_ModelInWrongState(getModel());
-  }
+  if (!getModel()->validState(oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
+    return logError_ModelInWrongState(getModel());
 
   oms::ComRef tail(cref);
   oms::ComRef head = tail.pop_front();

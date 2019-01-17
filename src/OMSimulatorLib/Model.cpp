@@ -54,8 +54,7 @@ oms::Model::Model(const oms::ComRef& cref, const std::string& tempDir)
 
 oms::Model::~Model()
 {
-  if (oms_modelState_terminated != modelState)
-    terminate();
+  terminate();
 
   if (system)
     delete system;
@@ -356,7 +355,7 @@ oms_status_enu_t oms::Model::getAllResources(std::vector<std::string>& resources
 
 oms_status_enu_t oms::Model::setStartTime(double value)
 {
-  if (oms_modelState_terminated != modelState)
+  if (!validState(oms_modelState_virgin|oms_modelState_instantiated))
     return logError_ModelInWrongState(this);
 
   startTime = value;
@@ -365,7 +364,7 @@ oms_status_enu_t oms::Model::setStartTime(double value)
 
 oms_status_enu_t oms::Model::setStopTime(double value)
 {
-  if (oms_modelState_terminated != modelState)
+  if (!validState(oms_modelState_virgin|oms_modelState_instantiated))
     return logError_ModelInWrongState(this);
 
   stopTime = value;
@@ -374,13 +373,13 @@ oms_status_enu_t oms::Model::setStopTime(double value)
 
 oms_status_enu_t oms::Model::instantiate()
 {
-  if (oms_modelState_terminated != modelState)
+  if (!validState(oms_modelState_virgin))
     return logError_ModelInWrongState(this);
 
   if (!system)
     return logError("Model doesn't contain a system");
 
-  modelState = oms_modelState_initialization;
+  modelState = oms_modelState_virgin;
   if (oms_status_ok != system->instantiate())
   {
     terminate();
@@ -393,7 +392,7 @@ oms_status_enu_t oms::Model::instantiate()
 
 oms_status_enu_t oms::Model::initialize()
 {
-  if (oms_modelState_instantiated != modelState)
+  if (!validState(oms_modelState_instantiated))
     return logError_ModelInWrongState(this);
 
   if (!system)
@@ -418,6 +417,7 @@ oms_status_enu_t oms::Model::initialize()
       resultFile = new MATWriter(bufferSize);
     else
     {
+      modelState = oms_modelState_instantiated;
       clock.toc();
       return logError("Unsupported format of the result file: " + resultFilename);
     }
@@ -467,7 +467,7 @@ oms_status_enu_t oms::Model::initialize()
 oms_status_enu_t oms::Model::simulate_asynchronous(void (*cb)(const char* cref, double time, oms_status_enu_t status))
 {
   clock.tic();
-  if (oms_modelState_simulation != modelState)
+  if (!validState(oms_modelState_simulation))
   {
     clock.toc();
     return logError_ModelInWrongState(this);
@@ -489,7 +489,7 @@ oms_status_enu_t oms::Model::simulate_asynchronous(void (*cb)(const char* cref, 
 oms_status_enu_t oms::Model::simulate()
 {
   clock.tic();
-  if (oms_modelState_simulation != modelState)
+  if (!validState(oms_modelState_simulation))
   {
     clock.toc();
     return logError_ModelInWrongState(this);
@@ -510,7 +510,7 @@ oms_status_enu_t oms::Model::simulate()
 oms_status_enu_t oms::Model::stepUntil(double stopTime)
 {
   clock.tic();
-  if (oms_modelState_simulation != modelState)
+  if (!validState(oms_modelState_simulation))
   {
     clock.toc();
     return logError_ModelInWrongState(this);
@@ -530,10 +530,10 @@ oms_status_enu_t oms::Model::stepUntil(double stopTime)
 
 oms_status_enu_t oms::Model::terminate()
 {
-  if (oms_modelState_terminated == modelState)
+  if (validState(oms_modelState_virgin))
     return oms_status_ok;
 
-  if (oms_modelState_instantiated == modelState && oms_status_ok != system->initialize())
+  if (validState(oms_modelState_instantiated) && oms_status_ok != system->initialize())
     return logError_Termination(system->getFullCref());
 
   if (!system)
@@ -548,13 +548,13 @@ oms_status_enu_t oms::Model::terminate()
     resultFile = NULL;
   }
 
-  modelState = oms_modelState_terminated;
+  modelState = oms_modelState_virgin;
   return oms_status_ok;
 }
 
 oms_status_enu_t oms::Model::reset()
 {
-  if (oms_modelState_simulation != modelState)
+  if (!validState(oms_modelState_simulation))
     return logError_ModelInWrongState(this);
 
   if (!system)
@@ -673,7 +673,7 @@ oms_status_enu_t oms::Model::removeSignalsFromResults(const char* regex)
 
 oms_status_enu_t oms::Model::cancelSimulation_asynchronous()
 {
-  if (oms_modelState_simulation != modelState)
+  if (!validState(oms_modelState_simulation))
     return logError_ModelInWrongState(this);
 
   cancelSim = true;

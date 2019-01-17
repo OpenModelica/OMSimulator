@@ -805,7 +805,7 @@ static int OMSimulatorLua_oms_getModelState(lua_State *L)
   luaL_checktype(L, 1, LUA_TSTRING);
 
   const char* cref = lua_tostring(L, 1);
-  oms_modelState_enu_t modelState = oms_modelState_terminated;
+  oms_modelState_enu_t modelState = oms_modelState_error;
 
   oms_status_enu_t status = oms_getModelState(cref, &modelState);
   lua_pushinteger(L, modelState);

@@ -391,7 +391,7 @@ void oms::SystemTLM::disconnectFromSockets(const oms::ComRef cref)
 
 oms_status_enu_t oms::SystemTLM::setSocketData(const std::string &address, int managerPort, int monitorPort)
 {
-  if (oms_modelState_terminated != getModel()->getModelState())
+  if (!getModel()->validState(oms_modelState_virgin))
     return logError_ModelInWrongState(this);
 
   this->address = address;

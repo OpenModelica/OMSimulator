@@ -245,16 +245,8 @@ oms_status_enu_t oms::SystemWC::getRealOutputDerivative(const ComRef& cref, doub
   if (!value)
     return oms_status_ok;
 
-  switch (getModel()->getModelState())
-  {
-    case oms_modelState_initialization:
-      return oms_status_error;
-    case oms_modelState_instantiated:
-    case oms_modelState_simulation:
-      break;
-    default:
-      return logError_ModelInWrongState(getModel());
-  }
+  if (!getModel()->validState(oms_modelState_simulation))
+    return logError_ModelInWrongState(getModel());
 
   oms::ComRef tail(cref);
   oms::ComRef head = tail.pop_front();
@@ -275,15 +267,8 @@ oms_status_enu_t oms::SystemWC::setRealInputDerivative(const ComRef& cref, doubl
   if (!value)
     return oms_status_ok;
 
-  switch (getModel()->getModelState())
-  {
-    case oms_modelState_instantiated:
-    case oms_modelState_initialization:
-    case oms_modelState_simulation:
-      break;
-    default:
-      return logError_ModelInWrongState(getModel());
-  }
+  if (!getModel()->validState(oms_modelState_simulation))
+    return logError_ModelInWrongState(getModel());
 
   oms::ComRef tail(cref);
   oms::ComRef head = tail.pop_front();

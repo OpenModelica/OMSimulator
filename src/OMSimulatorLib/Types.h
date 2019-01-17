@@ -50,10 +50,11 @@ typedef enum {
 } oms_status_enu_t;
 
 typedef enum {
-  oms_modelState_terminated,
-  oms_modelState_instantiated,
-  oms_modelState_initialization,
-  oms_modelState_simulation
+  oms_modelState_virgin         = 1<<0,
+  oms_modelState_instantiated   = 1<<1,
+  oms_modelState_initialization = 1<<2,
+  oms_modelState_simulation     = 1<<3,
+  oms_modelState_error          = 1<<4
 } oms_modelState_enu_t;
 
 typedef enum {
