@@ -109,18 +109,25 @@ static int OMSimulatorLua_oms_setTempDirectory(lua_State *L)
   return 1;
 }
 
-//oms_status_enu_t oms_setTolerance(const char* cref, double tolerance);
 static int OMSimulatorLua_oms_setTolerance(lua_State *L)
 {
-  if (lua_gettop(L) != 2)
-    return luaL_error(L, "expecting exactly 2 arguments");
+  if (lua_gettop(L) != 2 && lua_gettop(L) != 3)
+    return luaL_error(L, "expecting exactly 2 or 3 arguments");
   luaL_checktype(L, 1, LUA_TSTRING);
   luaL_checktype(L, 2, LUA_TNUMBER);
 
   const char* cref = lua_tostring(L, 1);
-  double tolerance = lua_tonumber(L, 2);
+  double absoluteTolerance = lua_tonumber(L, 2);
 
-  oms_status_enu_t status = oms_setTolerance(cref, tolerance);
+  oms_status_enu_t status;
+  if (lua_gettop(L) == 2)
+    status = oms_setTolerance(cref, absoluteTolerance, absoluteTolerance);
+  else
+  {
+    double relativeTolerance = lua_tonumber(L, 3);
+    status = oms_setTolerance(cref, absoluteTolerance, relativeTolerance);
+  }
+
   lua_pushinteger(L, status);
   return 1;
 }
@@ -1353,6 +1360,12 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   lua_setglobal(L, "coarsegrained");
   lua_pushnumber(L, 2);
   lua_setglobal(L, "finegrained");
+
+  // oms_solver_enu_t
+  REGISTER_LUA_ENUM(oms_solver_sc_explicit_euler);
+  REGISTER_LUA_ENUM(oms_solver_sc_cvode);
+  REGISTER_LUA_ENUM(oms_solver_wc_ma);
+  REGISTER_LUA_ENUM(oms_solver_wc_mav);
 
   // oms_system_enu_t
   REGISTER_LUA_ENUM(oms_system_none);

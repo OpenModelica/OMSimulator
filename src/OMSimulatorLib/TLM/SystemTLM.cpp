@@ -42,7 +42,7 @@
 #include <algorithm>
 
 oms::SystemTLM::SystemTLM(const ComRef& cref, Model* parentModel, System* parentSystem)
-  : oms::System(cref, oms_system_tlm, parentModel, parentSystem)
+  : oms::System(cref, oms_system_tlm, parentModel, parentSystem, oms_solver_none)
 {
   logTrace();
   model = omtlm_newModel(cref.c_str());
@@ -332,9 +332,9 @@ oms_status_enu_t oms::SystemTLM::connectToSockets(const oms::ComRef cref, std::s
   TLMBusConnector** tlmbuses = system->getTLMBusConnectors();
   for (int i=0; tlmbuses[i]; ++i)
   {
-      if(system->getStepSize() > tlmbuses[i]->getDelay()*0.5) {
+      if(system->getMaximumStepSize() > tlmbuses[i]->getDelay()*0.5) {
         system->setFixedStepSize(tlmbuses[i]->getDelay()*0.5);
-        logInfo("Limiting stepSize for "+std::string(getCref())+"."+std::string(tlmbuses[i]->getName())+" to "+std::to_string(system->getStepSize()));
+        logInfo("Limiting stepSize for "+std::string(getCref())+"."+std::string(tlmbuses[i]->getName())+" to "+std::to_string(system->getMaximumStepSize()));
       }
   }
 
@@ -350,7 +350,7 @@ oms_status_enu_t oms::SystemTLM::connectToSockets(const oms::ComRef cref, std::s
   if(!plugin->Init(std::string(cref),
                    getModel()->getStartTime(),
                    1, //Unused argument anyway
-                   system->getStepSize(),
+                   system->getMaximumStepSize(),
                    server)) {
     logError("Error initializing the TLM plugin for "+std::string(cref));
     return oms_status_error;
@@ -669,9 +669,9 @@ void oms::SystemTLM::readFromSockets(SystemWC* system, double time, Component* c
       bus->setReal(tlmrefs.Z, impedance);
 
       double impedance2, wave2;
-      plugin->GetWaveImpedance1D(id, time+system->getStepSize(), &impedance2, &wave2);
+      plugin->GetWaveImpedance1D(id, time+system->getMaximumStepSize(), &impedance2, &wave2);
 
-      double dWave = (wave2-wave)/system->getStepSize();
+      double dWave = (wave2-wave)/system->getMaximumStepSize();
 
       bus->setRealInputDerivatives(tlmrefs.c, 1, dWave);
     }
@@ -685,7 +685,7 @@ void oms::SystemTLM::readFromSockets(SystemWC* system, double time, Component* c
       double t = time;
       for(size_t i=0; i<10; ++i) {
         plugin->GetWaveImpedance1D(id, t, &impedance, &wave);
-        t += system->getStepSize()/9;
+        t += system->getMaximumStepSize()/9;
 
         bus->setReal(tlmrefs.c[i], wave);
         bus->setReal(tlmrefs.t[i], t);
@@ -730,11 +730,11 @@ void oms::SystemTLM::readFromSockets(SystemWC* system, double time, Component* c
 
       std::vector<double> waves2(6,0);
       double Zt2, Zr2;
-      plugin->GetWaveImpedance3D(id, time+system->getStepSize(), &Zt2, &Zr2, &waves2[0]);
+      plugin->GetWaveImpedance3D(id, time+system->getMaximumStepSize(), &Zt2, &Zr2, &waves2[0]);
 
       std::vector<double> dWaves(6,0);
       for(size_t i=0; i<6; ++i) {
-        double dWave = (waves2[i]-waves[i])/system->getStepSize();
+        double dWave = (waves2[i]-waves[i])/system->getMaximumStepSize();
         bus->setRealInputDerivatives(tlmrefs.c[i], 1, dWave);
       }
     }
@@ -749,7 +749,7 @@ void oms::SystemTLM::readFromSockets(SystemWC* system, double time, Component* c
 
       for(size_t i=0; i<10; ++i) {
         plugin->GetWaveImpedance3D(id, t, &Zt, &Zr, &waves[0]);
-        t += system->getStepSize()/9;
+        t += system->getMaximumStepSize()/9;
 
         bus->setReals(tlmrefs.c[i], waves);
         bus->setReal(tlmrefs.t[i], t);

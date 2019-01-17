@@ -976,9 +976,12 @@ oms_status_enu_t oms_RunFile(const char* filename_)
       oms_setResultFile(modelName.c_str(), oms::Flags::ResultFile().c_str(), 1);
     oms_setStartTime(modelName.c_str(), oms::Flags::StartTime());
     oms_setStopTime(modelName.c_str(), oms::Flags::StopTime());
-    oms_setTolerance(modelName.c_str(), oms::Flags::Tolerance());
+    oms_setTolerance(modelName.c_str(), oms::Flags::Tolerance(), oms::Flags::Tolerance());
     oms_setFixedStepSize(systemName.c_str(), (oms::Flags::StopTime() - oms::Flags::StartTime()) / (oms::Flags::Intervals()-1));
-    oms_setSolver(systemName.c_str(), oms::Flags::Solver().c_str());
+    if (kind == oms_fmi_kind_me_and_cs)
+      oms_setSolver(systemName.c_str(), oms::Flags::DefaultModeIsCS() ? oms::Flags::MasterAlgorithm() : oms::Flags::Solver());
+    else
+      oms_setSolver(systemName.c_str(), (kind == oms_fmi_kind_cs) ? oms::Flags::MasterAlgorithm() : oms::Flags::Solver());
 
     status = do_simulation(modelName, std::chrono::duration<double>(oms::Flags::Timeout())) ? oms_status_error : oms_status_ok;
     oms_terminate(modelName.c_str());
@@ -994,7 +997,7 @@ oms_status_enu_t oms_RunFile(const char* filename_)
       oms_setResultFile(cref, oms::Flags::ResultFile().c_str(), 1);
     oms_setStartTime(cref, oms::Flags::StartTime());
     oms_setStopTime(cref, oms::Flags::StopTime());
-    oms_setTolerance(cref, oms::Flags::Tolerance());
+    oms_setTolerance(cref, oms::Flags::Tolerance(), oms::Flags::Tolerance());
 
     status = do_simulation(std::string(cref), std::chrono::duration<double>(oms::Flags::Timeout())) ? oms_status_error : oms_status_ok;
     oms_terminate(cref);
@@ -1102,6 +1105,24 @@ oms_status_enu_t oms_getReal(const char* cref, double* value)
     return logError_SystemNotInModel(model->getCref(), front);
 
   return system->getReal(tail, *value);
+}
+
+oms_status_enu_t oms_getSolver(const char* cref, oms_solver_enu_t* solver)
+{
+  oms::ComRef tail(cref);
+  oms::ComRef front = tail.pop_front();
+
+  oms::Model* model = oms::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  front = tail.pop_front();
+  oms::System* system = model->getSystem(front);
+  if (!system)
+    return logError_SystemNotInModel(model->getCref(), front);
+
+  *solver = system->getSolver();
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms_getInteger(const char* cref, int* value)
@@ -1308,6 +1329,22 @@ oms_status_enu_t oms_setFixedStepSize(const char* cref, double stepSize)
   return logError_SystemNotInModel(model->getCref(), front);
 }
 
+oms_status_enu_t oms_setVariableStepSize(const char* cref, double initialStepSize, double minimumStepSize, double maximumStepSize)
+{
+  oms::ComRef tail(cref);
+  oms::ComRef front = tail.pop_front();
+
+  oms::Model* model = oms::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  oms::System* system = model->getSystem(tail);
+  if (system)
+    return system->setVariableStepSize(initialStepSize, minimumStepSize, maximumStepSize);
+
+  return logError_SystemNotInModel(model->getCref(), front);
+}
+
 oms_status_enu_t oms_getModelState(const char* cref, oms_modelState_enu_t* modelState)
 {
   oms::ComRef tail(cref);
@@ -1344,6 +1381,42 @@ oms_status_enu_t oms_getTLMVariableTypes(oms_tlm_domain_t domain, const int dime
 #else
   return LOG_NO_TLM();
 #endif
+}
+
+oms_status_enu_t oms_getTolerance(const char* cref, double* absoluteTolerance, double* relativeTolerance)
+{
+  oms::ComRef tail(cref);
+  oms::ComRef front = tail.pop_front();
+
+  oms::Model* model = oms::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  front = tail.pop_front();
+  oms::System* system = model->getSystem(front);
+  if (!system)
+    return logError_SystemNotInModel(model->getCref(), front);
+
+  system->getTolerance(absoluteTolerance, relativeTolerance);
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms_getVariableStepSize(const char* cref, double* initialStepSize, double* minimumStepSize, double* maximumStepSize)
+{
+  oms::ComRef tail(cref);
+  oms::ComRef front = tail.pop_front();
+
+  oms::Model* model = oms::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  front = tail.pop_front();
+  oms::System* system = model->getSystem(front);
+  if (!system)
+    return logError_SystemNotInModel(model->getCref(), front);
+
+  system->getVariableStepSize(initialStepSize, minimumStepSize, maximumStepSize);
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms_extractFMIKind(const char* filename, oms_fmi_kind_enu_t* kind)
@@ -1402,12 +1475,7 @@ oms_status_enu_t oms_extractFMIKind(const char* filename, oms_fmi_kind_enu_t* ki
   return oms_status_ok;
 }
 
-oms_status_enu_t oms_setSolver(const char* cref, const char* solver)
-{
-  return logError_NotImplemented;
-}
-
-oms_status_enu_t oms_setTolerance(const char* cref, double tolerance)
+oms_status_enu_t oms_setSolver(const char* cref, oms_solver_enu_t solver)
 {
   oms::ComRef tail(cref);
   oms::ComRef front = tail.pop_front();
@@ -1418,7 +1486,23 @@ oms_status_enu_t oms_setTolerance(const char* cref, double tolerance)
 
   oms::System* system = model->getSystem(tail);
   if (system)
-    return system->setTolerance(tolerance);
+    return system->setSolver(solver);
+
+  return logError_SystemNotInModel(model->getCref(), front);
+}
+
+oms_status_enu_t oms_setTolerance(const char* cref, double absoluteTolerance, double relativeTolerance)
+{
+  oms::ComRef tail(cref);
+  oms::ComRef front = tail.pop_front();
+
+  oms::Model* model = oms::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  oms::System* system = model->getSystem(tail);
+  if (system)
+    return system->setTolerance(absoluteTolerance, relativeTolerance);
 
   return logError_SystemNotInModel(model->getCref(), front);
 }

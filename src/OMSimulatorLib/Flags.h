@@ -65,7 +65,8 @@ namespace oms
     static double Timeout() {return GetInstance().timeout;}
     static double Tolerance() {return GetInstance().tolerance;}
     static std::string ResultFile() {return GetInstance().resultFile;}
-    static std::string Solver() {return GetInstance().solver;}
+    static oms_solver_enu_t Solver() {return GetInstance().solver;}
+    static oms_solver_enu_t MasterAlgorithm() {return GetInstance().masterAlgorithm;}
     static unsigned int Intervals() {return GetInstance().intervals;}
 
     static void SuppressPath(bool value) {GetInstance().suppressPath = value;}
@@ -81,7 +82,8 @@ namespace oms
     double stopTime;
     double timeout;
     double tolerance;
-    std::string solver;
+    oms_solver_enu_t solver;
+    oms_solver_enu_t masterAlgorithm;
     std::string resultFile;
 
   private:

@@ -81,13 +81,18 @@ typedef enum {
 } oms_tlm_domain_t;
 
 typedef enum {
-  oms_solver_internal,         ///< internal solver; CS-FMU only
-  oms_solver_explicit_euler,
-  oms_solver_cvode
+  oms_solver_none,
+  oms_solver_sc_min,
+  oms_solver_sc_explicit_euler,
+  oms_solver_sc_cvode,  ///< default
+  oms_solver_sc_max,
+  oms_solver_wc_min,
+  oms_solver_wc_ma,     ///< Fixed stepsize (default)
+  oms_solver_wc_mav,    ///< Adaptive stepsize
+  oms_solver_wc_max
 } oms_solver_enu_t;
 
 typedef enum {
-  oms_element_none,
   oms_element_system,
   oms_element_component,
 } oms_element_enu_t;
@@ -100,7 +105,6 @@ typedef enum {
 } oms_system_enu_t;
 
 typedef enum {
-  oms_component_none,
   oms_component_fmu,      ///< FMU
   oms_component_table,    ///< lookup table
   oms_component_external  ///< external model

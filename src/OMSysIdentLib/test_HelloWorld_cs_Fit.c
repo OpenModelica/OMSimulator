@@ -68,7 +68,7 @@ int test_HelloWorld_cs_Fit()
   status = oms_addSystem(SYSTEMIDENT, oms_system_wc);
   ASSERT(status == oms_status_ok);
   status = oms_addSubModel(FMUIDENT, "../FMUs/HelloWorld_cs.fmu");
-  oms_setTolerance(SYSTEMIDENT, 1e-5);
+  oms_setTolerance(SYSTEMIDENT, 1e-5, 1e-5);
 
   void* fitmodel = omsi_newSysIdentModel(MODELIDENT);
   status = omsi_initialize(fitmodel, kNumSeries, data_time, kNumObservations, inputvars, 0, measurementvars, 1);

@@ -40,7 +40,7 @@
 #include "Types.h"
 
 oms::SystemWC::SystemWC(const ComRef& cref, Model* parentModel, System* parentSystem)
-  : oms::System(cref, oms_system_wc, parentModel, parentSystem)
+  : oms::System(cref, oms_system_wc, parentModel, parentSystem, oms_solver_wc_ma)
 {
 }
 
@@ -68,21 +68,48 @@ oms::System* oms::SystemWC::NewSystem(const oms::ComRef& cref, oms::Model* paren
   return system;
 }
 
+std::string oms::SystemWC::getSolverName() const
+{
+  switch (solverMethod)
+  {
+    case oms_solver_wc_ma:
+      return std::string("oms-ma");
+    case oms_solver_wc_mav:
+      return std::string("oms-mav");
+  }
+
+  return std::string("unknown");
+}
+
+oms_status_enu_t oms::SystemWC::setSolverMethod(std::string solver)
+{
+  if (std::string("oms-ma") == solver)
+    solverMethod = oms_solver_wc_ma;
+  else if (std::string("oms-mav") == solver)
+    solverMethod = oms_solver_wc_mav;
+  else
+    return oms_status_error;
+
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms::SystemWC::exportToSSD_SimulationInformation(pugi::xml_node& node) const
 {
   pugi::xml_node node_simulation_information = node.append_child(oms::ssd::ssd_simulation_information);
 
   pugi::xml_node node_solver = node_simulation_information.append_child("FixedStepMaster");
-  node_solver.append_attribute("description") = solverName.c_str();
-  node_solver.append_attribute("stepSize") = std::to_string(stepSize).c_str();
+  node_solver.append_attribute("description") = getSolverName().c_str();
+  node_solver.append_attribute("stepSize") = std::to_string(maximumStepSize).c_str();
 
   return oms_status_ok;
 }
 
 oms_status_enu_t oms::SystemWC::importFromSSD_SimulationInformation(const pugi::xml_node& node)
 {
-  solverName = node.child("FixedStepMaster").attribute("description").as_string();
-  stepSize = node.child("FixedStepMaster").attribute("stepSize").as_double();
+  std::string solverName = node.child("FixedStepMaster").attribute("description").as_string();
+  if (oms_status_ok != setSolverMethod(solverName))
+    return oms_status_error;
+  initialStepSize=minimumStepSize=maximumStepSize = node.child("FixedStepMaster").attribute("stepSize").as_double();
   return oms_status_ok;
 }
 
@@ -183,7 +210,7 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
 
   while (time < stopTime)
   {
-    double tNext = time+stepSize;
+    double tNext = time+maximumStepSize;
     if (tNext > stopTime)
       tNext = stopTime;
 
@@ -388,7 +415,7 @@ oms_status_enu_t oms::SystemWC::solveAlgLoop(DirectedGraph& graph, const std::ve
       if (fabs(res[i]) > maxRes)
         maxRes = fabs(res[i]);
     }
-  } while(maxRes > tolerance && it < maxIterations);
+  } while(maxRes > absoluteTolerance && it < maxIterations);
 
   delete[] res;
 

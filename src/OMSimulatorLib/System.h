@@ -140,11 +140,18 @@ namespace oms
     oms_status_enu_t addSignalsToResults(const char* regex);
     oms_status_enu_t removeSignalsFromResults(const char* regex);
 
-    virtual oms_status_enu_t setFixedStepSize(double stepSize) {return oms_status_error;}
-    virtual oms_status_enu_t setTolerance(double tolerance) {return oms_status_error;}
+    virtual oms_status_enu_t setSolver(oms_solver_enu_t solver) {return oms_status_error;}
+
+    void getTolerance(double* absoluteTolerance, double* relativeTolerance) const {if (absoluteTolerance) *absoluteTolerance=this->absoluteTolerance; if (relativeTolerance) *relativeTolerance=this->relativeTolerance;}
+    void getVariableStepSize(double* initialStepSize, double* minimumStepSize, double* maximumStepSize) const {if (initialStepSize) *initialStepSize=this->initialStepSize; if (minimumStepSize) *minimumStepSize=this->minimumStepSize; if (maximumStepSize) *maximumStepSize=this->maximumStepSize;}
+    oms_status_enu_t setTolerance(double absoluteTolerance, double relativeTolerance) {this->absoluteTolerance=absoluteTolerance; this->relativeTolerance=relativeTolerance; return oms_status_ok;}
+    oms_status_enu_t setFixedStepSize(double stepSize) {this->minimumStepSize=this->maximumStepSize=this->initialStepSize=stepSize; return oms_status_ok;}
+    oms_status_enu_t setVariableStepSize(double initialStepSize, double minimumStepSize, double maximumStepSize) {this->minimumStepSize=minimumStepSize; this->maximumStepSize=maximumStepSize; this->initialStepSize=initialStepSize; return oms_status_ok;}
+    double getMaximumStepSize() {return maximumStepSize;}
+    oms_solver_enu_t getSolver() {return solverMethod;}
 
   protected:
-    System(const ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem);
+    System(const ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem, oms_solver_enu_t solverMethod);
 
     // stop the compiler generating methods copying the object
     System(System const& copy);            ///< not implemented
@@ -156,6 +163,13 @@ namespace oms
     Clock clock;
     unsigned int clock_id;
 
+    oms_solver_enu_t solverMethod = oms_solver_none;
+
+    double absoluteTolerance = 1e-4;
+    double relativeTolerance = 1e-4;
+    double minimumStepSize = 1e-4;
+    double maximumStepSize = 1e-1;
+    double initialStepSize = 1e-4;
   private:
     ComRef cref;
     oms_system_enu_t type;
