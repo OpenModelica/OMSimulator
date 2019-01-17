@@ -107,7 +107,7 @@ namespace oms
 
     const std::vector<Flag> flags = {
       {"", "", "FMU or SSP file", re_filename, Flags::Filename, false},
-      {"--clearAllOptions", "", "Reset all flags to efault vlaues", re_void, Flags::ClearAllOptions, false},
+      {"--clearAllOptions", "", "Reset all flags to default values", re_void, Flags::ClearAllOptions, false},
       {"--fetchAllVars", "", "", re_default, Flags::FetchAllVars, false},
       {"--help", "-h", "Displays the help text", re_void, Flags::Help, true},
       {"--ignoreInitialUnknowns", "", "Ignore the initial unknowns from the modelDesction.xml", re_bool, Flags::IgnoreInitialUnknowns, false},
