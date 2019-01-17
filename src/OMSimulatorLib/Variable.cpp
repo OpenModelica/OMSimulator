@@ -39,7 +39,7 @@
 #include <string>
 
 
-oms3::Variable::Variable(fmi2_import_variable_t *var, unsigned int index)
+oms::Variable::Variable(fmi2_import_variable_t *var, unsigned int index)
   : is_state(false), cref(fmi2_import_get_variable_name(var)), index(index)
 {
   // extract the attributes
@@ -72,11 +72,11 @@ oms3::Variable::Variable(fmi2_import_variable_t *var, unsigned int index)
   }
 }
 
-oms3::Variable::~Variable()
+oms::Variable::~Variable()
 {
 }
 
-oms_causality_enu_t oms3::Variable::getCausality() const
+oms_causality_enu_t oms::Variable::getCausality() const
 {
   switch (causality)
   {
@@ -94,12 +94,12 @@ oms_causality_enu_t oms3::Variable::getCausality() const
   }
 }
 
-bool oms3::operator==(const oms3::Variable& v1, const oms3::Variable& v2)
+bool oms::operator==(const oms::Variable& v1, const oms::Variable& v2)
 {
   return v1.cref == v2.cref && v1.vr == v2.vr;
 }
 
-bool oms3::operator!=(const oms3::Variable& v1, const oms3::Variable& v2)
+bool oms::operator!=(const oms::Variable& v1, const oms::Variable& v2)
 {
   return !(v1 == v2);
 }

@@ -8,21 +8,21 @@ Get boolean value of given signal.
 #LUA#
 .. code-block:: lua
 
-  value, status = oms3_getBoolean(cref)
+  value, status = oms_getBoolean(cref)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  value, status = session.oms3_getBoolean(cref)
+  value, status = session.oms_getBoolean(cref)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms3_getBoolean(const char* cref, bool* value);
+  oms_status_enu_t oms_getBoolean(const char* cref, bool* value);
 
 #END#
 

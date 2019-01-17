@@ -8,21 +8,21 @@ Removes all variables that match the given regex to the result file.
 #LUA#
 .. code-block:: lua
 
-  status = oms3_removeSignalsFromResults(cref, regex)
+  status = oms_removeSignalsFromResults(cref, regex)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms3_removeSignalsFromResults(cref, regex)
+  status = session.oms_removeSignalsFromResults(cref, regex)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms3_removeSignalsFromResults(const char* cref, const char* regex);
+  oms_status_enu_t oms_removeSignalsFromResults(const char* cref, const char* regex);
 
 #END#
 

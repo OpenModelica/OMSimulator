@@ -39,7 +39,7 @@
 #include <string>
 #include <vector>
 
-namespace oms3
+namespace oms
 {
   class Variable
   {
@@ -84,7 +84,7 @@ namespace oms3
     oms_causality_enu_t getCausality() const;
 
     unsigned int getIndex() const { return index; }
-    oms3::Connector makeConnector() const {return oms3::Connector(getCausality(), type, cref);}
+    oms::Connector makeConnector() const {return oms::Connector(getCausality(), type, cref);}
 
   private:
     ComRef cref;
@@ -96,12 +96,12 @@ namespace oms3
     oms_signal_type_enu_t type;
     unsigned int index; ///< index origin = 1
 
-    friend bool operator==(const oms3::Variable& v1, const oms3::Variable& v2);
-    friend bool operator!=(const oms3::Variable& v1, const oms3::Variable& v2);
+    friend bool operator==(const oms::Variable& v1, const oms::Variable& v2);
+    friend bool operator!=(const oms::Variable& v1, const oms::Variable& v2);
   };
 
-  bool operator==(const oms3::Variable& v1, const oms3::Variable& v2);
-  bool operator!=(const oms3::Variable& v1, const oms3::Variable& v2);
+  bool operator==(const oms::Variable& v1, const oms::Variable& v2);
+  bool operator!=(const oms::Variable& v1, const oms::Variable& v2);
 }
 
 #endif

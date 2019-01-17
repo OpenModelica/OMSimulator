@@ -37,7 +37,7 @@
 #include <stdio.h>
 #include <string>
 
-namespace oms3
+namespace oms
 {
   class CSVWriter :
     public ResultWriter

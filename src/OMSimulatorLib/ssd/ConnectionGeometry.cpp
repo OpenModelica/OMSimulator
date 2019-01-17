@@ -38,7 +38,7 @@
 #include <sstream>
 #include <vector>
 
-oms3::ssd::ConnectionGeometry::ConnectionGeometry()
+oms::ssd::ConnectionGeometry::ConnectionGeometry()
 {
   logTrace();
 
@@ -47,7 +47,7 @@ oms3::ssd::ConnectionGeometry::ConnectionGeometry()
   this->n = 0;
 }
 
-oms3::ssd::ConnectionGeometry::ConnectionGeometry(const oms3::ssd::ConnectionGeometry& rhs)
+oms::ssd::ConnectionGeometry::ConnectionGeometry(const oms::ssd::ConnectionGeometry& rhs)
 {
   logTrace();
 
@@ -67,7 +67,7 @@ oms3::ssd::ConnectionGeometry::ConnectionGeometry(const oms3::ssd::ConnectionGeo
   }
 }
 
-oms3::ssd::ConnectionGeometry::~ConnectionGeometry()
+oms::ssd::ConnectionGeometry::~ConnectionGeometry()
 {
   logTrace();
 
@@ -78,7 +78,7 @@ oms3::ssd::ConnectionGeometry::~ConnectionGeometry()
   }
 }
 
-oms3::ssd::ConnectionGeometry& oms3::ssd::ConnectionGeometry::operator=(oms3::ssd::ConnectionGeometry const& rhs)
+oms::ssd::ConnectionGeometry& oms::ssd::ConnectionGeometry::operator=(oms::ssd::ConnectionGeometry const& rhs)
 {
   logTrace();
 
@@ -110,7 +110,7 @@ oms3::ssd::ConnectionGeometry& oms3::ssd::ConnectionGeometry::operator=(oms3::ss
   return *this;
 }
 
-void oms3::ssd::ConnectionGeometry::setPoints(unsigned int n_, double* pointsX_, double* pointsY_)
+void oms::ssd::ConnectionGeometry::setPoints(unsigned int n_, double* pointsX_, double* pointsY_)
 {
   if (this->n > 0)
   {
@@ -134,7 +134,7 @@ void oms3::ssd::ConnectionGeometry::setPoints(unsigned int n_, double* pointsX_,
   }
 }
 
-oms_status_enu_t oms3::ssd::ConnectionGeometry::exportToSSD(pugi::xml_node& root) const
+oms_status_enu_t oms::ssd::ConnectionGeometry::exportToSSD(pugi::xml_node& root) const
 {
   // export ssd:ConnectionGeometry
   if (getLength() > 0)
@@ -160,7 +160,7 @@ oms_status_enu_t oms3::ssd::ConnectionGeometry::exportToSSD(pugi::xml_node& root
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::ssd::ConnectionGeometry::importFromSSD(const pugi::xml_node& node)
+oms_status_enu_t oms::ssd::ConnectionGeometry::importFromSSD(const pugi::xml_node& node)
 {
   std::string pointsXStr = node.attribute("pointsX").as_string();
   std::istringstream pointsXStream(pointsXStr);

@@ -6,7 +6,7 @@
 #include <cstring>
 #include <algorithm>
 
-oms3::TLMBusConnector::TLMBusConnector(const oms3::ComRef &name, oms_tlm_domain_t domain, const int dimensions, const oms_tlm_interpolation_t interpolation, System* parentSystem, Component *component)
+oms::TLMBusConnector::TLMBusConnector(const oms::ComRef &name, oms_tlm_domain_t domain, const int dimensions, const oms_tlm_interpolation_t interpolation, System* parentSystem, Component *component)
   : parentSystem(parentSystem), component(component)
 {
   std::string str(name);
@@ -30,10 +30,10 @@ oms3::TLMBusConnector::TLMBusConnector(const oms3::ComRef &name, oms_tlm_domain_
   variableTypes = TLMBusConnector::getVariableTypes(domain, dimensions, interpolation);
 }
 
-oms3::TLMBusConnector::~TLMBusConnector()
+oms::TLMBusConnector::~TLMBusConnector()
 {
   if (this->name) delete[] this->name;
-  if (this->geometry) delete reinterpret_cast<oms3::ssd::ConnectorGeometry*>(this->geometry);
+  if (this->geometry) delete reinterpret_cast<oms::ssd::ConnectorGeometry*>(this->geometry);
   if (this->connectornames) {
     for (int i=0; connectornames[i]; ++i)
       delete[] connectornames[i];
@@ -46,7 +46,7 @@ oms3::TLMBusConnector::~TLMBusConnector()
   }
 }
 
-oms_status_enu_t oms3::TLMBusConnector::exportToSSD(pugi::xml_node &root) const
+oms_status_enu_t oms::TLMBusConnector::exportToSSD(pugi::xml_node &root) const
 {
   pugi::xml_node bus_node = root.append_child(oms::bus);
   bus_node.append_attribute("name") = name;
@@ -69,13 +69,13 @@ oms_status_enu_t oms3::TLMBusConnector::exportToSSD(pugi::xml_node &root) const
 
   if (this->geometry)
   {
-    return reinterpret_cast<oms3::ssd::ConnectorGeometry*>(this->geometry)->exportToSSD(bus_node);
+    return reinterpret_cast<oms::ssd::ConnectorGeometry*>(this->geometry)->exportToSSD(bus_node);
   }
 
   return oms_status_ok;
 }
 
-oms3::TLMBusConnector::TLMBusConnector(const oms3::TLMBusConnector &rhs)
+oms::TLMBusConnector::TLMBusConnector(const oms::TLMBusConnector &rhs)
 {
   this->name = new char[strlen(rhs.name)+1];
   strcpy(this->name, rhs.name);
@@ -84,14 +84,14 @@ oms3::TLMBusConnector::TLMBusConnector(const oms3::TLMBusConnector &rhs)
   this->interpolation = rhs.interpolation;
 
   if (rhs.geometry)
-    this->geometry = reinterpret_cast<ssd_connector_geometry_t*>(new oms3::ssd::ConnectorGeometry(*reinterpret_cast<oms3::ssd::ConnectorGeometry*>(rhs.geometry)));
+    this->geometry = reinterpret_cast<ssd_connector_geometry_t*>(new oms::ssd::ConnectorGeometry(*reinterpret_cast<oms::ssd::ConnectorGeometry*>(rhs.geometry)));
   else
     this->geometry = NULL;
 
   variableTypes = TLMBusConnector::getVariableTypes(domain, dimensions, interpolation);
 }
 
-oms3::TLMBusConnector &oms3::TLMBusConnector::operator=(const oms3::TLMBusConnector &rhs)
+oms::TLMBusConnector &oms::TLMBusConnector::operator=(const oms::TLMBusConnector &rhs)
 {
   // check for self-assignment
   if(&rhs == this)
@@ -105,14 +105,14 @@ oms3::TLMBusConnector &oms3::TLMBusConnector::operator=(const oms3::TLMBusConnec
   this->dimensions = rhs.dimensions;
   this->interpolation = rhs.interpolation;
 
-  this->setGeometry(reinterpret_cast<oms3::ssd::ConnectorGeometry*>(rhs.geometry));
+  this->setGeometry(reinterpret_cast<oms::ssd::ConnectorGeometry*>(rhs.geometry));
 
   variableTypes = TLMBusConnector::getVariableTypes(domain, dimensions, interpolation);
 
   return *this;
 }
 
-void oms3::TLMBusConnector::setName(const oms3::ComRef &name)
+void oms::TLMBusConnector::setName(const oms::ComRef &name)
 {
   if (this->name)
     delete[] this->name;
@@ -122,19 +122,19 @@ void oms3::TLMBusConnector::setName(const oms3::ComRef &name)
   strcpy(this->name, str.c_str());
 }
 
-void oms3::TLMBusConnector::setGeometry(const oms3::ssd::ConnectorGeometry *newGeometry)
+void oms::TLMBusConnector::setGeometry(const oms::ssd::ConnectorGeometry *newGeometry)
 {
   if (this->geometry)
   {
-    delete reinterpret_cast<oms3::ssd::ConnectorGeometry*>(this->geometry);
+    delete reinterpret_cast<oms::ssd::ConnectorGeometry*>(this->geometry);
     this->geometry = NULL;
   }
 
   if (newGeometry)
-    this->geometry = reinterpret_cast<ssd_connector_geometry_t*>(new oms3::ssd::ConnectorGeometry(*newGeometry));
+    this->geometry = reinterpret_cast<ssd_connector_geometry_t*>(new oms::ssd::ConnectorGeometry(*newGeometry));
 }
 
-void oms3::TLMBusConnector::setReal(int i, double value)
+void oms::TLMBusConnector::setReal(int i, double value)
 {
   if(parentSystem)
     parentSystem->setReal(getConnector(i), value);
@@ -142,7 +142,7 @@ void oms3::TLMBusConnector::setReal(int i, double value)
     getComponent()->setReal(getConnector(i), value);
 }
 
-void oms3::TLMBusConnector::getReal(int i, double &value)
+void oms::TLMBusConnector::getReal(int i, double &value)
 {
   if(parentSystem)
     parentSystem->getReal(getConnector(i), value);
@@ -150,7 +150,7 @@ void oms3::TLMBusConnector::getReal(int i, double &value)
     getComponent()->getReal(getConnector(i), value);
 }
 
-void oms3::TLMBusConnector::setReals(std::vector<int> i, std::vector<double> values)
+void oms::TLMBusConnector::setReals(std::vector<int> i, std::vector<double> values)
 {
   if(parentSystem) {
     for(int j=0; j<i.size(); ++j)
@@ -162,7 +162,7 @@ void oms3::TLMBusConnector::setReals(std::vector<int> i, std::vector<double> val
   }
 }
 
-void oms3::TLMBusConnector::getReals(std::vector<int> i, std::vector<double> &values)
+void oms::TLMBusConnector::getReals(std::vector<int> i, std::vector<double> &values)
 {
   if(parentSystem) {
     for(int j=0; j<i.size(); ++j)
@@ -174,12 +174,12 @@ void oms3::TLMBusConnector::getReals(std::vector<int> i, std::vector<double> &va
   }
 }
 
-void oms3::TLMBusConnector::setRealInputDerivatives(int i, int order, double value)
+void oms::TLMBusConnector::setRealInputDerivatives(int i, int order, double value)
 {
     logError_NotImplemented;
 }
 
-const std::string oms3::TLMBusConnector::getDomainString() const
+const std::string oms::TLMBusConnector::getDomainString() const
 {
   switch(domain)
   {
@@ -194,21 +194,21 @@ const std::string oms3::TLMBusConnector::getDomainString() const
   return "";
 }
 
-oms3::ComRef oms3::TLMBusConnector::getConnector(int id) const
+oms::ComRef oms::TLMBusConnector::getConnector(int id) const
 {
   return sortedConnectors[id];
 }
 
-std::vector<oms3::ComRef> oms3::TLMBusConnector::getConnectors(std::vector<int> ids) const
+std::vector<oms::ComRef> oms::TLMBusConnector::getConnectors(std::vector<int> ids) const
 {
-  std::vector<oms3::ComRef> retval;
+  std::vector<oms::ComRef> retval;
   for(int id : ids) {
     retval.push_back(sortedConnectors[id]);
   }
   return retval;
 }
 
-oms_status_enu_t oms3::TLMBusConnector::addConnector(const oms3::ComRef &cref, std::string vartype)
+oms_status_enu_t oms::TLMBusConnector::addConnector(const oms::ComRef &cref, std::string vartype)
 {
   if(std::find(variableTypes.begin(), variableTypes.end(), vartype) == variableTypes.end())
     return logError_UnknownTLMVariableType(vartype);
@@ -217,7 +217,7 @@ oms_status_enu_t oms3::TLMBusConnector::addConnector(const oms3::ComRef &cref, s
     return logError_VariableTypeAlreadyInTLMBus(this->getName(), vartype);
   }
 
-  oms3::ComRef tempRef = cref;
+  oms::ComRef tempRef = cref;
   connectors.insert(std::make_pair(vartype, tempRef));
   updateConnectors();
   sortConnectors();
@@ -225,7 +225,7 @@ oms_status_enu_t oms3::TLMBusConnector::addConnector(const oms3::ComRef &cref, s
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::TLMBusConnector::deleteConnector(const oms3::ComRef &cref)
+oms_status_enu_t oms::TLMBusConnector::deleteConnector(const oms::ComRef &cref)
 {
   for (auto it = connectors.begin(); it != connectors.end(); ++it) {
     if ((*it).second == cref) {
@@ -238,17 +238,17 @@ oms_status_enu_t oms3::TLMBusConnector::deleteConnector(const oms3::ComRef &cref
   return oms_status_error;
 }
 
-void oms3::TLMBusConnector::sortConnectors()
+void oms::TLMBusConnector::sortConnectors()
 {
   if(variableTypes.size() == connectors.size()) {
     for(const std::string& type : variableTypes) {
-      oms3::ComRef name = connectors.find(type)->second;
+      oms::ComRef name = connectors.find(type)->second;
       sortedConnectors.push_back(std::string(name));
     }
   }
 }
 
-oms_status_enu_t oms3::TLMBusConnector::registerToSockets(TLMPlugin *plugin)
+oms_status_enu_t oms::TLMBusConnector::registerToSockets(TLMPlugin *plugin)
 {
   if(sortedConnectors.empty() && (getActualBus() == this))
     return logError_NoConnectorsInTLMBus(getName());
@@ -279,7 +279,7 @@ oms_status_enu_t oms3::TLMBusConnector::registerToSockets(TLMPlugin *plugin)
 /**
  * \brief Recurse into specified system and find component connected to conA
  */
-oms3::Component* oms3::TLMBusConnector::getComponent(const ComRef& con, System* system) const
+oms::Component* oms::TLMBusConnector::getComponent(const ComRef& con, System* system) const
 {
   Connection** connections = system->getConnections(ComRef(""));
   for(int i=0; connections[i]; ++i) {
@@ -309,7 +309,7 @@ oms3::Component* oms3::TLMBusConnector::getComponent(const ComRef& con, System* 
 /**
  * \brief Recursively find component (i.e. FMU) connected to the TLM bus. Return NULL if not found.
  */
-oms3::Component* oms3::TLMBusConnector::getComponent()
+oms::Component* oms::TLMBusConnector::getComponent()
 {
   if(!component && !parentSystem)
     return nullptr;
@@ -320,7 +320,7 @@ oms3::Component* oms3::TLMBusConnector::getComponent()
   return component;
 }
 
-oms3::TLMBusConnector* oms3::TLMBusConnector::getActualBus()
+oms::TLMBusConnector* oms::TLMBusConnector::getActualBus()
 {
   if(!actualBus && !parentSystem)
     actualBus = this;
@@ -330,7 +330,7 @@ oms3::TLMBusConnector* oms3::TLMBusConnector::getActualBus()
   return actualBus;
 }
 
-oms3::TLMBusConnector* oms3::TLMBusConnector::getActualBus(ComRef cref, System *system)
+oms::TLMBusConnector* oms::TLMBusConnector::getActualBus(ComRef cref, System *system)
 {
   Connection** connections = system->getConnections(ComRef(""));
   for(int i=0; connections[i]; ++i) {
@@ -362,7 +362,7 @@ oms3::TLMBusConnector* oms3::TLMBusConnector::getActualBus(ComRef cref, System *
   return nullptr; //Should never happen
 }
 
-std::vector<std::string> oms3::TLMBusConnector::getVariableTypes(oms_tlm_domain_t domain, int dimensions, oms_tlm_interpolation_t interpolation)
+std::vector<std::string> oms::TLMBusConnector::getVariableTypes(oms_tlm_domain_t domain, int dimensions, oms_tlm_interpolation_t interpolation)
 {
   std::vector<std::string> types;
   if(domain == oms_tlm_domain_input || domain == oms_tlm_domain_output) {
@@ -410,7 +410,7 @@ std::vector<std::string> oms3::TLMBusConnector::getVariableTypes(oms_tlm_domain_
   return types;
 }
 
-std::vector<std::string> oms3::TLMBusConnector::getVariableDescriptions(oms_tlm_domain_t domain, int dimensions, oms_tlm_interpolation_t interpolation)
+std::vector<std::string> oms::TLMBusConnector::getVariableDescriptions(oms_tlm_domain_t domain, int dimensions, oms_tlm_interpolation_t interpolation)
 {
   std::string value = "variable";
   std::string state = "state";
@@ -564,7 +564,7 @@ std::vector<std::string> oms3::TLMBusConnector::getVariableDescriptions(oms_tlm_
 }
 
 
-void oms3::TLMBusConnector::updateConnectors()
+void oms::TLMBusConnector::updateConnectors()
 {
   if (connectornames)
   {

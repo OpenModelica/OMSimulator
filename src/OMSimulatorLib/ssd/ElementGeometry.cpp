@@ -36,7 +36,7 @@
 
 #include <string.h>
 
-oms3::ssd::ElementGeometry::ElementGeometry()
+oms::ssd::ElementGeometry::ElementGeometry()
 {
   logTrace();
 
@@ -51,7 +51,7 @@ oms3::ssd::ElementGeometry::ElementGeometry()
   this->iconFixedAspectRatio = false;
 }
 
-oms3::ssd::ElementGeometry::ElementGeometry(const oms3::ssd::ElementGeometry& rhs)
+oms::ssd::ElementGeometry::ElementGeometry(const oms::ssd::ElementGeometry& rhs)
 {
   logTrace();
 
@@ -75,7 +75,7 @@ oms3::ssd::ElementGeometry::ElementGeometry(const oms3::ssd::ElementGeometry& rh
   this->iconFixedAspectRatio = rhs.iconFixedAspectRatio;
 }
 
-oms3::ssd::ElementGeometry::~ElementGeometry()
+oms::ssd::ElementGeometry::~ElementGeometry()
 {
   logTrace();
 
@@ -83,7 +83,7 @@ oms3::ssd::ElementGeometry::~ElementGeometry()
     delete[] this->iconSource;
 }
 
-oms3::ssd::ElementGeometry& oms3::ssd::ElementGeometry::operator=(oms3::ssd::ElementGeometry const& rhs)
+oms::ssd::ElementGeometry& oms::ssd::ElementGeometry::operator=(oms::ssd::ElementGeometry const& rhs)
 {
   logTrace();
 
@@ -116,7 +116,7 @@ oms3::ssd::ElementGeometry& oms3::ssd::ElementGeometry::operator=(oms3::ssd::Ele
   return *this;
 }
 
-void oms3::ssd::ElementGeometry::setIconSource(std::string iconSource)
+void oms::ssd::ElementGeometry::setIconSource(std::string iconSource)
 {
   if (this->iconSource)
     delete[] this->iconSource;
@@ -131,7 +131,7 @@ void oms3::ssd::ElementGeometry::setIconSource(std::string iconSource)
   }
 }
 
-oms_status_enu_t oms3::ssd::ElementGeometry::exportToSSD(pugi::xml_node& root) const
+oms_status_enu_t oms::ssd::ElementGeometry::exportToSSD(pugi::xml_node& root) const
 {
   // export ssd:ElementGeometry
   if (x1 != 0.0 || y1 != 0.0 || x2 != 0.0 || y2 != 0.0 || rotation != 0.0 || hasIconSource() || iconRotation != 0.0 || getIconFlip() || getIconFixedAspectRatio())
@@ -163,7 +163,7 @@ oms_status_enu_t oms3::ssd::ElementGeometry::exportToSSD(pugi::xml_node& root) c
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::ssd::ElementGeometry::importFromSSD(const pugi::xml_node& node)
+oms_status_enu_t oms::ssd::ElementGeometry::importFromSSD(const pugi::xml_node& node)
 {
   x1 = node.attribute("x1").as_double();
   y1 = node.attribute("y1").as_double();

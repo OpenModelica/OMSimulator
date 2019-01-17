@@ -8,21 +8,21 @@ Sets the tolerance for a given system or component.
 #LUA#
 .. code-block:: lua
 
-  status = oms3_setTolerance(cref, tolerance)
+  status = oms_setTolerance(cref, tolerance)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms3_setTolerance(cref, tolerance)
+  status = session.oms_setTolerance(cref, tolerance)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms3_setTolerance(const char* cref, double tolerance);
+  oms_status_enu_t oms_setTolerance(const char* cref, double tolerance);
 
 #END#
 

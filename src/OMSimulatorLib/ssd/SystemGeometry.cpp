@@ -34,7 +34,7 @@
 
 #include <string.h>
 
-oms3::ssd::SystemGeometry::SystemGeometry()
+oms::ssd::SystemGeometry::SystemGeometry()
 {
   logTrace();
 
@@ -44,7 +44,7 @@ oms3::ssd::SystemGeometry::SystemGeometry()
   this->y2 = 0.0; // 10.0;
 }
 
-oms3::ssd::SystemGeometry::SystemGeometry(const oms3::ssd::SystemGeometry& rhs)
+oms::ssd::SystemGeometry::SystemGeometry(const oms::ssd::SystemGeometry& rhs)
 {
   logTrace();
 
@@ -54,12 +54,12 @@ oms3::ssd::SystemGeometry::SystemGeometry(const oms3::ssd::SystemGeometry& rhs)
   this->y2 = rhs.y2;
 }
 
-oms3::ssd::SystemGeometry::~SystemGeometry()
+oms::ssd::SystemGeometry::~SystemGeometry()
 {
   logTrace();
 }
 
-oms3::ssd::SystemGeometry& oms3::ssd::SystemGeometry::operator=(oms3::ssd::SystemGeometry const& rhs)
+oms::ssd::SystemGeometry& oms::ssd::SystemGeometry::operator=(oms::ssd::SystemGeometry const& rhs)
 {
   logTrace();
 

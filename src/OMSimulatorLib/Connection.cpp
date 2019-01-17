@@ -38,7 +38,7 @@
 #include <iostream>
 
 
-oms3::Connection::Connection(const oms3::ComRef& conA, const oms3::ComRef& conB, oms3_connection_type_enu_t type)
+oms::Connection::Connection(const oms::ComRef& conA, const oms::ComRef& conB, oms_connection_type_enu_t type)
 {
   std::string str;
 
@@ -52,20 +52,20 @@ oms3::Connection::Connection(const oms3::ComRef& conA, const oms3::ComRef& conB,
   this->conB = new char[str.size()+1];
   strcpy(this->conB, str.c_str());
 
-  this->geometry = reinterpret_cast<ssd_connection_geometry_t*>(new oms3::ssd::ConnectionGeometry());
+  this->geometry = reinterpret_cast<ssd_connection_geometry_t*>(new oms::ssd::ConnectionGeometry());
 
   tlmparameters = NULL;
 }
 
-oms3::Connection::~Connection()
+oms::Connection::~Connection()
 {
   if (this->conA) delete[] this->conA;
   if (this->conB) delete[] this->conB;
   if (this->tlmparameters) delete tlmparameters;
-  if (this->geometry) delete reinterpret_cast<oms3::ssd::ConnectionGeometry*>(this->geometry);
+  if (this->geometry) delete reinterpret_cast<oms::ssd::ConnectionGeometry*>(this->geometry);
 }
 
-oms3::Connection::Connection(const oms3::Connection& rhs)
+oms::Connection::Connection(const oms::Connection& rhs)
 {
   this->type = rhs.type;
 
@@ -75,21 +75,21 @@ oms3::Connection::Connection(const oms3::Connection& rhs)
   this->conB = new char[strlen(rhs.conB)+1];
   strcpy(this->conB, rhs.conB);
 
-  oms3::ssd::ConnectionGeometry* geometry_ = new oms3::ssd::ConnectionGeometry();
-  *geometry_ = *reinterpret_cast<oms3::ssd::ConnectionGeometry*>(rhs.geometry);
+  oms::ssd::ConnectionGeometry* geometry_ = new oms::ssd::ConnectionGeometry();
+  *geometry_ = *reinterpret_cast<oms::ssd::ConnectionGeometry*>(rhs.geometry);
   this->geometry = reinterpret_cast<ssd_connection_geometry_t*>(geometry_);
 
   tlmparameters = NULL;
 }
 
-oms3::Connection& oms3::Connection::operator=(const oms3::Connection& rhs)
+oms::Connection& oms::Connection::operator=(const oms::Connection& rhs)
 {
   // check for self-assignment
   if(&rhs == this)
     return *this;
 
   if (this->type != rhs.type)
-    logWarning("[oms3::Connection::operator=] changing type of connection");
+    logWarning("[oms::Connection::operator=] changing type of connection");
   this->type = rhs.type;
 
   if (this->conA) delete[] this->conA;
@@ -100,8 +100,8 @@ oms3::Connection& oms3::Connection::operator=(const oms3::Connection& rhs)
   this->conB = new char[strlen(rhs.conB)+1];
   strcpy(this->conB, rhs.conB);
 
-  oms3::ssd::ConnectionGeometry* geometry_ = new oms3::ssd::ConnectionGeometry();
-  *geometry_ = *reinterpret_cast<oms3::ssd::ConnectionGeometry*>(rhs.geometry);
+  oms::ssd::ConnectionGeometry* geometry_ = new oms::ssd::ConnectionGeometry();
+  *geometry_ = *reinterpret_cast<oms::ssd::ConnectionGeometry*>(rhs.geometry);
   this->geometry = reinterpret_cast<ssd_connection_geometry_t*>(geometry_);
 
   setTLMParameters(rhs.tlmparameters);
@@ -109,12 +109,12 @@ oms3::Connection& oms3::Connection::operator=(const oms3::Connection& rhs)
   return *this;
 }
 
-oms_status_enu_t oms3::Connection::exportToSSD(pugi::xml_node &root) const
+oms_status_enu_t oms::Connection::exportToSSD(pugi::xml_node &root) const
 {
   pugi::xml_node node;
-  if(type == oms3_connection_single)
+  if(type == oms_connection_single)
     node = root.append_child(oms::ssd::ssd_connection);
-  else if(type == oms3_connection_bus || type == oms3_connection_tlm)
+  else if(type == oms_connection_bus || type == oms_connection_tlm)
     node = root.append_child(oms::bus_connection);
 
   ComRef startConnectorRef(conA);
@@ -127,7 +127,7 @@ oms_status_enu_t oms3::Connection::exportToSSD(pugi::xml_node &root) const
   node.append_attribute("endElement") = endConnectorRef.isEmpty() ? "" : endElementRef.c_str();
   node.append_attribute("endConnector") = endConnectorRef.isEmpty() ? endElementRef.c_str() : endConnectorRef.c_str();
 
-  if(type == oms3_connection_tlm)
+  if(type == oms_connection_tlm)
   {
     node.append_attribute("delay") = std::to_string(tlmparameters->delay).c_str();
     node.append_attribute("alpha") = std::to_string(tlmparameters->alpha).c_str();
@@ -140,16 +140,16 @@ oms_status_enu_t oms3::Connection::exportToSSD(pugi::xml_node &root) const
   return oms_status_ok;
 }
 
-void oms3::Connection::setGeometry(const oms3::ssd::ConnectionGeometry* newGeometry)
+void oms::Connection::setGeometry(const oms::ssd::ConnectionGeometry* newGeometry)
 {
-  oms3::ssd::ConnectionGeometry* geometry_ = reinterpret_cast<oms3::ssd::ConnectionGeometry*>(this->geometry);
+  oms::ssd::ConnectionGeometry* geometry_ = reinterpret_cast<oms::ssd::ConnectionGeometry*>(this->geometry);
   if (geometry_)
     delete geometry_;
-  geometry_ = new oms3::ssd::ConnectionGeometry(*newGeometry);
+  geometry_ = new oms::ssd::ConnectionGeometry(*newGeometry);
   this->geometry = reinterpret_cast<ssd_connection_geometry_t*>(geometry_);
 }
 
-void oms3::Connection::setTLMParameters(const oms3_tlm_connection_parameters_t* parameters)
+void oms::Connection::setTLMParameters(const oms_tlm_connection_parameters_t* parameters)
 {
   if (tlmparameters)
   {
@@ -161,10 +161,10 @@ void oms3::Connection::setTLMParameters(const oms3_tlm_connection_parameters_t* 
     setTLMParameters(parameters->delay, parameters->alpha, parameters->linearimpedance, parameters->angularimpedance);
 }
 
-void oms3::Connection::setTLMParameters(double delay, double alpha, double linearimpedance, double angualrimpedance)
+void oms::Connection::setTLMParameters(double delay, double alpha, double linearimpedance, double angualrimpedance)
 {
   if (!tlmparameters)
-    tlmparameters = new oms3_tlm_connection_parameters_t;
+    tlmparameters = new oms_tlm_connection_parameters_t;
 
   tlmparameters->delay = delay;
   tlmparameters->alpha = alpha;
@@ -172,19 +172,19 @@ void oms3::Connection::setTLMParameters(double delay, double alpha, double linea
   tlmparameters->angularimpedance = angualrimpedance;
 }
 
-bool oms3::Connection::isEqual(const oms3::ComRef& signalA, const oms3::ComRef& signalB) const
+bool oms::Connection::isEqual(const oms::ComRef& signalA, const oms::ComRef& signalB) const
 {
-  return (signalA == oms3::ComRef(this->conA) && signalB == oms3::ComRef(this->conB)) || (signalA == oms3::ComRef(this->conB) && signalB == oms3::ComRef(this->conA));
+  return (signalA == oms::ComRef(this->conA) && signalB == oms::ComRef(this->conB)) || (signalA == oms::ComRef(this->conB) && signalB == oms::ComRef(this->conA));
 }
 
-bool oms3::Connection::isEqual(const oms3::Connection& connection) const
+bool oms::Connection::isEqual(const oms::Connection& connection) const
 {
-  const oms3::ComRef& conA_ = connection.getSignalA();
-  const oms3::ComRef& conB_ = connection.getSignalB();
+  const oms::ComRef& conA_ = connection.getSignalA();
+  const oms::ComRef& conB_ = connection.getSignalB();
   return isEqual(conA_, conB_);
 }
 
-bool oms3::Connection::containsSignal(const oms3::ComRef& signal)
+bool oms::Connection::containsSignal(const oms::ComRef& signal)
 {
-  return signal == oms3::ComRef(this->conA) || signal == oms3::ComRef(this->conB);
+  return signal == oms::ComRef(this->conA) || signal == oms::ComRef(this->conB);
 }

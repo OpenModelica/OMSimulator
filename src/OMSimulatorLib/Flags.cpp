@@ -43,7 +43,7 @@
 #include <RegEx.h>
 #include <sstream>
 
-oms3::Flags::Flags()
+oms::Flags::Flags()
 {
   setDefaults();
 
@@ -55,11 +55,11 @@ oms3::Flags::Flags()
   }
 }
 
-oms3::Flags::~Flags()
+oms::Flags::~Flags()
 {
 }
 
-void oms3::Flags::setDefaults()
+void oms::Flags::setDefaults()
 {
   ignoreInitialUnknowns = false;
   suppressPath = false;
@@ -75,7 +75,7 @@ void oms3::Flags::setDefaults()
   resultFile = "<default>";
 }
 
-oms3::Flags& oms3::Flags::GetInstance()
+oms::Flags& oms::Flags::GetInstance()
 {
   // the only instance
   static Flags flags;
@@ -98,7 +98,7 @@ bool isOptionAndValue(const std::string& cmd, const std::string& name, std::stri
   return false;
 }
 
-oms_status_enu_t oms3::Flags::SetCommandLineOption(const std::string& cmd)
+oms_status_enu_t oms::Flags::SetCommandLineOption(const std::string& cmd)
 {
   // split command line arguments
   std::vector<std::string> args;
@@ -152,27 +152,27 @@ oms_status_enu_t oms3::Flags::SetCommandLineOption(const std::string& cmd)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Flags::ClearAllOptions(const std::string& value)
+oms_status_enu_t oms::Flags::ClearAllOptions(const std::string& value)
 {
   GetInstance().setDefaults();
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Flags::FetchAllVars(const std::string& value)
+oms_status_enu_t oms::Flags::FetchAllVars(const std::string& value)
 {
-  oms3::ComRef tail(value);
-  oms3::ComRef front = tail.pop_front();
+  oms::ComRef tail(value);
+  oms::ComRef front = tail.pop_front();
 
-  oms3::Model* model = oms3::Scope::GetInstance().getModel(front);
+  oms::Model* model = oms::Scope::GetInstance().getModel(front);
   if (!model)
     return logError_ModelNotInScope(front);
 
   front = tail.pop_front();
-  oms3::System* system = model->getSystem(front);
+  oms::System* system = model->getSystem(front);
   if (!system)
     return logError_SystemNotInModel(model->getCref(), front);
 
-  oms3::Component* component = system->getComponent(tail);
+  oms::Component* component = system->getComponent(tail);
   if (!component)
     return logError_ComponentNotInSystem(system, tail);
 
@@ -184,13 +184,13 @@ oms_status_enu_t oms3::Flags::FetchAllVars(const std::string& value)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Flags::Filename(const std::string& value)
+oms_status_enu_t oms::Flags::Filename(const std::string& value)
 {
-  oms3_RunFile(value.c_str());
+  oms_RunFile(value.c_str());
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Flags::Help(const std::string& value)
+oms_status_enu_t oms::Flags::Help(const std::string& value)
 {
   std::stringstream ss;
   ss << "Options:" << std::endl;
@@ -211,104 +211,104 @@ oms_status_enu_t oms3::Flags::Help(const std::string& value)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Flags::IgnoreInitialUnknowns(const std::string& value)
+oms_status_enu_t oms::Flags::IgnoreInitialUnknowns(const std::string& value)
 {
   GetInstance().ignoreInitialUnknowns = (value == "true");
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Flags::Intervals(const std::string& value)
+oms_status_enu_t oms::Flags::Intervals(const std::string& value)
 {
   GetInstance().intervals = atoi(value.c_str());
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Flags::LogFile(const std::string& value)
+oms_status_enu_t oms::Flags::LogFile(const std::string& value)
 {
-  oms3_setLogFile(value.c_str());
+  oms_setLogFile(value.c_str());
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Flags::LogLevel(const std::string& value)
+oms_status_enu_t oms::Flags::LogLevel(const std::string& value)
 {
-  oms3_setLoggingLevel(atoi(value.c_str()));
+  oms_setLoggingLevel(atoi(value.c_str()));
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Flags::Mode(const std::string& value)
+oms_status_enu_t oms::Flags::Mode(const std::string& value)
 {
   GetInstance().defaultModeIsCS = (value == "cs");
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Flags::ProgressBar(const std::string& value)
+oms_status_enu_t oms::Flags::ProgressBar(const std::string& value)
 {
   GetInstance().progressBar = (value == "true");
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Flags::ResultFile(const std::string& value)
+oms_status_enu_t oms::Flags::ResultFile(const std::string& value)
 {
   GetInstance().resultFile = atof(value.c_str());
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Flags::SetInputDerivatives(const std::string& value)
+oms_status_enu_t oms::Flags::SetInputDerivatives(const std::string& value)
 {
   GetInstance().inputDerivatives = (value == "true");
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Flags::Solver(const std::string& value)
+oms_status_enu_t oms::Flags::Solver(const std::string& value)
 {
   GetInstance().solver = value;
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Flags::StartTime(const std::string& value)
+oms_status_enu_t oms::Flags::StartTime(const std::string& value)
 {
   GetInstance().startTime = atof(value.c_str());
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Flags::StopTime(const std::string& value)
+oms_status_enu_t oms::Flags::StopTime(const std::string& value)
 {
   GetInstance().stopTime = atof(value.c_str());
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Flags::SuppressPath(const std::string& value)
+oms_status_enu_t oms::Flags::SuppressPath(const std::string& value)
 {
-  oms3::Flags::SuppressPath(value == "true");
+  oms::Flags::SuppressPath(value == "true");
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Flags::TempDir(const std::string& value)
+oms_status_enu_t oms::Flags::TempDir(const std::string& value)
 {
-  oms3_setTempDirectory(value.c_str());
+  oms_setTempDirectory(value.c_str());
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Flags::Timeout(const std::string& value)
+oms_status_enu_t oms::Flags::Timeout(const std::string& value)
 {
   GetInstance().timeout = atoi(value.c_str());
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Flags::Tolerance(const std::string& value)
+oms_status_enu_t oms::Flags::Tolerance(const std::string& value)
 {
   GetInstance().tolerance = atof(value.c_str());
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Flags::Version(const std::string& value)
+oms_status_enu_t oms::Flags::Version(const std::string& value)
 {
-  std::cout << oms3_getVersion() << std::endl;
+  std::cout << oms_getVersion() << std::endl;
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Flags::WorkingDir(const std::string& value)
+oms_status_enu_t oms::Flags::WorkingDir(const std::string& value)
 {
-  oms3_setWorkingDirectory(value.c_str());
+  oms_setWorkingDirectory(value.c_str());
   return oms_status_ok;
 }

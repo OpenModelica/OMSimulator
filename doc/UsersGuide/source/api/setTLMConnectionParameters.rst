@@ -22,7 +22,7 @@ Simulates a composite model in its own thread.
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms3_setTLMConnectionParameters(const char* crefA, const char* crefB, const oms3_tlm_connection_parameters_t* parameters);
+  oms_status_enu_t oms_setTLMConnectionParameters(const char* crefA, const char* crefB, const oms_tlm_connection_parameters_t* parameters);
 
 #END#
 

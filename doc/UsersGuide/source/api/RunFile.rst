@@ -22,7 +22,7 @@ Simulates a single FMU or SSP model.
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms3_RunFile(const char* filename);
+  oms_status_enu_t oms_RunFile(const char* filename);
 
 #END#
 

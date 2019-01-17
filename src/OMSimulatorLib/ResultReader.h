@@ -35,7 +35,7 @@
 #include <string>
 #include <vector>
 
-namespace oms3
+namespace oms
 {
   class ResultReader
   {

@@ -42,18 +42,18 @@
 #include <vector>
 #include <map>
 
-namespace oms3
+namespace oms
 {
   class ExternalModel : public Component
   {
   public:
     ~ExternalModel();
-    static ExternalModel* NewComponent(const oms3::ComRef& cref, System* parentSystem, const std::string& path, const std::string& startscript);
+    static ExternalModel* NewComponent(const oms::ComRef& cref, System* parentSystem, const std::string& path, const std::string& startscript);
 
     oms_status_enu_t setRealParameter(const std::string& var, double value);
     oms_status_enu_t getRealParameter(const std::string& var, double& value);
     const std::string& getStartScript() const {return startscript;}
-    const std::map<std::string, oms3::Option<double>>& getRealParameters() const {return realParameters;}
+    const std::map<std::string, oms::Option<double>>& getRealParameters() const {return realParameters;}
 
     oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
     oms_status_enu_t instantiate();
@@ -69,7 +69,7 @@ namespace oms3
     oms_status_enu_t removeSignalsFromResults(const char* regex);
 
   protected:
-    ExternalModel(const oms3::ComRef& cref, System* parentSystem, const std::string& path, const std::string& startscript);
+    ExternalModel(const oms::ComRef& cref, System* parentSystem, const std::string& path, const std::string& startscript);
 
     // stop the compiler generating methods copying the object
     ExternalModel(ExternalModel const& copy);            ///< not implemented
@@ -77,7 +77,7 @@ namespace oms3
 
   private:
     std::string startscript;
-    std::map<std::string, oms3::Option<double>> realParameters;
+    std::map<std::string, oms::Option<double>> realParameters;
   };
 }
 

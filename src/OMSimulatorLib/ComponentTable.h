@@ -43,14 +43,14 @@
 #include <unordered_map>
 #include <vector>
 
-namespace oms3
+namespace oms
 {
   class ComponentTable : public Component
   {
   public:
     ~ComponentTable();
 
-    static Component* NewComponent(const oms3::ComRef& cref, System* parentSystem, const std::string& path);
+    static Component* NewComponent(const oms::ComRef& cref, System* parentSystem, const std::string& path);
     static Component* NewComponent(const pugi::xml_node& node, System* parentSystem);
 
     oms_status_enu_t exportToSSD(pugi::xml_node& node) const;

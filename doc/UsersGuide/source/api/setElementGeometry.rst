@@ -22,7 +22,7 @@ Set geometry information to a given component.
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms3_setElementGeometry(const char* cref, const ssd_element_geometry_t* geometry);
+  oms_status_enu_t oms_setElementGeometry(const char* cref, const ssd_element_geometry_t* geometry);
 
 #END#
 

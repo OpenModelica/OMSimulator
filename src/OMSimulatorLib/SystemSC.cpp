@@ -43,9 +43,9 @@
 #include "sundials/sundials_dense.h" /* definitions DlsMat DENSE_ELEM */
 #include "sundials/sundials_types.h" /* definition of type realtype */
 
-int oms3::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
+int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
-  //std::cout << "\n[oms3::cvode_rhs] t=" << t << std::endl;
+  //std::cout << "\n[oms::cvode_rhs] t=" << t << std::endl;
   SystemSC* system = (SystemSC*)user_data;
   oms_status_enu_t status;
 
@@ -62,7 +62,7 @@ int oms3::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
     status = system->fmus[i]->setContinuousStates(system->states[i]);
     if (oms_status_ok != status) return status;
   }
-  //std::cout << "[oms3::cvode_rhs] y" << std::endl;
+  //std::cout << "[oms::cvode_rhs] y" << std::endl;
   //N_VPrint_Serial(y);
 
   system->updateInputs(system->outputsGraph);
@@ -84,16 +84,16 @@ int oms3::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
   return 0;
 }
 
-oms3::SystemSC::SystemSC(const ComRef& cref, Model* parentModel, System* parentSystem)
-  : oms3::System(cref, oms_system_sc, parentModel, parentSystem)
+oms::SystemSC::SystemSC(const ComRef& cref, Model* parentModel, System* parentSystem)
+  : oms::System(cref, oms_system_sc, parentModel, parentSystem)
 {
 }
 
-oms3::SystemSC::~SystemSC()
+oms::SystemSC::~SystemSC()
 {
 }
 
-oms3::System* oms3::SystemSC::NewSystem(const oms3::ComRef& cref, oms3::Model* parentModel, oms3::System* parentSystem)
+oms::System* oms::SystemSC::NewSystem(const oms::ComRef& cref, oms::Model* parentModel, oms::System* parentSystem)
 {
   if (!cref.isValidIdent())
   {
@@ -111,7 +111,7 @@ oms3::System* oms3::SystemSC::NewSystem(const oms3::ComRef& cref, oms3::Model* p
   return system;
 }
 
-std::string oms3::SystemSC::getSolverName() const
+std::string oms::SystemSC::getSolverName() const
 {
   switch (solverMethod)
   {
@@ -124,7 +124,7 @@ std::string oms3::SystemSC::getSolverName() const
   return std::string("unknown");
 }
 
-oms_status_enu_t oms3::SystemSC::setSolverMethod(std::string solver)
+oms_status_enu_t oms::SystemSC::setSolverMethod(std::string solver)
 {
   if (std::string("euler") == solver)
     solverMethod = oms_solver_explicit_euler;
@@ -136,7 +136,7 @@ oms_status_enu_t oms3::SystemSC::setSolverMethod(std::string solver)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::SystemSC::exportToSSD_SimulationInformation(pugi::xml_node& node) const
+oms_status_enu_t oms::SystemSC::exportToSSD_SimulationInformation(pugi::xml_node& node) const
 {
   pugi::xml_node node_simulation_information = node.append_child(oms::ssd::ssd_simulation_information);
 
@@ -151,7 +151,7 @@ oms_status_enu_t oms3::SystemSC::exportToSSD_SimulationInformation(pugi::xml_nod
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::SystemSC::importFromSSD_SimulationInformation(const pugi::xml_node& node)
+oms_status_enu_t oms::SystemSC::importFromSSD_SimulationInformation(const pugi::xml_node& node)
 {
   std::string solverName = node.child("VariableStepSolver").attribute("description").as_string();
   if (oms_status_ok != setSolverMethod(solverName))
@@ -164,7 +164,7 @@ oms_status_enu_t oms3::SystemSC::importFromSSD_SimulationInformation(const pugi:
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::SystemSC::instantiate()
+oms_status_enu_t oms::SystemSC::instantiate()
 {
   time = getModel()->getStartTime();
 
@@ -213,7 +213,7 @@ oms_status_enu_t oms3::SystemSC::instantiate()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::SystemSC::initialize()
+oms_status_enu_t oms::SystemSC::initialize()
 {
   clock.reset();
   CallClock callClock(clock);
@@ -323,7 +323,7 @@ oms_status_enu_t oms3::SystemSC::initialize()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::SystemSC::terminate()
+oms_status_enu_t oms::SystemSC::terminate()
 {
   for (const auto& subsystem : getSubSystems())
     if (oms_status_ok != subsystem.second->terminate())
@@ -385,7 +385,7 @@ oms_status_enu_t oms3::SystemSC::terminate()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::SystemSC::reset()
+oms_status_enu_t oms::SystemSC::reset()
 {
   for (const auto& subsystem : getSubSystems())
     if (oms_status_ok != subsystem.second->reset())
@@ -429,7 +429,7 @@ oms_status_enu_t oms3::SystemSC::reset()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::SystemSC::stepUntil(double stopTime, void (*cb)(const char* ident, double time, oms_status_enu_t status))
+oms_status_enu_t oms::SystemSC::stepUntil(double stopTime, void (*cb)(const char* ident, double time, oms_status_enu_t status))
 {
   CallClock callClock(clock);
 
@@ -608,7 +608,7 @@ oms_status_enu_t oms3::SystemSC::stepUntil(double stopTime, void (*cb)(const cha
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::SystemSC::updateInputs(DirectedGraph& graph)
+oms_status_enu_t oms::SystemSC::updateInputs(DirectedGraph& graph)
 {
   CallClock callClock(clock);
 
@@ -650,7 +650,7 @@ oms_status_enu_t oms3::SystemSC::updateInputs(DirectedGraph& graph)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::SystemSC::solveAlgLoop(DirectedGraph& graph, const std::vector< std::pair<int, int> >& SCC)
+oms_status_enu_t oms::SystemSC::solveAlgLoop(DirectedGraph& graph, const std::vector< std::pair<int, int> >& SCC)
 {
   CallClock callClock(clock);
 

@@ -22,7 +22,7 @@ Gets the type of an TLM variable.
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms3_getTLMVariableTypes(oms_tlm_domain_t domain, const int dimensions, const oms_tlm_interpolation_t interpolation, char ***types, char ***descriptions);
+  oms_status_enu_t oms_getTLMVariableTypes(oms_tlm_domain_t domain, const int dimensions, const oms_tlm_interpolation_t interpolation, char ***types, char ***descriptions);
 
 #END#
 

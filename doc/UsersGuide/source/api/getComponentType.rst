@@ -22,7 +22,7 @@ Gets the type of the given component.
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms3_getComponentType(const char* cref, oms_component_enu_t* type);
+  oms_status_enu_t oms_getComponentType(const char* cref, oms_component_enu_t* type);
 
 #END#
 

@@ -8,21 +8,21 @@ Exports a composite model to a SPP file.
 #LUA#
 .. code-block:: lua
 
-  status = oms3_export(cref, filename)
+  status = oms_export(cref, filename)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms3_export(cref, filename)
+  status = session.oms_export(cref, filename)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms3_export(const char* cref, const char* filename);
+  oms_status_enu_t oms_export(const char* cref, const char* filename);
 
 #END#
 

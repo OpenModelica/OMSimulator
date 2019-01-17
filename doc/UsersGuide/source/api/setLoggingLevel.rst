@@ -10,21 +10,21 @@ Enables/Disables debug logging (logDebug and logTrace).
 #LUA#
 .. code-block:: lua
 
-  oms3_setLoggingLevel(logLevel)
+  oms_setLoggingLevel(logLevel)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  session.oms3_setLoggingLevel(logLevel)
+  session.oms_setLoggingLevel(logLevel)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  void oms3_setLoggingLevel(int logLevel);
+  void oms_setLoggingLevel(int logLevel);
 
 #END#
 

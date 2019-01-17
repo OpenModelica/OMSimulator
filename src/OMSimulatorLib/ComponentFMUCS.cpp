@@ -42,12 +42,12 @@
 #include <OMSBoost.h>
 #include <RegEx.h>
 
-oms3::ComponentFMUCS::ComponentFMUCS(const ComRef& cref, System* parentSystem, const std::string& fmuPath)
-  : oms3::Component(cref, oms_component_fmu, parentSystem, fmuPath), fmuInfo(fmuPath, oms_fmi_kind_cs)
+oms::ComponentFMUCS::ComponentFMUCS(const ComRef& cref, System* parentSystem, const std::string& fmuPath)
+  : oms::Component(cref, oms_component_fmu, parentSystem, fmuPath), fmuInfo(fmuPath, oms_fmi_kind_cs)
 {
 }
 
-oms3::ComponentFMUCS::~ComponentFMUCS()
+oms::ComponentFMUCS::~ComponentFMUCS()
 {
   fmi2_import_free_instance(fmu);
   fmi2_import_destroy_dllfmu(fmu);
@@ -61,7 +61,7 @@ oms3::ComponentFMUCS::~ComponentFMUCS()
   }
 }
 
-oms3::Component* oms3::ComponentFMUCS::NewComponent(const oms3::ComRef& cref, oms3::System* parentSystem, const std::string& fmuPath)
+oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::System* parentSystem, const std::string& fmuPath)
 {
   if (!cref.isValidIdent())
   {
@@ -88,7 +88,7 @@ oms3::Component* oms3::ComponentFMUCS::NewComponent(const oms3::ComRef& cref, om
   component->callbacks.calloc = calloc;
   component->callbacks.realloc = realloc;
   component->callbacks.free = free;
-  component->callbacks.logger = oms3::fmiLogger;
+  component->callbacks.logger = oms::fmiLogger;
   component->callbacks.log_level = jm_log_level_all;
   component->callbacks.context = 0;
 
@@ -140,7 +140,7 @@ oms3::Component* oms3::ComponentFMUCS::NewComponent(const oms3::ComRef& cref, om
     return NULL;
   }
 
-  component->callbackFunctions.logger = oms3::fmi2logger;
+  component->callbackFunctions.logger = oms::fmi2logger;
   component->callbackFunctions.allocateMemory = calloc;
   component->callbackFunctions.freeMemory = free;
   component->callbackFunctions.componentEnvironment = component->fmu;
@@ -155,7 +155,7 @@ oms3::Component* oms3::ComponentFMUCS::NewComponent(const oms3::ComRef& cref, om
   for (size_t i = 0; i < varListSize; ++i)
   {
     fmi2_import_variable_t* var = fmi2_import_get_variable(varList, i);
-    oms3::Variable v(var, i + 1);
+    oms::Variable v(var, i + 1);
     component->allVariables.push_back(v);
     component->exportVariables.push_back(true);
   }
@@ -205,11 +205,11 @@ oms3::Component* oms3::ComponentFMUCS::NewComponent(const oms3::ComRef& cref, om
   for (auto const& v : component->allVariables)
   {
     if (v.isParameter() && v.isTypeReal())
-      component->realParameters[std::string(v)] = oms3::Option<double>();
+      component->realParameters[std::string(v)] = oms::Option<double>();
     else if (v.isParameter() && v.isTypeInteger())
-      component->integerParameters[std::string(v)] = oms3::Option<int>();
+      component->integerParameters[std::string(v)] = oms::Option<int>();
     else if (v.isParameter() && v.isTypeBoolean())
-      component->booleanParameters[std::string(v)] = oms3::Option<bool>();
+      component->booleanParameters[std::string(v)] = oms::Option<bool>();
 
     if (v.isInput())
       component->inputs.push_back(v);
@@ -250,7 +250,7 @@ oms3::Component* oms3::ComponentFMUCS::NewComponent(const oms3::ComRef& cref, om
   return component;
 }
 
-oms3::Component* oms3::ComponentFMUCS::NewComponent(const pugi::xml_node& node, oms3::System* parentSystem)
+oms::Component* oms::ComponentFMUCS::NewComponent(const pugi::xml_node& node, oms::System* parentSystem)
 {
   ComRef cref = ComRef(node.attribute("name").as_string());
   std::string type = node.attribute("type").as_string();
@@ -262,7 +262,7 @@ oms3::Component* oms3::ComponentFMUCS::NewComponent(const pugi::xml_node& node, 
     return NULL;
   }
 
-  oms3::ComponentFMUCS* component = dynamic_cast<oms3::ComponentFMUCS*>(oms3::ComponentFMUCS::NewComponent(cref, parentSystem, source));
+  oms::ComponentFMUCS* component = dynamic_cast<oms::ComponentFMUCS*>(oms::ComponentFMUCS::NewComponent(cref, parentSystem, source));
   if (!component)
     return NULL;
 
@@ -278,12 +278,12 @@ oms3::Component* oms3::ComponentFMUCS::NewComponent(const pugi::xml_node& node, 
       // import connectors
       for(pugi::xml_node_iterator itConnectors = (*it).begin(); itConnectors != (*it).end(); ++itConnectors)
       {
-        component->connectors.push_back(oms3::Connector::NewConnector(*itConnectors));
+        component->connectors.push_back(oms::Connector::NewConnector(*itConnectors));
       }
     }
     else if(name == oms::ssd::ssd_element_geometry)
     {
-      oms3::ssd::ElementGeometry geometry;
+      oms::ssd::ElementGeometry geometry;
       geometry.importFromSSD(*it);
       component->setGeometry(geometry);
     }
@@ -301,7 +301,7 @@ oms3::Component* oms3::ComponentFMUCS::NewComponent(const pugi::xml_node& node, 
   return component;
 }
 
-oms_status_enu_t oms3::ComponentFMUCS::exportToSSD(pugi::xml_node& node) const
+oms_status_enu_t oms::ComponentFMUCS::exportToSSD(pugi::xml_node& node) const
 {
 #if !defined(NO_TLM)
   if (tlmbusconnectors[0])
@@ -330,7 +330,7 @@ oms_status_enu_t oms3::ComponentFMUCS::exportToSSD(pugi::xml_node& node) const
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::ComponentFMUCS::initializeDependencyGraph_initialUnknowns()
+oms_status_enu_t oms::ComponentFMUCS::initializeDependencyGraph_initialUnknowns()
 {
   if (initialUnknownsGraph.getEdges().size() > 0)
   {
@@ -375,7 +375,7 @@ oms_status_enu_t oms3::ComponentFMUCS::initializeDependencyGraph_initialUnknowns
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::ComponentFMUCS::initializeDependencyGraph_outputs()
+oms_status_enu_t oms::ComponentFMUCS::initializeDependencyGraph_outputs()
 {
   if (outputsGraph.getEdges().size() > 0)
   {
@@ -419,7 +419,7 @@ oms_status_enu_t oms3::ComponentFMUCS::initializeDependencyGraph_outputs()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::ComponentFMUCS::instantiate()
+oms_status_enu_t oms::ComponentFMUCS::instantiate()
 {
   jm_status_enu_t jmstatus;
   fmi2_status_t fmistatus;
@@ -445,7 +445,7 @@ oms_status_enu_t oms3::ComponentFMUCS::instantiate()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::ComponentFMUCS::initialize()
+oms_status_enu_t oms::ComponentFMUCS::initialize()
 {
   clock.reset();
   CallClock callClock(clock);
@@ -459,7 +459,7 @@ oms_status_enu_t oms3::ComponentFMUCS::initialize()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::ComponentFMUCS::terminate()
+oms_status_enu_t oms::ComponentFMUCS::terminate()
 {
   fmi2_status_t fmistatus = fmi2_import_terminate(fmu);
   if (fmi2_status_ok != fmistatus)
@@ -470,7 +470,7 @@ oms_status_enu_t oms3::ComponentFMUCS::terminate()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::ComponentFMUCS::reset()
+oms_status_enu_t oms::ComponentFMUCS::reset()
 {
   fmi2_status_t fmistatus = fmi2_import_reset(fmu);
   if (fmi2_status_ok != fmistatus)
@@ -488,7 +488,7 @@ oms_status_enu_t oms3::ComponentFMUCS::reset()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::ComponentFMUCS::stepUntil(double stopTime)
+oms_status_enu_t oms::ComponentFMUCS::stepUntil(double stopTime)
 {
   CallClock callClock(clock);
   System *topLevelSystem = getModel()->getTopLevelSystem();
@@ -531,7 +531,7 @@ oms_status_enu_t oms3::ComponentFMUCS::stepUntil(double stopTime)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::ComponentFMUCS::getBoolean(const fmi2_value_reference_t& vr, bool& value)
+oms_status_enu_t oms::ComponentFMUCS::getBoolean(const fmi2_value_reference_t& vr, bool& value)
 {
   CallClock callClock(clock);
 
@@ -543,7 +543,7 @@ oms_status_enu_t oms3::ComponentFMUCS::getBoolean(const fmi2_value_reference_t& 
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::ComponentFMUCS::getBoolean(const ComRef& cref, bool& value)
+oms_status_enu_t oms::ComponentFMUCS::getBoolean(const ComRef& cref, bool& value)
 {
   CallClock callClock(clock);
   int j=-1;
@@ -563,7 +563,7 @@ oms_status_enu_t oms3::ComponentFMUCS::getBoolean(const ComRef& cref, bool& valu
   return getBoolean(vr, value);
 }
 
-oms_status_enu_t oms3::ComponentFMUCS::getInteger(const fmi2_value_reference_t& vr, int& value)
+oms_status_enu_t oms::ComponentFMUCS::getInteger(const fmi2_value_reference_t& vr, int& value)
 {
   CallClock callClock(clock);
 
@@ -573,7 +573,7 @@ oms_status_enu_t oms3::ComponentFMUCS::getInteger(const fmi2_value_reference_t& 
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::ComponentFMUCS::getInteger(const ComRef& cref, int& value)
+oms_status_enu_t oms::ComponentFMUCS::getInteger(const ComRef& cref, int& value)
 {
   CallClock callClock(clock);
   int j=-1;
@@ -593,7 +593,7 @@ oms_status_enu_t oms3::ComponentFMUCS::getInteger(const ComRef& cref, int& value
   return getInteger(vr, value);
 }
 
-oms_status_enu_t oms3::ComponentFMUCS::getReal(const fmi2_value_reference_t& vr, double& value)
+oms_status_enu_t oms::ComponentFMUCS::getReal(const fmi2_value_reference_t& vr, double& value)
 {
   CallClock callClock(clock);
 
@@ -608,7 +608,7 @@ oms_status_enu_t oms3::ComponentFMUCS::getReal(const fmi2_value_reference_t& vr,
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::ComponentFMUCS::getReal(const ComRef& cref, double& value)
+oms_status_enu_t oms::ComponentFMUCS::getReal(const ComRef& cref, double& value)
 {
   CallClock callClock(clock);
   int j=-1;
@@ -628,7 +628,7 @@ oms_status_enu_t oms3::ComponentFMUCS::getReal(const ComRef& cref, double& value
   return getReal(vr, value);
 }
 
-oms_status_enu_t oms3::ComponentFMUCS::getRealOutputDerivative(const ComRef& cref, double*& value)
+oms_status_enu_t oms::ComponentFMUCS::getRealOutputDerivative(const ComRef& cref, double*& value)
 {
   CallClock callClock(clock);
   int j=-1;
@@ -660,7 +660,7 @@ oms_status_enu_t oms3::ComponentFMUCS::getRealOutputDerivative(const ComRef& cre
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::ComponentFMUCS::setRealInputDerivative(const ComRef& cref, double* value, unsigned int order)
+oms_status_enu_t oms::ComponentFMUCS::setRealInputDerivative(const ComRef& cref, double* value, unsigned int order)
 {
   CallClock callClock(clock);
   int j=-1;
@@ -686,7 +686,7 @@ oms_status_enu_t oms3::ComponentFMUCS::setRealInputDerivative(const ComRef& cref
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::ComponentFMUCS::setBoolean(const ComRef& cref, bool value)
+oms_status_enu_t oms::ComponentFMUCS::setBoolean(const ComRef& cref, bool value)
 {
   CallClock callClock(clock);
   int j=-1;
@@ -710,7 +710,7 @@ oms_status_enu_t oms3::ComponentFMUCS::setBoolean(const ComRef& cref, bool value
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::ComponentFMUCS::setInteger(const ComRef& cref, int value)
+oms_status_enu_t oms::ComponentFMUCS::setInteger(const ComRef& cref, int value)
 {
   CallClock callClock(clock);
   int j=-1;
@@ -733,7 +733,7 @@ oms_status_enu_t oms3::ComponentFMUCS::setInteger(const ComRef& cref, int value)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::ComponentFMUCS::setReal(const ComRef& cref, double value)
+oms_status_enu_t oms::ComponentFMUCS::setReal(const ComRef& cref, double value)
 {
   CallClock callClock(clock);
   int j=-1;
@@ -760,7 +760,7 @@ oms_status_enu_t oms3::ComponentFMUCS::setReal(const ComRef& cref, double value)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::ComponentFMUCS::registerSignalsForResultFile(ResultWriter& resultFile)
+oms_status_enu_t oms::ComponentFMUCS::registerSignalsForResultFile(ResultWriter& resultFile)
 {
   resultFileMapping.clear();
 
@@ -819,7 +819,7 @@ oms_status_enu_t oms3::ComponentFMUCS::registerSignalsForResultFile(ResultWriter
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::ComponentFMUCS::updateSignals(ResultWriter& resultWriter)
+oms_status_enu_t oms::ComponentFMUCS::updateSignals(ResultWriter& resultWriter)
 {
   CallClock callClock(clock);
   SignalValue_t wallTime;
@@ -855,7 +855,7 @@ oms_status_enu_t oms3::ComponentFMUCS::updateSignals(ResultWriter& resultWriter)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::ComponentFMUCS::addSignalsToResults(const char* regex)
+oms_status_enu_t oms::ComponentFMUCS::addSignalsToResults(const char* regex)
 {
   oms_regex exp(regex);
   for (unsigned int i=0; i<allVariables.size(); ++i)
@@ -874,7 +874,7 @@ oms_status_enu_t oms3::ComponentFMUCS::addSignalsToResults(const char* regex)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::ComponentFMUCS::removeSignalsFromResults(const char* regex)
+oms_status_enu_t oms::ComponentFMUCS::removeSignalsFromResults(const char* regex)
 {
   oms_regex exp(regex);
   for (unsigned int i=0; i<allVariables.size(); ++i)

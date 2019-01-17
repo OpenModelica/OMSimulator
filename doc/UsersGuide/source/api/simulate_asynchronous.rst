@@ -22,7 +22,7 @@ Simulates a composite model in its own thread.
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms3_simulate_asynchronous(const char* cref, void (*cb)(const char* cref, double time, oms_status_enu_t status));
+  oms_status_enu_t oms_simulate_asynchronous(const char* cref, void (*cb)(const char* cref, double time, oms_status_enu_t status));
 
 #END#
 

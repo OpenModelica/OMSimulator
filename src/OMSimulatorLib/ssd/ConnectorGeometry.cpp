@@ -36,7 +36,7 @@
 
 #include <string.h>
 
-oms3::ssd::ConnectorGeometry::ConnectorGeometry(double x, double y)
+oms::ssd::ConnectorGeometry::ConnectorGeometry(double x, double y)
 {
   logTrace();
 
@@ -44,7 +44,7 @@ oms3::ssd::ConnectorGeometry::ConnectorGeometry(double x, double y)
   this->y = y;
 }
 
-oms3::ssd::ConnectorGeometry::ConnectorGeometry(const oms3::ssd::ConnectorGeometry& rhs)
+oms::ssd::ConnectorGeometry::ConnectorGeometry(const oms::ssd::ConnectorGeometry& rhs)
 {
   logTrace();
 
@@ -52,12 +52,12 @@ oms3::ssd::ConnectorGeometry::ConnectorGeometry(const oms3::ssd::ConnectorGeomet
   this->y = rhs.y;
 }
 
-oms3::ssd::ConnectorGeometry::~ConnectorGeometry()
+oms::ssd::ConnectorGeometry::~ConnectorGeometry()
 {
   logTrace();
 }
 
-oms3::ssd::ConnectorGeometry& oms3::ssd::ConnectorGeometry::operator=(oms3::ssd::ConnectorGeometry const& rhs)
+oms::ssd::ConnectorGeometry& oms::ssd::ConnectorGeometry::operator=(oms::ssd::ConnectorGeometry const& rhs)
 {
   logTrace();
 
@@ -71,7 +71,7 @@ oms3::ssd::ConnectorGeometry& oms3::ssd::ConnectorGeometry::operator=(oms3::ssd:
   return *this;
 }
 
-oms_status_enu_t oms3::ssd::ConnectorGeometry::exportToSSD(pugi::xml_node& root) const
+oms_status_enu_t oms::ssd::ConnectorGeometry::exportToSSD(pugi::xml_node& root) const
 {
   pugi::xml_node node = root.append_child(oms::ssd::ssd_connector_geometry);
   node.append_attribute("x") = std::to_string(x).c_str();

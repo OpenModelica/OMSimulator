@@ -44,30 +44,30 @@
 #include <string>
 #include <vector>
 
-namespace oms3
+namespace oms
 {
   /**
    * \brief Element
    */
-  class Element : protected oms3_element_t
+  class Element : protected oms_element_t
   {
   public:
-    Element(oms3_element_enu_t type, const ComRef& name);
+    Element(oms_element_enu_t type, const ComRef& name);
     ~Element();
 
-    const oms3_element_enu_t getType() const {return type;}
-    const oms3::ComRef getName() const {return oms3::ComRef(name);}
-    oms3::Connector** getConnectors() const {return reinterpret_cast<oms3::Connector**>(connectors);}
-    const oms3::ssd::ElementGeometry* getGeometry() const {return reinterpret_cast<oms3::ssd::ElementGeometry*>(geometry);}
+    const oms_element_enu_t getType() const {return type;}
+    const oms::ComRef getName() const {return oms::ComRef(name);}
+    oms::Connector** getConnectors() const {return reinterpret_cast<oms::Connector**>(connectors);}
+    const oms::ssd::ElementGeometry* getGeometry() const {return reinterpret_cast<oms::ssd::ElementGeometry*>(geometry);}
 
     void setName(const ComRef& name);
-    void setGeometry(const oms3::ssd::ElementGeometry* newGeometry);
-    void setConnectors(oms3::Connector** newConnectors);
-    void setBusConnectors(oms3::BusConnector **newBusConnectors);
+    void setGeometry(const oms::ssd::ElementGeometry* newGeometry);
+    void setConnectors(oms::Connector** newConnectors);
+    void setBusConnectors(oms::BusConnector **newBusConnectors);
 #if !defined(NO_TLM)
-    void setTLMBusConnectors(oms3::TLMBusConnector **newTLMBusConnectors);
+    void setTLMBusConnectors(oms::TLMBusConnector **newTLMBusConnectors);
 #endif
-    void setSubElements(oms3_element_t** subelements);
+    void setSubElements(oms_element_t** subelements);
 
   private:
     // methods to copy the object

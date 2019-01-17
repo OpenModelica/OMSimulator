@@ -55,20 +55,20 @@ const double data_x[] = {1, 0.9, 0.8100000000000001, 0.7290000000000001, 0.6561,
 
 int test_HelloWorld_cs_Fit()
 {
-  const char* version = oms3_getVersion();
+  const char* version = oms_getVersion();
   oms_status_enu_t status;
   //std::cout << version << std::endl;
 
-  oms3_setLogFile("test_HelloWorld_cs_Fit.log");
-  status = oms3_setTempDirectory(".");
+  oms_setLogFile("test_HelloWorld_cs_Fit.log");
+  status = oms_setTempDirectory(".");
   ASSERT(status == oms_status_ok);
 
-  status = oms3_newModel(MODELIDENT);
+  status = oms_newModel(MODELIDENT);
   ASSERT(status == oms_status_ok);
-  status = oms3_addSystem(SYSTEMIDENT, oms_system_wc);
+  status = oms_addSystem(SYSTEMIDENT, oms_system_wc);
   ASSERT(status == oms_status_ok);
-  status = oms3_addSubModel(FMUIDENT, "../FMUs/HelloWorld_cs.fmu");
-  oms3_setTolerance(SYSTEMIDENT, 1e-5);
+  status = oms_addSubModel(FMUIDENT, "../FMUs/HelloWorld_cs.fmu");
+  oms_setTolerance(SYSTEMIDENT, 1e-5);
 
   void* fitmodel = omsi_newSysIdentModel(MODELIDENT);
   status = omsi_initialize(fitmodel, kNumSeries, data_time, kNumObservations, inputvars, 0, measurementvars, 1);
@@ -99,9 +99,9 @@ int test_HelloWorld_cs_Fit()
   printf("HelloWorld.a: startvalue %f, estimatedvalue %f\n", startvalue, estimatedvalue);
 
   omsi_freeSysIdentModel(fitmodel);
-  status = oms3_terminate(MODELIDENT);
+  status = oms_terminate(MODELIDENT);
   ASSERT(status == oms_status_ok);
-  status = oms3_delete(MODELIDENT);
+  status = oms_delete(MODELIDENT);
   ASSERT(status == oms_status_ok);
   return 0;
 }

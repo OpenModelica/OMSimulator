@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
     if (0 == strcmp(argv[i], "--help") || 0 == strcmp(argv[i], "-h"))
     {
       logInfo("Usage: OMSimulator [Options|Lua script]");
-      oms3_setCommandLineOption(argv[i]);
+      oms_setCommandLineOption(argv[i]);
       return 0;
     }
   }
@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
 
       lua_close(L);
     }
-    else if (oms_status_ok != oms3_setCommandLineOption(argv[i]))
+    else if (oms_status_ok != oms_setCommandLineOption(argv[i]))
       return 1;
   }
 

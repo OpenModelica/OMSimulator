@@ -14,7 +14,7 @@
 
 #include <pugixml.hpp>
 
-namespace oms3
+namespace oms
 {
 class Component;
 class System;
@@ -93,10 +93,10 @@ typedef struct  {
   /**
    * \brief TLMBusConnector
    */
-  class TLMBusConnector : protected oms3_tlmbusconnector_t
+  class TLMBusConnector : protected oms_tlmbusconnector_t
   {
   public:
-    TLMBusConnector(const oms3::ComRef& name, oms_tlm_domain_t domain, const int dimensions, const oms_tlm_interpolation_t interpolation, System* parentSystem=nullptr, Component* component=nullptr);
+    TLMBusConnector(const oms::ComRef& name, oms_tlm_domain_t domain, const int dimensions, const oms_tlm_interpolation_t interpolation, System* parentSystem=nullptr, Component* component=nullptr);
     ~TLMBusConnector();
 
     oms_status_enu_t exportToSSD(pugi::xml_node& root) const;
@@ -105,8 +105,8 @@ typedef struct  {
     TLMBusConnector(const TLMBusConnector& rhs);
     TLMBusConnector& operator=(const TLMBusConnector& rhs);
 
-    void setName(const oms3::ComRef& name);
-    void setGeometry(const oms3::ssd::ConnectorGeometry* newGeometry);
+    void setName(const oms::ComRef& name);
+    void setGeometry(const oms::ssd::ConnectorGeometry* newGeometry);
 
     void setReal(int i, double value);
     void getReal(int i, double &value);
@@ -114,7 +114,7 @@ typedef struct  {
     void getReals(std::vector<int> i, std::vector<double>& values);
     void setRealInputDerivatives(int i, int order, double value);
 
-    const oms3::ComRef getName() const {return oms3::ComRef(name);}
+    const oms::ComRef getName() const {return oms::ComRef(name);}
     oms_tlm_domain_t getDomain() const {return domain;}
     const std::string getDomainString() const;
     const int getDimensions() const {return dimensions;}
@@ -122,30 +122,30 @@ typedef struct  {
     const oms_tlm_interpolation_t getInterpolation() const {return interpolation;}
     void setDelay(double delay) { this->delay = delay; }
     double getDelay() { return this->delay; }
-    oms3::ComRef getConnector(int id) const;
-    std::vector<oms3::ComRef> getConnectors(std::vector<int> ids) const;
-    const oms3::ssd::ConnectorGeometry* getGeometry() const {return reinterpret_cast<oms3::ssd::ConnectorGeometry*>(geometry);}
+    oms::ComRef getConnector(int id) const;
+    std::vector<oms::ComRef> getConnectors(std::vector<int> ids) const;
+    const oms::ssd::ConnectorGeometry* getGeometry() const {return reinterpret_cast<oms::ssd::ConnectorGeometry*>(geometry);}
 
-    oms_status_enu_t addConnector(const oms3::ComRef& cref, std::string vartype);
-    oms_status_enu_t deleteConnector(const oms3::ComRef& cref);
+    oms_status_enu_t addConnector(const oms::ComRef& cref, std::string vartype);
+    oms_status_enu_t deleteConnector(const oms::ComRef& cref);
     void updateConnectors();
     void sortConnectors();
     oms_status_enu_t registerToSockets(TLMPlugin *plugin);
     int getId() const {return id;}
 
-    oms3::Component* getComponent();
-    oms3::TLMBusConnector* getActualBus();
+    oms::Component* getComponent();
+    oms::TLMBusConnector* getActualBus();
 
     static std::vector<std::string>  getVariableTypes(oms_tlm_domain_t domain, int dimensions, oms_tlm_interpolation_t interpolation);
     static std::vector<std::string>  getVariableDescriptions(oms_tlm_domain_t domain, int dimensions, oms_tlm_interpolation_t interpolation);
 
   private:
-    oms3::Component* getComponent(const ComRef &conA, System *system) const;
-    oms3::TLMBusConnector* getActualBus(ComRef cref, System *system);
+    oms::Component* getComponent(const ComRef &conA, System *system) const;
+    oms::TLMBusConnector* getActualBus(ComRef cref, System *system);
 
     oms_causality_enu_t causality;
-    std::map<std::string, oms3::ComRef> connectors;
-    std::vector<oms3::ComRef> sortedConnectors;
+    std::map<std::string, oms::ComRef> connectors;
+    std::vector<oms::ComRef> sortedConnectors;
     std::vector<std::string> variableTypes; //Used to keep track of TLM variable types
     System* parentSystem;
     Component* component = nullptr;

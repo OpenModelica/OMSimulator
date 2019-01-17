@@ -8,21 +8,21 @@ Adds a component to a system.
 #LUA#
 .. code-block:: lua
 
-  status = oms3_addSubModel(cref, fmuPath)
+  status = oms_addSubModel(cref, fmuPath)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms3_addSubModel(cref, fmuPath)
+  status = session.oms_addSubModel(cref, fmuPath)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms3_addSubModel(const char* cref, const char* fmuPath);
+  oms_status_enu_t oms_addSubModel(const char* cref, const char* fmuPath);
 
 #END#
 

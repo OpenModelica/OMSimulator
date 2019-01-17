@@ -12,15 +12,15 @@
 
 #include <pugixml.hpp>
 
-namespace oms3
+namespace oms
 {
   /**
    * \brief BusConnector
    */
-  class BusConnector : protected oms3_busconnector_t
+  class BusConnector : protected oms_busconnector_t
   {
   public:
-    BusConnector(const oms3::ComRef& name);
+    BusConnector(const oms::ComRef& name);
     ~BusConnector();
 
     oms_status_enu_t exportToSSD(pugi::xml_node& root) const;
@@ -29,20 +29,20 @@ namespace oms3
     BusConnector(const BusConnector& rhs);
     BusConnector& operator=(const BusConnector& rhs);
 
-    void setName(const oms3::ComRef& name);
-    void setGeometry(const oms3::ssd::ConnectorGeometry* newGeometry);
+    void setName(const oms::ComRef& name);
+    void setGeometry(const oms::ssd::ConnectorGeometry* newGeometry);
 
-    const oms3::ComRef getName() const {return oms3::ComRef(name);}
-    const oms3::ssd::ConnectorGeometry* getGeometry() const {return reinterpret_cast<oms3::ssd::ConnectorGeometry*>(geometry);}
+    const oms::ComRef getName() const {return oms::ComRef(name);}
+    const oms::ssd::ConnectorGeometry* getGeometry() const {return reinterpret_cast<oms::ssd::ConnectorGeometry*>(geometry);}
 
-    oms_status_enu_t addConnector(const oms3::ComRef& cref);
-    oms_status_enu_t deleteConnector(const oms3::ComRef& cref);
-    std::vector<oms3::ComRef> getConnectors() const {return conrefs;}
+    oms_status_enu_t addConnector(const oms::ComRef& cref);
+    oms_status_enu_t deleteConnector(const oms::ComRef& cref);
+    std::vector<oms::ComRef> getConnectors() const {return conrefs;}
 
     void updateConnectors();
 
   private:
-    std::vector<oms3::ComRef> conrefs;
+    std::vector<oms::ComRef> conrefs;
   };
 }
 

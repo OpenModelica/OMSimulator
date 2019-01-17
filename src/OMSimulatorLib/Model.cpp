@@ -42,12 +42,7 @@
 #include <OMSBoost.h>
 #include <minizip.h>
 
-/* ************************************ */
-/* oms3                                 */
-/*                                      */
-/* ************************************ */
-
-oms3::Model::Model(const oms3::ComRef& cref, const std::string& tempDir)
+oms::Model::Model(const oms::ComRef& cref, const std::string& tempDir)
   : cref(cref), tempDir(tempDir), resultFilename(std::string(cref) + "_res.mat")
 {
   if (!Flags::SuppressPath())
@@ -57,7 +52,7 @@ oms3::Model::Model(const oms3::ComRef& cref, const std::string& tempDir)
   elements.push_back(NULL);
 }
 
-oms3::Model::~Model()
+oms::Model::~Model()
 {
   if (oms_modelState_terminated != modelState)
     terminate();
@@ -66,7 +61,7 @@ oms3::Model::~Model()
     delete system;
 }
 
-oms3::Model* oms3::Model::NewModel(const oms3::ComRef& cref)
+oms::Model* oms::Model::NewModel(const oms::ComRef& cref)
 {
   if (!cref.isValidIdent())
   {
@@ -96,11 +91,11 @@ oms3::Model* oms3::Model::NewModel(const oms3::ComRef& cref)
     return NULL;
   }
 
-  oms3::Model* model = new oms3::Model(cref, tempDir.string());
+  oms::Model* model = new oms::Model(cref, tempDir.string());
   return model;
 }
 
-oms_status_enu_t oms3::Model::rename(const oms3::ComRef& cref)
+oms_status_enu_t oms::Model::rename(const oms::ComRef& cref)
 {
   if (!cref.isValidIdent())
     return logError(std::string(cref) + " is not a valid ident");
@@ -109,13 +104,13 @@ oms_status_enu_t oms3::Model::rename(const oms3::ComRef& cref)
   return oms_status_ok;
 }
 
-oms3::System* oms3::Model::getSystem(const oms3::ComRef& cref)
+oms::System* oms::Model::getSystem(const oms::ComRef& cref)
 {
   if (!system)
     return NULL;
 
-  oms3::ComRef tail(cref);
-  oms3::ComRef front = tail.pop_front();
+  oms::ComRef tail(cref);
+  oms::ComRef front = tail.pop_front();
 
   if (this->system->getCref() == front)
   {
@@ -128,13 +123,13 @@ oms3::System* oms3::Model::getSystem(const oms3::ComRef& cref)
   return NULL;
 }
 
-oms3::Component* oms3::Model::getComponent(const oms3::ComRef& cref)
+oms::Component* oms::Model::getComponent(const oms::ComRef& cref)
 {
   if (!system)
     return NULL;
 
-  oms3::ComRef tail(cref);
-  oms3::ComRef front = tail.pop_front();
+  oms::ComRef tail(cref);
+  oms::ComRef front = tail.pop_front();
 
   if (this->system->getCref() == front)
     return system->getComponent(tail);
@@ -142,10 +137,10 @@ oms3::Component* oms3::Model::getComponent(const oms3::ComRef& cref)
   return NULL;
 }
 
-oms_status_enu_t oms3::Model::delete_(const oms3::ComRef& cref)
+oms_status_enu_t oms::Model::delete_(const oms::ComRef& cref)
 {
-  oms3::ComRef tail(cref);
-  oms3::ComRef front = tail.pop_front();
+  oms::ComRef tail(cref);
+  oms::ComRef front = tail.pop_front();
 
   if (!system || front != system->getCref())
     return oms_status_error;
@@ -160,7 +155,7 @@ oms_status_enu_t oms3::Model::delete_(const oms3::ComRef& cref)
     return system->delete_(tail);
 }
 
-oms_status_enu_t oms3::Model::list(const oms3::ComRef& cref, char** contents)
+oms_status_enu_t oms::Model::list(const oms::ComRef& cref, char** contents)
 {
   struct xmlStringWriter : pugi::xml_writer
   {
@@ -200,7 +195,7 @@ oms_status_enu_t oms3::Model::list(const oms3::ComRef& cref, char** contents)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Model::addSystem(const oms3::ComRef& cref, oms_system_enu_t type)
+oms_status_enu_t oms::Model::addSystem(const oms::ComRef& cref, oms_system_enu_t type)
 {
   if (cref.isValidIdent() && !system)
   {
@@ -216,8 +211,8 @@ oms_status_enu_t oms3::Model::addSystem(const oms3::ComRef& cref, oms_system_enu
   if (!system)
     return logError("Model \"" + std::string(getCref()) + "\" does not contain any system");
 
-  oms3::ComRef tail(cref);
-  oms3::ComRef front = tail.pop_front();
+  oms::ComRef tail(cref);
+  oms::ComRef front = tail.pop_front();
 
   if (system->getCref() == front)
     return system->addSubSystem(tail, type);
@@ -225,7 +220,7 @@ oms_status_enu_t oms3::Model::addSystem(const oms3::ComRef& cref, oms_system_enu
   return logError("wrong input \"" + std::string(front) + "\" != \"" + std::string(system->getCref()) + "\"");
 }
 
-oms_status_enu_t oms3::Model::exportToSSD(pugi::xml_node& node) const
+oms_status_enu_t oms::Model::exportToSSD(pugi::xml_node& node) const
 {
   node.append_attribute("name") = this->getCref().c_str();
   node.append_attribute("version") = "Draft20180219";
@@ -244,7 +239,7 @@ oms_status_enu_t oms3::Model::exportToSSD(pugi::xml_node& node) const
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Model::importFromSSD(const pugi::xml_node& node)
+oms_status_enu_t oms::Model::importFromSSD(const pugi::xml_node& node)
 {
   for(pugi::xml_node_iterator it = node.begin(); it != node.end(); ++it)
   {
@@ -286,7 +281,7 @@ oms_status_enu_t oms3::Model::importFromSSD(const pugi::xml_node& node)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Model::exportToFile(const std::string& filename) const
+oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
 {
   pugi::xml_document doc;
 
@@ -341,7 +336,7 @@ oms_status_enu_t oms3::Model::exportToFile(const std::string& filename) const
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Model::getAllResources(std::vector<std::string>& resources) const
+oms_status_enu_t oms::Model::getAllResources(std::vector<std::string>& resources) const
 {
   resources.push_back("SystemStructure.ssd");
   if (system)
@@ -349,7 +344,7 @@ oms_status_enu_t oms3::Model::getAllResources(std::vector<std::string>& resource
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Model::setStartTime(double value)
+oms_status_enu_t oms::Model::setStartTime(double value)
 {
   if (oms_modelState_terminated != modelState)
     return logError_ModelInWrongState(this);
@@ -358,7 +353,7 @@ oms_status_enu_t oms3::Model::setStartTime(double value)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Model::setStopTime(double value)
+oms_status_enu_t oms::Model::setStopTime(double value)
 {
   if (oms_modelState_terminated != modelState)
     return logError_ModelInWrongState(this);
@@ -367,7 +362,7 @@ oms_status_enu_t oms3::Model::setStopTime(double value)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Model::instantiate()
+oms_status_enu_t oms::Model::instantiate()
 {
   if (oms_modelState_terminated != modelState)
     return logError_ModelInWrongState(this);
@@ -386,7 +381,7 @@ oms_status_enu_t oms3::Model::instantiate()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Model::initialize()
+oms_status_enu_t oms::Model::initialize()
 {
   if (oms_modelState_instantiated != modelState)
     return logError_ModelInWrongState(this);
@@ -459,7 +454,7 @@ oms_status_enu_t oms3::Model::initialize()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Model::simulate_asynchronous(void (*cb)(const char* cref, double time, oms_status_enu_t status))
+oms_status_enu_t oms::Model::simulate_asynchronous(void (*cb)(const char* cref, double time, oms_status_enu_t status))
 {
   clock.tic();
   if (oms_modelState_simulation != modelState)
@@ -481,7 +476,7 @@ oms_status_enu_t oms3::Model::simulate_asynchronous(void (*cb)(const char* cref,
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Model::simulate()
+oms_status_enu_t oms::Model::simulate()
 {
   clock.tic();
   if (oms_modelState_simulation != modelState)
@@ -502,7 +497,7 @@ oms_status_enu_t oms3::Model::simulate()
   return status;
 }
 
-oms_status_enu_t oms3::Model::stepUntil(double stopTime)
+oms_status_enu_t oms::Model::stepUntil(double stopTime)
 {
   clock.tic();
   if (oms_modelState_simulation != modelState)
@@ -523,7 +518,7 @@ oms_status_enu_t oms3::Model::stepUntil(double stopTime)
   return status;
 }
 
-oms_status_enu_t oms3::Model::terminate()
+oms_status_enu_t oms::Model::terminate()
 {
   if (oms_modelState_terminated == modelState)
     return oms_status_ok;
@@ -547,7 +542,7 @@ oms_status_enu_t oms3::Model::terminate()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Model::reset()
+oms_status_enu_t oms::Model::reset()
 {
   if (oms_modelState_simulation != modelState)
     return logError_ModelInWrongState(this);
@@ -568,7 +563,7 @@ oms_status_enu_t oms3::Model::reset()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Model::setLoggingInterval(double loggingInterval)
+oms_status_enu_t oms::Model::setLoggingInterval(double loggingInterval)
 {
   if (loggingInterval < 0.0)
     this->loggingInterval = 0.0;
@@ -576,7 +571,7 @@ oms_status_enu_t oms3::Model::setLoggingInterval(double loggingInterval)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Model::registerSignalsForResultFile()
+oms_status_enu_t oms::Model::registerSignalsForResultFile()
 {
   if (!resultFile)
     return oms_status_ok;
@@ -588,7 +583,7 @@ oms_status_enu_t oms3::Model::registerSignalsForResultFile()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Model::emit(double time, bool force)
+oms_status_enu_t oms::Model::emit(double time, bool force)
 {
   if (!resultFile)
     return oms_status_ok;
@@ -607,7 +602,7 @@ oms_status_enu_t oms3::Model::emit(double time, bool force)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Model::setResultFile(const std::string& filename, int bufferSize)
+oms_status_enu_t oms::Model::setResultFile(const std::string& filename, int bufferSize)
 {
   this->resultFilename = filename;
   this->bufferSize = bufferSize;
@@ -650,7 +645,7 @@ oms_status_enu_t oms3::Model::setResultFile(const std::string& filename, int buf
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Model::addSignalsToResults(const char* regex)
+oms_status_enu_t oms::Model::addSignalsToResults(const char* regex)
 {
   if (system)
     if (oms_status_ok != system->addSignalsToResults(regex))
@@ -658,7 +653,7 @@ oms_status_enu_t oms3::Model::addSignalsToResults(const char* regex)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Model::removeSignalsFromResults(const char* regex)
+oms_status_enu_t oms::Model::removeSignalsFromResults(const char* regex)
 {
   if (system)
     if (oms_status_ok != system->removeSignalsFromResults(regex))
@@ -666,7 +661,7 @@ oms_status_enu_t oms3::Model::removeSignalsFromResults(const char* regex)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::Model::cancelSimulation_asynchronous()
+oms_status_enu_t oms::Model::cancelSimulation_asynchronous()
 {
   if (oms_modelState_simulation != modelState)
     return logError_ModelInWrongState(this);

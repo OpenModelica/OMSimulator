@@ -35,7 +35,7 @@
 #include <string>
 #include <cstring>
 
-namespace oms3
+namespace oms
 {
   /**
    * \brief ComRef - component reference
@@ -74,9 +74,9 @@ namespace oms3
 namespace std
 {
   template <>
-  struct hash<oms3::ComRef>
+  struct hash<oms::ComRef>
   {
-    std::size_t operator()(const oms3::ComRef& cref) const
+    std::size_t operator()(const oms::ComRef& cref) const
     {
       using std::size_t;
       using std::hash;

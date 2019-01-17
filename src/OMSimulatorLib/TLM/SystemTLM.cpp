@@ -41,8 +41,8 @@
 #include <thread>
 #include <algorithm>
 
-oms3::SystemTLM::SystemTLM(const ComRef& cref, Model* parentModel, System* parentSystem)
-  : oms3::System(cref, oms_system_tlm, parentModel, parentSystem)
+oms::SystemTLM::SystemTLM(const ComRef& cref, Model* parentModel, System* parentSystem)
+  : oms::System(cref, oms_system_tlm, parentModel, parentSystem)
 {
   logTrace();
   model = omtlm_newModel(cref.c_str());
@@ -54,12 +54,12 @@ oms3::SystemTLM::SystemTLM(const ComRef& cref, Model* parentModel, System* paren
     omtlm_setLogLevel(model, TLMLogLevel::Debug);
 }
 
-oms3::SystemTLM::~SystemTLM()
+oms::SystemTLM::~SystemTLM()
 {
   omtlm_unloadModel(model);
 }
 
-oms3::System* oms3::SystemTLM::NewSystem(const oms3::ComRef& cref, oms3::Model* parentModel, oms3::System* parentSystem)
+oms::System* oms::SystemTLM::NewSystem(const oms::ComRef& cref, oms::Model* parentModel, oms::System* parentSystem)
 {
   if (!cref.isValidIdent())
   {
@@ -77,7 +77,7 @@ oms3::System* oms3::SystemTLM::NewSystem(const oms3::ComRef& cref, oms3::Model* 
   return system;
 }
 
-oms_status_enu_t oms3::SystemTLM::exportToSSD_SimulationInformation(pugi::xml_node& node) const
+oms_status_enu_t oms::SystemTLM::exportToSSD_SimulationInformation(pugi::xml_node& node) const
 {
   pugi::xml_node node_simulation_information = node.append_child(oms::ssd::ssd_simulation_information);
 
@@ -94,7 +94,7 @@ oms_status_enu_t oms3::SystemTLM::exportToSSD_SimulationInformation(pugi::xml_no
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::SystemTLM::importFromSSD_SimulationInformation(const pugi::xml_node& node)
+oms_status_enu_t oms::SystemTLM::importFromSSD_SimulationInformation(const pugi::xml_node& node)
 {
   pugi::xml_node annotationsNode = node.child(oms::ssd::ssd_annotations);
   if(annotationsNode) {
@@ -117,7 +117,7 @@ oms_status_enu_t oms3::SystemTLM::importFromSSD_SimulationInformation(const pugi
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::SystemTLM::instantiate()
+oms_status_enu_t oms::SystemTLM::instantiate()
 {
   for (const auto& subsystem : getSubSystems())
     if (oms_status_ok != subsystem.second->instantiate())
@@ -125,7 +125,7 @@ oms_status_enu_t oms3::SystemTLM::instantiate()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::SystemTLM::initialize()
+oms_status_enu_t oms::SystemTLM::initialize()
 {
   omtlm_setLogStepSize(model, getModel()->getLoggingInterval());
 
@@ -224,7 +224,7 @@ oms_status_enu_t oms3::SystemTLM::initialize()
 
   Connection** connections = this->getConnections(ComRef(""));
   for(int i=0; connections[i]; ++i) {
-    oms3_tlm_connection_parameters_t* tlmpars = connections[i]->getTLMParameters();
+    oms_tlm_connection_parameters_t* tlmpars = connections[i]->getTLMParameters();
     omtlm_addConnection(model,connections[i]->getSignalA().c_str(),connections[i]->getSignalB().c_str(),tlmpars->delay,tlmpars->linearimpedance,tlmpars->angularimpedance,tlmpars->alpha);
   }
 
@@ -234,7 +234,7 @@ oms_status_enu_t oms3::SystemTLM::initialize()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::SystemTLM::terminate()
+oms_status_enu_t oms::SystemTLM::terminate()
 {
   for (const auto& subsystem : getSubSystems())
     if (oms_status_ok != subsystem.second->terminate())
@@ -242,7 +242,7 @@ oms_status_enu_t oms3::SystemTLM::terminate()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::SystemTLM::reset()
+oms_status_enu_t oms::SystemTLM::reset()
 {
   for (const auto& subsystem : getSubSystems())
     if (oms_status_ok != subsystem.second->reset())
@@ -250,13 +250,13 @@ oms_status_enu_t oms3::SystemTLM::reset()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::SystemTLM::stepUntil(double stopTime, void (*cb)(const char* ident, double time, oms_status_enu_t status))
+oms_status_enu_t oms::SystemTLM::stepUntil(double stopTime, void (*cb)(const char* ident, double time, oms_status_enu_t status))
 {
   omtlm_setStartTime(model, getModel()->getStartTime());
   omtlm_setStopTime(model, stopTime);
 
   if(getSubSystems().empty() && getComponents().empty())
-    logWarning("oms3::TLMCompositeModel::stepUntil: Simulating empty model...");
+    logWarning("oms::TLMCompositeModel::stepUntil: Simulating empty model...");
 
   logInfo("Starting TLM manager in new thread");
 
@@ -268,7 +268,7 @@ oms_status_enu_t oms3::SystemTLM::stepUntil(double stopTime, void (*cb)(const ch
   for(auto it = getSubSystems().begin(); it!=getSubSystems().end(); ++it) {
     System* subsystem = it->second;
     ComRef syscref = subsystem->getCref();
-    fmiConnectThreads.push_back(std::thread(&oms3::SystemTLM::connectToSockets, this, syscref, server));
+    fmiConnectThreads.push_back(std::thread(&oms::SystemTLM::connectToSockets, this, syscref, server));
   }
   for(auto &thread : fmiConnectThreads)
     thread.join();
@@ -282,7 +282,7 @@ oms_status_enu_t oms3::SystemTLM::stepUntil(double stopTime, void (*cb)(const ch
   for(auto it = getSubSystems().begin(); it!=getSubSystems().end(); ++it) {
     System *subsystem = it->second;
     ComRef syscref = subsystem->getCref();
-    fmiInitializeThreads.push_back(std::thread(&oms3::SystemTLM::initializeSubSystem, this, syscref));
+    fmiInitializeThreads.push_back(std::thread(&oms::SystemTLM::initializeSubSystem, this, syscref));
   }
   for(auto &thread : fmiInitializeThreads)
     thread.join();
@@ -296,7 +296,7 @@ oms_status_enu_t oms3::SystemTLM::stepUntil(double stopTime, void (*cb)(const ch
   for(auto it = getSubSystems().begin(); it!=getSubSystems().end(); ++it) {
     System* subsystem = it->second;
     ComRef syscref = subsystem->getCref();
-    fmiSimulateThreads.push_back(std::thread(&oms3::SystemTLM::simulateSubSystem, this, syscref, stopTime));
+    fmiSimulateThreads.push_back(std::thread(&oms::SystemTLM::simulateSubSystem, this, syscref, stopTime));
   }
   for(auto &thread : fmiSimulateThreads)
     thread.join();
@@ -308,7 +308,7 @@ oms_status_enu_t oms3::SystemTLM::stepUntil(double stopTime, void (*cb)(const ch
   std::vector<std::thread> fmiDisconnectThreads;
   for(auto it = getSubSystems().begin(); it!=getSubSystems().end(); ++it) {
     System* subsystem = it->second;
-    fmiDisconnectThreads.push_back(std::thread(&oms3::SystemTLM::disconnectFromSockets, this, subsystem->getCref()));
+    fmiDisconnectThreads.push_back(std::thread(&oms::SystemTLM::disconnectFromSockets, this, subsystem->getCref()));
   }
   for(auto &thread : fmiDisconnectThreads)
     thread.join();
@@ -318,7 +318,7 @@ oms_status_enu_t oms3::SystemTLM::stepUntil(double stopTime, void (*cb)(const ch
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::SystemTLM::connectToSockets(const oms3::ComRef cref, std::string server)
+oms_status_enu_t oms::SystemTLM::connectToSockets(const oms::ComRef cref, std::string server)
 {
   logInfo("Starting TLM simulation thread for model "+std::string(cref));
 
@@ -374,7 +374,7 @@ oms_status_enu_t oms3::SystemTLM::connectToSockets(const oms3::ComRef cref, std:
   return oms_status_ok;
 }
 
-void oms3::SystemTLM::disconnectFromSockets(const oms3::ComRef cref)
+void oms::SystemTLM::disconnectFromSockets(const oms::ComRef cref)
 {
   SystemWC* system = reinterpret_cast<SystemWC*>(getSystem(cref));
   if(system != nullptr)
@@ -389,7 +389,7 @@ void oms3::SystemTLM::disconnectFromSockets(const oms3::ComRef cref)
   }
 }
 
-oms_status_enu_t oms3::SystemTLM::setSocketData(const std::string &address, int managerPort, int monitorPort)
+oms_status_enu_t oms::SystemTLM::setSocketData(const std::string &address, int managerPort, int monitorPort)
 {
   if (oms_modelState_terminated != getModel()->getModelState())
     return logError_ModelInWrongState(this);
@@ -400,7 +400,7 @@ oms_status_enu_t oms3::SystemTLM::setSocketData(const std::string &address, int 
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::SystemTLM::setPositionAndOrientation(const oms3::ComRef &cref, std::vector<double> x, std::vector<double> A)
+oms_status_enu_t oms::SystemTLM::setPositionAndOrientation(const oms::ComRef &cref, std::vector<double> x, std::vector<double> A)
 {
   ComRef tail = cref;
   ComRef head = tail.pop_front();
@@ -420,7 +420,7 @@ oms_status_enu_t oms3::SystemTLM::setPositionAndOrientation(const oms3::ComRef &
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::SystemTLM::updateInitialValues(const oms3::ComRef cref)
+oms_status_enu_t oms::SystemTLM::updateInitialValues(const oms::ComRef cref)
 {
   SystemWC* system = reinterpret_cast<SystemWC*>(getSystem(cref));
   if(system == nullptr)
@@ -503,7 +503,7 @@ oms_status_enu_t oms3::SystemTLM::updateInitialValues(const oms3::ComRef cref)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms3::SystemTLM::initializeSubSystem(oms3::ComRef cref)
+oms_status_enu_t oms::SystemTLM::initializeSubSystem(oms::ComRef cref)
 {
   oms_status_enu_t status = getSubSystem(cref)->initialize();
   if(status = oms_status_ok)
@@ -516,14 +516,14 @@ oms_status_enu_t oms3::SystemTLM::initializeSubSystem(oms3::ComRef cref)
   return status;
 }
 
-oms_status_enu_t oms3::SystemTLM::simulateSubSystem(oms3::ComRef cref, double stopTime)
+oms_status_enu_t oms::SystemTLM::simulateSubSystem(oms::ComRef cref, double stopTime)
 {
   oms_status_enu_t status = getSubSystem(cref)->stepUntil(stopTime, NULL);
   plugins[getSubSystem(cref)]->AwaitClosePermission();
   return status;
 }
 
-void oms3::SystemTLM::writeToSockets(SystemWC *system, double time, Component* component)
+void oms::SystemTLM::writeToSockets(SystemWC *system, double time, Component* component)
 {
   socketMutexes[system].lock();
 
@@ -617,7 +617,7 @@ void oms3::SystemTLM::writeToSockets(SystemWC *system, double time, Component* c
   socketMutexes[system].unlock();
 }
 
-void oms3::SystemTLM::readFromSockets(SystemWC* system, double time, Component* component)
+void oms::SystemTLM::readFromSockets(SystemWC* system, double time, Component* component)
 {
   socketMutexes[system].lock();
 
@@ -765,7 +765,7 @@ void oms3::SystemTLM::readFromSockets(SystemWC* system, double time, Component* 
 }
 
 
-void oms3::SystemTLM::sendValueToLogger(int varId, double time, double value)
+void oms::SystemTLM::sendValueToLogger(int varId, double time, double value)
 {
   logMutex.lock();
   logBuffer[varId].push_back(std::make_pair(time, value));
@@ -787,7 +787,7 @@ void oms3::SystemTLM::sendValueToLogger(int varId, double time, double value)
   logMutex.unlock();
 }
 
-oms_status_enu_t oms3::SystemTLM::registerSignalsForResultFile(ResultWriter& resultFile)
+oms_status_enu_t oms::SystemTLM::registerSignalsForResultFile(ResultWriter& resultFile)
 {
   for(auto& system : getSubSystems()) {
     TLMBusConnector** tlmbuses = system.second->getTLMBusConnectors();
@@ -847,12 +847,12 @@ oms_status_enu_t oms3::SystemTLM::registerSignalsForResultFile(ResultWriter& res
   return oms_status_ok;
 }
 
-int oms3::SystemTLM::registerLogVariable()
+int oms::SystemTLM::registerLogVariable()
 {
   return numLogVars++;
 }
 
-void oms3::SystemTLM::registerLogVariables(oms3::System *system, ResultWriter& resultFile)
+void oms::SystemTLM::registerLogVariables(oms::System *system, ResultWriter& resultFile)
 {
   for(int i=0; system->getConnectors()[i]; ++i) {
     if(system->getConnectors()[i]->isOutput() && system->getConnectors()[i]->isTypeReal()) {
@@ -875,7 +875,7 @@ void oms3::SystemTLM::registerLogVariables(oms3::System *system, ResultWriter& r
   }
 }
 
-void oms3::SystemTLM::sendValuesToLogger(oms3::System *system, double time)
+void oms::SystemTLM::sendValuesToLogger(oms::System *system, double time)
 {
   for(int i=0; system->getConnectors()[i]; ++i) {
     if(system->getConnectors()[i]->isOutput() && system->getConnectors()[i]->isTypeReal()) {
@@ -900,7 +900,7 @@ void oms3::SystemTLM::sendValuesToLogger(oms3::System *system, double time)
   }
 }
 
-oms_status_enu_t oms3::SystemTLM::updateSignals(oms3::ResultWriter &resultFile)
+oms_status_enu_t oms::SystemTLM::updateSignals(oms::ResultWriter &resultFile)
 {
   if(logBuffer.size() == 0)
     return oms_status_ok;

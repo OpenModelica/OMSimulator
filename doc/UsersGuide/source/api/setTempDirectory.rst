@@ -8,21 +8,21 @@ Set new temp directory.
 #LUA#
 .. code-block:: lua
 
-  status = oms3_setTempDirectory(newTempDir)
+  status = oms_setTempDirectory(newTempDir)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms3_setTempDirectory(newTempDir)
+  status = session.oms_setTempDirectory(newTempDir)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms3_setTempDirectory(const char* newTempDir);
+  oms_status_enu_t oms_setTempDirectory(const char* newTempDir);
 
 #END#
 

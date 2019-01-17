@@ -8,21 +8,21 @@ Get real value.
 #LUA#
 .. code-block:: lua
 
-  value, status = oms3_getReal(cref)
+  value, status = oms_getReal(cref)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  value, status = session.oms3_getReal(cref)
+  value, status = session.oms_getReal(cref)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms3_getReal(const char* cref, double* value);
+  oms_status_enu_t oms_getReal(const char* cref, double* value);
 
 #END#
 

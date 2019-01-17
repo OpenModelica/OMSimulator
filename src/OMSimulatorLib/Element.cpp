@@ -40,7 +40,7 @@
 #include <cstring>
 #include <iostream>
 
-oms3::Element::Element(oms3_element_enu_t type, const oms3::ComRef& name)
+oms::Element::Element(oms_element_enu_t type, const oms::ComRef& name)
 {
   this->type = type;
 
@@ -51,7 +51,7 @@ oms3::Element::Element(oms3_element_enu_t type, const oms3::ComRef& name)
   this->elements = NULL;
   this->connectors = NULL;
 
-  this->geometry = reinterpret_cast<ssd_element_geometry_t*>(new oms3::ssd::ElementGeometry());
+  this->geometry = reinterpret_cast<ssd_element_geometry_t*>(new oms::ssd::ElementGeometry());
 
   this->busconnectors = NULL;
 
@@ -60,7 +60,7 @@ oms3::Element::Element(oms3_element_enu_t type, const oms3::ComRef& name)
 #endif
 }
 
-oms3::Element::~Element()
+oms::Element::~Element()
 {
   if (this->name)
     delete[] this->name;
@@ -68,10 +68,10 @@ oms3::Element::~Element()
   // lochel: don't delete the sub-elements
 
   if (this->geometry)
-    delete reinterpret_cast<oms3::ssd::ElementGeometry*>(this->geometry);
+    delete reinterpret_cast<oms::ssd::ElementGeometry*>(this->geometry);
 }
 
-void oms3::Element::setName(const oms3::ComRef& name)
+void oms::Element::setName(const oms::ComRef& name)
 {
   if (this->name)
     delete[] this->name;
@@ -81,38 +81,38 @@ void oms3::Element::setName(const oms3::ComRef& name)
   strcpy(this->name, str.c_str());
 }
 
-void oms3::Element::setGeometry(const oms3::ssd::ElementGeometry* newGeometry)
+void oms::Element::setGeometry(const oms::ssd::ElementGeometry* newGeometry)
 {
   if (this->geometry)
   {
-    delete reinterpret_cast<oms3::ssd::ElementGeometry*>(this->geometry);
+    delete reinterpret_cast<oms::ssd::ElementGeometry*>(this->geometry);
     this->geometry = NULL;
   }
 
   if (newGeometry)
   {
-    this->geometry = reinterpret_cast<ssd_element_geometry_t*>(new oms3::ssd::ElementGeometry(*newGeometry));
+    this->geometry = reinterpret_cast<ssd_element_geometry_t*>(new oms::ssd::ElementGeometry(*newGeometry));
   }
 }
 
-void oms3::Element::setConnectors(oms3::Connector** newConnectors)
+void oms::Element::setConnectors(oms::Connector** newConnectors)
 {
   this->connectors = reinterpret_cast<oms_connector_t**>(newConnectors);
 }
 
-void oms3::Element::setBusConnectors(oms3::BusConnector **newBusConnectors)
+void oms::Element::setBusConnectors(oms::BusConnector **newBusConnectors)
 {
-  this->busconnectors = reinterpret_cast<oms3_busconnector_t**>(newBusConnectors);
+  this->busconnectors = reinterpret_cast<oms_busconnector_t**>(newBusConnectors);
 }
 
 #if !defined(NO_TLM)
-void oms3::Element::setTLMBusConnectors(oms3::TLMBusConnector **newBusConnectors)
+void oms::Element::setTLMBusConnectors(oms::TLMBusConnector **newBusConnectors)
 {
-  this->tlmbusconnectors = reinterpret_cast<oms3_tlmbusconnector_t**>(newBusConnectors);
+  this->tlmbusconnectors = reinterpret_cast<oms_tlmbusconnector_t**>(newBusConnectors);
 }
 #endif
 
-void oms3::Element::setSubElements(oms3_element_t** subelements)
+void oms::Element::setSubElements(oms_element_t** subelements)
 {
   this->elements = subelements;
 }

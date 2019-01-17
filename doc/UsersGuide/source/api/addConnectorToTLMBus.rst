@@ -8,21 +8,21 @@ Adds a connector to a TLM bus.
 #LUA#
 .. code-block:: lua
 
-  status = oms3_addConnectorToTLMBus(busCref, connectorCref, type)
+  status = oms_addConnectorToTLMBus(busCref, connectorCref, type)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms3_addConnectorToTLMBus(busCref, connectorCref, type)
+  status = session.oms_addConnectorToTLMBus(busCref, connectorCref, type)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms3_addConnectorToTLMBus(const char* busCref, const char* connectorCref, const char *type);
+  oms_status_enu_t oms_addConnectorToTLMBus(const char* busCref, const char* connectorCref, const char *type);
 
 #END#
 

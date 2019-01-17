@@ -11,21 +11,21 @@ filename="" to redirect to std streams and proper filename to redirect to file.
 #LUA#
 .. code-block:: lua
 
-  status = oms3_setLogFile(filename)
+  status = oms_setLogFile(filename)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  status = session.oms3_setLogFile(filename)
+  status = session.oms_setLogFile(filename)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms3_setLogFile(const char* filename);
+  oms_status_enu_t oms_setLogFile(const char* filename);
 
 #END#
 

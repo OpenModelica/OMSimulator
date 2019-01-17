@@ -35,7 +35,7 @@
 
 #include <cstring>
 
-oms3::FMUInfo::FMUInfo(const std::string& path, oms_fmi_kind_enu_t fmuKind)
+oms::FMUInfo::FMUInfo(const std::string& path, oms_fmi_kind_enu_t fmuKind)
 {
   this->author = NULL;
   this->copyright = NULL;
@@ -60,7 +60,7 @@ oms3::FMUInfo::FMUInfo(const std::string& path, oms_fmi_kind_enu_t fmuKind)
   this->maxOutputDerivativeOrder = 0;
 }
 
-oms3::FMUInfo::~FMUInfo()
+oms::FMUInfo::~FMUInfo()
 {
   if (this->author) delete[] this->author;
   if (this->copyright) delete[] this->copyright;
@@ -75,7 +75,7 @@ oms3::FMUInfo::~FMUInfo()
   if (this->version) delete[] this->version;
 }
 
-oms_status_enu_t oms3::FMUInfo::update(fmi_version_enu_t version, fmi2_import_t* fmu)
+oms_status_enu_t oms::FMUInfo::update(fmi_version_enu_t version, fmi2_import_t* fmu)
 {
   std::string value;
 

@@ -10,21 +10,21 @@ function.
 #LUA#
 .. code-block:: lua
 
-  oms3_freeMemory(obj)
+  oms_freeMemory(obj)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  session.oms3_freeMemory(obj)
+  session.oms_freeMemory(obj)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms3_freeMemory(void* obj);
+  oms_status_enu_t oms_freeMemory(void* obj);
 
 #END#
 
