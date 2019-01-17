@@ -45,6 +45,8 @@
 
 oms3::Flags::Flags()
 {
+  setDefaults();
+
   for (unsigned int i=0; i<flags.size(); ++i)
   {
     lookup[flags[i].name] = i;
@@ -55,6 +57,22 @@ oms3::Flags::Flags()
 
 oms3::Flags::~Flags()
 {
+}
+
+void oms3::Flags::setDefaults()
+{
+  ignoreInitialUnknowns = false;
+  suppressPath = false;
+  progressBar = false;
+  inputDerivatives = false;
+  defaultModeIsCS = false;
+  intervals = 100;
+  startTime = 0.0;
+  stopTime = 1.0;
+  timeout = 0.0;
+  tolerance = 1e-4;
+  solver = "cvode";
+  resultFile = "<default>";
 }
 
 oms3::Flags& oms3::Flags::GetInstance()
@@ -131,6 +149,12 @@ oms_status_enu_t oms3::Flags::SetCommandLineOption(const std::string& cmd)
       return logError("Invalid value: \"" + arg + "\"");
   }
 
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms3::Flags::ClearAllOptions(const std::string& value)
+{
+  GetInstance().setDefaults();
   return oms_status_ok;
 }
 
