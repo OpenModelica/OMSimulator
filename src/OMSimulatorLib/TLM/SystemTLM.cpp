@@ -360,7 +360,7 @@ oms_status_enu_t oms::SystemTLM::connectToSockets(const oms::ComRef cref, std::s
 
   for (int i=0; tlmbuses[i]; ++i)
   {
-    TLMBusConnector* bus = tlmbuses[i];
+    TLMBusConnector* bus = tlmbuses[i]->getActualBus();
     oms_status_enu_t status = bus->registerToSockets(plugin);
     if(status == oms_status_error) {
       return logError("Failed to register interface "+std::string(bus->getName()));
@@ -434,6 +434,7 @@ oms_status_enu_t oms::SystemTLM::updateInitialValues(const oms::ComRef cref)
   for (int i=0; tlmbuses[i]; ++i)
   {
     TLMBusConnector* bus = tlmbuses[i];
+    bus = bus->getActualBus();
 
     if(bus->getDimensions() == 1 && bus->getCausality() == oms_causality_input) {
       oms_tlm_sigrefs_signal_t tlmrefs;
@@ -463,8 +464,7 @@ oms_status_enu_t oms::SystemTLM::updateInitialValues(const oms::ComRef cref)
             bus->getInterpolation() == oms_tlm_no_interpolation) {
       oms_tlm_sigrefs_3d_t tlmrefs;
       std::vector<double> effort(6,0);
-      std::vector<double> flow(3,0);
-      std::vector<double> angularflow(3,0);
+      std::vector<double> flow(6,0);
       system->getReals(bus->getConnectors(tlmrefs.f), effort);
       std::vector<int> flowrefs = tlmrefs.v;
       flowrefs.insert(flowrefs.end(), tlmrefs.w.begin(), tlmrefs.w.end());
@@ -476,8 +476,7 @@ oms_status_enu_t oms::SystemTLM::updateInitialValues(const oms::ComRef cref)
             bus->getInterpolation() == oms_tlm_coarse_grained) {
       oms_tlm_sigrefs_3d_cg_t tlmrefs;
       std::vector<double> effort(6,0);
-      std::vector<double> flow(3,0);
-      std::vector<double> angularflow(3,0);
+      std::vector<double> flow(6,0);
       system->getReals(bus->getConnectors(tlmrefs.c), effort);
       std::vector<int> flowrefs = tlmrefs.v;
       flowrefs.insert(flowrefs.end(), tlmrefs.w.begin(), tlmrefs.w.end());
@@ -489,8 +488,7 @@ oms_status_enu_t oms::SystemTLM::updateInitialValues(const oms::ComRef cref)
             bus->getInterpolation() == oms_tlm_fine_grained) {
       oms_tlm_sigrefs_3d_fg_t tlmrefs;
       std::vector<double> effort(6,0);
-      std::vector<double> flow(3,0);
-      std::vector<double> angularflow(3,0);
+      std::vector<double> flow(6,0);
       system->getReals(bus->getConnectors(tlmrefs.c[0]), effort);
       std::vector<int> flowrefs = tlmrefs.v;
       flowrefs.insert(flowrefs.end(), tlmrefs.w.begin(), tlmrefs.w.end());
@@ -506,9 +504,10 @@ oms_status_enu_t oms::SystemTLM::updateInitialValues(const oms::ComRef cref)
 oms_status_enu_t oms::SystemTLM::initializeSubSystem(oms::ComRef cref)
 {
   oms_status_enu_t status = getSubSystem(cref)->initialize();
-  if(status = oms_status_ok)
-    status = updateInitialValues(cref);
-  if(status == oms_status_ok) {
+  if(oms_status_ok != status)
+    return status;
+  status = updateInitialValues(cref);
+  if(oms_status_ok == status) {
     setInitializedMutex.lock();
     initializedsubsystems.push_back(cref);
     setInitializedMutex.unlock();
@@ -532,8 +531,8 @@ void oms::SystemTLM::writeToSockets(SystemWC *system, double time, Component* co
   for(int i=0; tlmbuses[i]; ++i)
   {
     TLMBusConnector* bus = tlmbuses[i];
-    int id = bus->getId();      //Need socket ID from top-level bus
     bus = bus->getActualBus();  //Communicate with actual bus
+    int id = bus->getId();
 
     if(component && component != bus->getComponent()) {
       continue; //Ignore FMUs not specified in vector
@@ -605,10 +604,10 @@ void oms::SystemTLM::writeToSockets(SystemWC *system, double time, Component* co
       sendValueToLogger(busLogIds[bus]+17, time, w[2]);
       sendValueToLogger(busLogIds[bus]+18, time, f[0]);
       sendValueToLogger(busLogIds[bus]+19, time, f[1]);
-      sendValueToLogger(busLogIds[bus]+20, time, f[3]);
-      sendValueToLogger(busLogIds[bus]+21, time, f[0]);
-      sendValueToLogger(busLogIds[bus]+22, time, f[1]);
-      sendValueToLogger(busLogIds[bus]+23, time, f[2]);
+      sendValueToLogger(busLogIds[bus]+20, time, f[2]);
+      sendValueToLogger(busLogIds[bus]+21, time, f[3]);
+      sendValueToLogger(busLogIds[bus]+22, time, f[4]);
+      sendValueToLogger(busLogIds[bus]+23, time, f[5]);
     }
   }
 
@@ -626,8 +625,8 @@ void oms::SystemTLM::readFromSockets(SystemWC* system, double time, Component* c
   for(int i=0; tlmbuses[i]; ++i)
   {
     TLMBusConnector* bus = tlmbuses[i];
-    int id = bus->getId();      //Need socket ID from top-level bus
     bus = bus->getActualBus();  //Communicate with actual bus
+    int id = bus->getId();
 
     if(component && component != bus->getComponent()) {
       continue; //Ignore FMUs not specified in vector
