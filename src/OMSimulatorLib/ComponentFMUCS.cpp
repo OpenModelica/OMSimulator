@@ -749,7 +749,7 @@ oms_status_enu_t oms::ComponentFMUCS::setReal(const ComRef& cref, double value)
   if (!fmu || j < 0)
     return oms_status_error;
 
-  if (oms_modelState_initialization == getModel()->getModelState())
+  if (getModel()->validState(oms_modelState_initialization))
     if (allVariables[j].isCalculated() || allVariables[j].isIndependent())
       return logWarning("It is not allowed to provide a start value if initial=\"calculated\" or causality=\"independent\".");
 
