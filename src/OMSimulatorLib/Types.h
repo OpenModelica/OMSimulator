@@ -105,6 +105,7 @@ typedef enum {
 } oms_system_enu_t;
 
 typedef enum {
+  oms_component_none,
   oms_component_fmu,      ///< FMU
   oms_component_table,    ///< lookup table
   oms_component_external  ///< external model
