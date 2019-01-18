@@ -23,10 +23,10 @@ add_executable(OMSimulator main.cpp)
 
 IF (APPLE)
   add_custom_command(TARGET OMSimulator POST_BUILD COMMAND
-    ${CMAKE_INSTALL_NAME_TOOL} -add_rpath "@loader_path/../../../../lib/$(HOST_SHORT)"
+    ${CMAKE_INSTALL_NAME_TOOL} -add_rpath "@loader_path/../../../../lib/${HOST_SHORT}"
     $<TARGET_FILE:OMSimulator>)
   add_custom_command(TARGET OMSimulator POST_BUILD COMMAND
-    ${CMAKE_INSTALL_NAME_TOOL} -add_rpath "@loader_path/../lib/$(HOST_SHORT)"
+    ${CMAKE_INSTALL_NAME_TOOL} -add_rpath "@loader_path/../lib/${HOST_SHORT}"
     $<TARGET_FILE:OMSimulator>)
 ENDIF ()
 
