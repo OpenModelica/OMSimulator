@@ -201,24 +201,23 @@ class OMSimulator:
   def importFile(self, filename):
     contents = ctypes.c_char_p()
     status = self.obj.oms_importFile(self.checkstring(filename), ctypes.byref(contents))
-    return [status, contents.value]
+    return [status, self.checkstring(contents.value)]
   def list(self, ident):
     contents = ctypes.c_char_p()
     status = self.obj.oms_list(self.checkstring(ident), ctypes.byref(contents))
-    return [status, contents.value]
+    return [status, self.checkstring(contents.value)]
   def listUnconnectedConnectors(self, ident):
     contents = ctypes.c_char_p()
     status = self.obj.oms_listUnconnectedConnectors(self.checkstring(ident), ctypes.byref(contents))
-    #self.obj.oms_freeMemory(contents)
-    return [status, contents.value]
+    return [status, self.checkstring(contents.value)]
   def parseModelName(self, ident):
     contents = ctypes.c_char_p()
     status = self.obj.oms_parseModelName(self.checkstring(ident), ctypes.byref(contents))
-    return [status, contents.value]
+    return [status, self.checkstring(contents.value)]
   def importString(self, ident):
     contents = ctypes.c_char_p()
     status = self.obj.oms_importString(self.checkstring(ident), ctypes.byref(contents))
-    return [status, contents.value]
+    return [status, self.checkstring(contents.value)]
   def addSystem(self, ident, type):
     return self.obj.oms_addSystem(self.checkstring(ident), type)
   def copySystem(self, source, target):
@@ -310,8 +309,6 @@ class OMSimulator:
   def setFixedStepSize(self, cref, stepSize):
     return self.obj.oms_setFixedStepSize(self.checkstring(cref), stepSize)
   def checkstring(self, ident):
-    if isinstance(ident, bytes):
-       ident=ident
-    elif isinstance(ident, str):
-       ident=ident.encode()
+    if isinstance(ident, str):
+       ident = ident.encode()
     return ident

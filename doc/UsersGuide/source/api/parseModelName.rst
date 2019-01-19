@@ -4,9 +4,9 @@ parseModelName
 
 Parses the model name from a given SSD representation.
 
-Memory is allocated for `ident`. The caller is responsible to free it using the
-C-API. The Lua bindings take care of the memory and the caller doesn't need to
-call free.
+Memory is allocated for `ident`. The caller is responsible to free it using
+the C-API. The Lua and Python bindings take care of the memory and the caller
+doesn't need to call free.
 #END#
 
 #LUA#

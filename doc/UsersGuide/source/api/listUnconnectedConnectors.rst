@@ -5,8 +5,8 @@ listUnconnectedConnectors
 Lists all unconnected connectors of a given system.
 
 Memory is allocated for `contents`. The caller is responsible to free it using
-the C-API. The Lua bindings take care of the memory and the caller doesn't
-need to call free.
+the C-API. The Lua and Python bindings take care of the memory and the caller
+doesn't need to call free.
 #END#
 
 #LUA#
