@@ -227,12 +227,11 @@ oms_status_enu_t oms_copySystem(const char* source, const char* target)
   return logError_NotImplemented;
 }
 
-oms_status_enu_t oms_freeMemory(void* obj)
+void oms_freeMemory(void* obj)
 {
   logTrace();
   if (obj)
     free(obj);
-  return oms_status_ok;
 }
 
 oms_status_enu_t oms_getElement(const char* cref_, oms_element_t** element)
