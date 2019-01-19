@@ -205,7 +205,6 @@ class OMSimulator:
   def list(self, ident):
     contents = ctypes.c_char_p()
     status = self.obj.oms_list(self.checkstring(ident), ctypes.byref(contents))
-    #self.obj.oms_freeMemory(contents)
     return [status, contents.value]
   def listUnconnectedConnectors(self, ident):
     contents = ctypes.c_char_p()
@@ -215,12 +214,10 @@ class OMSimulator:
   def parseModelName(self, ident):
     contents = ctypes.c_char_p()
     status = self.obj.oms_parseModelName(self.checkstring(ident), ctypes.byref(contents))
-    #self.obj.oms_freeMemory(contents)
     return [status, contents.value]
   def importString(self, ident):
     contents = ctypes.c_char_p()
     status = self.obj.oms_importString(self.checkstring(ident), ctypes.byref(contents))
-    #self.obj.oms_freeMemory(contents)
     return [status, contents.value]
   def addSystem(self, ident, type):
     return self.obj.oms_addSystem(self.checkstring(ident), type)
