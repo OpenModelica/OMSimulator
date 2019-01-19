@@ -2,7 +2,7 @@
 setTolerance
 ------------
 
-Sets the tolerance for a given system or component.
+Sets the tolerance for a given model, system, or component.
 #END#
 
 #LUA#

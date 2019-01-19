@@ -1500,6 +1500,9 @@ oms_status_enu_t oms_setTolerance(const char* cref, double absoluteTolerance, do
   if (!model)
     return logError_ModelNotInScope(front);
 
+  if (tail.isEmpty())
+    return model->getTopLevelSystem()->setTolerance(absoluteTolerance, relativeTolerance);
+
   oms::System* system = model->getSystem(tail);
   if (system)
     return system->setTolerance(absoluteTolerance, relativeTolerance);
