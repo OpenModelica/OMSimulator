@@ -11,189 +11,33 @@ class OMSimulator:
     else:
       self.obj=cdll.LoadLibrary("libOMSimulator.so")
 
-    self.system()
-    self.causality()
-    self.signal_type()
-    self.tlm_interpolation()
-    self.tlm_domain()
-
-    self.obj.oms_getVersion.argtypes = None
-    self.obj.oms_getVersion.restype = ctypes.c_char_p
-
-    self.obj.oms_getSystemType.argtypes = [ctypes.c_char_p]
-    self.obj.oms_getSystemType.restype = ctypes.c_int
-
-    self.obj.oms_setLogFile.argtypes = [ctypes.c_char_p]
-    self.obj.oms_setLogFile.restype = ctypes.c_int
-
-    self.obj.oms_setLoggingInterval.argtypes = [ctypes.c_char_p, ctypes.c_double]
-    self.obj.oms_setLoggingInterval.restype = ctypes.c_int
-
-    self.obj.oms_setMaxLogFileSize.argtypes = [ctypes.c_ulong]
-    self.obj.oms_setMaxLogFileSize.restype = None
-
-    self.obj.oms_setTempDirectory.argtypes = [ctypes.c_char_p]
-    self.obj.oms_setTempDirectory.restype = ctypes.c_int
-
-    self.obj.oms_setWorkingDirectory.argtypes = [ctypes.c_char_p]
-    self.obj.oms_setWorkingDirectory.restype = ctypes.c_int
-
-    self.obj.oms_newModel.argtypes = [ctypes.c_char_p]
-    self.obj.oms_newModel.restype = ctypes.c_int
-
-    self.obj.oms_rename.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_rename.restype = ctypes.c_int
-
-    self.obj.oms_delete.argtypes = [ctypes.c_char_p]
-    self.obj.oms_delete.restype = ctypes.c_int
-
-    self.obj.oms_export.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_export.restype = ctypes.c_int
-
-    self.obj.oms_importFile.argtypes = [ctypes.c_char_p]
-    self.obj.oms_importFile.restype = ctypes.c_int
-
-    self.obj.oms_list.argtypes = [ctypes.c_char_p]
-    self.obj.oms_list.restype = ctypes.c_int
-
-    self.obj.oms_parseModelName.argtypes = [ctypes.c_char_p]
-    self.obj.oms_parseModelName.restype = ctypes.c_int
-
-    self.obj.oms_importString.argtypes = [ctypes.c_char_p]
-    self.obj.oms_importString.restype = ctypes.c_int
-
-    self.obj.oms_addSystem.argtypes = [ctypes.c_char_p, ctypes.c_int]
-    self.obj.oms_addSystem.restype = ctypes.c_int
-
-    self.obj.oms_copySystem.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_copySystem.restype = ctypes.c_int
-
-    self.obj.oms_addSubModel.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_addSubModel.restype = ctypes.c_int
-
-    self.obj.oms_addConnector.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int]
-    self.obj.oms_addConnector.restype = ctypes.c_int
-
-    self.obj.oms_setCommandLineOption.argtypes = [ctypes.c_char_p]
-    self.obj.oms_setCommandLineOption.restype = ctypes.c_int
-
-    self.obj.oms_addConnection.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_addConnection.restype = ctypes.c_int
-
-    self.obj.oms_deleteConnection.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_deleteConnection.restype = ctypes.c_int
-
-    self.obj.oms_addBus.argtypes = [ctypes.c_char_p]
-    self.obj.oms_addBus.restype = ctypes.c_int
-
-    self.obj.oms_addConnectorToBus.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_addConnectorToBus.restype = ctypes.c_int
-
-    self.obj.oms_deleteConnectorFromBus.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_deleteConnectorFromBus.restype = ctypes.c_int
-
-    self.obj.oms_addTLMBus.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_int]
-    self.obj.oms_addTLMBus.restype = ctypes.c_int
-
-    self.obj.oms_addConnectorToTLMBus.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_addConnectorToTLMBus.restype = ctypes.c_int
-
-    self.obj.oms_deleteConnectorFromTLMBus.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_deleteConnectorFromTLMBus.restype = ctypes.c_int
-
-    self.obj.oms_addTLMConnection.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_double, ctypes.c_double, ctypes.c_double]
-    self.obj.oms_addTLMConnection.restype = ctypes.c_int
-
-    self.obj.oms_addExternalModel.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_addExternalModel.restype = ctypes.c_int
-
-    self.obj.oms_addSubModel.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_addSubModel.restype = ctypes.c_int
-
-    self.obj.oms_instantiate.argtypes = [ctypes.c_char_p]
-    self.obj.oms_instantiate.restype = ctypes.c_int
-
-    self.obj.oms_initialize.argtypes = [ctypes.c_char_p]
-    self.obj.oms_initialize.restype = ctypes.c_int
-
-    self.obj.oms_simulate.argtypes = [ctypes.c_char_p]
-    self.obj.oms_simulate.restype = ctypes.c_int
-
-    self.obj.oms_stepUntil.argtypes = [ctypes.c_char_p, ctypes.c_double]
-    self.obj.oms_stepUntil.restype = ctypes.c_int
-
-    self.obj.oms_terminate.argtypes = [ctypes.c_char_p]
-    self.obj.oms_terminate.restype = ctypes.c_int
-
-    self.obj.oms_reset.argtypes = [ctypes.c_char_p]
-    self.obj.oms_reset.restype = ctypes.c_int
-
-    self.obj.oms_setTLMSocketData.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_int]
-    self.obj.oms_setTLMSocketData.restype = ctypes.c_int
-
-    self.obj.oms_setTLMPositionAndOrientation.argtypes = [ctypes.c_char_p, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double]
-    self.obj.oms_setTLMPositionAndOrientation.restype = ctypes.c_int
-
-    self.obj.oms_exportDependencyGraphs.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_exportDependencyGraphs.restype = ctypes.c_int
-
-    self.obj.oms_getReal.argtypes = [ctypes.c_char_p]
-    self.obj.oms_getReal.restype = ctypes.c_int
-
-    self.obj.oms_setReal.argtypes = [ctypes.c_char_p, ctypes.c_double]
-    self.obj.oms_setReal.restype = ctypes.c_int
-
-    self.obj.oms_setResultFile.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int]
-    self.obj.oms_setResultFile.restype = ctypes.c_int
-
-    self.obj.oms_setSignalFilter.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_setSignalFilter.restype = ctypes.c_int
-
-    self.obj.oms_addSignalsToResults.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_addSignalsToResults.restype = ctypes.c_int
-
-    self.obj.oms_removeSignalsFromResults.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_removeSignalsFromResults.restype = ctypes.c_int
-
-    self.obj.oms_getStartTime.argtypes = [ctypes.c_char_p]
-    self.obj.oms_getStartTime.restype = ctypes.c_int
-
-    self.obj.oms_setStartTime.argtypes = [ctypes.c_char_p, ctypes.c_double]
-    self.obj.oms_setStartTime.restype = ctypes.c_int
-
-    self.obj.oms_getStopTime.argtypes = [ctypes.c_char_p]
-    self.obj.oms_getStopTime.restype = ctypes.c_int
-
-    self.obj.oms_setStopTime.argtypes = [ctypes.c_char_p, ctypes.c_double]
-    self.obj.oms_setStopTime.restype = ctypes.c_int
-
-    self.obj.oms_setFixedStepSize.argtypes = [ctypes.c_char_p, ctypes.c_double]
-    self.obj.oms_setFixedStepSize.restype = ctypes.c_int
-
-  ## define enum types for accesing typedef enum from c
-  def system(self):
+    ## oms_system_enu_t
     self.system_none = 0
     self.system_tlm = 1
     self.system_wc = 2
     self.system_sc = 3
-  def causality(self):
+
+    ## oms_causality_enu_t
     self.input = 0
     self.output = 1
     self.parameter = 2
     self.bidir = 3
     self.undefined = 4
-  def signal_type(self):
+
+    ## oms_signal_type_enu_t
     self.signal_type_real = 0
     self.signal_type_integer = 1
     self.signal_type_boolean = 2
     self.signal_type_string = 3
     self.signal_type_enum = 4
     self.signal_type_bus = 5
-  def tlm_interpolation(self):
+
+    ## tlm_interpolation
     self.default = 0
     self.coarsegrained = 1
     self.finegrained = 2
-  def tlm_domain(self):
+
+    ## oms_tlm_domain_t
     self.tlm_domain_input = 0
     self.tlm_domain_output = 1
     self.tlm_domain_mechanical = 2
@@ -201,8 +45,137 @@ class OMSimulator:
     self.tlm_domain_hydraulic = 4
     self.tlm_domain_electric = 5
 
+    ## oms_solver_enu_t
+    self.solver_sc_explicit_euler = 2
+    self.solver_sc_cvode = 3
+    self.solver_wc_ma = 6
+    self.solver_wc_mav = 7
+
+    self.obj.oms_addBus.argtypes = [ctypes.c_char_p]
+    self.obj.oms_addBus.restype = ctypes.c_int
+    self.obj.oms_addConnection.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_addConnection.restype = ctypes.c_int
+    self.obj.oms_addConnector.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int]
+    self.obj.oms_addConnector.restype = ctypes.c_int
+    self.obj.oms_addConnectorToBus.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_addConnectorToBus.restype = ctypes.c_int
+    self.obj.oms_addConnectorToTLMBus.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_addConnectorToTLMBus.restype = ctypes.c_int
+    self.obj.oms_addExternalModel.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_addExternalModel.restype = ctypes.c_int
+    self.obj.oms_addSignalsToResults.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_addSignalsToResults.restype = ctypes.c_int
+    self.obj.oms_addSubModel.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_addSubModel.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_addSubModel.restype = ctypes.c_int
+    self.obj.oms_addSubModel.restype = ctypes.c_int
+    self.obj.oms_addSystem.argtypes = [ctypes.c_char_p, ctypes.c_int]
+    self.obj.oms_addSystem.restype = ctypes.c_int
+    self.obj.oms_addTLMBus.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_int]
+    self.obj.oms_addTLMBus.restype = ctypes.c_int
+    self.obj.oms_addTLMConnection.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_double, ctypes.c_double, ctypes.c_double]
+    self.obj.oms_addTLMConnection.restype = ctypes.c_int
+    self.obj.oms_compareSimulationResults.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_double, ctypes.c_double]
+    self.obj.oms_compareSimulationResults.restype = ctypes.c_int
+    self.obj.oms_copySystem.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_copySystem.restype = ctypes.c_int
+    self.obj.oms_delete.argtypes = [ctypes.c_char_p]
+    self.obj.oms_delete.restype = ctypes.c_int
+    self.obj.oms_deleteConnection.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_deleteConnection.restype = ctypes.c_int
+    self.obj.oms_deleteConnectorFromBus.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_deleteConnectorFromBus.restype = ctypes.c_int
+    self.obj.oms_deleteConnectorFromTLMBus.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_deleteConnectorFromTLMBus.restype = ctypes.c_int
+    self.obj.oms_export.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_export.restype = ctypes.c_int
+    self.obj.oms_exportDependencyGraphs.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_exportDependencyGraphs.restype = ctypes.c_int
+    self.obj.oms_getBoolean.argtypes = [ctypes.c_char_p, ctypes.c_void_p]
+    self.obj.oms_getBoolean.restype = ctypes.c_int
+    self.obj.oms_getInteger.argtypes = [ctypes.c_char_p, ctypes.c_void_p]
+    self.obj.oms_getInteger.restype = ctypes.c_int
+    self.obj.oms_getReal.argtypes = [ctypes.c_char_p, ctypes.c_void_p]
+    self.obj.oms_getReal.restype = ctypes.c_int
+    self.obj.oms_getStartTime.argtypes = [ctypes.c_char_p]
+    self.obj.oms_getStartTime.restype = ctypes.c_int
+    self.obj.oms_getStopTime.argtypes = [ctypes.c_char_p]
+    self.obj.oms_getStopTime.restype = ctypes.c_int
+    self.obj.oms_getSystemType.argtypes = [ctypes.c_char_p]
+    self.obj.oms_getSystemType.restype = ctypes.c_int
+    self.obj.oms_getVersion.argtypes = None
+    self.obj.oms_getVersion.restype = ctypes.c_char_p
+    self.obj.oms_importFile.argtypes = [ctypes.c_char_p]
+    self.obj.oms_importFile.restype = ctypes.c_int
+    self.obj.oms_importString.argtypes = [ctypes.c_char_p]
+    self.obj.oms_importString.restype = ctypes.c_int
+    self.obj.oms_initialize.argtypes = [ctypes.c_char_p]
+    self.obj.oms_initialize.restype = ctypes.c_int
+    self.obj.oms_instantiate.argtypes = [ctypes.c_char_p]
+    self.obj.oms_instantiate.restype = ctypes.c_int
+    self.obj.oms_list.argtypes = [ctypes.c_char_p]
+    self.obj.oms_list.restype = ctypes.c_int
+    self.obj.oms_listUnconnectedConnectors.argtypes = [ctypes.c_char_p]
+    self.obj.oms_listUnconnectedConnectors.restype = ctypes.c_int
+    self.obj.oms_newModel.argtypes = [ctypes.c_char_p]
+    self.obj.oms_newModel.restype = ctypes.c_int
+    self.obj.oms_parseModelName.argtypes = [ctypes.c_char_p]
+    self.obj.oms_parseModelName.restype = ctypes.c_int
+    self.obj.oms_removeSignalsFromResults.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_removeSignalsFromResults.restype = ctypes.c_int
+    self.obj.oms_rename.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_rename.restype = ctypes.c_int
+    self.obj.oms_reset.argtypes = [ctypes.c_char_p]
+    self.obj.oms_reset.restype = ctypes.c_int
+    self.obj.oms_setBoolean.argtypes = [ctypes.c_char_p, ctypes.c_bool]
+    self.obj.oms_setBoolean.restype = ctypes.c_int
+    self.obj.oms_setCommandLineOption.argtypes = [ctypes.c_char_p]
+    self.obj.oms_setCommandLineOption.restype = ctypes.c_int
+    self.obj.oms_setFixedStepSize.argtypes = [ctypes.c_char_p, ctypes.c_double]
+    self.obj.oms_setFixedStepSize.restype = ctypes.c_int
+    self.obj.oms_setInteger.argtypes = [ctypes.c_char_p, ctypes.c_int]
+    self.obj.oms_setInteger.restype = ctypes.c_int
+    self.obj.oms_setLogFile.argtypes = [ctypes.c_char_p]
+    self.obj.oms_setLogFile.restype = ctypes.c_int
+    self.obj.oms_setLoggingInterval.argtypes = [ctypes.c_char_p, ctypes.c_double]
+    self.obj.oms_setLoggingInterval.restype = ctypes.c_int
+    self.obj.oms_setLoggingLevel.argtypes = [ctypes.c_int]
+    self.obj.oms_setLoggingLevel.restype = ctypes.c_int
+    self.obj.oms_setMaxLogFileSize.argtypes = [ctypes.c_ulong]
+    self.obj.oms_setMaxLogFileSize.restype = None
+    self.obj.oms_setReal.argtypes = [ctypes.c_char_p, ctypes.c_double]
+    self.obj.oms_setReal.restype = ctypes.c_int
+    self.obj.oms_setResultFile.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int]
+    self.obj.oms_setResultFile.restype = ctypes.c_int
+    self.obj.oms_setSignalFilter.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_setSignalFilter.restype = ctypes.c_int
+    self.obj.oms_setStartTime.argtypes = [ctypes.c_char_p, ctypes.c_double]
+    self.obj.oms_setStartTime.restype = ctypes.c_int
+    self.obj.oms_setStopTime.argtypes = [ctypes.c_char_p, ctypes.c_double]
+    self.obj.oms_setStopTime.restype = ctypes.c_int
+    self.obj.oms_setTempDirectory.argtypes = [ctypes.c_char_p]
+    self.obj.oms_setTempDirectory.restype = ctypes.c_int
+    self.obj.oms_setTLMPositionAndOrientation.argtypes = [ctypes.c_char_p, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double]
+    self.obj.oms_setTLMPositionAndOrientation.restype = ctypes.c_int
+    self.obj.oms_setTLMSocketData.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_int]
+    self.obj.oms_setTLMSocketData.restype = ctypes.c_int
+    self.obj.oms_setTolerance.argtypes = [ctypes.c_double, ctypes.c_double]
+    self.obj.oms_setTolerance.restype = ctypes.c_int
+    self.obj.oms_setWorkingDirectory.argtypes = [ctypes.c_char_p]
+    self.obj.oms_setWorkingDirectory.restype = ctypes.c_int
+    self.obj.oms_simulate.argtypes = [ctypes.c_char_p]
+    self.obj.oms_simulate.restype = ctypes.c_int
+    self.obj.oms_stepUntil.argtypes = [ctypes.c_char_p, ctypes.c_double]
+    self.obj.oms_stepUntil.restype = ctypes.c_int
+    self.obj.oms_terminate.argtypes = [ctypes.c_char_p]
+    self.obj.oms_terminate.restype = ctypes.c_int
+
   def getVersion(self):
     return self.checkstring(self.obj.oms_getVersion())
+  def setLoggingLevel(self, level):
+    return self.obj.oms_setLoggingLevel(level)
+  def setTolerance(self, absoluteTolerance, relativeTolerance):
+    return self.obj.oms_setTolerance(absoluteTolerance, relativeTolerance)
   def getSystemType(self, cref):
     type = ctypes.c_int()
     status = self.obj.oms_getSystemType(self.checkstring(cref), ctypes.byref(type))
@@ -232,6 +205,11 @@ class OMSimulator:
   def list(self, ident):
     contents = ctypes.c_char_p()
     status = self.obj.oms_list(self.checkstring(ident), ctypes.byref(contents))
+    #self.obj.oms_freeMemory(contents)
+    return [status, contents.value]
+  def listUnconnectedConnectors(self, ident):
+    contents = ctypes.c_char_p()
+    status = self.obj.oms_listUnconnectedConnectors(self.checkstring(ident), ctypes.byref(contents))
     #self.obj.oms_freeMemory(contents)
     return [status, contents.value]
   def parseModelName(self, ident):
@@ -272,6 +250,8 @@ class OMSimulator:
     return self.obj.oms_deleteConnectorFromTLMBus(self.checkstring(busCref), self.checkstring(connectorCref))
   def addTLMConnection(self, crefA, crefB, delay, alpha, linearimpedance, angularimpedance):
     return self.obj.oms_addTLMConnection(self.checkstring(crefA), self.checkstring(crefB), delay, alpha, linearimpedance, angularimpedance)
+  def compareSimulationResults(self, filenameA, filenameB, var, relTol, absTol):
+    return self.obj.oms_compareSimulationResults(self.checkstring(filenameA), self.checkstring(filenameB), self.checkstring(var), relTol, absTol)
   def addExternalModel(self, cref, path, startscript):
     return self.obj.oms_addExternalModel(self.checkstring(cref), self.checkstring(path), self.checkstring(startscript))
   def instantiate(self, cref):
@@ -296,8 +276,20 @@ class OMSimulator:
     value = ctypes.c_double()
     status = self.obj.oms_getReal(self.checkstring(cref), ctypes.byref(value))
     return [value.value, status]
+  def getInteger(self, cref):
+    value = ctypes.c_int()
+    status = self.obj.oms_getInteger(self.checkstring(cref), ctypes.byref(value))
+    return [value.value, status]
+  def getBoolean(self, cref):
+    value = ctypes.c_bool()
+    status = self.obj.oms_getBoolean(self.checkstring(cref), ctypes.byref(value))
+    return [value.value, status]
   def setReal(self, signal, value):
     return self.obj.oms_setReal(self.checkstring(signal), value)
+  def setInteger(self, signal, value):
+    return self.obj.oms_setInteger(self.checkstring(signal), value)
+  def setBoolean(self, signal, value):
+    return self.obj.oms_setBoolean(self.checkstring(signal), value)
   def setResultFile(self, cref, filename, bufferSize):
     return self.obj.oms_setResultFile(self.checkstring(cref), self.checkstring(filename), bufferSize)
   def setSignalFilter(self, cref, regex):
