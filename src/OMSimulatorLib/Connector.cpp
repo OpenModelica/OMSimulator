@@ -107,6 +107,8 @@ oms::Connector* oms::Connector::NewConnector(const pugi::xml_node& node)
     type = oms_signal_type_integer;
   else if (typeString == "Boolean")
     type = oms_signal_type_boolean;
+  else if (typeString == "Enumeration")
+    type = oms_signal_type_enum;
   else
   {
     logError("Failed to import " + std::string(oms::ssd::ssd_connector) + ":type");

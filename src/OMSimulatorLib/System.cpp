@@ -536,7 +536,14 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node)
           Component* component = NULL;
           std::string type = itElements->attribute("type").as_string();
           if ("application/x-fmu-sharedlibrary" == type)
-            component = ComponentFMUCS::NewComponent(*itElements, this);
+          {
+            if (getType() == oms_system_wc)
+              component = ComponentFMUCS::NewComponent(*itElements, this);
+            else if (getType() == oms_system_sc)
+              component = ComponentFMUME::NewComponent(*itElements, this);
+            else
+              return logError("wrong xml schema detected: " + name);
+          }
           else if ("application/table" == type)
             component = ComponentTable::NewComponent(*itElements, this);
 
