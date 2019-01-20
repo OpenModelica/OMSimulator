@@ -108,16 +108,14 @@ oms::System* oms::Model::getSystem(const oms::ComRef& cref)
   if (!system)
     return NULL;
 
+  if (cref.isEmpty())
+    return system;
+
   oms::ComRef tail(cref);
   oms::ComRef front = tail.pop_front();
 
   if (this->system->getCref() == front)
-  {
-    if (tail.isEmpty())
-      return system;
-    else
-      return system->getSystem(tail);
-  }
+    return system->getSystem(tail);
 
   return NULL;
 }
