@@ -329,14 +329,12 @@ oms_status_enu_t oms_getSystemType(const char* cref, oms_system_enu_t* type)
   *type = oms_system_none;
 
   oms::Model* model = oms::Scope::GetInstance().getModel(modelCref);
-  if (!model) {
+  if (!model)
     return logError_ModelNotInScope(modelCref);
-  }
 
   oms::System* system = model->getSystem(tail);
-  if (!system) {
+  if (!system)
     return logError_SystemNotInModel(modelCref, tail);
-  }
 
   *type = system->getType();
   return oms_status_ok;
@@ -1498,9 +1496,6 @@ oms_status_enu_t oms_setTolerance(const char* cref, double absoluteTolerance, do
   oms::Model* model = oms::Scope::GetInstance().getModel(front);
   if (!model)
     return logError_ModelNotInScope(front);
-
-  if (tail.isEmpty())
-    return model->getTopLevelSystem()->setTolerance(absoluteTolerance, relativeTolerance);
 
   oms::System* system = model->getSystem(tail);
   if (system)

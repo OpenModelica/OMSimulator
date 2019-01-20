@@ -167,7 +167,8 @@ oms::ComRef oms::System::getFullCref() const
 
 oms::System* oms::System::getSystem(const oms::ComRef& cref)
 {
-  oms::System* system = NULL;
+  if (cref.isEmpty())
+    return this;
 
   oms::ComRef tail(cref);
   oms::ComRef front = tail.pop_front();
@@ -175,9 +176,6 @@ oms::System* oms::System::getSystem(const oms::ComRef& cref)
   auto it = subsystems.find(front);
   if (it == subsystems.end())
     return NULL;
-
-  if (tail.isEmpty())
-    return it->second;
 
   return it->second->getSystem(tail);
 }

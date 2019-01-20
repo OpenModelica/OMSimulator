@@ -32,6 +32,7 @@
 #include "ComRef.h"
 #include "Types.h"
 #include "Identifier.h"
+#include <assert.h>
 
 oms::ComRef::ComRef(const std::string& path)
 {
@@ -41,6 +42,7 @@ oms::ComRef::ComRef(const std::string& path)
 
 oms::ComRef::ComRef(const char* path)
 {
+  assert(path);
   cref = new char[strlen(path) + 1];
   strcpy(cref, path);
 }
@@ -52,19 +54,19 @@ oms::ComRef::~ComRef()
 
 oms::ComRef::ComRef(const oms::ComRef& copy)
 {
-  cref = new char[strlen(copy.c_str()) + 1];
-  strcpy(cref, copy.c_str());
+  cref = new char[strlen(copy.cref) + 1];
+  strcpy(cref, copy.cref);
 }
 
 oms::ComRef& oms::ComRef::operator=(const oms::ComRef& copy)
 {
   // check for self-assignment
-  if(&copy == this)
+  if (&copy == this)
     return *this;
 
   delete[] cref;
-  cref = new char[strlen(copy.c_str()) + 1];
-  strcpy(cref, copy.c_str());
+  cref = new char[strlen(copy.cref) + 1];
+  strcpy(cref, copy.cref);
 
   return *this;
 }
@@ -86,40 +88,41 @@ bool oms::ComRef::isValidIdent() const
 
 bool oms::ComRef::isEmpty() const
 {
-  return !(cref && cref[0] != '\0');
+  return (cref[0] == '\0');
 }
 
 oms::ComRef oms::ComRef::front() const
 {
-  int dot=0;
+  for (int i=0; cref[i]; ++i)
+  {
+    if (cref[i] == '.')
+    {
+      cref[i] = '\0';
+      oms::ComRef front(cref);
+      cref[i] = '.';
+      return front;
+    }
+  }
 
-  for(int i=0; cref[i] && dot==0; ++i)
-    if(cref[i] == '.')
-      dot = i;
-
-  if (dot)
-    cref[dot] = '\0';
-
-  oms::ComRef front(cref);
-
-  if (dot)
-    cref[dot] = '.';
-  return front;
+  return oms::ComRef(cref);
 }
 
 oms::ComRef oms::ComRef::pop_front()
 {
-  int i=0;
-  for(; cref[i]; ++i)
-    if(cref[i] == '.')
+  for (int i=0; cref[i]; ++i)
+  {
+    if (cref[i] == '.')
     {
       cref[i] = '\0';
-      i++;
-      break;
+      oms::ComRef front(cref);
+      cref[i] = '.';
+      *this = oms::ComRef(cref + i + 1);
+      return front;
     }
+  }
 
   oms::ComRef front(cref);
-  *this = oms::ComRef(cref + i);
+  *this = oms::ComRef("");
   return front;
 }
 

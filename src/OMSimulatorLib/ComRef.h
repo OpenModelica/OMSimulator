@@ -63,7 +63,7 @@ namespace oms
     operator std::string() const {return std::string(cref);}
 
   private:
-    char* cref = NULL;
+    char* cref;
   };
 
   bool operator==(const ComRef& lhs, const ComRef& rhs);
@@ -76,14 +76,11 @@ namespace std
   template <>
   struct hash<oms::ComRef>
   {
-    std::size_t operator()(const oms::ComRef& cref) const
+    size_t operator()(const oms::ComRef& cref) const
     {
-      using std::size_t;
-      using std::hash;
-      using std::string;
-
-      return hash<string>()(string(cref));
+      return hash<std::string>()(std::string(cref));
     }
   };
 }
+
 #endif
