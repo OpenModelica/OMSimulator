@@ -158,7 +158,7 @@ option(OMTLM "Enable the OMTLMSimulator module." ON)
 IF(OMTLM)
 set(OMTLMSIMULATOR_INCLUDEDIR ${PROJECT_SOURCE_DIR}/OMTLMSimulator/common)
 set(OMTLMSIMULATORLIB_INCLUDEDIR ${PROJECT_SOURCE_DIR}/OMTLMSimulator/common/OMTLMSimulatorLib)
-IF(WIN32 AND MSVC)
+IF(WIN32)
   set(OMTLMSIMULATORLIB_LIBRARYDIR ${PROJECT_SOURCE_DIR}/OMTLMSimulator/bin)
 ELSE() # use it from the install folder where is properly installed for MacOS
   set(OMTLMSIMULATORLIB_LIBRARYDIR ${CMAKE_INSTALL_PREFIX}/lib/${HOST_SHORT})
