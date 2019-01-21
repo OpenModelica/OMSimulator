@@ -10,9 +10,8 @@ case "${detected_OS}" in
     if [ -z "$LD_LIBRARY_PATH" ]; then export LD_LIBRARY_PATH="$SCRIPTPATH/../lib"; else export LD_LIBRARY_PATH="$SCRIPTPATH/../lib":$LD_LIBRARY_PATH; fi
     ;;
   (MINGW*)
-    if [ -z "$PYTHONPATH" ]; then export PYTHONPATH="$SCRIPTPATH/../lib"; else export PYTHONPATH="$SCRIPTPATH/../lib":$PYTHONPATH; fi
-    if [ -z "$LD_LIBRARY_PATH" ]; then export LD_LIBRARY_PATH="$SCRIPTPATH/../lib"; else export LD_LIBRARY_PATH="$SCRIPTPATH/../lib":$LD_LIBRARY_PATH; fi
-    if [ -z "$PATH" ]; then export PATH="$SCRIPTPATH/../lib"; else export PATH="$SCRIPTPATH/../lib":$PATH; fi
+    if [ -z "$PYTHONPATH" ]; then export PYTHONPATH="$SCRIPTPATH:$SCRIPTPATH/../lib"; else export PYTHONPATH="$SCRIPTPATH:$SCRIPTPATH/../lib":$PYTHONPATH; fi
+    if [ -z "$PATH" ]; then export PATH="$SCRIPTPATH:$SCRIPTPATH/../lib"; else export PATH="$SCRIPTPATH:$SCRIPTPATH/../lib":$PATH; fi
     ;;
 esac
 
