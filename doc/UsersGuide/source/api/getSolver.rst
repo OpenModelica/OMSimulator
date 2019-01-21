@@ -8,7 +8,7 @@ Gets the selected solver method of the given system.
 #LUA#
 .. code-block:: lua
 
-  solver, status = oms.getSolver(cref)
+  solver, status = oms_getSolver(cref)
 
 #END#
 

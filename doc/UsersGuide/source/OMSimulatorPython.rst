@@ -3,7 +3,8 @@
 OMSimulatorPython
 =================
 
-This is a shared library that provides a Python interface for the OMSimulatorLib library.
+This is a shared library that provides a Python interface for the
+OMSimulatorLib library.
 
 .. index:: OMSimulatorPython; Examples
 
@@ -13,27 +14,30 @@ Examples
 .. code-block:: python
 
   from OMSimulator import OMSimulator
-  oms = OMSimulator()
-
-  oms.newFMIModel("model")
+  oms.setTempDirectory("./temp/")
+  oms.newModel("model")
+  oms.addSystem("model.root", oms.system_sc)
 
   # instantiate FMUs
-  oms.addFMU("model", "FMUs/submodelA.fmu", "A")
-  oms.addFMU("model", "FMUs/submodelB.fmu", "B")
+  oms.addSubModel("model.root.system1", "FMUs/System1.fmu")
+  oms.addSubModel("model.root.system2", "FMUs/System2.fmu")
 
   # add connections
-  oms.addConnection("model", "A:in1", "B:out1")
-  oms.addConnection("model", "A:in2", "B:out2")
-  oms.addConnection("model", "A:out1", "B:in1")
-  oms.addConnection("model", "A:out2", "B:in2")
+  oms.addConnection("model.root.system1.y", "model.root.system2.u")
+  oms.addConnection("model.root.system2.y", "model.root.system1.u")
 
-  oms.setStopTime("model", 2.0)
-  oms.setCommunicationInterval("model", 1e-5)
-  oms.setResultFile("model", "AB_res.mat")
+  # simulation settings
+  oms.setResultFile("model", "results.mat")
+  oms.setStopTime("model", 0.1)
+  oms.setFixedStepSize("model.root", 1e-4)
+
+  oms.instantiate("model")
+  oms.setReal("model.root.system1.x_start", 2.5)
 
   oms.initialize("model")
   oms.simulate("model")
-  oms.unloadModel("model")
+  oms.terminate("model")
+  oms.delete("model")
 
 .. index:: OMSimulatorPython; Scripting Commands
 

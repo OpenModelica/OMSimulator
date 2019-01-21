@@ -15,7 +15,7 @@ Set the logging interval of the simulation.
 #PYTHON#
 .. code-block:: python
 
-  status = oms_setLoggingInterval(cref, loggingInterval)
+  status = oms.setLoggingInterval(cref, loggingInterval)
 
 #END#
 
