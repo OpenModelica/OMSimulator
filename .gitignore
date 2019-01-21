@@ -3,6 +3,7 @@
 /.vscode/
 /build/
 /install/
+/version.txt
 
 # local files
 /OMSimulator.config
