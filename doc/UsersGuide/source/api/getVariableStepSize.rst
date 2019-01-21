@@ -8,7 +8,7 @@ Gets the step size parameters.
 #LUA#
 .. code-block:: lua
 
-  initialStepSize, minimumStepSize, maximumStepSize, status = oms.getVariableStepSize(cref)
+  initialStepSize, minimumStepSize, maximumStepSize, status = oms_getVariableStepSize(cref)
 
 #END#
 

@@ -15,7 +15,7 @@ Sets special flags.
 #PYTHON#
 .. code-block:: python
 
-  status = oms_setCommandLineOption(cmd)
+  status = oms.setCommandLineOption(cmd)
 
 #END#
 
