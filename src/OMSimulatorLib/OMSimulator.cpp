@@ -244,6 +244,24 @@ oms_status_enu_t oms_getElements(const char* cref, oms_element_t*** elements)
   return oms::Scope::GetInstance().getElements(oms::ComRef(cref), reinterpret_cast<oms::Element***>(elements));
 }
 
+oms_status_enu_t oms_getFixedStepSize(const char* cref, double* stepSize)
+{
+  oms::ComRef tail(cref);
+  oms::ComRef front = tail.pop_front();
+
+  oms::Model* model = oms::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  front = tail.pop_front();
+  oms::System* system = model->getSystem(front);
+  if (!system)
+    return logError_SystemNotInModel(model->getCref(), front);
+
+  system->getStepSize(NULL, NULL, stepSize);
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms_setElementGeometry(const char* cref, const ssd_element_geometry_t* geometry)
 {
   if (!geometry)
@@ -1412,7 +1430,7 @@ oms_status_enu_t oms_getVariableStepSize(const char* cref, double* initialStepSi
   if (!system)
     return logError_SystemNotInModel(model->getCref(), front);
 
-  system->getVariableStepSize(initialStepSize, minimumStepSize, maximumStepSize);
+  system->getStepSize(initialStepSize, minimumStepSize, maximumStepSize);
   return oms_status_ok;
 }
 
