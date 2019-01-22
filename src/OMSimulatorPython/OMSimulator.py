@@ -93,16 +93,22 @@ class OMSimulator:
     self.obj.oms_exportDependencyGraphs.restype = ctypes.c_int
     self.obj.oms_getBoolean.argtypes = [ctypes.c_char_p, ctypes.c_void_p]
     self.obj.oms_getBoolean.restype = ctypes.c_int
+    self.obj.oms_getFixedStepSize.argtypes = [ctypes.c_char_p, ctypes.c_void_p]
+    self.obj.oms_getFixedStepSize.restype = ctypes.c_int
     self.obj.oms_getInteger.argtypes = [ctypes.c_char_p, ctypes.c_void_p]
     self.obj.oms_getInteger.restype = ctypes.c_int
     self.obj.oms_getReal.argtypes = [ctypes.c_char_p, ctypes.c_void_p]
     self.obj.oms_getReal.restype = ctypes.c_int
+    self.obj.oms_getSolver.argtypes = [ctypes.c_char_p, ctypes.c_void_p]
+    self.obj.oms_getSolver.restype = ctypes.c_int
     self.obj.oms_getStartTime.argtypes = [ctypes.c_char_p]
     self.obj.oms_getStartTime.restype = ctypes.c_int
     self.obj.oms_getStopTime.argtypes = [ctypes.c_char_p]
     self.obj.oms_getStopTime.restype = ctypes.c_int
     self.obj.oms_getSystemType.argtypes = [ctypes.c_char_p]
     self.obj.oms_getSystemType.restype = ctypes.c_int
+    self.obj.oms_getVariableStepSize.argtypes = [ctypes.c_char_p, ctypes.c_void_p, ctypes.c_void_p, ctypes.c_void_p]
+    self.obj.oms_getVariableStepSize.restype = ctypes.c_int
     self.obj.oms_getVersion.argtypes = None
     self.obj.oms_getVersion.restype = ctypes.c_char_p
     self.obj.oms_importFile.argtypes = [ctypes.c_char_p]
@@ -149,6 +155,8 @@ class OMSimulator:
     self.obj.oms_setResultFile.restype = ctypes.c_int
     self.obj.oms_setSignalFilter.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_setSignalFilter.restype = ctypes.c_int
+    self.obj.oms_setSolver.argtypes = [ctypes.c_char_p, ctypes.c_int]
+    self.obj.oms_setSolver.restype = ctypes.c_int
     self.obj.oms_setStartTime.argtypes = [ctypes.c_char_p, ctypes.c_double]
     self.obj.oms_setStartTime.restype = ctypes.c_int
     self.obj.oms_setStopTime.argtypes = [ctypes.c_char_p, ctypes.c_double]
@@ -159,8 +167,10 @@ class OMSimulator:
     self.obj.oms_setTLMPositionAndOrientation.restype = ctypes.c_int
     self.obj.oms_setTLMSocketData.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_int]
     self.obj.oms_setTLMSocketData.restype = ctypes.c_int
-    self.obj.oms_setTolerance.argtypes = [ctypes.c_double, ctypes.c_double]
+    self.obj.oms_setTolerance.argtypes = [ctypes.c_char_p, ctypes.c_double, ctypes.c_double]
     self.obj.oms_setTolerance.restype = ctypes.c_int
+    self.obj.oms_setVariableStepSize.argtypes = [ctypes.c_char_p, ctypes.c_double, ctypes.c_double, ctypes.c_double]
+    self.obj.oms_setVariableStepSize.restype = ctypes.c_int
     self.obj.oms_setWorkingDirectory.argtypes = [ctypes.c_char_p]
     self.obj.oms_setWorkingDirectory.restype = ctypes.c_int
     self.obj.oms_simulate.argtypes = [ctypes.c_char_p]
@@ -174,12 +184,20 @@ class OMSimulator:
     return self.checkstring(self.obj.oms_getVersion())
   def setLoggingLevel(self, level):
     return self.obj.oms_setLoggingLevel(level)
-  def setTolerance(self, absoluteTolerance, relativeTolerance):
-    return self.obj.oms_setTolerance(absoluteTolerance, relativeTolerance)
+  def setTolerance(self, cref, absoluteTolerance, relativeTolerance):
+    return self.obj.oms_setTolerance(self.checkstring(cref), absoluteTolerance, relativeTolerance)
+  def setVariableStepSize(self, cref, initialStepSize, minimumStepSize, maximumStepSize):
+    return self.obj.oms_setVariableStepSize(self.checkstring(cref), initialStepSize, minimumStepSize, maximumStepSize)
   def getSystemType(self, cref):
     type = ctypes.c_int()
     status = self.obj.oms_getSystemType(self.checkstring(cref), ctypes.byref(type))
     return [status, type.value]
+  def getVariableStepSize(self, cref):
+    initialStepSize = ctypes.c_double()
+    minimumStepSize = ctypes.c_double()
+    maximumStepSize = ctypes.c_double()
+    status = self.obj.oms_getVariableStepSize(self.checkstring(cref), ctypes.byref(initialStepSize), ctypes.byref(minimumStepSize), ctypes.byref(maximumStepSize))
+    return [initialStepSize.value, minimumStepSize.value, maximumStepSize.value, status]
   def setLogFile(self, filename):
     return self.obj.oms_setLogFile(self.checkstring(filename))
   def setLoggingInterval(self, cref, loggingInterval):
@@ -280,6 +298,14 @@ class OMSimulator:
     value = ctypes.c_bool()
     status = self.obj.oms_getBoolean(self.checkstring(cref), ctypes.byref(value))
     return [value.value, status]
+  def getFixedStepSize(self, cref):
+    value = ctypes.c_double()
+    status = self.obj.oms_getFixedStepSize(self.checkstring(cref), ctypes.byref(value))
+    return [value.value, status]
+  def getSolver(self, cref):
+    value = ctypes.c_int()
+    status = self.obj.oms_getSolver(self.checkstring(cref), ctypes.byref(value))
+    return [value.value, status]
   def setReal(self, signal, value):
     return self.obj.oms_setReal(self.checkstring(signal), value)
   def setInteger(self, signal, value):
@@ -290,6 +316,8 @@ class OMSimulator:
     return self.obj.oms_setResultFile(self.checkstring(cref), self.checkstring(filename), bufferSize)
   def setSignalFilter(self, cref, regex):
     return self.obj.oms_setSignalFilter(self.checkstring(cref), self.checkstring(regex))
+  def setSolver(self, cref, solver):
+    return self.obj.oms_setSolver(self.checkstring(cref), solver)
   def addSignalsToResults(self, cref, regex):
     return self.obj.oms_addSignalsToResults(self.checkstring(cref), self.checkstring(regex))
   def removeSignalsFromResults(self, cref, regex):
