@@ -132,6 +132,27 @@ static int OMSimulatorLua_oms_setTolerance(lua_State *L)
   return 1;
 }
 
+//OMSAPI oms_status_enu_t OMSCALL oms_setVariableStepSize(const char* cref, double initialStepSize, double minimumStepSize, double maximumStepSize);
+static int OMSimulatorLua_oms_setVariableStepSize(lua_State *L)
+{
+  if (lua_gettop(L) != 4)
+    return luaL_error(L, "expecting exactly 4 arguments");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TNUMBER);
+  luaL_checktype(L, 3, LUA_TNUMBER);
+  luaL_checktype(L, 4, LUA_TNUMBER);
+
+  const char* cref = lua_tostring(L, 1);
+  double initialStepSize = lua_tonumber(L, 2);
+  double minimumStepSize = lua_tonumber(L, 3);
+  double maximumStepSize = lua_tonumber(L, 4);
+
+  oms_status_enu_t status = oms_setVariableStepSize(cref, initialStepSize, minimumStepSize, maximumStepSize);
+
+  lua_pushinteger(L, status);
+  return 1;
+}
+
 //oms_status_enu_t oms_setWorkingDirectory(const char* newWorkingDir);
 static int OMSimulatorLua_oms_setWorkingDirectory(lua_State *L)
 {
@@ -404,6 +425,27 @@ static int OMSimulatorLua_oms_getSystemType(lua_State *L)
   return 2;
 }
 
+//OMSAPI oms_status_enu_t OMSCALL oms_getVariableStepSize(const char* cref, double* initialStepSize, double* minimumStepSize, double* maximumStepSize);
+static int OMSimulatorLua_oms_getVariableStepSize(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* cref = lua_tostring(L, 1);
+  double initialStepSize = 0.0;
+  double minimumStepSize = 0.0;
+  double maximumStepSize = 0.0;
+  oms_status_enu_t status = oms_getVariableStepSize(cref, &initialStepSize, &minimumStepSize, &maximumStepSize);
+
+  lua_pushnumber(L, initialStepSize);
+  lua_pushnumber(L, minimumStepSize);
+  lua_pushnumber(L, maximumStepSize);
+  lua_pushinteger(L, status);
+
+  return 4;
+}
+
 //oms_status_enu_t oms_getBoolean(const char* cref, bool* value);
 static int OMSimulatorLua_oms_getBoolean(lua_State *L)
 {
@@ -416,6 +458,22 @@ static int OMSimulatorLua_oms_getBoolean(lua_State *L)
 
   oms_status_enu_t status = oms_getBoolean(cref, &value);
   lua_pushinteger(L, value);
+  lua_pushinteger(L, status);
+  return 2;
+}
+
+//OMSAPI oms_status_enu_t OMSCALL oms_getFixedStepSize(const char* cref, double* stepSize);
+static int OMSimulatorLua_oms_getFixedStepSize(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* cref = lua_tostring(L, 1);
+  double stepSize = 0.0;
+
+  oms_status_enu_t status = oms_getFixedStepSize(cref, &stepSize);
+  lua_pushnumber(L, stepSize);
   lua_pushinteger(L, status);
   return 2;
 }
@@ -448,6 +506,22 @@ static int OMSimulatorLua_oms_getReal(lua_State *L)
 
   oms_status_enu_t status = oms_getReal(cref, &value);
   lua_pushnumber(L, value);
+  lua_pushinteger(L, status);
+  return 2;
+}
+
+//OMSAPI oms_status_enu_t OMSCALL oms_getSolver(const char* cref, oms_solver_enu_t* solver);
+static int OMSimulatorLua_oms_getSolver(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* cref = lua_tostring(L, 1);
+  oms_solver_enu_t solver = oms_solver_none;
+
+  oms_status_enu_t status = oms_getSolver(cref, &solver);
+  lua_pushinteger(L, solver);
   lua_pushinteger(L, status);
   return 2;
 }
@@ -902,10 +976,26 @@ static int OMSimulatorLua_oms_setSignalFilter(lua_State *L)
   if (lua_gettop(L) != 2)
     return luaL_error(L, "expecting exactly 2 argument");
   luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
 
   const char* cref = lua_tostring(L, 1);
   const char* regex = lua_tostring(L, 2);
   oms_status_enu_t status = oms_setSignalFilter(cref, regex);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
+//OMSAPI oms_status_enu_t OMSCALL oms_setSolver(const char* cref, oms_solver_enu_t solver);
+static int OMSimulatorLua_oms_setSolver(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TNUMBER);
+
+  const char* cref = lua_tostring(L, 1);
+  oms_solver_enu_t solver = (oms_solver_enu_t)lua_tointeger(L, 2);
+  oms_status_enu_t status = oms_setSolver(cref, solver);
   lua_pushinteger(L, status);
   return 1;
 }
@@ -1290,11 +1380,14 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms_export);
   REGISTER_LUA_CALL(oms_exportDependencyGraphs);
   REGISTER_LUA_CALL(oms_getBoolean);
+  REGISTER_LUA_CALL(oms_getFixedStepSize);
   REGISTER_LUA_CALL(oms_getInteger);
   REGISTER_LUA_CALL(oms_getReal);
+  REGISTER_LUA_CALL(oms_getSolver);
   REGISTER_LUA_CALL(oms_getStartTime);
   REGISTER_LUA_CALL(oms_getStopTime);
   REGISTER_LUA_CALL(oms_getSystemType);
+  REGISTER_LUA_CALL(oms_getVariableStepSize);
   REGISTER_LUA_CALL(oms_getVersion);
   REGISTER_LUA_CALL(oms_importFile);
   REGISTER_LUA_CALL(oms_importString);
@@ -1318,12 +1411,14 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms_setReal);
   REGISTER_LUA_CALL(oms_setResultFile);
   REGISTER_LUA_CALL(oms_setSignalFilter);
+  REGISTER_LUA_CALL(oms_setSolver);
   REGISTER_LUA_CALL(oms_setStartTime);
   REGISTER_LUA_CALL(oms_setStopTime);
   REGISTER_LUA_CALL(oms_setTempDirectory);
   REGISTER_LUA_CALL(oms_setTLMPositionAndOrientation);
   REGISTER_LUA_CALL(oms_setTLMSocketData);
   REGISTER_LUA_CALL(oms_setTolerance);
+  REGISTER_LUA_CALL(oms_setVariableStepSize);
   REGISTER_LUA_CALL(oms_setWorkingDirectory);
   REGISTER_LUA_CALL(oms_simulate);
   REGISTER_LUA_CALL(oms_stepUntil);
