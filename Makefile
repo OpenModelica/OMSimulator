@@ -346,8 +346,6 @@ doc-html:
 doc-doxygen:
 	@$(RM) $(INSTALL_DIR)/doc/OMSimulatorLib
 	@$(MKDIR) $(INSTALL_DIR)/doc/OMSimulatorLib
-	@$(MAKE) -C doc/dev/OMSimulatorLib OMSimulatorLib.png
-	@$(CP) doc/dev/OMSimulatorLib/OMSimulatorLib.png $(INSTALL_DIR)/doc/OMSimulatorLib/
 	@$(MAKE) -C doc/dev/OMSimulatorLib doc-doxygen
 	@$(CP) doc/dev/OMSimulatorLib/html/* $(INSTALL_DIR)/doc/OMSimulatorLib/
 	@$(MAKE) -C doc/dev/OMSimulatorLib clean
