@@ -464,24 +464,14 @@ oms_status_enu_t oms::Model::initialize()
 
 oms_status_enu_t oms::Model::simulate_asynchronous(void (*cb)(const char* cref, double time, oms_status_enu_t status))
 {
-  clock.tic();
   if (!validState(oms_modelState_simulation))
-  {
-    clock.toc();
     return logError_ModelInWrongState(this);
-  }
 
   if (!system)
-  {
-    clock.toc();
     return logError("Model doesn't contain a system");
-  }
 
   std::thread([=]{system->stepUntil(stopTime, cb);}).detach();
-  emit(stopTime, true);
-  clock.toc();
-
-  return oms_status_ok;
+  return oms_status_pending;
 }
 
 oms_status_enu_t oms::Model::simulate()
