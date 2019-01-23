@@ -21,6 +21,12 @@ ENDIF ()
 
 add_executable(OMSimulator main.cpp)
 
+IF (BOOST_ROOT AND MINGW)
+  # For some reason the above link_directories is ignored when cross-compiling MinGW64...
+  target_link_libraries(OMSimulator "-L${BOOST_ROOT}/lib")
+  message(STATUS BOOST_ROOT MinGW64 workaround active)
+ENDIF ()
+
 IF (APPLE)
   add_custom_command(TARGET OMSimulator POST_BUILD COMMAND
     ${CMAKE_INSTALL_NAME_TOOL} -add_rpath "@loader_path/../../../../lib/${HOST_SHORT}"
