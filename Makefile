@@ -18,6 +18,8 @@ OMSYSIDENT ?= ON
 OMTLM ?= ON
 # Option to enable AddressSanitizer
 ASAN ?= OFF
+# Statically link dependencies as much as possible
+STATIC ?= OFF
 # Option to switch between Debug and Release builds
 BUILD_TYPE ?= Release
 
@@ -77,6 +79,11 @@ else
 endif
 	FEXT=.so
 	CMAKE_FPIC=-DCMAKE_C_FLAGS="-fPIC"
+endif
+
+ifeq ($(STATIC),ON)
+  # Do not use -DBoost_USE_STATIC_LIBS=ON; it messes up -static in alpine/musl
+  CMAKE_STATIC=-DBUILD_SHARED=OFF
 endif
 
 # use cmake from above if is set, otherwise cmake
@@ -195,7 +202,7 @@ $(BUILD_DIR)/Makefile: RegEx CMakeLists.txt
 	@echo
 	$(eval STD_REGEX := $(shell 3rdParty/RegEx/OMSRegEx$(EEXT)))
 	$(MKDIR) $(BUILD_DIR)
-	cd $(BUILD_DIR) && $(CMAKE) $(CMAKE_TARGET) ../.. -DABI=$(ABI) -DSTD_REGEX=$(STD_REGEX) -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DOMSYSIDENT:BOOL=$(OMSYSIDENT) -DOMTLM:BOOL=$(OMTLM) -DASAN:BOOL=$(ASAN) -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) $(CMAKE_BOOST_ROOT) $(CMAKE_INSTALL_PREFIX) $(HOST_SHORT) $(EXTRA_CMAKE)
+	cd $(BUILD_DIR) && $(CMAKE) $(CMAKE_TARGET) ../.. -DABI=$(ABI) -DSTD_REGEX=$(STD_REGEX) -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DOMSYSIDENT:BOOL=$(OMSYSIDENT) -DOMTLM:BOOL=$(OMTLM) -DASAN:BOOL=$(ASAN) -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) $(CMAKE_BOOST_ROOT) $(CMAKE_INSTALL_PREFIX) $(HOST_SHORT) $(EXTRA_CMAKE) $(CMAKE_STATIC)
 
 config-fmil: 3rdParty/FMIL/$(INSTALL_DIR)/lib/libfmilib.a
 3rdParty/FMIL/$(INSTALL_DIR)/lib/libfmilib.a: 3rdParty/FMIL/$(BUILD_DIR)/Makefile
