@@ -1526,7 +1526,7 @@ oms_status_enu_t oms::System::getBoolean(const ComRef& cref, bool& value)
     }
   }
 
-  return oms_status_error;
+  return logError_UnknownSignal(getFullCref() + cref);
 }
 
 oms_status_enu_t oms::System::getInteger(const ComRef& cref, int& value)
@@ -1558,7 +1558,7 @@ oms_status_enu_t oms::System::getInteger(const ComRef& cref, int& value)
     }
   }
 
-  return oms_status_error;
+  return logError_UnknownSignal(getFullCref() + cref);
 }
 
 oms_status_enu_t oms::System::getReal(const ComRef& cref, double& value)
@@ -1590,7 +1590,7 @@ oms_status_enu_t oms::System::getReal(const ComRef& cref, double& value)
     }
   }
 
-  return oms_status_error;
+  return logError_UnknownSignal(getFullCref() + cref);
 }
 
 oms_status_enu_t oms::System::setBoolean(const ComRef& cref, bool value)

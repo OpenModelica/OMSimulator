@@ -572,7 +572,7 @@ oms_status_enu_t oms::ComponentFMUCS::getBoolean(const ComRef& cref, bool& value
   }
 
   if (!fmu || j < 0)
-    return oms_status_error;
+    return logError_UnknownSignal(getFullCref() + cref);
 
   fmi2_value_reference_t vr = allVariables[j].getValueReference();
   return getBoolean(vr, value);
@@ -602,7 +602,7 @@ oms_status_enu_t oms::ComponentFMUCS::getInteger(const ComRef& cref, int& value)
   }
 
   if (!fmu || j < 0)
-    return oms_status_error;
+    return logError_UnknownSignal(getFullCref() + cref);
 
   fmi2_value_reference_t vr = allVariables[j].getValueReference();
   return getInteger(vr, value);
@@ -637,7 +637,7 @@ oms_status_enu_t oms::ComponentFMUCS::getReal(const ComRef& cref, double& value)
   }
 
   if (!fmu || j < 0)
-    return oms_status_error;
+    return logError_UnknownSignal(getFullCref() + cref);
 
   fmi2_value_reference_t vr = allVariables[j].getValueReference();
   return getReal(vr, value);
@@ -657,7 +657,7 @@ oms_status_enu_t oms::ComponentFMUCS::getRealOutputDerivative(const ComRef& cref
   }
 
   if (!fmu || j < 0)
-    return oms_status_error;
+    return logError_UnknownSignal(getFullCref() + cref);
 
   fmi2_value_reference_t vr = allVariables[j].getValueReference();
   fmi2_integer_t order = getFMUInfo()->getMaxOutputDerivativeOrder();
