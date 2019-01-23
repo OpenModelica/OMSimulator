@@ -36,10 +36,7 @@ pipeline {
             sh '''
             # No so-files should ever exist in a bin/ folder
             ! ls install/linux/bin/*.so 1> /dev/null 2>&1
-            (cd install/linux && tar czf "../../OMSimulator-linux-amd64-`git describe`.tar.gz" *)
             '''
-
-            archiveArtifacts "OMSimulator-linux-amd64-*.tar.gz"
 
             partest()
 
@@ -119,6 +116,28 @@ pipeline {
           }
           steps {
             buildOMS()
+          }
+        }
+        stage('alpine-static') {
+          agent {
+            dockerfile {
+              additionalBuildArgs '--pull'
+              dir '.CI/alpine'
+              label 'linux'
+            }
+          }
+          environment {
+            OMSFLAGS = "CERES=OFF OMSYSIDENT=OFF OMTLM=OFF STATIC=ON"
+          }
+          steps {
+            buildOMS()
+            sh '''
+            # No so-files should ever exist in a bin/ folder
+            ! ls install/linux/bin/*.so 1> /dev/null 2>&1
+            (cd install/linux && tar czf "../../OMSimulator-linux-amd64-`git describe`.tar.gz" *)
+            '''
+
+            archiveArtifacts "OMSimulator-linux-amd64-*.tar.gz"
           }
         }
         stage('linux32') {
@@ -455,6 +474,6 @@ void buildOMS() {
   git fetch --tags
   make config-3rdParty ${env.CC ? "CC=" + env.CC : ""} ${env.CXX ? "CXX=" + env.CXX : ""} ${env.OMSFLAGS ?: ""} -j${nproc}
   make config-OMSimulator -j${nproc} ${env.ASAN ? "ASAN=ON" : ""} ${env.OMSFLAGS ?: ""}
-  make OMSimulator -j${nproc} ${env.ASAN ? "DISABLE_RUN_OMSIMULATOR_VERSION=1" : ""}
+  make OMSimulator -j${nproc} ${env.ASAN ? "DISABLE_RUN_OMSIMULATOR_VERSION=1" : ""} ${env.OMSFLAGS ?: ""}
   """
 }
