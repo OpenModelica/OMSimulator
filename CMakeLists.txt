@@ -162,6 +162,7 @@ ENDIF()
 ##########################
 # Configuration for OMTLMSimulatorLib
 option(OMTLM "Enable the OMTLMSimulator module." ON)
+option(BUILD_SHARED "Build and link using shared libraries." ON)
 IF(OMTLM)
 set(OMTLMSIMULATOR_INCLUDEDIR ${PROJECT_SOURCE_DIR}/OMTLMSimulator/common)
 set(OMTLMSIMULATORLIB_INCLUDEDIR ${PROJECT_SOURCE_DIR}/OMTLMSimulator/common/OMTLMSimulatorLib)

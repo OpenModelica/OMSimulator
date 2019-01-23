@@ -143,7 +143,7 @@ IF (WIN32 AND MSVC)
 ENDIF ()
 
 target_link_libraries(OMSimulatorLib fmilib sundials_kinsol sundials_cvode sundials_nvecserial minizip ${LIB_ATOMIC} ${Boost_LIBRARIES} ${OMTLM_LINKFLAGS} ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
-target_link_libraries(OMSimulatorLib_static fmilib sundials_kinsol sundials_cvode sundials_nvecserial minizip ${LIB_ATOMIC} ${Boost_LIBRARIES} ${OMTLM_LINKFLAGS} ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(OMSimulatorLib_static fmilib sundials_kinsol sundials_cvode sundials_nvecserial minizip ${CMAKE_DL_LIBS} ${LIB_ATOMIC} ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} ${OMTLM_LINKFLAGS})
 IF (WIN32 AND MINGW)
   target_link_libraries(OMSimulatorLib shlwapi)
   target_link_libraries(OMSimulatorLib_static shlwapi)
