@@ -689,7 +689,7 @@ oms_status_enu_t oms::ComponentFMUCS::setRealInputDerivative(const ComRef& cref,
   }
 
   if (!fmu || j < 0)
-    return oms_status_error;
+    return logError_UnknownSignal(getFullCref() + cref);
 
   fmi2_value_reference_t vr = allVariables[j].getValueReference();
   if (order > 0)
@@ -715,7 +715,7 @@ oms_status_enu_t oms::ComponentFMUCS::setBoolean(const ComRef& cref, bool value)
   }
 
   if (!fmu || j < 0)
-    return oms_status_error;
+    return logError_UnknownSignal(getFullCref() + cref);
 
   if (oms_modelState_virgin == getModel()->getModelState())
     booleanStartValues[allVariables[j].getCref()] = value;
@@ -744,7 +744,7 @@ oms_status_enu_t oms::ComponentFMUCS::setInteger(const ComRef& cref, int value)
   }
 
   if (!fmu || j < 0)
-    return oms_status_error;
+    return logError_UnknownSignal(getFullCref() + cref);
 
   if (oms_modelState_virgin == getModel()->getModelState())
     integerStartValues[allVariables[j].getCref()] = value;
@@ -772,7 +772,7 @@ oms_status_enu_t oms::ComponentFMUCS::setReal(const ComRef& cref, double value)
   }
 
   if (!fmu || j < 0)
-    return oms_status_error;
+    return logError_UnknownSignal(getFullCref() + cref);
 
   if (getModel()->validState(oms_modelState_virgin|oms_modelState_enterInstantiation|oms_modelState_instantiated))
     if (allVariables[j].isCalculated() || allVariables[j].isIndependent())
