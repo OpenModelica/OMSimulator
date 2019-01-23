@@ -128,6 +128,9 @@ else
   ifeq (MINGW,$(findstring MINGW,$(detected_OS)))
     CMAKE_TARGET=-G "Unix Makefiles" -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_RC_COMPILER=$(CROSS_TRIPLE)-windres
   endif
+  ifeq ($(detected_OS),Darwin)
+    EXTRA_CMAKE+=-DCMAKE_INSTALL_NAME_TOOL=$(CROSS_TRIPLE)-install_name_tool
+  endif
   DISABLE_RUN_OMSIMULATOR_VERSION ?= 1
 endif
 
