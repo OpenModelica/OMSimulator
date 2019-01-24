@@ -55,6 +55,7 @@ namespace oms
     static bool isValidIdent(const std::string& ident);
     bool isValidIdent() const;
     bool isEmpty() const;
+    bool isRootOf(ComRef child) const;
 
     ComRef front() const;
     ComRef pop_front();

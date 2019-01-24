@@ -491,7 +491,7 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node)
         connectors.back() = oms::Connector::NewConnector(*itConnectors);
         if (connectors.back())
         {
-          exportConnectors[getFullCref() + connectors.back()->getName()] = true;
+          exportConnectors[connectors.back()->getName()] = true;
           connectors.push_back(NULL);
         }
         else
@@ -1388,6 +1388,7 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
     auto component = components.find(front);
     if (component != components.end())
     {
+      logInfo("Delete " + std::string(front));
       deleteAllConectionsTo(front);
       delete component->second;
       components.erase(component);
@@ -1397,7 +1398,8 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
     for (int i=0; i<connectors.size()-1; ++i)
       if (connectors[i]->getName() == front)
       {
-        exportConnectors.erase(getFullCref() + front);
+        deleteAllConectionsTo(front);
+        exportConnectors.erase(front);
         delete connectors[i];
         connectors.pop_back();   // last element is always NULL
         connectors[i] = connectors.back();
