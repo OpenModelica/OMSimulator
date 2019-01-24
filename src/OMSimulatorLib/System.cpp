@@ -36,6 +36,7 @@
 #include "ComponentFMUME.h"
 #include "ComponentTable.h"
 #include "ExternalModel.h"
+#include "Flags.h"
 #include "Model.h"
 #include "ResultWriter.h"
 #include "ssd/Tags.h"
@@ -1722,7 +1723,10 @@ oms_status_enu_t oms::System::importFromSSD_ConnectionGeometry(const pugi::xml_n
 
 oms_status_enu_t oms::System::registerSignalsForResultFile(ResultWriter& resultFile)
 {
-  clock_id = resultFile.addSignal(std::string(getFullCref() + ComRef("$wallTime")), "wall-clock time [s]", SignalType_REAL);
+  if (Flags::WallTime())
+    clock_id = resultFile.addSignal(std::string(getFullCref() + ComRef("$wallTime")), "wall-clock time [s]", SignalType_REAL);
+  else
+    clock_id = 0;
 
   for (const auto& component : components)
     if (oms_status_ok != component.second->registerSignalsForResultFile(resultFile))
@@ -1764,9 +1768,12 @@ oms_status_enu_t oms::System::registerSignalsForResultFile(ResultWriter& resultF
 
 oms_status_enu_t oms::System::updateSignals(ResultWriter& resultFile)
 {
-  SignalValue_t wallTime;
-  wallTime.realValue = clock.getElapsedWallTime();
-  resultFile.updateSignal(clock_id, wallTime);
+  if (clock_id)
+  {
+    SignalValue_t wallTime;
+    wallTime.realValue = clock.getElapsedWallTime();
+    resultFile.updateSignal(clock_id, wallTime);
+  }
 
   for (const auto& component : components)
     if (oms_status_ok != component.second->updateSignals(resultFile))
