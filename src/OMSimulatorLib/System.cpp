@@ -1804,6 +1804,26 @@ oms_status_enu_t oms::System::updateSignals(ResultWriter& resultFile)
 
 oms_status_enu_t oms::System::addSignalsToResults(const char* regex)
 {
+  try
+  {
+    oms_regex exp(regex);
+    for (auto& x: exportConnectors)
+    {
+      if (x.second)
+        continue;
+
+      if (regex_match(std::string(x.first), exp))
+      {
+        //logInfo("added \"" + std::string(x.first) + "\" to results");
+        x.second = true;
+      }
+    }
+  }
+  catch (std::regex_error& e)
+  {
+    return logError("invalid regular expression");
+  }
+
   for (const auto& component : components)
     if (oms_status_ok != component.second->addSignalsToResults(regex))
       return oms_status_error;
@@ -1812,24 +1832,31 @@ oms_status_enu_t oms::System::addSignalsToResults(const char* regex)
     if (oms_status_ok != subsystem.second->addSignalsToResults(regex))
       return oms_status_error;
 
-  oms_regex exp(regex);
-  for (auto& x: exportConnectors)
-  {
-    if (x.second)
-      continue;
-
-    if (regex_match(std::string(x.first), exp))
-    {
-      //logInfo("added \"" + std::string(x.first) + "\" to results");
-      x.second = true;
-    }
-  }
-
   return oms_status_ok;
 }
 
 oms_status_enu_t oms::System::removeSignalsFromResults(const char* regex)
 {
+  try
+  {
+    oms_regex exp(regex);
+    for (auto& x: exportConnectors)
+    {
+      if (!x.second)
+        continue;
+
+      if (regex_match(std::string(x.first), exp))
+      {
+        //logInfo("removed \"" + std::string(x.first) + "\" from results");
+        x.second = false;
+      }
+    }
+  }
+  catch (std::regex_error& e)
+  {
+    return logError("invalid regular expression");
+  }
+
   for (const auto& component : components)
     if (oms_status_ok != component.second->removeSignalsFromResults(regex))
       return oms_status_error;
@@ -1837,19 +1864,6 @@ oms_status_enu_t oms::System::removeSignalsFromResults(const char* regex)
   for (const auto& subsystem : subsystems)
     if (oms_status_ok != subsystem.second->removeSignalsFromResults(regex))
       return oms_status_error;
-
-  oms_regex exp(regex);
-  for (auto& x: exportConnectors)
-  {
-    if (!x.second)
-      continue;
-
-    if (regex_match(std::string(x.first), exp))
-    {
-      //logInfo("removed \"" + std::string(x.first) + "\" from results");
-      x.second = false;
-    }
-  }
 
   return oms_status_ok;
 }
