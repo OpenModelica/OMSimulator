@@ -92,6 +92,17 @@ bool oms::ComRef::isEmpty() const
   return (cref[0] == '\0');
 }
 
+bool oms::ComRef::isRootOf(ComRef child) const
+{
+  ComRef root(*this);
+  while (!root.isEmpty())
+  {
+    if (child.pop_front() != root.pop_front())
+      return false;
+  }
+  return true;
+}
+
 oms::ComRef oms::ComRef::front() const
 {
   for (int i=0; cref[i]; ++i)
