@@ -32,11 +32,12 @@
 #include "SystemTLM.h"
 
 #include "Component.h"
+#include "Flags.h"
 #include "Model.h"
-#include "SystemWC.h"
-#include "Types.h"
 #include "OMTLMSimulatorLib/OMTLMSimulatorLib.h"
 #include "ssd/Tags.h"
+#include "SystemWC.h"
+#include "Types.h"
 
 #include <thread>
 #include <algorithm>
@@ -788,7 +789,13 @@ void oms::SystemTLM::sendValueToLogger(int varId, double time, double value)
 
 oms_status_enu_t oms::SystemTLM::registerSignalsForResultFile(ResultWriter& resultFile)
 {
-  for(auto& system : getSubSystems()) {
+  if (Flags::WallTime())
+    clock_id = resultFile.addSignal(std::string(getFullCref() + ComRef("$wallTime")), "wall-clock time [s]", SignalType_REAL);
+  else
+    clock_id = 0;
+
+  for(auto& system : getSubSystems())
+  {
     TLMBusConnector** tlmbuses = system.second->getTLMBusConnectors();
     for(int i=0; tlmbuses[i]; ++i)
     {
@@ -901,10 +908,18 @@ void oms::SystemTLM::sendValuesToLogger(oms::System *system, double time)
 
 oms_status_enu_t oms::SystemTLM::updateSignals(oms::ResultWriter &resultFile)
 {
-  if(logBuffer.size() == 0)
+  if (logBuffer.size() == 0)
     return oms_status_ok;
 
-  int i=2;  //Start on 2 since two first variables are time and walltime
+  int i = (clock_id) ? 2 : 1;  // TODO: see #596
+
+  if (clock_id)
+  {
+    SignalValue_t wallTime;
+    wallTime.realValue = clock.getElapsedWallTime();
+    resultFile.updateSignal(clock_id, wallTime);
+  }
+
   for(auto& varbuffer : logBuffer) {
     auto& databuffer = varbuffer.second;
     double x1,x2,t1,t2;

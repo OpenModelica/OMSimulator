@@ -60,6 +60,7 @@ namespace oms
     static bool InputDerivatives() {return GetInstance().inputDerivatives;}
     static bool ProgressBar() {return GetInstance().progressBar;}
     static bool SuppressPath() {return GetInstance().suppressPath;}
+    static bool WallTime() {return GetInstance().wallTime;}
     static double StartTime() {return GetInstance().startTime;}
     static double StopTime() {return GetInstance().stopTime;}
     static double Timeout() {return GetInstance().timeout;}
@@ -69,14 +70,13 @@ namespace oms
     static oms_solver_enu_t MasterAlgorithm() {return GetInstance().masterAlgorithm;}
     static unsigned int Intervals() {return GetInstance().intervals;}
 
-    static void SuppressPath(bool value) {GetInstance().suppressPath = value;}
-
   private:
     bool ignoreInitialUnknowns;
     bool suppressPath;
     bool progressBar;
     bool inputDerivatives;
     bool defaultModeIsCS;
+    bool wallTime;
     unsigned int intervals;
     double startTime;
     double stopTime;
@@ -128,6 +128,7 @@ namespace oms
       {"--timeout", "", "Specifies the maximum allowed time in seconds for running a simulation (0 disables)", re_number, Flags::Timeout, false},
       {"--tolerance", "", "Specifies the relative tolerance", re_double, Flags::Tolerance, false},
       {"--version", "-v", "Displays version information", re_void, Flags::Version, false},
+      {"--wallTime", "", "Add wall time information for to the result file", re_bool, Flags::WallTime, false},
       {"--workingDir", "", "Specifies the working directory", re_default, Flags::WorkingDir, false}
     };
 
@@ -151,6 +152,7 @@ namespace oms
     static oms_status_enu_t Timeout(const std::string& value);
     static oms_status_enu_t Tolerance(const std::string& value);
     static oms_status_enu_t Version(const std::string& value);
+    static oms_status_enu_t WallTime(const std::string& value);
     static oms_status_enu_t WorkingDir(const std::string& value);
   };
 }

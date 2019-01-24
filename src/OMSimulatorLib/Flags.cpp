@@ -66,6 +66,7 @@ void oms::Flags::setDefaults()
   progressBar = false;
   inputDerivatives = false;
   defaultModeIsCS = false;
+  wallTime = false;
   intervals = 100;
   startTime = 0.0;
   stopTime = 1.0;
@@ -285,7 +286,7 @@ oms_status_enu_t oms::Flags::StopTime(const std::string& value)
 
 oms_status_enu_t oms::Flags::SuppressPath(const std::string& value)
 {
-  oms::Flags::SuppressPath(value == "true");
+  GetInstance().suppressPath = (value == "true");
   return oms_status_ok;
 }
 
@@ -316,5 +317,11 @@ oms_status_enu_t oms::Flags::Version(const std::string& value)
 oms_status_enu_t oms::Flags::WorkingDir(const std::string& value)
 {
   oms_setWorkingDirectory(value.c_str());
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Flags::WallTime(const std::string& value)
+{
+  GetInstance().wallTime = (value == "true");
   return oms_status_ok;
 }
