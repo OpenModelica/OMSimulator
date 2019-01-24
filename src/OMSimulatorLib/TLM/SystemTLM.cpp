@@ -439,15 +439,15 @@ oms_status_enu_t oms::SystemTLM::updateInitialValues(const oms::ComRef cref)
     if(bus->getDimensions() == 1 && bus->getCausality() == oms_causality_input) {
       oms_tlm_sigrefs_signal_t tlmrefs;
       double value;
-      system->getReal(bus->getConnector(tlmrefs.y), value);
+      bus->getReal(tlmrefs.y, value);
       plugin->SetInitialValue(bus->getId(), value);
     }
     else if(bus->getDimensions() == 1 && bus->getCausality() == oms_causality_bidir &&
             bus->getInterpolation() == oms_tlm_coarse_grained) {
       oms_tlm_sigrefs_1d_cg_t tlmrefs;
       double effort,flow;
-      system->getReal(bus->getConnector(tlmrefs.c), effort);
-      system->getReal(bus->getConnector(tlmrefs.v), flow);
+      bus->getReal(tlmrefs.c, effort);
+      bus->getReal(tlmrefs.v, flow);
       plugin->SetInitialForce1D(bus->getId(), effort);
       plugin->SetInitialFlow1D(bus->getId(), flow);
     }
@@ -455,8 +455,8 @@ oms_status_enu_t oms::SystemTLM::updateInitialValues(const oms::ComRef cref)
             bus->getInterpolation() == oms_tlm_fine_grained) {
       oms_tlm_sigrefs_1d_fg_t tlmrefs;
       double effort,flow;
-      system->getReal(bus->getConnector(tlmrefs.c[0]), effort);
-      system->getReal(bus->getConnector(tlmrefs.v), flow);
+      bus->getReal(tlmrefs.c[0], effort);
+      bus->getReal(tlmrefs.v, flow);
       plugin->SetInitialForce1D(bus->getId(), effort);
       plugin->SetInitialFlow1D(bus->getId(), flow);
     }
@@ -465,10 +465,10 @@ oms_status_enu_t oms::SystemTLM::updateInitialValues(const oms::ComRef cref)
       oms_tlm_sigrefs_3d_t tlmrefs;
       std::vector<double> effort(6,0);
       std::vector<double> flow(6,0);
-      system->getReals(bus->getConnectors(tlmrefs.f), effort);
+      bus->getReals(tlmrefs.f, effort);
       std::vector<int> flowrefs = tlmrefs.v;
       flowrefs.insert(flowrefs.end(), tlmrefs.w.begin(), tlmrefs.w.end());
-      system->getReals(bus->getConnectors(flowrefs), flow);
+      bus->getReals(flowrefs, flow);
       plugin->SetInitialForce3D(bus->getId(), effort[0], effort[1], effort[2], effort[3], effort[4], effort[5]);
       plugin->SetInitialFlow3D(bus->getId(), flow[0], flow[1], flow[2], flow[3], flow[4], flow[5]);
     }
@@ -477,10 +477,10 @@ oms_status_enu_t oms::SystemTLM::updateInitialValues(const oms::ComRef cref)
       oms_tlm_sigrefs_3d_cg_t tlmrefs;
       std::vector<double> effort(6,0);
       std::vector<double> flow(6,0);
-      system->getReals(bus->getConnectors(tlmrefs.c), effort);
+      bus->getReals(tlmrefs.c, effort);
       std::vector<int> flowrefs = tlmrefs.v;
       flowrefs.insert(flowrefs.end(), tlmrefs.w.begin(), tlmrefs.w.end());
-      system->getReals(bus->getConnectors(flowrefs), flow);
+      bus->getReals(flowrefs, flow);
       plugin->SetInitialForce3D(bus->getId(), effort[0], effort[1], effort[2], effort[3], effort[4], effort[5]);
       plugin->SetInitialFlow3D(bus->getId(), flow[0], flow[1], flow[2], flow[3], flow[4], flow[5]);
     }
@@ -489,10 +489,10 @@ oms_status_enu_t oms::SystemTLM::updateInitialValues(const oms::ComRef cref)
       oms_tlm_sigrefs_3d_fg_t tlmrefs;
       std::vector<double> effort(6,0);
       std::vector<double> flow(6,0);
-      system->getReals(bus->getConnectors(tlmrefs.c[0]), effort);
+      bus->getReals(tlmrefs.c[0], effort);
       std::vector<int> flowrefs = tlmrefs.v;
       flowrefs.insert(flowrefs.end(), tlmrefs.w.begin(), tlmrefs.w.end());
-      system->getReals(bus->getConnectors(flowrefs), flow);
+      bus->getReals(flowrefs, flow);
       plugin->SetInitialForce3D(bus->getId(), effort[0], effort[1], effort[2], effort[3], effort[4], effort[5]);
       plugin->SetInitialFlow3D(bus->getId(), flow[0], flow[1], flow[2], flow[3], flow[4], flow[5]);
     }
@@ -542,7 +542,7 @@ void oms::SystemTLM::writeToSockets(SystemWC *system, double time, Component* co
     if(bus->getDimensions() == 1 && bus->getCausality() == oms_causality_output) {
       oms_tlm_sigrefs_signal_t tlmrefs;
       double value;
-      system->getReal(bus->getConnector(tlmrefs.y), value);
+      bus->getReal(tlmrefs.y, value);
       plugin->SetValueSignal(id, time, value);
       sendValueToLogger(busLogIds[bus], time, value);
     }
@@ -572,10 +572,10 @@ void oms::SystemTLM::writeToSockets(SystemWC *system, double time, Component* co
       std::vector<double> w(3,0);
       std::vector<double> f(6,0);
 
-      system->getReals(bus->getConnectors(tlmrefs.x), x);
-      system->getReals(bus->getConnectors(tlmrefs.A), A);
-      system->getReals(bus->getConnectors(tlmrefs.v), v);
-      system->getReals(bus->getConnectors(tlmrefs.w), w);
+      bus->getReals(tlmrefs.x, x);
+      bus->getReals(tlmrefs.A, A);
+      bus->getReals(tlmrefs.v, v);
+      bus->getReals(tlmrefs.w, w);
 
       //Important: OMTLMSimulator assumes that GetForce is called
       //before SetMotion, in order to calculate the wave variable
