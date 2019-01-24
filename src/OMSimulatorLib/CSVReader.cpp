@@ -44,7 +44,7 @@ oms::CSVReader::CSVReader(const char* filename)
 
   if (file.fail())
   {
-    logError("MatReader::MatReader failed opening file \"" + std::string(filename) + "\"");
+    logError("CSVReader::CSVReader failed opening file \"" + std::string(filename) + "\"");
     return;
   }
 
@@ -77,7 +77,7 @@ oms::CSVReader::CSVReader(const char* filename)
   for(char& c : line)
   {
     if (!quoteSign && '"' == c)
-    quoteSign = true;
+      quoteSign = true;
     else if (quoteSign && '"' == c)
     {
       quoteSign = false;
@@ -110,6 +110,7 @@ oms::CSVReader::CSVReader(const char* filename)
   int row=0;
   int col=0;
   while (std::getline(file, line))
+  {
     if (!line.empty())
     {
       quoteSign = false;
@@ -152,6 +153,7 @@ oms::CSVReader::CSVReader(const char* filename)
       }
       row++;
     }
+  }
 }
 
 oms::CSVReader::~CSVReader()
