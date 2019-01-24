@@ -743,7 +743,11 @@ oms_status_enu_t oms::ComponentFMUME::registerSignalsForResultFile(ResultWriter&
 {
   resultFileMapping.clear();
 
-  clock_id = resultFile.addSignal(std::string(getFullCref() + ComRef("$wallTime")), "wall-clock time [s]", SignalType_REAL);
+  if (Flags::WallTime())
+    clock_id = resultFile.addSignal(std::string(getFullCref() + ComRef("$wallTime")), "wall-clock time [s]", SignalType_REAL);
+  else
+    clock_id = 0;
+
   for (unsigned int i=0; i<allVariables.size(); ++i)
   {
     if (!exportVariables[i])
@@ -801,9 +805,13 @@ oms_status_enu_t oms::ComponentFMUME::registerSignalsForResultFile(ResultWriter&
 oms_status_enu_t oms::ComponentFMUME::updateSignals(ResultWriter& resultWriter)
 {
   CallClock callClock(clock);
-  SignalValue_t wallTime;
-  wallTime.realValue = clock.getElapsedWallTime();
-  resultWriter.updateSignal(clock_id, wallTime);
+
+  if (clock_id)
+  {
+    SignalValue_t wallTime;
+    wallTime.realValue = clock.getElapsedWallTime();
+    resultWriter.updateSignal(clock_id, wallTime);
+  }
 
   for (auto const &it : resultFileMapping)
   {

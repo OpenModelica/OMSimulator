@@ -574,7 +574,6 @@ oms_status_enu_t oms::Model::registerSignalsForResultFile()
   if (!resultFile)
     return oms_status_ok;
 
-  clock_id = resultFile->addSignal("$wallTime", "wall-clock time [s]", SignalType_REAL);
   if (system)
     if (oms_status_ok != system->registerSignalsForResultFile(*resultFile))
       return oms_status_error;
@@ -588,9 +587,6 @@ oms_status_enu_t oms::Model::emit(double time, bool force)
   if (!force && time < lastEmit + loggingInterval)
     return oms_status_ok;
 
-  SignalValue_t wallTime;
-  wallTime.realValue = clock.getElapsedWallTime();
-  resultFile->updateSignal(clock_id, wallTime);
   if (system)
     if (oms_status_ok != system->updateSignals(*resultFile))
       return oms_status_error;

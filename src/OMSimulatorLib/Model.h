@@ -129,7 +129,6 @@ namespace oms
     int bufferSize = 10;
     std::string resultFilename;             ///< default <name>_res.mat
     Clock clock;
-    unsigned int clock_id;
 
     bool cancelSim;
   };
