@@ -155,14 +155,13 @@ oms_status_enu_t oms_delete(const char* cref)
   oms::ComRef tail(cref);
   oms::ComRef front = tail.pop_front();
 
+  if (tail.isEmpty())
+    return oms::Scope::GetInstance().deleteModel(front);
+
   oms::Model* model = oms::Scope::GetInstance().getModel(front);
   if (!model)
     return logError_ModelNotInScope(front);
-
-  if (tail.isEmpty())
-    return oms::Scope::GetInstance().deleteModel(front);
-  else
-    return model->delete_(tail);
+  return model->delete_(tail);
 }
 
 oms_status_enu_t oms_export(const char* cref_, const char* filename)
