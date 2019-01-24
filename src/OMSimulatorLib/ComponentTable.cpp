@@ -92,7 +92,7 @@ oms::Component* oms::ComponentTable::NewComponent(const oms::ComRef& cref, oms::
   int size = 1 + component->resultReader->getAllSignals().size();
   for (auto const &signal : component->resultReader->getAllSignals())
   {
-    component->exportSeries[component->getFullCref() + ComRef(signal)] = true;
+    component->exportSeries[ComRef(signal)] = true;
     component->connectors.back() = new Connector(oms_causality_output, oms_signal_type_real, ComRef(signal), i++/(double)size);
     component->connectors.push_back(NULL);
   }
@@ -123,6 +123,9 @@ oms::Component* oms::ComponentTable::NewComponent(const pugi::xml_node& node, om
       delete connector;
   component->connectors.clear();
 
+  for (auto const &signal : component->resultReader->getAllSignals())
+    component->exportSeries[component->getFullCref() + ComRef(signal)] = false;
+
   for(pugi::xml_node_iterator it = node.begin(); it != node.end(); ++it)
   {
     std::string name = it->name();
@@ -130,7 +133,10 @@ oms::Component* oms::ComponentTable::NewComponent(const pugi::xml_node& node, om
     {
       // import connectors
       for(pugi::xml_node_iterator itConnectors = (*it).begin(); itConnectors != (*it).end(); ++itConnectors)
+      {
         component->connectors.push_back(oms::Connector::NewConnector(*itConnectors));
+        component->exportSeries[component->connectors.back()->getName()] = true;
+      }
     }
     else if(name == oms::ssd::ssd_element_geometry)
     {
@@ -213,13 +219,12 @@ oms_status_enu_t oms::ComponentTable::registerSignalsForResultFile(ResultWriter&
 {
   resultFileMapping.clear();
 
-  for (unsigned int i=0; i<resultReader->getAllSignals().size(); ++i)
+  for (unsigned int i=0; i<connectors.size(); ++i)
   {
-    if (!exportSeries[ComRef(resultReader->getAllSignals()[i])])
+    if (!connectors[i] || !exportSeries[connectors[i]->getName()])
       continue;
 
-    std::string name = std::string(getFullCref()) + "." + resultReader->getAllSignals()[i];
-
+    std::string name = std::string(getFullCref() + connectors[i]->getName());
     unsigned int ID = resultFile.addSignal(name, "lookup table", SignalType_REAL);
     resultFileMapping[ID] = i;
   }
@@ -232,7 +237,7 @@ oms_status_enu_t oms::ComponentTable::updateSignals(ResultWriter& resultWriter)
   for (auto const &it : resultFileMapping)
   {
     unsigned int ID = it.first;
-    const std::string& var = resultReader->getAllSignals()[it.second];
+    const ComRef& var = connectors[it.second]->getName();
     SignalValue_t value;
 
     if (oms_status_ok != getReal(var, value.realValue))
@@ -252,10 +257,7 @@ oms_status_enu_t oms::ComponentTable::addSignalsToResults(const char* regex)
       continue;
 
     if (regex_match(std::string(x.first), exp))
-    {
-      //logInfo("added \"" + std::string(x.first) + "\" to results");
       x.second = true;
-    }
   }
 
   return oms_status_ok;
@@ -270,10 +272,7 @@ oms_status_enu_t oms::ComponentTable::removeSignalsFromResults(const char* regex
       continue;
 
     if (regex_match(std::string(x.first), exp))
-    {
-      //logInfo("removed \"" + std::string(x.first) + "\" from results");
       x.second = false;
-    }
   }
 
   return oms_status_ok;
