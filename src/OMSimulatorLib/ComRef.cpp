@@ -30,9 +30,10 @@
  */
 
 #include "ComRef.h"
-#include "Types.h"
-#include "Identifier.h"
 #include <assert.h>
+#include <RegEx.h>
+
+const oms_regex re_ident("^[a-zA-Z][a-zA-Z0-9_]*$");
 
 oms::ComRef::ComRef(const std::string& path)
 {
@@ -78,7 +79,7 @@ oms::ComRef oms::ComRef::operator+(const oms::ComRef& rhs) const
 
 bool oms::ComRef::isValidIdent(const std::string& ident)
 {
-  return oms_regex_match(ident, regex_ident);
+  return oms_regex_match(ident, re_ident);
 }
 
 bool oms::ComRef::isValidIdent() const
