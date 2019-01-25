@@ -33,6 +33,7 @@
 
 #include "Component.h"
 #include "ComponentFMUME.h"
+#include "ComponentTable.h"
 #include "Flags.h"
 #include "Model.h"
 #include "Types.h"
@@ -611,6 +612,26 @@ oms_status_enu_t oms::SystemSC::stepUntil(double stopTime, void (*cb)(const char
 oms_status_enu_t oms::SystemSC::updateInputs(DirectedGraph& graph)
 {
   CallClock callClock(clock);
+
+  if (getModel()->validState(oms_modelState_simulation))
+  {
+    // update time
+    for (const auto& component : getComponents())
+    {
+      switch (component.second->getType())
+      {
+        case oms_component_fmu:
+          if (fmi2_status_ok != fmi2_import_set_time(dynamic_cast<ComponentFMUME*>(component.second)->getFMU(), time))
+            logError_FMUCall("fmi2_import_set_time", dynamic_cast<ComponentFMUME*>(component.second));
+          break;
+        case oms_component_table:
+          dynamic_cast<ComponentTable*>(component.second)->stepUntil(time);
+          break;
+        default:
+          break;
+      }
+    }
+  }
 
   // input := output
   const std::vector< std::vector< std::pair<int, int> > >& sortedConnections = graph.getSortedConnections();
