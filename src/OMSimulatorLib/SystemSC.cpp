@@ -434,9 +434,6 @@ oms_status_enu_t oms::SystemSC::stepUntil(double stopTime, void (*cb)(const char
 {
   CallClock callClock(clock);
 
-  if (0 == fmus.size())
-    return oms_status_ok;
-
   ComRef modelName = this->getModel()->getCref();
   fmi2_status_t fmistatus;
   oms_status_enu_t status;
