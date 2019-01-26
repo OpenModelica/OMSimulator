@@ -158,7 +158,7 @@ bool oms::ResultReader::compareSeries(Series* seriesA, Series* seriesB, double r
     else
       do iB++; while (iB < lengthB-1 && seriesB->time[iB] >= seriesB->time[iB + 1]);
 
-  } while (iA < lengthA-1 && iB < lengthB-1);
+  } while (iA < lengthA && iB < lengthB);
 
   return true;
 }
