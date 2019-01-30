@@ -62,6 +62,7 @@ oms::Flags::~Flags()
 void oms::Flags::setDefaults()
 {
   defaultModeIsCS = false;
+  doubleStep = false;
   ignoreInitialUnknowns = false;
   inputDerivatives = false;
   intervals = 100;
@@ -335,8 +336,15 @@ oms_status_enu_t oms::Flags::WorkingDir(const std::string& value)
   return oms_status_ok;
 }
 
+
 oms_status_enu_t oms::Flags::WallTime(const std::string& value)
 {
   GetInstance().wallTime = (value == "true");
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Flags::DoubleStep(const std::string& value)
+{
+  GetInstance().doubleStep = (value == "true");
   return oms_status_ok;
 }

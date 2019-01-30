@@ -65,6 +65,10 @@ namespace oms
     oms_status_enu_t setSolverMethod(std::string);
     oms_status_enu_t setSolver(oms_solver_enu_t solver) {if (solver > oms_solver_wc_min && solver < oms_solver_wc_max) {solverMethod=solver; return oms_status_ok;} return oms_status_error;}
 
+    oms_status_enu_t getInputAndOutput(DirectedGraph& graph, std::vector<double>& inputVect,std::vector<double>& outputVect,std::map<ComRef, Component*> FMUcomponents);
+    oms_status_enu_t getOutput(DirectedGraph& graph, std::vector<double>& outputVect,std::map<ComRef, Component*> FMUcomponents);
+    oms_status_enu_t updateCanGetFMUs(DirectedGraph& graph,std::map<ComRef, Component*> FMUcomponents);
+    oms_status_enu_t updateCantGetFMUs(DirectedGraph& graph,std::map<ComRef, Component*> FMUcomponents);
     oms_status_enu_t updateInputs(DirectedGraph& graph);
     oms_status_enu_t solveAlgLoop(DirectedGraph& graph, const std::vector< std::pair<int, int> >& SCC);
 
@@ -88,6 +92,9 @@ namespace oms
 
   private:
     double time;
+
+    std::vector<fmi2_import_t*> fmiImportVect;
+    std::vector<fmi2_FMU_state_t> sVect;
 
     double* derBuffer = NULL;
     StepSizeConfiguration stepSizeConfiguration;  ///< Configuration data structure for assc

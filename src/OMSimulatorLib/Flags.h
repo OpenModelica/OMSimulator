@@ -63,6 +63,7 @@ namespace oms
     static bool StripRoot() {return GetInstance().stripRoot;}
     static bool SuppressPath() {return GetInstance().suppressPath;}
     static bool WallTime() {return GetInstance().wallTime;}
+    static bool DoubleStep() {return GetInstance().doubleStep;}
     static double StartTime() {return GetInstance().startTime;}
     static double StopTime() {return GetInstance().stopTime;}
     static double Timeout() {return GetInstance().timeout;}
@@ -81,6 +82,7 @@ namespace oms
     bool stripRoot;
     bool suppressPath;
     bool wallTime;
+    bool doubleStep;
     unsigned int intervals;
     double startTime;
     double stopTime;
@@ -135,7 +137,8 @@ namespace oms
       {"--tolerance", "", "Specifies the relative tolerance", re_double, Flags::Tolerance, false},
       {"--version", "-v", "Displays version information", re_void, Flags::Version, false},
       {"--wallTime", "", "Add wall time information for to the result file", re_bool, Flags::WallTime, false},
-      {"--workingDir", "", "Specifies the working directory", re_default, Flags::WorkingDir, false}
+      {"--workingDir", "", "Specifies the working directory", re_default, Flags::WorkingDir, false},
+      {"--doubleStep", "", "Changes the algorithm inside the WC sytems to double-step when using adaptive step-size", re_bool, Flags::DoubleStep, false}
     };
 
     static oms_status_enu_t ClearAllOptions(const std::string& value);
@@ -162,6 +165,7 @@ namespace oms
     static oms_status_enu_t Version(const std::string& value);
     static oms_status_enu_t WallTime(const std::string& value);
     static oms_status_enu_t WorkingDir(const std::string& value);
+    static oms_status_enu_t DoubleStep(const std::string& value);
   };
 }
 
