@@ -8,14 +8,14 @@ Imports a composite model from a string.
 #LUA#
 .. code-block:: lua
 
-  cref, oms_status_enu_t oms_importString(contents)
+  cref, status = oms_importString(contents)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  cref, oms_status_enu_t oms.importString(contents)
+  cref, status = oms.importString(contents)
 
 #END#
 
