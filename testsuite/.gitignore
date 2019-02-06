@@ -1,0 +1,5 @@
+# generated files
+/*.log
+/difftool/lex.yy.c
+/difftool/lex.yy.o
+/resources/*.fmu

@@ -1,0 +1,816 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  fmiVersion="2.0"
+  modelName="eCS_SW"
+  guid="{e009445a-d0ef-46f3-90e7-686e0f2d0219}"
+  description="Software meant to close the loop between ECS_SW and ECS_HW. A basic but industrially relevant control is implemented in order to enable principal ECS_HW operation"
+  version="2"
+  generationTool="Dymola Version 2018 FD01 (64-bit), 2017-10-11"
+  generationDateAndTime="2018-03-22T13:04:48Z"
+  variableNamingConvention="structured"
+  numberOfEventIndicators="26">
+  <CoSimulation
+    modelIdentifier="eCS_SW"
+    canHandleVariableCommunicationStepSize="true"
+    canInterpolateInputs="true"
+    maxOutputDerivativeOrder="1"
+    canGetAndSetFMUstate="true"
+    canSerializeFMUstate="true"
+    providesDirectionalDerivative="true"/>
+  <UnitDefinitions>
+    <Unit
+      name="s">
+      <BaseUnit s="1"/>
+    </Unit>
+  </UnitDefinitions>
+  <TypeDefinitions>
+    <SimpleType
+      name="Modelica.Blocks.Interfaces.RealInput">
+      <Real/>
+    </SimpleType>
+    <SimpleType
+      name="Modelica.Blocks.Interfaces.RealOutput">
+      <Real/>
+    </SimpleType>
+  </TypeDefinitions>
+  <DefaultExperiment startTime="0.0"
+    stopTime="2.0"
+    tolerance="0.0001"/>
+  <ModelVariables>
+    <!-- Index for next variable = 1 -->
+    <ScalarVariable
+      name="CABIN_TEMP_REQ_POS"
+      valueReference="335544320"
+      causality="output">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealOutput"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 2 -->
+    <ScalarVariable
+      name="CABIN_TEMP_CMD_INH"
+      valueReference="67108865"
+      causality="output"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealOutput"
+        start="1"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 3 -->
+    <ScalarVariable
+      name="DistrA_REQ_POS"
+      valueReference="335544322"
+      causality="output">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealOutput"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 4 -->
+    <ScalarVariable
+      name="DistrA_CMD_INH"
+      valueReference="67108867"
+      causality="output"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealOutput"
+        start="1"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 5 -->
+    <ScalarVariable
+      name="CABIN_FLOW_REQ_POS"
+      valueReference="335544324"
+      causality="output">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealOutput"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 6 -->
+    <ScalarVariable
+      name="CABIN_FLOW_CMD_INH"
+      valueReference="67108869"
+      causality="output"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealOutput"
+        start="1"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 7 -->
+    <ScalarVariable
+      name="PACK_TEMP_REQ_POS"
+      valueReference="335544326"
+      causality="output">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealOutput"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 8 -->
+    <ScalarVariable
+      name="PACK_TEMP_CMD_INH"
+      valueReference="67108871"
+      causality="output"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealOutput"
+        start="1"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 9 -->
+    <ScalarVariable
+      name="EJECTOR_V_CMD"
+      valueReference="335544328"
+      causality="output">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealOutput"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 10 -->
+    <ScalarVariable
+      name="EJECTOR_CMD_INH"
+      valueReference="67108873"
+      causality="output"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealOutput"
+        start="1"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 11 -->
+    <ScalarVariable
+      name="PACK_PRESS_REQ_POS"
+      valueReference="335544330"
+      causality="output">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealOutput"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 12 -->
+    <ScalarVariable
+      name="PACK_PRESS_CMD_INH"
+      valueReference="67108875"
+      causality="output"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealOutput"
+        start="1"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 13 -->
+    <ScalarVariable
+      name="DistrB_V_CMD_OPEN"
+      valueReference="67108876"
+      causality="output"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealOutput"
+        start="1"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 14 -->
+    <ScalarVariable
+      name="DistrB_V_CMD_CLOSE"
+      valueReference="67108877"
+      causality="output"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealOutput"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 15 -->
+    <ScalarVariable
+      name="PRSOV_CMD_OPEN_HOLD"
+      valueReference="67108878"
+      causality="output"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealOutput"
+        start="1"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 16 -->
+    <ScalarVariable
+      name="RAMAIR_V_CMD_CLOSE"
+      valueReference="67108879"
+      causality="output"
+      variability="constant">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealOutput"
+        start="1"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 17 -->
+    <ScalarVariable
+      name="Meas_PACK_TEMP_V_POS_OPEN"
+      valueReference="352321536"
+      causality="input">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 18 -->
+    <ScalarVariable
+      name="Meas_PACK_TEMP_V_POS"
+      valueReference="352321537"
+      causality="input">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        start="-2"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 19 -->
+    <ScalarVariable
+      name="Meas_CABIN_FLOW_V_POS_CLOSED"
+      valueReference="352321538"
+      causality="input">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 20 -->
+    <ScalarVariable
+      name="Meas_CABIN_FLOW_V_POS_OPEN"
+      valueReference="352321539"
+      causality="input">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 21 -->
+    <ScalarVariable
+      name="Meas_CABIN_FLOW_V_POS"
+      valueReference="352321540"
+      causality="input">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        start="-2"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 22 -->
+    <ScalarVariable
+      name="Meas_DistrA_FLOW_V_POS_CLOSED"
+      valueReference="352321541"
+      causality="input">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 23 -->
+    <ScalarVariable
+      name="Meas_DistrA_FLOW_V_POS_OPEN"
+      valueReference="352321542"
+      causality="input">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 24 -->
+    <ScalarVariable
+      name="Meas_CABIN_TEMP_V_POS_CLOSED"
+      valueReference="352321543"
+      causality="input">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 25 -->
+    <ScalarVariable
+      name="Meas_CABIN_TEMP_V_POS_OPEN"
+      valueReference="352321544"
+      causality="input">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 26 -->
+    <ScalarVariable
+      name="Meas_CABIN_TEMP_V_POS"
+      valueReference="352321545"
+      causality="input">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        start="-2"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 27 -->
+    <ScalarVariable
+      name="Meas_COND_LO_DIFF_PRESS"
+      valueReference="352321546"
+      causality="input">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 28 -->
+    <ScalarVariable
+      name="Meas_COND_HIGH_DIFF_PRESS"
+      valueReference="352321547"
+      causality="input">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 29 -->
+    <ScalarVariable
+      name="Meas_OVERPRESS_SWITCH"
+      valueReference="352321548"
+      causality="input">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        start="1"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 30 -->
+    <ScalarVariable
+      name="Meas_PACK_PRESS"
+      valueReference="352321549"
+      description="kPag"
+      causality="input">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        start="50"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 31 -->
+    <ScalarVariable
+      name="Meas_DistrA_FLOW_V_POS"
+      valueReference="352321550"
+      causality="input">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        start="-2"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 32 -->
+    <ScalarVariable
+      name="Meas_PACK_PRESS_V_POS_OPEN"
+      valueReference="352321551"
+      causality="input">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 33 -->
+    <ScalarVariable
+      name="Meas_PACK_PRESS_V_POS"
+      valueReference="352321552"
+      causality="input">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        start="-2"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 34 -->
+    <ScalarVariable
+      name="Meas_EJECTOR_V_POS_CLOSED"
+      valueReference="352321553"
+      causality="input">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 35 -->
+    <ScalarVariable
+      name="Meas_EJECTOR_V_POS_OPEN"
+      valueReference="352321554"
+      causality="input">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 36 -->
+    <ScalarVariable
+      name="Meas_EJECTOR_V_POS"
+      valueReference="352321555"
+      causality="input">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        start="-2"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 37 -->
+    <ScalarVariable
+      name="Meas_PACK_TEMP_V_POS_CLOSED"
+      valueReference="352321556"
+      causality="input">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 38 -->
+    <ScalarVariable
+      name="Meas_COMPR_INLET_TEMP"
+      valueReference="352321557"
+      causality="input">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        start="293"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 39 -->
+    <ScalarVariable
+      name="Meas_DistrA_INLET_OVERTEMP"
+      valueReference="352321558"
+      causality="input">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        start="273"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 40 -->
+    <ScalarVariable
+      name="Meas_CAB_INLET_TEMP"
+      valueReference="352321559"
+      causality="input">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        start="273"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 41 -->
+    <ScalarVariable
+      name="Meas_DistrA_INLET_TEMP"
+      valueReference="352321560"
+      causality="input">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        start="273"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 42 -->
+    <ScalarVariable
+      name="Meas_PACK_TEMP"
+      valueReference="352321561"
+      causality="input">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        start="273"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 43 -->
+    <ScalarVariable
+      name="Meas_CABIN_FLOW_SIGN"
+      valueReference="352321562"
+      causality="input">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        start="0.001"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 44 -->
+    <ScalarVariable
+      name="Meas_CABIN_PRESS"
+      valueReference="352321563"
+      causality="input">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        start="101"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 45 -->
+    <ScalarVariable
+      name="Meas_DisrtA_FLOW"
+      valueReference="352321564"
+      causality="input">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        start="0.001"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 46 -->
+    <ScalarVariable
+      name="Meas_RAMAIR_V_POS_OPEN"
+      valueReference="352321565"
+      causality="input">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 47 -->
+    <ScalarVariable
+      name="Meas_DistrB_V_POS_CLOSED"
+      valueReference="352321566"
+      causality="input">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 48 -->
+    <ScalarVariable
+      name="Meas_DistrB_V_POS_OPEN"
+      valueReference="352321567"
+      causality="input">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 49 -->
+    <ScalarVariable
+      name="Meas_PACK_PRESS_V_POS_CLOSED"
+      valueReference="352321568"
+      causality="input">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 50 -->
+    <ScalarVariable
+      name="Meas_RAMAIR_V_POS_CLOSED"
+      valueReference="352321569"
+      causality="input">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        start="1"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 51 -->
+    <ScalarVariable
+      name="Altitude"
+      valueReference="352321570"
+      description="m"
+      causality="input">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        start="0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 52 -->
+    <ScalarVariable
+      name="Mach"
+      valueReference="352321571"
+      description="-"
+      causality="input">
+      <Real
+        declaredType="Modelica.Blocks.Interfaces.RealInput"
+        start="0.3"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 53 -->
+    <ScalarVariable
+      name="CPUtime"
+      valueReference="3825205264"
+      causality="output">
+      <Real
+        unit="s"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 54 -->
+    <ScalarVariable
+      name="EventCounter"
+      valueReference="3825205265"
+      causality="output">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 55 -->
+    <ScalarVariable
+      name="concealed1"
+      valueReference="33554432">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 56 -->
+    <ScalarVariable
+      name="concealed2"
+      valueReference="587202560">
+      <Real derivative="55"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 57 -->
+    <ScalarVariable
+      name="concealed3"
+      valueReference="33554433">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 58 -->
+    <ScalarVariable
+      name="concealed4"
+      valueReference="587202561">
+      <Real derivative="57"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 59 -->
+    <ScalarVariable
+      name="concealed5"
+      valueReference="33554434">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 60 -->
+    <ScalarVariable
+      name="concealed6"
+      valueReference="587202562">
+      <Real derivative="59"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 61 -->
+    <ScalarVariable
+      name="concealed7"
+      valueReference="33554435">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 62 -->
+    <ScalarVariable
+      name="concealed8"
+      valueReference="587202563">
+      <Real derivative="61"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 63 -->
+    <ScalarVariable
+      name="concealed9"
+      valueReference="33554436">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 64 -->
+    <ScalarVariable
+      name="concealed10"
+      valueReference="587202564">
+      <Real derivative="63"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 65 -->
+    <ScalarVariable
+      name="concealed11"
+      valueReference="33554437">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 66 -->
+    <ScalarVariable
+      name="concealed12"
+      valueReference="587202565">
+      <Real derivative="65"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 67 -->
+    <ScalarVariable
+      name="concealed13"
+      valueReference="33554438">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 68 -->
+    <ScalarVariable
+      name="concealed14"
+      valueReference="587202566">
+      <Real derivative="67"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 69 -->
+    <ScalarVariable
+      name="concealed15"
+      valueReference="33554439">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 70 -->
+    <ScalarVariable
+      name="concealed16"
+      valueReference="587202567">
+      <Real derivative="69"/>
+    </ScalarVariable>
+  </ModelVariables>
+  <ModelStructure>
+    <Outputs>
+      <Unknown index="1"
+        dependencies="40 55"
+        dependenciesKind="fixed fixed"/>
+      <Unknown index="2"
+        dependencies=""
+        dependenciesKind=""/>
+      <Unknown index="3"
+        dependencies="45 61 69"
+        dependenciesKind="fixed fixed fixed"/>
+      <Unknown index="4"
+        dependencies=""
+        dependenciesKind=""/>
+      <Unknown index="5"
+        dependencies="43 63 65"
+        dependenciesKind="fixed fixed fixed"/>
+      <Unknown index="6"
+        dependencies=""
+        dependenciesKind=""/>
+      <Unknown index="7"
+        dependencies="42 57"
+        dependenciesKind="fixed fixed"/>
+      <Unknown index="8"
+        dependencies=""
+        dependenciesKind=""/>
+      <Unknown index="9"
+        dependencies="67"
+        dependenciesKind="fixed"/>
+      <Unknown index="10"
+        dependencies=""
+        dependenciesKind=""/>
+      <Unknown index="11"
+        dependencies="30 59"
+        dependenciesKind="fixed fixed"/>
+      <Unknown index="12"
+        dependencies=""
+        dependenciesKind=""/>
+      <Unknown index="13"
+        dependencies=""
+        dependenciesKind=""/>
+      <Unknown index="14"
+        dependencies=""
+        dependenciesKind=""/>
+      <Unknown index="15"
+        dependencies=""
+        dependenciesKind=""/>
+      <Unknown index="16"
+        dependencies=""
+        dependenciesKind=""/>
+      <Unknown index="53"
+        dependencies=""
+        dependenciesKind=""/>
+      <Unknown index="54"
+        dependencies=""
+        dependenciesKind=""/>
+    </Outputs>
+    <Derivatives>
+      <Unknown index="56"
+        dependencies="40 55"
+        dependenciesKind="fixed fixed"/>
+      <Unknown index="58"
+        dependencies="42 57"
+        dependenciesKind="fixed fixed"/>
+      <Unknown index="60"
+        dependencies="30 59"
+        dependenciesKind="fixed fixed"/>
+      <Unknown index="62"
+        dependencies="45 61 69"
+        dependenciesKind="fixed fixed fixed"/>
+      <Unknown index="64"
+        dependencies="43 63 65"
+        dependenciesKind="fixed fixed fixed"/>
+      <Unknown index="66"
+        dependencies="45 65 69"
+        dependenciesKind="dependent fixed fixed"/>
+      <Unknown index="68"
+        dependencies="51 52 67"
+        dependenciesKind="fixed dependent fixed"/>
+      <Unknown index="70"
+        dependencies="42 69"
+        dependenciesKind="fixed fixed"/>
+    </Derivatives>
+    <InitialUnknowns>
+      <Unknown index="1"
+        dependencies=""
+        dependenciesKind=""/>
+      <Unknown index="2"
+        dependencies=""
+        dependenciesKind=""/>
+      <Unknown index="3"
+        dependencies=""
+        dependenciesKind=""/>
+      <Unknown index="4"
+        dependencies=""
+        dependenciesKind=""/>
+      <Unknown index="5"
+        dependencies=""
+        dependenciesKind=""/>
+      <Unknown index="6"
+        dependencies=""
+        dependenciesKind=""/>
+      <Unknown index="7"
+        dependencies=""
+        dependenciesKind=""/>
+      <Unknown index="8"
+        dependencies=""
+        dependenciesKind=""/>
+      <Unknown index="9"
+        dependencies=""
+        dependenciesKind=""/>
+      <Unknown index="10"
+        dependencies=""
+        dependenciesKind=""/>
+      <Unknown index="11"
+        dependencies=""
+        dependenciesKind=""/>
+      <Unknown index="12"
+        dependencies=""
+        dependenciesKind=""/>
+      <Unknown index="13"
+        dependencies=""
+        dependenciesKind=""/>
+      <Unknown index="14"
+        dependencies=""
+        dependenciesKind=""/>
+      <Unknown index="15"
+        dependencies=""
+        dependenciesKind=""/>
+      <Unknown index="16"
+        dependencies=""
+        dependenciesKind=""/>
+      <Unknown index="53"
+        dependencies=""
+        dependenciesKind=""/>
+      <Unknown index="54"
+        dependencies=""
+        dependenciesKind=""/>
+      <Unknown index="55"
+        dependencies="40"
+        dependenciesKind="dependent"/>
+      <Unknown index="56"
+        dependencies="40"
+        dependenciesKind="dependent"/>
+      <Unknown index="57"
+        dependencies="42"
+        dependenciesKind="dependent"/>
+      <Unknown index="58"
+        dependencies="42"
+        dependenciesKind="dependent"/>
+      <Unknown index="59"
+        dependencies="30"
+        dependenciesKind="dependent"/>
+      <Unknown index="60"
+        dependencies="30"
+        dependenciesKind="dependent"/>
+      <Unknown index="61"
+        dependencies="45"
+        dependenciesKind="dependent"/>
+      <Unknown index="62"
+        dependencies="45"
+        dependenciesKind="dependent"/>
+      <Unknown index="63"
+        dependencies="43"
+        dependenciesKind="dependent"/>
+      <Unknown index="64"
+        dependencies="43"
+        dependenciesKind="dependent"/>
+      <Unknown index="65"
+        dependencies=""
+        dependenciesKind=""/>
+      <Unknown index="66"
+        dependencies="45"
+        dependenciesKind="dependent"/>
+      <Unknown index="67"
+        dependencies=""
+        dependenciesKind=""/>
+      <Unknown index="68"
+        dependencies="51 52"
+        dependenciesKind="dependent dependent"/>
+      <Unknown index="69"
+        dependencies=""
+        dependenciesKind=""/>
+      <Unknown index="70"
+        dependencies="42"
+        dependenciesKind="dependent"/>
+    </InitialUnknowns>
+  </ModelStructure>
+</fmiModelDescription>

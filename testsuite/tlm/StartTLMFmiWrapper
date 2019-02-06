@@ -1,0 +1,59 @@
+#!/bin/bash
+# Hopsan TLM start-up script
+# Start with 6 arguments:
+# 1 XModelName
+# 2 start-time 
+# 3 end-time 
+# 4 max-time-step 
+# 5 server-name:port 
+# 6 Path to FMU file 
+
+# *********************SETUP SIMULATION*********************************************
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$PWD/../../OMTLMSimulator/bin
+
+NAME=$1
+MODELPATH=$6
+
+case $6 in
+  /*) MODELPATH=$6 ;;
+  *) MODELPATH=$PWD/$6 ;;
+esac
+
+MODELDIR=`dirname "$MODELPATH"`
+
+FMIWrapper_Cmd="$PWD/../../install/linux/bin/FMIWrapper $NAME $MODELPATH solver=CVODE -d -v $^"
+
+TLMCONFIGFILE=tlm.config
+
+
+if [ ! -f "$MODELPATH" ] ; then 
+	echo Usage: 
+	echo $0 XModelName start-time end-time max-time-step server-name:port model-file 
+	echo $6
+	pwd
+	exit 1
+fi
+
+mkdir -p $MODELDIR
+cd $MODELDIR
+
+echo Starting an FMIWrapper simulation with input file: $6 >> $NAME.simlog
+echo execution directory is $MODELDIR >> $NAME.simlog
+echo Make sure that: >> $NAME.simlog
+echo time = $2 >> $NAME.simlog
+echo timeEnd = $3 >> $NAME.simlog
+echo MaxTimeStep "<"= $4 >> $NAME.simlog
+echo >> $NAME.simlog
+
+echo Writing caseID $NAME and server name $5 to file $TLMCONFIGFILE >> $NAME.simlog
+echo $1 > $TLMCONFIGFILE
+echo $5 >> $TLMCONFIGFILE
+echo $2 >> $TLMCONFIGFILE
+echo $3 >> $TLMCONFIGFILE
+echo $4 >> $TLMCONFIGFILE
+
+echo Starting FMIWrapper >> $NAME.simlog
+echo $FMIWrapper_Cmd >> $NAME.simlog
+echo DOING THIS: $FMIWrapper_Cmd >> $NAME.simlog
+$FMIWrapper_Cmd
+echo DONE THIS: $FMIWrapper_Cmd >> $NAME.simlog

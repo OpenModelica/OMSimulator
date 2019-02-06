@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  fmiVersion="2.0"
+  modelName="Modelica.Blocks.Nonlinear.Limiter"
+  guid="{83f36145-8a7e-4e5f-86d8-b8c3ddc0971d}"
+  description="Limit the range of a signal"
+  generationTool="OpenModelica Compiler OMCompiler v1.13.0-dev.1067+ga616890f6"
+  generationDateAndTime="2019-02-06T17:40:02Z"
+  variableNamingConvention="structured"
+  numberOfEventIndicators="0">
+  <ModelExchange
+    modelIdentifier="Modelica_Blocks_Nonlinear_Limiter">
+  </ModelExchange>
+  <CoSimulation
+    modelIdentifier="Modelica_Blocks_Nonlinear_Limiter"
+    needsExecutionTool="false"
+    canHandleVariableCommunicationStepSize="true"
+    canInterpolateInputs="false"
+    maxOutputDerivativeOrder="0"
+    canRunAsynchronuously = "false"
+    canBeInstantiatedOnlyOncePerProcess="false"
+    canNotUseMemoryManagementFunctions="false"
+    canGetAndSetFMUstate="false"
+    canSerializeFMUstate="false"
+     />
+  <TypeDefinitions>
+    <SimpleType name="Modelica.Blocks.Types.LimiterHomotopy">
+      <Enumeration>
+        <Item name="NoHomotopy" value="1"/>
+        <Item name="Linear" value="2"/>
+        <Item name="UpperLimit" value="3"/>
+        <Item name="LowerLimit" value="4"/>
+      </Enumeration>
+    </SimpleType>
+  </TypeDefinitions>
+  <LogCategories>
+    <Category name="logEvents" />
+    <Category name="logSingularLinearSystems" />
+    <Category name="logNonlinearSystems" />
+    <Category name="logDynamicStateSelection" />
+    <Category name="logStatusWarning" />
+    <Category name="logStatusDiscard" />
+    <Category name="logStatusError" />
+    <Category name="logStatusFatal" />
+    <Category name="logStatusPending" />
+    <Category name="logAll" />
+    <Category name="logFmi2Call" />
+  </LogCategories>
+  <DefaultExperiment startTime="0.0" stopTime="1.0" tolerance="1e-06"/>
+  <ModelVariables>
+  <!-- Index of variable = "1" -->
+  <ScalarVariable
+    name="u"
+    valueReference="0"
+    description="Connector of Real input signal"
+    variability="continuous"
+    causality="input"
+    >
+    <Real start="0.0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "2" -->
+  <ScalarVariable
+    name="y"
+    valueReference="1"
+    description="Connector of Real output signal"
+    variability="continuous"
+    causality="output"
+    initial="calculated">
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "3" -->
+  <ScalarVariable
+    name="uMax"
+    valueReference="2"
+    description="Upper limits of input signals"
+    variability="fixed"
+    causality="parameter"
+    initial="exact">
+    <Real start="1.0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "4" -->
+  <ScalarVariable
+    name="uMin"
+    valueReference="3"
+    description="Lower limits of input signals"
+    variability="fixed"
+    causality="calculatedParameter"
+    initial="calculated">
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "5" -->
+  <ScalarVariable
+    name="_D_outputAlias_y"
+    valueReference="1"
+    description="Connector of Real output signal"
+    variability="continuous"
+    causality="local"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "6" -->
+  <ScalarVariable
+    name="simplifiedExpr"
+    valueReference="0"
+    description="Simplified expression for homotopy-based initialization"
+    variability="continuous"
+    causality="local"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "7" -->
+  <ScalarVariable
+    name="homotopyType"
+    valueReference="0"
+    description="Simplified model for homotopy-based initialization"
+    variability="fixed"
+    causality="calculatedParameter"
+    initial="calculated">
+    <Enumeration declaredType="Modelica.Blocks.Types.LimiterHomotopy"/>
+  </ScalarVariable>
+  <!-- Index of variable = "8" -->
+  <ScalarVariable
+    name="limitsAtInit"
+    valueReference="0"
+    description="Has no longer an effect and is only kept for backwards compatibility (the implementation uses now the homotopy operator)"
+    variability="fixed"
+    causality="calculatedParameter"
+    initial="calculated">
+    <Boolean/>
+  </ScalarVariable>
+  <!-- Index of variable = "9" -->
+  <ScalarVariable
+    name="strict"
+    valueReference="1"
+    description="= true, if strict limits with noEvent(..)"
+    variability="fixed"
+    causality="calculatedParameter"
+    initial="calculated">
+    <Boolean/>
+  </ScalarVariable>
+  </ModelVariables>
+  <ModelStructure>
+    <Outputs>
+      <Unknown index="2" dependencies="1" dependenciesKind="dependent" />
+    </Outputs>
+  </ModelStructure>
+</fmiModelDescription>
