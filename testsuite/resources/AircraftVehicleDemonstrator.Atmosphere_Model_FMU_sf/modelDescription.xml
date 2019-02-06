@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  fmiVersion="2.0"
+  modelName="Atmosphere_Model_FMU_sf"
+  guid="{f8827204-33c6-49e4-a871-4f99cd4ae27d}" 
+  description="S-function with FMI generated from Simulink model Atmosphere_Model_FMU"
+  author="Unknown"
+  version="1.2"
+  generationTool="Dassault Systemes FMI Kit for Simulink, ver. 2.3.0 (MATLAB 8.9 (R2015b) 13-Aug-2015)"
+  generationDateAndTime="2018-01-10T07:47:40Z"
+  variableNamingConvention="structured"
+  numberOfEventIndicators="0">
+  <CoSimulation
+    modelIdentifier="Atmosphere_Model_FMU_sf"
+	canHandleVariableCommunicationStepSize="true"
+    canInterpolateInputs="true"/>
+  <DefaultExperiment startTime="0.0"
+    stopTime="10.0"
+    stepSize="0.01"/>
+  <ModelVariables>
+    <!-- Index for next variable = 1 -->
+    <ScalarVariable
+      name="Mach"
+      valueReference="1342177280"
+      causality="input">
+      <Real
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 2 -->
+    <ScalarVariable
+      name="Alt"
+      valueReference="1342177281"
+      causality="input">
+      <Real
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 3 -->
+    <ScalarVariable
+      name="Out_U_Wind"
+      valueReference="1073741824"
+      causality="output">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 4 -->
+    <ScalarVariable
+      name="Out_Q_sund"
+      valueReference="1073741825"
+      causality="output">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 5 -->
+    <ScalarVariable
+      name="Out_t_stag"
+      valueReference="1073741826"
+      causality="output">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 6 -->
+    <ScalarVariable
+      name="Out_t_oat"
+      valueReference="1073741827"
+      causality="output">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 7 -->
+    <ScalarVariable
+      name="Out_k_air"
+      valueReference="1073741828"
+      causality="output">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 8 -->
+    <ScalarVariable
+      name="Out_a_air"
+      valueReference="1073741829"
+      causality="output">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 9 -->
+    <ScalarVariable
+      name="Out_cv_air"
+      valueReference="1073741830"
+      causality="output">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 10 -->
+    <ScalarVariable
+      name="Out_cp_air"
+      valueReference="1073741831"
+      causality="output">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 11 -->
+    <ScalarVariable
+      name="Out_pr_air"
+      valueReference="1073741832"
+      causality="output">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 12 -->
+    <ScalarVariable
+      name="Out_p_oap"
+      valueReference="1073741833"
+      causality="output">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 13 -->
+    <ScalarVariable
+      name="Out_t_dpa"
+      valueReference="1073741834"
+      causality="output">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 14 -->
+    <ScalarVariable
+      name="Out_pact_a"
+      valueReference="1073741835"
+      causality="output">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 15 -->
+    <ScalarVariable
+      name="Out_psat_a"
+      valueReference="1073741836"
+      causality="output">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 16 -->
+    <ScalarVariable
+      name="Out_my_air"
+      valueReference="1073741837"
+      causality="output">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 17 -->
+    <ScalarVariable
+      name="Out_ny_air"
+      valueReference="1073741838"
+      causality="output">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 18 -->
+    <ScalarVariable
+      name="Out_rho_oad"
+      valueReference="1073741839"
+      causality="output">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 19 -->
+    <ScalarVariable
+      name="Out_g"
+      valueReference="1073741840"
+      causality="output">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 20 -->
+    <ScalarVariable
+      name="Parameters.Atmos.Value"
+      valueReference="268435456"
+      causality="parameter"
+      variability="tunable">
+      <Real
+        start="1.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 21 -->
+    <ScalarVariable
+      name="Parameters.Q_sund.Value"
+      valueReference="268435457"
+      causality="parameter"
+      variability="tunable">
+      <Real
+        start="1.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 22 -->
+    <ScalarVariable
+      name="Parameters.RH.Value"
+      valueReference="268435458"
+      causality="parameter"
+      variability="tunable">
+      <Real
+        start="50.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 23 -->
+    <ScalarVariable
+      name="Parameters.U_wind.Value"
+      valueReference="268435459"
+      causality="parameter"
+      variability="tunable">
+      <Real
+        start="1.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 24 -->
+    <ScalarVariable
+      name="Parameters.Subsystem_Atmospheres.Merge_p_oap1.InitialOutput"
+      valueReference="268435460"
+      causality="parameter"
+      variability="tunable">
+      <Real
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 25 -->
+    <ScalarVariable
+      name="Parameters.Subsystem_Atmospheres.Merge_rho_oad1.InitialOutput"
+      valueReference="268435461"
+      causality="parameter"
+      variability="tunable">
+      <Real
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 26 -->
+    <ScalarVariable
+      name="Parameters.Subsystem_Atmospheres.Merge_t_oat1.InitialOutput"
+      valueReference="268435462"
+      causality="parameter"
+      variability="tunable">
+      <Real
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 27 -->
+    <ScalarVariable
+      name="Parameters.Subsystem_Atmospheres.If_Action_Atmos_1.Out1.InitialOutput"
+      valueReference="268435463"
+      causality="parameter"
+      variability="tunable">
+      <Real
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 28 -->
+    <ScalarVariable
+      name="Parameters.Subsystem_Atmospheres.If_Action_Atmos_2.Out1.InitialOutput"
+      valueReference="268435464"
+      causality="parameter"
+      variability="tunable">
+      <Real
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 29 -->
+    <ScalarVariable
+      name="Parameters.Subsystem_Atmospheres.If_Action_Atmos_3.Out1.InitialOutput"
+      valueReference="268435465"
+      causality="parameter"
+      variability="tunable">
+      <Real
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 30 -->
+    <ScalarVariable
+      name="Parameters.Subsystem_Atmospheres.If_Action_Atmos_4.Out1.InitialOutput"
+      valueReference="268435466"
+      causality="parameter"
+      variability="tunable">
+      <Real
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 31 -->
+    <ScalarVariable
+      name="Parameters.Subsystem_Atmospheres.If_Action_Atmos_5.Out1.InitialOutput"
+      valueReference="268435467"
+      causality="parameter"
+      variability="tunable">
+      <Real
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 32 -->
+    <ScalarVariable
+      name="BlockOutputs.Subsystem_Atmospheres.MIL_STD_210A__Atmosphere__Cold__BlkIO"
+      valueReference="1610612736">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 33 -->
+    <ScalarVariable
+      name="BlockOutputs.Subsystem_Atmospheres.MIL_STD_210A__Atmosphere__Cold__BlkIO_1"
+      valueReference="1610612737">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 34 -->
+    <ScalarVariable
+      name="BlockOutputs.Subsystem_Atmospheres.MIL_STD_210A__Atmosphere__Cold__BlkIO_2"
+      valueReference="1610612738">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 35 -->
+    <ScalarVariable
+      name="BlockOutputs.Subsystem_Atmospheres.MIL_STD_210A__Atmosphere__Hot__BlkIO"
+      valueReference="1610612739">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 36 -->
+    <ScalarVariable
+      name="BlockOutputs.Subsystem_Atmospheres.MIL_STD_210A__Atmosphere__Hot__BlkIO_1"
+      valueReference="1610612740">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 37 -->
+    <ScalarVariable
+      name="BlockOutputs.Subsystem_Atmospheres.MIL_STD_210A__Atmosphere__Hot__BlkIO_2"
+      valueReference="1610612741">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 38 -->
+    <ScalarVariable
+      name="BlockOutputs.Subsystem_Atmospheres.MIL_STD_210A__Atmosphere__Polar__BlkIO"
+      valueReference="1610612742">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 39 -->
+    <ScalarVariable
+      name="BlockOutputs.Subsystem_Atmospheres.MIL_STD_210A__Atmosphere__Polar__BlkIO_1"
+      valueReference="1610612743">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 40 -->
+    <ScalarVariable
+      name="BlockOutputs.Subsystem_Atmospheres.MIL_STD_210A__Atmosphere__Polar__BlkIO_2"
+      valueReference="1610612744">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 41 -->
+    <ScalarVariable
+      name="BlockOutputs.Subsystem_Atmospheres.MIL_STD_210A__Atmosphere__Tropica_l_BlkIO"
+      valueReference="1610612745">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 42 -->
+    <ScalarVariable
+      name="BlockOutputs.Subsystem_Atmospheres.MIL_STD_210A__Atmosphere__Tropica_l_BlkIO_1"
+      valueReference="1610612746">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 43 -->
+    <ScalarVariable
+      name="BlockOutputs.Subsystem_Atmospheres.MIL_STD_210A__Atmosphere__Tropica_l_BlkIO_2"
+      valueReference="1610612747">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 44 -->
+    <ScalarVariable
+      name="BlockOutputs.Subsystem_Atmospheres.Merge_p_oap1"
+      valueReference="1610612748">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 45 -->
+    <ScalarVariable
+      name="BlockOutputs.Subsystem_Atmospheres.Merge_rho_oad1"
+      valueReference="1610612749">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 46 -->
+    <ScalarVariable
+      name="BlockOutputs.Subsystem_Atmospheres.Merge_t_oat1"
+      valueReference="1610612750">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 47 -->
+    <ScalarVariable
+      name="BlockOutputs.Subsystem_Atmospheres.If_Action_Atmos_1.In1"
+      valueReference="1610612751">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 48 -->
+    <ScalarVariable
+      name="BlockOutputs.Subsystem_Atmospheres.If_Action_Atmos_2.In1"
+      valueReference="1610612752">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 49 -->
+    <ScalarVariable
+      name="BlockOutputs.Subsystem_Atmospheres.If_Action_Atmos_3.In1"
+      valueReference="1610612753">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 50 -->
+    <ScalarVariable
+      name="BlockOutputs.Subsystem_Atmospheres.If_Action_Atmos_4.In1"
+      valueReference="1610612754">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 51 -->
+    <ScalarVariable
+      name="BlockOutputs.Subsystem_Atmospheres.If_Action_Atmos_5.In1"
+      valueReference="1610612755">
+      <Real/>
+    </ScalarVariable>
+  </ModelVariables>
+  <ModelStructure>
+    <Outputs>
+      <Unknown index="3"/>
+      <Unknown index="4"/>
+      <Unknown index="5"/>
+      <Unknown index="6"/>
+      <Unknown index="7"/>
+      <Unknown index="8"/>
+      <Unknown index="9"/>
+      <Unknown index="10"/>
+      <Unknown index="11"/>
+      <Unknown index="12"/>
+      <Unknown index="13"/>
+      <Unknown index="14"/>
+      <Unknown index="15"/>
+      <Unknown index="16"/>
+      <Unknown index="17"/>
+      <Unknown index="18"/>
+      <Unknown index="19"/>
+    </Outputs>
+    <InitialUnknowns>
+      <Unknown index="3"/>
+      <Unknown index="4"/>
+      <Unknown index="5"/>
+      <Unknown index="6"/>
+      <Unknown index="7"/>
+      <Unknown index="8"/>
+      <Unknown index="9"/>
+      <Unknown index="10"/>
+      <Unknown index="11"/>
+      <Unknown index="12"/>
+      <Unknown index="13"/>
+      <Unknown index="14"/>
+      <Unknown index="15"/>
+      <Unknown index="16"/>
+      <Unknown index="17"/>
+      <Unknown index="18"/>
+      <Unknown index="19"/>
+    </InitialUnknowns>
+  </ModelStructure>
+</fmiModelDescription>

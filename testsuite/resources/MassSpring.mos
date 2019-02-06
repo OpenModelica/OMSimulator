@@ -1,0 +1,17 @@
+loadString("
+model MassSpring
+  input Real f;
+  output Real x;
+  output Real v;
+  parameter Real M=100;
+  parameter Real B = 10;
+  parameter Real k = 3000;
+
+equation
+  der(v)*M + v*B + k*x = -f;
+  v = der(x);
+end MassSpring;
+"); getErrorString();
+
+buildModelFMU(MassSpring, version="2.0", fmuType="me_cs", fileNamePrefix="tlm.massSpring", platforms={"x86_64-linux-gnu"}); getErrorString();
+system("zip -qd tlm.massSpring.fmu sources/*");

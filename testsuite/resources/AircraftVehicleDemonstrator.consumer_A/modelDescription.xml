@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  fmiVersion="2.0"
+  modelName="consumer_A"
+  guid="{c80feb7f-fa9c-460f-909d-1e3b8dd9aee3}"
+  version="2"
+  generationTool="Dymola Version 2018 FD01 (64-bit), 2017-10-11"
+  generationDateAndTime="2018-03-22T12:45:07Z"
+  variableNamingConvention="structured"
+  numberOfEventIndicators="6">
+  <CoSimulation
+    modelIdentifier="consumer_A"
+    canHandleVariableCommunicationStepSize="true"
+    canInterpolateInputs="true"
+    maxOutputDerivativeOrder="1"
+    canGetAndSetFMUstate="true"
+    canSerializeFMUstate="true"
+    providesDirectionalDerivative="true"/>
+  <UnitDefinitions>
+    <Unit
+      name="1"/>
+    <Unit
+      name="J/kg">
+      <BaseUnit m="2"
+        s="-2"/>
+    </Unit>
+    <Unit
+      name="Pa">
+      <BaseUnit kg="1"
+        m="-1"
+        s="-2"/>
+    </Unit>
+    <Unit
+      name="kg/s">
+      <BaseUnit kg="1"
+        s="-1"/>
+    </Unit>
+    <Unit
+      name="s">
+      <BaseUnit s="1"/>
+    </Unit>
+  </UnitDefinitions>
+  <TypeDefinitions>
+    <SimpleType
+      name="ModelicaFluidLite.SIm.Jpkg">
+      <Real
+        quantity="specenth"
+        unit="J/kg"/>
+    </SimpleType>
+    <SimpleType
+      name="ModelicaFluidLite.SIm.Pa">
+      <Real
+        quantity="pressure"
+        unit="Pa"/>
+    </SimpleType>
+    <SimpleType
+      name="ModelicaFluidLite.SIm.kgps">
+      <Real
+        quantity="massflow"
+        unit="kg/s"/>
+    </SimpleType>
+    <SimpleType
+      name="ModelicaFluidLite.SIm.u">
+      <Real
+        quantity="real"
+        unit="1"/>
+    </SimpleType>
+  </TypeDefinitions>
+  <DefaultExperiment startTime="0.0"
+    stopTime="15.0"
+    tolerance="0.0001"/>
+  <ModelVariables>
+    <!-- Index for next variable = 1 -->
+    <ScalarVariable
+      name="pin.p"
+      valueReference="352321536"
+      description="pressure"
+      causality="input">
+      <Real
+        declaredType="ModelicaFluidLite.SIm.Pa"
+        start="315000"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 2 -->
+    <ScalarVariable
+      name="pin.m"
+      valueReference="335544320"
+      description="mass flow"
+      causality="output">
+      <Real
+        declaredType="ModelicaFluidLite.SIm.kgps"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 3 -->
+    <ScalarVariable
+      name="pin.h"
+      valueReference="352321537"
+      description="spec enthalpy into pipe-type modules"
+      causality="input">
+      <Real
+        declaredType="ModelicaFluidLite.SIm.Jpkg"
+        start="20200"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 4 -->
+    <ScalarVariable
+      name="pin.hn"
+      valueReference="335544321"
+      description="spec enthalpy into node/volume"
+      causality="output">
+      <Real
+        declaredType="ModelicaFluidLite.SIm.Jpkg"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 5 -->
+    <ScalarVariable
+      name="pin.xs"
+      valueReference="352321538"
+      description="ratio of steam into pipe-type modules"
+      causality="input">
+      <Real
+        declaredType="ModelicaFluidLite.SIm.u"
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 6 -->
+    <ScalarVariable
+      name="pin.xw"
+      valueReference="352321539"
+      description="ratio of free water into pipe-type modules"
+      causality="input">
+      <Real
+        declaredType="ModelicaFluidLite.SIm.u"
+        start="0.0"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 7 -->
+    <ScalarVariable
+      name="pin.xsn"
+      valueReference="335544322"
+      description="ratio of steam into node/volume"
+      causality="output">
+      <Real
+        declaredType="ModelicaFluidLite.SIm.u"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 8 -->
+    <ScalarVariable
+      name="pin.xwn"
+      valueReference="335544323"
+      description="ratio of free water into node/volume"
+      causality="output">
+      <Real
+        declaredType="ModelicaFluidLite.SIm.u"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 9 -->
+    <ScalarVariable
+      name="CPUtime"
+      valueReference="3825205252"
+      causality="output">
+      <Real
+        unit="s"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 10 -->
+    <ScalarVariable
+      name="EventCounter"
+      valueReference="3825205253"
+      causality="output">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 11 -->
+    <ScalarVariable
+      name="concealed1"
+      valueReference="33554432">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 12 -->
+    <ScalarVariable
+      name="concealed2"
+      valueReference="587202560">
+      <Real derivative="11"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 13 -->
+    <ScalarVariable
+      name="concealed3"
+      valueReference="33554433">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 14 -->
+    <ScalarVariable
+      name="concealed4"
+      valueReference="587202561">
+      <Real derivative="13"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 15 -->
+    <ScalarVariable
+      name="concealed5"
+      valueReference="33554434">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 16 -->
+    <ScalarVariable
+      name="concealed6"
+      valueReference="587202562">
+      <Real derivative="15"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 17 -->
+    <ScalarVariable
+      name="concealed7"
+      valueReference="33554435">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 18 -->
+    <ScalarVariable
+      name="concealed8"
+      valueReference="587202563">
+      <Real derivative="17"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 19 -->
+    <ScalarVariable
+      name="concealed9"
+      valueReference="33554436">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 20 -->
+    <ScalarVariable
+      name="concealed10"
+      valueReference="587202564">
+      <Real derivative="19"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 21 -->
+    <ScalarVariable
+      name="concealed11"
+      valueReference="33554437">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 22 -->
+    <ScalarVariable
+      name="concealed12"
+      valueReference="587202565">
+      <Real derivative="21"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 23 -->
+    <ScalarVariable
+      name="concealed13"
+      valueReference="33554438">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 24 -->
+    <ScalarVariable
+      name="concealed14"
+      valueReference="587202566">
+      <Real derivative="23"/>
+    </ScalarVariable>
+    <!-- Index for next variable = 25 -->
+    <ScalarVariable
+      name="concealed15"
+      valueReference="33554439">
+      <Real/>
+    </ScalarVariable>
+    <!-- Index for next variable = 26 -->
+    <ScalarVariable
+      name="concealed16"
+      valueReference="587202567">
+      <Real derivative="25"/>
+    </ScalarVariable>
+  </ModelVariables>
+  <ModelStructure>
+    <Outputs>
+      <Unknown index="2"
+        dependencies="11"
+        dependenciesKind="fixed"/>
+      <Unknown index="4"
+        dependencies="15"
+        dependenciesKind="fixed"/>
+      <Unknown index="7"
+        dependencies="1 3 5 6 11 13 15 17 21"
+        dependenciesKind="fixed fixed fixed fixed dependent dependent dependent fixed fixed"/>
+      <Unknown index="8"
+        dependencies="1 3 5 6 11 13 15 17 21"
+        dependenciesKind="fixed fixed fixed fixed dependent dependent dependent fixed fixed"/>
+      <Unknown index="9"
+        dependencies=""
+        dependenciesKind=""/>
+      <Unknown index="10"
+        dependencies=""
+        dependenciesKind=""/>
+    </Outputs>
+    <Derivatives>
+      <Unknown index="12"
+        dependencies="1 3 5 6 11 13 15 17 21"
+        dependenciesKind="fixed fixed fixed fixed dependent dependent dependent fixed fixed"/>
+      <Unknown index="14"
+        dependencies="1 3 5 6 11 13 15 17 21"
+        dependenciesKind="fixed fixed fixed fixed dependent dependent dependent fixed fixed"/>
+      <Unknown index="16"
+        dependencies="1 3 5 6 11 13 15 17 21"
+        dependenciesKind="fixed fixed fixed fixed dependent dependent dependent fixed fixed"/>
+      <Unknown index="18"
+        dependencies="1 3 5 6 11 13 15 17 19 21"
+        dependenciesKind="fixed fixed fixed fixed dependent dependent dependent fixed dependent fixed"/>
+      <Unknown index="20"
+        dependencies="15 19"
+        dependenciesKind="fixed fixed"/>
+      <Unknown index="22"
+        dependencies="11 21 23 25"
+        dependenciesKind="fixed fixed fixed fixed"/>
+      <Unknown index="24"
+        dependencies="11 23 25"
+        dependenciesKind="fixed fixed fixed"/>
+      <Unknown index="26"
+        dependencies="11 25"
+        dependenciesKind="fixed fixed"/>
+    </Derivatives>
+    <InitialUnknowns>
+      <Unknown index="2"
+        dependencies="1 3 5 6"
+        dependenciesKind="dependent dependent dependent dependent"/>
+      <Unknown index="4"
+        dependencies="1 3 5 6"
+        dependenciesKind="dependent dependent dependent dependent"/>
+      <Unknown index="7"
+        dependencies=""
+        dependenciesKind=""/>
+      <Unknown index="8"
+        dependencies=""
+        dependenciesKind=""/>
+      <Unknown index="9"
+        dependencies=""
+        dependenciesKind=""/>
+      <Unknown index="10"
+        dependencies=""
+        dependenciesKind=""/>
+      <Unknown index="11"
+        dependencies="1 3 5 6"
+        dependenciesKind="dependent dependent dependent dependent"/>
+      <Unknown index="12"
+        dependencies="1 3 5 6"
+        dependenciesKind="dependent dependent dependent dependent"/>
+      <Unknown index="14"
+        dependencies="1 3 5 6"
+        dependenciesKind="dependent dependent dependent dependent"/>
+      <Unknown index="15"
+        dependencies="1 3 5 6"
+        dependenciesKind="dependent dependent dependent dependent"/>
+      <Unknown index="16"
+        dependencies="1 3 5 6"
+        dependenciesKind="dependent dependent dependent dependent"/>
+      <Unknown index="18"
+        dependencies=""
+        dependenciesKind=""/>
+      <Unknown index="20"
+        dependencies="1 3 5 6"
+        dependenciesKind="dependent dependent dependent dependent"/>
+      <Unknown index="21"
+        dependencies="1 3 5 6"
+        dependenciesKind="dependent dependent dependent dependent"/>
+      <Unknown index="22"
+        dependencies="1 3 5 6"
+        dependenciesKind="dependent dependent dependent dependent"/>
+      <Unknown index="23"
+        dependencies=""
+        dependenciesKind=""/>
+      <Unknown index="24"
+        dependencies="1 3 5 6"
+        dependenciesKind="dependent dependent dependent dependent"/>
+      <Unknown index="25"
+        dependencies=""
+        dependenciesKind=""/>
+      <Unknown index="26"
+        dependencies="1 3 5 6"
+        dependenciesKind="dependent dependent dependent dependent"/>
+    </InitialUnknowns>
+  </ModelStructure>
+</fmiModelDescription>

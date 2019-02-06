@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  fmiVersion="2.0"
+  modelName="Modelica.Blocks.Math.Gain"
+  guid="{09da73c2-a93d-4630-9c1f-969d5a0e91e6}"
+  description="Output the product of a gain value with the input signal"
+  generationTool="OpenModelica Compiler OMCompiler v1.13.0-dev.1067+ga616890f6"
+  generationDateAndTime="2019-02-06T17:35:03Z"
+  variableNamingConvention="structured"
+  numberOfEventIndicators="0">
+  <ModelExchange
+    modelIdentifier="Modelica_Blocks_Math_Gain">
+  </ModelExchange>
+  <CoSimulation
+    modelIdentifier="Modelica_Blocks_Math_Gain"
+    needsExecutionTool="false"
+    canHandleVariableCommunicationStepSize="true"
+    canInterpolateInputs="false"
+    maxOutputDerivativeOrder="0"
+    canRunAsynchronuously = "false"
+    canBeInstantiatedOnlyOncePerProcess="false"
+    canNotUseMemoryManagementFunctions="false"
+    canGetAndSetFMUstate="false"
+    canSerializeFMUstate="false"
+     />
+  <LogCategories>
+    <Category name="logEvents" />
+    <Category name="logSingularLinearSystems" />
+    <Category name="logNonlinearSystems" />
+    <Category name="logDynamicStateSelection" />
+    <Category name="logStatusWarning" />
+    <Category name="logStatusDiscard" />
+    <Category name="logStatusError" />
+    <Category name="logStatusFatal" />
+    <Category name="logStatusPending" />
+    <Category name="logAll" />
+    <Category name="logFmi2Call" />
+  </LogCategories>
+  <DefaultExperiment startTime="0.0" stopTime="1.0" tolerance="1e-06"/>
+  <ModelVariables>
+  <!-- Index of variable = "1" -->
+  <ScalarVariable
+    name="u"
+    valueReference="0"
+    description="Input signal connector"
+    variability="continuous"
+    causality="input"
+    >
+    <Real start="0.0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "2" -->
+  <ScalarVariable
+    name="y"
+    valueReference="1"
+    description="Output signal connector"
+    variability="continuous"
+    causality="output"
+    initial="calculated">
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "3" -->
+  <ScalarVariable
+    name="k"
+    valueReference="2"
+    description="Gain value multiplied with input signal"
+    variability="fixed"
+    causality="parameter"
+    initial="exact">
+    <Real start="1.0" unit="1"/>
+  </ScalarVariable>
+  <!-- Index of variable = "4" -->
+  <ScalarVariable
+    name="_D_outputAlias_y"
+    valueReference="1"
+    description="Output signal connector"
+    variability="continuous"
+    causality="local"
+    >
+    <Real/>
+  </ScalarVariable>
+  </ModelVariables>
+  <ModelStructure>
+    <Outputs>
+      <Unknown index="2" dependencies="1" dependenciesKind="dependent" />
+    </Outputs>
+  </ModelStructure>
+</fmiModelDescription>
