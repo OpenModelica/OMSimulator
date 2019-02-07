@@ -5,6 +5,7 @@ pipeline {
   }
   options {
     newContainerPerStage()
+    disableConcurrentBuilds()
   }
   parameters {
     booleanParam(name: 'MSVC64', defaultValue: false, description: 'Build with MSVC64 (often hangs)')
