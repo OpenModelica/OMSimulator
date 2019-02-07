@@ -8,6 +8,7 @@ pipeline {
   }
   parameters {
     booleanParam(name: 'MSVC64', defaultValue: false, description: 'Build with MSVC64 (often hangs)')
+    booleanParam(name: 'MINGW32', defaultValue: false, description: 'Build with MINGW32 (does not link boost)')
   }
   stages {
     stage('build') {
@@ -83,7 +84,7 @@ pipeline {
                    */
                   label 'linux'
                   args "--mount type=volume,source=runtest-omsimulator-cache-linux64-asan,target=/cache/runtest " +
-                       "--cap-add SYS_PTRACE " + // Needed for ASAN
+                       "--cap-add SYS_PTRACE --privileged " + // Needed for ASAN
                        "--oom-kill-disable -m 1024m --memory-swap 1024m" // Needed for ASAN
                 }
               }
@@ -328,6 +329,42 @@ pipeline {
           }
         }
 
+        stage('mingw32-cross') {
+          when {
+            expression { return params.MINGW32 }
+            beforeAgent true
+          }
+          agent {
+            docker {
+              image 'docker.openmodelica.org/msyscross-omsimulator:v2.0'
+              label 'linux'
+              alwaysPull true
+            }
+          }
+          environment {
+            CROSS_TRIPLE = "i686-w64-mingw32"
+            CC = "${env.CROSS_TRIPLE}-gcc-posix"
+            CXX = "${env.CROSS_TRIPLE}-g++-posix"
+            CPPFLAGS = '-I/opt/pacman/mingw32/include'
+            LDFLAGS = '-L/opt/pacman/mingw32/lib'
+            AR = "${env.CROSS_TRIPLE}-ar-posix"
+            RANLIB = "${env.CROSS_TRIPLE}-ranlib-posix"
+            detected_OS = 'MINGW32'
+            VERBOSE = '1'
+            BOOST_ROOT = '/opt/pacman/mingw32/'
+          }
+
+          steps {
+            buildOMS()
+            sh '''
+            (cd install/mingw && zip -r "../../OMSimulator-mingw32-`git describe`.zip" *)
+            '''
+
+            archiveArtifacts "OMSimulator-mingw32*.zip"
+            stash name: 'mingw32-install', includes: "install/mingw/**"
+          }
+        }
+
         stage('msvc64') {
           when {
             expression { return params.MSVC64 }
@@ -440,7 +477,7 @@ def numPhysicalCPU() {
 void partest(cache=true, extraArgs='') {
   echo "cache: ${cache}, asan: ${env.ASAN}"
   sh """
-  make -C testsuite difftool
+  make -C testsuite difftool resources
   cp -f "${env.RUNTESTDB}/"* testsuite/ || true
   """
 
@@ -452,7 +489,7 @@ void partest(cache=true, extraArgs='') {
   ${env.ASAN ? "" : "ulimit -v 6291456" /* Max 6GB per process */}
 
   cd testsuite/partest
-  ./runtests.pl ${env.ASAN ? "-asan -fast": ""} -j${numPhysicalCPU()} -nocolour -with-xml ${extraArgs}
+  ./runtests.pl ${env.ASAN ? "-asan": ""} -j${numPhysicalCPU()} -nocolour -with-xml ${extraArgs}
   CODE=\$?
   test \$CODE = 0 -o \$CODE = 7 || exit 1
   """

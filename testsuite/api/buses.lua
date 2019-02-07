@@ -3,7 +3,7 @@
 -- linux: yes
 -- mingw: yes
 -- win: yes
--- mac: yes
+-- mac: no
 
 oms_setCommandLineOption("--suppressPath=true")
 
@@ -104,142 +104,142 @@ printStatus(status, 0)
 -- status:  [correct] error
 -- <?xml version="1.0"?>
 -- <ssd:System name="tlm">
--- 	<ssd:SimulationInformation>
--- 		<ssd:Annotations>
--- 			<ssd:Annotation type="org.openmodelica">
--- 				<oms:TlmMaster ip="" managerport="0" monitorport="0" />
--- 			</ssd:Annotation>
--- 		</ssd:Annotations>
--- 	</ssd:SimulationInformation>
--- 	<ssd:Elements>
--- 		<ssd:System name="wc2">
--- 			<ssd:SimulationInformation>
--- 				<FixedStepMaster description="oms-ma" stepSize="0.100000" />
--- 			</ssd:SimulationInformation>
--- 			<ssd:Elements />
--- 			<ssd:Connectors>
--- 				<ssd:Connector name="y1" kind="output" type="Real" />
--- 				<ssd:Connector name="y2" kind="output" type="Real" />
--- 				<ssd:Connector name="y3" kind="output" type="Real" />
--- 			</ssd:Connectors>
--- 			<ssd:Connections />
--- 			<ssd:Annotations>
--- 				<ssd:Annotation type="org.openmodelica">
--- 					<oms:Bus name="bus2">
--- 						<oms:Signals>
--- 							<oms:Signal name="y1" />
--- 							<oms:Signal name="y2" />
--- 						</oms:Signals>
--- 					</oms:Bus>
--- 				</ssd:Annotation>
--- 			</ssd:Annotations>
--- 		</ssd:System>
--- 		<ssd:System name="wc1">
--- 			<ssd:SimulationInformation>
--- 				<FixedStepMaster description="oms-ma" stepSize="0.100000" />
--- 			</ssd:SimulationInformation>
--- 			<ssd:Elements />
--- 			<ssd:Connectors>
--- 				<ssd:Connector name="u1" kind="input" type="Real" />
--- 				<ssd:Connector name="u2" kind="input" type="Real" />
--- 				<ssd:Connector name="y" kind="output" type="Real" />
--- 			</ssd:Connectors>
--- 			<ssd:Connections />
--- 			<ssd:Annotations>
--- 				<ssd:Annotation type="org.openmodelica">
--- 					<oms:Bus name="bus1">
--- 						<oms:Signals>
--- 							<oms:Signal name="u1" />
--- 							<oms:Signal name="u2" />
--- 							<oms:Signal name="y" />
--- 						</oms:Signals>
--- 					</oms:Bus>
--- 				</ssd:Annotation>
--- 			</ssd:Annotations>
--- 		</ssd:System>
--- 	</ssd:Elements>
--- 	<ssd:Connectors />
--- 	<ssd:Connections>
--- 		<ssd:Connection startElement="wc2" startConnector="y1" endElement="wc1" endConnector="u1" />
--- 		<ssd:Connection startElement="wc2" startConnector="y2" endElement="wc1" endConnector="u2" />
--- 	</ssd:Connections>
--- 	<ssd:Annotations>
--- 		<ssd:Annotation type="org.openmodelica">
--- 			<oms:Connections>
--- 				<oms:Connection startElement="wc1" startConnector="bus1" endElement="wc2" endConnector="bus2" />
--- 			</oms:Connections>
--- 		</ssd:Annotation>
--- 	</ssd:Annotations>
+--  <ssd:SimulationInformation>
+--    <ssd:Annotations>
+--      <ssd:Annotation type="org.openmodelica">
+--        <oms:TlmMaster ip="" managerport="0" monitorport="0" />
+--      </ssd:Annotation>
+--    </ssd:Annotations>
+--  </ssd:SimulationInformation>
+--  <ssd:Elements>
+--    <ssd:System name="wc2">
+--      <ssd:SimulationInformation>
+--        <FixedStepMaster description="oms-ma" stepSize="0.100000" />
+--      </ssd:SimulationInformation>
+--      <ssd:Elements />
+--      <ssd:Connectors>
+--        <ssd:Connector name="y1" kind="output" type="Real" />
+--        <ssd:Connector name="y2" kind="output" type="Real" />
+--        <ssd:Connector name="y3" kind="output" type="Real" />
+--      </ssd:Connectors>
+--      <ssd:Connections />
+--      <ssd:Annotations>
+--        <ssd:Annotation type="org.openmodelica">
+--          <oms:Bus name="bus2">
+--            <oms:Signals>
+--              <oms:Signal name="y1" />
+--              <oms:Signal name="y2" />
+--            </oms:Signals>
+--          </oms:Bus>
+--        </ssd:Annotation>
+--      </ssd:Annotations>
+--    </ssd:System>
+--    <ssd:System name="wc1">
+--      <ssd:SimulationInformation>
+--        <FixedStepMaster description="oms-ma" stepSize="0.100000" />
+--      </ssd:SimulationInformation>
+--      <ssd:Elements />
+--      <ssd:Connectors>
+--        <ssd:Connector name="u1" kind="input" type="Real" />
+--        <ssd:Connector name="u2" kind="input" type="Real" />
+--        <ssd:Connector name="y" kind="output" type="Real" />
+--      </ssd:Connectors>
+--      <ssd:Connections />
+--      <ssd:Annotations>
+--        <ssd:Annotation type="org.openmodelica">
+--          <oms:Bus name="bus1">
+--            <oms:Signals>
+--              <oms:Signal name="u1" />
+--              <oms:Signal name="u2" />
+--              <oms:Signal name="y" />
+--            </oms:Signals>
+--          </oms:Bus>
+--        </ssd:Annotation>
+--      </ssd:Annotations>
+--    </ssd:System>
+--  </ssd:Elements>
+--  <ssd:Connectors />
+--  <ssd:Connections>
+--    <ssd:Connection startElement="wc2" startConnector="y1" endElement="wc1" endConnector="u1" />
+--    <ssd:Connection startElement="wc2" startConnector="y2" endElement="wc1" endConnector="u2" />
+--  </ssd:Connections>
+--  <ssd:Annotations>
+--    <ssd:Annotation type="org.openmodelica">
+--      <oms:Connections>
+--        <oms:Connection startElement="wc1" startConnector="bus1" endElement="wc2" endConnector="bus2" />
+--      </oms:Connections>
+--    </ssd:Annotation>
+--  </ssd:Annotations>
 -- </ssd:System>
 --
 -- status:  [correct] ok
 -- <?xml version="1.0"?>
 -- <ssd:System name="tlm">
--- 	<ssd:SimulationInformation>
--- 		<ssd:Annotations>
--- 			<ssd:Annotation type="org.openmodelica">
--- 				<oms:TlmMaster ip="" managerport="0" monitorport="0" />
--- 			</ssd:Annotation>
--- 		</ssd:Annotations>
--- 	</ssd:SimulationInformation>
--- 	<ssd:Elements>
--- 		<ssd:System name="wc2">
--- 			<ssd:SimulationInformation>
--- 				<FixedStepMaster description="oms-ma" stepSize="0.100000" />
--- 			</ssd:SimulationInformation>
--- 			<ssd:Elements />
--- 			<ssd:Connectors>
--- 				<ssd:Connector name="y1" kind="output" type="Real" />
--- 				<ssd:Connector name="y2" kind="output" type="Real" />
--- 				<ssd:Connector name="y3" kind="output" type="Real" />
--- 			</ssd:Connectors>
--- 			<ssd:Connections />
--- 			<ssd:Annotations>
--- 				<ssd:Annotation type="org.openmodelica">
--- 					<oms:Bus name="bus2">
--- 						<oms:Signals>
--- 							<oms:Signal name="y1" />
--- 							<oms:Signal name="y2" />
--- 						</oms:Signals>
--- 					</oms:Bus>
--- 				</ssd:Annotation>
--- 			</ssd:Annotations>
--- 		</ssd:System>
--- 		<ssd:System name="wc1">
--- 			<ssd:SimulationInformation>
--- 				<FixedStepMaster description="oms-ma" stepSize="0.100000" />
--- 			</ssd:SimulationInformation>
--- 			<ssd:Elements />
--- 			<ssd:Connectors>
--- 				<ssd:Connector name="u1" kind="input" type="Real" />
--- 				<ssd:Connector name="u2" kind="input" type="Real" />
--- 				<ssd:Connector name="y" kind="output" type="Real" />
--- 			</ssd:Connectors>
--- 			<ssd:Connections />
--- 			<ssd:Annotations>
--- 				<ssd:Annotation type="org.openmodelica">
--- 					<oms:Bus name="bus1">
--- 						<oms:Signals>
--- 							<oms:Signal name="u1" />
--- 							<oms:Signal name="u2" />
--- 						</oms:Signals>
--- 					</oms:Bus>
--- 				</ssd:Annotation>
--- 			</ssd:Annotations>
--- 		</ssd:System>
--- 	</ssd:Elements>
--- 	<ssd:Connectors />
--- 	<ssd:Connections>
--- 		<ssd:Connection startElement="wc2" startConnector="y1" endElement="wc1" endConnector="u1" />
--- 		<ssd:Connection startElement="wc2" startConnector="y2" endElement="wc1" endConnector="u2" />
--- 	</ssd:Connections>
--- 	<ssd:Annotations>
--- 		<ssd:Annotation type="org.openmodelica">
--- 			<oms:Connections>
--- 				<oms:Connection startElement="wc1" startConnector="bus1" endElement="wc2" endConnector="bus2" />
--- 			</oms:Connections>
--- 		</ssd:Annotation>
--- 	</ssd:Annotations>
+--  <ssd:SimulationInformation>
+--    <ssd:Annotations>
+--      <ssd:Annotation type="org.openmodelica">
+--        <oms:TlmMaster ip="" managerport="0" monitorport="0" />
+--      </ssd:Annotation>
+--    </ssd:Annotations>
+--  </ssd:SimulationInformation>
+--  <ssd:Elements>
+--    <ssd:System name="wc2">
+--      <ssd:SimulationInformation>
+--        <FixedStepMaster description="oms-ma" stepSize="0.100000" />
+--      </ssd:SimulationInformation>
+--      <ssd:Elements />
+--      <ssd:Connectors>
+--        <ssd:Connector name="y1" kind="output" type="Real" />
+--        <ssd:Connector name="y2" kind="output" type="Real" />
+--        <ssd:Connector name="y3" kind="output" type="Real" />
+--      </ssd:Connectors>
+--      <ssd:Connections />
+--      <ssd:Annotations>
+--        <ssd:Annotation type="org.openmodelica">
+--          <oms:Bus name="bus2">
+--            <oms:Signals>
+--              <oms:Signal name="y1" />
+--              <oms:Signal name="y2" />
+--            </oms:Signals>
+--          </oms:Bus>
+--        </ssd:Annotation>
+--      </ssd:Annotations>
+--    </ssd:System>
+--    <ssd:System name="wc1">
+--      <ssd:SimulationInformation>
+--        <FixedStepMaster description="oms-ma" stepSize="0.100000" />
+--      </ssd:SimulationInformation>
+--      <ssd:Elements />
+--      <ssd:Connectors>
+--        <ssd:Connector name="u1" kind="input" type="Real" />
+--        <ssd:Connector name="u2" kind="input" type="Real" />
+--        <ssd:Connector name="y" kind="output" type="Real" />
+--      </ssd:Connectors>
+--      <ssd:Connections />
+--      <ssd:Annotations>
+--        <ssd:Annotation type="org.openmodelica">
+--          <oms:Bus name="bus1">
+--            <oms:Signals>
+--              <oms:Signal name="u1" />
+--              <oms:Signal name="u2" />
+--            </oms:Signals>
+--          </oms:Bus>
+--        </ssd:Annotation>
+--      </ssd:Annotations>
+--    </ssd:System>
+--  </ssd:Elements>
+--  <ssd:Connectors />
+--  <ssd:Connections>
+--    <ssd:Connection startElement="wc2" startConnector="y1" endElement="wc1" endConnector="u1" />
+--    <ssd:Connection startElement="wc2" startConnector="y2" endElement="wc1" endConnector="u2" />
+--  </ssd:Connections>
+--  <ssd:Annotations>
+--    <ssd:Annotation type="org.openmodelica">
+--      <oms:Connections>
+--        <oms:Connection startElement="wc1" startConnector="bus1" endElement="wc2" endConnector="bus2" />
+--      </oms:Connections>
+--    </ssd:Annotation>
+--  </ssd:Annotations>
 -- </ssd:System>
 --
 -- status:  [correct] ok

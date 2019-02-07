@@ -3,7 +3,7 @@
 -- linux: yes
 -- mingw: yes
 -- win: yes
--- mac: yes
+-- mac: no
 
 oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./test02-lua/")
