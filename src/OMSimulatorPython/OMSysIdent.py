@@ -53,44 +53,44 @@ class OMSysIdent:
             self.obj=cdll.LoadLibrary("libOMSysIdent.so")
 
         self.obj.omsi_newSysIdentModel.argtypes = [ctypes.c_char_p]
-        self.obj.omsi_newSysIdentModel.restype = ctypes.c_void_p
+        self.obj.omsi_newSysIdentModel.restype = ctypes.POINTER(ctypes.c_void_p)
 
-        self.obj.omsi_freeSysIdentModel.argtypes = [ctypes.c_void_p]
+        self.obj.omsi_freeSysIdentModel.argtypes = [ctypes.POINTER(ctypes.c_void_p)]
 
-        self.obj.omsi_describe.argtypes = [ctypes.c_void_p]
+        self.obj.omsi_describe.argtypes = [ctypes.POINTER(ctypes.c_void_p)]
         self.obj.omsi_describe.restype = ctypes.c_int
 
         self.obj.omsi_initialize.argtypes = [
-            ctypes.c_void_p, ctypes.c_int,
-            ndpointer(dtype=np.float64,ndim=1,flags='C_CONTIGUOUS'), ctypes.c_int,
-            ctypes.POINTER(ctypes.c_char_p), ctypes.c_int,
-            ctypes.POINTER(ctypes.c_char_p), ctypes.c_int]
+            ctypes.POINTER(ctypes.c_void_p), ctypes.c_size_t,
+            ndpointer(dtype=np.float64,ndim=1,flags='C_CONTIGUOUS'), ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_char_p), ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_char_p), ctypes.c_size_t]
         self.obj.omsi_initialize.restype = ctypes.c_int
 
         self.obj.omsi_addMeasurement.argtypes = [
-            ctypes.c_void_p, ctypes.c_int, ctypes.c_char_p,
-            ndpointer(dtype=np.float64,ndim=1,flags='C_CONTIGUOUS'), ctypes.c_int]
+            ctypes.POINTER(ctypes.c_void_p), ctypes.c_size_t, ctypes.c_char_p,
+            ndpointer(dtype=np.float64,ndim=1,flags='C_CONTIGUOUS'), ctypes.c_size_t]
         self.obj.omsi_addMeasurement.restype = ctypes.c_int
 
         self.obj.omsi_addInput.argtypes = [
-            ctypes.c_void_p, ctypes.c_char_p, ndpointer(dtype=np.float64,ndim=1,flags='C_CONTIGUOUS'), ctypes.c_int]
+            ctypes.POINTER(ctypes.c_void_p), ctypes.c_char_p, ndpointer(dtype=np.float64,ndim=1,flags='C_CONTIGUOUS'), ctypes.c_size_t]
         self.obj.omsi_addInput.restype = ctypes.c_int
 
         self.obj.omsi_addParameter.argtypes = [
-            ctypes.c_void_p, ctypes.c_char_p, ctypes.c_double]
+            ctypes.POINTER(ctypes.c_void_p), ctypes.c_char_p, ctypes.c_double]
         self.obj.omsi_addParameter.restype = ctypes.c_int
 
-        self.obj.omsi_getParameter.argtype = [ctypes.c_void_p, ctypes.c_char_p,
+        self.obj.omsi_getParameter.argtype = [ctypes.POINTER(ctypes.c_void_p), ctypes.c_char_p,
             ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double)]
         self.obj.omsi_getParameter.restype = ctypes.c_int
 
-        self.obj.omsi_solve.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
+        self.obj.omsi_solve.argtypes = [ctypes.POINTER(ctypes.c_void_p), ctypes.c_char_p]
         self.obj.omsi_solve.restype = ctypes.c_int
 
-        self.obj.omsi_setOptions_max_num_iterations.argtypes = [ctypes.c_void_p, ctypes.c_int]
+        self.obj.omsi_setOptions_max_num_iterations.argtypes = [ctypes.POINTER(ctypes.c_void_p), ctypes.c_size_t]
         self.obj.omsi_setOptions_max_num_iterations.restype = ctypes.c_int
 
-        self.obj.omsi_getState.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.c_int)]
+        self.obj.omsi_getState.argtypes = [ctypes.POINTER(ctypes.c_void_p), ctypes.POINTER(ctypes.c_int)]
         self.obj.omsi_getState.restype = ctypes.c_int
 
         self.simodel = self.obj.omsi_newSysIdentModel(ident)
