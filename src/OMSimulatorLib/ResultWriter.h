@@ -32,6 +32,7 @@
 #ifndef _OMS_RESULTWRITER_H_
 #define _OMS_RESULTWRITER_H_
 
+#include "ComRef.h"
 #include <string>
 #include <vector>
 
@@ -53,7 +54,7 @@ namespace oms
 
   struct Signal
   {
-    std::string name;
+    ComRef name;
     std::string description;
     SignalType_t type;
   };
@@ -70,8 +71,8 @@ namespace oms
     ResultWriter(unsigned int bufferSize);
     virtual ~ResultWriter();
 
-    unsigned int addSignal(const std::string& name, const std::string& description, SignalType_t type);
-    void addParameter(const std::string& name, const std::string& description, SignalType_t type, SignalValue_t value);
+    unsigned int addSignal(const ComRef& name, const std::string& description, SignalType_t type);
+    void addParameter(const ComRef& name, const std::string& description, SignalType_t type, SignalValue_t value);
 
     bool create(const std::string& filename, double startTime, double stopTime);
     void close();

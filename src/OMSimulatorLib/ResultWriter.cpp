@@ -30,6 +30,7 @@
  */
 
 #include "ResultWriter.h"
+#include "Flags.h"
 
 oms::ResultWriter::ResultWriter(unsigned int bufferSize)
   : bufferSize(bufferSize),
@@ -44,24 +45,36 @@ oms::ResultWriter::~ResultWriter()
     delete[] data_2;
 }
 
-unsigned int oms::ResultWriter::addSignal(const std::string& name, const std::string& description, SignalType_t type)
+unsigned int oms::ResultWriter::addSignal(const ComRef& name, const std::string& description, SignalType_t type)
 {
   Signal signal;
   signal.name = name;
   signal.description = description;
   signal.type = type;
 
+  if (Flags::StripRoot())
+  {
+    signal.name.pop_front();
+    signal.name.pop_front();
+  }
+
   signals.push_back(signal);
   return (unsigned int) signals.size();
 }
 
-void oms::ResultWriter::addParameter(const std::string& name, const std::string& description, SignalType_t type, SignalValue_t value)
+void oms::ResultWriter::addParameter(const ComRef& name, const std::string& description, SignalType_t type, SignalValue_t value)
 {
   Parameter parameter;
   parameter.signal.name = name;
   parameter.signal.description = description;
   parameter.signal.type = type;
   parameter.value = value;
+
+  if (Flags::StripRoot())
+  {
+    parameter.signal.name.pop_front();
+    parameter.signal.name.pop_front();
+  }
 
   parameters.push_back(parameter);
 }

@@ -61,20 +61,21 @@ oms::Flags::~Flags()
 
 void oms::Flags::setDefaults()
 {
-  ignoreInitialUnknowns = false;
-  suppressPath = false;
-  progressBar = false;
-  inputDerivatives = false;
   defaultModeIsCS = false;
-  wallTime = false;
+  ignoreInitialUnknowns = false;
+  inputDerivatives = false;
   intervals = 100;
+  masterAlgorithm = oms_solver_wc_ma;
+  progressBar = false;
+  resultFile = "<default>";
+  solver = oms_solver_sc_cvode;
   startTime = 0.0;
   stopTime = 1.0;
+  stripRoot = false;
+  suppressPath = false;
   timeout = 0.0;
   tolerance = 1e-4;
-  solver = oms_solver_sc_cvode;
-  masterAlgorithm = oms_solver_wc_ma;
-  resultFile = "<default>";
+  wallTime = false;
 }
 
 oms::Flags& oms::Flags::GetInstance()
@@ -281,6 +282,12 @@ oms_status_enu_t oms::Flags::StartTime(const std::string& value)
 oms_status_enu_t oms::Flags::StopTime(const std::string& value)
 {
   GetInstance().stopTime = atof(value.c_str());
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Flags::StripRoot(const std::string& value)
+{
+  GetInstance().stripRoot = (value == "true");
   return oms_status_ok;
 }
 

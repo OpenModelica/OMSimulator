@@ -43,6 +43,7 @@ namespace oms
   class ComRef
   {
   public:
+    ComRef();
     ComRef(const std::string& path);
     ComRef(const char* path);
     ~ComRef();
@@ -61,6 +62,7 @@ namespace oms
     ComRef pop_front();
 
     const char* c_str() const {return cref;}
+    size_t size() {return strlen(cref);}
     operator std::string() const {return std::string(cref);}
 
   private:
