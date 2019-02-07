@@ -27,7 +27,7 @@ pipeline {
                * the tests run on a particular node, they might execute slightly slower
                */
               label 'linux'
-              args "--mount type=volume,source=runtest-omsimulator-cache-linux64,target=/cache/runtest"
+              args "--mount type=volume,source=runtest-omsimulator-cache-linux64,target=/cache/runtest --tmpfs /tmp"
             }
           }
           environment {
@@ -55,51 +55,33 @@ pipeline {
           }
         }
         stage('linux64-asan') {
-          stages {
-            stage('build') {
-              agent {
-                docker {
-                  image 'docker.openmodelica.org/build-deps:v1.13'
-                  label 'linux'
-                  alwaysPull true
-                }
-              }
-              environment {
-                RUNTESTDB = "/cache/runtest/"
-                ASAN = "ON"
-              }
-              steps {
+          agent {
+            node {
+              label 'linux'
+            }
+          }
+          environment {
+            RUNTESTDB = "/cache/runtest/"
+            ASAN = "ON"
+          }
+          steps {
+            script {
+              image = docker.build("build-deps-cache", "--pull .CI/cache")
+              image.inside("-e RUNTESTDB=${env.RUNTESTDB} -e ASAN=${env.ASAN} --tmpfs /tmp") {
+                // Keep ASAN jobs separate since you might get HEARTBEAT_CHECK_INTERVAL problems
                 buildOMS()
-                stash name: 'asan', includes: "install/linux/**"
+              }
+              image.inside("--mount type=volume,source=runtest-omsimulator-cache-linux64-asan,target=/cache/runtest " +
+                     "--cap-add SYS_PTRACE --privileged " + // Needed for ASAN
+                     "--oom-kill-disable -m 1024m --memory-swap 1024m " +
+                     "-e RUNTESTDB=${env.RUNTESTDB} -e ASAN=${env.ASAN} --tmpfs /tmp")
+              {
+                timeout(20) { retry(2) {
+                  partest()
+                } }
               }
             }
-            stage('test') {
-              agent {
-                dockerfile {
-                  additionalBuildArgs '--pull'
-                  dir '.CI/cache'
-                  /* The cache Dockerfile makes /cache/runtest, etc world writable
-                   * This is necessary because we run the docker image as a user and need to
-                   * be able to have a global caching of the omlibrary parts and the runtest database.
-                   * Note that the database is stored in a volume on a per-node basis, so the first time
-                   * the tests run on a particular node, they might execute slightly slower
-                   */
-                  label 'linux'
-                  args "--mount type=volume,source=runtest-omsimulator-cache-linux64-asan,target=/cache/runtest " +
-                       "--cap-add SYS_PTRACE --privileged " + // Needed for ASAN
-                       "--oom-kill-disable -m 1024m --memory-swap 1024m" // Needed for ASAN
-                }
-              }
-              environment {
-                RUNTESTDB = "/cache/runtest/"
-                ASAN = "ON"
-              }
-              steps {
-                unstash name: 'asan'
-                partest()
-                junit 'testsuite/partest/result.xml'
-              }
-            }
+            junit 'testsuite/partest/result.xml'
           }
         }
         stage('centos6') {
@@ -108,6 +90,7 @@ pipeline {
               additionalBuildArgs '--pull'
               dir '.CI/centos6'
               label 'linux'
+              args '--tmpfs /tmp'
             }
           }
           environment {
@@ -155,7 +138,8 @@ pipeline {
                * the tests run on a particular node, they might execute slightly slower
                */
               label 'linux'
-              args "--mount type=volume,source=runtest-omsimulator-cache-linux32,target=/cache/runtest"
+              args "--mount type=volume,source=runtest-omsimulator-cache-linux32,target=/cache/runtest "+
+                   '--tmpfs /tmp'
             }
           }
           environment {
@@ -185,6 +169,7 @@ pipeline {
                   image 'docker.openmodelica.org/armcross-omsimulator:v2.0'
                   label 'linux'
                   alwaysPull true
+                  args '--tmpfs /tmp'
                 }
               }
               environment {
@@ -196,9 +181,9 @@ pipeline {
                 FMIL_FLAGS = '-DFMILIB_FMI_PLATFORM=arm-linux-gnueabihf'
                 detected_OS = 'Linux'
                 VERBOSE = '1'
+                OMSFLAGS = "OMTLM=OFF"
               }
               steps {
-                sh 'printenv'
                 buildOMS()
                 sh '''
                 # No so-files should ever exist in a bin/ folder
@@ -228,13 +213,15 @@ pipeline {
                    */
                   label 'linux-arm32'
                   args '--memory=500m --memory-swap=500m ' +
-                       "--mount type=volume,source=runtest-omsimulator-cache-arm32,target=/cache/runtest"
+                       "--mount type=volume,source=runtest-omsimulator-cache-arm32,target=/cache/runtest " +
+                       '--tmpfs /tmp'
                 }
               }
               environment {
                 RUNTESTDB = "/cache/runtest/"
               }
               steps {
+                sh 'hostname'
                 unstash name: 'arm32-install'
 
                 // Work-around for deleting logs
@@ -257,6 +244,7 @@ pipeline {
                   image 'docker.openmodelica.org/osxcross-omsimulator:v2.0'
                   label 'linux'
                   alwaysPull true
+                  args '--tmpfs /tmp'
                 }
               }
               environment {
@@ -269,6 +257,7 @@ pipeline {
                 detected_OS = 'Darwin'
                 VERBOSE = '1'
                 BOOST_ROOT = '/opt/osxcross/macports/pkgs/opt/local/'
+                OMSFLAGS = "OMTLM=OFF"
               }
               steps {
                 buildOMS()
@@ -302,9 +291,10 @@ pipeline {
         stage('mingw64-cross') {
           agent {
             docker {
-              image 'docker.openmodelica.org/msyscross-omsimulator:v2.0'
+              image 'docker.openmodelica.org/msyscross-omsimulator:v2.1.0'
               label 'linux'
               alwaysPull true
+              args '--tmpfs /tmp'
             }
           }
           environment {
@@ -318,6 +308,7 @@ pipeline {
             detected_OS = 'MINGW64'
             VERBOSE = '1'
             BOOST_ROOT = '/opt/pacman/mingw64/'
+            MSYSROOT = '/opt/pacman/'
           }
 
           steps {
@@ -325,9 +316,25 @@ pipeline {
             sh '''
             (cd install/mingw && zip -r "../../OMSimulator-mingw64-`git describe`.zip" *)
             '''
-
             archiveArtifacts "OMSimulator-mingw64*.zip"
-            stash name: 'mingw64-install', includes: "install/mingw/**"
+            writeFile(file:"install/mingw/bin/OMSimulator", text:"""#!/bin/sh
+            export "HOME=${WORKSPACE}"
+            export WINEDEBUG=-all
+            exec /usr/bin/wine64 "${WORKSPACE}/install/mingw/bin/OMSimulator.exe" "\$@"
+            """)
+            writeFile(file:"install/mingw/bin/OMSimulatorPython", text:"""#!/bin/sh
+            export "HOME=${WORKSPACE}"
+            export "PYTHONPATH=${WORKSPACE}/install/mingw/bin;${WORKSPACE}/install/mingw/lib"
+            export "WINEPATH=${WORKSPACE}/install/mingw/bin;${WORKSPACE}/install/mingw/lib;/opt/pacman/mingw64/bin"
+            export WINEDEBUG=-all
+            exec /usr/bin/wine64 /opt/pacman/mingw64/bin/python3.7.exe "\$@"
+            """)
+            sh "chmod +x install/mingw/bin/OMSimulator install/mingw/bin/OMSimulatorPython"
+            sh "install/mingw/bin/OMSimulator --version || install/mingw/bin/OMSimulator --version"
+            // We need to compile a native omc-diff
+            sh "make -C testsuite CC=gcc difftool"
+            partest(true, '-platform=mingw -nopython')
+            junit 'testsuite/partest/result.xml'
           }
         }
 
@@ -338,9 +345,10 @@ pipeline {
           }
           agent {
             docker {
-              image 'docker.openmodelica.org/msyscross-omsimulator:v2.0'
+              image 'docker.openmodelica.org/msyscross-omsimulator:v2.1.0'
               label 'linux'
               alwaysPull true
+              args '--tmpfs /tmp'
             }
           }
           environment {
@@ -354,6 +362,8 @@ pipeline {
             detected_OS = 'MINGW32'
             VERBOSE = '1'
             BOOST_ROOT = '/opt/pacman/mingw32/'
+            MSYSROOT = '/opt/pacman/'
+            OMSFLAGS = 'OMTLM=OFF'
           }
 
           steps {

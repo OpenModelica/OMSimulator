@@ -34,6 +34,7 @@ use Fcntl;
 # Force the children to not use parallel mark
 $ENV{GC_MARKERS}="1";
 
+my $use_python = 1;
 my $use_db = 1;
 my $save_db = 1;
 my $asan = 0;
@@ -84,6 +85,7 @@ for(@ARGV){
     print("  -jN           Use N threads.\n");
     print("  -nocolour     Don't use colours in output.\n");
     print("  -nodb         Don't store timing data.\n");
+    print("  -nopython     Skip Python tests.\n");
     print("  -nosavedb     Don't overwrite stored timing data.\n");
     print("  -platform     Force to use a specific platform, e.g. win or linux32.\n");
     print("  -with-txt     Output TXT log.\n");
@@ -117,6 +119,9 @@ for(@ARGV){
   }
   elsif(/^-nodb$/) {
     $use_db = 0;
+  }
+  elsif(/^-nopython$/) {
+    $use_python = 0;
   }
   elsif(/^-nosavedb$/) {
     $save_db = 0;
@@ -221,7 +226,7 @@ sub add_tests {
   my @tests = split(/\s|=|\\/, shift);
   my $path = shift;
 
-  if ($asan) {
+  if ($asan || !$use_python) {
     @tests = grep(/\.lua|\.xml/, @tests);
   } else {
     @tests = grep(/\.lua|\.py|\.xml/, @tests);

@@ -9,22 +9,31 @@ use File::Temp qw/ tempfile /;
 (undef,$testTempFile) = tempfile("rtest$$.XXXXX", TMPDIR => 1, SUFFIX => ".tmp", UNLINK => 1);
 $cwd = getcwd;
 if ($cwd =~ m/(.*)testsuite\/(.+)$/) {
+  $PLATFORM1 = $ENV{'PLATFORM1'};
+  $PLATFORM2 = $ENV{'PLATFORM2'};
+  $PLATFORM3 = $ENV{'PLATFORM3'};
   $prefix = $1;
   $dirname = $2;
-  $os = `uname`;
-  if ($os =~ /MINGW/) {
-    $PLATFORM1 = "mingw";
-  }
-  else {
-    if ($os =~ /Darwin/) {
-      $PLATFORM1 = "mac";
+  if (!$PLATFORM1) {
+    $os = `uname`;
+    if ($os =~ /MINGW/) {
+      $PLATFORM1 = "mingw";
     }
     else {
-      $PLATFORM1 = "linux";
+      if ($os =~ /Darwin/) {
+        $PLATFORM1 = "mac";
+      }
+      else {
+        $PLATFORM1 = "linux";
+      }
     }
   }
-  $PLATFORM2 = $PLATFORM1;
-  $PLATFORM3 = $PLATFORM1;
+  if (!$PLATFORM2) {
+    $PLATFORM2 = $PLATFORM1;
+  }
+  if (!$PLATFORM3) {
+    $PLATFORM3 = $PLATFORM1;
+  }
 } else {
   print "You must run rtest from OMSimulator (was run from $cwd)\n";
   exit 0;
@@ -424,6 +433,9 @@ while ($#ARGV >= 0) {
     } elsif ($arg eq "-platform=win") {
       $PLATFORM2="win";
       $PLATFORM3="win";
+    } elsif ($arg eq "-platform=mingw") {
+      $PLATFORM2="mingw";
+      $PLATFORM3="mingw";
     } elsif($arg eq "-platform=linux32") {
       $PLATFORM3="linux32";
     } elsif ($arg eq "-b") {

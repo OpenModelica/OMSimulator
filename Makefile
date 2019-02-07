@@ -115,10 +115,8 @@ ifeq ($(CROSS_TRIPLE),)
   CMAKE=cmake $(CMAKE_TARGET)
 else
   LUA_EXTRA_FLAGS=CC=$(CC) CXX=$(CXX) RANLIB=$(CROSS_TRIPLE)-ranlib detected_OS=$(detected_OS)
-  OMTLM := OFF
   CERES := OFF
   OMSYSIDENT := OFF
-  LIBXML2 := OFF
   CROSS_TRIPLE_DASH = $(CROSS_TRIPLE)-
   HOST_CROSS_TRIPLE = "--host=$(CROSS_TRIPLE)"
   FMIL_FLAGS ?=
@@ -126,7 +124,14 @@ else
   RANLIB ?= $(CROSS_TRIPLE)-ranlib
   CMAKE=cmake $(CMAKE_TARGET)
   ifeq (MINGW,$(findstring MINGW,$(detected_OS)))
+    LIBXML2 := OFF
     CMAKE_TARGET=-G "Unix Makefiles" -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_RC_COMPILER=$(CROSS_TRIPLE)-windres
+    ifeq (x86_64,$(findstring x86_64,$(CROSS_TRIPLE)))
+      ABI=WINDOWS64
+    else
+      ABI=WINDOWS32
+    endif
+    FEXT=.dll
   endif
   ifeq ($(detected_OS),Darwin)
     EXTRA_CMAKE+=-DCMAKE_INSTALL_NAME_TOOL=$(CROSS_TRIPLE)-install_name_tool
@@ -171,7 +176,7 @@ OMTLMSimulator: RegEx
 	test ! "$(FEXT)" != ".dll" || cp OMTLMSimulator/bin/libomtlmsimulator$(FEXT) $(TOP_INSTALL_DIR)/lib/$(HOST_SHORT_OMC)
 	test ! "$(detected_OS)" = Darwin || ($(CROSS_TRIPLE_DASH)install_name_tool -id "@rpath/libomtlmsimulator$(FEXT)" $(TOP_INSTALL_DIR)/lib/$(HOST_SHORT_OMC)/libomtlmsimulator$(FEXT))
 	test ! "$(FEXT)" = ".dll" || cp OMTLMSimulator/bin/libomtlmsimulator$(FEXT) $(TOP_INSTALL_DIR)/bin/
-	test ! `uname` != Darwin || cp OMTLMSimulator/bin/FMIWrapper $(TOP_INSTALL_DIR)/bin/
+	test ! `uname` != Darwin || cp OMTLMSimulator/bin/FMIWrapper$(EEXT) $(TOP_INSTALL_DIR)/bin/
 	test ! `uname` != Darwin || cp OMTLMSimulator/bin/StartTLMFmiWrapper $(TOP_INSTALL_DIR)/bin/
 
 OMTLMSimulatorStandalone: RegEx config-fmil
