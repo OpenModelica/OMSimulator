@@ -34,7 +34,6 @@
 
 #include "Component.h"
 #include "ComRef.h"
-#include "Option.h"
 #include "ResultWriter.h"
 #include "Variable.h"
 #include <fmilib.h>
