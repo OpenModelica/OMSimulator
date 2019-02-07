@@ -59,6 +59,7 @@ namespace oms
     static bool IgnoreInitialUnknowns() {return GetInstance().ignoreInitialUnknowns;}
     static bool InputDerivatives() {return GetInstance().inputDerivatives;}
     static bool ProgressBar() {return GetInstance().progressBar;}
+    static bool StripRoot() {return GetInstance().stripRoot;}
     static bool SuppressPath() {return GetInstance().suppressPath;}
     static bool WallTime() {return GetInstance().wallTime;}
     static double StartTime() {return GetInstance().startTime;}
@@ -71,11 +72,12 @@ namespace oms
     static unsigned int Intervals() {return GetInstance().intervals;}
 
   private:
-    bool ignoreInitialUnknowns;
-    bool suppressPath;
-    bool progressBar;
-    bool inputDerivatives;
     bool defaultModeIsCS;
+    bool ignoreInitialUnknowns;
+    bool inputDerivatives;
+    bool progressBar;
+    bool stripRoot;
+    bool suppressPath;
     bool wallTime;
     unsigned int intervals;
     double startTime;
@@ -123,6 +125,7 @@ namespace oms
       {"--solver", "", "Specifies the integration method (internal, euler, cvode)", re_void, Flags::Solver, false},
       {"--startTime", "-s", "Specifies the start time", re_double, Flags::StartTime, false},
       {"--stopTime", "-t", "Specifies the stop time", re_double, Flags::StopTime, false},
+      {"--stripRoot", "", "Removes the root system prefix from all exported signals", re_bool, Flags::StripRoot, false},
       {"--suppressPath", "", "", re_bool, Flags::SuppressPath, false},
       {"--tempDir", "", "Specifies the temp directory", re_default, Flags::TempDir, false},
       {"--timeout", "", "Specifies the maximum allowed time in seconds for running a simulation (0 disables)", re_number, Flags::Timeout, false},
@@ -147,6 +150,7 @@ namespace oms
     static oms_status_enu_t Solver(const std::string& value);
     static oms_status_enu_t StartTime(const std::string& value);
     static oms_status_enu_t StopTime(const std::string& value);
+    static oms_status_enu_t StripRoot(const std::string& value);
     static oms_status_enu_t SuppressPath(const std::string& value);
     static oms_status_enu_t TempDir(const std::string& value);
     static oms_status_enu_t Timeout(const std::string& value);
