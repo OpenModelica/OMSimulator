@@ -63,10 +63,14 @@ OMSAPI oms_status_enu_t OMSCALL oms_addConnection(const char* crefA, const char*
 OMSAPI oms_status_enu_t OMSCALL oms_addConnector(const char* cref, oms_causality_enu_t causality, oms_signal_type_enu_t type);
 OMSAPI oms_status_enu_t OMSCALL oms_addConnectorToBus(const char* busCref, const char* connectorCref);
 OMSAPI oms_status_enu_t OMSCALL oms_addConnectorToTLMBus(const char* busCref, const char* connectorCref, const char *type);
+OMSAPI oms_status_enu_t OMSCALL oms_addDynamicValueIndicator(const char* signal, const char* lower, const char* upper, double stepSize);
+OMSAPI oms_status_enu_t OMSCALL oms_addEventIndicator(const char* signal);
 OMSAPI oms_status_enu_t OMSCALL oms_addExternalModel(const char* cref, const char* path, const char* startscript);
 OMSAPI oms_status_enu_t OMSCALL oms_addSignalsToResults(const char* cref, const char* regex);
+OMSAPI oms_status_enu_t OMSCALL oms_addStaticValueIndicator(const char* signal, double lower, double upper, double stepSize);
 OMSAPI oms_status_enu_t OMSCALL oms_addSubModel(const char* cref, const char* fmuPath);
 OMSAPI oms_status_enu_t OMSCALL oms_addSystem(const char* cref, oms_system_enu_t type);
+OMSAPI oms_status_enu_t OMSCALL oms_addTimeIndicator(const char* signal);
 OMSAPI oms_status_enu_t OMSCALL oms_addTLMBus(const char* cref, oms_tlm_domain_t domain, const int dimensions, const oms_tlm_interpolation_t interpolation);
 OMSAPI oms_status_enu_t OMSCALL oms_addTLMConnection(const char* crefA, const char* crefB, double delay, double alpha, double linearimpedance, double angularimpedance);
 OMSAPI oms_status_enu_t OMSCALL oms_cancelSimulation_asynchronous(const char* cref);

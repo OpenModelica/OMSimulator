@@ -34,8 +34,10 @@
 
 #include "ComRef.h"
 #include "DirectedGraph.h"
+#include "StepSizeConfiguration.h"
 #include "System.h"
 #include "Types.h"
+#include <vector>
 
 namespace oms
 {
@@ -55,6 +57,7 @@ namespace oms
     oms_status_enu_t terminate();
     oms_status_enu_t reset();
     oms_status_enu_t stepUntil(double stopTime, void (*cb)(const char* ident, double time, oms_status_enu_t status));
+    oms_status_enu_t stepUntilASSC(double stopTime, void (*cb)(const char* ident, double time, oms_status_enu_t status));
 
     double getTime() const {return time;}
 
@@ -70,6 +73,12 @@ namespace oms
     oms_status_enu_t setRealInputDerivative(const ComRef& cref, double value);
     unsigned int getMaxOutputDerivativeOrder();
 
+    // Functions for configuring assc
+    oms_status_enu_t addEventIndicator(const ComRef& signal) {return stepSizeConfiguration.addEventIndicator(signal);}
+    oms_status_enu_t addTimeIndicator(const ComRef& signal) {return stepSizeConfiguration.addTimeIndicator(signal);}
+    oms_status_enu_t addStaticValueIndicator(const ComRef& signal, double lowerBound, double upperBound, double stepSize) {return stepSizeConfiguration.addStaticValueIndicator(signal, lowerBound, upperBound, stepSize);}
+    oms_status_enu_t addDynamicValueIndicator(const ComRef& signal,const ComRef& lower,const ComRef& upper,double stepSize) {return stepSizeConfiguration.addDynamicValueIndicator(signal, lower, upper, stepSize);}
+
   protected:
     SystemWC(const ComRef& cref, Model* parentModel, System* parentSystem);
 
@@ -81,6 +90,7 @@ namespace oms
     double time;
 
     double* derBuffer = NULL;
+    StepSizeConfiguration stepSizeConfiguration;  ///< Configuration data structure for assc
   };
 }
 

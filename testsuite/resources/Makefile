@@ -7,6 +7,8 @@ AircraftVehicleDemonstrator.consumer_B \
 AircraftVehicleDemonstrator.eCS_Generic_Export \
 AircraftVehicleDemonstrator.eCS_SW \
 AircraftVehicleDemonstrator.engine \
+ASSCExample.Class1 \
+ASSCExample.Class2 \
 DualMassOscillator.System1 \
 DualMassOscillator.System2 \
 HelloWorld \
