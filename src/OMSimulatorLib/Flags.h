@@ -59,6 +59,7 @@ namespace oms
     static bool IgnoreInitialUnknowns() {return GetInstance().ignoreInitialUnknowns;}
     static bool InputDerivatives() {return GetInstance().inputDerivatives;}
     static bool ProgressBar() {return GetInstance().progressBar;}
+    static bool RealTime() {return GetInstance().realTime;}
     static bool StripRoot() {return GetInstance().stripRoot;}
     static bool SuppressPath() {return GetInstance().suppressPath;}
     static bool WallTime() {return GetInstance().wallTime;}
@@ -76,6 +77,7 @@ namespace oms
     bool ignoreInitialUnknowns;
     bool inputDerivatives;
     bool progressBar;
+    bool realTime;
     bool stripRoot;
     bool suppressPath;
     bool wallTime;
@@ -120,6 +122,7 @@ namespace oms
       {"--logLevel", "", "0 default, 1 default+debug, 2 default+debug+trace", re_number, Flags::LogLevel, false},
       {"--mode", "-m", "Forces a certain FMI mode iff the FMU provides cs and me [arg: cs (default) or me]", re_mode, Flags::Mode, false},
       {"--progressBar", "", "", re_bool, Flags::ProgressBar, false},
+      {"--realTime", "", "Experimental feature for (soft) real-time co-simulation", re_bool, Flags::RealTime, false},
       {"--resultFile", "-r", "Specifies the name of the output result file", re_default, Flags::ResultFile, false},
       {"--setInputDerivatives", "", "", re_bool, Flags::SetInputDerivatives, false},
       {"--solver", "", "Specifies the integration method (euler, cvode)", re_default, Flags::Solver, false},
@@ -145,6 +148,7 @@ namespace oms
     static oms_status_enu_t LogLevel(const std::string& value);
     static oms_status_enu_t Mode(const std::string& value);
     static oms_status_enu_t ProgressBar(const std::string& value);
+    static oms_status_enu_t RealTime(const std::string& value);
     static oms_status_enu_t ResultFile(const std::string& value);
     static oms_status_enu_t SetInputDerivatives(const std::string& value);
     static oms_status_enu_t Solver(const std::string& value);

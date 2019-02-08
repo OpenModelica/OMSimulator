@@ -38,6 +38,7 @@
 #include "ssd/Tags.h"
 #include "SystemTLM.h"
 #include "Types.h"
+#include <thread>
 
 oms::SystemWC::SystemWC(const ComRef& cref, Model* parentModel, System* parentSystem)
   : oms::System(cref, oms_system_wc, parentModel, parentSystem, oms_solver_wc_ma)
@@ -202,6 +203,7 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
 {
   CallClock callClock(clock);
   ComRef modelName = this->getModel()->getCref();
+  auto start = std::chrono::steady_clock::now() + std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(time));
 
   double startTime=time;
 
@@ -237,6 +239,18 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
           cb(modelName.c_str(), tNext, status);
         return status;
       }
+    }
+
+    if (Flags::RealTime())
+    {
+      auto now = std::chrono::steady_clock::now();
+      // seems a cast to a sufficient high resolution of time is necessary for avoiding truncation errors
+      auto next = start + std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(tNext));
+      std::chrono::duration<double> margin = std::chrono::duration<double>(next - now);
+      if (margin < std::chrono::duration<double>(0))
+        logWarning("real-time frame overrun, time=" + std::to_string(tNext) + "s, exceeded margin=" + std::to_string(margin.count()) + "s");
+      else
+        std::this_thread::sleep_until(next);
     }
 
     time = tNext;
