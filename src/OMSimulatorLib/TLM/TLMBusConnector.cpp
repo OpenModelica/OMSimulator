@@ -342,7 +342,7 @@ oms::TLMBusConnector* oms::TLMBusConnector::getActualBus(ComRef cref, System *sy
       subcref = connections[i]->getSignalA();
     }
     else {
-      return this;
+      continue;
     }
 
     TLMBusConnector* subBus = system->getTLMBusConnector(subcref);
@@ -359,7 +359,7 @@ oms::TLMBusConnector* oms::TLMBusConnector::getActualBus(ComRef cref, System *sy
     }
   }
 
-  return nullptr; //Should never happen
+  return this;
 }
 
 std::vector<std::string> oms::TLMBusConnector::getVariableTypes(oms_tlm_domain_t domain, int dimensions, oms_tlm_interpolation_t interpolation)
