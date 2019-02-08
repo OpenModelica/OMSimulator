@@ -122,7 +122,7 @@ namespace oms
       {"--progressBar", "", "", re_bool, Flags::ProgressBar, false},
       {"--resultFile", "-r", "Specifies the name of the output result file", re_default, Flags::ResultFile, false},
       {"--setInputDerivatives", "", "", re_bool, Flags::SetInputDerivatives, false},
-      {"--solver", "", "Specifies the integration method (internal, euler, cvode)", re_void, Flags::Solver, false},
+      {"--solver", "", "Specifies the integration method (euler, cvode)", re_default, Flags::Solver, false},
       {"--startTime", "-s", "Specifies the start time", re_double, Flags::StartTime, false},
       {"--stopTime", "-t", "Specifies the stop time", re_double, Flags::StopTime, false},
       {"--stripRoot", "", "Removes the root system prefix from all exported signals", re_bool, Flags::StripRoot, false},
