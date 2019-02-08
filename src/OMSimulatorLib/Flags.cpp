@@ -67,6 +67,7 @@ void oms::Flags::setDefaults()
   intervals = 100;
   masterAlgorithm = oms_solver_wc_ma;
   progressBar = false;
+  realTime = false;
   resultFile = "<default>";
   solver = oms_solver_sc_cvode;
   startTime = 0.0;
@@ -247,6 +248,12 @@ oms_status_enu_t oms::Flags::Mode(const std::string& value)
 oms_status_enu_t oms::Flags::ProgressBar(const std::string& value)
 {
   GetInstance().progressBar = (value == "true");
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Flags::RealTime(const std::string& value)
+{
+  GetInstance().realTime = (value == "true");
   return oms_status_ok;
 }
 
