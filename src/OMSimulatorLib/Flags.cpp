@@ -270,6 +270,7 @@ oms_status_enu_t oms::Flags::Solver(const std::string& value)
     GetInstance().solver = oms_solver_sc_cvode;
   else
     return oms_status_error;
+
   return oms_status_ok;
 }
 
