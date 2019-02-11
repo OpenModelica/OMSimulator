@@ -151,6 +151,8 @@ class OMSimulator:
     self.obj.oms_setMaxLogFileSize.restype = None
     self.obj.oms_setReal.argtypes = [ctypes.c_char_p, ctypes.c_double]
     self.obj.oms_setReal.restype = ctypes.c_int
+    self.obj.oms_setRealInputDerivative.argtypes = [ctypes.c_char_p, ctypes.c_double]
+    self.obj.oms_setRealInputDerivative.restype = ctypes.c_int
     self.obj.oms_setResultFile.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int]
     self.obj.oms_setResultFile.restype = ctypes.c_int
     self.obj.oms_setSignalFilter.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
@@ -308,6 +310,8 @@ class OMSimulator:
     return [value.value, status]
   def setReal(self, signal, value):
     return self.obj.oms_setReal(self.checkstring(signal), value)
+  def setRealInputDerivative(self, signal, value):
+    return self.obj.oms_setRealInputDerivative(self.checkstring(signal), value)
   def setInteger(self, signal, value):
     return self.obj.oms_setInteger(self.checkstring(signal), value)
   def setBoolean(self, signal, value):

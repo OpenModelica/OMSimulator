@@ -949,7 +949,7 @@ oms_status_enu_t oms::System::addTLMConnection(const oms::ComRef& crefA, const o
 {
 #if !defined(NO_TLM)
   if (type != oms_system_tlm)
-    return logError_OnlyForTlmSystem;
+    return logError_OnlyForSystemTLM;
 
   oms::ComRef tailA(crefA);
   oms::ComRef headA = tailA.pop_front();
@@ -1183,7 +1183,7 @@ oms_status_enu_t oms::System::addExternalModel(const oms::ComRef& cref, std::str
 {
 #if !defined(NO_TLM)
   if (type != oms_system_tlm)
-    return logError_OnlyForTlmSystem;
+    return logError_OnlyForSystemTLM;
 
   if (!cref.isValidIdent())
     return oms_status_error;

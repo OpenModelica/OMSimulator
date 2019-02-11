@@ -42,6 +42,7 @@
 #include "ResultReader.h"
 #include "Scope.h"
 #include "System.h"
+#include "SystemWC.h"
 #if !defined(NO_TLM)
   #include "SystemTLM.h"
   #include "TLMBusConnector.h"
@@ -1051,7 +1052,7 @@ oms_status_enu_t oms_setTLMSocketData(const char *cref, const char *address, int
     return logError_SystemNotInModel(model->getCref(), front);
 
   if (system->getType() != oms_system_tlm)
-    return logError_OnlyForTlmSystem;
+    return logError_OnlyForSystemTLM;
 
   oms::SystemTLM* tlmsystem = reinterpret_cast<oms::SystemTLM*>(system);
   return tlmsystem->setSocketData(address, managerPort, monitorPort);
@@ -1076,7 +1077,7 @@ oms_status_enu_t oms_setTLMPositionAndOrientation(const char *cref, double x1, d
     return logError_SystemNotInModel(model->getCref(), front);
 
   if (system->getType() != oms_system_tlm)
-    return logError_OnlyForTlmSystem;
+    return logError_OnlyForSystemTLM;
 
   oms::SystemTLM* tlmsystem = reinterpret_cast<oms::SystemTLM*>(system);
   std::vector<double> x = {x1,x2,x3};
@@ -1188,6 +1189,27 @@ oms_status_enu_t oms_setReal(const char* cref, double value)
     return logError_SystemNotInModel(model->getCref(), front);
 
   return system->setReal(tail, value);
+}
+
+oms_status_enu_t oms_setRealInputDerivative(const char* cref, double value)
+{
+  oms::ComRef tail(cref);
+  oms::ComRef front = tail.pop_front();
+
+  oms::Model* model = oms::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  front = tail.pop_front();
+  oms::System* system = model->getSystem(front);
+  if (!system)
+    return logError_SystemNotInModel(model->getCref(), front);
+
+  if (system->getType() != oms_system_wc)
+    return logError_OnlyForSystemWC;
+
+  oms::SystemWC* systemWC = reinterpret_cast<oms::SystemWC*>(system);
+  return systemWC->setRealInputDerivative(tail, value);
 }
 
 oms_status_enu_t oms_setInteger(const char* cref, int value)

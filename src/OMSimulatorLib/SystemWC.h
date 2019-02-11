@@ -67,6 +67,7 @@ namespace oms
 
     oms_status_enu_t getRealOutputDerivative(const ComRef& cref, double*& value, unsigned int& order);
     oms_status_enu_t setRealInputDerivative(const ComRef& cref, double* value, unsigned int order);
+    oms_status_enu_t setRealInputDerivative(const ComRef& cref, double value);
     unsigned int getMaxOutputDerivativeOrder();
 
   protected:

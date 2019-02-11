@@ -142,7 +142,8 @@ private:
 #define logError_NotImplemented                              logError("Not implemented")
 #define logError_OnlyForExternalModels                       logError("Only available for TLM sub models (aka external models)")
 #define logError_OnlyForModel                                logError("Only implemented for model identifiers")
-#define logError_OnlyForTlmSystem                            logError("Only available for TLM systems")
+#define logError_OnlyForSystemTLM                            logError("Only available for TLM systems")
+#define logError_OnlyForSystemWC                             logError("Only available for WC systems")
 #define logError_ResetFailed(system)                         logError("failed to reset system \"" + std::string(system) + "\" to instantiation mode")
 #define logError_SubSystemNotInSystem(system, subsystem)     logError("System \"" + std::string(system) + "\" does not contain subsystem \"" + std::string(subsystem) + "\"")
 #define logError_SystemNotInModel(model, system)             logError("Model \"" + std::string(model) + "\" does not contain system \"" + std::string(system) + "\"")
@@ -153,4 +154,5 @@ private:
 #define logError_UnknownTLMVariableType(vartype)             logError("Unknown TLM variable type: \""+vartype+"\"")
 #define logError_VariableTypeAlreadyInTLMBus(cref,vartype)   logError("TLM bus connector \"" + std::string(cref) + "\" already contains a variable with type \"" + vartype + "\"")
 #define logError_WrongSchema(name)                           logError("Wrong xml schema detected. Unexpected tag \"" + name + "\"")
+
 #endif
