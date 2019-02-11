@@ -558,7 +558,7 @@ static int OMSimulatorLua_oms_setInteger(lua_State *L)
   return 1;
 }
 
-//oms_status_enu_t oms_setReal(const char* cref, double* value);
+// oms_status_enu_t oms_setReal(const char* cref, double value);
 static int OMSimulatorLua_oms_setReal(lua_State *L)
 {
   if (lua_gettop(L) != 2)
@@ -570,6 +570,22 @@ static int OMSimulatorLua_oms_setReal(lua_State *L)
   double value = lua_tonumber(L, 2);
 
   oms_status_enu_t status = oms_setReal(cref, value);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
+// OMSAPI oms_status_enu_t OMSCALL oms_setRealInputDerivative(const char* cref, double value);
+static int OMSimulatorLua_oms_setRealInputDerivative(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 arguments");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TNUMBER);
+
+  const char* cref = lua_tostring(L, 1);
+  double value = lua_tonumber(L, 2);
+
+  oms_status_enu_t status = oms_setRealInputDerivative(cref, value);
   lua_pushinteger(L, status);
   return 1;
 }
@@ -1134,7 +1150,6 @@ static int OMSimulatorLua_omsi_freeSysIdentModel(lua_State *L)
   return 0;
 }
 
-//void oms_setReal(void* model, const char* var, double value);
 // oms_status_enu_t omsi_initialize(void* simodel, size_t nSeries, const double* time, size_t nTime, char const* const* inputvars, size_t nInputvars, char const* const* measurementvars, size_t nMeasurementvars);
 static int OMSimulatorLua_omsi_initialize(lua_State *L)
 {
@@ -1409,6 +1424,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms_setLoggingLevel);
   REGISTER_LUA_CALL(oms_setMaxLogFileSize);
   REGISTER_LUA_CALL(oms_setReal);
+  REGISTER_LUA_CALL(oms_setRealInputDerivative);
   REGISTER_LUA_CALL(oms_setResultFile);
   REGISTER_LUA_CALL(oms_setSignalFilter);
   REGISTER_LUA_CALL(oms_setSolver);

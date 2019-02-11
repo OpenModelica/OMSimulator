@@ -324,6 +324,11 @@ oms_status_enu_t oms::SystemWC::setRealInputDerivative(const ComRef& cref, doubl
   return oms_status_error;
 }
 
+oms_status_enu_t oms::SystemWC::setRealInputDerivative(const ComRef& cref, double value)
+{
+  return setRealInputDerivative(cref, &value, 1);
+}
+
 oms_status_enu_t oms::SystemWC::updateInputs(oms::DirectedGraph& graph)
 {
   CallClock callClock(clock);
