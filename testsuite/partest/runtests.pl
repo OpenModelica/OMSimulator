@@ -172,7 +172,7 @@ sub read_makefile {
   my $dir = shift;
   my $header = shift;
 
-  return if($fast == 1 and $dir =~ m"/OMSysIdent"); # Skip OMSysIdent if -fast is given.
+  return if($fast == 1 and $dir =~ m"/tlm"); # Skip tlm if -fast is given.
 
   open(my $in, "<", "$dir/Makefile") or die "Couldn't open $dir/Makefile: $!";
 

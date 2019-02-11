@@ -10,6 +10,7 @@ pipeline {
   parameters {
     booleanParam(name: 'MSVC64', defaultValue: false, description: 'Build with MSVC64 (often hangs)')
     booleanParam(name: 'MINGW32', defaultValue: false, description: 'Build with MINGW32 (does not link boost)')
+    string(name: 'RUNTESTS_FLAG', defaultValue: '-fast', description: 'runtests.pl flag')
   }
   stages {
     stage('build') {
@@ -490,7 +491,7 @@ void partest(cache=true, extraArgs='') {
   ${env.ASAN ? "" : "ulimit -v 6291456" /* Max 6GB per process */}
 
   cd testsuite/partest
-  ./runtests.pl ${env.ASAN ? "-asan": ""} -j${numPhysicalCPU()} -nocolour -with-xml ${extraArgs}
+  ./runtests.pl ${env.ASAN ? "-asan": ""} -j${numPhysicalCPU()} -nocolour -with-xml ${params.RUNTESTS_FLAG} ${extraArgs}
   CODE=\$?
   test \$CODE = 0 -o \$CODE = 7 || exit 1
   """
