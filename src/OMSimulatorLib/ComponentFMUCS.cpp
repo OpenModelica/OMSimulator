@@ -682,10 +682,15 @@ oms_status_enu_t oms::ComponentFMUCS::setRealInputDerivative(const ComRef& cref,
   int j=-1;
   for (size_t i = 0; i < allVariables.size(); i++)
   {
-    if (allVariables[i].getCref() == cref && allVariables[i].isTypeReal() && allVariables[i].isInput())
+    if (allVariables[i].getCref() == cref)
     {
-      j = i;
-      break;
+      if (allVariables[i].isTypeReal() && allVariables[i].isInput())
+      {
+        j = i;
+        break;
+      }
+      else
+        return logError_OnlyForRealInputs(getFullCref() + cref);
     }
   }
 

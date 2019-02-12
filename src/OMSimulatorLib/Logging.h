@@ -142,6 +142,7 @@ private:
 #define logError_NotImplemented                              logError("Not implemented")
 #define logError_OnlyForExternalModels                       logError("Only available for TLM sub models (aka external models)")
 #define logError_OnlyForModel                                logError("Only implemented for model identifiers")
+#define logError_OnlyForRealInputs(cref)                     logError("Signal \"" + std::string(cref) + "\" is not a real input signal")
 #define logError_OnlyForSystemTLM                            logError("Only available for TLM systems")
 #define logError_OnlyForSystemWC                             logError("Only available for WC systems")
 #define logError_ResetFailed(system)                         logError("failed to reset system \"" + std::string(system) + "\" to instantiation mode")
