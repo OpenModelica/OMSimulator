@@ -344,7 +344,6 @@ oms_status_enu_t oms::SystemTLM::connectToSockets(const oms::ComRef cref, std::s
   TLMPlugin* plugin = TLMPlugin::CreateInstance();
   pluginsMutex.lock();
   plugins[system] = plugin;
-  pluginsMutex.unlock();
 
   logInfo("Initializing plugin for "+std::string(cref));
 
@@ -354,8 +353,10 @@ oms_status_enu_t oms::SystemTLM::connectToSockets(const oms::ComRef cref, std::s
                    system->getMaximumStepSize(),
                    server)) {
     logError("Error initializing the TLM plugin for "+std::string(cref));
+    pluginsMutex.unlock();
     return oms_status_error;
   }
+  pluginsMutex.unlock();
 
   logInfo("Registering interfaces for "+std::string(cref));
 
