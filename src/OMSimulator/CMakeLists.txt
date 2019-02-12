@@ -47,8 +47,5 @@ ENDIF ()
 
 add_definitions(-DOMS_STATIC)
 target_link_libraries(OMSimulator OMSimulatorLib_static lua ${OMSYSIDENT_OPTION})
-IF (NOT BUILD_SHARED)
-target_link_libraries(OMSimulator -static)
-ENDIF ()
 
 install(TARGETS OMSimulator DESTINATION bin)

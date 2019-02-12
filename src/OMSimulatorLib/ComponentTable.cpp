@@ -35,7 +35,7 @@
 #include "Model.h"
 #include "ssd/Tags.h"
 #include "System.h"
-#include <OMSBoost.h>
+#include <OMSFileSystem.h>
 #include <RegEx.h>
 
 oms::ComponentTable::ComponentTable(const ComRef& cref, System* parentSystem, const std::string& path)
@@ -71,14 +71,14 @@ oms::Component* oms::ComponentTable::NewComponent(const oms::ComRef& cref, oms::
   if (path.length() > 4)
     extension = path.substr(path.length() - 4);
 
-  boost::filesystem::path temp_root(parentSystem->getModel()->getTempDirectory());
-  boost::filesystem::path relPath = boost::filesystem::path("resources") / (std::string(cref) + extension);
-  boost::filesystem::path absPath = temp_root / relPath;
+  filesystem::path temp_root(parentSystem->getModel()->getTempDirectory());
+  filesystem::path relPath = filesystem::path("resources") / (std::string(cref) + extension);
+  filesystem::path absPath = temp_root / relPath;
 
   ComponentTable* component = new ComponentTable(cref, parentSystem, "resources/" + std::string(cref) + extension);
 
   if (parentSystem->copyResources())
-    boost::filesystem::copy_file(boost::filesystem::path(path), absPath, boost::filesystem::copy_option::overwrite_if_exists);
+    filesystem::copy_file(filesystem::path(path), absPath, filesystem::copy_options::overwrite_existing);
 
   component->resultReader = ResultReader::newReader(path.c_str());
   if (!component->resultReader)

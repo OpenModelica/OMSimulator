@@ -112,25 +112,11 @@ pipeline {
           }
           environment {
             SHELLSTART = """
-            export CC="/opt/rh/devtoolset-6/root/usr/bin/gcc"
-            export CXX="/opt/rh/devtoolset-6/root/usr/bin/g++"
+            export CC="/opt/rh/devtoolset-7/root/usr/bin/gcc"
+            export CXX="/opt/rh/devtoolset-7/root/usr/bin/g++"
+            export CXXFLAGS="-std=c++17"
             """
-            OMSFLAGS = "CERES=OFF"
-          }
-          steps {
-            buildOMS()
-          }
-        }
-        stage('alpine-static') {
-          agent {
-            dockerfile {
-              additionalBuildArgs '--pull'
-              dir '.CI/alpine'
-              label 'linux'
-            }
-          }
-          environment {
-            OMSFLAGS = "CERES=OFF OMSYSIDENT=OFF OMTLM=OFF STATIC=ON"
+            OMSFLAGS = "CERES=OFF OMSYSIDENT=OFF OMTLM=OFF"
           }
           steps {
             buildOMS()
@@ -139,8 +125,22 @@ pipeline {
             ! ls install/linux/bin/*.so 1> /dev/null 2>&1
             (cd install/linux && tar czf "../../OMSimulator-linux-amd64-`git describe`.tar.gz" *)
             '''
-
             archiveArtifacts "OMSimulator-linux-amd64-*.tar.gz"
+          }
+        }
+        stage('alpine') {
+          agent {
+            dockerfile {
+              additionalBuildArgs '--pull'
+              dir '.CI/alpine'
+              label 'linux'
+            }
+          }
+          environment {
+            OMSFLAGS = "CERES=OFF OMSYSIDENT=OFF OMTLM=OFF"
+          }
+          steps {
+            buildOMS()
           }
         }
         stage('linux32') {
