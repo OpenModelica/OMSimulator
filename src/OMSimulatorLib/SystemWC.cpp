@@ -210,6 +210,9 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
   if (Flags::ProgressBar())
     logInfo("stepUntil [" + std::to_string(startTime) + "; " + std::to_string(stopTime) + "]");
 
+  if (isTopLevelSystem())
+    getModel()->emit(time);
+
   while (time < stopTime)
   {
     double tNext = time+maximumStepSize;
