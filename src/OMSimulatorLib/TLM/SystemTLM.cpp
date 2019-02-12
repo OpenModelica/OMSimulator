@@ -263,16 +263,13 @@ oms_status_enu_t oms::SystemTLM::stepUntil(double stopTime, void (*cb)(const cha
 
   std::thread *masterThread = new std::thread(&omtlm_simulate, model);
 
-  logInfo("Connecting submodels to manager (threaded)");
+  logInfo("Connecting submodels to manager (sequential)");
   std::string server = address + ":" + std::to_string(actualManagerPort);
-  std::vector<std::thread> fmiConnectThreads;
   for(auto it = getSubSystems().begin(); it!=getSubSystems().end(); ++it) {
     System* subsystem = it->second;
     ComRef syscref = subsystem->getCref();
-    fmiConnectThreads.push_back(std::thread(&oms::SystemTLM::connectToSockets, this, syscref, server));
+    connectToSockets(syscref, server);
   }
-  for(auto &thread : fmiConnectThreads)
-    thread.join();
   for(auto it = getSubSystems().begin(); it!=getSubSystems().end(); ++it) {
     if(find(connectedsubsystems.begin(), connectedsubsystems.end(), it->second->getCref()) == connectedsubsystems.end())
       return logError("Failed to connect TLM subsystem: "+std::string(it->second->getCref()));
