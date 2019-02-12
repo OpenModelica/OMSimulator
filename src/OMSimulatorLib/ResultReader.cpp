@@ -38,7 +38,7 @@
 
 #include <string.h>
 
-#include <boost/filesystem.hpp>
+#include <OMSFileSystem.h>
 
 oms::ResultReader::ResultReader(const char* filename)
 {
@@ -50,7 +50,9 @@ oms::ResultReader::~ResultReader()
 
 oms::ResultReader* oms::ResultReader::newReader(const char* filename)
 {
-  std::string extension = boost::filesystem::extension(filename);
+  // Call filesystem::path twice because old Boost .extension() returns
+  // a string, but newer Boost and C++17 return a path
+  std::string extension = filesystem::path(filesystem::path(filename).extension()).string();
   ResultReader* resultReader = NULL;
 
   if (".csv" == extension)

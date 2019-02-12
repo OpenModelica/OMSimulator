@@ -29,21 +29,38 @@
  *
  */
 
-#include <OMSBoost.h>
+#include <OMSFileSystem.h>
 #include <cstring>
 
-boost::filesystem::path oms_temp_directory_path(void)
-{
-#if (BOOST_VERSION >= 104600) // no temp_directory_path in boost < 1.46
-  return boost::filesystem::temp_directory_path();
-
+#if OMC_STD_FS == 1
+// We have C++17; it has temp_directory_path and canonical
 #else
 
+#include <cstdlib>
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+#if (BOOST_VERSION < 104600)
+#if defined(_MSC_VER) || defined(__MINGW32__)
+#include <windows.h>
+#endif
+#endif
+
+#ifdef __cplusplus
+}
+#endif
+
+#if !(BOOST_VERSION >= 104600) // no temp_directory_path in boost < 1.46
+filesystem::path oms_temp_directory_path(void)
+{
 #if (_WIN32)
   char* val = (char*)malloc(sizeof(char)*(MAX_PATH + 1));
   GetTempPath(MAX_PATH, val);
 
-  boost::filesystem::path p((val!=0) ? val : "/tmp");
+  filesystem::path p((val!=0) ? val : "/tmp");
   if (val) free(val);
   return p;
 #else
@@ -54,24 +71,19 @@ boost::filesystem::path oms_temp_directory_path(void)
   (val = std::getenv("TEMP"   )) ||
   (val = std::getenv("TEMPDIR"));
 
-  boost::filesystem::path p((val!=0) ? val : "/tmp");
+  filesystem::path p((val!=0) ? val : "/tmp");
   return p;
 #endif // win32
-
-#endif // boost version
 }
 
-
-boost::filesystem::path oms_canonical(boost::filesystem::path p)
+filesystem::path oms_canonical(filesystem::path p)
 {
-#if (BOOST_VERSION >= 104600) // no temp_directory_path in boost < 1.46
-  return boost::filesystem::canonical(p);
-#else
   return p;
-#endif
 }
+#endif
+#endif
 
-boost::filesystem::path oms_unique_path(const std::string& prefix)
+filesystem::path oms_unique_path(const std::string& prefix)
 {
   const char lt[] = "0123456789abcdefghijklmnopqrstuvwxyz";
   int size = strlen(lt);
@@ -80,14 +92,14 @@ boost::filesystem::path oms_unique_path(const std::string& prefix)
   for(int i=0; i<8; i++)
     s += std::string(1, lt[rand() % size]);
 
-  boost::filesystem::path p(s);
+  filesystem::path p(s);
   return p;
 }
 
 /*
 
 The code above is partially based on the boost implementation for
-boost::filesystem::temp_directory_path.
+filesystem::temp_directory_path.
 
 Boost Software License - Version 1.0 - August 17th, 2003
 

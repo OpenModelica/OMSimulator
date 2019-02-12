@@ -39,7 +39,7 @@
 #include "SystemSC.h"
 #include <fmilib.h>
 #include <JM/jm_portability.h>
-#include <OMSBoost.h>
+#include <OMSFileSystem.h>
 #include <RegEx.h>
 
 oms::ComponentFMUME::ComponentFMUME(const ComRef& cref, System* parentSystem, const std::string& fmuPath)
@@ -54,9 +54,9 @@ oms::ComponentFMUME::~ComponentFMUME()
   fmi2_import_free(fmu);
   fmi_import_free_context(context);
 
-  if (!tempDir.empty() && boost::filesystem::is_directory(tempDir))
+  if (!tempDir.empty() && filesystem::is_directory(tempDir))
   {
-    boost::filesystem::remove_all(tempDir);
+    filesystem::remove_all(tempDir);
     logDebug("removed working directory: \"" + tempDir + "\"");
   }
 }
@@ -75,12 +75,12 @@ oms::Component* oms::ComponentFMUME::NewComponent(const oms::ComRef& cref, oms::
     return NULL;
   }
 
-  boost::filesystem::path temp_root(parentSystem->getModel()->getTempDirectory());
-  boost::filesystem::path temp_temp = temp_root / "temp";
-  boost::filesystem::path temp_resources = temp_root / "resources";
+  filesystem::path temp_root(parentSystem->getModel()->getTempDirectory());
+  filesystem::path temp_temp = temp_root / "temp";
+  filesystem::path temp_resources = temp_root / "resources";
 
-  boost::filesystem::path relFMUPath = boost::filesystem::path("resources") / (std::string(cref) + ".fmu");
-  boost::filesystem::path absFMUPath = temp_root / relFMUPath;
+  filesystem::path relFMUPath = filesystem::path("resources") / (std::string(cref) + ".fmu");
+  filesystem::path absFMUPath = temp_root / relFMUPath;
 
   ComponentFMUME* component = new ComponentFMUME(cref, parentSystem, "resources/" + std::string(cref) + ".fmu");
 
@@ -93,12 +93,12 @@ oms::Component* oms::ComponentFMUME::NewComponent(const oms::ComRef& cref, oms::
   component->callbacks.context = 0;
 
   if (parentSystem->copyResources())
-    boost::filesystem::copy_file(boost::filesystem::path(fmuPath), absFMUPath, boost::filesystem::copy_option::overwrite_if_exists);
+    filesystem::copy_file(filesystem::path(fmuPath), absFMUPath, filesystem::copy_options::overwrite_existing);
 
   // set temp directory
-  boost::filesystem::path tempDir = temp_temp / std::string(cref);
+  filesystem::path tempDir = temp_temp / std::string(cref);
   component->tempDir = tempDir.string();
-  if (!boost::filesystem::is_directory(tempDir) && !boost::filesystem::create_directory(tempDir))
+  if (!filesystem::is_directory(tempDir) && !filesystem::create_directory(tempDir))
   {
     logError("Creating temp directory for component \"" + std::string(cref) + "\" failed");
     return NULL;

@@ -35,7 +35,7 @@
 #include "System.h"
 #include "Component.h"
 #include <miniunz.h>
-#include <OMSBoost.h>
+#include <OMSFileSystem.h>
 #include <time.h>
 
 oms::Scope::Scope()
@@ -173,7 +173,7 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
     return logError("filename extension must be \".ssp\"; no other formats are supported");
 
   // extract SystemStructure.ssd to temp
-  boost::filesystem::path temp_root(getTempDirectory());
+  filesystem::path temp_root(getTempDirectory());
   if (oms_status_ok != oms::Scope::miniunz(filename, temp_root.string(), true))
     return logError("failed to extract \"SystemStructure.ssd\" from \"" + filename + "\"");
 
@@ -220,15 +220,15 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
 
 oms_status_enu_t oms::Scope::setTempDirectory(const std::string& newTempDir)
 {
-  if (!boost::filesystem::is_directory(newTempDir))
+  if (!filesystem::is_directory(newTempDir))
   {
-    if (!boost::filesystem::create_directory(newTempDir))
+    if (!filesystem::create_directory(newTempDir))
       return logError("Changing temp directory to \"" + newTempDir + "\" failed");
     else if (!Flags::SuppressPath())
       logInfo("New temp directory has been created: \"" + newTempDir + "\"");
   }
 
-  boost::filesystem::path path(newTempDir.c_str());
+  filesystem::path path(newTempDir.c_str());
   try
   {
     path = oms_canonical(path);
@@ -249,10 +249,10 @@ oms_status_enu_t oms::Scope::setTempDirectory(const std::string& newTempDir)
 
 oms_status_enu_t oms::Scope::setWorkingDirectory(const std::string& newWorkingDir)
 {
-  if (!boost::filesystem::is_directory(newWorkingDir))
+  if (!filesystem::is_directory(newWorkingDir))
     return logError("Set working directory to \"" + newWorkingDir + "\" failed");
 
-  boost::filesystem::path path(newWorkingDir.c_str());
+  filesystem::path path(newWorkingDir.c_str());
   try
   {
     path = oms_canonical(path);
@@ -263,7 +263,7 @@ oms_status_enu_t oms::Scope::setWorkingDirectory(const std::string& newWorkingDi
     // https://svn.boost.org/trac10/ticket/11138
   }
 
-  boost::filesystem::current_path(path);
+  filesystem::current_path(path);
 
   if (!Flags::SuppressPath())
     logInfo("Set working directory to \"" + path.string() + "\"");
@@ -273,7 +273,7 @@ oms_status_enu_t oms::Scope::setWorkingDirectory(const std::string& newWorkingDi
 
 std::string oms::Scope::getWorkingDirectory()
 {
-  boost::filesystem::path workingDir(boost::filesystem::current_path());
+  filesystem::path workingDir(filesystem::current_path());
   return workingDir.string();
 }
 

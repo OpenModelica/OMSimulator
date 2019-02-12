@@ -39,8 +39,9 @@
 #include "System.h"
 #include "Component.h"
 
-#include <OMSBoost.h>
+#include <OMSFileSystem.h>
 #include <minizip.h>
+#include <thread>
 
 oms::Model::Model(const oms::ComRef& cref, const std::string& tempDir)
   : cref(cref), tempDir(tempDir), resultFilename(std::string(cref) + "_res.mat")
@@ -68,23 +69,23 @@ oms::Model* oms::Model::NewModel(const oms::ComRef& cref)
     return NULL;
   }
 
-  boost::filesystem::path tempDir = (boost::filesystem::path(Scope::GetInstance().getTempDirectory().c_str()) / oms_unique_path(std::string(cref))).string();
-  if (boost::filesystem::is_directory(tempDir))
+  filesystem::path tempDir = (filesystem::path(Scope::GetInstance().getTempDirectory().c_str()) / oms_unique_path(std::string(cref))).string();
+  if (filesystem::is_directory(tempDir))
   {
     logError("Unique temp directory does already exist. Clean up the temp directory \"" + Scope::GetInstance().getTempDirectory() + "\" and try again.");
     return NULL;
   }
-  if (!boost::filesystem::create_directory(tempDir))
+  if (!filesystem::create_directory(tempDir))
   {
     logError("Failed to create unique temp directory for the model \"" + std::string(cref) + "\"");
     return NULL;
   }
-  if (!boost::filesystem::create_directory(tempDir / "temp"))
+  if (!filesystem::create_directory(tempDir / "temp"))
   {
     logError("Failed to create temp directory for the model \"" + std::string(cref) + "\"");
     return NULL;
   }
-  if (!boost::filesystem::create_directory(tempDir / "resources"))
+  if (!filesystem::create_directory(tempDir / "resources"))
   {
     logError("Failed to create resources directory for the model \"" + std::string(cref) + "\"");
     return NULL;
@@ -307,7 +308,7 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
   pugi::xml_node node = doc.append_child(oms::ssd::ssd_system_structure_description);
   exportToSSD(node);
 
-  boost::filesystem::path ssdPath = boost::filesystem::path(tempDir) / "SystemStructure.ssd";
+  filesystem::path ssdPath = filesystem::path(tempDir) / "SystemStructure.ssd";
   if (!doc.save_file(ssdPath.string().c_str()))
     return logError("failed to export \"" + ssdPath.string() + "\" (for model \"" + std::string(this->getCref()) + "\")");
 
@@ -337,8 +338,8 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
   delete[] argv;
   Scope::GetInstance().setWorkingDirectory(cd);
 
-  boost::filesystem::path full_path = boost::filesystem::path(tempDir) / "temp/model.ssp";
-  boost::filesystem::copy_file(full_path, boost::filesystem::path(filename), boost::filesystem::copy_option::overwrite_if_exists);
+  filesystem::path full_path = filesystem::path(tempDir) / "temp/model.ssp";
+  filesystem::copy_file(full_path, filesystem::path(filename), filesystem::copy_options::overwrite_existing);
 
   return oms_status_ok;
 }

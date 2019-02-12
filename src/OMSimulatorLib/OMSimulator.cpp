@@ -49,7 +49,6 @@
 #endif
 #include "Types.h"
 #include "Version.h"
-#include <boost/filesystem.hpp>
 #include <miniunz.h>
 #include <pugixml.hpp>
 #include <string>

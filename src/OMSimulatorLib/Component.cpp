@@ -33,7 +33,7 @@
 
 #include "Model.h"
 #include "System.h"
-#include <OMSBoost.h>
+#include <OMSFileSystem.h>
 #include "TLMBusConnector.h"
 
 
@@ -221,18 +221,18 @@ oms_status_enu_t oms::Component::deleteConnector(const ComRef& cref)
 
 oms_status_enu_t oms::Component::deleteResources()
 {
-  boost::filesystem::path temp_root(parentSystem->getModel()->getTempDirectory());
-  boost::filesystem::path temp_temp = temp_root / "temp";
-  boost::filesystem::path temp_resources = temp_root / "resources";
+  filesystem::path temp_root(parentSystem->getModel()->getTempDirectory());
+  filesystem::path temp_temp = temp_root / "temp";
+  filesystem::path temp_resources = temp_root / "resources";
 
-  boost::filesystem::path relFMUPath = boost::filesystem::path("resources") / (std::string(cref) + ".fmu");
-  boost::filesystem::path absFMUPath = temp_root / relFMUPath;
+  filesystem::path relFMUPath = filesystem::path("resources") / (std::string(cref) + ".fmu");
+  filesystem::path absFMUPath = temp_root / relFMUPath;
 
   // delete resources
-  boost::filesystem::remove(absFMUPath);
+  filesystem::remove(absFMUPath);
 
   // delete temp directory
-  boost::filesystem::remove(temp_temp / std::string(cref));
+  filesystem::remove(temp_temp / std::string(cref));
 
   return oms_status_ok;
 }
