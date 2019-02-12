@@ -100,6 +100,9 @@ namespace oms
 
     bool validState(int validStates) const {return (modelState & validStates);}
 
+    bool isIsolatedFMUModel() const {return isolatedFMU;}
+    void setIsolatedFMUModel() {isolatedFMU = true;}
+
   private:
     Model(const ComRef& cref, const std::string& tempDir);
 
@@ -131,6 +134,7 @@ namespace oms
     Clock clock;
 
     bool cancelSim;
+    bool isolatedFMU = false;
   };
 }
 

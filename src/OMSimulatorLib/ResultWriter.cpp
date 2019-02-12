@@ -31,6 +31,8 @@
 
 #include "ResultWriter.h"
 #include "Flags.h"
+#include "Model.h"
+#include "Scope.h"
 
 oms::ResultWriter::ResultWriter(unsigned int bufferSize)
   : bufferSize(bufferSize),
@@ -52,11 +54,17 @@ unsigned int oms::ResultWriter::addSignal(const ComRef& name, const std::string&
   signal.description = description;
   signal.type = type;
 
-  if (Flags::StripRoot())
+  oms::Model* model = oms::Scope::GetInstance().getModel(name.front());
+  if (Flags::StripRoot() || (model && model->isIsolatedFMUModel()))
   {
     signal.name.pop_front();
     signal.name.pop_front();
+    if (model && model->isIsolatedFMUModel())
+      signal.name.pop_front();
   }
+
+  if (signal.name.isEmpty())
+    return 0;
 
   signals.push_back(signal);
   return (unsigned int) signals.size();
@@ -70,11 +78,17 @@ void oms::ResultWriter::addParameter(const ComRef& name, const std::string& desc
   parameter.signal.type = type;
   parameter.value = value;
 
-  if (Flags::StripRoot())
+  oms::Model* model = oms::Scope::GetInstance().getModel(name.front());
+  if (Flags::StripRoot() || (model && model->isIsolatedFMUModel()))
   {
     parameter.signal.name.pop_front();
     parameter.signal.name.pop_front();
+    if (model && model->isIsolatedFMUModel())
+      parameter.signal.name.pop_front();
   }
+
+  if (parameter.signal.name.isEmpty())
+    return;
 
   parameters.push_back(parameter);
 }
