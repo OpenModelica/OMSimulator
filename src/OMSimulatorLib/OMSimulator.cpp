@@ -977,6 +977,11 @@ oms_status_enu_t oms_RunFile(const char* filename_)
     status = oms_newModel(modelName.c_str());
     if (oms_status_ok != status) return logError("oms_newModel failed");
 
+    oms::Model* model = oms::Scope::GetInstance().getModel(oms::ComRef(modelName));
+    if (!model)
+      return logError_ModelNotInScope(oms::ComRef(modelName));
+    model->setIsolatedFMUModel();
+
     if (kind == oms_fmi_kind_me_and_cs)
       status = oms_addSystem(systemName.c_str(), oms::Flags::DefaultModeIsCS() ? oms_system_wc : oms_system_sc);
     else
