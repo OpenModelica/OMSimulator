@@ -46,9 +46,7 @@ oms::Scope::Scope()
 
   this->models.push_back(NULL);
 
-  boost::filesystem::path tempDir = oms_temp_directory_path() / "omsimulator";
-  setTempDirectory(tempDir.string());
-
+  setTempDirectory(tempDir);
   setWorkingDirectory(".");
 }
 
