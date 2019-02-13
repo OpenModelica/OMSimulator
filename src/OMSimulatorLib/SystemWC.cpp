@@ -224,7 +224,7 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
 
   if(solverMethod == oms_solver_wc_mav) // If variable step.
   {
-    double stepSize = initialStepSize;
+    stepSize = initialStepSize;
     logDebug("DEBUGGING: Entering VariableStep solver");
     int fmuIndex = 0;
     std::map<ComRef, Component*> FMUcomponents;
@@ -433,7 +433,10 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
         time = tNext;
         if (isTopLevelSystem())
         {
-          getModel()->setStepAndRollIterator(stepSize,rollbackCounter,biggestDifferance,totalError);
+          this->stepSize = stepSize;
+          this->rollBackIt = rollbackCounter;
+          this->maxError = biggestDifferance;
+          this->normError = totalError;
           getModel()->emit(time);
         }
         updateInputs(outputsGraph); // updateCanGetFMUs(outputsGraph,canGetAndSetStateFMUcomponents);
@@ -1168,5 +1171,128 @@ oms_status_enu_t oms::SystemWC::solveAlgLoop(DirectedGraph& graph, const std::ve
   if (it >= maxIterations)
     return logError("max. number of iterations (" + std::to_string(maxIterations) + ") exceeded at time = " + std::to_string(getTime()));
   logDebug("CompositeModel::solveAlgLoop: maxRes: " + std::to_string(maxRes) + ", iterations: " + std::to_string(it) + " at time = " + std::to_string(getTime()));
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::SystemWC::registerSignalsForResultFile(ResultWriter& resultFile)
+{
+  if (Flags::WallTime())
+    clock_id = resultFile.addSignal(std::string(getFullCref() + ComRef("$wallTime")), "wall-clock time [s]", SignalType_REAL);
+  else
+    clock_id = 0;
+
+  if (getSolver() == oms_solver_wc_mav)
+  {
+    h_id = resultFile.addSignal("h", "Step-size h [s]", SignalType_REAL);
+    roll_iter_id = resultFile.addSignal("rollbackIterations", "How many Rollbacks were made", SignalType_INT);
+    max_error_id = resultFile.addSignal("errorMax", "Max error", SignalType_REAL);
+    error_id = resultFile.addSignal("errorNorm", "Normalized error from all signals", SignalType_REAL);
+  }
+  else
+  {
+    h_id = 0;
+    roll_iter_id = 0;
+    max_error_id = 0;
+    error_id = 0;
+  }
+
+  for (const auto& component : getComponents())
+    if (oms_status_ok != component.second->registerSignalsForResultFile(resultFile))
+      return oms_status_error;
+
+  for (const auto& subsystem : getSubSystems())
+    if (oms_status_ok != subsystem.second->registerSignalsForResultFile(resultFile))
+      return oms_status_error;
+
+  resultFileMapping.clear();
+  Connector** connectors = getConnectors();
+  for (int i=0; connectors[i]; ++i)
+  {
+    if (!connectors[i])
+      continue;
+    if (!exportConnectors[connectors[i]->getName()])
+      continue;
+
+    auto const& connector = connectors[i];
+
+    if (oms_signal_type_real == connector->getType())
+    {
+      unsigned int ID = resultFile.addSignal(std::string(getFullCref() + connector->getName()), "connector", SignalType_REAL);
+      resultFileMapping[ID] = i;
+    }
+    else if (oms_signal_type_integer == connector->getType())
+    {
+      unsigned int ID = resultFile.addSignal(std::string(connector->getName()), "connector", SignalType_INT);
+      resultFileMapping[ID] = i;
+    }
+    else if (oms_signal_type_boolean == connector->getType())
+    {
+      unsigned int ID = resultFile.addSignal(std::string(connector->getName()), "connector", SignalType_BOOL);
+      resultFileMapping[ID] = i;
+    }
+  }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::SystemWC::updateSignals(ResultWriter& resultFile)
+{
+  if (clock_id)
+  {
+    SignalValue_t wallTime;
+    wallTime.realValue = clock.getElapsedWallTime();
+    resultFile.updateSignal(clock_id, wallTime);
+  }
+
+  if(getSolver() == oms_solver_wc_mav)
+  {
+    SignalValue_t stepS;
+    stepS.realValue = stepSize;
+    resultFile.updateSignal(h_id, stepS);
+    SignalValue_t rollB;
+    rollB.intValue = rollBackIt;
+    resultFile.updateSignal(roll_iter_id, rollB);
+    SignalValue_t maxErr;
+    maxErr.realValue = maxError;
+    resultFile.updateSignal(max_error_id, maxErr);
+    SignalValue_t errNorm;
+    errNorm.realValue = normError;
+    resultFile.updateSignal(error_id, errNorm);
+  }
+
+  for (const auto& component : getComponents())
+    if (oms_status_ok != component.second->updateSignals(resultFile))
+      return oms_status_error;
+
+  for (const auto& subsystem : getSubSystems())
+    if (oms_status_ok != subsystem.second->updateSignals(resultFile))
+      return oms_status_error;
+
+  Connector** connectors = getConnectors();
+  for (auto const &it : resultFileMapping)
+  {
+    unsigned int ID = it.first;
+    auto const& connector = connectors[it.second];
+    SignalValue_t value;
+    if (oms_signal_type_real == connector->getType())
+    {
+      if (oms_status_ok != getReal(connector->getName(), value.realValue))
+        return logError("failed to fetch connector " + std::string(connector->getName()));
+      resultFile.updateSignal(ID, value);
+    }
+    else if (oms_signal_type_integer == connector->getType())
+    {
+      if (oms_status_ok != getInteger(connector->getName(), value.intValue))
+        return logError("failed to fetch variable " + std::string(connector->getName()));
+      resultFile.updateSignal(ID, value);
+    }
+    else if (oms_signal_type_boolean == connector->getType())
+    {
+      if (oms_status_ok != getBoolean(connector->getName(), value.boolValue))
+        return logError("failed to fetch variable " + std::string(connector->getName()));
+      resultFile.updateSignal(ID, value);
+    }
+  }
+
   return oms_status_ok;
 }

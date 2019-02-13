@@ -92,7 +92,6 @@ namespace oms
     double getLoggingInterval() const {return loggingInterval;}
     oms_status_enu_t setResultFile(const std::string& filename, int bufferSize);
     oms_status_enu_t emit(double time, bool force=false);
-    oms_status_enu_t setStepAndRollIterator(double stepSize,unsigned int rollBackIt, double maxError, double normError);
     oms_status_enu_t addSignalsToResults(const char* regex);
     oms_status_enu_t removeSignalsFromResults(const char* regex);
 
@@ -133,14 +132,6 @@ namespace oms
     int bufferSize = 10;
     std::string resultFilename;             ///< default <name>_res.mat
     Clock clock;
-    unsigned int h_id;
-    unsigned int roll_iter_id;
-    unsigned int max_error_id;
-    unsigned int error_id;
-    double stepSize = 1e-4; // Default system stepsize. So first logging step works.
-    double maxError = 0.0;
-    double normError = 0.0;
-    unsigned int rollBackIt = 0;
 
     bool cancelSim;
     bool isolatedFMU = false;

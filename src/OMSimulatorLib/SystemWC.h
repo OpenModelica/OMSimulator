@@ -83,6 +83,9 @@ namespace oms
     oms_status_enu_t addStaticValueIndicator(const ComRef& signal, double lowerBound, double upperBound, double stepSize) {return stepSizeConfiguration.addStaticValueIndicator(signal, lowerBound, upperBound, stepSize);}
     oms_status_enu_t addDynamicValueIndicator(const ComRef& signal,const ComRef& lower,const ComRef& upper,double stepSize) {return stepSizeConfiguration.addDynamicValueIndicator(signal, lower, upper, stepSize);}
 
+    oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultFile);
+    oms_status_enu_t updateSignals(ResultWriter& resultFile);
+
   protected:
     SystemWC(const ComRef& cref, Model* parentModel, System* parentSystem);
 
@@ -98,6 +101,15 @@ namespace oms
 
     double* derBuffer = NULL;
     StepSizeConfiguration stepSizeConfiguration;  ///< Configuration data structure for assc
+
+    unsigned int h_id;
+    unsigned int roll_iter_id;
+    unsigned int max_error_id;
+    unsigned int error_id;
+    double stepSize = 1e-4; // Default system stepsize. So first logging step works.
+    double maxError = 0.0;
+    double normError = 0.0;
+    unsigned int rollBackIt = 0;
   };
 }
 
