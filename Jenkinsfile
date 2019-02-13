@@ -350,11 +350,11 @@ pipeline {
             bat """
 call install\\mingw\\bin\\OMSimulator.exe --version
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-call C:\\OMDev\\tools\\msys\\mingw64\\usr\\bin\\sh --login -c make -C testsuite difftool resources
+call C:\\OMDev\\tools\\msys\\usr\\bin\\sh --login -c make -C testsuite difftool resources
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 cd testsuite\\partest
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-call C:\\OMDev\\tools\\msys\\mingw64\\usr\\bin\\sh --login -c perl ./runtests.pl -nocolour -with-xml ${params.RUNTESTS_FLAG}
+call C:\\OMDev\\tools\\msys\\usr\\bin\\sh --login -c perl ./runtests.pl -nocolour -with-xml ${params.RUNTESTS_FLAG}
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 EXIT /b 0
 :fail
