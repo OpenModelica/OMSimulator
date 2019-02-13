@@ -259,7 +259,7 @@ oms_status_enu_t oms::Flags::RealTime(const std::string& value)
 
 oms_status_enu_t oms::Flags::ResultFile(const std::string& value)
 {
-  GetInstance().resultFile = atof(value.c_str());
+  GetInstance().resultFile = value;
   return oms_status_ok;
 }
 
