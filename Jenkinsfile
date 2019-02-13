@@ -349,7 +349,7 @@ pipeline {
             unstash name: 'mingw64-install'
             omdevCommand("install/mingw/bin/OMSimulator.exe --version")
             omdevCommand("make -C testsuite difftool resources")
-            omdevCommand("perl ./runtests.pl -nocolour -with-xml ${params.RUNTESTS_FLAG}")
+            omdevCommand("cd testsuite/partest && perl ./runtests.pl -nocolour -with-xml ${params.RUNTESTS_FLAG}")
             junit 'testsuite/partest/result.xml'
           }
         }
