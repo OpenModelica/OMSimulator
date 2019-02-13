@@ -288,6 +288,7 @@ pipeline {
             }
           }
         }
+        stage('mingw64') { stages {
         stage('mingw64-cross') {
           agent {
             docker {
@@ -329,14 +330,41 @@ pipeline {
             export WINEDEBUG=-all
             exec /usr/bin/wine64 /opt/pacman/mingw64/bin/python3.7.exe "\$@"
             """)
+            stash name: 'mingw64-install', includes: "install/mingw/**"
             sh "chmod +x install/mingw/bin/OMSimulator install/mingw/bin/OMSimulatorPython"
             sh "install/mingw/bin/OMSimulator --version || install/mingw/bin/OMSimulator --version"
-            // We need to compile a native omc-diff
-            sh "make -C testsuite CC=gcc difftool"
-            partest(true, '-platform=mingw -nopython')
+          }
+        }
+        stage('mingw64-test') {
+          agent {
+            label 'omsimulator-windows'
+          }
+          environment {
+            PATH = "${env.PATH};C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;C:\\OMDev\\tools\\msys\\mingw64\\bin\\"
+            OMDEV = "/c/OMDev"
+            MSYSTEM = "MINGW64"
+          }
+
+          steps {
+            unstash name: 'mingw64-install'
+            bat """
+call install\\mingw\\bin\\OMSimulator.exe --version
+IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
+call C:\\OMDev\\tools\\msys\\mingw64\\bin\\sh --login -c make -C testsuite difftool resources
+IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
+cd testsuite\\partest
+IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
+call C:\\OMDev\\tools\\msys\\mingw64\\bin\\sh --login -c perl ./runtests.pl -nocolour -with-xml ${params.RUNTESTS_FLAG}
+IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
+EXIT /b 0
+:fail
+ECHO Something went wrong!
+EXIT /b 1
+"""
             junit 'testsuite/partest/result.xml'
           }
         }
+        } }
 
         stage('mingw32-cross') {
           when {
