@@ -339,7 +339,10 @@ pipeline {
         }
         stage('mingw64-test') {
           agent {
-            label 'omdev'
+            node {
+              label 'omdev'
+              customWorkspace "OMS${env.BRANCH_NAME}${env.CHANGE_ID}"
+            }
           }
           environment {
             PATH = "${env.PATH};C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;C:\\OMDev\\tools\\msys\\mingw64\\bin\\"
