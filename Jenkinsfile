@@ -319,7 +319,7 @@ pipeline {
             '''
             archiveArtifacts "OMSimulator-mingw64*.zip"
             stash name: 'mingw64-install', includes: "install/mingw/**"
-            if false {
+            if (false) {
               writeFile(file:"install/mingw/bin/OMSimulator", text:"""#!/bin/sh
               export "HOME=${WORKSPACE}"
               export WINEDEBUG=-all
