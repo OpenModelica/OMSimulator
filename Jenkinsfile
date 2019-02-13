@@ -337,7 +337,7 @@ pipeline {
         }
         stage('mingw64-test') {
           agent {
-            label 'omsimulator-windows'
+            label 'omdev'
           }
           environment {
             PATH = "${env.PATH};C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;C:\\OMDev\\tools\\msys\\mingw64\\bin\\"
@@ -347,20 +347,9 @@ pipeline {
 
           steps {
             unstash name: 'mingw64-install'
-            bat """
-call install\\mingw\\bin\\OMSimulator.exe --version
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-call C:\\OMDev\\tools\\msys\\usr\\bin\\sh --login -c make -C testsuite difftool resources
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-cd testsuite\\partest
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-call C:\\OMDev\\tools\\msys\\usr\\bin\\sh --login -c perl ./runtests.pl -nocolour -with-xml ${params.RUNTESTS_FLAG}
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-EXIT /b 0
-:fail
-ECHO Something went wrong!
-EXIT /b 1
-"""
+            omdevCommand("install\\mingw\\bin\\OMSimulator.exe --version")
+            omdevCommand("make -C testsuite difftool resources")
+            omdevCommand("perl ./runtests.pl -nocolour -with-xml ${params.RUNTESTS_FLAG}")
             junit 'testsuite/partest/result.xml'
           }
         }
@@ -552,5 +541,12 @@ void buildOMS() {
   make config-3rdParty ${env.CC ? "CC=" + env.CC : ""} ${env.CXX ? "CXX=" + env.CXX : ""} ${env.OMSFLAGS ?: ""} -j${nproc}
   make config-OMSimulator -j${nproc} ${env.ASAN ? "ASAN=ON" : ""} ${env.OMSFLAGS ?: ""}
   make OMSimulator -j${nproc} ${env.ASAN ? "DISABLE_RUN_OMSIMULATOR_VERSION=1" : ""} ${env.OMSFLAGS ?: ""}
+  """
+}
+
+def omdevCommand(cmd) {
+  bat """
+  call C:\\OMDev\\tools\\msys\\usr\\bin\\sh --login -c "cd '${env.WORKSPACE}' && ${cmd}"
+  EXIT /b %ERRORLEVEL%
   """
 }
