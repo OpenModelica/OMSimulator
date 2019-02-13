@@ -391,6 +391,7 @@ EXIT /b 1
             VERBOSE = '1'
             BOOST_ROOT = '/opt/pacman/mingw32/'
             MSYSROOT = '/opt/pacman/'
+            OMSFLAGS = "OMTLM=OFF" // OMTLMSimulator project does not support 32-bit MINGW
           }
 
           steps {
