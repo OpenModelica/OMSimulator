@@ -347,7 +347,7 @@ pipeline {
 
           steps {
             unstash name: 'mingw64-install'
-            omdevCommand("install\\mingw\\bin\\OMSimulator.exe --version")
+            omdevCommand("install/mingw/bin/OMSimulator.exe --version")
             omdevCommand("make -C testsuite difftool resources")
             omdevCommand("perl ./runtests.pl -nocolour -with-xml ${params.RUNTESTS_FLAG}")
             junit 'testsuite/partest/result.xml'
@@ -546,7 +546,7 @@ void buildOMS() {
 
 def omdevCommand(cmd) {
   bat """
-  call C:\\OMDev\\tools\\msys\\usr\\bin\\sh --login -c "cd '${env.WORKSPACE}' && ${cmd}"
+  call C:\\OMDev\\tools\\msys\\usr\\bin\\sh --login -c "cd '${env.WORKSPACE}.replace("\\","/")' && ${cmd}"
   EXIT /b %ERRORLEVEL%
   """
 }
