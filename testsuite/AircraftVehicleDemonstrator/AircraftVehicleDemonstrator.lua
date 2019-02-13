@@ -7,7 +7,7 @@
 --oms_setLoggingLevel(0)
 oms_setCommandLineOption("--suppressPath=true")
 --oms_setLogFile("AircraftVehicleDemonstrator.log")
-oms_setTempDirectory("./AircraftVehicleDemonstrator_tmp/")
+oms_setTempDirectory("./")
 
 oms_newModel("AircraftVehicleDemonstrator")
 oms_addSystem("AircraftVehicleDemonstrator.root", oms_system_wc)
