@@ -1,6 +1,6 @@
 #ifndef _OMS_FILESYSTEM_H_
 
-#ifdef __has_include
+#if !defined(WITHOUT_FS) && defined(__has_include)
 #if __has_include(<filesystem>)
 #include <filesystem>
 #if __cpp_lib_filesystem >= 201703
