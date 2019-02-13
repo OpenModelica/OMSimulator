@@ -345,7 +345,7 @@ pipeline {
           }
           agent {
             docker {
-              image 'docker.openmodelica.org/msyscross-omsimulator:v2.1.0'
+              image 'docker.openmodelica.org/msyscross-omsimulator:v2.1.0-i686'
               label 'linux'
               alwaysPull true
               args '--tmpfs /tmp'
