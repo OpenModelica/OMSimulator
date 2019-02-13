@@ -575,7 +575,6 @@ oms_status_enu_t oms::Model::registerSignalsForResultFile()
   if (!resultFile)
     return oms_status_ok;
 
-  clock_id = resultFile->addSignal("$wallTime", "wall-clock time [s]", SignalType_REAL);
   if(getTopLevelSystem()->getSolver() == oms_solver_wc_mav)
   {
     h_id = resultFile->addSignal("h","Step-size h [s]",SignalType_REAL);
@@ -596,10 +595,6 @@ oms_status_enu_t oms::Model::emit(double time, bool force)
   if (!force && time < lastEmit + loggingInterval)
     return oms_status_ok;
 
-
-  SignalValue_t wallTime;
-  wallTime.realValue = clock.getElapsedWallTime();
-  resultFile->updateSignal(clock_id, wallTime);
   if(getTopLevelSystem()->getSolver() == oms_solver_wc_mav)
   {
     SignalValue_t stepS;

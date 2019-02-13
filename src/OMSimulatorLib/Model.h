@@ -133,7 +133,6 @@ namespace oms
     int bufferSize = 10;
     std::string resultFilename;             ///< default <name>_res.mat
     Clock clock;
-    unsigned int clock_id;
     unsigned int h_id;
     unsigned int roll_iter_id;
     unsigned int max_error_id;
