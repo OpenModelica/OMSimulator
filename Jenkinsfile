@@ -546,7 +546,7 @@ void buildOMS() {
 
 def omdevCommand(cmd) {
   bat """
-  call C:\\OMDev\\tools\\msys\\usr\\bin\\sh --login -c "cd '${env.WORKSPACE}.replace("\\","/")' && ${cmd}"
+  call C:\\OMDev\\tools\\msys\\usr\\bin\\sh --login -c "cd '${env.WORKSPACE.replace("\\","/")}' && ${cmd}"
   EXIT /b %ERRORLEVEL%
   """
 }
