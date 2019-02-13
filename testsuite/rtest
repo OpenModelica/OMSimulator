@@ -260,7 +260,11 @@ sub runone
     while(<LOG>) {
       s/^[ \t]*//;
       s/[ \t]+/ /;
-      print RES $_;
+      s/[\r][\n]/\n/;
+      if ($_ ne "\n") {
+        # Skip empty lines
+        print RES $_;
+      }
     }
     close LOG;
     close RES;
@@ -328,7 +332,7 @@ sub dofile
         if (/^$comment_prefix /) {
           print OUT substr($_,3);
         } elsif (/^$comment_prefix$/) {
-          print OUT substr($_,2);
+          # Skip empty lines
         } elsif ($tc_err == 0)  {
             print "Error in testcase: $f\n";
             $tc_err = 1;
