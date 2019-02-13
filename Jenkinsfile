@@ -319,22 +319,22 @@ pipeline {
             '''
             archiveArtifacts "OMSimulator-mingw64*.zip"
             stash name: 'mingw64-install', includes: "install/mingw/**"
-            if (false) {
-              writeFile(file:"install/mingw/bin/OMSimulator", text:"""#!/bin/sh
-              export "HOME=${WORKSPACE}"
-              export WINEDEBUG=-all
-              exec /usr/bin/wine64 "${WORKSPACE}/install/mingw/bin/OMSimulator.exe" "\$@"
-              """)
-              writeFile(file:"install/mingw/bin/OMSimulatorPython", text:"""#!/bin/sh
-              export "HOME=${WORKSPACE}"
-              export "PYTHONPATH=${WORKSPACE}/install/mingw/bin;${WORKSPACE}/install/mingw/lib"
-              export "WINEPATH=${WORKSPACE}/install/mingw/bin;${WORKSPACE}/install/mingw/lib;/opt/pacman/mingw64/bin"
-              export WINEDEBUG=-all
-              exec /usr/bin/wine64 /opt/pacman/mingw64/bin/python3.7.exe "\$@"
-              """)
-              sh "chmod +x install/mingw/bin/OMSimulator install/mingw/bin/OMSimulatorPython"
-              sh "install/mingw/bin/OMSimulator --version || install/mingw/bin/OMSimulator --version"
-            }
+            /*
+            writeFile(file:"install/mingw/bin/OMSimulator", text:"""#!/bin/sh
+            export "HOME=${WORKSPACE}"
+            export WINEDEBUG=-all
+            exec /usr/bin/wine64 "${WORKSPACE}/install/mingw/bin/OMSimulator.exe" "\$@"
+            """)
+            writeFile(file:"install/mingw/bin/OMSimulatorPython", text:"""#!/bin/sh
+            export "HOME=${WORKSPACE}"
+            export "PYTHONPATH=${WORKSPACE}/install/mingw/bin;${WORKSPACE}/install/mingw/lib"
+            export "WINEPATH=${WORKSPACE}/install/mingw/bin;${WORKSPACE}/install/mingw/lib;/opt/pacman/mingw64/bin"
+            export WINEDEBUG=-all
+            exec /usr/bin/wine64 /opt/pacman/mingw64/bin/python3.7.exe "\$@"
+            """)
+            sh "chmod +x install/mingw/bin/OMSimulator install/mingw/bin/OMSimulatorPython"
+            sh "install/mingw/bin/OMSimulator --version || install/mingw/bin/OMSimulator --version"
+            */
           }
         }
         stage('mingw64-test') {
