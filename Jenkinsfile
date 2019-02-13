@@ -341,7 +341,7 @@ pipeline {
           agent {
             node {
               label 'omdev'
-              customWorkspace "OMS${env.BRANCH_NAME}${env.CHANGE_ID}"
+              customWorkspace "OMS${env.BRANCH_NAME}"
             }
           }
           environment {
