@@ -363,7 +363,6 @@ pipeline {
             VERBOSE = '1'
             BOOST_ROOT = '/opt/pacman/mingw32/'
             MSYSROOT = '/opt/pacman/'
-            OMSFLAGS = 'OMTLM=OFF'
           }
 
           steps {
