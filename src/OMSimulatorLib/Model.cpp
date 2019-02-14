@@ -104,6 +104,46 @@ oms_status_enu_t oms::Model::rename(const oms::ComRef& cref)
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::Model::loadSnapshot(const char* snapshot)
+{
+  pugi::xml_document doc;
+  pugi::xml_parse_result result = doc.load(snapshot);
+  if (!result)
+    return logError("loading snapshot failed (" + std::string(result.description()) + ")");
+
+  const pugi::xml_node node = doc.document_element(); // ssd:SystemStructureDescription
+
+  ComRef new_cref = ComRef(node.attribute("name").as_string());
+  std::string ssdVersion = node.attribute("version").as_string();
+
+  if (new_cref != getCref())
+    return logError("this API cannot be used to rename a model");
+
+  if (ssdVersion != "Draft20180219")
+    logWarning("Unknown SSD version: " + ssdVersion);
+
+  System* old_root_system = system;
+  system = NULL;
+
+  copyResources(false);
+  oms_status_enu_t status = importFromSSD(node);
+  copyResources(true);
+
+  if (oms_status_ok != status)
+  {
+    system = old_root_system;
+    return logError("loading snapshot failed");
+  }
+
+  if (old_root_system)
+  {
+    delete old_root_system;
+    old_root_system = NULL;
+  }
+
+  return oms_status_ok;
+}
+
 oms::System* oms::Model::getSystem(const oms::ComRef& cref)
 {
   if (!system)
