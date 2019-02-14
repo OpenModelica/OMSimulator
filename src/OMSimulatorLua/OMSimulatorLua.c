@@ -1550,6 +1550,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_ENUM(oms_solver_wc_ma);
   REGISTER_LUA_ENUM(oms_solver_wc_mav);
   REGISTER_LUA_ENUM(oms_solver_wc_assc);
+  REGISTER_LUA_ENUM(oms_solver_wc_mav2);
 
   // oms_system_enu_t
   REGISTER_LUA_ENUM(oms_system_none);

@@ -80,6 +80,8 @@ std::string oms::SystemWC::getSolverName() const
       return std::string("oms-mav");
     case oms_solver_wc_assc:
       return std::string("oms-assc");
+    case oms_solver_wc_mav2:
+      return std::string("oms-mav2");
   }
 
   return std::string("unknown");
@@ -93,6 +95,8 @@ oms_status_enu_t oms::SystemWC::setSolverMethod(std::string solver)
     solverMethod = oms_solver_wc_mav;
   else if (std::string("oms-assc") == solver)
     solverMethod = oms_solver_wc_assc;
+  else if (std::string("oms-mav2") == solver)
+    solverMethod = oms_solver_wc_mav2;
   else
     return oms_status_error;
 
@@ -222,7 +226,7 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
   if (isTopLevelSystem())
     getModel()->emit(time);
 
-  if(solverMethod == oms_solver_wc_mav) // If variable step.
+  if(solverMethod == oms_solver_wc_mav || solverMethod == oms_solver_wc_mav2)
   {
     stepSize = initialStepSize;
     logDebug("DEBUGGING: Entering VariableStep solver");
@@ -235,7 +239,7 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
     std::vector<double> inputVect;
     std::vector<double> outputVect;
     bool firstTime = true;
-    bool doDoubleStep = Flags::DoubleStep(); //Should we double step or not?
+    bool doDoubleStep = (solverMethod == oms_solver_wc_mav2); //Should we double step or not?
     int howManySteps;
     unsigned int rollbackCounter = 0;
     while (time < stopTime)

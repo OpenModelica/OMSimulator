@@ -91,6 +91,7 @@ typedef enum {
   oms_solver_wc_ma,     ///< Fixed stepsize (default)
   oms_solver_wc_mav,    ///< Adaptive stepsize
   oms_solver_wc_assc,   ///< Adaptive stepsize by @farkasrebus
+  oms_solver_wc_mav2,   ///< Adaptive stepsize (double-step)
   oms_solver_wc_max
 } oms_solver_enu_t;
 
