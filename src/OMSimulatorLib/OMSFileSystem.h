@@ -62,6 +62,6 @@ const filesystem::copy_option overwrite_existing = filesystem::copy_option::over
 #endif
 
 filesystem::path oms_unique_path(const std::string& prefix);
-void oms_copy_file(const filesystem::path& path);
+void oms_copy_file(const filesystem::path& source, const filesystem::path& dest);
 
 #endif
