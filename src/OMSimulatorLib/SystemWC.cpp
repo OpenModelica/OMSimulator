@@ -241,7 +241,6 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
     bool firstTime = true;
     bool doDoubleStep = (solverMethod == oms_solver_wc_mav2); //Should we double step or not?
     int howManySteps;
-    unsigned int rollbackCounter = 0;
     while (time < stopTime)
     {
       if (stepSize > maximumStepSize) stepSize = maximumStepSize;
@@ -287,10 +286,8 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
       }
 
       oms_status_enu_t status;
-
       for (int whichStepIndex = 0; whichStepIndex < howManySteps; whichStepIndex++)
       {
-
         for (const auto& component : canGetAndSetStateFMUcomponents) // Get states and stepUntil for FMUs that can get state.
         {
           if (whichStepIndex == 0) // first time get the state vector so we can rollback if needed.
@@ -368,11 +365,9 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
       logDebug("DEBUGGING: outputVect is size:"+std::to_string(outputVect.size()));
       if (inputVect.size() != outputVect.size()) return oms_status_error;
 
-      double biggestDifferance = 0.0;
       double safety_factor = 0.90;
       double maxChange = 1.5;
       double minChange = 0.5;
-      double totalError = 0.0;
       for (int n=0; n < inputVect.size();n++) // Calculate error in the FMUs we do error_control on.
       {
         double error;
@@ -384,15 +379,15 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
 
         logDebug("DEBUGGING: Error is:"+std::to_string(error)+" and Scale factor is: "+std::to_string((fabs(outputVect[n])*relativeTolerance+absoluteTolerance)));
 
-        totalError = totalError+pow(error/(fabs(outputVect[n])*relativeTolerance+absoluteTolerance),2);
-        if (error/(fabs(outputVect[n])*relativeTolerance+absoluteTolerance) > biggestDifferance)
+        normError = normError+pow(error/(fabs(outputVect[n])*relativeTolerance+absoluteTolerance),2);
+        if (error/(fabs(outputVect[n])*relativeTolerance+absoluteTolerance) > maxError)
         {
-          biggestDifferance = error/(fabs(outputVect[n])*relativeTolerance+absoluteTolerance);
-          logDebug("DEBUGGING: scaled error is: " + std::to_string(error/(fabs(outputVect[n])*relativeTolerance+absoluteTolerance)) + " New biggest Differance is: " + std::to_string(biggestDifferance));
+          maxError = error/(fabs(outputVect[n])*relativeTolerance+absoluteTolerance);
+          logDebug("DEBUGGING: scaled error is: " + std::to_string(error/(fabs(outputVect[n])*relativeTolerance+absoluteTolerance)) + " New biggest Differance is: " + std::to_string(maxError));
         }
       }
-      totalError = pow(totalError,0.5);
-      double fixRatio = pow(1.0/biggestDifferance,0.5);
+      normError = pow(normError,0.5);
+      double fixRatio = pow(1.0/maxError,0.5);
       logDebug("DEBUGGING: fixRatio is: " + std::to_string(fixRatio));
       if (fixRatio < 1.0 && minimumStepSize < stepSize) //Going to rollback.
       {
@@ -415,7 +410,7 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
         if (fixRatio < minChange) fixRatio = minChange;
         stepSize = stepSize*fixRatio;
         logDebug("DEBUGGING: Rollbacking New h is: " + std::to_string(stepSize));
-        rollbackCounter++;
+        rollBackIt++;
       }
       else // Not going to rollback.
       {
@@ -434,40 +429,54 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
             }
           }
         }
+
+        if (Flags::RealTime())
+        {
+          auto now = std::chrono::steady_clock::now();
+          // seems a cast to a sufficient high resolution of time is necessary for avoiding truncation errors
+          auto next = start + std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(tNext));
+          std::chrono::duration<double> margin = std::chrono::duration<double>(next - now);
+          if (margin < std::chrono::duration<double>(0))
+            logWarning("real-time frame overrun, time=" + std::to_string(tNext) + "s, exceeded margin=" + std::to_string(margin.count()) + "s");
+          else
+            std::this_thread::sleep_until(next);
+        }
+
         time = tNext;
         if (isTopLevelSystem())
-        {
-          this->stepSize = stepSize;
-          this->rollBackIt = rollbackCounter;
-          this->maxError = biggestDifferance;
-          this->normError = totalError;
           getModel()->emit(time);
-        }
-        updateInputs(outputsGraph); // updateCanGetFMUs(outputsGraph,canGetAndSetStateFMUcomponents);
+        updateInputs(outputsGraph);
         if (isTopLevelSystem())
-        {
           getModel()->emit(time);
+
+        if (cb)
+          cb(modelName.c_str(), time, oms_status_ok);
+
+        if (Flags::ProgressBar())
+          Log::ProgressBar(startTime, stopTime, time);
+
+        if (isTopLevelSystem() && getModel()->cancelSimulation())
+        {
+          cb(modelName.c_str(), time, oms_status_discard);
+          return oms_status_discard;
         }
-        rollbackCounter = 0;
+
+        rollBackIt = 0;
         fixRatio = fixRatio*safety_factor;
         if (fixRatio > 1.0)
-          if (fixRatio > maxChange) fixRatio = maxChange;
-            stepSize = stepSize*fixRatio;
+          if (fixRatio > maxChange)
+            fixRatio = maxChange;
+        stepSize = stepSize*fixRatio;
       }
+
       fmiImportVect.clear();
       sVect.clear();
-      if (cb)
-        cb(modelName.c_str(), time, oms_status_ok);
-
-      if (Flags::ProgressBar())
-        Log::ProgressBar(startTime, stopTime, time);
 
       if (isTopLevelSystem() && getModel()->cancelSimulation())
       {
         cb(modelName.c_str(), time, oms_status_discard);
         return oms_status_discard;
       }
-
     }
   }
   else if (solverMethod == oms_solver_wc_ma)
