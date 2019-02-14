@@ -1194,10 +1194,10 @@ oms_status_enu_t oms::SystemWC::registerSignalsForResultFile(ResultWriter& resul
 
   if ((getSolver() == oms_solver_wc_mav || getSolver() == oms_solver_wc_mav2) && Flags::SolverStats())
   {
-    h_id = resultFile.addSignal("h", "Step-size h [s]", SignalType_REAL);
-    roll_iter_id = resultFile.addSignal("rollbackIterations", "How many Rollbacks were made", SignalType_INT);
-    max_error_id = resultFile.addSignal("errorMax", "Max error", SignalType_REAL);
-    error_id = resultFile.addSignal("errorNorm", "Normalized error from all signals", SignalType_REAL);
+    h_id = resultFile.addSignal(std::string(getFullCref() + ComRef("$h")), "Step-size h [s]", SignalType_REAL);
+    roll_iter_id = resultFile.addSignal(std::string(getFullCref() + ComRef("$rollbackIterations")), "How many Rollbacks were made", SignalType_INT);
+    max_error_id = resultFile.addSignal(std::string(getFullCref() + ComRef("$errorMax")), "Max error", SignalType_REAL);
+    error_id = resultFile.addSignal(std::string(getFullCref() + ComRef("$errorNorm")), "Normalized error from all signals", SignalType_REAL);
   }
   else
   {
