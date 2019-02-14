@@ -228,9 +228,8 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
 
   if(solverMethod == oms_solver_wc_mav || solverMethod == oms_solver_wc_mav2)
   {
-    stepSize = initialStepSize;
     logDebug("DEBUGGING: Entering VariableStep solver");
-    int fmuIndex = 0;
+    stepSize = initialStepSize;
     std::map<ComRef, Component*> FMUcomponents;
     std::map<ComRef, Component*> canGetAndSetStateFMUcomponents;
     std::map<ComRef, Component*> noneFMUcomponents;
@@ -238,52 +237,51 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
     std::vector<double> outputVectEnd;
     std::vector<double> inputVect;
     std::vector<double> outputVect;
-    bool firstTime = true;
     bool doDoubleStep = (solverMethod == oms_solver_wc_mav2); //Should we double step or not?
-    int howManySteps;
+
+    for (const auto& component : getComponents()) // Map the FMUs.
+    {
+      if (oms_component_fmu == component.second->getType()) // Check that its an FMU
+      {
+        if(dynamic_cast<ComponentFMUCS*>(component.second)->getFMUInfo()->getCanGetAndSetFMUstate())
+          canGetAndSetStateFMUcomponents.insert(std::pair<ComRef, Component*>(component.first,component.second));
+        else
+          FMUcomponents.insert(std::pair<ComRef, Component*>(component.first,component.second));
+      }
+      else
+        noneFMUcomponents.insert(std::pair<ComRef, Component*>(component.first,component.second));
+    }
+
+    logDebug("DEBUGGING: canGetAndSetStateFMUcomponents is size: " + std::to_string(canGetAndSetStateFMUcomponents.size()));
+    logDebug("DEBUGGING: FMUcomponents is size: " + std::to_string(FMUcomponents.size()));
+    logDebug("DEBUGGING: noneFMUcomponents is size: " + std::to_string(noneFMUcomponents.size()));
+
+    // Lets make sure we can reset FMUs
+    if(canGetAndSetStateFMUcomponents.size() == 0)
+      return logError("If no FMUs can get/set states, Variable Step solver can't be used.");
+
+    // Lets check if we should double step or not.
+    if(FMUcomponents.size() != 0 && doDoubleStep)
+    {
+      doDoubleStep = false;
+      logWarning("Found FMUs that can't get/set states, will not double step.");
+    }
+
+    int howManySteps = doDoubleStep ? 3 : 1;
+
     while (time < stopTime)
     {
       if (stepSize > maximumStepSize) stepSize = maximumStepSize;
       if (stepSize < minimumStepSize) stepSize = minimumStepSize;
+
       double tNext = time+stepSize;
       if (tNext > stopTime)
       {
         tNext = stopTime;
         stepSize = tNext-time;
       }
-      logDebug("DEBUGGING: doStep: " + std::to_string(time) + " -> " + std::to_string(tNext));
 
-      if(firstTime) // first time get a list of all components set up for which can get/Set fmu states.
-      {
-        firstTime = false;
-        for (const auto& component : getComponents()) // Map the FMUs.
-        {
-          if (oms_component_fmu == component.second->getType()) // Check that its an FMU
-          {
-            if(dynamic_cast<ComponentFMUCS*>(component.second)->getFMUInfo()->getCanGetAndSetFMUstate())
-            {
-              canGetAndSetStateFMUcomponents.insert(std::pair<ComRef, Component*>(component.first,component.second));
-            }
-            else
-            {
-              FMUcomponents.insert(std::pair<ComRef, Component*>(component.first,component.second));
-            }
-          }
-          else
-          {
-            noneFMUcomponents.insert(std::pair<ComRef, Component*>(component.first,component.second));
-          }
-        }
-        logDebug("DEBUGGING: canGetAndSetStateFMUcomponents is size: "+std::to_string(canGetAndSetStateFMUcomponents.size()));
-        logDebug("DEBUGGING: FMUcomponents is size:"+std::to_string(FMUcomponents.size()));
-        logDebug("DEBUGGING: noneFMUcomponents is size:"+std::to_string(noneFMUcomponents.size()));
-        // Lets make sure we can reset FMUs
-        if(canGetAndSetStateFMUcomponents.size() == 0) { return logError("If no FMUs can get/set states, Variable Step solver can't be used.");}
-        // Lets check if we should double step or not.
-        if(FMUcomponents.size() != 0 && doDoubleStep) {doDoubleStep = false; logWarning("Found FMUs that can't get/set states, will not double step regardless of flag.");}
-        if (!doDoubleStep) howManySteps = 1;
-        else howManySteps = 3;
-      }
+      logDebug("doStep: " + std::to_string(time) + " -> " + std::to_string(tNext));
 
       oms_status_enu_t status;
       for (int whichStepIndex = 0; whichStepIndex < howManySteps; whichStepIndex++)
