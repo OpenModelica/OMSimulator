@@ -3,9 +3,12 @@
 #ifdef __has_include
 #if __has_include(<filesystem>)
 #include <filesystem>
+#if __cpp_lib_filesystem >= 201703
 namespace filesystem = std::filesystem;
 #define OMC_STD_FS 1
-#elif __has_include(<experimental/filesystem>)
+#endif
+#endif
+#if !defined(OMC_STD_FS) && __has_include(<experimental/filesystem>)
 #include <experimental/filesystem>
 namespace filesystem = std::experimental::filesystem::v1;
 #define OMC_STD_FS 1
