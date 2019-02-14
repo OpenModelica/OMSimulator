@@ -172,9 +172,9 @@ oms_status_enu_t oms_delete(const char* cref)
   return model->delete_(tail);
 }
 
-oms_status_enu_t oms_export(const char* cref_, const char* filename)
+oms_status_enu_t oms_export(const char* cref, const char* filename)
 {
-  return oms::Scope::GetInstance().exportModel(oms::ComRef(cref_), std::string(filename));
+  return oms::Scope::GetInstance().exportModel(oms::ComRef(cref), std::string(filename));
 }
 
 oms_status_enu_t oms_importFile(const char* filename, char** cref)
@@ -206,6 +206,17 @@ oms_status_enu_t oms_listUnconnectedConnectors(const char* cref_, char** content
     return logError_SystemNotInModel(front, tail);
 
   return system->listUnconnectedConnectors(contents);
+}
+
+oms_status_enu_t oms_loadSnapshot(const char* cref_, const char* snapshot)
+{
+  oms::ComRef cref(cref_);
+
+  oms::Model* model = oms::Scope::GetInstance().getModel(cref);
+  if (!model)
+    return logError_ModelNotInScope(cref);
+
+  return model->loadSnapshot(snapshot);
 }
 
 oms_status_enu_t oms_parseModelName(const char* contents, char** cref)
@@ -241,9 +252,9 @@ void oms_freeMemory(void* obj)
     free(obj);
 }
 
-oms_status_enu_t oms_getElement(const char* cref_, oms_element_t** element)
+oms_status_enu_t oms_getElement(const char* cref, oms_element_t** element)
 {
-  return oms::Scope::GetInstance().getElement(oms::ComRef(cref_), reinterpret_cast<oms::Element**>(element));
+  return oms::Scope::GetInstance().getElement(oms::ComRef(cref), reinterpret_cast<oms::Element**>(element));
 }
 
 oms_status_enu_t oms_getElements(const char* cref, oms_element_t*** elements)
