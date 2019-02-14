@@ -7,7 +7,7 @@ pipeline {
     newContainerPerStage()
   }
   parameters {
-    booleanParam(name: 'MSVC64', defaultValue: false, description: 'Build with MSVC64 (often hangs)')
+    booleanParam(name: 'MSVC64', defaultValue: true, description: 'Build with MSVC64 (often hangs)')
     booleanParam(name: 'MINGW32', defaultValue: false, description: 'Build with MINGW32 (does not link boost)')
     booleanParam(name: 'SUBMODULE_UPDATE', defaultValue: false, description: 'Allow pull request to update submodules (disabled by default due to common user errors)')
     string(name: 'RUNTESTS_FLAG', defaultValue: '', description: 'runtests.pl flag')
