@@ -56,8 +56,15 @@ filesystem::path oms_temp_directory_path(void);
 filesystem::path oms_canonical(filesystem::path p);
 #endif
 
-namespace boost::filesystem::copy_options {
-const filesystem::copy_option overwrite_existing = filesystem::copy_option::overwrite_if_exists;
+namespace boost
+{
+  namespace filesystem
+  {
+    namespace copy_options
+    {
+      const filesystem::copy_option overwrite_existing = filesystem::copy_option::overwrite_if_exists;
+    }
+  }
 }
 #endif
 
