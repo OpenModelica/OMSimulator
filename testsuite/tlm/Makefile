@@ -5,7 +5,6 @@ externalmodels.lua \
 externalmodels.py \
 tlm1d.lua \
 tlm1dfg.lua \
-tlm3d.lua \
 tlmbuses.lua \
 tlmbuses.py \
 tlmexternal.lua \
@@ -13,6 +12,7 @@ tlmsignals.lua \
 
 # Run make failingtest
 FAILINGTESTFILES = \
+tlm3d.lua \
 
 # Dependency files that are not .lua or Makefile
 # Add them here or they will be cleaned.
