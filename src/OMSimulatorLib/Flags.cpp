@@ -70,6 +70,7 @@ void oms::Flags::setDefaults()
   realTime = false;
   resultFile = "<default>";
   solver = oms_solver_sc_cvode;
+  solverStats = false;
   startTime = 0.0;
   stopTime = 1.0;
   stripRoot = false;
@@ -278,6 +279,12 @@ oms_status_enu_t oms::Flags::Solver(const std::string& value)
   else
     return oms_status_error;
 
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Flags::SolverStats(const std::string& value)
+{
+  GetInstance().solverStats = (value == "true");
   return oms_status_ok;
 }
 

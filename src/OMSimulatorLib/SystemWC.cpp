@@ -1185,7 +1185,7 @@ oms_status_enu_t oms::SystemWC::registerSignalsForResultFile(ResultWriter& resul
   else
     clock_id = 0;
 
-  if (getSolver() == oms_solver_wc_mav)
+  if ((getSolver() == oms_solver_wc_mav || getSolver() == oms_solver_wc_mav2) && Flags::SolverStats())
   {
     h_id = resultFile.addSignal("h", "Step-size h [s]", SignalType_REAL);
     roll_iter_id = resultFile.addSignal("rollbackIterations", "How many Rollbacks were made", SignalType_INT);
@@ -1248,7 +1248,7 @@ oms_status_enu_t oms::SystemWC::updateSignals(ResultWriter& resultFile)
     resultFile.updateSignal(clock_id, wallTime);
   }
 
-  if(getSolver() == oms_solver_wc_mav)
+  if ((getSolver() == oms_solver_wc_mav || getSolver() == oms_solver_wc_mav2) && Flags::SolverStats())
   {
     SignalValue_t stepS;
     stepS.realValue = stepSize;
