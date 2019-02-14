@@ -5,14 +5,27 @@ pipeline {
   }
   options {
     newContainerPerStage()
-    disableConcurrentBuilds()
   }
   parameters {
     booleanParam(name: 'MSVC64', defaultValue: false, description: 'Build with MSVC64 (often hangs)')
     booleanParam(name: 'MINGW32', defaultValue: false, description: 'Build with MINGW32 (does not link boost)')
+    booleanParam(name: 'SUBMODULE_UPDATE', defaultValue: false, description: 'Allow pull request to update submodules (disabled by default due to common user errors)')
     string(name: 'RUNTESTS_FLAG', defaultValue: '', description: 'runtests.pl flag')
   }
   stages {
+    stage('check') {
+      when {
+        changeRequest()
+        beforeAgent true
+      }
+      agent {
+        label 'linux'
+      }
+      steps {
+        submoduleNoChange("3rdParty")
+        submoduleNoChange("OMTLMSimulator")
+      }
+    }
     stage('build') {
       parallel {
         stage('linux64') {
@@ -515,4 +528,16 @@ void buildOMS() {
   make config-OMSimulator -j${nproc} ${env.ASAN ? "ASAN=ON" : ""} ${env.OMSFLAGS ?: ""}
   make OMSimulator -j${nproc} ${env.ASAN ? "DISABLE_RUN_OMSIMULATOR_VERSION=1" : ""} ${env.OMSFLAGS ?: ""}
   """
+}
+
+void submoduleNoChange(path) {
+  if (params.SUBMODULE_UPDATE) {
+    // Don't need to check
+    return
+  }
+  a=sh(returnStdout: true, script: "git ls-tree origin/${env.CHANGE_TARGET} ${path}").trim()
+  b=sh(returnStdout: true, script: "git ls-tree HEAD ${path}").trim()
+  if (a != b) {
+    throw new Exception("Did you intend to change a submodule? Set SUBMODULE_UPDATE in the run options.")
+  }
 }
