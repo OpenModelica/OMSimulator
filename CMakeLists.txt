@@ -76,6 +76,7 @@ IF (CMAKE_VERSION VERSION_LESS 3.1.0)
     message(STATUS "We have C++17 in CXXFLAGS")
   ELSE()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+    add_definitions(-DWITHOUT_FS)
     message(STATUS "Using CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS} for setting -std=c++11 without checking if it is supported (old cmake version)")
   ENDIF ()
 ELSE() # use the freaking CMAKE_CXX_STANDARD*
@@ -88,13 +89,14 @@ ELSE() # use the freaking CMAKE_CXX_STANDARD*
     set(CMAKE_CXX11_STANDARD_COMPILE_OPTION "-std=c++17")
     set(CMAKE_CXX11_EXTENSION_COMPILE_OPTION "-std=gnu++17")
     set(CPP_FS_LIBS "-lstdc++fs")
+  ELSE()
+    add_definitions(-DWITHOUT_FS)
   ENDIF ()
   set(CMAKE_CXX_STANDARD 11)
   set(CMAKE_CXX_STANDARD_REQUIRED ON)
   set(CMAKE_CXX_EXTENSIONS OFF)
   message(STATUS "Using CMAKE_CXX_STANDARD: ${CMAKE_CXX_STANDARD}, CMAKE_CXX_EXTENSIONS: ${CMAKE_CXX_EXTENSIONS} and CMAKE_CXX_STANDARD_REQUIRED: ${CMAKE_CXX_STANDARD_REQUIRED} for setting ${CMAKE_CXX11_STANDARD_COMPILE_OPTION}")
 ENDIF()
-
 
 ##########################
 # Configuring for Boost
