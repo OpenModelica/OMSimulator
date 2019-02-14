@@ -6,7 +6,7 @@
 -- mac: no
 
 oms_setCommandLineOption("--suppressPath=true")
-oms_setTempDirectory("./import_export-lua/")
+oms_setTempDirectory("./")
 
 function printStatus(status, expected)
   cmp = ""

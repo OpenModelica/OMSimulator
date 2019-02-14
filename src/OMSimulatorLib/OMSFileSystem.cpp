@@ -96,6 +96,20 @@ filesystem::path oms_unique_path(const std::string& prefix)
   return p;
 }
 
+void oms_copy_file(const filesystem::path& source,const filesystem::path& dest)
+{
+#if defined(__MINGW32__) || defined(__MINGW64__)
+  /* The MINGW implementation succeeds for filesystem::copy_file, but does not
+     copy the entire file.
+   */
+  if (!::CopyFile(source, dest, 1)) {
+    throw filesystem::filesystem_error(std::string("Failed to copy file"), source, dest);
+  }
+#else
+  filesystem::copy_file(source, dest, filesystem::copy_options::overwrite_existing);
+#endif
+}
+
 /*
 
 The code above is partially based on the boost implementation for

@@ -78,7 +78,7 @@ oms::Component* oms::ComponentTable::NewComponent(const oms::ComRef& cref, oms::
   ComponentTable* component = new ComponentTable(cref, parentSystem, "resources/" + std::string(cref) + extension);
 
   if (parentSystem->copyResources())
-    filesystem::copy_file(filesystem::path(path), absPath, filesystem::copy_options::overwrite_existing);
+    oms_copy_file(filesystem::path(path), absPath);
 
   component->resultReader = ResultReader::newReader(path.c_str());
   if (!component->resultReader)
