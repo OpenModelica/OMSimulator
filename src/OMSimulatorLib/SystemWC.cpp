@@ -119,7 +119,7 @@ oms_status_enu_t oms::SystemWC::importFromSSD_SimulationInformation(const pugi::
   std::string solverName = node.child("FixedStepMaster").attribute("description").as_string();
   if (oms_status_ok != setSolverMethod(solverName))
     return oms_status_error;
-  initialStepSize=minimumStepSize=maximumStepSize = node.child("FixedStepMaster").attribute("stepSize").as_double();
+  initialStepSize = minimumStepSize=maximumStepSize = node.child("FixedStepMaster").attribute("stepSize").as_double();
   return oms_status_ok;
 }
 
@@ -226,7 +226,7 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
   if (isTopLevelSystem())
     getModel()->emit(time);
 
-  if(solverMethod == oms_solver_wc_mav || solverMethod == oms_solver_wc_mav2)
+  if (solverMethod == oms_solver_wc_mav || solverMethod == oms_solver_wc_mav2)
   {
     logDebug("DEBUGGING: Entering VariableStep solver");
     stepSize = initialStepSize;
@@ -243,7 +243,7 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
     {
       if (oms_component_fmu == component.second->getType()) // Check that its an FMU
       {
-        if(dynamic_cast<ComponentFMUCS*>(component.second)->getFMUInfo()->getCanGetAndSetFMUstate())
+        if (dynamic_cast<ComponentFMUCS*>(component.second)->getFMUInfo()->getCanGetAndSetFMUstate())
           canGetAndSetStateFMUcomponents.insert(std::pair<ComRef, Component*>(component.first,component.second));
         else
           FMUcomponents.insert(std::pair<ComRef, Component*>(component.first,component.second));
@@ -257,11 +257,11 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
     logDebug("DEBUGGING: noneFMUcomponents is size: " + std::to_string(noneFMUcomponents.size()));
 
     // Lets make sure we can reset FMUs
-    if(canGetAndSetStateFMUcomponents.size() == 0)
+    if (canGetAndSetStateFMUcomponents.size() == 0)
       return logError("If no FMUs can get/set states, Variable Step solver can't be used.");
 
     // Lets check if we should double step or not.
-    if(FMUcomponents.size() != 0 && doDoubleStep)
+    if (FMUcomponents.size() != 0 && doDoubleStep)
     {
       doDoubleStep = false;
       logWarning("Found FMUs that can't get/set states, will not double step.");
@@ -290,11 +290,9 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
         {
           if (whichStepIndex == 0) // first time get the state vector so we can rollback if needed.
           {
-            fmi2_import_t* fmu_in;
+            fmi2_import_t* fmu_in = dynamic_cast<ComponentFMUCS*>(component.second)->getFMU();
             fmi2_FMU_state_t s = NULL;
-            fmu_in = dynamic_cast<ComponentFMUCS*>(component.second)->getFMU();
-            s = NULL;
-            fmi_status = fmi2_import_get_fmu_state(fmu_in,&s);
+            fmi_status = fmi2_import_get_fmu_state(fmu_in, &s);
             sVect.push_back(s);
             fmiImportVect.push_back(fmu_in);
           }
@@ -334,7 +332,8 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
         // get inputs and outputs at the end of all steps.
         if (whichStepIndex == 0)
         {
-          if(oms_status_ok != getInputAndOutput(outputsGraph,inputVect,outputVect,canGetAndSetStateFMUcomponents)) return oms_status_error;
+          if (oms_status_ok != getInputAndOutput(outputsGraph,inputVect,outputVect,canGetAndSetStateFMUcomponents))
+            return oms_status_error;
           if (doDoubleStep) // Rollback for small steppies.
           {
             //Fix fmus
@@ -356,12 +355,14 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
         else if (whichStepIndex == 1)
           updateInputs(outputsGraph);
         else if (whichStepIndex == 2)
-          if(oms_status_ok != getInputAndOutput(outputsGraph,inputVectEnd,outputVectEnd,canGetAndSetStateFMUcomponents)) return oms_status_error;
+          if (oms_status_ok != getInputAndOutput(outputsGraph,inputVectEnd,outputVectEnd,canGetAndSetStateFMUcomponents))
+            return oms_status_error;
       }
       logDebug("DEBUGGING: Lets do Error control");
       logDebug("DEBUGGING: inputVect is size: "+std::to_string(inputVect.size()));
       logDebug("DEBUGGING: outputVect is size:"+std::to_string(outputVect.size()));
-      if (inputVect.size() != outputVect.size()) return oms_status_error;
+      if (inputVect.size() != outputVect.size())
+        return oms_status_error;
 
       double safety_factor = 0.90;
       double maxChange = 1.5;
@@ -369,8 +370,7 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
       for (int n=0; n < inputVect.size();n++) // Calculate error in the FMUs we do error_control on.
       {
         double error;
-
-        if(!doDoubleStep)
+        if (!doDoubleStep)
           error = fabs(inputVect[n]-outputVect[n]);
         else
           error = fabs(outputVectEnd[n]-outputVect[n]);
@@ -384,8 +384,8 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
           logDebug("DEBUGGING: scaled error is: " + std::to_string(error/(fabs(outputVect[n])*relativeTolerance+absoluteTolerance)) + " New biggest Differance is: " + std::to_string(maxError));
         }
       }
-      normError = pow(normError,0.5);
-      double fixRatio = pow(1.0/maxError,0.5);
+      normError = pow(normError, 0.5);
+      double fixRatio = pow(1.0/maxError, 0.5);
       logDebug("DEBUGGING: fixRatio is: " + std::to_string(fixRatio));
       if (fixRatio < 1.0 && minimumStepSize < stepSize) //Going to rollback.
       {
@@ -467,6 +467,10 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
         stepSize = stepSize*fixRatio;
       }
 
+      for (int kkl=0; kkl < sVect.size(); kkl++)
+      {
+        fmi2_import_free_fmu_state(fmiImportVect[kkl], &sVect[kkl]);
+      }
       fmiImportVect.clear();
       sVect.clear();
 
@@ -834,7 +838,7 @@ oms_status_enu_t oms::SystemWC::getInputAndOutput(oms::DirectedGraph& graph, std
         logDebug(outputModel);
         if (FMUcomponents.find(inputModel) != FMUcomponents.end())
         {
-          if(FMUcomponents.find(outputModel) != FMUcomponents.end())
+          if (FMUcomponents.find(outputModel) != FMUcomponents.end())
           {
             if (graph.getNodes()[input].getType() == oms_signal_type_real)
             {
@@ -990,7 +994,7 @@ oms_status_enu_t oms::SystemWC::updateCanGetFMUs(oms::DirectedGraph& graph,std::
           OK = false;
         }
       }
-      if(OK)
+      if (OK)
       {
         if (oms_status_ok != solveAlgLoop(graph, sortedConnections[i])) return oms_status_error;  // This loop will only connect FMUs that can get state, and thus we can solve it.
       }
