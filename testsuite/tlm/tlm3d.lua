@@ -170,7 +170,7 @@ oms_addConnectorToTLMBus("model.tlm3d.wc2.P","model.tlm3d.wc2.t3", "effort6");
 
 oms_addTLMConnection("model.tlm3d.wc1.P","model.tlm3d.wc2.P", 0.00001, 0.9, 10000, 100);
 
-oms_setTLMSocketData("model.tlm3d","127.0.1.1",13511,13611)
+oms_setTLMSocketData("model.tlm3d","127.0.1.1",11511,12511)
 
 oms_setStartTime("model",0);
 oms_setStopTime("model",0.1);

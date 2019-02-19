@@ -35,7 +35,7 @@ oms_addTLMConnection("model.tlmexternal.adder.x2", "model.tlmexternal.source1.y"
 oms_addTLMConnection("model.tlmexternal.gain.y", "model.tlmexternal.adder.y",     0,0,0,0)
 
 -- simulation parameters
-oms_setTLMSocketData("model.tlmexternal","127.0.1.1",13311,13411)
+oms_setTLMSocketData("model.tlmexternal","127.0.1.1",11411,12411)
 oms_setStartTime("model", 0.5)
 oms_setStopTime("model", 4)
 
