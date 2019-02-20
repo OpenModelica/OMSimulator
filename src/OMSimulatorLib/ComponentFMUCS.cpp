@@ -94,7 +94,7 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::
   component->callbacks.context = 0;
 
   if (parentSystem->copyResources())
-    filesystem::copy_file(filesystem::path(fmuPath), absFMUPath, filesystem::copy_options::overwrite_existing);
+    oms_copy_file(filesystem::path(fmuPath), absFMUPath);
 
   // set temp directory
   filesystem::path tempDir = temp_temp / std::string(cref);
