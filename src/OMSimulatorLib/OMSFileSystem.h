@@ -24,9 +24,6 @@ static inline filesystem::path oms_canonical(filesystem::path p) {
 }
 
 #else
-#include <boost/filesystem.hpp>
-namespace filesystem = boost::filesystem;
-
 #include <string>
 #include <boost/version.hpp>
 // boost version < 1.57 has issues linking boost::filesystem::copy_file
@@ -46,6 +43,8 @@ namespace filesystem = boost::filesystem;
 #include <ctpl_stl.h>
 #endif
 
+#include <boost/filesystem.hpp>
+namespace filesystem = boost::filesystem;
 
 #if (BOOST_VERSION >= 104600) // no temp_directory_path in boost < 1.46
 static inline filesystem::path oms_temp_directory_path(void) {
@@ -59,18 +58,9 @@ filesystem::path oms_temp_directory_path(void);
 filesystem::path oms_canonical(filesystem::path p);
 #endif
 
-namespace boost
-{
-  namespace filesystem
-  {
-    namespace copy_options
-    {
-      const filesystem::copy_option overwrite_existing = filesystem::copy_option::overwrite_if_exists;
-    }
-  }
-}
 #endif
 
+void oms_copy_file(const filesystem::path &from, const filesystem::path &to);
 filesystem::path oms_unique_path(const std::string& prefix);
 
 #endif

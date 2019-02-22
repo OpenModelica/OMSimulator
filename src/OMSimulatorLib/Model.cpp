@@ -339,7 +339,7 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
   Scope::GetInstance().setWorkingDirectory(cd);
 
   filesystem::path full_path = filesystem::path(tempDir) / "temp/model.ssp";
-  filesystem::copy_file(full_path, filesystem::path(filename), filesystem::copy_options::overwrite_existing);
+  oms_copy_file(full_path, filesystem::path(filename));
 
   return oms_status_ok;
 }

@@ -32,26 +32,22 @@
 #include <OMSFileSystem.h>
 #include <cstring>
 
+#if defined(_MSC_VER) || defined(__MINGW32__) || defined(__MINGW64__)
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+#include <windows.h>
+#ifdef __cplusplus
+}
+#endif
+#endif
+
 #if OMC_STD_FS == 1
 // We have C++17; it has temp_directory_path and canonical
 #else
 
 #include <cstdlib>
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-#if (BOOST_VERSION < 104600)
-#if defined(_MSC_VER) || defined(__MINGW32__)
-#include <windows.h>
-#endif
-#endif
-
-#ifdef __cplusplus
-}
-#endif
 
 #if !(BOOST_VERSION >= 104600) // no temp_directory_path in boost < 1.46
 filesystem::path oms_temp_directory_path(void)
@@ -94,6 +90,22 @@ filesystem::path oms_unique_path(const std::string& prefix)
 
   filesystem::path p(s);
   return p;
+}
+
+void oms_copy_file(const filesystem::path &from, const filesystem::path &to)
+{
+#if defined(__MINGW32__) || defined(__MINGW64__)
+  /* The MINGW implementation succeeds for filesystem::copy_file, but does not
+     copy the entire file.
+   */
+  if (!CopyFile(from.string().c_str(), to.string().c_str(), 1)) {
+    throw std::runtime_error(std::string("Failed to copy file: ") + from.string() + "  to: " + to.string());
+  }
+#elif OMC_STD_FS == 1
+  filesystem::copy_file(from, to, filesystem::copy_options::overwrite_existing);
+#else
+  filesystem::copy_file(from, to, filesystem::copy_option::overwrite_if_exists);
+#endif
 }
 
 /*

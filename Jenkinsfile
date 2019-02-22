@@ -417,7 +417,7 @@ cd "${env.WORKSPACE}/install/win"
 zip -r "../../OMSimulator-win64-`git describe`.zip" *
 """
 
-            bat """
+            retry(2) { bat """
 set BOOST_ROOT=C:\\local\\boost_1_64_0
 set PATH=C:\\bin\\cmake\\bin;%PATH%
 
@@ -437,7 +437,7 @@ EXIT /b 0
 :fail
 ECHO Something went wrong!
 EXIT /b 1
-"""
+""" }
 
             archiveArtifacts "OMSimulator-win64*.zip"
           }
