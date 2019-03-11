@@ -323,14 +323,10 @@ oms_status_enu_t oms::SystemWC::stepUntilASSC(double stopTime, void (*cb)(const 
     }
   }
 
-  //global lower and upper bound
-  double min=stepSizeConfiguration.getMinimalStepSize();
-  double max=stepSizeConfiguration.getMaximalStepSize();
-
   //start simulation
   while (time<stopTime)
   {
-    double nextStepSize=max;
+    double nextStepSize=maximumStepSize;
     //detect events
     bool event=false;
     for (auto& pair:prevDoubleValues)
@@ -367,7 +363,7 @@ oms_status_enu_t oms::SystemWC::stepUntilASSC(double stopTime, void (*cb)(const 
     //if event was detected change step size to minimal, otherwise see other configuration parameters
     if (event)
     {
-      nextStepSize=min;
+      nextStepSize=minimumStepSize;
     }
     else
     {
@@ -423,8 +419,8 @@ oms_status_enu_t oms::SystemWC::stepUntilASSC(double stopTime, void (*cb)(const 
       }
 
       //ensure global bounds
-      if (nextStepSize<min) nextStepSize=min;
-      if (nextStepSize>max) nextStepSize=max;
+      if (nextStepSize<minimumStepSize) nextStepSize=minimumStepSize;
+      if (nextStepSize>maximumStepSize) nextStepSize=maximumStepSize;
     }
 
     double tNext = time+nextStepSize;

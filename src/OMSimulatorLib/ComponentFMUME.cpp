@@ -615,6 +615,17 @@ oms_status_enu_t oms::ComponentFMUME::getInteger(const ComRef& cref, int& value)
   return getInteger(vr, value);
 }
 
+oms::Variable* oms::ComponentFMUME::getVariable(const ComRef& cref)
+{
+  CallClock callClock(clock);
+  for (size_t i=0; i < allVariables.size(); i++)
+    if (allVariables[i].getCref() == cref)
+      return &allVariables[i];
+
+  logError_UnknownSignal(getFullCref() + cref);
+  return NULL;
+}
+
 oms_status_enu_t oms::ComponentFMUME::getReal(const fmi2_value_reference_t& vr, double& value)
 {
   CallClock callClock(clock);

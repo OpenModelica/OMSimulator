@@ -63,6 +63,8 @@ namespace oms
     oms_status_enu_t initializeDependencyGraph_initialUnknowns();
     oms_status_enu_t initializeDependencyGraph_outputs();
 
+    Variable* getVariable(const ComRef& cref);
+
     oms_status_enu_t getBoolean(const ComRef& cref, bool& value);
     oms_status_enu_t getBoolean(const fmi2_value_reference_t& vr, bool& value);
     oms_status_enu_t getInteger(const ComRef& cref, int& value);
