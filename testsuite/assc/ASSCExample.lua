@@ -8,7 +8,7 @@ oms_setCommandLineOption("--suppressPath=true --ignoreInitialUnknowns=true --str
 oms_setTempDirectory("./ASSCExample-lua/")
 
 oms_newModel("Example")
-oms_addSystem("Example.root", oms_system_sc)
+oms_addSystem("Example.root", oms_system_wc)
 
 -- instantiate FMUs
 oms_addSubModel("Example.root.Class1", "../resources/ASSCExample.Class1.fmu")
@@ -22,10 +22,10 @@ oms_setStopTime("Example", 6.0)
 oms_setSolver("Example", oms_solver_wc_assc)
 oms_setVariableStepSize("Example", 0.05, 0.05, 0.5)
 
-oms_addEventIndicator("Example.Class1.max")
-oms_addTimeIndicator("Example.Class1.eventTime")
-oms_addStaticValueIndicator("Example.Class2.signalwiththreshold", 4.5, 5.0, 0.1)
-oms_addDynamicValueIndicator("Example.Class2.signalwiththreshold", "Example.Class1.closeToMax", "Example.Class1.max", 0.05)
+oms_addEventIndicator("Example.root.Class1.max")
+oms_addTimeIndicator("Example.root.Class1.eventTime")
+oms_addStaticValueIndicator("Example.root.Class2.signalwiththreshold", 4.5, 5.0, 0.1)
+oms_addDynamicValueIndicator("Example.root.Class2.signalwiththreshold", "Example.root.Class1.closeToMax", "Example.root.Class1.max", 0.05)
 
 oms_instantiate("Example")
 oms_initialize("Example")
