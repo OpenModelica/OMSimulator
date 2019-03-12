@@ -77,6 +77,8 @@ std::string oms::SystemWC::getSolverName() const
       return std::string("oms-ma");
     case oms_solver_wc_mav:
       return std::string("oms-mav");
+    case oms_solver_wc_assc:
+      return std::string("oms-assc");
   }
 
   return std::string("unknown");
@@ -88,6 +90,8 @@ oms_status_enu_t oms::SystemWC::setSolverMethod(std::string solver)
     solverMethod = oms_solver_wc_ma;
   else if (std::string("oms-mav") == solver)
     solverMethod = oms_solver_wc_mav;
+  else if (std::string("oms-assc") == solver)
+    solverMethod = oms_solver_wc_assc;
   else
     return oms_status_error;
 
@@ -202,6 +206,10 @@ oms_status_enu_t oms::SystemWC::reset()
 oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char* ident, double time, oms_status_enu_t status))
 {
   CallClock callClock(clock);
+
+  if (solverMethod == oms_solver_wc_assc)
+    return stepUntilASSC(stopTime, cb);
+
   ComRef modelName = this->getModel()->getCref();
   auto start = std::chrono::steady_clock::now() + std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(time));
 
