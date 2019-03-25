@@ -39,8 +39,6 @@ else
 end
 
 -- Result:
--- stdout            | info    | The initialization finished successfully without homotopy method.
--- stdout            | info    | The initialization finished successfully without homotopy method.
+-- info:    Result file: Example_res.mat (bufferSize=10)
 -- info:    Results are equal
--- info:    Logging information has been saved to "Example.log"
 -- endResult
