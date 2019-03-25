@@ -2,10 +2,10 @@
 <fmiModelDescription
   fmiVersion="2.0"
   modelName="ASSCExample.Class2"
-  guid="{3d34d7fb-9383-4e58-b187-a19a21807e6c}"
+  guid="{3ddc1fcc-5210-46f1-8504-da0aa23ae0a3}"
   description=""
-  generationTool="OpenModelica Compiler OMCompiler v1.13.0-dev.1067+ga616890f6"
-  generationDateAndTime="2019-02-08T15:51:25Z"
+  generationTool="OpenModelica Compiler OpenModelica 1.13.0"
+  generationDateAndTime="2019-03-18T01:19:09Z"
   variableNamingConvention="structured"
   numberOfEventIndicators="1">
   <ModelExchange
@@ -16,7 +16,7 @@
     needsExecutionTool="false"
     canHandleVariableCommunicationStepSize="true"
     canInterpolateInputs="false"
-    maxOutputDerivativeOrder="0"
+    maxOutputDerivativeOrder="1"
     canRunAsynchronuously = "false"
     canBeInstantiatedOnlyOncePerProcess="false"
     canNotUseMemoryManagementFunctions="false"

@@ -1,15 +1,15 @@
 {"format":"Transformational debugger info","version":1,
 "info":{"name":"ASSCExample.Class2","description":""},
 "variables":{
-"signalwiththreshold":{"comment":"","kind":"state","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"<interactive>","lineStart":14,"lineEnd":14,"colStart":5,"colEnd":29},"within":["Real"]}},
-"der(signalwiththreshold)":{"comment":"","kind":"derivative","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"<interactive>","lineStart":14,"lineEnd":14,"colStart":5,"colEnd":29},"within":["Real"]}},
-"max":{"comment":"","kind":"variable","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"<interactive>","lineStart":13,"lineEnd":13,"colStart":5,"colEnd":45},"within":["Real"]}},
-"max":{"comment":"","kind":"variable","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"<interactive>","lineStart":13,"lineEnd":13,"colStart":5,"colEnd":45},"within":["Real"]}}
+"signalwiththreshold":{"comment":"","kind":"state","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"ASSCExample","lineStart":13,"lineEnd":13,"colStart":5,"colEnd":29},"within":["Real"]}},
+"der(signalwiththreshold)":{"comment":"","kind":"derivative","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"ASSCExample","lineStart":13,"lineEnd":13,"colStart":5,"colEnd":29},"within":["Real"]}},
+"max":{"comment":"","kind":"variable","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"ASSCExample","lineStart":12,"lineEnd":12,"colStart":5,"colEnd":45},"within":["Real"]}},
+"max":{"comment":"","kind":"variable","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"ASSCExample","lineStart":12,"lineEnd":12,"colStart":5,"colEnd":45},"within":["Real"]}}
 },
 "equations":[{"eqIndex":0,"tag":"dummy"},
-{"eqIndex":1,"section":"initial","tag":"assign","defines":["signalwiththreshold"],"uses":[],"equation":["0.0"],"source":{"info":{"file":"<interactive>","lineStart":16,"lineEnd":16,"colStart":5,"colEnd":26},"within":["ASSCExample.Class2"]}},
+{"eqIndex":1,"section":"initial","tag":"assign","defines":["signalwiththreshold"],"uses":[],"equation":["0.0"],"source":{"info":{"file":"ASSCExample","lineStart":15,"lineEnd":15,"colStart":5,"colEnd":26},"within":["ASSCExample.Class2"]}},
 {"eqIndex":2,"tag":"alias","equation":[3],"section":"initial"},
-{"eqIndex":3,"section":"regular","tag":"assign","defines":["der(signalwiththreshold)"],"uses":["max","signalwiththreshold"],"equation":["if signalwiththreshold < max then 1.0 else 0.0"],"source":{"info":{"file":"<interactive>","lineStart":18,"lineEnd":18,"colStart":5,"colEnd":106},"within":["ASSCExample.Class2"]}}
+{"eqIndex":3,"section":"regular","tag":"assign","defines":["der(signalwiththreshold)"],"uses":["signalwiththreshold","max"],"equation":["if max > signalwiththreshold then 1.0 else 0.0"],"source":{"info":{"file":"ASSCExample","lineStart":17,"lineEnd":17,"colStart":5,"colEnd":106},"within":["ASSCExample.Class2"]}}
 ],
 "functions":[
 ]
