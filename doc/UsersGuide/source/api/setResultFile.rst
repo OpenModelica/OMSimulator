@@ -29,4 +29,5 @@ Set the result file of the simulation.
 #END#
 
 #DESCRIPTION#
+The creation of a result file is omitted if the filename is an empty string.
 #END#
