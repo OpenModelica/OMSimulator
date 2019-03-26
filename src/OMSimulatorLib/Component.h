@@ -47,6 +47,7 @@ namespace oms
 {
   class System;
   class Model;
+  class Variable;
 
   void fmiLogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message);
   void fmi2logger(fmi2_component_environment_t env, fmi2_string_t instanceName, fmi2_status_t status, fmi2_string_t category, fmi2_string_t message, ...);
@@ -97,6 +98,8 @@ namespace oms
     virtual oms_status_enu_t setBoolean(const ComRef& cref, bool value) {return logError_NotImplemented;}
     virtual oms_status_enu_t setInteger(const ComRef& cref, int value) {return logError_NotImplemented;}
     virtual oms_status_enu_t setReal(const ComRef& cref, double value) {return logError_NotImplemented;}
+
+    virtual Variable* getVariable(const ComRef& cref) {logError_NotImplemented; return NULL;}
 
     virtual oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultFile) = 0;
     virtual oms_status_enu_t updateSignals(ResultWriter& resultWriter) = 0;

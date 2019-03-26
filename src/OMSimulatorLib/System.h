@@ -64,6 +64,7 @@ namespace oms
     System* getSystem(const ComRef& cref);
     Component* getComponent(const ComRef& cref);
     System* getSubSystem(const ComRef& cref);
+    Variable* getVariable(const ComRef& cref);
     const ComRef& getCref() const {return cref;}
     ComRef getFullCref() const;
     Element* getElement() {return &element;}

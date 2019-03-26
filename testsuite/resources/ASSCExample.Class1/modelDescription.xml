@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  fmiVersion="2.0"
+  modelName="ASSCExample.Class1"
+  guid="{37ea4e10-ed4e-468f-ad9d-5f476f0d0e98}"
+  description=""
+  generationTool="OpenModelica Compiler OMCompiler v1.13.0-dev.1067+ga616890f6"
+  generationDateAndTime="2019-02-08T15:50:52Z"
+  variableNamingConvention="structured"
+  numberOfEventIndicators="1">
+  <ModelExchange
+    modelIdentifier="ASSCExample_Class1">
+  </ModelExchange>
+  <CoSimulation
+    modelIdentifier="ASSCExample_Class1"
+    needsExecutionTool="false"
+    canHandleVariableCommunicationStepSize="true"
+    canInterpolateInputs="false"
+    maxOutputDerivativeOrder="0"
+    canRunAsynchronuously = "false"
+    canBeInstantiatedOnlyOncePerProcess="false"
+    canNotUseMemoryManagementFunctions="false"
+    canGetAndSetFMUstate="false"
+    canSerializeFMUstate="false"
+     />
+  <LogCategories>
+    <Category name="logEvents" />
+    <Category name="logSingularLinearSystems" />
+    <Category name="logNonlinearSystems" />
+    <Category name="logDynamicStateSelection" />
+    <Category name="logStatusWarning" />
+    <Category name="logStatusDiscard" />
+    <Category name="logStatusError" />
+    <Category name="logStatusFatal" />
+    <Category name="logStatusPending" />
+    <Category name="logAll" />
+    <Category name="logFmi2Call" />
+  </LogCategories>
+  <DefaultExperiment startTime="0.0" stopTime="1.0" tolerance="1e-06"/>
+  <ModelVariables>
+  <!-- Index of variable = "1" -->
+  <ScalarVariable
+    name="closeToMax"
+    valueReference="0"
+    variability="continuous"
+    causality="local"
+    initial="exact">
+    <Real start="1.9"/>
+  </ScalarVariable>
+  <!-- Index of variable = "2" -->
+  <ScalarVariable
+    name="eventTime"
+    valueReference="1"
+    variability="continuous"
+    causality="local"
+    initial="calculated">
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "3" -->
+  <ScalarVariable
+    name="max"
+    valueReference="2"
+    variability="continuous"
+    causality="output"
+    initial="exact">
+    <Real start="2.0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "4" -->
+  <ScalarVariable
+    name="_D_outputAlias_max"
+    valueReference="2"
+    variability="continuous"
+    causality="local"
+    >
+    <Real/>
+  </ScalarVariable>
+  </ModelVariables>
+  <ModelStructure>
+    <Outputs>
+      <Unknown index="3" dependencies="" dependenciesKind="" />
+    </Outputs>
+  </ModelStructure>
+</fmiModelDescription>

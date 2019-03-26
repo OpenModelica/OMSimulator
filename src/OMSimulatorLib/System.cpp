@@ -44,6 +44,7 @@
 #include "SystemTLM.h"
 #include "SystemWC.h"
 #include "Types.h"
+#include "Variable.h"
 #include <OMSFileSystem.h>
 #include <RegEx.h>
 
@@ -1594,6 +1595,27 @@ oms_status_enu_t oms::System::getReal(const ComRef& cref, double& value)
   }
 
   return logError_UnknownSignal(getFullCref() + cref);
+}
+
+oms::Variable* oms::System::getVariable(const ComRef& cref)
+{
+  oms::ComRef tail(cref);
+  oms::ComRef head = tail.pop_front();
+
+  auto subsystem = subsystems.find(head);
+  if (subsystem != subsystems.end())
+    return subsystem->second->getVariable(tail);
+
+  auto component = components.find(head);
+  if (component != components.end())
+    return component->second->getVariable(tail);
+
+  //for (auto& connector : connectors)
+  //  if (connector && connector->getName() == cref)
+  //    return connector->getVariable();
+
+  logError_UnknownSignal(getFullCref() + cref);
+  return NULL;
 }
 
 oms_status_enu_t oms::System::setBoolean(const ComRef& cref, bool value)
