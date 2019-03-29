@@ -367,6 +367,7 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
       double safety_factor = 0.90;
       double maxChange = 1.5;
       double minChange = 0.5;
+      maxError = 0.0;
       for (int n=0; n < inputVect.size();n++) // Calculate error in the FMUs we do error_control on.
       {
         double error;
