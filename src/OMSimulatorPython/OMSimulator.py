@@ -50,6 +50,7 @@ class OMSimulator:
     self.solver_sc_cvode = 3
     self.solver_wc_ma = 6
     self.solver_wc_mav = 7
+    self.solver_wc_mav2 = 8
 
     self.obj.oms_addBus.argtypes = [ctypes.c_char_p]
     self.obj.oms_addBus.restype = ctypes.c_int

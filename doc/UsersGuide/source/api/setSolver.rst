@@ -18,6 +18,7 @@ Sets the solver method for the given system.
   "oms_solver_sc_cvode", "sc-system", "CVODE with adaptive stepsize"
   "oms_solver_wc_ma", "wc-system", "default master algorithm with fixed step size"
   "oms_solver_wc_mav", "wc-system", "master algorithm with adaptive stepsize"
+  "oms_solver_wc_mav2", "wc-system", "master algorithm with adaptive stepsize (double-step)"
 
 #END#
 

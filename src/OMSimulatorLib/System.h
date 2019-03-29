@@ -171,6 +171,10 @@ namespace oms
     double minimumStepSize = 1e-4;
     double maximumStepSize = 1e-1;
     double initialStepSize = 1e-4;
+
+    std::unordered_map<unsigned int /*result file var ID*/, unsigned int /*allVariables ID*/> resultFileMapping;
+    std::unordered_map<ComRef, bool> exportConnectors;
+
   private:
     ComRef cref;
     oms_system_enu_t type;
@@ -191,9 +195,6 @@ namespace oms
     std::vector<TLMBusConnector*> tlmbusconnectors;
 #endif
     std::vector<Connection*> connections;           ///< last element is always NULL
-
-    std::unordered_map<unsigned int /*result file var ID*/, unsigned int /*allVariables ID*/> resultFileMapping;
-    std::unordered_map<ComRef, bool> exportConnectors;
 
     oms_status_enu_t importFromSSD_ConnectionGeometry(const pugi::xml_node& node, const ComRef& crefA, const ComRef& crefB);
   };

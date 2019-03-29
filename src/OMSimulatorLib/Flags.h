@@ -60,6 +60,7 @@ namespace oms
     static bool InputDerivatives() {return GetInstance().inputDerivatives;}
     static bool ProgressBar() {return GetInstance().progressBar;}
     static bool RealTime() {return GetInstance().realTime;}
+    static bool SolverStats() {return GetInstance().solverStats;}
     static bool StripRoot() {return GetInstance().stripRoot;}
     static bool SuppressPath() {return GetInstance().suppressPath;}
     static bool WallTime() {return GetInstance().wallTime;}
@@ -67,9 +68,9 @@ namespace oms
     static double StopTime() {return GetInstance().stopTime;}
     static double Timeout() {return GetInstance().timeout;}
     static double Tolerance() {return GetInstance().tolerance;}
-    static std::string ResultFile() {return GetInstance().resultFile;}
-    static oms_solver_enu_t Solver() {return GetInstance().solver;}
     static oms_solver_enu_t MasterAlgorithm() {return GetInstance().masterAlgorithm;}
+    static oms_solver_enu_t Solver() {return GetInstance().solver;}
+    static std::string ResultFile() {return GetInstance().resultFile;}
     static unsigned int Intervals() {return GetInstance().intervals;}
 
   private:
@@ -78,6 +79,7 @@ namespace oms
     bool inputDerivatives;
     bool progressBar;
     bool realTime;
+    bool solverStats;
     bool stripRoot;
     bool suppressPath;
     bool wallTime;
@@ -126,6 +128,7 @@ namespace oms
       {"--resultFile", "-r", "Specifies the name of the output result file", re_default, Flags::ResultFile, false},
       {"--setInputDerivatives", "", "", re_bool, Flags::SetInputDerivatives, false},
       {"--solver", "", "Specifies the integration method (euler, cvode)", re_default, Flags::Solver, false},
+      {"--solverStats", "", "Adds solver stats to the result file, e.g. step size (not supported for all solvers)", re_bool, Flags::SolverStats, false},
       {"--startTime", "-s", "Specifies the start time", re_double, Flags::StartTime, false},
       {"--stopTime", "-t", "Specifies the stop time", re_double, Flags::StopTime, false},
       {"--stripRoot", "", "Removes the root system prefix from all exported signals", re_bool, Flags::StripRoot, false},
@@ -152,6 +155,7 @@ namespace oms
     static oms_status_enu_t ResultFile(const std::string& value);
     static oms_status_enu_t SetInputDerivatives(const std::string& value);
     static oms_status_enu_t Solver(const std::string& value);
+    static oms_status_enu_t SolverStats(const std::string& value);
     static oms_status_enu_t StartTime(const std::string& value);
     static oms_status_enu_t StopTime(const std::string& value);
     static oms_status_enu_t StripRoot(const std::string& value);

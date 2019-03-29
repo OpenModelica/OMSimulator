@@ -38,6 +38,7 @@
 #include "ssd/Tags.h"
 #include "SystemTLM.h"
 #include "Types.h"
+#include <math.h>
 #include <thread>
 
 oms::SystemWC::SystemWC(const ComRef& cref, Model* parentModel, System* parentSystem)
@@ -79,6 +80,8 @@ std::string oms::SystemWC::getSolverName() const
       return std::string("oms-mav");
     case oms_solver_wc_assc:
       return std::string("oms-assc");
+    case oms_solver_wc_mav2:
+      return std::string("oms-mav2");
   }
 
   return std::string("unknown");
@@ -92,6 +95,8 @@ oms_status_enu_t oms::SystemWC::setSolverMethod(std::string solver)
     solverMethod = oms_solver_wc_mav;
   else if (std::string("oms-assc") == solver)
     solverMethod = oms_solver_wc_assc;
+  else if (std::string("oms-mav2") == solver)
+    solverMethod = oms_solver_wc_mav2;
   else
     return oms_status_error;
 
@@ -114,7 +119,7 @@ oms_status_enu_t oms::SystemWC::importFromSSD_SimulationInformation(const pugi::
   std::string solverName = node.child("FixedStepMaster").attribute("description").as_string();
   if (oms_status_ok != setSolverMethod(solverName))
     return oms_status_error;
-  initialStepSize=minimumStepSize=maximumStepSize = node.child("FixedStepMaster").attribute("stepSize").as_double();
+  initialStepSize = minimumStepSize=maximumStepSize = node.child("FixedStepMaster").attribute("stepSize").as_double();
   return oms_status_ok;
 }
 
@@ -213,6 +218,7 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
   ComRef modelName = this->getModel()->getCref();
   auto start = std::chrono::steady_clock::now() + std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(time));
 
+  fmi2_status_t fmi_status;
   double startTime=time;
   if (Flags::ProgressBar())
     logInfo("stepUntil [" + std::to_string(startTime) + "; " + std::to_string(stopTime) + "]");
@@ -220,68 +226,330 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
   if (isTopLevelSystem())
     getModel()->emit(time);
 
-  while (time < stopTime)
+  if (solverMethod == oms_solver_wc_mav || solverMethod == oms_solver_wc_mav2)
   {
-    double tNext = time+maximumStepSize;
-    if (tNext > stopTime)
-      tNext = stopTime;
+    logDebug("DEBUGGING: Entering VariableStep solver");
+    stepSize = initialStepSize;
+    std::map<ComRef, Component*> FMUcomponents;
+    std::map<ComRef, Component*> canGetAndSetStateFMUcomponents;
+    std::map<ComRef, Component*> noneFMUcomponents;
+    std::vector<double> inputVectEnd;
+    std::vector<double> outputVectEnd;
+    std::vector<double> inputVect;
+    std::vector<double> outputVect;
+    bool doDoubleStep = (solverMethod == oms_solver_wc_mav2); //Should we double step or not?
 
-    logDebug("doStep: " + std::to_string(time) + " -> " + std::to_string(tNext));
-
-    oms_status_enu_t status;
-    for (const auto& subsystem : getSubSystems())
+    for (const auto& component : getComponents()) // Map the FMUs.
     {
-      status = subsystem.second->stepUntil(tNext, NULL);
-      if (oms_status_ok != status)
+      if (oms_component_fmu == component.second->getType()) // Check that its an FMU
       {
-        if (cb)
-          cb(modelName.c_str(), tNext, status);
-        return status;
+        if (dynamic_cast<ComponentFMUCS*>(component.second)->getFMUInfo()->getCanGetAndSetFMUstate())
+          canGetAndSetStateFMUcomponents.insert(std::pair<ComRef, Component*>(component.first,component.second));
+        else
+          FMUcomponents.insert(std::pair<ComRef, Component*>(component.first,component.second));
       }
-    }
-
-    for (const auto& component : getComponents())
-    {
-      status = component.second->stepUntil(tNext);
-      if (oms_status_ok != status)
-      {
-        if (cb)
-          cb(modelName.c_str(), tNext, status);
-        return status;
-      }
-    }
-
-    if (Flags::RealTime())
-    {
-      auto now = std::chrono::steady_clock::now();
-      // seems a cast to a sufficient high resolution of time is necessary for avoiding truncation errors
-      auto next = start + std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(tNext));
-      std::chrono::duration<double> margin = std::chrono::duration<double>(next - now);
-      if (margin < std::chrono::duration<double>(0))
-        logWarning("real-time frame overrun, time=" + std::to_string(tNext) + "s, exceeded margin=" + std::to_string(margin.count()) + "s");
       else
-        std::this_thread::sleep_until(next);
+        noneFMUcomponents.insert(std::pair<ComRef, Component*>(component.first,component.second));
     }
 
-    time = tNext;
-    if (isTopLevelSystem())
-      getModel()->emit(time);
-    updateInputs(outputsGraph);
-    if (isTopLevelSystem())
-      getModel()->emit(time);
+    logDebug("DEBUGGING: canGetAndSetStateFMUcomponents is size: " + std::to_string(canGetAndSetStateFMUcomponents.size()));
+    logDebug("DEBUGGING: FMUcomponents is size: " + std::to_string(FMUcomponents.size()));
+    logDebug("DEBUGGING: noneFMUcomponents is size: " + std::to_string(noneFMUcomponents.size()));
 
-    if (cb)
-      cb(modelName.c_str(), time, oms_status_ok);
+    // Lets make sure we can reset FMUs
+    if (canGetAndSetStateFMUcomponents.size() == 0)
+      return logError("If no FMUs can get/set states, Variable Step solver can't be used.");
 
-    if (Flags::ProgressBar())
-      Log::ProgressBar(startTime, stopTime, time);
-
-    if (isTopLevelSystem() && getModel()->cancelSimulation())
+    // Lets check if we should double step or not.
+    if (FMUcomponents.size() != 0 && doDoubleStep)
     {
-      cb(modelName.c_str(), time, oms_status_discard);
-      return oms_status_discard;
+      doDoubleStep = false;
+      logWarning("Found FMUs that can't get/set states, will not double step.");
+    }
+
+    int howManySteps = doDoubleStep ? 3 : 1;
+
+    while (time < stopTime)
+    {
+      if (stepSize > maximumStepSize) stepSize = maximumStepSize;
+      if (stepSize < minimumStepSize) stepSize = minimumStepSize;
+
+      double tNext = time+stepSize;
+      if (tNext > stopTime)
+      {
+        tNext = stopTime;
+        stepSize = tNext-time;
+      }
+
+      logDebug("doStep: " + std::to_string(time) + " -> " + std::to_string(tNext));
+
+      oms_status_enu_t status;
+      for (int whichStepIndex = 0; whichStepIndex < howManySteps; whichStepIndex++)
+      {
+        for (const auto& component : canGetAndSetStateFMUcomponents) // Get states and stepUntil for FMUs that can get state.
+        {
+          if (whichStepIndex == 0) // first time get the state vector so we can rollback if needed.
+          {
+            fmi2_import_t* fmu_in = dynamic_cast<ComponentFMUCS*>(component.second)->getFMU();
+            fmi2_FMU_state_t s = NULL;
+            fmi_status = fmi2_import_get_fmu_state(fmu_in, &s);
+            sVect.push_back(s);
+            fmiImportVect.push_back(fmu_in);
+          }
+
+          status = component.second->stepUntil(tNext);
+          if (oms_status_ok != status)
+          {
+            if (cb)
+              cb(modelName.c_str(), tNext, status);
+            return status;
+          }
+        }
+
+        for (const auto& component : noneFMUcomponents) // stepUntil for noneFmus
+        {
+          status = component.second->stepUntil(tNext);
+          if (oms_status_ok != status)
+          {
+            if (cb)
+              cb(modelName.c_str(), tNext, status);
+            return status;
+          }
+        }
+
+        for (const auto& subsystem : getSubSystems()) // stepUntill for subsystems of ME FMUs, TODO: Fix rollback here too.
+        {
+          status = subsystem.second->stepUntil(tNext, NULL);
+          if (oms_status_ok != status)
+          {
+            if (cb)
+              cb(modelName.c_str(), tNext, status);
+            return status;
+          }
+        }
+
+        logDebug("DEBUGGING: Doing error control");
+        // get inputs and outputs at the end of all steps.
+        if (whichStepIndex == 0)
+        {
+          if (oms_status_ok != getInputAndOutput(outputsGraph,inputVect,outputVect,canGetAndSetStateFMUcomponents))
+            return oms_status_error;
+          if (doDoubleStep) // Rollback for small steppies.
+          {
+            //Fix fmus
+            for (int i=0; i<fmiImportVect.size(); ++i) // Reset all FMU states
+            {
+              fmi_status = fmi2_import_set_fmu_state(fmiImportVect[i], sVect[i]);
+            }
+            //Fix time
+            time = tNext-stepSize;
+            for (const auto& component : getComponents())
+            {
+              if (oms_component_fmu == component.second->getType())
+              {
+                dynamic_cast<ComponentFMUCS*>(component.second)->setFmuTime(time);
+              }
+            }
+          }
+        }
+        else if (whichStepIndex == 1)
+          updateInputs(outputsGraph);
+        else if (whichStepIndex == 2)
+          if (oms_status_ok != getInputAndOutput(outputsGraph,inputVectEnd,outputVectEnd,canGetAndSetStateFMUcomponents))
+            return oms_status_error;
+      }
+      logDebug("DEBUGGING: Lets do Error control");
+      logDebug("DEBUGGING: inputVect is size: "+std::to_string(inputVect.size()));
+      logDebug("DEBUGGING: outputVect is size:"+std::to_string(outputVect.size()));
+      if (inputVect.size() != outputVect.size())
+        return oms_status_error;
+
+      double safety_factor = 0.90;
+      double maxChange = 1.5;
+      double minChange = 0.5;
+      maxError = 0.0;
+      for (int n=0; n < inputVect.size();n++) // Calculate error in the FMUs we do error_control on.
+      {
+        double error;
+        if (!doDoubleStep)
+          error = fabs(inputVect[n]-outputVect[n]);
+        else
+          error = fabs(outputVectEnd[n]-outputVect[n]);
+
+        logDebug("DEBUGGING: Error is:"+std::to_string(error)+" and Scale factor is: "+std::to_string((fabs(outputVect[n])*relativeTolerance+absoluteTolerance)));
+
+        normError = normError+pow(error/(fabs(outputVect[n])*relativeTolerance+absoluteTolerance),2);
+        if (error/(fabs(outputVect[n])*relativeTolerance+absoluteTolerance) > maxError)
+        {
+          maxError = error/(fabs(outputVect[n])*relativeTolerance+absoluteTolerance);
+          logDebug("DEBUGGING: scaled error is: " + std::to_string(error/(fabs(outputVect[n])*relativeTolerance+absoluteTolerance)) + " New biggest Differance is: " + std::to_string(maxError));
+        }
+      }
+      normError = pow(normError, 0.5);
+      double fixRatio = pow(1.0/maxError, 0.5);
+      logDebug("DEBUGGING: fixRatio is: " + std::to_string(fixRatio));
+      if (fixRatio < 1.0 && minimumStepSize < stepSize) //Going to rollback.
+      {
+        //Fix fmus
+        for (int i=0; i<fmiImportVect.size(); ++i) // Reset all FMU states
+        {
+          fmi_status = fmi2_import_set_fmu_state(fmiImportVect[i], sVect[i]);
+        }
+        //Fix time
+        time = tNext-stepSize;
+        for (const auto& component : getComponents())
+        {
+          if (oms_component_fmu == component.second->getType())
+          {
+            dynamic_cast<ComponentFMUCS*>(component.second)->setFmuTime(time);
+          }
+        }
+        //Fix Steptime.
+        fixRatio = fixRatio*safety_factor;
+        if (fixRatio < minChange) fixRatio = minChange;
+        stepSize = stepSize*fixRatio;
+        logDebug("DEBUGGING: Rollbacking New h is: " + std::to_string(stepSize));
+        rollBackIt++;
+      }
+      else // Not going to rollback.
+      {
+        if (!FMUcomponents.empty())
+        {
+          for (const auto& component : FMUcomponents) // These FMUs cant rollback, so only simulating them when we have decided on a step to take.
+          {
+            if (doDoubleStep)
+              return logError("We shouldn't be doing double stepping when we have FMUs that can't get or set states.");
+            status = component.second->stepUntil(tNext);
+            if (oms_status_ok != status)
+            {
+              if (cb)
+                cb(modelName.c_str(), tNext, status);
+              return status;
+            }
+          }
+        }
+
+        if (Flags::RealTime())
+        {
+          auto now = std::chrono::steady_clock::now();
+          // seems a cast to a sufficient high resolution of time is necessary for avoiding truncation errors
+          auto next = start + std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(tNext));
+          std::chrono::duration<double> margin = std::chrono::duration<double>(next - now);
+          if (margin < std::chrono::duration<double>(0))
+            logWarning("real-time frame overrun, time=" + std::to_string(tNext) + "s, exceeded margin=" + std::to_string(margin.count()) + "s");
+          else
+            std::this_thread::sleep_until(next);
+        }
+
+        time = tNext;
+        if (isTopLevelSystem())
+          getModel()->emit(time);
+        updateInputs(outputsGraph);
+        if (isTopLevelSystem())
+          getModel()->emit(time);
+
+        if (cb)
+          cb(modelName.c_str(), time, oms_status_ok);
+
+        if (Flags::ProgressBar())
+          Log::ProgressBar(startTime, stopTime, time);
+
+        if (isTopLevelSystem() && getModel()->cancelSimulation())
+        {
+          cb(modelName.c_str(), time, oms_status_discard);
+          return oms_status_discard;
+        }
+
+        rollBackIt = 0;
+        fixRatio = fixRatio*safety_factor;
+        if (fixRatio > 1.0)
+          if (fixRatio > maxChange)
+            fixRatio = maxChange;
+        stepSize = stepSize*fixRatio;
+      }
+
+      for (int kkl=0; kkl < sVect.size(); kkl++)
+      {
+        fmi2_import_free_fmu_state(fmiImportVect[kkl], &sVect[kkl]);
+      }
+      fmiImportVect.clear();
+      sVect.clear();
+
+      if (isTopLevelSystem() && getModel()->cancelSimulation())
+      {
+        cb(modelName.c_str(), time, oms_status_discard);
+        return oms_status_discard;
+      }
     }
   }
+  else if (solverMethod == oms_solver_wc_ma)
+  {
+    logDebug("DEBUGGING: Entering FixedStep solver");
+    while (time < stopTime)
+    {
+      double tNext = time+maximumStepSize;
+      if (tNext > stopTime)
+        tNext = stopTime;
+
+      logDebug("doStep: " + std::to_string(time) + " -> " + std::to_string(tNext));
+
+      oms_status_enu_t status;
+      for (const auto& subsystem : getSubSystems())
+      {
+        status = subsystem.second->stepUntil(tNext, NULL);
+        if (oms_status_ok != status)
+        {
+          if (cb)
+            cb(modelName.c_str(), tNext, status);
+          return status;
+        }
+      }
+
+      for (const auto& component : getComponents())
+      {
+        status = component.second->stepUntil(tNext);
+        if (oms_status_ok != status)
+        {
+          if (cb)
+            cb(modelName.c_str(), tNext, status);
+          return status;
+        }
+      }
+
+      if (Flags::RealTime())
+      {
+        auto now = std::chrono::steady_clock::now();
+        // seems a cast to a sufficient high resolution of time is necessary for avoiding truncation errors
+        auto next = start + std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(tNext));
+        std::chrono::duration<double> margin = std::chrono::duration<double>(next - now);
+        if (margin < std::chrono::duration<double>(0))
+          logWarning("real-time frame overrun, time=" + std::to_string(tNext) + "s, exceeded margin=" + std::to_string(margin.count()) + "s");
+        else
+          std::this_thread::sleep_until(next);
+      }
+
+      time = tNext;
+      if (isTopLevelSystem())
+        getModel()->emit(time);
+      updateInputs(outputsGraph);
+      if (isTopLevelSystem())
+        getModel()->emit(time);
+
+      if (cb)
+        cb(modelName.c_str(), time, oms_status_ok);
+
+      if (Flags::ProgressBar())
+        Log::ProgressBar(startTime, stopTime, time);
+
+      if (isTopLevelSystem() && getModel()->cancelSimulation())
+      {
+        cb(modelName.c_str(), time, oms_status_discard);
+        return oms_status_discard;
+      }
+    }
+  }
+  else
+    return logError("Invalid solver selected");
 
   if (Flags::ProgressBar())
   {
@@ -548,6 +816,265 @@ oms_status_enu_t oms::SystemWC::setRealInputDerivative(const ComRef& cref, doubl
   return setRealInputDerivative(cref, &value, 1);
 }
 
+oms_status_enu_t oms::SystemWC::getInputAndOutput(oms::DirectedGraph& graph, std::vector<double>& inputVect,std::vector<double>& outputVect,std::map<ComRef, Component*> FMUcomponents)
+{
+  // FMUcomponents in will be list of FMUs that CAN GET FMUs
+  const std::vector< std::vector< std::pair<int, int> > >& sortedConnections = graph.getSortedConnections();
+  inputVect.clear();
+  int inCount = 0;
+  outputVect.clear();
+  int outCount = 0;
+    for(int i=0; i<sortedConnections.size(); i++)
+    {
+      if (sortedConnections[i].size() == 1)
+      {
+        logDebug("DEBUGGING: Size of sortedConnections[i] is: "+std::to_string(sortedConnections[i].size()));
+        int input = sortedConnections[i][0].second;
+        oms::ComRef inputName(graph.getNodes()[input].getName());
+        oms::ComRef inputModel = inputName.pop_front();
+        logDebug(inputModel);
+        int output = sortedConnections[i][0].first;
+        oms::ComRef outputName(graph.getNodes()[output].getName());
+        oms::ComRef outputModel = outputName.pop_front();
+        logDebug(outputModel);
+        if (FMUcomponents.find(inputModel) != FMUcomponents.end())
+        {
+          if (FMUcomponents.find(outputModel) != FMUcomponents.end())
+          {
+            if (graph.getNodes()[input].getType() == oms_signal_type_real)
+            {
+              double inValue = 0.0;
+              if (oms_status_ok != getReal(graph.getNodes()[input].getName(), inValue)) return oms_status_error;
+              logDebug("DEBUGGING: found a real input called: "+std::string(graph.getNodes()[output].getName()));
+              inputVect.push_back(inValue);
+              inCount++;
+            }
+            if (graph.getNodes()[output].getType() == oms_signal_type_real)
+            {
+              double outValue = 0.0;
+              if (oms_status_ok != getReal(graph.getNodes()[output].getName(), outValue)) return oms_status_error;
+              logDebug("DEBUGGING: found a real output called: "+std::string(graph.getNodes()[output].getName()));
+              outputVect.push_back(outValue);
+              outCount++;
+            }
+          }
+        }
+      }
+      else
+      {
+        logDebug("DEBUGGING: Exiting cuz algebraic loop!");
+        return oms_status_error; // algebraic loop: TODO
+      }
+      logDebug("DEBUGGING: we have added "+std::to_string(inCount)+" inputs and "+std::to_string(outCount)+" outputs to the vectors.");
+    }
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::SystemWC::getOutput(oms::DirectedGraph& graph, std::vector<double>& outputVect,std::map<ComRef, Component*> FMUcomponents)
+{
+  const std::vector< std::vector< std::pair<int, int> > >& sortedConnections = graph.getSortedConnections();
+  outputVect.clear();
+  if (!FMUcomponents.empty())
+  {
+    for(int i=0; i<sortedConnections.size(); i++)
+    {
+      if (sortedConnections[i].size() == 1)
+      {
+        int output = sortedConnections[i][0].first;
+        int input = sortedConnections[i][0].second;
+        oms::ComRef outputName(graph.getNodes()[output].getName());
+        oms::ComRef inputName(graph.getNodes()[input].getName());
+        oms::ComRef outputModel = outputName.pop_front();
+        oms::ComRef inputModel = inputName.pop_front();
+        if (FMUcomponents.find(inputModel) == FMUcomponents.end())
+        {
+          if (FMUcomponents.find(outputModel) == FMUcomponents.end())
+          {
+            if (graph.getNodes()[output].getType() == oms_signal_type_real)
+            {
+              double outValue = 0.0;
+              if (oms_status_ok != getReal(graph.getNodes()[output].getName(), outValue)) return oms_status_error;
+              outputVect.push_back(outValue);
+            }
+          }
+        }
+      }
+      else
+        return oms_status_error; // Algebraic loop, TODO.
+    }
+  }
+  else
+  {
+    for(int i=0; i<sortedConnections.size(); i++)
+    {
+      if (sortedConnections[i].size() == 1)
+      {
+        int output = sortedConnections[i][0].first;
+        if (graph.getNodes()[output].getType() == oms_signal_type_real)
+        {
+          double outValue = 0.0;
+          if (oms_status_ok != getReal(graph.getNodes()[output].getName(), outValue)) return oms_status_error;
+          outputVect.push_back(outValue);
+        }
+      }
+      else
+        return oms_status_error; // Algebraic loop, TODO.
+    }
+  }
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::SystemWC::updateCanGetFMUs(oms::DirectedGraph& graph,std::map<ComRef, Component*> FMUcomponents)
+{
+  // FMUcomponents in will be list of FMUs that CAN GET FMUs
+  const std::vector< std::vector< std::pair<int, int> > >& sortedConnections = graph.getSortedConnections();
+  for(int i=0; i<sortedConnections.size(); i++)
+  {
+    if (sortedConnections[i].size() == 1)
+    {
+      int output = sortedConnections[i][0].first;
+      int input = sortedConnections[i][0].second;
+      oms::ComRef outputName(graph.getNodes()[output].getName());
+      oms::ComRef inputName(graph.getNodes()[input].getName());
+      oms::ComRef outputModel = outputName.pop_front();
+      oms::ComRef inputModel = inputName.pop_front();
+      if (FMUcomponents.find(inputModel) != FMUcomponents.end() && FMUcomponents.find(outputModel) != FMUcomponents.end())
+      {
+        if (graph.getNodes()[input].getType() == oms_signal_type_real)
+        {
+          double value = 0.0;
+          logDebug("DEBUGGING: We found a link between two fmus that can handle get and set");
+          if (oms_status_ok != getReal(graph.getNodes()[output].getName(), value)) return oms_status_error;
+          if (oms_status_ok != setReal(graph.getNodes()[input].getName(), value)) return oms_status_error;
+
+          // derivatives
+          if (derBuffer)
+          {
+            unsigned int order;
+            if (oms_status_ok == getRealOutputDerivative(graph.getNodes()[output].getName(), derBuffer, order))
+            {
+              //logInfo(graph.getNodes()[output].getName() + " -> " + graph.getNodes()[input].getName() + ": " + std::to_string(derBuffer[0]));
+              if (oms_status_ok != setRealInputDerivative(graph.getNodes()[input].getName(), derBuffer, order)) return oms_status_error;
+            }
+          }
+        }
+        else if (graph.getNodes()[input].getType() == oms_signal_type_integer)
+        {
+          int value = 0.0;
+          if (oms_status_ok != getInteger(graph.getNodes()[output].getName(), value)) return oms_status_error;
+          if (oms_status_ok != setInteger(graph.getNodes()[input].getName(), value)) return oms_status_error;
+        }
+        else if (graph.getNodes()[input].getType() == oms_signal_type_boolean)
+        {
+          bool value = 0.0;
+          if (oms_status_ok != getBoolean(graph.getNodes()[output].getName(), value)) return oms_status_error;
+          if (oms_status_ok != setBoolean(graph.getNodes()[input].getName(), value)) return oms_status_error;
+        }
+        else
+          return logError_InternalError;
+
+      }
+    }
+    else
+    {
+      bool OK = true;
+      for (int j = 0; j < sortedConnections[j].size(); i++)
+      {
+        int output = sortedConnections[i][j].first;
+        int input = sortedConnections[i][j].second;
+        oms::ComRef outputName(graph.getNodes()[output].getName());
+        oms::ComRef inputName(graph.getNodes()[input].getName());
+        oms::ComRef outputModel = outputName.pop_front();
+        oms::ComRef inputModel = inputName.pop_front();
+        if (FMUcomponents.find(inputModel) != FMUcomponents.end() || FMUcomponents.find(outputModel) != FMUcomponents.end())
+        {
+          OK = OK;
+        }
+        else
+        {
+          OK = false;
+        }
+      }
+      if (OK)
+      {
+        if (oms_status_ok != solveAlgLoop(graph, sortedConnections[i])) return oms_status_error;  // This loop will only connect FMUs that can get state, and thus we can solve it.
+      }
+      else
+      {
+        logError("Algebraic Loop connecting FMUs that can get states and FMUs that can't get states, this will not work out. Restart the simulation with fixed step solver.");
+        return oms_status_error;
+      }
+    }
+  }
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::SystemWC::updateCantGetFMUs(oms::DirectedGraph& graph,std::map<ComRef, Component*> FMUcomponents)
+{
+  const std::vector< std::vector< std::pair<int, int> > >& sortedConnections = graph.getSortedConnections();
+  for(int i=0; i<sortedConnections.size(); i++)
+  {
+    if (sortedConnections[i].size() == 1)
+    {
+      int output = sortedConnections[i][0].first;
+      int input = sortedConnections[i][0].second;
+      oms::ComRef outputName(graph.getNodes()[output].getName());
+      oms::ComRef inputName(graph.getNodes()[input].getName());
+      oms::ComRef outputModel = outputName.pop_front();
+      oms::ComRef inputModel = inputName.pop_front();
+      logDebug("DEBUGGING: Lets check which connection it is.");
+      if (FMUcomponents.find(inputModel) != FMUcomponents.end() || FMUcomponents.find(outputModel) != FMUcomponents.end())
+      {
+        if (graph.getNodes()[input].getType() == oms_signal_type_real)
+        {
+          double value = 0.0;
+          logDebug("DEBUGGING: We found a link between two fmus where atleast one cant handle get and set, so lets update this (real)");
+          if (oms_status_ok != getReal(graph.getNodes()[output].getName(), value)) return oms_status_error;
+          if (oms_status_ok != setReal(graph.getNodes()[input].getName(), value)) return oms_status_error;
+
+          // derivatives
+          if (derBuffer)
+          {
+            unsigned int order;
+            if (oms_status_ok == getRealOutputDerivative(graph.getNodes()[output].getName(), derBuffer, order))
+            {
+              logDebug(graph.getNodes()[output].getName() + " -> " + graph.getNodes()[input].getName() + ": " + std::to_string(derBuffer[0]));
+              if (oms_status_ok != setRealInputDerivative(graph.getNodes()[input].getName(), derBuffer, order)) return oms_status_error;
+            }
+          }
+          logDebug("DEBUGGING: Sorted the Derivative");
+        }
+        else if (graph.getNodes()[input].getType() == oms_signal_type_integer)
+        {
+          logDebug("DEBUGGING: We found a link between two fmus where atleast one cant handle get and set, so lets update this (int)");
+          int value = 0.0;
+          if (oms_status_ok != getInteger(graph.getNodes()[output].getName(), value)) return oms_status_error;
+          if (oms_status_ok != setInteger(graph.getNodes()[input].getName(), value)) return oms_status_error;
+        }
+        else if (graph.getNodes()[input].getType() == oms_signal_type_boolean)
+        {
+          logDebug("DEBUGGING: We found a link between two fmus where atleast one cant handle get and set, so lets update this (boolean)");
+          bool value = 0.0;
+          if (oms_status_ok != getBoolean(graph.getNodes()[output].getName(), value)) return oms_status_error;
+          if (oms_status_ok != setBoolean(graph.getNodes()[input].getName(), value)) return oms_status_error;
+        }
+        else
+        {
+          logDebug("DEBUGGING: We found a link between two fmus where atleast one cant handle get and set, BUT THE link isnt real/int/boolean, casting error.");
+          return logError_InternalError;
+        }
+
+      }
+
+    }
+    else
+    {
+      if (oms_status_ok != solveAlgLoop(graph, sortedConnections[i])) return oms_status_error; // This loop will only connect FMUs that cant get state, and thus we can solve it.
+    }
+  }
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms::SystemWC::updateInputs(oms::DirectedGraph& graph)
 {
   CallClock callClock(clock);
@@ -660,5 +1187,128 @@ oms_status_enu_t oms::SystemWC::solveAlgLoop(DirectedGraph& graph, const std::ve
   if (it >= maxIterations)
     return logError("max. number of iterations (" + std::to_string(maxIterations) + ") exceeded at time = " + std::to_string(getTime()));
   logDebug("CompositeModel::solveAlgLoop: maxRes: " + std::to_string(maxRes) + ", iterations: " + std::to_string(it) + " at time = " + std::to_string(getTime()));
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::SystemWC::registerSignalsForResultFile(ResultWriter& resultFile)
+{
+  if (Flags::WallTime())
+    clock_id = resultFile.addSignal(std::string(getFullCref() + ComRef("$wallTime")), "wall-clock time [s]", SignalType_REAL);
+  else
+    clock_id = 0;
+
+  if ((getSolver() == oms_solver_wc_mav || getSolver() == oms_solver_wc_mav2) && Flags::SolverStats())
+  {
+    h_id = resultFile.addSignal(std::string(getFullCref() + ComRef("$h")), "Step-size h [s]", SignalType_REAL);
+    roll_iter_id = resultFile.addSignal(std::string(getFullCref() + ComRef("$rollbackIterations")), "How many Rollbacks were made", SignalType_INT);
+    max_error_id = resultFile.addSignal(std::string(getFullCref() + ComRef("$errorMax")), "Max error", SignalType_REAL);
+    error_id = resultFile.addSignal(std::string(getFullCref() + ComRef("$errorNorm")), "Normalized error from all signals", SignalType_REAL);
+  }
+  else
+  {
+    h_id = 0;
+    roll_iter_id = 0;
+    max_error_id = 0;
+    error_id = 0;
+  }
+
+  for (const auto& component : getComponents())
+    if (oms_status_ok != component.second->registerSignalsForResultFile(resultFile))
+      return oms_status_error;
+
+  for (const auto& subsystem : getSubSystems())
+    if (oms_status_ok != subsystem.second->registerSignalsForResultFile(resultFile))
+      return oms_status_error;
+
+  resultFileMapping.clear();
+  Connector** connectors = getConnectors();
+  for (int i=0; connectors[i]; ++i)
+  {
+    if (!connectors[i])
+      continue;
+    if (!exportConnectors[connectors[i]->getName()])
+      continue;
+
+    auto const& connector = connectors[i];
+
+    if (oms_signal_type_real == connector->getType())
+    {
+      unsigned int ID = resultFile.addSignal(std::string(getFullCref() + connector->getName()), "connector", SignalType_REAL);
+      resultFileMapping[ID] = i;
+    }
+    else if (oms_signal_type_integer == connector->getType())
+    {
+      unsigned int ID = resultFile.addSignal(std::string(connector->getName()), "connector", SignalType_INT);
+      resultFileMapping[ID] = i;
+    }
+    else if (oms_signal_type_boolean == connector->getType())
+    {
+      unsigned int ID = resultFile.addSignal(std::string(connector->getName()), "connector", SignalType_BOOL);
+      resultFileMapping[ID] = i;
+    }
+  }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::SystemWC::updateSignals(ResultWriter& resultFile)
+{
+  if (clock_id)
+  {
+    SignalValue_t wallTime;
+    wallTime.realValue = clock.getElapsedWallTime();
+    resultFile.updateSignal(clock_id, wallTime);
+  }
+
+  if ((getSolver() == oms_solver_wc_mav || getSolver() == oms_solver_wc_mav2) && Flags::SolverStats())
+  {
+    SignalValue_t stepS;
+    stepS.realValue = stepSize;
+    resultFile.updateSignal(h_id, stepS);
+    SignalValue_t rollB;
+    rollB.intValue = rollBackIt;
+    resultFile.updateSignal(roll_iter_id, rollB);
+    SignalValue_t maxErr;
+    maxErr.realValue = maxError;
+    resultFile.updateSignal(max_error_id, maxErr);
+    SignalValue_t errNorm;
+    errNorm.realValue = normError;
+    resultFile.updateSignal(error_id, errNorm);
+  }
+
+  for (const auto& component : getComponents())
+    if (oms_status_ok != component.second->updateSignals(resultFile))
+      return oms_status_error;
+
+  for (const auto& subsystem : getSubSystems())
+    if (oms_status_ok != subsystem.second->updateSignals(resultFile))
+      return oms_status_error;
+
+  Connector** connectors = getConnectors();
+  for (auto const &it : resultFileMapping)
+  {
+    unsigned int ID = it.first;
+    auto const& connector = connectors[it.second];
+    SignalValue_t value;
+    if (oms_signal_type_real == connector->getType())
+    {
+      if (oms_status_ok != getReal(connector->getName(), value.realValue))
+        return logError("failed to fetch connector " + std::string(connector->getName()));
+      resultFile.updateSignal(ID, value);
+    }
+    else if (oms_signal_type_integer == connector->getType())
+    {
+      if (oms_status_ok != getInteger(connector->getName(), value.intValue))
+        return logError("failed to fetch variable " + std::string(connector->getName()));
+      resultFile.updateSignal(ID, value);
+    }
+    else if (oms_signal_type_boolean == connector->getType())
+    {
+      if (oms_status_ok != getBoolean(connector->getName(), value.boolValue))
+        return logError("failed to fetch variable " + std::string(connector->getName()));
+      resultFile.updateSignal(ID, value);
+    }
+  }
+
   return oms_status_ok;
 }
