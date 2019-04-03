@@ -317,7 +317,7 @@ class OMSimulator:
     return self.obj.oms_setInteger(self.checkstring(signal), value)
   def setBoolean(self, signal, value):
     return self.obj.oms_setBoolean(self.checkstring(signal), value)
-  def setResultFile(self, cref, filename, bufferSize):
+  def setResultFile(self, cref, filename, bufferSize=1):
     return self.obj.oms_setResultFile(self.checkstring(cref), self.checkstring(filename), bufferSize)
   def setSignalFilter(self, cref, regex):
     return self.obj.oms_setSignalFilter(self.checkstring(cref), self.checkstring(regex))
