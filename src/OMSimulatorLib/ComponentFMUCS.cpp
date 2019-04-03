@@ -655,9 +655,10 @@ oms_status_enu_t oms::ComponentFMUCS::getReal(const ComRef& cref, double& value)
   return getReal(vr, value);
 }
 
-oms_status_enu_t oms::ComponentFMUCS::getRealOutputDerivative(const ComRef& cref, double*& value)
+oms_status_enu_t oms::ComponentFMUCS::getRealOutputDerivative(const ComRef& cref, SignalDerivative& der)
 {
   CallClock callClock(clock);
+
   int j=-1;
   for (size_t i = 0; i < allVariables.size(); i++)
   {
@@ -672,24 +673,26 @@ oms_status_enu_t oms::ComponentFMUCS::getRealOutputDerivative(const ComRef& cref
     return logError_UnknownSignal(getFullCref() + cref);
 
   fmi2_value_reference_t vr = allVariables[j].getValueReference();
-  fmi2_integer_t order = getFMUInfo()->getMaxOutputDerivativeOrder();
-  if (order > 0)
+  der = SignalDerivative(getFMUInfo()->getMaxOutputDerivativeOrder());
+
+  if (der.order > 0)
   {
-    if (fmi2_status_ok != fmi2_import_get_real_output_derivatives(fmu, &vr, 1, &order, value))
+    if (fmi2_status_ok != fmi2_import_get_real_output_derivatives(fmu, &vr, 1, (fmi2_integer_t*)&der.order, der.values))
       return oms_status_error;
 
-    if (std::isnan(value[0]))
+    if (std::isnan(der.values[0]))
       return logError("getRealOutputDerivative returned NAN");
-    if (std::isinf(value[0]))
+    if (std::isinf(der.values[0]))
       return logError("getRealOutputDerivative returned +/-inf");
   }
 
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::ComponentFMUCS::setRealInputDerivative(const ComRef& cref, double* value, unsigned int order)
+oms_status_enu_t oms::ComponentFMUCS::setRealInputDerivative(const ComRef& cref, const SignalDerivative& der)
 {
   CallClock callClock(clock);
+
   int j=-1;
   for (size_t i = 0; i < allVariables.size(); i++)
   {
@@ -709,8 +712,11 @@ oms_status_enu_t oms::ComponentFMUCS::setRealInputDerivative(const ComRef& cref,
     return logError_UnknownSignal(getFullCref() + cref);
 
   fmi2_value_reference_t vr = allVariables[j].getValueReference();
+
+  unsigned int order = der.getMaxDerivativeOrder();
   if (order > 0)
   {
+    const double* value = der.getDerivatives();
     if (fmi2_status_ok != fmi2_import_set_real_input_derivatives(fmu, &vr, 1, (fmi2_integer_t*)&order, value))
       return oms_status_error;
   }

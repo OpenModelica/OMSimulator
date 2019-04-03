@@ -41,6 +41,7 @@
 #include "Model.h"
 #include "ResultReader.h"
 #include "Scope.h"
+#include "SignalDerivative.h"
 #include "System.h"
 #include "SystemWC.h"
 #if !defined(NO_TLM)
@@ -1213,7 +1214,7 @@ oms_status_enu_t oms_setRealInputDerivative(const char* cref, double value)
     return logError_OnlyForSystemWC;
 
   oms::SystemWC* systemWC = reinterpret_cast<oms::SystemWC*>(system);
-  return systemWC->setRealInputDerivative(tail, value);
+  return systemWC->setRealInputDerivative(tail, oms::SignalDerivative(1, &value));
 }
 
 oms_status_enu_t oms_setInteger(const char* cref, int value)

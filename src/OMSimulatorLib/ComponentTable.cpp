@@ -215,6 +215,12 @@ oms_status_enu_t oms::ComponentTable::getReal(const oms::ComRef& cref, double& v
   return oms_status_error;
 }
 
+oms_status_enu_t oms::ComponentTable::getRealOutputDerivative(const ComRef& cref, SignalDerivative& value)
+{
+  value = SignalDerivative(0, NULL);
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms::ComponentTable::registerSignalsForResultFile(ResultWriter& resultFile)
 {
   resultFileMapping.clear();

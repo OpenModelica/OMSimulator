@@ -36,6 +36,7 @@
 #include "ComRef.h"
 #include "ResultReader.h"
 #include "ResultWriter.h"
+#include "SignalDerivative.h"
 #include <fmilib.h>
 #include <map>
 #include <pugixml.hpp>
@@ -62,6 +63,7 @@ namespace oms
     oms_status_enu_t stepUntil(double stopTime) {time = stopTime; return oms_status_ok;}
 
     oms_status_enu_t getReal(const ComRef& cref, double& value);
+    oms_status_enu_t getRealOutputDerivative(const ComRef& cref, SignalDerivative& value);
 
     oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultFile);
     oms_status_enu_t updateSignals(ResultWriter& resultWriter);

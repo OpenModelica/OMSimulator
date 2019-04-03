@@ -39,6 +39,7 @@
 #include "FMUInfo.h"
 #include "Logging.h"
 #include "ResultWriter.h"
+#include "SignalDerivative.h"
 #include "Types.h"
 #include <fmilib.h>
 #include <pugixml.hpp>
@@ -97,6 +98,9 @@ namespace oms
     virtual oms_status_enu_t setBoolean(const ComRef& cref, bool value) {return logError_NotImplemented;}
     virtual oms_status_enu_t setInteger(const ComRef& cref, int value) {return logError_NotImplemented;}
     virtual oms_status_enu_t setReal(const ComRef& cref, double value) {return logError_NotImplemented;}
+
+    virtual oms_status_enu_t getRealOutputDerivative(const ComRef& cref, SignalDerivative& der) {return logError_NotImplemented;}
+    virtual oms_status_enu_t setRealInputDerivative(const ComRef& cref, const SignalDerivative& der) {return logError_NotImplemented;}
 
     virtual Variable* getVariable(const ComRef& cref) {logError_NotImplemented; return NULL;}
 
