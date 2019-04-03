@@ -34,6 +34,7 @@
 
 #include "ComRef.h"
 #include "DirectedGraph.h"
+#include "SignalDerivative.h"
 #include "StepSizeConfiguration.h"
 #include "System.h"
 #include "Types.h"
@@ -72,9 +73,8 @@ namespace oms
     oms_status_enu_t updateInputs(DirectedGraph& graph);
     oms_status_enu_t solveAlgLoop(DirectedGraph& graph, const std::vector< std::pair<int, int> >& SCC);
 
-    oms_status_enu_t getRealOutputDerivative(const ComRef& cref, double*& value, unsigned int& order);
-    oms_status_enu_t setRealInputDerivative(const ComRef& cref, double* value, unsigned int order);
-    oms_status_enu_t setRealInputDerivative(const ComRef& cref, double value);
+    oms_status_enu_t getRealOutputDerivative(const ComRef& cref, SignalDerivative& der);
+    oms_status_enu_t setRealInputDerivative(const ComRef& cref, const SignalDerivative& der);
     unsigned int getMaxOutputDerivativeOrder();
 
     // Functions for configuring assc
@@ -99,7 +99,6 @@ namespace oms
     std::vector<fmi2_import_t*> fmiImportVect;
     std::vector<fmi2_FMU_state_t> sVect;
 
-    double* derBuffer = NULL;
     StepSizeConfiguration stepSizeConfiguration;  ///< Configuration data structure for assc
 
     unsigned int h_id;
