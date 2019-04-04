@@ -35,6 +35,7 @@
 #include "ComponentFMUCS.h"
 #include "Flags.h"
 #include "Model.h"
+#include "SignalDerivative.h"
 #include "ssd/Tags.h"
 #include "SystemTLM.h"
 #include "Types.h"
@@ -48,8 +49,6 @@ oms::SystemWC::SystemWC(const ComRef& cref, Model* parentModel, System* parentSy
 
 oms::SystemWC::~SystemWC()
 {
-  if (derBuffer)
-    delete[] derBuffer;
 }
 
 oms::System* oms::SystemWC::NewSystem(const oms::ComRef& cref, oms::Model* parentModel, oms::System* parentSystem)
@@ -170,12 +169,6 @@ oms_status_enu_t oms::SystemWC::initialize()
   for (const auto& component : getComponents())
     if (oms_status_ok != component.second->initialize())
       return oms_status_error;
-
-  if (derBuffer)
-    delete[] derBuffer;
-  derBuffer = NULL;
-  if (Flags::InputDerivatives())
-    derBuffer = new double[getMaxOutputDerivativeOrder()];
 
   return oms_status_ok;
 }
@@ -768,11 +761,8 @@ oms_status_enu_t oms::SystemWC::stepUntilASSC(double stopTime, void (*cb)(const 
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::SystemWC::getRealOutputDerivative(const ComRef& cref, double*& value, unsigned int& order)
+oms_status_enu_t oms::SystemWC::getRealOutputDerivative(const ComRef& cref, SignalDerivative& der)
 {
-  if (!value)
-    return oms_status_ok;
-
   if (!getModel()->validState(oms_modelState_simulation))
     return logError_ModelInWrongState(getModel());
 
@@ -780,21 +770,14 @@ oms_status_enu_t oms::SystemWC::getRealOutputDerivative(const ComRef& cref, doub
   oms::ComRef head = tail.pop_front();
 
   auto component = getComponents().find(head);
-  if (component != getComponents().end() && oms_component_fmu == component->second->getType())
-  {
-    order = component->second->getFMUInfo()->getMaxOutputDerivativeOrder();
-    if (order > 0)
-      return dynamic_cast<ComponentFMUCS*>(component->second)->getRealOutputDerivative(tail, value);
-  }
+  if (component != getComponents().end())
+    return component->second->getRealOutputDerivative(tail, der);
 
   return oms_status_error;
 }
 
-oms_status_enu_t oms::SystemWC::setRealInputDerivative(const ComRef& cref, double* value, unsigned int order)
+oms_status_enu_t oms::SystemWC::setRealInputDerivative(const ComRef& cref, const SignalDerivative& der)
 {
-  if (!value)
-    return oms_status_ok;
-
   if (!getModel()->validState(oms_modelState_simulation))
     return logError_ModelInWrongState(getModel());
 
@@ -802,18 +785,10 @@ oms_status_enu_t oms::SystemWC::setRealInputDerivative(const ComRef& cref, doubl
   oms::ComRef head = tail.pop_front();
 
   auto component = getComponents().find(head);
-  if (component != getComponents().end() && oms_component_fmu == component->second->getType())
-  {
-    if (order > 0)
-      return dynamic_cast<ComponentFMUCS*>(component->second)->setRealInputDerivative(tail, value, order);
-  }
+  if (component != getComponents().end())
+    return component->second->setRealInputDerivative(tail, der);
 
   return oms_status_error;
-}
-
-oms_status_enu_t oms::SystemWC::setRealInputDerivative(const ComRef& cref, double value)
-{
-  return setRealInputDerivative(cref, &value, 1);
 }
 
 oms_status_enu_t oms::SystemWC::getInputAndOutput(oms::DirectedGraph& graph, std::vector<double>& inputVect,std::vector<double>& outputVect,std::map<ComRef, Component*> FMUcomponents)
@@ -948,13 +923,13 @@ oms_status_enu_t oms::SystemWC::updateCanGetFMUs(oms::DirectedGraph& graph,std::
           if (oms_status_ok != setReal(graph.getNodes()[input].getName(), value)) return oms_status_error;
 
           // derivatives
-          if (derBuffer)
+          if (Flags::InputDerivatives() && getModel()->validState(oms_modelState_simulation))
           {
-            unsigned int order;
-            if (oms_status_ok == getRealOutputDerivative(graph.getNodes()[output].getName(), derBuffer, order))
+            SignalDerivative der;
+            if (oms_status_ok == getRealOutputDerivative(graph.getNodes()[output].getName(), der))
             {
               //logInfo(graph.getNodes()[output].getName() + " -> " + graph.getNodes()[input].getName() + ": " + std::to_string(derBuffer[0]));
-              if (oms_status_ok != setRealInputDerivative(graph.getNodes()[input].getName(), derBuffer, order)) return oms_status_error;
+              if (oms_status_ok != setRealInputDerivative(graph.getNodes()[input].getName(), der)) return oms_status_error;
             }
           }
         }
@@ -1033,13 +1008,13 @@ oms_status_enu_t oms::SystemWC::updateCantGetFMUs(oms::DirectedGraph& graph,std:
           if (oms_status_ok != setReal(graph.getNodes()[input].getName(), value)) return oms_status_error;
 
           // derivatives
-          if (derBuffer)
+          if (Flags::InputDerivatives() && getModel()->validState(oms_modelState_simulation))
           {
-            unsigned int order;
-            if (oms_status_ok == getRealOutputDerivative(graph.getNodes()[output].getName(), derBuffer, order))
+            SignalDerivative der;
+            if (oms_status_ok == getRealOutputDerivative(graph.getNodes()[output].getName(), der))
             {
-              logDebug(graph.getNodes()[output].getName() + " -> " + graph.getNodes()[input].getName() + ": " + std::to_string(derBuffer[0]));
-              if (oms_status_ok != setRealInputDerivative(graph.getNodes()[input].getName(), derBuffer, order)) return oms_status_error;
+              //logDebug(graph.getNodes()[output].getName() + " -> " + graph.getNodes()[input].getName() + ": " + std::to_string(derBuffer[0]));
+              if (oms_status_ok != setRealInputDerivative(graph.getNodes()[input].getName(), der)) return oms_status_error;
             }
           }
           logDebug("DEBUGGING: Sorted the Derivative");
@@ -1095,13 +1070,13 @@ oms_status_enu_t oms::SystemWC::updateInputs(oms::DirectedGraph& graph)
         if (oms_status_ok != setReal(graph.getNodes()[input].getName(), value)) return oms_status_error;
 
         // derivatives
-        if (derBuffer)
+        if (Flags::InputDerivatives() && getModel()->validState(oms_modelState_simulation))
         {
-          unsigned int order;
-          if (oms_status_ok == getRealOutputDerivative(graph.getNodes()[output].getName(), derBuffer, order))
+          SignalDerivative der;
+          if (oms_status_ok == getRealOutputDerivative(graph.getNodes()[output].getName(), der))
           {
             //logInfo(graph.getNodes()[output].getName() + " -> " + graph.getNodes()[input].getName() + ": " + std::to_string(derBuffer[0]));
-            if (oms_status_ok != setRealInputDerivative(graph.getNodes()[input].getName(), derBuffer, order)) return oms_status_error;
+            if (oms_status_ok != setRealInputDerivative(graph.getNodes()[input].getName(), der)) return oms_status_error;
           }
         }
       }

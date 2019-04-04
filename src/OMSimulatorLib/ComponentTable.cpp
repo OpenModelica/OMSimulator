@@ -215,6 +215,36 @@ oms_status_enu_t oms::ComponentTable::getReal(const oms::ComRef& cref, double& v
   return oms_status_error;
 }
 
+oms_status_enu_t oms::ComponentTable::getRealOutputDerivative(const ComRef& cref, SignalDerivative& value)
+{
+  if (!resultReader)
+    logError("the table isn't initialized properly");
+
+  if (series.find(cref) == series.end())
+    series[cref] = resultReader->getSeries(cref.c_str());
+
+  for (int i=1; i<series[cref]->length; ++i)
+  {
+    if (series[cref]->time[i-1] == time && series[cref]->time[i] == time)
+    {
+      // event / discrete change
+      double m = 0.0;
+      value = SignalDerivative(1, &m);
+      return oms_status_ok;
+    }
+    else if (series[cref]->time[i-1] <= time && series[cref]->time[i] >= time)
+    {
+      double m = (series[cref]->value[i] - series[cref]->value[i-1]) / (series[cref]->time[i] - series[cref]->time[i-1]);
+      value = SignalDerivative(1, &m);
+      return oms_status_ok;
+    }
+  }
+
+  logError("out of range (cref=" + std::string(cref) + ", time=" + std::to_string(time) + ")");
+  value = SignalDerivative(0, NULL);
+  return oms_status_error;
+}
+
 oms_status_enu_t oms::ComponentTable::registerSignalsForResultFile(ResultWriter& resultFile)
 {
   resultFileMapping.clear();

@@ -85,8 +85,8 @@ namespace oms
     std::vector<Variable> getInputs() {return inputs;}
     std::vector<Variable> getOutputs() {return outputs;}
 
-    oms_status_enu_t getRealOutputDerivative(const ComRef& cref, double*& value);
-    oms_status_enu_t setRealInputDerivative(const ComRef& cref, double* value, unsigned int order);
+    oms_status_enu_t getRealOutputDerivative(const ComRef& cref, SignalDerivative& der);
+    oms_status_enu_t setRealInputDerivative(const ComRef& cref, const SignalDerivative& der);
 
     oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultFile);
     oms_status_enu_t updateSignals(ResultWriter& resultWriter);
