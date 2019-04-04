@@ -410,6 +410,7 @@ pipeline {
           }
 
           steps {
+            bat 'hostname'
             writeFile file: "buildZip.sh", text: """#!/bin/sh
 set -x -e
 export PATH="/c/Program Files/TortoiseSVN/bin/:/c/bin/jdk/bin:/c/bin/nsis/:\$PATH:/c/bin/git/bin"
