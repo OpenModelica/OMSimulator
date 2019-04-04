@@ -132,7 +132,7 @@ oms::ResultReader::Series* oms::MatReader::getSeries(const char* var)
   MatVer4Matrix *data = NULL;
   if (info[0] == 1)
     data = data_1;
-  else if (info[0] == 2)
+  else if (info[0] == 2 || info[0] == 0)
     data = data_2;
   else
     return NULL;
