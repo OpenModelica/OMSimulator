@@ -228,20 +228,19 @@ oms_status_enu_t oms::ComponentTable::getRealOutputDerivative(const ComRef& cref
     if (series[cref]->time[i-1] == time && series[cref]->time[i] == time)
     {
       // event / discrete change
-      double m = 0.0;
-      value = SignalDerivative(1, &m);
+      value = SignalDerivative(0.0);
       return oms_status_ok;
     }
     else if (series[cref]->time[i-1] <= time && series[cref]->time[i] >= time)
     {
       double m = (series[cref]->value[i] - series[cref]->value[i-1]) / (series[cref]->time[i] - series[cref]->time[i-1]);
-      value = SignalDerivative(1, &m);
+      value = SignalDerivative(m);
       return oms_status_ok;
     }
   }
 
   logError("out of range (cref=" + std::string(cref) + ", time=" + std::to_string(time) + ")");
-  value = SignalDerivative(0, NULL);
+  value = SignalDerivative();
   return oms_status_error;
 }
 

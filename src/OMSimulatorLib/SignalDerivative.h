@@ -32,23 +32,26 @@
 #ifndef _OMS_SIGNAL_DERIVATIVE_H_
 #define _OMS_SIGNAL_DERIVATIVE_H_
 
+#include <fmilib.h>
+
 namespace oms
 {
   class SignalDerivative
   {
   public:
     SignalDerivative();
-    SignalDerivative(unsigned int order);
-    SignalDerivative(unsigned int order, double* values);
+    SignalDerivative(double der);
+    SignalDerivative(unsigned int order, fmi2_import_t* fmu, fmi2_value_reference_t vr);
     ~SignalDerivative();
 
-    // methods to copy the component reference
-    SignalDerivative(const SignalDerivative& copy);
-    SignalDerivative& operator=(const SignalDerivative& copy);
+    // methods to copy the object
+    SignalDerivative(const SignalDerivative& rhs);
+    SignalDerivative& operator=(const SignalDerivative& rhs);
 
     const unsigned int getMaxDerivativeOrder() const {return order;}
     const double* getDerivatives() const {return values;}
 
+  private:
     unsigned int order;
     double* values;
   };

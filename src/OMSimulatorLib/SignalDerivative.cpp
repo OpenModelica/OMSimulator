@@ -31,28 +31,40 @@
 
 #include "SignalDerivative.h"
 
+#include "Logging.h"
+#include <cmath>
 #include <cstring>
 
-oms::SignalDerivative::SignalDerivative() :SignalDerivative(0, nullptr)
+oms::SignalDerivative::SignalDerivative()
 {
+  order = 0;
+  values = nullptr;
 }
 
-oms::SignalDerivative::SignalDerivative(unsigned int order)
+oms::SignalDerivative::SignalDerivative(double der)
 {
-  this->order = order;
-  this->values = new double[order];
-  memset(this->values, 0, order*sizeof(double));
+  order = 1;
+  values = new double[order];
+  values[0] = der;
 }
 
-oms::SignalDerivative::SignalDerivative(unsigned int order, double* values)
+oms::SignalDerivative::SignalDerivative(unsigned int order, fmi2_import_t* fmu, fmi2_value_reference_t vr)
 {
   this->order = order;
-  if (order == 0)
-    this->values = nullptr;
+  if (this->order == 0)
+    values = nullptr;
   else
   {
-    this->values = new double[order];
-    memcpy(this->values, values, order*sizeof(double));
+    values = new double[order];
+    if (fmi2_status_ok != fmi2_import_get_real_output_derivatives(fmu, &vr, 1, (fmi2_integer_t*)&this->order, values))
+      logError("fmi2_import_get_real_output_derivatives failed");
+    else
+    {
+      if (std::isnan(values[0]))
+        logError("fmi2_import_get_real_output_derivatives returned NAN");
+      if (std::isinf(values[0]))
+        logError("fmi2_import_get_real_output_derivatives returned +/-inf");
+    }
   }
 }
 
@@ -62,30 +74,30 @@ oms::SignalDerivative::~SignalDerivative()
     delete[] values;
 }
 
-oms::SignalDerivative::SignalDerivative(const oms::SignalDerivative& copy)
+oms::SignalDerivative::SignalDerivative(const oms::SignalDerivative& rhs)
 {
-  order = copy.order;
+  order = rhs.order;
   if (order == 0)
     values = nullptr;
   else
   {
     values = new double[order];
-    memcpy(values, copy.values, order*sizeof(double));
+    memcpy(values, rhs.values, order*sizeof(double));
   }
 }
 
-oms::SignalDerivative& oms::SignalDerivative::operator=(const oms::SignalDerivative& copy)
+oms::SignalDerivative& oms::SignalDerivative::operator=(const oms::SignalDerivative& rhs)
 {
   // check for self-assignment
-  if (&copy == this)
+  if (&rhs == this)
     return *this;
 
-  if (order != copy.order)
+  if (order != rhs.order)
   {
     if (values)
       delete[] values;
 
-    order = copy.order;
+    order = rhs.order;
     if (order == 0)
       values = nullptr;
     else
@@ -93,7 +105,7 @@ oms::SignalDerivative& oms::SignalDerivative::operator=(const oms::SignalDerivat
   }
 
   if (values)
-    memcpy(values, copy.values, order*sizeof(double));
+    memcpy(values, rhs.values, order*sizeof(double));
 
   return *this;
 }
