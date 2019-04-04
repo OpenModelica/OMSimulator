@@ -672,20 +672,7 @@ oms_status_enu_t oms::ComponentFMUCS::getRealOutputDerivative(const ComRef& cref
   if (!fmu || j < 0)
     return logError_UnknownSignal(getFullCref() + cref);
 
-  fmi2_value_reference_t vr = allVariables[j].getValueReference();
-  der = SignalDerivative(getFMUInfo()->getMaxOutputDerivativeOrder());
-
-  if (der.order > 0)
-  {
-    if (fmi2_status_ok != fmi2_import_get_real_output_derivatives(fmu, &vr, 1, (fmi2_integer_t*)&der.order, der.values))
-      return oms_status_error;
-
-    if (std::isnan(der.values[0]))
-      return logError("getRealOutputDerivative returned NAN");
-    if (std::isinf(der.values[0]))
-      return logError("getRealOutputDerivative returned +/-inf");
-  }
-
+  der = SignalDerivative(getFMUInfo()->getMaxOutputDerivativeOrder(), fmu, allVariables[j].getValueReference());
   return oms_status_ok;
 }
 
