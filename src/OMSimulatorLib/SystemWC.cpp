@@ -205,6 +205,9 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
 {
   CallClock callClock(clock);
 
+  // set input derivatives
+  updateInputs(outputsGraph);
+
   if (solverMethod == oms_solver_wc_assc)
     return stepUntilASSC(stopTime, cb);
 
