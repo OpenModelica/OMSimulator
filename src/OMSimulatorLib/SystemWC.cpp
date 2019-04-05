@@ -931,7 +931,7 @@ oms_status_enu_t oms::SystemWC::updateCanGetFMUs(oms::DirectedGraph& graph,std::
             SignalDerivative der;
             if (oms_status_ok == getRealOutputDerivative(graph.getNodes()[output].getName(), der))
             {
-              //logInfo(graph.getNodes()[output].getName() + " -> " + graph.getNodes()[input].getName() + ": " + std::to_string(derBuffer[0]));
+              //logInfo(graph.getNodes()[output].getName() + " -> " + graph.getNodes()[input].getName() + ": " + std::string(der));
               if (oms_status_ok != setRealInputDerivative(graph.getNodes()[input].getName(), der)) return oms_status_error;
             }
           }
@@ -1016,7 +1016,7 @@ oms_status_enu_t oms::SystemWC::updateCantGetFMUs(oms::DirectedGraph& graph,std:
             SignalDerivative der;
             if (oms_status_ok == getRealOutputDerivative(graph.getNodes()[output].getName(), der))
             {
-              //logDebug(graph.getNodes()[output].getName() + " -> " + graph.getNodes()[input].getName() + ": " + std::to_string(derBuffer[0]));
+              //logDebug(graph.getNodes()[output].getName() + " -> " + graph.getNodes()[input].getName() + ": " + std::string(der));
               if (oms_status_ok != setRealInputDerivative(graph.getNodes()[input].getName(), der)) return oms_status_error;
             }
           }
@@ -1078,7 +1078,7 @@ oms_status_enu_t oms::SystemWC::updateInputs(oms::DirectedGraph& graph)
           SignalDerivative der;
           if (oms_status_ok == getRealOutputDerivative(graph.getNodes()[output].getName(), der))
           {
-            //logInfo(graph.getNodes()[output].getName() + " -> " + graph.getNodes()[input].getName() + ": " + std::to_string(derBuffer[0]));
+            //logInfo(graph.getNodes()[output].getName() + " -> " + graph.getNodes()[input].getName() + ": " + std::string(der));
             if (oms_status_ok != setRealInputDerivative(graph.getNodes()[input].getName(), der)) return oms_status_error;
           }
         }

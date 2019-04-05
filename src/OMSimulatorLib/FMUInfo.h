@@ -53,6 +53,7 @@ namespace oms
     std::string getPath() const {return std::string(path);}
     oms_fmi_kind_enu_t getKind() const {return fmiKind;}
 
+    bool getCanInterpolateInputs() const {return canInterpolateInputs;}
     unsigned int getMaxOutputDerivativeOrder() const {return maxOutputDerivativeOrder;}
     bool getCanGetAndSetFMUstate() const {return canGetAndSetFMUstate;}
 
