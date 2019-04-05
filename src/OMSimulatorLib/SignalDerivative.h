@@ -32,7 +32,9 @@
 #ifndef _OMS_SIGNAL_DERIVATIVE_H_
 #define _OMS_SIGNAL_DERIVATIVE_H_
 
+#include "Types.h"
 #include <fmilib.h>
+#include <string>
 
 namespace oms
 {
@@ -50,6 +52,9 @@ namespace oms
 
     const unsigned int getMaxDerivativeOrder() const {return order;}
     const double* getDerivatives() const {return values;}
+    oms_status_enu_t setRealInputDerivatives(fmi2_import_t* fmu, fmi2_value_reference_t vr) const;
+
+    operator std::string() const;
 
   private:
     unsigned int order;

@@ -60,10 +60,19 @@ oms::SignalDerivative::SignalDerivative(unsigned int order, fmi2_import_t* fmu, 
       logError("fmi2_import_get_real_output_derivatives failed");
     else
     {
-      if (std::isnan(values[0]))
-        logError("fmi2_import_get_real_output_derivatives returned NAN");
-      if (std::isinf(values[0]))
-        logError("fmi2_import_get_real_output_derivatives returned +/-inf");
+      for (int i=0; i<order; ++i)
+      {
+        if (std::isnan(values[i]))
+        {
+          logWarning("fmi2_import_get_real_output_derivatives returned NAN");
+          values[i] = 0.0;
+        }
+        if (std::isinf(values[i]))
+        {
+          logWarning("fmi2_import_get_real_output_derivatives returned +/-inf");
+          values[i] = 0.0;
+        }
+      }
     }
   }
 }
@@ -108,4 +117,30 @@ oms::SignalDerivative& oms::SignalDerivative::operator=(const oms::SignalDerivat
     memcpy(values, rhs.values, order*sizeof(double));
 
   return *this;
+}
+
+oms_status_enu_t oms::SignalDerivative::setRealInputDerivatives(fmi2_import_t* fmu, fmi2_value_reference_t vr) const
+{
+  if (order > 0 && values)
+  {
+    if (fmi2_status_ok != fmi2_import_set_real_input_derivatives(fmu, &vr, 1, (fmi2_integer_t*)&order, (fmi2_real_t*)values))
+      return oms_status_error;
+  }
+  return oms_status_ok;
+}
+
+oms::SignalDerivative::operator std::string() const
+{
+  std::string str = "[" + std::to_string(order) + ": ";
+  if (values)
+  {
+    if (order > 0)
+      str += std::to_string(values[0]);
+    for (int i=1; i<order; ++i)
+      str += "; " + std::to_string(values[i]);
+  }
+  else
+    str += "NULL";
+
+  return str + "]";
 }
