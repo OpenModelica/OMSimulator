@@ -210,9 +210,8 @@ oms_status_enu_t oms::ComponentTable::getReal(const oms::ComRef& cref, double& v
     }
   }
 
-  logError("out of range (cref=" + std::string(cref) + ", time=" + std::to_string(time) + ")");
   value = 0.0;
-  return oms_status_error;
+  return logError("out of range (cref=" + std::string(cref) + ", time=" + std::to_string(time) + ")");
 }
 
 oms_status_enu_t oms::ComponentTable::getRealOutputDerivative(const ComRef& cref, SignalDerivative& value)
@@ -225,13 +224,8 @@ oms_status_enu_t oms::ComponentTable::getRealOutputDerivative(const ComRef& cref
 
   for (int i=1; i<series[cref]->length; ++i)
   {
-    if (series[cref]->time[i-1] == time && series[cref]->time[i] == time)
-    {
-      // event / discrete change
-      value = SignalDerivative(0.0);
-      return oms_status_ok;
-    }
-    else if (series[cref]->time[i-1] <= time && series[cref]->time[i] >= time)
+    if ((series[cref]->time[i-1] <= time && series[cref]->time[i] > time) ||
+        (series[cref]->time[i] == time && i == series[cref]->length-1))
     {
       double m = (series[cref]->value[i] - series[cref]->value[i-1]) / (series[cref]->time[i] - series[cref]->time[i-1]);
       value = SignalDerivative(m);
@@ -239,9 +233,8 @@ oms_status_enu_t oms::ComponentTable::getRealOutputDerivative(const ComRef& cref
     }
   }
 
-  logError("out of range (cref=" + std::string(cref) + ", time=" + std::to_string(time) + ")");
   value = SignalDerivative();
-  return oms_status_error;
+  return logError("out of range (cref=" + std::string(cref) + ", time=" + std::to_string(time) + ")");
 }
 
 oms_status_enu_t oms::ComponentTable::registerSignalsForResultFile(ResultWriter& resultFile)
