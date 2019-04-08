@@ -30,15 +30,20 @@
  */
 
 #include "MATWriter.h"
-#include "ResultWriter.h"
-#include "MatVer4.h"
-#include "Logging.h"
-#include "Util.h"
 
-#include <stdio.h>
-#include <string>
+#include "Logging.h"
+#include "MatVer4.h"
+#include "ResultWriter.h"
+#include "Util.h"
 #include <cstring>
 #include <errno.h>
+#include <stdlib.h>
+#include <string>
+
+#if defined(_MSC_VER) || defined(__MINGW32__) || defined(__MINGW64__)
+#include <stdio.h>
+#include <share.h>
+#endif
 
 oms::MATWriter::MATWriter(unsigned int bufferSize)
   : ResultWriter(bufferSize),
@@ -59,7 +64,12 @@ bool oms::MATWriter::createFile(const std::string& filename, double startTime, d
     return false;
   }
 
+#if defined(_MSC_VER) || defined(__MINGW32__) || defined(__MINGW64__)
+  //https://docs.microsoft.com/en-us/cpp/c-runtime-library/reference/fsopen-wfsopen
+  pFile = _fsopen(filename.c_str(), "wb+", _SH_DENYWR);
+#else
   pFile = fopen(filename.c_str(), "wb+");
+#endif
 
   if (!pFile)
   {
@@ -201,4 +211,5 @@ void oms::MATWriter::closeFile()
 void oms::MATWriter::writeFile()
 {
   appendMatVer4Matrix(pFile, pos_data_2, "data_2", 1 + signals.size(), nEmits, data_2, MatVer4Type_DOUBLE);
+  fflush(pFile);
 }
