@@ -97,30 +97,6 @@ It is not strictly required to install the full Visual Studio IDE. The batch scr
    buildWinVS.bat VS15-Win64
    ```
 
-## Working with the repository
-
-OMSimulator.git is a superproject.
-Clone the project using:
-
-```bash
-git clone https://github.com/OpenModelica/OMSimulator.git --recursive
-```
-
-If you are a developer and want to track the latest heads, use:
-
-```bash
-# After cloning
-git checkout master && git submodule foreach --recursive "git checkout master"
-# To update; you will need to merge each submodule, but your changes will remain
-git submodule foreach --recursive "git pull" && git pull
-```
-
-In order to push to the repository, you will push to your own fork of OMSimulator.git, OMSimulator-testsuite.git, etc. You will need to create a fork of each repository that you want to push to (by clicking the Fork button in the GitHub web interface).
-
-### Testing
-
-Developers can trigger a [Hudson job](https://test.openmodelica.org/hudson/job/OMSimulator-PR/build?delay=0sec) after creating a pull request to test the changes on different platforms.
-
 ## The optional parameter estimation module
 
 OMSimulator includes an optional parameter optimization module. It is enabled by default. It can be disabled in order to speed up the compilation process or if it causes compilation problems. It is not supported when using MinGW (and automatically disabled in that case). It can be disabled by using the options `CERES=OFF` (disables building its dependencies) and `OMSYSIDENT=OFF`.
