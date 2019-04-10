@@ -40,6 +40,12 @@
 #include "Types.h"
 #include <vector>
 
+#if (BOOST_VERSION >= 105300)
+#include <ctpl.h>
+#else // use the standard queue
+#include <ctpl_stl.h>
+#endif
+
 namespace oms
 {
   class Model;
@@ -109,6 +115,9 @@ namespace oms
     double maxError = 0.0;
     double normError = 0.0;
     unsigned int rollBackIt = 0;
+
+    bool useThreads = false;
+    ctpl::thread_pool *pool = NULL;
   };
 }
 
