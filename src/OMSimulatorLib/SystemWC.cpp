@@ -39,6 +39,7 @@
 #include "ssd/Tags.h"
 #include "SystemTLM.h"
 #include "Types.h"
+#include <future>
 #include <math.h>
 #include <thread>
 
@@ -126,13 +127,43 @@ oms_status_enu_t oms::SystemWC::instantiate()
 {
   time = getModel()->getStartTime();
 
+  // initialize thread pool
+  useThreads = (Flags::Parallelization() == ParallelizationApproach::CTPL);
+  if (useThreads)
+  {
+    int numThreads = getComponents().size();
+    if (numThreads > std::thread::hardware_concurrency())
+      numThreads = std::thread::hardware_concurrency();
+    pool = new ctpl::thread_pool(numThreads);
+  }
+
   for (const auto& subsystem : getSubSystems())
     if (oms_status_ok != subsystem.second->instantiate())
       return oms_status_error;
 
-  for (const auto& component : getComponents())
-    if (oms_status_ok != component.second->instantiate())
-      return oms_status_error;
+  if (useThreads)
+  {
+    std::vector<std::future<oms_status_enu_t>> results(getComponents().size());
+    int i=0;
+    for (const auto& component : getComponents())
+    {
+      results[i] = pool->push([&component](int id){ /*logInfo("Id: " + std::to_string(id));*/ return component.second->instantiate(); });
+      i++;
+    }
+
+    for (auto& r : results)
+    {
+      oms_status_enu_t status = r.get();
+      if (oms_status_ok != status)
+        return oms_status_error;
+    }
+  }
+  else
+  {
+    for (const auto& component : getComponents())
+      if (oms_status_ok != component.second->instantiate())
+        return oms_status_error;
+  }
 
   return oms_status_ok;
 }
@@ -175,6 +206,12 @@ oms_status_enu_t oms::SystemWC::initialize()
 
 oms_status_enu_t oms::SystemWC::terminate()
 {
+  if (pool)
+  {
+    delete pool;
+    pool = NULL;
+  }
+
   for (const auto& subsystem : getSubSystems())
     if (oms_status_ok != subsystem.second->terminate())
       return oms_status_error;
@@ -501,14 +538,38 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
         }
       }
 
-      for (const auto& component : getComponents())
+      if (useThreads)
       {
-        status = component.second->stepUntil(tNext);
-        if (oms_status_ok != status)
+        std::vector<std::future<oms_status_enu_t>> results(getComponents().size());
+        int i=0;
+        for (const auto& component : getComponents())
         {
-          if (cb)
-            cb(modelName.c_str(), tNext, status);
-          return status;
+          results[i] = pool->push([&component, tNext](int id){ /*logInfo("Id: " + std::to_string(id));*/ return component.second->stepUntil(tNext); });
+          i++;
+        }
+
+        for (auto& r : results)
+        {
+          status = r.get();
+          if (oms_status_ok != status)
+          {
+            if (cb)
+              cb(modelName.c_str(), tNext, status);
+            return status;
+          }
+        }
+      }
+      else
+      {
+        for (const auto& component : getComponents())
+        {
+          status = component.second->stepUntil(tNext);
+          if (oms_status_ok != status)
+          {
+            if (cb)
+              cb(modelName.c_str(), tNext, status);
+            return status;
+          }
         }
       }
 

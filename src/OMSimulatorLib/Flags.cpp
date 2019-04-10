@@ -78,6 +78,7 @@ void oms::Flags::setDefaults()
   timeout = 0.0;
   tolerance = 1e-4;
   wallTime = false;
+  parallelization = ParallelizationApproach::NONE;
 }
 
 oms::Flags& oms::Flags::GetInstance()
@@ -216,11 +217,20 @@ oms_status_enu_t oms::Flags::Help(const std::string& value)
     if (GetInstance().flags[i].name.empty())
       label += "<filename>";
     else if (!GetInstance().flags[i].regex.empty())
-      label += "=<arg>";
+    {
+      if (GetInstance().flags[i].regex == GetInstance().re_bool)
+        label += "=<bool>";
+      else if (GetInstance().flags[i].regex == GetInstance().re_double)
+        label += "=<double>";
+      else if (GetInstance().flags[i].regex == GetInstance().re_number)
+        label += "=<int>";
+      else
+        label += "=<arg>";
+    }
     if (!GetInstance().flags[i].abbr.empty())
-      label += " [ " + GetInstance().flags[i].abbr + " ]";
+      label += " [" + GetInstance().flags[i].abbr + "]";
 
-    ss << std::left << std::setw(28) << label << "  " << GetInstance().flags[i].desc << std::endl;
+    ss << std::left << std::setw(32) << label << "  " << GetInstance().flags[i].desc << std::endl;
   }
 
   logInfo(ss.str());
@@ -257,6 +267,23 @@ oms_status_enu_t oms::Flags::Mode(const std::string& value)
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::Flags::Parallelization(const std::string& value)
+{
+  if (value == "none")
+    GetInstance().parallelization = ParallelizationApproach::NONE;
+  else if (value == "ctpl")
+    GetInstance().parallelization = ParallelizationApproach::CTPL;
+  else if (value == "atomic")
+    GetInstance().parallelization = ParallelizationApproach::ATOMIC;
+  else if (value == "condition")
+    GetInstance().parallelization = ParallelizationApproach::CONDITION;
+  else if (value == "mutex")
+    GetInstance().parallelization = ParallelizationApproach::MUTEX;
+  else
+    return logError("Invalid parallelization approach");
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms::Flags::ProgressBar(const std::string& value)
 {
   GetInstance().progressBar = (value == "true");
@@ -288,7 +315,7 @@ oms_status_enu_t oms::Flags::Solver(const std::string& value)
   else if (value == "cvode")
     GetInstance().solver = oms_solver_sc_cvode;
   else
-    return oms_status_error;
+    return logError("Invalid solver method");
 
   return oms_status_ok;
 }

@@ -39,6 +39,15 @@
 
 namespace oms
 {
+  enum class ParallelizationApproach
+  {
+    NONE,      //!< Single-Core default algorithm
+    CTPL,      //!< Parallel doStep(..) using CTPL task pool library (https://github.com/vit-vit/CTPL)
+    ATOMIC,    //!< Experimental parallel (multi-rate) communication channel approach using ATOMIC variables and polling for synchronization
+    CONDITION, //!< Experimental parallel (multi-rate) communication channel approach using CONDITION variables for synchronization
+    MUTEX      //!< Experimental parallel (multi-rate) communication channel approach using MUTEXES for synchronization
+  };
+
   class Flags
   {
   private:
@@ -70,6 +79,7 @@ namespace oms
     static double Tolerance() {return GetInstance().tolerance;}
     static oms_solver_enu_t MasterAlgorithm() {return GetInstance().masterAlgorithm;}
     static oms_solver_enu_t Solver() {return GetInstance().solver;}
+    static ParallelizationApproach Parallelization() {return GetInstance().parallelization;}
     static std::string ResultFile() {return GetInstance().resultFile;}
     static unsigned int Intervals() {return GetInstance().intervals;}
 
@@ -83,14 +93,15 @@ namespace oms
     bool stripRoot;
     bool suppressPath;
     bool wallTime;
-    unsigned int intervals;
     double startTime;
     double stopTime;
     double timeout;
     double tolerance;
-    oms_solver_enu_t solver;
     oms_solver_enu_t masterAlgorithm;
+    oms_solver_enu_t solver;
+    ParallelizationApproach parallelization;
     std::string resultFile;
+    unsigned int intervals;
 
   private:
     struct Flag
@@ -121,13 +132,14 @@ namespace oms
       {"--ignoreInitialUnknowns", "", "Ignore the initial unknowns from the modelDesction.xml", re_bool, Flags::IgnoreInitialUnknowns, false},
       {"--intervals", "-i", "Specifies the number of communication points (arg > 1)", re_number, Flags::Intervals, false},
       {"--logFile", "-l", "Specifies the logfile (stdout is used if no log file is specified)", re_default, Flags::LogFile, false},
-      {"--logLevel", "", "0 default, 1 default+debug, 2 default+debug+trace", re_number, Flags::LogLevel, false},
-      {"--mode", "-m", "Forces a certain FMI mode iff the FMU provides cs and me [arg: cs (default) or me]", re_mode, Flags::Mode, false},
+      {"--logLevel", "", "0 default, 1 debug, 2 debug+trace", re_number, Flags::LogLevel, false},
+      {"--mode", "-m", "Forces a certain FMI mode iff the FMU provides cs and me ([cs], me)", re_mode, Flags::Mode, false},
+      {"--parallelization", "-p", "Specifies the parallelization approach ([none], ctpl, atomic, condition, mutex)", re_default, Flags::Parallelization, false},
       {"--progressBar", "", "", re_bool, Flags::ProgressBar, false},
       {"--realTime", "", "Experimental feature for (soft) real-time co-simulation", re_bool, Flags::RealTime, false},
       {"--resultFile", "-r", "Specifies the name of the output result file", re_default, Flags::ResultFile, false},
       {"--setInputDerivatives", "", "", re_bool, Flags::SetInputDerivatives, false},
-      {"--solver", "", "Specifies the integration method (euler, cvode)", re_default, Flags::Solver, false},
+      {"--solver", "", "Specifies the integration method (euler, [cvode])", re_default, Flags::Solver, false},
       {"--solverStats", "", "Adds solver stats to the result file, e.g. step size (not supported for all solvers)", re_bool, Flags::SolverStats, false},
       {"--startTime", "-s", "Specifies the start time", re_double, Flags::StartTime, false},
       {"--stopTime", "-t", "Specifies the stop time", re_double, Flags::StopTime, false},
@@ -150,6 +162,7 @@ namespace oms
     static oms_status_enu_t LogFile(const std::string& value);
     static oms_status_enu_t LogLevel(const std::string& value);
     static oms_status_enu_t Mode(const std::string& value);
+    static oms_status_enu_t Parallelization(const std::string& value);
     static oms_status_enu_t ProgressBar(const std::string& value);
     static oms_status_enu_t RealTime(const std::string& value);
     static oms_status_enu_t ResultFile(const std::string& value);
