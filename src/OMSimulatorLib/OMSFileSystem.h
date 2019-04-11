@@ -38,9 +38,6 @@ static inline filesystem::path oms_canonical(filesystem::path p) {
 
 #if (BOOST_VERSION >= 105300)
 #include <boost/lockfree/queue.hpp>
-#include <ctpl.h>
-#else // use the standard queue
-#include <ctpl_stl.h>
 #endif
 
 #include <boost/filesystem.hpp>
