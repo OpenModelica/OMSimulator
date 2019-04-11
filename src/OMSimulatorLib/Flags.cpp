@@ -66,6 +66,7 @@ void oms::Flags::setDefaults()
   inputExtrapolation = false;
   intervals = 100;
   masterAlgorithm = oms_solver_wc_ma;
+  numProcs = 1;
   progressBar = false;
   realTime = false;
   resultFile = "<default>";
@@ -78,7 +79,6 @@ void oms::Flags::setDefaults()
   timeout = 0.0;
   tolerance = 1e-4;
   wallTime = false;
-  parallelization = ParallelizationApproach::NONE;
 }
 
 oms::Flags& oms::Flags::GetInstance()
@@ -273,20 +273,9 @@ oms_status_enu_t oms::Flags::Mode(const std::string& value)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Flags::Parallelization(const std::string& value)
+oms_status_enu_t oms::Flags::NumProcs(const std::string& value)
 {
-  if (value == "none")
-    GetInstance().parallelization = ParallelizationApproach::NONE;
-  else if (value == "ctpl")
-    GetInstance().parallelization = ParallelizationApproach::CTPL;
-  else if (value == "atomic")
-    GetInstance().parallelization = ParallelizationApproach::ATOMIC;
-  else if (value == "condition")
-    GetInstance().parallelization = ParallelizationApproach::CONDITION;
-  else if (value == "mutex")
-    GetInstance().parallelization = ParallelizationApproach::MUTEX;
-  else
-    return logError("Invalid parallelization approach");
+  GetInstance().numProcs = atoi(value.c_str());
   return oms_status_ok;
 }
 

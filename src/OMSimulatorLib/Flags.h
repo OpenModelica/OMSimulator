@@ -39,15 +39,6 @@
 
 namespace oms
 {
-  enum class ParallelizationApproach
-  {
-    NONE,      //!< Single-Core default algorithm
-    CTPL,      //!< Parallel doStep(..) using CTPL task pool library (https://github.com/vit-vit/CTPL)
-    ATOMIC,    //!< Experimental parallel (multi-rate) communication channel approach using ATOMIC variables and polling for synchronization
-    CONDITION, //!< Experimental parallel (multi-rate) communication channel approach using CONDITION variables for synchronization
-    MUTEX      //!< Experimental parallel (multi-rate) communication channel approach using MUTEXES for synchronization
-  };
-
   class Flags
   {
   private:
@@ -79,7 +70,7 @@ namespace oms
     static double Tolerance() {return GetInstance().tolerance;}
     static oms_solver_enu_t MasterAlgorithm() {return GetInstance().masterAlgorithm;}
     static oms_solver_enu_t Solver() {return GetInstance().solver;}
-    static ParallelizationApproach Parallelization() {return GetInstance().parallelization;}
+    static unsigned int NumProcs() {return GetInstance().numProcs;}
     static std::string ResultFile() {return GetInstance().resultFile;}
     static unsigned int Intervals() {return GetInstance().intervals;}
 
@@ -99,9 +90,9 @@ namespace oms
     double tolerance;
     oms_solver_enu_t masterAlgorithm;
     oms_solver_enu_t solver;
-    ParallelizationApproach parallelization;
     std::string resultFile;
     unsigned int intervals;
+    unsigned int numProcs;
 
   private:
     struct Flag
@@ -135,7 +126,7 @@ namespace oms
       {"--logFile", "-l", "Specifies the logfile (stdout is used if no log file is specified)", re_default, Flags::LogFile, false},
       {"--logLevel", "", "0 default, 1 debug, 2 debug+trace", re_number, Flags::LogLevel, false},
       {"--mode", "-m", "Forces a certain FMI mode iff the FMU provides cs and me ([cs], me)", re_mode, Flags::Mode, false},
-      {"--parallelization", "-p", "Specifies the parallelization approach ([none], ctpl, atomic, condition, mutex)", re_default, Flags::Parallelization, false},
+      {"--numProcs", "-n", "Specifies the max. number of processors to use (0=auto, 1=default)", re_number, Flags::NumProcs, false},
       {"--progressBar", "", "Shows a progress bar for the simulation progress in the terminal", re_bool, Flags::ProgressBar, false},
       {"--realTime", "", "Experimental feature for (soft) real-time co-simulation", re_bool, Flags::RealTime, false},
       {"--resultFile", "-r", "Specifies the name of the output result file", re_default, Flags::ResultFile, false},
@@ -164,7 +155,7 @@ namespace oms
     static oms_status_enu_t LogFile(const std::string& value);
     static oms_status_enu_t LogLevel(const std::string& value);
     static oms_status_enu_t Mode(const std::string& value);
-    static oms_status_enu_t Parallelization(const std::string& value);
+    static oms_status_enu_t NumProcs(const std::string& value);
     static oms_status_enu_t ProgressBar(const std::string& value);
     static oms_status_enu_t RealTime(const std::string& value);
     static oms_status_enu_t ResultFile(const std::string& value);
