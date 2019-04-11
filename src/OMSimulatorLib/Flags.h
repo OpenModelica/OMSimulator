@@ -66,7 +66,7 @@ namespace oms
 
     static bool DefaultModeIsCS() {return GetInstance().defaultModeIsCS;}
     static bool IgnoreInitialUnknowns() {return GetInstance().ignoreInitialUnknowns;}
-    static bool InputDerivatives() {return GetInstance().inputDerivatives;}
+    static bool InputExtrapolation() {return GetInstance().inputExtrapolation;}
     static bool ProgressBar() {return GetInstance().progressBar;}
     static bool RealTime() {return GetInstance().realTime;}
     static bool SolverStats() {return GetInstance().solverStats;}
@@ -86,7 +86,7 @@ namespace oms
   private:
     bool defaultModeIsCS;
     bool ignoreInitialUnknowns;
-    bool inputDerivatives;
+    bool inputExtrapolation;
     bool progressBar;
     bool realTime;
     bool solverStats;
@@ -127,24 +127,25 @@ namespace oms
     const std::vector<Flag> flags = {
       {"", "", "FMU or SSP file", re_filename, Flags::Filename, false},
       {"--clearAllOptions", "", "Reset all flags to default values", re_void, Flags::ClearAllOptions, false},
-      {"--fetchAllVars", "", "", re_default, Flags::FetchAllVars, false},
+      {"--fetchAllVars", "", "Workaround for certain FMUs that do not update all internal dependencies automatically", re_default, Flags::FetchAllVars, false},
       {"--help", "-h", "Displays the help text", re_void, Flags::Help, true},
-      {"--ignoreInitialUnknowns", "", "Ignore the initial unknowns from the modelDesction.xml", re_bool, Flags::IgnoreInitialUnknowns, false},
+      {"--ignoreInitialUnknowns", "", "Ignore the initial unknowns from the modelDescription.xml", re_bool, Flags::IgnoreInitialUnknowns, false},
+      {"--inputExtrapolation", "", "Enables input extrapolation using derivative information", re_bool, Flags::InputExtrapolation, false},
       {"--intervals", "-i", "Specifies the number of communication points (arg > 1)", re_number, Flags::Intervals, false},
       {"--logFile", "-l", "Specifies the logfile (stdout is used if no log file is specified)", re_default, Flags::LogFile, false},
       {"--logLevel", "", "0 default, 1 debug, 2 debug+trace", re_number, Flags::LogLevel, false},
       {"--mode", "-m", "Forces a certain FMI mode iff the FMU provides cs and me ([cs], me)", re_mode, Flags::Mode, false},
       {"--parallelization", "-p", "Specifies the parallelization approach ([none], ctpl, atomic, condition, mutex)", re_default, Flags::Parallelization, false},
-      {"--progressBar", "", "", re_bool, Flags::ProgressBar, false},
+      {"--progressBar", "", "Shows a progress bar for the simulation progress in the terminal", re_bool, Flags::ProgressBar, false},
       {"--realTime", "", "Experimental feature for (soft) real-time co-simulation", re_bool, Flags::RealTime, false},
       {"--resultFile", "-r", "Specifies the name of the output result file", re_default, Flags::ResultFile, false},
-      {"--setInputDerivatives", "", "", re_bool, Flags::SetInputDerivatives, false},
+      {"--setInputDerivatives", "", "Deprecated; see '--inputExtrapolation'", re_bool, Flags::SetInputDerivatives, false},
       {"--solver", "", "Specifies the integration method (euler, [cvode])", re_default, Flags::Solver, false},
       {"--solverStats", "", "Adds solver stats to the result file, e.g. step size (not supported for all solvers)", re_bool, Flags::SolverStats, false},
       {"--startTime", "-s", "Specifies the start time", re_double, Flags::StartTime, false},
       {"--stopTime", "-t", "Specifies the stop time", re_double, Flags::StopTime, false},
       {"--stripRoot", "", "Removes the root system prefix from all exported signals", re_bool, Flags::StripRoot, false},
-      {"--suppressPath", "", "", re_bool, Flags::SuppressPath, false},
+      {"--suppressPath", "", "Supresses path information in info messages; especially useful for testing", re_bool, Flags::SuppressPath, false},
       {"--tempDir", "", "Specifies the temp directory", re_default, Flags::TempDir, false},
       {"--timeout", "", "Specifies the maximum allowed time in seconds for running a simulation (0 disables)", re_number, Flags::Timeout, false},
       {"--tolerance", "", "Specifies the relative tolerance", re_double, Flags::Tolerance, false},
@@ -158,6 +159,7 @@ namespace oms
     static oms_status_enu_t Filename(const std::string& value);
     static oms_status_enu_t Help(const std::string& value);
     static oms_status_enu_t IgnoreInitialUnknowns(const std::string& value);
+    static oms_status_enu_t InputExtrapolation(const std::string& value);
     static oms_status_enu_t Intervals(const std::string& value);
     static oms_status_enu_t LogFile(const std::string& value);
     static oms_status_enu_t LogLevel(const std::string& value);

@@ -987,7 +987,7 @@ oms_status_enu_t oms::SystemWC::updateCanGetFMUs(oms::DirectedGraph& graph,std::
           if (oms_status_ok != setReal(graph.getNodes()[input].getName(), value)) return oms_status_error;
 
           // derivatives
-          if (Flags::InputDerivatives() && getModel()->validState(oms_modelState_simulation))
+          if (Flags::InputExtrapolation() && getModel()->validState(oms_modelState_simulation))
           {
             SignalDerivative der;
             if (oms_status_ok == getRealOutputDerivative(graph.getNodes()[output].getName(), der))
@@ -1072,7 +1072,7 @@ oms_status_enu_t oms::SystemWC::updateCantGetFMUs(oms::DirectedGraph& graph,std:
           if (oms_status_ok != setReal(graph.getNodes()[input].getName(), value)) return oms_status_error;
 
           // derivatives
-          if (Flags::InputDerivatives() && getModel()->validState(oms_modelState_simulation))
+          if (Flags::InputExtrapolation() && getModel()->validState(oms_modelState_simulation))
           {
             SignalDerivative der;
             if (oms_status_ok == getRealOutputDerivative(graph.getNodes()[output].getName(), der))
@@ -1134,7 +1134,7 @@ oms_status_enu_t oms::SystemWC::updateInputs(oms::DirectedGraph& graph)
         if (oms_status_ok != setReal(graph.getNodes()[input].getName(), value)) return oms_status_error;
 
         // derivatives
-        if (Flags::InputDerivatives() && getModel()->validState(oms_modelState_simulation))
+        if (Flags::InputExtrapolation() && getModel()->validState(oms_modelState_simulation))
         {
           SignalDerivative der;
           if (oms_status_ok == getRealOutputDerivative(graph.getNodes()[output].getName(), der))

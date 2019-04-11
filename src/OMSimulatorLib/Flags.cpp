@@ -63,7 +63,7 @@ void oms::Flags::setDefaults()
 {
   defaultModeIsCS = false;
   ignoreInitialUnknowns = false;
-  inputDerivatives = false;
+  inputExtrapolation = false;
   intervals = 100;
   masterAlgorithm = oms_solver_wc_ma;
   progressBar = false;
@@ -243,6 +243,12 @@ oms_status_enu_t oms::Flags::IgnoreInitialUnknowns(const std::string& value)
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::Flags::InputExtrapolation(const std::string& value)
+{
+  GetInstance().inputExtrapolation = (value == "true");
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms::Flags::Intervals(const std::string& value)
 {
   GetInstance().intervals = atoi(value.c_str());
@@ -304,8 +310,8 @@ oms_status_enu_t oms::Flags::ResultFile(const std::string& value)
 
 oms_status_enu_t oms::Flags::SetInputDerivatives(const std::string& value)
 {
-  GetInstance().inputDerivatives = (value == "true");
-  return oms_status_ok;
+  logWarning("--setInputDerivatives is deprecated; use --inputExtrapolation instead");
+  return InputExtrapolation(value);
 }
 
 oms_status_enu_t oms::Flags::Solver(const std::string& value)
