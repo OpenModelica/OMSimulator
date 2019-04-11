@@ -101,11 +101,12 @@ namespace oms
       const std::string abbr;
       const std::string desc;
       const std::string regex;
-      oms_status_enu_t (*fnc)(const std::string& value);
+      oms_status_enu_t (*fcn)(const std::string& value);
       const bool interrupt;
     };
 
     std::map<std::string, unsigned int> lookup;
+    std::vector<std::string> files;
 
     const std::string re_void = "";
     const std::string re_default = ".+";
@@ -113,7 +114,7 @@ namespace oms
     const std::string re_mode = "(me|cs)";
     const std::string re_double = "((\\+|-)?[[:digit:]]+)(\\.(([[:digit:]]+)?))?((e|E)((\\+|-)?)[[:digit:]]+)?";
     const std::string re_number = "[[:digit:]]+";
-    const std::string re_filename = ".+(\\.fmu|\\.ssp)";
+    const std::string re_filename = ".+(\\.fmu|\\.ssp|\\.lua)";
 
     const std::vector<Flag> flags = {
       {"", "", "FMU or SSP file", re_filename, Flags::Filename, false},

@@ -60,6 +60,13 @@
 #include <mutex>
 #include <condition_variable>
 
+#if defined(OMS_STATIC)
+extern "C"
+{
+  #include <OMSimulatorLua.c>
+}
+#endif
+
 const char* oms_getVersion()
 {
   return oms_git_version;
@@ -1023,6 +1030,23 @@ oms_status_enu_t oms_RunFile(const char* filename_)
     oms_terminate(cref);
     oms_delete(cref);
     return status;
+  }
+  else if (type == ".lua")
+  {
+#if defined(OMS_STATIC)
+    lua_State *L = luaL_newstate();
+    luaL_openlibs(L);
+    luaopen_OMSimulatorLua(L);
+    if (luaL_loadfile(L, filename.c_str()))
+      return logError(lua_tostring(L, -1));
+
+    if (lua_pcall(L, 0, 0, 0))
+      return logError(lua_tostring(L, -1));
+
+    lua_close(L);
+#else
+    return logError("Lua is only supported in the static version of OMSimulatorLib");
+#endif
   }
   else
     return logError("Not able to process file '" + filename + "'\nUse OMSimulator --help for more information.");

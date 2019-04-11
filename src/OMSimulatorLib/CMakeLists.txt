@@ -17,6 +17,11 @@ IF (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.1)
   ENDIF ()
 ENDIF ()
 
+IF (Ceres_FOUND AND OMSYSIDENT)
+  add_definitions(-DWITH_OMSYSIDENT)
+  set(OMSYSIDENT_OPTION OMSysIdent_static)
+ENDIF()
+
 IF (OMTLM)
   set(OMTLM_SOURCES "TLM/")
   set(TLM_STRING "")
@@ -98,27 +103,34 @@ ENDIF (OMTLM)
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Version.cpp.in" "${CMAKE_CURRENT_BINARY_DIR}/Version.cpp" @ONLY)
 list(APPEND OMSIMULATORLIB_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/Version.cpp")
 
-include_directories(${FMILibrary_INCLUDEDIR})
-include_directories(${CVODELibrary_INCLUDEDIR})
-include_directories(${KINSOLLibrary_INCLUDEDIR})
-include_directories(${PUGIXML_INCLUDEDIR})
-include_directories(${Boost_INCLUDE_DIRS})
+include_directories(
+  ../../3rdParty/RegEx
+  ../OMSimulatorLib
+  ../OMSimulatorLua
+  ../OMSysIdentLib
+  ${Boost_INCLUDE_DIRS}
+  ${CTPL_INCLUDEDIR}
+  ${CVODELibrary_INCLUDEDIR}
+  ${FMILibrary_INCLUDEDIR}
+  ${KINSOLLibrary_INCLUDEDIR}
+  ${LUALibrary_INCLUDEDIR}
+  ${MINIZIP_INCLUDEDIR}
+  ${OMTLM_SOURCES}
+  ${PUGIXML_INCLUDEDIR})
 IF (OMTLM)
-  include_directories(${OMTLMSIMULATORLIB_INCLUDEDIR})
-  include_directories(${OMTLMSIMULATOR_INCLUDEDIR})
-  include_directories(${OMTLMSIMULATOR_3RDPARTY_INCLUDEDIR})
+  include_directories(
+    ${OMTLMSIMULATORLIB_INCLUDEDIR}
+    ${OMTLMSIMULATOR_INCLUDEDIR}
+    ${OMTLMSIMULATOR_3RDPARTY_INCLUDEDIR})
 ENDIF (OMTLM)
-include_directories(${OMTLM_SOURCES})
-include_directories(${CTPL_INCLUDEDIR})
-include_directories(${MINIZIP_INCLUDEDIR})
-include_directories(../../3rdParty/RegEx)
-include_directories(../OMSimulatorLib)
 
-link_directories(${FMILibrary_LIBRARYDIR})
-link_directories(${CVODELibrary_LIBRARYDIR})
-link_directories(${KINSOLLibrary_LIBRARYDIR})
-link_directories(${Boost_LIBRARY_DIRS})
-link_directories(${MINIZIP_LIBRARYDIR})
+link_directories(
+  ${FMILibrary_LIBRARYDIR}
+  ${LUALibrary_LIBRARYDIR}
+  ${CVODELibrary_LIBRARYDIR}
+  ${KINSOLLibrary_LIBRARYDIR}
+  ${Boost_LIBRARY_DIRS}
+  ${MINIZIP_LIBRARYDIR})
 IF (OMTLM)
   link_directories(${OMTLMSIMULATORLIB_LIBRARYDIR})
 ENDIF ()
@@ -144,7 +156,7 @@ IF (WIN32 AND MSVC)
 ENDIF ()
 
 target_link_libraries(OMSimulatorLib fmilib sundials_kinsol sundials_cvode sundials_nvecserial minizip ${LIB_ATOMIC} ${Boost_LIBRARIES} ${OMTLM_LINKFLAGS} ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} ${CPP_FS_LIBS} ${STATIC_LIBGCC})
-target_link_libraries(OMSimulatorLib_static fmilib sundials_kinsol sundials_cvode sundials_nvecserial minizip ${CMAKE_DL_LIBS} ${LIB_ATOMIC} ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} ${OMTLM_LINKFLAGS} ${CPP_FS_LIBS} ${STATIC_LIBGCC})
+target_link_libraries(OMSimulatorLib_static fmilib sundials_kinsol sundials_cvode sundials_nvecserial minizip lua ${OMSYSIDENT_OPTION} ${CMAKE_DL_LIBS} ${LIB_ATOMIC} ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} ${OMTLM_LINKFLAGS} ${CPP_FS_LIBS} ${STATIC_LIBGCC})
 
 IF (WIN32 AND MINGW)
   target_link_libraries(OMSimulatorLib shlwapi)

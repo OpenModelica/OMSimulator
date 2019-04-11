@@ -2,11 +2,7 @@ project(OMSimulator)
 
 set(CMAKE_INSTALL_RPATH "$ORIGIN/../lib/${HOST_SHORT}:$ORIGIN/")
 
-include_directories(
-  ../OMSimulatorLib
-  ../OMSysIdentLib
-  ../OMSimulatorLua
-  ${LUALibrary_INCLUDEDIR})
+include_directories(../OMSimulatorLib)
 
 link_directories(
   ${FMILibrary_LIBRARYDIR}
@@ -36,16 +32,11 @@ IF (APPLE)
     $<TARGET_FILE:OMSimulator>)
 ENDIF ()
 
-IF (Ceres_FOUND AND OMSYSIDENT)
-  add_definitions(-DWITH_OMSYSIDENT)
-  set(OMSYSIDENT_OPTION OMSysIdent_static)
-ENDIF()
-
 IF (WIN32 AND MINGW)
   set(CMAKE_EXE_LINKER_FLAGS "-static -static-libgcc -static-libstdc++")
 ENDIF ()
 
 add_definitions(-DOMS_STATIC)
-target_link_libraries(OMSimulator OMSimulatorLib_static lua ${OMSYSIDENT_OPTION})
+target_link_libraries(OMSimulator OMSimulatorLib_static)
 
 install(TARGETS OMSimulator DESTINATION bin)
