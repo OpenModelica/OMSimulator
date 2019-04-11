@@ -25,6 +25,7 @@ include_directories(
 
 link_directories(
   ${FMILibrary_LIBRARYDIR}
+  ${LUALibrary_LIBRARYDIR}
   ${Boost_LIBRARY_DIRS}
   ${CVODELibrary_LIBRARYDIR}
   ${KINSOLLibrary_LIBRARYDIR}
@@ -33,7 +34,7 @@ link_directories(
 )
 
 set(OMSYSIDENTLIB_SOURCES OMSysIdent.cpp FitModel.cpp)
-set(OMSYSIDENTLIB_LIBRARIES OMSimulatorLib ${FMILibrary_LIBRARY} sundials_cvode sundials_nvecserial ${CMAKE_DL_LIBS} ${Boost_LIBRARIES} ${OMTLM_LINKFLAGS})
+set(OMSYSIDENTLIB_LIBRARIES OMSimulatorLib ${FMILibrary_LIBRARY} sundials_cvode sundials_nvecserial lua ${CMAKE_DL_LIBS} ${Boost_LIBRARIES} ${OMTLM_LINKFLAGS})
 
 # Static library, to be linked into the OMSimulator executable
 add_library(OMSysIdent_static STATIC ${OMSYSIDENTLIB_SOURCES})

@@ -106,6 +106,8 @@ bool isOptionAndValue(const std::string& cmd, const std::string& name, std::stri
 
 oms_status_enu_t oms::Flags::SetCommandLineOption(const std::string& cmd)
 {
+  GetInstance().files.clear();
+
   // split command line arguments
   std::vector<std::string> args;
   size_t start=0;
@@ -147,13 +149,18 @@ oms_status_enu_t oms::Flags::SetCommandLineOption(const std::string& cmd)
 
     if (regex_match(value, oms_regex(regex_str)))
     {
-      oms_status_enu_t status = GetInstance().flags[l->second].fnc(value);
+      oms_status_enu_t status = GetInstance().flags[l->second].fcn(value);
       if (GetInstance().flags[l->second].interrupt || oms_status_ok != status)
         return status;
     }
     else
       return logError("Invalid value: \"" + arg + "\"");
   }
+
+  // run Lua scripts, FMUs, SSP files
+  for (const auto& file : GetInstance().files)
+    if (oms_status_ok != oms_RunFile(file.c_str()))
+      return oms_status_error;
 
   return oms_status_ok;
 }
@@ -203,20 +210,22 @@ oms_status_enu_t oms::Flags::FetchAllVars(const std::string& value)
 
 oms_status_enu_t oms::Flags::Filename(const std::string& value)
 {
-  oms_RunFile(value.c_str());
+  GetInstance().files.push_back(value);
   return oms_status_ok;
 }
 
 oms_status_enu_t oms::Flags::Help(const std::string& value)
 {
   std::stringstream ss;
+  ss << "Usage: OMSimulator [Options] [Lua script] [FMU] [SSP file]" << std::endl;
   ss << "Options:" << std::endl;
   for (unsigned int i=0; i<GetInstance().flags.size(); ++i)
   {
-    std::string label = "  " + GetInstance().flags[i].name;
     if (GetInstance().flags[i].name.empty())
-      label += "<filename>";
-    else if (!GetInstance().flags[i].regex.empty())
+      continue;
+
+    std::string label = "  " + GetInstance().flags[i].name;
+    if (!GetInstance().flags[i].regex.empty())
     {
       if (GetInstance().flags[i].regex == GetInstance().re_bool)
         label += "=<bool>";
