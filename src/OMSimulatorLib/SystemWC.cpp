@@ -128,11 +128,11 @@ oms_status_enu_t oms::SystemWC::instantiate()
   time = getModel()->getStartTime();
 
   // initialize thread pool
-  useThreads = (Flags::Parallelization() == ParallelizationApproach::CTPL);
+  useThreads = (Flags::NumProcs() != 1);
   if (useThreads)
   {
-    int numThreads = getComponents().size();
-    if (numThreads > std::thread::hardware_concurrency())
+    int numThreads = Flags::NumProcs();
+    if (numThreads > std::thread::hardware_concurrency() || 0 == numThreads)
       numThreads = std::thread::hardware_concurrency();
     pool = new ctpl::thread_pool(numThreads);
   }
