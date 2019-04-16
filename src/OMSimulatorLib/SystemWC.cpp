@@ -512,14 +512,39 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
       logDebug("doStep: " + std::to_string(time) + " -> " + std::to_string(tNext));
 
       oms_status_enu_t status;
-      for (const auto& subsystem : getSubSystems())
+      if (useThreadPool())
       {
-        status = subsystem.second->stepUntil(tNext, NULL);
-        if (oms_status_ok != status)
+        ctpl::thread_pool& pool = getThreadPool();
+        std::vector<std::future<oms_status_enu_t>> results(getSubSystems().size());
+        int i=0;
+        for (const auto& subsystem : getSubSystems())
         {
-          if (cb)
-            cb(modelName.c_str(), tNext, status);
-          return status;
+          results[i] = pool.push([&subsystem, tNext](int id){ /*logInfo("Id: " + std::to_string(id));*/ return subsystem.second->stepUntil(tNext, NULL); });
+          i++;
+        }
+
+        for (auto& r : results)
+        {
+          status = r.get();
+          if (oms_status_ok != status)
+          {
+            if (cb)
+              cb(modelName.c_str(), tNext, status);
+            return status;
+          }
+        }
+      }
+      else
+      {
+        for (const auto& subsystem : getSubSystems())
+        {
+          status = subsystem.second->stepUntil(tNext, NULL);
+          if (oms_status_ok != status)
+          {
+            if (cb)
+              cb(modelName.c_str(), tNext, status);
+            return status;
+          }
         }
       }
 

@@ -385,6 +385,7 @@ oms_status_enu_t oms::Model::instantiate()
     if (numThreads > std::thread::hardware_concurrency() || 0 == numThreads)
       numThreads = std::thread::hardware_concurrency();
     pool = new ctpl::thread_pool(numThreads);
+    logInfo("Initialized thread pool for model " + std::string(getCref()) + " with " + std::to_string(numThreads) + " threads");
   }
 
   modelState = oms_modelState_enterInstantiation;
