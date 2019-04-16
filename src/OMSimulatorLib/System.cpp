@@ -1898,3 +1898,13 @@ oms_status_enu_t oms::System::removeSignalsFromResults(const char* regex)
 
   return oms_status_ok;
 }
+
+bool oms::System::useThreadPool()
+{
+  return getModel()->useThreadPool();
+}
+
+ctpl::thread_pool& oms::System::getThreadPool()
+{
+  return getModel()->getThreadPool();
+}
