@@ -37,8 +37,14 @@
 #include "Element.h"
 #include "ResultWriter.h"
 #include "Types.h"
-
+#include <assert.h>
 #include <pugixml.hpp>
+
+#if (BOOST_VERSION >= 105300)
+#include <ctpl.h>
+#else // use the standard queue
+#include <ctpl_stl.h>
+#endif
 
 namespace oms
 {
@@ -103,6 +109,9 @@ namespace oms
     bool isIsolatedFMUModel() const {return isolatedFMU;}
     void setIsolatedFMUModel() {isolatedFMU = true;}
 
+    bool useThreadPool() {return (pool != nullptr);}
+    ctpl::thread_pool& getThreadPool() {assert(pool); return *pool;}
+
   private:
     Model(const ComRef& cref, const std::string& tempDir);
 
@@ -135,6 +144,8 @@ namespace oms
 
     bool cancelSim;
     bool isolatedFMU = false;
+
+    ctpl::thread_pool* pool = nullptr;
   };
 }
 

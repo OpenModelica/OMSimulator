@@ -127,27 +127,18 @@ oms_status_enu_t oms::SystemWC::instantiate()
 {
   time = getModel()->getStartTime();
 
-  // initialize thread pool
-  useThreads = (Flags::NumProcs() != 1);
-  if (useThreads)
-  {
-    int numThreads = Flags::NumProcs();
-    if (numThreads > std::thread::hardware_concurrency() || 0 == numThreads)
-      numThreads = std::thread::hardware_concurrency();
-    pool = new ctpl::thread_pool(numThreads);
-  }
-
   for (const auto& subsystem : getSubSystems())
     if (oms_status_ok != subsystem.second->instantiate())
       return oms_status_error;
 
-  if (useThreads)
+  if (useThreadPool())
   {
+    ctpl::thread_pool& pool = getThreadPool();
     std::vector<std::future<oms_status_enu_t>> results(getComponents().size());
     int i=0;
     for (const auto& component : getComponents())
     {
-      results[i] = pool->push([&component](int id){ /*logInfo("Id: " + std::to_string(id));*/ return component.second->instantiate(); });
+      results[i] = pool.push([&component](int id){ /*logInfo("Id: " + std::to_string(id));*/ return component.second->instantiate(); });
       i++;
     }
 
@@ -206,12 +197,6 @@ oms_status_enu_t oms::SystemWC::initialize()
 
 oms_status_enu_t oms::SystemWC::terminate()
 {
-  if (pool)
-  {
-    delete pool;
-    pool = NULL;
-  }
-
   for (const auto& subsystem : getSubSystems())
     if (oms_status_ok != subsystem.second->terminate())
       return oms_status_error;
@@ -538,13 +523,14 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
         }
       }
 
-      if (useThreads)
+      if (useThreadPool())
       {
+        ctpl::thread_pool& pool = getThreadPool();
         std::vector<std::future<oms_status_enu_t>> results(getComponents().size());
         int i=0;
         for (const auto& component : getComponents())
         {
-          results[i] = pool->push([&component, tNext](int id){ /*logInfo("Id: " + std::to_string(id));*/ return component.second->stepUntil(tNext); });
+          results[i] = pool.push([&component, tNext](int id){ /*logInfo("Id: " + std::to_string(id));*/ return component.second->stepUntil(tNext); });
           i++;
         }
 

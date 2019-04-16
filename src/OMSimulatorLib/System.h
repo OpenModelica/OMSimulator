@@ -49,6 +49,12 @@
 #include <pugixml.hpp>
 #include <unordered_map>
 
+#if (BOOST_VERSION >= 105300)
+#include <ctpl.h>
+#else // use the standard queue
+#include <ctpl_stl.h>
+#endif
+
 namespace oms
 {
   class Component;
@@ -150,6 +156,9 @@ namespace oms
     oms_status_enu_t setVariableStepSize(double initialStepSize, double minimumStepSize, double maximumStepSize) {this->minimumStepSize=minimumStepSize; this->maximumStepSize=maximumStepSize; this->initialStepSize=initialStepSize; return oms_status_ok;}
     double getMaximumStepSize() {return maximumStepSize;}
     oms_solver_enu_t getSolver() {return solverMethod;}
+
+    bool useThreadPool();
+    ctpl::thread_pool& getThreadPool();
 
   protected:
     System(const ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem, oms_solver_enu_t solverMethod);

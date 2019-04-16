@@ -378,6 +378,15 @@ oms_status_enu_t oms::Model::instantiate()
   if (!system)
     return logError("Model doesn't contain a system");
 
+  // initialize thread pool
+  int numThreads = Flags::NumProcs();
+  if (numThreads != 1)
+  {
+    if (numThreads > std::thread::hardware_concurrency() || 0 == numThreads)
+      numThreads = std::thread::hardware_concurrency();
+    pool = new ctpl::thread_pool(numThreads);
+  }
+
   modelState = oms_modelState_enterInstantiation;
   if (oms_status_ok != system->instantiate())
   {
@@ -530,6 +539,12 @@ oms_status_enu_t oms::Model::terminate()
 
   if (oms_status_ok != system->terminate())
     return logError_Termination(system->getFullCref());
+
+  if (useThreadPool())
+  {
+    delete pool;
+    pool = nullptr;
+  }
 
   if (resultFile)
   {
