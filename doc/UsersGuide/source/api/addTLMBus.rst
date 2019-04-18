@@ -1,6 +1,6 @@
 #CAPTION#
-simulate_asynchronous
----------------------
+addTLMBus
+---------
 
 Adds a TLM bus.
 #END#
