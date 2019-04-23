@@ -263,13 +263,13 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
     {
       if (oms_component_fmu == component.second->getType()) // Check that its an FMU
       {
-        if (dynamic_cast<ComponentFMUCS*>(component.second)->getFMUInfo()->getCanGetAndSetFMUstate())
-          canGetAndSetStateFMUcomponents.insert(std::pair<ComRef, Component*>(component.first,component.second));
+        if (component.second->getCanGetAndSetFMUstate())
+          canGetAndSetStateFMUcomponents.insert(std::pair<ComRef, Component*>(component.first, component.second));
         else
-          FMUcomponents.insert(std::pair<ComRef, Component*>(component.first,component.second));
+          FMUcomponents.insert(std::pair<ComRef, Component*>(component.first, component.second));
       }
       else
-        noneFMUcomponents.insert(std::pair<ComRef, Component*>(component.first,component.second));
+        noneFMUcomponents.insert(std::pair<ComRef, Component*>(component.first, component.second));
     }
 
     logDebug("DEBUGGING: canGetAndSetStateFMUcomponents is size: " + std::to_string(canGetAndSetStateFMUcomponents.size()));
@@ -310,11 +310,7 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
         {
           if (whichStepIndex == 0) // first time get the state vector so we can rollback if needed.
           {
-            fmi2_import_t* fmu_in = dynamic_cast<ComponentFMUCS*>(component.second)->getFMU();
-            fmi2_FMU_state_t s = NULL;
-            fmi_status = fmi2_import_get_fmu_state(fmu_in, &s);
-            sVect.push_back(s);
-            fmiImportVect.push_back(fmu_in);
+            component.second->saveState();
           }
 
           status = component.second->stepUntil(tNext);
@@ -357,9 +353,9 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
           if (doDoubleStep) // Rollback for small steppies.
           {
             //Fix fmus
-            for (int i=0; i<fmiImportVect.size(); ++i) // Reset all FMU states
+            for (const auto& component : canGetAndSetStateFMUcomponents) // Reset all FMU states
             {
-              fmi_status = fmi2_import_set_fmu_state(fmiImportVect[i], sVect[i]);
+              component.second->restoreState();
             }
             //Fix time
             time = tNext-stepSize;
@@ -411,9 +407,9 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
       if (fixRatio < 1.0 && minimumStepSize < stepSize) //Going to rollback.
       {
         //Fix fmus
-        for (int i=0; i<fmiImportVect.size(); ++i) // Reset all FMU states
+        for (const auto& component : canGetAndSetStateFMUcomponents) // Reset all FMU states
         {
-          fmi_status = fmi2_import_set_fmu_state(fmiImportVect[i], sVect[i]);
+          component.second->restoreState();
         }
         //Fix time
         time = tNext-stepSize;
@@ -489,13 +485,10 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
         stepSize = stepSize*fixRatio;
       }
 
-      for (int kkl=0; kkl < sVect.size(); kkl++)
+      for (const auto& component : canGetAndSetStateFMUcomponents)
       {
-        fmi2_import_free_fmu_state(fmiImportVect[kkl], &sVect[kkl]);
+        component.second->freeState();
       }
-      fmiImportVect.clear();
-      sVect.clear();
-
       if (isTopLevelSystem() && getModel()->cancelSimulation())
       {
         cb(modelName.c_str(), time, oms_status_discard);

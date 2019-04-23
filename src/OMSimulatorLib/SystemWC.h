@@ -96,9 +96,6 @@ namespace oms
   private:
     double time;
 
-    std::vector<fmi2_import_t*> fmiImportVect;
-    std::vector<fmi2_FMU_state_t> sVect;
-
     StepSizeConfiguration stepSizeConfiguration;  ///< Configuration data structure for assc
 
     unsigned int h_id;

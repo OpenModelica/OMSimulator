@@ -483,6 +483,8 @@ oms_status_enu_t oms::ComponentFMUCS::initialize()
 
 oms_status_enu_t oms::ComponentFMUCS::terminate()
 {
+  freeState();
+
   fmi2_status_t fmistatus = fmi2_import_terminate(fmu);
   if (fmi2_status_ok != fmistatus)
     return logError_Termination(getCref());
@@ -938,6 +940,34 @@ oms_status_enu_t oms::ComponentFMUCS::removeSignalsFromResults(const char* regex
       exportVariables[i] = false;
     }
   }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::ComponentFMUCS::saveState()
+{
+  fmi2_status_t fmistatus = fmi2_import_get_fmu_state(fmu, &fmuState);
+  if (fmi2_status_ok != fmistatus) return logError_FMUCall("fmi2_import_get_fmu_state", this);
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::ComponentFMUCS::freeState()
+{
+  if (!fmuState)
+    return oms_status_warning;
+
+  fmi2_status_t fmistatus = fmi2_import_free_fmu_state(fmu, &fmuState);
+  fmuState = NULL;
+  if (fmi2_status_ok != fmistatus) return logError_FMUCall("fmi2_import_free_fmu_state", this);
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::ComponentFMUCS::restoreState()
+{
+  fmi2_status_t fmistatus = fmi2_import_set_fmu_state(fmu, fmuState);
+  if (fmi2_status_ok != fmistatus) return logError_FMUCall("fmi2_import_set_fmu_state", this);
 
   return oms_status_ok;
 }
