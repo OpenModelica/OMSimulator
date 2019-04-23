@@ -3,3 +3,4 @@
 
 # generated files
 /source/*.inc
+/source/api/*.inc

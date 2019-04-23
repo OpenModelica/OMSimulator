@@ -281,7 +281,7 @@ OMSimulatorLua = ""
 OMSimulatorPython = ""
 OMSysIdentLua = ""
 
-for filename in sorted(os.listdir('api')):
+for filename in sorted(filter(lambda file: file.endswith('.rst'), os.listdir('api'))):
   m_omsi_api = re.match( r'omsi_', filename)
   if m_omsi_api:
     OMSysIdentLua = OMSysIdentLua + ".. " + filename + "\n\n"
