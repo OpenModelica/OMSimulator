@@ -93,7 +93,7 @@ namespace oms
     oms_status_enu_t addSignalsToResults(const char* regex);
     oms_status_enu_t removeSignalsFromResults(const char* regex);
 
-    bool getCanGetAndSetFMUstate() {return getFMUInfo()->getCanGetAndSetFMUstate();}
+    bool getCanGetAndSetState() {return getFMUInfo()->getCanGetAndSetFMUstate();}
     oms_status_enu_t saveState();
     oms_status_enu_t freeState();
     oms_status_enu_t restoreState();

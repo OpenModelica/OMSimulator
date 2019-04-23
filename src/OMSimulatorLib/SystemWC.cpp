@@ -252,7 +252,6 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
     logDebug("DEBUGGING: Entering VariableStep solver");
     std::map<ComRef, Component*> FMUcomponents;
     std::map<ComRef, Component*> canGetAndSetStateFMUcomponents;
-    std::map<ComRef, Component*> noneFMUcomponents;
     std::vector<double> inputVectEnd;
     std::vector<double> outputVectEnd;
     std::vector<double> inputVect;
@@ -261,20 +260,14 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
 
     for (const auto& component : getComponents()) // Map the FMUs.
     {
-      if (oms_component_fmu == component.second->getType()) // Check that its an FMU
-      {
-        if (component.second->getCanGetAndSetFMUstate())
-          canGetAndSetStateFMUcomponents.insert(std::pair<ComRef, Component*>(component.first, component.second));
-        else
-          FMUcomponents.insert(std::pair<ComRef, Component*>(component.first, component.second));
-      }
+      if (component.second->getCanGetAndSetState())
+        canGetAndSetStateFMUcomponents.insert(std::pair<ComRef, Component*>(component.first, component.second));
       else
-        noneFMUcomponents.insert(std::pair<ComRef, Component*>(component.first, component.second));
+        FMUcomponents.insert(std::pair<ComRef, Component*>(component.first, component.second));
     }
 
     logDebug("DEBUGGING: canGetAndSetStateFMUcomponents is size: " + std::to_string(canGetAndSetStateFMUcomponents.size()));
     logDebug("DEBUGGING: FMUcomponents is size: " + std::to_string(FMUcomponents.size()));
-    logDebug("DEBUGGING: noneFMUcomponents is size: " + std::to_string(noneFMUcomponents.size()));
 
     // Lets make sure we can reset FMUs
     if (canGetAndSetStateFMUcomponents.size() == 0)
@@ -313,17 +306,6 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
             component.second->saveState();
           }
 
-          status = component.second->stepUntil(tNext);
-          if (oms_status_ok != status)
-          {
-            if (cb)
-              cb(modelName.c_str(), tNext, status);
-            return status;
-          }
-        }
-
-        for (const auto& component : noneFMUcomponents) // stepUntil for noneFmus
-        {
           status = component.second->stepUntil(tNext);
           if (oms_status_ok != status)
           {
