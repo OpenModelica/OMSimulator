@@ -256,7 +256,7 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
     std::vector<double> outputVectEnd;
     std::vector<double> inputVect;
     std::vector<double> outputVect;
-    bool doDoubleStep = (solverMethod == oms_solver_wc_mav2); //Should we double step or not?
+    bool doDoubleStep = (solverMethod == oms_solver_wc_mav2); // Should we double step or not?
 
     for (const auto& component : getComponents()) // Map the FMUs.
     {
@@ -269,19 +269,15 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
     logDebug("DEBUGGING: canGetAndSetStateFMUcomponents is size: " + std::to_string(canGetAndSetStateFMUcomponents.size()));
     logDebug("DEBUGGING: FMUcomponents is size: " + std::to_string(FMUcomponents.size()));
 
-    // Lets make sure we can reset FMUs
+    // make sure we can reset FMUs
     if (canGetAndSetStateFMUcomponents.size() == 0)
-      return logError("If no FMUs can get/set states, Variable Step solver can't be used.");
+      return logError("The adaptive step solver requires components (e.g. FMUs) that can rollback their states. None of the involved components in this model provide this functionality.");
 
-    // Lets check if we should double step or not.
+    // check if we can double step
     if (FMUcomponents.size() != 0 && doDoubleStep)
-    {
-      doDoubleStep = false;
-      logWarning("Found FMUs that can't get/set states, will not double step.");
-    }
+      return logError("The double step approach requires that all the components can rollback their states. At least one component doesn't provide this functionality.");
 
     int howManySteps = doDoubleStep ? 3 : 1;
-
     while (time < stopTime)
     {
       if (stepSize > maximumStepSize) stepSize = maximumStepSize;
@@ -705,7 +701,7 @@ oms_status_enu_t oms::SystemWC::stepUntilASSC(double stopTime, void (*cb)(const 
       }
 
       //check values for threshold crossing detection
-      for (const auto& pair:stepSizeConfiguration.getStaticThresholds())
+      for (const auto& pair : stepSizeConfiguration.getStaticThresholds())
       {
         double sigval;
         this->getReal(pair.first,sigval);
@@ -721,7 +717,7 @@ oms_status_enu_t oms::SystemWC::stepUntilASSC(double stopTime, void (*cb)(const 
         }
       }
 
-      for (const auto& pair:stepSizeConfiguration.getDynamicThresholds())
+      for (const auto& pair : stepSizeConfiguration.getDynamicThresholds())
       {
         double sigval;
         this -> getReal(pair.first,sigval);
