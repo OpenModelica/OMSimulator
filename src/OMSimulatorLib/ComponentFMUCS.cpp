@@ -948,6 +948,7 @@ oms_status_enu_t oms::ComponentFMUCS::saveState()
 {
   fmi2_status_t fmistatus = fmi2_import_get_fmu_state(fmu, &fmuState);
   if (fmi2_status_ok != fmistatus) return logError_FMUCall("fmi2_import_get_fmu_state", this);
+  fmuStateTime = time;
 
   return oms_status_ok;
 }
@@ -968,6 +969,7 @@ oms_status_enu_t oms::ComponentFMUCS::restoreState()
 {
   fmi2_status_t fmistatus = fmi2_import_set_fmu_state(fmu, fmuState);
   if (fmi2_status_ok != fmistatus) return logError_FMUCall("fmi2_import_set_fmu_state", this);
+  time = fmuStateTime;
 
   return oms_status_ok;
 }

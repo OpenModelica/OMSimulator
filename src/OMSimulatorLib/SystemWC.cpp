@@ -293,15 +293,16 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
       logDebug("doStep: " + std::to_string(time) + " -> " + std::to_string(tNext));
 
       oms_status_enu_t status;
+
+      // Get states of FMUs that can get state
+      for (const auto& component : canGetAndSetStateFMUcomponents)
+        component.second->saveState();
+
       for (int whichStepIndex = 0; whichStepIndex < howManySteps; whichStepIndex++)
       {
-        for (const auto& component : canGetAndSetStateFMUcomponents) // Get states and stepUntil for FMUs that can get state.
+        // stepUntil for FMUs that can get state
+        for (const auto& component : canGetAndSetStateFMUcomponents)
         {
-          if (whichStepIndex == 0) // first time get the state vector so we can rollback if needed.
-          {
-            component.second->saveState();
-          }
-
           status = component.second->stepUntil(tNext);
           if (oms_status_ok != status)
           {
@@ -311,7 +312,8 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
           }
         }
 
-        for (const auto& subsystem : getSubSystems()) // stepUntill for subsystems of ME FMUs, TODO: Fix rollback here too.
+        // stepUntill for subsystems (ME-FMUs), TODO: Fix rollback here too.
+        for (const auto& subsystem : getSubSystems())
         {
           status = subsystem.second->stepUntil(tNext, NULL);
           if (oms_status_ok != status)
@@ -328,13 +330,15 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
         {
           if (oms_status_ok != getInputAndOutput(outputsGraph,inputVect,outputVect,canGetAndSetStateFMUcomponents))
             return oms_status_error;
+
           if (doDoubleStep) // Rollback for small steppies.
           {
-            //Fix fmus
-            for (const auto& component : canGetAndSetStateFMUcomponents) // Reset all FMU states
+            // Rollback all FMUs
+            for (const auto& component : canGetAndSetStateFMUcomponents)
             {
               component.second->restoreState();
             }
+
             //Fix time
             time = tNext-stepSize;
             for (const auto& component : getComponents())
@@ -353,8 +357,8 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
             return oms_status_error;
       }
       logDebug("DEBUGGING: Lets do Error control");
-      logDebug("DEBUGGING: inputVect is size: "+std::to_string(inputVect.size()));
-      logDebug("DEBUGGING: outputVect is size:"+std::to_string(outputVect.size()));
+      logDebug("DEBUGGING: inputVect is size:  " + std::to_string(inputVect.size()));
+      logDebug("DEBUGGING: outputVect is size: " + std::to_string(outputVect.size()));
       if (inputVect.size() != outputVect.size())
         return oms_status_error;
 
@@ -362,7 +366,7 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
       double maxChange = 1.5;
       double minChange = 0.5;
       maxError = 0.0;
-      for (int n=0; n < inputVect.size();n++) // Calculate error in the FMUs we do error_control on.
+      for (int n=0; n < inputVect.size(); n++) // Calculate error in the FMUs we do error_control on.
       {
         double error;
         if (!doDoubleStep)
@@ -384,21 +388,16 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
       logDebug("DEBUGGING: fixRatio is: " + std::to_string(fixRatio));
       if (fixRatio < 1.0 && minimumStepSize < stepSize) //Going to rollback.
       {
-        //Fix fmus
-        for (const auto& component : canGetAndSetStateFMUcomponents) // Reset all FMU states
+        // Rollback FMUs
+        for (const auto& component : canGetAndSetStateFMUcomponents)
         {
           component.second->restoreState();
         }
-        //Fix time
+
+        // Fix time
         time = tNext-stepSize;
-        for (const auto& component : getComponents())
-        {
-          if (oms_component_fmu == component.second->getType())
-          {
-            dynamic_cast<ComponentFMUCS*>(component.second)->setFmuTime(time);
-          }
-        }
-        //Fix Steptime.
+
+        // Fix stepSize
         fixRatio = fixRatio*safety_factor;
         if (fixRatio < minChange) fixRatio = minChange;
         stepSize = stepSize*fixRatio;

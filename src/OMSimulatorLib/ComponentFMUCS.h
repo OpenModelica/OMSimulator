@@ -129,6 +129,7 @@ namespace oms
     double time;
 
     fmi2_FMU_state_t fmuState = NULL;
+    double fmuStateTime;
   };
 }
 
