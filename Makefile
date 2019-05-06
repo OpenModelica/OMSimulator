@@ -33,6 +33,7 @@ ifeq ($(detected_OS),Darwin)
 	CERES := OFF
 	LIBXML2 := OFF
 	OMSYSIDENT := OFF
+	OMTLM := OFF
 	export ABI := MAC64
 	FEXT=.dylib
 	CMAKE_FPIC=-DCMAKE_C_FLAGS="-fPIC"
