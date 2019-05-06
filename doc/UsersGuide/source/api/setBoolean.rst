@@ -2,7 +2,7 @@
 setBoolean
 ----------
 
-Set boolean value of given signal.
+Sets the value of a given boolean signal.
 #END#
 
 #LUA#
