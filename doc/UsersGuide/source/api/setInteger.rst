@@ -2,7 +2,7 @@
 setInteger
 ----------
 
-Set integer value of given signal.
+Sets the value of a given integer signal.
 #END#
 
 #LUA#
