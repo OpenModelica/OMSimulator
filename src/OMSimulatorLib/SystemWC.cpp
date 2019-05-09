@@ -460,11 +460,12 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
         }
 
         time = tNext;
+        bool emitted;
         if (isTopLevelSystem())
-          getModel()->emit(time);
+          getModel()->emit(time, false, &emitted);
         updateInputs(outputsGraph);
         if (isTopLevelSystem())
-          getModel()->emit(time);
+          getModel()->emit(time, emitted);
 
         if (cb)
           cb(modelName.c_str(), time, oms_status_ok);
@@ -597,11 +598,12 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
       }
 
       time = tNext;
+      bool emitted;
       if (isTopLevelSystem())
-        getModel()->emit(time);
+        getModel()->emit(time, false, &emitted);
       updateInputs(outputsGraph);
       if (isTopLevelSystem())
-        getModel()->emit(time);
+        getModel()->emit(time, emitted);
 
       if (cb)
         cb(modelName.c_str(), time, oms_status_ok);
@@ -809,11 +811,12 @@ oms_status_enu_t oms::SystemWC::stepUntilASSC(double stopTime, void (*cb)(const 
     }
 
     time = tNext;
+    bool emitted;
     if (isTopLevelSystem())
-      getModel()->emit(time);
+      getModel()->emit(time, false, &emitted);
     updateInputs(outputsGraph);
     if (isTopLevelSystem())
-      getModel()->emit(time);
+      getModel()->emit(time, emitted);
 
     if (cb)
       cb(modelName.c_str(), time, oms_status_ok);

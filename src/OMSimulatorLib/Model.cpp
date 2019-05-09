@@ -597,8 +597,11 @@ oms_status_enu_t oms::Model::registerSignalsForResultFile()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Model::emit(double time, bool force)
+oms_status_enu_t oms::Model::emit(double time, bool force, bool* emitted)
 {
+  if (emitted)
+    *emitted = false;
+
   if (!resultFile)
     return oms_status_ok;
   if (!force && time < lastEmit + loggingInterval)
@@ -610,6 +613,8 @@ oms_status_enu_t oms::Model::emit(double time, bool force)
 
   resultFile->emit(time);
   lastEmit = time;
+  if (emitted)
+    *emitted = true;
   return oms_status_ok;
 }
 
