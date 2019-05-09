@@ -57,8 +57,15 @@ oms::ComponentFMUCS::~ComponentFMUCS()
 
   if (!tempDir.empty() && filesystem::is_directory(tempDir))
   {
-    filesystem::remove_all(tempDir);
-    logDebug("removed working directory: \"" + tempDir + "\"");
+    try
+    {
+      filesystem::remove_all(tempDir);
+      logDebug("removed working directory: \"" + tempDir + "\"");
+    }
+    catch (const std::exception& e)
+    {
+      logWarning("working directory \"" + tempDir + "\" couldn't be removed: " + e.what());
+    }
   }
 }
 
