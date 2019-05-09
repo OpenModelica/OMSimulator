@@ -63,7 +63,7 @@ oms::ComponentFMUME::~ComponentFMUME()
     }
     catch (const std::exception& e)
     {
-      logWarning("working directory \"" + tempDir + "\" couldn't be removed: " + e.what());
+      logWarning("working directory \"" + tempDir + "\" couldn't be removed\n" + e.what());
     }
   }
 }
