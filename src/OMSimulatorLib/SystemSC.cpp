@@ -514,7 +514,7 @@ oms_status_enu_t oms::SystemSC::stepUntil(double stopTime, void (*cb)(const char
 
         updateInputs(outputsGraph);
         if (isTopLevelSystem())
-          getModel()->emit(time);
+          getModel()->emit(time, true);
       }
 
       // calculate next time step

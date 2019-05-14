@@ -606,6 +606,8 @@ oms_status_enu_t oms::Model::emit(double time, bool force, bool* emitted)
     return oms_status_ok;
   if (!force && time < lastEmit + loggingInterval)
     return oms_status_ok;
+  if (!force && time <= lastEmit)
+    return oms_status_ok;
 
   if (system)
     if (oms_status_ok != system->updateSignals(*resultFile))
