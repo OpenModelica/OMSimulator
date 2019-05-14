@@ -481,6 +481,9 @@ oms_status_enu_t oms::SystemSC::stepUntil(double stopTime, void (*cb)(const char
       // handle events
       if (callEventUpdate[i] || zero_crossing_event || (fmus[i]->getEventInfo()->nextEventTimeDefined && time == fmus[i]->getEventInfo()->nextEventTime))
       {
+        if (isTopLevelSystem())
+          getModel()->emit(time);
+
         fmistatus = fmi2_import_enter_event_mode(fmus[i]->getFMU());
         if (fmi2_status_ok != fmistatus) logError_FMUCall("fmi2_import_enter_event_mode", fmus[i]);
 
@@ -508,6 +511,10 @@ oms_status_enu_t oms::SystemSC::stepUntil(double stopTime, void (*cb)(const char
           int flag = CVodeReInit(solverData.cvode.mem, time, solverData.cvode.y);
           if (flag < 0) logError("SUNDIALS_ERROR: CVodeReInit() failed with flag = " + std::to_string(flag));
         }
+
+        updateInputs(outputsGraph);
+        if (isTopLevelSystem())
+          getModel()->emit(time);
       }
 
       // calculate next time step
