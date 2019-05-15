@@ -515,6 +515,10 @@ oms_status_enu_t oms::SystemSC::stepUntil(double stopTime, void (*cb)(const char
         updateInputs(outputsGraph);
         if (isTopLevelSystem())
           getModel()->emit(time, true);
+
+        // restart event iteration from the beginning
+        i=-1;
+        continue;
       }
 
       // calculate next time step
