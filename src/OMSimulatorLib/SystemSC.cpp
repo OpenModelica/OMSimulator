@@ -481,6 +481,12 @@ oms_status_enu_t oms::SystemSC::stepUntil(double stopTime, void (*cb)(const char
       // handle events
       if (callEventUpdate[i] || zero_crossing_event || (fmus[i]->getEventInfo()->nextEventTimeDefined && time == fmus[i]->getEventInfo()->nextEventTime))
       {
+        logDebug("Event detected in FMU \"" + std::string(fmus[i]->getFullCref()) + "\" at time=" + std::to_string(time));
+
+        // emit the left limit of the event (if it hasn't already been emitted)
+        if (isTopLevelSystem())
+          getModel()->emit(time, false);
+
         fmistatus = fmi2_import_enter_event_mode(fmus[i]->getFMU());
         if (fmi2_status_ok != fmistatus) logError_FMUCall("fmi2_import_enter_event_mode", fmus[i]);
 
@@ -508,6 +514,15 @@ oms_status_enu_t oms::SystemSC::stepUntil(double stopTime, void (*cb)(const char
           int flag = CVodeReInit(solverData.cvode.mem, time, solverData.cvode.y);
           if (flag < 0) logError("SUNDIALS_ERROR: CVodeReInit() failed with flag = " + std::to_string(flag));
         }
+
+        // emit the right limit of the event
+        updateInputs(outputsGraph);
+        if (isTopLevelSystem())
+          getModel()->emit(time, true);
+
+        // restart event iteration from the beginning
+        i=-1;
+        continue;
       }
 
       // calculate next time step
