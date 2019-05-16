@@ -5,6 +5,7 @@ DualMassOscillator.lua \
 import_export.lua \
 import_export.py \
 PI_Controller.lua \
+QuarterCarModel.lua \
 simulation.lua \
 simulation.py \
 table.lua \
