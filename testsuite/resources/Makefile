@@ -24,6 +24,10 @@ Modelica.Blocks.Sources.Clock \
 Modelica.Blocks.Sources.Constant \
 Modelica.Blocks.Sources.Sine \
 Modelica.Blocks.Sources.Step \
+QuarterCarModel.DisplacementDisplacement.Chassis \
+QuarterCarModel.DisplacementDisplacement.Wheel \
+QuarterCarModel.DisplacementForce.Chassis \
+QuarterCarModel.DisplacementForce.Wheel \
 tlm.adder \
 tlm.CoarseGrained1_1D \
 tlm.CoarseGrained2_1D \
@@ -36,6 +40,7 @@ tlm.mass \
 tlm.massSpring \
 tlm.source \
 tlm.UpperPendulum \
+tlm.UpperPendulumFG \
 tlm.UpperPendulumFG \
 
 .PHONY: all

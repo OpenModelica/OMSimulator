@@ -1,0 +1,200 @@
+checking build system type... x86_64-unknown-linux-gnu
+checking host system type... x86_64-pc-linux-gnu
+checking target system type... x86_64-pc-linux-gnu
+build_short: x86_64-linux-gnu
+host_short: x86_64-linux-gnu
+checking for x86_64-linux-gnu-gcc... x86_64-linux-gnu-gcc
+checking whether the C compiler works... yes
+checking for C compiler default output file name... a.out
+checking for suffix of executables... 
+checking whether we are cross compiling... no
+checking for suffix of object files... o
+checking whether we are using the GNU C compiler... yes
+checking whether x86_64-linux-gnu-gcc accepts -g... yes
+checking for x86_64-linux-gnu-gcc option to accept ISO C89... none needed
+checking how to run the C preprocessor... x86_64-linux-gnu-gcc -E
+checking whether make sets $(MAKE)... yes
+checking for cross-compilation flags... not cross-compiling
+checking if -Werror works... ok
+checking looking for --no-undefined... yes
+checking looking for dollars in identifiers... CPPFLAGS: -fdollars-in-identifiers
+checking for grep that handles long lines and -e... /bin/grep
+checking for egrep... /bin/grep -E
+checking for ANSI C header files... no
+checking for an ANSI C-conforming const... yes
+checking for sys/types.h... yes
+checking for sys/stat.h... yes
+checking for stdlib.h... yes
+checking for string.h... yes
+checking for memory.h... yes
+checking for strings.h... yes
+checking for inttypes.h... yes
+checking for stdint.h... yes
+checking for unistd.h... yes
+checking for size_t... yes
+checking for vprintf... yes
+checking for _doprnt... yes
+checking for strdup... yes
+checking for strerror... yes
+checking LAPACK/BLAS flags... not found
+checking for static pthreads... no
+checking for pthread_mutex_lock in -lpthread... yes
+checking for cos in -lm... yes
+checking for filesystem access... OK
+checking fmi2Functions.h usability... yes
+checking fmi2Functions.h presence... yes
+checking for fmi2Functions.h... yes
+checking fmi2FunctionTypes.h usability... yes
+checking fmi2FunctionTypes.h presence... yes
+checking for fmi2FunctionTypes.h... yes
+checking fmi2TypesPlatform.h usability... yes
+checking fmi2TypesPlatform.h presence... yes
+checking for fmi2TypesPlatform.h... yes
+configure: creating ./config.status
+config.status: creating Makefile
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o QuarterCarModel_DisplacementDisplacement_Wheel.o QuarterCarModel_DisplacementDisplacement_Wheel.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o QuarterCarModel_DisplacementDisplacement_Wheel_functions.o QuarterCarModel_DisplacementDisplacement_Wheel_functions.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o QuarterCarModel_DisplacementDisplacement_Wheel_records.o QuarterCarModel_DisplacementDisplacement_Wheel_records.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o QuarterCarModel_DisplacementDisplacement_Wheel_01exo.o QuarterCarModel_DisplacementDisplacement_Wheel_01exo.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o QuarterCarModel_DisplacementDisplacement_Wheel_02nls.o QuarterCarModel_DisplacementDisplacement_Wheel_02nls.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o QuarterCarModel_DisplacementDisplacement_Wheel_03lsy.o QuarterCarModel_DisplacementDisplacement_Wheel_03lsy.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o QuarterCarModel_DisplacementDisplacement_Wheel_04set.o QuarterCarModel_DisplacementDisplacement_Wheel_04set.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o QuarterCarModel_DisplacementDisplacement_Wheel_05evt.o QuarterCarModel_DisplacementDisplacement_Wheel_05evt.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o QuarterCarModel_DisplacementDisplacement_Wheel_06inz.o QuarterCarModel_DisplacementDisplacement_Wheel_06inz.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o QuarterCarModel_DisplacementDisplacement_Wheel_07dly.o QuarterCarModel_DisplacementDisplacement_Wheel_07dly.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o QuarterCarModel_DisplacementDisplacement_Wheel_08bnd.o QuarterCarModel_DisplacementDisplacement_Wheel_08bnd.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o QuarterCarModel_DisplacementDisplacement_Wheel_09alg.o QuarterCarModel_DisplacementDisplacement_Wheel_09alg.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o QuarterCarModel_DisplacementDisplacement_Wheel_10asr.o QuarterCarModel_DisplacementDisplacement_Wheel_10asr.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o QuarterCarModel_DisplacementDisplacement_Wheel_11mix.o QuarterCarModel_DisplacementDisplacement_Wheel_11mix.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o QuarterCarModel_DisplacementDisplacement_Wheel_12jac.o QuarterCarModel_DisplacementDisplacement_Wheel_12jac.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o QuarterCarModel_DisplacementDisplacement_Wheel_13opt.o QuarterCarModel_DisplacementDisplacement_Wheel_13opt.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o QuarterCarModel_DisplacementDisplacement_Wheel_14lnz.o QuarterCarModel_DisplacementDisplacement_Wheel_14lnz.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o QuarterCarModel_DisplacementDisplacement_Wheel_15syn.o QuarterCarModel_DisplacementDisplacement_Wheel_15syn.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o QuarterCarModel_DisplacementDisplacement_Wheel_16dae.o QuarterCarModel_DisplacementDisplacement_Wheel_16dae.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o QuarterCarModel_DisplacementDisplacement_Wheel_17inl.o QuarterCarModel_DisplacementDisplacement_Wheel_17inl.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o QuarterCarModel_DisplacementDisplacement_Wheel_init_fmu.o QuarterCarModel_DisplacementDisplacement_Wheel_init_fmu.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o QuarterCarModel_DisplacementDisplacement_Wheel_FMU.o QuarterCarModel_DisplacementDisplacement_Wheel_FMU.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o util/read_matlab4.o util/read_matlab4.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o util/read_csv.o util/read_csv.c
+util/read_csv.c: In function ‘read_csv_dataset_size’:
+util/read_csv.c:111:3: warning: ignoring return value of ‘fread’, declared with attribute warn_unused_result [-Wunused-result]
+   fread(buf, 1, 5, f);
+   ^~~~~~~~~~~~~~~~~~~
+util/read_csv.c:114:5: warning: ignoring return value of ‘fread’, declared with attribute warn_unused_result [-Wunused-result]
+     fread(&delim, 1, 1, f);
+     ^~~~~~~~~~~~~~~~~~~~~~
+util/read_csv.c: In function ‘read_csv_dataset_var’:
+util/read_csv.c:226:3: warning: ignoring return value of ‘fread’, declared with attribute warn_unused_result [-Wunused-result]
+   fread(buf, 1, 5, fin);
+   ^~~~~~~~~~~~~~~~~~~~~
+util/read_csv.c:229:5: warning: ignoring return value of ‘fread’, declared with attribute warn_unused_result [-Wunused-result]
+     fread(&delim, 1, 1, fin);
+     ^~~~~~~~~~~~~~~~~~~~~~~~
+util/read_csv.c: In function ‘read_csv’:
+util/read_csv.c:272:3: warning: ignoring return value of ‘fread’, declared with attribute warn_unused_result [-Wunused-result]
+   fread(buf, 1, 5, fin);
+   ^~~~~~~~~~~~~~~~~~~~~
+util/read_csv.c:275:5: warning: ignoring return value of ‘fread’, declared with attribute warn_unused_result [-Wunused-result]
+     fread(&delim, 1, 1, fin);
+     ^~~~~~~~~~~~~~~~~~~~~~~~
+In file included from QuarterCarModel_DisplacementDisplacement_Wheel_FMU.c:54:0:
+fmi-export/fmu2_model_interface.c.inc: In function ‘omc_assert_fmi_common’:
+fmi-export/fmu2_model_interface.c.inc:162:16: warning: passing argument 1 of ‘GC_vasprintf’ from incompatible pointer type [-Wincompatible-pointer-types]
+   GC_vasprintf(&str, msg, args);
+                ^
+In file included from openmodelica_func.h:52:0,
+                 from QuarterCarModel_DisplacementDisplacement_Wheel_FMU.c:10:
+util/modelica_string.h:71:5: note: expected ‘const char **’ but argument is of type ‘char **’
+ int GC_vasprintf(const char **strp, const char *fmt, va_list ap);
+     ^~~~~~~~~~~~
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o util/libcsv.o util/libcsv.c
+util/read_csv.c: At top level:
+cc1: warning: unrecognized command line option ‘-Wno-parentheses-equality’
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o gc/memory_pool.o gc/memory_pool.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o gc/omc_gc.o gc/omc_gc.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o util/base_array.o util/base_array.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o util/boolean_array.o util/boolean_array.c
+QuarterCarModel_DisplacementDisplacement_Wheel_FMU.c: At top level:
+cc1: warning: unrecognized command line option ‘-Wno-parentheses-equality’
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o util/omc_error.o util/omc_error.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o util/division.o util/division.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o util/generic_array.o util/generic_array.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o util/index_spec.o util/index_spec.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o util/integer_array.o util/integer_array.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o util/list.o util/list.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o util/modelica_string.o util/modelica_string.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o util/real_array.o util/real_array.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o util/ringbuffer.o util/ringbuffer.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o util/string_array.o util/string_array.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o util/utility.o util/utility.c
+util/utility.c: In function ‘OpenModelica_uriToFilename_impl’:
+util/utility.c:285:24: warning: format ‘%s’ expects argument of type ‘char *’, but argument 3 has type ‘modelica_string {aka void *}’ [-Wformat=]
+         sprintf(buf, "%s/%s", dir, resourcesDir);
+                       ~^
+                       %p
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o util/varinfo.o util/varinfo.c
+util/utility.c: At top level:
+cc1: warning: unrecognized command line option ‘-Wno-parentheses-equality’
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o util/ModelicaUtilities.o util/ModelicaUtilities.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o util/omc_msvc.o util/omc_msvc.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o util/simulation_options.o util/simulation_options.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o util/rational.o util/rational.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o util/modelica_string_lit.o util/modelica_string_lit.c
+util/ModelicaUtilities.c: In function ‘ModelicaError’:
+util/ModelicaUtilities.c:68:1: warning: ‘noreturn’ function does return
+ }
+ ^
+util/ModelicaUtilities.c: In function ‘ModelicaVFormatError’:
+util/ModelicaUtilities.c:72:1: warning: ‘noreturn’ function does return
+ }
+ ^
+util/ModelicaUtilities.c: In function ‘ModelicaFormatError’:
+util/ModelicaUtilities.c:79:1: warning: ‘noreturn’ function does return
+ }
+ ^
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o util/omc_init.o util/omc_init.c
+util/ModelicaUtilities.c: At top level:
+cc1: warning: unrecognized command line option ‘-Wno-parentheses-equality’
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o util/omc_mmap.o util/omc_mmap.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o math-support/pivot.o math-support/pivot.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o simulation/simulation_info_json.o simulation/simulation_info_json.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o simulation/options.o simulation/options.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o simulation/simulation_omc_assert.o simulation/simulation_omc_assert.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o simulation/omc_simulation_util.o simulation/omc_simulation_util.c
+simulation/simulation_info_json.c: In function ‘skipValue’:
+simulation/simulation_info_json.c:113:19: warning: comparison between pointer and zero character constant [-Wpointer-compare]
+         if (str+1 == '\0') {
+                   ^~
+simulation/simulation_info_json.c:113:13: note: did you mean to dereference the pointer?
+         if (str+1 == '\0') {
+             ^
+simulation/simulation_info_json.c: At top level:
+cc1: warning: unrecognized command line option ‘-Wno-parentheses-equality’
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o simulation/solver/delay.o simulation/solver/delay.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o simulation/solver/fmi_events.o simulation/solver/fmi_events.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o simulation/solver/omc_math.o simulation/solver/omc_math.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o simulation/solver/model_help.o simulation/solver/model_help.c
+simulation/solver/fmi_events.c: In function ‘checkForDiscreteChanges’:
+simulation/solver/fmi_events.c:79:74: warning: format ‘%s’ expects argument of type ‘char *’, but argument 5 has type ‘modelica_string {aka void *}’ [-Wformat=]
+         infoStreamPrint(LOG_EVENTS_V, 0, "discrete var changed: %s from %s to %s", modelData->stringVarsData[i].info.name, v1, v2);
+                                                                         ~^
+                                                                         %p
+simulation/solver/fmi_events.c:79:80: warning: format ‘%s’ expects argument of type ‘char *’, but argument 6 has type ‘modelica_string {aka void *}’ [-Wformat=]
+         infoStreamPrint(LOG_EVENTS_V, 0, "discrete var changed: %s from %s to %s", modelData->stringVarsData[i].info.name, v1, v2);
+                                                                               ~^
+                                                                               %p
+simulation/solver/fmi_events.c: At top level:
+cc1: warning: unrecognized command line option ‘-Wno-parentheses-equality’
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o simulation/solver/stateset.o simulation/solver/stateset.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o simulation/solver/synchronous.o simulation/solver/synchronous.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o simulation/solver/initialization/initialization.o simulation/solver/initialization/initialization.c
+x86_64-linux-gnu-gcc -Os -fno-stack-protector -Wno-parentheses-equality -Wno-unused-variable -fPIC -I/mnt/c/Users/lenna/Repositories/OpenModelica/build/include/omc/c/fmi -fdollars-in-identifiers -DCMINPACK_NO_DLL=1   -c -o meta/meta_modelica_catch.o meta/meta_modelica_catch.c
+mkdir -p ../binaries/linux64
+x86_64-linux-gnu-gcc -shared -o QuarterCarModel_DisplacementDisplacement_Wheel.so QuarterCarModel_DisplacementDisplacement_Wheel.o QuarterCarModel_DisplacementDisplacement_Wheel_functions.o QuarterCarModel_DisplacementDisplacement_Wheel_records.o QuarterCarModel_DisplacementDisplacement_Wheel_01exo.o QuarterCarModel_DisplacementDisplacement_Wheel_02nls.o QuarterCarModel_DisplacementDisplacement_Wheel_03lsy.o QuarterCarModel_DisplacementDisplacement_Wheel_04set.o QuarterCarModel_DisplacementDisplacement_Wheel_05evt.o QuarterCarModel_DisplacementDisplacement_Wheel_06inz.o QuarterCarModel_DisplacementDisplacement_Wheel_07dly.o QuarterCarModel_DisplacementDisplacement_Wheel_08bnd.o QuarterCarModel_DisplacementDisplacement_Wheel_09alg.o QuarterCarModel_DisplacementDisplacement_Wheel_10asr.o QuarterCarModel_DisplacementDisplacement_Wheel_11mix.o QuarterCarModel_DisplacementDisplacement_Wheel_12jac.o QuarterCarModel_DisplacementDisplacement_Wheel_13opt.o QuarterCarModel_DisplacementDisplacement_Wheel_14lnz.o QuarterCarModel_DisplacementDisplacement_Wheel_15syn.o QuarterCarModel_DisplacementDisplacement_Wheel_16dae.o QuarterCarModel_DisplacementDisplacement_Wheel_17inl.o QuarterCarModel_DisplacementDisplacement_Wheel_init_fmu.o QuarterCarModel_DisplacementDisplacement_Wheel_FMU.o ./util/read_matlab4.o ./util/read_csv.o ./util/libcsv.o gc/memory_pool.o gc/omc_gc.o ./util/base_array.o ./util/boolean_array.o ./util/omc_error.o ./util/division.o ./util/generic_array.o ./util/index_spec.o ./util/integer_array.o ./util/list.o ./util/modelica_string.o ./util/real_array.o ./util/ringbuffer.o ./util/string_array.o ./util/utility.o ./util/varinfo.o ./util/ModelicaUtilities.o ./util/omc_msvc.o ./util/simulation_options.o ./util/rational.o ./util/modelica_string_lit.o ./util/omc_init.o ./util/omc_mmap.o ./math-support/pivot.o ./simulation/simulation_info_json.o ./simulation/options.o ./simulation/simulation_omc_assert.o ./simulation/omc_simulation_util.o ./simulation/solver/delay.o ./simulation/solver/fmi_events.o ./simulation/solver/omc_math.o ./simulation/solver/model_help.o ./simulation/solver/stateset.o ./simulation/solver/synchronous.o ./simulation/solver/initialization/initialization.o ./meta/meta_modelica_catch.o  -L"/mnt/c/Users/lenna/Repositories/OMSimulator/testsuite/resources"  -Wl,-Bstatic  -Wl,-Bdynamic -shared -static-libgcc -lm -lpthread  -shared
+cp QuarterCarModel_DisplacementDisplacement_Wheel.so QuarterCarModel_DisplacementDisplacement_Wheel_FMU.libs ../binaries/linux64/
+head -n20 Makefile > ../resources/linux64.summary
+make distclean
+make[1]: Entering directory '/mnt/c/Users/lenna/Repositories/OMSimulator/testsuite/resources/QuarterCarModel_DisplacementDisplacement_Wheel.fmutmp/sources'
+rm -f QuarterCarModel_DisplacementDisplacement_Wheel.def QuarterCarModel_DisplacementDisplacement_Wheel.o QuarterCarModel_DisplacementDisplacement_Wheel.a QuarterCarModel_DisplacementDisplacement_Wheel.so  QuarterCarModel_DisplacementDisplacement_Wheel.o QuarterCarModel_DisplacementDisplacement_Wheel_functions.o QuarterCarModel_DisplacementDisplacement_Wheel_records.o QuarterCarModel_DisplacementDisplacement_Wheel_01exo.o QuarterCarModel_DisplacementDisplacement_Wheel_02nls.o QuarterCarModel_DisplacementDisplacement_Wheel_03lsy.o QuarterCarModel_DisplacementDisplacement_Wheel_04set.o QuarterCarModel_DisplacementDisplacement_Wheel_05evt.o QuarterCarModel_DisplacementDisplacement_Wheel_06inz.o QuarterCarModel_DisplacementDisplacement_Wheel_07dly.o QuarterCarModel_DisplacementDisplacement_Wheel_08bnd.o QuarterCarModel_DisplacementDisplacement_Wheel_09alg.o QuarterCarModel_DisplacementDisplacement_Wheel_10asr.o QuarterCarModel_DisplacementDisplacement_Wheel_11mix.o QuarterCarModel_DisplacementDisplacement_Wheel_12jac.o QuarterCarModel_DisplacementDisplacement_Wheel_13opt.o QuarterCarModel_DisplacementDisplacement_Wheel_14lnz.o QuarterCarModel_DisplacementDisplacement_Wheel_15syn.o QuarterCarModel_DisplacementDisplacement_Wheel_16dae.o QuarterCarModel_DisplacementDisplacement_Wheel_17inl.o QuarterCarModel_DisplacementDisplacement_Wheel_init_fmu.o QuarterCarModel_DisplacementDisplacement_Wheel_FMU.o ./util/read_matlab4.o ./util/read_csv.o ./util/libcsv.o gc/memory_pool.o gc/omc_gc.o ./util/base_array.o ./util/boolean_array.o ./util/omc_error.o ./util/division.o ./util/generic_array.o ./util/index_spec.o ./util/integer_array.o ./util/list.o ./util/modelica_string.o ./util/real_array.o ./util/ringbuffer.o ./util/string_array.o ./util/utility.o ./util/varinfo.o ./util/ModelicaUtilities.o ./util/omc_msvc.o ./util/simulation_options.o ./util/rational.o ./util/modelica_string_lit.o ./util/omc_init.o ./util/omc_mmap.o ./math-support/pivot.o ./simulation/simulation_info_json.o ./simulation/options.o ./simulation/simulation_omc_assert.o ./simulation/omc_simulation_util.o ./simulation/solver/delay.o ./simulation/solver/fmi_events.o ./simulation/solver/omc_math.o ./simulation/solver/model_help.o ./simulation/solver/stateset.o ./simulation/solver/synchronous.o ./simulation/solver/initialization/initialization.o ./meta/meta_modelica_catch.o 
+rm -f Makefile config.status config.log
+make[1]: Leaving directory '/mnt/c/Users/lenna/Repositories/OMSimulator/testsuite/resources/QuarterCarModel_DisplacementDisplacement_Wheel.fmutmp/sources'

@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  fmiVersion="2.0"
+  modelName="QuarterCarModel.DisplacementForce.Wheel"
+  guid="{710a4fcc-1ed4-43e1-8d4a-d45f40e7e065}"
+  description=""
+  generationTool="OpenModelica Compiler OMCompiler v1.14.0-dev.257+g5daaf9ba0"
+  generationDateAndTime="2019-05-16T11:03:39Z"
+  variableNamingConvention="structured"
+  numberOfEventIndicators="0">
+  <ModelExchange
+    modelIdentifier="QuarterCarModel_DisplacementForce_Wheel">
+    <SourceFiles>
+      <File name="QuarterCarModel_DisplacementForce_Wheel.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_functions.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_records.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_01exo.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_02nls.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_03lsy.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_04set.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_05evt.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_06inz.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_07dly.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_08bnd.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_09alg.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_10asr.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_11mix.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_12jac.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_13opt.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_14lnz.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_15syn.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_16dae.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_17inl.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_init_fmu.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_FMU.c" />
+      <File name="./util/read_matlab4.c" />
+      <File name="./util/read_csv.c" />
+      <File name="./util/libcsv.c" />
+      <File name="gc/memory_pool.c" />
+      <File name="gc/omc_gc.c" />
+      <File name="./util/base_array.c" />
+      <File name="./util/boolean_array.c" />
+      <File name="./util/omc_error.c" />
+      <File name="./util/division.c" />
+      <File name="./util/generic_array.c" />
+      <File name="./util/index_spec.c" />
+      <File name="./util/integer_array.c" />
+      <File name="./util/list.c" />
+      <File name="./util/modelica_string.c" />
+      <File name="./util/real_array.c" />
+      <File name="./util/ringbuffer.c" />
+      <File name="./util/string_array.c" />
+      <File name="./util/utility.c" />
+      <File name="./util/varinfo.c" />
+      <File name="./util/ModelicaUtilities.c" />
+      <File name="./util/omc_msvc.c" />
+      <File name="./util/simulation_options.c" />
+      <File name="./util/rational.c" />
+      <File name="./util/modelica_string_lit.c" />
+      <File name="./util/omc_init.c" />
+      <File name="./util/omc_mmap.c" />
+      <File name="./math-support/pivot.c" />
+      <File name="./simulation/simulation_info_json.c" />
+      <File name="./simulation/options.c" />
+      <File name="./simulation/simulation_omc_assert.c" />
+      <File name="./simulation/omc_simulation_util.c" />
+      <File name="./simulation/solver/delay.c" />
+      <File name="./simulation/solver/fmi_events.c" />
+      <File name="./simulation/solver/omc_math.c" />
+      <File name="./simulation/solver/model_help.c" />
+      <File name="./simulation/solver/stateset.c" />
+      <File name="./simulation/solver/synchronous.c" />
+      <File name="./simulation/solver/initialization/initialization.c" />
+      <File name="./meta/meta_modelica_catch.c" />
+    </SourceFiles>
+  </ModelExchange>
+  <CoSimulation
+    modelIdentifier="QuarterCarModel_DisplacementForce_Wheel"
+    needsExecutionTool="false"
+    canHandleVariableCommunicationStepSize="true"
+    canInterpolateInputs="false"
+    maxOutputDerivativeOrder="0"
+    canRunAsynchronuously = "false"
+    canBeInstantiatedOnlyOncePerProcess="false"
+    canNotUseMemoryManagementFunctions="false"
+    canGetAndSetFMUstate="false"
+    canSerializeFMUstate="false"
+    >
+    <SourceFiles>
+      <File name="QuarterCarModel_DisplacementForce_Wheel.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_functions.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_records.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_01exo.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_02nls.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_03lsy.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_04set.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_05evt.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_06inz.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_07dly.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_08bnd.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_09alg.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_10asr.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_11mix.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_12jac.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_13opt.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_14lnz.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_15syn.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_16dae.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_17inl.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_init_fmu.c" />
+      <File name="QuarterCarModel_DisplacementForce_Wheel_FMU.c" />
+      <File name="./util/read_matlab4.c" />
+      <File name="./util/read_csv.c" />
+      <File name="./util/libcsv.c" />
+      <File name="gc/memory_pool.c" />
+      <File name="gc/omc_gc.c" />
+      <File name="./util/base_array.c" />
+      <File name="./util/boolean_array.c" />
+      <File name="./util/omc_error.c" />
+      <File name="./util/division.c" />
+      <File name="./util/generic_array.c" />
+      <File name="./util/index_spec.c" />
+      <File name="./util/integer_array.c" />
+      <File name="./util/list.c" />
+      <File name="./util/modelica_string.c" />
+      <File name="./util/real_array.c" />
+      <File name="./util/ringbuffer.c" />
+      <File name="./util/string_array.c" />
+      <File name="./util/utility.c" />
+      <File name="./util/varinfo.c" />
+      <File name="./util/ModelicaUtilities.c" />
+      <File name="./util/omc_msvc.c" />
+      <File name="./util/simulation_options.c" />
+      <File name="./util/rational.c" />
+      <File name="./util/modelica_string_lit.c" />
+      <File name="./util/omc_init.c" />
+      <File name="./util/omc_mmap.c" />
+      <File name="./math-support/pivot.c" />
+      <File name="./simulation/simulation_info_json.c" />
+      <File name="./simulation/options.c" />
+      <File name="./simulation/simulation_omc_assert.c" />
+      <File name="./simulation/omc_simulation_util.c" />
+      <File name="./simulation/solver/delay.c" />
+      <File name="./simulation/solver/fmi_events.c" />
+      <File name="./simulation/solver/omc_math.c" />
+      <File name="./simulation/solver/model_help.c" />
+      <File name="./simulation/solver/stateset.c" />
+      <File name="./simulation/solver/synchronous.c" />
+      <File name="./simulation/solver/initialization/initialization.c" />
+      <File name="./meta/meta_modelica_catch.c" />
+    </SourceFiles>
+  </CoSimulation>
+  <LogCategories>
+    <Category name="logEvents" />
+    <Category name="logSingularLinearSystems" />
+    <Category name="logNonlinearSystems" />
+    <Category name="logDynamicStateSelection" />
+    <Category name="logStatusWarning" />
+    <Category name="logStatusDiscard" />
+    <Category name="logStatusError" />
+    <Category name="logStatusFatal" />
+    <Category name="logStatusPending" />
+    <Category name="logAll" />
+    <Category name="logFmi2Call" />
+  </LogCategories>
+  <DefaultExperiment startTime="0.0" stopTime="1.0" tolerance="1e-06"/>
+  <ModelVariables>
+  <!-- Index of variable = "1" -->
+  <ScalarVariable
+    name="der_z_w"
+    valueReference="0"
+    variability="continuous"
+    causality="local"
+    initial="exact">
+    <Real start="0.0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "2" -->
+  <ScalarVariable
+    name="z_w"
+    valueReference="1"
+    variability="continuous"
+    causality="local"
+    initial="exact">
+    <Real start="0.0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "3" -->
+  <ScalarVariable
+    name="der(der_z_w)"
+    valueReference="2"
+    variability="continuous"
+    causality="local"
+    initial="calculated">
+    <Real derivative="1"/>
+  </ScalarVariable>
+  <!-- Index of variable = "4" -->
+  <ScalarVariable
+    name="der(z_w)"
+    valueReference="3"
+    variability="continuous"
+    causality="local"
+    initial="calculated">
+    <Real derivative="2"/>
+  </ScalarVariable>
+  <!-- Index of variable = "5" -->
+  <ScalarVariable
+    name="F"
+    valueReference="4"
+    variability="continuous"
+    causality="output"
+    initial="calculated">
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "6" -->
+  <ScalarVariable
+    name="der_z_c"
+    valueReference="5"
+    variability="continuous"
+    causality="input"
+    >
+    <Real start="0.0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "7" -->
+  <ScalarVariable
+    name="z"
+    valueReference="6"
+    variability="continuous"
+    causality="input"
+    >
+    <Real start="0.0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "8" -->
+  <ScalarVariable
+    name="z_c"
+    valueReference="7"
+    variability="continuous"
+    causality="input"
+    >
+    <Real start="0.0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "9" -->
+  <ScalarVariable
+    name="d_c"
+    valueReference="8"
+    variability="fixed"
+    causality="parameter"
+    initial="exact">
+    <Real start="1000.0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "10" -->
+  <ScalarVariable
+    name="k_c"
+    valueReference="9"
+    variability="fixed"
+    causality="parameter"
+    initial="exact">
+    <Real start="15000.0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "11" -->
+  <ScalarVariable
+    name="k_w"
+    valueReference="10"
+    variability="fixed"
+    causality="parameter"
+    initial="exact">
+    <Real start="150000.0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "12" -->
+  <ScalarVariable
+    name="m_w"
+    valueReference="11"
+    variability="fixed"
+    causality="parameter"
+    initial="exact">
+    <Real start="40.0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "13" -->
+  <ScalarVariable
+    name="_D_outputAlias_F"
+    valueReference="4"
+    variability="continuous"
+    causality="local"
+    >
+    <Real/>
+  </ScalarVariable>
+  </ModelVariables>
+  <ModelStructure>
+    <Outputs>
+      <Unknown index="5" dependencies="1 2 6 8" dependenciesKind="dependent dependent dependent dependent" />
+    </Outputs>
+    <Derivatives>
+      <Unknown index="3" dependencies="1 2 6 7 8" dependenciesKind="dependent dependent dependent dependent dependent" />
+      <Unknown index="4" dependencies="1" dependenciesKind="dependent" />
+    </Derivatives>
+  </ModelStructure>
+</fmiModelDescription>
