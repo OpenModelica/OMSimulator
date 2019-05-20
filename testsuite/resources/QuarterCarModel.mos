@@ -1,0 +1,12 @@
+loadModel(Modelica); getErrorString();
+loadFile("QuarterCarModel.mo"); getErrorString();
+
+buildModelFMU(QuarterCarModel.DisplacementDisplacement.Chassis, version="2.0", fmuType="me_cs", platforms={"x86_64-linux-gnu"}); getErrorString();
+system("zip -qd QuarterCarModel.DisplacementDisplacement.Chassis.fmu sources/* && unzip QuarterCarModel.DisplacementDisplacement.Chassis.fmu -d QuarterCarModel.DisplacementDisplacement.Chassis/");
+buildModelFMU(QuarterCarModel.DisplacementDisplacement.Wheel, version="2.0", fmuType="me_cs", platforms={"x86_64-linux-gnu"}); getErrorString();
+system("zip -qd QuarterCarModel.DisplacementDisplacement.Wheel.fmu sources/* && unzip QuarterCarModel.DisplacementDisplacement.Wheel.fmu -d QuarterCarModel.DisplacementDisplacement.Wheel/");
+
+buildModelFMU(QuarterCarModel.DisplacementForce.Chassis, version="2.0", fmuType="me_cs", platforms={"x86_64-linux-gnu"}); getErrorString();
+system("zip -qd QuarterCarModel.DisplacementForce.Chassis.fmu sources/* && unzip QuarterCarModel.DisplacementForce.Chassis.fmu -d QuarterCarModel.DisplacementForce.Chassis/");
+buildModelFMU(QuarterCarModel.DisplacementForce.Wheel, version="2.0", fmuType="me_cs", platforms={"x86_64-linux-gnu"}); getErrorString();
+system("zip -qd QuarterCarModel.DisplacementForce.Wheel.fmu sources/* && unzip QuarterCarModel.DisplacementForce.Wheel.fmu -dQuarterCarModel.DisplacementForce.Wheel/");

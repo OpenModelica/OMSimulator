@@ -1,0 +1,30 @@
+{"format":"Transformational debugger info","version":1,
+"info":{"name":"QuarterCarModel.DisplacementDisplacement.Wheel","description":""},
+"variables":{
+"$outputAlias_der_z_w":{"comment":"","kind":"state","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"/mnt/c/Users/lenna/Repositories/OMSimulator/testsuite/resources/QuarterCarModel.mo","lineStart":108,"lineEnd":109,"colStart":7,"colEnd":77},"within":["Real"]}},
+"der($outputAlias_der_z_w)":{"comment":"","kind":"derivative","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"/mnt/c/Users/lenna/Repositories/OMSimulator/testsuite/resources/QuarterCarModel.mo","lineStart":108,"lineEnd":109,"colStart":7,"colEnd":77},"within":["Real"]}},
+"der_z_c":{"comment":"","kind":"variable","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"/mnt/c/Users/lenna/Repositories/OMSimulator/testsuite/resources/QuarterCarModel.mo","lineStart":104,"lineEnd":105,"colStart":7,"colEnd":79},"within":["Real"]}},
+"z":{"comment":"","kind":"variable","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"/mnt/c/Users/lenna/Repositories/OMSimulator/testsuite/resources/QuarterCarModel.mo","lineStart":110,"lineEnd":113,"colStart":7,"colEnd":31},"within":["Real"]}},
+"z_c":{"comment":"","kind":"variable","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"/mnt/c/Users/lenna/Repositories/OMSimulator/testsuite/resources/QuarterCarModel.mo","lineStart":102,"lineEnd":103,"colStart":7,"colEnd":77},"within":["Real"]}},
+"z_w":{"comment":"","kind":"variable","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"/mnt/c/Users/lenna/Repositories/OMSimulator/testsuite/resources/QuarterCarModel.mo","lineStart":106,"lineEnd":107,"colStart":7,"colEnd":75},"within":["Real"]}},
+"der_z_c":{"comment":"","kind":"variable","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"/mnt/c/Users/lenna/Repositories/OMSimulator/testsuite/resources/QuarterCarModel.mo","lineStart":104,"lineEnd":105,"colStart":7,"colEnd":79},"within":["Real"]}},
+"z_c":{"comment":"","kind":"variable","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"/mnt/c/Users/lenna/Repositories/OMSimulator/testsuite/resources/QuarterCarModel.mo","lineStart":102,"lineEnd":103,"colStart":7,"colEnd":77},"within":["Real"]}},
+"d_c":{"comment":"","kind":"parameter","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"/mnt/c/Users/lenna/Repositories/OMSimulator/testsuite/resources/QuarterCarModel.mo","lineStart":100,"lineEnd":100,"colStart":7,"colEnd":31},"within":["Real"]}},
+"k_w":{"comment":"","kind":"parameter","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"/mnt/c/Users/lenna/Repositories/OMSimulator/testsuite/resources/QuarterCarModel.mo","lineStart":98,"lineEnd":98,"colStart":7,"colEnd":33},"within":["Real"]}},
+"m_w":{"comment":"","kind":"parameter","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"/mnt/c/Users/lenna/Repositories/OMSimulator/testsuite/resources/QuarterCarModel.mo","lineStart":97,"lineEnd":97,"colStart":7,"colEnd":30},"within":["Real"]}}
+},
+"equations":[{"eqIndex":0,"tag":"dummy"},
+{"eqIndex":1,"section":"initial","tag":"assign","defines":["$outputAlias_z_w"],"uses":["$START.$outputAlias_z_w"],"equation":["$START.$outputAlias_z_w"],"source":{"info":{"file":"","lineStart":0,"lineEnd":0,"colStart":0,"colEnd":0}}},
+{"eqIndex":2,"tag":"alias","equation":[10],"section":"initial"},
+{"eqIndex":3,"section":"initial","tag":"assign","defines":["$outputAlias_der_z_w"],"uses":["$START.$outputAlias_der_z_w"],"equation":["$START.$outputAlias_der_z_w"],"source":{"info":{"file":"","lineStart":0,"lineEnd":0,"colStart":0,"colEnd":0}}},
+{"eqIndex":4,"tag":"alias","equation":[9],"section":"initial"},
+{"eqIndex":5,"tag":"alias","equation":[8],"section":"initial"},
+{"eqIndex":6,"tag":"alias","equation":[7],"section":"initial"},
+{"eqIndex":7,"section":"regular","tag":"assign","defines":["der($outputAlias_z_w)"],"uses":["$outputAlias_der_z_w"],"equation":["$outputAlias_der_z_w"],"source":{"info":{"file":"/mnt/c/Users/lenna/Repositories/OMSimulator/testsuite/resources/QuarterCarModel.mo","lineStart":115,"lineEnd":115,"colStart":7,"colEnd":25},"within":["QuarterCarModel.DisplacementDisplacement.Wheel"]}},
+{"eqIndex":8,"section":"regular","tag":"assign","defines":["der($outputAlias_der_z_w)"],"uses":["m_w","$outputAlias_der_z_w","der_z_c","d_c","z_c","k_c","$outputAlias_z_w","z","k_w"],"equation":["(k_w * (z - $outputAlias_z_w) + k_c * (z_c - $outputAlias_z_w) + d_c * (der_z_c - $outputAlias_der_z_w)) / m_w"],"source":{"info":{"file":"/mnt/c/Users/lenna/Repositories/OMSimulator/testsuite/resources/QuarterCarModel.mo","lineStart":116,"lineEnd":116,"colStart":7,"colEnd":79},"within":["QuarterCarModel.DisplacementDisplacement.Wheel"]}},
+{"eqIndex":9,"section":"regular","tag":"assign","defines":["der_z_w"],"uses":["$outputAlias_der_z_w"],"equation":["$outputAlias_der_z_w"],"source":{"info":{"file":"","lineStart":0,"lineEnd":0,"colStart":0,"colEnd":0}}},
+{"eqIndex":10,"section":"regular","tag":"assign","defines":["z_w"],"uses":["$outputAlias_z_w"],"equation":["$outputAlias_z_w"],"source":{"info":{"file":"","lineStart":0,"lineEnd":0,"colStart":0,"colEnd":0}}}
+],
+"functions":[
+]
+}
