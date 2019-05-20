@@ -192,6 +192,9 @@ oms_status_enu_t oms::SystemWC::initialize()
     if (oms_status_ok != component.second->initialize())
       return oms_status_error;
 
+  if (solverMethod == oms_solver_wc_mav || solverMethod == oms_solver_wc_mav2)
+    stepSize = initialStepSize;
+
   return oms_status_ok;
 }
 
@@ -247,7 +250,6 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
   if (solverMethod == oms_solver_wc_mav || solverMethod == oms_solver_wc_mav2)
   {
     logDebug("DEBUGGING: Entering VariableStep solver");
-    stepSize = initialStepSize;
     std::map<ComRef, Component*> FMUcomponents;
     std::map<ComRef, Component*> canGetAndSetStateFMUcomponents;
     std::map<ComRef, Component*> noneFMUcomponents;
