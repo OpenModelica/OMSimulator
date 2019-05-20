@@ -252,43 +252,32 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
     logDebug("DEBUGGING: Entering VariableStep solver");
     std::map<ComRef, Component*> FMUcomponents;
     std::map<ComRef, Component*> canGetAndSetStateFMUcomponents;
-    std::map<ComRef, Component*> noneFMUcomponents;
     std::vector<double> inputVectEnd;
     std::vector<double> outputVectEnd;
     std::vector<double> inputVect;
     std::vector<double> outputVect;
-    bool doDoubleStep = (solverMethod == oms_solver_wc_mav2); //Should we double step or not?
+    bool doDoubleStep = (solverMethod == oms_solver_wc_mav2); // Should we double step or not?
 
     for (const auto& component : getComponents()) // Map the FMUs.
     {
-      if (oms_component_fmu == component.second->getType()) // Check that its an FMU
-      {
-        if (dynamic_cast<ComponentFMUCS*>(component.second)->getFMUInfo()->getCanGetAndSetFMUstate())
-          canGetAndSetStateFMUcomponents.insert(std::pair<ComRef, Component*>(component.first,component.second));
-        else
-          FMUcomponents.insert(std::pair<ComRef, Component*>(component.first,component.second));
-      }
+      if (component.second->getCanGetAndSetState())
+        canGetAndSetStateFMUcomponents.insert(std::pair<ComRef, Component*>(component.first, component.second));
       else
-        noneFMUcomponents.insert(std::pair<ComRef, Component*>(component.first,component.second));
+        FMUcomponents.insert(std::pair<ComRef, Component*>(component.first, component.second));
     }
 
     logDebug("DEBUGGING: canGetAndSetStateFMUcomponents is size: " + std::to_string(canGetAndSetStateFMUcomponents.size()));
     logDebug("DEBUGGING: FMUcomponents is size: " + std::to_string(FMUcomponents.size()));
-    logDebug("DEBUGGING: noneFMUcomponents is size: " + std::to_string(noneFMUcomponents.size()));
 
-    // Lets make sure we can reset FMUs
+    // make sure we can reset FMUs
     if (canGetAndSetStateFMUcomponents.size() == 0)
-      return logError("If no FMUs can get/set states, Variable Step solver can't be used.");
+      return logError("The adaptive step solver requires components (e.g. FMUs) that can rollback their states. None of the involved components in this model provide this functionality.");
 
-    // Lets check if we should double step or not.
+    // check if we can double step
     if (FMUcomponents.size() != 0 && doDoubleStep)
-    {
-      doDoubleStep = false;
-      logWarning("Found FMUs that can't get/set states, will not double step.");
-    }
+      return logError("The double step approach requires that all the components can rollback their states. At least one component doesn't provide this functionality.");
 
     int howManySteps = doDoubleStep ? 3 : 1;
-
     while (time < stopTime)
     {
       if (stepSize > maximumStepSize) stepSize = maximumStepSize;
@@ -304,29 +293,15 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
       logDebug("doStep: " + std::to_string(time) + " -> " + std::to_string(tNext));
 
       oms_status_enu_t status;
+
+      // Get states of FMUs that can get state
+      for (const auto& component : canGetAndSetStateFMUcomponents)
+        component.second->saveState();
+
       for (int whichStepIndex = 0; whichStepIndex < howManySteps; whichStepIndex++)
       {
-        for (const auto& component : canGetAndSetStateFMUcomponents) // Get states and stepUntil for FMUs that can get state.
-        {
-          if (whichStepIndex == 0) // first time get the state vector so we can rollback if needed.
-          {
-            fmi2_import_t* fmu_in = dynamic_cast<ComponentFMUCS*>(component.second)->getFMU();
-            fmi2_FMU_state_t s = NULL;
-            fmi_status = fmi2_import_get_fmu_state(fmu_in, &s);
-            sVect.push_back(s);
-            fmiImportVect.push_back(fmu_in);
-          }
-
-          status = component.second->stepUntil(tNext);
-          if (oms_status_ok != status)
-          {
-            if (cb)
-              cb(modelName.c_str(), tNext, status);
-            return status;
-          }
-        }
-
-        for (const auto& component : noneFMUcomponents) // stepUntil for noneFmus
+        // stepUntil for FMUs that can get state
+        for (const auto& component : canGetAndSetStateFMUcomponents)
         {
           status = component.second->stepUntil(tNext);
           if (oms_status_ok != status)
@@ -337,7 +312,8 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
           }
         }
 
-        for (const auto& subsystem : getSubSystems()) // stepUntill for subsystems of ME FMUs, TODO: Fix rollback here too.
+        // stepUntill for subsystems (ME-FMUs), TODO: Fix rollback here too.
+        for (const auto& subsystem : getSubSystems())
         {
           status = subsystem.second->stepUntil(tNext, NULL);
           if (oms_status_ok != status)
@@ -354,13 +330,15 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
         {
           if (oms_status_ok != getInputAndOutput(outputsGraph,inputVect,outputVect,canGetAndSetStateFMUcomponents))
             return oms_status_error;
+
           if (doDoubleStep) // Rollback for small steppies.
           {
-            //Fix fmus
-            for (int i=0; i<fmiImportVect.size(); ++i) // Reset all FMU states
+            // Rollback all FMUs
+            for (const auto& component : canGetAndSetStateFMUcomponents)
             {
-              fmi_status = fmi2_import_set_fmu_state(fmiImportVect[i], sVect[i]);
+              component.second->restoreState();
             }
+
             //Fix time
             time = tNext-stepSize;
             for (const auto& component : getComponents())
@@ -379,8 +357,8 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
             return oms_status_error;
       }
       logDebug("DEBUGGING: Lets do Error control");
-      logDebug("DEBUGGING: inputVect is size: "+std::to_string(inputVect.size()));
-      logDebug("DEBUGGING: outputVect is size:"+std::to_string(outputVect.size()));
+      logDebug("DEBUGGING: inputVect is size:  " + std::to_string(inputVect.size()));
+      logDebug("DEBUGGING: outputVect is size: " + std::to_string(outputVect.size()));
       if (inputVect.size() != outputVect.size())
         return oms_status_error;
 
@@ -388,7 +366,7 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
       double maxChange = 1.5;
       double minChange = 0.5;
       maxError = 0.0;
-      for (int n=0; n < inputVect.size();n++) // Calculate error in the FMUs we do error_control on.
+      for (int n=0; n < inputVect.size(); n++) // Calculate error in the FMUs we do error_control on.
       {
         double error;
         if (!doDoubleStep)
@@ -410,21 +388,16 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
       logDebug("DEBUGGING: fixRatio is: " + std::to_string(fixRatio));
       if (fixRatio < 1.0 && minimumStepSize < stepSize) //Going to rollback.
       {
-        //Fix fmus
-        for (int i=0; i<fmiImportVect.size(); ++i) // Reset all FMU states
+        // Rollback FMUs
+        for (const auto& component : canGetAndSetStateFMUcomponents)
         {
-          fmi_status = fmi2_import_set_fmu_state(fmiImportVect[i], sVect[i]);
+          component.second->restoreState();
         }
-        //Fix time
+
+        // Fix time
         time = tNext-stepSize;
-        for (const auto& component : getComponents())
-        {
-          if (oms_component_fmu == component.second->getType())
-          {
-            dynamic_cast<ComponentFMUCS*>(component.second)->setFmuTime(time);
-          }
-        }
-        //Fix Steptime.
+
+        // Fix stepSize
         fixRatio = fixRatio*safety_factor;
         if (fixRatio < minChange) fixRatio = minChange;
         stepSize = stepSize*fixRatio;
@@ -489,13 +462,10 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
         stepSize = stepSize*fixRatio;
       }
 
-      for (int kkl=0; kkl < sVect.size(); kkl++)
+      for (const auto& component : canGetAndSetStateFMUcomponents)
       {
-        fmi2_import_free_fmu_state(fmiImportVect[kkl], &sVect[kkl]);
+        component.second->freeState();
       }
-      fmiImportVect.clear();
-      sVect.clear();
-
       if (isTopLevelSystem() && getModel()->cancelSimulation())
       {
         cb(modelName.c_str(), time, oms_status_discard);
@@ -730,7 +700,7 @@ oms_status_enu_t oms::SystemWC::stepUntilASSC(double stopTime, void (*cb)(const 
       }
 
       //check values for threshold crossing detection
-      for (const auto& pair:stepSizeConfiguration.getStaticThresholds())
+      for (const auto& pair : stepSizeConfiguration.getStaticThresholds())
       {
         double sigval;
         this->getReal(pair.first,sigval);
@@ -746,7 +716,7 @@ oms_status_enu_t oms::SystemWC::stepUntilASSC(double stopTime, void (*cb)(const 
         }
       }
 
-      for (const auto& pair:stepSizeConfiguration.getDynamicThresholds())
+      for (const auto& pair : stepSizeConfiguration.getDynamicThresholds())
       {
         double sigval;
         this -> getReal(pair.first,sigval);

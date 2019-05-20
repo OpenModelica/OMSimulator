@@ -93,6 +93,11 @@ namespace oms
     oms_status_enu_t addSignalsToResults(const char* regex);
     oms_status_enu_t removeSignalsFromResults(const char* regex);
 
+    bool getCanGetAndSetState() {return getFMUInfo()->getCanGetAndSetFMUstate();}
+    oms_status_enu_t saveState();
+    oms_status_enu_t freeState();
+    oms_status_enu_t restoreState();
+
   protected:
     ComponentFMUCS(const ComRef& cref, System* parentSystem, const std::string& fmuPath);
 
@@ -122,6 +127,9 @@ namespace oms
     std::unordered_map<unsigned int /*result file var ID*/, unsigned int /*allVariables ID*/> resultFileMapping;
 
     double time;
+
+    fmi2_FMU_state_t fmuState = NULL;
+    double fmuStateTime;
   };
 }
 

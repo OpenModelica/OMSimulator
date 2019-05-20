@@ -93,6 +93,8 @@ namespace oms
     fmi2_import_t* getFMU() {return fmu;}
     fmi2_event_info_t* getEventInfo() {return &eventInfo;}
 
+    bool getCanGetAndSetState() {return getFMUInfo()->getCanGetAndSetFMUstate();}
+
   protected:
     ComponentFMUME(const ComRef& cref, System* parentSystem, const std::string& fmuPath);
 
