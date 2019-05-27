@@ -220,61 +220,83 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
 
 oms_status_enu_t oms::Scope::setTempDirectory(const std::string& newTempDir)
 {
-  if (!filesystem::is_directory(newTempDir))
-  {
-    if (!filesystem::create_directory(newTempDir))
-      return logError("Changing temp directory to \"" + newTempDir + "\" failed");
-    else if (!Flags::SuppressPath())
-      logInfo("New temp directory has been created: \"" + newTempDir + "\"");
-  }
-
-  filesystem::path path(newTempDir.c_str());
   try
   {
-    path = oms_canonical(path);
+    if (!filesystem::is_directory(newTempDir))
+    {
+      if (!filesystem::create_directory(newTempDir))
+        return logError("Changing temp directory to \"" + newTempDir + "\" failed");
+      else if (!Flags::SuppressPath())
+        logInfo("New temp directory has been created: \"" + newTempDir + "\"");
+    }
+
+    filesystem::path path(newTempDir.c_str());
+    try
+    {
+      path = oms_canonical(path);
+    }
+    catch (std::exception e)
+    {
+      // do nothing, canonical fails if the directory contains a junction or a symlink!
+      // https://svn.boost.org/trac10/ticket/11138
+    }
+
+    this->tempDir = path.string();
+
+    if (!Flags::SuppressPath())
+      logInfo("Set temp directory to    \"" + this->tempDir + "\"");
+
+    return oms_status_ok;
   }
-  catch (std::exception e)
+  catch (const std::exception& e)
   {
-    // do nothing, canonical fails if the directory contains a junction or a symlink!
-    // https://svn.boost.org/trac10/ticket/11138
+    return logError("failed to set temp directory to \"" + newTempDir + "\": " + e.what());
   }
-
-  this->tempDir = path.string();
-
-  if (!Flags::SuppressPath())
-    logInfo("Set temp directory to    \"" + this->tempDir + "\"");
-
-  return oms_status_ok;
 }
 
 oms_status_enu_t oms::Scope::setWorkingDirectory(const std::string& newWorkingDir)
 {
-  if (!filesystem::is_directory(newWorkingDir))
-    return logError("Set working directory to \"" + newWorkingDir + "\" failed");
-
-  filesystem::path path(newWorkingDir.c_str());
   try
   {
-    path = oms_canonical(path);
+    if (!filesystem::is_directory(newWorkingDir))
+      return logError("Set working directory to \"" + newWorkingDir + "\" failed");
+
+    filesystem::path path(newWorkingDir.c_str());
+    try
+    {
+      path = oms_canonical(path);
+    }
+    catch (const std::exception&)
+    {
+      // do nothing, canonical fails if the directory contains a junction or a symlink!
+      // https://svn.boost.org/trac10/ticket/11138
+    }
+
+    filesystem::current_path(path);
+
+    if (!Flags::SuppressPath())
+      logInfo("Set working directory to \"" + path.string() + "\"");
+
+    return oms_status_ok;
   }
-  catch (std::exception e)
+  catch (const std::exception& e)
   {
-    // do nothing, canonical fails if the directory contains a junction or a symlink!
-    // https://svn.boost.org/trac10/ticket/11138
+    return logError("failed to set working directory to \"" + newWorkingDir + "\": " + e.what());
   }
-
-  filesystem::current_path(path);
-
-  if (!Flags::SuppressPath())
-    logInfo("Set working directory to \"" + path.string() + "\"");
-
-  return oms_status_ok;
 }
 
 std::string oms::Scope::getWorkingDirectory()
 {
-  filesystem::path workingDir(filesystem::current_path());
-  return workingDir.string();
+  try
+  {
+    filesystem::path workingDir(filesystem::current_path());
+    return workingDir.string();
+  }
+  catch (const std::exception& e)
+  {
+    logError("failed to get working directory: " + std::string(e.what()));
+    return "";
+  }
 }
 
 oms_status_enu_t oms::Scope::getElement(const oms::ComRef& cref, oms::Element** element)
