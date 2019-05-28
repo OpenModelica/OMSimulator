@@ -61,6 +61,7 @@ oms::Flags::~Flags()
 
 void oms::Flags::setDefaults()
 {
+  emitEvents = true;
   defaultModeIsCS = false;
   ignoreInitialUnknowns = false;
   inputExtrapolation = false;
@@ -168,6 +169,12 @@ oms_status_enu_t oms::Flags::SetCommandLineOption(const std::string& cmd)
 oms_status_enu_t oms::Flags::ClearAllOptions(const std::string& value)
 {
   GetInstance().setDefaults();
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Flags::EmitEvents(const std::string& value)
+{
+  GetInstance().emitEvents = (value == "true");
   return oms_status_ok;
 }
 
