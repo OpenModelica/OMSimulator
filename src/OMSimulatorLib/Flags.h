@@ -55,6 +55,7 @@ namespace oms
   public:
     static oms_status_enu_t SetCommandLineOption(const std::string& cmd);
 
+    static bool EmitEvents() {return GetInstance().emitEvents;}
     static bool DefaultModeIsCS() {return GetInstance().defaultModeIsCS;}
     static bool IgnoreInitialUnknowns() {return GetInstance().ignoreInitialUnknowns;}
     static bool InputExtrapolation() {return GetInstance().inputExtrapolation;}
@@ -75,6 +76,7 @@ namespace oms
     static unsigned int Intervals() {return GetInstance().intervals;}
 
   private:
+    bool emitEvents;
     bool defaultModeIsCS;
     bool ignoreInitialUnknowns;
     bool inputExtrapolation;
@@ -119,6 +121,7 @@ namespace oms
     const std::vector<Flag> flags = {
       {"", "", "FMU or SSP file", re_filename, Flags::Filename, false},
       {"--clearAllOptions", "", "Reset all flags to default values", re_void, Flags::ClearAllOptions, false},
+      {"--emitEvents", "", "Specifies whether events should be emitted or not", re_bool, Flags::EmitEvents, false},
       {"--fetchAllVars", "", "Workaround for certain FMUs that do not update all internal dependencies automatically", re_default, Flags::FetchAllVars, false},
       {"--help", "-h", "Displays the help text", re_void, Flags::Help, true},
       {"--ignoreInitialUnknowns", "", "Ignore the initial unknowns from the modelDescription.xml", re_bool, Flags::IgnoreInitialUnknowns, false},
@@ -147,6 +150,7 @@ namespace oms
     };
 
     static oms_status_enu_t ClearAllOptions(const std::string& value);
+    static oms_status_enu_t EmitEvents(const std::string& value);
     static oms_status_enu_t FetchAllVars(const std::string& value);
     static oms_status_enu_t Filename(const std::string& value);
     static oms_status_enu_t Help(const std::string& value);
