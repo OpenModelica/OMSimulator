@@ -66,6 +66,8 @@ namespace oms
     oms_status_enu_t setSolverMethod(std::string);
     oms_status_enu_t setSolver(oms_solver_enu_t solver) {if (solver > oms_solver_wc_min && solver < oms_solver_wc_max) {solverMethod=solver; return oms_status_ok;} return oms_status_error;}
 
+    oms_status_enu_t getInputs(DirectedGraph& graph, std::vector<double>& inputs);
+    oms_status_enu_t setInputsDer(oms::DirectedGraph& graph, const std::vector<double>& inputsDer);
     oms_status_enu_t getInputAndOutput(DirectedGraph& graph, std::vector<double>& inputVect,std::vector<double>& outputVect,std::map<ComRef, Component*> FMUcomponents);
     oms_status_enu_t updateInputs(DirectedGraph& graph);
     oms_status_enu_t solveAlgLoop(DirectedGraph& graph, const std::vector< std::pair<int, int> >& SCC);
