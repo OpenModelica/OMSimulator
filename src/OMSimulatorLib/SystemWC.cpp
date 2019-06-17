@@ -507,8 +507,11 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
       logDebug("doStep: " + std::to_string(time) + " -> " + std::to_string(tNext));
 
       // Save component's state
-      for (const auto& component : getComponents())
-        component.second->saveState();
+      if (masiMax > 1)
+      {
+        for (const auto& component : getComponents())
+          component.second->saveState();
+      }
 
       getInputs(outputsGraph, inputVect1);
       for (int masi=0; masi<masiMax; masi++)
