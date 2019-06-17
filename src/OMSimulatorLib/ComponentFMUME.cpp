@@ -490,6 +490,9 @@ oms_status_enu_t oms::ComponentFMUME::instantiate()
 
 oms_status_enu_t oms::ComponentFMUME::doEventIteration()
 {
+  const int maxIterations = Flags::MaxEventIteration();
+  int iterations = 0;
+
   CallClock callClock(clock);
   fmi2_status_t fmistatus;
   eventInfo.newDiscreteStatesNeeded = fmi2_true;
@@ -498,6 +501,9 @@ oms_status_enu_t oms::ComponentFMUME::doEventIteration()
   {
     fmistatus = fmi2_import_new_discrete_states(fmu, &eventInfo);
     if (fmi2_status_ok != fmistatus) return logError_FMUCall("fmi2_import_new_discrete_states", this);
+
+    if (++iterations >= maxIterations)
+      return logError("Event iteration reached max number of iterations (" + std::to_string(maxIterations) + ") for FMU " + std::string(getCref()));
   }
   return oms_status_ok;
 }
