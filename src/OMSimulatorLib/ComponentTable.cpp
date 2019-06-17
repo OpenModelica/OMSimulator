@@ -299,3 +299,20 @@ oms_status_enu_t oms::ComponentTable::removeSignalsFromResults(const char* regex
 
   return oms_status_ok;
 }
+
+oms_status_enu_t oms::ComponentTable::saveState()
+{
+  storedTime = time;
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::ComponentTable::freeState()
+{
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::ComponentTable::restoreState()
+{
+  time = storedTime;
+  return oms_status_ok;
+}
