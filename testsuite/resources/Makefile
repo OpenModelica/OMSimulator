@@ -13,6 +13,7 @@ DualMassOscillator.System1 \
 DualMassOscillator.System2 \
 HelloWorld \
 HelloWorldWithInput \
+Lin2DimODE \
 Modelica.Blocks.Continuous.Integrator \
 Modelica.Blocks.Math.Add \
 Modelica.Blocks.Math.Add3 \
