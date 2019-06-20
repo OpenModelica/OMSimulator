@@ -10,4 +10,4 @@ end HelloWorld;
 
 buildModelFMU(HelloWorld, version="2.0", fmuType="me_cs", fileNamePrefix="HelloWorld", platforms={"x86_64-linux-gnu"}); getErrorString();
 
-system("unzip HelloWorld.fmu -d HelloWorld/");
+system("zip -qd HelloWorld.fmu sources/* && unzip HelloWorld.fmu -d HelloWorld/");
