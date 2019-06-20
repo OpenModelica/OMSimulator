@@ -42,7 +42,7 @@
 #define MODELIDENT "test_HelloWorld_cs_Fit"
 #define SYSTEMIDENT "test_HelloWorld_cs_Fit.root"
 #define FMUIDENT "test_HelloWorld_cs_Fit.root.HelloWorld"
-#define VARCREF(x) MODELIDENT "." FMUIDENT ":" x
+#define VARCREF(x) FMUIDENT "." x
 
 
 // Data generated from simulating HelloWorld.mo for 1.0s with Euler and 0.1s step size
@@ -67,7 +67,8 @@ int test_HelloWorld_cs_Fit()
   ASSERT(status == oms_status_ok);
   status = oms_addSystem(SYSTEMIDENT, oms_system_wc);
   ASSERT(status == oms_status_ok);
-  status = oms_addSubModel(FMUIDENT, "../FMUs/HelloWorld_cs.fmu");
+  status = oms_addSubModel(FMUIDENT, "../resources/HelloWorld.fmu");
+  ASSERT(status == oms_status_ok);
   oms_setTolerance(SYSTEMIDENT, 1e-5, 1e-5);
 
   void* fitmodel = omsi_newSysIdentModel(MODELIDENT);
