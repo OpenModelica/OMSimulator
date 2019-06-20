@@ -1,0 +1,14 @@
+loadString("
+model HelloWorldWithInput
+  input Real u;
+  parameter Real a = -1;
+  parameter Real x_start = 1;
+  Real x(start=x_start, fixed=true);
+equation
+  der(x) = a*x + u;
+end HelloWorldWithInput;
+"); getErrorString();
+
+buildModelFMU(HelloWorldWithInput, version="2.0", fmuType="me_cs", fileNamePrefix="HelloWorldWithInput", platforms={"x86_64-linux-gnu"}); getErrorString();
+
+system("zip -qd HelloWorldWithInput.fmu sources/* && unzip HelloWorldWithInput.fmu -d HelloWorldWithInput/");

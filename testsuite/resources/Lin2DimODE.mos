@@ -1,0 +1,19 @@
+loadString("
+model Lin2DimODE
+  parameter Real a11 = -1;
+  parameter Real a12 = 0.1;
+  parameter Real a21 = 0.1;
+  parameter Real a22 = -0.9;
+  parameter Real x1_start = 1;
+  parameter Real x2_start = 1.1;
+  Real x1(start=x1_start, fixed=true);
+  Real x2(start=x2_start, fixed=true);
+equation
+  der(x1) = a11*x1 + a12*x2;
+  der(x2) = a21*x1 + a22*x2;
+end Lin2DimODE;
+"); getErrorString();
+
+buildModelFMU(Lin2DimODE, version="2.0", fmuType="me_cs", fileNamePrefix="Lin2DimODE", platforms={"x86_64-linux-gnu"}); getErrorString();
+
+system("zip -qd Lin2DimODE.fmu sources/* && unzip Lin2DimODE.fmu -d Lin2DimODE/");
