@@ -57,7 +57,7 @@
 // Macros for brief code
 #define MODELIDENT "test_Lin2DimODE_cs_Fit"
 #define FMUIDENT "Lin2DimODE"
-#define VARCREF(x) MODELIDENT "." FMUIDENT ":" x
+#define VARCREF(x) MODELIDENT ".root." FMUIDENT "." x
 
 using std::abs;
 using Eigen::Dynamic;
@@ -81,7 +81,10 @@ void the_reference_ode(const char* oms_modelident, const std::vector<std::string
     for (int j=0; j < x_name.size(); ++j) {
       oms_getReal(x_name[j].c_str(), &(x(i, j)));
     }
-    oms_reset(oms_modelident);
+    // 2019-06-20 TODO: oms_reset seems to be broken. Using the two following lines as a workaround
+    // oms_reset(oms_modelident);
+    oms_terminate(oms_modelident);
+    oms_instantiate(oms_modelident);
   }
 }
 
@@ -117,7 +120,8 @@ int test_Lin2DimODE_cs_Fit()
   ASSERT(status == oms_status_ok);
   status = oms_addSystem(oms_systemident.c_str(), oms_system_wc);
   ASSERT(status == oms_status_ok);
-  status = oms_addSubModel(oms_fmuident.c_str(), "../FMUs/Lin2DimODE_cs.fmu");
+  status = oms_addSubModel(oms_fmuident.c_str(), "../resources/Lin2DimODE.fmu");
+  ASSERT(status == oms_status_ok);
   oms_setTolerance(oms_systemident.c_str(), 1e-5, 1e-5);
   status = oms_setStopTime(oms_modelident, data_time[kNumObservations - 1]); // needed?
 
@@ -133,7 +137,7 @@ int test_Lin2DimODE_cs_Fit()
   the_reference_ode(oms_modelident, parametervars, p_ref, data_time, mesvars, x_ref);
   std::cout << "i \t t \t x1 \t x2\n";
   for (int i=0; i < data_time.size(); ++i) {
-    std::cout << i << "\t" << data_time[0] << "\t" << x_ref(i, 0) << "\t" << x_ref(i, 1) << std::endl;
+    std::cout << i << "\t" << data_time[i] << "\t" << x_ref(i, 0) << "\t" << x_ref(i, 1) << std::endl;
   }
 
 
