@@ -1,5 +1,10 @@
 -- status: correct
--- teardown_command: rm -f HelloWorldWithInput_cs_Fit.log HelloWorldWithInput_cs_Fit_res.csv
+-- teardown_command: rm -rf HelloWorldWithInput_cs_Fit/ HelloWorldWithInput_cs_Fit.log HelloWorldWithInput_cs_Fit_res.csv
+-- linux: yes
+-- mingw: no
+-- win: no
+-- mac: no
+
 
 oms_setLogFile("HelloWorldWithInput_cs_Fit.log")
 status = oms_setTempDirectory("./HelloWorldWithInput_cs_Fit/")

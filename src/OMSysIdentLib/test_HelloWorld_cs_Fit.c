@@ -60,7 +60,7 @@ int test_HelloWorld_cs_Fit()
   //std::cout << version << std::endl;
 
   oms_setLogFile("test_HelloWorld_cs_Fit.log");
-  status = oms_setTempDirectory(".");
+  status = oms_setTempDirectory("./test_HelloWorld_cs_Fit/");
   ASSERT(status == oms_status_ok);
 
   status = oms_newModel(MODELIDENT);

@@ -109,7 +109,7 @@ int test_Lin2DimODE_cs_Fit()
   }
 
   oms_setLogFile("test_Lin2DimODE_cs_Fit.log");
-  status = oms_setTempDirectory(".");
+  status = oms_setTempDirectory("./test_Lin2DimODE_cs_Fit/");
   ASSERT(status == oms_status_ok);
 
   const char* oms_modelident = MODELIDENT;

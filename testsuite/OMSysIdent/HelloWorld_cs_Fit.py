@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm HelloWorld_cs_Fit_py.log HelloWorld_cs_Fit_res.mat
+## teardown_command: rm -rf HelloWorld_cs_Fit_py/ HelloWorld_cs_Fit_py.log HelloWorld_cs_Fit_res.mat
 
 from OMSimulator import OMSimulator
 from OMSysIdent import OMSysIdent
