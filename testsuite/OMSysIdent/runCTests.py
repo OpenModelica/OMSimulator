@@ -1,8 +1,12 @@
 ## status: correct
-## teardown_command: rm test_HelloWorld_cs_Fit.log test_HelloWorld_cs_Fit_res.mat test_Lin2DimODE_cs_Fit.log test_Lin2DimODE_cs_Fit_res.mat
+## teardown_command: rm -rf test_HelloWorld_cs_Fit/ test_HelloWorld_cs_Fit.log test_HelloWorld_cs_Fit_res.mat test_Lin2DimODE_cs_Fit/ test_Lin2DimODE_cs_Fit.log test_Lin2DimODE_cs_Fit_res.mat
+
+# Python Wrapper for executing ctest, which in turn executes test examples.
+# As of 2019-06-21 there are two examples which are executed:
+# - ../../src/OMSysIdentLib/test_HelloWorld_cs_Fit.c
+# - ../../src/OMSysIdentLib/test_Lin2DimODE_cs_Fit.cpp
 
 import os
-
 
 ctestpath = '../../build/linux'
 logfilename = 'ctest.log'

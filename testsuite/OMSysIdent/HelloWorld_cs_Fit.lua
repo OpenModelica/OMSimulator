@@ -1,5 +1,9 @@
 -- status: correct
--- teardown_command: rm -f HelloWorld_cs_Fit.log HelloWorld_cs_Fit_res.mat
+-- teardown_command: rm -rf HelloWorld_cs_Fit/ HelloWorld_cs_Fit.log HelloWorld_cs_Fit_res.mat
+-- linux: yes
+-- mingw: no
+-- win: no
+-- mac: no
 
 -- Uncomment below if script shall be executed by a standard Lua interpreter
 -- require("package")
