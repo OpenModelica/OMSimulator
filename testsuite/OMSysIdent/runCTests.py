@@ -1,5 +1,9 @@
 ## status: correct
 ## teardown_command: rm -rf test_HelloWorld_cs_Fit/ test_HelloWorld_cs_Fit.log test_HelloWorld_cs_Fit_res.mat test_Lin2DimODE_cs_Fit/ test_Lin2DimODE_cs_Fit.log test_Lin2DimODE_cs_Fit_res.mat
+## linux: yes
+## mingw: no
+## win: no
+## mac: no
 
 # Python Wrapper for executing ctest, which in turn executes test examples.
 # As of 2019-06-21 there are two examples which are executed:
