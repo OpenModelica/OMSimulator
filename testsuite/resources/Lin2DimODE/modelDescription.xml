@@ -2,10 +2,10 @@
 <fmiModelDescription
   fmiVersion="2.0"
   modelName="Lin2DimODE"
-  guid="{2be90121-0ee6-4bc0-b82e-578cd51195b0}"
+  guid="{9d416fc1-e944-4b1b-b4c1-62b4caf9c138}"
   description=""
-  generationTool="OpenModelica Compiler OpenModelica 1.14.0~dev-26555-g4698d26"
-  generationDateAndTime="2019-06-20T20:41:51Z"
+  generationTool="OpenModelica Compiler OMCompiler v1.14.0-dev.26548+g9d690ceb49"
+  generationDateAndTime="2019-06-25T13:38:48Z"
   variableNamingConvention="structured"
   numberOfEventIndicators="0">
   <ModelExchange
