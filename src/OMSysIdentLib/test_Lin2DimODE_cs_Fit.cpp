@@ -81,10 +81,7 @@ void the_reference_ode(const char* oms_modelident, const std::vector<std::string
     for (int j=0; j < x_name.size(); ++j) {
       oms_getReal(x_name[j].c_str(), &(x(i, j)));
     }
-    // 2019-06-20 TODO: oms_reset seems to be broken. Using the two following lines as a workaround
-    // oms_reset(oms_modelident);
-    oms_terminate(oms_modelident);
-    oms_instantiate(oms_modelident);
+    oms_reset(oms_modelident);
   }
 }
 

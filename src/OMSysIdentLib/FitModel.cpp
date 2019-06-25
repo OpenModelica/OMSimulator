@@ -132,10 +132,7 @@ struct OdeResidual {
       }
     }
 
-    // TODO: use oms_reset
-    //oms_reset(oms_modelIdent_);
-    oms_terminate(oms_modelIdent_);
-    oms_instantiate(oms_modelIdent_);
+    oms_reset(oms_modelIdent_);
 
     return true;
   }
