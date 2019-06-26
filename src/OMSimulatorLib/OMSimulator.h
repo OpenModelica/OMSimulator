@@ -107,7 +107,6 @@ OMSAPI oms_status_enu_t OMSCALL oms_getTolerance(const char* cref, double* absol
 OMSAPI oms_status_enu_t OMSCALL oms_getVariableStepSize(const char* cref, double* initialStepSize, double* minimumStepSize, double* maximumStepSize);
 OMSAPI const char* OMSCALL oms_getVersion();
 OMSAPI oms_status_enu_t OMSCALL oms_importFile(const char* filename, char** cref);
-OMSAPI oms_status_enu_t OMSCALL oms_importString(const char* contents, char** cref);
 OMSAPI oms_status_enu_t OMSCALL oms_initialize(const char* cref);
 OMSAPI oms_status_enu_t OMSCALL oms_instantiate(const char* cref);
 OMSAPI oms_status_enu_t OMSCALL oms_list(const char* cref, char** contents);

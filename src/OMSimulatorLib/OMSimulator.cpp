@@ -224,11 +224,6 @@ oms_status_enu_t oms_parseModelName(const char* contents, char** cref)
   return logError_NotImplemented;
 }
 
-oms_status_enu_t oms_importString(const char* contents, char** cref)
-{
-  return logError_NotImplemented;
-}
-
 oms_status_enu_t oms_addSystem(const char* cref_, oms_system_enu_t type)
 {
   oms::ComRef cref(cref_);
