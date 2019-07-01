@@ -125,9 +125,10 @@ oms_status_enu_t oms::Model::loadSnapshot(const char* snapshot)
   System* old_root_system = system;
   system = NULL;
 
+  bool old_copyResources = copyResources();
   copyResources(false);
   oms_status_enu_t status = importFromSSD(node);
-  copyResources(true);
+  copyResources(old_copyResources);
 
   if (oms_status_ok != status)
   {
