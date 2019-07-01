@@ -211,17 +211,22 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
 
   std::string cd = Scope::GetInstance().getWorkingDirectory();
   Scope::GetInstance().setWorkingDirectory(model->getTempDirectory());
+
+  bool old_copyResources = model->copyResources();
   model->copyResources(false);
   status = model->importFromSSD(node);
-  model->copyResources(true);
+  model->copyResources(old_copyResources);
+
   Scope::GetInstance().setWorkingDirectory(cd);
+
   if (oms_status_ok != status)
   {
     deleteModel(cref);
     return oms_status_error;
   }
 
-  *_cref = (char*)model->getCref().c_str();
+  if (_cref)
+    *_cref = (char*)model->getCref().c_str();
 
   return oms_status_ok;
 }
