@@ -129,6 +129,11 @@ oms_status_enu_t oms::Scope::exportModel(const oms::ComRef& cref, const std::str
 
 oms_status_enu_t oms::Scope::miniunz(const std::string& filename, const std::string& extractdir, bool systemStructure)
 {
+  // This function is used to extract (1) complete SSP/FMU files or to extract
+  // (2) the SystemStructure.ssd from an SSP file:
+  //     (1) miniunz -xo <filename> -d <extractdir>
+  //     (2) miniunz -xo <filename> SystemStructure.ssd -d <extractdir>
+
   // Usage: miniunz [-e] [-x] [-v] [-l] [-o] [-p password] file.zip [file_to_extr.] [-d extractdir]
   //        -e  Extract without pathname (junk paths)
   //        -x  Extract with pathname
@@ -152,13 +157,16 @@ oms_status_enu_t oms::Scope::miniunz(const std::string& filename, const std::str
   argv[i++] = (char*)extractdir.c_str();
   int status = ::miniunz(argc, argv);
   delete[] argv;
+
+  // Note: miniunz can change the working directory
+  // Restore working directory if it was changed
   std::string cd2 = Scope::GetInstance().getWorkingDirectory();
   if (cd != cd2)
     Scope::GetInstance().setWorkingDirectory(cd);
 
-  if (status == 0)
-    return oms_status_ok;
-  return oms_status_error;
+  if (status != 0)
+    return oms_status_error;
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cref)
