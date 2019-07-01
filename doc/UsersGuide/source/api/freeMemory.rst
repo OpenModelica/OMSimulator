@@ -7,9 +7,8 @@ is allocated.
 #END#
 
 #LUA#
-.. code-block:: lua
 
-  oms_freeMemory(obj)
+This function is neither needed nor available from the Lua interface.
 
 #END#
 
