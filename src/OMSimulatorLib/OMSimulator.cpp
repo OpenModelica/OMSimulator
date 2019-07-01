@@ -120,7 +120,9 @@ oms_status_enu_t oms_setWorkingDirectory(const char* newWorkingDir)
 
 oms_status_enu_t oms_newModel(const char* cref)
 {
-  return oms::Scope::GetInstance().newModel(oms::ComRef(cref));
+  if (!oms::Scope::GetInstance().newModel(oms::ComRef(cref)))
+    return oms_status_error;
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms_rename(const char* cref_, const char* newCref_)

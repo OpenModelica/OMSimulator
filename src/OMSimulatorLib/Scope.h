@@ -59,7 +59,7 @@ namespace oms
      */
     static Scope& GetInstance();
 
-    oms_status_enu_t newModel(const ComRef& cref);
+    Model* newModel(const ComRef& cref);
     oms_status_enu_t deleteModel(const ComRef& cref);
     oms_status_enu_t renameModel(const ComRef& cref, const ComRef& newCref);
     oms_status_enu_t exportModel(const ComRef& cref, const std::string& filename);

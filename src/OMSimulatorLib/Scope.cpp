@@ -65,21 +65,24 @@ oms::Scope& oms::Scope::GetInstance()
   return scope;
 }
 
-oms_status_enu_t oms::Scope::newModel(const oms::ComRef& cref)
+oms::Model* oms::Scope::newModel(const oms::ComRef& cref)
 {
   // check if cref is in scope
   if (getModel(cref))
-    return logError_AlreadyInScope(cref);
+  {
+    logError_AlreadyInScope(cref);
+    return NULL;
+  }
 
   Model* model = oms::Model::NewModel(cref);
   if (!model)
-    return oms_status_error;
+    return NULL;
 
   models.back() = model;
   models_map[cref] = models.size() - 1;
   models.push_back(NULL);
 
-  return oms_status_ok;
+  return model;
 }
 
 oms_status_enu_t oms::Scope::deleteModel(const oms::ComRef& cref)
@@ -195,16 +198,12 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
   ComRef cref = ComRef(node.attribute("name").as_string());
   std::string ssdVersion = node.attribute("version").as_string();
 
-  oms_status_enu_t status = newModel(cref);
-  if (oms_status_ok != status)
-    return status;
+  Model* model = newModel(cref);
+  if (!model)
+    return oms_status_error;
 
   if (ssdVersion != "Draft20180219")
     logWarning("Unknown SSD version: " + ssdVersion);
-
-  Model* model = getModel(cref);
-  if (!model) // that should be impossible
-    return oms_status_error;
 
   // extract the ssp file
   oms::Scope::miniunz(filename, model->getTempDirectory(), false);
@@ -214,7 +213,7 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
 
   bool old_copyResources = model->copyResources();
   model->copyResources(false);
-  status = model->importFromSSD(node);
+  oms_status_enu_t status = model->importFromSSD(node);
   model->copyResources(old_copyResources);
 
   Scope::GetInstance().setWorkingDirectory(cd);
