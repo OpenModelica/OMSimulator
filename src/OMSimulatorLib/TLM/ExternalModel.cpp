@@ -32,6 +32,7 @@
 #include "ExternalModel.h"
 #include "Logging.h"
 #include "Element.h"
+#include "ExternalModelInfo.h"
 #include "Types.h"
 #include "ssd/Tags.h"
 
@@ -40,7 +41,7 @@
 #include <iostream>
 
 oms::ExternalModel::ExternalModel(const oms::ComRef& cref, System* parentSystem, const std::string& path, const std::string& startscript)
-  : oms::Component(cref, oms_component_external, parentSystem, path), startscript(startscript)
+  : oms::Component(cref, oms_component_external, parentSystem, path), externalModelInfo(path, startscript)
 {
 }
 
@@ -105,7 +106,7 @@ oms_status_enu_t oms::ExternalModel::exportToSSD(pugi::xml_node& node) const
   pugi::xml_node annotation_node = annotations_node.append_child(oms::ssd::ssd_annotation);
   annotation_node.append_attribute("type") = oms::annotation_type;
   pugi::xml_node externalmodel_node = annotation_node.append_child(oms::external_model);
-  externalmodel_node.append_attribute("startscript") = this->startscript.c_str();
+  externalmodel_node.append_attribute("startscript") = externalModelInfo.getStartScript().c_str();
 
   return oms_status_ok;
 }
