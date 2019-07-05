@@ -536,6 +536,20 @@ typedef struct {
   unsigned int maxOutputDerivativeOrder;
 } oms_fmu_info_t;
 
+/**
+ * \brief External model specific attributes
+ */
+typedef struct {
+  /**
+   * Path to the external model file
+   */
+  char* path;
+  /**
+   * Start script for the external model
+   */
+  char* startScript;
+}  oms_external_tlm_model_info_t;
+
 #ifdef __cplusplus
 }
 #endif

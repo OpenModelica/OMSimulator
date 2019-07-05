@@ -35,6 +35,7 @@
 #include "Component.h"
 #include "ComRef.h"
 #include "Element.h"
+#include "ExternalModelInfo.h"
 #include "Option.h"
 #include "ResultWriter.h"
 #include "Types.h"
@@ -50,9 +51,11 @@ namespace oms
     ~ExternalModel();
     static ExternalModel* NewComponent(const oms::ComRef& cref, System* parentSystem, const std::string& path, const std::string& startscript);
 
+    const ExternalModelInfo *getExternalModelInfo() const {return &(this->externalModelInfo);}
+
     oms_status_enu_t setRealParameter(const std::string& var, double value);
     oms_status_enu_t getRealParameter(const std::string& var, double& value);
-    const std::string& getStartScript() const {return startscript;}
+    const std::string getStartScript() const {return externalModelInfo.getStartScript();}
     const std::map<std::string, oms::Option<double>>& getRealParameters() const {return realParameters;}
 
     oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
@@ -76,7 +79,7 @@ namespace oms
     ExternalModel& operator=(ExternalModel const& copy); ///< not implemented
 
   private:
-    std::string startscript;
+    ExternalModelInfo externalModelInfo;
     std::map<std::string, oms::Option<double>> realParameters;
   };
 }

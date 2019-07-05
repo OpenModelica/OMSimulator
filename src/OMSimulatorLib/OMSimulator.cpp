@@ -34,6 +34,7 @@
 #include "Component.h"
 #include "ComRef.h"
 #include "Element.h"
+#include "ExternalModelInfo.h"
 #include "Flags.h"
 #include "FMUInfo.h"
 #include "Logging.h"
@@ -47,6 +48,7 @@
 #if !defined(NO_TLM)
   #include "SystemTLM.h"
   #include "TLMBusConnector.h"
+  #include "ExternalModel.h"
 #endif
 #include "Types.h"
 #include "Version.h"
@@ -830,6 +832,37 @@ oms_status_enu_t oms_getSubModelPath(const char* cref, char** path)
 
   *path = (char*)component->getPath().c_str();
   return oms_status_ok;
+}
+
+oms_status_enu_t oms_getExternalModelInfo(const char* cref, const oms_external_tlm_model_info_t** externalModelInfo)
+{
+#if !defined(NO_TLM)
+  oms::ComRef tail(cref);
+  oms::ComRef front = tail.pop_front();
+
+  oms::Model* model = oms::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  front = tail.pop_front();
+  oms::System* system = model->getSystem(front);
+  if (!system)
+    return logError_SystemNotInModel(model->getCref(), front);
+
+  oms::Component* component = system->getComponent(tail);
+  if (!component)
+    return logError_ComponentNotInSystem(system, tail);
+
+  if (component->getType() == oms_component_external)
+  {
+    *reinterpret_cast<const oms::ExternalModelInfo**>(externalModelInfo) = reinterpret_cast<oms::ExternalModel*>(component)->getExternalModelInfo();
+    return oms_status_ok;
+  }
+
+  return oms_status_error;
+#else
+  return LOG_NO_TLM();
+#endif
 }
 
 oms_status_enu_t oms_getFMUInfo(const char* cref, const oms_fmu_info_t** fmuInfo)

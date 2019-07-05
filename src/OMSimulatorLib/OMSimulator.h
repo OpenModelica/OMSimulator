@@ -91,6 +91,7 @@ OMSAPI oms_status_enu_t OMSCALL oms_getConnections(const char* cref, oms_connect
 OMSAPI oms_status_enu_t OMSCALL oms_getConnector(const char* cref, oms_connector_t** connector);
 OMSAPI oms_status_enu_t OMSCALL oms_getElement(const char* cref, oms_element_t** element);
 OMSAPI oms_status_enu_t OMSCALL oms_getElements(const char* cref, oms_element_t*** elements);
+OMSAPI oms_status_enu_t OMSCALL oms_getExternalModelInfo(const char* cref, const oms_external_tlm_model_info_t** externalModelInfo);
 OMSAPI oms_status_enu_t OMSCALL oms_getFixedStepSize(const char* cref, double* stepSize);
 OMSAPI oms_status_enu_t OMSCALL oms_getFMUInfo(const char* cref, const oms_fmu_info_t** fmuInfo);
 OMSAPI oms_status_enu_t OMSCALL oms_getInteger(const char* cref, int* value);
