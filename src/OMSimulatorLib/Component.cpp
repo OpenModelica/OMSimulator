@@ -113,6 +113,8 @@ oms::Component::~Component()
     if(tlmbusconnector)
       delete tlmbusconnector;
 #endif
+
+  deleteResources();
 }
 
 oms::ComRef oms::Component::getFullCref() const
@@ -222,17 +224,24 @@ oms_status_enu_t oms::Component::deleteConnector(const ComRef& cref)
 oms_status_enu_t oms::Component::deleteResources()
 {
   filesystem::path temp_root(parentSystem->getModel()->getTempDirectory());
-  filesystem::path temp_temp = temp_root / "temp";
-  filesystem::path temp_resources = temp_root / "resources";
-
-  filesystem::path relFMUPath = filesystem::path("resources") / (std::string(cref) + ".fmu");
-  filesystem::path absFMUPath = temp_root / relFMUPath;
+  filesystem::path absResourcePath = temp_root / path;
 
   // delete resources
-  filesystem::remove(absFMUPath);
+  //filesystem::remove(absResourcePath);
 
   // delete temp directory
-  filesystem::remove(temp_temp / std::string(cref));
+  if (!tempDir.empty() && filesystem::is_directory(tempDir))
+  {
+    try
+    {
+      filesystem::remove_all(getTempDir());
+      logDebug("removed temp directory: \"" + tempDir + "\"");
+    }
+    catch (const std::exception& e)
+    {
+      logWarning("temp directory \"" + tempDir + "\" couldn't be removed\n" + e.what());
+    }
+  }
 
   return oms_status_ok;
 }

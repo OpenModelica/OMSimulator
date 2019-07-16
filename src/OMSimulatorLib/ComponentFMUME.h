@@ -107,7 +107,6 @@ namespace oms
     fmi2_callback_functions_t callbackFunctions;
     fmi_import_context_t* context = NULL;
     fmi2_import_t* fmu = NULL;
-    std::string tempDir;
 
     fmi2_event_info_t eventInfo;
     size_t nContinuousStates;

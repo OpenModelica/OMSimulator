@@ -67,6 +67,8 @@ namespace oms
     oms_status_enu_t deleteResources();
     oms_status_enu_t getAllResources(std::vector<std::string>& resources) const {resources.push_back(path); return oms_status_ok;}
     const std::string& getPath() const {return path;}
+    const std::string& getTempDir() const {return tempDir;}
+    void setTempDir(const std::string& tempDir) {this->tempDir = tempDir;}
     oms_component_enu_t getType() const {return type;}
     virtual const FMUInfo* getFMUInfo() const {return NULL;}
     void fetchAllVars(bool enableOption) {fetchAllVars_ = enableOption;}
@@ -137,7 +139,8 @@ namespace oms
     System* parentSystem;
     ComRef cref;
     oms_component_enu_t type;
-    std::string path;
+    std::string path;     // resource file (fmu, mat)
+    std::string tempDir;  // unzipped fmu
   };
 }
 
