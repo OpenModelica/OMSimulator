@@ -54,19 +54,6 @@ oms::ComponentFMUCS::~ComponentFMUCS()
   fmi2_import_destroy_dllfmu(fmu);
   fmi2_import_free(fmu);
   fmi_import_free_context(context);
-
-  if (!tempDir.empty() && filesystem::is_directory(tempDir))
-  {
-    try
-    {
-      filesystem::remove_all(tempDir);
-      logDebug("removed working directory: \"" + tempDir + "\"");
-    }
-    catch (const std::exception& e)
-    {
-      logWarning("working directory \"" + tempDir + "\" couldn't be removed\n" + e.what());
-    }
-  }
 }
 
 oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::System* parentSystem, const std::string& fmuPath)
@@ -83,9 +70,11 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::
     return NULL;
   }
 
+  std::string id = parentSystem->getUniqueID() + "_";
+
   filesystem::path temp_root(parentSystem->getModel()->getTempDirectory());
   filesystem::path temp_temp = temp_root / "temp";
-  filesystem::path relFMUPath = filesystem::path("resources") / (std::string(cref) + ".fmu");
+  filesystem::path relFMUPath = parentSystem->copyResources() ? (filesystem::path("resources") / (id + std::string(cref) + ".fmu")) : filesystem::path(fmuPath);
   filesystem::path absFMUPath = temp_root / relFMUPath;
 
   ComponentFMUCS* component = new ComponentFMUCS(cref, parentSystem, relFMUPath.string());
@@ -104,8 +93,8 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::
     oms_copy_file(filesystem::path(fmuPath), absFMUPath);
 
   // set temp directory
-  filesystem::path tempDir = temp_temp / std::string(cref);
-  component->tempDir = tempDir.string();
+  filesystem::path tempDir = temp_temp / (id + std::string(cref));
+  component->setTempDir(tempDir.string());
   if (!filesystem::is_directory(tempDir) && !filesystem::create_directory(tempDir))
   {
     logError("Creating temp directory for component \"" + std::string(cref) + "\" failed");
@@ -115,7 +104,7 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::
   component->context = fmi_import_allocate_context(&component->callbacks);
 
   // check version of FMU
-  fmi_version_enu_t version = fmi_import_get_fmi_version(component->context, absFMUPath.string().c_str(), component->tempDir.c_str());
+  fmi_version_enu_t version = fmi_import_get_fmi_version(component->context, absFMUPath.string().c_str(), component->getTempDir().c_str());
   if (fmi_version_2_0_enu != version)
   {
     logError("Unsupported FMI version: " + std::string(fmi_version_to_string(version)));
@@ -124,7 +113,7 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::
   }
 
   // parse modelDescription.xml
-  component->fmu = fmi2_import_parse_xml(component->context, component->tempDir.c_str(), 0);
+  component->fmu = fmi2_import_parse_xml(component->context, component->getTempDir().c_str(), 0);
   if (!component->fmu)
   {
     logError("Error parsing modelDescription.xml");

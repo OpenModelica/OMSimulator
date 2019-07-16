@@ -160,6 +160,8 @@ namespace oms
     bool useThreadPool();
     ctpl::thread_pool& getThreadPool();
 
+    std::string getUniqueID() const;
+
   protected:
     System(const ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem, oms_solver_enu_t solverMethod);
 
