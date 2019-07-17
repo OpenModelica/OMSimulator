@@ -1912,5 +1912,10 @@ ctpl::thread_pool& oms::System::getThreadPool()
 std::string oms::System::getUniqueID() const
 {
   static unsigned int id = 0;
-  return std::to_string(++id);
+  std::string str = std::to_string(++id);
+
+  while (str.length() < 4)
+    str = "0" + str;
+
+  return str;
 }

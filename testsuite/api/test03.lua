@@ -73,7 +73,7 @@ oms_delete("test")
 -- 			<FixedStepMaster description="oms-ma" stepSize="0.100000" />
 -- 		</ssd:SimulationInformation>
 -- 		<ssd:Elements>
--- 			<ssd:Component name="source" type="application/x-fmu-sharedlibrary" source="resources/1_source.fmu">
+-- 			<ssd:Component name="source" type="application/x-fmu-sharedlibrary" source="resources/0001_source.fmu">
 -- 				<ssd:Connectors>
 -- 					<ssd:Connector name="y" kind="output" type="Real">
 -- 						<ssd:ConnectorGeometry x="1.000000" y="0.500000" />
@@ -101,7 +101,7 @@ oms_delete("test")
 -- 			<FixedStepMaster description="oms-ma" stepSize="0.100000" />
 -- 		</ssd:SimulationInformation>
 -- 		<ssd:Elements>
--- 			<ssd:Component name="source" type="application/x-fmu-sharedlibrary" source="resources/1_source.fmu">
+-- 			<ssd:Component name="source" type="application/x-fmu-sharedlibrary" source="resources/0001_source.fmu">
 -- 				<ssd:Connectors>
 -- 					<ssd:Connector name="y" kind="output" type="Real">
 -- 						<ssd:ConnectorGeometry x="1.000000" y="0.500000" />

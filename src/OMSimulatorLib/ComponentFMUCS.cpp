@@ -70,11 +70,9 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::
     return NULL;
   }
 
-  std::string id = parentSystem->getUniqueID() + "_";
-
   filesystem::path temp_root(parentSystem->getModel()->getTempDirectory());
   filesystem::path temp_temp = temp_root / "temp";
-  filesystem::path relFMUPath = parentSystem->copyResources() ? (filesystem::path("resources") / (id + std::string(cref) + ".fmu")) : filesystem::path(fmuPath);
+  filesystem::path relFMUPath = parentSystem->copyResources() ? (filesystem::path("resources") / (parentSystem->getUniqueID() + "_" + std::string(cref) + ".fmu")) : filesystem::path(fmuPath);
   filesystem::path absFMUPath = temp_root / relFMUPath;
 
   ComponentFMUCS* component = new ComponentFMUCS(cref, parentSystem, relFMUPath.string());
@@ -93,7 +91,7 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::
     oms_copy_file(filesystem::path(fmuPath), absFMUPath);
 
   // set temp directory
-  filesystem::path tempDir = temp_temp / (id + std::string(cref));
+  filesystem::path tempDir = temp_temp / relFMUPath.stem();
   component->setTempDir(tempDir.string());
   if (!filesystem::is_directory(tempDir) && !filesystem::create_directory(tempDir))
   {

@@ -71,10 +71,8 @@ oms::Component* oms::ComponentTable::NewComponent(const oms::ComRef& cref, oms::
   if (path.length() > 4)
     extension = path.substr(path.length() - 4);
 
-  std::string id = parentSystem->getUniqueID() + "_";
-
   filesystem::path temp_root(parentSystem->getModel()->getTempDirectory());
-  filesystem::path relPath = parentSystem->copyResources() ? (filesystem::path("resources") / (id + std::string(cref) + extension)) : filesystem::path(path);
+  filesystem::path relPath = parentSystem->copyResources() ? (filesystem::path("resources") / (parentSystem->getUniqueID() + "_" + std::string(cref) + extension)) : filesystem::path(path);
   filesystem::path absPath = temp_root / relPath;
 
   ComponentTable* component = new ComponentTable(cref, parentSystem, relPath.string());
