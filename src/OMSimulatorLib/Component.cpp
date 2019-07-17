@@ -242,3 +242,8 @@ oms_status_enu_t oms::Component::deleteResources()
 
   return oms_status_ok;
 }
+
+oms_status_enu_t oms::Component::faultInjection(const oms::ComRef& signal, oms_fault_type_enu_t faultType, double faultValue)
+{
+  return oms_status_error;
+}

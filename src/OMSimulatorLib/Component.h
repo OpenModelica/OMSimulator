@@ -75,6 +75,7 @@ namespace oms
     System* getParentSystem() const {return parentSystem;}
     Model* getModel() const;
     void setGeometry(const ssd::ElementGeometry& geometry) {element.setGeometry(&geometry);}
+    oms_status_enu_t faultInjection(const ComRef& signal, oms_fault_type_enu_t faultType, double faultValue);
 
     oms_status_enu_t addTLMBus(const oms::ComRef& cref, oms_tlm_domain_t domain, const int dimensions, const oms_tlm_interpolation_t interpolation);
 #if !defined(NO_TLM)

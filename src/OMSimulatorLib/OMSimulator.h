@@ -107,6 +107,7 @@ OMSAPI oms_status_enu_t OMSCALL oms_getTLMVariableTypes(oms_tlm_domain_t domain,
 OMSAPI oms_status_enu_t OMSCALL oms_getTolerance(const char* cref, double* absoluteTolerance, double* relativeTolerance);
 OMSAPI oms_status_enu_t OMSCALL oms_getVariableStepSize(const char* cref, double* initialStepSize, double* minimumStepSize, double* maximumStepSize);
 OMSAPI const char* OMSCALL oms_getVersion();
+OMSAPI oms_status_enu_t OMSCALL oms_faultInjection(const char* signal, oms_fault_type_enu_t faultType, double faultValue);
 OMSAPI oms_status_enu_t OMSCALL oms_importFile(const char* filename, char** cref);
 OMSAPI oms_status_enu_t OMSCALL oms_initialize(const char* cref);
 OMSAPI oms_status_enu_t OMSCALL oms_instantiate(const char* cref);

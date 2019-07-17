@@ -1919,3 +1919,21 @@ std::string oms::System::getUniqueID() const
 
   return str;
 }
+
+oms_status_enu_t oms::System::faultInjection(const oms::ComRef& signal, oms_fault_type_enu_t faultType, double faultValue)
+{
+  oms::System* system = NULL;
+
+  oms::ComRef tail(signal);
+  oms::ComRef front = tail.pop_front();
+
+  auto subsystem = subsystems.find(front);
+  if (subsystem != subsystems.end())
+    return subsystem->second->faultInjection(tail, faultType, faultValue);
+
+  auto component = components.find(front);
+  if (component != components.end())
+    return component->second->faultInjection(tail, faultType, faultValue);
+
+  return oms_status_error;
+}
