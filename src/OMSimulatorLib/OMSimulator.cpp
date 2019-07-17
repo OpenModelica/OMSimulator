@@ -195,7 +195,7 @@ oms_status_enu_t oms_faultInjection(const char* signal, oms_fault_type_enu_t fau
   if (!system)
     return logError_SystemNotInModel(model->getCref(), front);
 
-  return system->faultInjection(tail, faultType, faultValue);
+  return system->setFaultInjection(tail, faultType, faultValue);
 }
 
 oms_status_enu_t oms_importFile(const char* filename, char** cref)

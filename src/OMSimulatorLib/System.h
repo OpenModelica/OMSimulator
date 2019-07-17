@@ -122,7 +122,7 @@ namespace oms
     const DirectedGraph& getInitialUnknownsGraph() {return initialUnknownsGraph;}
     const DirectedGraph& getOutputsGraph() {return outputsGraph;}
     oms_status_enu_t exportDependencyGraphs(const std::string& pathInitialization, const std::string& pathSimulation);
-    oms_status_enu_t faultInjection(const ComRef& signal, oms_fault_type_enu_t faultType, double faultValue);
+    oms_status_enu_t setFaultInjection(const ComRef& signal, oms_fault_type_enu_t faultType, double faultValue);
 
     virtual oms_status_enu_t instantiate() = 0;
     virtual oms_status_enu_t initialize() = 0;

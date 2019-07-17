@@ -98,6 +98,8 @@ namespace oms
     oms_status_enu_t freeState();
     oms_status_enu_t restoreState();
 
+    oms_status_enu_t setFaultInjection(const ComRef& signal, oms_fault_type_enu_t faultType, double faultValue);
+
   protected:
     ComponentFMUCS(const ComRef& cref, System* parentSystem, const std::string& fmuPath);
 
@@ -129,6 +131,8 @@ namespace oms
 
     fmi2_FMU_state_t fmuState = NULL;
     double fmuStateTime;
+
+    std::map<fmi2_value_reference_t, oms_fault_type_t> fib;  ///< fault injection blocks
   };
 }
 

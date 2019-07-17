@@ -64,7 +64,6 @@ namespace oms
     Connector* getConnector(const ComRef& cref);
     Connector** getConnectors() {return &connectors[0];}
     oms_status_enu_t deleteConnector(const ComRef& cref);
-    oms_status_enu_t deleteResources();
     oms_status_enu_t getAllResources(std::vector<std::string>& resources) const {resources.push_back(path); return oms_status_ok;}
     const std::string& getPath() const {return path;}
     const std::string& getTempDir() const {return tempDir;}
@@ -75,7 +74,7 @@ namespace oms
     System* getParentSystem() const {return parentSystem;}
     Model* getModel() const;
     void setGeometry(const ssd::ElementGeometry& geometry) {element.setGeometry(&geometry);}
-    oms_status_enu_t faultInjection(const ComRef& signal, oms_fault_type_enu_t faultType, double faultValue);
+    virtual oms_status_enu_t setFaultInjection(const ComRef& signal, oms_fault_type_enu_t faultType, double faultValue) {return oms_status_error;}
 
     oms_status_enu_t addTLMBus(const oms::ComRef& cref, oms_tlm_domain_t domain, const int dimensions, const oms_tlm_interpolation_t interpolation);
 #if !defined(NO_TLM)
@@ -105,7 +104,7 @@ namespace oms
     virtual oms_status_enu_t getRealOutputDerivative(const ComRef& cref, SignalDerivative& der) {return logError_NotImplemented;}
     virtual oms_status_enu_t setRealInputDerivative(const ComRef& cref, const SignalDerivative& der) {return logError_NotImplemented;}
 
-    virtual Variable* getVariable(const ComRef& cref) {logError_NotImplemented; return NULL;}
+    virtual Variable* getVariable(const ComRef& cref) = 0;
 
     virtual oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultFile) = 0;
     virtual oms_status_enu_t updateSignals(ResultWriter& resultWriter) = 0;
@@ -140,8 +139,8 @@ namespace oms
     System* parentSystem;
     ComRef cref;
     oms_component_enu_t type;
-    std::string path;     // resource file (fmu, mat)
-    std::string tempDir;  // unzipped fmu
+    std::string path;                             ///< resource file (fmu, mat)
+    std::string tempDir;                          ///< unzipped fmu
   };
 }
 
