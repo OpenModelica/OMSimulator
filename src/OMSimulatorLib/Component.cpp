@@ -234,7 +234,7 @@ oms_status_enu_t oms::Component::deleteResources()
   {
     try
     {
-      filesystem::remove_all(getTempDir());
+      filesystem::remove_all(tempDir);
       logDebug("removed temp directory: \"" + tempDir + "\"");
     }
     catch (const std::exception& e)
