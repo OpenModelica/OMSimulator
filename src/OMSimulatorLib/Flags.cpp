@@ -62,6 +62,7 @@ oms::Flags::~Flags()
 void oms::Flags::setDefaults()
 {
   defaultModeIsCS = false;
+  deleteTempFiles = true;
   emitEvents = true;
   ignoreInitialUnknowns = false;
   inputExtrapolation = false;
@@ -170,6 +171,12 @@ oms_status_enu_t oms::Flags::SetCommandLineOption(const std::string& cmd)
 oms_status_enu_t oms::Flags::ClearAllOptions(const std::string& value)
 {
   GetInstance().setDefaults();
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Flags::DeleteTempFiles(const std::string& value)
+{
+  GetInstance().deleteTempFiles = (value == "true");
   return oms_status_ok;
 }
 

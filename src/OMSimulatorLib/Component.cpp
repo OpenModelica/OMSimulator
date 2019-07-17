@@ -31,11 +31,11 @@
 
 #include "Component.h"
 
+#include "Flags.h"
 #include "Model.h"
 #include "System.h"
-#include <OMSFileSystem.h>
 #include "TLMBusConnector.h"
-
+#include <OMSFileSystem.h>
 
 void oms::fmiLogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message)
 {
@@ -223,23 +223,20 @@ oms_status_enu_t oms::Component::deleteConnector(const ComRef& cref)
 
 oms_status_enu_t oms::Component::deleteResources()
 {
-  filesystem::path temp_root(parentSystem->getModel()->getTempDirectory());
-  filesystem::path absResourcePath = temp_root / path;
-
-  // delete resources
-  //filesystem::remove(absResourcePath);
-
   // delete temp directory
-  if (!tempDir.empty() && filesystem::is_directory(tempDir))
+  if (Flags::DeleteTempFiles())
   {
-    try
+    if (!tempDir.empty() && filesystem::is_directory(tempDir))
     {
-      filesystem::remove_all(tempDir);
-      logDebug("removed temp directory: \"" + tempDir + "\"");
-    }
-    catch (const std::exception& e)
-    {
-      logWarning("temp directory \"" + tempDir + "\" couldn't be removed\n" + e.what());
+      try
+      {
+        filesystem::remove_all(tempDir);
+        logDebug("removed temp directory: \"" + tempDir + "\"");
+      }
+      catch (const std::exception& e)
+      {
+        logWarning("temp directory \"" + tempDir + "\" couldn't be removed\n" + e.what());
+      }
     }
   }
 
