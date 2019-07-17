@@ -56,6 +56,7 @@ namespace oms
     static oms_status_enu_t SetCommandLineOption(const std::string& cmd);
 
     static bool DefaultModeIsCS() {return GetInstance().defaultModeIsCS;}
+    static bool DeleteTempFiles() {return GetInstance().deleteTempFiles;}
     static bool EmitEvents() {return GetInstance().emitEvents;}
     static bool IgnoreInitialUnknowns() {return GetInstance().ignoreInitialUnknowns;}
     static bool InputExtrapolation() {return GetInstance().inputExtrapolation;}
@@ -77,8 +78,9 @@ namespace oms
     static unsigned int NumProcs() {return GetInstance().numProcs;}
 
   private:
-    bool emitEvents;
     bool defaultModeIsCS;
+    bool deleteTempFiles;
+    bool emitEvents;
     bool ignoreInitialUnknowns;
     bool inputExtrapolation;
     bool progressBar;
@@ -123,36 +125,38 @@ namespace oms
     const std::vector<Flag> flags = {
       {"", "", "FMU or SSP file", re_filename, Flags::Filename, false},
       {"--clearAllOptions", "", "Reset all flags to default values", re_void, Flags::ClearAllOptions, false},
-      {"--emitEvents", "", "Specifies whether events should be emitted or not", re_bool, Flags::EmitEvents, false},
+      {"--deleteTempFiles", "", "Deletes temp files as soon as they are no longer needed ([true], false)", re_bool, Flags::DeleteTempFiles, false},
+      {"--emitEvents", "", "Specifies whether events should be emitted or not ([true], false)", re_bool, Flags::EmitEvents, false},
       {"--fetchAllVars", "", "Workaround for certain FMUs that do not update all internal dependencies automatically", re_default, Flags::FetchAllVars, false},
       {"--help", "-h", "Displays the help text", re_void, Flags::Help, true},
-      {"--ignoreInitialUnknowns", "", "Ignore the initial unknowns from the modelDescription.xml", re_bool, Flags::IgnoreInitialUnknowns, false},
-      {"--inputExtrapolation", "", "Enables input extrapolation using derivative information", re_bool, Flags::InputExtrapolation, false},
+      {"--ignoreInitialUnknowns", "", "Ignore the initial unknowns from the modelDescription.xml (true, [false])", re_bool, Flags::IgnoreInitialUnknowns, false},
+      {"--inputExtrapolation", "", "Enables input extrapolation using derivative information (true, [false])", re_bool, Flags::InputExtrapolation, false},
       {"--intervals", "-i", "Specifies the number of communication points (arg > 1)", re_number, Flags::Intervals, false},
       {"--logFile", "-l", "Specifies the logfile (stdout is used if no log file is specified)", re_default, Flags::LogFile, false},
       {"--logLevel", "", "0 default, 1 debug, 2 debug+trace", re_number, Flags::LogLevel, false},
+      {"--maxEventIteration", "", "Specifies the max. number of iterations for handling a single event", re_number, Flags::MaxEventIteration, false},
       {"--mode", "-m", "Forces a certain FMI mode iff the FMU provides cs and me ([cs], me)", re_mode, Flags::Mode, false},
       {"--numProcs", "-n", "Specifies the max. number of processors to use (0=auto, 1=default)", re_number, Flags::NumProcs, false},
-      {"--maxEventIteration", "", "Specifies the max. number of iterations for handling a single event", re_number, Flags::MaxEventIteration, false},
-      {"--progressBar", "", "Shows a progress bar for the simulation progress in the terminal", re_bool, Flags::ProgressBar, false},
-      {"--realTime", "", "Experimental feature for (soft) real-time co-simulation", re_bool, Flags::RealTime, false},
+      {"--progressBar", "", "Shows a progress bar for the simulation progress in the terminal (true, [false])", re_bool, Flags::ProgressBar, false},
+      {"--realTime", "", "Experimental feature for (soft) real-time co-simulation (true, [false])", re_bool, Flags::RealTime, false},
       {"--resultFile", "-r", "Specifies the name of the output result file", re_default, Flags::ResultFile, false},
       {"--setInputDerivatives", "", "Deprecated; see '--inputExtrapolation'", re_bool, Flags::SetInputDerivatives, false},
       {"--solver", "", "Specifies the integration method (euler, [cvode])", re_default, Flags::Solver, false},
-      {"--solverStats", "", "Adds solver stats to the result file, e.g. step size (not supported for all solvers)", re_bool, Flags::SolverStats, false},
+      {"--solverStats", "", "Adds solver stats to the result file, e.g. step size; not supported for all solvers (true, [false])", re_bool, Flags::SolverStats, false},
       {"--startTime", "-s", "Specifies the start time", re_double, Flags::StartTime, false},
       {"--stopTime", "-t", "Specifies the stop time", re_double, Flags::StopTime, false},
-      {"--stripRoot", "", "Removes the root system prefix from all exported signals", re_bool, Flags::StripRoot, false},
-      {"--suppressPath", "", "Supresses path information in info messages; especially useful for testing", re_bool, Flags::SuppressPath, false},
+      {"--stripRoot", "", "Removes the root system prefix from all exported signals (true, [false])", re_bool, Flags::StripRoot, false},
+      {"--suppressPath", "", "Supresses path information in info messages; especially useful for testing (true, [false])", re_bool, Flags::SuppressPath, false},
       {"--tempDir", "", "Specifies the temp directory", re_default, Flags::TempDir, false},
       {"--timeout", "", "Specifies the maximum allowed time in seconds for running a simulation (0 disables)", re_number, Flags::Timeout, false},
       {"--tolerance", "", "Specifies the relative tolerance", re_double, Flags::Tolerance, false},
       {"--version", "-v", "Displays version information", re_void, Flags::Version, false},
-      {"--wallTime", "", "Add wall time information for to the result file", re_bool, Flags::WallTime, false},
+      {"--wallTime", "", "Add wall time information for to the result file (true, [false])", re_bool, Flags::WallTime, false},
       {"--workingDir", "", "Specifies the working directory", re_default, Flags::WorkingDir, false}
     };
 
     static oms_status_enu_t ClearAllOptions(const std::string& value);
+    static oms_status_enu_t DeleteTempFiles(const std::string& value);
     static oms_status_enu_t EmitEvents(const std::string& value);
     static oms_status_enu_t FetchAllVars(const std::string& value);
     static oms_status_enu_t Filename(const std::string& value);
