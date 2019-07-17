@@ -59,6 +59,20 @@ oms::Model::~Model()
 
   if (system)
     delete system;
+
+  // delete temp directory
+  if (!tempDir.empty() && filesystem::is_directory(tempDir))
+  {
+    try
+    {
+      filesystem::remove_all(tempDir);
+      logDebug("removed temp directory: \"" + tempDir + "\"");
+    }
+    catch (const std::exception& e)
+    {
+      logWarning("temp directory \"" + tempDir + "\" couldn't be removed\n" + e.what());
+    }
+  }
 }
 
 oms::Model* oms::Model::NewModel(const oms::ComRef& cref)
