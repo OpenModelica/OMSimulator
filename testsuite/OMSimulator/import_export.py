@@ -247,7 +247,7 @@ printStatus(status, 0)
 ## 						<ssd:Connectors />
 ## 						<ssd:Connections />
 ## 					</ssd:System>
-## 					<ssd:Component name="T" type="application/table" source="resources/T.csv">
+## 					<ssd:Component name="T" type="application/table" source="resources/2_T.csv">
 ## 						<ssd:Connectors>
 ## 							<ssd:Connector name="time" kind="output" type="Real">
 ## 								<ssd:ConnectorGeometry x="1.000000" y="0.333333" />
@@ -257,7 +257,7 @@ printStatus(status, 0)
 ## 							</ssd:Connector>
 ## 						</ssd:Connectors>
 ## 					</ssd:Component>
-## 					<ssd:Component name="A" type="application/x-fmu-sharedlibrary" source="resources/A.fmu">
+## 					<ssd:Component name="A" type="application/x-fmu-sharedlibrary" source="resources/1_A.fmu">
 ## 						<ssd:Connectors>
 ## 							<ssd:Connector name="y" kind="output" type="Real">
 ## 								<ssd:ConnectorGeometry x="1.000000" y="0.500000" />
@@ -370,7 +370,7 @@ printStatus(status, 0)
 ## 						<ssd:Connectors />
 ## 						<ssd:Connections />
 ## 					</ssd:System>
-## 					<ssd:Component name="T" type="application/table" source="resources/T.csv">
+## 					<ssd:Component name="T" type="application/table" source="resources/2_T.csv">
 ## 						<ssd:Connectors>
 ## 							<ssd:Connector name="time" kind="output" type="Real">
 ## 								<ssd:ConnectorGeometry x="1.000000" y="0.333333" />
@@ -380,7 +380,7 @@ printStatus(status, 0)
 ## 							</ssd:Connector>
 ## 						</ssd:Connectors>
 ## 					</ssd:Component>
-## 					<ssd:Component name="A" type="application/x-fmu-sharedlibrary" source="resources/A.fmu">
+## 					<ssd:Component name="A" type="application/x-fmu-sharedlibrary" source="resources/1_A.fmu">
 ## 						<ssd:Connectors>
 ## 							<ssd:Connector name="y" kind="output" type="Real">
 ## 								<ssd:ConnectorGeometry x="1.000000" y="0.500000" />
