@@ -62,6 +62,7 @@ namespace oms
 
     oms_status_enu_t stepUntil(double stopTime) {time = stopTime; return oms_status_ok;}
 
+    Variable* getVariable(const ComRef& cref) {logError_NotImplemented; return NULL;}
     oms_status_enu_t getReal(const ComRef& cref, double& value);
     oms_status_enu_t getRealOutputDerivative(const ComRef& cref, SignalDerivative& value);
 

@@ -79,6 +79,11 @@ typedef enum {
   oms_fault_type_const      ///< y = faultValue
 } oms_fault_type_enu_t;
 
+typedef struct {
+  oms_fault_type_enu_t faultType;
+  double faultValue;
+} oms_fault_type_t;
+
 typedef enum {
   oms_tlm_domain_input,
   oms_tlm_domain_output,

@@ -110,11 +110,26 @@ oms::Component::~Component()
 
 #if !defined(NO_TLM)
   for (const auto tlmbusconnector : tlmbusconnectors)
-    if(tlmbusconnector)
+    if (tlmbusconnector)
       delete tlmbusconnector;
 #endif
 
-  deleteResources();
+  // delete temp directory
+  if (Flags::DeleteTempFiles())
+  {
+    if (!tempDir.empty() && filesystem::is_directory(tempDir))
+    {
+      try
+      {
+        filesystem::remove_all(tempDir);
+        logDebug("removed temp directory: \"" + tempDir + "\"");
+      }
+      catch (const std::exception& e)
+      {
+        logWarning("temp directory \"" + tempDir + "\" couldn't be removed\n" + e.what());
+      }
+    }
+  }
 }
 
 oms::ComRef oms::Component::getFullCref() const
@@ -130,9 +145,9 @@ oms::Model* oms::Component::getModel() const
 oms_status_enu_t oms::Component::addTLMBus(const oms::ComRef &cref, oms_tlm_domain_t domain, const int dimensions, const oms_tlm_interpolation_t interpolation)
 {
 #if !defined(NO_TLM)
-  if(!cref.isValidIdent()) {
+  if (!cref.isValidIdent())
     return logError("Not a valid ident: "+std::string(cref));
-  }
+
   oms::TLMBusConnector* bus = new oms::TLMBusConnector(cref, domain, dimensions, interpolation,nullptr,this);
   tlmbusconnectors.back() = bus;
   tlmbusconnectors.push_back(NULL);
@@ -146,10 +161,10 @@ oms_status_enu_t oms::Component::addTLMBus(const oms::ComRef &cref, oms_tlm_doma
 #if !defined(NO_TLM)
 oms::TLMBusConnector *oms::Component::getTLMBusConnector(const oms::ComRef &cref)
 {
-  for(auto &tlmbusconnector : tlmbusconnectors) {
-    if(tlmbusconnector && tlmbusconnector->getName() == cref)
+  for (auto &tlmbusconnector : tlmbusconnectors)
+    if (tlmbusconnector && tlmbusconnector->getName() == cref)
       return tlmbusconnector;
-  }
+
   return NULL;
 }
 #endif
@@ -157,12 +172,12 @@ oms::TLMBusConnector *oms::Component::getTLMBusConnector(const oms::ComRef &cref
 oms_status_enu_t oms::Component::addConnectorToTLMBus(const oms::ComRef& busCref, const oms::ComRef& connectorCref, const std::string type)
 {
 #if !defined(NO_TLM)
-
   //Check that connector exists in component
   bool found = false;
-  for(auto& connector : connectors)
+  for (auto& connector : connectors)
     if (connector && connector->getName() == connectorCref)
       found = true;
+
   if (!found)
     return logError_ConnectorNotInComponent(connectorCref, this);
 
@@ -182,8 +197,8 @@ oms_status_enu_t oms::Component::addConnectorToTLMBus(const oms::ComRef& busCref
 oms_status_enu_t oms::Component::deleteConnectorFromTLMBus(const oms::ComRef& busCref, const oms::ComRef& connectorCref)
 {
 #if !defined(NO_TLM)
-  for(auto& bus : tlmbusconnectors)
-    if(bus && bus->getName() == busCref)
+  for (auto& bus : tlmbusconnectors)
+    if (bus && bus->getName() == busCref)
       return bus->deleteConnector(connectorCref);
 
   return logError_BusNotInComponent(busCref, this);
@@ -195,10 +210,8 @@ oms_status_enu_t oms::Component::deleteConnectorFromTLMBus(const oms::ComRef& bu
 oms::Connector* oms::Component::getConnector(const ComRef& cref)
 {
   for (auto &connector : connectors)
-  {
     if (connector && connector->getName() == cref)
       return connector;
-  }
 
   return NULL;
 }
@@ -218,32 +231,5 @@ oms_status_enu_t oms::Component::deleteConnector(const ComRef& cref)
     }
   }
 
-  return oms_status_error;
-}
-
-oms_status_enu_t oms::Component::deleteResources()
-{
-  // delete temp directory
-  if (Flags::DeleteTempFiles())
-  {
-    if (!tempDir.empty() && filesystem::is_directory(tempDir))
-    {
-      try
-      {
-        filesystem::remove_all(tempDir);
-        logDebug("removed temp directory: \"" + tempDir + "\"");
-      }
-      catch (const std::exception& e)
-      {
-        logWarning("temp directory \"" + tempDir + "\" couldn't be removed\n" + e.what());
-      }
-    }
-  }
-
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms::Component::faultInjection(const oms::ComRef& signal, oms_fault_type_enu_t faultType, double faultValue)
-{
   return oms_status_error;
 }

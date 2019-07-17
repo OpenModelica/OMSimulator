@@ -53,6 +53,7 @@ namespace oms
 
     const ExternalModelInfo *getExternalModelInfo() const {return &(this->externalModelInfo);}
 
+    Variable* getVariable(const ComRef& cref) {logError_NotImplemented; return NULL;}
     oms_status_enu_t setRealParameter(const std::string& var, double value);
     oms_status_enu_t getRealParameter(const std::string& var, double& value);
     const std::string getStartScript() const {return externalModelInfo.getStartScript();}
