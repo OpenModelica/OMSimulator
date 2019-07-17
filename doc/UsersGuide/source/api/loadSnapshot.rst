@@ -8,7 +8,7 @@ Loads a snapshot to restore a previous model state.
 #LUA#
 .. code-block:: lua
 
-  # not available
+  status oms_loadSnapshot(cref, snapshot)
 
 #END#
 
