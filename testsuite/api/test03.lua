@@ -1,5 +1,5 @@
 -- status: correct
--- teardown_command: rm -rf test03-lua/
+-- teardown_command: rm -rf test03-lua/ test_res.mat
 -- linux: yes
 -- mingw: no
 -- win: no
