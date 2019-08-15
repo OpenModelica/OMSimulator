@@ -1598,6 +1598,55 @@ oms_status_enu_t oms_extractFMIKind(const char* filename, oms_fmi_kind_enu_t* ki
   return oms_status_ok;
 }
 
+oms_status_enu_t oms_fetchExternalModelInterfaces(const char* cref, char*** names, char*** domains, int** dimensions)
+{
+#if !defined(NO_TLM)
+  oms::ComRef tail(cref);
+  oms::ComRef front = tail.pop_front();
+
+  oms::Model* model = oms::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  front = tail.pop_front();
+  oms::System* system = model->getSystem(front);
+  if (!system)
+    return logError_SystemNotInModel(model->getCref(), front);
+
+  if (system->getType() != oms_system_tlm)
+    return logError_OnlyForSystemTLM;
+
+  oms::SystemTLM* tlmsystem = reinterpret_cast<oms::SystemTLM*>(system);
+  std::vector<std::string> namesVec,domainsVec;
+  std::vector<int> dimensionsVec;
+
+  oms_status_enu_t status = tlmsystem->fetchInterfaces(tail,namesVec,dimensionsVec,domainsVec);
+
+  (*names) = new char*[namesVec.size()+1];
+  for(int i=0; i<namesVec.size(); ++i) {
+    (*names)[i] = new char[namesVec[i].size()+1];
+    strcpy((*names)[i], namesVec[i].c_str());
+  }
+  (*names)[namesVec.size()] = nullptr;
+
+  (*domains) = new char*[domainsVec.size()+1];
+  for(int i=0; i<domainsVec.size(); ++i) {
+    (*domains)[i] = new char[domainsVec[i].size()+1];
+    strcpy((*domains)[i], domainsVec[i].c_str());
+  }
+  (*domains)[domainsVec.size()] = nullptr;
+
+  (*dimensions) = new int[dimensionsVec.size()+1];
+  for(int i=0; i<dimensionsVec.size(); ++i) {
+    (*dimensions)[i] = dimensionsVec[i];
+  }
+
+  return status;
+#else
+  return LOG_NO_TLM();
+#endif
+}
+
 oms_status_enu_t oms_setSolver(const char* cref, oms_solver_enu_t solver)
 {
   oms::ComRef tail(cref);

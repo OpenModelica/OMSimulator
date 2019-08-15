@@ -83,6 +83,7 @@ OMSAPI oms_status_enu_t OMSCALL oms_deleteConnectorFromTLMBus(const char* busCre
 OMSAPI oms_status_enu_t OMSCALL oms_export(const char* cref, const char* filename);
 OMSAPI oms_status_enu_t OMSCALL oms_exportDependencyGraphs(const char* cref, const char* initialization, const char* simulation);
 OMSAPI oms_status_enu_t OMSCALL oms_extractFMIKind(const char* filename, oms_fmi_kind_enu_t* kind);
+OMSAPI oms_status_enu_t OMSCALL oms_fetchExternalModelInterfaces(const char* cref, char*** names, char*** domains, int** dimensions);
 OMSAPI void OMSCALL oms_freeMemory(void* obj);
 OMSAPI oms_status_enu_t OMSCALL oms_getBoolean(const char* cref, bool* value);
 OMSAPI oms_status_enu_t OMSCALL oms_getBus(const char* cref, oms_busconnector_t** busConnector);

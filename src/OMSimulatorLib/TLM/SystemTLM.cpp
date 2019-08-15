@@ -142,8 +142,11 @@ oms_status_enu_t oms::SystemTLM::initialize()
   omtlm_setMonitorPort(model, actualMonitorPort);
 
   for(const auto& subsystem : this->getSubSystems()) {
+    if(!singleModel.empty() && singleModel != subsystem.second->getCref().c_str()) {
+        continue;
+    }
     omtlm_addSubModel(model, subsystem.second->getCref().c_str(),"","none");
-    for(int i=0; subsystem.second->getTLMBusConnectors()[i]; ++i) {
+    for(int i=0; subsystem.second->getTLMBusConnectors()[i] && (singleModel==""); ++i) {
       TLMBusConnector *tlmbus = subsystem.second->getTLMBusConnectors()[i];
 
       std::string causality = "input";
@@ -165,6 +168,10 @@ oms_status_enu_t oms::SystemTLM::initialize()
   for(const auto& component : this->getComponents()) {
     if(component.second->getType() != oms_component_external)
       continue;
+
+    if(!singleModel.empty() && singleModel != component.second->getCref().c_str()) {
+        continue;
+    }
 
     ExternalModel* externalmodel = reinterpret_cast<ExternalModel*>(component.second);
 
@@ -417,6 +424,46 @@ oms_status_enu_t oms::SystemTLM::setPositionAndOrientation(const oms::ComRef &cr
   }
   omtlm_setInitialPositionAndOrientation(model, ifcname.c_str(), x, A);
   return oms_status_ok;
+}
+
+oms_status_enu_t oms::SystemTLM::fetchInterfaces(const oms::ComRef &cref,
+                                                 std::vector<std::string> &names,
+                                                 std::vector<int> &dimensions,
+                                                 std::vector<std::string> &domains)
+{
+    if(getComponents().find(cref) == getComponents().end()) {
+      return logError("Sub-model \""+std::string(cref)+"\" not found.");
+    }
+    singleModel = cref.c_str();
+    initialize();
+    singleModel = "";
+    omtlm_fetchInterfaces(model, cref.c_str());
+
+    //Read interface data from interfaceData.xml (generated above)
+    pugi::xml_document doc;
+    pugi::xml_parse_result result = doc.load_file("interfaceData.xml");
+    if(!result) {
+        return logError("reading interface data from interfaceData.xml failed");
+    }
+
+    pugi::xml_node modelDataNode = doc.child("ModelData");
+    if(!modelDataNode) {
+        return logError("\"ModelData\" node not found in interfaceData.xml");
+    }
+
+    pugi::xml_node interfacesNode = modelDataNode.child("Interfaces");
+    if(!interfacesNode) {
+        return logError("\"Interfaces\" node not found in interfaceData.xml");
+    }
+
+    for (pugi::xml_node interfaceNode = interfacesNode.child("Interface"); interfaceNode; interfaceNode = interfaceNode.next_sibling("Interface"))
+    {
+        names.push_back(interfaceNode.attribute("Name").value());
+        dimensions.push_back(interfaceNode.attribute("Dimensions").as_int());
+        domains.push_back(interfaceNode.attribute("Domain").value());
+    }
+
+    return oms_status_ok;
 }
 
 oms_status_enu_t oms::SystemTLM::updateInitialValues(const oms::ComRef cref)
