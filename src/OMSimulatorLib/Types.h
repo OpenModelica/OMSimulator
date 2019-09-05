@@ -73,7 +73,6 @@ typedef enum {
 } oms_tlm_interpolation_t;
 
 typedef enum {
-  oms_fault_type_none,      ///< y = y.$original
   oms_fault_type_bias,      ///< y = y.$original + faultValue
   oms_fault_type_gain,      ///< y = y.$original * faultValue
   oms_fault_type_const      ///< y = faultValue
