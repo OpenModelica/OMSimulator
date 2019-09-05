@@ -95,6 +95,8 @@ namespace oms
 
     bool getCanGetAndSetState() {return getFMUInfo()->getCanGetAndSetFMUstate();}
 
+    oms_status_enu_t setFaultInjection(const ComRef& signal, oms_fault_type_enu_t faultType, double faultValue);
+
   protected:
     ComponentFMUME(const ComRef& cref, System* parentSystem, const std::string& fmuPath);
 
@@ -125,6 +127,8 @@ namespace oms
     std::map<ComRef, bool> booleanStartValues; ///< parameters and start values defined before instantiating the FMU
 
     std::unordered_map<unsigned int /*result file var ID*/, unsigned int /*allVariables ID*/> resultFileMapping;
+
+    std::map<fmi2_value_reference_t, oms_fault_type_t> fib;  ///< fault injection blocks
   };
 }
 
