@@ -1599,7 +1599,6 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_ENUM(oms_tlm_domain_electric);
 
   // oms_fault_type_enu_t
-  REGISTER_LUA_ENUM(oms_fault_type_none);
   REGISTER_LUA_ENUM(oms_fault_type_bias);
   REGISTER_LUA_ENUM(oms_fault_type_gain);
   REGISTER_LUA_ENUM(oms_fault_type_const);
