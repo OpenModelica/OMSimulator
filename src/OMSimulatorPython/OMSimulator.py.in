@@ -46,6 +46,11 @@ class OMSimulator:
     self.solver_wc_mav = 7
     self.solver_wc_mav2 = 8
 
+    ## oms_fault_type_enu_t
+    self.fault_type_bias = 0
+    self.fault_type_gain = 1
+    self.fault_type_const = 2
+
     self.obj.oms_addBus.argtypes = [ctypes.c_char_p]
     self.obj.oms_addBus.restype = ctypes.c_int
     self.obj.oms_addConnection.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
@@ -86,6 +91,8 @@ class OMSimulator:
     self.obj.oms_export.restype = ctypes.c_int
     self.obj.oms_exportDependencyGraphs.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_exportDependencyGraphs.restype = ctypes.c_int
+    self.obj.oms_faultInjection.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_double]
+    self.obj.oms_faultInjection.restype = ctypes.c_int
     self.obj.oms_getBoolean.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_bool)]
     self.obj.oms_getBoolean.restype = ctypes.c_int
     self.obj.oms_getFixedStepSize.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_double)]
@@ -277,6 +284,8 @@ class OMSimulator:
     return self.obj.oms_setTLMPositionAndOrientation(self.checkstring(cref), x1, x2, x3, A11, A12, A13, A21, A22, A23, A31, A32, A33)
   def exportDependencyGraphs(self, cref, initialization, simulation):
     return self.obj.oms_exportDependencyGraphs(self.checkstring(cref), self.checkstring(initialization), self.checkstring(simulation))
+  def faultInjection(self, cref, faultType, faultValue):
+    return self.obj.oms_faultInjection(self.checkstring(cref), faultType, faultValue)
   def getReal(self, cref):
     value = ctypes.c_double()
     status = self.obj.oms_getReal(self.checkstring(cref), ctypes.byref(value))
