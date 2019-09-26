@@ -546,6 +546,26 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node)
           }
           else if ("application/table" == type)
             component = ComponentTable::NewComponent(*itElements, this);
+          else if (itElements->attribute("type") == nullptr) {
+              std::string name = itElements->attribute("name").as_string();
+              std::string source = itElements->attribute("source").as_string();
+              pugi::xml_node simulationInformationNode = itElements->child(oms::ssd::ssd_simulation_information);
+              if(simulationInformationNode) {
+                  pugi::xml_node annotationsNode = simulationInformationNode.child(oms::ssd::ssd_annotations);
+                  if(annotationsNode) {
+                      for (pugi::xml_node annotationNode = annotationsNode.child(oms::ssd::ssd_annotation); annotationsNode; annotationsNode = annotationsNode.next_sibling(oms::ssd::ssd_annotation)) {
+                          std::string type = annotationNode.attribute("type").as_string() ;
+                          if("org.openmodelica" == type) {
+                              pugi::xml_node externalModelNode = annotationNode.child(oms::external_model);
+                              if(externalModelNode) {
+                                  std::string startScript = externalModelNode.attribute("startscript").as_string();
+                                  component = ExternalModel::NewComponent(name,this,source,startScript);
+                              }
+                          }
+                      }
+                  }
+              }
+          }
 
           if (component)
           {
