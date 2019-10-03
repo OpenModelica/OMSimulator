@@ -546,6 +546,7 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node)
           }
           else if ("application/table" == type)
             component = ComponentTable::NewComponent(*itElements, this);
+#if !defined(NO_TLM)
           else if (itElements->attribute("type") == nullptr) {
               std::string name = itElements->attribute("name").as_string();
               std::string source = itElements->attribute("source").as_string();
@@ -566,6 +567,7 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node)
                   }
               }
           }
+#endif
 
           if (component)
           {
