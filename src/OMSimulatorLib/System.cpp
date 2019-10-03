@@ -559,7 +559,7 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node)
                               pugi::xml_node externalModelNode = annotationNode.child(oms::external_model);
                               if(externalModelNode) {
                                   std::string startScript = externalModelNode.attribute("startscript").as_string();
-                                  component = ExternalModel::NewComponent(name,this,source,startScript);
+                                  component = oms::ExternalModel::NewComponent(name,this,source,startScript);
                               }
                           }
                       }
