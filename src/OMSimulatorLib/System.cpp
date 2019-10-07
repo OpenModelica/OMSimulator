@@ -554,9 +554,9 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node)
               if(simulationInformationNode) {
                   pugi::xml_node annotationsNode = simulationInformationNode.child(oms::ssd::ssd_annotations);
                   if(annotationsNode) {
-                      for (pugi::xml_node annotationNode = annotationsNode.child(oms::ssd::ssd_annotation); annotationsNode; annotationsNode = annotationsNode.next_sibling(oms::ssd::ssd_annotation)) {
+                      for (pugi::xml_node annotationNode = annotationsNode.child(oms::ssd::ssd_annotation); annotationNode; annotationNode = annotationNode.next_sibling(oms::ssd::ssd_annotation)) {
                           std::string type = annotationNode.attribute("type").as_string() ;
-                          if("org.openmodelica" == type) {
+                          if(oms::annotation_type == type) {
                               pugi::xml_node externalModelNode = annotationNode.child(oms::external_model);
                               if(externalModelNode) {
                                   std::string startScript = externalModelNode.attribute("startscript").as_string();
@@ -566,9 +566,50 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node)
                       }
                   }
               }
+              pugi::xml_node annotationsNode = itElements->child(oms::ssd::ssd_annotations);
+              if(annotationsNode) {
+                  for (pugi::xml_node annotationNode = annotationsNode.child(oms::ssd::ssd_annotation); annotationNode; annotationNode = annotationNode.next_sibling(oms::ssd::ssd_annotation)) {
+                      std::string type = annotationNode.attribute("type").as_string() ;
+                      if(oms::annotation_type == type) {
+                          pugi::xml_node busNode = annotationNode.child(oms::bus);
+                          //Load TLM bus connector for external model
+                          std::string busname = busNode.attribute("name").as_string();
+                          std::string domainstr = busNode.attribute("domain").as_string();
+                          int dimensions = busNode.attribute("dimensions").as_int();
+                          std::string interpolationstr = busNode.attribute("interpolation").as_string();
+                          oms_tlm_interpolation_t interpolation;
+                          if (interpolationstr == "none")
+                              interpolation = oms_tlm_no_interpolation;
+                          else if (interpolationstr == "coarsegrained")
+                              interpolation = oms_tlm_coarse_grained;
+                          else if (interpolationstr == "finegrained")
+                              interpolation = oms_tlm_fine_grained;
+                          else
+                              return logError("Unsupported interpolation type: "+interpolationstr);
+
+                          oms_tlm_domain_t domain;
+                          if(domainstr == "input")
+                              domain = oms_tlm_domain_input;
+                          else if(domainstr == "output")
+                              domain = oms_tlm_domain_output;
+                          else if(domainstr == "mechanical")
+                              domain = oms_tlm_domain_mechanical;
+                          else if(domainstr == "rotational")
+                              domain = oms_tlm_domain_rotational;
+                          else if(domainstr == "hydraulic")
+                              domain = oms_tlm_domain_hydraulic;
+                          else if(domainstr == "electric")
+                              domain = oms_tlm_domain_electric;
+                          else
+                              return logError("Unsupported TLM domain: "+domainstr);
+
+                          if (oms_status_ok != component->addTLMBus(busname,domain,dimensions,interpolation))
+                              return oms_status_error;
+                      }
+                  }
+              }
           }
 #endif
-
           if (component)
           {
             components[component->getCref()] = component;
