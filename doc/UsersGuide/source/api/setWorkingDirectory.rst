@@ -26,5 +26,12 @@ Set a new working directory.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  status := oms_setWorkingDirectory(newWorkingDir);
+
+#END#
+
 #DESCRIPTION#
 #END#

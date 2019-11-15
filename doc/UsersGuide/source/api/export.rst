@@ -26,5 +26,12 @@ Exports a composite model to a SPP file.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  status := oms_export(cref, filename);
+
+#END#
+
 #DESCRIPTION#
 #END#

@@ -26,5 +26,11 @@ This function is neither needed nor available from the Lua interface.
 
 #END#
 
+#OMC#
+
+This function is not needed for OpenModelicaScripting Interface
+
+#END#
+
 #DESCRIPTION#
 #END#

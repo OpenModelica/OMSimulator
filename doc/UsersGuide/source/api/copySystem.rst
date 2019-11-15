@@ -26,5 +26,12 @@ Copies a system.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  status := oms_copySystem(source, target);
+
+#END#
+
 #DESCRIPTION#
 #END#

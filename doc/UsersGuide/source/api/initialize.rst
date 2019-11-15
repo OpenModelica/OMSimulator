@@ -26,5 +26,12 @@ Initializes a composite model.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  status := oms_initialize(cref);
+
+#END#
+
 #DESCRIPTION#
 #END#

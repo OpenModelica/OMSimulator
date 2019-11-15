@@ -26,5 +26,12 @@ Imports a composite model from a SSP file.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  (cref, status) := oms_importFile(filename);
+
+#END#
+
 #DESCRIPTION#
 #END#

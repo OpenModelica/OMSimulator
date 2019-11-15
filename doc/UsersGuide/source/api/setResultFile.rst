@@ -28,6 +28,14 @@ Set the result file of the simulation.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  status := oms_setResultFile(cref, filename); 
+  status := oms_setResultFile(cref, filename, bufferSize);
+
+#END#
+
 #DESCRIPTION#
 The creation of a result file is omitted if the filename is an empty string.
 #END#

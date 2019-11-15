@@ -26,5 +26,12 @@ Gets the type of an TLM variable.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  # not available
+
+#END#
+
 #DESCRIPTION#
 #END#

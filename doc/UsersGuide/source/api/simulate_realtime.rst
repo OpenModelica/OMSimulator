@@ -26,5 +26,12 @@ Experimental feature for (soft) real-time simulation.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  # not yet available
+
+#END#
+
 #DESCRIPTION#
 #END#

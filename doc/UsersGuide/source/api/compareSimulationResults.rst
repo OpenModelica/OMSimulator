@@ -11,6 +11,30 @@ relative tolerances.
 
   oms_compareSimulationResults(filenameA, filenameB, var, relTol, absTol)
 
+#END#
+
+#PYTHON#
+.. code-block:: python
+
+  oms.compareSimulationResults(filenameA, filenameB, var, relTol, absTol)
+
+#END#
+
+#CAPI#
+.. code-block:: c
+
+  int oms_compareSimulationResults(const char* filenameA, const char* filenameB, const char* var, double relTol, double absTol);
+
+#END#
+
+#OMC#
+.. code-block:: Modelica
+
+  status := oms_compareSimulationResults(filenameA, filenameB, var, relTol, absTol);
+
+#END#
+
+#DESCRIPTION#
 The following table describes the input values:
 
 .. csv-table::
@@ -30,22 +54,4 @@ The following table describes the return values:
   :widths: 10, 65
 
   "Integer", "1 if the signal is considered as equal, 0 otherwise"
-
-#END#
-
-#PYTHON#
-.. code-block:: python
-
-  oms.compareSimulationResults(filenameA, filenameB, var, relTol, absTol)
-
-#END#
-
-#CAPI#
-.. code-block:: c
-
-  int oms_compareSimulationResults(const char* filenameA, const char* filenameB, const char* var, double relTol, double absTol);
-
-#END#
-
-#DESCRIPTION#
 #END#

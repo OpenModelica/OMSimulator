@@ -26,5 +26,12 @@ Sets a callback function for the logging system.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  # not available
+
+#END#
+
 #DESCRIPTION#
 #END#

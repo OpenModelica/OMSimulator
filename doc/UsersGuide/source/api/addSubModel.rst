@@ -26,5 +26,12 @@ Adds a component to a system.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  status := oms_addSubModel(cref, fmuPath);
+
+#END#
+
 #DESCRIPTION#
 #END#

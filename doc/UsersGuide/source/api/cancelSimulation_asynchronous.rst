@@ -26,5 +26,12 @@ Cancels a running asynchronous simulation.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  status := oms_cancelSimulation_asynchronous(cref);
+
+#END#
+
 #DESCRIPTION#
 #END#

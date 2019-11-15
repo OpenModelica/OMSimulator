@@ -26,5 +26,12 @@ Get integer value of given signal.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  (value, status) := oms_getInteger(cref);
+
+#END#
+
 #DESCRIPTION#
 #END#

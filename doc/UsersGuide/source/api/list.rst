@@ -30,5 +30,12 @@ doesn't need to call free.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  (contents, status) := oms_list(cref);
+
+#END#
+
 #DESCRIPTION#
 #END#

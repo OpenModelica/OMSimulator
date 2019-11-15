@@ -26,5 +26,12 @@ Adds a connector to a bus.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  status := oms_addConnectorToBus(busCref, connectorCref);
+
+#END#
+
 #DESCRIPTION#
 #END#

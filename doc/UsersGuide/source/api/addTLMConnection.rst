@@ -26,5 +26,12 @@ Connects two TLM connectors.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  status := oms_addTLMConnection(crefA, crefB, delay, alpha, linearimpedance, angularimpedance);
+
+#END#
+
 #DESCRIPTION#
 #END#

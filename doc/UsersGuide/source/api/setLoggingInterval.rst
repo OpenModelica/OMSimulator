@@ -26,5 +26,12 @@ Set the logging interval of the simulation.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  status := oms_setLoggingInterval(cref, loggingInterval);
+
+#END#
+
 #DESCRIPTION#
 #END#

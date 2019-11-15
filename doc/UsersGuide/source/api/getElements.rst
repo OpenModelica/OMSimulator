@@ -26,5 +26,12 @@ Get list of all sub-components of a given component reference.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  # not available
+
+#END#
+
 #DESCRIPTION#
 #END#

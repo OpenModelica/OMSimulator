@@ -26,5 +26,12 @@ Gets the type of the given system.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  (type, status) := oms_getSystemType(cref);
+
+#END#
+
 #DESCRIPTION#
 #END#

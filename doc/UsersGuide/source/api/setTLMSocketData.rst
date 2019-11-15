@@ -26,5 +26,12 @@ Sets data for TLM socket communication.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  status := oms_setTLMSocketData(cref, address, managerPort, monitorPort);
+
+#END#
+
 #DESCRIPTION#
 #END#

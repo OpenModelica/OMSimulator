@@ -26,5 +26,12 @@ Experimental feature for setting the activation ratio of FMUs for experimenting 
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  # not yet available
+
+#END#
+
 #DESCRIPTION#
 #END#

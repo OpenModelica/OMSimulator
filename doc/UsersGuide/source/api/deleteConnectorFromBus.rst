@@ -26,5 +26,12 @@ Deletes a connector from a given bus.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  status := oms_deleteConnectorFromBus(busCref, connectorCref);
+
+#END#
+
 #DESCRIPTION#
 #END#

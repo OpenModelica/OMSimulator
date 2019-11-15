@@ -26,5 +26,12 @@ Gets the TLM bus objects of the given TLM bus cref.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  # not available
+
+#END#
+
 #DESCRIPTION#
 #END#
