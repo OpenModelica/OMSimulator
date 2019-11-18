@@ -29,7 +29,7 @@ Instantiates a given composite model.
 #OMC#
 .. code-block:: Modelica
 
-  status = oms_instantiate(cref);
+  status := oms_instantiate(cref);
 
 #END#
 

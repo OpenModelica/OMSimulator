@@ -29,7 +29,7 @@ Sets the value of a given real signal.
 #OMC#
 .. code-block:: Modelica
 
-  status = oms_setReal(cref, value);
+  status := oms_setReal(cref, value);
 
 #END#
 

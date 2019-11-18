@@ -29,7 +29,7 @@ Set the start time of the simulation.
 #OMC#
 .. code-block:: Modelica
 
-  status = oms_setStartTime(cref, startTime);
+  status := oms_setStartTime(cref, startTime);
 
 #END#
 

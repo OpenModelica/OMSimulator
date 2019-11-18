@@ -29,7 +29,7 @@ Creates a new and yet empty composite model.
 #OMC#
 .. code-block:: Modelica
 
-  status = oms_newModel(cref);
+  status := oms_newModel(cref);
 
 #END#
 

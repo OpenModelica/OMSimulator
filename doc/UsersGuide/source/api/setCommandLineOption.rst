@@ -29,7 +29,7 @@ Sets special flags.
 #OMC#
 .. code-block:: Modelica
 
-  status = oms_setCommandLineOption(cmd);
+  status := oms_setCommandLineOption(cmd);
 
 #END#
 

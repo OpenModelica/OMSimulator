@@ -29,7 +29,7 @@ Renames a model, system, or component.
 #OMC#
 .. code-block:: Modelica
 
-  status = oms_rename(cref, newCref);
+  status := oms_rename(cref, newCref);
 
 #END#
 

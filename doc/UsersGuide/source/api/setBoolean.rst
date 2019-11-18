@@ -29,7 +29,7 @@ Sets the value of a given boolean signal.
 #OMC#
 .. code-block:: Modelica
 
-  status = oms_setBoolean(cref, value);
+  status := oms_setBoolean(cref, value);
 
 #END#
 

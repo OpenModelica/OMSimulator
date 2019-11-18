@@ -29,7 +29,7 @@ Loads a snapshot to restore a previous model state.
 #OMC#
 .. code-block:: Modelica
 
-  status = oms_loadSnapshot(cref, snapshot);
+  status := oms_loadSnapshot(cref, snapshot);
 
 #END#
 

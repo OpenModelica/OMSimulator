@@ -31,7 +31,7 @@ This can only be used for CS-FMU real input signals.
 #OMC#
 .. code-block:: Modelica
 
-  status = oms_setRealInputDerivative(cref, value);
+  status := oms_setRealInputDerivative(cref, value);
 
 #END#
 

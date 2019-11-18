@@ -29,7 +29,7 @@ Removes all variables that match the given regex to the result file.
 #OMC#
 .. code-block:: Modelica
 
-  status = oms_removeSignalsFromResults(cref, regex);
+  status := oms_removeSignalsFromResults(cref, regex);
 
 #END#
 
