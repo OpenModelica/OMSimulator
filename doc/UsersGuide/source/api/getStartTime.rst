@@ -26,5 +26,12 @@ Get the start time from the model.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  (startTime, status) := oms_getStartTime(cref);
+
+#END#
+
 #DESCRIPTION#
 #END#

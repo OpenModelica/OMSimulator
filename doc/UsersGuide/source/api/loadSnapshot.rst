@@ -8,7 +8,7 @@ Loads a snapshot to restore a previous model state.
 #LUA#
 .. code-block:: lua
 
-  status oms_loadSnapshot(cref, snapshot)
+  status = oms_loadSnapshot(cref, snapshot)
 
 #END#
 
@@ -23,6 +23,13 @@ Loads a snapshot to restore a previous model state.
 .. code-block:: c
 
   oms_status_enu_t oms_loadSnapshot(const char* cref, const char* snapshot);
+
+#END#
+
+#OMC#
+.. code-block:: Modelica
+
+  status := oms_loadSnapshot(cref, snapshot);
 
 #END#
 

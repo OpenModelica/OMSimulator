@@ -26,5 +26,12 @@ Creates a new and yet empty composite model.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  status := oms_newModel(cref);
+
+#END#
+
 #DESCRIPTION#
 #END#

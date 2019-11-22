@@ -26,6 +26,13 @@ Sets the value of a given real signal.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  status := oms_setReal(cref, value);
+
+#END#
+
 #DESCRIPTION#
 This function can be called in different model states:
 

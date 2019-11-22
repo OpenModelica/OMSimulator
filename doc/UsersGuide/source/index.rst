@@ -14,6 +14,7 @@ OMSimulator's documentation
   OMSimulatorLib
   OMSimulatorLua
   OMSimulatorPython
+  OpenModelicaScripting
   OMEdit
   OMSysIdent
   SSP

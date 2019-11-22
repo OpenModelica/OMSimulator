@@ -26,6 +26,13 @@ Sets special flags.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  status := oms_setCommandLineOption(cmd);
+
+#END#
+
 #DESCRIPTION#
 
 Available flags:

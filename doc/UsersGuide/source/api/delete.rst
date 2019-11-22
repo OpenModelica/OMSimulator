@@ -26,5 +26,13 @@ Deletes a connector, component, system, or model object.
 
 #END#
 
+
+#OMC#
+.. code-block:: Modelica
+
+  status := oms_delete(cref);
+
+#END#
+
 #DESCRIPTION#
 #END#

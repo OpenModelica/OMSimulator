@@ -26,5 +26,12 @@ Set geometry information to a given component.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  # not available
+
+#END#
+
 #DESCRIPTION#
 #END#

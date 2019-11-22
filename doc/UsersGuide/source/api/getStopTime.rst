@@ -26,5 +26,12 @@ Get the stop time from the model.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  (stopTime, status) := oms_getStopTime(cref);
+
+#END#
+
 #DESCRIPTION#
 #END#

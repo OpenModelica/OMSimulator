@@ -29,5 +29,12 @@ filename="" to redirect to std streams and proper filename to redirect to file.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  status := oms_setLogFile(filename);
+
+#END#
+
 #DESCRIPTION#
 #END#

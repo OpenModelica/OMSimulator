@@ -26,5 +26,12 @@ Sets the value of a given boolean signal.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  status := oms_setBoolean(cref, value);
+
+#END#
+
 #DESCRIPTION#
 #END#

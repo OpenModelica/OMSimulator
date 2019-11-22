@@ -27,6 +27,13 @@ specified as fully qualified component references, e.g., `"model.system.componen
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  status := oms_addConnection(crefA, crefB);
+
+#END#
+
 #DESCRIPTION#
 The two arguments `crefA` and `crefB` get swapped automatically if necessary.
 #END#

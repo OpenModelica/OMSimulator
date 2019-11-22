@@ -27,5 +27,12 @@ Returns the library's version string.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  version := oms_getVersion();
+
+#END#
+
 #DESCRIPTION#
 #END#

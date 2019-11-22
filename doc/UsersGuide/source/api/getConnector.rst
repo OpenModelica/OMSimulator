@@ -26,5 +26,12 @@ Gets the connector object of the given connector cref.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  # not available
+
+#END#
+
 #DESCRIPTION#
 #END#

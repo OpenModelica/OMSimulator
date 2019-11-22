@@ -26,5 +26,12 @@ Instantiates a given composite model.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  status := oms_instantiate(cref);
+
+#END#
+
 #DESCRIPTION#
 #END#

@@ -28,5 +28,12 @@ The FMUs go into the same state as after instantiation.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  status := oms_reset(cref);
+
+#END#
+
 #DESCRIPTION#
 #END#

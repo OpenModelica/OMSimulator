@@ -26,5 +26,29 @@ Adds a connector to a given component.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  status := oms_addConnector(cref, causality, type);
+  
+  The second argument "causality", should be any of the following,
+  
+  "OpenModelica.Scripting.oms_causality.oms_causality_input" 
+  "OpenModelica.Scripting.oms_causality.oms_causality_output" 
+  "OpenModelica.Scripting.oms_causality.oms_causality_parameter" 
+  "OpenModelica.Scripting.oms_causality.oms_causality_bidir" 
+  "OpenModelica.Scripting.oms_causality.oms_causality_undefined"
+  
+  The third argument type, should be any of the following,
+  
+  "OpenModelica.Scripting.oms_signal_type.oms_signal_type_real"
+  "OpenModelica.Scripting.oms_signal_type.oms_signal_type_integer"
+  "OpenModelica.Scripting.oms_signal_type.oms_signal_type_boolean"
+  "OpenModelica.Scripting.oms_signal_type.oms_signal_type_string"
+  "OpenModelica.Scripting.oms_signal_type.oms_signal_type_enum"
+  "OpenModelica.Scripting.oms_signal_type.oms_signal_type_bus"
+
+#END#
+
 #DESCRIPTION#
 #END#

@@ -26,5 +26,12 @@ Get list of all connections from a given component.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  # not available
+
+#END#
+
 #DESCRIPTION#
 #END#

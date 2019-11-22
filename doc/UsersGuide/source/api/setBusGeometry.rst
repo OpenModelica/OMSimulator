@@ -25,5 +25,12 @@ setBusGeometry
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  # not available
+
+#END#
+
 #DESCRIPTION#
 #END#

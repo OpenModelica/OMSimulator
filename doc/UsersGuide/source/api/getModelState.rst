@@ -26,5 +26,12 @@ Gets the model state of the given model cref.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  (modelState, status) := oms_getModelState(cref);
+
+#END#
+
 #DESCRIPTION#
 #END#

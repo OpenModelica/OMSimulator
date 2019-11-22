@@ -25,5 +25,12 @@ setSignalFilter
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  status := oms_setSignalFilter(cref, regex);
+
+#END#
+
 #DESCRIPTION#
 #END#

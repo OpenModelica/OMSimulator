@@ -26,5 +26,12 @@ Simulates a composite model in its own thread.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  # not available
+
+#END#
+
 #DESCRIPTION#
 #END#

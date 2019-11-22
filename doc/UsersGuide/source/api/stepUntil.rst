@@ -26,5 +26,12 @@ Simulates a composite model until a given time value.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  status := oms_stepUntil(cref, stopTime);
+
+#END#
+
 #DESCRIPTION#
 #END#

@@ -26,5 +26,12 @@ Gets the tolerance of a given system or component.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  (absoluteTolerance, relativeTolerance, status) := oms_getTolerance(cref);
+
+#END#
+
 #DESCRIPTION#
 #END#

@@ -26,5 +26,12 @@ Get element information of a given component reference.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  # not available
+
+#END#
+
 #DESCRIPTION#
 #END#

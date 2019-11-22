@@ -26,5 +26,12 @@ Adds a connector to a TLM bus.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  status := oms_addConnectorToTLMBus(busCref, connectorCref, type);
+
+#END#
+
 #DESCRIPTION#
 #END#

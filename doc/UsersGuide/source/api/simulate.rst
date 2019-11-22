@@ -26,5 +26,12 @@ Simulates a composite model.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  status := oms_simulate(cref);
+
+#END#
+
 #DESCRIPTION#
 #END#

@@ -28,6 +28,14 @@ Sets the tolerance for a given model or system.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  status := oms_setTolerance(const char* cref, double tolerance);
+  status := oms_setTolerance(const char* cref, double absoluteTolerance, double relativeTolerance);
+
+#END#
+
 #DESCRIPTION#
 Default values are `1e-4` for both relative and absolute tolerances.
 

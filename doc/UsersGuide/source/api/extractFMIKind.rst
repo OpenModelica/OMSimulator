@@ -26,5 +26,12 @@ Extracts the FMI kind of a given FMU from the file system.
 
 #END#
 
+#OMC#
+.. code-block:: Modelica
+
+  (kind,status) := oms_extractFMIKind(filename);
+
+#END#
+
 #DESCRIPTION#
 #END#
