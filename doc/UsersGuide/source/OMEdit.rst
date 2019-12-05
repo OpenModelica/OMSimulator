@@ -1,12 +1,14 @@
 .. index:: OMEdit
 
-OMEdit
-======
+Graphical Modelling
+===================
 
 OMSimulator has an optional dependency to OpenModelica in order to utilize the
 graphical modelling editor OMEdit. This feature requires to install the full
 OpenModelica tool suite, which includes OMSimulator. The independent
 stand-alone version doesn't provide any graphical modelling editor.
+
+See also `FMI documentation <https://openmodelica.org/doc/OpenModelicaUsersGuide/latest/fmitlm.html>`_.
 
 .. figure :: images/omedit_01.png
   :name: omedit-mainwindow-browsers

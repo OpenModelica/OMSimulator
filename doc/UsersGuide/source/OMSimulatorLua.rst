@@ -1,5 +1,7 @@
 .. index:: OMSimulatorLua
 
+.. _oms-lua :
+
 OMSimulatorLua
 =================
 

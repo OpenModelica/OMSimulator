@@ -1,5 +1,7 @@
 .. index:: OMSimulatorPython
 
+.. _oms-python :
+
 OMSimulatorPython
 =================
 
