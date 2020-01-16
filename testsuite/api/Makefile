@@ -5,6 +5,8 @@ buses.lua \
 buses.py \
 connections.lua \
 connections.py \
+test_omsExport.lua \
+test_omsExport.py \
 test01.lua \
 test01.py \
 test02.lua \

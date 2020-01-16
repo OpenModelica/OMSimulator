@@ -98,7 +98,7 @@ void oms_copy_file(const filesystem::path &from, const filesystem::path &to)
   /* The MINGW implementation succeeds for filesystem::copy_file, but does not
      copy the entire file.
    */
-  if (!CopyFile(from.string().c_str(), to.string().c_str(), 1)) {
+  if (!CopyFile(from.string().c_str(), to.string().c_str(), 0 /* overwrite existing */)) {
     throw std::runtime_error(std::string("Failed to copy file: ") + from.string() + "  to: " + to.string());
   }
 #elif OMC_STD_FS == 1
