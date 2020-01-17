@@ -25,6 +25,16 @@ The latest documentation is avilable as [pdf](https://openmodelica.org/doc/OMSim
   - glog
   - Ceres Solver
 
+## Working with the repository
+
+OMSimulator.git is a superproject. Clone the project recursive using:
+```bash
+> MY_FORK=MyGitHubUserName; git clone https://openmodelica.org/git-readonly/OMSimulator.git --recursive && (cd OMSimulator && git remote set-url --push origin git@github.com:$MY_FORK/OMSimulator.git && git submodule foreach --recursive 'git remote set-url --push origin `git config --get remote.origin.url | sed s,^.*/,git@github.com:'$MY_FORK'/,`')
+```
+Faster pulling by using openmodelica.org read-only mirror (low latency in Europe; very important when updating all submodules).
+Replace the openmodelica.org pull URL with https://github.com/OpenModelica/OMSimulator.git if you want to pull directly from github.
+The default choice is to push to your fork on github.com (SSH).
+
 ## Compilation
 
 ### Linux / MacOS
