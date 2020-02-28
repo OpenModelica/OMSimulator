@@ -5,7 +5,7 @@
 -- win: no
 -- mac: no
 
-oms_setCommandLineOption("--suppressPath=true --ignoreInitialUnknowns=true")
+oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./PI_Controller-lua/")
 
 oms_newModel("PI_Controller")

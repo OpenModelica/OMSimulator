@@ -40,7 +40,7 @@
 
 
 oms::Variable::Variable(fmi2_import_variable_t *var, unsigned int index)
-  : is_state(false), cref(fmi2_import_get_variable_name(var)), index(index)
+  : is_state(false), is_der(false), cref(fmi2_import_get_variable_name(var)), index(index)
 {
   // extract the attributes
   description = fmi2_import_get_variable_description(var) ? fmi2_import_get_variable_description(var) : "";
@@ -52,6 +52,13 @@ oms::Variable::Variable(fmi2_import_variable_t *var, unsigned int index)
   {
     case fmi2_base_type_real:
       type = oms_signal_type_real;
+      // mark derivatives
+      {
+        fmi2_import_real_variable_t* varReal = fmi2_import_get_variable_as_real(var);
+        fmi2_import_variable_t* varState = (fmi2_import_variable_t*)fmi2_import_get_real_variable_derivative_of(varReal);
+        if (varState)
+          markAsDer();
+      }
       break;
     case fmi2_base_type_int:
       type = oms_signal_type_integer;

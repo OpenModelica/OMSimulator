@@ -4,7 +4,7 @@
 -- mingw: no
 -- win: no
 
-oms_setCommandLineOption("--suppressPath=true --ignoreInitialUnknowns=true --stripRoot=true")
+oms_setCommandLineOption("--suppressPath=true --stripRoot=true")
 oms_setTempDirectory("./ASSCExample-lua/")
 
 oms_newModel("Example")
@@ -33,9 +33,9 @@ oms_terminate("Example")
 oms_delete("Example")
 
 if 1 == oms_compareSimulationResults("Example_res.mat", "../references/SSC.mat", "Class2.signalwiththreshold", 0.0, 0.0) then
-  print("info:     Results are equal")
+  print("info:    Results are equal")
 else
-  print("warning:  Results are not equal")
+  print("warning: Results are not equal")
 end
 
 -- Result:
