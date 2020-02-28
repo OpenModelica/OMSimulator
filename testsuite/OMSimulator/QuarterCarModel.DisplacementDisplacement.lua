@@ -5,7 +5,7 @@
 -- win: no
 -- mac: no
 
-oms_setCommandLineOption("--suppressPath=true --ignoreInitialUnknowns=true --solverStats=true")
+oms_setCommandLineOption("--suppressPath=true --solverStats=true")
 oms_setTempDirectory("./QuarterCarModel/")
 
 oms_newModel("QuarterCarModel")

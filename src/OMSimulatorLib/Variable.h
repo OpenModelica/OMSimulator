@@ -48,6 +48,7 @@ namespace oms
     ~Variable();
 
     void markAsState() { is_state = true; }
+    void markAsDer() { is_der = true; }
 
     // causality attribute
     bool isParameter() const { return fmi2_causality_enu_parameter == causality; }
@@ -56,6 +57,7 @@ namespace oms
     bool isOutput() const { return fmi2_causality_enu_output == causality; }
     bool isLocal() const { return fmi2_causality_enu_local == causality; }
     bool isState() const { return is_state; }
+    bool isDer() const { return is_der; }
     bool isIndependent() const { return fmi2_causality_enu_independent == causality; }
 
     // initial attribute
@@ -66,7 +68,8 @@ namespace oms
     bool isInitialUnknown() const {
       return (isOutput() && (isApprox() || isCalculated()))
         || (isCalculatedParameter())
-        || (isState() && (isApprox() || isCalculated()));
+        || (isState() && (isApprox() || isCalculated()))
+        || (isDer() && (isApprox() || isCalculated()));
     }
 
     const ComRef& getCref() const { return cref; }
@@ -93,6 +96,7 @@ namespace oms
     fmi2_causality_enu_t causality;
     fmi2_initial_enu_t initialProperty;
     bool is_state;
+    bool is_der;
     oms_signal_type_enu_t type;
     unsigned int index; ///< index origin = 1
 

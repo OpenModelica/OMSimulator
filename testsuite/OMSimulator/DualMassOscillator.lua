@@ -5,7 +5,7 @@
 -- win: no
 -- mac: no
 
-oms_setCommandLineOption("--suppressPath=true --ignoreInitialUnknowns=true")
+oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./dualmassoscillator-lua/")
 
 oms_newModel("DualMassOscillator")
