@@ -106,6 +106,12 @@ oms_status_enu_t oms::SystemWC::setSolverMethod(std::string solver)
 oms_status_enu_t oms::SystemWC::exportToSSD_SimulationInformation(pugi::xml_node& node) const
 {
   pugi::xml_node node_simulation_information = node.append_child(oms::ssp::Draft20180219::ssd::simulation_information);
+  /* oms:SimulationInformation should be added as vendor specific annotations from 1.0 */
+  pugi::xml_node node_annotations = node.append_child(oms::ssd::ssd_annotations);
+  pugi::xml_node node_annotation = node_annotations.append_child(oms::ssd::ssd_annotation);
+  node_annotation.append_attribute("type") = oms::annotation_type;
+
+  pugi::xml_node node_simulation_information = node_annotation.append_child(oms::simulation_information);
 
   pugi::xml_node node_solver = node_simulation_information.append_child("FixedStepMaster");
   node_solver.append_attribute("description") = getSolverName().c_str();
@@ -117,6 +123,7 @@ oms_status_enu_t oms::SystemWC::exportToSSD_SimulationInformation(pugi::xml_node
 oms_status_enu_t oms::SystemWC::importFromSSD_SimulationInformation(const pugi::xml_node& node)
 {
   std::string solverName = node.child("FixedStepMaster").attribute("description").as_string();
+
   if (oms_status_ok != setSolverMethod(solverName))
     return oms_status_error;
   initialStepSize = minimumStepSize=maximumStepSize = node.child("FixedStepMaster").attribute("stepSize").as_double();

@@ -34,11 +34,20 @@
 
 namespace oms
 {
+  extern const char* annotation_type;
+  extern const char* tlm_master;
+  extern const char* bus;
+  extern const char* signals;
+  extern const char* signal;
+  extern const char* bus_connections;
+  extern const char* bus_connection;
+  extern const char* external_model;
   namespace ssp
   {
     namespace Version1_0
     {
     }
+  extern const char* simulation_information;
 
     namespace Draft20180219
     {

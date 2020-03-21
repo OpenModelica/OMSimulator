@@ -511,15 +511,7 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node)
           ComRef systemCref = ComRef(itElements->attribute("name").as_string());
 
           // lochel: I guess that can somehow be improved
-          oms_system_enu_t systemType = oms_system_tlm;
-          if (std::string(itElements->child(oms::ssp::Draft20180219::ssd::simulation_information).child("VariableStepSolver").attribute("description").as_string()) != "")
-            systemType = oms_system_sc;
-          if (std::string(itElements->child(oms::ssp::Draft20180219::ssd::simulation_information).child("FixedStepSolver").attribute("description").as_string()) != "")
-            systemType = oms_system_sc;
-          if (std::string(itElements->child(oms::ssp::Draft20180219::ssd::simulation_information).child("VariableStepMaster").attribute("description").as_string()) != "")
-            systemType = oms_system_wc;
-          if (std::string(itElements->child(oms::ssp::Draft20180219::ssd::simulation_information).child("FixedStepMaster").attribute("description").as_string()) != "")
-            systemType = oms_system_wc;
+          oms_system_enu_t systemType = getModel()->getSystemType(*itElements);
 
           if (oms_status_ok != addSubSystem(systemCref, systemType))
             return oms_status_error;
@@ -632,6 +624,12 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node)
         for(pugi::xml_node_iterator itAnnotations = annotation_node.begin(); itAnnotations != annotation_node.end(); ++itAnnotations)
         {
           name = itAnnotations->name();
+          // check for oms:simulationInformation from version 1.0
+          if (std::string(name) == oms::simulation_information)
+          {
+            if (oms_status_ok != importFromSSD_SimulationInformation(*itAnnotations))
+              return logError("Failed to import " + std::string(oms::ssd::ssd_simulation_information));
+          }
           if (std::string(name) == oms::ssp::Draft20180219::bus)
           {
             //Load bus connector

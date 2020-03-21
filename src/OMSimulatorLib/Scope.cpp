@@ -202,7 +202,7 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
   if (!model)
     return oms_status_error;
 
-  if (ssdVersion != "Draft20180219")
+  if (ssdVersion != "Draft20180219" && ssdVersion != "1.0")
     logWarning("Unknown SSD version: " + ssdVersion);
 
   // extract the ssp file
