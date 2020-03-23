@@ -31,29 +31,29 @@
 
 #include "Tags.h"
 
-const char* oms::annotation_type                        = "org.openmodelica";
-const char* oms::tlm_master                             = "oms:TlmMaster";
-const char* oms::bus                                    = "oms:Bus";
-const char* oms::signals                                = "oms:Signals";
-const char* oms::signal                                 = "oms:Signal";
-const char* oms::bus_connections                        = "oms:Connections";
-const char* oms::bus_connection                         = "oms:Connection";
-const char* oms::external_model                         = "oms:ExternalModel";
+const char* oms::ssp::Draft20180219::annotation_type                   = "org.openmodelica";
+const char* oms::ssp::Draft20180219::tlm_master                        = "oms:TlmMaster";
+const char* oms::ssp::Draft20180219::bus                               = "oms:Bus";
+const char* oms::ssp::Draft20180219::signals                           = "oms:Signals";
+const char* oms::ssp::Draft20180219::signal                            = "oms:Signal";
+const char* oms::ssp::Draft20180219::bus_connections                   = "oms:Connections";
+const char* oms::ssp::Draft20180219::bus_connection                    = "oms:Connection";
+const char* oms::ssp::Draft20180219::external_model                    = "oms:ExternalModel";
 
-const char* oms::ssd::ssd_annotation                   = "ssd:Annotation";
-const char* oms::ssd::ssd_annotations                  = "ssd:Annotations";
-const char* oms::ssd::ssd_component                    = "ssd:Component";
-const char* oms::ssd::ssd_connection                   = "ssd:Connection";
-const char* oms::ssd::ssd_connection_geometry          = "ssd:ConnectionGeometry";
-const char* oms::ssd::ssd_connections                  = "ssd:Connections";
-const char* oms::ssd::ssd_connector                    = "ssd:Connector";
-const char* oms::ssd::ssd_connector_geometry           = "ssd:ConnectorGeometry";
-const char* oms::ssd::ssd_connectors                   = "ssd:Connectors";
-const char* oms::ssd::ssd_default_experiment           = "ssd:DefaultExperiment";
-const char* oms::ssd::ssd_element_geometry             = "ssd:ElementGeometry";
-const char* oms::ssd::ssd_elements                     = "ssd:Elements";
-const char* oms::ssd::ssd_enumerations                 = "ssd:Enumerations";
-const char* oms::ssd::ssd_simulation_information       = "ssd:SimulationInformation";
-const char* oms::ssd::ssd_system                       = "ssd:System";
-const char* oms::ssd::ssd_system_structure_description = "ssd:SystemStructureDescription";
-const char* oms::ssd::ssd_units                        = "ssd:Units";
+const char* oms::ssp::Draft20180219::ssd::annotation                   = "ssd:Annotation";
+const char* oms::ssp::Draft20180219::ssd::annotations                  = "ssd:Annotations";
+const char* oms::ssp::Draft20180219::ssd::component                    = "ssd:Component";
+const char* oms::ssp::Draft20180219::ssd::connection                   = "ssd:Connection";
+const char* oms::ssp::Draft20180219::ssd::connection_geometry          = "ssd:ConnectionGeometry";
+const char* oms::ssp::Draft20180219::ssd::connections                  = "ssd:Connections";
+const char* oms::ssp::Draft20180219::ssd::connector                    = "ssd:Connector";
+const char* oms::ssp::Draft20180219::ssd::connector_geometry           = "ssd:ConnectorGeometry";
+const char* oms::ssp::Draft20180219::ssd::connectors                   = "ssd:Connectors";
+const char* oms::ssp::Draft20180219::ssd::default_experiment           = "ssd:DefaultExperiment";
+const char* oms::ssp::Draft20180219::ssd::element_geometry             = "ssd:ElementGeometry";
+const char* oms::ssp::Draft20180219::ssd::elements                     = "ssd:Elements";
+const char* oms::ssp::Draft20180219::ssd::enumerations                 = "ssd:Enumerations";
+const char* oms::ssp::Draft20180219::ssd::simulation_information       = "ssd:SimulationInformation";
+const char* oms::ssp::Draft20180219::ssd::system                       = "ssd:System";
+const char* oms::ssp::Draft20180219::ssd::system_structure_description = "ssd:SystemStructureDescription";
+const char* oms::ssp::Draft20180219::ssd::units                        = "ssd:Units";

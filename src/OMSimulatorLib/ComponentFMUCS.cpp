@@ -261,7 +261,7 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const pugi::xml_node& node, om
   for(pugi::xml_node_iterator it = node.begin(); it != node.end(); ++it)
   {
     std::string name = it->name();
-    if(name == oms::ssd::ssd_connectors)
+    if(name == oms::ssp::Draft20180219::ssd::connectors)
     {
       // import connectors
       for(pugi::xml_node_iterator itConnectors = (*it).begin(); itConnectors != (*it).end(); ++itConnectors)
@@ -269,7 +269,7 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const pugi::xml_node& node, om
         component->connectors.push_back(oms::Connector::NewConnector(*itConnectors));
       }
     }
-    else if(name == oms::ssd::ssd_element_geometry)
+    else if(name == oms::ssp::Draft20180219::ssd::element_geometry)
     {
       oms::ssd::ElementGeometry geometry;
       geometry.importFromSSD(*it);
@@ -294,9 +294,9 @@ oms_status_enu_t oms::ComponentFMUCS::exportToSSD(pugi::xml_node& node) const
 #if !defined(NO_TLM)
   if (tlmbusconnectors[0])
   {
-    pugi::xml_node annotations_node = node.append_child(oms::ssd::ssd_annotations);
-    pugi::xml_node annotation_node = annotations_node.append_child(oms::ssd::ssd_annotation);
-    annotation_node.append_attribute("type") = oms::annotation_type;
+    pugi::xml_node annotations_node = node.append_child(oms::ssp::Draft20180219::ssd::annotations);
+    pugi::xml_node annotation_node = annotations_node.append_child(oms::ssp::Draft20180219::ssd::annotation);
+    annotation_node.append_attribute("type") = oms::ssp::Draft20180219::annotation_type;
     for (const auto& tlmbusconnector : tlmbusconnectors)
       if (tlmbusconnector)
         tlmbusconnector->exportToSSD(annotation_node);
@@ -306,7 +306,7 @@ oms_status_enu_t oms::ComponentFMUCS::exportToSSD(pugi::xml_node& node) const
   node.append_attribute("name") = this->getCref().c_str();
   node.append_attribute("type") = "application/x-fmu-sharedlibrary";
   node.append_attribute("source") = getPath().c_str();
-  pugi::xml_node node_connectors = node.append_child(oms::ssd::ssd_connectors);
+  pugi::xml_node node_connectors = node.append_child(oms::ssp::Draft20180219::ssd::connectors);
 
   if (element.getGeometry())
     element.getGeometry()->exportToSSD(node);

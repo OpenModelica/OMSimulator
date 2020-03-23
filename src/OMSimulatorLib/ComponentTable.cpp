@@ -131,7 +131,7 @@ oms::Component* oms::ComponentTable::NewComponent(const pugi::xml_node& node, om
   for(pugi::xml_node_iterator it = node.begin(); it != node.end(); ++it)
   {
     std::string name = it->name();
-    if(name == oms::ssd::ssd_connectors)
+    if(name == oms::ssp::Draft20180219::ssd::connectors)
     {
       // import connectors
       for(pugi::xml_node_iterator itConnectors = (*it).begin(); itConnectors != (*it).end(); ++itConnectors)
@@ -140,7 +140,7 @@ oms::Component* oms::ComponentTable::NewComponent(const pugi::xml_node& node, om
         component->exportSeries[component->connectors.back()->getName()] = true;
       }
     }
-    else if(name == oms::ssd::ssd_element_geometry)
+    else if(name == oms::ssp::Draft20180219::ssd::element_geometry)
     {
       oms::ssd::ElementGeometry geometry;
       geometry.importFromSSD(*it);
@@ -165,7 +165,7 @@ oms_status_enu_t oms::ComponentTable::exportToSSD(pugi::xml_node& node) const
   node.append_attribute("name") = this->getCref().c_str();
   node.append_attribute("type") = "application/table";
   node.append_attribute("source") = getPath().c_str();
-  pugi::xml_node node_connectors = node.append_child(oms::ssd::ssd_connectors);
+  pugi::xml_node node_connectors = node.append_child(oms::ssp::Draft20180219::ssd::connectors);
 
   if (element.getGeometry())
     element.getGeometry()->exportToSSD(node);

@@ -113,9 +113,9 @@ oms_status_enu_t oms::Connection::exportToSSD(pugi::xml_node &root) const
 {
   pugi::xml_node node;
   if(type == oms_connection_single)
-    node = root.append_child(oms::ssd::ssd_connection);
+    node = root.append_child(oms::ssp::Draft20180219::ssd::connection);
   else if(type == oms_connection_bus || type == oms_connection_tlm)
-    node = root.append_child(oms::bus_connection);
+    node = root.append_child(oms::ssp::Draft20180219::bus_connection);
 
   ComRef startConnectorRef(conA);
   ComRef startElementRef = startConnectorRef.pop_front();

@@ -34,35 +34,45 @@
 
 namespace oms
 {
-  extern const char* annotation_type;
-  extern const char* tlm_master;
-  extern const char* bus;
-  extern const char* signals;
-  extern const char* signal;
-  extern const char* bus_connections;
-  extern const char* bus_connection;
-  extern const char* external_model;
-
-  namespace ssd
+  namespace ssp
   {
-    extern const char* ssd_annotation;
-    extern const char* ssd_annotations;
-    extern const char* ssd_annotation;
-    extern const char* ssd_component;
-    extern const char* ssd_connection_geometry;
-    extern const char* ssd_connection;
-    extern const char* ssd_connections;
-    extern const char* ssd_connector_geometry;
-    extern const char* ssd_connector;
-    extern const char* ssd_connectors;
-    extern const char* ssd_default_experiment;
-    extern const char* ssd_element_geometry;
-    extern const char* ssd_elements;
-    extern const char* ssd_enumerations;
-    extern const char* ssd_simulation_information;
-    extern const char* ssd_system_structure_description;
-    extern const char* ssd_system;
-    extern const char* ssd_units;
+    namespace Version1_0
+    {
+    }
+
+    namespace Draft20180219
+    {
+      extern const char* annotation_type;
+      extern const char* tlm_master;
+      extern const char* bus;
+      extern const char* signals;
+      extern const char* signal;
+      extern const char* bus_connections;
+      extern const char* bus_connection;
+      extern const char* external_model;
+
+      namespace ssd
+      {
+        extern const char* annotation;
+        extern const char* annotations;
+        extern const char* annotation;
+        extern const char* component;
+        extern const char* connection_geometry;
+        extern const char* connection;
+        extern const char* connections;
+        extern const char* connector_geometry;
+        extern const char* connector;
+        extern const char* connectors;
+        extern const char* default_experiment;
+        extern const char* element_geometry;
+        extern const char* elements;
+        extern const char* enumerations;
+        extern const char* simulation_information;
+        extern const char* system_structure_description;
+        extern const char* system;
+        extern const char* units;
+      }
+    }
   }
 }
 

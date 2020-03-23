@@ -136,7 +136,7 @@ oms_status_enu_t oms::ssd::ElementGeometry::exportToSSD(pugi::xml_node& root) co
   // export ssd:ElementGeometry
   if (x1 != 0.0 || y1 != 0.0 || x2 != 0.0 || y2 != 0.0 || rotation != 0.0 || hasIconSource() || iconRotation != 0.0 || getIconFlip() || getIconFixedAspectRatio())
   {
-    pugi::xml_node node = root.append_child(oms::ssd::ssd_element_geometry);
+    pugi::xml_node node = root.append_child(oms::ssp::Draft20180219::ssd::element_geometry);
     node.append_attribute("x1") = std::to_string(x1).c_str();
     node.append_attribute("y1") = std::to_string(y1).c_str();
     node.append_attribute("x2") = std::to_string(x2).c_str();

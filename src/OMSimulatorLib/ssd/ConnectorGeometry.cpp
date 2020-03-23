@@ -73,7 +73,7 @@ oms::ssd::ConnectorGeometry& oms::ssd::ConnectorGeometry::operator=(oms::ssd::Co
 
 oms_status_enu_t oms::ssd::ConnectorGeometry::exportToSSD(pugi::xml_node& root) const
 {
-  pugi::xml_node node = root.append_child(oms::ssd::ssd_connector_geometry);
+  pugi::xml_node node = root.append_child(oms::ssp::Draft20180219::ssd::connector_geometry);
   node.append_attribute("x") = std::to_string(x).c_str();
   node.append_attribute("y") = std::to_string(y).c_str();
 

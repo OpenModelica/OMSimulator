@@ -27,12 +27,12 @@ oms::BusConnector::~BusConnector()
 
 oms_status_enu_t oms::BusConnector::exportToSSD(pugi::xml_node &root) const
 {
-  pugi::xml_node bus_node = root.append_child(oms::bus);
+  pugi::xml_node bus_node = root.append_child(oms::ssp::Draft20180219::bus);
   bus_node.append_attribute("name") = name;
 
-  pugi::xml_node signals_node = bus_node.append_child(oms::signals);
+  pugi::xml_node signals_node = bus_node.append_child(oms::ssp::Draft20180219::signals);
   for(auto& connector : conrefs) {
-    pugi::xml_node signal_node = signals_node.append_child(oms::signal);
+    pugi::xml_node signal_node = signals_node.append_child(oms::ssp::Draft20180219::signal);
     signal_node.append_attribute("name") = connector.c_str();
   }
 

@@ -105,7 +105,7 @@ oms_status_enu_t oms::SystemWC::setSolverMethod(std::string solver)
 
 oms_status_enu_t oms::SystemWC::exportToSSD_SimulationInformation(pugi::xml_node& node) const
 {
-  pugi::xml_node node_simulation_information = node.append_child(oms::ssd::ssd_simulation_information);
+  pugi::xml_node node_simulation_information = node.append_child(oms::ssp::Draft20180219::ssd::simulation_information);
 
   pugi::xml_node node_solver = node_simulation_information.append_child("FixedStepMaster");
   node_solver.append_attribute("description") = getSolverName().c_str();

@@ -139,7 +139,7 @@ oms_status_enu_t oms::SystemSC::setSolverMethod(std::string solver)
 
 oms_status_enu_t oms::SystemSC::exportToSSD_SimulationInformation(pugi::xml_node& node) const
 {
-  pugi::xml_node node_simulation_information = node.append_child(oms::ssd::ssd_simulation_information);
+  pugi::xml_node node_simulation_information = node.append_child(oms::ssp::Draft20180219::ssd::simulation_information);
 
   pugi::xml_node node_solver = node_simulation_information.append_child("VariableStepSolver");
   node_solver.append_attribute("description") = getSolverName().c_str();
