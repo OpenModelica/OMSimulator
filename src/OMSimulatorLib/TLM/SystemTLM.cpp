@@ -80,14 +80,14 @@ oms::System* oms::SystemTLM::NewSystem(const oms::ComRef& cref, oms::Model* pare
 
 oms_status_enu_t oms::SystemTLM::exportToSSD_SimulationInformation(pugi::xml_node& node) const
 {
-  pugi::xml_node node_simulation_information = node.append_child(oms::ssd::ssd_simulation_information);
+  pugi::xml_node node_simulation_information = node.append_child(oms::ssp::Draft20180219::ssd::simulation_information);
 
-  pugi::xml_node node_annotations = node_simulation_information.append_child(oms::ssd::ssd_annotations);
+  pugi::xml_node node_annotations = node_simulation_information.append_child(oms::ssp::Draft20180219::ssd::annotations);
 
-  pugi::xml_node node_annotation = node_annotations.append_child(oms::ssd::ssd_annotation);
-  node_annotation.append_attribute("type") = oms::annotation_type;
+  pugi::xml_node node_annotation = node_annotations.append_child(oms::ssp::Draft20180219::ssd::annotation);
+  node_annotation.append_attribute("type") = oms::ssp::Draft20180219::annotation_type;
 
-  pugi::xml_node node_tlm = node_annotation.append_child(oms::tlm_master);
+  pugi::xml_node node_tlm = node_annotation.append_child(oms::ssp::Draft20180219::tlm_master);
   node_tlm.append_attribute("ip") = address.c_str();
   node_tlm.append_attribute("managerport") = std::to_string(desiredManagerPort).c_str();
   node_tlm.append_attribute("monitorport") = std::to_string(desiredMonitorPort).c_str();
@@ -97,9 +97,9 @@ oms_status_enu_t oms::SystemTLM::exportToSSD_SimulationInformation(pugi::xml_nod
 
 oms_status_enu_t oms::SystemTLM::importFromSSD_SimulationInformation(const pugi::xml_node& node)
 {
-  pugi::xml_node annotationsNode = node.child(oms::ssd::ssd_annotations);
+  pugi::xml_node annotationsNode = node.child(oms::ssp::Draft20180219::ssd::annotations);
   if(annotationsNode) {
-    pugi::xml_node annotationNode = annotationsNode.child(oms::ssd::ssd_annotation);
+    pugi::xml_node annotationNode = annotationsNode.child(oms::ssp::Draft20180219::ssd::annotation);
     if(annotationNode && std::string(annotationNode.attribute("type").as_string()) == "org.openmodelica") {
       pugi::xml_node tlmmasterNode = annotationNode.child("oms:TlmMaster");
       for (auto it = tlmmasterNode.attributes_begin(); it != tlmmasterNode.attributes_end(); ++it)

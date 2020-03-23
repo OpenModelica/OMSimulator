@@ -228,7 +228,7 @@ oms_status_enu_t oms::Model::list(const oms::ComRef& cref, char** contents)
   // list model
   if (cref.isEmpty())
   {
-    pugi::xml_node node = doc.append_child(oms::ssd::ssd_system_structure_description);
+    pugi::xml_node node = doc.append_child(oms::ssp::Draft20180219::ssd::system_structure_description);
     exportToSSD(node);
   }
   else
@@ -240,7 +240,7 @@ oms_status_enu_t oms::Model::list(const oms::ComRef& cref, char** contents)
     System* subsystem = getSystem(cref);
     if (subsystem)
     {
-      pugi::xml_node node = doc.append_child(oms::ssd::ssd_system);
+      pugi::xml_node node = doc.append_child(oms::ssp::Draft20180219::ssd::system);
       subsystem->exportToSSD(node);
     }
     else
@@ -250,7 +250,7 @@ oms_status_enu_t oms::Model::list(const oms::ComRef& cref, char** contents)
       if (!component)
         return logError("error");
 
-      pugi::xml_node node = doc.append_child(oms::ssd::ssd_system);
+      pugi::xml_node node = doc.append_child(oms::ssp::Draft20180219::ssd::system);
       component->exportToSSD(node);
     }
   }
@@ -293,12 +293,12 @@ oms_status_enu_t oms::Model::exportToSSD(pugi::xml_node& node) const
 
   if (system)
   {
-    pugi::xml_node system_node = node.append_child(oms::ssd::ssd_system);
+    pugi::xml_node system_node = node.append_child(oms::ssp::Draft20180219::ssd::system);
     if (oms_status_ok != system->exportToSSD(system_node))
       return logError("export of system failed");
   }
 
-  pugi::xml_node default_experiment = node.append_child(oms::ssd::ssd_default_experiment);
+  pugi::xml_node default_experiment = node.append_child(oms::ssp::Draft20180219::ssd::default_experiment);
   default_experiment.append_attribute("startTime") = std::to_string(startTime).c_str();
   default_experiment.append_attribute("stopTime") = std::to_string(stopTime).c_str();
 
@@ -310,19 +310,19 @@ oms_status_enu_t oms::Model::importFromSSD(const pugi::xml_node& node)
   for(pugi::xml_node_iterator it = node.begin(); it != node.end(); ++it)
   {
     std::string name = it->name();
-    if (name == oms::ssd::ssd_system)
+    if (name == oms::ssp::Draft20180219::ssd::system)
     {
       ComRef systemCref = ComRef(it->attribute("name").as_string());
 
       // lochel: I guess that can somehow be improved
       oms_system_enu_t systemType = oms_system_tlm;
-      if (std::string(it->child(oms::ssd::ssd_simulation_information).child("VariableStepSolver").attribute("description").as_string()) != "")
+      if (std::string(it->child(oms::ssp::Draft20180219::ssd::simulation_information).child("VariableStepSolver").attribute("description").as_string()) != "")
         systemType = oms_system_sc;
-      if (std::string(it->child(oms::ssd::ssd_simulation_information).child("FixedStepSolver").attribute("description").as_string()) != "")
+      if (std::string(it->child(oms::ssp::Draft20180219::ssd::simulation_information).child("FixedStepSolver").attribute("description").as_string()) != "")
         systemType = oms_system_sc;
-      if (std::string(it->child(oms::ssd::ssd_simulation_information).child("VariableStepMaster").attribute("description").as_string()) != "")
+      if (std::string(it->child(oms::ssp::Draft20180219::ssd::simulation_information).child("VariableStepMaster").attribute("description").as_string()) != "")
         systemType = oms_system_wc;
-      if (std::string(it->child(oms::ssd::ssd_simulation_information).child("FixedStepMaster").attribute("description").as_string()) != "")
+      if (std::string(it->child(oms::ssp::Draft20180219::ssd::simulation_information).child("FixedStepMaster").attribute("description").as_string()) != "")
         systemType = oms_system_wc;
 
       if (oms_status_ok != addSystem(systemCref, systemType))
@@ -335,7 +335,7 @@ oms_status_enu_t oms::Model::importFromSSD(const pugi::xml_node& node)
       if (oms_status_ok != system->importFromSSD(*it))
         return oms_status_error;
     }
-    else if (name == oms::ssd::ssd_default_experiment)
+    else if (name == oms::ssp::Draft20180219::ssd::default_experiment)
     {
       startTime = it->attribute("startTime").as_double(0.0);
       stopTime = it->attribute("stopTime").as_double(1.0);
@@ -363,7 +363,7 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
   declarationNode.append_attribute("version") = "1.0";
   declarationNode.append_attribute("encoding") = "UTF-8";
 
-  pugi::xml_node node = doc.append_child(oms::ssd::ssd_system_structure_description);
+  pugi::xml_node node = doc.append_child(oms::ssp::Draft20180219::ssd::system_structure_description);
   exportToSSD(node);
 
   filesystem::path ssdPath = filesystem::path(tempDir) / "SystemStructure.ssd";

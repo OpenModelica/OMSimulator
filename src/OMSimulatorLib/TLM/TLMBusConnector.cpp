@@ -48,7 +48,7 @@ oms::TLMBusConnector::~TLMBusConnector()
 
 oms_status_enu_t oms::TLMBusConnector::exportToSSD(pugi::xml_node &root) const
 {
-  pugi::xml_node bus_node = root.append_child(oms::bus);
+  pugi::xml_node bus_node = root.append_child(oms::ssp::Draft20180219::bus);
   bus_node.append_attribute("name") = name;
   bus_node.append_attribute("type") = "tlm";
   bus_node.append_attribute("domain") = getDomainString().c_str();
@@ -60,9 +60,9 @@ oms_status_enu_t oms::TLMBusConnector::exportToSSD(pugi::xml_node &root) const
   else if(interpolation == oms_tlm_fine_grained)
     bus_node.append_attribute("interpolation") = "finegrained";
 
-  pugi::xml_node signals_node = bus_node.append_child(oms::signals);
+  pugi::xml_node signals_node = bus_node.append_child(oms::ssp::Draft20180219::signals);
   for(auto& connector : connectors) {
-    pugi::xml_node signal_node = signals_node.append_child(oms::signal);
+    pugi::xml_node signal_node = signals_node.append_child(oms::ssp::Draft20180219::signal);
     signal_node.append_attribute("name") = connector.second.c_str();
     signal_node.append_attribute("type") = connector.first.c_str();
   }

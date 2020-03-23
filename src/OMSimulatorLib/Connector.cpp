@@ -97,7 +97,7 @@ oms::Connector* oms::Connector::NewConnector(const pugi::xml_node& node)
     causality = oms_causality_parameter;
   else
   {
-    logError("Failed to import " + std::string(oms::ssd::ssd_connector) + ":causality");
+    logError("Failed to import " + std::string(oms::ssp::Draft20180219::ssd::connector) + ":causality");
     return NULL;
   }
   oms_signal_type_enu_t type = oms_signal_type_real;
@@ -111,20 +111,20 @@ oms::Connector* oms::Connector::NewConnector(const pugi::xml_node& node)
     type = oms_signal_type_enum;
   else
   {
-    logError("Failed to import " + std::string(oms::ssd::ssd_connector) + ":type");
+    logError("Failed to import " + std::string(oms::ssp::Draft20180219::ssd::connector) + ":type");
     return NULL;
   }
 
   Connector* connector = new Connector(causality, type, cref);
   if (!connector)
   {
-    logError("Failed to import " + std::string(oms::ssd::ssd_connector));
+    logError("Failed to import " + std::string(oms::ssp::Draft20180219::ssd::connector));
     return NULL;
   }
   else
   {
     // Load connector geometry
-    pugi::xml_node connectorGeometryNode = node.child(oms::ssd::ssd_connector_geometry);
+    pugi::xml_node connectorGeometryNode = node.child(oms::ssp::Draft20180219::ssd::connector_geometry);
     if (connectorGeometryNode)
     {
       oms::ssd::ConnectorGeometry geometry(0.0, 0.0);
@@ -138,7 +138,7 @@ oms::Connector* oms::Connector::NewConnector(const pugi::xml_node& node)
 
 oms_status_enu_t oms::Connector::exportToSSD(pugi::xml_node &root) const
 {
-  pugi::xml_node node = root.append_child(oms::ssd::ssd_connector);
+  pugi::xml_node node = root.append_child(oms::ssp::Draft20180219::ssd::connector);
   node.append_attribute("name") = std::string(getName()).c_str();
   switch (this->causality)
   {
