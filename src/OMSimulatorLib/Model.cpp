@@ -315,15 +315,6 @@ oms_status_enu_t oms::Model::importFromSSD(const pugi::xml_node& node)
       ComRef systemCref = ComRef(it->attribute("name").as_string());
 
       // lochel: I guess that can somehow be improved
-      oms_system_enu_t systemType = oms_system_tlm;
-      if (std::string(it->child(oms::ssp::Draft20180219::ssd::simulation_information).child("VariableStepSolver").attribute("description").as_string()) != "")
-        systemType = oms_system_sc;
-      if (std::string(it->child(oms::ssp::Draft20180219::ssd::simulation_information).child("FixedStepSolver").attribute("description").as_string()) != "")
-        systemType = oms_system_sc;
-      if (std::string(it->child(oms::ssp::Draft20180219::ssd::simulation_information).child("VariableStepMaster").attribute("description").as_string()) != "")
-        systemType = oms_system_wc;
-      if (std::string(it->child(oms::ssp::Draft20180219::ssd::simulation_information).child("FixedStepMaster").attribute("description").as_string()) != "")
-        systemType = oms_system_wc;
       oms_system_enu_t systemType = getSystemType(*it);
 
       if (oms_status_ok != addSystem(systemCref, systemType))
@@ -355,21 +346,21 @@ oms_system_enu_t oms::Model::getSystemType(pugi::xml_node& node)
   {
     std::string name = itElements->name();
     /*  To handle version = "Draft20180219"*/
-    if (name ==  oms::ssd::ssd_simulation_information)
+    if (name ==  oms::ssp::Draft20180219::ssd::simulation_information)
     {
       systemType = getSystemTypeHelper(*itElements);
     }
 
     /* from Version "1.0" simulationInformation is handled in vendor annotation */
-    if (name == oms::ssd::ssd_annotations)
+    if (name == oms::ssp::Draft20180219::ssd::annotations)
     {
-      pugi::xml_node annotation_node = itElements->child(oms::ssd::ssd_annotation);
-      if (annotation_node && std::string(annotation_node.attribute("type").as_string()) == oms::annotation_type)
+      pugi::xml_node annotation_node = itElements->child(oms::ssp::Draft20180219::ssd::annotation);
+      if (annotation_node && std::string(annotation_node.attribute("type").as_string()) == oms::ssp::Draft20180219::annotation_type)
       {
         for(pugi::xml_node_iterator itAnnotations = annotation_node.begin(); itAnnotations != annotation_node.end(); ++itAnnotations)
         {
           std::string annotationName = itAnnotations->name();
-          if (std::string(annotationName) == oms::simulation_information) // check for oms:simulationInformation from version 1.0
+          if (std::string(annotationName) == oms::ssp::Version1_0::simulation_information) // check for oms:simulationInformation from version 1.0
           {
             systemType = getSystemTypeHelper(*itAnnotations);
           }

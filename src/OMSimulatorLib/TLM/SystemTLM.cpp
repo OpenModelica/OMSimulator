@@ -80,19 +80,15 @@ oms::System* oms::SystemTLM::NewSystem(const oms::ComRef& cref, oms::Model* pare
 
 oms_status_enu_t oms::SystemTLM::exportToSSD_SimulationInformation(pugi::xml_node& node) const
 {
-  pugi::xml_node node_simulation_information = node.append_child(oms::ssp::Draft20180219::ssd::simulation_information);
-  //pugi::xml_node node_simulation_information = node.append_child(oms::ssd::ssd_simulation_information);
-
-  pugi::xml_node node_annotations = node_simulation_information.append_child(oms::ssp::Draft20180219::ssd::annotations);
-  pugi::xml_node node_annotations = node.append_child(oms::ssd::ssd_annotations);
-
+  pugi::xml_node node_annotations = node.append_child(oms::ssp::Draft20180219::ssd::annotations);
   pugi::xml_node node_annotation = node_annotations.append_child(oms::ssp::Draft20180219::ssd::annotation);
   node_annotation.append_attribute("type") = oms::ssp::Draft20180219::annotation_type;
 
-  pugi::xml_node node_tlm = node_annotation.append_child(oms::ssp::Draft20180219::tlm_master);
-  pugi::xml_node node_simulation_information = node_annotation.append_child(oms::simulation_information);
+  /* ssd:SimulationInformation should be added as vendor specific annotations from Version 1.0 */
+  pugi::xml_node node_simulation_information = node_annotation.append_child(oms::ssp::Version1_0::simulation_information);
 
-  pugi::xml_node node_tlm = node_simulation_information.append_child(oms::tlm_master);
+  pugi::xml_node node_tlm = node_simulation_information.append_child(oms::ssp::Draft20180219::tlm_master);
+
   node_tlm.append_attribute("ip") = address.c_str();
   node_tlm.append_attribute("managerport") = std::to_string(desiredManagerPort).c_str();
   node_tlm.append_attribute("monitorport") = std::to_string(desiredMonitorPort).c_str();
@@ -122,7 +118,7 @@ oms_status_enu_t oms::SystemTLM::importFromSSD_SimulationInformation(const pugi:
 
 oms_status_enu_t oms::SystemTLM::importFromSSD_SimulationInformationHelper(const pugi::xml_node & node)
 {
-  pugi::xml_node tlmmasterNode = node.child("oms:TlmMaster");
+  pugi::xml_node tlmmasterNode = node.child("oms::ssp::Draft20180219::tlm_master");
   for (auto it = tlmmasterNode.attributes_begin(); it != tlmmasterNode.attributes_end(); ++it)
    {
      std::string name = it->name();

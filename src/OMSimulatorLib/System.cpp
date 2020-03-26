@@ -625,10 +625,10 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node)
         {
           name = itAnnotations->name();
           // check for oms:simulationInformation from version 1.0
-          if (std::string(name) == oms::simulation_information)
+          if (std::string(name) == oms::ssp::Version1_0::simulation_information)
           {
             if (oms_status_ok != importFromSSD_SimulationInformation(*itAnnotations))
-              return logError("Failed to import " + std::string(oms::ssd::ssd_simulation_information));
+              return logError("Failed to import " + std::string(oms::ssp::Version1_0::simulation_information));
           }
           if (std::string(name) == oms::ssp::Draft20180219::bus)
           {

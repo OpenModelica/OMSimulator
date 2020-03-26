@@ -156,18 +156,24 @@ oms_status_enu_t oms::Connector::exportToSSD(pugi::xml_node &root) const
   {
   case oms_signal_type_boolean:
     node.append_attribute("type") = "Boolean";
+    // TO DO replace the node attribute of type to child elements <ssc:Real>
+    //node.append_child(oms::ssp::Version1_0::ssc::boolean_type);
     break;
   case oms_signal_type_enum:
     node.append_attribute("type") = "Enumeration";
+    //node.append_child(oms::ssp::Version1_0::ssc::enumeration_type);
     break;
   case oms_signal_type_integer:
     node.append_attribute("type") = "Integer";
+    //node.append_child(oms::ssp::Version1_0::ssc::integer_type);
     break;
   case oms_signal_type_real:
     node.append_attribute("type") = "Real";
+    //node.append_child(oms::ssp::Version1_0::ssc::real_type);
     break;
   case oms_signal_type_string:
     node.append_attribute("type") = "String";
+    //node.append_child(oms::ssp::Version1_0::ssc::string_type);
     break;
   }
   if (this->geometry)
