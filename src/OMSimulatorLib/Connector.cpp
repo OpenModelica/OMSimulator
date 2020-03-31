@@ -83,11 +83,10 @@ oms::Connector::~Connector()
   if (this->geometry) delete reinterpret_cast<oms::ssd::ConnectorGeometry*>(this->geometry);
 }
 
-oms::Connector* oms::Connector::NewConnector(const pugi::xml_node& node)
+oms::Connector* oms::Connector::NewConnector(const pugi::xml_node& node, const std::string& sspVersion)
 {
   ComRef cref = ComRef(node.attribute("name").as_string());
   std::string causalityString = node.attribute("kind").as_string();
-  std::string typeString = node.attribute("type").as_string();
   oms_causality_enu_t causality = oms_causality_undefined;
   if (causalityString == "input")
     causality = oms_causality_input;
@@ -100,6 +99,10 @@ oms::Connector* oms::Connector::NewConnector(const pugi::xml_node& node)
     logError("Failed to import " + std::string(oms::ssp::Draft20180219::ssd::connector) + ":causality");
     return NULL;
   }
+
+  // get the types of connectors
+  std::string typeString = getTypeString(node, sspVersion);
+
   oms_signal_type_enu_t type = oms_signal_type_real;
   if (typeString == "Real")
     type = oms_signal_type_real;
@@ -109,6 +112,7 @@ oms::Connector* oms::Connector::NewConnector(const pugi::xml_node& node)
     type = oms_signal_type_boolean;
   else if (typeString == "Enumeration")
     type = oms_signal_type_enum;
+  //TODO handle Binary Types
   else
   {
     logError("Failed to import " + std::string(oms::ssp::Draft20180219::ssd::connector) + ":type");
@@ -136,6 +140,40 @@ oms::Connector* oms::Connector::NewConnector(const pugi::xml_node& node)
   return connector;
 }
 
+std::string oms::Connector::getTypeString(const pugi::xml_node &node, const std::string& sspVersion)
+{
+  std::string typeString = "";
+  if (sspVersion == "Draft20180219")
+  {
+    typeString = node.attribute("type").as_string();
+    return typeString;
+  }
+  else if (sspVersion == "1.0")
+  {
+    for(pugi::xml_node_iterator it = node.begin(); it != node.end(); ++it)
+    {
+      std::string name = it->name();
+      if (name == oms::ssp::Version1_0::ssc::real_type)
+        return typeString = "Real";
+      else if(name == oms::ssp::Version1_0::ssc::integer_type)
+        return typeString = "Integer";
+      else if(name == oms::ssp::Version1_0::ssc::boolean_type)
+        return typeString = "Boolean";
+      else if(name == oms::ssp::Version1_0::ssc::string_type)
+        return typeString = "String";
+      else if(name == oms::ssp::Version1_0::ssc::enumeration_type)
+        return typeString = "Enumeration";
+      else if(name == oms::ssp::Version1_0::ssc::binary_type)
+        return typeString = "Binary";
+    }
+    if (typeString == "")
+    {
+      logError("Failed to import " + std::string(oms::ssp::Draft20180219::ssd::connector) + ":type Version-1.0");
+    }
+  }
+  return typeString;
+}
+
 oms_status_enu_t oms::Connector::exportToSSD(pugi::xml_node &root) const
 {
   pugi::xml_node node = root.append_child(oms::ssp::Draft20180219::ssd::connector);
@@ -155,26 +193,21 @@ oms_status_enu_t oms::Connector::exportToSSD(pugi::xml_node &root) const
   switch (this->type)
   {
   case oms_signal_type_boolean:
-    node.append_attribute("type") = "Boolean";
-    // TO DO replace the node attribute of type to child elements <ssc:Real>
-    //node.append_child(oms::ssp::Version1_0::ssc::boolean_type);
+    node.append_child(oms::ssp::Version1_0::ssc::boolean_type);
     break;
   case oms_signal_type_enum:
-    node.append_attribute("type") = "Enumeration";
-    //node.append_child(oms::ssp::Version1_0::ssc::enumeration_type);
+    node.append_child(oms::ssp::Version1_0::ssc::enumeration_type);
     break;
   case oms_signal_type_integer:
-    node.append_attribute("type") = "Integer";
-    //node.append_child(oms::ssp::Version1_0::ssc::integer_type);
+    node.append_child(oms::ssp::Version1_0::ssc::integer_type);
     break;
   case oms_signal_type_real:
-    node.append_attribute("type") = "Real";
-    //node.append_child(oms::ssp::Version1_0::ssc::real_type);
+    node.append_child(oms::ssp::Version1_0::ssc::real_type);
     break;
   case oms_signal_type_string:
-    node.append_attribute("type") = "String";
-    //node.append_child(oms::ssp::Version1_0::ssc::string_type);
+    node.append_child(oms::ssp::Version1_0::ssc::string_type);
     break;
+  //TODO handle Binary Types
   }
   if (this->geometry)
   {

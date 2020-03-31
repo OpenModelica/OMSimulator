@@ -446,12 +446,12 @@ oms_status_enu_t oms::System::exportToSSD(pugi::xml_node& node) const
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node)
+oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const std::string& sspVersion)
 {
   for(pugi::xml_node_iterator it = node.begin(); it != node.end(); ++it)
   {
     std::string name = it->name();
-    if (name == oms::ssp::Draft20180219::ssd::simulation_information)
+    if (name == oms::ssp::Draft20180219::ssd::simulation_information && sspVersion == "Draft20180219")
     {
       if (oms_status_ok != importFromSSD_SimulationInformation(*it))
         return logError("Failed to import " + std::string(oms::ssp::Draft20180219::ssd::simulation_information));
@@ -490,7 +490,7 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node)
     {
       for(pugi::xml_node_iterator itConnectors = (*it).begin(); itConnectors != (*it).end(); ++itConnectors)
       {
-        connectors.back() = oms::Connector::NewConnector(*itConnectors);
+        connectors.back() = oms::Connector::NewConnector(*itConnectors, sspVersion);
         if (connectors.back())
         {
           exportConnectors[connectors.back()->getName()] = true;
@@ -511,7 +511,7 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node)
           ComRef systemCref = ComRef(itElements->attribute("name").as_string());
 
           // lochel: I guess that can somehow be improved
-          oms_system_enu_t systemType = getModel()->getSystemType(*itElements);
+          oms_system_enu_t systemType = getModel()->getSystemType(*itElements, sspVersion);
 
           if (oms_status_ok != addSubSystem(systemCref, systemType))
             return oms_status_error;
@@ -520,7 +520,7 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node)
           if (!system)
             return oms_status_error;
 
-          if (oms_status_ok != system->importFromSSD(*itElements))
+          if (oms_status_ok != system->importFromSSD(*itElements, sspVersion))
             return oms_status_error;
         }
         else if (name == oms::ssp::Draft20180219::ssd::component)
@@ -530,14 +530,14 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node)
           if ("application/x-fmu-sharedlibrary" == type)
           {
             if (getType() == oms_system_wc)
-              component = ComponentFMUCS::NewComponent(*itElements, this);
+              component = ComponentFMUCS::NewComponent(*itElements, this, sspVersion);
             else if (getType() == oms_system_sc)
-              component = ComponentFMUME::NewComponent(*itElements, this);
+              component = ComponentFMUME::NewComponent(*itElements, this, sspVersion);
             else
               return logError("wrong xml schema detected: " + name);
           }
           else if ("application/table" == type)
-            component = ComponentTable::NewComponent(*itElements, this);
+            component = ComponentTable::NewComponent(*itElements, this, sspVersion);
 #if !defined(NO_TLM)
           else if (itElements->attribute("type") == nullptr) {
               std::string name = itElements->attribute("name").as_string();
@@ -625,7 +625,7 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node)
         {
           name = itAnnotations->name();
           // check for oms:simulationInformation from version 1.0
-          if (std::string(name) == oms::ssp::Version1_0::simulation_information)
+          if (std::string(name) == oms::ssp::Version1_0::simulation_information && sspVersion == "1.0")
           {
             if (oms_status_ok != importFromSSD_SimulationInformation(*itAnnotations))
               return logError("Failed to import " + std::string(oms::ssp::Version1_0::simulation_information));

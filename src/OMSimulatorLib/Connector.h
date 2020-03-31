@@ -53,9 +53,10 @@ namespace oms
     ~Connector();
 
     // you have to free the memory yourself
-    static Connector* NewConnector(const pugi::xml_node& node);
+    static Connector* NewConnector(const pugi::xml_node& node, const std::string& sspVersion);
 
     oms_status_enu_t exportToSSD(pugi::xml_node& root) const;
+    static std::string getTypeString(const pugi::xml_node& node, const std::string& sspVersion);
 
     // methods to copy the object
     Connector(const Connector& rhs);

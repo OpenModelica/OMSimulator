@@ -80,7 +80,7 @@ namespace oms
     oms_status_enu_t addSubModel(const ComRef& cref, const std::string& fmuPath);
     bool validCref(const ComRef& cref);
     oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
-    oms_status_enu_t importFromSSD(const pugi::xml_node& node);
+    oms_status_enu_t importFromSSD(const pugi::xml_node& node, const std::string& sspVersion);
     virtual oms_status_enu_t exportToSSD_SimulationInformation(pugi::xml_node& node) const = 0;
     virtual oms_status_enu_t importFromSSD_SimulationInformation(const pugi::xml_node& node) = 0;
     void setGeometry(const ssd::ElementGeometry& geometry) {element.setGeometry(&geometry);}
