@@ -266,6 +266,7 @@ oms_status_enu_t oms::Model::addSystem(const oms::ComRef& cref, oms_system_enu_t
   if (cref.isValidIdent() && !system)
   {
     system = System::NewSystem(cref, type, this, NULL);
+
     if (system)
     {
       elements[0] = system->getElement();

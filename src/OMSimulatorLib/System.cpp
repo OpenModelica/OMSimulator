@@ -542,27 +542,44 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
           else if (itElements->attribute("type") == nullptr) {
               std::string name = itElements->attribute("name").as_string();
               std::string source = itElements->attribute("source").as_string();
-              pugi::xml_node simulationInformationNode = itElements->child(oms::ssp::Draft20180219::ssd::simulation_information);
-              if(simulationInformationNode) {
+
+              if (sspVersion == "Draft20180219") {
+                pugi::xml_node simulationInformationNode = itElements->child(oms::ssp::Draft20180219::ssd::simulation_information);
+                if(simulationInformationNode && sspVersion == "Draft20180219") {
                   pugi::xml_node annotationsNode = simulationInformationNode.child(oms::ssp::Draft20180219::ssd::annotations);
                   if(annotationsNode) {
-                      for (pugi::xml_node annotationNode = annotationsNode.child(oms::ssp::Draft20180219::ssd::annotation); annotationNode; annotationNode = annotationNode.next_sibling(oms::ssp::Draft20180219::ssd::annotation)) {
-                          std::string type = annotationNode.attribute("type").as_string() ;
-                          if(oms::ssp::Draft20180219::annotation_type == type) {
-                              pugi::xml_node externalModelNode = annotationNode.child(oms::ssp::Draft20180219::external_model);
-                              if(externalModelNode) {
-                                  std::string startScript = externalModelNode.attribute("startscript").as_string();
-                                  component = oms::ExternalModel::NewComponent(name,this,source,startScript);
-                              }
-                          }
+                    for (pugi::xml_node annotationNode = annotationsNode.child(oms::ssp::Draft20180219::ssd::annotation); annotationNode; annotationNode = annotationNode.next_sibling(oms::ssp::Draft20180219::ssd::annotation)) {
+                      std::string type = annotationNode.attribute("type").as_string() ;
+                      if(oms::ssp::Draft20180219::annotation_type == type) {
+                        pugi::xml_node externalModelNode = annotationNode.child(oms::ssp::Draft20180219::external_model);
+                        if(externalModelNode) {
+                          std::string startScript = externalModelNode.attribute("startscript").as_string();
+                          component = oms::ExternalModel::NewComponent(name,this,source,startScript);
+                        }
                       }
+                    }
                   }
+                }
               }
+
+
               pugi::xml_node annotationsNode = itElements->child(oms::ssp::Draft20180219::ssd::annotations);
               if(annotationsNode) {
                   for (pugi::xml_node annotationNode = annotationsNode.child(oms::ssp::Draft20180219::ssd::annotation); annotationNode; annotationNode = annotationNode.next_sibling(oms::ssp::Draft20180219::ssd::annotation)) {
                       std::string type = annotationNode.attribute("type").as_string() ;
                       if(oms::ssp::Draft20180219::annotation_type == type) {
+
+                          if (sspVersion == "1.0"){
+                            pugi::xml_node omsSimulationInformationNode = annotationNode.child(oms::ssp::Version1_0::simulation_information);
+                            if(omsSimulationInformationNode) {
+                              pugi::xml_node externalModelNode = omsSimulationInformationNode.child(oms::ssp::Draft20180219::external_model);
+                              if(externalModelNode) {
+                                std::string startScript = externalModelNode.attribute("startscript").as_string();
+                                component = oms::ExternalModel::NewComponent(name, this, source, startScript);
+                              }
+                            }
+                          }
+
                           pugi::xml_node busNode = annotationNode.child(oms::ssp::Draft20180219::bus);
                           //Load TLM bus connector for external model
                           std::string busname = busNode.attribute("name").as_string();
