@@ -67,22 +67,37 @@ oms_delete("test")
 
 -- Result:
 -- <?xml version="1.0"?>
--- <ssd:SystemStructureDescription name="test" version="Draft20180219">
+-- <ssd:SystemStructureDescription name="test" version="1.0">
 -- 	<ssd:System name="eoo">
--- 		<ssd:SimulationInformation>
--- 			<FixedStepMaster description="oms-ma" stepSize="0.100000" />
--- 		</ssd:SimulationInformation>
+-- 		<ssd:Annotations>
+-- 			<ssd:Annotation type="org.openmodelica">
+-- 				<oms:SimulationInformation>
+-- 					<FixedStepMaster description="oms-ma" stepSize="0.100000" />
+-- 				</oms:SimulationInformation>
+-- 			</ssd:Annotation>
+-- 		</ssd:Annotations>
 -- 		<ssd:Elements>
 -- 			<ssd:Component name="source" type="application/x-fmu-sharedlibrary" source="resources/0001_source.fmu">
 -- 				<ssd:Connectors>
--- 					<ssd:Connector name="y" kind="output" type="Real">
+-- 					<ssd:Connector name="y" kind="output">
+-- 						<ssc:Real />
 -- 						<ssd:ConnectorGeometry x="1.000000" y="0.500000" />
 -- 					</ssd:Connector>
--- 					<ssd:Connector name="amplitude" kind="parameter" type="Real" />
--- 					<ssd:Connector name="freqHz" kind="parameter" type="Real" />
--- 					<ssd:Connector name="offset" kind="parameter" type="Real" />
--- 					<ssd:Connector name="phase" kind="parameter" type="Real" />
--- 					<ssd:Connector name="startTime" kind="parameter" type="Real" />
+-- 					<ssd:Connector name="amplitude" kind="parameter">
+-- 						<ssc:Real />
+-- 					</ssd:Connector>
+-- 					<ssd:Connector name="freqHz" kind="parameter">
+-- 						<ssc:Real />
+-- 					</ssd:Connector>
+-- 					<ssd:Connector name="offset" kind="parameter">
+-- 						<ssc:Real />
+-- 					</ssd:Connector>
+-- 					<ssd:Connector name="phase" kind="parameter">
+-- 						<ssc:Real />
+-- 					</ssd:Connector>
+-- 					<ssd:Connector name="startTime" kind="parameter">
+-- 						<ssc:Real />
+-- 					</ssd:Connector>
 -- 				</ssd:Connectors>
 -- 			</ssd:Component>
 -- 		</ssd:Elements>
@@ -95,22 +110,37 @@ oms_delete("test")
 -- info:    Delete source
 -- status:  [correct] ok
 -- <?xml version="1.0"?>
--- <ssd:SystemStructureDescription name="test" version="Draft20180219">
+-- <ssd:SystemStructureDescription name="test" version="1.0">
 -- 	<ssd:System name="eoo">
--- 		<ssd:SimulationInformation>
--- 			<FixedStepMaster description="oms-ma" stepSize="0.100000" />
--- 		</ssd:SimulationInformation>
+-- 		<ssd:Annotations>
+-- 			<ssd:Annotation type="org.openmodelica">
+-- 				<oms:SimulationInformation>
+-- 					<FixedStepMaster description="oms-ma" stepSize="0.100000" />
+-- 				</oms:SimulationInformation>
+-- 			</ssd:Annotation>
+-- 		</ssd:Annotations>
 -- 		<ssd:Elements>
 -- 			<ssd:Component name="source" type="application/x-fmu-sharedlibrary" source="resources/0001_source.fmu">
 -- 				<ssd:Connectors>
--- 					<ssd:Connector name="y" kind="output" type="Real">
+-- 					<ssd:Connector name="y" kind="output">
+-- 						<ssc:Real />
 -- 						<ssd:ConnectorGeometry x="1.000000" y="0.500000" />
 -- 					</ssd:Connector>
--- 					<ssd:Connector name="amplitude" kind="parameter" type="Real" />
--- 					<ssd:Connector name="freqHz" kind="parameter" type="Real" />
--- 					<ssd:Connector name="offset" kind="parameter" type="Real" />
--- 					<ssd:Connector name="phase" kind="parameter" type="Real" />
--- 					<ssd:Connector name="startTime" kind="parameter" type="Real" />
+-- 					<ssd:Connector name="amplitude" kind="parameter">
+-- 						<ssc:Real />
+-- 					</ssd:Connector>
+-- 					<ssd:Connector name="freqHz" kind="parameter">
+-- 						<ssc:Real />
+-- 					</ssd:Connector>
+-- 					<ssd:Connector name="offset" kind="parameter">
+-- 						<ssc:Real />
+-- 					</ssd:Connector>
+-- 					<ssd:Connector name="phase" kind="parameter">
+-- 						<ssc:Real />
+-- 					</ssd:Connector>
+-- 					<ssd:Connector name="startTime" kind="parameter">
+-- 						<ssc:Real />
+-- 					</ssd:Connector>
 -- 				</ssd:Connectors>
 -- 			</ssd:Component>
 -- 		</ssd:Elements>

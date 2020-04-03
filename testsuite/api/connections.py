@@ -94,31 +94,55 @@ printStatus(status, 0)
 ## status:  [correct] error
 ## <?xml version="1.0"?>
 ## <ssd:System name="wc">
-## 	<ssd:SimulationInformation>
-## 		<FixedStepMaster description="oms-ma" stepSize="0.100000" />
-## 	</ssd:SimulationInformation>
+## 	<ssd:Annotations>
+## 		<ssd:Annotation type="org.openmodelica">
+## 			<oms:SimulationInformation>
+## 				<FixedStepMaster description="oms-ma" stepSize="0.100000" />
+## 			</oms:SimulationInformation>
+## 		</ssd:Annotation>
+## 	</ssd:Annotations>
 ## 	<ssd:Elements>
 ## 		<ssd:System name="sc2">
-## 			<ssd:SimulationInformation>
-## 				<VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
-## 			</ssd:SimulationInformation>
+## 			<ssd:Annotations>
+## 				<ssd:Annotation type="org.openmodelica">
+## 					<oms:SimulationInformation>
+## 						<VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
+## 					</oms:SimulationInformation>
+## 				</ssd:Annotation>
+## 			</ssd:Annotations>
 ## 			<ssd:Elements />
 ## 			<ssd:Connectors>
-## 				<ssd:Connector name="y1" kind="output" type="Real" />
-## 				<ssd:Connector name="y2" kind="output" type="Integer" />
-## 				<ssd:Connector name="y3" kind="output" type="Real" />
+## 				<ssd:Connector name="y1" kind="output">
+## 					<ssc:Real />
+## 				</ssd:Connector>
+## 				<ssd:Connector name="y2" kind="output">
+## 					<ssc:Integer />
+## 				</ssd:Connector>
+## 				<ssd:Connector name="y3" kind="output">
+## 					<ssc:Real />
+## 				</ssd:Connector>
 ## 			</ssd:Connectors>
 ## 			<ssd:Connections />
 ## 		</ssd:System>
 ## 		<ssd:System name="sc1">
-## 			<ssd:SimulationInformation>
-## 				<VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
-## 			</ssd:SimulationInformation>
+## 			<ssd:Annotations>
+## 				<ssd:Annotation type="org.openmodelica">
+## 					<oms:SimulationInformation>
+## 						<VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
+## 					</oms:SimulationInformation>
+## 				</ssd:Annotation>
+## 			</ssd:Annotations>
 ## 			<ssd:Elements />
 ## 			<ssd:Connectors>
-## 				<ssd:Connector name="u1" kind="input" type="Real" />
-## 				<ssd:Connector name="u2" kind="input" type="Real" />
-## 				<ssd:Connector name="y" kind="output" type="Real" />
+## 				<ssd:Connector name="u1" kind="input">
+## 					<ssc:Real />
+## 				</ssd:Connector>
+## 				<ssd:Connector name="u2" kind="input">
+## 					<ssc:Real />
+## 				</ssd:Connector>
+## 				<ssd:Connector name="y" kind="output">
+## 					<ssc:Real />
+## 				</ssd:Connector>
 ## 			</ssd:Connectors>
 ## 			<ssd:Connections />
 ## 		</ssd:System>
@@ -132,31 +156,55 @@ printStatus(status, 0)
 ## status:  [correct] ok
 ## <?xml version="1.0"?>
 ## <ssd:System name="wc">
-## 	<ssd:SimulationInformation>
-## 		<FixedStepMaster description="oms-ma" stepSize="0.100000" />
-## 	</ssd:SimulationInformation>
+## 	<ssd:Annotations>
+## 		<ssd:Annotation type="org.openmodelica">
+## 			<oms:SimulationInformation>
+## 				<FixedStepMaster description="oms-ma" stepSize="0.100000" />
+## 			</oms:SimulationInformation>
+## 		</ssd:Annotation>
+## 	</ssd:Annotations>
 ## 	<ssd:Elements>
 ## 		<ssd:System name="sc2">
-## 			<ssd:SimulationInformation>
-## 				<VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
-## 			</ssd:SimulationInformation>
+## 			<ssd:Annotations>
+## 				<ssd:Annotation type="org.openmodelica">
+## 					<oms:SimulationInformation>
+## 						<VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
+## 					</oms:SimulationInformation>
+## 				</ssd:Annotation>
+## 			</ssd:Annotations>
 ## 			<ssd:Elements />
 ## 			<ssd:Connectors>
-## 				<ssd:Connector name="y1" kind="output" type="Real" />
-## 				<ssd:Connector name="y2" kind="output" type="Integer" />
-## 				<ssd:Connector name="y3" kind="output" type="Real" />
+## 				<ssd:Connector name="y1" kind="output">
+## 					<ssc:Real />
+## 				</ssd:Connector>
+## 				<ssd:Connector name="y2" kind="output">
+## 					<ssc:Integer />
+## 				</ssd:Connector>
+## 				<ssd:Connector name="y3" kind="output">
+## 					<ssc:Real />
+## 				</ssd:Connector>
 ## 			</ssd:Connectors>
 ## 			<ssd:Connections />
 ## 		</ssd:System>
 ## 		<ssd:System name="sc1">
-## 			<ssd:SimulationInformation>
-## 				<VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
-## 			</ssd:SimulationInformation>
+## 			<ssd:Annotations>
+## 				<ssd:Annotation type="org.openmodelica">
+## 					<oms:SimulationInformation>
+## 						<VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
+## 					</oms:SimulationInformation>
+## 				</ssd:Annotation>
+## 			</ssd:Annotations>
 ## 			<ssd:Elements />
 ## 			<ssd:Connectors>
-## 				<ssd:Connector name="u1" kind="input" type="Real" />
-## 				<ssd:Connector name="u2" kind="input" type="Real" />
-## 				<ssd:Connector name="y" kind="output" type="Real" />
+## 				<ssd:Connector name="u1" kind="input">
+## 					<ssc:Real />
+## 				</ssd:Connector>
+## 				<ssd:Connector name="u2" kind="input">
+## 					<ssc:Real />
+## 				</ssd:Connector>
+## 				<ssd:Connector name="y" kind="output">
+## 					<ssc:Real />
+## 				</ssd:Connector>
 ## 			</ssd:Connectors>
 ## 			<ssd:Connections />
 ## 		</ssd:System>
