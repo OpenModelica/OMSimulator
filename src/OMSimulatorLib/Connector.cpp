@@ -151,7 +151,6 @@ std::string oms::Connector::getTypeString(const pugi::xml_node &node, const std:
   if (sspVersion == "Draft20180219")
   {
     typeString = node.attribute("type").as_string();
-    return typeString;
   }
   else if (sspVersion == "1.0")
   {
@@ -159,17 +158,17 @@ std::string oms::Connector::getTypeString(const pugi::xml_node &node, const std:
     {
       std::string name = it->name();
       if (name == oms::ssp::Version1_0::ssc::real_type)
-        return typeString = "Real";
+        typeString = "Real";
       else if(name == oms::ssp::Version1_0::ssc::integer_type)
-        return typeString = "Integer";
+        typeString = "Integer";
       else if(name == oms::ssp::Version1_0::ssc::boolean_type)
-        return typeString = "Boolean";
+        typeString = "Boolean";
       else if(name == oms::ssp::Version1_0::ssc::string_type)
-        return typeString = "String";
+        typeString = "String";
       else if(name == oms::ssp::Version1_0::ssc::enumeration_type)
-        return typeString = "Enumeration";
+        typeString = "Enumeration";
       else if(name == oms::ssp::Version1_0::ssc::binary_type)
-        return typeString = "Binary";
+        typeString = "Binary";
     }
     if (typeString == "")
     {
