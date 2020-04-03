@@ -350,6 +350,7 @@ printStatus(status, 0)
 --    </ssd:System>
 --    <ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000" />
 -- </ssd:SystemStructureDescription>
+
 -- status:  [correct] ok
 -- status:  [correct] ok
 -- status:  [correct] ok
@@ -511,5 +512,6 @@ printStatus(status, 0)
 --    </ssd:System>
 --    <ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000" />
 -- </ssd:SystemStructureDescription>
+
 -- status:  [correct] ok
 -- endResult

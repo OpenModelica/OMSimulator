@@ -66,15 +66,11 @@ printStatus(status, 0)
 ## 					<oms:Bus name="tlmbus" type="tlm" domain="mechanical" dimensions="1" interpolation="none">
 ## 						<oms:Signals />
 ## 					</oms:Bus>
+## 					<oms:SimulationInformation>
+## 						<oms:ExternalModel startscript="resources/startscript.sh" />
+## 					</oms:SimulationInformation>
 ## 				</ssd:Annotation>
 ## 			</ssd:Annotations>
-## 			<ssd:SimulationInformation>
-## 				<ssd:Annotations>
-## 					<ssd:Annotation type="org.openmodelica">
-## 						<oms:ExternalModel startscript="resources/startscript.sh" />
-## 					</ssd:Annotation>
-## 				</ssd:Annotations>
-## 			</ssd:SimulationInformation>
 ## 		</ssd:Component>
 ## 	</ssd:Elements>
 ## 	<ssd:Connectors />
