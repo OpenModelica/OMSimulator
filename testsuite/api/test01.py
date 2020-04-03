@@ -86,16 +86,24 @@ printStatus(status, 3)
 ## error:   [NewSystem] A WC system must be the root system or a subsystem of a TLM system.
 ## status:  [correct] error
 ## <?xml version="1.0"?>
-## <ssd:SystemStructureDescription name="test" version="Draft20180219">
+## <ssd:SystemStructureDescription name="test" version="1.0">
 ## 	<ssd:System name="foo">
-## 		<ssd:SimulationInformation>
-## 			<FixedStepMaster description="oms-ma" stepSize="0.100000" />
-## 		</ssd:SimulationInformation>
+## 		<ssd:Annotations>
+## 			<ssd:Annotation type="org.openmodelica">
+## 				<oms:SimulationInformation>
+## 					<FixedStepMaster description="oms-ma" stepSize="0.100000" />
+## 				</oms:SimulationInformation>
+## 			</ssd:Annotation>
+## 		</ssd:Annotations>
 ## 		<ssd:Elements>
 ## 			<ssd:System name="goo">
-## 				<ssd:SimulationInformation>
-## 					<VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
-## 				</ssd:SimulationInformation>
+## 				<ssd:Annotations>
+## 					<ssd:Annotation type="org.openmodelica">
+## 						<oms:SimulationInformation>
+## 							<VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
+## 						</oms:SimulationInformation>
+## 					</ssd:Annotation>
+## 				</ssd:Annotations>
 ## 				<ssd:Elements />
 ## 				<ssd:Connectors />
 ## 				<ssd:Connections />
@@ -109,14 +117,22 @@ printStatus(status, 3)
 ##
 ## <?xml version="1.0"?>
 ## <ssd:System name="foo">
-## 	<ssd:SimulationInformation>
-## 		<FixedStepMaster description="oms-ma" stepSize="0.100000" />
-## 	</ssd:SimulationInformation>
+## 	<ssd:Annotations>
+## 		<ssd:Annotation type="org.openmodelica">
+## 			<oms:SimulationInformation>
+## 				<FixedStepMaster description="oms-ma" stepSize="0.100000" />
+## 			</oms:SimulationInformation>
+## 		</ssd:Annotation>
+## 	</ssd:Annotations>
 ## 	<ssd:Elements>
 ## 		<ssd:System name="goo">
-## 			<ssd:SimulationInformation>
-## 				<VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
-## 			</ssd:SimulationInformation>
+## 			<ssd:Annotations>
+## 				<ssd:Annotation type="org.openmodelica">
+## 					<oms:SimulationInformation>
+## 						<VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
+## 					</oms:SimulationInformation>
+## 				</ssd:Annotation>
+## 			</ssd:Annotations>
 ## 			<ssd:Elements />
 ## 			<ssd:Connectors />
 ## 			<ssd:Connections />
@@ -128,9 +144,13 @@ printStatus(status, 3)
 ##
 ## <?xml version="1.0"?>
 ## <ssd:System name="goo">
-## 	<ssd:SimulationInformation>
-## 		<VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
-## 	</ssd:SimulationInformation>
+## 	<ssd:Annotations>
+## 		<ssd:Annotation type="org.openmodelica">
+## 			<oms:SimulationInformation>
+## 				<VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
+## 			</oms:SimulationInformation>
+## 		</ssd:Annotation>
+## 	</ssd:Annotations>
 ## 	<ssd:Elements />
 ## 	<ssd:Connectors />
 ## 	<ssd:Connections />
@@ -144,7 +164,7 @@ printStatus(status, 3)
 ## status:  [correct] ok
 ## status:  [correct] ok
 ## <?xml version="1.0"?>
-## <ssd:SystemStructureDescription name="test" version="Draft20180219">
+## <ssd:SystemStructureDescription name="test" version="1.0">
 ## 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000" />
 ## </ssd:SystemStructureDescription>
 ##

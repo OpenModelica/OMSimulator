@@ -57,3 +57,14 @@ const char* oms::ssp::Draft20180219::ssd::simulation_information       = "ssd:Si
 const char* oms::ssp::Draft20180219::ssd::system                       = "ssd:System";
 const char* oms::ssp::Draft20180219::ssd::system_structure_description = "ssd:SystemStructureDescription";
 const char* oms::ssp::Draft20180219::ssd::units                        = "ssd:Units";
+
+// version 1.0
+const char* oms::ssp::Version1_0::simulation_information               = "oms:SimulationInformation"; // for version 1.0 ssd:SimulationInformation should be handled in vendorSpecific annotation
+
+const char* oms::ssp::Version1_0::ssc::real_type                       = "ssc:Real";
+const char* oms::ssp::Version1_0::ssc::integer_type                    = "ssc:Integer";
+const char* oms::ssp::Version1_0::ssc::boolean_type                    = "ssc:Boolean";
+const char* oms::ssp::Version1_0::ssc::string_type                     = "ssc:String";
+const char* oms::ssp::Version1_0::ssc::enumeration_type                = "ssc:Enumeration";
+const char* oms::ssp::Version1_0::ssc::binary_type                     = "ssc:Binary";
+

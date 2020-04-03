@@ -38,6 +38,17 @@ namespace oms
   {
     namespace Version1_0
     {
+      extern const char* simulation_information;
+
+      namespace ssc
+      {
+        extern const char*  real_type;
+        extern const char*  integer_type;
+        extern const char*  boolean_type;
+        extern const char*  string_type;
+        extern const char*  enumeration_type;
+        extern const char*  binary_type;
+      }
     }
 
     namespace Draft20180219

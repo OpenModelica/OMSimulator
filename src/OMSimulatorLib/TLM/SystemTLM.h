@@ -50,6 +50,7 @@ namespace oms
     static System* NewSystem(const oms::ComRef& cref, Model* parentModel, System* parentSystem);
     oms_status_enu_t exportToSSD_SimulationInformation(pugi::xml_node& node) const;
     oms_status_enu_t importFromSSD_SimulationInformation(const pugi::xml_node& node);
+    oms_status_enu_t importFromSSD_SimulationInformationHelper(const pugi::xml_node& node);
     oms_status_enu_t setSocketData(const std::string& address, int managerPort, int monitorPort);
     oms_status_enu_t setPositionAndOrientation(const ComRef &cref, std::vector<double> x, std::vector<double> A);
     oms_status_enu_t fetchInterfaces(const ComRef &cref, std::vector<std::string> &name, std::vector<int> &dimensions, std::vector<std::string> &domain);

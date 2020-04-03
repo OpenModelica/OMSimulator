@@ -52,33 +52,29 @@ printStatus(status, 0)
 -- status:  [correct] ok
 -- <?xml version="1.0"?>
 -- <ssd:System name="tlm">
---  <ssd:SimulationInformation>
---    <ssd:Annotations>
---      <ssd:Annotation type="org.openmodelica">
---        <oms:TlmMaster ip="" managerport="0" monitorport="0" />
---      </ssd:Annotation>
---    </ssd:Annotations>
---  </ssd:SimulationInformation>
---  <ssd:Elements>
---    <ssd:Component name="external" source="resources/external.mo">
---      <ssd:Annotations>
---        <ssd:Annotation type="org.openmodelica">
---          <oms:Bus name="tlmbus" type="tlm" domain="mechanical" dimensions="1" interpolation="none">
---            <oms:Signals />
---          </oms:Bus>
---        </ssd:Annotation>
---      </ssd:Annotations>
---      <ssd:SimulationInformation>
---        <ssd:Annotations>
---          <ssd:Annotation type="org.openmodelica">
---            <oms:ExternalModel startscript="resources/startscript.sh" />
---          </ssd:Annotation>
---        </ssd:Annotations>
---      </ssd:SimulationInformation>
---    </ssd:Component>
---  </ssd:Elements>
---  <ssd:Connectors />
---  <ssd:Connections />
+-- 	<ssd:Annotations>
+-- 		<ssd:Annotation type="org.openmodelica">
+-- 			<oms:SimulationInformation>
+-- 				<oms:TlmMaster ip="" managerport="0" monitorport="0" />
+-- 			</oms:SimulationInformation>
+-- 		</ssd:Annotation>
+-- 	</ssd:Annotations>
+-- 	<ssd:Elements>
+-- 		<ssd:Component name="external" source="resources/external.mo">
+-- 			<ssd:Annotations>
+-- 				<ssd:Annotation type="org.openmodelica">
+-- 					<oms:Bus name="tlmbus" type="tlm" domain="mechanical" dimensions="1" interpolation="none">
+-- 						<oms:Signals />
+-- 					</oms:Bus>
+-- 					<oms:SimulationInformation>
+-- 						<oms:ExternalModel startscript="resources/startscript.sh" />
+-- 					</oms:SimulationInformation>
+-- 				</ssd:Annotation>
+-- 			</ssd:Annotations>
+-- 		</ssd:Component>
+-- 	</ssd:Elements>
+-- 	<ssd:Connectors />
+-- 	<ssd:Connections />
 -- </ssd:System>
 --
 -- status:  [correct] ok

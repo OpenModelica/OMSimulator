@@ -104,23 +104,33 @@ printStatus(status, 0)
 ## status:  [correct] error
 ## <?xml version="1.0"?>
 ## <ssd:System name="tlm">
-## 	<ssd:SimulationInformation>
-## 		<ssd:Annotations>
-## 			<ssd:Annotation type="org.openmodelica">
+## 	<ssd:Annotations>
+## 		<ssd:Annotation type="org.openmodelica">
+## 			<oms:SimulationInformation>
 ## 				<oms:TlmMaster ip="" managerport="0" monitorport="0" />
-## 			</ssd:Annotation>
-## 		</ssd:Annotations>
-## 	</ssd:SimulationInformation>
+## 			</oms:SimulationInformation>
+## 		</ssd:Annotation>
+## 	</ssd:Annotations>
 ## 	<ssd:Elements>
 ## 		<ssd:System name="wc2">
-## 			<ssd:SimulationInformation>
-## 				<FixedStepMaster description="oms-ma" stepSize="0.100000" />
-## 			</ssd:SimulationInformation>
+## 			<ssd:Annotations>
+## 				<ssd:Annotation type="org.openmodelica">
+## 					<oms:SimulationInformation>
+## 						<FixedStepMaster description="oms-ma" stepSize="0.100000" />
+## 					</oms:SimulationInformation>
+## 				</ssd:Annotation>
+## 			</ssd:Annotations>
 ## 			<ssd:Elements />
 ## 			<ssd:Connectors>
-## 				<ssd:Connector name="y1" kind="output" type="Real" />
-## 				<ssd:Connector name="y2" kind="output" type="Real" />
-## 				<ssd:Connector name="y3" kind="output" type="Real" />
+## 				<ssd:Connector name="y1" kind="output">
+## 					<ssc:Real />
+## 				</ssd:Connector>
+## 				<ssd:Connector name="y2" kind="output">
+## 					<ssc:Real />
+## 				</ssd:Connector>
+## 				<ssd:Connector name="y3" kind="output">
+## 					<ssc:Real />
+## 				</ssd:Connector>
 ## 			</ssd:Connectors>
 ## 			<ssd:Connections />
 ## 			<ssd:Annotations>
@@ -135,14 +145,24 @@ printStatus(status, 0)
 ## 			</ssd:Annotations>
 ## 		</ssd:System>
 ## 		<ssd:System name="wc1">
-## 			<ssd:SimulationInformation>
-## 				<FixedStepMaster description="oms-ma" stepSize="0.100000" />
-## 			</ssd:SimulationInformation>
+## 			<ssd:Annotations>
+## 				<ssd:Annotation type="org.openmodelica">
+## 					<oms:SimulationInformation>
+## 						<FixedStepMaster description="oms-ma" stepSize="0.100000" />
+## 					</oms:SimulationInformation>
+## 				</ssd:Annotation>
+## 			</ssd:Annotations>
 ## 			<ssd:Elements />
 ## 			<ssd:Connectors>
-## 				<ssd:Connector name="u1" kind="input" type="Real" />
-## 				<ssd:Connector name="u2" kind="input" type="Real" />
-## 				<ssd:Connector name="y" kind="output" type="Real" />
+## 				<ssd:Connector name="u1" kind="input">
+## 					<ssc:Real />
+## 				</ssd:Connector>
+## 				<ssd:Connector name="u2" kind="input">
+## 					<ssc:Real />
+## 				</ssd:Connector>
+## 				<ssd:Connector name="y" kind="output">
+## 					<ssc:Real />
+## 				</ssd:Connector>
 ## 			</ssd:Connectors>
 ## 			<ssd:Connections />
 ## 			<ssd:Annotations>
@@ -175,23 +195,33 @@ printStatus(status, 0)
 ## status:  [correct] ok
 ## <?xml version="1.0"?>
 ## <ssd:System name="tlm">
-## 	<ssd:SimulationInformation>
-## 		<ssd:Annotations>
-## 			<ssd:Annotation type="org.openmodelica">
+## 	<ssd:Annotations>
+## 		<ssd:Annotation type="org.openmodelica">
+## 			<oms:SimulationInformation>
 ## 				<oms:TlmMaster ip="" managerport="0" monitorport="0" />
-## 			</ssd:Annotation>
-## 		</ssd:Annotations>
-## 	</ssd:SimulationInformation>
+## 			</oms:SimulationInformation>
+## 		</ssd:Annotation>
+## 	</ssd:Annotations>
 ## 	<ssd:Elements>
 ## 		<ssd:System name="wc2">
-## 			<ssd:SimulationInformation>
-## 				<FixedStepMaster description="oms-ma" stepSize="0.100000" />
-## 			</ssd:SimulationInformation>
+## 			<ssd:Annotations>
+## 				<ssd:Annotation type="org.openmodelica">
+## 					<oms:SimulationInformation>
+## 						<FixedStepMaster description="oms-ma" stepSize="0.100000" />
+## 					</oms:SimulationInformation>
+## 				</ssd:Annotation>
+## 			</ssd:Annotations>
 ## 			<ssd:Elements />
 ## 			<ssd:Connectors>
-## 				<ssd:Connector name="y1" kind="output" type="Real" />
-## 				<ssd:Connector name="y2" kind="output" type="Real" />
-## 				<ssd:Connector name="y3" kind="output" type="Real" />
+## 				<ssd:Connector name="y1" kind="output">
+## 					<ssc:Real />
+## 				</ssd:Connector>
+## 				<ssd:Connector name="y2" kind="output">
+## 					<ssc:Real />
+## 				</ssd:Connector>
+## 				<ssd:Connector name="y3" kind="output">
+## 					<ssc:Real />
+## 				</ssd:Connector>
 ## 			</ssd:Connectors>
 ## 			<ssd:Connections />
 ## 			<ssd:Annotations>
@@ -206,14 +236,24 @@ printStatus(status, 0)
 ## 			</ssd:Annotations>
 ## 		</ssd:System>
 ## 		<ssd:System name="wc1">
-## 			<ssd:SimulationInformation>
-## 				<FixedStepMaster description="oms-ma" stepSize="0.100000" />
-## 			</ssd:SimulationInformation>
+## 			<ssd:Annotations>
+## 				<ssd:Annotation type="org.openmodelica">
+## 					<oms:SimulationInformation>
+## 						<FixedStepMaster description="oms-ma" stepSize="0.100000" />
+## 					</oms:SimulationInformation>
+## 				</ssd:Annotation>
+## 			</ssd:Annotations>
 ## 			<ssd:Elements />
 ## 			<ssd:Connectors>
-## 				<ssd:Connector name="u1" kind="input" type="Real" />
-## 				<ssd:Connector name="u2" kind="input" type="Real" />
-## 				<ssd:Connector name="y" kind="output" type="Real" />
+## 				<ssd:Connector name="u1" kind="input">
+## 					<ssc:Real />
+## 				</ssd:Connector>
+## 				<ssd:Connector name="u2" kind="input">
+## 					<ssc:Real />
+## 				</ssd:Connector>
+## 				<ssd:Connector name="y" kind="output">
+## 					<ssc:Real />
+## 				</ssd:Connector>
 ## 			</ssd:Connectors>
 ## 			<ssd:Connections />
 ## 			<ssd:Annotations>

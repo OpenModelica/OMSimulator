@@ -103,7 +103,7 @@ oms::Component* oms::ComponentTable::NewComponent(const oms::ComRef& cref, oms::
   return component;
 }
 
-oms::Component* oms::ComponentTable::NewComponent(const pugi::xml_node& node, oms::System* parentSystem)
+oms::Component* oms::ComponentTable::NewComponent(const pugi::xml_node& node, oms::System* parentSystem, const std::string& sspVersion)
 {
   ComRef cref = ComRef(node.attribute("name").as_string());
   std::string type = node.attribute("type").as_string();
@@ -136,7 +136,7 @@ oms::Component* oms::ComponentTable::NewComponent(const pugi::xml_node& node, om
       // import connectors
       for(pugi::xml_node_iterator itConnectors = (*it).begin(); itConnectors != (*it).end(); ++itConnectors)
       {
-        component->connectors.push_back(oms::Connector::NewConnector(*itConnectors));
+        component->connectors.push_back(oms::Connector::NewConnector(*itConnectors, sspVersion));
         component->exportSeries[component->connectors.back()->getName()] = true;
       }
     }

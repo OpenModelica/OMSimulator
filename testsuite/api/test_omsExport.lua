@@ -48,11 +48,15 @@ printStatus(status, 0)
 -- status:  [correct] ok
 -- status:  [correct] ok
 -- <?xml version="1.0"?>
--- <ssd:SystemStructureDescription name="model" version="Draft20180219">
+-- <ssd:SystemStructureDescription name="model" version="1.0">
 -- 	<ssd:System name="sc">
--- 		<ssd:SimulationInformation>
--- 			<VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
--- 		</ssd:SimulationInformation>
+-- 		<ssd:Annotations>
+-- 			<ssd:Annotation type="org.openmodelica">
+-- 				<oms:SimulationInformation>
+-- 					<VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
+-- 				</oms:SimulationInformation>
+-- 			</ssd:Annotation>
+-- 		</ssd:Annotations>
 -- 		<ssd:Elements />
 -- 		<ssd:Connectors />
 -- 		<ssd:Connections />

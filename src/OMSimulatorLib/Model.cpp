@@ -136,7 +136,7 @@ oms_status_enu_t oms::Model::loadSnapshot(const char* snapshot)
   if (new_cref != getCref())
     return logError("this API cannot be used to rename a model");
 
-  if (ssdVersion != "Draft20180219")
+  if (ssdVersion != "Draft20180219" && ssdVersion != "1.0")
     logWarning("Unknown SSD version: " + ssdVersion);
 
   System* old_root_system = system;
@@ -266,6 +266,7 @@ oms_status_enu_t oms::Model::addSystem(const oms::ComRef& cref, oms_system_enu_t
   if (cref.isValidIdent() && !system)
   {
     system = System::NewSystem(cref, type, this, NULL);
+
     if (system)
     {
       elements[0] = system->getElement();
@@ -289,7 +290,7 @@ oms_status_enu_t oms::Model::addSystem(const oms::ComRef& cref, oms_system_enu_t
 oms_status_enu_t oms::Model::exportToSSD(pugi::xml_node& node) const
 {
   node.append_attribute("name") = this->getCref().c_str();
-  node.append_attribute("version") = "Draft20180219";
+  node.append_attribute("version") = "1.0";
 
   if (system)
   {
@@ -307,6 +308,7 @@ oms_status_enu_t oms::Model::exportToSSD(pugi::xml_node& node) const
 
 oms_status_enu_t oms::Model::importFromSSD(const pugi::xml_node& node)
 {
+  std::string sspVersion = node.attribute("version").as_string();
   for(pugi::xml_node_iterator it = node.begin(); it != node.end(); ++it)
   {
     std::string name = it->name();
@@ -315,15 +317,7 @@ oms_status_enu_t oms::Model::importFromSSD(const pugi::xml_node& node)
       ComRef systemCref = ComRef(it->attribute("name").as_string());
 
       // lochel: I guess that can somehow be improved
-      oms_system_enu_t systemType = oms_system_tlm;
-      if (std::string(it->child(oms::ssp::Draft20180219::ssd::simulation_information).child("VariableStepSolver").attribute("description").as_string()) != "")
-        systemType = oms_system_sc;
-      if (std::string(it->child(oms::ssp::Draft20180219::ssd::simulation_information).child("FixedStepSolver").attribute("description").as_string()) != "")
-        systemType = oms_system_sc;
-      if (std::string(it->child(oms::ssp::Draft20180219::ssd::simulation_information).child("VariableStepMaster").attribute("description").as_string()) != "")
-        systemType = oms_system_wc;
-      if (std::string(it->child(oms::ssp::Draft20180219::ssd::simulation_information).child("FixedStepMaster").attribute("description").as_string()) != "")
-        systemType = oms_system_wc;
+      oms_system_enu_t systemType = getSystemType(*it, sspVersion);
 
       if (oms_status_ok != addSystem(systemCref, systemType))
         return oms_status_error;
@@ -332,7 +326,7 @@ oms_status_enu_t oms::Model::importFromSSD(const pugi::xml_node& node)
       if (!system)
         return oms_status_error;
 
-      if (oms_status_ok != system->importFromSSD(*it))
+      if (oms_status_ok != system->importFromSSD(*it, sspVersion))
         return oms_status_error;
     }
     else if (name == oms::ssp::Draft20180219::ssd::default_experiment)
@@ -345,6 +339,54 @@ oms_status_enu_t oms::Model::importFromSSD(const pugi::xml_node& node)
   }
 
   return oms_status_ok;
+}
+
+oms_system_enu_t oms::Model::getSystemType(const pugi::xml_node& node, const std::string& sspVersion)
+{
+  oms_system_enu_t systemType;
+  for(pugi::xml_node_iterator itElements = node.begin(); itElements != node.end(); ++itElements)
+  {
+    std::string name = itElements->name();
+    /*  To handle version = "Draft20180219"*/
+    if (name ==  oms::ssp::Draft20180219::ssd::simulation_information && sspVersion == "Draft20180219")
+    {
+      systemType = getSystemTypeHelper(*itElements);
+    }
+
+    /* from Version "1.0" simulationInformation is handled in vendor annotation */
+    if (name == oms::ssp::Draft20180219::ssd::annotations  && sspVersion == "1.0")
+    {
+      pugi::xml_node annotation_node = itElements->child(oms::ssp::Draft20180219::ssd::annotation);
+      if (annotation_node && std::string(annotation_node.attribute("type").as_string()) == oms::ssp::Draft20180219::annotation_type)
+      {
+        for(pugi::xml_node_iterator itAnnotations = annotation_node.begin(); itAnnotations != annotation_node.end(); ++itAnnotations)
+        {
+          std::string annotationName = itAnnotations->name();
+          if (std::string(annotationName) == oms::ssp::Version1_0::simulation_information) // check for oms:simulationInformation from version 1.0
+          {
+            systemType = getSystemTypeHelper(*itAnnotations);
+          }
+        }
+      }
+    }
+  }
+
+  return systemType;
+}
+
+oms_system_enu_t oms::Model::getSystemTypeHelper(const pugi::xml_node& node)
+{
+  oms_system_enu_t systemType = oms_system_tlm;
+  if (std::string(node.child("VariableStepSolver").attribute("description").as_string()) != "")
+    systemType = oms_system_sc;
+  if (std::string(node.child("FixedStepSolver").attribute("description").as_string()) != "")
+    systemType = oms_system_sc;
+  if (std::string(node.child("VariableStepMaster").attribute("description").as_string()) != "")
+    systemType = oms_system_wc;
+  if (std::string(node.child("FixedStepMaster").attribute("description").as_string()) != "")
+    systemType = oms_system_wc;
+
+  return systemType;
 }
 
 oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const

@@ -89,11 +89,12 @@ oms_status_enu_t oms::ExternalModel::getRealParameter(const std::string &var, do
 
 oms_status_enu_t oms::ExternalModel::exportToSSD(pugi::xml_node& node) const
 {
+  pugi::xml_node annotations_node = node.append_child(oms::ssp::Draft20180219::ssd::annotations);
+  pugi::xml_node annotation_node = annotations_node.append_child(oms::ssp::Draft20180219::ssd::annotation);
+  annotation_node.append_attribute("type") = oms::ssp::Draft20180219::annotation_type;
+
   if (tlmbusconnectors[0])
   {
-    pugi::xml_node annotations_node = node.append_child(oms::ssp::Draft20180219::ssd::annotations);
-    pugi::xml_node annotation_node = annotations_node.append_child(oms::ssp::Draft20180219::ssd::annotation);
-    annotation_node.append_attribute("type") = oms::ssp::Draft20180219::annotation_type;
     for (const auto& tlmbusconnector : tlmbusconnectors)
       if (tlmbusconnector)
         tlmbusconnector->exportToSSD(annotation_node);
@@ -101,11 +102,10 @@ oms_status_enu_t oms::ExternalModel::exportToSSD(pugi::xml_node& node) const
 
   node.append_attribute("name") = this->getCref().c_str();
   node.append_attribute("source") = this->getPath().c_str();
-  pugi::xml_node siminfo_node = node.append_child(oms::ssp::Draft20180219::ssd::simulation_information);
-  pugi::xml_node annotations_node = siminfo_node.append_child(oms::ssp::Draft20180219::ssd::annotations);
-  pugi::xml_node annotation_node = annotations_node.append_child(oms::ssp::Draft20180219::ssd::annotation);
-  annotation_node.append_attribute("type") = oms::ssp::Draft20180219::annotation_type;
-  pugi::xml_node externalmodel_node = annotation_node.append_child(oms::ssp::Draft20180219::external_model);
+  /* ssd:SimulationInformation should be added as vendor specific annotations from Version 1.0 */
+  pugi::xml_node siminfo_node = annotation_node.append_child(oms::ssp::Version1_0::simulation_information);
+
+  pugi::xml_node externalmodel_node = siminfo_node.append_child(oms::ssp::Draft20180219::external_model);
   externalmodel_node.append_attribute("startscript") = externalModelInfo.getStartScript().c_str();
 
   return oms_status_ok;
