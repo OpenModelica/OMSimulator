@@ -112,7 +112,12 @@ oms::Connector* oms::Connector::NewConnector(const pugi::xml_node& node, const s
     type = oms_signal_type_boolean;
   else if (typeString == "Enumeration")
     type = oms_signal_type_enum;
-  //TODO handle Binary Types
+  //TODO handle Binary Types for FMI-2.1 see specification
+  else if (typeString == "Binary")
+  {
+    logError("Failed to import " + std::string(oms::ssp::Draft20180219::ssd::connector) + ":Binary-type");
+    return NULL;
+  }
   else
   {
     logError("Failed to import " + std::string(oms::ssp::Draft20180219::ssd::connector) + ":type");
@@ -207,7 +212,9 @@ oms_status_enu_t oms::Connector::exportToSSD(pugi::xml_node &root) const
   case oms_signal_type_string:
     node.append_child(oms::ssp::Version1_0::ssc::string_type);
     break;
-  //TODO handle Binary Types
+  default:
+    logError("Failed to export " + std::string(oms::ssp::Draft20180219::ssd::connector) + ":Binary-type");
+    break;
   }
   if (this->geometry)
   {
