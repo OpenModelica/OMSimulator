@@ -37,6 +37,7 @@
 #include "ssd/Tags.h"
 #include "System.h"
 #include "SystemSC.h"
+#include "Parameters.h"
 #include <fmilib.h>
 #include <JM/jm_portability.h>
 #include <OMSFileSystem.h>
@@ -277,6 +278,10 @@ oms::Component* oms::ComponentFMUME::NewComponent(const pugi::xml_node& node, om
       geometry.importFromSSD(*it);
       component->setGeometry(geometry);
     }
+    else if(name == oms::ssp::Version1_0::ssd::parameter_bindings)
+    {
+      //TODO set the parameter bindings associated with the components
+    }
     else
     {
       logError_WrongSchema(name);
@@ -317,6 +322,14 @@ oms_status_enu_t oms::ComponentFMUME::exportToSSD(pugi::xml_node& node) const
     if (connector)
       if (oms_status_ok != connector->exportToSSD(node_connectors))
         return oms_status_error;
+
+  // export ParameterBindings at Component Level
+  if (!realStartValues.empty() || !integerStartValues.empty() || !booleanStartValues.empty())
+  {
+    Parameters * parameters = new oms::Parameters(realStartValues, integerStartValues, booleanStartValues);
+    parameters->exportToSSD(node);
+  }
+
   return oms_status_ok;
 }
 

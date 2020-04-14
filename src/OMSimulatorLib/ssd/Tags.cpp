@@ -61,6 +61,14 @@ const char* oms::ssp::Draft20180219::ssd::units                        = "ssd:Un
 // version 1.0
 const char* oms::ssp::Version1_0::simulation_information               = "oms:SimulationInformation"; // for version 1.0 ssd:SimulationInformation should be handled in vendorSpecific annotation
 
+const char* oms::ssp::Version1_0::ssd::parameter_bindings              = "ssd:ParameterBindings";
+const char* oms::ssp::Version1_0::ssd::parameter_binding               = "ssd:ParameterBinding";
+
+const char* oms::ssp::Version1_0::ssv::parameter_set                   = "ssv:ParameterSet";
+const char* oms::ssp::Version1_0::ssv::parameters                      = "ssv:Parameters";
+const char* oms::ssp::Version1_0::ssv::parameter                       = "ssv:Parameter";
+
+
 const char* oms::ssp::Version1_0::ssc::real_type                       = "ssc:Real";
 const char* oms::ssp::Version1_0::ssc::integer_type                    = "ssc:Integer";
 const char* oms::ssp::Version1_0::ssc::boolean_type                    = "ssc:Boolean";
@@ -68,3 +76,9 @@ const char* oms::ssp::Version1_0::ssc::string_type                     = "ssc:St
 const char* oms::ssp::Version1_0::ssc::enumeration_type                = "ssc:Enumeration";
 const char* oms::ssp::Version1_0::ssc::binary_type                     = "ssc:Binary";
 
+const char* oms::ssp::Version1_0::ssv::real_type                       = "ssv:Real";
+const char* oms::ssp::Version1_0::ssv::integer_type                    = "ssv:Integer";
+const char* oms::ssp::Version1_0::ssv::boolean_type                    = "ssv:Boolean";
+const char* oms::ssp::Version1_0::ssv::string_type                     = "ssv:String";
+const char* oms::ssp::Version1_0::ssv::enumeration_type                = "ssv:Enumeration";
+const char* oms::ssp::Version1_0::ssv::binary_type                     = "ssv:Binary";

@@ -40,6 +40,26 @@ namespace oms
     {
       extern const char* simulation_information;
 
+      namespace ssd
+      {
+        extern const char* parameter_bindings;
+        extern const char* parameter_binding;
+      }
+
+      namespace ssv
+      {
+        extern const char* parameter_set;
+        extern const char* parameters;
+        extern const char* parameter;
+
+        extern const char*  real_type;
+        extern const char*  integer_type;
+        extern const char*  boolean_type;
+        extern const char*  string_type;
+        extern const char*  enumeration_type;
+        extern const char*  binary_type;
+      }
+
       namespace ssc
       {
         extern const char*  real_type;
