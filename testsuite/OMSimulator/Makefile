@@ -2,6 +2,7 @@ TEST = ../rtest -v
 
 TESTFILES = \
 DualMassOscillator.lua \
+import_export_parameters.lua \
 import_export.lua \
 import_export.py \
 PI_Controller.lua \

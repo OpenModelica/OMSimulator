@@ -1,39 +1,38 @@
 -- status: correct
--- teardown_command: rm -rf import_export_Parameter_lua/PI_Controller_res.mat
 -- linux: yes
 -- mingw: yes
 -- win: no
 -- mac: no
 
 oms_setCommandLineOption("--suppressPath=true")
-oms_setTempDirectory("./import_export_Parameter_lua/")
+oms_setTempDirectory("./import_export_parameters_lua/")
 
-oms_newModel("PI_Controller")
-oms_addSystem("PI_Controller.co_sim", oms_system_wc)
+oms_newModel("import_export_parameters")
+oms_addSystem("import_export_parameters.co_sim", oms_system_wc)
 
 -- instantiate FMUs
-oms_addSubModel("PI_Controller.co_sim.addP", "../resources/Modelica.Blocks.Math.Add.fmu")
-oms_addSubModel("PI_Controller.co_sim.P", "../resources/Modelica.Blocks.Math.Gain.fmu")
-oms_addSubModel("PI_Controller.co_sim.addI", "../resources/Modelica.Blocks.Math.Add3.fmu")
+oms_addSubModel("import_export_parameters.co_sim.addP", "../resources/Modelica.Blocks.Math.Add.fmu")
+oms_addSubModel("import_export_parameters.co_sim.P", "../resources/Modelica.Blocks.Math.Gain.fmu")
+oms_addSubModel("import_export_parameters.co_sim.addI", "../resources/Modelica.Blocks.Math.Add3.fmu")
 
 -- setParameters
-oms_setReal("PI_Controller.co_sim.addP.k1", 10.0)
-oms_setReal("PI_Controller.co_sim.addP.k2", -1.0)
-oms_setReal("PI_Controller.co_sim.addI.k2",  2.0)
+oms_setReal("import_export_parameters.co_sim.addP.k1", 10.0)
+oms_setReal("import_export_parameters.co_sim.addP.k2", -1.0)
+oms_setReal("import_export_parameters.co_sim.addI.k2",  2.0)
 
 -- simulation settings
-oms_setStartTime("PI_Controller", 0.0)
-oms_setStopTime("PI_Controller", 4.0)
-oms_setFixedStepSize("PI_Controller.co_sim", 1e-3)
-oms_setResultFile("PI_Controller", "PI_Controller.mat", 100)
+oms_setStartTime("import_export_parameters", 0.0)
+oms_setStopTime("import_export_parameters", 4.0)
+oms_setFixedStepSize("import_export_parameters.co_sim", 1e-3)
+oms_setResultFile("import_export_parameters", "import_export_parameters.mat", 100)
 
-src, status = oms_list("PI_Controller")
+src, status = oms_list("import_export_parameters")
 print(src)
 
 
 -- Result:
 -- <?xml version="1.0"?>
--- <ssd:SystemStructureDescription name="PI_Controller" version="1.0">
+-- <ssd:SystemStructureDescription name="import_export_parameters" version="1.0">
 -- 	<ssd:System name="co_sim">
 -- 		<ssd:Annotations>
 -- 			<ssd:Annotation type="org.openmodelica">
@@ -43,7 +42,7 @@ print(src)
 -- 			</ssd:Annotation>
 -- 		</ssd:Annotations>
 -- 		<ssd:Elements>
--- 			<ssd:Component name="addP" type="application/x-fmu-sharedlibrary" source="resources\0001_addP.fmu">
+-- 			<ssd:Component name="addP" type="application/x-fmu-sharedlibrary" source="resources/0001_addP.fmu">
 -- 				<ssd:Connectors>
 -- 					<ssd:Connector name="u1" kind="input">
 -- 						<ssc:Real />
@@ -79,7 +78,7 @@ print(src)
 -- 					</ssd:ParameterBinding>
 -- 				</ssd:ParameterBindings>
 -- 			</ssd:Component>
--- 			<ssd:Component name="addI" type="application/x-fmu-sharedlibrary" source="resources\0003_addI.fmu">
+-- 			<ssd:Component name="addI" type="application/x-fmu-sharedlibrary" source="resources/0003_addI.fmu">
 -- 				<ssd:Connectors>
 -- 					<ssd:Connector name="u1" kind="input">
 -- 						<ssc:Real />
@@ -119,7 +118,7 @@ print(src)
 -- 					</ssd:ParameterBinding>
 -- 				</ssd:ParameterBindings>
 -- 			</ssd:Component>
--- 			<ssd:Component name="P" type="application/x-fmu-sharedlibrary" source="resources\0002_P.fmu">
+-- 			<ssd:Component name="P" type="application/x-fmu-sharedlibrary" source="resources/0002_P.fmu">
 -- 				<ssd:Connectors>
 -- 					<ssd:Connector name="u" kind="input">
 -- 						<ssc:Real />
@@ -140,5 +139,5 @@ print(src)
 -- 	</ssd:System>
 -- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="4.000000" />
 -- </ssd:SystemStructureDescription>
--- 
+--
 -- endResult
