@@ -52,22 +52,22 @@ namespace oms
         extern const char* parameters;
         extern const char* parameter;
 
-        extern const char*  real_type;
-        extern const char*  integer_type;
-        extern const char*  boolean_type;
-        extern const char*  string_type;
-        extern const char*  enumeration_type;
-        extern const char*  binary_type;
+        extern const char* real_type;
+        extern const char* integer_type;
+        extern const char* boolean_type;
+        extern const char* string_type;
+        extern const char* enumeration_type;
+        extern const char* binary_type;
       }
 
       namespace ssc
       {
-        extern const char*  real_type;
-        extern const char*  integer_type;
-        extern const char*  boolean_type;
-        extern const char*  string_type;
-        extern const char*  enumeration_type;
-        extern const char*  binary_type;
+        extern const char* real_type;
+        extern const char* integer_type;
+        extern const char* boolean_type;
+        extern const char* string_type;
+        extern const char* enumeration_type;
+        extern const char* binary_type;
       }
     }
 

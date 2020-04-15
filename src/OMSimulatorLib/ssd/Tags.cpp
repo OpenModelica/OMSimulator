@@ -59,7 +59,7 @@ const char* oms::ssp::Draft20180219::ssd::system_structure_description = "ssd:Sy
 const char* oms::ssp::Draft20180219::ssd::units                        = "ssd:Units";
 
 // version 1.0
-const char* oms::ssp::Version1_0::simulation_information               = "oms:SimulationInformation"; // for version 1.0 ssd:SimulationInformation should be handled in vendorSpecific annotation
+const char* oms::ssp::Version1_0::simulation_information               = "oms:SimulationInformation"; // simulation information must be handled in a vendor specific annotation
 
 const char* oms::ssp::Version1_0::ssd::parameter_bindings              = "ssd:ParameterBindings";
 const char* oms::ssp::Version1_0::ssd::parameter_binding               = "ssd:ParameterBinding";
@@ -67,7 +67,6 @@ const char* oms::ssp::Version1_0::ssd::parameter_binding               = "ssd:Pa
 const char* oms::ssp::Version1_0::ssv::parameter_set                   = "ssv:ParameterSet";
 const char* oms::ssp::Version1_0::ssv::parameters                      = "ssv:Parameters";
 const char* oms::ssp::Version1_0::ssv::parameter                       = "ssv:Parameter";
-
 
 const char* oms::ssp::Version1_0::ssc::real_type                       = "ssc:Real";
 const char* oms::ssp::Version1_0::ssc::integer_type                    = "ssc:Integer";

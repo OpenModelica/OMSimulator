@@ -54,16 +54,19 @@ oms::Parameters::~Parameters()
 oms_status_enu_t oms::Parameters::setReal(const ComRef& cref, double value)
 {
   realStartValues[cref] = value;
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms::Parameters::setInteger(const ComRef& cref, int value)
 {
   integerStartValues[cref] = value;
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms::Parameters::setBoolean(const ComRef& cref, bool value)
 {
   booleanStartValues[cref] = value;
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms::Parameters::exportToSSD(pugi::xml_node& node) const

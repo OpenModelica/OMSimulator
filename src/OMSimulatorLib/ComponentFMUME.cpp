@@ -37,7 +37,7 @@
 #include "ssd/Tags.h"
 #include "System.h"
 #include "SystemSC.h"
-#include "Parameters.h"
+
 #include <fmilib.h>
 #include <JM/jm_portability.h>
 #include <OMSFileSystem.h>
@@ -323,12 +323,8 @@ oms_status_enu_t oms::ComponentFMUME::exportToSSD(pugi::xml_node& node) const
       if (oms_status_ok != connector->exportToSSD(node_connectors))
         return oms_status_error;
 
-  // export ParameterBindings at Component Level
-  if (!realStartValues.empty() || !integerStartValues.empty() || !booleanStartValues.empty())
-  {
-    Parameters * parameters = new oms::Parameters(realStartValues, integerStartValues, booleanStartValues);
-    parameters->exportToSSD(node);
-  }
+  // export ParameterBindings at component level
+  startValues.exportToSSD(node);
 
   return oms_status_ok;
 }
@@ -449,24 +445,21 @@ oms_status_enu_t oms::ComponentFMUME::instantiate()
     return logError_FMUCall("fmi2_import_instantiate", this);
 
   // set start values
-  for (const auto& v : booleanStartValues)
+  for (const auto& v : startValues.booleanStartValues)
   {
     if (oms_status_ok != setBoolean(v.first, v.second))
       return logError("Failed to set start value for " + std::string(v.first));
   }
-  booleanStartValues.clear();
-  for (const auto& v : integerStartValues)
+  for (const auto& v : startValues.integerStartValues)
   {
     if (oms_status_ok != setInteger(v.first, v.second))
       return logError("Failed to set start value for " + std::string(v.first));
   }
-  integerStartValues.clear();
-  for (const auto& v : realStartValues)
+  for (const auto& v : startValues.realStartValues)
   {
     if (oms_status_ok != setReal(v.first, v.second))
       return logError("Failed to set start value for " + std::string(v.first));
   }
-  realStartValues.clear();
 
   // enterInitialization
   const double& startTime = getParentSystem()->getModel()->getStartTime();
@@ -714,7 +707,7 @@ oms_status_enu_t oms::ComponentFMUME::setBoolean(const ComRef& cref, bool value)
     return logError_UnknownSignal(getFullCref() + cref);
 
   if (oms_modelState_virgin == getModel()->getModelState())
-    booleanStartValues[allVariables[j].getCref()] = value;
+    startValues.setBoolean(allVariables[j].getCref(), value);
   else
   {
     fmi2_value_reference_t vr = allVariables[j].getValueReference();
@@ -743,7 +736,7 @@ oms_status_enu_t oms::ComponentFMUME::setInteger(const ComRef& cref, int value)
     return logError_UnknownSignal(getFullCref() + cref);
 
   if (oms_modelState_virgin == getModel()->getModelState())
-    integerStartValues[allVariables[j].getCref()] = value;
+    startValues.setInteger(allVariables[j].getCref(), value);
   else
   {
     fmi2_value_reference_t vr = allVariables[j].getValueReference();
@@ -775,7 +768,7 @@ oms_status_enu_t oms::ComponentFMUME::setReal(const ComRef& cref, double value)
       return logWarning("It is not allowed to provide a start value if initial=\"calculated\" or causality=\"independent\".");
 
   if (oms_modelState_virgin == getModel()->getModelState())
-    realStartValues[allVariables[j].getCref()] = value;
+    startValues.setReal(allVariables[j].getCref(), value);
   else
   {
     fmi2_value_reference_t vr = allVariables[j].getValueReference();
