@@ -43,20 +43,35 @@
 #include <iostream>
 
 
-oms::Parameters::Parameters(std::map<ComRef, double> realStartValues, std::map<ComRef, int> integerStartValues, std::map<ComRef, bool> booleanStartValues)
+oms::Parameters::Parameters()
 {
-  this->realStartValues = realStartValues;
-  this->integerStartValues = integerStartValues;
-  this->booleanStartValues = booleanStartValues;
 }
 
 oms::Parameters::~Parameters()
 {
-
 }
 
-oms_status_enu_t oms::Parameters::exportToSSD(pugi::xml_node& node)
+oms_status_enu_t oms::Parameters::setReal(const ComRef& cref, double value)
 {
+  realStartValues[cref] = value;
+}
+
+oms_status_enu_t oms::Parameters::setInteger(const ComRef& cref, int value)
+{
+  integerStartValues[cref] = value;
+}
+
+oms_status_enu_t oms::Parameters::setBoolean(const ComRef& cref, bool value)
+{
+  booleanStartValues[cref] = value;
+}
+
+oms_status_enu_t oms::Parameters::exportToSSD(pugi::xml_node& node) const
+{
+  // skip this if there is nothing to export
+  if (realStartValues.empty() && integerStartValues.empty() && booleanStartValues.empty())
+    return oms_status_ok;
+
   // Top level Parameter nodes
   pugi::xml_node node_parameters_bindings = node.append_child(oms::ssp::Version1_0::ssd::parameter_bindings);
   pugi::xml_node node_parameter_binding  = node_parameters_bindings.append_child(oms::ssp::Version1_0::ssd::parameter_binding);

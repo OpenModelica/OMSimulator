@@ -32,21 +32,26 @@
 #ifndef _OMS_PARAMETERS_H_
 #define _OMS_PARAMETERS_H_
 
-#include "Types.h"
 #include "ComRef.h"
+#include "Types.h"
+
 #include <pugixml.hpp>
 #include <map>
-
 
 namespace oms
 {
   class Parameters
   {
   public:
-    Parameters(std::map<ComRef, double>  realStartValues, std::map<ComRef, int>  integerStartValues, std::map<ComRef, bool>  booleanStartValues);
+    Parameters();
     ~Parameters();
-    oms_status_enu_t exportToSSD(pugi::xml_node& root);
-  private:
+
+    oms_status_enu_t setReal(const ComRef& cref, double value);
+    oms_status_enu_t setInteger(const ComRef& cref, int value);
+    oms_status_enu_t setBoolean(const ComRef& cref, bool value);
+
+    oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
+
     std::map<ComRef, double> realStartValues;  ///< parameters and start values defined before instantiating the FMU
     std::map<ComRef, int> integerStartValues;  ///< parameters and start values defined before instantiating the FMU
     std::map<ComRef, bool> booleanStartValues; ///< parameters and start values defined before instantiating the FMU
