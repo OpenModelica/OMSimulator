@@ -34,8 +34,10 @@
 
 #include "Component.h"
 #include "ComRef.h"
+#include "Parameters.h"
 #include "ResultWriter.h"
 #include "Variable.h"
+
 #include <fmilib.h>
 #include <map>
 #include <pugixml.hpp>
@@ -122,9 +124,7 @@ namespace oms
     std::vector<Variable> parameters;
     std::vector<bool> exportVariables;
 
-    std::map<ComRef, double> realStartValues;  ///< parameters and start values defined before instantiating the FMU
-    std::map<ComRef, int> integerStartValues;  ///< parameters and start values defined before instantiating the FMU
-    std::map<ComRef, bool> booleanStartValues; ///< parameters and start values defined before instantiating the FMU
+    Parameters startValues; ///< parameters and start values defined before instantiating the FMU
 
     std::unordered_map<unsigned int /*result file var ID*/, unsigned int /*allVariables ID*/> resultFileMapping;
 
