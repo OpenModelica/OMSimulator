@@ -34,7 +34,6 @@
 
 #include "ComRef.h"
 #include "Types.h"
-
 #include <pugixml.hpp>
 #include <map>
 
@@ -51,6 +50,8 @@ namespace oms
     oms_status_enu_t setBoolean(const ComRef& cref, bool value);
 
     oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
+    oms_status_enu_t importFromSSD(const pugi::xml_node& node, const std::string& sspVersion);
+
 
     std::map<ComRef, double> realStartValues;  ///< parameters and start values defined before instantiating the FMU
     std::map<ComRef, int> integerStartValues;  ///< parameters and start values defined before instantiating the FMU

@@ -29,6 +29,34 @@ oms_setResultFile("import_export_parameters", "import_export_parameters.mat", 10
 src, status = oms_list("import_export_parameters")
 print(src)
 
+oms_export("import_export_parameters", "import_export_parameters.ssp");
+oms_delete("import_export_parameters")
+
+oms_importFile("import_export_parameters.ssp");
+
+oms_instantiate("import_export_parameters")
+
+print("info:      Parameter settings")
+print("info:      import_export_parameters.co_sim.addP.k1: " .. oms_getReal("import_export_parameters.co_sim.addP.k1"))
+print("info:      import_export_parameters.co_sim.addP.k2: " .. oms_getReal("import_export_parameters.co_sim.addP.k2"))
+print("info:      import_export_parameters.co_sim.addI.k2: " .. oms_getReal("import_export_parameters.co_sim.addI.k2"))
+
+oms_initialize("import_export_parameters")
+print("info:    Initialization")
+print("info:      import_export_parameters.co_sim.addP.k1: " .. oms_getReal("import_export_parameters.co_sim.addP.k1"))
+print("info:      import_export_parameters.co_sim.addP.k2: " .. oms_getReal("import_export_parameters.co_sim.addP.k2"))
+print("info:      import_export_parameters.co_sim.addI.k2: " .. oms_getReal("import_export_parameters.co_sim.addI.k2"))
+
+oms_simulate("import_export_parameters")
+print("info:    Simulation")
+print("info:      import_export_parameters.co_sim.addP.k1: " .. oms_getReal("import_export_parameters.co_sim.addP.k1"))
+print("info:      import_export_parameters.co_sim.addP.k2: " .. oms_getReal("import_export_parameters.co_sim.addP.k2"))
+print("info:      import_export_parameters.co_sim.addI.k2: " .. oms_getReal("import_export_parameters.co_sim.addI.k2"))
+
+oms_terminate("import_export_parameters")
+oms_delete("import_export_parameters")
+
+
 
 -- Result:
 -- <?xml version="1.0"?>
@@ -139,5 +167,18 @@ print(src)
 -- 	</ssd:System>
 -- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="4.000000" />
 -- </ssd:SystemStructureDescription>
---
+-- 
+-- info:      Parameter settings
+-- info:      import_export_parameters.co_sim.addP.k1: 10.0
+-- info:      import_export_parameters.co_sim.addP.k2: -1.0
+-- info:      import_export_parameters.co_sim.addI.k2: 2.0
+-- info:    Result file: import_export_parameters_res.mat (bufferSize=10)
+-- info:    Initialization
+-- info:      import_export_parameters.co_sim.addP.k1: 10.0
+-- info:      import_export_parameters.co_sim.addP.k2: -1.0
+-- info:      import_export_parameters.co_sim.addI.k2: 2.0
+-- info:    Simulation
+-- info:      import_export_parameters.co_sim.addP.k1: 10.0
+-- info:      import_export_parameters.co_sim.addP.k2: -1.0
+-- info:      import_export_parameters.co_sim.addI.k2: 2.0
 -- endResult
