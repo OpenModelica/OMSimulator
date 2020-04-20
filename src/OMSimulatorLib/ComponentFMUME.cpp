@@ -280,7 +280,8 @@ oms::Component* oms::ComponentFMUME::NewComponent(const pugi::xml_node& node, om
     }
     else if(name == oms::ssp::Version1_0::ssd::parameter_bindings)
     {
-      //TODO set the parameter bindings associated with the components
+      // set parameter bindings associated with the component
+      component->startValues.importFromSSD(*it, sspVersion);
     }
     else
     {
