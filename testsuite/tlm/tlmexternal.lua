@@ -12,22 +12,22 @@ oms_addSystem("model.tlmexternal", oms_system_tlm);
 
 -- adder
 oms_addExternalModel("model.tlmexternal.adder", "../resources/tlm.adder.fmu", "./StartTLMFmiWrapper")
-oms_addTLMBus("model.tlmexternal.adder.x1",  oms_tlm_domain_input, 1, default)
-oms_addTLMBus("model.tlmexternal.adder.x2",  oms_tlm_domain_input, 1, default)
-oms_addTLMBus("model.tlmexternal.adder.y",   oms_tlm_domain_output, 1, default)
+oms_addTLMBus("model.tlmexternal.adder.x1",  oms_tlm_domain_input, 1, oms_tlm_no_interpolation)
+oms_addTLMBus("model.tlmexternal.adder.x2",  oms_tlm_domain_input, 1, oms_tlm_no_interpolation)
+oms_addTLMBus("model.tlmexternal.adder.y",   oms_tlm_domain_output, 1, oms_tlm_no_interpolation)
 
 -- source1
 oms_addExternalModel("model.tlmexternal.source1", "../resources/tlm.source.fmu", "./StartTLMFmiWrapper")
-oms_addTLMBus("model.tlmexternal.source1.y", oms_tlm_domain_output, 1, default)
+oms_addTLMBus("model.tlmexternal.source1.y", oms_tlm_domain_output, 1, oms_tlm_no_interpolation)
 
 -- source2
 oms_addExternalModel("model.tlmexternal.source2", "../resources/tlm.source.fmu", "./StartTLMFmiWrapper")
-oms_addTLMBus("model.tlmexternal.source2.y", oms_tlm_domain_output, 1, default)
+oms_addTLMBus("model.tlmexternal.source2.y", oms_tlm_domain_output, 1, oms_tlm_no_interpolation)
 
 -- gain
 oms_addExternalModel("model.tlmexternal.gain", "../resources/tlm.gain.fmu", "./StartTLMFmiWrapper")
-oms_addTLMBus("model.tlmexternal.gain.y",    oms_tlm_domain_input, 1, default)
-oms_addTLMBus("model.tlmexternal.gain.u",    oms_tlm_domain_output, 1, default)
+oms_addTLMBus("model.tlmexternal.gain.y",    oms_tlm_domain_input, 1, oms_tlm_no_interpolation)
+oms_addTLMBus("model.tlmexternal.gain.u",    oms_tlm_domain_output, 1, oms_tlm_no_interpolation)
 
 -- connections
 oms_addTLMConnection("model.tlmexternal.adder.x1", "model.tlmexternal.source2.y", 0,0,0,0)

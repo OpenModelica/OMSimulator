@@ -15,7 +15,7 @@ oms_addSystem("model.tlm1dfg", oms_system_tlm);
 oms_addSystem("model.tlm1dfg.wc1", oms_system_wc);
 oms_setFixedStepSize("model.tlm1dfg.wc1", 0.001);
 oms_addSubModel("model.tlm1dfg.wc1.fmu", "../resources/tlm.FineGrained1_1D.fmu");
-oms_addTLMBus("model.tlm1dfg.wc1.fmu.P",oms_tlm_domain_mechanical,1,finegrained);
+oms_addTLMBus("model.tlm1dfg.wc1.fmu.P",oms_tlm_domain_mechanical,1,oms_tlm_fine_grained);
 oms_addConnectorToTLMBus("model.tlm1dfg.wc1.fmu.P","model.tlm1dfg.wc1.fmu.position", "state");
 oms_addConnectorToTLMBus("model.tlm1dfg.wc1.fmu.P","model.tlm1dfg.wc1.fmu.velocity", "flow");
 oms_addConnectorToTLMBus("model.tlm1dfg.wc1.fmu.P","model.tlm1dfg.wc1.fmu.wave1", "wave1");
@@ -39,13 +39,13 @@ oms_addConnectorToTLMBus("model.tlm1dfg.wc1.fmu.P","model.tlm1dfg.wc1.fmu.time8"
 oms_addConnectorToTLMBus("model.tlm1dfg.wc1.fmu.P","model.tlm1dfg.wc1.fmu.time9", "time9");
 oms_addConnectorToTLMBus("model.tlm1dfg.wc1.fmu.P","model.tlm1dfg.wc1.fmu.time10", "time10");
 oms_addConnectorToTLMBus("model.tlm1dfg.wc1.fmu.P","model.tlm1dfg.wc1.fmu.impedance", "impedance");
-oms_addTLMBus("model.tlm1dfg.wc1.P",oms_tlm_domain_mechanical,1,finegrained);
+oms_addTLMBus("model.tlm1dfg.wc1.P",oms_tlm_domain_mechanical,1,oms_tlm_fine_grained);
 oms_addConnection("model.tlm1dfg.wc1.fmu.P","model.tlm1dfg.wc1.P");
 
 oms_addSystem("model.tlm1dfg.wc2", oms_system_wc);
 oms_setFixedStepSize("model.tlm1dfg.wc2", 0.001);
 oms_addSubModel("model.tlm1dfg.wc2.fmu", "../resources/tlm.FineGrained2_1D.fmu");
-oms_addTLMBus("model.tlm1dfg.wc2.fmu.P",oms_tlm_domain_mechanical,1,finegrained);
+oms_addTLMBus("model.tlm1dfg.wc2.fmu.P",oms_tlm_domain_mechanical,1,oms_tlm_fine_grained);
 oms_addConnectorToTLMBus("model.tlm1dfg.wc2.fmu.P","model.tlm1dfg.wc2.fmu.position", "state");
 oms_addConnectorToTLMBus("model.tlm1dfg.wc2.fmu.P","model.tlm1dfg.wc2.fmu.velocity", "flow");
 oms_addConnectorToTLMBus("model.tlm1dfg.wc2.fmu.P","model.tlm1dfg.wc2.fmu.wave1", "wave1");
@@ -69,7 +69,7 @@ oms_addConnectorToTLMBus("model.tlm1dfg.wc2.fmu.P","model.tlm1dfg.wc2.fmu.time8"
 oms_addConnectorToTLMBus("model.tlm1dfg.wc2.fmu.P","model.tlm1dfg.wc2.fmu.time9", "time9");
 oms_addConnectorToTLMBus("model.tlm1dfg.wc2.fmu.P","model.tlm1dfg.wc2.fmu.time10", "time10");
 oms_addConnectorToTLMBus("model.tlm1dfg.wc2.fmu.P","model.tlm1dfg.wc2.fmu.impedance", "impedance");
-oms_addTLMBus("model.tlm1dfg.wc2.P",oms_tlm_domain_mechanical,1,finegrained);
+oms_addTLMBus("model.tlm1dfg.wc2.P",oms_tlm_domain_mechanical,1,oms_tlm_fine_grained);
 oms_addConnection("model.tlm1dfg.wc2.fmu.P","model.tlm1dfg.wc2.P");
 
 oms_addTLMConnection("model.tlm1dfg.wc1.P","model.tlm1dfg.wc2.P", 0.001, 0.2, 0.1, 0);
