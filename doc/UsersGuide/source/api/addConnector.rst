@@ -9,6 +9,24 @@ Adds a connector to a given component.
 .. code-block:: lua
 
   status = oms_addConnector(cref, causality, type)
+  
+  The second argument "causality", should be any of the following,
+  
+  oms_causality_input
+  oms_causality_output 
+  oms_causality_parameter
+  oms_causality_bidir
+  oms_causality_undefined
+  
+  The third argument "type", should be any of the following,
+  
+  oms_signal_type_real
+  oms_signal_type_integer
+  oms_signal_type_boolean
+  oms_signal_type_string
+  oms_signal_type_enum
+  oms_signal_type_bus
+
 
 #END#
 
@@ -16,6 +34,24 @@ Adds a connector to a given component.
 .. code-block:: python
 
   status = oms.addConnector(cref, causality, type)
+  
+  The second argument "causality", should be any of the following,
+  
+  oms.input
+  oms.output 
+  oms.parameter
+  oms.bidir
+  oms.undefined
+  
+  The third argument "type", should be any of the following,
+  
+  oms.signal_type_real
+  oms.signal_type_integer
+  oms.signal_type_boolean
+  oms.signal_type_string
+  oms.signal_type_enum
+  oms.signal_type_bus
+  
 
 #END#
 
