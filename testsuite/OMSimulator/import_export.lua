@@ -51,22 +51,22 @@ printStatus(status, 0)
 status = oms_addSystem("test.eoo.foo2", oms_system_wc)
 printStatus(status, 0)
 
-status = oms_addConnector("test.eoo.foo.f", input, oms_signal_type_real)
+status = oms_addConnector("test.eoo.foo.f", oms_causality_input, oms_signal_type_real)
 printStatus(status, 0)
 
-status = oms_addConnector("test.eoo.foo.x", output, oms_signal_type_real)
+status = oms_addConnector("test.eoo.foo.x", oms_causality_output, oms_signal_type_real)
 printStatus(status, 0)
 
-status = oms_addConnector("test.eoo.foo.v", output, oms_signal_type_real)
+status = oms_addConnector("test.eoo.foo.v", oms_causality_output, oms_signal_type_real)
 printStatus(status, 0)
 
-status = oms_addConnector("test.eoo.foo.y1", output, oms_signal_type_real)
+status = oms_addConnector("test.eoo.foo.y1", oms_causality_output, oms_signal_type_real)
 printStatus(status, 0)
 
-status = oms_addConnector("test.eoo.foo.y2", output, oms_signal_type_real)
+status = oms_addConnector("test.eoo.foo.y2", oms_causality_output, oms_signal_type_real)
 printStatus(status, 0)
 
-status = oms_addTLMBus("test.eoo.foo.tlm", oms_tlm_domain_mechanical, 1, default)
+status = oms_addTLMBus("test.eoo.foo.tlm", oms_tlm_domain_mechanical, 1, oms_tlm_no_interpolation)
 printStatus(status, 0)
 
 status = oms_addConnectorToTLMBus("test.eoo.foo.tlm", "test.eoo.foo.f", "effort")
@@ -87,22 +87,22 @@ printStatus(status, 0)
 status = oms_addConnectorToBus("test.eoo.foo.bus", "test.eoo.foo.y2")
 printStatus(status, 0)
 
-status = oms_addConnector("test.eoo.foo2.f", input, oms_signal_type_real)
+status = oms_addConnector("test.eoo.foo2.f", oms_causality_input, oms_signal_type_real)
 printStatus(status, 0)
 
-status = oms_addConnector("test.eoo.foo2.x", output, oms_signal_type_real)
+status = oms_addConnector("test.eoo.foo2.x", oms_causality_output, oms_signal_type_real)
 printStatus(status, 0)
 
-status = oms_addConnector("test.eoo.foo2.v", output, oms_signal_type_real)
+status = oms_addConnector("test.eoo.foo2.v", oms_causality_output, oms_signal_type_real)
 printStatus(status, 0)
 
-status = oms_addConnector("test.eoo.foo2.u1", input, oms_signal_type_real)
+status = oms_addConnector("test.eoo.foo2.u1", oms_causality_input, oms_signal_type_real)
 printStatus(status, 0)
 
-status = oms_addConnector("test.eoo.foo2.u2", input, oms_signal_type_real)
+status = oms_addConnector("test.eoo.foo2.u2", oms_causality_input, oms_signal_type_real)
 printStatus(status, 0)
 
-status = oms_addTLMBus("test.eoo.foo2.tlm", oms_tlm_domain_mechanical, 1, default)
+status = oms_addTLMBus("test.eoo.foo2.tlm", oms_tlm_domain_mechanical, 1, oms_tlm_no_interpolation)
 printStatus(status, 0)
 
 status = oms_addConnectorToTLMBus("test.eoo.foo2.tlm", "test.eoo.foo2.f", "effort")

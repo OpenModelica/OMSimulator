@@ -45,7 +45,7 @@ oms_addConnection("PI_Controller.co_sim.driveTrain.w", "PI_Controller.co_sim.add
 oms_addConnection("PI_Controller.co_sim.driveTrain.w", "PI_Controller.co_sim.addI.u2")
 
 -- add connectors
-oms_addConnector("PI_Controller.co_sim.speed", output, oms_signal_type_real)
+oms_addConnector("PI_Controller.co_sim.speed", oms_causality_output, oms_signal_type_real)
 oms_addConnection("PI_Controller.co_sim.setpoint.speed", "PI_Controller.co_sim.speed")
 
 -- simulation settings

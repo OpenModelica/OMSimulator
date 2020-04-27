@@ -37,7 +37,7 @@ printStatus(status, 0)
 status = oms_addExternalModel("model.tlm.external", "resources/external.mo", "resources/startscript.sh")
 printStatus(status, 0)
 
-status = oms_addTLMBus("model.tlm.external.tlmbus", oms_tlm_domain_mechanical, 1, default)
+status = oms_addTLMBus("model.tlm.external.tlmbus", oms_tlm_domain_mechanical, 1, oms_tlm_no_interpolation)
 
 src, status = oms_list("model.tlm")
 print(src)

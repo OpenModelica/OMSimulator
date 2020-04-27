@@ -1547,20 +1547,17 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(omsi_solve);
 #endif /* WITH_OMSYSIDENT */
 
-  // Add enumerable constants
-  lua_pushnumber(L, 0);
-  lua_setglobal(L, "input");
-  lua_pushnumber(L, 1);
-  lua_setglobal(L, "output");
-  lua_pushnumber(L, 3);
-  lua_setglobal(L, "bidirectional");
+  // oms_tlm_interpolation_t
+  REGISTER_LUA_ENUM(oms_tlm_no_interpolation);
+  REGISTER_LUA_ENUM(oms_tlm_coarse_grained);
+  REGISTER_LUA_ENUM(oms_tlm_fine_grained);
 
-  lua_pushnumber(L, 0);
-  lua_setglobal(L, "default");
-  lua_pushnumber(L, 1);
-  lua_setglobal(L, "coarsegrained");
-  lua_pushnumber(L, 2);
-  lua_setglobal(L, "finegrained");
+  // oms_causality_enu_t;
+  REGISTER_LUA_ENUM(oms_causality_input);
+  REGISTER_LUA_ENUM(oms_causality_output);
+  REGISTER_LUA_ENUM(oms_causality_parameter);
+  REGISTER_LUA_ENUM(oms_causality_bidir);
+  REGISTER_LUA_ENUM(oms_causality_undefined);
 
   // oms_solver_enu_t
   REGISTER_LUA_ENUM(oms_solver_sc_explicit_euler);
