@@ -36,6 +36,7 @@
 #include "Clock.h"
 #include "ComRef.h"
 #include "Connection.h"
+#include "Parameters.h"
 #include "DirectedGraph.h"
 #include "Element.h"
 #include "ExternalModel.h"
@@ -195,9 +196,7 @@ namespace oms
     std::map<ComRef, System*> subsystems;
     std::map<ComRef, Component*> components;
 
-    std::map<ComRef, double> realValues;            ///< values of the real connectors
-    std::map<ComRef, int> integerValues;            ///< values of the integer connectors
-    std::map<ComRef, bool> booleanValues;           ///< values of the boolean connectors
+    Parameters startValues; ///< system level connectors, parameters and their start values defined before instantiating the FMU
 
     Element element;
     std::vector<Connector*> connectors;             ///< last element is always NULL

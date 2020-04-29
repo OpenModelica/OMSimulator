@@ -389,6 +389,12 @@ oms_status_enu_t oms::System::exportToSSD(pugi::xml_node& node) const
   if (oms_status_ok != element.getGeometry()->exportToSSD(node))
     return logError("export of system ElementGeometry failed");
 
+  // export top level system connectors
+  pugi::xml_node connectors_node = node.append_child(oms::ssp::Draft20180219::ssd::connectors);
+
+  // export top level parameter bindings
+  startValues.exportToSSD(node);
+
   pugi::xml_node elements_node = node.append_child(oms::ssp::Draft20180219::ssd::elements);
 
   for (const auto& subsystem : subsystems)
@@ -405,7 +411,6 @@ oms_status_enu_t oms::System::exportToSSD(pugi::xml_node& node) const
       return logError("export of component failed");
   }
 
-  pugi::xml_node connectors_node = node.append_child(oms::ssp::Draft20180219::ssd::connectors);
   for(const auto& connector : connectors)
     if (connector)
       connector->exportToSSD(connectors_node);
@@ -461,6 +466,12 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
       oms::ssd::ElementGeometry geometry;
       geometry.importFromSSD(*it);
       setGeometry(geometry);
+    }
+    else if(name == oms::ssp::Version1_0::ssd::parameter_bindings)
+    {
+      // set parameter bindings associated with the system
+      if (oms_status_ok !=  startValues.importFromSSD(*it, sspVersion))
+        return logError("Failed to import " + std::string(oms::ssp::Version1_0::ssd::parameter_bindings) + ": at System Level");
     }
     else if (name == oms::ssp::Draft20180219::ssd::connections)
     {
@@ -791,6 +802,7 @@ oms_status_enu_t oms::System::addConnector(const oms::ComRef& cref, oms_causalit
 {
   oms::ComRef tail(cref);
   oms::ComRef head = tail.pop_front();
+
   auto subsystem = subsystems.find(head);
   if (subsystem != subsystems.end())
     return subsystem->second->addConnector(tail, causality, type);
@@ -1599,8 +1611,8 @@ oms_status_enu_t oms::System::getBoolean(const ComRef& cref, bool& value)
   {
     if (connector && connector->getName() == cref && connector->isTypeBoolean())
     {
-      auto booleanValue = booleanValues.find(cref);
-      if (booleanValue != booleanValues.end())
+      auto booleanValue = startValues.booleanStartValues.find(cref);
+      if (booleanValue != startValues.booleanStartValues.end())
         value = booleanValue->second;
       else
         value = 0; // default value
@@ -1631,8 +1643,8 @@ oms_status_enu_t oms::System::getInteger(const ComRef& cref, int& value)
   {
     if (connector && connector->getName() == cref && connector->isTypeInteger())
     {
-      auto integerValue = integerValues.find(cref);
-      if (integerValue != integerValues.end())
+      auto integerValue = startValues.integerStartValues.find(cref);
+      if (integerValue != startValues.integerStartValues.end())
         value = integerValue->second;
       else
         value = 0; // default value
@@ -1663,8 +1675,8 @@ oms_status_enu_t oms::System::getReal(const ComRef& cref, double& value)
   {
     if (connector && connector->getName() == cref && connector->isTypeReal())
     {
-      auto realValue = realValues.find(cref);
-      if (realValue != realValues.end())
+      auto realValue = startValues.realStartValues.find(cref);
+      if (realValue != startValues.realStartValues.end())
         value = realValue->second;
       else
         value = 0.0; // default value
@@ -1715,7 +1727,7 @@ oms_status_enu_t oms::System::setBoolean(const ComRef& cref, bool value)
   for (auto& connector : connectors)
     if (connector && connector->getName() == cref && connector->isTypeBoolean())
     {
-      booleanValues[cref] = value;
+      startValues.setBoolean(cref, value);
       return oms_status_ok;
     }
 
@@ -1741,7 +1753,7 @@ oms_status_enu_t oms::System::setInteger(const ComRef& cref, int value)
   for (auto& connector : connectors)
     if (connector && connector->getName() == cref && connector->isTypeInteger())
     {
-      integerValues[cref] = value;
+      startValues.setInteger(cref, value);
       return oms_status_ok;
     }
 
@@ -1767,7 +1779,7 @@ oms_status_enu_t oms::System::setReal(const ComRef& cref, double value)
   for (auto& connector : connectors)
     if (connector && connector->getName() == cref && connector->isTypeReal())
     {
-      realValues[cref] = value;
+      startValues.setReal(cref, value);
       return oms_status_ok;
     }
 
