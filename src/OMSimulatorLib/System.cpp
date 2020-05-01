@@ -333,6 +333,8 @@ oms_status_enu_t oms::System::listUnconnectedConnectors(char** contents) const
           unconnectedInputs.push_back(getFullCref() + cref);
         if (connectors[i]->isOutput())
           unconnectedOutputs.push_back(getFullCref() + cref);
+        if (connectors[i]->isParameter())
+          unconnectedOutputs.push_back(getFullCref() + cref);
       }
     }
   }
@@ -347,6 +349,8 @@ oms_status_enu_t oms::System::listUnconnectedConnectors(char** contents) const
         if (connector->isInput())
           unconnectedInputs.push_back(getFullCref() + cref);
         if (connector->isOutput())
+          unconnectedOutputs.push_back(getFullCref() + cref);
+        if (connector->isParameter())
           unconnectedOutputs.push_back(getFullCref() + cref);
       }
     }
@@ -989,12 +993,16 @@ oms_status_enu_t oms::System::addConnection(const oms::ComRef& crefA, const oms:
   }
   else
   {
+    // TODO implement causality table which allows different possible connection according to specification
     if (!((conA->getCausality() == oms_causality_output && conB->getCausality() == oms_causality_input) ||
-      (conB->getCausality() == oms_causality_output && conA->getCausality() == oms_causality_input)))
+      (conB->getCausality() == oms_causality_output && conA->getCausality() == oms_causality_input) ||
+      (conA->getCausality() == oms_causality_parameter && conB->getCausality() == oms_causality_parameter)))
       return logError("Causality mismatch in connection: " + std::string(crefA) + " -> " + std::string(crefB));
   }
   if ((crefA.isValidIdent() && conA->getCausality() == oms_causality_input) ||
-      (!crefA.isValidIdent() && conA->getCausality() == oms_causality_output))
+      (!crefA.isValidIdent() && conA->getCausality() == oms_causality_output) ||
+      (crefA.isValidIdent() && conA->getCausality() == oms_causality_parameter) ||
+      (!crefA.isValidIdent() && conA->getCausality() == oms_causality_parameter))
     connections.back() = new oms::Connection(crefA, crefB);
   else
     connections.back() = new oms::Connection(crefB, crefA);
@@ -1573,8 +1581,8 @@ oms_status_enu_t oms::System::updateDependencyGraphs()
     if (varA && varB)
     {
       // flip causality checks for connectors (top-level crefs)
-      bool outA = connection->getSignalA().isValidIdent() ? varA->isInput() : varA->isOutput();
-      bool inB = connection->getSignalB().isValidIdent() ? varB->isOutput() : varB->isInput();
+      bool outA = connection->getSignalA().isValidIdent() ? varA->isInput() : varA->isOutput() || varA->isParameter(); // allow system parameters
+      bool inB = connection->getSignalB().isValidIdent() ? varB->isOutput() : varB->isInput() || varB->isParameter(); // allow system parameters
 
       if (outA && inB)
       {

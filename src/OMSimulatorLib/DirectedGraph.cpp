@@ -261,8 +261,8 @@ void oms::DirectedGraph::calculateSortedConnections()
     for (int j = 0; j < components[i].size(); ++j)
     {
       // flip causality checks for connectors (top-level crefs)
-      bool outA = nodes[edges[components[i][j]].first].getName().isValidIdent() ? nodes[edges[components[i][j]].first].isInput() : nodes[edges[components[i][j]].first].isOutput();
-      bool inB = nodes[edges[components[i][j]].second].getName().isValidIdent() ? nodes[edges[components[i][j]].second].isOutput() : nodes[edges[components[i][j]].second].isInput();
+      bool outA = nodes[edges[components[i][j]].first].getName().isValidIdent() ? nodes[edges[components[i][j]].first].isInput() : nodes[edges[components[i][j]].first].isOutput() || nodes[edges[components[i][j]].first].isParameter();
+      bool inB = nodes[edges[components[i][j]].second].getName().isValidIdent() ? nodes[edges[components[i][j]].second].isOutput() : nodes[edges[components[i][j]].second].isInput() || nodes[edges[components[i][j]].second].isParameter();
 
       if (outA && inB)
         SCC.push_back(std::pair<int, int>(edges[components[i][j]]));

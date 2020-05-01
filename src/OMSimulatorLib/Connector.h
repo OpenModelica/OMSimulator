@@ -75,6 +75,7 @@ namespace oms
 
     bool isInput() const { return oms_causality_input == causality; }
     bool isOutput() const { return oms_causality_output == causality; }
+    bool isParameter() const { return oms_causality_parameter == causality; }
 
     bool isTypeReal() const { return oms_signal_type_real == type; }
     bool isTypeInteger() const { return oms_signal_type_integer == type || oms_signal_type_enum == type; }

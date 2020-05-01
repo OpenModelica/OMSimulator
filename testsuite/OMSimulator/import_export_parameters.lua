@@ -8,17 +8,13 @@ oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./import_export_parameters_lua/")
 
 oms_newModel("import_export_parameters")
-oms_addSystem("import_export_parameters.co_sim", oms_system_wc)
 
--- top level system connector 
+oms_addSystem("import_export_parameters.co_sim", oms_system_wc)
 oms_addConnector("import_export_parameters.co_sim.T_cref", oms_causality_parameter, oms_signal_type_real)
--- set top level system parameter
 oms_setReal("import_export_parameters.co_sim.T_cref", 20.0)
 
 oms_addSystem("import_export_parameters.co_sim.foo", oms_system_sc)
--- top level system connector
-oms_addConnector("import_export_parameters.co_sim.foo.F_cref", oms_causality_output, oms_signal_type_real)
--- set top level system parameter
+oms_addConnector("import_export_parameters.co_sim.foo.F_cref", oms_causality_parameter, oms_signal_type_real)
 oms_setReal("import_export_parameters.co_sim.foo.F_cref", 30.0)
 
 -- instantiate FMUs
@@ -26,7 +22,10 @@ oms_addSubModel("import_export_parameters.co_sim.addP", "../resources/Modelica.B
 oms_addSubModel("import_export_parameters.co_sim.P", "../resources/Modelica.Blocks.Math.Gain.fmu")
 oms_addSubModel("import_export_parameters.co_sim.addI", "../resources/Modelica.Blocks.Math.Add3.fmu")
 
--- oms_addConnection("import_export_parameters.co_sim.F_cref", "import_export_parameters.co_sim.addP.y")
+-- TODO top-level system parameter connections
+-- oms_addConnection("import_export_parameters.co_sim.T_cref", "import_export_parameters.co_sim.addI.k2")
+
+oms_addConnection("import_export_parameters.co_sim.foo.F_cref", "import_export_parameters.co_sim.addP.k1")
 
 -- setParameters
 oms_setReal("import_export_parameters.co_sim.addP.k1", 10.0)
@@ -38,6 +37,11 @@ oms_setStartTime("import_export_parameters", 0.0)
 oms_setStopTime("import_export_parameters", 4.0)
 oms_setFixedStepSize("import_export_parameters.co_sim", 1e-3)
 oms_setResultFile("import_export_parameters", "import_export_parameters.mat", 100)
+
+oms_exportDependencyGraphs("import_export_parameters.co_sim", "import_export_parameters_init.dot", "import_export_parameters_sim.dot")
+os.execute("gvpr -c \"N[$.degree==0]{delete(root, $)}\" import_export_parameters_init.dot | dot -Tpdf -o import_export_parameters_init.pdf")
+os.execute("gvpr -c \"N[$.degree==0]{delete(root, $)}\" import_export_parameters_sim.dot | dot -Tpdf -o import_export_parameters_sim.pdf")
+
 
 src, status = oms_list("import_export_parameters")
 print(src)
@@ -114,7 +118,7 @@ oms_delete("import_export_parameters")
 -- 					</ssd:Annotation>
 -- 				</ssd:Annotations>
 -- 				<ssd:Connectors>
--- 					<ssd:Connector name="F_cref" kind="output">
+-- 					<ssd:Connector name="F_cref" kind="parameter">
 -- 						<ssc:Real />
 -- 					</ssd:Connector>
 -- 				</ssd:Connectors>
@@ -224,7 +228,9 @@ oms_delete("import_export_parameters")
 -- 				</ssd:Connectors>
 -- 			</ssd:Component>
 -- 		</ssd:Elements>
--- 		<ssd:Connections />
+-- 		<ssd:Connections>
+-- 			<ssd:Connection startElement="foo" startConnector="F_cref" endElement="addP" endConnector="k1" />
+-- 		</ssd:Connections>
 -- 	</ssd:System>
 -- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="4.000000" />
 -- </ssd:SystemStructureDescription>
@@ -238,13 +244,13 @@ oms_delete("import_export_parameters")
 -- info:      import_export_parameters.co_sim.foo.F_cref : 30.0
 -- info:    Result file: import_export_parameters_res.mat (bufferSize=10)
 -- info:    Initialization
--- info:      import_export_parameters.co_sim.addP.k1    : 10.0
+-- info:      import_export_parameters.co_sim.addP.k1    : 30.0
 -- info:      import_export_parameters.co_sim.addP.k2    : -1.0
 -- info:      import_export_parameters.co_sim.addI.k2    : 2.0
 -- info:      import_export_parameters.co_sim.T_cref     : 20.0
 -- info:      import_export_parameters.co_sim.foo.F_cref : 30.0
 -- info:    Simulation
--- info:      import_export_parameters.co_sim.addP.k1    : 10.0
+-- info:      import_export_parameters.co_sim.addP.k1    : 30.0
 -- info:      import_export_parameters.co_sim.addP.k2    : -1.0
 -- info:      import_export_parameters.co_sim.addI.k2    : 2.0
 -- info:      import_export_parameters.co_sim.T_cref     : 20.0
