@@ -38,9 +38,9 @@ oms_setStopTime("import_export_parameters", 4.0)
 oms_setFixedStepSize("import_export_parameters.co_sim", 1e-3)
 oms_setResultFile("import_export_parameters", "import_export_parameters.mat", 100)
 
-oms_exportDependencyGraphs("import_export_parameters.co_sim", "import_export_parameters_init.dot", "import_export_parameters_sim.dot")
-os.execute("gvpr -c \"N[$.degree==0]{delete(root, $)}\" import_export_parameters_init.dot | dot -Tpdf -o import_export_parameters_init.pdf")
-os.execute("gvpr -c \"N[$.degree==0]{delete(root, $)}\" import_export_parameters_sim.dot | dot -Tpdf -o import_export_parameters_sim.pdf")
+-- oms_exportDependencyGraphs("import_export_parameters.co_sim", "import_export_parameters_init.dot", "import_export_parameters_sim.dot")
+-- os.execute("gvpr -c \"N[$.degree==0]{delete(root, $)}\" import_export_parameters_init.dot | dot -Tpdf -o import_export_parameters_init.pdf")
+-- os.execute("gvpr -c \"N[$.degree==0]{delete(root, $)}\" import_export_parameters_sim.dot | dot -Tpdf -o import_export_parameters_sim.pdf")
 
 
 src, status = oms_list("import_export_parameters")
