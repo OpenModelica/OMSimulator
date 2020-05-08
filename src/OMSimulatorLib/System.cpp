@@ -860,7 +860,7 @@ std::string oms::System::getConnectorOwner(const oms::ComRef& cref)
     owner = "System";
   }
   else if (subsystem != subsystems.end()){
-    owner = "System";
+    owner = "Element";
   }
   else if (component != components.end()){
     owner = "Element";
@@ -1021,6 +1021,10 @@ oms_status_enu_t oms::System::addConnection(const oms::ComRef& crefA, const oms:
 
   if(isConnectionValid){
     connections.back() = new oms::Connection(crefA, crefB);
+  }
+  else if(isValidConnection(connectorOwnerA, connectorOwnerB, conB, conA)) // flip the crefs and check for valid Connection
+  {
+    connections.back() = new oms::Connection(crefB, crefA);
   }
   else
   {
