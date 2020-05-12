@@ -399,6 +399,9 @@ oms_status_enu_t oms::System::exportToSSD(pugi::xml_node& node) const
 
   // export top level system connectors
   pugi::xml_node connectors_node = node.append_child(oms::ssp::Draft20180219::ssd::connectors);
+  for(const auto& connector : connectors)
+    if (connector)
+      connector->exportToSSD(connectors_node);
 
   // export top level parameter bindings
   startValues.exportToSSD(node);
@@ -418,10 +421,6 @@ oms_status_enu_t oms::System::exportToSSD(pugi::xml_node& node) const
     if (oms_status_ok != component.second->exportToSSD(component_node))
       return logError("export of component failed");
   }
-
-  for(const auto& connector : connectors)
-    if (connector)
-      connector->exportToSSD(connectors_node);
 
   std::vector<oms::Connection*> busconnections;
   pugi::xml_node connections_node = node.append_child(oms::ssp::Draft20180219::ssd::connections);
@@ -479,7 +478,7 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
     {
       // set parameter bindings associated with the system
       if (oms_status_ok !=  startValues.importFromSSD(*it, sspVersion))
-        return logError("Failed to import " + std::string(oms::ssp::Version1_0::ssd::parameter_bindings) + ": at System Level");
+        return logError("Failed to import " + std::string(oms::ssp::Version1_0::ssd::parameter_bindings));
     }
     else if (name == oms::ssp::Draft20180219::ssd::connections)
     {
@@ -810,7 +809,6 @@ oms_status_enu_t oms::System::addConnector(const oms::ComRef& cref, oms_causalit
 {
   oms::ComRef tail(cref);
   oms::ComRef head = tail.pop_front();
-
   auto subsystem = subsystems.find(head);
   if (subsystem != subsystems.end())
     return subsystem->second->addConnector(tail, causality, type);
@@ -990,26 +988,21 @@ oms_status_enu_t oms::System::addConnection(const oms::ComRef& crefA, const oms:
       return logError("Connector is already connected: " + std::string(crefB));
   }
 
-  // system inputs/outputs
-  if (crefA.isValidIdent() && crefB.isValidIdent())
-    return logError("Connections between inputs and outputs of the same system are forbidden: " + std::string(crefA) + " -> " + std::string(crefB));
-
   // check if the connections are valid, according to the SSP-1.0 allowed connection table
-  bool isvalidconnection = initialUnknownsGraph.isValidConnection(crefA, crefB, *conA, *conB);
-
-  if(isvalidconnection){
+  if (initialUnknownsGraph.isValidConnection(crefA, crefB, *conA, *conB))
+  {
     connections.back() = new oms::Connection(crefA, crefB);
+    connections.push_back(NULL);
   }
-  else if(initialUnknownsGraph.isValidConnection(crefB, crefA, *conB, *conA)) // flip the crefs and check for valid Connection
+  // flipped causality check
+  else if (initialUnknownsGraph.isValidConnection(crefB, crefA, *conB, *conA))
   {
     connections.back() = new oms::Connection(crefB, crefA);
+    connections.push_back(NULL);
   }
   else
-  {
-    return logError("Causality mismatch in " + getConnectorOwner(crefA) + " -> " + getConnectorOwner(crefB)  + " connection: " + std::string(crefA) + " -> " + std::string(crefB));
-  }
+    return logError("Causality mismatch in connection: " + std::string(crefA) + " -> " + std::string(crefB));
 
-  connections.push_back(NULL);
   return oms_status_ok;
 }
 
@@ -1582,12 +1575,7 @@ oms_status_enu_t oms::System::updateDependencyGraphs()
     Connector* varB = getConnector(connection->getSignalB());
     if (varA && varB)
     {
-      // flip causality checks for connectors (top-level crefs), remove this once the isValidConnection() is verified
-      //bool outA = connection->getSignalA().isValidIdent() ? (varA->isInput() || varA->isParameter()) : (varA->isOutput() || varA->isCalculatedParameter()); // allow system parameters
-      //bool inB = connection->getSignalB().isValidIdent() ? (varB->isOutput() || varB->isCalculatedParameter()) : (varB->isInput() || varB->isParameter()); // allow system parameters
-
       bool validConnection = initialUnknownsGraph.isValidConnection(connection->getSignalA(), connection->getSignalB(), *varA, *varB);
-
       if (validConnection)
       {
         initialUnknownsGraph.addEdge(Connector(varA->getCausality(), varA->getType(), connection->getSignalA()), Connector(varB->getCausality(), varB->getType(), connection->getSignalB()));
