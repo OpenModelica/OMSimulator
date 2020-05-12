@@ -119,6 +119,6 @@ oms_delete("PI_Controller")
 -- info:      limiter.u: 0.0
 -- info:      limiter.y: 0.0
 -- info:    Simulation
--- info:      limiter.u: -10.041439549286
--- info:      limiter.y: -10.041439549286
+-- info:      limiter.u: -10.146734070551
+-- info:      limiter.y: -10.146734070551
 -- endResult
