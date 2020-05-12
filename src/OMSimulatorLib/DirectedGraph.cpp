@@ -260,13 +260,16 @@ void oms::DirectedGraph::calculateSortedConnections()
     SCC.clear();
     for (int j = 0; j < components[i].size(); ++j)
     {
-      // is this check needed as we check all connections at topLevel, flip causality checks for connectors (top-level crefs)
-      bool outA = nodes[edges[components[i][j]].first].getName().isValidIdent() ? nodes[edges[components[i][j]].first].isInput() || nodes[edges[components[i][j]].first].isParameter() : nodes[edges[components[i][j]].first].isOutput() || nodes[edges[components[i][j]].first].isParameter();
-      bool inB = nodes[edges[components[i][j]].second].getName().isValidIdent() ? nodes[edges[components[i][j]].second].isOutput() || nodes[edges[components[i][j]].second].isParameter() : nodes[edges[components[i][j]].second].isInput() || nodes[edges[components[i][j]].second].isParameter();
+      // flip causality checks for connectors (top-level crefs) remove this once the below validConnection is verified
+      //bool outA = nodes[edges[components[i][j]].first].getName().isValidIdent() ? nodes[edges[components[i][j]].first].isInput() || nodes[edges[components[i][j]].first].isParameter() : nodes[edges[components[i][j]].first].isOutput() || nodes[edges[components[i][j]].first].isParameter();
+      //bool inB = nodes[edges[components[i][j]].second].getName().isValidIdent() ? nodes[edges[components[i][j]].second].isOutput() || nodes[edges[components[i][j]].second].isParameter() : nodes[edges[components[i][j]].second].isInput() || nodes[edges[components[i][j]].second].isParameter();
 
-      //SCC.push_back(std::pair<int, int>(edges[components[i][j]]));
+      Connector conA = nodes[edges[components[i][j]].first];
+      Connector conB = nodes[edges[components[i][j]].second];
 
-      if (outA && inB)
+      bool validConnection = isValidConnection(conA.getName(), conB.getName(), conA, conB);
+
+      if (validConnection)
         SCC.push_back(std::pair<int, int>(edges[components[i][j]]));
     }
 
@@ -279,3 +282,43 @@ void oms::DirectedGraph::calculateSortedConnections()
 
   sortedConnectionsAreValid = true;
 }
+
+/*
+ * Function which implements the allowed connections, according to SSP-1.0 connection table
+ */
+bool oms::DirectedGraph::isValidConnection(const ComRef& crefA, const ComRef& crefB, Connector& conA, Connector& conB)
+{
+  bool connectionA, connectionB;
+
+  // Check connection-A is valid
+  if (crefA.isValidIdent()) // smart way of detecting, top Level System
+    if (conA.isInput() || conA.isParameter()) // Top System level var's at ConnectionA can be input or parameter
+      connectionA = true;
+    else
+      connectionA = false;
+  else // Elements
+    // TODO check for inout, either FMI-2.0 or FMI-1.0 does not have inout
+    if (conA.isOutput() || conA.isCalculatedParameter()) // Element level var's at ConnectionA can be output or calculatedParameter, and inout
+      connectionA = true;
+    else
+      connectionA = false;
+
+  // check connection-B is valid
+  if (crefB.isValidIdent()) // smart way of detecting, top Level System
+    if (conB.isOutput() || conB.isCalculatedParameter()) // Top System level var's at ConnectionB can be output or calculatedParameter
+      connectionB = true;
+    else
+      connectionB = false;
+  else // Elements
+    // TODO check for inout, either FMI-2.0 or FMI-1.0 does not have inout
+    if (conB.isParameter() || conB.isInput()) // Element level vars at ConnectionB can be parameter or input, and inout
+      connectionB = true;
+    else
+      connectionB = false;
+
+  if (connectionA && connectionB)
+    return true;
+  else
+    return false;
+}
+

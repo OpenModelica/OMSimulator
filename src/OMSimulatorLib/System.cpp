@@ -335,6 +335,8 @@ oms_status_enu_t oms::System::listUnconnectedConnectors(char** contents) const
           unconnectedOutputs.push_back(getFullCref() + cref);
         if (connectors[i]->isParameter())
           unconnectedOutputs.push_back(getFullCref() + cref);
+        if (connectors[i]->isCalculatedParameter())
+          unconnectedOutputs.push_back(getFullCref() + cref);
       }
     }
   }
@@ -351,6 +353,8 @@ oms_status_enu_t oms::System::listUnconnectedConnectors(char** contents) const
         if (connector->isOutput())
           unconnectedOutputs.push_back(getFullCref() + cref);
         if (connector->isParameter())
+          unconnectedOutputs.push_back(getFullCref() + cref);
+        if (connector->isCalculatedParameter())
           unconnectedOutputs.push_back(getFullCref() + cref);
       }
     }
@@ -848,29 +852,7 @@ oms::Connector* oms::System::getConnector(const oms::ComRef& cref)
 
 std::string oms::System::getConnectorOwner(const oms::ComRef& cref)
 {
-  std::string owner = "";
-
-  oms::ComRef tail(cref);
-  oms::ComRef head = tail.pop_front();
-
-  auto subsystem = subsystems.find(head);
-  auto component = components.find(head);
-
-  if (cref.isValidIdent()){
-    owner = "System";
-  }
-  else if (subsystem != subsystems.end()){
-    owner = "Element";
-  }
-  else if (component != components.end()){
-    owner = "Element";
-  }
-
-  if (owner == "")
-  {
-    logError("Failed to find Connector Owner for " + std::string(cref));
-  }
-  return owner;
+  return cref.isValidIdent() ? "System" : "Element";
 }
 
 oms::BusConnector* oms::System::getBusConnector(const oms::ComRef& cref)
@@ -1012,82 +994,23 @@ oms_status_enu_t oms::System::addConnection(const oms::ComRef& crefA, const oms:
   if (crefA.isValidIdent() && crefB.isValidIdent())
     return logError("Connections between inputs and outputs of the same system are forbidden: " + std::string(crefA) + " -> " + std::string(crefB));
 
-  // get Connector Owner
-  std::string connectorOwnerA = getConnectorOwner(crefA);
-  std::string connectorOwnerB = getConnectorOwner(crefB);
+  // check if the connections are valid, according to the SSP-1.0 allowed connection table
+  bool isvalidconnection = initialUnknownsGraph.isValidConnection(crefA, crefB, *conA, *conB);
 
-  // check if the connections are valid, according to the specification
-  bool isConnectionValid = isValidConnection(connectorOwnerA, connectorOwnerB, conA, conB);
-
-  if(isConnectionValid){
+  if(isvalidconnection){
     connections.back() = new oms::Connection(crefA, crefB);
   }
-  else if(isValidConnection(connectorOwnerA, connectorOwnerB, conB, conA)) // flip the crefs and check for valid Connection
+  else if(initialUnknownsGraph.isValidConnection(crefB, crefA, *conB, *conA)) // flip the crefs and check for valid Connection
   {
     connections.back() = new oms::Connection(crefB, crefA);
   }
   else
   {
-    return logError("Causality mismatch in " + connectorOwnerA + " -> " + connectorOwnerB  + " connection: " + std::string(crefA) + " -> " + std::string(crefB));
+    return logError("Causality mismatch in " + getConnectorOwner(crefA) + " -> " + getConnectorOwner(crefB)  + " connection: " + std::string(crefA) + " -> " + std::string(crefB));
   }
 
   connections.push_back(NULL);
   return oms_status_ok;
-}
-
-/*
- * Function which implements the allowed connections, according to SSP-1.0 connection table
- */
-bool oms::System::isValidConnection(std::string connectorOwnerA, std::string connectorOwnerB, Connector* conA, Connector* conB)
-{
-  // System -> System
-  if (connectorOwnerA == "System" && connectorOwnerB == "System"){
-    if (conA->getCausality() == oms_causality_parameter && conB->getCausality() == oms_causality_output)  // parameter to output
-      return true;
-    else if (conA->getCausality() == oms_causality_input && conB->getCausality() == oms_causality_output)  // input to output
-      return true;
-    //TODO parameter to calculatedParameter
-    else
-      return false;
-  }
-  // System -> Element
-  else if (connectorOwnerA == "System" && connectorOwnerB == "Element"){
-    if (conA->getCausality() == oms_causality_parameter && conB->getCausality() == oms_causality_parameter)  // parameter to parameter
-      return true;
-    else if (conA->getCausality() == oms_causality_parameter && conB->getCausality() == oms_causality_input)  // parameter to input
-      return true;
-    else if (conA->getCausality() == oms_causality_input && conB->getCausality() == oms_causality_input)  //input to input
-      return true;
-    //TODO parameter to inout, inout does not exist for FMI-1.0 and FMI-2.0
-    //TODO input to inout, inout does not exist for FMI-1.0 and FMI-2.0
-    else
-      return false;
-  }
-  // Element -> Element
-  else if (connectorOwnerA == "Element" && connectorOwnerB == "Element"){
-    /*TODO
-      calculateParameter to parameter,
-      calculateParameter to input ,
-      calculateParameter to inout,
-      output to inout,
-      inout to input */
-    if (conA->getCausality() == oms_causality_output && conB->getCausality() == oms_causality_input) // output to input
-      return true;
-    else
-      return false;
-  }
-  // Element -> System
-  else if (connectorOwnerA == "Element" && connectorOwnerB == "System"){
-    /*TODO
-       calculateParameter to calculateParameter,
-       calculateParameter to output ,
-       inout to output */
-    if (conA->getCausality() == oms_causality_output && conB->getCausality() == oms_causality_output)  // output to output
-      return true;
-    else
-      return false;
-  }
-  return false;
 }
 
 oms_status_enu_t oms::System::deleteConnection(const oms::ComRef& crefA, const oms::ComRef& crefB)
@@ -1659,20 +1582,19 @@ oms_status_enu_t oms::System::updateDependencyGraphs()
     Connector* varB = getConnector(connection->getSignalB());
     if (varA && varB)
     {
-      // flip causality checks for connectors (top-level crefs), This check ís not needed as we check at top Level
-      //bool outA = connection->getSignalA().isValidIdent() ? varA->isInput() || varA->isParameter() : varA->isOutput() || varA->isParameter(); // allow system parameters
-      //bool inB = connection->getSignalB().isValidIdent() ? varB->isOutput() || varB->isParameter() : varB->isInput() || varB->isParameter(); // allow system parameters
+      // flip causality checks for connectors (top-level crefs), remove this once the isValidConnection() is verified
+      //bool outA = connection->getSignalA().isValidIdent() ? (varA->isInput() || varA->isParameter()) : (varA->isOutput() || varA->isCalculatedParameter()); // allow system parameters
+      //bool inB = connection->getSignalB().isValidIdent() ? (varB->isOutput() || varB->isCalculatedParameter()) : (varB->isInput() || varB->isParameter()); // allow system parameters
 
-      initialUnknownsGraph.addEdge(Connector(varA->getCausality(), varA->getType(), connection->getSignalA()), Connector(varB->getCausality(), varB->getType(), connection->getSignalB()));
-      outputsGraph.addEdge(Connector(varA->getCausality(), varA->getType(), connection->getSignalA()), Connector(varB->getCausality(), varB->getType(), connection->getSignalB()));
-      /*
-      if (outA && inB)
+      bool validConnection = initialUnknownsGraph.isValidConnection(connection->getSignalA(), connection->getSignalB(), *varA, *varB);
+
+      if (validConnection)
       {
         initialUnknownsGraph.addEdge(Connector(varA->getCausality(), varA->getType(), connection->getSignalA()), Connector(varB->getCausality(), varB->getType(), connection->getSignalB()));
         outputsGraph.addEdge(Connector(varA->getCausality(), varA->getType(), connection->getSignalA()), Connector(varB->getCausality(), varB->getType(), connection->getSignalB()));
       }
       else
-        return logError("failed for " + std::string(connection->getSignalA()) + " -> " + std::string(connection->getSignalB()));*/
+        return logError("failed for " + std::string(connection->getSignalA()) + " -> " + std::string(connection->getSignalB()));
     }
     else
       return logError("invalid connection");

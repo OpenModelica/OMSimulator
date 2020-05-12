@@ -121,6 +121,7 @@ namespace oms
     std::vector<Variable> inputs;
     std::vector<Variable> outputs;
     std::vector<Variable> parameters;
+    std::vector<Variable> calculatedParameters;
     std::vector<bool> exportVariables;
 
     Parameters startValues; ///< parameters and start values defined before instantiating the FMU

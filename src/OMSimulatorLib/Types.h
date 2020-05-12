@@ -62,6 +62,7 @@ typedef enum {
   oms_causality_input,      ///< input
   oms_causality_output,     ///< output
   oms_causality_parameter,  ///< parameter
+  oms_causality_calculatedParameter, ///< calculatedParameter
   oms_causality_bidir,      ///< bidirecitonal
   oms_causality_undefined
 } oms_causality_enu_t;

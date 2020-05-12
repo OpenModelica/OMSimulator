@@ -211,6 +211,8 @@ oms::Component* oms::ComponentFMUME::NewComponent(const oms::ComRef& cref, oms::
     }
     else if (v.isParameter())
       component->parameters.push_back(v);
+    else if (v.isCalculatedParameter())
+      component->calculatedParameters.push_back(v);
 
     if (v.isInitialUnknown())
       component->initialUnknownsGraph.addNode(Connector(v.getCausality(), v.getType(), v.getCref()));
@@ -232,6 +234,8 @@ oms::Component* oms::ComponentFMUME::NewComponent(const oms::ComRef& cref, oms::
     component->connectors.push_back(new Connector(oms_causality_output, v.getType(), v.getCref(), i++/(double)size));
   for (const auto& v : component->parameters)
     component->connectors.push_back(new Connector(oms_causality_parameter, v.getType(), v.getCref()));
+  for (const auto& v : component->calculatedParameters)
+    component->connectors.push_back(new Connector(oms_causality_calculatedParameter, v.getType(), v.getCref()));
   component->connectors.push_back(NULL);
   component->element.setConnectors(&component->connectors[0]);
 
