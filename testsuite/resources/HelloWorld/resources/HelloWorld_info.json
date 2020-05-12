@@ -6,7 +6,7 @@
 "a":{"comment":"","kind":"parameter","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"<interactive>","lineStart":3,"lineEnd":3,"colStart":3,"colEnd":24},"within":["Real"]}}
 },
 "equations":[{"eqIndex":0,"tag":"dummy"},
-{"eqIndex":1,"section":"initial","tag":"assign","defines":["x"],"uses":["$START.x"],"equation":["$START.x"],"source":{"info":{"file":"","lineStart":0,"lineEnd":0,"colStart":0,"colEnd":0}}},
+{"eqIndex":1,"section":"initial","tag":"assign","defines":["x"],"uses":["x_start"],"equation":["x_start"],"source":{"info":{"file":"","lineStart":0,"lineEnd":0,"colStart":0,"colEnd":0}}},
 {"eqIndex":2,"tag":"alias","equation":[3],"section":"initial"},
 {"eqIndex":3,"section":"regular","tag":"assign","defines":["der(x)"],"uses":["x","a"],"equation":["a * x"],"source":{"info":{"file":"<interactive>","lineStart":7,"lineEnd":7,"colStart":3,"colEnd":15},"within":["HelloWorld"]}},
 {"eqIndex":4,"section":"start","tag":"assign","defines":["$START.x"],"uses":["x_start"],"equation":["x_start"],"source":{"info":{"file":"<interactive>","lineStart":5,"lineEnd":5,"colStart":3,"colEnd":36},"within":["Real"]}}

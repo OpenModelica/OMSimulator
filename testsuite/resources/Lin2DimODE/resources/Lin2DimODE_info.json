@@ -10,8 +10,8 @@
 "x2_start":{"comment":"","kind":"parameter","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"<interactive>","lineStart":8,"lineEnd":8,"colStart":3,"colEnd":32},"within":["Real"]}}
 },
 "equations":[{"eqIndex":0,"tag":"dummy"},
-{"eqIndex":1,"section":"initial","tag":"assign","defines":["x1"],"uses":["$START.x1"],"equation":["$START.x1"],"source":{"info":{"file":"","lineStart":0,"lineEnd":0,"colStart":0,"colEnd":0}}},
-{"eqIndex":2,"section":"initial","tag":"assign","defines":["x2"],"uses":["$START.x2"],"equation":["$START.x2"],"source":{"info":{"file":"","lineStart":0,"lineEnd":0,"colStart":0,"colEnd":0}}},
+{"eqIndex":1,"section":"initial","tag":"assign","defines":["x1"],"uses":["x1_start"],"equation":["x1_start"],"source":{"info":{"file":"","lineStart":0,"lineEnd":0,"colStart":0,"colEnd":0}}},
+{"eqIndex":2,"section":"initial","tag":"assign","defines":["x2"],"uses":["x2_start"],"equation":["x2_start"],"source":{"info":{"file":"","lineStart":0,"lineEnd":0,"colStart":0,"colEnd":0}}},
 {"eqIndex":3,"tag":"alias","equation":[5],"section":"initial"},
 {"eqIndex":4,"tag":"alias","equation":[6],"section":"initial"},
 {"eqIndex":5,"section":"regular","tag":"assign","defines":["der(x2)"],"uses":["x2","a22","x1","a21"],"equation":["a21 * x1 + a22 * x2"],"source":{"info":{"file":"<interactive>","lineStart":13,"lineEnd":13,"colStart":3,"colEnd":28},"within":["Lin2DimODE"]}},

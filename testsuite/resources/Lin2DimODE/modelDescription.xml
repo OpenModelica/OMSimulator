@@ -2,10 +2,10 @@
 <fmiModelDescription
   fmiVersion="2.0"
   modelName="Lin2DimODE"
-  guid="{9d416fc1-e944-4b1b-b4c1-62b4caf9c138}"
+  guid="{051f7ef0-a71a-434d-b620-cfd2da2a30de}"
   description=""
-  generationTool="OpenModelica Compiler OMCompiler v1.14.0-dev.26548+g9d690ceb49"
-  generationDateAndTime="2019-06-25T13:38:48Z"
+  generationTool="OpenModelica Compiler OMCompiler v1.16.0-dev.320+gd5256b6de0"
+  generationDateAndTime="2020-05-12T15:24:24Z"
   variableNamingConvention="structured"
   numberOfEventIndicators="0">
   <ModelExchange
@@ -55,11 +55,13 @@
       <File name="./util/varinfo.c" />
       <File name="./util/ModelicaUtilities.c" />
       <File name="./util/omc_msvc.c" />
+      <File name="./util/parallel_helper.c" />
       <File name="./util/simulation_options.c" />
       <File name="./util/rational.c" />
       <File name="./util/modelica_string_lit.c" />
       <File name="./util/omc_init.c" />
       <File name="./util/omc_mmap.c" />
+      <File name="./util/jacobian_util.c" />
       <File name="./math-support/pivot.c" />
       <File name="./simulation/simulation_info_json.c" />
       <File name="./simulation/options.c" />
@@ -132,11 +134,13 @@
       <File name="./util/varinfo.c" />
       <File name="./util/ModelicaUtilities.c" />
       <File name="./util/omc_msvc.c" />
+      <File name="./util/parallel_helper.c" />
       <File name="./util/simulation_options.c" />
       <File name="./util/rational.c" />
       <File name="./util/modelica_string_lit.c" />
       <File name="./util/omc_init.c" />
       <File name="./util/omc_mmap.c" />
+      <File name="./util/jacobian_util.c" />
       <File name="./math-support/pivot.c" />
       <File name="./simulation/simulation_info_json.c" />
       <File name="./simulation/options.c" />
@@ -171,36 +175,28 @@
   <ScalarVariable
     name="x1"
     valueReference="0"
-    variability="continuous"
-    causality="local"
-    initial="exact">
-    <Real start="0.0"/>
+    >
+    <Real/>
   </ScalarVariable>
   <!-- Index of variable = "2" -->
   <ScalarVariable
     name="x2"
     valueReference="1"
-    variability="continuous"
-    causality="local"
-    initial="exact">
-    <Real start="0.0"/>
+    >
+    <Real/>
   </ScalarVariable>
   <!-- Index of variable = "3" -->
   <ScalarVariable
     name="der(x1)"
     valueReference="2"
-    variability="continuous"
-    causality="local"
-    initial="calculated">
+    >
     <Real derivative="1"/>
   </ScalarVariable>
   <!-- Index of variable = "4" -->
   <ScalarVariable
     name="der(x2)"
     valueReference="3"
-    variability="continuous"
-    causality="local"
-    initial="calculated">
+    >
     <Real derivative="2"/>
   </ScalarVariable>
   <!-- Index of variable = "5" -->
@@ -209,7 +205,7 @@
     valueReference="4"
     variability="fixed"
     causality="parameter"
-    initial="exact">
+    >
     <Real start="-1.0"/>
   </ScalarVariable>
   <!-- Index of variable = "6" -->
@@ -218,7 +214,7 @@
     valueReference="5"
     variability="fixed"
     causality="parameter"
-    initial="exact">
+    >
     <Real start="0.1"/>
   </ScalarVariable>
   <!-- Index of variable = "7" -->
@@ -227,7 +223,7 @@
     valueReference="6"
     variability="fixed"
     causality="parameter"
-    initial="exact">
+    >
     <Real start="0.1"/>
   </ScalarVariable>
   <!-- Index of variable = "8" -->
@@ -236,7 +232,7 @@
     valueReference="7"
     variability="fixed"
     causality="parameter"
-    initial="exact">
+    >
     <Real start="-0.9"/>
   </ScalarVariable>
   <!-- Index of variable = "9" -->
@@ -245,7 +241,7 @@
     valueReference="8"
     variability="fixed"
     causality="parameter"
-    initial="exact">
+    >
     <Real start="1.0"/>
   </ScalarVariable>
   <!-- Index of variable = "10" -->
@@ -254,7 +250,7 @@
     valueReference="9"
     variability="fixed"
     causality="parameter"
-    initial="exact">
+    >
     <Real start="1.1"/>
   </ScalarVariable>
   </ModelVariables>
@@ -263,5 +259,11 @@
       <Unknown index="3" dependencies="1 2" dependenciesKind="dependent dependent" />
       <Unknown index="4" dependencies="1 2" dependenciesKind="dependent dependent" />
     </Derivatives>
+    <InitialUnknowns>
+      <Unknown index="1" dependencies="9" dependenciesKind="dependent" />
+      <Unknown index="2" dependencies="10" dependenciesKind="dependent" />
+      <Unknown index="3" dependencies="5 6 9 10" dependenciesKind="dependent dependent dependent dependent" />
+      <Unknown index="4" dependencies="7 8 9 10" dependenciesKind="dependent dependent dependent dependent" />
+    </InitialUnknowns>
   </ModelStructure>
 </fmiModelDescription>
