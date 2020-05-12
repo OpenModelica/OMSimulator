@@ -194,7 +194,6 @@ printStatus(status, 0)
 ## status:  [correct] ok
 ## status:  [correct] ok
 ## status:  [correct] ok
-## status:  [correct] ok
 ## <?xml version="1.0"?>
 ## <ssd:SystemStructureDescription name="test" version="1.0">
 ##     <ssd:System name="eoo">
@@ -352,7 +351,7 @@ printStatus(status, 0)
 ##     </ssd:System>
 ##     <ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000" />
 ## </ssd:SystemStructureDescription>
-##
+## 
 ## status:  [correct] ok
 ## status:  [correct] ok
 ## status:  [correct] ok
@@ -514,7 +513,7 @@ printStatus(status, 0)
 ##     </ssd:System>
 ##     <ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000" />
 ## </ssd:SystemStructureDescription>
-##
+## 
 ## status:  [correct] ok
 ## endResult
 
