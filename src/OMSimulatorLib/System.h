@@ -36,10 +36,10 @@
 #include "Clock.h"
 #include "ComRef.h"
 #include "Connection.h"
-#include "Parameters.h"
 #include "DirectedGraph.h"
 #include "Element.h"
 #include "ExternalModel.h"
+#include "Parameters.h"
 #include "ResultWriter.h"
 #include "ssd/ConnectorGeometry.h"
 #if !defined(NO_TLM)
@@ -87,7 +87,7 @@ namespace oms
     void setGeometry(const ssd::ElementGeometry& geometry) {element.setGeometry(&geometry);}
     oms_status_enu_t addConnector(const ComRef& cref, oms_causality_enu_t causality, oms_signal_type_enu_t type);
     Connector* getConnector(const ComRef& cref);
-    std::string getConnectorOwner(const ComRef& cref);
+    std::string getConnectorOwner(const ComRef& cref) const;
     Connector** getConnectors() {return &connectors[0];}
     BusConnector* getBusConnector(const ComRef& cref);
     oms_status_enu_t addTLMConnection(const ComRef& crefA, const ComRef& crefB, double delay, double alpha, double linearimpedance, double angularimpedance);
