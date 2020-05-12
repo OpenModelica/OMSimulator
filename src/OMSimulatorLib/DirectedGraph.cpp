@@ -263,7 +263,7 @@ void oms::DirectedGraph::calculateSortedConnections()
       Connector conA = nodes[edges[components[i][j]].first];
       Connector conB = nodes[edges[components[i][j]].second];
 
-      if (isValidConnection(conA, conB))
+      if (isValidConnection(conA.getName(), conB.getName(), conA, conB))
         SCC.push_back(std::pair<int, int>(edges[components[i][j]]));
     }
 
@@ -280,11 +280,8 @@ void oms::DirectedGraph::calculateSortedConnections()
 /*
  * Function which implements the allowed connections, according to SSP-1.0 connection table
  */
-bool oms::DirectedGraph::isValidConnection(const Connector& conA, const Connector& conB) const
+bool oms::DirectedGraph::isValidConnection(const ComRef& crefA, const ComRef& crefB, const Connector& conA, const Connector& conB) const
 {
-  const ComRef& crefA = conA.getName();
-  const ComRef& crefB = conB.getName();
-
   bool connectorA, connectorB;
 
   // Check connector A

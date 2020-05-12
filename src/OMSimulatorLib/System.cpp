@@ -989,13 +989,13 @@ oms_status_enu_t oms::System::addConnection(const oms::ComRef& crefA, const oms:
   }
 
   // check if the connections are valid, according to the SSP-1.0 allowed connection table
-  if (initialUnknownsGraph.isValidConnection(*conA, *conB))
+  if (initialUnknownsGraph.isValidConnection(crefA, crefB, *conA, *conB))
   {
     connections.back() = new oms::Connection(crefA, crefB);
     connections.push_back(NULL);
   }
   // flipped causality check
-  else if (initialUnknownsGraph.isValidConnection(*conB, *conA))
+  else if (initialUnknownsGraph.isValidConnection(crefB, crefA, *conB, *conA))
   {
     connections.back() = new oms::Connection(crefB, crefA);
     connections.push_back(NULL);
@@ -1575,7 +1575,7 @@ oms_status_enu_t oms::System::updateDependencyGraphs()
     Connector* varB = getConnector(connection->getSignalB());
     if (varA && varB)
     {
-      bool validConnection = initialUnknownsGraph.isValidConnection(*varA, *varB);
+      bool validConnection = initialUnknownsGraph.isValidConnection(connection->getSignalA(), connection->getSignalB(), *varA, *varB);
       if (validConnection)
       {
         initialUnknownsGraph.addEdge(Connector(varA->getCausality(), varA->getType(), connection->getSignalA()), Connector(varB->getCausality(), varB->getType(), connection->getSignalB()));
