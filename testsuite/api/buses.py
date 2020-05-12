@@ -111,6 +111,7 @@ printStatus(status, 0)
 ## 			</oms:SimulationInformation>
 ## 		</ssd:Annotation>
 ## 	</ssd:Annotations>
+## 	<ssd:Connectors />
 ## 	<ssd:Elements>
 ## 		<ssd:System name="wc2">
 ## 			<ssd:Annotations>
@@ -120,7 +121,6 @@ printStatus(status, 0)
 ## 					</oms:SimulationInformation>
 ## 				</ssd:Annotation>
 ## 			</ssd:Annotations>
-## 			<ssd:Elements />
 ## 			<ssd:Connectors>
 ## 				<ssd:Connector name="y1" kind="output">
 ## 					<ssc:Real />
@@ -132,6 +132,7 @@ printStatus(status, 0)
 ## 					<ssc:Real />
 ## 				</ssd:Connector>
 ## 			</ssd:Connectors>
+## 			<ssd:Elements />
 ## 			<ssd:Connections />
 ## 			<ssd:Annotations>
 ## 				<ssd:Annotation type="org.openmodelica">
@@ -152,7 +153,6 @@ printStatus(status, 0)
 ## 					</oms:SimulationInformation>
 ## 				</ssd:Annotation>
 ## 			</ssd:Annotations>
-## 			<ssd:Elements />
 ## 			<ssd:Connectors>
 ## 				<ssd:Connector name="u1" kind="input">
 ## 					<ssc:Real />
@@ -164,6 +164,7 @@ printStatus(status, 0)
 ## 					<ssc:Real />
 ## 				</ssd:Connector>
 ## 			</ssd:Connectors>
+## 			<ssd:Elements />
 ## 			<ssd:Connections />
 ## 			<ssd:Annotations>
 ## 				<ssd:Annotation type="org.openmodelica">
@@ -178,7 +179,6 @@ printStatus(status, 0)
 ## 			</ssd:Annotations>
 ## 		</ssd:System>
 ## 	</ssd:Elements>
-## 	<ssd:Connectors />
 ## 	<ssd:Connections>
 ## 		<ssd:Connection startElement="wc2" startConnector="y1" endElement="wc1" endConnector="u1" />
 ## 		<ssd:Connection startElement="wc2" startConnector="y2" endElement="wc1" endConnector="u2" />
@@ -191,7 +191,7 @@ printStatus(status, 0)
 ## 		</ssd:Annotation>
 ## 	</ssd:Annotations>
 ## </ssd:System>
-##
+## 
 ## status:  [correct] ok
 ## <?xml version="1.0"?>
 ## <ssd:System name="tlm">
@@ -202,6 +202,7 @@ printStatus(status, 0)
 ## 			</oms:SimulationInformation>
 ## 		</ssd:Annotation>
 ## 	</ssd:Annotations>
+## 	<ssd:Connectors />
 ## 	<ssd:Elements>
 ## 		<ssd:System name="wc2">
 ## 			<ssd:Annotations>
@@ -211,7 +212,6 @@ printStatus(status, 0)
 ## 					</oms:SimulationInformation>
 ## 				</ssd:Annotation>
 ## 			</ssd:Annotations>
-## 			<ssd:Elements />
 ## 			<ssd:Connectors>
 ## 				<ssd:Connector name="y1" kind="output">
 ## 					<ssc:Real />
@@ -223,6 +223,7 @@ printStatus(status, 0)
 ## 					<ssc:Real />
 ## 				</ssd:Connector>
 ## 			</ssd:Connectors>
+## 			<ssd:Elements />
 ## 			<ssd:Connections />
 ## 			<ssd:Annotations>
 ## 				<ssd:Annotation type="org.openmodelica">
@@ -243,7 +244,6 @@ printStatus(status, 0)
 ## 					</oms:SimulationInformation>
 ## 				</ssd:Annotation>
 ## 			</ssd:Annotations>
-## 			<ssd:Elements />
 ## 			<ssd:Connectors>
 ## 				<ssd:Connector name="u1" kind="input">
 ## 					<ssc:Real />
@@ -255,6 +255,7 @@ printStatus(status, 0)
 ## 					<ssc:Real />
 ## 				</ssd:Connector>
 ## 			</ssd:Connectors>
+## 			<ssd:Elements />
 ## 			<ssd:Connections />
 ## 			<ssd:Annotations>
 ## 				<ssd:Annotation type="org.openmodelica">
@@ -268,7 +269,6 @@ printStatus(status, 0)
 ## 			</ssd:Annotations>
 ## 		</ssd:System>
 ## 	</ssd:Elements>
-## 	<ssd:Connectors />
 ## 	<ssd:Connections>
 ## 		<ssd:Connection startElement="wc2" startConnector="y1" endElement="wc1" endConnector="u1" />
 ## 		<ssd:Connection startElement="wc2" startConnector="y2" endElement="wc1" endConnector="u2" />
@@ -281,7 +281,7 @@ printStatus(status, 0)
 ## 		</ssd:Annotation>
 ## 	</ssd:Annotations>
 ## </ssd:System>
-##
+## 
 ## status:  [correct] ok
 ## info:    0 warnings
 ## info:    2 errors

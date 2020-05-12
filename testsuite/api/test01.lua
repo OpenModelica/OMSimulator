@@ -96,6 +96,7 @@ printStatus(status, 3)
 -- 				</oms:SimulationInformation>
 -- 			</ssd:Annotation>
 -- 		</ssd:Annotations>
+-- 		<ssd:Connectors />
 -- 		<ssd:Elements>
 -- 			<ssd:System name="goo">
 -- 				<ssd:Annotations>
@@ -105,17 +106,16 @@ printStatus(status, 3)
 -- 						</oms:SimulationInformation>
 -- 					</ssd:Annotation>
 -- 				</ssd:Annotations>
--- 				<ssd:Elements />
 -- 				<ssd:Connectors />
+-- 				<ssd:Elements />
 -- 				<ssd:Connections />
 -- 			</ssd:System>
 -- 		</ssd:Elements>
--- 		<ssd:Connectors />
 -- 		<ssd:Connections />
 -- 	</ssd:System>
 -- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000" />
 -- </ssd:SystemStructureDescription>
---
+-- 
 -- <?xml version="1.0"?>
 -- <ssd:System name="foo">
 -- 	<ssd:Annotations>
@@ -125,6 +125,7 @@ printStatus(status, 3)
 -- 			</oms:SimulationInformation>
 -- 		</ssd:Annotation>
 -- 	</ssd:Annotations>
+-- 	<ssd:Connectors />
 -- 	<ssd:Elements>
 -- 		<ssd:System name="goo">
 -- 			<ssd:Annotations>
@@ -134,15 +135,14 @@ printStatus(status, 3)
 -- 					</oms:SimulationInformation>
 -- 				</ssd:Annotation>
 -- 			</ssd:Annotations>
--- 			<ssd:Elements />
 -- 			<ssd:Connectors />
+-- 			<ssd:Elements />
 -- 			<ssd:Connections />
 -- 		</ssd:System>
 -- 	</ssd:Elements>
--- 	<ssd:Connectors />
 -- 	<ssd:Connections />
 -- </ssd:System>
---
+-- 
 -- <?xml version="1.0"?>
 -- <ssd:System name="goo">
 -- 	<ssd:Annotations>
@@ -152,11 +152,11 @@ printStatus(status, 3)
 -- 			</oms:SimulationInformation>
 -- 		</ssd:Annotation>
 -- 	</ssd:Annotations>
--- 	<ssd:Elements />
 -- 	<ssd:Connectors />
+-- 	<ssd:Elements />
 -- 	<ssd:Connections />
 -- </ssd:System>
---
+-- 
 -- error:   [newModel] "test" already exists in the scope
 -- status:  [correct] error
 -- status:  [correct] ok
@@ -168,7 +168,7 @@ printStatus(status, 3)
 -- <ssd:SystemStructureDescription name="test" version="1.0">
 -- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000" />
 -- </ssd:SystemStructureDescription>
---
+-- 
 -- status:  [correct] ok
 -- error:   [deleteModel] Model "foo" does not exist in the scope
 -- status:  [correct] error

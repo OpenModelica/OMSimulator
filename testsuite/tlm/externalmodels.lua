@@ -59,6 +59,7 @@ printStatus(status, 0)
 -- 			</oms:SimulationInformation>
 -- 		</ssd:Annotation>
 -- 	</ssd:Annotations>
+-- 	<ssd:Connectors />
 -- 	<ssd:Elements>
 -- 		<ssd:Component name="external" source="resources/external.mo">
 -- 			<ssd:Annotations>
@@ -73,9 +74,8 @@ printStatus(status, 0)
 -- 			</ssd:Annotations>
 -- 		</ssd:Component>
 -- 	</ssd:Elements>
--- 	<ssd:Connectors />
 -- 	<ssd:Connections />
 -- </ssd:System>
---
+-- 
 -- status:  [correct] ok
 -- endResult
