@@ -94,6 +94,8 @@ oms::Connector* oms::Connector::NewConnector(const pugi::xml_node& node, const s
     causality = oms_causality_output;
   else if (causalityString == "parameter")
     causality = oms_causality_parameter;
+  else if (causalityString == "calculatedParameter")
+    causality = oms_causality_calculatedParameter;
   else
   {
     logError("Failed to import " + std::string(oms::ssp::Draft20180219::ssd::connector) + ":causality");
