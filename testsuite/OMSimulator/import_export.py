@@ -192,8 +192,6 @@ printStatus(status, 0)
 ## status:  [correct] ok
 ## status:  [correct] ok
 ## status:  [correct] ok
-## status:  [correct] ok
-## status:  [correct] ok
 ## <?xml version="1.0"?>
 ## <ssd:SystemStructureDescription name="test" version="1.0">
 ##     <ssd:System name="eoo">
