@@ -16,4 +16,4 @@ end Lin2DimODE;
 
 buildModelFMU(Lin2DimODE, version="2.0", fmuType="me_cs", fileNamePrefix="Lin2DimODE", platforms={"x86_64-linux-gnu"}); getErrorString();
 
-system("zip -qd Lin2DimODE.fmu sources/* && unzip Lin2DimODE.fmu -d Lin2DimODE/");
+system("zip -qd Lin2DimODE.fmu sources/* && unzip -o Lin2DimODE.fmu -d Lin2DimODE/");

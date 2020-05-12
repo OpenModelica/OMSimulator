@@ -44,9 +44,25 @@ tlm.UpperPendulum \
 tlm.UpperPendulumFG \
 tlm.UpperPendulumFG \
 
-.PHONY: all
+MOSs = \
+ASSCExample.mos \
+DualMassOscillator.mos \
+HelloWorldWithInput.mos \
+Mass.mos \
+QuarterCarModel.mos \
+Blocks.mos \
+HelloWorld.mos \
+Lin2DimODE.mos \
+MassSpring.mos \
+
+.PHONY: all generateFMUs
 
 all:
 	@echo
 	@echo preparing FMUs...
 	@for fmu in $(FMUs) ; do cd $$fmu && zip -r ../$$fmu.fmu * && cd .. ; done
+
+generateFMUs:
+	@echo
+	@echo generating FMUs...
+	@for mos in $(MOSs) ; do omc $$mos ; done

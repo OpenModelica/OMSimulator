@@ -12,14 +12,14 @@ buildModelFMU(Modelica.Blocks.Math.Add3, version="2.0", fmuType="me_cs", fileNam
 buildModelFMU(Modelica.Blocks.Nonlinear.Limiter, version="2.0", fmuType="me_cs", fileNamePrefix="Modelica.Blocks.Nonlinear.Limiter", platforms={"x86_64-linux-gnu"}); getErrorString();
 buildModelFMU(Modelica.Blocks.Continuous.Integrator, version="2.0", fmuType="me_cs", fileNamePrefix="Modelica.Blocks.Continuous.Integrator", platforms={"x86_64-linux-gnu"}); getErrorString();
 
-system("zip -qd Modelica.Blocks.Math.Add.fmu sources/* && unzip Modelica.Blocks.Math.Add.fmu -d Modelica.Blocks.Math.Add/");
-system("zip -qd Modelica.Blocks.Math.Feedback.fmu sources/* && unzip Modelica.Blocks.Math.Feedback.fmu -d Modelica.Blocks.Math.Feedback/");
-system("zip -qd Modelica.Blocks.Math.Gain.fmu sources/* && unzip Modelica.Blocks.Math.Gain.fmu -d Modelica.Blocks.Math.Gain/");
-system("zip -qd Modelica.Blocks.Math.Product.fmu sources/* && unzip Modelica.Blocks.Math.Product.fmu -d Modelica.Blocks.Math.Product/");
-system("zip -qd Modelica.Blocks.Sources.Clock.fmu sources/* && unzip Modelica.Blocks.Sources.Clock.fmu -d Modelica.Blocks.Sources.Clock/");
-system("zip -qd Modelica.Blocks.Sources.Constant.fmu sources/* && unzip Modelica.Blocks.Sources.Constant.fmu -d Modelica.Blocks.Sources.Constant/");
-system("zip -qd Modelica.Blocks.Sources.Sine.fmu sources/* && unzip Modelica.Blocks.Sources.Sine.fmu -d Modelica.Blocks.Sources.Sine/");
-system("zip -qd Modelica.Blocks.Sources.Step.fmu sources/* && unzip Modelica.Blocks.Sources.Step.fmu -d Modelica.Blocks.Sources.Step/");
-system("zip -qd Modelica.Blocks.Math.Add3.fmu sources/* && unzip Modelica.Blocks.Math.Add3.fmu -d Modelica.Blocks.Math.Add3/");
-system("zip -qd Modelica.Blocks.Nonlinear.Limiter.fmu sources/* && unzip Modelica.Blocks.Nonlinear.Limiter.fmu -d Modelica.Blocks.Nonlinear.Limiter/");
-system("zip -qd Modelica.Blocks.Continuous.Integrator.fmu sources/* && unzip Modelica.Blocks.Continuous.Integrator.fmu -d Modelica.Blocks.Continuous.Integrator/");
+system("zip -qd Modelica.Blocks.Math.Add.fmu sources/* && unzip -o Modelica.Blocks.Math.Add.fmu -d Modelica.Blocks.Math.Add/");
+system("zip -qd Modelica.Blocks.Math.Feedback.fmu sources/* && unzip -o Modelica.Blocks.Math.Feedback.fmu -d Modelica.Blocks.Math.Feedback/");
+system("zip -qd Modelica.Blocks.Math.Gain.fmu sources/* && unzip -o Modelica.Blocks.Math.Gain.fmu -d Modelica.Blocks.Math.Gain/");
+system("zip -qd Modelica.Blocks.Math.Product.fmu sources/* && unzip -o Modelica.Blocks.Math.Product.fmu -d Modelica.Blocks.Math.Product/");
+system("zip -qd Modelica.Blocks.Sources.Clock.fmu sources/* && unzip -o Modelica.Blocks.Sources.Clock.fmu -d Modelica.Blocks.Sources.Clock/");
+system("zip -qd Modelica.Blocks.Sources.Constant.fmu sources/* && unzip -o Modelica.Blocks.Sources.Constant.fmu -d Modelica.Blocks.Sources.Constant/");
+system("zip -qd Modelica.Blocks.Sources.Sine.fmu sources/* && unzip -o Modelica.Blocks.Sources.Sine.fmu -d Modelica.Blocks.Sources.Sine/");
+system("zip -qd Modelica.Blocks.Sources.Step.fmu sources/* && unzip -o Modelica.Blocks.Sources.Step.fmu -d Modelica.Blocks.Sources.Step/");
+system("zip -qd Modelica.Blocks.Math.Add3.fmu sources/* && unzip -o Modelica.Blocks.Math.Add3.fmu -d Modelica.Blocks.Math.Add3/");
+system("zip -qd Modelica.Blocks.Nonlinear.Limiter.fmu sources/* && unzip -o Modelica.Blocks.Nonlinear.Limiter.fmu -d Modelica.Blocks.Nonlinear.Limiter/");
+system("zip -qd Modelica.Blocks.Continuous.Integrator.fmu sources/* && unzip -o Modelica.Blocks.Continuous.Integrator.fmu -d Modelica.Blocks.Continuous.Integrator/");

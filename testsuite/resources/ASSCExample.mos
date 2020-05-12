@@ -24,5 +24,5 @@ end ASSCExample;
 buildModelFMU(ASSCExample.Class1, version="2.0", fmuType="me_cs", fileNamePrefix="ASSCExample.Class1", platforms={"x86_64-linux-gnu"}); getErrorString();
 buildModelFMU(ASSCExample.Class2, version="2.0", fmuType="me_cs", fileNamePrefix="ASSCExample.Class2", platforms={"x86_64-linux-gnu"}); getErrorString();
 
-system("zip -qd ASSCExample.Class1.fmu sources/* && unzip ASSCExample.Class1.fmu -d ASSCExample.Class1/");
-system("zip -qd ASSCExample.Class2.fmu sources/* && unzip ASSCExample.Class2.fmu -d ASSCExample.Class2/");
+system("zip -qd ASSCExample.Class1.fmu sources/* && unzip -o ASSCExample.Class1.fmu -d ASSCExample.Class1/");
+system("zip -qd ASSCExample.Class2.fmu sources/* && unzip -o ASSCExample.Class2.fmu -d ASSCExample.Class2/");
