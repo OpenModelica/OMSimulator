@@ -11,4 +11,4 @@ end HelloWorldWithInput;
 
 buildModelFMU(HelloWorldWithInput, version="2.0", fmuType="me_cs", fileNamePrefix="HelloWorldWithInput", platforms={"x86_64-linux-gnu"}); getErrorString();
 
-system("zip -qd HelloWorldWithInput.fmu sources/* && unzip HelloWorldWithInput.fmu -d HelloWorldWithInput/");
+system("zip -qd HelloWorldWithInput.fmu sources/* && unzip -o HelloWorldWithInput.fmu -d HelloWorldWithInput/");

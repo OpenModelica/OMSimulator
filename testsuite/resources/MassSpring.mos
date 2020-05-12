@@ -14,4 +14,4 @@ end MassSpring;
 "); getErrorString();
 
 buildModelFMU(MassSpring, version="2.0", fmuType="me_cs", fileNamePrefix="tlm.massSpring", platforms={"x86_64-linux-gnu"}); getErrorString();
-system("zip -qd tlm.massSpring.fmu sources/*");
+system("zip -qd tlm.massSpring.fmu sources/* && unzip -o tlm.massSpring.fmu -d tlm.massSpring/");

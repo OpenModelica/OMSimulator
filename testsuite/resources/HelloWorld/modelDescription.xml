@@ -2,10 +2,10 @@
 <fmiModelDescription
   fmiVersion="2.0"
   modelName="HelloWorld"
-  guid="{b36a0215-3911-47bd-93a6-b292f3a309e1}"
+  guid="{926e7a15-7754-42f2-a2cd-3d27857c4bf2}"
   description=""
-  generationTool="OpenModelica Compiler OMCompiler v1.14.0-dev.26548+g9d690ceb49"
-  generationDateAndTime="2019-06-25T13:28:27Z"
+  generationTool="OpenModelica Compiler OMCompiler v1.16.0-dev.320+gd5256b6de0"
+  generationDateAndTime="2020-05-12T15:24:00Z"
   variableNamingConvention="structured"
   numberOfEventIndicators="0">
   <ModelExchange
@@ -55,11 +55,13 @@
       <File name="./util/varinfo.c" />
       <File name="./util/ModelicaUtilities.c" />
       <File name="./util/omc_msvc.c" />
+      <File name="./util/parallel_helper.c" />
       <File name="./util/simulation_options.c" />
       <File name="./util/rational.c" />
       <File name="./util/modelica_string_lit.c" />
       <File name="./util/omc_init.c" />
       <File name="./util/omc_mmap.c" />
+      <File name="./util/jacobian_util.c" />
       <File name="./math-support/pivot.c" />
       <File name="./simulation/simulation_info_json.c" />
       <File name="./simulation/options.c" />
@@ -132,11 +134,13 @@
       <File name="./util/varinfo.c" />
       <File name="./util/ModelicaUtilities.c" />
       <File name="./util/omc_msvc.c" />
+      <File name="./util/parallel_helper.c" />
       <File name="./util/simulation_options.c" />
       <File name="./util/rational.c" />
       <File name="./util/modelica_string_lit.c" />
       <File name="./util/omc_init.c" />
       <File name="./util/omc_mmap.c" />
+      <File name="./util/jacobian_util.c" />
       <File name="./math-support/pivot.c" />
       <File name="./simulation/simulation_info_json.c" />
       <File name="./simulation/options.c" />
@@ -171,18 +175,14 @@
   <ScalarVariable
     name="x"
     valueReference="0"
-    variability="continuous"
-    causality="local"
-    initial="exact">
-    <Real start="0.0"/>
+    >
+    <Real/>
   </ScalarVariable>
   <!-- Index of variable = "2" -->
   <ScalarVariable
     name="der(x)"
     valueReference="1"
-    variability="continuous"
-    causality="local"
-    initial="calculated">
+    >
     <Real derivative="1"/>
   </ScalarVariable>
   <!-- Index of variable = "3" -->
@@ -191,7 +191,7 @@
     valueReference="2"
     variability="fixed"
     causality="parameter"
-    initial="exact">
+    >
     <Real start="-1.0"/>
   </ScalarVariable>
   <!-- Index of variable = "4" -->
@@ -200,7 +200,7 @@
     valueReference="3"
     variability="fixed"
     causality="parameter"
-    initial="exact">
+    >
     <Real start="1.0"/>
   </ScalarVariable>
   </ModelVariables>
@@ -208,5 +208,9 @@
     <Derivatives>
       <Unknown index="2" dependencies="1" dependenciesKind="dependent" />
     </Derivatives>
+    <InitialUnknowns>
+      <Unknown index="1" dependencies="4" dependenciesKind="dependent" />
+      <Unknown index="2" dependencies="3 4" dependenciesKind="dependent dependent" />
+    </InitialUnknowns>
   </ModelStructure>
 </fmiModelDescription>

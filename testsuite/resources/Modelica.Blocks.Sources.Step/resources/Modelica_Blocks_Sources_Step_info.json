@@ -1,13 +1,13 @@
 {"format":"Transformational debugger info","version":1,
 "info":{"name":"Modelica.Blocks.Sources.Step","description":"Generate step signal of type Real"},
 "variables":{
-"y":{"comment":"Connector of Real output signal","kind":"variable","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"/mnt/c/Users/lenna/Repositories/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Interfaces.mo","lineStart":300,"lineEnd":301,"colStart":5,"colEnd":56},"within":["Real"]}},
-"height":{"comment":"Height of step","kind":"parameter","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"/mnt/c/Users/lenna/Repositories/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Sources.mo","lineStart":286,"lineEnd":287,"colStart":5,"colEnd":98},"within":["Real"]}},
-"startTime":{"comment":"Output y = offset for time < startTime","kind":"parameter","type":"Real","unit":"s","displayUnit":"","source":{"info":{"file":"/mnt/c/Users/lenna/Repositories/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Interfaces.mo","lineStart":480,"lineEnd":480,"colStart":5,"colEnd":80},"within":["Real"]}}
+"y":{"comment":"Connector of Real output signal","kind":"variable","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"/mnt/c/Users/Lennart/Repositories/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Interfaces.mo","lineStart":300,"lineEnd":301,"colStart":5,"colEnd":56},"within":["Real"]}},
+"height":{"comment":"Height of step","kind":"parameter","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"/mnt/c/Users/Lennart/Repositories/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Sources.mo","lineStart":284,"lineEnd":285,"colStart":5,"colEnd":98},"within":["Real"]}},
+"startTime":{"comment":"Output y = offset for time < startTime","kind":"parameter","type":"Real","unit":"s","displayUnit":"","source":{"info":{"file":"/mnt/c/Users/Lennart/Repositories/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Interfaces.mo","lineStart":480,"lineEnd":480,"colStart":5,"colEnd":80},"within":["Real"]}}
 },
 "equations":[{"eqIndex":0,"tag":"dummy"},
 {"eqIndex":1,"tag":"alias","equation":[2],"section":"initial"},
-{"eqIndex":2,"section":"regular","tag":"assign","defines":["y"],"uses":["height","startTime","time","offset"],"equation":["offset + (if time < startTime then 0.0 else height)"],"source":{"info":{"file":"/mnt/c/Users/lenna/Repositories/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Sources.mo","lineStart":291,"lineEnd":291,"colStart":5,"colEnd":58},"within":["Modelica.Blocks.Sources.Step"]}}
+{"eqIndex":2,"section":"regular","tag":"assign","defines":["y"],"uses":["height","startTime","time","offset"],"equation":["offset + (if time < startTime then 0.0 else height)"],"source":{"info":{"file":"/mnt/c/Users/Lennart/Repositories/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Sources.mo","lineStart":289,"lineEnd":289,"colStart":5,"colEnd":58},"within":["Modelica.Blocks.Sources.Step"]}}
 ],
 "functions":[
 ]

@@ -2,14 +2,80 @@
 <fmiModelDescription
   fmiVersion="2.0"
   modelName="Modelica.Blocks.Math.Gain"
-  guid="{09da73c2-a93d-4630-9c1f-969d5a0e91e6}"
+  guid="{53232687-5c3c-4945-9570-f21c95eed817}"
   description="Output the product of a gain value with the input signal"
-  generationTool="OpenModelica Compiler OMCompiler v1.13.0-dev.1067+ga616890f6"
-  generationDateAndTime="2019-02-06T17:35:03Z"
+  generationTool="OpenModelica Compiler OMCompiler v1.16.0-dev.320+gd5256b6de0"
+  generationDateAndTime="2020-05-12T15:20:02Z"
   variableNamingConvention="structured"
   numberOfEventIndicators="0">
   <ModelExchange
     modelIdentifier="Modelica_Blocks_Math_Gain">
+    <SourceFiles>
+      <File name="Modelica_Blocks_Math_Gain.c" />
+      <File name="Modelica_Blocks_Math_Gain_functions.c" />
+      <File name="Modelica_Blocks_Math_Gain_records.c" />
+      <File name="Modelica_Blocks_Math_Gain_01exo.c" />
+      <File name="Modelica_Blocks_Math_Gain_02nls.c" />
+      <File name="Modelica_Blocks_Math_Gain_03lsy.c" />
+      <File name="Modelica_Blocks_Math_Gain_04set.c" />
+      <File name="Modelica_Blocks_Math_Gain_05evt.c" />
+      <File name="Modelica_Blocks_Math_Gain_06inz.c" />
+      <File name="Modelica_Blocks_Math_Gain_07dly.c" />
+      <File name="Modelica_Blocks_Math_Gain_08bnd.c" />
+      <File name="Modelica_Blocks_Math_Gain_09alg.c" />
+      <File name="Modelica_Blocks_Math_Gain_10asr.c" />
+      <File name="Modelica_Blocks_Math_Gain_11mix.c" />
+      <File name="Modelica_Blocks_Math_Gain_12jac.c" />
+      <File name="Modelica_Blocks_Math_Gain_13opt.c" />
+      <File name="Modelica_Blocks_Math_Gain_14lnz.c" />
+      <File name="Modelica_Blocks_Math_Gain_15syn.c" />
+      <File name="Modelica_Blocks_Math_Gain_16dae.c" />
+      <File name="Modelica_Blocks_Math_Gain_17inl.c" />
+      <File name="Modelica_Blocks_Math_Gain_init_fmu.c" />
+      <File name="Modelica_Blocks_Math_Gain_FMU.c" />
+      <File name="./util/read_matlab4.c" />
+      <File name="./util/read_csv.c" />
+      <File name="./util/libcsv.c" />
+      <File name="gc/memory_pool.c" />
+      <File name="gc/omc_gc.c" />
+      <File name="./util/base_array.c" />
+      <File name="./util/boolean_array.c" />
+      <File name="./util/omc_error.c" />
+      <File name="./util/omc_file.c" />
+      <File name="./util/division.c" />
+      <File name="./util/generic_array.c" />
+      <File name="./util/index_spec.c" />
+      <File name="./util/integer_array.c" />
+      <File name="./util/list.c" />
+      <File name="./util/modelica_string.c" />
+      <File name="./util/real_array.c" />
+      <File name="./util/ringbuffer.c" />
+      <File name="./util/string_array.c" />
+      <File name="./util/utility.c" />
+      <File name="./util/varinfo.c" />
+      <File name="./util/ModelicaUtilities.c" />
+      <File name="./util/omc_msvc.c" />
+      <File name="./util/parallel_helper.c" />
+      <File name="./util/simulation_options.c" />
+      <File name="./util/rational.c" />
+      <File name="./util/modelica_string_lit.c" />
+      <File name="./util/omc_init.c" />
+      <File name="./util/omc_mmap.c" />
+      <File name="./util/jacobian_util.c" />
+      <File name="./math-support/pivot.c" />
+      <File name="./simulation/simulation_info_json.c" />
+      <File name="./simulation/options.c" />
+      <File name="./simulation/simulation_omc_assert.c" />
+      <File name="./simulation/omc_simulation_util.c" />
+      <File name="./simulation/solver/delay.c" />
+      <File name="./simulation/solver/fmi_events.c" />
+      <File name="./simulation/solver/omc_math.c" />
+      <File name="./simulation/solver/model_help.c" />
+      <File name="./simulation/solver/stateset.c" />
+      <File name="./simulation/solver/synchronous.c" />
+      <File name="./simulation/solver/initialization/initialization.c" />
+      <File name="./meta/meta_modelica_catch.c" />
+    </SourceFiles>
   </ModelExchange>
   <CoSimulation
     modelIdentifier="Modelica_Blocks_Math_Gain"
@@ -22,7 +88,74 @@
     canNotUseMemoryManagementFunctions="false"
     canGetAndSetFMUstate="false"
     canSerializeFMUstate="false"
-     />
+    >
+    <SourceFiles>
+      <File name="Modelica_Blocks_Math_Gain.c" />
+      <File name="Modelica_Blocks_Math_Gain_functions.c" />
+      <File name="Modelica_Blocks_Math_Gain_records.c" />
+      <File name="Modelica_Blocks_Math_Gain_01exo.c" />
+      <File name="Modelica_Blocks_Math_Gain_02nls.c" />
+      <File name="Modelica_Blocks_Math_Gain_03lsy.c" />
+      <File name="Modelica_Blocks_Math_Gain_04set.c" />
+      <File name="Modelica_Blocks_Math_Gain_05evt.c" />
+      <File name="Modelica_Blocks_Math_Gain_06inz.c" />
+      <File name="Modelica_Blocks_Math_Gain_07dly.c" />
+      <File name="Modelica_Blocks_Math_Gain_08bnd.c" />
+      <File name="Modelica_Blocks_Math_Gain_09alg.c" />
+      <File name="Modelica_Blocks_Math_Gain_10asr.c" />
+      <File name="Modelica_Blocks_Math_Gain_11mix.c" />
+      <File name="Modelica_Blocks_Math_Gain_12jac.c" />
+      <File name="Modelica_Blocks_Math_Gain_13opt.c" />
+      <File name="Modelica_Blocks_Math_Gain_14lnz.c" />
+      <File name="Modelica_Blocks_Math_Gain_15syn.c" />
+      <File name="Modelica_Blocks_Math_Gain_16dae.c" />
+      <File name="Modelica_Blocks_Math_Gain_17inl.c" />
+      <File name="Modelica_Blocks_Math_Gain_init_fmu.c" />
+      <File name="Modelica_Blocks_Math_Gain_FMU.c" />
+      <File name="./util/read_matlab4.c" />
+      <File name="./util/read_csv.c" />
+      <File name="./util/libcsv.c" />
+      <File name="gc/memory_pool.c" />
+      <File name="gc/omc_gc.c" />
+      <File name="./util/base_array.c" />
+      <File name="./util/boolean_array.c" />
+      <File name="./util/omc_error.c" />
+      <File name="./util/omc_file.c" />
+      <File name="./util/division.c" />
+      <File name="./util/generic_array.c" />
+      <File name="./util/index_spec.c" />
+      <File name="./util/integer_array.c" />
+      <File name="./util/list.c" />
+      <File name="./util/modelica_string.c" />
+      <File name="./util/real_array.c" />
+      <File name="./util/ringbuffer.c" />
+      <File name="./util/string_array.c" />
+      <File name="./util/utility.c" />
+      <File name="./util/varinfo.c" />
+      <File name="./util/ModelicaUtilities.c" />
+      <File name="./util/omc_msvc.c" />
+      <File name="./util/parallel_helper.c" />
+      <File name="./util/simulation_options.c" />
+      <File name="./util/rational.c" />
+      <File name="./util/modelica_string_lit.c" />
+      <File name="./util/omc_init.c" />
+      <File name="./util/omc_mmap.c" />
+      <File name="./util/jacobian_util.c" />
+      <File name="./math-support/pivot.c" />
+      <File name="./simulation/simulation_info_json.c" />
+      <File name="./simulation/options.c" />
+      <File name="./simulation/simulation_omc_assert.c" />
+      <File name="./simulation/omc_simulation_util.c" />
+      <File name="./simulation/solver/delay.c" />
+      <File name="./simulation/solver/fmi_events.c" />
+      <File name="./simulation/solver/omc_math.c" />
+      <File name="./simulation/solver/model_help.c" />
+      <File name="./simulation/solver/stateset.c" />
+      <File name="./simulation/solver/synchronous.c" />
+      <File name="./simulation/solver/initialization/initialization.c" />
+      <File name="./meta/meta_modelica_catch.c" />
+    </SourceFiles>
+  </CoSimulation>
   <LogCategories>
     <Category name="logEvents" />
     <Category name="logSingularLinearSystems" />
@@ -43,7 +176,6 @@
     name="u"
     valueReference="0"
     description="Input signal connector"
-    variability="continuous"
     causality="input"
     >
     <Real start="0.0"/>
@@ -53,9 +185,8 @@
     name="y"
     valueReference="1"
     description="Output signal connector"
-    variability="continuous"
     causality="output"
-    initial="calculated">
+    >
     <Real/>
   </ScalarVariable>
   <!-- Index of variable = "3" -->
@@ -65,23 +196,13 @@
     description="Gain value multiplied with input signal"
     variability="fixed"
     causality="parameter"
-    initial="exact">
-    <Real start="1.0" unit="1"/>
-  </ScalarVariable>
-  <!-- Index of variable = "4" -->
-  <ScalarVariable
-    name="_D_outputAlias_y"
-    valueReference="1"
-    description="Output signal connector"
-    variability="continuous"
-    causality="local"
     >
-    <Real/>
+    <Real start="1.0" unit="1"/>
   </ScalarVariable>
   </ModelVariables>
   <ModelStructure>
     <Outputs>
-      <Unknown index="2" dependencies="1" dependenciesKind="dependent" />
+      <Unknown index="2" dependencies="" dependenciesKind="" />
     </Outputs>
   </ModelStructure>
 </fmiModelDescription>

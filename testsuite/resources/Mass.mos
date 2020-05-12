@@ -21,4 +21,4 @@ end Mass;
 "); getErrorString();
 
 buildModelFMU(Mass, version="2.0", fmuType="me_cs", fileNamePrefix="tlm.mass", platforms={"x86_64-linux-gnu"}); getErrorString();
-system("zip -qd tlm.mass.fmu sources/*");
+system("zip -qd tlm.mass.fmu sources/* && unzip -o tlm.mass.fmu -d tlm.mass/");
