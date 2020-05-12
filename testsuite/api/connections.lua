@@ -101,6 +101,7 @@ printStatus(status, 0)
 -- 			</oms:SimulationInformation>
 -- 		</ssd:Annotation>
 -- 	</ssd:Annotations>
+-- 	<ssd:Connectors />
 -- 	<ssd:Elements>
 -- 		<ssd:System name="sc2">
 -- 			<ssd:Annotations>
@@ -110,7 +111,6 @@ printStatus(status, 0)
 -- 					</oms:SimulationInformation>
 -- 				</ssd:Annotation>
 -- 			</ssd:Annotations>
--- 			<ssd:Elements />
 -- 			<ssd:Connectors>
 -- 				<ssd:Connector name="y1" kind="output">
 -- 					<ssc:Real />
@@ -122,6 +122,7 @@ printStatus(status, 0)
 -- 					<ssc:Real />
 -- 				</ssd:Connector>
 -- 			</ssd:Connectors>
+-- 			<ssd:Elements />
 -- 			<ssd:Connections />
 -- 		</ssd:System>
 -- 		<ssd:System name="sc1">
@@ -132,7 +133,6 @@ printStatus(status, 0)
 -- 					</oms:SimulationInformation>
 -- 				</ssd:Annotation>
 -- 			</ssd:Annotations>
--- 			<ssd:Elements />
 -- 			<ssd:Connectors>
 -- 				<ssd:Connector name="u1" kind="input">
 -- 					<ssc:Real />
@@ -144,10 +144,10 @@ printStatus(status, 0)
 -- 					<ssc:Real />
 -- 				</ssd:Connector>
 -- 			</ssd:Connectors>
+-- 			<ssd:Elements />
 -- 			<ssd:Connections />
 -- 		</ssd:System>
 -- 	</ssd:Elements>
--- 	<ssd:Connectors />
 -- 	<ssd:Connections>
 -- 		<ssd:Connection startElement="sc2" startConnector="y1" endElement="sc1" endConnector="u1" />
 -- 	</ssd:Connections>
@@ -163,6 +163,7 @@ printStatus(status, 0)
 -- 			</oms:SimulationInformation>
 -- 		</ssd:Annotation>
 -- 	</ssd:Annotations>
+-- 	<ssd:Connectors />
 -- 	<ssd:Elements>
 -- 		<ssd:System name="sc2">
 -- 			<ssd:Annotations>
@@ -172,7 +173,6 @@ printStatus(status, 0)
 -- 					</oms:SimulationInformation>
 -- 				</ssd:Annotation>
 -- 			</ssd:Annotations>
--- 			<ssd:Elements />
 -- 			<ssd:Connectors>
 -- 				<ssd:Connector name="y1" kind="output">
 -- 					<ssc:Real />
@@ -184,6 +184,7 @@ printStatus(status, 0)
 -- 					<ssc:Real />
 -- 				</ssd:Connector>
 -- 			</ssd:Connectors>
+-- 			<ssd:Elements />
 -- 			<ssd:Connections />
 -- 		</ssd:System>
 -- 		<ssd:System name="sc1">
@@ -194,7 +195,6 @@ printStatus(status, 0)
 -- 					</oms:SimulationInformation>
 -- 				</ssd:Annotation>
 -- 			</ssd:Annotations>
--- 			<ssd:Elements />
 -- 			<ssd:Connectors>
 -- 				<ssd:Connector name="u1" kind="input">
 -- 					<ssc:Real />
@@ -206,10 +206,10 @@ printStatus(status, 0)
 -- 					<ssc:Real />
 -- 				</ssd:Connector>
 -- 			</ssd:Connectors>
+-- 			<ssd:Elements />
 -- 			<ssd:Connections />
 -- 		</ssd:System>
 -- 	</ssd:Elements>
--- 	<ssd:Connectors />
 -- 	<ssd:Connections />
 -- </ssd:System>
 --

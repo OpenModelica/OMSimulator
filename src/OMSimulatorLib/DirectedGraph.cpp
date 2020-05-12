@@ -260,11 +260,10 @@ void oms::DirectedGraph::calculateSortedConnections()
     SCC.clear();
     for (int j = 0; j < components[i].size(); ++j)
     {
-      // flip causality checks for connectors (top-level crefs)
-      bool outA = nodes[edges[components[i][j]].first].getName().isValidIdent() ? nodes[edges[components[i][j]].first].isInput() : nodes[edges[components[i][j]].first].isOutput();
-      bool inB = nodes[edges[components[i][j]].second].getName().isValidIdent() ? nodes[edges[components[i][j]].second].isOutput() : nodes[edges[components[i][j]].second].isInput();
+      Connector conA = nodes[edges[components[i][j]].first];
+      Connector conB = nodes[edges[components[i][j]].second];
 
-      if (outA && inB)
+      if (isValidConnection(conA.getName(), conB.getName(), conA, conB))
         SCC.push_back(std::pair<int, int>(edges[components[i][j]]));
     }
 
@@ -276,4 +275,41 @@ void oms::DirectedGraph::calculateSortedConnections()
   }
 
   sortedConnectionsAreValid = true;
+}
+
+/*
+ * Function which implements the allowed connections, according to SSP-1.0 connection table
+ */
+bool oms::DirectedGraph::isValidConnection(const ComRef& crefA, const ComRef& crefB, const Connector& conA, const Connector& conB) const
+{
+  bool connectorA, connectorB;
+
+  // Check connector A
+  if (crefA.isValidIdent()) // this is a system
+  {
+    // Connector A of a systems must be input or parameter
+    connectorA = conA.isInput() || conA.isParameter();
+  }
+  else // this is an element
+  {
+    // Connector A of an element must be output, calculated parameter, or inout
+    // TODO: check for inout, neither FMI-1.0 nor FMI-2.0 do support inout
+    connectorA = conA.isOutput() || conA.isCalculatedParameter();
+  }
+
+  // Check connector B
+  if (crefB.isValidIdent()) // this is a system
+  {
+    // Connector B of a systems must be output or calculated parameter
+    connectorB = conB.isOutput() || conB.isCalculatedParameter();
+  }
+  else // this is an element
+  {
+    // Connector A of an element must be input, parameter, or inout
+    // TODO: check for inout, neither FMI-1.0 nor FMI-2.0 do support inout
+    connectorB = conB.isParameter() || conB.isInput();
+  }
+
+  // both connectors must be valid in order to make the connection valid
+  return connectorA && connectorB;
 }

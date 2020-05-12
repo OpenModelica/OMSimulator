@@ -54,7 +54,7 @@ oms_setStopTime("PI_Controller", 4.0)
 oms_setFixedStepSize("PI_Controller.co_sim", 1e-3)
 oms_setResultFile("PI_Controller", "PI_Controller.mat", 100)
 
-oms_exportDependencyGraphs("PI_Controller.co_sim", "PI_Controller_init.dot", "PI_Controller_sim.dot")
+--oms_exportDependencyGraphs("PI_Controller.co_sim", "PI_Controller_init.dot", "PI_Controller_sim.dot")
 --os.execute("gvpr -c \"N[$.degree==0]{delete(root, $)}\" PI_Controller_init.dot | dot -Tpdf -o PI_Controller_init.pdf")
 --os.execute("gvpr -c \"N[$.degree==0]{delete(root, $)}\" PI_Controller_sim.dot | dot -Tpdf -o PI_Controller_sim.pdf")
 

@@ -333,6 +333,10 @@ oms_status_enu_t oms::System::listUnconnectedConnectors(char** contents) const
           unconnectedInputs.push_back(getFullCref() + cref);
         if (connectors[i]->isOutput())
           unconnectedOutputs.push_back(getFullCref() + cref);
+        if (connectors[i]->isParameter())
+          unconnectedOutputs.push_back(getFullCref() + cref);
+        if (connectors[i]->isCalculatedParameter())
+          unconnectedOutputs.push_back(getFullCref() + cref);
       }
     }
   }
@@ -347,6 +351,10 @@ oms_status_enu_t oms::System::listUnconnectedConnectors(char** contents) const
         if (connector->isInput())
           unconnectedInputs.push_back(getFullCref() + cref);
         if (connector->isOutput())
+          unconnectedOutputs.push_back(getFullCref() + cref);
+        if (connector->isParameter())
+          unconnectedOutputs.push_back(getFullCref() + cref);
+        if (connector->isCalculatedParameter())
           unconnectedOutputs.push_back(getFullCref() + cref);
       }
     }
@@ -389,6 +397,15 @@ oms_status_enu_t oms::System::exportToSSD(pugi::xml_node& node) const
   if (oms_status_ok != element.getGeometry()->exportToSSD(node))
     return logError("export of system ElementGeometry failed");
 
+  // export top level system connectors
+  pugi::xml_node connectors_node = node.append_child(oms::ssp::Draft20180219::ssd::connectors);
+  for(const auto& connector : connectors)
+    if (connector)
+      connector->exportToSSD(connectors_node);
+
+  // export top level parameter bindings
+  startValues.exportToSSD(node);
+
   pugi::xml_node elements_node = node.append_child(oms::ssp::Draft20180219::ssd::elements);
 
   for (const auto& subsystem : subsystems)
@@ -404,11 +421,6 @@ oms_status_enu_t oms::System::exportToSSD(pugi::xml_node& node) const
     if (oms_status_ok != component.second->exportToSSD(component_node))
       return logError("export of component failed");
   }
-
-  pugi::xml_node connectors_node = node.append_child(oms::ssp::Draft20180219::ssd::connectors);
-  for(const auto& connector : connectors)
-    if (connector)
-      connector->exportToSSD(connectors_node);
 
   std::vector<oms::Connection*> busconnections;
   pugi::xml_node connections_node = node.append_child(oms::ssp::Draft20180219::ssd::connections);
@@ -461,6 +473,12 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
       oms::ssd::ElementGeometry geometry;
       geometry.importFromSSD(*it);
       setGeometry(geometry);
+    }
+    else if(name == oms::ssp::Version1_0::ssd::parameter_bindings)
+    {
+      // set parameter bindings associated with the system
+      if (oms_status_ok !=  startValues.importFromSSD(*it, sspVersion))
+        return logError("Failed to import " + std::string(oms::ssp::Version1_0::ssd::parameter_bindings));
     }
     else if (name == oms::ssp::Draft20180219::ssd::connections)
     {
@@ -830,6 +848,11 @@ oms::Connector* oms::System::getConnector(const oms::ComRef& cref)
   return NULL;
 }
 
+std::string oms::System::getConnectorOwner(const oms::ComRef& cref) const
+{
+  return cref.isValidIdent() ? "System" : "Element";
+}
+
 oms::BusConnector* oms::System::getBusConnector(const oms::ComRef& cref)
 {
   oms::ComRef tail(cref);
@@ -965,29 +988,21 @@ oms_status_enu_t oms::System::addConnection(const oms::ComRef& crefA, const oms:
       return logError("Connector is already connected: " + std::string(crefB));
   }
 
-  // system inputs/outputs
-  if (crefA.isValidIdent() && crefB.isValidIdent())
-    return logError("Connections between inputs and outputs of the same system are forbidden: " + std::string(crefA) + " -> " + std::string(crefB));
-  else if (crefA.isValidIdent() || crefB.isValidIdent())
+  // check if the connections are valid, according to the SSP-1.0 allowed connection table
+  if (initialUnknownsGraph.isValidConnection(crefA, crefB, *conA, *conB))
   {
-    // flipped causality check
-    if (!((conA->getCausality() == oms_causality_output && conB->getCausality() == oms_causality_output) ||
-      (conB->getCausality() == oms_causality_input && conA->getCausality() == oms_causality_input)))
-      return logError("Causality mismatch in connection: " + std::string(crefA) + " -> " + std::string(crefB));
-  }
-  else
-  {
-    if (!((conA->getCausality() == oms_causality_output && conB->getCausality() == oms_causality_input) ||
-      (conB->getCausality() == oms_causality_output && conA->getCausality() == oms_causality_input)))
-      return logError("Causality mismatch in connection: " + std::string(crefA) + " -> " + std::string(crefB));
-  }
-  if ((crefA.isValidIdent() && conA->getCausality() == oms_causality_input) ||
-      (!crefA.isValidIdent() && conA->getCausality() == oms_causality_output))
     connections.back() = new oms::Connection(crefA, crefB);
-  else
+    connections.push_back(NULL);
+  }
+  // flipped causality check
+  else if (initialUnknownsGraph.isValidConnection(crefB, crefA, *conB, *conA))
+  {
     connections.back() = new oms::Connection(crefB, crefA);
+    connections.push_back(NULL);
+  }
+  else
+    return logError("Causality mismatch in connection: " + std::string(crefA) + " -> " + std::string(crefB));
 
-  connections.push_back(NULL);
   return oms_status_ok;
 }
 
@@ -1560,11 +1575,8 @@ oms_status_enu_t oms::System::updateDependencyGraphs()
     Connector* varB = getConnector(connection->getSignalB());
     if (varA && varB)
     {
-      // flip causality checks for connectors (top-level crefs)
-      bool outA = connection->getSignalA().isValidIdent() ? varA->isInput() : varA->isOutput();
-      bool inB = connection->getSignalB().isValidIdent() ? varB->isOutput() : varB->isInput();
-
-      if (outA && inB)
+      bool validConnection = initialUnknownsGraph.isValidConnection(connection->getSignalA(), connection->getSignalB(), *varA, *varB);
+      if (validConnection)
       {
         initialUnknownsGraph.addEdge(Connector(varA->getCausality(), varA->getType(), connection->getSignalA()), Connector(varB->getCausality(), varB->getType(), connection->getSignalB()));
         outputsGraph.addEdge(Connector(varA->getCausality(), varA->getType(), connection->getSignalA()), Connector(varB->getCausality(), varB->getType(), connection->getSignalB()));
@@ -1599,8 +1611,8 @@ oms_status_enu_t oms::System::getBoolean(const ComRef& cref, bool& value)
   {
     if (connector && connector->getName() == cref && connector->isTypeBoolean())
     {
-      auto booleanValue = booleanValues.find(cref);
-      if (booleanValue != booleanValues.end())
+      auto booleanValue = startValues.booleanStartValues.find(cref);
+      if (booleanValue != startValues.booleanStartValues.end())
         value = booleanValue->second;
       else
         value = 0; // default value
@@ -1631,8 +1643,8 @@ oms_status_enu_t oms::System::getInteger(const ComRef& cref, int& value)
   {
     if (connector && connector->getName() == cref && connector->isTypeInteger())
     {
-      auto integerValue = integerValues.find(cref);
-      if (integerValue != integerValues.end())
+      auto integerValue = startValues.integerStartValues.find(cref);
+      if (integerValue != startValues.integerStartValues.end())
         value = integerValue->second;
       else
         value = 0; // default value
@@ -1663,8 +1675,8 @@ oms_status_enu_t oms::System::getReal(const ComRef& cref, double& value)
   {
     if (connector && connector->getName() == cref && connector->isTypeReal())
     {
-      auto realValue = realValues.find(cref);
-      if (realValue != realValues.end())
+      auto realValue = startValues.realStartValues.find(cref);
+      if (realValue != startValues.realStartValues.end())
         value = realValue->second;
       else
         value = 0.0; // default value
@@ -1715,7 +1727,7 @@ oms_status_enu_t oms::System::setBoolean(const ComRef& cref, bool value)
   for (auto& connector : connectors)
     if (connector && connector->getName() == cref && connector->isTypeBoolean())
     {
-      booleanValues[cref] = value;
+      startValues.setBoolean(cref, value);
       return oms_status_ok;
     }
 
@@ -1741,7 +1753,7 @@ oms_status_enu_t oms::System::setInteger(const ComRef& cref, int value)
   for (auto& connector : connectors)
     if (connector && connector->getName() == cref && connector->isTypeInteger())
     {
-      integerValues[cref] = value;
+      startValues.setInteger(cref, value);
       return oms_status_ok;
     }
 
@@ -1767,7 +1779,7 @@ oms_status_enu_t oms::System::setReal(const ComRef& cref, double value)
   for (auto& connector : connectors)
     if (connector && connector->getName() == cref && connector->isTypeReal())
     {
-      realValues[cref] = value;
+      startValues.setReal(cref, value);
       return oms_status_ok;
     }
 

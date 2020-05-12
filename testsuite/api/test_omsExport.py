@@ -56,13 +56,13 @@ printStatus(status, 0)
 ## 				</oms:SimulationInformation>
 ## 			</ssd:Annotation>
 ## 		</ssd:Annotations>
-## 		<ssd:Elements />
 ## 		<ssd:Connectors />
+## 		<ssd:Elements />
 ## 		<ssd:Connections />
 ## 	</ssd:System>
 ## 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000" />
 ## </ssd:SystemStructureDescription>
-##
+## 
 ## 0
 ## status:  [correct] ok
 ## status:  [correct] ok

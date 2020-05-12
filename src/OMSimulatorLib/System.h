@@ -39,6 +39,7 @@
 #include "DirectedGraph.h"
 #include "Element.h"
 #include "ExternalModel.h"
+#include "Parameters.h"
 #include "ResultWriter.h"
 #include "ssd/ConnectorGeometry.h"
 #if !defined(NO_TLM)
@@ -86,6 +87,7 @@ namespace oms
     void setGeometry(const ssd::ElementGeometry& geometry) {element.setGeometry(&geometry);}
     oms_status_enu_t addConnector(const ComRef& cref, oms_causality_enu_t causality, oms_signal_type_enu_t type);
     Connector* getConnector(const ComRef& cref);
+    std::string getConnectorOwner(const ComRef& cref) const;
     Connector** getConnectors() {return &connectors[0];}
     BusConnector* getBusConnector(const ComRef& cref);
     oms_status_enu_t addTLMConnection(const ComRef& crefA, const ComRef& crefB, double delay, double alpha, double linearimpedance, double angularimpedance);
@@ -195,9 +197,7 @@ namespace oms
     std::map<ComRef, System*> subsystems;
     std::map<ComRef, Component*> components;
 
-    std::map<ComRef, double> realValues;            ///< values of the real connectors
-    std::map<ComRef, int> integerValues;            ///< values of the integer connectors
-    std::map<ComRef, bool> booleanValues;           ///< values of the boolean connectors
+    Parameters startValues; ///< system level connectors, parameters and their start values defined before instantiating the FMU
 
     Element element;
     std::vector<Connector*> connectors;             ///< last element is always NULL
