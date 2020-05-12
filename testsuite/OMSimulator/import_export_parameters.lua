@@ -30,7 +30,7 @@ oms_addSubModel("import_export_parameters.co_sim.P", "../resources/Modelica.Bloc
 oms_addSubModel("import_export_parameters.co_sim.addI", "../resources/Modelica.Blocks.Math.Add3.fmu")
 
 -- TODO check all allowed connections
--- System.Parameter to Element.Parameter 
+-- System.Parameter to Element.Parameter
 oms_addConnection("import_export_parameters.co_sim.T_cref", "import_export_parameters.co_sim.addI.k2")
 oms_addConnection("import_export_parameters.co_sim.k_cref", "import_export_parameters.co_sim.addP.k1")
 
@@ -57,7 +57,6 @@ oms_setResultFile("import_export_parameters", "import_export_parameters.mat", 10
 -- oms_exportDependencyGraphs("import_export_parameters.co_sim", "import_export_parameters_init.dot", "import_export_parameters_sim.dot")
 -- os.execute("gvpr -c \"N[$.degree==0]{delete(root, $)}\" import_export_parameters_init.dot | dot -Tpdf -o import_export_parameters_init.pdf")
 -- os.execute("gvpr -c \"N[$.degree==0]{delete(root, $)}\" import_export_parameters_sim.dot | dot -Tpdf -o import_export_parameters_sim.pdf")
-
 
 src, status = oms_list("import_export_parameters")
 print(src)
@@ -114,10 +113,8 @@ print("info:      import_export_parameters.co_sim.Output_cref : " .. oms_getReal
 oms_terminate("import_export_parameters")
 oms_delete("import_export_parameters")
 
-
-
 -- Result:
--- error:   [addConnection] Causality mismatch in Element -> Element connection: foo.F_cref -> addP.k1
+-- error:   [addConnection] Causality mismatch in connection: foo.F_cref -> addP.k1
 -- <?xml version="1.0"?>
 -- <ssd:SystemStructureDescription name="import_export_parameters" version="1.0">
 -- 	<ssd:System name="co_sim">
@@ -288,7 +285,7 @@ oms_delete("import_export_parameters")
 -- 	</ssd:System>
 -- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="4.000000" />
 -- </ssd:SystemStructureDescription>
--- 
+--
 -- info:    model doesn't contain any continuous state
 -- info:      Parameter settings
 -- info:      import_export_parameters.co_sim.addP.k1     : 10.0

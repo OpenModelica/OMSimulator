@@ -86,7 +86,7 @@ printStatus(status, 0)
 ## status:  [correct] ok
 ## status:  [correct] ok
 ## status:  [correct] ok
-## error:   [addConnection] Causality mismatch in Element -> Element connection: sc1.y -> sc2.y3
+## error:   [addConnection] Causality mismatch in connection: sc1.y -> sc2.y3
 ## status:  [correct] error
 ## error:   [addConnection] Type mismatch in connection: sc1.u2 -> sc2.y2
 ## status:  [correct] error
@@ -152,7 +152,7 @@ printStatus(status, 0)
 ## 		<ssd:Connection startElement="sc2" startConnector="y1" endElement="sc1" endConnector="u1" />
 ## 	</ssd:Connections>
 ## </ssd:System>
-## 
+##
 ## status:  [correct] ok
 ## <?xml version="1.0"?>
 ## <ssd:System name="wc">
@@ -212,7 +212,7 @@ printStatus(status, 0)
 ## 	</ssd:Elements>
 ## 	<ssd:Connections />
 ## </ssd:System>
-## 
+##
 ## status:  [correct] ok
 ## info:    0 warnings
 ## info:    3 errors
