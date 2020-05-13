@@ -65,8 +65,6 @@ namespace oms
     const std::vector<Connector>& getNodes() const {return nodes;}
     const std::vector< std::pair<int, int> >& getEdges() const {return edges;}
 
-    bool isValidConnection(const ComRef& crefA, const ComRef& crefB, const Connector& conA, const Connector& conB) const;
-
   private:
     std::deque< std::vector<int> > getSCCs();
     void calculateSortedConnections();
