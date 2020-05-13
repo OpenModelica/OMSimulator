@@ -30,13 +30,12 @@
  */
 
 #include "Connection.h"
-#include "ssd/ConnectionGeometry.h"
 #include "Logging.h"
+#include "ssd/ConnectionGeometry.h"
 #include "ssd/Tags.h"
 
 #include <cstring>
 #include <iostream>
-
 
 oms::Connection::Connection(const oms::ComRef& conA, const oms::ComRef& conB, oms_connection_type_enu_t type)
 {
@@ -187,4 +186,38 @@ bool oms::Connection::isEqual(const oms::Connection& connection) const
 bool oms::Connection::containsSignal(const oms::ComRef& signal)
 {
   return signal.isRootOf(oms::ComRef(this->conA)) || signal.isRootOf(oms::ComRef(this->conB));
+}
+
+bool oms::Connection::isValid(const ComRef& crefA, const ComRef& crefB, const Connector& conA, const Connector& conB)
+{
+  bool connectorA, connectorB;
+
+  // Check connector A
+  if (crefA.isValidIdent()) // this is a system
+  {
+    // Connector A of a systems must be input or parameter
+    connectorA = conA.isInput() || conA.isParameter();
+  }
+  else // this is an element
+  {
+    // Connector A of an element must be output, calculated parameter, or inout
+    // TODO: check for inout, neither FMI-1.0 nor FMI-2.0 do support inout
+    connectorA = conA.isOutput() || conA.isCalculatedParameter();
+  }
+
+  // Check connector B
+  if (crefB.isValidIdent()) // this is a system
+  {
+    // Connector B of a systems must be output or calculated parameter
+    connectorB = conB.isOutput() || conB.isCalculatedParameter();
+  }
+  else // this is an element
+  {
+    // Connector A of an element must be input, parameter, or inout
+    // TODO: check for inout, neither FMI-1.0 nor FMI-2.0 do support inout
+    connectorB = conB.isParameter() || conB.isInput();
+  }
+
+  // both connectors must be valid in order to make the connection valid
+  return connectorA && connectorB;
 }

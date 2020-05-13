@@ -33,8 +33,9 @@
 #define _OMS_CONNECTION_H_
 
 #include "ComRef.h"
-#include "Types.h"
+#include "Connector.h"
 #include "ssd/ConnectionGeometry.h"
+#include "Types.h"
 
 #include <string>
 
@@ -69,6 +70,11 @@ namespace oms
     bool isEqual(const oms::Connection& connection) const;
     bool isEqual(const oms::ComRef& signalA, const oms::ComRef& signalB) const;
     bool containsSignal(const oms::ComRef& signal);
+
+    /**
+    * \brief Checks a connection based on SSP-1.0 connection table
+    */
+    static bool isValid(const ComRef& crefA, const ComRef& crefB, const Connector& conA, const Connector& conB);
 
   private:
     friend bool operator==(const Connection& lhs, const Connection& rhs);
