@@ -2,10 +2,10 @@
 <fmiModelDescription
   fmiVersion="2.0"
   modelName="DualMassOscillator.System2"
-  guid="{e3c0f6ce-87ff-4655-8650-962ca35a5895}"
+  guid="{09406b3e-7ffc-4316-81f2-9a8d74d1a9a1}"
   description=""
   generationTool="OpenModelica Compiler OMCompiler v1.16.0-dev.320+gd5256b6de0"
-  generationDateAndTime="2020-05-12T15:15:47Z"
+  generationDateAndTime="2020-05-15T10:44:19Z"
   variableNamingConvention="structured"
   numberOfEventIndicators="0">
   <ModelExchange
@@ -184,7 +184,7 @@
   <ModelVariables>
   <!-- Index of variable = "1" -->
   <ScalarVariable
-    name="springDamper_coupling.s_rel"
+    name="sd3.s_rel"
     valueReference="0"
     description="Relative distance (= flange_b.s - flange_a.s)"
     >
@@ -192,15 +192,15 @@
   </ScalarVariable>
   <!-- Index of variable = "2" -->
   <ScalarVariable
-    name="springDamper_coupling.v_rel"
+    name="sd3.v_rel"
     valueReference="1"
     description="Relative velocity (= der(s_rel))"
-    >
-    <Real unit="m/s"/>
+    initial="exact">
+    <Real start="0.0" unit="m/s"/>
   </ScalarVariable>
   <!-- Index of variable = "3" -->
   <ScalarVariable
-    name="der(springDamper_coupling.s_rel)"
+    name="der(sd3.s_rel)"
     valueReference="2"
     description="der(Relative distance (= flange_b.s - flange_a.s))"
     >
@@ -208,7 +208,7 @@
   </ScalarVariable>
   <!-- Index of variable = "4" -->
   <ScalarVariable
-    name="der(springDamper_coupling.v_rel)"
+    name="der(sd3.v_rel)"
     valueReference="3"
     description="der(Relative velocity (= der(s_rel)))"
     >
@@ -280,7 +280,7 @@
   </ScalarVariable>
   <!-- Index of variable = "13" -->
   <ScalarVariable
-    name="der(springDamper2.s_rel)"
+    name="der(sd2.s_rel)"
     valueReference="12"
     description="Relative distance (= flange_b.s - flange_a.s)"
     >
@@ -288,7 +288,7 @@
   </ScalarVariable>
   <!-- Index of variable = "14" -->
   <ScalarVariable
-    name="der(springDamper2.v_rel)"
+    name="der(sd2.v_rel)"
     valueReference="13"
     description="Relative velocity (= der(s_rel))"
     >
@@ -312,11 +312,10 @@
   </ScalarVariable>
   <!-- Index of variable = "17" -->
   <ScalarVariable
-    name="mass2.a"
+    name="a2"
     valueReference="16"
-    description="Absolute acceleration of component"
     >
-    <Real unit="m/s2"/>
+    <Real/>
   </ScalarVariable>
   <!-- Index of variable = "18" -->
   <ScalarVariable
@@ -368,87 +367,87 @@
   </ScalarVariable>
   <!-- Index of variable = "24" -->
   <ScalarVariable
-    name="s1"
+    name="sd2.f_c"
     valueReference="23"
-    causality="input"
+    description="Spring force"
     >
-    <Real start="0.0"/>
+    <Real unit="N"/>
   </ScalarVariable>
   <!-- Index of variable = "25" -->
   <ScalarVariable
-    name="springDamper2.f"
+    name="sd2.f_d"
     valueReference="24"
-    description="Forces between flanges (= flange_b.f)"
+    description="Damping force"
     >
     <Real unit="N"/>
   </ScalarVariable>
   <!-- Index of variable = "26" -->
   <ScalarVariable
-    name="springDamper2.f_c"
+    name="sd2.lossPower"
     valueReference="25"
-    description="Spring force"
-    >
-    <Real unit="N"/>
-  </ScalarVariable>
-  <!-- Index of variable = "27" -->
-  <ScalarVariable
-    name="springDamper2.f_d"
-    valueReference="26"
-    description="Damping force"
-    >
-    <Real unit="N"/>
-  </ScalarVariable>
-  <!-- Index of variable = "28" -->
-  <ScalarVariable
-    name="springDamper2.lossPower"
-    valueReference="27"
     description="Loss power leaving component via heatPort (&gt; 0, if heat is flowing out of component)"
     >
     <Real unit="W"/>
   </ScalarVariable>
-  <!-- Index of variable = "29" -->
+  <!-- Index of variable = "27" -->
   <ScalarVariable
-    name="springDamper2.s_rel"
-    valueReference="28"
+    name="sd2.s_rel"
+    valueReference="26"
     description="Relative distance (= flange_b.s - flange_a.s)"
     >
     <Real unit="m"/>
   </ScalarVariable>
-  <!-- Index of variable = "30" -->
+  <!-- Index of variable = "28" -->
   <ScalarVariable
-    name="springDamper2.v_rel"
-    valueReference="29"
+    name="sd2.v_rel"
+    valueReference="27"
     description="Relative velocity (= der(s_rel))"
     >
     <Real unit="m/s"/>
   </ScalarVariable>
+  <!-- Index of variable = "29" -->
+  <ScalarVariable
+    name="sd3.f"
+    valueReference="28"
+    description="Forces between flanges (= flange_b.f)"
+    >
+    <Real unit="N"/>
+  </ScalarVariable>
+  <!-- Index of variable = "30" -->
+  <ScalarVariable
+    name="sd3.f_c"
+    valueReference="29"
+    description="Spring force"
+    >
+    <Real unit="N"/>
+  </ScalarVariable>
   <!-- Index of variable = "31" -->
   <ScalarVariable
-    name="springDamper_coupling.f_c"
+    name="sd3.f_d"
     valueReference="30"
-    description="Spring force"
+    description="Damping force"
     >
     <Real unit="N"/>
   </ScalarVariable>
   <!-- Index of variable = "32" -->
   <ScalarVariable
-    name="springDamper_coupling.f_d"
+    name="sd3.lossPower"
     valueReference="31"
-    description="Damping force"
-    >
-    <Real unit="N"/>
-  </ScalarVariable>
-  <!-- Index of variable = "33" -->
-  <ScalarVariable
-    name="springDamper_coupling.lossPower"
-    valueReference="32"
     description="Loss power leaving component via heatPort (&gt; 0, if heat is flowing out of component)"
     >
     <Real unit="W"/>
   </ScalarVariable>
-  <!-- Index of variable = "34" -->
+  <!-- Index of variable = "33" -->
   <ScalarVariable
     name="v1"
+    valueReference="32"
+    causality="input"
+    >
+    <Real start="0.0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "34" -->
+  <ScalarVariable
+    name="x1"
     valueReference="33"
     causality="input"
     >
@@ -458,57 +457,61 @@
   <ScalarVariable
     name="c2"
     valueReference="34"
+    description="damping constant"
     variability="fixed"
     causality="parameter"
     >
-    <Real start="100000.0"/>
+    <Real start="0.5"/>
   </ScalarVariable>
   <!-- Index of variable = "36" -->
   <ScalarVariable
-    name="cc"
+    name="c3"
     valueReference="35"
+    description="damping constant"
     variability="fixed"
     causality="parameter"
     >
-    <Real start="1000000.0"/>
+    <Real start="0.3"/>
   </ScalarVariable>
   <!-- Index of variable = "37" -->
   <ScalarVariable
-    name="d2"
-    valueReference="36"
-    variability="fixed"
-    causality="parameter"
-    >
-    <Real start="6.3246"/>
-  </ScalarVariable>
-  <!-- Index of variable = "38" -->
-  <ScalarVariable
-    name="dc"
-    valueReference="37"
-    variability="fixed"
-    causality="parameter"
-    >
-    <Real start="14.1421"/>
-  </ScalarVariable>
-  <!-- Index of variable = "39" -->
-  <ScalarVariable
     name="fixed.flange.s"
-    valueReference="38"
+    valueReference="36"
     description="Absolute position of flange"
     variability="fixed"
     causality="calculatedParameter"
     >
     <Real unit="m"/>
   </ScalarVariable>
-  <!-- Index of variable = "40" -->
+  <!-- Index of variable = "38" -->
   <ScalarVariable
     name="fixed.s0"
-    valueReference="39"
+    valueReference="37"
     description="Fixed offset position of housing"
     variability="fixed"
     causality="parameter"
     >
-    <Real start="3.0" unit="m"/>
+    <Real start="0.0" unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "39" -->
+  <ScalarVariable
+    name="k2"
+    valueReference="38"
+    description="spring constant"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="10.0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "40" -->
+  <ScalarVariable
+    name="k3"
+    valueReference="39"
+    description="spring constant"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="20.0"/>
   </ScalarVariable>
   <!-- Index of variable = "41" -->
   <ScalarVariable
@@ -541,121 +544,112 @@
   </ScalarVariable>
   <!-- Index of variable = "44" -->
   <ScalarVariable
-    name="s2_start"
+    name="sd2.c"
     valueReference="43"
-    variability="fixed"
-    causality="parameter"
-    >
-    <Real start="2.0"/>
-  </ScalarVariable>
-  <!-- Index of variable = "45" -->
-  <ScalarVariable
-    name="springDamper2.c"
-    valueReference="44"
     description="Spring constant"
     variability="fixed"
     causality="calculatedParameter"
     >
     <Real min="0.0" unit="N/m"/>
   </ScalarVariable>
-  <!-- Index of variable = "46" -->
+  <!-- Index of variable = "45" -->
   <ScalarVariable
-    name="springDamper2.d"
-    valueReference="45"
+    name="sd2.d"
+    valueReference="44"
     description="Damping constant"
     variability="fixed"
     causality="calculatedParameter"
     >
     <Real min="0.0" unit="N.s/m"/>
   </ScalarVariable>
+  <!-- Index of variable = "46" -->
+  <ScalarVariable
+    name="sd2.s_nominal"
+    valueReference="45"
+    description="Nominal value of s_rel (used for scaling)"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="0.0001" min="0.0" unit="m"/>
+  </ScalarVariable>
   <!-- Index of variable = "47" -->
   <ScalarVariable
-    name="springDamper2.flange_b.s"
+    name="sd2.s_rel0"
     valueReference="46"
+    description="Unstretched spring length"
+    variability="fixed"
+    causality="parameter"
+    >
+    <Real start="0.0" unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "48" -->
+  <ScalarVariable
+    name="sd3.c"
+    valueReference="47"
+    description="Spring constant"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real min="0.0" unit="N/m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "49" -->
+  <ScalarVariable
+    name="sd3.d"
+    valueReference="48"
+    description="Damping constant"
+    variability="fixed"
+    causality="calculatedParameter"
+    >
+    <Real min="0.0" unit="N.s/m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "50" -->
+  <ScalarVariable
+    name="sd3.flange_b.s"
+    valueReference="49"
     description="Absolute position of flange"
     variability="fixed"
     causality="calculatedParameter"
     >
     <Real unit="m"/>
   </ScalarVariable>
-  <!-- Index of variable = "48" -->
+  <!-- Index of variable = "51" -->
   <ScalarVariable
-    name="springDamper2.s_nominal"
-    valueReference="47"
+    name="sd3.s_nominal"
+    valueReference="50"
     description="Nominal value of s_rel (used for scaling)"
     variability="fixed"
     causality="parameter"
     >
     <Real start="0.0001" min="0.0" unit="m"/>
-  </ScalarVariable>
-  <!-- Index of variable = "49" -->
-  <ScalarVariable
-    name="springDamper2.s_rel0"
-    valueReference="48"
-    description="Unstretched spring length"
-    variability="fixed"
-    causality="parameter"
-    >
-    <Real start="1.0" unit="m"/>
-  </ScalarVariable>
-  <!-- Index of variable = "50" -->
-  <ScalarVariable
-    name="springDamper_coupling.c"
-    valueReference="49"
-    description="Spring constant"
-    variability="fixed"
-    causality="calculatedParameter"
-    >
-    <Real min="0.0" unit="N/m"/>
-  </ScalarVariable>
-  <!-- Index of variable = "51" -->
-  <ScalarVariable
-    name="springDamper_coupling.d"
-    valueReference="50"
-    description="Damping constant"
-    variability="fixed"
-    causality="calculatedParameter"
-    >
-    <Real min="0.0" unit="N.s/m"/>
   </ScalarVariable>
   <!-- Index of variable = "52" -->
   <ScalarVariable
-    name="springDamper_coupling.s_nominal"
+    name="sd3.s_rel0"
     valueReference="51"
-    description="Nominal value of s_rel (used for scaling)"
-    variability="fixed"
-    causality="parameter"
-    >
-    <Real start="0.0001" min="0.0" unit="m"/>
-  </ScalarVariable>
-  <!-- Index of variable = "53" -->
-  <ScalarVariable
-    name="springDamper_coupling.s_rel0"
-    valueReference="52"
     description="Unstretched spring length"
     variability="fixed"
     causality="parameter"
     >
-    <Real start="1.0" unit="m"/>
+    <Real start="0.0" unit="m"/>
   </ScalarVariable>
-  <!-- Index of variable = "54" -->
+  <!-- Index of variable = "53" -->
   <ScalarVariable
-    name="v2_start"
-    valueReference="53"
+    name="x2_start"
+    valueReference="52"
     variability="fixed"
     causality="parameter"
     >
-    <Real start="0.0"/>
+    <Real start="0.5"/>
   </ScalarVariable>
-  <!-- Index of variable = "55" -->
+  <!-- Index of variable = "54" -->
   <ScalarVariable
     name="fixed.flange.f"
-    valueReference="55"
+    valueReference="54"
     description="Cut force directed into flange"
     >
     <Real unit="N"/>
   </ScalarVariable>
-  <!-- Index of variable = "56" -->
+  <!-- Index of variable = "55" -->
   <ScalarVariable
     name="forceSensor.f"
     valueReference="14"
@@ -663,7 +657,7 @@
     >
     <Real unit="N"/>
   </ScalarVariable>
-  <!-- Index of variable = "57" -->
+  <!-- Index of variable = "56" -->
   <ScalarVariable
     name="forceSensor.flange_a.f"
     valueReference="14"
@@ -671,29 +665,37 @@
     >
     <Real unit="N"/>
   </ScalarVariable>
-  <!-- Index of variable = "58" -->
+  <!-- Index of variable = "57" -->
   <ScalarVariable
     name="forceSensor.flange_a.s"
-    valueReference="23"
+    valueReference="33"
     description="Absolute position of flange"
     >
     <Real unit="m"/>
   </ScalarVariable>
-  <!-- Index of variable = "59" -->
+  <!-- Index of variable = "58" -->
   <ScalarVariable
     name="forceSensor.flange_b.f"
-    valueReference="59"
+    valueReference="58"
     description="Cut force directed into flange"
     >
     <Real unit="N"/>
   </ScalarVariable>
-  <!-- Index of variable = "60" -->
+  <!-- Index of variable = "59" -->
   <ScalarVariable
     name="forceSensor.flange_b.s"
-    valueReference="23"
+    valueReference="33"
     description="Absolute position of flange"
     >
     <Real unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "60" -->
+  <ScalarVariable
+    name="mass2.a"
+    valueReference="16"
+    description="Absolute acceleration of component"
+    >
+    <Real unit="m/s2"/>
   </ScalarVariable>
   <!-- Index of variable = "61" -->
   <ScalarVariable
@@ -706,7 +708,7 @@
   <!-- Index of variable = "62" -->
   <ScalarVariable
     name="mass2.flange_b.f"
-    valueReference="24"
+    valueReference="28"
     description="Cut force directed into flange"
     >
     <Real unit="N"/>
@@ -722,7 +724,7 @@
   <!-- Index of variable = "64" -->
   <ScalarVariable
     name="move.flange.s"
-    valueReference="23"
+    valueReference="33"
     description="Absolute position of flange"
     >
     <Real unit="m"/>
@@ -730,7 +732,7 @@
   <!-- Index of variable = "65" -->
   <ScalarVariable
     name="move.u[1]"
-    valueReference="23"
+    valueReference="33"
     description="Position, velocity and acceleration of flange as input signals"
     >
     <Real/>
@@ -738,7 +740,7 @@
   <!-- Index of variable = "66" -->
   <ScalarVariable
     name="move.u[2]"
-    valueReference="33"
+    valueReference="32"
     description="Position, velocity and acceleration of flange as input signals"
     >
     <Real/>
@@ -753,14 +755,15 @@
   </ScalarVariable>
   <!-- Index of variable = "68" -->
   <ScalarVariable
-    name="s2"
-    valueReference="19"
+    name="sd2.f"
+    valueReference="14"
+    description="Forces between flanges (= flange_b.f)"
     >
-    <Real/>
+    <Real unit="N"/>
   </ScalarVariable>
   <!-- Index of variable = "69" -->
   <ScalarVariable
-    name="springDamper2.flange_a.f"
+    name="sd2.flange_a.f"
     valueReference="69"
     description="Cut force directed into flange"
     >
@@ -768,31 +771,31 @@
   </ScalarVariable>
   <!-- Index of variable = "70" -->
   <ScalarVariable
-    name="springDamper2.flange_a.s"
-    valueReference="18"
+    name="sd2.flange_a.s"
+    valueReference="33"
     description="Absolute position of flange"
     >
     <Real unit="m"/>
   </ScalarVariable>
   <!-- Index of variable = "71" -->
   <ScalarVariable
-    name="springDamper2.flange_b.f"
-    valueReference="24"
+    name="sd2.flange_b.f"
+    valueReference="14"
     description="Cut force directed into flange"
     >
     <Real unit="N"/>
   </ScalarVariable>
   <!-- Index of variable = "72" -->
   <ScalarVariable
-    name="springDamper_coupling.f"
-    valueReference="14"
-    description="Forces between flanges (= flange_b.f)"
+    name="sd2.flange_b.s"
+    valueReference="17"
+    description="Absolute position of flange"
     >
-    <Real unit="N"/>
+    <Real unit="m"/>
   </ScalarVariable>
   <!-- Index of variable = "73" -->
   <ScalarVariable
-    name="springDamper_coupling.flange_a.f"
+    name="sd3.flange_a.f"
     valueReference="73"
     description="Cut force directed into flange"
     >
@@ -800,29 +803,35 @@
   </ScalarVariable>
   <!-- Index of variable = "74" -->
   <ScalarVariable
-    name="springDamper_coupling.flange_a.s"
-    valueReference="23"
+    name="sd3.flange_a.s"
+    valueReference="18"
     description="Absolute position of flange"
     >
     <Real unit="m"/>
   </ScalarVariable>
   <!-- Index of variable = "75" -->
   <ScalarVariable
-    name="springDamper_coupling.flange_b.f"
-    valueReference="14"
+    name="sd3.flange_b.f"
+    valueReference="28"
     description="Cut force directed into flange"
     >
     <Real unit="N"/>
   </ScalarVariable>
   <!-- Index of variable = "76" -->
   <ScalarVariable
-    name="springDamper_coupling.flange_b.s"
-    valueReference="17"
-    description="Absolute position of flange"
+    name="v2"
+    valueReference="76"
     >
-    <Real unit="m"/>
+    <Real/>
   </ScalarVariable>
   <!-- Index of variable = "77" -->
+  <ScalarVariable
+    name="x2"
+    valueReference="19"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "78" -->
   <ScalarVariable
     name="mass2.stateSelect"
     valueReference="0"
@@ -832,9 +841,9 @@
     >
     <Enumeration declaredType="StateSelect" start="3"/>
   </ScalarVariable>
-  <!-- Index of variable = "78" -->
+  <!-- Index of variable = "79" -->
   <ScalarVariable
-    name="springDamper2.stateSelect"
+    name="sd2.stateSelect"
     valueReference="1"
     description="Priority to use s_rel and v_rel as states"
     variability="fixed"
@@ -842,9 +851,9 @@
     >
     <Enumeration declaredType="StateSelect"/>
   </ScalarVariable>
-  <!-- Index of variable = "79" -->
+  <!-- Index of variable = "80" -->
   <ScalarVariable
-    name="springDamper_coupling.stateSelect"
+    name="sd3.stateSelect"
     valueReference="2"
     description="Priority to use s_rel and v_rel as states"
     variability="fixed"
@@ -852,7 +861,7 @@
     >
     <Enumeration declaredType="StateSelect"/>
   </ScalarVariable>
-  <!-- Index of variable = "80" -->
+  <!-- Index of variable = "81" -->
   <ScalarVariable
     name="move.useSupport"
     valueReference="0"
@@ -862,9 +871,9 @@
     >
     <Boolean/>
   </ScalarVariable>
-  <!-- Index of variable = "81" -->
+  <!-- Index of variable = "82" -->
   <ScalarVariable
-    name="springDamper2.useHeatPort"
+    name="sd2.useHeatPort"
     valueReference="1"
     description="=true, if heatPort is enabled"
     variability="fixed"
@@ -872,9 +881,9 @@
     >
     <Boolean/>
   </ScalarVariable>
-  <!-- Index of variable = "82" -->
+  <!-- Index of variable = "83" -->
   <ScalarVariable
-    name="springDamper_coupling.useHeatPort"
+    name="sd3.useHeatPort"
     valueReference="2"
     description="=true, if heatPort is enabled"
     variability="fixed"
@@ -885,30 +894,29 @@
   </ModelVariables>
   <ModelStructure>
     <Outputs>
-      <Unknown index="15" dependencies="1 2" dependenciesKind="dependent dependent" />
+      <Unknown index="15" dependencies="1 2 33 34" dependenciesKind="dependent dependent dependent dependent" />
     </Outputs>
     <Derivatives>
       <Unknown index="3" dependencies="2" dependenciesKind="dependent" />
-      <Unknown index="4" dependencies="1 2 16 24 34" dependenciesKind="dependent dependent dependent dependent dependent" />
+      <Unknown index="4" dependencies="1 2 33 34" dependenciesKind="dependent dependent dependent dependent" />
     </Derivatives>
     <InitialUnknowns>
-      <Unknown index="1" dependencies="34 41 54" dependenciesKind="dependent dependent dependent" />
-      <Unknown index="2" dependencies="16 42" dependenciesKind="dependent dependent" />
-      <Unknown index="3" dependencies="16 42" dependenciesKind="dependent dependent" />
-      <Unknown index="4" dependencies="16 23 34 40 41 42 44 52 54" dependenciesKind="dependent dependent dependent dependent dependent dependent dependent dependent dependent" />
-      <Unknown index="15" dependencies="16 34 40 41 42 54" dependenciesKind="dependent dependent dependent dependent dependent dependent" />
-      <Unknown index="39" dependencies="23" dependenciesKind="dependent" />
-      <Unknown index="43" dependencies="77" dependenciesKind="dependent" />
-      <Unknown index="45" dependencies="37" dependenciesKind="dependent" />
-      <Unknown index="46" dependencies="49" dependenciesKind="dependent" />
-      <Unknown index="47" dependencies="23" dependenciesKind="dependent" />
-      <Unknown index="50" dependencies="38" dependenciesKind="dependent" />
-      <Unknown index="51" dependencies="53" dependenciesKind="dependent" />
-      <Unknown index="78" dependencies="" dependenciesKind="" />
+      <Unknown index="1" dependencies="23 41 42" dependenciesKind="dependent dependent dependent" />
+      <Unknown index="3" dependencies="2" dependenciesKind="dependent" />
+      <Unknown index="4" dependencies="2 16 23 33 38 41 42 51" dependenciesKind="dependent dependent dependent dependent dependent dependent dependent dependent" />
+      <Unknown index="15" dependencies="16 33 41 42 51" dependenciesKind="dependent dependent dependent dependent dependent" />
+      <Unknown index="37" dependencies="23" dependenciesKind="dependent" />
+      <Unknown index="43" dependencies="78" dependenciesKind="dependent" />
+      <Unknown index="44" dependencies="35" dependenciesKind="dependent" />
+      <Unknown index="45" dependencies="47" dependenciesKind="dependent" />
+      <Unknown index="48" dependencies="36" dependenciesKind="dependent" />
+      <Unknown index="49" dependencies="52" dependenciesKind="dependent" />
+      <Unknown index="50" dependencies="23" dependenciesKind="dependent" />
       <Unknown index="79" dependencies="" dependenciesKind="" />
       <Unknown index="80" dependencies="" dependenciesKind="" />
       <Unknown index="81" dependencies="" dependenciesKind="" />
       <Unknown index="82" dependencies="" dependenciesKind="" />
+      <Unknown index="83" dependencies="" dependenciesKind="" />
     </InitialUnknowns>
   </ModelStructure>
 </fmiModelDescription>

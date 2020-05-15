@@ -17,27 +17,28 @@ oms_addSubModel("DualMassOscillator.root.system2", "../resources/DualMassOscilla
 
 -- add connections
 oms_addConnection("DualMassOscillator.root.system1.F", "DualMassOscillator.root.system2.F")
-oms_addConnection("DualMassOscillator.root.system1.s1", "DualMassOscillator.root.system2.s1")
+oms_addConnection("DualMassOscillator.root.system1.x1", "DualMassOscillator.root.system2.x1")
 oms_addConnection("DualMassOscillator.root.system1.v1", "DualMassOscillator.root.system2.v1")
 oms_addConnection("DualMassOscillator.root.system1.a1", "DualMassOscillator.root.system2.a1")
 
 -- simulation settings
 oms_setResultFile("DualMassOscillator", "DualMassOscillator.mat", 100)
-oms_setStopTime("DualMassOscillator", 0.1)
-oms_setFixedStepSize("DualMassOscillator.root", 1e-5)
+oms_setStopTime("DualMassOscillator", 10.0)
+oms_setFixedStepSize("DualMassOscillator.root", 1e-3)
 
 oms_instantiate("DualMassOscillator")
-oms_setReal("DualMassOscillator.root.system2.s2_start", 2.5)
+oms_setReal("DualMassOscillator.root.system1.x1_start", 0.0)
+oms_setReal("DualMassOscillator.root.system2.x2_start", 0.5)
 
 oms_initialize("DualMassOscillator")
 print("info:    Initialization")
-print("info:      system1.s1: " .. oms_getReal("DualMassOscillator.root.system1.s1"))
-print("info:      system2.s2: " .. oms_getReal("DualMassOscillator.root.system2.s2"))
+print("info:      system1.x1: " .. oms_getReal("DualMassOscillator.root.system1.x1"))
+print("info:      system2.x2: " .. oms_getReal("DualMassOscillator.root.system2.x2"))
 
 oms_simulate("DualMassOscillator")
 print("info:    Simulation")
-print("info:      system1.s1: " .. oms_getReal("DualMassOscillator.root.system1.s1"))
-print("info:      system2.s2: " .. oms_getReal("DualMassOscillator.root.system2.s2"))
+print("info:      system1.x1: " .. oms_getReal("DualMassOscillator.root.system1.x1"))
+print("info:      system2.x2: " .. oms_getReal("DualMassOscillator.root.system2.x2"))
 
 oms_terminate("DualMassOscillator")
 oms_delete("DualMassOscillator")
@@ -46,12 +47,12 @@ oms_delete("DualMassOscillator")
 -- info:    maximum step size for 'DualMassOscillator.root': 0.100000
 -- info:    Result file: DualMassOscillator.mat (bufferSize=100)
 -- info:    Initialization
--- info:      system1.s1: 1.0
--- info:      system2.s2: 2.5
+-- info:      system1.x1: 0.0
+-- info:      system2.x2: 0.5
 -- info:    Simulation
--- info:      system1.s1: 0.91068548987697
--- info:      system2.s2: 1.956251983577
+-- info:      system1.x1: 0.050988622308801
+-- info:      system2.x2: 0.03162781956834
 -- info:    Final Statistics for 'DualMassOscillator.root':
---          NumSteps = 656 NumRhsEvals  = 911 NumLinSolvSetups = 120
---          NumNonlinSolvIters = 910 NumNonlinSolvConvFails = 0 NumErrTestFails = 57
+--          NumSteps = 262 NumRhsEvals  = 293 NumLinSolvSetups = 25
+--          NumNonlinSolvIters = 292 NumNonlinSolvConvFails = 0 NumErrTestFails = 2
 -- endResult
