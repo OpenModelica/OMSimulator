@@ -135,7 +135,7 @@ namespace oms
       {"--logFile", "-l", "Specifies the logfile (stdout is used if no log file is specified)", re_default, Flags::LogFile, false},
       {"--logLevel", "", "0 default, 1 debug, 2 debug+trace", re_number, Flags::LogLevel, false},
       {"--maxEventIteration", "", "Specifies the max. number of iterations for handling a single event", re_number, Flags::MaxEventIteration, false},
-      {"--mode", "-m", "Forces a certain FMI mode iff the FMU provides cs and me ([cs], me)", re_mode, Flags::Mode, false},
+      {"--mode", "-m", "Forces a certain FMI mode iff the FMU provides cs and me (cs, [me])", re_mode, Flags::Mode, false},
       {"--numProcs", "-n", "Specifies the max. number of processors to use (0=auto, 1=default)", re_number, Flags::NumProcs, false},
       {"--progressBar", "", "Shows a progress bar for the simulation progress in the terminal (true, [false])", re_bool, Flags::ProgressBar, false},
       {"--realTime", "", "Experimental feature for (soft) real-time co-simulation (true, [false])", re_bool, Flags::RealTime, false},
