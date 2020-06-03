@@ -490,10 +490,8 @@ oms_status_enu_t oms::Model::instantiate()
 
   modelState = oms_modelState_enterInstantiation;
   if (oms_status_ok != system->instantiate())
-  {
-    terminate();
     return oms_status_error;
-  }
+
   modelState = oms_modelState_instantiated;
 
   return oms_status_ok;
@@ -632,8 +630,8 @@ oms_status_enu_t oms::Model::terminate()
   if (validState(oms_modelState_virgin))
     return oms_status_ok;
 
-  if (validState(oms_modelState_instantiated) && oms_status_ok != system->initialize())
-    return logError_Termination(system->getFullCref());
+  if (validState(oms_modelState_enterInstantiation))
+    return logError_ModelInWrongState(this);
 
   if (!system)
     return logError("Model doesn't contain a system");

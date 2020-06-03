@@ -174,7 +174,7 @@ oms_status_enu_t oms::SystemSC::instantiate()
 {
   time = getModel()->getStartTime();
 
-  // there shouldn't be any substem
+  // there shouldn't be any subsystem
   for (const auto& subsystem : getSubSystems())
     if (oms_status_ok != subsystem.second->instantiate())
       return oms_status_error;
