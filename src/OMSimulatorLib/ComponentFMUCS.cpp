@@ -429,7 +429,7 @@ oms_status_enu_t oms::ComponentFMUCS::instantiate()
   // load the FMU shared library
   jmstatus = fmi2_import_create_dllfmu(fmu, fmi2_fmu_kind_cs, &callbackFunctions);
   if (jm_status_error == jmstatus)
-    return logError("Could not load the FMU; it may be corrupted or may not support your platform");
+    return logError("Could not load \"" + getPath() + "\" which is associated with \"" + std::string(getFullCref()) + "\"; it may be corrupted or may not support your platform");
 
   jmstatus = fmi2_import_instantiate(fmu, getCref().c_str(), fmi2_cosimulation, NULL, fmi2_false);
   if (jm_status_error == jmstatus)
