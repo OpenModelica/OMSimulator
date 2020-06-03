@@ -1501,6 +1501,31 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
         connectors.back() = NULL;
         return oms_status_ok;
       }
+
+    for (int i=0; i<busconnectors.size()-1; ++i)
+      if (busconnectors[i]->getName() == front)
+      {
+        deleteAllConectionsTo(front);
+        exportConnectors.erase(front);
+        delete busconnectors[i];
+        busconnectors.pop_back();   // last element is always NULL
+        busconnectors[i] = busconnectors.back();
+        busconnectors.back() = NULL;
+        return oms_status_ok;
+      }
+#if !defined(NO_TLM)
+    for (int i=0; i<tlmbusconnectors.size()-1; ++i)
+      if (tlmbusconnectors[i]->getName() == front)
+      {
+        deleteAllConectionsTo(front);
+        exportConnectors.erase(front);
+        delete tlmbusconnectors[i];
+        tlmbusconnectors.pop_back();   // last element is always NULL
+        tlmbusconnectors[i] = tlmbusconnectors.back();
+        tlmbusconnectors.back() = NULL;
+        return oms_status_ok;
+      }
+#endif
   }
   else
   {
