@@ -1209,6 +1209,22 @@ oms_status_enu_t oms_getReal(const char* cref, double* value)
   return system->getReal(tail, *value);
 }
 
+oms_status_enu_t oms_getResultFile(const char* cref_, char** filename, int* bufferSize)
+{
+  oms::ComRef cref(cref_);
+
+  if (cref.isValidIdent())
+  {
+    oms::Model* model = oms::Scope::GetInstance().getModel(cref);
+    if (!model)
+      return logError_ModelNotInScope(cref);
+
+    return model->getResultFile(filename, bufferSize);
+  }
+  else
+    return logError_OnlyForModel;
+}
+
 oms_status_enu_t oms_getSolver(const char* cref, oms_solver_enu_t* solver)
 {
   oms::ComRef tail(cref);
