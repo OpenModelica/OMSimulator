@@ -1487,6 +1487,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms_getBoolean);
   REGISTER_LUA_CALL(oms_getFixedStepSize);
   REGISTER_LUA_CALL(oms_getInteger);
+  REGISTER_LUA_CALL(oms_getModelState);
   REGISTER_LUA_CALL(oms_getReal);
   REGISTER_LUA_CALL(oms_getSolver);
   REGISTER_LUA_CALL(oms_getStartTime);
@@ -1580,6 +1581,14 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_ENUM(oms_status_error);
   REGISTER_LUA_ENUM(oms_status_fatal);
   REGISTER_LUA_ENUM(oms_status_pending);
+
+  // oms_modelState_enu_t
+  REGISTER_LUA_ENUM(oms_modelState_virgin);
+  REGISTER_LUA_ENUM(oms_modelState_enterInstantiation);
+  REGISTER_LUA_ENUM(oms_modelState_instantiated);
+  REGISTER_LUA_ENUM(oms_modelState_initialization);
+  REGISTER_LUA_ENUM(oms_modelState_simulation);
+  REGISTER_LUA_ENUM(oms_modelState_error);
 
   // oms_signal_type_enu_t
   REGISTER_LUA_ENUM(oms_signal_type_real);
