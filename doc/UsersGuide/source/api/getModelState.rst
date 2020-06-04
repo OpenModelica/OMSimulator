@@ -8,7 +8,7 @@ Gets the model state of the given model cref.
 #LUA#
 .. code-block:: lua
 
-  # not available
+  modelState, status = oms_getModelState(cref)
 
 #END#
 
