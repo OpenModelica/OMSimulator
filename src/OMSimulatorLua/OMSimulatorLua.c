@@ -1582,6 +1582,14 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_ENUM(oms_status_fatal);
   REGISTER_LUA_ENUM(oms_status_pending);
 
+  // oms_modelState_enu_t
+  REGISTER_LUA_ENUM(oms_modelState_virgin);
+  REGISTER_LUA_ENUM(oms_modelState_enterInstantiation);
+  REGISTER_LUA_ENUM(oms_modelState_instantiated);
+  REGISTER_LUA_ENUM(oms_modelState_initialization);
+  REGISTER_LUA_ENUM(oms_modelState_simulation);
+  REGISTER_LUA_ENUM(oms_modelState_error);
+
   // oms_signal_type_enu_t
   REGISTER_LUA_ENUM(oms_signal_type_real);
   REGISTER_LUA_ENUM(oms_signal_type_integer);
