@@ -761,6 +761,15 @@ oms_status_enu_t oms::Model::setResultFile(const std::string& filename, int buff
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::Model::getResultFile(char** filename, int* bufferSize)
+{
+  *filename = (char*)this->resultFilename.c_str();
+  *bufferSize = this->bufferSize;
+
+  return oms_status_ok;
+}
+
+
 oms_status_enu_t oms::Model::addSignalsToResults(const char* regex)
 {
   if (system)
