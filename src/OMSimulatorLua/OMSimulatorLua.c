@@ -1487,6 +1487,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms_getBoolean);
   REGISTER_LUA_CALL(oms_getFixedStepSize);
   REGISTER_LUA_CALL(oms_getInteger);
+  REGISTER_LUA_CALL(oms_getModelState);
   REGISTER_LUA_CALL(oms_getReal);
   REGISTER_LUA_CALL(oms_getSolver);
   REGISTER_LUA_CALL(oms_getStartTime);
