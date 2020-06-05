@@ -123,6 +123,9 @@ oms_status_enu_t oms::Model::rename(const oms::ComRef& cref)
 
 oms_status_enu_t oms::Model::loadSnapshot(const char* snapshot)
 {
+  if (!validState(oms_modelState_virgin))
+    return logError_ModelInWrongState(this);
+
   pugi::xml_document doc;
   pugi::xml_parse_result result = doc.load(snapshot);
   if (!result)
