@@ -33,7 +33,7 @@
 #include <assert.h>
 #include <RegEx.h>
 
-const oms_regex re_ident("^[a-zA-Z][a-zA-Z0-9_]*$");
+const oms_regex re_ident("^[a-zA-Z][a-zA-Z0-9_-]*$");
 
 oms::ComRef::ComRef()
 {
