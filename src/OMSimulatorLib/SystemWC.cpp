@@ -115,6 +115,8 @@ oms_status_enu_t oms::SystemWC::exportToSSD_SimulationInformation(pugi::xml_node
   pugi::xml_node node_solver = node_simulation_information.append_child("FixedStepMaster");
   node_solver.append_attribute("description") = getSolverName().c_str();
   node_solver.append_attribute("stepSize") = std::to_string(maximumStepSize).c_str();
+  node_solver.append_attribute("absoluteTolerance") = std::to_string(absoluteTolerance).c_str();
+  node_solver.append_attribute("relativeTolerance") = std::to_string(relativeTolerance).c_str();
 
   return oms_status_ok;
 }
@@ -126,6 +128,8 @@ oms_status_enu_t oms::SystemWC::importFromSSD_SimulationInformation(const pugi::
   if (oms_status_ok != setSolverMethod(solverName))
     return oms_status_error;
   initialStepSize = minimumStepSize=maximumStepSize = node.child("FixedStepMaster").attribute("stepSize").as_double();
+  absoluteTolerance = node.child("FixedStepMaster").attribute("absoluteTolerance").as_double();
+  relativeTolerance = node.child("FixedStepMaster").attribute("relativeTolerance").as_double();
   return oms_status_ok;
 }
 

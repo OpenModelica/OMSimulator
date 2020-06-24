@@ -147,6 +147,8 @@ namespace oms
     std::string resultFilename;             ///< default <name>_res.mat
     Clock clock;
 
+    std::string signalFilter="";
+
     bool cancelSim;
     bool isolatedFMU = false;
 
