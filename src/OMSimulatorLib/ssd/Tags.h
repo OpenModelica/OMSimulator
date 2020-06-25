@@ -39,6 +39,8 @@ namespace oms
     namespace Version1_0
     {
       extern const char* simulation_information;
+      extern const char* FixedStepMaster;
+      extern const char* VariableStepSolver;
 
       namespace ssd
       {

@@ -51,7 +51,7 @@ namespace oms
 
     static System* NewSystem(const ComRef& cref, Model* parentModel, System* parentSystem);
     oms_status_enu_t exportToSSD_SimulationInformation(pugi::xml_node& node) const;
-    oms_status_enu_t importFromSSD_SimulationInformation(const pugi::xml_node& node);
+    oms_status_enu_t importFromSSD_SimulationInformation(const pugi::xml_node& node, const std::string& sspVersion);
 
     oms_status_enu_t instantiate();
     oms_status_enu_t initialize();

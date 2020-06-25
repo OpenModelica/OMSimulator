@@ -96,7 +96,7 @@ oms_status_enu_t oms::SystemTLM::exportToSSD_SimulationInformation(pugi::xml_nod
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::SystemTLM::importFromSSD_SimulationInformation(const pugi::xml_node& node)
+oms_status_enu_t oms::SystemTLM::importFromSSD_SimulationInformation(const pugi::xml_node& node, const std::string& sspVersion)
 {
   pugi::xml_node annotationsNode = node.child(oms::ssp::Draft20180219::ssd::annotations);
 

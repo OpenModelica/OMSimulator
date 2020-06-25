@@ -60,6 +60,8 @@ const char* oms::ssp::Draft20180219::ssd::units                        = "ssd:Un
 
 // version 1.0
 const char* oms::ssp::Version1_0::simulation_information               = "oms:SimulationInformation"; // simulation information must be handled in a vendor specific annotation
+const char* oms::ssp::Version1_0::FixedStepMaster                      = "oms:FixedStepMaster"; // WC-System
+const char* oms::ssp::Version1_0::VariableStepSolver                   = "oms:VariableStepSolver"; // SC-System
 
 const char* oms::ssp::Version1_0::ssd::parameter_bindings              = "ssd:ParameterBindings";
 const char* oms::ssp::Version1_0::ssd::parameter_binding               = "ssd:ParameterBinding";

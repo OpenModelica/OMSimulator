@@ -146,7 +146,7 @@ oms_status_enu_t oms::SystemSC::exportToSSD_SimulationInformation(pugi::xml_node
   /* ssd:SimulationInformation should be added as vendor specific annotations from Version 1.0 */
   pugi::xml_node node_simulation_information = node_annotation.append_child(oms::ssp::Version1_0::simulation_information);
 
-  pugi::xml_node node_solver = node_simulation_information.append_child("VariableStepSolver");
+  pugi::xml_node node_solver = node_simulation_information.append_child(oms::ssp::Version1_0::VariableStepSolver);
   node_solver.append_attribute("description") = getSolverName().c_str();
   node_solver.append_attribute("absoluteTolerance") = std::to_string(absoluteTolerance).c_str();
   node_solver.append_attribute("relativeTolerance") = std::to_string(relativeTolerance).c_str();
@@ -157,16 +157,30 @@ oms_status_enu_t oms::SystemSC::exportToSSD_SimulationInformation(pugi::xml_node
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::SystemSC::importFromSSD_SimulationInformation(const pugi::xml_node& node)
+oms_status_enu_t oms::SystemSC::importFromSSD_SimulationInformation(const pugi::xml_node& node, const std::string& sspVersion)
 {
-  std::string solverName = node.child("VariableStepSolver").attribute("description").as_string();
+  std::string solverName = "";
+  const char* VariableStepSolver = "";
+
+  if (sspVersion == "1.0")
+  {
+    solverName = node.child(oms::ssp::Version1_0::VariableStepSolver).attribute("description").as_string();
+    VariableStepSolver = oms::ssp::Version1_0::VariableStepSolver;
+  }
+  else
+  {
+    solverName = node.child("VariableStepSolver").attribute("description").as_string();
+    VariableStepSolver = "VariableStepSolver";
+  }
+
   if (oms_status_ok != setSolverMethod(solverName))
     return oms_status_error;
-  absoluteTolerance = node.child("VariableStepSolver").attribute("absoluteTolerance").as_double();
-  relativeTolerance = node.child("VariableStepSolver").attribute("relativeTolerance").as_double();
-  minimumStepSize = node.child("VariableStepSolver").attribute("minimumStepSize").as_double();
-  maximumStepSize = node.child("VariableStepSolver").attribute("maximumStepSize").as_double();
-  initialStepSize = node.child("VariableStepSolver").attribute("initialStepSize").as_double();
+
+  absoluteTolerance = node.child(VariableStepSolver).attribute("absoluteTolerance").as_double();
+  relativeTolerance = node.child(VariableStepSolver).attribute("relativeTolerance").as_double();
+  minimumStepSize = node.child(VariableStepSolver).attribute("minimumStepSize").as_double();
+  maximumStepSize = node.child(VariableStepSolver).attribute("maximumStepSize").as_double();
+  initialStepSize = node.child(VariableStepSolver).attribute("initialStepSize").as_double();
   return oms_status_ok;
 }
 

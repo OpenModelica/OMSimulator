@@ -465,7 +465,7 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
     std::string name = it->name();
     if (name == oms::ssp::Draft20180219::ssd::simulation_information && sspVersion == "Draft20180219")
     {
-      if (oms_status_ok != importFromSSD_SimulationInformation(*it))
+      if (oms_status_ok != importFromSSD_SimulationInformation(*it, sspVersion))
         return logError("Failed to import " + std::string(oms::ssp::Draft20180219::ssd::simulation_information));
     }
     else if (name == oms::ssp::Draft20180219::ssd::element_geometry)
@@ -662,7 +662,7 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
           // check for oms:simulationInformation from version 1.0
           if (std::string(name) == oms::ssp::Version1_0::simulation_information && sspVersion == "1.0")
           {
-            if (oms_status_ok != importFromSSD_SimulationInformation(*itAnnotations))
+            if (oms_status_ok != importFromSSD_SimulationInformation(*itAnnotations, sspVersion))
               return logError("Failed to import " + std::string(oms::ssp::Version1_0::simulation_information));
           }
           if (std::string(name) == oms::ssp::Draft20180219::bus)
