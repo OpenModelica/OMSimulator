@@ -33,7 +33,7 @@ printStatus(status, 0)
 status = oms_addSystem("model.sc", oms_system_sc)
 printStatus(status, 0)
 
-status = oms_setSignalFilter("model", "A")
+status = oms_setSignalFilter("model", "[AB]")
 printStatus(status, 0)
 
 src, status = oms_list("model")
@@ -41,6 +41,9 @@ printStatus(status, 0)
 print(src)
 
 status = oms_removeSignalsFromResults("model", "A")
+printStatus(status, 0)
+
+status = oms_addSignalsToResults("model", "Y")
 printStatus(status, 0)
 
 src, status = oms_list("model")
@@ -73,12 +76,15 @@ printStatus(status, 0)
 -- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
 -- 		<ssd:Annotations>
 -- 			<ssd:Annotation type="org.openmodelica">
--- 				<oms:SimulationInformation resultFile="model_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="A" />
+-- 				<oms:SimulationInformation resultFile="model_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="[AB]" />
 -- 			</ssd:Annotation>
 -- 		</ssd:Annotations>
 -- 	</ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>
 -- 
+-- warning: [oms_removeSignalsFromResults] will not update the signalFilters in ssp, use [oms_setSignalFilter]
+-- status:  [correct] ok
+-- warning: [oms_addSignalsToResults] will not update the signalFilters in ssp, use [oms_setSignalFilter]
 -- status:  [correct] ok
 -- status:  [correct] ok
 -- <?xml version="1.0"?>
@@ -98,11 +104,13 @@ printStatus(status, 0)
 -- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
 -- 		<ssd:Annotations>
 -- 			<ssd:Annotation type="org.openmodelica">
--- 				<oms:SimulationInformation resultFile="model_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="" />
+-- 				<oms:SimulationInformation resultFile="model_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="[AB]" />
 -- 			</ssd:Annotation>
 -- 		</ssd:Annotations>
 -- 	</ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>
 -- 
 -- status:  [correct] ok
+-- info:    2 warnings
+-- info:    0 errors
 -- endResult

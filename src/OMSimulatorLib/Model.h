@@ -103,6 +103,7 @@ namespace oms
     oms_status_enu_t emit(double time, bool force=false, bool* emitted=NULL);
     oms_status_enu_t addSignalsToResults(const char* regex);
     oms_status_enu_t removeSignalsFromResults(const char* regex);
+    oms_status_enu_t setSignalFilter(const char* regex);
     oms_status_enu_t getSignalFilter(char** regex);
 
     oms_status_enu_t cancelSimulation_asynchronous();

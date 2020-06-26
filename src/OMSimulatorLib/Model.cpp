@@ -834,10 +834,22 @@ oms_status_enu_t oms::Model::getSignalFilter(char** regex)
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::Model::setSignalFilter(const char* regex)
+{
+  if (oms_status_ok != removeSignalsFromResults(".*"))
+    return oms_status_error;
+
+  if (oms_status_ok != system->addSignalsToResults(regex))
+    return oms_status_error;
+
+  this->signalFilter = regex;
+
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms::Model::addSignalsToResults(const char* regex)
 {
   if (system)
-    this->signalFilter = regex;
     if (oms_status_ok != system->addSignalsToResults(regex))
       return oms_status_error;
   return oms_status_ok;
@@ -848,7 +860,6 @@ oms_status_enu_t oms::Model::removeSignalsFromResults(const char* regex)
   if (system)
     if (oms_status_ok != system->removeSignalsFromResults(regex))
       return oms_status_error;
-  this->signalFilter = ""; // set to empty after removing the regex
   return oms_status_ok;
 }
 
