@@ -1225,6 +1225,22 @@ oms_status_enu_t oms_getResultFile(const char* cref_, char** filename, int* buff
     return logError_OnlyForModel;
 }
 
+oms_status_enu_t oms_getSignalFilter(const char* cref_, char** regex)
+{
+  oms::ComRef cref(cref_);
+
+  if (cref.isValidIdent())
+  {
+    oms::Model* model = oms::Scope::GetInstance().getModel(cref);
+    if (!model)
+      return logError_ModelNotInScope(cref);
+
+    return model->getSignalFilter(regex);
+  }
+  else
+    return logError_OnlyForModel;
+}
+
 oms_status_enu_t oms_getSolver(const char* cref, oms_solver_enu_t* solver)
 {
   oms::ComRef tail(cref);

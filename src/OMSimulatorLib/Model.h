@@ -103,6 +103,7 @@ namespace oms
     oms_status_enu_t emit(double time, bool force=false, bool* emitted=NULL);
     oms_status_enu_t addSignalsToResults(const char* regex);
     oms_status_enu_t removeSignalsFromResults(const char* regex);
+    oms_status_enu_t getSignalFilter(char** regex);
 
     oms_status_enu_t cancelSimulation_asynchronous();
     bool cancelSimulation() const {return cancelSim;}
@@ -147,7 +148,7 @@ namespace oms
     std::string resultFilename;             ///< default <name>_res.mat
     Clock clock;
 
-    std::string signalFilter;
+    std::string signalFilter = "";  // default set to empty
 
     bool cancelSim;
     bool isolatedFMU = false;

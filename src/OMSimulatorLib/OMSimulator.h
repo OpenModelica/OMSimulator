@@ -99,6 +99,7 @@ OMSAPI oms_status_enu_t OMSCALL oms_getInteger(const char* cref, int* value);
 OMSAPI oms_status_enu_t OMSCALL oms_getModelState(const char* cref, oms_modelState_enu_t* modelState);
 OMSAPI oms_status_enu_t OMSCALL oms_getReal(const char* cref, double* value);
 OMSAPI oms_status_enu_t OMSCALL oms_getResultFile(const char* cref, char** filename, int* bufferSize);
+OMSAPI oms_status_enu_t OMSCALL oms_getSignalFilter(const char* cref, char** regex);
 OMSAPI oms_status_enu_t OMSCALL oms_getSolver(const char* cref, oms_solver_enu_t* solver);
 OMSAPI oms_status_enu_t OMSCALL oms_getStartTime(const char* cref, double* startTime);
 OMSAPI oms_status_enu_t OMSCALL oms_getStopTime(const char* cref, double* stopTime);
