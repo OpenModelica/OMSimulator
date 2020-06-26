@@ -208,7 +208,7 @@ printStatus(status, 0)
 ##                 <ssd:Annotations>
 ##                     <ssd:Annotation type="org.openmodelica">
 ##                         <oms:SimulationInformation>
-##                             <FixedStepMaster description="oms-ma" stepSize="0.100000" />
+##                             <oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
 ##                         </oms:SimulationInformation>
 ##                     </ssd:Annotation>
 ##                 </ssd:Annotations>
@@ -253,7 +253,7 @@ printStatus(status, 0)
 ##                 <ssd:Annotations>
 ##                     <ssd:Annotation type="org.openmodelica">
 ##                         <oms:SimulationInformation>
-##                             <FixedStepMaster description="oms-ma" stepSize="0.100000" />
+##                             <oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
 ##                         </oms:SimulationInformation>
 ##                     </ssd:Annotation>
 ##                 </ssd:Annotations>
@@ -279,7 +279,7 @@ printStatus(status, 0)
 ##                         <ssd:Annotations>
 ##                             <ssd:Annotation type="org.openmodelica">
 ##                                 <oms:SimulationInformation>
-##                                     <VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
+##                                     <oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
 ##                                 </oms:SimulationInformation>
 ##                             </ssd:Annotation>
 ##                         </ssd:Annotations>
@@ -347,7 +347,13 @@ printStatus(status, 0)
 ##             </ssd:Annotation>
 ##         </ssd:Annotations>
 ##     </ssd:System>
-##     <ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000" />
+##     <ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
+##         <ssd:Annotations>
+##             <ssd:Annotation type="org.openmodelica">
+##                 <oms:SimulationInformation resultFile="test_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="" />
+##             </ssd:Annotation>
+##         </ssd:Annotations>
+##     </ssd:DefaultExperiment>
 ## </ssd:SystemStructureDescription>
 ## 
 ## status:  [correct] ok
@@ -370,7 +376,7 @@ printStatus(status, 0)
 ##                 <ssd:Annotations>
 ##                     <ssd:Annotation type="org.openmodelica">
 ##                         <oms:SimulationInformation>
-##                             <FixedStepMaster description="oms-ma" stepSize="0.100000" />
+##                             <oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
 ##                         </oms:SimulationInformation>
 ##                     </ssd:Annotation>
 ##                 </ssd:Annotations>
@@ -415,7 +421,7 @@ printStatus(status, 0)
 ##                 <ssd:Annotations>
 ##                     <ssd:Annotation type="org.openmodelica">
 ##                         <oms:SimulationInformation>
-##                             <FixedStepMaster description="oms-ma" stepSize="0.100000" />
+##                             <oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
 ##                         </oms:SimulationInformation>
 ##                     </ssd:Annotation>
 ##                 </ssd:Annotations>
@@ -441,7 +447,7 @@ printStatus(status, 0)
 ##                         <ssd:Annotations>
 ##                             <ssd:Annotation type="org.openmodelica">
 ##                                 <oms:SimulationInformation>
-##                                     <VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
+##                                     <oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
 ##                                 </oms:SimulationInformation>
 ##                             </ssd:Annotation>
 ##                         </ssd:Annotations>
@@ -509,7 +515,13 @@ printStatus(status, 0)
 ##             </ssd:Annotation>
 ##         </ssd:Annotations>
 ##     </ssd:System>
-##     <ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000" />
+##     <ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
+##         <ssd:Annotations>
+##             <ssd:Annotation type="org.openmodelica">
+##                 <oms:SimulationInformation resultFile="test_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="" />
+##             </ssd:Annotation>
+##         </ssd:Annotations>
+##     </ssd:DefaultExperiment>
 ## </ssd:SystemStructureDescription>
 ## 
 ## status:  [correct] ok

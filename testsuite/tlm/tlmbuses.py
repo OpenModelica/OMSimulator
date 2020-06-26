@@ -125,7 +125,7 @@ printStatus(status, 0)
 ## 			<ssd:Annotations>
 ## 				<ssd:Annotation type="org.openmodelica">
 ## 					<oms:SimulationInformation>
-## 						<FixedStepMaster description="oms-ma" stepSize="0.100000" />
+## 						<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
 ## 					</oms:SimulationInformation>
 ## 				</ssd:Annotation>
 ## 			</ssd:Annotations>
@@ -159,7 +159,7 @@ printStatus(status, 0)
 ## 			<ssd:Annotations>
 ## 				<ssd:Annotation type="org.openmodelica">
 ## 					<oms:SimulationInformation>
-## 						<FixedStepMaster description="oms-ma" stepSize="0.100000" />
+## 						<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
 ## 					</oms:SimulationInformation>
 ## 				</ssd:Annotation>
 ## 			</ssd:Annotations>

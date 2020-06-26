@@ -72,13 +72,13 @@ oms_delete("test")
 -- 		<ssd:Annotations>
 -- 			<ssd:Annotation type="org.openmodelica">
 -- 				<oms:SimulationInformation>
--- 					<FixedStepMaster description="oms-ma" stepSize="0.100000" />
+-- 					<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
 -- 				</oms:SimulationInformation>
 -- 			</ssd:Annotation>
 -- 		</ssd:Annotations>
 -- 		<ssd:Connectors />
 -- 		<ssd:Elements>
--- 			<ssd:Component name="source" type="application/x-fmu-sharedlibrary" source="resources/0001_source.fmu">
+-- 			<ssd:Component name="source" type="application/x-fmu-sharedlibrary" source="resources\0001_source.fmu">
 -- 				<ssd:Connectors>
 -- 					<ssd:Connector name="y" kind="output">
 -- 						<ssc:Real />
@@ -104,7 +104,13 @@ oms_delete("test")
 -- 		</ssd:Elements>
 -- 		<ssd:Connections />
 -- 	</ssd:System>
--- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000" />
+-- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
+-- 		<ssd:Annotations>
+-- 			<ssd:Annotation type="org.openmodelica">
+-- 				<oms:SimulationInformation resultFile="test_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="" />
+-- 			</ssd:Annotation>
+-- 		</ssd:Annotations>
+-- 	</ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>
 -- 
 -- info:    Delete source
@@ -115,13 +121,13 @@ oms_delete("test")
 -- 		<ssd:Annotations>
 -- 			<ssd:Annotation type="org.openmodelica">
 -- 				<oms:SimulationInformation>
--- 					<FixedStepMaster description="oms-ma" stepSize="0.100000" />
+-- 					<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
 -- 				</oms:SimulationInformation>
 -- 			</ssd:Annotation>
 -- 		</ssd:Annotations>
 -- 		<ssd:Connectors />
 -- 		<ssd:Elements>
--- 			<ssd:Component name="source" type="application/x-fmu-sharedlibrary" source="resources/0001_source.fmu">
+-- 			<ssd:Component name="source" type="application/x-fmu-sharedlibrary" source="resources\0001_source.fmu">
 -- 				<ssd:Connectors>
 -- 					<ssd:Connector name="y" kind="output">
 -- 						<ssc:Real />
@@ -147,7 +153,13 @@ oms_delete("test")
 -- 		</ssd:Elements>
 -- 		<ssd:Connections />
 -- 	</ssd:System>
--- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000" />
+-- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
+-- 		<ssd:Annotations>
+-- 			<ssd:Annotation type="org.openmodelica">
+-- 				<oms:SimulationInformation resultFile="test_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="" />
+-- 			</ssd:Annotation>
+-- 		</ssd:Annotations>
+-- 	</ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>
 -- 
 -- info:    Result file: test_res.mat (bufferSize=10)
