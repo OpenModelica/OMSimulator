@@ -36,7 +36,7 @@ printStatus(status, 0)
 status = oms.setSignalFilter("model", "[AB]")
 printStatus(status, 0)
 
-src, status = oms.list("model")
+(status, src) = oms.list("model")
 printStatus(status, 0)
 print(src)
 
@@ -46,7 +46,7 @@ printStatus(status, 0)
 status = oms.addSignalsToResults("model", "Y")
 printStatus(status, 0)
 
-src, status = oms.list("model")
+(status, src) = oms.list("model")
 printStatus(status, 0)
 print(src)
 
@@ -58,7 +58,8 @@ printStatus(status, 0)
 ## status:  [correct] ok
 ## status:  [correct] ok
 ## status:  [correct] ok
-## status:  [wrong] <?xml version="1.0"?>
+## status:  [correct] ok
+## <?xml version="1.0"?>
 ## <ssd:SystemStructureDescription name="model" version="1.0">
 ## 	<ssd:System name="sc">
 ## 		<ssd:Annotations>
@@ -81,12 +82,12 @@ printStatus(status, 0)
 ## 	</ssd:DefaultExperiment>
 ## </ssd:SystemStructureDescription>
 ## 
-## 0
 ## warning: [oms_removeSignalsFromResults] will not update the signalFilters in ssp, use [oms_setSignalFilter]
 ## status:  [correct] ok
 ## warning: [oms_addSignalsToResults] will not update the signalFilters in ssp, use [oms_setSignalFilter]
 ## status:  [correct] ok
-## status:  [wrong] <?xml version="1.0"?>
+## status:  [correct] ok
+## <?xml version="1.0"?>
 ## <ssd:SystemStructureDescription name="model" version="1.0">
 ## 	<ssd:System name="sc">
 ## 		<ssd:Annotations>
@@ -109,7 +110,6 @@ printStatus(status, 0)
 ## 	</ssd:DefaultExperiment>
 ## </ssd:SystemStructureDescription>
 ## 
-## 0
 ## status:  [correct] ok
 ## info:    2 warnings
 ## info:    0 errors
