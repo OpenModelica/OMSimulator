@@ -193,7 +193,7 @@ class OMSimulator:
   def getSystemType(self, cref):
     type = ctypes.c_int()
     status = self.obj.oms_getSystemType(self.checkstring(cref), ctypes.byref(type))
-    return [status, type.value]
+    return [type.value, status]
   def getVariableStepSize(self, cref):
     initialStepSize = ctypes.c_double()
     minimumStepSize = ctypes.c_double()
@@ -221,19 +221,19 @@ class OMSimulator:
   def importFile(self, filename):
     contents = ctypes.c_char_p()
     status = self.obj.oms_importFile(self.checkstring(filename), ctypes.byref(contents))
-    return [status, self.checkstring(contents.value)]
+    return [self.checkstring(contents.value), status]
   def list(self, ident):
     contents = ctypes.c_char_p()
     status = self.obj.oms_list(self.checkstring(ident), ctypes.byref(contents))
-    return [status, self.checkstring(contents.value)]
+    return [self.checkstring(contents.value), status]
   def listUnconnectedConnectors(self, ident):
     contents = ctypes.c_char_p()
     status = self.obj.oms_listUnconnectedConnectors(self.checkstring(ident), ctypes.byref(contents))
-    return [status, self.checkstring(contents.value)]
+    return [self.checkstring(contents.value), status]
   def parseModelName(self, ident):
     contents = ctypes.c_char_p()
     status = self.obj.oms_parseModelName(self.checkstring(ident), ctypes.byref(contents))
-    return [status, self.checkstring(contents.value)]
+    return [self.checkstring(contents.value), status]
   def addSystem(self, ident, type):
     return self.obj.oms_addSystem(self.checkstring(ident), type)
   def copySystem(self, source, target):

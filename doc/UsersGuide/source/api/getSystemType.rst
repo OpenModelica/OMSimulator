@@ -15,7 +15,7 @@ Gets the type of the given system.
 #PYTHON#
 .. code-block:: python
 
-  # not available
+  type, status = oms.getSystemType(cref)
 
 #END#
 
