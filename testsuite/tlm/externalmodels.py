@@ -39,7 +39,7 @@ printStatus(status, 0)
 
 status = oms.addTLMBus("model.tlm.external.tlmbus", oms.tlm_domain_mechanical, 1, oms.default)
 
-status, src = oms.list("model.tlm")
+src, status = oms.list("model.tlm")
 print(src)
 
 status = oms.delete("model")

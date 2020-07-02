@@ -8,7 +8,7 @@ Gets the type of the given system.
 #LUA#
 .. code-block:: lua
 
-  # not available
+  type, status = oms_getSystemType(cref)
 
 #END#
 

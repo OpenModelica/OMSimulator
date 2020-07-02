@@ -41,13 +41,13 @@ printStatus(status, 0)
 status = oms.addSystem("test.foo.hoo", oms.system_wc)
 printStatus(status, 3)
 
-status, src = oms.list("test")
+src, status = oms.list("test")
 print(src)
 
-status, src = oms.list("test.foo")
+src, status = oms.list("test.foo")
 print(src)
 
-status, src = oms.list("test.foo.goo")
+src, status = oms.list("test.foo.goo")
 print(src)
 
 status = oms.newModel("test")
@@ -68,7 +68,7 @@ printStatus(status, 0)
 status = oms.newModel("test")
 printStatus(status, 0)
 
-status, src = oms.list("test")
+src, status = oms.list("test")
 print(src)
 
 status = oms.delete("test")

@@ -65,13 +65,13 @@ printStatus(status, 3)
 status = oms.addConnection("model.wc.sc1.u1", "model.wc.sc2.y3")
 printStatus(status, 3)
 
-status, src = oms.list("model.wc")
+src, status = oms.list("model.wc")
 print(src)
 
 status = oms.deleteConnection("model.wc.sc1.u1", "model.wc.sc2.y1")
 printStatus(status, 0)
 
-status, src = oms.list("model.wc")
+src, status = oms.list("model.wc")
 print(src)
 
 status = oms.delete("model")
