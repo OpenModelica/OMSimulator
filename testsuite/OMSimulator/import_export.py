@@ -135,7 +135,7 @@ printStatus(status, 0)
 status = oms.addConnection("test.eoo.foo.bus", "test.eoo.foo2.bus")
 printStatus(status, 0)
 
-status, src = oms.list("test")
+src, status = oms.list("test")
 printStatus(status, 0)
 print(src)
 
@@ -145,10 +145,10 @@ printStatus(status, 0)
 status = oms.delete("test")
 printStatus(status, 0)
 
-status, model = oms.importFile("test-py.ssp")
+model, status = oms.importFile("test-py.ssp")
 printStatus(status, 0)
 
-status, src = oms.list(model)
+src, status = oms.list(model)
 printStatus(status, 0)
 print(src)
 
