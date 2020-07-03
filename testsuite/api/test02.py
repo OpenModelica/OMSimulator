@@ -39,7 +39,7 @@ def printType(t):
 status = oms.newModel("test")
 printStatus(status, 0)
 
-status, type = oms.getSystemType("test")
+type, status = oms.getSystemType("test")
 printType(type)
 printStatus(status, 3)
 
@@ -52,19 +52,19 @@ printStatus(status, 0)
 status = oms.addSystem("test.eoo.foo.goo", oms.system_sc)
 printStatus(status, 0)
 
-status, type = oms.getSystemType("test")
+type, status = oms.getSystemType("test")
 printType(type)
 printStatus(status, 3)
 
-status, type = oms.getSystemType("test.eoo")
+type, status = oms.getSystemType("test.eoo")
 printType(type)
 printStatus(status, 0)
 
-status, type = oms.getSystemType("test.eoo.foo")
+type, status = oms.getSystemType("test.eoo.foo")
 printType(type)
 printStatus(status, 0)
 
-status, type = oms.getSystemType("test.eoo.foo.goo")
+type, status = oms.getSystemType("test.eoo.foo.goo")
 printType(type)
 printStatus(status, 0)
 

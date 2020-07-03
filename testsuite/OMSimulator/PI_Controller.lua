@@ -1,7 +1,7 @@
 -- status: correct
 -- teardown_command: rm -rf PI_Controller-lua/ PI_Controller_init.dot PI_Controller_sim.dot PI_Controller_res.mat PI_Controller.ssp
 -- linux: yes
--- mingw: no
+-- mingw: yes
 -- win: no
 -- mac: no
 
@@ -114,7 +114,7 @@ oms_delete("PI_Controller")
 -- info:      PI_Controller.co_sim.limiter.uMax: 12.0
 -- info:      PI_Controller.co_sim.addSat.k2: -1.0
 -- info:      PI_Controller.co_sim.gainTrack.k: 0.1
--- info:    Result file: PI_Controller_res.mat (bufferSize=10)
+-- info:    Result file: PI_Controller.mat (bufferSize=100)
 -- info:    Initialization
 -- info:      limiter.u: 0.0
 -- info:      limiter.y: 0.0

@@ -8,14 +8,14 @@ Gets the type of the given system.
 #LUA#
 .. code-block:: lua
 
-  # not available
+  type, status = oms_getSystemType(cref)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  # not available
+  type, status = oms.getSystemType(cref)
 
 #END#
 

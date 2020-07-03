@@ -306,6 +306,18 @@ oms_status_enu_t oms::Model::exportToSSD(pugi::xml_node& node) const
   default_experiment.append_attribute("startTime") = std::to_string(startTime).c_str();
   default_experiment.append_attribute("stopTime") = std::to_string(stopTime).c_str();
 
+  // export openmodelica_default_experiment as vendor annotations
+  pugi::xml_node node_annotations = default_experiment.append_child(oms::ssp::Draft20180219::ssd::annotations);
+  pugi::xml_node node_annotation = node_annotations.append_child(oms::ssp::Draft20180219::ssd::annotation);
+  node_annotation.append_attribute("type") =  oms::ssp::Draft20180219::annotation_type;
+  pugi::xml_node oms_simulation_information = node_annotation.append_child(oms::ssp::Version1_0::simulation_information);
+  //pugi::xml_node oms_default_experiment = oms_simulation_information.append_child("DefaultExperiment");
+
+  oms_simulation_information.append_attribute("resultFile") = resultFilename.c_str();
+  oms_simulation_information.append_attribute("loggingInterval") = std::to_string(loggingInterval).c_str();
+  oms_simulation_information.append_attribute("bufferSize") = std::to_string(bufferSize).c_str();
+  oms_simulation_information.append_attribute("signalFilter") = signalFilter.c_str();
+
   return oms_status_ok;
 }
 
@@ -336,6 +348,26 @@ oms_status_enu_t oms::Model::importFromSSD(const pugi::xml_node& node)
     {
       startTime = it->attribute("startTime").as_double(0.0);
       stopTime = it->attribute("stopTime").as_double(1.0);
+
+      // import oms::DefaultExperiment from oms:simulationInformation
+      pugi::xml_node annotations = it->child(oms::ssp::Draft20180219::ssd::annotations);
+      pugi::xml_node annotation_node = annotations.child(oms::ssp::Draft20180219::ssd::annotation);
+
+      if (annotation_node && std::string(annotation_node.attribute("type").as_string()) == oms::ssp::Draft20180219::annotation_type)
+      {
+        for(pugi::xml_node_iterator itAnnotations = annotation_node.begin(); itAnnotations != annotation_node.end(); ++itAnnotations)
+        {
+          name = itAnnotations->name();
+          // check for oms_default_experiment from version 1.0
+          if (std::string(name) == oms::ssp::Version1_0::simulation_information  && sspVersion == "1.0")
+          {
+            resultFilename = itAnnotations->attribute("resultFile").as_string();
+            loggingInterval = itAnnotations->attribute("loggingInterval").as_double();
+            bufferSize = itAnnotations->attribute("bufferSize").as_int();
+            signalFilter = itAnnotations->attribute("signalFilter").as_string();
+          }
+        }
+      }
     }
     else
       return logError("wrong xml schema detected");
@@ -353,7 +385,7 @@ oms_system_enu_t oms::Model::getSystemType(const pugi::xml_node& node, const std
     /*  To handle version = "Draft20180219"*/
     if (name ==  oms::ssp::Draft20180219::ssd::simulation_information && sspVersion == "Draft20180219")
     {
-      systemType = getSystemTypeHelper(*itElements);
+      systemType = getSystemTypeHelper(*itElements, sspVersion);
     }
 
     /* from Version "1.0" simulationInformation is handled in vendor annotation */
@@ -367,7 +399,7 @@ oms_system_enu_t oms::Model::getSystemType(const pugi::xml_node& node, const std
           std::string annotationName = itAnnotations->name();
           if (std::string(annotationName) == oms::ssp::Version1_0::simulation_information) // check for oms:simulationInformation from version 1.0
           {
-            systemType = getSystemTypeHelper(*itAnnotations);
+            systemType = getSystemTypeHelper(*itAnnotations, sspVersion);
           }
         }
       }
@@ -377,16 +409,39 @@ oms_system_enu_t oms::Model::getSystemType(const pugi::xml_node& node, const std
   return systemType;
 }
 
-oms_system_enu_t oms::Model::getSystemTypeHelper(const pugi::xml_node& node)
+oms_system_enu_t oms::Model::getSystemTypeHelper(const pugi::xml_node& node, const std::string& sspVersion)
 {
+  const char* VariableStepSolver = "";
+  const char* FixedStepSolver = "";
+  const char* VariableStepMaster = "";
+  const char* FixedStepMaster = "";
+
+  if (sspVersion == "1.0")
+  {
+    VariableStepSolver = oms::ssp::Version1_0::VariableStepSolver;
+    FixedStepMaster = oms::ssp::Version1_0::FixedStepMaster;
+    // TODO check whether below two option exists
+    VariableStepMaster = "oms:VariableStepMaster";
+    FixedStepSolver = "oms:FixedStepSolver";
+  }
+  else
+  {
+
+    VariableStepSolver = "VariableStepSolver";
+    FixedStepMaster = "FixedStepMaster";
+    // TODO check whether below two option exists
+    VariableStepMaster = "VariableStepMaster";
+    FixedStepSolver = "FixedStepSolver";
+  }
+
   oms_system_enu_t systemType = oms_system_tlm;
-  if (std::string(node.child("VariableStepSolver").attribute("description").as_string()) != "")
+  if (std::string(node.child(VariableStepSolver).attribute("description").as_string()) != "")
     systemType = oms_system_sc;
-  if (std::string(node.child("FixedStepSolver").attribute("description").as_string()) != "")
+  if (std::string(node.child(FixedStepSolver).attribute("description").as_string()) != "")
     systemType = oms_system_sc;
-  if (std::string(node.child("VariableStepMaster").attribute("description").as_string()) != "")
+  if (std::string(node.child(VariableStepMaster).attribute("description").as_string()) != "")
     systemType = oms_system_wc;
-  if (std::string(node.child("FixedStepMaster").attribute("description").as_string()) != "")
+  if (std::string(node.child(FixedStepMaster).attribute("description").as_string()) != "")
     systemType = oms_system_wc;
 
   return systemType;
@@ -772,6 +827,25 @@ oms_status_enu_t oms::Model::getResultFile(char** filename, int* bufferSize)
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::Model::getSignalFilter(char** regex)
+{
+  *regex = (char*)this->signalFilter.c_str();
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Model::setSignalFilter(const char* regex)
+{
+  if (oms_status_ok != removeSignalsFromResults(".*"))
+    return oms_status_error;
+
+  if (oms_status_ok != system->addSignalsToResults(regex))
+    return oms_status_error;
+
+  this->signalFilter = regex;
+
+  return oms_status_ok;
+}
 
 oms_status_enu_t oms::Model::addSignalsToResults(const char* regex)
 {

@@ -121,7 +121,7 @@ oms_delete("import_export_parameters")
 -- 		<ssd:Annotations>
 -- 			<ssd:Annotation type="org.openmodelica">
 -- 				<oms:SimulationInformation>
--- 					<FixedStepMaster description="oms-ma" stepSize="0.001000" />
+-- 					<oms:FixedStepMaster description="oms-ma" stepSize="0.001000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
 -- 				</oms:SimulationInformation>
 -- 			</ssd:Annotation>
 -- 		</ssd:Annotations>
@@ -161,7 +161,7 @@ oms_delete("import_export_parameters")
 -- 				<ssd:Annotations>
 -- 					<ssd:Annotation type="org.openmodelica">
 -- 						<oms:SimulationInformation>
--- 							<VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
+-- 							<oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
 -- 						</oms:SimulationInformation>
 -- 					</ssd:Annotation>
 -- 				</ssd:Annotations>
@@ -283,9 +283,15 @@ oms_delete("import_export_parameters")
 -- 			<ssd:Connection startElement="addP" startConnector="y" endElement="" endConnector="Output_cref" />
 -- 		</ssd:Connections>
 -- 	</ssd:System>
--- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="4.000000" />
+-- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="4.000000">
+-- 		<ssd:Annotations>
+-- 			<ssd:Annotation type="org.openmodelica">
+-- 				<oms:SimulationInformation resultFile="import_export_parameters.mat" loggingInterval="0.000000" bufferSize="100" signalFilter="" />
+-- 			</ssd:Annotation>
+-- 		</ssd:Annotations>
+-- 	</ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>
---
+-- 
 -- info:    model doesn't contain any continuous state
 -- info:      Parameter settings
 -- info:      import_export_parameters.co_sim.addP.k1     : 10.0
@@ -298,7 +304,7 @@ oms_delete("import_export_parameters")
 -- info:      import_export_parameters.co_sim.T_cref      : 20.0
 -- info:      import_export_parameters.co_sim.k_cref      : 30.0
 -- info:      import_export_parameters.co_sim.Output_cref : 0.0
--- info:    Result file: import_export_parameters_res.mat (bufferSize=10)
+-- info:    Result file: import_export_parameters.mat (bufferSize=100)
 -- info:    Initialization
 -- info:      import_export_parameters.co_sim.addP.k1     : 30.0
 -- info:      import_export_parameters.co_sim.addP.k2     : -1.0
