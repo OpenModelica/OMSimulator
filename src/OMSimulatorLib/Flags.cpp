@@ -64,6 +64,7 @@ void oms::Flags::setDefaults()
   defaultModeIsCS = false;
   deleteTempFiles = true;
   emitEvents = true;
+  exportParametersInline = false;
   ignoreInitialUnknowns = false;
   inputExtrapolation = false;
   intervals = 100;
@@ -183,6 +184,12 @@ oms_status_enu_t oms::Flags::DeleteTempFiles(const std::string& value)
 oms_status_enu_t oms::Flags::EmitEvents(const std::string& value)
 {
   GetInstance().emitEvents = (value == "true");
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Flags::ExportParametersInline(const std::string& value)
+{
+  GetInstance().exportParametersInline = (value == "true");
   return oms_status_ok;
 }
 

@@ -227,12 +227,13 @@ oms_status_enu_t oms::Model::list(const oms::ComRef& cref, char** contents)
 
   xmlStringWriter writer;
   pugi::xml_document doc;
+  pugi::xml_node ssvNode(NULL);
 
   // list model
   if (cref.isEmpty())
   {
     pugi::xml_node node = doc.append_child(oms::ssp::Draft20180219::ssd::system_structure_description);
-    exportToSSD(node);
+    exportToSSD(node, ssvNode);
   }
   else
   {
@@ -244,7 +245,7 @@ oms_status_enu_t oms::Model::list(const oms::ComRef& cref, char** contents)
     if (subsystem)
     {
       pugi::xml_node node = doc.append_child(oms::ssp::Draft20180219::ssd::system);
-      subsystem->exportToSSD(node);
+      subsystem->exportToSSD(node, ssvNode);
     }
     else
     {
@@ -254,7 +255,7 @@ oms_status_enu_t oms::Model::list(const oms::ComRef& cref, char** contents)
         return logError("error");
 
       pugi::xml_node node = doc.append_child(oms::ssp::Draft20180219::ssd::system);
-      component->exportToSSD(node);
+      component->exportToSSD(node, ssvNode);
     }
   }
 
@@ -290,7 +291,7 @@ oms_status_enu_t oms::Model::addSystem(const oms::ComRef& cref, oms_system_enu_t
   return logError("wrong input \"" + std::string(front) + "\" != \"" + std::string(system->getCref()) + "\"");
 }
 
-oms_status_enu_t oms::Model::exportToSSD(pugi::xml_node& node) const
+oms_status_enu_t oms::Model::exportToSSD(pugi::xml_node& node, pugi::xml_node& ssvNode) const
 {
   node.append_attribute("name") = this->getCref().c_str();
   node.append_attribute("version") = "1.0";
@@ -298,7 +299,7 @@ oms_status_enu_t oms::Model::exportToSSD(pugi::xml_node& node) const
   if (system)
   {
     pugi::xml_node system_node = node.append_child(oms::ssp::Draft20180219::ssd::system);
-    if (oms_status_ok != system->exportToSSD(system_node))
+    if (oms_status_ok != system->exportToSSD(system_node, ssvNode))
       return logError("export of system failed");
   }
 
@@ -450,6 +451,7 @@ oms_system_enu_t oms::Model::getSystemTypeHelper(const pugi::xml_node& node, con
 oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
 {
   pugi::xml_document doc;
+  pugi::xml_document ssvdoc;
 
   std::string extension = "";
   if (filename.length() > 4)
@@ -464,9 +466,49 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
   declarationNode.append_attribute("encoding") = "UTF-8";
 
   pugi::xml_node node = doc.append_child(oms::ssp::Draft20180219::ssd::system_structure_description);
-  exportToSSD(node);
+
+  // generate XML declaration for ssv file
+  pugi::xml_node ssvDeclarationNode = ssvdoc.append_child(pugi::node_declaration);
+  ssvDeclarationNode.append_attribute("version") = "1.0";
+  ssvDeclarationNode.append_attribute("encoding") = "UTF-8";
+
+  pugi::xml_node node_parameterset = ssvdoc.append_child(oms::ssp::Version1_0::ssv::parameter_set);
+  node_parameterset.append_attribute("version") = "1.0";
+  node_parameterset.append_attribute("name") = "parameters";
+  pugi::xml_node node_parameters = node_parameterset.append_child(oms::ssp::Version1_0::ssv::parameters);
+
+  exportToSSD(node, node_parameters);
 
   filesystem::path ssdPath = filesystem::path(tempDir) / "SystemStructure.ssd";
+
+  // check for parameter-bindings are defined, (i.e) count the child nodes node_parameters in ssvdoc
+  int parameterNodeCount = std::distance(node_parameters.begin(), node_parameters.end());
+
+  size_t lastindex = filename.find_last_of(".");
+  std::string ssvfileName = filename.substr(0, lastindex) + ".ssv";
+
+  if (parameterNodeCount > 0) // parameter bindings exist and export to ssv file and also update the ssd file with parameterBindings at the top level
+  {
+    filesystem::path ssvPath = filesystem::path(tempDir) /  ssvfileName;
+    //std::cout << "\n ssvPath  : " << ssvPath << " filename : " << ssvfileName;
+    ssvdoc.save_file(ssvPath.string().c_str());
+
+    // update the ssd with the top level parameterBindings (e.g)  <ParameterBinding source="resources/ControlledTemperature.ssv">
+    for(pugi::xml_node_iterator it = node.begin(); it != node.end(); ++it)
+    {
+      pugi::xml_node node_connectors = it->child(oms::ssp::Draft20180219::ssd::connectors);
+      if (node_connectors) // insert the parameter bindings after top-level connectors node
+      {
+        pugi::xml_node node_parameters_bindings = it->insert_child_after(oms::ssp::Version1_0::ssd::parameter_bindings, node_connectors);
+        pugi::xml_node node_parameter_binding  = node_parameters_bindings.append_child(oms::ssp::Version1_0::ssd::parameter_binding);
+        node_parameter_binding.append_attribute("source") = ssvfileName.c_str();
+        break;
+      }
+    }
+  }
+
+  //doc.save(std::cout);
+
   if (!doc.save_file(ssdPath.string().c_str()))
     return logError("failed to export \"" + ssdPath.string() + "\" (for model \"" + std::string(this->getCref()) + "\")");
 
@@ -478,6 +520,10 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
   //        -9  Compress better
   //        -j  exclude path. store only the file name
   std::vector<std::string> resources;
+  // TODO, export ssv file to resource directory
+  if (parameterNodeCount > 0)
+    resources.push_back(ssvfileName);
+
   if (oms_status_ok != getAllResources(resources))
     return logError("failed to gather all resources");
 

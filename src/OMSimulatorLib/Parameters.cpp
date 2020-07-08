@@ -85,32 +85,7 @@ oms_status_enu_t oms::Parameters::exportToSSD(pugi::xml_node& node) const
   node_parameterset.append_attribute("name") = "parameters";
   pugi::xml_node node_parameters = node_parameterset.append_child(oms::ssp::Version1_0::ssv::parameters);
 
-  // realStartValues
-  for (const auto& r : realStartValues)
-  {
-    pugi::xml_node node_parameter = node_parameters.append_child(oms::ssp::Version1_0::ssv::parameter);
-    node_parameter.append_attribute("name") = r.first.c_str();
-    pugi::xml_node node_parameter_type = node_parameter.append_child(oms::ssp::Version1_0::ssv::real_type);
-    node_parameter_type.append_attribute("value") = r.second;
-  }
-
-  // integerStartValues
-  for (const auto& i : integerStartValues)
-  {
-    pugi::xml_node node_parameter = node_parameters.append_child(oms::ssp::Version1_0::ssv::parameter);
-    node_parameter.append_attribute("name") = i.first.c_str();
-    pugi::xml_node node_parameter_type = node_parameter.append_child(oms::ssp::Version1_0::ssv::integer_type);
-    node_parameter_type.append_attribute("value") = i.second;
-  }
-
-  // boolStartValues
-  for (const auto& b : booleanStartValues)
-  {
-    pugi::xml_node node_parameter = node_parameters.append_child(oms::ssp::Version1_0::ssv::parameter);
-    node_parameter.append_attribute("name") = b.first.c_str();
-    pugi::xml_node node_parameter_type = node_parameter.append_child(oms::ssp::Version1_0::ssv::boolean_type);
-    node_parameter_type.append_attribute("value") = b.second;
-  }
+  exportStartValuesHelper(node_parameters);
 
   return oms_status_ok;
 }
@@ -162,6 +137,51 @@ oms_status_enu_t oms::Parameters::importFromSSD(const pugi::xml_node& node, cons
         }
       }
     }
+  }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Parameters::exportToSSV(pugi::xml_node& node) const
+{
+  // skip this if there is nothing to export
+  if (realStartValues.empty() && integerStartValues.empty() && booleanStartValues.empty())
+    return oms_status_ok;
+
+  exportStartValuesHelper(node);
+
+  return oms_status_ok;
+}
+
+
+oms_status_enu_t oms::Parameters::exportStartValuesHelper(pugi::xml_node& node) const
+{
+  // realStartValues
+  for (const auto& r : realStartValues)
+  {
+    //std::cout << "\n Start Values : " << std::string(r.first) << " = " << r.second ;
+    pugi::xml_node node_parameter = node.append_child(oms::ssp::Version1_0::ssv::parameter);
+    node_parameter.append_attribute("name") = r.first.c_str();
+    pugi::xml_node node_parameter_type = node_parameter.append_child(oms::ssp::Version1_0::ssv::real_type);
+    node_parameter_type.append_attribute("value") = r.second;
+  }
+
+  // integerStartValues
+  for (const auto& i : integerStartValues)
+  {
+    pugi::xml_node node_parameter = node.append_child(oms::ssp::Version1_0::ssv::parameter);
+    node_parameter.append_attribute("name") = i.first.c_str();
+    pugi::xml_node node_parameter_type = node_parameter.append_child(oms::ssp::Version1_0::ssv::integer_type);
+    node_parameter_type.append_attribute("value") = i.second;
+  }
+
+  // boolStartValues
+  for (const auto& b : booleanStartValues)
+  {
+    pugi::xml_node node_parameter = node.append_child(oms::ssp::Version1_0::ssv::parameter);
+    node_parameter.append_attribute("name") = b.first.c_str();
+    pugi::xml_node node_parameter_type = node_parameter.append_child(oms::ssp::Version1_0::ssv::boolean_type);
+    node_parameter_type.append_attribute("value") = b.second;
   }
 
   return oms_status_ok;

@@ -301,7 +301,7 @@ oms::Component* oms::ComponentFMUME::NewComponent(const pugi::xml_node& node, om
   return component;
 }
 
-oms_status_enu_t oms::ComponentFMUME::exportToSSD(pugi::xml_node& node) const
+oms_status_enu_t oms::ComponentFMUME::exportToSSD(pugi::xml_node& node, pugi::xml_node& ssvNode) const
 {
 #if !defined(NO_TLM)
   if (tlmbusconnectors[0])
@@ -329,7 +329,10 @@ oms_status_enu_t oms::ComponentFMUME::exportToSSD(pugi::xml_node& node) const
         return oms_status_error;
 
   // export ParameterBindings at component level
-  startValues.exportToSSD(node);
+  if (Flags::ExportParametersInline()) // export as inline
+    startValues.exportToSSD(node);
+  else
+    startValues.exportToSSV(ssvNode); // export to ssv file
 
   return oms_status_ok;
 }
