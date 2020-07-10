@@ -36,6 +36,7 @@
 #include "Types.h"
 #include "ComRef.h"
 #include "ssd/Tags.h"
+#include <OMSFileSystem.h>
 
 #include <pugixml.hpp>
 #include <map>
@@ -90,14 +91,23 @@ oms_status_enu_t oms::Parameters::exportToSSD(pugi::xml_node& node) const
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Parameters::importFromSSD(const pugi::xml_node& node, const std::string& sspVersion)
+oms_status_enu_t oms::Parameters::importFromSSD(const pugi::xml_node& node, const std::string& sspVersion, const std::string& tempdir)
 {
   for (pugi::xml_node parameterBindingNode = node.child(oms::ssp::Version1_0::ssd::parameter_binding); parameterBindingNode; parameterBindingNode = parameterBindingNode.next_sibling(oms::ssp::Version1_0::ssd::parameter_binding))
   {
     std::string ssvFile = parameterBindingNode.attribute("source").as_string() ;
     if (!ssvFile.empty())
     {
-      //TODO, parse ssv file and set the Parameters
+      //TODO, This works only on the top level system parameters, All subsystems and component level parameters are not set, we need a parameterMapping to set the values from toplevel
+      filesystem::path temp_root(tempdir);
+      pugi::xml_document ssvdoc;
+      pugi::xml_parse_result result = ssvdoc.load_file((temp_root / ssvFile).string().c_str());
+      if (!result)
+        return logError("loading \"" + std::string(ssvFile) + "\" failed (" + std::string(result.description()) + ")");
+
+      pugi::xml_node parameterSet = ssvdoc.document_element(); // ssd:SystemStructureDescription
+      pugi::xml_node parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
+      importStartValuesHelper(parameters);
     }
     else
     {
@@ -106,36 +116,37 @@ oms_status_enu_t oms::Parameters::importFromSSD(const pugi::xml_node& node, cons
       pugi::xml_node parameterSet = parameterValues.child(oms::ssp::Version1_0::ssv::parameter_set);
       std::string paramsetVersion = parameterSet.attribute("version").as_string();
       pugi::xml_node parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
-      if (parameters)
-      {
-        for(pugi::xml_node_iterator itparameters = parameters.begin(); itparameters != parameters.end(); ++itparameters)
-        {
-          std::string name = itparameters->name();
-          if (name == oms::ssp::Version1_0::ssv::parameter)
-          {
-            ComRef cref = ComRef(itparameters->attribute("name").as_string());
-            if (itparameters->child(oms::ssp::Version1_0::ssv::real_type))
-            {
-              double value = itparameters->child(oms::ssp::Version1_0::ssv::real_type).attribute("value").as_double();
-              setReal(cref, value);
-            }
-            else if(itparameters->child(oms::ssp::Version1_0::ssv::integer_type))
-            {
-              int value = itparameters->child(oms::ssp::Version1_0::ssv::integer_type).attribute("value").as_int();
-              setInteger(cref, value);
-            }
-            else if(itparameters->child(oms::ssp::Version1_0::ssv::boolean_type))
-            {
-              bool value = itparameters->child(oms::ssp::Version1_0::ssv::boolean_type).attribute("value").as_bool();
-              setBoolean(cref, value);
-            }
-            else
-            {
-              logError("Failed to import " + std::string(oms::ssp::Version1_0::ssv::parameter) + ":Unknown ParameterBinding-type");
-            }
-          }
-        }
-      }
+      importStartValuesHelper(parameters);
+//      if (parameters)
+//      {
+//        for(pugi::xml_node_iterator itparameters = parameters.begin(); itparameters != parameters.end(); ++itparameters)
+//        {
+//          std::string name = itparameters->name();
+//          if (name == oms::ssp::Version1_0::ssv::parameter)
+//          {
+//            ComRef cref = ComRef(itparameters->attribute("name").as_string());
+//            if (itparameters->child(oms::ssp::Version1_0::ssv::real_type))
+//            {
+//              double value = itparameters->child(oms::ssp::Version1_0::ssv::real_type).attribute("value").as_double();
+//              setReal(cref, value);
+//            }
+//            else if(itparameters->child(oms::ssp::Version1_0::ssv::integer_type))
+//            {
+//              int value = itparameters->child(oms::ssp::Version1_0::ssv::integer_type).attribute("value").as_int();
+//              setInteger(cref, value);
+//            }
+//            else if(itparameters->child(oms::ssp::Version1_0::ssv::boolean_type))
+//            {
+//              bool value = itparameters->child(oms::ssp::Version1_0::ssv::boolean_type).attribute("value").as_bool();
+//              setBoolean(cref, value);
+//            }
+//            else
+//            {
+//              logError("Failed to import " + std::string(oms::ssp::Version1_0::ssv::parameter) + ":Unknown ParameterBinding-type");
+//            }
+//          }
+//        }
+//      }
     }
   }
 
@@ -187,3 +198,38 @@ oms_status_enu_t oms::Parameters::exportStartValuesHelper(pugi::xml_node& node) 
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::Parameters::importStartValuesHelper(pugi::xml_node& parameters)
+{
+  if (parameters)
+  {
+    for(pugi::xml_node_iterator itparameters = parameters.begin(); itparameters != parameters.end(); ++itparameters)
+    {
+      std::string name = itparameters->name();
+      if (name == oms::ssp::Version1_0::ssv::parameter)
+      {
+        ComRef cref = ComRef(itparameters->attribute("name").as_string());
+        if (itparameters->child(oms::ssp::Version1_0::ssv::real_type))
+        {
+          double value = itparameters->child(oms::ssp::Version1_0::ssv::real_type).attribute("value").as_double();
+          setReal(cref, value);
+        }
+        else if(itparameters->child(oms::ssp::Version1_0::ssv::integer_type))
+        {
+          int value = itparameters->child(oms::ssp::Version1_0::ssv::integer_type).attribute("value").as_int();
+          setInteger(cref, value);
+        }
+        else if(itparameters->child(oms::ssp::Version1_0::ssv::boolean_type))
+        {
+          bool value = itparameters->child(oms::ssp::Version1_0::ssv::boolean_type).attribute("value").as_bool();
+          setBoolean(cref, value);
+        }
+        else
+        {
+          logError("Failed to import " + std::string(oms::ssp::Version1_0::ssv::parameter) + ":Unknown ParameterBinding-type");
+        }
+      }
+    }
+  }
+
+  return oms_status_ok;
+}

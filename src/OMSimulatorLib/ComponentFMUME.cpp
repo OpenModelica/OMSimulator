@@ -285,7 +285,8 @@ oms::Component* oms::ComponentFMUME::NewComponent(const pugi::xml_node& node, om
     else if(name == oms::ssp::Version1_0::ssd::parameter_bindings)
     {
       // set parameter bindings associated with the component
-      component->startValues.importFromSSD(*it, sspVersion);
+      std::string tempdir = parentSystem->getModel()->getTempDirectory();
+      component->startValues.importFromSSD(*it, sspVersion, tempdir);
     }
     else
     {

@@ -480,7 +480,8 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
     else if(name == oms::ssp::Version1_0::ssd::parameter_bindings)
     {
       // set parameter bindings associated with the system
-      if (oms_status_ok !=  startValues.importFromSSD(*it, sspVersion))
+      std::string tempdir = getModel()->getTempDirectory();
+      if (oms_status_ok !=  startValues.importFromSSD(*it, sspVersion, tempdir))
         return logError("Failed to import " + std::string(oms::ssp::Version1_0::ssd::parameter_bindings));
     }
     else if (name == oms::ssp::Draft20180219::ssd::connections)
