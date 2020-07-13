@@ -141,19 +141,21 @@ oms_delete("import_export_parameters")
 -- 		</ssd:Connectors>
 -- 		<ssd:ParameterBindings>
 -- 			<ssd:ParameterBinding>
--- 				<ssv:ParameterSet version="1.0" name="parameters">
--- 					<ssv:Parameters>
--- 						<ssv:Parameter name="k_cref">
--- 							<ssv:Real value="30" />
--- 						</ssv:Parameter>
--- 						<ssv:Parameter name="T_cref">
--- 							<ssv:Real value="20" />
--- 						</ssv:Parameter>
--- 						<ssv:Parameter name="Input_cref">
--- 							<ssv:Real value="-20" />
--- 						</ssv:Parameter>
--- 					</ssv:Parameters>
--- 				</ssv:ParameterSet>
+-- 				<ssd:ParameterValues>
+-- 					<ssv:ParameterSet version="1.0" name="parameters">
+-- 						<ssv:Parameters>
+-- 							<ssv:Parameter name="k_cref">
+-- 								<ssv:Real value="30" />
+-- 							</ssv:Parameter>
+-- 							<ssv:Parameter name="T_cref">
+-- 								<ssv:Real value="20" />
+-- 							</ssv:Parameter>
+-- 							<ssv:Parameter name="Input_cref">
+-- 								<ssv:Real value="-20" />
+-- 							</ssv:Parameter>
+-- 						</ssv:Parameters>
+-- 					</ssv:ParameterSet>
+-- 				</ssd:ParameterValues>
 -- 			</ssd:ParameterBinding>
 -- 		</ssd:ParameterBindings>
 -- 		<ssd:Elements>
@@ -172,13 +174,15 @@ oms_delete("import_export_parameters")
 -- 				</ssd:Connectors>
 -- 				<ssd:ParameterBindings>
 -- 					<ssd:ParameterBinding>
--- 						<ssv:ParameterSet version="1.0" name="parameters">
--- 							<ssv:Parameters>
--- 								<ssv:Parameter name="F_cref">
--- 									<ssv:Real value="30" />
--- 								</ssv:Parameter>
--- 							</ssv:Parameters>
--- 						</ssv:ParameterSet>
+-- 						<ssd:ParameterValues>
+-- 							<ssv:ParameterSet version="1.0" name="parameters">
+-- 								<ssv:Parameters>
+-- 									<ssv:Parameter name="F_cref">
+-- 										<ssv:Real value="30" />
+-- 									</ssv:Parameter>
+-- 								</ssv:Parameters>
+-- 							</ssv:ParameterSet>
+-- 						</ssd:ParameterValues>
 -- 					</ssd:ParameterBinding>
 -- 				</ssd:ParameterBindings>
 -- 				<ssd:Elements />
@@ -207,16 +211,18 @@ oms_delete("import_export_parameters")
 -- 				</ssd:Connectors>
 -- 				<ssd:ParameterBindings>
 -- 					<ssd:ParameterBinding>
--- 						<ssv:ParameterSet version="1.0" name="parameters">
--- 							<ssv:Parameters>
--- 								<ssv:Parameter name="k2">
--- 									<ssv:Real value="-1" />
--- 								</ssv:Parameter>
--- 								<ssv:Parameter name="k1">
--- 									<ssv:Real value="10" />
--- 								</ssv:Parameter>
--- 							</ssv:Parameters>
--- 						</ssv:ParameterSet>
+-- 						<ssd:ParameterValues>
+-- 							<ssv:ParameterSet version="1.0" name="parameters">
+-- 								<ssv:Parameters>
+-- 									<ssv:Parameter name="k2">
+-- 										<ssv:Real value="-1" />
+-- 									</ssv:Parameter>
+-- 									<ssv:Parameter name="k1">
+-- 										<ssv:Real value="10" />
+-- 									</ssv:Parameter>
+-- 								</ssv:Parameters>
+-- 							</ssv:ParameterSet>
+-- 						</ssd:ParameterValues>
 -- 					</ssd:ParameterBinding>
 -- 				</ssd:ParameterBindings>
 -- 			</ssd:Component>
@@ -250,13 +256,15 @@ oms_delete("import_export_parameters")
 -- 				</ssd:Connectors>
 -- 				<ssd:ParameterBindings>
 -- 					<ssd:ParameterBinding>
--- 						<ssv:ParameterSet version="1.0" name="parameters">
--- 							<ssv:Parameters>
--- 								<ssv:Parameter name="k2">
--- 									<ssv:Real value="2" />
--- 								</ssv:Parameter>
--- 							</ssv:Parameters>
--- 						</ssv:ParameterSet>
+-- 						<ssd:ParameterValues>
+-- 							<ssv:ParameterSet version="1.0" name="parameters">
+-- 								<ssv:Parameters>
+-- 									<ssv:Parameter name="k2">
+-- 										<ssv:Real value="2" />
+-- 									</ssv:Parameter>
+-- 								</ssv:Parameters>
+-- 							</ssv:ParameterSet>
+-- 						</ssd:ParameterValues>
 -- 					</ssd:ParameterBinding>
 -- 				</ssd:ParameterBindings>
 -- 			</ssd:Component>

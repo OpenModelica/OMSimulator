@@ -78,7 +78,9 @@ oms_status_enu_t oms::Parameters::exportToSSD(pugi::xml_node& node) const
   // Top level Parameter nodes
   pugi::xml_node node_parameters_bindings = node.append_child(oms::ssp::Version1_0::ssd::parameter_bindings);
   pugi::xml_node node_parameter_binding  = node_parameters_bindings.append_child(oms::ssp::Version1_0::ssd::parameter_binding);
-  pugi::xml_node node_parameterset = node_parameter_binding.append_child(oms::ssp::Version1_0::ssv::parameter_set);
+  pugi::xml_node node_parameter_values  = node_parameter_binding.append_child(oms::ssp::Version1_0::ssd::parameter_values);
+
+  pugi::xml_node node_parameterset = node_parameter_values.append_child(oms::ssp::Version1_0::ssv::parameter_set);
   node_parameterset.append_attribute("version") = "1.0";
   node_parameterset.append_attribute("name") = "parameters";
   pugi::xml_node node_parameters = node_parameterset.append_child(oms::ssp::Version1_0::ssv::parameters);
@@ -125,7 +127,8 @@ oms_status_enu_t oms::Parameters::importFromSSD(const pugi::xml_node& node, cons
     else
     {
       // inline ParameterBindings
-      pugi::xml_node parameterSet = parameterBindingNode.child(oms::ssp::Version1_0::ssv::parameter_set);
+      pugi::xml_node parameterValues = parameterBindingNode.child(oms::ssp::Version1_0::ssd::parameter_values);
+      pugi::xml_node parameterSet = parameterValues.child(oms::ssp::Version1_0::ssv::parameter_set);
       std::string paramsetVersion = parameterSet.attribute("version").as_string();
       pugi::xml_node parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
       if (parameters)
