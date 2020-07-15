@@ -22,7 +22,7 @@ oms_setReal("import_export_parameters.co_sim.k_cref", 30.0)
 
 oms_addSystem("import_export_parameters.co_sim.foo", oms_system_sc)
 oms_addConnector("import_export_parameters.co_sim.foo.F_cref", oms_causality_parameter, oms_signal_type_real)
-oms_setReal("import_export_parameters.co_sim.foo.F_cref", 30.0)
+oms_setReal("import_export_parameters.co_sim.foo.F_cref", 40.0)
 
 -- instantiate FMUs
 oms_addSubModel("import_export_parameters.co_sim.addP", "../resources/Modelica.Blocks.Math.Add.fmu")
@@ -80,6 +80,7 @@ print("info:      import_export_parameters.co_sim.Input_cref  : " .. oms_getReal
 print("info:      import_export_parameters.co_sim.T_cref      : " .. oms_getReal("import_export_parameters.co_sim.T_cref"))
 print("info:      import_export_parameters.co_sim.k_cref      : " .. oms_getReal("import_export_parameters.co_sim.k_cref"))
 print("info:      import_export_parameters.co_sim.Output_cref : " .. oms_getReal("import_export_parameters.co_sim.Output_cref"))
+print("info:      import_export_parameters.co_sim.foo.F_cref  : " .. oms_getReal("import_export_parameters.co_sim.foo.F_cref"))
 
 oms_initialize("import_export_parameters")
 print("info:    Initialization")
@@ -94,6 +95,7 @@ print("info:      import_export_parameters.co_sim.Input_cref  : " .. oms_getReal
 print("info:      import_export_parameters.co_sim.T_cref      : " .. oms_getReal("import_export_parameters.co_sim.T_cref"))
 print("info:      import_export_parameters.co_sim.k_cref      : " .. oms_getReal("import_export_parameters.co_sim.k_cref"))
 print("info:      import_export_parameters.co_sim.Output_cref : " .. oms_getReal("import_export_parameters.co_sim.Output_cref"))
+print("info:      import_export_parameters.co_sim.foo.F_cref  : " .. oms_getReal("import_export_parameters.co_sim.foo.F_cref"))
 
 oms_simulate("import_export_parameters")
 print("info:    Simulation")
@@ -109,6 +111,7 @@ print("info:      import_export_parameters.co_sim.Input_cref  : " .. oms_getReal
 print("info:      import_export_parameters.co_sim.T_cref      : " .. oms_getReal("import_export_parameters.co_sim.T_cref"))
 print("info:      import_export_parameters.co_sim.k_cref      : " .. oms_getReal("import_export_parameters.co_sim.k_cref"))
 print("info:      import_export_parameters.co_sim.Output_cref : " .. oms_getReal("import_export_parameters.co_sim.Output_cref"))
+print("info:      import_export_parameters.co_sim.foo.F_cref  : " .. oms_getReal("import_export_parameters.co_sim.foo.F_cref"))
 
 oms_terminate("import_export_parameters")
 oms_delete("import_export_parameters")

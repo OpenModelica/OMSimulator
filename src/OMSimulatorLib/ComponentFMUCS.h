@@ -134,6 +134,7 @@ namespace oms
     double fmuStateTime;
 
     std::map<fmi2_value_reference_t, oms_fault_type_t> fib;  ///< fault injection blocks
+    oms::ComRef getValidCref(ComRef cref);
   };
 }
 

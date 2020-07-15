@@ -308,7 +308,7 @@ oms_status_enu_t oms::Model::updateParameterBindingsToSSD(pugi::xml_node& node, 
       {
         pugi::xml_node node_parameters_bindings = node.insert_child_after(oms::ssp::Version1_0::ssd::parameter_bindings, *it);
         pugi::xml_node node_parameter_binding  = node_parameters_bindings.append_child(oms::ssp::Version1_0::ssd::parameter_binding);
-        std::string ssvFileName = std::string(this->getCref()) + ".ssv";
+        std::string ssvFileName = "resources/" + std::string(this->getCref()) + ".ssv";
         node_parameter_binding.append_attribute("source") = ssvFileName.c_str();
         break;
       }
@@ -536,13 +536,14 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
 
   // check for parameter-bindings are defined, (i.e) count the child nodes node_parameters in ssvdoc
   int parameterNodeCount = std::distance(node_parameters.begin(), node_parameters.end());
-  std::string ssvFileName = std::string(this->getCref()) + ".ssv";
+  std::string ssvFileName = "";
 
   // check parameter bindings exist and export to ssv file and also update the ssd file with parameterBindings at the top level
   if (parameterNodeCount > 0)
   {
+    ssvFileName = "resources/" + std::string(this->getCref()) + ".ssv";
     filesystem::path ssvPath = filesystem::path(tempDir) /  ssvFileName;
-    //std::cout << "\n ssvPath  : " << ssvPath << " filename : " << ssvfileName;
+    //std::cout << "\n ssvPath  : " << ssvPath << " filename : " << ssvFileName;
     ssvdoc.save_file(ssvPath.string().c_str());
 
     // update the ssd with the top level parameterBindings (e.g)  <ParameterBinding source="resources/ControlledTemperature.ssv">
@@ -571,11 +572,12 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
   //        -1  Compress faster
   //        -9  Compress better
   //        -j  exclude path. store only the file name
-  std::vector<std::string> resources;
-  // TODO, export ssv file to resource directory
-  if (parameterNodeCount > 0)
-    resources.push_back(ssvFileName);
 
+  std::vector<std::string> resources;
+  if (!ssvFileName.empty())
+  {
+    resources.push_back(ssvFileName);
+  }
   if (oms_status_ok != getAllResources(resources))
     return logError("failed to gather all resources");
 

@@ -442,17 +442,20 @@ oms_status_enu_t oms::ComponentFMUCS::instantiate()
   // set start values
   for (const auto& v : startValues.booleanStartValues)
   {
-    if (oms_status_ok != setBoolean(v.first, v.second))
+    oms::ComRef cref = getValidCref(v.first);
+    if (oms_status_ok != setBoolean(cref, v.second))
       return logError("Failed to set start value for " + std::string(v.first));
   }
   for (const auto& v : startValues.integerStartValues)
   {
-    if (oms_status_ok != setInteger(v.first, v.second))
+    oms::ComRef cref = getValidCref(v.first);
+    if (oms_status_ok != setInteger(cref, v.second))
       return logError("Failed to set start value for " + std::string(v.first));
   }
   for (const auto& v : startValues.realStartValues)
   {
-    if (oms_status_ok != setReal(v.first, v.second))
+    oms::ComRef cref = getValidCref(v.first);
+    if (oms_status_ok != setReal(cref, v.second))
       return logError("Failed to set start value for " + std::string(v.first));
   }
 
@@ -467,6 +470,22 @@ oms_status_enu_t oms::ComponentFMUCS::instantiate()
   if (fmi2_status_ok != fmistatus) return logError_FMUCall("fmi2_import_enter_initialization_mode", this);
 
   return oms_status_ok;
+}
+
+
+/*
+ * function which returns validCrefs
+ * (e.g). add.P => P
+ * inline parameters should be returned as default value (e.g.) P => P
+ */
+oms::ComRef oms::ComponentFMUCS::getValidCref(ComRef cref)
+{
+  oms::ComRef tail(cref);
+  oms::ComRef head = tail.pop_front();
+
+  if (tail.isEmpty()) // check for inline parameter crefs, (e.g.) P => P
+    tail = cref;
+  return tail;
 }
 
 oms_status_enu_t oms::ComponentFMUCS::initialize()
@@ -756,7 +775,11 @@ oms_status_enu_t oms::ComponentFMUCS::setBoolean(const ComRef& cref, bool value)
     return logError_UnknownSignal(getFullCref() + cref);
 
   if (oms_modelState_virgin == getModel()->getModelState())
-    startValues.setBoolean(allVariables[j].getCref(), value);
+    if (Flags::ExportParametersInline())
+      startValues.setBoolean(allVariables[j].getCref(), value);
+    else
+      // append startValues with prefix (e.g) addP.K1
+      startValues.setBoolean(getCref()+allVariables[j].getCref(), value);
   else
   {
     fmi2_value_reference_t vr = allVariables[j].getValueReference();
@@ -785,7 +808,11 @@ oms_status_enu_t oms::ComponentFMUCS::setInteger(const ComRef& cref, int value)
     return logError_UnknownSignal(getFullCref() + cref);
 
   if (oms_modelState_virgin == getModel()->getModelState())
-    startValues.setInteger(allVariables[j].getCref(), value);
+    if (Flags::ExportParametersInline())
+      startValues.setInteger(allVariables[j].getCref(), value);
+    else
+      // append startValues with prefix (e.g) addP.K1
+      startValues.setInteger(getCref()+allVariables[j].getCref(), value);
   else
   {
     fmi2_value_reference_t vr = allVariables[j].getValueReference();
@@ -817,7 +844,11 @@ oms_status_enu_t oms::ComponentFMUCS::setReal(const ComRef& cref, double value)
       return logWarning("It is not allowed to provide a start value if initial=\"calculated\" or causality=\"independent\".");
 
   if (oms_modelState_virgin == getModel()->getModelState())
-    startValues.setReal(allVariables[j].getCref(), value);
+    if (Flags::ExportParametersInline())
+      startValues.setReal(allVariables[j].getCref(), value);
+    else
+      // append startValues with prefix (e.g) addP.K1
+      startValues.setReal(getCref()+allVariables[j].getCref(), value);
   else
   {
     fmi2_value_reference_t vr = allVariables[j].getValueReference();

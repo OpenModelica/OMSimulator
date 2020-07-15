@@ -164,7 +164,7 @@ namespace oms
     ctpl::thread_pool& getThreadPool();
 
     std::string getUniqueID() const;
-
+    std::string ssvFileSource = "";
   protected:
     System(const ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem, oms_solver_enu_t solverMethod);
 
@@ -209,6 +209,7 @@ namespace oms
     std::vector<Connection*> connections;           ///< last element is always NULL
 
     oms_status_enu_t importFromSSD_ConnectionGeometry(const pugi::xml_node& node, const ComRef& crefA, const ComRef& crefB);
+    oms::ComRef getValidCref(const ComRef& cref);
   };
 }
 

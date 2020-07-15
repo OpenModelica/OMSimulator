@@ -130,6 +130,7 @@ namespace oms
     std::unordered_map<unsigned int /*result file var ID*/, unsigned int /*allVariables ID*/> resultFileMapping;
 
     std::map<fmi2_value_reference_t, oms_fault_type_t> fib;  ///< fault injection blocks
+    oms::ComRef getValidCref(ComRef cref);
   };
 }
 

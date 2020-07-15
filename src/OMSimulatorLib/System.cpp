@@ -479,13 +479,63 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
     }
     else if(name == oms::ssp::Version1_0::ssd::parameter_bindings)
     {
+      pugi::xml_node parameterBindingNode = it->child(oms::ssp::Version1_0::ssd::parameter_binding);
+      ssvFileSource = parameterBindingNode.attribute("source").as_string() ;
       // set parameter bindings associated with the system
-      std::string tempdir = getModel()->getTempDirectory();
-      if (oms_status_ok !=  startValues.importFromSSD(*it, sspVersion, tempdir))
-        return logError("Failed to import " + std::string(oms::ssp::Version1_0::ssd::parameter_bindings));
+      if (ssvFileSource.empty()) // inline parameterBinding
+      {
+        //std::cout << "\n System ssvFileSource  inline :" << ssvFileSource;
+        std::string tempdir = getModel()->getTempDirectory();
+        if (oms_status_ok !=  startValues.importFromSSD(*it, sspVersion, tempdir))
+          return logError("Failed to import " + std::string(oms::ssp::Version1_0::ssd::parameter_bindings));
+      }
     }
     else if (name == oms::ssp::Draft20180219::ssd::connections)
     {
+      // check for ssvFileSource exist and set the values before the connections
+      if (!ssvFileSource.empty())
+      {
+        std::string tempdir = getModel()->getTempDirectory();
+        filesystem::path temp_root(tempdir);
+        pugi::xml_document ssvdoc;
+        pugi::xml_parse_result result = ssvdoc.load_file((temp_root / ssvFileSource).string().c_str());
+        if (!result)
+          return logError("loading \"" + std::string(ssvFileSource) + "\" failed (" + std::string(result.description()) + ")");
+
+        pugi::xml_node parameterSet = ssvdoc.document_element(); // ssd:SystemStructureDescription
+        pugi::xml_node parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
+        if (parameters)
+        {
+          for(pugi::xml_node_iterator itparameters = parameters.begin(); itparameters != parameters.end(); ++itparameters)
+          {
+            std::string name = itparameters->name();
+            if (name == oms::ssp::Version1_0::ssv::parameter)
+            {
+              ComRef cref = ComRef(itparameters->attribute("name").as_string());
+              if (itparameters->child(oms::ssp::Version1_0::ssv::real_type))
+              {
+                double value = itparameters->child(oms::ssp::Version1_0::ssv::real_type).attribute("value").as_double();
+                setReal(cref, value);
+              }
+              else if(itparameters->child(oms::ssp::Version1_0::ssv::integer_type))
+              {
+                int value = itparameters->child(oms::ssp::Version1_0::ssv::integer_type).attribute("value").as_int();
+                setInteger(cref, value);
+              }
+              else if(itparameters->child(oms::ssp::Version1_0::ssv::boolean_type))
+              {
+                bool value = itparameters->child(oms::ssp::Version1_0::ssv::boolean_type).attribute("value").as_bool();
+                setBoolean(cref, value);
+              }
+              else
+              {
+                logError("Failed to import " + std::string(oms::ssp::Version1_0::ssv::parameter) + ":Unknown ParameterBinding-type");
+              }
+            }
+          }
+        }
+      }
+
       for(pugi::xml_node_iterator itConnectors = (*it).begin(); itConnectors != (*it).end(); ++itConnectors)
       {
         ComRef startElement = ComRef(itConnectors->attribute("startElement").as_string());
@@ -1640,7 +1690,8 @@ oms_status_enu_t oms::System::getBoolean(const ComRef& cref, bool& value)
   {
     if (connector && connector->getName() == cref && connector->isTypeBoolean())
     {
-      auto booleanValue = startValues.booleanStartValues.find(cref);
+      oms::ComRef ident = getValidCref(cref);
+      auto booleanValue = startValues.booleanStartValues.find(ident);
       if (booleanValue != startValues.booleanStartValues.end())
         value = booleanValue->second;
       else
@@ -1672,7 +1723,8 @@ oms_status_enu_t oms::System::getInteger(const ComRef& cref, int& value)
   {
     if (connector && connector->getName() == cref && connector->isTypeInteger())
     {
-      auto integerValue = startValues.integerStartValues.find(cref);
+      oms::ComRef ident = getValidCref(cref);
+      auto integerValue = startValues.integerStartValues.find(ident);
       if (integerValue != startValues.integerStartValues.end())
         value = integerValue->second;
       else
@@ -1704,7 +1756,8 @@ oms_status_enu_t oms::System::getReal(const ComRef& cref, double& value)
   {
     if (connector && connector->getName() == cref && connector->isTypeReal())
     {
-      auto realValue = startValues.realStartValues.find(cref);
+      oms::ComRef ident = getValidCref(cref);
+      auto realValue = startValues.realStartValues.find(ident);
       if (realValue != startValues.realStartValues.end())
         value = realValue->second;
       else
@@ -1714,6 +1767,31 @@ oms_status_enu_t oms::System::getReal(const ComRef& cref, double& value)
   }
 
   return logError_UnknownSignal(getFullCref() + cref);
+}
+
+/*
+ * function which returns valid cref for which are needed to set StartValues
+ * if ExportParametersInline is set return the defaule cref
+ * else when importing from ssv , check for cref belongs to toplevel System or SubSystem
+ */
+oms::ComRef oms::System::getValidCref(const ComRef& cref)
+{
+  oms::ComRef ident;
+  if (Flags::ExportParametersInline())
+  {
+    ident = cref;
+  }
+  else
+  {
+    std::string s = std::string(getFullCref());
+    int count  = std::count(s.begin(), s.end(), '.');
+    // count > 1 means subsystems (e.g.) A.B.C else Top level System (e.g) A.B
+    if (count > 1)
+      ident = getCref() + cref;
+    else
+      ident = cref;
+  }
+  return ident;
 }
 
 oms::Variable* oms::System::getVariable(const ComRef& cref)
@@ -1756,7 +1834,8 @@ oms_status_enu_t oms::System::setBoolean(const ComRef& cref, bool value)
   for (auto& connector : connectors)
     if (connector && connector->getName() == cref && connector->isTypeBoolean())
     {
-      startValues.setBoolean(cref, value);
+      oms::ComRef ident = getValidCref(cref);
+      startValues.setBoolean(ident, value);
       return oms_status_ok;
     }
 
@@ -1782,7 +1861,8 @@ oms_status_enu_t oms::System::setInteger(const ComRef& cref, int value)
   for (auto& connector : connectors)
     if (connector && connector->getName() == cref && connector->isTypeInteger())
     {
-      startValues.setInteger(cref, value);
+      oms::ComRef ident = getValidCref(cref);
+      startValues.setInteger(ident, value);
       return oms_status_ok;
     }
 
@@ -1808,10 +1888,10 @@ oms_status_enu_t oms::System::setReal(const ComRef& cref, double value)
   for (auto& connector : connectors)
     if (connector && connector->getName() == cref && connector->isTypeReal())
     {
-      startValues.setReal(cref, value);
+      oms::ComRef ident = getValidCref(cref);
+      startValues.setReal(ident, value);
       return oms_status_ok;
     }
-
   return logError_UnknownSignal(getFullCref() + cref);
 }
 
