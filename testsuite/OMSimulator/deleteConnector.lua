@@ -105,7 +105,7 @@ print(src)
 -- 					</ssd:Connector>
 -- 				</ssd:Connectors>
 -- 				<ssd:Elements>
--- 					<ssd:Component name="Gain" type="application/x-fmu-sharedlibrary" source="resources\0001_Gain.fmu">
+-- 					<ssd:Component name="Gain" type="application/x-fmu-sharedlibrary" source="resources/0001_Gain.fmu">
 -- 						<ssd:Connectors>
 -- 							<ssd:Connector name="u" kind="input">
 -- 								<ssc:Real />
