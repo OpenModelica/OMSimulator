@@ -77,6 +77,8 @@ namespace oms
     oms_status_enu_t setInteger(const ComRef& cref, int value);
     oms_status_enu_t setReal(const ComRef& cref, double value);
 
+    oms_status_enu_t deleteStartValues(const ComRef& cref);
+
     oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultFile);
     oms_status_enu_t updateSignals(ResultWriter& resultWriter);
     oms_status_enu_t addSignalsToResults(const char* regex);

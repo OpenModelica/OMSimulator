@@ -1552,7 +1552,8 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
     for (int i=0; i<connectors.size()-1; ++i)
       if (connectors[i]->getName() == front)
       {
-        //deleteAllConectionsTo(front);
+        //deleteAllConectionsTo(front)
+        startValues.deleteStartValues(front); // delete startValues associated with the Connector
         exportConnectors.erase(front);
         delete connectors[i];
         connectors.pop_back();   // last element is always NULL
@@ -1565,6 +1566,7 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
       if (busconnectors[i]->getName() == front)
       {
         //deleteAllConectionsTo(front);
+        startValues.deleteStartValues(front); // delete startValues associated with the Connector
         exportConnectors.erase(front);
         delete busconnectors[i];
         busconnectors.pop_back();   // last element is always NULL
@@ -1577,6 +1579,7 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
       if (tlmbusconnectors[i]->getName() == front)
       {
         //deleteAllConectionsTo(front);
+        startValues.deleteStartValues(front); // delete startValues associated with the Connector
         exportConnectors.erase(front);
         delete tlmbusconnectors[i];
         tlmbusconnectors.pop_back();   // last element is always NULL
@@ -1599,7 +1602,9 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
     if (component != components.end())
     {
       deleteConnectionsToConnector(front, tail); // delete connections associated with Connector
+      component->second->deleteStartValues(tail); // delete startValues associated with the Connector
       component->second->deleteConnector(tail);
+      return oms_status_ok;
     }
   }
 
@@ -1614,7 +1619,6 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
  */
 oms_status_enu_t oms::System::deleteConnectionsToConnector(const ComRef& cref, const ComRef& crefA)
 {
-  //std::cout << "\n deleteConnectionsToConnector_1 : " << std::string(cref) << " -> " << std::string(crefA);
   for (int i=0; i < connections.size(); ++i)
   {
     if (connections[i] && connections[i]->containsSignal(cref))
@@ -1625,6 +1629,7 @@ oms_status_enu_t oms::System::deleteConnectionsToConnector(const ComRef& cref, c
       oms::ComRef tailB(connections[i]->getSignalB());
       oms::ComRef headB = tailB.pop_front();
 
+      // delete only the matched connector connections
       if (crefA == tailA || crefA == tailB)
       {
         //std::cout << "\n matched connection : " << std::string(connections[i]->getSignalA()) << " -> " << std::string(connections[i]->getSignalB());

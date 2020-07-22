@@ -798,6 +798,14 @@ oms_status_enu_t oms::ComponentFMUME::setInteger(const ComRef& cref, int value)
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::ComponentFMUME::deleteStartValues(const ComRef& cref)
+{
+  if (oms_status_ok != startValues.deleteStartValues(cref))
+    return logError("ComponentFMUME::deleteStartValues failed for signal : " + std::string(cref));
+
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms::ComponentFMUME::setReal(const ComRef& cref, double value)
 {
   CallClock callClock(clock);

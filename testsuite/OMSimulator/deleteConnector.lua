@@ -17,6 +17,11 @@ oms_addConnector("deleteConnector.Root.System1.C2", oms_causality_input, oms_sig
 oms_addSystem("deleteConnector.Root.System2", oms_system_sc)
 oms_addConnector("deleteConnector.Root.System2.C3", oms_causality_output, oms_signal_type_real)
 oms_addConnector("deleteConnector.Root.System2.C4", oms_causality_output, oms_signal_type_real)
+oms_setReal("deleteConnector.Root.System2.C3", 20.0)
+oms_setReal("deleteConnector.Root.System2.C4", 30.0)
+
+oms_addSubModel("deleteConnector.Root.System1.Gain", "../resources/Modelica.Blocks.Math.Gain.fmu")
+oms_setReal("deleteConnector.Root.System1.Gain.k", 30.0)
 
 oms_addConnection("deleteConnector.Root.System2.C3", "deleteConnector.Root.System1.C1")
 oms_addConnection("deleteConnector.Root.System2.C4", "deleteConnector.Root.System1.C2")
@@ -27,6 +32,10 @@ print(src)
 -- delete connector "deleteConnector.Root.System2.C3" and associated connection
 oms_delete("deleteConnector.Root.System2.C3")
 
+-- delete components connector and its startValue
+oms_delete("deleteConnector.Root.System1.Gain.k")
+
+-- after deletion
 src = oms_list("deleteConnector")
 print(src)
 
@@ -60,6 +69,22 @@ print(src)
 -- 						<ssc:Real />
 -- 					</ssd:Connector>
 -- 				</ssd:Connectors>
+-- 				<ssd:ParameterBindings>
+-- 					<ssd:ParameterBinding>
+-- 						<ssd:ParameterValues>
+-- 							<ssv:ParameterSet version="1.0" name="parameters">
+-- 								<ssv:Parameters>
+-- 									<ssv:Parameter name="C4">
+-- 										<ssv:Real value="30" />
+-- 									</ssv:Parameter>
+-- 									<ssv:Parameter name="C3">
+-- 										<ssv:Real value="20" />
+-- 									</ssv:Parameter>
+-- 								</ssv:Parameters>
+-- 							</ssv:ParameterSet>
+-- 						</ssd:ParameterValues>
+-- 					</ssd:ParameterBinding>
+-- 				</ssd:ParameterBindings>
 -- 				<ssd:Elements />
 -- 				<ssd:Connections />
 -- 			</ssd:System>
@@ -79,7 +104,36 @@ print(src)
 -- 						<ssc:Real />
 -- 					</ssd:Connector>
 -- 				</ssd:Connectors>
--- 				<ssd:Elements />
+-- 				<ssd:Elements>
+-- 					<ssd:Component name="Gain" type="application/x-fmu-sharedlibrary" source="resources\0001_Gain.fmu">
+-- 						<ssd:Connectors>
+-- 							<ssd:Connector name="u" kind="input">
+-- 								<ssc:Real />
+-- 								<ssd:ConnectorGeometry x="0.000000" y="0.500000" />
+-- 							</ssd:Connector>
+-- 							<ssd:Connector name="y" kind="output">
+-- 								<ssc:Real />
+-- 								<ssd:ConnectorGeometry x="1.000000" y="0.500000" />
+-- 							</ssd:Connector>
+-- 							<ssd:Connector name="k" kind="parameter">
+-- 								<ssc:Real />
+-- 							</ssd:Connector>
+-- 						</ssd:Connectors>
+-- 						<ssd:ParameterBindings>
+-- 							<ssd:ParameterBinding>
+-- 								<ssd:ParameterValues>
+-- 									<ssv:ParameterSet version="1.0" name="parameters">
+-- 										<ssv:Parameters>
+-- 											<ssv:Parameter name="k">
+-- 												<ssv:Real value="30" />
+-- 											</ssv:Parameter>
+-- 										</ssv:Parameters>
+-- 									</ssv:ParameterSet>
+-- 								</ssd:ParameterValues>
+-- 							</ssd:ParameterBinding>
+-- 						</ssd:ParameterBindings>
+-- 					</ssd:Component>
+-- 				</ssd:Elements>
 -- 				<ssd:Connections />
 -- 			</ssd:System>
 -- 		</ssd:Elements>
@@ -122,6 +176,19 @@ print(src)
 -- 						<ssc:Real />
 -- 					</ssd:Connector>
 -- 				</ssd:Connectors>
+-- 				<ssd:ParameterBindings>
+-- 					<ssd:ParameterBinding>
+-- 						<ssd:ParameterValues>
+-- 							<ssv:ParameterSet version="1.0" name="parameters">
+-- 								<ssv:Parameters>
+-- 									<ssv:Parameter name="C4">
+-- 										<ssv:Real value="30" />
+-- 									</ssv:Parameter>
+-- 								</ssv:Parameters>
+-- 							</ssv:ParameterSet>
+-- 						</ssd:ParameterValues>
+-- 					</ssd:ParameterBinding>
+-- 				</ssd:ParameterBindings>
 -- 				<ssd:Elements />
 -- 				<ssd:Connections />
 -- 			</ssd:System>
@@ -141,7 +208,20 @@ print(src)
 -- 						<ssc:Real />
 -- 					</ssd:Connector>
 -- 				</ssd:Connectors>
--- 				<ssd:Elements />
+-- 				<ssd:Elements>
+-- 					<ssd:Component name="Gain" type="application/x-fmu-sharedlibrary" source="resources/0001_Gain.fmu">
+-- 						<ssd:Connectors>
+-- 							<ssd:Connector name="u" kind="input">
+-- 								<ssc:Real />
+-- 								<ssd:ConnectorGeometry x="0.000000" y="0.500000" />
+-- 							</ssd:Connector>
+-- 							<ssd:Connector name="y" kind="output">
+-- 								<ssc:Real />
+-- 								<ssd:ConnectorGeometry x="1.000000" y="0.500000" />
+-- 							</ssd:Connector>
+-- 						</ssd:Connectors>
+-- 					</ssd:Component>
+-- 				</ssd:Elements>
 -- 				<ssd:Connections />
 -- 			</ssd:System>
 -- 		</ssd:Elements>

@@ -70,6 +70,33 @@ oms_status_enu_t oms::Parameters::setBoolean(const ComRef& cref, bool value)
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::Parameters::deleteStartValues(const ComRef& cref)
+{
+  // realstartValues
+  auto realValue = realStartValues.find(cref);
+  if (realValue != realStartValues.end())
+  {
+    realStartValues.erase(realValue);
+    return oms_status_ok;
+  }
+  // integerstartValues
+  auto integerValue = integerStartValues.find(cref);
+  if (integerValue != integerStartValues.end())
+  {
+    integerStartValues.erase(integerValue);
+    return oms_status_ok;
+  }
+  // booleanstartValues
+  auto boolValue = booleanStartValues.find(cref);
+  if (boolValue != booleanStartValues.end())
+  {
+    booleanStartValues.erase(boolValue);
+    return oms_status_ok;
+  }
+
+  return logError("deleteStartValues failed for : " + std::string(cref));
+}
+
 oms_status_enu_t oms::Parameters::exportToSSD(pugi::xml_node& node) const
 {
   // skip this if there is nothing to export

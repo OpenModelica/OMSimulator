@@ -101,6 +101,8 @@ namespace oms
     virtual oms_status_enu_t setInteger(const ComRef& cref, int value) {return logError_NotImplemented;}
     virtual oms_status_enu_t setReal(const ComRef& cref, double value) {return logError_NotImplemented;}
 
+    virtual oms_status_enu_t deleteStartValues(const ComRef& cref) {return oms_status_ok;}
+
     virtual oms_status_enu_t getRealOutputDerivative(const ComRef& cref, SignalDerivative& der) {return logError_NotImplemented;}
     virtual oms_status_enu_t setRealInputDerivative(const ComRef& cref, const SignalDerivative& der) {return logError_NotImplemented;}
 
