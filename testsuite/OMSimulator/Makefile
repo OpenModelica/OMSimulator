@@ -11,6 +11,7 @@ QuarterCarModel.DisplacementDisplacement.lua \
 simulation.lua \
 simulation.py \
 table.lua \
+deleteConnector.lua \
 
 # Run make failingtest
 FAILINGTESTFILES = \
