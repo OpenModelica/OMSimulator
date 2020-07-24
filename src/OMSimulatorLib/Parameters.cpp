@@ -70,7 +70,7 @@ oms_status_enu_t oms::Parameters::setBoolean(const ComRef& cref, bool value)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Parameters::deleteStartValues(const ComRef& cref)
+oms_status_enu_t oms::Parameters::deleteStartValue(const ComRef& cref)
 {
   // realstartValues
   auto realValue = realStartValues.find(cref);
@@ -94,7 +94,7 @@ oms_status_enu_t oms::Parameters::deleteStartValues(const ComRef& cref)
     return oms_status_ok;
   }
 
-  return logError("deleteStartValues failed for : " + std::string(cref));
+  return logError("deleteStartValue failed for : " + std::string(cref));
 }
 
 oms_status_enu_t oms::Parameters::exportToSSD(pugi::xml_node& node) const

@@ -881,10 +881,10 @@ oms_status_enu_t oms::ComponentFMUCS::setReal(const ComRef& cref, double value)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::ComponentFMUCS::deleteStartValues(const ComRef& cref)
+oms_status_enu_t oms::ComponentFMUCS::deleteStartValue(const ComRef& cref)
 {
-  if (oms_status_ok != startValues.deleteStartValues(cref))
-    return logError("ComponentFMUCS::deleteStartValues failed for signal : " + std::string(cref));
+  if (oms_status_ok != startValues.deleteStartValue(cref))
+    return logError("ComponentFMUCS::deleteStartValue failed for signal : " + std::string(cref));
 
   return oms_status_ok;
 }
