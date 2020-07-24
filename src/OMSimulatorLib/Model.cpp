@@ -346,6 +346,12 @@ oms_status_enu_t oms::Model::addSystem(const oms::ComRef& cref, oms_system_enu_t
 
 oms_status_enu_t oms::Model::exportToSSD(pugi::xml_node& node, pugi::xml_node& ssvNode) const
 {
+  node.append_attribute("xmlns:ssc") = "http://ssp-standard.org/SSP1/SystemStructureCommon";
+  node.append_attribute("xmlns:ssd") = "http://ssp-standard.org/SSP1/SystemStructureDescription";
+  node.append_attribute("xmlns:ssv") = "http://ssp-standard.org/SSP1/SystemStructureParameterValues";
+  node.append_attribute("xmlns:ssm") = "http://ssp-standard.org/SSP1/SystemStructureParameterMapping";
+  node.append_attribute("xmlns:ssb") = "http://ssp-standard.org/SSP1/SystemStructureSignalDictionary";
+
   node.append_attribute("name") = this->getCref().c_str();
   node.append_attribute("version") = "1.0";
 
@@ -526,6 +532,9 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
   ssvDeclarationNode.append_attribute("encoding") = "UTF-8";
 
   pugi::xml_node node_parameterset = ssvdoc.append_child(oms::ssp::Version1_0::ssv::parameter_set);
+  node_parameterset.append_attribute("xmlns:ssc") = "http://ssp-standard.org/SSP1/SystemStructureCommon";
+  node_parameterset.append_attribute("xmlns:ssv") = "http://ssp-standard.org/SSP1/SystemStructureParameterValues";
+
   node_parameterset.append_attribute("version") = "1.0";
   node_parameterset.append_attribute("name") = "parameters";
   pugi::xml_node node_parameters = node_parameterset.append_child(oms::ssp::Version1_0::ssv::parameters);
