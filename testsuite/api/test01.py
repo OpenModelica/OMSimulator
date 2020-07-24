@@ -86,7 +86,7 @@ printStatus(status, 3)
 ## error:   [NewSystem] A WC system must be the root system or a subsystem of a TLM system.
 ## status:  [correct] error
 ## <?xml version="1.0"?>
-## <ssd:SystemStructureDescription name="test" version="1.0">
+## <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" name="test" version="1.0">
 ## 	<ssd:System name="foo">
 ## 		<ssd:Annotations>
 ## 			<ssd:Annotation type="org.openmodelica">
@@ -170,7 +170,7 @@ printStatus(status, 3)
 ## status:  [correct] ok
 ## status:  [correct] ok
 ## <?xml version="1.0"?>
-## <ssd:SystemStructureDescription name="test" version="1.0">
+## <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" name="test" version="1.0">
 ## 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
 ## 		<ssd:Annotations>
 ## 			<ssd:Annotation type="org.openmodelica">
