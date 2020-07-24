@@ -56,7 +56,7 @@ namespace oms
     static Component* NewComponent(const pugi::xml_node& node, System* parentSystem,  const std::string& sspVersion);
     const FMUInfo* getFMUInfo() const {return &(this->fmuInfo);}
 
-    oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
+    oms_status_enu_t exportToSSD(pugi::xml_node& node, pugi::xml_node& ssvNode) const;
     oms_status_enu_t instantiate();
     oms_status_enu_t initialize();
     oms_status_enu_t terminate();
@@ -130,6 +130,7 @@ namespace oms
     std::unordered_map<unsigned int /*result file var ID*/, unsigned int /*allVariables ID*/> resultFileMapping;
 
     std::map<fmi2_value_reference_t, oms_fault_type_t> fib;  ///< fault injection blocks
+    oms::ComRef getValidCref(ComRef cref);
   };
 }
 

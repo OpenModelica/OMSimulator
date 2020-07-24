@@ -4,8 +4,8 @@
 -- win: no
 -- mac: no
 
-oms_setCommandLineOption("--suppressPath=true")
-oms_setTempDirectory("./import_export_parameters_lua/")
+oms_setCommandLineOption("--suppressPath=true --exportParametersInline=true")
+oms_setTempDirectory("./import_export_parameters_inline_lua/")
 
 oms_newModel("import_export_parameters")
 
@@ -52,7 +52,7 @@ oms_setReal("import_export_parameters.co_sim.addI.k2",  2.0)
 oms_setStartTime("import_export_parameters", 0.0)
 oms_setStopTime("import_export_parameters", 4.0)
 oms_setFixedStepSize("import_export_parameters.co_sim", 1e-3)
-oms_setResultFile("import_export_parameters", "import_export_parameters.mat", 100)
+oms_setResultFile("import_export_parameters", "import_export_parameters_inline.mat", 100)
 
 -- oms_exportDependencyGraphs("import_export_parameters.co_sim", "import_export_parameters_init.dot", "import_export_parameters_sim.dot")
 -- os.execute("gvpr -c \"N[$.degree==0]{delete(root, $)}\" import_export_parameters_init.dot | dot -Tpdf -o import_export_parameters_init.pdf")
@@ -61,10 +61,10 @@ oms_setResultFile("import_export_parameters", "import_export_parameters.mat", 10
 src, status = oms_list("import_export_parameters")
 print(src)
 
-oms_export("import_export_parameters", "import_export_parameters.ssp");
+oms_export("import_export_parameters", "import_export_parameters_inline.ssp");
 oms_delete("import_export_parameters")
 
-oms_importFile("import_export_parameters.ssp");
+oms_importFile("import_export_parameters_inline.ssp");
 
 oms_instantiate("import_export_parameters")
 
@@ -143,7 +143,23 @@ oms_delete("import_export_parameters")
 -- 			</ssd:Connector>
 -- 		</ssd:Connectors>
 -- 		<ssd:ParameterBindings>
--- 			<ssd:ParameterBinding source="resources/import_export_parameters.ssv" />
+-- 			<ssd:ParameterBinding>
+-- 				<ssd:ParameterValues>
+-- 					<ssv:ParameterSet version="1.0" name="parameters">
+-- 						<ssv:Parameters>
+-- 							<ssv:Parameter name="k_cref">
+-- 								<ssv:Real value="30" />
+-- 							</ssv:Parameter>
+-- 							<ssv:Parameter name="T_cref">
+-- 								<ssv:Real value="20" />
+-- 							</ssv:Parameter>
+-- 							<ssv:Parameter name="Input_cref">
+-- 								<ssv:Real value="-20" />
+-- 							</ssv:Parameter>
+-- 						</ssv:Parameters>
+-- 					</ssv:ParameterSet>
+-- 				</ssd:ParameterValues>
+-- 			</ssd:ParameterBinding>
 -- 		</ssd:ParameterBindings>
 -- 		<ssd:Elements>
 -- 			<ssd:System name="foo">
@@ -159,6 +175,19 @@ oms_delete("import_export_parameters")
 -- 						<ssc:Real />
 -- 					</ssd:Connector>
 -- 				</ssd:Connectors>
+-- 				<ssd:ParameterBindings>
+-- 					<ssd:ParameterBinding>
+-- 						<ssd:ParameterValues>
+-- 							<ssv:ParameterSet version="1.0" name="parameters">
+-- 								<ssv:Parameters>
+-- 									<ssv:Parameter name="F_cref">
+-- 										<ssv:Real value="40" />
+-- 									</ssv:Parameter>
+-- 								</ssv:Parameters>
+-- 							</ssv:ParameterSet>
+-- 						</ssd:ParameterValues>
+-- 					</ssd:ParameterBinding>
+-- 				</ssd:ParameterBindings>
 -- 				<ssd:Elements />
 -- 				<ssd:Connections />
 -- 			</ssd:System>
@@ -183,6 +212,22 @@ oms_delete("import_export_parameters")
 -- 						<ssc:Real />
 -- 					</ssd:Connector>
 -- 				</ssd:Connectors>
+-- 				<ssd:ParameterBindings>
+-- 					<ssd:ParameterBinding>
+-- 						<ssd:ParameterValues>
+-- 							<ssv:ParameterSet version="1.0" name="parameters">
+-- 								<ssv:Parameters>
+-- 									<ssv:Parameter name="k2">
+-- 										<ssv:Real value="-1" />
+-- 									</ssv:Parameter>
+-- 									<ssv:Parameter name="k1">
+-- 										<ssv:Real value="10" />
+-- 									</ssv:Parameter>
+-- 								</ssv:Parameters>
+-- 							</ssv:ParameterSet>
+-- 						</ssd:ParameterValues>
+-- 					</ssd:ParameterBinding>
+-- 				</ssd:ParameterBindings>
 -- 			</ssd:Component>
 -- 			<ssd:Component name="addI" type="application/x-fmu-sharedlibrary" source="resources/0003_addI.fmu">
 -- 				<ssd:Connectors>
@@ -212,6 +257,19 @@ oms_delete("import_export_parameters")
 -- 						<ssc:Real />
 -- 					</ssd:Connector>
 -- 				</ssd:Connectors>
+-- 				<ssd:ParameterBindings>
+-- 					<ssd:ParameterBinding>
+-- 						<ssd:ParameterValues>
+-- 							<ssv:ParameterSet version="1.0" name="parameters">
+-- 								<ssv:Parameters>
+-- 									<ssv:Parameter name="k2">
+-- 										<ssv:Real value="2" />
+-- 									</ssv:Parameter>
+-- 								</ssv:Parameters>
+-- 							</ssv:ParameterSet>
+-- 						</ssd:ParameterValues>
+-- 					</ssd:ParameterBinding>
+-- 				</ssd:ParameterBindings>
 -- 			</ssd:Component>
 -- 			<ssd:Component name="P" type="application/x-fmu-sharedlibrary" source="resources/0002_P.fmu">
 -- 				<ssd:Connectors>
@@ -239,7 +297,7 @@ oms_delete("import_export_parameters")
 -- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="4.000000">
 -- 		<ssd:Annotations>
 -- 			<ssd:Annotation type="org.openmodelica">
--- 				<oms:SimulationInformation resultFile="import_export_parameters.mat" loggingInterval="0.000000" bufferSize="100" signalFilter="" />
+-- 				<oms:SimulationInformation resultFile="import_export_parameters_inline.mat" loggingInterval="0.000000" bufferSize="100" signalFilter="" />
 -- 			</ssd:Annotation>
 -- 		</ssd:Annotations>
 -- 	</ssd:DefaultExperiment>
@@ -258,7 +316,7 @@ oms_delete("import_export_parameters")
 -- info:      import_export_parameters.co_sim.k_cref      : 30.0
 -- info:      import_export_parameters.co_sim.Output_cref : 0.0
 -- info:      import_export_parameters.co_sim.foo.F_cref  : 40.0
--- info:    Result file: import_export_parameters.mat (bufferSize=100)
+-- info:    Result file: import_export_parameters_inline.mat (bufferSize=100)
 -- info:    Initialization
 -- info:      import_export_parameters.co_sim.addP.k1     : 30.0
 -- info:      import_export_parameters.co_sim.addP.k2     : -1.0

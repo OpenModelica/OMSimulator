@@ -84,7 +84,7 @@ namespace oms
     oms_status_enu_t addConnectorToTLMBus(const ComRef& busCref, const ComRef& connectorCref, const std::string type);
     oms_status_enu_t deleteConnectorFromTLMBus(const ComRef& busCref, const ComRef& connectorCref);
 
-    virtual oms_status_enu_t exportToSSD(pugi::xml_node& node) const = 0;
+    virtual oms_status_enu_t exportToSSD(pugi::xml_node& node, pugi::xml_node& ssvNode) const = 0;
     virtual oms_status_enu_t instantiate() = 0;
     virtual oms_status_enu_t initialize() = 0;
     virtual oms_status_enu_t terminate() = 0;

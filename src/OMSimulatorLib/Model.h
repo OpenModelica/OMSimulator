@@ -70,11 +70,12 @@ namespace oms
     oms_status_enu_t rename(const ComRef& cref);
     oms_status_enu_t list(const ComRef& cref, char** contents);
     oms_status_enu_t addSystem(const ComRef& cref, oms_system_enu_t type);
-    oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
+    oms_status_enu_t exportToSSD(pugi::xml_node& node, pugi::xml_node& ssvNode) const;
     oms_status_enu_t importFromSSD(const pugi::xml_node& node);
     oms_status_enu_t exportToFile(const std::string& filename) const;
     oms_system_enu_t getSystemType(const pugi::xml_node& node, const std::string& sspVersion);
     oms_system_enu_t getSystemTypeHelper(const pugi::xml_node& node, const std::string& sspVersion);
+    oms_status_enu_t updateParameterBindingsToSSD(pugi::xml_node& node, pugi::xml_node& ssvNode, bool isTopSystemOrModel) const;
     void copyResources(bool copy_resources) {this->copy_resources = copy_resources;}
     bool copyResources() {return copy_resources;}
 

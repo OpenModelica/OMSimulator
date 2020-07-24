@@ -227,24 +227,48 @@ oms_status_enu_t oms::Model::list(const oms::ComRef& cref, char** contents)
 
   xmlStringWriter writer;
   pugi::xml_document doc;
+  pugi::xml_document ssvdoc;
+
+  // check for toplevelSystem or Model to update parameterbindings in ssd
+  bool isTopSystemOrModel = false;
+
+  // generate XML declaration for ssv file
+  pugi::xml_node ssvDeclarationNode = ssvdoc.append_child(pugi::node_declaration);
+  ssvDeclarationNode.append_attribute("version") = "1.0";
+  ssvDeclarationNode.append_attribute("encoding") = "UTF-8";
+
+  pugi::xml_node node_parameterset = ssvdoc.append_child(oms::ssp::Version1_0::ssv::parameter_set);
+  node_parameterset.append_attribute("version") = "1.0";
+  node_parameterset.append_attribute("name") = "parameters";
+  pugi::xml_node node_parameters = node_parameterset.append_child(oms::ssp::Version1_0::ssv::parameters);
 
   // list model
   if (cref.isEmpty())
   {
+    isTopSystemOrModel = true;
     pugi::xml_node node = doc.append_child(oms::ssp::Draft20180219::ssd::system_structure_description);
-    exportToSSD(node);
+    exportToSSD(node, node_parameters);
+    // update parameterBindings in ssd
+    pugi::xml_node system_node = node.child(oms::ssp::Draft20180219::ssd::system);
+    updateParameterBindingsToSSD(system_node, node_parameters, isTopSystemOrModel);
   }
   else
   {
     // list system
     if (!system)
       return logError("Model \"" + std::string(getCref()) + "\" does not contain any system");
-
     System* subsystem = getSystem(cref);
+
+    // check for topLevel System, to update parameterBindings in ssd
+    if (cref.isValidIdent())
+      isTopSystemOrModel = true;
+
     if (subsystem)
     {
       pugi::xml_node node = doc.append_child(oms::ssp::Draft20180219::ssd::system);
-      subsystem->exportToSSD(node);
+      subsystem->exportToSSD(node, node_parameters);
+      // update parameterBindings in ssd
+      updateParameterBindingsToSSD(node, node_parameters, isTopSystemOrModel);
     }
     else
     {
@@ -254,13 +278,43 @@ oms_status_enu_t oms::Model::list(const oms::ComRef& cref, char** contents)
         return logError("error");
 
       pugi::xml_node node = doc.append_child(oms::ssp::Draft20180219::ssd::system);
-      component->exportToSSD(node);
+      component->exportToSSD(node, node_parameters);
     }
   }
 
   doc.save(writer);
   *contents = (char*) malloc(strlen(writer.result.c_str()) + 1);
   strcpy(*contents, writer.result.c_str());
+  return oms_status_ok;
+}
+
+/*
+ * This function update the ParameterBindings in SSD, to link with a SSV file, (e.g)
+ * <ssd:ParameterBindings>
+ *     <ssd:ParameterBinding source="resources/import_export_parameters.ssv" />
+ * </ssd:ParameterBindings>
+ */
+oms_status_enu_t oms::Model::updateParameterBindingsToSSD(pugi::xml_node& node, pugi::xml_node& ssvNode, bool isTopSystemOrModel) const
+{
+  int parameterNodeCount = std::distance(ssvNode.begin(), ssvNode.end());
+
+  // check parameter bindings exist and export to ssv file and also update the ssd file with parameterBindings at the top level
+  if (parameterNodeCount > 0 && isTopSystemOrModel)
+  {
+    // update the ssd with the top level parameterBindings (e.g)  <ParameterBinding source="resources/ControlledTemperature.ssv">
+    for(pugi::xml_node_iterator it = node.begin(); it != node.end(); ++it)
+    {
+      if (std::string(it->name()) == oms::ssp::Draft20180219::ssd::connectors) // insert the parameter bindings after top-level connectors node
+      {
+        pugi::xml_node node_parameters_bindings = node.insert_child_after(oms::ssp::Version1_0::ssd::parameter_bindings, *it);
+        pugi::xml_node node_parameter_binding  = node_parameters_bindings.append_child(oms::ssp::Version1_0::ssd::parameter_binding);
+        std::string ssvFileName = "resources/" + std::string(this->getCref()) + ".ssv";
+        node_parameter_binding.append_attribute("source") = ssvFileName.c_str();
+        break;
+      }
+    }
+  }
+
   return oms_status_ok;
 }
 
@@ -290,7 +344,7 @@ oms_status_enu_t oms::Model::addSystem(const oms::ComRef& cref, oms_system_enu_t
   return logError("wrong input \"" + std::string(front) + "\" != \"" + std::string(system->getCref()) + "\"");
 }
 
-oms_status_enu_t oms::Model::exportToSSD(pugi::xml_node& node) const
+oms_status_enu_t oms::Model::exportToSSD(pugi::xml_node& node, pugi::xml_node& ssvNode) const
 {
   node.append_attribute("name") = this->getCref().c_str();
   node.append_attribute("version") = "1.0";
@@ -298,7 +352,7 @@ oms_status_enu_t oms::Model::exportToSSD(pugi::xml_node& node) const
   if (system)
   {
     pugi::xml_node system_node = node.append_child(oms::ssp::Draft20180219::ssd::system);
-    if (oms_status_ok != system->exportToSSD(system_node))
+    if (oms_status_ok != system->exportToSSD(system_node, ssvNode))
       return logError("export of system failed");
   }
 
@@ -450,6 +504,7 @@ oms_system_enu_t oms::Model::getSystemTypeHelper(const pugi::xml_node& node, con
 oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
 {
   pugi::xml_document doc;
+  pugi::xml_document ssvdoc;
 
   std::string extension = "";
   if (filename.length() > 4)
@@ -464,9 +519,49 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
   declarationNode.append_attribute("encoding") = "UTF-8";
 
   pugi::xml_node node = doc.append_child(oms::ssp::Draft20180219::ssd::system_structure_description);
-  exportToSSD(node);
+
+  // generate XML declaration for ssv file
+  pugi::xml_node ssvDeclarationNode = ssvdoc.append_child(pugi::node_declaration);
+  ssvDeclarationNode.append_attribute("version") = "1.0";
+  ssvDeclarationNode.append_attribute("encoding") = "UTF-8";
+
+  pugi::xml_node node_parameterset = ssvdoc.append_child(oms::ssp::Version1_0::ssv::parameter_set);
+  node_parameterset.append_attribute("version") = "1.0";
+  node_parameterset.append_attribute("name") = "parameters";
+  pugi::xml_node node_parameters = node_parameterset.append_child(oms::ssp::Version1_0::ssv::parameters);
+
+  exportToSSD(node, node_parameters);
 
   filesystem::path ssdPath = filesystem::path(tempDir) / "SystemStructure.ssd";
+
+  // check for parameter-bindings are defined, (i.e) count the child nodes node_parameters in ssvdoc
+  int parameterNodeCount = std::distance(node_parameters.begin(), node_parameters.end());
+  std::string ssvFileName = "";
+
+  // check parameter bindings exist and export to ssv file and also update the ssd file with parameterBindings at the top level
+  if (parameterNodeCount > 0)
+  {
+    ssvFileName = "resources/" + std::string(this->getCref()) + ".ssv";
+    filesystem::path ssvPath = filesystem::path(tempDir) /  ssvFileName;
+    //std::cout << "\n ssvPath  : " << ssvPath << " filename : " << ssvFileName;
+    ssvdoc.save_file(ssvPath.string().c_str());
+
+    // update the ssd with the top level parameterBindings (e.g)  <ParameterBinding source="resources/ControlledTemperature.ssv">
+    for(pugi::xml_node_iterator it = node.begin(); it != node.end(); ++it)
+    {
+      pugi::xml_node node_connectors = it->child(oms::ssp::Draft20180219::ssd::connectors);
+      if (node_connectors) // insert the parameter bindings after top-level connectors node
+      {
+        pugi::xml_node node_parameters_bindings = it->insert_child_after(oms::ssp::Version1_0::ssd::parameter_bindings, node_connectors);
+        pugi::xml_node node_parameter_binding  = node_parameters_bindings.append_child(oms::ssp::Version1_0::ssd::parameter_binding);
+        node_parameter_binding.append_attribute("source") = ssvFileName.c_str();
+        break;
+      }
+    }
+  }
+
+  //doc.save(std::cout);
+
   if (!doc.save_file(ssdPath.string().c_str()))
     return logError("failed to export \"" + ssdPath.string() + "\" (for model \"" + std::string(this->getCref()) + "\")");
 
@@ -477,7 +572,12 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
   //        -1  Compress faster
   //        -9  Compress better
   //        -j  exclude path. store only the file name
+
   std::vector<std::string> resources;
+  if (!ssvFileName.empty())
+  {
+    resources.push_back(ssvFileName);
+  }
   if (oms_status_ok != getAllResources(resources))
     return logError("failed to gather all resources");
 

@@ -36,6 +36,7 @@
 #include "Types.h"
 #include "ComRef.h"
 #include "ssd/Tags.h"
+#include <OMSFileSystem.h>
 
 #include <pugixml.hpp>
 #include <map>
@@ -85,44 +86,27 @@ oms_status_enu_t oms::Parameters::exportToSSD(pugi::xml_node& node) const
   node_parameterset.append_attribute("name") = "parameters";
   pugi::xml_node node_parameters = node_parameterset.append_child(oms::ssp::Version1_0::ssv::parameters);
 
-  // realStartValues
-  for (const auto& r : realStartValues)
-  {
-    pugi::xml_node node_parameter = node_parameters.append_child(oms::ssp::Version1_0::ssv::parameter);
-    node_parameter.append_attribute("name") = r.first.c_str();
-    pugi::xml_node node_parameter_type = node_parameter.append_child(oms::ssp::Version1_0::ssv::real_type);
-    node_parameter_type.append_attribute("value") = r.second;
-  }
-
-  // integerStartValues
-  for (const auto& i : integerStartValues)
-  {
-    pugi::xml_node node_parameter = node_parameters.append_child(oms::ssp::Version1_0::ssv::parameter);
-    node_parameter.append_attribute("name") = i.first.c_str();
-    pugi::xml_node node_parameter_type = node_parameter.append_child(oms::ssp::Version1_0::ssv::integer_type);
-    node_parameter_type.append_attribute("value") = i.second;
-  }
-
-  // boolStartValues
-  for (const auto& b : booleanStartValues)
-  {
-    pugi::xml_node node_parameter = node_parameters.append_child(oms::ssp::Version1_0::ssv::parameter);
-    node_parameter.append_attribute("name") = b.first.c_str();
-    pugi::xml_node node_parameter_type = node_parameter.append_child(oms::ssp::Version1_0::ssv::boolean_type);
-    node_parameter_type.append_attribute("value") = b.second;
-  }
+  exportStartValuesHelper(node_parameters);
 
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Parameters::importFromSSD(const pugi::xml_node& node, const std::string& sspVersion)
+oms_status_enu_t oms::Parameters::importFromSSD(const pugi::xml_node& node, const std::string& sspVersion, const std::string& tempdir)
 {
   for (pugi::xml_node parameterBindingNode = node.child(oms::ssp::Version1_0::ssd::parameter_binding); parameterBindingNode; parameterBindingNode = parameterBindingNode.next_sibling(oms::ssp::Version1_0::ssd::parameter_binding))
   {
     std::string ssvFile = parameterBindingNode.attribute("source").as_string() ;
     if (!ssvFile.empty())
     {
-      //TODO, parse ssv file and set the Parameters
+      filesystem::path temp_root(tempdir);
+      pugi::xml_document ssvdoc;
+      pugi::xml_parse_result result = ssvdoc.load_file((temp_root / ssvFile).string().c_str());
+      if (!result)
+        return logError("loading \"" + std::string(ssvFile) + "\" failed (" + std::string(result.description()) + ")");
+
+      pugi::xml_node parameterSet = ssvdoc.document_element(); // ssd:SystemStructureDescription
+      pugi::xml_node parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
+      importStartValuesHelper(parameters);
     }
     else
     {
@@ -131,34 +115,86 @@ oms_status_enu_t oms::Parameters::importFromSSD(const pugi::xml_node& node, cons
       pugi::xml_node parameterSet = parameterValues.child(oms::ssp::Version1_0::ssv::parameter_set);
       std::string paramsetVersion = parameterSet.attribute("version").as_string();
       pugi::xml_node parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
-      if (parameters)
+      importStartValuesHelper(parameters);
+    }
+  }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Parameters::exportToSSV(pugi::xml_node& node) const
+{
+  // skip this if there is nothing to export
+  if (realStartValues.empty() && integerStartValues.empty() && booleanStartValues.empty())
+    return oms_status_ok;
+
+  exportStartValuesHelper(node);
+
+  return oms_status_ok;
+}
+
+
+oms_status_enu_t oms::Parameters::exportStartValuesHelper(pugi::xml_node& node) const
+{
+  // realStartValues
+  for (const auto& r : realStartValues)
+  {
+    //std::cout << "\n Start Values : " << std::string(r.first) << " = " << r.second ;
+    pugi::xml_node node_parameter = node.append_child(oms::ssp::Version1_0::ssv::parameter);
+    node_parameter.append_attribute("name") = r.first.c_str();
+    pugi::xml_node node_parameter_type = node_parameter.append_child(oms::ssp::Version1_0::ssv::real_type);
+    node_parameter_type.append_attribute("value") = r.second;
+  }
+
+  // integerStartValues
+  for (const auto& i : integerStartValues)
+  {
+    pugi::xml_node node_parameter = node.append_child(oms::ssp::Version1_0::ssv::parameter);
+    node_parameter.append_attribute("name") = i.first.c_str();
+    pugi::xml_node node_parameter_type = node_parameter.append_child(oms::ssp::Version1_0::ssv::integer_type);
+    node_parameter_type.append_attribute("value") = i.second;
+  }
+
+  // boolStartValues
+  for (const auto& b : booleanStartValues)
+  {
+    pugi::xml_node node_parameter = node.append_child(oms::ssp::Version1_0::ssv::parameter);
+    node_parameter.append_attribute("name") = b.first.c_str();
+    pugi::xml_node node_parameter_type = node_parameter.append_child(oms::ssp::Version1_0::ssv::boolean_type);
+    node_parameter_type.append_attribute("value") = b.second;
+  }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Parameters::importStartValuesHelper(pugi::xml_node& parameters)
+{
+  if (parameters)
+  {
+    for(pugi::xml_node_iterator itparameters = parameters.begin(); itparameters != parameters.end(); ++itparameters)
+    {
+      std::string name = itparameters->name();
+      if (name == oms::ssp::Version1_0::ssv::parameter)
       {
-        for(pugi::xml_node_iterator itparameters = parameters.begin(); itparameters != parameters.end(); ++itparameters)
+        ComRef cref = ComRef(itparameters->attribute("name").as_string());
+        if (itparameters->child(oms::ssp::Version1_0::ssv::real_type))
         {
-          std::string name = itparameters->name();
-          if (name == oms::ssp::Version1_0::ssv::parameter)
-          {
-            ComRef cref = ComRef(itparameters->attribute("name").as_string());
-            if (itparameters->child(oms::ssp::Version1_0::ssv::real_type))
-            {
-              double value = itparameters->child(oms::ssp::Version1_0::ssv::real_type).attribute("value").as_double();
-              setReal(cref, value);
-            }
-            else if(itparameters->child(oms::ssp::Version1_0::ssv::integer_type))
-            {
-              int value = itparameters->child(oms::ssp::Version1_0::ssv::integer_type).attribute("value").as_int();
-              setInteger(cref, value);
-            }
-            else if(itparameters->child(oms::ssp::Version1_0::ssv::boolean_type))
-            {
-              bool value = itparameters->child(oms::ssp::Version1_0::ssv::boolean_type).attribute("value").as_bool();
-              setBoolean(cref, value);
-            }
-            else
-            {
-              logError("Failed to import " + std::string(oms::ssp::Version1_0::ssv::parameter) + ":Unknown ParameterBinding-type");
-            }
-          }
+          double value = itparameters->child(oms::ssp::Version1_0::ssv::real_type).attribute("value").as_double();
+          setReal(cref, value);
+        }
+        else if(itparameters->child(oms::ssp::Version1_0::ssv::integer_type))
+        {
+          int value = itparameters->child(oms::ssp::Version1_0::ssv::integer_type).attribute("value").as_int();
+          setInteger(cref, value);
+        }
+        else if(itparameters->child(oms::ssp::Version1_0::ssv::boolean_type))
+        {
+          bool value = itparameters->child(oms::ssp::Version1_0::ssv::boolean_type).attribute("value").as_bool();
+          setBoolean(cref, value);
+        }
+        else
+        {
+          logError("Failed to import " + std::string(oms::ssp::Version1_0::ssv::parameter) + ":Unknown ParameterBinding-type");
         }
       }
     }
@@ -166,4 +202,3 @@ oms_status_enu_t oms::Parameters::importFromSSD(const pugi::xml_node& node, cons
 
   return oms_status_ok;
 }
-
