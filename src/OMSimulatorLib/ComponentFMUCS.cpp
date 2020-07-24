@@ -329,9 +329,13 @@ oms_status_enu_t oms::ComponentFMUCS::exportToSSD(pugi::xml_node& node, pugi::xm
 
   // export ParameterBindings at component level
   if (Flags::ExportParametersInline()) // export as inline
+  {
     startValues.exportToSSD(node);
+  }
   else
+  {
     startValues.exportToSSV(ssvNode); // export to ssv file
+  }
 
   return oms_status_ok;
 }
@@ -775,11 +779,17 @@ oms_status_enu_t oms::ComponentFMUCS::setBoolean(const ComRef& cref, bool value)
     return logError_UnknownSignal(getFullCref() + cref);
 
   if (oms_modelState_virgin == getModel()->getModelState())
+  {
     if (Flags::ExportParametersInline())
+    {
       startValues.setBoolean(allVariables[j].getCref(), value);
+    }
     else
+    {
       // append startValues with prefix (e.g) addP.K1
       startValues.setBoolean(getCref()+allVariables[j].getCref(), value);
+    }
+  }
   else
   {
     fmi2_value_reference_t vr = allVariables[j].getValueReference();
@@ -808,11 +818,17 @@ oms_status_enu_t oms::ComponentFMUCS::setInteger(const ComRef& cref, int value)
     return logError_UnknownSignal(getFullCref() + cref);
 
   if (oms_modelState_virgin == getModel()->getModelState())
+  {
     if (Flags::ExportParametersInline())
+    {
       startValues.setInteger(allVariables[j].getCref(), value);
+    }
     else
+    {
       // append startValues with prefix (e.g) addP.K1
       startValues.setInteger(getCref()+allVariables[j].getCref(), value);
+    }
+  }
   else
   {
     fmi2_value_reference_t vr = allVariables[j].getValueReference();
@@ -844,11 +860,17 @@ oms_status_enu_t oms::ComponentFMUCS::setReal(const ComRef& cref, double value)
       return logWarning("It is not allowed to provide a start value if initial=\"calculated\" or causality=\"independent\".");
 
   if (oms_modelState_virgin == getModel()->getModelState())
+  {
     if (Flags::ExportParametersInline())
+    {
       startValues.setReal(allVariables[j].getCref(), value);
+    }
     else
+    {
       // append startValues with prefix (e.g) addP.K1
       startValues.setReal(getCref()+allVariables[j].getCref(), value);
+    }
+  }
   else
   {
     fmi2_value_reference_t vr = allVariables[j].getValueReference();

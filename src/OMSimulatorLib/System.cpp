@@ -405,9 +405,13 @@ oms_status_enu_t oms::System::exportToSSD(pugi::xml_node& node, pugi::xml_node& 
 
   // export top level parameter bindings
   if (Flags::ExportParametersInline()) // export as inline
+  {
     startValues.exportToSSD(node);
+  }
   else
+  {
     startValues.exportToSSV(ssvNode); // export to ssv file
+  }
 
   pugi::xml_node elements_node = node.append_child(oms::ssp::Draft20180219::ssd::elements);
 
