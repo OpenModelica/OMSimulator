@@ -2,7 +2,7 @@ TEST = ../rtest -v
 
 TESTFILES = \
 DualMassOscillator.lua \
-import_export_parameters.lua \
+import_export_parameters_to_ssv.lua \
 import_export_parameters_inline.lua \
 import_export.lua \
 import_export.py \
