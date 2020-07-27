@@ -4,7 +4,7 @@
 -- win: no
 -- mac: no
 
-oms_setCommandLineOption("--suppressPath=true")
+oms_setCommandLineOption("--suppressPath=true --exportParametersInline=false")
 oms_setTempDirectory("./import_export_parameters_lua/")
 
 oms_newModel("import_export_parameters")

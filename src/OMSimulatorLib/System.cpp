@@ -1553,7 +1553,14 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
       if (connectors[i]->getName() == front)
       {
         //deleteAllConectionsTo(front)
-        startValues.deleteStartValue(front); // delete startValues associated with the Connector
+        if (Flags::ExportParametersInline())
+        {
+          startValues.deleteStartValue(front); // delete startValues associated with the Connector
+        }
+        else
+        {
+          startValues.deleteStartValue(getCref()+front); // delete startValues associated with the Connector from ssv file
+        }
         exportConnectors.erase(front);
         delete connectors[i];
         connectors.pop_back();   // last element is always NULL
@@ -1566,7 +1573,14 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
       if (busconnectors[i]->getName() == front)
       {
         //deleteAllConectionsTo(front);
-        startValues.deleteStartValue(front); // delete startValues associated with the Connector
+        if (Flags::ExportParametersInline())
+        {
+          startValues.deleteStartValue(front); // delete startValues associated with the Connector
+        }
+        else
+        {
+          startValues.deleteStartValue(getCref()+front); // delete startValues associated with the Connector from ssv file
+        }
         exportConnectors.erase(front);
         delete busconnectors[i];
         busconnectors.pop_back();   // last element is always NULL
@@ -1579,7 +1593,14 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
       if (tlmbusconnectors[i]->getName() == front)
       {
         //deleteAllConectionsTo(front);
-        startValues.deleteStartValue(front); // delete startValues associated with the Connector
+        if (Flags::ExportParametersInline())
+        {
+          startValues.deleteStartValue(front); // delete startValues associated with the Connector
+        }
+        else
+        {
+          startValues.deleteStartValue(getCref()+front); // delete startValues associated with the Connector from ssv file
+        }
         exportConnectors.erase(front);
         delete tlmbusconnectors[i];
         tlmbusconnectors.pop_back();   // last element is always NULL
@@ -1602,7 +1623,14 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
     if (component != components.end())
     {
       deleteConnectionsToConnector(front+tail); // delete connections associated with Connector
-      component->second->deleteStartValue(tail); // delete startValues associated with the Connector
+      if (Flags::ExportParametersInline())
+      {
+        component->second->deleteStartValue(tail); // delete startValues associated with the Connector
+      }
+      else
+      {
+        component->second->deleteStartValue(front+tail); // delete startValues associated with the Connector from ssv file
+      }
       component->second->deleteConnector(tail);
       return oms_status_ok;
     }

@@ -64,7 +64,7 @@ void oms::Flags::setDefaults()
   defaultModeIsCS = false;
   deleteTempFiles = true;
   emitEvents = true;
-  exportParametersInline = false;
+  exportParametersInline = true;
   ignoreInitialUnknowns = false;
   inputExtrapolation = false;
   intervals = 100;
