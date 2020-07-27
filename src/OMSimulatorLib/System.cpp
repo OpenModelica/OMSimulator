@@ -1594,14 +1594,14 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
     auto subsystem = subsystems.find(front);
     if (subsystem != subsystems.end())
     {
-      deleteConnectionsToConnector(front, tail); // delete connections associated with Connector
+      deleteConnectionsToConnector(front+tail); // delete connections associated with Connector
       return subsystem->second->delete_(tail);
     }
 
     auto component = components.find(front);
     if (component != components.end())
     {
-      deleteConnectionsToConnector(front, tail); // delete connections associated with Connector
+      deleteConnectionsToConnector(front+tail); // delete connections associated with Connector
       component->second->deleteStartValue(tail); // delete startValues associated with the Connector
       component->second->deleteConnector(tail);
       return oms_status_ok;
@@ -1617,11 +1617,14 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
  *  connections addP.u2 -> A.u1
  *  oms_delete(addP.u1) should delete only addP.u1 ->addI.x1
  */
-oms_status_enu_t oms::System::deleteConnectionsToConnector(const ComRef& cref, const ComRef& crefA)
+oms_status_enu_t oms::System::deleteConnectionsToConnector(const ComRef& cref)
 {
+  oms::ComRef tail(cref);
+  oms::ComRef head = tail.pop_front();
+
   for (int i=0; i < connections.size(); ++i)
   {
-    if (connections[i] && connections[i]->containsSignal(cref))
+    if (connections[i] && connections[i]->containsSignal(head))
     {
       oms::ComRef tailA(connections[i]->getSignalA());
       oms::ComRef headA = tailA.pop_front();
@@ -1630,7 +1633,7 @@ oms_status_enu_t oms::System::deleteConnectionsToConnector(const ComRef& cref, c
       oms::ComRef headB = tailB.pop_front();
 
       // delete only the matched connector connections
-      if (crefA == tailA || crefA == tailB)
+      if (tail == tailA || tail == tailB)
       {
         //std::cout << "\n matched connection : " << std::string(connections[i]->getSignalA()) << " -> " << std::string(connections[i]->getSignalB());
         delete connections[i];
