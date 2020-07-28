@@ -1663,7 +1663,9 @@ oms_status_enu_t oms::System::updateDependencyGraphs()
       if (validConnection)
       {
         initialUnknownsGraph.addEdge(Connector(varA->getCausality(), varA->getType(), connection->getSignalA()), Connector(varB->getCausality(), varB->getType(), connection->getSignalB()));
-        outputsGraph.addEdge(Connector(varA->getCausality(), varA->getType(), connection->getSignalA()), Connector(varB->getCausality(), varB->getType(), connection->getSignalB()));
+        // Don't include parameter connections in simulation dependencies
+        if (!varA->isParameter())
+          outputsGraph.addEdge(Connector(varA->getCausality(), varA->getType(), connection->getSignalA()), Connector(varB->getCausality(), varB->getType(), connection->getSignalB()));
       }
       else
         return logError("failed for " + std::string(connection->getSignalA()) + " -> " + std::string(connection->getSignalB()));
