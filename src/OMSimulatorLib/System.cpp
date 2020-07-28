@@ -603,7 +603,8 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
         {
           Component* component = NULL;
           std::string type = itElements->attribute("type").as_string();
-          if ("application/x-fmu-sharedlibrary" == type)
+          // allow component type to be empty, as type is optional according to SSP-1.0 and default type is application/x-fmu-sharedlibrary
+          if ("application/x-fmu-sharedlibrary" == type || type.empty())
           {
             if (getType() == oms_system_wc)
               component = ComponentFMUCS::NewComponent(*itElements, this, sspVersion);

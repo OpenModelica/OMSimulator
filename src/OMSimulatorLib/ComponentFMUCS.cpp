@@ -249,7 +249,7 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const pugi::xml_node& node, om
   std::string type = node.attribute("type").as_string();
   std::string source = node.attribute("source").as_string();
 
-  if (type != "application/x-fmu-sharedlibrary")
+  if (type != "application/x-fmu-sharedlibrary" && !type.empty())
   {
     logError("Unexpected component type: " + type);
     return NULL;
