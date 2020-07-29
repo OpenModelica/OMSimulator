@@ -800,9 +800,7 @@ oms_status_enu_t oms::ComponentFMUME::setInteger(const ComRef& cref, int value)
 
 oms_status_enu_t oms::ComponentFMUME::deleteStartValue(const ComRef& cref)
 {
-  if (oms_status_ok != startValues.deleteStartValue(cref))
-    return logError("failed to delete start value for signal \"" + std::string(cref) + "\"");
-
+  startValues.deleteStartValue(cref);
   return oms_status_ok;
 }
 

@@ -35,6 +35,12 @@ oms_delete("deleteConnector.Root.System2.C3")
 -- delete components connector and its startValue
 oms_delete("deleteConnector.Root.System1.Gain.k")
 
+-- delete unknown connector signal for warning
+oms_delete("deleteConnector.Root.System2.C6")
+
+-- delete unknown system for warning
+oms_delete("deleteConnector.Root.System3")
+
 -- after deletion
 src = oms_list("deleteConnector")
 print(src)
@@ -151,6 +157,8 @@ print(src)
 -- 	</ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>
 -- 
+-- warning:  failed to delete a system (or) component (or) connector (or) model for "deleteConnector.Root.System2.C6"
+-- warning:  failed to delete a system (or) component (or) connector (or) model for "deleteConnector.Root.System3"
 -- <?xml version="1.0"?>
 -- <ssd:SystemStructureDescription name="deleteConnector" version="1.0">
 -- 	<ssd:System name="Root">
@@ -238,4 +246,6 @@ print(src)
 -- 	</ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>
 -- 
+-- info:    2 warnings
+-- info:    0 errors
 -- endResult

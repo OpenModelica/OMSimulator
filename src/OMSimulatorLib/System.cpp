@@ -1636,6 +1636,7 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
     }
   }
 
+  logWarning("\n failed to delete a system (or) component (or) connector (or) model for \"" + std::string(getFullCref()+front) + "\"");
   return oms_status_error;
 }
 
