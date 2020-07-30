@@ -222,6 +222,20 @@ oms_status_enu_t oms::Component::deleteConnector(const ComRef& cref)
   {
     if (connectors[i] && connectors[i]->getName() == cref)
     {
+
+      // delete startValues associated with components connector
+      Component * component = parentSystem->getComponent(getCref());
+      if (Flags::ExportParametersInline())
+      {
+        // delete startValues associated with the Connector
+        component->deleteStartValue(cref);
+      }
+      else
+      {
+        // delete startValues associated with the Connector from ssv file
+        component->deleteStartValue(getCref()+cref);
+      }
+
       delete connectors[i];
       connectors.pop_back();
       connectors[i] = connectors.back();

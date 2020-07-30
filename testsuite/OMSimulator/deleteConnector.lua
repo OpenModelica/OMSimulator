@@ -171,8 +171,8 @@ print(src)
 -- 	</ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>
 -- 
--- warning: failed to delete a system (or) component (or) connector (or) model for "deleteConnector.Root.System2.C6"
--- warning: failed to delete a system (or) component (or) connector (or) model for "deleteConnector.Root.System3"
+-- warning: failed to delete object "deleteConnector.Root.System2.C6" because the identifier couldn't be resolved to any connector, component, system, or model
+-- warning: failed to delete object "deleteConnector.Root.System3" because the identifier couldn't be resolved to any connector, component, system, or model
 -- <?xml version="1.0"?>
 -- <ssd:SystemStructureDescription name="deleteConnector" version="1.0">
 -- 	<ssd:System name="Root">

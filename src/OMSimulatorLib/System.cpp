@@ -1628,22 +1628,11 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
     auto component = components.find(front);
     if (component != components.end())
     {
-      if (Flags::ExportParametersInline())
-      {
-        // delete startValues associated with the Connector
-        component->second->deleteStartValue(tail);
-      }
-      else
-      {
-        // delete startValues associated with the Connector from ssv file
-        component->second->deleteStartValue(cref);
-      }
       deleteAllConectionsTo(cref);
       return component->second->deleteConnector(tail);
     }
   }
-
-  logWarning("failed to delete a system (or) component (or) connector (or) model for \"" + std::string(getFullCref()+front) + "\"");
+  logWarning("failed to delete object \"" + std::string(getFullCref()+front) + "\"" + " because the identifier couldn't be resolved to any connector, component, system, or model");
   return oms_status_error;
 }
 
