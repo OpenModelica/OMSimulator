@@ -63,7 +63,14 @@ print(src)
 -- 				</oms:SimulationInformation>
 -- 			</ssd:Annotation>
 -- 		</ssd:Annotations>
--- 		<ssd:Connectors />
+-- 		<ssd:Connectors>
+-- 			<ssd:Connector name="C1" kind="input">
+-- 				<ssc:Real />
+-- 			</ssd:Connector>
+-- 			<ssd:Connector name="C2" kind="output">
+-- 				<ssc:Real />
+-- 			</ssd:Connector>
+-- 		</ssd:Connectors>
 -- 		<ssd:Elements>
 -- 			<ssd:System name="System2">
 -- 				<ssd:Annotations>
@@ -150,6 +157,7 @@ print(src)
 -- 			</ssd:System>
 -- 		</ssd:Elements>
 -- 		<ssd:Connections>
+-- 			<ssd:Connection startElement="" startConnector="C1" endElement="" endConnector="C2" />
 -- 			<ssd:Connection startElement="System2" startConnector="C3" endElement="System1" endConnector="C1" />
 -- 			<ssd:Connection startElement="System2" startConnector="C4" endElement="System1" endConnector="C2" />
 -- 		</ssd:Connections>
@@ -162,9 +170,9 @@ print(src)
 -- 		</ssd:Annotations>
 -- 	</ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>
---
--- warning:  failed to delete a system (or) component (or) connector (or) model for "deleteConnector.Root.System2.C6"
--- warning:  failed to delete a system (or) component (or) connector (or) model for "deleteConnector.Root.System3"
+-- 
+-- warning: failed to delete a system (or) component (or) connector (or) model for "deleteConnector.Root.System2.C6"
+-- warning: failed to delete a system (or) component (or) connector (or) model for "deleteConnector.Root.System3"
 -- <?xml version="1.0"?>
 -- <ssd:SystemStructureDescription name="deleteConnector" version="1.0">
 -- 	<ssd:System name="Root">
@@ -175,7 +183,11 @@ print(src)
 -- 				</oms:SimulationInformation>
 -- 			</ssd:Annotation>
 -- 		</ssd:Annotations>
--- 		<ssd:Connectors />
+-- 		<ssd:Connectors>
+-- 			<ssd:Connector name="C2" kind="output">
+-- 				<ssc:Real />
+-- 			</ssd:Connector>
+-- 		</ssd:Connectors>
 -- 		<ssd:Elements>
 -- 			<ssd:System name="System2">
 -- 				<ssd:Annotations>
@@ -251,7 +263,7 @@ print(src)
 -- 		</ssd:Annotations>
 -- 	</ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>
---
+-- 
 -- info:    2 warnings
 -- info:    0 errors
 -- endResult

@@ -94,7 +94,7 @@ oms_status_enu_t oms::Parameters::deleteStartValue(const ComRef& cref)
     return oms_status_ok;
   }
 
-  return logWarning("failed to delete start value for signal \"" + std::string(cref) + "\"");
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms::Parameters::exportToSSD(pugi::xml_node& node) const
