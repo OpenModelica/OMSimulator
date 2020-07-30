@@ -10,6 +10,10 @@ oms_setTempDirectory("./deleteConnector_lua/")
 oms_newModel("deleteConnector")
 
 oms_addSystem("deleteConnector.Root", oms_system_wc)
+oms_addConnector("deleteConnector.Root.C1", oms_causality_input, oms_signal_type_real)
+oms_addConnector("deleteConnector.Root.C2", oms_causality_output, oms_signal_type_real)
+oms_addConnection("deleteConnector.Root.C1", "deleteConnector.Root.C2")
+
 oms_addSystem("deleteConnector.Root.System1", oms_system_sc)
 oms_addConnector("deleteConnector.Root.System1.C1", oms_causality_input, oms_signal_type_real)
 oms_addConnector("deleteConnector.Root.System1.C2", oms_causality_input, oms_signal_type_real)
@@ -28,6 +32,8 @@ oms_addConnection("deleteConnector.Root.System2.C4", "deleteConnector.Root.Syste
 
 src = oms_list("deleteConnector")
 print(src)
+
+oms_delete("deleteConnector.Root.C1")
 
 -- delete connector "deleteConnector.Root.System2.C3" and associated connection
 oms_delete("deleteConnector.Root.System2.C3")

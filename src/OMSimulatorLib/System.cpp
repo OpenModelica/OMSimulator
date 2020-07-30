@@ -1554,11 +1554,13 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
       {
         if (Flags::ExportParametersInline())
         {
-          startValues.deleteStartValue(front); // delete startValues associated with the Connector
+          // delete startValues associated with the Connector
+          startValues.deleteStartValue(front);
         }
         else
         {
-          startValues.deleteStartValue(getCref()+front); // delete startValues associated with the Connector from ssv file
+          // delete startValues associated with the Connector from ssv file
+          startValues.deleteStartValue(getCref()+front);
         }
         deleteAllConectionsTo(front);
         exportConnectors.erase(front);
@@ -1574,11 +1576,13 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
       {
         if (Flags::ExportParametersInline())
         {
-          startValues.deleteStartValue(front); // delete startValues associated with the Connector
+          // delete startValues associated with the Connector
+          startValues.deleteStartValue(front);
         }
         else
         {
-          startValues.deleteStartValue(getCref()+front); // delete startValues associated with the Connector from ssv file
+          // delete startValues associated with the Connector from ssv file
+          startValues.deleteStartValue(getCref()+front);
         }
         deleteAllConectionsTo(front);
         exportConnectors.erase(front);
@@ -1594,11 +1598,13 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
       {
         if (Flags::ExportParametersInline())
         {
-          startValues.deleteStartValue(front); // delete startValues associated with the Connector
+          // delete startValues associated with the Connector
+          startValues.deleteStartValue(front);
         }
         else
         {
-          startValues.deleteStartValue(getCref()+front); // delete startValues associated with the Connector from ssv file
+          // delete startValues associated with the Connector from ssv file
+          startValues.deleteStartValue(getCref()+front);
         }
         deleteAllConectionsTo(front);
         exportConnectors.erase(front);
