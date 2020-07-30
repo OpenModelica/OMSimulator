@@ -113,7 +113,6 @@ namespace oms
     oms_status_enu_t addExternalModel(const ComRef &cref, std::string path, std::string startscript);
     oms_status_enu_t delete_(const ComRef& cref);
     oms_status_enu_t deleteAllConectionsTo(const ComRef& cref);
-    oms_status_enu_t deleteConnectionsToConnector(const ComRef& cref);
     bool isConnected(const ComRef& cref) const;
     Model* getModel();
     System* getParentSystem() const {return parentSystem;}

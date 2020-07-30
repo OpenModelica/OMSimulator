@@ -1552,7 +1552,6 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
     for (int i=0; i<connectors.size()-1; ++i)
       if (connectors[i]->getName() == front)
       {
-        //deleteAllConectionsTo(front)
         if (Flags::ExportParametersInline())
         {
           startValues.deleteStartValue(front); // delete startValues associated with the Connector
@@ -1561,6 +1560,7 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
         {
           startValues.deleteStartValue(getCref()+front); // delete startValues associated with the Connector from ssv file
         }
+        deleteAllConectionsTo(front);
         exportConnectors.erase(front);
         delete connectors[i];
         connectors.pop_back();   // last element is always NULL
@@ -1572,7 +1572,6 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
     for (int i=0; i<busconnectors.size()-1; ++i)
       if (busconnectors[i]->getName() == front)
       {
-        //deleteAllConectionsTo(front);
         if (Flags::ExportParametersInline())
         {
           startValues.deleteStartValue(front); // delete startValues associated with the Connector
@@ -1581,6 +1580,7 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
         {
           startValues.deleteStartValue(getCref()+front); // delete startValues associated with the Connector from ssv file
         }
+        deleteAllConectionsTo(front);
         exportConnectors.erase(front);
         delete busconnectors[i];
         busconnectors.pop_back();   // last element is always NULL
@@ -1592,7 +1592,6 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
     for (int i=0; i<tlmbusconnectors.size()-1; ++i)
       if (tlmbusconnectors[i]->getName() == front)
       {
-        //deleteAllConectionsTo(front);
         if (Flags::ExportParametersInline())
         {
           startValues.deleteStartValue(front); // delete startValues associated with the Connector
@@ -1601,6 +1600,7 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
         {
           startValues.deleteStartValue(getCref()+front); // delete startValues associated with the Connector from ssv file
         }
+        deleteAllConectionsTo(front);
         exportConnectors.erase(front);
         delete tlmbusconnectors[i];
         tlmbusconnectors.pop_back();   // last element is always NULL
@@ -1615,64 +1615,19 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
     auto subsystem = subsystems.find(front);
     if (subsystem != subsystems.end())
     {
-      deleteConnectionsToConnector(front+tail); // delete connections associated with Connector
+      deleteAllConectionsTo(cref);
       return subsystem->second->delete_(tail);
     }
 
     auto component = components.find(front);
     if (component != components.end())
     {
-      deleteConnectionsToConnector(front+tail); // delete connections associated with Connector
-      if (Flags::ExportParametersInline())
-      {
-        component->second->deleteStartValue(tail); // delete startValues associated with the Connector
-      }
-      else
-      {
-        component->second->deleteStartValue(front+tail); // delete startValues associated with the Connector from ssv file
-      }
-      component->second->deleteConnector(tail);
-      return oms_status_ok;
+      deleteAllConectionsTo(cref);
+      return component->second->deleteConnector(tail);
     }
   }
 
-  logWarning("\n failed to delete a system (or) component (or) connector (or) model for \"" + std::string(getFullCref()+front) + "\"");
-  return oms_status_error;
-}
-
-/*
- *  deletes the connections associated with the connector
- *  connections addP.u1 -> addI.x1
- *  connections addP.u2 -> A.u1
- *  oms_delete(addP.u1) should delete only addP.u1 ->addI.x1
- */
-oms_status_enu_t oms::System::deleteConnectionsToConnector(const ComRef& cref)
-{
-  oms::ComRef tail(cref);
-  oms::ComRef head = tail.pop_front();
-
-  for (int i=0; i < connections.size(); ++i)
-  {
-    if (connections[i] && connections[i]->containsSignal(head))
-    {
-      oms::ComRef tailA(connections[i]->getSignalA());
-      oms::ComRef headA = tailA.pop_front();
-
-      oms::ComRef tailB(connections[i]->getSignalB());
-      oms::ComRef headB = tailB.pop_front();
-
-      // delete only the matched connector connections
-      if (tail == tailA || tail == tailB)
-      {
-        //std::cout << "\n matched connection : " << std::string(connections[i]->getSignalA()) << " -> " << std::string(connections[i]->getSignalB());
-        delete connections[i];
-        connections.pop_back();   // last element is always NULL
-        connections[i] = connections.back();
-        connections.back() = NULL;
-        return oms_status_ok;
-      }
-    }
-  }
+  logWarning("failed to delete a system (or) component (or) connector (or) model for \"" + std::string(getFullCref()+front) + "\"");
   return oms_status_error;
 }
 

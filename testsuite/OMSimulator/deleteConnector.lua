@@ -156,7 +156,7 @@ print(src)
 -- 		</ssd:Annotations>
 -- 	</ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>
--- 
+--
 -- warning:  failed to delete a system (or) component (or) connector (or) model for "deleteConnector.Root.System2.C6"
 -- warning:  failed to delete a system (or) component (or) connector (or) model for "deleteConnector.Root.System3"
 -- <?xml version="1.0"?>
@@ -245,7 +245,7 @@ print(src)
 -- 		</ssd:Annotations>
 -- 	</ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>
--- 
+--
 -- info:    2 warnings
 -- info:    0 errors
 -- endResult
