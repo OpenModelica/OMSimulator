@@ -1632,7 +1632,7 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
       return component->second->deleteConnector(tail);
     }
   }
-  logWarning("failed to delete object \"" + std::string(getFullCref()+front) + "\"" + " because the identifier couldn't be resolved to any connector, component, system, or model");
+  logWarning("failed to delete object \"" + std::string(getFullCref()+cref) + "\"" + " because the identifier couldn't be resolved to any connector, component, system, or model");
   return oms_status_error;
 }
 
