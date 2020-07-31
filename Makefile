@@ -197,7 +197,11 @@ RegEx: 3rdParty/RegEx/OMSRegEx$(EEXT)
 3rdParty/RegEx/OMSRegEx$(EEXT): 3rdParty/RegEx/RegEx.h 3rdParty/RegEx/OMSRegEx.cpp
 	$(MAKE) -C 3rdParty/RegEx
 
-config-3rdParty: config-fmil config-lua config-zlib config-cvode config-kinsol config-ceres-solver config-libxml2
+3rdParty/README.md:
+	@echo "Please checkout the 3rdParty submodule, e.g. using \"git submodule update --init 3rdParty\""
+	@false
+
+config-3rdParty: 3rdParty/README.md config-fmil config-lua config-zlib config-cvode config-kinsol config-ceres-solver config-libxml2
 
 config-OMSimulator: $(BUILD_DIR)/Makefile
 $(BUILD_DIR)/Makefile: RegEx CMakeLists.txt
@@ -364,4 +368,3 @@ doc-doxygen:
 gitclean:
 	git submodule foreach --recursive 'git clean -fdx'
 	git clean -fdx -e .project
-
