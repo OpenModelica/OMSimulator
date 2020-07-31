@@ -198,7 +198,7 @@ RegEx: 3rdParty/RegEx/OMSRegEx$(EEXT)
 	$(MAKE) -C 3rdParty/RegEx
 
 3rdParty/README.md:
-	@echo "Please checkout the 3rdParty submodule, e.g. using \"git submodule update --init 3rdParty\""
+	@echo "Please checkout the 3rdParty submodule, e.g. using \"git submodule update --init 3rdParty\", and try again."
 	@false
 
 config-3rdParty: 3rdParty/README.md config-fmil config-lua config-zlib config-cvode config-kinsol config-ceres-solver config-libxml2
