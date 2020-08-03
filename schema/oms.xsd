@@ -1,39 +1,33 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+    xmlns:oms="https://raw.githubusercontent.com/arun3688/OMSimulator/generatexmlnamespaces/schema/oms.xsd"
+    targetNamespace="https://raw.githubusercontent.com/arun3688/OMSimulator/generatexmlnamespaces/schema/oms.xsd">
   <xs:element name="SimulationInformation">
     <xs:complexType>
-      <xs:sequence>
-        <xs:element name="FixedStepMaster">
+      <xs:sequence minOccurs="0">
+        <xs:element minOccurs="0" name="VariableStepSolver">
           <xs:complexType>
-            <xs:simpleContent>
-              <xs:extension base="xs:string">
-                <xs:attribute type="xs:string" name="description"/>
-                <xs:attribute type="xs:float" name="stepSize"/>
-                <xs:attribute type="xs:float" name="absoluteTolerance"/>
-                <xs:attribute type="xs:float" name="relativeTolerance"/>
-              </xs:extension>
-            </xs:simpleContent>
+            <xs:attribute name="description" type="xs:string" use="required" />
+            <xs:attribute name="absoluteTolerance" type="xs:decimal" use="required" />
+            <xs:attribute name="relativeTolerance" type="xs:decimal" use="required" />
+            <xs:attribute name="minimumStepSize" type="xs:decimal" use="required" />
+            <xs:attribute name="maximumStepSize" type="xs:decimal" use="required" />
+            <xs:attribute name="initialStepSize" type="xs:decimal" use="required" />
           </xs:complexType>
         </xs:element>
-        <xs:element name="VariableStepSolver">
+        <xs:element minOccurs="0" name="FixedStepMaster">
           <xs:complexType>
-            <xs:simpleContent>
-              <xs:extension base="xs:string">
-                <xs:attribute type="xs:string" name="description"/>
-                <xs:attribute type="xs:float" name="absoluteTolerance"/>
-                <xs:attribute type="xs:float" name="relativeTolerance"/>
-                <xs:attribute type="xs:float" name="minimumStepSize"/>
-                <xs:attribute type="xs:float" name="maximumStepSize"/>
-                <xs:attribute type="xs:float" name="initialStepSize"/>
-              </xs:extension>
-            </xs:simpleContent>
+            <xs:attribute name="description" type="xs:string" use="required" />
+            <xs:attribute name="stepSize" type="xs:decimal" use="required" />
+            <xs:attribute name="absoluteTolerance" type="xs:decimal" use="required" />
+            <xs:attribute name="relativeTolerance" type="xs:decimal" use="required" />
           </xs:complexType>
         </xs:element>
       </xs:sequence>
-      <xs:attribute type="xs:string" name="resultFile"/>
-      <xs:attribute type="xs:float" name="loggingInterval"/>
-      <xs:attribute type="xs:byte" name="bufferSize"/>
-      <xs:attribute type="xs:string" name="signalFilter"/>
+      <xs:attribute name="resultFile" type="xs:string" use="optional" />
+      <xs:attribute name="loggingInterval" type="xs:decimal" use="optional" />
+      <xs:attribute name="bufferSize" type="xs:unsignedByte" use="optional" />
+      <xs:attribute name="signalFilter" type="xs:string" use="optional" />
     </xs:complexType>
   </xs:element>
 </xs:schema>
