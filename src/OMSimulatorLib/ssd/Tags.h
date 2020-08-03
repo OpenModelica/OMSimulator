@@ -87,9 +87,7 @@ namespace oms
 
       namespace ssd
       {
-        extern const char* annotation;
         extern const char* annotations;
-        extern const char* annotation;
         extern const char* component;
         extern const char* connection_geometry;
         extern const char* connection;
@@ -105,6 +103,11 @@ namespace oms
         extern const char* system_structure_description;
         extern const char* system;
         extern const char* units;
+      }
+
+      namespace ssc
+      {
+        extern const char* annotation;
       }
     }
   }

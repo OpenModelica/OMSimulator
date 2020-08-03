@@ -306,7 +306,7 @@ oms_status_enu_t oms::ComponentFMUCS::exportToSSD(pugi::xml_node& node, pugi::xm
   if (tlmbusconnectors[0])
   {
     pugi::xml_node annotations_node = node.append_child(oms::ssp::Draft20180219::ssd::annotations);
-    pugi::xml_node annotation_node = annotations_node.append_child(oms::ssp::Draft20180219::ssd::annotation);
+    pugi::xml_node annotation_node = annotations_node.append_child(oms::ssp::Draft20180219::ssc::annotation);
     annotation_node.append_attribute("type") = oms::ssp::Draft20180219::annotation_type;
     for (const auto& tlmbusconnector : tlmbusconnectors)
       if (tlmbusconnector)

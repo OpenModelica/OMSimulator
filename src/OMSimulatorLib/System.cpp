@@ -444,7 +444,7 @@ oms_status_enu_t oms::System::exportToSSD(pugi::xml_node& node, pugi::xml_node& 
 #endif
   {
     pugi::xml_node annotations_node = node.append_child(oms::ssp::Draft20180219::ssd::annotations);
-    pugi::xml_node annotation_node = annotations_node.append_child(oms::ssp::Draft20180219::ssd::annotation);
+    pugi::xml_node annotation_node = annotations_node.append_child(oms::ssp::Draft20180219::ssc::annotation);
     annotation_node.append_attribute("type") = oms::ssp::Draft20180219::annotation_type;
     for (const auto& busconnector : busconnectors)
       if (busconnector)
@@ -625,7 +625,7 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
                 if(simulationInformationNode && sspVersion == "Draft20180219") {
                   pugi::xml_node annotationsNode = simulationInformationNode.child(oms::ssp::Draft20180219::ssd::annotations);
                   if(annotationsNode) {
-                    for (pugi::xml_node annotationNode = annotationsNode.child(oms::ssp::Draft20180219::ssd::annotation); annotationNode; annotationNode = annotationNode.next_sibling(oms::ssp::Draft20180219::ssd::annotation)) {
+                    for (pugi::xml_node annotationNode = annotationsNode.child(oms::ssp::Draft20180219::ssc::annotation); annotationNode; annotationNode = annotationNode.next_sibling(oms::ssp::Draft20180219::ssc::annotation)) {
                       std::string type = annotationNode.attribute("type").as_string() ;
                       if(oms::ssp::Draft20180219::annotation_type == type) {
                         pugi::xml_node externalModelNode = annotationNode.child(oms::ssp::Draft20180219::external_model);
@@ -642,7 +642,7 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
 
               pugi::xml_node annotationsNode = itElements->child(oms::ssp::Draft20180219::ssd::annotations);
               if(annotationsNode) {
-                  for (pugi::xml_node annotationNode = annotationsNode.child(oms::ssp::Draft20180219::ssd::annotation); annotationNode; annotationNode = annotationNode.next_sibling(oms::ssp::Draft20180219::ssd::annotation)) {
+                  for (pugi::xml_node annotationNode = annotationsNode.child(oms::ssp::Draft20180219::ssc::annotation); annotationNode; annotationNode = annotationNode.next_sibling(oms::ssp::Draft20180219::ssc::annotation)) {
                       std::string type = annotationNode.attribute("type").as_string() ;
                       if(oms::ssp::Draft20180219::annotation_type == type) {
 
@@ -712,7 +712,7 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
     }
     else if (name == oms::ssp::Draft20180219::ssd::annotations)
     {
-      pugi::xml_node annotation_node = it->child(oms::ssp::Draft20180219::ssd::annotation);
+      pugi::xml_node annotation_node = it->child(oms::ssp::Draft20180219::ssc::annotation);
       if (annotation_node && std::string(annotation_node.attribute("type").as_string()) == oms::ssp::Draft20180219::annotation_type)
       {
         for(pugi::xml_node_iterator itAnnotations = annotation_node.begin(); itAnnotations != annotation_node.end(); ++itAnnotations)

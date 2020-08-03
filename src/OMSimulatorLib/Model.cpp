@@ -369,7 +369,7 @@ oms_status_enu_t oms::Model::exportToSSD(pugi::xml_node& node, pugi::xml_node& s
 
   // export openmodelica_default_experiment as vendor annotations
   pugi::xml_node node_annotations = default_experiment.append_child(oms::ssp::Draft20180219::ssd::annotations);
-  pugi::xml_node node_annotation = node_annotations.append_child(oms::ssp::Draft20180219::ssd::annotation);
+  pugi::xml_node node_annotation = node_annotations.append_child(oms::ssp::Draft20180219::ssc::annotation);
   node_annotation.append_attribute("type") =  oms::ssp::Draft20180219::annotation_type;
   pugi::xml_node oms_simulation_information = node_annotation.append_child(oms::ssp::Version1_0::simulation_information);
   //pugi::xml_node oms_default_experiment = oms_simulation_information.append_child("DefaultExperiment");
@@ -412,7 +412,7 @@ oms_status_enu_t oms::Model::importFromSSD(const pugi::xml_node& node)
 
       // import oms::DefaultExperiment from oms:simulationInformation
       pugi::xml_node annotations = it->child(oms::ssp::Draft20180219::ssd::annotations);
-      pugi::xml_node annotation_node = annotations.child(oms::ssp::Draft20180219::ssd::annotation);
+      pugi::xml_node annotation_node = annotations.child(oms::ssp::Draft20180219::ssc::annotation);
 
       if (annotation_node && std::string(annotation_node.attribute("type").as_string()) == oms::ssp::Draft20180219::annotation_type)
       {
@@ -452,7 +452,7 @@ oms_system_enu_t oms::Model::getSystemType(const pugi::xml_node& node, const std
     /* from Version "1.0" simulationInformation is handled in vendor annotation */
     if (name == oms::ssp::Draft20180219::ssd::annotations  && sspVersion == "1.0")
     {
-      pugi::xml_node annotation_node = itElements->child(oms::ssp::Draft20180219::ssd::annotation);
+      pugi::xml_node annotation_node = itElements->child(oms::ssp::Draft20180219::ssc::annotation);
       if (annotation_node && std::string(annotation_node.attribute("type").as_string()) == oms::ssp::Draft20180219::annotation_type)
       {
         for(pugi::xml_node_iterator itAnnotations = annotation_node.begin(); itAnnotations != annotation_node.end(); ++itAnnotations)

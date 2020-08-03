@@ -106,7 +106,7 @@ oms_status_enu_t oms::SystemWC::setSolverMethod(std::string solver)
 oms_status_enu_t oms::SystemWC::exportToSSD_SimulationInformation(pugi::xml_node& node) const
 {
   pugi::xml_node node_annotations = node.append_child(oms::ssp::Draft20180219::ssd::annotations);
-  pugi::xml_node node_annotation = node_annotations.append_child(oms::ssp::Draft20180219::ssd::annotation);
+  pugi::xml_node node_annotation = node_annotations.append_child(oms::ssp::Draft20180219::ssc::annotation);
   node_annotation.append_attribute("type") =  oms::ssp::Draft20180219::annotation_type;
 
   /* ssd:SimulationInformation should be added as vendor specific annotations from Version 1.0 */
