@@ -90,11 +90,11 @@ printStatus(status, 3)
 -- <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="test" version="1.0">
 -- 	<ssd:System name="foo">
 -- 		<ssd:Annotations>
--- 			<ssd:Annotation type="org.openmodelica">
+-- 			<ssc:Annotation type="org.openmodelica">
 -- 				<oms:SimulationInformation>
 -- 					<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
 -- 				</oms:SimulationInformation>
--- 			</ssd:Annotation>
+-- 			</ssc:Annotation>
 -- 		</ssd:Annotations>
 -- 		<ssd:Connectors />
 -- 		<ssd:Elements>
@@ -115,9 +115,9 @@ printStatus(status, 3)
 -- 	</ssd:System>
 -- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
 -- 		<ssd:Annotations>
--- 			<ssd:Annotation type="org.openmodelica">
+-- 			<ssc:Annotation type="org.openmodelica">
 -- 				<oms:SimulationInformation resultFile="test_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="" />
--- 			</ssd:Annotation>
+-- 			</ssc:Annotation>
 -- 		</ssd:Annotations>
 -- 	</ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>
@@ -125,21 +125,21 @@ printStatus(status, 3)
 -- <?xml version="1.0"?>
 -- <ssd:System name="foo">
 -- 	<ssd:Annotations>
--- 		<ssd:Annotation type="org.openmodelica">
+-- 		<ssc:Annotation type="org.openmodelica">
 -- 			<oms:SimulationInformation>
 -- 				<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
 -- 			</oms:SimulationInformation>
--- 		</ssd:Annotation>
+-- 		</ssc:Annotation>
 -- 	</ssd:Annotations>
 -- 	<ssd:Connectors />
 -- 	<ssd:Elements>
 -- 		<ssd:System name="goo">
 -- 			<ssd:Annotations>
--- 				<ssd:Annotation type="org.openmodelica">
+-- 				<ssc:Annotation type="org.openmodelica">
 -- 					<oms:SimulationInformation>
 -- 						<oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
 -- 					</oms:SimulationInformation>
--- 				</ssd:Annotation>
+-- 				</ssc:Annotation>
 -- 			</ssd:Annotations>
 -- 			<ssd:Connectors />
 -- 			<ssd:Elements />
@@ -152,11 +152,11 @@ printStatus(status, 3)
 -- <?xml version="1.0"?>
 -- <ssd:System name="goo">
 -- 	<ssd:Annotations>
--- 		<ssd:Annotation type="org.openmodelica">
+-- 		<ssc:Annotation type="org.openmodelica">
 -- 			<oms:SimulationInformation>
 -- 				<oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
 -- 			</oms:SimulationInformation>
--- 		</ssd:Annotation>
+-- 		</ssc:Annotation>
 -- 	</ssd:Annotations>
 -- 	<ssd:Connectors />
 -- 	<ssd:Elements />
@@ -173,10 +173,10 @@ printStatus(status, 3)
 -- <?xml version="1.0"?>
 -- <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="test" version="1.0">
 -- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
--- 		<ssd:Annotations>
+-- 		<ssc:Annotations>
 -- 			<ssd:Annotation type="org.openmodelica">
 -- 				<oms:SimulationInformation resultFile="test_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="" />
--- 			</ssd:Annotation>
+-- 			</ssc:Annotation>
 -- 		</ssd:Annotations>
 -- 	</ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>

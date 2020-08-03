@@ -196,21 +196,21 @@ printStatus(status, 0)
 ## <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="test" version="1.0">
 ##     <ssd:System name="eoo">
 ##         <ssd:Annotations>
-##             <ssd:Annotation type="org.openmodelica">
+##             <ssc:Annotation type="org.openmodelica">
 ##                 <oms:SimulationInformation>
 ##                     <oms:TlmMaster ip="127.0.1.1" managerport="11111" monitorport="11121" />
 ##                 </oms:SimulationInformation>
-##             </ssd:Annotation>
+##             </ssc:Annotation>
 ##         </ssd:Annotations>
 ##         <ssd:Connectors />
 ##         <ssd:Elements>
 ##             <ssd:System name="foo2">
 ##                 <ssd:Annotations>
-##                     <ssd:Annotation type="org.openmodelica">
+##                     <ssc:Annotation type="org.openmodelica">
 ##                         <oms:SimulationInformation>
 ##                             <oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
 ##                         </oms:SimulationInformation>
-##                     </ssd:Annotation>
+##                     </ssc:Annotation>
 ##                 </ssd:Annotations>
 ##                 <ssd:Connectors>
 ##                     <ssd:Connector name="f" kind="input">
@@ -232,7 +232,7 @@ printStatus(status, 0)
 ##                 <ssd:Elements />
 ##                 <ssd:Connections />
 ##                 <ssd:Annotations>
-##                     <ssd:Annotation type="org.openmodelica">
+##                     <ssc:Annotation type="org.openmodelica">
 ##                         <oms:Bus name="bus">
 ##                             <oms:Signals>
 ##                                 <oms:Signal name="u1" />
@@ -246,16 +246,16 @@ printStatus(status, 0)
 ##                                 <oms:Signal name="x" type="state" />
 ##                             </oms:Signals>
 ##                         </oms:Bus>
-##                     </ssd:Annotation>
+##                     </ssc:Annotation>
 ##                 </ssd:Annotations>
 ##             </ssd:System>
 ##             <ssd:System name="foo">
 ##                 <ssd:Annotations>
-##                     <ssd:Annotation type="org.openmodelica">
+##                     <ssc:Annotation type="org.openmodelica">
 ##                         <oms:SimulationInformation>
 ##                             <oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
 ##                         </oms:SimulationInformation>
-##                     </ssd:Annotation>
+##                     </ssc:Annotation>
 ##                 </ssd:Annotations>
 ##                 <ssd:Connectors>
 ##                     <ssd:Connector name="f" kind="input">
@@ -277,11 +277,11 @@ printStatus(status, 0)
 ##                 <ssd:Elements>
 ##                     <ssd:System name="goo">
 ##                         <ssd:Annotations>
-##                             <ssd:Annotation type="org.openmodelica">
+##                             <ssc:Annotation type="org.openmodelica">
 ##                                 <oms:SimulationInformation>
 ##                                     <oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
 ##                                 </oms:SimulationInformation>
-##                             </ssd:Annotation>
+##                             </ssc:Annotation>
 ##                         </ssd:Annotations>
 ##                         <ssd:Connectors />
 ##                         <ssd:Elements />
@@ -316,7 +316,7 @@ printStatus(status, 0)
 ##                 </ssd:Elements>
 ##                 <ssd:Connections />
 ##                 <ssd:Annotations>
-##                     <ssd:Annotation type="org.openmodelica">
+##                     <ssc:Annotation type="org.openmodelica">
 ##                         <oms:Bus name="bus">
 ##                             <oms:Signals>
 ##                                 <oms:Signal name="y1" />
@@ -330,7 +330,7 @@ printStatus(status, 0)
 ##                                 <oms:Signal name="x" type="state" />
 ##                             </oms:Signals>
 ##                         </oms:Bus>
-##                     </ssd:Annotation>
+##                     </ssc:Annotation>
 ##                 </ssd:Annotations>
 ##             </ssd:System>
 ##         </ssd:Elements>
@@ -339,19 +339,19 @@ printStatus(status, 0)
 ##             <ssd:Connection startElement="foo" startConnector="y2" endElement="foo2" endConnector="u2" />
 ##         </ssd:Connections>
 ##         <ssd:Annotations>
-##             <ssd:Annotation type="org.openmodelica">
+##             <ssc:Annotation type="org.openmodelica">
 ##                 <oms:Connections>
 ##                     <oms:Connection startElement="foo" startConnector="tlm" endElement="foo2" endConnector="tlm" delay="0.001000" alpha="0.300000" linearimpedance="100.000000" angularimpedance="0.000000" />
 ##                     <oms:Connection startElement="foo" startConnector="bus" endElement="foo2" endConnector="bus" />
 ##                 </oms:Connections>
-##             </ssd:Annotation>
+##             </ssc:Annotation>
 ##         </ssd:Annotations>
 ##     </ssd:System>
 ##     <ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
 ##         <ssd:Annotations>
-##             <ssd:Annotation type="org.openmodelica">
+##             <ssc:Annotation type="org.openmodelica">
 ##                 <oms:SimulationInformation resultFile="test_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="" />
-##             </ssd:Annotation>
+##             </ssc:Annotation>
 ##         </ssd:Annotations>
 ##     </ssd:DefaultExperiment>
 ## </ssd:SystemStructureDescription>
