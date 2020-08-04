@@ -71,6 +71,7 @@ namespace oms
         extern const char* string_type;
         extern const char* enumeration_type;
         extern const char* binary_type;
+        extern const char* annotation;
       }
     }
 
@@ -87,6 +88,7 @@ namespace oms
 
       namespace ssd
       {
+        extern const char* annotation;
         extern const char* annotations;
         extern const char* component;
         extern const char* connection_geometry;
@@ -105,10 +107,6 @@ namespace oms
         extern const char* units;
       }
 
-      namespace ssc
-      {
-        extern const char* annotation;
-      }
     }
   }
 }

@@ -90,7 +90,7 @@ oms_status_enu_t oms::ExternalModel::getRealParameter(const std::string &var, do
 oms_status_enu_t oms::ExternalModel::exportToSSD(pugi::xml_node& node, pugi::xml_node& ssvNode) const
 {
   pugi::xml_node annotations_node = node.append_child(oms::ssp::Draft20180219::ssd::annotations);
-  pugi::xml_node annotation_node = annotations_node.append_child(oms::ssp::Draft20180219::ssc::annotation);
+  pugi::xml_node annotation_node = annotations_node.append_child(oms::ssp::Version1_0::ssc::annotation);
   annotation_node.append_attribute("type") = oms::ssp::Draft20180219::annotation_type;
 
   if (tlmbusconnectors[0])

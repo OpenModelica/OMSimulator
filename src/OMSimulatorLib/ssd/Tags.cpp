@@ -40,7 +40,7 @@ const char* oms::ssp::Draft20180219::bus_connections                   = "oms:Co
 const char* oms::ssp::Draft20180219::bus_connection                    = "oms:Connection";
 const char* oms::ssp::Draft20180219::external_model                    = "oms:ExternalModel";
 
-const char* oms::ssp::Draft20180219::ssc::annotation                   = "ssc:Annotation";
+const char* oms::ssp::Draft20180219::ssd::annotation                   = "ssd:Annotation";
 const char* oms::ssp::Draft20180219::ssd::annotations                  = "ssd:Annotations";
 const char* oms::ssp::Draft20180219::ssd::component                    = "ssd:Component";
 const char* oms::ssp::Draft20180219::ssd::connection                   = "ssd:Connection";
@@ -84,3 +84,5 @@ const char* oms::ssp::Version1_0::ssv::boolean_type                    = "ssv:Bo
 const char* oms::ssp::Version1_0::ssv::string_type                     = "ssv:String";
 const char* oms::ssp::Version1_0::ssv::enumeration_type                = "ssv:Enumeration";
 const char* oms::ssp::Version1_0::ssv::binary_type                     = "ssv:Binary";
+
+const char* oms::ssp::Version1_0::ssc::annotation                      = "ssc:Annotation";
