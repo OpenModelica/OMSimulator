@@ -413,12 +413,12 @@ oms_status_enu_t oms::Model::importFromSSD(const pugi::xml_node& node)
       // import oms::DefaultExperiment from oms:simulationInformation
       pugi::xml_node annotations = it->child(oms::ssp::Draft20180219::ssd::annotations);
       pugi::xml_node annotation_node;
-      annotation_node = it->child(oms::ssp::Version1_0::ssc::annotation);
+      annotation_node = annotations.child(oms::ssp::Version1_0::ssc::annotation);
 
       // check for ssd:annotation to support older version, which is a bug
       if(!annotation_node)
       {
-        annotation_node = it->child(oms::ssp::Draft20180219::ssd::annotation);
+        annotation_node = annotations.child(oms::ssp::Draft20180219::ssd::annotation);
       }
 
       if (annotation_node && std::string(annotation_node.attribute("type").as_string()) == oms::ssp::Draft20180219::annotation_type)
