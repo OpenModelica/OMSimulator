@@ -67,7 +67,7 @@ oms_delete("test")
 
 -- Result:
 -- <?xml version="1.0"?>
--- <ssd:SystemStructureDescription name="test" version="1.0">
+-- <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="test" version="1.0">
 -- 	<ssd:System name="eoo">
 -- 		<ssd:Annotations>
 -- 			<ssd:Annotation type="org.openmodelica">
@@ -116,7 +116,7 @@ oms_delete("test")
 -- info:    Delete source
 -- status:  [correct] ok
 -- <?xml version="1.0"?>
--- <ssd:SystemStructureDescription name="test" version="1.0">
+-- <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="test" version="1.0">
 -- 	<ssd:System name="eoo">
 -- 		<ssd:Annotations>
 -- 			<ssd:Annotation type="org.openmodelica">
