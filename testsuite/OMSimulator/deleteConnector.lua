@@ -54,7 +54,7 @@ print(src)
 
 -- Result:
 -- <?xml version="1.0"?>
--- <ssd:SystemStructureDescription name="deleteConnector" version="1.0">
+-- <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="deleteConnector" version="1.0">
 -- 	<ssd:System name="Root">
 -- 		<ssd:Annotations>
 -- 			<ssd:Annotation type="org.openmodelica">
@@ -174,7 +174,7 @@ print(src)
 -- warning: failed to delete object "deleteConnector.Root.System2.C6" because the identifier couldn't be resolved to any connector, component, system, or model
 -- warning: failed to delete object "deleteConnector.Root.System3" because the identifier couldn't be resolved to any connector, component, system, or model
 -- <?xml version="1.0"?>
--- <ssd:SystemStructureDescription name="deleteConnector" version="1.0">
+-- <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="deleteConnector" version="1.0">
 -- 	<ssd:System name="Root">
 -- 		<ssd:Annotations>
 -- 			<ssd:Annotation type="org.openmodelica">
