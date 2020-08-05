@@ -309,6 +309,7 @@ EXIT /B 0
 :all
 START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% clean"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
+IF NOT EXIST "3rdParty/README.md" GOTO fail2
 START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% fmil"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% lua"
@@ -339,4 +340,8 @@ EXIT /B 0
 
 :fail
 ECHO Error: Configuring failed for target '%TARGET%'.
+EXIT /B 1
+
+:fail2
+ECHO Error: Please checkout the 3rdParty submodule, e.g. using 'git submodule update --init 3rdParty', and try again.
 EXIT /B 1

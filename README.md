@@ -27,6 +27,8 @@ The latest documentation is avilable as [pdf](https://openmodelica.org/doc/OMSim
 
 ## Compilation
 
+Note: Make sure to fetch the submodules, e.g., using `git submodule update --init`.
+
 ### Linux / MacOS
 
 1. install libxml2-dev
