@@ -652,6 +652,7 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
                   else
                   {
                     annotationNodeString = oms::ssp::Draft20180219::ssd::annotation;
+                    logWarning("Wrong/deprecated content detected but successfully loaded. Please re-export the SSP file to avoid this message.");
                   }
 
                   for (pugi::xml_node annotationNode = annotationNode.child(annotationNodeString); annotationNode; annotationNode = annotationNode.next_sibling(annotationNodeString)) {
@@ -731,6 +732,7 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
       if(!annotation_node)
       {
         annotation_node = it->child(oms::ssp::Draft20180219::ssd::annotation);
+        logWarning("Wrong/deprecated content detected but successfully loaded. Please re-export the SSP file to avoid this message.");
       }
 
       if (annotation_node && std::string(annotation_node.attribute("type").as_string()) == oms::ssp::Draft20180219::annotation_type)
