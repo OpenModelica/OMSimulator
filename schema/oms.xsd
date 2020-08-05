@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema" 
-    xmlns:oms="https://raw.githubusercontent.com/arun3688/OMSimulator/generatexmlnamespaces/schema/oms.xsd"
-    targetNamespace="https://raw.githubusercontent.com/arun3688/OMSimulator/generatexmlnamespaces/schema/oms.xsd">
+    targetNamespace="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd">
   <xs:element name="SimulationInformation">
     <xs:complexType>
       <xs:sequence minOccurs="0">
@@ -24,10 +23,10 @@
           </xs:complexType>
         </xs:element>
       </xs:sequence>
-      <xs:attribute name="resultFile" type="xs:string" use="optional" />
-      <xs:attribute name="loggingInterval" type="xs:decimal" use="optional" />
-      <xs:attribute name="bufferSize" type="xs:unsignedByte" use="optional" />
-      <xs:attribute name="signalFilter" type="xs:string" use="optional" />
+      <xs:attribute name="resultFile" type="xs:string" />
+      <xs:attribute name="loggingInterval" type="xs:decimal" />
+      <xs:attribute name="bufferSize" type="xs:int" />
+      <xs:attribute name="signalFilter" type="xs:string" />
     </xs:complexType>
   </xs:element>
 </xs:schema>
