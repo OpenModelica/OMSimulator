@@ -16,6 +16,8 @@ Examples
 .. code-block:: python
 
   from OMSimulator import OMSimulator
+
+  oms = OMSimulator()
   oms.setTempDirectory("./temp/")
   oms.newModel("model")
   oms.addSystem("model.root", oms.system_sc)
