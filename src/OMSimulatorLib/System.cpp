@@ -1552,6 +1552,16 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
     for (int i=0; i<connectors.size()-1; ++i)
       if (connectors[i]->getName() == front)
       {
+        if (Flags::ExportParametersInline())
+        {
+          // delete startValues associated with the Connector
+          startValues.deleteStartValue(front);
+        }
+        else
+        {
+          // delete startValues associated with the Connector from ssv file
+          startValues.deleteStartValue(getCref()+front);
+        }
         deleteAllConectionsTo(front);
         exportConnectors.erase(front);
         delete connectors[i];
@@ -1564,6 +1574,16 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
     for (int i=0; i<busconnectors.size()-1; ++i)
       if (busconnectors[i]->getName() == front)
       {
+        if (Flags::ExportParametersInline())
+        {
+          // delete startValues associated with the Connector
+          startValues.deleteStartValue(front);
+        }
+        else
+        {
+          // delete startValues associated with the Connector from ssv file
+          startValues.deleteStartValue(getCref()+front);
+        }
         deleteAllConectionsTo(front);
         exportConnectors.erase(front);
         delete busconnectors[i];
@@ -1576,6 +1596,16 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
     for (int i=0; i<tlmbusconnectors.size()-1; ++i)
       if (tlmbusconnectors[i]->getName() == front)
       {
+        if (Flags::ExportParametersInline())
+        {
+          // delete startValues associated with the Connector
+          startValues.deleteStartValue(front);
+        }
+        else
+        {
+          // delete startValues associated with the Connector from ssv file
+          startValues.deleteStartValue(getCref()+front);
+        }
         deleteAllConectionsTo(front);
         exportConnectors.erase(front);
         delete tlmbusconnectors[i];
@@ -1590,13 +1620,19 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
   {
     auto subsystem = subsystems.find(front);
     if (subsystem != subsystems.end())
+    {
+      deleteAllConectionsTo(cref);
       return subsystem->second->delete_(tail);
+    }
 
     auto component = components.find(front);
     if (component != components.end())
+    {
+      deleteAllConectionsTo(cref);
       return component->second->deleteConnector(tail);
+    }
   }
-
+  logWarning("failed to delete object \"" + std::string(getFullCref()+cref) + "\"" + " because the identifier couldn't be resolved to any connector, component, system, or model");
   return oms_status_error;
 }
 
