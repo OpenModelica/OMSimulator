@@ -499,15 +499,16 @@ oms_status_enu_t oms::ComponentFMUME::instantiate()
 
 /*
  * function which returns validCrefs
- * (e.g). add.P => P
- * inline parameters should be returned as default value (e.g.) P => P
+ * (e.g) add.P => P
+ * (e.g) chassis.C.mChassis => C.mChassis
+ * inline parameters should be returned as default value (e.g.) P => P or C.mChassis => C.mChassis
  */
 oms::ComRef oms::ComponentFMUME::getValidCref(ComRef cref)
 {
   oms::ComRef tail(cref);
   oms::ComRef head = tail.pop_front();
 
-  if (tail.isEmpty()) // check for inline parameter crefs, (e.g.) P => P
+  if (tail.isEmpty() || head != getCref()) // check for inline parameter crefs, (e.g.) P => P or C.mChassis => C.mChassis
     tail = cref;
   return tail;
 }

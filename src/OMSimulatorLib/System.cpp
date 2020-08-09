@@ -1814,7 +1814,7 @@ oms_status_enu_t oms::System::getReal(const ComRef& cref, double& value)
 
 /*
  * function which returns valid cref for which are needed to set StartValues
- * if ExportParametersInline is set return the defaule cref
+ * if ExportParametersInline is set return the default cref
  * else when importing from ssv , check for cref belongs to toplevel System or SubSystem
  */
 oms::ComRef oms::System::getValidCref(const ComRef& cref)

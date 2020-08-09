@@ -138,6 +138,10 @@ oms_status_enu_t oms::Parameters::importFromSSD(const pugi::xml_node& node, cons
     else
     {
       // inline ParameterBindings
+      if (parameterBindingNode.child(oms::ssp::Version1_0::ssv::parameter_set))
+      {
+        logWarning("Wrong/deprecated content detected but successfully loaded. Please re-export the SSP file to avoid this message.");
+      }
       pugi::xml_node parameterValues = parameterBindingNode.child(oms::ssp::Version1_0::ssd::parameter_values);
       pugi::xml_node parameterSet = parameterValues.child(oms::ssp::Version1_0::ssv::parameter_set);
       std::string paramsetVersion = parameterSet.attribute("version").as_string();
