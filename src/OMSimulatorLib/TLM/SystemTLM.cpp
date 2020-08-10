@@ -81,7 +81,7 @@ oms::System* oms::SystemTLM::NewSystem(const oms::ComRef& cref, oms::Model* pare
 oms_status_enu_t oms::SystemTLM::exportToSSD_SimulationInformation(pugi::xml_node& node) const
 {
   pugi::xml_node node_annotations = node.append_child(oms::ssp::Draft20180219::ssd::annotations);
-  pugi::xml_node node_annotation = node_annotations.append_child(oms::ssp::Draft20180219::ssd::annotation);
+  pugi::xml_node node_annotation = node_annotations.append_child(oms::ssp::Version1_0::ssc::annotation);
   node_annotation.append_attribute("type") = oms::ssp::Draft20180219::annotation_type;
 
   /* ssd:SimulationInformation should be added as vendor specific annotations from Version 1.0 */
@@ -101,8 +101,18 @@ oms_status_enu_t oms::SystemTLM::importFromSSD_SimulationInformation(const pugi:
   pugi::xml_node annotationsNode = node.child(oms::ssp::Draft20180219::ssd::annotations);
 
   /*  To handle version = "Draft20180219"*/
-  if(annotationsNode) {
-    pugi::xml_node annotationNode = annotationsNode.child(oms::ssp::Draft20180219::ssd::annotation);
+  if(annotationsNode)
+  {
+    pugi::xml_node annotationNode;
+    annotationNode = annotationsNode.child(oms::ssp::Version1_0::ssc::annotation);
+
+    // check for ssd:annotation to support older version, which is a bug
+    if(!annotationNode)
+    {
+      annotationNode = annotationsNode.child(oms::ssp::Draft20180219::ssd::annotation);
+      logWarning_deprecated;
+    }
+
     if(annotationNode && std::string(annotationNode.attribute("type").as_string()) == "org.openmodelica") {
       importFromSSD_SimulationInformationHelper(annotationNode);
     }

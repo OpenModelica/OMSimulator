@@ -95,21 +95,21 @@ printStatus(status, 0)
 -- <?xml version="1.0"?>
 -- <ssd:System name="wc">
 -- 	<ssd:Annotations>
--- 		<ssd:Annotation type="org.openmodelica">
+-- 		<ssc:Annotation type="org.openmodelica">
 -- 			<oms:SimulationInformation>
 -- 				<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
 -- 			</oms:SimulationInformation>
--- 		</ssd:Annotation>
+-- 		</ssc:Annotation>
 -- 	</ssd:Annotations>
 -- 	<ssd:Connectors />
 -- 	<ssd:Elements>
 -- 		<ssd:System name="sc2">
 -- 			<ssd:Annotations>
--- 				<ssd:Annotation type="org.openmodelica">
+-- 				<ssc:Annotation type="org.openmodelica">
 -- 					<oms:SimulationInformation>
 -- 						<oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
 -- 					</oms:SimulationInformation>
--- 				</ssd:Annotation>
+-- 				</ssc:Annotation>
 -- 			</ssd:Annotations>
 -- 			<ssd:Connectors>
 -- 				<ssd:Connector name="y1" kind="output">
@@ -127,11 +127,11 @@ printStatus(status, 0)
 -- 		</ssd:System>
 -- 		<ssd:System name="sc1">
 -- 			<ssd:Annotations>
--- 				<ssd:Annotation type="org.openmodelica">
+-- 				<ssc:Annotation type="org.openmodelica">
 -- 					<oms:SimulationInformation>
 -- 						<oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
 -- 					</oms:SimulationInformation>
--- 				</ssd:Annotation>
+-- 				</ssc:Annotation>
 -- 			</ssd:Annotations>
 -- 			<ssd:Connectors>
 -- 				<ssd:Connector name="u1" kind="input">
@@ -157,21 +157,21 @@ printStatus(status, 0)
 -- <?xml version="1.0"?>
 -- <ssd:System name="wc">
 -- 	<ssd:Annotations>
--- 		<ssd:Annotation type="org.openmodelica">
+-- 		<ssc:Annotation type="org.openmodelica">
 -- 			<oms:SimulationInformation>
 -- 				<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
 -- 			</oms:SimulationInformation>
--- 		</ssd:Annotation>
+-- 		</ssc:Annotation>
 -- 	</ssd:Annotations>
 -- 	<ssd:Connectors />
 -- 	<ssd:Elements>
 -- 		<ssd:System name="sc2">
 -- 			<ssd:Annotations>
--- 				<ssd:Annotation type="org.openmodelica">
+-- 				<ssc:Annotation type="org.openmodelica">
 -- 					<oms:SimulationInformation>
 -- 						<oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
 -- 					</oms:SimulationInformation>
--- 				</ssd:Annotation>
+-- 				</ssc:Annotation>
 -- 			</ssd:Annotations>
 -- 			<ssd:Connectors>
 -- 				<ssd:Connector name="y1" kind="output">
@@ -189,11 +189,11 @@ printStatus(status, 0)
 -- 		</ssd:System>
 -- 		<ssd:System name="sc1">
 -- 			<ssd:Annotations>
--- 				<ssd:Annotation type="org.openmodelica">
+-- 				<ssc:Annotation type="org.openmodelica">
 -- 					<oms:SimulationInformation>
 -- 						<oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
 -- 					</oms:SimulationInformation>
--- 				</ssd:Annotation>
+-- 				</ssc:Annotation>
 -- 			</ssd:Annotations>
 -- 			<ssd:Connectors>
 -- 				<ssd:Connector name="u1" kind="input">

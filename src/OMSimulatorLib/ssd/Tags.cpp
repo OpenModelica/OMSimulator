@@ -84,3 +84,5 @@ const char* oms::ssp::Version1_0::ssv::boolean_type                    = "ssv:Bo
 const char* oms::ssp::Version1_0::ssv::string_type                     = "ssv:String";
 const char* oms::ssp::Version1_0::ssv::enumeration_type                = "ssv:Enumeration";
 const char* oms::ssp::Version1_0::ssv::binary_type                     = "ssv:Binary";
+
+const char* oms::ssp::Version1_0::ssc::annotation                      = "ssc:Annotation";

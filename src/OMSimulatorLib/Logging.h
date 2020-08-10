@@ -155,5 +155,6 @@ private:
 #define logError_UnknownTLMVariableType(vartype)             logError("Unknown TLM variable type: \""+vartype+"\"")
 #define logError_VariableTypeAlreadyInTLMBus(cref,vartype)   logError("TLM bus connector \"" + std::string(cref) + "\" already contains a variable with type \"" + vartype + "\"")
 #define logError_WrongSchema(name)                           logError("Wrong xml schema detected. Unexpected tag \"" + name + "\"")
+#define logWarning_deprecated                                logWarning("Wrong/deprecated content detected but successfully loaded. Please re-export the SSP file to avoid this message.")
 
 #endif

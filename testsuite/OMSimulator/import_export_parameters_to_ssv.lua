@@ -122,11 +122,11 @@ oms_delete("import_export_parameters")
 -- <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="import_export_parameters" version="1.0">
 -- 	<ssd:System name="co_sim">
 -- 		<ssd:Annotations>
--- 			<ssd:Annotation type="org.openmodelica">
+-- 			<ssc:Annotation type="org.openmodelica">
 -- 				<oms:SimulationInformation>
 -- 					<oms:FixedStepMaster description="oms-ma" stepSize="0.001000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
 -- 				</oms:SimulationInformation>
--- 			</ssd:Annotation>
+-- 			</ssc:Annotation>
 -- 		</ssd:Annotations>
 -- 		<ssd:Connectors>
 -- 			<ssd:Connector name="Input_cref" kind="input">
@@ -148,11 +148,11 @@ oms_delete("import_export_parameters")
 -- 		<ssd:Elements>
 -- 			<ssd:System name="foo">
 -- 				<ssd:Annotations>
--- 					<ssd:Annotation type="org.openmodelica">
+-- 					<ssc:Annotation type="org.openmodelica">
 -- 						<oms:SimulationInformation>
 -- 							<oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
 -- 						</oms:SimulationInformation>
--- 					</ssd:Annotation>
+-- 					</ssc:Annotation>
 -- 				</ssd:Annotations>
 -- 				<ssd:Connectors>
 -- 					<ssd:Connector name="F_cref" kind="parameter">
@@ -238,9 +238,9 @@ oms_delete("import_export_parameters")
 -- 	</ssd:System>
 -- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="4.000000">
 -- 		<ssd:Annotations>
--- 			<ssd:Annotation type="org.openmodelica">
+-- 			<ssc:Annotation type="org.openmodelica">
 -- 				<oms:SimulationInformation resultFile="import_export_parameters.mat" loggingInterval="0.000000" bufferSize="100" signalFilter="" />
--- 			</ssd:Annotation>
+-- 			</ssc:Annotation>
 -- 		</ssd:Annotations>
 -- 	</ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>
