@@ -110,7 +110,7 @@ oms_status_enu_t oms::SystemTLM::importFromSSD_SimulationInformation(const pugi:
     if(!annotationNode)
     {
       annotationNode = annotationsNode.child(oms::ssp::Draft20180219::ssd::annotation);
-      logWarning("Wrong/deprecated content detected but successfully loaded. Please re-export the SSP file to avoid this message.");
+      logWarning_deprecated;
     }
 
     if(annotationNode && std::string(annotationNode.attribute("type").as_string()) == "org.openmodelica") {

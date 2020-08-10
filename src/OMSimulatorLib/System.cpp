@@ -625,6 +625,10 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
                 if(simulationInformationNode && sspVersion == "Draft20180219") {
                   pugi::xml_node annotationsNode = simulationInformationNode.child(oms::ssp::Draft20180219::ssd::annotations);
                   if(annotationsNode) {
+                    if (annotationsNode.child(oms::ssp::Draft20180219::ssd::annotation))
+                    {
+                      logWarning_deprecated;
+                    }
                     for (pugi::xml_node annotationNode = annotationsNode.child(oms::ssp::Draft20180219::ssd::annotation); annotationNode; annotationNode = annotationNode.next_sibling(oms::ssp::Draft20180219::ssd::annotation)) {
                       std::string type = annotationNode.attribute("type").as_string() ;
                       if(oms::ssp::Draft20180219::annotation_type == type) {
@@ -652,7 +656,7 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
                   else
                   {
                     annotationNodeString = oms::ssp::Draft20180219::ssd::annotation;
-                    logWarning("Wrong/deprecated content detected but successfully loaded. Please re-export the SSP file to avoid this message.");
+                    logWarning_deprecated;
                   }
 
                   for (pugi::xml_node annotationNode = annotationNode.child(annotationNodeString); annotationNode; annotationNode = annotationNode.next_sibling(annotationNodeString)) {
@@ -732,7 +736,7 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
       if(!annotation_node)
       {
         annotation_node = it->child(oms::ssp::Draft20180219::ssd::annotation);
-        logWarning("Wrong/deprecated content detected but successfully loaded. Please re-export the SSP file to avoid this message.");
+        logWarning_deprecated;
       }
 
       if (annotation_node && std::string(annotation_node.attribute("type").as_string()) == oms::ssp::Draft20180219::annotation_type)
