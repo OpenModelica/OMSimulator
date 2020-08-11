@@ -31,7 +31,9 @@
 
 #include "CSVWriter.h"
 #include "ResultWriter.h"
+#include "Flags.h"
 
+#include <iostream>
 #include <stdio.h>
 #include <string>
 
@@ -59,6 +61,16 @@ bool oms::CSVWriter::createFile(const std::string& filename, double startTime, d
   {
     fprintf(pFile, ", \"%s\"", signals[i].name.c_str());
   }
+
+  // export parameters headers to .csv file
+  if (Flags::AddParametersToCSV())
+  {
+    for (int i = 0; i < parameters.size(); ++i)
+    {
+      fprintf(pFile, ", \"%s\"", parameters[i].signal.name.c_str());
+    }
+  }
+
   fprintf(pFile, "\n");
 
   return true;
@@ -82,6 +94,26 @@ void oms::CSVWriter::writeFile()
 
     for (int j = 1; j < signals.size() + 1; ++j)
       fprintf(pFile, ", %.12g", data_2[i * (signals.size() + 1) + j]);
+
+    // export parameter values to .csv file
+    if (Flags::AddParametersToCSV())
+    {
+      for (int j = 0; j < parameters.size(); ++j)
+      {
+        switch (parameters[j].signal.type)
+        {
+          case SignalType_REAL:
+            fprintf(pFile, ", %.12g", parameters[j].value.realValue);
+            break;
+          case SignalType_INT:
+            fprintf(pFile, ", %d", parameters[j].value.intValue);
+            break;
+          case SignalType_BOOL:
+            fprintf(pFile, ", %d", parameters[j].value.boolValue);
+            break;
+        }
+      }
+    }
 
     fprintf(pFile, "\n");
   }
