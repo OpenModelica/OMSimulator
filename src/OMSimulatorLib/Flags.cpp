@@ -61,6 +61,7 @@ oms::Flags::~Flags()
 
 void oms::Flags::setDefaults()
 {
+  addParametersToCSV = false;
   defaultModeIsCS = false;
   deleteTempFiles = true;
   emitEvents = true;
@@ -166,6 +167,12 @@ oms_status_enu_t oms::Flags::SetCommandLineOption(const std::string& cmd)
     if (oms_status_ok != oms_RunFile(file.c_str()))
       return oms_status_error;
 
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Flags::AddParametersToCSV(const std::string& value)
+{
+  GetInstance().addParametersToCSV = (value == "true");
   return oms_status_ok;
 }
 

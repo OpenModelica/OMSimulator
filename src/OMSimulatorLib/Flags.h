@@ -55,6 +55,7 @@ namespace oms
   public:
     static oms_status_enu_t SetCommandLineOption(const std::string& cmd);
 
+    static bool AddParametersToCSV() {return GetInstance().addParametersToCSV;}
     static bool DefaultModeIsCS() {return GetInstance().defaultModeIsCS;}
     static bool DeleteTempFiles() {return GetInstance().deleteTempFiles;}
     static bool EmitEvents() {return GetInstance().emitEvents;}
@@ -79,6 +80,7 @@ namespace oms
     static unsigned int NumProcs() {return GetInstance().numProcs;}
 
   private:
+    bool addParametersToCSV;
     bool defaultModeIsCS;
     bool deleteTempFiles;
     bool emitEvents;
@@ -126,6 +128,7 @@ namespace oms
 
     const std::vector<Flag> flags = {
       {"", "", "FMU or SSP file", re_filename, Flags::Filename, false},
+      {"--addParametersToCSV", "", "Export parameters to .csv file, ", re_default, Flags::AddParametersToCSV, false},
       {"--clearAllOptions", "", "Reset all flags to default values", re_void, Flags::ClearAllOptions, false},
       {"--deleteTempFiles", "", "Deletes temp files as soon as they are no longer needed ([true], false)", re_bool, Flags::DeleteTempFiles, false},
       {"--emitEvents", "", "Specifies whether events should be emitted or not ([true], false)", re_bool, Flags::EmitEvents, false},
@@ -158,6 +161,7 @@ namespace oms
       {"--workingDir", "", "Specifies the working directory", re_default, Flags::WorkingDir, false}
     };
 
+    static oms_status_enu_t AddParametersToCSV(const std::string& value);
     static oms_status_enu_t ClearAllOptions(const std::string& value);
     static oms_status_enu_t DeleteTempFiles(const std::string& value);
     static oms_status_enu_t EmitEvents(const std::string& value);
