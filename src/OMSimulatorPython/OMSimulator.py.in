@@ -1,9 +1,13 @@
 from ctypes import cdll
-import ctypes, sys
+import ctypes, sys, os
 
 class OMSimulator:
-  def __init__(self):
-    self.obj=cdll.LoadLibrary("@OMSIMULATORLIB_STRING@")
+  def __init__(self, omslib=None):
+    if omslib is None:
+      dirname = os.path.dirname(__file__)
+      self.obj=cdll.LoadLibrary(os.path.join(dirname, "@OMSIMULATORLIB_DIR_STRING@", "@OMSIMULATORLIB_STRING@"))
+    else:
+      self.obj=cdll.LoadLibrary(omslib)
 
     ## oms_system_enu_t
     self.system_none = 0
