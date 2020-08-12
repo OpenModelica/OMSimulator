@@ -54,48 +54,47 @@ bool oms::CSVWriter::createFile(const std::string& filename, double startTime, d
     return false;
 
   pFile = fopen(filename.c_str(), "w");
-  fprintf(pFile, "\"sep=,\"\n");
-  fprintf(pFile, "\"time\"");
+  if (!Flags::SkipCSVHeader())
+    fputs("\"sep=,\"\n", pFile);
 
+  // first signal is always 'time'
+  fputs("\"time\"", pFile);
+
+  // write signal names to csv file
   for (int i = 0; i < signals.size(); ++i)
-  {
     fprintf(pFile, ", \"%s\"", signals[i].name.c_str());
-  }
 
-  // export parameters headers to .csv file
+  // write parameter headers to csv file
   if (Flags::AddParametersToCSV())
-  {
     for (int i = 0; i < parameters.size(); ++i)
-    {
       fprintf(pFile, ", \"%s\"", parameters[i].signal.name.c_str());
-    }
-  }
 
-  fprintf(pFile, "\n");
-
+  fputs("\n", pFile);
   return true;
 }
 
 void oms::CSVWriter::closeFile()
 {
-  if (pFile)
-  {
-    writeFile();
-    fclose(pFile);
-    pFile = NULL;
-  }
+  if (!pFile)
+    return;
+
+  writeFile();
+  fclose(pFile);
+  pFile = NULL;
 }
 
 void oms::CSVWriter::writeFile()
 {
   for (int i = 0; i < nEmits; ++i)
   {
+    // first signal is always 'time'
     fprintf(pFile, "%.12g", data_2[i * (signals.size() + 1) + 0]);
 
+    // write signals to csv file
     for (int j = 1; j < signals.size() + 1; ++j)
       fprintf(pFile, ", %.12g", data_2[i * (signals.size() + 1) + j]);
 
-    // export parameter values to .csv file
+    // write parameters to csv file
     if (Flags::AddParametersToCSV())
     {
       for (int j = 0; j < parameters.size(); ++j)
@@ -115,6 +114,7 @@ void oms::CSVWriter::writeFile()
       }
     }
 
-    fprintf(pFile, "\n");
+    fputs("\n", pFile);
   }
+  fflush(pFile);
 }
