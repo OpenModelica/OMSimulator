@@ -25,10 +25,6 @@ OMSimulator.log: difftool
 	@$(MAKE) -C OMSimulator -f Makefile test > $@
 	@grep == OMSimulator.log
 
-OMSysIdent.log: difftool
-	@$(MAKE) -C OMSysIdent -f Makefile test > $@
-	@grep == OMSysIdent.log
-
 tlm.log: difftool
 	@$(MAKE) -C tlm -f Makefile test > $@
 	@grep == tlm.log

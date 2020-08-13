@@ -16,7 +16,6 @@ OMSimulator's documentation
   OMSimulatorPython
   OpenModelicaScripting
   OMEdit
-  OMSysIdent
   SSP
 
 

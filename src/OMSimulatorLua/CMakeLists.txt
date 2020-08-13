@@ -5,7 +5,6 @@ set(CMAKE_INSTALL_RPATH "$ORIGIN/../lib/${HOST_SHORT}:$ORIGIN/")
 include_directories(
   ${LUALibrary_INCLUDEDIR}
   ../OMSimulatorLib
-  ../OMSysIdentLib
 )
 
 link_directories(
@@ -15,10 +14,6 @@ link_directories(
   ${CVODELibrary_LIBRARYDIR}
   ${KINSOLLibrary_LIBRARYDIR}
   ${OMTLMSIMULATORLIB_LIBRARYDIR})
-
-IF (Ceres_FOUND AND OMSYSIDENT)
-  add_definitions(-DWITH_OMSYSIDENT)
-ENDIF()
 
 # Shared library version
 add_library(OMSimulatorLua STATIC OMSimulatorLua.c)
