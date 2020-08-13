@@ -99,7 +99,7 @@ sub setbaselineone
     my $sim_exe="OMSimulator";
     if ($ext eq '.py') {
       $comment_prefix="##";
-      $sim_exe="OMSimulatorPython";
+      $sim_exe="OMSimulatorPython3";
     }
     if ($ext eq '.lua') {
       $comment_prefix="--";
@@ -195,7 +195,7 @@ sub runone
       $sim_exe="OMSimulator.exe";
     }
     if ($ext eq '.py') {
-      $sim_exe="OMSimulatorPython";
+      $sim_exe="OMSimulatorPython3";
     }
 
     $log = "$tmpdir/log-$f";
