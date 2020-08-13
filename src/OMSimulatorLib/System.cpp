@@ -1062,10 +1062,12 @@ oms_status_enu_t oms::System::addConnection(const oms::ComRef& crefA, const oms:
   if (getConnection(crefA, crefB))
     return logError_ConnectionExistsAlready(crefA, crefB, this);
 
-
   auto componentA = getComponent(headA);
-
-  if (conA->getType() != conB->getType() && componentA->getType() != oms_component_table) // allow non real connection from csv inputs to fmus
+  if(componentA && componentA->getType() == oms_component_table)
+  {
+    // allow non real connection from csv inputs to fmus,
+  }
+  else if (conA->getType() != conB->getType())
   {
     return logError("Type mismatch in connection: " + std::string(crefA) + " -> " + std::string(crefB));
   }
