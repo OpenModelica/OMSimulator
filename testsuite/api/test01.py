@@ -24,7 +24,7 @@ def printStatus(status, expected):
     status = "warning"
   elif 3 == status:
     status = "error"
-  print "status:  [%s] %s" % (cmp, status)
+  print("status:  [%s] %s" % (cmp, status), flush=True)
 
 status = oms.newModel("test")
 printStatus(status, 0)
@@ -42,13 +42,13 @@ status = oms.addSystem("test.foo.hoo", oms.system_wc)
 printStatus(status, 3)
 
 src, status = oms.list("test")
-print(src)
+print(src, flush=True)
 
 src, status = oms.list("test.foo")
-print(src)
+print(src, flush=True)
 
 src, status = oms.list("test.foo.goo")
-print(src)
+print(src, flush=True)
 
 status = oms.newModel("test")
 printStatus(status, 3)
@@ -69,7 +69,7 @@ status = oms.newModel("test")
 printStatus(status, 0)
 
 src, status = oms.list("test")
-print(src)
+print(src, flush=True)
 
 status = oms.delete("test")
 printStatus(status, 0)
@@ -120,7 +120,7 @@ printStatus(status, 3)
 ## 		</ssd:Annotations>
 ## 	</ssd:DefaultExperiment>
 ## </ssd:SystemStructureDescription>
-## 
+##
 ## <?xml version="1.0"?>
 ## <ssd:System name="foo">
 ## 	<ssd:Annotations>
@@ -147,7 +147,7 @@ printStatus(status, 3)
 ## 	</ssd:Elements>
 ## 	<ssd:Connections />
 ## </ssd:System>
-## 
+##
 ## <?xml version="1.0"?>
 ## <ssd:System name="goo">
 ## 	<ssd:Annotations>
@@ -161,7 +161,7 @@ printStatus(status, 3)
 ## 	<ssd:Elements />
 ## 	<ssd:Connections />
 ## </ssd:System>
-## 
+##
 ## error:   [newModel] "test" already exists in the scope
 ## status:  [correct] error
 ## status:  [correct] ok
@@ -179,7 +179,7 @@ printStatus(status, 3)
 ## 		</ssd:Annotations>
 ## 	</ssd:DefaultExperiment>
 ## </ssd:SystemStructureDescription>
-## 
+##
 ## status:  [correct] ok
 ## error:   [deleteModel] Model "foo" does not exist in the scope
 ## status:  [correct] error

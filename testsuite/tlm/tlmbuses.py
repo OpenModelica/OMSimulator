@@ -24,7 +24,7 @@ def printStatus(status, expected):
     status = "warning"
   elif 3 == status:
     status = "error"
-  print "status:  [%s] %s" % (cmp, status)
+  print("status:  [%s] %s" % (cmp, status), flush=True)
 
 oms.newModel("model")
 oms.addSystem("model.tlm", oms.system_tlm)
@@ -81,13 +81,13 @@ status = oms.addTLMConnection("model.tlm.wc1.bus1","model.tlm.wc2.bus2", 0.001,0
 printStatus(status, 0)
 
 src, status = oms.list("model.tlm")
-print src
+print(src)
 
 status = oms.deleteConnectorFromTLMBus("model.tlm.wc1.bus2","model.tlm.wc1.x")
 printStatus(status, 0)
 
 src, status = oms.list("model.tlm")
-print src
+print(src)
 
 status = oms.delete("model")
 printStatus(status, 0)
@@ -204,7 +204,7 @@ printStatus(status, 0)
 ## 		</ssc:Annotation>
 ## 	</ssd:Annotations>
 ## </ssd:System>
-## 
+##
 ## status:  [correct] ok
 ## <?xml version="1.0"?>
 ## <ssd:System name="tlm">
@@ -301,7 +301,7 @@ printStatus(status, 0)
 ## 		</ssc:Annotation>
 ## 	</ssd:Annotations>
 ## </ssd:System>
-## 
+##
 ## status:  [correct] ok
 ## info:    0 warnings
 ## info:    3 errors

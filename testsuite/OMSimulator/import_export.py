@@ -24,7 +24,7 @@ def printStatus(status, expected):
     status = "warning"
   elif 3 == status:
     status = "error"
-  print "status:  [%s] %s" % (cmp, status)
+  print("status:  [%s] %s" % (cmp, status), flush=True)
 
 status = oms.newModel("test")
 printStatus(status, 0)
@@ -355,7 +355,7 @@ printStatus(status, 0)
 ##         </ssd:Annotations>
 ##     </ssd:DefaultExperiment>
 ## </ssd:SystemStructureDescription>
-## 
+##
 ## status:  [correct] ok
 ## status:  [correct] ok
 ## status:  [correct] ok
@@ -523,7 +523,6 @@ printStatus(status, 0)
 ##         </ssd:Annotations>
 ##     </ssd:DefaultExperiment>
 ## </ssd:SystemStructureDescription>
-## 
+##
 ## status:  [correct] ok
 ## endResult
-
