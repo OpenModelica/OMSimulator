@@ -129,7 +129,7 @@ pipeline {
             export CXX="/opt/rh/devtoolset-7/root/usr/bin/g++"
             export CXXFLAGS="-std=c++17"
             """
-            OMSFLAGS = "CERES=OFF OMSYSIDENT=OFF OMTLM=OFF"
+            OMSFLAGS = "OMTLM=OFF"
           }
           steps {
             buildOMS()
@@ -150,7 +150,7 @@ pipeline {
             }
           }
           environment {
-            OMSFLAGS = "CERES=OFF OMSYSIDENT=OFF OMTLM=OFF"
+            OMSFLAGS = "OMTLM=OFF"
           }
           steps {
             buildOMS()
@@ -165,7 +165,7 @@ pipeline {
             }
           }
           environment {
-            OMSFLAGS = "CERES=OFF OMSYSIDENT=OFF OMTLM=OFF"
+            OMSFLAGS = "OMTLM=OFF"
           }
           steps {
             buildOMS()

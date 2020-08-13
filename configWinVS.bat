@@ -50,14 +50,10 @@ IF ["%OMS_VS_TARGET%"]==["VS15-Win64"] (
 
 IF NOT DEFINED CMAKE_BUILD_TYPE SET CMAKE_BUILD_TYPE="Release"
 IF NOT DEFINED BOOST_ROOT SET BOOST_ROOT=C:\local\boost_1_64_0
-IF NOT DEFINED CERES SET CERES=OFF
-IF NOT DEFINED OMFIT SET OMFIT=OFF
 
 ECHO.
 SET CMAKE_BUILD_TYPE
 SET BOOST_ROOT
-SET CERES
-SET OMFIT
 ECHO.
 :: -- init ----------------------------
 
@@ -73,9 +69,6 @@ IF ["%TARGET%"]==["lua"] GOTO lua
 IF ["%TARGET%"]==["zlib"] GOTO zlib
 IF ["%TARGET%"]==["cvode"] GOTO cvode
 IF ["%TARGET%"]==["kinsol"] GOTO kinsol
-IF ["%TARGET%"]==["gflags"] GOTO gflags
-IF ["%TARGET%"]==["glog"] GOTO glog
-IF ["%TARGET%"]==["ceres"] GOTO ceres
 IF ["%TARGET%"]==["pthread"] GOTO pthread
 IF ["%TARGET%"]==["libxml2"] GOTO libxml2
 IF ["%TARGET%"]==["boost"] GOTO boost
@@ -183,69 +176,6 @@ EXIT /B 0
 :: -- config kinsol -------------------
 
 
-:: -- config gflags -------------------
-:gflags
-ECHO # config gflags
-IF ["%CERES%"]==["OFF"] (
-  ECHO CERES=OFF: Skipping build of 3rdParty library gflags, which is a dependency of the optional parameter estimation module.
-) ELSE (
-  IF EXIST "3rdParty\gflags\build\win\" RMDIR /S /Q 3rdParty\gflags\build\win
-  IF EXIST "3rdParty\gflags\install\win\" RMDIR /S /Q 3rdParty\gflags\install\win
-  MKDIR 3rdParty\gflags\build\win
-  CD 3rdParty\gflags\build\win
-  cmake.exe -G %OMS_VS_VERSION% ..\..\gflags -DCMAKE_INSTALL_PREFIX=..\..\install\win -DBUILD_TESTING:BOOL=OFF -DCMAKE_BUILD_TYPE=Release
-  IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-  CD ..\..\..\..
-  ECHO # build gflags
-  msbuild.exe "3rdParty\gflags\build\win\INSTALL.vcxproj" /t:Build /p:configuration=Release /maxcpucount
-  IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-)
-EXIT /B 0
-:: -- config gflags -------------------
-
-
-:: -- config glog ---------------------
-:glog
-ECHO # config glog
-IF ["%CERES%"]==["OFF"] (
-  ECHO CERES=OFF: Skipping build of 3rdParty library glog, which is a dependency of the optional parameter estimation module.
-) ELSE (
-  IF EXIST "3rdParty\glog\build\win\" RMDIR /S /Q 3rdParty\glog\build\win
-  IF EXIST "3rdParty\glog\install\win\" RMDIR /S /Q 3rdParty\glog\install\win
-  MKDIR 3rdParty\glog\build\win
-  CD 3rdParty\glog\build\win
-  cmake.exe -G %OMS_VS_VERSION% ..\..\glog -DCMAKE_INSTALL_PREFIX=..\..\install\win -DBUILD_TESTING:BOOL=OFF -DCMAKE_BUILD_TYPE=Release
-  IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-  CD ..\..\..\..
-  ECHO # build glog
-  msbuild.exe "3rdParty\glog\build\win\INSTALL.vcxproj" /t:Build /p:configuration=Release /maxcpucount
-  IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-)
-EXIT /B 0
-:: -- config glog ---------------------
-
-
-:: -- config ceres-solver -------------
-:ceres
-ECHO # config ceres-solver
-IF ["%CERES%"]==["OFF"] (
-  ECHO CERES=OFF: Skipping build of 3rdParty library ceres-solver, which is a dependency of the optional parameter estimation module.
-) ELSE (
-  IF EXIST "3rdParty\ceres-solver\build\win\" RMDIR /S /Q 3rdParty\ceres-solver\build\win
-  IF EXIST "3rdParty\ceres-solver\install\win\" RMDIR /S /Q 3rdParty\ceres-solver\install\win
-  MKDIR 3rdParty\ceres-solver\build\win
-  CD 3rdParty\ceres-solver\build\win
-  cmake.exe -G %OMS_VS_VERSION% ..\..\ceres-solver -DCMAKE_INSTALL_PREFIX=..\..\install\win -DCXX11:BOOL=ON -DEXPORT_BUILD_DIR:BOOL=ON -DEIGEN_INCLUDE_DIR_HINTS="../../eigen/eigen" -DBUILD_EXAMPLES:BOOL=OFF -DBUILD_TESTING:BOOL=OFF -DCMAKE_BUILD_TYPE=Release
-  IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-  CD ..\..\..\..
-  ECHO # build ceres-solver
-  msbuild.exe "3rdParty\ceres-solver\build\win\INSTALL.vcxproj" /t:Build /p:configuration=Release /maxcpucount
-  IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-)
-EXIT /B 0
-:: -- config ceres-solver -------------
-
-
 :: -- pthread -------------------------
 :pthread
 ECHO # config pthread
@@ -298,7 +228,7 @@ ECHO # config OMSimulator
 IF EXIST "build\win\" RMDIR /S /Q build\win
 MKDIR build\win
 CD build\win
-cmake.exe -G %OMS_VS_VERSION% ..\.. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DOMFIT="%OMFIT%" -DBOOST_ROOT=%BOOST_ROOT% -DCMAKE_BUILD_TYPE:STRING=%CMAKE_BUILD_TYPE%
+cmake.exe -G %OMS_VS_VERSION% ..\.. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DBOOST_ROOT=%BOOST_ROOT% -DCMAKE_BUILD_TYPE:STRING=%CMAKE_BUILD_TYPE%
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 CD ..\..
 EXIT /B 0
@@ -319,12 +249,6 @@ IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% cvode"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% kinsol"
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% gflags"
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% glog"
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% ceres"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% pthread"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail

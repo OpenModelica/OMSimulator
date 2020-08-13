@@ -21,9 +21,6 @@ The latest documentation is avilable as [pdf](https://openmodelica.org/doc/OMSim
   - SUNDIALS CVODE
   - SUNDIALS KINSOL
   - CTPL
-  - gflags
-  - glog
-  - Ceres Solver
 
 ## Compilation
 
@@ -98,12 +95,3 @@ It is not strictly required to install the full Visual Studio IDE. The batch scr
    ```bash
    buildWinVS.bat VS15-Win64
    ```
-
-## The optional parameter estimation module
-
-OMSimulator includes an optional parameter optimization module. It is enabled by default. It can be disabled in order to speed up the compilation process or if it causes compilation problems. It is not supported when using MinGW (and automatically disabled in that case). It can be disabled by using the options `CERES=OFF` (disables building its dependencies) and `OMSYSIDENT=OFF`.
-
-```bash
-make config-3rdParty OMSYSIDENT=OFF
-make config-OMSimulator OMSYSIDENT=OFF
-```

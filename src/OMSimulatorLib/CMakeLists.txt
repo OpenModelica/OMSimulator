@@ -17,11 +17,6 @@ IF (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.1)
   ENDIF ()
 ENDIF ()
 
-IF (Ceres_FOUND AND OMSYSIDENT)
-  add_definitions(-DWITH_OMSYSIDENT)
-  set(OMSYSIDENT_OPTION OMSysIdent_static)
-ENDIF()
-
 IF (OMTLM)
   set(OMTLM_SOURCES "TLM/")
   set(TLM_STRING "")
@@ -108,7 +103,6 @@ include_directories(
   ../../3rdParty/RegEx
   ../OMSimulatorLib
   ../OMSimulatorLua
-  ../OMSysIdentLib
   ${Boost_INCLUDE_DIRS}
   ${CTPL_INCLUDEDIR}
   ${CVODELibrary_INCLUDEDIR}
@@ -157,7 +151,7 @@ IF (WIN32 AND MSVC)
 ENDIF ()
 
 target_link_libraries(OMSimulatorLib fmilib sundials_kinsol sundials_cvode sundials_nvecserial minizip ${LIB_ATOMIC} ${Boost_LIBRARIES} ${OMTLM_LINKFLAGS} ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} ${CPP_FS_LIBS} ${STATIC_LIBGCC})
-target_link_libraries(OMSimulatorLib_static fmilib sundials_kinsol sundials_cvode sundials_nvecserial minizip lua ${OMSYSIDENT_OPTION} ${CMAKE_DL_LIBS} ${LIB_ATOMIC} ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} ${OMTLM_LINKFLAGS} ${CPP_FS_LIBS} ${STATIC_LIBGCC})
+target_link_libraries(OMSimulatorLib_static fmilib sundials_kinsol sundials_cvode sundials_nvecserial minizip lua ${CMAKE_DL_LIBS} ${LIB_ATOMIC} ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} ${OMTLM_LINKFLAGS} ${CPP_FS_LIBS} ${STATIC_LIBGCC})
 
 IF (WIN32 AND MINGW)
   target_link_libraries(OMSimulatorLib shlwapi)

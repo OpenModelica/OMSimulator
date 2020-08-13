@@ -166,29 +166,6 @@ ELSE()
 ENDIF()
 
 ##########################
-# Configuring for glog
-set(GLOG_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/glog/install/${PLATFORM_STRING}/include)
-
-##########################
-# Configuring for gflags
-set(GFLAGS_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/gflags/install/${PLATFORM_STRING}/include)
-
-##########################
-# Configuring for Ceres-Solver
-option(OMSYSIDENT "Enable the OMSYSIDENT module for parameter estimation support." ON)
-IF(OMSYSIDENT)
-find_package(Ceres)
-  IF(Ceres_FOUND)
-    message(STATUS "Found Ceres-Solver")
-    message(STATUS "  CERES_INCLUDE_DIRS: " ${CERES_INCLUDE_DIRS})
-    message(STATUS "  GLOG_INCLUDEDIR:    " ${GLOG_INCLUDEDIR})
-    message(STATUS "  GFLAGS_INCLUDEDIR:  " ${GFLAGS_INCLUDEDIR})
-  ELSE()
-    message(WARNING, "Ceres-Solver not found. Building without parameter estimation module.")
-  ENDIF()
-ENDIF()
-
-##########################
 # Configuration for OMTLMSimulatorLib
 option(OMTLM "Enable the OMTLMSimulator module." ON)
 IF(OMTLM)
@@ -217,8 +194,3 @@ add_subdirectory(src/OMSimulator)
 add_subdirectory(src/OMSimulatorLib)
 add_subdirectory(src/OMSimulatorLua)
 add_subdirectory(src/OMSimulatorPython)
-IF (Ceres_FOUND AND OMSYSIDENT)
-  enable_testing()
-  add_subdirectory(src/OMSysIdentLib)
-ENDIF()
-
