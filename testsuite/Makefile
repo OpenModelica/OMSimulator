@@ -2,7 +2,7 @@
 
 all: difftool resources test
 
-test: api.log AircraftVehicleDemonstrator.log OMSimulator.log OMSysIdent.log tlm.log assc.log
+test: api.log AircraftVehicleDemonstrator.log OMSimulator.log tlm.log assc.log
 
 partest: difftool resources
 	cd partest && time ./runtests.pl -nocolour -with-xml

@@ -24,7 +24,7 @@ def printStatus(status, expected):
     status = "warning"
   elif 3 == status:
     status = "error"
-  print "status:  [%s] %s" % (cmp, status)
+  print("status:  [%s] %s" % (cmp, status), flush=True)
 
 status = oms.newModel("test")
 printStatus(status, 0)
@@ -47,28 +47,28 @@ printStatus(status, 0)
 
 v, status = oms.getReal("test.co_sim.A.A")
 printStatus(status, 0)
-print "test.co_sim.A.A: %g" % v
+print("test.co_sim.A.A: %g" % v, flush=True)
 
 status = oms.setReal("test.co_sim.A.A", v + 1.0)
 printStatus(status, 0)
 
 v, status = oms.getReal("test.co_sim.A.A")
 printStatus(status, 0)
-print "test.co_sim.A.A: %g" % v
+print("test.co_sim.A.A: %g" % v, flush=True)
 
 status = oms.initialize("test")
 printStatus(status, 0)
 
 v, status = oms.getReal("test.co_sim.A.y")
 printStatus(status, 0)
-print "test.co_sim.A.y: %g" % v
+print("test.co_sim.A.y: %g" % v, flush=True)
 
 status = oms.simulate("test")
 printStatus(status, 0)
 
 v, status = oms.getReal("test.co_sim.A.y")
 printStatus(status, 0)
-print "test.co_sim.A.y: %g" % v
+print("test.co_sim.A.y: %g" % v, flush=True)
 
 status = oms.terminate("test")
 printStatus(status, 0)

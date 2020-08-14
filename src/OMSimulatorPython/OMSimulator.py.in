@@ -344,5 +344,7 @@ class OMSimulator:
     return self.obj.oms_setFixedStepSize(self.checkstring(cref), stepSize)
   def checkstring(self, ident):
     if isinstance(ident, str):
-       ident = ident.encode()
+      ident = ident.encode()
+    elif isinstance(ident, bytes):
+      ident = ident.decode("utf-8")
     return ident

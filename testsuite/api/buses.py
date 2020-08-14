@@ -23,7 +23,7 @@ def printStatus(status, expected):
     status = "warning"
   elif 3 == status:
     status = "error"
-  print "status:  [%s] %s" % (cmp, status)
+  print("status:  [%s] %s" % (cmp, status), flush=True)
 
 status = oms.setTempDirectory("./buses-py/")
 printStatus(status, 0)
@@ -75,13 +75,13 @@ status = oms.addConnection("model.tlm.wc2.bus2","model.tlm.wc1.bus1")
 printStatus(status, 3)
 
 src, status = oms.list("model.tlm")
-print(src)
+print(src, flush=True)
 
 status = oms.deleteConnectorFromBus("model.tlm.wc1.bus1","model.tlm.wc1.y")
 printStatus(status, 0)
 
 src, status = oms.list("model.tlm")
-print(src)
+print(src, flush=True)
 
 status = oms.delete("model")
 printStatus(status, 0)
@@ -191,7 +191,7 @@ printStatus(status, 0)
 ## 		</ssc:Annotation>
 ## 	</ssd:Annotations>
 ## </ssd:System>
-## 
+##
 ## status:  [correct] ok
 ## <?xml version="1.0"?>
 ## <ssd:System name="tlm">
@@ -281,7 +281,7 @@ printStatus(status, 0)
 ## 		</ssc:Annotation>
 ## 	</ssd:Annotations>
 ## </ssd:System>
-## 
+##
 ## status:  [correct] ok
 ## info:    0 warnings
 ## info:    2 errors

@@ -23,7 +23,7 @@ def printStatus(status, expected):
     status = "warning"
   elif 3 == status:
     status = "error"
-  print "status:  [%s] %s" % (cmp, status)
+  print("status:  [%s] %s" % (cmp, status), flush=True)
 
 status = oms.setTempDirectory("./connections-py/")
 printStatus(status, 0)
@@ -66,13 +66,13 @@ status = oms.addConnection("model.wc.sc1.u1", "model.wc.sc2.y3")
 printStatus(status, 3)
 
 src, status = oms.list("model.wc")
-print(src)
+print(src, flush=True)
 
 status = oms.deleteConnection("model.wc.sc1.u1", "model.wc.sc2.y1")
 printStatus(status, 0)
 
 src, status = oms.list("model.wc")
-print(src)
+print(src, flush=True)
 
 status = oms.delete("model")
 printStatus(status, 0)
@@ -152,7 +152,7 @@ printStatus(status, 0)
 ## 		<ssd:Connection startElement="sc2" startConnector="y1" endElement="sc1" endConnector="u1" />
 ## 	</ssd:Connections>
 ## </ssd:System>
-## 
+##
 ## status:  [correct] ok
 ## <?xml version="1.0"?>
 ## <ssd:System name="wc">
@@ -212,7 +212,7 @@ printStatus(status, 0)
 ## 	</ssd:Elements>
 ## 	<ssd:Connections />
 ## </ssd:System>
-## 
+##
 ## status:  [correct] ok
 ## info:    0 warnings
 ## info:    3 errors
