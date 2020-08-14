@@ -226,18 +226,24 @@ oms_status_enu_t oms::ComponentTable::getInteger(const oms::ComRef& cref, int& v
 
   for (int i=0; i<series[cref]->length; ++i)
   {
-    if (time == series[cref]->time[i])
+    if(i == 0 && time < series[cref]->time[i])
+    {
+      return logError("invalid csv input series (cref=" + std::string(cref) + ", time=" + std::to_string(time) + " cannot be less than first time point in csv " + std::to_string(series[cref]->time[i]) + ")");
+    }
+    else if(time == series[cref]->time[i])
     {
       value = series[cref]->value[i];
       return oms_status_ok;
     }
-    else if(time < series[cref]->time[i])
+    else if (time < series[cref]->time[i])
     {
       value = series[cref]->value[i-1];
       return oms_status_ok;
     }
   }
+
   value = 0;
+  return oms_status_ok;
   return logError("out of range (cref=" + std::string(cref) + ", time=" + std::to_string(time) + ")");
 }
 
@@ -251,7 +257,11 @@ oms_status_enu_t oms::ComponentTable::getBoolean(const oms::ComRef& cref, bool& 
 
   for (int i=0; i<series[cref]->length; ++i)
   {
-    if (time == series[cref]->time[i])
+    if(i == 0 && time < series[cref]->time[i])
+    {
+      return logError("invalid csv input series (cref=" + std::string(cref) + ", time=" + std::to_string(time) + " cannot be less than first time point in csv " + std::to_string(series[cref]->time[i]) + ")");
+    }
+    else if (time == series[cref]->time[i] )
     {
       value = series[cref]->value[i];
       return oms_status_ok;
