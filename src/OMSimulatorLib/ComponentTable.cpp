@@ -224,14 +224,14 @@ oms_status_enu_t oms::ComponentTable::getInteger(const oms::ComRef& cref, int& v
   if (series.find(cref) == series.end())
     series[cref] = resultReader->getSeries(cref.c_str());
 
-  for (int i=1; i<series[cref]->length; ++i)
+  for (int i=0; i<series[cref]->length; ++i)
   {
-    if (series[cref]->time[i-1] == time)
+    if (time == series[cref]->time[i])
     {
-      value = series[cref]->value[i-1];
+      value = series[cref]->value[i];
       return oms_status_ok;
     }
-    else if (series[cref]->time[i-1] <= time && series[cref]->time[i] >= time)
+    else if(time < series[cref]->time[i])
     {
       value = series[cref]->value[i-1];
       return oms_status_ok;
@@ -249,14 +249,14 @@ oms_status_enu_t oms::ComponentTable::getBoolean(const oms::ComRef& cref, bool& 
   if (series.find(cref) == series.end())
     series[cref] = resultReader->getSeries(cref.c_str());
 
-  for (int i=1; i<series[cref]->length; ++i)
+  for (int i=0; i<series[cref]->length; ++i)
   {
-    if (series[cref]->time[i-1] == time)
+    if (time == series[cref]->time[i])
     {
-      value = series[cref]->value[i-1];
+      value = series[cref]->value[i];
       return oms_status_ok;
     }
-    else if (series[cref]->time[i-1] <= time && series[cref]->time[i] >= time)
+    else if(time < series[cref]->time[i])
     {
       value = series[cref]->value[i-1];
       return oms_status_ok;
