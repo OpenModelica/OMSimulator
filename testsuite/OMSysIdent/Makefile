@@ -3,11 +3,11 @@ TEST = ../rtest -v
 TESTFILES = \
 HelloWorld_cs_Fit.lua \
 HelloWorldWithInput_cs_Fit.lua \
-HelloWorld_cs_Fit.py \
-runCTests.py \
 
 # Run make failingtest
 FAILINGTESTFILES = \
+HelloWorld_cs_Fit.py \
+runCTests.py \
 
 # Dependency files that are not .lua or Makefile
 # Add them here or they will be cleaned.
