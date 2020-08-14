@@ -201,7 +201,7 @@ sub runone
     my $start_t = time;
     my ($ext) = $f =~ /(\.[^.]+)$/;
     my $sim_exe="OMSimulator";
-    if ($PLATFORM eq 'win') {
+    if ($TEST_PLATFORM eq 'win') {
       $sim_exe="OMSimulator.exe";
     }
     if ($ext eq '.py') {
