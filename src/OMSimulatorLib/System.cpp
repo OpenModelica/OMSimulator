@@ -1062,8 +1062,15 @@ oms_status_enu_t oms::System::addConnection(const oms::ComRef& crefA, const oms:
   if (getConnection(crefA, crefB))
     return logError_ConnectionExistsAlready(crefA, crefB, this);
 
-  if (conA->getType() != conB->getType())
+  auto componentA = getComponent(headA);
+  if(componentA && componentA->getType() == oms_component_table)
+  {
+    // allow non-real connections to tables
+  }
+  else if (conA->getType() != conB->getType())
+  {
     return logError("Type mismatch in connection: " + std::string(crefA) + " -> " + std::string(crefB));
+  }
 
   for (auto& connection : connections)
   {

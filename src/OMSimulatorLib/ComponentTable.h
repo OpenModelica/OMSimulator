@@ -65,6 +65,8 @@ namespace oms
     Variable* getVariable(const ComRef& cref) {logError_NotImplemented; return NULL;}
     oms_status_enu_t getReal(const ComRef& cref, double& value);
     oms_status_enu_t getRealOutputDerivative(const ComRef& cref, SignalDerivative& value);
+    oms_status_enu_t getInteger(const ComRef& cref, int& value);
+    oms_status_enu_t getBoolean(const ComRef& cref, bool& value);
 
     oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultFile);
     oms_status_enu_t updateSignals(ResultWriter& resultWriter);
