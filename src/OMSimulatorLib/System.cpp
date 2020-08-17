@@ -1065,7 +1065,7 @@ oms_status_enu_t oms::System::addConnection(const oms::ComRef& crefA, const oms:
   auto componentA = getComponent(headA);
   if(componentA && componentA->getType() == oms_component_table)
   {
-    // allow non-real connections from csv inputs to fmus
+    // allow non-real connections to tables
   }
   else if (conA->getType() != conB->getType())
   {
