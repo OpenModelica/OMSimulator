@@ -216,6 +216,68 @@ oms_status_enu_t oms::ComponentTable::getReal(const oms::ComRef& cref, double& v
   return logError("out of range (cref=" + std::string(cref) + ", time=" + std::to_string(time) + ")");
 }
 
+oms_status_enu_t oms::ComponentTable::getInteger(const oms::ComRef& cref, int& value)
+{
+  if (!resultReader)
+    logError("the table isn't initialized properly");
+
+  if (series.find(cref) == series.end())
+    series[cref] = resultReader->getSeries(cref.c_str());
+
+  if (series[cref]->length < 1)
+    return logError("empty table");
+  else if (series[cref]->time[0] > time)
+    return logError("out of range (cref=" + std::string(cref) + ", time=" + std::to_string(time) + " cannot be less than first time point in table " + std::to_string(series[cref]->time[0]) + ")");
+
+  for (int i=0; i<series[cref]->length; ++i)
+  {
+    if (time == series[cref]->time[i])
+    {
+      value = series[cref]->value[i];
+      return oms_status_ok;
+    }
+    else if (i > 0 && time < series[cref]->time[i])
+    {
+      value = series[cref]->value[i-1];
+      return oms_status_ok;
+    }
+  }
+
+  value = 0;
+  return logError("out of range (cref=" + std::string(cref) + ", time=" + std::to_string(time) + ")");
+}
+
+oms_status_enu_t oms::ComponentTable::getBoolean(const oms::ComRef& cref, bool& value)
+{
+  if (!resultReader)
+    logError("the table isn't initialized properly");
+
+  if (series.find(cref) == series.end())
+    series[cref] = resultReader->getSeries(cref.c_str());
+
+  if (series[cref]->length < 1)
+    return logError("empty table");
+  else if (series[cref]->time[0] > time)
+    return logError("out of range (cref=" + std::string(cref) + ", time=" + std::to_string(time) + " cannot be less than first time point in table " + std::to_string(series[cref]->time[0]) + ")");
+
+  for (int i=0; i<series[cref]->length; ++i)
+  {
+    if (time == series[cref]->time[i])
+    {
+      value = series[cref]->value[i];
+      return oms_status_ok;
+    }
+    else if (i > 0 && time < series[cref]->time[i])
+    {
+      value = series[cref]->value[i-1];
+      return oms_status_ok;
+    }
+  }
+
+  value = 0;
+  return logError("out of range (cref=" + std::string(cref) + ", time=" + std::to_string(time) + ")");
+}
+
 oms_status_enu_t oms::ComponentTable::getRealOutputDerivative(const ComRef& cref, SignalDerivative& value)
 {
   if (!resultReader)
