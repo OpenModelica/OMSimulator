@@ -2,37 +2,47 @@
 use Cwd;
 use File::Temp qw/ tempfile /;
 
-# PLATFORM1 is used to find omc-diff
-# PLATFORM2 is used to find OMSimulator
-# PLATFORM3 determines if the test will be executed
-
 (undef,$testTempFile) = tempfile("rtest$$.XXXXX", TMPDIR => 1, SUFFIX => ".tmp", UNLINK => 1);
 $cwd = getcwd;
+if ($cwd =~ m/(.*)OpenModelica\/(.+)$/) {
+  $SUPERPROJECT = 1;
+} else {
+  $SUPERPROJECT = 0;
+}
+
 if ($cwd =~ m/(.*)testsuite\/(.+)$/) {
   $prefix = $1;
   $dirname = $2;
   $os = `uname`;
   if ($os =~ /MINGW/) {
-    $PLATFORM1 = "mingw";
+    $PLATFORM = "mingw";
   }
   else {
     if ($os =~ /Darwin/) {
-      $PLATFORM1 = "mac";
+      $PLATFORM = "mac";
     }
     else {
-      $PLATFORM1 = "linux";
+      $PLATFORM = "linux";
     }
   }
-  $PLATFORM2 = $PLATFORM1;
-  $PLATFORM3 = $PLATFORM1;
+
+  $TEST_PLATFORM = $PLATFORM;
+
+  if ($SUPERPROJECT) {
+    $OMCDIFF = "$prefix/../build/bin/omc-diff";
+    $BIN = "$prefix/../build/bin/";
+  } else {
+    $OMCDIFF = "$prefix/install/$PLATFORM/bin/omc-diff";
+    $BIN = "$prefix/install/$PLATFORM/bin/";
+  }
 } else {
   print "You must run rtest from OMSimulator (was run from $cwd)\n";
   exit 0;
 }
 
-system "$prefix/install/$PLATFORM1/bin/omc-diff -v1.4";
+system "$OMCDIFF -v1.4";
 if ($?) {
-  print "$prefix/install/$PLATFORM1/bin/omc-diff seems to be missing or of an incompatible version.\n";
+  print "$OMCDIFF seems to be missing or of an incompatible version.\n";
   print "Compile omc-diff and run rtest again.\n";
   exit 2;
 }
@@ -99,7 +109,7 @@ sub setbaselineone
     my $sim_exe="OMSimulator";
     if ($ext eq '.py') {
       $comment_prefix="##";
-      $sim_exe="OMSimulatorPython";
+      $sim_exe="OMSimulatorPython3";
     }
     if ($ext eq '.lua') {
       $comment_prefix="--";
@@ -123,7 +133,7 @@ sub setbaselineone
       $env =~ s/:/\\;/g;
     }
     unlink "$testTempFile$f";
-    system "$env $ulimit $prefix/install/$PLATFORM2/bin/$sim_exe $f >>$log 2>&1";
+    system "$env $ulimit $BIN/$sim_exe $f >>$log 2>&1";
     if ($nodelete == 0 && open(TOREMOVE,"<$testTempFile$f")) {
       while(my $line = <TOREMOVE>) {
         $line =~ s/^\s*(.*?)\s*$/$1/;
@@ -191,11 +201,11 @@ sub runone
     my $start_t = time;
     my ($ext) = $f =~ /(\.[^.]+)$/;
     my $sim_exe="OMSimulator";
-    if ($PLATFORM2 eq 'win') {
+    if ($TEST_PLATFORM eq 'win') {
       $sim_exe="OMSimulator.exe";
     }
     if ($ext eq '.py') {
-      $sim_exe="OMSimulatorPython";
+      $sim_exe="OMSimulatorPython3";
     }
 
     $log = "$tmpdir/log-$f";
@@ -216,7 +226,7 @@ sub runone
       $env =~ s/:/\\;/g;
     }
     unlink "$testTempFile$f";
-    system "$env $ulimit $prefix/install/$PLATFORM2/bin/$sim_exe $f >>$log 2>&1";
+    system "$env $ulimit $BIN/$sim_exe $f >>$log 2>&1";
     $retval = $?;
     if ($nodelete==0 && open(TOREMOVE,"<$testTempFile$f")) {
       while(my $line = <TOREMOVE>) {
@@ -257,7 +267,7 @@ sub runone
     close RES;
 
     # Compare
-    system "$prefix/install/$PLATFORM1/bin/omc-diff $epsilon $expected $got > $difference";
+    system "$OMCDIFF $epsilon $expected $got > $difference";
 
     if ( $? != 0 ) {
     print "equation mismatch [time:$end_t]\n";
@@ -387,8 +397,7 @@ sub dofile
       return 1;
     }
 
-    # print $PLATFORM3 . "?=" . $info{$PLATFORM3} . "\n";
-    if ($info{$PLATFORM3} eq "yes") {
+    if ($info{$TEST_PLATFORM} eq "yes") {
       if ($setbaseline) {
         setbaselineone $f,%info;
         $status = 0;
@@ -422,10 +431,18 @@ while ($#ARGV >= 0) {
     } elsif ($arg eq "-v") {
       $verbose="yes";
     } elsif ($arg eq "-platform=win") {
-      $PLATFORM2="win";
-      $PLATFORM3="win";
+      if ($SUPERPROJECT) {
+        print "Argument -platform=win is not available if running from the OpenModelica superproject"
+      } else {
+        $TEST_PLATFORM="win";
+        $BIN = "$prefix/install/win/bin/";
+      }
     } elsif($arg eq "-platform=linux32") {
-      $PLATFORM3="linux32";
+      if ($SUPERPROJECT) {
+        print "Argument -platform=linux32 is not available if running from the OpenModelica superproject"
+      } else {
+        $TEST_PLATFORM="linux32";
+      }
     } elsif ($arg eq "-b") {
       $setbaseline = 1;
     } elsif ($arg eq "-c") {
