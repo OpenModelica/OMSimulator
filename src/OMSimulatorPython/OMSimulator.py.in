@@ -2,12 +2,20 @@ from ctypes import cdll
 import ctypes, sys, os
 
 class OMSimulator:
-  def __init__(self, omslib=None):
+  def __init__(self, omslib=None, temp_directory=None):
     if omslib is None:
       dirname = os.path.dirname(__file__)
       self.obj=cdll.LoadLibrary(os.path.join(dirname, "@OMSIMULATORLIB_DIR_STRING@", "@OMSIMULATORLIB_STRING@"))
     else:
       self.obj=cdll.LoadLibrary(omslib)
+
+    ## oms_status_enu_t
+    self.status_ok = 0
+    self.status_warning = 1
+    self.status_discard = 2
+    self.status_error = 3
+    self.status_fatal = 4
+    self.status_pending = 5
 
     ## oms_system_enu_t
     self.system_none = 0
@@ -186,6 +194,19 @@ class OMSimulator:
     self.obj.oms_terminate.argtypes = [ctypes.c_char_p]
     self.obj.oms_terminate.restype = ctypes.c_int
 
+    self.models = []
+
+    if temp_directory is not None:
+        self.setTempDirectory(temp_directory)
+
+  def __enter__(self):
+    return self
+
+  def __exit__(self, type, value, traceback):
+    for model in self.models:
+      self.terminate(model)
+      self.delete(model)
+
   def getVersion(self):
     return self.checkstring(self.obj.oms_getVersion())
   def setLoggingLevel(self, level):
@@ -215,11 +236,17 @@ class OMSimulator:
   def setWorkingDirectory(self, path):
     return self.obj.oms_setWorkingDirectory(self.checkstring(path))
   def newModel(self, cref):
-    return self.obj.oms_newModel(self.checkstring(cref))
+    status = self.obj.oms_newModel(self.checkstring(cref))
+    if status == self.status_ok:
+        self.models.append(cref)
+    return status
   def rename(self, cref, newcref):
     return self.obj.oms_rename(self.checkstring(cref), self.checkstring(newcref))
   def delete(self, cref):
-    return self.obj.oms_delete(self.checkstring(cref))
+    status = self.obj.oms_delete(self.checkstring(cref))
+    if status == self.status_ok:
+        self.models = [model for model in self.models if model != cref]
+    return status
   def export(self, cref, filename):
     return self.obj.oms_export(self.checkstring(cref), self.checkstring(filename))
   def importFile(self, filename):
