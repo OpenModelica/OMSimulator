@@ -23,7 +23,7 @@ def printStatus(status, expected):
     status = "warning"
   elif 3 == status:
     status = "error"
-  print "status:  [%s] %s" % (cmp, status)
+  print("status:  [%s] %s" % (cmp, status), flush=True)
 
 status = oms.setTempDirectory("./externalmodels-py/")
 printStatus(status, 0)
@@ -76,6 +76,6 @@ printStatus(status, 0)
 ## 	</ssd:Elements>
 ## 	<ssd:Connections />
 ## </ssd:System>
-## 
+##
 ## status:  [correct] ok
 ## endResult

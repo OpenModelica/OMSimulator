@@ -25,7 +25,7 @@ def printStatus(status, expected):
     status = "warning"
   elif 3 == status:
     status = "error"
-  print "status:  [%s] %s" % (cmp, status)
+  print("status:  [%s] %s" % (cmp, status), flush=True)
 
 status = oms.newModel("model")
 printStatus(status, 0)
@@ -38,7 +38,7 @@ printStatus(status, 0)
 
 (src, status) = oms.list("model")
 printStatus(status, 0)
-print(src)
+print(src, flush=True)
 
 status = oms.removeSignalsFromResults("model", "A")
 printStatus(status, 0)
@@ -48,7 +48,7 @@ printStatus(status, 0)
 
 (src, status) = oms.list("model")
 printStatus(status, 0)
-print(src)
+print(src, flush=True)
 
 status= oms.export("model", "model.ssp")
 printStatus(status, 0)
@@ -81,7 +81,7 @@ printStatus(status, 0)
 ## 		</ssd:Annotations>
 ## 	</ssd:DefaultExperiment>
 ## </ssd:SystemStructureDescription>
-## 
+##
 ## warning: [oms_removeSignalsFromResults] will not update the signalFilters in ssp, use [oms_setSignalFilter]
 ## status:  [correct] ok
 ## warning: [oms_addSignalsToResults] will not update the signalFilters in ssp, use [oms_setSignalFilter]
@@ -109,7 +109,7 @@ printStatus(status, 0)
 ## 		</ssd:Annotations>
 ## 	</ssd:DefaultExperiment>
 ## </ssd:SystemStructureDescription>
-## 
+##
 ## status:  [correct] ok
 ## info:    2 warnings
 ## info:    0 errors

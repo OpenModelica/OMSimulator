@@ -24,17 +24,17 @@ def printStatus(status, expected):
     status = "warning"
   elif 3 == status:
     status = "error"
-  print "status:  [%s] %s" % (cmp, status)
+  print("status:  [%s] %s" % (cmp, status), flush=True)
 
 def printType(t):
   if oms.system_tlm == t:
-    print "type: system_tlm"
+    print("type: system_tlm", flush=True)
   elif oms.system_wc == t:
-    print "type: system_wc"
+    print("type: system_wc", flush=True)
   elif oms.system_sc == t:
-    print "type: system_sc"
+    print("type: system_sc", flush=True)
   else:
-    print "Unknown type"
+    print("Unknown type", flush=True)
 
 status = oms.newModel("test")
 printStatus(status, 0)
