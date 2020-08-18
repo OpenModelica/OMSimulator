@@ -197,7 +197,7 @@ class OMSimulator:
     self.models = []
 
     if temp_directory is not None:
-        self.setTempDirectory(temp_directory)
+      self.setTempDirectory(temp_directory)
 
   def __enter__(self):
     return self
@@ -207,8 +207,14 @@ class OMSimulator:
       self.terminate(model)
       self.delete(model)
 
+  @property
+  def version(self):
+    '''Returns the version string'''
+    return self.getVersion()
+
   def getVersion(self):
-    return self.checkstring(self.obj.oms_getVersion())
+    return self.obj.oms_getVersion().decode('utf-8')
+
   def setLoggingLevel(self, level):
     return self.obj.oms_setLoggingLevel(level)
   def setTolerance(self, cref, absoluteTolerance, relativeTolerance):
