@@ -10,7 +10,6 @@ class OMSimulator:
         self.obj=CDLL(os.path.join(dirname, "@OMSIMULATORLIB_DIR_STRING@", "@OMSIMULATORLIB_STRING@"), winmode=0)
       else:
         self.obj=CDLL(os.path.join(dirname, "@OMSIMULATORLIB_DIR_STRING@", "@OMSIMULATORLIB_STRING@"))
-      self.obj=CDLL(os.path.join(dirname, "@OMSIMULATORLIB_DIR_STRING@", "@OMSIMULATORLIB_STRING@"), winmode=0)
     else:
       if platform.python_version() >= "3.8":
         self.obj=CDLL(omslib, winmode=0)
