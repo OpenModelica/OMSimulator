@@ -1,13 +1,21 @@
-from ctypes import cdll
-import ctypes, sys, os
+from ctypes import CDLL
+import ctypes, sys, os, platform
 
 class OMSimulator:
   def __init__(self, omslib=None, temp_directory=None):
     if omslib is None:
       dirname = os.path.dirname(__file__)
-      self.obj=cdll.LoadLibrary(os.path.join(dirname, "@OMSIMULATORLIB_DIR_STRING@", "@OMSIMULATORLIB_STRING@"))
+      ## use CDLL instances for proper loading in Python versions > 3.8 as winmode=0 parameter is needed for proper loading in windows
+      if platform.python_version() >= "3.8":
+        self.obj=CDLL(os.path.join(dirname, "@OMSIMULATORLIB_DIR_STRING@", "@OMSIMULATORLIB_STRING@"), winmode=0)
+      else:
+        self.obj=CDLL(os.path.join(dirname, "@OMSIMULATORLIB_DIR_STRING@", "@OMSIMULATORLIB_STRING@"))
+      self.obj=CDLL(os.path.join(dirname, "@OMSIMULATORLIB_DIR_STRING@", "@OMSIMULATORLIB_STRING@"), winmode=0)
     else:
-      self.obj=cdll.LoadLibrary(omslib)
+      if platform.python_version() >= "3.8":
+        self.obj=CDLL(omslib, winmode=0)
+      else:
+        self.obj=CDLL(omslib)
 
     ## oms_status_enu_t
     self.status_ok = 0
