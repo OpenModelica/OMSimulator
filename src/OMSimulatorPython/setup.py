@@ -25,16 +25,18 @@ if (sysconfig.get_platform() == 'linux-x86_64' or sysconfig.get_platform() == 'm
 
 ## TODO subprocess call for windows 
 
+## copy dlls and OMSimulator.py to root directory
 datafiles = []
 installdir = os.path.join(os.getcwd(),"install") 
 for root, dirs, files in os.walk(installdir):
   path = root.split(os.sep)
   for file in files:
     (tmpfile, ext) = os.path.splitext(file)
-    if((tmpfile == "libOMSimulator" or file== "OMSimulator") and (ext == ".dll" or ext==".so")):
+    if ((tmpfile == "libOMSimulator" or file== "OMSimulator") and (ext == ".dll" or ext==".so")):
+      datafiles.append(('OMSimulator',[os.path.join(root,file)]))
+    if (tmpfile == "OMSimulator" and ext == ".py"):
       datafiles.append(('OMSimulator',[os.path.join(root,file)]))
 
-#print(datafiles)
 os.chdir("../")
 
 setup(
@@ -47,7 +49,8 @@ setup(
       maintainer_email='arunkumar.palanisamy@liu.se',
       license="BSD, OSMC-PL 1.2, GPL (user's choice)",
       url='http://openmodelica.org/',
-      packages=['OMSimulator'],
       data_files = datafiles,
-      install_requires=['GitPython']
+      install_requires=['GitPython'],
+      packages=['OMSimulator'],
+      zip_safe = False
       )
