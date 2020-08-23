@@ -21,7 +21,7 @@ os.chdir(clonedir)
 if (sysconfig.get_platform() == 'linux-x86_64' or sysconfig.get_platform() == 'mingw'):
   subprocess.call(['make', 'config-3rdParty'])
   subprocess.call(['make', 'config-OMSimulator'])
-  subprocess.call(['make', 'OMSimulator', str(multiprocessing.cpu_count())])
+  subprocess.call(['make', 'OMSimulator', '-j'+str(multiprocessing.cpu_count())])
 
 ## TODO subprocess call for windows 
 
