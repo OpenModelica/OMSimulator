@@ -32,7 +32,7 @@ for root, dirs, files in os.walk(installdir):
   path = root.split(os.sep)
   for file in files:
     (tmpfile, ext) = os.path.splitext(file)
-    if ((tmpfile == "libOMSimulator" or file== "OMSimulator") and (ext == ".dll" or ext==".so")):
+    if ((tmpfile == "libOMSimulator" or tmpfile == "libomtlmsimulator" or  tmpfile== "OMSimulator") and (ext == ".dll" or ext==".so")):
       datafiles.append(('OMSimulator',[os.path.join(root,file)]))
     if (tmpfile == "OMSimulator" and ext == ".py"):
       datafiles.append(('OMSimulator',[os.path.join(root,file)]))
@@ -42,11 +42,9 @@ os.chdir("../")
 setup(
       name='OMSimulator',
       version='2.0.1',
-      description='OSimulator-Python API Interface',
-      author='Arunkumar Palanisamy',
-      author_email='arunkumar.palanisamy@liu.se',
-      maintainer='Arunkumar Palanisamy',
-      maintainer_email='arunkumar.palanisamy@liu.se',
+      description='OMSimulator-Python API Interface',
+      author='Open Source Modelica Consortium (OSMC)',
+      author_email='openmodelicadevelopers@ida.liu.se',
       license="BSD, OSMC-PL 1.2, GPL (user's choice)",
       url='http://openmodelica.org/',
       data_files = datafiles,
