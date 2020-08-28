@@ -5,7 +5,7 @@ class OMSimulator:
   def __init__(self, omslib=None, temp_directory=None):
     if omslib is None:
       dirname = os.path.dirname(__file__)
-      omslib = os.path.join(dirname, "..", "@OMSIMULATORLIB_DIR_STRING@", "@OMSIMULATORLIB_STRING@")
+      omslib = os.path.join(dirname, "@OMSIMULATORLIB_DIR_STRING@", "@OMSIMULATORLIB_STRING@")
 
     # Use CDLL instances with winmode=0 for proper loading in Python
     # versions > 3.8 as needed on Windows
