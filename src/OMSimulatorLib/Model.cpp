@@ -495,38 +495,23 @@ oms_system_enu_t oms::Model::getSystemType(const pugi::xml_node& node, const std
 
 oms_system_enu_t oms::Model::getSystemTypeHelper(const pugi::xml_node& node, const std::string& sspVersion)
 {
-  const char* VariableStepSolver = "";
-  const char* FixedStepSolver = "";
-  const char* VariableStepMaster = "";
-  const char* FixedStepMaster = "";
-
-  if (sspVersion == "1.0")
-  {
-    VariableStepSolver = oms::ssp::Version1_0::VariableStepSolver;
-    FixedStepMaster = oms::ssp::Version1_0::FixedStepMaster;
-    // TODO check whether below two option exists
-    VariableStepMaster = "oms:VariableStepMaster";
-    FixedStepSolver = "oms:FixedStepSolver";
-  }
-  else
-  {
-
-    VariableStepSolver = "VariableStepSolver";
-    FixedStepMaster = "FixedStepMaster";
-    // TODO check whether below two option exists
-    VariableStepMaster = "VariableStepMaster";
-    FixedStepSolver = "FixedStepSolver";
-  }
-
   oms_system_enu_t systemType = oms_system_tlm;
-  if (std::string(node.child(VariableStepSolver).attribute("description").as_string()) != "")
+  if (node.child(oms::ssp::Version1_0::VariableStepSolver).attribute("description").as_string() != "" || node.child("VariableStepSolver").attribute("description").as_string() !="")
+  {
     systemType = oms_system_sc;
-  if (std::string(node.child(FixedStepSolver).attribute("description").as_string()) != "")
+  }
+  else if (node.child("oms:FixedStepSolver").attribute("description").as_string() != "" || node.child("FixedStepSolver").attribute("description").as_string() != "")
+  {
     systemType = oms_system_sc;
-  if (std::string(node.child(VariableStepMaster).attribute("description").as_string()) != "")
+  }
+  else if (node.child("oms:VariableStepMaster").attribute("description").as_string() != "" || node.child("VariableStepMaster").attribute("description").as_string() != "")
+  {
     systemType = oms_system_wc;
-  if (std::string(node.child(FixedStepMaster).attribute("description").as_string()) != "")
+  }
+  else if (node.child(oms::ssp::Version1_0::FixedStepMaster).attribute("description").as_string() != "" || node.child("FixedStepMaster").attribute("description").as_string() != "")
+  {
     systemType = oms_system_wc;
+  }
 
   return systemType;
 }
