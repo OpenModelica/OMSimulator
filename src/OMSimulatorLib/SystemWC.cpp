@@ -125,9 +125,11 @@ oms_status_enu_t oms::SystemWC::importFromSSD_SimulationInformation(const pugi::
 {
   std::string solverName = "";
   const char* FixedStepMaster = "";
-  if (sspVersion == "1.0")
+
+  pugi::xml_node fixedStepMaster = node.child(oms::ssp::Version1_0::FixedStepMaster);
+  if (fixedStepMaster)
   {
-    solverName = node.child(oms::ssp::Version1_0::FixedStepMaster).attribute("description").as_string();
+    solverName = fixedStepMaster.attribute("description").as_string();
     FixedStepMaster = oms::ssp::Version1_0::FixedStepMaster;
   }
   else

@@ -162,9 +162,10 @@ oms_status_enu_t oms::SystemSC::importFromSSD_SimulationInformation(const pugi::
   std::string solverName = "";
   const char* VariableStepSolver = "";
 
-  if (sspVersion == "1.0")
+  pugi::xml_node variableStepSolver = node.child(oms::ssp::Version1_0::VariableStepSolver);
+  if (variableStepSolver)
   {
-    solverName = node.child(oms::ssp::Version1_0::VariableStepSolver).attribute("description").as_string();
+    solverName = variableStepSolver.attribute("description").as_string();
     VariableStepSolver = oms::ssp::Version1_0::VariableStepSolver;
   }
   else
