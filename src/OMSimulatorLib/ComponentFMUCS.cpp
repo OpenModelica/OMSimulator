@@ -87,7 +87,7 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::
   component->callbacks.context = 0;
 
   // Copy the resource to the temp directory of the model? We don't want have
-  // do copy resources if importing an SSP or snapshot.
+  // to copy resources if importing an SSP file or snapshot.
   if (parentSystem->copyResources())
     oms_copy_file(filesystem::path(fmuPath), absFMUPath);
 
