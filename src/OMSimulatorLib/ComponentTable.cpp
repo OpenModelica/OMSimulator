@@ -82,7 +82,7 @@ oms::Component* oms::ComponentTable::NewComponent(const oms::ComRef& cref, oms::
   if (parentSystem->copyResources())
     oms_copy_file(filesystem::path(path), absPath);
 
-  component->resultReader = ResultReader::newReader(path.c_str());
+  component->resultReader = ResultReader::newReader(absPath.string().c_str());
   if (!component->resultReader)
   {
     logError("Could not load lookup table: " + path);
