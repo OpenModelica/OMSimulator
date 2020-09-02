@@ -113,23 +113,6 @@ oms::Component::~Component()
     if (tlmbusconnector)
       delete tlmbusconnector;
 #endif
-
-  // delete temp directory
-  if (Flags::DeleteTempFiles())
-  {
-    if (!tempDir.empty() && filesystem::is_directory(tempDir))
-    {
-      try
-      {
-        filesystem::remove_all(tempDir);
-        logDebug("removed temp directory: \"" + tempDir + "\"");
-      }
-      catch (const std::exception& e)
-      {
-        logWarning("temp directory \"" + tempDir + "\" couldn't be removed\n" + e.what());
-      }
-    }
-  }
 }
 
 oms::ComRef oms::Component::getFullCref() const
