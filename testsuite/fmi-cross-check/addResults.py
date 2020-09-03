@@ -6,11 +6,22 @@ import shutil
 from tempfile import NamedTemporaryFile
 import subprocess
 import sys
+import time
 #sys.path.append("/opt/OMSimulator-dev-181/lib")
-from OMSimulator import OMSimulator
+
+from OMPython import OMCSessionZMQ
+omc = OMCSessionZMQ()
+
+from generateHTML import generateOverviewHTML
 
 debugPrint = False
 ignoreNotCompliantWithLatestRules = True
+generateHTML = True
+
+ulimitOMSimulator = 60
+default_tolerance = 1e-8
+reltolDiffMinMax = 1e-4
+rangeDelta = 0.002
 
 class HideOutput(object):
   '''
@@ -49,7 +60,7 @@ def simulate(testFMUDir, resultDir, modelName, fmiType, luaFile):
       + "    --addParametersToCSV=true \\\n"                                   \
       + "    --intervals=" + intervals + " \\\n"                               \
       + "    --suppressPath=true \\\n"                                         \
-      + "    --timeout=60 \\\n"                                                \
+      + "    --timeout=" + str(ulimitOMSimulator) +  "\\\n"                    \
       + "    " + os.path.relpath(luaFile,resultDir)
 
   if sys.platform == "win32":
@@ -70,13 +81,17 @@ def simulate(testFMUDir, resultDir, modelName, fmiType, luaFile):
     print(errStr)
     print("\n\n")
 
+  # Check if result file was generated
+  if (not os.path.isfile(os.path.join(resultDir,  modelName+"_out.csv"))) and (exitCode == 0):
+    exitCode = 1
+
   # Delete temp files
   shutil.rmtree(tempDir, ignore_errors=True)
 
   return (exitCode, cmd, outStr, errStr)
 
 
-def filterReultFile(resultFile, referenceFile, resultDir):
+def filterResultFile(resultFile, referenceFile, resultDir):
   # Only save columns from fmu and remove ".fmu" and "\"" from variable names
   csv_res = pd.read_csv(resultFile)
   fmu_vars = [s for s in list(csv_res.columns.values) if(s.startswith(" \"fmu.") or s == "time")]
@@ -111,53 +126,21 @@ def filterReultFile(resultFile, referenceFile, resultDir):
 
 
 def diffSimulationResults(resultFile, referenceFile, modelName, testFMUDir, resultDir, relTol, absTol):
-  resultsCorrect = True
-  resultDiff = ""
-  wrongVars = []
+  """Check results with OpenModelica's diffSimulationResults function."""
 
-  logDiffFile = os.path.join(testFMUDir, modelName + "_diff.log")
+  omc.sendExpression('cd("%s")' % resultDir)
+  (resultsCorrect, failVars) =  omc.sendExpression('diffSimulationResults("%s","%s","%s",relTol=%g,relTolDiffMinMax=%g,rangeDelta=%g)' %
+                                                  (resultFile,       \
+                                                  referenceFile,     \
+                                                  modelName+".diff", \
+                                                  relTol,            \
+                                                  reltolDiffMinMax,  \
+                                                  rangeDelta))
 
-  # Compare results for each variable
-  csv_ref = pd.read_csv(referenceFile)
-  refVariables = list(csv_ref.columns.values)
-  refVariables.pop(0) # Remove time
+  if len(failVars) > 0:
+    resultsCorrect = False
 
-  with OMSimulator() as oms:
-    if not debugPrint:
-      with HideOutput():
-        oms.setWorkingDirectory(resultDir)
-        oms.setLogFile(logDiffFile)
-    else:
-      oms.setWorkingDirectory(resultDir)
-      oms.setLogFile(logDiffFile)
-    for var in refVariables:
-      status = oms.compareSimulationResults(resultFile, referenceFile, var, relTol, absTol)
-      if not status == 1:
-        resultsCorrect = False
-        if debugPrint:
-          print("Variable \"" + var + "\" not correct.")
-        wrongVars.append(var)
-
-  if not debugPrint:
-    sys.stdout = sys.__stdout__
-
-  for wrongVar in wrongVars:
-    with open(logDiffFile, 'a') as file:
-      file.write("Variable \"" + wrongVar + "\" not correct.\n")
-
-  with open(logDiffFile, "r") as file:
-    resultDiff = file.read()
-    if debugPrint:
-      print(resultDiff)
-
-  # Remove temp files
-  try:
-    os.remove(logDiffFile)
-  except:
-    # This is not working on Windows: PermissionError because OMSimulator does not close the log file
-    print("Error: Could not remove \"" + logDiffFile + "\"")
-
-  return (resultsCorrect, resultDiff)
+  return (resultsCorrect, failVars)
 
 
 def generateLua(modelName, testFMUDir, resultDir, fmiType):
@@ -171,7 +154,7 @@ def generateLua(modelName, testFMUDir, resultDir, fmiType):
   tempDir = "temp"
   startTime = "0.0"
   stopTime = "1.0"
-  relTol = "1e-8"
+  relTol = str(default_tolerance)
   interval = 500
   inputCSV = ""
   refOptFile = os.path.join(testFMUDir, modelName + "_ref.opt")
@@ -244,7 +227,7 @@ def generateLua(modelName, testFMUDir, resultDir, fmiType):
 
   f.close()
 
-  return (luaFilePath, float(relTol))
+  return (luaFilePath, float(relTol), float(startTime), float(stopTime))
 
 
 def createREADME(resultDir, modelName, cmd, luaFile):
@@ -262,14 +245,14 @@ def createREADME(resultDir, modelName, cmd, luaFile):
 
 
 def addResult(crossCheckDir, fmiVersion, fmiType, platform, importingToolID,
-              importingToolVersion, exporingToolID, exportingToolVersion,
-              modelName):
+              importingToolVersion, exportingToolID, exportingToolVersion,
+              modelName, df):
 
   testFMUDir = os.path.join(crossCheckDir, "fmus", fmiVersion, fmiType, platform,         \
-                            exporingToolID, exportingToolVersion, modelName)
+                            exportingToolID, exportingToolVersion, modelName)
   resultDir = os.path.join(crossCheckDir, "results", fmiVersion, fmiType,                 \
-                           platform, importingToolID, importingToolVersion,       \
-                           exporingToolID, exportingToolVersion, modelName)
+                           platform, importingToolID, importingToolVersion,               \
+                           exportingToolID, exportingToolVersion, modelName)
 
   testFMU = os.path.join(testFMUDir, modelName + ".fmu")
   print("Testing " + os.path.relpath(testFMU, crossCheckDir))
@@ -280,40 +263,67 @@ def addResult(crossCheckDir, fmiVersion, fmiType, platform, importingToolID,
   os.makedirs(resultDir, exist_ok = True)
 
   # Generate lua file
-  (luaFile, relTol) = generateLua(modelName, testFMUDir, resultDir, fmiType)
+  (luaFile, relTol, startTime, stopTime) = generateLua(modelName, testFMUDir, resultDir, fmiType)
 
   # Simulate FMU with OMSimulator
+  simTimeStart = time.time()
   (exitCode, cmd, out, error) = simulate(testFMUDir, resultDir, modelName, fmiType, luaFile)
+  simTime = time.time() - simTimeStart
 
   # Generate README
   createREADME(resultDir, modelName, cmd, luaFile)
+
+  # Return if simulation failed
+  if not exitCode==0:
+    if os.path.isfile(os.path.join(testFMUDir,"notCompliantWithLatestRules")):
+      open(os.path.join(resultDir,"rejected"), "w").close()
+    else:
+      open(os.path.join(resultDir,"failed"), "w").close()
+    canSimulate = False
+  else:
+    canSimulate = True
 
   # Filter result file and check if all variables are in output file
   resultFile = os.path.join(resultDir, modelName + "_out.csv")
   referenceResult = os.path.join(testFMUDir, modelName + "_ref.csv")
   resultDiff = ""
   if os.path.isfile(resultFile):
-    resultDiff = filterReultFile(resultFile, referenceResult, resultDir)
+    resultDiff = filterResultFile(resultFile, referenceResult, resultDir)
   else:
     open(os.path.join(resultDir,"failed"), "w").close()
 
+  csv_ref = pd.read_csv(referenceResult)
+  numRefVars = len(list(csv_ref.columns.values))-1
+
   # Check results
   resultsCorrect = False
+  failedVars = []
   if os.path.isfile(resultFile):
-    (resultsCorrect, resultDiff2) = diffSimulationResults(resultFile, referenceResult, modelName, testFMUDir, resultDir, 0.1, 0.1)
-    resultDiff = resultDiff + "\n" + resultDiff2
+    (resultsCorrect, failedVars) = diffSimulationResults(resultFile, referenceResult, modelName, testFMUDir, resultDir, 0.1, 0.1)
+    if resultsCorrect and len(resultDiff) > 0:
+      raise Exception("That was not supposed to happen!")
 
   if not (os.path.isfile(os.path.join(resultDir,"failed")) or os.path.isfile(os.path.join(resultDir,"rejected"))):
     open(os.path.join(resultDir,"passed"), "w").close()
 
-  if exitCode==0:
-    return (True, out, error, resultDiff, resultsCorrect)
-  else:
-    if os.path.isfile(os.path.join(testFMUDir,"notCompliantWithLatestRules")):
-      open(os.path.join(resultDir,"rejected"), "w").close()
-    else:
-      open(os.path.join(resultDir,"failed"), "w").close()
-    return (False, out, error, resultDiff, resultsCorrect)
+  df = df.append({
+    "FMI Version": fmiVersion,
+    "FMI Type": fmiType,
+    "Exporting Tool": exportingToolID,
+    "Exporting Tool Version": exportingToolVersion,
+    "Model Name": modelName,
+    "OMS can import FMU": canSimulate,
+    "Output": out,
+    "Error": error,
+    "Results Correct": resultsCorrect,
+    "Failed Variables": failedVars,
+    "Toal Variables": numRefVars,
+    "Simulation Time": simTime,
+    "Start Time": startTime,
+    "Stop Time": stopTime,
+    "Tolerance": relTol
+  }, ignore_index=True)
+  return df
 
 
 def runTest(crossCheckDir, platform, omsVersion):
@@ -328,11 +338,15 @@ def runTest(crossCheckDir, platform, omsVersion):
   platform -- string with plaform defined by fmi-cross-check repository
   omsVersion -- string with version of OMSimulator to be tested
   """
+  # Get start time
+  startTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+  t_sec = time.time()
+
   # Make sure we are in crossCheckDir
   os.chdir(fmiCrossCheckDir)
 
   # Create empty data frame for results.
-  df = pd.DataFrame(columns=["FMI Version", "FMI Type", "Exporting Tool", "Exporting Tool Version", "Model Name", "OMS can import FMU", "Output", "Error", "Results Correct", "Result comments"])
+  df = pd.DataFrame(columns=["FMI Version", "FMI Type", "Exporting Tool", "Exporting Tool Version", "Model Name", "OMS can import FMU", "Output", "Error", "Results Correct", "Failed Variables", "Total Variables", "Simulation Time", "Start Time", "Stop Time", "Tolerance"])
 
   # Iterate over tests
   for fmiVersion in ["2.0"]:
@@ -348,35 +362,36 @@ def runTest(crossCheckDir, platform, omsVersion):
               if os.path.isfile(os.path.join(crossCheckDir, "fmus", fmiVersion, fmiType, platform, exportingToolID, exportingToolVersion, fmu, "notCompliantWithLatestRules")):
                 continue
 
-            (result, output, error, resultComments, resultsCorrect) = addResult(crossCheckDir, fmiVersion, fmiType, platform, "OMSimulator", omsVersion, exportingToolID, exportingToolVersion, fmu)
-            df = df.append({
-              "FMI Version": fmiVersion,
-              "FMI Type": fmiType,
-              "Exporting Tool": exportingToolID,
-              "Exporting Tool Version": exportingToolVersion,
-              "Model Name": fmu,
-              "OMS can import FMU": result,
-              "Output": output,
-              "Error": error,
-              "Results Correct": resultsCorrect,
-              "Result comments": resultComments
-            }, ignore_index=True)
+            df = addResult(crossCheckDir, fmiVersion, fmiType, platform, "OMSimulator", omsVersion, exportingToolID, exportingToolVersion, fmu, df)
+
 
   # Write result csv
   resultFile = os.path.join(crossCheckDir, "OMSimulator_Results.csv")
   df.to_csv(resultFile, index=False, header=True)
 
+  # Get total time
+  totalTime = (time.time() - t_sec)
+
   # Output result summary
   numFmus = len(df["OMS can import FMU"])
   fmusSimulated = list(df["OMS can import FMU"]).count(True)
   fmusVerified = list(df["Results Correct"]).count(True)
-  print("\n\t# ############################################# #")
-  print("\t#             Final results summary             # ")
-  print("\t# \tTotal FMUs tested:\t\t" + str(numFmus) + "\t#")
-  print("\t# \tFMUs simulated succesfully:\t" + str(fmusSimulated) + " / " + str(numFmus) + "\t#")
-  print("\t# \tFMUs verified:\t\t\t" + str(fmusVerified) + " / " + str(numFmus) + "\t#")
-  print("\t# ############################################# #")
+  print("\n\t# ##################################################### #")
+  print("\t#             Final results summary                     # ")
+  print("\t# \tTotal FMUs tested:\t\t" + str(numFmus) + "\t\t#")
+  print("\t# \tTotal test time:\t\t" + time.strftime("%M:%S", time.gmtime(totalTime)) + " min\t#")
+  print("\t# \tFMUs simulated succesfully:\t" + str(fmusSimulated) + " / " + str(numFmus) + "\t\t#")
+  print("\t# \tFMUs verified:\t\t\t" + str(fmusVerified) + " / " + str(numFmus) + "\t\t#")
+  print("\t# ##################################################### #")
   print("Detailed results saved in " + str(resultFile) + "\n")
+
+  # Generate HTML
+  if generateHTML:
+    omsVersionShort = omsVersion
+    omsVersion = subprocess.run([pathToOMSimulator, '--version'], stdout=subprocess.PIPE).stdout.decode()
+    omsVersion = omsVersion.replace("\n", "")
+    os.chdir(os.path.dirname(fmiCrossCheckDir))
+    generateOverviewHTML(df, crossCheckDir, platform, startTime, totalTime, platform, omsVersion, omsVersionShort, ulimitOMSimulator, default_tolerance)
 
   return df
 
@@ -435,5 +450,4 @@ if "dev" in omsVersion:
   omsVersion = omsVersion[0:-1]
 
 # Run fmi-cross-check for OMSimulator
-
 df = runTest(fmiCrossCheckDir, platform, omsVersion)
