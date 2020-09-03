@@ -1,19 +1,29 @@
 import os
+import sys
+import subprocess
 import time
 import shutil
+import pandas as pd
 from OMPython import OMCSessionZMQ
 
-# TODO Less global variables...
+# Global variables
+ignoreNotCompliantWithLatestRules = True
+
+ulimitOMSimulator = 60
+default_tolerance = 1e-8
 reltolDiffMinMax = 1e-4
 rangeDelta = 0.002
 
 htmlResultDir = "html"
 filesDir = "files"
 
-def generateOverviewHTML(result_df, crossCheckDir, platform, timeStart, totalTime, sysInfo, omsVersion, omsVersionShort, ulimitOMSimulator, default_tolerance):
+def generateOverviewHTML(crossCheckDir, platform, omsVersion, omsVersionShort, timeStart, totalTime, sysInfo):
 
   # Remove html directory
   shutil.rmtree(htmlResultDir, ignore_errors=True)
+
+  # Generate data frame
+  result_df = constructDF(crossCheckDir, platform, omsVersionShort)
 
   # Create directories for HTML files
   for dirs in [htmlResultDir, os.path.join(htmlResultDir,filesDir)]:
@@ -85,6 +95,8 @@ def generateOverviewHTML(result_df, crossCheckDir, platform, timeStart, totalTim
         + "      </tr>\n"
     resultsTable = resultsTable + row
 
+  commitshort = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD'], cwd=crossCheckDir).decode('utf-8')
+  commitfull = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=crossCheckDir).decode('utf-8')
 
   htmltpl=open("fmi-cross-check.html.tpl").read()
 
@@ -92,6 +104,9 @@ def generateOverviewHTML(result_df, crossCheckDir, platform, timeStart, totalTim
   htmltpl = htmltpl.replace("#Total#", str(numFmus))
   htmltpl = htmltpl.replace("#Simulation#", str(fmusSimulated))
   htmltpl = htmltpl.replace("#Verification#", str(fmusVerified))
+
+  htmltpl = htmltpl.replace("#commitshort#", str(commitshort))
+  htmltpl = htmltpl.replace("#commitfull#", str(commitfull))
 
   htmltpl = htmltpl.replace("#totalTime#", time.strftime("%M:%S", time.gmtime(totalTime)))
   htmltpl = htmltpl.replace("#sysInfo#", sysInfo)
@@ -105,7 +120,81 @@ def generateOverviewHTML(result_df, crossCheckDir, platform, timeStart, totalTim
 
   htmltpl = htmltpl.replace("      #testsHTML#", resultsTable)
 
-  open(os.path.join(htmlResultDir,"fmi-cross-check.html"), "w").write(htmltpl)
+  resultHTML = os.path.join(htmlResultDir,"fmi-cross-check.html")
+  open(resultHTML, "w").write(htmltpl)
+
+  # Copy dygraph.js into html/
+  shutil.copyfile("dygraph.js", os.path.join(htmlResultDir,"dygraph.js"))
+
+  return resultHTML
+
+
+def constructDF(crossCheckDir, platform, omsVersion):
+
+    # Create empty data frame for results.
+  df = pd.DataFrame(columns=["FMI Version", "FMI Type", "Exporting Tool", "Exporting Tool Version", "Model Name", "OMS can import FMU", "Output", "Error", "Results Correct", "Failed Variables", "Total Variables", "Simulation Time", "Start Time", "Stop Time", "Tolerance"])
+
+  # Iterate over tests
+  for fmiVersion in ["2.0"]:
+    for fmiType in ["me", "cs"]:
+      toolsDir = os.path.join(crossCheckDir, "fmus", fmiVersion, fmiType, platform)
+      for exportingToolID in os.listdir(toolsDir):
+        versionsDir = os.path.join(toolsDir, exportingToolID) 
+        for exportingToolVersion in os.listdir(versionsDir):
+          fmusDir = os.path.join(versionsDir, exportingToolVersion)
+          for modelName in os.listdir(fmusDir):
+            # Skipt not compliant FMUs
+            if ignoreNotCompliantWithLatestRules:
+              if os.path.isfile(os.path.join(crossCheckDir, "fmus", fmiVersion, fmiType, platform, exportingToolID, exportingToolVersion, modelName, "notCompliantWithLatestRules")):
+                continue
+            
+            testFMUDir = os.path.join(crossCheckDir, "fmus", fmiVersion, fmiType, platform,         \
+                                      exportingToolID, exportingToolVersion, modelName)
+            resultDir = os.path.join(crossCheckDir, "results", fmiVersion, fmiType,                 \
+                                     platform, "OMSimulator", omsVersion,                           \
+                                     exportingToolID, exportingToolVersion, modelName)
+
+            # Check for result file
+            canSimulate = os.path.isfile(os.path.join(resultDir, modelName + "_out.csv"))
+
+            output = open(os.path.join(resultDir, "OMSimulator_out.log"), "r").read()
+            error = open(os.path.join(resultDir, "OMSimulator_err.log"), "r").read()
+
+            resultsCorrect = os.path.isfile(os.path.join(resultDir, "passed"))
+
+            failedVars = []
+            for f in os.listdir(resultDir):
+               if ".diff." in f:
+                  failedVars.append(f.split(".diff.")[1].split(".csv")[0])
+
+            csv_ref = pd.read_csv(os.path.join(testFMUDir, modelName + "_ref.csv"))
+            numRefVars = len(list(csv_ref.columns.values))-1
+
+            experimentSettings = open(os.path.join(resultDir, "OMSimulator_exp.log"), "r").read()
+            simTime = experimentSettings.split("Simulation Time: ")[1].split("\n")[0]
+            startTime = experimentSettings.split("Start Time: ")[1].split("\n")[0]
+            stopTime = experimentSettings.split("Stop Time: ")[1].split("\n")[0]
+            relTol = experimentSettings.split("Relative Tolerance: ")[1].split("\n")[0]
+
+            df = df.append({
+              "FMI Version": fmiVersion,
+              "FMI Type": fmiType,
+              "Exporting Tool": exportingToolID,
+              "Exporting Tool Version": exportingToolVersion,
+              "Model Name": modelName,
+              "OMS can import FMU": canSimulate,
+              "Output": output,
+              "Error": error,
+              "Results Correct": resultsCorrect,
+              "Failed Variables": failedVars,
+              "Toal Variables": numRefVars,
+              "Simulation Time": float(simTime),
+              "Start Time": startTime,
+              "Stop Time": stopTime,
+              "Tolerance": relTol
+            }, ignore_index=True)
+
+  return df
 
 
 def generateFailedVerificationHTML(row, testFMUDir, resultDir, modelDir, fileName):
@@ -188,3 +277,71 @@ def generateSimLogHTML(row, testFMUDir, resultDir, modelDir, fileName):
   open(os.path.join(modelDir, logHtml), "w").write(content)
 
   return linkHTML
+
+
+#
+# Start point for script
+#
+if __name__ == "__main__":
+  if not len(sys.argv) >= 4 or sys.argv[1].lower() == "--help":
+    print("Usage: python3 generateHTML.py /path/to/fmi-cross-check/repo FMIPlatform OMSimulatorVersion OMSimulatorVersionShort sysInfo startTime testDurationInSec [OPTIONS]\n")
+    print("Example: python3 generateHTML.py fmi-cross-check \"linux64\" \"v2.1.0-dev-211-g1b24316-linux\" \"v2.1.0\" \"Ubunut 18.04 TLS\" \"14:00:00\" 15462\n")
+    quit()
+
+  # Check path to fmi-cross-check repo is correct
+  crossCheckDir = os.path.abspath(str(sys.argv[1]))
+  if not (os.path.isdir(os.path.join(crossCheckDir,"fmus")) or os.path.isdir(os.path.join(crossCheckDir,"results"))):
+    print("Can't find \"fmus\" or \"results\" directories in \"" + crossCheckDir + "\".\n Is this /fmi-cross-check from \"https://github.com/modelica/fmi-cross-check/\"?")
+    raise Exception("Error: Not in fmi-cross-check repo!")
+
+  # Get platform string
+  platform = str(sys.argv[2])
+  if not platform in ["linux64", "linux32", "win64", "win32", "darwin64", "c-code"]:
+    raise Exception("Unknown 2nd arguemnt platform: \"" + platform + "\"")
+
+  # Get OMS version
+  omsVersion = str(sys.argv[3])
+  omsVersionShort = str(sys.argv[4])
+
+  # Get System info
+  sysInfo = str(sys.argv[5])
+
+  # Get start time
+  timeStart = str(sys.argv[6])
+
+  # Get test duration in seconds
+  totalTime = float(sys.argv[7])
+
+  # Get optional configurations
+  for conf in sys.argv[8:]:
+    if conf.lower() == "ignorenotnompliantwithtrules":
+      ignoreNotCompliantWithLatestRules = True
+    elif len(conf.split("=")) == 2:
+      (name, arg) = conf.lower().split("=")
+      if name == "ignorenotnompliantwithtrules":
+        ignoreNotCompliantWithLatestRules = arg == True
+      elif name == "omsTimeOut":
+        ulimitOMSimulator = float(arg)
+        if ulimitOMSimulator <= 0:
+          Exception("Invalid value \""+ arg + "\" for flag \"omsTimeOut\"")
+      elif name == "deftol":
+        default_tolerance = float(arg)
+        if default_tolerance <= 0:
+          Exception("Invalid value \""+ arg + "\" for flag \"defTol\"")
+      elif name == "reltoldiffminmax":
+        reltolDiffMinMax = float(arg)
+        if reltolDiffMinMax <= 0:
+          Exception("Invalid value \""+ arg + "\" for flag \"reltolDiffMinMax\"")
+      elif name == "rangedelta":
+        rangeDelta = float(arg)
+        if rangeDelta <= 0:
+          Exception("Invalid value \""+ arg + "\" for flag \"rangeDelta\"")
+      else:
+        Exception("Unknown flag \"" + name + "\"")
+    else:
+      Exception("Unknown flag \"" + conf + "\"")
+
+  config = (ulimitOMSimulator, default_tolerance, reltolDiffMinMax, rangeDelta)
+  print("Using config (omsTimeOut, defTol, reltolDiffMinMax, rangeDelta) = " + str(config) + "\n")
+
+  generateOverviewHTML(crossCheckDir, platform, omsVersion, omsVersionShort, timeStart, totalTime, sysInfo)

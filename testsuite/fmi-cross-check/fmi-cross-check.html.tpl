@@ -23,7 +23,7 @@
     <p>System info: #sysInfo#</p>
     <p>OMSimulator Version: #omsVersion#</p>
     <p>Test started: #timeStart#</p>
-    <p>Tested Library: <a href="https://github.com/modelica/fmi-cross-check">fmi-cross-check</a></p>
+    <p>Tested Library: <a href="https://github.com/modelica/fmi-cross-check">fmi-cross-check</a> commit <a href="https://github.com/modelica/fmi-cross-check/commit/#commitfull#">#commitshort#</a></p>
     <p>Simulate FMU time limit: #ulimitOMSimulator#s</p>
     <p>Default tolerance: #default_tolerance#</p>
     Verified using: #referenceTool#
