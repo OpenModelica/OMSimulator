@@ -1562,8 +1562,7 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
   if (cref.hasSuffixStart())
   {
     oms::ComRef signal = cref.popSuffix();
-    deleteStartValue(signal);
-    return oms_status_ok;
+    return deleteStartValue(signal);
   }
 
   oms::ComRef tail(cref);
@@ -1685,9 +1684,7 @@ oms_status_enu_t oms::System::deleteStartValue(const ComRef& cref)
   if (tail.isEmpty())
   {
     if (oms_status_ok != startValues.deleteStartValue(front))
-    {
-      logWarning("failed to delete start value \"" + std::string(getFullCref()+cref)+":start" + "\"" + " because the identifier couldn't be resolved to any System");
-    }
+      return logWarning("failed to delete start value \"" + std::string(getFullCref()+cref)+":start" + "\"" + " because the identifier couldn't be resolved to any system");
     return oms_status_ok;
   }
 
@@ -1701,14 +1698,11 @@ oms_status_enu_t oms::System::deleteStartValue(const ComRef& cref)
   if (component != components.end())
   {
     if (oms_status_ok != component->second->deleteStartValue(tail))
-    {
-      logWarning("failed to delete start value \"" + std::string(getFullCref()+cref)+":start" + "\"" + " because the identifier couldn't be resolved to any component");
-    }
+      return logWarning("failed to delete start value \"" + std::string(getFullCref()+cref)+":start" + "\"" + " because the identifier couldn't be resolved to any component");
     return oms_status_ok;
   }
 
-  logWarning("failed to delete start value \"" + std::string(getFullCref()+cref)+":start" + "\"" + " because the identifier couldn't be resolved to any connector, component, system, or model");
-  return oms_status_ok;
+  return logWarning("failed to delete start value \"" + std::string(getFullCref()+cref)+":start" + "\"" + " because the identifier couldn't be resolved to any connector, component, system, or model");
 }
 
 bool oms::System::copyResources()
