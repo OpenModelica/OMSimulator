@@ -98,6 +98,44 @@ bool oms::ComRef::isEmpty() const
   return (cref[0] == '\0');
 }
 
+bool oms::ComRef::hasSuffixStart() const
+{
+  int i=0;
+  while (cref[i])
+    ++i;
+
+  if (i < 7)
+    return false;
+
+  if (cref[i-6] == ':' &&
+      cref[i-5] == 's' &&
+      cref[i-4] == 't' &&
+      cref[i-3] == 'a' &&
+      cref[i-2] == 'r' &&
+      cref[i-1] == 't')
+    return true;
+
+  return false;
+}
+
+oms::ComRef oms::ComRef::popSuffix() const
+{
+  int index=0;
+  for (int i=0; cref[i]; ++i)
+    if (cref[i] == ':')
+      index = i;
+
+  if (index > 0)
+  {
+    cref[index] = '\0';
+    oms::ComRef front(cref);
+    cref[index] = ':';
+    return front;
+  }
+
+  return oms::ComRef(cref);
+}
+
 bool oms::ComRef::isRootOf(ComRef child) const
 {
   ComRef root(*this);

@@ -94,7 +94,7 @@ oms_status_enu_t oms::Parameters::deleteStartValue(const ComRef& cref)
     return oms_status_ok;
   }
 
-  return oms_status_ok;
+  return oms_status_error;
 }
 
 oms_status_enu_t oms::Parameters::exportToSSD(pugi::xml_node& node) const

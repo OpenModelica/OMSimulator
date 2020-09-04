@@ -12,6 +12,7 @@ simulation.lua \
 simulation.py \
 table.lua \
 deleteConnector.lua \
+deleteStartValues.lua \
 
 # Run make failingtest
 FAILINGTESTFILES = \
