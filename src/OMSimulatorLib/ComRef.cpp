@@ -133,7 +133,7 @@ oms::ComRef oms::ComRef::popSuffix() const
     return front;
   }
 
-  return oms::ComRef(cref);
+  return *this;
 }
 
 bool oms::ComRef::isRootOf(ComRef child) const
@@ -160,7 +160,7 @@ oms::ComRef oms::ComRef::front() const
     }
   }
 
-  return oms::ComRef(cref);
+  return *this;
 }
 
 oms::ComRef oms::ComRef::pop_front()
@@ -178,7 +178,7 @@ oms::ComRef oms::ComRef::pop_front()
   }
 
   oms::ComRef front(cref);
-  *this = oms::ComRef("");
+  *this = oms::ComRef();
   return front;
 }
 
