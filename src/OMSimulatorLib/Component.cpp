@@ -205,7 +205,6 @@ oms_status_enu_t oms::Component::deleteConnector(const ComRef& cref)
   {
     if (connectors[i] && connectors[i]->getName() == cref)
     {
-
       // delete startValues associated with components connector
       Component * component = parentSystem->getComponent(getCref());
       if (Flags::ExportParametersInline())

@@ -356,7 +356,7 @@ printStatus(status, 0)
 --         </ssd:Annotations>
 --     </ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>
--- 
+--
 -- status:  [correct] ok
 -- status:  [correct] ok
 -- status:  [correct] ok
@@ -524,6 +524,6 @@ printStatus(status, 0)
 --         </ssd:Annotations>
 --     </ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>
--- 
+--
 -- status:  [correct] ok
 -- endResult

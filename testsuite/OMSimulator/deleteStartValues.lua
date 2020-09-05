@@ -5,56 +5,55 @@
 -- mac: yes
 
 oms_setCommandLineOption("--suppressPath=true")
-oms_setTempDirectory("./deleteConnector_lua/")
+oms_setTempDirectory("./deleteStartValues_lua/")
 
-oms_newModel("deleteConnector")
+oms_newModel("deleteStartValues")
 
-oms_addSystem("deleteConnector.Root", oms_system_wc)
-oms_addConnector("deleteConnector.Root.C1", oms_causality_input, oms_signal_type_real)
-oms_addConnector("deleteConnector.Root.C2", oms_causality_output, oms_signal_type_real)
-oms_addConnection("deleteConnector.Root.C1", "deleteConnector.Root.C2")
+oms_addSystem("deleteStartValues.Root", oms_system_wc)
+oms_addConnector("deleteStartValues.Root.C1", oms_causality_input, oms_signal_type_real)
+oms_addConnector("deleteStartValues.Root.C2", oms_causality_output, oms_signal_type_real)
+oms_addConnector("deleteStartValues.Root.C3", oms_causality_parameter, oms_signal_type_real)
+oms_setReal("deleteStartValues.Root.C3", 10.0)
 
-oms_addSystem("deleteConnector.Root.System1", oms_system_sc)
-oms_addConnector("deleteConnector.Root.System1.C1", oms_causality_input, oms_signal_type_real)
-oms_addConnector("deleteConnector.Root.System1.C2", oms_causality_input, oms_signal_type_real)
+oms_addSystem("deleteStartValues.Root.System1", oms_system_sc)
+oms_addConnector("deleteStartValues.Root.System1.C1", oms_causality_input, oms_signal_type_real)
+oms_addConnector("deleteStartValues.Root.System1.C2", oms_causality_input, oms_signal_type_real)
 
-oms_addSystem("deleteConnector.Root.System2", oms_system_sc)
-oms_addConnector("deleteConnector.Root.System2.C3", oms_causality_output, oms_signal_type_real)
-oms_addConnector("deleteConnector.Root.System2.C4", oms_causality_output, oms_signal_type_real)
-oms_setReal("deleteConnector.Root.System2.C3", 20.0)
-oms_setReal("deleteConnector.Root.System2.C4", 30.0)
+oms_setReal("deleteStartValues.Root.System1.C1", -10.0)
+oms_setReal("deleteStartValues.Root.System1.C2", -30.0)
 
-oms_addSubModel("deleteConnector.Root.System1.Gain", "../resources/Modelica.Blocks.Math.Gain.fmu")
-oms_setReal("deleteConnector.Root.System1.Gain.k", 30.0)
+oms_addSystem("deleteStartValues.Root.System2", oms_system_sc)
+oms_addConnector("deleteStartValues.Root.System2.C3", oms_causality_output, oms_signal_type_real)
+oms_addConnector("deleteStartValues.Root.System2.C4", oms_causality_output, oms_signal_type_real)
+oms_setReal("deleteStartValues.Root.System2.C3", 20.0)
+oms_setReal("deleteStartValues.Root.System2.C4", 30.0)
 
-oms_addConnection("deleteConnector.Root.System2.C3", "deleteConnector.Root.System1.C1")
-oms_addConnection("deleteConnector.Root.System2.C4", "deleteConnector.Root.System1.C2")
+oms_addSubModel("deleteStartValues.Root.System1.Gain", "../resources/Modelica.Blocks.Math.Gain.fmu")
 
-src = oms_list("deleteConnector")
+--oms_setReal("deleteStartValues.Root.System1.Gain.k:start", 30.0) // this is allowed before initialization
+--oms_setReal("deleteStartValues.Root.System1.Gain.k", 20.0) // allowed only if model is initialized, we are allowed to provide different value after initialization
+
+src = oms_list("deleteStartValues")
 print(src)
 
-oms_delete("deleteConnector.Root.C1")
+oms_delete("deleteStartValues.Root.C3:start")
+oms_delete("deleteStartValues.Root.System1.C1:start")
+oms_delete("deleteStartValues.Root.System1.C2:start")
+oms_delete("deleteStartValues.Root.System2.C3:start")
+oms_delete("deleteStartValues.Root.System2.C4:start")
 
--- delete connector "deleteConnector.Root.System2.C3" and associated connection
-oms_delete("deleteConnector.Root.System2.C3")
+-- delete unknown system startValue for warning
+oms_delete("deleteStartValues.Root.System3.C4:start")
 
--- delete components connector and its startValue
-oms_delete("deleteConnector.Root.System1.Gain.k")
+-- delete components startValue which was not set
+oms_delete("deleteStartValues.Root.System1.Gain.k:start")
 
--- delete unknown connector signal for warning
-oms_delete("deleteConnector.Root.System2.C6")
-
--- delete unknown system for warning
-oms_delete("deleteConnector.Root.System3")
-
--- after deletion
-src = oms_list("deleteConnector")
+src = oms_list("deleteStartValues")
 print(src)
-
 
 -- Result:
 -- <?xml version="1.0"?>
--- <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="deleteConnector" version="1.0">
+-- <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="deleteStartValues" version="1.0">
 -- 	<ssd:System name="Root">
 -- 		<ssd:Annotations>
 -- 			<ssc:Annotation type="org.openmodelica">
@@ -70,7 +69,23 @@ print(src)
 -- 			<ssd:Connector name="C2" kind="output">
 -- 				<ssc:Real />
 -- 			</ssd:Connector>
+-- 			<ssd:Connector name="C3" kind="parameter">
+-- 				<ssc:Real />
+-- 			</ssd:Connector>
 -- 		</ssd:Connectors>
+-- 		<ssd:ParameterBindings>
+-- 			<ssd:ParameterBinding>
+-- 				<ssd:ParameterValues>
+-- 					<ssv:ParameterSet version="1.0" name="parameters">
+-- 						<ssv:Parameters>
+-- 							<ssv:Parameter name="C3">
+-- 								<ssv:Real value="10" />
+-- 							</ssv:Parameter>
+-- 						</ssv:Parameters>
+-- 					</ssv:ParameterSet>
+-- 				</ssd:ParameterValues>
+-- 			</ssd:ParameterBinding>
+-- 		</ssd:ParameterBindings>
 -- 		<ssd:Elements>
 -- 			<ssd:System name="System2">
 -- 				<ssd:Annotations>
@@ -123,6 +138,22 @@ print(src)
 -- 						<ssc:Real />
 -- 					</ssd:Connector>
 -- 				</ssd:Connectors>
+-- 				<ssd:ParameterBindings>
+-- 					<ssd:ParameterBinding>
+-- 						<ssd:ParameterValues>
+-- 							<ssv:ParameterSet version="1.0" name="parameters">
+-- 								<ssv:Parameters>
+-- 									<ssv:Parameter name="C2">
+-- 										<ssv:Real value="-30" />
+-- 									</ssv:Parameter>
+-- 									<ssv:Parameter name="C1">
+-- 										<ssv:Real value="-10" />
+-- 									</ssv:Parameter>
+-- 								</ssv:Parameters>
+-- 							</ssv:ParameterSet>
+-- 						</ssd:ParameterValues>
+-- 					</ssd:ParameterBinding>
+-- 				</ssd:ParameterBindings>
 -- 				<ssd:Elements>
 -- 					<ssd:Component name="Gain" type="application/x-fmu-sharedlibrary" source="resources/0001_Gain.fmu">
 -- 						<ssd:Connectors>
@@ -138,43 +169,26 @@ print(src)
 -- 								<ssc:Real />
 -- 							</ssd:Connector>
 -- 						</ssd:Connectors>
--- 						<ssd:ParameterBindings>
--- 							<ssd:ParameterBinding>
--- 								<ssd:ParameterValues>
--- 									<ssv:ParameterSet version="1.0" name="parameters">
--- 										<ssv:Parameters>
--- 											<ssv:Parameter name="k">
--- 												<ssv:Real value="30" />
--- 											</ssv:Parameter>
--- 										</ssv:Parameters>
--- 									</ssv:ParameterSet>
--- 								</ssd:ParameterValues>
--- 							</ssd:ParameterBinding>
--- 						</ssd:ParameterBindings>
 -- 					</ssd:Component>
 -- 				</ssd:Elements>
 -- 				<ssd:Connections />
 -- 			</ssd:System>
 -- 		</ssd:Elements>
--- 		<ssd:Connections>
--- 			<ssd:Connection startElement="" startConnector="C1" endElement="" endConnector="C2" />
--- 			<ssd:Connection startElement="System2" startConnector="C3" endElement="System1" endConnector="C1" />
--- 			<ssd:Connection startElement="System2" startConnector="C4" endElement="System1" endConnector="C2" />
--- 		</ssd:Connections>
+-- 		<ssd:Connections />
 -- 	</ssd:System>
 -- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
 -- 		<ssd:Annotations>
 -- 			<ssc:Annotation type="org.openmodelica">
--- 				<oms:SimulationInformation resultFile="deleteConnector_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="" />
+-- 				<oms:SimulationInformation resultFile="deleteStartValues_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="" />
 -- 			</ssc:Annotation>
 -- 		</ssd:Annotations>
 -- 	</ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>
 --
--- warning: failed to delete object "deleteConnector.Root.System2.C6" because the identifier couldn't be resolved to any connector, component, system, or model
--- warning: failed to delete object "deleteConnector.Root.System3" because the identifier couldn't be resolved to any connector, component, system, or model
+-- warning: failed to delete object "deleteStartValues.Root.System3.C4:start" because the identifier couldn't be resolved to any connector, component, system, or model
+-- warning: failed to delete start value "deleteStartValues.Root.System1.Gain.k:start" because the identifier couldn't be resolved to any component signal
 -- <?xml version="1.0"?>
--- <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="deleteConnector" version="1.0">
+-- <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="deleteStartValues" version="1.0">
 -- 	<ssd:System name="Root">
 -- 		<ssd:Annotations>
 -- 			<ssc:Annotation type="org.openmodelica">
@@ -184,7 +198,13 @@ print(src)
 -- 			</ssc:Annotation>
 -- 		</ssd:Annotations>
 -- 		<ssd:Connectors>
+-- 			<ssd:Connector name="C1" kind="input">
+-- 				<ssc:Real />
+-- 			</ssd:Connector>
 -- 			<ssd:Connector name="C2" kind="output">
+-- 				<ssc:Real />
+-- 			</ssd:Connector>
+-- 			<ssd:Connector name="C3" kind="parameter">
 -- 				<ssc:Real />
 -- 			</ssd:Connector>
 -- 		</ssd:Connectors>
@@ -198,23 +218,13 @@ print(src)
 -- 					</ssc:Annotation>
 -- 				</ssd:Annotations>
 -- 				<ssd:Connectors>
+-- 					<ssd:Connector name="C3" kind="output">
+-- 						<ssc:Real />
+-- 					</ssd:Connector>
 -- 					<ssd:Connector name="C4" kind="output">
 -- 						<ssc:Real />
 -- 					</ssd:Connector>
 -- 				</ssd:Connectors>
--- 				<ssd:ParameterBindings>
--- 					<ssd:ParameterBinding>
--- 						<ssd:ParameterValues>
--- 							<ssv:ParameterSet version="1.0" name="parameters">
--- 								<ssv:Parameters>
--- 									<ssv:Parameter name="C4">
--- 										<ssv:Real value="30" />
--- 									</ssv:Parameter>
--- 								</ssv:Parameters>
--- 							</ssv:ParameterSet>
--- 						</ssd:ParameterValues>
--- 					</ssd:ParameterBinding>
--- 				</ssd:ParameterBindings>
 -- 				<ssd:Elements />
 -- 				<ssd:Connections />
 -- 			</ssd:System>
@@ -245,20 +255,21 @@ print(src)
 -- 								<ssc:Real />
 -- 								<ssd:ConnectorGeometry x="1.000000" y="0.500000" />
 -- 							</ssd:Connector>
+-- 							<ssd:Connector name="k" kind="parameter">
+-- 								<ssc:Real />
+-- 							</ssd:Connector>
 -- 						</ssd:Connectors>
 -- 					</ssd:Component>
 -- 				</ssd:Elements>
 -- 				<ssd:Connections />
 -- 			</ssd:System>
 -- 		</ssd:Elements>
--- 		<ssd:Connections>
--- 			<ssd:Connection startElement="System2" startConnector="C4" endElement="System1" endConnector="C2" />
--- 		</ssd:Connections>
+-- 		<ssd:Connections />
 -- 	</ssd:System>
 -- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
 -- 		<ssd:Annotations>
 -- 			<ssc:Annotation type="org.openmodelica">
--- 				<oms:SimulationInformation resultFile="deleteConnector_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="" />
+-- 				<oms:SimulationInformation resultFile="deleteStartValues_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="" />
 -- 			</ssc:Annotation>
 -- 		</ssd:Annotations>
 -- 	</ssd:DefaultExperiment>

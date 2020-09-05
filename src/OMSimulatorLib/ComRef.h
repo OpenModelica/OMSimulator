@@ -61,6 +61,9 @@ namespace oms
     ComRef front() const;
     ComRef pop_front();
 
+    bool hasSuffixStart() const;
+    ComRef popSuffix() const;
+
     const char* c_str() const {return cref;}
     size_t size() {return strlen(cref);}
     operator std::string() const {return std::string(cref);}

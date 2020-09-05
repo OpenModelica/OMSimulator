@@ -1563,6 +1563,14 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
 
   if (tail.isEmpty())
   {
+    // check cref has ":start" suffix at the end to delete only start values
+    if (front.hasSuffixStart())
+    {
+      if (oms_status_ok != startValues.deleteStartValue(getValidCref(front)))
+        return logWarning("failed to delete start value \"" + std::string(getFullCref()+front) + "\"" + " because the identifier couldn't be resolved to any system signal");
+      return oms_status_ok;
+    }
+
     auto subsystem = subsystems.find(front);
     if (subsystem != subsystems.end())
     {
@@ -1585,16 +1593,8 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
     for (int i=0; i<connectors.size()-1; ++i)
       if (connectors[i]->getName() == front)
       {
-        if (Flags::ExportParametersInline())
-        {
-          // delete startValues associated with the Connector
-          startValues.deleteStartValue(front);
-        }
-        else
-        {
-          // delete startValues associated with the Connector from ssv file
-          startValues.deleteStartValue(getCref()+front);
-        }
+        // delete startValues associated with the Connector
+        startValues.deleteStartValue(getValidCref(front));
         deleteAllConectionsTo(front);
         exportConnectors.erase(front);
         delete connectors[i];
@@ -1607,16 +1607,8 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
     for (int i=0; i<busconnectors.size()-1; ++i)
       if (busconnectors[i]->getName() == front)
       {
-        if (Flags::ExportParametersInline())
-        {
-          // delete startValues associated with the Connector
-          startValues.deleteStartValue(front);
-        }
-        else
-        {
-          // delete startValues associated with the Connector from ssv file
-          startValues.deleteStartValue(getCref()+front);
-        }
+        // delete startValues associated with the Connector
+        startValues.deleteStartValue(getValidCref(front));
         deleteAllConectionsTo(front);
         exportConnectors.erase(front);
         delete busconnectors[i];
@@ -1629,16 +1621,8 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
     for (int i=0; i<tlmbusconnectors.size()-1; ++i)
       if (tlmbusconnectors[i]->getName() == front)
       {
-        if (Flags::ExportParametersInline())
-        {
-          // delete startValues associated with the Connector
-          startValues.deleteStartValue(front);
-        }
-        else
-        {
-          // delete startValues associated with the Connector from ssv file
-          startValues.deleteStartValue(getCref()+front);
-        }
+        // delete startValues associated with the Connector
+        startValues.deleteStartValue(getValidCref(front));
         deleteAllConectionsTo(front);
         exportConnectors.erase(front);
         delete tlmbusconnectors[i];
@@ -1661,6 +1645,19 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
     auto component = components.find(front);
     if (component != components.end())
     {
+      // check cref has ":start" suffix at the end to delete only start values
+      if (tail.hasSuffixStart())
+      {
+        // add prefix to cref start values if ssv file is used (e.g) k1:start -> addP.k1:start
+        if(!Flags::ExportParametersInline())
+        {
+          tail = cref;
+        }
+        if (oms_status_ok != component->second->deleteStartValue(tail))
+          return logWarning("failed to delete start value \"" + std::string(getFullCref()+cref) + "\"" + " because the identifier couldn't be resolved to any component signal");
+        return oms_status_ok;
+      }
+
       deleteAllConectionsTo(cref);
       return component->second->deleteConnector(tail);
     }
