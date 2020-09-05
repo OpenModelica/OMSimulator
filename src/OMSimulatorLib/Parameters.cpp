@@ -72,22 +72,28 @@ oms_status_enu_t oms::Parameters::setBoolean(const ComRef& cref, bool value)
 
 oms_status_enu_t oms::Parameters::deleteStartValue(const ComRef& cref)
 {
-  // realstartValues
-  auto realValue = realStartValues.find(cref);
+  oms::ComRef signal(cref);
+  if (signal.hasSuffixStart())
+    signal = cref.popSuffix();
+
+  // reals
+  auto realValue = realStartValues.find(signal);
   if (realValue != realStartValues.end())
   {
     realStartValues.erase(realValue);
     return oms_status_ok;
   }
-  // integerstartValues
-  auto integerValue = integerStartValues.find(cref);
+
+  // integers
+  auto integerValue = integerStartValues.find(signal);
   if (integerValue != integerStartValues.end())
   {
     integerStartValues.erase(integerValue);
     return oms_status_ok;
   }
-  // booleanstartValues
-  auto boolValue = booleanStartValues.find(cref);
+
+  // booleans
+  auto boolValue = booleanStartValues.find(signal);
   if (boolValue != booleanStartValues.end())
   {
     booleanStartValues.erase(boolValue);

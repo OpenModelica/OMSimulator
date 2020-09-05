@@ -1558,18 +1558,19 @@ bool oms::System::isConnected(const ComRef& cref) const
 
 oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
 {
-  // check cref has ":start" suffix at the end to delete only start values
-  if (cref.hasSuffixStart())
-  {
-    oms::ComRef signal = cref.popSuffix();
-    return deleteStartValue(signal);
-  }
-
   oms::ComRef tail(cref);
   oms::ComRef front = tail.pop_front();
 
   if (tail.isEmpty())
   {
+    // check cref has ":start" suffix at the end to delete only start values
+    if (front.hasSuffixStart())
+    {
+      if (oms_status_ok != startValues.deleteStartValue(front))
+        return logWarning("failed to delete start value \"" + std::string(getFullCref()+front) + "\"" + " because the identifier couldn't be resolved to any system");
+      return oms_status_ok;
+    }
+
     auto subsystem = subsystems.find(front);
     if (subsystem != subsystems.end())
     {
@@ -1668,41 +1669,20 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
     auto component = components.find(front);
     if (component != components.end())
     {
+      // check cref has ":start" suffix at the end to delete only start values
+      if (tail.hasSuffixStart())
+      {
+        if (oms_status_ok != component->second->deleteStartValue(tail))
+          return logWarning("failed to delete start value \"" + std::string(getFullCref()+cref) + "\"" + " because the identifier couldn't be resolved to any signal");
+        return oms_status_ok;
+      }
+
       deleteAllConectionsTo(cref);
       return component->second->deleteConnector(tail);
     }
   }
   logWarning("failed to delete object \"" + std::string(getFullCref()+cref) + "\"" + " because the identifier couldn't be resolved to any connector, component, system, or model");
   return oms_status_error;
-}
-
-oms_status_enu_t oms::System::deleteStartValue(const ComRef& cref)
-{
-  oms::ComRef tail(cref);
-  oms::ComRef front = tail.pop_front();
-
-  if (tail.isEmpty())
-  {
-    if (oms_status_ok != startValues.deleteStartValue(front))
-      return logWarning("failed to delete start value \"" + std::string(getFullCref()+cref)+":start" + "\"" + " because the identifier couldn't be resolved to any system");
-    return oms_status_ok;
-  }
-
-  auto subsystem = subsystems.find(front);
-  if (subsystem != subsystems.end())
-  {
-    return subsystem->second->deleteStartValue(tail);
-  }
-
-  auto component = components.find(front);
-  if (component != components.end())
-  {
-    if (oms_status_ok != component->second->deleteStartValue(tail))
-      return logWarning("failed to delete start value \"" + std::string(getFullCref()+cref)+":start" + "\"" + " because the identifier couldn't be resolved to any component");
-    return oms_status_ok;
-  }
-
-  return logWarning("failed to delete start value \"" + std::string(getFullCref()+cref)+":start" + "\"" + " because the identifier couldn't be resolved to any connector, component, system, or model");
 }
 
 bool oms::System::copyResources()
