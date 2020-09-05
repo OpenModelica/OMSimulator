@@ -30,7 +30,7 @@ oms_setReal("deleteStartValues.Root.System2.C4", 30.0)
 
 oms_addSubModel("deleteStartValues.Root.System1.Gain", "../resources/Modelica.Blocks.Math.Gain.fmu")
 
---oms_setReal("deleteStartValues.Root.System1.Gain.k:start", 30.0) // this is allowed before initialization 
+--oms_setReal("deleteStartValues.Root.System1.Gain.k:start", 30.0) // this is allowed before initialization
 --oms_setReal("deleteStartValues.Root.System1.Gain.k", 20.0) // allowed only if model is initialized, we are allowed to provide different value after initialization
 
 src = oms_list("deleteStartValues")
@@ -185,7 +185,7 @@ print(src)
 -- 		</ssd:Annotations>
 -- 	</ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>
--- 
+--
 -- warning: failed to delete start value "deleteStartValues.Root.System3.C4:start" because the identifier couldn't be resolved to any connector, component, system, or model
 -- warning: failed to delete start value "deleteStartValues.Root.System1.Gain.k:start" because the identifier couldn't be resolved to any component
 -- <?xml version="1.0"?>
@@ -275,7 +275,7 @@ print(src)
 -- 		</ssd:Annotations>
 -- 	</ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>
--- 
+--
 -- info:    2 warnings
 -- info:    0 errors
 -- endResult

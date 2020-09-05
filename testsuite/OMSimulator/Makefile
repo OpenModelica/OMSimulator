@@ -1,9 +1,11 @@
 TEST = ../rtest -v
 
 TESTFILES = \
+deleteConnector.lua \
+deleteStartValues.lua \
 DualMassOscillator.lua \
-import_export_parameters_to_ssv.lua \
 import_export_parameters_inline.lua \
+import_export_parameters_to_ssv.lua \
 import_export.lua \
 import_export.py \
 PI_Controller.lua \
@@ -11,8 +13,6 @@ QuarterCarModel.DisplacementDisplacement.lua \
 simulation.lua \
 simulation.py \
 table.lua \
-deleteConnector.lua \
-deleteStartValues.lua \
 
 # Run make failingtest
 FAILINGTESTFILES = \
