@@ -6,7 +6,7 @@ OS_SHORT = linux64
 
 # Set to your fmi-cross-check as an abolute path.
 # If the directory does not exist it will be cloned into that location.
-FMI_CROSS_CHECK_DIR = fmi-cross-check
+FMI_CROSS_CHECK_DIR = $$(pwd)/fmi-cross-check
 
 # If you don't have FMPy installed skip step "validate-files" or use a Docker image with FMPy:
 # For Ubuntu Bionic use "anheuermann/fmpy:bionic-amd64" or for Ubuntu Focal use "anheuermann/fmpy:focal-amd64"
