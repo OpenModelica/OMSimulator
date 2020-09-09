@@ -34,6 +34,7 @@
 
 #include "ComRef.h"
 #include "Types.h"
+#include "Option.h"
 #include <pugixml.hpp>
 #include <map>
 
@@ -57,9 +58,11 @@ namespace oms
     oms_status_enu_t exportStartValuesHelper(pugi::xml_node& node) const;
     oms_status_enu_t importStartValuesHelper(pugi::xml_node& parameters);
 
-    std::map<ComRef, double> realStartValues;  ///< parameters and start values defined before instantiating the FMU
-    std::map<ComRef, int> integerStartValues;  ///< parameters and start values defined before instantiating the FMU
-    std::map<ComRef, bool> booleanStartValues; ///< parameters and start values defined before instantiating the FMU
+    bool isStartValuesEmpty() const;
+
+    std::map<ComRef, std::pair<double, oms::Option<double>>> realValues;  ///< real values defined after initialization and optional start values defined before instantiating the FMU
+    std::map<ComRef, std::pair<int, oms::Option<int>>> integerValues;  ///< integer values defined after initialization and optional start values defined before instantiating the FMU
+    std::map<ComRef, std::pair<bool, oms::Option<bool>>> booleanValues; ///< boolean values defined after initialization and optional start values defined before instantiating the FMU
   };
 }
 

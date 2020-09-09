@@ -35,6 +35,7 @@
 #include "Parameters.h"
 #include "Types.h"
 #include "ComRef.h"
+#include "Option.h"
 #include "ssd/Tags.h"
 #include <OMSFileSystem.h>
 
@@ -54,19 +55,76 @@ oms::Parameters::~Parameters()
 
 oms_status_enu_t oms::Parameters::setReal(const ComRef& cref, double value)
 {
-  realStartValues[cref] = value;
+  //realValues[cref] = value;
+  if (cref.hasSuffixStart())
+  {
+    realValues[cref.popSuffix()] = std::pair<double, oms::Option<double>>(0, value);
+  }
+  else
+  {
+    // check for start value exist and update the cref with value and old startValues eg (value, startValue)
+    oms::Option<double> startValue;
+    auto realValue = realValues.find(cref);
+    if (realValue != realValues.end())
+    {
+      startValue = std::get<1>(realValue->second).getValue();
+    }
+    else
+    {
+      startValue = oms::Option<double>();
+    }
+    realValues[cref] = std::pair<double, oms::Option<double>>(value, startValue);
+  }
   return oms_status_ok;
 }
 
 oms_status_enu_t oms::Parameters::setInteger(const ComRef& cref, int value)
 {
-  integerStartValues[cref] = value;
+  //integerValues[cref] = value;
+  if (cref.hasSuffixStart())
+  {
+    integerValues[cref.popSuffix()] = std::pair<int, oms::Option<int>>(0, value);
+  }
+  else
+  {
+    // check for start value exist and update the cref with value and old startValues eg (value, startValue)
+    oms::Option<int> startValue;
+    auto integerValue = integerValues.find(cref);
+    if (integerValue != integerValues.end())
+    {
+      startValue = std::get<1>(integerValue->second).getValue();
+    }
+    else
+    {
+      startValue = oms::Option<int>();
+    }
+    integerValues[cref] = std::pair<double, oms::Option<int>>(value, startValue);
+  }
   return oms_status_ok;
 }
 
 oms_status_enu_t oms::Parameters::setBoolean(const ComRef& cref, bool value)
 {
-  booleanStartValues[cref] = value;
+  //booleanValues[cref] = value;
+  if (cref.hasSuffixStart())
+  {
+    booleanValues[cref.popSuffix()] = std::pair<bool, oms::Option<bool>>(false, value);
+  }
+  else
+  {
+    // check for start value exist and update the cref with value and old startValues eg (value, startValue)
+    oms::Option<bool> startValue;
+    auto booleanValue = booleanValues.find(cref);
+    if (booleanValue != booleanValues.end())
+    {
+      startValue = std::get<1>(booleanValue->second).getValue();
+    }
+    else
+    {
+      startValue = oms::Option<bool>();
+    }
+    booleanValues[cref] = std::pair<bool, oms::Option<bool>>(value, startValue);
+  }
   return oms_status_ok;
 }
 
@@ -77,26 +135,26 @@ oms_status_enu_t oms::Parameters::deleteStartValue(const ComRef& cref)
     signal = cref.popSuffix();
 
   // reals
-  auto realValue = realStartValues.find(signal);
-  if (realValue != realStartValues.end())
+  auto realValue = realValues.find(signal);
+  if (realValue != realValues.end())
   {
-    realStartValues.erase(realValue);
+    realValues.erase(realValue);
     return oms_status_ok;
   }
 
   // integers
-  auto integerValue = integerStartValues.find(signal);
-  if (integerValue != integerStartValues.end())
+  auto integerValue = integerValues.find(signal);
+  if (integerValue != integerValues.end())
   {
-    integerStartValues.erase(integerValue);
+    integerValues.erase(integerValue);
     return oms_status_ok;
   }
 
   // booleans
-  auto boolValue = booleanStartValues.find(signal);
-  if (boolValue != booleanStartValues.end())
+  auto boolValue = booleanValues.find(signal);
+  if (boolValue != booleanValues.end())
   {
-    booleanStartValues.erase(boolValue);
+    booleanValues.erase(boolValue);
     return oms_status_ok;
   }
 
@@ -106,7 +164,7 @@ oms_status_enu_t oms::Parameters::deleteStartValue(const ComRef& cref)
 oms_status_enu_t oms::Parameters::exportToSSD(pugi::xml_node& node) const
 {
   // skip this if there is nothing to export
-  if (realStartValues.empty() && integerStartValues.empty() && booleanStartValues.empty())
+  if (isStartValuesEmpty())
     return oms_status_ok;
 
   // Top level Parameter nodes
@@ -162,7 +220,7 @@ oms_status_enu_t oms::Parameters::importFromSSD(const pugi::xml_node& node, cons
 oms_status_enu_t oms::Parameters::exportToSSV(pugi::xml_node& node) const
 {
   // skip this if there is nothing to export
-  if (realStartValues.empty() && integerStartValues.empty() && booleanStartValues.empty())
+  if (isStartValuesEmpty())
     return oms_status_ok;
 
   exportStartValuesHelper(node);
@@ -173,32 +231,42 @@ oms_status_enu_t oms::Parameters::exportToSSV(pugi::xml_node& node) const
 
 oms_status_enu_t oms::Parameters::exportStartValuesHelper(pugi::xml_node& node) const
 {
-  // realStartValues
-  for (const auto& r : realStartValues)
+
+  // realValues
+  for (const auto& r : realValues)
   {
-    //std::cout << "\n Start Values : " << std::string(r.first) << " = " << r.second ;
-    pugi::xml_node node_parameter = node.append_child(oms::ssp::Version1_0::ssv::parameter);
-    node_parameter.append_attribute("name") = r.first.c_str();
-    pugi::xml_node node_parameter_type = node_parameter.append_child(oms::ssp::Version1_0::ssv::real_type);
-    node_parameter_type.append_attribute("value") = r.second;
+    if (!std::get<1>(r.second).isNone())
+    {
+      //std::cout << "\n if real values mapping : " << std::string(r.first) << " = " << std::get<0>(r.second) << " = " <<  std::get<1>(r.second).getValue() << "= " << std::get<1>(r.second).isNone();
+      pugi::xml_node node_parameter = node.append_child(oms::ssp::Version1_0::ssv::parameter);
+      node_parameter.append_attribute("name") = r.first.c_str();
+      pugi::xml_node node_parameter_type = node_parameter.append_child(oms::ssp::Version1_0::ssv::real_type);
+      node_parameter_type.append_attribute("value") = std::get<1>(r.second).getValue();
+    }
   }
 
-  // integerStartValues
-  for (const auto& i : integerStartValues)
+  // integerValues
+  for (const auto& i : integerValues)
   {
-    pugi::xml_node node_parameter = node.append_child(oms::ssp::Version1_0::ssv::parameter);
-    node_parameter.append_attribute("name") = i.first.c_str();
-    pugi::xml_node node_parameter_type = node_parameter.append_child(oms::ssp::Version1_0::ssv::integer_type);
-    node_parameter_type.append_attribute("value") = i.second;
+    if (!std::get<1>(i.second).isNone())
+    {
+      pugi::xml_node node_parameter = node.append_child(oms::ssp::Version1_0::ssv::parameter);
+      node_parameter.append_attribute("name") = i.first.c_str();
+      pugi::xml_node node_parameter_type = node_parameter.append_child(oms::ssp::Version1_0::ssv::integer_type);
+      node_parameter_type.append_attribute("value") = std::get<1>(i.second).getValue();
+    }
   }
 
   // boolStartValues
-  for (const auto& b : booleanStartValues)
+  for (const auto& b : booleanValues)
   {
-    pugi::xml_node node_parameter = node.append_child(oms::ssp::Version1_0::ssv::parameter);
-    node_parameter.append_attribute("name") = b.first.c_str();
-    pugi::xml_node node_parameter_type = node_parameter.append_child(oms::ssp::Version1_0::ssv::boolean_type);
-    node_parameter_type.append_attribute("value") = b.second;
+    if (!std::get<1>(b.second).isNone())
+    {
+      pugi::xml_node node_parameter = node.append_child(oms::ssp::Version1_0::ssv::parameter);
+      node_parameter.append_attribute("name") = b.first.c_str();
+      pugi::xml_node node_parameter_type = node_parameter.append_child(oms::ssp::Version1_0::ssv::boolean_type);
+      node_parameter_type.append_attribute("value") = std::get<1>(b.second).getValue();
+    }
   }
 
   return oms_status_ok;
@@ -238,4 +306,42 @@ oms_status_enu_t oms::Parameters::importStartValuesHelper(pugi::xml_node& parame
   }
 
   return oms_status_ok;
+}
+
+bool oms::Parameters::isStartValuesEmpty() const
+{
+  bool realStart = true , integerStart = true , boolStart = true;
+
+  for (const auto& r : realValues)
+  {
+    if (!std::get<1>(r.second).isNone())
+    {
+      realStart = false;
+      break;
+    }
+  }
+
+  for (const auto& r : integerValues)
+  {
+    if (!std::get<1>(r.second).isNone())
+    {
+      integerStart = false;
+      break;
+    }
+  }
+
+  for (const auto& r : booleanValues)
+  {
+    if (!std::get<1>(r.second).isNone())
+    {
+      boolStart = false;
+      break;
+    }
+  }
+  //std::cout << "\n isStartValuesEmpty : " << realStart << " " << integerStart << "  " << boolStart;
+
+  if (realStart && integerStart && boolStart)
+    return true;
+
+  return false;
 }

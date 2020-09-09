@@ -444,22 +444,22 @@ oms_status_enu_t oms::ComponentFMUCS::instantiate()
     return logError_FMUCall("fmi2_import_instantiate", this);
 
   // set start values
-  for (const auto& v : startValues.booleanStartValues)
+  for (const auto& v : startValues.booleanValues)
   {
     oms::ComRef cref = getValidCref(v.first);
-    if (oms_status_ok != setBoolean(cref, v.second))
+    if (oms_status_ok != setBoolean(cref, std::get<1>(v.second).getValue()))
       return logError("Failed to set start value for " + std::string(v.first));
   }
-  for (const auto& v : startValues.integerStartValues)
+  for (const auto& v : startValues.integerValues)
   {
     oms::ComRef cref = getValidCref(v.first);
-    if (oms_status_ok != setInteger(cref, v.second))
+    if (oms_status_ok != setInteger(cref, std::get<1>(v.second).getValue()))
       return logError("Failed to set start value for " + std::string(v.first));
   }
-  for (const auto& v : startValues.realStartValues)
+  for (const auto& v : startValues.realValues)
   {
     oms::ComRef cref = getValidCref(v.first);
-    if (oms_status_ok != setReal(cref, v.second))
+    if (oms_status_ok != setReal(cref, std::get<1>(v.second).getValue()))
       return logError("Failed to set start value for " + std::string(v.first));
   }
 
@@ -597,6 +597,20 @@ oms_status_enu_t oms::ComponentFMUCS::getBoolean(const fmi2_value_reference_t& v
 oms_status_enu_t oms::ComponentFMUCS::getBoolean(const ComRef& cref, bool& value)
 {
   CallClock callClock(clock);
+
+  // check for start suffix
+  if (cref.hasSuffixStart())
+  {
+    auto booleanValue = startValues.booleanValues.find(cref.popSuffix());
+    if (booleanValue != startValues.booleanValues.end())
+    {
+      value = std::get<1>(booleanValue->second).getValue();
+      return oms_status_ok;
+    }
+    // should we return a default start value if did not exist value = 0 or return error ?
+    return oms_status_error;
+  }
+
   int j=-1;
   for (size_t i = 0; i < allVariables.size(); i++)
   {
@@ -627,6 +641,20 @@ oms_status_enu_t oms::ComponentFMUCS::getInteger(const fmi2_value_reference_t& v
 oms_status_enu_t oms::ComponentFMUCS::getInteger(const ComRef& cref, int& value)
 {
   CallClock callClock(clock);
+
+  // check for start suffix
+  if (cref.hasSuffixStart())
+  {
+    auto integerValue = startValues.integerValues.find(cref.popSuffix());
+    if (integerValue != startValues.integerValues.end())
+    {
+      value = std::get<1>(integerValue->second).getValue();
+      return oms_status_ok;
+    }
+    // should we return a default start value if did not exist value = 0 or return error ?
+    return oms_status_error;
+  }
+
   int j=-1;
   for (size_t i = 0; i < allVariables.size(); i++)
   {
@@ -696,10 +724,25 @@ oms_status_enu_t oms::ComponentFMUCS::getReal(const fmi2_value_reference_t& vr, 
 oms_status_enu_t oms::ComponentFMUCS::getReal(const ComRef& cref, double& value)
 {
   CallClock callClock(clock);
+
+  // check for start suffix
+  if (cref.hasSuffixStart())
+  {
+    double rvalue;
+    auto realValue = startValues.realValues.find(cref.popSuffix());
+    if (realValue != startValues.realValues.end())
+    {
+      value = std::get<1>(realValue->second).getValue();
+      return oms_status_ok;
+    }
+    // should we return a default start value if did not exist value = 0 or return error ?
+    return oms_status_error;
+  }
+
   int j=-1;
   for (size_t i = 0; i < allVariables.size(); i++)
   {
-    if (allVariables[i].getCref() == cref && allVariables[i].isTypeReal())
+    if (allVariables[i].getCref() == cref.popSuffix() && allVariables[i].isTypeReal())
     {
       j = i;
       break;
@@ -769,7 +812,7 @@ oms_status_enu_t oms::ComponentFMUCS::setBoolean(const ComRef& cref, bool value)
   int j=-1;
   for (size_t i = 0; i < allVariables.size(); i++)
   {
-    if (allVariables[i].getCref() == cref && allVariables[i].isTypeBoolean())
+    if (allVariables[i].getCref() == cref.popSuffix() && allVariables[i].isTypeBoolean())
     {
       j = i;
       break;
@@ -779,16 +822,16 @@ oms_status_enu_t oms::ComponentFMUCS::setBoolean(const ComRef& cref, bool value)
   if (!fmu || j < 0)
     return logError_UnknownSignal(getFullCref() + cref);
 
-  if (oms_modelState_virgin == getModel()->getModelState())
+  if (cref.hasSuffixStart() && oms_modelState_virgin == getModel()->getModelState())
   {
     if (Flags::ExportParametersInline())
     {
-      startValues.setBoolean(allVariables[j].getCref(), value);
+      startValues.setBoolean(cref, value);
     }
     else
     {
       // append startValues with prefix (e.g) addP.K1
-      startValues.setBoolean(getCref()+allVariables[j].getCref(), value);
+      startValues.setBoolean(getCref()+cref, value);
     }
   }
   else
@@ -808,7 +851,7 @@ oms_status_enu_t oms::ComponentFMUCS::setInteger(const ComRef& cref, int value)
   int j=-1;
   for (size_t i = 0; i < allVariables.size(); i++)
   {
-    if (allVariables[i].getCref() == cref && allVariables[i].isTypeInteger())
+    if (allVariables[i].getCref() == cref.popSuffix() && allVariables[i].isTypeInteger())
     {
       j = i;
       break;
@@ -818,16 +861,16 @@ oms_status_enu_t oms::ComponentFMUCS::setInteger(const ComRef& cref, int value)
   if (!fmu || j < 0)
     return logError_UnknownSignal(getFullCref() + cref);
 
-  if (oms_modelState_virgin == getModel()->getModelState())
+  if (cref.hasSuffixStart() && oms_modelState_virgin == getModel()->getModelState())
   {
     if (Flags::ExportParametersInline())
     {
-      startValues.setInteger(allVariables[j].getCref(), value);
+      startValues.setInteger(cref, value);
     }
     else
     {
       // append startValues with prefix (e.g) addP.K1
-      startValues.setInteger(getCref()+allVariables[j].getCref(), value);
+      startValues.setInteger(getCref()+cref, value);
     }
   }
   else
@@ -846,7 +889,7 @@ oms_status_enu_t oms::ComponentFMUCS::setReal(const ComRef& cref, double value)
   int j=-1;
   for (size_t i = 0; i < allVariables.size(); i++)
   {
-    if (allVariables[i].getCref() == cref && allVariables[i].isTypeReal())
+    if (allVariables[i].getCref() == cref.popSuffix() && allVariables[i].isTypeReal())
     {
       j = i;
       break;
@@ -860,16 +903,16 @@ oms_status_enu_t oms::ComponentFMUCS::setReal(const ComRef& cref, double value)
     if (allVariables[j].isCalculated() || allVariables[j].isIndependent())
       return logWarning("It is not allowed to provide a start value if initial=\"calculated\" or causality=\"independent\".");
 
-  if (oms_modelState_virgin == getModel()->getModelState())
+  if (cref.hasSuffixStart() && oms_modelState_virgin == getModel()->getModelState())
   {
     if (Flags::ExportParametersInline())
     {
-      startValues.setReal(allVariables[j].getCref(), value);
+      startValues.setReal(cref, value);
     }
     else
     {
       // append startValues with prefix (e.g) addP.K1
-      startValues.setReal(getCref()+allVariables[j].getCref(), value);
+      startValues.setReal(getCref()+cref, value);
     }
   }
   else

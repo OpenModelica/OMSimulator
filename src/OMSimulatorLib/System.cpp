@@ -1761,14 +1761,27 @@ oms_status_enu_t oms::System::getBoolean(const ComRef& cref, bool& value)
 
   for (auto& connector : connectors)
   {
-    if (connector && connector->getName() == cref && connector->isTypeBoolean())
+    // check crefs popSuffix, to see if it has :start and pop the cref
+    if (connector && connector->getName() == cref.popSuffix() && connector->isTypeBoolean())
     {
-      oms::ComRef ident = getValidCref(cref);
-      auto booleanValue = startValues.booleanStartValues.find(ident);
-      if (booleanValue != startValues.booleanStartValues.end())
-        value = booleanValue->second;
+      oms::ComRef ident = getValidCref(cref.popSuffix());
+      auto booleanValue = startValues.booleanValues.find(ident);
+      if (booleanValue != startValues.booleanValues.end())
+      {
+        //value = booleanValue->second;
+        if (cref.hasSuffixStart())
+        {
+          value = std::get<1>(booleanValue->second).getValue();
+        }
+        else
+        {
+          value = std::get<0>(booleanValue->second);
+        }
+      }
       else
+      {
         value = 0; // default value
+      }
       return oms_status_ok;
     }
   }
@@ -1794,14 +1807,27 @@ oms_status_enu_t oms::System::getInteger(const ComRef& cref, int& value)
 
   for (auto& connector : connectors)
   {
-    if (connector && connector->getName() == cref && connector->isTypeInteger())
+    // check crefs popSuffix, to see if it has :start and pop the cref
+    if (connector && connector->getName() == cref.popSuffix() && connector->isTypeInteger())
     {
-      oms::ComRef ident = getValidCref(cref);
-      auto integerValue = startValues.integerStartValues.find(ident);
-      if (integerValue != startValues.integerStartValues.end())
-        value = integerValue->second;
+      oms::ComRef ident = getValidCref(cref.popSuffix());
+      auto integerValue = startValues.integerValues.find(ident);
+      if (integerValue != startValues.integerValues.end())
+      {
+        //value = integerValue->second;
+        if (cref.hasSuffixStart())
+        {
+          value = std::get<1>(integerValue->second).getValue();
+        }
+        else
+        {
+          value = std::get<0>(integerValue->second);
+        }
+      }
       else
+      {
         value = 0; // default value
+      }
       return oms_status_ok;
     }
   }
@@ -1827,14 +1853,26 @@ oms_status_enu_t oms::System::getReal(const ComRef& cref, double& value)
 
   for (auto& connector : connectors)
   {
-    if (connector && connector->getName() == cref && connector->isTypeReal())
+    // check crefs popSuffix, to see if it has :start and pop the cref
+    if (connector && connector->getName() == cref.popSuffix() && connector->isTypeReal())
     {
-      oms::ComRef ident = getValidCref(cref);
-      auto realValue = startValues.realStartValues.find(ident);
-      if (realValue != startValues.realStartValues.end())
-        value = realValue->second;
+      oms::ComRef ident = getValidCref(cref.popSuffix());
+      auto realValue = startValues.realValues.find(ident);
+      if (realValue != startValues.realValues.end())
+      {
+        if (cref.hasSuffixStart())
+        {
+          value = std::get<1>(realValue->second).getValue();
+        }
+        else
+        {
+          value = std::get<0>(realValue->second);
+        }
+      }
       else
+      {
         value = 0.0; // default value
+      }
       return oms_status_ok;
     }
   }
@@ -1893,6 +1931,15 @@ oms_status_enu_t oms::System::setBoolean(const ComRef& cref, bool value)
   if (!getModel()->validState(oms_modelState_virgin|oms_modelState_enterInstantiation|oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
     return logError_ModelInWrongState(getModel());
 
+  /*check for allowed start values
+   * cond (1) cref has start prefix (e.g) K:start and modelstate = oms_modelState_virgin
+   * cond (2) cref do not have start prefix (e.g) K and modelstate = oms_modelState_simulation (i.e allow external inputs during simulation)
+   */
+  if (!cref.hasSuffixStart() && oms_modelState_virgin == getModel()->getModelState() || cref.hasSuffixStart() && oms_modelState_simulation == getModel()->getModelState())
+  {
+    return logError("wrong model state, cannot set value or start value for signal \"" + std::string(getFullCref() + cref) + "\"");
+  }
+
   oms::ComRef tail(cref);
   oms::ComRef head = tail.pop_front();
 
@@ -1905,13 +1952,15 @@ oms_status_enu_t oms::System::setBoolean(const ComRef& cref, bool value)
     return component->second->setBoolean(tail, value);
 
   for (auto& connector : connectors)
-    if (connector && connector->getName() == cref && connector->isTypeBoolean())
+  {
+    // check crefs popSuffix, to see if it has :start and pop the cref
+    if (connector && connector->getName() == cref.popSuffix() && connector->isTypeBoolean())
     {
       oms::ComRef ident = getValidCref(cref);
       startValues.setBoolean(ident, value);
       return oms_status_ok;
     }
-
+  }
   return logError_UnknownSignal(getFullCref() + cref);
 }
 
@@ -1919,6 +1968,15 @@ oms_status_enu_t oms::System::setInteger(const ComRef& cref, int value)
 {
   if (!getModel()->validState(oms_modelState_virgin|oms_modelState_enterInstantiation|oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
     return logError_ModelInWrongState(getModel());
+
+  /*check for allowed start values
+   * cond (1) cref has start prefix (e.g) K:start and modelstate = oms_modelState_virgin
+   * cond (2) cref do not have start prefix (e.g) K and modelstate = oms_modelState_simulation (i.e allow external inputs during simulation)
+   */
+  if (!cref.hasSuffixStart() && oms_modelState_virgin == getModel()->getModelState() || cref.hasSuffixStart() && oms_modelState_simulation == getModel()->getModelState())
+  {
+    return logError("wrong model state, cannot set value or start value for signal \"" + std::string(getFullCref() + cref) + "\"");
+  }
 
   oms::ComRef tail(cref);
   oms::ComRef head = tail.pop_front();
@@ -1932,12 +1990,15 @@ oms_status_enu_t oms::System::setInteger(const ComRef& cref, int value)
     return component->second->setInteger(tail, value);
 
   for (auto& connector : connectors)
-    if (connector && connector->getName() == cref && connector->isTypeInteger())
+  {
+    // check crefs popSuffix, to see if it has :start and pop the cref
+    if (connector && connector->getName() == cref.popSuffix() && connector->isTypeInteger())
     {
       oms::ComRef ident = getValidCref(cref);
       startValues.setInteger(ident, value);
       return oms_status_ok;
     }
+  }
 
   return logError_UnknownSignal(getFullCref() + cref);
 }
@@ -1946,6 +2007,15 @@ oms_status_enu_t oms::System::setReal(const ComRef& cref, double value)
 {
   if (!getModel()->validState(oms_modelState_virgin|oms_modelState_enterInstantiation|oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
     return logError_ModelInWrongState(getModel());
+
+  /*check for allowed start values
+   * cond (1) cref has start prefix (e.g) K:start and modelstate = oms_modelState_virgin
+   * cond (2) cref do not have start prefix (e.g) K and modelstate = oms_modelState_simulation (i.e allow external inputs during simulation)
+   */
+  if (!cref.hasSuffixStart() && oms_modelState_virgin == getModel()->getModelState() || cref.hasSuffixStart() && oms_modelState_simulation == getModel()->getModelState())
+  {
+    return logError("wrong model state, cannot set value or start value for signal \"" + std::string(getFullCref() + cref) + "\"");
+  }
 
   oms::ComRef tail(cref);
   oms::ComRef head = tail.pop_front();
@@ -1959,12 +2029,15 @@ oms_status_enu_t oms::System::setReal(const ComRef& cref, double value)
     return component->second->setReal(tail, value);
 
   for (auto& connector : connectors)
-    if (connector && connector->getName() == cref && connector->isTypeReal())
+  {
+    // check crefs popSuffix, to see if it has :start and pop the cref
+    if (connector && connector->getName() == cref.popSuffix() && connector->isTypeReal())
     {
       oms::ComRef ident = getValidCref(cref);
       startValues.setReal(ident, value);
       return oms_status_ok;
     }
+  }
   return logError_UnknownSignal(getFullCref() + cref);
 }
 

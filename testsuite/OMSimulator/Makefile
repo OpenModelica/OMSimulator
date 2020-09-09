@@ -11,6 +11,7 @@ import_export.lua \
 import_export.py \
 PI_Controller.lua \
 QuarterCarModel.DisplacementDisplacement.lua \
+setAndGetStartValues.lua \
 simulation.lua \
 simulation.py \
 table.lua \
