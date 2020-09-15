@@ -240,6 +240,9 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::
   component->initializeDependencyGraph_initialUnknowns();
   component->initializeDependencyGraph_outputs();
 
+  // parse modelDescription.xml to get start values before instantiating fmu's
+  component->startValues.parseModelDescription((tempDir / "modelDescription.xml").string().c_str());
+
   return component;
 }
 
@@ -696,6 +699,29 @@ oms_status_enu_t oms::ComponentFMUCS::getReal(const fmi2_value_reference_t& vr, 
 oms_status_enu_t oms::ComponentFMUCS::getReal(const ComRef& cref, double& value)
 {
   CallClock callClock(clock);
+
+  if (oms_modelState_virgin == getModel()->getModelState())
+  {
+    // check for start values exist, priority over modeldescription.xml start values
+    auto realValue = startValues.realStartValues.find(cref);
+    if (realValue != startValues.realStartValues.end())
+    {
+      value = realValue->second;
+      return oms_status_ok;
+    }
+    else
+    {      
+      // search in modelDescription.xml
+      auto realValue = startValues.modelDescriptionStartValues.find(cref);
+      if (realValue != startValues.modelDescriptionStartValues.end())
+      {
+        value = stod(realValue->second);
+        return oms_status_ok;
+      }
+    }
+    return logError("No Start Value set or available for signal : " + std::string(getFullCref() + cref));
+  }
+
   int j=-1;
   for (size_t i = 0; i < allVariables.size(); i++)
   {

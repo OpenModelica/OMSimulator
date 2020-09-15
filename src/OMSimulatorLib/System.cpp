@@ -1811,7 +1811,7 @@ oms_status_enu_t oms::System::getInteger(const ComRef& cref, int& value)
 
 oms_status_enu_t oms::System::getReal(const ComRef& cref, double& value)
 {
-  if (!getModel()->validState(oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
+  if (!getModel()->validState(oms_modelState_virgin|oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
     return logError_ModelInWrongState(getModel());
 
   oms::ComRef tail(cref);
@@ -1830,6 +1830,12 @@ oms_status_enu_t oms::System::getReal(const ComRef& cref, double& value)
     if (connector && connector->getName() == cref && connector->isTypeReal())
     {
       oms::ComRef ident = getValidCref(cref);
+      // check any external input are set and return the value, otherwise return the startValue
+      if (oms_modelState_simulation == getModel()->getModelState() && startValues.realValues[ident] != 0.0)
+      {
+        value = startValues.realValues[ident];
+        return oms_status_ok;
+      }
       auto realValue = startValues.realStartValues.find(ident);
       if (realValue != startValues.realStartValues.end())
         value = realValue->second;
@@ -1962,7 +1968,15 @@ oms_status_enu_t oms::System::setReal(const ComRef& cref, double value)
     if (connector && connector->getName() == cref && connector->isTypeReal())
     {
       oms::ComRef ident = getValidCref(cref);
-      startValues.setReal(ident, value);
+      // set external inputs, after initialization
+      if (oms_modelState_simulation == getModel()->getModelState())
+      {
+        startValues.realValues[ident] = value;
+      }
+      else
+      {
+        startValues.setReal(ident, value);
+      }
       return oms_status_ok;
     }
   return logError_UnknownSignal(getFullCref() + cref);

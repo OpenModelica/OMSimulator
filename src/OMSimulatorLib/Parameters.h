@@ -56,10 +56,18 @@ namespace oms
     oms_status_enu_t exportToSSV(pugi::xml_node& ssvNode) const;
     oms_status_enu_t exportStartValuesHelper(pugi::xml_node& node) const;
     oms_status_enu_t importStartValuesHelper(pugi::xml_node& parameters);
+    oms_status_enu_t parseModelDescription(const char *filename);
 
     std::map<ComRef, double> realStartValues;  ///< parameters and start values defined before instantiating the FMU
     std::map<ComRef, int> integerStartValues;  ///< parameters and start values defined before instantiating the FMU
     std::map<ComRef, bool> booleanStartValues; ///< parameters and start values defined before instantiating the FMU
+
+    std::map<ComRef, double> realValues;  ///< real input values defined after initialization
+    std::map<ComRef, double> integerValues;  ///< integer input values defined after initialization
+    std::map<ComRef, double> booleanValues;  ///< boolean input values defined after initialization
+
+    std::map<ComRef, std::string> modelDescriptionStartValues; // startValues read from  modelDescription.xml
+
   };
 }
 
