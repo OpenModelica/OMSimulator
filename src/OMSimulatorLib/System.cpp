@@ -1764,6 +1764,12 @@ oms_status_enu_t oms::System::getBoolean(const ComRef& cref, bool& value)
     if (connector && connector->getName() == cref && connector->isTypeBoolean())
     {
       oms::ComRef ident = getValidCref(cref);
+      // check any external input are set and return the value, otherwise return the startValue
+      if (oms_modelState_simulation == getModel()->getModelState() && startValues.booleanValues[ident] != 0.0)
+      {
+        value = startValues.booleanValues[ident];
+        return oms_status_ok;
+      }
       auto booleanValue = startValues.booleanStartValues.find(ident);
       if (booleanValue != startValues.booleanStartValues.end())
         value = booleanValue->second;
@@ -1797,6 +1803,12 @@ oms_status_enu_t oms::System::getInteger(const ComRef& cref, int& value)
     if (connector && connector->getName() == cref && connector->isTypeInteger())
     {
       oms::ComRef ident = getValidCref(cref);
+      // check any external input are set and return the value, otherwise return the startValue
+      if (oms_modelState_simulation == getModel()->getModelState() && startValues.integerValues[ident] != 0.0)
+      {
+        value = startValues.integerValues[ident];
+        return oms_status_ok;
+      }
       auto integerValue = startValues.integerStartValues.find(ident);
       if (integerValue != startValues.integerStartValues.end())
         value = integerValue->second;
@@ -1914,7 +1926,15 @@ oms_status_enu_t oms::System::setBoolean(const ComRef& cref, bool value)
     if (connector && connector->getName() == cref && connector->isTypeBoolean())
     {
       oms::ComRef ident = getValidCref(cref);
-      startValues.setBoolean(ident, value);
+      // set external inputs, after initialization
+      if (oms_modelState_simulation == getModel()->getModelState())
+      {
+        startValues.booleanValues[ident] = value;
+      }
+      else
+      {
+        startValues.setBoolean(ident, value);
+      }
       return oms_status_ok;
     }
 
@@ -1941,7 +1961,15 @@ oms_status_enu_t oms::System::setInteger(const ComRef& cref, int value)
     if (connector && connector->getName() == cref && connector->isTypeInteger())
     {
       oms::ComRef ident = getValidCref(cref);
-      startValues.setInteger(ident, value);
+      // set external inputs, after initialization
+      if (oms_modelState_simulation == getModel()->getModelState())
+      {
+        startValues.integerValues[ident] = value;
+      }
+      else
+      {
+        startValues.setInteger(ident, value);
+      }
       return oms_status_ok;
     }
 

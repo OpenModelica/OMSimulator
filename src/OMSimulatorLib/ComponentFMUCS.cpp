@@ -600,6 +600,29 @@ oms_status_enu_t oms::ComponentFMUCS::getBoolean(const fmi2_value_reference_t& v
 oms_status_enu_t oms::ComponentFMUCS::getBoolean(const ComRef& cref, bool& value)
 {
   CallClock callClock(clock);
+
+  if (oms_modelState_virgin == getModel()->getModelState())
+  {
+    // check for start values exist, priority over modeldescription.xml start values
+    auto booleanValue = startValues.booleanStartValues.find(cref);
+    if (booleanValue != startValues.booleanStartValues.end())
+    {
+      value = booleanValue->second;
+      return oms_status_ok;
+    }
+    else
+    {
+      // search in modelDescription.xml
+      auto booleanValue = startValues.modelDescriptionBooleanStartValues.find(cref);
+      if (booleanValue != startValues.modelDescriptionBooleanStartValues.end())
+      {
+        value = booleanValue->second;
+        return oms_status_ok;
+      }
+    }
+    return logError("no start value provided or available for signal: " + std::string(getFullCref() + cref));
+  }
+
   int j=-1;
   for (size_t i = 0; i < allVariables.size(); i++)
   {
@@ -630,6 +653,29 @@ oms_status_enu_t oms::ComponentFMUCS::getInteger(const fmi2_value_reference_t& v
 oms_status_enu_t oms::ComponentFMUCS::getInteger(const ComRef& cref, int& value)
 {
   CallClock callClock(clock);
+
+  if (oms_modelState_virgin == getModel()->getModelState())
+  {
+    // check for start values exist, priority over modeldescription.xml start values
+    auto integerValue = startValues.integerStartValues.find(cref);
+    if (integerValue != startValues.integerStartValues.end())
+    {
+      value = integerValue->second;
+      return oms_status_ok;
+    }
+    else
+    {
+      // search in modelDescription.xml
+      auto integerValue = startValues.modelDescriptionIntegerStartValues.find(cref);
+      if (integerValue != startValues.modelDescriptionIntegerStartValues.end())
+      {
+        value = integerValue->second;
+        return oms_status_ok;
+      }
+    }
+    return logError("no start value set or available for signal: " + std::string(getFullCref() + cref));
+  }
+
   int j=-1;
   for (size_t i = 0; i < allVariables.size(); i++)
   {
@@ -712,14 +758,14 @@ oms_status_enu_t oms::ComponentFMUCS::getReal(const ComRef& cref, double& value)
     else
     {      
       // search in modelDescription.xml
-      auto realValue = startValues.modelDescriptionStartValues.find(cref);
-      if (realValue != startValues.modelDescriptionStartValues.end())
+      auto realValue = startValues.modelDescriptionRealStartValues.find(cref);
+      if (realValue != startValues.modelDescriptionRealStartValues.end())
       {
-        value = stod(realValue->second);
+        value = realValue->second;
         return oms_status_ok;
       }
     }
-    return logError("No Start Value set or available for signal : " + std::string(getFullCref() + cref));
+    return logError("no start value set or available for signal: " + std::string(getFullCref() + cref));
   }
 
   int j=-1;

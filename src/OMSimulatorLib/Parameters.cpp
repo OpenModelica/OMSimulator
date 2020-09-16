@@ -242,26 +242,26 @@ oms_status_enu_t oms::Parameters::importStartValuesHelper(pugi::xml_node& parame
 
 oms_status_enu_t oms::Parameters::parseModelDescription(const char *filename)
 {
-  //std::cout << "\n inside Parameters parseModelDescription ";
   pugi::xml_document doc;
   pugi::xml_parse_result result = doc.load_file(filename);
   pugi::xml_node node = doc.document_element(); // modelDescription.xml
 
   if (!result)
-    logError("Failed to load modelDescription.xml");
+  {
+    return logError("Failed to load modelDescription.xml");
+  }
 
-  std::string fmiVersion = node.attribute("fmiVersion").as_string();
+  //std::string fmiVersion = node.attribute("fmiVersion").as_string();
+
   for(pugi::xml_node_iterator it = node.begin(); it != node.end(); ++it)
   {
     std::string name = it->name();
-    //std::cout << "\n parsing xml : " << name;
     if(name == "ModelVariables")
     {
-      //std::cout << "\n inside ModelVariables : " << name;
       pugi::xml_node scalarVariableNode = node.child("ModelVariables");
       if (!scalarVariableNode)
       {
-        logError("Error parsing modelDescription.xml");
+        return logError("Error parsing modelDescription.xml");
       }
       for (pugi::xml_node scalarVariable = scalarVariableNode.child("ScalarVariable"); scalarVariable; scalarVariable = scalarVariable.next_sibling("ScalarVariable"))
       {
@@ -269,15 +269,15 @@ oms_status_enu_t oms::Parameters::parseModelDescription(const char *filename)
         if (scalarVariable.child("Real").attribute("start").as_string() != "")
         {
           //startValue = scalarVariable.child("Real").attribute("start").as_string();
-          modelDescriptionStartValues[ComRef(scalarVariable.attribute("name").as_string())] = scalarVariable.child("Real").attribute("start").as_string();
+          modelDescriptionRealStartValues[ComRef(scalarVariable.attribute("name").as_string())] = scalarVariable.child("Real").attribute("start").as_double();
         }
         if (scalarVariable.child("Integer").attribute("start").as_string() != "")
         {
-          modelDescriptionStartValues[scalarVariable.attribute("name").as_string()] = scalarVariable.child("Integer").attribute("start").as_string();
+          modelDescriptionIntegerStartValues[scalarVariable.attribute("name").as_string()] = scalarVariable.child("Integer").attribute("start").as_int();
         }
         if (scalarVariable.child("Boolean").attribute("start").as_string() != "")
         {
-          modelDescriptionStartValues[scalarVariable.attribute("name").as_string()] = scalarVariable.child("Boolean").attribute("start").as_string();
+          modelDescriptionBooleanStartValues[scalarVariable.attribute("name").as_string()] = scalarVariable.child("Boolean").attribute("start").as_bool();
         }
       }
     }

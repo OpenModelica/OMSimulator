@@ -242,6 +242,9 @@ oms::Component* oms::ComponentFMUME::NewComponent(const oms::ComRef& cref, oms::
   component->initializeDependencyGraph_initialUnknowns();
   component->initializeDependencyGraph_outputs();
 
+  // parse modelDescription.xml to get start values before instantiating fmu's
+  component->startValues.parseModelDescription((tempDir / "modelDescription.xml").string().c_str());
+
   return component;
 }
 
@@ -606,6 +609,29 @@ oms_status_enu_t oms::ComponentFMUME::getBoolean(const fmi2_value_reference_t& v
 oms_status_enu_t oms::ComponentFMUME::getBoolean(const ComRef& cref, bool& value)
 {
   CallClock callClock(clock);
+
+  if (oms_modelState_virgin == getModel()->getModelState())
+  {
+    // check for start values exist, priority over modeldescription.xml start values
+    auto booleanValue = startValues.booleanStartValues.find(cref);
+    if (booleanValue != startValues.booleanStartValues.end())
+    {
+      value = booleanValue->second;
+      return oms_status_ok;
+    }
+    else
+    {
+      // search in modelDescription.xml
+      auto booleanValue = startValues.modelDescriptionBooleanStartValues.find(cref);
+      if (booleanValue != startValues.modelDescriptionBooleanStartValues.end())
+      {
+        value = booleanValue->second;
+        return oms_status_ok;
+      }
+    }
+    return logError("no start value provided or available for signal: " + std::string(getFullCref() + cref));
+  }
+
   int j=-1;
   for (size_t i = 0; i < allVariables.size(); i++)
   {
@@ -636,6 +662,29 @@ oms_status_enu_t oms::ComponentFMUME::getInteger(const fmi2_value_reference_t& v
 oms_status_enu_t oms::ComponentFMUME::getInteger(const ComRef& cref, int& value)
 {
   CallClock callClock(clock);
+
+  if (oms_modelState_virgin == getModel()->getModelState())
+  {
+    // check for start values exist, priority over modeldescription.xml start values
+    auto integerValue = startValues.integerStartValues.find(cref);
+    if (integerValue != startValues.integerStartValues.end())
+    {
+      value = integerValue->second;
+      return oms_status_ok;
+    }
+    else
+    {
+      // search in modelDescription.xml
+      auto integerValue = startValues.modelDescriptionIntegerStartValues.find(cref);
+      if (integerValue != startValues.modelDescriptionIntegerStartValues.end())
+      {
+        value = integerValue->second;
+        return oms_status_ok;
+      }
+    }
+    return logError("no start value set or available for signal: " + std::string(getFullCref() + cref));
+  }
+
   int j=-1;
   for (size_t i = 0; i < allVariables.size(); i++)
   {
@@ -705,6 +754,29 @@ oms_status_enu_t oms::ComponentFMUME::getReal(const fmi2_value_reference_t& vr, 
 oms_status_enu_t oms::ComponentFMUME::getReal(const ComRef& cref, double& value)
 {
   CallClock callClock(clock);
+
+  if (oms_modelState_virgin == getModel()->getModelState())
+  {
+    // check for start values exist, priority over modeldescription.xml start values
+    auto realValue = startValues.realStartValues.find(cref);
+    if (realValue != startValues.realStartValues.end())
+    {
+      value = realValue->second;
+      return oms_status_ok;
+    }
+    else
+    {
+      // search in modelDescription.xml
+      auto realValue = startValues.modelDescriptionRealStartValues.find(cref);
+      if (realValue != startValues.modelDescriptionRealStartValues.end())
+      {
+        value = realValue->second;
+        return oms_status_ok;
+      }
+    }
+    return logError("no start value set or available for signal: " + std::string(getFullCref() + cref));
+  }
+
   int j=-1;
   for (size_t i = 0; i < allVariables.size(); i++)
   {

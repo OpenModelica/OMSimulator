@@ -63,10 +63,12 @@ namespace oms
     std::map<ComRef, bool> booleanStartValues; ///< parameters and start values defined before instantiating the FMU
 
     std::map<ComRef, double> realValues;  ///< real input values defined after initialization
-    std::map<ComRef, double> integerValues;  ///< integer input values defined after initialization
-    std::map<ComRef, double> booleanValues;  ///< boolean input values defined after initialization
+    std::map<ComRef, int> integerValues;  ///< integer input values defined after initialization
+    std::map<ComRef, bool> booleanValues;  ///< boolean input values defined after initialization
 
-    std::map<ComRef, std::string> modelDescriptionStartValues; // startValues read from  modelDescription.xml
+    std::map<ComRef, double> modelDescriptionRealStartValues;  ///< real start values read from modelDescription.xml
+    std::map<ComRef, int> modelDescriptionIntegerStartValues;  ///< integer start values read from modelDescription.xml
+    std::map<ComRef, bool> modelDescriptionBooleanStartValues;  ///< boolean start values read from modelDescription.xml
 
   };
 }
