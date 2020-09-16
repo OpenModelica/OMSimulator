@@ -1745,7 +1745,7 @@ oms_status_enu_t oms::System::updateDependencyGraphs()
 
 oms_status_enu_t oms::System::getBoolean(const ComRef& cref, bool& value)
 {
-  if (!getModel()->validState(oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
+  if (!getModel()->validState(oms_modelState_virgin|oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
     return logError_ModelInWrongState(getModel());
 
   oms::ComRef tail(cref);
@@ -1784,7 +1784,7 @@ oms_status_enu_t oms::System::getBoolean(const ComRef& cref, bool& value)
 
 oms_status_enu_t oms::System::getInteger(const ComRef& cref, int& value)
 {
-  if (!getModel()->validState(oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
+  if (!getModel()->validState(oms_modelState_virgin|oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
     return logError_ModelInWrongState(getModel());
 
   oms::ComRef tail(cref);
