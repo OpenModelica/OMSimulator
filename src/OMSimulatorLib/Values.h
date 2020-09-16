@@ -29,8 +29,8 @@
  *
  */
 
-#ifndef _OMS_PARAMETERS_H_
-#define _OMS_PARAMETERS_H_
+#ifndef _OMS_VALUES_H_
+#define _OMS_VALUES_H_
 
 #include "ComRef.h"
 #include "Types.h"
@@ -39,11 +39,11 @@
 
 namespace oms
 {
-  class Parameters
+  class Values
   {
   public:
-    Parameters();
-    ~Parameters();
+    Values();
+    ~Values();
 
     oms_status_enu_t setReal(const ComRef& cref, double value);
     oms_status_enu_t setInteger(const ComRef& cref, int value);
