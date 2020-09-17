@@ -34,7 +34,7 @@
 
 #include "Component.h"
 #include "ComRef.h"
-#include "Parameters.h"
+#include "Values.h"
 #include "ResultWriter.h"
 #include "Variable.h"
 
@@ -127,7 +127,7 @@ namespace oms
     std::vector<Variable> calculatedParameters;
     std::vector<bool> exportVariables;
 
-    Parameters startValues; ///< parameters and start values defined before instantiating the FMU
+    Values values; ///< start values defined before instantiating the FMU and external inputs defined after initialization
 
     std::unordered_map<unsigned int /*result file var ID*/, unsigned int /*allVariables ID*/> resultFileMapping;
 

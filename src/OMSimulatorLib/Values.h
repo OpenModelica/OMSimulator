@@ -29,8 +29,8 @@
  *
  */
 
-#ifndef _OMS_PARAMETERS_H_
-#define _OMS_PARAMETERS_H_
+#ifndef _OMS_VALUES_H_
+#define _OMS_VALUES_H_
 
 #include "ComRef.h"
 #include "Types.h"
@@ -39,11 +39,11 @@
 
 namespace oms
 {
-  class Parameters
+  class Values
   {
   public:
-    Parameters();
-    ~Parameters();
+    Values();
+    ~Values();
 
     oms_status_enu_t setReal(const ComRef& cref, double value);
     oms_status_enu_t setInteger(const ComRef& cref, int value);
@@ -56,10 +56,20 @@ namespace oms
     oms_status_enu_t exportToSSV(pugi::xml_node& ssvNode) const;
     oms_status_enu_t exportStartValuesHelper(pugi::xml_node& node) const;
     oms_status_enu_t importStartValuesHelper(pugi::xml_node& parameters);
+    oms_status_enu_t parseModelDescription(const char *filename);
 
     std::map<ComRef, double> realStartValues;  ///< parameters and start values defined before instantiating the FMU
     std::map<ComRef, int> integerStartValues;  ///< parameters and start values defined before instantiating the FMU
     std::map<ComRef, bool> booleanStartValues; ///< parameters and start values defined before instantiating the FMU
+
+    std::map<ComRef, double> realValues;  ///< real input values defined after initialization
+    std::map<ComRef, int> integerValues;  ///< integer input values defined after initialization
+    std::map<ComRef, bool> booleanValues;  ///< boolean input values defined after initialization
+
+    std::map<ComRef, double> modelDescriptionRealStartValues;  ///< real start values read from modelDescription.xml
+    std::map<ComRef, int> modelDescriptionIntegerStartValues;  ///< integer start values read from modelDescription.xml
+    std::map<ComRef, bool> modelDescriptionBooleanStartValues;  ///< boolean start values read from modelDescription.xml
+
   };
 }
 

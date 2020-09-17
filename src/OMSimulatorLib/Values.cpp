@@ -32,7 +32,7 @@
 
 #include "Util.h"
 #include "Logging.h"
-#include "Parameters.h"
+#include "Values.h"
 #include "Types.h"
 #include "ComRef.h"
 #include "ssd/Tags.h"
@@ -44,33 +44,33 @@
 #include <iostream>
 
 
-oms::Parameters::Parameters()
+oms::Values::Values()
 {
 }
 
-oms::Parameters::~Parameters()
+oms::Values::~Values()
 {
 }
 
-oms_status_enu_t oms::Parameters::setReal(const ComRef& cref, double value)
+oms_status_enu_t oms::Values::setReal(const ComRef& cref, double value)
 {
   realStartValues[cref] = value;
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Parameters::setInteger(const ComRef& cref, int value)
+oms_status_enu_t oms::Values::setInteger(const ComRef& cref, int value)
 {
   integerStartValues[cref] = value;
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Parameters::setBoolean(const ComRef& cref, bool value)
+oms_status_enu_t oms::Values::setBoolean(const ComRef& cref, bool value)
 {
   booleanStartValues[cref] = value;
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Parameters::deleteStartValue(const ComRef& cref)
+oms_status_enu_t oms::Values::deleteStartValue(const ComRef& cref)
 {
   oms::ComRef signal(cref);
   if (signal.hasSuffixStart())
@@ -103,7 +103,7 @@ oms_status_enu_t oms::Parameters::deleteStartValue(const ComRef& cref)
   return oms_status_error;
 }
 
-oms_status_enu_t oms::Parameters::exportToSSD(pugi::xml_node& node) const
+oms_status_enu_t oms::Values::exportToSSD(pugi::xml_node& node) const
 {
   // skip this if there is nothing to export
   if (realStartValues.empty() && integerStartValues.empty() && booleanStartValues.empty())
@@ -124,7 +124,7 @@ oms_status_enu_t oms::Parameters::exportToSSD(pugi::xml_node& node) const
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Parameters::importFromSSD(const pugi::xml_node& node, const std::string& sspVersion, const std::string& tempdir)
+oms_status_enu_t oms::Values::importFromSSD(const pugi::xml_node& node, const std::string& sspVersion, const std::string& tempdir)
 {
   for (pugi::xml_node parameterBindingNode = node.child(oms::ssp::Version1_0::ssd::parameter_binding); parameterBindingNode; parameterBindingNode = parameterBindingNode.next_sibling(oms::ssp::Version1_0::ssd::parameter_binding))
   {
@@ -159,7 +159,7 @@ oms_status_enu_t oms::Parameters::importFromSSD(const pugi::xml_node& node, cons
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Parameters::exportToSSV(pugi::xml_node& node) const
+oms_status_enu_t oms::Values::exportToSSV(pugi::xml_node& node) const
 {
   // skip this if there is nothing to export
   if (realStartValues.empty() && integerStartValues.empty() && booleanStartValues.empty())
@@ -171,7 +171,7 @@ oms_status_enu_t oms::Parameters::exportToSSV(pugi::xml_node& node) const
 }
 
 
-oms_status_enu_t oms::Parameters::exportStartValuesHelper(pugi::xml_node& node) const
+oms_status_enu_t oms::Values::exportStartValuesHelper(pugi::xml_node& node) const
 {
   // realStartValues
   for (const auto& r : realStartValues)
@@ -204,7 +204,7 @@ oms_status_enu_t oms::Parameters::exportStartValuesHelper(pugi::xml_node& node) 
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Parameters::importStartValuesHelper(pugi::xml_node& parameters)
+oms_status_enu_t oms::Values::importStartValuesHelper(pugi::xml_node& parameters)
 {
   if (parameters)
   {
@@ -239,3 +239,49 @@ oms_status_enu_t oms::Parameters::importStartValuesHelper(pugi::xml_node& parame
 
   return oms_status_ok;
 }
+
+oms_status_enu_t oms::Values::parseModelDescription(const char *filename)
+{
+  pugi::xml_document doc;
+  pugi::xml_parse_result result = doc.load_file(filename);
+  pugi::xml_node node = doc.document_element(); // modelDescription.xml
+
+  if (!result)
+  {
+    return logError("Failed to load modelDescription.xml");
+  }
+
+  //std::string fmiVersion = node.attribute("fmiVersion").as_string();
+
+  for(pugi::xml_node_iterator it = node.begin(); it != node.end(); ++it)
+  {
+    std::string name = it->name();
+    if(name == "ModelVariables")
+    {
+      pugi::xml_node scalarVariableNode = node.child("ModelVariables");
+      if (!scalarVariableNode)
+      {
+        return logError("Error parsing modelDescription.xml");
+      }
+      for (pugi::xml_node scalarVariable = scalarVariableNode.child("ScalarVariable"); scalarVariable; scalarVariable = scalarVariable.next_sibling("ScalarVariable"))
+      {
+        //std::string startValue = "";
+        if (scalarVariable.child("Real").attribute("start").as_string() != "")
+        {
+          //startValue = scalarVariable.child("Real").attribute("start").as_string();
+          modelDescriptionRealStartValues[ComRef(scalarVariable.attribute("name").as_string())] = scalarVariable.child("Real").attribute("start").as_double();
+        }
+        if (scalarVariable.child("Integer").attribute("start").as_string() != "")
+        {
+          modelDescriptionIntegerStartValues[scalarVariable.attribute("name").as_string()] = scalarVariable.child("Integer").attribute("start").as_int();
+        }
+        if (scalarVariable.child("Boolean").attribute("start").as_string() != "")
+        {
+          modelDescriptionBooleanStartValues[scalarVariable.attribute("name").as_string()] = scalarVariable.child("Boolean").attribute("start").as_bool();
+        }
+      }
+    }
+  }
+  return oms_status_ok;
+}
+

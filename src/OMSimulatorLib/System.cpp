@@ -406,11 +406,11 @@ oms_status_enu_t oms::System::exportToSSD(pugi::xml_node& node, pugi::xml_node& 
   // export top level parameter bindings
   if (Flags::ExportParametersInline()) // export as inline
   {
-    startValues.exportToSSD(node);
+    values.exportToSSD(node);
   }
   else
   {
-    startValues.exportToSSV(ssvNode); // export to ssv file
+    values.exportToSSV(ssvNode); // export to ssv file
   }
 
   pugi::xml_node elements_node = node.append_child(oms::ssp::Draft20180219::ssd::elements);
@@ -490,7 +490,7 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
       {
         //std::cout << "\n System ssvFileSource  inline :" << ssvFileSource;
         std::string tempdir = getModel()->getTempDirectory();
-        if (oms_status_ok !=  startValues.importFromSSD(*it, sspVersion, tempdir))
+        if (oms_status_ok !=  values.importFromSSD(*it, sspVersion, tempdir))
           return logError("Failed to import " + std::string(oms::ssp::Version1_0::ssd::parameter_bindings));
       }
     }
@@ -1566,7 +1566,7 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
     // check cref has ":start" suffix at the end to delete only start values
     if (front.hasSuffixStart())
     {
-      if (oms_status_ok != startValues.deleteStartValue(getValidCref(front)))
+      if (oms_status_ok != values.deleteStartValue(getValidCref(front)))
         return logWarning("failed to delete start value \"" + std::string(getFullCref()+front) + "\"" + " because the identifier couldn't be resolved to any system signal");
       return oms_status_ok;
     }
@@ -1594,7 +1594,7 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
       if (connectors[i]->getName() == front)
       {
         // delete startValues associated with the Connector
-        startValues.deleteStartValue(getValidCref(front));
+        values.deleteStartValue(getValidCref(front));
         deleteAllConectionsTo(front);
         exportConnectors.erase(front);
         delete connectors[i];
@@ -1608,7 +1608,7 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
       if (busconnectors[i]->getName() == front)
       {
         // delete startValues associated with the Connector
-        startValues.deleteStartValue(getValidCref(front));
+        values.deleteStartValue(getValidCref(front));
         deleteAllConectionsTo(front);
         exportConnectors.erase(front);
         delete busconnectors[i];
@@ -1622,7 +1622,7 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
       if (tlmbusconnectors[i]->getName() == front)
       {
         // delete startValues associated with the Connector
-        startValues.deleteStartValue(getValidCref(front));
+        values.deleteStartValue(getValidCref(front));
         deleteAllConectionsTo(front);
         exportConnectors.erase(front);
         delete tlmbusconnectors[i];
@@ -1745,7 +1745,7 @@ oms_status_enu_t oms::System::updateDependencyGraphs()
 
 oms_status_enu_t oms::System::getBoolean(const ComRef& cref, bool& value)
 {
-  if (!getModel()->validState(oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
+  if (!getModel()->validState(oms_modelState_virgin|oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
     return logError_ModelInWrongState(getModel());
 
   oms::ComRef tail(cref);
@@ -1764,8 +1764,14 @@ oms_status_enu_t oms::System::getBoolean(const ComRef& cref, bool& value)
     if (connector && connector->getName() == cref && connector->isTypeBoolean())
     {
       oms::ComRef ident = getValidCref(cref);
-      auto booleanValue = startValues.booleanStartValues.find(ident);
-      if (booleanValue != startValues.booleanStartValues.end())
+      // check any external input are set and return the value, otherwise return the startValue
+      if (oms_modelState_simulation == getModel()->getModelState() && values.booleanValues[ident] != 0.0)
+      {
+        value = values.booleanValues[ident];
+        return oms_status_ok;
+      }
+      auto booleanValue = values.booleanStartValues.find(ident);
+      if (booleanValue != values.booleanStartValues.end())
         value = booleanValue->second;
       else
         value = 0; // default value
@@ -1778,7 +1784,7 @@ oms_status_enu_t oms::System::getBoolean(const ComRef& cref, bool& value)
 
 oms_status_enu_t oms::System::getInteger(const ComRef& cref, int& value)
 {
-  if (!getModel()->validState(oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
+  if (!getModel()->validState(oms_modelState_virgin|oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
     return logError_ModelInWrongState(getModel());
 
   oms::ComRef tail(cref);
@@ -1797,8 +1803,14 @@ oms_status_enu_t oms::System::getInteger(const ComRef& cref, int& value)
     if (connector && connector->getName() == cref && connector->isTypeInteger())
     {
       oms::ComRef ident = getValidCref(cref);
-      auto integerValue = startValues.integerStartValues.find(ident);
-      if (integerValue != startValues.integerStartValues.end())
+      // check any external input are set and return the value, otherwise return the startValue
+      if (oms_modelState_simulation == getModel()->getModelState() && values.integerValues[ident] != 0.0)
+      {
+        value = values.integerValues[ident];
+        return oms_status_ok;
+      }
+      auto integerValue = values.integerStartValues.find(ident);
+      if (integerValue != values.integerStartValues.end())
         value = integerValue->second;
       else
         value = 0; // default value
@@ -1811,7 +1823,7 @@ oms_status_enu_t oms::System::getInteger(const ComRef& cref, int& value)
 
 oms_status_enu_t oms::System::getReal(const ComRef& cref, double& value)
 {
-  if (!getModel()->validState(oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
+  if (!getModel()->validState(oms_modelState_virgin|oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
     return logError_ModelInWrongState(getModel());
 
   oms::ComRef tail(cref);
@@ -1830,8 +1842,14 @@ oms_status_enu_t oms::System::getReal(const ComRef& cref, double& value)
     if (connector && connector->getName() == cref && connector->isTypeReal())
     {
       oms::ComRef ident = getValidCref(cref);
-      auto realValue = startValues.realStartValues.find(ident);
-      if (realValue != startValues.realStartValues.end())
+      // check any external input are set and return the value, otherwise return the startValue
+      if (oms_modelState_simulation == getModel()->getModelState() && values.realValues[ident] != 0.0)
+      {
+        value = values.realValues[ident];
+        return oms_status_ok;
+      }
+      auto realValue = values.realStartValues.find(ident);
+      if (realValue != values.realStartValues.end())
         value = realValue->second;
       else
         value = 0.0; // default value
@@ -1908,7 +1926,15 @@ oms_status_enu_t oms::System::setBoolean(const ComRef& cref, bool value)
     if (connector && connector->getName() == cref && connector->isTypeBoolean())
     {
       oms::ComRef ident = getValidCref(cref);
-      startValues.setBoolean(ident, value);
+      // set external inputs, after initialization
+      if (oms_modelState_simulation == getModel()->getModelState())
+      {
+        values.booleanValues[ident] = value;
+      }
+      else
+      {
+        values.setBoolean(ident, value);
+      }
       return oms_status_ok;
     }
 
@@ -1935,7 +1961,15 @@ oms_status_enu_t oms::System::setInteger(const ComRef& cref, int value)
     if (connector && connector->getName() == cref && connector->isTypeInteger())
     {
       oms::ComRef ident = getValidCref(cref);
-      startValues.setInteger(ident, value);
+      // set external inputs, after initialization
+      if (oms_modelState_simulation == getModel()->getModelState())
+      {
+        values.integerValues[ident] = value;
+      }
+      else
+      {
+        values.setInteger(ident, value);
+      }
       return oms_status_ok;
     }
 
@@ -1962,7 +1996,15 @@ oms_status_enu_t oms::System::setReal(const ComRef& cref, double value)
     if (connector && connector->getName() == cref && connector->isTypeReal())
     {
       oms::ComRef ident = getValidCref(cref);
-      startValues.setReal(ident, value);
+      // set external inputs, after initialization
+      if (oms_modelState_simulation == getModel()->getModelState())
+      {
+        values.realValues[ident] = value;
+      }
+      else
+      {
+        values.setReal(ident, value);
+      }
       return oms_status_ok;
     }
   return logError_UnknownSignal(getFullCref() + cref);

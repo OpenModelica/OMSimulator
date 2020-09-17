@@ -1161,7 +1161,8 @@ oms_status_enu_t oms::SystemWC::registerSignalsForResultFile(ResultWriter& resul
   {
     if (!connectors[i])
       continue;
-    if (!exportConnectors[connectors[i]->getName()])
+    // check for full cref in exportConnectors
+    if (!exportConnectors[getFullCref()+connectors[i]->getName()])
       continue;
 
     auto const& connector = connectors[i];

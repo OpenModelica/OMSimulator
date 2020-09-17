@@ -242,6 +242,9 @@ oms::Component* oms::ComponentFMUME::NewComponent(const oms::ComRef& cref, oms::
   component->initializeDependencyGraph_initialUnknowns();
   component->initializeDependencyGraph_outputs();
 
+  // parse modelDescription.xml to get start values before instantiating fmu's
+  component->values.parseModelDescription((tempDir / "modelDescription.xml").string().c_str());
+
   return component;
 }
 
@@ -286,7 +289,7 @@ oms::Component* oms::ComponentFMUME::NewComponent(const pugi::xml_node& node, om
     {
       // set parameter bindings associated with the component
       std::string tempdir = parentSystem->getModel()->getTempDirectory();
-      component->startValues.importFromSSD(*it, sspVersion, tempdir);
+      component->values.importFromSSD(*it, sspVersion, tempdir);
     }
     else
     {
@@ -332,11 +335,11 @@ oms_status_enu_t oms::ComponentFMUME::exportToSSD(pugi::xml_node& node, pugi::xm
   // export ParameterBindings at component level
   if (Flags::ExportParametersInline()) // export as inline
   {
-    startValues.exportToSSD(node);
+    values.exportToSSD(node);
   }
   else
   {
-    startValues.exportToSSV(ssvNode); // export to ssv file
+    values.exportToSSV(ssvNode); // export to ssv file
   }
 
   return oms_status_ok;
@@ -458,19 +461,19 @@ oms_status_enu_t oms::ComponentFMUME::instantiate()
     return logError_FMUCall("fmi2_import_instantiate", this);
 
   // set start values
-  for (const auto& v : startValues.booleanStartValues)
+  for (const auto& v : values.booleanStartValues)
   {
     oms::ComRef cref = getValidCref(v.first);
     if (oms_status_ok != setBoolean(cref, v.second))
       return logError("Failed to set start value for " + std::string(v.first));
   }
-  for (const auto& v : startValues.integerStartValues)
+  for (const auto& v : values.integerStartValues)
   {
     oms::ComRef cref = getValidCref(v.first);
     if (oms_status_ok != setInteger(cref, v.second))
       return logError("Failed to set start value for " + std::string(v.first));
   }
-  for (const auto& v : startValues.realStartValues)
+  for (const auto& v : values.realStartValues)
   {
     oms::ComRef cref = getValidCref(v.first);
     if (oms_status_ok != setReal(cref, v.second))
@@ -606,6 +609,29 @@ oms_status_enu_t oms::ComponentFMUME::getBoolean(const fmi2_value_reference_t& v
 oms_status_enu_t oms::ComponentFMUME::getBoolean(const ComRef& cref, bool& value)
 {
   CallClock callClock(clock);
+
+  if (oms_modelState_virgin == getModel()->getModelState())
+  {
+    // check for start values exist, priority over modeldescription.xml start values
+    auto booleanValue = values.booleanStartValues.find(cref);
+    if (booleanValue != values.booleanStartValues.end())
+    {
+      value = booleanValue->second;
+      return oms_status_ok;
+    }
+    else
+    {
+      // search in modelDescription.xml
+      auto booleanValue = values.modelDescriptionBooleanStartValues.find(cref);
+      if (booleanValue != values.modelDescriptionBooleanStartValues.end())
+      {
+        value = booleanValue->second;
+        return oms_status_ok;
+      }
+    }
+    return logError("no start value provided or available for signal: " + std::string(getFullCref() + cref));
+  }
+
   int j=-1;
   for (size_t i = 0; i < allVariables.size(); i++)
   {
@@ -636,6 +662,29 @@ oms_status_enu_t oms::ComponentFMUME::getInteger(const fmi2_value_reference_t& v
 oms_status_enu_t oms::ComponentFMUME::getInteger(const ComRef& cref, int& value)
 {
   CallClock callClock(clock);
+
+  if (oms_modelState_virgin == getModel()->getModelState())
+  {
+    // check for start values exist, priority over modeldescription.xml start values
+    auto integerValue = values.integerStartValues.find(cref);
+    if (integerValue != values.integerStartValues.end())
+    {
+      value = integerValue->second;
+      return oms_status_ok;
+    }
+    else
+    {
+      // search in modelDescription.xml
+      auto integerValue = values.modelDescriptionIntegerStartValues.find(cref);
+      if (integerValue != values.modelDescriptionIntegerStartValues.end())
+      {
+        value = integerValue->second;
+        return oms_status_ok;
+      }
+    }
+    return logError("no start value set or available for signal: " + std::string(getFullCref() + cref));
+  }
+
   int j=-1;
   for (size_t i = 0; i < allVariables.size(); i++)
   {
@@ -705,6 +754,29 @@ oms_status_enu_t oms::ComponentFMUME::getReal(const fmi2_value_reference_t& vr, 
 oms_status_enu_t oms::ComponentFMUME::getReal(const ComRef& cref, double& value)
 {
   CallClock callClock(clock);
+
+  if (oms_modelState_virgin == getModel()->getModelState())
+  {
+    // check for start values exist, priority over modeldescription.xml start values
+    auto realValue = values.realStartValues.find(cref);
+    if (realValue != values.realStartValues.end())
+    {
+      value = realValue->second;
+      return oms_status_ok;
+    }
+    else
+    {
+      // search in modelDescription.xml
+      auto realValue = values.modelDescriptionRealStartValues.find(cref);
+      if (realValue != values.modelDescriptionRealStartValues.end())
+      {
+        value = realValue->second;
+        return oms_status_ok;
+      }
+    }
+    return logError("no start value set or available for signal: " + std::string(getFullCref() + cref));
+  }
+
   int j=-1;
   for (size_t i = 0; i < allVariables.size(); i++)
   {
@@ -742,12 +814,12 @@ oms_status_enu_t oms::ComponentFMUME::setBoolean(const ComRef& cref, bool value)
   {
     if (Flags::ExportParametersInline())
     {
-      startValues.setBoolean(allVariables[j].getCref(), value);
+      values.setBoolean(allVariables[j].getCref(), value);
     }
     else
     {
       // append startValues with prefix (e.g) addP.K1
-      startValues.setBoolean(getCref()+allVariables[j].getCref(), value);
+      values.setBoolean(getCref()+allVariables[j].getCref(), value);
     }
   }
   else
@@ -781,12 +853,12 @@ oms_status_enu_t oms::ComponentFMUME::setInteger(const ComRef& cref, int value)
   {
     if (Flags::ExportParametersInline())
     {
-      startValues.setInteger(allVariables[j].getCref(), value);
+      values.setInteger(allVariables[j].getCref(), value);
     }
     else
     {
       // append startValues with prefix (e.g) addP.K1
-      startValues.setInteger(getCref()+allVariables[j].getCref(), value);
+      values.setInteger(getCref()+allVariables[j].getCref(), value);
     }
   }
   else
@@ -801,7 +873,7 @@ oms_status_enu_t oms::ComponentFMUME::setInteger(const ComRef& cref, int value)
 
 oms_status_enu_t oms::ComponentFMUME::deleteStartValue(const ComRef& cref)
 {
-  return startValues.deleteStartValue(cref);
+  return values.deleteStartValue(cref);
 }
 
 oms_status_enu_t oms::ComponentFMUME::setReal(const ComRef& cref, double value)
@@ -828,12 +900,12 @@ oms_status_enu_t oms::ComponentFMUME::setReal(const ComRef& cref, double value)
   {
     if (Flags::ExportParametersInline())
     {
-      startValues.setReal(allVariables[j].getCref(), value);
+      values.setReal(allVariables[j].getCref(), value);
     }
     else
     {
       // append startValues with prefix (e.g) addP.K1
-      startValues.setReal(getCref()+allVariables[j].getCref(), value);
+      values.setReal(getCref()+allVariables[j].getCref(), value);
     }
   }
   else

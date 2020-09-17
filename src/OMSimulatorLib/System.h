@@ -39,7 +39,7 @@
 #include "DirectedGraph.h"
 #include "Element.h"
 #include "ExternalModel.h"
-#include "Parameters.h"
+#include "Values.h"
 #include "ResultWriter.h"
 #include "ssd/ConnectorGeometry.h"
 #if !defined(NO_TLM)
@@ -197,7 +197,7 @@ namespace oms
     std::map<ComRef, System*> subsystems;
     std::map<ComRef, Component*> components;
 
-    Parameters startValues; ///< system level connectors, parameters and their start values defined before instantiating the FMU
+    Values values; ///< system level connectors, parameters and their start values defined before instantiating the FMU and external inputs defined after initialization
 
     Element element;
     std::vector<Connector*> connectors;             ///< last element is always NULL
