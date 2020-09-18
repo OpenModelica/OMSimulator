@@ -71,6 +71,7 @@ void oms::Flags::setDefaults()
   intervals = 100;
   masterAlgorithm = oms_solver_wc_ma;
   maxEventIteration = 100;
+  maxLoopIteration = 10;
   numProcs = 1;
   progressBar = false;
   realTime = false;
@@ -309,6 +310,12 @@ oms_status_enu_t oms::Flags::LogLevel(const std::string& value)
 oms_status_enu_t oms::Flags::MaxEventIteration(const std::string& value)
 {
   GetInstance().maxEventIteration = atoi(value.c_str());
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Flags::MaxLoopIteration(const std::string& value)
+{
+  GetInstance().maxLoopIteration = atoi(value.c_str());
   return oms_status_ok;
 }
 
