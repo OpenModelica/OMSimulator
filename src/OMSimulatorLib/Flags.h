@@ -78,6 +78,7 @@ namespace oms
     static std::string ResultFile() {return GetInstance().resultFile;}
     static unsigned int Intervals() {return GetInstance().intervals;}
     static unsigned int MaxEventIteration() {return GetInstance().maxEventIteration;}
+    static unsigned int MaxLoopIteration() {return GetInstance().maxLoopIteration;}
     static unsigned int NumProcs() {return GetInstance().numProcs;}
 
   private:
@@ -104,6 +105,7 @@ namespace oms
     std::string resultFile;
     unsigned int intervals;
     unsigned int maxEventIteration;
+    unsigned int maxLoopIteration;
     unsigned int numProcs;
 
   private:
@@ -143,6 +145,7 @@ namespace oms
       {"--logFile", "-l", "Specifies the logfile (stdout is used if no log file is specified)", re_default, Flags::LogFile, false},
       {"--logLevel", "", "0 default, 1 debug, 2 debug+trace", re_number, Flags::LogLevel, false},
       {"--maxEventIteration", "", "Specifies the max. number of iterations for handling a single event", re_number, Flags::MaxEventIteration, false},
+      {"--maxLoopIteration", "", "Specifies the max. number of iterations for solving algebraic loops between system-level components. Internal algebraic loops of components are not affected.", re_number, Flags::MaxLoopIteration, false},
       {"--mode", "-m", "Forces a certain FMI mode iff the FMU provides cs and me (cs, [me])", re_mode, Flags::Mode, false},
       {"--numProcs", "-n", "Specifies the max. number of processors to use (0=auto, 1=default)", re_number, Flags::NumProcs, false},
       {"--progressBar", "", "Shows a progress bar for the simulation progress in the terminal (true, [false])", re_bool, Flags::ProgressBar, false},
@@ -178,6 +181,7 @@ namespace oms
     static oms_status_enu_t LogFile(const std::string& value);
     static oms_status_enu_t LogLevel(const std::string& value);
     static oms_status_enu_t MaxEventIteration(const std::string& value);
+    static oms_status_enu_t MaxLoopIteration(const std::string& value);
     static oms_status_enu_t Mode(const std::string& value);
     static oms_status_enu_t NumProcs(const std::string& value);
     static oms_status_enu_t ProgressBar(const std::string& value);
