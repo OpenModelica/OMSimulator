@@ -61,6 +61,9 @@ print("info:      exportConnectors.Root.Gain.u                : " .. oms_getReal
 src = oms_list("exportConnectors")
 print(src)
 
+oms_terminate("exportConnectors")
+oms_delete("exportConnectors")
+
 -- Result:
 -- info:  Before Setting Start Values
 -- info:      exportConnectors.Root.C1                    : 0.0
