@@ -708,7 +708,7 @@ oms_status_enu_t oms::SystemSC::solveAlgLoop(DirectedGraph& graph, const std::ve
   CallClock callClock(clock);
 
   const int size = SCC.size();
-  const int maxIterations = 10;
+  const int maxIterations = Flags::MaxLoopIteration();
   double maxRes;
   double *res = new double[size]();
 
