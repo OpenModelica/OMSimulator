@@ -14,6 +14,7 @@ PI_Controller.lua \
 QuarterCarModel.DisplacementDisplacement.lua \
 simulation.lua \
 simulation.py \
+setExternalInputs.lua \
 table.lua \
 
 # Run make failingtest
