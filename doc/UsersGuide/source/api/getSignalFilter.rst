@@ -1,6 +1,6 @@
 #CAPTION#
 getSignalFilter
--------------
+---------------
 
 Gets the signal filter of the given model cref.
 #END#

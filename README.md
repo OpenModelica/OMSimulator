@@ -41,6 +41,8 @@ Note: Make sure to fetch the submodules, e.g., using `git submodule update --ini
    make config-OMSimulator
    ```
 
+   For the debug configuration add `BUILD_TYPE=Debug` to `make config-OMSimulator`.
+
 1. build OMSimulator
 
    ```bash
@@ -60,6 +62,8 @@ Note: Make sure to fetch the submodules, e.g., using `git submodule update --ini
    make config-3rdParty
    make config-OMSimulator
    ```
+
+   For the debug configuration add `BUILD_TYPE=Debug` to `make config-OMSimulator`.
 
 1. build OMSimulator
 
@@ -89,6 +93,8 @@ It is not strictly required to install the full Visual Studio IDE. The batch scr
    ```bash
    configWinVS.bat VS15-Win64
    ```
+
+   To build the debug version change `CMAKE_BUILD_TYPE` to `Debug` or change the release type in Visual Studio to `debug`.
 
 1. build OMSimulator
 
