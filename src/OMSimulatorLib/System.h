@@ -132,6 +132,8 @@ namespace oms
     virtual oms_status_enu_t reset() = 0;
     virtual oms_status_enu_t stepUntil(double stopTime, void (*cb)(const char* ident, double time, oms_status_enu_t status)) = 0;
 
+    double getTime() const {return time;}
+
     oms_status_enu_t getBoolean(const ComRef& cref, bool& value);
     oms_status_enu_t getInteger(const ComRef& cref, int& value);
     oms_status_enu_t getReal(const ComRef& cref, double& value);
@@ -160,12 +162,15 @@ namespace oms
     double getMaximumStepSize() {return maximumStepSize;}
     oms_solver_enu_t getSolver() {return solverMethod;}
 
+    oms_status_enu_t solveAlgLoop(DirectedGraph& graph, const std::vector< std::pair<int, int> >& SCC);
+
     bool useThreadPool();
     ctpl::thread_pool& getThreadPool();
 
     std::string getUniqueID() const;
     std::string ssvFileSource = "";
   protected:
+    double time;
     System(const ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem, oms_solver_enu_t solverMethod);
 
     // stop the compiler generating methods copying the object
