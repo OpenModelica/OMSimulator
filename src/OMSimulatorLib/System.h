@@ -32,6 +32,7 @@
 #ifndef _OMS_SYSTEM_H_
 #define _OMS_SYSTEM_H_
 
+#include "AlgLoopSolver.h"
 #include "BusConnector.h"
 #include "Clock.h"
 #include "ComRef.h"
@@ -58,6 +59,7 @@
 
 namespace oms
 {
+  class AlgLoopSolver;
   class Component;
   class Model;
   class Variable;
@@ -215,6 +217,8 @@ namespace oms
 
     oms_status_enu_t importFromSSD_ConnectionGeometry(const pugi::xml_node& node, const ComRef& crefA, const ComRef& crefB);
     oms::ComRef getValidCref(const ComRef& cref);
+
+    AlgLoopSolver algLoopSolver;
   };
 }
 
