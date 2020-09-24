@@ -36,8 +36,9 @@
 #include "System.h"
 #include "Types.h"
 
-#include "cvode/cvode.h"             /* prototypes for CVODE fcts., consts. */
-#include "nvector/nvector_serial.h"  /* serial N_Vector types, fcts., macros */
+#include <cvode/cvode.h>                  /* prototypes for CVODE fcts., consts. */
+#include <nvector/nvector_serial.h>       /* serial N_Vector types, fcts., macros */
+#include <sunlinsol/sunlinsol_dense.h>    /* Default dense linear solver */
 
 namespace oms
 {
@@ -101,6 +102,9 @@ namespace oms
     {
       void *mem;
       N_Vector y;
+      SUNLinearSolver linSol; /* linear solver object */
+      SUNMatrix J;            /* Matrix used by linear solver */
+      N_Vector liny;          /* Vector used by linear solver */
       N_Vector abstol;
     };
 
