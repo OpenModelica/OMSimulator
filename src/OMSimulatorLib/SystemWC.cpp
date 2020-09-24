@@ -1016,6 +1016,22 @@ oms_status_enu_t oms::SystemWC::updateInputs(oms::DirectedGraph& graph)
 
   // input := output
   const std::vector< std::vector< std::pair<int, int> > >& sortedConnections = graph.getSortedConnections();
+  // TODO: Move to a different place, maybe in System.cpp, and only call function
+  // Instantiate loops
+  if (!loopsInstantiated)
+  {
+    int systCount = 0;
+    for(int i=0; i<sortedConnections.size(); i++)
+    {
+      if (sortedConnections[i].size() > 1)
+      {
+        addAlgLoop(systCount, sortedConnections[i]);
+        systCount++;
+      }
+    }
+    loopsInstantiated = true;
+  }
+
   for(int i=0; i<sortedConnections.size(); i++)
   {
     if (sortedConnections[i].size() == 1)
@@ -1057,7 +1073,7 @@ oms_status_enu_t oms::SystemWC::updateInputs(oms::DirectedGraph& graph)
     }
     else
     {
-      if (oms_status_ok != solveAlgLoop(graph, sortedConnections[i])) return oms_status_error;
+      if (oms_status_ok != solveAlgLoop(graph, i)) return oms_status_error;
     }
   }
   return oms_status_ok;

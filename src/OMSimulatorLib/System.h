@@ -32,7 +32,7 @@
 #ifndef _OMS_SYSTEM_H_
 #define _OMS_SYSTEM_H_
 
-#include "AlgLoopSolver.h"
+#include "AlgLoop.h"
 #include "BusConnector.h"
 #include "Clock.h"
 #include "ComRef.h"
@@ -59,7 +59,7 @@
 
 namespace oms
 {
-  class AlgLoopSolver;
+  class AlgLoop;
   class Component;
   class Model;
   class Variable;
@@ -164,7 +164,8 @@ namespace oms
     double getMaximumStepSize() {return maximumStepSize;}
     oms_solver_enu_t getSolver() {return solverMethod;}
 
-    oms_status_enu_t solveAlgLoop(DirectedGraph& graph, const std::vector< std::pair<int, int> >& SCC);
+    oms_status_enu_t addAlgLoop(int systemNumber, std::vector< std::pair<int, int> > SCC);
+    oms_status_enu_t solveAlgLoop(DirectedGraph& graph, int systemNumber);
 
     bool useThreadPool();
     ctpl::thread_pool& getThreadPool();
@@ -196,6 +197,9 @@ namespace oms
     std::unordered_map<unsigned int /*result file var ID*/, unsigned int /*allVariables ID*/> resultFileMapping;
     std::unordered_map<ComRef, bool> exportConnectors;
 
+  protected:
+    bool loopsInstantiated = false;
+
   private:
     ComRef cref;
     oms_system_enu_t type;
@@ -218,7 +222,7 @@ namespace oms
     oms_status_enu_t importFromSSD_ConnectionGeometry(const pugi::xml_node& node, const ComRef& crefA, const ComRef& crefB);
     oms::ComRef getValidCref(const ComRef& cref);
 
-    AlgLoopSolver algLoopSolver;
+    std::vector<AlgLoop> algLoops;    ///< Vector of algebraic loop objects
   };
 }
 

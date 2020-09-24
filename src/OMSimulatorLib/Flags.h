@@ -55,6 +55,7 @@ namespace oms
   public:
     static oms_status_enu_t SetCommandLineOption(const std::string& cmd);
 
+    static oms_alg_solver_enu_t AlgLoopSolver() {return GetInstance().algLoopSolver;}
     static bool AddParametersToCSV() {return GetInstance().addParametersToCSV;}
     static bool DefaultModeIsCS() {return GetInstance().defaultModeIsCS;}
     static bool DeleteTempFiles() {return GetInstance().deleteTempFiles;}
@@ -83,6 +84,7 @@ namespace oms
 
   private:
     bool addParametersToCSV;
+    oms_alg_solver_enu_t algLoopSolver;
     bool defaultModeIsCS;
     bool deleteTempFiles;
     bool emitEvents;
@@ -133,6 +135,7 @@ namespace oms
     const std::vector<Flag> flags = {
       {"", "", "FMU or SSP file", re_filename, Flags::Filename, false},
       {"--addParametersToCSV", "", "Export parameters to .csv file (true, [false])", re_default, Flags::AddParametersToCSV, false},
+      {"--algLoopSolver", "", "Specifies the alg. loop solver method ([fixedpoint], kinsol) used for algebraic loops spanning over multiple components.", re_default, Flags::AlgLoopSolver, false},
       {"--clearAllOptions", "", "Reset all flags to default values", re_void, Flags::ClearAllOptions, false},
       {"--deleteTempFiles", "", "Deletes temp files as soon as they are no longer needed ([true], false)", re_bool, Flags::DeleteTempFiles, false},
       {"--emitEvents", "", "Specifies whether events should be emitted or not ([true], false)", re_bool, Flags::EmitEvents, false},
@@ -168,6 +171,7 @@ namespace oms
     };
 
     static oms_status_enu_t AddParametersToCSV(const std::string& value);
+    static oms_status_enu_t AlgLoopSolver(const std::string& value);
     static oms_status_enu_t ClearAllOptions(const std::string& value);
     static oms_status_enu_t DeleteTempFiles(const std::string& value);
     static oms_status_enu_t EmitEvents(const std::string& value);

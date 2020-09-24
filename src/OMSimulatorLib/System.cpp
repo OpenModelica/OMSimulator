@@ -2254,7 +2254,19 @@ oms_status_enu_t oms::System::setFaultInjection(const oms::ComRef& signal, oms_f
   return oms_status_error;
 }
 
-oms_status_enu_t oms::System::solveAlgLoop(DirectedGraph& graph, const std::vector< std::pair<int, int> >& SCC)
+oms_status_enu_t oms::System::addAlgLoop(int systemNumber, std::vector< std::pair<int, int> > SCC)
 {
-  return algLoopSolver.solveAlgLoop(*this, graph, SCC);
+  if (loopsInstantiated)
+  {
+    algLoops.clear();
+    loopsInstantiated = false;
+  }
+  algLoops.push_back( AlgLoop( Flags::AlgLoopSolver(), SCC ));
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::System::solveAlgLoop(DirectedGraph& graph, int systemNumber)
+{
+  return algLoops[systemNumber].solveAlgLoop(*this, graph);
 }
