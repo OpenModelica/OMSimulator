@@ -38,11 +38,11 @@
 #include "Model.h"
 #include "Types.h"
 #include "ssd/Tags.h"
-#include "cvode/cvode.h"             /* prototypes for CVODE fcts., consts. */
-#include "nvector/nvector_serial.h"  /* serial N_Vector types, fcts., macros */
-#include "cvode/cvode_dense.h"       /* prototype for CVDense */
-#include "sundials/sundials_dense.h" /* definitions DlsMat DENSE_ELEM */
-#include "sundials/sundials_types.h" /* definition of type realtype */
+#include "cvode/cvode.h"                /* prototypes for CVODE fcts., consts. */
+#include "nvector/nvector_serial.h"     /* serial N_Vector types, fcts., macros */
+#include <sunlinsol/sunlinsol_dense.h>  /* Default dense linear solver */
+#include "sundials/sundials_dense.h"    /* definitions DlsMat DENSE_ELEM */
+#include "sundials/sundials_types.h"    /* definition of type realtype */
 
 int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
@@ -295,7 +295,7 @@ oms_status_enu_t oms::SystemSC::initialize()
 
     // Call CVodeCreate to create the solver memory and specify the
     // Backward Differentiation Formula and the use of a Newton iteration
-    solverData.cvode.mem = CVodeCreate(CV_BDF, CV_NEWTON);
+    solverData.cvode.mem = CVodeCreate(CV_BDF);
     if (!solverData.cvode.mem) logError("SUNDIALS_ERROR: CVodeCreate() failed - returned NULL pointer");
 
     int flag = CVodeSetUserData(solverData.cvode.mem, (void*)this);
@@ -312,8 +312,18 @@ oms_status_enu_t oms::SystemSC::initialize()
     flag = CVodeSVtolerances(solverData.cvode.mem, relativeTolerance, solverData.cvode.abstol);
     if (flag < 0) logError("SUNDIALS_ERROR: CVodeSVtolerances() failed with flag = " + std::to_string(flag));
 
-    // Call CVDense to specify the CVDENSE dense linear solver */
-    flag = CVDense(solverData.cvode.mem, static_cast<long>(n_states));
+    // Call N_VNew_Serial and SUNDenseMatrix to generate dense vector abd natrix for lin. solver module
+    solverData.cvode.liny = N_VNew_Serial(n_states);
+    if (solverData.cvode.liny == NULL) logError("SUNDIALS_ERROR: N_VNew_Serial() failed");
+    solverData.cvode.J = SUNDenseMatrix(n_states, n_states);
+    if (solverData.cvode.J == NULL) logError("SUNDIALS_ERROR: N_VNew_Serial() failed");
+
+    // Call SUNLinSol_Dense to creat linear solver object
+    solverData.cvode.linSol = SUNLinSol_Dense(solverData.cvode.liny, solverData.cvode.J);
+    if (solverData.cvode.linSol == NULL) logError("SUNDIALS_ERROR: SUNLinSol_Dense() failed");
+
+    // Call CVodeSetLinearSolver to set the dense linear solver */
+    flag = CVodeSetLinearSolver(solverData.cvode.mem, solverData.cvode.linSol, solverData.cvode.J);
     if (flag < 0) logError("SUNDIALS_ERROR: CVDense() failed with flag = " + std::to_string(flag));
 
     const fmi2_real_t stopTime = 1.0;
@@ -377,6 +387,9 @@ oms_status_enu_t oms::SystemSC::terminate()
     msg += "NumNonlinSolvIters = " + std::to_string(nni) + " NumNonlinSolvConvFails = " + std::to_string(ncfn) + " NumErrTestFails = " + std::to_string(netf);
     logInfo(msg);
 
+    SUNMatDestroy(solverData.cvode.J);
+    N_VDestroy(solverData.cvode.liny);
+    SUNLinSolFree(solverData.cvode.linSol);
     N_VDestroy_Serial(solverData.cvode.y);
     N_VDestroy_Serial(solverData.cvode.abstol);
     CVodeFree(&(solverData.cvode.mem));
