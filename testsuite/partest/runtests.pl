@@ -37,8 +37,8 @@ $ENV{GC_MARKERS}="1";
 my $use_db = 1;
 my $save_db = 1;
 my $asan = 0;
+my $notlm = 0;
 my $nocolour = '';
-my $fast = 0;
 my $count_tests = 0;
 my $run_failing = 0;
 my $file;
@@ -79,12 +79,12 @@ for(@ARGV){
     print("  -b            Rebase tests in parallel. Use in conjuction with -file=/path/to/file.\n");
     print("  -counttests   Don't run the test; only count them.\n");
     print("  -failing      Run failing tests instead of working.\n");
-    print("  -fast         Only run fast tests.\n");
     print("  -file         Reads testcases from the given file instead of from a makefile.\n");
     print("  -jN           Use N threads.\n");
     print("  -nocolour     Don't use colours in output.\n");
     print("  -nodb         Don't store timing data.\n");
     print("  -nosavedb     Don't overwrite stored timing data.\n");
+    print("  -notlm        Skip all tlm tests.\n");
     print("  -platform     Force to use a specific platform, e.g. win or linux32.\n");
     print("  -with-txt     Output TXT log.\n");
     print("  -with-xml     Output XML log.\n");
@@ -102,9 +102,6 @@ for(@ARGV){
   elsif(/^-failing$/) {
     $run_failing = 1;
   }
-  elsif(/^-fast$/) {
-    $fast = 1;
-  }
   elsif(/^-file=(.*)$/) {
     $file = $1;
   }
@@ -120,6 +117,9 @@ for(@ARGV){
   }
   elsif(/^-nosavedb$/) {
     $save_db = 0;
+  }
+  elsif(/^-notlm$/) {
+    $notlm = 1;
   }
   elsif(/^-platform(.*)$/) {
     $platform = $_;
@@ -172,7 +172,7 @@ sub read_makefile {
   my $dir = shift;
   my $header = shift;
 
-  return if($fast == 1 and $dir =~ m"/tlm"); # Skip tlm if -fast is given.
+  return if($notlm == 1 and $dir =~ m"/tlm"); # Skip tlm if -notlm is given.
 
   open(my $in, "<", "$dir/Makefile") or die "Couldn't open $dir/Makefile: $!";
 
@@ -418,4 +418,3 @@ if (@dirs) {
 if(@failed_tests) {
   exit 7;
 }
-
