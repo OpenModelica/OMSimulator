@@ -1,5 +1,5 @@
 OMSimulator's documentation
-==============================
+===========================
 
 .. only :: html or epub
 
@@ -19,7 +19,7 @@ OMSimulator's documentation
   SSP
 
 
-.. only :: html or epub
+.. only :: html
 
   Indices and tables
   ==================
