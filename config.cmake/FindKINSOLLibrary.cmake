@@ -2,7 +2,7 @@
 
 find_library(KINSOLLibrary_LIBRARY
   NAMES sundials_kinsol
-  HINTS ${KINSOLLibrary_ROOT}/lib
+  HINTS ${KINSOLLibrary_ROOT}/lib ${KINSOLLibrary_ROOT}/lib/x86_64-linux-gnu ${KINSOLLibrary_ROOT}/lib/i386-linux-gnu
 )
 
 if(KINSOLLibrary_LIBRARY)
