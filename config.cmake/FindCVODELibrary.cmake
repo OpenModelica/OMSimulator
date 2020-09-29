@@ -2,11 +2,11 @@
 
 find_library(CVODELibrary_LIBRARY
   NAMES sundials_cvode
-  HINTS ${CVODELibrary_ROOT}/lib ${CVODELibrary_ROOT}/lib/x86_64-linux-gnu ${CVODELibrary_ROOT}/lib/i386-linux-gnu
+  HINTS ${CVODELibrary_ROOT}/lib ${CVODELibrary_ROOT}/lib/${CMAKE_LIBRARY_ARCHITECTURE}
 )
 
 if(CVODELibrary_LIBRARY)
-  set(CVODELibrary_LIBRARYDIR ${CVODELibrary_ROOT}/lib)
+  get_filename_component(CVODELibrary_LIBRARYDIR ${CVODELibrary_LIBRARY} DIRECTORY)
   set(CVODELibrary_INCLUDEDIR ${CVODELibrary_ROOT}/include)
   message(STATUS "Found CVODE")
   message(STATUS "  CVODELibrary_ROOT:       " ${CVODELibrary_ROOT})

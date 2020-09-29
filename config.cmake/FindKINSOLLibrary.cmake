@@ -2,11 +2,11 @@
 
 find_library(KINSOLLibrary_LIBRARY
   NAMES sundials_kinsol
-  HINTS ${KINSOLLibrary_ROOT}/lib ${KINSOLLibrary_ROOT}/lib/x86_64-linux-gnu ${KINSOLLibrary_ROOT}/lib/i386-linux-gnu
+  HINTS ${KINSOLLibrary_ROOT}/lib ${KINSOLLibrary_ROOT}/lib/${CMAKE_LIBRARY_ARCHITECTURE}
 )
 
 if(KINSOLLibrary_LIBRARY)
-  set(KINSOLLibrary_LIBRARYDIR ${KINSOLLibrary_ROOT}/lib)
+  get_filename_component(KINSOLLibrary_LIBRARYDIR ${KINSOLLibrary_LIBRARY} DIRECTORY)
   set(KINSOLLibrary_INCLUDEDIR ${KINSOLLibrary_ROOT}/include)
   message(STATUS "Found KINSOL")
   message(STATUS "  KINSOLLibrary_ROOT:       " ${KINSOLLibrary_ROOT})
