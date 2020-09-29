@@ -35,6 +35,7 @@
 #include <string>
 #include <vector>
 #include "Types.h"
+#include "DirectedGraph.h"
 
 #include <kinsol/kinsol.h>
 #include <nvector/nvector_serial.h>
@@ -45,57 +46,51 @@ namespace oms
   class System;
   class DirectedGraph;
 
+  typedef struct KINSOL_USER_DATA {
+    System*         syst;
+    DirectedGraph*  graph;
+    const int       algLoopNumber;
+  }KINSOL_USER_DATA;
+
   class KinsolSolver
   {
     public:
-    KinsolSolver* NewKinsolSolver();
+    ~KinsolSolver();
+    static KinsolSolver* NewKinsolSolver(const int algLoopNum, const unsigned int size, double absoluteTolerance);
+    oms_status_enu_t kinsolSolve(System& syst, DirectedGraph& graph);
 
     private:
-    /* ### configuration  ### */
-    int linearSolverMethod;     /* specifies the method to solve the underlying linear problem */
-    int nonLinearSystemNumber;
-    int kinsolStrategy;
-    int retries;
-    int solved;                 /* if the system is once solved reuse linear matrix information */
-    int nominalJac;
-
-    /* ### tolerances ### */
+    /* tolerances */
     double fnormtol;        /* function tolerance */
-    double scsteptol;       /* step tolerance */
-    double maxstepfactor;   /* maximum newton step factor mxnewtstep = maxstepfactor * norm2(xScaling) */
 
-    /* ### work arrays ### */
+    /* work arrays */
     N_Vector initialGuess;
-    N_Vector xScale;
-    N_Vector fScale;
-    N_Vector fRes;
-    N_Vector fTmp;
+    N_Vector uScale;        /* Scaling vector for u */
+    N_Vector fScale;        /* Scaling vector for f(u) */
+    N_Vector fTmp;          /* Vector used for tmp computations */
 
-    int iflag;
-    long countResCalls;        /* case of sparse function not avaiable */
-
-    /* ### kinsol internal data */
+    /* kinsol internal data */
     void* kinsolMemory;
     void* userData;
-
-    /* settings */
     int size;
-    int nnz;
+
+    /* linear solver data */
+    SUNLinearSolver linSol; /* Linear solver object used by KINSOL */
+    N_Vector y;             /* Template for cloning vectors needed inside linear solver */
+    SUNMatrix J;            /* (Non-)Sparse matrix template for cloning matrices needed within linear solver */
 
     /* member function */
     static int nlsKinsolResiduals(N_Vector uu, N_Vector fval, void *userData);
-    void nlsKinsolErrorPrint(int error_code, const char *module, const char *function, char *msg, void *userData);
-    void nlsKinsolInfoPrint(const char *module, const char *function, char *msg, void *userData);
-    int nlsDenseJac(long int N, N_Vector x, N_Vector fx, SUNMatrix Jac, void *userData, N_Vector tmp1, N_Vector tmp2);
-    void nlsKinsolJacSumDense(SUNMatrix mat);
+    static void sundialsErrorHandlerFunction(int error_code, const char *module, const char *function, char *msg, void *userData);
+    static void sundialsInfoHandlerFunction(const char *module, const char *function, char *msg, void *userData);
   };
 
   class AlgLoop
   {
     public:
-    AlgLoop();
-    AlgLoop(oms_alg_solver_enu_t method, std::vector< std::pair<int, int> > SCC);
-    
+    AlgLoop(oms_alg_solver_enu_t method, double absTol, oms_ssc_t SCC, const int systNumber);
+
+    oms_ssc_t getSCC() {return SCC;}
     oms_status_enu_t solveAlgLoop(System& syst, DirectedGraph& graph);
     std::string getAlgSolverName();
     std::string dumpLoopVars(DirectedGraph& graph);
@@ -104,13 +99,13 @@ namespace oms
     oms_alg_solver_enu_t algSolverMethod;
     oms_status_enu_t fixPointIteration(System& syst, DirectedGraph& graph);
 
-    KinsolSolver kinsolData;
+    KinsolSolver* kinsolData;
 
     /* Loop data */
-    const std::vector< std::pair<int, int> > SCC; ///< Strong connected components
-
+    const oms_ssc_t SCC;            ///< Strong connected components
+    const int systNumber;
+    double absoluteTolerance;
   };
 }
-
 
 #endif // _OMS_ALGLOOP_H_

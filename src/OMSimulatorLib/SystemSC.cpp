@@ -351,6 +351,9 @@ oms_status_enu_t oms::SystemSC::initialize()
     if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetMaxNumSteps() failed with flag = " + std::to_string(flag));
   }
 
+  // Mark algebraic loops to be updated on next call
+  loopsNeedUpdate = true;
+
   return oms_status_ok;
 }
 
@@ -679,23 +682,8 @@ oms_status_enu_t oms::SystemSC::updateInputs(DirectedGraph& graph)
   }
 
   // input := output
-  const std::vector< std::vector< std::pair<int, int> > >& sortedConnections = graph.getSortedConnections();
-
-  // TODO: Move to a different place, maybe in System.cpp, and only call function
-  // Instantiate loops
-  if (!loopsInstantiated)
-  {
-    int systCount = 0;
-    for(int i=0; i<sortedConnections.size(); i++)
-    {
-      if (sortedConnections[i].size() > 1)
-      {
-        addAlgLoop(systCount, sortedConnections[i]);
-        systCount++;
-      }
-    }
-    loopsInstantiated = true;
-  }
+  const std::vector< oms_ssc_t >& sortedConnections = graph.getSortedConnections();
+  updateAlgebraicLoops(sortedConnections);
 
   for(int i=0; i<sortedConnections.size(); i++)
   {

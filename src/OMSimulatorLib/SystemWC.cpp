@@ -218,6 +218,9 @@ oms_status_enu_t oms::SystemWC::initialize()
   if (solverMethod == oms_solver_wc_mav || solverMethod == oms_solver_wc_mav2)
     stepSize = initialStepSize;
 
+  // Mark algebraic loops to be updated on next call
+  loopsNeedUpdate = true;
+
   return oms_status_ok;
 }
 
@@ -918,7 +921,7 @@ oms_status_enu_t oms::SystemWC::setRealInputDerivative(const ComRef& cref, const
 oms_status_enu_t oms::SystemWC::getInputs(oms::DirectedGraph& graph, std::vector<double>& inputs)
 {
   inputs.clear();
-  const std::vector< std::vector< std::pair<int, int> > >& sortedConnections = graph.getSortedConnections();
+  const std::vector< oms_ssc_t >& sortedConnections = graph.getSortedConnections();
   for(int i=0; i<sortedConnections.size(); i++)
   {
     if (sortedConnections[i].size() == 1)
@@ -939,7 +942,7 @@ oms_status_enu_t oms::SystemWC::getInputs(oms::DirectedGraph& graph, std::vector
 oms_status_enu_t oms::SystemWC::setInputsDer(oms::DirectedGraph& graph, const std::vector<double>& inputsDer)
 {
   int derI = 0;
-  const std::vector< std::vector< std::pair<int, int> > >& sortedConnections = graph.getSortedConnections();
+  const std::vector< oms_ssc_t >& sortedConnections = graph.getSortedConnections();
   for(int i=0; i<sortedConnections.size(); i++)
   {
     if (sortedConnections[i].size() == 1)
@@ -959,7 +962,7 @@ oms_status_enu_t oms::SystemWC::setInputsDer(oms::DirectedGraph& graph, const st
 oms_status_enu_t oms::SystemWC::getInputAndOutput(oms::DirectedGraph& graph, std::vector<double>& inputVect,std::vector<double>& outputVect,std::map<ComRef, Component*> FMUcomponents)
 {
   // FMUcomponents in will be list of FMUs that CAN GET FMUs
-  const std::vector< std::vector< std::pair<int, int> > >& sortedConnections = graph.getSortedConnections();
+  const std::vector< oms_ssc_t >& sortedConnections = graph.getSortedConnections();
   inputVect.clear();
   int inCount = 0;
   outputVect.clear();
@@ -1015,22 +1018,8 @@ oms_status_enu_t oms::SystemWC::updateInputs(oms::DirectedGraph& graph)
   CallClock callClock(clock);
 
   // input := output
-  const std::vector< std::vector< std::pair<int, int> > >& sortedConnections = graph.getSortedConnections();
-  // TODO: Move to a different place, maybe in System.cpp, and only call function
-  // Instantiate loops
-  if (!loopsInstantiated)
-  {
-    int systCount = 0;
-    for(int i=0; i<sortedConnections.size(); i++)
-    {
-      if (sortedConnections[i].size() > 1)
-      {
-        addAlgLoop(systCount, sortedConnections[i]);
-        systCount++;
-      }
-    }
-    loopsInstantiated = true;
-  }
+  const std::vector< oms_ssc_t >& sortedConnections = graph.getSortedConnections();
+  updateAlgebraicLoops(sortedConnections);
 
   for(int i=0; i<sortedConnections.size(); i++)
   {

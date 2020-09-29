@@ -31,6 +31,7 @@
 
 #include "System.h"
 
+#include "AlgLoop.h"
 #include "Component.h"
 #include "ComponentFMUCS.h"
 #include "ComponentFMUME.h"
@@ -2254,14 +2255,45 @@ oms_status_enu_t oms::System::setFaultInjection(const oms::ComRef& signal, oms_f
   return oms_status_error;
 }
 
-oms_status_enu_t oms::System::addAlgLoop(int systemNumber, std::vector< std::pair<int, int> > SCC)
+oms::AlgLoop* oms::System::getAlgLoop(const int systemNumber)
 {
-  if (loopsInstantiated)
+  if (systemNumber > algLoops.size()-1 || systemNumber < 0)
+  {
+    logError("Invalid system number for algebraic loop.");
+    return NULL;
+  }
+
+  return &algLoops[systemNumber];
+}
+
+oms_status_enu_t oms::System::addAlgLoop(int systemNumber, oms_ssc_t SCC, const int systNumber)
+{
+  if (loopsNeedUpdate)
   {
     algLoops.clear();
-    loopsInstantiated = false;
+    loopsNeedUpdate = false;
   }
-  algLoops.push_back( AlgLoop( Flags::AlgLoopSolver(), SCC ));
+  algLoops.push_back( AlgLoop( Flags::AlgLoopSolver(), absoluteTolerance, SCC, systNumber ));
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::System::updateAlgebraicLoops(const std::vector< oms_ssc_t >& sortedConnections)
+{
+  // Instantiate loops
+  if (loopsNeedUpdate)
+  {
+    int systCount = 0;
+    for(int i=0; i<sortedConnections.size(); i++)
+    {
+      if (sortedConnections[i].size() > 1)
+      {
+        addAlgLoop(systCount, sortedConnections[i], systCount);
+        systCount++;
+      }
+    }
+    loopsNeedUpdate = false;
+  }
 
   return oms_status_ok;
 }

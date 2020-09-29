@@ -109,7 +109,7 @@ typedef enum {
 
 typedef enum {
   oms_alg_solver_none,
-  oms_alg_solver_fixedpoint,  ///< Fixed-point-tteration (default)
+  oms_alg_solver_fixedpoint,  ///< Fixed-point-iteration (default)
   oms_alg_solver_kinsol       ///< Kinsol solver
 } oms_alg_solver_enu_t;
 

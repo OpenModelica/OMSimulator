@@ -164,7 +164,9 @@ namespace oms
     double getMaximumStepSize() {return maximumStepSize;}
     oms_solver_enu_t getSolver() {return solverMethod;}
 
-    oms_status_enu_t addAlgLoop(int systemNumber, std::vector< std::pair<int, int> > SCC);
+    AlgLoop* getAlgLoop(const int systemNumber);
+    oms_status_enu_t addAlgLoop(int systemNumber, oms_ssc_t SCC, const int systNumber);
+    oms_status_enu_t updateAlgebraicLoops(const std::vector< oms_ssc_t >& sortedConnections);
     oms_status_enu_t solveAlgLoop(DirectedGraph& graph, int systemNumber);
 
     bool useThreadPool();
@@ -198,7 +200,7 @@ namespace oms
     std::unordered_map<ComRef, bool> exportConnectors;
 
   protected:
-    bool loopsInstantiated = false;
+    bool loopsNeedUpdate = true;
 
   private:
     ComRef cref;
