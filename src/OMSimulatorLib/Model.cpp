@@ -316,6 +316,8 @@ oms_status_enu_t oms::Model::exportSnapshot(const oms::ComRef& cref, char** cont
   ssvDeclarationNode.append_attribute("encoding") = "UTF-8";
 
   pugi::xml_node node_parameterset = ssvdoc.append_child(oms::ssp::Version1_0::ssv::parameter_set);
+  node_parameterset.append_attribute("xmlns:ssc") = "http://ssp-standard.org/SSP1/SystemStructureCommon";
+  node_parameterset.append_attribute("xmlns:ssv") = "http://ssp-standard.org/SSP1/SystemStructureParameterValues";
   node_parameterset.append_attribute("version") = "1.0";
   node_parameterset.append_attribute("name") = "parameters";
   pugi::xml_node node_parameters = node_parameterset.append_child(oms::ssp::Version1_0::ssv::parameters);
@@ -340,6 +342,8 @@ oms_status_enu_t oms::Model::exportSnapshot(const oms::ComRef& cref, char** cont
     pugi::xml_node ssvfilenode  = last.append_child(oms::ssp::Version1_0::ssv_file);
     std::string ssvFilePath = "resources/" + std::string(this->getCref()) + ".ssv";
     ssvfilenode.append_attribute("name") = ssvFilePath.c_str();
+    // dump all the ssv file contents
+    ssvfilenode.append_copy(node_parameterset);
     // TODO ssm file
   }
 

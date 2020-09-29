@@ -10,10 +10,13 @@ status = oms_setTempDirectory("./exportSnapshot/")
 
 oms_newModel("exportSnapshot")
 oms_addSystem("exportSnapshot.root", oms_system_wc)
+oms_addConnector("exportSnapshot.root.C1", oms_causality_input, oms_signal_type_real)
+oms_setReal("exportSnapshot.root.C1", -10)
 
 oms_addSubModel("exportSnapshot.root.add", "../resources/Modelica.Blocks.Math.Add.fmu")
 
 oms_setReal("exportSnapshot.root.add.u1", 10)
+oms_setReal("exportSnapshot.root.add.k1", 30)
 
 -- src1 = oms_list("exportSnapshot") 
 -- print(src1)
@@ -54,7 +57,11 @@ oms_delete("exportSnapshot")
 -- 				</oms:SimulationInformation>
 -- 			</ssc:Annotation>
 -- 		</ssd:Annotations>
--- 		<ssd:Connectors />
+-- 		<ssd:Connectors>
+-- 			<ssd:Connector name="C1" kind="input">
+-- 				<ssc:Real />
+-- 			</ssd:Connector>
+-- 		</ssd:Connectors>
 -- 		<ssd:ParameterBindings>
 -- 			<ssd:ParameterBinding source="resources/exportSnapshot.ssv" />
 -- 		</ssd:ParameterBindings>
@@ -105,7 +112,11 @@ oms_delete("exportSnapshot")
 -- 						</oms:SimulationInformation>
 -- 					</ssc:Annotation>
 -- 				</ssd:Annotations>
--- 				<ssd:Connectors />
+-- 				<ssd:Connectors>
+-- 					<ssd:Connector name="C1" kind="input">
+-- 						<ssc:Real />
+-- 					</ssd:Connector>
+-- 				</ssd:Connectors>
 -- 				<ssd:ParameterBindings>
 -- 					<ssd:ParameterBinding source="resources/exportSnapshot.ssv" />
 -- 				</ssd:ParameterBindings>
@@ -144,7 +155,21 @@ oms_delete("exportSnapshot")
 -- 			</ssd:DefaultExperiment>
 -- 		</ssd:SystemStructureDescription>
 -- 	</oms:ssd_file>
--- 	<oms:ssv_file name="resources/exportSnapshot.ssv" />
+-- 	<oms:ssv_file name="resources/exportSnapshot.ssv">
+-- 		<ssv:ParameterSet xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" version="1.0" name="parameters">
+-- 			<ssv:Parameters>
+-- 				<ssv:Parameter name="C1">
+-- 					<ssv:Real value="-10" />
+-- 				</ssv:Parameter>
+-- 				<ssv:Parameter name="add.u1">
+-- 					<ssv:Real value="10" />
+-- 				</ssv:Parameter>
+-- 				<ssv:Parameter name="add.k1">
+-- 					<ssv:Real value="30" />
+-- 				</ssv:Parameter>
+-- 			</ssv:Parameters>
+-- 		</ssv:ParameterSet>
+-- 	</oms:ssv_file>
 -- </oms:snapshot>
 -- 
 -- error:   [exportSnapshot] "exportSnapshot.root.add" is not a top level model
