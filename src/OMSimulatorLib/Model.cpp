@@ -288,6 +288,68 @@ oms_status_enu_t oms::Model::list(const oms::ComRef& cref, char** contents)
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::Model::exportSnapshot(const oms::ComRef& cref, char** contents)
+{
+  // only top level model is allowed
+  if (!cref.isEmpty())
+  {
+    //return logError("only top level model is allowed, unknown model: " + std::string(cref));
+    return logError("\"" + std::string(getCref()+std::string(cref)) + "\" is not a top level model");
+  }
+
+  struct xmlStringWriter : pugi::xml_writer
+  {
+    std::string result;
+    virtual void write(const void* data, size_t size)
+    {
+      result += std::string(static_cast<const char*>(data), size);
+    }
+  };
+
+  xmlStringWriter writer;
+  pugi::xml_document doc;
+  pugi::xml_document ssvdoc;
+
+  // generate XML declaration for ssv file
+  pugi::xml_node ssvDeclarationNode = ssvdoc.append_child(pugi::node_declaration);
+  ssvDeclarationNode.append_attribute("version") = "1.0";
+  ssvDeclarationNode.append_attribute("encoding") = "UTF-8";
+
+  pugi::xml_node node_parameterset = ssvdoc.append_child(oms::ssp::Version1_0::ssv::parameter_set);
+  node_parameterset.append_attribute("version") = "1.0";
+  node_parameterset.append_attribute("name") = "parameters";
+  pugi::xml_node node_parameters = node_parameterset.append_child(oms::ssp::Version1_0::ssv::parameters);
+
+  // list model
+  pugi::xml_node snapshotnode = doc.append_child(oms::ssp::Version1_0::snap_shot);
+  pugi::xml_node ssdfilenode = snapshotnode.append_child(oms::ssp::Version1_0::ssd_file);
+  ssdfilenode.append_attribute("name") = "SystemStructure.ssd";
+
+  pugi::xml_node node = ssdfilenode.append_child(oms::ssp::Draft20180219::ssd::system_structure_description);
+  exportToSSD(node, node_parameters);
+
+  // update ssv file if exist
+  if (!Flags::ExportParametersInline())
+  {
+    // update parameterBindings in ssd
+    pugi::xml_node system_node = node.child(oms::ssp::Draft20180219::ssd::system);
+    updateParameterBindingsToSSD(system_node, node_parameters, true);
+
+    // update <oms:ssv_file> after </oms:ssd_file>
+    pugi::xml_node last = doc.last_child();
+    pugi::xml_node ssvfilenode  = last.append_child(oms::ssp::Version1_0::ssv_file);
+    std::string ssvFilePath = "resources/" + std::string(this->getCref()) + ".ssv";
+    ssvfilenode.append_attribute("name") = ssvFilePath.c_str();
+    // TODO ssm file
+  }
+
+  doc.save(writer);
+  *contents = (char*) malloc(strlen(writer.result.c_str()) + 1);
+  strcpy(*contents, writer.result.c_str());
+
+  return oms_status_ok;
+}
+
 /*
  * This function update the ParameterBindings in SSD, to link with a SSV file, (e.g)
  * <ssd:ParameterBindings>
