@@ -113,6 +113,7 @@ OMSAPI oms_status_enu_t OMSCALL oms_getVariableStepSize(const char* cref, double
 OMSAPI const char* OMSCALL oms_getVersion();
 OMSAPI oms_status_enu_t OMSCALL oms_faultInjection(const char* signal, oms_fault_type_enu_t faultType, double faultValue);
 OMSAPI oms_status_enu_t OMSCALL oms_importFile(const char* filename, char** cref);
+OMSAPI oms_status_enu_t OMSCALL oms_importSnapshot(const char* cref, const char* snapshot);
 OMSAPI oms_status_enu_t OMSCALL oms_initialize(const char* cref);
 OMSAPI oms_status_enu_t OMSCALL oms_instantiate(const char* cref);
 OMSAPI oms_status_enu_t OMSCALL oms_list(const char* cref, char** contents);

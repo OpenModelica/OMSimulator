@@ -251,6 +251,17 @@ oms_status_enu_t oms_loadSnapshot(const char* cref_, const char* snapshot)
   return model->loadSnapshot(snapshot);
 }
 
+oms_status_enu_t oms_importSnapshot(const char* cref_, const char* snapshot)
+{
+  oms::ComRef cref(cref_);
+
+  oms::Model* model = oms::Scope::GetInstance().getModel(cref);
+  if (!model)
+    return logError_ModelNotInScope(cref);
+
+  return model->importSnapshot(snapshot);
+}
+
 oms_status_enu_t oms_parseModelName(const char* contents, char** cref)
 {
   return logError_NotImplemented;

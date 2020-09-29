@@ -6,11 +6,11 @@ deleteStartValues.lua \
 deleteStartValuesInSSV.lua \
 DualMassOscillator.lua \
 exportConnectorsToResultFile.lua \
-exportSnapshot.lua \
 import_export_parameters_inline.lua \
 import_export_parameters_to_ssv.lua \
 import_export.lua \
 import_export.py \
+import_export_snapshot.lua \
 PI_Controller.lua \
 QuarterCarModel.DisplacementDisplacement.lua \
 simulation.lua \
