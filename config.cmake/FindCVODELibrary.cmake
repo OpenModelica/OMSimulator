@@ -2,7 +2,7 @@
 
 find_library(CVODELibrary_LIBRARY
   NAMES sundials_cvode
-  HINTS ${CVODELibrary_ROOT}/lib
+  HINTS ${CVODELibrary_ROOT}/lib ${CVODELibrary_ROOT}/lib/x86_64-linux-gnu ${CVODELibrary_ROOT}/lib/i386-linux-gnu
 )
 
 if(CVODELibrary_LIBRARY)
