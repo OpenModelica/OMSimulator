@@ -503,16 +503,16 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
         filesystem::path temp_root(tempdir);
         pugi::xml_document ssvdoc;
         pugi::xml_parse_result result = ssvdoc.load_file((temp_root / ssvFileSource).string().c_str());
-        pugi::xml_node parameterSet, parameters, ssvNode;
+        pugi::xml_node parameterSet, parameters;
 
         if (result) // check from ssv file
         {
           parameterSet = ssvdoc.document_element(); // ssv:ParameterSet
           parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
         }
-        else if((ssvNode = getModel()->getSnapshot().child(oms::ssp::Version1_0::ssv_file))) // check in memory oms:ssv_file
+        else if (getModel()->getSnapshot().child(oms::ssp::Version1_0::ssv_file)) // check in memory oms:ssv_file
         {
-          parameterSet = ssvNode.child(oms::ssp::Version1_0::ssv::parameter_set); // ssv:ParameterSet
+          parameterSet = getModel()->getSnapshot().child(oms::ssp::Version1_0::ssv_file).child(oms::ssp::Version1_0::ssv::parameter_set); // ssv:ParameterSet
           parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
         }
         else
