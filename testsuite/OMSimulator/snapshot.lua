@@ -29,8 +29,6 @@ print(snapshot)
 oms_delete("snapshot")
 
 -- Result:
--- error:   [importFromSSD] loading "resources/snapshot.ssv" failed (File was not found)
--- error:   [importSnapshot] loading snapshot failed
 -- <?xml version="1.0"?>
 -- <oms:snapshot>
 -- 	<oms:ssd_file name="SystemStructure.ssd">
@@ -93,7 +91,7 @@ oms_delete("snapshot")
 -- 					<ssv:Real value="-10" />
 -- 				</ssv:Parameter>
 -- 				<ssv:Parameter name="add.u1">
--- 					<ssv:Real value="3.5" />
+-- 					<ssv:Real value="10" />
 -- 				</ssv:Parameter>
 -- 				<ssv:Parameter name="add.k1">
 -- 					<ssv:Real value="30" />
@@ -102,7 +100,5 @@ oms_delete("snapshot")
 -- 		</ssv:ParameterSet>
 -- 	</oms:ssv_file>
 -- </oms:snapshot>
---
--- info:    0 warnings
--- info:    2 errors
+-- 
 -- endResult

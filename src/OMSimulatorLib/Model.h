@@ -122,6 +122,8 @@ namespace oms
 
     oms_status_enu_t loadSnapshot(const char* snapshot);
 
+    pugi::xml_node getSnapshot() {return snapShot;}
+
   private:
     Model(const ComRef& cref, const std::string& tempDir);
 
@@ -152,7 +154,9 @@ namespace oms
     std::string resultFilename;             ///< default <name>_res.mat
     Clock clock;
 
-    std::string signalFilter = "";  // default set to empty
+    std::string signalFilter = "";  ///< default set to empty
+
+    pugi::xml_node snapShot; ///< top level snapshot node which contains ssd, ssv and ssm as child nodes
 
     bool cancelSim;
     bool isolatedFMU = false;

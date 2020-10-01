@@ -175,10 +175,10 @@ oms_status_enu_t oms::Model::importSnapshot(const char* snapshot)
   if (!result)
     return logError("loading snapshot failed (" + std::string(result.description()) + ")");
 
-  const pugi::xml_node node = doc.document_element(); // oms:snapshot
+  snapShot = doc.document_element(); // oms:snapshot
 
   // get ssd:SystemStructureDescription
-  pugi::xml_node ssdNode = node.child(oms::ssp::Version1_0::ssd_file).child(oms::ssp::Draft20180219::ssd::system_structure_description);
+  pugi::xml_node ssdNode = snapShot.child(oms::ssp::Version1_0::ssd_file).child(oms::ssp::Draft20180219::ssd::system_structure_description);
 
   ComRef new_cref = ComRef(ssdNode.attribute("name").as_string());
   std::string ssdVersion = ssdNode.attribute("version").as_string();
