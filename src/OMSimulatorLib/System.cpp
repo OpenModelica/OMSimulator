@@ -569,7 +569,8 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
         connectors.back() = oms::Connector::NewConnector(*itConnectors, sspVersion);
         if (connectors.back())
         {
-          exportConnectors[connectors.back()->getName()] = true;
+          //save the connectors with full cref
+          exportConnectors[getFullCref() + connectors.back()->getName()] = true;
           connectors.push_back(NULL);
         }
         else
