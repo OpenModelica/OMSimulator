@@ -44,6 +44,10 @@ tlm.UpperPendulum \
 tlm.UpperPendulumFG \
 tlm.UpperPendulumFG \
 
+SSPs = \
+importStartValues \
+
+
 MOSs = \
 ASSCExample.mos \
 DualMassOscillator.mos \
@@ -55,12 +59,19 @@ HelloWorld.mos \
 Lin2DimODE.mos \
 MassSpring.mos \
 
-.PHONY: all generateFMUs
+.PHONY: all generateFMUs generateSSPs
 
 all:
 	@echo
 	@echo preparing FMUs...
 	@for fmu in $(FMUs) ; do cd $$fmu && zip -r ../$$fmu.fmu * && cd .. ; done
+
+
+generateSSPs:
+	@echo
+	@echo preparing SSPs...
+	@for ssp in $(SSPs) ; do cd $$ssp && zip -r ../$$ssp.ssp * && cd .. ; done
+
 
 generateFMUs:
 	@echo
