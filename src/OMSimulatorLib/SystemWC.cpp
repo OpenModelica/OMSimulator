@@ -1016,6 +1016,8 @@ oms_status_enu_t oms::SystemWC::getInputAndOutput(oms::DirectedGraph& graph, std
 oms_status_enu_t oms::SystemWC::updateInputs(oms::DirectedGraph& graph)
 {
   CallClock callClock(clock);
+  oms_status_enu_t status;
+  int loopNum = 0;
 
   // input := output
   const std::vector< oms_ssc_t >& sortedConnections = graph.getSortedConnections();
@@ -1062,7 +1064,13 @@ oms_status_enu_t oms::SystemWC::updateInputs(oms::DirectedGraph& graph)
     }
     else
     {
-      if (oms_status_ok != solveAlgLoop(graph, i)) return oms_status_error;
+      status = solveAlgLoop(graph, loopNum);
+      if (oms_status_ok != status)
+      {
+        loopsNeedUpdate = true;
+        return status;
+      }
+      loopNum++;
     }
   }
   return oms_status_ok;

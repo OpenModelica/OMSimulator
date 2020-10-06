@@ -660,6 +660,8 @@ oms_status_enu_t oms::SystemSC::stepUntil(double stopTime, void (*cb)(const char
 oms_status_enu_t oms::SystemSC::updateInputs(DirectedGraph& graph)
 {
   CallClock callClock(clock);
+  oms_status_enu_t status;
+  int loopNum = 0;
 
   if (getModel()->validState(oms_modelState_simulation))
   {
@@ -715,7 +717,13 @@ oms_status_enu_t oms::SystemSC::updateInputs(DirectedGraph& graph)
     }
     else
     {
-      if (oms_status_ok != solveAlgLoop(graph, i)) return oms_status_error;
+      status = solveAlgLoop(graph, loopNum);
+      if (oms_status_ok != status)
+      {
+        loopsNeedUpdate = true;
+        return status;
+      }
+      loopNum++;
     }
   }
   return oms_status_ok;

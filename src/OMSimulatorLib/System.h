@@ -165,9 +165,9 @@ namespace oms
     oms_solver_enu_t getSolver() {return solverMethod;}
 
     AlgLoop* getAlgLoop(const int systemNumber);
-    oms_status_enu_t addAlgLoop(int systemNumber, oms_ssc_t SCC, const int systNumber);
+    oms_status_enu_t addAlgLoop(oms_ssc_t SCC, const int algLoopNum);
     oms_status_enu_t updateAlgebraicLoops(const std::vector< oms_ssc_t >& sortedConnections);
-    oms_status_enu_t solveAlgLoop(DirectedGraph& graph, int systemNumber);
+    oms_status_enu_t solveAlgLoop(DirectedGraph& graph, int loopNumber);
 
     bool useThreadPool();
     ctpl::thread_pool& getThreadPool();

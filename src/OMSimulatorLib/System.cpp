@@ -2266,14 +2266,14 @@ oms::AlgLoop* oms::System::getAlgLoop(const int systemNumber)
   return &algLoops[systemNumber];
 }
 
-oms_status_enu_t oms::System::addAlgLoop(int systemNumber, oms_ssc_t SCC, const int systNumber)
+oms_status_enu_t oms::System::addAlgLoop(oms_ssc_t SCC, const int algLoopNum)
 {
   if (loopsNeedUpdate)
   {
     algLoops.clear();
     loopsNeedUpdate = false;
   }
-  algLoops.push_back( AlgLoop( Flags::AlgLoopSolver(), absoluteTolerance, SCC, systNumber ));
+  algLoops.push_back( AlgLoop( Flags::AlgLoopSolver(), absoluteTolerance, SCC, algLoopNum ));
 
   return oms_status_ok;
 }
@@ -2288,7 +2288,7 @@ oms_status_enu_t oms::System::updateAlgebraicLoops(const std::vector< oms_ssc_t 
     {
       if (sortedConnections[i].size() > 1)
       {
-        addAlgLoop(systCount, sortedConnections[i], systCount);
+        addAlgLoop(sortedConnections[i], systCount);
         systCount++;
       }
     }
@@ -2298,7 +2298,7 @@ oms_status_enu_t oms::System::updateAlgebraicLoops(const std::vector< oms_ssc_t 
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::System::solveAlgLoop(DirectedGraph& graph, int systemNumber)
+oms_status_enu_t oms::System::solveAlgLoop(DirectedGraph& graph, int loopNumber)
 {
-  return algLoops[systemNumber].solveAlgLoop(*this, graph);
+  return algLoops[loopNumber].solveAlgLoop(*this, graph);
 }
