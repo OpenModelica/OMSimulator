@@ -6,7 +6,10 @@ The OMSimulator project is a FMI-based co-simulation environment that supports o
 
 Pre-compiled binaries are available for [Windows, Linux, and Mac](https://test.openmodelica.org/jenkins/job/OMSimulator/job/master/lastSuccessfulBuild/artifact/).
 
+## Documentation
+
 The latest documentation is avilable as [pdf](https://openmodelica.org/doc/OMSimulator/master/OMSimulator.pdf) and [html](https://openmodelica.org/doc/OMSimulator/master/html/).
+For OMSimulatorLib a [Doxygen source code documentation](https://openmodelica.org/doc/OMSimulator/master/OMSimulatorLib/) is available as well.
 
 ## Dependencies
 
