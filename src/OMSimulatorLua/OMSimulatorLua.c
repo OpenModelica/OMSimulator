@@ -890,6 +890,11 @@ static int OMSimulatorLua_oms_addSubModel(lua_State *L)
   const char* fmuPath = lua_tostring(L, 2);
   oms_status_enu_t status = oms_addSubModel(cref, fmuPath);
 
+  if (status!=oms_status_ok)
+  {
+    return luaL_error(L, "oms_addSubModel(%s,%s) failed", cref, fmuPath);
+  }
+
   lua_pushinteger(L, status);
 
   return 1;
