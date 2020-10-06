@@ -239,8 +239,18 @@ oms::Component* oms::ComponentFMUME::NewComponent(const oms::ComRef& cref, oms::
   component->connectors.push_back(NULL);
   component->element.setConnectors(&component->connectors[0]);
 
-  component->initializeDependencyGraph_initialUnknowns();
-  component->initializeDependencyGraph_outputs();
+  if (oms_status_ok != component->initializeDependencyGraph_initialUnknowns())
+  {
+    logError(std::string(cref) + ": Couldn't initialize dependency graph for initial unknowns.");
+    delete component;
+    return NULL;
+  }
+  if (oms_status_ok != component->initializeDependencyGraph_outputs())
+  {
+    logError(std::string(cref) + ": Couldn't initialize dependency graph for simulation unknowns.");
+    delete component;
+    return NULL;
+  }
 
   // parse modelDescription.xml to get start values before instantiating fmu's
   component->values.parseModelDescription((tempDir / "modelDescription.xml").string().c_str());
@@ -393,6 +403,13 @@ oms_status_enu_t oms::ComponentFMUME::initializeDependencyGraph_initialUnknowns(
     {
       for (size_t j = startIndex[i]; j < startIndex[i + 1]; j++)
       {
+        if (dependency[j] <= 0 || allVariables.size() < dependency[j])
+        {
+          logError(std::string(getCref()) + ": Dependecies from modelDescription.xml erroneous.");
+          logDebug("Can't find variable for dependency with index " + std::to_string(dependency[j]) + " for initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + "." );
+          logInfo("Use flag --ignoreInitialUnknowns=true to ignore dependencies, but this can cause inflated loop size.");
+          return oms_status_fatal;
+        }
         logDebug(std::string(getCref()) + ": " + getPath() + " initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + " depends on " + std::string(allVariables[dependency[j] - 1]));
         initialUnknownsGraph.addEdge(allVariables[dependency[j] - 1].makeConnector(), initialUnknownsGraph.getNodes()[i]);
       }
@@ -437,6 +454,13 @@ oms_status_enu_t oms::ComponentFMUME::initializeDependencyGraph_outputs()
     {
       for (size_t j = startIndex[i]; j < startIndex[i + 1]; j++)
       {
+        if (dependency[j] <= 0 || allVariables.size() < dependency[j])
+        {
+          logError(std::string(getCref()) + ": Dependecies from modelDescription.xml erroneous.");
+          logDebug("Can't find variable for dependency with index " + std::to_string(dependency[j]) + " for output " + std::string(outputs[i]) + "." );
+          logInfo("Use flag --ignoreInitialUnknowns=true to ignore dependencies, but this can cause inflated loop size.");
+          return oms_status_fatal;
+        }
         logDebug(std::string(getCref()) + ": " + getPath() + " output " + std::string(outputs[i]) + " depends on " + std::string(allVariables[dependency[j] - 1]));
         outputsGraph.addEdge(allVariables[dependency[j] - 1].makeConnector(), outputs[i].makeConnector());
       }
