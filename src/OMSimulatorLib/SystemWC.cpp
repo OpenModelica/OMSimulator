@@ -82,9 +82,9 @@ std::string oms::SystemWC::getSolverName() const
       return std::string("oms-assc");
     case oms_solver_wc_mav2:
       return std::string("oms-mav2");
+    default:
+      return std::string("unknown");
   }
-
-  return std::string("unknown");
 }
 
 oms_status_enu_t oms::SystemWC::setSolverMethod(std::string solver)

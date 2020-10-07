@@ -150,10 +150,10 @@ oms::System* oms::System::NewSystem(const oms::ComRef& cref, oms_system_enu_t ty
       return NULL;
     }
     return SystemSC::NewSystem(cref, parentModel, parentSystem);
-  }
-
-  logError_InternalError;
+  default:
+      logError_InternalError;
   return NULL;
+  }
 }
 
 oms::ComRef oms::System::getFullCref() const

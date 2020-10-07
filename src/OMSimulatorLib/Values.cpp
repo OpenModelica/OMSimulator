@@ -266,16 +266,16 @@ oms_status_enu_t oms::Values::parseModelDescription(const char *filename)
       for (pugi::xml_node scalarVariable = scalarVariableNode.child("ScalarVariable"); scalarVariable; scalarVariable = scalarVariable.next_sibling("ScalarVariable"))
       {
         //std::string startValue = "";
-        if (scalarVariable.child("Real").attribute("start").as_string() != "")
+        if (strlen(scalarVariable.child("Real").attribute("start").as_string()) != 0)
         {
           //startValue = scalarVariable.child("Real").attribute("start").as_string();
           modelDescriptionRealStartValues[ComRef(scalarVariable.attribute("name").as_string())] = scalarVariable.child("Real").attribute("start").as_double();
         }
-        if (scalarVariable.child("Integer").attribute("start").as_string() != "")
+        if (strlen(scalarVariable.child("Integer").attribute("start").as_string()) != 0)
         {
           modelDescriptionIntegerStartValues[scalarVariable.attribute("name").as_string()] = scalarVariable.child("Integer").attribute("start").as_int();
         }
-        if (scalarVariable.child("Boolean").attribute("start").as_string() != "")
+        if (strlen(scalarVariable.child("Boolean").attribute("start").as_string()) != 0)
         {
           modelDescriptionBooleanStartValues[scalarVariable.attribute("name").as_string()] = scalarVariable.child("Boolean").attribute("start").as_bool();
         }

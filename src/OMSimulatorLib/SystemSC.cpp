@@ -120,9 +120,9 @@ std::string oms::SystemSC::getSolverName() const
       return std::string("euler");
     case oms_solver_sc_cvode:
       return std::string("cvode");
+    default:
+      return std::string("unknown");
   }
-
-  return std::string("unknown");
 }
 
 oms_status_enu_t oms::SystemSC::setSolverMethod(std::string solver)
