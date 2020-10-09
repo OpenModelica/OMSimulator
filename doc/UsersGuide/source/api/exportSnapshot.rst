@@ -1,6 +1,6 @@
 #CAPTION#
 exportSnapshot
-----
+--------------
 
 Lists the SSD representation of a given model, system, or component.
 

@@ -1,6 +1,6 @@
 #CAPTION#
 importSnapshot
-------------
+--------------
 
 Loads a snapshot to restore a previous model state. The model must be in virgin model state, which means it must not be instantiated.
 #END#
