@@ -18,6 +18,7 @@ setExternalInputs.lua \
 simulation.lua \
 simulation.py \
 snapshot.lua \
+snapshot.py \
 table.lua \
 
 # Run make failingtest
