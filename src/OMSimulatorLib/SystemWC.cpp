@@ -1040,7 +1040,7 @@ oms_status_enu_t oms::SystemWC::updateInputs(oms::DirectedGraph& graph)
           }
         }
       }
-      else if (graph.getNodes()[input].getType() == oms_signal_type_integer)
+      else if (graph.getNodes()[input].getType() == oms_signal_type_integer or graph.getNodes()[input].getType() == oms_signal_type_enum)
       {
         int value = 0.0;
         if (oms_status_ok != getInteger(graph.getNodes()[output].getName(), value)) return oms_status_error;

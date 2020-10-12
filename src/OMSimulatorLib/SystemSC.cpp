@@ -628,7 +628,7 @@ oms_status_enu_t oms::SystemSC::stepUntil(double stopTime, void (*cb)(const char
       if (fmi2_status_ok != fmistatus) logError_FMUCall("fmi2_import_completed_integrator_step", fmus[i]);
     }
 
-    updateInputs(outputsGraph);
+    updateInputs(continuousTimeModeGraph); //pass the continuousTimeMode dependency graph which involves only connections of type Real
     if (isTopLevelSystem())
       getModel()->emit(time);
 
@@ -693,7 +693,7 @@ oms_status_enu_t oms::SystemSC::updateInputs(DirectedGraph& graph)
         if (oms_status_ok != getReal(graph.getNodes()[output].getName(), value)) return oms_status_error;
         if (oms_status_ok != setReal(graph.getNodes()[input].getName(), value)) return oms_status_error;
       }
-      else if (graph.getNodes()[input].getType() == oms_signal_type_integer)
+      else if (graph.getNodes()[input].getType() == oms_signal_type_integer or graph.getNodes()[input].getType() == oms_signal_type_enum)
       {
         int value = 0.0;
         if (oms_status_ok != getInteger(graph.getNodes()[output].getName(), value)) return oms_status_error;

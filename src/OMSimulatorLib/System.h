@@ -123,7 +123,7 @@ namespace oms
     oms_status_enu_t updateDependencyGraphs();
     const DirectedGraph& getInitialUnknownsGraph() {return initialUnknownsGraph;}
     const DirectedGraph& getOutputsGraph() {return outputsGraph;}
-    oms_status_enu_t exportDependencyGraphs(const std::string& pathInitialization, const std::string& pathSimulation);
+    oms_status_enu_t exportDependencyGraphs(const std::string& pathInitialization, const std::string& pathSimulation, const std::string& pathContinuous);
     oms_status_enu_t setFaultInjection(const ComRef& signal, oms_fault_type_enu_t faultType, double faultValue);
 
     virtual oms_status_enu_t instantiate() = 0;
@@ -174,6 +174,7 @@ namespace oms
 
     DirectedGraph initialUnknownsGraph;
     DirectedGraph outputsGraph;
+    DirectedGraph continuousTimeModeGraph; ///< filtered dependency graph, with connections of type Real;
 
     Clock clock;
     unsigned int clock_id;
