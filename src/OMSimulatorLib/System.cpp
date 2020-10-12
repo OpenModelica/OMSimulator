@@ -1097,7 +1097,6 @@ oms_status_enu_t oms::System::addConnection(const oms::ComRef& crefA, const oms:
   }
   else if (conA->getType() != conB->getType())
   {
-    std::cout << "\n" << conA->getType() << " => " << conB->getType();
     return logError("Type mismatch in connection: " + std::string(crefA) + " -> " + std::string(crefB));
   }
 

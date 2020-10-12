@@ -38,7 +38,7 @@ printStatus(status, 0)
 status = oms_addSubModel("test.co_sim.B", "../resources/tlm.source.fmu")
 printStatus(status, 0)
 
-oms_exportDependencyGraphs("test.co_sim", "test_init.dot", "test_sim.dot")
+oms_exportDependencyGraphs("test.co_sim", "test_init.dot", "test_sim.dot", "test_continuous.dot")
 
 status = oms_instantiate("test")
 printStatus(status, 0)
