@@ -164,7 +164,7 @@ namespace oms
     ctpl::thread_pool& getThreadPool();
 
     std::string getUniqueID() const;
-    std::string ssvFileSource = "";
+    std::vector<std::string> ssvFileSources;
   protected:
     System(const ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem, oms_solver_enu_t solverMethod);
 

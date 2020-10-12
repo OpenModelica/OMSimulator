@@ -214,6 +214,17 @@ oms_status_enu_t oms_list(const char* cref_, char** contents)
   return model->list(tail, contents);
 }
 
+oms_status_enu_t oms_exportSnapshot(const char* cref_, char** contents)
+{
+  oms::ComRef tail(cref_);
+  oms::ComRef front = tail.pop_front();
+  oms::Model* model = oms::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  return model->exportSnapshot(tail, contents);
+}
+
 oms_status_enu_t oms_listUnconnectedConnectors(const char* cref_, char** contents)
 {
   oms::ComRef tail(cref_);
@@ -238,6 +249,17 @@ oms_status_enu_t oms_loadSnapshot(const char* cref_, const char* snapshot)
     return logError_ModelNotInScope(cref);
 
   return model->loadSnapshot(snapshot);
+}
+
+oms_status_enu_t oms_importSnapshot(const char* cref_, const char* snapshot)
+{
+  oms::ComRef cref(cref_);
+
+  oms::Model* model = oms::Scope::GetInstance().getModel(cref);
+  if (!model)
+    return logError_ModelNotInScope(cref);
+
+  return model->importSnapshot(snapshot);
 }
 
 oms_status_enu_t oms_parseModelName(const char* contents, char** cref)

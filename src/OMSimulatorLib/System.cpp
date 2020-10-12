@@ -483,57 +483,80 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
     }
     else if(name == oms::ssp::Version1_0::ssd::parameter_bindings)
     {
-      pugi::xml_node parameterBindingNode = it->child(oms::ssp::Version1_0::ssd::parameter_binding);
-      ssvFileSource = parameterBindingNode.attribute("source").as_string() ;
-      // set parameter bindings associated with the system
-      if (ssvFileSource.empty()) // inline parameterBinding
+      // check for multiple ssv files or parameter bindings
+      for (pugi::xml_node parameterBindingNode = it->child(oms::ssp::Version1_0::ssd::parameter_binding); parameterBindingNode; parameterBindingNode = parameterBindingNode.next_sibling(oms::ssp::Version1_0::ssd::parameter_binding))
       {
-        //std::cout << "\n System ssvFileSource  inline :" << ssvFileSource;
-        std::string tempdir = getModel()->getTempDirectory();
-        if (oms_status_ok !=  values.importFromSSD(*it, sspVersion, tempdir))
-          return logError("Failed to import " + std::string(oms::ssp::Version1_0::ssd::parameter_bindings));
+        std::string ssvFileSource = parameterBindingNode.attribute("source").as_string();
+        // set parameter bindings associated with the system
+        if (ssvFileSource.empty()) // inline parameterBinding
+        {
+          //std::cout << "\n System ssvFileSource  inline :" << ssvFileSource;
+          std::string tempdir = getModel()->getTempDirectory();
+          if (oms_status_ok !=  values.importFromSSD(*it, sspVersion, tempdir))
+            return logError("Failed to import " + std::string(oms::ssp::Version1_0::ssd::parameter_bindings));
+        }
+        else
+        {
+          // store the ssv files and process it later while handling the connection, so all the components are loaded
+          ssvFileSources.push_back(ssvFileSource);
+        }
       }
     }
     else if (name == oms::ssp::Draft20180219::ssd::connections)
     {
       // check for ssvFileSource exist and set the values before the connections
-      if (!ssvFileSource.empty())
+      if (!ssvFileSources.empty())
       {
-        std::string tempdir = getModel()->getTempDirectory();
-        filesystem::path temp_root(tempdir);
-        pugi::xml_document ssvdoc;
-        pugi::xml_parse_result result = ssvdoc.load_file((temp_root / ssvFileSource).string().c_str());
-        if (!result)
-          return logError("loading \"" + std::string(ssvFileSource) + "\" failed (" + std::string(result.description()) + ")");
-
-        pugi::xml_node parameterSet = ssvdoc.document_element(); // ssd:SystemStructureDescription
-        pugi::xml_node parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
-        if (parameters)
+        for (const auto& ssvFileSource : ssvFileSources)
         {
-          for(pugi::xml_node_iterator itparameters = parameters.begin(); itparameters != parameters.end(); ++itparameters)
+          std::string tempdir = getModel()->getTempDirectory();
+          filesystem::path temp_root(tempdir);
+          pugi::xml_document ssvdoc;
+          pugi::xml_parse_result result = ssvdoc.load_file((temp_root / ssvFileSource).string().c_str());
+          pugi::xml_node parameterSet, parameters;
+
+          if (result) // check from ssv file
           {
-            std::string name = itparameters->name();
-            if (name == oms::ssp::Version1_0::ssv::parameter)
+            parameterSet = ssvdoc.document_element(); // ssv:ParameterSet
+            parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
+          }
+          else if (getModel()->getSnapshot().child(oms::ssp::Version1_0::ssv_file)) // check in memory oms:ssv_file
+          {
+            parameterSet = getModel()->getSnapshot().child(oms::ssp::Version1_0::ssv_file).child(oms::ssp::Version1_0::ssv::parameter_set); // ssv:ParameterSet
+            parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
+          }
+          else
+          {
+            return logError("loading \"" + std::string(ssvFileSource) + "\" failed (" + std::string(result.description()) + ")");
+          }
+
+          if (parameters)
+          {
+            for(pugi::xml_node_iterator itparameters = parameters.begin(); itparameters != parameters.end(); ++itparameters)
             {
-              ComRef cref = ComRef(itparameters->attribute("name").as_string());
-              if (itparameters->child(oms::ssp::Version1_0::ssv::real_type))
+              std::string name = itparameters->name();
+              if (name == oms::ssp::Version1_0::ssv::parameter)
               {
-                double value = itparameters->child(oms::ssp::Version1_0::ssv::real_type).attribute("value").as_double();
-                setReal(cref, value);
-              }
-              else if(itparameters->child(oms::ssp::Version1_0::ssv::integer_type))
-              {
-                int value = itparameters->child(oms::ssp::Version1_0::ssv::integer_type).attribute("value").as_int();
-                setInteger(cref, value);
-              }
-              else if(itparameters->child(oms::ssp::Version1_0::ssv::boolean_type))
-              {
-                bool value = itparameters->child(oms::ssp::Version1_0::ssv::boolean_type).attribute("value").as_bool();
-                setBoolean(cref, value);
-              }
-              else
-              {
-                logError("Failed to import " + std::string(oms::ssp::Version1_0::ssv::parameter) + ":Unknown ParameterBinding-type");
+                ComRef cref = ComRef(itparameters->attribute("name").as_string());
+                if (itparameters->child(oms::ssp::Version1_0::ssv::real_type))
+                {
+                  double value = itparameters->child(oms::ssp::Version1_0::ssv::real_type).attribute("value").as_double();
+                  setReal(cref, value);
+                }
+                else if(itparameters->child(oms::ssp::Version1_0::ssv::integer_type))
+                {
+                  int value = itparameters->child(oms::ssp::Version1_0::ssv::integer_type).attribute("value").as_int();
+                  setInteger(cref, value);
+                }
+                else if(itparameters->child(oms::ssp::Version1_0::ssv::boolean_type))
+                {
+                  bool value = itparameters->child(oms::ssp::Version1_0::ssv::boolean_type).attribute("value").as_bool();
+                  setBoolean(cref, value);
+                }
+                else
+                {
+                  logError("Failed to import " + std::string(oms::ssp::Version1_0::ssv::parameter) + ":Unknown ParameterBinding-type");
+                }
               }
             }
           }

@@ -8,13 +8,17 @@ DualMassOscillator.lua \
 exportConnectorsToResultFile.lua \
 import_export_parameters_inline.lua \
 import_export_parameters_to_ssv.lua \
+import_export_snapshot.lua \
 import_export.lua \
 import_export.py \
+importStartValues.lua \
 PI_Controller.lua \
 QuarterCarModel.DisplacementDisplacement.lua \
+setExternalInputs.lua \
 simulation.lua \
 simulation.py \
-setExternalInputs.lua \
+snapshot.lua \
+snapshot.py \
 table.lua \
 
 # Run make failingtest
