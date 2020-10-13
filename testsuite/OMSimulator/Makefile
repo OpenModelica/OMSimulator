@@ -6,6 +6,7 @@ deleteStartValues.lua \
 deleteStartValuesInSSV.lua \
 DualMassOscillator.lua \
 exportConnectorsToResultFile.lua \
+Enumeration.lua \
 import_export_parameters_inline.lua \
 import_export_parameters_to_ssv.lua \
 import_export_snapshot.lua \

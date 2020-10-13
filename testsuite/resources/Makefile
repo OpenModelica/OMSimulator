@@ -11,8 +11,10 @@ ASSCExample.Class1 \
 ASSCExample.Class2 \
 DualMassOscillator.System1 \
 DualMassOscillator.System2 \
+Enum1 \
 HelloWorld \
 HelloWorldWithInput \
+Int1 \
 Lin2DimODE \
 Modelica.Blocks.Continuous.Integrator \
 Modelica.Blocks.Math.Add \

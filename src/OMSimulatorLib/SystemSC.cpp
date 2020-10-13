@@ -66,7 +66,7 @@ int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
   //std::cout << "[oms::cvode_rhs] y" << std::endl;
   //N_VPrint_Serial(y);
 
-  system->updateInputs(system->outputsGraph);
+  system->updateInputs(system->eventGraph);
 
   // get state derivatives
   for (int j=0, k=0; j < system->fmus.size(); ++j)
@@ -242,7 +242,7 @@ oms_status_enu_t oms::SystemSC::initialize()
   if (oms_status_ok != updateDependencyGraphs())
     return oms_status_error;
 
-  if (oms_status_ok != updateInputs(initialUnknownsGraph))
+  if (oms_status_ok != updateInputs(initializationGraph))
     return oms_status_error;
 
   for (const auto& subsystem : getSubSystems())
@@ -549,7 +549,7 @@ oms_status_enu_t oms::SystemSC::stepUntil(double stopTime, void (*cb)(const char
         }
 
         // emit the right limit of the event
-        updateInputs(outputsGraph);
+        updateInputs(eventGraph);
         if (Flags::EmitEvents() && isTopLevelSystem())
           getModel()->emit(time, true);
 
@@ -628,7 +628,7 @@ oms_status_enu_t oms::SystemSC::stepUntil(double stopTime, void (*cb)(const char
       if (fmi2_status_ok != fmistatus) logError_FMUCall("fmi2_import_completed_integrator_step", fmus[i]);
     }
 
-    updateInputs(outputsGraph);
+    updateInputs(simulationGraph); //pass the continuousTimeMode dependency graph which involves only connections of type Real
     if (isTopLevelSystem())
       getModel()->emit(time);
 
@@ -693,7 +693,7 @@ oms_status_enu_t oms::SystemSC::updateInputs(DirectedGraph& graph)
         if (oms_status_ok != getReal(graph.getNodes()[output].getName(), value)) return oms_status_error;
         if (oms_status_ok != setReal(graph.getNodes()[input].getName(), value)) return oms_status_error;
       }
-      else if (graph.getNodes()[input].getType() == oms_signal_type_integer)
+      else if (graph.getNodes()[input].getType() == oms_signal_type_integer || graph.getNodes()[input].getType() == oms_signal_type_enum)
       {
         int value = 0.0;
         if (oms_status_ok != getInteger(graph.getNodes()[output].getName(), value)) return oms_status_error;

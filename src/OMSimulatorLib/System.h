@@ -121,9 +121,9 @@ namespace oms
     const std::map<ComRef, System*>& getSubSystems() {return subsystems;}
     const std::map<ComRef, Component*>& getComponents() {return components;}
     oms_status_enu_t updateDependencyGraphs();
-    const DirectedGraph& getInitialUnknownsGraph() {return initialUnknownsGraph;}
-    const DirectedGraph& getOutputsGraph() {return outputsGraph;}
-    oms_status_enu_t exportDependencyGraphs(const std::string& pathInitialization, const std::string& pathSimulation);
+    const DirectedGraph& getInitialUnknownsGraph() {return initializationGraph;}
+    const DirectedGraph& getOutputsGraph() {return eventGraph;}
+    oms_status_enu_t exportDependencyGraphs(const std::string& pathInitialization, const std::string& pathEvent, const std::string& pathSimulation);
     oms_status_enu_t setFaultInjection(const ComRef& signal, oms_fault_type_enu_t faultType, double faultValue);
 
     virtual oms_status_enu_t instantiate() = 0;
@@ -172,8 +172,9 @@ namespace oms
     System(System const& copy);            ///< not implemented
     System& operator=(System const& copy); ///< not implemented
 
-    DirectedGraph initialUnknownsGraph;
-    DirectedGraph outputsGraph;
+    DirectedGraph initializationGraph; ///< dependency graph, with all connections, solved at initialization
+    DirectedGraph eventGraph; ///< filtered dependency graph, without parameters, solved at event mode
+    DirectedGraph simulationGraph; ///< filtered dependency graph, with connections of type Real, solved at continuous time mode;
 
     Clock clock;
     unsigned int clock_id;

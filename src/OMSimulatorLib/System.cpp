@@ -1091,6 +1091,10 @@ oms_status_enu_t oms::System::addConnection(const oms::ComRef& crefA, const oms:
   {
     // allow non-real connections to tables
   }
+  else if(conA->getType() == oms_signal_type_integer && conB->getType() == oms_signal_type_enum)
+  {
+    // allow integer connection to enum types
+  }
   else if (conA->getType() != conB->getType())
   {
     return logError("Type mismatch in connection: " + std::string(crefA) + " -> " + std::string(crefB));
@@ -1710,34 +1714,37 @@ oms_status_enu_t oms::System::getAllResources(std::vector<std::string>& resource
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::System::exportDependencyGraphs(const std::string& pathInitialization, const std::string& pathSimulation)
+oms_status_enu_t oms::System::exportDependencyGraphs(const std::string& pathInitialization, const std::string& pathEvent, const std::string& pathSimulation)
 {
   oms_status_enu_t status = updateDependencyGraphs();
 
-  initialUnknownsGraph.dotExport(pathInitialization);
-  outputsGraph.dotExport(pathSimulation);
-
+  initializationGraph.dotExport(pathInitialization);
+  eventGraph.dotExport(pathEvent);
+  simulationGraph.dotExport(pathSimulation);
   return status;
 }
 
 oms_status_enu_t oms::System::updateDependencyGraphs()
 {
-  initialUnknownsGraph.clear();
-  outputsGraph.clear();
+  initializationGraph.clear();
+  eventGraph.clear();
+  simulationGraph.clear();
 
   for (const auto& subsystem : subsystems)
   {
     if (oms_status_ok != subsystem.second->updateDependencyGraphs())
       return oms_status_error;
 
-    initialUnknownsGraph.includeGraph(subsystem.second->getInitialUnknownsGraph(), subsystem.first);
-    outputsGraph.includeGraph(subsystem.second->getOutputsGraph(), subsystem.first);
+    initializationGraph.includeGraph(subsystem.second->getInitialUnknownsGraph(), subsystem.first);
+    eventGraph.includeGraph(subsystem.second->getOutputsGraph(), subsystem.first);
+    simulationGraph.includeGraph(subsystem.second->getOutputsGraph(), subsystem.first);
   }
 
   for (const auto& component : components)
   {
-    initialUnknownsGraph.includeGraph(component.second->getInitialUnknownsGraph(), component.first);
-    outputsGraph.includeGraph(component.second->getOutputsGraph(), component.first);
+    initializationGraph.includeGraph(component.second->getInitialUnknownsGraph(), component.first);
+    eventGraph.includeGraph(component.second->getOutputsGraph(), component.first);
+    simulationGraph.includeGraph(component.second->getOutputsGraph(), component.first);
   }
 
   for (const auto& connection : connections)
@@ -1752,10 +1759,17 @@ oms_status_enu_t oms::System::updateDependencyGraphs()
       bool validConnection = oms::Connection::isValid(connection->getSignalA(), connection->getSignalB(), *varA, *varB);
       if (validConnection)
       {
-        initialUnknownsGraph.addEdge(Connector(varA->getCausality(), varA->getType(), connection->getSignalA()), Connector(varB->getCausality(), varB->getType(), connection->getSignalB()));
+        initializationGraph.addEdge(Connector(varA->getCausality(), varA->getType(), connection->getSignalA()), Connector(varB->getCausality(), varB->getType(), connection->getSignalB()));
         // Don't include parameter connections in simulation dependencies
         if (!varA->isParameter())
-          outputsGraph.addEdge(Connector(varA->getCausality(), varA->getType(), connection->getSignalA()), Connector(varB->getCausality(), varB->getType(), connection->getSignalB()));
+        {
+          eventGraph.addEdge(Connector(varA->getCausality(), varA->getType(), connection->getSignalA()), Connector(varB->getCausality(), varB->getType(), connection->getSignalB()));
+        }
+        // allow only real connections in Continuous time mode
+        if (varA->getType() == oms_signal_type_real && !varA->isParameter())
+        {
+          simulationGraph.addEdge(Connector(varA->getCausality(), varA->getType(), connection->getSignalA()), Connector(varB->getCausality(), varB->getType(), connection->getSignalB()));
+        }
       }
       else
         return logError("failed for " + std::string(connection->getSignalA()) + " -> " + std::string(connection->getSignalB()));
