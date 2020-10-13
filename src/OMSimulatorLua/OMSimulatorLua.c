@@ -330,7 +330,7 @@ static int OMSimulatorLua_oms_importSnapshot(lua_State *L)
   return 1;
 }
 
-//oms_status_enu_t oms_exportDependencyGraphs(const char* cref, const char* initialization, const char* simulation, const char* continuousTimeMode);
+//oms_status_enu_t oms_exportDependencyGraphs(const char* cref, const char* initialization, const char* event, const char* simulation);
 static int OMSimulatorLua_oms_exportDependencyGraphs(lua_State *L)
 {
   if (lua_gettop(L) != 4)
@@ -343,10 +343,10 @@ static int OMSimulatorLua_oms_exportDependencyGraphs(lua_State *L)
 
   const char* cref = lua_tostring(L, 1);
   const char* initialization = lua_tostring(L, 2);
-  const char* simulation = lua_tostring(L, 3);
-  const char* continuousTimeMode = lua_tostring(L, 4);
+  const char* event = lua_tostring(L, 3);
+  const char* simulation = lua_tostring(L, 4);
 
-  oms_status_enu_t status = oms_exportDependencyGraphs(cref, initialization, simulation, continuousTimeMode);
+  oms_status_enu_t status = oms_exportDependencyGraphs(cref, initialization, event, simulation);
   lua_pushinteger(L, status);
   return 1;
 }

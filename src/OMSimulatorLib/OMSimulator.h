@@ -81,7 +81,7 @@ OMSAPI oms_status_enu_t OMSCALL oms_deleteConnection(const char* crefA, const ch
 OMSAPI oms_status_enu_t OMSCALL oms_deleteConnectorFromBus(const char* busCref, const char* connectorCref);
 OMSAPI oms_status_enu_t OMSCALL oms_deleteConnectorFromTLMBus(const char* busCref, const char* connectorCref);
 OMSAPI oms_status_enu_t OMSCALL oms_export(const char* cref, const char* filename);
-OMSAPI oms_status_enu_t OMSCALL oms_exportDependencyGraphs(const char* cref, const char* initialization, const char* simulation, const char* continuousTimeMode);
+OMSAPI oms_status_enu_t OMSCALL oms_exportDependencyGraphs(const char* cref, const char* initialization, const char* event, const char* simulation);
 OMSAPI oms_status_enu_t OMSCALL oms_exportSnapshot(const char* cref, char** contents);
 OMSAPI oms_status_enu_t OMSCALL oms_extractFMIKind(const char* filename, oms_fmi_kind_enu_t* kind);
 OMSAPI oms_status_enu_t OMSCALL oms_fetchExternalModelInterfaces(const char* cref, char*** names, char*** domains, int** dimensions);

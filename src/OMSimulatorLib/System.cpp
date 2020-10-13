@@ -1714,37 +1714,37 @@ oms_status_enu_t oms::System::getAllResources(std::vector<std::string>& resource
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::System::exportDependencyGraphs(const std::string& pathInitialization, const std::string& pathSimulation, const std::string& pathContinuous)
+oms_status_enu_t oms::System::exportDependencyGraphs(const std::string& pathInitialization, const std::string& pathEvent, const std::string& pathSimulation)
 {
   oms_status_enu_t status = updateDependencyGraphs();
 
-  initialUnknownsGraph.dotExport(pathInitialization);
-  outputsGraph.dotExport(pathSimulation);
-  continuousTimeModeGraph.dotExport(pathContinuous);
+  initializationGraph.dotExport(pathInitialization);
+  eventGraph.dotExport(pathEvent);
+  simulationGraph.dotExport(pathSimulation);
   return status;
 }
 
 oms_status_enu_t oms::System::updateDependencyGraphs()
 {
-  initialUnknownsGraph.clear();
-  outputsGraph.clear();
-  continuousTimeModeGraph.clear();
+  initializationGraph.clear();
+  eventGraph.clear();
+  simulationGraph.clear();
 
   for (const auto& subsystem : subsystems)
   {
     if (oms_status_ok != subsystem.second->updateDependencyGraphs())
       return oms_status_error;
 
-    initialUnknownsGraph.includeGraph(subsystem.second->getInitialUnknownsGraph(), subsystem.first);
-    outputsGraph.includeGraph(subsystem.second->getOutputsGraph(), subsystem.first);
-    continuousTimeModeGraph.includeGraph(subsystem.second->getOutputsGraph(), subsystem.first);
+    initializationGraph.includeGraph(subsystem.second->getInitialUnknownsGraph(), subsystem.first);
+    eventGraph.includeGraph(subsystem.second->getOutputsGraph(), subsystem.first);
+    simulationGraph.includeGraph(subsystem.second->getOutputsGraph(), subsystem.first);
   }
 
   for (const auto& component : components)
   {
-    initialUnknownsGraph.includeGraph(component.second->getInitialUnknownsGraph(), component.first);
-    outputsGraph.includeGraph(component.second->getOutputsGraph(), component.first);
-    continuousTimeModeGraph.includeGraph(component.second->getOutputsGraph(), component.first);
+    initializationGraph.includeGraph(component.second->getInitialUnknownsGraph(), component.first);
+    eventGraph.includeGraph(component.second->getOutputsGraph(), component.first);
+    simulationGraph.includeGraph(component.second->getOutputsGraph(), component.first);
   }
 
   for (const auto& connection : connections)
@@ -1759,16 +1759,16 @@ oms_status_enu_t oms::System::updateDependencyGraphs()
       bool validConnection = oms::Connection::isValid(connection->getSignalA(), connection->getSignalB(), *varA, *varB);
       if (validConnection)
       {
-        initialUnknownsGraph.addEdge(Connector(varA->getCausality(), varA->getType(), connection->getSignalA()), Connector(varB->getCausality(), varB->getType(), connection->getSignalB()));
+        initializationGraph.addEdge(Connector(varA->getCausality(), varA->getType(), connection->getSignalA()), Connector(varB->getCausality(), varB->getType(), connection->getSignalB()));
         // Don't include parameter connections in simulation dependencies
         if (!varA->isParameter())
         {
-          outputsGraph.addEdge(Connector(varA->getCausality(), varA->getType(), connection->getSignalA()), Connector(varB->getCausality(), varB->getType(), connection->getSignalB()));
+          eventGraph.addEdge(Connector(varA->getCausality(), varA->getType(), connection->getSignalA()), Connector(varB->getCausality(), varB->getType(), connection->getSignalB()));
         }
         // allow only real connections in Continuous time mode
         if (varA->getType() == oms_signal_type_real && !varA->isParameter())
         {
-          continuousTimeModeGraph.addEdge(Connector(varA->getCausality(), varA->getType(), connection->getSignalA()), Connector(varB->getCausality(), varB->getType(), connection->getSignalB()));
+          simulationGraph.addEdge(Connector(varA->getCausality(), varA->getType(), connection->getSignalA()), Connector(varB->getCausality(), varB->getType(), connection->getSignalB()));
         }
       }
       else

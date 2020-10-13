@@ -1197,7 +1197,7 @@ oms_status_enu_t oms_setTLMPositionAndOrientation(const char *cref, double x1, d
 #endif
 }
 
-oms_status_enu_t oms_exportDependencyGraphs(const char* cref, const char* initialization, const char* simulation, const char* continuousTimeMode)
+oms_status_enu_t oms_exportDependencyGraphs(const char* cref, const char* initialization, const char* event, const char* simulation)
 {
   oms::ComRef tail(cref);
   oms::ComRef front = tail.pop_front();
@@ -1211,7 +1211,7 @@ oms_status_enu_t oms_exportDependencyGraphs(const char* cref, const char* initia
   if (!system)
     return logError_SystemNotInModel(model->getCref(), tail);
 
-  return system->exportDependencyGraphs(initialization, simulation, continuousTimeMode);
+  return system->exportDependencyGraphs(initialization, event, simulation);
 }
 
 oms_status_enu_t oms_getReal(const char* cref, double* value)

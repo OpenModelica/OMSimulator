@@ -101,7 +101,7 @@ class OMSimulator:
     self.obj.oms_deleteConnectorFromTLMBus.restype = ctypes.c_int
     self.obj.oms_export.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_export.restype = ctypes.c_int
-    self.obj.oms_exportDependencyGraphs.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_exportDependencyGraphs.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_exportDependencyGraphs.restype = ctypes.c_int
     self.obj.oms_exportSnapshot.argtypes = [ctypes.c_char_p]
     self.obj.oms_exportSnapshot.restype = ctypes.c_int
@@ -335,8 +335,8 @@ class OMSimulator:
     return self.obj.oms_setTLMSocketData(self.checkstring(cref), self.checkstring(address), managerPort, monitorPort)
   def setTLMPositionAndOrientation(self, cref, x1, x2, x3, A11, A12, A13, A21, A22, A23, A31, A32, A33):
     return self.obj.oms_setTLMPositionAndOrientation(self.checkstring(cref), x1, x2, x3, A11, A12, A13, A21, A22, A23, A31, A32, A33)
-  def exportDependencyGraphs(self, cref, initialization, simulation):
-    return self.obj.oms_exportDependencyGraphs(self.checkstring(cref), self.checkstring(initialization), self.checkstring(simulation))
+  def exportDependencyGraphs(self, cref, initialization, event, simulation):
+    return self.obj.oms_exportDependencyGraphs(self.checkstring(cref), self.checkstring(initialization), self.checkstring(event), self.checkstring(simulation))
   def faultInjection(self, cref, faultType, faultValue):
     return self.obj.oms_faultInjection(self.checkstring(cref), faultType, faultValue)
   def getReal(self, cref):
