@@ -81,7 +81,8 @@ OMSAPI oms_status_enu_t OMSCALL oms_deleteConnection(const char* crefA, const ch
 OMSAPI oms_status_enu_t OMSCALL oms_deleteConnectorFromBus(const char* busCref, const char* connectorCref);
 OMSAPI oms_status_enu_t OMSCALL oms_deleteConnectorFromTLMBus(const char* busCref, const char* connectorCref);
 OMSAPI oms_status_enu_t OMSCALL oms_export(const char* cref, const char* filename);
-OMSAPI oms_status_enu_t OMSCALL oms_exportDependencyGraphs(const char* cref, const char* initialization, const char* simulation);
+OMSAPI oms_status_enu_t OMSCALL oms_exportDependencyGraphs(const char* cref, const char* initialization, const char* event, const char* simulation);
+OMSAPI oms_status_enu_t OMSCALL oms_exportSnapshot(const char* cref, char** contents);
 OMSAPI oms_status_enu_t OMSCALL oms_extractFMIKind(const char* filename, oms_fmi_kind_enu_t* kind);
 OMSAPI oms_status_enu_t OMSCALL oms_fetchExternalModelInterfaces(const char* cref, char*** names, char*** domains, int** dimensions);
 OMSAPI void OMSCALL oms_freeMemory(void* obj);
@@ -112,6 +113,7 @@ OMSAPI oms_status_enu_t OMSCALL oms_getVariableStepSize(const char* cref, double
 OMSAPI const char* OMSCALL oms_getVersion();
 OMSAPI oms_status_enu_t OMSCALL oms_faultInjection(const char* signal, oms_fault_type_enu_t faultType, double faultValue);
 OMSAPI oms_status_enu_t OMSCALL oms_importFile(const char* filename, char** cref);
+OMSAPI oms_status_enu_t OMSCALL oms_importSnapshot(const char* cref, const char* snapshot);
 OMSAPI oms_status_enu_t OMSCALL oms_initialize(const char* cref);
 OMSAPI oms_status_enu_t OMSCALL oms_instantiate(const char* cref);
 OMSAPI oms_status_enu_t OMSCALL oms_list(const char* cref, char** contents);

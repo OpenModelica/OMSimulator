@@ -1,6 +1,6 @@
 #CAPTION#
-loadSnapshot
-------------
+importSnapshot
+--------------
 
 Loads a snapshot to restore a previous model state. The model must be in virgin model state, which means it must not be instantiated.
 #END#
@@ -8,28 +8,28 @@ Loads a snapshot to restore a previous model state. The model must be in virgin 
 #LUA#
 .. code-block:: lua
 
-  status = oms_loadSnapshot(cref, snapshot)
+  status = oms_importSnapshot(cref, snapshot)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  status = oms_loadSnapshot(cref, snapshot)
+  status = oms_importSnapshot(cref, snapshot)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms_loadSnapshot(const char* cref, const char* snapshot);
+  oms_status_enu_t oms_importSnapshot(const char* cref, const char* snapshot);
 
 #END#
 
 #OMC#
 .. code-block:: Modelica
 
-  status := oms_loadSnapshot(cref, snapshot);
+  status := oms_importSnapshot(cref, snapshot);
 
 #END#
 

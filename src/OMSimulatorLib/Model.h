@@ -71,7 +71,9 @@ namespace oms
     oms_status_enu_t list(const ComRef& cref, char** contents);
     oms_status_enu_t addSystem(const ComRef& cref, oms_system_enu_t type);
     oms_status_enu_t exportToSSD(pugi::xml_node& node, pugi::xml_node& ssvNode) const;
+    oms_status_enu_t exportSnapshot(const ComRef& cref, char** contents);
     oms_status_enu_t importFromSSD(const pugi::xml_node& node);
+    oms_status_enu_t importSnapshot(const char* snapshot);
     oms_status_enu_t exportToFile(const std::string& filename) const;
     oms_system_enu_t getSystemType(const pugi::xml_node& node, const std::string& sspVersion);
     oms_system_enu_t getSystemTypeHelper(const pugi::xml_node& node, const std::string& sspVersion);
@@ -120,6 +122,8 @@ namespace oms
 
     oms_status_enu_t loadSnapshot(const char* snapshot);
 
+    pugi::xml_node getSnapshot() {return snapShot;}
+
   private:
     Model(const ComRef& cref, const std::string& tempDir);
 
@@ -150,7 +154,9 @@ namespace oms
     std::string resultFilename;             ///< default <name>_res.mat
     Clock clock;
 
-    std::string signalFilter = "";  // default set to empty
+    std::string signalFilter = "";  ///< default set to empty
+
+    pugi::xml_node snapShot; ///< top level snapshot node which contains ssd, ssv and ssm as child nodes
 
     bool cancelSim;
     bool isolatedFMU = false;

@@ -41,6 +41,10 @@ namespace oms
       extern const char* simulation_information;
       extern const char* FixedStepMaster;
       extern const char* VariableStepSolver;
+      extern const char* snap_shot;
+      extern const char* ssd_file;
+      extern const char* ssv_file;
+      extern const char* ssm_file;
 
       namespace ssd
       {

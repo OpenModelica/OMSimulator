@@ -1,0 +1,11 @@
+{"format":"Transformational debugger info","version":1,
+"info":{"name":"Enum1","description":""},
+"variables":{
+"u":{"comment":"","kind":"variable","type":"Enumeration","unit":"","displayUnit":"","source":{"info":{"file":"<interactive>","lineStart":4,"lineEnd":4,"colStart":3,"colEnd":12},"within":["Enum1.E"]}},
+"u":{"comment":"","kind":"variable","type":"Enumeration","unit":"","displayUnit":"","source":{"info":{"file":"<interactive>","lineStart":4,"lineEnd":4,"colStart":3,"colEnd":12},"within":["Enum1.E"]}}
+},
+"equations":[{"eqIndex":0,"tag":"dummy"}
+],
+"functions":[
+]
+}

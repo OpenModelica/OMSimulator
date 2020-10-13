@@ -204,7 +204,7 @@ oms_status_enu_t oms::SystemWC::initialize()
   if (oms_status_ok != updateDependencyGraphs())
     return oms_status_error;
 
-  if (oms_status_ok != updateInputs(initialUnknownsGraph))
+  if (oms_status_ok != updateInputs(initializationGraph))
     return oms_status_error;
 
   for (const auto& subsystem : getSubSystems())
@@ -254,7 +254,7 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
   CallClock callClock(clock);
 
   // set input derivatives
-  updateInputs(outputsGraph);
+  updateInputs(eventGraph);
 
   if (solverMethod == oms_solver_wc_assc)
     return stepUntilASSC(stopTime, cb);
@@ -351,7 +351,7 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
         // get inputs and outputs at the end of all steps.
         if (whichStepIndex == 0)
         {
-          if (oms_status_ok != getInputAndOutput(outputsGraph,inputVect,outputVect,canGetAndSetStateFMUcomponents))
+          if (oms_status_ok != getInputAndOutput(eventGraph,inputVect,outputVect,canGetAndSetStateFMUcomponents))
             return oms_status_error;
 
           if (doDoubleStep) // Rollback for small steppies.
@@ -374,9 +374,9 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
           }
         }
         else if (whichStepIndex == 1)
-          updateInputs(outputsGraph);
+          updateInputs(eventGraph);
         else if (whichStepIndex == 2)
-          if (oms_status_ok != getInputAndOutput(outputsGraph,inputVectEnd,outputVectEnd,canGetAndSetStateFMUcomponents))
+          if (oms_status_ok != getInputAndOutput(eventGraph,inputVectEnd,outputVectEnd,canGetAndSetStateFMUcomponents))
             return oms_status_error;
       }
       logDebug("DEBUGGING: Lets do Error control");
@@ -461,7 +461,7 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
         bool emitted;
         if (isTopLevelSystem())
           getModel()->emit(time, false, &emitted);
-        updateInputs(outputsGraph);
+        updateInputs(eventGraph);
         if (isTopLevelSystem())
           getModel()->emit(time, emitted);
 
@@ -536,7 +536,7 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
           component.second->saveState();
       }
 
-      getInputs(outputsGraph, inputVect1);
+      getInputs(eventGraph, inputVect1);
       for (int masi=0; masi<masiMax; masi++)
       {
         oms_status_enu_t status;
@@ -626,8 +626,8 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
 
         if (masi < masiMax-1)
         {
-          updateInputs(outputsGraph);
-          getInputs(outputsGraph, inputVect2);
+          updateInputs(eventGraph);
+          getInputs(eventGraph, inputVect2);
           inputDer.clear();
           for (int inputI=0; inputI<inputVect1.size(); ++inputI)
             inputDer.push_back((inputVect2[inputI]-inputVect1[inputI]) / h);
@@ -637,7 +637,7 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
             component.second->restoreState();
 
           //updateInputs(outputsGraph);
-          setInputsDer(outputsGraph, inputDer);
+          setInputsDer(eventGraph, inputDer);
         }
         else
         {
@@ -645,7 +645,7 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
           bool emitted;
           if (isTopLevelSystem())
             getModel()->emit(time, false, &emitted);
-          updateInputs(outputsGraph);
+          updateInputs(eventGraph);
           if (isTopLevelSystem())
             getModel()->emit(time, emitted);
         }
@@ -860,7 +860,7 @@ oms_status_enu_t oms::SystemWC::stepUntilASSC(double stopTime, void (*cb)(const 
     bool emitted;
     if (isTopLevelSystem())
       getModel()->emit(time, false, &emitted);
-    updateInputs(outputsGraph);
+    updateInputs(eventGraph);
     if (isTopLevelSystem())
       getModel()->emit(time, emitted);
 
@@ -1040,7 +1040,7 @@ oms_status_enu_t oms::SystemWC::updateInputs(oms::DirectedGraph& graph)
           }
         }
       }
-      else if (graph.getNodes()[input].getType() == oms_signal_type_integer)
+      else if (graph.getNodes()[input].getType() == oms_signal_type_integer || graph.getNodes()[input].getType() == oms_signal_type_enum)
       {
         int value = 0.0;
         if (oms_status_ok != getInteger(graph.getNodes()[output].getName(), value)) return oms_status_error;

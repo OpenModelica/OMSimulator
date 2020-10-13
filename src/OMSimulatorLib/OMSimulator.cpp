@@ -214,6 +214,17 @@ oms_status_enu_t oms_list(const char* cref_, char** contents)
   return model->list(tail, contents);
 }
 
+oms_status_enu_t oms_exportSnapshot(const char* cref_, char** contents)
+{
+  oms::ComRef tail(cref_);
+  oms::ComRef front = tail.pop_front();
+  oms::Model* model = oms::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  return model->exportSnapshot(tail, contents);
+}
+
 oms_status_enu_t oms_listUnconnectedConnectors(const char* cref_, char** contents)
 {
   oms::ComRef tail(cref_);
@@ -238,6 +249,17 @@ oms_status_enu_t oms_loadSnapshot(const char* cref_, const char* snapshot)
     return logError_ModelNotInScope(cref);
 
   return model->loadSnapshot(snapshot);
+}
+
+oms_status_enu_t oms_importSnapshot(const char* cref_, const char* snapshot)
+{
+  oms::ComRef cref(cref_);
+
+  oms::Model* model = oms::Scope::GetInstance().getModel(cref);
+  if (!model)
+    return logError_ModelNotInScope(cref);
+
+  return model->importSnapshot(snapshot);
 }
 
 oms_status_enu_t oms_parseModelName(const char* contents, char** cref)
@@ -1175,7 +1197,7 @@ oms_status_enu_t oms_setTLMPositionAndOrientation(const char *cref, double x1, d
 #endif
 }
 
-oms_status_enu_t oms_exportDependencyGraphs(const char* cref, const char* initialization, const char* simulation)
+oms_status_enu_t oms_exportDependencyGraphs(const char* cref, const char* initialization, const char* event, const char* simulation)
 {
   oms::ComRef tail(cref);
   oms::ComRef front = tail.pop_front();
@@ -1189,7 +1211,7 @@ oms_status_enu_t oms_exportDependencyGraphs(const char* cref, const char* initia
   if (!system)
     return logError_SystemNotInModel(model->getCref(), tail);
 
-  return system->exportDependencyGraphs(initialization, simulation);
+  return system->exportDependencyGraphs(initialization, event, simulation);
 }
 
 oms_status_enu_t oms_getReal(const char* cref, double* value)

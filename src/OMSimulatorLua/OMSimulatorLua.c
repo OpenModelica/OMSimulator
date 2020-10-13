@@ -258,6 +258,26 @@ static int OMSimulatorLua_oms_list(lua_State *L)
   return 2;
 }
 
+//oms_status_enu_t oms_exportSnapshot(const char* cref, char** contents);
+static int OMSimulatorLua_oms_exportSnapshot(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* cref = lua_tostring(L, 1);
+  char* contents = NULL;
+  oms_status_enu_t status = oms_exportSnapshot(cref, &contents);
+
+  lua_pushstring(L, contents ? contents : "");
+  lua_pushinteger(L, status);
+
+  if (contents)
+    oms_freeMemory(contents);
+
+  return 2;
+}
+
 //oms_status_enu_t oms_listUnconnectedConnectors(const char* cref, char** contents);
 static int OMSimulatorLua_oms_listUnconnectedConnectors(lua_State *L)
 {
@@ -294,21 +314,39 @@ static int OMSimulatorLua_oms_loadSnapshot(lua_State *L)
   return 1;
 }
 
-//oms_status_enu_t oms_exportDependencyGraphs(const char* cref, const char* initialization, const char* simulation);
+//oms_status_enu_t oms_importSnapshot(const char* cref, const char* snapshot);
+static int OMSimulatorLua_oms_importSnapshot(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 arguments\n<integer> = oms_loadSnapshot(<string>, <string>)");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+
+  const char* cref = lua_tostring(L, 1);
+  const char* snapshot = lua_tostring(L, 2);
+  oms_status_enu_t status = oms_importSnapshot(cref, snapshot);
+
+  lua_pushinteger(L, status);
+  return 1;
+}
+
+//oms_status_enu_t oms_exportDependencyGraphs(const char* cref, const char* initialization, const char* event, const char* simulation);
 static int OMSimulatorLua_oms_exportDependencyGraphs(lua_State *L)
 {
-  if (lua_gettop(L) != 3)
-    return luaL_error(L, "expecting exactly 3 arguments");
+  if (lua_gettop(L) != 4)
+    return luaL_error(L, "expecting exactly 4 arguments");
 
   luaL_checktype(L, 1, LUA_TSTRING);
   luaL_checktype(L, 2, LUA_TSTRING);
   luaL_checktype(L, 3, LUA_TSTRING);
+  luaL_checktype(L, 4, LUA_TSTRING);
 
   const char* cref = lua_tostring(L, 1);
   const char* initialization = lua_tostring(L, 2);
-  const char* simulation = lua_tostring(L, 3);
+  const char* event = lua_tostring(L, 3);
+  const char* simulation = lua_tostring(L, 4);
 
-  oms_status_enu_t status = oms_exportDependencyGraphs(cref, initialization, simulation);
+  oms_status_enu_t status = oms_exportDependencyGraphs(cref, initialization, event, simulation);
   lua_pushinteger(L, status);
   return 1;
 }
@@ -1230,6 +1268,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms_deleteConnectorFromTLMBus);
   REGISTER_LUA_CALL(oms_export);
   REGISTER_LUA_CALL(oms_exportDependencyGraphs);
+  REGISTER_LUA_CALL(oms_exportSnapshot);
   REGISTER_LUA_CALL(oms_faultInjection);
   REGISTER_LUA_CALL(oms_getBoolean);
   REGISTER_LUA_CALL(oms_getFixedStepSize);
@@ -1243,6 +1282,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms_getVariableStepSize);
   REGISTER_LUA_CALL(oms_getVersion);
   REGISTER_LUA_CALL(oms_importFile);
+  REGISTER_LUA_CALL(oms_importSnapshot);
   REGISTER_LUA_CALL(oms_initialize);
   REGISTER_LUA_CALL(oms_instantiate);
   REGISTER_LUA_CALL(oms_list);
