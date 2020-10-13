@@ -2,10 +2,10 @@
 <fmiModelDescription
   fmiVersion="2.0"
   modelName="Enum1"
-  guid="{4f10ea46-8367-4574-b873-be9898352ccf}"
+  guid="{519dd39c-75b2-481c-98d6-2096c5b6a41e}"
   description=""
-  generationTool="OpenModelica Compiler OMCompiler v1.16.0-dev.690+g327dc89d4a"
-  generationDateAndTime="2020-10-12T16:17:53Z"
+  generationTool="OpenModelica Compiler OMCompiler v1.17.0-dev.44+gcb1dac39fa"
+  generationDateAndTime="2020-10-13T12:09:16Z"
   variableNamingConvention="structured"
   numberOfEventIndicators="0">
   <ModelExchange

@@ -2,10 +2,10 @@
 <fmiModelDescription
   fmiVersion="2.0"
   modelName="Int1"
-  guid="{b250cf58-be0d-4cba-8aeb-d6680e6c6052}"
+  guid="{d0d221b6-3326-43e3-a088-3a8dcda546f3}"
   description=""
-  generationTool="OpenModelica Compiler OMCompiler v1.16.0-dev.690+g327dc89d4a"
-  generationDateAndTime="2020-10-12T16:17:56Z"
+  generationTool="OpenModelica Compiler OMCompiler v1.17.0-dev.44+gcb1dac39fa"
+  generationDateAndTime="2020-10-13T12:09:22Z"
   variableNamingConvention="structured"
   numberOfEventIndicators="0">
   <ModelExchange
