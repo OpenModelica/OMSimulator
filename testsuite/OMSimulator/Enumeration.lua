@@ -22,7 +22,6 @@ oms_setResultFile("test", "test_res.mat")
 -- os.execute("gvpr -c \"N[$.degree==0]{delete(root, $)}\" test.root_sim.dot | dot -Tpdf -o test.root_sim.pdf")
 -- os.execute("gvpr -c \"N[$.degree==0]{delete(root, $)}\" test.root_continuous.dot | dot -Tpdf -o test.root_continuous.pdf")
 
-
 oms_instantiate("test")
 print("info:    Instantiation")
 print("info:      test.root.A.y     : " .. oms_getInteger("test.root.A.y"))
@@ -40,7 +39,6 @@ print("info:      test.root.B.u     : " .. oms_getInteger("test.root.B.u"))
 
 oms_terminate("test")
 oms_delete("test")
-
 
 -- Result:
 -- info:    model doesn't contain any continuous state
