@@ -5,7 +5,7 @@
 -- mac: no
 
 oms_setCommandLineOption("--suppressPath=true")
-oms_setTempDirectory("./exportConnectors/")
+oms_setTempDirectory("./setExternalInputs_lua/")
 
 oms_newModel("setExternalInputs")
 
