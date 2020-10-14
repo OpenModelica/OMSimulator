@@ -353,6 +353,12 @@ oms_status_enu_t oms::ComponentFMUCS::exportToSSD(pugi::xml_node& node, pugi::xm
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::ComponentFMUCS::exportToSSVTemplate(pugi::xml_node& ssvNode)
+{
+  values.exportToSSVTemplate(ssvNode, getCref());
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms::ComponentFMUCS::initializeDependencyGraph_initialUnknowns()
 {
   if (initialUnknownsGraph.getEdges().size() > 0)

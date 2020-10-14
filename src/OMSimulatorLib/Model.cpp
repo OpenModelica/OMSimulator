@@ -401,6 +401,52 @@ oms_status_enu_t oms::Model::exportSnapshot(const oms::ComRef& cref, char** cont
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::Model::exportSSVTemplate(const oms::ComRef& cref, const std::string& filename)
+{
+  // only top level model is allowed
+  if (!cref.isEmpty())
+  {
+    return logError("\"" + std::string(getCref()+std::string(cref)) + "\" is not a top level model");
+  }
+
+  pugi::xml_document ssvdoc;
+
+  std::string extension = "";
+  if (filename.length() > 4)
+    extension = filename.substr(filename.length() - 4);
+
+  if (extension != ".ssv")
+    return logError("filename extension must be \".ssv\"; no other formats are supported");
+
+  // generate XML declaration for ssv file
+  pugi::xml_node ssvDeclarationNode = ssvdoc.append_child(pugi::node_declaration);
+  ssvDeclarationNode.append_attribute("version") = "1.0";
+  ssvDeclarationNode.append_attribute("encoding") = "UTF-8";
+
+  pugi::xml_node node_parameterset = ssvdoc.append_child(oms::ssp::Version1_0::ssv::parameter_set);
+  node_parameterset.append_attribute("xmlns:ssc") = "http://ssp-standard.org/SSP1/SystemStructureCommon";
+  node_parameterset.append_attribute("xmlns:ssv") = "http://ssp-standard.org/SSP1/SystemStructureParameterValues";
+
+  node_parameterset.append_attribute("version") = "1.0";
+  node_parameterset.append_attribute("name") = "modelDescriptionStartValues";
+  pugi::xml_node node_parameters = node_parameterset.append_child(oms::ssp::Version1_0::ssv::parameters);
+
+  for (const auto& component : system->getComponents())
+  {
+    if (oms_status_ok != component.second->exportToSSVTemplate(node_parameters))
+    {
+      return logError("export of ssv template failed for component " + std::string(system->getFullCref()+std::string(component.first)));
+    }
+  }
+
+  //ssvdoc.save(std::cout);
+
+  if (!ssvdoc.save_file(filename.c_str()))
+    return logError("failed to export  \"" + filename + "\" (for model \"" + std::string(this->getCref()) + "\")");
+
+  return oms_status_ok;
+}
+
 /*
  * This function update the ParameterBindings in SSD, to link with a SSV file, (e.g)
  * <ssd:ParameterBindings>
