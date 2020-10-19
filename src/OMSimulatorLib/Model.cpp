@@ -403,11 +403,8 @@ oms_status_enu_t oms::Model::exportSnapshot(const oms::ComRef& cref, char** cont
 
 oms_status_enu_t oms::Model::exportSSVTemplate(const oms::ComRef& cref, const std::string& filename)
 {
-  // only top level model is allowed
-  if (!cref.isEmpty())
-  {
-    return logError("\"" + std::string(getCref()+std::string(cref)) + "\" is not a top level model");
-  }
+  oms::ComRef tail(cref);
+  oms::ComRef front = tail.pop_front();
 
   pugi::xml_document ssvdoc;
 
@@ -433,9 +430,12 @@ oms_status_enu_t oms::Model::exportSSVTemplate(const oms::ComRef& cref, const st
 
   for (const auto& component : system->getComponents())
   {
-    if (oms_status_ok != component.second->exportToSSVTemplate(node_parameters))
+    if(tail == component.first || cref.isEmpty()) // allow querying single component or whole model
     {
-      return logError("export of ssv template failed for component " + std::string(system->getFullCref()+std::string(component.first)));
+      if (oms_status_ok != component.second->exportToSSVTemplate(node_parameters))
+      {
+        return logError("export of ssv template failed for component " + std::string(system->getFullCref()+std::string(component.first)));
+      }
     }
   }
 
