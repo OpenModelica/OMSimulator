@@ -38,11 +38,9 @@
 #include "Model.h"
 #include "Types.h"
 #include "ssd/Tags.h"
-#include "cvode/cvode.h"                /* prototypes for CVODE fcts., consts. */
-#include "nvector/nvector_serial.h"     /* serial N_Vector types, fcts., macros */
+#include <cvode/cvode.h>                /* prototypes for CVODE fcts., consts. */
+#include <nvector/nvector_serial.h>     /* serial N_Vector types, fcts., macros */
 #include <sunlinsol/sunlinsol_dense.h>  /* Default dense linear solver */
-#include "sundials/sundials_dense.h"    /* definitions DlsMat DENSE_ELEM */
-#include "sundials/sundials_types.h"    /* definition of type realtype */
 
 int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
