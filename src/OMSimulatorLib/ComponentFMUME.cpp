@@ -405,7 +405,7 @@ oms_status_enu_t oms::ComponentFMUME::initializeDependencyGraph_initialUnknowns(
       {
         if (dependency[j] <= 0 || allVariables.size() < dependency[j])
         {
-          logError(std::string(getCref()) + ": Dependecies from modelDescription.xml erroneous.");
+          logError(std::string(getCref()) + ": Dependencies from modelDescription.xml erroneous.");
           logDebug("Can't find variable for dependency with index " + std::to_string(dependency[j]) + " for initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + "." );
           logInfo("Use flag --ignoreInitialUnknowns=true to ignore dependencies, but this can cause inflated loop size.");
           return oms_status_fatal;
@@ -456,7 +456,7 @@ oms_status_enu_t oms::ComponentFMUME::initializeDependencyGraph_outputs()
       {
         if (dependency[j] <= 0 || allVariables.size() < dependency[j])
         {
-          logError(std::string(getCref()) + ": Dependecies from modelDescription.xml erroneous.");
+          logError(std::string(getCref()) + ": Dependencies from modelDescription.xml erroneous.");
           logDebug("Can't find variable for dependency with index " + std::to_string(dependency[j]) + " for output " + std::string(outputs[i]) + "." );
           logInfo("Use flag --ignoreInitialUnknowns=true to ignore dependencies, but this can cause inflated loop size.");
           return oms_status_fatal;
