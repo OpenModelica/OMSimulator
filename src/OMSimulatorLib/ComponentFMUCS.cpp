@@ -361,6 +361,18 @@ oms_status_enu_t oms::ComponentFMUCS::initializeDependencyGraph_initialUnknowns(
     return oms_status_error;
   }
 
+  if (Flags::IgnoreInitialUnknowns())
+  {
+    int N=initialUnknownsGraph.getNodes().size();
+    for (int i = 0; i < N; i++)
+    {
+      logDebug(std::string(getCref()) + ": " + getPath() + " initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + " depends on all");
+      for (int j = 0; j < inputs.size(); j++)
+        initialUnknownsGraph.addEdge(inputs[j].makeConnector(), initialUnknownsGraph.getNodes()[i]);
+    }
+    return oms_status_ok;
+  }
+
   size_t *startIndex=NULL, *dependency=NULL;
   char* factorKind;
 
@@ -391,7 +403,7 @@ oms_status_enu_t oms::ComponentFMUCS::initializeDependencyGraph_initialUnknowns(
       {
         if (dependency[j] <= 0 || allVariables.size() < dependency[j])
         {
-          logError(std::string(getCref()) + ": Dependecies from modelDescription.xml erroneous.");
+          logError(std::string(getCref()) + ": Dependencies from modelDescription.xml erroneous.");
           logDebug("Can't find variable for dependency with index " + std::to_string(dependency[j]) + " for  initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + "." );
           logInfo("Use flag --ignoreInitialUnknowns=true to ignore dependencies, but this can cause inflated loop size.");
           return oms_status_fatal;
@@ -442,7 +454,7 @@ oms_status_enu_t oms::ComponentFMUCS::initializeDependencyGraph_outputs()
       {
         if (dependency[j] <= 0 || allVariables.size() < dependency[j])
         {
-          logError(std::string(getCref()) + ": Dependecies from modelDescription.xml erroneous.");
+          logError(std::string(getCref()) + ": Dependnecies from modelDescription.xml erroneous.");
           logDebug("Can't find variable for dependency with index " + std::to_string(dependency[j]) + " for output " + std::string(outputs[i]) + "." );
           logInfo("Use flag --ignoreInitialUnknowns=true to ignore dependencies, but this can cause inflated loop size.");
           return oms_status_fatal;
