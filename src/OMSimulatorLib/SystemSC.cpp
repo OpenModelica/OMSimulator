@@ -38,11 +38,9 @@
 #include "Model.h"
 #include "Types.h"
 #include "ssd/Tags.h"
-#include "cvode/cvode.h"                /* prototypes for CVODE fcts., consts. */
-#include "nvector/nvector_serial.h"     /* serial N_Vector types, fcts., macros */
+#include <cvode/cvode.h>                /* prototypes for CVODE fcts., consts. */
+#include <nvector/nvector_serial.h>     /* serial N_Vector types, fcts., macros */
 #include <sunlinsol/sunlinsol_dense.h>  /* Default dense linear solver */
-#include "sundials/sundials_dense.h"    /* definitions DlsMat DENSE_ELEM */
-#include "sundials/sundials_types.h"    /* definition of type realtype */
 
 int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
@@ -625,7 +623,7 @@ oms_status_enu_t oms::SystemSC::stepUntil(double stopTime, void (*cb)(const char
     for (int i=0; i < fmus.size(); ++i)
     {
       fmistatus = fmi2_import_completed_integrator_step(fmus[i]->getFMU(), fmi2_true, &callEventUpdate[i], &terminateSimulation[i]);
-      if (fmi2_status_ok != fmistatus) logError_FMUCall("fmi2_import_completed_integrator_step", fmus[i]);
+      if (fmi2_status_ok != fmistatus) return logError_FMUCall("fmi2_import_completed_integrator_step", fmus[i]);
     }
 
     updateInputs(simulationGraph); //pass the continuousTimeMode dependency graph which involves only connections of type Real
