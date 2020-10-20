@@ -623,10 +623,7 @@ oms_status_enu_t oms::SystemSC::stepUntil(double stopTime, void (*cb)(const char
     for (int i=0; i < fmus.size(); ++i)
     {
       fmistatus = fmi2_import_completed_integrator_step(fmus[i]->getFMU(), fmi2_true, &callEventUpdate[i], &terminateSimulation[i]);
-      if (fmi2_status_ok != fmistatus)
-      {
-        return logError_FMUCall("fmi2_import_completed_integrator_step", fmus[i]);
-      }
+      if (fmi2_status_ok != fmistatus) return logError_FMUCall("fmi2_import_completed_integrator_step", fmus[i]);
     }
 
     updateInputs(simulationGraph); //pass the continuousTimeMode dependency graph which involves only connections of type Real
