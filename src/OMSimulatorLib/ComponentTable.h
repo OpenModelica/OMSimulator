@@ -55,7 +55,7 @@ namespace oms
     static Component* NewComponent(const pugi::xml_node& node, System* parentSystem, const std::string& sspVersion);
 
     oms_status_enu_t exportToSSD(pugi::xml_node& node, pugi::xml_node& ssvNode) const;
-    oms_status_enu_t exportToSSVTemplate(pugi::xml_node& ssvNode) {return logError_NotImplemented;}
+    oms_status_enu_t exportToSSVTemplate(pugi::xml_node& ssvNode) {return oms_status_ok;}
     oms_status_enu_t instantiate();
     oms_status_enu_t initialize() {return oms_status_ok;}
     oms_status_enu_t terminate() {return oms_status_ok;}
