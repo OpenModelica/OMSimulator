@@ -401,12 +401,11 @@ oms_status_enu_t oms::ComponentFMUCS::initializeDependencyGraph_initialUnknowns(
     {
       for (size_t j = startIndex[i]; j < startIndex[i + 1]; j++)
       {
-        if (dependency[j] <= 0 || allVariables.size() < dependency[j])
+        if (dependency[j] < 1 || dependency[j] > allVariables.size())
         {
-          logError(std::string(getCref()) + ": Dependencies from modelDescription.xml erroneous.");
-          logDebug("Can't find variable for dependency with index " + std::to_string(dependency[j]) + " for  initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + "." );
-          logInfo("Use flag --ignoreInitialUnknowns=true to ignore dependencies, but this can cause inflated loop size.");
-          return oms_status_fatal;
+          logWarning("Initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + " has bad dependency on variable with index " + std::to_string(dependency[j]) + " which couldn't be resolved");
+          logInfo("Use flag --ignoreInitialUnknowns=true to ignore all dependencies, but this can cause inflated loop size.");
+          return logError(std::string(getCref()) + ": erroneous dependencies detected in modelDescription.xml");
         }
         logDebug(std::string(getCref()) + ": " + getPath() + " initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + " depends on " + std::string(allVariables[dependency[j] - 1]));
         initialUnknownsGraph.addEdge(allVariables[dependency[j] - 1].makeConnector(), initialUnknownsGraph.getNodes()[i]);
@@ -452,12 +451,10 @@ oms_status_enu_t oms::ComponentFMUCS::initializeDependencyGraph_outputs()
     {
       for (size_t j = startIndex[i]; j < startIndex[i + 1]; j++)
       {
-        if (dependency[j] <= 0 || allVariables.size() < dependency[j])
+        if (dependency[j] < 1 || dependency[j] > allVariables.size())
         {
-          logError(std::string(getCref()) + ": Dependnecies from modelDescription.xml erroneous.");
-          logDebug("Can't find variable for dependency with index " + std::to_string(dependency[j]) + " for output " + std::string(outputs[i]) + "." );
-          logInfo("Use flag --ignoreInitialUnknowns=true to ignore dependencies, but this can cause inflated loop size.");
-          return oms_status_fatal;
+          logWarning("Output " + std::string(outputs[i]) + " has bad dependency on variable with index " + std::to_string(dependency[j]) + " which couldn't be resolved");
+          return logError(std::string(getCref()) + ": erroneous dependencies detected in modelDescription.xml");
         }
         logDebug(std::string(getCref()) + ": " + getPath() + " output " + std::string(outputs[i]) + " depends on " + std::string(allVariables[dependency[j] - 1]));
         outputsGraph.addEdge(allVariables[dependency[j] - 1].makeConnector(), outputs[i].makeConnector());
@@ -792,7 +789,7 @@ oms_status_enu_t oms::ComponentFMUCS::getReal(const ComRef& cref, double& value)
       return oms_status_ok;
     }
     else
-    {      
+    {
       // search in modelDescription.xml
       auto realValue = values.modelDescriptionRealStartValues.find(cref);
       if (realValue != values.modelDescriptionRealStartValues.end())
