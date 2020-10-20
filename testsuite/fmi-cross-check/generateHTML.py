@@ -194,6 +194,7 @@ def constructDF(crossCheckDir, platform, omsVersion):
               "Tolerance": relTol
             }, ignore_index=True)
 
+  df.sort_values(by=["Exporting Tool", "Exporting Tool Version", "FMI Version", "FMI Type", "Model Name"])
   return df
 
 
