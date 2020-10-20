@@ -317,8 +317,7 @@ void Log::ProgressBar(double start, double stop, double value)
     printf("%c", '=');
 
   //fill progress bar with spaces
-  printf("%*s]", width - pos + 1, "");
-  printf(" %3d%%", percent);
+  printf("%*c %3d%%", width - pos + 1, ']', percent);
   log.progress = true;
 }
 
