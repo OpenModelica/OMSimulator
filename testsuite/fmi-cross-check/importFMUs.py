@@ -132,13 +132,13 @@ def simulateFMU(omsimulator, testFMUDir, resultDir, modelName, fmiType, luaFile)
            "--timeout=" + str(ulimitOMSimulator),
            os.path.relpath(luaFile, resultDir)]
   else:
-    cmd = omsimulator + "\\\n"                                                   \
+    cmd = omsimulator + " \\\n"                                                  \
         + "    --stripRoot=true \\\n"                                            \
         + "    --skipCSVHeader=true \\\n"                                        \
         + "    --addParametersToCSV=true \\\n"                                   \
         + "    --intervals=" + intervals + " \\\n"                               \
         + "    --suppressPath=true \\\n"                                         \
-        + "    --timeout=" + str(ulimitOMSimulator) +  "\\\n"                    \
+        + "    --timeout=" + str(ulimitOMSimulator) +  " \\\n"                   \
         + "    " + os.path.relpath(luaFile, resultDir)
 
   # Call OMSimulator and measure time
@@ -166,6 +166,7 @@ def simulateFMU(omsimulator, testFMUDir, resultDir, modelName, fmiType, luaFile)
     print(out.decode())
     print("stderr:")
     print(err.decode())
+    print("Wrote log files to " + resultDir)
     print("\n\n")
 
   # Check if result file was generated
@@ -271,11 +272,22 @@ if __name__ == "__main__":
 
   # Get OMSimulator and version
   omsimulator = str(sys.argv[3])
-  omsimulator = os.path.abspath(shutil.which(omsimulator))
-  if omsimulator is None:
-    Exception("Can't find \""+ omsimulator + "\"")
+  if "wine" in omsimulator:
+    (tmp1, tmp2) = omsimulator.split(" ")
+    if shutil.which(tmp1) is None:
+      raise Exception("Can't find \""+ tmp1 + "\"")
+    if shutil.which(tmp2) is None:
+      raise Exception("Can't find \""+ tmp2 + "\"")
+    tmp2 = os.path.abspath(shutil.which(tmp2))
+    omsimulator = tmp1 + " " + tmp2
+  else:
+    if shutil.which(omsimulator) is None:
+      raise Exception("Can't find \""+ omsimulator + "\"")
+    omsimulator = os.path.abspath(shutil.which(omsimulator))
 
-  omsVersion = subprocess.run([omsimulator, '--version'], stdout=subprocess.PIPE).stdout.decode()
+  tmpCall = omsimulator.split()
+  tmpCall.append('--version')
+  omsVersion = subprocess.run(tmpCall, stdout=subprocess.PIPE).stdout.decode()
   omsVersion = omsVersion.replace("OMSimulator ", "").replace("\n", "")
 
   print("Using OMSimulator from \"" + omsimulator + "\" with version \"" + omsVersion + "\"")
