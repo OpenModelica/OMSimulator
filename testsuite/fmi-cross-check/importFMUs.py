@@ -122,32 +122,18 @@ def simulateFMU(omsimulator, testFMUDir, resultDir, modelName, fmiType, luaFile)
   intervals = "500"
 
   # Run lua file with OMSimulator via shell
-  if sys.platform == "win32":
-    cmd = [omsimulator,
-           "--stripRoot=true",
-           "--skipCSVHeader=true",
-           "--addParametersToCSV=true",
-           "--intervals=" + intervals,
-           "--suppressPath=true",
-           "--timeout=" + str(ulimitOMSimulator),
-           os.path.relpath(luaFile, resultDir)]
-  else:
-    cmd = omsimulator + " \\\n"                                                  \
-        + "    --stripRoot=true \\\n"                                            \
-        + "    --skipCSVHeader=true \\\n"                                        \
-        + "    --addParametersToCSV=true \\\n"                                   \
-        + "    --intervals=" + intervals + " \\\n"                               \
-        + "    --suppressPath=true \\\n"                                         \
-        + "    --timeout=" + str(ulimitOMSimulator) +  " \\\n"                   \
-        + "    " + os.path.relpath(luaFile, resultDir)
+  cmd = ["--stripRoot=true",
+          "--skipCSVHeader=true",
+          "--addParametersToCSV=true",
+          "--intervals=" + intervals,
+          "--suppressPath=true",
+          "--timeout=" + str(ulimitOMSimulator),
+          os.path.relpath(luaFile, resultDir)]
 
   # Call OMSimulator and measure time
   simTimeStart = time.time()
-  if sys.platform == "win32":
-    proc = subprocess.Popen(cmd, cwd=resultDir, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-    cmd = ' \\\n    '.join(cmd)
-  else:
-    proc = subprocess.Popen([cmd], cwd=resultDir, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+  proc = subprocess.Popen(omsimulator+cmd, cwd=resultDir, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  cmd = ' '.join(omsimulator+cmd)
   simTime = time.time() - simTimeStart
   (out, err) = proc.communicate()
   exitCode = proc.returncode
@@ -273,24 +259,26 @@ if __name__ == "__main__":
   # Get OMSimulator and version
   omsimulator = str(sys.argv[3])
   if "wine" in omsimulator:
-    (tmp1, tmp2) = omsimulator.split(" ")
+    (tmp1, tmp2) = omsimulator.split(" ",1)
     if shutil.which(tmp1) is None:
       raise Exception("Can't find \""+ tmp1 + "\"")
+    tmp2 = tmp2.replace('\\ ', " ")
     if shutil.which(tmp2) is None:
-      raise Exception("Can't find \""+ tmp2 + "\"")
-    tmp2 = os.path.abspath(shutil.which(tmp2))
-    omsimulator = tmp1 + " " + tmp2
+      raise Exception("Can't find \""+ tmp1 + "\"")
+    print(tmp2)
+    tmp2 = os.path.abspath(tmp2)
+    omsimulator = [tmp1, tmp2]
   else:
     if shutil.which(omsimulator) is None:
       raise Exception("Can't find \""+ omsimulator + "\"")
-    omsimulator = os.path.abspath(shutil.which(omsimulator))
+    omsimulator = [os.path.abspath(shutil.which(omsimulator))]
 
-  tmpCall = omsimulator.split()
+  tmpCall = omsimulator.copy()
   tmpCall.append('--version')
   omsVersion = subprocess.run(tmpCall, stdout=subprocess.PIPE).stdout.decode()
   omsVersion = omsVersion.replace("OMSimulator ", "").replace("\n", "")
 
-  print("Using OMSimulator from \"" + omsimulator + "\" with version \"" + omsVersion + "\"")
+  print("Using OMSimulator from \"" + ' '.join(omsimulator) + "\" with version \"" + omsVersion + "\"")
 
   # Change working dir to fmi-cross-check repo
   crossCheckDir = os.path.abspath(str(sys.argv[1]))
