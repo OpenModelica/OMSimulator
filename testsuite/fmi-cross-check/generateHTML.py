@@ -3,6 +3,7 @@ import sys
 import subprocess
 import time
 import shutil
+import re
 import pandas as pd
 from OMPython import OMCSessionZMQ
 
@@ -98,6 +99,8 @@ def generateOverviewHTML(crossCheckDir, platform, omsVersion, omsVersionShort, t
   commitshort = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD'], cwd=crossCheckDir).decode('utf-8')
   commitfull = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=crossCheckDir).decode('utf-8')
 
+  omscommitshort = re.search(r"-g.+-",omsVersion).group()[2:9]
+
   htmltpl=open("fmi-cross-check.html.tpl").read()
 
   # Replace keywords from HTML template
@@ -107,6 +110,7 @@ def generateOverviewHTML(crossCheckDir, platform, omsVersion, omsVersionShort, t
 
   htmltpl = htmltpl.replace("#commitshort#", str(commitshort))
   htmltpl = htmltpl.replace("#commitfull#", str(commitfull))
+  htmltpl = htmltpl.replace("#omscommitshort#", str(omscommitshort))
 
   htmltpl = htmltpl.replace("#totalTime#", time.strftime("%M:%S", time.gmtime(totalTime)))
   htmltpl = htmltpl.replace("#sysInfo#", sysInfo)
