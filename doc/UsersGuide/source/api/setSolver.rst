@@ -27,6 +27,16 @@ Sets the solver method for the given system.
 
   status = oms.setSolver(cref, solver)
 
+.. csv-table::
+  :header: "solver", "Type", "Description"
+  :widths: 20, 10, 35
+
+  "oms.solver_sc_explicit_euler", "sc-system", "Explicit euler with fixed step size"
+  "oms.solver_sc_cvode", "sc-system", "CVODE with adaptive stepsize"
+  "oms.solver_wc_ma", "wc-system", "default master algorithm with fixed step size"
+  "oms.solver_wc_mav", "wc-system", "master algorithm with adaptive stepsize"
+  "oms.solver_wc_mav2", "wc-system", "master algorithm with adaptive stepsize (double-step)"
+
 #END#
 
 #CAPI#
@@ -40,7 +50,7 @@ Sets the solver method for the given system.
 .. code-block:: Modelica
 
   status := oms_setSolver(cref, solver);
-  
+
   The second argument "solver" should be any of the following,
 
   "OpenModelica.Scripting.oms_solver.oms_solver_none"
