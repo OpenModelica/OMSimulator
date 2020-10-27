@@ -167,7 +167,7 @@ def validateGeneratedResults(crossCheckDir, platform, omsVersion):
 if __name__ == "__main__":
   if not len(sys.argv) >= 4 or sys.argv[1].lower() == "--help":
     print("Usage: python3 validateResults.py /path/to/fmi-cross-check/repo FMIPlatform OMSimulatorVersion [OPTIONS]\n")
-    print("Example: python3 validateResults.py fmi-cross-check \"linux64\" \"v2.1.0-dev-211-g1b24316-linux\" \n")
+    print("Example: python3 validateResults.py fmi-cross-check \"linux64\" \"v2.0.0.post234-gdd1714c-linux\" \n")
     quit()
 
   # Change working dir to fmi-cross-check repo
@@ -185,8 +185,8 @@ if __name__ == "__main__":
 
   # Get OMSimulator version
   omsVersion = str(sys.argv[3])
-  if "dev" in omsVersion:
-    omsVersion = omsVersion.split("dev")[0]
+  if "post" in omsVersion:
+    omsVersion = omsVersion.split("post")[0]
     omsVersion = omsVersion[0:-1]
 
   # Get optional configurations
