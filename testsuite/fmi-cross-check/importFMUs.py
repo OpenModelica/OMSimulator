@@ -293,8 +293,8 @@ if __name__ == "__main__":
   if not platform in ["linux64", "linux32", "win64", "win32", "darwin64", "c-code"]:
     raise Exception("Unknown 2nd arguemnt platform: \"" + platform + "\"")
 
-  if "dev" in omsVersion:
-    omsVersion = omsVersion.split("dev")[0]
+  if "post" in omsVersion:
+    omsVersion = omsVersion.split("post")[0]
     omsVersion = omsVersion[0:-1]
 
   # Get optional configurations
