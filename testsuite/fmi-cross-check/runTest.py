@@ -23,8 +23,8 @@ omsimulator = str(sys.argv[2])
 omsVersion = subprocess.run([omsimulator, '--version'], stdout=subprocess.PIPE).stdout.decode()
 omsVersion = omsVersion.replace("OMSimulator ", "").replace("\n", "")
 
-if "dev" in omsVersion:
-  omsVersionShort = omsVersion.split("dev")[0]
+if "post" in omsVersion:
+  omsVersionShort = omsVersion.split("post")[0]
   omsVersionShort = omsVersionShort[0:-1]
 else:
   omsVersionShort = omsVersion

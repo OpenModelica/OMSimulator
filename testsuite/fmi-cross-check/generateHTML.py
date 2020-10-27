@@ -290,7 +290,7 @@ def generateSimLogHTML(row, testFMUDir, resultDir, modelDir, fileName):
 if __name__ == "__main__":
   if not len(sys.argv) >= 4 or sys.argv[1].lower() == "--help":
     print("Usage: python3 generateHTML.py /path/to/fmi-cross-check/repo FMIPlatform OMSimulatorVersion OMSimulatorVersionShort sysInfo startTime testDurationInSec [OPTIONS]\n")
-    print("Example: python3 generateHTML.py fmi-cross-check \"linux64\" \"v2.1.0-dev-211-g1b24316-linux\" \"v2.1.0\" \"Ubunut 18.04 TLS\" \"14:00:00\" 15462\n")
+    print("Example: python3 generateHTML.py fmi-cross-check \"linux64\" \"v2.0.0.post234-gdd1714c-linux\" \"v2.1.0\" \"Ubunut 18.04 TLS\" \"14:00:00\" 15462\n")
     quit()
 
   # Check path to fmi-cross-check repo is correct
