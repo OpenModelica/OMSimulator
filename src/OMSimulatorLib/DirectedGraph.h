@@ -43,6 +43,13 @@
 #include <string>
 #include <vector>
 
+/**
+ * @brief Strong connected components data type.
+ *
+ * A vector of pairs of connected components.
+ */
+typedef std::vector< std::pair<int, int> > oms_ssc_t;
+
 namespace oms
 {
   class DirectedGraph
@@ -60,24 +67,24 @@ namespace oms
 
     void includeGraph(const DirectedGraph& graph, const ComRef& prefix);
 
-    const std::vector< std::vector< std::pair<int, int> > >& getSortedConnections();
+    const std::vector< oms_ssc_t >& getSortedConnections();
 
     const std::vector<Connector>& getNodes() const {return nodes;}
-    const std::vector< std::pair<int, int> >& getEdges() const {return edges;}
+    const oms_ssc_t& getEdges() const {return edges;}
 
   private:
     std::deque< std::vector<int> > getSCCs();
     void calculateSortedConnections();
     void strongconnect(int v, std::vector< std::vector<int> > G, int& index, int *d, int *low, std::stack<int>& S, bool *stacked, std::deque< std::vector<int> >& components);
 
-    static int getEdgeIndex(const std::vector< std::pair<int, int> >& edges, int from, int to);
+    static int getEdgeIndex(const oms_ssc_t& edges, int from, int to);
 
   private:
     std::vector<Connector> nodes;
-    std::vector< std::pair<int, int> > edges;
+    oms_ssc_t edges;
 
     std::vector< std::vector<int> > G;
-    std::vector< std::vector< std::pair<int, int> > > sortedConnections;
+    std::vector< oms_ssc_t > sortedConnections;
     bool sortedConnectionsAreValid;
   };
 }
