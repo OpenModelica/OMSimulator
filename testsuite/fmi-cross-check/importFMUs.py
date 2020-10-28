@@ -264,7 +264,7 @@ if __name__ == "__main__":
       raise Exception("Can't find \""+ tmp1 + "\"")
     tmp2 = tmp2.replace('\\ ', " ")
     if shutil.which(tmp2) is None:
-      raise Exception("Can't find \""+ tmp1 + "\"")
+      raise Exception("Can't find \""+ tmp2 + "\"")
     print(tmp2)
     tmp2 = os.path.abspath(tmp2)
     omsimulator = [tmp1, tmp2]
