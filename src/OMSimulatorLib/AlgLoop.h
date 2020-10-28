@@ -44,22 +44,18 @@
 namespace oms
 {
   class System;
-  class DirectedGraph;
-
-  typedef struct KINSOL_USER_DATA {
-    System*         syst;
-    DirectedGraph*  graph;
-    const int       algLoopNumber;
-  }KINSOL_USER_DATA;
 
   class KinsolSolver
   {
-    public:
+  public:
     ~KinsolSolver();
     static KinsolSolver* NewKinsolSolver(const int algLoopNum, const unsigned int size, double absoluteTolerance);
     oms_status_enu_t kinsolSolve(System& syst, DirectedGraph& graph);
 
-    private:
+  protected:
+    KinsolSolver();
+
+  private:
     /* tolerances */
     double fnormtol;        /* function tolerance */
 
@@ -87,25 +83,25 @@ namespace oms
 
   class AlgLoop
   {
-    public:
-    AlgLoop(oms_alg_solver_enu_t method, double absTol, oms_ssc_t SCC, const int systNumber);
+  public:
+    AlgLoop(oms_solver_enu_t method, double absTol, oms_ssc_t SCC, const int systNumber);
 
     oms_ssc_t getSCC() {return SCC;}
     oms_status_enu_t solveAlgLoop(System& syst, DirectedGraph& graph);
     std::string getAlgSolverName();
     std::string dumpLoopVars(DirectedGraph& graph);
 
-    private:
-    oms_alg_solver_enu_t algSolverMethod;
+  private:
+    oms_solver_enu_t algSolverMethod;
     oms_status_enu_t fixPointIteration(System& syst, DirectedGraph& graph);
 
     KinsolSolver* kinsolData;
 
-    /* Loop data */
-    const oms_ssc_t SCC;            ///< Strong connected components
+    /* loop data */
+    const oms_ssc_t SCC;            ///< strongly connected component
     const int systNumber;
     double absoluteTolerance;
   };
 }
 
-#endif // _OMS_ALGLOOP_H_
+#endif

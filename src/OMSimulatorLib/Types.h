@@ -104,14 +104,12 @@ typedef enum {
   oms_solver_wc_mav,    ///< Adaptive stepsize
   oms_solver_wc_assc,   ///< Adaptive stepsize by @farkasrebus
   oms_solver_wc_mav2,   ///< Adaptive stepsize (double-step)
-  oms_solver_wc_max
+  oms_solver_wc_max,
+  oms_solver_alg_min,
+  oms_solver_alg_fixedpoint,  ///< Fixed-point-iteration (default)
+  oms_solver_alg_kinsol,      ///< Kinsol solver
+  oms_solver_alg_max
 } oms_solver_enu_t;
-
-typedef enum {
-  oms_alg_solver_none,
-  oms_alg_solver_fixedpoint,  ///< Fixed-point-iteration (default)
-  oms_alg_solver_kinsol       ///< Kinsol solver
-} oms_alg_solver_enu_t;
 
 typedef enum {
   oms_element_system,

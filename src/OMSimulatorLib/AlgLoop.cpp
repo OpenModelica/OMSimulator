@@ -36,6 +36,12 @@
 #include "Flags.h"
 #include "System.h"
 
+struct KINSOL_USER_DATA {
+  oms::System* syst;
+  oms::DirectedGraph* graph;
+  const int algLoopNumber;
+};
+
 /**
  * @brief Check flag returned by KINSOL function and log error
  *
@@ -166,6 +172,10 @@ int oms::KinsolSolver::nlsKinsolResiduals(N_Vector uu, N_Vector fval, void *user
   return 0 /* success */;
 }
 
+oms::KinsolSolver::KinsolSolver()
+{
+}
+
 /**
  * @brief Destroy the oms::KinsolSolver::KinsolSolver object
  *
@@ -197,7 +207,6 @@ oms::KinsolSolver::~KinsolSolver()
 oms::KinsolSolver* oms::KinsolSolver::NewKinsolSolver(const int algLoopNum, const unsigned int size, double absoluteTolerance)
 {
   int flag;
-  int printLevel;
   KinsolSolver* kinsolSolver = new KinsolSolver();
 
   logDebug("Create new KinsolSolver object for algebraic loop number " + std::to_string(algLoopNum));
@@ -226,11 +235,11 @@ oms::KinsolSolver* oms::KinsolSolver::NewKinsolSolver(const int algLoopNum, cons
   if (!checkFlag(flag, "KINSetUserData")) return NULL;
 
   /* Set error handler and print level */
-  if (Log::DebugEnabled()) {
+  int printLevel = 0;
+  if (Log::DebugEnabled())
+  {
     logDebug("SUNDIALS KINSOL: Set print level to maximum.");
     printLevel = 3;
-  } else {
-    printLevel = 0;
   }
   flag = KINSetPrintLevel(kinsolSolver->kinsolMemory, printLevel);
   if (!checkFlag(flag, "KINSetPrintLevel")) return NULL;
@@ -306,7 +315,6 @@ oms_status_enu_t oms::KinsolSolver::kinsolSolve(System& syst, DirectedGraph& gra
   const oms_ssc_t SCC = algLoop->getSCC();
 
   int flag;
-  double fNormValue;
 
   logDebug("Solving system " + std::to_string(kinsolUserData->algLoopNumber));
 
@@ -322,9 +330,7 @@ oms_status_enu_t oms::KinsolSolver::kinsolSolve(System& syst, DirectedGraph& gra
   {
     int output = SCC[i].first;
     if (oms_status_ok != syst.getReal(graph.getNodes()[output].getName(), initialGuess_data[i]))
-    {
       return oms_status_error;
-    }
   }
 
   /* u and f scaling */
@@ -337,23 +343,17 @@ oms_status_enu_t oms::KinsolSolver::kinsolSolve(System& syst, DirectedGraph& gra
                 uScale,         /* scaling vector, for the variable uu */
                 fScale);        /* scaling vector for function values fval */
   if (flag < 0)
-  {
-    logError("SUNDIALS_ERROR: KINSol() failed with flag = " + std::to_string(flag));
-    return oms_status_error;
-  }
+    return logError("SUNDIALS_ERROR: KINSol() failed with flag = " + std::to_string(flag));
   else
-  {
     logDebug("SUNDIALS_INFO: KINSol() succeded with flag = " + std::to_string(flag));
-  }
 
   /* Check solution */
   flag = nlsKinsolResiduals(initialGuess, fTmp, userData);
-  fNormValue = N_VWL2Norm(fTmp, fTmp);
+  double fNormValue = N_VWL2Norm(fTmp, fTmp);
   if ( fNormValue > fnormtol )
   {
-    logWarning("Solution of algebraic loop " + std::to_string(((KINSOL_USER_DATA *)userData)->algLoopNumber) + "not within precission given by fnormtol: " + std::to_string(fnormtol));
     logDebug("2-norm of residual of solution: " + std::to_string(fNormValue));
-    return oms_status_warning;
+    return logWarning("Solution of algebraic loop " + std::to_string(((KINSOL_USER_DATA *)userData)->algLoopNumber) + " not within precission given by fnormtol: " + std::to_string(fnormtol));;
   }
 
   logDebug("Solved system " + std::to_string(kinsolUserData->algLoopNumber) + " successfully");
@@ -364,18 +364,18 @@ oms_status_enu_t oms::KinsolSolver::kinsolSolve(System& syst, DirectedGraph& gra
  * @brief Construct a new oms::AlgLoop::AlgLoop object
  *
  * @param method  Specifies used solver for the loop.
- *                Can be `oms_alg_solver_fixedpoint` for fixed-point-iteration
- *                or `oms_alg_solver_kinsol` for SUNDIALS KINSOL
+ *                Can be `oms_solver_alg_fixedpoint` for fixed-point-iteration
+ *                or `oms_solver_alg_kinsol` for SUNDIALS KINSOL
  * @param absTol  Tolerance used for the algebraic solver.
  * @param scc     Strong Connected Componten, a vector of connected
  * @param number
  */
-oms::AlgLoop::AlgLoop(oms_alg_solver_enu_t method, double absTol, oms_ssc_t scc, const int number): absoluteTolerance(absTol), SCC(scc), systNumber(number)
+oms::AlgLoop::AlgLoop(oms_solver_enu_t method, double absTol, oms_ssc_t scc, const int number): absoluteTolerance(absTol), SCC(scc), systNumber(number)
 {
   switch (method)
   {
-    case oms_alg_solver_fixedpoint:
-    case oms_alg_solver_kinsol:
+    case oms_solver_alg_fixedpoint:
+    case oms_solver_alg_kinsol:
       algSolverMethod = method;
       break;
     default:
@@ -383,7 +383,7 @@ oms::AlgLoop::AlgLoop(oms_alg_solver_enu_t method, double absTol, oms_ssc_t scc,
       throw;
   }
 
-  if (method == oms_alg_solver_kinsol)
+  if (method == oms_solver_alg_kinsol)
   {
     kinsolData = KinsolSolver::NewKinsolSolver(systNumber, SCC.size(), absoluteTolerance);
     if (kinsolData==NULL)
@@ -411,9 +411,9 @@ oms_status_enu_t oms::AlgLoop::solveAlgLoop(System& syst, DirectedGraph& graph)
 
   switch (algSolverMethod)
   {
-  case oms_alg_solver_fixedpoint:
+  case oms_solver_alg_fixedpoint:
     return fixPointIteration(syst, graph);
-  case oms_alg_solver_kinsol:
+  case oms_solver_alg_kinsol:
     return kinsolData->kinsolSolve(syst, graph);
   default:
     logError("Invalid algebraic solver method!");
@@ -494,15 +494,13 @@ oms_status_enu_t oms::AlgLoop::fixPointIteration(System& syst, DirectedGraph& gr
  *
  * @return std::string  Name of solver method
  */
-std::string oms::AlgLoop::getAlgSolverName(void)
+std::string oms::AlgLoop::getAlgSolverName()
 {
   switch (algSolverMethod)
   {
-  case oms_alg_solver_none:
-    return "None";
-  case oms_alg_solver_fixedpoint:
+  case oms_solver_alg_fixedpoint:
     return "Fixed-Point-Iteration";
-  case oms_alg_solver_kinsol:
+  case oms_solver_alg_kinsol:
     return "KINSOL";
   default:
     logError("This should not be reachable!");

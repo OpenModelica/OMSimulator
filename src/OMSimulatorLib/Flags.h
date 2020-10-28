@@ -55,7 +55,6 @@ namespace oms
   public:
     static oms_status_enu_t SetCommandLineOption(const std::string& cmd);
 
-    static oms_alg_solver_enu_t AlgLoopSolver() {return GetInstance().algLoopSolver;}
     static bool AddParametersToCSV() {return GetInstance().addParametersToCSV;}
     static bool DefaultModeIsCS() {return GetInstance().defaultModeIsCS;}
     static bool DeleteTempFiles() {return GetInstance().deleteTempFiles;}
@@ -74,6 +73,7 @@ namespace oms
     static double StopTime() {return GetInstance().stopTime;}
     static double Timeout() {return GetInstance().timeout;}
     static double Tolerance() {return GetInstance().tolerance;}
+    static oms_solver_enu_t AlgLoopSolver() {return GetInstance().algLoopSolver;}
     static oms_solver_enu_t MasterAlgorithm() {return GetInstance().masterAlgorithm;}
     static oms_solver_enu_t Solver() {return GetInstance().solver;}
     static std::string ResultFile() {return GetInstance().resultFile;}
@@ -84,7 +84,6 @@ namespace oms
 
   private:
     bool addParametersToCSV;
-    oms_alg_solver_enu_t algLoopSolver;
     bool defaultModeIsCS;
     bool deleteTempFiles;
     bool emitEvents;
@@ -102,6 +101,7 @@ namespace oms
     double stopTime;
     double timeout;
     double tolerance;
+    oms_solver_enu_t algLoopSolver;
     oms_solver_enu_t masterAlgorithm;
     oms_solver_enu_t solver;
     std::string resultFile;
