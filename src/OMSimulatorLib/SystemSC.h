@@ -61,7 +61,10 @@ namespace oms
     oms_status_enu_t reset();
     oms_status_enu_t stepUntil(double stopTime, void (*cb)(const char* ident, double time, oms_status_enu_t status));
 
+    double getTime() const {return time;}
+
     oms_status_enu_t updateInputs(DirectedGraph& graph);
+    oms_status_enu_t solveAlgLoop(DirectedGraph& graph, const std::vector< std::pair<int, int> >& SCC);
 
     std::string getSolverName() const;
     oms_status_enu_t setSolverMethod(std::string);
@@ -76,6 +79,8 @@ namespace oms
     SystemSC& operator=(SystemSC const& copy); ///< not implemented
 
   private:
+    double time;
+
     std::vector<ComponentFMUME*> fmus;
 
     std::vector<fmi2_boolean_t> callEventUpdate;
