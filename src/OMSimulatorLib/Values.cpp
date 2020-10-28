@@ -204,6 +204,46 @@ oms_status_enu_t oms::Values::exportStartValuesHelper(pugi::xml_node& node) cons
   return oms_status_ok;
 }
 
+/*
+ * exports the start values read from modeldescription.xml to ssv template
+ */
+oms_status_enu_t oms::Values::exportToSSVTemplate(pugi::xml_node& node, const ComRef& cref)
+{
+  // skip this if there is nothing to export
+  if (modelDescriptionRealStartValues.empty() && modelDescriptionIntegerStartValues.empty() && modelDescriptionBooleanStartValues.empty())
+    return oms_status_ok;
+
+  // realStartValues
+  for (const auto& r : modelDescriptionRealStartValues)
+  {
+    //std::cout << "\n Start Values : " << std::string(r.first) << " = " << r.second ;
+    pugi::xml_node node_parameter = node.append_child(oms::ssp::Version1_0::ssv::parameter);
+    node_parameter.append_attribute("name") = std::string(cref + r.first).c_str();
+    pugi::xml_node node_parameter_type = node_parameter.append_child(oms::ssp::Version1_0::ssv::real_type);
+    node_parameter_type.append_attribute("value") = r.second;
+  }
+
+  // integerStartValues
+  for (const auto& i : modelDescriptionIntegerStartValues)
+  {
+    pugi::xml_node node_parameter = node.append_child(oms::ssp::Version1_0::ssv::parameter);
+    node_parameter.append_attribute("name") = std::string(cref + i.first).c_str();
+    pugi::xml_node node_parameter_type = node_parameter.append_child(oms::ssp::Version1_0::ssv::integer_type);
+    node_parameter_type.append_attribute("value") = i.second;
+  }
+
+  // boolStartValues
+  for (const auto& b : modelDescriptionBooleanStartValues)
+  {
+    pugi::xml_node node_parameter = node.append_child(oms::ssp::Version1_0::ssv::parameter);
+    node_parameter.append_attribute("name") = std::string(cref + b.first).c_str();
+    pugi::xml_node node_parameter_type = node_parameter.append_child(oms::ssp::Version1_0::ssv::boolean_type);
+    node_parameter_type.append_attribute("value") = b.second;
+  }
+
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms::Values::importStartValuesHelper(pugi::xml_node& parameters)
 {
   if (parameters)
@@ -266,16 +306,16 @@ oms_status_enu_t oms::Values::parseModelDescription(const char *filename)
       for (pugi::xml_node scalarVariable = scalarVariableNode.child("ScalarVariable"); scalarVariable; scalarVariable = scalarVariable.next_sibling("ScalarVariable"))
       {
         //std::string startValue = "";
-        if (scalarVariable.child("Real").attribute("start").as_string() != "")
+        if (strlen(scalarVariable.child("Real").attribute("start").as_string()) != 0)
         {
           //startValue = scalarVariable.child("Real").attribute("start").as_string();
           modelDescriptionRealStartValues[ComRef(scalarVariable.attribute("name").as_string())] = scalarVariable.child("Real").attribute("start").as_double();
         }
-        if (scalarVariable.child("Integer").attribute("start").as_string() != "")
+        if (strlen(scalarVariable.child("Integer").attribute("start").as_string()) != 0)
         {
           modelDescriptionIntegerStartValues[scalarVariable.attribute("name").as_string()] = scalarVariable.child("Integer").attribute("start").as_int();
         }
-        if (scalarVariable.child("Boolean").attribute("start").as_string() != "")
+        if (strlen(scalarVariable.child("Boolean").attribute("start").as_string()) != 0)
         {
           modelDescriptionBooleanStartValues[scalarVariable.attribute("name").as_string()] = scalarVariable.child("Boolean").attribute("start").as_bool();
         }

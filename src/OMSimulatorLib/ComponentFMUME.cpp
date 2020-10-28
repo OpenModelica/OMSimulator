@@ -239,8 +239,18 @@ oms::Component* oms::ComponentFMUME::NewComponent(const oms::ComRef& cref, oms::
   component->connectors.push_back(NULL);
   component->element.setConnectors(&component->connectors[0]);
 
-  component->initializeDependencyGraph_initialUnknowns();
-  component->initializeDependencyGraph_outputs();
+  if (oms_status_ok != component->initializeDependencyGraph_initialUnknowns())
+  {
+    logError(std::string(cref) + ": Couldn't initialize dependency graph for initial unknowns.");
+    delete component;
+    return NULL;
+  }
+  if (oms_status_ok != component->initializeDependencyGraph_outputs())
+  {
+    logError(std::string(cref) + ": Couldn't initialize dependency graph for simulation unknowns.");
+    delete component;
+    return NULL;
+  }
 
   // parse modelDescription.xml to get start values before instantiating fmu's
   component->values.parseModelDescription((tempDir / "modelDescription.xml").string().c_str());
@@ -345,6 +355,12 @@ oms_status_enu_t oms::ComponentFMUME::exportToSSD(pugi::xml_node& node, pugi::xm
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::ComponentFMUME::exportToSSVTemplate(pugi::xml_node& ssvNode)
+{
+  values.exportToSSVTemplate(ssvNode, getCref());
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms::ComponentFMUME::initializeDependencyGraph_initialUnknowns()
 {
   if (initialUnknownsGraph.getEdges().size() > 0)
@@ -353,9 +369,10 @@ oms_status_enu_t oms::ComponentFMUME::initializeDependencyGraph_initialUnknowns(
     return oms_status_error;
   }
 
+  int N=initialUnknownsGraph.getNodes().size();
+
   if (Flags::IgnoreInitialUnknowns())
   {
-    int N=initialUnknownsGraph.getNodes().size();
     for (int i = 0; i < N; i++)
     {
       logDebug(std::string(getCref()) + ": " + getPath() + " initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + " depends on all");
@@ -363,6 +380,34 @@ oms_status_enu_t oms::ComponentFMUME::initializeDependencyGraph_initialUnknowns(
         initialUnknownsGraph.addEdge(inputs[j].makeConnector(), initialUnknownsGraph.getNodes()[i]);
     }
     return oms_status_ok;
+  }
+
+  // Check if initial unknowns from modelDescription.xml are the same as in initialUnknownsGraph
+  fmi2_import_variable_list_t* initialUnknowns;
+  initialUnknowns = fmi2_import_get_initial_unknowns_list(fmu);
+  int numInitialUnknowns = fmi2_import_get_variable_list_size(initialUnknowns);
+  bool initialUnknownsCorrect = true;
+  for (int i = 0; i < numInitialUnknowns; i++)
+  {
+    fmi2_xml_variable_t* tmpVar;
+    tmpVar = fmi2_import_get_variable(initialUnknowns, i);
+    int originalIndex = fmi2_import_get_variable_original_order(tmpVar);
+
+    // Check if variable with valueReference is initialUnknown
+    Variable var = allVariables[originalIndex];
+    if (! var.isInitialUnknown())
+    {
+      logWarning(std::string(getCref()) + ": Variable " + std::string(var.getCref()) + " with index " + std::to_string(originalIndex+1) + " is not an initial unknown.");
+      initialUnknownsCorrect = false;
+    }
+  }
+  fmi2_import_free_variable_list(initialUnknowns);
+  if (N < numInitialUnknowns || initialUnknownsCorrect==false)
+  {
+    logDebug("Found " +  std::to_string(numInitialUnknowns) + " initial unknown variables in modelDescription.xml (expected max. " + std::to_string(N) + ")");
+    logError(std::string(getCref()) + ": Erroneous initial unknowns detected in modelDescription.xml.");
+    logInfo("Use flag --ignoreInitialUnknowns=true to ignore all initial unknowns, but this can cause inflated loop size.");
+    return oms_status_error;
   }
 
   size_t *startIndex=NULL, *dependency=NULL;
@@ -376,7 +421,6 @@ oms_status_enu_t oms::ComponentFMUME::initializeDependencyGraph_initialUnknowns(
     return oms_status_ok;
   }
 
-  int N=initialUnknownsGraph.getNodes().size();
   for (int i = 0; i < N; i++)
   {
     if (startIndex[i] == startIndex[i + 1])
@@ -393,6 +437,13 @@ oms_status_enu_t oms::ComponentFMUME::initializeDependencyGraph_initialUnknowns(
     {
       for (size_t j = startIndex[i]; j < startIndex[i + 1]; j++)
       {
+        if (dependency[j] < 1 || dependency[j] > allVariables.size())
+        {
+          logWarning("Initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + " has bad dependency on variable with index " + std::to_string(dependency[j]) + " which couldn't be resolved");
+          logError(std::string(getCref()) + ": erroneous dependencies detected in modelDescription.xml");
+          logInfo("Use flag --ignoreInitialUnknowns=true to ignore all dependencies, but this can cause inflated loop size.");
+          return oms_status_error;
+        }
         logDebug(std::string(getCref()) + ": " + getPath() + " initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + " depends on " + std::string(allVariables[dependency[j] - 1]));
         initialUnknownsGraph.addEdge(allVariables[dependency[j] - 1].makeConnector(), initialUnknownsGraph.getNodes()[i]);
       }
@@ -437,6 +488,11 @@ oms_status_enu_t oms::ComponentFMUME::initializeDependencyGraph_outputs()
     {
       for (size_t j = startIndex[i]; j < startIndex[i + 1]; j++)
       {
+        if (dependency[j] < 1 || dependency[j] > allVariables.size())
+        {
+          logWarning("Output " + std::string(outputs[i]) + " has bad dependency on variable with index " + std::to_string(dependency[j]) + " which couldn't be resolved");
+          return logError(std::string(getCref()) + ": erroneous dependencies detected in modelDescription.xml");
+        }
         logDebug(std::string(getCref()) + ": " + getPath() + " output " + std::string(outputs[i]) + " depends on " + std::string(allVariables[dependency[j] - 1]));
         outputsGraph.addEdge(allVariables[dependency[j] - 1].makeConnector(), outputs[i].makeConnector());
       }

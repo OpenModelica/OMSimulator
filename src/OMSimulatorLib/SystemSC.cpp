@@ -38,11 +38,9 @@
 #include "Model.h"
 #include "Types.h"
 #include "ssd/Tags.h"
-#include "cvode/cvode.h"                /* prototypes for CVODE fcts., consts. */
-#include "nvector/nvector_serial.h"     /* serial N_Vector types, fcts., macros */
+#include <cvode/cvode.h>                /* prototypes for CVODE fcts., consts. */
+#include <nvector/nvector_serial.h>     /* serial N_Vector types, fcts., macros */
 #include <sunlinsol/sunlinsol_dense.h>  /* Default dense linear solver */
-#include "sundials/sundials_dense.h"    /* definitions DlsMat DENSE_ELEM */
-#include "sundials/sundials_types.h"    /* definition of type realtype */
 
 int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
@@ -66,7 +64,7 @@ int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
   //std::cout << "[oms::cvode_rhs] y" << std::endl;
   //N_VPrint_Serial(y);
 
-  system->updateInputs(system->outputsGraph);
+  system->updateInputs(system->eventGraph);
 
   // get state derivatives
   for (int j=0, k=0; j < system->fmus.size(); ++j)
@@ -120,9 +118,9 @@ std::string oms::SystemSC::getSolverName() const
       return std::string("euler");
     case oms_solver_sc_cvode:
       return std::string("cvode");
+    default:
+      return std::string("unknown");
   }
-
-  return std::string("unknown");
 }
 
 oms_status_enu_t oms::SystemSC::setSolverMethod(std::string solver)
@@ -242,7 +240,7 @@ oms_status_enu_t oms::SystemSC::initialize()
   if (oms_status_ok != updateDependencyGraphs())
     return oms_status_error;
 
-  if (oms_status_ok != updateInputs(initialUnknownsGraph))
+  if (oms_status_ok != updateInputs(initializationGraph))
     return oms_status_error;
 
   for (const auto& subsystem : getSubSystems())
@@ -552,7 +550,7 @@ oms_status_enu_t oms::SystemSC::stepUntil(double stopTime, void (*cb)(const char
         }
 
         // emit the right limit of the event
-        updateInputs(outputsGraph);
+        updateInputs(eventGraph);
         if (Flags::EmitEvents() && isTopLevelSystem())
           getModel()->emit(time, true);
 
@@ -628,10 +626,10 @@ oms_status_enu_t oms::SystemSC::stepUntil(double stopTime, void (*cb)(const char
     for (int i=0; i < fmus.size(); ++i)
     {
       fmistatus = fmi2_import_completed_integrator_step(fmus[i]->getFMU(), fmi2_true, &callEventUpdate[i], &terminateSimulation[i]);
-      if (fmi2_status_ok != fmistatus) logError_FMUCall("fmi2_import_completed_integrator_step", fmus[i]);
+      if (fmi2_status_ok != fmistatus) return logError_FMUCall("fmi2_import_completed_integrator_step", fmus[i]);
     }
 
-    updateInputs(outputsGraph);
+    updateInputs(simulationGraph); //pass the continuousTimeMode dependency graph which involves only connections of type Real
     if (isTopLevelSystem())
       getModel()->emit(time);
 
@@ -700,7 +698,7 @@ oms_status_enu_t oms::SystemSC::updateInputs(DirectedGraph& graph)
         if (oms_status_ok != getReal(graph.getNodes()[output].getName(), value)) return oms_status_error;
         if (oms_status_ok != setReal(graph.getNodes()[input].getName(), value)) return oms_status_error;
       }
-      else if (graph.getNodes()[input].getType() == oms_signal_type_integer)
+      else if (graph.getNodes()[input].getType() == oms_signal_type_integer || graph.getNodes()[input].getType() == oms_signal_type_enum)
       {
         int value = 0.0;
         if (oms_status_ok != getInteger(graph.getNodes()[output].getName(), value)) return oms_status_error;

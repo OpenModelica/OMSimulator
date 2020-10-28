@@ -1,5 +1,8 @@
-from ctypes import CDLL
-import ctypes, sys, os, platform
+import ctypes
+import os
+import platform
+import sys
+
 
 class OMSimulator:
   def __init__(self, omslib=None, temp_directory=None):
@@ -7,7 +10,7 @@ class OMSimulator:
       dirname = os.path.dirname(__file__)
       omslib = os.path.join(dirname, "@OMSIMULATORLIB_DIR_STRING@", "@OMSIMULATORLIB_STRING@")
 
-    self.obj=CDLL(omslib)
+    self.obj=ctypes.CDLL(omslib)
 
     ## oms_status_enu_t
     self.status_ok = 0
@@ -101,8 +104,10 @@ class OMSimulator:
     self.obj.oms_deleteConnectorFromTLMBus.restype = ctypes.c_int
     self.obj.oms_export.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_export.restype = ctypes.c_int
-    self.obj.oms_exportDependencyGraphs.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_exportDependencyGraphs.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_exportDependencyGraphs.restype = ctypes.c_int
+    self.obj.oms_exportSnapshot.argtypes = [ctypes.c_char_p]
+    self.obj.oms_exportSnapshot.restype = ctypes.c_int
     self.obj.oms_faultInjection.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_double]
     self.obj.oms_faultInjection.restype = ctypes.c_int
     self.obj.oms_getBoolean.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_bool)]
@@ -127,6 +132,8 @@ class OMSimulator:
     self.obj.oms_getVersion.restype = ctypes.c_char_p
     self.obj.oms_importFile.argtypes = [ctypes.c_char_p]
     self.obj.oms_importFile.restype = ctypes.c_int
+    self.obj.oms_importSnapshot.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_importSnapshot.restype = ctypes.c_int
     self.obj.oms_initialize.argtypes = [ctypes.c_char_p]
     self.obj.oms_initialize.restype = ctypes.c_int
     self.obj.oms_instantiate.argtypes = [ctypes.c_char_p]
@@ -135,6 +142,8 @@ class OMSimulator:
     self.obj.oms_list.restype = ctypes.c_int
     self.obj.oms_listUnconnectedConnectors.argtypes = [ctypes.c_char_p]
     self.obj.oms_listUnconnectedConnectors.restype = ctypes.c_int
+    self.obj.oms_loadSnapshot.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_loadSnapshot.restype = ctypes.c_int
     self.obj.oms_newModel.argtypes = [ctypes.c_char_p]
     self.obj.oms_newModel.restype = ctypes.c_int
     self.obj.oms_parseModelName.argtypes = [ctypes.c_char_p]
@@ -259,14 +268,24 @@ class OMSimulator:
     contents = ctypes.c_char_p()
     status = self.obj.oms_importFile(self.checkstring(filename), ctypes.byref(contents))
     return [self.checkstring(contents.value), status]
+  def importSnapshot(self, ident, snapshot):
+    status = self.obj.oms_importSnapshot(self.checkstring(ident), self.checkstring(snapshot))
+    return status
   def list(self, ident):
     contents = ctypes.c_char_p()
     status = self.obj.oms_list(self.checkstring(ident), ctypes.byref(contents))
+    return [self.checkstring(contents.value), status]
+  def exportSnapshot(self, ident):
+    contents = ctypes.c_char_p()
+    status = self.obj.oms_exportSnapshot(self.checkstring(ident), ctypes.byref(contents))
     return [self.checkstring(contents.value), status]
   def listUnconnectedConnectors(self, ident):
     contents = ctypes.c_char_p()
     status = self.obj.oms_listUnconnectedConnectors(self.checkstring(ident), ctypes.byref(contents))
     return [self.checkstring(contents.value), status]
+  def loadSnapshot(self, ident, snapshot):
+    status = self.obj.oms_loadSnapshot(self.checkstring(ident), self.checkstring(snapshot))
+    return status
   def parseModelName(self, ident):
     contents = ctypes.c_char_p()
     status = self.obj.oms_parseModelName(self.checkstring(ident), ctypes.byref(contents))
@@ -319,8 +338,8 @@ class OMSimulator:
     return self.obj.oms_setTLMSocketData(self.checkstring(cref), self.checkstring(address), managerPort, monitorPort)
   def setTLMPositionAndOrientation(self, cref, x1, x2, x3, A11, A12, A13, A21, A22, A23, A31, A32, A33):
     return self.obj.oms_setTLMPositionAndOrientation(self.checkstring(cref), x1, x2, x3, A11, A12, A13, A21, A22, A23, A31, A32, A33)
-  def exportDependencyGraphs(self, cref, initialization, simulation):
-    return self.obj.oms_exportDependencyGraphs(self.checkstring(cref), self.checkstring(initialization), self.checkstring(simulation))
+  def exportDependencyGraphs(self, cref, initialization, event, simulation):
+    return self.obj.oms_exportDependencyGraphs(self.checkstring(cref), self.checkstring(initialization), self.checkstring(event), self.checkstring(simulation))
   def faultInjection(self, cref, faultType, faultValue):
     return self.obj.oms_faultInjection(self.checkstring(cref), faultType, faultValue)
   def getReal(self, cref):

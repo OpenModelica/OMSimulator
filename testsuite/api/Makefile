@@ -12,6 +12,7 @@ test01.py \
 test02.lua \
 test02.py \
 test03.lua \
+test03.py \
 
 # Run make failingtest
 FAILINGTESTFILES = \

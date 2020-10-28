@@ -54,6 +54,7 @@ namespace oms
     oms_status_enu_t deleteStartValue(const ComRef& cref);
 
     oms_status_enu_t exportToSSV(pugi::xml_node& ssvNode) const;
+    oms_status_enu_t exportToSSVTemplate(pugi::xml_node& ssvNode, const ComRef& cref);  ///< start values read from modelDescription.xml
     oms_status_enu_t exportStartValuesHelper(pugi::xml_node& node) const;
     oms_status_enu_t importStartValuesHelper(pugi::xml_node& parameters);
     oms_status_enu_t parseModelDescription(const char *filename);

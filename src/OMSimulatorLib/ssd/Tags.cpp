@@ -63,6 +63,11 @@ const char* oms::ssp::Version1_0::simulation_information               = "oms:Si
 const char* oms::ssp::Version1_0::FixedStepMaster                      = "oms:FixedStepMaster"; // WC-System
 const char* oms::ssp::Version1_0::VariableStepSolver                   = "oms:VariableStepSolver"; // SC-System
 
+const char* oms::ssp::Version1_0::snap_shot                             = "oms:snapshot";
+const char* oms::ssp::Version1_0::ssd_file                              = "oms:ssd_file";
+const char* oms::ssp::Version1_0::ssv_file                              = "oms:ssv_file";
+const char* oms::ssp::Version1_0::ssm_file                              = "oms:ssm_file";
+
 const char* oms::ssp::Version1_0::ssd::parameter_bindings              = "ssd:ParameterBindings";
 const char* oms::ssp::Version1_0::ssd::parameter_binding               = "ssd:ParameterBinding";
 const char* oms::ssp::Version1_0::ssd::parameter_values                = "ssd:ParameterValues";
