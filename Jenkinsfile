@@ -133,12 +133,6 @@ pipeline {
           }
           steps {
             buildOMS()
-            sh '''
-            # No so-files should ever exist in a bin/ folder
-            ! ls install/linux/bin/*.so 1> /dev/null 2>&1
-            (cd install/linux && tar czf "../../OMSimulator-linux-amd64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev`.tar.gz" *)
-            '''
-            archiveArtifacts "OMSimulator-linux-amd64-*.tar.gz"
           }
         }
         stage('centos7') {
@@ -154,6 +148,12 @@ pipeline {
           }
           steps {
             buildOMS()
+            sh '''
+            # No so-files should ever exist in a bin/ folder
+            ! ls install/linux/bin/*.so 1> /dev/null 2>&1
+            (cd install/linux && tar czf "../../OMSimulator-linux-amd64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev`.tar.gz" *)
+            '''
+            archiveArtifacts "OMSimulator-linux-amd64-*.tar.gz"
           }
         }
         stage('alpine') {
