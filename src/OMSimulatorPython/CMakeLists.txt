@@ -11,6 +11,7 @@ ENDIF ()
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/OMSimulator.py" "${CMAKE_CURRENT_BINARY_DIR}/OMSimulator.py" @ONLY)
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/__init__.py" "${CMAKE_CURRENT_BINARY_DIR}/__init__.py" @ONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/setup.py" "${CMAKE_CURRENT_BINARY_DIR}/setup.py" @ONLY )
 
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/OMSimulator.py" DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/OMSimulator)
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/__init__.py" DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/OMSimulator)
@@ -28,3 +29,41 @@ ELSE ()
   install(FILES OMSimulatorPython3 DESTINATION ${CMAKE_INSTALL_PREFIX}/bin PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ)
   install(DIRECTORY ${CMAKE_INSTALL_PREFIX}/lib/ DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/OMSimulator FILES_MATCHING PATTERN "*.so" PATTERN "OMSimulator" EXCLUDE PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ)
 ENDIF ()
+
+set(SETUP_PY "${CMAKE_CURRENT_BINARY_DIR}/setup.py")
+set(PIP_DIRECTORY "${CMAKE_INSTALL_PREFIX}/../pip")
+set(PYTHON_EXE "")
+
+find_package(PythonInterp)
+IF (PYTHONINTERP_FOUND)
+  message(STATUS "Found Python for executable")
+  message(STATUS "  PYTHON_VERSION:      " ${PYTHON_VERSION_STRING})
+  message(STATUS "  PYTHON_EXECUATABLE:  " ${PYTHON_EXECUTABLE})
+  set(PYTHON_EXE ${PYTHON_EXECUTABLE})
+ENDIF()
+
+function(delete dirname)
+  IF (EXISTS ${dirname})
+    file(GLOB MY_FILES ${dirname}/*.tar.gz)
+    IF (MY_FILES)
+      file(REMOVE_RECURSE ${MY_FILES})
+    ENDIF()
+  ENDIF()
+endfunction()
+
+
+IF (EXISTS ${SETUP_PY} AND PYTHON_EXE)
+  ## delete older versions if exist
+  delete(${CMAKE_CURRENT_BINARY_DIR}/dist)
+  execute_process(COMMAND ${PYTHON_EXE} ${SETUP_PY} sdist WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
+  IF (EXISTS ${PIP_DIRECTORY})
+    ## delete older versions if exist
+    delete(${PIP_DIRECTORY}/dist) 
+  ENDIF()
+  
+  ## copy the source distribution to pip directory
+  file(COPY ${CMAKE_CURRENT_BINARY_DIR}/dist DESTINATION ${PIP_DIRECTORY})
+ENDIF()
+
+
