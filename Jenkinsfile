@@ -60,6 +60,12 @@ pipeline {
 
             // Temporary debugging
             // archiveArtifacts artifacts: 'testsuite/**/*.log', fingerprint: true
+            sh '''
+            # No so-files should ever exist in a bin/ folder
+            ! ls install/linux/bin/*.so 1> /dev/null 2>&1
+            (cd install/linux && tar czf "../../OMSimulator-linux-amd64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev`.tar.gz" *)
+            '''
+            archiveArtifacts "OMSimulator-linux-amd64-*.tar.gz"
 
             sh 'make doc doc-html doc-doxygen'
             sh '(cd install/linux/doc && zip -r "../../../OMSimulator-doc-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev`.zip" *)'
@@ -133,12 +139,6 @@ pipeline {
           }
           steps {
             buildOMS()
-            sh '''
-            # No so-files should ever exist in a bin/ folder
-            ! ls install/linux/bin/*.so 1> /dev/null 2>&1
-            (cd install/linux && tar czf "../../OMSimulator-linux-amd64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev`.tar.gz" *)
-            '''
-            archiveArtifacts "OMSimulator-linux-amd64-*.tar.gz"
           }
         }
         stage('centos7') {
