@@ -26,7 +26,6 @@ endfunction()
 
 ## build source distribution python setup.py sdist if python found
 IF (EXISTS ${SETUP_PY} AND PYTHON_EXE)
-
   ## delete older versions if exist
   delete(${CMAKE_CURRENT_BINARY_DIR}/dist)
   execute_process(COMMAND ${PYTHON_EXE} ${SETUP_PY} sdist WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
@@ -38,10 +37,8 @@ IF (EXISTS ${SETUP_PY} AND PYTHON_EXE)
   
   ## copy the source distribution to pip directory
   IF (EXISTS ${CMAKE_CURRENT_BINARY_DIR}/dist)
-    message(STATUS "Copying files")
     file(COPY ${CMAKE_CURRENT_BINARY_DIR}/dist DESTINATION ${PIP_DIRECTORY})
   ENDIF()
-
 ENDIF()
 
 
