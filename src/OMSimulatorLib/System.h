@@ -32,7 +32,6 @@
 #ifndef _OMS_SYSTEM_H_
 #define _OMS_SYSTEM_H_
 
-#include "AlgLoop.h"
 #include "BusConnector.h"
 #include "Clock.h"
 #include "ComRef.h"
@@ -165,8 +164,7 @@ namespace oms
     oms_solver_enu_t getSolver() {return solverMethod;}
 
     AlgLoop* getAlgLoop(const int systemNumber);
-    oms_status_enu_t addAlgLoop(oms_ssc_t SCC, const int algLoopNum);
-    oms_status_enu_t updateAlgebraicLoops(const std::vector< oms_ssc_t >& sortedConnections);
+    void updateAlgebraicLoops(const std::vector< oms_ssc_t >& sortedConnections);
     oms_status_enu_t solveAlgLoop(DirectedGraph& graph, int loopNumber);
 
     bool useThreadPool();
@@ -174,8 +172,8 @@ namespace oms
 
     std::string getUniqueID() const;
     std::vector<std::string> ssvFileSources;
+
   protected:
-    double time;
     System(const ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem, oms_solver_enu_t solverMethod);
 
     // stop the compiler generating methods copying the object
@@ -200,8 +198,8 @@ namespace oms
     std::unordered_map<unsigned int /*result file var ID*/, unsigned int /*allVariables ID*/> resultFileMapping;
     std::unordered_map<ComRef, bool> exportConnectors;
 
-  protected:
     bool loopsNeedUpdate = true;
+    double time;
 
   private:
     ComRef cref;

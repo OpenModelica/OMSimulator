@@ -2313,26 +2313,21 @@ oms_status_enu_t oms::System::importBusConnectorSignals(const pugi::xml_node& no
 
 oms::AlgLoop* oms::System::getAlgLoop(const int systemNumber)
 {
-  if (systemNumber > algLoops.size()-1 || systemNumber < 0)
-  {
-    logError("Invalid system number for algebraic loop.");
-    return NULL;
-  }
+  if (systemNumber >= 0 && systemNumber < algLoops.size())
+    return &algLoops[systemNumber];
 
-  return &algLoops[systemNumber];
+  logError("Invalid system number for algebraic loop.");
+  return NULL;
 }
 
-oms_status_enu_t oms::System::addAlgLoop(oms_ssc_t SCC, const int algLoopNum)
+void oms::System::updateAlgebraicLoops(const std::vector<oms_ssc_t>& sortedConnections)
 {
-  if (loopsNeedUpdate)
-  {
-    algLoops.clear();
-    loopsNeedUpdate = false;
-  }
-  algLoops.push_back( AlgLoop( Flags::AlgLoopSolver(), absoluteTolerance, SCC, algLoopNum ));
+  if (!loopsNeedUpdate)
+    return
 
-  return oms_status_ok;
-}
+  // instantiate loops
+  algLoops.clear();
+  loopsNeedUpdate = false;
 
 oms_status_enu_t oms::System::importBusConnectorGeometry(const pugi::xml_node& node)
 {
@@ -2369,20 +2364,15 @@ oms_status_enu_t oms::System::updateAlgebraicLoops(const std::vector< oms_ssc_t 
 {
   // Instantiate loops
   if (loopsNeedUpdate)
+  int systCount = 0;
+  for (int i=0; i<sortedConnections.size(); i++)
   {
-    int systCount = 0;
-    for(int i=0; i<sortedConnections.size(); i++)
+    if (sortedConnections[i].size() > 1)
     {
-      if (sortedConnections[i].size() > 1)
-      {
-        addAlgLoop(sortedConnections[i], systCount);
-        systCount++;
-      }
+      algLoops.push_back(AlgLoop(Flags::AlgLoopSolver(), absoluteTolerance, sortedConnections[i], systCount));
+      systCount++;
     }
-    loopsNeedUpdate = false;
   }
-
-  return oms_status_ok;
 }
 
 oms_status_enu_t oms::System::importStartValuesFromSSV()
