@@ -10,7 +10,7 @@ find_package(PythonInterp)
 IF (PYTHONINTERP_FOUND)
   message(STATUS "Found Python Interpretor")
   message(STATUS "  PYTHON_VERSION:      " ${PYTHON_VERSION_STRING})
-  message(STATUS "  PYTHON_EXECUTABLE:  " ${PYTHON_EXECUTABLE})
+  message(STATUS "  PYTHON_EXECUTABLE:   " ${PYTHON_EXECUTABLE})
   set(PYTHON_EXE ${PYTHON_EXECUTABLE})
 ENDIF()
 
