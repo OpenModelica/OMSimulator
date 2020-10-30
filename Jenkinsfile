@@ -323,34 +323,50 @@ pipeline {
           }
         }
         stage('mingw64-cross') {
-          agent {
-            docker {
-              image 'docker.openmodelica.org/msyscross-omsimulator:v2.0'
-              label 'linux'
-              alwaysPull true
+          stages {
+            stage('cross-compile') {
+              agent {
+                docker {
+                  image 'docker.openmodelica.org/msyscross-omsimulator:v2.0'
+                  label 'linux'
+                  alwaysPull true
+                }
+              }
+              environment {
+                CROSS_TRIPLE = "x86_64-w64-mingw32"
+                CC = "${env.CROSS_TRIPLE}-gcc-posix"
+                CXX = "${env.CROSS_TRIPLE}-g++-posix"
+                CPPFLAGS = '-I/opt/pacman/mingw64/include'
+                LDFLAGS = '-L/opt/pacman/mingw64/lib'
+                AR = "${env.CROSS_TRIPLE}-ar-posix"
+                RANLIB = "${env.CROSS_TRIPLE}-ranlib-posix"
+                detected_OS = 'MINGW64'
+                VERBOSE = '1'
+                BOOST_ROOT = '/opt/pacman/mingw64/'
+              }
+
+              steps {
+                buildOMS()
+                sh '''
+                (cd install/mingw && zip -r "../../OMSimulator-mingw64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev`.zip" *)
+                '''
+
+                archiveArtifacts "OMSimulator-mingw64*.zip"
+                stash name: 'mingw64-install', includes: "install/mingw/**"
+              }
             }
-          }
-          environment {
-            CROSS_TRIPLE = "x86_64-w64-mingw32"
-            CC = "${env.CROSS_TRIPLE}-gcc-posix"
-            CXX = "${env.CROSS_TRIPLE}-g++-posix"
-            CPPFLAGS = '-I/opt/pacman/mingw64/include'
-            LDFLAGS = '-L/opt/pacman/mingw64/lib'
-            AR = "${env.CROSS_TRIPLE}-ar-posix"
-            RANLIB = "${env.CROSS_TRIPLE}-ranlib-posix"
-            detected_OS = 'MINGW64'
-            VERBOSE = '1'
-            BOOST_ROOT = '/opt/pacman/mingw64/'
-          }
-
-          steps {
-            buildOMS()
-            sh '''
-            (cd install/mingw && zip -r "../../OMSimulator-mingw64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev`.zip" *)
-            '''
-
-            archiveArtifacts "OMSimulator-mingw64*.zip"
-            stash name: 'mingw64-install', includes: "install/mingw/**"
+            stage('test') {
+              agent {
+                label 'windows'
+              }
+              steps {
+                unstash name: 'mingw64-install'
+                withEnv(["RUNTESTDB=${env.HOME}/jenkins-cache/runtest/"]) {
+                  partest()
+                }
+                junit 'testsuite/partest/result.xml'
+              }
+            }
           }
         }
 
