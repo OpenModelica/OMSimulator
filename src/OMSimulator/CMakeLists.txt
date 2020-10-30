@@ -32,10 +32,6 @@ IF (APPLE)
     $<TARGET_FILE:OMSimulator>)
 ENDIF ()
 
-IF (WIN32 AND MINGW)
-  set(CMAKE_EXE_LINKER_FLAGS "-static -static-libgcc -static-libstdc++")
-ENDIF ()
-
 add_definitions(-DOMS_STATIC)
 target_link_libraries(OMSimulator OMSimulatorLib_static)
 
