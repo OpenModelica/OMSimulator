@@ -64,7 +64,7 @@ pipeline {
 
             sh 'make doc doc-html doc-doxygen'
             sh '(cd install/linux/doc && zip -r "../../../OMSimulator-doc-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev`.zip" *)'
-            archiveArtifacts artifacts: 'OMSimulator-doc*.zip', 'OMSimulator-linux-amd64-*.tar.gz', fingerprint: true
+            archiveArtifacts artifacts: 'OMSimulator-doc*.zip,OMSimulator-linux-amd64-*.tar.gz', fingerprint: true
             stash name: 'docs', includes: "install/linux/doc/**"
           }
         }
