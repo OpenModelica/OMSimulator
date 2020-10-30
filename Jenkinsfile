@@ -231,13 +231,11 @@ pipeline {
                 ! ls install/linux/bin/*.so 1> /dev/null 2>&1
                 (cd install/linux && tar czf "../../OMSimulator-linux-arm32-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.tar.gz" *)
                 '''
-
                 archiveArtifacts "OMSimulator-linux-arm32-*.tar.gz"
                 stash name: 'arm32-zip', includes: "OMSimulator-linux-arm32-*.tar.gz"
                 stash name: 'arm32-install', includes: "install/linux/**"
               }
             }
-
             stage('test') {
               /* when {
                 beforeAgent true
@@ -308,7 +306,6 @@ pipeline {
                 stash name: 'osx-install', includes: "install/mac/**"
               }
             }
-
             stage('test') {
               /* when {
                 beforeAgent true
@@ -327,36 +324,79 @@ pipeline {
             }
           }
         }
+
         stage('mingw64-cross') {
-          agent {
-            docker {
-              image 'docker.openmodelica.org/msyscross-omsimulator:v2.0'
-              label 'linux'
-              alwaysPull true
+          stages {
+            stage('cross-compile') {
+              agent {
+                docker {
+                  image 'docker.openmodelica.org/msyscross-omsimulator:v2.0'
+                  label 'linux'
+                  alwaysPull true
+                }
+              }
+              environment {
+                CROSS_TRIPLE = "x86_64-w64-mingw32"
+                CC = "${env.CROSS_TRIPLE}-gcc-posix"
+                CXX = "${env.CROSS_TRIPLE}-g++-posix"
+                CPPFLAGS = '-I/opt/pacman/mingw64/include'
+                LDFLAGS = '-L/opt/pacman/mingw64/lib'
+                AR = "${env.CROSS_TRIPLE}-ar-posix"
+                RANLIB = "${env.CROSS_TRIPLE}-ranlib-posix"
+                detected_OS = 'MINGW64'
+                VERBOSE = '1'
+                BOOST_ROOT = '/opt/pacman/mingw64/'
+              }
+              steps {
+                buildOMS()
+                sh '''
+                (cd install/mingw && zip -r "../../OMSimulator-mingw64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *)
+                '''
+                archiveArtifacts "OMSimulator-mingw64*.zip"
+                stash name: 'mingw64-zip', includes: "OMSimulator-mingw64-*.zip"
+                stash name: 'mingw64-install', includes: "install/mingw/**"
+              }
             }
-          }
-          environment {
-            CROSS_TRIPLE = "x86_64-w64-mingw32"
-            CC = "${env.CROSS_TRIPLE}-gcc-posix"
-            CXX = "${env.CROSS_TRIPLE}-g++-posix"
-            CPPFLAGS = '-I/opt/pacman/mingw64/include'
-            LDFLAGS = '-L/opt/pacman/mingw64/lib'
-            AR = "${env.CROSS_TRIPLE}-ar-posix"
-            RANLIB = "${env.CROSS_TRIPLE}-ranlib-posix"
-            detected_OS = 'MINGW64'
-            VERBOSE = '1'
-            BOOST_ROOT = '/opt/pacman/mingw64/'
-          }
+            stage('test') {
+              agent {
+                label 'omsimulator-windows'
+              }
+              environment {
+                PATH = "${env.PATH};C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;C:\\OMDev\\tools\\msys\\mingw64\\bin\\"
+                OMDEV = "/c/OMDev"
+                MSYSTEM = "MINGW64"
+                RUNTESTDB="${env.HOME}/jenkins-cache/runtest/"
+              }
+              steps {
+                unstash name: 'mingw64-install'
 
-          steps {
-            buildOMS()
-            sh '''
-            (cd install/mingw && zip -r "../../OMSimulator-mingw64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *)
-            '''
+                bat 'hostname'
+                writeFile file: "testMingw64-install.sh", text:"""#!/bin/sh
+set -x -e
+cd "${env.WORKSPACE}"
+export PATH="/c/Program Files/TortoiseSVN/bin/:/c/bin/jdk/bin:/c/bin/nsis/:\$PATH:/c/bin/git/bin"
+make -C testsuite difftool resources
+cp -f "${env.RUNTESTDB}/"* testsuite/ || true
+find testsuite/ -name "*.lua" -exec sed -i /teardown_command/d {} ";"
+cd testsuite/partest
+./runtests.pl -j\$(nproc) -nocolour ${env.BRANCH_NAME == "master" ? "-notlm" : ""} -with-xml ${params.RUNTESTS_FLAG}
+"""
+                bat """
+set BOOST_ROOT=C:\\local\\boost_1_64_0
+set PATH=C:\\bin\\cmake\\bin;%PATH%
 
-            archiveArtifacts "OMSimulator-mingw64-*.zip"
-            stash name: 'mingw64-zip', includes: "OMSimulator-mingw64-*.zip"
-            stash name: 'mingw64-install', includes: "install/mingw/**"
+C:\\OMDev\\tools\\msys\\usr\\bin\\sh --login -i '${env.WORKSPACE}/testMingw64-install.sh'
+
+EXIT /b 0
+
+:fail
+ECHO Something went wrong!
+EXIT /b 1
+"""
+
+                junit 'testsuite/partest/result.xml'
+              }
+            }
           }
         }
 
@@ -402,29 +442,30 @@ pipeline {
         }
 
         stage('msvc64') {
-          when {
-            expression { return params.MSVC64 }
-            beforeAgent true
-          }
-          agent {
-            label 'omsimulator-windows'
-          }
-          environment {
-            PATH = "${env.PATH};C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;C:\\OMDev\\tools\\msys\\mingw64\\bin\\"
-            OMDEV = "/c/OMDev"
-            MSYSTEM = "MINGW64"
-          }
-
-          steps {
-            bat 'hostname'
-            writeFile file: "buildZip.sh", text: """#!/bin/sh
+          stages {
+            stage('build') {
+              when {
+                expression { return params.MSVC64 }
+                beforeAgent true
+              }
+              agent {
+                label 'omsimulator-windows'
+              }
+              environment {
+                PATH = "${env.PATH};C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;C:\\OMDev\\tools\\msys\\mingw64\\bin\\"
+                OMDEV = "/c/OMDev"
+                MSYSTEM = "MINGW64"
+              }
+              steps {
+                bat 'hostname'
+                writeFile file: "buildZip.sh", text: """#!/bin/sh
 set -x -e
 export PATH="/c/Program Files/TortoiseSVN/bin/:/c/bin/jdk/bin:/c/bin/nsis/:\$PATH:/c/bin/git/bin"
 cd "${env.WORKSPACE}/install/win"
 zip -r "../../OMSimulator-win64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *
 """
 
-            retry(2) { bat """
+                retry(2) { bat """
 set BOOST_ROOT=C:\\local\\boost_1_64_0
 set PATH=C:\\bin\\cmake\\bin;%PATH%
 
@@ -446,8 +487,51 @@ ECHO Something went wrong!
 EXIT /b 1
 """ }
 
-            archiveArtifacts "OMSimulator-win64-*.zip"
-            stash name: 'win64-zip', includes: "OMSimulator-win64-*.zip"
+                archiveArtifacts "OMSimulator-win64-*.zip"
+                stash name: 'win64-zip', includes: "OMSimulator-win64-*.zip"
+                stash name: 'win64-install', includes: "install/win/**"
+              }
+            }
+            stage('test') {
+              agent {
+                label 'omsimulator-windows'
+              }
+              environment {
+                PATH = "${env.PATH};C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;C:\\OMDev\\tools\\msys\\mingw64\\bin\\"
+                OMDEV = "/c/OMDev"
+                MSYSTEM = "MINGW64"
+                RUNTESTDB="${env.HOME}/jenkins-cache/runtest/"
+              }
+              steps {
+                unstash name: 'win64-install'
+
+                bat 'hostname'
+                writeFile file: "testMSVC64-install.sh", text:"""#!/bin/sh
+set -x -e
+cd "${env.WORKSPACE}"
+export PATH="/c/Program Files/TortoiseSVN/bin/:/c/bin/jdk/bin:/c/bin/nsis/:\$PATH:/c/bin/git/bin"
+make -C testsuite difftool resources
+cp -f "${env.RUNTESTDB}/"* testsuite/ || true
+find testsuite/ -name "*.lua" -exec sed -i /teardown_command/d {} ";"
+cd testsuite/partest
+./runtests.pl -j\$(nproc) -platform=win -nocolour ${env.BRANCH_NAME == "master" ? "-notlm" : ""} -with-xml ${params.RUNTESTS_FLAG}
+"""
+                bat """
+set BOOST_ROOT=C:\\local\\boost_1_64_0
+set PATH=C:\\bin\\cmake\\bin;%PATH%
+
+C:\\OMDev\\tools\\msys\\usr\\bin\\sh --login -i '${env.WORKSPACE}/testMSVC64-install.sh'
+
+EXIT /b 0
+
+:fail
+ECHO Something went wrong!
+EXIT /b 1
+"""
+
+                junit 'testsuite/partest/result.xml'
+              }
+            }
           }
         }
 

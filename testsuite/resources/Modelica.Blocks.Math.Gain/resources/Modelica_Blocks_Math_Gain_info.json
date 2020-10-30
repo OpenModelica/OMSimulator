@@ -1,13 +1,13 @@
 {"format":"Transformational debugger info","version":1,
 "info":{"name":"Modelica.Blocks.Math.Gain","description":"Output the product of a gain value with the input signal"},
 "variables":{
-"u":{"comment":"Input signal connector","kind":"variable","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"/mnt/c/Users/Lennart/Repositories/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Math.mo","lineStart":546,"lineEnd":547,"colStart":5,"colEnd":58},"within":["Real"]}},
-"u":{"comment":"Input signal connector","kind":"variable","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"/mnt/c/Users/Lennart/Repositories/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Math.mo","lineStart":546,"lineEnd":547,"colStart":5,"colEnd":58},"within":["Real"]}},
-"k":{"comment":"Gain value multiplied with input signal","kind":"parameter","type":"Real","unit":"1","displayUnit":"","source":{"info":{"file":"/mnt/c/Users/Lennart/Repositories/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Math.mo","lineStart":543,"lineEnd":544,"colStart":5,"colEnd":48},"within":["Real"]}}
+"u":{"comment":"Input signal connector","kind":"variable","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"/home/andreas/workspace/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Math.mo","lineStart":546,"lineEnd":547,"colStart":5,"colEnd":58},"within":["Real"]}},
+"u":{"comment":"Input signal connector","kind":"variable","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"/home/andreas/workspace/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Math.mo","lineStart":546,"lineEnd":547,"colStart":5,"colEnd":58},"within":["Real"]}},
+"k":{"comment":"Gain value multiplied with input signal","kind":"parameter","type":"Real","unit":"1","displayUnit":"","source":{"info":{"file":"/home/andreas/workspace/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Math.mo","lineStart":543,"lineEnd":544,"colStart":5,"colEnd":48},"within":["Real"]}}
 },
 "equations":[{"eqIndex":0,"tag":"dummy"},
 {"eqIndex":1,"tag":"alias","equation":[2],"section":"initial"},
-{"eqIndex":2,"section":"regular","tag":"assign","defines":["y"],"uses":["u","k"],"equation":["k * u"],"source":{"info":{"file":"/mnt/c/Users/Lennart/Repositories/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Math.mo","lineStart":552,"lineEnd":552,"colStart":5,"colEnd":12},"within":["Modelica.Blocks.Math.Gain"]}}
+{"eqIndex":2,"section":"regular","tag":"assign","defines":["y"],"uses":["u","k"],"equation":["k * u"],"source":{"info":{"file":"/home/andreas/workspace/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Math.mo","lineStart":552,"lineEnd":552,"colStart":5,"colEnd":12},"within":["Modelica.Blocks.Math.Gain"]}}
 ],
 "functions":[
 ]
