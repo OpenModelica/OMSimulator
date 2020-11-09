@@ -60,10 +60,10 @@ pipeline {
 
             // Temporary debugging
             // archiveArtifacts artifacts: 'testsuite/**/*.log', fingerprint: true
-            sh '(cd install/linux && tar czf "../../OMSimulator-linux-amd64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev`.tar.gz" *)'
+            sh '(cd install/linux && tar czf "../../OMSimulator-linux-amd64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.tar.gz" *)'
 
             sh 'make doc doc-html doc-doxygen'
-            sh '(cd install/linux/doc && zip -r "../../../OMSimulator-doc-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev`.zip" *)'
+            sh '(cd install/linux/doc && zip -r "../../../OMSimulator-doc-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *)'
             archiveArtifacts artifacts: 'OMSimulator-doc*.zip,OMSimulator-linux-amd64-*.tar.gz', fingerprint: true
             stash name: 'docs', includes: "install/linux/doc/**"
           }
@@ -189,7 +189,7 @@ pipeline {
             sh '''
             # No so-files should ever exist in a bin/ folder
             ! ls install/linux/bin/*.so 1> /dev/null 2>&1
-            (cd install/linux && tar czf "../../OMSimulator-linux-i386-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev`.tar.gz" *)
+            (cd install/linux && tar czf "../../OMSimulator-linux-i386-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.tar.gz" *)
             '''
 
             archiveArtifacts "OMSimulator-linux-i386-*.tar.gz"
@@ -226,7 +226,7 @@ pipeline {
                 sh '''
                 # No so-files should ever exist in a bin/ folder
                 ! ls install/linux/bin/*.so 1> /dev/null 2>&1
-                (cd install/linux && tar czf "../../OMSimulator-linux-arm32-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev`.tar.gz" *)
+                (cd install/linux && tar czf "../../OMSimulator-linux-arm32-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.tar.gz" *)
                 '''
 
                 archiveArtifacts "OMSimulator-linux-arm32-*.tar.gz"
@@ -296,7 +296,7 @@ pipeline {
               steps {
                 buildOMS()
                 sh '''
-                (cd install/mac && zip -r "../../OMSimulator-osx-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev`.zip" *)
+                (cd install/mac && zip -r "../../OMSimulator-osx-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *)
                 '''
 
                 archiveArtifacts "OMSimulator-osx*.zip"
@@ -346,7 +346,7 @@ pipeline {
           steps {
             buildOMS()
             sh '''
-            (cd install/mingw && zip -r "../../OMSimulator-mingw64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev`.zip" *)
+            (cd install/mingw && zip -r "../../OMSimulator-mingw64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *)
             '''
 
             archiveArtifacts "OMSimulator-mingw64*.zip"
@@ -382,7 +382,7 @@ pipeline {
           steps {
             buildOMS()
             sh '''
-            (cd install/mingw && zip -r "../../OMSimulator-mingw32-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev`.zip" *)
+            (cd install/mingw && zip -r "../../OMSimulator-mingw32-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *)
             '''
 
             archiveArtifacts "OMSimulator-mingw32*.zip"
@@ -410,7 +410,7 @@ pipeline {
 set -x -e
 export PATH="/c/Program Files/TortoiseSVN/bin/:/c/bin/jdk/bin:/c/bin/nsis/:\$PATH:/c/bin/git/bin"
 cd "${env.WORKSPACE}/install/win"
-zip -r "../../OMSimulator-win64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev`.zip" *
+zip -r "../../OMSimulator-win64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *
 """
 
             retry(2) { bat """
