@@ -1,6 +1,6 @@
 #CAPTION#
 exportSSVTemplate
---------------
+-----------------
 
 export start values read from modeldescription.xml to a .ssv file
 
