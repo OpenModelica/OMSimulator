@@ -15,7 +15,7 @@ Loads a snapshot to restore a previous model state. The model must be in virgin 
 #PYTHON#
 .. code-block:: python
 
-  status = oms_importSnapshot(cref, snapshot)
+  status = oms.importSnapshot(cref, snapshot)
 
 #END#
 
