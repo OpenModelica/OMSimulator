@@ -282,8 +282,7 @@ class OMSimulator:
     status = self.obj.oms_exportSnapshot(self.checkstring(ident), ctypes.byref(contents))
     return [self.checkstring(contents.value), status]
   def exportSSVTemplate(self, ident, filename):
-    status = self.obj.oms_exportSSVTemplate(self.checkstring(ident), self.checkstring(filename))
-    return status
+    return self.obj.oms_exportSSVTemplate(self.checkstring(ident), self.checkstring(filename))
   def listUnconnectedConnectors(self, ident):
     contents = ctypes.c_char_p()
     status = self.obj.oms_listUnconnectedConnectors(self.checkstring(ident), ctypes.byref(contents))
