@@ -154,7 +154,7 @@ oms_status_enu_t oms::SystemWC::instantiate()
     if (oms_status_ok != subsystem.second->instantiate())
       return oms_status_error;
 
-  if (useThreadPool())
+  if (false && useThreadPool())
   {
     ctpl::thread_pool& pool = getThreadPool();
     std::vector<std::future<oms_status_enu_t>> results(getComponents().size());
