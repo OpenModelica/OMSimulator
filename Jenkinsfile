@@ -303,8 +303,8 @@ pipeline {
                 (cd install/mac && zip -r "../../OMSimulator-osx-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *)
                 '''
 
-                archiveArtifacts "OMSimulator-osx*.zip"
-                stash name: 'osx-zip', includes: "OMSimulator-osx*.zip"
+                archiveArtifacts "OMSimulator-osx-*.zip"
+                stash name: 'osx-zip', includes: "OMSimulator-osx-*.zip"
                 stash name: 'osx-install', includes: "install/mac/**"
               }
             }
@@ -354,8 +354,8 @@ pipeline {
             (cd install/mingw && zip -r "../../OMSimulator-mingw64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *)
             '''
 
-            archiveArtifacts "OMSimulator-mingw64*.zip"
-            stash name: 'mingw64-zip', includes: "OMSimulator-mingw64*.zip"
+            archiveArtifacts "OMSimulator-mingw64-*.zip"
+            stash name: 'mingw64-zip', includes: "OMSimulator-mingw64-*.zip"
             stash name: 'mingw64-install', includes: "install/mingw/**"
           }
         }
@@ -391,8 +391,8 @@ pipeline {
             (cd install/mingw && zip -r "../../OMSimulator-mingw32-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *)
             '''
 
-            archiveArtifacts "OMSimulator-mingw32*.zip"
-            stash name: 'mingw32-zip', includes: "OMSimulator-mingw32*.zip"
+            archiveArtifacts "OMSimulator-mingw32-*.zip"
+            stash name: 'mingw32-zip', includes: "OMSimulator-mingw32-*.zip"
             stash name: 'mingw32-install', includes: "install/mingw/**"
           }
         }
@@ -442,8 +442,8 @@ ECHO Something went wrong!
 EXIT /b 1
 """ }
 
-            archiveArtifacts "OMSimulator-win64*.zip"
-            stash name: 'win64-zip', includes: "OMSimulator-win64*.zip"
+            archiveArtifacts "OMSimulator-win64-*.zip"
+            stash name: 'win64-zip', includes: "OMSimulator-win64-*.zip"
           }
         }
 
@@ -520,10 +520,10 @@ EXIT /b 1
             unstash name: 'amd64-zip'         // includes: "OMSimulator-linux-amd64-*.tar.gz"
             unstash name: 'arm32-zip'         // includes: "OMSimulator-linux-arm32-*.tar.gz"
             unstash name: 'i389-zip'          // includes: "OMSimulator-linux-i386-*.tar.gz"
-            unstash name: 'mingw32-zip'       // includes: "OMSimulator-mingw32*.zip"
-            unstash name: 'mingw64-zip'       // includes: "OMSimulator-mingw64*.zip"
-            unstash name: 'win64-zip'         // includes: "OMSimulator-win64*.zip"
-            unstash name: 'osx-zip'           // includes: "OMSimulator-osx*.zip"
+            unstash name: 'mingw32-zip'       // includes: "OMSimulator-mingw32-*.zip"
+            unstash name: 'mingw64-zip'       // includes: "OMSimulator-mingw64-*.zip"
+            unstash name: 'win64-zip'         // includes: "OMSimulator-win64-*.zip"
+            unstash name: 'osx-zip'           // includes: "OMSimulator-osx-*.zip"
 
             sh "ls *.zip *.tar.gz"
 
@@ -533,7 +533,7 @@ EXIT /b 1
                   configName: 'OMSimulator',
                   transfers: [
                     sshTransfer(
-                      remoteDirectory: "linux-i368/",
+                      remoteDirectory: "linux-i386/",
                       sourceFiles: 'OMSimulator-linux-i386-*.tar.gz'),
                     sshTransfer(
                       remoteDirectory: "linux-arm32/",
@@ -543,16 +543,16 @@ EXIT /b 1
                       sourceFiles: 'OMSimulator-linux-amd64-*.tar.gz'),
                     sshTransfer(
                       remoteDirectory: "win-mingw32/",
-                      sourceFiles: 'OMSimulator-mingw32*.zip'),
+                      sourceFiles: 'OMSimulator-mingw32-*.zip'),
                     sshTransfer(
                       remoteDirectory: "win-mingw64/",
-                      sourceFiles: 'OMSimulator-mingw64*.zip'),
+                      sourceFiles: 'OMSimulator-mingw64-*.zip'),
                     sshTransfer(
                       remoteDirectory: "osx/",
-                      sourceFiles: 'OMSimulator-osx*.zip'),
+                      sourceFiles: 'OMSimulator-osx-*.zip'),
                     sshTransfer(
                       remoteDirectory: "win-msvc64/",
-                      sourceFiles: 'OMSimulator-win64*.zip')
+                      sourceFiles: 'OMSimulator-win64-*.zip')
                   ]
                 )
               ]
