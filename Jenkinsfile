@@ -10,7 +10,7 @@ pipeline {
     booleanParam(name: 'MSVC64', defaultValue: true, description: 'Build with MSVC64 (often hangs)')
     booleanParam(name: 'MINGW32', defaultValue: false, description: 'Build with MINGW32 (does not link boost)')
     booleanParam(name: 'SUBMODULE_UPDATE', defaultValue: false, description: 'Allow pull request to update submodules (disabled by default due to common user errors)')
-    booleanParam(name: 'UPLOAD_BUILD_OPENMODELICA', defaultValue: false, description: 'Upload install artifacts to build.openmodelica.org/omsimulator')
+    booleanParam(name: 'UPLOAD_BUILD_OPENMODELICA', defaultValue: false, description: 'Upload install artifacts to build.openmodelica.org/omsimulator. Activates MINGW32 as well.')
     string(name: 'RUNTESTS_FLAG', defaultValue: '', description: 'runtests.pl flag')
   }
   stages {
@@ -362,7 +362,11 @@ pipeline {
 
         stage('mingw32-cross') {
           when {
-            expression { return params.MINGW32 }
+            anyOf {
+              expression { return params.MINGW32 }
+              expression { return params.UPLOAD_BUILD_OPENMODELICA }
+              buildingTag()
+            }
             beforeAgent true
           }
           agent {
@@ -497,21 +501,14 @@ EXIT /b 1
 
         stage('upload-artifacts') {
           when {
-            allOf {
-              not {
-                changeRequest()
-              }
-              anyOf {
-                buildingTag()
-                anyOf {
-                  branch 'master'
-                  branch 'maintenance/**'
-                }
-              }
-              expression { return params.MINGW32 }
+            anyOf {
+              buildingTag()
               expression { return params.UPLOAD_BUILD_OPENMODELICA }
             }
             beforeAgent true
+          }
+          environment {
+            EXPERIMENTAL = getExperimentalPath()
           }
           agent {
             label 'linux'
@@ -533,25 +530,25 @@ EXIT /b 1
                   configName: 'OMSimulator',
                   transfers: [
                     sshTransfer(
-                      remoteDirectory: "linux-i386/",
+                      remoteDirectory: "${EXPERIMENTAL}linux-i386/",
                       sourceFiles: 'OMSimulator-linux-i386-*.tar.gz'),
                     sshTransfer(
-                      remoteDirectory: "linux-arm32/",
+                      remoteDirectory: "${EXPERIMENTAL}linux-arm32/",
                       sourceFiles: 'OMSimulator-linux-arm32-*.tar.gz'),
                     sshTransfer(
-                      remoteDirectory: "linux-amd64/",
+                      remoteDirectory: "${EXPERIMENTAL}linux-amd64/",
                       sourceFiles: 'OMSimulator-linux-amd64-*.tar.gz'),
                     sshTransfer(
-                      remoteDirectory: "win-mingw32/",
+                      remoteDirectory: "${EXPERIMENTAL}win-mingw32/",
                       sourceFiles: 'OMSimulator-mingw32-*.zip'),
                     sshTransfer(
-                      remoteDirectory: "win-mingw64/",
+                      remoteDirectory: "${EXPERIMENTAL}win-mingw64/",
                       sourceFiles: 'OMSimulator-mingw64-*.zip'),
                     sshTransfer(
-                      remoteDirectory: "osx/",
+                      remoteDirectory: "${EXPERIMENTAL}osx/",
                       sourceFiles: 'OMSimulator-osx-*.zip'),
                     sshTransfer(
-                      remoteDirectory: "win-msvc64/",
+                      remoteDirectory: "${EXPERIMENTAL}win-msvc64/",
                       sourceFiles: 'OMSimulator-win64-*.zip')
                   ]
                 )
@@ -631,5 +628,14 @@ void submoduleNoChange(path) {
   b=sh(returnStdout: true, script: "git ls-tree HEAD ${path}").trim()
   if (a != b) {
     throw new Exception("Did you intend to change a submodule? Set SUBMODULE_UPDATE in the run options.")
+  }
+}
+
+def getExperimentalPath() {
+  if (changeRequest()) {
+    return "experimental/pr-${env.CHANGE_ID}/"
+  }
+  else {
+    return ""
   }
 }
