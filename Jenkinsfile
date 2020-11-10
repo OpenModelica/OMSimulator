@@ -10,6 +10,7 @@ pipeline {
     booleanParam(name: 'MSVC64', defaultValue: true, description: 'Build with MSVC64 (often hangs)')
     booleanParam(name: 'MINGW32', defaultValue: false, description: 'Build with MINGW32 (does not link boost)')
     booleanParam(name: 'SUBMODULE_UPDATE', defaultValue: false, description: 'Allow pull request to update submodules (disabled by default due to common user errors)')
+    booleanParam(name: 'UPLOAD_BUILD_OPENMODELICA', defaultValue: false, description: 'Upload install artifacts to build.openmodelica.org/omsimulator')
     string(name: 'RUNTESTS_FLAG', defaultValue: '', description: 'runtests.pl flag')
   }
   stages {
@@ -65,6 +66,7 @@ pipeline {
             sh 'make doc doc-html doc-doxygen'
             sh '(cd install/linux/doc && zip -r "../../../OMSimulator-doc-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *)'
             archiveArtifacts artifacts: 'OMSimulator-doc*.zip,OMSimulator-linux-amd64-*.tar.gz', fingerprint: true
+            stash name: 'amd64-zip', includes: "OMSimulator-linux-amd64-*.tar.gz"
             stash name: 'docs', includes: "install/linux/doc/**"
           }
         }
@@ -193,6 +195,7 @@ pipeline {
             '''
 
             archiveArtifacts "OMSimulator-linux-i386-*.tar.gz"
+            stash name: 'i389-zip', includes: "OMSimulator-linux-i386-*.tar.gz"
 
             partest()
 
@@ -230,6 +233,7 @@ pipeline {
                 '''
 
                 archiveArtifacts "OMSimulator-linux-arm32-*.tar.gz"
+                stash name: 'arm32-zip', includes: "OMSimulator-linux-arm32-*.tar.gz"
                 stash name: 'arm32-install', includes: "install/linux/**"
               }
             }
@@ -299,7 +303,8 @@ pipeline {
                 (cd install/mac && zip -r "../../OMSimulator-osx-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *)
                 '''
 
-                archiveArtifacts "OMSimulator-osx*.zip"
+                archiveArtifacts "OMSimulator-osx-*.zip"
+                stash name: 'osx-zip', includes: "OMSimulator-osx-*.zip"
                 stash name: 'osx-install', includes: "install/mac/**"
               }
             }
@@ -349,7 +354,8 @@ pipeline {
             (cd install/mingw && zip -r "../../OMSimulator-mingw64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *)
             '''
 
-            archiveArtifacts "OMSimulator-mingw64*.zip"
+            archiveArtifacts "OMSimulator-mingw64-*.zip"
+            stash name: 'mingw64-zip', includes: "OMSimulator-mingw64-*.zip"
             stash name: 'mingw64-install', includes: "install/mingw/**"
           }
         }
@@ -385,7 +391,8 @@ pipeline {
             (cd install/mingw && zip -r "../../OMSimulator-mingw32-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *)
             '''
 
-            archiveArtifacts "OMSimulator-mingw32*.zip"
+            archiveArtifacts "OMSimulator-mingw32-*.zip"
+            stash name: 'mingw32-zip', includes: "OMSimulator-mingw32-*.zip"
             stash name: 'mingw32-install', includes: "install/mingw/**"
           }
         }
@@ -435,7 +442,8 @@ ECHO Something went wrong!
 EXIT /b 1
 """ }
 
-            archiveArtifacts "OMSimulator-win64*.zip"
+            archiveArtifacts "OMSimulator-win64-*.zip"
+            stash name: 'win64-zip', includes: "OMSimulator-win64-*.zip"
           }
         }
 
@@ -465,17 +473,90 @@ EXIT /b 1
           agent {
             label 'linux'
           }
-          /*
-          // Does  not pass GIT_BRANCH env.var
-          options {
-            skipDefaultCheckout()
-          }
-          */
           steps {
             unstash name: 'docs'
             sh "test ! -z '${env.GIT_BRANCH}'"
             sh "test ! '${env.GIT_BRANCH}' = 'null'"
-            sshPublisher(publishers: [sshPublisherDesc(configName: 'OMSimulator-doc', transfers: [sshTransfer(execCommand: "rm -rf .tmp/${env.GIT_BRANCH}"), sshTransfer(execCommand: "test ! -z '${env.GIT_BRANCH}' && rm -rf '/var/www/doc/OMSimulator/${env.GIT_BRANCH}' && mkdir -p `dirname '/var/www/doc/OMSimulator/.tmp/${env.GIT_BRANCH}'` && mv '/var/www/doc/OMSimulator/.tmp/${env.GIT_BRANCH}' '/var/www/doc/OMSimulator/${env.GIT_BRANCH}'", remoteDirectory: ".tmp/${env.GIT_BRANCH}", removePrefix: "install/linux/doc", sourceFiles: 'install/linux/doc/**')])])
+            sshPublisher (
+              publishers: [
+                sshPublisherDesc(
+                  configName: 'OMSimulator-doc',
+                  transfers: [
+                    sshTransfer(execCommand: "rm -rf .tmp/${env.GIT_BRANCH}"),
+                    sshTransfer(
+                      execCommand: "test ! -z '${env.GIT_BRANCH}' && rm -rf '/var/www/doc/OMSimulator/${env.GIT_BRANCH}' && mkdir -p `dirname '/var/www/doc/OMSimulator/.tmp/${env.GIT_BRANCH}'` && mv '/var/www/doc/OMSimulator/.tmp/${env.GIT_BRANCH}' '/var/www/doc/OMSimulator/${env.GIT_BRANCH}'",
+                      remoteDirectory: ".tmp/${env.GIT_BRANCH}",
+                      removePrefix: "install/linux/doc",
+                      sourceFiles: 'install/linux/doc/**')
+                  ]
+                )
+              ]
+            )
+          }
+        }
+
+        stage('upload-artifacts') {
+          when {
+            allOf {
+              not {
+                changeRequest()
+              }
+              anyOf {
+                buildingTag()
+                anyOf {
+                  branch 'master'
+                  branch 'maintenance/**'
+                }
+              }
+              expression { return params.MINGW32 }
+              expression { return params.UPLOAD_BUILD_OPENMODELICA }
+            }
+            beforeAgent true
+          }
+          agent {
+            label 'linux'
+          }
+          steps {
+            unstash name: 'amd64-zip'         // includes: "OMSimulator-linux-amd64-*.tar.gz"
+            unstash name: 'arm32-zip'         // includes: "OMSimulator-linux-arm32-*.tar.gz"
+            unstash name: 'i389-zip'          // includes: "OMSimulator-linux-i386-*.tar.gz"
+            unstash name: 'mingw32-zip'       // includes: "OMSimulator-mingw32-*.zip"
+            unstash name: 'mingw64-zip'       // includes: "OMSimulator-mingw64-*.zip"
+            unstash name: 'win64-zip'         // includes: "OMSimulator-win64-*.zip"
+            unstash name: 'osx-zip'           // includes: "OMSimulator-osx-*.zip"
+
+            sh "ls *.zip *.tar.gz"
+
+            sshPublisher (
+              publishers: [
+                sshPublisherDesc(
+                  configName: 'OMSimulator',
+                  transfers: [
+                    sshTransfer(
+                      remoteDirectory: "linux-i386/",
+                      sourceFiles: 'OMSimulator-linux-i386-*.tar.gz'),
+                    sshTransfer(
+                      remoteDirectory: "linux-arm32/",
+                      sourceFiles: 'OMSimulator-linux-arm32-*.tar.gz'),
+                    sshTransfer(
+                      remoteDirectory: "linux-amd64/",
+                      sourceFiles: 'OMSimulator-linux-amd64-*.tar.gz'),
+                    sshTransfer(
+                      remoteDirectory: "win-mingw32/",
+                      sourceFiles: 'OMSimulator-mingw32-*.zip'),
+                    sshTransfer(
+                      remoteDirectory: "win-mingw64/",
+                      sourceFiles: 'OMSimulator-mingw64-*.zip'),
+                    sshTransfer(
+                      remoteDirectory: "osx/",
+                      sourceFiles: 'OMSimulator-osx-*.zip'),
+                    sshTransfer(
+                      remoteDirectory: "win-msvc64/",
+                      sourceFiles: 'OMSimulator-win64-*.zip')
+                  ]
+                )
+              ]
+            )
           }
         }
 
