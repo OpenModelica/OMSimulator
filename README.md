@@ -4,7 +4,17 @@ The OMSimulator project is a FMI-based co-simulation environment that supports o
 
 ## Downloads
 
-Pre-compiled binaries are available for [Windows, Linux, and Mac](https://test.openmodelica.org/jenkins/job/OMSimulator/job/master/lastSuccessfulBuild/artifact/).
+### Full package
+
+Pre-compiled binaries are available for [Windows, Linux, and Mac](https://build.openmodelica.org/omsimulator/).
+
+### Python
+
+Installation using `pip` is recommended:
+
+```bash
+pip3 install OMSimulator
+```
 
 ## Documentation
 
