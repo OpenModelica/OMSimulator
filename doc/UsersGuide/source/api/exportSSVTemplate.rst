@@ -2,8 +2,7 @@
 exportSSVTemplate
 -----------------
 
-export start values read from modeldescription.xml to a .ssv file
-
+Export start values of a FMU read from modeldescription.xml to a .ssv file. It can be called on a given model or components.
 #END#
 
 #LUA#
