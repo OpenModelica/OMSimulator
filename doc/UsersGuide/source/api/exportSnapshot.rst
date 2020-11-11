@@ -19,7 +19,7 @@ doesn't need to call free.
 #PYTHON#
 .. code-block:: python
 
-  contents, status = oms_exportSnapshot(cref)
+  contents, status = oms.exportSnapshot(cref)
 
 #END#
 
