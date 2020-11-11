@@ -2,7 +2,8 @@
 exportSSVTemplate
 -----------------
 
-Export start values of a FMU read from modeldescription.xml to a .ssv file. It can be called on a given model or components.
+Exports all signals that have start values of one or multiple FMUs to a SSV file that are read from modelDescription.xml. The function can be called for a top level model or a certain FMU component.
+If called for a top level model, start values of all FMUs are exported to the SSV file. If called for a component, start values of just this FMU are exported to the SSV file.
 #END#
 
 #LUA#
