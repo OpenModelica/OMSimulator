@@ -107,7 +107,7 @@ namespace oms
     oms_status_enu_t emit(double time, bool force=false, bool* emitted=NULL);
     oms_status_enu_t addSignalsToResults(const char* regex);
     oms_status_enu_t removeSignalsFromResults(const char* regex);
-    oms_status_enu_t setSignalFilter(const char* regex);
+    oms_status_enu_t setSignalFilter(const std::string& regex);
     oms_status_enu_t getSignalFilter(char** regex);
 
     oms_status_enu_t cancelSimulation_asynchronous();
@@ -152,10 +152,10 @@ namespace oms
     double lastEmit;
     double loggingInterval = 0.0;
     int bufferSize = 10;
-    std::string resultFilename;             ///< default <name>_res.mat
+    std::string resultFilename; ///< default <name>_res.mat
     Clock clock;
 
-    std::string signalFilter = "";  ///< default set to empty
+    std::string signalFilter = ".*"; ///< default
 
     pugi::xml_node snapShot; ///< top level snapshot node which contains ssd, ssv and ssm as child nodes
 

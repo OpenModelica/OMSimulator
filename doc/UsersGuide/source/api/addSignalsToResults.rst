@@ -2,6 +2,8 @@
 addSignalsToResults
 -------------------
 
+[deprecated: `setSignalFilter` is the recommended API]
+
 Add all variables that match the given regex to the result file.
 #END#
 
