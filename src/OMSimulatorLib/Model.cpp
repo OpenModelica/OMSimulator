@@ -598,7 +598,7 @@ oms_status_enu_t oms::Model::importFromSSD(const pugi::xml_node& node)
             resultFilename = itAnnotations->attribute("resultFile").as_string();
             loggingInterval = itAnnotations->attribute("loggingInterval").as_double();
             bufferSize = itAnnotations->attribute("bufferSize").as_int();
-            signalFilter = itAnnotations->attribute("signalFilter").as_string();
+            setSignalFilter(itAnnotations->attribute("signalFilter").as_string());
           }
         }
       }
@@ -655,19 +655,19 @@ oms_system_enu_t oms::Model::getSystemType(const pugi::xml_node& node, const std
 oms_system_enu_t oms::Model::getSystemTypeHelper(const pugi::xml_node& node, const std::string& sspVersion)
 {
   oms_system_enu_t systemType = oms_system_tlm;
-  if (node.child(oms::ssp::Version1_0::VariableStepSolver).attribute("description").as_string() != "" || node.child("VariableStepSolver").attribute("description").as_string() !="")
+  if (std::string(node.child(oms::ssp::Version1_0::VariableStepSolver).attribute("description").as_string()) != "" || std::string(node.child("VariableStepSolver").attribute("description").as_string()) !="")
   {
     systemType = oms_system_sc;
   }
-  else if (node.child("oms:FixedStepSolver").attribute("description").as_string() != "" || node.child("FixedStepSolver").attribute("description").as_string() != "")
+  else if (std::string(node.child("oms:FixedStepSolver").attribute("description").as_string()) != "" || std::string(node.child("FixedStepSolver").attribute("description").as_string()) != "")
   {
     systemType = oms_system_sc;
   }
-  else if (node.child("oms:VariableStepMaster").attribute("description").as_string() != "" || node.child("VariableStepMaster").attribute("description").as_string() != "")
+  else if (std::string(node.child("oms:VariableStepMaster").attribute("description").as_string()) != "" || std::string(node.child("VariableStepMaster").attribute("description").as_string()) != "")
   {
     systemType = oms_system_wc;
   }
-  else if (node.child(oms::ssp::Version1_0::FixedStepMaster).attribute("description").as_string() != "" || node.child("FixedStepMaster").attribute("description").as_string() != "")
+  else if (std::string(node.child(oms::ssp::Version1_0::FixedStepMaster).attribute("description").as_string()) != "" || std::string(node.child("FixedStepMaster").attribute("description").as_string()) != "")
   {
     systemType = oms_system_wc;
   }
@@ -1111,15 +1111,21 @@ oms_status_enu_t oms::Model::getSignalFilter(char** regex)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Model::setSignalFilter(const char* regex)
+oms_status_enu_t oms::Model::setSignalFilter(const std::string& regex)
 {
-  if (oms_status_ok != removeSignalsFromResults(".*"))
-    return oms_status_error;
+  // If regex is empty then all signals will be exported
+  if (regex.empty() || regex == ".*")
+    this->signalFilter = ".*";
+  else
+  {
+    if (oms_status_ok != removeSignalsFromResults(".*"))
+      return oms_status_error;
 
-  if (oms_status_ok != system->addSignalsToResults(regex))
-    return oms_status_error;
+    this->signalFilter = regex;
+  }
 
-  this->signalFilter = regex;
+  if (oms_status_ok != system->addSignalsToResults(this->signalFilter.c_str()))
+    return oms_status_error;
 
   return oms_status_ok;
 }

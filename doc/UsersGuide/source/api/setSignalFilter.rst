@@ -2,6 +2,8 @@
 setSignalFilter
 ---------------
 
+This function specifies the signal filter. The signal filter is used to
+determine which signals will eventually be exported to the result file.
 #END#
 
 #LUA#
@@ -33,4 +35,6 @@ setSignalFilter
 #END#
 
 #DESCRIPTION#
+The second argument, i.e. regex, is a regular expression (C++11).
+`".*"` and `"(.)*"` can be used to hit all variables.
 #END#

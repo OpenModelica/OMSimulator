@@ -1430,7 +1430,7 @@ oms_status_enu_t oms_setSignalFilter(const char* cref, const char* regex)
 
 oms_status_enu_t oms_addSignalsToResults(const char* cref, const char* regex)
 {
-  logWarning("[oms_addSignalsToResults] will not update the signalFilters in ssp, use [oms_setSignalFilter]");
+  logWarning("[addSignalsToResults] is deprecated and [setSignalFilter] is the recommended API");
 
   oms::ComRef tail(cref);
   oms::ComRef front = tail.pop_front();
@@ -1444,7 +1444,7 @@ oms_status_enu_t oms_addSignalsToResults(const char* cref, const char* regex)
 
 oms_status_enu_t oms_removeSignalsFromResults(const char* cref, const char* regex)
 {
-  logWarning("[oms_removeSignalsFromResults] will not update the signalFilters in ssp, use [oms_setSignalFilter]");
+  logWarning("[removeSignalsFromResults] is deprecated and [setSignalFilter] is the recommended API");
 
   oms::ComRef tail(cref);
   oms::ComRef front = tail.pop_front();
