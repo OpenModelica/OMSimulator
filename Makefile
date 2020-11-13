@@ -1,4 +1,3 @@
-
 CC ?= gcc
 CXX ?= g++
 LINK ?= $(CXX)
@@ -124,7 +123,7 @@ else
 	CMAKE_BOOST_ROOT="-DBOOST_ROOT=$(BOOST_ROOT)"
 endif
 
-.PHONY: OMSimulator OMSimulatorCore config-OMSimulator config-fmil config-lua config-zlib config-cvode config-kinsol config-3rdParty distclean testsuite doc doc-html doc-doxygen OMTLMSimulator OMTLMSimulatorClean RegEx
+.PHONY: OMSimulator OMSimulatorCore config-OMSimulator config-fmil config-lua config-zlib config-cvode config-kinsol config-3rdParty distclean testsuite doc doc-html doc-doxygen OMTLMSimulator OMTLMSimulatorClean RegEx pip
 
 OMSimulator:
 	@echo OS: $(detected_OS)
@@ -141,6 +140,16 @@ OMSimulatorCore:
 	@echo "# make OMSimulatorCore"
 	@echo
 	@$(MAKE) -C $(BUILD_DIR) install
+
+pip:
+	@echo
+	@echo "# make pip"
+	@echo
+	@cd src/pip/install/ && python3 setup.py sdist
+	@echo "########################"
+	@echo "# Run the following command to upload the package"
+	@echo "# > twine upload src/pip/install/dist/*"
+	@echo "########################"
 
 ifeq ($(OMTLM),ON)
 OMTLMSimulator: RegEx
