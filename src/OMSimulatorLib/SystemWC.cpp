@@ -154,7 +154,9 @@ oms_status_enu_t oms::SystemWC::instantiate()
     if (oms_status_ok != subsystem.second->instantiate())
       return oms_status_error;
 
-  if (useThreadPool())
+  // The thread pool is disabled for instantiation because it caused problems on Windows for certain FMUs.
+  // https://github.com/OpenModelica/OMSimulator/issues/858
+  if (false && useThreadPool())
   {
     ctpl::thread_pool& pool = getThreadPool();
     std::vector<std::future<oms_status_enu_t>> results(getComponents().size());
