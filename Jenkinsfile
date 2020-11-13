@@ -508,7 +508,7 @@ EXIT /b 1
             beforeAgent true
           }
           environment {
-            EXPERIMENTAL = getExperimentalPath()
+            DEPLOYMENT_PATH_PREFIX = getDeploymentPathPrefix()
           }
           agent {
             label 'linux'
@@ -530,25 +530,25 @@ EXIT /b 1
                   configName: 'OMSimulator',
                   transfers: [
                     sshTransfer(
-                      remoteDirectory: "${EXPERIMENTAL}linux-i386/",
+                      remoteDirectory: "${DEPLOYMENT_PATH_PREFIX}linux-i386/",
                       sourceFiles: 'OMSimulator-linux-i386-*.tar.gz'),
                     sshTransfer(
-                      remoteDirectory: "${EXPERIMENTAL}linux-arm32/",
+                      remoteDirectory: "${DEPLOYMENT_PATH_PREFIX}linux-arm32/",
                       sourceFiles: 'OMSimulator-linux-arm32-*.tar.gz'),
                     sshTransfer(
-                      remoteDirectory: "${EXPERIMENTAL}linux-amd64/",
+                      remoteDirectory: "${DEPLOYMENT_PATH_PREFIX}linux-amd64/",
                       sourceFiles: 'OMSimulator-linux-amd64-*.tar.gz'),
                     sshTransfer(
-                      remoteDirectory: "${EXPERIMENTAL}win-mingw32/",
+                      remoteDirectory: "${DEPLOYMENT_PATH_PREFIX}win-mingw32/",
                       sourceFiles: 'OMSimulator-mingw32-*.zip'),
                     sshTransfer(
-                      remoteDirectory: "${EXPERIMENTAL}win-mingw64/",
+                      remoteDirectory: "${DEPLOYMENT_PATH_PREFIX}win-mingw64/",
                       sourceFiles: 'OMSimulator-mingw64-*.zip'),
                     sshTransfer(
-                      remoteDirectory: "${EXPERIMENTAL}osx/",
+                      remoteDirectory: "${DEPLOYMENT_PATH_PREFIX}osx/",
                       sourceFiles: 'OMSimulator-osx-*.zip'),
                     sshTransfer(
-                      remoteDirectory: "${EXPERIMENTAL}win-msvc64/",
+                      remoteDirectory: "${DEPLOYMENT_PATH_PREFIX}win-msvc64/",
                       sourceFiles: 'OMSimulator-win64-*.zip')
                   ]
                 )
@@ -631,8 +631,8 @@ void submoduleNoChange(path) {
   }
 }
 
-def getExperimentalPath() {
-  if (changeRequest()) {
+def getDeploymentPathPrefix() {
+  if (env.CHANGE_ID ? true : false) {
     return "experimental/pr-${env.CHANGE_ID}/"
   }
   else {
