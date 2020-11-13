@@ -142,10 +142,13 @@ OMSimulatorCore:
 	@$(MAKE) -C $(BUILD_DIR) install
 
 pip:
+	@echo
+	@echo "# make pip"
+	@echo
 	@cd src/pip/install/ && python3 setup.py sdist
 	@echo "########################"
 	@echo "# Run the following command to upload the package"
-	@echo "# > twine upload <OMSimulator>/src/pip/install/dist/*"
+	@echo "# > twine upload src/pip/install/dist/*"
 	@echo "########################"
 
 ifeq ($(OMTLM),ON)

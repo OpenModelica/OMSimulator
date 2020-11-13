@@ -71,7 +71,7 @@ class my_build_py(build_py):
     elif (sysconfig.get_platform() == 'mingw' and platform.architecture()[0] == '64bit'):
       response = requests.get('https://build.openmodelica.org/omsimulator/win-mingw64/OMSimulator-mingw64-@OMS_VERSION_STRING@.zip')
     elif (sysconfig.get_platform() == 'mingw' and platform.architecture()[0] == '32bit'):
-      response = requests.get('https://build.openmodelica.org/omsimulator/win-mingw64/OMSimulator-mingw64-@OMS_VERSION_STRING@.zip')
+      response = requests.get('https://build.openmodelica.org/omsimulator/win-mingw32/OMSimulator-mingw32-@OMS_VERSION_STRING@.zip')
     elif (sysconfig.get_platform() == 'win-amd64'):
       response = requests.get('https://build.openmodelica.org/omsimulator/win-msvc64/OMSimulator-win64-@OMS_VERSION_STRING@.zip')
     elif (platform.system() == 'Darwin'):
