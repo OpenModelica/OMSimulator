@@ -42,7 +42,7 @@ import requests
 from setuptools import setup
 
 
-# overrride build_py, for compiling and copying the dlls
+# override build_py, for compiling and copying the dlls
 class my_build_py(build_py):
   def __init__(self, dist):
     # check if directory exist and remove
