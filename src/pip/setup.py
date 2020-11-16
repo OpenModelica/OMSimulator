@@ -119,15 +119,21 @@ class my_build_py(build_py):
       self.fetch_oms()
     build_py.run(self)
 
-setup(name = 'OMSimulator',
-      version = '@OMS_SHORT_VERSION_STRING@',
-      description = 'OMSimulator - the FMI-based co-simulation environment for Python',
-      author = 'Open Source Modelica Consortium (OSMC)',
-      author_email = 'openmodelicadevelopers@ida.liu.se',
-      license = "BSD, OSMC-PL 1.2, GPL (user's choice)",
-      url = 'http://openmodelica.org/',
-      install_requires = ['requests'],
-      packages = ['OMSimulator'],
-      cmdclass = {'build_py': my_build_py},
-      zip_safe = False
-      )
+with open('README.md', 'r') as fh:
+  long_description = fh.read()
+
+setup(
+  name = 'OMSimulator',
+  version = '@OMS_SHORT_VERSION_STRING@',
+  description = 'OMSimulator - the FMI-based co-simulation environment for Python',
+  long_description = long_description,
+  long_description_content_type = 'text/markdown',
+  author = 'Open Source Modelica Consortium (OSMC)',
+  author_email = 'openmodelicadevelopers@ida.liu.se',
+  license = "BSD, OSMC-PL 1.2, GPL (user's choice)",
+  url = 'http://openmodelica.org/',
+  install_requires = ['requests'],
+  packages = ['OMSimulator'],
+  cmdclass = {'build_py': my_build_py},
+  zip_safe = False
+)
