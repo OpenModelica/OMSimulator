@@ -239,7 +239,7 @@ oms_delete("import_export_parameters")
 -- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="4.000000">
 -- 		<ssd:Annotations>
 -- 			<ssc:Annotation type="org.openmodelica">
--- 				<oms:SimulationInformation resultFile="import_export_parameters.mat" loggingInterval="0.000000" bufferSize="100" signalFilter="" />
+-- 				<oms:SimulationInformation resultFile="import_export_parameters.mat" loggingInterval="0.000000" bufferSize="100" signalFilter=".*" />
 -- 			</ssc:Annotation>
 -- 		</ssd:Annotations>
 -- 	</ssd:DefaultExperiment>

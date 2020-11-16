@@ -118,12 +118,12 @@ oms_delete("deleteStartValuesInSSV")
 -- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
 -- 		<ssd:Annotations>
 -- 			<ssc:Annotation type="org.openmodelica">
--- 				<oms:SimulationInformation resultFile="deleteStartValuesInSSV_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="" />
+-- 				<oms:SimulationInformation resultFile="deleteStartValuesInSSV_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter=".*" />
 -- 			</ssc:Annotation>
 -- 		</ssd:Annotations>
 -- 	</ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>
--- 
+--
 -- warning: failed to delete start value "deleteStartValuesInSSV.Root.C3:start" because the identifier couldn't be resolved to any system signal
 -- warning: failed to delete start value "deleteStartValuesInSSV.Root.System1.C4:start" because the identifier couldn't be resolved to any system signal
 -- warning: failed to delete start value "deleteStartValuesInSSV.Root.System1.Gain.j:start" because the identifier couldn't be resolved to any component signal

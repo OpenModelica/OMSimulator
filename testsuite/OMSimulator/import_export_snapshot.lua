@@ -18,7 +18,7 @@ oms_addSubModel("import_export_snapshot.root.add", "../resources/Modelica.Blocks
 oms_setReal("import_export_snapshot.root.add.u1", 10)
 oms_setReal("import_export_snapshot.root.add.k1", 30)
 
--- src1 = oms_list("import_export_snapshot") 
+-- src1 = oms_list("import_export_snapshot")
 -- print(src1)
 
 oms_export("import_export_snapshot", "import_export_snapshot.ssp");
@@ -26,19 +26,19 @@ oms_delete("import_export_snapshot")
 
 oms_importFile("import_export_snapshot.ssp");
 
-src1 = oms_list("import_export_snapshot") 
+src1 = oms_list("import_export_snapshot")
 print(src1)
 
-src2 = oms_exportSnapshot("import_export_snapshot")  
+src2 = oms_exportSnapshot("import_export_snapshot")
 print(src2)
 
 oms_importSnapshot("import_export_snapshot", src2)
 
--- check of error msg 
-oms_exportSnapshot("import_export_snapshot.root.add")  
+-- check of error msg
+oms_exportSnapshot("import_export_snapshot.root.add")
 
 oms_setStopTime("import_export_snapshot", 2)
- 
+
 oms_instantiate("import_export_snapshot")
 
 oms_initialize("import_export_snapshot")
@@ -95,12 +95,12 @@ oms_delete("import_export_snapshot")
 -- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
 -- 		<ssd:Annotations>
 -- 			<ssc:Annotation type="org.openmodelica">
--- 				<oms:SimulationInformation resultFile="import_export_snapshot_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="" />
+-- 				<oms:SimulationInformation resultFile="import_export_snapshot_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter=".*" />
 -- 			</ssc:Annotation>
 -- 		</ssd:Annotations>
 -- 	</ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>
--- 
+--
 -- <?xml version="1.0"?>
 -- <oms:snapshot>
 -- 	<oms:ssd_file name="SystemStructure.ssd">
@@ -150,7 +150,7 @@ oms_delete("import_export_snapshot")
 -- 			<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
 -- 				<ssd:Annotations>
 -- 					<ssc:Annotation type="org.openmodelica">
--- 						<oms:SimulationInformation resultFile="import_export_snapshot_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="" />
+-- 						<oms:SimulationInformation resultFile="import_export_snapshot_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter=".*" />
 -- 					</ssc:Annotation>
 -- 				</ssd:Annotations>
 -- 			</ssd:DefaultExperiment>
@@ -172,7 +172,7 @@ oms_delete("import_export_snapshot")
 -- 		</ssv:ParameterSet>
 -- 	</oms:ssv_file>
 -- </oms:snapshot>
--- 
+--
 -- error:   [exportSnapshot] "import_export_snapshot.root.add" is not a top level model
 -- info:    Result file: import_export_snapshot_res.mat (bufferSize=10)
 -- info:    0 warnings
