@@ -636,6 +636,6 @@ def getExperimentalPath() {
     return "experimental/pr-${env.CHANGE_ID}/"
   }
   else {
-    return ""
+    return "./"   // We can't use an empty string due to an stupid Jenkins bug
   }
 }
