@@ -632,7 +632,7 @@ void submoduleNoChange(path) {
 }
 
 def getExperimentalPath() {
-  if (env.CHANGE_ID ? true : false) {
+  if (env.CHANGE_ID) {
     return "experimental/pr-${env.CHANGE_ID}/"
   }
   else {
