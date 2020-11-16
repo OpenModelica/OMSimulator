@@ -99,12 +99,12 @@ oms.delete("test")
 ## 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
 ## 		<ssd:Annotations>
 ## 			<ssc:Annotation type="org.openmodelica">
-## 				<oms:SimulationInformation resultFile="test_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="" />
+## 				<oms:SimulationInformation resultFile="test_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter=".*" />
 ## 			</ssc:Annotation>
 ## 		</ssd:Annotations>
 ## 	</ssd:DefaultExperiment>
 ## </ssd:SystemStructureDescription>
-## 
+##
 ## info:    Delete source
 ## status:  [correct] ok
 ## <?xml version="1.0"?>
@@ -148,11 +148,11 @@ oms.delete("test")
 ## 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
 ## 		<ssd:Annotations>
 ## 			<ssc:Annotation type="org.openmodelica">
-## 				<oms:SimulationInformation resultFile="test_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="" />
+## 				<oms:SimulationInformation resultFile="test_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter=".*" />
 ## 			</ssc:Annotation>
 ## 		</ssd:Annotations>
 ## 	</ssd:DefaultExperiment>
 ## </ssd:SystemStructureDescription>
-## 
+##
 ## info:    Result file: test_res.mat (bufferSize=10)
 ## endResult

@@ -82,9 +82,9 @@ printStatus(status, 0)
 ## 	</ssd:DefaultExperiment>
 ## </ssd:SystemStructureDescription>
 ##
-## warning: [oms_removeSignalsFromResults] will not update the signalFilters in ssp, use [oms_setSignalFilter]
+## warning: [removeSignalsFromResults] is deprecated and [setSignalFilter] is the recommended API
 ## status:  [correct] ok
-## warning: [oms_addSignalsToResults] will not update the signalFilters in ssp, use [oms_setSignalFilter]
+## warning: [addSignalsToResults] is deprecated and [setSignalFilter] is the recommended API
 ## status:  [correct] ok
 ## status:  [correct] ok
 ## <?xml version="1.0"?>
