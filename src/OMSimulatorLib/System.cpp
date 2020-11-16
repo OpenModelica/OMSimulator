@@ -398,10 +398,15 @@ oms_status_enu_t oms::System::exportToSSD(pugi::xml_node& node, pugi::xml_node& 
     return logError("export of system ElementGeometry failed");
 
   // export top level system connectors
-  pugi::xml_node connectors_node = node.append_child(oms::ssp::Draft20180219::ssd::connectors);
-  for(const auto& connector : connectors)
-    if (connector)
-      connector->exportToSSD(connectors_node);
+  if (connectors.size() > 1)
+  {
+    pugi::xml_node connectors_node = node.append_child(oms::ssp::Draft20180219::ssd::connectors);
+    for(const auto& connector : connectors)
+    {
+      if (connector)
+        connector->exportToSSD(connectors_node);
+    }
+  }
 
   // export top level parameter bindings
   if (Flags::ExportParametersInline()) // export as inline
@@ -413,29 +418,36 @@ oms_status_enu_t oms::System::exportToSSD(pugi::xml_node& node, pugi::xml_node& 
     values.exportToSSV(ssvNode); // export to ssv file
   }
 
-  pugi::xml_node elements_node = node.append_child(oms::ssp::Draft20180219::ssd::elements);
-
-  for (const auto& subsystem : subsystems)
+  if (subelements.size() > 1)
   {
-    pugi::xml_node system_node = elements_node.append_child(oms::ssp::Draft20180219::ssd::system);
-    if (oms_status_ok != subsystem.second->exportToSSD(system_node, ssvNode))
-      return logError("export of system failed");
-  }
-
-  for (const auto& component : components)
-  {
-    pugi::xml_node component_node = elements_node.append_child(oms::ssp::Draft20180219::ssd::component);
-    if (oms_status_ok != component.second->exportToSSD(component_node, ssvNode))
-      return logError("export of component failed");
+    pugi::xml_node elements_node = node.append_child(oms::ssp::Draft20180219::ssd::elements);
+    for (const auto& subsystem : subsystems)
+    {
+      pugi::xml_node system_node = elements_node.append_child(oms::ssp::Draft20180219::ssd::system);
+      if (oms_status_ok != subsystem.second->exportToSSD(system_node, ssvNode))
+        return logError("export of system failed");
+    }
+    for (const auto& component : components)
+    {
+      pugi::xml_node component_node = elements_node.append_child(oms::ssp::Draft20180219::ssd::component);
+      if (oms_status_ok != component.second->exportToSSD(component_node, ssvNode))
+        return logError("export of component failed");
+    }
   }
 
   std::vector<oms::Connection*> busconnections;
-  pugi::xml_node connections_node = node.append_child(oms::ssp::Draft20180219::ssd::connections);
-  for (const auto& connection : connections)
-    if (connection && connection->getType() == oms_connection_single)
-      connection->exportToSSD(connections_node);
-    else if (connection)
-      busconnections.push_back(connection);
+
+  if (connections.size() > 1)
+  {
+    pugi::xml_node connections_node = node.append_child(oms::ssp::Draft20180219::ssd::connections);
+    for (const auto& connection : connections)
+    {
+      if (connection && connection->getType() == oms_connection_single)
+        connection->exportToSSD(connections_node);
+      else if (connection)
+        busconnections.push_back(connection);
+    }
+  }
 
 #if !defined(NO_TLM)
   if (busconnectors[0] || tlmbusconnectors[0] || !busconnections.empty())
