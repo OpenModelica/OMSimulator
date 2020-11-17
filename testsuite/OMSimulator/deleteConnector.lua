@@ -104,8 +104,6 @@ print(src)
 -- 						</ssd:ParameterValues>
 -- 					</ssd:ParameterBinding>
 -- 				</ssd:ParameterBindings>
--- 				<ssd:Elements />
--- 				<ssd:Connections />
 -- 			</ssd:System>
 -- 			<ssd:System name="System1">
 -- 				<ssd:Annotations>
@@ -153,7 +151,6 @@ print(src)
 -- 						</ssd:ParameterBindings>
 -- 					</ssd:Component>
 -- 				</ssd:Elements>
--- 				<ssd:Connections />
 -- 			</ssd:System>
 -- 		</ssd:Elements>
 -- 		<ssd:Connections>
@@ -170,7 +167,7 @@ print(src)
 -- 		</ssd:Annotations>
 -- 	</ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>
---
+-- 
 -- warning: failed to delete object "deleteConnector.Root.System2.C6" because the identifier couldn't be resolved to any connector, component, system, or model
 -- warning: failed to delete object "deleteConnector.Root.System3" because the identifier couldn't be resolved to any connector, component, system, or model
 -- <?xml version="1.0"?>
@@ -215,8 +212,6 @@ print(src)
 -- 						</ssd:ParameterValues>
 -- 					</ssd:ParameterBinding>
 -- 				</ssd:ParameterBindings>
--- 				<ssd:Elements />
--- 				<ssd:Connections />
 -- 			</ssd:System>
 -- 			<ssd:System name="System1">
 -- 				<ssd:Annotations>
@@ -248,7 +243,6 @@ print(src)
 -- 						</ssd:Connectors>
 -- 					</ssd:Component>
 -- 				</ssd:Elements>
--- 				<ssd:Connections />
 -- 			</ssd:System>
 -- 		</ssd:Elements>
 -- 		<ssd:Connections>
@@ -263,7 +257,7 @@ print(src)
 -- 		</ssd:Annotations>
 -- 	</ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>
---
+-- 
 -- info:    2 warnings
 -- info:    0 errors
 -- endResult

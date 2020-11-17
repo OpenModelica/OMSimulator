@@ -188,8 +188,6 @@ oms_delete("import_export_parameters")
 -- 						</ssd:ParameterValues>
 -- 					</ssd:ParameterBinding>
 -- 				</ssd:ParameterBindings>
--- 				<ssd:Elements />
--- 				<ssd:Connections />
 -- 			</ssd:System>
 -- 			<ssd:Component name="addP" type="application/x-fmu-sharedlibrary" source="resources/0001_addP.fmu">
 -- 				<ssd:Connectors>
@@ -302,7 +300,7 @@ oms_delete("import_export_parameters")
 -- 		</ssd:Annotations>
 -- 	</ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>
---
+-- 
 -- info:    model doesn't contain any continuous state
 -- info:      Parameter settings
 -- info:      import_export_parameters.co_sim.addP.k1     : 10.0

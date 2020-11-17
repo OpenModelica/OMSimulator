@@ -69,9 +69,6 @@ printStatus(status, 0)
 -- 				</oms:SimulationInformation>
 -- 			</ssc:Annotation>
 -- 		</ssd:Annotations>
--- 		<ssd:Connectors />
--- 		<ssd:Elements />
--- 		<ssd:Connections />
 -- 	</ssd:System>
 -- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
 -- 		<ssd:Annotations>
@@ -81,7 +78,7 @@ printStatus(status, 0)
 -- 		</ssd:Annotations>
 -- 	</ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>
---
+-- 
 -- warning: [removeSignalsFromResults] is deprecated and [setSignalFilter] is the recommended API
 -- status:  [correct] ok
 -- warning: [addSignalsToResults] is deprecated and [setSignalFilter] is the recommended API
@@ -97,9 +94,6 @@ printStatus(status, 0)
 -- 				</oms:SimulationInformation>
 -- 			</ssc:Annotation>
 -- 		</ssd:Annotations>
--- 		<ssd:Connectors />
--- 		<ssd:Elements />
--- 		<ssd:Connections />
 -- 	</ssd:System>
 -- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
 -- 		<ssd:Annotations>
@@ -109,7 +103,7 @@ printStatus(status, 0)
 -- 		</ssd:Annotations>
 -- 	</ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>
---
+-- 
 -- status:  [correct] ok
 -- info:    2 warnings
 -- info:    0 errors

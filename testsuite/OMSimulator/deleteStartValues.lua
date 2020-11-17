@@ -119,8 +119,6 @@ print(src)
 -- 						</ssd:ParameterValues>
 -- 					</ssd:ParameterBinding>
 -- 				</ssd:ParameterBindings>
--- 				<ssd:Elements />
--- 				<ssd:Connections />
 -- 			</ssd:System>
 -- 			<ssd:System name="System1">
 -- 				<ssd:Annotations>
@@ -171,10 +169,8 @@ print(src)
 -- 						</ssd:Connectors>
 -- 					</ssd:Component>
 -- 				</ssd:Elements>
--- 				<ssd:Connections />
 -- 			</ssd:System>
 -- 		</ssd:Elements>
--- 		<ssd:Connections />
 -- 	</ssd:System>
 -- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
 -- 		<ssd:Annotations>
@@ -184,7 +180,7 @@ print(src)
 -- 		</ssd:Annotations>
 -- 	</ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>
---
+-- 
 -- warning: failed to delete object "deleteStartValues.Root.System3.C4:start" because the identifier couldn't be resolved to any connector, component, system, or model
 -- warning: failed to delete start value "deleteStartValues.Root.System1.Gain.k:start" because the identifier couldn't be resolved to any component signal
 -- <?xml version="1.0"?>
@@ -225,8 +221,6 @@ print(src)
 -- 						<ssc:Real />
 -- 					</ssd:Connector>
 -- 				</ssd:Connectors>
--- 				<ssd:Elements />
--- 				<ssd:Connections />
 -- 			</ssd:System>
 -- 			<ssd:System name="System1">
 -- 				<ssd:Annotations>
@@ -261,10 +255,8 @@ print(src)
 -- 						</ssd:Connectors>
 -- 					</ssd:Component>
 -- 				</ssd:Elements>
--- 				<ssd:Connections />
 -- 			</ssd:System>
 -- 		</ssd:Elements>
--- 		<ssd:Connections />
 -- 	</ssd:System>
 -- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
 -- 		<ssd:Annotations>
@@ -274,7 +266,7 @@ print(src)
 -- 		</ssd:Annotations>
 -- 	</ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>
---
+-- 
 -- info:    2 warnings
 -- info:    0 errors
 -- endResult

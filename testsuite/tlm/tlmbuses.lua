@@ -117,7 +117,6 @@ printStatus(status, 0)
 -- 			</oms:SimulationInformation>
 -- 		</ssc:Annotation>
 -- 	</ssd:Annotations>
--- 	<ssd:Connectors />
 -- 	<ssd:Elements>
 -- 		<ssd:System name="wc2">
 -- 			<ssd:Annotations>
@@ -141,8 +140,6 @@ printStatus(status, 0)
 -- 					<ssc:Real />
 -- 				</ssd:Connector>
 -- 			</ssd:Connectors>
--- 			<ssd:Elements />
--- 			<ssd:Connections />
 -- 			<ssd:Annotations>
 -- 				<ssc:Annotation type="org.openmodelica">
 -- 					<oms:Bus name="bus2" type="tlm" domain="output" dimensions="1" interpolation="none">
@@ -175,8 +172,6 @@ printStatus(status, 0)
 -- 					<ssc:Real />
 -- 				</ssd:Connector>
 -- 			</ssd:Connectors>
--- 			<ssd:Elements />
--- 			<ssd:Connections />
 -- 			<ssd:Annotations>
 -- 				<ssc:Annotation type="org.openmodelica">
 -- 					<oms:Bus name="bus1" type="tlm" domain="input" dimensions="1" interpolation="none">
@@ -195,7 +190,6 @@ printStatus(status, 0)
 -- 			</ssd:Annotations>
 -- 		</ssd:System>
 -- 	</ssd:Elements>
--- 	<ssd:Connections />
 -- 	<ssd:Annotations>
 -- 		<ssc:Annotation type="org.openmodelica">
 -- 			<oms:Connections>
@@ -215,7 +209,6 @@ printStatus(status, 0)
 -- 			</oms:SimulationInformation>
 -- 		</ssc:Annotation>
 -- 	</ssd:Annotations>
--- 	<ssd:Connectors />
 -- 	<ssd:Elements>
 -- 		<ssd:System name="wc2">
 -- 			<ssd:Annotations>
@@ -239,8 +232,6 @@ printStatus(status, 0)
 -- 					<ssc:Real />
 -- 				</ssd:Connector>
 -- 			</ssd:Connectors>
--- 			<ssd:Elements />
--- 			<ssd:Connections />
 -- 			<ssd:Annotations>
 -- 				<ssc:Annotation type="org.openmodelica">
 -- 					<oms:Bus name="bus2" type="tlm" domain="output" dimensions="1" interpolation="none">
@@ -273,8 +264,6 @@ printStatus(status, 0)
 -- 					<ssc:Real />
 -- 				</ssd:Connector>
 -- 			</ssd:Connectors>
--- 			<ssd:Elements />
--- 			<ssd:Connections />
 -- 			<ssd:Annotations>
 -- 				<ssc:Annotation type="org.openmodelica">
 -- 					<oms:Bus name="bus1" type="tlm" domain="input" dimensions="1" interpolation="none">
@@ -292,7 +281,6 @@ printStatus(status, 0)
 -- 			</ssd:Annotations>
 -- 		</ssd:System>
 -- 	</ssd:Elements>
--- 	<ssd:Connections />
 -- 	<ssd:Annotations>
 -- 		<ssc:Annotation type="org.openmodelica">
 -- 			<oms:Connections>

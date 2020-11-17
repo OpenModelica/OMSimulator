@@ -90,7 +90,6 @@ oms_delete("import_export_snapshot")
 -- 				</ssd:Connectors>
 -- 			</ssd:Component>
 -- 		</ssd:Elements>
--- 		<ssd:Connections />
 -- 	</ssd:System>
 -- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
 -- 		<ssd:Annotations>
@@ -100,7 +99,7 @@ oms_delete("import_export_snapshot")
 -- 		</ssd:Annotations>
 -- 	</ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>
---
+-- 
 -- <?xml version="1.0"?>
 -- <oms:snapshot>
 -- 	<oms:ssd_file name="SystemStructure.ssd">
@@ -145,7 +144,6 @@ oms_delete("import_export_snapshot")
 -- 						</ssd:Connectors>
 -- 					</ssd:Component>
 -- 				</ssd:Elements>
--- 				<ssd:Connections />
 -- 			</ssd:System>
 -- 			<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
 -- 				<ssd:Annotations>
@@ -172,7 +170,7 @@ oms_delete("import_export_snapshot")
 -- 		</ssv:ParameterSet>
 -- 	</oms:ssv_file>
 -- </oms:snapshot>
---
+-- 
 -- error:   [exportSnapshot] "import_export_snapshot.root.add" is not a top level model
 -- info:    Result file: import_export_snapshot_res.mat (bufferSize=10)
 -- info:    0 warnings
