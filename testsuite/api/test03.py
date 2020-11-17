@@ -69,7 +69,7 @@ oms.delete("test")
 ## 			</ssc:Annotation>
 ## 		</ssd:Annotations>
 ## 		<ssd:Elements>
-## 			<ssd:Component name="source" type="application/x-fmu-sharedlibrary" source="resources\0001_source.fmu">
+## 			<ssd:Component name="source" type="application/x-fmu-sharedlibrary" source="resources/0001_source.fmu">
 ## 				<ssd:Connectors>
 ## 					<ssd:Connector name="y" kind="output">
 ## 						<ssc:Real />
@@ -116,7 +116,7 @@ oms.delete("test")
 ## 			</ssc:Annotation>
 ## 		</ssd:Annotations>
 ## 		<ssd:Elements>
-## 			<ssd:Component name="source" type="application/x-fmu-sharedlibrary" source="resources\0001_source.fmu">
+## 			<ssd:Component name="source" type="application/x-fmu-sharedlibrary" source="resources/0001_source.fmu">
 ## 				<ssd:Connectors>
 ## 					<ssd:Connector name="y" kind="output">
 ## 						<ssc:Real />

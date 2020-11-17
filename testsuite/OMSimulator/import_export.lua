@@ -281,9 +281,6 @@ printStatus(status, 0)
 --                                 </oms:SimulationInformation>
 --                             </ssc:Annotation>
 --                         </ssd:Annotations>
---                         <ssd:Connectors />
---                         <ssd:Elements />
---                         <ssd:Connections />
 --                     </ssd:System>
 --                     <ssd:Component name="T" type="application/table" source="resources/0002_T.csv">
 --                         <ssd:Connectors>
