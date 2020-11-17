@@ -612,7 +612,7 @@ oms_status_enu_t oms::Model::importFromSSD(const pugi::xml_node& node)
 
 oms_system_enu_t oms::Model::getSystemType(const pugi::xml_node& node, const std::string& sspVersion)
 {
-  oms_system_enu_t systemType;
+  oms_system_enu_t systemType = oms_system_none;
   for(pugi::xml_node_iterator itElements = node.begin(); itElements != node.end(); ++itElements)
   {
     std::string name = itElements->name();
