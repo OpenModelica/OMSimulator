@@ -102,7 +102,7 @@ oms.delete("test")
 ## 		</ssd:Annotations>
 ## 	</ssd:DefaultExperiment>
 ## </ssd:SystemStructureDescription>
-## 
+##
 ## info:    Delete source
 ## status:  [correct] ok
 ## <?xml version="1.0"?>
@@ -149,6 +149,6 @@ oms.delete("test")
 ## 		</ssd:Annotations>
 ## 	</ssd:DefaultExperiment>
 ## </ssd:SystemStructureDescription>
-## 
+##
 ## info:    Result file: test_res.mat (bufferSize=10)
 ## endResult

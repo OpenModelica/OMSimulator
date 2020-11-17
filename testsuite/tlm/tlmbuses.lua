@@ -198,7 +198,7 @@ printStatus(status, 0)
 -- 		</ssc:Annotation>
 -- 	</ssd:Annotations>
 -- </ssd:System>
--- 
+--
 -- status:  [correct] ok
 -- <?xml version="1.0"?>
 -- <ssd:System name="tlm">
@@ -289,7 +289,7 @@ printStatus(status, 0)
 -- 		</ssc:Annotation>
 -- 	</ssd:Annotations>
 -- </ssd:System>
--- 
+--
 -- status:  [correct] ok
 -- info:    0 warnings
 -- info:    3 errors

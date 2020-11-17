@@ -180,7 +180,7 @@ print(src)
 -- 		</ssd:Annotations>
 -- 	</ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>
--- 
+--
 -- warning: failed to delete object "deleteStartValues.Root.System3.C4:start" because the identifier couldn't be resolved to any connector, component, system, or model
 -- warning: failed to delete start value "deleteStartValues.Root.System1.Gain.k:start" because the identifier couldn't be resolved to any component signal
 -- <?xml version="1.0"?>
@@ -266,7 +266,7 @@ print(src)
 -- 		</ssd:Annotations>
 -- 	</ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>
--- 
+--
 -- info:    2 warnings
 -- info:    0 errors
 -- endResult

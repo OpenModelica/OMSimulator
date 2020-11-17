@@ -115,7 +115,7 @@ printStatus(status, 3)
 ## 		</ssd:Annotations>
 ## 	</ssd:DefaultExperiment>
 ## </ssd:SystemStructureDescription>
-## 
+##
 ## <?xml version="1.0"?>
 ## <ssd:System name="foo">
 ## 	<ssd:Annotations>
@@ -137,7 +137,7 @@ printStatus(status, 3)
 ## 		</ssd:System>
 ## 	</ssd:Elements>
 ## </ssd:System>
-## 
+##
 ## <?xml version="1.0"?>
 ## <ssd:System name="goo">
 ## 	<ssd:Annotations>
@@ -148,7 +148,7 @@ printStatus(status, 3)
 ## 		</ssc:Annotation>
 ## 	</ssd:Annotations>
 ## </ssd:System>
-## 
+##
 ## error:   [newModel] "test" already exists in the scope
 ## status:  [correct] error
 ## status:  [correct] ok
@@ -166,7 +166,7 @@ printStatus(status, 3)
 ## 		</ssd:Annotations>
 ## 	</ssd:DefaultExperiment>
 ## </ssd:SystemStructureDescription>
-## 
+##
 ## status:  [correct] ok
 ## error:   [deleteModel] Model "foo" does not exist in the scope
 ## status:  [correct] error
