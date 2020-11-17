@@ -435,17 +435,22 @@ oms_status_enu_t oms::System::exportToSSD(pugi::xml_node& node, pugi::xml_node& 
     }
   }
 
-  std::vector<oms::Connection*> busconnections;
+  std::vector<oms::Connection*> busconnections, ssdconnections;
 
-  if (connections.size() > 1)
+  for (const auto& connection : connections)
+  {
+    if (connection && connection->getType() == oms_connection_single)
+      ssdconnections.push_back(connection);
+    else if (connection)
+      busconnections.push_back(connection);
+  }
+
+  if (!ssdconnections.empty())
   {
     pugi::xml_node connections_node = node.append_child(oms::ssp::Draft20180219::ssd::connections);
-    for (const auto& connection : connections)
+    for (const auto& ssdconnection : ssdconnections)
     {
-      if (connection && connection->getType() == oms_connection_single)
-        connection->exportToSSD(connections_node);
-      else if (connection)
-        busconnections.push_back(connection);
+      ssdconnection->exportToSSD(connections_node);
     }
   }
 
