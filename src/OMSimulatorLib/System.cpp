@@ -653,7 +653,7 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
                     {
                       logWarning_deprecated;
                     }
-                    for (pugi::xml_node annotationNode = annotationsNode.child(oms::ssp::Draft20180219::ssd::annotation); annotationNode; annotationNode = annotationNode.next_sibling(oms::ssp::Draft20180219::ssd::annotation)) {
+                    for (pugi::xml_node annotationNode = annotationsNode.child(oms::ssp::Draft20180219::ssd::annotation); annotationNode; annotationNode = annotationsNode.next_sibling(oms::ssp::Draft20180219::ssd::annotation)) {
                       std::string type = annotationNode.attribute("type").as_string() ;
                       if(oms::ssp::Draft20180219::annotation_type == type) {
                         pugi::xml_node externalModelNode = annotationNode.child(oms::ssp::Draft20180219::external_model);
@@ -683,7 +683,7 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
                     logWarning_deprecated;
                   }
 
-                  for (pugi::xml_node annotationNode = annotationsNode.child(annotationNodeString); annotationNode; annotationNode = annotationNode.next_sibling(annotationNodeString)) {
+                  for (pugi::xml_node annotationNode = annotationsNode.child(annotationNodeString); annotationNode; annotationNode = annotationsNode.next_sibling(annotationNodeString)) {
                       std::string type = annotationNode.attribute("type").as_string() ;
                       if(oms::ssp::Draft20180219::annotation_type == type) {
 
