@@ -398,7 +398,7 @@ oms_status_enu_t oms::System::exportToSSD(pugi::xml_node& node, pugi::xml_node& 
     return logError("export of system ElementGeometry failed");
 
   // export top level system connectors
-  if (connectors.size() > 1)
+  if (!connectors.empty())
   {
     pugi::xml_node connectors_node = node.append_child(oms::ssp::Draft20180219::ssd::connectors);
     for(const auto& connector : connectors)
@@ -418,7 +418,7 @@ oms_status_enu_t oms::System::exportToSSD(pugi::xml_node& node, pugi::xml_node& 
     values.exportToSSV(ssvNode); // export to ssv file
   }
 
-  if (subelements.size() > 1)
+  if (!subelements.empty())
   {
     pugi::xml_node elements_node = node.append_child(oms::ssp::Draft20180219::ssd::elements);
     for (const auto& subsystem : subsystems)
