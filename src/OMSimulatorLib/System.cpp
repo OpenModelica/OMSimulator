@@ -611,7 +611,7 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
                     {
                       logWarning_deprecated;
                     }
-                    for (pugi::xml_node annotationNode = annotationsNode.child(oms::ssp::Draft20180219::ssd::annotation); annotationNode; annotationNode = annotationNode.next_sibling(oms::ssp::Draft20180219::ssd::annotation)) {
+                    for (pugi::xml_node annotationNode = annotationsNode.child(oms::ssp::Draft20180219::ssd::annotation); annotationNode; annotationNode = annotationsNode.next_sibling(oms::ssp::Draft20180219::ssd::annotation)) {
                       std::string type = annotationNode.attribute("type").as_string() ;
                       if(oms::ssp::Draft20180219::annotation_type == type) {
                         pugi::xml_node externalModelNode = annotationNode.child(oms::ssp::Draft20180219::external_model);
@@ -641,7 +641,7 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
                     logWarning_deprecated;
                   }
 
-                  for (pugi::xml_node annotationNode = annotationNode.child(annotationNodeString); annotationNode; annotationNode = annotationNode.next_sibling(annotationNodeString)) {
+                  for (pugi::xml_node annotationNode = annotationsNode.child(annotationNodeString); annotationNode; annotationNode = annotationsNode.next_sibling(annotationNodeString)) {
                       std::string type = annotationNode.attribute("type").as_string() ;
                       if(oms::ssp::Draft20180219::annotation_type == type) {
 
@@ -2067,7 +2067,7 @@ oms_status_enu_t oms::System::setReal(const ComRef& cref, double value)
 
 oms_status_enu_t oms::System::getReals(const std::vector<oms::ComRef> &sr, std::vector<double> &values)
 {
-  oms_status_enu_t status;
+  oms_status_enu_t status = oms_status_ok;
   for(int i=0; i<sr.size(); ++i) {
     status = getReal(sr[i],values[i]);
     if(status != oms_status_ok)
@@ -2078,7 +2078,7 @@ oms_status_enu_t oms::System::getReals(const std::vector<oms::ComRef> &sr, std::
 
 oms_status_enu_t oms::System::setReals(const std::vector<oms::ComRef> &crefs, std::vector<double> values)
 {
-  oms_status_enu_t status;
+  oms_status_enu_t status = oms_status_ok;
   for(int i=0; i<crefs.size(); ++i) {
     status = setReal(crefs[i],values[i]);
     if(status != oms_status_ok)
