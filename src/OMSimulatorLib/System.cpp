@@ -683,7 +683,7 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
                     logWarning_deprecated;
                   }
 
-                  for (pugi::xml_node annotationNode = annotationNode.child(annotationNodeString); annotationNode; annotationNode = annotationNode.next_sibling(annotationNodeString)) {
+                  for (pugi::xml_node annotationNode = annotationsNode.child(annotationNodeString); annotationNode; annotationNode = annotationNode.next_sibling(annotationNodeString)) {
                       std::string type = annotationNode.attribute("type").as_string() ;
                       if(oms::ssp::Draft20180219::annotation_type == type) {
 
