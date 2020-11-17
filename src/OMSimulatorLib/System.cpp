@@ -2050,7 +2050,7 @@ oms_status_enu_t oms::System::setReal(const ComRef& cref, double value)
 
 oms_status_enu_t oms::System::getReals(const std::vector<oms::ComRef> &sr, std::vector<double> &values)
 {
-  oms_status_enu_t status;
+  oms_status_enu_t status = oms_status_ok;
   for(int i=0; i<sr.size(); ++i) {
     status = getReal(sr[i],values[i]);
     if(status != oms_status_ok)
@@ -2061,7 +2061,7 @@ oms_status_enu_t oms::System::getReals(const std::vector<oms::ComRef> &sr, std::
 
 oms_status_enu_t oms::System::setReals(const std::vector<oms::ComRef> &crefs, std::vector<double> values)
 {
-  oms_status_enu_t status;
+  oms_status_enu_t status = oms_status_ok;
   for(int i=0; i<crefs.size(); ++i) {
     status = setReal(crefs[i],values[i]);
     if(status != oms_status_ok)
