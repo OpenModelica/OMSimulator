@@ -516,65 +516,6 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
     }
     else if (name == oms::ssp::Draft20180219::ssd::connections)
     {
-      // check for ssvFileSource exist and set the values before the connections
-      if (!ssvFileSources.empty())
-      {
-        for (const auto& ssvFileSource : ssvFileSources)
-        {
-          std::string tempdir = getModel()->getTempDirectory();
-          filesystem::path temp_root(tempdir);
-          pugi::xml_document ssvdoc;
-          pugi::xml_parse_result result = ssvdoc.load_file((temp_root / ssvFileSource).string().c_str());
-          pugi::xml_node parameterSet, parameters;
-
-          if (result) // check from ssv file
-          {
-            parameterSet = ssvdoc.document_element(); // ssv:ParameterSet
-            parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
-          }
-          else if (getModel()->getSnapshot().child(oms::ssp::Version1_0::ssv_file)) // check in memory oms:ssv_file
-          {
-            parameterSet = getModel()->getSnapshot().child(oms::ssp::Version1_0::ssv_file).child(oms::ssp::Version1_0::ssv::parameter_set); // ssv:ParameterSet
-            parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
-          }
-          else
-          {
-            return logError("loading \"" + std::string(ssvFileSource) + "\" failed (" + std::string(result.description()) + ")");
-          }
-
-          if (parameters)
-          {
-            for(pugi::xml_node_iterator itparameters = parameters.begin(); itparameters != parameters.end(); ++itparameters)
-            {
-              std::string name = itparameters->name();
-              if (name == oms::ssp::Version1_0::ssv::parameter)
-              {
-                ComRef cref = ComRef(itparameters->attribute("name").as_string());
-                if (itparameters->child(oms::ssp::Version1_0::ssv::real_type))
-                {
-                  double value = itparameters->child(oms::ssp::Version1_0::ssv::real_type).attribute("value").as_double();
-                  setReal(cref, value);
-                }
-                else if(itparameters->child(oms::ssp::Version1_0::ssv::integer_type))
-                {
-                  int value = itparameters->child(oms::ssp::Version1_0::ssv::integer_type).attribute("value").as_int();
-                  setInteger(cref, value);
-                }
-                else if(itparameters->child(oms::ssp::Version1_0::ssv::boolean_type))
-                {
-                  bool value = itparameters->child(oms::ssp::Version1_0::ssv::boolean_type).attribute("value").as_bool();
-                  setBoolean(cref, value);
-                }
-                else
-                {
-                  logError("Failed to import " + std::string(oms::ssp::Version1_0::ssv::parameter) + ":Unknown ParameterBinding-type");
-                }
-              }
-            }
-          }
-        }
-      }
-
       for(pugi::xml_node_iterator itConnectors = (*it).begin(); itConnectors != (*it).end(); ++itConnectors)
       {
         ComRef startElement = ComRef(itConnectors->attribute("startElement").as_string());
@@ -761,6 +702,65 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
         }
         else
           return logError("wrong xml schema detected: " + name);
+      }
+
+      // check for ssvFileSource exist and set the values before the connections
+      if (!ssvFileSources.empty())
+      {
+        for (const auto& ssvFileSource : ssvFileSources)
+        {
+          std::string tempdir = getModel()->getTempDirectory();
+          filesystem::path temp_root(tempdir);
+          pugi::xml_document ssvdoc;
+          pugi::xml_parse_result result = ssvdoc.load_file((temp_root / ssvFileSource).string().c_str());
+          pugi::xml_node parameterSet, parameters;
+
+          if (result) // check from ssv file
+          {
+            parameterSet = ssvdoc.document_element(); // ssv:ParameterSet
+            parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
+          }
+          else if (getModel()->getSnapshot().child(oms::ssp::Version1_0::ssv_file)) // check in memory oms:ssv_file
+          {
+            parameterSet = getModel()->getSnapshot().child(oms::ssp::Version1_0::ssv_file).child(oms::ssp::Version1_0::ssv::parameter_set); // ssv:ParameterSet
+            parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
+          }
+          else
+          {
+            return logError("loading \"" + std::string(ssvFileSource) + "\" failed (" + std::string(result.description()) + ")");
+          }
+
+          if (parameters)
+          {
+            for(pugi::xml_node_iterator itparameters = parameters.begin(); itparameters != parameters.end(); ++itparameters)
+            {
+              std::string name = itparameters->name();
+              if (name == oms::ssp::Version1_0::ssv::parameter)
+              {
+                ComRef cref = ComRef(itparameters->attribute("name").as_string());
+                if (itparameters->child(oms::ssp::Version1_0::ssv::real_type))
+                {
+                  double value = itparameters->child(oms::ssp::Version1_0::ssv::real_type).attribute("value").as_double();
+                  setReal(cref, value);
+                }
+                else if(itparameters->child(oms::ssp::Version1_0::ssv::integer_type))
+                {
+                  int value = itparameters->child(oms::ssp::Version1_0::ssv::integer_type).attribute("value").as_int();
+                  setInteger(cref, value);
+                }
+                else if(itparameters->child(oms::ssp::Version1_0::ssv::boolean_type))
+                {
+                  bool value = itparameters->child(oms::ssp::Version1_0::ssv::boolean_type).attribute("value").as_bool();
+                  setBoolean(cref, value);
+                }
+                else
+                {
+                  logError("Failed to import " + std::string(oms::ssp::Version1_0::ssv::parameter) + ":Unknown ParameterBinding-type");
+                }
+              }
+            }
+          }
+        }
       }
     }
     else if (name == oms::ssp::Draft20180219::ssd::annotations)
