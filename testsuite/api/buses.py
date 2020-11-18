@@ -1,7 +1,7 @@
 ## status: correct
 ## teardown_command: rm -rf buses-py/
 ## linux: yes
-## mingw: yes
+## mingw: no
 ## win: no
 ## mac: no
 

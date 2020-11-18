@@ -1,7 +1,7 @@
 ## status: correct
 ## teardown_command: rm -rf import_export-py/ test-py.ssp
 ## linux: yes
-## mingw: yes
+## mingw: no
 ## win: no
 ## mac: no
 

@@ -2,8 +2,8 @@
 -- teardown_command: rm -rf test_omsExport-lua/
 -- linux: yes
 -- linux32: yes
--- mingw: yes
--- win: yes
+-- mingw: no
+-- win: no
 -- mac: yes
 
 oms_setCommandLineOption("--suppressPath=true")

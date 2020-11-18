@@ -1,8 +1,8 @@
 -- status: correct
 -- teardown_command: rm -rf table-lua/ table_res.mat
 -- linux: yes
--- mingw: yes
--- win: yes
+-- mingw: no
+-- win: no
 -- mac: yes
 
 oms_setCommandLineOption("--suppressPath=true")
