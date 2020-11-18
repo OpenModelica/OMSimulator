@@ -112,7 +112,6 @@ printStatus(status, 0)
 -- 			</oms:SimulationInformation>
 -- 		</ssc:Annotation>
 -- 	</ssd:Annotations>
--- 	<ssd:Connectors />
 -- 	<ssd:Elements>
 -- 		<ssd:System name="wc2">
 -- 			<ssd:Annotations>
@@ -133,8 +132,6 @@ printStatus(status, 0)
 -- 					<ssc:Real />
 -- 				</ssd:Connector>
 -- 			</ssd:Connectors>
--- 			<ssd:Elements />
--- 			<ssd:Connections />
 -- 			<ssd:Annotations>
 -- 				<ssc:Annotation type="org.openmodelica">
 -- 					<oms:Bus name="bus2">
@@ -165,8 +162,6 @@ printStatus(status, 0)
 -- 					<ssc:Real />
 -- 				</ssd:Connector>
 -- 			</ssd:Connectors>
--- 			<ssd:Elements />
--- 			<ssd:Connections />
 -- 			<ssd:Annotations>
 -- 				<ssc:Annotation type="org.openmodelica">
 -- 					<oms:Bus name="bus1">
@@ -192,7 +187,7 @@ printStatus(status, 0)
 -- 		</ssc:Annotation>
 -- 	</ssd:Annotations>
 -- </ssd:System>
--- 
+--
 -- status:  [correct] ok
 -- <?xml version="1.0"?>
 -- <ssd:System name="tlm">
@@ -203,7 +198,6 @@ printStatus(status, 0)
 -- 			</oms:SimulationInformation>
 -- 		</ssc:Annotation>
 -- 	</ssd:Annotations>
--- 	<ssd:Connectors />
 -- 	<ssd:Elements>
 -- 		<ssd:System name="wc2">
 -- 			<ssd:Annotations>
@@ -224,8 +218,6 @@ printStatus(status, 0)
 -- 					<ssc:Real />
 -- 				</ssd:Connector>
 -- 			</ssd:Connectors>
--- 			<ssd:Elements />
--- 			<ssd:Connections />
 -- 			<ssd:Annotations>
 -- 				<ssc:Annotation type="org.openmodelica">
 -- 					<oms:Bus name="bus2">
@@ -256,8 +248,6 @@ printStatus(status, 0)
 -- 					<ssc:Real />
 -- 				</ssd:Connector>
 -- 			</ssd:Connectors>
--- 			<ssd:Elements />
--- 			<ssd:Connections />
 -- 			<ssd:Annotations>
 -- 				<ssc:Annotation type="org.openmodelica">
 -- 					<oms:Bus name="bus1">
@@ -282,7 +272,7 @@ printStatus(status, 0)
 -- 		</ssc:Annotation>
 -- 	</ssd:Annotations>
 -- </ssd:System>
--- 
+--
 -- status:  [correct] ok
 -- info:    0 warnings
 -- info:    2 errors

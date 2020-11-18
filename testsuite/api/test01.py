@@ -95,7 +95,6 @@ printStatus(status, 3)
 ## 				</oms:SimulationInformation>
 ## 			</ssc:Annotation>
 ## 		</ssd:Annotations>
-## 		<ssd:Connectors />
 ## 		<ssd:Elements>
 ## 			<ssd:System name="goo">
 ## 				<ssd:Annotations>
@@ -105,12 +104,8 @@ printStatus(status, 3)
 ## 						</oms:SimulationInformation>
 ## 					</ssc:Annotation>
 ## 				</ssd:Annotations>
-## 				<ssd:Connectors />
-## 				<ssd:Elements />
-## 				<ssd:Connections />
 ## 			</ssd:System>
 ## 		</ssd:Elements>
-## 		<ssd:Connections />
 ## 	</ssd:System>
 ## 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
 ## 		<ssd:Annotations>
@@ -130,7 +125,6 @@ printStatus(status, 3)
 ## 			</oms:SimulationInformation>
 ## 		</ssc:Annotation>
 ## 	</ssd:Annotations>
-## 	<ssd:Connectors />
 ## 	<ssd:Elements>
 ## 		<ssd:System name="goo">
 ## 			<ssd:Annotations>
@@ -140,12 +134,8 @@ printStatus(status, 3)
 ## 					</oms:SimulationInformation>
 ## 				</ssc:Annotation>
 ## 			</ssd:Annotations>
-## 			<ssd:Connectors />
-## 			<ssd:Elements />
-## 			<ssd:Connections />
 ## 		</ssd:System>
 ## 	</ssd:Elements>
-## 	<ssd:Connections />
 ## </ssd:System>
 ##
 ## <?xml version="1.0"?>
@@ -157,9 +147,6 @@ printStatus(status, 3)
 ## 			</oms:SimulationInformation>
 ## 		</ssc:Annotation>
 ## 	</ssd:Annotations>
-## 	<ssd:Connectors />
-## 	<ssd:Elements />
-## 	<ssd:Connections />
 ## </ssd:System>
 ##
 ## error:   [newModel] "test" already exists in the scope

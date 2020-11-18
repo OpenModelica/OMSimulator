@@ -119,8 +119,6 @@ print(src)
 -- 						</ssd:ParameterValues>
 -- 					</ssd:ParameterBinding>
 -- 				</ssd:ParameterBindings>
--- 				<ssd:Elements />
--- 				<ssd:Connections />
 -- 			</ssd:System>
 -- 			<ssd:System name="System1">
 -- 				<ssd:Annotations>
@@ -171,10 +169,8 @@ print(src)
 -- 						</ssd:Connectors>
 -- 					</ssd:Component>
 -- 				</ssd:Elements>
--- 				<ssd:Connections />
 -- 			</ssd:System>
 -- 		</ssd:Elements>
--- 		<ssd:Connections />
 -- 	</ssd:System>
 -- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
 -- 		<ssd:Annotations>
@@ -225,8 +221,6 @@ print(src)
 -- 						<ssc:Real />
 -- 					</ssd:Connector>
 -- 				</ssd:Connectors>
--- 				<ssd:Elements />
--- 				<ssd:Connections />
 -- 			</ssd:System>
 -- 			<ssd:System name="System1">
 -- 				<ssd:Annotations>
@@ -261,10 +255,8 @@ print(src)
 -- 						</ssd:Connectors>
 -- 					</ssd:Component>
 -- 				</ssd:Elements>
--- 				<ssd:Connections />
 -- 			</ssd:System>
 -- 		</ssd:Elements>
--- 		<ssd:Connections />
 -- 	</ssd:System>
 -- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
 -- 		<ssd:Annotations>

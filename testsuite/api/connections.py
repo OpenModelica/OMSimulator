@@ -101,7 +101,6 @@ printStatus(status, 0)
 ## 			</oms:SimulationInformation>
 ## 		</ssc:Annotation>
 ## 	</ssd:Annotations>
-## 	<ssd:Connectors />
 ## 	<ssd:Elements>
 ## 		<ssd:System name="sc2">
 ## 			<ssd:Annotations>
@@ -122,8 +121,6 @@ printStatus(status, 0)
 ## 					<ssc:Real />
 ## 				</ssd:Connector>
 ## 			</ssd:Connectors>
-## 			<ssd:Elements />
-## 			<ssd:Connections />
 ## 		</ssd:System>
 ## 		<ssd:System name="sc1">
 ## 			<ssd:Annotations>
@@ -144,8 +141,6 @@ printStatus(status, 0)
 ## 					<ssc:Real />
 ## 				</ssd:Connector>
 ## 			</ssd:Connectors>
-## 			<ssd:Elements />
-## 			<ssd:Connections />
 ## 		</ssd:System>
 ## 	</ssd:Elements>
 ## 	<ssd:Connections>
@@ -163,7 +158,6 @@ printStatus(status, 0)
 ## 			</oms:SimulationInformation>
 ## 		</ssc:Annotation>
 ## 	</ssd:Annotations>
-## 	<ssd:Connectors />
 ## 	<ssd:Elements>
 ## 		<ssd:System name="sc2">
 ## 			<ssd:Annotations>
@@ -184,8 +178,6 @@ printStatus(status, 0)
 ## 					<ssc:Real />
 ## 				</ssd:Connector>
 ## 			</ssd:Connectors>
-## 			<ssd:Elements />
-## 			<ssd:Connections />
 ## 		</ssd:System>
 ## 		<ssd:System name="sc1">
 ## 			<ssd:Annotations>
@@ -206,11 +198,8 @@ printStatus(status, 0)
 ## 					<ssc:Real />
 ## 				</ssd:Connector>
 ## 			</ssd:Connectors>
-## 			<ssd:Elements />
-## 			<ssd:Connections />
 ## 		</ssd:System>
 ## 	</ssd:Elements>
-## 	<ssd:Connections />
 ## </ssd:System>
 ##
 ## status:  [correct] ok

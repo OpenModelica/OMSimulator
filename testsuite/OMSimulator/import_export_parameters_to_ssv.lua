@@ -159,8 +159,6 @@ oms_delete("import_export_parameters")
 -- 						<ssc:Real />
 -- 					</ssd:Connector>
 -- 				</ssd:Connectors>
--- 				<ssd:Elements />
--- 				<ssd:Connections />
 -- 			</ssd:System>
 -- 			<ssd:Component name="addP" type="application/x-fmu-sharedlibrary" source="resources/0001_addP.fmu">
 -- 				<ssd:Connectors>
