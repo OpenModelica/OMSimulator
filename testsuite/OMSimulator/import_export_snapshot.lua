@@ -90,7 +90,6 @@ oms_delete("import_export_snapshot")
 -- 				</ssd:Connectors>
 -- 			</ssd:Component>
 -- 		</ssd:Elements>
--- 		<ssd:Connections />
 -- 	</ssd:System>
 -- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
 -- 		<ssd:Annotations>
@@ -145,7 +144,6 @@ oms_delete("import_export_snapshot")
 -- 						</ssd:Connectors>
 -- 					</ssd:Component>
 -- 				</ssd:Elements>
--- 				<ssd:Connections />
 -- 			</ssd:System>
 -- 			<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
 -- 				<ssd:Annotations>

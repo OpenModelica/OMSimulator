@@ -203,7 +203,6 @@ printStatus(status, 0)
 --                 </oms:SimulationInformation>
 --             </ssc:Annotation>
 --         </ssd:Annotations>
---         <ssd:Connectors />
 --         <ssd:Elements>
 --             <ssd:System name="foo2">
 --                 <ssd:Annotations>
@@ -230,8 +229,6 @@ printStatus(status, 0)
 --                         <ssc:Real />
 --                     </ssd:Connector>
 --                 </ssd:Connectors>
---                 <ssd:Elements />
---                 <ssd:Connections />
 --                 <ssd:Annotations>
 --                     <ssc:Annotation type="org.openmodelica">
 --                         <oms:Bus name="bus">
@@ -284,9 +281,6 @@ printStatus(status, 0)
 --                                 </oms:SimulationInformation>
 --                             </ssc:Annotation>
 --                         </ssd:Annotations>
---                         <ssd:Connectors />
---                         <ssd:Elements />
---                         <ssd:Connections />
 --                     </ssd:System>
 --                     <ssd:Component name="T" type="application/table" source="resources/0002_T.csv">
 --                         <ssd:Connectors>
@@ -315,7 +309,6 @@ printStatus(status, 0)
 --                         </ssd:Connectors>
 --                     </ssd:Component>
 --                 </ssd:Elements>
---                 <ssd:Connections />
 --                 <ssd:Annotations>
 --                     <ssc:Annotation type="org.openmodelica">
 --                         <oms:Bus name="bus">
@@ -371,7 +364,6 @@ printStatus(status, 0)
 --                 </oms:SimulationInformation>
 --             </ssc:Annotation>
 --         </ssd:Annotations>
---         <ssd:Connectors />
 --         <ssd:Elements>
 --             <ssd:System name="foo2">
 --                 <ssd:Annotations>
@@ -398,8 +390,6 @@ printStatus(status, 0)
 --                         <ssc:Real />
 --                     </ssd:Connector>
 --                 </ssd:Connectors>
---                 <ssd:Elements />
---                 <ssd:Connections />
 --                 <ssd:Annotations>
 --                     <ssc:Annotation type="org.openmodelica">
 --                         <oms:Bus name="bus">
@@ -452,9 +442,6 @@ printStatus(status, 0)
 --                                 </oms:SimulationInformation>
 --                             </ssc:Annotation>
 --                         </ssd:Annotations>
---                         <ssd:Connectors />
---                         <ssd:Elements />
---                         <ssd:Connections />
 --                     </ssd:System>
 --                     <ssd:Component name="T" type="application/table" source="resources/0002_T.csv">
 --                         <ssd:Connectors>
@@ -483,7 +470,6 @@ printStatus(status, 0)
 --                         </ssd:Connectors>
 --                     </ssd:Component>
 --                 </ssd:Elements>
---                 <ssd:Connections />
 --                 <ssd:Annotations>
 --                     <ssc:Annotation type="org.openmodelica">
 --                         <oms:Bus name="bus">

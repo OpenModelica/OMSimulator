@@ -54,7 +54,6 @@ oms_delete("setExternalInputs")
 -- 				</oms:SimulationInformation>
 -- 			</ssc:Annotation>
 -- 		</ssd:Annotations>
--- 		<ssd:Connectors />
 -- 		<ssd:Elements>
 -- 			<ssd:Component name="Gain" type="application/x-fmu-sharedlibrary" source="resources/0001_Gain.fmu">
 -- 				<ssd:Connectors>
@@ -72,7 +71,6 @@ oms_delete("setExternalInputs")
 -- 				</ssd:Connectors>
 -- 			</ssd:Component>
 -- 		</ssd:Elements>
--- 		<ssd:Connections />
 -- 	</ssd:System>
 -- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="5.000000">
 -- 		<ssd:Annotations>

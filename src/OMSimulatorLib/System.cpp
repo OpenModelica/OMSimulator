@@ -398,10 +398,15 @@ oms_status_enu_t oms::System::exportToSSD(pugi::xml_node& node, pugi::xml_node& 
     return logError("export of system ElementGeometry failed");
 
   // export top level system connectors
-  pugi::xml_node connectors_node = node.append_child(oms::ssp::Draft20180219::ssd::connectors);
-  for(const auto& connector : connectors)
-    if (connector)
-      connector->exportToSSD(connectors_node);
+  if (connectors.size() > 1)
+  {
+    pugi::xml_node connectors_node = node.append_child(oms::ssp::Draft20180219::ssd::connectors);
+    for(const auto& connector : connectors)
+    {
+      if (connector)
+        connector->exportToSSD(connectors_node);
+    }
+  }
 
   // export top level parameter bindings
   if (Flags::ExportParametersInline()) // export as inline
@@ -413,29 +418,41 @@ oms_status_enu_t oms::System::exportToSSD(pugi::xml_node& node, pugi::xml_node& 
     values.exportToSSV(ssvNode); // export to ssv file
   }
 
-  pugi::xml_node elements_node = node.append_child(oms::ssp::Draft20180219::ssd::elements);
-
-  for (const auto& subsystem : subsystems)
+  if (subelements.size() > 1)
   {
-    pugi::xml_node system_node = elements_node.append_child(oms::ssp::Draft20180219::ssd::system);
-    if (oms_status_ok != subsystem.second->exportToSSD(system_node, ssvNode))
-      return logError("export of system failed");
+    pugi::xml_node elements_node = node.append_child(oms::ssp::Draft20180219::ssd::elements);
+    for (const auto& subsystem : subsystems)
+    {
+      pugi::xml_node system_node = elements_node.append_child(oms::ssp::Draft20180219::ssd::system);
+      if (oms_status_ok != subsystem.second->exportToSSD(system_node, ssvNode))
+        return logError("export of system failed");
+    }
+    for (const auto& component : components)
+    {
+      pugi::xml_node component_node = elements_node.append_child(oms::ssp::Draft20180219::ssd::component);
+      if (oms_status_ok != component.second->exportToSSD(component_node, ssvNode))
+        return logError("export of component failed");
+    }
   }
 
-  for (const auto& component : components)
-  {
-    pugi::xml_node component_node = elements_node.append_child(oms::ssp::Draft20180219::ssd::component);
-    if (oms_status_ok != component.second->exportToSSD(component_node, ssvNode))
-      return logError("export of component failed");
-  }
+  std::vector<oms::Connection*> busconnections, ssdconnections;
 
-  std::vector<oms::Connection*> busconnections;
-  pugi::xml_node connections_node = node.append_child(oms::ssp::Draft20180219::ssd::connections);
   for (const auto& connection : connections)
+  {
     if (connection && connection->getType() == oms_connection_single)
-      connection->exportToSSD(connections_node);
+      ssdconnections.push_back(connection);
     else if (connection)
       busconnections.push_back(connection);
+  }
+
+  if (!ssdconnections.empty())
+  {
+    pugi::xml_node connections_node = node.append_child(oms::ssp::Draft20180219::ssd::connections);
+    for (const auto& ssdconnection : ssdconnections)
+    {
+      ssdconnection->exportToSSD(connections_node);
+    }
+  }
 
 #if !defined(NO_TLM)
   if (busconnectors[0] || tlmbusconnectors[0] || !busconnections.empty())
@@ -504,65 +521,6 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
     }
     else if (name == oms::ssp::Draft20180219::ssd::connections)
     {
-      // check for ssvFileSource exist and set the values before the connections
-      if (!ssvFileSources.empty())
-      {
-        for (const auto& ssvFileSource : ssvFileSources)
-        {
-          std::string tempdir = getModel()->getTempDirectory();
-          filesystem::path temp_root(tempdir);
-          pugi::xml_document ssvdoc;
-          pugi::xml_parse_result result = ssvdoc.load_file((temp_root / ssvFileSource).string().c_str());
-          pugi::xml_node parameterSet, parameters;
-
-          if (result) // check from ssv file
-          {
-            parameterSet = ssvdoc.document_element(); // ssv:ParameterSet
-            parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
-          }
-          else if (getModel()->getSnapshot().child(oms::ssp::Version1_0::ssv_file)) // check in memory oms:ssv_file
-          {
-            parameterSet = getModel()->getSnapshot().child(oms::ssp::Version1_0::ssv_file).child(oms::ssp::Version1_0::ssv::parameter_set); // ssv:ParameterSet
-            parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
-          }
-          else
-          {
-            return logError("loading \"" + std::string(ssvFileSource) + "\" failed (" + std::string(result.description()) + ")");
-          }
-
-          if (parameters)
-          {
-            for(pugi::xml_node_iterator itparameters = parameters.begin(); itparameters != parameters.end(); ++itparameters)
-            {
-              std::string name = itparameters->name();
-              if (name == oms::ssp::Version1_0::ssv::parameter)
-              {
-                ComRef cref = ComRef(itparameters->attribute("name").as_string());
-                if (itparameters->child(oms::ssp::Version1_0::ssv::real_type))
-                {
-                  double value = itparameters->child(oms::ssp::Version1_0::ssv::real_type).attribute("value").as_double();
-                  setReal(cref, value);
-                }
-                else if(itparameters->child(oms::ssp::Version1_0::ssv::integer_type))
-                {
-                  int value = itparameters->child(oms::ssp::Version1_0::ssv::integer_type).attribute("value").as_int();
-                  setInteger(cref, value);
-                }
-                else if(itparameters->child(oms::ssp::Version1_0::ssv::boolean_type))
-                {
-                  bool value = itparameters->child(oms::ssp::Version1_0::ssv::boolean_type).attribute("value").as_bool();
-                  setBoolean(cref, value);
-                }
-                else
-                {
-                  logError("Failed to import " + std::string(oms::ssp::Version1_0::ssv::parameter) + ":Unknown ParameterBinding-type");
-                }
-              }
-            }
-          }
-        }
-      }
-
       for(pugi::xml_node_iterator itConnectors = (*it).begin(); itConnectors != (*it).end(); ++itConnectors)
       {
         ComRef startElement = ComRef(itConnectors->attribute("startElement").as_string());
@@ -653,7 +611,7 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
                     {
                       logWarning_deprecated;
                     }
-                    for (pugi::xml_node annotationNode = annotationsNode.child(oms::ssp::Draft20180219::ssd::annotation); annotationNode; annotationNode = annotationNode.next_sibling(oms::ssp::Draft20180219::ssd::annotation)) {
+                    for (pugi::xml_node annotationNode = annotationsNode.child(oms::ssp::Draft20180219::ssd::annotation); annotationNode; annotationNode = annotationsNode.next_sibling(oms::ssp::Draft20180219::ssd::annotation)) {
                       std::string type = annotationNode.attribute("type").as_string() ;
                       if(oms::ssp::Draft20180219::annotation_type == type) {
                         pugi::xml_node externalModelNode = annotationNode.child(oms::ssp::Draft20180219::external_model);
@@ -683,7 +641,7 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
                     logWarning_deprecated;
                   }
 
-                  for (pugi::xml_node annotationNode = annotationNode.child(annotationNodeString); annotationNode; annotationNode = annotationNode.next_sibling(annotationNodeString)) {
+                  for (pugi::xml_node annotationNode = annotationsNode.child(annotationNodeString); annotationNode; annotationNode = annotationsNode.next_sibling(annotationNodeString)) {
                       std::string type = annotationNode.attribute("type").as_string() ;
                       if(oms::ssp::Draft20180219::annotation_type == type) {
 
@@ -749,6 +707,65 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
         }
         else
           return logError("wrong xml schema detected: " + name);
+      }
+
+      // check for ssvFileSource exist and set the values before the connections
+      if (!ssvFileSources.empty())
+      {
+        for (const auto& ssvFileSource : ssvFileSources)
+        {
+          std::string tempdir = getModel()->getTempDirectory();
+          filesystem::path temp_root(tempdir);
+          pugi::xml_document ssvdoc;
+          pugi::xml_parse_result result = ssvdoc.load_file((temp_root / ssvFileSource).string().c_str());
+          pugi::xml_node parameterSet, parameters;
+
+          if (result) // check from ssv file
+          {
+            parameterSet = ssvdoc.document_element(); // ssv:ParameterSet
+            parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
+          }
+          else if (getModel()->getSnapshot().child(oms::ssp::Version1_0::ssv_file)) // check in memory oms:ssv_file
+          {
+            parameterSet = getModel()->getSnapshot().child(oms::ssp::Version1_0::ssv_file).child(oms::ssp::Version1_0::ssv::parameter_set); // ssv:ParameterSet
+            parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
+          }
+          else
+          {
+            return logError("loading \"" + std::string(ssvFileSource) + "\" failed (" + std::string(result.description()) + ")");
+          }
+
+          if (parameters)
+          {
+            for(pugi::xml_node_iterator itparameters = parameters.begin(); itparameters != parameters.end(); ++itparameters)
+            {
+              std::string name = itparameters->name();
+              if (name == oms::ssp::Version1_0::ssv::parameter)
+              {
+                ComRef cref = ComRef(itparameters->attribute("name").as_string());
+                if (itparameters->child(oms::ssp::Version1_0::ssv::real_type))
+                {
+                  double value = itparameters->child(oms::ssp::Version1_0::ssv::real_type).attribute("value").as_double();
+                  setReal(cref, value);
+                }
+                else if(itparameters->child(oms::ssp::Version1_0::ssv::integer_type))
+                {
+                  int value = itparameters->child(oms::ssp::Version1_0::ssv::integer_type).attribute("value").as_int();
+                  setInteger(cref, value);
+                }
+                else if(itparameters->child(oms::ssp::Version1_0::ssv::boolean_type))
+                {
+                  bool value = itparameters->child(oms::ssp::Version1_0::ssv::boolean_type).attribute("value").as_bool();
+                  setBoolean(cref, value);
+                }
+                else
+                {
+                  logError("Failed to import " + std::string(oms::ssp::Version1_0::ssv::parameter) + ":Unknown ParameterBinding-type");
+                }
+              }
+            }
+          }
+        }
       }
     }
     else if (name == oms::ssp::Draft20180219::ssd::annotations)
@@ -2050,7 +2067,7 @@ oms_status_enu_t oms::System::setReal(const ComRef& cref, double value)
 
 oms_status_enu_t oms::System::getReals(const std::vector<oms::ComRef> &sr, std::vector<double> &values)
 {
-  oms_status_enu_t status;
+  oms_status_enu_t status = oms_status_ok;
   for(int i=0; i<sr.size(); ++i) {
     status = getReal(sr[i],values[i]);
     if(status != oms_status_ok)
@@ -2061,7 +2078,7 @@ oms_status_enu_t oms::System::getReals(const std::vector<oms::ComRef> &sr, std::
 
 oms_status_enu_t oms::System::setReals(const std::vector<oms::ComRef> &crefs, std::vector<double> values)
 {
-  oms_status_enu_t status;
+  oms_status_enu_t status = oms_status_ok;
   for(int i=0; i<crefs.size(); ++i) {
     status = setReal(crefs[i],values[i]);
     if(status != oms_status_ok)

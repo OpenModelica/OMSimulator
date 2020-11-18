@@ -76,7 +76,6 @@ oms_delete("test")
 -- 				</oms:SimulationInformation>
 -- 			</ssc:Annotation>
 -- 		</ssd:Annotations>
--- 		<ssd:Connectors />
 -- 		<ssd:Elements>
 -- 			<ssd:Component name="source" type="application/x-fmu-sharedlibrary" source="resources/0001_source.fmu">
 -- 				<ssd:Connectors>
@@ -102,7 +101,6 @@ oms_delete("test")
 -- 				</ssd:Connectors>
 -- 			</ssd:Component>
 -- 		</ssd:Elements>
--- 		<ssd:Connections />
 -- 	</ssd:System>
 -- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
 -- 		<ssd:Annotations>
@@ -125,7 +123,6 @@ oms_delete("test")
 -- 				</oms:SimulationInformation>
 -- 			</ssc:Annotation>
 -- 		</ssd:Annotations>
--- 		<ssd:Connectors />
 -- 		<ssd:Elements>
 -- 			<ssd:Component name="source" type="application/x-fmu-sharedlibrary" source="resources/0001_source.fmu">
 -- 				<ssd:Connectors>
@@ -151,7 +148,6 @@ oms_delete("test")
 -- 				</ssd:Connectors>
 -- 			</ssd:Component>
 -- 		</ssd:Elements>
--- 		<ssd:Connections />
 -- 	</ssd:System>
 -- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
 -- 		<ssd:Annotations>

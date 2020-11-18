@@ -2,11 +2,11 @@
 # Hopsan TLM start-up script
 # Start with 6 arguments:
 # 1 XModelName
-# 2 start-time 
-# 3 end-time 
-# 4 max-time-step 
-# 5 server-name:port 
-# 6 Path to FMU file 
+# 2 start-time
+# 3 end-time
+# 4 max-time-step
+# 5 server-name:port
+# 6 Path to FMU file
 
 # *********************SETUP SIMULATION*********************************************
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$PWD/../../OMTLMSimulator/bin
@@ -26,9 +26,9 @@ FMIWrapper_Cmd="$PWD/../../install/linux/bin/FMIWrapper $NAME $MODELPATH solver=
 TLMCONFIGFILE=tlm.config
 
 
-if [ ! -f "$MODELPATH" ] ; then 
-	echo Usage: 
-	echo $0 XModelName start-time end-time max-time-step server-name:port model-file 
+if [ ! -f "$MODELPATH" ] ; then
+	echo Usage:
+	echo $0 XModelName start-time end-time max-time-step server-name:port model-file
 	echo $6
 	pwd
 	exit 1
