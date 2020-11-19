@@ -404,7 +404,7 @@ EXIT /b 1
           when {
             anyOf {
               expression { return params.MINGW32 }
-              expression { return params.UPLOAD_BUILD_OPENMODELICA }
+              expression { return shouldWeUploadArtifacts() }
               buildingTag()
             }
             beforeAgent true
@@ -587,7 +587,7 @@ EXIT /b 1
           when {
             anyOf {
               buildingTag()
-              expression { return params.UPLOAD_BUILD_OPENMODELICA }
+              expression { return shouldWeUploadArtifacts() }
             }
             beforeAgent true
           }
@@ -715,11 +715,23 @@ void submoduleNoChange(path) {
   }
 }
 
+def isPR() {
+  return env.CHANGE_ID ? true : false
+}
+
 def getDeploymentPrefix() {
-  if (env.CHANGE_ID) {
+  if (isPR()) {
     return "experimental/pr-${env.CHANGE_ID}/"
   }
-  else {
-    return "./"   // We can't use an empty string due to an stupid Jenkins bug
+  return "./"   // We can't use an empty string due to an stupid Jenkins bug
+}
+
+def shouldWeUploadArtifacts() {
+  if (isPR()) {
+    return params.UPLOAD_BUILD_OPENMODELICA
   }
+  if (env.GIT_BRANCH == "master") {
+    return true
+  }
+  return false
 }
