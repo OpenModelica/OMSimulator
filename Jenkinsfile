@@ -728,6 +728,9 @@ def getDeploymentPrefix() {
 
 def shouldWeUploadArtifacts() {
   if (isPR()) {
+    if (pullRequest.labels.contains("CI/Upload Artifacts")) {
+      return true
+    }
     return params.UPLOAD_BUILD_OPENMODELICA
   }
   if (env.GIT_BRANCH == "master") {
