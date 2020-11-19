@@ -704,7 +704,7 @@ void buildOMS() {
 }
 
 void submoduleNoChange(path) {
-  if (params.SUBMODULE_UPDATE) {
+  if (shouldWeUpdateSubmodules()) {
     // Don't need to check
     return
   }
@@ -734,4 +734,13 @@ def shouldWeUploadArtifacts() {
     return true
   }
   return false
+}
+
+def shouldWeUpdateSubmodules() {
+  if (isPR()) {
+    if (pullRequest.labels.contains("CI/Update Submodules")) {
+      return true
+    }
+  }
+  return params.SUBMODULE_UPDATE
 }
