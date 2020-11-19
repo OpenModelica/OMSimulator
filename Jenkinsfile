@@ -195,7 +195,7 @@ pipeline {
             '''
 
             archiveArtifacts "OMSimulator-linux-i386-*.tar.gz"
-            stash name: 'i389-zip', includes: "OMSimulator-linux-i386-*.tar.gz"
+            stash name: 'i386-zip', includes: "OMSimulator-linux-i386-*.tar.gz"
 
             partest()
 
@@ -404,7 +404,7 @@ EXIT /b 1
           when {
             anyOf {
               expression { return params.MINGW32 }
-              expression { return params.UPLOAD_BUILD_OPENMODELICA }
+              expression { return shouldWeUploadArtifacts() }
               buildingTag()
             }
             beforeAgent true
@@ -587,12 +587,12 @@ EXIT /b 1
           when {
             anyOf {
               buildingTag()
-              expression { return params.UPLOAD_BUILD_OPENMODELICA }
+              expression { return shouldWeUploadArtifacts() }
             }
             beforeAgent true
           }
           environment {
-            EXPERIMENTAL = getExperimentalPath()
+            DEPLOYMENT_PREFIX = getDeploymentPrefix()
           }
           agent {
             label 'linux'
@@ -600,7 +600,7 @@ EXIT /b 1
           steps {
             unstash name: 'amd64-zip'         // includes: "OMSimulator-linux-amd64-*.tar.gz"
             unstash name: 'arm32-zip'         // includes: "OMSimulator-linux-arm32-*.tar.gz"
-            unstash name: 'i389-zip'          // includes: "OMSimulator-linux-i386-*.tar.gz"
+            unstash name: 'i386-zip'          // includes: "OMSimulator-linux-i386-*.tar.gz"
             unstash name: 'mingw32-zip'       // includes: "OMSimulator-mingw32-*.zip"
             unstash name: 'mingw64-zip'       // includes: "OMSimulator-mingw64-*.zip"
             unstash name: 'win64-zip'         // includes: "OMSimulator-win64-*.zip"
@@ -614,25 +614,25 @@ EXIT /b 1
                   configName: 'OMSimulator',
                   transfers: [
                     sshTransfer(
-                      remoteDirectory: "${EXPERIMENTAL}linux-i386/",
+                      remoteDirectory: "${DEPLOYMENT_PREFIX}linux-i386/",
                       sourceFiles: 'OMSimulator-linux-i386-*.tar.gz'),
                     sshTransfer(
-                      remoteDirectory: "${EXPERIMENTAL}linux-arm32/",
+                      remoteDirectory: "${DEPLOYMENT_PREFIX}linux-arm32/",
                       sourceFiles: 'OMSimulator-linux-arm32-*.tar.gz'),
                     sshTransfer(
-                      remoteDirectory: "${EXPERIMENTAL}linux-amd64/",
+                      remoteDirectory: "${DEPLOYMENT_PREFIX}linux-amd64/",
                       sourceFiles: 'OMSimulator-linux-amd64-*.tar.gz'),
                     sshTransfer(
-                      remoteDirectory: "${EXPERIMENTAL}win-mingw32/",
+                      remoteDirectory: "${DEPLOYMENT_PREFIX}win-mingw32/",
                       sourceFiles: 'OMSimulator-mingw32-*.zip'),
                     sshTransfer(
-                      remoteDirectory: "${EXPERIMENTAL}win-mingw64/",
+                      remoteDirectory: "${DEPLOYMENT_PREFIX}win-mingw64/",
                       sourceFiles: 'OMSimulator-mingw64-*.zip'),
                     sshTransfer(
-                      remoteDirectory: "${EXPERIMENTAL}osx/",
+                      remoteDirectory: "${DEPLOYMENT_PREFIX}osx/",
                       sourceFiles: 'OMSimulator-osx-*.zip'),
                     sshTransfer(
-                      remoteDirectory: "${EXPERIMENTAL}win-msvc64/",
+                      remoteDirectory: "${DEPLOYMENT_PREFIX}win-msvc64/",
                       sourceFiles: 'OMSimulator-win64-*.zip')
                   ]
                 )
@@ -704,7 +704,7 @@ void buildOMS() {
 }
 
 void submoduleNoChange(path) {
-  if (params.SUBMODULE_UPDATE) {
+  if (shouldWeUpdateSubmodules()) {
     // Don't need to check
     return
   }
@@ -715,11 +715,42 @@ void submoduleNoChange(path) {
   }
 }
 
-def getExperimentalPath() {
-  if (env.CHANGE_ID) {
+def isPR() {
+  return env.CHANGE_ID ? true : false
+}
+
+def isTag() {
+  return env.TAG_NAME ? true : false
+}
+
+def getDeploymentPrefix() {
+  if (isPR()) {
     return "experimental/pr-${env.CHANGE_ID}/"
   }
-  else {
-    return "./"   // We can't use an empty string due to an stupid Jenkins bug
+  if (isTag()) {
+    return "stable/"
   }
+  return "dev/"
+}
+
+def shouldWeUploadArtifacts() {
+  if (isPR()) {
+    if (pullRequest.labels.contains("CI/Upload Artifacts")) {
+      return true
+    }
+    return params.UPLOAD_BUILD_OPENMODELICA
+  }
+  if (env.GIT_BRANCH == "master") {
+    return true
+  }
+  return false
+}
+
+def shouldWeUpdateSubmodules() {
+  if (isPR()) {
+    if (pullRequest.labels.contains("CI/Update Submodules")) {
+      return true
+    }
+  }
+  return params.SUBMODULE_UPDATE
 }
