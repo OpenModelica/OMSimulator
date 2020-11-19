@@ -1,5 +1,11 @@
 project(pip)
 
+IF (OMS_VERSION_STRING MATCHES "^(.*)\\.post(.*)-g(.*)$")
+  set(OMS_BUILD_TYPE "dev")
+ELSE()
+  set(OMS_BUILD_TYPE "stable")
+ENDIF()
+
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/setup.py" "${CMAKE_CURRENT_BINARY_DIR}/setup.py" @ONLY)
 
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/setup.py" DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/install/)
