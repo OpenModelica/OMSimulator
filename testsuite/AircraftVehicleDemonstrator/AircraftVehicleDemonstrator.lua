@@ -1,8 +1,8 @@
 -- status: correct
 -- teardown_command: rm -rf AircraftVehicleDemonstrator_tmp/ AircraftVehicleDemonstrator.log AircraftVehicleDemonstrator*.dot AircraftVehicleDemonstrator_res.mat
 -- linux: no
--- mingw: yes
--- win: yes
+-- mingw: no
+-- win: no
 
 --oms_setLoggingLevel(0)
 oms_setCommandLineOption("--suppressPath=true")

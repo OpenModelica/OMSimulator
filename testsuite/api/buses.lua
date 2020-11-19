@@ -1,8 +1,8 @@
 -- status: correct
 -- teardown_command: rm -rf buses-lua/
 -- linux: yes
--- mingw: yes
--- win: yes
+-- mingw: no
+-- win: no
 -- mac: no
 
 oms_setCommandLineOption("--suppressPath=true")

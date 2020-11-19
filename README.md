@@ -43,13 +43,13 @@ Note: Make sure to fetch the submodules, e.g., using `git submodule update --ini
 
 ### Linux / MacOS
 
-1. install libxml2-dev
+1. Install libxml2-dev
 
    ```bash
    sudo apt-get install libxml2-dev
    ```
 
-1. configure OMSimulator
+1. Configure OMSimulator
 
    ```bash
    make config-3rdParty
@@ -58,7 +58,7 @@ Note: Make sure to fetch the submodules, e.g., using `git submodule update --ini
 
    For the debug configuration add `BUILD_TYPE=Debug` to `make config-OMSimulator`.
 
-1. build OMSimulator
+1. Build OMSimulator
 
    ```bash
    make OMSimulator -j4
@@ -66,12 +66,12 @@ Note: Make sure to fetch the submodules, e.g., using `git submodule update --ini
 
 ### Windows (OMDev mingw)
 
-1. setup OMDev
+1. Setup OMDev
 
    - Checkout OMDev (OpenModelica Development Environment): `git clone https://openmodelica.org/git/OMDev.git`
    - Follow the instructions in `OMDev/INSTALL.txt`
 
-1. configure OMSimulator
+1. Configure OMSimulator
 
    ```bash
    make config-3rdParty
@@ -80,7 +80,7 @@ Note: Make sure to fetch the submodules, e.g., using `git submodule update --ini
 
    For the debug configuration add `BUILD_TYPE=Debug` to `make config-OMSimulator`.
 
-1. build OMSimulator
+1. Build OMSimulator
 
    ```bash
    make OMSimulator -j4
@@ -97,22 +97,71 @@ The following versions of Visual Studio are supported:
 
 It is not strictly required to install the full Visual Studio IDE. The batch scripts only require *[Visual C++ Build Tools](http://landinghub.visualstudio.com/visual-cpp-build-tools)*.
 
-1. install boost (VS14: 1.63, VS15: 1.64)
+1. Install boost (VS14: 1.63, VS15: 1.64)
 
    - Download and install precompiled boost libs, e.g. from [this](https://sourceforge.net/projects/boost/files/boost-binaries/) source
    - Set environment variable `BOOST_ROOT` to install path, e.g:
      - `BOOST_ROOT=C:\local\boost_1_64_0`
 
-1. configure OMSimulator
+1. Configure OMSimulator
 
    ```bash
-   configWinVS.bat VS15-Win64
+   .\configWinVS.bat VS15-Win64
    ```
 
    To build the debug version change `CMAKE_BUILD_TYPE` to `Debug` or change the release type in Visual Studio to `debug`.
 
-1. build OMSimulator
+1. Build OMSimulator
 
    ```bash
-   buildWinVS.bat VS15-Win64
+   .\buildWinVS.bat VS15-Win64
    ```
+
+## Test your build
+
+The testsuite of OMSimulator is run on Jenkins for every commit and creating
+[test reports](https://test.openmodelica.org/jenkins/job/OMSimulator/job/master/lastSuccessfulBuild/testReport/).
+The project is tested for the following OS:
+   - linux-arm32
+   - linux64 without OMPython
+   - cross-compiled mingw64
+   - msvc64
+   - cross-compiled OSX
+
+In addition the [OpenModelica project](https://github.com/OpenModelica/OpenModelica) has a number of test cases using OMSimulator for FMU simulation that can be find in this [OpenModelica test reports](https://test.openmodelica.org/jenkins/job/OpenModelica/job/master/lastSuccessfulBuild/testReport/).
+
+To verify your build is compiled and installed corrrectly see the following instructions.
+
+### Linux / MacOS / Windows (OMDev mingw)
+
+1. Build test dependencies
+   ```bash
+   make -C testsuite/ difftool resources
+   ```
+
+2. Run partest
+
+   ```bash
+   cd testsuite/partest/
+   ./runtests.pl -j4
+   ```
+   Use `-jN` to test with `N` threads.
+   To disable TLM tests add `-notlm`, to disable Python tests add `-asan`.
+
+### Windows (Visual Studio)
+
+We currently have no bat-Script to build and test with CMD, so you have to use OMDev mingw shell for the tests.
+
+1. Build test dependencies
+   ```bash
+   make -C testsuite/ difftool resources
+   ```
+
+2. Run partest
+
+   ```bash
+   cd testsuite/partest/
+   ./runtests.pl -j4 -platform=win
+   ```
+   Use `-jN` to test with `N` threads.
+   To disable TLM tests add `-notlm`, to disable Python tests add `-asan`.

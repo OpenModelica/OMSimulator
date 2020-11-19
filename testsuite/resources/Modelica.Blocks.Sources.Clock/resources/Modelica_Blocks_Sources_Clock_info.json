@@ -1,12 +1,12 @@
 {"format":"Transformational debugger info","version":1,
 "info":{"name":"Modelica.Blocks.Sources.Clock","description":"Generate actual time signal"},
 "variables":{
-"y":{"comment":"Connector of Real output signal","kind":"variable","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"/mnt/c/Users/Lennart/Repositories/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Interfaces.mo","lineStart":300,"lineEnd":301,"colStart":5,"colEnd":56},"within":["Real"]}},
-"offset":{"comment":"Offset of output signal y","kind":"parameter","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"/mnt/c/Users/Lennart/Repositories/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Interfaces.mo","lineStart":479,"lineEnd":479,"colStart":5,"colEnd":56},"within":["Real"]}}
+"y":{"comment":"Connector of Real output signal","kind":"variable","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"/home/andreas/workspace/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Interfaces.mo","lineStart":300,"lineEnd":301,"colStart":5,"colEnd":56},"within":["Real"]}},
+"offset":{"comment":"Offset of output signal y","kind":"parameter","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"/home/andreas/workspace/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Interfaces.mo","lineStart":479,"lineEnd":479,"colStart":5,"colEnd":56},"within":["Real"]}}
 },
 "equations":[{"eqIndex":0,"tag":"dummy"},
 {"eqIndex":1,"tag":"alias","equation":[2],"section":"initial"},
-{"eqIndex":2,"section":"regular","tag":"assign","defines":["y"],"uses":["startTime","time","offset"],"equation":["offset + (if time < startTime then 0.0 else time - startTime)"],"source":{"info":{"file":"/mnt/c/Users/Lennart/Repositories/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Sources.mo","lineStart":125,"lineEnd":125,"colStart":5,"colEnd":68},"within":["Modelica.Blocks.Sources.Clock"]}}
+{"eqIndex":2,"section":"regular","tag":"assign","defines":["y"],"uses":["startTime","time","offset"],"equation":["offset + (if time < startTime then 0.0 else time - startTime)"],"source":{"info":{"file":"/home/andreas/workspace/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Sources.mo","lineStart":125,"lineEnd":125,"colStart":5,"colEnd":68},"within":["Modelica.Blocks.Sources.Clock"]}}
 ],
 "functions":[
 ]

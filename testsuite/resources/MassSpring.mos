@@ -13,5 +13,5 @@ equation
 end MassSpring;
 "); getErrorString();
 
-buildModelFMU(MassSpring, version="2.0", fmuType="me_cs", fileNamePrefix="tlm.massSpring", platforms={"x86_64-linux-gnu"}); getErrorString();
+buildModelFMU(MassSpring, version="2.0", fmuType="me_cs", fileNamePrefix="tlm.massSpring", platforms={"x86_64-linux-gnu docker run docker.openmodelica.org/build-deps:bionic.nightly.amd64","x86_64-w64-mingw32 docker run docker.openmodelica.org/msyscross-omsimulator:v2.0"}); getErrorString();
 system("zip -qd tlm.massSpring.fmu sources/* && unzip -o tlm.massSpring.fmu -d tlm.massSpring/");

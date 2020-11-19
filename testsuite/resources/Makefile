@@ -72,5 +72,5 @@ all:
 
 generateFMUs:
 	@echo
-	@echo generating FMUs...
-	@for mos in $(MOSs) ; do omc $$mos ; done
+	@echo generating FMUs with $$(omc --version) from $$(which omc)
+	@for mos in $(MOSs) ; do omc $$mos && rm *.libs *.log *.makefile; done

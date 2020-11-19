@@ -1,6 +1,6 @@
 -- status: correct
 -- linux: yes
--- mingw: yes
+-- mingw: no
 -- win: no
 -- mac: no
 
