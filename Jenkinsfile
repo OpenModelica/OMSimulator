@@ -719,11 +719,18 @@ def isPR() {
   return env.CHANGE_ID ? true : false
 }
 
+def isTag() {
+  return env.TAG_NAME ? true : false
+}
+
 def getDeploymentPrefix() {
   if (isPR()) {
     return "experimental/pr-${env.CHANGE_ID}/"
   }
-  return "./"   // We can't use an empty string due to an stupid Jenkins bug
+  if (isTag()) {
+    return "stable/"
+  }
+  return "dev/"
 }
 
 def shouldWeUploadArtifacts() {
