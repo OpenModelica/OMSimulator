@@ -195,7 +195,7 @@ pipeline {
             '''
 
             archiveArtifacts "OMSimulator-linux-i386-*.tar.gz"
-            stash name: 'i389-zip', includes: "OMSimulator-linux-i386-*.tar.gz"
+            stash name: 'i386-zip', includes: "OMSimulator-linux-i386-*.tar.gz"
 
             partest()
 
@@ -592,7 +592,7 @@ EXIT /b 1
             beforeAgent true
           }
           environment {
-            EXPERIMENTAL = getExperimentalPath()
+            DEPLOYMENT_PREFIX = getDeploymentPrefix()
           }
           agent {
             label 'linux'
@@ -600,7 +600,7 @@ EXIT /b 1
           steps {
             unstash name: 'amd64-zip'         // includes: "OMSimulator-linux-amd64-*.tar.gz"
             unstash name: 'arm32-zip'         // includes: "OMSimulator-linux-arm32-*.tar.gz"
-            unstash name: 'i389-zip'          // includes: "OMSimulator-linux-i386-*.tar.gz"
+            unstash name: 'i386-zip'          // includes: "OMSimulator-linux-i386-*.tar.gz"
             unstash name: 'mingw32-zip'       // includes: "OMSimulator-mingw32-*.zip"
             unstash name: 'mingw64-zip'       // includes: "OMSimulator-mingw64-*.zip"
             unstash name: 'win64-zip'         // includes: "OMSimulator-win64-*.zip"
@@ -614,25 +614,25 @@ EXIT /b 1
                   configName: 'OMSimulator',
                   transfers: [
                     sshTransfer(
-                      remoteDirectory: "${EXPERIMENTAL}linux-i386/",
+                      remoteDirectory: "${DEPLOYMENT_PREFIX}linux-i386/",
                       sourceFiles: 'OMSimulator-linux-i386-*.tar.gz'),
                     sshTransfer(
-                      remoteDirectory: "${EXPERIMENTAL}linux-arm32/",
+                      remoteDirectory: "${DEPLOYMENT_PREFIX}linux-arm32/",
                       sourceFiles: 'OMSimulator-linux-arm32-*.tar.gz'),
                     sshTransfer(
-                      remoteDirectory: "${EXPERIMENTAL}linux-amd64/",
+                      remoteDirectory: "${DEPLOYMENT_PREFIX}linux-amd64/",
                       sourceFiles: 'OMSimulator-linux-amd64-*.tar.gz'),
                     sshTransfer(
-                      remoteDirectory: "${EXPERIMENTAL}win-mingw32/",
+                      remoteDirectory: "${DEPLOYMENT_PREFIX}win-mingw32/",
                       sourceFiles: 'OMSimulator-mingw32-*.zip'),
                     sshTransfer(
-                      remoteDirectory: "${EXPERIMENTAL}win-mingw64/",
+                      remoteDirectory: "${DEPLOYMENT_PREFIX}win-mingw64/",
                       sourceFiles: 'OMSimulator-mingw64-*.zip'),
                     sshTransfer(
-                      remoteDirectory: "${EXPERIMENTAL}osx/",
+                      remoteDirectory: "${DEPLOYMENT_PREFIX}osx/",
                       sourceFiles: 'OMSimulator-osx-*.zip'),
                     sshTransfer(
-                      remoteDirectory: "${EXPERIMENTAL}win-msvc64/",
+                      remoteDirectory: "${DEPLOYMENT_PREFIX}win-msvc64/",
                       sourceFiles: 'OMSimulator-win64-*.zip')
                   ]
                 )
@@ -715,7 +715,7 @@ void submoduleNoChange(path) {
   }
 }
 
-def getExperimentalPath() {
+def getDeploymentPrefix() {
   if (env.CHANGE_ID) {
     return "experimental/pr-${env.CHANGE_ID}/"
   }
