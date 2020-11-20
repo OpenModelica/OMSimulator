@@ -740,10 +740,7 @@ def shouldWeUploadArtifacts() {
     }
     return params.UPLOAD_BUILD_OPENMODELICA
   }
-  if (env.GIT_BRANCH == "master") {
-    return true
-  }
-  return false
+  return true
 }
 
 def shouldWeUpdateSubmodules() {
