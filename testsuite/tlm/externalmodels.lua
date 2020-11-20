@@ -52,13 +52,6 @@ printStatus(status, 0)
 -- status:  [correct] ok
 -- <?xml version="1.0"?>
 -- <ssd:System name="tlm">
--- 	<ssd:Annotations>
--- 		<ssc:Annotation type="org.openmodelica">
--- 			<oms:SimulationInformation>
--- 				<oms:TlmMaster ip="" managerport="0" monitorport="0" />
--- 			</oms:SimulationInformation>
--- 		</ssc:Annotation>
--- 	</ssd:Annotations>
 -- 	<ssd:Elements>
 -- 		<ssd:Component name="external" source="resources/external.mo">
 -- 			<ssd:Annotations>
@@ -73,6 +66,13 @@ printStatus(status, 0)
 -- 			</ssd:Annotations>
 -- 		</ssd:Component>
 -- 	</ssd:Elements>
+-- 	<ssd:Annotations>
+-- 		<ssc:Annotation type="org.openmodelica">
+-- 			<oms:SimulationInformation>
+-- 				<oms:TlmMaster ip="" managerport="0" monitorport="0" />
+-- 			</oms:SimulationInformation>
+-- 		</ssc:Annotation>
+-- 	</ssd:Annotations>
 -- </ssd:System>
 --
 -- status:  [correct] ok

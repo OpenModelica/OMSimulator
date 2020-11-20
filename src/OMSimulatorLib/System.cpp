@@ -390,10 +390,6 @@ oms_status_enu_t oms::System::exportToSSD(pugi::xml_node& node, pugi::xml_node& 
 {
   node.append_attribute("name") = this->getCref().c_str();
 
-  // export ssd:SimulationInformation
-  if (oms_status_ok != this->exportToSSD_SimulationInformation(node))
-    return logError("export of system SimulationInformation failed");
-
   if (oms_status_ok != element.getGeometry()->exportToSSD(node))
     return logError("export of system ElementGeometry failed");
 
@@ -478,6 +474,10 @@ oms_status_enu_t oms::System::exportToSSD(pugi::xml_node& node, pugi::xml_node& 
         busconnection->exportToSSD(busconnections_node);
     }
   }
+
+  //export ssd:SimulationInformation to end, in order to make it valid with easy-ssp
+  if (oms_status_ok != this->exportToSSD_SimulationInformation(node))
+    return logError("export of system SimulationInformation failed");
 
   return oms_status_ok;
 }
