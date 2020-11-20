@@ -121,13 +121,6 @@ oms_delete("import_export_parameters")
 -- <?xml version="1.0"?>
 -- <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="import_export_parameters" version="1.0">
 -- 	<ssd:System name="co_sim">
--- 		<ssd:Annotations>
--- 			<ssc:Annotation type="org.openmodelica">
--- 				<oms:SimulationInformation>
--- 					<oms:FixedStepMaster description="oms-ma" stepSize="0.001000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
--- 				</oms:SimulationInformation>
--- 			</ssc:Annotation>
--- 		</ssd:Annotations>
 -- 		<ssd:Connectors>
 -- 			<ssd:Connector name="Input_cref" kind="input">
 -- 				<ssc:Real />
@@ -147,6 +140,11 @@ oms_delete("import_export_parameters")
 -- 		</ssd:ParameterBindings>
 -- 		<ssd:Elements>
 -- 			<ssd:System name="foo">
+-- 				<ssd:Connectors>
+-- 					<ssd:Connector name="F_cref" kind="parameter">
+-- 						<ssc:Real />
+-- 					</ssd:Connector>
+-- 				</ssd:Connectors>
 -- 				<ssd:Annotations>
 -- 					<ssc:Annotation type="org.openmodelica">
 -- 						<oms:SimulationInformation>
@@ -154,11 +152,6 @@ oms_delete("import_export_parameters")
 -- 						</oms:SimulationInformation>
 -- 					</ssc:Annotation>
 -- 				</ssd:Annotations>
--- 				<ssd:Connectors>
--- 					<ssd:Connector name="F_cref" kind="parameter">
--- 						<ssc:Real />
--- 					</ssd:Connector>
--- 				</ssd:Connectors>
 -- 			</ssd:System>
 -- 			<ssd:Component name="addP" type="application/x-fmu-sharedlibrary" source="resources/0001_addP.fmu">
 -- 				<ssd:Connectors>
@@ -233,6 +226,13 @@ oms_delete("import_export_parameters")
 -- 			<ssd:Connection startElement="" startConnector="Input_cref" endElement="addP" endConnector="u1" />
 -- 			<ssd:Connection startElement="addP" startConnector="y" endElement="" endConnector="Output_cref" />
 -- 		</ssd:Connections>
+-- 		<ssd:Annotations>
+-- 			<ssc:Annotation type="org.openmodelica">
+-- 				<oms:SimulationInformation>
+-- 					<oms:FixedStepMaster description="oms-ma" stepSize="0.001000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+-- 				</oms:SimulationInformation>
+-- 			</ssc:Annotation>
+-- 		</ssd:Annotations>
 -- 	</ssd:System>
 -- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="4.000000">
 -- 		<ssd:Annotations>

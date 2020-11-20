@@ -51,13 +51,6 @@ oms_delete("import_export_snapshot")
 -- <?xml version="1.0"?>
 -- <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="import_export_snapshot" version="1.0">
 -- 	<ssd:System name="root">
--- 		<ssd:Annotations>
--- 			<ssc:Annotation type="org.openmodelica">
--- 				<oms:SimulationInformation>
--- 					<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
--- 				</oms:SimulationInformation>
--- 			</ssc:Annotation>
--- 		</ssd:Annotations>
 -- 		<ssd:Connectors>
 -- 			<ssd:Connector name="C1" kind="input">
 -- 				<ssc:Real />
@@ -90,6 +83,13 @@ oms_delete("import_export_snapshot")
 -- 				</ssd:Connectors>
 -- 			</ssd:Component>
 -- 		</ssd:Elements>
+-- 		<ssd:Annotations>
+-- 			<ssc:Annotation type="org.openmodelica">
+-- 				<oms:SimulationInformation>
+-- 					<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+-- 				</oms:SimulationInformation>
+-- 			</ssc:Annotation>
+-- 		</ssd:Annotations>
 -- 	</ssd:System>
 -- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
 -- 		<ssd:Annotations>
@@ -105,13 +105,6 @@ oms_delete("import_export_snapshot")
 -- 	<oms:ssd_file name="SystemStructure.ssd">
 -- 		<ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="import_export_snapshot" version="1.0">
 -- 			<ssd:System name="root">
--- 				<ssd:Annotations>
--- 					<ssc:Annotation type="org.openmodelica">
--- 						<oms:SimulationInformation>
--- 							<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
--- 						</oms:SimulationInformation>
--- 					</ssc:Annotation>
--- 				</ssd:Annotations>
 -- 				<ssd:Connectors>
 -- 					<ssd:Connector name="C1" kind="input">
 -- 						<ssc:Real />
@@ -144,6 +137,13 @@ oms_delete("import_export_snapshot")
 -- 						</ssd:Connectors>
 -- 					</ssd:Component>
 -- 				</ssd:Elements>
+-- 				<ssd:Annotations>
+-- 					<ssc:Annotation type="org.openmodelica">
+-- 						<oms:SimulationInformation>
+-- 							<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+-- 						</oms:SimulationInformation>
+-- 					</ssc:Annotation>
+-- 				</ssd:Annotations>
 -- 			</ssd:System>
 -- 			<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
 -- 				<ssd:Annotations>

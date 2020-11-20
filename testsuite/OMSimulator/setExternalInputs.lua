@@ -47,13 +47,6 @@ oms_delete("setExternalInputs")
 -- <?xml version="1.0"?>
 -- <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="setExternalInputs" version="1.0">
 -- 	<ssd:System name="Root">
--- 		<ssd:Annotations>
--- 			<ssc:Annotation type="org.openmodelica">
--- 				<oms:SimulationInformation>
--- 					<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
--- 				</oms:SimulationInformation>
--- 			</ssc:Annotation>
--- 		</ssd:Annotations>
 -- 		<ssd:Elements>
 -- 			<ssd:Component name="Gain" type="application/x-fmu-sharedlibrary" source="resources/0001_Gain.fmu">
 -- 				<ssd:Connectors>
@@ -71,6 +64,13 @@ oms_delete("setExternalInputs")
 -- 				</ssd:Connectors>
 -- 			</ssd:Component>
 -- 		</ssd:Elements>
+-- 		<ssd:Annotations>
+-- 			<ssc:Annotation type="org.openmodelica">
+-- 				<oms:SimulationInformation>
+-- 					<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+-- 				</oms:SimulationInformation>
+-- 			</ssc:Annotation>
+-- 		</ssd:Annotations>
 -- 	</ssd:System>
 -- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="5.000000">
 -- 		<ssd:Annotations>

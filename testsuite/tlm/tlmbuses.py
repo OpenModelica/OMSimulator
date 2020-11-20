@@ -110,22 +110,8 @@ printStatus(status, 0)
 ## status:  [correct] ok
 ## <?xml version="1.0"?>
 ## <ssd:System name="tlm">
-## 	<ssd:Annotations>
-## 		<ssc:Annotation type="org.openmodelica">
-## 			<oms:SimulationInformation>
-## 				<oms:TlmMaster ip="127.0.1.1" managerport="11111" monitorport="11121" />
-## 			</oms:SimulationInformation>
-## 		</ssc:Annotation>
-## 	</ssd:Annotations>
 ## 	<ssd:Elements>
 ## 		<ssd:System name="wc2">
-## 			<ssd:Annotations>
-## 				<ssc:Annotation type="org.openmodelica">
-## 					<oms:SimulationInformation>
-## 						<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
-## 					</oms:SimulationInformation>
-## 				</ssc:Annotation>
-## 			</ssd:Annotations>
 ## 			<ssd:Connectors>
 ## 				<ssd:Connector name="y" kind="input">
 ## 					<ssc:Real />
@@ -149,8 +135,6 @@ printStatus(status, 0)
 ## 					</oms:Bus>
 ## 				</ssc:Annotation>
 ## 			</ssd:Annotations>
-## 		</ssd:System>
-## 		<ssd:System name="wc1">
 ## 			<ssd:Annotations>
 ## 				<ssc:Annotation type="org.openmodelica">
 ## 					<oms:SimulationInformation>
@@ -158,6 +142,8 @@ printStatus(status, 0)
 ## 					</oms:SimulationInformation>
 ## 				</ssc:Annotation>
 ## 			</ssd:Annotations>
+## 		</ssd:System>
+## 		<ssd:System name="wc1">
 ## 			<ssd:Connectors>
 ## 				<ssd:Connector name="y" kind="output">
 ## 					<ssc:Real />
@@ -188,6 +174,13 @@ printStatus(status, 0)
 ## 					</oms:Bus>
 ## 				</ssc:Annotation>
 ## 			</ssd:Annotations>
+## 			<ssd:Annotations>
+## 				<ssc:Annotation type="org.openmodelica">
+## 					<oms:SimulationInformation>
+## 						<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+## 					</oms:SimulationInformation>
+## 				</ssc:Annotation>
+## 			</ssd:Annotations>
 ## 		</ssd:System>
 ## 	</ssd:Elements>
 ## 	<ssd:Annotations>
@@ -197,11 +190,6 @@ printStatus(status, 0)
 ## 			</oms:Connections>
 ## 		</ssc:Annotation>
 ## 	</ssd:Annotations>
-## </ssd:System>
-##
-## status:  [correct] ok
-## <?xml version="1.0"?>
-## <ssd:System name="tlm">
 ## 	<ssd:Annotations>
 ## 		<ssc:Annotation type="org.openmodelica">
 ## 			<oms:SimulationInformation>
@@ -209,15 +197,13 @@ printStatus(status, 0)
 ## 			</oms:SimulationInformation>
 ## 		</ssc:Annotation>
 ## 	</ssd:Annotations>
+## </ssd:System>
+##
+## status:  [correct] ok
+## <?xml version="1.0"?>
+## <ssd:System name="tlm">
 ## 	<ssd:Elements>
 ## 		<ssd:System name="wc2">
-## 			<ssd:Annotations>
-## 				<ssc:Annotation type="org.openmodelica">
-## 					<oms:SimulationInformation>
-## 						<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
-## 					</oms:SimulationInformation>
-## 				</ssc:Annotation>
-## 			</ssd:Annotations>
 ## 			<ssd:Connectors>
 ## 				<ssd:Connector name="y" kind="input">
 ## 					<ssc:Real />
@@ -241,8 +227,6 @@ printStatus(status, 0)
 ## 					</oms:Bus>
 ## 				</ssc:Annotation>
 ## 			</ssd:Annotations>
-## 		</ssd:System>
-## 		<ssd:System name="wc1">
 ## 			<ssd:Annotations>
 ## 				<ssc:Annotation type="org.openmodelica">
 ## 					<oms:SimulationInformation>
@@ -250,6 +234,8 @@ printStatus(status, 0)
 ## 					</oms:SimulationInformation>
 ## 				</ssc:Annotation>
 ## 			</ssd:Annotations>
+## 		</ssd:System>
+## 		<ssd:System name="wc1">
 ## 			<ssd:Connectors>
 ## 				<ssd:Connector name="y" kind="output">
 ## 					<ssc:Real />
@@ -279,6 +265,13 @@ printStatus(status, 0)
 ## 					</oms:Bus>
 ## 				</ssc:Annotation>
 ## 			</ssd:Annotations>
+## 			<ssd:Annotations>
+## 				<ssc:Annotation type="org.openmodelica">
+## 					<oms:SimulationInformation>
+## 						<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+## 					</oms:SimulationInformation>
+## 				</ssc:Annotation>
+## 			</ssd:Annotations>
 ## 		</ssd:System>
 ## 	</ssd:Elements>
 ## 	<ssd:Annotations>
@@ -286,6 +279,13 @@ printStatus(status, 0)
 ## 			<oms:Connections>
 ## 				<oms:Connection startElement="wc1" startConnector="bus1" endElement="wc2" endConnector="bus2" delay="0.001000" alpha="0.300000" linearimpedance="100.000000" angularimpedance="0.000000" />
 ## 			</oms:Connections>
+## 		</ssc:Annotation>
+## 	</ssd:Annotations>
+## 	<ssd:Annotations>
+## 		<ssc:Annotation type="org.openmodelica">
+## 			<oms:SimulationInformation>
+## 				<oms:TlmMaster ip="127.0.1.1" managerport="11111" monitorport="11121" />
+## 			</oms:SimulationInformation>
 ## 		</ssc:Annotation>
 ## 	</ssd:Annotations>
 ## </ssd:System>
