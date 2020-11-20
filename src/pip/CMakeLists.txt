@@ -1,7 +1,7 @@
 project(pip)
 
 IF (OMS_VERSION_STRING MATCHES "^(.*)\\.post(.*)-g(.*)$")
-  set(OMS_BUILD_TYPE "dev")
+  set(OMS_BUILD_TYPE "nightly")
 ELSE()
   set(OMS_BUILD_TYPE "stable")
 ENDIF()

@@ -730,7 +730,7 @@ def getDeploymentPrefix() {
   if (isTag()) {
     return "stable/"
   }
-  return "dev/"
+  return "nightly/"
 }
 
 def shouldWeUploadArtifacts() {
