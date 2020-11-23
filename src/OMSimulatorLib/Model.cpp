@@ -530,7 +530,8 @@ oms_status_enu_t oms::Model::exportToSSD(pugi::xml_node& node, pugi::xml_node& s
   pugi::xml_node node_annotations = default_experiment.append_child(oms::ssp::Draft20180219::ssd::annotations);
   pugi::xml_node node_annotation = node_annotations.append_child(oms::ssp::Version1_0::ssc::annotation);
   node_annotation.append_attribute("type") =  oms::ssp::Draft20180219::annotation_type;
-  pugi::xml_node oms_simulation_information = node_annotation.append_child(oms::ssp::Version1_0::simulation_information);
+  pugi::xml_node oms_annotation_node = node_annotation.append_child(oms::ssp::Version1_0::oms_annotations);
+  pugi::xml_node oms_simulation_information = oms_annotation_node.append_child(oms::ssp::Version1_0::simulation_information);
   //pugi::xml_node oms_default_experiment = oms_simulation_information.append_child("DefaultExperiment");
 
   oms_simulation_information.append_attribute("resultFile") = resultFilename.c_str();
@@ -589,7 +590,14 @@ oms_status_enu_t oms::Model::importFromSSD(const pugi::xml_node& node)
 
       if (annotation_node && std::string(annotation_node.attribute("type").as_string()) == oms::ssp::Draft20180219::annotation_type)
       {
-        for(pugi::xml_node_iterator itAnnotations = annotation_node.begin(); itAnnotations != annotation_node.end(); ++itAnnotations)
+        pugi::xml_node oms_annotation_node = annotation_node.child(oms::ssp::Version1_0::oms_annotations);
+        // support older <ssc:annotation>
+        if (!oms_annotation_node)
+        {
+          oms_annotation_node = annotation_node;
+          logWarning_deprecated;
+        }
+        for(pugi::xml_node_iterator itAnnotations = oms_annotation_node.begin(); itAnnotations != oms_annotation_node.end(); ++itAnnotations)
         {
           name = itAnnotations->name();
           // check for oms_default_experiment from version 1.0
@@ -637,7 +645,16 @@ oms_system_enu_t oms::Model::getSystemType(const pugi::xml_node& node, const std
 
       if (annotation_node && std::string(annotation_node.attribute("type").as_string()) == oms::ssp::Draft20180219::annotation_type)
       {
-        for(pugi::xml_node_iterator itAnnotations = annotation_node.begin(); itAnnotations != annotation_node.end(); ++itAnnotations)
+        pugi::xml_node oms_annotation_node;
+        oms_annotation_node = annotation_node.child(oms::ssp::Version1_0::oms_annotations);
+        // support older <ssc:annotation>
+        if (!oms_annotation_node)
+        {
+          oms_annotation_node = annotation_node;
+          logWarning_deprecated;
+        }
+
+        for(pugi::xml_node_iterator itAnnotations = oms_annotation_node.begin(); itAnnotations != oms_annotation_node.end(); ++itAnnotations)
         {
           std::string annotationName = itAnnotations->name();
           if (std::string(annotationName) == oms::ssp::Version1_0::simulation_information) // check for oms:simulationInformation from version 1.0

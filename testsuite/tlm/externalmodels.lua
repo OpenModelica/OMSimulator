@@ -39,11 +39,21 @@ printStatus(status, 0)
 
 status = oms_addTLMBus("model.tlm.external.tlmbus", oms_tlm_domain_mechanical, 1, oms_tlm_no_interpolation)
 
-src, status = oms_list("model.tlm")
+src, status = oms_list("model")
 print(src)
+
+oms_export("model", "tlm.ssp")
 
 status = oms_delete("model")
 printStatus(status, 0)
+
+oms_importFile("tlm.ssp")
+
+src, status = oms_list("model")
+print(src)
+
+status = oms_delete("model")
+
 
 -- Result:
 -- status:  [correct] ok
@@ -51,29 +61,91 @@ printStatus(status, 0)
 -- status:  [correct] ok
 -- status:  [correct] ok
 -- <?xml version="1.0"?>
--- <ssd:System name="tlm">
--- 	<ssd:Elements>
--- 		<ssd:Component name="external" source="resources/external.mo">
--- 			<ssd:Annotations>
--- 				<ssc:Annotation type="org.openmodelica">
--- 					<oms:Bus name="tlmbus" type="tlm" domain="mechanical" dimensions="1" interpolation="none">
--- 						<oms:Signals />
--- 					</oms:Bus>
+-- <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="model" version="1.0">
+-- 	<ssd:System name="tlm">
+-- 		<ssd:Elements>
+-- 			<ssd:Component name="external" source="resources/external.mo">
+-- 				<ssd:Annotations>
+-- 					<ssc:Annotation type="org.openmodelica">
+-- 						<oms:Annotations>
+-- 							<oms:Buses>
+-- 								<oms:Bus name="tlmbus" type="tlm" domain="mechanical" dimensions="1" interpolation="none">
+-- 									<oms:Signals />
+-- 								</oms:Bus>
+-- 							</oms:Buses>
+-- 							<oms:SimulationInformation>
+-- 								<oms:ExternalModel startscript="resources/startscript.sh" />
+-- 							</oms:SimulationInformation>
+-- 						</oms:Annotations>
+-- 					</ssc:Annotation>
+-- 				</ssd:Annotations>
+-- 			</ssd:Component>
+-- 		</ssd:Elements>
+-- 		<ssd:Annotations>
+-- 			<ssc:Annotation type="org.openmodelica">
+-- 				<oms:Annotations>
 -- 					<oms:SimulationInformation>
--- 						<oms:ExternalModel startscript="resources/startscript.sh" />
+-- 						<oms:TlmMaster ip="" managerport="0" monitorport="0" />
 -- 					</oms:SimulationInformation>
--- 				</ssc:Annotation>
--- 			</ssd:Annotations>
--- 		</ssd:Component>
--- 	</ssd:Elements>
--- 	<ssd:Annotations>
--- 		<ssc:Annotation type="org.openmodelica">
--- 			<oms:SimulationInformation>
--- 				<oms:TlmMaster ip="" managerport="0" monitorport="0" />
--- 			</oms:SimulationInformation>
--- 		</ssc:Annotation>
--- 	</ssd:Annotations>
--- </ssd:System>
+-- 				</oms:Annotations>
+-- 			</ssc:Annotation>
+-- 		</ssd:Annotations>
+-- 	</ssd:System>
+-- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
+-- 		<ssd:Annotations>
+-- 			<ssc:Annotation type="org.openmodelica">
+-- 				<oms:Annotations>
+-- 					<oms:SimulationInformation resultFile="model_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter=".*" />
+-- 				</oms:Annotations>
+-- 			</ssc:Annotation>
+-- 		</ssd:Annotations>
+-- 	</ssd:DefaultExperiment>
+-- </ssd:SystemStructureDescription>
 --
 -- status:  [correct] ok
+-- error:   [addSignalsToResults] Not implemented
+-- <?xml version="1.0"?>
+-- <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="model" version="1.0">
+-- 	<ssd:System name="tlm">
+-- 		<ssd:Elements>
+-- 			<ssd:Component name="external" source="resources/external.mo">
+-- 				<ssd:Annotations>
+-- 					<ssc:Annotation type="org.openmodelica">
+-- 						<oms:Annotations>
+-- 							<oms:Buses>
+-- 								<oms:Bus name="tlmbus" type="tlm" domain="mechanical" dimensions="1" interpolation="none">
+-- 									<oms:Signals />
+-- 								</oms:Bus>
+-- 							</oms:Buses>
+-- 							<oms:SimulationInformation>
+-- 								<oms:ExternalModel startscript="resources/startscript.sh" />
+-- 							</oms:SimulationInformation>
+-- 						</oms:Annotations>
+-- 					</ssc:Annotation>
+-- 				</ssd:Annotations>
+-- 			</ssd:Component>
+-- 		</ssd:Elements>
+-- 		<ssd:Annotations>
+-- 			<ssc:Annotation type="org.openmodelica">
+-- 				<oms:Annotations>
+-- 					<oms:SimulationInformation>
+-- 						<oms:TlmMaster ip="" managerport="0" monitorport="0" />
+-- 					</oms:SimulationInformation>
+-- 				</oms:Annotations>
+-- 			</ssc:Annotation>
+-- 		</ssd:Annotations>
+-- 	</ssd:System>
+-- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
+-- 		<ssd:Annotations>
+-- 			<ssc:Annotation type="org.openmodelica">
+-- 				<oms:Annotations>
+-- 					<oms:SimulationInformation resultFile="model_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter=".*" />
+-- 				</oms:Annotations>
+-- 			</ssc:Annotation>
+-- 		</ssd:Annotations>
+-- 	</ssd:DefaultExperiment>
+-- </ssd:SystemStructureDescription>
+--
+-- info:    0 warnings
+-- info:    1 errors
 -- endResult

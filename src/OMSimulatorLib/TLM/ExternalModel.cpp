@@ -92,18 +92,20 @@ oms_status_enu_t oms::ExternalModel::exportToSSD(pugi::xml_node& node, pugi::xml
   pugi::xml_node annotations_node = node.append_child(oms::ssp::Draft20180219::ssd::annotations);
   pugi::xml_node annotation_node = annotations_node.append_child(oms::ssp::Version1_0::ssc::annotation);
   annotation_node.append_attribute("type") = oms::ssp::Draft20180219::annotation_type;
+  pugi::xml_node oms_annotation_node = annotation_node.append_child(oms::ssp::Version1_0::oms_annotations);
 
   if (tlmbusconnectors[0])
   {
+    pugi::xml_node oms_buses_node = oms_annotation_node.append_child(oms::ssp::Version1_0::oms_buses);
     for (const auto& tlmbusconnector : tlmbusconnectors)
       if (tlmbusconnector)
-        tlmbusconnector->exportToSSD(annotation_node);
+        tlmbusconnector->exportToSSD(oms_buses_node);
   }
 
   node.append_attribute("name") = this->getCref().c_str();
   node.append_attribute("source") = this->getPath().c_str();
   /* ssd:SimulationInformation should be added as vendor specific annotations from Version 1.0 */
-  pugi::xml_node siminfo_node = annotation_node.append_child(oms::ssp::Version1_0::simulation_information);
+  pugi::xml_node siminfo_node = oms_annotation_node.append_child(oms::ssp::Version1_0::simulation_information);
 
   pugi::xml_node externalmodel_node = siminfo_node.append_child(oms::ssp::Draft20180219::external_model);
   externalmodel_node.append_attribute("startscript") = externalModelInfo.getStartScript().c_str();
