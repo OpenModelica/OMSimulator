@@ -461,21 +461,24 @@ oms_status_enu_t oms::System::exportToSSD(pugi::xml_node& node, pugi::xml_node& 
   if (busconnectors[0] || !busconnections.empty())
 #endif
   {
-    pugi::xml_node oms_buses_node;
-    if (busconnectors.size() > 1 || tlmbusconnectors.size() > 1)
+    if (busconnectors.size() > 1)
     {
-      oms_buses_node = oms_annotation_node.append_child(oms::ssp::Version1_0::oms_buses);
-    }
-    for (const auto& busconnector : busconnectors)
-    {
-      if (busconnector)
-        busconnector->exportToSSD(oms_buses_node);
+      pugi::xml_node oms_buses_node = oms_annotation_node.append_child(oms::ssp::Version1_0::oms_buses);
+      for (const auto& busconnector : busconnectors)
+      {
+        if (busconnector)
+          busconnector->exportToSSD(oms_buses_node);
+      }
     }
 #if !defined(NO_TLM)
-    for (const auto& tlmbusconnector : tlmbusconnectors)
+    if (tlmbusconnectors.size() > 1)
     {
-      if (tlmbusconnector)
-        tlmbusconnector->exportToSSD(oms_buses_node);
+      pugi::xml_node oms_buses_node = oms_annotation_node.append_child(oms::ssp::Version1_0::oms_buses);
+      for (const auto& tlmbusconnector : tlmbusconnectors)
+      {
+        if (tlmbusconnector)
+          tlmbusconnector->exportToSSD(oms_buses_node);
+      }
     }
 #endif
     if (!busconnections.empty())
