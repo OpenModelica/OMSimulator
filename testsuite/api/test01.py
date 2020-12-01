@@ -92,25 +92,31 @@ printStatus(status, 3)
 ## 			<ssd:System name="goo">
 ## 				<ssd:Annotations>
 ## 					<ssc:Annotation type="org.openmodelica">
-## 						<oms:SimulationInformation>
-## 							<oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
-## 						</oms:SimulationInformation>
+## 						<oms:Annotations>
+## 							<oms:SimulationInformation>
+## 								<oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
+## 							</oms:SimulationInformation>
+## 						</oms:Annotations>
 ## 					</ssc:Annotation>
 ## 				</ssd:Annotations>
 ## 			</ssd:System>
 ## 		</ssd:Elements>
 ## 		<ssd:Annotations>
 ## 			<ssc:Annotation type="org.openmodelica">
-## 				<oms:SimulationInformation>
-## 					<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
-## 				</oms:SimulationInformation>
+## 				<oms:Annotations>
+## 					<oms:SimulationInformation>
+## 						<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+## 					</oms:SimulationInformation>
+## 				</oms:Annotations>
 ## 			</ssc:Annotation>
 ## 		</ssd:Annotations>
 ## 	</ssd:System>
 ## 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
 ## 		<ssd:Annotations>
 ## 			<ssc:Annotation type="org.openmodelica">
-## 				<oms:SimulationInformation resultFile="test_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter=".*" />
+## 				<oms:Annotations>
+## 					<oms:SimulationInformation resultFile="test_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter=".*" />
+## 				</oms:Annotations>
 ## 			</ssc:Annotation>
 ## 		</ssd:Annotations>
 ## 	</ssd:DefaultExperiment>
@@ -122,18 +128,22 @@ printStatus(status, 3)
 ## 		<ssd:System name="goo">
 ## 			<ssd:Annotations>
 ## 				<ssc:Annotation type="org.openmodelica">
-## 					<oms:SimulationInformation>
-## 						<oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
-## 					</oms:SimulationInformation>
+## 					<oms:Annotations>
+## 						<oms:SimulationInformation>
+## 							<oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
+## 						</oms:SimulationInformation>
+## 					</oms:Annotations>
 ## 				</ssc:Annotation>
 ## 			</ssd:Annotations>
 ## 		</ssd:System>
 ## 	</ssd:Elements>
 ## 	<ssd:Annotations>
 ## 		<ssc:Annotation type="org.openmodelica">
-## 			<oms:SimulationInformation>
-## 				<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
-## 			</oms:SimulationInformation>
+## 			<oms:Annotations>
+## 				<oms:SimulationInformation>
+## 					<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+## 				</oms:SimulationInformation>
+## 			</oms:Annotations>
 ## 		</ssc:Annotation>
 ## 	</ssd:Annotations>
 ## </ssd:System>
@@ -142,9 +152,11 @@ printStatus(status, 3)
 ## <ssd:System name="goo">
 ## 	<ssd:Annotations>
 ## 		<ssc:Annotation type="org.openmodelica">
-## 			<oms:SimulationInformation>
-## 				<oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
-## 			</oms:SimulationInformation>
+## 			<oms:Annotations>
+## 				<oms:SimulationInformation>
+## 					<oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
+## 				</oms:SimulationInformation>
+## 			</oms:Annotations>
 ## 		</ssc:Annotation>
 ## 	</ssd:Annotations>
 ## </ssd:System>
@@ -161,7 +173,9 @@ printStatus(status, 3)
 ## 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
 ## 		<ssd:Annotations>
 ## 			<ssc:Annotation type="org.openmodelica">
-## 				<oms:SimulationInformation resultFile="test_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter=".*" />
+## 				<oms:Annotations>
+## 					<oms:SimulationInformation resultFile="test_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter=".*" />
+## 				</oms:Annotations>
 ## 			</ssc:Annotation>
 ## 		</ssd:Annotations>
 ## 	</ssd:DefaultExperiment>

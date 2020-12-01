@@ -26,6 +26,11 @@ oms_delete("importStartValues")
 
 
 -- Result:
+-- warning: Wrong/deprecated content detected but successfully loaded. Please re-export the SSP file to avoid this message.
+-- warning: Wrong/deprecated content detected but successfully loaded. Please re-export the SSP file to avoid this message.
+-- warning: Wrong/deprecated content detected but successfully loaded. Please re-export the SSP file to avoid this message.
+-- warning: Wrong/deprecated content detected but successfully loaded. Please re-export the SSP file to avoid this message.
+-- warning: Wrong/deprecated content detected but successfully loaded. Please re-export the SSP file to avoid this message.
 -- <?xml version="1.0"?>
 -- <oms:snapshot>
 -- 	<oms:ssd_file name="SystemStructure.ssd">
@@ -54,25 +59,31 @@ oms_delete("importStartValues")
 -- 						</ssd:Connectors>
 -- 						<ssd:Annotations>
 -- 							<ssc:Annotation type="org.openmodelica">
--- 								<oms:SimulationInformation>
--- 									<oms:VariableStepSolver description="euler" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
--- 								</oms:SimulationInformation>
+-- 								<oms:Annotations>
+-- 									<oms:SimulationInformation>
+-- 										<oms:VariableStepSolver description="euler" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
+-- 									</oms:SimulationInformation>
+-- 								</oms:Annotations>
 -- 							</ssc:Annotation>
 -- 						</ssd:Annotations>
 -- 					</ssd:System>
 -- 				</ssd:Elements>
 -- 				<ssd:Annotations>
 -- 					<ssc:Annotation type="org.openmodelica">
--- 						<oms:SimulationInformation>
--- 							<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
--- 						</oms:SimulationInformation>
+-- 						<oms:Annotations>
+-- 							<oms:SimulationInformation>
+-- 								<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+-- 							</oms:SimulationInformation>
+-- 						</oms:Annotations>
 -- 					</ssc:Annotation>
 -- 				</ssd:Annotations>
 -- 			</ssd:System>
 -- 			<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
 -- 				<ssd:Annotations>
 -- 					<ssc:Annotation type="org.openmodelica">
--- 						<oms:SimulationInformation resultFile="importStartValues_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter=".*" />
+-- 						<oms:Annotations>
+-- 							<oms:SimulationInformation resultFile="importStartValues_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter=".*" />
+-- 						</oms:Annotations>
 -- 					</ssc:Annotation>
 -- 				</ssd:Annotations>
 -- 			</ssd:DefaultExperiment>
@@ -97,4 +108,6 @@ oms_delete("importStartValues")
 --
 -- info:    model doesn't contain any continuous state
 -- info:    Result file: importStartValues_res.mat (bufferSize=10)
+-- info:    5 warnings
+-- info:    0 errors
 -- endResult

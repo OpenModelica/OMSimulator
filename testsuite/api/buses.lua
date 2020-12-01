@@ -120,19 +120,19 @@ printStatus(status, 0)
 -- 			</ssd:Connectors>
 -- 			<ssd:Annotations>
 -- 				<ssc:Annotation type="org.openmodelica">
--- 					<oms:Bus name="bus2">
--- 						<oms:Signals>
--- 							<oms:Signal name="y1" />
--- 							<oms:Signal name="y2" />
--- 						</oms:Signals>
--- 					</oms:Bus>
--- 				</ssc:Annotation>
--- 			</ssd:Annotations>
--- 			<ssd:Annotations>
--- 				<ssc:Annotation type="org.openmodelica">
--- 					<oms:SimulationInformation>
--- 						<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
--- 					</oms:SimulationInformation>
+-- 					<oms:Annotations>
+-- 						<oms:Buses>
+-- 							<oms:Bus name="bus2">
+-- 								<oms:Signals>
+-- 									<oms:Signal name="y1" />
+-- 									<oms:Signal name="y2" />
+-- 								</oms:Signals>
+-- 							</oms:Bus>
+-- 						</oms:Buses>
+-- 						<oms:SimulationInformation>
+-- 							<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+-- 						</oms:SimulationInformation>
+-- 					</oms:Annotations>
 -- 				</ssc:Annotation>
 -- 			</ssd:Annotations>
 -- 		</ssd:System>
@@ -150,20 +150,20 @@ printStatus(status, 0)
 -- 			</ssd:Connectors>
 -- 			<ssd:Annotations>
 -- 				<ssc:Annotation type="org.openmodelica">
--- 					<oms:Bus name="bus1">
--- 						<oms:Signals>
--- 							<oms:Signal name="u1" />
--- 							<oms:Signal name="u2" />
--- 							<oms:Signal name="y" />
--- 						</oms:Signals>
--- 					</oms:Bus>
--- 				</ssc:Annotation>
--- 			</ssd:Annotations>
--- 			<ssd:Annotations>
--- 				<ssc:Annotation type="org.openmodelica">
--- 					<oms:SimulationInformation>
--- 						<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
--- 					</oms:SimulationInformation>
+-- 					<oms:Annotations>
+-- 						<oms:Buses>
+-- 							<oms:Bus name="bus1">
+-- 								<oms:Signals>
+-- 									<oms:Signal name="u1" />
+-- 									<oms:Signal name="u2" />
+-- 									<oms:Signal name="y" />
+-- 								</oms:Signals>
+-- 							</oms:Bus>
+-- 						</oms:Buses>
+-- 						<oms:SimulationInformation>
+-- 							<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+-- 						</oms:SimulationInformation>
+-- 					</oms:Annotations>
 -- 				</ssc:Annotation>
 -- 			</ssd:Annotations>
 -- 		</ssd:System>
@@ -174,16 +174,14 @@ printStatus(status, 0)
 -- 	</ssd:Connections>
 -- 	<ssd:Annotations>
 -- 		<ssc:Annotation type="org.openmodelica">
--- 			<oms:Connections>
--- 				<oms:Connection startElement="wc1" startConnector="bus1" endElement="wc2" endConnector="bus2" />
--- 			</oms:Connections>
--- 		</ssc:Annotation>
--- 	</ssd:Annotations>
--- 	<ssd:Annotations>
--- 		<ssc:Annotation type="org.openmodelica">
--- 			<oms:SimulationInformation>
--- 				<oms:TlmMaster ip="" managerport="0" monitorport="0" />
--- 			</oms:SimulationInformation>
+-- 			<oms:Annotations>
+-- 				<oms:Connections>
+-- 					<oms:Connection startElement="wc1" startConnector="bus1" endElement="wc2" endConnector="bus2" />
+-- 				</oms:Connections>
+-- 				<oms:SimulationInformation>
+-- 					<oms:TlmMaster ip="" managerport="0" monitorport="0" />
+-- 				</oms:SimulationInformation>
+-- 			</oms:Annotations>
 -- 		</ssc:Annotation>
 -- 	</ssd:Annotations>
 -- </ssd:System>
@@ -206,19 +204,19 @@ printStatus(status, 0)
 -- 			</ssd:Connectors>
 -- 			<ssd:Annotations>
 -- 				<ssc:Annotation type="org.openmodelica">
--- 					<oms:Bus name="bus2">
--- 						<oms:Signals>
--- 							<oms:Signal name="y1" />
--- 							<oms:Signal name="y2" />
--- 						</oms:Signals>
--- 					</oms:Bus>
--- 				</ssc:Annotation>
--- 			</ssd:Annotations>
--- 			<ssd:Annotations>
--- 				<ssc:Annotation type="org.openmodelica">
--- 					<oms:SimulationInformation>
--- 						<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
--- 					</oms:SimulationInformation>
+-- 					<oms:Annotations>
+-- 						<oms:Buses>
+-- 							<oms:Bus name="bus2">
+-- 								<oms:Signals>
+-- 									<oms:Signal name="y1" />
+-- 									<oms:Signal name="y2" />
+-- 								</oms:Signals>
+-- 							</oms:Bus>
+-- 						</oms:Buses>
+-- 						<oms:SimulationInformation>
+-- 							<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+-- 						</oms:SimulationInformation>
+-- 					</oms:Annotations>
 -- 				</ssc:Annotation>
 -- 			</ssd:Annotations>
 -- 		</ssd:System>
@@ -236,19 +234,19 @@ printStatus(status, 0)
 -- 			</ssd:Connectors>
 -- 			<ssd:Annotations>
 -- 				<ssc:Annotation type="org.openmodelica">
--- 					<oms:Bus name="bus1">
--- 						<oms:Signals>
--- 							<oms:Signal name="u1" />
--- 							<oms:Signal name="u2" />
--- 						</oms:Signals>
--- 					</oms:Bus>
--- 				</ssc:Annotation>
--- 			</ssd:Annotations>
--- 			<ssd:Annotations>
--- 				<ssc:Annotation type="org.openmodelica">
--- 					<oms:SimulationInformation>
--- 						<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
--- 					</oms:SimulationInformation>
+-- 					<oms:Annotations>
+-- 						<oms:Buses>
+-- 							<oms:Bus name="bus1">
+-- 								<oms:Signals>
+-- 									<oms:Signal name="u1" />
+-- 									<oms:Signal name="u2" />
+-- 								</oms:Signals>
+-- 							</oms:Bus>
+-- 						</oms:Buses>
+-- 						<oms:SimulationInformation>
+-- 							<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+-- 						</oms:SimulationInformation>
+-- 					</oms:Annotations>
 -- 				</ssc:Annotation>
 -- 			</ssd:Annotations>
 -- 		</ssd:System>
@@ -259,16 +257,14 @@ printStatus(status, 0)
 -- 	</ssd:Connections>
 -- 	<ssd:Annotations>
 -- 		<ssc:Annotation type="org.openmodelica">
--- 			<oms:Connections>
--- 				<oms:Connection startElement="wc1" startConnector="bus1" endElement="wc2" endConnector="bus2" />
--- 			</oms:Connections>
--- 		</ssc:Annotation>
--- 	</ssd:Annotations>
--- 	<ssd:Annotations>
--- 		<ssc:Annotation type="org.openmodelica">
--- 			<oms:SimulationInformation>
--- 				<oms:TlmMaster ip="" managerport="0" monitorport="0" />
--- 			</oms:SimulationInformation>
+-- 			<oms:Annotations>
+-- 				<oms:Connections>
+-- 					<oms:Connection startElement="wc1" startConnector="bus1" endElement="wc2" endConnector="bus2" />
+-- 				</oms:Connections>
+-- 				<oms:SimulationInformation>
+-- 					<oms:TlmMaster ip="" managerport="0" monitorport="0" />
+-- 				</oms:SimulationInformation>
+-- 			</oms:Annotations>
 -- 		</ssc:Annotation>
 -- 	</ssd:Annotations>
 -- </ssd:System>
