@@ -147,9 +147,11 @@ oms_delete("import_export_parameters")
 -- 				</ssd:Connectors>
 -- 				<ssd:Annotations>
 -- 					<ssc:Annotation type="org.openmodelica">
--- 						<oms:SimulationInformation>
--- 							<oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
--- 						</oms:SimulationInformation>
+-- 						<oms:Annotations>
+-- 							<oms:SimulationInformation>
+-- 								<oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
+-- 							</oms:SimulationInformation>
+-- 						</oms:Annotations>
 -- 					</ssc:Annotation>
 -- 				</ssd:Annotations>
 -- 			</ssd:System>
@@ -228,16 +230,20 @@ oms_delete("import_export_parameters")
 -- 		</ssd:Connections>
 -- 		<ssd:Annotations>
 -- 			<ssc:Annotation type="org.openmodelica">
--- 				<oms:SimulationInformation>
--- 					<oms:FixedStepMaster description="oms-ma" stepSize="0.001000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
--- 				</oms:SimulationInformation>
+-- 				<oms:Annotations>
+-- 					<oms:SimulationInformation>
+-- 						<oms:FixedStepMaster description="oms-ma" stepSize="0.001000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+-- 					</oms:SimulationInformation>
+-- 				</oms:Annotations>
 -- 			</ssc:Annotation>
 -- 		</ssd:Annotations>
 -- 	</ssd:System>
 -- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="4.000000">
 -- 		<ssd:Annotations>
 -- 			<ssc:Annotation type="org.openmodelica">
--- 				<oms:SimulationInformation resultFile="import_export_parameters.mat" loggingInterval="0.000000" bufferSize="100" signalFilter=".*" />
+-- 				<oms:Annotations>
+-- 					<oms:SimulationInformation resultFile="import_export_parameters.mat" loggingInterval="0.000000" bufferSize="100" signalFilter=".*" />
+-- 				</oms:Annotations>
 -- 			</ssc:Annotation>
 -- 		</ssd:Annotations>
 -- 	</ssd:DefaultExperiment>

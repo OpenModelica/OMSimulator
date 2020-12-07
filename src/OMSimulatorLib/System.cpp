@@ -450,33 +450,47 @@ oms_status_enu_t oms::System::exportToSSD(pugi::xml_node& node, pugi::xml_node& 
     }
   }
 
+  pugi::xml_node annotations_node = node.append_child(oms::ssp::Draft20180219::ssd::annotations);
+  pugi::xml_node annotation_node = annotations_node.append_child(oms::ssp::Version1_0::ssc::annotation);
+  annotation_node.append_attribute("type") = oms::ssp::Draft20180219::annotation_type;
+  pugi::xml_node oms_annotation_node = annotation_node.append_child(oms::ssp::Version1_0::oms_annotations);
+
 #if !defined(NO_TLM)
   if (busconnectors[0] || tlmbusconnectors[0] || !busconnections.empty())
 #else
   if (busconnectors[0] || !busconnections.empty())
 #endif
   {
-    pugi::xml_node annotations_node = node.append_child(oms::ssp::Draft20180219::ssd::annotations);
-    pugi::xml_node annotation_node = annotations_node.append_child(oms::ssp::Version1_0::ssc::annotation);
-    annotation_node.append_attribute("type") = oms::ssp::Draft20180219::annotation_type;
-    for (const auto& busconnector : busconnectors)
-      if (busconnector)
-        busconnector->exportToSSD(annotation_node);
+    if (busconnectors.size() > 1)
+    {
+      pugi::xml_node oms_buses_node = oms_annotation_node.append_child(oms::ssp::Version1_0::oms_buses);
+      for (const auto& busconnector : busconnectors)
+      {
+        if (busconnector)
+          busconnector->exportToSSD(oms_buses_node);
+      }
+    }
 #if !defined(NO_TLM)
-    for (const auto& tlmbusconnector : tlmbusconnectors)
-      if (tlmbusconnector)
-        tlmbusconnector->exportToSSD(annotation_node);
+    if (tlmbusconnectors.size() > 1)
+    {
+      pugi::xml_node oms_buses_node = oms_annotation_node.append_child(oms::ssp::Version1_0::oms_buses);
+      for (const auto& tlmbusconnector : tlmbusconnectors)
+      {
+        if (tlmbusconnector)
+          tlmbusconnector->exportToSSD(oms_buses_node);
+      }
+    }
 #endif
     if (!busconnections.empty())
     {
-      pugi::xml_node busconnections_node = annotation_node.append_child(oms::ssp::Draft20180219::bus_connections);
+      pugi::xml_node busconnections_node = oms_annotation_node.append_child(oms::ssp::Draft20180219::bus_connections);
       for (const auto& busconnection : busconnections)
         busconnection->exportToSSD(busconnections_node);
     }
   }
 
   //export ssd:SimulationInformation to end, in order to make it valid with easy-ssp
-  if (oms_status_ok != this->exportToSSD_SimulationInformation(node))
+  if (oms_status_ok != this->exportToSSD_SimulationInformation(oms_annotation_node))
     return logError("export of system SimulationInformation failed");
 
   return oms_status_ok;
@@ -504,10 +518,10 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
       for (pugi::xml_node parameterBindingNode = it->child(oms::ssp::Version1_0::ssd::parameter_binding); parameterBindingNode; parameterBindingNode = parameterBindingNode.next_sibling(oms::ssp::Version1_0::ssd::parameter_binding))
       {
         std::string ssvFileSource = parameterBindingNode.attribute("source").as_string();
+
         // set parameter bindings associated with the system
         if (ssvFileSource.empty()) // inline parameterBinding
         {
-          //std::cout << "\n System ssvFileSource  inline :" << ssvFileSource;
           std::string tempdir = getModel()->getTempDirectory();
           if (oms_status_ok !=  values.importFromSSD(*it, sspVersion, tempdir))
             return logError("Failed to import " + std::string(oms::ssp::Version1_0::ssd::parameter_bindings));
@@ -586,7 +600,7 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
           Component* component = NULL;
           std::string type = itElements->attribute("type").as_string();
           // allow component type to be empty, as type is optional according to SSP-1.0 and default type is application/x-fmu-sharedlibrary
-          if ("application/x-fmu-sharedlibrary" == type || type.empty())
+          if ("application/x-fmu-sharedlibrary" == type || type.empty() && getType() != oms_system_tlm)
           {
             if (getType() == oms_system_wc)
               component = ComponentFMUCS::NewComponent(*itElements, this, sspVersion);
@@ -598,101 +612,96 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
           else if ("application/table" == type)
             component = ComponentTable::NewComponent(*itElements, this, sspVersion);
 #if !defined(NO_TLM)
-          else if (itElements->attribute("type") == nullptr) {
-              std::string name = itElements->attribute("name").as_string();
-              std::string source = itElements->attribute("source").as_string();
+          else if (itElements->attribute("type") == nullptr && getType() == oms_system_tlm) {
+            std::string name = itElements->attribute("name").as_string();
+            std::string source = itElements->attribute("source").as_string();
 
-              if (sspVersion == "Draft20180219") {
-                pugi::xml_node simulationInformationNode = itElements->child(oms::ssp::Draft20180219::ssd::simulation_information);
-                if(simulationInformationNode && sspVersion == "Draft20180219") {
-                  pugi::xml_node annotationsNode = simulationInformationNode.child(oms::ssp::Draft20180219::ssd::annotations);
-                  if(annotationsNode) {
-                    if (annotationsNode.child(oms::ssp::Draft20180219::ssd::annotation))
+            // parse older <ssd:SimulationInformation> <ssd:annotations> </ssd:annotations> </ssd:SimulationInformation>
+            if (sspVersion == "Draft20180219")
+            {
+              pugi::xml_node simulationInformationNode = itElements->child(oms::ssp::Draft20180219::ssd::simulation_information);
+              if (simulationInformationNode && sspVersion == "Draft20180219")
+              {
+                pugi::xml_node annotationsNode = simulationInformationNode.child(oms::ssp::Draft20180219::ssd::annotations);
+                if (annotationsNode)
+                {
+                  if (annotationsNode.child(oms::ssp::Draft20180219::ssd::annotation))
+                  {
+                    logWarning_deprecated;
+                  }
+                  for (pugi::xml_node annotationNode = annotationsNode.child(oms::ssp::Draft20180219::ssd::annotation); annotationNode; annotationNode = annotationsNode.next_sibling(oms::ssp::Draft20180219::ssd::annotation))
+                  {
+                    std::string type = annotationNode.attribute("type").as_string();
+                    if (oms::ssp::Draft20180219::annotation_type == type)
                     {
-                      logWarning_deprecated;
-                    }
-                    for (pugi::xml_node annotationNode = annotationsNode.child(oms::ssp::Draft20180219::ssd::annotation); annotationNode; annotationNode = annotationsNode.next_sibling(oms::ssp::Draft20180219::ssd::annotation)) {
-                      std::string type = annotationNode.attribute("type").as_string() ;
-                      if(oms::ssp::Draft20180219::annotation_type == type) {
-                        pugi::xml_node externalModelNode = annotationNode.child(oms::ssp::Draft20180219::external_model);
-                        if(externalModelNode) {
-                          std::string startScript = externalModelNode.attribute("startscript").as_string();
-                          component = oms::ExternalModel::NewComponent(name,this,source,startScript);
-                        }
+                      pugi::xml_node externalModelNode = annotationNode.child(oms::ssp::Draft20180219::external_model);
+                      if (externalModelNode)
+                      {
+                        std::string startScript = externalModelNode.attribute("startscript").as_string();
+                        component = oms::ExternalModel::NewComponent(name, this, source, startScript);
                       }
                     }
                   }
                 }
               }
+            }
 
+            // sspVersion-1.0
+            pugi::xml_node annotationsNode = itElements->child(oms::ssp::Draft20180219::ssd::annotations);
+            pugi::xml_node annotation_node = annotationsNode.child(oms::ssp::Version1_0::ssc::annotation);
 
-              pugi::xml_node annotationsNode = itElements->child(oms::ssp::Draft20180219::ssd::annotations);
-              if(annotationsNode) {
-                  const char* annotationNodeString = "";
-                  pugi::xml_node annotationNodeChild;
-                  annotationNodeChild = annotationsNode.child(oms::ssp::Version1_0::ssc::annotation);
-                  if(annotationNodeChild)
-                  {
-                    annotationNodeString = oms::ssp::Version1_0::ssc::annotation;
-                  }
-                  else
-                  {
-                    annotationNodeString = oms::ssp::Draft20180219::ssd::annotation;
-                    logWarning_deprecated;
-                  }
+            // check for ssd:annotation to support older version, which is a bug
+            if(!annotation_node)
+            {
+              annotation_node = annotationsNode.child(oms::ssp::Draft20180219::ssd::annotation);
+              logWarning_deprecated;
+            }
 
-                  for (pugi::xml_node annotationNode = annotationsNode.child(annotationNodeString); annotationNode; annotationNode = annotationsNode.next_sibling(annotationNodeString)) {
-                      std::string type = annotationNode.attribute("type").as_string() ;
-                      if(oms::ssp::Draft20180219::annotation_type == type) {
-
-                          if (sspVersion == "1.0"){
-                            pugi::xml_node omsSimulationInformationNode = annotationNode.child(oms::ssp::Version1_0::simulation_information);
-                            if(omsSimulationInformationNode) {
-                              pugi::xml_node externalModelNode = omsSimulationInformationNode.child(oms::ssp::Draft20180219::external_model);
-                              if(externalModelNode) {
-                                std::string startScript = externalModelNode.attribute("startscript").as_string();
-                                component = oms::ExternalModel::NewComponent(name, this, source, startScript);
-                              }
-                            }
-                          }
-
-                          pugi::xml_node busNode = annotationNode.child(oms::ssp::Draft20180219::bus);
-                          //Load TLM bus connector for external model
-                          std::string busname = busNode.attribute("name").as_string();
-                          std::string domainstr = busNode.attribute("domain").as_string();
-                          int dimensions = busNode.attribute("dimensions").as_int();
-                          std::string interpolationstr = busNode.attribute("interpolation").as_string();
-                          oms_tlm_interpolation_t interpolation;
-                          if (interpolationstr == "none")
-                              interpolation = oms_tlm_no_interpolation;
-                          else if (interpolationstr == "coarsegrained")
-                              interpolation = oms_tlm_coarse_grained;
-                          else if (interpolationstr == "finegrained")
-                              interpolation = oms_tlm_fine_grained;
-                          else
-                              return logError("Unsupported interpolation type: "+interpolationstr);
-
-                          oms_tlm_domain_t domain;
-                          if(domainstr == "input")
-                              domain = oms_tlm_domain_input;
-                          else if(domainstr == "output")
-                              domain = oms_tlm_domain_output;
-                          else if(domainstr == "mechanical")
-                              domain = oms_tlm_domain_mechanical;
-                          else if(domainstr == "rotational")
-                              domain = oms_tlm_domain_rotational;
-                          else if(domainstr == "hydraulic")
-                              domain = oms_tlm_domain_hydraulic;
-                          else if(domainstr == "electric")
-                              domain = oms_tlm_domain_electric;
-                          else
-                              return logError("Unsupported TLM domain: "+domainstr);
-
-                          if (oms_status_ok != component->addTLMBus(busname,domain,dimensions,interpolation))
-                              return oms_status_error;
-                      }
-                  }
+            if (annotation_node && std::string(annotation_node.attribute("type").as_string()) == oms::ssp::Draft20180219::annotation_type)
+            {
+              pugi::xml_node oms_annotation_node = annotation_node.child(oms::ssp::Version1_0::oms_annotations);
+              // support older <ssc:annotation>
+              if (!oms_annotation_node)
+              {
+                oms_annotation_node = annotation_node;
+                logWarning_deprecated;
               }
+
+              if (oms_annotation_node)
+              {
+                pugi::xml_node oms_simulation_information = oms_annotation_node.child(oms::ssp::Version1_0::simulation_information);
+                if (oms_simulation_information)
+                {
+                  pugi::xml_node externalModelNode = oms_simulation_information.child(oms::ssp::Draft20180219::external_model);
+                  if (externalModelNode)
+                  {
+                    std::string startScript = externalModelNode.attribute("startscript").as_string();
+                    component = oms::ExternalModel::NewComponent(name, this, source, startScript);
+                  }
+                }
+                // parse <oms:Buses>
+                for (pugi::xml_node_iterator itAnnotations = oms_annotation_node.begin(); itAnnotations != oms_annotation_node.end(); ++itAnnotations)
+                {
+                  std::string nodeName = itAnnotations->name();
+                  // support older <oms:bus>
+                  if (nodeName == oms::ssp::Draft20180219::bus)
+                  {
+                    importTLMBus(*itAnnotations, component);
+                  }
+                  // <oms:buses>
+                  if (nodeName == oms::ssp::Version1_0::oms_buses)
+                  {
+                    for (pugi::xml_node_iterator itbuses = itAnnotations->begin(); itbuses != itAnnotations->end(); ++itbuses)
+                    {
+                      if (std::string(itbuses->name()) == oms::ssp::Draft20180219::bus)
+                      {
+                        importTLMBus(*itbuses, component);
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
 #endif
           if (component)
@@ -712,66 +721,12 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
       // check for ssvFileSource exist and set the values before the connections
       if (!ssvFileSources.empty())
       {
-        for (const auto& ssvFileSource : ssvFileSources)
-        {
-          std::string tempdir = getModel()->getTempDirectory();
-          filesystem::path temp_root(tempdir);
-          pugi::xml_document ssvdoc;
-          pugi::xml_parse_result result = ssvdoc.load_file((temp_root / ssvFileSource).string().c_str());
-          pugi::xml_node parameterSet, parameters;
-
-          if (result) // check from ssv file
-          {
-            parameterSet = ssvdoc.document_element(); // ssv:ParameterSet
-            parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
-          }
-          else if (getModel()->getSnapshot().child(oms::ssp::Version1_0::ssv_file)) // check in memory oms:ssv_file
-          {
-            parameterSet = getModel()->getSnapshot().child(oms::ssp::Version1_0::ssv_file).child(oms::ssp::Version1_0::ssv::parameter_set); // ssv:ParameterSet
-            parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
-          }
-          else
-          {
-            return logError("loading \"" + std::string(ssvFileSource) + "\" failed (" + std::string(result.description()) + ")");
-          }
-
-          if (parameters)
-          {
-            for(pugi::xml_node_iterator itparameters = parameters.begin(); itparameters != parameters.end(); ++itparameters)
-            {
-              std::string name = itparameters->name();
-              if (name == oms::ssp::Version1_0::ssv::parameter)
-              {
-                ComRef cref = ComRef(itparameters->attribute("name").as_string());
-                if (itparameters->child(oms::ssp::Version1_0::ssv::real_type))
-                {
-                  double value = itparameters->child(oms::ssp::Version1_0::ssv::real_type).attribute("value").as_double();
-                  setReal(cref, value);
-                }
-                else if(itparameters->child(oms::ssp::Version1_0::ssv::integer_type))
-                {
-                  int value = itparameters->child(oms::ssp::Version1_0::ssv::integer_type).attribute("value").as_int();
-                  setInteger(cref, value);
-                }
-                else if(itparameters->child(oms::ssp::Version1_0::ssv::boolean_type))
-                {
-                  bool value = itparameters->child(oms::ssp::Version1_0::ssv::boolean_type).attribute("value").as_bool();
-                  setBoolean(cref, value);
-                }
-                else
-                {
-                  logError("Failed to import " + std::string(oms::ssp::Version1_0::ssv::parameter) + ":Unknown ParameterBinding-type");
-                }
-              }
-            }
-          }
-        }
+        importStartValuesFromSSV();
       }
     }
     else if (name == oms::ssp::Draft20180219::ssd::annotations)
     {
-      pugi::xml_node annotation_node;
-      annotation_node = it->child(oms::ssp::Version1_0::ssc::annotation);
+      pugi::xml_node annotation_node = it->child(oms::ssp::Version1_0::ssc::annotation);
 
       // check for ssd:annotation to support older version, which is a bug
       if(!annotation_node)
@@ -782,100 +737,71 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
 
       if (annotation_node && std::string(annotation_node.attribute("type").as_string()) == oms::ssp::Draft20180219::annotation_type)
       {
-        for(pugi::xml_node_iterator itAnnotations = annotation_node.begin(); itAnnotations != annotation_node.end(); ++itAnnotations)
+        pugi::xml_node oms_annotation_node = annotation_node.child(oms::ssp::Version1_0::oms_annotations);
+
+        // support older <ssc:annotation>
+        if (!oms_annotation_node)
+        {
+          oms_annotation_node = annotation_node;
+          logWarning_deprecated;
+        }
+
+        // parse <oms:annotations>
+        for(pugi::xml_node_iterator itAnnotations = oms_annotation_node.begin(); itAnnotations != oms_annotation_node.end(); ++itAnnotations)
         {
           name = itAnnotations->name();
+
           // check for oms:simulationInformation from version 1.0
           if (std::string(name) == oms::ssp::Version1_0::simulation_information && sspVersion == "1.0")
           {
             if (oms_status_ok != importFromSSD_SimulationInformation(*itAnnotations, sspVersion))
               return logError("Failed to import " + std::string(oms::ssp::Version1_0::simulation_information));
           }
+
+          // support older <ssc:annotation> <oms:bus> </oms:bus> </ssc:annotation>
           if (std::string(name) == oms::ssp::Draft20180219::bus)
           {
             //Load bus connector
             std::string busname = itAnnotations->attribute("name").as_string();
             if (std::string(itAnnotations->attribute("type").as_string()) == "tlm")
             {
-              std::string domainstr = itAnnotations->attribute("domain").as_string();
-              int dimensions = itAnnotations->attribute("dimensions").as_int();
-              std::string interpolationstr = itAnnotations->attribute("interpolation").as_string();
-              oms_tlm_interpolation_t interpolation;
-              if (interpolationstr == "none")
-                interpolation = oms_tlm_no_interpolation;
-              else if (interpolationstr == "coarsegrained")
-                interpolation = oms_tlm_coarse_grained;
-              else if (interpolationstr == "finegrained")
-                interpolation = oms_tlm_fine_grained;
-              else
-                return logError("Unsupported interpolation type: "+interpolationstr);
-
-              oms_tlm_domain_t domain;
-              if(domainstr == "input")
-                domain = oms_tlm_domain_input;
-              else if(domainstr == "output")
-                domain = oms_tlm_domain_output;
-              else if(domainstr == "mechanical")
-                domain = oms_tlm_domain_mechanical;
-              else if(domainstr == "rotational")
-                domain = oms_tlm_domain_rotational;
-              else if(domainstr == "hydraulic")
-                domain = oms_tlm_domain_hydraulic;
-              else if(domainstr == "electric")
-                domain = oms_tlm_domain_electric;
-              else
-                return logError("Unsupported TLM domain: "+domainstr);
-
-              if (oms_status_ok != addTLMBus(busname,domain,dimensions,interpolation))
-                return oms_status_error;
+              importTLMBus(*itAnnotations, NULL);
             }
-            else {
+            else
+            {
               if (oms_status_ok != addBus(busname))
                 return oms_status_error;
             }
-
             //Load bus connector signals
-            pugi::xml_node signals_node = itAnnotations->child(oms::ssp::Draft20180219::signals);
-            if (signals_node)
-            {
-              for(pugi::xml_node_iterator itSignals = signals_node.begin(); itSignals != signals_node.end(); ++itSignals)
-              {
-                name = itSignals->name();
-                if (name == oms::ssp::Draft20180219::signal)
-                {
-                  std::string signalname = itSignals->attribute("name").as_string();
-                  if (std::string(itAnnotations->attribute("type").as_string()) == "tlm")
-                  {
-                    std::string signaltype = itSignals->attribute("type").as_string();
-                    addConnectorToTLMBus(busname, signalname, signaltype);
-                  }
-                  else
-                    addConnectorToBus(busname, signalname);
-                }
-              }
-            }
+            importBusConnectorSignals (*itAnnotations);
 
             // Load bus connector geometry
-            pugi::xml_node connectorGeometryNode = itAnnotations->child(oms::ssp::Draft20180219::ssd::connector_geometry);
-            if (connectorGeometryNode)
+            importBusConnectorGeometry(*itAnnotations);
+          }
+
+          // support <ssc:annotation> <oms:buses> <oms:bus> </oms:bus> </oms:buses></ssc:annotation>
+          if (std::string(name) == oms::ssp::Version1_0::oms_buses)
+          {
+            for(pugi::xml_node_iterator itbuses = itAnnotations->begin(); itbuses != itAnnotations->end(); ++itbuses)
             {
-              oms::ssd::ConnectorGeometry geometry(0.0, 0.0);
-              geometry.setPosition(connectorGeometryNode.attribute("x").as_double(), connectorGeometryNode.attribute("y").as_double());
-              if (std::string(itAnnotations->attribute("type").as_string()) == "tlm")
+              if (std::string(itbuses->name()) == oms::ssp::Draft20180219::bus)
               {
-#if !defined(NO_TLM)
-                oms::TLMBusConnector* tlmBusConnector = getTLMBusConnector(busname);
-                if (tlmBusConnector)
-                  tlmBusConnector->setGeometry(&geometry);
-#else
-                return LOG_NO_TLM();
-#endif
-              }
-              else
-              {
-                oms::BusConnector* busConnector = getBusConnector(busname);
-                if (busConnector)
-                  busConnector->setGeometry(&geometry);
+                //Load bus connector
+                std::string busname = itbuses->attribute("name").as_string();
+                if (std::string(itbuses->attribute("type").as_string()) == "tlm")
+                {
+                  importTLMBus(*itbuses, NULL);
+                }
+                else
+                {
+                  if (oms_status_ok != addBus(busname))
+                    return oms_status_error;
+                }
+                //Load bus connector signals
+                importBusConnectorSignals(*itbuses);
+
+                // Load bus connector geometry
+                importBusConnectorGeometry(*itbuses);
               }
             }
           }
@@ -2306,4 +2232,171 @@ oms_status_enu_t oms::System::setFaultInjection(const oms::ComRef& signal, oms_f
     return component->second->setFaultInjection(tail, faultType, faultValue);
 
   return oms_status_error;
+}
+
+oms_status_enu_t oms::System::importTLMBus(const pugi::xml_node& node, Component* component)
+{
+  std::string busname = node.attribute("name").as_string();
+  std::string domainstr = node.attribute("domain").as_string();
+  int dimensions = node.attribute("dimensions").as_int();
+  std::string interpolationstr = node.attribute("interpolation").as_string();
+
+  oms_tlm_interpolation_t interpolation;
+  if (interpolationstr == "none")
+    interpolation = oms_tlm_no_interpolation;
+  else if (interpolationstr == "coarsegrained")
+    interpolation = oms_tlm_coarse_grained;
+  else if (interpolationstr == "finegrained")
+    interpolation = oms_tlm_fine_grained;
+  else
+    return logError("Unsupported interpolation type: " + interpolationstr);
+
+  oms_tlm_domain_t domain;
+  if (domainstr == "input")
+    domain = oms_tlm_domain_input;
+  else if (domainstr == "output")
+    domain = oms_tlm_domain_output;
+  else if (domainstr == "mechanical")
+    domain = oms_tlm_domain_mechanical;
+  else if (domainstr == "rotational")
+    domain = oms_tlm_domain_rotational;
+  else if (domainstr == "hydraulic")
+    domain = oms_tlm_domain_hydraulic;
+  else if (domainstr == "electric")
+    domain = oms_tlm_domain_electric;
+  else
+    return logError("Unsupported TLM domain: " + domainstr);
+
+  if (component)
+  {
+    if (oms_status_ok != component->addTLMBus(busname, domain, dimensions, interpolation))
+      return oms_status_error;
+  }
+  else
+  {
+    if (oms_status_ok != addTLMBus(busname, domain, dimensions, interpolation))
+      return oms_status_error;
+  }
+
+  return oms_status_ok;
+}
+
+
+oms_status_enu_t oms::System::importBusConnectorSignals(const pugi::xml_node& node)
+{
+  std::string busname = node.attribute("name").as_string();
+  //Load bus connector signals
+  pugi::xml_node signals_node = node.child(oms::ssp::Draft20180219::signals);
+
+  if (signals_node)
+  {
+    for(pugi::xml_node_iterator itSignals = signals_node.begin(); itSignals != signals_node.end(); ++itSignals)
+    {
+      std::string name = itSignals->name();
+      if (name == oms::ssp::Draft20180219::signal)
+      {
+        std::string signalname = itSignals->attribute("name").as_string();
+        if (std::string(node.attribute("type").as_string()) == "tlm")
+        {
+          std::string signaltype = itSignals->attribute("type").as_string();
+          addConnectorToTLMBus(busname, signalname, signaltype);
+        }
+        else
+          addConnectorToBus(busname, signalname);
+      }
+    }
+  }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::System::importBusConnectorGeometry(const pugi::xml_node& node)
+{
+  std::string busname = node.attribute("name").as_string();
+  //Load bus connector signals
+  pugi::xml_node connectorGeometryNode = node.child(oms::ssp::Draft20180219::ssd::connector_geometry);
+
+  if (connectorGeometryNode)
+  {
+    oms::ssd::ConnectorGeometry geometry(0.0, 0.0);
+    geometry.setPosition(connectorGeometryNode.attribute("x").as_double(), connectorGeometryNode.attribute("y").as_double());
+    if (std::string(node.attribute("type").as_string()) == "tlm")
+    {
+#if !defined(NO_TLM)
+      oms::TLMBusConnector* tlmBusConnector = getTLMBusConnector(busname);
+      if (tlmBusConnector)
+        tlmBusConnector->setGeometry(&geometry);
+#else
+      return LOG_NO_TLM();
+#endif
+    }
+    else
+    {
+      oms::BusConnector* busConnector = getBusConnector(busname);
+      if (busConnector)
+        busConnector->setGeometry(&geometry);
+    }
+  }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::System::importStartValuesFromSSV()
+{
+  for (const auto& ssvFileSource : ssvFileSources)
+  {
+    std::string tempdir = getModel()->getTempDirectory();
+    filesystem::path temp_root(tempdir);
+    pugi::xml_document ssvdoc;
+    pugi::xml_parse_result result = ssvdoc.load_file((temp_root / ssvFileSource).string().c_str());
+    pugi::xml_node parameterSet, parameters;
+
+    if (result) // check from ssv file
+    {
+      parameterSet = ssvdoc.document_element(); // ssv:ParameterSet
+      parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
+    }
+    else if (getModel()->getSnapshot().child(oms::ssp::Version1_0::ssv_file)) // check in memory oms:ssv_file
+    {
+      parameterSet = getModel()->getSnapshot().child(oms::ssp::Version1_0::ssv_file).child(oms::ssp::Version1_0::ssv::parameter_set); // ssv:ParameterSet
+      parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
+    }
+    else
+    {
+      return logError("loading \"" + std::string(ssvFileSource) + "\" failed (" + std::string(result.description()) + ")");
+    }
+
+    if (parameters)
+    {
+      for(pugi::xml_node_iterator itparameters = parameters.begin(); itparameters != parameters.end(); ++itparameters)
+      {
+        std::string name = itparameters->name();
+        if (name == oms::ssp::Version1_0::ssv::parameter)
+        {
+          ComRef cref = ComRef(itparameters->attribute("name").as_string());
+          if (itparameters->child(oms::ssp::Version1_0::ssv::real_type))
+          {
+            double value = itparameters->child(oms::ssp::Version1_0::ssv::real_type).attribute("value").as_double();
+            setReal(cref, value);
+          }
+          else if(itparameters->child(oms::ssp::Version1_0::ssv::integer_type))
+          {
+            int value = itparameters->child(oms::ssp::Version1_0::ssv::integer_type).attribute("value").as_int();
+            setInteger(cref, value);
+          }
+          else if(itparameters->child(oms::ssp::Version1_0::ssv::boolean_type))
+          {
+            bool value = itparameters->child(oms::ssp::Version1_0::ssv::boolean_type).attribute("value").as_bool();
+            setBoolean(cref, value);
+          }
+          else
+          {
+            logError("Failed to import " + std::string(oms::ssp::Version1_0::ssv::parameter) + ":Unknown ParameterBinding-type");
+          }
+        }
+      }
+    }
+  }
+
+  return oms_status_ok;
 }

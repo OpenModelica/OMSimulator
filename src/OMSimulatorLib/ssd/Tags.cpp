@@ -62,11 +62,13 @@ const char* oms::ssp::Draft20180219::ssd::units                        = "ssd:Un
 const char* oms::ssp::Version1_0::simulation_information               = "oms:SimulationInformation"; // simulation information must be handled in a vendor specific annotation
 const char* oms::ssp::Version1_0::FixedStepMaster                      = "oms:FixedStepMaster"; // WC-System
 const char* oms::ssp::Version1_0::VariableStepSolver                   = "oms:VariableStepSolver"; // SC-System
+const char* oms::ssp::Version1_0::oms_annotations                      = "oms:Annotations"; // root node for all oms_annotations
+const char* oms::ssp::Version1_0::oms_buses                            = "oms:Buses";
 
-const char* oms::ssp::Version1_0::snap_shot                             = "oms:snapshot";
-const char* oms::ssp::Version1_0::ssd_file                              = "oms:ssd_file";
-const char* oms::ssp::Version1_0::ssv_file                              = "oms:ssv_file";
-const char* oms::ssp::Version1_0::ssm_file                              = "oms:ssm_file";
+const char* oms::ssp::Version1_0::snap_shot                            = "oms:snapshot";
+const char* oms::ssp::Version1_0::ssd_file                             = "oms:ssd_file";
+const char* oms::ssp::Version1_0::ssv_file                             = "oms:ssv_file";
+const char* oms::ssp::Version1_0::ssm_file                             = "oms:ssm_file";
 
 const char* oms::ssp::Version1_0::ssd::parameter_bindings              = "ssd:ParameterBindings";
 const char* oms::ssp::Version1_0::ssd::parameter_binding               = "ssd:ParameterBinding";

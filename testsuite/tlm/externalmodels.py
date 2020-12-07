@@ -56,21 +56,27 @@ printStatus(status, 0)
 ## 		<ssd:Component name="external" source="resources/external.mo">
 ## 			<ssd:Annotations>
 ## 				<ssc:Annotation type="org.openmodelica">
-## 					<oms:Bus name="tlmbus" type="tlm" domain="mechanical" dimensions="1" interpolation="none">
-## 						<oms:Signals />
-## 					</oms:Bus>
-## 					<oms:SimulationInformation>
-## 						<oms:ExternalModel startscript="resources/startscript.sh" />
-## 					</oms:SimulationInformation>
+## 					<oms:Annotations>
+## 						<oms:Buses>
+## 							<oms:Bus name="tlmbus" type="tlm" domain="mechanical" dimensions="1" interpolation="none">
+## 								<oms:Signals />
+## 							</oms:Bus>
+## 						</oms:Buses>
+## 						<oms:SimulationInformation>
+## 							<oms:ExternalModel startscript="resources/startscript.sh" />
+## 						</oms:SimulationInformation>
+## 					</oms:Annotations>
 ## 				</ssc:Annotation>
 ## 			</ssd:Annotations>
 ## 		</ssd:Component>
 ## 	</ssd:Elements>
 ## 	<ssd:Annotations>
 ## 		<ssc:Annotation type="org.openmodelica">
-## 			<oms:SimulationInformation>
-## 				<oms:TlmMaster ip="" managerport="0" monitorport="0" />
-## 			</oms:SimulationInformation>
+## 			<oms:Annotations>
+## 				<oms:SimulationInformation>
+## 					<oms:TlmMaster ip="" managerport="0" monitorport="0" />
+## 				</oms:SimulationInformation>
+## 			</oms:Annotations>
 ## 		</ssc:Annotation>
 ## 	</ssd:Annotations>
 ## </ssd:System>

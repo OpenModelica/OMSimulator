@@ -109,9 +109,11 @@ printStatus(status, 0)
 ## 			</ssd:Connectors>
 ## 			<ssd:Annotations>
 ## 				<ssc:Annotation type="org.openmodelica">
-## 					<oms:SimulationInformation>
-## 						<oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
-## 					</oms:SimulationInformation>
+## 					<oms:Annotations>
+## 						<oms:SimulationInformation>
+## 							<oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
+## 						</oms:SimulationInformation>
+## 					</oms:Annotations>
 ## 				</ssc:Annotation>
 ## 			</ssd:Annotations>
 ## 		</ssd:System>
@@ -129,9 +131,11 @@ printStatus(status, 0)
 ## 			</ssd:Connectors>
 ## 			<ssd:Annotations>
 ## 				<ssc:Annotation type="org.openmodelica">
-## 					<oms:SimulationInformation>
-## 						<oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
-## 					</oms:SimulationInformation>
+## 					<oms:Annotations>
+## 						<oms:SimulationInformation>
+## 							<oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
+## 						</oms:SimulationInformation>
+## 					</oms:Annotations>
 ## 				</ssc:Annotation>
 ## 			</ssd:Annotations>
 ## 		</ssd:System>
@@ -141,9 +145,11 @@ printStatus(status, 0)
 ## 	</ssd:Connections>
 ## 	<ssd:Annotations>
 ## 		<ssc:Annotation type="org.openmodelica">
-## 			<oms:SimulationInformation>
-## 				<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
-## 			</oms:SimulationInformation>
+## 			<oms:Annotations>
+## 				<oms:SimulationInformation>
+## 					<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+## 				</oms:SimulationInformation>
+## 			</oms:Annotations>
 ## 		</ssc:Annotation>
 ## 	</ssd:Annotations>
 ## </ssd:System>
@@ -166,9 +172,11 @@ printStatus(status, 0)
 ## 			</ssd:Connectors>
 ## 			<ssd:Annotations>
 ## 				<ssc:Annotation type="org.openmodelica">
-## 					<oms:SimulationInformation>
-## 						<oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
-## 					</oms:SimulationInformation>
+## 					<oms:Annotations>
+## 						<oms:SimulationInformation>
+## 							<oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
+## 						</oms:SimulationInformation>
+## 					</oms:Annotations>
 ## 				</ssc:Annotation>
 ## 			</ssd:Annotations>
 ## 		</ssd:System>
@@ -186,18 +194,22 @@ printStatus(status, 0)
 ## 			</ssd:Connectors>
 ## 			<ssd:Annotations>
 ## 				<ssc:Annotation type="org.openmodelica">
-## 					<oms:SimulationInformation>
-## 						<oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
-## 					</oms:SimulationInformation>
+## 					<oms:Annotations>
+## 						<oms:SimulationInformation>
+## 							<oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
+## 						</oms:SimulationInformation>
+## 					</oms:Annotations>
 ## 				</ssc:Annotation>
 ## 			</ssd:Annotations>
 ## 		</ssd:System>
 ## 	</ssd:Elements>
 ## 	<ssd:Annotations>
 ## 		<ssc:Annotation type="org.openmodelica">
-## 			<oms:SimulationInformation>
-## 				<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
-## 			</oms:SimulationInformation>
+## 			<oms:Annotations>
+## 				<oms:SimulationInformation>
+## 					<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+## 				</oms:SimulationInformation>
+## 			</oms:Annotations>
 ## 		</ssc:Annotation>
 ## 	</ssd:Annotations>
 ## </ssd:System>
