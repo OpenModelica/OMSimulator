@@ -84,6 +84,7 @@ OMSAPI oms_status_enu_t OMSCALL oms_export(const char* cref, const char* filenam
 OMSAPI oms_status_enu_t OMSCALL oms_exportDependencyGraphs(const char* cref, const char* initialization, const char* event, const char* simulation);
 OMSAPI oms_status_enu_t OMSCALL oms_exportSnapshot(const char* cref, char** contents);
 OMSAPI oms_status_enu_t OMSCALL oms_exportSSVTemplate(const char* cref, const char* filename);
+OMSAPI oms_status_enu_t OMSCALL oms_exportSSMTemplate(const char * cref, const char * filename);
 OMSAPI oms_status_enu_t OMSCALL oms_extractFMIKind(const char* filename, oms_fmi_kind_enu_t* kind);
 OMSAPI oms_status_enu_t OMSCALL oms_fetchExternalModelInterfaces(const char* cref, char*** names, char*** domains, int** dimensions);
 OMSAPI void OMSCALL oms_freeMemory(void* obj);

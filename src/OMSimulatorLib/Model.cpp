@@ -430,7 +430,7 @@ oms_status_enu_t oms::Model::exportSSVTemplate(const oms::ComRef& cref, const st
 
   for (const auto& component : system->getComponents())
   {
-    if(tail == component.first || cref.isEmpty()) // allow querying single component or whole model
+    if(component.first == tail || cref.isEmpty()) // allow querying single component or whole model
     {
       if (oms_status_ok != component.second->exportToSSVTemplate(node_parameters))
       {
@@ -442,6 +442,50 @@ oms_status_enu_t oms::Model::exportSSVTemplate(const oms::ComRef& cref, const st
   //ssvdoc.save(std::cout);
 
   if (!ssvdoc.save_file(filename.c_str()))
+    return logError("failed to export  \"" + filename + "\" (for model \"" + std::string(this->getCref()) + "\")");
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Model::exportSSMTemplate(const oms::ComRef& cref, const std::string& filename)
+{
+  oms::ComRef tail(cref);
+  oms::ComRef front = tail.pop_front();
+
+  pugi::xml_document ssmdoc;
+
+  std::string extension = "";
+  if (filename.length() > 4)
+    extension = filename.substr(filename.length() - 4);
+
+  if (extension != ".ssm")
+    return logError("filename extension must be \".ssm\"; no other formats are supported");
+
+  // generate XML declaration for ssv file
+  pugi::xml_node ssmDeclarationNode = ssmdoc.append_child(pugi::node_declaration);
+  ssmDeclarationNode.append_attribute("version") = "1.0";
+  ssmDeclarationNode.append_attribute("encoding") = "UTF-8";
+
+  pugi::xml_node node_parameterMapping = ssmdoc.append_child(oms::ssp::Version1_0::ssm::parameter_mapping);
+  node_parameterMapping.append_attribute("xmlns:ssc") = "http://ssp-standard.org/SSP1/SystemStructureCommon";
+  node_parameterMapping.append_attribute("xmlns:ssm") = "http://ssp-standard.org/SSP1/SystemStructureParameterMapping";
+
+  node_parameterMapping.append_attribute("version") = "1.0";
+
+  for (const auto& component : system->getComponents())
+  {
+    if(component.first == tail || cref.isEmpty()) // allow querying single component or whole model
+    {
+      if (oms_status_ok != component.second->exportToSSMTemplate(node_parameterMapping))
+      {
+        return logError("export of ssm template failed for component " + std::string(system->getFullCref()+std::string(component.first)));
+      }
+    }
+  }
+
+  //ssmdoc.save(std::cout);
+
+  if (!ssmdoc.save_file(filename.c_str()))
     return logError("failed to export  \"" + filename + "\" (for model \"" + std::string(this->getCref()) + "\")");
 
   return oms_status_ok;

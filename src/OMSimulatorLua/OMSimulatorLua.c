@@ -294,6 +294,22 @@ static int OMSimulatorLua_oms_exportSSVTemplate(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms_exportSSMTemplate(const char* cref, const char* filename);
+static int OMSimulatorLua_oms_exportSSMTemplate(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 arguments");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+
+  const char* cref = lua_tostring(L, 1);
+  const char* filename = lua_tostring(L, 2);
+  oms_status_enu_t status = oms_exportSSMTemplate(cref, filename);
+
+  lua_pushinteger(L, status);
+  return 1;
+}
+
 //oms_status_enu_t oms_listUnconnectedConnectors(const char* cref, char** contents);
 static int OMSimulatorLua_oms_listUnconnectedConnectors(lua_State *L)
 {
@@ -1286,6 +1302,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms_exportDependencyGraphs);
   REGISTER_LUA_CALL(oms_exportSnapshot);
   REGISTER_LUA_CALL(oms_exportSSVTemplate);
+  REGISTER_LUA_CALL(oms_exportSSMTemplate);
   REGISTER_LUA_CALL(oms_faultInjection);
   REGISTER_LUA_CALL(oms_getBoolean);
   REGISTER_LUA_CALL(oms_getFixedStepSize);

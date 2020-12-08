@@ -244,6 +244,44 @@ oms_status_enu_t oms::Values::exportToSSVTemplate(pugi::xml_node& node, const Co
   return oms_status_ok;
 }
 
+/*
+ * exports the start values read from modeldescription.xml to ssm template
+ * with attributes source and target (eg.) <ssm:MappingEntry target="controller_2.bandwidth" source=""/>
+ * the source attribute will be empty and needs to be manually updated by the user
+ */
+oms_status_enu_t oms::Values::exportToSSMTemplate(pugi::xml_node& node, const ComRef& cref)
+{
+  // skip this if there is nothing to export
+  if (modelDescriptionRealStartValues.empty() && modelDescriptionIntegerStartValues.empty() && modelDescriptionBooleanStartValues.empty())
+    return oms_status_ok;
+
+  // realStartValues
+  for (const auto& r : modelDescriptionRealStartValues)
+  {
+    pugi::xml_node node_parameterMappingEntry = node.append_child(oms::ssp::Version1_0::ssm::parameter_mapping_entry);
+    node_parameterMappingEntry.append_attribute("source") = "";
+    node_parameterMappingEntry.append_attribute("target") = std::string(cref + r.first).c_str();
+  }
+
+  // integerStartValues
+  for (const auto& i : modelDescriptionIntegerStartValues)
+  {
+    pugi::xml_node node_parameterMappingEntry = node.append_child(oms::ssp::Version1_0::ssm::parameter_mapping_entry);
+    node_parameterMappingEntry.append_attribute("source") = "";
+    node_parameterMappingEntry.append_attribute("target") = std::string(cref + i.first).c_str();
+  }
+
+  // boolStartValues
+  for (const auto& b : modelDescriptionBooleanStartValues)
+  {
+    pugi::xml_node node_parameterMappingEntry = node.append_child(oms::ssp::Version1_0::ssm::parameter_mapping_entry);
+    node_parameterMappingEntry.append_attribute("source") = "";
+    node_parameterMappingEntry.append_attribute("target") = std::string(cref + b.first).c_str();
+  }
+
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms::Values::importStartValuesHelper(pugi::xml_node& parameters)
 {
   if (parameters)

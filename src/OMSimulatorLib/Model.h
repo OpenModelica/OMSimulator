@@ -73,6 +73,7 @@ namespace oms
     oms_status_enu_t exportToSSD(pugi::xml_node& node, pugi::xml_node& ssvNode) const;
     oms_status_enu_t exportSnapshot(const ComRef& cref, char** contents);
     oms_status_enu_t exportSSVTemplate(const ComRef& cref, const std::string& filename);
+    oms_status_enu_t exportSSMTemplate(const ComRef& cref, const std::string& filename);
     oms_status_enu_t importFromSSD(const pugi::xml_node& node);
     oms_status_enu_t importSnapshot(const char* snapshot);
     oms_status_enu_t exportToFile(const std::string& filename) const;

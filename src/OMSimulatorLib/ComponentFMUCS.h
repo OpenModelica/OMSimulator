@@ -60,6 +60,7 @@ namespace oms
 
     oms_status_enu_t exportToSSD(pugi::xml_node& node, pugi::xml_node& ssvNode) const;
     oms_status_enu_t exportToSSVTemplate(pugi::xml_node& ssvNode);
+    oms_status_enu_t exportToSSMTemplate(pugi::xml_node& ssmNode);
     oms_status_enu_t instantiate();
     oms_status_enu_t initialize();
     oms_status_enu_t terminate();
