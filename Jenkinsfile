@@ -118,26 +118,6 @@ pipeline {
             }
           }
         }
-        stage('centos6') {
-          agent {
-            dockerfile {
-              additionalBuildArgs '--pull'
-              dir '.CI/centos6'
-              label 'linux'
-            }
-          }
-          environment {
-            SHELLSTART = """
-            export CC="/opt/rh/devtoolset-7/root/usr/bin/gcc"
-            export CXX="/opt/rh/devtoolset-7/root/usr/bin/g++"
-            export CXXFLAGS="-std=c++17"
-            """
-            OMSFLAGS = "OMTLM=OFF"
-          }
-          steps {
-            buildOMS()
-          }
-        }
         stage('centos7') {
           agent {
             dockerfile {
