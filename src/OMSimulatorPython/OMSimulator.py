@@ -110,6 +110,8 @@ class OMSimulator:
     self.obj.oms_exportSnapshot.restype = ctypes.c_int
     self.obj.oms_exportSSVTemplate.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_exportSSVTemplate.restype = ctypes.c_int
+    self.obj.oms_exportSSMTemplate.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_exportSSMTemplate.restype = ctypes.c_int
     self.obj.oms_faultInjection.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_double]
     self.obj.oms_faultInjection.restype = ctypes.c_int
     self.obj.oms_getBoolean.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_bool)]
@@ -283,6 +285,8 @@ class OMSimulator:
     return [self.checkstring(contents.value), status]
   def exportSSVTemplate(self, ident, filename):
     return self.obj.oms_exportSSVTemplate(self.checkstring(ident), self.checkstring(filename))
+  def exportSSMTemplate(self, ident, filename):
+    return self.obj.oms_exportSSMTemplate(self.checkstring(ident), self.checkstring(filename))
   def listUnconnectedConnectors(self, ident):
     contents = ctypes.c_char_p()
     status = self.obj.oms_listUnconnectedConnectors(self.checkstring(ident), ctypes.byref(contents))

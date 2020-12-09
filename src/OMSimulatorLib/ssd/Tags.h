@@ -55,6 +55,12 @@ namespace oms
         extern const char* parameter_values;
       }
 
+      namespace ssm
+      {
+        extern const char* parameter_mapping;
+        extern const char* parameter_mapping_entry;
+      }
+
       namespace ssv
       {
         extern const char* parameter_set;

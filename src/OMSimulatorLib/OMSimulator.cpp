@@ -236,6 +236,17 @@ oms_status_enu_t oms_exportSSVTemplate(const char* cref_, const char* filename)
   return model->exportSSVTemplate(tail, std::string(filename));
 }
 
+oms_status_enu_t oms_exportSSMTemplate(const char * cref_, const char * filename)
+{
+  oms::ComRef tail(cref_);
+  oms::ComRef front = tail.pop_front();
+  oms::Model * model = oms::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  return model->exportSSMTemplate(tail, std::string(filename));
+}
+
 oms_status_enu_t oms_listUnconnectedConnectors(const char* cref_, char** contents)
 {
   oms::ComRef tail(cref_);

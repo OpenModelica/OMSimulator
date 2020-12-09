@@ -93,3 +93,6 @@ const char* oms::ssp::Version1_0::ssv::enumeration_type                = "ssv:En
 const char* oms::ssp::Version1_0::ssv::binary_type                     = "ssv:Binary";
 
 const char* oms::ssp::Version1_0::ssc::annotation                      = "ssc:Annotation";
+
+const char* oms::ssp::Version1_0::ssm::parameter_mapping               = "ssm:ParameterMapping";
+const char* oms::ssp::Version1_0::ssm::parameter_mapping_entry         = "ssm:MappingEntry";
