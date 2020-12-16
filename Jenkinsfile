@@ -307,7 +307,7 @@ pipeline {
 
         stage('mingw64-gcc') {
           stages {
-            stage('compile') {
+            stage('build') {
               agent {
                 label 'omsimulator-windows'
               }
@@ -320,10 +320,21 @@ pipeline {
                 VERBOSE = '1'
               }
               steps {
+                bat 'hostname'
+                
                 buildOMS()
-                bat '''
-                C:\\OMDev\\tools\\msys\\usr\\bin\\sh --login -i -c 'cd ${env.WORKSPACE}/install/mingw && zip -r "../../OMSimulator-mingw64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *'
-                '''
+                
+                writeFile file: "buildZip64.sh", text: """#!/bin/sh
+                set -x -e
+                export PATH="/c/Program Files/TortoiseSVN/bin/:/c/bin/jdk/bin:/c/bin/nsis/:\$PATH:/c/bin/git/bin"
+                cd "${env.WORKSPACE}/install/mingw"
+                zip -r "../../OMSimulator-mingw64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *
+                """
+                
+                bat """
+                C:\\OMDev\\tools\\msys\\usr\\bin\\sh --login -i '${env.WORKSPACE}/buildZip64.sh'
+                """
+                
                 archiveArtifacts "OMSimulator-mingw64*.zip"
                 stash name: 'mingw64-zip', includes: "OMSimulator-mingw64-*.zip"
                 stash name: 'mingw64-install', includes: "install/mingw/**"
@@ -378,7 +389,7 @@ EXIT /b 1
             beforeAgent true
           }
           stages {
-            stage('compile') {
+            stage('build') {
               agent {
                 label 'omsimulator-windows'
               }
@@ -392,9 +403,19 @@ EXIT /b 1
               }
               steps {
                 buildOMS()
-                bat '''
-                C:\\OMDev\\tools\\msys\\usr\\bin\\sh --login -i -c 'cd ${env.WORKSPACE}/install/mingw && zip -r "../../OMSimulator-mingw32-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *'
-                '''
+
+                writeFile file: "buildZip32.sh", text: """#!/bin/sh
+                set -x -e
+                export PATH="/c/Program Files/TortoiseSVN/bin/:/c/bin/jdk/bin:/c/bin/nsis/:\$PATH:/c/bin/git/bin"
+                cd "${env.WORKSPACE}/install/mingw"
+                zip -r "../../OMSimulator-mingw32-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *
+                """
+
+                bat """
+                C:\\OMDev\\tools\\msys\\usr\\bin\\sh --login -i '${env.WORKSPACE}/buildZip32.sh'
+                EXIT /b 0
+                """
+
                 archiveArtifacts "OMSimulator-mingw32*.zip"
                 stash name: 'mingw32-zip', includes: "OMSimulator-mingw32-*.zip"
                 stash name: 'mingw32-install', includes: "install/mingw/**"
