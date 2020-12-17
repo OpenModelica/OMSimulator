@@ -1,0 +1,20 @@
+// Build FMUs Enum1.fmu and Init1.fmu
+
+loadString("
+model Enum1
+  type E = enumeration(one, two, three);
+  input E u;
+end Enum1;
+"); getErrorString();
+
+loadString("
+model Int1
+  output Integer y = 2;
+end Int1;
+"); getErrorString();
+
+buildModelFMU(Enum1, version="2.0", fmuType="me_cs", fileNamePrefix="Enum1", platforms={"x86_64-linux-gnu docker run docker.openmodelica.org/build-deps:bionic.nightly.amd64","x86_64-w64-mingw32 docker run docker.openmodelica.org/msyscross-omsimulator:v2.0"}); getErrorString();
+buildModelFMU(Int1, version="2.0", fmuType="me_cs", fileNamePrefix="Int1", platforms={"x86_64-linux-gnu docker run docker.openmodelica.org/build-deps:bionic.nightly.amd64","x86_64-w64-mingw32 docker run docker.openmodelica.org/msyscross-omsimulator:v2.0"}); getErrorString();
+
+system("zip -qd Enum1.fmu sources/* && unzip -o Enum1.fmu -d Enum1/");
+system("zip -qd Int1.fmu sources/* && unzip -o Int1.fmu -d Int1/");

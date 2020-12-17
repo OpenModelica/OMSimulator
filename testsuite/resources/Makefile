@@ -53,6 +53,7 @@ importStartValues \
 MOSs = \
 ASSCExample.mos \
 DualMassOscillator.mos \
+Enumeration.mos \
 HelloWorldWithInput.mos \
 Mass.mos \
 QuarterCarModel.mos \
