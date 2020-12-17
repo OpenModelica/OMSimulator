@@ -75,7 +75,7 @@ oms::Component* oms::ComponentTable::NewComponent(const oms::ComRef& cref, oms::
   filesystem::path relPath = parentSystem->copyResources() ? (filesystem::path("resources") / (parentSystem->getUniqueID() + "_" + std::string(cref) + extension)) : filesystem::path(path);
   filesystem::path absPath = temp_root / relPath;
 
-  ComponentTable* component = new ComponentTable(cref, parentSystem, relPath.string());
+  ComponentTable* component = new ComponentTable(cref, parentSystem, relPath.generic_string());
 
   // Copy the resource to the temp directory of the model? We don't want have
   // to copy resources if importing an SSP file or snapshot.
