@@ -1,7 +1,7 @@
 -- status: correct
 -- teardown_command: rm -rf table-lua/ table_res.mat
 -- linux: yes
--- mingw: no
+-- mingw: yes
 -- win: no
 -- mac: yes
 

@@ -2,7 +2,7 @@
 -- teardown_command: rm -rf test01-lua/
 -- linux: yes
 -- linux32: yes
--- mingw: no
+-- mingw: yes
 -- win: no
 -- mac: yes
 

@@ -1,7 +1,7 @@
 ## status: correct
 ## teardown_command: rm -rf simulation-py/ test_init.dot test_sim.dot test.mat
 ## linux: yes
-## mingw: no
+## mingw: yes
 ## win: no
 ## mac: no
 

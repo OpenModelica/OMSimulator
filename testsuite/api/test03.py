@@ -1,7 +1,7 @@
 ## status: correct
 ## teardown_command: rm -rf test03-py/ test_res.mat
 ## linux: yes
-## mingw: no
+## mingw: yes
 ## win: no
 ## mac: no
 

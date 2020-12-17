@@ -1,7 +1,7 @@
 -- status: correct
 -- teardown_command: rm -rf PI_Controller-lua/ PI_Controller_init.dot PI_Controller_sim.dot PI_Controller_res.mat PI_Controller.ssp
 -- linux: yes
--- mingw: no
+-- mingw: yes
 -- win: no
 -- mac: no
 
