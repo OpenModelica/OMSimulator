@@ -10,7 +10,11 @@ class OMSimulator:
       dirname = os.path.dirname(__file__)
       omslib = os.path.join(dirname, "@OMSIMULATORLIB_DIR_STRING@", "@OMSIMULATORLIB_STRING@")
 
+    if os.name == 'nt': # If on Windows
+      ddlDir = os.add_dll_directory(os.path.dirname(omslib))
     self.obj=ctypes.CDLL(omslib)
+    if os.name == 'nt': # If on Windows
+      close(ddlDir)
 
     ## oms_status_enu_t
     self.status_ok = 0
