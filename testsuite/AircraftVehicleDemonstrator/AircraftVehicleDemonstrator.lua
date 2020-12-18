@@ -1,12 +1,12 @@
--- status: correct
+-- status: erroneous
 -- teardown_command: rm -rf AircraftVehicleDemonstrator_tmp/ AircraftVehicleDemonstrator.log AircraftVehicleDemonstrator*.dot AircraftVehicleDemonstrator_res.mat
 -- linux: no
 -- mingw: yes
 -- win: no
 
---oms_setLoggingLevel(0)
-oms_setCommandLineOption("--suppressPath=true")
---oms_setLogFile("AircraftVehicleDemonstrator.log")
+-- Ignoring initial unknowns beacuse dependencies are wrong in modelDescription.xml.
+-- TODO: Revert this when FMU is fixed
+oms_setCommandLineOption("--suppressPath=true --ignoreInitialUnknowns=true")
 oms_setTempDirectory("./AircraftVehicleDemonstrator_tmp/")
 
 oms_newModel("AircraftVehicleDemonstrator")
@@ -175,6 +175,7 @@ for _,var in ipairs(vars) do
 end
 
 -- Result:
+-- warning: Alg. loop (size 80)
 -- info:    Result file: AircraftVehicleDemonstrator_res.mat (bufferSize=10)
 -- info:    AircraftVehicleDemonstrator.root.engine.pB.p is equal
 -- info:    AircraftVehicleDemonstrator.root.eCS_Generic_Export.Meas_PACK_TEMP is equal
