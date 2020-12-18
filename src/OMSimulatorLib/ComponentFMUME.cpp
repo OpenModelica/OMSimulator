@@ -75,7 +75,7 @@ oms::Component* oms::ComponentFMUME::NewComponent(const oms::ComRef& cref, oms::
   filesystem::path relFMUPath = parentSystem->copyResources() ? (filesystem::path("resources") / (parentSystem->getUniqueID() + "_" + std::string(cref) + ".fmu")) : filesystem::path(fmuPath);
   filesystem::path absFMUPath = temp_root / relFMUPath;
 
-  ComponentFMUME* component = new ComponentFMUME(cref, parentSystem, relFMUPath.string());
+  ComponentFMUME* component = new ComponentFMUME(cref, parentSystem, relFMUPath.generic_string());
 
   component->callbacks.malloc = malloc;
   component->callbacks.calloc = calloc;
