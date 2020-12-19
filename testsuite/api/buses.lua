@@ -1,7 +1,7 @@
 -- status: correct
 -- teardown_command: rm -rf buses-lua/
 -- linux: yes
--- mingw: no
+-- mingw: yes
 -- win: no
 -- mac: no
 

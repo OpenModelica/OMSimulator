@@ -1,7 +1,7 @@
 -- status: correct
 -- teardown_command: rm -rf QuarterCarModel/ QuarterCarModel.DisplacementDisplacement.mat
 -- linux: yes
--- mingw: no
+-- mingw: yes
 -- win: no
 -- mac: no
 

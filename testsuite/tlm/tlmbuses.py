@@ -1,7 +1,7 @@
 ## status: correct
 ## teardown_command: rm -rf tlmbuses-py/
 ## linux: yes
-## mingw: no
+## mingw: yes
 ## win: no
 ## mac: no
 

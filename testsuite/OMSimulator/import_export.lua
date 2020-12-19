@@ -1,7 +1,7 @@
 -- status: correct
 -- teardown_command: rm -rf test.ssp import_export-lua/
 -- linux: yes
--- mingw: no
+-- mingw: yes
 -- win: no
 -- mac: no
 
