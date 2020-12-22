@@ -747,9 +747,9 @@ void buildOMS() {
      echo time make OMSimulator -j%NUMBER_OF_PROCESSORS% ${env.OMSFLAGS ?: ""}
      ) > buildOMSimulatorWindows.sh
 
-     set MSYSTEM=MINGW64
+     set MSYSTEM=${env.MSYSTEM ? env.MSYSTEM : "MINGW64"}
      set MSYS2_PATH_TYPE=inherit
-     %OMDEV%\\tools\\msys\\usr\\bin\\sh --login -i -c "cd `cygpath '${WORKSPACE}'` && chmod +x buildOMSimulatorWindows.sh && ./buildOMSimulatorWindows.sh && rm -f ./buildOMSimulatorWindows.sh"
+     %OMDEV%\\tools\\msys\\usr\\bin\\sh --login -c "cd `cygpath '${WORKSPACE}'` && chmod +x buildOMSimulatorWindows.sh && ./buildOMSimulatorWindows.sh && rm -f ./buildOMSimulatorWindows.sh"
     """)
   } else {
     echo "${env.NODE_NAME}"
