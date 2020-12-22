@@ -234,15 +234,22 @@ oms_status_enu_t oms::Scope::setTempDirectory(const std::string& newTempDir)
 {
   try
   {
-    if (!filesystem::is_directory(newTempDir))
+    std::string newTempDirWorkaround = newTempDir;
+#if defined(__MINGW32__)
+    // create_directory() behaves different with clang 11 than gcc for path with trailing "/"
+    if('/' == newTempDirWorkaround.back()) {
+      newTempDirWorkaround.pop_back();
+    }
+#endif
+    if (!filesystem::is_directory(newTempDirWorkaround))
     {
-      if (!filesystem::create_directory(newTempDir))
-        return logError("Changing temp directory to \"" + newTempDir + "\" failed");
+      if (!filesystem::create_directory(newTempDirWorkaround))
+        return logError("Changing temp directory to \"" + newTempDirWorkaround + "\" failed");
       else if (!Flags::SuppressPath())
         logInfo("New temp directory has been created: \"" + newTempDir + "\"");
     }
 
-    filesystem::path path(newTempDir.c_str());
+    filesystem::path path(newTempDirWorkaround.c_str());
     try
     {
       path = oms_canonical(path);
