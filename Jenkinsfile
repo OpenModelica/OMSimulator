@@ -382,7 +382,7 @@ EXIT /b 1
         stage('mingw32-gcc') {
           when {
             anyOf {
-              expression { return params.MINGW32 }
+              expression { return shouldWeBuildMINGW32() }
               expression { return shouldWeUploadArtifacts() }
               buildingTag()
             }
@@ -812,4 +812,14 @@ def shouldWeUpdateSubmodules() {
     }
   }
   return params.SUBMODULE_UPDATE
+}
+
+def shouldWeBuildMINGW32() {
+  if (isPR()) {
+    if (pullRequest.labels.contains("CI/MINGW32")) {
+      return true
+    }
+    return params.MINGW32
+  }
+  return true
 }
