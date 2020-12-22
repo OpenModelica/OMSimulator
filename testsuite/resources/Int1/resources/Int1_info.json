@@ -1,10 +1,10 @@
 {"format":"Transformational debugger info","version":1,
 "info":{"name":"Int1","description":""},
 "variables":{
-"$outputAlias_y":{"comment":"","kind":"discrete","type":"Integer","unit":"","displayUnit":"","source":{"info":{"file":"<interactive>","lineStart":3,"lineEnd":3,"colStart":3,"colEnd":23}}}
+"$outputAlias_y":{"comment":"","kind":"discrete","type":"Integer","unit":"","displayUnit":"","source":{"info":{"file":"<interactive>","lineStart":3,"lineEnd":3,"colStart":3,"colEnd":23},"within":["Integer"]}}
 },
 "equations":[{"eqIndex":0,"tag":"dummy"},
-{"eqIndex":1,"section":"initial","tag":"assign","defines":["$outputAlias_y"],"uses":[],"equation":["2"],"source":{"info":{"file":"<interactive>","lineStart":3,"lineEnd":3,"colStart":3,"colEnd":23}}},
+{"eqIndex":1,"section":"initial","tag":"assign","defines":["$outputAlias_y"],"uses":[],"equation":["2"],"source":{"info":{"file":"<interactive>","lineStart":3,"lineEnd":3,"colStart":3,"colEnd":23},"within":["Integer"]}},
 {"eqIndex":2,"tag":"alias","equation":[3],"section":"initial"},
 {"eqIndex":3,"section":"regular","tag":"assign","defines":["y"],"uses":[],"equation":["2"],"source":{"info":{"file":"","lineStart":0,"lineEnd":0,"colStart":0,"colEnd":0}}},
 {"eqIndex":4,"tag":"alias","equation":[1],"section":"parameter"}
