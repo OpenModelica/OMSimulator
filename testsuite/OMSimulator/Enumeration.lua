@@ -5,7 +5,7 @@
 -- mac: no
 
 oms_setCommandLineOption("--suppressPath=true")
-oms_setTempDirectory("./Enumeration-lua/")
+oms_setTempDirectory("./Enumeration_lua/")
 
 oms_newModel("test")
 oms_addSystem("test.root", oms_system_sc)

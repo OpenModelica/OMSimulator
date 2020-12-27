@@ -382,7 +382,7 @@ EXIT /b 1
         stage('mingw32-gcc') {
           when {
             anyOf {
-              expression { return params.MINGW32 }
+              expression { return shouldWeBuildMINGW32() }
               expression { return shouldWeUploadArtifacts() }
               buildingTag()
             }
@@ -747,9 +747,9 @@ void buildOMS() {
      echo time make OMSimulator -j%NUMBER_OF_PROCESSORS% ${env.OMSFLAGS ?: ""}
      ) > buildOMSimulatorWindows.sh
 
-     set MSYSTEM=MINGW64
+     set MSYSTEM=${env.MSYSTEM ? env.MSYSTEM : "MINGW64"}
      set MSYS2_PATH_TYPE=inherit
-     %OMDEV%\\tools\\msys\\usr\\bin\\sh --login -i -c "cd `cygpath '${WORKSPACE}'` && chmod +x buildOMSimulatorWindows.sh && ./buildOMSimulatorWindows.sh && rm -f ./buildOMSimulatorWindows.sh"
+     %OMDEV%\\tools\\msys\\usr\\bin\\sh --login -c "cd `cygpath '${WORKSPACE}'` && chmod +x buildOMSimulatorWindows.sh && ./buildOMSimulatorWindows.sh && rm -f ./buildOMSimulatorWindows.sh"
     """)
   } else {
     echo "${env.NODE_NAME}"
@@ -812,4 +812,14 @@ def shouldWeUpdateSubmodules() {
     }
   }
   return params.SUBMODULE_UPDATE
+}
+
+def shouldWeBuildMINGW32() {
+  if (isPR()) {
+    if (pullRequest.labels.contains("CI/MINGW32")) {
+      return true
+    }
+    return params.MINGW32
+  }
+  return true
 }
