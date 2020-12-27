@@ -2329,6 +2329,17 @@ void oms::System::updateAlgebraicLoops(const std::vector<oms_ssc_t>& sortedConne
   algLoops.clear();
   loopsNeedUpdate = false;
 
+  int systCount = 0;
+  for (int i=0; i<sortedConnections.size(); i++)
+  {
+    if (sortedConnections[i].size() > 1)
+    {
+      algLoops.push_back(AlgLoop(Flags::AlgLoopSolver(), absoluteTolerance, sortedConnections[i], systCount));
+      systCount++;
+    }
+  }
+}
+
 oms_status_enu_t oms::System::importBusConnectorGeometry(const pugi::xml_node& node)
 {
   std::string busname = node.attribute("name").as_string();
@@ -2358,21 +2369,6 @@ oms_status_enu_t oms::System::importBusConnectorGeometry(const pugi::xml_node& n
   }
 
   return oms_status_ok;
-}
-
-oms_status_enu_t oms::System::updateAlgebraicLoops(const std::vector< oms_ssc_t >& sortedConnections)
-{
-  // Instantiate loops
-  if (loopsNeedUpdate)
-  int systCount = 0;
-  for (int i=0; i<sortedConnections.size(); i++)
-  {
-    if (sortedConnections[i].size() > 1)
-    {
-      algLoops.push_back(AlgLoop(Flags::AlgLoopSolver(), absoluteTolerance, sortedConnections[i], systCount));
-      systCount++;
-    }
-  }
 }
 
 oms_status_enu_t oms::System::importStartValuesFromSSV()
