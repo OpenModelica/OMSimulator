@@ -53,6 +53,7 @@ namespace oms
         extern const char* parameter_bindings;
         extern const char* parameter_binding;
         extern const char* parameter_values;
+        extern const char* parameter_mapping;
       }
 
       namespace ssm

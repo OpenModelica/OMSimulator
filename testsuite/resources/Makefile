@@ -48,6 +48,8 @@ tlm.UpperPendulumFG \
 
 SSPs = \
 importStartValues \
+importParameterMapping \
+importParameterMappingInline \
 
 
 MOSs = \

@@ -58,6 +58,7 @@ namespace oms
     oms_status_enu_t exportToSSMTemplate(pugi::xml_node& ssmNode, const ComRef& cref);  ///< start values read from modelDescription.xml and creates a ssm template
     oms_status_enu_t exportStartValuesHelper(pugi::xml_node& node) const;
     oms_status_enu_t importStartValuesHelper(pugi::xml_node& parameters);
+    oms_status_enu_t importParameterMappingInline(pugi::xml_node& parameterMapping);
     oms_status_enu_t parseModelDescription(const char *filename);
 
     std::map<ComRef, double> realStartValues;  ///< parameters and start values defined before instantiating the FMU
@@ -71,6 +72,8 @@ namespace oms
     std::map<ComRef, double> modelDescriptionRealStartValues;  ///< real start values read from modelDescription.xml
     std::map<ComRef, int> modelDescriptionIntegerStartValues;  ///< integer start values read from modelDescription.xml
     std::map<ComRef, bool> modelDescriptionBooleanStartValues;  ///< boolean start values read from modelDescription.xml
+
+    std::multimap<ComRef, ComRef> mappedEntry;  ///< parameter names and values provided in the parameter source are to be mapped to the parameters of the component or system
 
   };
 }

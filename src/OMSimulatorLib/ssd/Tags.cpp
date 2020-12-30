@@ -73,6 +73,7 @@ const char* oms::ssp::Version1_0::ssm_file                             = "oms:ss
 const char* oms::ssp::Version1_0::ssd::parameter_bindings              = "ssd:ParameterBindings";
 const char* oms::ssp::Version1_0::ssd::parameter_binding               = "ssd:ParameterBinding";
 const char* oms::ssp::Version1_0::ssd::parameter_values                = "ssd:ParameterValues";
+const char* oms::ssp::Version1_0::ssd::parameter_mapping               = "ssd:ParameterMapping";
 
 const char* oms::ssp::Version1_0::ssv::parameter_set                   = "ssv:ParameterSet";
 const char* oms::ssp::Version1_0::ssv::parameters                      = "ssv:Parameters";
