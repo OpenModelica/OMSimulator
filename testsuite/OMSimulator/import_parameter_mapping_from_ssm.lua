@@ -5,7 +5,7 @@
 -- mac: no
 
 oms_setCommandLineOption("--suppressPath=true")
-oms_setTempDirectory("./import_parameter_mapping_inline_lua/")
+oms_setTempDirectory("./import_parameter_mapping_ssm_lua/")
 
 oms_importFile("../resources/importParameterMapping.ssp");
 
