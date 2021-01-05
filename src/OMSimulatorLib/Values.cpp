@@ -120,6 +120,7 @@ oms_status_enu_t oms::Values::exportToSSD(pugi::xml_node& node) const
   pugi::xml_node node_parameters = node_parameterset.append_child(oms::ssp::Version1_0::ssv::parameters);
 
   exportStartValuesHelper(node_parameters);
+  exportParameterMappingInline(node_parameter_binding);
 
   return oms_status_ok;
 }
@@ -171,31 +172,109 @@ oms_status_enu_t oms::Values::exportToSSV(pugi::xml_node& node) const
 oms_status_enu_t oms::Values::exportStartValuesHelper(pugi::xml_node& node) const
 {
   // realStartValues
-  for (const auto& r : realStartValues)
+  std::vector<ComRef> realEntry; // list of exported cref entry
+  for (const auto &r : realStartValues)
   {
-    //std::cout << "\n Start Values : " << std::string(r.first) << " = " << r.second ;
-    pugi::xml_node node_parameter = node.append_child(oms::ssp::Version1_0::ssv::parameter);
-    node_parameter.append_attribute("name") = r.first.c_str();
-    pugi::xml_node node_parameter_type = node_parameter.append_child(oms::ssp::Version1_0::ssv::real_type);
-    node_parameter_type.append_attribute("value") = r.second;
+    // check cref has entry associated with parameter mapping
+    ComRef cref = getMappedCrefEntry(r.first);
+
+    // export cref if entry does not exist, as cref associated with parameter mapping can have multiple entries with same value
+    if (std::find(realEntry.begin(), realEntry.end(), cref) == realEntry.end())
+    {
+      pugi::xml_node node_parameter = node.append_child(oms::ssp::Version1_0::ssv::parameter);
+      node_parameter.append_attribute("name") = cref.c_str();
+      pugi::xml_node node_parameter_type = node_parameter.append_child(oms::ssp::Version1_0::ssv::real_type);
+      node_parameter_type.append_attribute("value") = r.second;
+      realEntry.push_back(cref);
+    }
   }
 
   // integerStartValues
-  for (const auto& i : integerStartValues)
+  std::vector<ComRef> integerEntry; // list of exported cref entry
+  for (const auto &i : integerStartValues)
   {
-    pugi::xml_node node_parameter = node.append_child(oms::ssp::Version1_0::ssv::parameter);
-    node_parameter.append_attribute("name") = i.first.c_str();
-    pugi::xml_node node_parameter_type = node_parameter.append_child(oms::ssp::Version1_0::ssv::integer_type);
-    node_parameter_type.append_attribute("value") = i.second;
+    // check cref has entry associated with parameter mapping
+    ComRef cref = getMappedCrefEntry(i.first);
+
+    // export cref if entry does not exist, as cref associated with parameter mapping can have multiple entries with same value
+    if (std::find(integerEntry.begin(), integerEntry.end(), cref) == integerEntry.end())
+    {
+      pugi::xml_node node_parameter = node.append_child(oms::ssp::Version1_0::ssv::parameter);
+      node_parameter.append_attribute("name") = i.first.c_str();
+      pugi::xml_node node_parameter_type = node_parameter.append_child(oms::ssp::Version1_0::ssv::integer_type);
+      node_parameter_type.append_attribute("value") = i.second;
+      integerEntry.push_back(cref);
+    }
   }
 
   // boolStartValues
-  for (const auto& b : booleanStartValues)
+  std::vector<ComRef> booleanEntry; // list of exported cref entry
+  for (const auto &b : booleanStartValues)
   {
-    pugi::xml_node node_parameter = node.append_child(oms::ssp::Version1_0::ssv::parameter);
-    node_parameter.append_attribute("name") = b.first.c_str();
-    pugi::xml_node node_parameter_type = node_parameter.append_child(oms::ssp::Version1_0::ssv::boolean_type);
-    node_parameter_type.append_attribute("value") = b.second;
+    // check cref has entry associated with parameter mapping
+    ComRef cref = getMappedCrefEntry(b.first);
+
+    // export cref if entry does not exist, as cref associated with parameter mapping can have multiple entries with same value
+    if (std::find(booleanEntry.begin(), booleanEntry.end(), cref) == booleanEntry.end())
+    {
+      pugi::xml_node node_parameter = node.append_child(oms::ssp::Version1_0::ssv::parameter);
+      node_parameter.append_attribute("name") = b.first.c_str();
+      pugi::xml_node node_parameter_type = node_parameter.append_child(oms::ssp::Version1_0::ssv::boolean_type);
+      node_parameter_type.append_attribute("value") = b.second;
+      booleanEntry.push_back(cref);
+    }
+  }
+
+  return oms_status_ok;
+}
+
+/*
+ * returns mapped cref if entry found associated with parameter mapping,
+ * otherwise return the default cref
+ */
+oms::ComRef oms::Values::getMappedCrefEntry(ComRef cref) const
+{
+  if (mappedEntry.empty())
+  {
+    return cref;
+  }
+
+  ComRef mappedCref = cref;
+  for (const auto &it : mappedEntry)
+  {
+    if (it.second == cref)
+    {
+      mappedCref = it.first;
+      break;
+    }
+  }
+
+  return mappedCref;
+}
+
+/*
+ * export parameter mapping inline associated with parameterbinding
+ * <ssd:parameterBinding>
+ *   <ssd:parameterMapping>
+ *     <ssm:parameterMapping> </ssm:parameterMapping>
+ *   </ssd:paramterMapping>
+ * </ssd:parameterBinding>
+ */
+oms_status_enu_t oms::Values::exportParameterMappingInline(pugi::xml_node& node) const
+{
+  if (mappedEntry.empty())
+  {
+    return oms_status_ok;
+  }
+
+  pugi::xml_node ssd_parameter_mapping = node.append_child(oms::ssp::Version1_0::ssd::parameter_mapping);
+  pugi::xml_node ssm_parameter_mapping = ssd_parameter_mapping.append_child(oms::ssp::Version1_0::ssm::parameter_mapping);
+
+  for (const auto& it : mappedEntry)
+  {
+    pugi::xml_node ssm_mapping_entry = ssm_parameter_mapping.append_child(oms::ssp::Version1_0::ssm::parameter_mapping_entry);
+    ssm_mapping_entry.append_attribute("source") = it.first.c_str();
+    ssm_mapping_entry.append_attribute("target") = it.second.c_str();
   }
 
   return oms_status_ok;

@@ -57,9 +57,12 @@ namespace oms
     oms_status_enu_t exportToSSVTemplate(pugi::xml_node& ssvNode, const ComRef& cref);  ///< start values read from modelDescription.xml and creates a ssv template
     oms_status_enu_t exportToSSMTemplate(pugi::xml_node& ssmNode, const ComRef& cref);  ///< start values read from modelDescription.xml and creates a ssm template
     oms_status_enu_t exportStartValuesHelper(pugi::xml_node& node) const;
+    oms_status_enu_t exportParameterMappingInline(pugi::xml_node& node) const;
     oms_status_enu_t importStartValuesHelper(pugi::xml_node& parameters);
     oms_status_enu_t importParameterMappingInline(pugi::xml_node& parameterMapping);
     oms_status_enu_t parseModelDescription(const char *filename);
+
+    oms::ComRef getMappedCrefEntry(ComRef cref) const;
 
     std::map<ComRef, double> realStartValues;  ///< parameters and start values defined before instantiating the FMU
     std::map<ComRef, int> integerStartValues;  ///< parameters and start values defined before instantiating the FMU
