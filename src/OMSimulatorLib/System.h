@@ -164,7 +164,7 @@ namespace oms
     ctpl::thread_pool& getThreadPool();
 
     std::string getUniqueID() const;
-    std::vector<std::string> ssvFileSources;
+    std::map<std::string, std::string> startValuesFileSources;  ///< ssvFileSource mapped with ssmFilesource if mapping is provided, otherwise only ssvFilesource entry is made
   protected:
     System(const ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem, oms_solver_enu_t solverMethod);
 
@@ -215,6 +215,8 @@ namespace oms
     oms_status_enu_t importBusConnectorSignals(const pugi::xml_node& node);
     oms_status_enu_t importBusConnectorGeometry(const pugi::xml_node& node);
     oms_status_enu_t importStartValuesFromSSV();
+    oms_status_enu_t importStartValuesFromSSVHelper(std::string fileName, std::multimap<ComRef, ComRef> &mappedEntry);
+    oms_status_enu_t importParamterMappingFromSSM(std::string fileName, std::multimap<ComRef, ComRef> &mappedEntry);
   };
 }
 

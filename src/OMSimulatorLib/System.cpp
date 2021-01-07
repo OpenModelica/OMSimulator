@@ -528,8 +528,21 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
         }
         else
         {
-          // store the ssv files and process it later while handling the connection, so all the components are loaded
-          ssvFileSources.push_back(ssvFileSource);
+          // store the ssv and ssm files and process it later while handling the connection, so all the components are loaded
+          pugi::xml_node parameterMapping = parameterBindingNode.child(oms::ssp::Version1_0::ssd::parameter_mapping);
+
+          // check for parameterMapping (e.g) <ssd:ParameterMapping>
+          if (parameterMapping)
+          {
+            // parameterMapping provided
+            std::string ssmFileSource = parameterMapping.attribute("source").as_string();
+            startValuesFileSources[ssvFileSource] = ssmFileSource;
+          }
+          else
+          {
+            // no parameterMapping
+            startValuesFileSources[ssvFileSource] = "";
+          }
         }
       }
     }
@@ -718,8 +731,8 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
           return logError("wrong xml schema detected: " + name);
       }
 
-      // check for ssvFileSource exist and set the values before the connections
-      if (!ssvFileSources.empty())
+      // check for ssv FileSource exist and set the values before the connections
+      if (!startValuesFileSources.empty())
       {
         importStartValuesFromSSV();
       }
@@ -2343,56 +2356,156 @@ oms_status_enu_t oms::System::importBusConnectorGeometry(const pugi::xml_node& n
 
 oms_status_enu_t oms::System::importStartValuesFromSSV()
 {
-  for (const auto& ssvFileSource : ssvFileSources)
+  for (const auto& file : startValuesFileSources)
   {
-    std::string tempdir = getModel()->getTempDirectory();
-    filesystem::path temp_root(tempdir);
-    pugi::xml_document ssvdoc;
-    pugi::xml_parse_result result = ssvdoc.load_file((temp_root / ssvFileSource).string().c_str());
-    pugi::xml_node parameterSet, parameters;
+    // mapping between a parameter in the source and a parameter of the system or component being parametrized
+    std::multimap<ComRef, ComRef> mappedEntry;
 
-    if (result) // check from ssv file
+    // check for parameter mapping file ".ssm file"
+    if (!file.second.empty())
     {
-      parameterSet = ssvdoc.document_element(); // ssv:ParameterSet
-      parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
-    }
-    else if (getModel()->getSnapshot().child(oms::ssp::Version1_0::ssv_file)) // check in memory oms:ssv_file
-    {
-      parameterSet = getModel()->getSnapshot().child(oms::ssp::Version1_0::ssv_file).child(oms::ssp::Version1_0::ssv::parameter_set); // ssv:ParameterSet
-      parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
+      importParamterMappingFromSSM(file.second, mappedEntry);
+      importStartValuesFromSSVHelper(file.first, mappedEntry);
     }
     else
     {
-      return logError("loading \"" + std::string(ssvFileSource) + "\" failed (" + std::string(result.description()) + ")");
+      // no mapping file provided, apply the values from ssv file
+      importStartValuesFromSSVHelper(file.first, mappedEntry);
     }
+  }
 
-    if (parameters)
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::System::importStartValuesFromSSVHelper(std::string fileName, std::multimap<ComRef, ComRef> &mappedEntry)
+{
+  std::string tempdir = getModel()->getTempDirectory();
+  filesystem::path temp_root(tempdir);
+  pugi::xml_document ssvdoc;
+  pugi::xml_parse_result result = ssvdoc.load_file((temp_root / fileName).string().c_str());
+  pugi::xml_node parameterSet, parameters;
+
+  if (result) // check from ssv file
+  {
+    parameterSet = ssvdoc.document_element(); // ssv:ParameterSet
+    parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
+  }
+  else if (getModel()->getSnapshot().child(oms::ssp::Version1_0::ssv_file)) // check in memory oms:ssv_file
+  {
+    parameterSet = getModel()->getSnapshot().child(oms::ssp::Version1_0::ssv_file).child(oms::ssp::Version1_0::ssv::parameter_set); // ssv:ParameterSet
+    parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
+  }
+  else
+  {
+    return logError("loading \"" + std::string(fileName) + "\" failed (" + std::string(result.description()) + ")");
+  }
+
+  if (parameters)
+  {
+    for (pugi::xml_node_iterator itparameters = parameters.begin(); itparameters != parameters.end(); ++itparameters)
     {
-      for(pugi::xml_node_iterator itparameters = parameters.begin(); itparameters != parameters.end(); ++itparameters)
+      std::string name = itparameters->name();
+      std::vector<ComRef> mappedcrefs;
+      if (name == oms::ssp::Version1_0::ssv::parameter)
       {
-        std::string name = itparameters->name();
-        if (name == oms::ssp::Version1_0::ssv::parameter)
+        ComRef cref = ComRef(itparameters->attribute("name").as_string());
+        // check cref has any mapping entry
+        if (!mappedEntry.empty())
         {
-          ComRef cref = ComRef(itparameters->attribute("name").as_string());
-          if (itparameters->child(oms::ssp::Version1_0::ssv::real_type))
+          auto mapfind = mappedEntry.equal_range(cref);
+          for (auto it = mapfind.first; it != mapfind.second; ++it)
           {
-            double value = itparameters->child(oms::ssp::Version1_0::ssv::real_type).attribute("value").as_double();
-            setReal(cref, value);
+            mappedcrefs.push_back(it->second);
           }
-          else if(itparameters->child(oms::ssp::Version1_0::ssv::integer_type))
+        }
+
+        if (itparameters->child(oms::ssp::Version1_0::ssv::real_type))
+        {
+          double value = itparameters->child(oms::ssp::Version1_0::ssv::real_type).attribute("value").as_double();
+          if (!mappedcrefs.empty())
           {
-            int value = itparameters->child(oms::ssp::Version1_0::ssv::integer_type).attribute("value").as_int();
-            setInteger(cref, value);
-          }
-          else if(itparameters->child(oms::ssp::Version1_0::ssv::boolean_type))
-          {
-            bool value = itparameters->child(oms::ssp::Version1_0::ssv::boolean_type).attribute("value").as_bool();
-            setBoolean(cref, value);
+            for (const auto &mappedcref : mappedcrefs)
+            {
+              setReal(mappedcref, value);
+            }
           }
           else
           {
-            logError("Failed to import " + std::string(oms::ssp::Version1_0::ssv::parameter) + ":Unknown ParameterBinding-type");
+            // no mapping entry found, apply the default cref found in ssv file
+            setReal(cref, value);
           }
+        }
+        else if (itparameters->child(oms::ssp::Version1_0::ssv::integer_type))
+        {
+          int value = itparameters->child(oms::ssp::Version1_0::ssv::integer_type).attribute("value").as_int();
+          if (!mappedcrefs.empty())
+          {
+            for (const auto &mappedcref : mappedcrefs)
+            {
+              setInteger(mappedcref, value);
+            }
+          }
+          else
+          {
+            // no mapping entry found, apply the default cref found in ssv file
+            setInteger(cref, value);
+          }
+        }
+        else if (itparameters->child(oms::ssp::Version1_0::ssv::boolean_type))
+        {
+          bool value = itparameters->child(oms::ssp::Version1_0::ssv::boolean_type).attribute("value").as_bool();
+          if (!mappedcrefs.empty())
+          {
+            for (const auto &mappedcref : mappedcrefs)
+            {
+              setBoolean(mappedcref, value);
+            }
+          }
+          else
+          {
+            // no mapping entry found, apply the default cref found in ssv file
+            setBoolean(cref, value);
+          }
+        }
+        else
+        {
+          logError("Failed to import " + std::string(oms::ssp::Version1_0::ssv::parameter) + ":Unknown ParameterBinding-type");
+        }
+      }
+    }
+  }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::System::importParamterMappingFromSSM(std::string fileName, std::multimap<ComRef, ComRef> &mappedEntry)
+{
+  std::string tempdir = getModel()->getTempDirectory();
+  filesystem::path temp_root(tempdir);
+  pugi::xml_document ssmdoc;
+  pugi::xml_parse_result result = ssmdoc.load_file((temp_root / fileName).string().c_str());
+  pugi::xml_node parameterMapping;
+
+  if (result) // check from ssm file
+  {
+    parameterMapping = ssmdoc.document_element(); // ssm:ParameterMapping
+  }
+
+  if (parameterMapping)
+  {
+    for (pugi::xml_node_iterator itparametermapping = parameterMapping.begin(); itparametermapping != parameterMapping.end(); ++itparametermapping)
+    {
+      std::string name = itparametermapping->name();
+      if (name == oms::ssp::Version1_0::ssm::parameter_mapping_entry)
+      {
+        ComRef source = itparametermapping->attribute("source").as_string();
+        if (!source.isEmpty())
+        {
+          mappedEntry.insert(std::make_pair(source, itparametermapping->attribute("target").as_string()));
+        }
+        else
+        {
+          // default value will be applied
         }
       }
     }
