@@ -507,9 +507,9 @@ oms_status_enu_t oms::Model::updateParameterBindingsToSSD(pugi::xml_node& node, 
     // update the ssd with the top level parameterBindings (e.g)  <ParameterBinding source="resources/ControlledTemperature.ssv">
     for(pugi::xml_node_iterator it = node.begin(); it != node.end(); ++it)
     {
-      if (std::string(it->name()) == oms::ssp::Draft20180219::ssd::connectors) // insert the parameter bindings after top-level connectors node
+      if (std::string(it->name()) == oms::ssp::Draft20180219::ssd::elements) // insert the parameter bindings after top-level connectors node
       {
-        pugi::xml_node node_parameters_bindings = node.insert_child_after(oms::ssp::Version1_0::ssd::parameter_bindings, *it);
+        pugi::xml_node node_parameters_bindings = node.insert_child_before(oms::ssp::Version1_0::ssd::parameter_bindings, *it);
         pugi::xml_node node_parameter_binding  = node_parameters_bindings.append_child(oms::ssp::Version1_0::ssd::parameter_binding);
         std::string ssvFileName = "resources/" + std::string(this->getCref()) + ".ssv";
         node_parameter_binding.append_attribute("source") = ssvFileName.c_str();
@@ -787,10 +787,10 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
     // update the ssd with the top level parameterBindings (e.g)  <ParameterBinding source="resources/ControlledTemperature.ssv">
     for(pugi::xml_node_iterator it = node.begin(); it != node.end(); ++it)
     {
-      pugi::xml_node node_connectors = it->child(oms::ssp::Draft20180219::ssd::connectors);
-      if (node_connectors) // insert the parameter bindings after top-level connectors node
+      pugi::xml_node node_elements = it->child(oms::ssp::Draft20180219::ssd::elements);
+      if (node_elements) // insert the parameter bindings before <ssd:Elements>
       {
-        pugi::xml_node node_parameters_bindings = it->insert_child_after(oms::ssp::Version1_0::ssd::parameter_bindings, node_connectors);
+        pugi::xml_node node_parameters_bindings = it->insert_child_before(oms::ssp::Version1_0::ssd::parameter_bindings, node_elements);
         pugi::xml_node node_parameter_binding  = node_parameters_bindings.append_child(oms::ssp::Version1_0::ssd::parameter_binding);
         node_parameter_binding.append_attribute("source") = ssvFileName.c_str();
         break;

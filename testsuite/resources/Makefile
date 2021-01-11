@@ -50,6 +50,7 @@ SSPs = \
 importStartValues \
 importParameterMapping \
 importParameterMappingInline \
+import_hierarchical_ssv_sources \
 
 
 MOSs = \

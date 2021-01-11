@@ -66,6 +66,9 @@ print("info:      import_parameter_mapping.co_sim.System2.Input_2      : " .. om
 print("info:      import_parameter_mapping.co_sim.System2.parameter_1  : " .. oms_getReal("import_parameter_mapping.co_sim.System2.parameter_1"))
 print("info:      import_parameter_mapping.co_sim.System2.parameter_2  : " .. oms_getReal("import_parameter_mapping.co_sim.System2.parameter_2"))
 
+oms_terminate("import_parameter_mapping")
+oms_delete("import_parameter_mapping")
+
 -- Result:
 -- info:    model doesn't contain any continuous state
 -- info:    model doesn't contain any continuous state

@@ -129,29 +129,65 @@ oms_status_enu_t oms::Values::importFromSSD(const pugi::xml_node& node, const st
 {
   for (pugi::xml_node parameterBindingNode = node.child(oms::ssp::Version1_0::ssd::parameter_binding); parameterBindingNode; parameterBindingNode = parameterBindingNode.next_sibling(oms::ssp::Version1_0::ssd::parameter_binding))
   {
-    /* parameter bindings from ssv files are handled at system level (System.h) importStartValuesFromSSV()
-       (e.g) parameterBindingNode.attribute("source").as_string(); */
-
-    // inline ParameterBindings
-    if (parameterBindingNode.child(oms::ssp::Version1_0::ssv::parameter_set))
+    std::string ssvFile = parameterBindingNode.attribute("source").as_string();
+    // parameter binding provided with .ssv file
+    if (!ssvFile.empty())
     {
-      logWarning_deprecated;
+      filesystem::path temp_root(tempdir);
+      pugi::xml_document ssvdoc;
+      pugi::xml_parse_result result = ssvdoc.load_file((temp_root / ssvFile).string().c_str());
+      if (!result)
+        return logError("loading \"" + std::string(ssvFile) + "\" failed (" + std::string(result.description()) + ")");
+
+      pugi::xml_node parameterSet = ssvdoc.document_element(); // ssd:SystemStructureDescription
+      pugi::xml_node parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
+
+      // check for parameterMapping (e.g) <ssd:ParameterMapping>
+      pugi::xml_node ssd_parameterMapping = parameterBindingNode.child(oms::ssp::Version1_0::ssd::parameter_mapping);
+
+      if (ssd_parameterMapping)
+      {
+        // parameterMapping provided
+        std::string ssmFileSource = ssd_parameterMapping.attribute("source").as_string();
+        pugi::xml_document ssmdoc;
+        pugi::xml_parse_result ssm_result = ssmdoc.load_file((temp_root / ssmFileSource).string().c_str());
+
+        if (ssm_result) // check from ssm file
+        {
+          pugi::xml_node ssm_parameterMapping = ssmdoc.document_element(); // ssm:ParameterMapping
+          importParameterMapping(ssm_parameterMapping);
+        }
+        else
+        {
+          return logError("loading \"" + std::string(ssmFileSource) + "\" failed (" + std::string(ssm_result.description()) + ")");
+        }
+      }
+
+      importStartValuesHelper(parameters);
     }
-    pugi::xml_node parameterValues = parameterBindingNode.child(oms::ssp::Version1_0::ssd::parameter_values);
-    pugi::xml_node parameterSet = parameterValues.child(oms::ssp::Version1_0::ssv::parameter_set);
-    std::string paramsetVersion = parameterSet.attribute("version").as_string();
-    pugi::xml_node parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
-
-    // check for parameterMapping (e.g) <ssd:ParameterMapping>
-    pugi::xml_node ssd_parameterMapping = parameterBindingNode.child(oms::ssp::Version1_0::ssd::parameter_mapping);
-    pugi::xml_node ssm_parameterMapping = ssd_parameterMapping.child(oms::ssp::Version1_0::ssm::parameter_mapping);
-
-    if (ssm_parameterMapping)
+    else
     {
-      importParameterMappingInline(ssm_parameterMapping);
-    }
+      // inline ParameterBindings
+      if (parameterBindingNode.child(oms::ssp::Version1_0::ssv::parameter_set))
+      {
+        logWarning_deprecated;
+      }
+      pugi::xml_node parameterValues = parameterBindingNode.child(oms::ssp::Version1_0::ssd::parameter_values);
+      pugi::xml_node parameterSet = parameterValues.child(oms::ssp::Version1_0::ssv::parameter_set);
+      std::string paramsetVersion = parameterSet.attribute("version").as_string();
+      pugi::xml_node parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
 
-    importStartValuesHelper(parameters);
+      // check for parameterMapping (e.g) <ssd:ParameterMapping>
+      pugi::xml_node ssd_parameterMapping = parameterBindingNode.child(oms::ssp::Version1_0::ssd::parameter_mapping);
+      pugi::xml_node ssm_parameterMapping = ssd_parameterMapping.child(oms::ssp::Version1_0::ssm::parameter_mapping);
+
+      if (ssm_parameterMapping)
+      {
+        importParameterMapping(ssm_parameterMapping);
+      }
+
+      importStartValuesHelper(parameters);
+    }
   }
 
   return oms_status_ok;
@@ -483,7 +519,7 @@ oms_status_enu_t oms::Values::parseModelDescription(const char *filename)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Values::importParameterMappingInline(pugi::xml_node& parameterMapping)
+oms_status_enu_t oms::Values::importParameterMapping(pugi::xml_node& parameterMapping)
 {
   if (parameterMapping)
   {
