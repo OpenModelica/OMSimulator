@@ -216,7 +216,7 @@ namespace oms
     oms_status_enu_t importBusConnectorGeometry(const pugi::xml_node& node);
     oms_status_enu_t importStartValuesFromSSV();
     oms_status_enu_t importStartValuesFromSSVHelper(std::string fileName, std::multimap<ComRef, ComRef> &mappedEntry);
-    oms_status_enu_t importParamterMappingFromSSM(std::string fileName, std::multimap<ComRef, ComRef> &mappedEntry);
+    oms_status_enu_t importParameterMappingFromSSM(std::string fileName, std::multimap<ComRef, ComRef> &mappedEntry);
   };
 }
 

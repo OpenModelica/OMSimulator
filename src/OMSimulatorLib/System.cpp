@@ -514,36 +514,47 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
     }
     else if(name == oms::ssp::Version1_0::ssd::parameter_bindings)
     {
-      // check for multiple ssv files or parameter bindings
-      for (pugi::xml_node parameterBindingNode = it->child(oms::ssp::Version1_0::ssd::parameter_binding); parameterBindingNode; parameterBindingNode = parameterBindingNode.next_sibling(oms::ssp::Version1_0::ssd::parameter_binding))
+      std::string parent_node = it->parent().parent().name();
+      // top level parameter bindings belonging to <ssd:SystemStructureDescription> provided either as inline or .ssv files
+      if (parent_node == oms::ssp::Draft20180219::ssd::system_structure_description)
       {
-        std::string ssvFileSource = parameterBindingNode.attribute("source").as_string();
-
-        // set parameter bindings associated with the system
-        if (ssvFileSource.empty()) // inline parameterBinding
+        // check for multiple ssv files or parameter bindings
+        for (pugi::xml_node parameterBindingNode = it->child(oms::ssp::Version1_0::ssd::parameter_binding); parameterBindingNode; parameterBindingNode = parameterBindingNode.next_sibling(oms::ssp::Version1_0::ssd::parameter_binding))
         {
-          std::string tempdir = getModel()->getTempDirectory();
-          if (oms_status_ok !=  values.importFromSSD(*it, sspVersion, tempdir))
-            return logError("Failed to import " + std::string(oms::ssp::Version1_0::ssd::parameter_bindings));
-        }
-        else
-        {
-          // store the ssv and ssm files and process it later while handling the connection, so all the components are loaded
-          pugi::xml_node parameterMapping = parameterBindingNode.child(oms::ssp::Version1_0::ssd::parameter_mapping);
+          std::string ssvFileSource = parameterBindingNode.attribute("source").as_string();
 
-          // check for parameterMapping (e.g) <ssd:ParameterMapping>
-          if (parameterMapping)
+          // set parameter bindings associated with the system
+          if (ssvFileSource.empty()) // inline parameterBinding
           {
-            // parameterMapping provided
-            std::string ssmFileSource = parameterMapping.attribute("source").as_string();
-            startValuesFileSources[ssvFileSource] = ssmFileSource;
+            std::string tempdir = getModel()->getTempDirectory();
+            if (oms_status_ok != values.importFromSSD(*it, sspVersion, tempdir))
+              return logError("Failed to import " + std::string(oms::ssp::Version1_0::ssd::parameter_bindings));
           }
           else
           {
-            // no parameterMapping
-            startValuesFileSources[ssvFileSource] = "";
+            // store the ssv and ssm files and process it later while handling the connection, so all the components are loaded
+            pugi::xml_node parameterMapping = parameterBindingNode.child(oms::ssp::Version1_0::ssd::parameter_mapping);
+
+            // check for parameterMapping (e.g) <ssd:ParameterMapping>
+            if (parameterMapping)
+            {
+              // parameterMapping provided
+              std::string ssmFileSource = parameterMapping.attribute("source").as_string();
+              startValuesFileSources[ssvFileSource] = ssmFileSource;
+            }
+            else
+            {
+              // no parameterMapping
+              startValuesFileSources[ssvFileSource] = "";
+            }
           }
         }
+      }
+      else
+      // heirarchial level parameter bindings belonging to <ssd:Elements> provided either as inline or .ssv files
+      {
+        if (oms_status_ok !=  values.importFromSSD(*it, sspVersion, getModel()->getTempDirectory()))
+            return logError("Failed to import " + std::string(oms::ssp::Version1_0::ssd::parameter_bindings));
       }
     }
     else if (name == oms::ssp::Draft20180219::ssd::connections)
@@ -2364,7 +2375,7 @@ oms_status_enu_t oms::System::importStartValuesFromSSV()
     // check for parameter mapping file ".ssm file"
     if (!file.second.empty())
     {
-      importParamterMappingFromSSM(file.second, mappedEntry);
+      importParameterMappingFromSSM(file.second, mappedEntry);
       importStartValuesFromSSVHelper(file.first, mappedEntry);
     }
     else
@@ -2478,7 +2489,7 @@ oms_status_enu_t oms::System::importStartValuesFromSSVHelper(std::string fileNam
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::System::importParamterMappingFromSSM(std::string fileName, std::multimap<ComRef, ComRef> &mappedEntry)
+oms_status_enu_t oms::System::importParameterMappingFromSSM(std::string fileName, std::multimap<ComRef, ComRef> &mappedEntry)
 {
   std::string tempdir = getModel()->getTempDirectory();
   filesystem::path temp_root(tempdir);
@@ -2489,6 +2500,10 @@ oms_status_enu_t oms::System::importParamterMappingFromSSM(std::string fileName,
   if (result) // check from ssm file
   {
     parameterMapping = ssmdoc.document_element(); // ssm:ParameterMapping
+  }
+  else
+  {
+    return logError("loading \"" + std::string(fileName) + "\" failed (" + std::string(result.description()) + ")");
   }
 
   if (parameterMapping)

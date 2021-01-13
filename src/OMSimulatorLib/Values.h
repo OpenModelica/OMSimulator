@@ -59,7 +59,7 @@ namespace oms
     oms_status_enu_t exportStartValuesHelper(pugi::xml_node& node) const;
     oms_status_enu_t exportParameterMappingInline(pugi::xml_node& node) const;
     oms_status_enu_t importStartValuesHelper(pugi::xml_node& parameters);
-    oms_status_enu_t importParameterMappingInline(pugi::xml_node& parameterMapping);
+    oms_status_enu_t importParameterMapping(pugi::xml_node& parameterMapping);
     oms_status_enu_t parseModelDescription(const char *filename);
 
     oms::ComRef getMappedCrefEntry(ComRef cref) const;
