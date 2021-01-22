@@ -60,8 +60,6 @@ namespace oms
     oms_status_enu_t stepUntil(double stopTime, void (*cb)(const char* ident, double time, oms_status_enu_t status));
     oms_status_enu_t stepUntilASSC(double stopTime, void (*cb)(const char* ident, double time, oms_status_enu_t status));
 
-    double getTime() const {return time;}
-
     std::string getSolverName() const;
     oms_status_enu_t setSolverMethod(std::string);
     oms_status_enu_t setSolver(oms_solver_enu_t solver) {if (solver > oms_solver_wc_min && solver < oms_solver_wc_max) {solverMethod=solver; return oms_status_ok;} return oms_status_error;}
@@ -70,7 +68,6 @@ namespace oms
     oms_status_enu_t setInputsDer(oms::DirectedGraph& graph, const std::vector<double>& inputsDer);
     oms_status_enu_t getInputAndOutput(DirectedGraph& graph, std::vector<double>& inputVect,std::vector<double>& outputVect,std::map<ComRef, Component*> FMUcomponents);
     oms_status_enu_t updateInputs(DirectedGraph& graph);
-    oms_status_enu_t solveAlgLoop(DirectedGraph& graph, const std::vector< std::pair<int, int> >& SCC);
 
     oms_status_enu_t getRealOutputDerivative(const ComRef& cref, SignalDerivative& der);
     oms_status_enu_t setRealInputDerivative(const ComRef& cref, const SignalDerivative& der);
@@ -93,8 +90,6 @@ namespace oms
     SystemWC& operator=(SystemWC const& copy); ///< not implemented
 
   private:
-    double time;
-
     StepSizeConfiguration stepSizeConfiguration;  ///< Configuration data structure for assc
 
     unsigned int h_id;

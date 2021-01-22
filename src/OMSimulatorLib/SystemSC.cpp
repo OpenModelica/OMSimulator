@@ -345,6 +345,9 @@ oms_status_enu_t oms::SystemSC::initialize()
     if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetMaxNumSteps() failed with flag = " + std::to_string(flag));
   }
 
+  // Mark algebraic loops to be updated on next call
+  loopsNeedUpdate = true;
+
   return oms_status_ok;
 }
 
@@ -651,6 +654,8 @@ oms_status_enu_t oms::SystemSC::stepUntil(double stopTime, void (*cb)(const char
 oms_status_enu_t oms::SystemSC::updateInputs(DirectedGraph& graph)
 {
   CallClock callClock(clock);
+  oms_status_enu_t status;
+  int loopNum = 0;
 
   if (getModel()->validState(oms_modelState_simulation))
   {
@@ -673,7 +678,9 @@ oms_status_enu_t oms::SystemSC::updateInputs(DirectedGraph& graph)
   }
 
   // input := output
-  const std::vector< std::vector< std::pair<int, int> > >& sortedConnections = graph.getSortedConnections();
+  const std::vector< oms_ssc_t >& sortedConnections = graph.getSortedConnections();
+  updateAlgebraicLoops(sortedConnections);
+
   for(int i=0; i<sortedConnections.size(); i++)
   {
     if (sortedConnections[i].size() == 1)
@@ -704,69 +711,14 @@ oms_status_enu_t oms::SystemSC::updateInputs(DirectedGraph& graph)
     }
     else
     {
-      if (oms_status_ok != solveAlgLoop(graph, sortedConnections[i])) return oms_status_error;
+      status = solveAlgLoop(graph, loopNum);
+      if (oms_status_ok != status)
+      {
+        loopsNeedUpdate = true;
+        return status;
+      }
+      loopNum++;
     }
   }
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms::SystemSC::solveAlgLoop(DirectedGraph& graph, const std::vector< std::pair<int, int> >& SCC)
-{
-  CallClock callClock(clock);
-
-  const int size = SCC.size();
-  const int maxIterations = Flags::MaxLoopIteration();
-  double maxRes;
-  double *res = new double[size]();
-
-  int it=0;
-  do
-  {
-    it++;
-    // get old values
-    for (int i=0; i<size; ++i)
-    {
-      int output = SCC[i].first;
-      if (oms_status_ok != getReal(graph.getNodes()[output].getName(), res[i]))
-      {
-        delete[] res;
-        return oms_status_error;
-      }
-    }
-
-    // update inputs
-    for (int i=0; i<size; ++i)
-    {
-      int input = SCC[i].second;
-      if (oms_status_ok != setReal(graph.getNodes()[input].getName(), res[i]))
-      {
-        delete[] res;
-        return oms_status_error;
-      }
-    }
-
-    // calculate residuals
-    maxRes = 0.0;
-    double value;
-    for (int i=0; i<size; ++i)
-    {
-      int output = SCC[i].first;
-      if (oms_status_ok != getReal(graph.getNodes()[output].getName(), value))
-      {
-        delete[] res;
-        return oms_status_error;
-      }
-      res[i] -= value;
-
-      if (fabs(res[i]) > maxRes)
-        maxRes = fabs(res[i]);
-    }
-  } while(maxRes > absoluteTolerance && it < maxIterations);
-
-  delete[] res;
-
-  if (it >= maxIterations)
-    return logError("max. number of iterations (" + std::to_string(maxIterations) + ") exceeded at time = " + std::to_string(getTime()));
-  logDebug("CompositeModel::solveAlgLoop: maxRes: " + std::to_string(maxRes) + ", iterations: " + std::to_string(it) + " at time = " + std::to_string(getTime()));
   return oms_status_ok;
 }
