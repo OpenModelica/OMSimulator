@@ -133,22 +133,21 @@ pipeline {
             buildOMS()
           }
         }
-// Disable until working
-//        stage('alpine') {
-//          agent {
-//            dockerfile {
-//              additionalBuildArgs '--pull'
-//              dir '.CI/alpine'
-//              label 'linux'
-//            }
-//          }
-//          environment {
-//            OMSFLAGS = "OMTLM=OFF"
-//          }
-//          steps {
-//            buildOMS()
-//          }
-//        }
+        stage('alpine') {
+          agent {
+            dockerfile {
+              additionalBuildArgs '--pull'
+              dir '.CI/alpine'
+              label 'linux'
+            }
+          }
+          environment {
+            OMSFLAGS = "OMTLM=OFF"
+          }
+          steps {
+            buildOMS()
+          }
+        }
         stage('linux32') {
           agent {
             dockerfile {
