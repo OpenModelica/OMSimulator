@@ -121,6 +121,8 @@ namespace oms
     virtual oms_status_enu_t restoreState() {return logError_NotImplemented;}
 
     oms_status_enu_t rename(const ComRef& newCref); ///< rename submodules (e.g)Fmu's
+    virtual std::vector<ComRef> getFilteredSignals() {return {};}
+
   protected:
     Component(const ComRef& cref, oms_component_enu_t type, System* parentSystem, const std::string& path);
 

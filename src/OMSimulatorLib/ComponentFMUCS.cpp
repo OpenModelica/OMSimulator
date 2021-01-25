@@ -1150,6 +1150,7 @@ oms_status_enu_t oms::ComponentFMUCS::addSignalsToResults(const char* regex)
     {
       //logInfo("added \"" + std::string(getFullCref() + var.getCref()) + "\" to results");
       exportVariables[i] = true;
+      filteredSignals.push_back(getFullCref() + var.getCref());
     }
   }
 
@@ -1169,6 +1170,11 @@ oms_status_enu_t oms::ComponentFMUCS::removeSignalsFromResults(const char* regex
     {
       //logInfo("removed \"" + std::string(getFullCref() + var.getCref()) + "\" from results");
       exportVariables[i] = false;
+      // remove signals
+      if (!filteredSignals.empty())
+      {
+        filteredSignals.erase(std::remove(filteredSignals.begin(), filteredSignals.end(), getFullCref() + var.getCref()));
+      }
     }
   }
 

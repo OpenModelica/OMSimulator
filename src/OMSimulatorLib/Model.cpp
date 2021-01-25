@@ -600,7 +600,15 @@ oms_status_enu_t oms::Model::exportToSSD(pugi::xml_node& node, pugi::xml_node& s
   oms_simulation_information.append_attribute("resultFile") = resultFilename.c_str();
   oms_simulation_information.append_attribute("loggingInterval") = std::to_string(loggingInterval).c_str();
   oms_simulation_information.append_attribute("bufferSize") = std::to_string(bufferSize).c_str();
-  oms_simulation_information.append_attribute("signalFilter") = signalFilter.c_str();
+  // check signal filter used
+  if (system->signalFilter)
+  {
+    oms_simulation_information.append_attribute("signalFilter") = "resources/signalFilter.xml";
+  }
+  else
+  {
+    oms_simulation_information.append_attribute("signalFilter") = ".*";
+  }
 
   return oms_status_ok;
 }
@@ -821,6 +829,46 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
     }
   }
 
+
+  // signal Filter
+  pugi::xml_document signalFilterdoc;
+  // generate XML declaration for signal filter
+  pugi::xml_node signalFilterNode = signalFilterdoc.append_child(pugi::node_declaration);
+  signalFilterNode.append_attribute("version") = "1.0";
+  signalFilterNode.append_attribute("encoding") = "UTF-8";
+
+  pugi::xml_node oms_signalFilter = signalFilterdoc.append_child("oms:SignalFilter");
+  oms_signalFilter.append_attribute("version") = "1.0";
+
+  for (const auto &it : system->getSubSystems())
+  {
+    for (const auto &var : it.second->filteredSignals)
+    {
+      pugi::xml_node oms_variable = oms_signalFilter.append_child("oms:Variable");
+      oms_variable.append_attribute("name") = var.c_str();
+    }
+  }
+
+  for (const auto &it : system->getComponents())
+  {
+    for (const auto &var : it.second->getFilteredSignals())
+    {
+      pugi::xml_node oms_variable = oms_signalFilter.append_child("oms:Variable");
+      oms_variable.append_attribute("name") = var.c_str();
+    }
+  }
+
+  //signalFilterdoc.save(std::cout);
+
+  int signalFilterCount = std::distance(oms_signalFilter.begin(), oms_signalFilter.end());
+  std::string signalFilterFileName = "";
+  if (signalFilterCount > 0)
+  {
+    signalFilterFileName = "resources/signalFilter.xml";
+    filesystem::path signalFilterFilePath = filesystem::path(tempDir) / signalFilterFileName;
+    signalFilterdoc.save_file(signalFilterFilePath.string().c_str());
+  }
+
   //doc.save(std::cout);
 
   if (!doc.save_file(ssdPath.string().c_str()))
@@ -860,6 +908,9 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
 void oms::Model::getAllResources(std::vector<std::string>& resources) const
 {
   resources.push_back("SystemStructure.ssd");
+
+  if (!signalFilterFileName.empty())
+    resources.push_back(signalFilterFileName);
 
   if (system)
     system->getAllResources(resources);
@@ -1238,6 +1289,13 @@ oms_status_enu_t oms::Model::setSignalFilter(const std::string& regex)
 oms_status_enu_t oms::Model::addSignalsToResults(const char* regex)
 {
   if (system)
+    // check signalFilter not set and use removeSignalsFromResults() to set all the signals to false only once, as addSignalsToResults can be used mulitple times to filter signals
+    if (!system->signalFilter)
+    {
+      if (oms_status_ok != removeSignalsFromResults(".*"))
+        return oms_status_error;
+    }
+
     if (oms_status_ok != system->addSignalsToResults(regex))
       return oms_status_error;
   return oms_status_ok;

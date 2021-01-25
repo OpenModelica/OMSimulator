@@ -180,6 +180,8 @@ namespace oms
 
     std::string getUniqueID() const;
     std::map<std::string, std::string> startValuesFileSources;  ///< ssvFileSource mapped with ssmFilesource if mapping is provided, otherwise only ssvFilesource entry is made
+    std::vector<ComRef> filteredSignals;  ///< filtered signals set via oms_addSignalsToResults()
+    bool signalFilter = false;
   protected:
     double time;
     System(const ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem, oms_solver_enu_t solverMethod);

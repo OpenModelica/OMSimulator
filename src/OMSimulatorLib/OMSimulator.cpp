@@ -1427,6 +1427,8 @@ oms_status_enu_t oms_setResultFile(const char* cref_, const char* filename, int 
 
 oms_status_enu_t oms_setSignalFilter(const char* cref, const char* regex)
 {
+  logWarning("[setSignalFilter] is deprecated and [addSignalsToResults] is the recommended API");
+
   oms_status_enu_t status;
 
   oms::ComRef tail(cref);
@@ -1441,7 +1443,7 @@ oms_status_enu_t oms_setSignalFilter(const char* cref, const char* regex)
 
 oms_status_enu_t oms_addSignalsToResults(const char* cref, const char* regex)
 {
-  logWarning("[addSignalsToResults] is deprecated and [setSignalFilter] is the recommended API");
+  //logWarning("[addSignalsToResults] is deprecated and [setSignalFilter] is the recommended API");
 
   oms::ComRef tail(cref);
   oms::ComRef front = tail.pop_front();
@@ -1455,7 +1457,7 @@ oms_status_enu_t oms_addSignalsToResults(const char* cref, const char* regex)
 
 oms_status_enu_t oms_removeSignalsFromResults(const char* cref, const char* regex)
 {
-  logWarning("[removeSignalsFromResults] is deprecated and [setSignalFilter] is the recommended API");
+  //logWarning("[removeSignalsFromResults] is deprecated and [setSignalFilter] is the recommended API");
 
   oms::ComRef tail(cref);
   oms::ComRef front = tail.pop_front();

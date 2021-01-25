@@ -26,6 +26,7 @@ rename.lua \
 setExternalInputs.lua \
 simulation.lua \
 simulation.py \
+signalFilter.lua \
 snapshot.lua \
 snapshot.py \
 table.lua \
