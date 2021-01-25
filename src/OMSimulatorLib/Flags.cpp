@@ -62,6 +62,7 @@ oms::Flags::~Flags()
 void oms::Flags::setDefaults()
 {
   addParametersToCSV = false;
+  algLoopSolver = oms_alg_solver_fixedpoint;
   defaultModeIsCS = false;
   deleteTempFiles = true;
   emitEvents = true;
@@ -177,6 +178,17 @@ oms_status_enu_t oms::Flags::AddParametersToCSV(const std::string& value)
   GetInstance().addParametersToCSV = (value == "true");
   return oms_status_ok;
 }
+
+oms_status_enu_t oms::Flags::AlgLoopSolver(const std::string& value)
+{
+  if (value == "fixedpoint")
+    GetInstance().algLoopSolver = oms_alg_solver_fixedpoint;
+  else if (value == "kinsol")
+    GetInstance().algLoopSolver = oms_alg_solver_kinsol;
+  else
+    return logError("Invalid solver method");
+  return oms_status_ok;
+  }
 
 oms_status_enu_t oms::Flags::ClearAllOptions(const std::string& value)
 {

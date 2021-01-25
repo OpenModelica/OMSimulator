@@ -145,7 +145,7 @@ void oms::DirectedGraph::includeGraph(const oms::DirectedGraph& graph, const oms
     addEdge(graph.nodes[graph.edges[i].first].addPrefix(prefix), graph.nodes[graph.edges[i].second].addPrefix(prefix));
 }
 
-int oms::DirectedGraph::getEdgeIndex(const std::vector< std::pair<int, int> >& edges, int from, int to)
+int oms::DirectedGraph::getEdgeIndex(const oms_ssc_t& edges, int from, int to)
 {
   for (int i = 0; i < edges.size(); ++i)
     if (edges[i].first == from && edges[i].second == to)
@@ -243,7 +243,7 @@ std::deque< std::vector<int> > oms::DirectedGraph::getSCCs()
   return components;
 }
 
-const std::vector< std::vector< std::pair<int, int> > >& oms::DirectedGraph::getSortedConnections()
+const std::vector< oms_ssc_t >& oms::DirectedGraph::getSortedConnections()
 {
   if (!sortedConnectionsAreValid)
     calculateSortedConnections();
@@ -253,7 +253,7 @@ const std::vector< std::vector< std::pair<int, int> > >& oms::DirectedGraph::get
 void oms::DirectedGraph::calculateSortedConnections()
 {
   std::deque< std::vector<int> > components = getSCCs();
-  std::vector< std::pair<int, int> > SCC;
+  oms_ssc_t SCC;
   sortedConnections.clear();
 
   for (int i = 0; i < components.size(); ++i)
