@@ -32,6 +32,7 @@
 #ifndef _OMS_SYSTEM_H_
 #define _OMS_SYSTEM_H_
 
+#include "AlgLoop.h"
 #include "BusConnector.h"
 #include "Clock.h"
 #include "ComRef.h"
@@ -58,6 +59,7 @@
 
 namespace oms
 {
+  class AlgLoop;
   class Component;
   class Model;
   class Variable;
@@ -132,6 +134,8 @@ namespace oms
     virtual oms_status_enu_t reset() = 0;
     virtual oms_status_enu_t stepUntil(double stopTime, void (*cb)(const char* ident, double time, oms_status_enu_t status)) = 0;
 
+    double getTime() const {return time;}
+
     oms_status_enu_t getBoolean(const ComRef& cref, bool& value);
     oms_status_enu_t getInteger(const ComRef& cref, int& value);
     oms_status_enu_t getReal(const ComRef& cref, double& value);
@@ -160,12 +164,18 @@ namespace oms
     double getMaximumStepSize() {return maximumStepSize;}
     oms_solver_enu_t getSolver() {return solverMethod;}
 
+    AlgLoop* getAlgLoop(const int systemNumber);
+    oms_status_enu_t addAlgLoop(oms_ssc_t SCC, const int algLoopNum);
+    oms_status_enu_t updateAlgebraicLoops(const std::vector< oms_ssc_t >& sortedConnections);
+    oms_status_enu_t solveAlgLoop(DirectedGraph& graph, int loopNumber);
+
     bool useThreadPool();
     ctpl::thread_pool& getThreadPool();
 
     std::string getUniqueID() const;
     std::map<std::string, std::string> startValuesFileSources;  ///< ssvFileSource mapped with ssmFilesource if mapping is provided, otherwise only ssvFilesource entry is made
   protected:
+    double time;
     System(const ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem, oms_solver_enu_t solverMethod);
 
     // stop the compiler generating methods copying the object
@@ -189,6 +199,9 @@ namespace oms
 
     std::unordered_map<unsigned int /*result file var ID*/, unsigned int /*allVariables ID*/> resultFileMapping;
     std::unordered_map<ComRef, bool> exportConnectors;
+
+  protected:
+    bool loopsNeedUpdate = true;
 
   private:
     ComRef cref;
@@ -217,6 +230,8 @@ namespace oms
     oms_status_enu_t importStartValuesFromSSV();
     oms_status_enu_t importStartValuesFromSSVHelper(std::string fileName, std::multimap<ComRef, ComRef> &mappedEntry);
     oms_status_enu_t importParameterMappingFromSSM(std::string fileName, std::multimap<ComRef, ComRef> &mappedEntry);
+
+    std::vector<AlgLoop> algLoops;    ///< Vector of algebraic loop objects
   };
 }
 
