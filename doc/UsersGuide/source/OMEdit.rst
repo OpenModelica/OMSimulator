@@ -65,22 +65,6 @@ That will pop-up a dialog to enter the names of the new sub-model.
 
   OMEdit: Add SubModel Dialog
 
-Instantiate Model
------------------
-
-Before a OMSimulator model can be simulated, it needs to be instantiated.
-Therefore, select the dedicated menu item:
-
-.. figure :: images/omedit_08.png
-
-  OMEdit: Instantiate Model
-
-That will pop-up a dialog to enter various simulation settings.
-
-.. figure :: images/omedit_09.png
-
-  OMEdit: Instantiate Model Dialog
-
 Simulate
 --------
 
