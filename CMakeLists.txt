@@ -32,7 +32,6 @@ ELSEIF(APPLE)
   set(PLATFORM_STRING "mac")
 ELSE()
   set(PLATFORM_STRING "linux")
-  set(STATIC_LIBGCC "-static-libgcc")
 ENDIF()
 
 # Don't allow in-source build
