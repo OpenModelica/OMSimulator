@@ -64,6 +64,8 @@ const char* oms::ssp::Version1_0::FixedStepMaster                      = "oms:Fi
 const char* oms::ssp::Version1_0::VariableStepSolver                   = "oms:VariableStepSolver"; // SC-System
 const char* oms::ssp::Version1_0::oms_annotations                      = "oms:Annotations"; // root node for all oms_annotations
 const char* oms::ssp::Version1_0::oms_buses                            = "oms:Buses";
+const char* oms::ssp::Version1_0::oms_signalFilter                     = "oms:SignalFilter";
+const char* oms::ssp::Version1_0::oms_Variable                         = "oms:Variable";
 
 const char* oms::ssp::Version1_0::snap_shot                            = "oms:snapshot";
 const char* oms::ssp::Version1_0::ssd_file                             = "oms:ssd_file";

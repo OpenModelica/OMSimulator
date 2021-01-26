@@ -129,6 +129,8 @@ namespace oms
 
     pugi::xml_node getSnapshot() {return snapShot;}
 
+    oms_status_enu_t exportSignalFilter(pugi::xml_node &signalfilter, int &count) const;
+
   private:
     Model(const ComRef& cref, const std::string& tempDir);
 

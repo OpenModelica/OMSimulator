@@ -600,14 +600,53 @@ oms_status_enu_t oms::Model::exportToSSD(pugi::xml_node& node, pugi::xml_node& s
   oms_simulation_information.append_attribute("resultFile") = resultFilename.c_str();
   oms_simulation_information.append_attribute("loggingInterval") = std::to_string(loggingInterval).c_str();
   oms_simulation_information.append_attribute("bufferSize") = std::to_string(bufferSize).c_str();
+
+  int signalFilterCount = 0;
+  pugi::xml_node oms_signalFilter(NULL);
+  exportSignalFilter(oms_signalFilter, signalFilterCount);
+
   // check signal filter used
-  if (system->signalFilter)
+  if (signalFilterCount > 0)
   {
     oms_simulation_information.append_attribute("signalFilter") = "resources/signalFilter.xml";
   }
   else
   {
     oms_simulation_information.append_attribute("signalFilter") = ".*";
+  }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Model::exportSignalFilter(pugi::xml_node &node, int &count) const
+{
+  if (!system)
+    return oms_status_ok;
+
+  for (const auto &it : system->getSubSystems())
+  {
+    for (const auto &var : it.second->filteredSignals)
+    {
+      count++;
+      if (node)
+      {
+        pugi::xml_node oms_variable = node.append_child(oms::ssp::Version1_0::oms_Variable);
+        oms_variable.append_attribute("name") = var.c_str();
+      }
+    }
+  }
+
+  for (const auto &it : system->getComponents())
+  {
+    for (const auto &var : it.second->getFilteredSignals())
+    {
+      count++;
+      if (node)
+      {
+        pugi::xml_node oms_variable = node.append_child(oms::ssp::Version1_0::oms_Variable);
+        oms_variable.append_attribute("name") = var.c_str();
+      }
+    }
   }
 
   return oms_status_ok;
@@ -837,30 +876,14 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
   signalFilterNode.append_attribute("version") = "1.0";
   signalFilterNode.append_attribute("encoding") = "UTF-8";
 
-  pugi::xml_node oms_signalFilter = signalFilterdoc.append_child("oms:SignalFilter");
+  pugi::xml_node oms_signalFilter = signalFilterdoc.append_child(oms::ssp::Version1_0::oms_signalFilter);
   oms_signalFilter.append_attribute("version") = "1.0";
 
-  for (const auto &it : system->getSubSystems())
-  {
-    for (const auto &var : it.second->filteredSignals)
-    {
-      pugi::xml_node oms_variable = oms_signalFilter.append_child("oms:Variable");
-      oms_variable.append_attribute("name") = var.c_str();
-    }
-  }
-
-  for (const auto &it : system->getComponents())
-  {
-    for (const auto &var : it.second->getFilteredSignals())
-    {
-      pugi::xml_node oms_variable = oms_signalFilter.append_child("oms:Variable");
-      oms_variable.append_attribute("name") = var.c_str();
-    }
-  }
+  int signalFilterCount = 0;
+  exportSignalFilter(oms_signalFilter, signalFilterCount);
 
   //signalFilterdoc.save(std::cout);
 
-  int signalFilterCount = std::distance(oms_signalFilter.begin(), oms_signalFilter.end());
   std::string signalFilterFileName = "";
   if (signalFilterCount > 0)
   {
