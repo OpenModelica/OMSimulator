@@ -4,7 +4,7 @@
 -- linux32: yes
 -- mingw: yes
 -- win: no
--- mac: yes
+-- mac: no
 
 oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./signalFilter-lua/")
@@ -165,5 +165,5 @@ oms_delete("model")
 -- 		</ssd:Annotations>
 -- 	</ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>
--- 
+--
 -- endResult
