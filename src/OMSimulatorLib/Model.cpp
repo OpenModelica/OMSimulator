@@ -408,6 +408,25 @@ oms_status_enu_t oms::Model::exportSnapshot(const oms::ComRef& cref, char** cont
     // TODO ssm file
   }
 
+  // export signalFilter if exist
+  pugi::xml_document signalFilterdoc;
+
+  // generate XML declaration for signal filter
+  pugi::xml_node signalFilterNode = signalFilterdoc.append_child(pugi::node_declaration);
+  pugi::xml_node oms_signalFilter = signalFilterdoc.append_child(oms::ssp::Version1_0::oms_signalFilter);
+  oms_signalFilter.append_attribute("version") = "1.0";
+
+  int signalFilterCount = 0;
+  exportSignalFilter(oms_signalFilter, signalFilterCount);
+
+  if (signalFilterCount > 0)
+  {
+    pugi::xml_node last = doc.last_child();
+    pugi::xml_node signalfilter_file  = last.append_child("oms:signalFilter_file");
+    signalfilter_file.append_attribute("name") = "resources/signalFilter.xml";
+    signalfilter_file.append_copy(oms_signalFilter);
+  }
+
   doc.save(writer);
   *contents = (char*) malloc(strlen(writer.result.c_str()) + 1);
   if (!*contents)
@@ -716,13 +735,45 @@ oms_status_enu_t oms::Model::importFromSSD(const pugi::xml_node& node)
             resultFilename = itAnnotations->attribute("resultFile").as_string();
             loggingInterval = itAnnotations->attribute("loggingInterval").as_double();
             bufferSize = itAnnotations->attribute("bufferSize").as_int();
-            setSignalFilter(itAnnotations->attribute("signalFilter").as_string());
+            std::string signalFilter = itAnnotations->attribute("signalFilter").as_string();
+            //setSignalFilter(itAnnotations->attribute("signalFilter").as_string());
+            if (signalFilter == ".*" || signalFilter.empty())
+            {
+              addSignalsToResults(signalFilter.c_str());
+            }
+            else
+            {
+              std::string regex = "";
+              importSignalFilter(signalFilter, regex);
+              addSignalsToResults(regex.c_str());
+            }
           }
         }
       }
     }
     else
       return logError("wrong xml schema detected");
+  }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Model::importSignalFilter(std::string &filename, std::string &regex)
+{
+  filesystem::path temp_root(tempDir);
+  pugi::xml_document signalFilterdoc;
+  pugi::xml_parse_result result = signalFilterdoc.load_file((temp_root / filename).string().c_str());
+  if (!result)
+    return logError("loading \"" + signalFilter + "\" failed (" + std::string(result.description()) + ")");
+
+  pugi::xml_node oms_signalfilter = signalFilterdoc.document_element(); // ssd:SystemStructureDescription
+  for (pugi::xml_node_iterator it = oms_signalfilter.begin(); it != oms_signalfilter.end(); ++it)
+  {
+    if (std::string(it->name()) == oms::ssp::Version1_0::oms_Variable)
+    {
+      // add all variables seperated with "|" to match with regular expression (e.g) "model.a|model.b"
+      regex = regex + it->attribute("name").as_string() + "|";
+    }
   }
 
   return oms_status_ok;
