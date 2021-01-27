@@ -13,6 +13,7 @@ exportSSVTemplate.lua \
 import_export_parameters_inline.lua \
 import_export_parameters_to_ssv.lua \
 import_export_snapshot.lua \
+import_export_signalFilter.lua \
 import_export.lua \
 import_export.py \
 import_hierarchical_ssv_sources.lua \
@@ -26,7 +27,6 @@ rename.lua \
 setExternalInputs.lua \
 simulation.lua \
 simulation.py \
-signalFilter.lua \
 snapshot.lua \
 snapshot.py \
 table.lua \

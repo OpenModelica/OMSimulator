@@ -419,7 +419,7 @@ oms_status_enu_t oms::Model::exportSnapshot(const oms::ComRef& cref, char** cont
   int signalFilterCount = 0;
   exportSignalFilter(oms_signalFilter, signalFilterCount);
 
-  if (signalFilterCount > 0)
+  if (system && system->signalFilter || signalFilterCount > 0)
   {
     pugi::xml_node last = doc.last_child();
     pugi::xml_node signalfilter_file  = last.append_child("oms:signalFilter_file");
@@ -620,18 +620,10 @@ oms_status_enu_t oms::Model::exportToSSD(pugi::xml_node& node, pugi::xml_node& s
   oms_simulation_information.append_attribute("loggingInterval") = std::to_string(loggingInterval).c_str();
   oms_simulation_information.append_attribute("bufferSize") = std::to_string(bufferSize).c_str();
 
-  int signalFilterCount = 0;
-  pugi::xml_node oms_signalFilter(NULL);
-  exportSignalFilter(oms_signalFilter, signalFilterCount);
-
-  // check signal filter used
-  if (signalFilterCount > 0)
+  // export signalFiter only if it is used, otherwise all signals are exported by default
+  if (system && system->signalFilter)
   {
     oms_simulation_information.append_attribute("signalFilter") = "resources/signalFilter.xml";
-  }
-  else
-  {
-    oms_simulation_information.append_attribute("signalFilter") = ".*";
   }
 
   return oms_status_ok;
@@ -736,10 +728,11 @@ oms_status_enu_t oms::Model::importFromSSD(const pugi::xml_node& node)
             loggingInterval = itAnnotations->attribute("loggingInterval").as_double();
             bufferSize = itAnnotations->attribute("bufferSize").as_int();
             std::string signalFilter = itAnnotations->attribute("signalFilter").as_string();
-            //setSignalFilter(itAnnotations->attribute("signalFilter").as_string());
+
+            // support older versions when signalFilter = ".*"
             if (signalFilter == ".*" || signalFilter.empty())
             {
-              addSignalsToResults(signalFilter.c_str());
+              // do not call addSignalsToResults, all signals will be exported by default
             }
             else
             {
@@ -936,7 +929,7 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
   //signalFilterdoc.save(std::cout);
 
   std::string signalFilterFileName = "";
-  if (signalFilterCount > 0)
+  if (system && system->signalFilter || signalFilterCount > 0)
   {
     signalFilterFileName = "resources/signalFilter.xml";
     filesystem::path signalFilterFilePath = filesystem::path(tempDir) / signalFilterFileName;
