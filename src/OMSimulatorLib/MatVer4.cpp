@@ -119,6 +119,8 @@ oms::MatVer4Matrix* oms::readMatVer4Matrix(FILE* file)
   MatVer4Type_t type = (MatVer4Type_t) (matrix->header.type % 100);
   size_t size = sizeofMatVer4Type(type);
   matrix->data = malloc(matrix->header.mrows * matrix->header.ncols * size);
+  if (!matrix->data)
+    return NULL;
   fread(matrix->data, size, matrix->header.mrows*matrix->header.ncols, file);
 
   return matrix;

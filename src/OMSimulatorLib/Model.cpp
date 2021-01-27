@@ -331,6 +331,11 @@ oms_status_enu_t oms::Model::list(const oms::ComRef& cref, char** contents)
 
   doc.save(writer);
   *contents = (char*) malloc(strlen(writer.result.c_str()) + 1);
+  if (!*contents)
+  {
+    logError("Out of memory");
+    return oms_status_fatal;
+  }
   strcpy(*contents, writer.result.c_str());
   return oms_status_ok;
 }
@@ -396,6 +401,11 @@ oms_status_enu_t oms::Model::exportSnapshot(const oms::ComRef& cref, char** cont
 
   doc.save(writer);
   *contents = (char*) malloc(strlen(writer.result.c_str()) + 1);
+  if (!*contents)
+  {
+    logError("Out of memory");
+    return oms_status_fatal;
+  }
   strcpy(*contents, writer.result.c_str());
 
   return oms_status_ok;

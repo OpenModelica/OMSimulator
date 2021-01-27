@@ -699,7 +699,7 @@ def numPhysicalCPU() {
 }
 
 void partest(cache=true, extraArgs='') {
-  echo "cache: ${cache}, asan: ${env.ASAN}"
+  echo "cache: ${cache}, asan: ${env.ASAN}, running on node: ${env.NODE_NAME}"
   sh """
   make -C testsuite difftool resources
   cp -f "${env.RUNTESTDB}/"* testsuite/ || true
@@ -710,10 +710,9 @@ void partest(cache=true, extraArgs='') {
 
   sh ("""#!/bin/bash -x
   ulimit -t 1500
-  ${env.ASAN ? "" : "ulimit -v 6291456" /* Max 6GB per process */}
 
   cd testsuite/partest
-  ./runtests.pl ${env.ASAN ? "-asan": ""} -j${numPhysicalCPU()} -nocolour ${env.BRANCH_NAME == "master" ? "-notlm" : ""} -with-xml ${params.RUNTESTS_FLAG} ${extraArgs}
+  ./runtests.pl ${env.ASAN ? "-asan": ""} ${env.ASAN ? "-j1": "-j${numPhysicalCPU()}"} -nocolour ${env.BRANCH_NAME == "master" ? "-notlm" : ""} -with-xml ${params.RUNTESTS_FLAG} ${extraArgs}
   CODE=\$?
   test \$CODE = 0 -o \$CODE = 7 || exit 1
   """
@@ -752,7 +751,7 @@ void buildOMS() {
      %OMDEV%\\tools\\msys\\usr\\bin\\sh --login -c "cd `cygpath '${WORKSPACE}'` && chmod +x buildOMSimulatorWindows.sh && ./buildOMSimulatorWindows.sh && rm -f ./buildOMSimulatorWindows.sh"
     """)
   } else {
-    echo "${env.NODE_NAME}"
+    echo "running on node: ${env.NODE_NAME}"
     def nproc = numPhysicalCPU()
     sh """
     ${env.SHELLSTART ?: ""}

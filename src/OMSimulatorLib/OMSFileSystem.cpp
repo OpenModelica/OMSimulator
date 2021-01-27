@@ -54,6 +54,11 @@ filesystem::path oms_temp_directory_path(void)
 {
 #if (_WIN32)
   char* val = (char*)malloc(sizeof(char)*(MAX_PATH + 1));
+  if (!val)
+  {
+    logError("Out of memory");
+    return NULL;
+  }
   GetTempPath(MAX_PATH, val);
 
   filesystem::path p((val!=0) ? val : "/tmp");
