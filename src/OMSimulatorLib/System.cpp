@@ -382,6 +382,11 @@ oms_status_enu_t oms::System::listUnconnectedConnectors(char** contents) const
   if (!msg.empty())
   {
     *contents = (char*) malloc(msg.length() + 1);
+    if (!*contents)
+    {
+      logError("Out of memory");
+      return oms_status_fatal;
+    }
     strcpy(*contents, msg.c_str());
   }
   return oms_status_ok;
