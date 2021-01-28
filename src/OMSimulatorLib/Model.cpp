@@ -121,6 +121,11 @@ oms_status_enu_t oms::Model::rename(const oms::ComRef& cref)
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::Model::rename(const ComRef& cref, const ComRef& newCref)
+{
+  //TODO
+}
+
 oms_status_enu_t oms::Model::loadSnapshot(const char* snapshot)
 {
   if (!validState(oms_modelState_virgin))

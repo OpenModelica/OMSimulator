@@ -106,19 +106,29 @@ oms_status_enu_t oms::Scope::deleteModel(const oms::ComRef& cref)
 
 oms_status_enu_t oms::Scope::renameModel(const oms::ComRef& cref, const oms::ComRef& newCref)
 {
-  auto it = models_map.find(cref);
+  oms::ComRef tail(cref);
+  oms::ComRef front = tail.pop_front();
+
+  auto it = models_map.find(front);
   if (it == models_map.end())
-    return logError("Model \"" + std::string(cref) + "\" does not exist in the scope");
+    return logError("Model \"" + std::string(front) + "\" does not exist in the scope");
 
   unsigned int index = it->second;
-  oms_status_enu_t status = models[index]->rename(newCref);
-  if (oms_status_ok != status)
-    return status;
+  if (tail.isEmpty()) // renaming the model itself
+  {
+    oms_status_enu_t status = models[index]->rename(newCref);
+    if (oms_status_ok != status)
+      return status;
 
-  models_map.erase(it);
-  models_map[newCref] = index;
+    models_map.erase(it);
+    models_map[newCref] = index;
 
-  return oms_status_ok;
+    return oms_status_ok;
+  }
+  else // renaming a subcomponent
+  {
+    return models[index]->rename(tail, newCref);
+  }
 }
 
 oms_status_enu_t oms::Scope::exportModel(const oms::ComRef& cref, const std::string& filename)

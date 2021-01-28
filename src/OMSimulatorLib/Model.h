@@ -68,6 +68,7 @@ namespace oms
     System* getTopLevelSystem() const {return system;}
     std::string getTempDirectory() const {return tempDir;}
     oms_status_enu_t rename(const ComRef& cref);
+    oms_status_enu_t rename(const ComRef& cref, const ComRef& newCref);
     oms_status_enu_t list(const ComRef& cref, char** contents);
     oms_status_enu_t addSystem(const ComRef& cref, oms_system_enu_t type);
     oms_status_enu_t exportToSSD(pugi::xml_node& node, pugi::xml_node& ssvNode) const;
