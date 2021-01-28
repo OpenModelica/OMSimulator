@@ -11,7 +11,6 @@ pipeline {
     booleanParam(name: 'MINGW32', defaultValue: false, description: 'Build with MINGW32')
     booleanParam(name: 'SUBMODULE_UPDATE', defaultValue: false, description: 'Allow pull request to update submodules (disabled by default due to common user errors)')
     booleanParam(name: 'UPLOAD_BUILD_OPENMODELICA', defaultValue: false, description: 'Upload install artifacts to build.openmodelica.org/omsimulator. Activates MINGW32 as well.')
-    booleanParam(name: 'STABLE', defaultValue: false, description: 'ONLY for releases - upload install artifacts to build.openmodelica.org/omsimulator/stable/')
     string(name: 'RUNTESTS_FLAG', defaultValue: '', description: 'runtests.pl flag')
   }
   stages {
@@ -677,59 +676,6 @@ EXIT /b 1
             )
           }
         }
-
-        stage('upload-artifacts-stable') {
-          when {
-            expression {return params.STABLE}
-            beforeAgent true
-          }
-          agent {
-            label 'linux'
-          }
-          steps {
-            unstash name: 'amd64-zip'         // includes: "OMSimulator-linux-amd64-*.tar.gz"
-            unstash name: 'arm32-zip'         // includes: "OMSimulator-linux-arm32-*.tar.gz"
-            unstash name: 'i386-zip'          // includes: "OMSimulator-linux-i386-*.tar.gz"
-            unstash name: 'mingw32-zip'       // includes: "OMSimulator-mingw32-*.zip"
-            unstash name: 'mingw64-zip'       // includes: "OMSimulator-mingw64-*.zip"
-            unstash name: 'win64-zip'         // includes: "OMSimulator-win64-*.zip"
-            unstash name: 'osx-zip'           // includes: "OMSimulator-osx-*.zip"
-
-            sh "ls *.zip *.tar.gz"
-
-            sshPublisher (
-              publishers: [
-                sshPublisherDesc(
-                  configName: 'OMSimulator',
-                  transfers: [
-                    sshTransfer(
-                      remoteDirectory: "stable/linux-i386/",
-                      sourceFiles: 'OMSimulator-linux-i386-*.tar.gz'),
-                    sshTransfer(
-                      remoteDirectory: "stable/linux-arm32/",
-                      sourceFiles: 'OMSimulator-linux-arm32-*.tar.gz'),
-                    sshTransfer(
-                      remoteDirectory: "stable/linux-amd64/",
-                      sourceFiles: 'OMSimulator-linux-amd64-*.tar.gz'),
-                    sshTransfer(
-                      remoteDirectory: "stable/win-mingw32/",
-                      sourceFiles: 'OMSimulator-mingw32-*.zip'),
-                    sshTransfer(
-                      remoteDirectory: "stable/win-mingw64/",
-                      sourceFiles: 'OMSimulator-mingw64-*.zip'),
-                    sshTransfer(
-                      remoteDirectory: "stable/osx/",
-                      sourceFiles: 'OMSimulator-osx-*.zip'),
-                    sshTransfer(
-                      remoteDirectory: "stable/win-msvc64/",
-                      sourceFiles: 'OMSimulator-win64-*.zip')
-                  ]
-                )
-              ]
-            )
-          }
-        }
-
       }
     }
 
