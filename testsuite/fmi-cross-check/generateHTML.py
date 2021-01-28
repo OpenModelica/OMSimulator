@@ -99,7 +99,10 @@ def generateOverviewHTML(crossCheckDir, platform, omsVersion, omsVersionShort, t
   commitshort = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD'], cwd=crossCheckDir).decode('utf-8')
   commitfull = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=crossCheckDir).decode('utf-8')
 
-  omscommitshort = re.search(r"-g.+-",omsVersion).group()[2:9]
+  if re.search(r"-g.+-",omsVersion):
+    omscommitshort = re.search(r"-g.+-",omsVersion).group()[2:9]
+  else:
+    omscommitshort = "unknown"
 
   htmltpl=open("fmi-cross-check.html.tpl").read()
 
