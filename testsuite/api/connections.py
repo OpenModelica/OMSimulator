@@ -90,8 +90,7 @@ printStatus(status, 0)
 ## status:  [correct] error
 ## error:   [addConnection] Type mismatch in connection: sc1.u2 -> sc2.y2
 ## status:  [correct] error
-## error:   [addConnection] Connector is already connected: sc1.u1
-## status:  [correct] error
+## status:  [wrong] ok
 ## <?xml version="1.0"?>
 ## <ssd:System name="wc">
 ## 	<ssd:Elements>
@@ -142,6 +141,7 @@ printStatus(status, 0)
 ## 	</ssd:Elements>
 ## 	<ssd:Connections>
 ## 		<ssd:Connection startElement="sc2" startConnector="y1" endElement="sc1" endConnector="u1" />
+## 		<ssd:Connection startElement="sc2" startConnector="y3" endElement="sc1" endConnector="u1" />
 ## 	</ssd:Connections>
 ## 	<ssd:Annotations>
 ## 		<ssc:Annotation type="org.openmodelica">
@@ -203,6 +203,9 @@ printStatus(status, 0)
 ## 			</ssd:Annotations>
 ## 		</ssd:System>
 ## 	</ssd:Elements>
+## 	<ssd:Connections>
+## 		<ssd:Connection startElement="sc2" startConnector="y3" endElement="sc1" endConnector="u1" />
+## 	</ssd:Connections>
 ## 	<ssd:Annotations>
 ## 		<ssc:Annotation type="org.openmodelica">
 ## 			<oms:Annotations>
@@ -216,5 +219,5 @@ printStatus(status, 0)
 ##
 ## status:  [correct] ok
 ## info:    0 warnings
-## info:    3 errors
+## info:    2 errors
 ## endResult

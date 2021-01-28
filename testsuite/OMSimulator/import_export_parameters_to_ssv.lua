@@ -117,7 +117,7 @@ oms_terminate("import_export_parameters")
 oms_delete("import_export_parameters")
 
 -- Result:
--- error:   [addConnection] Causality mismatch in connection: foo.F_cref -> addP.k1
+-- error:   [addConnection] Connector addP.k1 is already connected to k_cref
 -- <?xml version="1.0"?>
 -- <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="import_export_parameters" version="1.0">
 -- 	<ssd:System name="co_sim">
