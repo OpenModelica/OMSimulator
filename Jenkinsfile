@@ -11,6 +11,7 @@ pipeline {
     booleanParam(name: 'MINGW32', defaultValue: false, description: 'Build with MINGW32')
     booleanParam(name: 'SUBMODULE_UPDATE', defaultValue: false, description: 'Allow pull request to update submodules (disabled by default due to common user errors)')
     booleanParam(name: 'UPLOAD_BUILD_OPENMODELICA', defaultValue: false, description: 'Upload install artifacts to build.openmodelica.org/omsimulator. Activates MINGW32 as well.')
+    booleanParam(name: 'STABLE', defaultValue: false, description: 'Upload install artifacts to build.openmodelica.org/omsimulator/stable/')
     string(name: 'RUNTESTS_FLAG', defaultValue: '', description: 'runtests.pl flag')
   }
   stages {
@@ -321,20 +322,20 @@ pipeline {
               }
               steps {
                 bat 'hostname'
-                
+
                 buildOMS()
-                
+
                 writeFile file: "buildZip64.sh", text: """#!/bin/sh
                 set -x -e
                 export PATH="/c/Program Files/TortoiseSVN/bin/:/c/bin/jdk/bin:/c/bin/nsis/:\$PATH:/c/bin/git/bin"
                 cd "${env.WORKSPACE}/install/mingw"
                 zip -r "../../OMSimulator-mingw64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *
                 """
-                
+
                 bat """
                 C:\\OMDev\\tools\\msys\\usr\\bin\\sh --login -i '${env.WORKSPACE}/buildZip64.sh'
                 """
-                
+
                 archiveArtifacts "OMSimulator-mingw64*.zip"
                 stash name: 'mingw64-zip', includes: "OMSimulator-mingw64-*.zip"
                 stash name: 'mingw64-install', includes: "install/mingw/**"
@@ -475,7 +476,7 @@ EXIT /b 1
              buildOMS()
           }
         }
-        
+
 
         stage('msvc64') {
           stages {
@@ -780,15 +781,11 @@ def isPR() {
   return env.CHANGE_ID ? true : false
 }
 
-def isTag() {
-  return env.TAG_NAME ? true : false
-}
-
 def getDeploymentPrefix() {
   if (isPR()) {
     return "experimental/pr-${env.CHANGE_ID}/"
   }
-  if (isTag()) {
+  if (params.STABLE) {
     return "stable/"
   }
   return "nightly/"
