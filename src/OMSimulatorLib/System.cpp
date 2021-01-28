@@ -1075,10 +1075,9 @@ oms_status_enu_t oms::System::addConnection(const oms::ComRef& crefA, const oms:
 
   for (auto& connection : connections)
   {
-    if (connection && conA->getCausality() == oms_causality_input && connection->containsSignal(crefA))
-      return logError("Connector is already connected: " + std::string(crefA));
-    if (connection && conB->getCausality() == oms_causality_input && connection->containsSignal(crefB))
-      return logError("Connector is already connected: " + std::string(crefB));
+    // do not allow multiple connections to same connector which is already connected, check for connector-B has connection
+    if (connection && connection->containsSignal(crefB))
+       return logError("Connector is already connected: " + std::string(crefB));
   }
 
   // check if the connections are valid, according to the SSP-1.0 allowed connection table
