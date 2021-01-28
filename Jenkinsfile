@@ -11,7 +11,7 @@ pipeline {
     booleanParam(name: 'MINGW32', defaultValue: false, description: 'Build with MINGW32')
     booleanParam(name: 'SUBMODULE_UPDATE', defaultValue: false, description: 'Allow pull request to update submodules (disabled by default due to common user errors)')
     booleanParam(name: 'UPLOAD_BUILD_OPENMODELICA', defaultValue: false, description: 'Upload install artifacts to build.openmodelica.org/omsimulator. Activates MINGW32 as well.')
-    booleanParam(name: 'STABLE', defaultValue: false, description: 'Upload install artifacts to build.openmodelica.org/omsimulator/stable/')
+    booleanParam(name: 'STABLE', defaultValue: false, description: 'ONLY for releases - upload install artifacts to build.openmodelica.org/omsimulator/stable/')
     string(name: 'RUNTESTS_FLAG', defaultValue: '', description: 'runtests.pl flag')
   }
   stages {
