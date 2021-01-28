@@ -680,7 +680,7 @@ EXIT /b 1
 
         stage('upload-artifacts-stable') {
           when {
-            expression { return shouldWeUploadArtifacts() && params.STABLE}
+            expression {return params.STABLE}
             beforeAgent true
           }
           agent {
