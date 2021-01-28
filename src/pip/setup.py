@@ -63,19 +63,19 @@ class my_build_py(build_py):
 
     # download the zip directory from url
     if (sysconfig.get_platform() == 'linux-x86_64'):
-      response = requests.get('https://build.openmodelica.org/omsimulator/@OMS_BUILD_TYPE@/linux-amd64/OMSimulator-linux-amd64-@OMS_VERSION_STRING@.tar.gz')
+      response = requests.get('https://build.openmodelica.org/omsimulator/nightly/linux-amd64/OMSimulator-linux-amd64-@OMS_VERSION_STRING@.tar.gz')
     elif (sysconfig.get_platform() == 'linux-i386'):
-      response = requests.get('https://build.openmodelica.org/omsimulator/@OMS_BUILD_TYPE@/linux-i386/OMSimulator-linux-i386-@OMS_VERSION_STRING@.tar.gz')
+      response = requests.get('https://build.openmodelica.org/omsimulator/nightly/linux-i386/OMSimulator-linux-i386-@OMS_VERSION_STRING@.tar.gz')
     elif (sysconfig.get_platform() == 'linux-arm32'):
-      response = requests.get('https://build.openmodelica.org/omsimulator/@OMS_BUILD_TYPE@/linux-arm32/OMSimulator-linux-arm32-@OMS_VERSION_STRING@.tar.gz')
+      response = requests.get('https://build.openmodelica.org/omsimulator/nightly/linux-arm32/OMSimulator-linux-arm32-@OMS_VERSION_STRING@.tar.gz')
     elif (sysconfig.get_platform() == 'mingw' and platform.architecture()[0] == '64bit'):
-      response = requests.get('https://build.openmodelica.org/omsimulator/@OMS_BUILD_TYPE@/win-mingw64/OMSimulator-mingw64-@OMS_VERSION_STRING@.zip')
+      response = requests.get('https://build.openmodelica.org/omsimulator/nightly/win-mingw64/OMSimulator-mingw64-@OMS_VERSION_STRING@.zip')
     elif (sysconfig.get_platform() == 'mingw' and platform.architecture()[0] == '32bit'):
-      response = requests.get('https://build.openmodelica.org/omsimulator/@OMS_BUILD_TYPE@/win-mingw32/OMSimulator-mingw32-@OMS_VERSION_STRING@.zip')
+      response = requests.get('https://build.openmodelica.org/omsimulator/nightly/win-mingw32/OMSimulator-mingw32-@OMS_VERSION_STRING@.zip')
     elif (sysconfig.get_platform() == 'win-amd64'):
-      response = requests.get('https://build.openmodelica.org/omsimulator/@OMS_BUILD_TYPE@/win-msvc64/OMSimulator-win64-@OMS_VERSION_STRING@.zip')
+      response = requests.get('https://build.openmodelica.org/omsimulator/nightly/win-msvc64/OMSimulator-win64-@OMS_VERSION_STRING@.zip')
     elif (platform.system() == 'Darwin'):
-      response = requests.get('https://build.openmodelica.org/omsimulator/@OMS_BUILD_TYPE@/osx/OMSimulator-osx-@OMS_VERSION_STRING@.zip')
+      response = requests.get('https://build.openmodelica.org/omsimulator/nightly/osx/OMSimulator-osx-@OMS_VERSION_STRING@.zip')
     else:
       raise Exception("Platform not supported for {} ".format(sysconfig.get_platform()))
 
