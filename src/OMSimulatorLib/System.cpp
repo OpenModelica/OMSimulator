@@ -1077,7 +1077,9 @@ oms_status_enu_t oms::System::addConnection(const oms::ComRef& crefA, const oms:
   {
     // do not allow multiple connections to same connector which is already connected, check for connector-B has connection
     if (connection && connection->containsSignal(crefB))
-       return logError("Connector is already connected: " + std::string(crefB));
+    {
+      return logError("Connector " + std::string(crefB) + " is already connected to " + std::string(connection->getSignalA()));
+    }
   }
 
   // check if the connections are valid, according to the SSP-1.0 allowed connection table

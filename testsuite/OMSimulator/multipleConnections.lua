@@ -57,9 +57,9 @@ print("info:      model.System.gain.u         : " .. oms_getReal("model.System.g
 print("info:      model.System.gain.k         : " .. oms_getReal("model.System.gain.k"))
 
 -- Result:
--- error:   [addConnection] Connector is already connected: add.u1
--- error:   [addConnection] Connector is already connected: gain.k
--- error:   [addConnection] Connector is already connected: add.u2
+-- error:   [addConnection] Connector add.u1 is already connected to Input1
+-- error:   [addConnection] Connector gain.k is already connected to parameter1
+-- error:   [addConnection] Connector add.u2 is already connected to gain.y
 -- info:    Result file: model_res.mat (bufferSize=10)
 -- info:    Simulation
 -- info:      model.System.Input1         : 10.0
