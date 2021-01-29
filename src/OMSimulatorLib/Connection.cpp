@@ -188,6 +188,11 @@ bool oms::Connection::containsSignal(const oms::ComRef& signal)
   return signal.isRootOf(oms::ComRef(this->conA)) || signal.isRootOf(oms::ComRef(this->conB));
 }
 
+bool oms::Connection::containsSignalB(const oms::ComRef& signal)
+{
+  return signal.isRootOf(oms::ComRef(this->conB));
+}
+
 bool oms::Connection::isValid(const ComRef& crefA, const ComRef& crefB, const Connector& conA, const Connector& conB)
 {
   bool connectorA, connectorB;

@@ -1076,7 +1076,7 @@ oms_status_enu_t oms::System::addConnection(const oms::ComRef& crefA, const oms:
   for (auto& connection : connections)
   {
     // do not allow multiple connections to same connector which is already connected, check for connector-B has connection
-    if (connection && connection->containsSignal(crefB))
+    if (connection && connection->containsSignalB(crefB))
     {
       return logError("Connector " + std::string(crefB) + " is already connected to " + std::string(connection->getSignalA()));
     }
@@ -1091,6 +1091,14 @@ oms_status_enu_t oms::System::addConnection(const oms::ComRef& crefA, const oms:
   // flipped causality check
   else if (oms::Connection::isValid(crefB, crefA, *conB, *conA))
   {
+    // flipped connection checks for already connected connectors
+    for (auto &connection : connections)
+    {
+      if (connection && connection->containsSignalB(crefA))
+      {
+        return logError("Connector " + std::string(crefA) + " is already connected to " + std::string(connection->getSignalA()));
+      }
+    }
     connections.back() = new oms::Connection(crefB, crefA);
     connections.push_back(NULL);
   }
