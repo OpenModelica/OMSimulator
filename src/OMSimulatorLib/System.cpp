@@ -1073,12 +1073,14 @@ oms_status_enu_t oms::System::addConnection(const oms::ComRef& crefA, const oms:
     return logError("Type mismatch in connection: " + std::string(crefA) + " -> " + std::string(crefB));
   }
 
+  // Do not allow multiple connections to same 'input' connector
+  // (signal B). The 'input' connector (signal B) can actually be an
+  // output connector, e.g. if connecting a component to a system
+  // connector.
   for (auto& connection : connections)
   {
-    if (connection && conA->getCausality() == oms_causality_input && connection->containsSignal(crefA))
-      return logError("Connector is already connected: " + std::string(crefA));
-    if (connection && conB->getCausality() == oms_causality_input && connection->containsSignal(crefB))
-      return logError("Connector is already connected: " + std::string(crefB));
+    if (connection && connection->containsSignalB(crefB))
+      return logError("Connector " + std::string(crefB) + " is already connected to " + std::string(connection->getSignalA()));
   }
 
   // check if the connections are valid, according to the SSP-1.0 allowed connection table
@@ -1090,6 +1092,16 @@ oms_status_enu_t oms::System::addConnection(const oms::ComRef& crefA, const oms:
   // flipped causality check
   else if (oms::Connection::isValid(crefB, crefA, *conB, *conA))
   {
+    // ! Flipped connection checks !
+    // Do not allow multiple connections to same 'input' connector
+    // (signal A!). The 'input' connector (signal A!) can actually be
+    // an output connector, e.g. if connecting a component to a system
+    // connector.
+    for (auto &connection : connections)
+    {
+      if (connection && connection->containsSignalB(crefA))
+        return logError("Connector " + std::string(crefA) + " is already connected to " + std::string(connection->getSignalA()));
+    }
     connections.back() = new oms::Connection(crefB, crefA);
     connections.push_back(NULL);
   }

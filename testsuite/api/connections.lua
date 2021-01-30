@@ -53,7 +53,7 @@ printStatus(status, 0)
 status = oms_addConnection("model.wc.sc1.u1", "model.wc.sc2.y1")
 printStatus(status, 0)
 
---Connecting input to input (illegal)
+--Connecting output to output (illegal)
 status = oms_addConnection("model.wc.sc1.y", "model.wc.sc2.y3")
 printStatus(status, 3)
 
@@ -90,7 +90,7 @@ printStatus(status, 0)
 -- status:  [correct] error
 -- error:   [addConnection] Type mismatch in connection: sc1.u2 -> sc2.y2
 -- status:  [correct] error
--- error:   [addConnection] Connector is already connected: sc1.u1
+-- error:   [addConnection] Connector sc1.u1 is already connected to sc2.y1
 -- status:  [correct] error
 -- <?xml version="1.0"?>
 -- <ssd:System name="wc">

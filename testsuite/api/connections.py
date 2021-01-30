@@ -90,7 +90,7 @@ printStatus(status, 0)
 ## status:  [correct] error
 ## error:   [addConnection] Type mismatch in connection: sc1.u2 -> sc2.y2
 ## status:  [correct] error
-## error:   [addConnection] Connector is already connected: sc1.u1
+## error:   [addConnection] Connector sc1.u1 is already connected to sc2.y1
 ## status:  [correct] error
 ## <?xml version="1.0"?>
 ## <ssd:System name="wc">
