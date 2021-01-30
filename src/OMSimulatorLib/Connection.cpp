@@ -183,12 +183,12 @@ bool oms::Connection::isEqual(const oms::Connection& connection) const
   return isEqual(conA_, conB_);
 }
 
-bool oms::Connection::containsSignal(const oms::ComRef& signal)
+bool oms::Connection::containsSignal(const oms::ComRef& signal) const
 {
   return signal.isRootOf(oms::ComRef(this->conA)) || signal.isRootOf(oms::ComRef(this->conB));
 }
 
-bool oms::Connection::containsSignalB(const oms::ComRef& signal)
+bool oms::Connection::containsSignalB(const oms::ComRef& signal) const
 {
   return signal.isRootOf(oms::ComRef(this->conB));
 }

@@ -69,8 +69,8 @@ namespace oms
 
     bool isEqual(const oms::Connection& connection) const;
     bool isEqual(const oms::ComRef& signalA, const oms::ComRef& signalB) const;
-    bool containsSignal(const oms::ComRef& signal);
-    bool containsSignalB(const oms::ComRef& signal);
+    bool containsSignal(const oms::ComRef& signal) const;
+    bool containsSignalB(const oms::ComRef& signal) const;
 
     /**
     * \brief Checks a connection based on SSP-1.0 connection table

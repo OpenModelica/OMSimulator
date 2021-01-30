@@ -41,9 +41,7 @@ oms_addConnection("model.System.parameter2", "model.System.gain.k")
 oms_addConnection("model.System.Output1", "model.System.add.u2")
 
 oms_instantiate("model")
-
 oms_initialize("model")
-
 oms_simulate("model")
 
 print("info:    Simulation")
