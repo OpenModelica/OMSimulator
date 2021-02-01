@@ -120,6 +120,7 @@ namespace oms
     virtual oms_status_enu_t freeState() {return logError_NotImplemented;}
     virtual oms_status_enu_t restoreState() {return logError_NotImplemented;}
 
+    oms_status_enu_t rename(const ComRef& cref); ///< rename submodules (e.g)Fmu's
   protected:
     Component(const ComRef& cref, oms_component_enu_t type, System* parentSystem, const std::string& path);
 

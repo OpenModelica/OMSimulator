@@ -123,7 +123,30 @@ oms_status_enu_t oms::Model::rename(const oms::ComRef& cref)
 
 oms_status_enu_t oms::Model::rename(const ComRef& cref, const ComRef& newCref)
 {
-  //TODO
+  oms::ComRef tail(cref);
+  oms::ComRef front = tail.pop_front();
+
+  // rename top level system
+  if (tail.isEmpty())
+  {
+    return system->rename(newCref);
+  }
+
+  // rename subsystems
+  auto subsystem = system->getSubSystems().find(tail);
+  if (subsystem != system->getSubSystems().end())
+  {
+    return subsystem->second->rename(newCref);
+  }
+
+  // rename submodules
+  auto component = system->getComponents().find(tail);
+  if (component != system->getComponents().end())
+  {
+    return component->second->rename(newCref);
+  }
+
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms::Model::loadSnapshot(const char* snapshot)

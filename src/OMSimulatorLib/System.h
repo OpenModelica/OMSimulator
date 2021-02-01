@@ -148,6 +148,8 @@ namespace oms
     oms_status_enu_t setReals(const std::vector<ComRef> &crefs, std::vector<double> values);
     oms_status_enu_t setRealInputDerivatives(const ComRef &cref, int order, double value);
 
+    oms_status_enu_t rename(const ComRef& cref); ///< rename top level systems and subsystems
+
     bool isTopLevelSystem() const {return (parentSystem == NULL);}
 
     virtual oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultFile);

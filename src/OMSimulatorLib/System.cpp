@@ -2595,3 +2595,9 @@ oms_status_enu_t oms::System::solveAlgLoop(DirectedGraph& graph, int loopNumber)
 {
   return algLoops[loopNumber].solveAlgLoop(*this, graph);
 }
+
+oms_status_enu_t oms::System::rename(const oms::ComRef& cref)
+{
+  this->cref = cref;
+  return oms_status_ok;
+}

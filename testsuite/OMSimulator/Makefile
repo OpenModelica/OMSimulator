@@ -22,6 +22,7 @@ importStartValues.lua \
 multipleConnections.lua \
 PI_Controller.lua \
 QuarterCarModel.DisplacementDisplacement.lua \
+rename.lua \
 setExternalInputs.lua \
 simulation.lua \
 simulation.py \
