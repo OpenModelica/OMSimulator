@@ -19,11 +19,28 @@ src = oms_list("model")
 print(src)
 
 status = oms_rename("model.root", "root_1")
+
+-- error as model.root is changed to root_1
+status = oms_rename("model.root", "root_2")
+
+-- error as model.root is changed to root_1
 status = oms_rename("model.root.System1", "System_1")
-status = oms_rename("model.root.add", "add_1")
+
+-- correct
+status = oms_rename("model.root_1.System1", "System_1")
+
+-- error as model.root_1.System1 is changed to System_1
+status = oms_rename("model.root_1.System1", "System_2")
+
+-- correct
+status = oms_rename("model.root_1.add", "add_1")
+
+-- error as model_root_1.add is changed to add_1
+status = oms_rename("model.root_1.add", "add_2")
 
 src = oms_list("model")
 print(src)
+
 
 -- Result:
 -- <?xml version="1.0"?>
@@ -84,7 +101,11 @@ print(src)
 -- 		</ssd:Annotations>
 -- 	</ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>
---
+-- 
+-- error:   [rename] failed for "model.root" as the identifier could not be resolved to a top level system
+-- error:   [rename] failed for "model.root.System1" as the identifier could not be resolved to a top level system
+-- error:   [rename] failed for "model.root_1.System1" as the identifier could not be resolved to a system or subsystem or component
+-- error:   [rename] failed for "model.root_1.add" as the identifier could not be resolved to a system or subsystem or component
 -- <?xml version="1.0"?>
 -- <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="model" version="1.0">
 -- 	<ssd:System name="root_1">
@@ -143,5 +164,7 @@ print(src)
 -- 		</ssd:Annotations>
 -- 	</ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>
---
+-- 
+-- info:    0 warnings
+-- info:    4 errors
 -- endResult

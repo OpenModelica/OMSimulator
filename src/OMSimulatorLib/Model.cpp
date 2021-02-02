@@ -126,6 +126,16 @@ oms_status_enu_t oms::Model::rename(const ComRef& cref, const ComRef& newCref)
   oms::ComRef tail(cref);
   oms::ComRef front = tail.pop_front();
 
+  /*check for top level system is changed
+   * (e.g) oms_rename("model.root", "root_1")
+   *       oms_rename("model.root", "root_2") // should report error as top level system name is changed
+   *       oms_rename("model.root_1", "root_2") // correct
+   *       oms_rename("model.root_1.System1", "System_1") // wrong system detected
+   *       oms_rename("model.root_2.System1", "System_1") // correct
+  */
+  if (front != std::string(system->getCref()))
+    return logError("failed for \"" + std::string(getCref()+cref) + "\""  + " as the identifier could not be resolved to a top level system");
+
   // rename top level system
   if (tail.isEmpty())
   {
@@ -136,17 +146,25 @@ oms_status_enu_t oms::Model::rename(const ComRef& cref, const ComRef& newCref)
   auto subsystem = system->getSubSystems().find(tail);
   if (subsystem != system->getSubSystems().end())
   {
-    return subsystem->second->rename(newCref);
+    subsystem->second->rename(newCref);
+    system->getSubSystems()[newCref] = subsystem->second;
+    //delete old cref
+    system->getSubSystems().erase(subsystem);
+    return oms_status_ok;
   }
 
   // rename submodules
   auto component = system->getComponents().find(tail);
   if (component != system->getComponents().end())
   {
-    return component->second->rename(newCref);
+    component->second->rename(newCref);
+    system->getComponents()[newCref] = component->second;
+    // delete old cref
+    system->getComponents().erase(component);
+    return oms_status_ok;
   }
 
-  return oms_status_ok;
+  return logError("failed for \"" + std::string(getCref()+cref) + "\""  + " as the identifier could not be resolved to a system or subsystem or component");
 }
 
 oms_status_enu_t oms::Model::loadSnapshot(const char* snapshot)
