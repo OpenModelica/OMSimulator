@@ -17,6 +17,7 @@ Installation using `pip` is recommended:
 ```bash
 pip3 install OMSimulator
 ```
+Python needs to be version 3.8 or above.
 
 ## Documentation
 
