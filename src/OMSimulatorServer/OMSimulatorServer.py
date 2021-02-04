@@ -18,14 +18,49 @@ c/o Linköpings universitet, Department of Computer and Information Science,
 SE-58183 Linköping, Sweden.'''
 __status__ = 'development'
 
+def close_socket_gracefully(socket):
+  '''graceful termination'''
+  socket.setsockopt(zmq.LINGER, 0) # to avoid hanging infinitely
+  socket.close()
+
+def receive_and_reply(socket):
+  try:
+    msg = socket.recv_json()
+  except zmq.error.Again as error:
+    print('recv: ' + str(error))
+    return
+
+  # answer = msg
+  answer = json.loads(msg)
+  answer = json.dumps(answer)
+
+  try:
+    socket.send_json(answer)
+  except zmq.error.ZMQError as error:
+    print('send: ' + str(error))
+  else:
+    print(msg)
+
 def _main():
   # parse command-line arguments
   parser = argparse.ArgumentParser(description='OMS-SERVER', allow_abbrev=False)
-  parser.add_argument('--connect', default=None)
+  parser.add_argument('--port', default='1234', help='define the port for the req/rep comunication')
   args = parser.parse_args()
 
-  # do something else
-  logging.info('STOP')
+  # bind the socket
+  context = zmq.Context()
+
+  socket = context.socket(zmq.REP)  #pylint: disable=no-member
+  socket.bind('tcp://*:{}'.format(args.port))
+  socket.RCVTIMEO = 1000  #in milliseconds
+  logging.info('Bound to port {}'.format(args.port))
+
+  while socket:
+    try:
+      receive_and_reply(socket)
+    except KeyboardInterrupt:
+      close_socket_gracefully(socket)
+      socket = None
 
 if __name__ == '__main__':
   path = "log/"
