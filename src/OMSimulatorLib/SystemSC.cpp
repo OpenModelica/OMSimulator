@@ -547,14 +547,15 @@ oms_status_enu_t oms::SystemSC::doStep(void (*cb)(const char* ident, double time
       tnext = fmus[i]->getEventInfo()->nextEventTime;
   }
 
+  // calculate step size
   fmi2_real_t hcur = tnext - tlast;
-  // adjust time step
-  //if (tnext > stopTime - hcur / 1e16)
-  //{
-  //  // adjust final step size
-  //  tnext = stopTime;
-  //  hcur = tnext - tlast;
-  //}
+  const double stopTime = this->getModel()->getStopTime();
+  if (tnext > stopTime - hcur / 1e16)
+  {
+    // adjust final step size
+    tnext = stopTime;
+    hcur = tnext - tlast;
+  }
 
   // integrate using specified solver
   if (oms_solver_sc_explicit_euler == solverMethod)
