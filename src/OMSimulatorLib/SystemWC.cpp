@@ -136,7 +136,7 @@ oms_status_enu_t oms::SystemWC::importFromSSD_SimulationInformation(const pugi::
 
   if (oms_status_ok != setSolverMethod(solverName))
     return oms_status_error;
-  initialStepSize = minimumStepSize=maximumStepSize = node.child(FixedStepMaster).attribute("stepSize").as_double();
+  initialStepSize = minimumStepSize = maximumStepSize = node.child(FixedStepMaster).attribute("stepSize").as_double();
   absoluteTolerance = node.child(FixedStepMaster).attribute("absoluteTolerance").as_double();
   relativeTolerance = node.child(FixedStepMaster).attribute("relativeTolerance").as_double();
   return oms_status_ok;
@@ -269,7 +269,7 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
   auto start = std::chrono::steady_clock::now() + std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(time));
 
   fmi2_status_t fmi_status;
-  double startTime=time;
+  double startTime = time;
   if (Flags::ProgressBar())
     logInfo("stepUntil [" + std::to_string(startTime) + "; " + std::to_string(stopTime) + "]");
 
@@ -685,56 +685,57 @@ oms_status_enu_t oms::SystemWC::stepUntilASSC(double stopTime, void (*cb)(const 
 {
   CallClock callClock(clock);
   ComRef modelName = this->getModel()->getCref();
-  auto start = std::chrono::steady_clock::now() + std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(time));
 
-  double startTime=time;
+  double startTime = time;
   if (Flags::ProgressBar())
     logInfo("stepUntil [" + std::to_string(startTime) + "; " + std::to_string(stopTime) + "]");
 
-  //store previous values of eventIndicators by type
-  std::vector<std::pair<ComRef,double>> prevDoubleValues;
-  std::vector<std::pair<ComRef,int>> prevIntValues;
-  std::vector<std::pair<ComRef,bool>> prevBoolValues;
+  // store previous values of event indicators by type
+  std::vector<std::pair<ComRef, double>> prevDoubleValues;
+  std::vector<std::pair<ComRef, int>> prevIntValues;
+  std::vector<std::pair<ComRef, bool>> prevBoolValues;
 
-  //get inital values of eventIndicators
+  // get inital values of event indicators
   for (auto const& sr: stepSizeConfiguration.getEventIndicators())
   {
     Variable* var = getVariable(sr);
     if (var->isTypeReal())
     {
       double value;
-      this->getReal(sr,value);
+      this->getReal(sr, value);
       prevDoubleValues.push_back(std::pair<ComRef,double>(sr, value));
     }
     else if (var->isTypeInteger())
     {
       int value;
-      this->getInteger(sr,value);
+      this->getInteger(sr, value);
       prevIntValues.push_back(std::pair<ComRef,int>(sr, value));
     }
     else
     {
-      //if its a bool value
+      // if it's a bool value
       bool value;
-      this->getBoolean(sr,value);
+      this->getBoolean(sr, value);
       prevBoolValues.push_back(std::pair<ComRef,bool>(sr, value));
     }
   }
 
   //start simulation
-  while (time<stopTime)
+  auto start = std::chrono::steady_clock::now() + std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(time));
+  while (time < stopTime)
   {
-    double nextStepSize=maximumStepSize;
+    double nextStepSize = maximumStepSize;
+
     //detect events
-    bool event=false;
+    bool event = false;
     for (auto& pair:prevDoubleValues)
     {
       double currVal;
-      this->getReal(pair.first,currVal);
+      this->getReal(pair.first, currVal);
       if (currVal != pair.second)
       {
-        event=true;
-        pair.second=currVal;
+        event = true;
+        pair.second = currVal;
       }
     }
     for (auto& pair:prevIntValues)
@@ -743,8 +744,8 @@ oms_status_enu_t oms::SystemWC::stepUntilASSC(double stopTime, void (*cb)(const 
       this->getInteger(pair.first,currVal);
       if (currVal != pair.second)
       {
-        event=true;
-        pair.second=currVal;
+        event = true;
+        pair.second = currVal;
       }
     }
     for (auto& pair:prevBoolValues)
@@ -753,33 +754,33 @@ oms_status_enu_t oms::SystemWC::stepUntilASSC(double stopTime, void (*cb)(const 
       this->getBoolean(pair.first,currVal);
       if (currVal != pair.second)
       {
-        event=true;
-        pair.second=currVal;
+        event = true;
+        pair.second = currVal;
       }
     }
 
-    //if event was detected change step size to minimal, otherwise see other configuration parameters
+    // if event was detected change step size to minimal, otherwise see other configuration parameters
     if (event)
     {
-      nextStepSize=minimumStepSize;
+      nextStepSize = minimumStepSize;
     }
     else
     {
-      //check the next timed event
+      // check the next timed event
       for (const auto& var:stepSizeConfiguration.getTimeIndicators())
       {
         double nextEvent;
         this->getReal(var,nextEvent);
-        if (nextEvent>=time) //smaller values indicate inactivity
+        if (nextEvent >= time) // smaller values indicate inactivity
         {
           if (nextEvent-time<nextStepSize)
           {
-            nextStepSize=nextEvent-time;
+            nextStepSize = nextEvent-time;
           }
         }
       }
 
-      //check values for threshold crossing detection
+      // check values for threshold crossing detection
       for (const auto& pair : stepSizeConfiguration.getStaticThresholds())
       {
         double sigval;
@@ -790,7 +791,7 @@ oms_status_enu_t oms::SystemWC::stepUntilASSC(double stopTime, void (*cb)(const 
           {
             if (interval.stepSize<nextStepSize)
             {
-              nextStepSize=interval.stepSize;
+              nextStepSize = interval.stepSize;
             }
           }
         }
@@ -810,15 +811,15 @@ oms_status_enu_t oms::SystemWC::stepUntilASSC(double stopTime, void (*cb)(const 
           {
             if (interval.stepSize<nextStepSize)
             {
-              nextStepSize=interval.stepSize;
+              nextStepSize = interval.stepSize;
             }
           }
         }
       }
 
-      //ensure global bounds
-      if (nextStepSize<minimumStepSize) nextStepSize=minimumStepSize;
-      if (nextStepSize>maximumStepSize) nextStepSize=maximumStepSize;
+      // ensure global bounds
+      if (nextStepSize<minimumStepSize) nextStepSize = minimumStepSize;
+      if (nextStepSize>maximumStepSize) nextStepSize = maximumStepSize;
     }
 
     double tNext = time+nextStepSize;
@@ -925,7 +926,7 @@ oms_status_enu_t oms::SystemWC::getInputs(oms::DirectedGraph& graph, std::vector
 {
   inputs.clear();
   const std::vector< oms_ssc_t >& sortedConnections = graph.getSortedConnections();
-  for(int i=0; i<sortedConnections.size(); i++)
+  for(int i=0; i < sortedConnections.size(); i++)
   {
     if (sortedConnections[i].size() == 1)
     {
@@ -945,8 +946,8 @@ oms_status_enu_t oms::SystemWC::getInputs(oms::DirectedGraph& graph, std::vector
 oms_status_enu_t oms::SystemWC::setInputsDer(oms::DirectedGraph& graph, const std::vector<double>& inputsDer)
 {
   int derI = 0;
-  const std::vector< oms_ssc_t >& sortedConnections = graph.getSortedConnections();
-  for(int i=0; i<sortedConnections.size(); i++)
+  const std::vector<oms_ssc_t>& sortedConnections = graph.getSortedConnections();
+  for(int i=0; i < sortedConnections.size(); i++)
   {
     if (sortedConnections[i].size() == 1)
     {
@@ -970,7 +971,7 @@ oms_status_enu_t oms::SystemWC::getInputAndOutput(oms::DirectedGraph& graph, std
   int inCount = 0;
   outputVect.clear();
   int outCount = 0;
-    for(int i=0; i<sortedConnections.size(); i++)
+    for(int i=0; i < sortedConnections.size(); i++)
     {
       if (sortedConnections[i].size() == 1)
       {
@@ -1026,7 +1027,7 @@ oms_status_enu_t oms::SystemWC::updateInputs(oms::DirectedGraph& graph)
   const std::vector< oms_ssc_t >& sortedConnections = graph.getSortedConnections();
   updateAlgebraicLoops(sortedConnections);
 
-  for(int i=0; i<sortedConnections.size(); i++)
+  for(int i=0; i < sortedConnections.size(); i++)
   {
     if (sortedConnections[i].size() == 1)
     {
