@@ -1008,6 +1008,17 @@ oms_status_enu_t oms_simulate(const char* cref_)
   return model->simulate();
 }
 
+oms_status_enu_t oms_doStep(const char* cref_)
+{
+  oms::ComRef cref(cref_);
+
+  oms::Model* model = oms::Scope::GetInstance().getModel(cref);
+  if (!model)
+    return logError_ModelNotInScope(cref);
+
+  return model->doStep();
+}
+
 oms_status_enu_t oms_stepUntil(const char* cref_, double stopTime)
 {
   oms::ComRef cref(cref_);

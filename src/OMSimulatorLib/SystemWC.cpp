@@ -250,6 +250,11 @@ oms_status_enu_t oms::SystemWC::reset()
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::SystemWC::doStep()
+{
+  return oms_status_error;
+}
+
 oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char* ident, double time, oms_status_enu_t status))
 {
   CallClock callClock(clock);

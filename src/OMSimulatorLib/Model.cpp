@@ -1010,6 +1010,26 @@ oms_status_enu_t oms::Model::simulate()
   return status;
 }
 
+oms_status_enu_t oms::Model::doStep()
+{
+  clock.tic();
+  if (!validState(oms_modelState_simulation))
+  {
+    clock.toc();
+    return logError_ModelInWrongState(this);
+  }
+
+  if (!system)
+  {
+    clock.toc();
+    return logError("Model doesn't contain a system");
+  }
+
+  oms_status_enu_t status = system->doStep();
+  clock.toc();
+  return status;
+}
+
 oms_status_enu_t oms::Model::stepUntil(double stopTime)
 {
   clock.tic();

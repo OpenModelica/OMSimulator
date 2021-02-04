@@ -279,6 +279,11 @@ oms_status_enu_t oms::SystemTLM::reset()
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::SystemTLM::doStep()
+{
+  return oms_status_error;
+}
+
 oms_status_enu_t oms::SystemTLM::stepUntil(double stopTime, void (*cb)(const char* ident, double time, oms_status_enu_t status))
 {
   omtlm_setStartTime(model, getModel()->getStartTime());

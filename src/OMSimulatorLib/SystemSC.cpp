@@ -460,7 +460,7 @@ oms_status_enu_t oms::SystemSC::reset()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::SystemSC::doStep(void (*cb)(const char* ident, double time, oms_status_enu_t status))
+oms_status_enu_t oms::SystemSC::doStep()
 {
   const double hdef = maximumStepSize;
   fmi2_real_t tlast = time;
@@ -637,7 +637,7 @@ oms_status_enu_t oms::SystemSC::stepUntil(double stopTime, void (*cb)(const char
   oms_status_enu_t status = oms_status_ok;
   while (time < stopTime && oms_status_ok == status)
   {
-    status = doStep(cb);
+    status = doStep();
 
     if (isTopLevelSystem())
     {
