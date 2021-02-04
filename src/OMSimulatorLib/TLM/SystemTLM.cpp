@@ -281,7 +281,7 @@ oms_status_enu_t oms::SystemTLM::reset()
 
 oms_status_enu_t oms::SystemTLM::doStep()
 {
-  return oms_status_error;
+  return logError_NotForTlmSystem;
 }
 
 oms_status_enu_t oms::SystemTLM::stepUntil(double stopTime, void (*cb)(const char* ident, double time, oms_status_enu_t status))
