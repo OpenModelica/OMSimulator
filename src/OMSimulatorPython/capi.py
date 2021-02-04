@@ -46,16 +46,18 @@ class capi:
     self.obj.oms_deleteConnectorFromBus.restype = ctypes.c_int
     self.obj.oms_deleteConnectorFromTLMBus.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_deleteConnectorFromTLMBus.restype = ctypes.c_int
+    self.obj.oms_doStep.argtypes = [ctypes.c_char_p]
+    self.obj.oms_doStep.restype = ctypes.c_int
     self.obj.oms_export.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_export.restype = ctypes.c_int
     self.obj.oms_exportDependencyGraphs.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_exportDependencyGraphs.restype = ctypes.c_int
     self.obj.oms_exportSnapshot.argtypes = [ctypes.c_char_p]
     self.obj.oms_exportSnapshot.restype = ctypes.c_int
-    self.obj.oms_exportSSVTemplate.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_exportSSVTemplate.restype = ctypes.c_int
     self.obj.oms_exportSSMTemplate.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_exportSSMTemplate.restype = ctypes.c_int
+    self.obj.oms_exportSSVTemplate.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_exportSSVTemplate.restype = ctypes.c_int
     self.obj.oms_faultInjection.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_double]
     self.obj.oms_faultInjection.restype = ctypes.c_int
     self.obj.oms_getBoolean.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_bool)]
@@ -74,6 +76,8 @@ class capi:
     self.obj.oms_getStopTime.restype = ctypes.c_int
     self.obj.oms_getSystemType.argtypes = [ctypes.c_char_p]
     self.obj.oms_getSystemType.restype = ctypes.c_int
+    self.obj.oms_getTime.argtypes = [ctypes.c_char_p]
+    self.obj.oms_getTime.restype = ctypes.c_int
     self.obj.oms_getVariableStepSize.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double)]
     self.obj.oms_getVariableStepSize.restype = ctypes.c_int
     self.obj.oms_getVersion.argtypes = None
@@ -186,6 +190,8 @@ class capi:
     return self.obj.oms_deleteConnectorFromBus(busCref.encode(), connectorCref.encode())
   def deleteConnectorFromTLMBus(self, busCref, connectorCref):
     return self.obj.oms_deleteConnectorFromTLMBus(busCref.encode(), connectorCref.encode())
+  def doStep(self, cref):
+    return self.obj.oms_doStep(cref.encode())
   def export(self, cref, filename):
     return self.obj.oms_export(cref.encode(), filename.encode())
   def exportDependencyGraphs(self, cref, initialization, event, simulation):
@@ -232,6 +238,10 @@ class capi:
     type_ = ctypes.c_int()
     status = self.obj.oms_getSystemType(cref.encode(), ctypes.byref(type_))
     return [type_.value, status]
+  def getTime(self, cref):
+    time = ctypes.c_double()
+    status = self.obj.oms_getTime(cref.encode(), ctypes.byref(time))
+    return [time.value, status]
   def getVariableStepSize(self, cref):
     initialStepSize = ctypes.c_double()
     minimumStepSize = ctypes.c_double()

@@ -557,6 +557,8 @@ oms_status_enu_t oms::SystemSC::doStep()
     hcur = tnext - tlast;
   }
 
+  // logInfo("SystemSC::doStep [" + std::to_string(tlast) + "; " + std::to_string(tnext) + "]");
+
   // integrate using specified solver
   if (oms_solver_sc_explicit_euler == solverMethod)
   {
@@ -626,9 +628,7 @@ oms_status_enu_t oms::SystemSC::doStep()
 oms_status_enu_t oms::SystemSC::stepUntil(double stopTime, void (*cb)(const char* ident, double time, oms_status_enu_t status))
 {
   CallClock callClock(clock);
-
-  ComRef modelName = this->getModel()->getCref();
-  double startTime=time;
+  const double startTime=time;
 
   if (Flags::ProgressBar())
     logInfo("stepUntil [" + std::to_string(startTime) + "; " + std::to_string(stopTime) + "]");
@@ -642,7 +642,7 @@ oms_status_enu_t oms::SystemSC::stepUntil(double stopTime, void (*cb)(const char
     if (isTopLevelSystem())
     {
       if (cb)
-        cb(modelName.c_str(), time, status);
+        cb(this->getModel()->getCref().c_str(), time, status);
 
       if (Flags::ProgressBar())
         Log::ProgressBar(startTime, stopTime, time);
