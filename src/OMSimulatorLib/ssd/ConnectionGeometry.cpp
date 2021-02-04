@@ -33,6 +33,7 @@
 
 #include "../Logging.h"
 #include "Tags.h"
+#include "Util.h"
 
 #include <string.h>
 #include <sstream>
@@ -45,17 +46,6 @@ oms::ssd::ConnectionGeometry::ConnectionGeometry()
   this->pointsX = NULL;
   this->pointsY = NULL;
   this->n = 0;
-}
-
-void reverseArray(double* arr, unsigned int length)
-{
-  double tmp;
-  for (unsigned int start = 0, end = length-1; start < end; start++, end--)
-  {
-    tmp = arr[start];
-    arr[start] = arr[end];
-    arr[end] = tmp;
-  }
 }
 
 oms::ssd::ConnectionGeometry::ConnectionGeometry(const oms::ssd::ConnectionGeometry& rhs, bool inverse)
