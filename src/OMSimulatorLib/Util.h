@@ -77,4 +77,16 @@ static inline bool almostEqualRelativeAndAbs(double a, double b, double reltol=D
   return false;
 }
 
+template <class T>
+void reverseArray(T* array, unsigned int length)
+{
+  T tmp;
+  for (unsigned int start = 0, end = length-1; start < end; start++, end--)
+  {
+    tmp = array[start];
+    array[start] = array[end];
+    array[end] = tmp;
+  }
+}
+
 #endif

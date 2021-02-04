@@ -33,6 +33,7 @@
 
 #include "../Logging.h"
 #include "Tags.h"
+#include "Util.h"
 
 #include <string.h>
 #include <sstream>
@@ -47,7 +48,7 @@ oms::ssd::ConnectionGeometry::ConnectionGeometry()
   this->n = 0;
 }
 
-oms::ssd::ConnectionGeometry::ConnectionGeometry(const oms::ssd::ConnectionGeometry& rhs)
+oms::ssd::ConnectionGeometry::ConnectionGeometry(const oms::ssd::ConnectionGeometry& rhs, bool inverse)
 {
   logTrace();
 
@@ -59,6 +60,11 @@ oms::ssd::ConnectionGeometry::ConnectionGeometry(const oms::ssd::ConnectionGeome
     this->pointsY = new double[rhs.n];
     memcpy(this->pointsX, rhs.pointsX, n*sizeof(double));
     memcpy(this->pointsY, rhs.pointsY, n*sizeof(double));
+    if (inverse)
+    {
+      reverseArray(this->pointsX, this->n);
+      reverseArray(this->pointsY, this->n);
+    }
   }
   else
   {

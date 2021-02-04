@@ -139,12 +139,12 @@ oms_status_enu_t oms::Connection::exportToSSD(pugi::xml_node &root) const
   return oms_status_ok;
 }
 
-void oms::Connection::setGeometry(const oms::ssd::ConnectionGeometry* newGeometry)
+void oms::Connection::setGeometry(const oms::ssd::ConnectionGeometry* newGeometry, bool inverse)
 {
   oms::ssd::ConnectionGeometry* geometry_ = reinterpret_cast<oms::ssd::ConnectionGeometry*>(this->geometry);
   if (geometry_)
     delete geometry_;
-  geometry_ = new oms::ssd::ConnectionGeometry(*newGeometry);
+  geometry_ = new oms::ssd::ConnectionGeometry(*newGeometry, inverse);
   this->geometry = reinterpret_cast<ssd_connection_geometry_t*>(geometry_);
 }
 
@@ -169,6 +169,11 @@ void oms::Connection::setTLMParameters(double delay, double alpha, double linear
   tlmparameters->alpha = alpha;
   tlmparameters->linearimpedance = linearimpedance;
   tlmparameters->angularimpedance = angualrimpedance;
+}
+
+bool oms::Connection::isStrictEqual(const oms::ComRef& signalA, const oms::ComRef& signalB) const
+{
+  return signalA == oms::ComRef(this->conA) && signalB == oms::ComRef(this->conB);
 }
 
 bool oms::Connection::isEqual(const oms::ComRef& signalA, const oms::ComRef& signalB) const

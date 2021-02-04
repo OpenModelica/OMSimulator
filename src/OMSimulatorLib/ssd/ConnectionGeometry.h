@@ -46,7 +46,7 @@ namespace oms
     {
     public:
       ConnectionGeometry();
-      ConnectionGeometry(const ConnectionGeometry& rhs);
+      ConnectionGeometry(const ConnectionGeometry& rhs, bool inverse=false);
       ~ConnectionGeometry();
 
       ConnectionGeometry& operator=(ConnectionGeometry const& rhs);

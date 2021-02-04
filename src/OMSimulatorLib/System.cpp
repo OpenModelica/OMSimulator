@@ -1452,7 +1452,8 @@ oms_status_enu_t oms::System::setConnectionGeometry(const oms::ComRef& crefA, co
   for (auto& connection : connections)
     if (connection && connection->isEqual(crefA, crefB))
     {
-      connection->setGeometry(geometry);
+      bool inverse = connection->isStrictEqual(crefB, crefA);
+      connection->setGeometry(geometry, inverse);
       return oms_status_ok;
     }
 

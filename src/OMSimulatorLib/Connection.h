@@ -60,7 +60,7 @@ namespace oms
     const oms::ComRef getSignalB() const {return oms::ComRef(conB);}
 
     const oms::ssd::ConnectionGeometry* getGeometry() const {return reinterpret_cast<oms::ssd::ConnectionGeometry*>(geometry);}
-    void setGeometry(const oms::ssd::ConnectionGeometry* newGeometry);
+    void setGeometry(const oms::ssd::ConnectionGeometry* newGeometry, bool inverse=false);
     void setTLMParameters(const oms_tlm_connection_parameters_t* parameters);
     void setTLMParameters(double delay, double alpha, double linearimpedance, double angualrimpedance);
     oms_tlm_connection_parameters_t* getTLMParameters() const {return tlmparameters;}
@@ -68,7 +68,8 @@ namespace oms
     oms_connection_type_enu_t getType() const {return type;}
 
     bool isEqual(const oms::Connection& connection) const;
-    bool isEqual(const oms::ComRef& signalA, const oms::ComRef& signalB) const;
+    bool isEqual(const oms::ComRef& signalA, const oms::ComRef& signalB) const; ///< "A->B" and "B->A" are treated the same
+    bool isStrictEqual(const oms::ComRef& signalA, const oms::ComRef& signalB) const; ///< "A->B" is not strict equal "B->A"
     bool containsSignal(const oms::ComRef& signal) const;
     bool containsSignalB(const oms::ComRef& signal) const;
 
