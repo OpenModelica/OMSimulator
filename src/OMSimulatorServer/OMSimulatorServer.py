@@ -49,6 +49,7 @@ def pub_msg(socket, topic, msg: dict):
   if socket:
     msg_ = mogrify(topic, msg)
     socket.send_string(msg_)
+    logging.info(msg_)
 
 def _main():
   # parse command-line arguments
