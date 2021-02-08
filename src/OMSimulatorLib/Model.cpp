@@ -150,6 +150,7 @@ oms_status_enu_t oms::Model::rename(const ComRef& cref, const ComRef& newCref)
     system->getSubSystems()[newCref] = subsystem->second;
     //delete old cref
     system->getSubSystems().erase(subsystem);
+    renameConnections(tail, newCref);
     return oms_status_ok;
   }
 
@@ -161,11 +162,96 @@ oms_status_enu_t oms::Model::rename(const ComRef& cref, const ComRef& newCref)
     system->getComponents()[newCref] = component->second;
     // delete old cref
     system->getComponents().erase(component);
+    renameConnections(tail, newCref);
     return oms_status_ok;
   }
 
   return logError("failed for \"" + std::string(getCref()+cref) + "\""  + " as the identifier could not be resolved to a system or subsystem or component");
 }
+
+oms_status_enu_t oms::Model::renameConnections(const ComRef& cref, const ComRef& newCref)
+{
+  // list of new connections with new cref
+  std::map<ComRef, ComRef> newConnections;
+
+  // filter the connections to be renamed with new cref
+  for (const auto &it : system->getConnections())
+  {
+    if (it)
+    {
+      oms::ComRef signalA_tail(it->getSignalA());
+      ComRef signalA_front = signalA_tail.pop_front();
+
+      oms::ComRef signalB_tail(it->getSignalB());
+      ComRef signalB_front = signalB_tail.pop_front();
+
+      oms::ComRef newSignalA, newSignalB;
+      bool renameA = false;
+      bool renameB = false;
+
+      // rename signalA if connection exist with old cref
+      if (cref == signalA_front)
+      {
+        renameA = true;
+        if (signalA_tail.isEmpty())
+        {
+          newSignalA = signalA_front;
+        }
+        else
+        {
+          newSignalA = newCref + signalA_tail;
+        }
+      }
+      else
+      {
+        // default old cref
+        newSignalA = it->getSignalA();
+      }
+
+      // rename signalB if connection exist with old cref
+      if (cref == signalB_front)
+      {
+        renameB = true;
+        if (signalB_tail.isEmpty())
+        {
+          newSignalB = signalB_front;
+        }
+        else
+        {
+          newSignalB = newCref + signalB_tail;
+        }
+      }
+      else
+      {
+        // default old cref
+        newSignalB = it->getSignalB();
+      }
+
+      // filtered connections to be renamed
+      if (renameA || renameB)
+      {
+        newConnections[newSignalA] = newSignalB;
+      }
+    }
+  }
+
+  // delete all the connections with the old cref
+  system->deleteAllConectionsTo(cref);
+
+  /* add the list of new renamed connections
+  *  (e.g) oms_rename("model.root_1.System1", "System_1")
+  *        (input1 -> System1.input1) ==> (input1 -> System_1.input)
+  *        oms_rename("model.root_1.System_1", "System_2")
+  *        (input1 -> System_1.input) ==>  (input1 -> System_2.input)
+  */
+  for (const auto & newconnection : newConnections)
+  {
+    system->getConnections().back() = new oms::Connection(newconnection.first, newconnection.second);
+    system->getConnections().push_back(NULL);
+  }
+
+    return oms_status_ok;
+  }
 
 oms_status_enu_t oms::Model::loadSnapshot(const char* snapshot)
 {

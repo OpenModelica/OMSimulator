@@ -96,6 +96,8 @@ namespace oms
     oms_status_enu_t terminate();
     oms_status_enu_t reset();
 
+    oms_status_enu_t renameConnections(const ComRef& cref, const ComRef& newCref);
+
     oms_modelState_enu_t getModelState() const {return modelState;}
 
     oms_status_enu_t setStartTime(double value);
