@@ -333,6 +333,179 @@ oms_status_enu_t oms::SystemWC::doStep()
 
   if (solverMethod == oms_solver_wc_mav || solverMethod == oms_solver_wc_mav2)
   {
+    std::vector<double> inputVectEnd;
+    std::vector<double> outputVectEnd;
+    std::vector<double> inputVect;
+    std::vector<double> outputVect;
+
+    if (stepSize > maximumStepSize) stepSize = maximumStepSize;
+    if (stepSize < minimumStepSize) stepSize = minimumStepSize;
+
+    double tNext = time+stepSize;
+    const double stopTime = this->getModel()->getStopTime();
+    if (tNext > stopTime)
+    {
+      tNext = stopTime;
+      stepSize = tNext-time;
+    }
+
+    logDebug("doStep: " + std::to_string(time) + " -> " + std::to_string(tNext));
+
+    oms_status_enu_t status;
+
+    // Get states of FMUs that can get state
+    for (const auto& component : mav_canGetAndSetStateFMUcomponents)
+      component.second->saveState();
+
+    const int howManySteps = mav_doDoubleStep ? 3 : 1;
+    for (int whichStepIndex = 0; whichStepIndex < howManySteps; whichStepIndex++)
+    {
+      // stepUntil for FMUs that can get state
+      for (const auto& component : mav_canGetAndSetStateFMUcomponents)
+      {
+        status = component.second->stepUntil(tNext);
+        if (oms_status_ok != status)
+          return status;
+      }
+
+      // stepUntill for subsystems (ME-FMUs), TODO: Fix rollback here too.
+      for (const auto& subsystem : getSubSystems())
+      {
+        status = subsystem.second->stepUntil(tNext, NULL);
+        if (oms_status_ok != status)
+          return status;
+      }
+
+      logDebug("DEBUGGING: Doing error control");
+      // get inputs and outputs at the end of all steps.
+      if (whichStepIndex == 0)
+      {
+        if (oms_status_ok != getInputAndOutput(eventGraph, inputVect, outputVect, mav_canGetAndSetStateFMUcomponents))
+          return oms_status_error;
+
+        if (mav_doDoubleStep) // Rollback for small steppies.
+        {
+          // Rollback all FMUs
+          for (const auto& component : mav_canGetAndSetStateFMUcomponents)
+          {
+            component.second->restoreState();
+          }
+
+          //Fix time
+          time = tNext-stepSize;
+          for (const auto& component : getComponents())
+          {
+            if (oms_component_fmu == component.second->getType())
+            {
+              dynamic_cast<ComponentFMUCS*>(component.second)->setFmuTime(time);
+            }
+          }
+        }
+      }
+      else if (whichStepIndex == 1)
+        updateInputs(eventGraph);
+      else if (whichStepIndex == 2)
+        if (oms_status_ok != getInputAndOutput(eventGraph, inputVectEnd, outputVectEnd, mav_canGetAndSetStateFMUcomponents))
+          return oms_status_error;
+    }
+    logDebug("DEBUGGING: Lets do Error control");
+    logDebug("DEBUGGING: inputVect is size:  " + std::to_string(inputVect.size()));
+    logDebug("DEBUGGING: outputVect is size: " + std::to_string(outputVect.size()));
+    if (inputVect.size() != outputVect.size())
+      return oms_status_error;
+
+    double safety_factor = 0.90;
+    double maxChange = 1.5;
+    double minChange = 0.5;
+    maxError = 0.0;
+    for (int n=0; n < inputVect.size(); n++) // Calculate error in the FMUs we do error_control on.
+    {
+      double error;
+      if (!mav_doDoubleStep)
+        error = fabs(inputVect[n]-outputVect[n]);
+      else
+        error = fabs(outputVectEnd[n]-outputVect[n]);
+
+      logDebug("DEBUGGING: Error is:"+std::to_string(error)+" and Scale factor is: "+std::to_string((fabs(outputVect[n])*relativeTolerance+absoluteTolerance)));
+
+      normError = normError+pow(error/(fabs(outputVect[n])*relativeTolerance+absoluteTolerance),2);
+      if (error/(fabs(outputVect[n])*relativeTolerance+absoluteTolerance) > maxError)
+      {
+        maxError = error/(fabs(outputVect[n])*relativeTolerance+absoluteTolerance);
+        logDebug("DEBUGGING: scaled error is: " + std::to_string(error/(fabs(outputVect[n])*relativeTolerance+absoluteTolerance)) + " New biggest Differance is: " + std::to_string(maxError));
+      }
+    }
+    normError = pow(normError, 0.5);
+    double fixRatio = pow(1.0/maxError, 0.5);
+    logDebug("DEBUGGING: fixRatio is: " + std::to_string(fixRatio));
+    if (fixRatio < 1.0 && minimumStepSize < stepSize) //Going to rollback.
+    {
+      // Rollback FMUs
+      for (const auto& component : mav_canGetAndSetStateFMUcomponents)
+      {
+        component.second->restoreState();
+      }
+
+      // Fix time
+      time = tNext-stepSize;
+
+      // Fix stepSize
+      fixRatio = fixRatio*safety_factor;
+      if (fixRatio < minChange) fixRatio = minChange;
+      stepSize = stepSize*fixRatio;
+      logDebug("DEBUGGING: Rollbacking New h is: " + std::to_string(stepSize));
+      rollBackIt++;
+    }
+    else // Not going to rollback.
+    {
+      if (!mav_FMUcomponents.empty())
+      {
+        for (const auto& component : mav_FMUcomponents) // These FMUs cant rollback, so only simulating them when we have decided on a step to take.
+        {
+          if (mav_doDoubleStep)
+            return logError("We shouldn't be doing double stepping when we have FMUs that can't get or set states.");
+          status = component.second->stepUntil(tNext);
+          if (oms_status_ok != status)
+            return status;
+        }
+      }
+
+      if (Flags::RealTime())
+      {
+        auto now = std::chrono::steady_clock::now();
+        // seems a cast to a sufficient high resolution of time is necessary for avoiding truncation errors
+        auto next = start + std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(tNext));
+        std::chrono::duration<double> margin = std::chrono::duration<double>(next - now);
+        if (margin < std::chrono::duration<double>(0))
+          logWarning("real-time frame overrun, time=" + std::to_string(tNext) + "s, exceeded margin=" + std::to_string(margin.count()) + "s");
+        else
+          std::this_thread::sleep_until(next);
+      }
+
+      time = tNext;
+      bool emitted;
+      if (isTopLevelSystem())
+        getModel()->emit(time, false, &emitted);
+      updateInputs(eventGraph);
+      if (isTopLevelSystem())
+        getModel()->emit(time, emitted);
+
+      if (isTopLevelSystem() && getModel()->cancelSimulation())
+        return oms_status_discard;
+
+      rollBackIt = 0;
+      fixRatio = fixRatio*safety_factor;
+      if (fixRatio > 1.0)
+        if (fixRatio > maxChange)
+          fixRatio = maxChange;
+      stepSize = stepSize*fixRatio;
+    }
+
+    for (const auto& component : mav_canGetAndSetStateFMUcomponents)
+      component.second->freeState();
+
+    if (isTopLevelSystem() && getModel()->cancelSimulation())
+      return oms_status_discard;
   }
   else if (solverMethod == oms_solver_wc_ma)
   {
@@ -634,204 +807,20 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
   if (solverMethod == oms_solver_wc_mav || solverMethod == oms_solver_wc_mav2)
   {
     logDebug("DEBUGGING: Entering VariableStep solver");
-    std::vector<double> inputVectEnd;
-    std::vector<double> outputVectEnd;
-    std::vector<double> inputVect;
-    std::vector<double> outputVect;
 
-    int howManySteps = mav_doDoubleStep ? 3 : 1;
+    // main simulation loop
+    oms_status_enu_t status = oms_status_ok;
     while (time < stopTime)
     {
-      if (stepSize > maximumStepSize) stepSize = maximumStepSize;
-      if (stepSize < minimumStepSize) stepSize = minimumStepSize;
+      status = doStep();
 
-      double tNext = time+stepSize;
-      if (tNext > stopTime)
+      if (isTopLevelSystem())
       {
-        tNext = stopTime;
-        stepSize = tNext-time;
-      }
-
-      logDebug("doStep: " + std::to_string(time) + " -> " + std::to_string(tNext));
-
-      oms_status_enu_t status;
-
-      // Get states of FMUs that can get state
-      for (const auto& component : mav_canGetAndSetStateFMUcomponents)
-        component.second->saveState();
-
-      for (int whichStepIndex = 0; whichStepIndex < howManySteps; whichStepIndex++)
-      {
-        // stepUntil for FMUs that can get state
-        for (const auto& component : mav_canGetAndSetStateFMUcomponents)
-        {
-          status = component.second->stepUntil(tNext);
-          if (oms_status_ok != status)
-          {
-            if (cb)
-              cb(modelName.c_str(), tNext, status);
-            return status;
-          }
-        }
-
-        // stepUntill for subsystems (ME-FMUs), TODO: Fix rollback here too.
-        for (const auto& subsystem : getSubSystems())
-        {
-          status = subsystem.second->stepUntil(tNext, NULL);
-          if (oms_status_ok != status)
-          {
-            if (cb)
-              cb(modelName.c_str(), tNext, status);
-            return status;
-          }
-        }
-
-        logDebug("DEBUGGING: Doing error control");
-        // get inputs and outputs at the end of all steps.
-        if (whichStepIndex == 0)
-        {
-          if (oms_status_ok != getInputAndOutput(eventGraph,inputVect,outputVect,mav_canGetAndSetStateFMUcomponents))
-            return oms_status_error;
-
-          if (mav_doDoubleStep) // Rollback for small steppies.
-          {
-            // Rollback all FMUs
-            for (const auto& component : mav_canGetAndSetStateFMUcomponents)
-            {
-              component.second->restoreState();
-            }
-
-            //Fix time
-            time = tNext-stepSize;
-            for (const auto& component : getComponents())
-            {
-              if (oms_component_fmu == component.second->getType())
-              {
-                dynamic_cast<ComponentFMUCS*>(component.second)->setFmuTime(time);
-              }
-            }
-          }
-        }
-        else if (whichStepIndex == 1)
-          updateInputs(eventGraph);
-        else if (whichStepIndex == 2)
-          if (oms_status_ok != getInputAndOutput(eventGraph,inputVectEnd,outputVectEnd,mav_canGetAndSetStateFMUcomponents))
-            return oms_status_error;
-      }
-      logDebug("DEBUGGING: Lets do Error control");
-      logDebug("DEBUGGING: inputVect is size:  " + std::to_string(inputVect.size()));
-      logDebug("DEBUGGING: outputVect is size: " + std::to_string(outputVect.size()));
-      if (inputVect.size() != outputVect.size())
-        return oms_status_error;
-
-      double safety_factor = 0.90;
-      double maxChange = 1.5;
-      double minChange = 0.5;
-      maxError = 0.0;
-      for (int n=0; n < inputVect.size(); n++) // Calculate error in the FMUs we do error_control on.
-      {
-        double error;
-        if (!mav_doDoubleStep)
-          error = fabs(inputVect[n]-outputVect[n]);
-        else
-          error = fabs(outputVectEnd[n]-outputVect[n]);
-
-        logDebug("DEBUGGING: Error is:"+std::to_string(error)+" and Scale factor is: "+std::to_string((fabs(outputVect[n])*relativeTolerance+absoluteTolerance)));
-
-        normError = normError+pow(error/(fabs(outputVect[n])*relativeTolerance+absoluteTolerance),2);
-        if (error/(fabs(outputVect[n])*relativeTolerance+absoluteTolerance) > maxError)
-        {
-          maxError = error/(fabs(outputVect[n])*relativeTolerance+absoluteTolerance);
-          logDebug("DEBUGGING: scaled error is: " + std::to_string(error/(fabs(outputVect[n])*relativeTolerance+absoluteTolerance)) + " New biggest Differance is: " + std::to_string(maxError));
-        }
-      }
-      normError = pow(normError, 0.5);
-      double fixRatio = pow(1.0/maxError, 0.5);
-      logDebug("DEBUGGING: fixRatio is: " + std::to_string(fixRatio));
-      if (fixRatio < 1.0 && minimumStepSize < stepSize) //Going to rollback.
-      {
-        // Rollback FMUs
-        for (const auto& component : mav_canGetAndSetStateFMUcomponents)
-        {
-          component.second->restoreState();
-        }
-
-        // Fix time
-        time = tNext-stepSize;
-
-        // Fix stepSize
-        fixRatio = fixRatio*safety_factor;
-        if (fixRatio < minChange) fixRatio = minChange;
-        stepSize = stepSize*fixRatio;
-        logDebug("DEBUGGING: Rollbacking New h is: " + std::to_string(stepSize));
-        rollBackIt++;
-      }
-      else // Not going to rollback.
-      {
-        if (!mav_FMUcomponents.empty())
-        {
-          for (const auto& component : mav_FMUcomponents) // These FMUs cant rollback, so only simulating them when we have decided on a step to take.
-          {
-            if (mav_doDoubleStep)
-              return logError("We shouldn't be doing double stepping when we have FMUs that can't get or set states.");
-            status = component.second->stepUntil(tNext);
-            if (oms_status_ok != status)
-            {
-              if (cb)
-                cb(modelName.c_str(), tNext, status);
-              return status;
-            }
-          }
-        }
-
-        if (Flags::RealTime())
-        {
-          auto now = std::chrono::steady_clock::now();
-          // seems a cast to a sufficient high resolution of time is necessary for avoiding truncation errors
-          auto next = start + std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(tNext));
-          std::chrono::duration<double> margin = std::chrono::duration<double>(next - now);
-          if (margin < std::chrono::duration<double>(0))
-            logWarning("real-time frame overrun, time=" + std::to_string(tNext) + "s, exceeded margin=" + std::to_string(margin.count()) + "s");
-          else
-            std::this_thread::sleep_until(next);
-        }
-
-        time = tNext;
-        bool emitted;
-        if (isTopLevelSystem())
-          getModel()->emit(time, false, &emitted);
-        updateInputs(eventGraph);
-        if (isTopLevelSystem())
-          getModel()->emit(time, emitted);
-
         if (cb)
-          cb(modelName.c_str(), time, oms_status_ok);
+          cb(modelName.c_str(), time, status);
 
         if (Flags::ProgressBar())
           Log::ProgressBar(startTime, stopTime, time);
-
-        if (isTopLevelSystem() && getModel()->cancelSimulation())
-        {
-          cb(modelName.c_str(), time, oms_status_discard);
-          return oms_status_discard;
-        }
-
-        rollBackIt = 0;
-        fixRatio = fixRatio*safety_factor;
-        if (fixRatio > 1.0)
-          if (fixRatio > maxChange)
-            fixRatio = maxChange;
-        stepSize = stepSize*fixRatio;
-      }
-
-      for (const auto& component : mav_canGetAndSetStateFMUcomponents)
-      {
-        component.second->freeState();
-      }
-      if (isTopLevelSystem() && getModel()->cancelSimulation())
-      {
-        cb(modelName.c_str(), time, oms_status_discard);
-        return oms_status_discard;
       }
     }
 
@@ -971,57 +960,59 @@ oms_status_enu_t oms::SystemWC::setInputsDer(oms::DirectedGraph& graph, const st
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::SystemWC::getInputAndOutput(oms::DirectedGraph& graph, std::vector<double>& inputVect,std::vector<double>& outputVect,std::map<ComRef, Component*> mav_FMUcomponents)
+oms_status_enu_t oms::SystemWC::getInputAndOutput(oms::DirectedGraph& graph, std::vector<double>& inputVect, std::vector<double>& outputVect, std::map<ComRef, Component*> FMUcomponents)
 {
-  // mav_FMUcomponents in will be list of FMUs that CAN GET FMUs
+  // FMUcomponents in will be list of FMUs that CAN GET FMUs
   const std::vector< oms_ssc_t >& sortedConnections = graph.getSortedConnections();
   inputVect.clear();
   int inCount = 0;
   outputVect.clear();
   int outCount = 0;
-    for(int i=0; i < sortedConnections.size(); i++)
+
+  for(int i=0; i < sortedConnections.size(); i++)
+  {
+    if (sortedConnections[i].size() == 1)
     {
-      if (sortedConnections[i].size() == 1)
+      logDebug("DEBUGGING: Size of sortedConnections[i] is: "+std::to_string(sortedConnections[i].size()));
+      int input = sortedConnections[i][0].second;
+      oms::ComRef inputName(graph.getNodes()[input].getName());
+      oms::ComRef inputModel = inputName.pop_front();
+      logDebug(inputModel);
+      int output = sortedConnections[i][0].first;
+      oms::ComRef outputName(graph.getNodes()[output].getName());
+      oms::ComRef outputModel = outputName.pop_front();
+      logDebug(outputModel);
+      if (FMUcomponents.find(inputModel) != FMUcomponents.end())
       {
-        logDebug("DEBUGGING: Size of sortedConnections[i] is: "+std::to_string(sortedConnections[i].size()));
-        int input = sortedConnections[i][0].second;
-        oms::ComRef inputName(graph.getNodes()[input].getName());
-        oms::ComRef inputModel = inputName.pop_front();
-        logDebug(inputModel);
-        int output = sortedConnections[i][0].first;
-        oms::ComRef outputName(graph.getNodes()[output].getName());
-        oms::ComRef outputModel = outputName.pop_front();
-        logDebug(outputModel);
-        if (mav_FMUcomponents.find(inputModel) != mav_FMUcomponents.end())
+        if (FMUcomponents.find(outputModel) != FMUcomponents.end())
         {
-          if (mav_FMUcomponents.find(outputModel) != mav_FMUcomponents.end())
+          if (graph.getNodes()[input].getType() == oms_signal_type_real)
           {
-            if (graph.getNodes()[input].getType() == oms_signal_type_real)
-            {
-              double inValue = 0.0;
-              if (oms_status_ok != getReal(graph.getNodes()[input].getName(), inValue)) return oms_status_error;
-              logDebug("DEBUGGING: found a real input called: "+std::string(graph.getNodes()[output].getName()));
-              inputVect.push_back(inValue);
-              inCount++;
-            }
-            if (graph.getNodes()[output].getType() == oms_signal_type_real)
-            {
-              double outValue = 0.0;
-              if (oms_status_ok != getReal(graph.getNodes()[output].getName(), outValue)) return oms_status_error;
-              logDebug("DEBUGGING: found a real output called: "+std::string(graph.getNodes()[output].getName()));
-              outputVect.push_back(outValue);
-              outCount++;
-            }
+            double inValue = 0.0;
+            if (oms_status_ok != getReal(graph.getNodes()[input].getName(), inValue)) return oms_status_error;
+            logDebug("DEBUGGING: found a real input called: "+std::string(graph.getNodes()[output].getName()));
+            inputVect.push_back(inValue);
+            inCount++;
+          }
+          if (graph.getNodes()[output].getType() == oms_signal_type_real)
+          {
+            double outValue = 0.0;
+            if (oms_status_ok != getReal(graph.getNodes()[output].getName(), outValue)) return oms_status_error;
+            logDebug("DEBUGGING: found a real output called: "+std::string(graph.getNodes()[output].getName()));
+            outputVect.push_back(outValue);
+            outCount++;
           }
         }
       }
-      else
-      {
-        logDebug("DEBUGGING: Exiting cuz algebraic loop!");
-        return oms_status_error; // algebraic loop: TODO
-      }
-      logDebug("DEBUGGING: we have added "+std::to_string(inCount)+" inputs and "+std::to_string(outCount)+" outputs to the vectors.");
     }
+    else
+    {
+      logDebug("DEBUGGING: Exiting cuz algebraic loop!");
+      return oms_status_error; // algebraic loop: TODO
+    }
+    logDebug("DEBUGGING: we have added "+std::to_string(inCount)+" inputs and "+std::to_string(outCount)+" outputs to the vectors.");
+  }
+
   return oms_status_ok;
 }
 
