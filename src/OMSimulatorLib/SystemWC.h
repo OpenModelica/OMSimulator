@@ -109,6 +109,11 @@ namespace oms
 
     // oms_solver_wc_ma
     int masiMax;
+
+    // oms_solver_wc_mav || oms_solver_wc_mav2
+    bool mav_doDoubleStep;
+    std::map<ComRef, Component*> mav_FMUcomponents;
+    std::map<ComRef, Component*> mav_canGetAndSetStateFMUcomponents;
   };
 }
 

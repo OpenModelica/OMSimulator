@@ -217,6 +217,30 @@ oms_status_enu_t oms::SystemWC::initialize()
   if (solverMethod == oms_solver_wc_mav || solverMethod == oms_solver_wc_mav2)
   {
     stepSize = initialStepSize;
+    bool mav_doDoubleStep = (solverMethod == oms_solver_wc_mav2); // Should we double step or not?
+
+    mav_canGetAndSetStateFMUcomponents.clear();
+    mav_FMUcomponents.clear();
+
+    for (const auto& component : getComponents()) // Map the FMUs.
+    {
+      if (component.second->getCanGetAndSetState())
+        mav_canGetAndSetStateFMUcomponents.insert(std::pair<ComRef, Component*>(component.first, component.second));
+      else
+        mav_FMUcomponents.insert(std::pair<ComRef, Component*>(component.first, component.second));
+    }
+
+    logDebug("DEBUGGING: mav_canGetAndSetStateFMUcomponents is size: " + std::to_string(mav_canGetAndSetStateFMUcomponents.size()));
+    logDebug("DEBUGGING: mav_FMUcomponents is size: " + std::to_string(mav_FMUcomponents.size()));
+
+    // make sure we can reset FMUs
+    if (mav_canGetAndSetStateFMUcomponents.size() == 0)
+      return logError("The adaptive step solver requires components (e.g. FMUs) that can rollback their states. None of the involved components in this model provide this functionality.");
+
+    // check if we can double step
+    if (mav_FMUcomponents.size() != 0 && mav_doDoubleStep)
+      return logError("The double step approach requires that all the components can rollback their states. At least one component doesn't provide this functionality.");
+
   }
   else if (solverMethod == oms_solver_wc_ma)
   {
@@ -610,34 +634,12 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
   if (solverMethod == oms_solver_wc_mav || solverMethod == oms_solver_wc_mav2)
   {
     logDebug("DEBUGGING: Entering VariableStep solver");
-    std::map<ComRef, Component*> FMUcomponents;
-    std::map<ComRef, Component*> canGetAndSetStateFMUcomponents;
     std::vector<double> inputVectEnd;
     std::vector<double> outputVectEnd;
     std::vector<double> inputVect;
     std::vector<double> outputVect;
-    bool doDoubleStep = (solverMethod == oms_solver_wc_mav2); // Should we double step or not?
 
-    for (const auto& component : getComponents()) // Map the FMUs.
-    {
-      if (component.second->getCanGetAndSetState())
-        canGetAndSetStateFMUcomponents.insert(std::pair<ComRef, Component*>(component.first, component.second));
-      else
-        FMUcomponents.insert(std::pair<ComRef, Component*>(component.first, component.second));
-    }
-
-    logDebug("DEBUGGING: canGetAndSetStateFMUcomponents is size: " + std::to_string(canGetAndSetStateFMUcomponents.size()));
-    logDebug("DEBUGGING: FMUcomponents is size: " + std::to_string(FMUcomponents.size()));
-
-    // make sure we can reset FMUs
-    if (canGetAndSetStateFMUcomponents.size() == 0)
-      return logError("The adaptive step solver requires components (e.g. FMUs) that can rollback their states. None of the involved components in this model provide this functionality.");
-
-    // check if we can double step
-    if (FMUcomponents.size() != 0 && doDoubleStep)
-      return logError("The double step approach requires that all the components can rollback their states. At least one component doesn't provide this functionality.");
-
-    int howManySteps = doDoubleStep ? 3 : 1;
+    int howManySteps = mav_doDoubleStep ? 3 : 1;
     while (time < stopTime)
     {
       if (stepSize > maximumStepSize) stepSize = maximumStepSize;
@@ -655,13 +657,13 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
       oms_status_enu_t status;
 
       // Get states of FMUs that can get state
-      for (const auto& component : canGetAndSetStateFMUcomponents)
+      for (const auto& component : mav_canGetAndSetStateFMUcomponents)
         component.second->saveState();
 
       for (int whichStepIndex = 0; whichStepIndex < howManySteps; whichStepIndex++)
       {
         // stepUntil for FMUs that can get state
-        for (const auto& component : canGetAndSetStateFMUcomponents)
+        for (const auto& component : mav_canGetAndSetStateFMUcomponents)
         {
           status = component.second->stepUntil(tNext);
           if (oms_status_ok != status)
@@ -688,13 +690,13 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
         // get inputs and outputs at the end of all steps.
         if (whichStepIndex == 0)
         {
-          if (oms_status_ok != getInputAndOutput(eventGraph,inputVect,outputVect,canGetAndSetStateFMUcomponents))
+          if (oms_status_ok != getInputAndOutput(eventGraph,inputVect,outputVect,mav_canGetAndSetStateFMUcomponents))
             return oms_status_error;
 
-          if (doDoubleStep) // Rollback for small steppies.
+          if (mav_doDoubleStep) // Rollback for small steppies.
           {
             // Rollback all FMUs
-            for (const auto& component : canGetAndSetStateFMUcomponents)
+            for (const auto& component : mav_canGetAndSetStateFMUcomponents)
             {
               component.second->restoreState();
             }
@@ -713,7 +715,7 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
         else if (whichStepIndex == 1)
           updateInputs(eventGraph);
         else if (whichStepIndex == 2)
-          if (oms_status_ok != getInputAndOutput(eventGraph,inputVectEnd,outputVectEnd,canGetAndSetStateFMUcomponents))
+          if (oms_status_ok != getInputAndOutput(eventGraph,inputVectEnd,outputVectEnd,mav_canGetAndSetStateFMUcomponents))
             return oms_status_error;
       }
       logDebug("DEBUGGING: Lets do Error control");
@@ -729,7 +731,7 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
       for (int n=0; n < inputVect.size(); n++) // Calculate error in the FMUs we do error_control on.
       {
         double error;
-        if (!doDoubleStep)
+        if (!mav_doDoubleStep)
           error = fabs(inputVect[n]-outputVect[n]);
         else
           error = fabs(outputVectEnd[n]-outputVect[n]);
@@ -749,7 +751,7 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
       if (fixRatio < 1.0 && minimumStepSize < stepSize) //Going to rollback.
       {
         // Rollback FMUs
-        for (const auto& component : canGetAndSetStateFMUcomponents)
+        for (const auto& component : mav_canGetAndSetStateFMUcomponents)
         {
           component.second->restoreState();
         }
@@ -766,11 +768,11 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
       }
       else // Not going to rollback.
       {
-        if (!FMUcomponents.empty())
+        if (!mav_FMUcomponents.empty())
         {
-          for (const auto& component : FMUcomponents) // These FMUs cant rollback, so only simulating them when we have decided on a step to take.
+          for (const auto& component : mav_FMUcomponents) // These FMUs cant rollback, so only simulating them when we have decided on a step to take.
           {
-            if (doDoubleStep)
+            if (mav_doDoubleStep)
               return logError("We shouldn't be doing double stepping when we have FMUs that can't get or set states.");
             status = component.second->stepUntil(tNext);
             if (oms_status_ok != status)
@@ -822,7 +824,7 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
         stepSize = stepSize*fixRatio;
       }
 
-      for (const auto& component : canGetAndSetStateFMUcomponents)
+      for (const auto& component : mav_canGetAndSetStateFMUcomponents)
       {
         component.second->freeState();
       }
@@ -969,9 +971,9 @@ oms_status_enu_t oms::SystemWC::setInputsDer(oms::DirectedGraph& graph, const st
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::SystemWC::getInputAndOutput(oms::DirectedGraph& graph, std::vector<double>& inputVect,std::vector<double>& outputVect,std::map<ComRef, Component*> FMUcomponents)
+oms_status_enu_t oms::SystemWC::getInputAndOutput(oms::DirectedGraph& graph, std::vector<double>& inputVect,std::vector<double>& outputVect,std::map<ComRef, Component*> mav_FMUcomponents)
 {
-  // FMUcomponents in will be list of FMUs that CAN GET FMUs
+  // mav_FMUcomponents in will be list of FMUs that CAN GET FMUs
   const std::vector< oms_ssc_t >& sortedConnections = graph.getSortedConnections();
   inputVect.clear();
   int inCount = 0;
@@ -990,9 +992,9 @@ oms_status_enu_t oms::SystemWC::getInputAndOutput(oms::DirectedGraph& graph, std
         oms::ComRef outputName(graph.getNodes()[output].getName());
         oms::ComRef outputModel = outputName.pop_front();
         logDebug(outputModel);
-        if (FMUcomponents.find(inputModel) != FMUcomponents.end())
+        if (mav_FMUcomponents.find(inputModel) != mav_FMUcomponents.end())
         {
-          if (FMUcomponents.find(outputModel) != FMUcomponents.end())
+          if (mav_FMUcomponents.find(outputModel) != mav_FMUcomponents.end())
           {
             if (graph.getNodes()[input].getType() == oms_signal_type_real)
             {
