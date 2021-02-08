@@ -443,6 +443,8 @@ oms_status_enu_t oms::SystemWC::doStep()
 
     if (isTopLevelSystem() && getModel()->cancelSimulation())
       return oms_status_discard;
+
+    return oms_status_ok;
   }
 
   return logError("Invalid solver selected");
