@@ -213,10 +213,50 @@ oms_status_enu_t oms::SystemWC::initialize()
     if (oms_status_ok != component.second->initialize())
       return oms_status_error;
 
+  // prepare data structures for simulation
   if (solverMethod == oms_solver_wc_mav || solverMethod == oms_solver_wc_mav2)
+  {
     stepSize = initialStepSize;
+  }
+  else if (solverMethod == oms_solver_wc_ma)
+  {
+  }
+  else if (solverMethod == oms_solver_wc_assc)
+  {
+    // store previous values of event indicators by type
+    assc_prevDoubleValues.clear();
+    assc_prevIntValues.clear();
+    assc_prevBoolValues.clear();
 
-  // Mark algebraic loops to be updated on next call
+    // get inital values of event indicators
+    for (auto const& sr: stepSizeConfiguration.getEventIndicators())
+    {
+      Variable* var = getVariable(sr);
+      if (var->isTypeReal())
+      {
+        double value;
+        this->getReal(sr, value);
+        assc_prevDoubleValues.push_back(std::pair<ComRef,double>(sr, value));
+      }
+      else if (var->isTypeInteger())
+      {
+        int value;
+        this->getInteger(sr, value);
+        assc_prevIntValues.push_back(std::pair<ComRef,int>(sr, value));
+      }
+      else
+      {
+        // if it's a bool value
+        bool value;
+        this->getBoolean(sr, value);
+        assc_prevBoolValues.push_back(std::pair<ComRef,bool>(sr, value));
+      }
+    }
+  }
+  else
+    return logError("Invalid solver selected");
+
+  // mark algebraic loops to be updated on next call
   loopsNeedUpdate = true;
 
   return oms_status_ok;
@@ -252,7 +292,160 @@ oms_status_enu_t oms::SystemWC::reset()
 
 oms_status_enu_t oms::SystemWC::doStep()
 {
-  return oms_status_error;
+  if (solverMethod == oms_solver_wc_mav || solverMethod == oms_solver_wc_mav2)
+  {
+  }
+  else if (solverMethod == oms_solver_wc_ma)
+  {
+  }
+  else if (solverMethod == oms_solver_wc_assc)
+  {
+    auto start = std::chrono::steady_clock::now() + std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(time));
+    double nextStepSize = maximumStepSize;
+
+    //detect events
+    bool event = false;
+    for (auto& pair:assc_prevDoubleValues)
+    {
+      double currVal;
+      this->getReal(pair.first, currVal);
+      if (currVal != pair.second)
+      {
+        event = true;
+        pair.second = currVal;
+      }
+    }
+    for (auto& pair:assc_prevIntValues)
+    {
+      int currVal;
+      this->getInteger(pair.first,currVal);
+      if (currVal != pair.second)
+      {
+        event = true;
+        pair.second = currVal;
+      }
+    }
+    for (auto& pair:assc_prevBoolValues)
+    {
+      bool currVal;
+      this->getBoolean(pair.first,currVal);
+      if (currVal != pair.second)
+      {
+        event = true;
+        pair.second = currVal;
+      }
+    }
+
+    // if event was detected change step size to minimal, otherwise see other configuration parameters
+    if (event)
+    {
+      nextStepSize = minimumStepSize;
+    }
+    else
+    {
+      // check the next timed event
+      for (const auto& var:stepSizeConfiguration.getTimeIndicators())
+      {
+        double nextEvent;
+        this->getReal(var,nextEvent);
+        if (nextEvent >= time) // smaller values indicate inactivity
+        {
+          if (nextEvent-time<nextStepSize)
+          {
+            nextStepSize = nextEvent-time;
+          }
+        }
+      }
+
+      // check values for threshold crossing detection
+      for (const auto& pair : stepSizeConfiguration.getStaticThresholds())
+      {
+        double sigval;
+        this->getReal(pair.first,sigval);
+        for (const auto& interval:pair.second)
+        {
+          if (sigval>interval.lower && sigval <interval.upper)
+          {
+            if (interval.stepSize<nextStepSize)
+            {
+              nextStepSize = interval.stepSize;
+            }
+          }
+        }
+      }
+
+      for (const auto& pair : stepSizeConfiguration.getDynamicThresholds())
+      {
+        double sigval;
+        this -> getReal(pair.first,sigval);
+        for (const auto& interval:pair.second)
+        {
+          double lower;
+          this->getReal(interval.lower,lower);
+          double upper;
+          this->getReal(interval.upper, upper);
+          if (sigval>lower && sigval<upper)
+          {
+            if (interval.stepSize<nextStepSize)
+            {
+              nextStepSize = interval.stepSize;
+            }
+          }
+        }
+      }
+
+      // ensure global bounds
+      if (nextStepSize<minimumStepSize) nextStepSize = minimumStepSize;
+      if (nextStepSize>maximumStepSize) nextStepSize = maximumStepSize;
+    }
+
+    double tNext = time+nextStepSize;
+    const double stopTime = this->getModel()->getStopTime();
+    if (tNext > stopTime)
+      tNext = stopTime;
+
+    logDebug("doStep: " + std::to_string(time) + " -> " + std::to_string(tNext));
+
+    oms_status_enu_t status;
+    for (const auto& subsystem : getSubSystems())
+    {
+      status = subsystem.second->stepUntil(tNext, NULL);
+      if (oms_status_ok != status)
+        return status;
+    }
+
+    for (const auto& component : getComponents())
+    {
+      status = component.second->stepUntil(tNext);
+      if (oms_status_ok != status)
+        return status;
+    }
+
+    if (Flags::RealTime())
+    {
+      auto now = std::chrono::steady_clock::now();
+      // seems a cast to a sufficient high resolution of time is necessary for avoiding truncation errors
+      auto next = start + std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(tNext));
+      std::chrono::duration<double> margin = std::chrono::duration<double>(next - now);
+      if (margin < std::chrono::duration<double>(0))
+        logWarning("real-time frame overrun, time=" + std::to_string(tNext) + "s, exceeded margin=" + std::to_string(margin.count()) + "s");
+      else
+        std::this_thread::sleep_until(next);
+    }
+
+    time = tNext;
+    bool emitted;
+    if (isTopLevelSystem())
+      getModel()->emit(time, false, &emitted);
+    updateInputs(eventGraph);
+    if (isTopLevelSystem())
+      getModel()->emit(time, emitted);
+
+    if (isTopLevelSystem() && getModel()->cancelSimulation())
+      return oms_status_discard;
+  }
+
+  return logError("Invalid solver selected");
 }
 
 oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char* ident, double time, oms_status_enu_t status))
@@ -690,205 +883,25 @@ oms_status_enu_t oms::SystemWC::stepUntilASSC(double stopTime, void (*cb)(const 
   if (Flags::ProgressBar())
     logInfo("stepUntil [" + std::to_string(startTime) + "; " + std::to_string(stopTime) + "]");
 
-  // store previous values of event indicators by type
-  std::vector<std::pair<ComRef, double>> prevDoubleValues;
-  std::vector<std::pair<ComRef, int>> prevIntValues;
-  std::vector<std::pair<ComRef, bool>> prevBoolValues;
-
-  // get inital values of event indicators
-  for (auto const& sr: stepSizeConfiguration.getEventIndicators())
+  // main simulation loop
+  oms_status_enu_t status = oms_status_ok;
+  while (time < stopTime && oms_status_ok == status)
   {
-    Variable* var = getVariable(sr);
-    if (var->isTypeReal())
+    status = doStep();
+
+    if (isTopLevelSystem())
     {
-      double value;
-      this->getReal(sr, value);
-      prevDoubleValues.push_back(std::pair<ComRef,double>(sr, value));
-    }
-    else if (var->isTypeInteger())
-    {
-      int value;
-      this->getInteger(sr, value);
-      prevIntValues.push_back(std::pair<ComRef,int>(sr, value));
-    }
-    else
-    {
-      // if it's a bool value
-      bool value;
-      this->getBoolean(sr, value);
-      prevBoolValues.push_back(std::pair<ComRef,bool>(sr, value));
+      if (cb)
+        cb(modelName.c_str(), time, status);
+
+      if (Flags::ProgressBar())
+        Log::ProgressBar(startTime, stopTime, time);
     }
   }
 
-  //start simulation
-  auto start = std::chrono::steady_clock::now() + std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(time));
-  while (time < stopTime)
-  {
-    double nextStepSize = maximumStepSize;
-
-    //detect events
-    bool event = false;
-    for (auto& pair:prevDoubleValues)
-    {
-      double currVal;
-      this->getReal(pair.first, currVal);
-      if (currVal != pair.second)
-      {
-        event = true;
-        pair.second = currVal;
-      }
-    }
-    for (auto& pair:prevIntValues)
-    {
-      int currVal;
-      this->getInteger(pair.first,currVal);
-      if (currVal != pair.second)
-      {
-        event = true;
-        pair.second = currVal;
-      }
-    }
-    for (auto& pair:prevBoolValues)
-    {
-      bool currVal;
-      this->getBoolean(pair.first,currVal);
-      if (currVal != pair.second)
-      {
-        event = true;
-        pair.second = currVal;
-      }
-    }
-
-    // if event was detected change step size to minimal, otherwise see other configuration parameters
-    if (event)
-    {
-      nextStepSize = minimumStepSize;
-    }
-    else
-    {
-      // check the next timed event
-      for (const auto& var:stepSizeConfiguration.getTimeIndicators())
-      {
-        double nextEvent;
-        this->getReal(var,nextEvent);
-        if (nextEvent >= time) // smaller values indicate inactivity
-        {
-          if (nextEvent-time<nextStepSize)
-          {
-            nextStepSize = nextEvent-time;
-          }
-        }
-      }
-
-      // check values for threshold crossing detection
-      for (const auto& pair : stepSizeConfiguration.getStaticThresholds())
-      {
-        double sigval;
-        this->getReal(pair.first,sigval);
-        for (const auto& interval:pair.second)
-        {
-          if (sigval>interval.lower && sigval <interval.upper)
-          {
-            if (interval.stepSize<nextStepSize)
-            {
-              nextStepSize = interval.stepSize;
-            }
-          }
-        }
-      }
-
-      for (const auto& pair : stepSizeConfiguration.getDynamicThresholds())
-      {
-        double sigval;
-        this -> getReal(pair.first,sigval);
-        for (const auto& interval:pair.second)
-        {
-          double lower;
-          this->getReal(interval.lower,lower);
-          double upper;
-          this->getReal(interval.upper, upper);
-          if (sigval>lower && sigval<upper)
-          {
-            if (interval.stepSize<nextStepSize)
-            {
-              nextStepSize = interval.stepSize;
-            }
-          }
-        }
-      }
-
-      // ensure global bounds
-      if (nextStepSize<minimumStepSize) nextStepSize = minimumStepSize;
-      if (nextStepSize>maximumStepSize) nextStepSize = maximumStepSize;
-    }
-
-    double tNext = time+nextStepSize;
-    if (tNext > stopTime)
-      tNext = stopTime;
-
-    logDebug("doStep: " + std::to_string(time) + " -> " + std::to_string(tNext));
-
-    oms_status_enu_t status;
-    for (const auto& subsystem : getSubSystems())
-    {
-      status = subsystem.second->stepUntil(tNext, NULL);
-      if (oms_status_ok != status)
-      {
-        if (cb)
-          cb(modelName.c_str(), tNext, status);
-        return status;
-      }
-    }
-
-    for (const auto& component : getComponents())
-    {
-      status = component.second->stepUntil(tNext);
-      if (oms_status_ok != status)
-      {
-        if (cb)
-          cb(modelName.c_str(), tNext, status);
-        return status;
-      }
-    }
-
-    if (Flags::RealTime())
-    {
-      auto now = std::chrono::steady_clock::now();
-      // seems a cast to a sufficient high resolution of time is necessary for avoiding truncation errors
-      auto next = start + std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(tNext));
-      std::chrono::duration<double> margin = std::chrono::duration<double>(next - now);
-      if (margin < std::chrono::duration<double>(0))
-        logWarning("real-time frame overrun, time=" + std::to_string(tNext) + "s, exceeded margin=" + std::to_string(margin.count()) + "s");
-      else
-        std::this_thread::sleep_until(next);
-    }
-
-    time = tNext;
-    bool emitted;
-    if (isTopLevelSystem())
-      getModel()->emit(time, false, &emitted);
-    updateInputs(eventGraph);
-    if (isTopLevelSystem())
-      getModel()->emit(time, emitted);
-
-    if (cb)
-      cb(modelName.c_str(), time, oms_status_ok);
-
-    if (Flags::ProgressBar())
-      Log::ProgressBar(startTime, stopTime, time);
-
-    if (isTopLevelSystem() && getModel()->cancelSimulation())
-    {
-      cb(modelName.c_str(), time, oms_status_discard);
-      return oms_status_discard;
-    }
-  }
-
-  if (Flags::ProgressBar())
-  {
-    Log::ProgressBar(startTime, stopTime, time);
+  if (isTopLevelSystem() && Flags::ProgressBar())
     Log::TerminateBar();
-  }
+
   return oms_status_ok;
 }
 

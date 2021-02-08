@@ -101,6 +101,10 @@ namespace oms
     double maxError = 0.0;
     double normError = 0.0;
     unsigned int rollBackIt = 0;
+
+    std::vector<std::pair<ComRef, double>> assc_prevDoubleValues;
+    std::vector<std::pair<ComRef, int>> assc_prevIntValues;
+    std::vector<std::pair<ComRef, bool>> assc_prevBoolValues;
   };
 }
 
