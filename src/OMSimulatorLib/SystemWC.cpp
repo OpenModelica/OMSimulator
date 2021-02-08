@@ -220,6 +220,19 @@ oms_status_enu_t oms::SystemWC::initialize()
   }
   else if (solverMethod == oms_solver_wc_ma)
   {
+    masiMax = 2;
+    if (Flags::InputExtrapolation())
+    {
+      for (const auto& component : getComponents())
+        if (!component.second->getCanGetAndSetState())
+        {
+          masiMax = 1;
+          logWarning("Not all components support \"canGetAndSetState\"; an explicit master algorithm will be used");
+          break;
+        }
+    }
+    else
+      masiMax = 1;
   }
   else if (solverMethod == oms_solver_wc_assc)
   {
@@ -292,15 +305,138 @@ oms_status_enu_t oms::SystemWC::reset()
 
 oms_status_enu_t oms::SystemWC::doStep()
 {
+  auto start = std::chrono::steady_clock::now() + std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(time));
+
   if (solverMethod == oms_solver_wc_mav || solverMethod == oms_solver_wc_mav2)
   {
   }
   else if (solverMethod == oms_solver_wc_ma)
   {
+    std::vector<double> inputVect1;
+    std::vector<double> inputVect2;
+    std::vector<double> inputDer;
+
+    double tNext = time+maximumStepSize;
+    const double stopTime = this->getModel()->getStopTime();
+    if (tNext > stopTime)
+      tNext = stopTime;
+
+    double h = tNext - time;
+    logDebug("doStep: " + std::to_string(time) + " -> " + std::to_string(tNext));
+
+    // save component's state
+    if (masiMax > 1)
+    {
+      for (const auto& component : getComponents())
+        component.second->saveState();
+    }
+
+    getInputs(eventGraph, inputVect1);
+    for (int masi=0; masi<masiMax; masi++)
+    {
+      oms_status_enu_t status;
+      if (useThreadPool())
+      {
+        ctpl::thread_pool& pool = getThreadPool();
+        std::vector<std::future<oms_status_enu_t>> results(getSubSystems().size());
+        int i=0;
+        for (const auto& subsystem : getSubSystems())
+        {
+          results[i] = pool.push([&subsystem, tNext](int id){ /*logInfo("Id: " + std::to_string(id));*/ return subsystem.second->stepUntil(tNext, NULL); });
+          i++;
+        }
+
+        for (auto& r : results)
+        {
+          status = r.get();
+          if (oms_status_ok != status)
+            return status;
+        }
+      }
+      else
+      {
+        for (const auto& subsystem : getSubSystems())
+        {
+          status = subsystem.second->stepUntil(tNext, NULL);
+          if (oms_status_ok != status)
+            return status;
+        }
+      }
+
+      if (useThreadPool())
+      {
+        ctpl::thread_pool& pool = getThreadPool();
+        std::vector<std::future<oms_status_enu_t>> results(getComponents().size());
+        int i=0;
+        for (const auto& component : getComponents())
+        {
+          results[i] = pool.push([&component, tNext](int id){ /*logInfo("Id: " + std::to_string(id));*/ return component.second->stepUntil(tNext); });
+          i++;
+        }
+
+        for (auto& r : results)
+        {
+          status = r.get();
+          if (oms_status_ok != status)
+            return status;
+        }
+      }
+      else
+      {
+        for (const auto& component : getComponents())
+        {
+          status = component.second->stepUntil(tNext);
+          if (oms_status_ok != status)
+            return status;
+        }
+      }
+
+      if (Flags::RealTime())
+      {
+        auto now = std::chrono::steady_clock::now();
+        // seems a cast to a sufficient high resolution of time is necessary for avoiding truncation errors
+        auto next = start + std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(tNext));
+        std::chrono::duration<double> margin = std::chrono::duration<double>(next - now);
+        if (margin < std::chrono::duration<double>(0))
+          logWarning("real-time frame overrun, time=" + std::to_string(tNext) + "s, exceeded margin=" + std::to_string(margin.count()) + "s");
+        else
+          std::this_thread::sleep_until(next);
+      }
+
+      if (masi < masiMax-1)
+      {
+        updateInputs(eventGraph);
+        getInputs(eventGraph, inputVect2);
+        inputDer.clear();
+        for (int inputI=0; inputI<inputVect1.size(); ++inputI)
+          inputDer.push_back((inputVect2[inputI]-inputVect1[inputI]) / h);
+
+        // Restore component's state
+        for (const auto& component : getComponents())
+          component.second->restoreState();
+
+        //updateInputs(outputsGraph);
+        setInputsDer(eventGraph, inputDer);
+      }
+      else
+      {
+        time = tNext;
+        bool emitted;
+        if (isTopLevelSystem())
+          getModel()->emit(time, false, &emitted);
+        updateInputs(eventGraph);
+        if (isTopLevelSystem())
+          getModel()->emit(time, emitted);
+      }
+    }
+
+    if (isTopLevelSystem() && getModel()->cancelSimulation())
+      return oms_status_discard;
+
+    return oms_status_ok;
   }
   else if (solverMethod == oms_solver_wc_assc)
   {
-    auto start = std::chrono::steady_clock::now() + std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(time));
     double nextStepSize = maximumStepSize;
 
     //detect events
@@ -696,184 +832,39 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
         return oms_status_discard;
       }
     }
+
+    if (isTopLevelSystem() && Flags::ProgressBar())
+      Log::TerminateBar();
+
+    return oms_status_ok;
   }
   else if (solverMethod == oms_solver_wc_ma)
   {
     logDebug("DEBUGGING: Entering FixedStep solver");
 
-    int masiMax = 2;
-    if (Flags::InputExtrapolation())
+    // main simulation loop
+    oms_status_enu_t status = oms_status_ok;
+    while (time < stopTime && oms_status_ok == status)
     {
-      for (const auto& component : getComponents())
+      status = doStep();
+
+      if (isTopLevelSystem())
       {
-        if (!component.second->getCanGetAndSetState())
-        {
-          masiMax = 1;
-          logWarning("Not all components support \"canGetAndSetState\"; an explicit master algorithm will be used");
-          break;
-        }
+        if (cb)
+          cb(modelName.c_str(), time, status);
+
+        if (Flags::ProgressBar())
+          Log::ProgressBar(startTime, stopTime, time);
       }
     }
-    else
-      masiMax = 1;
 
-    std::vector<double> inputVect1;
-    std::vector<double> inputVect2;
-    std::vector<double> inputDer;
+    if (isTopLevelSystem() && Flags::ProgressBar())
+      Log::TerminateBar();
 
-    while (time < stopTime)
-    {
-      double tNext = time+maximumStepSize;
-      if (tNext > stopTime)
-        tNext = stopTime;
-
-      double h = tNext - time;
-      logDebug("doStep: " + std::to_string(time) + " -> " + std::to_string(tNext));
-
-      // Save component's state
-      if (masiMax > 1)
-      {
-        for (const auto& component : getComponents())
-          component.second->saveState();
-      }
-
-      getInputs(eventGraph, inputVect1);
-      for (int masi=0; masi<masiMax; masi++)
-      {
-        oms_status_enu_t status;
-        if (useThreadPool())
-        {
-          ctpl::thread_pool& pool = getThreadPool();
-          std::vector<std::future<oms_status_enu_t>> results(getSubSystems().size());
-          int i=0;
-          for (const auto& subsystem : getSubSystems())
-          {
-            results[i] = pool.push([&subsystem, tNext](int id){ /*logInfo("Id: " + std::to_string(id));*/ return subsystem.second->stepUntil(tNext, NULL); });
-            i++;
-          }
-
-          for (auto& r : results)
-          {
-            status = r.get();
-            if (oms_status_ok != status)
-            {
-              if (cb)
-                cb(modelName.c_str(), tNext, status);
-              return status;
-            }
-          }
-        }
-        else
-        {
-          for (const auto& subsystem : getSubSystems())
-          {
-            status = subsystem.second->stepUntil(tNext, NULL);
-            if (oms_status_ok != status)
-            {
-              if (cb)
-                cb(modelName.c_str(), tNext, status);
-              return status;
-            }
-          }
-        }
-
-        if (useThreadPool())
-        {
-          ctpl::thread_pool& pool = getThreadPool();
-          std::vector<std::future<oms_status_enu_t>> results(getComponents().size());
-          int i=0;
-          for (const auto& component : getComponents())
-          {
-            results[i] = pool.push([&component, tNext](int id){ /*logInfo("Id: " + std::to_string(id));*/ return component.second->stepUntil(tNext); });
-            i++;
-          }
-
-          for (auto& r : results)
-          {
-            status = r.get();
-            if (oms_status_ok != status)
-            {
-              if (cb)
-                cb(modelName.c_str(), tNext, status);
-              return status;
-            }
-          }
-        }
-        else
-        {
-          for (const auto& component : getComponents())
-          {
-            status = component.second->stepUntil(tNext);
-            if (oms_status_ok != status)
-            {
-              if (cb)
-                cb(modelName.c_str(), tNext, status);
-              return status;
-            }
-          }
-        }
-
-        if (Flags::RealTime())
-        {
-          auto now = std::chrono::steady_clock::now();
-          // seems a cast to a sufficient high resolution of time is necessary for avoiding truncation errors
-          auto next = start + std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(tNext));
-          std::chrono::duration<double> margin = std::chrono::duration<double>(next - now);
-          if (margin < std::chrono::duration<double>(0))
-            logWarning("real-time frame overrun, time=" + std::to_string(tNext) + "s, exceeded margin=" + std::to_string(margin.count()) + "s");
-          else
-            std::this_thread::sleep_until(next);
-        }
-
-        if (masi < masiMax-1)
-        {
-          updateInputs(eventGraph);
-          getInputs(eventGraph, inputVect2);
-          inputDer.clear();
-          for (int inputI=0; inputI<inputVect1.size(); ++inputI)
-            inputDer.push_back((inputVect2[inputI]-inputVect1[inputI]) / h);
-
-          // Restore component's state
-          for (const auto& component : getComponents())
-            component.second->restoreState();
-
-          //updateInputs(outputsGraph);
-          setInputsDer(eventGraph, inputDer);
-        }
-        else
-        {
-          time = tNext;
-          bool emitted;
-          if (isTopLevelSystem())
-            getModel()->emit(time, false, &emitted);
-          updateInputs(eventGraph);
-          if (isTopLevelSystem())
-            getModel()->emit(time, emitted);
-        }
-      }
-
-      if (cb)
-        cb(modelName.c_str(), time, oms_status_ok);
-
-      if (Flags::ProgressBar())
-        Log::ProgressBar(startTime, stopTime, time);
-
-      if (isTopLevelSystem() && getModel()->cancelSimulation())
-      {
-        cb(modelName.c_str(), time, oms_status_discard);
-        return oms_status_discard;
-      }
-    }
+    return status;
   }
   else
     return logError("Invalid solver selected");
-
-  if (Flags::ProgressBar())
-  {
-    Log::ProgressBar(startTime, stopTime, time);
-    Log::TerminateBar();
-  }
-  return oms_status_ok;
 }
 
 oms_status_enu_t oms::SystemWC::stepUntilASSC(double stopTime, void (*cb)(const char* ident, double time, oms_status_enu_t status))
@@ -904,7 +895,7 @@ oms_status_enu_t oms::SystemWC::stepUntilASSC(double stopTime, void (*cb)(const 
   if (isTopLevelSystem() && Flags::ProgressBar())
     Log::TerminateBar();
 
-  return oms_status_ok;
+  return status;
 }
 
 oms_status_enu_t oms::SystemWC::getRealOutputDerivative(const ComRef& cref, SignalDerivative& der)

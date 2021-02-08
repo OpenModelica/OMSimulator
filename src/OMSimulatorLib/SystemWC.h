@@ -102,9 +102,13 @@ namespace oms
     double normError = 0.0;
     unsigned int rollBackIt = 0;
 
+    // oms_solver_wc_assc
     std::vector<std::pair<ComRef, double>> assc_prevDoubleValues;
     std::vector<std::pair<ComRef, int>> assc_prevIntValues;
     std::vector<std::pair<ComRef, bool>> assc_prevBoolValues;
+
+    // oms_solver_wc_ma
+    int masiMax;
   };
 }
 

@@ -652,7 +652,7 @@ oms_status_enu_t oms::SystemSC::stepUntil(double stopTime, void (*cb)(const char
   if (isTopLevelSystem() && Flags::ProgressBar())
     Log::TerminateBar();
 
-  return oms_status_ok;
+  return status;
 }
 
 oms_status_enu_t oms::SystemSC::updateInputs(DirectedGraph& graph)
