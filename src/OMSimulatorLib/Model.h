@@ -100,6 +100,7 @@ namespace oms
     double getStartTime() const {return startTime;}
     oms_status_enu_t setStopTime(double value);
     double getStopTime() const {return stopTime;}
+    double getTime() const {return time;}
 
     oms_status_enu_t setLoggingInterval(double loggingInterval);
     double getLoggingInterval() const {return loggingInterval;}
@@ -148,6 +149,7 @@ namespace oms
     // ssd:DefaultExperiment
     double startTime = 0.0;
     double stopTime = 1.0;
+    double time = 0.0;
 
     ResultWriter* resultFile = NULL;
     double lastEmit;
