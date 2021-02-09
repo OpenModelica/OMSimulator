@@ -95,16 +95,17 @@ def _main():
 
   pub_msg(socket_sub, 'status', {'progress': 0})
 
-  time = oms.getStartTime(model)
-  stopTime = oms.getStopTime(model)
+  time, _ = oms.getStartTime(model)
+  stopTime, _ = oms.getStopTime(model)
   range = stopTime - time
 
   oms.instantiate(model)
   oms.initialize(model)
   while time < stopTime:
+    print({'progress': time / range})
     pub_msg(socket_sub, 'status', {'progress': time / range})
     oms.doStep(model)
-    time = oms.getStartTime(model)
+    time, _ = oms.getStartTime(model)
   oms.terminate(model)
   oms.delete(model)
   pub_msg(socket_sub, 'status', {'progress': 100})
