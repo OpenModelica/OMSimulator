@@ -169,11 +169,8 @@ oms_status_enu_t oms::Model::rename(const ComRef& cref, const ComRef& newCref)
   return logError("failed for \"" + std::string(getCref()+cref) + "\""  + " as the identifier could not be resolved to a system or subsystem or component");
 }
 
-oms_status_enu_t oms::Model::renameConnections(const ComRef& cref, const ComRef& newCref)
+oms_status_enu_t oms::Model::renameConnections(const ComRef &cref, const ComRef &newCref)
 {
-  // list of new connections with new cref
-  std::map<ComRef, ComRef> newConnections;
-
   // filter the connections to be renamed with new cref
   for (const auto &it : system->getConnections())
   {
@@ -230,28 +227,13 @@ oms_status_enu_t oms::Model::renameConnections(const ComRef& cref, const ComRef&
       // filtered connections to be renamed
       if (renameA || renameB)
       {
-        newConnections[newSignalA] = newSignalB;
+        it->renameConnection(newSignalA, newSignalB);
       }
     }
   }
 
-  // delete all the connections with the old cref
-  system->deleteAllConectionsTo(cref);
-
-  /* add the list of new renamed connections
-  *  (e.g) oms_rename("model.root_1.System1", "System_1")
-  *        (input1 -> System1.input1) ==> (input1 -> System_1.input)
-  *        oms_rename("model.root_1.System_1", "System_2")
-  *        (input1 -> System_1.input) ==>  (input1 -> System_2.input)
-  */
-  for (const auto & newconnection : newConnections)
-  {
-    system->getConnections().back() = new oms::Connection(newconnection.first, newconnection.second);
-    system->getConnections().push_back(NULL);
-  }
-
-    return oms_status_ok;
-  }
+  return oms_status_ok;
+}
 
 oms_status_enu_t oms::Model::loadSnapshot(const char* snapshot)
 {

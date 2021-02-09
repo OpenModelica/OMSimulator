@@ -231,3 +231,27 @@ bool oms::Connection::isValid(const ComRef& crefA, const ComRef& crefB, const Co
   // both connectors must be valid in order to make the connection valid
   return connectorA && connectorB;
 }
+
+oms_status_enu_t oms::Connection::renameConnection(const oms::ComRef& newSignalA, const oms::ComRef& newSignalB)
+{
+  /*  (e.g) oms_rename("model.root_1.System1", "System_1")
+  *         (input1 -> System1.input1) ==> (input1 -> System_1.input)
+  *         oms_rename("model.root_1.System_1", "System_2")
+  *         (input1 -> System_1.input) ==>  (input1 -> System_2.input)
+  */
+
+  delete [] this->conA;
+  delete [] this->conB;
+
+  std::string str;
+
+  str = std::string(newSignalA);
+  this->conA = new char[str.size()+1];
+  strcpy(this->conA, str.c_str());
+
+  str = std::string(newSignalB);
+  this->conB = new char[str.size()+1];
+  strcpy(this->conB, str.c_str());
+
+  return oms_status_ok;
+}
