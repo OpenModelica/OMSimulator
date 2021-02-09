@@ -3,19 +3,11 @@ import os
 import platform
 import sys
 
+from OMSimulator import Scope
+
 
 class OMSimulator:
-  def __init__(self, omslib=None, temp_directory=None):
-    if omslib is None:
-      dirname = os.path.dirname(__file__)
-      omslib = os.path.join(dirname, "@OMSIMULATORLIB_DIR_STRING@", "@OMSIMULATORLIB_STRING@")
-
-    if os.name == 'nt': # On Windows
-      dllDir = os.add_dll_directory(os.path.dirname(omslib))
-    self.obj=ctypes.CDLL(omslib)
-    if os.name == 'nt':
-      dllDir.close()
-
+  def __init__(self, temp_directory=None):
     ## oms_status_enu_t
     self.status_ok = 0
     self.status_warning = 1
@@ -70,153 +62,6 @@ class OMSimulator:
     self.fault_type_gain = 1
     self.fault_type_const = 2
 
-    self.obj.oms_addBus.argtypes = [ctypes.c_char_p]
-    self.obj.oms_addBus.restype = ctypes.c_int
-    self.obj.oms_addConnection.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_addConnection.restype = ctypes.c_int
-    self.obj.oms_addConnector.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int]
-    self.obj.oms_addConnector.restype = ctypes.c_int
-    self.obj.oms_addConnectorToBus.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_addConnectorToBus.restype = ctypes.c_int
-    self.obj.oms_addConnectorToTLMBus.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_addConnectorToTLMBus.restype = ctypes.c_int
-    self.obj.oms_addExternalModel.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_addExternalModel.restype = ctypes.c_int
-    self.obj.oms_addSignalsToResults.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_addSignalsToResults.restype = ctypes.c_int
-    self.obj.oms_addSubModel.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_addSubModel.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_addSubModel.restype = ctypes.c_int
-    self.obj.oms_addSubModel.restype = ctypes.c_int
-    self.obj.oms_addSystem.argtypes = [ctypes.c_char_p, ctypes.c_int]
-    self.obj.oms_addSystem.restype = ctypes.c_int
-    self.obj.oms_addTLMBus.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_int]
-    self.obj.oms_addTLMBus.restype = ctypes.c_int
-    self.obj.oms_addTLMConnection.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_double, ctypes.c_double, ctypes.c_double]
-    self.obj.oms_addTLMConnection.restype = ctypes.c_int
-    self.obj.oms_compareSimulationResults.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_double, ctypes.c_double]
-    self.obj.oms_compareSimulationResults.restype = ctypes.c_int
-    self.obj.oms_copySystem.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_copySystem.restype = ctypes.c_int
-    self.obj.oms_delete.argtypes = [ctypes.c_char_p]
-    self.obj.oms_delete.restype = ctypes.c_int
-    self.obj.oms_deleteConnection.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_deleteConnection.restype = ctypes.c_int
-    self.obj.oms_deleteConnectorFromBus.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_deleteConnectorFromBus.restype = ctypes.c_int
-    self.obj.oms_deleteConnectorFromTLMBus.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_deleteConnectorFromTLMBus.restype = ctypes.c_int
-    self.obj.oms_doStep.argtypes = [ctypes.c_char_p]
-    self.obj.oms_doStep.restype = ctypes.c_int
-    self.obj.oms_export.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_export.restype = ctypes.c_int
-    self.obj.oms_exportDependencyGraphs.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_exportDependencyGraphs.restype = ctypes.c_int
-    self.obj.oms_exportSnapshot.argtypes = [ctypes.c_char_p]
-    self.obj.oms_exportSnapshot.restype = ctypes.c_int
-    self.obj.oms_exportSSMTemplate.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_exportSSMTemplate.restype = ctypes.c_int
-    self.obj.oms_exportSSVTemplate.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_exportSSVTemplate.restype = ctypes.c_int
-    self.obj.oms_faultInjection.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_double]
-    self.obj.oms_faultInjection.restype = ctypes.c_int
-    self.obj.oms_getBoolean.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_bool)]
-    self.obj.oms_getBoolean.restype = ctypes.c_int
-    self.obj.oms_getFixedStepSize.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_double)]
-    self.obj.oms_getFixedStepSize.restype = ctypes.c_int
-    self.obj.oms_getInteger.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_int)]
-    self.obj.oms_getInteger.restype = ctypes.c_int
-    self.obj.oms_getReal.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_double)]
-    self.obj.oms_getReal.restype = ctypes.c_int
-    self.obj.oms_getSolver.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_int)]
-    self.obj.oms_getSolver.restype = ctypes.c_int
-    self.obj.oms_getStartTime.argtypes = [ctypes.c_char_p]
-    self.obj.oms_getStartTime.restype = ctypes.c_int
-    self.obj.oms_getStopTime.argtypes = [ctypes.c_char_p]
-    self.obj.oms_getStopTime.restype = ctypes.c_int
-    self.obj.oms_getTime.argtypes = [ctypes.c_char_p]
-    self.obj.oms_getTime.restype = ctypes.c_int
-    self.obj.oms_getSystemType.argtypes = [ctypes.c_char_p]
-    self.obj.oms_getSystemType.restype = ctypes.c_int
-    self.obj.oms_getVariableStepSize.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double)]
-    self.obj.oms_getVariableStepSize.restype = ctypes.c_int
-    self.obj.oms_getVersion.argtypes = None
-    self.obj.oms_getVersion.restype = ctypes.c_char_p
-    self.obj.oms_importFile.argtypes = [ctypes.c_char_p]
-    self.obj.oms_importFile.restype = ctypes.c_int
-    self.obj.oms_importSnapshot.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_importSnapshot.restype = ctypes.c_int
-    self.obj.oms_initialize.argtypes = [ctypes.c_char_p]
-    self.obj.oms_initialize.restype = ctypes.c_int
-    self.obj.oms_instantiate.argtypes = [ctypes.c_char_p]
-    self.obj.oms_instantiate.restype = ctypes.c_int
-    self.obj.oms_list.argtypes = [ctypes.c_char_p]
-    self.obj.oms_list.restype = ctypes.c_int
-    self.obj.oms_listUnconnectedConnectors.argtypes = [ctypes.c_char_p]
-    self.obj.oms_listUnconnectedConnectors.restype = ctypes.c_int
-    self.obj.oms_loadSnapshot.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_loadSnapshot.restype = ctypes.c_int
-    self.obj.oms_newModel.argtypes = [ctypes.c_char_p]
-    self.obj.oms_newModel.restype = ctypes.c_int
-    self.obj.oms_parseModelName.argtypes = [ctypes.c_char_p]
-    self.obj.oms_parseModelName.restype = ctypes.c_int
-    self.obj.oms_removeSignalsFromResults.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_removeSignalsFromResults.restype = ctypes.c_int
-    self.obj.oms_rename.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_rename.restype = ctypes.c_int
-    self.obj.oms_reset.argtypes = [ctypes.c_char_p]
-    self.obj.oms_reset.restype = ctypes.c_int
-    self.obj.oms_setBoolean.argtypes = [ctypes.c_char_p, ctypes.c_bool]
-    self.obj.oms_setBoolean.restype = ctypes.c_int
-    self.obj.oms_setCommandLineOption.argtypes = [ctypes.c_char_p]
-    self.obj.oms_setCommandLineOption.restype = ctypes.c_int
-    self.obj.oms_setFixedStepSize.argtypes = [ctypes.c_char_p, ctypes.c_double]
-    self.obj.oms_setFixedStepSize.restype = ctypes.c_int
-    self.obj.oms_setInteger.argtypes = [ctypes.c_char_p, ctypes.c_int]
-    self.obj.oms_setInteger.restype = ctypes.c_int
-    self.obj.oms_setLogFile.argtypes = [ctypes.c_char_p]
-    self.obj.oms_setLogFile.restype = ctypes.c_int
-    self.obj.oms_setLoggingInterval.argtypes = [ctypes.c_char_p, ctypes.c_double]
-    self.obj.oms_setLoggingInterval.restype = ctypes.c_int
-    self.obj.oms_setLoggingLevel.argtypes = [ctypes.c_int]
-    self.obj.oms_setLoggingLevel.restype = ctypes.c_int
-    self.obj.oms_setMaxLogFileSize.argtypes = [ctypes.c_ulong]
-    self.obj.oms_setMaxLogFileSize.restype = None
-    self.obj.oms_setReal.argtypes = [ctypes.c_char_p, ctypes.c_double]
-    self.obj.oms_setReal.restype = ctypes.c_int
-    self.obj.oms_setRealInputDerivative.argtypes = [ctypes.c_char_p, ctypes.c_double]
-    self.obj.oms_setRealInputDerivative.restype = ctypes.c_int
-    self.obj.oms_setResultFile.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int]
-    self.obj.oms_setResultFile.restype = ctypes.c_int
-    self.obj.oms_setSignalFilter.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_setSignalFilter.restype = ctypes.c_int
-    self.obj.oms_setSolver.argtypes = [ctypes.c_char_p, ctypes.c_int]
-    self.obj.oms_setSolver.restype = ctypes.c_int
-    self.obj.oms_setStartTime.argtypes = [ctypes.c_char_p, ctypes.c_double]
-    self.obj.oms_setStartTime.restype = ctypes.c_int
-    self.obj.oms_setStopTime.argtypes = [ctypes.c_char_p, ctypes.c_double]
-    self.obj.oms_setStopTime.restype = ctypes.c_int
-    self.obj.oms_setTempDirectory.argtypes = [ctypes.c_char_p]
-    self.obj.oms_setTempDirectory.restype = ctypes.c_int
-    self.obj.oms_setTLMPositionAndOrientation.argtypes = [ctypes.c_char_p, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double]
-    self.obj.oms_setTLMPositionAndOrientation.restype = ctypes.c_int
-    self.obj.oms_setTLMSocketData.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_int]
-    self.obj.oms_setTLMSocketData.restype = ctypes.c_int
-    self.obj.oms_setTolerance.argtypes = [ctypes.c_char_p, ctypes.c_double, ctypes.c_double]
-    self.obj.oms_setTolerance.restype = ctypes.c_int
-    self.obj.oms_setVariableStepSize.argtypes = [ctypes.c_char_p, ctypes.c_double, ctypes.c_double, ctypes.c_double]
-    self.obj.oms_setVariableStepSize.restype = ctypes.c_int
-    self.obj.oms_setWorkingDirectory.argtypes = [ctypes.c_char_p]
-    self.obj.oms_setWorkingDirectory.restype = ctypes.c_int
-    self.obj.oms_simulate.argtypes = [ctypes.c_char_p]
-    self.obj.oms_simulate.restype = ctypes.c_int
-    self.obj.oms_stepUntil.argtypes = [ctypes.c_char_p, ctypes.c_double]
-    self.obj.oms_stepUntil.restype = ctypes.c_int
-    self.obj.oms_terminate.argtypes = [ctypes.c_char_p]
-    self.obj.oms_terminate.restype = ctypes.c_int
-
-    self.models = []
-
     if temp_directory is not None:
       self.setTempDirectory(temp_directory)
 
@@ -224,7 +69,7 @@ class OMSimulator:
     return self
 
   def __exit__(self, type, value, traceback):
-    for model in self.models:
+    for model in Scope._Scope:
       self.terminate(model)
       self.delete(model)
 
@@ -234,191 +79,152 @@ class OMSimulator:
     return self.getVersion()
 
   def getVersion(self):
-    return self.obj.oms_getVersion().decode('utf-8')
+    return Scope._capi.getVersion()
 
   def setLoggingLevel(self, level):
-    return self.obj.oms_setLoggingLevel(level)
+    return Scope._capi.setLoggingLevel(level)
   def setTolerance(self, cref, absoluteTolerance, relativeTolerance):
-    return self.obj.oms_setTolerance(self.checkstring(cref), absoluteTolerance, relativeTolerance)
+    return Scope._capi.setTolerance(cref, absoluteTolerance, relativeTolerance)
   def setVariableStepSize(self, cref, initialStepSize, minimumStepSize, maximumStepSize):
-    return self.obj.oms_setVariableStepSize(self.checkstring(cref), initialStepSize, minimumStepSize, maximumStepSize)
+    return Scope._capi.setVariableStepSize(cref, initialStepSize, minimumStepSize, maximumStepSize)
   def getSystemType(self, cref):
-    type = ctypes.c_int()
-    status = self.obj.oms_getSystemType(self.checkstring(cref), ctypes.byref(type))
-    return [type.value, status]
+    return Scope._capi.getSystemType(cref)
   def getVariableStepSize(self, cref):
-    initialStepSize = ctypes.c_double()
-    minimumStepSize = ctypes.c_double()
-    maximumStepSize = ctypes.c_double()
-    status = self.obj.oms_getVariableStepSize(self.checkstring(cref), ctypes.byref(initialStepSize), ctypes.byref(minimumStepSize), ctypes.byref(maximumStepSize))
-    return [initialStepSize.value, minimumStepSize.value, maximumStepSize.value, status]
+    return Scope._capi.getVariableStepSize(cref)
   def setLogFile(self, filename):
-    return self.obj.oms_setLogFile(self.checkstring(filename))
+    return Scope._capi.setLogFile(filename)
   def setLoggingInterval(self, cref, loggingInterval):
-    return self.obj.oms_setLoggingInterval(self.checkstring(cref), loggingInterval)
+    return Scope._capi.setLoggingInterval(cref, loggingInterval)
   def setMaxLogFileSize(self, size):
-    return self.obj.oms_setMaxLogFileSize(size)
+    return Scope._capi.setMaxLogFileSize(size)
   def setTempDirectory(self, newTempDir):
-    return self.obj.oms_setTempDirectory(self.checkstring(newTempDir))
+    return Scope._capi.setTempDirectory(newTempDir)
   def setWorkingDirectory(self, path):
-    return self.obj.oms_setWorkingDirectory(self.checkstring(path))
+    return Scope._capi.setWorkingDirectory(path)
   def newModel(self, cref):
-    status = self.obj.oms_newModel(self.checkstring(cref))
+    status = Scope._capi.newModel(cref)
     if status == self.status_ok:
-        self.models.append(cref)
+        Scope._Scope.append(cref)
     return status
   def rename(self, cref, newcref):
-    return self.obj.oms_rename(self.checkstring(cref), self.checkstring(newcref))
+    return Scope._capi.rename(cref, newcref)
   def delete(self, cref):
-    status = self.obj.oms_delete(self.checkstring(cref))
+    status = Scope._capi.delete(cref)
     if status == self.status_ok:
-        self.models = [model for model in self.models if model != cref]
+        Scope._Scope = [model for model in Scope._Scope if model != cref]
     return status
   def export(self, cref, filename):
-    return self.obj.oms_export(self.checkstring(cref), self.checkstring(filename))
+    return Scope._capi.export(cref, filename)
   def importFile(self, filename):
-    contents = ctypes.c_char_p()
-    status = self.obj.oms_importFile(self.checkstring(filename), ctypes.byref(contents))
-    return [self.checkstring(contents.value), status]
+    return Scope._capi.importFile(filename)
   def importSnapshot(self, ident, snapshot):
-    status = self.obj.oms_importSnapshot(self.checkstring(ident), self.checkstring(snapshot))
+    status = Scope._capi.importSnapshot(ident, snapshot)
     return status
   def list(self, ident):
-    contents = ctypes.c_char_p()
-    status = self.obj.oms_list(self.checkstring(ident), ctypes.byref(contents))
-    return [self.checkstring(contents.value), status]
+    return Scope._capi.list(ident)
   def exportSnapshot(self, ident):
-    contents = ctypes.c_char_p()
-    status = self.obj.oms_exportSnapshot(self.checkstring(ident), ctypes.byref(contents))
-    return [self.checkstring(contents.value), status]
+    return Scope._capi.exportSnapshot(ident)
   def exportSSVTemplate(self, ident, filename):
-    return self.obj.oms_exportSSVTemplate(self.checkstring(ident), self.checkstring(filename))
+    return Scope._capi.exportSSVTemplate(ident, filename)
   def exportSSMTemplate(self, ident, filename):
-    return self.obj.oms_exportSSMTemplate(self.checkstring(ident), self.checkstring(filename))
+    return Scope._capi.exportSSMTemplate(ident, filename)
   def listUnconnectedConnectors(self, ident):
-    contents = ctypes.c_char_p()
-    status = self.obj.oms_listUnconnectedConnectors(self.checkstring(ident), ctypes.byref(contents))
-    return [self.checkstring(contents.value), status]
+    return Scope._capi.listUnconnectedConnectors(ident)
   def loadSnapshot(self, ident, snapshot):
-    status = self.obj.oms_loadSnapshot(self.checkstring(ident), self.checkstring(snapshot))
+    status = Scope._capi.loadSnapshot(ident, snapshot)
     return status
   def parseModelName(self, ident):
-    contents = ctypes.c_char_p()
-    status = self.obj.oms_parseModelName(self.checkstring(ident), ctypes.byref(contents))
-    return [self.checkstring(contents.value), status]
+    return Scope._capi.parseModelName(ident)
   def addSystem(self, ident, type):
-    return self.obj.oms_addSystem(self.checkstring(ident), type)
+    return Scope._capi.addSystem(ident, type)
   def copySystem(self, source, target):
-    return self.obj.oms_copySystem(self.checkstring(source), self.checkstring(target))
+    return Scope._capi.copySystem(source, target)
   def addSubModel(self, cref, fmuPath):
-    return self.obj.oms_addSubModel(self.checkstring(cref), self.checkstring(fmuPath))
+    return Scope._capi.addSubModel(cref, fmuPath)
   def addConnector(self, cref, causality, type):
-    return self.obj.oms_addConnector(self.checkstring(cref), causality, type)
+    return Scope._capi.addConnector(cref, causality, type)
   def setCommandLineOption(self, cmd):
-    return self.obj.oms_setCommandLineOption(self.checkstring(cmd))
+    return Scope._capi.setCommandLineOption(cmd)
   def addConnection(self, crefA, crefB):
-    return self.obj.oms_addConnection(self.checkstring(crefA), self.checkstring(crefB))
+    return Scope._capi.addConnection(crefA, crefB)
   def deleteConnection(self, crefA, crefB):
-    return self.obj.oms_deleteConnection(self.checkstring(crefA), self.checkstring(crefB))
+    return Scope._capi.deleteConnection(crefA, crefB)
   def addBus(self, crefA):
-    return self.obj.oms_addBus(self.checkstring(crefA))
+    return Scope._capi.addBus(crefA)
   def addConnectorToBus(self, busCref, connectorCref):
-    return self.obj.oms_addConnectorToBus(self.checkstring(busCref), self.checkstring(connectorCref))
+    return Scope._capi.addConnectorToBus(busCref, connectorCref)
   def deleteConnectorFromBus(self, busCref, connectorCref):
-    return self.obj.oms_deleteConnectorFromBus(self.checkstring(busCref), self.checkstring(connectorCref))
+    return Scope._capi.deleteConnectorFromBus(busCref, connectorCref)
   def addTLMBus(self, cref, domain, dimensions, interpolation):
-    return self.obj.oms_addTLMBus(self.checkstring(cref), self.checkstring(domain), dimensions, interpolation)
+    return Scope._capi.addTLMBus(cref, domain, dimensions, interpolation)
   def addConnectorToTLMBus(self, busCref, connectorCref, type):
-    return self.obj.oms_addConnectorToTLMBus(self.checkstring(busCref), self.checkstring(connectorCref), self.checkstring(type))
+    return Scope._capi.addConnectorToTLMBus(busCref, connectorCref, type)
   def deleteConnectorFromTLMBus(self, busCref, connectorCref):
-    return self.obj.oms_deleteConnectorFromTLMBus(self.checkstring(busCref), self.checkstring(connectorCref))
+    return Scope._capi.deleteConnectorFromTLMBus(busCref, connectorCref)
   def addTLMConnection(self, crefA, crefB, delay, alpha, linearimpedance, angularimpedance):
-    return self.obj.oms_addTLMConnection(self.checkstring(crefA), self.checkstring(crefB), delay, alpha, linearimpedance, angularimpedance)
+    return Scope._capi.addTLMConnection(crefA, crefB, delay, alpha, linearimpedance, angularimpedance)
   def compareSimulationResults(self, filenameA, filenameB, var, relTol, absTol):
-    return self.obj.oms_compareSimulationResults(self.checkstring(filenameA), self.checkstring(filenameB), self.checkstring(var), relTol, absTol)
+    return Scope._capi.compareSimulationResults(filenameA, filenameB, var, relTol, absTol)
   def addExternalModel(self, cref, path, startscript):
-    return self.obj.oms_addExternalModel(self.checkstring(cref), self.checkstring(path), self.checkstring(startscript))
+    return Scope._capi.addExternalModel(cref, path, startscript)
   def instantiate(self, cref):
-    return self.obj.oms_instantiate(self.checkstring(cref))
+    return Scope._capi.instantiate(cref)
   def initialize(self, cref):
-    return self.obj.oms_initialize(self.checkstring(cref))
+    return Scope._capi.initialize(cref)
   def simulate(self, cref):
-    return self.obj.oms_simulate(self.checkstring(cref))
-  def doStep(self, cref):
-    return self.obj.oms_doStep(self.checkstring(cref))
+    return Scope._capi.simulate(cref)
   def stepUntil(self, cref, stopTime):
-    return self.obj.oms_stepUntil(self.checkstring(cref), stopTime)
+    return Scope._capi.stepUntil(cref, stopTime)
   def terminate(self, cref):
-    return self.obj.oms_terminate(self.checkstring(cref))
+    return Scope._capi.terminate(cref)
   def reset(self, cref):
-    return self.obj.oms_reset(self.checkstring(cref))
+    return Scope._capi.reset(cref)
   def setTLMSocketData(self, cref, address, managerPort, monitorPort):
-    return self.obj.oms_setTLMSocketData(self.checkstring(cref), self.checkstring(address), managerPort, monitorPort)
+    return Scope._capi.setTLMSocketData(cref, address, managerPort, monitorPort)
   def setTLMPositionAndOrientation(self, cref, x1, x2, x3, A11, A12, A13, A21, A22, A23, A31, A32, A33):
-    return self.obj.oms_setTLMPositionAndOrientation(self.checkstring(cref), x1, x2, x3, A11, A12, A13, A21, A22, A23, A31, A32, A33)
+    return Scope._capi.setTLMPositionAndOrientation(cref, x1, x2, x3, A11, A12, A13, A21, A22, A23, A31, A32, A33)
   def exportDependencyGraphs(self, cref, initialization, event, simulation):
-    return self.obj.oms_exportDependencyGraphs(self.checkstring(cref), self.checkstring(initialization), self.checkstring(event), self.checkstring(simulation))
+    return Scope._capi.exportDependencyGraphs(cref, initialization, event, simulation)
   def faultInjection(self, cref, faultType, faultValue):
-    return self.obj.oms_faultInjection(self.checkstring(cref), faultType, faultValue)
+    return Scope._capi.faultInjection(cref, faultType, faultValue)
   def getReal(self, cref):
-    value = ctypes.c_double()
-    status = self.obj.oms_getReal(self.checkstring(cref), ctypes.byref(value))
-    return [value.value, status]
+    [value, status] = Scope._capi.getReal(cref)
+    return [value, status]
   def getInteger(self, cref):
-    value = ctypes.c_int()
-    status = self.obj.oms_getInteger(self.checkstring(cref), ctypes.byref(value))
-    return [value.value, status]
+    return Scope._capi.getInteger(cref)
   def getBoolean(self, cref):
-    value = ctypes.c_bool()
-    status = self.obj.oms_getBoolean(self.checkstring(cref), ctypes.byref(value))
-    return [value.value, status]
+    return Scope._capi.getBoolean(cref)
   def getFixedStepSize(self, cref):
-    value = ctypes.c_double()
-    status = self.obj.oms_getFixedStepSize(self.checkstring(cref), ctypes.byref(value))
-    return [value.value, status]
+    return Scope._capi.getFixedStepSize(cref)
   def getSolver(self, cref):
-    value = ctypes.c_int()
-    status = self.obj.oms_getSolver(self.checkstring(cref), ctypes.byref(value))
-    return [value.value, status]
+    return Scope._capi.getSolver(cref)
   def setReal(self, signal, value):
-    return self.obj.oms_setReal(self.checkstring(signal), value)
+    return Scope._capi.setReal(signal, value)
   def setRealInputDerivative(self, signal, value):
-    return self.obj.oms_setRealInputDerivative(self.checkstring(signal), value)
+    return Scope._capi.setRealInputDerivative(signal, value)
   def setInteger(self, signal, value):
-    return self.obj.oms_setInteger(self.checkstring(signal), value)
+    return Scope._capi.setInteger(signal, value)
   def setBoolean(self, signal, value):
-    return self.obj.oms_setBoolean(self.checkstring(signal), value)
+    return Scope._capi.setBoolean(signal, value)
   def setResultFile(self, cref, filename, bufferSize=1):
-    return self.obj.oms_setResultFile(self.checkstring(cref), self.checkstring(filename), bufferSize)
+    return Scope._capi.setResultFile(cref, filename, bufferSize)
   def setSignalFilter(self, cref, regex):
-    return self.obj.oms_setSignalFilter(self.checkstring(cref), self.checkstring(regex))
+    return Scope._capi.setSignalFilter(cref, regex)
   def setSolver(self, cref, solver):
-    return self.obj.oms_setSolver(self.checkstring(cref), solver)
+    return Scope._capi.setSolver(cref, solver)
   def addSignalsToResults(self, cref, regex):
-    return self.obj.oms_addSignalsToResults(self.checkstring(cref), self.checkstring(regex))
+    return Scope._capi.addSignalsToResults(cref, regex)
   def removeSignalsFromResults(self, cref, regex):
-    return self.obj.oms_removeSignalsFromResults(self.checkstring(cref), self.checkstring(regex))
+    return Scope._capi.removeSignalsFromResults(cref, regex)
   def getStartTime(self, cref):
-    startTime = ctypes.c_double()
-    status = self.obj.oms_getStartTime(self.checkstring(cref), ctypes.byref(startTime))
-    return [startTime.value, status]
+    return Scope._capi.getStartTime(cref)
   def setStartTime(self, cref, startTime):
-    return self.obj.oms_setStartTime(self.checkstring(cref), startTime)
+    return Scope._capi.setStartTime(cref, startTime)
   def getStopTime(self, cref):
-    stopTime = ctypes.c_double()
-    status = self.obj.oms_getStopTime(self.checkstring(cref), ctypes.byref(stopTime))
-    return [stopTime.value, status]
+    return Scope._capi.getStopTime(cref)
   def setStopTime(self, cref, stopTime):
-    return self.obj.oms_setStopTime(self.checkstring(cref), stopTime)
-  def getTime(self, cref):
-    time = ctypes.c_double()
-    status = self.obj.oms_getTime(self.checkstring(cref), ctypes.byref(time))
-    return [time.value, status]
+    return Scope._capi.setStopTime(cref, stopTime)
   def setFixedStepSize(self, cref, stepSize):
-    return self.obj.oms_setFixedStepSize(self.checkstring(cref), stepSize)
-  def checkstring(self, ident):
-    if isinstance(ident, str):
-      ident = ident.encode()
-    elif isinstance(ident, bytes):
-      ident = ident.decode("utf-8")
-    return ident
+    return Scope._capi.setFixedStepSize(cref, stepSize)
+  def getTime(self, cref):
+    return Scope._capi.getTime(cref)
