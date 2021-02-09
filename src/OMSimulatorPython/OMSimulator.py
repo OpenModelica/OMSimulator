@@ -132,6 +132,8 @@ class OMSimulator:
     self.obj.oms_getStartTime.restype = ctypes.c_int
     self.obj.oms_getStopTime.argtypes = [ctypes.c_char_p]
     self.obj.oms_getStopTime.restype = ctypes.c_int
+    self.obj.oms_getTime.argtypes = [ctypes.c_char_p]
+    self.obj.oms_getTime.restype = ctypes.c_int
     self.obj.oms_getSystemType.argtypes = [ctypes.c_char_p]
     self.obj.oms_getSystemType.restype = ctypes.c_int
     self.obj.oms_getVariableStepSize.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double)]
@@ -404,6 +406,10 @@ class OMSimulator:
     return [stopTime.value, status]
   def setStopTime(self, cref, stopTime):
     return self.obj.oms_setStopTime(self.checkstring(cref), stopTime)
+  def getTime(self, cref):
+    time = ctypes.c_double()
+    status = self.obj.oms_getTime(self.checkstring(cref), ctypes.byref(time))
+    return [time.value, status]
   def setFixedStepSize(self, cref, stepSize):
     return self.obj.oms_setFixedStepSize(self.checkstring(cref), stepSize)
   def checkstring(self, ident):

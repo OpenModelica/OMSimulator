@@ -100,6 +100,7 @@ namespace oms
     double getStartTime() const {return startTime;}
     oms_status_enu_t setStopTime(double value);
     double getStopTime() const {return stopTime;}
+    double getTime() const;
 
     oms_status_enu_t setLoggingInterval(double loggingInterval);
     double getLoggingInterval() const {return loggingInterval;}
