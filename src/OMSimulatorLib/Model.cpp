@@ -876,6 +876,13 @@ oms_status_enu_t oms::Model::setStopTime(double value)
   return oms_status_ok;
 }
 
+double oms::Model::getTime() const
+{
+  if (system)
+    return system->getTime();
+  return getStartTime();
+}
+
 oms_status_enu_t oms::Model::instantiate()
 {
   if (!validState(oms_modelState_virgin|oms_modelState_enterInstantiation))

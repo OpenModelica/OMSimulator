@@ -1528,6 +1528,19 @@ oms_status_enu_t oms_setStopTime(const char* cref, double stopTime)
   return model->setStopTime(stopTime);
 }
 
+oms_status_enu_t oms_getTime(const char* cref, double* time)
+{
+  oms::ComRef tail(cref);
+  oms::ComRef front = tail.pop_front();
+
+  oms::Model* model = oms::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  *time = model->getTime();
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms_setFixedStepSize(const char* cref, double stepSize)
 {
   oms::ComRef tail(cref);
