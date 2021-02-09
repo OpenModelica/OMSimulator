@@ -149,7 +149,6 @@ namespace oms
     // ssd:DefaultExperiment
     double startTime = 0.0;
     double stopTime = 1.0;
-    double time = 0.0;
 
     ResultWriter* resultFile = NULL;
     double lastEmit;
