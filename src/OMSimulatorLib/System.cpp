@@ -2601,3 +2601,51 @@ oms_status_enu_t oms::System::rename(const oms::ComRef& newCref)
   this->cref = newCref;
   return oms_status_ok;
 }
+
+oms_status_enu_t oms::System::rename(const ComRef& cref, const ComRef& newCref)
+{
+  // renaming the system itself
+  if (cref.isEmpty())
+    return this->rename(newCref);
+
+  oms::ComRef tail(cref);
+  oms::ComRef front = tail.pop_front();
+
+  // rename subsystems
+  auto subsystem = subsystems.find(front);
+  if (subsystem != subsystems.end())
+  {
+    subsystem->second->rename(tail, newCref);
+    this->renameConnections(cref, newCref);
+    subsystems.erase(subsystem);  // delete the old cref from the lookup
+    subsystems[newCref] = subsystem->second;
+    return oms_status_ok;
+  }
+
+  // rename components
+  if (!tail.isEmpty())
+    return logError("renaming of parts within a component isn't implemented");
+
+  // rename components
+  auto component = components.find(front);
+  if (component != components.end())
+  {
+    component->second->rename(newCref);
+    this->renameConnections(cref, newCref);
+    components.erase(component);  // delete the old cref from the lookup
+    components[newCref] = component->second;
+    return oms_status_ok;
+  }
+
+  return logError("failed for \"" + std::string(getCref()+cref) + "\""  + " as the identifier could not be resolved to a system or subsystem or component");
+}
+
+oms_status_enu_t oms::System::renameConnections(const ComRef &cref, const ComRef &newCref)
+{
+  //logInfo("renameConnections in " + std::string(getFullCref()) + ": [" + std::string(cref) + "], [" + std::string(newCref) + "]");
+  for (const auto &connection : connections)
+    if (connection)
+      connection->rename(cref, newCref);
+
+  return oms_status_ok;
+}

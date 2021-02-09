@@ -123,116 +123,24 @@ oms_status_enu_t oms::Model::rename(const oms::ComRef& cref)
 
 oms_status_enu_t oms::Model::rename(const ComRef& cref, const ComRef& newCref)
 {
+  if (!newCref.isValidIdent())
+    return logError(std::string(newCref) + " is not a valid ident");
+
+  if (!system)
+    return logError("Model \"" + std::string(getCref()) + "\" does not contain any system");
+
+  // renaming the model
+  if (cref.isEmpty())
+    return this->rename(newCref);
+
+  // renaming any subcomponent
   oms::ComRef tail(cref);
   oms::ComRef front = tail.pop_front();
 
-  /*check for top level system is changed
-   * (e.g) oms_rename("model.root", "root_1")
-   *       oms_rename("model.root", "root_2") // should report error as top level system name is changed
-   *       oms_rename("model.root_1", "root_2") // correct
-   *       oms_rename("model.root_1.System1", "System_1") // wrong system detected
-   *       oms_rename("model.root_2.System1", "System_1") // correct
-  */
-  if (front != std::string(system->getCref()))
-    return logError("failed for \"" + std::string(getCref()+cref) + "\""  + " as the identifier could not be resolved to a top level system");
+  if (system->getCref() == front)
+    return system->rename(tail, newCref);
 
-  // rename top level system
-  if (tail.isEmpty())
-  {
-    return system->rename(newCref);
-  }
-
-  // rename subsystems
-  auto subsystem = system->getSubSystems().find(tail);
-  if (subsystem != system->getSubSystems().end())
-  {
-    subsystem->second->rename(newCref);
-    system->getSubSystems()[newCref] = subsystem->second;
-    //delete old cref
-    system->getSubSystems().erase(subsystem);
-    renameConnections(tail, newCref);
-    return oms_status_ok;
-  }
-
-  // rename submodules
-  auto component = system->getComponents().find(tail);
-  if (component != system->getComponents().end())
-  {
-    component->second->rename(newCref);
-    system->getComponents()[newCref] = component->second;
-    // delete old cref
-    system->getComponents().erase(component);
-    renameConnections(tail, newCref);
-    return oms_status_ok;
-  }
-
-  return logError("failed for \"" + std::string(getCref()+cref) + "\""  + " as the identifier could not be resolved to a system or subsystem or component");
-}
-
-oms_status_enu_t oms::Model::renameConnections(const ComRef &cref, const ComRef &newCref)
-{
-  // filter the connections to be renamed with new cref
-  for (const auto &it : system->getConnections())
-  {
-    if (it)
-    {
-      oms::ComRef signalA_tail(it->getSignalA());
-      ComRef signalA_front = signalA_tail.pop_front();
-
-      oms::ComRef signalB_tail(it->getSignalB());
-      ComRef signalB_front = signalB_tail.pop_front();
-
-      oms::ComRef newSignalA, newSignalB;
-      bool renameA = false;
-      bool renameB = false;
-
-      // rename signalA if connection exist with old cref
-      if (cref == signalA_front)
-      {
-        renameA = true;
-        if (signalA_tail.isEmpty())
-        {
-          newSignalA = signalA_front;
-        }
-        else
-        {
-          newSignalA = newCref + signalA_tail;
-        }
-      }
-      else
-      {
-        // default old cref
-        newSignalA = it->getSignalA();
-      }
-
-      // rename signalB if connection exist with old cref
-      if (cref == signalB_front)
-      {
-        renameB = true;
-        if (signalB_tail.isEmpty())
-        {
-          newSignalB = signalB_front;
-        }
-        else
-        {
-          newSignalB = newCref + signalB_tail;
-        }
-      }
-      else
-      {
-        // default old cref
-        newSignalB = it->getSignalB();
-      }
-
-      // filtered connections to be renamed
-      if (renameA || renameB)
-      {
-        it->renameConnection(newSignalA, newSignalB);
-      }
-    }
-  }
-
-  return oms_status_ok;
+  return logError("Model \"" + std::string(getCref()) + "\" does not contain system " + std::string(getCref()));
 }
 
 oms_status_enu_t oms::Model::loadSnapshot(const char* snapshot)

@@ -77,7 +77,7 @@ namespace oms
     * \brief Checks a connection based on SSP-1.0 connection table
     */
     static bool isValid(const ComRef& crefA, const ComRef& crefB, const Connector& conA, const Connector& conB);
-    oms_status_enu_t renameConnection(const oms::ComRef& newSignalA, const oms::ComRef& newSignalB);
+    oms_status_enu_t rename(const oms::ComRef& cref, const oms::ComRef& newCref);
   private:
     friend bool operator==(const Connection& lhs, const Connection& rhs);
     friend bool operator!=(const Connection& lhs, const Connection& rhs);
