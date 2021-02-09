@@ -2637,7 +2637,7 @@ oms_status_enu_t oms::System::rename(const ComRef& cref, const ComRef& newCref)
     return oms_status_ok;
   }
 
-  return logError("failed for \"" + std::string(getCref()+cref) + "\""  + " as the identifier could not be resolved to a system or subsystem or component");
+  return logError("failed for \"" + std::string(getFullCref() + cref) + "\""  + " as the identifier could not be resolved to a system or subsystem or component");
 }
 
 oms_status_enu_t oms::System::renameConnections(const ComRef &cref, const ComRef &newCref)

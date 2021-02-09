@@ -140,7 +140,7 @@ oms_status_enu_t oms::Model::rename(const ComRef& cref, const ComRef& newCref)
   if (system->getCref() == front)
     return system->rename(tail, newCref);
 
-  return logError("Model \"" + std::string(getCref()) + "\" does not contain system " + std::string(getCref()));
+  return logError("Model \"" + std::string(getCref()) + "\" does not contain system \"" + std::string(front) + "\"");
 }
 
 oms_status_enu_t oms::Model::loadSnapshot(const char* snapshot)

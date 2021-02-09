@@ -169,8 +169,8 @@ print("info:      model.root_1.add_1.u2           : " .. oms_getReal("model.root
 -- </ssd:SystemStructureDescription>
 --
 -- error:   [addConnection] Connection <"add.y", "output"> exists already in system "model.root_1"
--- error:   [rename] failed for "model.root" as the identifier could not be resolved to a top level system
--- error:   [rename] failed for "model.root.System1" as the identifier could not be resolved to a top level system
+-- error:   [rename] Model "model" does not contain system "root"
+-- error:   [rename] Model "model" does not contain system "root"
 -- error:   [getTLMBusConnector] "System_1.output" is not a valid ident
 -- error:   [addConnection] Connector "System_1.output" not found in system "model.root_1"
 -- error:   [rename] failed for "model.root_1.System1" as the identifier could not be resolved to a system or subsystem or component
@@ -263,8 +263,8 @@ print("info:      model.root_1.add_1.u2           : " .. oms_getReal("model.root
 -- 		<ssd:Connections>
 -- 			<ssd:Connection startElement="" startConnector="input1" endElement="System_2" endConnector="input1" />
 -- 			<ssd:Connection startElement="" startConnector="input1" endElement="add_1" endConnector="u1" />
--- 			<ssd:Connection startElement="add_1" startConnector="y" endElement="" endConnector="output" />
 -- 			<ssd:Connection startElement="System_2" startConnector="output" endElement="add_1" endConnector="u2" />
+-- 			<ssd:Connection startElement="add_1" startConnector="y" endElement="" endConnector="output" />
 -- 		</ssd:Connections>
 -- 		<ssd:Annotations>
 -- 			<ssc:Annotation type="org.openmodelica">
