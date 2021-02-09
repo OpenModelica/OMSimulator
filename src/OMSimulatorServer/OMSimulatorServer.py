@@ -94,9 +94,17 @@ def _main():
     logging.info('Result file: {}'.format(args.result_file))
 
   pub_msg(socket_sub, 'status', {'progress': 0})
+
+  time = oms.getStartTime(model)
+  stopTime = oms.getStopTime(model)
+  range = stopTime - time
+
   oms.instantiate(model)
   oms.initialize(model)
-  oms.simulate(model)
+  while time < stopTime:
+    pub_msg(socket_sub, 'status', {'progress': time / range})
+    oms.doStep(model)
+    time = oms.getStartTime(model)
   oms.terminate(model)
   oms.delete(model)
   pub_msg(socket_sub, 'status', {'progress': 100})
