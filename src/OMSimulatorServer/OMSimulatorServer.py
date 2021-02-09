@@ -56,8 +56,8 @@ def _main():
   parser = argparse.ArgumentParser(description='OMS-SERVER', allow_abbrev=False)
   parser.add_argument('--model', default=None, required=True, help='define the model to simulate')
   parser.add_argument('--result-file', default=None, help='defines whether and if so to which file the results will be written')
-  parser.add_argument('--port-rep', type=int, default=None, help='define the port for the req/rep comunication')
-  parser.add_argument('--port-pub', type=int, default=None, help='define the port for the pub/sub comunication')
+  parser.add_argument('--endpoint-rep', default=None, help='define the endpoint for the req/rep communication')
+  parser.add_argument('--endpoint-pub', default=None, help='define the endpoint for the pub/sub communication')
   args = parser.parse_args()
 
   logging.info('OMS Server {}'.format(__version__))
@@ -65,20 +65,20 @@ def _main():
 
   context = zmq.Context()
 
-  # bind the REP socket
-  if args.port_rep:
+  # connet the REP socket
+  if args.endpoint_rep:
     socket_rep = context.socket(zmq.REP)  #pylint: disable=no-member
-    socket_rep.bind('tcp://*:{}'.format(args.port_rep))
+    socket_rep.connect(args.endpoint_rep)
     socket_rep.RCVTIMEO = 1000  #in milliseconds
-    logging.info('REP socket bound to port {}'.format(args.port_rep))
+    logging.info('REP socket connected to {}'.format(args.endpoint_rep))
   else:
     socket_rep = None
 
-  # bind the PUB socket
-  if args.port_pub:
+  # connect the PUB socket
+  if args.endpoint_pub:
     socket_sub = context.socket(zmq.PUB)  #pylint: disable=no-member
-    socket_sub.bind('tcp://*:{}'.format(args.port_pub))
-    logging.info('PUB socket bound to port {}'.format(args.port_pub))
+    socket_sub.connect(args.endpoint_pub)
+    logging.info('PUB socket connected to {}'.format(args.endpoint_pub))
   else:
     socket_sub = None
 
