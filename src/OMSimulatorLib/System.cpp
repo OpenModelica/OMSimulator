@@ -2617,8 +2617,8 @@ oms_status_enu_t oms::System::rename(const ComRef& cref, const ComRef& newCref)
   {
     subsystem->second->rename(tail, newCref);
     this->renameConnections(cref, newCref);
-    subsystems.erase(subsystem);  // delete the old cref from the lookup
     subsystems[newCref] = subsystem->second;
+    subsystems.erase(subsystem);  // delete the old cref from the lookup
     return oms_status_ok;
   }
 
@@ -2632,8 +2632,8 @@ oms_status_enu_t oms::System::rename(const ComRef& cref, const ComRef& newCref)
   {
     component->second->rename(newCref);
     this->renameConnections(cref, newCref);
-    components.erase(component);  // delete the old cref from the lookup
     components[newCref] = component->second;
+    components.erase(component);  // delete the old cref from the lookup
     return oms_status_ok;
   }
 
