@@ -5,7 +5,7 @@
 -- mac: no
 
 oms_setCommandLineOption("--suppressPath=true")
-oms_setTempDirectory("./multipleinputconnections/")
+oms_setTempDirectory("./rename_lua/")
 
 oms_newModel("model")
 
