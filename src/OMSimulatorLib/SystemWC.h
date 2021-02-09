@@ -57,6 +57,7 @@ namespace oms
     oms_status_enu_t initialize();
     oms_status_enu_t terminate();
     oms_status_enu_t reset();
+    oms_status_enu_t doStep();
     oms_status_enu_t stepUntil(double stopTime, void (*cb)(const char* ident, double time, oms_status_enu_t status));
     oms_status_enu_t stepUntilASSC(double stopTime, void (*cb)(const char* ident, double time, oms_status_enu_t status));
 
@@ -100,6 +101,19 @@ namespace oms
     double maxError = 0.0;
     double normError = 0.0;
     unsigned int rollBackIt = 0;
+
+    // oms_solver_wc_assc
+    std::vector<std::pair<ComRef, double>> assc_prevDoubleValues;
+    std::vector<std::pair<ComRef, int>> assc_prevIntValues;
+    std::vector<std::pair<ComRef, bool>> assc_prevBoolValues;
+
+    // oms_solver_wc_ma
+    int masiMax;
+
+    // oms_solver_wc_mav || oms_solver_wc_mav2
+    bool mav_doDoubleStep;
+    std::map<ComRef, Component*> mav_FMUcomponents;
+    std::map<ComRef, Component*> mav_canGetAndSetStateFMUcomponents;
   };
 }
 

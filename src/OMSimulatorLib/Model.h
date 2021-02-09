@@ -90,6 +90,7 @@ namespace oms
     oms_status_enu_t initialize();
     oms_status_enu_t simulate_asynchronous(void (*cb)(const char* cref, double time, oms_status_enu_t status));
     oms_status_enu_t simulate();
+    oms_status_enu_t doStep();
     oms_status_enu_t stepUntil(double stopTime);
     oms_status_enu_t terminate();
     oms_status_enu_t reset();

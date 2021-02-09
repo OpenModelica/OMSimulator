@@ -59,6 +59,7 @@ namespace oms
     oms_status_enu_t initialize();
     oms_status_enu_t terminate();
     oms_status_enu_t reset();
+    oms_status_enu_t doStep();
     oms_status_enu_t stepUntil(double stopTime, void (*cb)(const char* ident, double time, oms_status_enu_t status));
 
     oms_status_enu_t connectToSockets(const oms::ComRef cref, std::string server);

@@ -106,16 +106,18 @@ class OMSimulator:
     self.obj.oms_deleteConnectorFromBus.restype = ctypes.c_int
     self.obj.oms_deleteConnectorFromTLMBus.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_deleteConnectorFromTLMBus.restype = ctypes.c_int
+    self.obj.oms_doStep.argtypes = [ctypes.c_char_p]
+    self.obj.oms_doStep.restype = ctypes.c_int
     self.obj.oms_export.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_export.restype = ctypes.c_int
     self.obj.oms_exportDependencyGraphs.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_exportDependencyGraphs.restype = ctypes.c_int
     self.obj.oms_exportSnapshot.argtypes = [ctypes.c_char_p]
     self.obj.oms_exportSnapshot.restype = ctypes.c_int
-    self.obj.oms_exportSSVTemplate.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
-    self.obj.oms_exportSSVTemplate.restype = ctypes.c_int
     self.obj.oms_exportSSMTemplate.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_exportSSMTemplate.restype = ctypes.c_int
+    self.obj.oms_exportSSVTemplate.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_exportSSVTemplate.restype = ctypes.c_int
     self.obj.oms_faultInjection.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_double]
     self.obj.oms_faultInjection.restype = ctypes.c_int
     self.obj.oms_getBoolean.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_bool)]
@@ -342,6 +344,8 @@ class OMSimulator:
     return self.obj.oms_initialize(self.checkstring(cref))
   def simulate(self, cref):
     return self.obj.oms_simulate(self.checkstring(cref))
+  def doStep(self, cref):
+    return self.obj.oms_doStep(self.checkstring(cref))
   def stepUntil(self, cref, stopTime):
     return self.obj.oms_stepUntil(self.checkstring(cref), stopTime)
   def terminate(self, cref):

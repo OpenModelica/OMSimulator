@@ -158,6 +158,7 @@ OMSAPI oms_status_enu_t OMSCALL oms_setVariableStepSize(const char* cref, double
 OMSAPI oms_status_enu_t OMSCALL oms_setWorkingDirectory(const char* newWorkingDir);
 OMSAPI oms_status_enu_t OMSCALL oms_simulate_asynchronous(const char* cref, void (*cb)(const char* cref, double time, oms_status_enu_t status));
 OMSAPI oms_status_enu_t OMSCALL oms_simulate(const char* cref);
+OMSAPI oms_status_enu_t OMSCALL oms_doStep(const char* cref);
 OMSAPI oms_status_enu_t OMSCALL oms_stepUntil(const char* cref, double stopTime);
 OMSAPI oms_status_enu_t OMSCALL oms_terminate(const char* cref);
 
