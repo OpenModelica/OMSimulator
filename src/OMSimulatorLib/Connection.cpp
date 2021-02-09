@@ -231,3 +231,30 @@ bool oms::Connection::isValid(const ComRef& crefA, const ComRef& crefB, const Co
   // both connectors must be valid in order to make the connection valid
   return connectorA && connectorB;
 }
+
+oms_status_enu_t oms::Connection::rename(const ComRef& cref, const ComRef& newCref)
+{
+  oms::ComRef tailA(getSignalA());
+  const oms::ComRef frontA = tailA.pop_front();
+
+  if (frontA == cref)
+  {
+    std::string str(newCref + tailA);
+    delete [] this->conA;
+    this->conA = new char[str.size()+1];
+    strcpy(this->conA, str.c_str());
+  }
+
+  oms::ComRef tailB(getSignalB());
+  const oms::ComRef frontB = tailB.pop_front();
+
+  if (frontB == cref)
+  {
+    std::string str(newCref + tailB);
+    delete [] this->conB;
+    this->conB = new char[str.size()+1];
+    strcpy(this->conB, str.c_str());
+  }
+
+  return oms_status_ok;
+}

@@ -121,6 +121,28 @@ oms_status_enu_t oms::Model::rename(const oms::ComRef& cref)
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::Model::rename(const ComRef& cref, const ComRef& newCref)
+{
+  if (!newCref.isValidIdent())
+    return logError(std::string(newCref) + " is not a valid ident");
+
+  if (!system)
+    return logError("Model \"" + std::string(getCref()) + "\" does not contain any system");
+
+  // renaming the model
+  if (cref.isEmpty())
+    return this->rename(newCref);
+
+  // renaming any subcomponent
+  oms::ComRef tail(cref);
+  oms::ComRef front = tail.pop_front();
+
+  if (system->getCref() == front)
+    return system->rename(tail, newCref);
+
+  return logError("Model \"" + std::string(getCref()) + "\" does not contain system \"" + std::string(front) + "\"");
+}
+
 oms_status_enu_t oms::Model::loadSnapshot(const char* snapshot)
 {
   if (!validState(oms_modelState_virgin))

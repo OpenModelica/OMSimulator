@@ -229,3 +229,9 @@ oms_status_enu_t oms::Component::deleteConnector(const ComRef& cref)
 
   return oms_status_error;
 }
+
+oms_status_enu_t oms::Component::rename(const oms::ComRef& newCref)
+{
+  this->cref = newCref;
+  return oms_status_ok;
+}

@@ -120,8 +120,9 @@ namespace oms
     System* getParentSystem() const {return parentSystem;}
     bool copyResources();
     oms_status_enu_t getAllResources(std::vector<std::string>& resources);
-    const std::map<ComRef, System*>& getSubSystems() {return subsystems;}
-    const std::map<ComRef, Component*>& getComponents() {return components;}
+    std::map<ComRef, System*>& getSubSystems() {return subsystems;}
+    std::map<ComRef, Component*>& getComponents() {return components;}
+    std::vector<Connection*>& getConnections() {return connections;}
     oms_status_enu_t updateDependencyGraphs();
     const DirectedGraph& getInitialUnknownsGraph() {return initializationGraph;}
     const DirectedGraph& getOutputsGraph() {return eventGraph;}
@@ -147,6 +148,10 @@ namespace oms
     oms_status_enu_t getReals(const std::vector<ComRef> &crefs, std::vector<double> &values);
     oms_status_enu_t setReals(const std::vector<ComRef> &crefs, std::vector<double> values);
     oms_status_enu_t setRealInputDerivatives(const ComRef &cref, int order, double value);
+
+    oms_status_enu_t rename(const ComRef& newCref); ///< rename the system itself
+    oms_status_enu_t rename(const ComRef& cref, const ComRef& newCref); ///< rename any component within the system
+    oms_status_enu_t renameConnections(const ComRef& cref, const ComRef& newCref);
 
     bool isTopLevelSystem() const {return (parentSystem == NULL);}
 

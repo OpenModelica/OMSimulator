@@ -132,10 +132,10 @@ oms_status_enu_t oms_rename(const char* cref_, const char* newCref_)
   oms::ComRef cref(cref_);
   oms::ComRef newCref(newCref_);
 
-  if (cref.isValidIdent())
-    return oms::Scope::GetInstance().renameModel(cref, newCref);
-  else
-    return logError_OnlyForModel;
+  if (!newCref.isValidIdent())
+    return logError("The new name \"" + std::string(newCref) + "\" is invalid. It must be a valid (non-qualified) cref.");
+
+  return oms::Scope::GetInstance().renameModel(cref, newCref);
 }
 
 int oms_compareSimulationResults(const char* filenameA, const char* filenameB, const char* var, double relTol, double absTol)
