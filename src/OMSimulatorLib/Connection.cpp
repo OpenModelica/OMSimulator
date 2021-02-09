@@ -234,14 +234,6 @@ bool oms::Connection::isValid(const ComRef& crefA, const ComRef& crefB, const Co
 
 oms_status_enu_t oms::Connection::rename(const ComRef& cref, const ComRef& newCref)
 {
-  if (getSignalA() == cref)
-  {
-    std::string str(newCref);
-    delete [] this->conA;
-    this->conA = new char[str.size()+1];
-    strcpy(this->conA, str.c_str());
-  }
-
   oms::ComRef tailA(getSignalA());
   const oms::ComRef frontA = tailA.pop_front();
 
@@ -251,14 +243,6 @@ oms_status_enu_t oms::Connection::rename(const ComRef& cref, const ComRef& newCr
     delete [] this->conA;
     this->conA = new char[str.size()+1];
     strcpy(this->conA, str.c_str());
-  }
-
-  if (getSignalB() == cref)
-  {
-    std::string str(newCref);
-    delete [] this->conB;
-    this->conB = new char[str.size()+1];
-    strcpy(this->conB, str.c_str());
   }
 
   oms::ComRef tailB(getSignalB());
