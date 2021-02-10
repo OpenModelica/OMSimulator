@@ -1597,7 +1597,7 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
     auto component = components.find(front);
     if (component != components.end())
     {
-      logInfo("Delete " + std::string(front));
+      //logInfo("Delete " + std::string(front));
       deleteAllConectionsTo(front);
       delete component->second;
       components.erase(component);
