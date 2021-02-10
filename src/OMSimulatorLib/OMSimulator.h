@@ -123,7 +123,6 @@ OMSAPI oms_status_enu_t OMSCALL oms_list(const char* cref, char** contents);
 OMSAPI oms_status_enu_t OMSCALL oms_listUnconnectedConnectors(const char* cref, char** contents);
 OMSAPI oms_status_enu_t OMSCALL oms_loadSnapshot(const char* cref, const char* snapshot);
 OMSAPI oms_status_enu_t OMSCALL oms_newModel(const char* cref);
-OMSAPI oms_status_enu_t OMSCALL oms_parseModelName(const char* contents, char** cref);
 OMSAPI oms_status_enu_t OMSCALL oms_removeSignalsFromResults(const char* cref, const char* regex);
 OMSAPI oms_status_enu_t OMSCALL oms_rename(const char* cref, const char* newCref);
 OMSAPI oms_status_enu_t OMSCALL oms_reset(const char* cref);
