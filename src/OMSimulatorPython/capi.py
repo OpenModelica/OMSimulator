@@ -82,7 +82,7 @@ class capi:
     self.obj.oms_getVariableStepSize.restype = ctypes.c_int
     self.obj.oms_getVersion.argtypes = None
     self.obj.oms_getVersion.restype = ctypes.c_char_p
-    self.obj.oms_importFile.argtypes = [ctypes.c_char_p]
+    self.obj.oms_importFile.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_char_p)]
     self.obj.oms_importFile.restype = ctypes.c_int
     self.obj.oms_importSnapshot.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_importSnapshot.restype = ctypes.c_int
@@ -94,7 +94,7 @@ class capi:
     self.obj.oms_list.restype = ctypes.c_int
     self.obj.oms_listUnconnectedConnectors.argtypes = [ctypes.c_char_p]
     self.obj.oms_listUnconnectedConnectors.restype = ctypes.c_int
-    self.obj.oms_loadSnapshot.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_loadSnapshot.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.POINTER(ctypes.c_char_p)]
     self.obj.oms_loadSnapshot.restype = ctypes.c_int
     self.obj.oms_newModel.argtypes = [ctypes.c_char_p]
     self.obj.oms_newModel.restype = ctypes.c_int
@@ -249,9 +249,9 @@ class capi:
   def getVersion(self):
     return self.obj.oms_getVersion().decode('utf-8')
   def importFile(self, filename):
-    contents = ctypes.c_char_p()
-    status = self.obj.oms_importFile(filename.encode(), ctypes.byref(contents))
-    return [contents.value.decode("utf-8"), status]
+    cref = ctypes.c_char_p()
+    status = self.obj.oms_importFile(filename.encode(), ctypes.byref(cref))
+    return [cref.value.decode("utf-8"), status]
   def importSnapshot(self, ident, snapshot):
     status = self.obj.oms_importSnapshot(ident.encode(), snapshot.encode())
     return status
@@ -268,7 +268,9 @@ class capi:
     status = self.obj.oms_listUnconnectedConnectors(ident.encode(), ctypes.byref(contents))
     return [contents.value.decode("utf-8"), status]
   def loadSnapshot(self, ident, snapshot):
-    return self.obj.oms_loadSnapshot(ident.encode(), snapshot.encode())
+    newCref = ctypes.c_char_p()
+    status = self.obj.oms_loadSnapshot(ident.encode(), snapshot.encode(), ctypes.byref(newCref))
+    return [newCref.value.decode("utf-8"), status]
   def newModel(self, cref):
     return self.obj.oms_newModel(cref.encode())
   def removeSignalsFromResults(self, cref, regex):

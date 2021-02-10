@@ -43,7 +43,7 @@ oms.delete("test.eoo.source")
 oms.addSubModel("test.eoo.source", "../resources/Modelica.Blocks.Sources.Constant.fmu")
 
 ## restore model from snapshot
-status = oms.loadSnapshot("test", src)
+newCref, status = oms.loadSnapshot("test", src)
 printStatus(status, 0)
 
 src, status = oms.list("test")

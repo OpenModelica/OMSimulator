@@ -8,21 +8,21 @@ Loads a snapshot to restore a previous model state. The model must be in virgin 
 #LUA#
 .. code-block:: lua
 
-  status = oms_loadSnapshot(cref, snapshot)
+  newCref, status = oms_loadSnapshot(cref, snapshot)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  status = oms.loadSnapshot(cref, snapshot)
+  newCref, status = oms.loadSnapshot(cref, snapshot)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms_loadSnapshot(const char* cref, const char* snapshot);
+  oms_status_enu_t oms_loadSnapshot(const char* cref, const char* snapshot, char** newCref);
 
 #END#
 

@@ -70,6 +70,8 @@ namespace oms
     oms_status_enu_t getElements(const ComRef& cref, oms::Element*** elements);
     Model* getModel(const ComRef& cref);
 
+    oms_status_enu_t loadSnapshot(const ComRef& cref, const char* snapshot, char** newCref);
+
     const std::string& getTempDirectory() const {return GetInstance().tempDir;}
     std::string getWorkingDirectory();
 
