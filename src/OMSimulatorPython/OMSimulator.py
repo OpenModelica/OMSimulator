@@ -171,6 +171,8 @@ class OMSimulator:
     return Scope._capi.initialize(cref)
   def simulate(self, cref):
     return Scope._capi.simulate(cref)
+  def doStep(self, cref):
+    return Scope._capi.doStep(cref)
   def stepUntil(self, cref, stopTime):
     return Scope._capi.stepUntil(cref, stopTime)
   def terminate(self, cref):
