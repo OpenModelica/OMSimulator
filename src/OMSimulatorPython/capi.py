@@ -98,8 +98,6 @@ class capi:
     self.obj.oms_loadSnapshot.restype = ctypes.c_int
     self.obj.oms_newModel.argtypes = [ctypes.c_char_p]
     self.obj.oms_newModel.restype = ctypes.c_int
-    self.obj.oms_parseModelName.argtypes = [ctypes.c_char_p]
-    self.obj.oms_parseModelName.restype = ctypes.c_int
     self.obj.oms_removeSignalsFromResults.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_removeSignalsFromResults.restype = ctypes.c_int
     self.obj.oms_rename.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
@@ -273,10 +271,6 @@ class capi:
     return self.obj.oms_loadSnapshot(ident.encode(), snapshot.encode())
   def newModel(self, cref):
     return self.obj.oms_newModel(cref.encode())
-  def parseModelName(self, ident):
-    contents = ctypes.c_char_p()
-    status = self.obj.oms_parseModelName(ident.encode(), ctypes.byref(contents))
-    return [contents.value.decode("utf-8"), status]
   def removeSignalsFromResults(self, cref, regex):
     return self.obj.oms_removeSignalsFromResults(cref.encode(), regex.encode())
   def rename(self, cref, newcref):
