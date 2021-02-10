@@ -65,6 +65,8 @@ class OMSimulator:
     if temp_directory is not None:
       self.setTempDirectory(temp_directory)
 
+    self.getResultFile = Scope._capi.getResultFile
+
   def __enter__(self):
     return self
 
