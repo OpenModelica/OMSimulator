@@ -184,7 +184,8 @@ oms_status_enu_t oms::Scope::miniunz(const std::string& filename, const std::str
 
 oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cref)
 {
-  *_cref = NULL;
+  if (_cref)
+    *_cref = NULL;
 
   std::string extension = "";
   if (filename.length() > 4)
@@ -384,4 +385,46 @@ oms::Model* oms::Scope::getModel(const oms::ComRef& cref)
     return NULL;
 
   return models[it->second];
+}
+
+oms_status_enu_t oms::Scope::loadSnapshot(const oms::ComRef& cref, const char* snapshot, char** newCref)
+{
+  if (newCref)
+    *newCref = NULL;
+
+  pugi::xml_document doc;
+  pugi::xml_parse_result result = doc.load(snapshot);
+  if (!result)
+    return logError("loading snapshot failed (" + std::string(result.description()) + ")");
+
+  const pugi::xml_node node = doc.document_element(); // ssd:SystemStructureDescription
+
+  ComRef name = ComRef(node.attribute("name").as_string());
+
+  oms_status_enu_t status;
+  if (name == cref)
+  {
+    Model* model = getModel(cref);
+    status = model->loadSnapshot(snapshot);
+    if (newCref)
+      *newCref = (char*)model->getCref().c_str();
+    return status;
+  }
+  else
+  {
+    if (oms_status_ok == renameModel(cref, name))
+    {
+      Model* model = getModel(name);
+      status = model->loadSnapshot(snapshot);
+      if (oms_status_ok == status)
+      {
+        if (newCref)
+          *newCref = (char*)model->getCref().c_str();
+        return status;
+      }
+      else
+        renameModel(name, cref);
+    }
+    return logError("loading snapshot failed");
+  }
 }
