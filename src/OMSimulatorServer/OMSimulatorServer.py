@@ -8,11 +8,11 @@ import logging
 import math
 import os
 
-import OMSimulator
+import OMSimulator as oms
 import zmq
 
 __author__ = 'Lennart Ochel <lennart.ochel@ri.se>'
-__version__ = OMSimulator.__version__
+__version__ = oms.__version__
 __copyright__ = '''\
 Copyright (c) 2018-CurrentYear, Open Source Modelica Consortium (OSMC),
 c/o Linköpings universitet, Department of Computer and Information Science,
@@ -55,10 +55,11 @@ def pub_msg(socket, topic, msg: dict):
 def _main():
   # parse command-line arguments
   parser = argparse.ArgumentParser(description='OMS-SERVER', allow_abbrev=False)
+  parser.add_argument('--endpoint-pub', default=None, help='define the endpoint for the pub/sub communication')
+  parser.add_argument('--endpoint-rep', default=None, help='define the endpoint for the req/rep communication')
   parser.add_argument('--model', default=None, required=True, help='define the model to simulate')
   parser.add_argument('--result-file', default=None, help='defines whether and if so to which file the results will be written')
-  parser.add_argument('--endpoint-rep', default=None, help='define the endpoint for the req/rep communication')
-  parser.add_argument('--endpoint-pub', default=None, help='define the endpoint for the pub/sub communication')
+  parser.add_argument('--temp', default='./temp/', help='defines the temp directory')
   args = parser.parse_args()
 
   logging.info('OMS Server {}'.format(__version__))
@@ -83,43 +84,29 @@ def _main():
   else:
     socket_sub = None
 
-  oms = OMSimulator.OMSimulator()
-  oms.setTempDirectory("./temp/")
+  oms.setTempDirectory(args.temp)
+  model = oms.importFile(args.model)
 
-  model, status = oms.importFile(args.model)
-  if status != 0:
-    logging.error("Couldn't import model {}".format(args.model))
-    return
-
-  #print(oms.getSystemType(model))
+  #print(model.systemType)
 
   if args.result_file:
-    oms.setResultFile(model, args.result_file)
-    logging.info('Result file: {}'.format(args.result_file))
+    model.resultFile = args.result_file
 
   pub_msg(socket_sub, 'status', {'progress': 0})
 
-  time, _ = oms.getTime(model)
-  startTime, _ = oms.getStartTime(model)
-  stopTime, _ = oms.getStopTime(model)
+  startTime = model.startTime
+  stopTime = model.stopTime
 
-  if oms.instantiate(model) != 0:
-    logging.error("Failed to instantiate")
-    return
+  model.instantiate()
+  model.initialize()
 
-  if oms.initialize(model) != 0:
-    logging.error("Failed to initialize")
-    return
-
-  while time < stopTime:
-    progress = math.floor((time-startTime) / (stopTime-startTime) * 100)
+  while model.time < stopTime:
+    progress = math.floor((model.time-startTime) / (stopTime-startTime) * 100)
     pub_msg(socket_sub, 'status', {'progress': progress})
-    if oms.doStep(model) != 0:
-      logging.error("Failed to simulate")
-      return
-    time, _ = oms.getTime(model)
-  oms.terminate(model)
-  oms.delete(model)
+    model.doStep()
+
+  model.terminate()
+  model.delete()
   pub_msg(socket_sub, 'status', {'progress': 100})
 
 if __name__ == '__main__':
