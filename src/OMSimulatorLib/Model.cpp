@@ -900,7 +900,7 @@ oms_status_enu_t oms::Model::setStopTime(double value)
 
 double oms::Model::getTime() const
 {
-  if (system)
+  if (system && validState(oms_modelState_simulation))
     return system->getTime();
   return getStartTime();
 }

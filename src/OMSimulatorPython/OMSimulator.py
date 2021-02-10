@@ -133,8 +133,6 @@ class OMSimulator:
   def loadSnapshot(self, ident, snapshot):
     status = Scope._capi.loadSnapshot(ident, snapshot)
     return status
-  def parseModelName(self, ident):
-    return Scope._capi.parseModelName(ident)
   def addSystem(self, ident, type):
     return Scope._capi.addSystem(ident, type)
   def copySystem(self, source, target):
@@ -173,6 +171,8 @@ class OMSimulator:
     return Scope._capi.initialize(cref)
   def simulate(self, cref):
     return Scope._capi.simulate(cref)
+  def doStep(self, cref):
+    return Scope._capi.doStep(cref)
   def stepUntil(self, cref, stopTime):
     return Scope._capi.stepUntil(cref, stopTime)
   def terminate(self, cref):
