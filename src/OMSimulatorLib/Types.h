@@ -331,30 +331,6 @@ typedef struct {
 } ssd_system_geometry_t;
 
 /**
- * \brief 5.3.6 ssd:SimulationInformation
- *
- * This element provides default information for useful solver/master
- * algorithms and their default settings for processing the given component or
- * (sub-)system. The information is purely an optional indicator of useful
- * settings, any processing tool is free to use, merge, or discard this
- * information in any way it sees fit.
- *
- * Multiple child-elements are allowed here in order to supply different
- * settings for different kinds of solver/master algorithms.
- *
- * Simulation information can be present at multiple hierarchy levels of the
- * overall system, including individual components. It is up to the processing
- * tool to decide how best to integrate this information into its overall
- * solving/simulation strategy. Tools supporting the use of multiple, different
- * solvers/co-simulation master algorithms inside one simulation can make use
- * of multiple different settings at different scopes, however this standard
- * does not presume or require the existence of this functionality.
- */
-typedef struct {
-  int dummy; ///< just to make msvc happy
-} ssd_simulation_information_t;
-
-/**
  * \brief Parameters for TLM connection
  */
 typedef struct {
