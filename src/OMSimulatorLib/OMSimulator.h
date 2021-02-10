@@ -124,7 +124,6 @@ OMSAPI oms_status_enu_t OMSCALL oms_list(const char* cref, char** contents);
 OMSAPI oms_status_enu_t OMSCALL oms_listUnconnectedConnectors(const char* cref, char** contents);
 OMSAPI oms_status_enu_t OMSCALL oms_loadSnapshot(const char* cref, const char* snapshot, char** newCref);
 OMSAPI oms_status_enu_t OMSCALL oms_newModel(const char* cref);
-OMSAPI oms_status_enu_t OMSCALL oms_parseModelName(const char* contents, char** cref);
 OMSAPI oms_status_enu_t OMSCALL oms_removeSignalsFromResults(const char* cref, const char* regex);
 OMSAPI oms_status_enu_t OMSCALL oms_rename(const char* cref, const char* newCref);
 OMSAPI oms_status_enu_t OMSCALL oms_reset(const char* cref);
@@ -161,10 +160,6 @@ OMSAPI oms_status_enu_t OMSCALL oms_simulate_asynchronous(const char* cref, void
 OMSAPI oms_status_enu_t OMSCALL oms_simulate(const char* cref);
 OMSAPI oms_status_enu_t OMSCALL oms_stepUntil(const char* cref, double stopTime);
 OMSAPI oms_status_enu_t OMSCALL oms_terminate(const char* cref);
-
-/* not implemented yet */
-oms_status_enu_t oms_setSimulationInformation(const char* cref, ssd_simulation_information_t* info);
-oms_status_enu_t oms_getSimulationInformation(const char* cref, ssd_simulation_information_t** info);
 
 #ifdef __cplusplus
 }
