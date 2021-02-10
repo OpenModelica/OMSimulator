@@ -105,12 +105,20 @@ def _main():
   startTime, _ = oms.getStartTime(model)
   stopTime, _ = oms.getStopTime(model)
 
-  oms.instantiate(model)
-  oms.initialize(model)
+  if oms.instantiate(model) != 0:
+    logging.error("Failed to instantiate")
+    return
+
+  if oms.initialize(model) != 0:
+    logging.error("Failed to initialize")
+    return
+
   while time < stopTime:
     progress = math.floor((time-startTime) / (stopTime-startTime) * 100)
     pub_msg(socket_sub, 'status', {'progress': progress})
-    oms.doStep(model)
+    if oms.doStep(model) != 0:
+      logging.error("Failed to simulate")
+      return
     time, _ = oms.getTime(model)
   oms.terminate(model)
   oms.delete(model)
