@@ -15,7 +15,7 @@ Gets the result filename and buffer size of the given model cref.
 #PYTHON#
 .. code-block:: python
 
-  # not available
+  filename, bufferSize, status = oms.getResultFile(cref)
 
 #END#
 

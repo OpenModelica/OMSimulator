@@ -1,5 +1,4 @@
 from OMSimulator import Scope, Types
-from OMSimulator.NewAPI import *
 
 
 class Model:
@@ -30,6 +29,11 @@ class Model:
     if Types.Status(status) != Types.Status.OK:
       raise Exception('error {}'.format(Types.Status(status)))
 
+  def doStep(self):
+    status = Scope._capi.doStep(self.cref)
+    if Types.Status(status) != Types.Status.OK:
+      raise Exception('error {}'.format(Types.Status(status)))
+
   def terminate(self):
     status = Scope._capi.terminate(self.cref)
     if Types.Status(status) != Types.Status.OK:
@@ -38,6 +42,13 @@ class Model:
   @property
   def cref(self):
     return self._cref
+
+  @property
+  def time(self):
+    value, status = Scope._capi.getTime(self.cref)
+    if Types.Status(status) != Types.Status.OK:
+      raise Exception('error {}'.format(Types.Status(status)))
+    return value
 
   @property
   def startTime(self):
@@ -62,5 +73,22 @@ class Model:
   @stopTime.setter
   def stopTime(self, value: float):
     status = Scope._capi.setStopTime(self.cref, value)
+    if Types.Status(status) != Types.Status.OK:
+      raise Exception('error {}'.format(Types.Status(status)))
+
+  @property
+  def resultFile(self):
+    file, _, status = Scope._capi.getResultFile(self.cref)
+    if Types.Status(status) != Types.Status.OK:
+      raise Exception('error {}'.format(Types.Status(status)))
+    return file
+
+  @resultFile.setter
+  def resultFile(self, file: str):
+    _, bufferSize, status = Scope._capi.getResultFile(self.cref)
+    if Types.Status(status) != Types.Status.OK:
+      raise Exception('error {}'.format(Types.Status(status)))
+
+    status = Scope._capi.setResultFile(self.cref, file, bufferSize)
     if Types.Status(status) != Types.Status.OK:
       raise Exception('error {}'.format(Types.Status(status)))

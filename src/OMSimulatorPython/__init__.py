@@ -3,6 +3,7 @@
 OpenModelica FMI & TLM based simulator'''
 
 from OMSimulator import Scope, Types
+from OMSimulator.Model import Model
 from OMSimulator.NewAPI import *
 from OMSimulator.OMSimulator import OMSimulator
 

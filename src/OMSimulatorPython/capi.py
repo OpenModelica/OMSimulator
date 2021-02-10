@@ -68,6 +68,8 @@ class capi:
     self.obj.oms_getInteger.restype = ctypes.c_int
     self.obj.oms_getReal.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_double)]
     self.obj.oms_getReal.restype = ctypes.c_int
+    self.obj.oms_getResultFile.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_char_p), ctypes.POINTER(ctypes.c_int)]
+    self.obj.oms_getResultFile.restype = ctypes.c_int
     self.obj.oms_getSolver.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_int)]
     self.obj.oms_getSolver.restype = ctypes.c_int
     self.obj.oms_getStartTime.argtypes = [ctypes.c_char_p]
@@ -197,7 +199,7 @@ class capi:
   def exportSnapshot(self, ident):
     contents = ctypes.c_char_p()
     status = self.obj.oms_exportSnapshot(ident.encode(), ctypes.byref(contents))
-    return [contents.value.decode("utf-8"), status]
+    return [contents.value.decode('utf-8'), status]
   def exportSSMTemplate(self, ident, filename):
     return self.obj.oms_exportSSMTemplate(ident.encode(), filename.encode())
   def exportSSVTemplate(self, ident, filename):
@@ -220,6 +222,11 @@ class capi:
     value = ctypes.c_double()
     status = self.obj.oms_getReal(cref.encode(), ctypes.byref(value))
     return [value.value, status]
+  def getResultFile(self, cref):
+    filename = ctypes.c_char_p()
+    bufferSize = ctypes.c_int()
+    status = self.obj.oms_getResultFile(cref.encode(), ctypes.byref(filename), ctypes.byref(bufferSize))
+    return [filename.value.decode('utf-8'), bufferSize.value, status]
   def getSolver(self, cref):
     value = ctypes.c_int()
     status = self.obj.oms_getSolver(cref.encode(), ctypes.byref(value))
@@ -262,11 +269,11 @@ class capi:
   def list(self, ident):
     contents = ctypes.c_char_p()
     status = self.obj.oms_list(ident.encode(), ctypes.byref(contents))
-    return [contents.value.decode("utf-8"), status]
+    return [contents.value.decode('utf-8'), status]
   def listUnconnectedConnectors(self, ident):
     contents = ctypes.c_char_p()
     status = self.obj.oms_listUnconnectedConnectors(ident.encode(), ctypes.byref(contents))
-    return [contents.value.decode("utf-8"), status]
+    return [contents.value.decode('utf-8'), status]
   def loadSnapshot(self, ident, snapshot):
     newCref = ctypes.c_char_p()
     status = self.obj.oms_loadSnapshot(ident.encode(), snapshot.encode(), ctypes.byref(newCref))
