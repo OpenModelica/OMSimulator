@@ -5,6 +5,7 @@ import argparse
 import datetime
 import json
 import logging
+import math
 import os
 
 import OMSimulator
@@ -84,28 +85,35 @@ def _main():
 
   oms = OMSimulator.OMSimulator()
   oms.setTempDirectory("./temp/")
+
   model, status = oms.importFile(args.model)
   if status != 0:
     logging.error("Couldn't import model {}".format(args.model))
     return
+  else:
+    logging.info("Model loaded: {}".format(model))
+
+  #print(oms.getSystemType(model))
 
   if args.result_file:
     oms.setResultFile(model, args.result_file)
     logging.info('Result file: {}'.format(args.result_file))
+  else:
+    oms.setResultFile(model, '')
 
   pub_msg(socket_sub, 'status', {'progress': 0})
 
-  time, _ = oms.getStartTime(model)
+  time, _ = oms.getTime(model)
+  startTime, _ = oms.getStartTime(model)
   stopTime, _ = oms.getStopTime(model)
-  range = stopTime - time
 
   oms.instantiate(model)
   oms.initialize(model)
   while time < stopTime:
-    print({'progress': time / range})
-    pub_msg(socket_sub, 'status', {'progress': time / range})
+    progress = math.floor((time-startTime) / (stopTime-startTime) * 100)
+    pub_msg(socket_sub, 'status', {'progress': progress})
     oms.doStep(model)
-    time, _ = oms.getStartTime(model)
+    time, _ = oms.getTime(model)
   oms.terminate(model)
   oms.delete(model)
   pub_msg(socket_sub, 'status', {'progress': 100})
