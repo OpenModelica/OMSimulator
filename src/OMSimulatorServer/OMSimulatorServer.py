@@ -98,8 +98,6 @@ def _main():
   if args.result_file:
     oms.setResultFile(model, args.result_file)
     logging.info('Result file: {}'.format(args.result_file))
-  else:
-    oms.setResultFile(model, '')
 
   pub_msg(socket_sub, 'status', {'progress': 0})
 
