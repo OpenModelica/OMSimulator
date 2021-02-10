@@ -50,7 +50,7 @@ def pub_msg(socket, topic, msg: dict):
   if socket:
     msg_ = mogrify(topic, msg)
     socket.send_string(msg_)
-    logging.info(msg_)
+    #logging.info(msg_)
 
 def _main():
   # parse command-line arguments
@@ -90,8 +90,6 @@ def _main():
   if status != 0:
     logging.error("Couldn't import model {}".format(args.model))
     return
-  else:
-    logging.info("Model loaded: {}".format(model))
 
   #print(oms.getSystemType(model))
 
