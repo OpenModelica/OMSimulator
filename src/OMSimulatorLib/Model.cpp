@@ -636,26 +636,40 @@ oms_status_enu_t oms::Model::exportSignalFilter(pugi::xml_node &node, int &count
 
   for (const auto &it : system->getSubSystems())
   {
-    for (const auto &var : it.second->filteredSignals)
+    for (const auto& var: it.second->getFilteredSignals())
     {
       count++;
-      if (node)
+      if (node && var.second)
       {
         pugi::xml_node oms_variable = node.append_child(oms::ssp::Version1_0::oms_Variable);
-        oms_variable.append_attribute("name") = var.c_str();
+        oms_variable.append_attribute("name") = var.first.c_str();
       }
     }
   }
 
   for (const auto &it : system->getComponents())
   {
-    for (const auto &var : it.second->getFilteredSignals())
+    count++;
+    if (it.second->getType() == oms_component_table)
     {
-      count++;
-      if (node)
+      for (const auto &var : it.second->getFilteredSeriesSignals())
       {
-        pugi::xml_node oms_variable = node.append_child(oms::ssp::Version1_0::oms_Variable);
-        oms_variable.append_attribute("name") = var.c_str();
+        if (node && var.second)
+        {
+          pugi::xml_node oms_variable = node.append_child(oms::ssp::Version1_0::oms_Variable);
+          oms_variable.append_attribute("name") = var.first.c_str();
+        }
+      }
+    }
+    else if (it.second->getType() == oms_component_fmu)
+    {
+      for (const auto &var : it.second->getAllVariables())
+      {
+        if (node && var.exportVar)
+        {
+          pugi::xml_node oms_variable = node.append_child(oms::ssp::Version1_0::oms_Variable);
+          oms_variable.append_attribute("name") = (it.second->getFullCref() + var.getCref()).c_str();
+        }
       }
     }
   }

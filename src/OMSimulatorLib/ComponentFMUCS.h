@@ -87,8 +87,8 @@ namespace oms
 
     oms_status_enu_t setFmuTime(double time) {this->time = time; return oms_status_ok;}
     fmi2_import_t* getFMU() {return fmu;}
-    std::vector<Variable> getAllVariables() {return allVariables;}
-    std::vector<Variable> getInputs() {return inputs;}
+    std::vector<Variable> &getAllVariables() { return allVariables; }
+    std::vector<Variable> getInputs() { return inputs; }
     std::vector<Variable> getOutputs() {return outputs;}
 
     oms_status_enu_t getRealOutputDerivative(const ComRef& cref, SignalDerivative& der);
@@ -105,7 +105,6 @@ namespace oms
     oms_status_enu_t restoreState();
 
     oms_status_enu_t setFaultInjection(const ComRef& signal, oms_fault_type_enu_t faultType, double faultValue);
-    std::vector<ComRef> getFilteredSignals() { return filteredSignals; }
 
   protected:
     ComponentFMUCS(const ComRef& cref, System* parentSystem, const std::string& fmuPath);
@@ -128,7 +127,6 @@ namespace oms
     std::vector<Variable> parameters;
     std::vector<Variable> calculatedParameters;
     std::vector<bool> exportVariables;
-    std::vector<ComRef> filteredSignals;  ///< filtered signals set via oms_addSignalsToResults()
 
     Values values; ///< start values defined before instantiating the FMU and external inputs defined after initialization
 

@@ -345,7 +345,6 @@ oms_status_enu_t oms::ComponentTable::addSignalsToResults(const char* regex)
     if (regex_match(std::string(x.first), exp))
     {
       x.second = true;
-      filteredSignals.push_back(x.first);
     }
   }
 
@@ -363,11 +362,6 @@ oms_status_enu_t oms::ComponentTable::removeSignalsFromResults(const char* regex
     if (regex_match(std::string(x.first), exp))
     {
       x.second = false;
-      // remove signals
-      if (!filteredSignals.empty())
-      {
-        filteredSignals.erase(std::remove(filteredSignals.begin(), filteredSignals.end(), x.first));
-      }
     }
   }
 

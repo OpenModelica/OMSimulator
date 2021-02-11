@@ -180,7 +180,7 @@ namespace oms
 
     std::string getUniqueID() const;
     std::map<std::string, std::string> startValuesFileSources;  ///< ssvFileSource mapped with ssmFilesource if mapping is provided, otherwise only ssvFilesource entry is made
-    std::vector<ComRef> filteredSignals;  ///< filtered signals set via oms_addSignalsToResults()
+    std::unordered_map<ComRef, bool> & getFilteredSignals() {return exportConnectors;}
     bool signalFilter = false;
   protected:
     double time;

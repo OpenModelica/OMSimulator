@@ -43,6 +43,7 @@
 #include "Types.h"
 #include <fmilib.h>
 #include <pugixml.hpp>
+#include <unordered_map>
 
 namespace oms
 {
@@ -121,7 +122,8 @@ namespace oms
     virtual oms_status_enu_t restoreState() {return logError_NotImplemented;}
 
     oms_status_enu_t rename(const ComRef& newCref); ///< rename submodules (e.g)Fmu's
-    virtual std::vector<ComRef> getFilteredSignals() {return {};}
+    virtual std::vector<Variable> &getAllVariables() { return allVariables; }                    ///< filtered variables from fmus
+    virtual std::unordered_map<ComRef, bool> &getFilteredSeriesSignals() { return exportSeries; } ///< filtered variables from tables
 
   protected:
     Component(const ComRef& cref, oms_component_enu_t type, System* parentSystem, const std::string& path);
@@ -148,6 +150,8 @@ namespace oms
     oms_component_enu_t type;
     std::string path;                             ///< resource file (fmu, mat)
     std::string tempDir;                          ///< unzipped fmu
+    std::unordered_map<ComRef, bool> exportSeries = {};
+    std::vector<Variable> allVariables = {};
   };
 }
 

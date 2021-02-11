@@ -2184,7 +2184,6 @@ oms_status_enu_t oms::System::addSignalsToResults(const char* regex)
       if (regex_match(std::string(x.first), exp))
       {
         //logInfo("added \"" + std::string(x.first) + "\" to results");
-        filteredSignals.push_back(x.first);
         x.second = true;
       }
     }
@@ -2220,12 +2219,6 @@ oms_status_enu_t oms::System::removeSignalsFromResults(const char* regex)
       {
         //logInfo("removed \"" + std::string(x.first) + "\" from results");
         x.second = false;
-        // remove signals
-        if (!filteredSignals.empty())
-        {
-          filteredSignals.erase(std::remove(filteredSignals.begin(), filteredSignals.end(), x.first));
-        }
-
       }
     }
   }
