@@ -399,32 +399,23 @@ oms_status_enu_t oms::Scope::loadSnapshot(const oms::ComRef& cref, const char* s
 
   const pugi::xml_node node = doc.document_element(); // ssd:SystemStructureDescription
 
-  ComRef name = ComRef(node.attribute("name").as_string());
+  ComRef name(node.attribute("name").as_string());
+  if (name != cref && getModel(name))
+    return logError("failed to load snapshot, because it would change the model's name but it already exists in the scope");
 
-  oms_status_enu_t status;
-  if (name == cref)
-  {
-    Model* model = getModel(cref);
-    status = model->loadSnapshot(snapshot);
-    if (newCref)
-      *newCref = (char*)model->getCref().c_str();
-    return status;
-  }
-  else
-  {
+  std::string ssdVersion = node.attribute("version").as_string();
+  if (ssdVersion != "Draft20180219" && ssdVersion != "1.0")
+    return logError("Unknown SSD version: " + ssdVersion + " Supported version are 1.0 and Draft20180219.");
+
+  oms_status_enu_t status = getModel(cref)->loadSnapshot(node);
+
+  ComRef new_name(cref);
+  if (oms_status_ok == status && name != cref)
     if (oms_status_ok == renameModel(cref, name))
-    {
-      Model* model = getModel(name);
-      status = model->loadSnapshot(snapshot);
-      if (oms_status_ok == status)
-      {
-        if (newCref)
-          *newCref = (char*)model->getCref().c_str();
-        return status;
-      }
-      else
-        renameModel(name, cref);
-    }
-    return logError("loading snapshot failed");
-  }
+      new_name = name;
+
+  if (newCref)
+    *newCref = (char*)getModel(new_name)->getCref().c_str();
+
+  return status;
 }
