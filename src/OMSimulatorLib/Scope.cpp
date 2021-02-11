@@ -405,7 +405,7 @@ oms_status_enu_t oms::Scope::loadSnapshot(const oms::ComRef& cref, const char* s
 
   std::string ssdVersion = node.attribute("version").as_string();
   if (ssdVersion != "Draft20180219" && ssdVersion != "1.0")
-    logWarning("Unknown SSD version \"" + ssdVersion + "\"; import will continue anyways. Supported version are \"1.0\" and \"Draft20180219\".");
+    return logError("Unknown SSD version \"" + ssdVersion + "\"; supported version are \"1.0\" and \"Draft20180219\".");
 
   oms_status_enu_t status = getModel(cref)->loadSnapshot(node);
 
