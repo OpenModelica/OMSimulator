@@ -78,7 +78,7 @@ oms_delete("setExternalInputs")
 -- 		<ssd:Annotations>
 -- 			<ssc:Annotation type="org.openmodelica">
 -- 				<oms:Annotations>
--- 					<oms:SimulationInformation resultFile="setExternalInputs_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter=".*" />
+-- 					<oms:SimulationInformation resultFile="setExternalInputs_res.mat" loggingInterval="0.000000" bufferSize="10" />
 -- 				</oms:Annotations>
 -- 			</ssc:Annotation>
 -- 		</ssd:Annotations>

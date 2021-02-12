@@ -57,6 +57,7 @@ printStatus(status, 0)
 -- Result:
 -- status:  [correct] ok
 -- status:  [correct] ok
+-- warning: [oms_setSignalFilter] is deprecated , use [oms_addSignalsToResults] to add signals and [oms_removeSignalsFromResults] to remove signals
 -- status:  [correct] ok
 -- status:  [correct] ok
 -- <?xml version="1.0"?>
@@ -76,16 +77,14 @@ printStatus(status, 0)
 -- 		<ssd:Annotations>
 -- 			<ssc:Annotation type="org.openmodelica">
 -- 				<oms:Annotations>
--- 					<oms:SimulationInformation resultFile="model_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="[AB]" />
+-- 					<oms:SimulationInformation resultFile="model_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="resources/signalFilter.xml" />
 -- 				</oms:Annotations>
 -- 			</ssc:Annotation>
 -- 		</ssd:Annotations>
 -- 	</ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>
 --
--- warning: [removeSignalsFromResults] is deprecated and [setSignalFilter] is the recommended API
 -- status:  [correct] ok
--- warning: [addSignalsToResults] is deprecated and [setSignalFilter] is the recommended API
 -- status:  [correct] ok
 -- status:  [correct] ok
 -- <?xml version="1.0"?>
@@ -105,7 +104,7 @@ printStatus(status, 0)
 -- 		<ssd:Annotations>
 -- 			<ssc:Annotation type="org.openmodelica">
 -- 				<oms:Annotations>
--- 					<oms:SimulationInformation resultFile="model_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="[AB]" />
+-- 					<oms:SimulationInformation resultFile="model_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="resources/signalFilter.xml" />
 -- 				</oms:Annotations>
 -- 			</ssc:Annotation>
 -- 		</ssd:Annotations>
@@ -113,6 +112,6 @@ printStatus(status, 0)
 -- </ssd:SystemStructureDescription>
 --
 -- status:  [correct] ok
--- info:    2 warnings
+-- info:    1 warnings
 -- info:    0 errors
 -- endResult
