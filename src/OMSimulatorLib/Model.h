@@ -131,6 +131,9 @@ namespace oms
 
     pugi::xml_node getSnapshot() {return snapShot;}
 
+    static std::string getTypeString(const oms_signal_type_enu_t &signalType);
+    static std::string getCausalityString(const oms_causality_enu_t &causalityType);
+
   private:
     Model(const ComRef& cref, const std::string& tempDir);
 

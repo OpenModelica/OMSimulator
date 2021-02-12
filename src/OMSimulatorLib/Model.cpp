@@ -643,6 +643,15 @@ oms_status_enu_t oms::Model::exportSignalFilter(pugi::xml_node &node, int &count
       {
         pugi::xml_node oms_variable = node.append_child(oms::ssp::Version1_0::oms_Variable);
         oms_variable.append_attribute("name") = var.first.c_str();
+
+        // pop cref two times (e.g) model.root.System1.input = > System1.input
+        oms::ComRef tail(var.first);
+        tail.pop_front();
+        tail.pop_front();
+
+        oms::Connector* connector = system->getConnector(tail);
+        oms_variable.append_attribute("type") = getTypeString(connector->getType()).c_str();
+        oms_variable.append_attribute("kind") = getCausalityString(connector->getCausality()).c_str();
       }
     }
   }
@@ -658,6 +667,8 @@ oms_status_enu_t oms::Model::exportSignalFilter(pugi::xml_node &node, int &count
         {
           pugi::xml_node oms_variable = node.append_child(oms::ssp::Version1_0::oms_Variable);
           oms_variable.append_attribute("name") = var.first.c_str();
+          oms_variable.append_attribute("type") = "real"; // for tables the signals are treated as real for now
+          oms_variable.append_attribute("kind") = "";
         }
       }
     }
@@ -669,6 +680,8 @@ oms_status_enu_t oms::Model::exportSignalFilter(pugi::xml_node &node, int &count
         {
           pugi::xml_node oms_variable = node.append_child(oms::ssp::Version1_0::oms_Variable);
           oms_variable.append_attribute("name") = (it.second->getFullCref() + var.getCref()).c_str();
+          oms_variable.append_attribute("type") = getTypeString(var.getType()).c_str();
+          oms_variable.append_attribute("kind") = getCausalityString(var.getCausality()).c_str();
         }
       }
     }
@@ -1397,4 +1410,62 @@ oms_status_enu_t oms::Model::cancelSimulation_asynchronous()
 
   cancelSim = true;
   return oms_status_ok;
+}
+
+std::string oms::Model::getTypeString(const oms_signal_type_enu_t &signalType)
+{
+  std::string type = "unknown";
+  if (signalType == oms_signal_type_real)
+  {
+    type = "real";
+  }
+  else if (signalType == oms_signal_type_integer)
+  {
+    type = "integer";
+  }
+  else if (signalType == oms_signal_type_string)
+  {
+    type = "string";
+  }
+  else if (signalType == oms_signal_type_enum)
+  {
+    type = "enumeration";
+  }
+  else if (signalType == oms_signal_type_boolean)
+  {
+    type = "bool";
+  }
+  else if (signalType == oms_signal_type_bus)
+  {
+    type = "bus";
+  }
+
+  return type;
+}
+
+std::string oms::Model::getCausalityString(const oms_causality_enu_t &causalityType)
+{
+  std::string causality = "undefined";
+  if (causalityType == oms_causality_input)
+  {
+    causality = "input";
+  }
+  else if (causalityType == oms_causality_output)
+  {
+    causality = "output";
+  }
+  else if (causalityType == oms_causality_parameter)
+  {
+    causality = "parameter";
+  }
+  else if (causalityType == oms_causality_calculatedParameter)
+  {
+    causality = "calculatedParameter";
+  }
+  else if (causalityType == oms_causality_bidir)
+  {
+    causality = "inout";
+  }
+
+  return causality;
 }

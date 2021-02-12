@@ -183,19 +183,19 @@ oms_delete("model")
 -- 	</oms:ssd_file>
 -- 	<oms:signalFilter_file name="resources/signalFilter.xml">
 -- 		<oms:SignalFilter version="1.0">
--- 			<oms:Variable name="model.root.System2.Input_1" />
--- 			<oms:Variable name="model.root.Gain.u" />
--- 			<oms:Variable name="model.root.Gain.k" />
+-- 			<oms:Variable name="model.root.System2.Input_1" type="real" kind="input" />
+-- 			<oms:Variable name="model.root.Gain.u" type="real" kind="input" />
+-- 			<oms:Variable name="model.root.Gain.k" type="real" kind="parameter" />
 -- 		</oms:SignalFilter>
 -- 	</oms:signalFilter_file>
 -- </oms:snapshot>
--- 
+--
 -- info:    model doesn't contain any continuous state
 -- info:    model doesn't contain any continuous state
 -- info:    Result file: model_res.csv (bufferSize=1)
--- 
--- 
+--
+--
 -- "time", "model.root.Gain.u", "model.root.System2.Input_1", "model.root.Gain.k"
 -- 0, 0, 30, 1
--- 
+--
 -- endResult
