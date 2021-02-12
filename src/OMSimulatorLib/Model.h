@@ -125,7 +125,7 @@ namespace oms
     bool useThreadPool() {return (pool != nullptr);}
     ctpl::thread_pool& getThreadPool() {assert(pool); return *pool;}
 
-    oms_status_enu_t loadSnapshot(const char* snapshot);
+    oms_status_enu_t loadSnapshot(const pugi::xml_node node);
 
     pugi::xml_node getSnapshot() {return snapShot;}
 
