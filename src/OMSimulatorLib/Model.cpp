@@ -143,26 +143,13 @@ oms_status_enu_t oms::Model::rename(const ComRef& cref, const ComRef& newCref)
   return logError("Model \"" + std::string(getCref()) + "\" does not contain system \"" + std::string(front) + "\"");
 }
 
-oms_status_enu_t oms::Model::loadSnapshot(const char* snapshot)
+oms_status_enu_t oms::Model::loadSnapshot(const pugi::xml_node node)
 {
+  // This method will not change the name of the model.
+  // If a renaming is requested then it will happen in Scope::loadSnapshot.
+
   if (!validState(oms_modelState_virgin))
     return logError_ModelInWrongState(this);
-
-  pugi::xml_document doc;
-  pugi::xml_parse_result result = doc.load(snapshot);
-  if (!result)
-    return logError("loading snapshot failed (" + std::string(result.description()) + ")");
-
-  const pugi::xml_node node = doc.document_element(); // ssd:SystemStructureDescription
-
-  ComRef new_cref = ComRef(node.attribute("name").as_string());
-  std::string ssdVersion = node.attribute("version").as_string();
-
-  if (new_cref != getCref())
-    return logError("this API cannot be used to rename a model");
-
-  if (ssdVersion != "Draft20180219" && ssdVersion != "1.0")
-    logWarning("Unknown SSD version: " + ssdVersion);
 
   System* old_root_system = system;
   system = NULL;
