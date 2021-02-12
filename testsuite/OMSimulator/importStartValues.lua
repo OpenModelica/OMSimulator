@@ -106,9 +106,9 @@ oms_delete("importStartValues")
 -- 	</oms:ssv_file>
 -- 	<oms:signalFilter_file name="resources/signalFilter.xml">
 -- 		<oms:SignalFilter version="1.0">
--- 			<oms:Variable name="importStartValues.root.System1.C3" type="real" kind="output" />
--- 			<oms:Variable name="importStartValues.root.System1.C1" type="real" kind="input" />
--- 			<oms:Variable name="importStartValues.root.System1.C2" type="real" kind="parameter" />
+-- 			<oms:Variable name="importStartValues.root.System1.C3" type="Real" kind="output" />
+-- 			<oms:Variable name="importStartValues.root.System1.C1" type="Real" kind="input" />
+-- 			<oms:Variable name="importStartValues.root.System1.C2" type="Real" kind="parameter" />
 -- 		</oms:SignalFilter>
 -- 	</oms:signalFilter_file>
 -- </oms:snapshot>

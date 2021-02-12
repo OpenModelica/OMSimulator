@@ -57,7 +57,7 @@ printStatus(status, 0)
 ## Result:
 ## status:  [correct] ok
 ## status:  [correct] ok
-## warning: [oms_setSignalFilter] is deprecated , use [oms_addSignalsToResults] to add signals and [oms_removeSignalsFromResults] to remove signals
+## warning: [oms_setSignalFilter] is deprecated, use [oms_addSignalsToResults] to add signals and [oms_removeSignalsFromResults] to remove signals
 ## status:  [correct] ok
 ## status:  [correct] ok
 ## <?xml version="1.0"?>

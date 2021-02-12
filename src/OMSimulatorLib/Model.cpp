@@ -1417,27 +1417,27 @@ std::string oms::Model::getTypeString(const oms_signal_type_enu_t &signalType)
   std::string type = "unknown";
   if (signalType == oms_signal_type_real)
   {
-    type = "real";
+    type = "Real";
   }
   else if (signalType == oms_signal_type_integer)
   {
-    type = "integer";
+    type = "Integer";
   }
   else if (signalType == oms_signal_type_string)
   {
-    type = "string";
+    type = "String";
   }
   else if (signalType == oms_signal_type_enum)
   {
-    type = "enumeration";
+    type = "Enumeration";
   }
   else if (signalType == oms_signal_type_boolean)
   {
-    type = "bool";
+    type = "Bool";
   }
   else if (signalType == oms_signal_type_bus)
   {
-    type = "bus";
+    type = "Bus";
   }
 
   return type;

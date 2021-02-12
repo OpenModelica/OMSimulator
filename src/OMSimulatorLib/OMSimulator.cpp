@@ -1427,7 +1427,7 @@ oms_status_enu_t oms_setResultFile(const char* cref_, const char* filename, int 
 
 oms_status_enu_t oms_setSignalFilter(const char* cref, const char* regex)
 {
-  logWarning("[oms_setSignalFilter] is deprecated , use [oms_addSignalsToResults] to add signals and [oms_removeSignalsFromResults] to remove signals");
+  logWarning("[oms_setSignalFilter] is deprecated, use [oms_addSignalsToResults] to add signals and [oms_removeSignalsFromResults] to remove signals");
 
   oms_status_enu_t status;
 

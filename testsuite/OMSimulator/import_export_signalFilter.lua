@@ -183,9 +183,9 @@ oms_delete("model")
 -- 	</oms:ssd_file>
 -- 	<oms:signalFilter_file name="resources/signalFilter.xml">
 -- 		<oms:SignalFilter version="1.0">
--- 			<oms:Variable name="model.root.System2.Input_1" type="real" kind="input" />
--- 			<oms:Variable name="model.root.Gain.u" type="real" kind="input" />
--- 			<oms:Variable name="model.root.Gain.k" type="real" kind="parameter" />
+-- 			<oms:Variable name="model.root.System2.Input_1" type="Real" kind="input" />
+-- 			<oms:Variable name="model.root.Gain.u" type="Real" kind="input" />
+-- 			<oms:Variable name="model.root.Gain.k" type="Real" kind="parameter" />
 -- 		</oms:SignalFilter>
 -- 	</oms:signalFilter_file>
 -- </oms:snapshot>
