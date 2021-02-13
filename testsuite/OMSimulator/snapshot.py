@@ -106,15 +106,6 @@ oms.delete("snapshot")
 ## 			</ssv:Parameters>
 ## 		</ssv:ParameterSet>
 ## 	</oms:ssv_file>
-## 	<oms:signalFilter_file name="resources/signalFilter.xml">
-## 		<oms:SignalFilter version="1.0">
-## 			<oms:Variable name="snapshot.root.add.u1" type="Real" kind="input" />
-## 			<oms:Variable name="snapshot.root.add.u2" type="Real" kind="input" />
-## 			<oms:Variable name="snapshot.root.add.y" type="Real" kind="output" />
-## 			<oms:Variable name="snapshot.root.add.k1" type="Real" kind="parameter" />
-## 			<oms:Variable name="snapshot.root.add.k2" type="Real" kind="parameter" />
-## 		</oms:SignalFilter>
-## 	</oms:signalFilter_file>
 ## </oms:snapshot>
 ##
 ## endResult
