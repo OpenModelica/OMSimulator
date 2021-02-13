@@ -416,10 +416,9 @@ oms_status_enu_t oms::Model::exportSnapshot(const oms::ComRef& cref, char** cont
   pugi::xml_node oms_signalFilter = signalFilterdoc.append_child(oms::ssp::Version1_0::oms_signalFilter);
   oms_signalFilter.append_attribute("version") = "1.0";
 
-  int signalFilterCount = 0;
-  exportSignalFilter(oms_signalFilter, signalFilterCount);
+  exportSignalFilter(oms_signalFilter);
 
-  if (system && system->signalFilter || signalFilterCount > 0)
+  if (system && system->signalFilter)
   {
     pugi::xml_node last = doc.last_child();
     pugi::xml_node signalfilter_file  = last.append_child("oms:signalFilter_file");
@@ -629,7 +628,7 @@ oms_status_enu_t oms::Model::exportToSSD(pugi::xml_node& node, pugi::xml_node& s
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Model::exportSignalFilter(pugi::xml_node &node, int &count) const
+oms_status_enu_t oms::Model::exportSignalFilter(pugi::xml_node &node) const
 {
   if (!system)
     return oms_status_ok;
@@ -638,7 +637,6 @@ oms_status_enu_t oms::Model::exportSignalFilter(pugi::xml_node &node, int &count
   {
     for (const auto& var: it.second->getFilteredSignals())
     {
-      count++;
       if (node && var.second)
       {
         pugi::xml_node oms_variable = node.append_child(oms::ssp::Version1_0::oms_Variable);
@@ -658,7 +656,6 @@ oms_status_enu_t oms::Model::exportSignalFilter(pugi::xml_node &node, int &count
 
   for (const auto &it : system->getComponents())
   {
-    count++;
     if (it.second->getType() == oms_component_table)
     {
       for (const auto &var : it.second->getFilteredSeriesSignals())
@@ -950,13 +947,12 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
   pugi::xml_node oms_signalFilter = signalFilterdoc.append_child(oms::ssp::Version1_0::oms_signalFilter);
   oms_signalFilter.append_attribute("version") = "1.0";
 
-  int signalFilterCount = 0;
-  exportSignalFilter(oms_signalFilter, signalFilterCount);
+  exportSignalFilter(oms_signalFilter);
 
   //signalFilterdoc.save(std::cout);
 
   std::string signalFilterFileName = "";
-  if (system && system->signalFilter || signalFilterCount > 0)
+  if (system && system->signalFilter)
   {
     signalFilterFileName = "resources/signalFilter.xml";
     filesystem::path signalFilterFilePath = filesystem::path(tempDir) / signalFilterFileName;
