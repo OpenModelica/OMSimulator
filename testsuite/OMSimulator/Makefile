@@ -28,6 +28,7 @@ simulation.lua \
 simulation.py \
 snapshot.lua \
 snapshot.py \
+newSnapshot.lua \
 table.lua \
 
 # Run make failingtest

@@ -182,6 +182,25 @@ oms::ComRef oms::ComRef::pop_front()
   return front;
 }
 
+oms::ComRef oms::ComRef::pop_front_colon()
+{
+  for (int i=0; cref[i]; ++i)
+  {
+    if (cref[i] == ':')
+    {
+      cref[i] = '\0';
+      oms::ComRef front(cref);
+      cref[i] = ':';
+      *this = oms::ComRef(cref + i + 1);
+      return front;
+    }
+  }
+
+  oms::ComRef front(cref);
+  *this = oms::ComRef();
+  return front;
+}
+
 bool oms::operator==(const oms::ComRef& lhs, const oms::ComRef& rhs)
 {
   return (0 == strcmp(lhs.c_str(), rhs.c_str()));

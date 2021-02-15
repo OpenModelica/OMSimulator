@@ -214,10 +214,11 @@ oms_status_enu_t oms_list(const char* cref_, char** contents)
   return model->list(tail, contents);
 }
 
-oms_status_enu_t oms_exportSnapshot(const char* cref_, char** contents)
+oms_status_enu_t oms_exportSnapshot(const char* ex_cref, char** contents)
 {
-  oms::ComRef tail(cref_);
-  oms::ComRef front = tail.pop_front();
+  oms::ComRef tail(ex_cref);
+  oms::ComRef front = tail.pop_front_colon();
+
   oms::Model* model = oms::Scope::GetInstance().getModel(front);
   if (!model)
     return logError_ModelNotInScope(front);

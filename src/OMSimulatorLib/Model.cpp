@@ -351,13 +351,6 @@ oms_status_enu_t oms::Model::list(const oms::ComRef& cref, char** contents)
 
 oms_status_enu_t oms::Model::exportSnapshot(const oms::ComRef& cref, char** contents)
 {
-  // only top level model is allowed
-  if (!cref.isEmpty())
-  {
-    //return logError("only top level model is allowed, unknown model: " + std::string(cref));
-    return logError("\"" + std::string(getCref()+std::string(cref)) + "\" is not a top level model");
-  }
-
   struct xmlStringWriter : pugi::xml_writer
   {
     std::string result;
@@ -406,6 +399,27 @@ oms_status_enu_t oms::Model::exportSnapshot(const oms::ComRef& cref, char** cont
     // dump all the ssv file contents
     ssvfilenode.append_copy(node_parameterset);
     // TODO ssm file
+  }
+
+  // query for specific files
+  if (!cref.isEmpty())
+  {
+    bool resources = false;
+    for (pugi::xml_node node : snapshotnode.children())
+    {
+      std::string filename = node.attribute("name").as_string();
+      if (filename == cref.c_str())
+      {
+        // reset the document and replace node
+        doc.reset();
+        doc.append_copy(node);
+        resources = true;
+      }
+    }
+    if (!resources)
+    {
+      return logError("resource file \"" + std::string(cref) + "\" does not exist \n");
+    }
   }
 
   doc.save(writer);

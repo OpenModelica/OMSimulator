@@ -60,6 +60,7 @@ namespace oms
 
     ComRef front() const;
     ComRef pop_front();
+    ComRef pop_front_colon();
 
     bool hasSuffixStart() const;
     ComRef popSuffix() const;
