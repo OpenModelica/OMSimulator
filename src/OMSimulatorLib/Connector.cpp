@@ -86,6 +86,7 @@ oms::Connector::~Connector()
 oms::Connector* oms::Connector::NewConnector(const pugi::xml_node& node, const std::string& sspVersion)
 {
   ComRef cref = ComRef(node.attribute("name").as_string());
+
   std::string causalityString = node.attribute("kind").as_string();
   oms_causality_enu_t causality = oms_causality_undefined;
   if (causalityString == "input")
@@ -98,14 +99,13 @@ oms::Connector* oms::Connector::NewConnector(const pugi::xml_node& node, const s
     causality = oms_causality_calculatedParameter;
   else
   {
-    logError("Failed to import " + std::string(oms::ssp::Draft20180219::ssd::connector) + ":causality");
+    logError("Failed to import connector \"" + std::string(cref) + "\" with causality \"" + causalityString + "\"");
     return NULL;
   }
 
   // get the types of connectors
   std::string typeString = getTypeString(node, sspVersion);
-
-  oms_signal_type_enu_t type = oms_signal_type_real;
+  oms_signal_type_enu_t type;
   if (typeString == "Real")
     type = oms_signal_type_real;
   else if (typeString == "Integer")
@@ -114,34 +114,24 @@ oms::Connector* oms::Connector::NewConnector(const pugi::xml_node& node, const s
     type = oms_signal_type_boolean;
   else if (typeString == "Enumeration")
     type = oms_signal_type_enum;
-  //TODO handle Binary Types for FMI-2.1 see specification
-  else if (typeString == "Binary")
-  {
-    logError("Failed to import " + std::string(oms::ssp::Draft20180219::ssd::connector) + ":Binary-type");
-    return NULL;
-  }
+  // TODO handle "Binary" type for FMI-2.1 see specification
   else
   {
-    logError("Failed to import " + std::string(oms::ssp::Draft20180219::ssd::connector) + ":type");
+    logError("Failed to import connector \"" + std::string(cref) + "\" with type \"" + typeString + "\"");
     return NULL;
   }
 
   Connector* connector = new Connector(causality, type, cref);
   if (!connector)
-  {
-    logError("Failed to import " + std::string(oms::ssp::Draft20180219::ssd::connector));
     return NULL;
-  }
-  else
+
+  // Load connector geometry
+  pugi::xml_node connectorGeometryNode = node.child(oms::ssp::Draft20180219::ssd::connector_geometry);
+  if (connectorGeometryNode)
   {
-    // Load connector geometry
-    pugi::xml_node connectorGeometryNode = node.child(oms::ssp::Draft20180219::ssd::connector_geometry);
-    if (connectorGeometryNode)
-    {
-      oms::ssd::ConnectorGeometry geometry(0.0, 0.0);
-      geometry.setPosition(connectorGeometryNode.attribute("x").as_double(), connectorGeometryNode.attribute("y").as_double());
-      connector->setGeometry(&geometry);
-    }
+    oms::ssd::ConnectorGeometry geometry(0.0, 0.0);
+    geometry.setPosition(connectorGeometryNode.attribute("x").as_double(), connectorGeometryNode.attribute("y").as_double());
+    connector->setGeometry(&geometry);
   }
 
   return connector;
@@ -149,10 +139,9 @@ oms::Connector* oms::Connector::NewConnector(const pugi::xml_node& node, const s
 
 std::string oms::Connector::getTypeString(const pugi::xml_node &node, const std::string& sspVersion)
 {
-  std::string typeString = "";
   if (sspVersion == "Draft20180219")
   {
-    typeString = node.attribute("type").as_string();
+    return node.attribute("type").as_string();
   }
   else if (sspVersion == "1.0")
   {
@@ -160,24 +149,25 @@ std::string oms::Connector::getTypeString(const pugi::xml_node &node, const std:
     {
       std::string name = it->name();
       if (name == oms::ssp::Version1_0::ssc::real_type)
-        typeString = "Real";
+        return "Real";
       else if(name == oms::ssp::Version1_0::ssc::integer_type)
-        typeString = "Integer";
+        return "Integer";
       else if(name == oms::ssp::Version1_0::ssc::boolean_type)
-        typeString = "Boolean";
+        return "Boolean";
       else if(name == oms::ssp::Version1_0::ssc::string_type)
-        typeString = "String";
+        return "String";
       else if(name == oms::ssp::Version1_0::ssc::enumeration_type)
-        typeString = "Enumeration";
+        return "Enumeration";
       else if(name == oms::ssp::Version1_0::ssc::binary_type)
-        typeString = "Binary";
+        return "Binary";
     }
-    if (typeString == "")
-    {
-      logError("Failed to import " + std::string(oms::ssp::Draft20180219::ssd::connector) + ":type Version-1.0");
-    }
+
+    logError("Failed to import " + std::string(oms::ssp::Draft20180219::ssd::connector) + ":type Version-1.0");
+    return "";
   }
-  return typeString;
+
+  logError("Unknown SSP version");
+  return "";
 }
 
 oms_status_enu_t oms::Connector::exportToSSD(pugi::xml_node &root) const
