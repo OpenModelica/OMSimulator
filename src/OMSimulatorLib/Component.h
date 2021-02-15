@@ -64,7 +64,7 @@ namespace oms
     Connector* getConnector(const ComRef& cref);
     Connector** getConnectors() {return &connectors[0];}
     oms_status_enu_t deleteConnector(const ComRef& cref);
-    oms_status_enu_t getAllResources(std::vector<std::string>& resources) const {resources.push_back(path); return oms_status_ok;}
+    void getAllResources(std::vector<std::string>& resources) const {resources.push_back(path);}
     const std::string& getPath() const {return path;}
     const std::string& getTempDir() const {return tempDir;}
     void setTempDir(const std::string& tempDir) {this->tempDir = tempDir;}

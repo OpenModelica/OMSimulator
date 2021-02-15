@@ -831,12 +831,7 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
   //        -j  exclude path. store only the file name
 
   std::vector<std::string> resources;
-  if (!ssvFileName.empty())
-  {
-    resources.push_back(ssvFileName);
-  }
-  if (oms_status_ok != getAllResources(resources))
-    return logError("failed to gather all resources");
+  getAllResources(resources);
 
   std::string cd = Scope::GetInstance().getWorkingDirectory();
   Scope::GetInstance().setWorkingDirectory(tempDir);
@@ -859,12 +854,12 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Model::getAllResources(std::vector<std::string>& resources) const
+void oms::Model::getAllResources(std::vector<std::string>& resources) const
 {
   resources.push_back("SystemStructure.ssd");
+
   if (system)
-    return system->getAllResources(resources);
-  return oms_status_ok;
+    system->getAllResources(resources);
 }
 
 oms_status_enu_t oms::Model::setStartTime(double value)

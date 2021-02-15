@@ -193,17 +193,20 @@ oms_status_enu_t oms::Values::importFromSSD(const pugi::xml_node& node, const st
   return oms_status_ok;
 }
 
+bool oms::Values::empty() const
+{
+  return realStartValues.empty() && integerStartValues.empty() && booleanStartValues.empty();
+}
+
 oms_status_enu_t oms::Values::exportToSSV(pugi::xml_node& node) const
 {
   // skip this if there is nothing to export
-  if (realStartValues.empty() && integerStartValues.empty() && booleanStartValues.empty())
+  if (this->empty())
     return oms_status_ok;
 
   exportStartValuesHelper(node);
-
   return oms_status_ok;
 }
-
 
 oms_status_enu_t oms::Values::exportStartValuesHelper(pugi::xml_node& node) const
 {
