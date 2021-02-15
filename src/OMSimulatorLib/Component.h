@@ -64,7 +64,7 @@ namespace oms
     Connector* getConnector(const ComRef& cref);
     Connector** getConnectors() {return &connectors[0];}
     oms_status_enu_t deleteConnector(const ComRef& cref);
-    void getAllResources(std::vector<std::string>& resources) const {resources.push_back(path);}
+    oms_status_enu_t getAllResources(std::vector<std::string>& resources) const {resources.push_back(path); return oms_status_ok;}
     const std::string& getPath() const {return path;}
     const std::string& getTempDir() const {return tempDir;}
     void setTempDir(const std::string& tempDir) {this->tempDir = tempDir;}
@@ -144,7 +144,7 @@ namespace oms
     System* parentSystem;
     ComRef cref;
     oms_component_enu_t type;
-    const std::string path;                       ///< resource file (fmu, mat)
+    std::string path;                             ///< resource file (fmu, mat)
     std::string tempDir;                          ///< unzipped fmu
   };
 }

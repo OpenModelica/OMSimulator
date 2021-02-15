@@ -1687,13 +1687,17 @@ bool oms::System::copyResources()
   return parentModel->copyResources();
 }
 
-void oms::System::getAllResources(std::vector<std::string>& resources) const
+oms_status_enu_t oms::System::getAllResources(std::vector<std::string>& resources)
 {
   for (const auto& component : components)
-    component.second->getAllResources(resources);
+    if (oms_status_ok != component.second->getAllResources(resources))
+      return oms_status_error;
 
   for (const auto& subsystem : subsystems)
-    subsystem.second->getAllResources(resources);
+    if (oms_status_ok != subsystem.second->getAllResources(resources))
+      return oms_status_error;
+
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms::System::exportDependencyGraphs(const std::string& pathInitialization, const std::string& pathEvent, const std::string& pathSimulation)

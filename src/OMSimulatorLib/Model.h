@@ -80,12 +80,12 @@ namespace oms
     oms_status_enu_t exportToFile(const std::string& filename) const;
     oms_system_enu_t getSystemType(const pugi::xml_node& node, const std::string& sspVersion);
     oms_system_enu_t getSystemTypeHelper(const pugi::xml_node& node, const std::string& sspVersion);
-    oms_status_enu_t updateParameterBindingsToSSD(pugi::xml_node& node) const;
+    oms_status_enu_t updateParameterBindingsToSSD(pugi::xml_node& node, pugi::xml_node& ssvNode, bool isTopSystemOrModel) const;
     void copyResources(bool copy_resources) {this->copy_resources = copy_resources;}
     bool copyResources() {return copy_resources;}
 
     oms::Element** getElements() {return &elements[0];}
-    void getAllResources(std::vector<std::string>& resources) const;
+    oms_status_enu_t getAllResources(std::vector<std::string>& resources) const;
 
     oms_status_enu_t instantiate();
     oms_status_enu_t initialize();

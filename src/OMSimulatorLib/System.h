@@ -119,7 +119,7 @@ namespace oms
     Model* getModel();
     System* getParentSystem() const {return parentSystem;}
     bool copyResources();
-    void getAllResources(std::vector<std::string>& resources) const;
+    oms_status_enu_t getAllResources(std::vector<std::string>& resources);
     std::map<ComRef, System*>& getSubSystems() {return subsystems;}
     std::map<ComRef, Component*>& getComponents() {return components;}
     std::vector<Connection*>& getConnections() {return connections;}
