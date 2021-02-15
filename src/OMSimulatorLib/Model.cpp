@@ -795,10 +795,14 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
   int parameterNodeCount = std::distance(node_parameters.begin(), node_parameters.end());
   std::string ssvFileName = "";
 
+  std::vector<std::string> resources;
+
   // check parameter bindings exist and export to ssv file and also update the ssd file with parameterBindings at the top level
   if (parameterNodeCount > 0)
   {
     ssvFileName = "resources/" + std::string(this->getCref()) + ".ssv";
+    resources.push_back(ssvFileName);
+
     filesystem::path ssvPath = filesystem::path(tempDir) /  ssvFileName;
     //std::cout << "\n ssvPath  : " << ssvPath << " filename : " << ssvFileName;
     ssvdoc.save_file(ssvPath.string().c_str());
@@ -830,13 +834,7 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
   //        -9  Compress better
   //        -j  exclude path. store only the file name
 
-  std::vector<std::string> resources;
-  if (!ssvFileName.empty())
-  {
-    resources.push_back(ssvFileName);
-  }
-  if (oms_status_ok != getAllResources(resources))
-    return logError("failed to gather all resources");
+  getAllResources(resources);
 
   std::string cd = Scope::GetInstance().getWorkingDirectory();
   Scope::GetInstance().setWorkingDirectory(tempDir);
@@ -859,12 +857,12 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Model::getAllResources(std::vector<std::string>& resources) const
+void oms::Model::getAllResources(std::vector<std::string>& resources) const
 {
   resources.push_back("SystemStructure.ssd");
+
   if (system)
-    return system->getAllResources(resources);
-  return oms_status_ok;
+    system->getAllResources(resources);
 }
 
 oms_status_enu_t oms::Model::setStartTime(double value)

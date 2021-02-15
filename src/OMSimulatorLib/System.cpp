@@ -521,7 +521,9 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
     else if(name == oms::ssp::Version1_0::ssd::parameter_bindings)
     {
       std::string parent_node = it->parent().parent().name();
-      // top level parameter bindings belonging to <ssd:SystemStructureDescription> provided either as inline or .ssv files
+      // top-level parameter bindings belonging to
+      // <ssd:SystemStructureDescription> provided either as inline or
+      // .ssv files
       if (parent_node == oms::ssp::Draft20180219::ssd::system_structure_description)
       {
         // check for multiple ssv files or parameter bindings
@@ -557,9 +559,10 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
         }
       }
       else
-      // heirarchial level parameter bindings belonging to <ssd:Elements> provided either as inline or .ssv files
+      // hierarchical level parameter bindings belonging to
+      // <ssd:Elements> provided either as inline or .csv files
       {
-        if (oms_status_ok !=  values.importFromSSD(*it, sspVersion, getModel()->getTempDirectory()))
+        if (oms_status_ok != values.importFromSSD(*it, sspVersion, getModel()->getTempDirectory()))
             return logError("Failed to import " + std::string(oms::ssp::Version1_0::ssd::parameter_bindings));
       }
     }
@@ -1687,17 +1690,13 @@ bool oms::System::copyResources()
   return parentModel->copyResources();
 }
 
-oms_status_enu_t oms::System::getAllResources(std::vector<std::string>& resources)
+void oms::System::getAllResources(std::vector<std::string>& resources) const
 {
   for (const auto& component : components)
-    if (oms_status_ok != component.second->getAllResources(resources))
-      return oms_status_error;
+    component.second->getAllResources(resources);
 
   for (const auto& subsystem : subsystems)
-    if (oms_status_ok != subsystem.second->getAllResources(resources))
-      return oms_status_error;
-
-  return oms_status_ok;
+    subsystem.second->getAllResources(resources);
 }
 
 oms_status_enu_t oms::System::exportDependencyGraphs(const std::string& pathInitialization, const std::string& pathEvent, const std::string& pathSimulation)
