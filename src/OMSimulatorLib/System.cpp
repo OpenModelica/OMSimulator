@@ -1692,9 +1692,6 @@ bool oms::System::copyResources()
 
 void oms::System::getAllResources(std::vector<std::string>& resources) const
 {
-  if (!values.empty() && !Flags::ExportParametersInline())
-    resources.push_back("resources/" + std::string(this->getFullCref()) + ".ssv");
-
   for (const auto& component : components)
     component.second->getAllResources(resources);
 

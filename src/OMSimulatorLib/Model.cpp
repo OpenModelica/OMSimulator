@@ -795,10 +795,14 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
   int parameterNodeCount = std::distance(node_parameters.begin(), node_parameters.end());
   std::string ssvFileName = "";
 
+  std::vector<std::string> resources;
+
   // check parameter bindings exist and export to ssv file and also update the ssd file with parameterBindings at the top level
   if (parameterNodeCount > 0)
   {
     ssvFileName = "resources/" + std::string(this->getCref()) + ".ssv";
+    resources.push_back(ssvFileName);
+
     filesystem::path ssvPath = filesystem::path(tempDir) /  ssvFileName;
     //std::cout << "\n ssvPath  : " << ssvPath << " filename : " << ssvFileName;
     ssvdoc.save_file(ssvPath.string().c_str());
@@ -830,7 +834,6 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
   //        -9  Compress better
   //        -j  exclude path. store only the file name
 
-  std::vector<std::string> resources;
   getAllResources(resources);
 
   std::string cd = Scope::GetInstance().getWorkingDirectory();
