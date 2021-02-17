@@ -1,6 +1,6 @@
 project(OMSimulatorServer)
 
 # install only if build as part of the OpenModelica super project
-if(DEFINED CMAKE_INSTALL_PREFIX)
+if(DEFINED OMBUILDDIR)
   install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/OMSimulatorServer.py" DESTINATION ${CMAKE_INSTALL_PREFIX}/share/OMSimulator/scripts)
 endif()
