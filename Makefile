@@ -85,12 +85,12 @@ ifeq ($(OMBUILDDIR),)
 else
 	TOP_INSTALL_DIR=$(OMBUILDDIR)
 	CMAKE_INSTALL_PREFIX=-DCMAKE_INSTALL_PREFIX=$(OMBUILDDIR)
-ifeq ($(host_short),)
-	HOST_SHORT=
-else
-	HOST_SHORT_OMC=$(host_short)/omc
-	HOST_SHORT=-DHOST_SHORT=$(HOST_SHORT_OMC)
-endif
+	ifeq ($(host_short),)
+		HOST_SHORT=-DHOST_SHORT=
+	else
+		HOST_SHORT_OMC=$(host_short)/omc
+		HOST_SHORT=-DHOST_SHORT=$(HOST_SHORT_OMC)
+	endif
 endif
 
 ifeq ($(detected_OS),Darwin)
