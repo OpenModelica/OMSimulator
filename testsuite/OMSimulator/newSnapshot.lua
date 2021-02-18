@@ -29,6 +29,12 @@ snapshot = oms_exportSnapshot("newsnapshot:resources/snapshot1.ssv")
 snapshot = oms_exportSnapshot("newsnapshot:resources/newsnapshot.ssv")
 print(snapshot)
 
+-- error
+oms_importSnapshot("newsnapshot:resources/newsnapshot1.ssv", snapshot)
+
+-- correct
+oms_importSnapshot("newsnapshot:resources/newsnapshot.ssv", snapshot)
+
 oms_delete("newsnapshot")
 
 
@@ -127,6 +133,7 @@ oms_delete("newsnapshot")
 -- 	</ssv:ParameterSet>
 -- </oms:ssv_file>
 --
+-- error:   [importSnapshot] resource file "resources/newsnapshot1.ssv" does not exist
 -- info:    0 warnings
--- info:    2 errors
+-- info:    3 errors
 -- endResult

@@ -174,7 +174,7 @@ oms_status_enu_t oms::Model::loadSnapshot(const pugi::xml_node node)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Model::importSnapshot(const char* snapshot)
+oms_status_enu_t oms::Model::importSnapshot(const oms::ComRef& cref, const char* snapshot)
 {
   if (!validState(oms_modelState_virgin))
     return logError_ModelInWrongState(this);
@@ -187,7 +187,48 @@ oms_status_enu_t oms::Model::importSnapshot(const char* snapshot)
   snapShot = doc.document_element(); // oms:snapshot
 
   // get ssd:SystemStructureDescription
-  pugi::xml_node ssdNode = snapShot.child(oms::ssp::Version1_0::ssd_file).child(oms::ssp::Draft20180219::ssd::system_structure_description);
+  pugi::xml_node ssdNode;
+  ssdNode = snapShot.child(oms::ssp::Version1_0::ssd_file).child(oms::ssp::Draft20180219::ssd::system_structure_description);
+
+  // partial snapshot provided, load full snapshot internally
+  if (!ssdNode)
+  {
+    char *fullsnapshot = NULL;
+    // get full snapshot
+    exportSnapshot("", &fullsnapshot);
+
+    // copy the partial snapshot
+    pugi::xml_document copy;
+    copy.reset(doc);
+    pugi::xml_node partialSnapshot = copy.document_element(); // oms:snapshot
+    std::string partialSnapshotfilename = partialSnapshot.attribute("name").as_string();
+
+    // reset the doc and load the document with full snapshot
+    doc.reset();
+    doc.load(fullsnapshot);
+
+    snapShot = doc.document_element(); // <oms:snapShot>
+    ssdNode = snapShot.child(oms::ssp::Version1_0::ssd_file).child(oms::ssp::Draft20180219::ssd::system_structure_description);
+
+    // replace the partialSnapshot in the fullSnapshot
+    bool resources = false;
+    for (pugi::xml_node node : snapShot.children())
+    {
+      std::string filename = node.attribute("name").as_string();
+      if ((partialSnapshotfilename == filename) && (partialSnapshotfilename == cref.c_str()))
+      {
+        // remove the node
+        snapShot.remove_child(node.name());
+        // replace the new snapshot
+        snapShot.append_copy(partialSnapshot);
+        resources = true;
+      }
+    }
+    if (!resources)
+    {
+      return logError("resource file \"" + std::string(cref) + "\" does not exist \n");
+    }
+  }
 
   ComRef new_cref = ComRef(ssdNode.attribute("name").as_string());
   std::string ssdVersion = ssdNode.attribute("version").as_string();
