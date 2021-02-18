@@ -59,7 +59,7 @@ def _main():
   parser.add_argument('--endpoint-rep', default=None, help='define the endpoint for the req/rep communication')
   parser.add_argument('--model', default=None, required=True, help='define the model to simulate')
   parser.add_argument('--logLevel', default=0, type=int, help='defines the logging level')
-  parser.add_argument('--option', default='', help='defines optional command line options')
+  parser.add_argument('--option', default='', nargs='+', help='defines optional command line options')
   parser.add_argument('--result-file', default=None, help='defines whether and if so to which file the results will be written')
   parser.add_argument('--temp', default='./temp/', help='defines the temp directory')
   args = parser.parse_args()
@@ -86,7 +86,7 @@ def _main():
   else:
     socket_sub = None
 
-  oms.setCommandLineOption(args.option.replace(';', ' '))
+  oms.setCommandLineOption(' '.join(list(map((lambda x: x[1:-1]), args.option))))
   oms.setLoggingLevel(args.logLevel)
   oms.setTempDirectory(args.temp)
   model = oms.importFile(args.model)
