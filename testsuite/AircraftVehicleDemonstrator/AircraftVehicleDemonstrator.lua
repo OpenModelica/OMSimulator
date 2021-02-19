@@ -154,7 +154,8 @@ oms_instantiate("AircraftVehicleDemonstrator")
 -- set parameters
 oms_setReal("AircraftVehicleDemonstrator.root.atmosphere_Model_FMU_sf.Parameters.Atmos.Value", 6) -- Hot climate
 
-oms_setSignalFilter("AircraftVehicleDemonstrator", "AircraftVehicleDemonstrator\\.root\\.(engine\\.pB\\.p|eCS_Generic_Export\\.Meas_PACK_TEMP|eCS_Generic_Export\\.Meas_PACK_PRESS)")
+removeSignalsFromResults("AircraftVehicleDemonstrator", ".*")
+addSignalsToResults("AircraftVehicleDemonstrator", "AircraftVehicleDemonstrator\\.root\\.(engine\\.pB\\.p|eCS_Generic_Export\\.Meas_PACK_TEMP|eCS_Generic_Export\\.Meas_PACK_PRESS)")
 oms_initialize("AircraftVehicleDemonstrator")
 
 oms_setFixedStepSize("AircraftVehicleDemonstrator.root", 1e-4)
