@@ -1701,15 +1701,15 @@ void oms::System::getAllResources(std::vector<std::string>& resources) const
 
 void oms::System::getFilteredSignals(std::vector<ComRef>& filteredSignals) const
 {
+  for (const auto &x : exportConnectors)
+    if (x.second)
+      filteredSignals.push_back(x.first);
+
   for (const auto& component : components)
     component.second->getFilteredSignals(filteredSignals);
 
   for (const auto& subsystem : subsystems)
     subsystem.second->getFilteredSignals(filteredSignals);
-
-  for (auto &x : exportConnectors)
-    if (x.second)
-      filteredSignals.push_back(x.first);
 }
 
 oms_status_enu_t oms::System::exportDependencyGraphs(const std::string& pathInitialization, const std::string& pathEvent, const std::string& pathSimulation)
