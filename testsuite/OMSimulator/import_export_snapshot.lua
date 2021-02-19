@@ -179,6 +179,7 @@ oms_delete("import_export_snapshot")
 -- 	</oms:ssv_file>
 -- 	<oms:signalFilter_file name="resources/signalFilter.xml">
 -- 		<oms:SignalFilter version="1.0">
+-- 			<oms:Variable name="import_export_snapshot.root.C1" />
 -- 			<oms:Variable name="import_export_snapshot.root.add.u1" />
 -- 			<oms:Variable name="import_export_snapshot.root.add.u2" />
 -- 			<oms:Variable name="import_export_snapshot.root.add.y" />
