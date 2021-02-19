@@ -78,7 +78,7 @@ namespace oms
     void exportSignalFilter(pugi::xml_node &signalfilter) const;
     oms_status_enu_t importFromSSD(const pugi::xml_node& node);
     oms_status_enu_t importSnapshot(const char* snapshot);
-    oms_status_enu_t importSignalFilter(std::string filename);
+    oms_status_enu_t importSignalFilter(const std::string& filenameaa);
     oms_status_enu_t exportToFile(const std::string& filename) const;
     oms_system_enu_t getSystemType(const pugi::xml_node& node, const std::string& sspVersion);
     oms_system_enu_t getSystemTypeHelper(const pugi::xml_node& node, const std::string& sspVersion);
@@ -162,7 +162,7 @@ namespace oms
     std::string resultFilename; ///< default <name>_res.mat
     Clock clock;
 
-    const std::string signalFilterFileName = "resources/signalFilter.xml";
+    std::string signalFilterFileName = "resources/signalFilter.xml";
 
     pugi::xml_node snapShot; ///< top level snapshot node which contains ssd, ssv and ssm as child nodes
 

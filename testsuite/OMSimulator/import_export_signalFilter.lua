@@ -44,6 +44,7 @@ oms_addSignalsToResults("model", "model.root.Gain.*")
 
 oms_removeSignalsFromResults("model", "model.root.System2.parameter_1")
 oms_removeSignalsFromResults("model", "model.root.Gain.y")
+--oms_removeSignalsFromResults("model", "model.root.Gain.k")
 
 oms_export("model", "signalFilter.ssp")
 

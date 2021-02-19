@@ -33,7 +33,7 @@ printStatus(status, 0)
 status = oms.addSystem("model.sc", oms.system_sc)
 printStatus(status, 0)
 
-status = oms.setSignalFilter("model", "[AB]")
+status = oms.addSignalsToResults("model", "[AB]")
 printStatus(status, 0)
 
 (src, status) = oms.list("model")
@@ -57,7 +57,6 @@ printStatus(status, 0)
 ## Result:
 ## status:  [correct] ok
 ## status:  [correct] ok
-## warning: [oms_setSignalFilter] is deprecated, use [oms_addSignalsToResults] to add signals and [oms_removeSignalsFromResults] to remove signals
 ## status:  [correct] ok
 ## status:  [correct] ok
 ## <?xml version="1.0"?>
@@ -112,6 +111,4 @@ printStatus(status, 0)
 ## </ssd:SystemStructureDescription>
 ##
 ## status:  [correct] ok
-## info:    1 warnings
-## info:    0 errors
 ## endResult

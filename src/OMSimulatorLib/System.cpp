@@ -2212,7 +2212,7 @@ oms_status_enu_t oms::System::addSignalsToResults(const char* regex)
   for (const auto& subsystem : subsystems)
     return subsystem.second->addSignalsToResults(regex);
 
-  return oms_status_error;
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms::System::removeSignalsFromResults(const char* regex)

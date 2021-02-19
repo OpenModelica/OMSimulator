@@ -698,10 +698,13 @@ oms_status_enu_t oms::Model::importFromSSD(const pugi::xml_node& node)
           // check for oms_default_experiment from version 1.0
           if (std::string(name) == oms::ssp::Version1_0::simulation_information  && sspVersion == "1.0")
           {
-            resultFilename = itAnnotations->attribute("resultFile").as_string();
-            loggingInterval = itAnnotations->attribute("loggingInterval").as_double();
-            bufferSize = itAnnotations->attribute("bufferSize").as_int();
-            importSignalFilter(itAnnotations->attribute("signalFilter").as_string());
+            this->resultFilename = itAnnotations->attribute("resultFile").as_string();
+            this->loggingInterval = itAnnotations->attribute("loggingInterval").as_double();
+            this->bufferSize = itAnnotations->attribute("bufferSize").as_int();
+            this->signalFilterFileName = itAnnotations->attribute("signalFilter").as_string();
+            oms_status_enu_t status = importSignalFilter(signalFilterFileName);
+            if (oms_status_ok != status)
+              return logError("Failed to import the signal filter file: " + signalFilterFileName);
           }
         }
       }
@@ -713,7 +716,7 @@ oms_status_enu_t oms::Model::importFromSSD(const pugi::xml_node& node)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Model::importSignalFilter(std::string filename)
+oms_status_enu_t oms::Model::importSignalFilter(const std::string& filename)
 {
   filesystem::path temp_root(tempDir);
   pugi::xml_document signalFilterdoc;
