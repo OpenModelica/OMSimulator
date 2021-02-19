@@ -2,11 +2,8 @@
 '''OMSimulator Server for interactive simulation of SSP files.'''
 
 import argparse
-import datetime
 import json
-import logging
 import math
-import os
 
 import OMSimulator as oms
 import zmq
@@ -28,7 +25,7 @@ def receive_and_reply(socket):
   try:
     msg = socket.recv_json()
   except zmq.error.Again as error:
-    print('recv: ' + str(error))
+    print('server:  recv: ' + str(error), flush=True)
     return
 
   # answer = msg
@@ -38,9 +35,9 @@ def receive_and_reply(socket):
   try:
     socket.send_json(answer)
   except zmq.error.ZMQError as error:
-    print('send: ' + str(error))
+    print('server:  send: ' + str(error), flush=True)
   else:
-    print(msg)
+    print('server:  {}'.format(msg), flush=True)
 
 def mogrify(topic: str, msg: dict):
   '''Combines a topic identifier and a json representation of a dictionary'''
@@ -50,7 +47,6 @@ def pub_msg(socket, topic, msg: dict):
   if socket:
     msg_ = mogrify(topic, msg)
     socket.send_string(msg_)
-    #logging.info(msg_)
 
 def _main():
   # parse command-line arguments
@@ -61,11 +57,11 @@ def _main():
   parser.add_argument('--logLevel', default=0, type=int, help='defines the logging level')
   parser.add_argument('--option', default='', nargs='+', help='defines optional command line options')
   parser.add_argument('--result-file', default=None, help='defines whether and if so to which file the results will be written')
-  parser.add_argument('--temp', default='./temp/', help='defines the temp directory')
+  parser.add_argument('--temp', default=None, help='defines the temp directory')
   args = parser.parse_args()
 
-  logging.info('OMS Server {}'.format(__version__))
-  logging.info('ZMQ {}'.format(zmq.zmq_version()))
+  print('server:  OMS Server {}'.format(__version__), flush=True)
+  print('server:  ZMQ {}'.format(zmq.zmq_version()), flush=True)
 
   context = zmq.Context()
 
@@ -74,7 +70,7 @@ def _main():
     socket_rep = context.socket(zmq.REP)  #pylint: disable=no-member
     socket_rep.connect(args.endpoint_rep)
     socket_rep.RCVTIMEO = 1000  #in milliseconds
-    logging.info('REP socket connected to {}'.format(args.endpoint_rep))
+    print('server:  REP socket connected to {}'.format(args.endpoint_rep), flush=True)
   else:
     socket_rep = None
 
@@ -82,16 +78,17 @@ def _main():
   if args.endpoint_pub:
     socket_sub = context.socket(zmq.PUB)  #pylint: disable=no-member
     socket_sub.connect(args.endpoint_pub)
-    logging.info('PUB socket connected to {}'.format(args.endpoint_pub))
+    print('server:  PUB socket connected to {}'.format(args.endpoint_pub), flush=True)
   else:
     socket_sub = None
 
   oms.setCommandLineOption(' '.join(list(map((lambda x: x[1:-1]), args.option))))
   oms.setLoggingLevel(args.logLevel)
-  oms.setTempDirectory(args.temp)
+  if args.temp:
+    oms.setTempDirectory(args.temp)
   model = oms.importFile(args.model)
 
-  #print(model.systemType)
+  #print('server:  {}.format(model.systemType), flush=True)
 
   if args.result_file:
     model.resultFile = args.result_file
@@ -114,20 +111,4 @@ def _main():
   pub_msg(socket_sub, 'status', {'progress': 100})
 
 if __name__ == '__main__':
-  path = "log/"
-  if not os.path.isdir(path):
-    try:
-      os.makedirs(path)
-    except OSError:
-      raise Exception("Creation of the log directory failed")
-
-  filename = datetime.datetime.now().strftime('%Y%m%d-%H%M%S') + '-' + 'OMSimulator-Server' + '.log'
-  format = '%(asctime)s: %(levelname)s [%(name)s] %(message)s'
-  logging.basicConfig(filename=os.path.join(path, filename), level=logging.INFO, format=format)
-
-  formatter = logging.Formatter(format)
-  handler = logging.StreamHandler()
-  handler.setFormatter(formatter)
-  logging.getLogger().addHandler(handler)
-
   _main()
