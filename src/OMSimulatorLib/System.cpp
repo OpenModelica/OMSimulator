@@ -2207,10 +2207,12 @@ oms_status_enu_t oms::System::addSignalsToResults(const char* regex)
   }
 
   for (const auto& component : components)
-    return component.second->addSignalsToResults(regex);
+    if (oms_status_ok != component.second->addSignalsToResults(regex))
+      return oms_status_error;
 
   for (const auto& subsystem : subsystems)
-    return subsystem.second->addSignalsToResults(regex);
+    if (oms_status_ok != subsystem.second->addSignalsToResults(regex))
+      return oms_status_error;
 
   return oms_status_ok;
 }
