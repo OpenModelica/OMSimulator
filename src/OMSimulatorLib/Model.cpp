@@ -721,14 +721,30 @@ oms_status_enu_t oms::Model::importSignalFilter(const std::string& filename)
   filesystem::path temp_root(tempDir);
   pugi::xml_document signalFilterdoc;
   pugi::xml_parse_result result = signalFilterdoc.load_file((temp_root / filename).string().c_str());
-  if (!result)
-    return logError("loading \"" + filename + "\" failed (" + std::string(result.description()) + ")");
+  // if (!result)
+  //   return logError("loading \"" + filename + "\" failed (" + std::string(result.description()) + ")");
 
-  removeSignalsFromResults(".*"); // disable all signals
-  pugi::xml_node oms_signalfilter = signalFilterdoc.document_element();
-  for (pugi::xml_node_iterator it = oms_signalfilter.begin(); it != oms_signalfilter.end(); ++it)
-    if (std::string(it->name()) == oms::ssp::Version1_0::oms_Variable)
-      addSignalsToResults(it->attribute("name").as_string());
+  if (result)
+  {
+    removeSignalsFromResults(".*"); // disable all signals
+    pugi::xml_node oms_signalfilter = signalFilterdoc.document_element();
+    for (pugi::xml_node_iterator it = oms_signalfilter.begin(); it != oms_signalfilter.end(); ++it)
+    {
+      if (std::string(it->name()) == oms::ssp::Version1_0::oms_Variable)
+        addSignalsToResults(it->attribute("name").as_string());
+    }
+  }
+  else
+  {
+    // load from memory
+    std::vector<oms::ComRef> filteredSignals;
+    system->getFilteredSignals(filteredSignals);
+    removeSignalsFromResults(".*"); // disable all signals
+    for (auto const &signal : filteredSignals)
+    {
+      addSignalsToResults(signal.c_str());
+    }
+  }
 
   return oms_status_ok;
 }
