@@ -80,7 +80,7 @@ oms_delete("snapshot")
 -- 				<ssd:Annotations>
 -- 					<ssc:Annotation type="org.openmodelica">
 -- 						<oms:Annotations>
--- 							<oms:SimulationInformation resultFile="snapshot_res.mat" loggingInterval="0.000000" bufferSize="10" />
+-- 							<oms:SimulationInformation resultFile="snapshot_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="resources/signalFilter.xml" />
 -- 						</oms:Annotations>
 -- 					</ssc:Annotation>
 -- 				</ssd:Annotations>
@@ -102,6 +102,16 @@ oms_delete("snapshot")
 -- 			</ssv:Parameters>
 -- 		</ssv:ParameterSet>
 -- 	</oms:ssv_file>
+-- 	<oms:signalFilter_file name="resources/signalFilter.xml">
+-- 		<oms:SignalFilter version="1.0">
+-- 			<oms:Variable name="snapshot.root.C1" />
+-- 			<oms:Variable name="snapshot.root.add.u1" />
+-- 			<oms:Variable name="snapshot.root.add.u2" />
+-- 			<oms:Variable name="snapshot.root.add.y" />
+-- 			<oms:Variable name="snapshot.root.add.k1" />
+-- 			<oms:Variable name="snapshot.root.add.k2" />
+-- 		</oms:SignalFilter>
+-- 	</oms:signalFilter_file>
 -- </oms:snapshot>
 --
 -- endResult
