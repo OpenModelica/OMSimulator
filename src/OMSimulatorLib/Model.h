@@ -165,6 +165,7 @@ namespace oms
     Clock clock;
 
     std::string signalFilter = ".*"; ///< default
+    const std::string signalFilterFileName = "resources/signalFilter.xml";
 
     pugi::xml_node snapShot; ///< top level snapshot node which contains ssd, ssv and ssm as child nodes
 

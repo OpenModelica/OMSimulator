@@ -951,10 +951,8 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
 
   //signalFilterdoc.save(std::cout);
 
-  std::string signalFilterFileName = "";
   if (system && system->signalFilter)
   {
-    signalFilterFileName = "resources/signalFilter.xml";
     filesystem::path signalFilterFilePath = filesystem::path(tempDir) / signalFilterFileName;
     signalFilterdoc.save_file(signalFilterFilePath.string().c_str());
   }
@@ -999,7 +997,7 @@ void oms::Model::getAllResources(std::vector<std::string>& resources) const
 {
   resources.push_back("SystemStructure.ssd");
 
-  if (!signalFilterFileName.empty())
+  if (system && system->signalFilter)
     resources.push_back(signalFilterFileName);
 
   if (system)
