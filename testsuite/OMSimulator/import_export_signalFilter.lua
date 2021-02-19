@@ -39,12 +39,14 @@ oms_setReal("model.root.System2.parameter_1", 40)
 
 oms_addSubModel("model.root.Gain", "../resources/Modelica.Blocks.Math.Gain.fmu")
 
+oms_removeSignalsFromResults("model", ".*")
+
 oms_addSignalsToResults("model", "model.root.System2.*")
 oms_addSignalsToResults("model", "model.root.Gain.*")
 
 oms_removeSignalsFromResults("model", "model.root.System2.parameter_1")
 oms_removeSignalsFromResults("model", "model.root.Gain.y")
---oms_removeSignalsFromResults("model", "model.root.Gain.k")
+-- oms_removeSignalsFromResults("model", "model.root.Gain.k")
 
 oms_export("model", "signalFilter.ssp")
 
@@ -184,9 +186,9 @@ oms_delete("model")
 -- 	</oms:ssd_file>
 -- 	<oms:signalFilter_file name="resources/signalFilter.xml">
 -- 		<oms:SignalFilter version="1.0">
--- 			<oms:Variable name="model.root.System2.Input_1" type="Real" kind="input" />
--- 			<oms:Variable name="model.root.Gain.u" type="Real" kind="input" />
--- 			<oms:Variable name="model.root.Gain.k" type="Real" kind="parameter" />
+-- 			<oms:Variable name="model.root.Gain.u" />
+-- 			<oms:Variable name="model.root.Gain.k" />
+-- 			<oms:Variable name="model.root.System2.Input_1" />
 -- 		</oms:SignalFilter>
 -- 	</oms:signalFilter_file>
 -- </oms:snapshot>
