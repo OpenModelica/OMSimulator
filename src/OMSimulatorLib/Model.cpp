@@ -418,13 +418,10 @@ oms_status_enu_t oms::Model::exportSnapshot(const oms::ComRef& cref, char** cont
 
   exportSignalFilter(oms_signalFilter);
 
-  if (true /*always export for now*/)
-  {
-    pugi::xml_node last = doc.last_child();
-    pugi::xml_node signalfilter_file  = last.append_child("oms:signalFilter_file");
-    signalfilter_file.append_attribute("name") = "resources/signalFilter.xml";
-    signalfilter_file.append_copy(oms_signalFilter);
-  }
+  pugi::xml_node last = doc.last_child();
+  pugi::xml_node signalfilter_file  = last.append_child("oms:signalFilter_file");
+  signalfilter_file.append_attribute("name") = signalFilterFileName.c_str();
+  signalfilter_file.append_copy(oms_signalFilter);
 
   doc.save(writer);
   *contents = (char*) malloc(strlen(writer.result.c_str()) + 1);
@@ -618,12 +615,7 @@ oms_status_enu_t oms::Model::exportToSSD(pugi::xml_node& node, pugi::xml_node& s
   oms_simulation_information.append_attribute("resultFile") = resultFilename.c_str();
   oms_simulation_information.append_attribute("loggingInterval") = std::to_string(loggingInterval).c_str();
   oms_simulation_information.append_attribute("bufferSize") = std::to_string(bufferSize).c_str();
-
-  // export signalFiter only if it is used, otherwise all signals are exported by default
-  if (true /*always export for now*/)
-  {
-    oms_simulation_information.append_attribute("signalFilter") = "resources/signalFilter.xml";
-  }
+  oms_simulation_information.append_attribute("signalFilter") = signalFilterFileName.c_str();
 
   return oms_status_ok;
 }
@@ -891,15 +883,8 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
 
   exportSignalFilter(oms_signalFilter);
 
-  //signalFilterdoc.save(std::cout);
-
-  if (true /*always export for now*/)
-  {
-    filesystem::path signalFilterFilePath = filesystem::path(tempDir) / signalFilterFileName;
-    signalFilterdoc.save_file(signalFilterFilePath.string().c_str());
-  }
-
-  //doc.save(std::cout);
+  filesystem::path signalFilterFilePath = filesystem::path(tempDir) / signalFilterFileName;
+  signalFilterdoc.save_file(signalFilterFilePath.string().c_str());
 
   if (!doc.save_file(ssdPath.string().c_str()))
     return logError("failed to export \"" + ssdPath.string() + "\" (for model \"" + std::string(this->getCref()) + "\")");
