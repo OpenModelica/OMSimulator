@@ -152,7 +152,6 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::
   {
     fmi2_import_variable_t* var = fmi2_import_get_variable(varList, i);
     oms::Variable v(var, i + 1);
-    v.exportVar = true;
     component->allVariables.push_back(v);
     component->exportVariables.push_back(true);
   }
@@ -1035,6 +1034,13 @@ oms_status_enu_t oms::ComponentFMUCS::deleteStartValue(const ComRef& cref)
   return values.deleteStartValue(cref);
 }
 
+void oms::ComponentFMUCS::getFilteredSignals(std::vector<ComRef>& filteredSignals) const
+{
+  for (unsigned int i=0; i<allVariables.size(); ++i)
+    if (exportVariables[i])
+      filteredSignals.push_back(this->getFullCref() + allVariables[i].getCref());
+}
+
 oms_status_enu_t oms::ComponentFMUCS::registerSignalsForResultFile(ResultWriter& resultFile)
 {
   resultFileMapping.clear();
@@ -1146,12 +1152,11 @@ oms_status_enu_t oms::ComponentFMUCS::addSignalsToResults(const char* regex)
     if (exportVariables[i])
       continue;
 
-    auto &var = allVariables[i];
+    auto const &var = allVariables[i];
     if(regex_match(std::string(getFullCref() + var.getCref()), exp))
     {
       //logInfo("added \"" + std::string(getFullCref() + var.getCref()) + "\" to results");
       exportVariables[i] = true;
-      var.exportVar = true;
     }
   }
 
@@ -1166,12 +1171,11 @@ oms_status_enu_t oms::ComponentFMUCS::removeSignalsFromResults(const char* regex
     if (!exportVariables[i])
       continue;
 
-    auto &var = allVariables[i];
+    auto const &var = allVariables[i];
     if(regex_match(std::string(getFullCref() + var.getCref()), exp))
     {
       //logInfo("removed \"" + std::string(getFullCref() + var.getCref()) + "\" from results");
       exportVariables[i] = false;
-      var.exportVar = false;
     }
   }
 

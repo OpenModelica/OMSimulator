@@ -1699,6 +1699,19 @@ void oms::System::getAllResources(std::vector<std::string>& resources) const
     subsystem.second->getAllResources(resources);
 }
 
+void oms::System::getFilteredSignals(std::vector<ComRef>& filteredSignals) const
+{
+  for (auto& x: exportConnectors)
+    if (x.second)
+      filteredSignals.push_back(this->getFullCref() + x.first);
+
+  for (const auto& component : components)
+    component.second->getFilteredSignals(filteredSignals);
+
+  for (const auto& subsystem : subsystems)
+    subsystem.second->getFilteredSignals(filteredSignals);
+}
+
 oms_status_enu_t oms::System::exportDependencyGraphs(const std::string& pathInitialization, const std::string& pathEvent, const std::string& pathSimulation)
 {
   oms_status_enu_t status = updateDependencyGraphs();
@@ -2194,19 +2207,16 @@ oms_status_enu_t oms::System::addSignalsToResults(const char* regex)
   }
 
   for (const auto& component : components)
-    if (oms_status_ok != component.second->addSignalsToResults(regex))
-      return oms_status_error;
+    return component.second->addSignalsToResults(regex);
 
   for (const auto& subsystem : subsystems)
-    if (oms_status_ok != subsystem.second->addSignalsToResults(regex))
-      return oms_status_error;
+    return subsystem.second->addSignalsToResults(regex);
 
-  return oms_status_ok;
+  return oms_status_error;
 }
 
 oms_status_enu_t oms::System::removeSignalsFromResults(const char* regex)
 {
-  this->signalFilter = true;
   try
   {
     oms_regex exp(regex);

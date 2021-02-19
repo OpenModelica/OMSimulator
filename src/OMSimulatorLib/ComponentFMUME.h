@@ -102,7 +102,8 @@ namespace oms
     bool getCanGetAndSetState() {return getFMUInfo()->getCanGetAndSetFMUstate();}
 
     oms_status_enu_t setFaultInjection(const ComRef& signal, oms_fault_type_enu_t faultType, double faultValue);
-    std::vector<Variable> &getAllVariables() { return allVariables; }
+
+    void getFilteredSignals(std::vector<ComRef>& filteredSignals) const;
 
   protected:
     ComponentFMUME(const ComRef& cref, System* parentSystem, const std::string& fmuPath);

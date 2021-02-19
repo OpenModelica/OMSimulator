@@ -418,7 +418,7 @@ oms_status_enu_t oms::Model::exportSnapshot(const oms::ComRef& cref, char** cont
 
   exportSignalFilter(oms_signalFilter);
 
-  if (system && system->signalFilter)
+  if (true /*always export for now*/)
   {
     pugi::xml_node last = doc.last_child();
     pugi::xml_node signalfilter_file  = last.append_child("oms:signalFilter_file");
@@ -620,7 +620,7 @@ oms_status_enu_t oms::Model::exportToSSD(pugi::xml_node& node, pugi::xml_node& s
   oms_simulation_information.append_attribute("bufferSize") = std::to_string(bufferSize).c_str();
 
   // export signalFiter only if it is used, otherwise all signals are exported by default
-  if (system && system->signalFilter)
+  if (true /*always export for now*/)
   {
     oms_simulation_information.append_attribute("signalFilter") = "resources/signalFilter.xml";
   }
@@ -628,63 +628,21 @@ oms_status_enu_t oms::Model::exportToSSD(pugi::xml_node& node, pugi::xml_node& s
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Model::exportSignalFilter(pugi::xml_node &node) const
+void oms::Model::exportSignalFilter(pugi::xml_node &node) const
 {
   if (!system)
-    return oms_status_ok;
+    return;
 
-  for (const auto &it : system->getSubSystems())
+  std::vector<oms::ComRef> filteredSignals;
+  system->getFilteredSignals(filteredSignals);
+
+  for (auto const &signal : filteredSignals)
   {
-    for (const auto& var: it.second->getFilteredSignals())
-    {
-      if (node && var.second)
-      {
-        pugi::xml_node oms_variable = node.append_child(oms::ssp::Version1_0::oms_Variable);
-        oms_variable.append_attribute("name") = var.first.c_str();
-
-        // pop cref two times (e.g) model.root.System1.input = > System1.input
-        oms::ComRef tail(var.first);
-        tail.pop_front();
-        tail.pop_front();
-
-        oms::Connector* connector = system->getConnector(tail);
-        oms_variable.append_attribute("type") = getTypeString(connector->getType()).c_str();
-        oms_variable.append_attribute("kind") = getCausalityString(connector->getCausality()).c_str();
-      }
-    }
+    pugi::xml_node oms_variable = node.append_child(oms::ssp::Version1_0::oms_Variable);
+    oms_variable.append_attribute("name") = signal.c_str();
+    //oms_variable.append_attribute("type") = getTypeString(connector->getType()).c_str();
+    //oms_variable.append_attribute("kind") = getCausalityString(connector->getCausality()).c_str();
   }
-
-  for (const auto &it : system->getComponents())
-  {
-    if (it.second->getType() == oms_component_table)
-    {
-      for (const auto &var : it.second->getFilteredSeriesSignals())
-      {
-        if (node && var.second)
-        {
-          pugi::xml_node oms_variable = node.append_child(oms::ssp::Version1_0::oms_Variable);
-          oms_variable.append_attribute("name") = var.first.c_str();
-          oms_variable.append_attribute("type") = "real"; // for tables the signals are treated as real for now
-          oms_variable.append_attribute("kind") = "";
-        }
-      }
-    }
-    else if (it.second->getType() == oms_component_fmu)
-    {
-      for (const auto &var : it.second->getAllVariables())
-      {
-        if (node && var.exportVar)
-        {
-          pugi::xml_node oms_variable = node.append_child(oms::ssp::Version1_0::oms_Variable);
-          oms_variable.append_attribute("name") = (it.second->getFullCref() + var.getCref()).c_str();
-          oms_variable.append_attribute("type") = getTypeString(var.getType()).c_str();
-          oms_variable.append_attribute("kind") = getCausalityString(var.getCausality()).c_str();
-        }
-      }
-    }
-  }
-
-  return oms_status_ok;
 }
 
 oms_status_enu_t oms::Model::importFromSSD(const pugi::xml_node& node)
@@ -751,19 +709,7 @@ oms_status_enu_t oms::Model::importFromSSD(const pugi::xml_node& node)
             resultFilename = itAnnotations->attribute("resultFile").as_string();
             loggingInterval = itAnnotations->attribute("loggingInterval").as_double();
             bufferSize = itAnnotations->attribute("bufferSize").as_int();
-            std::string signalFilter = itAnnotations->attribute("signalFilter").as_string();
-
-            // support older versions when signalFilter = ".*"
-            if (signalFilter == ".*" || signalFilter.empty())
-            {
-              // do not call addSignalsToResults, all signals will be exported by default
-            }
-            else
-            {
-              std::string regex = "";
-              importSignalFilter(signalFilter, regex);
-              addSignalsToResults(regex.c_str());
-            }
+            importSignalFilter(itAnnotations->attribute("signalFilter").as_string());
           }
         }
       }
@@ -775,23 +721,19 @@ oms_status_enu_t oms::Model::importFromSSD(const pugi::xml_node& node)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Model::importSignalFilter(std::string &filename, std::string &regex)
+oms_status_enu_t oms::Model::importSignalFilter(std::string filename)
 {
   filesystem::path temp_root(tempDir);
   pugi::xml_document signalFilterdoc;
   pugi::xml_parse_result result = signalFilterdoc.load_file((temp_root / filename).string().c_str());
   if (!result)
-    return logError("loading \"" + signalFilter + "\" failed (" + std::string(result.description()) + ")");
+    return logError("loading \"" + filename + "\" failed (" + std::string(result.description()) + ")");
 
-  pugi::xml_node oms_signalfilter = signalFilterdoc.document_element(); // ssd:SystemStructureDescription
+  removeSignalsFromResults(".*"); // disable all signals
+  pugi::xml_node oms_signalfilter = signalFilterdoc.document_element();
   for (pugi::xml_node_iterator it = oms_signalfilter.begin(); it != oms_signalfilter.end(); ++it)
-  {
     if (std::string(it->name()) == oms::ssp::Version1_0::oms_Variable)
-    {
-      // add all variables seperated with "|" to match with regular expression (e.g) "model.a|model.b"
-      regex = regex + it->attribute("name").as_string() + "|";
-    }
-  }
+      addSignalsToResults(it->attribute("name").as_string());
 
   return oms_status_ok;
 }
@@ -951,7 +893,7 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
 
   //signalFilterdoc.save(std::cout);
 
-  if (system && system->signalFilter)
+  if (true /*always export for now*/)
   {
     filesystem::path signalFilterFilePath = filesystem::path(tempDir) / signalFilterFileName;
     signalFilterdoc.save_file(signalFilterFilePath.string().c_str());
@@ -997,7 +939,7 @@ void oms::Model::getAllResources(std::vector<std::string>& resources) const
 {
   resources.push_back("SystemStructure.ssd");
 
-  if (system && system->signalFilter)
+  if (system && this->signalFilter)
     resources.push_back(signalFilterFileName);
 
   if (system)
@@ -1348,49 +1290,18 @@ oms_status_enu_t oms::Model::getResultFile(char** filename, int* bufferSize)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Model::getSignalFilter(char** regex)
-{
-  *regex = (char*)this->signalFilter.c_str();
-
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms::Model::setSignalFilter(const std::string& regex)
-{
-  // If regex is empty then all signals will be exported
-  if (regex.empty() || regex == ".*")
-    this->signalFilter = ".*";
-  else
-  {
-    if (oms_status_ok != removeSignalsFromResults(".*"))
-      return oms_status_error;
-
-    this->signalFilter = regex;
-  }
-
-  if (oms_status_ok != system->addSignalsToResults(this->signalFilter.c_str()))
-    return oms_status_error;
-
-  return oms_status_ok;
-}
-
 oms_status_enu_t oms::Model::addSignalsToResults(const char* regex)
 {
-  if (system)
-    // check signalFilter not set and use removeSignalsFromResults() to set all the signals to false only once, as addSignalsToResults can be used mulitple times to filter signals
-    if (!system->signalFilter)
-    {
-      if (oms_status_ok != removeSignalsFromResults(".*"))
-        return oms_status_error;
-    }
+  if (!system)
+    return oms_status_ok;
 
-    if (oms_status_ok != system->addSignalsToResults(regex))
-      return oms_status_error;
-  return oms_status_ok;
+  return system->addSignalsToResults(regex);
 }
 
 oms_status_enu_t oms::Model::removeSignalsFromResults(const char* regex)
 {
+  this->signalFilter = true;
+
   if (system)
     if (oms_status_ok != system->removeSignalsFromResults(regex))
       return oms_status_error;

@@ -80,7 +80,7 @@ namespace oms
     oms_status_enu_t freeState();
     oms_status_enu_t restoreState();
 
-    std::unordered_map<ComRef, bool> &getFilteredSeriesSignals() { return exportSeries; }
+    void getFilteredSignals(std::vector<ComRef>& filteredSignals) const;
 
   protected:
     ComponentTable(const ComRef& cref, System* parentSystem, const std::string& path);

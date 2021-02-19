@@ -334,6 +334,13 @@ oms_status_enu_t oms::ComponentTable::updateSignals(ResultWriter& resultWriter)
   return oms_status_ok;
 }
 
+void oms::ComponentTable::getFilteredSignals(std::vector<ComRef>& filteredSignals) const
+{
+  for (auto& x: exportSeries)
+    if (x.second)
+      filteredSignals.push_back(this->getFullCref() + x.first);
+}
+
 oms_status_enu_t oms::ComponentTable::addSignalsToResults(const char* regex)
 {
   oms_regex exp(regex);
@@ -343,9 +350,7 @@ oms_status_enu_t oms::ComponentTable::addSignalsToResults(const char* regex)
       continue;
 
     if (regex_match(std::string(x.first), exp))
-    {
       x.second = true;
-    }
   }
 
   return oms_status_ok;
@@ -360,9 +365,7 @@ oms_status_enu_t oms::ComponentTable::removeSignalsFromResults(const char* regex
       continue;
 
     if (regex_match(std::string(x.first), exp))
-    {
       x.second = false;
-    }
   }
 
   return oms_status_ok;

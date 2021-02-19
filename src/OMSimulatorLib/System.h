@@ -120,6 +120,7 @@ namespace oms
     System* getParentSystem() const {return parentSystem;}
     bool copyResources();
     void getAllResources(std::vector<std::string>& resources) const;
+    void getFilteredSignals(std::vector<ComRef>& filteredSignals) const;
     std::map<ComRef, System*>& getSubSystems() {return subsystems;}
     std::map<ComRef, Component*>& getComponents() {return components;}
     std::vector<Connection*>& getConnections() {return connections;}
@@ -180,8 +181,6 @@ namespace oms
 
     std::string getUniqueID() const;
     std::map<std::string, std::string> startValuesFileSources;  ///< ssvFileSource mapped with ssmFilesource if mapping is provided, otherwise only ssvFilesource entry is made
-    std::unordered_map<ComRef, bool> & getFilteredSignals() {return exportConnectors;}
-    bool signalFilter = false;
   protected:
     double time;
     System(const ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem, oms_solver_enu_t solverMethod);

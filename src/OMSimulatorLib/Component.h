@@ -43,7 +43,6 @@
 #include "Types.h"
 #include <fmilib.h>
 #include <pugixml.hpp>
-#include <unordered_map>
 
 namespace oms
 {
@@ -66,6 +65,7 @@ namespace oms
     Connector** getConnectors() {return &connectors[0];}
     oms_status_enu_t deleteConnector(const ComRef& cref);
     void getAllResources(std::vector<std::string>& resources) const {resources.push_back(path);}
+    virtual void getFilteredSignals(std::vector<ComRef>& filteredSignals) const = 0;
     const std::string& getPath() const {return path;}
     const std::string& getTempDir() const {return tempDir;}
     void setTempDir(const std::string& tempDir) {this->tempDir = tempDir;}
@@ -122,8 +122,6 @@ namespace oms
     virtual oms_status_enu_t restoreState() {return logError_NotImplemented;}
 
     oms_status_enu_t rename(const ComRef& newCref); ///< rename submodules (e.g)Fmu's
-    virtual std::vector<Variable> &getAllVariables() { return allVariables; }                    ///< filtered variables from fmus
-    virtual std::unordered_map<ComRef, bool> &getFilteredSeriesSignals() { return exportSeries; } ///< filtered variables from tables
 
   protected:
     Component(const ComRef& cref, oms_component_enu_t type, System* parentSystem, const std::string& path);
@@ -150,8 +148,6 @@ namespace oms
     oms_component_enu_t type;
     std::string path;                             ///< resource file (fmu, mat)
     std::string tempDir;                          ///< unzipped fmu
-    std::unordered_map<ComRef, bool> exportSeries = {};
-    std::vector<Variable> allVariables = {};
   };
 }
 

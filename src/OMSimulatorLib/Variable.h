@@ -88,7 +88,6 @@ namespace oms
 
     unsigned int getIndex() const { return index; }
     oms::Connector makeConnector() const {return oms::Connector(getCausality(), type, cref);}
-    bool exportVar;
   private:
     ComRef cref;
     std::string description;
