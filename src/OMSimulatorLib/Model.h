@@ -170,8 +170,6 @@ namespace oms
     bool isolatedFMU = false;
 
     ctpl::thread_pool* pool = nullptr;
-
-    bool signalFilter = false;
   };
 }
 

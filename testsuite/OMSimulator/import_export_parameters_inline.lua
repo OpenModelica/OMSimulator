@@ -300,7 +300,7 @@ oms_delete("import_export_parameters")
 -- 		<ssd:Annotations>
 -- 			<ssc:Annotation type="org.openmodelica">
 -- 				<oms:Annotations>
--- 					<oms:SimulationInformation resultFile="import_export_parameters_inline.mat" loggingInterval="0.000000" bufferSize="100" />
+-- 					<oms:SimulationInformation resultFile="import_export_parameters_inline.mat" loggingInterval="0.000000" bufferSize="100" signalFilter="resources/signalFilter.xml" />
 -- 				</oms:Annotations>
 -- 			</ssc:Annotation>
 -- 		</ssd:Annotations>

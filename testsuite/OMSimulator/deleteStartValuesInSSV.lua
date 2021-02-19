@@ -121,7 +121,7 @@ oms_delete("deleteStartValuesInSSV")
 -- 		<ssd:Annotations>
 -- 			<ssc:Annotation type="org.openmodelica">
 -- 				<oms:Annotations>
--- 					<oms:SimulationInformation resultFile="deleteStartValuesInSSV_res.mat" loggingInterval="0.000000" bufferSize="10" />
+-- 					<oms:SimulationInformation resultFile="deleteStartValuesInSSV_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="resources/signalFilter.xml" />
 -- 				</oms:Annotations>
 -- 			</ssc:Annotation>
 -- 		</ssd:Annotations>

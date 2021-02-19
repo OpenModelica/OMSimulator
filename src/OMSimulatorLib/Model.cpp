@@ -696,15 +696,15 @@ oms_status_enu_t oms::Model::importFromSSD(const pugi::xml_node& node)
         {
           name = itAnnotations->name();
           // check for oms_default_experiment from version 1.0
-          if (std::string(name) == oms::ssp::Version1_0::simulation_information  && sspVersion == "1.0")
+          if (std::string(name) == oms::ssp::Version1_0::simulation_information && sspVersion == "1.0")
           {
             this->resultFilename = itAnnotations->attribute("resultFile").as_string();
             this->loggingInterval = itAnnotations->attribute("loggingInterval").as_double();
             this->bufferSize = itAnnotations->attribute("bufferSize").as_int();
-            this->signalFilterFileName = itAnnotations->attribute("signalFilter").as_string();
-            oms_status_enu_t status = importSignalFilter(signalFilterFileName);
-            if (oms_status_ok != status)
-              return logError("Failed to import the signal filter file: " + signalFilterFileName);
+
+            std::string _signalFilterFileName = itAnnotations->attribute("signalFilter").as_string();
+            if (oms_status_ok == importSignalFilter(_signalFilterFileName))
+              this->signalFilterFileName = _signalFilterFileName;
           }
         }
       }
@@ -926,9 +926,7 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
 void oms::Model::getAllResources(std::vector<std::string>& resources) const
 {
   resources.push_back("SystemStructure.ssd");
-
-  if (system && this->signalFilter)
-    resources.push_back(signalFilterFileName);
+  resources.push_back(signalFilterFileName);
 
   if (system)
     system->getAllResources(resources);
@@ -1288,8 +1286,6 @@ oms_status_enu_t oms::Model::addSignalsToResults(const char* regex)
 
 oms_status_enu_t oms::Model::removeSignalsFromResults(const char* regex)
 {
-  this->signalFilter = true;
-
   if (system)
     if (oms_status_ok != system->removeSignalsFromResults(regex))
       return oms_status_error;
