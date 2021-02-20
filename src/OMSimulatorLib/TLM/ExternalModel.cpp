@@ -145,10 +145,12 @@ oms_status_enu_t oms::ExternalModel::updateSignals(ResultWriter& resultWriter)
 
 oms_status_enu_t oms::ExternalModel::addSignalsToResults(const char* regex)
 {
-  return logError_NotImplemented;
+  //return logError_NotImplemented;
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms::ExternalModel::removeSignalsFromResults(const char* regex)
 {
-  return logError_NotImplemented;
+  //return logError_NotImplemented;
+  return oms_status_ok;
 }
