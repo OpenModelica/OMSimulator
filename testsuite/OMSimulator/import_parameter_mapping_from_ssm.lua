@@ -11,7 +11,7 @@ oms_importFile("../resources/importParameterMapping.ssp");
 
 oms_instantiate("import_parameter_mapping")
 
-print("info:      Instantiation ")
+print("info:      Instantiation")
 print("info:      import_parameter_mapping.co_sim.Input_1              : " .. oms_getReal("import_parameter_mapping.co_sim.Input_1"))
 print("info:      import_parameter_mapping.co_sim.Input_2              : " .. oms_getReal("import_parameter_mapping.co_sim.Input_2"))
 print("info:      import_parameter_mapping.co_sim.Input_3              : " .. oms_getReal("import_parameter_mapping.co_sim.Input_3"))

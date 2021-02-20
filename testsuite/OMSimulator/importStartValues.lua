@@ -82,7 +82,7 @@ oms_delete("importStartValues")
 -- 				<ssd:Annotations>
 -- 					<ssc:Annotation type="org.openmodelica">
 -- 						<oms:Annotations>
--- 							<oms:SimulationInformation resultFile="importStartValues_res.mat" loggingInterval="0.000000" bufferSize="10" />
+-- 							<oms:SimulationInformation resultFile="importStartValues_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="resources/signalFilter.xml" />
 -- 						</oms:Annotations>
 -- 					</ssc:Annotation>
 -- 				</ssd:Annotations>
@@ -104,6 +104,14 @@ oms_delete("importStartValues")
 -- 			</ssv:Parameters>
 -- 		</ssv:ParameterSet>
 -- 	</oms:ssv_file>
+-- 	<oms:signalFilter_file name="resources/signalFilter.xml">
+-- 		<oms:SignalFilter version="1.0">
+-- 			<oms:Variable name="importStartValues.root.C1" />
+-- 			<oms:Variable name="importStartValues.root.System1.C3" />
+-- 			<oms:Variable name="importStartValues.root.System1.C2" />
+-- 			<oms:Variable name="importStartValues.root.System1.C1" />
+-- 		</oms:SignalFilter>
+-- 	</oms:signalFilter_file>
 -- </oms:snapshot>
 --
 -- info:    model doesn't contain any continuous state
