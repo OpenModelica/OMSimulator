@@ -20,6 +20,7 @@ DEPENDENCIES = \
 *.lua \
 *.py \
 Makefile \
+StartTLMFmiWrapper \
 
 CLEAN = `ls | grep -w -v -f deps.tmp`
 
