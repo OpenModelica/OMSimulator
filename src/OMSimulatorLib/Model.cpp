@@ -703,8 +703,9 @@ oms_status_enu_t oms::Model::importFromSSD(const pugi::xml_node& node)
             this->bufferSize = itAnnotations->attribute("bufferSize").as_int();
 
             std::string _signalFilterFileName = itAnnotations->attribute("signalFilter").as_string();
-            if (oms_status_ok == importSignalFilter(_signalFilterFileName))
-              this->signalFilterFileName = _signalFilterFileName;
+            if (".*" != _signalFilterFileName) // avoid error messages for older ssp files
+              if (oms_status_ok == importSignalFilter(_signalFilterFileName))
+                this->signalFilterFileName = _signalFilterFileName;
           }
         }
       }
