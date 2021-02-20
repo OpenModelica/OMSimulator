@@ -108,13 +108,14 @@ oms_delete("test")
 -- 		<ssd:Annotations>
 -- 			<ssc:Annotation type="org.openmodelica">
 -- 				<oms:Annotations>
--- 					<oms:SimulationInformation resultFile="test_res.mat" loggingInterval="0.000000" bufferSize="10" />
+-- 					<oms:SimulationInformation resultFile="test_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="resources/signalFilter.xml" />
 -- 				</oms:Annotations>
 -- 			</ssc:Annotation>
 -- 		</ssd:Annotations>
 -- 	</ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>
 --
+-- error:   [importSignalFilter] loading "resources/signalFilter.xml" failed (File was not found)
 -- status:  [correct] ok
 -- <?xml version="1.0"?>
 -- <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="test" version="1.0">
@@ -158,7 +159,7 @@ oms_delete("test")
 -- 		<ssd:Annotations>
 -- 			<ssc:Annotation type="org.openmodelica">
 -- 				<oms:Annotations>
--- 					<oms:SimulationInformation resultFile="test_res.mat" loggingInterval="0.000000" bufferSize="10" />
+-- 					<oms:SimulationInformation resultFile="test_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="resources/signalFilter.xml" />
 -- 				</oms:Annotations>
 -- 			</ssc:Annotation>
 -- 		</ssd:Annotations>
@@ -166,4 +167,6 @@ oms_delete("test")
 -- </ssd:SystemStructureDescription>
 --
 -- info:    Result file: test_res.mat (bufferSize=10)
+-- info:    0 warnings
+-- info:    1 errors
 -- endResult
