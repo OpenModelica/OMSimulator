@@ -3,6 +3,7 @@ TEST = ../rtest -v
 TESTFILES = \
 deleteConnector.lua \
 deleteStartValues.lua \
+deleteStartValues_b.lua \
 deleteStartValuesInSSV.lua \
 DualMassOscillator.lua \
 Enumeration.lua \

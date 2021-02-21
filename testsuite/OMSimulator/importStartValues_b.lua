@@ -1,8 +1,8 @@
 -- status: correct
--- linux: yes
--- mingw: no
--- win: yes
--- mac: no
+-- linux: no
+-- mingw: yes
+-- win: no
+-- mac: yes
 
 oms_setCommandLineOption("--suppressPath=true --exportParametersInline=false")
 
@@ -108,8 +108,8 @@ oms_delete("importStartValues")
 -- 		<oms:SignalFilter version="1.0">
 -- 			<oms:Variable name="importStartValues.root.C1" />
 -- 			<oms:Variable name="importStartValues.root.System1.C3" />
--- 			<oms:Variable name="importStartValues.root.System1.C1" />
 -- 			<oms:Variable name="importStartValues.root.System1.C2" />
+-- 			<oms:Variable name="importStartValues.root.System1.C1" />
 -- 		</oms:SignalFilter>
 -- 	</oms:signalFilter_file>
 -- </oms:snapshot>
