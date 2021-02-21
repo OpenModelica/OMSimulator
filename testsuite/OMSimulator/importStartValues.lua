@@ -108,8 +108,8 @@ oms_delete("importStartValues")
 -- 		<oms:SignalFilter version="1.0">
 -- 			<oms:Variable name="importStartValues.root.C1" />
 -- 			<oms:Variable name="importStartValues.root.System1.C3" />
--- 			<oms:Variable name="importStartValues.root.System1.C2" />
 -- 			<oms:Variable name="importStartValues.root.System1.C1" />
+-- 			<oms:Variable name="importStartValues.root.System1.C2" />
 -- 		</oms:SignalFilter>
 -- 	</oms:signalFilter_file>
 -- </oms:snapshot>
