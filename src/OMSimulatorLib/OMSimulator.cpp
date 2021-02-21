@@ -1409,6 +1409,16 @@ oms_status_enu_t oms_setResultFile(const char* cref_, const char* filename, int 
     return logError_OnlyForModel;
 }
 
+oms_status_enu_t oms_setSignalFilter(const char* cref, const char* regex)
+{
+  logWarning("function 'setSignalFilter' is deprecated, check the documentation for more information");
+
+  if (oms_status_ok != oms_removeSignalsFromResults(cref, ".*"))
+    return oms_status_error;
+
+  return oms_addSignalsToResults(cref, regex);
+}
+
 oms_status_enu_t oms_addSignalsToResults(const char* cref, const char* regex)
 {
   oms::ComRef tail(cref);

@@ -143,6 +143,7 @@ OMSAPI void OMSCALL oms_setMaxLogFileSize(const unsigned long size);
 OMSAPI oms_status_enu_t OMSCALL oms_setReal(const char* cref, double value);
 OMSAPI oms_status_enu_t OMSCALL oms_setRealInputDerivative(const char* cref, double value);
 OMSAPI oms_status_enu_t OMSCALL oms_setResultFile(const char* cref, const char* filename, int bufferSize);
+OMSAPI oms_status_enu_t OMSCALL oms_setSignalFilter(const char* cref, const char* regex);
 OMSAPI oms_status_enu_t OMSCALL oms_setSolver(const char* cref, oms_solver_enu_t solver);
 OMSAPI oms_status_enu_t OMSCALL oms_setStartTime(const char* cref, double startTime);
 OMSAPI oms_status_enu_t OMSCALL oms_setStopTime(const char* cref, double stopTime);

@@ -119,6 +119,7 @@ class OMSimulator:
     self.setReal = Scope._capi.setReal
     self.setRealInputDerivative = Scope._capi.setRealInputDerivative
     self.setResultFile = Scope._capi.setResultFile
+    self.setSignalFilter = Scope._capi.setSignalFilter
     self.setSolver = Scope._capi.setSolver
     self.setStartTime = Scope._capi.setStartTime
     self.setStopTime = Scope._capi.setStopTime

@@ -128,6 +128,8 @@ class capi:
     self.obj.oms_setRealInputDerivative.restype = ctypes.c_int
     self.obj.oms_setResultFile.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int]
     self.obj.oms_setResultFile.restype = ctypes.c_int
+    self.obj.oms_setSignalFilter.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_setSignalFilter.restype = ctypes.c_int
     self.obj.oms_setSolver.argtypes = [ctypes.c_char_p, ctypes.c_int]
     self.obj.oms_setSolver.restype = ctypes.c_int
     self.obj.oms_setStartTime.argtypes = [ctypes.c_char_p, ctypes.c_double]
@@ -306,6 +308,8 @@ class capi:
     return self.obj.oms_setRealInputDerivative(signal.encode(), value)
   def setResultFile(self, cref, filename, bufferSize=1):
     return self.obj.oms_setResultFile(cref.encode(), filename.encode(), bufferSize)
+  def setSignalFilter(self, cref, regex):
+    return self.obj.oms_setSignalFilter(cref.encode(), regex.encode())
   def setSolver(self, cref, solver):
     return self.obj.oms_setSolver(cref.encode(), solver)
   def setStartTime(self, cref, startTime):

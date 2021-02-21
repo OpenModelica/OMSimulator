@@ -1125,6 +1125,21 @@ static int OMSimulatorLua_oms_setResultFile(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms_setSignalFilter(const char* cref, const char* regex)
+static int OMSimulatorLua_oms_setSignalFilter(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+
+  const char* cref = lua_tostring(L, 1);
+  const char* regex = lua_tostring(L, 2);
+  oms_status_enu_t status = oms_setSignalFilter(cref, regex);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
 //OMSAPI oms_status_enu_t OMSCALL oms_setSolver(const char* cref, oms_solver_enu_t solver);
 static int OMSimulatorLua_oms_setSolver(lua_State *L)
 {
@@ -1305,6 +1320,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms_setReal);
   REGISTER_LUA_CALL(oms_setRealInputDerivative);
   REGISTER_LUA_CALL(oms_setResultFile);
+  REGISTER_LUA_CALL(oms_setSignalFilter);
   REGISTER_LUA_CALL(oms_setSolver);
   REGISTER_LUA_CALL(oms_setStartTime);
   REGISTER_LUA_CALL(oms_setStopTime);
