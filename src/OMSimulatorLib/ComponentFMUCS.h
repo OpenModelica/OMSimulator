@@ -85,11 +85,10 @@ namespace oms
 
     oms_status_enu_t deleteStartValue(const ComRef& cref);
 
-    oms_status_enu_t setFmuTime(double time) {this->time = time; return oms_status_ok;}
-    fmi2_import_t* getFMU() {return fmu;}
-    std::vector<Variable> &getAllVariables() { return allVariables; }
+    void setTime(double time) { this->time = time; }
+    fmi2_import_t* getFMU() { return fmu; }
     std::vector<Variable> getInputs() { return inputs; }
-    std::vector<Variable> getOutputs() {return outputs;}
+    std::vector<Variable> getOutputs() { return outputs; }
 
     oms_status_enu_t getRealOutputDerivative(const ComRef& cref, SignalDerivative& der);
     oms_status_enu_t setRealInputDerivative(const ComRef& cref, const SignalDerivative& der);

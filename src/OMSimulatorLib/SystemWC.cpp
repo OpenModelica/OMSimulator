@@ -397,7 +397,7 @@ oms_status_enu_t oms::SystemWC::doStep()
           {
             if (oms_component_fmu == component.second->getType())
             {
-              dynamic_cast<ComponentFMUCS*>(component.second)->setFmuTime(time);
+              dynamic_cast<ComponentFMUCS*>(component.second)->setTime(time);
             }
           }
         }
