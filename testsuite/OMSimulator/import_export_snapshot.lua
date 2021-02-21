@@ -104,6 +104,7 @@ oms_delete("import_export_snapshot")
 -- 	</ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>
 --
+-- error:   [getVariable] Unknown signal "import_export_snapshot.root.C1"
 -- <?xml version="1.0"?>
 -- <oms:snapshot>
 -- 	<oms:ssd_file name="SystemStructure.ssd">
@@ -180,11 +181,11 @@ oms_delete("import_export_snapshot")
 -- 	<oms:signalFilter_file name="resources/signalFilter.xml">
 -- 		<oms:SignalFilter version="1.0">
 -- 			<oms:Variable name="import_export_snapshot.root.C1" />
--- 			<oms:Variable name="import_export_snapshot.root.add.u1" />
--- 			<oms:Variable name="import_export_snapshot.root.add.u2" />
--- 			<oms:Variable name="import_export_snapshot.root.add.y" />
--- 			<oms:Variable name="import_export_snapshot.root.add.k1" />
--- 			<oms:Variable name="import_export_snapshot.root.add.k2" />
+-- 			<oms:Variable name="import_export_snapshot.root.add.u1" type="Real" kind="input" />
+-- 			<oms:Variable name="import_export_snapshot.root.add.u2" type="Real" kind="input" />
+-- 			<oms:Variable name="import_export_snapshot.root.add.y" type="Real" kind="output" />
+-- 			<oms:Variable name="import_export_snapshot.root.add.k1" type="Real" kind="parameter" />
+-- 			<oms:Variable name="import_export_snapshot.root.add.k2" type="Real" kind="parameter" />
 -- 		</oms:SignalFilter>
 -- 	</oms:signalFilter_file>
 -- </oms:snapshot>

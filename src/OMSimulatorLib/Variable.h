@@ -83,8 +83,10 @@ namespace oms
     bool isTypeInteger() const { return oms_signal_type_integer == type || oms_signal_type_enum == type; }
     bool isTypeBoolean() const { return oms_signal_type_boolean == type; }
 
-    std::string getCausalityString() { return std::string(fmi2_causality_to_string(causality)); }
+    std::string getCausalityString() const { return std::string(fmi2_causality_to_string(causality)); }
     oms_causality_enu_t getCausality() const;
+
+    std::string getTypeString() const;
 
     unsigned int getIndex() const { return index; }
     oms::Connector makeConnector() const {return oms::Connector(getCausality(), type, cref);}

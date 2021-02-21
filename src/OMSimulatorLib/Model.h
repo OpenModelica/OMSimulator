@@ -50,6 +50,7 @@ namespace oms
 {
   class Component;
   class System;
+  class Variable;
 
   class Model
   {
@@ -129,8 +130,7 @@ namespace oms
 
     pugi::xml_node getSnapshot() {return snapShot;}
 
-    static std::string getTypeString(const oms_signal_type_enu_t &signalType);
-    static std::string getCausalityString(const oms_causality_enu_t &causalityType);
+    Variable* getVariable(const ComRef& cref) const;
 
   private:
     Model(const ComRef& cref, const std::string& tempDir);

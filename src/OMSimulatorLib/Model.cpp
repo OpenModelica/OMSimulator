@@ -31,13 +31,14 @@
 
 #include "Model.h"
 
+#include "Component.h"
 #include "CSVWriter.h"
 #include "Flags.h"
 #include "MATWriter.h"
 #include "Scope.h"
 #include "ssd/Tags.h"
 #include "System.h"
-#include "Component.h"
+#include "Variable.h"
 
 #include <OMSFileSystem.h>
 #include <minizip.h>
@@ -141,6 +142,19 @@ oms_status_enu_t oms::Model::rename(const ComRef& cref, const ComRef& newCref)
     return system->rename(tail, newCref);
 
   return logError("Model \"" + std::string(getCref()) + "\" does not contain system \"" + std::string(front) + "\"");
+}
+
+oms::Variable* oms::Model::getVariable(const ComRef& cref) const
+{
+  // renaming any subcomponent
+  oms::ComRef tail(cref);
+  oms::ComRef front = tail.pop_front();
+
+  if (system->getCref() == front)
+    return system->getVariable(tail);
+
+  logWarning("failed to find signal \"" + std::string(cref) + "\"");
+  return NULL;
 }
 
 oms_status_enu_t oms::Model::loadSnapshot(const pugi::xml_node node)
@@ -632,8 +646,15 @@ void oms::Model::exportSignalFilter(pugi::xml_node &node) const
   {
     pugi::xml_node oms_variable = node.append_child(oms::ssp::Version1_0::oms_Variable);
     oms_variable.append_attribute("name") = signal.c_str();
-    //oms_variable.append_attribute("type") = getTypeString(connector->getType()).c_str();
-    //oms_variable.append_attribute("kind") = getCausalityString(connector->getCausality()).c_str();
+
+    oms::ComRef cref(signal);
+    cref.pop_front();
+    Variable* var = getVariable(cref);
+    if (var)
+    {
+      oms_variable.append_attribute("type") = var->getTypeString().c_str();
+      oms_variable.append_attribute("kind") = var->getCausalityString().c_str();
+    }
   }
 }
 
@@ -1300,62 +1321,4 @@ oms_status_enu_t oms::Model::cancelSimulation_asynchronous()
 
   cancelSim = true;
   return oms_status_ok;
-}
-
-std::string oms::Model::getTypeString(const oms_signal_type_enu_t &signalType)
-{
-  std::string type = "unknown";
-  if (signalType == oms_signal_type_real)
-  {
-    type = "Real";
-  }
-  else if (signalType == oms_signal_type_integer)
-  {
-    type = "Integer";
-  }
-  else if (signalType == oms_signal_type_string)
-  {
-    type = "String";
-  }
-  else if (signalType == oms_signal_type_enum)
-  {
-    type = "Enumeration";
-  }
-  else if (signalType == oms_signal_type_boolean)
-  {
-    type = "Bool";
-  }
-  else if (signalType == oms_signal_type_bus)
-  {
-    type = "Bus";
-  }
-
-  return type;
-}
-
-std::string oms::Model::getCausalityString(const oms_causality_enu_t &causalityType)
-{
-  std::string causality = "undefined";
-  if (causalityType == oms_causality_input)
-  {
-    causality = "input";
-  }
-  else if (causalityType == oms_causality_output)
-  {
-    causality = "output";
-  }
-  else if (causalityType == oms_causality_parameter)
-  {
-    causality = "parameter";
-  }
-  else if (causalityType == oms_causality_calculatedParameter)
-  {
-    causality = "calculatedParameter";
-  }
-  else if (causalityType == oms_causality_bidir)
-  {
-    causality = "inout";
-  }
-
-  return causality;
 }
