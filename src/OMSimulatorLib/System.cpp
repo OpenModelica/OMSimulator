@@ -2444,25 +2444,32 @@ oms_status_enu_t oms::System::importStartValuesFromSSV()
 
 oms_status_enu_t oms::System::importStartValuesFromSSVHelper(std::string fileName, std::multimap<ComRef, ComRef> &mappedEntry)
 {
-  std::string tempdir = getModel()->getTempDirectory();
-  filesystem::path temp_root(tempdir);
-  pugi::xml_document ssvdoc;
-  pugi::xml_parse_result result = ssvdoc.load_file((temp_root / fileName).string().c_str());
   pugi::xml_node parameterSet, parameters;
 
-  if (result) // check from ssv file
+  // load from ssp
+  if (!getModel()->getSnapshot())
   {
+    std::string tempdir = getModel()->getTempDirectory();
+    filesystem::path temp_root(tempdir);
+    pugi::xml_document ssvdoc;
+    pugi::xml_parse_result result = ssvdoc.load_file((temp_root / fileName).string().c_str());
+    if (!result)
+    {
+      return logError("loading \"" + std::string(fileName) + "\" failed (" + std::string(result.description()) + ")");
+    }
     parameterSet = ssvdoc.document_element(); // ssv:ParameterSet
-    parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
-  }
-  else if (getModel()->getSnapshot().child(oms::ssp::Version1_0::ssv_file)) // check in memory oms:ssv_file
-  {
-    parameterSet = getModel()->getSnapshot().child(oms::ssp::Version1_0::ssv_file).child(oms::ssp::Version1_0::ssv::parameter_set); // ssv:ParameterSet
     parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
   }
   else
   {
-    return logError("loading \"" + std::string(fileName) + "\" failed (" + std::string(result.description()) + ")");
+    // load from snapshot oms:ssv_file
+    pugi::xml_node oms_ssv_file = getModel()->getSnapshot().child(oms::ssp::Version1_0::ssv_file);
+    if (!oms_ssv_file)
+    {
+      return logError("loading \"oms:ssv_file\" from <oms:snapShot> failed");
+    }
+    parameterSet = oms_ssv_file.child(oms::ssp::Version1_0::ssv::parameter_set); // ssv:ParameterSet
+    parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
   }
 
   if (parameters)
