@@ -33,7 +33,6 @@ print(snapshot, flush=True)
 oms.delete("snapshot")
 
 ## Result:
-## error:   [importSignalFilter] loading "resources/signalFilter.xml" failed (File was not found)
 ## <?xml version="1.0"?>
 ## <oms:snapshot>
 ## 	<oms:ssd_file name="SystemStructure.ssd">
@@ -119,6 +118,4 @@ oms.delete("snapshot")
 ## 	</oms:signalFilter_file>
 ## </oms:snapshot>
 ##
-## info:    0 warnings
-## info:    1 errors
 ## endResult
