@@ -3,7 +3,6 @@ TEST = ../rtest -v
 TESTFILES = \
 deleteConnector.lua \
 deleteStartValues.lua \
-deleteStartValues_b.lua \
 deleteStartValuesInSSV.lua \
 DualMassOscillator.lua \
 Enumeration.lua \
@@ -21,6 +20,7 @@ import_hierarchical_ssv_sources.lua \
 import_parameter_mapping_from_ssm.lua \
 import_parameter_mapping_inline.lua \
 importStartValues.lua \
+importStartValues_b.lua \
 multipleConnections.lua \
 PI_Controller.lua \
 QuarterCarModel.DisplacementDisplacement.lua \
