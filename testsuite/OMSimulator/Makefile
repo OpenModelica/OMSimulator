@@ -21,6 +21,7 @@ import_parameter_mapping_from_ssm.lua \
 import_parameter_mapping_inline.lua \
 importStartValues.lua \
 importStartValues_b.lua \
+importStartValues_c.lua \
 multipleConnections.lua \
 PI_Controller.lua \
 QuarterCarModel.DisplacementDisplacement.lua \
