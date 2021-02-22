@@ -1701,9 +1701,9 @@ void oms::System::getAllResources(std::vector<std::string>& resources) const
 
 void oms::System::getFilteredSignals(std::vector<ComRef>& filteredSignals) const
 {
-  for (const auto &x : exportConnectors)
-    if (x.second)
-      filteredSignals.push_back(x.first);
+  for (const auto& connector : connectors)
+    if (connector && exportConnectors.at(getFullCref()+connector->getName()))
+      filteredSignals.push_back(getFullCref()+connector->getName());
 
   for (const auto& component : components)
     component.second->getFilteredSignals(filteredSignals);
