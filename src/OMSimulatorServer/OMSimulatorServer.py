@@ -6,6 +6,7 @@ import json
 import math
 import sys
 import threading
+import time
 
 import OMSimulator as oms
 import zmq
@@ -23,33 +24,16 @@ def close_socket_gracefully(socket):
   socket.setsockopt(zmq.LINGER, 0) # to avoid hanging infinitely
   socket.close()
 
-def receive_and_reply(socket):
-  try:
-    msg = socket.recv_json()
-  except zmq.error.Again as error:
-    print('server:  recv: ' + str(error), flush=True)
-    return
-
-  # answer = msg
-  answer = json.loads(msg)
-  answer = json.dumps(answer)
-
-  try:
-    socket.send_json(answer)
-  except zmq.error.ZMQError as error:
-    print('server:  send: ' + str(error), flush=True)
-  else:
-    print('server:  {}'.format(msg), flush=True)
-
 def mogrify(topic: str, msg: dict):
   '''Combines a topic identifier and a json representation of a dictionary'''
   return '%s %s' % (topic, json.dumps(msg))
 
 class Server:
   def __init__(self, args):
-    self._alive = False
+    self._alive = True
     self._context = zmq.Context()
     self._mutex = threading.Lock()
+    self._pause = args.interactive
     self._socket_rep = None
     self._socket_sub = None
     self._thread = None
@@ -78,18 +62,14 @@ class Server:
       self._socket_rep.connect(args.endpoint_rep)
       self._socket_rep.RCVTIMEO = 1000  #in milliseconds
       self.print('REP socket connected to {}'.format(args.endpoint_rep))
+      self._thread = threading.Thread(target=self._main, daemon=True)
+      self._thread.start()
 
     # connect the PUB socket
     if args.endpoint_pub:
       socket_sub = self._context.socket(zmq.PUB)  #pylint: disable=no-member
       socket_sub.connect(args.endpoint_pub)
       self.print('PUB socket connected to {}'.format(args.endpoint_pub))
-
-  @property
-  def alive(self):
-    '''Check if server instance is alive'''
-    with self._mutex:
-      return self._alive
 
   def print(self, msg):
     print('server:  {}'.format(msg), flush=True)
@@ -99,19 +79,60 @@ class Server:
       msg_ = mogrify(topic, msg)
       self._socket_sub.send_string(msg_)
 
+  def _main(self):
+    alive = True
+    while alive:
+      try:
+        msg = self._socket_rep.recv_json()
+      except zmq.error.Again as error:
+        self.print('recv: ' + str(error))
+        continue
+
+      fcn = msg['fcn']
+      ok = False
+
+      if 'simulation' == fcn:
+        arg = msg['arg']
+        if 'pause' == arg:
+          with self._mutex:
+            self._pause = True
+        elif 'continue' == arg:
+          with self._mutex:
+            self._pause = False
+        elif 'end' == arg:
+          alive = False
+          with self._mutex:
+            self._alive = False
+
+      answer = json.dumps({'status': 'ack' if ok else 'nack', 'fcn': fcn})
+      try:
+        self._socket_rep.send_json(answer)
+      except zmq.error.ZMQError as error:
+        self.print('send: ' + str(error))
+      else:
+        self.print(msg)
+
   def run(self):
     self.pub_msg('status', {'progress': 0})
 
+    time_ = self._model.time
     startTime = self._model.startTime
     stopTime = self._model.stopTime
-
     self._model.instantiate()
     self._model.initialize()
 
-    while self._model.time < stopTime:
-      progress = math.floor((self._model.time-startTime) / (stopTime-startTime) * 100)
+    while True:
+      progress = math.floor((time_-startTime) / (stopTime-startTime) * 100)
       self.pub_msg('status', {'progress': progress})
-      self._model.doStep()
+
+      if self._pause:
+        time.sleep(0.3)
+      else:
+        with self._mutex:
+          self._model.doStep()
+          time_ = self._model.time
+          if time_ >= stopTime and self._alive:
+            break
 
     self._model.terminate()
     self._model.delete()
