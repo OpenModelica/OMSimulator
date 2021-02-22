@@ -738,31 +738,14 @@ oms_status_enu_t oms::Model::importFromSSD(const pugi::xml_node& node)
 
 oms_status_enu_t oms::Model::importSignalFilter(const std::string& filename)
 {
-  pugi::xml_node oms_signalfilter;
-
-  if (!snapShot)
-  {
-    filesystem::path temp_root(tempDir);
-    pugi::xml_document signalFilterdoc;
-    pugi::xml_parse_result result = signalFilterdoc.load_file((temp_root / filename).string().c_str());
-    if (!result)
-    {
-      return logError("loading \"" + filename + "\" failed (" + std::string(result.description()) + ")");
-    }
-    oms_signalfilter = signalFilterdoc.document_element();
-  }
-  else
-  {
-    // load from snapshot
-    pugi::xml_node oms_signalfilter_file = snapShot.child("oms:signalFilter_file");
-    if (!oms_signalfilter_file)
-    {
-      return logError("loading \"oms:signalFilter\" from <oms:snapShot> failed");
-    }
-    oms_signalfilter = oms_signalfilter_file.child(oms::ssp::Version1_0::oms_signalFilter);
-  }
+  filesystem::path temp_root(tempDir);
+  pugi::xml_document signalFilterdoc;
+  pugi::xml_parse_result result = signalFilterdoc.load_file((temp_root / filename).string().c_str());
+  if (!result)
+    return logError("loading \"" + filename + "\" failed (" + std::string(result.description()) + ")");
 
   removeSignalsFromResults(".*"); // disable all signals
+  pugi::xml_node oms_signalfilter = signalFilterdoc.document_element();
   for (pugi::xml_node_iterator it = oms_signalfilter.begin(); it != oms_signalfilter.end(); ++it)
     if (std::string(it->name()) == oms::ssp::Version1_0::oms_Variable)
       addSignalsToResults(it->attribute("name").as_string());
