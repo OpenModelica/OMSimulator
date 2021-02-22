@@ -211,7 +211,7 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
   pugi::xml_document snapshot;
   pugi::xml_node oms_snapshot = snapshot.append_child(oms::ssp::Version1_0::snap_shot);
 
-  pugi::xml_node ssd_file = oms_snapshot.append_child(oms::ssp::Version1_0::ssd_file);
+  pugi::xml_node ssd_file = oms_snapshot.append_child(oms::ssp::Version1_0::oms_file);
   ssd_file.append_attribute("name") = "SystemStructure.ssd";
   ssd_file.append_copy(node);
 
@@ -242,7 +242,7 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
       if (entry.path().extension() == ".ssv")
       {
         // ssv files
-        pugi::xml_node ssv_file = oms_snapshot.append_child(oms::ssp::Version1_0::ssv_file);
+        pugi::xml_node ssv_file = oms_snapshot.append_child(oms::ssp::Version1_0::oms_file);
         ssv_file.append_attribute("name") = ("resources/" + entry.path().filename().generic_string()).c_str();
         pugi::xml_document ssv_doc;
         pugi::xml_parse_result result = ssv_doc.load_file(entry.path().c_str());
@@ -255,7 +255,7 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
       else if (entry.path().extension() == ".ssm")
       {
         // ssm files
-        pugi::xml_node ssm_file = oms_snapshot.append_child(oms::ssp::Version1_0::ssm_file);
+        pugi::xml_node ssm_file = oms_snapshot.append_child(oms::ssp::Version1_0::oms_file);
         ssm_file.append_attribute("name") = ("resources/" + entry.path().filename().generic_string()).c_str();;
         pugi::xml_document ssm_doc;
         pugi::xml_parse_result result = ssm_doc.load_file(entry.path().c_str());
@@ -267,7 +267,7 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
       }
       else if (entry.path().filename()== "signalFilter.xml")
       {
-        pugi::xml_node signalFilter_file = oms_snapshot.append_child("oms:signalFilter_file");
+        pugi::xml_node signalFilter_file = oms_snapshot.append_child(oms::ssp::Version1_0::oms_file);
         signalFilter_file.append_attribute("name") = "resources/signalFilter.xml";
         pugi::xml_document signalFilter_doc;
         pugi::xml_parse_result result = signalFilter_doc.load_file(entry.path().c_str());
