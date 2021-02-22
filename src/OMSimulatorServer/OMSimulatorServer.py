@@ -88,7 +88,7 @@ class Server:
         self.print('recv: ' + str(error))
         continue
 
-      fcn = msg['fcn']
+      fcn = msg['fcn'] if 'fcn' in msg else ''
       ok = False
 
       if 'simulation' == fcn:
