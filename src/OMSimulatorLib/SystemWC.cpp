@@ -371,7 +371,7 @@ oms_status_enu_t oms::SystemWC::doStep()
       // stepUntill for subsystems (ME-FMUs), TODO: Fix rollback here too.
       for (const auto& subsystem : getSubSystems())
       {
-        status = subsystem.second->stepUntil(tNext, NULL);
+        status = subsystem.second->stepUntil(tNext);
         if (oms_status_ok != status)
           return status;
       }
@@ -490,9 +490,6 @@ oms_status_enu_t oms::SystemWC::doStep()
       if (isTopLevelSystem())
         getModel()->emit(time, emitted);
 
-      if (isTopLevelSystem() && getModel()->cancelSimulation())
-        return oms_status_discard;
-
       rollBackIt = 0;
       fixRatio = fixRatio*safety_factor;
       if (fixRatio > 1.0)
@@ -503,9 +500,6 @@ oms_status_enu_t oms::SystemWC::doStep()
 
     for (const auto& component : mav_canGetAndSetStateFMUcomponents)
       component.second->freeState();
-
-    if (isTopLevelSystem() && getModel()->cancelSimulation())
-      return oms_status_discard;
   }
   else if (solverMethod == oms_solver_wc_ma)
   {
@@ -539,7 +533,7 @@ oms_status_enu_t oms::SystemWC::doStep()
         int i=0;
         for (const auto& subsystem : getSubSystems())
         {
-          results[i] = pool.push([&subsystem, tNext](int id){ /*logInfo("Id: " + std::to_string(id));*/ return subsystem.second->stepUntil(tNext, NULL); });
+          results[i] = pool.push([&subsystem, tNext](int id){ /*logInfo("Id: " + std::to_string(id));*/ return subsystem.second->stepUntil(tNext); });
           i++;
         }
 
@@ -554,7 +548,7 @@ oms_status_enu_t oms::SystemWC::doStep()
       {
         for (const auto& subsystem : getSubSystems())
         {
-          status = subsystem.second->stepUntil(tNext, NULL);
+          status = subsystem.second->stepUntil(tNext);
           if (oms_status_ok != status)
             return status;
         }
@@ -626,9 +620,6 @@ oms_status_enu_t oms::SystemWC::doStep()
           getModel()->emit(time, emitted);
       }
     }
-
-    if (isTopLevelSystem() && getModel()->cancelSimulation())
-      return oms_status_discard;
 
     return oms_status_ok;
   }
@@ -742,7 +733,7 @@ oms_status_enu_t oms::SystemWC::doStep()
     oms_status_enu_t status;
     for (const auto& subsystem : getSubSystems())
     {
-      status = subsystem.second->stepUntil(tNext, NULL);
+      status = subsystem.second->stepUntil(tNext);
       if (oms_status_ok != status)
         return status;
     }
@@ -774,16 +765,13 @@ oms_status_enu_t oms::SystemWC::doStep()
     if (isTopLevelSystem())
       getModel()->emit(time, emitted);
 
-    if (isTopLevelSystem() && getModel()->cancelSimulation())
-      return oms_status_discard;
-
     return oms_status_ok;
   }
 
   return logError("Invalid solver selected");
 }
 
-oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char* ident, double time, oms_status_enu_t status))
+oms_status_enu_t oms::SystemWC::stepUntil(double stopTime)
 {
   CallClock callClock(clock);
 
@@ -791,7 +779,7 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
   updateInputs(eventGraph);
 
   if (solverMethod == oms_solver_wc_assc)
-    return stepUntilASSC(stopTime, cb);
+    return stepUntilASSC(stopTime);
 
   ComRef modelName = this->getModel()->getCref();
   auto start = std::chrono::steady_clock::now() + std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(time));
@@ -814,14 +802,8 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
     {
       status = doStep();
 
-      if (isTopLevelSystem())
-      {
-        if (cb)
-          cb(modelName.c_str(), time, status);
-
-        if (Flags::ProgressBar())
-          Log::ProgressBar(startTime, stopTime, time);
-      }
+      if (isTopLevelSystem() && Flags::ProgressBar())
+        Log::ProgressBar(startTime, stopTime, time);
     }
 
     if (isTopLevelSystem() && Flags::ProgressBar())
@@ -839,14 +821,8 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
     {
       status = doStep();
 
-      if (isTopLevelSystem())
-      {
-        if (cb)
-          cb(modelName.c_str(), time, status);
-
-        if (Flags::ProgressBar())
-          Log::ProgressBar(startTime, stopTime, time);
-      }
+      if (isTopLevelSystem() && Flags::ProgressBar())
+        Log::ProgressBar(startTime, stopTime, time);
     }
 
     if (isTopLevelSystem() && Flags::ProgressBar())
@@ -858,7 +834,7 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime, void (*cb)(const char
     return logError("Invalid solver selected");
 }
 
-oms_status_enu_t oms::SystemWC::stepUntilASSC(double stopTime, void (*cb)(const char* ident, double time, oms_status_enu_t status))
+oms_status_enu_t oms::SystemWC::stepUntilASSC(double stopTime)
 {
   CallClock callClock(clock);
   ComRef modelName = this->getModel()->getCref();
@@ -873,14 +849,8 @@ oms_status_enu_t oms::SystemWC::stepUntilASSC(double stopTime, void (*cb)(const 
   {
     status = doStep();
 
-    if (isTopLevelSystem())
-    {
-      if (cb)
-        cb(modelName.c_str(), time, status);
-
-      if (Flags::ProgressBar())
-        Log::ProgressBar(startTime, stopTime, time);
-    }
+    if (isTopLevelSystem() && Flags::ProgressBar())
+      Log::ProgressBar(startTime, stopTime, time);
   }
 
   if (isTopLevelSystem() && Flags::ProgressBar())
