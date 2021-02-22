@@ -89,7 +89,6 @@ namespace oms
 
     oms_status_enu_t instantiate();
     oms_status_enu_t initialize();
-    oms_status_enu_t simulate_asynchronous(void (*cb)(const char* cref, double time, oms_status_enu_t status));
     oms_status_enu_t simulate();
     oms_status_enu_t doStep();
     oms_status_enu_t stepUntil(double stopTime);
@@ -113,9 +112,6 @@ namespace oms
     oms_status_enu_t removeSignalsFromResults(const char* regex);
     oms_status_enu_t setSignalFilter(const std::string& regex);
     oms_status_enu_t getSignalFilter(char** regex);
-
-    oms_status_enu_t cancelSimulation_asynchronous();
-    bool cancelSimulation() const {return cancelSim;}
 
     bool validState(int validStates) const {return (modelState & validStates);}
 
@@ -163,7 +159,6 @@ namespace oms
 
     pugi::xml_node snapShot; ///< top level snapshot node which contains ssd, ssv and ssm as child nodes
 
-    bool cancelSim;
     bool isolatedFMU = false;
 
     ctpl::thread_pool* pool = nullptr;

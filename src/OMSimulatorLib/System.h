@@ -134,7 +134,7 @@ namespace oms
     virtual oms_status_enu_t terminate() = 0;
     virtual oms_status_enu_t reset() = 0;
     virtual oms_status_enu_t doStep() = 0;
-    virtual oms_status_enu_t stepUntil(double stopTime, void (*cb)(const char* ident, double time, oms_status_enu_t status)) = 0;
+    virtual oms_status_enu_t stepUntil(double stopTime) = 0;
 
     double getTime() const {return time;}
 
