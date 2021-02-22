@@ -154,9 +154,16 @@ oms_status_enu_t oms::Model::loadSnapshot(const pugi::xml_node node)
   System* old_root_system = system;
   system = NULL;
 
+  // internally create the oms:snapshot from snapshot
+  pugi::xml_document snapshot;
+  pugi::xml_node oms_snapshot = snapshot.append_child(oms::ssp::Version1_0::snap_shot);
+  pugi::xml_node ssd_file = oms_snapshot.append_child(oms::ssp::Version1_0::ssd_file);
+  ssd_file.append_attribute("name") = "SystemStructure.ssd";
+  ssd_file.append_copy(node);
+
   bool old_copyResources = copyResources();
   copyResources(false);
-  oms_status_enu_t status = importFromSnapshot(node);
+  oms_status_enu_t status = importFromSnapshot(oms_snapshot);
   copyResources(old_copyResources);
 
   if (oms_status_ok != status)
