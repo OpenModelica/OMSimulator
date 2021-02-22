@@ -775,7 +775,6 @@ oms::Variable* oms::ComponentFMUCS::getVariable(const ComRef& cref)
     if (allVariables[i].getCref() == cref)
       return &allVariables[i];
 
-  logError_UnknownSignal(getFullCref() + cref);
   return NULL;
 }
 

@@ -33,6 +33,12 @@ test:
 	@echo Running tests...
 	@$(TEST) $(TESTFILES)
 
+baseline:
+	@echo
+	@echo Updating tests...
+	@$(TEST) -b $(TESTFILES)
+	@$(MAKE) clean
+
 # Cleans all files that are not listed as dependencies
 clean:
 	@echo $(DEPENDENCIES) | sed 's/ /\\\|/g' > deps.tmp

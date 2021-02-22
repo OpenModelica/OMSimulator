@@ -34,7 +34,7 @@ oms.addSystem("test.eoo", oms.system_wc)
 oms.addSubModel("test.eoo.source", "../resources/Modelica.Blocks.Sources.Sine.fmu")
 
 ## save snapshot
-src, status = oms.list("test")
+src, status = oms.exportSnapshot("test")
 print(src, flush=True)
 
 ## change model
@@ -43,10 +43,10 @@ oms.delete("test.eoo.source")
 oms.addSubModel("test.eoo.source", "../resources/Modelica.Blocks.Sources.Constant.fmu")
 
 ## restore model from snapshot
-newCref, status = oms.loadSnapshot("test", src)
+status = oms.importSnapshot("test", src)
 printStatus(status, 0)
 
-src, status = oms.list("test")
+src, status = oms.exportSnapshot("test")
 print(src, flush=True)
 
 oms.instantiate("test")
@@ -59,103 +59,131 @@ oms.delete("test")
 
 ## Result:
 ## <?xml version="1.0"?>
-## <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="test" version="1.0">
-## 	<ssd:System name="eoo">
-## 		<ssd:Elements>
-## 			<ssd:Component name="source" type="application/x-fmu-sharedlibrary" source="resources/0001_source.fmu">
-## 				<ssd:Connectors>
-## 					<ssd:Connector name="y" kind="output">
-## 						<ssc:Real />
-## 						<ssd:ConnectorGeometry x="1.000000" y="0.500000" />
-## 					</ssd:Connector>
-## 					<ssd:Connector name="amplitude" kind="parameter">
-## 						<ssc:Real />
-## 					</ssd:Connector>
-## 					<ssd:Connector name="freqHz" kind="parameter">
-## 						<ssc:Real />
-## 					</ssd:Connector>
-## 					<ssd:Connector name="offset" kind="parameter">
-## 						<ssc:Real />
-## 					</ssd:Connector>
-## 					<ssd:Connector name="phase" kind="parameter">
-## 						<ssc:Real />
-## 					</ssd:Connector>
-## 					<ssd:Connector name="startTime" kind="parameter">
-## 						<ssc:Real />
-## 					</ssd:Connector>
-## 				</ssd:Connectors>
-## 			</ssd:Component>
-## 		</ssd:Elements>
-## 		<ssd:Annotations>
-## 			<ssc:Annotation type="org.openmodelica">
-## 				<oms:Annotations>
-## 					<oms:SimulationInformation>
-## 						<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
-## 					</oms:SimulationInformation>
-## 				</oms:Annotations>
-## 			</ssc:Annotation>
-## 		</ssd:Annotations>
-## 	</ssd:System>
-## 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
-## 		<ssd:Annotations>
-## 			<ssc:Annotation type="org.openmodelica">
-## 				<oms:Annotations>
-## 					<oms:SimulationInformation resultFile="test_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="resources/signalFilter.xml" />
-## 				</oms:Annotations>
-## 			</ssc:Annotation>
-## 		</ssd:Annotations>
-## 	</ssd:DefaultExperiment>
-## </ssd:SystemStructureDescription>
+## <oms:snapshot>
+## 	<oms:ssd_file name="SystemStructure.ssd">
+## 		<ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="test" version="1.0">
+## 			<ssd:System name="eoo">
+## 				<ssd:Elements>
+## 					<ssd:Component name="source" type="application/x-fmu-sharedlibrary" source="resources/0001_source.fmu">
+## 						<ssd:Connectors>
+## 							<ssd:Connector name="y" kind="output">
+## 								<ssc:Real />
+## 								<ssd:ConnectorGeometry x="1.000000" y="0.500000" />
+## 							</ssd:Connector>
+## 							<ssd:Connector name="amplitude" kind="parameter">
+## 								<ssc:Real />
+## 							</ssd:Connector>
+## 							<ssd:Connector name="freqHz" kind="parameter">
+## 								<ssc:Real />
+## 							</ssd:Connector>
+## 							<ssd:Connector name="offset" kind="parameter">
+## 								<ssc:Real />
+## 							</ssd:Connector>
+## 							<ssd:Connector name="phase" kind="parameter">
+## 								<ssc:Real />
+## 							</ssd:Connector>
+## 							<ssd:Connector name="startTime" kind="parameter">
+## 								<ssc:Real />
+## 							</ssd:Connector>
+## 						</ssd:Connectors>
+## 					</ssd:Component>
+## 				</ssd:Elements>
+## 				<ssd:Annotations>
+## 					<ssc:Annotation type="org.openmodelica">
+## 						<oms:Annotations>
+## 							<oms:SimulationInformation>
+## 								<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+## 							</oms:SimulationInformation>
+## 						</oms:Annotations>
+## 					</ssc:Annotation>
+## 				</ssd:Annotations>
+## 			</ssd:System>
+## 			<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
+## 				<ssd:Annotations>
+## 					<ssc:Annotation type="org.openmodelica">
+## 						<oms:Annotations>
+## 							<oms:SimulationInformation resultFile="test_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="resources/signalFilter.xml" />
+## 						</oms:Annotations>
+## 					</ssc:Annotation>
+## 				</ssd:Annotations>
+## 			</ssd:DefaultExperiment>
+## 		</ssd:SystemStructureDescription>
+## 	</oms:ssd_file>
+## 	<oms:signalFilter_file name="resources/signalFilter.xml">
+## 		<oms:SignalFilter version="1.0">
+## 			<oms:Variable name="test.eoo.source.y" type="Real" kind="output" />
+## 			<oms:Variable name="test.eoo.source.amplitude" type="Real" kind="parameter" />
+## 			<oms:Variable name="test.eoo.source.freqHz" type="Real" kind="parameter" />
+## 			<oms:Variable name="test.eoo.source.offset" type="Real" kind="parameter" />
+## 			<oms:Variable name="test.eoo.source.phase" type="Real" kind="parameter" />
+## 			<oms:Variable name="test.eoo.source.startTime" type="Real" kind="parameter" />
+## 		</oms:SignalFilter>
+## 	</oms:signalFilter_file>
+## </oms:snapshot>
 ##
 ## status:  [correct] ok
 ## <?xml version="1.0"?>
-## <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="test" version="1.0">
-## 	<ssd:System name="eoo">
-## 		<ssd:Elements>
-## 			<ssd:Component name="source" type="application/x-fmu-sharedlibrary" source="resources/0001_source.fmu">
-## 				<ssd:Connectors>
-## 					<ssd:Connector name="y" kind="output">
-## 						<ssc:Real />
-## 						<ssd:ConnectorGeometry x="1.000000" y="0.500000" />
-## 					</ssd:Connector>
-## 					<ssd:Connector name="amplitude" kind="parameter">
-## 						<ssc:Real />
-## 					</ssd:Connector>
-## 					<ssd:Connector name="freqHz" kind="parameter">
-## 						<ssc:Real />
-## 					</ssd:Connector>
-## 					<ssd:Connector name="offset" kind="parameter">
-## 						<ssc:Real />
-## 					</ssd:Connector>
-## 					<ssd:Connector name="phase" kind="parameter">
-## 						<ssc:Real />
-## 					</ssd:Connector>
-## 					<ssd:Connector name="startTime" kind="parameter">
-## 						<ssc:Real />
-## 					</ssd:Connector>
-## 				</ssd:Connectors>
-## 			</ssd:Component>
-## 		</ssd:Elements>
-## 		<ssd:Annotations>
-## 			<ssc:Annotation type="org.openmodelica">
-## 				<oms:Annotations>
-## 					<oms:SimulationInformation>
-## 						<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
-## 					</oms:SimulationInformation>
-## 				</oms:Annotations>
-## 			</ssc:Annotation>
-## 		</ssd:Annotations>
-## 	</ssd:System>
-## 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
-## 		<ssd:Annotations>
-## 			<ssc:Annotation type="org.openmodelica">
-## 				<oms:Annotations>
-## 					<oms:SimulationInformation resultFile="test_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="resources/signalFilter.xml" />
-## 				</oms:Annotations>
-## 			</ssc:Annotation>
-## 		</ssd:Annotations>
-## 	</ssd:DefaultExperiment>
-## </ssd:SystemStructureDescription>
+## <oms:snapshot>
+## 	<oms:ssd_file name="SystemStructure.ssd">
+## 		<ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="test" version="1.0">
+## 			<ssd:System name="eoo">
+## 				<ssd:Elements>
+## 					<ssd:Component name="source" type="application/x-fmu-sharedlibrary" source="resources/0001_source.fmu">
+## 						<ssd:Connectors>
+## 							<ssd:Connector name="y" kind="output">
+## 								<ssc:Real />
+## 								<ssd:ConnectorGeometry x="1.000000" y="0.500000" />
+## 							</ssd:Connector>
+## 							<ssd:Connector name="amplitude" kind="parameter">
+## 								<ssc:Real />
+## 							</ssd:Connector>
+## 							<ssd:Connector name="freqHz" kind="parameter">
+## 								<ssc:Real />
+## 							</ssd:Connector>
+## 							<ssd:Connector name="offset" kind="parameter">
+## 								<ssc:Real />
+## 							</ssd:Connector>
+## 							<ssd:Connector name="phase" kind="parameter">
+## 								<ssc:Real />
+## 							</ssd:Connector>
+## 							<ssd:Connector name="startTime" kind="parameter">
+## 								<ssc:Real />
+## 							</ssd:Connector>
+## 						</ssd:Connectors>
+## 					</ssd:Component>
+## 				</ssd:Elements>
+## 				<ssd:Annotations>
+## 					<ssc:Annotation type="org.openmodelica">
+## 						<oms:Annotations>
+## 							<oms:SimulationInformation>
+## 								<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+## 							</oms:SimulationInformation>
+## 						</oms:Annotations>
+## 					</ssc:Annotation>
+## 				</ssd:Annotations>
+## 			</ssd:System>
+## 			<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
+## 				<ssd:Annotations>
+## 					<ssc:Annotation type="org.openmodelica">
+## 						<oms:Annotations>
+## 							<oms:SimulationInformation resultFile="test_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="resources/signalFilter.xml" />
+## 						</oms:Annotations>
+## 					</ssc:Annotation>
+## 				</ssd:Annotations>
+## 			</ssd:DefaultExperiment>
+## 		</ssd:SystemStructureDescription>
+## 	</oms:ssd_file>
+## 	<oms:signalFilter_file name="resources/signalFilter.xml">
+## 		<oms:SignalFilter version="1.0">
+## 			<oms:Variable name="test.eoo.source.y" type="Real" kind="output" />
+## 			<oms:Variable name="test.eoo.source.amplitude" type="Real" kind="parameter" />
+## 			<oms:Variable name="test.eoo.source.freqHz" type="Real" kind="parameter" />
+## 			<oms:Variable name="test.eoo.source.offset" type="Real" kind="parameter" />
+## 			<oms:Variable name="test.eoo.source.phase" type="Real" kind="parameter" />
+## 			<oms:Variable name="test.eoo.source.startTime" type="Real" kind="parameter" />
+## 		</oms:SignalFilter>
+## 	</oms:signalFilter_file>
+## </oms:snapshot>
 ##
 ## info:    Result file: test_res.mat (bufferSize=10)
 ## endResult

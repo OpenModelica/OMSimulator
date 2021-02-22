@@ -135,7 +135,7 @@ printStatus(status, 0)
 status = oms_addConnection("test.eoo.foo.bus", "test.eoo.foo2.bus")
 printStatus(status, 0)
 
-src, status = oms_list("test")
+src, status = oms_exportSnapshot("test")
 printStatus(status, 0)
 print(src)
 
@@ -148,7 +148,7 @@ printStatus(status, 0)
 model, status = oms_importFile("test.ssp");
 printStatus(status, 0)
 
-src, status = oms_list(model)
+src, status = oms_exportSnapshot(model)
 printStatus(status, 0)
 print(src)
 
@@ -194,334 +194,382 @@ printStatus(status, 0)
 -- status:  [correct] ok
 -- status:  [correct] ok
 -- <?xml version="1.0"?>
--- <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="test" version="1.0">
--- 	<ssd:System name="eoo">
--- 		<ssd:Elements>
--- 			<ssd:System name="foo2">
--- 				<ssd:Connectors>
--- 					<ssd:Connector name="f" kind="input">
--- 						<ssc:Real />
--- 					</ssd:Connector>
--- 					<ssd:Connector name="x" kind="output">
--- 						<ssc:Real />
--- 					</ssd:Connector>
--- 					<ssd:Connector name="v" kind="output">
--- 						<ssc:Real />
--- 					</ssd:Connector>
--- 					<ssd:Connector name="u1" kind="input">
--- 						<ssc:Real />
--- 					</ssd:Connector>
--- 					<ssd:Connector name="u2" kind="input">
--- 						<ssc:Real />
--- 					</ssd:Connector>
--- 				</ssd:Connectors>
--- 				<ssd:Annotations>
--- 					<ssc:Annotation type="org.openmodelica">
--- 						<oms:Annotations>
--- 							<oms:Buses>
--- 								<oms:Bus name="bus">
--- 									<oms:Signals>
--- 										<oms:Signal name="u1" />
--- 										<oms:Signal name="u2" />
--- 									</oms:Signals>
--- 								</oms:Bus>
--- 							</oms:Buses>
--- 							<oms:Buses>
--- 								<oms:Bus name="tlm" type="tlm" domain="mechanical" dimensions="1" interpolation="none">
--- 									<oms:Signals>
--- 										<oms:Signal name="f" type="effort" />
--- 										<oms:Signal name="v" type="flow" />
--- 										<oms:Signal name="x" type="state" />
--- 									</oms:Signals>
--- 								</oms:Bus>
--- 							</oms:Buses>
--- 							<oms:SimulationInformation>
--- 								<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
--- 							</oms:SimulationInformation>
--- 						</oms:Annotations>
--- 					</ssc:Annotation>
--- 				</ssd:Annotations>
--- 			</ssd:System>
--- 			<ssd:System name="foo">
--- 				<ssd:Connectors>
--- 					<ssd:Connector name="f" kind="input">
--- 						<ssc:Real />
--- 					</ssd:Connector>
--- 					<ssd:Connector name="x" kind="output">
--- 						<ssc:Real />
--- 					</ssd:Connector>
--- 					<ssd:Connector name="v" kind="output">
--- 						<ssc:Real />
--- 					</ssd:Connector>
--- 					<ssd:Connector name="y1" kind="output">
--- 						<ssc:Real />
--- 					</ssd:Connector>
--- 					<ssd:Connector name="y2" kind="output">
--- 						<ssc:Real />
--- 					</ssd:Connector>
--- 				</ssd:Connectors>
+-- <oms:snapshot>
+-- 	<oms:ssd_file name="SystemStructure.ssd">
+-- 		<ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="test" version="1.0">
+-- 			<ssd:System name="eoo">
 -- 				<ssd:Elements>
--- 					<ssd:System name="goo">
+-- 					<ssd:System name="foo2">
+-- 						<ssd:Connectors>
+-- 							<ssd:Connector name="f" kind="input">
+-- 								<ssc:Real />
+-- 							</ssd:Connector>
+-- 							<ssd:Connector name="x" kind="output">
+-- 								<ssc:Real />
+-- 							</ssd:Connector>
+-- 							<ssd:Connector name="v" kind="output">
+-- 								<ssc:Real />
+-- 							</ssd:Connector>
+-- 							<ssd:Connector name="u1" kind="input">
+-- 								<ssc:Real />
+-- 							</ssd:Connector>
+-- 							<ssd:Connector name="u2" kind="input">
+-- 								<ssc:Real />
+-- 							</ssd:Connector>
+-- 						</ssd:Connectors>
 -- 						<ssd:Annotations>
 -- 							<ssc:Annotation type="org.openmodelica">
 -- 								<oms:Annotations>
+-- 									<oms:Buses>
+-- 										<oms:Bus name="bus">
+-- 											<oms:Signals>
+-- 												<oms:Signal name="u1" />
+-- 												<oms:Signal name="u2" />
+-- 											</oms:Signals>
+-- 										</oms:Bus>
+-- 									</oms:Buses>
+-- 									<oms:Buses>
+-- 										<oms:Bus name="tlm" type="tlm" domain="mechanical" dimensions="1" interpolation="none">
+-- 											<oms:Signals>
+-- 												<oms:Signal name="f" type="effort" />
+-- 												<oms:Signal name="v" type="flow" />
+-- 												<oms:Signal name="x" type="state" />
+-- 											</oms:Signals>
+-- 										</oms:Bus>
+-- 									</oms:Buses>
 -- 									<oms:SimulationInformation>
--- 										<oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
+-- 										<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
 -- 									</oms:SimulationInformation>
 -- 								</oms:Annotations>
 -- 							</ssc:Annotation>
 -- 						</ssd:Annotations>
 -- 					</ssd:System>
--- 					<ssd:Component name="T" type="application/table" source="resources/0002_T.csv">
+-- 					<ssd:System name="foo">
 -- 						<ssd:Connectors>
--- 							<ssd:Connector name="time" kind="output">
--- 								<ssc:Real />
--- 								<ssd:ConnectorGeometry x="1.000000" y="0.333333" />
--- 							</ssd:Connector>
--- 							<ssd:Connector name="speed" kind="output">
--- 								<ssc:Real />
--- 								<ssd:ConnectorGeometry x="1.000000" y="0.666667" />
--- 							</ssd:Connector>
--- 						</ssd:Connectors>
--- 					</ssd:Component>
--- 					<ssd:Component name="A" type="application/x-fmu-sharedlibrary" source="resources/0001_A.fmu">
--- 						<ssd:Connectors>
--- 							<ssd:Connector name="y" kind="output">
--- 								<ssc:Real />
--- 								<ssd:ConnectorGeometry x="1.000000" y="0.500000" />
--- 							</ssd:Connector>
--- 							<ssd:Connector name="A" kind="parameter">
+-- 							<ssd:Connector name="f" kind="input">
 -- 								<ssc:Real />
 -- 							</ssd:Connector>
--- 							<ssd:Connector name="omega" kind="parameter">
+-- 							<ssd:Connector name="x" kind="output">
+-- 								<ssc:Real />
+-- 							</ssd:Connector>
+-- 							<ssd:Connector name="v" kind="output">
+-- 								<ssc:Real />
+-- 							</ssd:Connector>
+-- 							<ssd:Connector name="y1" kind="output">
+-- 								<ssc:Real />
+-- 							</ssd:Connector>
+-- 							<ssd:Connector name="y2" kind="output">
 -- 								<ssc:Real />
 -- 							</ssd:Connector>
 -- 						</ssd:Connectors>
--- 					</ssd:Component>
+-- 						<ssd:Elements>
+-- 							<ssd:System name="goo">
+-- 								<ssd:Annotations>
+-- 									<ssc:Annotation type="org.openmodelica">
+-- 										<oms:Annotations>
+-- 											<oms:SimulationInformation>
+-- 												<oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
+-- 											</oms:SimulationInformation>
+-- 										</oms:Annotations>
+-- 									</ssc:Annotation>
+-- 								</ssd:Annotations>
+-- 							</ssd:System>
+-- 							<ssd:Component name="T" type="application/table" source="resources/0002_T.csv">
+-- 								<ssd:Connectors>
+-- 									<ssd:Connector name="time" kind="output">
+-- 										<ssc:Real />
+-- 										<ssd:ConnectorGeometry x="1.000000" y="0.333333" />
+-- 									</ssd:Connector>
+-- 									<ssd:Connector name="speed" kind="output">
+-- 										<ssc:Real />
+-- 										<ssd:ConnectorGeometry x="1.000000" y="0.666667" />
+-- 									</ssd:Connector>
+-- 								</ssd:Connectors>
+-- 							</ssd:Component>
+-- 							<ssd:Component name="A" type="application/x-fmu-sharedlibrary" source="resources/0001_A.fmu">
+-- 								<ssd:Connectors>
+-- 									<ssd:Connector name="y" kind="output">
+-- 										<ssc:Real />
+-- 										<ssd:ConnectorGeometry x="1.000000" y="0.500000" />
+-- 									</ssd:Connector>
+-- 									<ssd:Connector name="A" kind="parameter">
+-- 										<ssc:Real />
+-- 									</ssd:Connector>
+-- 									<ssd:Connector name="omega" kind="parameter">
+-- 										<ssc:Real />
+-- 									</ssd:Connector>
+-- 								</ssd:Connectors>
+-- 							</ssd:Component>
+-- 						</ssd:Elements>
+-- 						<ssd:Annotations>
+-- 							<ssc:Annotation type="org.openmodelica">
+-- 								<oms:Annotations>
+-- 									<oms:Buses>
+-- 										<oms:Bus name="bus">
+-- 											<oms:Signals>
+-- 												<oms:Signal name="y1" />
+-- 												<oms:Signal name="y2" />
+-- 											</oms:Signals>
+-- 										</oms:Bus>
+-- 									</oms:Buses>
+-- 									<oms:Buses>
+-- 										<oms:Bus name="tlm" type="tlm" domain="mechanical" dimensions="1" interpolation="none">
+-- 											<oms:Signals>
+-- 												<oms:Signal name="f" type="effort" />
+-- 												<oms:Signal name="v" type="flow" />
+-- 												<oms:Signal name="x" type="state" />
+-- 											</oms:Signals>
+-- 										</oms:Bus>
+-- 									</oms:Buses>
+-- 									<oms:SimulationInformation>
+-- 										<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+-- 									</oms:SimulationInformation>
+-- 								</oms:Annotations>
+-- 							</ssc:Annotation>
+-- 						</ssd:Annotations>
+-- 					</ssd:System>
 -- 				</ssd:Elements>
+-- 				<ssd:Connections>
+-- 					<ssd:Connection startElement="foo" startConnector="y1" endElement="foo2" endConnector="u1" />
+-- 					<ssd:Connection startElement="foo" startConnector="y2" endElement="foo2" endConnector="u2" />
+-- 				</ssd:Connections>
 -- 				<ssd:Annotations>
 -- 					<ssc:Annotation type="org.openmodelica">
 -- 						<oms:Annotations>
--- 							<oms:Buses>
--- 								<oms:Bus name="bus">
--- 									<oms:Signals>
--- 										<oms:Signal name="y1" />
--- 										<oms:Signal name="y2" />
--- 									</oms:Signals>
--- 								</oms:Bus>
--- 							</oms:Buses>
--- 							<oms:Buses>
--- 								<oms:Bus name="tlm" type="tlm" domain="mechanical" dimensions="1" interpolation="none">
--- 									<oms:Signals>
--- 										<oms:Signal name="f" type="effort" />
--- 										<oms:Signal name="v" type="flow" />
--- 										<oms:Signal name="x" type="state" />
--- 									</oms:Signals>
--- 								</oms:Bus>
--- 							</oms:Buses>
+-- 							<oms:Connections>
+-- 								<oms:Connection startElement="foo" startConnector="tlm" endElement="foo2" endConnector="tlm" delay="0.001000" alpha="0.300000" linearimpedance="100.000000" angularimpedance="0.000000" />
+-- 								<oms:Connection startElement="foo" startConnector="bus" endElement="foo2" endConnector="bus" />
+-- 							</oms:Connections>
 -- 							<oms:SimulationInformation>
--- 								<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+-- 								<oms:TlmMaster ip="127.0.1.1" managerport="11111" monitorport="11121" />
 -- 							</oms:SimulationInformation>
 -- 						</oms:Annotations>
 -- 					</ssc:Annotation>
 -- 				</ssd:Annotations>
 -- 			</ssd:System>
--- 		</ssd:Elements>
--- 		<ssd:Connections>
--- 			<ssd:Connection startElement="foo" startConnector="y1" endElement="foo2" endConnector="u1" />
--- 			<ssd:Connection startElement="foo" startConnector="y2" endElement="foo2" endConnector="u2" />
--- 		</ssd:Connections>
--- 		<ssd:Annotations>
--- 			<ssc:Annotation type="org.openmodelica">
--- 				<oms:Annotations>
--- 					<oms:Connections>
--- 						<oms:Connection startElement="foo" startConnector="tlm" endElement="foo2" endConnector="tlm" delay="0.001000" alpha="0.300000" linearimpedance="100.000000" angularimpedance="0.000000" />
--- 						<oms:Connection startElement="foo" startConnector="bus" endElement="foo2" endConnector="bus" />
--- 					</oms:Connections>
--- 					<oms:SimulationInformation>
--- 						<oms:TlmMaster ip="127.0.1.1" managerport="11111" monitorport="11121" />
--- 					</oms:SimulationInformation>
--- 				</oms:Annotations>
--- 			</ssc:Annotation>
--- 		</ssd:Annotations>
--- 	</ssd:System>
--- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
--- 		<ssd:Annotations>
--- 			<ssc:Annotation type="org.openmodelica">
--- 				<oms:Annotations>
--- 					<oms:SimulationInformation resultFile="test_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="resources/signalFilter.xml" />
--- 				</oms:Annotations>
--- 			</ssc:Annotation>
--- 		</ssd:Annotations>
--- 	</ssd:DefaultExperiment>
--- </ssd:SystemStructureDescription>
+-- 			<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
+-- 				<ssd:Annotations>
+-- 					<ssc:Annotation type="org.openmodelica">
+-- 						<oms:Annotations>
+-- 							<oms:SimulationInformation resultFile="test_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="resources/signalFilter.xml" />
+-- 						</oms:Annotations>
+-- 					</ssc:Annotation>
+-- 				</ssd:Annotations>
+-- 			</ssd:DefaultExperiment>
+-- 		</ssd:SystemStructureDescription>
+-- 	</oms:ssd_file>
+-- 	<oms:signalFilter_file name="resources/signalFilter.xml">
+-- 		<oms:SignalFilter version="1.0">
+-- 			<oms:Variable name="test.eoo.foo2.u2" />
+-- 			<oms:Variable name="test.eoo.foo2.u1" />
+-- 			<oms:Variable name="test.eoo.foo2.x" />
+-- 			<oms:Variable name="test.eoo.foo2.v" />
+-- 			<oms:Variable name="test.eoo.foo2.f" />
+-- 			<oms:Variable name="test.eoo.foo.y2" />
+-- 			<oms:Variable name="test.eoo.foo.v" />
+-- 			<oms:Variable name="test.eoo.foo.x" />
+-- 			<oms:Variable name="test.eoo.foo.y1" />
+-- 			<oms:Variable name="test.eoo.foo.f" />
+-- 			<oms:Variable name="test.eoo.foo.T.speed" />
+-- 			<oms:Variable name="test.eoo.foo.T.time" />
+-- 			<oms:Variable name="test.eoo.foo.A._D_cse1" type="Real" kind="local" />
+-- 			<oms:Variable name="test.eoo.foo.A.y" type="Real" kind="output" />
+-- 			<oms:Variable name="test.eoo.foo.A.A" type="Real" kind="parameter" />
+-- 			<oms:Variable name="test.eoo.foo.A.omega" type="Real" kind="parameter" />
+-- 		</oms:SignalFilter>
+-- 	</oms:signalFilter_file>
+-- </oms:snapshot>
 --
 -- status:  [correct] ok
 -- status:  [correct] ok
 -- status:  [correct] ok
 -- status:  [correct] ok
 -- <?xml version="1.0"?>
--- <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="test" version="1.0">
--- 	<ssd:System name="eoo">
--- 		<ssd:Elements>
--- 			<ssd:System name="foo2">
--- 				<ssd:Connectors>
--- 					<ssd:Connector name="f" kind="input">
--- 						<ssc:Real />
--- 					</ssd:Connector>
--- 					<ssd:Connector name="x" kind="output">
--- 						<ssc:Real />
--- 					</ssd:Connector>
--- 					<ssd:Connector name="v" kind="output">
--- 						<ssc:Real />
--- 					</ssd:Connector>
--- 					<ssd:Connector name="u1" kind="input">
--- 						<ssc:Real />
--- 					</ssd:Connector>
--- 					<ssd:Connector name="u2" kind="input">
--- 						<ssc:Real />
--- 					</ssd:Connector>
--- 				</ssd:Connectors>
--- 				<ssd:Annotations>
--- 					<ssc:Annotation type="org.openmodelica">
--- 						<oms:Annotations>
--- 							<oms:Buses>
--- 								<oms:Bus name="bus">
--- 									<oms:Signals>
--- 										<oms:Signal name="u1" />
--- 										<oms:Signal name="u2" />
--- 									</oms:Signals>
--- 								</oms:Bus>
--- 							</oms:Buses>
--- 							<oms:Buses>
--- 								<oms:Bus name="tlm" type="tlm" domain="mechanical" dimensions="1" interpolation="none">
--- 									<oms:Signals>
--- 										<oms:Signal name="f" type="effort" />
--- 										<oms:Signal name="v" type="flow" />
--- 										<oms:Signal name="x" type="state" />
--- 									</oms:Signals>
--- 								</oms:Bus>
--- 							</oms:Buses>
--- 							<oms:SimulationInformation>
--- 								<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
--- 							</oms:SimulationInformation>
--- 						</oms:Annotations>
--- 					</ssc:Annotation>
--- 				</ssd:Annotations>
--- 			</ssd:System>
--- 			<ssd:System name="foo">
--- 				<ssd:Connectors>
--- 					<ssd:Connector name="f" kind="input">
--- 						<ssc:Real />
--- 					</ssd:Connector>
--- 					<ssd:Connector name="x" kind="output">
--- 						<ssc:Real />
--- 					</ssd:Connector>
--- 					<ssd:Connector name="v" kind="output">
--- 						<ssc:Real />
--- 					</ssd:Connector>
--- 					<ssd:Connector name="y1" kind="output">
--- 						<ssc:Real />
--- 					</ssd:Connector>
--- 					<ssd:Connector name="y2" kind="output">
--- 						<ssc:Real />
--- 					</ssd:Connector>
--- 				</ssd:Connectors>
+-- <oms:snapshot>
+-- 	<oms:ssd_file name="SystemStructure.ssd">
+-- 		<ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="test" version="1.0">
+-- 			<ssd:System name="eoo">
 -- 				<ssd:Elements>
--- 					<ssd:System name="goo">
+-- 					<ssd:System name="foo2">
+-- 						<ssd:Connectors>
+-- 							<ssd:Connector name="f" kind="input">
+-- 								<ssc:Real />
+-- 							</ssd:Connector>
+-- 							<ssd:Connector name="x" kind="output">
+-- 								<ssc:Real />
+-- 							</ssd:Connector>
+-- 							<ssd:Connector name="v" kind="output">
+-- 								<ssc:Real />
+-- 							</ssd:Connector>
+-- 							<ssd:Connector name="u1" kind="input">
+-- 								<ssc:Real />
+-- 							</ssd:Connector>
+-- 							<ssd:Connector name="u2" kind="input">
+-- 								<ssc:Real />
+-- 							</ssd:Connector>
+-- 						</ssd:Connectors>
 -- 						<ssd:Annotations>
 -- 							<ssc:Annotation type="org.openmodelica">
 -- 								<oms:Annotations>
+-- 									<oms:Buses>
+-- 										<oms:Bus name="bus">
+-- 											<oms:Signals>
+-- 												<oms:Signal name="u1" />
+-- 												<oms:Signal name="u2" />
+-- 											</oms:Signals>
+-- 										</oms:Bus>
+-- 									</oms:Buses>
+-- 									<oms:Buses>
+-- 										<oms:Bus name="tlm" type="tlm" domain="mechanical" dimensions="1" interpolation="none">
+-- 											<oms:Signals>
+-- 												<oms:Signal name="f" type="effort" />
+-- 												<oms:Signal name="v" type="flow" />
+-- 												<oms:Signal name="x" type="state" />
+-- 											</oms:Signals>
+-- 										</oms:Bus>
+-- 									</oms:Buses>
 -- 									<oms:SimulationInformation>
--- 										<oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
+-- 										<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
 -- 									</oms:SimulationInformation>
 -- 								</oms:Annotations>
 -- 							</ssc:Annotation>
 -- 						</ssd:Annotations>
 -- 					</ssd:System>
--- 					<ssd:Component name="T" type="application/table" source="resources/0002_T.csv">
+-- 					<ssd:System name="foo">
 -- 						<ssd:Connectors>
--- 							<ssd:Connector name="time" kind="output">
--- 								<ssc:Real />
--- 								<ssd:ConnectorGeometry x="1.000000" y="0.333333" />
--- 							</ssd:Connector>
--- 							<ssd:Connector name="speed" kind="output">
--- 								<ssc:Real />
--- 								<ssd:ConnectorGeometry x="1.000000" y="0.666667" />
--- 							</ssd:Connector>
--- 						</ssd:Connectors>
--- 					</ssd:Component>
--- 					<ssd:Component name="A" type="application/x-fmu-sharedlibrary" source="resources/0001_A.fmu">
--- 						<ssd:Connectors>
--- 							<ssd:Connector name="y" kind="output">
--- 								<ssc:Real />
--- 								<ssd:ConnectorGeometry x="1.000000" y="0.500000" />
--- 							</ssd:Connector>
--- 							<ssd:Connector name="A" kind="parameter">
+-- 							<ssd:Connector name="f" kind="input">
 -- 								<ssc:Real />
 -- 							</ssd:Connector>
--- 							<ssd:Connector name="omega" kind="parameter">
+-- 							<ssd:Connector name="x" kind="output">
+-- 								<ssc:Real />
+-- 							</ssd:Connector>
+-- 							<ssd:Connector name="v" kind="output">
+-- 								<ssc:Real />
+-- 							</ssd:Connector>
+-- 							<ssd:Connector name="y1" kind="output">
+-- 								<ssc:Real />
+-- 							</ssd:Connector>
+-- 							<ssd:Connector name="y2" kind="output">
 -- 								<ssc:Real />
 -- 							</ssd:Connector>
 -- 						</ssd:Connectors>
--- 					</ssd:Component>
+-- 						<ssd:Elements>
+-- 							<ssd:System name="goo">
+-- 								<ssd:Annotations>
+-- 									<ssc:Annotation type="org.openmodelica">
+-- 										<oms:Annotations>
+-- 											<oms:SimulationInformation>
+-- 												<oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
+-- 											</oms:SimulationInformation>
+-- 										</oms:Annotations>
+-- 									</ssc:Annotation>
+-- 								</ssd:Annotations>
+-- 							</ssd:System>
+-- 							<ssd:Component name="T" type="application/table" source="resources/0002_T.csv">
+-- 								<ssd:Connectors>
+-- 									<ssd:Connector name="time" kind="output">
+-- 										<ssc:Real />
+-- 										<ssd:ConnectorGeometry x="1.000000" y="0.333333" />
+-- 									</ssd:Connector>
+-- 									<ssd:Connector name="speed" kind="output">
+-- 										<ssc:Real />
+-- 										<ssd:ConnectorGeometry x="1.000000" y="0.666667" />
+-- 									</ssd:Connector>
+-- 								</ssd:Connectors>
+-- 							</ssd:Component>
+-- 							<ssd:Component name="A" type="application/x-fmu-sharedlibrary" source="resources/0001_A.fmu">
+-- 								<ssd:Connectors>
+-- 									<ssd:Connector name="y" kind="output">
+-- 										<ssc:Real />
+-- 										<ssd:ConnectorGeometry x="1.000000" y="0.500000" />
+-- 									</ssd:Connector>
+-- 									<ssd:Connector name="A" kind="parameter">
+-- 										<ssc:Real />
+-- 									</ssd:Connector>
+-- 									<ssd:Connector name="omega" kind="parameter">
+-- 										<ssc:Real />
+-- 									</ssd:Connector>
+-- 								</ssd:Connectors>
+-- 							</ssd:Component>
+-- 						</ssd:Elements>
+-- 						<ssd:Annotations>
+-- 							<ssc:Annotation type="org.openmodelica">
+-- 								<oms:Annotations>
+-- 									<oms:Buses>
+-- 										<oms:Bus name="bus">
+-- 											<oms:Signals>
+-- 												<oms:Signal name="y1" />
+-- 												<oms:Signal name="y2" />
+-- 											</oms:Signals>
+-- 										</oms:Bus>
+-- 									</oms:Buses>
+-- 									<oms:Buses>
+-- 										<oms:Bus name="tlm" type="tlm" domain="mechanical" dimensions="1" interpolation="none">
+-- 											<oms:Signals>
+-- 												<oms:Signal name="f" type="effort" />
+-- 												<oms:Signal name="v" type="flow" />
+-- 												<oms:Signal name="x" type="state" />
+-- 											</oms:Signals>
+-- 										</oms:Bus>
+-- 									</oms:Buses>
+-- 									<oms:SimulationInformation>
+-- 										<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+-- 									</oms:SimulationInformation>
+-- 								</oms:Annotations>
+-- 							</ssc:Annotation>
+-- 						</ssd:Annotations>
+-- 					</ssd:System>
 -- 				</ssd:Elements>
+-- 				<ssd:Connections>
+-- 					<ssd:Connection startElement="foo" startConnector="y1" endElement="foo2" endConnector="u1" />
+-- 					<ssd:Connection startElement="foo" startConnector="y2" endElement="foo2" endConnector="u2" />
+-- 				</ssd:Connections>
 -- 				<ssd:Annotations>
 -- 					<ssc:Annotation type="org.openmodelica">
 -- 						<oms:Annotations>
--- 							<oms:Buses>
--- 								<oms:Bus name="bus">
--- 									<oms:Signals>
--- 										<oms:Signal name="y1" />
--- 										<oms:Signal name="y2" />
--- 									</oms:Signals>
--- 								</oms:Bus>
--- 							</oms:Buses>
--- 							<oms:Buses>
--- 								<oms:Bus name="tlm" type="tlm" domain="mechanical" dimensions="1" interpolation="none">
--- 									<oms:Signals>
--- 										<oms:Signal name="f" type="effort" />
--- 										<oms:Signal name="v" type="flow" />
--- 										<oms:Signal name="x" type="state" />
--- 									</oms:Signals>
--- 								</oms:Bus>
--- 							</oms:Buses>
+-- 							<oms:Connections>
+-- 								<oms:Connection startElement="foo" startConnector="tlm" endElement="foo2" endConnector="tlm" delay="0.001000" alpha="0.300000" linearimpedance="100.000000" angularimpedance="0.000000" />
+-- 								<oms:Connection startElement="foo" startConnector="bus" endElement="foo2" endConnector="bus" />
+-- 							</oms:Connections>
 -- 							<oms:SimulationInformation>
--- 								<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+-- 								<oms:TlmMaster ip="" managerport="0" monitorport="0" />
 -- 							</oms:SimulationInformation>
 -- 						</oms:Annotations>
 -- 					</ssc:Annotation>
 -- 				</ssd:Annotations>
 -- 			</ssd:System>
--- 		</ssd:Elements>
--- 		<ssd:Connections>
--- 			<ssd:Connection startElement="foo" startConnector="y1" endElement="foo2" endConnector="u1" />
--- 			<ssd:Connection startElement="foo" startConnector="y2" endElement="foo2" endConnector="u2" />
--- 		</ssd:Connections>
--- 		<ssd:Annotations>
--- 			<ssc:Annotation type="org.openmodelica">
--- 				<oms:Annotations>
--- 					<oms:Connections>
--- 						<oms:Connection startElement="foo" startConnector="tlm" endElement="foo2" endConnector="tlm" delay="0.001000" alpha="0.300000" linearimpedance="100.000000" angularimpedance="0.000000" />
--- 						<oms:Connection startElement="foo" startConnector="bus" endElement="foo2" endConnector="bus" />
--- 					</oms:Connections>
--- 					<oms:SimulationInformation>
--- 						<oms:TlmMaster ip="" managerport="0" monitorport="0" />
--- 					</oms:SimulationInformation>
--- 				</oms:Annotations>
--- 			</ssc:Annotation>
--- 		</ssd:Annotations>
--- 	</ssd:System>
--- 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
--- 		<ssd:Annotations>
--- 			<ssc:Annotation type="org.openmodelica">
--- 				<oms:Annotations>
--- 					<oms:SimulationInformation resultFile="test_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="resources/signalFilter.xml" />
--- 				</oms:Annotations>
--- 			</ssc:Annotation>
--- 		</ssd:Annotations>
--- 	</ssd:DefaultExperiment>
--- </ssd:SystemStructureDescription>
+-- 			<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
+-- 				<ssd:Annotations>
+-- 					<ssc:Annotation type="org.openmodelica">
+-- 						<oms:Annotations>
+-- 							<oms:SimulationInformation resultFile="test_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="resources/signalFilter.xml" />
+-- 						</oms:Annotations>
+-- 					</ssc:Annotation>
+-- 				</ssd:Annotations>
+-- 			</ssd:DefaultExperiment>
+-- 		</ssd:SystemStructureDescription>
+-- 	</oms:ssd_file>
+-- 	<oms:signalFilter_file name="resources/signalFilter.xml">
+-- 		<oms:SignalFilter version="1.0">
+-- 			<oms:Variable name="test.eoo.foo2.u2" />
+-- 			<oms:Variable name="test.eoo.foo2.u1" />
+-- 			<oms:Variable name="test.eoo.foo2.x" />
+-- 			<oms:Variable name="test.eoo.foo2.v" />
+-- 			<oms:Variable name="test.eoo.foo2.f" />
+-- 			<oms:Variable name="test.eoo.foo.y2" />
+-- 			<oms:Variable name="test.eoo.foo.v" />
+-- 			<oms:Variable name="test.eoo.foo.x" />
+-- 			<oms:Variable name="test.eoo.foo.y1" />
+-- 			<oms:Variable name="test.eoo.foo.f" />
+-- 			<oms:Variable name="test.eoo.foo.T.test.eoo.foo.T.time" />
+-- 			<oms:Variable name="test.eoo.foo.T.test.eoo.foo.T.speed" />
+-- 			<oms:Variable name="test.eoo.foo.A._D_cse1" type="Real" kind="local" />
+-- 			<oms:Variable name="test.eoo.foo.A.y" type="Real" kind="output" />
+-- 			<oms:Variable name="test.eoo.foo.A.A" type="Real" kind="parameter" />
+-- 			<oms:Variable name="test.eoo.foo.A.omega" type="Real" kind="parameter" />
+-- 		</oms:SignalFilter>
+-- 	</oms:signalFilter_file>
+-- </oms:snapshot>
 --
 -- status:  [correct] ok
 -- endResult

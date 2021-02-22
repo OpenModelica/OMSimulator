@@ -146,14 +146,12 @@ oms_status_enu_t oms::Model::rename(const ComRef& cref, const ComRef& newCref)
 
 oms::Variable* oms::Model::getVariable(const ComRef& cref) const
 {
-  // renaming any subcomponent
   oms::ComRef tail(cref);
   oms::ComRef front = tail.pop_front();
 
   if (system->getCref() == front)
     return system->getVariable(tail);
 
-  logWarning("failed to find signal \"" + std::string(cref) + "\"");
   return NULL;
 }
 

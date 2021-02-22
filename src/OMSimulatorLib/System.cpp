@@ -1938,7 +1938,7 @@ oms::Variable* oms::System::getVariable(const ComRef& cref)
   //  if (connector && connector->getName() == cref)
   //    return connector->getVariable();
 
-  logError_UnknownSignal(getFullCref() + cref);
+  //logError_UnknownSignal(getFullCref() + cref);
   return NULL;
 }
 
