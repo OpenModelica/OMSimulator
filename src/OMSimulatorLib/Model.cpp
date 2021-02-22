@@ -156,7 +156,7 @@ oms_status_enu_t oms::Model::loadSnapshot(const pugi::xml_node node)
 
   bool old_copyResources = copyResources();
   copyResources(false);
-  oms_status_enu_t status = importFromSSD(node);
+  oms_status_enu_t status = importFromSnapshot(node);
   copyResources(old_copyResources);
 
   if (oms_status_ok != status)
@@ -184,7 +184,7 @@ oms_status_enu_t oms::Model::importSnapshot(const char* snapshot)
   if (!result)
     return logError("loading snapshot failed (" + std::string(result.description()) + ")");
 
-  snapShot = doc.document_element(); // oms:snapshot
+  pugi::xml_node snapShot = doc.document_element(); // oms:snapshot
 
   // get ssd:SystemStructureDescription
   pugi::xml_node ssdNode = snapShot.child(oms::ssp::Version1_0::ssd_file).child(oms::ssp::Draft20180219::ssd::system_structure_description);
@@ -203,7 +203,7 @@ oms_status_enu_t oms::Model::importSnapshot(const char* snapshot)
 
   bool old_copyResources = copyResources();
   copyResources(false);
-  oms_status_enu_t status = importFromSSD(ssdNode);
+  oms_status_enu_t status = importFromSnapshot(snapShot);
   copyResources(old_copyResources);
 
   if (oms_status_ok != status)
@@ -605,16 +605,22 @@ oms_status_enu_t oms::Model::exportToSSD(pugi::xml_node& node, pugi::xml_node& s
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Model::importFromSSD(const pugi::xml_node& node)
+oms_status_enu_t oms::Model::importFromSnapshot(const pugi::xml_node& oms_snapshot)
 {
-  std::string sspVersion = node.attribute("version").as_string();
+  pugi::xml_node ssdNode = oms_snapshot.child(oms::ssp::Version1_0::ssd_file).child(oms::ssp::Draft20180219::ssd::system_structure_description);
+  if (!ssdNode)
+  {
+    return logError("loading \"SystemStructure.ssd\" from <oms:snapShot> failed");
+  }
+
+  std::string sspVersion = ssdNode.attribute("version").as_string();
 
   if(sspVersion == "Draft20180219")
   {
     logWarning_deprecated;
   }
 
-  for(pugi::xml_node_iterator it = node.begin(); it != node.end(); ++it)
+  for(pugi::xml_node_iterator it = ssdNode.begin(); it != ssdNode.end(); ++it)
   {
     std::string name = it->name();
     if (name == oms::ssp::Draft20180219::ssd::system)
@@ -631,7 +637,7 @@ oms_status_enu_t oms::Model::importFromSSD(const pugi::xml_node& node)
       if (!system)
         return oms_status_error;
 
-      if (oms_status_ok != system->importFromSSD(*it, sspVersion))
+      if (oms_status_ok != system->importFromSnapshot(*it, sspVersion, oms_snapshot))
         return oms_status_error;
     }
     else if (name == oms::ssp::Draft20180219::ssd::default_experiment)

@@ -50,7 +50,7 @@ namespace oms
     oms_status_enu_t setBoolean(const ComRef& cref, bool value);
 
     oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
-    oms_status_enu_t importFromSSD(const pugi::xml_node& node, const std::string& sspVersion, const std::string& tempdir);
+    oms_status_enu_t importFromSnapshot(const pugi::xml_node& node, const std::string& sspVersion, const pugi::xml_node& oms_snapshot);
     oms_status_enu_t deleteStartValue(const ComRef& cref);
 
     oms_status_enu_t exportToSSV(pugi::xml_node& ssvNode) const;

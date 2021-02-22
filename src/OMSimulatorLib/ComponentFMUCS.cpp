@@ -256,7 +256,7 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::
   return component;
 }
 
-oms::Component* oms::ComponentFMUCS::NewComponent(const pugi::xml_node& node, oms::System* parentSystem, const std::string& sspVersion)
+oms::Component* oms::ComponentFMUCS::NewComponent(const pugi::xml_node& node, oms::System* parentSystem, const std::string& sspVersion, const pugi::xml_node& oms_snapshot)
 {
   ComRef cref = ComRef(node.attribute("name").as_string());
   std::string type = node.attribute("type").as_string();
@@ -297,7 +297,7 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const pugi::xml_node& node, om
     {
       // set parameter bindings associated with the component
       std::string tempdir = parentSystem->getModel()->getTempDirectory();
-      component->values.importFromSSD(*it, sspVersion, tempdir);
+      component->values.importFromSnapshot(*it, sspVersion, oms_snapshot);
     }
     else
     {

@@ -502,7 +502,7 @@ oms_status_enu_t oms::System::exportToSSD(pugi::xml_node& node, pugi::xml_node& 
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const std::string& sspVersion)
+oms_status_enu_t oms::System::importFromSnapshot(const pugi::xml_node& node, const std::string& sspVersion, const pugi::xml_node& oms_snapshot)
 {
   for(pugi::xml_node_iterator it = node.begin(); it != node.end(); ++it)
   {
@@ -535,7 +535,7 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
           if (ssvFileSource.empty()) // inline parameterBinding
           {
             std::string tempdir = getModel()->getTempDirectory();
-            if (oms_status_ok != values.importFromSSD(*it, sspVersion, tempdir))
+            if (oms_status_ok != values.importFromSnapshot(*it, sspVersion, oms_snapshot))
               return logError("Failed to import " + std::string(oms::ssp::Version1_0::ssd::parameter_bindings));
           }
           else
@@ -562,7 +562,7 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
       // hierarchical level parameter bindings belonging to
       // <ssd:Elements> provided either as inline or .csv files
       {
-        if (oms_status_ok != values.importFromSSD(*it, sspVersion, getModel()->getTempDirectory()))
+        if (oms_status_ok != values.importFromSnapshot(*it, sspVersion, oms_snapshot))
             return logError("Failed to import " + std::string(oms::ssp::Version1_0::ssd::parameter_bindings));
       }
     }
@@ -625,7 +625,7 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
           if (!system)
             return oms_status_error;
 
-          if (oms_status_ok != system->importFromSSD(*itElements, sspVersion))
+          if (oms_status_ok != system->importFromSnapshot(*itElements, sspVersion, oms_snapshot))
             return oms_status_error;
         }
         else if (name == oms::ssp::Draft20180219::ssd::component)
@@ -636,14 +636,14 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
           if ("application/x-fmu-sharedlibrary" == type || type.empty() && getType() != oms_system_tlm)
           {
             if (getType() == oms_system_wc)
-              component = ComponentFMUCS::NewComponent(*itElements, this, sspVersion);
+              component = ComponentFMUCS::NewComponent(*itElements, this, sspVersion, oms_snapshot);
             else if (getType() == oms_system_sc)
-              component = ComponentFMUME::NewComponent(*itElements, this, sspVersion);
+              component = ComponentFMUME::NewComponent(*itElements, this, sspVersion, oms_snapshot);
             else
               return logError("wrong xml schema detected: " + name);
           }
           else if ("application/table" == type)
-            component = ComponentTable::NewComponent(*itElements, this, sspVersion);
+            component = ComponentTable::NewComponent(*itElements, this, sspVersion, oms_snapshot);
 #if !defined(NO_TLM)
           else if (itElements->attribute("type") == nullptr && getType() == oms_system_tlm) {
             std::string name = itElements->attribute("name").as_string();
@@ -754,7 +754,7 @@ oms_status_enu_t oms::System::importFromSSD(const pugi::xml_node& node, const st
       // check for ssv FileSource exist and set the values before the connections
       if (!startValuesFileSources.empty())
       {
-        importStartValuesFromSSV();
+        importStartValuesFromSSV(oms_snapshot);
       }
     }
     else if (name == oms::ssp::Draft20180219::ssd::annotations)
@@ -2406,7 +2406,7 @@ oms_status_enu_t oms::System::addAlgLoop(oms_ssc_t SCC, const int algLoopNum)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::System::importStartValuesFromSSV()
+oms_status_enu_t oms::System::importStartValuesFromSSV(const pugi::xml_node& oms_snapshot)
 {
   for (const auto& file : startValuesFileSources)
   {
@@ -2416,41 +2416,29 @@ oms_status_enu_t oms::System::importStartValuesFromSSV()
     // check for parameter mapping file ".ssm file"
     if (!file.second.empty())
     {
-      importParameterMappingFromSSM(file.second, mappedEntry);
-      importStartValuesFromSSVHelper(file.first, mappedEntry);
+      importParameterMappingFromSSM(file.second, mappedEntry, oms_snapshot);
+      importStartValuesFromSSVHelper(file.first, mappedEntry, oms_snapshot);
     }
     else
     {
       // no mapping file provided, apply the values from ssv file
-      importStartValuesFromSSVHelper(file.first, mappedEntry);
+      importStartValuesFromSSVHelper(file.first, mappedEntry, oms_snapshot);
     }
   }
 
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::System::importStartValuesFromSSVHelper(std::string fileName, std::multimap<ComRef, ComRef> &mappedEntry)
+oms_status_enu_t oms::System::importStartValuesFromSSVHelper(std::string fileName, std::multimap<ComRef, ComRef> &mappedEntry, const pugi::xml_node& oms_snapshot)
 {
-  std::string tempdir = getModel()->getTempDirectory();
-  filesystem::path temp_root(tempdir);
-  pugi::xml_document ssvdoc;
-  pugi::xml_parse_result result = ssvdoc.load_file((temp_root / fileName).string().c_str());
-  pugi::xml_node parameterSet, parameters;
+  pugi::xml_node oms_ssv_file = oms_snapshot.find_child_by_attribute(oms::ssp::Version1_0::ssv_file, "name", fileName.c_str()); // this should be replaced to <oms:file>
+  if (!oms_ssv_file)
+  {
+    return logError("loading <oms:ssv_file> \"" + fileName + "\" from <oms:snapShot> failed");
+  }
 
-  if (result) // check from ssv file
-  {
-    parameterSet = ssvdoc.document_element(); // ssv:ParameterSet
-    parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
-  }
-  else if (getModel()->getSnapshot().child(oms::ssp::Version1_0::ssv_file)) // check in memory oms:ssv_file
-  {
-    parameterSet = getModel()->getSnapshot().child(oms::ssp::Version1_0::ssv_file).child(oms::ssp::Version1_0::ssv::parameter_set); // ssv:ParameterSet
-    parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
-  }
-  else
-  {
-    return logError("loading \"" + std::string(fileName) + "\" failed (" + std::string(result.description()) + ")");
-  }
+  pugi::xml_node parameterSet = oms_ssv_file.child(oms::ssp::Version1_0::ssv::parameter_set); // ssv:ParameterSet
+  pugi::xml_node parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
 
   if (parameters)
   {
@@ -2550,22 +2538,15 @@ oms_status_enu_t oms::System::updateAlgebraicLoops(const std::vector< oms_ssc_t 
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::System::importParameterMappingFromSSM(std::string fileName, std::multimap<ComRef, ComRef> &mappedEntry)
+oms_status_enu_t oms::System::importParameterMappingFromSSM(std::string fileName, std::multimap<ComRef, ComRef> &mappedEntry, const pugi::xml_node& oms_snapshot)
 {
-  std::string tempdir = getModel()->getTempDirectory();
-  filesystem::path temp_root(tempdir);
-  pugi::xml_document ssmdoc;
-  pugi::xml_parse_result result = ssmdoc.load_file((temp_root / fileName).string().c_str());
-  pugi::xml_node parameterMapping;
+  pugi::xml_node oms_ssm_file = oms_snapshot.find_child_by_attribute(oms::ssp::Version1_0::ssm_file, "name", fileName.c_str()); // this should be replaced to <oms:file>
+  if (!oms_ssm_file)
+  {
+    return logError("loading <oms:ssm_file> \"" + fileName + "\" from <oms:snapShot> failed");
+  }
 
-  if (result) // check from ssm file
-  {
-    parameterMapping = ssmdoc.document_element(); // ssm:ParameterMapping
-  }
-  else
-  {
-    return logError("loading \"" + std::string(fileName) + "\" failed (" + std::string(result.description()) + ")");
-  }
+  pugi::xml_node parameterMapping = oms_ssm_file.child(oms::ssp::Version1_0::ssm::parameter_mapping);
 
   if (parameterMapping)
   {

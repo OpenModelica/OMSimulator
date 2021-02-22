@@ -37,6 +37,7 @@
 #include <miniunz.h>
 #include <OMSFileSystem.h>
 #include <time.h>
+#include "ssd/Tags.h"
 
 oms::Scope::Scope()
   : tempDir(".")
@@ -206,6 +207,14 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
 
   const pugi::xml_node node = doc.document_element(); // ssd:SystemStructureDescription
 
+  // internally create the oms:snapshot from ssp
+  pugi::xml_document snapshot;
+  pugi::xml_node oms_snapshot = snapshot.append_child(oms::ssp::Version1_0::snap_shot);
+
+  pugi::xml_node ssd_file = oms_snapshot.append_child(oms::ssp::Version1_0::ssd_file);
+  ssd_file.append_attribute("name") = "SystemStructure.ssd";
+  ssd_file.append_copy(node);
+
   ComRef cref = ComRef(node.attribute("name").as_string());
   std::string ssdVersion = node.attribute("version").as_string();
 
@@ -224,7 +233,56 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
 
   bool old_copyResources = model->copyResources();
   model->copyResources(false);
-  oms_status_enu_t status = model->importFromSSD(node);
+
+  // add the remaining resources (e.g) .ssv, .ssm and signalFilter.xml to oms:snapshot
+  for (const auto &entry : filesystem::recursive_directory_iterator(model->getTempDirectory()))
+  {
+    if (entry.path().has_extension())
+    {
+      if (entry.path().extension() == ".ssv")
+      {
+        // ssv files
+        pugi::xml_node ssv_file = oms_snapshot.append_child(oms::ssp::Version1_0::ssv_file);
+        ssv_file.append_attribute("name") = ("resources/" + entry.path().filename().generic_string()).c_str();
+        pugi::xml_document ssv_doc;
+        pugi::xml_parse_result result = ssv_doc.load_file(entry.path().c_str());
+        if (!result)
+          return logError("loading \"" + entry.path().filename().generic_string() + "\" to <oms:snapshot> failed (" + std::string(result.description()) + ")");
+
+        pugi::xml_node ssv_node = ssv_doc.document_element(); // ssv:ParameterSet
+        ssv_file.append_copy(ssv_node);
+      }
+      else if (entry.path().extension() == ".ssm")
+      {
+        // ssm files
+        pugi::xml_node ssm_file = oms_snapshot.append_child(oms::ssp::Version1_0::ssm_file);
+        ssm_file.append_attribute("name") = ("resources/" + entry.path().filename().generic_string()).c_str();;
+        pugi::xml_document ssm_doc;
+        pugi::xml_parse_result result = ssm_doc.load_file(entry.path().c_str());
+        if (!result)
+          return logError("loading \"" + entry.path().filename().generic_string() + "\" to <oms:snapshot> failed (" + std::string(result.description()) + ")");
+
+        pugi::xml_node ssm_node = ssm_doc.document_element(); // ssv:ParameterSet
+        ssm_file.append_copy(ssm_node);
+      }
+      else if (entry.path().filename()== "signalFilter.xml")
+      {
+        pugi::xml_node signalFilter_file = oms_snapshot.append_child("oms:signalFilter_file");
+        signalFilter_file.append_attribute("name") = "resources/signalFilter.xml";
+        pugi::xml_document signalFilter_doc;
+        pugi::xml_parse_result result = signalFilter_doc.load_file(entry.path().c_str());
+        if (!result)
+          return logError("loading \"" + entry.path().filename().generic_string() + "\" to <oms:snapshot> failed (" + std::string(result.description()) + ")");
+
+        pugi::xml_node signalfilter_node = signalFilter_doc.document_element(); // oms:SignalFilter
+        signalFilter_file.append_copy(signalfilter_node);
+      }
+    }
+  }
+
+  //snapshot.save(std::cout);
+
+  oms_status_enu_t status = model->importFromSnapshot(oms_snapshot);
   model->copyResources(old_copyResources);
 
   Scope::GetInstance().setWorkingDirectory(cd);
