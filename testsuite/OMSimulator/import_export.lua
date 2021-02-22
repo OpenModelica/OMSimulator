@@ -360,16 +360,16 @@ printStatus(status, 0)
 -- 	</oms:ssd_file>
 -- 	<oms:signalFilter_file name="resources/signalFilter.xml">
 -- 		<oms:SignalFilter version="1.0">
--- 			<oms:Variable name="test.eoo.foo2.u2" />
--- 			<oms:Variable name="test.eoo.foo2.u1" />
+-- 			<oms:Variable name="test.eoo.foo2.f" />
 -- 			<oms:Variable name="test.eoo.foo2.x" />
 -- 			<oms:Variable name="test.eoo.foo2.v" />
--- 			<oms:Variable name="test.eoo.foo2.f" />
--- 			<oms:Variable name="test.eoo.foo.y2" />
--- 			<oms:Variable name="test.eoo.foo.v" />
--- 			<oms:Variable name="test.eoo.foo.x" />
--- 			<oms:Variable name="test.eoo.foo.y1" />
+-- 			<oms:Variable name="test.eoo.foo2.u1" />
+-- 			<oms:Variable name="test.eoo.foo2.u2" />
 -- 			<oms:Variable name="test.eoo.foo.f" />
+-- 			<oms:Variable name="test.eoo.foo.x" />
+-- 			<oms:Variable name="test.eoo.foo.v" />
+-- 			<oms:Variable name="test.eoo.foo.y1" />
+-- 			<oms:Variable name="test.eoo.foo.y2" />
 -- 			<oms:Variable name="test.eoo.foo.T.speed" />
 -- 			<oms:Variable name="test.eoo.foo.T.time" />
 -- 			<oms:Variable name="test.eoo.foo.A._D_cse1" type="Real" kind="local" />
@@ -551,16 +551,16 @@ printStatus(status, 0)
 -- 	</oms:ssd_file>
 -- 	<oms:signalFilter_file name="resources/signalFilter.xml">
 -- 		<oms:SignalFilter version="1.0">
--- 			<oms:Variable name="test.eoo.foo2.u2" />
--- 			<oms:Variable name="test.eoo.foo2.u1" />
+-- 			<oms:Variable name="test.eoo.foo2.f" />
 -- 			<oms:Variable name="test.eoo.foo2.x" />
 -- 			<oms:Variable name="test.eoo.foo2.v" />
--- 			<oms:Variable name="test.eoo.foo2.f" />
--- 			<oms:Variable name="test.eoo.foo.y2" />
--- 			<oms:Variable name="test.eoo.foo.v" />
--- 			<oms:Variable name="test.eoo.foo.x" />
--- 			<oms:Variable name="test.eoo.foo.y1" />
+-- 			<oms:Variable name="test.eoo.foo2.u1" />
+-- 			<oms:Variable name="test.eoo.foo2.u2" />
 -- 			<oms:Variable name="test.eoo.foo.f" />
+-- 			<oms:Variable name="test.eoo.foo.x" />
+-- 			<oms:Variable name="test.eoo.foo.v" />
+-- 			<oms:Variable name="test.eoo.foo.y1" />
+-- 			<oms:Variable name="test.eoo.foo.y2" />
 -- 			<oms:Variable name="test.eoo.foo.T.test.eoo.foo.T.time" />
 -- 			<oms:Variable name="test.eoo.foo.T.test.eoo.foo.T.speed" />
 -- 			<oms:Variable name="test.eoo.foo.A._D_cse1" type="Real" kind="local" />
