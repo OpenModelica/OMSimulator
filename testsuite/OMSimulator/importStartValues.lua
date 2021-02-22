@@ -1,8 +1,8 @@
 -- status: correct
 -- linux: yes
--- mingw: no
--- win: no
--- mac: no
+-- mingw: yes
+-- win: yes
+-- mac: yes
 
 oms_setCommandLineOption("--suppressPath=true --exportParametersInline=false")
 
