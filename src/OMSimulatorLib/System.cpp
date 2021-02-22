@@ -1581,7 +1581,7 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
   if (tail.isEmpty())
   {
     // check cref has ":start" suffix at the end to delete only start values
-    if (front.hasSuffixStart())
+    if (front.hasSuffix("start"))
     {
       if (oms_status_ok != values.deleteStartValue(getValidCref(front)))
         return logWarning("failed to delete start value \"" + std::string(getFullCref()+front) + "\"" + " because the identifier couldn't be resolved to any system signal");
@@ -1663,7 +1663,7 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
     if (component != components.end())
     {
       // check cref has ":start" suffix at the end to delete only start values
-      if (tail.hasSuffixStart())
+      if (tail.hasSuffix("start"))
       {
         // add prefix to cref start values if ssv file is used (e.g) k1:start -> addP.k1:start
         if(!Flags::ExportParametersInline())
