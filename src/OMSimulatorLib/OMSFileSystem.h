@@ -1,6 +1,7 @@
 #ifndef _OMS_FILESYSTEM_H_
 
 #if !defined(WITHOUT_FS) && defined(__has_include)
+
 #if __has_include(<filesystem>)
 #include <filesystem>
 #if __cpp_lib_filesystem >= 201703
@@ -16,6 +17,7 @@ namespace filesystem = std::experimental::filesystem::v1;
 #endif
 
 #if OMC_STD_FS == 1
+
 static inline filesystem::path oms_temp_directory_path(void) {
   return filesystem::temp_directory_path();
 }
@@ -23,7 +25,11 @@ static inline filesystem::path oms_canonical(filesystem::path p) {
   return filesystem::canonical(p);
 }
 
-#else
+#define OMS_RECURSIVE_DIRECTORY_ITERATOR(path) (filesystem::recursive_directory_iterator{path})
+
+#else // boost part
+
+
 #include <string>
 #include <boost/version.hpp>
 // boost version < 1.57 has issues linking boost::filesystem::copy_file
@@ -39,6 +45,14 @@ static inline filesystem::path oms_canonical(filesystem::path p) {
 #if (BOOST_VERSION >= 105300)
 #include <boost/lockfree/queue.hpp>
 #endif
+
+#if (BOOST_VERSION < 105500)
+#include <boost/range.hpp>
+#define OMS_RECURSIVE_DIRECTORY_ITERATOR(path) (boost::make_iterator_range(filesystem::recursive_directory_iterator{path}, {}))
+#else // older boost
+#define OMS_RECURSIVE_DIRECTORY_ITERATOR(path) (filesystem::recursive_directory_iterator{path})
+#endif
+
 
 #include <boost/filesystem.hpp>
 namespace filesystem = boost::filesystem;

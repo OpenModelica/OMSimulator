@@ -235,7 +235,7 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
   model->copyResources(false);
 
   // add the remaining resources (e.g) .ssv, .ssm and signalFilter.xml to oms:snapshot
-  for (const auto &entry : filesystem::recursive_directory_iterator(model->getTempDirectory()))
+  for (const auto &entry : OMS_RECURSIVE_DIRECTORY_ITERATOR(model->getTempDirectory()))
   {
     if (entry.path().has_extension())
     {
