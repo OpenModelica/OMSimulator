@@ -161,9 +161,18 @@ oms_status_enu_t oms::Model::loadSnapshot(const pugi::xml_node node)
   ssd_file.append_attribute("name") = "SystemStructure.ssd";
   ssd_file.append_copy(node);
 
+  /*construct mappedSnapshot from oms_snapshot
+    eg: filename -> <oms:file name="SystemStructure.ssd"
+  */
+  std::unordered_map<std::string, pugi::xml_node> mappedSnapshot;
+  for (const auto & it : oms_snapshot.children())
+  {
+    mappedSnapshot[it.attribute("name").as_string()] = it;
+  }
+
   bool old_copyResources = copyResources();
   copyResources(false);
-  oms_status_enu_t status = importFromSnapshot(oms_snapshot);
+  oms_status_enu_t status = importFromSnapshot(mappedSnapshot);
   copyResources(old_copyResources);
 
   if (oms_status_ok != status)
@@ -193,6 +202,15 @@ oms_status_enu_t oms::Model::importSnapshot(const char* snapshot)
 
   pugi::xml_node snapShot = doc.document_element(); // oms:snapshot
 
+  /*construct mappedSnapshot from oms_snapshot
+    eg: filename -> <oms:file name="SystemStructure.ssd"
+  */
+  std::unordered_map<std::string, pugi::xml_node> mappedSnapshot;
+  for (const auto & it : snapShot.children())
+  {
+    mappedSnapshot[it.attribute("name").as_string()] = it;
+  }
+
   // get ssd:SystemStructureDescription
   pugi::xml_node ssd_file = snapShot.find_child_by_attribute(oms::ssp::Version1_0::oms_file, "name", "SystemStructure.ssd");
   pugi::xml_node ssdNode = ssd_file.child(oms::ssp::Draft20180219::ssd::system_structure_description);
@@ -211,7 +229,7 @@ oms_status_enu_t oms::Model::importSnapshot(const char* snapshot)
 
   bool old_copyResources = copyResources();
   copyResources(false);
-  oms_status_enu_t status = importFromSnapshot(snapShot);
+  oms_status_enu_t status = importFromSnapshot(mappedSnapshot);
   copyResources(old_copyResources);
 
   if (oms_status_ok != status)
@@ -613,15 +631,15 @@ oms_status_enu_t oms::Model::exportToSSD(pugi::xml_node& node, pugi::xml_node& s
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Model::importFromSnapshot(const pugi::xml_node& oms_snapshot)
+oms_status_enu_t oms::Model::importFromSnapshot(const std::unordered_map<std::string, pugi::xml_node>& oms_snapshot)
 {
-  pugi::xml_node ssd_file = oms_snapshot.find_child_by_attribute(oms::ssp::Version1_0::oms_file, "name", "SystemStructure.ssd");
-  if (!ssd_file)
+  auto oms_file_ssd = oms_snapshot.find("SystemStructure.ssd");
+  if (oms_file_ssd == oms_snapshot.end())
   {
     return logError("loading <oms:file> \"SystemStructure.ssd\" from <oms:snapshot> failed");
   }
 
-  pugi::xml_node ssdNode = ssd_file.child(oms::ssp::Draft20180219::ssd::system_structure_description);
+  pugi::xml_node ssdNode = oms_file_ssd->second.child(oms::ssp::Draft20180219::ssd::system_structure_description);
   std::string sspVersion = ssdNode.attribute("version").as_string();
 
   if(sspVersion == "Draft20180219")

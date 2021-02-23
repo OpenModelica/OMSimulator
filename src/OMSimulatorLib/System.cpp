@@ -502,7 +502,7 @@ oms_status_enu_t oms::System::exportToSSD(pugi::xml_node& node, pugi::xml_node& 
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::System::importFromSnapshot(const pugi::xml_node& node, const std::string& sspVersion, const pugi::xml_node& oms_snapshot)
+oms_status_enu_t oms::System::importFromSnapshot(const pugi::xml_node& node, const std::string& sspVersion, const std::unordered_map<std::string, pugi::xml_node>& oms_snapshot)
 {
   for(pugi::xml_node_iterator it = node.begin(); it != node.end(); ++it)
   {
@@ -2406,7 +2406,7 @@ oms_status_enu_t oms::System::addAlgLoop(oms_ssc_t SCC, const int algLoopNum)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::System::importStartValuesFromSSV(const pugi::xml_node& oms_snapshot)
+oms_status_enu_t oms::System::importStartValuesFromSSV(const std::unordered_map<std::string, pugi::xml_node>& oms_snapshot)
 {
   for (const auto& file : startValuesFileSources)
   {
@@ -2429,15 +2429,15 @@ oms_status_enu_t oms::System::importStartValuesFromSSV(const pugi::xml_node& oms
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::System::importStartValuesFromSSVHelper(std::string fileName, std::multimap<ComRef, ComRef> &mappedEntry, const pugi::xml_node& oms_snapshot)
+oms_status_enu_t oms::System::importStartValuesFromSSVHelper(std::string fileName, std::multimap<ComRef, ComRef>& mappedEntry, const std::unordered_map<std::string, pugi::xml_node>& oms_snapshot)
 {
-  pugi::xml_node oms_ssv_file = oms_snapshot.find_child_by_attribute(oms::ssp::Version1_0::oms_file, "name", fileName.c_str());
-  if (!oms_ssv_file)
+  auto oms_ssv_file = oms_snapshot.find(fileName);
+  if (oms_ssv_file == oms_snapshot.end())
   {
     return logError("loading <oms:file> \"" + fileName + "\" from <oms:snapShot> failed");
   }
 
-  pugi::xml_node parameterSet = oms_ssv_file.child(oms::ssp::Version1_0::ssv::parameter_set); // ssv:ParameterSet
+  pugi::xml_node parameterSet = oms_ssv_file->second.child(oms::ssp::Version1_0::ssv::parameter_set); // ssv:ParameterSet
   pugi::xml_node parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
 
   if (parameters)
@@ -2538,15 +2538,15 @@ oms_status_enu_t oms::System::updateAlgebraicLoops(const std::vector< oms_ssc_t 
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::System::importParameterMappingFromSSM(std::string fileName, std::multimap<ComRef, ComRef> &mappedEntry, const pugi::xml_node& oms_snapshot)
+oms_status_enu_t oms::System::importParameterMappingFromSSM(std::string fileName, std::multimap<ComRef, ComRef>& mappedEntry, const std::unordered_map<std::string, pugi::xml_node>& oms_snapshot)
 {
-  pugi::xml_node oms_ssm_file = oms_snapshot.find_child_by_attribute(oms::ssp::Version1_0::oms_file, "name", fileName.c_str());
-  if (!oms_ssm_file)
+  auto oms_ssm_file = oms_snapshot.find(fileName);
+  if (oms_ssm_file == oms_snapshot.end())
   {
     return logError("loading <oms:file> \"" + fileName + "\" from <oms:snapShot> failed");
   }
 
-  pugi::xml_node parameterMapping = oms_ssm_file.child(oms::ssp::Version1_0::ssm::parameter_mapping);
+  pugi::xml_node parameterMapping = oms_ssm_file->second.child(oms::ssp::Version1_0::ssm::parameter_mapping);
 
   if (parameterMapping)
   {

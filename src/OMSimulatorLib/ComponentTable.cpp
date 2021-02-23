@@ -103,7 +103,7 @@ oms::Component* oms::ComponentTable::NewComponent(const oms::ComRef& cref, oms::
   return component;
 }
 
-oms::Component* oms::ComponentTable::NewComponent(const pugi::xml_node& node, oms::System* parentSystem, const std::string& sspVersion, const pugi::xml_node& oms_snapshot)
+oms::Component* oms::ComponentTable::NewComponent(const pugi::xml_node& node, oms::System* parentSystem, const std::string& sspVersion, const std::unordered_map<std::string, pugi::xml_node>& oms_snapshot)
 {
   ComRef cref = ComRef(node.attribute("name").as_string());
   std::string type = node.attribute("type").as_string();

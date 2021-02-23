@@ -83,7 +83,7 @@ namespace oms
     oms_status_enu_t addSubModel(const ComRef& cref, const std::string& fmuPath);
     bool validCref(const ComRef& cref);
     oms_status_enu_t exportToSSD(pugi::xml_node& node, pugi::xml_node& ssvNode) const;
-    oms_status_enu_t importFromSnapshot(const pugi::xml_node& node, const std::string& sspVersion, const pugi::xml_node& oms_snapshot);
+    oms_status_enu_t importFromSnapshot(const pugi::xml_node& node, const std::string& sspVersion, const std::unordered_map<std::string, pugi::xml_node>& oms_snapshot);
     virtual oms_status_enu_t exportToSSD_SimulationInformation(pugi::xml_node& node) const = 0;
     virtual oms_status_enu_t importFromSSD_SimulationInformation(const pugi::xml_node& node, const std::string& sspVersion) = 0;
     void setGeometry(const ssd::ElementGeometry& geometry) {element.setGeometry(&geometry);}
@@ -233,9 +233,9 @@ namespace oms
     oms_status_enu_t importTLMBus(const pugi::xml_node& node, Component* component);
     oms_status_enu_t importBusConnectorSignals(const pugi::xml_node& node);
     oms_status_enu_t importBusConnectorGeometry(const pugi::xml_node& node);
-    oms_status_enu_t importStartValuesFromSSV(const pugi::xml_node& node);
-    oms_status_enu_t importStartValuesFromSSVHelper(std::string fileName, std::multimap<ComRef, ComRef> &mappedEntry, const pugi::xml_node& oms_snapshot);
-    oms_status_enu_t importParameterMappingFromSSM(std::string fileName, std::multimap<ComRef, ComRef> &mappedEntry, const pugi::xml_node& oms_snapshot);
+    oms_status_enu_t importStartValuesFromSSV(const std::unordered_map<std::string, pugi::xml_node>& oms_snapshot);
+    oms_status_enu_t importStartValuesFromSSVHelper(std::string fileName, std::multimap<ComRef, ComRef> &mappedEntry, const std::unordered_map<std::string, pugi::xml_node>& oms_snapshot);
+    oms_status_enu_t importParameterMappingFromSSM(std::string fileName, std::multimap<ComRef, ComRef> &mappedEntry, const std::unordered_map<std::string, pugi::xml_node>& oms_snapshot);
 
     std::vector<AlgLoop> algLoops;    ///< Vector of algebraic loop objects
   };
