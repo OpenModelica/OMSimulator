@@ -233,7 +233,7 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
   if (ssdVersion != "Draft20180219" && ssdVersion != "1.0")
     logWarning("Unknown SSD version: " + ssdVersion);
 
-  const boost::filesystem::path model_tempDir(model->getTempDirectory());
+  const filesystem::path model_tempDir(model->getTempDirectory());
 
   // extract the ssp file
   oms::Scope::miniunz(filename, model_tempDir.string(), false);
