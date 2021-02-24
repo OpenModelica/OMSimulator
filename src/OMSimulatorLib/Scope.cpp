@@ -248,7 +248,7 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
   for (const auto& entry : OMS_RECURSIVE_DIRECTORY_ITERATOR(model_tempDir))
     if (entry.path().has_extension())
       if (".ssv" == entry.path().extension() || ".ssm" == entry.path().extension() || ".xml" == entry.path().extension())
-        addSnapshotResources(naive_uncomplete(entry.path(), model_tempDir).string(), mappedSnapshot);
+        addSnapshotResources(naive_uncomplete(entry.path(), model_tempDir).generic_string(), mappedSnapshot);
 
   // snapshot.save(std::cout);
 
