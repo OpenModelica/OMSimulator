@@ -156,7 +156,6 @@ namespace oms
 
     std::string signalFilter = ".*"; ///< default
 
-    bool cancelSim;
     bool isolatedFMU = false;
 
     ctpl::thread_pool* pool = nullptr;
