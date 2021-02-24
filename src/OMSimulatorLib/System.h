@@ -40,13 +40,15 @@
 #include "DirectedGraph.h"
 #include "Element.h"
 #include "ExternalModel.h"
-#include "Values.h"
 #include "ResultWriter.h"
+#include "Snapshot.h"
 #include "ssd/ConnectorGeometry.h"
 #if !defined(NO_TLM)
-#include "TLMBusConnector.h"
+  #include "TLMBusConnector.h"
 #endif
 #include "Types.h"
+#include "Values.h"
+
 #include <map>
 #include <pugixml.hpp>
 #include <unordered_map>
@@ -83,7 +85,7 @@ namespace oms
     oms_status_enu_t addSubModel(const ComRef& cref, const std::string& fmuPath);
     bool validCref(const ComRef& cref);
     oms_status_enu_t exportToSSD(pugi::xml_node& node, pugi::xml_node& ssvNode) const;
-    oms_status_enu_t importFromSnapshot(const pugi::xml_node& node, const std::string& sspVersion, const std::unordered_map<std::string, pugi::xml_node>& oms_snapshot);
+    oms_status_enu_t importFromSnapshot(const pugi::xml_node& node, const std::string& sspVersion, Snapshot& snapshot);
     virtual oms_status_enu_t exportToSSD_SimulationInformation(pugi::xml_node& node) const = 0;
     virtual oms_status_enu_t importFromSSD_SimulationInformation(const pugi::xml_node& node, const std::string& sspVersion) = 0;
     void setGeometry(const ssd::ElementGeometry& geometry) {element.setGeometry(&geometry);}

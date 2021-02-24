@@ -38,7 +38,7 @@
 
 #include <string.h>
 
-#include <OMSFileSystem.h>
+#include "OMSFileSystem.h"
 
 oms::ResultReader::ResultReader(const char* filename)
 {

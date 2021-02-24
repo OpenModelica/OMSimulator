@@ -46,7 +46,7 @@
 #include "SystemWC.h"
 #include "Types.h"
 #include "Variable.h"
-#include <OMSFileSystem.h>
+#include "OMSFileSystem.h"
 #include <RegEx.h>
 
 oms::System::System(const oms::ComRef& cref, oms_system_enu_t type, oms::Model* parentModel, oms::System* parentSystem, oms_solver_enu_t solverMethod)
@@ -502,7 +502,7 @@ oms_status_enu_t oms::System::exportToSSD(pugi::xml_node& node, pugi::xml_node& 
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::System::importFromSnapshot(const pugi::xml_node& node, const std::string& sspVersion, const std::unordered_map<std::string, pugi::xml_node>& oms_snapshot)
+oms_status_enu_t oms::System::importFromSnapshot(const pugi::xml_node& node, const std::string& sspVersion, Snapshot& oms_snapshot)
 {
   std::map<std::string, std::string> startValuesFileSources;  ///< ssvFileSource mapped with ssmFilesource if mapping is provided, otherwise only ssvFilesource entry is made
 

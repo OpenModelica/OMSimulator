@@ -36,7 +36,7 @@
 #include "Types.h"
 #include "ComRef.h"
 #include "ssd/Tags.h"
-#include <OMSFileSystem.h>
+#include "OMSFileSystem.h"
 
 #include <pugixml.hpp>
 #include <map>

@@ -31,14 +31,15 @@
 
 #include "Scope.h"
 
-#include "Flags.h"
-#include "System.h"
 #include "Component.h"
-#include <miniunz.h>
-#include <OMSFileSystem.h>
-#include <time.h>
+#include "Flags.h"
+#include "OMSFileSystem.h"
+#include "Snapshot.h"
 #include "ssd/Tags.h"
-#include <unordered_map>
+#include "System.h"
+
+#include <miniunz.h>
+#include <time.h>
 
 oms::Scope::Scope()
   : tempDir(".")
@@ -196,32 +197,16 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
   if (extension != ".ssp")
     return logError("filename extension must be \".ssp\"; no other formats are supported");
 
-  // extract SystemStructure.ssd to temp
+  // extract only SystemStructure.ssd to temp
   filesystem::path temp_root(getTempDirectory());
   if (oms_status_ok != oms::Scope::miniunz(filename, temp_root.string(), true))
     return logError("failed to extract \"SystemStructure.ssd\" from \"" + filename + "\"");
 
-  pugi::xml_document doc;
-  pugi::xml_parse_result result = doc.load_file((temp_root / "SystemStructure.ssd").string().c_str());
-  if (!result)
-    return logError("loading \"" + std::string(filename) + "\" failed (" + std::string(result.description()) + ")");
+  Snapshot snapshot;
+  snapshot.importResourcesFile("SystemStructure.ssd", temp_root);
 
-  const pugi::xml_node node = doc.document_element(); // ssd:SystemStructureDescription
-
-  // internally create the oms:snapshot from ssp
-  pugi::xml_document snapshot;
-  pugi::xml_node oms_snapshot = snapshot.append_child(oms::ssp::Version1_0::snap_shot);
-
-  pugi::xml_node ssd_file = oms_snapshot.append_child(oms::ssp::Version1_0::oms_file);
-  ssd_file.append_attribute("name") = "SystemStructure.ssd";
-  ssd_file.append_copy(node);
-
-  /*construct mappedSnapshot from oms_snapshot
-    eg: filename -> <oms:file name="SystemStructure.ssd"
-        filename -> <oms:file name = "resources/model.ssv"
-  */
-  std::unordered_map<std::string, pugi::xml_node> mappedSnapshot;
-  mappedSnapshot["SystemStructure.ssd"] = ssd_file;
+  pugi::xml_node node;
+  snapshot.getResources("SystemStructure.ssd", node);
 
   ComRef cref = ComRef(node.attribute("name").as_string());
   std::string ssdVersion = node.attribute("version").as_string();
@@ -235,7 +220,7 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
 
   const filesystem::path model_tempDir(model->getTempDirectory());
 
-  // extract the ssp file
+  // extract the entire ssp file to model->getTempDirectory()
   oms::Scope::miniunz(filename, model_tempDir.string(), false);
 
   std::string cd = Scope::GetInstance().getWorkingDirectory();
@@ -248,11 +233,9 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
   for (const auto& entry : OMS_RECURSIVE_DIRECTORY_ITERATOR(model_tempDir))
     if (entry.path().has_extension())
       if (".ssv" == entry.path().extension() || ".ssm" == entry.path().extension() || ".xml" == entry.path().extension())
-        addSnapshotResources(naive_uncomplete(entry.path(), model_tempDir).generic_string(), mappedSnapshot);
+        snapshot.importResourcesFile(naive_uncomplete(entry.path(), model_tempDir), model_tempDir);
 
-  // snapshot.save(std::cout);
-
-  oms_status_enu_t status = model->importFromSnapshot(mappedSnapshot);
+  oms_status_enu_t status = model->importFromSnapshot(snapshot);
   model->copyResources(old_copyResources);
 
   Scope::GetInstance().setWorkingDirectory(cd);
@@ -265,24 +248,6 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
 
   if (_cref)
     *_cref = (char*)model->getCref().c_str();
-
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms::Scope::addSnapshotResources(const std::string& filename, std::unordered_map<std::string, pugi::xml_node> &mappedSnapshot)
-{
-  pugi::xml_document resource_doc;
-  pugi::xml_parse_result result = resource_doc.load_file(filename.c_str());
-  if (!result)
-    return logError("loading resource \"" + filename + "\" failed (" + std::string(result.description()) + ")");
-
-  pugi::xml_document file_doc;
-  pugi::xml_node oms_file = file_doc.append_child(oms::ssp::Version1_0::oms_file);
-  oms_file.append_attribute("name") = filename.c_str();
-  oms_file.append_copy(resource_doc.document_element());
-
-  //file_doc.save(std::cout);
-  mappedSnapshot[filename] = oms_file;
 
   return oms_status_ok;
 }
@@ -433,17 +398,16 @@ oms::Model* oms::Scope::getModel(const oms::ComRef& cref)
   return models[it->second];
 }
 
-oms_status_enu_t oms::Scope::loadSnapshot(const oms::ComRef& cref, const char* snapshot, char** newCref)
+oms_status_enu_t oms::Scope::loadSnapshot(const oms::ComRef& cref, const char* snapshot_, char** newCref)
 {
   if (newCref)
     *newCref = NULL;
 
-  pugi::xml_document doc;
-  pugi::xml_parse_result result = doc.load(snapshot);
-  if (!result)
-    return logError("loading snapshot failed (" + std::string(result.description()) + ")");
+  Snapshot snapshot;
+  snapshot.importResourcesMemory("SystemStructure.ssd", snapshot_);
 
-  const pugi::xml_node node = doc.document_element(); // ssd:SystemStructureDescription
+  pugi::xml_node node;
+  snapshot.getResources("SystemStructure.ssd", node);
 
   ComRef name(node.attribute("name").as_string());
   if (name != cref && getModel(name))
@@ -453,7 +417,39 @@ oms_status_enu_t oms::Scope::loadSnapshot(const oms::ComRef& cref, const char* s
   if (ssdVersion != "Draft20180219" && ssdVersion != "1.0")
     return logError("Unknown SSD version \"" + ssdVersion + "\"; supported version are \"1.0\" and \"Draft20180219\".");
 
-  oms_status_enu_t status = getModel(cref)->loadSnapshot(node);
+  oms_status_enu_t status = getModel(cref)->loadSnapshot(snapshot);
+
+  ComRef new_name(cref);
+  if (oms_status_ok == status && name != cref)
+    if (oms_status_ok == renameModel(cref, name))
+      new_name = name;
+
+  if (newCref)
+    *newCref = (char*)getModel(new_name)->getCref().c_str();
+
+  return status;
+}
+
+oms_status_enu_t oms::Scope::importSnapshot(const oms::ComRef& cref, const char* snapshot_, char** newCref)
+{
+  if (newCref)
+    *newCref = NULL;
+
+  Snapshot snapshot;
+  snapshot.importSnapshot(snapshot_);
+
+  pugi::xml_node node;
+  snapshot.getResources("SystemStructure.ssd", node);
+
+  ComRef name(node.attribute("name").as_string());
+  if (name != cref && getModel(name))
+    return logError("failed to load snapshot, because it would change the model's name but it already exists in the scope");
+
+  std::string ssdVersion = node.attribute("version").as_string();
+  if (ssdVersion != "Draft20180219" && ssdVersion != "1.0")
+    return logError("Unknown SSD version \"" + ssdVersion + "\"; supported version are \"1.0\" and \"Draft20180219\".");
+
+  oms_status_enu_t status = getModel(cref)->loadSnapshot(snapshot);
 
   ComRef new_name(cref);
   if (oms_status_ok == status && name != cref)

@@ -86,7 +86,7 @@ class capi:
     self.obj.oms_getVersion.restype = ctypes.c_char_p
     self.obj.oms_importFile.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_char_p)]
     self.obj.oms_importFile.restype = ctypes.c_int
-    self.obj.oms_importSnapshot.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_importSnapshot.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.POINTER(ctypes.c_char_p)]
     self.obj.oms_importSnapshot.restype = ctypes.c_int
     self.obj.oms_initialize.argtypes = [ctypes.c_char_p]
     self.obj.oms_initialize.restype = ctypes.c_int
@@ -260,8 +260,9 @@ class capi:
     status = self.obj.oms_importFile(filename.encode(), ctypes.byref(cref))
     return [cref.value.decode("utf-8"), status]
   def importSnapshot(self, ident, snapshot):
-    status = self.obj.oms_importSnapshot(ident.encode(), snapshot.encode())
-    return status
+    newCref = ctypes.c_char_p()
+    status = self.obj.oms_importSnapshot(ident.encode(), snapshot.encode(), ctypes.byref(newCref))
+    return [newCref.value.decode("utf-8"), status]
   def initialize(self, cref):
     return self.obj.oms_initialize(cref.encode())
   def instantiate(self, cref):

@@ -29,7 +29,7 @@
  *
  */
 
-#include <OMSFileSystem.h>
+#include "OMSFileSystem.h"
 #include <cstring>
 
 #if defined(_MSC_VER) || defined(__MINGW32__) || defined(__MINGW64__)
@@ -45,11 +45,27 @@ extern "C"
 
 #if OMC_STD_FS == 1
 // We have C++17; it has temp_directory_path and canonical
+filesystem::path oms_temp_directory_path(void)
+{
+  return filesystem::temp_directory_path();
+}
+
+filesystem::path oms_canonical(filesystem::path p)
+{
+  return filesystem::canonical(p);
+}
 #else
 
 #include <cstdlib>
 
-#if !(BOOST_VERSION >= 104600) // no temp_directory_path in boost < 1.46
+#if (BOOST_VERSION >= 104600) // no temp_directory_path in boost < 1.46
+filesystem::path oms_temp_directory_path(void) {
+  return filesystem::temp_directory_path();
+}
+filesystem::path oms_canonical(filesystem::path p) {
+  return filesystem::canonical(p);
+}
+#else
 filesystem::path oms_temp_directory_path(void)
 {
 #if (_WIN32)
