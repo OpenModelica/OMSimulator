@@ -233,37 +233,22 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
   if (ssdVersion != "Draft20180219" && ssdVersion != "1.0")
     logWarning("Unknown SSD version: " + ssdVersion);
 
+  const boost::filesystem::path model_tempDir(model->getTempDirectory());
+
   // extract the ssp file
-  oms::Scope::miniunz(filename, model->getTempDirectory(), false);
+  oms::Scope::miniunz(filename, model_tempDir.string(), false);
 
   std::string cd = Scope::GetInstance().getWorkingDirectory();
-  Scope::GetInstance().setWorkingDirectory(model->getTempDirectory());
+  Scope::GetInstance().setWorkingDirectory(model_tempDir.string());
 
   bool old_copyResources = model->copyResources();
   model->copyResources(false);
 
   // add the remaining resources (e.g) .ssv, .ssm and signalFilter.xml to oms:snapshot
-  for (const auto &entry : OMS_RECURSIVE_DIRECTORY_ITERATOR(model->getTempDirectory()))
-  {
+  for (const auto& entry : OMS_RECURSIVE_DIRECTORY_ITERATOR(model_tempDir))
     if (entry.path().has_extension())
-    {
-      if (entry.path().extension() == ".ssv")
-      {
-        // ssv files
-        addSnapshotResources(oms_snapshot, entry.path().string(), mappedSnapshot);
-      }
-      else if (entry.path().extension() == ".ssm")
-      {
-        // ssm files
-        addSnapshotResources(oms_snapshot, entry.path().string(), mappedSnapshot);
-      }
-      else if (entry.path().filename()== "signalFilter.xml")
-      {
-        // signalFilter.xml
-        addSnapshotResources(oms_snapshot, entry.path().string(), mappedSnapshot);
-      }
-    }
-  }
+      if (".ssv" == entry.path().extension() || ".ssm" == entry.path().extension() || ".xml" == entry.path().extension())
+        addSnapshotResources(naive_uncomplete(entry.path(), model_tempDir).string(), mappedSnapshot);
 
   // snapshot.save(std::cout);
 
@@ -284,22 +269,19 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Scope::addSnapshotResources(pugi::xml_node& oms_snapshot, std::string path, std::unordered_map<std::string, pugi::xml_node> &mappedSnapshot)
+oms_status_enu_t oms::Scope::addSnapshotResources(const std::string& filename, std::unordered_map<std::string, pugi::xml_node> &mappedSnapshot)
 {
-  filesystem::path p(path);
-  std::string filename = "resources/" + p.filename().string();
-
-  pugi::xml_node oms_file = oms_snapshot.append_child(oms::ssp::Version1_0::oms_file);
-  oms_file.append_attribute("name") = filename.c_str();
-  pugi::xml_document doc;
-  pugi::xml_parse_result result = doc.load_file(path.c_str());
+  pugi::xml_document resource_doc;
+  pugi::xml_parse_result result = resource_doc.load_file(filename.c_str());
   if (!result)
-    return logError("loading \"" + filename + "\" to <oms:snapshot> failed (" + std::string(result.description()) + ")");
+    return logError("loading resource \"" + filename + "\" failed (" + std::string(result.description()) + ")");
 
-  pugi::xml_node oms_node = doc.document_element();
-  oms_file.append_copy(oms_node);
+  pugi::xml_document file_doc;
+  pugi::xml_node oms_file = file_doc.append_child(oms::ssp::Version1_0::oms_file);
+  oms_file.append_attribute("name") = filename.c_str();
+  oms_file.append_copy(resource_doc.document_element());
 
-  // map the filename with oms_file node
+  //file_doc.save(std::cout);
   mappedSnapshot[filename] = oms_file;
 
   return oms_status_ok;

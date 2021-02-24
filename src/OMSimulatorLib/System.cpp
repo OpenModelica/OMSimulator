@@ -2433,72 +2433,71 @@ oms_status_enu_t oms::System::importStartValuesFromSSVHelper(const std::string& 
   for (pugi::xml_node_iterator it = parameters.begin(); it != parameters.end(); ++it)
   {
     std::string name = it->name();
-    std::vector<ComRef> mappedcrefs;
-    if (name == oms::ssp::Version1_0::ssv::parameter)
-    {
-      ComRef cref = ComRef(it->attribute("name").as_string());
-      // check cref has any mapping entry
-      if (!mappedEntry.empty())
-      {
-        auto mapfind = mappedEntry.equal_range(cref);
-        for (auto it = mapfind.first; it != mapfind.second; ++it)
-        {
-          mappedcrefs.push_back(it->second);
-        }
-      }
+    if (oms::ssp::Version1_0::ssv::parameter != name)
+      continue;
 
-      if (it->child(oms::ssp::Version1_0::ssv::real_type))
+    ComRef cref(it->attribute("name").as_string());
+
+    std::vector<ComRef> mappedcrefs;
+    // check cref has any mapping entry
+    if (!mappedEntry.empty())
+    {
+      auto mapfind = mappedEntry.equal_range(cref);
+      for (auto it_ = mapfind.first; it_ != mapfind.second; ++it_)
+        mappedcrefs.push_back(it_->second);
+    }
+
+    if (it->child(oms::ssp::Version1_0::ssv::real_type))
+    {
+      double value = it->child(oms::ssp::Version1_0::ssv::real_type).attribute("value").as_double();
+      if (!mappedcrefs.empty())
       {
-        double value = it->child(oms::ssp::Version1_0::ssv::real_type).attribute("value").as_double();
-        if (!mappedcrefs.empty())
+        for (const auto& mappedcref : mappedcrefs)
         {
-          for (const auto &mappedcref : mappedcrefs)
-          {
-            setReal(mappedcref, value);
-          }
-        }
-        else
-        {
-          // no mapping entry found, apply the default cref found in ssv file
-          setReal(cref, value);
-        }
-      }
-      else if (it->child(oms::ssp::Version1_0::ssv::integer_type))
-      {
-        int value = it->child(oms::ssp::Version1_0::ssv::integer_type).attribute("value").as_int();
-        if (!mappedcrefs.empty())
-        {
-          for (const auto &mappedcref : mappedcrefs)
-          {
-            setInteger(mappedcref, value);
-          }
-        }
-        else
-        {
-          // no mapping entry found, apply the default cref found in ssv file
-          setInteger(cref, value);
-        }
-      }
-      else if (it->child(oms::ssp::Version1_0::ssv::boolean_type))
-      {
-        bool value = it->child(oms::ssp::Version1_0::ssv::boolean_type).attribute("value").as_bool();
-        if (!mappedcrefs.empty())
-        {
-          for (const auto &mappedcref : mappedcrefs)
-          {
-            setBoolean(mappedcref, value);
-          }
-        }
-        else
-        {
-          // no mapping entry found, apply the default cref found in ssv file
-          setBoolean(cref, value);
+          setReal(mappedcref, value);
         }
       }
       else
       {
-        logError("Failed to import " + std::string(oms::ssp::Version1_0::ssv::parameter) + ":Unknown ParameterBinding-type");
+        // no mapping entry found, apply the default cref found in ssv file
+        setReal(cref, value);
       }
+    }
+    else if (it->child(oms::ssp::Version1_0::ssv::integer_type))
+    {
+      int value = it->child(oms::ssp::Version1_0::ssv::integer_type).attribute("value").as_int();
+      if (!mappedcrefs.empty())
+      {
+        for (const auto& mappedcref : mappedcrefs)
+        {
+          setInteger(mappedcref, value);
+        }
+      }
+      else
+      {
+        // no mapping entry found, apply the default cref found in ssv file
+        setInteger(cref, value);
+      }
+    }
+    else if (it->child(oms::ssp::Version1_0::ssv::boolean_type))
+    {
+      bool value = it->child(oms::ssp::Version1_0::ssv::boolean_type).attribute("value").as_bool();
+      if (!mappedcrefs.empty())
+      {
+        for (const auto& mappedcref : mappedcrefs)
+        {
+          setBoolean(mappedcref, value);
+        }
+      }
+      else
+      {
+        // no mapping entry found, apply the default cref found in ssv file
+        setBoolean(cref, value);
+      }
+    }
+    else
+    {
+      logWarning("Failed to import " + std::string(oms::ssp::Version1_0::ssv::parameter) + ":Unknown ParameterBinding-type");
     }
   }
 
@@ -2601,7 +2600,7 @@ oms_status_enu_t oms::System::rename(const ComRef& cref, const ComRef& newCref)
 oms_status_enu_t oms::System::renameConnections(const ComRef &cref, const ComRef &newCref)
 {
   //logInfo("renameConnections in " + std::string(getFullCref()) + ": [" + std::string(cref) + "], [" + std::string(newCref) + "]");
-  for (const auto &connection : connections)
+  for (const auto& connection : connections)
     if (connection)
       connection->rename(cref, newCref);
 

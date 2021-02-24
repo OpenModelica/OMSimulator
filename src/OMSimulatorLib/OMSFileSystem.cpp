@@ -96,7 +96,7 @@ filesystem::path naive_uncomplete(const filesystem::path& path, const filesystem
   }
 
   if (base.has_root_path())
-    throw "cannot uncomplete a path relative path from a rooted base";
+    throw "cannot uncomplete a relative path from a rooted base";
 
   typedef filesystem::path::const_iterator path_iterator;
   path_iterator path_it = path.begin();
