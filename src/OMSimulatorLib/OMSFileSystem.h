@@ -71,7 +71,8 @@ filesystem::path oms_canonical(filesystem::path p);
 
 #endif
 
-void oms_copy_file(const filesystem::path &from, const filesystem::path &to);
+void oms_copy_file(const filesystem::path& from, const filesystem::path& to);
 filesystem::path oms_unique_path(const std::string& prefix);
+filesystem::path naive_uncomplete(const filesystem::path& path, const filesystem::path& base);
 
 #endif
