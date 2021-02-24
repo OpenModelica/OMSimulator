@@ -1,4 +1,5 @@
 -- status: correct
+-- teardown_command: rm -rf import_export_snapshot_lua/
 -- linux: yes
 -- mingw: yes
 -- win: no
@@ -6,7 +7,7 @@
 
 
 oms_setCommandLineOption("--suppressPath=true --exportParametersInline=false")
-status = oms_setTempDirectory("./import_export_snapshot/")
+status = oms_setTempDirectory("./import_export_snapshot_lua/")
 
 oms_newModel("import_export_snapshot")
 oms_addSystem("import_export_snapshot.root", oms_system_wc)
