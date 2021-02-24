@@ -1,4 +1,5 @@
 -- status: correct
+-- teardown_command: rm -rf importStartValues/
 -- linux: yes
 -- mingw: yes
 -- win: no

@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm -rf simulation-py/ test_init.dot test_sim.dot test.mat
+## teardown_command: rm -rf simulation-py/ test_init1.dot test_sim1.dot test_event1.dot test.mat
 ## linux: yes
 ## mingw: no
 ## win: no
@@ -38,7 +38,7 @@ printStatus(status, 0)
 status = oms.addSubModel("test.co_sim.B", "../resources/tlm.source.fmu")
 printStatus(status, 0)
 
-oms.exportDependencyGraphs("test.co_sim", "test_init.dot", "test_event.dot", "test_sim.dot")
+oms.exportDependencyGraphs("test.co_sim", "test_init1.dot", "test_event1.dot", "test_sim1.dot")
 
 oms.setResultFile("test", "test.mat")
 
