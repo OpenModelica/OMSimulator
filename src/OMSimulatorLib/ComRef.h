@@ -61,8 +61,10 @@ namespace oms
     ComRef front() const;
     ComRef pop_front();
 
-    bool hasSuffixStart() const;
-    ComRef popSuffix() const;
+    bool hasSuffix() const; ///< returns true if the cref has a suffix, i.e. ":"
+    bool hasSuffix(const std::string& suffix) const; ///< returns true if the cref has a suffix that matches the argument
+    ComRef popSuffix() const; ///< returns a copy of a ComRef without its suffix
+    std::string getSuffix() const; ///< returns the suffix as string
 
     const char* c_str() const {return cref;}
     size_t size() {return strlen(cref);}

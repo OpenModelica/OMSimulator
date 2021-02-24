@@ -929,7 +929,6 @@ oms_status_enu_t oms::Model::initialize()
   clock.reset();
   clock.tic();
 
-  cancelSim = false;
   lastEmit = startTime;
 
   if (!resultFilename.empty())
@@ -991,18 +990,6 @@ oms_status_enu_t oms::Model::initialize()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Model::simulate_asynchronous(void (*cb)(const char* cref, double time, oms_status_enu_t status))
-{
-  if (!validState(oms_modelState_simulation))
-    return logError_ModelInWrongState(this);
-
-  if (!system)
-    return logError("Model doesn't contain a system");
-
-  std::thread([=]{system->stepUntil(stopTime, cb);}).detach();
-  return oms_status_pending;
-}
-
 oms_status_enu_t oms::Model::simulate()
 {
   clock.tic();
@@ -1018,7 +1005,7 @@ oms_status_enu_t oms::Model::simulate()
     return logError("Model doesn't contain a system");
   }
 
-  oms_status_enu_t status = system->stepUntil(stopTime, NULL);
+  oms_status_enu_t status = system->stepUntil(stopTime);
   emit(stopTime, true);
   clock.toc();
   return status;
@@ -1059,7 +1046,7 @@ oms_status_enu_t oms::Model::stepUntil(double stopTime)
     return logError("Model doesn't contain a system");
   }
 
-  oms_status_enu_t status = system->stepUntil(stopTime, NULL);
+  oms_status_enu_t status = system->stepUntil(stopTime);
   emit(stopTime, true);
   clock.toc();
   return status;
@@ -1248,14 +1235,5 @@ oms_status_enu_t oms::Model::removeSignalsFromResults(const char* regex)
   if (system)
     if (oms_status_ok != system->removeSignalsFromResults(regex))
       return oms_status_error;
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms::Model::cancelSimulation_asynchronous()
-{
-  if (!validState(oms_modelState_simulation))
-    return logError_ModelInWrongState(this);
-
-  cancelSim = true;
   return oms_status_ok;
 }

@@ -1,4 +1,5 @@
 -- status: correct
+-- teardown_command: rm -rf import_export_parameters_lua/
 -- linux: yes
 -- mingw: yes
 -- win: no

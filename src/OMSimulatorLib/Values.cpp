@@ -73,7 +73,7 @@ oms_status_enu_t oms::Values::setBoolean(const ComRef& cref, bool value)
 oms_status_enu_t oms::Values::deleteStartValue(const ComRef& cref)
 {
   oms::ComRef signal(cref);
-  if (signal.hasSuffixStart())
+  if (signal.hasSuffix("start"))
     signal = cref.popSuffix();
 
   // reals

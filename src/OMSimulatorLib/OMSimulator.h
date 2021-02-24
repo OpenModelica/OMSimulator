@@ -73,7 +73,6 @@ OMSAPI oms_status_enu_t OMSCALL oms_addSystem(const char* cref, oms_system_enu_t
 OMSAPI oms_status_enu_t OMSCALL oms_addTimeIndicator(const char* signal);
 OMSAPI oms_status_enu_t OMSCALL oms_addTLMBus(const char* cref, oms_tlm_domain_t domain, const int dimensions, const oms_tlm_interpolation_t interpolation);
 OMSAPI oms_status_enu_t OMSCALL oms_addTLMConnection(const char* crefA, const char* crefB, double delay, double alpha, double linearimpedance, double angularimpedance);
-OMSAPI oms_status_enu_t OMSCALL oms_cancelSimulation_asynchronous(const char* cref);
 OMSAPI int OMSCALL oms_compareSimulationResults(const char* filenameA, const char* filenameB, const char* var, double relTol, double absTol);
 OMSAPI oms_status_enu_t OMSCALL oms_copySystem(const char* source, const char* target);
 OMSAPI oms_status_enu_t OMSCALL oms_delete(const char* cref);
@@ -156,7 +155,6 @@ OMSAPI oms_status_enu_t OMSCALL oms_setTLMSocketData(const char* cref, const cha
 OMSAPI oms_status_enu_t OMSCALL oms_setTolerance(const char* cref, double absoluteTolerance, double relativeTolerance);
 OMSAPI oms_status_enu_t OMSCALL oms_setVariableStepSize(const char* cref, double initialStepSize, double minimumStepSize, double maximumStepSize);
 OMSAPI oms_status_enu_t OMSCALL oms_setWorkingDirectory(const char* newWorkingDir);
-OMSAPI oms_status_enu_t OMSCALL oms_simulate_asynchronous(const char* cref, void (*cb)(const char* cref, double time, oms_status_enu_t status));
 OMSAPI oms_status_enu_t OMSCALL oms_simulate(const char* cref);
 OMSAPI oms_status_enu_t OMSCALL oms_stepUntil(const char* cref, double stopTime);
 OMSAPI oms_status_enu_t OMSCALL oms_terminate(const char* cref);
