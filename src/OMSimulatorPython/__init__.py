@@ -6,6 +6,7 @@ from OMSimulator import Scope, Types
 from OMSimulator.Model import Model
 from OMSimulator.NewAPI import *
 from OMSimulator.OMSimulator import OMSimulator
+from OMSimulator.System import System
 
 __version__ = '@OMS_SHORT_VERSION_STRING@'
 __copyright__ = '''\
