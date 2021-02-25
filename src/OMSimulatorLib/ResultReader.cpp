@@ -32,13 +32,12 @@
 #include "ResultReader.h"
 
 #include "CSVReader.h"
-#include "MatReader.h"
 #include "Logging.h"
+#include "MatReader.h"
+#include "OMSFileSystem.h"
 #include "Util.h"
 
 #include <string.h>
-
-#include <OMSFileSystem.h>
 
 oms::ResultReader::ResultReader(const char* filename)
 {

@@ -33,11 +33,11 @@
 #define _OMS_VALUES_H_
 
 #include "ComRef.h"
-#include "Types.h"
 #include "Snapshot.h"
-#include <pugixml.hpp>
+#include "Types.h"
+
 #include <map>
-#include <unordered_map>
+#include <pugixml.hpp>
 
 namespace oms
 {

@@ -40,7 +40,6 @@
 #include "DirectedGraph.h"
 #include "Element.h"
 #include "ExternalModel.h"
-#include "Values.h"
 #include "ResultWriter.h"
 #include "Snapshot.h"
 #include "ssd/ConnectorGeometry.h"
@@ -48,6 +47,8 @@
 #include "TLMBusConnector.h"
 #endif
 #include "Types.h"
+#include "Values.h"
+
 #include <map>
 #include <pugixml.hpp>
 #include <unordered_map>

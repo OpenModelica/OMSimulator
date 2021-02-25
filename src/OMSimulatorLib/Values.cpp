@@ -30,18 +30,17 @@
  */
 
 
-#include "Util.h"
-#include "Logging.h"
 #include "Values.h"
-#include "Types.h"
-#include "ComRef.h"
-#include "ssd/Tags.h"
-#include <OMSFileSystem.h>
 
-#include <pugixml.hpp>
-#include <map>
-#include <string>
+#include "Logging.h"
+#include "OMSFileSystem.h"
+#include "ssd/Tags.h"
+#include "Util.h"
+
 #include <iostream>
+#include <map>
+#include <pugixml.hpp>
+#include <string>
 #include <unordered_map>
 
 

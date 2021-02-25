@@ -33,9 +33,10 @@
 
 #include "Logging.h"
 #include "Model.h"
+#include "OMSFileSystem.h"
 #include "ssd/Tags.h"
 #include "System.h"
-#include <OMSFileSystem.h>
+
 #include <RegEx.h>
 
 oms::ComponentTable::ComponentTable(const ComRef& cref, System* parentSystem, const std::string& path)

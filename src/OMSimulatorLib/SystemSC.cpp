@@ -36,11 +36,8 @@
 #include "ComponentTable.h"
 #include "Flags.h"
 #include "Model.h"
-#include "Types.h"
 #include "ssd/Tags.h"
-#include <cvode/cvode.h>                /* prototypes for CVODE fcts., consts. */
-#include <nvector/nvector_serial.h>     /* serial N_Vector types, fcts., macros */
-#include <sunlinsol/sunlinsol_dense.h>  /* Default dense linear solver */
+
 
 int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
 {

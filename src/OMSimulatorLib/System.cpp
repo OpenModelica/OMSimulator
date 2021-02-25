@@ -31,22 +31,20 @@
 
 #include "System.h"
 
-#include "AlgLoop.h"
 #include "Component.h"
 #include "ComponentFMUCS.h"
 #include "ComponentFMUME.h"
 #include "ComponentTable.h"
-#include "ExternalModel.h"
 #include "Flags.h"
 #include "Model.h"
+#include "OMSFileSystem.h"
 #include "ResultWriter.h"
 #include "ssd/Tags.h"
 #include "SystemSC.h"
 #include "SystemTLM.h"
 #include "SystemWC.h"
-#include "Types.h"
 #include "Variable.h"
-#include <OMSFileSystem.h>
+
 #include <RegEx.h>
 
 oms::System::System(const oms::ComRef& cref, oms_system_enu_t type, oms::Model* parentModel, oms::System* parentSystem, oms_solver_enu_t solverMethod)

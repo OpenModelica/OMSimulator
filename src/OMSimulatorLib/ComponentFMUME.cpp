@@ -34,13 +34,13 @@
 #include "Flags.h"
 #include "Logging.h"
 #include "Model.h"
+#include "OMSFileSystem.h"
 #include "ssd/Tags.h"
 #include "System.h"
 #include "SystemSC.h"
 
 #include <fmilib.h>
 #include <JM/jm_portability.h>
-#include <OMSFileSystem.h>
 #include <RegEx.h>
 
 oms::ComponentFMUME::ComponentFMUME(const ComRef& cref, System* parentSystem, const std::string& fmuPath)
