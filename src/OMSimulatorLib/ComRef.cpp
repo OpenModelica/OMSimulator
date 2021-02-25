@@ -95,7 +95,7 @@ bool oms::ComRef::isValidIdent() const
 
 bool oms::ComRef::isEmpty() const
 {
-  return (cref[0] == '\0');
+  return cref[0] == '\0' || cref[0] == ':';
 }
 
 bool oms::ComRef::hasSuffix() const
@@ -109,24 +109,37 @@ bool oms::ComRef::hasSuffix() const
 
 bool oms::ComRef::hasSuffix(const std::string& suffix) const
 {
-  return getSuffix() == suffix;
+  return this->suffix() == suffix;
 }
 
-oms::ComRef oms::ComRef::popSuffix() const
+std::string oms::ComRef::pop_suffix()
 {
+  std::string suffix = this->suffix();
+
   for (int i=0; cref[i]; ++i)
+  {
     if (cref[i] == ':')
     {
       cref[i] = '\0';
-      oms::ComRef newCref(cref);
+      oms::ComRef front(cref);
       cref[i] = ':';
-      return newCref;
+      *this = front;
     }
+  }
 
-  return *this;
+  return suffix;
 }
 
-std::string oms::ComRef::getSuffix() const
+bool oms::ComRef::pop_suffix(const std::string& suffix)
+{
+  if (!this->hasSuffix(suffix))
+    return false;
+
+  this->pop_suffix();
+  return true;
+}
+
+std::string oms::ComRef::suffix() const
 {
   for (int i=0; cref[i]; ++i)
     if (cref[i] == ':')
@@ -157,6 +170,13 @@ oms::ComRef oms::ComRef::front() const
       cref[i] = '.';
       return front;
     }
+    else if (cref[i] == ':')
+    {
+      cref[i] = '\0';
+      oms::ComRef front(cref);
+      cref[i] = ':';
+      return front;
+    }
   }
 
   return *this;
@@ -172,6 +192,14 @@ oms::ComRef oms::ComRef::pop_front()
       oms::ComRef front(cref);
       cref[i] = '.';
       *this = oms::ComRef(cref + i + 1);
+      return front;
+    }
+    else if (cref[i] == ':')
+    {
+      cref[i] = '\0';
+      oms::ComRef front(cref);
+      cref[i] = ':';
+      *this = oms::ComRef(cref + i);
       return front;
     }
   }

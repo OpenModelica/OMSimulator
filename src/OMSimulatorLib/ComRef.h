@@ -39,6 +39,10 @@ namespace oms
 {
   /**
    * \brief ComRef - component reference
+   *
+   * A component reference is a qualified name of a component. It uses
+   * '.' as component separator. It may also contain a ':' followed by
+   * a suffix string which is used to define attributes or filenames.
    */
   class ComRef
   {
@@ -55,16 +59,19 @@ namespace oms
 
     static bool isValidIdent(const std::string& ident);
     bool isValidIdent() const;
-    bool isEmpty() const;
+
+    bool isEmpty() const; ///< return true if the no component is specified (still, a suffix might be present)
     bool isRootOf(ComRef child) const;
 
     ComRef front() const;
     ComRef pop_front();
 
-    bool hasSuffix() const; ///< returns true if the cref has a suffix, i.e. ":"
+    std::string suffix() const; ///< returns the suffix as string
+    std::string pop_suffix(); ///< returns the suffix as string and removes it from the current object
+    bool pop_suffix(const std::string& suffix);
+
+    bool hasSuffix() const; ///< returns true if the cref has a suffix, i.e. contains ":"
     bool hasSuffix(const std::string& suffix) const; ///< returns true if the cref has a suffix that matches the argument
-    ComRef popSuffix() const; ///< returns a copy of a ComRef without its suffix
-    std::string getSuffix() const; ///< returns the suffix as string
 
     const char* c_str() const {return cref;}
     size_t size() {return strlen(cref);}
