@@ -67,8 +67,8 @@ class Server:
 
     # connect the PUB socket
     if args.endpoint_pub:
-      socket_sub = self._context.socket(zmq.PUB)  #pylint: disable=no-member
-      socket_sub.connect(args.endpoint_pub)
+      self._socket_sub = self._context.socket(zmq.PUB)  #pylint: disable=no-member
+      self._socket_sub.connect(args.endpoint_pub)
       self.print('PUB socket connected to {}'.format(args.endpoint_pub))
 
   def print(self, msg):
