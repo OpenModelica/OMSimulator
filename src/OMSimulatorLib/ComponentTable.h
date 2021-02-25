@@ -52,7 +52,7 @@ namespace oms
     ~ComponentTable();
 
     static Component* NewComponent(const oms::ComRef& cref, System* parentSystem, const std::string& path);
-    static Component* NewComponent(const pugi::xml_node& node, System* parentSystem, const std::string& sspVersion);
+    static Component* NewComponent(const pugi::xml_node& node, System* parentSystem, const std::string& sspVersion, const std::unordered_map<std::string, pugi::xml_node>& oms_snapshot);
 
     oms_status_enu_t exportToSSD(pugi::xml_node& node, pugi::xml_node& ssvNode) const;
     oms_status_enu_t exportToSSVTemplate(pugi::xml_node& ssvNode) {return oms_status_ok;}

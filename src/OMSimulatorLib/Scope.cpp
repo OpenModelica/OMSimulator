@@ -37,6 +37,8 @@
 #include <miniunz.h>
 #include <OMSFileSystem.h>
 #include <time.h>
+#include "ssd/Tags.h"
+#include <unordered_map>
 
 oms::Scope::Scope()
   : tempDir(".")
@@ -206,6 +208,21 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
 
   const pugi::xml_node node = doc.document_element(); // ssd:SystemStructureDescription
 
+  // internally create the oms:snapshot from ssp
+  pugi::xml_document snapshot;
+  pugi::xml_node oms_snapshot = snapshot.append_child(oms::ssp::Version1_0::snap_shot);
+
+  pugi::xml_node ssd_file = oms_snapshot.append_child(oms::ssp::Version1_0::oms_file);
+  ssd_file.append_attribute("name") = "SystemStructure.ssd";
+  ssd_file.append_copy(node);
+
+  /*construct mappedSnapshot from oms_snapshot
+    eg: filename -> <oms:file name="SystemStructure.ssd"
+        filename -> <oms:file name = "resources/model.ssv"
+  */
+  std::unordered_map<std::string, pugi::xml_node> mappedSnapshot;
+  mappedSnapshot["SystemStructure.ssd"] = ssd_file;
+
   ComRef cref = ComRef(node.attribute("name").as_string());
   std::string ssdVersion = node.attribute("version").as_string();
 
@@ -224,7 +241,33 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
 
   bool old_copyResources = model->copyResources();
   model->copyResources(false);
-  oms_status_enu_t status = model->importFromSSD(node);
+
+  // add the remaining resources (e.g) .ssv, .ssm and signalFilter.xml to oms:snapshot
+  for (const auto &entry : OMS_RECURSIVE_DIRECTORY_ITERATOR(model->getTempDirectory()))
+  {
+    if (entry.path().has_extension())
+    {
+      if (entry.path().extension() == ".ssv")
+      {
+        // ssv files
+        addSnapshotResources(oms_snapshot, entry.path().string(), mappedSnapshot);
+      }
+      else if (entry.path().extension() == ".ssm")
+      {
+        // ssm files
+        addSnapshotResources(oms_snapshot, entry.path().string(), mappedSnapshot);
+      }
+      else if (entry.path().filename()== "signalFilter.xml")
+      {
+        // signalFilter.xml
+        addSnapshotResources(oms_snapshot, entry.path().string(), mappedSnapshot);
+      }
+    }
+  }
+
+  // snapshot.save(std::cout);
+
+  oms_status_enu_t status = model->importFromSnapshot(mappedSnapshot);
   model->copyResources(old_copyResources);
 
   Scope::GetInstance().setWorkingDirectory(cd);
@@ -237,6 +280,27 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
 
   if (_cref)
     *_cref = (char*)model->getCref().c_str();
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Scope::addSnapshotResources(pugi::xml_node& oms_snapshot, std::string path, std::unordered_map<std::string, pugi::xml_node> &mappedSnapshot)
+{
+  filesystem::path p(path);
+  std::string filename = "resources/" + p.filename().string();
+
+  pugi::xml_node oms_file = oms_snapshot.append_child(oms::ssp::Version1_0::oms_file);
+  oms_file.append_attribute("name") = filename.c_str();
+  pugi::xml_document doc;
+  pugi::xml_parse_result result = doc.load_file(path.c_str());
+  if (!result)
+    return logError("loading \"" + filename + "\" to <oms:snapshot> failed (" + std::string(result.description()) + ")");
+
+  pugi::xml_node oms_node = doc.document_element();
+  oms_file.append_copy(oms_node);
+
+  // map the filename with oms_file node
+  mappedSnapshot[filename] = oms_file;
 
   return oms_status_ok;
 }
