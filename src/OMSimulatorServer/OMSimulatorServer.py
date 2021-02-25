@@ -29,47 +29,40 @@ def mogrify(topic: str, msg: dict):
   return '%s %s' % (topic, json.dumps(msg))
 
 class Server:
-  def __init__(self, args):
+  def __init__(self, model, result_file, interactive, endpoint_pub, endpoint_rep):
     self._alive = True
     self._context = zmq.Context()
+    self._model = oms.importFile(model)
     self._mutex = threading.Lock()
-    self._pause = args.interactive
+    self._pause = interactive
     self._socket_rep = None
     self._socket_sub = None
     self._thread = None
 
-    oms.setCommandLineOption(' '.join(list(map((lambda x: x[1:-1]), args.option))))
-    oms.setLoggingLevel(args.logLevel)
-
-    if args.temp:
-      oms.setTempDirectory(args.temp)
-
-    self._model = oms.importFile(args.model)
-
-    if args.result_file:
-      self._model.resultFile = args.result_file
+    if result_file:
+      self._model.resultFile = result_file
 
     self.print('OMS Server {}'.format(__version__))
     self.print('ZMQ {}'.format(zmq.zmq_version()))
 
-    if args.interactive and not args.endpoint_rep:
+    if interactive and not endpoint_rep:
       self.print('flag --endpoint-rep is mandatory in interactive simulation mode')
       sys.exit(1)
 
     # connet the REP socket
-    if args.endpoint_rep:
+    if endpoint_rep:
       self._socket_rep = self._context.socket(zmq.REP)  #pylint: disable=no-member
-      self._socket_rep.connect(args.endpoint_rep)
+      self._socket_rep.connect(endpoint_rep)
       self._socket_rep.RCVTIMEO = 1000  #in milliseconds
-      self.print('REP socket connected to {}'.format(args.endpoint_rep))
+      self.print('REP socket connected to {}'.format(endpoint_rep))
       self._thread = threading.Thread(target=self._main, daemon=True)
       self._thread.start()
 
     # connect the PUB socket
-    if args.endpoint_pub:
+    if endpoint_pub:
       self._socket_sub = self._context.socket(zmq.PUB)  #pylint: disable=no-member
-      self._socket_sub.connect(args.endpoint_pub)
-      self.print('PUB socket connected to {}'.format(args.endpoint_pub))
+      self._socket_sub.connect(endpoint_pub)
+      self.print('PUB socket connected to {}'.format(endpoint_pub))
 
   def print(self, msg):
     print('server:  {}'.format(msg), flush=True)
@@ -151,7 +144,13 @@ def _main():
   parser.add_argument('--temp', default=None, help='defines the temp directory')
   args = parser.parse_args()
 
-  server = Server(args)
+  oms.setCommandLineOption(' '.join(list(map((lambda x: x[1:-1]), args.option))))
+  oms.setLoggingLevel(args.logLevel)
+
+  if args.temp:
+    oms.setTempDirectory(args.temp)
+
+  server = Server(args.model, args.result_file, args.interactive, args.endpoint_pub, args.endpoint_rep)
   server.run()
 
 if __name__ == '__main__':
