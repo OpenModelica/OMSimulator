@@ -39,7 +39,7 @@ printStatus(status, 0)
 
 status = oms_addTLMBus("model.tlm.external.tlmbus", oms_tlm_domain_mechanical, 1, oms_tlm_no_interpolation)
 
-src, status = oms_list("model")
+src, status = oms_exportSnapshot("model")
 print(src)
 
 oms_export("model", "tlm.ssp")
@@ -49,7 +49,7 @@ printStatus(status, 0)
 
 oms_importFile("tlm.ssp")
 
-src, status = oms_list("model")
+src, status = oms_exportSnapshot("model")
 print(src)
 
 status = oms_delete("model")

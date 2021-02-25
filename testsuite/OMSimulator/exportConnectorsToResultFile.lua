@@ -58,7 +58,7 @@ print("info:      exportConnectors.Root.C1                    : " .. oms_getReal
 print("info:      exportConnectors.Root.C3                    : " .. oms_getReal("exportConnectors.Root.C3"))
 print("info:      exportConnectors.Root.Gain.u                : " .. oms_getReal("exportConnectors.Root.Gain.u"))
 
-src = oms_list("exportConnectors")
+src = oms_exportSnapshot("exportConnectors")
 print(src)
 
 oms_terminate("exportConnectors")

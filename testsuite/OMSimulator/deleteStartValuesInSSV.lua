@@ -30,7 +30,7 @@ oms_setReal("deleteStartValuesInSSV.Root.System1.C2", 30.0)
 oms_addSubModel("deleteStartValuesInSSV.Root.System1.Gain", "../resources/Modelica.Blocks.Math.Gain.fmu")
 oms_setReal("deleteStartValuesInSSV.Root.System1.Gain.k", 40.0)
 
-src = oms_list("deleteStartValuesInSSV")
+src = oms_exportSnapshot("deleteStartValuesInSSV")
 print(src)
 
 -- delete top level system start value

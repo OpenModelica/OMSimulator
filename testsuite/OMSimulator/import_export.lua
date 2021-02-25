@@ -135,7 +135,7 @@ printStatus(status, 0)
 status = oms_addConnection("test.eoo.foo.bus", "test.eoo.foo2.bus")
 printStatus(status, 0)
 
-src, status = oms_list("test")
+src, status = oms_exportSnapshot("test")
 printStatus(status, 0)
 print(src)
 
@@ -148,7 +148,7 @@ printStatus(status, 0)
 model, status = oms_importFile("test.ssp");
 printStatus(status, 0)
 
-src, status = oms_list(model)
+src, status = oms_exportSnapshot(model)
 printStatus(status, 0)
 print(src)
 

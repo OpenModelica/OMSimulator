@@ -33,7 +33,7 @@ oms_setReal("setExternalInputs.Root.Gain.u", 10.0)
 oms_stepUntil("setExternalInputs", 5.0)
 print("info:      setExternalInputs.Root.Gain.u at time 5.0: " .. oms_getReal("setExternalInputs.Root.Gain.u"))
 
-src = oms_list("setExternalInputs")
+src = oms_exportSnapshot("setExternalInputs")
 print(src)
 
 oms_terminate("setExternalInputs")

@@ -19,7 +19,7 @@ oms_addSubModel("import_export_snapshot.root.add", "../resources/Modelica.Blocks
 oms_setReal("import_export_snapshot.root.add.u1", 10)
 oms_setReal("import_export_snapshot.root.add.k1", 30)
 
--- src1 = oms_list("import_export_snapshot")
+-- src1 = oms_exportSnapshot("import_export_snapshot")
 -- print(src1)
 
 oms_export("import_export_snapshot", "import_export_snapshot.ssp");
@@ -27,7 +27,7 @@ oms_delete("import_export_snapshot")
 
 oms_importFile("import_export_snapshot.ssp");
 
-src1 = oms_list("import_export_snapshot")
+src1 = oms_exportSnapshot("import_export_snapshot")
 print(src1)
 
 src2 = oms_exportSnapshot("import_export_snapshot")

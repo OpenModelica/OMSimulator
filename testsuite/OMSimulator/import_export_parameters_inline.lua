@@ -59,7 +59,7 @@ oms_setResultFile("import_export_parameters", "import_export_parameters_inline.m
 -- os.execute("gvpr -c \"N[$.degree==0]{delete(root, $)}\" import_export_parameters_init.dot | dot -Tpdf -o import_export_parameters_init.pdf")
 -- os.execute("gvpr -c \"N[$.degree==0]{delete(root, $)}\" import_export_parameters_sim.dot | dot -Tpdf -o import_export_parameters_sim.pdf")
 
-src, status = oms_list("import_export_parameters")
+src, status = oms_exportSnapshot("import_export_parameters")
 print(src)
 
 oms_export("import_export_parameters", "import_export_parameters_inline.ssp");

@@ -451,7 +451,7 @@ oms::Model* oms::Scope::getModel(const oms::ComRef& cref)
   return models[it->second];
 }
 
-oms_status_enu_t oms::Scope::loadSnapshot(const oms::ComRef& cref, const char* snapshot, char** newCref)
+oms_status_enu_t oms::Scope::importSnapshot(const oms::ComRef& cref, const char* snapshot, char** newCref)
 {
   if (newCref)
     *newCref = NULL;

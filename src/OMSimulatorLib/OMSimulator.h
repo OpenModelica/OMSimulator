@@ -119,7 +119,6 @@ OMSAPI oms_status_enu_t OMSCALL oms_importFile(const char* filename, char** cref
 OMSAPI oms_status_enu_t OMSCALL oms_importSnapshot(const char* cref, const char* snapshot);
 OMSAPI oms_status_enu_t OMSCALL oms_initialize(const char* cref);
 OMSAPI oms_status_enu_t OMSCALL oms_instantiate(const char* cref);
-OMSAPI oms_status_enu_t OMSCALL oms_list(const char* cref, char** contents);
 OMSAPI oms_status_enu_t OMSCALL oms_listUnconnectedConnectors(const char* cref, char** contents);
 OMSAPI oms_status_enu_t OMSCALL oms_loadSnapshot(const char* cref, const char* snapshot, char** newCref);
 OMSAPI oms_status_enu_t OMSCALL oms_newModel(const char* cref);

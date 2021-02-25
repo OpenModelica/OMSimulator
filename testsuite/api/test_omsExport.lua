@@ -36,7 +36,7 @@ printStatus(status, 0)
 status = oms_setSignalFilter("model", "[AB]")
 printStatus(status, 0)
 
-src, status = oms_list("model")
+src, status = oms_exportSnapshot("model")
 printStatus(status, 0)
 print(src)
 
@@ -46,7 +46,7 @@ printStatus(status, 0)
 status = oms_addSignalsToResults("model", "Y")
 printStatus(status, 0)
 
-src, status = oms_list("model")
+src, status = oms_exportSnapshot("model")
 printStatus(status, 0)
 print(src)
 

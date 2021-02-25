@@ -34,7 +34,7 @@ oms.addSystem("test.eoo", oms.system_wc)
 oms.addSubModel("test.eoo.source", "../resources/Modelica.Blocks.Sources.Sine.fmu")
 
 ## save snapshot
-src, status = oms.list("test")
+src, status = oms.exportSnapshot("test")
 print(src, flush=True)
 
 ## change model
@@ -43,10 +43,10 @@ oms.delete("test.eoo.source")
 oms.addSubModel("test.eoo.source", "../resources/Modelica.Blocks.Sources.Constant.fmu")
 
 ## restore model from snapshot
-newCref, status = oms.loadSnapshot("test", src)
+newCref, status = oms.importSnapshot("test", src)
 printStatus(status, 0)
 
-src, status = oms.list("test")
+src, status = oms.exportSnapshot("test")
 print(src, flush=True)
 
 oms.instantiate("test")

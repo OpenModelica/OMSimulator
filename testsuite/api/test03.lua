@@ -43,7 +43,7 @@ oms_addSystem("test.eoo", oms_system_wc)
 oms_addSubModel("test.eoo.source", "../resources/Modelica.Blocks.Sources.Sine.fmu")
 
 -- save snapshot
-src = oms_list("test")
+src = oms_exportSnapshot("test")
 print(src)
 
 -- change model
@@ -55,7 +55,7 @@ oms_addSubModel("test.eoo.source", "../resources/Modelica.Blocks.Sources.Constan
 newCref, status = oms_loadSnapshot("test", src)
 printStatus(status, 0)
 
-src = oms_list("test")
+src = oms_exportSnapshot("test")
 print(src)
 
 oms_instantiate("test")

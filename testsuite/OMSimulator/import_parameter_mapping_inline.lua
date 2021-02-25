@@ -10,7 +10,7 @@ oms_setTempDirectory("./import_parameter_mapping_inline_lua/")
 
 oms_importFile("../resources/importParameterMappingInline.ssp");
 
-src, status = oms_list("import_parameter_mapping")
+src, status = oms_exportSnapshot("import_parameter_mapping")
 print(src)
 
 oms_instantiate("import_parameter_mapping")

@@ -29,7 +29,7 @@ oms_addConnection("model.root.System1.output", "model.root.add.u2")
 oms_addConnection("model.root.add.y", "model.root.output")
 
 
-src = oms_list("model")
+src = oms_exportSnapshot("model")
 print(src)
 
 status = oms_rename("model.root", "root_1")
@@ -62,7 +62,7 @@ oms_instantiate("model")
 
 oms_initialize("model")
 
-src = oms_list("model")
+src = oms_exportSnapshot("model")
 print(src)
 
 

@@ -92,8 +92,6 @@ class capi:
     self.obj.oms_initialize.restype = ctypes.c_int
     self.obj.oms_instantiate.argtypes = [ctypes.c_char_p]
     self.obj.oms_instantiate.restype = ctypes.c_int
-    self.obj.oms_list.argtypes = [ctypes.c_char_p]
-    self.obj.oms_list.restype = ctypes.c_int
     self.obj.oms_listUnconnectedConnectors.argtypes = [ctypes.c_char_p]
     self.obj.oms_listUnconnectedConnectors.restype = ctypes.c_int
     self.obj.oms_loadSnapshot.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.POINTER(ctypes.c_char_p)]
@@ -266,10 +264,6 @@ class capi:
     return self.obj.oms_initialize(cref.encode())
   def instantiate(self, cref):
     return self.obj.oms_instantiate(cref.encode())
-  def list(self, ident):
-    contents = ctypes.c_char_p()
-    status = self.obj.oms_list(ident.encode(), ctypes.byref(contents))
-    return [contents.value.decode('utf-8'), status]
   def listUnconnectedConnectors(self, ident):
     contents = ctypes.c_char_p()
     status = self.obj.oms_listUnconnectedConnectors(ident.encode(), ctypes.byref(contents))

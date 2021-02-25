@@ -42,13 +42,13 @@ printStatus(status, 0)
 status = oms_addSystem("test.foo.hoo", oms_system_wc)
 printStatus(status, 3)
 
-src, status = oms_list("test")
+src, status = oms_exportSnapshot("test")
 print(src)
 
-src, status = oms_list("test.foo")
+src, status = oms_exportSnapshot("test.foo")
 print(src)
 
-src, status = oms_list("test.foo.goo")
+src, status = oms_exportSnapshot("test.foo.goo")
 print(src)
 
 status = oms_newModel("test")
@@ -69,7 +69,7 @@ printStatus(status, 0)
 status = oms_newModel("test")
 printStatus(status, 0)
 
-src, status = oms_list("test")
+src, status = oms_exportSnapshot("test")
 print(src)
 
 status = oms_delete("test")

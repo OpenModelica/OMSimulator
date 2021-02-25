@@ -30,7 +30,7 @@ oms_setReal("deleteConnector.Root.System1.Gain.k", 30.0)
 oms_addConnection("deleteConnector.Root.System2.C3", "deleteConnector.Root.System1.C1")
 oms_addConnection("deleteConnector.Root.System2.C4", "deleteConnector.Root.System1.C2")
 
-src = oms_list("deleteConnector")
+src = oms_exportSnapshot("deleteConnector")
 print(src)
 
 oms_delete("deleteConnector.Root.C1")
@@ -48,7 +48,7 @@ oms_delete("deleteConnector.Root.System2.C6")
 oms_delete("deleteConnector.Root.System3")
 
 -- after deletion
-src = oms_list("deleteConnector")
+src = oms_exportSnapshot("deleteConnector")
 print(src)
 
 

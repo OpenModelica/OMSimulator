@@ -80,13 +80,13 @@ printStatus(status, 0)
 status = oms.addTLMConnection("model.tlm.wc1.bus1","model.tlm.wc2.bus2", 0.001,0.3,100,0)
 printStatus(status, 0)
 
-src, status = oms.list("model.tlm")
+src, status = oms.exportSnapshot("model.tlm")
 print(src)
 
 status = oms.deleteConnectorFromTLMBus("model.tlm.wc1.bus2","model.tlm.wc1.x")
 printStatus(status, 0)
 
-src, status = oms.list("model.tlm")
+src, status = oms.exportSnapshot("model.tlm")
 print(src)
 
 status = oms.delete("model")

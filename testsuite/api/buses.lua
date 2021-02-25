@@ -74,13 +74,13 @@ printStatus(status, 0)
 status = oms_addConnection("model.tlm.wc2.bus2","model.tlm.wc1.bus1")
 printStatus(status, 3)
 
-src, status = oms_list("model.tlm")
+src, status = oms_exportSnapshot("model.tlm")
 print(src)
 
 status = oms_deleteConnectorFromBus("model.tlm.wc1.bus1","model.tlm.wc1.y")
 printStatus(status, 0)
 
-src, status = oms_list("model.tlm")
+src, status = oms_exportSnapshot("model.tlm")
 print(src)
 
 status = oms_delete("model")
