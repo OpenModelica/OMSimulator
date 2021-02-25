@@ -162,6 +162,9 @@ oms_status_enu_t oms::Model::loadSnapshot(const pugi::xml_node node)
   ssd_file.append_copy(node);
 
   Snapshot newSnapshot; // this is a temporary workaroud, loadSnapshot will be removed later
+  newSnapshot.importResourcesMemory("SystemStructure.ssd", ssd_file);
+
+  // newSnapshot.printSnapshot();
 
   bool old_copyResources = copyResources();
   copyResources(false);
