@@ -164,7 +164,7 @@ oms_status_enu_t oms::Model::loadSnapshot(const pugi::xml_node node)
   Snapshot newSnapshot; // this is a temporary workaroud, loadSnapshot will be removed later
   newSnapshot.importResourcesMemory("SystemStructure.ssd", ssd_file);
 
-  // newSnapshot.printSnapshot();
+  // newSnapshot.debugPrintAll();
 
   bool old_copyResources = copyResources();
   copyResources(false);
@@ -205,7 +205,7 @@ oms_status_enu_t oms::Model::importSnapshot(const char* snapshot)
     newSnapshot.importResourcesMemory(it.attribute("name").as_string(), it);
   }
 
-  //newSnapshot.printSnapshot();
+  //newSnapshot.debugPrintAll();
 
   // get ssd:SystemStructureDescription
   pugi::xml_node ssd_file = oms_snapshot.find_child_by_attribute(oms::ssp::Version1_0::oms_file, "name", "SystemStructure.ssd");

@@ -53,8 +53,9 @@ namespace oms
     oms_status_enu_t importResourcesMemory(const std::string & filename, const pugi::xml_node & node);
     void getResources(std::vector<std::string>& resources);
     pugi::xml_node getNode(const filesystem::path& filename) const;
-    void debugPrintFile(const std::string& filename);
-    void printSnapshot() const;
+    pugi::xml_node getNode2(const filesystem::path& filename) const;
+    void debugPrintNode(const filesystem::path& filename) const;
+    void debugPrintAll() const;
   private:
     // stop the compiler generating methods copying the object
     Snapshot(Snapshot const& copy);            ///< not implemented

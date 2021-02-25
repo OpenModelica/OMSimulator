@@ -209,7 +209,7 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
 
   // internally create the oms:snapshot from ssp
   Snapshot snapshot;
-  snapshot.importResourcesFile(temp_root / "SystemStructure.ssd", temp_root);
+  snapshot.importResourcesFile("SystemStructure.ssd", temp_root);
 
   ComRef cref = ComRef(node.attribute("name").as_string());
   std::string ssdVersion = node.attribute("version").as_string();
@@ -232,15 +232,11 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
 
   // add the remaining resources (e.g) .ssv, .ssm and signalFilter.xml to oms:snapshot
   for (const auto &entry : OMS_RECURSIVE_DIRECTORY_ITERATOR(model->getTempDirectory()))
-  {
     if (entry.path().has_extension())
-    {
       if (".ssv" == entry.path().extension() || ".ssm" == entry.path().extension() || ".xml" == entry.path().extension())
-        snapshot.importResourcesFile(entry.path(), model->getTempDirectory());
-    }
-  }
+        snapshot.importResourcesFile(naive_uncomplete(entry.path(), model->getTempDirectory()), model->getTempDirectory());
 
-  // snapshot.printSnapshot();
+  // snapshot.debugPrintAll();
 
   oms_status_enu_t status = model->importFromSnapshot(snapshot);
   model->copyResources(old_copyResources);

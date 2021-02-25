@@ -52,17 +52,18 @@ oms_status_enu_t oms::Snapshot::importSnapshot(const char* snapshot)
 
 oms_status_enu_t oms::Snapshot::importResourcesFile(const filesystem::path& filename, const filesystem::path& root)
 {
-  pugi::xml_node oms_snapshot = doc.document_element();
-  pugi::xml_document snapshotdoc;
-  pugi::xml_parse_result result = snapshotdoc.load_file(filename.c_str());
+  filesystem::path p = root / filename;
+
+  pugi::xml_document tmp_doc;
+  pugi::xml_parse_result result = tmp_doc.load_file(p.c_str());
   if (!result)
-    return logError("loading resource \"" + filename.generic_string() + "\" failed (" + std::string(result.description()) + ")");
+    return logError("loading resource \"" + p.generic_string() + "\" failed (" + std::string(result.description()) + ")");
 
+  pugi::xml_node oms_snapshot = doc.document_element();
   pugi::xml_node oms_file = oms_snapshot.append_child(oms::ssp::Version1_0::oms_file);
-  oms_file.append_attribute("name") = naive_uncomplete(filename, root).generic_string().c_str();
-  oms_file.append_copy(snapshotdoc.document_element());
+  oms_file.append_attribute("name") = filename.generic_string().c_str();
+  oms_file.append_copy(tmp_doc.document_element());
 
-  //debugPrintFile(naive_uncomplete(filename, root).generic_string());
   return oms_status_ok;
 }
 
@@ -73,7 +74,7 @@ oms_status_enu_t oms::Snapshot::importResourcesMemory(const std::string & filena
     pugi::xml_node oms_snapshot = doc.document_element();
     oms_snapshot.append_copy(node);
   }
-  //debugPrintFile(filename);
+  //debugPrintNode(filename);
   return oms_status_ok;
 }
 
@@ -90,22 +91,34 @@ void oms::Snapshot::getResources(std::vector<std::string> & resources)
 pugi::xml_node oms::Snapshot::getNode(const filesystem::path& filename) const
 {
   pugi::xml_node oms_snapshot = doc.document_element();
-  return oms_snapshot.find_child_by_attribute(oms::ssp::Version1_0::oms_file, "name", filename.c_str());
+  pugi::xml_node node = oms_snapshot.find_child_by_attribute(oms::ssp::Version1_0::oms_file, "name", filename.generic_string().c_str());
+
+  if (!node)
+    logError("Failed to find node \"" + filename.generic_string() + "\"");
+
+  return node;
 }
 
-void oms::Snapshot::debugPrintFile(const std::string& filename)
+pugi::xml_node oms::Snapshot::getNode2(const filesystem::path& filename) const
 {
   pugi::xml_node oms_snapshot = doc.document_element();
-  pugi::xml_node oms_node = oms_snapshot.find_child_by_attribute(oms::ssp::Version1_0::oms_file, "name", filename.c_str());
-  if (!oms_node)
-  {
-    logError("Failed to find \"" + filename + "\" in the snapshot");
-  }
+  pugi::xml_node node = oms_snapshot.find_child_by_attribute(oms::ssp::Version1_0::oms_file, "name", filename.generic_string().c_str());
 
-  oms_node.print(std::cout);
+  if (!node)
+    logError("Failed to find node \"" + filename.generic_string() + "\"");
+
+  return node.first_child();
 }
 
-void oms::Snapshot::printSnapshot() const
+void oms::Snapshot::debugPrintNode(const filesystem::path& filename) const
 {
-  doc.save(std::cout);
+  pugi::xml_node node = getNode(filename);
+
+  if (node)
+    node.print(std::cout, "  ");
+}
+
+void oms::Snapshot::debugPrintAll() const
+{
+  doc.save(std::cout, "  ");
 }
