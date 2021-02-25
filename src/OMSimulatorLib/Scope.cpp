@@ -38,7 +38,6 @@
 #include <miniunz.h>
 #include <time.h>
 #include "ssd/Tags.h"
-#include <unordered_map>
 
 oms::Scope::Scope()
   : tempDir(".")

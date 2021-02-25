@@ -41,7 +41,6 @@
 #include <map>
 #include <pugixml.hpp>
 #include <string>
-#include <unordered_map>
 
 
 oms::Values::Values()
