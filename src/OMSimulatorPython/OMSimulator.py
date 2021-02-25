@@ -62,10 +62,79 @@ class OMSimulator:
     self.fault_type_gain = 1
     self.fault_type_const = 2
 
+    # map functions
+    self.addBus = Scope._capi.addBus
+    self.addConnection = Scope._capi.addConnection
+    self.addConnector = Scope._capi.addConnector
+    self.addConnectorToBus = Scope._capi.addConnectorToBus
+    self.addConnectorToTLMBus = Scope._capi.addConnectorToTLMBus
+    self.addExternalModel = Scope._capi.addExternalModel
+    self.addSignalsToResults = Scope._capi.addSignalsToResults
+    self.addSubModel = Scope._capi.addSubModel
+    self.addSystem = Scope._capi.addSystem
+    self.addTLMBus = Scope._capi.addTLMBus
+    self.addTLMConnection = Scope._capi.addTLMConnection
+    self.compareSimulationResults = Scope._capi.compareSimulationResults
+    self.copySystem = Scope._capi.copySystem
+    self.deleteConnection = Scope._capi.deleteConnection
+    self.deleteConnectorFromBus = Scope._capi.deleteConnectorFromBus
+    self.deleteConnectorFromTLMBus = Scope._capi.deleteConnectorFromTLMBus
+    self.doStep = Scope._capi.doStep
+    self.export = Scope._capi.export
+    self.exportDependencyGraphs = Scope._capi.exportDependencyGraphs
+    self.exportSnapshot = Scope._capi.exportSnapshot
+    self.exportSSMTemplate = Scope._capi.exportSSMTemplate
+    self.exportSSVTemplate = Scope._capi.exportSSVTemplate
+    self.faultInjection = Scope._capi.faultInjection
+    self.getBoolean = Scope._capi.getBoolean
+    self.getFixedStepSize = Scope._capi.getFixedStepSize
+    self.getInteger = Scope._capi.getInteger
+    self.getReal = Scope._capi.getReal
+    self.getResultFile = Scope._capi.getResultFile
+    self.getSolver = Scope._capi.getSolver
+    self.getStartTime = Scope._capi.getStartTime
+    self.getStopTime = Scope._capi.getStopTime
+    self.getSystemType = Scope._capi.getSystemType
+    self.getTime = Scope._capi.getTime
+    self.getVariableStepSize = Scope._capi.getVariableStepSize
+    self.getVersion = Scope._capi.getVersion
+    self.importFile = Scope._capi.importFile
+    self.importSnapshot = Scope._capi.importSnapshot
+    self.initialize = Scope._capi.initialize
+    self.instantiate = Scope._capi.instantiate
+    self.list = Scope._capi.list
+    self.listUnconnectedConnectors = Scope._capi.listUnconnectedConnectors
+    self.loadSnapshot = Scope._capi.loadSnapshot
+    self.removeSignalsFromResults = Scope._capi.removeSignalsFromResults
+    self.rename = Scope._capi.rename
+    self.reset = Scope._capi.reset
+    self.setBoolean = Scope._capi.setBoolean
+    self.setCommandLineOption = Scope._capi.setCommandLineOption
+    self.setFixedStepSize = Scope._capi.setFixedStepSize
+    self.setInteger = Scope._capi.setInteger
+    self.setLogFile = Scope._capi.setLogFile
+    self.setLoggingInterval = Scope._capi.setLoggingInterval
+    self.setLoggingLevel = Scope._capi.setLoggingLevel
+    self.setMaxLogFileSize = Scope._capi.setMaxLogFileSize
+    self.setReal = Scope._capi.setReal
+    self.setRealInputDerivative = Scope._capi.setRealInputDerivative
+    self.setResultFile = Scope._capi.setResultFile
+    self.setSignalFilter = Scope._capi.setSignalFilter
+    self.setSolver = Scope._capi.setSolver
+    self.setStartTime = Scope._capi.setStartTime
+    self.setStopTime = Scope._capi.setStopTime
+    self.setTempDirectory = Scope._capi.setTempDirectory
+    self.setTLMPositionAndOrientation = Scope._capi.setTLMPositionAndOrientation
+    self.setTLMSocketData = Scope._capi.setTLMSocketData
+    self.setTolerance = Scope._capi.setTolerance
+    self.setVariableStepSize = Scope._capi.setVariableStepSize
+    self.setWorkingDirectory = Scope._capi.setWorkingDirectory
+    self.simulate = Scope._capi.simulate
+    self.stepUntil = Scope._capi.stepUntil
+    self.terminate = Scope._capi.terminate
+
     if temp_directory is not None:
       self.setTempDirectory(temp_directory)
-
-    self.getResultFile = Scope._capi.getResultFile
 
   def __enter__(self):
     return self
@@ -80,153 +149,14 @@ class OMSimulator:
     '''Returns the version string'''
     return self.getVersion()
 
-  def getVersion(self):
-    return Scope._capi.getVersion()
-
-  def setLoggingLevel(self, level):
-    return Scope._capi.setLoggingLevel(level)
-  def setTolerance(self, cref, absoluteTolerance, relativeTolerance):
-    return Scope._capi.setTolerance(cref, absoluteTolerance, relativeTolerance)
-  def setVariableStepSize(self, cref, initialStepSize, minimumStepSize, maximumStepSize):
-    return Scope._capi.setVariableStepSize(cref, initialStepSize, minimumStepSize, maximumStepSize)
-  def getSystemType(self, cref):
-    return Scope._capi.getSystemType(cref)
-  def getVariableStepSize(self, cref):
-    return Scope._capi.getVariableStepSize(cref)
-  def setLogFile(self, filename):
-    return Scope._capi.setLogFile(filename)
-  def setLoggingInterval(self, cref, loggingInterval):
-    return Scope._capi.setLoggingInterval(cref, loggingInterval)
-  def setMaxLogFileSize(self, size):
-    return Scope._capi.setMaxLogFileSize(size)
-  def setTempDirectory(self, newTempDir):
-    return Scope._capi.setTempDirectory(newTempDir)
-  def setWorkingDirectory(self, path):
-    return Scope._capi.setWorkingDirectory(path)
   def newModel(self, cref):
     status = Scope._capi.newModel(cref)
     if status == self.status_ok:
         Scope._Scope.append(cref)
     return status
-  def rename(self, cref, newcref):
-    return Scope._capi.rename(cref, newcref)
+
   def delete(self, cref):
     status = Scope._capi.delete(cref)
     if status == self.status_ok:
         Scope._Scope = [model for model in Scope._Scope if model != cref]
     return status
-  def export(self, cref, filename):
-    return Scope._capi.export(cref, filename)
-  def importFile(self, filename):
-    return Scope._capi.importFile(filename)
-  def importSnapshot(self, ident, snapshot):
-    status = Scope._capi.importSnapshot(ident, snapshot)
-    return status
-  def list(self, ident):
-    return Scope._capi.list(ident)
-  def exportSnapshot(self, ident):
-    return Scope._capi.exportSnapshot(ident)
-  def exportSSVTemplate(self, ident, filename):
-    return Scope._capi.exportSSVTemplate(ident, filename)
-  def exportSSMTemplate(self, ident, filename):
-    return Scope._capi.exportSSMTemplate(ident, filename)
-  def listUnconnectedConnectors(self, ident):
-    return Scope._capi.listUnconnectedConnectors(ident)
-  def loadSnapshot(self, ident, snapshot):
-    status = Scope._capi.loadSnapshot(ident, snapshot)
-    return status
-  def addSystem(self, ident, type):
-    return Scope._capi.addSystem(ident, type)
-  def copySystem(self, source, target):
-    return Scope._capi.copySystem(source, target)
-  def addSubModel(self, cref, fmuPath):
-    return Scope._capi.addSubModel(cref, fmuPath)
-  def addConnector(self, cref, causality, type):
-    return Scope._capi.addConnector(cref, causality, type)
-  def setCommandLineOption(self, cmd):
-    return Scope._capi.setCommandLineOption(cmd)
-  def addConnection(self, crefA, crefB):
-    return Scope._capi.addConnection(crefA, crefB)
-  def deleteConnection(self, crefA, crefB):
-    return Scope._capi.deleteConnection(crefA, crefB)
-  def addBus(self, crefA):
-    return Scope._capi.addBus(crefA)
-  def addConnectorToBus(self, busCref, connectorCref):
-    return Scope._capi.addConnectorToBus(busCref, connectorCref)
-  def deleteConnectorFromBus(self, busCref, connectorCref):
-    return Scope._capi.deleteConnectorFromBus(busCref, connectorCref)
-  def addTLMBus(self, cref, domain, dimensions, interpolation):
-    return Scope._capi.addTLMBus(cref, domain, dimensions, interpolation)
-  def addConnectorToTLMBus(self, busCref, connectorCref, type):
-    return Scope._capi.addConnectorToTLMBus(busCref, connectorCref, type)
-  def deleteConnectorFromTLMBus(self, busCref, connectorCref):
-    return Scope._capi.deleteConnectorFromTLMBus(busCref, connectorCref)
-  def addTLMConnection(self, crefA, crefB, delay, alpha, linearimpedance, angularimpedance):
-    return Scope._capi.addTLMConnection(crefA, crefB, delay, alpha, linearimpedance, angularimpedance)
-  def compareSimulationResults(self, filenameA, filenameB, var, relTol, absTol):
-    return Scope._capi.compareSimulationResults(filenameA, filenameB, var, relTol, absTol)
-  def addExternalModel(self, cref, path, startscript):
-    return Scope._capi.addExternalModel(cref, path, startscript)
-  def instantiate(self, cref):
-    return Scope._capi.instantiate(cref)
-  def initialize(self, cref):
-    return Scope._capi.initialize(cref)
-  def simulate(self, cref):
-    return Scope._capi.simulate(cref)
-  def doStep(self, cref):
-    return Scope._capi.doStep(cref)
-  def stepUntil(self, cref, stopTime):
-    return Scope._capi.stepUntil(cref, stopTime)
-  def terminate(self, cref):
-    return Scope._capi.terminate(cref)
-  def reset(self, cref):
-    return Scope._capi.reset(cref)
-  def setTLMSocketData(self, cref, address, managerPort, monitorPort):
-    return Scope._capi.setTLMSocketData(cref, address, managerPort, monitorPort)
-  def setTLMPositionAndOrientation(self, cref, x1, x2, x3, A11, A12, A13, A21, A22, A23, A31, A32, A33):
-    return Scope._capi.setTLMPositionAndOrientation(cref, x1, x2, x3, A11, A12, A13, A21, A22, A23, A31, A32, A33)
-  def exportDependencyGraphs(self, cref, initialization, event, simulation):
-    return Scope._capi.exportDependencyGraphs(cref, initialization, event, simulation)
-  def faultInjection(self, cref, faultType, faultValue):
-    return Scope._capi.faultInjection(cref, faultType, faultValue)
-  def getReal(self, cref):
-    [value, status] = Scope._capi.getReal(cref)
-    return [value, status]
-  def getInteger(self, cref):
-    return Scope._capi.getInteger(cref)
-  def getBoolean(self, cref):
-    return Scope._capi.getBoolean(cref)
-  def getFixedStepSize(self, cref):
-    return Scope._capi.getFixedStepSize(cref)
-  def getSolver(self, cref):
-    return Scope._capi.getSolver(cref)
-  def setReal(self, signal, value):
-    return Scope._capi.setReal(signal, value)
-  def setRealInputDerivative(self, signal, value):
-    return Scope._capi.setRealInputDerivative(signal, value)
-  def setInteger(self, signal, value):
-    return Scope._capi.setInteger(signal, value)
-  def setBoolean(self, signal, value):
-    return Scope._capi.setBoolean(signal, value)
-  def setResultFile(self, cref, filename, bufferSize=1):
-    return Scope._capi.setResultFile(cref, filename, bufferSize)
-  def setSignalFilter(self, cref, regex):
-    return Scope._capi.setSignalFilter(cref, regex)
-  def setSolver(self, cref, solver):
-    return Scope._capi.setSolver(cref, solver)
-  def addSignalsToResults(self, cref, regex):
-    return Scope._capi.addSignalsToResults(cref, regex)
-  def removeSignalsFromResults(self, cref, regex):
-    return Scope._capi.removeSignalsFromResults(cref, regex)
-  def getStartTime(self, cref):
-    return Scope._capi.getStartTime(cref)
-  def setStartTime(self, cref, startTime):
-    return Scope._capi.setStartTime(cref, startTime)
-  def getStopTime(self, cref):
-    return Scope._capi.getStopTime(cref)
-  def setStopTime(self, cref, stopTime):
-    return Scope._capi.setStopTime(cref, stopTime)
-  def setFixedStepSize(self, cref, stepSize):
-    return Scope._capi.setFixedStepSize(cref, stepSize)
-  def getTime(self, cref):
-    return Scope._capi.getTime(cref)

@@ -66,9 +66,7 @@ const char* oms::ssp::Version1_0::oms_annotations                      = "oms:An
 const char* oms::ssp::Version1_0::oms_buses                            = "oms:Buses";
 
 const char* oms::ssp::Version1_0::snap_shot                            = "oms:snapshot";
-const char* oms::ssp::Version1_0::ssd_file                             = "oms:ssd_file";
-const char* oms::ssp::Version1_0::ssv_file                             = "oms:ssv_file";
-const char* oms::ssp::Version1_0::ssm_file                             = "oms:ssm_file";
+const char* oms::ssp::Version1_0::oms_file                             = "oms:file";
 
 const char* oms::ssp::Version1_0::ssd::parameter_bindings              = "ssd:ParameterBindings";
 const char* oms::ssp::Version1_0::ssd::parameter_binding               = "ssd:ParameterBinding";

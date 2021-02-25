@@ -1,4 +1,5 @@
 -- status: correct
+-- teardown_command: rm -rf import_parameter_mapping_ssm_lua/
 -- linux: yes
 -- mingw: yes
 -- win: no

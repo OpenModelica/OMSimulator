@@ -1,5 +1,5 @@
 -- status: correct
--- teardown_command: rm -rf simulation-lua/ test_init.dot test_sim.dot test_res.mat
+-- teardown_command: rm -rf simulation-lua/ test_init2.dot test_event2.dot test_sim2.dot test_res.mat
 -- linux: yes
 -- mingw: no
 -- win: no
@@ -38,7 +38,7 @@ printStatus(status, 0)
 status = oms_addSubModel("test.co_sim.B", "../resources/tlm.source.fmu")
 printStatus(status, 0)
 
-oms_exportDependencyGraphs("test.co_sim", "test_init.dot", "test_sim.dot", "test_continuous.dot")
+oms_exportDependencyGraphs("test.co_sim", "test_init2.dot", "test_event2.dot", "test_sim2.dot")
 
 status = oms_instantiate("test")
 printStatus(status, 0)

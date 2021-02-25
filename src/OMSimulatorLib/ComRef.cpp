@@ -80,7 +80,12 @@ oms::ComRef& oms::ComRef::operator=(const oms::ComRef& copy)
 
 oms::ComRef oms::ComRef::operator+(const oms::ComRef& rhs) const
 {
-  return oms::ComRef(std::string(*this) + "." + std::string(rhs));
+  if (!this->hasSuffix())
+    return oms::ComRef(std::string(*this) + "." + std::string(rhs));
+
+  ComRef lhs(*this);
+  lhs.pop_suffix();
+  return oms::ComRef(std::string(lhs) + "." + std::string(rhs));
 }
 
 bool oms::ComRef::isValidIdent(const std::string& ident)
@@ -95,45 +100,58 @@ bool oms::ComRef::isValidIdent() const
 
 bool oms::ComRef::isEmpty() const
 {
-  return (cref[0] == '\0');
+  return cref[0] == '\0';
 }
 
-bool oms::ComRef::hasSuffixStart() const
+bool oms::ComRef::hasSuffix() const
 {
-  int i=0;
-  while (cref[i])
-    ++i;
-
-  if (i < 7)
-    return false;
-
-  if (cref[i-6] == ':' &&
-      cref[i-5] == 's' &&
-      cref[i-4] == 't' &&
-      cref[i-3] == 'a' &&
-      cref[i-2] == 'r' &&
-      cref[i-1] == 't')
-    return true;
+  for (int i=0; cref[i]; ++i)
+    if (cref[i] == ':')
+      return true;
 
   return false;
 }
 
-oms::ComRef oms::ComRef::popSuffix() const
+bool oms::ComRef::hasSuffix(const std::string& suffix) const
 {
-  int index=0;
-  for (int i=0; cref[i]; ++i)
-    if (cref[i] == ':')
-      index = i;
+  return this->suffix() == suffix;
+}
 
-  if (index > 0)
+std::string oms::ComRef::pop_suffix()
+{
+  std::string suffix = this->suffix();
+
+  for (int i=0; cref[i]; ++i)
   {
-    cref[index] = '\0';
-    oms::ComRef front(cref);
-    cref[index] = ':';
-    return front;
+    if (cref[i] == ':')
+    {
+      cref[i] = '\0';
+      oms::ComRef front(cref);
+      cref[i] = ':';
+      *this = front;
+      return suffix;
+    }
   }
 
-  return *this;
+  return suffix;
+}
+
+bool oms::ComRef::pop_suffix(const std::string& suffix)
+{
+  if (!this->hasSuffix(suffix))
+    return false;
+
+  this->pop_suffix();
+  return true;
+}
+
+std::string oms::ComRef::suffix() const
+{
+  for (int i=0; cref[i]; ++i)
+    if (cref[i] == ':')
+      return std::string(cref+i+1);
+
+  return std::string();
 }
 
 bool oms::ComRef::isRootOf(ComRef child) const
@@ -158,6 +176,8 @@ oms::ComRef oms::ComRef::front() const
       cref[i] = '.';
       return front;
     }
+    else if (cref[i] == ':')
+      break;
   }
 
   return *this;
@@ -175,6 +195,8 @@ oms::ComRef oms::ComRef::pop_front()
       *this = oms::ComRef(cref + i + 1);
       return front;
     }
+    else if (cref[i] == ':')
+      break;
   }
 
   oms::ComRef front(cref);
