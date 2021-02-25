@@ -258,7 +258,7 @@ oms::Component* oms::ComponentFMUME::NewComponent(const oms::ComRef& cref, oms::
   return component;
 }
 
-oms::Component* oms::ComponentFMUME::NewComponent(const pugi::xml_node& node, oms::System* parentSystem, const std::string& sspVersion, Snapshot& snapshot)
+oms::Component* oms::ComponentFMUME::NewComponent(const pugi::xml_node& node, oms::System* parentSystem, const std::string& sspVersion, const Snapshot& snapshot)
 {
   ComRef cref = ComRef(node.attribute("name").as_string());
   std::string type = node.attribute("type").as_string();

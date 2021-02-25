@@ -54,7 +54,7 @@ namespace oms
     ~ComponentFMUME();
 
     static Component* NewComponent(const oms::ComRef& cref, System* parentSystem, const std::string& fmuPath);
-    static Component* NewComponent(const pugi::xml_node& node, System* parentSystem,  const std::string& sspVersion, Snapshot& snapshot);
+    static Component* NewComponent(const pugi::xml_node& node, System* parentSystem,  const std::string& sspVersion, const Snapshot& snapshot);
     const FMUInfo* getFMUInfo() const {return &(this->fmuInfo);}
 
     oms_status_enu_t exportToSSD(pugi::xml_node& node, pugi::xml_node& ssvNode) const;

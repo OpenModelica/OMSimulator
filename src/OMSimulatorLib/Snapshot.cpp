@@ -38,7 +38,7 @@
 oms::Snapshot::Snapshot()
 {
   // set the document with the root node <oms:snapshot>
-  oms_snapshot = doc.append_child(oms::ssp::Version1_0::snap_shot);
+  doc.append_child(oms::ssp::Version1_0::snap_shot);
 }
 
 oms::Snapshot::~Snapshot()
@@ -52,6 +52,7 @@ oms_status_enu_t oms::Snapshot::importSnapshot(const char* snapshot)
 
 oms_status_enu_t oms::Snapshot::importResourcesFile(const filesystem::path& filename, const filesystem::path& root)
 {
+  pugi::xml_node oms_snapshot = doc.document_element();
   pugi::xml_document snapshotdoc;
   pugi::xml_parse_result result = snapshotdoc.load_file(filename.c_str());
   if (!result)
@@ -69,6 +70,7 @@ oms_status_enu_t oms::Snapshot::importResourcesMemory(const std::string & filena
 {
   if (node)
   {
+    pugi::xml_node oms_snapshot = doc.document_element();
     oms_snapshot.append_copy(node);
   }
   //debugPrintFile(filename);
@@ -77,19 +79,23 @@ oms_status_enu_t oms::Snapshot::importResourcesMemory(const std::string & filena
 
 void oms::Snapshot::getResources(std::vector<std::string> & resources)
 {
+  pugi::xml_node oms_snapshot = doc.document_element();
+
   for (const auto & it: oms_snapshot.children())
   {
     resources.push_back(it.attribute("name").as_string());
   }
 }
 
-pugi::xml_node oms::Snapshot::getNode(const std::string& filename)
+pugi::xml_node oms::Snapshot::getNode(const filesystem::path& filename) const
 {
+  pugi::xml_node oms_snapshot = doc.document_element();
   return oms_snapshot.find_child_by_attribute(oms::ssp::Version1_0::oms_file, "name", filename.c_str());
 }
 
 void oms::Snapshot::debugPrintFile(const std::string& filename)
 {
+  pugi::xml_node oms_snapshot = doc.document_element();
   pugi::xml_node oms_node = oms_snapshot.find_child_by_attribute(oms::ssp::Version1_0::oms_file, "name", filename.c_str());
   if (!oms_node)
   {

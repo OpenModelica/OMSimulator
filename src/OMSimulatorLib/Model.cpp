@@ -627,13 +627,11 @@ oms_status_enu_t oms::Model::exportToSSD(pugi::xml_node& node, pugi::xml_node& s
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Model::importFromSnapshot(Snapshot& snapshot)
+oms_status_enu_t oms::Model::importFromSnapshot(const Snapshot& snapshot)
 {
   pugi::xml_node ssdRoot = snapshot.getNode("SystemStructure.ssd");
   if (!ssdRoot)
-  {
     return logError("loading <oms:file> \"SystemStructure.ssd\" from <oms:snapshot> failed");
-  }
 
   pugi::xml_node ssdNode = ssdRoot.child(oms::ssp::Draft20180219::ssd::system_structure_description);
   std::string sspVersion = ssdNode.attribute("version").as_string();

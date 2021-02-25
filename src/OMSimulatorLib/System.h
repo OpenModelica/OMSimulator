@@ -85,7 +85,7 @@ namespace oms
     oms_status_enu_t addSubModel(const ComRef& cref, const std::string& fmuPath);
     bool validCref(const ComRef& cref);
     oms_status_enu_t exportToSSD(pugi::xml_node& node, pugi::xml_node& ssvNode) const;
-    oms_status_enu_t importFromSnapshot(const pugi::xml_node& node, const std::string& sspVersion, Snapshot& snapshot);
+    oms_status_enu_t importFromSnapshot(const pugi::xml_node& node, const std::string& sspVersion, const Snapshot& snapshot);
     virtual oms_status_enu_t exportToSSD_SimulationInformation(pugi::xml_node& node) const = 0;
     virtual oms_status_enu_t importFromSSD_SimulationInformation(const pugi::xml_node& node, const std::string& sspVersion) = 0;
     void setGeometry(const ssd::ElementGeometry& geometry) {element.setGeometry(&geometry);}
@@ -234,9 +234,9 @@ namespace oms
     oms_status_enu_t importTLMBus(const pugi::xml_node& node, Component* component);
     oms_status_enu_t importBusConnectorSignals(const pugi::xml_node& node);
     oms_status_enu_t importBusConnectorGeometry(const pugi::xml_node& node);
-    oms_status_enu_t importStartValuesFromSSV(const std::string& ssvPath, const std::string ssmPath, Snapshot& snapshot);
-    oms_status_enu_t importStartValuesFromSSVHelper(const std::string& ssvPath, Snapshot& snapshot, const std::multimap<ComRef, ComRef>& mappedEntry);
-    oms_status_enu_t importParameterMappingFromSSM(const std::string& ssmPath, Snapshot& snapshot, std::multimap<ComRef, ComRef>& mappedEntry);
+    oms_status_enu_t importStartValuesFromSSV(const std::string& ssvPath, const std::string ssmPath, const Snapshot& snapshot);
+    oms_status_enu_t importStartValuesFromSSVHelper(const std::string& ssvPath, const Snapshot& snapshot, const std::multimap<ComRef, ComRef>& mappedEntry);
+    oms_status_enu_t importParameterMappingFromSSM(const std::string& ssmPath, const Snapshot& snapshot, std::multimap<ComRef, ComRef>& mappedEntry);
 
     std::vector<AlgLoop> algLoops;    ///< Vector of algebraic loop objects
   };

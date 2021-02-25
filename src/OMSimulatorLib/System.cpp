@@ -500,7 +500,7 @@ oms_status_enu_t oms::System::exportToSSD(pugi::xml_node& node, pugi::xml_node& 
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::System::importFromSnapshot(const pugi::xml_node& node, const std::string& sspVersion, Snapshot& snapshot)
+oms_status_enu_t oms::System::importFromSnapshot(const pugi::xml_node& node, const std::string& sspVersion, const Snapshot& snapshot)
 {
   std::map<std::string, std::string> startValuesFileSources;  ///< ssvFileSource mapped with ssmFilesource if mapping is provided, otherwise only ssvFilesource entry is made
 
@@ -2404,7 +2404,7 @@ oms_status_enu_t oms::System::addAlgLoop(oms_ssc_t SCC, const int algLoopNum)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::System::importStartValuesFromSSV(const std::string& ssvPath, const std::string ssmPath, Snapshot& snapshot)
+oms_status_enu_t oms::System::importStartValuesFromSSV(const std::string& ssvPath, const std::string ssmPath, const Snapshot& snapshot)
 {
   // mapping between a parameter in the source and a parameter of the system or component being parametrized
   std::multimap<ComRef, ComRef> mappedEntry;
@@ -2416,7 +2416,7 @@ oms_status_enu_t oms::System::importStartValuesFromSSV(const std::string& ssvPat
   return importStartValuesFromSSVHelper(ssvPath, snapshot, mappedEntry);
 }
 
-oms_status_enu_t oms::System::importStartValuesFromSSVHelper(const std::string& ssvPath, Snapshot & snapshot, const std::multimap<ComRef, ComRef>& mappedEntry)
+oms_status_enu_t oms::System::importStartValuesFromSSVHelper(const std::string& ssvPath, const Snapshot& snapshot, const std::multimap<ComRef, ComRef>& mappedEntry)
 {
   pugi::xml_node ssvFile = snapshot.getNode(ssvPath);
   if(!ssvFile)
@@ -2525,7 +2525,7 @@ oms_status_enu_t oms::System::updateAlgebraicLoops(const std::vector< oms_ssc_t 
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::System::importParameterMappingFromSSM(const std::string& ssmPath, Snapshot& snapshot, std::multimap<ComRef, ComRef>& mappedEntry)
+oms_status_enu_t oms::System::importParameterMappingFromSSM(const std::string& ssmPath, const Snapshot& snapshot, std::multimap<ComRef, ComRef>& mappedEntry)
 {
   pugi::xml_node ssmFile = snapshot.getNode(ssmPath);
   if (!ssmFile)

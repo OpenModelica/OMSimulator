@@ -53,7 +53,7 @@ namespace oms
     oms_status_enu_t importResourcesFile(const filesystem::path& filename, const filesystem::path& root);
     oms_status_enu_t importResourcesMemory(const std::string & filename, const pugi::xml_node & node);
     void getResources(std::vector<std::string>& resources);
-    pugi::xml_node getNode(const std::string& filename);
+    pugi::xml_node getNode(const filesystem::path& filename) const;
     void debugPrintFile(const std::string& filename);
     void printSnapshot() const;
   private:
@@ -63,7 +63,6 @@ namespace oms
 
   private:
    pugi::xml_document doc; // snapshot document
-   pugi::xml_node oms_snapshot;
   };
 }
 
