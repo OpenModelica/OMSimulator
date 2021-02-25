@@ -122,7 +122,7 @@ namespace oms
     bool useThreadPool() {return (pool != nullptr);}
     ctpl::thread_pool& getThreadPool() {assert(pool); return *pool;}
 
-    oms_status_enu_t loadSnapshot(const pugi::xml_node node);
+    oms_status_enu_t loadSnapshot(const pugi::xml_node& node);
 
   private:
     Model(const ComRef& cref, const std::string& tempDir);

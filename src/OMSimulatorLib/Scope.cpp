@@ -200,16 +200,11 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
   if (oms_status_ok != oms::Scope::miniunz(filename, temp_root.string(), true))
     return logError("failed to extract \"SystemStructure.ssd\" from \"" + filename + "\"");
 
-  pugi::xml_document doc;
-  pugi::xml_parse_result result = doc.load_file((temp_root / "SystemStructure.ssd").string().c_str());
-  if (!result)
-    return logError("loading \"" + std::string(filename) + "\" failed (" + std::string(result.description()) + ")");
-
-  const pugi::xml_node node = doc.document_element(); // ssd:SystemStructureDescription
-
-  // internally create the oms:snapshot from ssp
   Snapshot snapshot;
   snapshot.importResourcesFile("SystemStructure.ssd", temp_root);
+  const pugi::xml_node node = snapshot.getNode2("SystemStructure.ssd");
+  if (!node)
+    return logError("failed to load \"SystemStructure.ssd\"");
 
   ComRef cref = ComRef(node.attribute("name").as_string());
   std::string ssdVersion = node.attribute("version").as_string();

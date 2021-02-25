@@ -143,7 +143,7 @@ oms_status_enu_t oms::Model::rename(const ComRef& cref, const ComRef& newCref)
   return logError("Model \"" + std::string(getCref()) + "\" does not contain system \"" + std::string(front) + "\"");
 }
 
-oms_status_enu_t oms::Model::loadSnapshot(const pugi::xml_node node)
+oms_status_enu_t oms::Model::loadSnapshot(const pugi::xml_node& node)
 {
   // This method will not change the name of the model.
   // If a renaming is requested then it will happen in Scope::loadSnapshot.
@@ -162,7 +162,7 @@ oms_status_enu_t oms::Model::loadSnapshot(const pugi::xml_node node)
   ssd_file.append_copy(node);
 
   Snapshot newSnapshot; // this is a temporary workaroud, loadSnapshot will be removed later
-  newSnapshot.importResourcesMemory("SystemStructure.ssd", ssd_file);
+  newSnapshot.importResourcesXML("SystemStructure.ssd", ssd_file);
 
   // newSnapshot.debugPrintAll();
 
@@ -202,7 +202,7 @@ oms_status_enu_t oms::Model::importSnapshot(const char* snapshot)
   // create the snapshot interface
   for (const auto& it : oms_snapshot.children())
   {
-    newSnapshot.importResourcesMemory(it.attribute("name").as_string(), it);
+    newSnapshot.importResourcesXML(it.attribute("name").as_string(), it);
   }
 
   //newSnapshot.debugPrintAll();

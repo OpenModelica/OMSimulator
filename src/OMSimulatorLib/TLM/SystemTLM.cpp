@@ -122,7 +122,7 @@ oms_status_enu_t oms::SystemTLM::importFromSSD_SimulationInformation(const pugi:
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::SystemTLM::importFromSSD_SimulationInformationHelper(const pugi::xml_node & node)
+oms_status_enu_t oms::SystemTLM::importFromSSD_SimulationInformationHelper(const pugi::xml_node& node)
 {
   pugi::xml_node tlmmasterNode = node.child("oms::ssp::Draft20180219::tlm_master");
   for (auto it = tlmmasterNode.attributes_begin(); it != tlmmasterNode.attributes_end(); ++it)

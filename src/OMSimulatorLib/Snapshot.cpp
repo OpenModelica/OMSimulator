@@ -67,7 +67,22 @@ oms_status_enu_t oms::Snapshot::importResourcesFile(const filesystem::path& file
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Snapshot::importResourcesMemory(const std::string& filename, const pugi::xml_node &node)
+oms_status_enu_t oms::Snapshot::importResourcesMemory(const filesystem::path& filename, const char* contents)
+{
+  pugi::xml_document tmp_doc;
+  pugi::xml_parse_result result = tmp_doc.load(contents);
+  if (!result)
+    return logError("loading resource \"" + filename.generic_string() + "\" failed (" + std::string(result.description()) + ")");
+
+  pugi::xml_node oms_snapshot = doc.document_element();
+  pugi::xml_node oms_file = oms_snapshot.append_child(oms::ssp::Version1_0::oms_file);
+  oms_file.append_attribute("name") = filename.generic_string().c_str();
+  oms_file.append_copy(tmp_doc.document_element());
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Snapshot::importResourcesXML(const filesystem::path& filename, const pugi::xml_node& node)
 {
   if (node)
   {
