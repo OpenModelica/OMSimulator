@@ -34,8 +34,8 @@
 #include "Flags.h"
 #include "System.h"
 #include "Component.h"
+#include "Snapshot.h"
 #include <miniunz.h>
-#include <OMSFileSystem.h>
 #include <time.h>
 #include "ssd/Tags.h"
 #include <unordered_map>
@@ -209,19 +209,8 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
   const pugi::xml_node node = doc.document_element(); // ssd:SystemStructureDescription
 
   // internally create the oms:snapshot from ssp
-  pugi::xml_document snapshot;
-  pugi::xml_node oms_snapshot = snapshot.append_child(oms::ssp::Version1_0::snap_shot);
-
-  pugi::xml_node ssd_file = oms_snapshot.append_child(oms::ssp::Version1_0::oms_file);
-  ssd_file.append_attribute("name") = "SystemStructure.ssd";
-  ssd_file.append_copy(node);
-
-  /*construct mappedSnapshot from oms_snapshot
-    eg: filename -> <oms:file name="SystemStructure.ssd"
-        filename -> <oms:file name = "resources/model.ssv"
-  */
-  std::unordered_map<std::string, pugi::xml_node> mappedSnapshot;
-  mappedSnapshot["SystemStructure.ssd"] = ssd_file;
+  Snapshot snapshot;
+  snapshot.importResourcesFile(temp_root / "SystemStructure.ssd", temp_root);
 
   ComRef cref = ComRef(node.attribute("name").as_string());
   std::string ssdVersion = node.attribute("version").as_string();
@@ -247,27 +236,14 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
   {
     if (entry.path().has_extension())
     {
-      if (entry.path().extension() == ".ssv")
-      {
-        // ssv files
-        addSnapshotResources(oms_snapshot, entry.path().string(), mappedSnapshot);
-      }
-      else if (entry.path().extension() == ".ssm")
-      {
-        // ssm files
-        addSnapshotResources(oms_snapshot, entry.path().string(), mappedSnapshot);
-      }
-      else if (entry.path().filename()== "signalFilter.xml")
-      {
-        // signalFilter.xml
-        addSnapshotResources(oms_snapshot, entry.path().string(), mappedSnapshot);
-      }
+      if (".ssv" == entry.path().extension() || ".ssm" == entry.path().extension() || ".xml" == entry.path().extension())
+        snapshot.importResourcesFile(entry.path(), model->getTempDirectory());
     }
   }
 
-  // snapshot.save(std::cout);
+  // snapshot.printSnapshot();
 
-  oms_status_enu_t status = model->importFromSnapshot(mappedSnapshot);
+  oms_status_enu_t status = model->importFromSnapshot(snapshot);
   model->copyResources(old_copyResources);
 
   Scope::GetInstance().setWorkingDirectory(cd);
@@ -280,27 +256,6 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
 
   if (_cref)
     *_cref = (char*)model->getCref().c_str();
-
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms::Scope::addSnapshotResources(pugi::xml_node& oms_snapshot, std::string path, std::unordered_map<std::string, pugi::xml_node> &mappedSnapshot)
-{
-  filesystem::path p(path);
-  std::string filename = "resources/" + p.filename().string();
-
-  pugi::xml_node oms_file = oms_snapshot.append_child(oms::ssp::Version1_0::oms_file);
-  oms_file.append_attribute("name") = filename.c_str();
-  pugi::xml_document doc;
-  pugi::xml_parse_result result = doc.load_file(path.c_str());
-  if (!result)
-    return logError("loading \"" + filename + "\" to <oms:snapshot> failed (" + std::string(result.description()) + ")");
-
-  pugi::xml_node oms_node = doc.document_element();
-  oms_file.append_copy(oms_node);
-
-  // map the filename with oms_file node
-  mappedSnapshot[filename] = oms_file;
 
   return oms_status_ok;
 }

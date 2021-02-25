@@ -34,6 +34,7 @@
 
 #include "OMSFileSystem.h"
 #include "Types.h"
+#include "ssd/Tags.h"
 
 #include <pugixml.hpp>
 #include <string>
@@ -49,17 +50,19 @@ namespace oms
 
     oms_status_enu_t importSnapshot(const char* snapshot);
     oms_status_enu_t importResourcesFile(const filesystem::path& filename, const filesystem::path& root);
-    oms_status_enu_t importResourcesMemory(const filesystem::path& filename, const char* file);
-    oms_status_enu_t getResources(const filesystem::path& filename, pugi::xml_node& node);
-    void debugPrintFile(const filesystem::path& filename);
-
+    oms_status_enu_t importResourcesMemory(const std::string & filename, const pugi::xml_node & node);
+    void getResources(std::vector<std::string>& resources);
+    pugi::xml_node getNode(const std::string& filename);
+    void debugPrintFile(const std::string& filename);
+    void printSnapshot() const;
   private:
     // stop the compiler generating methods copying the object
     Snapshot(Snapshot const& copy);            ///< not implemented
     Snapshot& operator=(Snapshot const& copy); ///< not implemented
 
   private:
-    std::unordered_map<filesystem::path, pugi::xml_document> resources;
+   pugi::xml_document doc; // snapshot document
+   pugi::xml_node oms_snapshot;
   };
 }
 

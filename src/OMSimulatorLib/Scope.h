@@ -73,8 +73,6 @@ namespace oms
 
     oms_status_enu_t loadSnapshot(const ComRef& cref, const char* snapshot, char** newCref);
 
-    oms_status_enu_t addSnapshotResources(pugi::xml_node& oms_snapshot, std::string filename, std::unordered_map<std::string, pugi::xml_node>& mappedSnapshot);
-
     const std::string& getTempDirectory() const {return GetInstance().tempDir;}
     std::string getWorkingDirectory();
 
