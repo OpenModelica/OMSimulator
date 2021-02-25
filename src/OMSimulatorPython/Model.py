@@ -1,4 +1,4 @@
-from OMSimulator import Scope, Types
+from OMSimulator import Scope, System, Types
 
 
 class Model:
@@ -13,6 +13,13 @@ class Model:
       Scope._Scope = [cref for cref in Scope._Scope if cref != self.cref]
     else:
       raise Exception('error {}'.format(Types.Status(status)))
+
+  def addSystem(self, cref: str, type_: Types.System):
+    new_cref = self.cref + '.' + cref
+    status = Scope._capi.addSystem(new_cref, type_.value)
+    if Types.Status(status) != Types.Status.OK:
+      raise Exception('error {}'.format(Types.Status(status)))
+    return System.System(new_cref)
 
   def instantiate(self):
     status = Scope._capi.instantiate(self.cref)

@@ -39,6 +39,7 @@
 #include "Types.h"
 #include <assert.h>
 #include <pugixml.hpp>
+#include <unordered_map>
 
 #if (BOOST_VERSION >= 105300)
 #include <ctpl.h>
@@ -75,7 +76,7 @@ namespace oms
     oms_status_enu_t exportSnapshot(const ComRef& cref, char** contents);
     oms_status_enu_t exportSSVTemplate(const ComRef& cref, const std::string& filename);
     oms_status_enu_t exportSSMTemplate(const ComRef& cref, const std::string& filename);
-    oms_status_enu_t importFromSSD(const pugi::xml_node& node);
+    oms_status_enu_t importFromSnapshot(const std::unordered_map<std::string, pugi::xml_node>& oms_snapshot);
     oms_status_enu_t importSnapshot(const char* snapshot);
     oms_status_enu_t exportToFile(const std::string& filename) const;
     oms_system_enu_t getSystemType(const pugi::xml_node& node, const std::string& sspVersion);
@@ -123,8 +124,6 @@ namespace oms
 
     oms_status_enu_t loadSnapshot(const pugi::xml_node node);
 
-    pugi::xml_node getSnapshot() {return snapShot;}
-
   private:
     Model(const ComRef& cref, const std::string& tempDir);
 
@@ -156,8 +155,6 @@ namespace oms
     Clock clock;
 
     std::string signalFilter = ".*"; ///< default
-
-    pugi::xml_node snapShot; ///< top level snapshot node which contains ssd, ssv and ssm as child nodes
 
     bool isolatedFMU = false;
 
