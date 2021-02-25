@@ -52,7 +52,7 @@ class capi:
     self.obj.oms_export.restype = ctypes.c_int
     self.obj.oms_exportDependencyGraphs.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_exportDependencyGraphs.restype = ctypes.c_int
-    self.obj.oms_exportSnapshot.argtypes = [ctypes.c_char_p]
+    self.obj.oms_exportSnapshot.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_char_p)]
     self.obj.oms_exportSnapshot.restype = ctypes.c_int
     self.obj.oms_exportSSMTemplate.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_exportSSMTemplate.restype = ctypes.c_int
@@ -195,7 +195,7 @@ class capi:
   def exportSnapshot(self, ident):
     contents = ctypes.c_char_p()
     status = self.obj.oms_exportSnapshot(ident.encode(), ctypes.byref(contents))
-    return [contents.value.decode('utf-8'), status]
+    return [contents.value.decode('utf-8') if contents.value else '', status]
   def exportSSMTemplate(self, ident, filename):
     return self.obj.oms_exportSSMTemplate(ident.encode(), filename.encode())
   def exportSSVTemplate(self, ident, filename):
@@ -258,7 +258,7 @@ class capi:
   def importSnapshot(self, ident, snapshot):
     newCref = ctypes.c_char_p()
     status = self.obj.oms_importSnapshot(ident.encode(), snapshot.encode(), ctypes.byref(newCref))
-    return [newCref.value.decode('utf-8'), status]
+    return [newCref.value.decode('utf-8') if newCref.value else '', status]
   def initialize(self, cref):
     return self.obj.oms_initialize(cref.encode())
   def instantiate(self, cref):

@@ -86,80 +86,49 @@ printStatus(status, 3)
 ## error:   [NewSystem] A WC system must be the root system or a subsystem of a TLM system.
 ## status:  [correct] error
 ## <?xml version="1.0"?>
-## <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="test" version="1.0">
-## 	<ssd:System name="foo">
-## 		<ssd:Elements>
-## 			<ssd:System name="goo">
+## <oms:snapshot>
+## 	<oms:file name="SystemStructure.ssd">
+## 		<ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="test" version="1.0">
+## 			<ssd:System name="foo">
+## 				<ssd:Elements>
+## 					<ssd:System name="goo">
+## 						<ssd:Annotations>
+## 							<ssc:Annotation type="org.openmodelica">
+## 								<oms:Annotations>
+## 									<oms:SimulationInformation>
+## 										<oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
+## 									</oms:SimulationInformation>
+## 								</oms:Annotations>
+## 							</ssc:Annotation>
+## 						</ssd:Annotations>
+## 					</ssd:System>
+## 				</ssd:Elements>
 ## 				<ssd:Annotations>
 ## 					<ssc:Annotation type="org.openmodelica">
 ## 						<oms:Annotations>
 ## 							<oms:SimulationInformation>
-## 								<oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
+## 								<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
 ## 							</oms:SimulationInformation>
 ## 						</oms:Annotations>
 ## 					</ssc:Annotation>
 ## 				</ssd:Annotations>
 ## 			</ssd:System>
-## 		</ssd:Elements>
-## 		<ssd:Annotations>
-## 			<ssc:Annotation type="org.openmodelica">
-## 				<oms:Annotations>
-## 					<oms:SimulationInformation>
-## 						<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
-## 					</oms:SimulationInformation>
-## 				</oms:Annotations>
-## 			</ssc:Annotation>
-## 		</ssd:Annotations>
-## 	</ssd:System>
-## 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
-## 		<ssd:Annotations>
-## 			<ssc:Annotation type="org.openmodelica">
-## 				<oms:Annotations>
-## 					<oms:SimulationInformation resultFile="test_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter=".*" />
-## 				</oms:Annotations>
-## 			</ssc:Annotation>
-## 		</ssd:Annotations>
-## 	</ssd:DefaultExperiment>
-## </ssd:SystemStructureDescription>
+## 			<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
+## 				<ssd:Annotations>
+## 					<ssc:Annotation type="org.openmodelica">
+## 						<oms:Annotations>
+## 							<oms:SimulationInformation resultFile="test_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter=".*" />
+## 						</oms:Annotations>
+## 					</ssc:Annotation>
+## 				</ssd:Annotations>
+## 			</ssd:DefaultExperiment>
+## 		</ssd:SystemStructureDescription>
+## 	</oms:file>
+## </oms:snapshot>
 ##
-## <?xml version="1.0"?>
-## <ssd:System name="foo">
-## 	<ssd:Elements>
-## 		<ssd:System name="goo">
-## 			<ssd:Annotations>
-## 				<ssc:Annotation type="org.openmodelica">
-## 					<oms:Annotations>
-## 						<oms:SimulationInformation>
-## 							<oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
-## 						</oms:SimulationInformation>
-## 					</oms:Annotations>
-## 				</ssc:Annotation>
-## 			</ssd:Annotations>
-## 		</ssd:System>
-## 	</ssd:Elements>
-## 	<ssd:Annotations>
-## 		<ssc:Annotation type="org.openmodelica">
-## 			<oms:Annotations>
-## 				<oms:SimulationInformation>
-## 					<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
-## 				</oms:SimulationInformation>
-## 			</oms:Annotations>
-## 		</ssc:Annotation>
-## 	</ssd:Annotations>
-## </ssd:System>
+## error:   [exportSnapshot] "test.foo" is not a top level model
 ##
-## <?xml version="1.0"?>
-## <ssd:System name="goo">
-## 	<ssd:Annotations>
-## 		<ssc:Annotation type="org.openmodelica">
-## 			<oms:Annotations>
-## 				<oms:SimulationInformation>
-## 					<oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
-## 				</oms:SimulationInformation>
-## 			</oms:Annotations>
-## 		</ssc:Annotation>
-## 	</ssd:Annotations>
-## </ssd:System>
+## error:   [exportSnapshot] "test.foo.goo" is not a top level model
 ##
 ## error:   [newModel] "test" already exists in the scope
 ## status:  [correct] error
@@ -169,21 +138,25 @@ printStatus(status, 3)
 ## status:  [correct] ok
 ## status:  [correct] ok
 ## <?xml version="1.0"?>
-## <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="test" version="1.0">
-## 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
-## 		<ssd:Annotations>
-## 			<ssc:Annotation type="org.openmodelica">
-## 				<oms:Annotations>
-## 					<oms:SimulationInformation resultFile="test_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter=".*" />
-## 				</oms:Annotations>
-## 			</ssc:Annotation>
-## 		</ssd:Annotations>
-## 	</ssd:DefaultExperiment>
-## </ssd:SystemStructureDescription>
+## <oms:snapshot>
+## 	<oms:file name="SystemStructure.ssd">
+## 		<ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="test" version="1.0">
+## 			<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
+## 				<ssd:Annotations>
+## 					<ssc:Annotation type="org.openmodelica">
+## 						<oms:Annotations>
+## 							<oms:SimulationInformation resultFile="test_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter=".*" />
+## 						</oms:Annotations>
+## 					</ssc:Annotation>
+## 				</ssd:Annotations>
+## 			</ssd:DefaultExperiment>
+## 		</ssd:SystemStructureDescription>
+## 	</oms:file>
+## </oms:snapshot>
 ##
 ## status:  [correct] ok
 ## error:   [deleteModel] Model "foo" does not exist in the scope
 ## status:  [correct] error
 ## info:    0 warnings
-## info:    4 errors
+## info:    6 errors
 ## endResult

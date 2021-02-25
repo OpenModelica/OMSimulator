@@ -102,9 +102,7 @@ class OMSimulator:
     self.importSnapshot = Scope._capi.importSnapshot
     self.initialize = Scope._capi.initialize
     self.instantiate = Scope._capi.instantiate
-    self.list = Scope._capi.list
     self.listUnconnectedConnectors = Scope._capi.listUnconnectedConnectors
-    self.loadSnapshot = Scope._capi.loadSnapshot
     self.removeSignalsFromResults = Scope._capi.removeSignalsFromResults
     self.rename = Scope._capi.rename
     self.reset = Scope._capi.reset
