@@ -60,7 +60,7 @@ namespace oms
     static bool isValidIdent(const std::string& ident);
     bool isValidIdent() const;
 
-    bool isEmpty() const; ///< return true if the no component is specified (still, a suffix might be present)
+    bool isEmpty() const;
     bool isRootOf(ComRef child) const;
 
     ComRef front() const; ///< returns the first part of the ComRef (including suffix if its the only part)

@@ -100,7 +100,7 @@ bool oms::ComRef::isValidIdent() const
 
 bool oms::ComRef::isEmpty() const
 {
-  return cref[0] == '\0' || cref[0] == ':';
+  return cref[0] == '\0';
 }
 
 bool oms::ComRef::hasSuffix() const
