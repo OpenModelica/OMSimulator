@@ -205,13 +205,7 @@ oms_status_enu_t oms_importFile(const char* filename, char** cref)
 
 oms_status_enu_t oms_exportSnapshot(const char* cref, char** contents)
 {
-  oms::ComRef tail(cref);
-  oms::ComRef front = tail.pop_front().popSuffix();
-  oms::Model* model = oms::Scope::GetInstance().getModel(front);
-  if (!model)
-    return logError_ModelNotInScope(front);
-
-  return model->exportSnapshot(tail, contents);
+  return oms::Scope::GetInstance().exportSnapshot(oms::ComRef(cref), contents);
 }
 
 oms_status_enu_t oms_exportSSVTemplate(const char* cref_, const char* filename)

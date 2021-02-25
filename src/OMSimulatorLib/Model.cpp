@@ -238,8 +238,8 @@ oms_status_enu_t oms::Model::exportSnapshot(const oms::ComRef& cref, char** cont
 {
   logInfo(cref);
 
-  ComRef component = cref.popSuffix();
-  std::string file = cref.getSuffix();
+  ComRef component(cref);
+  std::string file = component.pop_suffix();
 
   if (!component.isEmpty() && !file.empty() && "SystemStructure.ssd" != file)
     return logError("Sub-components can only be queried from \"SystemStructure.ssd\"");

@@ -483,3 +483,20 @@ oms_status_enu_t oms::Scope::importSnapshot(const oms::ComRef& cref, const char*
 
   return status;
 }
+
+oms_status_enu_t oms::Scope::exportSnapshot(const ComRef& cref_, char** snapshot)
+{
+  ComRef cref(cref_);
+  std::string suffix = cref.pop_suffix();
+
+  oms::ComRef tail(cref);
+  oms::ComRef front = tail.pop_front();
+
+  auto it = models_map.find(front);
+  if (it == models_map.end())
+    return logError("Model \"" + std::string(front) + "\" does not exist in the scope");
+
+  //Snapshot snapshot;
+  //models[it->second]->exportSnapshot(cref_, snapshot);
+  return logError_NotImplemented;
+}

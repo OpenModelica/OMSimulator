@@ -73,7 +73,7 @@ oms_delete("import_parameter_mapping")
 -- Result:
 -- info:    model doesn't contain any continuous state
 -- info:    model doesn't contain any continuous state
--- info:      Instantiation
+-- info:      Instantiation 
 -- info:      import_parameter_mapping.co_sim.Input_1              : 20.0
 -- info:      import_parameter_mapping.co_sim.Input_2              : 20.0
 -- info:      import_parameter_mapping.co_sim.Input_3              : 50.0

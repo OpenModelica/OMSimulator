@@ -72,6 +72,7 @@ namespace oms
     Model* getModel(const ComRef& cref);
 
     oms_status_enu_t importSnapshot(const ComRef& cref, const char* snapshot, char** newCref);
+    oms_status_enu_t exportSnapshot(const ComRef& cref, char** snapshot);
 
     oms_status_enu_t addSnapshotResources(pugi::xml_node& oms_snapshot, std::string filename, std::unordered_map<std::string, pugi::xml_node>& mappedSnapshot);
 
