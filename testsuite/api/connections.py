@@ -92,12 +92,159 @@ printStatus(status, 0)
 ## status:  [correct] error
 ## error:   [addConnection] Connector sc1.u1 is already connected to sc2.y1
 ## status:  [correct] error
-## error:   [exportSnapshot] "model.wc" is not a top level model
+## <?xml version="1.0"?>
+## <oms:snapshot>
+##   <oms:file name="SystemStructure.ssd">
+##     <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="model" version="1.0">
+##       <ssd:System name="wc">
+##         <ssd:Elements>
+##           <ssd:System name="sc2">
+##             <ssd:Connectors>
+##               <ssd:Connector name="y1" kind="output">
+##                 <ssc:Real />
+##               </ssd:Connector>
+##               <ssd:Connector name="y2" kind="output">
+##                 <ssc:Integer />
+##               </ssd:Connector>
+##               <ssd:Connector name="y3" kind="output">
+##                 <ssc:Real />
+##               </ssd:Connector>
+##             </ssd:Connectors>
+##             <ssd:Annotations>
+##               <ssc:Annotation type="org.openmodelica">
+##                 <oms:Annotations>
+##                   <oms:SimulationInformation>
+##                     <oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
+##                   </oms:SimulationInformation>
+##                 </oms:Annotations>
+##               </ssc:Annotation>
+##             </ssd:Annotations>
+##           </ssd:System>
+##           <ssd:System name="sc1">
+##             <ssd:Connectors>
+##               <ssd:Connector name="u1" kind="input">
+##                 <ssc:Real />
+##               </ssd:Connector>
+##               <ssd:Connector name="u2" kind="input">
+##                 <ssc:Real />
+##               </ssd:Connector>
+##               <ssd:Connector name="y" kind="output">
+##                 <ssc:Real />
+##               </ssd:Connector>
+##             </ssd:Connectors>
+##             <ssd:Annotations>
+##               <ssc:Annotation type="org.openmodelica">
+##                 <oms:Annotations>
+##                   <oms:SimulationInformation>
+##                     <oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
+##                   </oms:SimulationInformation>
+##                 </oms:Annotations>
+##               </ssc:Annotation>
+##             </ssd:Annotations>
+##           </ssd:System>
+##         </ssd:Elements>
+##         <ssd:Connections>
+##           <ssd:Connection startElement="sc2" startConnector="y1" endElement="sc1" endConnector="u1" />
+##         </ssd:Connections>
+##         <ssd:Annotations>
+##           <ssc:Annotation type="org.openmodelica">
+##             <oms:Annotations>
+##               <oms:SimulationInformation>
+##                 <oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+##               </oms:SimulationInformation>
+##             </oms:Annotations>
+##           </ssc:Annotation>
+##         </ssd:Annotations>
+##       </ssd:System>
+##       <ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
+##         <ssd:Annotations>
+##           <ssc:Annotation type="org.openmodelica">
+##             <oms:Annotations>
+##               <oms:SimulationInformation resultFile="model_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter=".*" />
+##             </oms:Annotations>
+##           </ssc:Annotation>
+##         </ssd:Annotations>
+##       </ssd:DefaultExperiment>
+##     </ssd:SystemStructureDescription>
+##   </oms:file>
+## </oms:snapshot>
 ##
 ## status:  [correct] ok
-## error:   [exportSnapshot] "model.wc" is not a top level model
+## <?xml version="1.0"?>
+## <oms:snapshot>
+##   <oms:file name="SystemStructure.ssd">
+##     <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="model" version="1.0">
+##       <ssd:System name="wc">
+##         <ssd:Elements>
+##           <ssd:System name="sc2">
+##             <ssd:Connectors>
+##               <ssd:Connector name="y1" kind="output">
+##                 <ssc:Real />
+##               </ssd:Connector>
+##               <ssd:Connector name="y2" kind="output">
+##                 <ssc:Integer />
+##               </ssd:Connector>
+##               <ssd:Connector name="y3" kind="output">
+##                 <ssc:Real />
+##               </ssd:Connector>
+##             </ssd:Connectors>
+##             <ssd:Annotations>
+##               <ssc:Annotation type="org.openmodelica">
+##                 <oms:Annotations>
+##                   <oms:SimulationInformation>
+##                     <oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
+##                   </oms:SimulationInformation>
+##                 </oms:Annotations>
+##               </ssc:Annotation>
+##             </ssd:Annotations>
+##           </ssd:System>
+##           <ssd:System name="sc1">
+##             <ssd:Connectors>
+##               <ssd:Connector name="u1" kind="input">
+##                 <ssc:Real />
+##               </ssd:Connector>
+##               <ssd:Connector name="u2" kind="input">
+##                 <ssc:Real />
+##               </ssd:Connector>
+##               <ssd:Connector name="y" kind="output">
+##                 <ssc:Real />
+##               </ssd:Connector>
+##             </ssd:Connectors>
+##             <ssd:Annotations>
+##               <ssc:Annotation type="org.openmodelica">
+##                 <oms:Annotations>
+##                   <oms:SimulationInformation>
+##                     <oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
+##                   </oms:SimulationInformation>
+##                 </oms:Annotations>
+##               </ssc:Annotation>
+##             </ssd:Annotations>
+##           </ssd:System>
+##         </ssd:Elements>
+##         <ssd:Annotations>
+##           <ssc:Annotation type="org.openmodelica">
+##             <oms:Annotations>
+##               <oms:SimulationInformation>
+##                 <oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+##               </oms:SimulationInformation>
+##             </oms:Annotations>
+##           </ssc:Annotation>
+##         </ssd:Annotations>
+##       </ssd:System>
+##       <ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
+##         <ssd:Annotations>
+##           <ssc:Annotation type="org.openmodelica">
+##             <oms:Annotations>
+##               <oms:SimulationInformation resultFile="model_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter=".*" />
+##             </oms:Annotations>
+##           </ssc:Annotation>
+##         </ssd:Annotations>
+##       </ssd:DefaultExperiment>
+##     </ssd:SystemStructureDescription>
+##   </oms:file>
+## </oms:snapshot>
 ##
 ## status:  [correct] ok
 ## info:    0 warnings
-## info:    5 errors
+## info:    3 errors
 ## endResult

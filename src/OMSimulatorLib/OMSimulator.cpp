@@ -203,10 +203,10 @@ oms_status_enu_t oms_importFile(const char* filename, char** cref)
   return oms::Scope::GetInstance().importModel(std::string(filename), cref);
 }
 
-oms_status_enu_t oms_exportSnapshot(const char* cref_, char** contents)
+oms_status_enu_t oms_exportSnapshot(const char* cref, char** contents)
 {
-  oms::ComRef tail(cref_);
-  oms::ComRef front = tail.pop_front();
+  oms::ComRef tail(cref);
+  oms::ComRef front = tail.pop_front().popSuffix();
   oms::Model* model = oms::Scope::GetInstance().getModel(front);
   if (!model)
     return logError_ModelNotInScope(front);

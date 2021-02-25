@@ -236,23 +236,23 @@ oms_status_enu_t oms::Model::delete_(const oms::ComRef& cref)
 
 oms_status_enu_t oms::Model::exportSnapshot(const oms::ComRef& cref, char** contents)
 {
-  // only top level model is allowed
-  if (!cref.isEmpty())
-  {
-    //return logError("only top level model is allowed, unknown model: " + std::string(cref));
-    return logError("\"" + std::string(getCref()+std::string(cref)) + "\" is not a top level model");
-  }
+  logInfo(cref);
 
-  struct xmlStringWriter : pugi::xml_writer
-  {
-    std::string result;
-    virtual void write(const void* data, size_t size)
-    {
-      result += std::string(static_cast<const char*>(data), size);
-    }
-  };
+  ComRef component = cref.popSuffix();
+  std::string file = cref.getSuffix();
 
-  xmlStringWriter writer;
+  if (!component.isEmpty() && !file.empty() && "SystemStructure.ssd" != file)
+    return logError("Sub-components can only be queried from \"SystemStructure.ssd\"");
+
+  if (component.isEmpty() && file.empty())
+    logInfo("Complete snapshot");
+  else if (component.isEmpty() && !file.empty())
+    logInfo("Certain file of complete snapshot");
+  else if (!component.isEmpty() && file.empty())
+    logInfo("Subcomponent of complete snapshot");
+  else if (!component.isEmpty() && !file.empty())
+    logInfo("Subcomponent of certain file of snapshot");
+
   pugi::xml_document doc;
   pugi::xml_document ssvdoc;
 
@@ -293,6 +293,16 @@ oms_status_enu_t oms::Model::exportSnapshot(const oms::ComRef& cref, char** cont
     // TODO ssm file
   }
 
+  struct xmlStringWriter : pugi::xml_writer
+  {
+    std::string result;
+    void write(const void* data, size_t size)
+    {
+      result += std::string(static_cast<const char*>(data), size);
+    }
+  };
+
+  xmlStringWriter writer;
   doc.save(writer, "  ");
   *contents = (char*) malloc(strlen(writer.result.c_str()) + 1);
   if (!*contents)
