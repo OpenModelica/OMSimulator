@@ -124,6 +124,7 @@ std::string oms::ComRef::pop_suffix()
       oms::ComRef front(cref);
       cref[i] = ':';
       *this = front;
+      return suffix;
     }
   }
 
