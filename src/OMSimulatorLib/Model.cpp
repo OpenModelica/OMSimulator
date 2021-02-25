@@ -293,7 +293,7 @@ oms_status_enu_t oms::Model::exportSnapshot(const oms::ComRef& cref, char** cont
     // TODO ssm file
   }
 
-  doc.save(writer);
+  doc.save(writer, "  ");
   *contents = (char*) malloc(strlen(writer.result.c_str()) + 1);
   if (!*contents)
   {

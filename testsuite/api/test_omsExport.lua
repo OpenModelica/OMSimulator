@@ -61,30 +61,30 @@ printStatus(status, 0)
 -- status:  [correct] ok
 -- <?xml version="1.0"?>
 -- <oms:snapshot>
--- 	<oms:file name="SystemStructure.ssd">
--- 		<ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="model" version="1.0">
--- 			<ssd:System name="sc">
--- 				<ssd:Annotations>
--- 					<ssc:Annotation type="org.openmodelica">
--- 						<oms:Annotations>
--- 							<oms:SimulationInformation>
--- 								<oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
--- 							</oms:SimulationInformation>
--- 						</oms:Annotations>
--- 					</ssc:Annotation>
--- 				</ssd:Annotations>
--- 			</ssd:System>
--- 			<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
--- 				<ssd:Annotations>
--- 					<ssc:Annotation type="org.openmodelica">
--- 						<oms:Annotations>
--- 							<oms:SimulationInformation resultFile="model_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="[AB]" />
--- 						</oms:Annotations>
--- 					</ssc:Annotation>
--- 				</ssd:Annotations>
--- 			</ssd:DefaultExperiment>
--- 		</ssd:SystemStructureDescription>
--- 	</oms:file>
+--   <oms:file name="SystemStructure.ssd">
+--     <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="model" version="1.0">
+--       <ssd:System name="sc">
+--         <ssd:Annotations>
+--           <ssc:Annotation type="org.openmodelica">
+--             <oms:Annotations>
+--               <oms:SimulationInformation>
+--                 <oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
+--               </oms:SimulationInformation>
+--             </oms:Annotations>
+--           </ssc:Annotation>
+--         </ssd:Annotations>
+--       </ssd:System>
+--       <ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
+--         <ssd:Annotations>
+--           <ssc:Annotation type="org.openmodelica">
+--             <oms:Annotations>
+--               <oms:SimulationInformation resultFile="model_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="[AB]" />
+--             </oms:Annotations>
+--           </ssc:Annotation>
+--         </ssd:Annotations>
+--       </ssd:DefaultExperiment>
+--     </ssd:SystemStructureDescription>
+--   </oms:file>
 -- </oms:snapshot>
 --
 -- warning: [removeSignalsFromResults] is deprecated and [setSignalFilter] is the recommended API
@@ -94,30 +94,30 @@ printStatus(status, 0)
 -- status:  [correct] ok
 -- <?xml version="1.0"?>
 -- <oms:snapshot>
--- 	<oms:file name="SystemStructure.ssd">
--- 		<ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="model" version="1.0">
--- 			<ssd:System name="sc">
--- 				<ssd:Annotations>
--- 					<ssc:Annotation type="org.openmodelica">
--- 						<oms:Annotations>
--- 							<oms:SimulationInformation>
--- 								<oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
--- 							</oms:SimulationInformation>
--- 						</oms:Annotations>
--- 					</ssc:Annotation>
--- 				</ssd:Annotations>
--- 			</ssd:System>
--- 			<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
--- 				<ssd:Annotations>
--- 					<ssc:Annotation type="org.openmodelica">
--- 						<oms:Annotations>
--- 							<oms:SimulationInformation resultFile="model_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="[AB]" />
--- 						</oms:Annotations>
--- 					</ssc:Annotation>
--- 				</ssd:Annotations>
--- 			</ssd:DefaultExperiment>
--- 		</ssd:SystemStructureDescription>
--- 	</oms:file>
+--   <oms:file name="SystemStructure.ssd">
+--     <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="model" version="1.0">
+--       <ssd:System name="sc">
+--         <ssd:Annotations>
+--           <ssc:Annotation type="org.openmodelica">
+--             <oms:Annotations>
+--               <oms:SimulationInformation>
+--                 <oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
+--               </oms:SimulationInformation>
+--             </oms:Annotations>
+--           </ssc:Annotation>
+--         </ssd:Annotations>
+--       </ssd:System>
+--       <ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
+--         <ssd:Annotations>
+--           <ssc:Annotation type="org.openmodelica">
+--             <oms:Annotations>
+--               <oms:SimulationInformation resultFile="model_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="[AB]" />
+--             </oms:Annotations>
+--           </ssc:Annotation>
+--         </ssd:Annotations>
+--       </ssd:DefaultExperiment>
+--     </ssd:SystemStructureDescription>
+--   </oms:file>
 -- </oms:snapshot>
 --
 -- status:  [correct] ok
