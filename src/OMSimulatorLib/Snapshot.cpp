@@ -67,7 +67,7 @@ oms_status_enu_t oms::Snapshot::importResourcesFile(const filesystem::path& file
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Snapshot::importResourcesMemory(const std::string & filename, const pugi::xml_node &node)
+oms_status_enu_t oms::Snapshot::importResourcesMemory(const std::string& filename, const pugi::xml_node &node)
 {
   if (node)
   {

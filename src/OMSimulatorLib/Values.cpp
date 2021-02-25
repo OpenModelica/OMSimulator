@@ -33,7 +33,6 @@
 #include "Values.h"
 
 #include "Logging.h"
-#include "OMSFileSystem.h"
 #include "ssd/Tags.h"
 #include "Util.h"
 
@@ -462,16 +461,14 @@ oms_status_enu_t oms::Values::importStartValuesHelper(pugi::xml_node& parameters
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Values::parseModelDescription(const char *filename)
+oms_status_enu_t oms::Values::parseModelDescription(const filesystem::path& filename, const filesystem::path& root)
 {
-  pugi::xml_document doc;
-  pugi::xml_parse_result result = doc.load_file(filename);
-  pugi::xml_node node = doc.document_element(); // modelDescription.xml
+  Snapshot snapshot;
+  snapshot.importResourcesFile(filename, root);
+  const pugi::xml_node node = snapshot.getNode2(filename); // modelDescription.xml
 
-  if (!result)
-  {
+  if (!node)
     return logError("Failed to load modelDescription.xml");
-  }
 
   //std::string fmiVersion = node.attribute("fmiVersion").as_string();
 

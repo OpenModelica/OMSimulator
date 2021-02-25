@@ -33,6 +33,7 @@
 #define _OMS_VALUES_H_
 
 #include "ComRef.h"
+#include "OMSFileSystem.h"
 #include "Snapshot.h"
 #include "Types.h"
 
@@ -63,7 +64,7 @@ namespace oms
     oms_status_enu_t exportParameterMappingInline(pugi::xml_node& node) const;
     oms_status_enu_t importStartValuesHelper(pugi::xml_node& parameters);
     oms_status_enu_t importParameterMapping(pugi::xml_node& parameterMapping);
-    oms_status_enu_t parseModelDescription(const char *filename);
+    oms_status_enu_t parseModelDescription(const filesystem::path& filename, const filesystem::path& root);
 
     bool empty() const;
 
