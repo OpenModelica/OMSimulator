@@ -80,7 +80,12 @@ oms::ComRef& oms::ComRef::operator=(const oms::ComRef& copy)
 
 oms::ComRef oms::ComRef::operator+(const oms::ComRef& rhs) const
 {
-  return oms::ComRef(std::string(*this) + "." + std::string(rhs));
+  if (!this->hasSuffix())
+    return oms::ComRef(std::string(*this) + "." + std::string(rhs));
+
+  ComRef lhs(*this);
+  lhs.pop_suffix();
+  return oms::ComRef(std::string(lhs) + "." + std::string(rhs));
 }
 
 bool oms::ComRef::isValidIdent(const std::string& ident)
@@ -172,12 +177,7 @@ oms::ComRef oms::ComRef::front() const
       return front;
     }
     else if (cref[i] == ':')
-    {
-      cref[i] = '\0';
-      oms::ComRef front(cref);
-      cref[i] = ':';
-      return front;
-    }
+      break;
   }
 
   return *this;
@@ -196,13 +196,7 @@ oms::ComRef oms::ComRef::pop_front()
       return front;
     }
     else if (cref[i] == ':')
-    {
-      cref[i] = '\0';
-      oms::ComRef front(cref);
-      cref[i] = ':';
-      *this = oms::ComRef(cref + i);
-      return front;
-    }
+      break;
   }
 
   oms::ComRef front(cref);

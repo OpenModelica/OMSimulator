@@ -55,7 +55,7 @@ namespace oms
     // methods to copy the component reference
     ComRef(const ComRef& copy);
     ComRef& operator=(const ComRef& copy);
-    ComRef operator+(const ComRef& rhs) const;
+    ComRef operator+(const ComRef& rhs) const; ///< return ComRef(lhs + rhs) - Obs! lhs will lose its suffix
 
     static bool isValidIdent(const std::string& ident);
     bool isValidIdent() const;
@@ -63,8 +63,8 @@ namespace oms
     bool isEmpty() const; ///< return true if the no component is specified (still, a suffix might be present)
     bool isRootOf(ComRef child) const;
 
-    ComRef front() const;
-    ComRef pop_front();
+    ComRef front() const; ///< returns the first part of the ComRef (including suffix if its the only part)
+    ComRef pop_front(); ///< returns the first part of the ComRef and removed it from the current object
 
     std::string suffix() const; ///< returns the suffix as string
     std::string pop_suffix(); ///< returns the suffix as string and removes it from the current object
