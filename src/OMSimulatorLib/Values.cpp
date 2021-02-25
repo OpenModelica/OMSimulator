@@ -131,13 +131,10 @@ oms_status_enu_t oms::Values::importFromSnapshot(const pugi::xml_node& node, con
 
     if (!ssvFile.empty()) // parameter binding provided with .ssv file
     {
-      pugi::xml_node oms_ssv_file = snapshot.getNode(ssvFile);
-      if (!oms_ssv_file)
-      {
+      pugi::xml_node parameterSet = snapshot.getNode2(ssvFile);
+      if (!parameterSet)
         return logError("loading <oms:file> \"" + ssvFile + "\" from <oms:snapshot> failed");
-      }
 
-      pugi::xml_node parameterSet = oms_ssv_file.child(oms::ssp::Version1_0::ssv::parameter_set); // ssv:ParameterSet
       pugi::xml_node parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
 
       // check for parameterMapping (e.g) <ssd:ParameterMapping>
@@ -149,13 +146,10 @@ oms_status_enu_t oms::Values::importFromSnapshot(const pugi::xml_node& node, con
         std::string ssmFileSource = ssd_parameterMapping.attribute("source").as_string();
         if (!ssmFileSource.empty())
         {
-          pugi::xml_node oms_ssm_file = snapshot.getNode(ssmFileSource);
-          if (!oms_ssm_file)
-          {
+          pugi::xml_node ssm_parameterMapping = snapshot.getNode2(ssmFileSource);
+          if (!ssm_parameterMapping)
             return logError("loading <oms:file> \"" + ssmFileSource + "\" from <oms:snapshot> failed");
-          }
 
-          pugi::xml_node ssm_parameterMapping = oms_ssm_file.child(oms::ssp::Version1_0::ssm::parameter_mapping); // ssm:ParameterMapping
           importParameterMapping(ssm_parameterMapping);
         }
       }
