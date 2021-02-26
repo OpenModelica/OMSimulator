@@ -38,7 +38,6 @@
 #include "Flags.h"
 #include "Model.h"
 #include "OMSFileSystem.h"
-#include "ResultWriter.h"
 #include "ssd/Tags.h"
 #include "SystemSC.h"
 #include "SystemTLM.h"
@@ -2410,14 +2409,8 @@ oms_status_enu_t oms::System::importStartValuesFromSSV(const std::string& ssvPat
   std::multimap<ComRef, ComRef> mappedEntry;
 
   if (!ssmPath.empty())
-    if (oms_status_ok != importParameterMappingFromSSM(ssmPath, snapshot, mappedEntry))
-      return oms_status_error;
+    importParameterMappingFromSSM(ssmPath, snapshot, mappedEntry);
 
-  return importStartValuesFromSSVHelper(ssvPath, snapshot, mappedEntry);
-}
-
-oms_status_enu_t oms::System::importStartValuesFromSSVHelper(const std::string& ssvPath, const Snapshot& snapshot, const std::multimap<ComRef, ComRef>& mappedEntry)
-{
   pugi::xml_node parameterSet = snapshot.getResourcesFile(ssvPath);
   pugi::xml_node parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
 
@@ -2516,7 +2509,7 @@ oms_status_enu_t oms::System::updateAlgebraicLoops(const std::vector< oms_ssc_t 
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::System::importParameterMappingFromSSM(const std::string& ssmPath, const Snapshot& snapshot, std::multimap<ComRef, ComRef>& mappedEntry)
+void oms::System::importParameterMappingFromSSM(const std::string& ssmPath, const Snapshot& snapshot, std::multimap<ComRef, ComRef>& mappedEntry)
 {
   pugi::xml_node parameterMapping = snapshot.getResourcesFile(ssmPath);
 
@@ -2530,8 +2523,6 @@ oms_status_enu_t oms::System::importParameterMappingFromSSM(const std::string& s
         mappedEntry.insert(std::make_pair(source, it->attribute("target").as_string()));
     }
   }
-
-  return oms_status_ok;
 }
 
 oms_status_enu_t oms::System::solveAlgLoop(DirectedGraph& graph, int loopNumber)

@@ -235,8 +235,7 @@ namespace oms
     oms_status_enu_t importBusConnectorSignals(const pugi::xml_node& node);
     oms_status_enu_t importBusConnectorGeometry(const pugi::xml_node& node);
     oms_status_enu_t importStartValuesFromSSV(const std::string& ssvPath, const std::string ssmPath, const Snapshot& snapshot);
-    oms_status_enu_t importStartValuesFromSSVHelper(const std::string& ssvPath, const Snapshot& snapshot, const std::multimap<ComRef, ComRef>& mappedEntry);
-    oms_status_enu_t importParameterMappingFromSSM(const std::string& ssmPath, const Snapshot& snapshot, std::multimap<ComRef, ComRef>& mappedEntry);
+    void importParameterMappingFromSSM(const std::string& ssmPath, const Snapshot& snapshot, std::multimap<ComRef, ComRef>& mappedEntry);
 
     std::vector<AlgLoop> algLoops;    ///< Vector of algebraic loop objects
   };
