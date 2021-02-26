@@ -86,28 +86,14 @@ oms_status_enu_t oms::Snapshot::importResourcesXML(const filesystem::path& filen
   return oms_status_ok;
 }
 
-void oms::Snapshot::getResources(std::vector<std::string> & resources)
+void oms::Snapshot::getResources(std::vector<std::string>& resources)
 {
   pugi::xml_node oms_snapshot = doc.document_element();
-
-  for (const auto & it: oms_snapshot.children())
-  {
+  for (const auto& it : oms_snapshot.children())
     resources.push_back(it.attribute("name").as_string());
-  }
 }
 
-pugi::xml_node oms::Snapshot::getNode(const filesystem::path& filename) const
-{
-  pugi::xml_node oms_snapshot = doc.document_element();
-  pugi::xml_node node = oms_snapshot.find_child_by_attribute(oms::ssp::Version1_0::oms_file, "name", filename.generic_string().c_str());
-
-  if (!node)
-    logError("Failed to find node \"" + filename.generic_string() + "\"");
-
-  return node;
-}
-
-pugi::xml_node oms::Snapshot::getNode2(const filesystem::path& filename) const
+pugi::xml_node oms::Snapshot::getResourcesFile(const filesystem::path& filename) const
 {
   pugi::xml_node oms_snapshot = doc.document_element();
   pugi::xml_node node = oms_snapshot.find_child_by_attribute(oms::ssp::Version1_0::oms_file, "name", filename.generic_string().c_str());
@@ -120,7 +106,7 @@ pugi::xml_node oms::Snapshot::getNode2(const filesystem::path& filename) const
 
 void oms::Snapshot::debugPrintNode(const filesystem::path& filename) const
 {
-  pugi::xml_node node = getNode(filename);
+  pugi::xml_node node = getResourcesFile(filename);
 
   if (node)
     node.print(std::cout, "  ");
