@@ -268,15 +268,9 @@ oms_status_enu_t oms_loadSnapshot(const char* cref, const char* snapshot, char**
   return oms::Scope::GetInstance().loadSnapshot(oms::ComRef(cref), snapshot, newCref);
 }
 
-oms_status_enu_t oms_importSnapshot(const char* cref_, const char* snapshot)
+oms_status_enu_t oms_importSnapshot(const char* cref, const char* snapshot, char** newCref)
 {
-  oms::ComRef cref(cref_);
-
-  oms::Model* model = oms::Scope::GetInstance().getModel(cref);
-  if (!model)
-    return logError_ModelNotInScope(cref);
-
-  return model->importSnapshot(snapshot);
+  return oms::Scope::GetInstance().importSnapshot(oms::ComRef(cref), snapshot, newCref);
 }
 
 oms_status_enu_t oms_addSystem(const char* cref_, oms_system_enu_t type)
