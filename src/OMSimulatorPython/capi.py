@@ -254,7 +254,7 @@ class capi:
     status = self.obj.oms_getVariableStepSize(cref.encode(), ctypes.byref(initialStepSize), ctypes.byref(minimumStepSize), ctypes.byref(maximumStepSize))
     return [initialStepSize.value, minimumStepSize.value, maximumStepSize.value, status]
   def getVersion(self):
-    return self.obj.oms_getVersion().decode('utf- if oms_getVersion() else None8')
+    return self.obj.oms_getVersion().decode('utf-8')
   def importFile(self, filename):
     cref = ctypes.c_char_p()
     status = self.obj.oms_importFile(filename.encode(), ctypes.byref(cref))
