@@ -45,9 +45,13 @@ oms::Snapshot::~Snapshot()
 {
 }
 
-oms_status_enu_t oms::Snapshot::importSnapshot(const char* snapshot)
+oms_status_enu_t oms::Snapshot::import(const char* snapshot)
 {
-  return logError_NotImplemented;
+  doc.reset();
+  pugi::xml_parse_result result = doc.load_string(snapshot);
+  if (!result)
+    return logError("loading snapshot failed (" + std::string(result.description()) + ")");
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms::Snapshot::importResourcesFile(const filesystem::path& filename, const filesystem::path& root)
@@ -59,37 +63,26 @@ oms_status_enu_t oms::Snapshot::importResourcesFile(const filesystem::path& file
   if (!result)
     return logError("loading resource \"" + p.generic_string() + "\" failed (" + std::string(result.description()) + ")");
 
-  pugi::xml_node oms_snapshot = doc.document_element();
-  pugi::xml_node oms_file = oms_snapshot.append_child(oms::ssp::Version1_0::oms_file);
-  oms_file.append_attribute("name") = filename.generic_string().c_str();
-  oms_file.append_copy(tmp_doc.document_element());
-
-  return oms_status_ok;
+  return importResourcesXML(filename, tmp_doc.document_element());
 }
 
 oms_status_enu_t oms::Snapshot::importResourcesMemory(const filesystem::path& filename, const char* contents)
 {
   pugi::xml_document tmp_doc;
-  pugi::xml_parse_result result = tmp_doc.load(contents);
+  pugi::xml_parse_result result = tmp_doc.load_string(contents);
   if (!result)
     return logError("loading resource \"" + filename.generic_string() + "\" failed (" + std::string(result.description()) + ")");
 
-  pugi::xml_node oms_snapshot = doc.document_element();
-  pugi::xml_node oms_file = oms_snapshot.append_child(oms::ssp::Version1_0::oms_file);
-  oms_file.append_attribute("name") = filename.generic_string().c_str();
-  oms_file.append_copy(tmp_doc.document_element());
-
-  return oms_status_ok;
+  return importResourcesXML(filename, tmp_doc.document_element());
 }
 
 oms_status_enu_t oms::Snapshot::importResourcesXML(const filesystem::path& filename, const pugi::xml_node& node)
 {
-  if (node)
-  {
-    pugi::xml_node oms_snapshot = doc.document_element();
-    oms_snapshot.append_copy(node);
-  }
-  //debugPrintNode(filename);
+  pugi::xml_node oms_snapshot = doc.document_element();
+  pugi::xml_node oms_file = oms_snapshot.append_child(oms::ssp::Version1_0::oms_file);
+  oms_file.append_attribute("name") = filename.generic_string().c_str();
+  oms_file.append_copy(node);
+
   return oms_status_ok;
 }
 

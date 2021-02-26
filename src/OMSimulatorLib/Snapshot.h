@@ -48,7 +48,7 @@ namespace oms
     Snapshot();
     ~Snapshot();
 
-    oms_status_enu_t importSnapshot(const char* snapshot);
+    oms_status_enu_t import(const char* snapshot);
     oms_status_enu_t importResourcesFile(const filesystem::path& filename, const filesystem::path& root);
     oms_status_enu_t importResourcesMemory(const filesystem::path& filename, const char* contents);
     oms_status_enu_t importResourcesXML(const filesystem::path& filename, const pugi::xml_node& node);
