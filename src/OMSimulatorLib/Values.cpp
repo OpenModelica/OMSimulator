@@ -264,20 +264,16 @@ oms::ComRef oms::Values::getMappedCrefEntry(const ComRef& cref) const
   return cref;
 }
 
-/*
- * export parameter mapping inline associated with parameterbinding
- * <ssd:parameterBinding>
- *   <ssd:parameterMapping>
- *     <ssm:parameterMapping> </ssm:parameterMapping>
- *   </ssd:paramterMapping>
- * </ssd:parameterBinding>
- */
-oms_status_enu_t oms::Values::exportParameterMappingInline(pugi::xml_node& node) const
+// export parameter mapping inline associated with parameterbinding
+// <ssd:parameterBinding>
+//   <ssd:parameterMapping>
+//     <ssm:parameterMapping> </ssm:parameterMapping>
+//   </ssd:paramterMapping>
+// </ssd:parameterBinding>
+void oms::Values::exportParameterMappingInline(pugi::xml_node& node) const
 {
   if (mappedEntry.empty())
-  {
-    return oms_status_ok;
-  }
+    return;
 
   pugi::xml_node ssd_parameter_mapping = node.append_child(oms::ssp::Version1_0::ssd::parameter_mapping);
   pugi::xml_node ssm_parameter_mapping = ssd_parameter_mapping.append_child(oms::ssp::Version1_0::ssm::parameter_mapping);
@@ -288,18 +284,16 @@ oms_status_enu_t oms::Values::exportParameterMappingInline(pugi::xml_node& node)
     ssm_mapping_entry.append_attribute("source") = it.first.c_str();
     ssm_mapping_entry.append_attribute("target") = it.second.c_str();
   }
-
-  return oms_status_ok;
 }
 
 /*
  * exports the start values read from modeldescription.xml to ssv template
  */
-oms_status_enu_t oms::Values::exportToSSVTemplate(pugi::xml_node& node, const ComRef& cref)
+void oms::Values::exportToSSVTemplate(pugi::xml_node& node, const ComRef& cref)
 {
   // skip this if there is nothing to export
   if (modelDescriptionRealStartValues.empty() && modelDescriptionIntegerStartValues.empty() && modelDescriptionBooleanStartValues.empty())
-    return oms_status_ok;
+    return;
 
   // realStartValues
   for (const auto& r : modelDescriptionRealStartValues)
@@ -328,8 +322,6 @@ oms_status_enu_t oms::Values::exportToSSVTemplate(pugi::xml_node& node, const Co
     pugi::xml_node node_parameter_type = node_parameter.append_child(oms::ssp::Version1_0::ssv::boolean_type);
     node_parameter_type.append_attribute("value") = b.second;
   }
-
-  return oms_status_ok;
 }
 
 /*
