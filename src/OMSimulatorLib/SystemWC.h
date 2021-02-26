@@ -38,6 +38,7 @@
 #include "StepSizeConfiguration.h"
 #include "System.h"
 #include "Types.h"
+
 #include <vector>
 
 namespace oms

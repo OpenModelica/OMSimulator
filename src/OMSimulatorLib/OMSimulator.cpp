@@ -43,6 +43,7 @@
 #include "ResultReader.h"
 #include "Scope.h"
 #include "SignalDerivative.h"
+#include "Snapshot.h"
 #include "System.h"
 #include "SystemWC.h"
 #if !defined(NO_TLM)
@@ -1645,12 +1646,10 @@ oms_status_enu_t oms_extractFMIKind(const char* filename, oms_fmi_kind_enu_t* ki
   if (status != 0)
     return logError("failed to extract modelDescription.xml from \"" + std::string(filename) + "\"");
 
-  std::string xml_file = oms::Scope::GetInstance().getTempDirectory() + "/modelDescription.xml";
-  pugi::xml_document doc;
-  pugi::xml_parse_result result = doc.load_file(xml_file.c_str());
-  if (!result)
-    return logError("loading \"" + xml_file + "\" failed (" + std::string(result.description()) + ")");
-  const pugi::xml_node node = doc.document_element(); // ssd:SystemStructureDescription
+  oms::Snapshot snapshot;
+  if (oms_status_ok != snapshot.importResourcesFile("modelDescription.xml", oms::Scope::GetInstance().getTempDirectory()))
+    return logError("Failed to import");
+  const pugi::xml_node node = snapshot.getResourcesFile("modelDescription.xml");
 
   bool cs = (std::string(node.child("CoSimulation").attribute("modelIdentifier").as_string()) != "");
   bool me = (std::string(node.child("ModelExchange").attribute("modelIdentifier").as_string()) != "");

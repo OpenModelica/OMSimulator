@@ -61,7 +61,7 @@ oms::ExternalModel* oms::ExternalModel::NewComponent(const oms::ComRef& cref, Sy
   return model;
 }
 
-oms_status_enu_t oms::ExternalModel::setRealParameter(const std::string &var, double value)
+oms_status_enu_t oms::ExternalModel::setRealParameter(const std::string& var, double value)
 {
   std::map<std::string, oms::Option<double>>::iterator it;
   it = realParameters.find(var);
@@ -74,7 +74,7 @@ oms_status_enu_t oms::ExternalModel::setRealParameter(const std::string &var, do
   return oms_status_error;
 }
 
-oms_status_enu_t oms::ExternalModel::getRealParameter(const std::string &var, double &value)
+oms_status_enu_t oms::ExternalModel::getRealParameter(const std::string& var, double &value)
 {
   std::map<std::string, oms::Option<double>>::iterator it;
   it = realParameters.find(var);

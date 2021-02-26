@@ -137,7 +137,7 @@ oms::Connector* oms::Connector::NewConnector(const pugi::xml_node& node, const s
   return connector;
 }
 
-std::string oms::Connector::getTypeString(const pugi::xml_node &node, const std::string& sspVersion)
+std::string oms::Connector::getTypeString(const pugi::xml_node& node, const std::string& sspVersion)
 {
   if (sspVersion == "Draft20180219")
   {

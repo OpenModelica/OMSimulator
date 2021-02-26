@@ -34,6 +34,7 @@
 #include "Flags.h"
 #include "Logging.h"
 #include "Model.h"
+#include "OMSFileSystem.h"
 #include "ssd/Tags.h"
 #include "System.h"
 #include "SystemTLM.h"
@@ -41,7 +42,6 @@
 
 #include <fmilib.h>
 #include <JM/jm_portability.h>
-#include <OMSFileSystem.h>
 #include <RegEx.h>
 
 oms::ComponentFMUCS::ComponentFMUCS(const ComRef& cref, System* parentSystem, const std::string& fmuPath)
@@ -251,12 +251,12 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::
   }
 
   // parse modelDescription.xml to get start values before instantiating fmu's
-  component->values.parseModelDescription((tempDir / "modelDescription.xml").string().c_str());
+  component->values.parseModelDescription(tempDir);
 
   return component;
 }
 
-oms::Component* oms::ComponentFMUCS::NewComponent(const pugi::xml_node& node, oms::System* parentSystem, const std::string& sspVersion, const std::unordered_map<std::string, pugi::xml_node>& oms_snapshot)
+oms::Component* oms::ComponentFMUCS::NewComponent(const pugi::xml_node& node, oms::System* parentSystem, const std::string& sspVersion, const Snapshot& snapshot)
 {
   ComRef cref = ComRef(node.attribute("name").as_string());
   std::string type = node.attribute("type").as_string();
@@ -297,7 +297,7 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const pugi::xml_node& node, om
     {
       // set parameter bindings associated with the component
       std::string tempdir = parentSystem->getModel()->getTempDirectory();
-      component->values.importFromSnapshot(*it, sspVersion, oms_snapshot);
+      component->values.importFromSnapshot(*it, sspVersion, snapshot);
     }
     else
     {
