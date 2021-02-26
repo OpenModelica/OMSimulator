@@ -251,7 +251,7 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::
   }
 
   // parse modelDescription.xml to get start values before instantiating fmu's
-  component->values.parseModelDescription("modelDescription.xml", tempDir);
+  component->values.parseModelDescription(tempDir);
 
   return component;
 }

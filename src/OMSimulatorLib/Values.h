@@ -60,16 +60,18 @@ namespace oms
     oms_status_enu_t exportToSSVTemplate(pugi::xml_node& ssvNode, const ComRef& cref);  ///< start values read from modelDescription.xml and creates a ssv template
     oms_status_enu_t exportToSSMTemplate(pugi::xml_node& ssmNode, const ComRef& cref);  ///< start values read from modelDescription.xml and creates a ssm template
 
+    oms_status_enu_t parseModelDescription(const filesystem::path& root); ///< path without the filename, i.e. modelDescription.xml
+
+  private:
     oms_status_enu_t exportStartValuesHelper(pugi::xml_node& node) const;
     oms_status_enu_t exportParameterMappingInline(pugi::xml_node& node) const;
-    oms_status_enu_t importStartValuesHelper(pugi::xml_node& parameters);
-    oms_status_enu_t importParameterMapping(pugi::xml_node& parameterMapping);
-    oms_status_enu_t parseModelDescription(const filesystem::path& filename, const filesystem::path& root);
+    oms_status_enu_t importStartValuesHelper(const pugi::xml_node& parameters);
 
+    void importParameterMapping(const pugi::xml_node& parameterMapping);
+    oms::ComRef getMappedCrefEntry(const ComRef& cref) const;
     bool empty() const;
 
-    oms::ComRef getMappedCrefEntry(ComRef cref) const;
-
+  public:
     std::map<ComRef, double> realStartValues;  ///< parameters and start values defined before instantiating the FMU
     std::map<ComRef, int> integerStartValues;  ///< parameters and start values defined before instantiating the FMU
     std::map<ComRef, bool> booleanStartValues; ///< parameters and start values defined before instantiating the FMU
@@ -83,8 +85,6 @@ namespace oms
     std::map<ComRef, bool> modelDescriptionBooleanStartValues;  ///< boolean start values read from modelDescription.xml
 
     std::multimap<ComRef, ComRef> mappedEntry;  ///< parameter names and values provided in the parameter source are to be mapped to the parameters of the component or system
-
-    std::string path;
   };
 }
 

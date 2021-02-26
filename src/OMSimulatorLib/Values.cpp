@@ -103,7 +103,7 @@ oms_status_enu_t oms::Values::deleteStartValue(const ComRef& cref)
 oms_status_enu_t oms::Values::exportToSSD(pugi::xml_node& node) const
 {
   // skip this if there is nothing to export
-  if (realStartValues.empty() && integerStartValues.empty() && booleanStartValues.empty())
+  if (this->empty())
     return oms_status_ok;
 
   // Top level Parameter nodes
@@ -255,24 +255,13 @@ oms_status_enu_t oms::Values::exportStartValuesHelper(pugi::xml_node& node) cons
  * returns mapped cref if entry found associated with parameter mapping,
  * otherwise return the default cref
  */
-oms::ComRef oms::Values::getMappedCrefEntry(ComRef cref) const
+oms::ComRef oms::Values::getMappedCrefEntry(const ComRef& cref) const
 {
-  if (mappedEntry.empty())
-  {
-    return cref;
-  }
-
-  ComRef mappedCref = cref;
   for (const auto &it : mappedEntry)
-  {
     if (it.second == cref)
-    {
-      mappedCref = it.first;
-      break;
-    }
-  }
+      return it.first;
 
-  return mappedCref;
+  return cref;
 }
 
 /*
@@ -381,79 +370,72 @@ oms_status_enu_t oms::Values::exportToSSMTemplate(pugi::xml_node& node, const Co
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Values::importStartValuesHelper(pugi::xml_node& parameters)
+oms_status_enu_t oms::Values::importStartValuesHelper(const pugi::xml_node& parameters)
 {
-  if (parameters)
-  {
-    for(pugi::xml_node_iterator itparameters = parameters.begin(); itparameters != parameters.end(); ++itparameters)
-    {
-      std::string name = itparameters->name();
-      std::vector<ComRef> mappedcrefs;
-      if (name == oms::ssp::Version1_0::ssv::parameter)
-      {
-        ComRef cref = ComRef(itparameters->attribute("name").as_string());
-        // check cref has any mapping entry
-        if (!mappedEntry.empty())
-        {
-          auto mapfind = mappedEntry.equal_range(cref);
-          for (auto it = mapfind.first; it != mapfind.second; ++it)
-          {
-            mappedcrefs.push_back(it->second);
-          }
-        }
+  if (!parameters)
+    return oms_status_ok;
 
-        if (itparameters->child(oms::ssp::Version1_0::ssv::real_type))
+  for(pugi::xml_node_iterator itparameters = parameters.begin(); itparameters != parameters.end(); ++itparameters)
+  {
+    std::string name = itparameters->name();
+    std::vector<ComRef> mappedcrefs;
+    if (name == oms::ssp::Version1_0::ssv::parameter)
+    {
+      ComRef cref = ComRef(itparameters->attribute("name").as_string());
+
+      // check cref has any mapping entry
+      if (!mappedEntry.empty())
+      {
+        auto mapfind = mappedEntry.equal_range(cref);
+        for (auto it = mapfind.first; it != mapfind.second; ++it)
+          mappedcrefs.push_back(it->second);
+      }
+
+      if (itparameters->child(oms::ssp::Version1_0::ssv::real_type))
+      {
+        double value = itparameters->child(oms::ssp::Version1_0::ssv::real_type).attribute("value").as_double();
+        if (!mappedcrefs.empty())
         {
-          double value = itparameters->child(oms::ssp::Version1_0::ssv::real_type).attribute("value").as_double();
-          if (!mappedcrefs.empty())
-          {
-            for (const auto &mappedcref : mappedcrefs)
-            {
-              setReal(mappedcref, value);
-            }
-          }
-          else
-          {
-            // no mapping entry found, apply the default cref found in ssv file
-            setReal(cref, value);
-          }
-        }
-        else if (itparameters->child(oms::ssp::Version1_0::ssv::integer_type))
-        {
-          int value = itparameters->child(oms::ssp::Version1_0::ssv::integer_type).attribute("value").as_int();
-          if (!mappedcrefs.empty())
-          {
-            for (const auto &mappedcref : mappedcrefs)
-            {
-              setInteger(mappedcref, value);
-            }
-          }
-          else
-          {
-            // no mapping entry found, apply the default cref found in ssv file
-            setInteger(cref, value);
-          }
-        }
-        else if(itparameters->child(oms::ssp::Version1_0::ssv::boolean_type))
-        {
-          bool value = itparameters->child(oms::ssp::Version1_0::ssv::boolean_type).attribute("value").as_bool();
-          if (!mappedcrefs.empty())
-          {
-            for (const auto &mappedcref : mappedcrefs)
-            {
-              setBoolean(mappedcref, value);
-            }
-          }
-          else
-          {
-            // no mapping entry found, apply the default cref found in ssv file
-            setBoolean(cref, value);
-          }
+          for (const auto &mappedcref : mappedcrefs)
+            setReal(mappedcref, value);
         }
         else
         {
-          logError("Failed to import " + std::string(oms::ssp::Version1_0::ssv::parameter) + ":Unknown ParameterBinding-type");
+          // no mapping entry found, apply the default cref found in ssv file
+          setReal(cref, value);
         }
+      }
+      else if (itparameters->child(oms::ssp::Version1_0::ssv::integer_type))
+      {
+        int value = itparameters->child(oms::ssp::Version1_0::ssv::integer_type).attribute("value").as_int();
+        if (!mappedcrefs.empty())
+        {
+          for (const auto &mappedcref : mappedcrefs)
+            setInteger(mappedcref, value);
+        }
+        else
+        {
+          // no mapping entry found, apply the default cref found in ssv file
+          setInteger(cref, value);
+        }
+      }
+      else if(itparameters->child(oms::ssp::Version1_0::ssv::boolean_type))
+      {
+        bool value = itparameters->child(oms::ssp::Version1_0::ssv::boolean_type).attribute("value").as_bool();
+        if (!mappedcrefs.empty())
+        {
+          for (const auto &mappedcref : mappedcrefs)
+            setBoolean(mappedcref, value);
+        }
+        else
+        {
+          // no mapping entry found, apply the default cref found in ssv file
+          setBoolean(cref, value);
+        }
+      }
+      else
+      {
+        logError("Failed to import " + std::string(oms::ssp::Version1_0::ssv::parameter) + ":Unknown ParameterBinding-type");
       }
     }
   }
@@ -461,11 +443,11 @@ oms_status_enu_t oms::Values::importStartValuesHelper(pugi::xml_node& parameters
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Values::parseModelDescription(const filesystem::path& filename, const filesystem::path& root)
+oms_status_enu_t oms::Values::parseModelDescription(const filesystem::path& root)
 {
   Snapshot snapshot;
-  snapshot.importResourcesFile(filename, root);
-  const pugi::xml_node node = snapshot.getResourcesFile(filename); // modelDescription.xml
+  snapshot.importResourcesFile("modelDescription.xml", root);
+  const pugi::xml_node node = snapshot.getResourcesFile("modelDescription.xml");
 
   if (!node)
     return logError("Failed to load modelDescription.xml");
@@ -504,27 +486,19 @@ oms_status_enu_t oms::Values::parseModelDescription(const filesystem::path& file
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Values::importParameterMapping(pugi::xml_node& parameterMapping)
+void oms::Values::importParameterMapping(const pugi::xml_node& parameterMapping)
 {
-  if (parameterMapping)
-  {
-    for (pugi::xml_node_iterator itparametermapping = parameterMapping.begin(); itparametermapping != parameterMapping.end(); ++itparametermapping)
-    {
-      std::string name = itparametermapping->name();
-      if (name == oms::ssp::Version1_0::ssm::parameter_mapping_entry)
-      {
-        ComRef source = itparametermapping->attribute("source").as_string();
-        if (!source.isEmpty())
-        {
-          mappedEntry.insert(std::make_pair(source, itparametermapping->attribute("target").as_string()));
-        }
-        else
-        {
-          // default value will be applied
-        }
-      }
-    }
-  }
+  if (!parameterMapping)
+    return;
 
-  return oms_status_ok;
+  for (pugi::xml_node_iterator it = parameterMapping.begin(); it != parameterMapping.end(); ++it)
+  {
+    std::string name = it->name();
+    if (oms::ssp::Version1_0::ssm::parameter_mapping_entry != name)
+      continue;
+
+    ComRef source = it->attribute("source").as_string();
+    if (!source.isEmpty())
+      mappedEntry.insert(std::make_pair(source, it->attribute("target").as_string()));
+  }
 }
