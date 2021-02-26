@@ -181,12 +181,12 @@ oms_status_enu_t oms::ssd::ConnectionGeometry::importFromSSD(const pugi::xml_nod
 
   double* pointsX = new double[pointsXVector.size()];
   int i = 0;
-  for (auto& px : pointsXVector)
+  for (const auto& px : pointsXVector)
     pointsX[i++] = std::atof(px.c_str());
 
   double* pointsY = new double[pointsYVector.size()];
   i = 0;
-  for (auto& py : pointsYVector)
+  for (const auto& py : pointsYVector)
     pointsY[i++] = std::atof(py.c_str());
 
   setPoints(pointsXVector.size(), pointsX, pointsY);

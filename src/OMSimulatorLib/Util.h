@@ -32,12 +32,12 @@
 #ifndef _OMS_UTIL_H_
 #define _OMS_UTIL_H_
 
-#include <string>
-#include <sstream>
 #include <algorithm>
 #include <cctype>
 #include <locale>
 #include <math.h>
+#include <sstream>
+#include <string>
 
 // trim from start (in place)
 // https://stackoverflow.com/a/217605/7534030
