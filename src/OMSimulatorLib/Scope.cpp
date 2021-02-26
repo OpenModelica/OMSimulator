@@ -428,3 +428,21 @@ oms_status_enu_t oms::Scope::loadSnapshot(const oms::ComRef& cref, const char* s
 
   return status;
 }
+
+// TODO: renaming not yet supported
+oms_status_enu_t oms::Scope::importSnapshot(const oms::ComRef& cref, const char* snapshot, char** newCref)
+{
+  if (newCref)
+    *newCref = NULL;
+
+  oms::Model* model = oms::Scope::GetInstance().getModel(cref);
+  if (!model)
+    return logError_ModelNotInScope(cref);
+
+  oms_status_enu_t status = model->importSnapshot(snapshot);
+
+  if (newCref)
+    *newCref = (char*)getModel(cref)->getCref().c_str();
+
+  return status;
+}

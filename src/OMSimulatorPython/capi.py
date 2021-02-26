@@ -86,7 +86,7 @@ class capi:
     self.obj.oms_getVersion.restype = ctypes.c_char_p
     self.obj.oms_importFile.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_char_p)]
     self.obj.oms_importFile.restype = ctypes.c_int
-    self.obj.oms_importSnapshot.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_importSnapshot.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.POINTER(ctypes.c_char_p)]
     self.obj.oms_importSnapshot.restype = ctypes.c_int
     self.obj.oms_initialize.argtypes = [ctypes.c_char_p]
     self.obj.oms_initialize.restype = ctypes.c_int
@@ -199,7 +199,7 @@ class capi:
   def exportSnapshot(self, ident):
     contents = ctypes.c_char_p()
     status = self.obj.oms_exportSnapshot(ident.encode(), ctypes.byref(contents))
-    return [contents.value.decode('utf-8'), status]
+    return [contents.value.decode('utf-8') if contents.value else None, status]
   def exportSSMTemplate(self, ident, filename):
     return self.obj.oms_exportSSMTemplate(ident.encode(), filename.encode())
   def exportSSVTemplate(self, ident, filename):
@@ -226,7 +226,7 @@ class capi:
     filename = ctypes.c_char_p()
     bufferSize = ctypes.c_int()
     status = self.obj.oms_getResultFile(cref.encode(), ctypes.byref(filename), ctypes.byref(bufferSize))
-    return [filename.value.decode('utf-8'), bufferSize.value, status]
+    return [filename.value.decode('utf-8') if filename.value else None, bufferSize.value, status]
   def getSolver(self, cref):
     value = ctypes.c_int()
     status = self.obj.oms_getSolver(cref.encode(), ctypes.byref(value))
@@ -254,14 +254,15 @@ class capi:
     status = self.obj.oms_getVariableStepSize(cref.encode(), ctypes.byref(initialStepSize), ctypes.byref(minimumStepSize), ctypes.byref(maximumStepSize))
     return [initialStepSize.value, minimumStepSize.value, maximumStepSize.value, status]
   def getVersion(self):
-    return self.obj.oms_getVersion().decode('utf-8')
+    return self.obj.oms_getVersion().decode('utf- if oms_getVersion() else None8')
   def importFile(self, filename):
     cref = ctypes.c_char_p()
     status = self.obj.oms_importFile(filename.encode(), ctypes.byref(cref))
-    return [cref.value.decode("utf-8"), status]
+    return [cref.value.decode('utf-8') if cref.value else None, status]
   def importSnapshot(self, ident, snapshot):
-    status = self.obj.oms_importSnapshot(ident.encode(), snapshot.encode())
-    return status
+    newCref = ctypes.c_char_p()
+    status = self.obj.oms_importSnapshot(ident.encode(), snapshot.encode(), ctypes.byref(newCref))
+    return [newCref.value.decode('utf-8') if newCref.value else None, status]
   def initialize(self, cref):
     return self.obj.oms_initialize(cref.encode())
   def instantiate(self, cref):
@@ -269,15 +270,15 @@ class capi:
   def list(self, ident):
     contents = ctypes.c_char_p()
     status = self.obj.oms_list(ident.encode(), ctypes.byref(contents))
-    return [contents.value.decode('utf-8'), status]
+    return [contents.value.decode('utf-8') if contents.value else None, status]
   def listUnconnectedConnectors(self, ident):
     contents = ctypes.c_char_p()
     status = self.obj.oms_listUnconnectedConnectors(ident.encode(), ctypes.byref(contents))
-    return [contents.value.decode('utf-8'), status]
+    return [contents.value.decode('utf-8') if contents.value else None, status]
   def loadSnapshot(self, ident, snapshot):
     newCref = ctypes.c_char_p()
     status = self.obj.oms_loadSnapshot(ident.encode(), snapshot.encode(), ctypes.byref(newCref))
-    return [newCref.value.decode("utf-8"), status]
+    return [newCref.value.decode('utf-8') if newCref.value else None, status]
   def newModel(self, cref):
     return self.obj.oms_newModel(cref.encode())
   def removeSignalsFromResults(self, cref, regex):
