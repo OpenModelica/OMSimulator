@@ -11,6 +11,7 @@ To validate the results [FMPy](https://github.com/CATIA-Systems/FMPy) is used.
   - Python3 with modules
     - OMSimulator
     - pandas
+    - OMPython
   - Docker ***or*** FMPy
 
 Either you need FMPy installed and in your PATH or you can use a Docker image with it.
@@ -23,7 +24,7 @@ FMPY_DOCKER=
 ```
 in Makefile.
 
-Now call the Makefile and that's it.
+Now call the Makefile and that's it
 
 ```bash
 $ make all
@@ -51,22 +52,23 @@ From PowerShell:
   -w /fmi-cross-check anheuermann/fmpy:bionic-amd64 `
   python3 -m fmpy.cross_check.validate_vendor_repo --clean-up
 ```
-Whatch out for the `\` used on the Windows path to the fmi-cross-check repository.
+Watch out for the `\` used on the Windows path to the fmi-cross-check repository.
 
 
 ## Results
-For version `OMSimulator v2.1.0-dev-191-g5440b5c-linux` on Ubuntu 18.04 we got:
-```bash
-        # ############################################# #
-        #             Final results summary             #
-        #       Total FMUs tested:              55      #
-        #       FMUs simulated succesfully:     48 / 55 #
-        #       FMUs verified:                  15 / 55 #
-        # ############################################# #
-```
+We upload results for every commit to https://libraries.openmodelica.org/fmi-crosschecking/OMSimulator/.
 
-Also a detailed report will be saved `fmi-cross-check/OMSimulator_Results.csv`
-containing log and error messages.
+
+## Creating PRs to fmi-cross-check
+
+To create a pull request to the [modelica/fmi-cross-check](https://github.com/modelica/fmi-cross-check) repository see their readme with the rules.
+You will need to run the validation and correct all errors reported. To reduce the size of a result file from OMSimulator you can use:
+```bash
+python3 reduceCsvSize.py inputfile.csv
+```
+It will iteratively halve the size until the result file is smaller than 1 MB.
+
+
 
 ## Trouble shooting
   - FMPy is missing.
@@ -89,3 +91,5 @@ containing log and error messages.
       ignoreNotCompliantWithLatestRules = False
       ```
       in addResults.py.
+  - The Makefile is not working any more.
+    - We don't test the Makefile with CI and run the Python scripts directly to generate the results.

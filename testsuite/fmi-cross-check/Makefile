@@ -25,13 +25,14 @@ all: test
 
 test: fmi-cross-check-update
 	make clean
-	python3 runTest.py ${FMI_CROSS_CHECK_DIR} ${OMSIMULATOR}
+	python3 importFMUs.py "${FMI_CROSS_CHECK_DIR}" "${OS_SHORT}" "${OMSIMULATOR}"
+	python3 validateResults.py "${FMI_CROSS_CHECK_DIR}" "${OS_SHORT}" "${OMS_VERSION}"
 	make validateWithFMPy
 
 validateWithFMPy:
 	$(info Validating results with FMPy)
 	$(info This takes a while, get yourself a cup of tea.)
-	${FMPY_DOCKER} python3 -m fmpy.cross_check.validate_vendor_repo --clean-up
+	${FMPY_DOCKER} python3 -m fmpy.cross_check.validate_vendor_repo
 
 fmi-cross-check-update:
 	if [ -d "fmi-cross-check" ]; then \
