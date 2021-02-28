@@ -104,6 +104,11 @@ pugi::xml_node oms::Snapshot::getResourcesFile(const filesystem::path& filename)
   return node.first_child();
 }
 
+pugi::xml_node oms::Snapshot::operator[](const filesystem::path& filename) const
+{
+  return this->getResourcesFile(filename);
+}
+
 void oms::Snapshot::debugPrintNode(const filesystem::path& filename) const
 {
   pugi::xml_node node = getResourcesFile(filename);

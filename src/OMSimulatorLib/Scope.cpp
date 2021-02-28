@@ -202,7 +202,7 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
 
   Snapshot snapshot;
   snapshot.importResourcesFile("SystemStructure.ssd", temp_root);
-  const pugi::xml_node node = snapshot.getResourcesFile("SystemStructure.ssd");
+  const pugi::xml_node node = snapshot["SystemStructure.ssd"];
   if (!node)
     return logError("failed to load \"SystemStructure.ssd\"");
 
