@@ -1,4 +1,5 @@
 -- status: correct
+-- teardown_command: rm -rf import_export_snapshot_lua/
 -- linux: yes
 -- mingw: yes
 -- win: no
@@ -6,7 +7,7 @@
 
 
 oms_setCommandLineOption("--suppressPath=true --exportParametersInline=false")
-status = oms_setTempDirectory("./import_export_snapshot/")
+status = oms_setTempDirectory("./import_export_snapshot_lua/")
 
 oms_newModel("import_export_snapshot")
 oms_addSystem("import_export_snapshot.root", oms_system_wc)
@@ -132,7 +133,7 @@ oms_delete("import_export_snapshot")
 --
 -- <?xml version="1.0"?>
 -- <oms:snapshot>
--- 	<oms:ssd_file name="SystemStructure.ssd">
+-- 	<oms:file name="SystemStructure.ssd">
 -- 		<ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="import_export_snapshot" version="1.0">
 -- 			<ssd:System name="root">
 -- 				<ssd:Connectors>
@@ -187,8 +188,8 @@ oms_delete("import_export_snapshot")
 -- 				</ssd:Annotations>
 -- 			</ssd:DefaultExperiment>
 -- 		</ssd:SystemStructureDescription>
--- 	</oms:ssd_file>
--- 	<oms:ssv_file name="resources/import_export_snapshot.ssv">
+-- 	</oms:file>
+-- 	<oms:file name="resources/import_export_snapshot.ssv">
 -- 		<ssv:ParameterSet xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" version="1.0" name="parameters">
 -- 			<ssv:Parameters>
 -- 				<ssv:Parameter name="C1">
@@ -202,8 +203,8 @@ oms_delete("import_export_snapshot")
 -- 				</ssv:Parameter>
 -- 			</ssv:Parameters>
 -- 		</ssv:ParameterSet>
--- 	</oms:ssv_file>
--- 	<oms:signalFilter_file name="resources/signalFilter.xml">
+-- 	</oms:file>
+-- 	<oms:file name="resources/signalFilter.xml">
 -- 		<oms:SignalFilter version="1.0">
 -- 			<oms:Variable name="import_export_snapshot.root.C1" />
 -- 			<oms:Variable name="import_export_snapshot.root.add.u1" type="Real" kind="input" />
@@ -212,7 +213,7 @@ oms_delete("import_export_snapshot")
 -- 			<oms:Variable name="import_export_snapshot.root.add.k1" type="Real" kind="parameter" />
 -- 			<oms:Variable name="import_export_snapshot.root.add.k2" type="Real" kind="parameter" />
 -- 		</oms:SignalFilter>
--- 	</oms:signalFilter_file>
+-- 	</oms:file>
 -- </oms:snapshot>
 --
 -- error:   [exportSnapshot] "import_export_snapshot.root.add" is not a top level model

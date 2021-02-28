@@ -33,9 +33,10 @@
 
 #include "Logging.h"
 #include "Model.h"
+#include "OMSFileSystem.h"
 #include "ssd/Tags.h"
 #include "System.h"
-#include <OMSFileSystem.h>
+
 #include <RegEx.h>
 
 oms::ComponentTable::ComponentTable(const ComRef& cref, System* parentSystem, const std::string& path)
@@ -103,7 +104,7 @@ oms::Component* oms::ComponentTable::NewComponent(const oms::ComRef& cref, oms::
   return component;
 }
 
-oms::Component* oms::ComponentTable::NewComponent(const pugi::xml_node& node, oms::System* parentSystem, const std::string& sspVersion)
+oms::Component* oms::ComponentTable::NewComponent(const pugi::xml_node& node, oms::System* parentSystem, const std::string& sspVersion, const Snapshot& snapshot)
 {
   ComRef cref = ComRef(node.attribute("name").as_string());
   std::string type = node.attribute("type").as_string();

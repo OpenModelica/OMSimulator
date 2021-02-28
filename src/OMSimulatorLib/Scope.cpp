@@ -34,9 +34,10 @@
 #include "Flags.h"
 #include "System.h"
 #include "Component.h"
+#include "Snapshot.h"
 #include <miniunz.h>
-#include <OMSFileSystem.h>
 #include <time.h>
+#include "ssd/Tags.h"
 
 oms::Scope::Scope()
   : tempDir(".")
@@ -199,12 +200,11 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
   if (oms_status_ok != oms::Scope::miniunz(filename, temp_root.string(), true))
     return logError("failed to extract \"SystemStructure.ssd\" from \"" + filename + "\"");
 
-  pugi::xml_document doc;
-  pugi::xml_parse_result result = doc.load_file((temp_root / "SystemStructure.ssd").string().c_str());
-  if (!result)
-    return logError("loading \"" + std::string(filename) + "\" failed (" + std::string(result.description()) + ")");
-
-  const pugi::xml_node node = doc.document_element(); // ssd:SystemStructureDescription
+  Snapshot snapshot;
+  snapshot.importResourcesFile("SystemStructure.ssd", temp_root);
+  const pugi::xml_node node = snapshot.getResourcesFile("SystemStructure.ssd");
+  if (!node)
+    return logError("failed to load \"SystemStructure.ssd\"");
 
   ComRef cref = ComRef(node.attribute("name").as_string());
   std::string ssdVersion = node.attribute("version").as_string();
@@ -224,7 +224,16 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
 
   bool old_copyResources = model->copyResources();
   model->copyResources(false);
-  oms_status_enu_t status = model->importFromSSD(node);
+
+  // add the remaining resources (e.g) .ssv, .ssm and signalFilter.xml to oms:snapshot
+  for (const auto &entry : OMS_RECURSIVE_DIRECTORY_ITERATOR(model->getTempDirectory()))
+    if (entry.path().has_extension())
+      if (".ssv" == entry.path().extension() || ".ssm" == entry.path().extension() || ".xml" == entry.path().extension())
+        snapshot.importResourcesFile(naive_uncomplete(entry.path(), model->getTempDirectory()), model->getTempDirectory());
+
+  // snapshot.debugPrintAll();
+
+  oms_status_enu_t status = model->importFromSnapshot(snapshot);
   model->copyResources(old_copyResources);
 
   Scope::GetInstance().setWorkingDirectory(cd);
@@ -416,6 +425,24 @@ oms_status_enu_t oms::Scope::loadSnapshot(const oms::ComRef& cref, const char* s
 
   if (newCref)
     *newCref = (char*)getModel(new_name)->getCref().c_str();
+
+  return status;
+}
+
+// TODO: renaming not yet supported
+oms_status_enu_t oms::Scope::importSnapshot(const oms::ComRef& cref, const char* snapshot, char** newCref)
+{
+  if (newCref)
+    *newCref = NULL;
+
+  oms::Model* model = oms::Scope::GetInstance().getModel(cref);
+  if (!model)
+    return logError_ModelNotInScope(cref);
+
+  oms_status_enu_t status = model->importSnapshot(snapshot);
+
+  if (newCref)
+    *newCref = (char*)getModel(cref)->getCref().c_str();
 
   return status;
 }

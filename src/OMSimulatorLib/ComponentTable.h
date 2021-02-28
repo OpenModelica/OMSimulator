@@ -37,6 +37,7 @@
 #include "ResultReader.h"
 #include "ResultWriter.h"
 #include "SignalDerivative.h"
+#include "Snapshot.h"
 #include <fmilib.h>
 #include <map>
 #include <pugixml.hpp>
@@ -52,7 +53,7 @@ namespace oms
     ~ComponentTable();
 
     static Component* NewComponent(const oms::ComRef& cref, System* parentSystem, const std::string& path);
-    static Component* NewComponent(const pugi::xml_node& node, System* parentSystem, const std::string& sspVersion);
+    static Component* NewComponent(const pugi::xml_node& node, System* parentSystem, const std::string& sspVersion, const Snapshot& snapshot);
 
     oms_status_enu_t exportToSSD(pugi::xml_node& node, pugi::xml_node& ssvNode) const;
     oms_status_enu_t exportToSSVTemplate(pugi::xml_node& ssvNode) {return oms_status_ok;}

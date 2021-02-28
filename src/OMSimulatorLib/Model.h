@@ -37,6 +37,7 @@
 #include "Element.h"
 #include "ResultWriter.h"
 #include "Types.h"
+#include "Snapshot.h"
 #include <assert.h>
 #include <pugixml.hpp>
 
@@ -77,7 +78,7 @@ namespace oms
     oms_status_enu_t exportSSVTemplate(const ComRef& cref, const std::string& filename);
     oms_status_enu_t exportSSMTemplate(const ComRef& cref, const std::string& filename);
     void exportSignalFilter(pugi::xml_node &signalfilter) const;
-    oms_status_enu_t importFromSSD(const pugi::xml_node& node);
+    oms_status_enu_t importFromSnapshot(const Snapshot& snapshot);
     oms_status_enu_t importSnapshot(const char* snapshot);
     oms_status_enu_t importSignalFilter(const std::string& filenameaa);
     oms_status_enu_t exportToFile(const std::string& filename) const;
@@ -92,7 +93,6 @@ namespace oms
 
     oms_status_enu_t instantiate();
     oms_status_enu_t initialize();
-    oms_status_enu_t simulate_asynchronous(void (*cb)(const char* cref, double time, oms_status_enu_t status));
     oms_status_enu_t simulate();
     oms_status_enu_t doStep();
     oms_status_enu_t stepUntil(double stopTime);
@@ -115,9 +115,6 @@ namespace oms
     oms_status_enu_t addSignalsToResults(const char* regex);
     oms_status_enu_t removeSignalsFromResults(const char* regex);
 
-    oms_status_enu_t cancelSimulation_asynchronous();
-    bool cancelSimulation() const {return cancelSim;}
-
     bool validState(int validStates) const {return (modelState & validStates);}
 
     bool isIsolatedFMUModel() const {return isolatedFMU;}
@@ -126,9 +123,7 @@ namespace oms
     bool useThreadPool() {return (pool != nullptr);}
     ctpl::thread_pool& getThreadPool() {assert(pool); return *pool;}
 
-    oms_status_enu_t loadSnapshot(const pugi::xml_node node);
-
-    pugi::xml_node getSnapshot() {return snapShot;}
+    oms_status_enu_t loadSnapshot(const pugi::xml_node& node);
 
     Variable* getVariable(const ComRef& cref) const;
 
@@ -164,9 +159,6 @@ namespace oms
 
     std::string signalFilterFileName = "resources/signalFilter.xml";
 
-    pugi::xml_node snapShot; ///< top level snapshot node which contains ssd, ssv and ssm as child nodes
-
-    bool cancelSim;
     bool isolatedFMU = false;
 
     ctpl::thread_pool* pool = nullptr;

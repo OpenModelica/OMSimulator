@@ -122,7 +122,7 @@ oms_status_enu_t oms::SystemTLM::importFromSSD_SimulationInformation(const pugi:
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::SystemTLM::importFromSSD_SimulationInformationHelper(const pugi::xml_node & node)
+oms_status_enu_t oms::SystemTLM::importFromSSD_SimulationInformationHelper(const pugi::xml_node& node)
 {
   pugi::xml_node tlmmasterNode = node.child("oms::ssp::Draft20180219::tlm_master");
   for (auto it = tlmmasterNode.attributes_begin(); it != tlmmasterNode.attributes_end(); ++it)
@@ -284,7 +284,7 @@ oms_status_enu_t oms::SystemTLM::doStep()
   return logError_NotForTlmSystem;
 }
 
-oms_status_enu_t oms::SystemTLM::stepUntil(double stopTime, void (*cb)(const char* ident, double time, oms_status_enu_t status))
+oms_status_enu_t oms::SystemTLM::stepUntil(double stopTime)
 {
   omtlm_setStartTime(model, getModel()->getStartTime());
   omtlm_setStopTime(model, stopTime);
@@ -421,7 +421,7 @@ void oms::SystemTLM::disconnectFromSockets(const oms::ComRef cref)
   }
 }
 
-oms_status_enu_t oms::SystemTLM::setSocketData(const std::string &address, int managerPort, int monitorPort)
+oms_status_enu_t oms::SystemTLM::setSocketData(const std::string& address, int managerPort, int monitorPort)
 {
   if (!getModel()->validState(oms_modelState_virgin))
     return logError_ModelInWrongState(this);
@@ -589,7 +589,7 @@ oms_status_enu_t oms::SystemTLM::initializeSubSystem(oms::ComRef cref)
 
 oms_status_enu_t oms::SystemTLM::simulateSubSystem(oms::ComRef cref, double stopTime)
 {
-  oms_status_enu_t status = getSubSystem(cref)->stepUntil(stopTime, NULL);
+  oms_status_enu_t status = getSubSystem(cref)->stepUntil(stopTime);
   plugins[getSubSystem(cref)]->AwaitClosePermission();
   return status;
 }

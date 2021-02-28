@@ -29,7 +29,7 @@
  *
  */
 
-#include <OMSFileSystem.h>
+#include "OMSFileSystem.h"
 #include <cstring>
 
 #if defined(_MSC_VER) || defined(__MINGW32__) || defined(__MINGW64__)
@@ -45,11 +45,27 @@ extern "C"
 
 #if OMC_STD_FS == 1
 // We have C++17; it has temp_directory_path and canonical
+filesystem::path oms_temp_directory_path(void)
+{
+  return filesystem::temp_directory_path();
+}
+
+filesystem::path oms_canonical(filesystem::path p)
+{
+  return filesystem::canonical(p);
+}
 #else
 
 #include <cstdlib>
 
-#if !(BOOST_VERSION >= 104600) // no temp_directory_path in boost < 1.46
+#if (BOOST_VERSION >= 104600) // no temp_directory_path in boost < 1.46
+filesystem::path oms_temp_directory_path(void) {
+  return filesystem::temp_directory_path();
+}
+filesystem::path oms_canonical(filesystem::path p) {
+  return filesystem::canonical(p);
+}
+#else
 filesystem::path oms_temp_directory_path(void)
 {
 #if (_WIN32)
@@ -84,6 +100,38 @@ filesystem::path oms_canonical(filesystem::path p)
 #endif
 #endif
 
+// https://svn.boost.org/trac10/ticket/1976
+filesystem::path naive_uncomplete(const filesystem::path& path, const filesystem::path& base)
+{
+  if (path.has_root_path())
+  {
+    if (path.root_path() != base.root_path())
+      return path;
+    else
+      return naive_uncomplete(path.relative_path(), base.relative_path());
+  }
+
+  if (base.has_root_path())
+    throw "cannot uncomplete a relative path from a rooted base";
+
+  typedef filesystem::path::const_iterator path_iterator;
+  path_iterator path_it = path.begin();
+  path_iterator base_it = base.begin();
+  while (path_it != path.end() && base_it != base.end())
+  {
+    if (*path_it != *base_it)
+      break;
+    ++path_it; ++base_it;
+  }
+
+  filesystem::path result;
+  for (; base_it != base.end(); ++base_it)
+    result /= "..";
+  for (; path_it != path.end(); ++path_it)
+    result /= *path_it;
+  return result;
+}
+
 filesystem::path oms_unique_path(const std::string& prefix)
 {
   const char lt[] = "0123456789abcdefghijklmnopqrstuvwxyz";
@@ -97,7 +145,7 @@ filesystem::path oms_unique_path(const std::string& prefix)
   return p;
 }
 
-void oms_copy_file(const filesystem::path &from, const filesystem::path &to)
+void oms_copy_file(const filesystem::path& from, const filesystem::path& to)
 {
 #if defined(__MINGW32__) || defined(__MINGW64__)
   /* The MINGW implementation succeeds for filesystem::copy_file, but does not

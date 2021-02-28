@@ -46,7 +46,7 @@ oms::TLMBusConnector::~TLMBusConnector()
   }
 }
 
-oms_status_enu_t oms::TLMBusConnector::exportToSSD(pugi::xml_node &root) const
+oms_status_enu_t oms::TLMBusConnector::exportToSSD(pugi::xml_node& root) const
 {
   pugi::xml_node bus_node = root.append_child(oms::ssp::Draft20180219::bus);
   bus_node.append_attribute("name") = name;
@@ -61,16 +61,15 @@ oms_status_enu_t oms::TLMBusConnector::exportToSSD(pugi::xml_node &root) const
     bus_node.append_attribute("interpolation") = "finegrained";
 
   pugi::xml_node signals_node = bus_node.append_child(oms::ssp::Draft20180219::signals);
-  for(auto& connector : connectors) {
+  for(auto& connector : connectors)
+  {
     pugi::xml_node signal_node = signals_node.append_child(oms::ssp::Draft20180219::signal);
     signal_node.append_attribute("name") = connector.second.c_str();
     signal_node.append_attribute("type") = connector.first.c_str();
   }
 
   if (this->geometry)
-  {
     return reinterpret_cast<oms::ssd::ConnectorGeometry*>(this->geometry)->exportToSSD(bus_node);
-  }
 
   return oms_status_ok;
 }

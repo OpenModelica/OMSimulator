@@ -36,11 +36,8 @@
 #include "ComponentTable.h"
 #include "Flags.h"
 #include "Model.h"
-#include "Types.h"
 #include "ssd/Tags.h"
-#include <cvode/cvode.h>                /* prototypes for CVODE fcts., consts. */
-#include <nvector/nvector_serial.h>     /* serial N_Vector types, fcts., macros */
-#include <sunlinsol/sunlinsol_dense.h>  /* Default dense linear solver */
+
 
 int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
@@ -619,13 +616,10 @@ oms_status_enu_t oms::SystemSC::doStep()
   if (isTopLevelSystem())
     getModel()->emit(time);
 
-  if (isTopLevelSystem() && getModel()->cancelSimulation())
-    return oms_status_discard;
-
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::SystemSC::stepUntil(double stopTime, void (*cb)(const char* ident, double time, oms_status_enu_t status))
+oms_status_enu_t oms::SystemSC::stepUntil(double stopTime)
 {
   CallClock callClock(clock);
   const double startTime=time;
@@ -639,14 +633,8 @@ oms_status_enu_t oms::SystemSC::stepUntil(double stopTime, void (*cb)(const char
   {
     status = doStep();
 
-    if (isTopLevelSystem())
-    {
-      if (cb)
-        cb(this->getModel()->getCref().c_str(), time, status);
-
-      if (Flags::ProgressBar())
-        Log::ProgressBar(startTime, stopTime, time);
-    }
+    if (isTopLevelSystem() && Flags::ProgressBar())
+      Log::ProgressBar(startTime, stopTime, time);
   }
 
   if (isTopLevelSystem() && Flags::ProgressBar())

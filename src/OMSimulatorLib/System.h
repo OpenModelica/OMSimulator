@@ -40,13 +40,15 @@
 #include "DirectedGraph.h"
 #include "Element.h"
 #include "ExternalModel.h"
-#include "Values.h"
 #include "ResultWriter.h"
+#include "Snapshot.h"
 #include "ssd/ConnectorGeometry.h"
 #if !defined(NO_TLM)
 #include "TLMBusConnector.h"
 #endif
 #include "Types.h"
+#include "Values.h"
+
 #include <map>
 #include <pugixml.hpp>
 #include <unordered_map>
@@ -83,7 +85,7 @@ namespace oms
     oms_status_enu_t addSubModel(const ComRef& cref, const std::string& fmuPath);
     bool validCref(const ComRef& cref);
     oms_status_enu_t exportToSSD(pugi::xml_node& node, pugi::xml_node& ssvNode) const;
-    oms_status_enu_t importFromSSD(const pugi::xml_node& node, const std::string& sspVersion);
+    oms_status_enu_t importFromSnapshot(const pugi::xml_node& node, const std::string& sspVersion, const Snapshot& snapshot);
     virtual oms_status_enu_t exportToSSD_SimulationInformation(pugi::xml_node& node) const = 0;
     virtual oms_status_enu_t importFromSSD_SimulationInformation(const pugi::xml_node& node, const std::string& sspVersion) = 0;
     void setGeometry(const ssd::ElementGeometry& geometry) {element.setGeometry(&geometry);}
@@ -135,7 +137,7 @@ namespace oms
     virtual oms_status_enu_t terminate() = 0;
     virtual oms_status_enu_t reset() = 0;
     virtual oms_status_enu_t doStep() = 0;
-    virtual oms_status_enu_t stepUntil(double stopTime, void (*cb)(const char* ident, double time, oms_status_enu_t status)) = 0;
+    virtual oms_status_enu_t stepUntil(double stopTime) = 0;
 
     double getTime() const {return time;}
 
@@ -180,7 +182,6 @@ namespace oms
     ctpl::thread_pool& getThreadPool();
 
     std::string getUniqueID() const;
-    std::map<std::string, std::string> startValuesFileSources;  ///< ssvFileSource mapped with ssmFilesource if mapping is provided, otherwise only ssvFilesource entry is made
   protected:
     double time;
     System(const ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem, oms_solver_enu_t solverMethod);
@@ -234,9 +235,8 @@ namespace oms
     oms_status_enu_t importTLMBus(const pugi::xml_node& node, Component* component);
     oms_status_enu_t importBusConnectorSignals(const pugi::xml_node& node);
     oms_status_enu_t importBusConnectorGeometry(const pugi::xml_node& node);
-    oms_status_enu_t importStartValuesFromSSV();
-    oms_status_enu_t importStartValuesFromSSVHelper(std::string fileName, std::multimap<ComRef, ComRef> &mappedEntry);
-    oms_status_enu_t importParameterMappingFromSSM(std::string fileName, std::multimap<ComRef, ComRef> &mappedEntry);
+    oms_status_enu_t importStartValuesFromSSV(const std::string& ssvPath, const std::string ssmPath, const Snapshot& snapshot);
+    void importParameterMappingFromSSM(const std::string& ssmPath, const Snapshot& snapshot, std::multimap<ComRef, ComRef>& mappedEntry);
 
     std::vector<AlgLoop> algLoops;    ///< Vector of algebraic loop objects
   };

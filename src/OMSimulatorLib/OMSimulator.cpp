@@ -43,6 +43,7 @@
 #include "ResultReader.h"
 #include "Scope.h"
 #include "SignalDerivative.h"
+#include "Snapshot.h"
 #include "System.h"
 #include "SystemWC.h"
 #if !defined(NO_TLM)
@@ -267,15 +268,9 @@ oms_status_enu_t oms_loadSnapshot(const char* cref, const char* snapshot, char**
   return oms::Scope::GetInstance().loadSnapshot(oms::ComRef(cref), snapshot, newCref);
 }
 
-oms_status_enu_t oms_importSnapshot(const char* cref_, const char* snapshot)
+oms_status_enu_t oms_importSnapshot(const char* cref, const char* snapshot, char** newCref)
 {
-  oms::ComRef cref(cref_);
-
-  oms::Model* model = oms::Scope::GetInstance().getModel(cref);
-  if (!model)
-    return logError_ModelNotInScope(cref);
-
-  return model->importSnapshot(snapshot);
+  return oms::Scope::GetInstance().importSnapshot(oms::ComRef(cref), snapshot, newCref);
 }
 
 oms_status_enu_t oms_addSystem(const char* cref_, oms_system_enu_t type)
@@ -964,28 +959,6 @@ oms_status_enu_t oms_initialize(const char* cref_)
   return model->initialize();
 }
 
-oms_status_enu_t oms_simulate_asynchronous(const char* cref_, void (*cb)(const char* cref, double time, oms_status_enu_t status))
-{
-  oms::ComRef cref(cref_);
-
-  oms::Model* model = oms::Scope::GetInstance().getModel(cref);
-  if (!model)
-    return logError_ModelNotInScope(cref);
-
-  return model->simulate_asynchronous(cb);
-}
-
-oms_status_enu_t oms_cancelSimulation_asynchronous(const char* cref_)
-{
-  oms::ComRef cref(cref_);
-
-  oms::Model* model = oms::Scope::GetInstance().getModel(cref);
-  if (!model)
-    return logError_ModelNotInScope(cref);
-
-  return model->cancelSimulation_asynchronous();
-}
-
 oms_status_enu_t oms_simulate(const char* cref_)
 {
   oms::ComRef cref(cref_);
@@ -1643,12 +1616,10 @@ oms_status_enu_t oms_extractFMIKind(const char* filename, oms_fmi_kind_enu_t* ki
   if (status != 0)
     return logError("failed to extract modelDescription.xml from \"" + std::string(filename) + "\"");
 
-  std::string xml_file = oms::Scope::GetInstance().getTempDirectory() + "/modelDescription.xml";
-  pugi::xml_document doc;
-  pugi::xml_parse_result result = doc.load_file(xml_file.c_str());
-  if (!result)
-    return logError("loading \"" + xml_file + "\" failed (" + std::string(result.description()) + ")");
-  const pugi::xml_node node = doc.document_element(); // ssd:SystemStructureDescription
+  oms::Snapshot snapshot;
+  if (oms_status_ok != snapshot.importResourcesFile("modelDescription.xml", oms::Scope::GetInstance().getTempDirectory()))
+    return logError("Failed to import");
+  const pugi::xml_node node = snapshot.getResourcesFile("modelDescription.xml");
 
   bool cs = (std::string(node.child("CoSimulation").attribute("modelIdentifier").as_string()) != "");
   bool me = (std::string(node.child("ModelExchange").attribute("modelIdentifier").as_string()) != "");

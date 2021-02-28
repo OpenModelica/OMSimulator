@@ -1,4 +1,5 @@
 -- status: correct
+-- teardown_command: rm -rf exportssmtemplate_lua/ add1.ssm gain1.ssm template1.ssm
 -- linux: yes
 -- mingw: yes
 -- win: no
@@ -23,14 +24,14 @@ oms_addSystem("test.Root", oms_system_wc)
 oms_addSubModel("test.Root.Gain", "../resources/Modelica.Blocks.Math.Gain.fmu")
 oms_addSubModel("test.Root.add", "../resources/Modelica.Blocks.Math.Add.fmu")
 
-oms_exportSSMTemplate("test", "template.ssm")
-readFile("template.ssm")
+oms_exportSSMTemplate("test", "template1.ssm")
+readFile("template1.ssm")
 
-oms_exportSSMTemplate("test.Root.add", "add.ssm")
-readFile("add.ssm")
+oms_exportSSMTemplate("test.Root.add", "add1.ssm")
+readFile("add1.ssm")
 
-oms_exportSSMTemplate("test.Root.Gain", "gain.ssm")
-readFile("gain.ssm")
+oms_exportSSMTemplate("test.Root.Gain", "gain1.ssm")
+readFile("gain1.ssm")
 
 
 -- Result:

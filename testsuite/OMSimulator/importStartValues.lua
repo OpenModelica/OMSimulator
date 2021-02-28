@@ -1,4 +1,5 @@
 -- status: correct
+-- teardown_command: rm -rf importStartValues/
 -- linux: yes
 -- mingw: yes
 -- win: yes
@@ -33,7 +34,7 @@ oms_delete("importStartValues")
 -- warning: Wrong/deprecated content detected but successfully loaded. Please re-export the SSP file to avoid this message.
 -- <?xml version="1.0"?>
 -- <oms:snapshot>
--- 	<oms:ssd_file name="SystemStructure.ssd">
+-- 	<oms:file name="SystemStructure.ssd">
 -- 		<ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="importStartValues" version="1.0">
 -- 			<ssd:System name="root">
 -- 				<ssd:Connectors>
@@ -88,8 +89,8 @@ oms_delete("importStartValues")
 -- 				</ssd:Annotations>
 -- 			</ssd:DefaultExperiment>
 -- 		</ssd:SystemStructureDescription>
--- 	</oms:ssd_file>
--- 	<oms:ssv_file name="resources/importStartValues.ssv">
+-- 	</oms:file>
+-- 	<oms:file name="resources/importStartValues.ssv">
 -- 		<ssv:ParameterSet xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" version="1.0" name="parameters">
 -- 			<ssv:Parameters>
 -- 				<ssv:Parameter name="C1">
@@ -103,15 +104,15 @@ oms_delete("importStartValues")
 -- 				</ssv:Parameter>
 -- 			</ssv:Parameters>
 -- 		</ssv:ParameterSet>
--- 	</oms:ssv_file>
--- 	<oms:signalFilter_file name="resources/signalFilter.xml">
+-- 	</oms:file>
+-- 	<oms:file name="resources/signalFilter.xml">
 -- 		<oms:SignalFilter version="1.0">
 -- 			<oms:Variable name="importStartValues.root.C1" />
 -- 			<oms:Variable name="importStartValues.root.System1.C1" />
 -- 			<oms:Variable name="importStartValues.root.System1.C2" />
 -- 			<oms:Variable name="importStartValues.root.System1.C3" />
 -- 		</oms:SignalFilter>
--- 	</oms:signalFilter_file>
+-- 	</oms:file>
 -- </oms:snapshot>
 --
 -- info:    model doesn't contain any continuous state

@@ -35,12 +35,12 @@
 #include "CSVWriter.h"
 #include "Flags.h"
 #include "MATWriter.h"
+#include "OMSFileSystem.h"
 #include "Scope.h"
 #include "ssd/Tags.h"
 #include "System.h"
 #include "Variable.h"
 
-#include <OMSFileSystem.h>
 #include <minizip.h>
 #include <thread>
 
@@ -155,7 +155,7 @@ oms::Variable* oms::Model::getVariable(const ComRef& cref) const
   return NULL;
 }
 
-oms_status_enu_t oms::Model::loadSnapshot(const pugi::xml_node node)
+oms_status_enu_t oms::Model::loadSnapshot(const pugi::xml_node& node)
 {
   // This method will not change the name of the model.
   // If a renaming is requested then it will happen in Scope::loadSnapshot.
@@ -166,9 +166,13 @@ oms_status_enu_t oms::Model::loadSnapshot(const pugi::xml_node node)
   System* old_root_system = system;
   system = NULL;
 
+  Snapshot snapshot; // this is a temporary workaroud, loadSnapshot will be removed later
+  snapshot.importResourcesXML("SystemStructure.ssd", node);
+  //snapshot.debugPrintAll();
+
   bool old_copyResources = copyResources();
   copyResources(false);
-  oms_status_enu_t status = importFromSSD(node);
+  oms_status_enu_t status = importFromSnapshot(snapshot);
   copyResources(old_copyResources);
 
   if (oms_status_ok != status)
@@ -186,20 +190,17 @@ oms_status_enu_t oms::Model::loadSnapshot(const pugi::xml_node node)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Model::importSnapshot(const char* snapshot)
+oms_status_enu_t oms::Model::importSnapshot(const char* snapshot_)
 {
   if (!validState(oms_modelState_virgin))
     return logError_ModelInWrongState(this);
 
-  pugi::xml_document doc;
-  pugi::xml_parse_result result = doc.load(snapshot);
-  if (!result)
-    return logError("loading snapshot failed (" + std::string(result.description()) + ")");
-
-  snapShot = doc.document_element(); // oms:snapshot
+  Snapshot snapshot;
+  snapshot.import(snapshot_);
+  //snapshot.debugPrintAll();
 
   // get ssd:SystemStructureDescription
-  pugi::xml_node ssdNode = snapShot.child(oms::ssp::Version1_0::ssd_file).child(oms::ssp::Draft20180219::ssd::system_structure_description);
+  pugi::xml_node ssdNode = snapshot.getResourcesFile( "SystemStructure.ssd");
 
   ComRef new_cref = ComRef(ssdNode.attribute("name").as_string());
   std::string ssdVersion = ssdNode.attribute("version").as_string();
@@ -215,7 +216,7 @@ oms_status_enu_t oms::Model::importSnapshot(const char* snapshot)
 
   bool old_copyResources = copyResources();
   copyResources(false);
-  oms_status_enu_t status = importFromSSD(ssdNode);
+  oms_status_enu_t status = importFromSnapshot(snapshot);
   copyResources(old_copyResources);
 
   if (oms_status_ok != status)
@@ -397,7 +398,7 @@ oms_status_enu_t oms::Model::exportSnapshot(const oms::ComRef& cref, char** cont
 
   // list model
   pugi::xml_node snapshotnode = doc.append_child(oms::ssp::Version1_0::snap_shot);
-  pugi::xml_node ssdfilenode = snapshotnode.append_child(oms::ssp::Version1_0::ssd_file);
+  pugi::xml_node ssdfilenode = snapshotnode.append_child(oms::ssp::Version1_0::oms_file);
   ssdfilenode.append_attribute("name") = "SystemStructure.ssd";
 
   pugi::xml_node node = ssdfilenode.append_child(oms::ssp::Draft20180219::ssd::system_structure_description);
@@ -412,7 +413,7 @@ oms_status_enu_t oms::Model::exportSnapshot(const oms::ComRef& cref, char** cont
 
     // update <oms:ssv_file> after </oms:ssd_file>
     pugi::xml_node last = doc.last_child();
-    pugi::xml_node ssvfilenode  = last.append_child(oms::ssp::Version1_0::ssv_file);
+    pugi::xml_node ssvfilenode  = last.append_child(oms::ssp::Version1_0::oms_file);
     std::string ssvFilePath = "resources/" + std::string(this->getCref()) + ".ssv";
     ssvfilenode.append_attribute("name") = ssvFilePath.c_str();
     // dump all the ssv file contents
@@ -656,16 +657,20 @@ void oms::Model::exportSignalFilter(pugi::xml_node &node) const
   }
 }
 
-oms_status_enu_t oms::Model::importFromSSD(const pugi::xml_node& node)
+oms_status_enu_t oms::Model::importFromSnapshot(const Snapshot& snapshot)
 {
-  std::string sspVersion = node.attribute("version").as_string();
+  pugi::xml_node ssdNode = snapshot.getResourcesFile("SystemStructure.ssd");
+  if (!ssdNode)
+    return logError("loading <oms:file> \"SystemStructure.ssd\" from <oms:snapshot> failed");
+
+  std::string sspVersion = ssdNode.attribute("version").as_string();
 
   if(sspVersion == "Draft20180219")
   {
     logWarning_deprecated;
   }
 
-  for(pugi::xml_node_iterator it = node.begin(); it != node.end(); ++it)
+  for(pugi::xml_node_iterator it = ssdNode.begin(); it != ssdNode.end(); ++it)
   {
     std::string name = it->name();
     if (name == oms::ssp::Draft20180219::ssd::system)
@@ -682,7 +687,7 @@ oms_status_enu_t oms::Model::importFromSSD(const pugi::xml_node& node)
       if (!system)
         return oms_status_error;
 
-      if (oms_status_ok != system->importFromSSD(*it, sspVersion))
+      if (oms_status_ok != system->importFromSnapshot(*it, sspVersion, snapshot))
         return oms_status_error;
     }
     else if (name == oms::ssp::Draft20180219::ssd::default_experiment)
@@ -1016,7 +1021,6 @@ oms_status_enu_t oms::Model::initialize()
   clock.reset();
   clock.tic();
 
-  cancelSim = false;
   lastEmit = startTime;
 
   if (!resultFilename.empty())
@@ -1078,18 +1082,6 @@ oms_status_enu_t oms::Model::initialize()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Model::simulate_asynchronous(void (*cb)(const char* cref, double time, oms_status_enu_t status))
-{
-  if (!validState(oms_modelState_simulation))
-    return logError_ModelInWrongState(this);
-
-  if (!system)
-    return logError("Model doesn't contain a system");
-
-  std::thread([=]{system->stepUntil(stopTime, cb);}).detach();
-  return oms_status_pending;
-}
-
 oms_status_enu_t oms::Model::simulate()
 {
   clock.tic();
@@ -1105,7 +1097,7 @@ oms_status_enu_t oms::Model::simulate()
     return logError("Model doesn't contain a system");
   }
 
-  oms_status_enu_t status = system->stepUntil(stopTime, NULL);
+  oms_status_enu_t status = system->stepUntil(stopTime);
   emit(stopTime, true);
   clock.toc();
   return status;
@@ -1146,7 +1138,7 @@ oms_status_enu_t oms::Model::stepUntil(double stopTime)
     return logError("Model doesn't contain a system");
   }
 
-  oms_status_enu_t status = system->stepUntil(stopTime, NULL);
+  oms_status_enu_t status = system->stepUntil(stopTime);
   emit(stopTime, true);
   clock.toc();
   return status;
@@ -1309,14 +1301,5 @@ oms_status_enu_t oms::Model::removeSignalsFromResults(const char* regex)
   if (system)
     if (oms_status_ok != system->removeSignalsFromResults(regex))
       return oms_status_error;
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms::Model::cancelSimulation_asynchronous()
-{
-  if (!validState(oms_modelState_simulation))
-    return logError_ModelInWrongState(this);
-
-  cancelSim = true;
   return oms_status_ok;
 }

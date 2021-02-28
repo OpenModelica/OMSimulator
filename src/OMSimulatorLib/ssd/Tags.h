@@ -42,9 +42,7 @@ namespace oms
       extern const char* FixedStepMaster;
       extern const char* VariableStepSolver;
       extern const char* snap_shot;
-      extern const char* ssd_file;
-      extern const char* ssv_file;
-      extern const char* ssm_file;
+      extern const char* oms_file;
       extern const char* oms_annotations;
       extern const char* oms_buses;
       extern const char* oms_signalFilter;

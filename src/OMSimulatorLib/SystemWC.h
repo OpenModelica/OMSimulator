@@ -38,6 +38,7 @@
 #include "StepSizeConfiguration.h"
 #include "System.h"
 #include "Types.h"
+
 #include <vector>
 
 namespace oms
@@ -58,8 +59,8 @@ namespace oms
     oms_status_enu_t terminate();
     oms_status_enu_t reset();
     oms_status_enu_t doStep();
-    oms_status_enu_t stepUntil(double stopTime, void (*cb)(const char* ident, double time, oms_status_enu_t status));
-    oms_status_enu_t stepUntilASSC(double stopTime, void (*cb)(const char* ident, double time, oms_status_enu_t status));
+    oms_status_enu_t stepUntil(double stopTime);
+    oms_status_enu_t stepUntilASSC(double stopTime);
 
     std::string getSolverName() const;
     oms_status_enu_t setSolverMethod(std::string);
