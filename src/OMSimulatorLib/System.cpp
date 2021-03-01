@@ -2411,7 +2411,7 @@ oms_status_enu_t oms::System::importStartValuesFromSSV(const std::string& ssvPat
   if (!ssmPath.empty())
     importParameterMappingFromSSM(ssmPath, snapshot, mappedEntry);
 
-  pugi::xml_node parameterSet = snapshot.getResourcesFile(ssvPath);
+  pugi::xml_node parameterSet = snapshot.getResourceNode(ssvPath);
   pugi::xml_node parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
 
   for (pugi::xml_node_iterator it = parameters.begin(); it != parameters.end(); ++it)
@@ -2511,7 +2511,7 @@ oms_status_enu_t oms::System::updateAlgebraicLoops(const std::vector< oms_ssc_t 
 
 void oms::System::importParameterMappingFromSSM(const std::string& ssmPath, const Snapshot& snapshot, std::multimap<ComRef, ComRef>& mappedEntry)
 {
-  pugi::xml_node parameterMapping = snapshot.getResourcesFile(ssmPath);
+  pugi::xml_node parameterMapping = snapshot.getResourceNode(ssmPath);
 
   for (pugi::xml_node_iterator it = parameterMapping.begin(); it != parameterMapping.end(); ++it)
   {

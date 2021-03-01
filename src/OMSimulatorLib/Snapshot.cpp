@@ -45,7 +45,7 @@ oms::Snapshot::~Snapshot()
 {
 }
 
-pugi::xml_node oms::Snapshot::newResourcesFile(const filesystem::path& filename)
+pugi::xml_node oms::Snapshot::newResourceNode(const filesystem::path& filename)
 {
   pugi::xml_node oms_snapshot = doc.document_element();
   pugi::xml_node node = oms_snapshot.find_child_by_attribute(oms::ssp::Version1_0::oms_file, "name", filename.generic_string().c_str());
@@ -70,7 +70,7 @@ oms_status_enu_t oms::Snapshot::import(const char* snapshot)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Snapshot::importResourcesFile(const filesystem::path& filename, const filesystem::path& root)
+oms_status_enu_t oms::Snapshot::importResourceFile(const filesystem::path& filename, const filesystem::path& root)
 {
   filesystem::path p = root / filename;
 
@@ -79,20 +79,20 @@ oms_status_enu_t oms::Snapshot::importResourcesFile(const filesystem::path& file
   if (!result)
     return logError("loading resource \"" + p.generic_string() + "\" failed (" + std::string(result.description()) + ")");
 
-  return importResourcesXML(filename, tmp_doc.document_element());
+  return importResourceNode(filename, tmp_doc.document_element());
 }
 
-oms_status_enu_t oms::Snapshot::importResourcesMemory(const filesystem::path& filename, const char* contents)
+oms_status_enu_t oms::Snapshot::importResourceMemory(const filesystem::path& filename, const char* contents)
 {
   pugi::xml_document tmp_doc;
   pugi::xml_parse_result result = tmp_doc.load_string(contents);
   if (!result)
     return logError("loading resource \"" + filename.generic_string() + "\" failed (" + std::string(result.description()) + ")");
 
-  return importResourcesXML(filename, tmp_doc.document_element());
+  return importResourceNode(filename, tmp_doc.document_element());
 }
 
-oms_status_enu_t oms::Snapshot::importResourcesXML(const filesystem::path& filename, const pugi::xml_node& node)
+oms_status_enu_t oms::Snapshot::importResourceNode(const filesystem::path& filename, const pugi::xml_node& node)
 {
   pugi::xml_node oms_snapshot = doc.document_element();
   pugi::xml_node oms_file = oms_snapshot.append_child(oms::ssp::Version1_0::oms_file);
@@ -109,7 +109,7 @@ void oms::Snapshot::getResources(std::vector<std::string>& resources) const
     resources.push_back(it.attribute("name").as_string());
 }
 
-pugi::xml_node oms::Snapshot::getResourcesFile(const filesystem::path& filename) const
+pugi::xml_node oms::Snapshot::getResourceNode(const filesystem::path& filename) const
 {
   pugi::xml_node oms_snapshot = doc.document_element();
   pugi::xml_node node = oms_snapshot.find_child_by_attribute(oms::ssp::Version1_0::oms_file, "name", filename.generic_string().c_str());
@@ -128,12 +128,12 @@ pugi::xml_node oms::Snapshot::operator[](const filesystem::path& filename)
   if (node)
     return node.first_child();
 
-  return newResourcesFile(filename);
+  return newResourceNode(filename);
 }
 
 void oms::Snapshot::debugPrintNode(const filesystem::path& filename) const
 {
-  pugi::xml_node node = getResourcesFile(filename);
+  pugi::xml_node node = getResourceNode(filename);
 
   if (node)
     node.print(std::cout, "  ");
