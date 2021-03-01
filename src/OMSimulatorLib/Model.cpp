@@ -286,6 +286,7 @@ oms_status_enu_t oms::Model::list(const oms::ComRef& cref, char** contents)
   pugi::xml_document doc;
   pugi::xml_document ssvdoc;
 
+  Snapshot snapshot;
   // check for toplevelSystem or Model to update parameterbindings in ssd
   bool isTopSystemOrModel = false;
 
@@ -304,7 +305,7 @@ oms_status_enu_t oms::Model::list(const oms::ComRef& cref, char** contents)
   {
     isTopSystemOrModel = true;
     pugi::xml_node node = doc.append_child(oms::ssp::Draft20180219::ssd::system_structure_description);
-    exportToSSD(node, node_parameters);
+    exportToSSD(node, node_parameters, snapshot);
     // update parameterBindings in ssd
     pugi::xml_node system_node = node.child(oms::ssp::Draft20180219::ssd::system);
     updateParameterBindingsToSSD(system_node, node_parameters, isTopSystemOrModel);
@@ -323,7 +324,7 @@ oms_status_enu_t oms::Model::list(const oms::ComRef& cref, char** contents)
     if (subsystem)
     {
       pugi::xml_node node = doc.append_child(oms::ssp::Draft20180219::ssd::system);
-      subsystem->exportToSSD(node, node_parameters);
+      subsystem->exportToSSD(node, node_parameters, snapshot);
       // update parameterBindings in ssd
       updateParameterBindingsToSSD(node, node_parameters, isTopSystemOrModel);
     }
@@ -335,7 +336,7 @@ oms_status_enu_t oms::Model::list(const oms::ComRef& cref, char** contents)
         return logError("error");
 
       pugi::xml_node node = doc.append_child(oms::ssp::Draft20180219::ssd::system);
-      component->exportToSSD(node, node_parameters);
+      component->exportToSSD(node, node_parameters, snapshot);
     }
   }
 
@@ -359,64 +360,25 @@ oms_status_enu_t oms::Model::exportSnapshot(const oms::ComRef& cref, char** cont
     return logError("\"" + std::string(getCref()+std::string(cref)) + "\" is not a top level model");
   }
 
-  struct xmlStringWriter : pugi::xml_writer
-  {
-    std::string result;
-    virtual void write(const void* data, size_t size)
-    {
-      result += std::string(static_cast<const char*>(data), size);
-    }
-  };
+  Snapshot snapshot;
 
-  xmlStringWriter writer;
-  pugi::xml_document doc;
-  pugi::xml_document ssvdoc;
+  pugi::xml_node oms_ssd = snapshot.newResourceNode("SystemStructure.ssd");
+  pugi::xml_node ssdNode = oms_ssd.append_child(oms::ssp::Draft20180219::ssd::system_structure_description);
 
-  // generate XML declaration for ssv file
-  pugi::xml_node ssvDeclarationNode = ssvdoc.append_child(pugi::node_declaration);
-  ssvDeclarationNode.append_attribute("version") = "1.0";
-  ssvDeclarationNode.append_attribute("encoding") = "UTF-8";
+  pugi::xml_node ssvNode = snapshot.getTemplateResourceNodeSSV("resources/" + std::string(this->getCref()) + ".ssv");
 
-  pugi::xml_node node_parameterset = ssvdoc.append_child(oms::ssp::Version1_0::ssv::parameter_set);
-  node_parameterset.append_attribute("xmlns:ssc") = "http://ssp-standard.org/SSP1/SystemStructureCommon";
-  node_parameterset.append_attribute("xmlns:ssv") = "http://ssp-standard.org/SSP1/SystemStructureParameterValues";
-  node_parameterset.append_attribute("version") = "1.0";
-  node_parameterset.append_attribute("name") = "parameters";
-  pugi::xml_node node_parameters = node_parameterset.append_child(oms::ssp::Version1_0::ssv::parameters);
-
-  // list model
-  pugi::xml_node snapshotnode = doc.append_child(oms::ssp::Version1_0::snap_shot);
-  pugi::xml_node ssdfilenode = snapshotnode.append_child(oms::ssp::Version1_0::oms_file);
-  ssdfilenode.append_attribute("name") = "SystemStructure.ssd";
-
-  pugi::xml_node node = ssdfilenode.append_child(oms::ssp::Draft20180219::ssd::system_structure_description);
-  exportToSSD(node, node_parameters);
+  exportToSSD(ssdNode, ssvNode, snapshot);
 
   // update ssv file if exist
   if (!Flags::ExportParametersInline())
   {
     // update parameterBindings in ssd
-    pugi::xml_node system_node = node.child(oms::ssp::Draft20180219::ssd::system);
-    updateParameterBindingsToSSD(system_node, node_parameters, true);
-
-    // update <oms:ssv_file> after </oms:ssd_file>
-    pugi::xml_node last = doc.last_child();
-    pugi::xml_node ssvfilenode  = last.append_child(oms::ssp::Version1_0::oms_file);
-    std::string ssvFilePath = "resources/" + std::string(this->getCref()) + ".ssv";
-    ssvfilenode.append_attribute("name") = ssvFilePath.c_str();
-    // dump all the ssv file contents
-    ssvfilenode.append_copy(node_parameterset);
+    pugi::xml_node system_node = ssdNode.child(oms::ssp::Draft20180219::ssd::system);
+    updateParameterBindingsToSSD(system_node, ssvNode, true);
     // TODO ssm file
   }
 
-  doc.save(writer);
-  *contents = (char*) malloc(strlen(writer.result.c_str()) + 1);
-  if (!*contents)
-  {
-    logError("Out of memory");
-    return oms_status_fatal;
-  }
-  strcpy(*contents, writer.result.c_str());
+  snapshot.writeDocument(contents);
 
   return oms_status_ok;
 }
@@ -567,7 +529,7 @@ oms_status_enu_t oms::Model::addSystem(const oms::ComRef& cref, oms_system_enu_t
   return logError("wrong input \"" + std::string(front) + "\" != \"" + std::string(system->getCref()) + "\"");
 }
 
-oms_status_enu_t oms::Model::exportToSSD(pugi::xml_node& node, pugi::xml_node& ssvNode) const
+oms_status_enu_t oms::Model::exportToSSD(pugi::xml_node& node, pugi::xml_node& ssvNode, Snapshot& snapshot) const
 {
   node.append_attribute("xmlns:ssc") = "http://ssp-standard.org/SSP1/SystemStructureCommon";
   node.append_attribute("xmlns:ssd") = "http://ssp-standard.org/SSP1/SystemStructureDescription";
@@ -582,7 +544,7 @@ oms_status_enu_t oms::Model::exportToSSD(pugi::xml_node& node, pugi::xml_node& s
   if (system)
   {
     pugi::xml_node system_node = node.append_child(oms::ssp::Draft20180219::ssd::system);
-    if (oms_status_ok != system->exportToSSD(system_node, ssvNode))
+    if (oms_status_ok != system->exportToSSD(system_node, ssvNode, snapshot))
       return logError("export of system failed");
   }
 
@@ -765,6 +727,8 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
   pugi::xml_document doc;
   pugi::xml_document ssvdoc;
 
+  Snapshot snapshot;
+
   std::string extension = "";
   if (filename.length() > 4)
     extension = filename.substr(filename.length() - 4);
@@ -792,7 +756,7 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
   node_parameterset.append_attribute("name") = "parameters";
   pugi::xml_node node_parameters = node_parameterset.append_child(oms::ssp::Version1_0::ssv::parameters);
 
-  exportToSSD(node, node_parameters);
+  exportToSSD(node, node_parameters, snapshot);
 
   filesystem::path ssdPath = filesystem::path(tempDir) / "SystemStructure.ssd";
 

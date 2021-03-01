@@ -144,3 +144,56 @@ void oms::Snapshot::debugPrintAll() const
 {
   doc.save(std::cout, "  ");
 }
+
+pugi::xml_node oms::Snapshot::getTemplateResourceNodeSSD(const filesystem::path& filename)
+{
+  pugi::xml_node new_node = newResourceNode(filename);
+  new_node.append_attribute("xmlns:ssc") = "http://ssp-standard.org/SSP1/SystemStructureCommon";
+  new_node.append_attribute("xmlns:ssd") = "http://ssp-standard.org/SSP1/SystemStructureDescription";
+  new_node.append_attribute("xmlns:ssv") = "http://ssp-standard.org/SSP1/SystemStructureParameterValues";
+  new_node.append_attribute("xmlns:ssm") = "http://ssp-standard.org/SSP1/SystemStructureParameterMapping";
+  new_node.append_attribute("xmlns:ssb") = "http://ssp-standard.org/SSP1/SystemStructureSignalDictionary";
+  new_node.append_attribute("xmlns:oms") = "https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd";
+  // new_node.append_attribute("name") = this->getCref().c_str();
+  new_node.append_attribute("version") = "1.0";
+
+  return new_node;
+}
+
+pugi::xml_node oms::Snapshot::getTemplateResourceNodeSSV(const filesystem::path& filename)
+{
+  pugi::xml_node new_node = newResourceNode(filename);
+  pugi::xml_node node_parameterset = new_node.append_child(oms::ssp::Version1_0::ssv::parameter_set);
+  node_parameterset.append_attribute("xmlns:ssc") = "http://ssp-standard.org/SSP1/SystemStructureCommon";
+  node_parameterset.append_attribute("xmlns:ssv") = "http://ssp-standard.org/SSP1/SystemStructureParameterValues";
+  node_parameterset.append_attribute("version") = "1.0";
+  node_parameterset.append_attribute("name") = "parameters";
+  pugi::xml_node node_parameters = node_parameterset.append_child(oms::ssp::Version1_0::ssv::parameters);
+
+  return node_parameters;
+}
+
+oms_status_enu_t oms::Snapshot::writeDocument(char** contents)
+{
+  struct xmlStringWriter : pugi::xml_writer
+  {
+    std::string result;
+    virtual void write(const void *data, size_t size)
+    {
+      result += std::string(static_cast<const char *>(data), size);
+    }
+  };
+
+  xmlStringWriter writer;
+
+  doc.save(writer);
+  *contents = (char*) malloc(strlen(writer.result.c_str()) + 1);
+  if (!*contents)
+  {
+    logError("Out of memory");
+    return oms_status_fatal;
+  }
+  strcpy(*contents, writer.result.c_str());
+
+  return oms_status_ok;
+}

@@ -389,7 +389,7 @@ oms_status_enu_t oms::System::listUnconnectedConnectors(char** contents) const
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::System::exportToSSD(pugi::xml_node& node, pugi::xml_node& ssvNode) const
+oms_status_enu_t oms::System::exportToSSD(pugi::xml_node& node, pugi::xml_node& ssvNode, Snapshot& snapshot) const
 {
   node.append_attribute("name") = this->getCref().c_str();
 
@@ -423,13 +423,13 @@ oms_status_enu_t oms::System::exportToSSD(pugi::xml_node& node, pugi::xml_node& 
     for (const auto& subsystem : subsystems)
     {
       pugi::xml_node system_node = elements_node.append_child(oms::ssp::Draft20180219::ssd::system);
-      if (oms_status_ok != subsystem.second->exportToSSD(system_node, ssvNode))
+      if (oms_status_ok != subsystem.second->exportToSSD(system_node, ssvNode, snapshot))
         return logError("export of system failed");
     }
     for (const auto& component : components)
     {
       pugi::xml_node component_node = elements_node.append_child(oms::ssp::Draft20180219::ssd::component);
-      if (oms_status_ok != component.second->exportToSSD(component_node, ssvNode))
+      if (oms_status_ok != component.second->exportToSSD(component_node, ssvNode, snapshot))
         return logError("export of component failed");
     }
   }
