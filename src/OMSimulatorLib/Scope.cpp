@@ -201,8 +201,8 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
     return logError("failed to extract \"SystemStructure.ssd\" from \"" + filename + "\"");
 
   Snapshot snapshot;
-  snapshot.importResourcesFile("SystemStructure.ssd", temp_root);
-  const pugi::xml_node node = snapshot.getResourcesFile("SystemStructure.ssd");
+  snapshot.importResourceFile("SystemStructure.ssd", temp_root);
+  const pugi::xml_node node = snapshot.getResourceNode("SystemStructure.ssd");
   if (!node)
     return logError("failed to load \"SystemStructure.ssd\"");
 
@@ -229,7 +229,7 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
   for (const auto &entry : OMS_RECURSIVE_DIRECTORY_ITERATOR(model->getTempDirectory()))
     if (entry.path().has_extension())
       if (".ssv" == entry.path().extension() || ".ssm" == entry.path().extension() || ".xml" == entry.path().extension())
-        snapshot.importResourcesFile(naive_uncomplete(entry.path(), model->getTempDirectory()), model->getTempDirectory());
+        snapshot.importResourceFile(naive_uncomplete(entry.path(), model->getTempDirectory()), model->getTempDirectory());
 
   // snapshot.debugPrintAll();
 

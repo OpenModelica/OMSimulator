@@ -49,11 +49,15 @@ namespace oms
     ~Snapshot();
 
     oms_status_enu_t import(const char* snapshot);
-    oms_status_enu_t importResourcesFile(const filesystem::path& filename, const filesystem::path& root);
-    oms_status_enu_t importResourcesMemory(const filesystem::path& filename, const char* contents);
-    oms_status_enu_t importResourcesXML(const filesystem::path& filename, const pugi::xml_node& node);
-    void getResources(std::vector<std::string>& resources);
-    pugi::xml_node getResourcesFile(const filesystem::path& filename) const;
+    oms_status_enu_t importResourceFile(const filesystem::path& filename, const filesystem::path& root);
+    oms_status_enu_t importResourceMemory(const filesystem::path& filename, const char* contents);
+    oms_status_enu_t importResourceNode(const filesystem::path& filename, const pugi::xml_node& node);
+
+    pugi::xml_node newResourceNode(const filesystem::path& filename);
+    pugi::xml_node operator[](const filesystem::path& filename);
+
+    void getResources(std::vector<std::string>& resources) const;
+    pugi::xml_node getResourceNode(const filesystem::path& filename) const;
 
     void debugPrintNode(const filesystem::path& filename) const;
     void debugPrintAll() const;

@@ -130,7 +130,7 @@ oms_status_enu_t oms::Values::importFromSnapshot(const pugi::xml_node& node, con
 
     if (!ssvFile.empty()) // parameter binding provided with .ssv file
     {
-      pugi::xml_node parameterSet = snapshot.getResourcesFile(ssvFile);
+      pugi::xml_node parameterSet = snapshot.getResourceNode(ssvFile);
       if (!parameterSet)
         return logError("loading <oms:file> \"" + ssvFile + "\" from <oms:snapshot> failed");
 
@@ -145,7 +145,7 @@ oms_status_enu_t oms::Values::importFromSnapshot(const pugi::xml_node& node, con
         std::string ssmFileSource = ssd_parameterMapping.attribute("source").as_string();
         if (!ssmFileSource.empty())
         {
-          pugi::xml_node ssm_parameterMapping = snapshot.getResourcesFile(ssmFileSource);
+          pugi::xml_node ssm_parameterMapping = snapshot.getResourceNode(ssmFileSource);
           if (!ssm_parameterMapping)
             return logError("loading <oms:file> \"" + ssmFileSource + "\" from <oms:snapshot> failed");
 
@@ -438,8 +438,8 @@ oms_status_enu_t oms::Values::importStartValuesHelper(const pugi::xml_node& para
 oms_status_enu_t oms::Values::parseModelDescription(const filesystem::path& root)
 {
   Snapshot snapshot;
-  snapshot.importResourcesFile("modelDescription.xml", root);
-  const pugi::xml_node node = snapshot.getResourcesFile("modelDescription.xml");
+  snapshot.importResourceFile("modelDescription.xml", root);
+  const pugi::xml_node node = snapshot.getResourceNode("modelDescription.xml");
 
   if (!node)
     return logError("Failed to load modelDescription.xml");

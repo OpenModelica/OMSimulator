@@ -1641,9 +1641,9 @@ oms_status_enu_t oms_extractFMIKind(const char* filename, oms_fmi_kind_enu_t* ki
     return logError("failed to extract modelDescription.xml from \"" + std::string(filename) + "\"");
 
   oms::Snapshot snapshot;
-  if (oms_status_ok != snapshot.importResourcesFile("modelDescription.xml", oms::Scope::GetInstance().getTempDirectory()))
+  if (oms_status_ok != snapshot.importResourceFile("modelDescription.xml", oms::Scope::GetInstance().getTempDirectory()))
     return logError("Failed to import");
-  const pugi::xml_node node = snapshot.getResourcesFile("modelDescription.xml");
+  const pugi::xml_node node = snapshot.getResourceNode("modelDescription.xml");
 
   bool cs = (std::string(node.child("CoSimulation").attribute("modelIdentifier").as_string()) != "");
   bool me = (std::string(node.child("ModelExchange").attribute("modelIdentifier").as_string()) != "");
