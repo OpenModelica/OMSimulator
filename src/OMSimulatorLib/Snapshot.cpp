@@ -114,10 +114,11 @@ pugi::xml_node oms::Snapshot::getResourceNode(const filesystem::path& filename) 
   pugi::xml_node oms_snapshot = doc.document_element();
   pugi::xml_node node = oms_snapshot.find_child_by_attribute(oms::ssp::Version1_0::oms_file, "name", filename.generic_string().c_str());
 
-  if (!node)
-    logError("Failed to find node \"" + filename.generic_string() + "\"");
+  if (node)
+    return node.first_child();
 
-  return node.first_child();
+  logError("Failed to find node \"" + filename.generic_string() + "\"");
+  return node;
 }
 
 pugi::xml_node oms::Snapshot::operator[](const filesystem::path& filename)
