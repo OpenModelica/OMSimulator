@@ -45,6 +45,22 @@ oms::Snapshot::~Snapshot()
 {
 }
 
+pugi::xml_node oms::Snapshot::newResourcesFile(const filesystem::path& filename) const
+{
+  pugi::xml_node oms_snapshot = doc.document_element();
+  pugi::xml_node node = oms_snapshot.find_child_by_attribute(oms::ssp::Version1_0::oms_file, "name", filename.generic_string().c_str());
+
+  if (node)
+  {
+    logError("Node \"" + filename.generic_string() + "\" does already exist");
+    return node.first_child();
+  }
+
+  pugi::xml_node new_node = oms_snapshot.append_child(oms::ssp::Version1_0::oms_file);
+  new_node.append_attribute("name") = filename.generic_string().c_str();
+  return new_node;
+}
+
 oms_status_enu_t oms::Snapshot::import(const char* snapshot)
 {
   doc.reset();
@@ -86,7 +102,7 @@ oms_status_enu_t oms::Snapshot::importResourcesXML(const filesystem::path& filen
   return oms_status_ok;
 }
 
-void oms::Snapshot::getResources(std::vector<std::string>& resources)
+void oms::Snapshot::getResources(std::vector<std::string>& resources) const
 {
   pugi::xml_node oms_snapshot = doc.document_element();
   for (const auto& it : oms_snapshot.children())
@@ -106,7 +122,13 @@ pugi::xml_node oms::Snapshot::getResourcesFile(const filesystem::path& filename)
 
 pugi::xml_node oms::Snapshot::operator[](const filesystem::path& filename) const
 {
-  return this->getResourcesFile(filename);
+  pugi::xml_node oms_snapshot = doc.document_element();
+  pugi::xml_node node = oms_snapshot.find_child_by_attribute(oms::ssp::Version1_0::oms_file, "name", filename.generic_string().c_str());
+
+  if (node)
+    return node.first_child();
+
+  return newResourcesFile(filename);
 }
 
 void oms::Snapshot::debugPrintNode(const filesystem::path& filename) const
