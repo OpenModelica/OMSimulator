@@ -45,7 +45,7 @@ oms::Snapshot::~Snapshot()
 {
 }
 
-pugi::xml_node oms::Snapshot::newResourcesFile(const filesystem::path& filename) const
+pugi::xml_node oms::Snapshot::newResourcesFile(const filesystem::path& filename)
 {
   pugi::xml_node oms_snapshot = doc.document_element();
   pugi::xml_node node = oms_snapshot.find_child_by_attribute(oms::ssp::Version1_0::oms_file, "name", filename.generic_string().c_str());
@@ -120,7 +120,7 @@ pugi::xml_node oms::Snapshot::getResourcesFile(const filesystem::path& filename)
   return node.first_child();
 }
 
-pugi::xml_node oms::Snapshot::operator[](const filesystem::path& filename) const
+pugi::xml_node oms::Snapshot::operator[](const filesystem::path& filename)
 {
   pugi::xml_node oms_snapshot = doc.document_element();
   pugi::xml_node node = oms_snapshot.find_child_by_attribute(oms::ssp::Version1_0::oms_file, "name", filename.generic_string().c_str());
