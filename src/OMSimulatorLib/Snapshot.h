@@ -59,8 +59,13 @@ namespace oms
     void getResources(std::vector<std::string>& resources) const;
     pugi::xml_node getResourceNode(const filesystem::path& filename) const;
 
+    pugi::xml_node getTemplateResourceNodeSSD(const filesystem::path& filename);
+    pugi::xml_node getTemplateResourceNodeSSV(const filesystem::path& filename);
+
     void debugPrintNode(const filesystem::path& filename) const;
     void debugPrintAll() const;
+
+    oms_status_enu_t writeDocument(char** contents);
 
   private:
     // stop the compiler generating methods copying the object

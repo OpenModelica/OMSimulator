@@ -313,7 +313,7 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const pugi::xml_node& node, om
   return component;
 }
 
-oms_status_enu_t oms::ComponentFMUCS::exportToSSD(pugi::xml_node& node, pugi::xml_node& ssvNode) const
+oms_status_enu_t oms::ComponentFMUCS::exportToSSD(pugi::xml_node& node, pugi::xml_node& ssvNode, Snapshot& snapshot) const
 {
 #if !defined(NO_TLM)
   if (tlmbusconnectors[0])

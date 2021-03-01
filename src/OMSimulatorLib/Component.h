@@ -40,6 +40,7 @@
 #include "Logging.h"
 #include "ResultWriter.h"
 #include "SignalDerivative.h"
+#include "Snapshot.h"
 #include "Types.h"
 #include <fmilib.h>
 #include <pugixml.hpp>
@@ -84,7 +85,7 @@ namespace oms
     oms_status_enu_t addConnectorToTLMBus(const ComRef& busCref, const ComRef& connectorCref, const std::string type);
     oms_status_enu_t deleteConnectorFromTLMBus(const ComRef& busCref, const ComRef& connectorCref);
 
-    virtual oms_status_enu_t exportToSSD(pugi::xml_node& node, pugi::xml_node& ssvNode) const = 0;
+    virtual oms_status_enu_t exportToSSD(pugi::xml_node& node, pugi::xml_node& ssvNode, Snapshot& snapshot) const = 0;
     virtual oms_status_enu_t exportToSSVTemplate(pugi::xml_node& ssvNode) {return logError_NotImplemented;}
     virtual oms_status_enu_t exportToSSMTemplate(pugi::xml_node& ssmNode) {return logError_NotImplemented;}
     virtual oms_status_enu_t instantiate() = 0;
