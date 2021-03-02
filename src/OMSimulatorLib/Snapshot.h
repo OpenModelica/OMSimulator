@@ -49,12 +49,13 @@ namespace oms
     Snapshot(bool partial=false);
     ~Snapshot();
 
-    void clear(bool partial);
+    void setPartial(bool partial);
 
     oms_status_enu_t import(const char* snapshot);
     oms_status_enu_t importResourceFile(const filesystem::path& filename, const filesystem::path& root);
     oms_status_enu_t importResourceMemory(const filesystem::path& filename, const char* contents);
     oms_status_enu_t importResourceNode(const filesystem::path& filename, const pugi::xml_node& node);
+    oms_status_enu_t importPartialResourceNode(const filesystem::path& filename, const filesystem::path& nodename, const pugi::xml_node& node);
 
     pugi::xml_node newResourceNode(const filesystem::path& filename);
     pugi::xml_node operator[](const filesystem::path& filename);
