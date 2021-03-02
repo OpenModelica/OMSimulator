@@ -175,25 +175,31 @@ pugi::xml_node oms::Snapshot::getTemplateResourceNodeSSV(const filesystem::path&
 
 oms_status_enu_t oms::Snapshot::writeDocument(char** contents)
 {
-  struct xmlStringWriter : pugi::xml_writer
+  class : public pugi::xml_writer
   {
-    std::string result;
-    virtual void write(const void *data, size_t size)
+  public:
+    virtual void write(const void* data, size_t size)
     {
-      result += std::string(static_cast<const char *>(data), size);
+      result += std::string(static_cast<const char*>(data), size);
     }
-  };
 
-  xmlStringWriter writer;
+    oms_status_enu_t copy(char** contents)
+    {
+      *contents = (char*) malloc(result.length() + 1);
+      if (!*contents)
+      {
+        logError("Out of memory");
+        return oms_status_fatal;
+      }
 
-  doc.save(writer);
-  *contents = (char*) malloc(strlen(writer.result.c_str()) + 1);
-  if (!*contents)
-  {
-    logError("Out of memory");
-    return oms_status_fatal;
-  }
-  strcpy(*contents, writer.result.c_str());
+      strcpy(*contents, result.c_str());
+      return oms_status_ok;
+    }
 
-  return oms_status_ok;
+  private:
+    std::string result;
+  } writer;
+
+  doc.save(writer, "  ");
+  return writer.copy(contents);
 }
