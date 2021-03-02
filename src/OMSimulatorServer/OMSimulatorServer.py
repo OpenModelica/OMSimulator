@@ -36,7 +36,7 @@ class Server:
     self._mutex = threading.Lock()
     self._pause = interactive
     self._socket_rep = None
-    self._socket_sub = None
+    self._socket_pub = None
     self._thread = None
 
     if result_file:
@@ -60,17 +60,17 @@ class Server:
 
     # connect the PUB socket
     if endpoint_pub:
-      self._socket_sub = self._context.socket(zmq.PUB)  #pylint: disable=no-member
-      self._socket_sub.connect(endpoint_pub)
+      self._socket_pub = self._context.socket(zmq.PUB)  #pylint: disable=no-member
+      self._socket_pub.connect(endpoint_pub)
       self.print('PUB socket connected to {}'.format(endpoint_pub))
 
   def print(self, msg):
     print('server:  {}'.format(msg), flush=True)
 
   def pub_msg(self, topic, msg: dict):
-    if self._socket_sub:
+    if self._socket_pub:
       msg_ = mogrify(topic, msg)
-      self._socket_sub.send_string(msg_)
+      self._socket_pub.send_string(msg_)
 
   def _main(self):
     alive = True
