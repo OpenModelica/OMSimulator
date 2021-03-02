@@ -217,8 +217,8 @@ oms_status_enu_t oms_list(const char* cref_, char** contents)
 
 oms_status_enu_t oms_exportSnapshot(const char* cref_, char** contents)
 {
-  oms::ComRef tail(cref_);
-  oms::ComRef front = tail.pop_front();
+  oms::ComRef front(cref_);
+  oms::ComRef tail = front.pop_suffix();
   oms::Model* model = oms::Scope::GetInstance().getModel(front);
   if (!model)
     return logError_ModelNotInScope(front);

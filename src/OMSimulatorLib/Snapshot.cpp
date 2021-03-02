@@ -173,6 +173,24 @@ pugi::xml_node oms::Snapshot::getTemplateResourceNodeSSV(const filesystem::path&
   return node_parameters;
 }
 
+oms_status_enu_t oms::Snapshot::exportPartialSnapshot(const filesystem::path& filename)
+{
+  pugi::xml_node oms_snapshot = doc.document_element();
+  pugi::xml_node node = oms_snapshot.find_child_by_attribute(oms::ssp::Version1_0::oms_file, "name", filename.generic_string().c_str());
+  if (!node)
+  {
+    logError("Failed to find node \"" + filename.generic_string() + "\"");
+  }
+
+  pugi::xml_document newdoc;
+  newdoc.append_copy(node); // copy the partial snapshot
+
+  doc.reset(); // reset the document
+  doc.append_copy(newdoc.first_child()); // copy the partial snapshot to the document
+
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms::Snapshot::writeDocument(char** contents)
 {
   class : public pugi::xml_writer

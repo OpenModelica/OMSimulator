@@ -61,6 +61,7 @@ namespace oms
 
     pugi::xml_node getTemplateResourceNodeSSD(const filesystem::path& filename);
     pugi::xml_node getTemplateResourceNodeSSV(const filesystem::path& filename);
+    oms_status_enu_t exportPartialSnapshot(const filesystem::path& filename);
 
     void debugPrintNode(const filesystem::path& filename) const;
     void debugPrintAll() const;
