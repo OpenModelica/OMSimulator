@@ -49,8 +49,6 @@ namespace oms
     Snapshot(bool partial=false);
     ~Snapshot();
 
-    void setPartial(bool partial);
-
     oms_status_enu_t import(const char* snapshot);
     oms_status_enu_t importResourceFile(const filesystem::path& filename, const filesystem::path& root);
     oms_status_enu_t importResourceMemory(const filesystem::path& filename, const char* contents);

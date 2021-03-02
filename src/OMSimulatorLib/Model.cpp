@@ -371,12 +371,13 @@ oms_status_enu_t oms::Model::exportSnapshot(const oms::ComRef& cref, char** cont
     // TODO ssm file
   }
 
-  // query for partial snapshot - exportPartialSnapshot might return full snapshot
-  Snapshot partialSnapshot;
-  snapshot.exportPartialSnapshot(cref, partialSnapshot);
-  partialSnapshot.writeDocument(contents);
+  if (cref.isEmpty())
+    return snapshot.writeDocument(contents);
 
-  return oms_status_ok;
+  // query for partial snapshot
+  Snapshot partialSnapshot(true);
+  snapshot.exportPartialSnapshot(cref, partialSnapshot);
+  return partialSnapshot.writeDocument(contents);
 }
 
 oms_status_enu_t oms::Model::exportSSVTemplate(const oms::ComRef& cref, const std::string& filename)

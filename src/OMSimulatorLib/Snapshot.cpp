@@ -47,14 +47,6 @@ oms::Snapshot::~Snapshot()
 {
 }
 
-void oms::Snapshot::setPartial(bool partial)
-{
-  doc.reset();
-  doc.append_child(oms::ssp::Version1_0::snap_shot);
-  pugi::xml_node oms_snapshot = doc.document_element();
-  oms_snapshot.append_attribute("partial") = partial ? "true" : "false";
-}
-
 pugi::xml_node oms::Snapshot::newResourceNode(const filesystem::path& filename)
 {
   pugi::xml_node oms_snapshot = doc.document_element();
@@ -202,7 +194,6 @@ oms_status_enu_t oms::Snapshot::exportPartialSnapshot(const ComRef& cref, Snapsh
   // copy only single file
   if (!suffix.empty() && subCref.isEmpty())
   {
-    partialSnapshot.setPartial(true);
     pugi::xml_node node = getResourceNode(filesystem::path(suffix));
     if (!node)
       return logError("Failed to find node \"" + suffix + "\"");
@@ -210,19 +201,9 @@ oms_status_enu_t oms::Snapshot::exportPartialSnapshot(const ComRef& cref, Snapsh
     partialSnapshot.importResourceNode(filesystem::path(suffix), node);
   }
 
-  // copy whole model
-  if (suffix.empty() && subCref.isEmpty())
-  {
-    partialSnapshot.setPartial(false);
-    pugi::xml_node oms_snapshot = doc.document_element();
-    for (const auto& it : oms_snapshot.children())
-      partialSnapshot.importResourceNode(it.attribute("name").as_string(), it.first_child());
-  }
-
   // check cref if to filter component: subCref
   if (!subCref.isEmpty() && !suffix.empty())
   {
-    partialSnapshot.setPartial(true);
     ComRef tail(subCref);
     ComRef front = tail.pop_front();
 
