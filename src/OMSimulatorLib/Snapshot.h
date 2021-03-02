@@ -32,9 +32,10 @@
 #ifndef _OMS_SNAPSHOT_H_
 #define _OMS_SNAPSHOT_H_
 
+#include "ComRef.h"
 #include "OMSFileSystem.h"
-#include "Types.h"
 #include "ssd/Tags.h"
+#include "Types.h"
 
 #include <pugixml.hpp>
 #include <string>
@@ -45,7 +46,7 @@ namespace oms
   class Snapshot
   {
   public:
-    Snapshot();
+    Snapshot(bool partial=false);
     ~Snapshot();
 
     oms_status_enu_t import(const char* snapshot);
@@ -61,11 +62,15 @@ namespace oms
 
     pugi::xml_node getTemplateResourceNodeSSD(const filesystem::path& filename);
     pugi::xml_node getTemplateResourceNodeSSV(const filesystem::path& filename);
+    oms_status_enu_t exportPartialSnapshot(const ComRef& cref, Snapshot& partialSnapshot);
 
     void debugPrintNode(const filesystem::path& filename) const;
     void debugPrintAll() const;
 
     oms_status_enu_t writeDocument(char** contents);
+
+  private:
+    oms_status_enu_t importPartialResourceNode(const filesystem::path& filename, const filesystem::path& nodename, const pugi::xml_node& node);
 
   private:
     // stop the compiler generating methods copying the object

@@ -35,10 +35,12 @@
 
 #include <iostream>
 
-oms::Snapshot::Snapshot()
+oms::Snapshot::Snapshot(bool partial)
 {
   // set the document with the root node <oms:snapshot>
   doc.append_child(oms::ssp::Version1_0::snap_shot);
+  pugi::xml_node oms_snapshot = doc.document_element();
+  oms_snapshot.append_attribute("partial") = partial ? "true" : "false";
 }
 
 oms::Snapshot::~Snapshot()
@@ -97,6 +99,17 @@ oms_status_enu_t oms::Snapshot::importResourceNode(const filesystem::path& filen
   pugi::xml_node oms_snapshot = doc.document_element();
   pugi::xml_node oms_file = oms_snapshot.append_child(oms::ssp::Version1_0::oms_file);
   oms_file.append_attribute("name") = filename.generic_string().c_str();
+  oms_file.append_copy(node);
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Snapshot::importPartialResourceNode(const filesystem::path& filename, const filesystem::path& nodename, const pugi::xml_node& node)
+{
+  pugi::xml_node oms_snapshot = doc.document_element();
+  pugi::xml_node oms_file = oms_snapshot.append_child(oms::ssp::Version1_0::oms_file);
+  oms_file.append_attribute("name") = filename.generic_string().c_str();
+  oms_file.append_attribute("node") = nodename.generic_string().c_str();
   oms_file.append_copy(node);
 
   return oms_status_ok;
@@ -171,6 +184,67 @@ pugi::xml_node oms::Snapshot::getTemplateResourceNodeSSV(const filesystem::path&
   pugi::xml_node node_parameters = node_parameterset.append_child(oms::ssp::Version1_0::ssv::parameters);
 
   return node_parameters;
+}
+
+oms_status_enu_t oms::Snapshot::exportPartialSnapshot(const ComRef& cref, Snapshot& partialSnapshot)
+{
+  ComRef subCref(cref);
+  std::string suffix = subCref.pop_suffix();
+
+  // copy only single file
+  if (!suffix.empty() && subCref.isEmpty())
+  {
+    pugi::xml_node node = getResourceNode(filesystem::path(suffix));
+    if (!node)
+      return logError("Failed to find node \"" + suffix + "\"");
+
+    partialSnapshot.importResourceNode(filesystem::path(suffix), node);
+  }
+
+  // check cref if to filter component: subCref
+  if (!subCref.isEmpty() && !suffix.empty())
+  {
+    ComRef tail(subCref);
+    ComRef front = tail.pop_front();
+
+    // get SystemStructure.ssd
+    pugi::xml_node ssdNode = getResourceNode("SystemStructure.ssd");
+    pugi::xml_node systemNode = ssdNode.first_child();
+
+    std::string nodeName = (ComRef(ssdNode.attribute("name").as_string()) + subCref);
+
+    if (tail.isEmpty())
+    {
+      // return system
+      if (systemNode.attribute("name").as_string() == std::string(front))
+      {
+        partialSnapshot.importPartialResourceNode("SystemStructure.ssd", nodeName, systemNode);
+      }
+    }
+    else
+    {
+      // iterate System
+      for (pugi::xml_node_iterator it = systemNode.begin(); it != systemNode.end(); ++it)
+      {
+        if (std::string(it->name()) == oms::ssp::Draft20180219::ssd::elements)
+        {
+          for (pugi::xml_node_iterator itElements = (*it).begin(); itElements != (*it).end(); ++itElements)
+          {
+            std::string name = itElements->name();
+            if (name == oms::ssp::Draft20180219::ssd::system || name == oms::ssp::Draft20180219::ssd::component)
+            {
+              if(itElements->attribute("name").as_string() == std::string(tail))
+              {
+                partialSnapshot.importPartialResourceNode("SystemStructure.ssd", nodeName, *itElements);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms::Snapshot::writeDocument(char** contents)

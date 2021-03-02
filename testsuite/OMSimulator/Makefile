@@ -20,6 +20,7 @@ import_parameter_mapping_from_ssm.lua \
 import_parameter_mapping_inline.lua \
 importStartValues.lua \
 multipleConnections.lua \
+partialSnapshot.lua \
 PI_Controller.lua \
 QuarterCarModel.DisplacementDisplacement.lua \
 rename.lua \

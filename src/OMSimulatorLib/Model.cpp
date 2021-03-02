@@ -353,13 +353,6 @@ oms_status_enu_t oms::Model::list(const oms::ComRef& cref, char** contents)
 
 oms_status_enu_t oms::Model::exportSnapshot(const oms::ComRef& cref, char** contents)
 {
-  // only top level model is allowed
-  if (!cref.isEmpty())
-  {
-    //return logError("only top level model is allowed, unknown model: " + std::string(cref));
-    return logError("\"" + std::string(getCref()+std::string(cref)) + "\" is not a top level model");
-  }
-
   Snapshot snapshot;
 
   pugi::xml_node oms_ssd = snapshot.newResourceNode("SystemStructure.ssd");
@@ -378,9 +371,13 @@ oms_status_enu_t oms::Model::exportSnapshot(const oms::ComRef& cref, char** cont
     // TODO ssm file
   }
 
-  snapshot.writeDocument(contents);
+  if (cref.isEmpty())
+    return snapshot.writeDocument(contents);
 
-  return oms_status_ok;
+  // query for partial snapshot
+  Snapshot partialSnapshot(true);
+  snapshot.exportPartialSnapshot(cref, partialSnapshot);
+  return partialSnapshot.writeDocument(contents);
 }
 
 oms_status_enu_t oms::Model::exportSSVTemplate(const oms::ComRef& cref, const std::string& filename)
