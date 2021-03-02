@@ -219,10 +219,16 @@ oms_status_enu_t oms_exportSnapshot(const char* cref_, char** contents)
 {
   oms::ComRef tail(cref_);
   oms::ComRef front = tail.pop_front();
-  oms::Model* model = oms::Scope::GetInstance().getModel(front);
+
+  oms::ComRef modelCref(front);
+  modelCref.pop_suffix();
+
+  oms::Model* model = oms::Scope::GetInstance().getModel(modelCref);
   if (!model)
     return logError_ModelNotInScope(front);
 
+  if (tail.isEmpty())
+    return model->exportSnapshot(oms::ComRef(":" + front.suffix()), contents);
   return model->exportSnapshot(tail, contents);
 }
 
