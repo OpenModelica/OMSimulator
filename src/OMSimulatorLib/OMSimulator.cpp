@@ -227,7 +227,7 @@ oms_status_enu_t oms_exportSnapshot(const char* cref_, char** contents)
   if (!model)
     return logError_ModelNotInScope(front);
 
-  if (tail.isEmpty())
+  if (tail.isEmpty() && front.hasSuffix())
     return model->exportSnapshot(oms::ComRef(":" + front.suffix()), contents);
   return model->exportSnapshot(tail, contents);
 }

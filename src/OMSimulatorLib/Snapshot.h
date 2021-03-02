@@ -53,7 +53,6 @@ namespace oms
     oms_status_enu_t importResourceFile(const filesystem::path& filename, const filesystem::path& root);
     oms_status_enu_t importResourceMemory(const filesystem::path& filename, const char* contents);
     oms_status_enu_t importResourceNode(const filesystem::path& filename, const pugi::xml_node& node);
-    oms_status_enu_t importPartialResourceNode(const filesystem::path& filename, const filesystem::path& nodename, const pugi::xml_node& node);
 
     pugi::xml_node newResourceNode(const filesystem::path& filename);
     pugi::xml_node operator[](const filesystem::path& filename);
@@ -69,6 +68,9 @@ namespace oms
     void debugPrintAll() const;
 
     oms_status_enu_t writeDocument(char** contents);
+
+  private:
+    oms_status_enu_t importPartialResourceNode(const filesystem::path& filename, const filesystem::path& nodename, const pugi::xml_node& node);
 
   private:
     // stop the compiler generating methods copying the object
