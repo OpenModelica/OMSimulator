@@ -106,7 +106,7 @@ oms_delete("import_export_snapshot")
 -- </ssd:SystemStructureDescription>
 --
 -- <?xml version="1.0"?>
--- <oms:snapshot>
+-- <oms:snapshot partial="false">
 --   <oms:file name="SystemStructure.ssd">
 --     <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="import_export_snapshot" version="1.0">
 --       <ssd:System name="root">
@@ -180,8 +180,5 @@ oms_delete("import_export_snapshot")
 --   </oms:file>
 -- </oms:snapshot>
 --
--- error:   [exportSnapshot] "import_export_snapshot.root.add" is not a top level model
 -- info:    Result file: import_export_snapshot_res.mat (bufferSize=10)
--- info:    0 warnings
--- info:    1 errors
 -- endResult
