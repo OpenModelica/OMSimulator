@@ -35,14 +35,23 @@
 
 #include <iostream>
 
-oms::Snapshot::Snapshot()
+oms::Snapshot::Snapshot(bool partial)
 {
   // set the document with the root node <oms:snapshot>
   doc.append_child(oms::ssp::Version1_0::snap_shot);
+  pugi::xml_node oms_snapshot = doc.document_element();
+  oms_snapshot.append_attribute("partial") = partial ? "true" : "false";
 }
 
 oms::Snapshot::~Snapshot()
 {
+}
+
+void oms::Snapshot::clear(bool partial)
+{
+  doc.reset();
+  pugi::xml_node oms_snapshot = doc.document_element();
+  oms_snapshot.append_attribute("partial") = partial ? "true" : "false";
 }
 
 pugi::xml_node oms::Snapshot::newResourceNode(const filesystem::path& filename)
@@ -173,20 +182,30 @@ pugi::xml_node oms::Snapshot::getTemplateResourceNodeSSV(const filesystem::path&
   return node_parameters;
 }
 
-oms_status_enu_t oms::Snapshot::exportPartialSnapshot(const filesystem::path& filename)
+oms_status_enu_t oms::Snapshot::exportPartialSnapshot(const ComRef& cref, Snapshot& partialSnapshot)
 {
-  pugi::xml_node oms_snapshot = doc.document_element();
-  pugi::xml_node node = oms_snapshot.find_child_by_attribute(oms::ssp::Version1_0::oms_file, "name", filename.generic_string().c_str());
-  if (!node)
+  partialSnapshot.clear(true);
+
+  ComRef subCref(cref);
+  std::string suffix = subCref.pop_suffix();
+
+  if (!suffix.empty())
   {
-    logError("Failed to find node \"" + filename.generic_string() + "\"");
+    // copy only single file
+    pugi::xml_node node = getResourceNode(filesystem::path(suffix));
+    if (!node)
+      return logError("Failed to find node \"" + suffix + "\"");
+
+    partialSnapshot.importResourceNode(filesystem::path(suffix), node);
+  }
+  else
+  {
+    pugi::xml_node oms_snapshot = doc.document_element();
+    for (const auto& it : oms_snapshot.children())
+      partialSnapshot.importResourceNode(it.attribute("name").as_string(), it.first_child());
   }
 
-  pugi::xml_document newdoc;
-  newdoc.append_copy(node); // copy the partial snapshot
-
-  doc.reset(); // reset the document
-  doc.append_copy(newdoc.first_child()); // copy the partial snapshot to the document
+  // TODO: check cref if to filter component: subCref
 
   return oms_status_ok;
 }
