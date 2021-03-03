@@ -54,6 +54,8 @@ namespace oms
     oms_status_enu_t importResourceMemory(const filesystem::path& filename, const char* contents);
     oms_status_enu_t importResourceNode(const filesystem::path& filename, const pugi::xml_node& node);
 
+    bool isPartialSnapshot();
+
     pugi::xml_node newResourceNode(const filesystem::path& filename);
     pugi::xml_node operator[](const filesystem::path& filename);
 
@@ -63,6 +65,7 @@ namespace oms
     pugi::xml_node getTemplateResourceNodeSSD(const filesystem::path& filename);
     pugi::xml_node getTemplateResourceNodeSSV(const filesystem::path& filename);
     oms_status_enu_t exportPartialSnapshot(const ComRef& cref, Snapshot& partialSnapshot);
+    oms_status_enu_t importPartialSnapshot(const ComRef& cref, const char* fullsnapshot);
 
     void debugPrintNode(const filesystem::path& filename) const;
     void debugPrintAll() const;

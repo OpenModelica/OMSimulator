@@ -178,7 +178,7 @@ oms_status_enu_t oms::Model::loadSnapshot(const pugi::xml_node& node)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Model::importSnapshot(const char* snapshot_)
+oms_status_enu_t oms::Model::importSnapshot(const oms::ComRef& cref, const char* snapshot_)
 {
   if (!validState(oms_modelState_virgin))
     return logError_ModelInWrongState(this);
@@ -186,6 +186,14 @@ oms_status_enu_t oms::Model::importSnapshot(const char* snapshot_)
   Snapshot snapshot;
   snapshot.import(snapshot_);
   //snapshot.debugPrintAll();
+
+  if (snapshot.isPartialSnapshot())
+  {
+    char *fullsnapshot = NULL;
+    // get full snapshot
+    exportSnapshot("", &fullsnapshot);
+    snapshot.importPartialSnapshot(cref, fullsnapshot);
+  }
 
   // get ssd:SystemStructureDescription
   pugi::xml_node ssdNode = snapshot.getResourceNode("SystemStructure.ssd");
