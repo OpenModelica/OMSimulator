@@ -72,6 +72,12 @@ oms_status_enu_t oms::Snapshot::import(const char* snapshot)
   return oms_status_ok;
 }
 
+bool oms::Snapshot::isPartialSnapshot()
+{
+  pugi::xml_node oms_snapshot = doc.document_element();
+  return oms_snapshot.attribute("partial").as_bool();
+}
+
 oms_status_enu_t oms::Snapshot::importResourceFile(const filesystem::path& filename, const filesystem::path& root)
 {
   filesystem::path p = root / filename;
@@ -243,6 +249,86 @@ oms_status_enu_t oms::Snapshot::exportPartialSnapshot(const ComRef& cref, Snapsh
       }
     }
   }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Snapshot::importPartialSnapshot(const ComRef& cref, const char* fullsnapshot)
+{
+  ComRef subCref(cref);
+  std::string suffix = subCref.pop_suffix();
+
+  // copy the partial snapshot to new doc
+  pugi::xml_document copy;
+  copy.append_copy(doc.first_child());
+
+  // load the full snapshot
+  import(fullsnapshot);
+
+  pugi::xml_node partialsnapshot = copy.document_element(); // oms:snapshot
+  std::string partialSnapshotfilename = partialsnapshot.child(oms::ssp::Version1_0::oms_file).attribute("name").as_string();
+
+  // copy only single file
+  if (!suffix.empty() && subCref.isEmpty())
+  {
+    pugi::xml_node oms_snapshot = doc.document_element(); // oms:snapshot
+    for (pugi::xml_node node : oms_snapshot.children())
+    {
+      std::string filename = node.attribute("name").as_string();
+      //if ((filename == partialSnapshotfilename) && (filename == cref.c_str()))
+      if (filename == suffix && filename == partialSnapshotfilename)
+      {
+        oms_snapshot.remove_child(node);
+        // replace with partialsnapshot
+        oms_snapshot.append_copy(partialsnapshot.first_child());
+      }
+    }
+  }
+
+  // check cref if to filter component: subCref
+  if (!subCref.isEmpty() && !suffix.empty())
+  {
+    ComRef tail(subCref);
+    ComRef front = tail.pop_front();
+
+    // get SystemStructure.ssd
+    pugi::xml_node ssdNode = getResourceNode("SystemStructure.ssd");
+    pugi::xml_node systemNode = ssdNode.first_child();
+
+    if (tail.isEmpty())
+    {
+      // replace system
+      if (systemNode.attribute("name").as_string() == std::string(front))
+      {
+        ssdNode.remove_child(systemNode);
+        ssdNode.prepend_copy(partialsnapshot.first_child().first_child());
+      }
+    }
+    else
+    {
+      // replace subsystems or components
+      for (pugi::xml_node_iterator it = systemNode.begin(); it != systemNode.end(); ++it)
+      {
+        if (std::string(it->name()) == oms::ssp::Draft20180219::ssd::elements)
+        {
+          for (pugi::xml_node_iterator itElements = (*it).begin(); itElements != (*it).end(); ++itElements)
+          {
+            std::string name = itElements->name();
+            if (name == oms::ssp::Draft20180219::ssd::system || name == oms::ssp::Draft20180219::ssd::component)
+            {
+              if(itElements->attribute("name").as_string() == std::string(tail))
+              {
+                it->remove_child(*itElements);
+                it->append_copy(partialsnapshot.first_child().first_child());
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  //copy.save(std::cout);
 
   return oms_status_ok;
 }
