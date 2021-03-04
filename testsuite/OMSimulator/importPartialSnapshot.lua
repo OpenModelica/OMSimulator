@@ -28,10 +28,7 @@ snapshot = oms_exportSnapshot("snapshot")
 print(snapshot)
 
 -- (2) correct, querying partial snapshot ".ssd"
-print("Case 2 - reference")
 snapshot = oms_exportSnapshot("snapshot:SystemStructure.ssd")
-print(snapshot)
-
 oms_delete("snapshot.root.add")
 
 print("Case 2 - re-imported")
@@ -40,37 +37,29 @@ snapshot = oms_exportSnapshot("snapshot")
 print(snapshot)
 
 -- (3) correct, querying partial snapshot ".ssv"
-print("Case 3 - reference")
 oms_setReal("snapshot.root.add.u1", 20)
 snapshot = oms_exportSnapshot("snapshot:resources/snapshot.ssv")
-print(snapshot)
-
 oms_setReal("snapshot.root.add.u1", 10)
-newcref, status = oms_importSnapshot("snapshot:resources/snapshot.ssv", snapshot)
 
 print("Case 3 - re-imported")
+newcref, status = oms_importSnapshot("snapshot:resources/snapshot.ssv", snapshot)
 snapshot = oms_exportSnapshot("snapshot")
 print(snapshot)
 
 -- (4) query root system
-print("Case 4 - reference")
 snapshot = oms_exportSnapshot("snapshot.root:SystemStructure.ssd")
-print(snapshot)
-
 oms_delete("snapshot.root.add")
-newcref, status = oms_importSnapshot("snapshot.root:SystemStructure.ssd", snapshot)
 
 print("Case 4 - re-imported")
+newcref, status = oms_importSnapshot("snapshot.root:SystemStructure.ssd", snapshot)
 snapshot = oms_exportSnapshot("snapshot")
 print(snapshot)
 
 -- (5) query sub component
-print("Case 5 - reference")
 snapshot = oms_exportSnapshot("snapshot.root.add:SystemStructure.ssd")
-print(snapshot)
 
-newcref, status = oms_importSnapshot("snapshot.root.add:SystemStructure.ssd", snapshot)
 print("Case 5 - re-imported")
+newcref, status = oms_importSnapshot("snapshot.root.add:SystemStructure.ssd", snapshot)
 snapshot = oms_exportSnapshot("snapshot")
 print(snapshot)
 
@@ -231,67 +220,6 @@ print(snapshot)
 --   </oms:file>
 -- </oms:snapshot>
 --
--- Case 2 - reference
--- <?xml version="1.0"?>
--- <oms:snapshot partial="true">
---   <oms:file name="SystemStructure.ssd">
---     <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="snapshot" version="1.0">
---       <ssd:System name="root">
---         <ssd:Connectors>
---           <ssd:Connector name="C1" kind="input">
---             <ssc:Real />
---           </ssd:Connector>
---         </ssd:Connectors>
---         <ssd:ParameterBindings>
---           <ssd:ParameterBinding source="resources/snapshot.ssv" />
---         </ssd:ParameterBindings>
---         <ssd:Elements>
---           <ssd:Component name="add" type="application/x-fmu-sharedlibrary" source="resources/0001_add.fmu">
---             <ssd:Connectors>
---               <ssd:Connector name="u1" kind="input">
---                 <ssc:Real />
---                 <ssd:ConnectorGeometry x="0.000000" y="0.333333" />
---               </ssd:Connector>
---               <ssd:Connector name="u2" kind="input">
---                 <ssc:Real />
---                 <ssd:ConnectorGeometry x="0.000000" y="0.666667" />
---               </ssd:Connector>
---               <ssd:Connector name="y" kind="output">
---                 <ssc:Real />
---                 <ssd:ConnectorGeometry x="1.000000" y="0.500000" />
---               </ssd:Connector>
---               <ssd:Connector name="k1" kind="parameter">
---                 <ssc:Real />
---               </ssd:Connector>
---               <ssd:Connector name="k2" kind="parameter">
---                 <ssc:Real />
---               </ssd:Connector>
---             </ssd:Connectors>
---           </ssd:Component>
---         </ssd:Elements>
---         <ssd:Annotations>
---           <ssc:Annotation type="org.openmodelica">
---             <oms:Annotations>
---               <oms:SimulationInformation>
---                 <oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
---               </oms:SimulationInformation>
---             </oms:Annotations>
---           </ssc:Annotation>
---         </ssd:Annotations>
---       </ssd:System>
---       <ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
---         <ssd:Annotations>
---           <ssc:Annotation type="org.openmodelica">
---             <oms:Annotations>
---               <oms:SimulationInformation resultFile="snapshot_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter=".*" />
---             </oms:Annotations>
---           </ssc:Annotation>
---         </ssd:Annotations>
---       </ssd:DefaultExperiment>
---     </ssd:SystemStructureDescription>
---   </oms:file>
--- </oms:snapshot>
---
 -- Case 2 - re-imported
 -- <?xml version="1.0"?>
 -- <oms:snapshot partial="false">
@@ -356,23 +284,6 @@ print(snapshot)
 --       <ssv:Parameters>
 --         <ssv:Parameter name="C1">
 --           <ssv:Real value="-10" />
---         </ssv:Parameter>
---       </ssv:Parameters>
---     </ssv:ParameterSet>
---   </oms:file>
--- </oms:snapshot>
---
--- Case 3 - reference
--- <?xml version="1.0"?>
--- <oms:snapshot partial="true">
---   <oms:file name="resources/snapshot.ssv">
---     <ssv:ParameterSet xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" version="1.0" name="parameters">
---       <ssv:Parameters>
---         <ssv:Parameter name="C1">
---           <ssv:Real value="-10" />
---         </ssv:Parameter>
---         <ssv:Parameter name="add.u1">
---           <ssv:Real value="20" />
 --         </ssv:Parameter>
 --       </ssv:Parameters>
 --     </ssv:ParameterSet>
@@ -452,56 +363,6 @@ print(snapshot)
 --   </oms:file>
 -- </oms:snapshot>
 --
--- Case 4 - reference
--- <?xml version="1.0"?>
--- <oms:snapshot partial="true">
---   <oms:file name="SystemStructure.ssd" node="snapshot.root">
---     <ssd:System name="root">
---       <ssd:Connectors>
---         <ssd:Connector name="C1" kind="input">
---           <ssc:Real />
---         </ssd:Connector>
---       </ssd:Connectors>
---       <ssd:ParameterBindings>
---         <ssd:ParameterBinding source="resources/snapshot.ssv" />
---       </ssd:ParameterBindings>
---       <ssd:Elements>
---         <ssd:Component name="add" type="application/x-fmu-sharedlibrary" source="resources/0001_add.fmu">
---           <ssd:Connectors>
---             <ssd:Connector name="u1" kind="input">
---               <ssc:Real />
---               <ssd:ConnectorGeometry x="0.000000" y="0.333333" />
---             </ssd:Connector>
---             <ssd:Connector name="u2" kind="input">
---               <ssc:Real />
---               <ssd:ConnectorGeometry x="0.000000" y="0.666667" />
---             </ssd:Connector>
---             <ssd:Connector name="y" kind="output">
---               <ssc:Real />
---               <ssd:ConnectorGeometry x="1.000000" y="0.500000" />
---             </ssd:Connector>
---             <ssd:Connector name="k1" kind="parameter">
---               <ssc:Real />
---             </ssd:Connector>
---             <ssd:Connector name="k2" kind="parameter">
---               <ssc:Real />
---             </ssd:Connector>
---           </ssd:Connectors>
---         </ssd:Component>
---       </ssd:Elements>
---       <ssd:Annotations>
---         <ssc:Annotation type="org.openmodelica">
---           <oms:Annotations>
---             <oms:SimulationInformation>
---               <oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
---             </oms:SimulationInformation>
---           </oms:Annotations>
---         </ssc:Annotation>
---       </ssd:Annotations>
---     </ssd:System>
---   </oms:file>
--- </oms:snapshot>
---
 -- Case 4 - re-imported
 -- <?xml version="1.0"?>
 -- <oms:snapshot partial="false">
@@ -569,35 +430,6 @@ print(snapshot)
 --         </ssv:Parameter>
 --       </ssv:Parameters>
 --     </ssv:ParameterSet>
---   </oms:file>
--- </oms:snapshot>
---
--- Case 5 - reference
--- <?xml version="1.0"?>
--- <oms:snapshot partial="true">
---   <oms:file name="SystemStructure.ssd" node="snapshot.root.add">
---     <ssd:Component name="add" type="application/x-fmu-sharedlibrary" source="resources/0001_add.fmu">
---       <ssd:Connectors>
---         <ssd:Connector name="u1" kind="input">
---           <ssc:Real />
---           <ssd:ConnectorGeometry x="0.000000" y="0.333333" />
---         </ssd:Connector>
---         <ssd:Connector name="u2" kind="input">
---           <ssc:Real />
---           <ssd:ConnectorGeometry x="0.000000" y="0.666667" />
---         </ssd:Connector>
---         <ssd:Connector name="y" kind="output">
---           <ssc:Real />
---           <ssd:ConnectorGeometry x="1.000000" y="0.500000" />
---         </ssd:Connector>
---         <ssd:Connector name="k1" kind="parameter">
---           <ssc:Real />
---         </ssd:Connector>
---         <ssd:Connector name="k2" kind="parameter">
---           <ssc:Real />
---         </ssd:Connector>
---       </ssd:Connectors>
---     </ssd:Component>
 --   </oms:file>
 -- </oms:snapshot>
 --
