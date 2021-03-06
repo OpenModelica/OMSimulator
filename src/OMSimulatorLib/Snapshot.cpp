@@ -72,7 +72,7 @@ oms_status_enu_t oms::Snapshot::import(const char* snapshot)
   return oms_status_ok;
 }
 
-bool oms::Snapshot::isPartialSnapshot()
+bool oms::Snapshot::isPartialSnapshot() const
 {
   pugi::xml_node oms_snapshot = doc.document_element();
   return oms_snapshot.attribute("partial").as_bool();
@@ -156,12 +156,12 @@ void oms::Snapshot::debugPrintNode(const filesystem::path& filename) const
   pugi::xml_node node = getResourceNode(filename);
 
   if (node)
-    node.print(std::cout, "  ");
+    node.print(std::cout, "  ", pugi::format_indent|pugi::format_indent_attributes, pugi::encoding_utf8);
 }
 
 void oms::Snapshot::debugPrintAll() const
 {
-  doc.save(std::cout, "  ");
+  doc.save(std::cout, "  ", pugi::format_indent|pugi::format_indent_attributes, pugi::encoding_utf8);
 }
 
 pugi::xml_node oms::Snapshot::getTemplateResourceNodeSSD(const filesystem::path& filename)
@@ -360,6 +360,6 @@ oms_status_enu_t oms::Snapshot::writeDocument(char** contents)
     std::string result;
   } writer;
 
-  doc.save(writer, "  ");
+  doc.save(writer, "  ", pugi::format_indent|pugi::format_indent_attributes, pugi::encoding_utf8);
   return writer.copy(contents);
 }
