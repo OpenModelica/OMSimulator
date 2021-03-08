@@ -399,9 +399,9 @@ typedef struct _oms_element_t{
 
 typedef enum {
   oms_fmi_kind_unknown = 0,
-  oms_fmi_kind_me = 1,       ///< FMI for Model Exchange
-  oms_fmi_kind_cs = 2,       ///< FMI for Co-Simulation
-  oms_fmi_kind_me_and_cs = 3 ///< defined to be equal to (oms_fmi_kind_me|oms_fmi_kind_cs)
+  oms_fmi_kind_me = 1,        ///< FMI for Model Exchange
+  oms_fmi_kind_cs = 2,        ///< FMI for Co-Simulation
+  oms_fmi_kind_me_and_cs = 3  ///< defined to be equal to (oms_fmi_kind_me|oms_fmi_kind_cs)
 } oms_fmi_kind_enu_t;
 
 /**

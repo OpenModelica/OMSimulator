@@ -73,7 +73,7 @@ namespace oms
     virtual const FMUInfo* getFMUInfo() const {return NULL;}
     void fetchAllVars(bool enableOption) {fetchAllVars_ = enableOption;}
     System* getParentSystem() const {return parentSystem;}
-    Model* getModel() const;
+    Model& getModel() const;
     void setGeometry(const ssd::ElementGeometry& geometry) {element.setGeometry(&geometry);}
     virtual oms_status_enu_t setFaultInjection(const ComRef& signal, oms_fault_type_enu_t faultType, double faultValue) {return oms_status_error;}
 

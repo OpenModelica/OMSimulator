@@ -149,7 +149,7 @@ oms_status_enu_t oms::Model::loadSnapshot(const pugi::xml_node& node)
   // If a renaming is requested then it will happen in Scope::loadSnapshot.
 
   if (!validState(oms_modelState_virgin))
-    return logError_ModelInWrongState(this);
+    return logError_ModelInWrongState(getCref());
 
   System* old_root_system = system;
   system = NULL;
@@ -181,7 +181,7 @@ oms_status_enu_t oms::Model::loadSnapshot(const pugi::xml_node& node)
 oms_status_enu_t oms::Model::importSnapshot(const oms::ComRef& cref, const char* snapshot_)
 {
   if (!validState(oms_modelState_virgin))
-    return logError_ModelInWrongState(this);
+    return logError_ModelInWrongState(getCref());
 
   Snapshot snapshot;
   snapshot.import(snapshot_);
@@ -842,7 +842,7 @@ void oms::Model::getAllResources(std::vector<std::string>& resources) const
 oms_status_enu_t oms::Model::setStartTime(double value)
 {
   if (!validState(oms_modelState_virgin|oms_modelState_enterInstantiation|oms_modelState_instantiated))
-    return logError_ModelInWrongState(this);
+    return logError_ModelInWrongState(getCref());
 
   startTime = value;
   return oms_status_ok;
@@ -851,7 +851,7 @@ oms_status_enu_t oms::Model::setStartTime(double value)
 oms_status_enu_t oms::Model::setStopTime(double value)
 {
   if (!validState(oms_modelState_virgin|oms_modelState_enterInstantiation|oms_modelState_instantiated))
-    return logError_ModelInWrongState(this);
+    return logError_ModelInWrongState(getCref());
 
   stopTime = value;
   return oms_status_ok;
@@ -867,7 +867,7 @@ double oms::Model::getTime() const
 oms_status_enu_t oms::Model::instantiate()
 {
   if (!validState(oms_modelState_virgin|oms_modelState_enterInstantiation))
-    return logError_ModelInWrongState(this);
+    return logError_ModelInWrongState(getCref());
 
   if (!system)
     return logError("Model doesn't contain a system");
@@ -894,7 +894,7 @@ oms_status_enu_t oms::Model::instantiate()
 oms_status_enu_t oms::Model::initialize()
 {
   if (!validState(oms_modelState_instantiated))
-    return logError_ModelInWrongState(this);
+    return logError_ModelInWrongState(getCref());
 
   if (!system)
     return logError("Model doesn't contain a system");
@@ -970,7 +970,7 @@ oms_status_enu_t oms::Model::simulate()
   if (!validState(oms_modelState_simulation))
   {
     clock.toc();
-    return logError_ModelInWrongState(this);
+    return logError_ModelInWrongState(getCref());
   }
 
   if (!system)
@@ -991,7 +991,7 @@ oms_status_enu_t oms::Model::doStep()
   if (!validState(oms_modelState_simulation))
   {
     clock.toc();
-    return logError_ModelInWrongState(this);
+    return logError_ModelInWrongState(getCref());
   }
 
   if (!system)
@@ -1011,7 +1011,7 @@ oms_status_enu_t oms::Model::stepUntil(double stopTime)
   if (!validState(oms_modelState_simulation))
   {
     clock.toc();
-    return logError_ModelInWrongState(this);
+    return logError_ModelInWrongState(getCref());
   }
 
   if (!system)
@@ -1032,7 +1032,7 @@ oms_status_enu_t oms::Model::terminate()
     return oms_status_ok;
 
   if (validState(oms_modelState_enterInstantiation))
-    return logError_ModelInWrongState(this);
+    return logError_ModelInWrongState(getCref());
 
   if (!system)
     return logError("Model doesn't contain a system");
@@ -1059,7 +1059,7 @@ oms_status_enu_t oms::Model::terminate()
 oms_status_enu_t oms::Model::reset()
 {
   if (!validState(oms_modelState_simulation))
-    return logError_ModelInWrongState(this);
+    return logError_ModelInWrongState(getCref());
 
   if (!system)
     return logError("Model doesn't contain a system");

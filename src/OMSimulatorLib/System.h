@@ -68,16 +68,28 @@ namespace oms
 
   class System
   {
-  public:
+  public: // methods
     virtual ~System();
 
+    virtual oms_status_enu_t exportToSSD_SimulationInformation(pugi::xml_node& node) const = 0;
+    virtual oms_status_enu_t importFromSSD_SimulationInformation(const pugi::xml_node& node, const std::string& sspVersion) = 0;
+    virtual oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultFile);
+    virtual oms_status_enu_t updateSignals(ResultWriter& resultFile);
+    virtual oms_status_enu_t setSolver(oms_solver_enu_t solver) {return oms_status_error;}
+    virtual oms_status_enu_t instantiate() = 0;
+    virtual oms_status_enu_t initialize() = 0;
+    virtual oms_status_enu_t terminate() = 0;
+    virtual oms_status_enu_t reset() = 0;
+    virtual oms_status_enu_t doStep() = 0;
+    virtual oms_status_enu_t stepUntil(double stopTime) = 0;
+
     static System* NewSystem(const ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem);
-    System* getSystem(const ComRef& cref);
-    Component* getComponent(const ComRef& cref);
-    System* getSubSystem(const ComRef& cref);
-    Variable* getVariable(const ComRef& cref);
+
     const ComRef& getCref() const {return cref;}
     ComRef getFullCref() const;
+    System* getSystem(const ComRef& cref);
+    Component* getComponent(const ComRef& cref);
+    Variable* getVariable(const ComRef& cref);
     Element* getElement() {return &element;}
     oms_status_enu_t listUnconnectedConnectors(char** contents) const;
     oms_system_enu_t getType() const {return type;}
@@ -86,8 +98,6 @@ namespace oms
     bool validCref(const ComRef& cref);
     oms_status_enu_t exportToSSD(pugi::xml_node& node, pugi::xml_node& ssvNode, Snapshot& snapshot) const;
     oms_status_enu_t importFromSnapshot(const pugi::xml_node& node, const std::string& sspVersion, const Snapshot& snapshot);
-    virtual oms_status_enu_t exportToSSD_SimulationInformation(pugi::xml_node& node) const = 0;
-    virtual oms_status_enu_t importFromSSD_SimulationInformation(const pugi::xml_node& node, const std::string& sspVersion) = 0;
     void setGeometry(const ssd::ElementGeometry& geometry) {element.setGeometry(&geometry);}
     oms_status_enu_t addConnector(const ComRef& cref, oms_causality_enu_t causality, oms_signal_type_enu_t type);
     Connector* getConnector(const ComRef& cref);
@@ -118,7 +128,7 @@ namespace oms
     oms_status_enu_t delete_(const ComRef& cref);
     oms_status_enu_t deleteAllConectionsTo(const ComRef& cref);
     bool isConnected(const ComRef& cref) const;
-    Model* getModel();
+    Model& getModel();
     System* getParentSystem() const {return parentSystem;}
     bool copyResources();
     void getAllResources(std::vector<std::string>& resources) const;
@@ -130,13 +140,6 @@ namespace oms
     const DirectedGraph& getOutputsGraph() {return eventGraph;}
     oms_status_enu_t exportDependencyGraphs(const std::string& pathInitialization, const std::string& pathEvent, const std::string& pathSimulation);
     oms_status_enu_t setFaultInjection(const ComRef& signal, oms_fault_type_enu_t faultType, double faultValue);
-
-    virtual oms_status_enu_t instantiate() = 0;
-    virtual oms_status_enu_t initialize() = 0;
-    virtual oms_status_enu_t terminate() = 0;
-    virtual oms_status_enu_t reset() = 0;
-    virtual oms_status_enu_t doStep() = 0;
-    virtual oms_status_enu_t stepUntil(double stopTime) = 0;
 
     double getTime() const {return time;}
 
@@ -157,12 +160,8 @@ namespace oms
 
     bool isTopLevelSystem() const {return (parentSystem == NULL);}
 
-    virtual oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultFile);
-    virtual oms_status_enu_t updateSignals(ResultWriter& resultFile);
     oms_status_enu_t addSignalsToResults(const char* regex);
     oms_status_enu_t removeSignalsFromResults(const char* regex);
-
-    virtual oms_status_enu_t setSolver(oms_solver_enu_t solver) {return oms_status_error;}
 
     void getTolerance(double* absoluteTolerance, double* relativeTolerance) const {if (absoluteTolerance) *absoluteTolerance=this->absoluteTolerance; if (relativeTolerance) *relativeTolerance=this->relativeTolerance;}
     void getStepSize(double* initialStepSize, double* minimumStepSize, double* maximumStepSize) const {if (initialStepSize) *initialStepSize=this->initialStepSize; if (minimumStepSize) *minimumStepSize=this->minimumStepSize; if (maximumStepSize) *maximumStepSize=this->maximumStepSize;}
@@ -181,17 +180,31 @@ namespace oms
     ctpl::thread_pool& getThreadPool();
 
     std::string getUniqueID() const;
-  protected:
-    double time;
+
+    void forceLoopsToBeUpdated() {loopsNeedUpdate = true;}
+
+  protected: // methods
     System(const ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem, oms_solver_enu_t solverMethod);
 
     // stop the compiler generating methods copying the object
     System(System const& copy);            ///< not implemented
     System& operator=(System const& copy); ///< not implemented
 
-    DirectedGraph initializationGraph; ///< dependency graph, with all connections, solved at initialization
-    DirectedGraph eventGraph; ///< filtered dependency graph, without parameters, solved at event mode
-    DirectedGraph simulationGraph; ///< filtered dependency graph, with connections of type Real, solved at continuous time mode;
+  private: // methods
+    oms_status_enu_t importFromSSD_ConnectionGeometry(const pugi::xml_node& node, const ComRef& crefA, const ComRef& crefB);
+    oms::ComRef getValidCref(const ComRef& cref);
+    oms_status_enu_t importTLMBus(const pugi::xml_node& node, Component* component);
+    oms_status_enu_t importBusConnectorSignals(const pugi::xml_node& node);
+    oms_status_enu_t importBusConnectorGeometry(const pugi::xml_node& node);
+    oms_status_enu_t importStartValuesFromSSV(const std::string& ssvPath, const std::string ssmPath, const Snapshot& snapshot);
+    void importParameterMappingFromSSM(const std::string& ssmPath, const Snapshot& snapshot, std::multimap<ComRef, ComRef>& mappedEntry);
+
+  protected: // attributes
+    double time;
+
+    DirectedGraph initializationGraph;  ///< dependency graph, with all connections, solved at initialization
+    DirectedGraph eventGraph;  ///< filtered dependency graph, without parameters, solved at event mode
+    DirectedGraph simulationGraph;  ///< filtered dependency graph, with connections of type Real, solved at continuous time mode;
 
     Clock clock;
     unsigned int clock_id;
@@ -207,10 +220,7 @@ namespace oms
     std::unordered_map<unsigned int /*result file var ID*/, unsigned int /*allVariables ID*/> resultFileMapping;
     std::unordered_map<ComRef, bool> exportConnectors;
 
-  protected:
-    bool loopsNeedUpdate = true;
-
-  private:
+  private: // attributes
     ComRef cref;
     oms_system_enu_t type;
     Model* parentModel;
@@ -218,26 +228,19 @@ namespace oms
     std::map<ComRef, System*> subsystems;
     std::map<ComRef, Component*> components;
 
-    Values values; ///< system level connectors, parameters and their start values defined before instantiating the FMU and external inputs defined after initialization
+    Values values;  ///< system level connectors, parameters and their start values defined before instantiating the FMU and external inputs defined after initialization
 
     Element element;
-    std::vector<Connector*> connectors;             ///< last element is always NULL
-    std::vector<oms_element_t*> subelements;       ///< last element is always NULL; don't free it
+    std::vector<Connector*> connectors;  ///< last element is always NULL
+    std::vector<oms_element_t*> subelements;  ///< last element is always NULL; don't free it
     std::vector<BusConnector*> busconnectors;
 #if !defined(NO_TLM)
     std::vector<TLMBusConnector*> tlmbusconnectors;
 #endif
-    std::vector<Connection*> connections;           ///< last element is always NULL
+    std::vector<Connection*> connections;  ///< last element is always NULL
 
-    oms_status_enu_t importFromSSD_ConnectionGeometry(const pugi::xml_node& node, const ComRef& crefA, const ComRef& crefB);
-    oms::ComRef getValidCref(const ComRef& cref);
-    oms_status_enu_t importTLMBus(const pugi::xml_node& node, Component* component);
-    oms_status_enu_t importBusConnectorSignals(const pugi::xml_node& node);
-    oms_status_enu_t importBusConnectorGeometry(const pugi::xml_node& node);
-    oms_status_enu_t importStartValuesFromSSV(const std::string& ssvPath, const std::string ssmPath, const Snapshot& snapshot);
-    void importParameterMappingFromSSM(const std::string& ssmPath, const Snapshot& snapshot, std::multimap<ComRef, ComRef>& mappedEntry);
-
-    std::vector<AlgLoop> algLoops;    ///< Vector of algebraic loop objects
+    bool loopsNeedUpdate = true;
+    std::vector<AlgLoop> algLoops;  ///< vector of algebraic loop objects
   };
 }
 

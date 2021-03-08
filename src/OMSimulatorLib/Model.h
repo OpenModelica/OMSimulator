@@ -54,7 +54,7 @@ namespace oms
 
   class Model
   {
-  public:
+  public: // methods
     ~Model();
 
     /**
@@ -62,6 +62,7 @@ namespace oms
      * instances with valid names can be created.
      */
     static Model* NewModel(const ComRef& cref);
+
     const ComRef& getCref() const {return cref;}
     System* getSystem(const ComRef& cref);
     oms_status_enu_t delete_(const ComRef& cref);
@@ -124,7 +125,7 @@ namespace oms
 
     oms_status_enu_t loadSnapshot(const pugi::xml_node& node);
 
-  private:
+  private: // methods
     Model(const ComRef& cref, const std::string& tempDir);
 
     // stop the compiler generating methods copying the object
@@ -133,7 +134,7 @@ namespace oms
 
     oms_status_enu_t registerSignalsForResultFile();
 
-  private:
+  private: // attributes
     ComRef cref;
     System* system = NULL;
     std::string tempDir;

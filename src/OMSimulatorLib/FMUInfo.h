@@ -45,10 +45,10 @@ namespace oms
   class FMUInfo : protected oms_fmu_info_t
   {
   public:
-    FMUInfo(const std::string& path, oms_fmi_kind_enu_t fmuKind);
+    FMUInfo(const std::string& path);
     ~FMUInfo();
 
-    oms_status_enu_t update(fmi_version_enu_t version, fmi2_import_t* fmu);
+    void update(fmi_version_enu_t version, fmi2_import_t* fmu);
 
     std::string getPath() const {return std::string(path);}
     oms_fmi_kind_enu_t getKind() const {return fmiKind;}

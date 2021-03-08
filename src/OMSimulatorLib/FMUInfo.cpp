@@ -35,20 +35,20 @@
 
 #include <cstring>
 
-oms::FMUInfo::FMUInfo(const std::string& path, oms_fmi_kind_enu_t fmuKind)
+oms::FMUInfo::FMUInfo(const std::string& path)
 {
-  this->author = NULL;
-  this->copyright = NULL;
-  this->description = NULL;
-  this->fmiKind = fmuKind;
-  this->fmiVersion = NULL;
-  this->generationDateAndTime = NULL;
-  this->generationTool = NULL;
-  this->guid = NULL;
-  this->license = NULL;
-  this->modelName = NULL;
+  this->author = nullptr;
+  this->copyright = nullptr;
+  this->description = nullptr;
+  this->fmiKind = oms_fmi_kind_unknown;
+  this->fmiVersion = nullptr;
+  this->generationDateAndTime = nullptr;
+  this->generationTool = nullptr;
+  this->guid = nullptr;
+  this->license = nullptr;
+  this->modelName = nullptr;
   this->path = new char[path.size()+1]; strcpy(this->path, path.c_str());
-  this->version = NULL;
+  this->version = nullptr;
   this->canBeInstantiatedOnlyOncePerProcess = false;
   this->canGetAndSetFMUstate = false;
   this->canNotUseMemoryManagementFunctions = false;
@@ -75,41 +75,46 @@ oms::FMUInfo::~FMUInfo()
   if (this->version) delete[] this->version;
 }
 
-oms_status_enu_t oms::FMUInfo::update(fmi_version_enu_t version, fmi2_import_t* fmu)
+char* allocateAndCopyString(const char* source)
 {
-  std::string value;
+  char* target;
 
-  value = std::string(fmi2_import_get_author(fmu));
-  this->author = new char[value.size()+1]; strcpy(this->author, value.c_str());
+  if (source)
+  {
+    target = new char[strlen(source) + 1];
+    strcpy(target, source);
+  }
+  else
+  {
+    target = new char[1];
+    target[0] = '\0';
+  }
 
-  value = std::string(fmi2_import_get_copyright(fmu));
-  this->copyright = new char[value.size()+1]; strcpy(this->copyright, value.c_str());
+  return target;
+}
 
-  value = std::string(fmi2_import_get_description(fmu));
-  this->description = new char[value.size()+1]; strcpy(this->description, value.c_str());
+void oms::FMUInfo::update(fmi_version_enu_t version, fmi2_import_t* fmu)
+{
+  fmi2_fmu_kind_enu_t fmuKind = fmi2_import_get_fmu_kind(fmu);
+  if (fmi2_fmu_kind_me == fmuKind)
+    this->fmiKind = oms_fmi_kind_me;
+  else if (fmi2_fmu_kind_cs == fmuKind)
+    this->fmiKind = oms_fmi_kind_cs;
+  else if (fmi2_fmu_kind_me_and_cs == fmuKind)
+    this->fmiKind = oms_fmi_kind_me_and_cs;
 
-  value = std::string(fmi_version_to_string(version));
-  this->fmiVersion = new char[value.size()+1]; strcpy(this->fmiVersion, value.c_str());
+  this->author = allocateAndCopyString(fmi2_import_get_author(fmu));
+  this->copyright = allocateAndCopyString(fmi2_import_get_copyright(fmu));
+  this->description = allocateAndCopyString(fmi2_import_get_description(fmu));
+  this->fmiVersion = allocateAndCopyString(fmi_version_to_string(version));
+  this->generationDateAndTime = allocateAndCopyString(fmi2_import_get_generation_date_and_time(fmu));
+  this->generationTool = allocateAndCopyString(fmi2_import_get_generation_tool(fmu));
+  this->guid = allocateAndCopyString(fmi2_import_get_GUID(fmu));
+  this->license = allocateAndCopyString(fmi2_import_get_license(fmu));
+  this->modelName = allocateAndCopyString(fmi2_import_get_model_name(fmu));
+  this->version = allocateAndCopyString(fmi2_import_get_model_version(fmu));
 
-  value = std::string(fmi2_import_get_generation_date_and_time(fmu));
-  this->generationDateAndTime = new char[value.size()+1]; strcpy(this->generationDateAndTime, value.c_str());
-
-  value = std::string(fmi2_import_get_generation_tool(fmu));
-  this->generationTool = new char[value.size()+1]; strcpy(this->generationTool, value.c_str());
-
-  value = std::string(fmi2_import_get_GUID(fmu));
-  this->guid = new char[value.size()+1]; strcpy(this->guid, value.c_str());
-
-  value = std::string(fmi2_import_get_license(fmu));
-  this->license = new char[value.size()+1]; strcpy(this->license, value.c_str());
-
-  value = std::string(fmi2_import_get_model_name(fmu));
-  this->modelName = new char[value.size()+1]; strcpy(this->modelName, value.c_str());
-
-  value = std::string(fmi2_import_get_model_version(fmu));
-  this->version = new char[value.size()+1]; strcpy(this->version, value.c_str());
-
-  if (oms_fmi_kind_cs == fmiKind)
+  if (oms_fmi_kind_cs == fmiKind || oms_fmi_kind_me_and_cs == fmiKind)
   {
     this->canBeInstantiatedOnlyOncePerProcess = fmi2_import_get_capability(fmu, fmi2_cs_canBeInstantiatedOnlyOncePerProcess) > 0;
     this->canGetAndSetFMUstate = fmi2_import_get_capability(fmu, fmi2_cs_canGetAndSetFMUstate) > 0;
@@ -121,7 +126,8 @@ oms_status_enu_t oms::FMUInfo::update(fmi_version_enu_t version, fmi2_import_t* 
     this->canInterpolateInputs = fmi2_import_get_capability(fmu, fmi2_cs_canInterpolateInputs) > 0;
     this->maxOutputDerivativeOrder = fmi2_import_get_capability(fmu, fmi2_cs_maxOutputDerivativeOrder);
   }
-  else
+
+  if (oms_fmi_kind_me == fmiKind || oms_fmi_kind_me_and_cs == fmiKind)
   {
     this->canBeInstantiatedOnlyOncePerProcess = fmi2_import_get_capability(fmu, fmi2_me_canBeInstantiatedOnlyOncePerProcess) > 0;
     this->canGetAndSetFMUstate = fmi2_import_get_capability(fmu, fmi2_me_canGetAndSetFMUstate) > 0;
@@ -131,6 +137,4 @@ oms_status_enu_t oms::FMUInfo::update(fmi_version_enu_t version, fmi2_import_t* 
     this->needsExecutionTool = fmi2_import_get_capability(fmu, fmi2_me_needsExecutionTool) > 0;
     this->providesDirectionalDerivative = fmi2_import_get_capability(fmu, fmi2_me_providesDirectionalDerivatives) > 0;
   }
-
-  return oms_status_ok;
 }

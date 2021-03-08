@@ -285,18 +285,18 @@ oms::Component* oms::TLMBusConnector::getComponent(const ComRef& con, System* sy
     if(connections[i]->getSignalA() == con) {
       ComRef conref = connections[i]->getSignalB();
       ComRef front = conref.pop_front();
-      System* subsystem = system->getSubSystem(front);
+      System* subsystem = system->getSystem(front);
       if(subsystem) {
-        return getComponent(conref, system->getSubSystem(front));
+        return getComponent(conref, system->getSystem(front));
       }
       return system->getComponent(front);  //Will return NULL if component not found, which is fine
     }
     if(connections[i]->getSignalB() == con) {
       ComRef conref = connections[i]->getSignalA();
       ComRef front = conref.pop_front();
-      System* subsystem = system->getSubSystem(front);
+      System* subsystem = system->getSystem(front);
       if(subsystem) {
-        return getComponent(conref, system->getSubSystem(front));
+        return getComponent(conref, system->getSystem(front));
       }
       return system->getComponent(front);  //Will return NULL if component not found, which is fine
     }
@@ -349,7 +349,7 @@ oms::TLMBusConnector* oms::TLMBusConnector::getActualBus(ComRef cref, System *sy
       return subBus->getActualBus();
     }
     ComRef subhead = subcref.pop_front();
-    System *subSystem = system->getSubSystem(subhead);
+    System *subSystem = system->getSystem(subhead);
     if(subSystem)
       return subSystem->getTLMBusConnector(subcref)->getActualBus();
     Component *component = system->getComponent(subhead);
