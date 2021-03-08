@@ -34,9 +34,9 @@
 
 #include "Component.h"
 #include "ComRef.h"
-#include "Values.h"
 #include "ResultWriter.h"
 #include "Snapshot.h"
+#include "Values.h"
 #include "Variable.h"
 
 #include <fmilib.h>

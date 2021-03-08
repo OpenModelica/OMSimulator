@@ -40,7 +40,7 @@ const oms_regex re_ident("^[a-zA-Z][a-zA-Z0-9_]*$");
 
 oms::ComRef::ComRef()
 {
-  cref = allocateAndCopyString(NULL);
+  cref = allocateAndCopyString(nullptr);
 }
 
 oms::ComRef::ComRef(const std::string& path)
@@ -50,7 +50,6 @@ oms::ComRef::ComRef(const std::string& path)
 
 oms::ComRef::ComRef(const char* path)
 {
-  assert(path);
   cref = allocateAndCopyString(path);
 }
 

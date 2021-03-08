@@ -389,12 +389,12 @@ typedef struct {
  */
 typedef struct _oms_element_t{
   oms_element_enu_t type;                    ///< Element type, i.e. system or component
-  char* name;                                 ///< Name of the element
+  char* name;                                ///< Name of the element
   struct _oms_element_t** elements;          ///< List (null-terminated array) of all sub-elements
-  oms_connector_t** connectors;               ///< List (null-terminated array) of all interface variables: inputs, outputs, and parameters.
+  oms_connector_t** connectors;              ///< List (null-terminated array) of all interface variables: inputs, outputs, and parameters.
   oms_busconnector_t** busconnectors;        ///< List (null-terminated array) of all bus connectors
   oms_tlmbusconnector_t** tlmbusconnectors;  ///< List (null-terminated array) of all TLM bus connectors
-  ssd_element_geometry_t* geometry;           ///< Geometry information of the element
+  ssd_element_geometry_t* geometry;          ///< Geometry information of the element
 } oms_element_t;
 
 typedef enum {

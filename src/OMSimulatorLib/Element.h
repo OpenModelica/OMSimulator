@@ -32,17 +32,14 @@
 #ifndef _OMS_ELEMENT_H_
 #define _OMS_ELEMENT_H_
 
+#include "BusConnector.h"
 #include "ComRef.h"
 #include "Connector.h"
-#include "BusConnector.h"
+#include "ssd/ElementGeometry.h"
 #if !defined(NO_TLM)
 #include "TLMBusConnector.h"
 #endif
 #include "Types.h"
-#include "ssd/ElementGeometry.h"
-
-#include <string>
-#include <vector>
 
 namespace oms
 {
