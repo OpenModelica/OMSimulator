@@ -72,9 +72,9 @@ namespace oms
     bool hasSuffix() const; ///< returns true if the cref has a suffix, i.e. contains ":"
     bool hasSuffix(const std::string& suffix) const; ///< returns true if the cref has a suffix that matches the argument
 
-    const char* c_str() const {return cref;}
+    const char* c_str() const { return cref; }
     size_t size() const;
-    operator std::string() const {return std::string(cref);}
+    operator std::string() const { return std::string(cref); }
 
   private:
     char* cref;
