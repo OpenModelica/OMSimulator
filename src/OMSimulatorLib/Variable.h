@@ -49,7 +49,6 @@ namespace oms
     ~Variable();
 
     void markAsState() { is_state = true; }
-    void markAsDer() { is_der = true; }
 
     // causality attribute
     bool isParameter() const { return fmi2_causality_enu_parameter == causality; }
@@ -74,7 +73,7 @@ namespace oms
     }
 
     const ComRef& getCref() const { return cref; }
-    operator std::string() const {return std::string(cref);}
+    operator std::string() const { return std::string(cref); }
 
     fmi2_value_reference_t getValueReference() const { return vr; }
     oms_signal_type_enu_t getType() const { return type; }
@@ -88,7 +87,7 @@ namespace oms
     oms_causality_enu_t getCausality() const;
 
     unsigned int getIndex() const { return index; }
-    oms::Connector makeConnector() const {return oms::Connector(getCausality(), type, cref);}
+    oms::Connector makeConnector() const { return oms::Connector(getCausality(), type, cref); }
 
   private:
     ComRef cref;

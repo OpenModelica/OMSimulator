@@ -49,17 +49,11 @@ oms::Variable::Variable(fmi2_import_variable_t *var, unsigned int index)
   vr = fmi2_import_get_variable_vr(var);
   causality = fmi2_import_get_causality(var);
   initialProperty = fmi2_import_get_initial(var);
+
   switch (fmi2_import_get_variable_base_type(var))
   {
     case fmi2_base_type_real:
       type = oms_signal_type_real;
-      // mark derivatives
-      {
-        fmi2_import_real_variable_t* varReal = fmi2_import_get_variable_as_real(var);
-        fmi2_import_variable_t* varState = (fmi2_import_variable_t*)fmi2_import_get_real_variable_derivative_of(varReal);
-        if (varState)
-          markAsDer();
-      }
       break;
     case fmi2_base_type_int:
       type = oms_signal_type_integer;
@@ -77,6 +71,15 @@ oms::Variable::Variable(fmi2_import_variable_t *var, unsigned int index)
       logError("Unknown fmi base type");
       type = oms_signal_type_real;
       break;
+  }
+
+  // mark derivatives
+  if (oms_signal_type_real == type)
+  {
+    fmi2_import_real_variable_t* varReal = fmi2_import_get_variable_as_real(var);
+    fmi2_import_variable_t* varState = (fmi2_import_variable_t*)fmi2_import_get_real_variable_derivative_of(varReal);
+    if (varState)
+      is_der = true;
   }
 }
 

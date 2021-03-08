@@ -54,8 +54,8 @@ namespace oms
     oms_fmi_kind_enu_t getKind() const {return fmiKind;}
 
     bool getCanInterpolateInputs() const {return canInterpolateInputs;}
-    unsigned int getMaxOutputDerivativeOrder() const {return maxOutputDerivativeOrder;}
     bool getCanGetAndSetFMUstate() const {return canGetAndSetFMUstate;}
+    unsigned int getMaxOutputDerivativeOrder() const {return maxOutputDerivativeOrder;}
 
   private:
     // methods to copy the object
