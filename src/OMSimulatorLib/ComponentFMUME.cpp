@@ -44,7 +44,7 @@
 #include <RegEx.h>
 
 oms::ComponentFMUME::ComponentFMUME(const ComRef& cref, System* parentSystem, const std::string& fmuPath)
-  : oms::Component(cref, oms_component_fmu, parentSystem, fmuPath), fmuInfo(fmuPath, oms_fmi_kind_me)
+  : oms::Component(cref, oms_component_fmu, parentSystem, fmuPath), fmuInfo(fmuPath)
 {
 }
 
@@ -128,12 +128,7 @@ oms::Component* oms::ComponentFMUME::NewComponent(const oms::ComRef& cref, oms::
   }
 
   // update FMU info
-  if (oms_status_ok != component->fmuInfo.update(version, component->fmu))
-  {
-    logError("Error importing FMU attributes");
-    delete component;
-    return NULL;
-  }
+  component->fmuInfo.update(version, component->fmu);
 
   component->callbackFunctions.logger = oms::fmi2logger;
   component->callbackFunctions.allocateMemory = calloc;

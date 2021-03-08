@@ -35,12 +35,12 @@
 
 #include <cstring>
 
-oms::FMUInfo::FMUInfo(const std::string& path, oms_fmi_kind_enu_t fmuKind)
+oms::FMUInfo::FMUInfo(const std::string& path)
 {
   this->author = NULL;
   this->copyright = NULL;
   this->description = NULL;
-  this->fmiKind = fmuKind;
+  this->fmiKind = oms_fmi_kind_unknown;
   this->fmiVersion = NULL;
   this->generationDateAndTime = NULL;
   this->generationTool = NULL;
@@ -75,9 +75,17 @@ oms::FMUInfo::~FMUInfo()
   if (this->version) delete[] this->version;
 }
 
-oms_status_enu_t oms::FMUInfo::update(fmi_version_enu_t version, fmi2_import_t* fmu)
+void oms::FMUInfo::update(fmi_version_enu_t version, fmi2_import_t* fmu)
 {
   std::string value;
+
+  fmi2_fmu_kind_enu_t fmuKind = fmi2_import_get_fmu_kind(fmu);
+  if (fmi2_fmu_kind_me == fmuKind)
+    this->fmiKind = oms_fmi_kind_me;
+  else if (fmi2_fmu_kind_cs == fmuKind)
+    this->fmiKind = oms_fmi_kind_cs;
+  else if (fmi2_fmu_kind_me_and_cs == fmuKind)
+    this->fmiKind = oms_fmi_kind_me_and_cs;
 
   value = std::string(fmi2_import_get_author(fmu));
   this->author = new char[value.size()+1]; strcpy(this->author, value.c_str());
@@ -109,7 +117,7 @@ oms_status_enu_t oms::FMUInfo::update(fmi_version_enu_t version, fmi2_import_t* 
   value = std::string(fmi2_import_get_model_version(fmu));
   this->version = new char[value.size()+1]; strcpy(this->version, value.c_str());
 
-  if (oms_fmi_kind_cs == fmiKind)
+  if (oms_fmi_kind_cs == fmiKind || oms_fmi_kind_me_and_cs == fmiKind)
   {
     this->canBeInstantiatedOnlyOncePerProcess = fmi2_import_get_capability(fmu, fmi2_cs_canBeInstantiatedOnlyOncePerProcess) > 0;
     this->canGetAndSetFMUstate = fmi2_import_get_capability(fmu, fmi2_cs_canGetAndSetFMUstate) > 0;
@@ -121,7 +129,8 @@ oms_status_enu_t oms::FMUInfo::update(fmi_version_enu_t version, fmi2_import_t* 
     this->canInterpolateInputs = fmi2_import_get_capability(fmu, fmi2_cs_canInterpolateInputs) > 0;
     this->maxOutputDerivativeOrder = fmi2_import_get_capability(fmu, fmi2_cs_maxOutputDerivativeOrder);
   }
-  else
+
+  if (oms_fmi_kind_me == fmiKind || oms_fmi_kind_me_and_cs == fmiKind)
   {
     this->canBeInstantiatedOnlyOncePerProcess = fmi2_import_get_capability(fmu, fmi2_me_canBeInstantiatedOnlyOncePerProcess) > 0;
     this->canGetAndSetFMUstate = fmi2_import_get_capability(fmu, fmi2_me_canGetAndSetFMUstate) > 0;
@@ -131,6 +140,4 @@ oms_status_enu_t oms::FMUInfo::update(fmi_version_enu_t version, fmi2_import_t* 
     this->needsExecutionTool = fmi2_import_get_capability(fmu, fmi2_me_needsExecutionTool) > 0;
     this->providesDirectionalDerivative = fmi2_import_get_capability(fmu, fmi2_me_providesDirectionalDerivatives) > 0;
   }
-
-  return oms_status_ok;
 }
