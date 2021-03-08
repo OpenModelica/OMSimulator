@@ -75,18 +75,22 @@ oms::FMUInfo::~FMUInfo()
   if (this->version) delete[] this->version;
 }
 
-void copyString(const char* source, char** target)
+char* allocateAndCopyString(const char* source)
 {
+  char* target;
+
   if (source)
   {
-    *target = new char[strlen(source) + 1];
-    strcpy(*target, source);
+    target = new char[strlen(source) + 1];
+    strcpy(target, source);
   }
   else
   {
-    *target = new char[1];
-    *target[0] = '\0';
+    target = new char[1];
+    target[0] = '\0';
   }
+
+  return target;
 }
 
 void oms::FMUInfo::update(fmi_version_enu_t version, fmi2_import_t* fmu)
@@ -99,16 +103,16 @@ void oms::FMUInfo::update(fmi_version_enu_t version, fmi2_import_t* fmu)
   else if (fmi2_fmu_kind_me_and_cs == fmuKind)
     this->fmiKind = oms_fmi_kind_me_and_cs;
 
-  copyString(fmi2_import_get_author(fmu), &this->author);
-  copyString(fmi2_import_get_copyright(fmu), &this->copyright);
-  copyString(fmi2_import_get_description(fmu), &this->description);
-  copyString(fmi_version_to_string(version), &this->fmiVersion);
-  copyString(fmi2_import_get_generation_date_and_time(fmu), &this->generationDateAndTime);
-  copyString(fmi2_import_get_generation_tool(fmu), &this->generationTool);
-  copyString(fmi2_import_get_GUID(fmu), &this->guid);
-  copyString(fmi2_import_get_license(fmu), &this->license);
-  copyString(fmi2_import_get_model_name(fmu), &this->modelName);
-  copyString(fmi2_import_get_model_version(fmu), &this->version);
+  this->author = allocateAndCopyString(fmi2_import_get_author(fmu));
+  this->copyright = allocateAndCopyString(fmi2_import_get_copyright(fmu));
+  this->description = allocateAndCopyString(fmi2_import_get_description(fmu));
+  this->fmiVersion = allocateAndCopyString(fmi_version_to_string(version));
+  this->generationDateAndTime = allocateAndCopyString(fmi2_import_get_generation_date_and_time(fmu));
+  this->generationTool = allocateAndCopyString(fmi2_import_get_generation_tool(fmu));
+  this->guid = allocateAndCopyString(fmi2_import_get_GUID(fmu));
+  this->license = allocateAndCopyString(fmi2_import_get_license(fmu));
+  this->modelName = allocateAndCopyString(fmi2_import_get_model_name(fmu));
+  this->version = allocateAndCopyString(fmi2_import_get_model_version(fmu));
 
   if (oms_fmi_kind_cs == fmiKind || oms_fmi_kind_me_and_cs == fmiKind)
   {
