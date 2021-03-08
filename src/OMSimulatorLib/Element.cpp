@@ -30,34 +30,21 @@
  */
 
 #include "Element.h"
-#include "ssd/ElementGeometry.h"
-#include "Logging.h"
-#include "Connector.h"
-#if !defined(NO_TLM)
-#include "TLMBusConnector.h"
-#endif
 
-#include <cstring>
-#include <iostream>
+#include "OMSString.h"
+
 
 oms::Element::Element(oms_element_enu_t type, const oms::ComRef& name)
 {
   this->type = type;
-
-  std::string str = name;
-  this->name = new char[str.size()+1];
-  strcpy(this->name, str.c_str());
-
-  this->elements = NULL;
-  this->connectors = NULL;
-
-  this->geometry = reinterpret_cast<ssd_element_geometry_t*>(new oms::ssd::ElementGeometry());
-
-  this->busconnectors = NULL;
-
+  this->name = allocateAndCopyString(name.c_str());
+  this->elements = nullptr;
+  this->connectors = nullptr;
+  this->busconnectors = nullptr;
 #if !defined(NO_TLM)
-  this->tlmbusconnectors = NULL;
+  this->tlmbusconnectors = nullptr;
 #endif
+  this->geometry = reinterpret_cast<ssd_element_geometry_t*>(new oms::ssd::ElementGeometry());
 }
 
 oms::Element::~Element()
@@ -76,9 +63,7 @@ void oms::Element::setName(const oms::ComRef& name)
   if (this->name)
     delete[] this->name;
 
-  std::string str = name;
-  this->name = new char[str.size()+1];
-  strcpy(this->name, str.c_str());
+  this->name = allocateAndCopyString(name.c_str());
 }
 
 void oms::Element::setGeometry(const oms::ssd::ElementGeometry* newGeometry)
@@ -86,13 +71,11 @@ void oms::Element::setGeometry(const oms::ssd::ElementGeometry* newGeometry)
   if (this->geometry)
   {
     delete reinterpret_cast<oms::ssd::ElementGeometry*>(this->geometry);
-    this->geometry = NULL;
+    this->geometry = nullptr;
   }
 
   if (newGeometry)
-  {
     this->geometry = reinterpret_cast<ssd_element_geometry_t*>(new oms::ssd::ElementGeometry(*newGeometry));
-  }
 }
 
 void oms::Element::setConnectors(oms::Connector** newConnectors)
