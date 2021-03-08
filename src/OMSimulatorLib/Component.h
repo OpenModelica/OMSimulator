@@ -42,6 +42,7 @@
 #include "SignalDerivative.h"
 #include "Snapshot.h"
 #include "Types.h"
+
 #include <fmilib.h>
 #include <pugixml.hpp>
 
@@ -59,69 +60,65 @@ namespace oms
   public:
     virtual ~Component();
 
-    const ComRef& getCref() const {return cref;}
+    virtual oms_status_enu_t addSignalsToResults(const char* regex) = 0;
+    virtual oms_status_enu_t exportToSSD(pugi::xml_node& node, pugi::xml_node& ssvNode, Snapshot& snapshot) const = 0;
+    virtual oms_status_enu_t initialize() = 0;
+    virtual oms_status_enu_t instantiate() = 0;
+    virtual oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultFile) = 0;
+    virtual oms_status_enu_t removeSignalsFromResults(const char* regex) = 0;
+    virtual oms_status_enu_t reset() = 0;
+    virtual oms_status_enu_t terminate() = 0;
+    virtual oms_status_enu_t updateSignals(ResultWriter& resultWriter) = 0;
+    virtual Variable* getVariable(const ComRef& cref) = 0;
+
+    virtual bool getCanGetAndSetState() { return false; }
+    virtual const FMUInfo* getFMUInfo() const { return nullptr; }
+    virtual oms_status_enu_t deleteStartValue(const ComRef& cref) { return oms_status_ok; }
+    virtual oms_status_enu_t exportToSSMTemplate(pugi::xml_node& ssmNode) { return logError_NotImplemented; }
+    virtual oms_status_enu_t exportToSSVTemplate(pugi::xml_node& ssvNode) { return logError_NotImplemented; }
+    virtual oms_status_enu_t freeState() { return logError_NotImplemented; }
+    virtual oms_status_enu_t getBoolean(const ComRef& cref, bool& value) { return logError_NotImplemented; }
+    virtual oms_status_enu_t getInteger(const ComRef& cref, int& value) { return logError_NotImplemented; }
+    virtual oms_status_enu_t getReal(const ComRef& cref, double& value) { return logError_NotImplemented; }
+    virtual oms_status_enu_t getRealOutputDerivative(const ComRef& cref, SignalDerivative& der) { return logError_NotImplemented; }
+    virtual oms_status_enu_t restoreState() { return logError_NotImplemented; }
+    virtual oms_status_enu_t saveState() { return logError_NotImplemented; }
+    virtual oms_status_enu_t setBoolean(const ComRef& cref, bool value) { return logError_NotImplemented; }
+    virtual oms_status_enu_t setFaultInjection(const ComRef& signal, oms_fault_type_enu_t faultType, double faultValue) { return oms_status_error; }
+    virtual oms_status_enu_t setInteger(const ComRef& cref, int value) { return logError_NotImplemented; }
+    virtual oms_status_enu_t setReal(const ComRef& cref, double value) { return logError_NotImplemented; }
+    virtual oms_status_enu_t setRealInputDerivative(const ComRef& cref, const SignalDerivative& der) { return logError_NotImplemented; }
+    virtual oms_status_enu_t stepUntil(double stopTime) { return oms_status_ok; }
+
+    const ComRef& getCref() const { return cref; }
     ComRef getFullCref() const;
-    Element* getElement() {return &element;}
+    Element* getElement() { return &element; }
     Connector* getConnector(const ComRef& cref);
-    Connector** getConnectors() {return &connectors[0];}
+    Connector** getConnectors() { return &connectors[0]; }
     oms_status_enu_t deleteConnector(const ComRef& cref);
-    void getAllResources(std::vector<std::string>& resources) const {resources.push_back(path);}
-    const std::string& getPath() const {return path;}
-    const std::string& getTempDir() const {return tempDir;}
-    void setTempDir(const std::string& tempDir) {this->tempDir = tempDir;}
-    oms_component_enu_t getType() const {return type;}
-    virtual const FMUInfo* getFMUInfo() const {return NULL;}
-    void fetchAllVars(bool enableOption) {fetchAllVars_ = enableOption;}
-    System* getParentSystem() const {return parentSystem;}
+    void getAllResources(std::vector<std::string>& resources) const { resources.push_back(path); }
+    const std::string& getPath() const { return path; }
+    const std::string& getTempDir() const { return tempDir; }
+    void setTempDir(const std::string& tempDir) { this->tempDir = tempDir; }
+    oms_component_enu_t getType() const { return type; }
+    void fetchAllVars(bool enableOption) { fetchAllVars_ = enableOption; }
+    System* getParentSystem() const { return parentSystem; }
     Model& getModel() const;
-    void setGeometry(const ssd::ElementGeometry& geometry) {element.setGeometry(&geometry);}
-    virtual oms_status_enu_t setFaultInjection(const ComRef& signal, oms_fault_type_enu_t faultType, double faultValue) {return oms_status_error;}
+    void setGeometry(const ssd::ElementGeometry& geometry) { element.setGeometry(&geometry); }
 
     oms_status_enu_t addTLMBus(const oms::ComRef& cref, oms_tlm_domain_t domain, const int dimensions, const oms_tlm_interpolation_t interpolation);
 #if !defined(NO_TLM)
-    oms::TLMBusConnector *getTLMBusConnector(const oms::ComRef &cref);
-    TLMBusConnector **getTLMBusConnectors() {return &tlmbusconnectors[0];}
+    oms::TLMBusConnector* getTLMBusConnector(const oms::ComRef &cref);
+    TLMBusConnector** getTLMBusConnectors() { return &tlmbusconnectors[0]; }
 #endif
     oms_status_enu_t addConnectorToTLMBus(const ComRef& busCref, const ComRef& connectorCref, const std::string type);
     oms_status_enu_t deleteConnectorFromTLMBus(const ComRef& busCref, const ComRef& connectorCref);
 
-    virtual oms_status_enu_t exportToSSD(pugi::xml_node& node, pugi::xml_node& ssvNode, Snapshot& snapshot) const = 0;
-    virtual oms_status_enu_t exportToSSVTemplate(pugi::xml_node& ssvNode) {return logError_NotImplemented;}
-    virtual oms_status_enu_t exportToSSMTemplate(pugi::xml_node& ssmNode) {return logError_NotImplemented;}
-    virtual oms_status_enu_t instantiate() = 0;
-    virtual oms_status_enu_t initialize() = 0;
-    virtual oms_status_enu_t terminate() = 0;
-    virtual oms_status_enu_t reset() = 0;
-    virtual oms_status_enu_t stepUntil(double stopTime) {return oms_status_ok;}
+    const DirectedGraph& getInitialUnknownsGraph() { return initialUnknownsGraph; }
+    const DirectedGraph& getOutputsGraph() { return outputsGraph; }
 
-    const DirectedGraph& getInitialUnknownsGraph() {return initialUnknownsGraph;}
-    const DirectedGraph& getOutputsGraph() {return outputsGraph;}
+    oms_status_enu_t rename(const ComRef& newCref); ///< rename submodules, e.g., fmu:s
 
-    virtual oms_status_enu_t getBoolean(const ComRef& cref, bool& value) {return logError_NotImplemented;}
-    virtual oms_status_enu_t getInteger(const ComRef& cref, int& value) {return logError_NotImplemented;}
-    virtual oms_status_enu_t getReal(const ComRef& cref, double& value) {return logError_NotImplemented;}
-    virtual oms_status_enu_t setBoolean(const ComRef& cref, bool value) {return logError_NotImplemented;}
-    virtual oms_status_enu_t setInteger(const ComRef& cref, int value) {return logError_NotImplemented;}
-    virtual oms_status_enu_t setReal(const ComRef& cref, double value) {return logError_NotImplemented;}
-
-    virtual oms_status_enu_t deleteStartValue(const ComRef& cref) {return oms_status_ok;}
-
-    virtual oms_status_enu_t getRealOutputDerivative(const ComRef& cref, SignalDerivative& der) {return logError_NotImplemented;}
-    virtual oms_status_enu_t setRealInputDerivative(const ComRef& cref, const SignalDerivative& der) {return logError_NotImplemented;}
-
-    virtual Variable* getVariable(const ComRef& cref) = 0;
-
-    virtual oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultFile) = 0;
-    virtual oms_status_enu_t updateSignals(ResultWriter& resultWriter) = 0;
-    virtual oms_status_enu_t addSignalsToResults(const char* regex) = 0;
-    virtual oms_status_enu_t removeSignalsFromResults(const char* regex) = 0;
-
-    virtual bool getCanGetAndSetState() {return false;}
-    virtual oms_status_enu_t saveState() {return logError_NotImplemented;}
-    virtual oms_status_enu_t freeState() {return logError_NotImplemented;}
-    virtual oms_status_enu_t restoreState() {return logError_NotImplemented;}
-
-    oms_status_enu_t rename(const ComRef& newCref); ///< rename submodules (e.g)Fmu's
   protected:
     Component(const ComRef& cref, oms_component_enu_t type, System* parentSystem, const std::string& path);
 
@@ -129,6 +126,7 @@ namespace oms
     Component(Component const&);            ///< not implemented
     Component& operator=(Component const&); ///< not implemented
 
+  protected:
     DirectedGraph initialUnknownsGraph;
     DirectedGraph outputsGraph;
     Element element;
@@ -145,8 +143,8 @@ namespace oms
     System* parentSystem;
     ComRef cref;
     oms_component_enu_t type;
-    std::string path;                             ///< resource file (fmu, mat)
-    std::string tempDir;                          ///< unzipped fmu
+    std::string path;  ///< resource file (fmu, mat)
+    std::string tempDir;  ///< unzipped fmu
   };
 }
 
