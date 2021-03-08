@@ -33,7 +33,6 @@
 #define _OMS_COM_REF_H_
 
 #include <string>
-#include <cstring>
 
 namespace oms
 {
@@ -74,7 +73,7 @@ namespace oms
     bool hasSuffix(const std::string& suffix) const; ///< returns true if the cref has a suffix that matches the argument
 
     const char* c_str() const {return cref;}
-    size_t size() {return strlen(cref);}
+    size_t size() const;
     operator std::string() const {return std::string(cref);}
 
   private:

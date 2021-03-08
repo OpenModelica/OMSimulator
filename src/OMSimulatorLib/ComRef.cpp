@@ -30,6 +30,9 @@
  */
 
 #include "ComRef.h"
+
+#include "OMSString.h"
+
 #include <assert.h>
 #include <RegEx.h>
 
@@ -37,21 +40,18 @@ const oms_regex re_ident("^[a-zA-Z][a-zA-Z0-9_]*$");
 
 oms::ComRef::ComRef()
 {
-  cref = new char[1];
-  cref[0] = '\0';
+  cref = allocateAndCopyString(NULL);
 }
 
 oms::ComRef::ComRef(const std::string& path)
 {
-  cref = new char[path.size() + 1];
-  strcpy(cref, path.c_str());
+  cref = allocateAndCopyString(path);
 }
 
 oms::ComRef::ComRef(const char* path)
 {
   assert(path);
-  cref = new char[strlen(path) + 1];
-  strcpy(cref, path);
+  cref = allocateAndCopyString(path);
 }
 
 oms::ComRef::~ComRef()
@@ -61,8 +61,7 @@ oms::ComRef::~ComRef()
 
 oms::ComRef::ComRef(const oms::ComRef& copy)
 {
-  cref = new char[strlen(copy.cref) + 1];
-  strcpy(cref, copy.cref);
+  cref = allocateAndCopyString(copy.cref);
 }
 
 oms::ComRef& oms::ComRef::operator=(const oms::ComRef& copy)
@@ -72,8 +71,7 @@ oms::ComRef& oms::ComRef::operator=(const oms::ComRef& copy)
     return *this;
 
   delete[] cref;
-  cref = new char[strlen(copy.cref) + 1];
-  strcpy(cref, copy.cref);
+  cref = allocateAndCopyString(copy.cref);
 
   return *this;
 }
@@ -202,6 +200,11 @@ oms::ComRef oms::ComRef::pop_front()
   oms::ComRef front(cref);
   *this = oms::ComRef();
   return front;
+}
+
+size_t oms::ComRef::size() const
+{
+  return strlen(cref);
 }
 
 bool oms::operator==(const oms::ComRef& lhs, const oms::ComRef& rhs)
