@@ -161,7 +161,7 @@ namespace oms
       {"--startTime", "-s", "Specifies the start time", re_double, Flags::StartTime, false},
       {"--stopTime", "-t", "Specifies the stop time", re_double, Flags::StopTime, false},
       {"--stripRoot", "", "Removes the root system prefix from all exported signals (true, [false])", re_bool, Flags::StripRoot, false},
-      {"--suppressPath", "", "Supresses path information in info messages; especially useful for testing (true, [false])", re_bool, Flags::SuppressPath, false},
+      {"--suppressPath", "", "Supresses path information in info messages; especially useful for testing ([true], false)", re_bool, Flags::SuppressPath, false},
       {"--tempDir", "", "Specifies the temp directory", re_default, Flags::TempDir, false},
       {"--timeout", "", "Specifies the maximum allowed time in seconds for running a simulation (0 disables)", re_number, Flags::Timeout, false},
       {"--tolerance", "", "Specifies the relative tolerance", re_double, Flags::Tolerance, false},

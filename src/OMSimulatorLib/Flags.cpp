@@ -83,7 +83,7 @@ void oms::Flags::setDefaults()
   startTime = 0.0;
   stopTime = 1.0;
   stripRoot = false;
-  suppressPath = false;
+  suppressPath = true;
   timeout = 0.0;
   tolerance = 1e-4;
   wallTime = false;
