@@ -72,7 +72,7 @@ oms::Component* oms::ComponentTable::NewComponent(const oms::ComRef& cref, oms::
   if (path.length() > 4)
     extension = path.substr(path.length() - 4);
 
-  filesystem::path temp_root(parentSystem->getModel()->getTempDirectory());
+  filesystem::path temp_root(parentSystem->getModel().getTempDirectory());
   filesystem::path relPath = parentSystem->copyResources() ? (filesystem::path("resources") / (parentSystem->getUniqueID() + "_" + std::string(cref) + extension)) : filesystem::path(path);
   filesystem::path absPath = temp_root / relPath;
 
@@ -180,13 +180,13 @@ oms_status_enu_t oms::ComponentTable::exportToSSD(pugi::xml_node& node, pugi::xm
 
 oms_status_enu_t oms::ComponentTable::instantiate()
 {
-  time = getModel()->getStartTime();
+  time = getModel().getStartTime();
   return oms_status_ok;
 }
 
 oms_status_enu_t oms::ComponentTable::reset()
 {
-  time = getModel()->getStartTime();
+  time = getModel().getStartTime();
   return oms_status_ok;
 }
 

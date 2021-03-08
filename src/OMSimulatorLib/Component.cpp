@@ -120,9 +120,9 @@ oms::ComRef oms::Component::getFullCref() const
   return parentSystem->getFullCref() + cref;
 }
 
-oms::Model* oms::Component::getModel() const
+oms::Model& oms::Component::getModel() const
 {
-  return parentSystem ? parentSystem->getModel() : NULL;
+  return parentSystem->getModel();
 }
 
 oms_status_enu_t oms::Component::addTLMBus(const oms::ComRef &cref, oms_tlm_domain_t domain, const int dimensions, const oms_tlm_interpolation_t interpolation)
@@ -206,7 +206,7 @@ oms_status_enu_t oms::Component::deleteConnector(const ComRef& cref)
     if (connectors[i] && connectors[i]->getName() == cref)
     {
       // delete startValues associated with components connector
-      Component * component = parentSystem->getComponent(getCref());
+      Component* component = parentSystem->getComponent(getCref());
       if (Flags::ExportParametersInline())
       {
         // delete startValues associated with the Connector

@@ -149,7 +149,7 @@ oms_status_enu_t oms::SystemTLM::instantiate()
 
 oms_status_enu_t oms::SystemTLM::initialize()
 {
-  omtlm_setLogStepSize(model, getModel()->getLoggingInterval());
+  omtlm_setLogStepSize(model, getModel().getLoggingInterval());
 
   actualManagerPort = desiredManagerPort;
   actualMonitorPort = desiredMonitorPort;
@@ -197,7 +197,7 @@ oms_status_enu_t oms::SystemTLM::initialize()
     ExternalModel* externalmodel = reinterpret_cast<ExternalModel*>(component.second);
 
     //Copy external model file to temporary directory
-    std::string tempModelPath = getModel()->getTempDirectory()+"/"+std::string(externalmodel->getCref());
+    std::string tempModelPath = getModel().getTempDirectory()+"/"+std::string(externalmodel->getCref());
 
   #ifdef WIN32
     std::string cmd = "mkdir \""+tempModelPath+"\" 2> NUL";
@@ -257,8 +257,8 @@ oms_status_enu_t oms::SystemTLM::initialize()
     omtlm_addConnection(model,connections[i]->getSignalA().c_str(),connections[i]->getSignalB().c_str(),tlmpars->delay,tlmpars->linearimpedance,tlmpars->angularimpedance,tlmpars->alpha);
   }
 
-  logStep = (getModel()->getLoggingInterval() > 0) ? getModel()->getLoggingInterval() : 1e-3;
-  nextLogTime = getModel()->getStartTime()+logStep;
+  logStep = (getModel().getLoggingInterval() > 0) ? getModel().getLoggingInterval() : 1e-3;
+  nextLogTime = getModel().getStartTime()+logStep;
 
   return oms_status_ok;
 }
@@ -286,7 +286,7 @@ oms_status_enu_t oms::SystemTLM::doStep()
 
 oms_status_enu_t oms::SystemTLM::stepUntil(double stopTime)
 {
-  omtlm_setStartTime(model, getModel()->getStartTime());
+  omtlm_setStartTime(model, getModel().getStartTime());
   omtlm_setStopTime(model, stopTime);
 
   if(getSubSystems().empty() && getComponents().empty())
@@ -378,7 +378,7 @@ oms_status_enu_t oms::SystemTLM::connectToSockets(const oms::ComRef cref, std::s
   logInfo("Initializing plugin for "+std::string(cref));
 
   if(!plugin->Init(std::string(cref),
-                   getModel()->getStartTime(),
+                   getModel().getStartTime(),
                    1, //Unused argument anyway
                    system->getMaximumStepSize(),
                    server)) {
@@ -423,8 +423,8 @@ void oms::SystemTLM::disconnectFromSockets(const oms::ComRef cref)
 
 oms_status_enu_t oms::SystemTLM::setSocketData(const std::string& address, int managerPort, int monitorPort)
 {
-  if (!getModel()->validState(oms_modelState_virgin))
-    return logError_ModelInWrongState(this);
+  if (!getModel().validState(oms_modelState_virgin))
+    return logError_ModelInWrongState(getModel().getCref());
 
   this->address = address;
   this->desiredManagerPort = managerPort;
@@ -575,7 +575,7 @@ oms_status_enu_t oms::SystemTLM::updateInitialValues(const oms::ComRef cref)
 
 oms_status_enu_t oms::SystemTLM::initializeSubSystem(oms::ComRef cref)
 {
-  oms_status_enu_t status = getSubSystem(cref)->initialize();
+  oms_status_enu_t status = getSystem(cref)->initialize();
   if(oms_status_ok != status)
     return status;
   status = updateInitialValues(cref);
@@ -589,8 +589,8 @@ oms_status_enu_t oms::SystemTLM::initializeSubSystem(oms::ComRef cref)
 
 oms_status_enu_t oms::SystemTLM::simulateSubSystem(oms::ComRef cref, double stopTime)
 {
-  oms_status_enu_t status = getSubSystem(cref)->stepUntil(stopTime);
-  plugins[getSubSystem(cref)]->AwaitClosePermission();
+  oms_status_enu_t status = getSystem(cref)->stepUntil(stopTime);
+  plugins[getSystem(cref)]->AwaitClosePermission();
   return status;
 }
 
@@ -851,7 +851,7 @@ void oms::SystemTLM::sendValueToLogger(int varId, double time, double value)
   if(tmax >= nextLogTime && logBuffer.size() == numLogVars)
   {
     logTime = nextLogTime;
-    getModel()->emit(nextLogTime);
+    getModel().emit(nextLogTime);
     nextLogTime += logStep;
   }
 

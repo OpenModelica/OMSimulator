@@ -37,18 +37,18 @@
 
 oms::FMUInfo::FMUInfo(const std::string& path)
 {
-  this->author = NULL;
-  this->copyright = NULL;
-  this->description = NULL;
+  this->author = nullptr;
+  this->copyright = nullptr;
+  this->description = nullptr;
   this->fmiKind = oms_fmi_kind_unknown;
-  this->fmiVersion = NULL;
-  this->generationDateAndTime = NULL;
-  this->generationTool = NULL;
-  this->guid = NULL;
-  this->license = NULL;
-  this->modelName = NULL;
+  this->fmiVersion = nullptr;
+  this->generationDateAndTime = nullptr;
+  this->generationTool = nullptr;
+  this->guid = nullptr;
+  this->license = nullptr;
+  this->modelName = nullptr;
   this->path = new char[path.size()+1]; strcpy(this->path, path.c_str());
-  this->version = NULL;
+  this->version = nullptr;
   this->canBeInstantiatedOnlyOncePerProcess = false;
   this->canGetAndSetFMUstate = false;
   this->canNotUseMemoryManagementFunctions = false;
@@ -75,10 +75,22 @@ oms::FMUInfo::~FMUInfo()
   if (this->version) delete[] this->version;
 }
 
+void copyString(const char* source, char** target)
+{
+  if (source)
+  {
+    *target = new char[strlen(source) + 1];
+    strcpy(*target, source);
+  }
+  else
+  {
+    *target = new char[1];
+    *target[0] = '\0';
+  }
+}
+
 void oms::FMUInfo::update(fmi_version_enu_t version, fmi2_import_t* fmu)
 {
-  std::string value;
-
   fmi2_fmu_kind_enu_t fmuKind = fmi2_import_get_fmu_kind(fmu);
   if (fmi2_fmu_kind_me == fmuKind)
     this->fmiKind = oms_fmi_kind_me;
@@ -87,35 +99,16 @@ void oms::FMUInfo::update(fmi_version_enu_t version, fmi2_import_t* fmu)
   else if (fmi2_fmu_kind_me_and_cs == fmuKind)
     this->fmiKind = oms_fmi_kind_me_and_cs;
 
-  value = std::string(fmi2_import_get_author(fmu));
-  this->author = new char[value.size()+1]; strcpy(this->author, value.c_str());
-
-  value = std::string(fmi2_import_get_copyright(fmu));
-  this->copyright = new char[value.size()+1]; strcpy(this->copyright, value.c_str());
-
-  value = std::string(fmi2_import_get_description(fmu));
-  this->description = new char[value.size()+1]; strcpy(this->description, value.c_str());
-
-  value = std::string(fmi_version_to_string(version));
-  this->fmiVersion = new char[value.size()+1]; strcpy(this->fmiVersion, value.c_str());
-
-  value = std::string(fmi2_import_get_generation_date_and_time(fmu));
-  this->generationDateAndTime = new char[value.size()+1]; strcpy(this->generationDateAndTime, value.c_str());
-
-  value = std::string(fmi2_import_get_generation_tool(fmu));
-  this->generationTool = new char[value.size()+1]; strcpy(this->generationTool, value.c_str());
-
-  value = std::string(fmi2_import_get_GUID(fmu));
-  this->guid = new char[value.size()+1]; strcpy(this->guid, value.c_str());
-
-  value = std::string(fmi2_import_get_license(fmu));
-  this->license = new char[value.size()+1]; strcpy(this->license, value.c_str());
-
-  value = std::string(fmi2_import_get_model_name(fmu));
-  this->modelName = new char[value.size()+1]; strcpy(this->modelName, value.c_str());
-
-  value = std::string(fmi2_import_get_model_version(fmu));
-  this->version = new char[value.size()+1]; strcpy(this->version, value.c_str());
+  copyString(fmi2_import_get_author(fmu), &this->author);
+  copyString(fmi2_import_get_copyright(fmu), &this->copyright);
+  copyString(fmi2_import_get_description(fmu), &this->description);
+  copyString(fmi_version_to_string(version), &this->fmiVersion);
+  copyString(fmi2_import_get_generation_date_and_time(fmu), &this->generationDateAndTime);
+  copyString(fmi2_import_get_generation_tool(fmu), &this->generationTool);
+  copyString(fmi2_import_get_GUID(fmu), &this->guid);
+  copyString(fmi2_import_get_license(fmu), &this->license);
+  copyString(fmi2_import_get_model_name(fmu), &this->modelName);
+  copyString(fmi2_import_get_model_version(fmu), &this->version);
 
   if (oms_fmi_kind_cs == fmiKind || oms_fmi_kind_me_and_cs == fmiKind)
   {

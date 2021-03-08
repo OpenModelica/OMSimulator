@@ -132,7 +132,7 @@ private:
 #define logError_InternalError                                 logError("internal error")
 #define logError_InvalidIdent(cref)                            logError("\"" + std::string(cref) + "\" is not a valid ident")
 #define logError_InvalidIdent(cref)                            logError("\"" + std::string(cref) + "\" is not a valid ident")
-#define logError_ModelInWrongState(model)                      logError("Model \"" + std::string(model->getCref()) + "\" is in wrong model state")
+#define logError_ModelInWrongState(cref)                       logError("Model \"" + std::string(cref) + "\" is in wrong model state")
 #define logError_ModelNotInScope(cref)                         logError("Model \"" + std::string(cref) + "\" does not exist in the scope")
 #define logError_NoConnectorsInTLMBus(cref)                    logError("No connectors in TLM bus: \"" + std::string(cref) + "\"")
 #define logError_NotForExternalModels                          logError("Not available for external models")

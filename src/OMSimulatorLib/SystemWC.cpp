@@ -143,7 +143,7 @@ oms_status_enu_t oms::SystemWC::importFromSSD_SimulationInformation(const pugi::
 
 oms_status_enu_t oms::SystemWC::instantiate()
 {
-  time = getModel()->getStartTime();
+  time = getModel().getStartTime();
 
   for (const auto& subsystem : getSubSystems())
     if (oms_status_ok != subsystem.second->instantiate())
@@ -293,7 +293,7 @@ oms_status_enu_t oms::SystemWC::initialize()
     return logError("Invalid solver selected");
 
   // mark algebraic loops to be updated on next call
-  loopsNeedUpdate = true;
+  forceLoopsToBeUpdated();
 
   return oms_status_ok;
 }
@@ -321,7 +321,7 @@ oms_status_enu_t oms::SystemWC::reset()
     if (oms_status_ok != component.second->reset())
       return oms_status_error;
 
-  time = getModel()->getStartTime();
+  time = getModel().getStartTime();
 
   return oms_status_ok;
 }
@@ -341,7 +341,7 @@ oms_status_enu_t oms::SystemWC::doStep()
     if (stepSize < minimumStepSize) stepSize = minimumStepSize;
 
     double tNext = time+stepSize;
-    const double stopTime = this->getModel()->getStopTime();
+    const double stopTime = getModel().getStopTime();
     if (tNext > stopTime)
     {
       tNext = stopTime;
@@ -484,10 +484,10 @@ oms_status_enu_t oms::SystemWC::doStep()
       time = tNext;
       bool emitted;
       if (isTopLevelSystem())
-        getModel()->emit(time, false, &emitted);
+        getModel().emit(time, false, &emitted);
       updateInputs(eventGraph);
       if (isTopLevelSystem())
-        getModel()->emit(time, emitted);
+        getModel().emit(time, emitted);
 
       rollBackIt = 0;
       fixRatio = fixRatio*safety_factor;
@@ -507,7 +507,7 @@ oms_status_enu_t oms::SystemWC::doStep()
     std::vector<double> inputDer;
 
     double tNext = time+maximumStepSize;
-    const double stopTime = this->getModel()->getStopTime();
+    const double stopTime = this->getModel().getStopTime();
     if (tNext > stopTime)
       tNext = stopTime;
 
@@ -613,10 +613,10 @@ oms_status_enu_t oms::SystemWC::doStep()
         time = tNext;
         bool emitted;
         if (isTopLevelSystem())
-          getModel()->emit(time, false, &emitted);
+          getModel().emit(time, false, &emitted);
         updateInputs(eventGraph);
         if (isTopLevelSystem())
-          getModel()->emit(time, emitted);
+          getModel().emit(time, emitted);
       }
     }
 
@@ -723,7 +723,7 @@ oms_status_enu_t oms::SystemWC::doStep()
     }
 
     double tNext = time+nextStepSize;
-    const double stopTime = this->getModel()->getStopTime();
+    const double stopTime = this->getModel().getStopTime();
     if (tNext > stopTime)
       tNext = stopTime;
 
@@ -759,10 +759,10 @@ oms_status_enu_t oms::SystemWC::doStep()
     time = tNext;
     bool emitted;
     if (isTopLevelSystem())
-      getModel()->emit(time, false, &emitted);
+      getModel().emit(time, false, &emitted);
     updateInputs(eventGraph);
     if (isTopLevelSystem())
-      getModel()->emit(time, emitted);
+      getModel().emit(time, emitted);
 
     return oms_status_ok;
   }
@@ -780,7 +780,7 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime)
   if (solverMethod == oms_solver_wc_assc)
     return stepUntilASSC(stopTime);
 
-  ComRef modelName = this->getModel()->getCref();
+  ComRef modelName = this->getModel().getCref();
   auto start = std::chrono::steady_clock::now() + std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(time));
 
   fmi2_status_t fmi_status;
@@ -789,7 +789,7 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime)
     logInfo("stepUntil [" + std::to_string(startTime) + "; " + std::to_string(stopTime) + "]");
 
   if (isTopLevelSystem())
-    getModel()->emit(time);
+    getModel().emit(time);
 
   if (solverMethod == oms_solver_wc_mav || solverMethod == oms_solver_wc_mav2)
   {
@@ -836,7 +836,7 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime)
 oms_status_enu_t oms::SystemWC::stepUntilASSC(double stopTime)
 {
   CallClock callClock(clock);
-  ComRef modelName = this->getModel()->getCref();
+  ComRef modelName = this->getModel().getCref();
 
   double startTime = time;
   if (Flags::ProgressBar())
@@ -860,8 +860,8 @@ oms_status_enu_t oms::SystemWC::stepUntilASSC(double stopTime)
 
 oms_status_enu_t oms::SystemWC::getRealOutputDerivative(const ComRef& cref, SignalDerivative& der)
 {
-  if (!getModel()->validState(oms_modelState_simulation))
-    return logError_ModelInWrongState(getModel());
+  if (!getModel().validState(oms_modelState_simulation))
+    return logError_ModelInWrongState(getModel().getCref());
 
   oms::ComRef tail(cref);
   oms::ComRef head = tail.pop_front();
@@ -875,8 +875,8 @@ oms_status_enu_t oms::SystemWC::getRealOutputDerivative(const ComRef& cref, Sign
 
 oms_status_enu_t oms::SystemWC::setRealInputDerivative(const ComRef& cref, const SignalDerivative& der)
 {
-  if (!getModel()->validState(oms_modelState_simulation))
-    return logError_ModelInWrongState(getModel());
+  if (!getModel().validState(oms_modelState_simulation))
+    return logError_ModelInWrongState(getModel().getCref());
 
   oms::ComRef tail(cref);
   oms::ComRef head = tail.pop_front();
@@ -1009,7 +1009,7 @@ oms_status_enu_t oms::SystemWC::updateInputs(oms::DirectedGraph& graph)
         if (oms_status_ok != setReal(graph.getNodes()[input].getName(), value)) return oms_status_error;
 
         // derivatives
-        if (Flags::InputExtrapolation() && getModel()->validState(oms_modelState_simulation))
+        if (Flags::InputExtrapolation() && getModel().validState(oms_modelState_simulation))
         {
           SignalDerivative der;
           if (oms_status_ok == getRealOutputDerivative(graph.getNodes()[output].getName(), der))
@@ -1039,7 +1039,7 @@ oms_status_enu_t oms::SystemWC::updateInputs(oms::DirectedGraph& graph)
       status = solveAlgLoop(graph, loopNum);
       if (oms_status_ok != status)
       {
-        loopsNeedUpdate = true;
+        forceLoopsToBeUpdated();
         return status;
       }
       loopNum++;

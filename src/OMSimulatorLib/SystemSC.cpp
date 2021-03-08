@@ -178,7 +178,7 @@ oms_status_enu_t oms::SystemSC::importFromSSD_SimulationInformation(const pugi::
 
 oms_status_enu_t oms::SystemSC::instantiate()
 {
-  time = getModel()->getStartTime();
+  time = getModel().getStartTime();
 
   // there shouldn't be any subsystem
   for (const auto& subsystem : getSubSystems())
@@ -343,7 +343,7 @@ oms_status_enu_t oms::SystemSC::initialize()
   }
 
   // Mark algebraic loops to be updated on next call
-  loopsNeedUpdate = true;
+  forceLoopsToBeUpdated();
 
   return oms_status_ok;
 }
@@ -423,7 +423,7 @@ oms_status_enu_t oms::SystemSC::reset()
     if (oms_status_ok != component.second->reset())
       return oms_status_error;
 
-  time = getModel()->getStartTime();
+  time = getModel().getStartTime();
 
   if (oms_solver_sc_cvode == solverMethod && solverData.cvode.mem)
   {
@@ -499,7 +499,7 @@ oms_status_enu_t oms::SystemSC::doStep()
 
       // emit the left limit of the event (if it hasn't already been emitted)
       if (Flags::EmitEvents() && isTopLevelSystem())
-        getModel()->emit(time, false);
+        getModel().emit(time, false);
 
       fmistatus = fmi2_import_enter_event_mode(fmus[i]->getFMU());
       if (fmi2_status_ok != fmistatus) logError_FMUCall("fmi2_import_enter_event_mode", fmus[i]);
@@ -532,7 +532,7 @@ oms_status_enu_t oms::SystemSC::doStep()
       // emit the right limit of the event
       updateInputs(eventGraph);
       if (Flags::EmitEvents() && isTopLevelSystem())
-        getModel()->emit(time, true);
+        getModel().emit(time, true);
 
       // restart event iteration from the beginning
       i=-1;
@@ -546,7 +546,7 @@ oms_status_enu_t oms::SystemSC::doStep()
 
   // calculate step size
   fmi2_real_t hcur = tnext - tlast;
-  const double stopTime = this->getModel()->getStopTime();
+  const double stopTime = getModel().getStopTime();
   if (tnext > stopTime - hcur / 1e16)
   {
     // adjust final step size
@@ -614,7 +614,7 @@ oms_status_enu_t oms::SystemSC::doStep()
 
   updateInputs(simulationGraph); //pass the continuousTimeMode dependency graph which involves only connections of type Real
   if (isTopLevelSystem())
-    getModel()->emit(time);
+    getModel().emit(time);
 
   return oms_status_ok;
 }
@@ -649,7 +649,7 @@ oms_status_enu_t oms::SystemSC::updateInputs(DirectedGraph& graph)
   oms_status_enu_t status;
   int loopNum = 0;
 
-  if (getModel()->validState(oms_modelState_simulation))
+  if (getModel().validState(oms_modelState_simulation))
   {
     // update time
     for (const auto& component : getComponents())
@@ -706,7 +706,7 @@ oms_status_enu_t oms::SystemSC::updateInputs(DirectedGraph& graph)
       status = solveAlgLoop(graph, loopNum);
       if (oms_status_ok != status)
       {
-        loopsNeedUpdate = true;
+        forceLoopsToBeUpdated();
         return status;
       }
       loopNum++;

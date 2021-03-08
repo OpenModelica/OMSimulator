@@ -98,25 +98,25 @@ oms::System* oms::System::NewSystem(const oms::ComRef& cref, oms_system_enu_t ty
   if (!cref.isValidIdent())
   {
     logError_InvalidIdent(cref);
-    return NULL;
+    return nullptr;
   }
 
   if (parentSystem && parentSystem->getSystem(cref))
   {
     logError("Name is already in use");
-    return NULL;
+    return nullptr;
   }
 
   if (parentSystem && parentSystem->getComponent(cref))
   {
     logError("Name is already in use");
-    return NULL;
+    return nullptr;
   }
 
   if ((parentModel && parentSystem) || (!parentModel && !parentSystem))
   {
     logError_InternalError;
-    return NULL;
+    return nullptr;
   }
 
   switch (type)
@@ -125,7 +125,7 @@ oms::System* oms::System::NewSystem(const oms::ComRef& cref, oms_system_enu_t ty
     if (parentSystem)
     {
       logError("A TLM system must be the the root system of a model.");
-      return NULL;
+      return nullptr;
     }
 #if !defined(NO_TLM)
     return SystemTLM::NewSystem(cref, parentModel, parentSystem);
@@ -137,7 +137,7 @@ oms::System* oms::System::NewSystem(const oms::ComRef& cref, oms_system_enu_t ty
     if (parentSystem && oms_system_tlm != parentSystem->getType())
     {
       logError("A WC system must be the root system or a subsystem of a TLM system.");
-      return NULL;
+      return nullptr;
     }
     return SystemWC::NewSystem(cref, parentModel, parentSystem);
 
@@ -145,12 +145,12 @@ oms::System* oms::System::NewSystem(const oms::ComRef& cref, oms_system_enu_t ty
     if (parentSystem && oms_system_wc != parentSystem->getType())
     {
       logError("A SC system must be the root system or a subsystem of a WC system.");
-      return NULL;
+      return nullptr;
     }
     return SystemSC::NewSystem(cref, parentModel, parentSystem);
   default:
       logError_InternalError;
-  return NULL;
+  return nullptr;
   }
 }
 
@@ -173,17 +173,15 @@ oms::System* oms::System::getSystem(const oms::ComRef& cref)
   oms::ComRef tail(cref);
   oms::ComRef front = tail.pop_front();
 
-  auto it = subsystems.find(front);
-  if (it == subsystems.end())
-    return NULL;
+  auto subsystem = subsystems.find(front);
+  if (subsystem != subsystems.end())
+    return subsystem->second->getSystem(tail);
 
-  return it->second->getSystem(tail);
+  return nullptr;
 }
 
 oms::Component* oms::System::getComponent(const oms::ComRef& cref)
 {
-  oms::System* system = NULL;
-
   oms::ComRef tail(cref);
   oms::ComRef front = tail.pop_front();
 
@@ -192,19 +190,31 @@ oms::Component* oms::System::getComponent(const oms::ComRef& cref)
     return subsystem->second->getComponent(tail);
 
   auto component = components.find(cref);
-  if (component == components.end())
-    return NULL;
+  if (component != components.end())
+    return component->second;
 
-  return component->second;
+  return nullptr;
 }
 
-oms::System *oms::System::getSubSystem(const oms::ComRef &cref)
+oms::Variable* oms::System::getVariable(const ComRef& cref)
 {
-  auto it = subsystems.find(cref);
-  if (it == subsystems.end())
-    return NULL;
+  oms::ComRef tail(cref);
+  oms::ComRef head = tail.pop_front();
 
-  return it->second;
+  auto subsystem = subsystems.find(head);
+  if (subsystem != subsystems.end())
+    return subsystem->second->getVariable(tail);
+
+  auto component = components.find(head);
+  if (component != components.end())
+    return component->second->getVariable(tail);
+
+  //for (auto& connector : connectors)
+  //  if (connector && connector->getName() == cref)
+  //    return connector->getVariable();
+
+  logError_UnknownSignal(getFullCref() + cref);
+  return nullptr;
 }
 
 bool oms::System::validCref(const oms::ComRef& cref)
@@ -533,7 +543,7 @@ oms_status_enu_t oms::System::importFromSnapshot(const pugi::xml_node& node, con
           // set parameter bindings associated with the system
           if (ssvFileSource.empty()) // inline parameterBinding
           {
-            std::string tempdir = getModel()->getTempDirectory();
+            std::string tempdir = getModel().getTempDirectory();
             if (oms_status_ok != values.importFromSnapshot(*it, sspVersion, snapshot))
               return logError("Failed to import " + std::string(oms::ssp::Version1_0::ssd::parameter_bindings));
           }
@@ -613,7 +623,7 @@ oms_status_enu_t oms::System::importFromSnapshot(const pugi::xml_node& node, con
           ComRef systemCref = ComRef(itElements->attribute("name").as_string());
 
           // lochel: I guess that can somehow be improved
-          oms_system_enu_t systemType = getModel()->getSystemType(*itElements, sspVersion);
+          oms_system_enu_t systemType = getModel().getSystemType(*itElements, sspVersion);
 
           if (oms_status_ok != addSubSystem(systemCref, systemType))
             return oms_status_error;
@@ -927,7 +937,7 @@ oms::Connector* oms::System::getConnector(const oms::ComRef& cref)
     if (connector && connector->getName() == cref)
       return connector;
 
-  return NULL;
+  return nullptr;
 }
 
 std::string oms::System::getConnectorOwner(const oms::ComRef& cref) const
@@ -946,14 +956,14 @@ oms::BusConnector* oms::System::getBusConnector(const oms::ComRef& cref)
   if (!cref.isValidIdent())
   {
     logError_InvalidIdent(cref);
-    return NULL;
+    return nullptr;
   }
 
   for(auto& busconnector : busconnectors)
     if (busconnector && busconnector->getName() == cref)
       return busconnector;
 
-  return NULL;
+  return nullptr;
 }
 
 #if !defined(NO_TLM)
@@ -971,14 +981,14 @@ oms::TLMBusConnector* oms::System::getTLMBusConnector(const oms::ComRef& cref)
   if (!cref.isValidIdent())
   {
     logError_InvalidIdent(cref);
-    return NULL;
+    return nullptr;
   }
 
   for(auto& tlmbusconnector : tlmbusconnectors)
     if (tlmbusconnector && tlmbusconnector->getName() == cref)
       return tlmbusconnector;
 
-  return NULL;
+  return nullptr;
 }
 #endif
 
@@ -1165,7 +1175,7 @@ oms_status_enu_t oms::System::addTLMConnection(const oms::ComRef& crefA, const o
   }
 
   TLMBusConnector *busA=0, *busB=0;
-  auto subsystemA = getSubSystem(headA);
+  auto subsystemA = getSystem(headA);
   if(subsystemA)
     busA = subsystemA->getTLMBusConnector(tailA);
   if(!busA) {
@@ -1174,7 +1184,7 @@ oms_status_enu_t oms::System::addTLMConnection(const oms::ComRef& crefA, const o
       busA = componentA->getTLMBusConnector(tailA);
   }
 
-  auto subsystemB = getSubSystem(headB);
+  auto subsystemB = getSystem(headB);
   if(subsystemB)
     busB = subsystemB->getTLMBusConnector(tailB);
   if(!busB) {
@@ -1534,14 +1544,14 @@ oms::Connection* oms::System::getConnection(const oms::ComRef& crefA, const oms:
   for (auto& connection : connections)
     if (connection && connection->isEqual(crefA, crefB))
       return connection;
-  return NULL;
+  return nullptr;
 }
 
-oms::Model* oms::System::getModel()
+oms::Model& oms::System::getModel()
 {
   if (parentSystem)
     return parentSystem->getModel();
-  return parentModel;
+  return *parentModel;
 }
 
 oms_status_enu_t oms::System::deleteAllConectionsTo(const oms::ComRef& cref)
@@ -1765,8 +1775,8 @@ oms_status_enu_t oms::System::updateDependencyGraphs()
 
 oms_status_enu_t oms::System::getBoolean(const ComRef& cref, bool& value)
 {
-  if (!getModel()->validState(oms_modelState_virgin|oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
-    return logError_ModelInWrongState(getModel());
+  if (!getModel().validState(oms_modelState_virgin|oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
+    return logError_ModelInWrongState(getModel().getCref());
 
   oms::ComRef tail(cref);
   oms::ComRef head = tail.pop_front();
@@ -1785,7 +1795,7 @@ oms_status_enu_t oms::System::getBoolean(const ComRef& cref, bool& value)
     {
       oms::ComRef ident = getValidCref(cref);
       // check any external input are set and return the value, otherwise return the startValue
-      if (oms_modelState_simulation == getModel()->getModelState() && values.booleanValues[ident] != 0.0)
+      if (oms_modelState_simulation == getModel().getModelState() && values.booleanValues[ident] != 0.0)
       {
         value = values.booleanValues[ident];
         return oms_status_ok;
@@ -1804,8 +1814,8 @@ oms_status_enu_t oms::System::getBoolean(const ComRef& cref, bool& value)
 
 oms_status_enu_t oms::System::getInteger(const ComRef& cref, int& value)
 {
-  if (!getModel()->validState(oms_modelState_virgin|oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
-    return logError_ModelInWrongState(getModel());
+  if (!getModel().validState(oms_modelState_virgin|oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
+    return logError_ModelInWrongState(getModel().getCref());
 
   oms::ComRef tail(cref);
   oms::ComRef head = tail.pop_front();
@@ -1824,7 +1834,7 @@ oms_status_enu_t oms::System::getInteger(const ComRef& cref, int& value)
     {
       oms::ComRef ident = getValidCref(cref);
       // check any external input are set and return the value, otherwise return the startValue
-      if (oms_modelState_simulation == getModel()->getModelState() && values.integerValues[ident] != 0.0)
+      if (oms_modelState_simulation == getModel().getModelState() && values.integerValues[ident] != 0.0)
       {
         value = values.integerValues[ident];
         return oms_status_ok;
@@ -1843,8 +1853,8 @@ oms_status_enu_t oms::System::getInteger(const ComRef& cref, int& value)
 
 oms_status_enu_t oms::System::getReal(const ComRef& cref, double& value)
 {
-  if (!getModel()->validState(oms_modelState_virgin|oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
-    return logError_ModelInWrongState(getModel());
+  if (!getModel().validState(oms_modelState_virgin|oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
+    return logError_ModelInWrongState(getModel().getCref());
 
   oms::ComRef tail(cref);
   oms::ComRef head = tail.pop_front();
@@ -1863,7 +1873,7 @@ oms_status_enu_t oms::System::getReal(const ComRef& cref, double& value)
     {
       oms::ComRef ident = getValidCref(cref);
       // check any external input are set and return the value, otherwise return the startValue
-      if (oms_modelState_simulation == getModel()->getModelState() && values.realValues[ident] != 0.0)
+      if (oms_modelState_simulation == getModel().getModelState() && values.realValues[ident] != 0.0)
       {
         value = values.realValues[ident];
         return oms_status_ok;
@@ -1905,31 +1915,10 @@ oms::ComRef oms::System::getValidCref(const ComRef& cref)
   return ident;
 }
 
-oms::Variable* oms::System::getVariable(const ComRef& cref)
-{
-  oms::ComRef tail(cref);
-  oms::ComRef head = tail.pop_front();
-
-  auto subsystem = subsystems.find(head);
-  if (subsystem != subsystems.end())
-    return subsystem->second->getVariable(tail);
-
-  auto component = components.find(head);
-  if (component != components.end())
-    return component->second->getVariable(tail);
-
-  //for (auto& connector : connectors)
-  //  if (connector && connector->getName() == cref)
-  //    return connector->getVariable();
-
-  logError_UnknownSignal(getFullCref() + cref);
-  return NULL;
-}
-
 oms_status_enu_t oms::System::setBoolean(const ComRef& cref, bool value)
 {
-  if (!getModel()->validState(oms_modelState_virgin|oms_modelState_enterInstantiation|oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
-    return logError_ModelInWrongState(getModel());
+  if (!getModel().validState(oms_modelState_virgin|oms_modelState_enterInstantiation|oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
+    return logError_ModelInWrongState(getModel().getCref());
 
   oms::ComRef tail(cref);
   oms::ComRef head = tail.pop_front();
@@ -1947,7 +1936,7 @@ oms_status_enu_t oms::System::setBoolean(const ComRef& cref, bool value)
     {
       oms::ComRef ident = getValidCref(cref);
       // set external inputs, after initialization
-      if (oms_modelState_simulation == getModel()->getModelState())
+      if (oms_modelState_simulation == getModel().getModelState())
       {
         values.booleanValues[ident] = value;
       }
@@ -1963,8 +1952,8 @@ oms_status_enu_t oms::System::setBoolean(const ComRef& cref, bool value)
 
 oms_status_enu_t oms::System::setInteger(const ComRef& cref, int value)
 {
-  if (!getModel()->validState(oms_modelState_virgin|oms_modelState_enterInstantiation|oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
-    return logError_ModelInWrongState(getModel());
+  if (!getModel().validState(oms_modelState_virgin|oms_modelState_enterInstantiation|oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
+    return logError_ModelInWrongState(getModel().getCref());
 
   oms::ComRef tail(cref);
   oms::ComRef head = tail.pop_front();
@@ -1982,7 +1971,7 @@ oms_status_enu_t oms::System::setInteger(const ComRef& cref, int value)
     {
       oms::ComRef ident = getValidCref(cref);
       // set external inputs, after initialization
-      if (oms_modelState_simulation == getModel()->getModelState())
+      if (oms_modelState_simulation == getModel().getModelState())
       {
         values.integerValues[ident] = value;
       }
@@ -1998,8 +1987,8 @@ oms_status_enu_t oms::System::setInteger(const ComRef& cref, int value)
 
 oms_status_enu_t oms::System::setReal(const ComRef& cref, double value)
 {
-  if (!getModel()->validState(oms_modelState_virgin|oms_modelState_enterInstantiation|oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
-    return logError_ModelInWrongState(getModel());
+  if (!getModel().validState(oms_modelState_virgin|oms_modelState_enterInstantiation|oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
+    return logError_ModelInWrongState(getModel().getCref());
 
   oms::ComRef tail(cref);
   oms::ComRef head = tail.pop_front();
@@ -2017,7 +2006,7 @@ oms_status_enu_t oms::System::setReal(const ComRef& cref, double value)
     {
       oms::ComRef ident = getValidCref(cref);
       // set external inputs, after initialization
-      if (oms_modelState_simulation == getModel()->getModelState())
+      if (oms_modelState_simulation == getModel().getModelState())
       {
         values.realValues[ident] = value;
       }
@@ -2052,7 +2041,7 @@ oms_status_enu_t oms::System::setReals(const std::vector<oms::ComRef> &crefs, st
   return status;
 }
 
-oms_status_enu_t oms::System::setRealInputDerivatives(const oms::ComRef &cref, int order, double value)
+oms_status_enu_t oms::System::setRealInputDerivatives(const oms::ComRef& cref, int order, double value)
 {
   return logError_NotImplemented;
 }
@@ -2236,12 +2225,12 @@ oms_status_enu_t oms::System::removeSignalsFromResults(const char* regex)
 
 bool oms::System::useThreadPool()
 {
-  return getModel()->useThreadPool();
+  return getModel().useThreadPool();
 }
 
 ctpl::thread_pool& oms::System::getThreadPool()
 {
-  return getModel()->getThreadPool();
+  return getModel().getThreadPool();
 }
 
 std::string oms::System::getUniqueID() const
@@ -2385,7 +2374,7 @@ oms::AlgLoop* oms::System::getAlgLoop(const int systemNumber)
   if (systemNumber > algLoops.size()-1 || systemNumber < 0)
   {
     logError("Invalid system number for algebraic loop.");
-    return NULL;
+    return nullptr;
   }
 
   return &algLoops[systemNumber];

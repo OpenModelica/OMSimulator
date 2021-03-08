@@ -70,7 +70,7 @@ oms::Component* oms::ComponentFMUME::NewComponent(const oms::ComRef& cref, oms::
     return NULL;
   }
 
-  filesystem::path temp_root(parentSystem->getModel()->getTempDirectory());
+  filesystem::path temp_root(parentSystem->getModel().getTempDirectory());
   filesystem::path temp_temp = temp_root / "temp";
   filesystem::path relFMUPath = parentSystem->copyResources() ? (filesystem::path("resources") / (parentSystem->getUniqueID() + "_" + std::string(cref) + ".fmu")) : filesystem::path(fmuPath);
   filesystem::path absFMUPath = temp_root / relFMUPath;
@@ -293,7 +293,7 @@ oms::Component* oms::ComponentFMUME::NewComponent(const pugi::xml_node& node, om
     else if(name == oms::ssp::Version1_0::ssd::parameter_bindings)
     {
       // set parameter bindings associated with the component
-      std::string tempdir = parentSystem->getModel()->getTempDirectory();
+      std::string tempdir = parentSystem->getModel().getTempDirectory();
       component->values.importFromSnapshot(*it, sspVersion, snapshot);
     }
     else
@@ -538,7 +538,7 @@ oms_status_enu_t oms::ComponentFMUME::instantiate()
   }
 
   // enterInitialization
-  const double& startTime = getParentSystem()->getModel()->getStartTime();
+  const double& startTime = getModel().getStartTime();
   double relativeTolerance = 0.0;
   dynamic_cast<SystemSC*>(getParentSystem())->getTolerance(NULL, &relativeTolerance);
   fmistatus = fmi2_import_setup_experiment(fmu, fmi2_true, relativeTolerance, startTime, fmi2_false, 1.0);
@@ -632,7 +632,7 @@ oms_status_enu_t oms::ComponentFMUME::reset()
     return logError_ResetFailed(getCref());
 
   // enterInitialization
-  const double& startTime = getParentSystem()->getModel()->getStartTime();
+  const double& startTime = getModel().getStartTime();
   double relativeTolerance = 0.0;
   dynamic_cast<SystemSC*>(getParentSystem())->getTolerance(NULL, &relativeTolerance);
   fmistatus = fmi2_import_setup_experiment(fmu, fmi2_true, relativeTolerance, startTime, fmi2_false, 1.0);
@@ -667,7 +667,7 @@ oms_status_enu_t oms::ComponentFMUME::getBoolean(const ComRef& cref, bool& value
 {
   CallClock callClock(clock);
 
-  if (oms_modelState_virgin == getModel()->getModelState())
+  if (oms_modelState_virgin == getModel().getModelState())
   {
     // check for start values exist, priority over modeldescription.xml start values
     auto booleanValue = values.booleanStartValues.find(cref);
@@ -720,7 +720,7 @@ oms_status_enu_t oms::ComponentFMUME::getInteger(const ComRef& cref, int& value)
 {
   CallClock callClock(clock);
 
-  if (oms_modelState_virgin == getModel()->getModelState())
+  if (oms_modelState_virgin == getModel().getModelState())
   {
     // check for start values exist, priority over modeldescription.xml start values
     auto integerValue = values.integerStartValues.find(cref);
@@ -812,7 +812,7 @@ oms_status_enu_t oms::ComponentFMUME::getReal(const ComRef& cref, double& value)
 {
   CallClock callClock(clock);
 
-  if (oms_modelState_virgin == getModel()->getModelState())
+  if (oms_modelState_virgin == getModel().getModelState())
   {
     // check for start values exist, priority over modeldescription.xml start values
     auto realValue = values.realStartValues.find(cref);
@@ -867,7 +867,7 @@ oms_status_enu_t oms::ComponentFMUME::setBoolean(const ComRef& cref, bool value)
   if (!fmu || j < 0)
     return logError_UnknownSignal(getFullCref() + cref);
 
-  if (oms_modelState_virgin == getModel()->getModelState())
+  if (oms_modelState_virgin == getModel().getModelState())
   {
     if (Flags::ExportParametersInline())
     {
@@ -906,7 +906,7 @@ oms_status_enu_t oms::ComponentFMUME::setInteger(const ComRef& cref, int value)
   if (!fmu || j < 0)
     return logError_UnknownSignal(getFullCref() + cref);
 
-  if (oms_modelState_virgin == getModel()->getModelState())
+  if (oms_modelState_virgin == getModel().getModelState())
   {
     if (Flags::ExportParametersInline())
     {
@@ -949,11 +949,11 @@ oms_status_enu_t oms::ComponentFMUME::setReal(const ComRef& cref, double value)
   if (!fmu || j < 0)
     return logError_UnknownSignal(getFullCref() + cref);
 
-  if (getModel()->validState(oms_modelState_virgin|oms_modelState_enterInstantiation|oms_modelState_instantiated))
+  if (getModel().validState(oms_modelState_virgin|oms_modelState_enterInstantiation|oms_modelState_instantiated))
     if (allVariables[j].isCalculated() || allVariables[j].isIndependent())
       return logWarning("It is not allowed to provide a start value if initial=\"calculated\" or causality=\"independent\".");
 
-  if (oms_modelState_virgin == getModel()->getModelState())
+  if (oms_modelState_virgin == getModel().getModelState())
   {
     if (Flags::ExportParametersInline())
     {
