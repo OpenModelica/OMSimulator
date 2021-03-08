@@ -1,4 +1,5 @@
 #ifndef _OMS_FILESYSTEM_H_
+#define _OMS_FILESYSTEM_H_
 
 #if !defined(WITHOUT_FS) && defined(__has_include)
 

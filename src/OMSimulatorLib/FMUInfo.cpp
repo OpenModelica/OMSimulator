@@ -32,8 +32,8 @@
 #include "FMUInfo.h"
 
 #include "Logging.h"
+#include "OMSString.h"
 
-#include <cstring>
 
 oms::FMUInfo::FMUInfo(const std::string& path)
 {
@@ -47,7 +47,7 @@ oms::FMUInfo::FMUInfo(const std::string& path)
   this->guid = nullptr;
   this->license = nullptr;
   this->modelName = nullptr;
-  this->path = new char[path.size()+1]; strcpy(this->path, path.c_str());
+  this->path = allocateAndCopyString(path);
   this->version = nullptr;
   this->canBeInstantiatedOnlyOncePerProcess = false;
   this->canGetAndSetFMUstate = false;
@@ -73,24 +73,6 @@ oms::FMUInfo::~FMUInfo()
   if (this->modelName) delete[] this->modelName;
   if (this->path) delete[] this->path;
   if (this->version) delete[] this->version;
-}
-
-char* allocateAndCopyString(const char* source)
-{
-  char* target;
-
-  if (source)
-  {
-    target = new char[strlen(source) + 1];
-    strcpy(target, source);
-  }
-  else
-  {
-    target = new char[1];
-    target[0] = '\0';
-  }
-
-  return target;
 }
 
 void oms::FMUInfo::update(fmi_version_enu_t version, fmi2_import_t* fmu)
