@@ -46,6 +46,29 @@ class Model:
     if Types.Status(status) != Types.Status.OK:
       raise Exception('error {}'.format(Types.Status(status)))
 
+  def reset(self):
+    status = Scope._capi.reset(self.cref)
+    if Types.Status(status) != Types.Status.OK:
+      raise Exception('error {}'.format(Types.Status(status)))
+
+  def getBoolean(self, cref):
+    value, status = Scope._capi.getBoolean(self.cref + '.' + cref)
+    if Types.Status(status) != Types.Status.OK:
+      raise Exception('error {}'.format(Types.Status(status)))
+    return value
+
+  def getInteger(self, cref):
+    value, status = Scope._capi.getInteger(self.cref + '.' + cref)
+    if Types.Status(status) != Types.Status.OK:
+      raise Exception('error {}'.format(Types.Status(status)))
+    return value
+
+  def getReal(self, cref):
+    value, status = Scope._capi.getReal(self.cref + '.' + cref)
+    if Types.Status(status) != Types.Status.OK:
+      raise Exception('error {}'.format(Types.Status(status)))
+    return value
+
   @property
   def cref(self):
     return self._cref
@@ -99,3 +122,10 @@ class Model:
     status = Scope._capi.setResultFile(self.cref, file, bufferSize)
     if Types.Status(status) != Types.Status.OK:
       raise Exception('error {}'.format(Types.Status(status)))
+
+  @property
+  def modelState(self):
+    modelState, status = Scope._capi.getModelState(self.cref)
+    if Types.Status(status) != Types.Status.OK:
+      raise Exception('error {}'.format(Types.Status(status)))
+    return Types.ModelState(modelState)
