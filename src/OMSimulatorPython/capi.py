@@ -66,6 +66,8 @@ class capi:
     self.obj.oms_getFixedStepSize.restype = ctypes.c_int
     self.obj.oms_getInteger.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_int)]
     self.obj.oms_getInteger.restype = ctypes.c_int
+    self.obj.oms_getModelState.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_int)]
+    self.obj.oms_getModelState.restype = ctypes.c_int
     self.obj.oms_getReal.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_double)]
     self.obj.oms_getReal.restype = ctypes.c_int
     self.obj.oms_getResultFile.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_char_p), ctypes.POINTER(ctypes.c_int)]
@@ -217,6 +219,10 @@ class capi:
   def getInteger(self, cref):
     value = ctypes.c_int()
     status = self.obj.oms_getInteger(cref.encode(), ctypes.byref(value))
+    return [value.value, status]
+  def getModelState(self, cref):
+    value = ctypes.c_int()
+    status = self.obj.oms_getModelState(cref.encode(), ctypes.byref(value))
     return [value.value, status]
   def getReal(self, cref):
     value = ctypes.c_double()

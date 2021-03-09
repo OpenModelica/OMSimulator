@@ -15,3 +15,12 @@ class System(Enum):
   TLM = 1 # TLM system
   WC = 2 # Weakly Coupled system
   SC = 3 # Strongly Coupled system
+
+class ModelState(Enum):
+  'oms_modelState_enu_t'
+  VIRGIN = 1
+  ENTERINSTANTIATION = 2
+  INSTANTIATED = 4
+  INITIALIZATION = 8
+  SIMULATION = 16
+  ERROR = 32
