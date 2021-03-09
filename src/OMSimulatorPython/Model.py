@@ -69,6 +69,21 @@ class Model:
       raise Exception('error {}'.format(Types.Status(status)))
     return value
 
+  def setBoolean(self, cref, value):
+    status = Scope._capi.setBoolean(self.cref + '.' + cref, value)
+    if Types.Status(status) != Types.Status.OK:
+      raise Exception('error {}'.format(Types.Status(status)))
+
+  def setInteger(self, cref, value):
+    status = Scope._capi.setInteger(self.cref + '.' + cref, value)
+    if Types.Status(status) != Types.Status.OK:
+      raise Exception('error {}'.format(Types.Status(status)))
+
+  def setReal(self, cref, value):
+    status = Scope._capi.setReal(self.cref + '.' + cref, value)
+    if Types.Status(status) != Types.Status.OK:
+      raise Exception('error {}'.format(Types.Status(status)))
+
   @property
   def cref(self):
     return self._cref
