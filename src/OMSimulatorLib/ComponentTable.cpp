@@ -381,3 +381,10 @@ oms_status_enu_t oms::ComponentTable::restoreState()
   time = storedTime;
   return oms_status_ok;
 }
+
+void oms::ComponentTable::getFilteredSignals(std::vector<ComRef>& filteredSignals) const
+{
+  for (auto& x: exportSeries)
+    if (x.second)
+      filteredSignals.push_back(this->getFullCref() + x.first);
+}

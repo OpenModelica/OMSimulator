@@ -32,6 +32,7 @@
 #include "Connector.h"
 #include "Logging.h"
 #include "ssd/Tags.h"
+#include "Variable.h"
 
 #include <cstring>
 
@@ -287,4 +288,13 @@ bool oms::operator==(const oms::Connector& v1, const oms::Connector& v2)
 bool oms::operator!=(const oms::Connector& v1, const oms::Connector& v2)
 {
   return !(v1 == v2);
+}
+
+oms::Variable* oms::Connector::getVariable()
+{
+  oms_signal_type_enu_t type = this->getType();
+  oms_causality_enu_t kind = this->getCausality();
+  oms::Variable * var = new oms::Variable(type, kind);
+
+  return var;
 }

@@ -1222,3 +1222,12 @@ oms_status_enu_t oms::ComponentFMUCS::setFaultInjection(const oms::ComRef& signa
   }
   return oms_status_ok;
 }
+
+void oms::ComponentFMUCS::getFilteredSignals(std::vector<ComRef> &filteredSignals) const
+{
+  for (unsigned int i = 0; i < allVariables.size(); ++i)
+  {
+    if (exportVariables[i])
+      filteredSignals.push_back(this->getFullCref() + allVariables[i].getCref());
+  }
+}
