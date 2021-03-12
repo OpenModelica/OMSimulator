@@ -290,11 +290,50 @@ bool oms::operator!=(const oms::Connector& v1, const oms::Connector& v2)
   return !(v1 == v2);
 }
 
-oms::Variable* oms::Connector::getVariable()
+std::string oms::Connector::getTypeString()
 {
-  oms_signal_type_enu_t type = this->getType();
-  oms_causality_enu_t kind = this->getCausality();
-  oms::Variable * var = new oms::Variable(type, kind);
+  switch (this->type)
+  {
+  case oms_signal_type_real:
+    return std::string("Real");
 
-  return var;
+  case oms_signal_type_integer:
+    return std::string("Integer");
+
+  case oms_signal_type_string:
+    return std::string("String");
+
+  case oms_signal_type_enum:
+    return std::string("Enumeration");
+
+  case oms_signal_type_boolean:
+    return std::string("Bool");
+
+  case oms_signal_type_bus:
+    return std::string("Bus");
+
+  default:
+    return std::string("unknown");
+  }
+}
+
+std::string oms::Connector::getCausalityString()
+{
+  switch (this->causality)
+  {
+  case oms_causality_input:
+    return "input";
+
+  case oms_causality_output:
+    return "output";
+
+  case oms_causality_parameter:
+    return "parameter";
+
+  case oms_causality_calculatedParameter:
+    return "calculatedParameter";
+
+  default:
+    return std::string("unknown");
+  }
 }

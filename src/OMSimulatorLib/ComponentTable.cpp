@@ -382,9 +382,16 @@ oms_status_enu_t oms::ComponentTable::restoreState()
   return oms_status_ok;
 }
 
-void oms::ComponentTable::getFilteredSignals(std::vector<ComRef>& filteredSignals) const
+void oms::ComponentTable::getFilteredSignals(pugi::xml_node& node) const
 {
   for (auto& x: exportSeries)
+  {
     if (x.second)
-      filteredSignals.push_back(this->getFullCref() + x.first);
+    {
+      pugi::xml_node oms_variable = node.append_child(oms::ssp::Version1_0::oms_Variable);
+      oms_variable.append_attribute("name") = (this->getFullCref() + x.first).c_str();
+      oms_variable.append_attribute("type") = "Real"; // TODO handle types integer, bool
+      oms_variable.append_attribute("kind") = "output";
+    }
+  }
 }

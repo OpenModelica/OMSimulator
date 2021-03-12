@@ -51,7 +51,6 @@ namespace oms
 {
   class Component;
   class System;
-  class Variable;
 
   class Model
   {
@@ -127,8 +126,6 @@ namespace oms
     ctpl::thread_pool& getThreadPool() {assert(pool); return *pool;}
 
     oms_status_enu_t loadSnapshot(const pugi::xml_node& node);
-
-    Variable* getVariable(const ComRef& cref) const;
 
   private: // methods
     Model(const ComRef& cref, const std::string& tempDir);

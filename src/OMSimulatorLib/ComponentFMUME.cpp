@@ -1184,11 +1184,17 @@ oms_status_enu_t oms::ComponentFMUME::setFaultInjection(const oms::ComRef& signa
   return oms_status_ok;
 }
 
-void oms::ComponentFMUME::getFilteredSignals(std::vector<ComRef>& filteredSignals) const
+void oms::ComponentFMUME::getFilteredSignals(pugi::xml_node& node) const
 {
   for (unsigned int i = 0; i < allVariables.size(); ++i)
   {
     if (exportVariables[i])
-      filteredSignals.push_back(this->getFullCref() + allVariables[i].getCref());
+    {
+      const auto & var = allVariables[i];
+      pugi::xml_node oms_variable = node.append_child(oms::ssp::Version1_0::oms_Variable);
+      oms_variable.append_attribute("name") = (this->getFullCref() + var.getCref()).c_str();
+      oms_variable.append_attribute("type") = var.getTypeString().c_str();
+      oms_variable.append_attribute("kind") = var.getCausalityString().c_str();
+    }
   }
 }

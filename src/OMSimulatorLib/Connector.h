@@ -42,8 +42,6 @@
 
 namespace oms
 {
-  class Variable;
-
   /**
    * \brief Connector
    */
@@ -59,6 +57,8 @@ namespace oms
 
     oms_status_enu_t exportToSSD(pugi::xml_node& root) const;
     static std::string getTypeString(const pugi::xml_node& node, const std::string& sspVersion);
+    std::string getTypeString();
+    std::string getCausalityString();
 
     // methods to copy the object
     Connector(const Connector& rhs);
@@ -83,8 +83,6 @@ namespace oms
     bool isTypeReal() const { return oms_signal_type_real == type; }
     bool isTypeInteger() const { return oms_signal_type_integer == type || oms_signal_type_enum == type; }
     bool isTypeBoolean() const { return oms_signal_type_boolean == type; }
-
-    Variable* getVariable();
 
   private:
     friend bool operator==(const Connector& v1, const Connector& v2);

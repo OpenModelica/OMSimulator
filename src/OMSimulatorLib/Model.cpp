@@ -39,7 +39,6 @@
 #include "Scope.h"
 #include "ssd/Tags.h"
 #include "System.h"
-#include "Variable.h"
 
 #include <minizip.h>
 #include <thread>
@@ -1241,39 +1240,13 @@ oms_status_enu_t oms::Model::removeSignalsFromResults(const char* regex)
   return oms_status_ok;
 }
 
-oms::Variable* oms::Model::getVariable(const ComRef& cref) const
-{
-  oms::ComRef tail(cref);
-  oms::ComRef front = tail.pop_front();
-
-  if (system->getCref() == front)
-    return system->getVariable(tail);
-
-  return NULL;
-}
 
 void oms::Model::exportSignalFilter(pugi::xml_node &node) const
 {
   if (!system)
     return;
 
-  std::vector<oms::ComRef> filteredSignals;
-  system->getFilteredSignals(filteredSignals);
-
-  for (auto const &signal : filteredSignals)
-  {
-    pugi::xml_node oms_variable = node.append_child(oms::ssp::Version1_0::oms_Variable);
-    oms_variable.append_attribute("name") = signal.c_str();
-
-    oms::ComRef cref(signal);
-    cref.pop_front();
-    Variable* var = getVariable(cref);
-    if (var)
-    {
-      oms_variable.append_attribute("type") = var->getTypeString().c_str();
-      oms_variable.append_attribute("kind") = var->getCausalityString().c_str();
-    }
-  }
+  system->getFilteredSignals(node);
 }
 
 oms_status_enu_t oms::Model::importSignalFilter(const std::string& filename, const Snapshot& snapshot)
