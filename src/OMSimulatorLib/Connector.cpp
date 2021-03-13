@@ -290,7 +290,7 @@ bool oms::operator!=(const oms::Connector& v1, const oms::Connector& v2)
   return !(v1 == v2);
 }
 
-std::string oms::Connector::getTypeString()
+std::string oms::Connector::getTypeString() const
 {
   switch (this->type)
   {
@@ -317,7 +317,7 @@ std::string oms::Connector::getTypeString()
   }
 }
 
-std::string oms::Connector::getCausalityString()
+std::string oms::Connector::getCausalityString() const
 {
   switch (this->causality)
   {

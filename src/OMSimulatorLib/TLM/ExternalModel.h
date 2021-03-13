@@ -73,7 +73,7 @@ namespace oms
     oms_status_enu_t addSignalsToResults(const char* regex);
     oms_status_enu_t removeSignalsFromResults(const char* regex);
 
-    void getFilteredSignals(pugi::xml_node &node) const {}
+    void getFilteredSignals(std::vector<Connector>& filteredSignals) const {}
 
   protected:
     ExternalModel(const oms::ComRef& cref, System* parentSystem, const std::string& path, const std::string& startscript);

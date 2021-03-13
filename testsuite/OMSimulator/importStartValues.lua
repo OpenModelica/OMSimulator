@@ -123,7 +123,7 @@ oms_delete("importStartValues")
 --                 resultFile="importStartValues_res.mat"
 --                 loggingInterval="0.000000"
 --                 bufferSize="10"
---                 signalFilter=".*" />
+--                 signalFilter="resources/signalFilter.xml" />
 --             </oms:Annotations>
 --           </ssc:Annotation>
 --         </ssd:Annotations>
@@ -155,6 +155,28 @@ oms_delete("importStartValues")
 --         </ssv:Parameter>
 --       </ssv:Parameters>
 --     </ssv:ParameterSet>
+--   </oms:file>
+--   <oms:file
+--     name="resources/signalFilter.xml">
+--     <oms:SignalFilter
+--       version="1.0">
+--       <oms:Variable
+--         name="C1"
+--         type="Real"
+--         kind="input" />
+--       <oms:Variable
+--         name="C1"
+--         type="Real"
+--         kind="input" />
+--       <oms:Variable
+--         name="C2"
+--         type="Real"
+--         kind="parameter" />
+--       <oms:Variable
+--         name="C3"
+--         type="Real"
+--         kind="output" />
+--     </oms:SignalFilter>
 --   </oms:file>
 -- </oms:snapshot>
 --

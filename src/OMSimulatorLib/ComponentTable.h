@@ -81,7 +81,7 @@ namespace oms
     oms_status_enu_t freeState();
     oms_status_enu_t restoreState();
 
-    void getFilteredSignals(pugi::xml_node& node) const;
+    void getFilteredSignals(std::vector<Connector>& filteredSignals) const;
 
   protected:
     ComponentTable(const ComRef& cref, System* parentSystem, const std::string& path);

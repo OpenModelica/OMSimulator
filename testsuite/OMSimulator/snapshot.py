@@ -129,7 +129,7 @@ oms.delete("snapshot")
 ##                 resultFile="snapshot_res.mat"
 ##                 loggingInterval="0.000000"
 ##                 bufferSize="10"
-##                 signalFilter=".*" />
+##                 signalFilter="resources/signalFilter.xml" />
 ##             </oms:Annotations>
 ##           </ssc:Annotation>
 ##         </ssd:Annotations>
@@ -161,6 +161,11 @@ oms.delete("snapshot")
 ##         </ssv:Parameter>
 ##       </ssv:Parameters>
 ##     </ssv:ParameterSet>
+##   </oms:file>
+##   <oms:file
+##     name="resources/signalFilter.xml">
+##     <oms:SignalFilter
+##       version="1.0" />
 ##   </oms:file>
 ## </oms:snapshot>
 ##

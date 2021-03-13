@@ -57,8 +57,8 @@ namespace oms
 
     oms_status_enu_t exportToSSD(pugi::xml_node& root) const;
     static std::string getTypeString(const pugi::xml_node& node, const std::string& sspVersion);
-    std::string getTypeString();
-    std::string getCausalityString();
+    std::string getTypeString() const;
+    std::string getCausalityString() const;
 
     // methods to copy the object
     Connector(const Connector& rhs);

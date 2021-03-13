@@ -256,20 +256,7 @@ oms_delete("model")
 --   <oms:file
 --     name="resources/signalFilter.xml">
 --     <oms:SignalFilter
---       version="1.0">
---       <oms:Variable
---         name="model.root.Gain.u"
---         type="Real"
---         kind="input" />
---       <oms:Variable
---         name="model.root.Gain.k"
---         type="Real"
---         kind="parameter" />
---       <oms:Variable
---         name="model.root.System2.Input_1"
---         type="Real"
---         kind="input" />
---     </oms:SignalFilter>
+--       version="1.0" />
 --   </oms:file>
 -- </oms:snapshot>
 --
@@ -278,8 +265,8 @@ oms_delete("model")
 -- info:    Result file: model_res.csv (bufferSize=1)
 --
 --
--- "time", "model.root.Gain.u", "model.root.System2.Input_1", "model.root.Gain.k"
--- 0, 0, 30, 1
+-- "time"
+-- 0
 --
 -- info:    5 warnings
 -- info:    0 errors

@@ -104,7 +104,7 @@ namespace oms
 
     oms_status_enu_t setFaultInjection(const ComRef& signal, oms_fault_type_enu_t faultType, double faultValue);
 
-    void getFilteredSignals(pugi::xml_node& node) const;
+    void getFilteredSignals(std::vector<Connector>& filteredSignals) const;
 
   protected:
     ComponentFMUME(const ComRef& cref, System* parentSystem, const std::string& fmuPath);

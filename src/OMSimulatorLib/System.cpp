@@ -209,9 +209,9 @@ oms::Variable* oms::System::getVariable(const ComRef& cref)
   if (component != components.end())
     return component->second->getVariable(tail);
 
-  // for (auto &connector : connectors)
-  //   if (connector && connector->getName() == cref)
-  //     return connector->getVariable();
+  //for (auto& connector : connectors)
+  //  if (connector && connector->getName() == cref)
+  //    return connector->getVariable();
 
   logError_UnknownSignal(getFullCref() + cref);
   return nullptr;
@@ -1706,24 +1706,19 @@ void oms::System::getAllResources(std::vector<std::string>& resources) const
     subsystem.second->getAllResources(resources);
 }
 
-void oms::System::getFilteredSignals(pugi::xml_node& node) const
+void oms::System::getFilteredSignals(std::vector<Connector>& filteredSignals) const
 {
   for (const auto &connector : connectors)
   {
     if (connector && exportConnectors.at(getFullCref() + connector->getName()))
-    {
-      pugi::xml_node oms_variable = node.append_child(oms::ssp::Version1_0::oms_Variable);
-      oms_variable.append_attribute("name") = (getFullCref() + connector->getName()).c_str();
-      oms_variable.append_attribute("type") = connector->getTypeString().c_str();
-      oms_variable.append_attribute("kind") = connector->getCausalityString().c_str();
-    }
+      filteredSignals.push_back(*connector);
   }
 
   for (const auto& component : components)
-    component.second->getFilteredSignals(node);
+    component.second->getFilteredSignals(filteredSignals);
 
   for (const auto& subsystem : subsystems)
-    subsystem.second->getFilteredSignals(node);
+    subsystem.second->getFilteredSignals(filteredSignals);
 }
 
 oms_status_enu_t oms::System::exportDependencyGraphs(const std::string& pathInitialization, const std::string& pathEvent, const std::string& pathSimulation)

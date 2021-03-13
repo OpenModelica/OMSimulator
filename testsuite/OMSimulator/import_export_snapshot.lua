@@ -133,7 +133,7 @@ oms_delete("import_export_snapshot")
 --                 resultFile="import_export_snapshot_res.mat"
 --                 loggingInterval="0.000000"
 --                 bufferSize="10"
---                 signalFilter=".*" />
+--                 signalFilter="resources/signalFilter.xml" />
 --             </oms:Annotations>
 --           </ssc:Annotation>
 --         </ssd:Annotations>
@@ -165,6 +165,11 @@ oms_delete("import_export_snapshot")
 --         </ssv:Parameter>
 --       </ssv:Parameters>
 --     </ssv:ParameterSet>
+--   </oms:file>
+--   <oms:file
+--     name="resources/signalFilter.xml">
+--     <oms:SignalFilter
+--       version="1.0" />
 --   </oms:file>
 -- </oms:snapshot>
 --

@@ -1246,7 +1246,16 @@ void oms::Model::exportSignalFilter(pugi::xml_node &node) const
   if (!system)
     return;
 
-  system->getFilteredSignals(node);
+  std::vector<oms::Connector> filteredSignals;
+  system->getFilteredSignals(filteredSignals);
+
+  for (auto const& signal : filteredSignals)
+  {
+    pugi::xml_node oms_variable = node.append_child(oms::ssp::Version1_0::oms_Variable);
+    oms_variable.append_attribute("name") = signal.getName().c_str();
+    oms_variable.append_attribute("type") = signal.getTypeString().c_str();
+    oms_variable.append_attribute("kind") = signal.getCausalityString().c_str();
+  }
 }
 
 oms_status_enu_t oms::Model::importSignalFilter(const std::string& filename, const Snapshot& snapshot)
