@@ -38,6 +38,7 @@
 #include "Flags.h"
 #include "Model.h"
 #include "OMSFileSystem.h"
+#include "OMSString.h"
 #include "ssd/Tags.h"
 #include "SystemSC.h"
 #include "SystemTLM.h"
@@ -388,13 +389,9 @@ oms_status_enu_t oms::System::listUnconnectedConnectors(char** contents) const
 
   if (!msg.empty())
   {
-    *contents = (char*) malloc(msg.length() + 1);
+    *contents = mallocAndCopyString(msg);
     if (!*contents)
-    {
-      logError("Out of memory");
       return oms_status_fatal;
-    }
-    strcpy(*contents, msg.c_str());
   }
   return oms_status_ok;
 }
@@ -601,7 +598,7 @@ oms_status_enu_t oms::System::importFromSnapshot(const pugi::xml_node& node, con
     {
       for(pugi::xml_node_iterator itConnectors = (*it).begin(); itConnectors != (*it).end(); ++itConnectors)
       {
-        connectors.back() = oms::Connector::NewConnector(*itConnectors, sspVersion);
+        connectors.back() = oms::Connector::NewConnector(*itConnectors, sspVersion, this->getFullCref());
         if (connectors.back())
         {
           //save the connectors with full cref
@@ -912,7 +909,7 @@ oms_status_enu_t oms::System::addConnector(const oms::ComRef& cref, oms_causalit
   if (!validCref(cref))
     return logError_AlreadyInScope(getFullCref() + cref);
 
-  connectors.back() = new oms::Connector(causality, type, cref);
+  connectors.back() = new oms::Connector(causality, type, cref, this->getFullCref());
   exportConnectors[getFullCref() + connectors.back()->getName()] = true;
   connectors.push_back(NULL);
   element.setConnectors(&connectors[0]);
@@ -1766,16 +1763,16 @@ oms_status_enu_t oms::System::updateDependencyGraphs()
       bool validConnection = oms::Connection::isValid(connection->getSignalA(), connection->getSignalB(), *varA, *varB);
       if (validConnection)
       {
-        initializationGraph.addEdge(Connector(varA->getCausality(), varA->getType(), connection->getSignalA()), Connector(varB->getCausality(), varB->getType(), connection->getSignalB()));
+        initializationGraph.addEdge(Connector(varA->getCausality(), varA->getType(), connection->getSignalA(), this->getFullCref()), Connector(varB->getCausality(), varB->getType(), connection->getSignalB(), this->getFullCref()));
         // Don't include parameter connections in simulation dependencies
         if (!varA->isParameter())
         {
-          eventGraph.addEdge(Connector(varA->getCausality(), varA->getType(), connection->getSignalA()), Connector(varB->getCausality(), varB->getType(), connection->getSignalB()));
+          eventGraph.addEdge(Connector(varA->getCausality(), varA->getType(), connection->getSignalA(), this->getFullCref()), Connector(varB->getCausality(), varB->getType(), connection->getSignalB(), this->getFullCref()));
         }
         // allow only real connections in Continuous time mode
         if (varA->getType() == oms_signal_type_real && !varA->isParameter())
         {
-          simulationGraph.addEdge(Connector(varA->getCausality(), varA->getType(), connection->getSignalA()), Connector(varB->getCausality(), varB->getType(), connection->getSignalB()));
+          simulationGraph.addEdge(Connector(varA->getCausality(), varA->getType(), connection->getSignalA(), this->getFullCref()), Connector(varB->getCausality(), varB->getType(), connection->getSignalB(), this->getFullCref()));
         }
       }
       else

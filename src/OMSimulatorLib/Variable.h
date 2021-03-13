@@ -91,7 +91,7 @@ namespace oms
     fmi2_causality_enu_t getFmiCausality(oms_causality_enu_t& causalityKind) const;
 
     unsigned int getIndex() const { return index; }
-    oms::Connector makeConnector() const { return oms::Connector(getCausality(), type, cref); }
+    oms::Connector makeConnector(const oms::ComRef& owner) const { return oms::Connector(getCausality(), type, cref,owner); }
 
   private:
     ComRef cref;

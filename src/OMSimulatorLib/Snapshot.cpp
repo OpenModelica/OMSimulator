@@ -32,6 +32,7 @@
 #include "Snapshot.h"
 
 #include "Logging.h"
+#include "OMSString.h"
 
 #include <iostream>
 
@@ -367,14 +368,10 @@ oms_status_enu_t oms::Snapshot::writeDocument(char** contents)
 
     oms_status_enu_t copy(char** contents)
     {
-      *contents = (char*) malloc(result.length() + 1);
+      *contents = mallocAndCopyString(result);
       if (!*contents)
-      {
-        logError("Out of memory");
-        return oms_status_fatal;
-      }
+        return oms_status_error;
 
-      strcpy(*contents, result.c_str());
       return oms_status_ok;
     }
 

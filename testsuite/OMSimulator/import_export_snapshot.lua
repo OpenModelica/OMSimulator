@@ -169,7 +169,32 @@ oms_delete("import_export_snapshot")
 --   <oms:file
 --     name="resources/signalFilter.xml">
 --     <oms:SignalFilter
---       version="1.0" />
+--       version="1.0">
+--       <oms:Variable
+--         name="import_export_snapshot.root.C1"
+--         type="Real"
+--         kind="input" />
+--       <oms:Variable
+--         name="import_export_snapshot.root.add.u1"
+--         type="Real"
+--         kind="input" />
+--       <oms:Variable
+--         name="import_export_snapshot.root.add.u2"
+--         type="Real"
+--         kind="input" />
+--       <oms:Variable
+--         name="import_export_snapshot.root.add.y"
+--         type="Real"
+--         kind="output" />
+--       <oms:Variable
+--         name="import_export_snapshot.root.add.k1"
+--         type="Real"
+--         kind="parameter" />
+--       <oms:Variable
+--         name="import_export_snapshot.root.add.k2"
+--         type="Real"
+--         kind="parameter" />
+--     </oms:SignalFilter>
 --   </oms:file>
 -- </oms:snapshot>
 --

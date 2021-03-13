@@ -48,21 +48,21 @@ namespace oms
   class Connector : protected oms_connector_t
   {
   public:
-    Connector(oms_causality_enu_t causality, oms_signal_type_enu_t type, const oms::ComRef& name);
-    Connector(oms_causality_enu_t causality, oms_signal_type_enu_t type, const oms::ComRef& name, double height);
+    Connector(oms_causality_enu_t causality, oms_signal_type_enu_t type, const oms::ComRef& name, const oms::ComRef& owner);
+    Connector(oms_causality_enu_t causality, oms_signal_type_enu_t type, const oms::ComRef& name, const oms::ComRef& owner, double height);
     ~Connector();
 
+    // methods to copy the object
+    Connector(const Connector& rhs);
+    Connector& operator=(const Connector& rhs);
+
     // you have to free the memory yourself
-    static Connector* NewConnector(const pugi::xml_node& node, const std::string& sspVersion);
+    static Connector* NewConnector(const pugi::xml_node& node, const std::string& sspVersion, const oms::ComRef& owner);
 
     oms_status_enu_t exportToSSD(pugi::xml_node& root) const;
     static std::string getTypeString(const pugi::xml_node& node, const std::string& sspVersion);
     std::string getTypeString() const;
     std::string getCausalityString() const;
-
-    // methods to copy the object
-    Connector(const Connector& rhs);
-    Connector& operator=(const Connector& rhs);
 
     operator std::string() const {return std::string(name);}
 
@@ -71,7 +71,9 @@ namespace oms
 
     const oms_causality_enu_t getCausality() const {return causality;}
     const oms_signal_type_enu_t getType() const {return type;}
+    const oms::ComRef getOwner() const {return oms::ComRef(owner);}
     const oms::ComRef getName() const {return oms::ComRef(name);}
+    const oms::ComRef getFullName() const {return getOwner() + getName();}
     const oms::ssd::ConnectorGeometry* getGeometry() const {return reinterpret_cast<oms::ssd::ConnectorGeometry*>(geometry);}
     Connector addPrefix(const ComRef& prefix) const;
 

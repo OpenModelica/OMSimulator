@@ -36,6 +36,7 @@
 #include "Flags.h"
 #include "MATWriter.h"
 #include "OMSFileSystem.h"
+#include "OMSString.h"
 #include "Scope.h"
 #include "ssd/Tags.h"
 #include "System.h"
@@ -349,13 +350,9 @@ oms_status_enu_t oms::Model::list(const oms::ComRef& cref, char** contents)
   }
 
   doc.save(writer);
-  *contents = (char*) malloc(strlen(writer.result.c_str()) + 1);
+  *contents = mallocAndCopyString(writer.result);
   if (!*contents)
-  {
-    logError("Out of memory");
     return oms_status_fatal;
-  }
-  strcpy(*contents, writer.result.c_str());
   return oms_status_ok;
 }
 
@@ -1252,7 +1249,7 @@ void oms::Model::exportSignalFilter(pugi::xml_node &node) const
   for (auto const& signal : filteredSignals)
   {
     pugi::xml_node oms_variable = node.append_child(oms::ssp::Version1_0::oms_Variable);
-    oms_variable.append_attribute("name") = signal.getName().c_str();
+    oms_variable.append_attribute("name") = signal.getFullName().c_str();
     oms_variable.append_attribute("type") = signal.getTypeString().c_str();
     oms_variable.append_attribute("kind") = signal.getCausalityString().c_str();
   }

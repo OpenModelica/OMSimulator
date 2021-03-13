@@ -31,30 +31,30 @@
 
 #include "Connector.h"
 #include "Logging.h"
+#include "OMSString.h"
 #include "ssd/Tags.h"
 #include "Variable.h"
 
 #include <cstring>
 
-oms::Connector::Connector(oms_causality_enu_t causality, oms_signal_type_enu_t type, const oms::ComRef& name)
+oms::Connector::Connector(oms_causality_enu_t causality, oms_signal_type_enu_t type, const oms::ComRef& name, const oms::ComRef& owner)
 {
   this->causality = causality;
   this->type = type;
 
-  this->name = new char[strlen(name.c_str())+1];
-  strcpy(this->name, name.c_str());
+  this->owner = allocateAndCopyString(owner.c_str());
+  this->name = allocateAndCopyString(name.c_str());
 
   this->geometry = NULL;
 }
 
-oms::Connector::Connector(oms_causality_enu_t causality, oms_signal_type_enu_t type, const oms::ComRef& name, double height)
+oms::Connector::Connector(oms_causality_enu_t causality, oms_signal_type_enu_t type, const oms::ComRef& name, const oms::ComRef& owner, double height)
 {
   this->causality = causality;
   this->type = type;
 
-  std::string str(name);
-  this->name = new char[strlen(name.c_str())+1];
-  strcpy(this->name, name.c_str());
+  this->owner = allocateAndCopyString(owner.c_str());
+  this->name = allocateAndCopyString(name.c_str());
 
   double x, y;
   switch (causality)
@@ -80,11 +80,48 @@ oms::Connector::Connector(oms_causality_enu_t causality, oms_signal_type_enu_t t
 
 oms::Connector::~Connector()
 {
+  if (this->owner) delete[] this->owner;
   if (this->name) delete[] this->name;
   if (this->geometry) delete reinterpret_cast<oms::ssd::ConnectorGeometry*>(this->geometry);
 }
 
-oms::Connector* oms::Connector::NewConnector(const pugi::xml_node& node, const std::string& sspVersion)
+oms::Connector::Connector(const oms::Connector& rhs)
+{
+  this->causality = rhs.causality;
+  this->type = rhs.type;
+
+  this->owner = allocateAndCopyString(rhs.owner);
+  this->name = allocateAndCopyString(rhs.name);
+
+  if (rhs.geometry)
+    this->geometry = reinterpret_cast<ssd_connector_geometry_t*>(new oms::ssd::ConnectorGeometry(*reinterpret_cast<oms::ssd::ConnectorGeometry*>(rhs.geometry)));
+  else
+    this->geometry = NULL;
+}
+
+oms::Connector& oms::Connector::operator=(const oms::Connector& rhs)
+{
+  // check for self-assignment
+  if(&rhs == this)
+    return *this;
+
+  this->causality = rhs.causality;
+  this->type = rhs.type;
+
+  if (this->owner)
+    delete[] this->owner;
+  this->owner = allocateAndCopyString(rhs.owner);
+
+  if (this->name)
+    delete[] this->name;
+  this->name = allocateAndCopyString(rhs.name);
+
+  this->setGeometry(reinterpret_cast<oms::ssd::ConnectorGeometry*>(rhs.geometry));
+
+  return *this;
+}
+
+oms::Connector* oms::Connector::NewConnector(const pugi::xml_node& node, const std::string& sspVersion, const oms::ComRef& owner)
 {
   ComRef cref = ComRef(node.attribute("name").as_string());
 
@@ -122,7 +159,7 @@ oms::Connector* oms::Connector::NewConnector(const pugi::xml_node& node, const s
     return NULL;
   }
 
-  Connector* connector = new Connector(causality, type, cref);
+  Connector* connector = new Connector(causality, type, cref, owner);
   if (!connector)
     return NULL;
 
@@ -216,39 +253,6 @@ oms_status_enu_t oms::Connector::exportToSSD(pugi::xml_node &root) const
     return reinterpret_cast<oms::ssd::ConnectorGeometry*>(this->geometry)->exportToSSD(node);
   }
   return oms_status_ok;
-}
-
-oms::Connector::Connector(const oms::Connector& rhs)
-{
-  this->causality = rhs.causality;
-  this->type = rhs.type;
-
-  this->name = new char[strlen(rhs.name)+1];
-  strcpy(this->name, rhs.name);
-
-  if (rhs.geometry)
-    this->geometry = reinterpret_cast<ssd_connector_geometry_t*>(new oms::ssd::ConnectorGeometry(*reinterpret_cast<oms::ssd::ConnectorGeometry*>(rhs.geometry)));
-  else
-    this->geometry = NULL;
-}
-
-oms::Connector& oms::Connector::operator=(const oms::Connector& rhs)
-{
-  // check for self-assignment
-  if(&rhs == this)
-    return *this;
-
-  this->causality = rhs.causality;
-  this->type = rhs.type;
-
-  if (this->name)
-    delete[] this->name;
-  this->name = new char[strlen(rhs.name)+1];
-  strcpy(this->name, rhs.name);
-
-  this->setGeometry(reinterpret_cast<oms::ssd::ConnectorGeometry*>(rhs.geometry));
-
-  return *this;
 }
 
 void oms::Connector::setName(const oms::ComRef& name)

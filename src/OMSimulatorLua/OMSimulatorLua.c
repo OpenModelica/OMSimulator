@@ -346,6 +346,7 @@ static int OMSimulatorLua_oms_loadSnapshot(lua_State *L)
 
   lua_pushstring(L, newCref ? newCref : "");
   lua_pushinteger(L, status);
+
   return 2;
 }
 
@@ -365,6 +366,7 @@ static int OMSimulatorLua_oms_importSnapshot(lua_State *L)
 
   lua_pushstring(L, newCref ? newCref : "");
   lua_pushinteger(L, status);
+
   return 2;
 }
 

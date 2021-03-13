@@ -182,27 +182,27 @@ print(snapshot)
 --     <oms:SignalFilter
 --       version="1.0">
 --       <oms:Variable
---         name="C1"
+--         name="snapshot.root.C1"
 --         type="Real"
 --         kind="input" />
 --       <oms:Variable
---         name="u1"
+--         name="snapshot.root.add.u1"
 --         type="Real"
 --         kind="input" />
 --       <oms:Variable
---         name="u2"
+--         name="snapshot.root.add.u2"
 --         type="Real"
 --         kind="input" />
 --       <oms:Variable
---         name="y"
+--         name="snapshot.root.add.y"
 --         type="Real"
 --         kind="output" />
 --       <oms:Variable
---         name="k1"
+--         name="snapshot.root.add.k1"
 --         type="Real"
 --         kind="parameter" />
 --       <oms:Variable
---         name="k2"
+--         name="snapshot.root.add.k2"
 --         type="Real"
 --         kind="parameter" />
 --     </oms:SignalFilter>
