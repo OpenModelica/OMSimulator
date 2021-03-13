@@ -95,7 +95,7 @@ status = oms_delete("model")
 -- 		<ssd:Annotations>
 -- 			<ssc:Annotation type="org.openmodelica">
 -- 				<oms:Annotations>
--- 					<oms:SimulationInformation resultFile="model_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter=".*" />
+-- 					<oms:SimulationInformation resultFile="model_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="resources/signalFilter.xml" />
 -- 				</oms:Annotations>
 -- 			</ssc:Annotation>
 -- 		</ssd:Annotations>
@@ -139,7 +139,7 @@ status = oms_delete("model")
 -- 		<ssd:Annotations>
 -- 			<ssc:Annotation type="org.openmodelica">
 -- 				<oms:Annotations>
--- 					<oms:SimulationInformation resultFile="model_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter=".*" />
+-- 					<oms:SimulationInformation resultFile="model_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="resources/signalFilter.xml" />
 -- 				</oms:Annotations>
 -- 			</ssc:Annotation>
 -- 		</ssd:Annotations>
