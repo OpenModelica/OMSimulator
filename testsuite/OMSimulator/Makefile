@@ -12,15 +12,16 @@ exportSSMTemplate.py \
 exportSSVTemplate.lua \
 import_export_parameters_inline.lua \
 import_export_parameters_to_ssv.lua \
+import_export_signalFilter.lua \
 import_export_snapshot.lua \
 import_export.lua \
 import_export.py \
 import_hierarchical_ssv_sources.lua \
 import_parameter_mapping_from_ssm.lua \
 import_parameter_mapping_inline.lua \
+importPartialSnapshot.lua \
 importStartValues.lua \
 importStartValues.lua \
-import_export_signalFilter.lua \
 multipleConnections.lua \
 partialSnapshot.lua \
 PI_Controller.lua \
