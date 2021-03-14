@@ -190,10 +190,11 @@ oms_status_enu_t oms::Model::importSnapshot(const oms::ComRef& cref, const char*
 
   if (snapshot.isPartialSnapshot())
   {
-    char *fullsnapshot = NULL;
+    char* fullsnapshot;
     // get full snapshot
     exportSnapshot("", &fullsnapshot);
     snapshot.importPartialSnapshot(cref, fullsnapshot);
+    free(fullsnapshot);
   }
 
   // get ssd:SystemStructureDescription
