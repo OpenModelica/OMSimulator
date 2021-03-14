@@ -362,7 +362,7 @@ static int OMSimulatorLua_oms_importSnapshot(lua_State *L)
   const char* snapshot = lua_tostring(L, 2);
 
   char* newCref = NULL;
-  oms_status_enu_t status = oms_importSnapshot(cref, snapshot, &newCref);
+  oms_status_enu_t status = oms_importSnapshot(cref, snapshot, NULL);
 
   lua_pushstring(L, newCref ? newCref : "");
   lua_pushinteger(L, status);
