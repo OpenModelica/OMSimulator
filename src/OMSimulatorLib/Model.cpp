@@ -368,7 +368,7 @@ oms_status_enu_t oms::Model::exportSnapshot(const oms::ComRef& cref, char** cont
 
   exportToSSD(ssdNode, ssvNode, snapshot);
 
-  pugi::xml_node oms_signalFilter = snapshot.getTemplateResourceNodeSignalFilter(signalFilterFileName);
+  pugi::xml_node oms_signalFilter = snapshot.getTemplateResourceNodeSignalFilter(signalFilterFilename);
   exportSignalFilter(oms_signalFilter);
 
   // update ssv file if exist
@@ -574,7 +574,7 @@ oms_status_enu_t oms::Model::exportToSSD(pugi::xml_node& node, pugi::xml_node& s
   oms_simulation_information.append_attribute("resultFile") = resultFilename.c_str();
   oms_simulation_information.append_attribute("loggingInterval") = std::to_string(loggingInterval).c_str();
   oms_simulation_information.append_attribute("bufferSize") = std::to_string(bufferSize).c_str();
-  oms_simulation_information.append_attribute("signalFilter") = signalFilterFileName.c_str();
+  oms_simulation_information.append_attribute("signalFilter") = signalFilterFilename.c_str();
 
   return oms_status_ok;
 }
@@ -651,7 +651,7 @@ oms_status_enu_t oms::Model::importFromSnapshot(const Snapshot& snapshot)
             std::string _signalFilterFileName = itAnnotations->attribute("signalFilter").as_string();
             if (".*" != _signalFilterFileName) // avoid error messages for older ssp files
               if (oms_status_ok == importSignalFilter(_signalFilterFileName, snapshot))
-                this->signalFilterFileName = _signalFilterFileName;
+                this->signalFilterFilename = _signalFilterFileName;
           }
         }
       }
@@ -817,7 +817,7 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
 
   exportSignalFilter(oms_signalFilter);
 
-  filesystem::path signalFilterFilePath = filesystem::path(tempDir) / signalFilterFileName;
+  filesystem::path signalFilterFilePath = filesystem::path(tempDir) / signalFilterFilename;
   signalFilterdoc.save_file(signalFilterFilePath.string().c_str());
 
   //doc.save(std::cout);
@@ -859,7 +859,7 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
 void oms::Model::getAllResources(std::vector<std::string>& resources) const
 {
   resources.push_back("SystemStructure.ssd");
-  resources.push_back(signalFilterFileName);
+  resources.push_back(signalFilterFilename);
 
   if (system)
     system->getAllResources(resources);
@@ -1198,28 +1198,14 @@ oms_status_enu_t oms::Model::getResultFile(char** filename, int* bufferSize)
 
 oms_status_enu_t oms::Model::getSignalFilter(char** regex)
 {
-  *regex = (char*)this->signalFilter.c_str();
-
-  return oms_status_ok;
+  logWarning_deprecated;
+  return oms_status_error;
 }
 
 oms_status_enu_t oms::Model::setSignalFilter(const std::string& regex)
 {
-  // If regex is empty then all signals will be exported
-  if (regex.empty() || regex == ".*")
-    this->signalFilter = ".*";
-  else
-  {
-    if (oms_status_ok != removeSignalsFromResults(".*"))
-      return oms_status_error;
-
-    this->signalFilter = regex;
-  }
-
-  if (oms_status_ok != system->addSignalsToResults(this->signalFilter.c_str()))
-    return oms_status_error;
-
-  return oms_status_ok;
+  logWarning_deprecated;
+  return oms_status_error;
 }
 
 oms_status_enu_t oms::Model::addSignalsToResults(const char* regex)

@@ -154,11 +154,10 @@ namespace oms
     double lastEmit;
     double loggingInterval = 0.0;
     int bufferSize = 10;
-    std::string resultFilename; ///< default <name>_res.mat
     Clock clock;
 
-    std::string signalFilter = ".*"; ///< default
-    std::string signalFilterFileName = "resources/signalFilter.xml";
+    std::string resultFilename; ///< default <name>_res.mat
+    std::string signalFilterFilename = "resources/signalFilter.xml";
 
     bool isolatedFMU = false;
 
