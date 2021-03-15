@@ -34,10 +34,7 @@
 #include "Logging.h"
 #include "Util.h"
 
-#include <fmilib.h>
-#include <iostream>
 #include <JM/jm_portability.h>
-#include <string>
 
 
 oms::Variable::Variable(fmi2_import_variable_t *var, unsigned int index)
@@ -83,12 +80,6 @@ oms::Variable::Variable(fmi2_import_variable_t *var, unsigned int index)
   }
 }
 
-oms::Variable::Variable(oms_signal_type_enu_t& signalType, oms_causality_enu_t& causalityKind)
-{
-  type = signalType;
-  causality = getFmiCausality(causalityKind);
-}
-
 oms::Variable::~Variable()
 {
 }
@@ -111,24 +102,6 @@ oms_causality_enu_t oms::Variable::getCausality() const
   }
 }
 
-fmi2_causality_enu_t oms::Variable::getFmiCausality(oms_causality_enu_t& causalityKind) const
-{
-  switch (causalityKind)
-  {
-  case oms_causality_input:
-    return fmi2_causality_enu_input;
-
-  case oms_causality_output:
-    return fmi2_causality_enu_output;
-
-  case oms_causality_parameter:
-    return fmi2_causality_enu_parameter;
-
-  default:
-    return fmi2_causality_enu_unknown;
-  }
-}
-
 bool oms::operator==(const oms::Variable& v1, const oms::Variable& v2)
 {
   return v1.cref == v2.cref && v1.vr == v2.vr;
@@ -137,31 +110,4 @@ bool oms::operator==(const oms::Variable& v1, const oms::Variable& v2)
 bool oms::operator!=(const oms::Variable& v1, const oms::Variable& v2)
 {
   return !(v1 == v2);
-}
-
-std::string oms::Variable::getTypeString() const
-{
-  switch (type)
-  {
-  case oms_signal_type_real:
-    return std::string("Real");
-
-  case oms_signal_type_integer:
-    return std::string("Integer");
-
-  case oms_signal_type_string:
-    return std::string("String");
-
-  case oms_signal_type_enum:
-    return std::string("Enumeration");
-
-  case oms_signal_type_boolean:
-    return std::string("Bool");
-
-  case oms_signal_type_bus:
-    return std::string("Bus");
-
-  default:
-    return std::string("unknown");
-  }
 }

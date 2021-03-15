@@ -1238,7 +1238,6 @@ oms_status_enu_t oms::Model::removeSignalsFromResults(const char* regex)
   return oms_status_ok;
 }
 
-
 void oms::Model::exportSignalFilter(pugi::xml_node &node) const
 {
   if (!system)

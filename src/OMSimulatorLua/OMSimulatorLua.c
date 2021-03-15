@@ -350,7 +350,7 @@ static int OMSimulatorLua_oms_loadSnapshot(lua_State *L)
   return 2;
 }
 
-  //oms_status_enu_t oms_importSnapshot(const char* cref, const char* snapshot, char** newCref);
+//oms_status_enu_t oms_importSnapshot(const char* cref, const char* snapshot, char** newCref);
 static int OMSimulatorLua_oms_importSnapshot(lua_State *L)
 {
   if (lua_gettop(L) != 2)

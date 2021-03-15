@@ -46,7 +46,6 @@ namespace oms
   {
   public:
     Variable(fmi2_import_variable_t *var, unsigned int index);
-    Variable(oms_signal_type_enu_t& signalType, oms_causality_enu_t& causalityKind);
     ~Variable();
 
     void markAsState() { is_state = true; }
@@ -86,9 +85,6 @@ namespace oms
 
     std::string getCausalityString() const { return std::string(fmi2_causality_to_string(causality)); }
     oms_causality_enu_t getCausality() const;
-
-    std::string getTypeString() const;
-    fmi2_causality_enu_t getFmiCausality(oms_causality_enu_t& causalityKind) const;
 
     unsigned int getIndex() const { return index; }
     oms::Connector makeConnector(const oms::ComRef& owner) const { return oms::Connector(getCausality(), type, cref,owner); }
