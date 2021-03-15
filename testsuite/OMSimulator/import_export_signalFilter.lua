@@ -72,11 +72,6 @@ oms_delete("model")
 
 
 -- Result:
--- warning: [removeSignalsFromResults] is deprecated and [setSignalFilter] is the recommended API
--- warning: [addSignalsToResults] is deprecated and [setSignalFilter] is the recommended API
--- warning: [addSignalsToResults] is deprecated and [setSignalFilter] is the recommended API
--- warning: [removeSignalsFromResults] is deprecated and [setSignalFilter] is the recommended API
--- warning: [removeSignalsFromResults] is deprecated and [setSignalFilter] is the recommended API
 -- <?xml version="1.0"?>
 -- <oms:snapshot
 --   partial="false">
@@ -281,6 +276,4 @@ oms_delete("model")
 -- "time", "model.root.Gain.u", "model.root.System2.Input_1", "model.root.Gain.k"
 -- 0, 0, 30, 1
 --
--- info:    5 warnings
--- info:    0 errors
 -- endResult
