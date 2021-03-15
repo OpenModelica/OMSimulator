@@ -1196,18 +1196,6 @@ oms_status_enu_t oms::Model::getResultFile(char** filename, int* bufferSize)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Model::getSignalFilter(char** regex)
-{
-  logWarning_deprecated;
-  return oms_status_error;
-}
-
-oms_status_enu_t oms::Model::setSignalFilter(const std::string& regex)
-{
-  logWarning_deprecated;
-  return oms_status_error;
-}
-
 oms_status_enu_t oms::Model::addSignalsToResults(const char* regex)
 {
   if (system)

@@ -114,8 +114,6 @@ namespace oms
     oms_status_enu_t emit(double time, bool force=false, bool* emitted=NULL);
     oms_status_enu_t addSignalsToResults(const char* regex);
     oms_status_enu_t removeSignalsFromResults(const char* regex);
-    oms_status_enu_t setSignalFilter(const std::string& regex);
-    oms_status_enu_t getSignalFilter(char** regex);
 
     bool validState(int validStates) const {return (modelState & validStates);}
 
