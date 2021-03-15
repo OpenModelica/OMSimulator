@@ -87,7 +87,7 @@ namespace oms
     oms_causality_enu_t getCausality() const;
 
     unsigned int getIndex() const { return index; }
-    oms::Connector makeConnector(const oms::ComRef& owner) const { return oms::Connector(getCausality(), type, cref,owner); }
+    oms::Connector makeConnector(const oms::ComRef& owner) const { return oms::Connector(getCausality(), type, cref, owner); }
 
   private:
     ComRef cref;
