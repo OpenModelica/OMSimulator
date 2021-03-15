@@ -160,19 +160,19 @@ oms_delete("importStartValues")
 --     <oms:SignalFilter
 --       version="1.0">
 --       <oms:Variable
---         name="importStartValues.root.C1"
+--         name="root.C1"
 --         type="Real"
 --         kind="input" />
 --       <oms:Variable
---         name="importStartValues.root.System1.C1"
+--         name="root.System1.C1"
 --         type="Real"
 --         kind="input" />
 --       <oms:Variable
---         name="importStartValues.root.System1.C2"
+--         name="root.System1.C2"
 --         type="Real"
 --         kind="parameter" />
 --       <oms:Variable
---         name="importStartValues.root.System1.C3"
+--         name="root.System1.C3"
 --         type="Real"
 --         kind="output" />
 --     </oms:SignalFilter>

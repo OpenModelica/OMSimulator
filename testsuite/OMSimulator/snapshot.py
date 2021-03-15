@@ -167,27 +167,27 @@ oms.delete("snapshot")
 ##     <oms:SignalFilter
 ##       version="1.0">
 ##       <oms:Variable
-##         name="snapshot.root.C1"
+##         name="root.C1"
 ##         type="Real"
 ##         kind="input" />
 ##       <oms:Variable
-##         name="snapshot.root.add.u1"
+##         name="root.add.u1"
 ##         type="Real"
 ##         kind="input" />
 ##       <oms:Variable
-##         name="snapshot.root.add.u2"
+##         name="root.add.u2"
 ##         type="Real"
 ##         kind="input" />
 ##       <oms:Variable
-##         name="snapshot.root.add.y"
+##         name="root.add.y"
 ##         type="Real"
 ##         kind="output" />
 ##       <oms:Variable
-##         name="snapshot.root.add.k1"
+##         name="root.add.k1"
 ##         type="Real"
 ##         kind="parameter" />
 ##       <oms:Variable
-##         name="snapshot.root.add.k2"
+##         name="root.add.k2"
 ##         type="Real"
 ##         kind="parameter" />
 ##     </oms:SignalFilter>

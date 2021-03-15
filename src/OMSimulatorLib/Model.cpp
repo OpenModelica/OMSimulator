@@ -1223,7 +1223,9 @@ void oms::Model::exportSignalFilter(pugi::xml_node &node) const
   for (auto const& signal : filteredSignals)
   {
     pugi::xml_node oms_variable = node.append_child(oms::ssp::Version1_0::oms_Variable);
-    oms_variable.append_attribute("name") = signal.getFullName().c_str();
+    ComRef signalName = signal.getFullName();
+    signalName.pop_front();
+    oms_variable.append_attribute("name") = signalName.c_str();
     oms_variable.append_attribute("type") = signal.getTypeString().c_str();
     oms_variable.append_attribute("kind") = signal.getCausalityString().c_str();
   }
@@ -1237,7 +1239,11 @@ oms_status_enu_t oms::Model::importSignalFilter(const std::string& filename, con
   for (pugi::xml_node_iterator it = oms_signalfilter.begin(); it != oms_signalfilter.end(); ++it)
   {
     if (std::string(it->name()) == oms::ssp::Version1_0::oms_Variable)
-      addSignalsToResults(it->attribute("name").as_string());
+    {
+      ComRef signalName(getCref());
+      signalName = signalName + ComRef(it->attribute("name").as_string());
+      addSignalsToResults(signalName.c_str());
+    }
   }
 
   return oms_status_ok;
