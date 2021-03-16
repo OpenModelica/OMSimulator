@@ -34,6 +34,7 @@
 
 #include "Clock.h"
 #include "ComRef.h"
+#include "Connector.h"
 #include "DirectedGraph.h"
 #include "Element.h"
 #include "FMUInfo.h"
@@ -118,6 +119,8 @@ namespace oms
     const DirectedGraph& getOutputsGraph() { return outputsGraph; }
 
     oms_status_enu_t rename(const ComRef& newCref); ///< rename submodules, e.g., fmu:s
+
+    virtual void getFilteredSignals(std::vector<Connector>& filteredSignals) const = 0;
 
   protected:
     Component(const ComRef& cref, oms_component_enu_t type, System* parentSystem, const std::string& path);

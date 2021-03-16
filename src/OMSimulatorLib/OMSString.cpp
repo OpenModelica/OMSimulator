@@ -31,6 +31,8 @@
 
 #include "OMSString.h"
 
+#include "Logging.h"
+
 #include <cstring>
 
 char* oms::allocateAndCopyString(const char* source)
@@ -40,12 +42,18 @@ char* oms::allocateAndCopyString(const char* source)
   if (source)
   {
     target = new char[strlen(source) + 1];
-    strcpy(target, source);
+    if (target)
+      strcpy(target, source);
+    else
+      logError("Out of memory");
   }
   else
   {
     target = new char[1];
-    target[0] = '\0';
+    if (target)
+      target[0] = '\0';
+    else
+      logError("Out of memory");
   }
 
   return target;
@@ -54,4 +62,33 @@ char* oms::allocateAndCopyString(const char* source)
 char* oms::allocateAndCopyString(const std::string& source)
 {
   return allocateAndCopyString(source.c_str());
+}
+
+char* oms::mallocAndCopyString(const char* source)
+{
+  char* target;
+
+  if (source)
+  {
+    target = (char*) malloc(strlen(source) + 1);
+    if (target)
+      strcpy(target, source);
+    else
+      logError("Out of memory");
+  }
+  else
+  {
+    target = (char*) malloc(1);
+    if (target)
+      target[0] = '\0';
+    else
+      logError("Out of memory");
+  }
+
+  return target;
+}
+
+char* oms::mallocAndCopyString(const std::string& source)
+{
+  return mallocAndCopyString(source.c_str());
 }

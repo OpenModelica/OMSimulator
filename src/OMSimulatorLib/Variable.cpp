@@ -34,10 +34,7 @@
 #include "Logging.h"
 #include "Util.h"
 
-#include <fmilib.h>
-#include <iostream>
 #include <JM/jm_portability.h>
-#include <string>
 
 
 oms::Variable::Variable(fmi2_import_variable_t *var, unsigned int index)

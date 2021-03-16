@@ -45,6 +45,8 @@ namespace oms
       extern const char* oms_file;
       extern const char* oms_annotations;
       extern const char* oms_buses;
+      extern const char* oms_signalFilter;
+      extern const char* oms_Variable;
 
       namespace ssd
       {

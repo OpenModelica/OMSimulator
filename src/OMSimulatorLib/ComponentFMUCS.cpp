@@ -200,7 +200,7 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::
     else if (v.isOutput())
     {
       component->outputs.push_back(v);
-      component->outputsGraph.addNode(Connector(oms_causality_output, v.getType(), v.getCref()));
+      component->outputsGraph.addNode(Connector(oms_causality_output, v.getType(), v.getCref(), component->getFullCref()));
     }
     else if (v.isParameter())
       component->parameters.push_back(v);
@@ -208,7 +208,7 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::
       component->calculatedParameters.push_back(v);
 
     if (v.isInitialUnknown())
-      component->initialUnknownsGraph.addNode(Connector(v.getCausality(), v.getType(), v.getCref()));
+      component->initialUnknownsGraph.addNode(Connector(v.getCausality(), v.getType(), v.getCref(), component->getFullCref()));
 
     component->exportVariables.push_back(v.isInput() || v.isOutput());
   }
@@ -220,15 +220,15 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::
   int i = 1;
   int size = 1 + component->inputs.size();
   for (const auto& v : component->inputs)
-    component->connectors.push_back(new Connector(oms_causality_input, v.getType(), v.getCref(), i++/(double)size));
+    component->connectors.push_back(new Connector(oms_causality_input, v.getType(), v.getCref(), component->getFullCref(), i++/(double)size));
   i = 1;
   size = 1 + component->outputs.size();
   for (const auto& v : component->outputs)
-    component->connectors.push_back(new Connector(oms_causality_output, v.getType(), v.getCref(), i++/(double)size));
+    component->connectors.push_back(new Connector(oms_causality_output, v.getType(), v.getCref(), component->getFullCref(), i++/(double)size));
   for (const auto& v : component->parameters)
-    component->connectors.push_back(new Connector(oms_causality_parameter, v.getType(), v.getCref()));
+    component->connectors.push_back(new Connector(oms_causality_parameter, v.getType(), v.getCref(), component->getFullCref()));
   for (const auto& v : component->calculatedParameters)
-    component->connectors.push_back(new Connector(oms_causality_calculatedParameter, v.getType(), v.getCref()));
+    component->connectors.push_back(new Connector(oms_causality_calculatedParameter, v.getType(), v.getCref(), component->getFullCref()));
   component->connectors.push_back(NULL);
   component->element.setConnectors(&component->connectors[0]);
 
@@ -279,7 +279,7 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const pugi::xml_node& node, om
       // import connectors
       for(pugi::xml_node_iterator itConnectors = (*it).begin(); itConnectors != (*it).end(); ++itConnectors)
       {
-        component->connectors.push_back(oms::Connector::NewConnector(*itConnectors, sspVersion));
+        component->connectors.push_back(oms::Connector::NewConnector(*itConnectors, sspVersion, component->getFullCref()));
       }
     }
     else if(name == oms::ssp::Draft20180219::ssd::element_geometry)
@@ -376,7 +376,7 @@ oms_status_enu_t oms::ComponentFMUCS::initializeDependencyGraph_initialUnknowns(
     {
       logDebug(std::string(getCref()) + ": " + getPath() + " initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + " depends on all");
       for (int j = 0; j < inputs.size(); j++)
-        initialUnknownsGraph.addEdge(inputs[j].makeConnector(), initialUnknownsGraph.getNodes()[i]);
+        initialUnknownsGraph.addEdge(inputs[j].makeConnector(this->getFullCref()), initialUnknownsGraph.getNodes()[i]);
     }
     return oms_status_ok;
   }
@@ -431,7 +431,7 @@ oms_status_enu_t oms::ComponentFMUCS::initializeDependencyGraph_initialUnknowns(
     {
       logDebug(std::string(getCref()) + ": " + getPath() + " initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + " depends on all");
       for (int j = 0; j < inputs.size(); j++)
-        initialUnknownsGraph.addEdge(inputs[j].makeConnector(), initialUnknownsGraph.getNodes()[i]);
+        initialUnknownsGraph.addEdge(inputs[j].makeConnector(this->getFullCref()), initialUnknownsGraph.getNodes()[i]);
     }
     else
     {
@@ -445,7 +445,7 @@ oms_status_enu_t oms::ComponentFMUCS::initializeDependencyGraph_initialUnknowns(
           return oms_status_error;
         }
         logDebug(std::string(getCref()) + ": " + getPath() + " initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + " depends on " + std::string(allVariables[dependency[j] - 1]));
-        initialUnknownsGraph.addEdge(allVariables[dependency[j] - 1].makeConnector(), initialUnknownsGraph.getNodes()[i]);
+        initialUnknownsGraph.addEdge(allVariables[dependency[j] - 1].makeConnector(this->getFullCref()), initialUnknownsGraph.getNodes()[i]);
       }
     }
   }
@@ -482,7 +482,7 @@ oms_status_enu_t oms::ComponentFMUCS::initializeDependencyGraph_outputs()
     {
       logDebug(std::string(getCref()) + ": " + getPath() + " output " + std::string(outputs[i]) + " depends on all");
       for (int j = 0; j < inputs.size(); j++)
-        outputsGraph.addEdge(inputs[j].makeConnector(), outputs[i].makeConnector());
+        outputsGraph.addEdge(inputs[j].makeConnector(this->getFullCref()), outputs[i].makeConnector(this->getFullCref()));
     }
     else
     {
@@ -494,7 +494,7 @@ oms_status_enu_t oms::ComponentFMUCS::initializeDependencyGraph_outputs()
           return logError(std::string(getCref()) + ": erroneous dependencies detected in modelDescription.xml");
         }
         logDebug(std::string(getCref()) + ": " + getPath() + " output " + std::string(outputs[i]) + " depends on " + std::string(allVariables[dependency[j] - 1]));
-        outputsGraph.addEdge(allVariables[dependency[j] - 1].makeConnector(), outputs[i].makeConnector());
+        outputsGraph.addEdge(allVariables[dependency[j] - 1].makeConnector(this->getFullCref()), outputs[i].makeConnector(this->getFullCref()));
       }
     }
   }
@@ -1221,4 +1221,13 @@ oms_status_enu_t oms::ComponentFMUCS::setFaultInjection(const oms::ComRef& signa
     fib[var->getValueReference()] = ft;
   }
   return oms_status_ok;
+}
+
+void oms::ComponentFMUCS::getFilteredSignals(std::vector<Connector>& filteredSignals) const
+{
+  for (unsigned int i = 0; i < allVariables.size(); ++i)
+  {
+    if (exportVariables[i])
+      filteredSignals.push_back(allVariables[i].makeConnector(this->getFullCref()));
+  }
 }

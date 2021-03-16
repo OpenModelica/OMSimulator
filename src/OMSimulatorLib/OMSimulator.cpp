@@ -1248,22 +1248,6 @@ oms_status_enu_t oms_getResultFile(const char* cref_, char** filename, int* buff
     return logError_OnlyForModel;
 }
 
-oms_status_enu_t oms_getSignalFilter(const char* cref_, char** regex)
-{
-  oms::ComRef cref(cref_);
-
-  if (cref.isValidIdent())
-  {
-    oms::Model* model = oms::Scope::GetInstance().getModel(cref);
-    if (!model)
-      return logError_ModelNotInScope(cref);
-
-    return model->getSignalFilter(regex);
-  }
-  else
-    return logError_OnlyForModel;
-}
-
 oms_status_enu_t oms_getSolver(const char* cref, oms_solver_enu_t* solver)
 {
   oms::ComRef tail(cref);
@@ -1404,24 +1388,8 @@ oms_status_enu_t oms_setResultFile(const char* cref_, const char* filename, int 
     return logError_OnlyForModel;
 }
 
-oms_status_enu_t oms_setSignalFilter(const char* cref, const char* regex)
-{
-  oms_status_enu_t status;
-
-  oms::ComRef tail(cref);
-  oms::ComRef front = tail.pop_front();
-
-  oms::Model* model = oms::Scope::GetInstance().getModel(front);
-  if (!model)
-    return logError_ModelNotInScope(front);
-
-  return model->setSignalFilter(regex);
-}
-
 oms_status_enu_t oms_addSignalsToResults(const char* cref, const char* regex)
 {
-  logWarning("[addSignalsToResults] is deprecated and [setSignalFilter] is the recommended API");
-
   oms::ComRef tail(cref);
   oms::ComRef front = tail.pop_front();
 
@@ -1434,8 +1402,6 @@ oms_status_enu_t oms_addSignalsToResults(const char* cref, const char* regex)
 
 oms_status_enu_t oms_removeSignalsFromResults(const char* cref, const char* regex)
 {
-  logWarning("[removeSignalsFromResults] is deprecated and [setSignalFilter] is the recommended API");
-
   oms::ComRef tail(cref);
   oms::ComRef front = tail.pop_front();
 

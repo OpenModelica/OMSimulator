@@ -348,7 +348,7 @@ printStatus(status, 0)
 ## 		<ssd:Annotations>
 ## 			<ssc:Annotation type="org.openmodelica">
 ## 				<oms:Annotations>
-## 					<oms:SimulationInformation resultFile="test_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter=".*" />
+## 					<oms:SimulationInformation resultFile="test_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="resources/signalFilter.xml" />
 ## 				</oms:Annotations>
 ## 			</ssc:Annotation>
 ## 		</ssd:Annotations>
@@ -515,7 +515,7 @@ printStatus(status, 0)
 ## 		<ssd:Annotations>
 ## 			<ssc:Annotation type="org.openmodelica">
 ## 				<oms:Annotations>
-## 					<oms:SimulationInformation resultFile="test_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter=".*" />
+## 					<oms:SimulationInformation resultFile="test_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="resources/signalFilter.xml" />
 ## 				</oms:Annotations>
 ## 			</ssc:Annotation>
 ## 		</ssd:Annotations>

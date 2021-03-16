@@ -32,6 +32,7 @@
 #include "Snapshot.h"
 
 #include "Logging.h"
+#include "OMSString.h"
 
 #include <iostream>
 
@@ -140,6 +141,19 @@ pugi::xml_node oms::Snapshot::getResourceNode(const filesystem::path& filename) 
   return node;
 }
 
+oms_status_enu_t oms::Snapshot::deleteResourceNode(const filesystem::path &filename)
+{
+  pugi::xml_node oms_snapshot = doc.document_element(); // oms:snapshot
+  pugi::xml_node node = oms_snapshot.find_child_by_attribute(oms::ssp::Version1_0::oms_file, "name", filename.generic_string().c_str());
+
+  if (!node)
+    logError("Failed to find node \"" + filename.generic_string() + "\"");
+
+  oms_snapshot.remove_child(node);
+
+  return oms_status_ok;
+}
+
 pugi::xml_node oms::Snapshot::operator[](const filesystem::path& filename)
 {
   pugi::xml_node oms_snapshot = doc.document_element();
@@ -190,6 +204,15 @@ pugi::xml_node oms::Snapshot::getTemplateResourceNodeSSV(const filesystem::path&
   pugi::xml_node node_parameters = node_parameterset.append_child(oms::ssp::Version1_0::ssv::parameters);
 
   return node_parameters;
+}
+
+pugi::xml_node oms::Snapshot::getTemplateResourceNodeSignalFilter(const filesystem::path& filename)
+{
+  pugi::xml_node new_node = newResourceNode(filename);
+  pugi::xml_node oms_signalFilter = new_node.append_child(oms::ssp::Version1_0::oms_signalFilter);
+  oms_signalFilter.append_attribute("version") = "1.0";
+
+  return oms_signalFilter;
 }
 
 oms_status_enu_t oms::Snapshot::exportPartialSnapshot(const ComRef& cref, Snapshot& partialSnapshot)
@@ -345,14 +368,10 @@ oms_status_enu_t oms::Snapshot::writeDocument(char** contents)
 
     oms_status_enu_t copy(char** contents)
     {
-      *contents = (char*) malloc(result.length() + 1);
+      *contents = mallocAndCopyString(result);
       if (!*contents)
-      {
-        logError("Out of memory");
-        return oms_status_fatal;
-      }
+        return oms_status_error;
 
-      strcpy(*contents, result.c_str());
       return oms_status_ok;
     }
 

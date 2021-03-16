@@ -2,8 +2,6 @@
 removeSignalsFromResults
 ------------------------
 
-[deprecated: `setSignalFilter` is the recommended API]
-
 Removes all variables that match the given regex to the result file.
 #END#
 

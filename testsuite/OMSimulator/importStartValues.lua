@@ -1,5 +1,5 @@
 -- status: correct
--- teardown_command: rm -rf importStartValues/
+-- teardown_command: rm -rf importStartValues-lua/
 -- linux: yes
 -- mingw: yes
 -- win: no
@@ -7,7 +7,7 @@
 
 oms_setCommandLineOption("--suppressPath=true --exportParametersInline=false")
 
-status = oms_setTempDirectory("./importStartValues/")
+oms_setTempDirectory("./importStartValues-lua/")
 
 oms_importFile("../resources/importStartValues.ssp");
 
@@ -22,7 +22,6 @@ oms_initialize("importStartValues")
 oms_simulate("importStartValues")
 
 oms_terminate("importStartValues")
-
 oms_delete("importStartValues")
 
 
@@ -123,7 +122,7 @@ oms_delete("importStartValues")
 --                 resultFile="importStartValues_res.mat"
 --                 loggingInterval="0.000000"
 --                 bufferSize="10"
---                 signalFilter=".*" />
+--                 signalFilter="resources/signalFilter.xml" />
 --             </oms:Annotations>
 --           </ssc:Annotation>
 --         </ssd:Annotations>
@@ -155,6 +154,28 @@ oms_delete("importStartValues")
 --         </ssv:Parameter>
 --       </ssv:Parameters>
 --     </ssv:ParameterSet>
+--   </oms:file>
+--   <oms:file
+--     name="resources/signalFilter.xml">
+--     <oms:SignalFilter
+--       version="1.0">
+--       <oms:Variable
+--         name="importStartValues.root.C1"
+--         type="Real"
+--         kind="input" />
+--       <oms:Variable
+--         name="importStartValues.root.System1.C1"
+--         type="Real"
+--         kind="input" />
+--       <oms:Variable
+--         name="importStartValues.root.System1.C2"
+--         type="Real"
+--         kind="parameter" />
+--       <oms:Variable
+--         name="importStartValues.root.System1.C3"
+--         type="Real"
+--         kind="output" />
+--     </oms:SignalFilter>
 --   </oms:file>
 -- </oms:snapshot>
 --

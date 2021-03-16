@@ -17,7 +17,7 @@ rangeDelta = 0.002
 def generateLua(modelName, testFMUDir, resultDir, fmiType):
   """Generate Lua Script that will be called by OMSimulator.
   Reads experiment settings from <FMUName>_ref.opt and optional start values.
-  Returns path to generated Lua file. 
+  Returns path to generated Lua file.
   """
   # Get some paths
   testFMU = os.path.relpath(os.path.join(testFMUDir, modelName + ".fmu"), resultDir)
@@ -85,7 +85,6 @@ def generateLua(modelName, testFMUDir, resultDir, fmiType):
       f.write("oms_addConnection(\"model.root.input." + inp + "\", \"model.root.fmu." + inp + "\")\n")
 
   f.write("\n-- Simulation settings\n")
-  f.write("oms_setSignalFilter(\"model\", \".*\")\n")
   f.write("oms_setResultFile(\"model\", \"" + modelName + "_out.csv\")\n")
   f.write("oms_setStartTime(\"model\", " + startTime + ")\n")
   f.write("oms_setStopTime(\"model\", " + stopTime + ")\n")
@@ -181,7 +180,7 @@ def createREADME(resultDir, modelName, cmd, luaFile):
 
 def importFMU(crossCheckDir, testFMUDir, resultDir, modelName, fmiType, omsimulator):
   """Import and simulate FMU with OMSimulator
-  Generate a Lua script and run it with 
+  Generate a Lua script and run it with
   """
   testFMU = os.path.join(testFMUDir, modelName + ".fmu")
   print("Testing " + os.path.relpath(testFMU, crossCheckDir))
@@ -225,7 +224,7 @@ def simulateWithOMSimulator(crossCheckDir, platform, omsimulator, omsVersion):
     for fmiType in ["me", "cs"]:
       toolsDir = os.path.join(crossCheckDir, "fmus", fmiVersion, fmiType, platform)
       for exportingToolID in os.listdir(toolsDir):
-        versionsDir = os.path.join(toolsDir, exportingToolID) 
+        versionsDir = os.path.join(toolsDir, exportingToolID)
         for exportingToolVersion in os.listdir(versionsDir):
           fmusDir = os.path.join(versionsDir, exportingToolVersion)
           for modelName in os.listdir(fmusDir):

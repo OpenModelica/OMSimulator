@@ -38,6 +38,9 @@ namespace oms
 {
   char* allocateAndCopyString(const char* source);
   char* allocateAndCopyString(const std::string& source);
+
+  char* mallocAndCopyString(const char* source);
+  char* mallocAndCopyString(const std::string& source);
 }
 
 #endif

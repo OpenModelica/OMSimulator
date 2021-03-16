@@ -96,7 +96,7 @@ oms::Component* oms::ComponentTable::NewComponent(const oms::ComRef& cref, oms::
   for (auto const &signal : component->resultReader->getAllSignals())
   {
     component->exportSeries[ComRef(signal)] = true;
-    component->connectors.back() = new Connector(oms_causality_output, oms_signal_type_real, ComRef(signal), i++/(double)size);
+    component->connectors.back() = new Connector(oms_causality_output, oms_signal_type_real, ComRef(signal), component->getFullCref(), i++/(double)size);
     component->connectors.push_back(NULL);
   }
   component->element.setConnectors(&component->connectors[0]);
@@ -137,7 +137,7 @@ oms::Component* oms::ComponentTable::NewComponent(const pugi::xml_node& node, om
       // import connectors
       for(pugi::xml_node_iterator itConnectors = (*it).begin(); itConnectors != (*it).end(); ++itConnectors)
       {
-        component->connectors.push_back(oms::Connector::NewConnector(*itConnectors, sspVersion));
+        component->connectors.push_back(oms::Connector::NewConnector(*itConnectors, sspVersion, component->getFullCref()));
         component->exportSeries[component->connectors.back()->getName()] = true;
       }
     }
@@ -380,4 +380,13 @@ oms_status_enu_t oms::ComponentTable::restoreState()
 {
   time = storedTime;
   return oms_status_ok;
+}
+
+void oms::ComponentTable::getFilteredSignals(std::vector<Connector>& filteredSignals) const
+{
+  for (auto& x: exportSeries)
+  {
+    if (x.second)
+      filteredSignals.push_back(Connector(oms_causality_output, oms_signal_type_real, x.first, this->getFullCref()));
+  }
 }

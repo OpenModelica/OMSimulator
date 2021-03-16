@@ -357,6 +357,7 @@ typedef struct {
 typedef struct {
   oms_causality_enu_t causality;      ///< input/output/parameter
   oms_signal_type_enu_t type;         ///< Type of the connector
+  char* owner;                        ///< Owner of the connector
   char* name;                         ///< Name of the connector
   ssd_connector_geometry_t* geometry; ///< Geometry information of the connector
 } oms_connector_t;
