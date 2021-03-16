@@ -253,15 +253,15 @@ oms_delete("model")
 --     <oms:SignalFilter
 --       version="1.0">
 --       <oms:Variable
---         name="root.Gain.u"
+--         name="model.root.Gain.u"
 --         type="Real"
 --         kind="input" />
 --       <oms:Variable
---         name="root.Gain.k"
+--         name="model.root.Gain.k"
 --         type="Real"
 --         kind="parameter" />
 --       <oms:Variable
---         name="root.System2.Input_1"
+--         name="model.root.System2.Input_1"
 --         type="Real"
 --         kind="input" />
 --     </oms:SignalFilter>
