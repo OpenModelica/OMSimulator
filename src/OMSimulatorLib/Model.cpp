@@ -648,10 +648,8 @@ oms_status_enu_t oms::Model::importFromSnapshot(const Snapshot& snapshot)
             loggingInterval = itAnnotations->attribute("loggingInterval").as_double();
             bufferSize = itAnnotations->attribute("bufferSize").as_int();
 
-            std::string _signalFilterFileName = itAnnotations->attribute("signalFilter").as_string();
-            if (".*" != _signalFilterFileName) // avoid error messages for older ssp files
-              if (oms_status_ok == importSignalFilter(_signalFilterFileName, snapshot))
-                this->signalFilterFilename = _signalFilterFileName;
+            if (oms_status_ok == importSignalFilter(itAnnotations->attribute("signalFilter").as_string(), snapshot))
+              this->signalFilterFilename = itAnnotations->attribute("signalFilter").as_string();
           }
         }
       }
@@ -1231,7 +1229,16 @@ void oms::Model::exportSignalFilter(pugi::xml_node &node) const
 
 oms_status_enu_t oms::Model::importSignalFilter(const std::string& filename, const Snapshot& snapshot)
 {
+  if (".*" == filename) // avoid error messages for older ssp files
+  {
+    addSignalsToResults(".*");
+    return oms_status_warning;
+  }
+
   pugi::xml_node oms_signalfilter = snapshot.getResourceNode(filename);
+
+  if (!oms_signalfilter)
+    return oms_status_error;
 
   removeSignalsFromResults(".*"); // disable all signals
   for (pugi::xml_node_iterator it = oms_signalfilter.begin(); it != oms_signalfilter.end(); ++it)
