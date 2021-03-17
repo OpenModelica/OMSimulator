@@ -137,7 +137,8 @@ pugi::xml_node oms::Snapshot::getResourceNode(const filesystem::path& filename) 
   if (node)
     return node.first_child();
 
-  logError("Failed to find node \"" + filename.generic_string() + "\"");
+  if  ("resources/signalFilter.xml" != filename)  // TEMPORARILY DISABLE WARNING FOR OMEDIT - REVERT THIS ASAP
+    logError("Failed to find node \"" + filename.generic_string() + "\"");
   return node;
 }
 
