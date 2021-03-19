@@ -12,13 +12,6 @@ Sets data for TLM socket communication.
 
 #END#
 
-#PYTHON#
-.. code-block:: python
-
-  # not yet available
-
-#END#
-
 #CAPI#
 .. code-block:: c
 

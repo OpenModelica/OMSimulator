@@ -281,26 +281,40 @@ OMSimulatorLua = ""
 OMSimulatorPython = ""
 OMCScripting = ""
 
+def CmdSupportsTarget(filename: str, target: str):
+  file = open('api/' + filename, 'r')
+  lines = file.readlines()
+  file.close()
+
+  for line in lines:
+    if target in line:
+      return True
+  return False
+
 for filename in sorted(filter(lambda file: file.endswith('.rst'), os.listdir('api'))):
-  OMSimulatorLib = OMSimulatorLib + ".. " + filename + "\n\n"
-  OMSimulatorLib = OMSimulatorLib + ".. include:: api/" + filename + "\n  :start-after: #CAPTION#\n  :end-before: #END#\n\n"
-  OMSimulatorLib = OMSimulatorLib + ".. include:: api/" + filename + "\n  :start-after: #CAPI#\n  :end-before: #END#\n\n"
-  OMSimulatorLib = OMSimulatorLib + ".. include:: api/" + filename + "\n  :start-after: #DESCRIPTION#\n  :end-before: #END#\n\n"
+  if CmdSupportsTarget(filename, '#CAPI#'):
+    OMSimulatorLib = OMSimulatorLib + ".. " + filename + "\n\n"
+    OMSimulatorLib = OMSimulatorLib + ".. include:: api/" + filename + "\n  :start-after: #CAPTION#\n  :end-before: #END#\n\n"
+    OMSimulatorLib = OMSimulatorLib + ".. include:: api/" + filename + "\n  :start-after: #CAPI#\n  :end-before: #END#\n\n"
+    OMSimulatorLib = OMSimulatorLib + ".. include:: api/" + filename + "\n  :start-after: #DESCRIPTION#\n  :end-before: #END#\n\n"
 
-  OMSimulatorLua = OMSimulatorLua + ".. " + filename + "\n\n"
-  OMSimulatorLua = OMSimulatorLua + ".. include:: api/" + filename + "\n  :start-after: #CAPTION#\n  :end-before: #END#\n\n"
-  OMSimulatorLua = OMSimulatorLua + ".. include:: api/" + filename + "\n  :start-after: #LUA#\n  :end-before: #END#\n\n"
-  OMSimulatorLua = OMSimulatorLua + ".. include:: api/" + filename + "\n  :start-after: #DESCRIPTION#\n  :end-before: #END#\n\n"
+  if CmdSupportsTarget(filename, '#LUA#'):
+    OMSimulatorLua = OMSimulatorLua + ".. " + filename + "\n\n"
+    OMSimulatorLua = OMSimulatorLua + ".. include:: api/" + filename + "\n  :start-after: #CAPTION#\n  :end-before: #END#\n\n"
+    OMSimulatorLua = OMSimulatorLua + ".. include:: api/" + filename + "\n  :start-after: #LUA#\n  :end-before: #END#\n\n"
+    OMSimulatorLua = OMSimulatorLua + ".. include:: api/" + filename + "\n  :start-after: #DESCRIPTION#\n  :end-before: #END#\n\n"
 
-  OMSimulatorPython = OMSimulatorPython + ".. " + filename + "\n\n"
-  OMSimulatorPython = OMSimulatorPython + ".. include:: api/" + filename + "\n  :start-after: #CAPTION#\n  :end-before: #END#\n\n"
-  OMSimulatorPython = OMSimulatorPython + ".. include:: api/" + filename + "\n  :start-after: #PYTHON#\n  :end-before: #END#\n\n"
-  OMSimulatorPython = OMSimulatorPython + ".. include:: api/" + filename + "\n  :start-after: #DESCRIPTION#\n  :end-before: #END#\n\n"
+  if CmdSupportsTarget(filename, '#PYTHON#'):
+    OMSimulatorPython = OMSimulatorPython + ".. " + filename + "\n\n"
+    OMSimulatorPython = OMSimulatorPython + ".. include:: api/" + filename + "\n  :start-after: #CAPTION#\n  :end-before: #END#\n\n"
+    OMSimulatorPython = OMSimulatorPython + ".. include:: api/" + filename + "\n  :start-after: #PYTHON#\n  :end-before: #END#\n\n"
+    OMSimulatorPython = OMSimulatorPython + ".. include:: api/" + filename + "\n  :start-after: #DESCRIPTION#\n  :end-before: #END#\n\n"
 
-  OMCScripting = OMCScripting + ".. " + filename + "\n\n"
-  OMCScripting = OMCScripting + ".. include:: api/" + filename + "\n  :start-after: #CAPTION#\n  :end-before: #END#\n\n"
-  OMCScripting = OMCScripting + ".. include:: api/" + filename + "\n  :start-after: #OMC#\n  :end-before: #END#\n\n"
-  OMCScripting = OMCScripting + ".. include:: api/" + filename + "\n  :start-after: #DESCRIPTION#\n  :end-before: #END#\n\n"
+  if CmdSupportsTarget(filename, '#OMC#'):
+    OMCScripting = OMCScripting + ".. " + filename + "\n\n"
+    OMCScripting = OMCScripting + ".. include:: api/" + filename + "\n  :start-after: #CAPTION#\n  :end-before: #END#\n\n"
+    OMCScripting = OMCScripting + ".. include:: api/" + filename + "\n  :start-after: #OMC#\n  :end-before: #END#\n\n"
+    OMCScripting = OMCScripting + ".. include:: api/" + filename + "\n  :start-after: #DESCRIPTION#\n  :end-before: #END#\n\n"
 
 open("OMSimulatorLib.inc", "w").write("%s" % OMSimulatorLib)
 open("OMSimulatorLua.inc", "w").write("%s" % OMSimulatorLua)

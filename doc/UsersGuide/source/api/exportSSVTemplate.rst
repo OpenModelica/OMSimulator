@@ -27,12 +27,5 @@ If called for a top level model, start values of all FMUs are exported to the SS
 
 #END#
 
-#OMC#
-.. code-block:: Modelica
-
-  # not available
-
-#END#
-
 #DESCRIPTION#
 #END#
