@@ -54,4 +54,5 @@ The following table describes the return values:
   :widths: 10, 65
 
   "Integer", "1 if the signal is considered as equal, 0 otherwise"
+
 #END#
