@@ -139,6 +139,19 @@ class Model:
       raise Exception('error {}'.format(Types.Status(status)))
 
   @property
+  def fixedStepSize(self):
+    stepSize, status = Scope._capi.getFixedStepSize(self.cref)
+    if Types.Status(status) != Types.Status.OK:
+      raise Exception('error {}'.format(Types.Status(status)))
+    return stepSize
+
+  @fixedStepSize.setter
+  def fixedStepSize(self, stepSize: float):
+    status = Scope._capi.setFixedStepSize(self.cref, stepSize)
+    if Types.Status(status) != Types.Status.OK:
+      raise Exception('error {}'.format(Types.Status(status)))
+
+  @property
   def modelState(self):
     modelState, status = Scope._capi.getModelState(self.cref)
     if Types.Status(status) != Types.Status.OK:
