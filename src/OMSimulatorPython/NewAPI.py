@@ -30,7 +30,16 @@ def setCommandLineOption(cmd: str):
 def setLoggingLevel(level: int):
   if not isinstance(level, int):
     raise Exception('bad argument: {}'.format(level))
-
   status = Scope._capi.setLoggingLevel(level)
   if Types.Status(status) != Types.Status.OK:
     raise Exception('error {}'.format(Types.Status(status)))
+
+def setMaxLogFileSize(size: int) -> None:
+  Scope._capi.setMaxLogFileSize(size)
+
+def setLogFile(path: str, size=None) -> None:
+  status = Scope._capi.setLogFile(path)
+  if Types.Status(status) != Types.Status.OK:
+    raise Exception('error {}'.format(Types.Status(status)))
+  if size:
+    setMaxLogFileSize(size)
