@@ -282,9 +282,8 @@ OMSimulatorPython = ""
 OMCScripting = ""
 
 def CmdSupportsTarget(filename: str, target: str):
-  file = open('api/' + filename, 'r')
-  lines = file.readlines()
-  file.close()
+  with open('api/' + filename) as f:
+    lines = f.readlines()
 
   for line in lines:
     if target in line:
