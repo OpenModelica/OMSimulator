@@ -22,3 +22,16 @@ class System:
     if Types.Status(status) != Types.Status.OK:
       raise Exception('error {}'.format(Types.Status(status)))
     return System(new_cref)
+
+  def addSubModel(self, cref: str, path: str):
+    new_cref = self.cref + '.' + cref
+    status = Scope._capi.addSubModel(new_cref, path)
+    if Types.Status(status) != Types.Status.OK:
+      raise Exception('error {}'.format(Types.Status(status)))
+
+  def addConnection(self, conA: str, conB: str):
+    new_conA = self.cref + '.' + conA
+    new_conB = self.cref + '.' + conB
+    status = Scope._capi.addConnection(new_conA, new_conB)
+    if Types.Status(status) != Types.Status.OK:
+      raise Exception('error {}'.format(Types.Status(status)))
