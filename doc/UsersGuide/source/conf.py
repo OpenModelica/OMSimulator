@@ -283,11 +283,9 @@ OMCScripting = ""
 
 def CmdSupportsTarget(filename: str, target: str):
   with open('api/' + filename) as f:
-    lines = f.readlines()
-
-  for line in lines:
-    if target in line:
-      return True
+    for line in f:
+      if target in line:
+        return True
   return False
 
 for filename in sorted(filter(lambda file: file.endswith('.rst'), os.listdir('api'))):
