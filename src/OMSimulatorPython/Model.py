@@ -51,35 +51,35 @@ class Model:
     if Types.Status(status) != Types.Status.OK:
       raise Exception('error {}'.format(Types.Status(status)))
 
-  def getBoolean(self, cref):
+  def getBoolean(self, cref: str):
     value, status = Scope._capi.getBoolean(self.cref + '.' + cref)
     if Types.Status(status) != Types.Status.OK:
       raise Exception('error {}'.format(Types.Status(status)))
     return value
 
-  def getInteger(self, cref):
+  def getInteger(self, cref: str):
     value, status = Scope._capi.getInteger(self.cref + '.' + cref)
     if Types.Status(status) != Types.Status.OK:
       raise Exception('error {}'.format(Types.Status(status)))
     return value
 
-  def getReal(self, cref):
+  def getReal(self, cref: str):
     value, status = Scope._capi.getReal(self.cref + '.' + cref)
     if Types.Status(status) != Types.Status.OK:
       raise Exception('error {}'.format(Types.Status(status)))
     return value
 
-  def setBoolean(self, cref, value):
+  def setBoolean(self, cref: str, value: bool):
     status = Scope._capi.setBoolean(self.cref + '.' + cref, value)
     if Types.Status(status) != Types.Status.OK:
       raise Exception('error {}'.format(Types.Status(status)))
 
-  def setInteger(self, cref, value):
+  def setInteger(self, cref: str, value: int):
     status = Scope._capi.setInteger(self.cref + '.' + cref, value)
     if Types.Status(status) != Types.Status.OK:
       raise Exception('error {}'.format(Types.Status(status)))
 
-  def setReal(self, cref, value):
+  def setReal(self, cref: str, value: float):
     status = Scope._capi.setReal(self.cref + '.' + cref, value)
     if Types.Status(status) != Types.Status.OK:
       raise Exception('error {}'.format(Types.Status(status)))
