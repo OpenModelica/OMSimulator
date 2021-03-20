@@ -88,3 +88,67 @@ Python Scripting Commands
 #########################
 
 .. include:: OMSimulatorPython.inc
+
+Example: Pi
+###########
+
+.. code-block:: modelica
+
+  model Circle
+    parameter Integer globalSeed = 30020 "global seed to initialize random number generator";
+    parameter Integer localSeed = 614657 "local seed to initialize random number generator";
+    Real x;
+    Real y;
+    Boolean inside = x*x + y*y < 1.0;
+  protected
+    Integer state128[4];
+  algorithm
+    when initial() then
+      state128 := Modelica.Math.Random.Generators.Xorshift128plus.initialState(localSeed, globalSeed);
+      (x/r, state128) := Modelica.Math.Random.Generators.Xorshift128plus.random(state128);
+      (y/r, state128) := Modelica.Math.Random.Generators.Xorshift128plus.random(state128);
+    end when;
+    annotation(uses(Modelica(version="4.0.0")));
+  end Circle;
+
+.. code-block:: python
+
+  import math
+  import matplotlib.pyplot as plt
+  import OMSimulator as oms
+
+  # redirect logging to file and limit the file size to 65MB
+  oms.setLogFile('pi.log', 65)
+
+  model = oms.newModel('pi')
+  root = model.addSystem('root', oms.Types.System.SC)
+  root.addSubModel('circle', 'Circle.fmu')
+
+  model.resultFile = '' # no result file
+  model.instantiate()
+
+  results = list()
+  inside = 0
+
+  MIN = 100
+  MAX = 1000000
+  for i in range(0, MAX+1):
+    if i > 0:
+      model.reset()
+    model.setInteger('root.circle.globalSeed', i)
+    model.initialize()
+    if model.getBoolean("root.circle.inside"):
+      inside = inside + 1
+    if i >= MIN:
+      results.append(4.0*inside/i)
+  model.terminate()
+  model.delete()
+
+  plt.plot([MIN, MAX], [math.pi, math.pi], 'r--', range(MIN, MAX+1), results)
+  plt.xscale('log')
+  plt.ylabel('Approximation of pi')
+  plt.savefig('pi.png')
+
+.. figure :: images/pi.png
+
+  Results: Approximation of pi
