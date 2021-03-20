@@ -5,13 +5,6 @@ getSubModelPath
 Returns the path of a given component.
 #END#
 
-#LUA#
-.. code-block:: lua
-
-  # not available
-
-#END#
-
 #PYTHON#
 .. code-block:: python
 

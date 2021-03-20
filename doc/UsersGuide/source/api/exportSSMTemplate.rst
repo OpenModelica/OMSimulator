@@ -28,12 +28,5 @@ The function can be called for a top level model or a certain FMU component. If 
 
 #END#
 
-#OMC#
-.. code-block:: Modelica
-
-  # not available
-
-#END#
-
 #DESCRIPTION#
 #END#

@@ -12,13 +12,6 @@ Gets the model state of the given model cref.
 
 #END#
 
-#PYTHON#
-.. code-block:: python
-
-  # not available
-
-#END#
-
 #CAPI#
 .. code-block:: c
 

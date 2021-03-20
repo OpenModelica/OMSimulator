@@ -7,13 +7,6 @@ will be determined by the master algorithm and is limited by the
 definied minimal and maximal step sizes.
 #END#
 
-#LUA#
-.. code-block:: lua
-
-  -- not available
-
-#END#
-
 #PYTHON#
 .. code-block:: python
 
@@ -25,13 +18,6 @@ definied minimal and maximal step sizes.
 .. code-block:: c
 
   oms_status_enu_t oms_doStep(const char* cref);
-
-#END#
-
-#OMC#
-.. code-block:: Modelica
-
-  // not available
 
 #END#
 
