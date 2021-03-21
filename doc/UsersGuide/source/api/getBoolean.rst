@@ -27,7 +27,7 @@ Get boolean value of given signal.
 #END#
 
 #OMC#
-.. code-block:: Modelica
+.. code-block:: modelica
 
   (value, status) := oms_getBoolean(cref);
 

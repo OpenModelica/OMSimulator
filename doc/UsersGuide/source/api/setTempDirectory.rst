@@ -27,7 +27,7 @@ Set new temp directory.
 #END#
 
 #OMC#
-.. code-block:: Modelica
+.. code-block:: modelica
 
   status := oms_setTempDirectory(newTempDir);
 

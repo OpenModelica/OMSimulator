@@ -29,7 +29,7 @@ systems.
 #END#
 
 #OMC#
-.. code-block:: Modelica
+.. code-block:: modelica
 
   (stepSize, status) := oms_setFixedStepSize(cref);
 

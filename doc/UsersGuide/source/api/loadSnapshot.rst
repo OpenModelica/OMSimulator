@@ -27,7 +27,7 @@ Loads a snapshot to restore a previous model state. The model must be in virgin 
 #END#
 
 #OMC#
-.. code-block:: Modelica
+.. code-block:: modelica
 
   status := oms_loadSnapshot(cref, snapshot);
 

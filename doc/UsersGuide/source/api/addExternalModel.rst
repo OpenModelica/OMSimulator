@@ -27,7 +27,7 @@ Adds an external model to a TLM system.
 #END#
 
 #OMC#
-.. code-block:: Modelica
+.. code-block:: modelica
 
   status := oms_addExternalModel(cref, path, startscript);
 

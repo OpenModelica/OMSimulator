@@ -27,7 +27,7 @@ Terminates a given composite model.
 #END#
 
 #OMC#
-.. code-block:: Modelica
+.. code-block:: modelica
 
   status := oms_terminate(cref);
 

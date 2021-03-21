@@ -27,7 +27,7 @@ Deletes the connection between connectors `crefA` and `crefB`.
 #END#
 
 #OMC#
-.. code-block:: Modelica
+.. code-block:: modelica
 
   status := oms_deleteConnection(crefA, crefB);
 

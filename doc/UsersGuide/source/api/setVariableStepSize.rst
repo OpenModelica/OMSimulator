@@ -27,7 +27,7 @@ Sets the step size parameters for methods with stepsize control.
 #END#
 
 #OMC#
-.. code-block:: Modelica
+.. code-block:: modelica
 
   status := oms_getVariableStepSize(cref, initialStepSize, minimumStepSize, maximumStepSize);
 

@@ -27,7 +27,7 @@ Sets the value of a given integer signal.
 #END#
 
 #OMC#
-.. code-block:: Modelica
+.. code-block:: modelica
 
   status := oms_setInteger(cref, value);
 

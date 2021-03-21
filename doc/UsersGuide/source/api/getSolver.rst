@@ -27,7 +27,7 @@ Gets the selected solver method of the given system.
 #END#
 
 #OMC#
-.. code-block:: Modelica
+.. code-block:: modelica
 
   (solver, status) := oms_getSolver(cref);
 

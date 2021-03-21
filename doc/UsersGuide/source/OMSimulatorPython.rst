@@ -92,6 +92,14 @@ Python Scripting Commands
 Example: Pi
 ###########
 
+This example uses a simple Modelica model and FMI-based batch
+simulation to approximate the value of pi.
+
+A Modelica model is used to calculate two uniform distributed
+pseudo-random numbers between 0 and 1 based on a seed value and
+evaluates if the resulting coordinate is inside the unit circle or
+not.
+
 .. code-block:: modelica
 
   model Circle
@@ -105,13 +113,20 @@ Example: Pi
   algorithm
     when initial() then
       state128 := Modelica.Math.Random.Generators.Xorshift128plus.initialState(localSeed, globalSeed);
-      (x/r, state128) := Modelica.Math.Random.Generators.Xorshift128plus.random(state128);
-      (y/r, state128) := Modelica.Math.Random.Generators.Xorshift128plus.random(state128);
+      (x, state128) := Modelica.Math.Random.Generators.Xorshift128plus.random(state128);
+      (y, state128) := Modelica.Math.Random.Generators.Xorshift128plus.random(state128);
     end when;
     annotation(uses(Modelica(version="4.0.0")));
   end Circle;
 
+The model is then exported using the FMI interface and the generated
+FMU can then be used to run a million simulations in just a few
+seconds.
+
 .. code-block:: python
+  :caption: Batch simulation of the simple `Cirlce` model with different seed values. All OMSimulator-related comands are highlighted for convenience.
+  :linenos:
+  :emphasize-lines: 3,5-6,8-10,12-13,22-25,29-30
 
   import math
   import matplotlib.pyplot as plt
@@ -149,6 +164,9 @@ Example: Pi
   plt.ylabel('Approximation of pi')
   plt.savefig('pi.png')
 
+The following figure shows the approximation of pi in relation to the
+number of samples.
+
 .. figure :: images/pi.png
 
-  Results: Approximation of pi
+  Results of the above batch simulation which approximates the value of pi

@@ -27,7 +27,7 @@ Set the stop time of the simulation.
 #END#
 
 #OMC#
-.. code-block:: Modelica
+.. code-block:: modelica
 
   status := oms_setStopTime(cref, stopTime);
 

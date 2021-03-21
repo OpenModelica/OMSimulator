@@ -28,7 +28,7 @@ in virgin model state, which means it must not be instantiated.
 #END#
 
 #OMC#
-.. code-block:: Modelica
+.. code-block:: modelica
 
   status := oms_importSnapshot(cref, snapshot);
 

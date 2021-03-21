@@ -20,7 +20,7 @@ Returns the path of a given component.
 #END#
 
 #OMC#
-.. code-block:: Modelica
+.. code-block:: modelica
 
   (path, status) := oms_getSubModelPath(cref);
 

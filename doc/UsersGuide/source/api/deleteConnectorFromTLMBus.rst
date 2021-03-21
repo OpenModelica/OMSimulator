@@ -27,7 +27,7 @@ Deletes a connector from a given TLM bus.
 #END#
 
 #OMC#
-.. code-block:: Modelica
+.. code-block:: modelica
 
   status := oms_deleteConnectorFromTLMBus(busCref, connectorCref);
 

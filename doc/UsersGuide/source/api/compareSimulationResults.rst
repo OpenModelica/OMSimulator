@@ -28,7 +28,7 @@ relative tolerances.
 #END#
 
 #OMC#
-.. code-block:: Modelica
+.. code-block:: modelica
 
   status := oms_compareSimulationResults(filenameA, filenameB, var, relTol, absTol);
 
