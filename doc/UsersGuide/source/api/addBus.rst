@@ -27,7 +27,7 @@ Adds a bus to a given component.
 #END#
 
 #OMC#
-.. code-block:: Modelica
+.. code-block:: modelica
 
   status := oms_addBus(cref);
 

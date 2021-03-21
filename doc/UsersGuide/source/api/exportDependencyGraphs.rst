@@ -27,7 +27,7 @@ Export the dependency graphs of a given model to dot files.
 #END#
 
 #OMC#
-.. code-block:: Modelica
+.. code-block:: modelica
 
   status := oms_exportDependencyGraphs(cref, initialization, event, simulation);
 

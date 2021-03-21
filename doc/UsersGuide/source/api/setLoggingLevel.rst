@@ -29,7 +29,7 @@ Enables/Disables debug logging (logDebug and logTrace).
 #END#
 
 #OMC#
-.. code-block:: Modelica
+.. code-block:: modelica
 
   oms_setLoggingLevel(logLevel);
 

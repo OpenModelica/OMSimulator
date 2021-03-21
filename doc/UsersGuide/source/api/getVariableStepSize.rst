@@ -27,7 +27,7 @@ Gets the step size parameters.
 #END#
 
 #OMC#
-.. code-block:: Modelica
+.. code-block:: modelica
 
   (initialStepSize, minimumStepSize, maximumStepSize, status) := oms_getVariableStepSize(cref);
 

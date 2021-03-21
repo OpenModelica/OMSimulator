@@ -27,14 +27,14 @@ Adds a (sub-)system to a model or system.
 #END#
 
 #OMC#
-.. code-block:: Modelica
+.. code-block:: modelica
 
   status := oms_addSystem(cref, type);
-  
+
   The second argument type, should be any of the following,
 
   "OpenModelica.Scripting.oms_system.oms_system_none"
-  "OpenModelica.Scripting.oms_system.oms_system_tlm" 
+  "OpenModelica.Scripting.oms_system.oms_system_tlm"
   "OpenModelica.Scripting.oms_system.oms_system_sc"
   "OpenModelica.Scripting.oms_system.oms_system_wc"
 

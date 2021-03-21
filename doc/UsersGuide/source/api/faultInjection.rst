@@ -27,15 +27,15 @@ Defines a new fault injection block.
 #END#
 
 #OMC#
-.. code-block:: Modelica
+.. code-block:: modelica
 
   status := oms_faultInjection(cref, type, value);
   The second argument type, can be any of the following described below
-  
+
   "OpenModelica.Scripting.oms_fault_type.oms_fault_type_bias"
   "OpenModelica.Scripting.oms_fault_type.oms_fault_type_gain"
   "OpenModelica.Scripting.oms_fault_type.oms_fault_type_const"
-  
+
 #END#
 
 #DESCRIPTION#

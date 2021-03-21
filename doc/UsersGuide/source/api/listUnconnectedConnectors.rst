@@ -31,7 +31,7 @@ doesn't need to call free.
 #END#
 
 #OMC#
-.. code-block:: Modelica
+.. code-block:: modelica
 
   (contents, status) := oms_listUnconnectedConnectors(cref);
 

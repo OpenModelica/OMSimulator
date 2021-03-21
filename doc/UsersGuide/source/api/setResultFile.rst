@@ -29,9 +29,9 @@ Set the result file of the simulation.
 #END#
 
 #OMC#
-.. code-block:: Modelica
+.. code-block:: modelica
 
-  status := oms_setResultFile(cref, filename); 
+  status := oms_setResultFile(cref, filename);
   status := oms_setResultFile(cref, filename, bufferSize);
 
 #END#

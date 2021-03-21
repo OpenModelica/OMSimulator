@@ -11,7 +11,7 @@ OMSimulatorLib library.
 Examples
 ########
 
-.. code-block:: Modelica
+.. code-block:: modelica
 
   loadOMSimulator();
   oms_setTempDirectory("./temp/");
@@ -39,6 +39,7 @@ Examples
   oms_terminate("model");
   oms_delete("model");
   unloadOMSimulator();
+
 .. index:: OpenModelicaScripting; Scripting Commands
 
 OpenModelica Scripting Commands

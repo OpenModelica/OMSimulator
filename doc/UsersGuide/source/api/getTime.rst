@@ -27,7 +27,7 @@ Get the current simulation time from the model.
 #END#
 
 #OMC#
-.. code-block:: Modelica
+.. code-block:: modelica
 
   (time, status) := oms_getTime(cref);
 

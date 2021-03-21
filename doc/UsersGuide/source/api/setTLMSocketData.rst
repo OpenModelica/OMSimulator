@@ -20,7 +20,7 @@ Sets data for TLM socket communication.
 #END#
 
 #OMC#
-.. code-block:: Modelica
+.. code-block:: modelica
 
   status := oms_setTLMSocketData(cref, address, managerPort, monitorPort);
 

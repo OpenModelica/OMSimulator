@@ -29,7 +29,7 @@ Sets the tolerance for a given model or system.
 #END#
 
 #OMC#
-.. code-block:: Modelica
+.. code-block:: modelica
 
   status := oms_setTolerance(const char* cref, double tolerance);
   status := oms_setTolerance(const char* cref, double absoluteTolerance, double relativeTolerance);

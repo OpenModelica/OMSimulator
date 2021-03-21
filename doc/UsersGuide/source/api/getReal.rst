@@ -27,7 +27,7 @@ Get real value.
 #END#
 
 #OMC#
-.. code-block:: Modelica
+.. code-block:: modelica
 
   (value, status) := oms_getReal(cref);
 
