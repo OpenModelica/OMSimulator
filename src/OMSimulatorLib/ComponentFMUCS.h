@@ -76,8 +76,8 @@ namespace oms
     Variable* getVariable(const ComRef& cref);
 
     oms_status_enu_t getBoolean(const ComRef& cref, bool& value);
-    oms_status_enu_t getBoolean(const fmi2_value_reference_t vr[], bool value[], size_t nvr);
     oms_status_enu_t getBoolean(const fmi2_value_reference_t& vr, bool& value);
+    oms_status_enu_t getBoolean(const fmi2_value_reference_t vr[], int value[], size_t nvr);
     oms_status_enu_t getInteger(const ComRef& cref, int& value);
     oms_status_enu_t getInteger(const fmi2_value_reference_t vr[], int value[], size_t nvr);
     oms_status_enu_t getInteger(const fmi2_value_reference_t& vr, int& value);

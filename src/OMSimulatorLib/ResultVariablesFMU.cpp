@@ -60,7 +60,7 @@ oms_status_enu_t oms::ResultVariables::allocVarArrays(unsigned int nReals, unsig
   integers.id = new unsigned int[nInts];
 
   booleans.nvr = nBools;
-  booleans.value = new bool[nBools];
+  booleans.value = new int[nBools];
   booleans.vr = new unsigned int[nBools];
   booleans.id = new unsigned int[nBools];
 

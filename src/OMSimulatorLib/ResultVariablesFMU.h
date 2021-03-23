@@ -58,7 +58,7 @@ namespace oms
       oms_status_enu_t registerVariables(const std::vector<Variable> &allVariables, const std::vector<bool> &exportVariables);
       resultVariables<double> reals;
       resultVariables<int> integers;
-      resultVariables<bool> booleans;
+      resultVariables<int> booleans;
   };
 }
 

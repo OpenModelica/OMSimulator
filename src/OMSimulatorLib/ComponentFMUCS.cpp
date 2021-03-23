@@ -675,19 +675,13 @@ oms_status_enu_t oms::ComponentFMUCS::getBoolean(const fmi2_value_reference_t& v
  * @param nvr                     Length of arrays vr and value.
  * @return oms_status_enu_t       Return oms_status_ok on success.
  */
-oms_status_enu_t oms::ComponentFMUCS::getBoolean(const fmi2_value_reference_t vr[], bool value[], size_t nvr)
+oms_status_enu_t oms::ComponentFMUCS::getBoolean(const fmi2_value_reference_t vr[], int value[], size_t nvr)
 {
   CallClock callClock(clock);
 
-  int stupidIntBoolArray[nvr];
-
-  if (fmi2_status_ok != fmi2_import_get_boolean(fmu, vr, nvr, stupidIntBoolArray))
+  if (fmi2_status_ok != fmi2_import_get_boolean(fmu, vr, nvr, value))
     return oms_status_error;
 
-  for (int i=0; i<nvr; i++)
-  {
-    value[i] = stupidIntBoolArray[i] ? true : false;
-  }
   return oms_status_ok;
 }
 
