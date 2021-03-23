@@ -137,8 +137,8 @@ void oms::ResultWriter::updateSignal(unsigned int id, SignalValue_t value)
 }
 
 /**
- * @brief Update signals 
- * 
+ * @brief Update signals.
+ *
  * @tparam Type     Data type (double, int or bool) of values.
  * @param id        Array with indices matching values with allVariables.
  * @param value     Array with values of signals.

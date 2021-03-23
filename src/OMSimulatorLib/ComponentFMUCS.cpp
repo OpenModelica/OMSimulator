@@ -1221,20 +1221,20 @@ oms_status_enu_t oms::ComponentFMUCS::updateSignals(ResultWriter& resultWriter)
 
   // Get all result variables
   oms_status_enu_t status;
-  status = getReal(resultVariables.realResultVars.vr, resultVariables.realResultVars.value, resultVariables.realResultVars.nvr);
+  status = getReal(resultVariables.reals.vr, resultVariables.reals.value, resultVariables.reals.nvr);
   if (status != oms_status_ok)
     return logError("failed to fetch real variables");
-  status = getInteger(resultVariables.intResultVars.vr, resultVariables.intResultVars.value, resultVariables.intResultVars.nvr);
+  status = getInteger(resultVariables.integers.vr, resultVariables.integers.value, resultVariables.integers.nvr);
   if (status != oms_status_ok)
     return logError("failed to fetch integer variables");
-  status = getBoolean(resultVariables.boolResultVars.vr, resultVariables.boolResultVars.value, resultVariables.boolResultVars.nvr);
+  status = getBoolean(resultVariables.booleans.vr, resultVariables.booleans.value, resultVariables.booleans.nvr);
   if (status != oms_status_ok)
     return logError("failed to fetch boolean variables");
 
   // Update signals
-  resultWriter.updateSignals(resultVariables.realResultVars.id, resultVariables.realResultVars.value, resultVariables.realResultVars.nvr);
-  resultWriter.updateSignals(resultVariables.intResultVars.id, resultVariables.intResultVars.value, resultVariables.intResultVars.nvr);
-  resultWriter.updateSignals(resultVariables.boolResultVars.id, resultVariables.boolResultVars.value, resultVariables.boolResultVars.nvr);
+  resultWriter.updateSignals(resultVariables.reals.id, resultVariables.reals.value, resultVariables.reals.nvr);
+  resultWriter.updateSignals(resultVariables.integers.id, resultVariables.integers.value, resultVariables.integers.nvr);
+  resultWriter.updateSignals(resultVariables.booleans.id, resultVariables.booleans.value, resultVariables.booleans.nvr);
 
   /*
   for (auto const &it : resultFileMapping)

@@ -34,35 +34,35 @@
 
 oms::ResultVariables::~ResultVariables()
 {
-  delete realResultVars.value;
-  delete realResultVars.vr;
-  delete realResultVars.id;
+  delete reals.value;
+  delete reals.vr;
+  delete reals.id;
 
-  delete intResultVars.value;
-  delete intResultVars.vr;
-  delete intResultVars.id;
+  delete integers.value;
+  delete integers.vr;
+  delete integers.id;
 
-  delete boolResultVars.value;
-  delete boolResultVars.vr;
-  delete boolResultVars.id;
+  delete booleans.value;
+  delete booleans.vr;
+  delete booleans.id;
 }
 
 oms_status_enu_t oms::ResultVariables::allocVarArrays(unsigned int nReals, unsigned int nInts, unsigned int nBools)
 {
-  realResultVars.nvr = nReals;
-  realResultVars.value = new double[nReals];
-  realResultVars.vr = new unsigned int[nReals];
-  realResultVars.id = new unsigned int[nReals];
+  reals.nvr = nReals;
+  reals.value = new double[nReals];
+  reals.vr = new unsigned int[nReals];
+  reals.id = new unsigned int[nReals];
 
-  intResultVars.nvr = nInts;
-  intResultVars.value = new int[nInts];
-  intResultVars.vr = new unsigned int[nInts];
-  intResultVars.id = new unsigned int[nInts];
+  integers.nvr = nInts;
+  integers.value = new int[nInts];
+  integers.vr = new unsigned int[nInts];
+  integers.id = new unsigned int[nInts];
 
-  boolResultVars.nvr = nBools;
-  boolResultVars.value = new bool[nBools];
-  boolResultVars.vr = new unsigned int[nBools];
-  boolResultVars.id = new unsigned int[nBools];
+  booleans.nvr = nBools;
+  booleans.value = new bool[nBools];
+  booleans.vr = new unsigned int[nBools];
+  booleans.id = new unsigned int[nBools];
 
   return oms_status_ok;
 }
@@ -90,20 +90,20 @@ oms_status_enu_t oms::ResultVariables::registerVariables(const std::vector<Varia
     auto const &var = allVariables[i];
     if (var.isTypeReal())
     {
-      realResultVars.vr[jRealVars] = var.getValueReference();
-      realResultVars.id[jRealVars] = i;
+      reals.vr[jRealVars] = var.getValueReference();
+      reals.id[jRealVars] = i;
       jRealVars++;
     }
     else if (var.isTypeInteger())
     {
-      intResultVars.vr[jIntVars] = var.getValueReference();
-      intResultVars.id[jIntVars] = i;
+      integers.vr[jIntVars] = var.getValueReference();
+      integers.id[jIntVars] = i;
       jIntVars++;
     }
     else if (var.isTypeBoolean())
     {
-      boolResultVars.vr[jBoolVars] = var.getValueReference();
-      boolResultVars.id[jBoolVars] = i;
+      booleans.vr[jBoolVars] = var.getValueReference();
+      booleans.id[jBoolVars] = i;
       jBoolVars++;
     }
   }

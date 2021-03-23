@@ -56,9 +56,9 @@ namespace oms
       ~ResultVariables();
       oms_status_enu_t allocVarArrays(unsigned int nReals, unsigned int nInts, unsigned int nBools);
       oms_status_enu_t registerVariables(const std::vector<Variable> &allVariables, const std::vector<bool> &exportVariables);
-      resultVariables<double> realResultVars;
-      resultVariables<int> intResultVars;
-      resultVariables<bool> boolResultVars;
+      resultVariables<double> reals;
+      resultVariables<int> integers;
+      resultVariables<bool> booleans;
   };
 }
 
