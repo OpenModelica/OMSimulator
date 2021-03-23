@@ -34,17 +34,17 @@
 
 oms::ResultVariables::~ResultVariables()
 {
-  delete reals.value;
-  delete reals.vr;
-  delete reals.id;
+  delete [] reals.value;
+  delete [] reals.vr;
+  delete [] reals.id;
 
-  delete integers.value;
-  delete integers.vr;
-  delete integers.id;
+  delete [] integers.value;
+  delete [] integers.vr;
+  delete [] integers.id;
 
-  delete booleans.value;
-  delete booleans.vr;
-  delete booleans.id;
+  delete [] booleans.value;
+  delete [] booleans.vr;
+  delete [] booleans.id;
 }
 
 oms_status_enu_t oms::ResultVariables::allocVarArrays(unsigned int nReals, unsigned int nInts, unsigned int nBools)
