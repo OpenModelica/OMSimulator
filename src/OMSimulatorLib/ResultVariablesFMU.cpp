@@ -77,33 +77,33 @@ oms_status_enu_t oms::ResultVariables::allocVarArrays(unsigned int nReals, unsig
  * @param exportVariables     Reference to boolean vector if variable should be exported.
  * @return oms_status_enu_t 
  */
-oms_status_enu_t oms::ResultVariables::registerVariables(const std::vector<Variable> &allVariables, const std::vector<bool> &exportVariables)
+oms_status_enu_t oms::ResultVariables::registerVariables(std::vector<Variable> &allVariables, const std::vector<bool> &exportVariables, std::unordered_map<unsigned int, unsigned int> &resultFileMapping)
 {
   unsigned int jRealVars = 0;
   unsigned int jIntVars = 0;
   unsigned int jBoolVars = 0;
-  for (unsigned int i=0; i<allVariables.size(); ++i)
-  {
-    if (!exportVariables[i])
-      continue;
 
-    auto const &var = allVariables[i];
+  for (auto const &it : resultFileMapping)
+  //for (unsigned int i=0; i<allVariables.size(); i++)
+  {
+    unsigned int ID = it.first;
+    Variable& var = allVariables[it.second];
     if (var.isTypeReal())
     {
       reals.vr[jRealVars] = var.getValueReference();
-      reals.id[jRealVars] = i;
+      reals.id[jRealVars] = ID;
       jRealVars++;
     }
     else if (var.isTypeInteger())
     {
       integers.vr[jIntVars] = var.getValueReference();
-      integers.id[jIntVars] = i;
+      integers.id[jIntVars] = ID;
       jIntVars++;
     }
     else if (var.isTypeBoolean())
     {
       booleans.vr[jBoolVars] = var.getValueReference();
-      booleans.id[jBoolVars] = i;
+      booleans.id[jBoolVars] = ID;
       jBoolVars++;
     }
   }

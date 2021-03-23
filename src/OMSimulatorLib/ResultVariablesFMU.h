@@ -36,6 +36,7 @@
 
 #include <iostream>
 #include <vector>
+#include <unordered_map>
 
 
 namespace oms
@@ -52,10 +53,9 @@ namespace oms
   class ResultVariables
   {
     public:
-      //setResultVariables();
       ~ResultVariables();
       oms_status_enu_t allocVarArrays(unsigned int nReals, unsigned int nInts, unsigned int nBools);
-      oms_status_enu_t registerVariables(const std::vector<Variable> &allVariables, const std::vector<bool> &exportVariables);
+      oms_status_enu_t registerVariables(std::vector<Variable> &allVariables, const std::vector<bool> &exportVariables, std::unordered_map<unsigned int, unsigned int> &resultFileMapping);
       resultVariables<double> reals;
       resultVariables<int> integers;
       resultVariables<int> booleans;

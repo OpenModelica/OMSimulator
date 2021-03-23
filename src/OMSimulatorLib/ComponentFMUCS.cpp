@@ -1151,19 +1151,16 @@ oms_status_enu_t oms::ComponentFMUCS::registerSignalsForResultFile(ResultWriter&
       {
         getReal(var.getCref(), value.realValue);
         resultFile.addParameter(name, description, SignalType_REAL, value);
-        jRealVars++;
       }
       else if (var.isTypeInteger())
       {
         getInteger(var.getCref(), value.intValue);
         resultFile.addParameter(name, description, SignalType_INT, value);
-        jIntVars++;
       }
       else if (var.isTypeBoolean())
       {
         getBoolean(var.getCref(), value.boolValue);
         resultFile.addParameter(name, description, SignalType_BOOL, value);
-        jBoolVars++;
       }
       else
         logInfo("Parameter " + name + " will not be stored in the result file, because the signal type is not supported");
@@ -1197,7 +1194,7 @@ oms_status_enu_t oms::ComponentFMUCS::registerSignalsForResultFile(ResultWriter&
   resultVariables.allocVarArrays(jRealVars, jIntVars, jBoolVars);
 
   // Register result variables
-  resultVariables.registerVariables(allVariables, exportVariables);
+  resultVariables.registerVariables(allVariables, exportVariables, resultFileMapping);
 
   return oms_status_ok;
 }
