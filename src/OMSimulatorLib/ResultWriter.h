@@ -78,6 +78,8 @@ namespace oms
     void close();
 
     void updateSignal(unsigned int id, SignalValue_t value);
+    template <typename Type>
+    void updateSignals(unsigned int id[], Type value[], unsigned int nValue);
     void emit(double time);
 
   private:

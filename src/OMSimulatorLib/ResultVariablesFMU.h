@@ -1,0 +1,65 @@
+/*
+ * This file is part of OpenModelica.
+ *
+ * Copyright (c) 1998-CurrentYear, Open Source Modelica Consortium (OSMC),
+ * c/o Linköpings universitet, Department of Computer and Information Science,
+ * SE-58183 Linköping, Sweden.
+ *
+ * All rights reserved.
+ *
+ * THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR
+ * THIS OSMC PUBLIC LICENSE (OSMC-PL) VERSION 1.2.
+ * ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES
+ * RECIPIENT'S ACCEPTANCE OF THE OSMC PUBLIC LICENSE OR THE GPL VERSION 3,
+ * ACCORDING TO RECIPIENTS CHOICE.
+ *
+ * The OpenModelica software and the Open Source Modelica
+ * Consortium (OSMC) Public License (OSMC-PL) are obtained
+ * from OSMC, either from the above address,
+ * from the URLs: http://www.ida.liu.se/projects/OpenModelica or
+ * http://www.openmodelica.org, and in the OpenModelica distribution.
+ * GNU version 3 is obtained from: http://www.gnu.org/copyleft/gpl.html.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE, EXCEPT AS EXPRESSLY SET FORTH
+ * IN THE BY RECIPIENT SELECTED SUBSIDIARY LICENSE CONDITIONS OF OSMC-PL.
+ *
+ * See the full OSMC Public License conditions for more details.
+ *
+ */
+
+#ifndef _OMS_RESULT_VARIABLES_FMU_
+#define _OMS_RESULT_VARIABLES_FMU_
+
+#include "Variable.h"
+
+#include <iostream>
+#include <vector>
+
+
+namespace oms
+{
+  template <typename Type>
+  struct resultVariables
+  {
+    Type* value = NULL;         ///< Array of values of type double, int or bool
+    unsigned int* vr = NULL;    ///< Array of value references.
+    unsigned int* id = NULL;    ///< Array of indices of variable in allVariables
+    size_t nvr = 0;             ///< size of arrays value, vr and id
+  };
+
+  class ResultVariables
+  {
+    public:
+      //setResultVariables();
+      ~ResultVariables();
+      oms_status_enu_t allocVarArrays(unsigned int nReals, unsigned int nInts, unsigned int nBools);
+      oms_status_enu_t registerVariables(const std::vector<Variable> &allVariables, const std::vector<bool> &exportVariables);
+      resultVariables<double> realResultVars;
+      resultVariables<int> intResultVars;
+      resultVariables<bool> boolResultVars;
+  };
+}
+
+#endif

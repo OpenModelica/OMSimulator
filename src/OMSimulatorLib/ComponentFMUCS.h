@@ -34,6 +34,7 @@
 
 #include "Component.h"
 #include "ComRef.h"
+#include "ResultVariablesFMU.h"
 #include "ResultWriter.h"
 #include "Snapshot.h"
 #include "Values.h"
@@ -75,11 +76,14 @@ namespace oms
     Variable* getVariable(const ComRef& cref);
 
     oms_status_enu_t getBoolean(const ComRef& cref, bool& value);
+    oms_status_enu_t getBoolean(const fmi2_value_reference_t vr[], bool value[], size_t nvr);
     oms_status_enu_t getBoolean(const fmi2_value_reference_t& vr, bool& value);
     oms_status_enu_t getInteger(const ComRef& cref, int& value);
+    oms_status_enu_t getInteger(const fmi2_value_reference_t vr[], int value[], size_t nvr);
     oms_status_enu_t getInteger(const fmi2_value_reference_t& vr, int& value);
     oms_status_enu_t getReal(const ComRef& cref, double& value);
     oms_status_enu_t getReal(const fmi2_value_reference_t& vr, double& value);
+    oms_status_enu_t getReal(const fmi2_value_reference_t vr[], double value[], size_t nvr);
     oms_status_enu_t setBoolean(const ComRef& cref, bool value);
     oms_status_enu_t setInteger(const ComRef& cref, int value);
     oms_status_enu_t setReal(const ComRef& cref, double value);
@@ -134,6 +138,7 @@ namespace oms
     Values values; ///< start values defined before instantiating the FMU and external inputs defined after initialization
 
     std::unordered_map<unsigned int /*result file var ID*/, unsigned int /*allVariables ID*/> resultFileMapping;
+    ResultVariables resultVariables;
 
     double time;
 

@@ -667,6 +667,30 @@ oms_status_enu_t oms::ComponentFMUCS::getBoolean(const fmi2_value_reference_t& v
   return oms_status_ok;
 }
 
+/**
+ * @brief Get boolean value(s) of FMU component.
+ *
+ * @param vr                      Array with value references.
+ * @param value                   Array containing values on output.
+ * @param nvr                     Length of arrays vr and value.
+ * @return oms_status_enu_t       Return oms_status_ok on success.
+ */
+oms_status_enu_t oms::ComponentFMUCS::getBoolean(const fmi2_value_reference_t vr[], bool value[], size_t nvr)
+{
+  CallClock callClock(clock);
+
+  int stupidIntBoolArray[nvr];
+
+  if (fmi2_status_ok != fmi2_import_get_boolean(fmu, vr, nvr, stupidIntBoolArray))
+    return oms_status_error;
+
+  for (int i=0; i<nvr; i++)
+  {
+    value[i] = stupidIntBoolArray[i] ? true : false;
+  }
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms::ComponentFMUCS::getBoolean(const ComRef& cref, bool& value)
 {
   CallClock callClock(clock);
@@ -719,6 +743,26 @@ oms_status_enu_t oms::ComponentFMUCS::getInteger(const fmi2_value_reference_t& v
 
   return oms_status_ok;
 }
+
+
+/**
+ * @brief Get integer value(s) of FMU component.
+ *
+ * @param vr                      Array with value references.
+ * @param value                   Array containing values on output.
+ * @param nvr                     Length of arrays vr and value.
+ * @return oms_status_enu_t       Return oms_status_ok on success.
+ */
+oms_status_enu_t oms::ComponentFMUCS::getInteger(const fmi2_value_reference_t vr[], int value[], size_t nvr)
+{
+  CallClock callClock(clock);
+
+  if (fmi2_status_ok != fmi2_import_get_integer(fmu, vr, nvr, value))
+    return oms_status_error;
+
+  return oms_status_ok;
+}
+
 
 oms_status_enu_t oms::ComponentFMUCS::getInteger(const ComRef& cref, int& value)
 {
@@ -806,6 +850,62 @@ oms_status_enu_t oms::ComponentFMUCS::getReal(const fmi2_value_reference_t& vr, 
 
       default:
         return logError("Unhandled fault injection block");
+    }
+  }
+
+  return oms_status_ok;
+}
+
+
+/**
+ * @brief Get real value(s) of FMU component.
+ *
+ * @param vr                      Array with value references.
+ * @param value                   Array containing values on output.
+ * @param nvr                     Length of arrays vr and value.
+ * @return oms_status_enu_t       Return oms_status_ok on success.
+ */
+oms_status_enu_t oms::ComponentFMUCS::getReal(const fmi2_value_reference_t vr[], double value[], size_t nvr)
+{
+  CallClock callClock(clock);
+
+  if (fmi2_status_ok != fmi2_import_get_real(fmu, vr, nvr, value))
+    return oms_status_error;
+
+  for(int i=0; i<nvr; i++)
+  {
+    if (std::isnan(value[i]))
+      return logError("getReal returned NAN");
+    if (std::isinf(value[i]))
+      return logError("getReal returned +/-inf");
+  }
+
+  // Check for FIB
+  if(!fib.empty())
+  {
+    for(int i=0; i<nvr; i++)
+    {
+      auto block = fib.find(vr[i]);
+      if (block != fib.end())
+      {
+        switch(block->second.faultType)
+        {
+          case oms_fault_type_bias:   // y = y.$original + faultValue
+            value[i] += block->second.faultValue;
+            break;
+
+          case oms_fault_type_gain:   // y = y.$original * faultValue
+            value[i] *= block->second.faultValue;
+            break;
+
+          case oms_fault_type_const:  // y = faultValue
+            value[i] = block->second.faultValue;
+            break;
+
+          default:
+            return logError("Unhandled fault injection block");
+        }
+      }
     }
   }
 
@@ -1031,6 +1131,10 @@ oms_status_enu_t oms::ComponentFMUCS::deleteStartValue(const ComRef& cref)
 
 oms_status_enu_t oms::ComponentFMUCS::registerSignalsForResultFile(ResultWriter& resultFile)
 {
+  unsigned int jRealVars = 0;
+  unsigned int jIntVars = 0;
+  unsigned int jBoolVars = 0;
+
   resultFileMapping.clear();
 
   if (Flags::WallTime())
@@ -1053,16 +1157,19 @@ oms_status_enu_t oms::ComponentFMUCS::registerSignalsForResultFile(ResultWriter&
       {
         getReal(var.getCref(), value.realValue);
         resultFile.addParameter(name, description, SignalType_REAL, value);
+        jRealVars++;
       }
       else if (var.isTypeInteger())
       {
         getInteger(var.getCref(), value.intValue);
         resultFile.addParameter(name, description, SignalType_INT, value);
+        jIntVars++;
       }
       else if (var.isTypeBoolean())
       {
         getBoolean(var.getCref(), value.boolValue);
         resultFile.addParameter(name, description, SignalType_BOOL, value);
+        jBoolVars++;
       }
       else
         logInfo("Parameter " + name + " will not be stored in the result file, because the signal type is not supported");
@@ -1073,21 +1180,30 @@ oms_status_enu_t oms::ComponentFMUCS::registerSignalsForResultFile(ResultWriter&
       {
         unsigned int ID = resultFile.addSignal(name, description, SignalType_REAL);
         resultFileMapping[ID] = i;
+        jRealVars++;
       }
       else if (var.isTypeInteger())
       {
         unsigned int ID = resultFile.addSignal(name, description, SignalType_INT);
         resultFileMapping[ID] = i;
+        jIntVars++;
       }
       else if (var.isTypeBoolean())
       {
         unsigned int ID = resultFile.addSignal(name, description, SignalType_BOOL);
         resultFileMapping[ID] = i;
+        jBoolVars++;
       }
       else
         logInfo("Variable " + name + " will not be stored in the result file, because the signal type is not supported");
     }
   }
+
+  // Allocate memroy for var arrays
+  resultVariables.allocVarArrays(jRealVars, jIntVars, jBoolVars);
+
+  // Register result variables
+  resultVariables.registerVariables(allVariables, exportVariables);
 
   return oms_status_ok;
 }
@@ -1103,6 +1219,24 @@ oms_status_enu_t oms::ComponentFMUCS::updateSignals(ResultWriter& resultWriter)
     resultWriter.updateSignal(clock_id, wallTime);
   }
 
+  // Get all result variables
+  oms_status_enu_t status;
+  status = getReal(resultVariables.realResultVars.vr, resultVariables.realResultVars.value, resultVariables.realResultVars.nvr);
+  if (status != oms_status_ok)
+    return logError("failed to fetch real variables");
+  status = getInteger(resultVariables.intResultVars.vr, resultVariables.intResultVars.value, resultVariables.intResultVars.nvr);
+  if (status != oms_status_ok)
+    return logError("failed to fetch integer variables");
+  status = getBoolean(resultVariables.boolResultVars.vr, resultVariables.boolResultVars.value, resultVariables.boolResultVars.nvr);
+  if (status != oms_status_ok)
+    return logError("failed to fetch boolean variables");
+
+  // Update signals
+  resultWriter.updateSignals(resultVariables.realResultVars.id, resultVariables.realResultVars.value, resultVariables.realResultVars.nvr);
+  resultWriter.updateSignals(resultVariables.intResultVars.id, resultVariables.intResultVars.value, resultVariables.intResultVars.nvr);
+  resultWriter.updateSignals(resultVariables.boolResultVars.id, resultVariables.boolResultVars.value, resultVariables.boolResultVars.nvr);
+
+  /*
   for (auto const &it : resultFileMapping)
   {
     unsigned int ID = it.first;
@@ -1111,7 +1245,7 @@ oms_status_enu_t oms::ComponentFMUCS::updateSignals(ResultWriter& resultWriter)
     SignalValue_t value;
     if (var.isTypeReal())
     {
-        if (oms_status_ok != getReal(vr, value.realValue))
+      if (oms_status_ok != getReal(vr, value.realValue))
         return logError("failed to fetch variable " + std::string(var.getCref()));
       resultWriter.updateSignal(ID, value);
     }
@@ -1128,6 +1262,7 @@ oms_status_enu_t oms::ComponentFMUCS::updateSignals(ResultWriter& resultWriter)
       resultWriter.updateSignal(ID, value);
     }
   }
+  */
 
   return oms_status_ok;
 }

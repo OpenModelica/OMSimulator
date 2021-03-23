@@ -136,6 +136,26 @@ void oms::ResultWriter::updateSignal(unsigned int id, SignalValue_t value)
   }
 }
 
+/**
+ * @brief Update signals 
+ * 
+ * @tparam Type     Data type (double, int or bool) of values.
+ * @param id        Array with indices matching values with allVariables.
+ * @param value     Array with values of signals.
+ * @param nValue    Length of arrays id and nValue.
+ */
+template <typename Type>
+void oms::ResultWriter::updateSignals(unsigned int id[], Type value[], unsigned int nValue)
+{
+  if (!data_2)
+    return;
+
+  for (int i=0; i<nValue; i++)
+  {
+    data_2[nEmits*(signals.size() + 1) + id[i]] = value[i];
+  }
+}
+
 void oms::ResultWriter::emit(double time)
 {
   if (!data_2)
