@@ -155,6 +155,10 @@ void oms::ResultWriter::updateSignals(unsigned int id[], Type value[], unsigned 
     data_2[nEmits*(signals.size() + 1) + id[i]] = value[i];
   }
 }
+// Explicitly instantiate templates
+template void oms::ResultWriter::updateSignals(unsigned int id[], double value[], unsigned int nValue);
+template void oms::ResultWriter::updateSignals(unsigned int id[], int value[], unsigned int nValue);
+template void oms::ResultWriter::updateSignals(unsigned int id[], bool value[], unsigned int nValue);
 
 void oms::ResultWriter::emit(double time)
 {

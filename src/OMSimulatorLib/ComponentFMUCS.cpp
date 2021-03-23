@@ -1208,6 +1208,7 @@ oms_status_enu_t oms::ComponentFMUCS::registerSignalsForResultFile(ResultWriter&
   return oms_status_ok;
 }
 
+
 oms_status_enu_t oms::ComponentFMUCS::updateSignals(ResultWriter& resultWriter)
 {
   CallClock callClock(clock);
