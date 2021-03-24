@@ -700,7 +700,7 @@ oms_status_enu_t oms::SystemWC::doStep()
       for (const auto& pair : stepSizeConfiguration.getDynamicThresholds())
       {
         double sigval;
-        this -> getReal(pair.first,sigval);
+        this->getReal(pair.first,sigval);
         for (const auto& interval:pair.second)
         {
           double lower;
