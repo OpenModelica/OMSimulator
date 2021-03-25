@@ -74,6 +74,7 @@ oms_delete("model")
 -- Result:
 -- <?xml version="1.0"?>
 -- <oms:snapshot
+--   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
 --   partial="false">
 --   <oms:file
 --     name="SystemStructure.ssd">

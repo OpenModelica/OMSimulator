@@ -50,6 +50,7 @@ print(snapshot)
 -- Result:
 -- <?xml version="1.0"?>
 -- <oms:snapshot
+--   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
 --   partial="false">
 --   <oms:file
 --     name="SystemStructure.ssd">
@@ -211,6 +212,7 @@ print(snapshot)
 --
 -- <?xml version="1.0"?>
 -- <oms:snapshot
+--   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
 --   partial="true">
 --   <oms:file
 --     name="SystemStructure.ssd">
@@ -316,6 +318,7 @@ print(snapshot)
 --
 -- <?xml version="1.0"?>
 -- <oms:snapshot
+--   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
 --   partial="true">
 --   <oms:file
 --     name="resources/snapshot.ssv">
@@ -350,6 +353,7 @@ print(snapshot)
 -- error:   [oms_exportSnapshot] Model "snapshot1:resources/snapshot1.ssv" does not exist in the scope
 -- <?xml version="1.0"?>
 -- <oms:snapshot
+--   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
 --   partial="true">
 --   <oms:file
 --     name="SystemStructure.ssd"
@@ -430,6 +434,7 @@ print(snapshot)
 --
 -- <?xml version="1.0"?>
 -- <oms:snapshot
+--   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
 --   partial="true">
 --   <oms:file
 --     name="SystemStructure.ssd"
