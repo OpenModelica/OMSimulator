@@ -1899,6 +1899,12 @@ oms_status_enu_t oms::System::getReal(const ComRef& cref, double& value)
     }
   }
 
+  if (cref == "$wallTime")
+  {
+    value = clock.getElapsedWallTime();
+    return oms_status_ok;
+  }
+
   return logError_UnknownSignal(getFullCref() + cref);
 }
 
