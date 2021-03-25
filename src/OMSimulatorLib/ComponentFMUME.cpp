@@ -165,11 +165,12 @@ oms::Component* oms::ComponentFMUME::NewComponent(const oms::ComRef& cref, oms::
     fmi2_import_variable_t* varState = (fmi2_import_variable_t*)fmi2_import_get_real_variable_derivative_of(varReal);
     if (varState)
     {
-      fmi2_value_reference_t state_vr = fmi2_import_get_variable_vr(varState);
+      // IMPORTANT: vr is not unique!!! Do lookup with proper index or name
+      const oms::ComRef stateName(fmi2_import_get_variable_name(varState));
       bool found = false;
-      for (size_t i = 0; i < component->allVariables.size(); i++)
+      for (size_t i=0; i < component->allVariables.size(); i++)
       {
-        if (state_vr == component->allVariables[i].getValueReference())
+        if (stateName == component->allVariables[i].getCref())
         {
           component->allVariables[i].markAsState();
           found = true;
