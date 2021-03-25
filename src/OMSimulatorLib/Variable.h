@@ -45,7 +45,7 @@ namespace oms
   class Variable
   {
   public:
-    Variable(fmi2_import_variable_t *var, unsigned int index);
+    Variable(fmi2_import_variable_t* var, unsigned int index);
     ~Variable();
 
     void markAsState() { is_state = true; }
