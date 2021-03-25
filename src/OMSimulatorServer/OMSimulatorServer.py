@@ -7,6 +7,7 @@ import math
 import sys
 import threading
 import time
+import xml.etree.ElementTree as ET
 
 import OMSimulator as oms
 import zmq
@@ -63,6 +64,16 @@ class Server:
       self._socket_pub = self._context.socket(zmq.PUB)  #pylint: disable=no-member
       self._socket_pub.connect(endpoint_pub)
       self.print('PUB socket connected to {}'.format(endpoint_pub))
+
+    self._signals = {}
+    signalFilter = self._model.exportSnapshot(':resources/signalFilter.xml')
+    root = ET.fromstring(signalFilter)
+    for var in root[0][0]:
+      name = var.attrib['name']
+      type_ = var.attrib['type']
+      kind = var.attrib['kind']
+      self._signals[name] = {'type': type_, 'kind': kind}
+    self.pub_msg('signals', self._signals)
 
   def print(self, msg):
     print('server:  {}'.format(msg), flush=True)
