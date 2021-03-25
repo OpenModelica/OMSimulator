@@ -37,7 +37,7 @@
 #include <JM/jm_portability.h>
 
 
-oms::Variable::Variable(fmi2_import_variable_t *var, unsigned int index)
+oms::Variable::Variable(fmi2_import_variable_t* var, unsigned int index)
   : is_state(false), is_der(false), cref(fmi2_import_get_variable_name(var)), index(index)
 {
   // extract the attributes
