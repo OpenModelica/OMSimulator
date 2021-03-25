@@ -4,9 +4,7 @@
 -- mingw: yes
 -- win: no
 
--- Ignoring initial unknowns beacuse dependencies are wrong in modelDescription.xml.
--- TODO: Revert this when FMU is fixed
-oms_setCommandLineOption("--suppressPath=true --ignoreInitialUnknowns=true")
+oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./AircraftVehicleDemonstrator_tmp/")
 
 oms_newModel("AircraftVehicleDemonstrator")
