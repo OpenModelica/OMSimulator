@@ -390,7 +390,7 @@ oms_status_enu_t oms::ComponentFMUME::initializeDependencyGraph_initialUnknowns(
     else if (!var_oms.isInitialUnknown())
     {
       if (!Flags::IgnoreInitialUnknowns())
-        logWarning("[" + std::string(getCref()) + ": " + getPath() + "] Variable " + std::string(var_oms.getCref()) + " with index " + std::to_string(originalIndex+1) + " is erroneously listed as initial unknown.");
+        logWarning("[" + std::string(getCref()) + ": " + getPath() + "] Variable " + std::string(var_oms.getCref()) + " with index " + std::to_string(originalIndex+1) + " is falsely listed as initial unknown.");
       badInitialUnknowns = true;
     }
   }

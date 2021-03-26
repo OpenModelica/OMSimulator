@@ -76,4 +76,6 @@ end
 -- wc1.out is equal
 -- wc2.out is equal
 -- info:    Logging information has been saved to "tlmsignals.log"
+-- info: 4 warnings
+-- info: 0 errors
 -- endResult
