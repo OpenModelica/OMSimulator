@@ -2,7 +2,7 @@
 -- teardown_command: rm -rf AircraftVehicleDemonstrator_tmp/ AircraftVehicleDemonstrator.log AircraftVehicleDemonstrator*.dot AircraftVehicleDemonstrator_res.mat
 -- linux: no
 -- mingw: yes
--- win: no
+-- win: yes
 
 oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./AircraftVehicleDemonstrator_tmp/")
