@@ -602,9 +602,6 @@
       <Unknown index="42"
         dependencies="1 3 5 6 9 11 13 14"
         dependenciesKind="dependent dependent dependent dependent dependent dependent dependent dependent"/>
-      <Unknown index="43"
-        dependencies=""
-        dependenciesKind=""/>
       <Unknown index="44"
         dependencies="1 3 5 6 9 11 13 14"
         dependenciesKind="dependent dependent dependent dependent dependent dependent dependent dependent"/>
