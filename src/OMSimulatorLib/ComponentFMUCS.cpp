@@ -377,9 +377,9 @@ oms_status_enu_t oms::ComponentFMUCS::initializeDependencyGraph_initialUnknowns(
   size_t N_fmilib = fmi2_import_get_variable_list_size(initialUnknowns);
   bool initialUnknownsCorrect = true;
 
-  if (N != numInitialUnknowns)
+  if (N != N_fmilib)
   {
-    logWarning("Number of initial unknwons in modelDescription.xml is wrong. It contains " + std::to_string(numInitialUnknowns) + " but " + std::to_string(N) + " are expected.");
+    logWarning("Number of initial unknwons in modelDescription.xml is wrong. It contains " + std::to_string(N_fmilib) + " but " + std::to_string(N) + " are expected.");
     initialUnknownsCorrect = false;
   }
 
@@ -390,9 +390,9 @@ oms_status_enu_t oms::ComponentFMUCS::initializeDependencyGraph_initialUnknowns(
     const Variable& var_oms = allVariables[originalIndex];
     oms::ComRef name_fmilib(fmi2_import_get_variable_name(var_fmilib));
 
-    if (var.getCref() != name_fmilib || !var.isInitialUnknown()))
+    if (var_oms.getCref() != name_fmilib || !var_oms.isInitialUnknown())
     {
-      logWarning(std::string(getCref()) + ": Variable " + std::string(var.getCref()) + " with index " + std::to_string(originalIndex+1) + " is not an initial unknown.");
+      logWarning(std::string(getCref()) + ": Variable " + std::string(var_oms.getCref()) + " with index " + std::to_string(originalIndex+1) + " is not an initial unknown.");
       initialUnknownsCorrect = false;
     }
   }
