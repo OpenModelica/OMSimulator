@@ -378,8 +378,11 @@ oms_status_enu_t oms::ComponentFMUCS::initializeDependencyGraph_initialUnknowns(
   fmi2_import_variable_list_t* initialUnknowns;
   initialUnknowns = fmi2_import_get_initial_unknowns_list(fmu);
   int numInitialUnknowns = fmi2_import_get_variable_list_size(initialUnknowns);
+  if (N != numInitialUnknowns)
+    logInfo("N: " + std::to_string(N) + " numInitialUnknowns: " + std::to_string(numInitialUnknowns));
+
   bool initialUnknownsCorrect = true;
-  for (int i = 0; i < numInitialUnknowns; i++)
+  for (int i=0; i < numInitialUnknowns; i++)
   {
     fmi2_xml_variable_t* tmpVar;
     tmpVar = fmi2_import_get_variable(initialUnknowns, i);
@@ -433,11 +436,11 @@ oms_status_enu_t oms::ComponentFMUCS::initializeDependencyGraph_initialUnknowns(
 
   for (int i=0; i < N; i++)
   {
-    if (startIndex[i] == startIndex[i + 1])
+    if (startIndex[i] == startIndex[i+1])
     {
       logDebug(std::string(getCref()) + ": " + getPath() + " initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + " has no dependencies");
     }
-    else if ((startIndex[i] + 1 == startIndex[i + 1]) && (dependency[startIndex[i]] == 0))
+    else if ((startIndex[i] + 1 == startIndex[i+1]) && (dependency[startIndex[i]] == 0))
     {
       logDebug(std::string(getCref()) + ": " + getPath() + " initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + " depends on all");
       for (int j = 0; j < inputs.size(); j++)
@@ -445,7 +448,7 @@ oms_status_enu_t oms::ComponentFMUCS::initializeDependencyGraph_initialUnknowns(
     }
     else
     {
-      for (size_t j=startIndex[i]; j < startIndex[i + 1]; j++)
+      for (size_t j=startIndex[i]; j < startIndex[i+1]; j++)
       {
         if (dependency[j] < 1 || dependency[j] > allVariables.size())
         {
