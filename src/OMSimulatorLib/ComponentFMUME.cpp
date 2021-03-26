@@ -166,24 +166,16 @@ oms::Component* oms::ComponentFMUME::NewComponent(const oms::ComRef& cref, oms::
     if (varState)
     {
       // IMPORTANT: vr is not unique!!! Do lookup with proper index or name
-      const oms::ComRef stateName(fmi2_import_get_variable_name(varState));
-      bool found = false;
-      for (size_t i=0; i < component->allVariables.size(); i++)
-      {
-        if (stateName == component->allVariables[i].getCref())
-        {
-          component->allVariables[i].markAsState();
-          found = true;
-          break;
-        }
-      }
-      if (!found)
-      {
-        logError("Couldn't find " + std::string(fmi2_import_get_variable_name(varState)));
-        fmi2_import_free_variable_list(varList);
-        delete component;
-        return NULL;
-      }
+      size_t originalIndex = fmi2_import_get_variable_original_order(varState);
+      // TODO: check if index inside range
+      component->allVariables[originalIndex].markAsState();
+      //if (!found)
+      //{
+      //  logError("Couldn't find " + std::string(fmi2_import_get_variable_name(varState)));
+      //  fmi2_import_free_variable_list(varList);
+      //  delete component;
+      //  return NULL;
+      //}
     }
     else
     {
@@ -366,10 +358,7 @@ oms_status_enu_t oms::ComponentFMUME::exportToSSMTemplate(pugi::xml_node& ssmNod
 oms_status_enu_t oms::ComponentFMUME::initializeDependencyGraph_initialUnknowns()
 {
   if (initialUnknownsGraph.getEdges().size() > 0)
-  {
-    logError(std::string(getCref()) + ": " + getPath() + " is already initialized");
-    return oms_status_error;
-  }
+    return logError(std::string(getCref()) + ": " + getPath() + " is already initialized");
 
   int N=initialUnknownsGraph.getNodes().size();
 
@@ -385,19 +374,17 @@ oms_status_enu_t oms::ComponentFMUME::initializeDependencyGraph_initialUnknowns(
   }
 
   // Check if initial unknowns from modelDescription.xml are the same as in initialUnknownsGraph
-  fmi2_import_variable_list_t* initialUnknowns;
-  initialUnknowns = fmi2_import_get_initial_unknowns_list(fmu);
+  fmi2_import_variable_list_t* initialUnknowns = fmi2_import_get_initial_unknowns_list(fmu);
   int numInitialUnknowns = fmi2_import_get_variable_list_size(initialUnknowns);
   bool initialUnknownsCorrect = true;
-  for (int i = 0; i < numInitialUnknowns; i++)
+  for (int i=0; i < numInitialUnknowns; i++)
   {
-    fmi2_xml_variable_t* tmpVar;
-    tmpVar = fmi2_import_get_variable(initialUnknowns, i);
-    int originalIndex = fmi2_import_get_variable_original_order(tmpVar);
+    fmi2_xml_variable_t* tmpVar = fmi2_import_get_variable(initialUnknowns, i);
+    size_t originalIndex = fmi2_import_get_variable_original_order(tmpVar);
 
     // Check if variable with valueReference is initialUnknown
     Variable var = allVariables[originalIndex];
-    if (! var.isInitialUnknown())
+    if (!var.isInitialUnknown())
     {
       logWarning(std::string(getCref()) + ": Variable " + std::string(var.getCref()) + " with index " + std::to_string(originalIndex+1) + " is not an initial unknown.");
       initialUnknownsCorrect = false;
@@ -458,10 +445,7 @@ oms_status_enu_t oms::ComponentFMUME::initializeDependencyGraph_initialUnknowns(
 oms_status_enu_t oms::ComponentFMUME::initializeDependencyGraph_outputs()
 {
   if (outputsGraph.getEdges().size() > 0)
-  {
-    logError(std::string(getCref()) + ": " + getPath() + " is already initialized.");
-    return oms_status_error;
-  }
+    return logError(std::string(getCref()) + ": " + getPath() + " is already initialized.");
 
   size_t *startIndex=NULL, *dependency=NULL;
   char* factorKind;
@@ -474,7 +458,7 @@ oms_status_enu_t oms::ComponentFMUME::initializeDependencyGraph_outputs()
     return oms_status_ok;
   }
 
-  for (int i = 0; i < outputs.size(); i++)
+  for (int i=0; i < outputs.size(); i++)
   {
     if (startIndex[i] == startIndex[i + 1])
     {

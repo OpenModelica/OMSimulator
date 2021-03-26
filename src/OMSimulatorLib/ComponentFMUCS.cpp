@@ -164,24 +164,16 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::
     if (varState)
     {
       // IMPORTANT: vr is not unique!!! Do lookup with proper index or name
-      const oms::ComRef stateName(fmi2_import_get_variable_name(varState));
-      bool found = false;
-      for (size_t i=0; i < component->allVariables.size(); i++)
-      {
-        if (stateName == component->allVariables[i].getCref())
-        {
-          component->allVariables[i].markAsState();
-          found = true;
-          break;
-        }
-      }
-      if (!found)
-      {
-        logError("Couldn't find " + std::string(fmi2_import_get_variable_name(varState)));
-        fmi2_import_free_variable_list(varList);
-        delete component;
-        return NULL;
-      }
+      size_t originalIndex = fmi2_import_get_variable_original_order(varState);
+      // TODO: check if index inside range
+      component->allVariables[originalIndex].markAsState();
+      //if (!found)
+      //{
+      //  logError("Couldn't find " + std::string(fmi2_import_get_variable_name(varState)));
+      //  fmi2_import_free_variable_list(varList);
+      //  delete component;
+      //  return NULL;
+      //}
     }
     else
     {
@@ -395,7 +387,7 @@ oms_status_enu_t oms::ComponentFMUCS::initializeDependencyGraph_initialUnknowns(
 
     // Check if variable with valueReference is initialUnknown
     Variable var = allVariables[originalIndex];
-    if (! var.isInitialUnknown())
+    if (!var.isInitialUnknown())
     {
       logWarning(std::string(getCref()) + ": Variable " + std::string(var.getCref()) + " with index " + std::to_string(originalIndex+1) + " is not an initial unknown.");
       initialUnknownsCorrect = false;
@@ -422,7 +414,24 @@ oms_status_enu_t oms::ComponentFMUCS::initializeDependencyGraph_initialUnknowns(
     return oms_status_ok;
   }
 
-  for (int i = 0; i < N; i++)
+  logInfo(std::string(getCref()) + ": " + getPath());
+  std::string buffer = "startIndex(" + std::to_string(N+1) + ")\n";
+  for (int i=0; i < N; i++)
+    buffer += "startIndex[" + std::to_string(i) + "] (" + std::string(initialUnknownsGraph.getNodes()[i]) + ") = " + std::to_string(startIndex[i]) + "\n";
+  buffer += "startIndex[" + std::to_string(N) + "] = " + std::to_string(startIndex[N]) + "\n";
+  logInfo(buffer);
+
+  buffer = "dependency(" + std::to_string(startIndex[N]) + ")\n";
+  for (int i=0; i < startIndex[N]; i++)
+    buffer += "dependency[" + std::to_string(i) + "] = " + std::to_string(dependency[i]) + "\n";
+  logInfo(buffer);
+
+  buffer = "factorKind(" + std::to_string(startIndex[N]) + ")\n";
+  for (int i=0; i < startIndex[N]; i++)
+    buffer += "factorKind[" + std::to_string(i) + "] = " + std::string(fmi2_dependency_factor_kind_to_string((fmi2_dependency_factor_kind_enu_t)factorKind[i])) + "\n";
+  logInfo(buffer);
+
+  for (int i=0; i < N; i++)
   {
     if (startIndex[i] == startIndex[i + 1])
     {
@@ -436,7 +445,7 @@ oms_status_enu_t oms::ComponentFMUCS::initializeDependencyGraph_initialUnknowns(
     }
     else
     {
-      for (size_t j = startIndex[i]; j < startIndex[i + 1]; j++)
+      for (size_t j=startIndex[i]; j < startIndex[i + 1]; j++)
       {
         if (dependency[j] < 1 || dependency[j] > allVariables.size())
         {
