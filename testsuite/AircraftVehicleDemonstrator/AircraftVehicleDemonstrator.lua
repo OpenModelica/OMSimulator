@@ -175,9 +175,17 @@ for _,var in ipairs(vars) do
 end
 
 -- Result:
+-- warning: [cockpit: resources/0003_cockpit.fmu] The dependencies of the initial unknowns defined in the FMU are ignored because the flag --ignoreInitialUnknowns is active. Instead, all the initial unknowns will depend on all inputs.
+-- warning: [consumer_A: resources/0004_consumer_A.fmu] The dependencies of the initial unknowns defined in the FMU are ignored because the flag --ignoreInitialUnknowns is active. Instead, all the initial unknowns will depend on all inputs.
+-- warning: [consumer_B: resources/0005_consumer_B.fmu] The dependencies of the initial unknowns defined in the FMU are ignored because the flag --ignoreInitialUnknowns is active. Instead, all the initial unknowns will depend on all inputs.
+-- warning: [eCS_Generic_Export: resources/0006_eCS_Generic_Export.fmu] The dependencies of the initial unknowns defined in the FMU are ignored because the flag --ignoreInitialUnknowns is active. Instead, all the initial unknowns will depend on all inputs.
+-- warning: [eCS_SW: resources/0007_eCS_SW.fmu] The dependencies of the initial unknowns defined in the FMU are ignored because the flag --ignoreInitialUnknowns is active. Instead, all the initial unknowns will depend on all inputs.
+-- warning: [engine: resources/0008_engine.fmu] The dependencies of the initial unknowns defined in the FMU are ignored because the flag --ignoreInitialUnknowns is active. Instead, all the initial unknowns will depend on all inputs.
 -- warning: Alg. loop (size 80)
 -- info:    Result file: AircraftVehicleDemonstrator_res.mat (bufferSize=10)
 -- info:    AircraftVehicleDemonstrator.root.engine.pB.p is equal
 -- info:    AircraftVehicleDemonstrator.root.eCS_Generic_Export.Meas_PACK_TEMP is equal
 -- info:    AircraftVehicleDemonstrator.root.eCS_Generic_Export.Meas_PACK_PRESS is equal
+-- info:    7 warnings
+-- info:    0 errors
 -- endResult
