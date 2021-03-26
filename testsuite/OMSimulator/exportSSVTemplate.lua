@@ -34,6 +34,8 @@ readFile("gain.ssv")
 
 
 -- Result:
+-- warning: [Gain: resources/0001_Gain.fmu] The FMU lists 0 initial unknowns but actually contains 1 initial unknowns as per the variable definitions.
+-- info:    [Gain: resources/0001_Gain.fmu] The FMU contains bad initial unknowns. This might cause problems, e.g. wrong simulation results.
 -- <?xml version="1.0" encoding="UTF-8"?>
 -- <ssv:ParameterSet xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" version="1.0" name="modelDescriptionStartValues">
 -- 	<ssv:Parameters>
@@ -88,4 +90,6 @@ readFile("gain.ssv")
 -- 	</ssv:Parameters>
 -- </ssv:ParameterSet>
 --
+-- info:    1 warnings
+-- info:    0 errors
 -- endResult

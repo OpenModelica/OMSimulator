@@ -66,6 +66,8 @@ oms_terminate("test")
 oms_delete("test")
 
 -- Result:
+-- warning: [source: resources/0001_source.fmu] The FMU lists 0 initial unknowns but actually contains 1 initial unknowns as per the variable definitions.
+-- info:    [source: resources/0001_source.fmu] The FMU contains bad initial unknowns. This might cause problems, e.g. wrong simulation results.
 -- <?xml version="1.0"?>
 -- <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="test" version="1.0">
 -- 	<ssd:System name="eoo">
@@ -115,6 +117,10 @@ oms_delete("test")
 -- 	</ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>
 --
+-- warning: [source: resources/0002_source.fmu] The FMU lists 0 initial unknowns but actually contains 1 initial unknowns as per the variable definitions.
+-- info:    [source: resources/0002_source.fmu] The FMU contains bad initial unknowns. This might cause problems, e.g. wrong simulation results.
+-- warning: [source: resources/0001_source.fmu] The FMU lists 0 initial unknowns but actually contains 1 initial unknowns as per the variable definitions.
+-- info:    [source: resources/0001_source.fmu] The FMU contains bad initial unknowns. This might cause problems, e.g. wrong simulation results.
 -- error:   [getResourceNode] Failed to find node "resources/signalFilter.xml"
 -- status:  [correct] ok
 -- <?xml version="1.0"?>
@@ -167,6 +173,6 @@ oms_delete("test")
 -- </ssd:SystemStructureDescription>
 --
 -- info:    Result file: test_res.mat (bufferSize=10)
--- info:    0 warnings
+-- info:    3 warnings
 -- info:    1 errors
 -- endResult

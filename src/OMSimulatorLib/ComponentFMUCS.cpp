@@ -359,25 +359,18 @@ oms_status_enu_t oms::ComponentFMUCS::initializeDependencyGraph_initialUnknowns(
 
   int N=initialUnknownsGraph.getNodes().size();
 
-  if (Flags::IgnoreInitialUnknowns())
-  {
-    for (int i=0; i < N; i++)
-    {
-      logDebug(std::string(getCref()) + ": " + getPath() + " initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + " depends on all inputs");
-      for (int j=0; j < inputs.size(); j++)
-        initialUnknownsGraph.addEdge(inputs[j].makeConnector(this->getFullCref()), initialUnknownsGraph.getNodes()[i]);
-    }
-    return oms_status_ok;
-  }
-
   // Check if initial unknowns from modelDescription.xml are the same as in initialUnknownsGraph
   fmi2_import_variable_list_t* initialUnknowns;
   initialUnknowns = fmi2_import_get_initial_unknowns_list(fmu);
   size_t N_fmilib = fmi2_import_get_variable_list_size(initialUnknowns);
-  bool initialUnknownsCorrect = true;
+  bool badInitialUnknowns = false;
 
   if (N != N_fmilib)
-    logWarning(std::string(getCref()) + ": " + getPath() + " Number of initial unknwons in modelDescription.xml is wrong. It contains " + std::to_string(N_fmilib) + " but " + std::to_string(N) + " are expected.");
+  {
+    if (!Flags::IgnoreInitialUnknowns())
+      logWarning("[" + std::string(getCref()) + ": " + getPath() + "] The FMU lists " + std::to_string(N_fmilib) + " initial unknowns but actually contains " + std::to_string(N) + " initial unknowns as per the variable definitions.");
+    badInitialUnknowns = true;
+  }
 
   for (size_t i=0; i < N_fmilib; ++i)
   {
@@ -386,17 +379,38 @@ oms_status_enu_t oms::ComponentFMUCS::initializeDependencyGraph_initialUnknowns(
     const Variable& var_oms = allVariables[originalIndex];
     oms::ComRef name_fmilib(fmi2_import_get_variable_name(var_fmilib));
 
-    if (var_oms.getCref() != name_fmilib || !var_oms.isInitialUnknown())
+    if (var_oms.getCref() != name_fmilib)
     {
-      logWarning(std::string(getCref()) + ": Variable " + std::string(var_oms.getCref()) + " with index " + std::to_string(originalIndex+1) + " is not an initial unknown.");
-      initialUnknownsCorrect = false;
+      if (!Flags::IgnoreInitialUnknowns())
+        logWarning("[" + std::string(getCref()) + ": " + getPath() + "] Variable " + std::string(var_oms.getCref()) + " with index " + std::to_string(originalIndex+1) + " could not be found.");
+      badInitialUnknowns = true;
+    }
+    else if (!var_oms.isInitialUnknown())
+    {
+      if (!Flags::IgnoreInitialUnknowns())
+        logWarning("[" + std::string(getCref()) + ": " + getPath() + "] Variable " + std::string(var_oms.getCref()) + " with index " + std::to_string(originalIndex+1) + " is erroneously listed as initial unknown.");
+      badInitialUnknowns = true;
     }
   }
 
   fmi2_import_free_variable_list(initialUnknowns);
 
-  if (!initialUnknownsCorrect)
-    return logError(std::string(getCref()) + ": Erroneous initial unknowns detected in modelDescription.xml\nUse flag --ignoreInitialUnknowns=true to ignore all initial unknowns, but this can cause inflated loop size.");
+  if (badInitialUnknowns)
+  {
+    if(!Flags::IgnoreInitialUnknowns())
+      logInfo("[" + std::string(getCref()) + ": " + getPath() + "] The FMU contains bad initial unknowns. This might cause problems, e.g. wrong simulation results.");
+    else
+    {
+      logWarning("[" + std::string(getCref()) + ": " + getPath() + "] The dependencies of the initial unknowns defined in the FMU are ignored because the flag --ignoreInitialUnknowns is active. Instead, all the initial unknowns will depend on all inputs.");
+      for (int i=0; i < N; i++)
+      {
+        logDebug(std::string(getCref()) + ": " + getPath() + " initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + " depends on all inputs");
+        for (int j=0; j < inputs.size(); j++)
+          initialUnknownsGraph.addEdge(inputs[j].makeConnector(this->getFullCref()), initialUnknownsGraph.getNodes()[i]);
+      }
+      return oms_status_ok;
+    }
+  }
 
   size_t *startIndex=NULL, *dependency=NULL;
   char* factorKind;
