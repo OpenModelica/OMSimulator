@@ -167,15 +167,14 @@ oms::Component* oms::ComponentFMUME::NewComponent(const oms::ComRef& cref, oms::
     {
       // IMPORTANT: vr is not unique!!! Do lookup with proper index or name
       size_t originalIndex = fmi2_import_get_variable_original_order(varState);
-      // TODO: check if index inside range
+      if (originalIndex < 0 || originalIndex >= component->allVariables.size())
+      {
+        logError("Couldn't find " + std::string(fmi2_import_get_variable_name(varState)));
+        fmi2_import_free_variable_list(varList);
+        delete component;
+        return NULL;
+      }
       component->allVariables[originalIndex].markAsState();
-      //if (!found)
-      //{
-      //  logError("Couldn't find " + std::string(fmi2_import_get_variable_name(varState)));
-      //  fmi2_import_free_variable_list(varList);
-      //  delete component;
-      //  return NULL;
-      //}
     }
     else
     {
