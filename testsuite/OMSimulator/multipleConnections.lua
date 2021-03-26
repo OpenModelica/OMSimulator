@@ -55,6 +55,8 @@ print("info:      model.System.gain.u         : " .. oms_getReal("model.System.g
 print("info:      model.System.gain.k         : " .. oms_getReal("model.System.gain.k"))
 
 -- Result:
+-- warning: [gain: resources/0002_gain.fmu] The FMU lists 0 initial unknowns but actually contains 1 initial unknowns as per the variable definitions.
+-- info:    [gain: resources/0002_gain.fmu] The FMU contains bad initial unknowns. This might cause problems, e.g. wrong simulation results.
 -- error:   [addConnection] Connector add.u1 is already connected to Input1
 -- error:   [addConnection] Connector gain.k is already connected to parameter1
 -- error:   [addConnection] Connector add.u2 is already connected to gain.y
@@ -67,6 +69,6 @@ print("info:      model.System.gain.k         : " .. oms_getReal("model.System.g
 -- info:      model.System.add.u2         : 400.0
 -- info:      model.System.gain.u         : 10.0
 -- info:      model.System.gain.k         : 40.0
--- info:    0 warnings
+-- info:    1 warnings
 -- info:    3 errors
 -- endResult

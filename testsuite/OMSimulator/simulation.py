@@ -79,7 +79,11 @@ printStatus(status, 0)
 ## Result:
 ## status:  [correct] ok
 ## status:  [correct] ok
+## warning: [A: resources/0001_A.fmu] The FMU lists 0 initial unknowns but actually contains 1 initial unknowns as per the variable definitions.
+## info:    [A: resources/0001_A.fmu] The FMU contains bad initial unknowns. This might cause problems, e.g. wrong simulation results.
 ## status:  [correct] ok
+## warning: [B: resources/0002_B.fmu] The FMU lists 0 initial unknowns but actually contains 1 initial unknowns as per the variable definitions.
+## info:    [B: resources/0002_B.fmu] The FMU contains bad initial unknowns. This might cause problems, e.g. wrong simulation results.
 ## status:  [correct] ok
 ## status:  [correct] ok
 ## status:  [correct] ok
@@ -96,4 +100,6 @@ printStatus(status, 0)
 ## test.co_sim.A.y: 1.68294
 ## status:  [correct] ok
 ## status:  [correct] ok
+## info:    2 warnings
+## info:    0 errors
 ## endResult
