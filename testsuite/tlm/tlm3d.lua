@@ -205,4 +205,6 @@ end
 -- model.tlm3d.wc2.P.x[2] is equal
 -- model.tlm3d.wc2.P.x[3] is equal
 -- info:    Logging information has been saved to "tlm3d.log"
+-- info:    2 warnings
+-- info:    0 errors
 -- endResult

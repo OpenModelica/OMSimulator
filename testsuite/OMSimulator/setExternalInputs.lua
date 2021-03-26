@@ -40,6 +40,8 @@ oms_terminate("setExternalInputs")
 oms_delete("setExternalInputs")
 
 -- Result:
+-- warning: [Gain: resources/0001_Gain.fmu] The FMU lists 0 initial unknowns but actually contains 1 initial unknowns as per the variable definitions.
+-- info:    [Gain: resources/0001_Gain.fmu] The FMU contains bad initial unknowns. This might cause problems, e.g. wrong simulation results.
 -- info:    Result file: setExternalInputs_res.mat (bufferSize=10)
 -- info:      setExternalInputs.Root.Gain.u at time 1.0: 0.0
 -- info:      setExternalInputs.Root.Gain.u at time 3.0: 5.0
@@ -85,4 +87,6 @@ oms_delete("setExternalInputs")
 -- 	</ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>
 --
+-- info:    1 warnings
+-- info:    0 errors
 -- endResult
