@@ -38,8 +38,6 @@ readFile("gain2.ssm")
 
 
 ## Result:
-## warning: [Gain: resources/0001_Gain.fmu] The FMU lists 0 initial unknowns but actually contains 1 initial unknowns as per the variable definitions.
-## info:    [Gain: resources/0001_Gain.fmu] The FMU contains bad initial unknowns. This might cause problems, e.g. wrong simulation results.
 ## <?xml version="1.0" encoding="UTF-8"?>
 ## <ssm:ParameterMapping xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" version="1.0">
 ## 	<ssm:MappingEntry source="" target="add.u2" />
@@ -64,6 +62,4 @@ readFile("gain2.ssm")
 ## 	<ssm:MappingEntry source="" target="Gain.k" />
 ## </ssm:ParameterMapping>
 ##
-## info:    1 warnings
-## info:    0 errors
 ## endResult

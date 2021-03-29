@@ -105,22 +105,6 @@ oms_terminate("PI_Controller")
 oms_delete("PI_Controller")
 
 -- Result:
--- warning: [P: resources/0002_P.fmu] The FMU lists 0 initial unknowns but actually contains 1 initial unknowns as per the variable definitions.
--- info:    [P: resources/0002_P.fmu] The FMU contains bad initial unknowns. This might cause problems, e.g. wrong simulation results.
--- warning: [gainPI: resources/0006_gainPI.fmu] The FMU lists 0 initial unknowns but actually contains 1 initial unknowns as per the variable definitions.
--- info:    [gainPI: resources/0006_gainPI.fmu] The FMU contains bad initial unknowns. This might cause problems, e.g. wrong simulation results.
--- warning: [limiter: resources/0007_limiter.fmu] The FMU lists 0 initial unknowns but actually contains 5 initial unknowns as per the variable definitions.
--- info:    [limiter: resources/0007_limiter.fmu] The FMU contains bad initial unknowns. This might cause problems, e.g. wrong simulation results.
--- warning: [gainTrack: resources/0009_gainTrack.fmu] The FMU lists 0 initial unknowns but actually contains 1 initial unknowns as per the variable definitions.
--- info:    [gainTrack: resources/0009_gainTrack.fmu] The FMU contains bad initial unknowns. This might cause problems, e.g. wrong simulation results.
--- warning: [limiter: resources/0007_limiter.fmu] The FMU lists 0 initial unknowns but actually contains 5 initial unknowns as per the variable definitions.
--- info:    [limiter: resources/0007_limiter.fmu] The FMU contains bad initial unknowns. This might cause problems, e.g. wrong simulation results.
--- warning: [gainTrack: resources/0009_gainTrack.fmu] The FMU lists 0 initial unknowns but actually contains 1 initial unknowns as per the variable definitions.
--- info:    [gainTrack: resources/0009_gainTrack.fmu] The FMU contains bad initial unknowns. This might cause problems, e.g. wrong simulation results.
--- warning: [gainPI: resources/0006_gainPI.fmu] The FMU lists 0 initial unknowns but actually contains 1 initial unknowns as per the variable definitions.
--- info:    [gainPI: resources/0006_gainPI.fmu] The FMU contains bad initial unknowns. This might cause problems, e.g. wrong simulation results.
--- warning: [P: resources/0002_P.fmu] The FMU lists 0 initial unknowns but actually contains 1 initial unknowns as per the variable definitions.
--- info:    [P: resources/0002_P.fmu] The FMU contains bad initial unknowns. This might cause problems, e.g. wrong simulation results.
 -- info:    Parameter settings
 -- info:      PI_Controller.co_sim.addP.k1: 1.0
 -- info:      PI_Controller.co_sim.addP.k2: -1.0
@@ -135,8 +119,6 @@ oms_delete("PI_Controller")
 -- info:      limiter.u: 0.0
 -- info:      limiter.y: 0.0
 -- info:    Simulation
--- info:      limiter.u: -10.146734070551
--- info:      limiter.y: -10.146734070551
--- info:    8 warnings
--- info:    0 errors
+-- info:      limiter.u: -10.041439549286
+-- info:      limiter.y: -10.041439549286
 -- endResult
