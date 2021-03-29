@@ -1,13 +1,13 @@
 {"format":"Transformational debugger info","version":1,
 "info":{"name":"Modelica.Blocks.Math.Feedback","description":"Output difference between commanded and feedback input"},
 "variables":{
-"u1":{"comment":"","kind":"variable","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"/home/andreas/workspace/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Math.mo","lineStart":847,"lineEnd":848,"colStart":5,"colEnd":32},"within":["Real"]}},
-"y":{"comment":"","kind":"variable","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"/home/andreas/workspace/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Math.mo","lineStart":853,"lineEnd":854,"colStart":5,"colEnd":27},"within":["Real"]}},
-"u1":{"comment":"","kind":"variable","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"/home/andreas/workspace/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Math.mo","lineStart":847,"lineEnd":848,"colStart":5,"colEnd":32},"within":["Real"]}}
+"u1":{"comment":"","kind":"variable","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"/home/andreas/workspace/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Math.mo","lineStart":847,"lineEnd":848,"colStart":5,"colEnd":32}}},
+"y":{"comment":"","kind":"variable","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"/home/andreas/workspace/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Math.mo","lineStart":853,"lineEnd":854,"colStart":5,"colEnd":27}}},
+"u1":{"comment":"","kind":"variable","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"/home/andreas/workspace/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Math.mo","lineStart":847,"lineEnd":848,"colStart":5,"colEnd":32}}}
 },
 "equations":[{"eqIndex":0,"tag":"dummy"},
 {"eqIndex":1,"tag":"alias","equation":[2],"section":"initial"},
-{"eqIndex":2,"section":"regular","tag":"assign","defines":["y"],"uses":["u2","u1"],"equation":["u1 - u2"],"source":{"info":{"file":"/home/andreas/workspace/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Math.mo","lineStart":857,"lineEnd":857,"colStart":5,"colEnd":16},"within":["Modelica.Blocks.Math.Feedback"]}}
+{"eqIndex":2,"section":"regular","tag":"assign","defines":["y"],"uses":["u2","u1"],"equation":["u1 - u2"],"source":{"info":{"file":"/home/andreas/workspace/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Math.mo","lineStart":857,"lineEnd":857,"colStart":5,"colEnd":16}}}
 ],
 "functions":[
 ]

@@ -2,10 +2,10 @@
 <fmiModelDescription
   fmiVersion="2.0"
   modelName="DualMassOscillator.System2"
-  guid="{c66f1bc4-613b-48d4-9702-bceaf7abc8c9}"
+  guid="{3b496444-57df-48c7-a472-95a1f353457b}"
   description=""
-  generationTool="OpenModelica Compiler OMCompiler v1.16.2"
-  generationDateAndTime="2020-12-22T13:52:36Z"
+  generationTool="OpenModelica Compiler OMCompiler v1.18.0-dev.192+gc2d2d8d45f"
+  generationDateAndTime="2021-03-29T14:03:34Z"
   variableNamingConvention="structured"
   numberOfEventIndicators="0">
   <ModelExchange
@@ -31,6 +31,7 @@
       <File name="DualMassOscillator_System2_15syn.c" />
       <File name="DualMassOscillator_System2_16dae.c" />
       <File name="DualMassOscillator_System2_17inl.c" />
+      <File name="DualMassOscillator_System2_18spd.c" />
       <File name="DualMassOscillator_System2_init_fmu.c" />
       <File name="DualMassOscillator_System2_FMU.c" />
       <File name="./util/read_matlab4.c" />
@@ -40,38 +41,40 @@
       <File name="gc/omc_gc.c" />
       <File name="./util/base_array.c" />
       <File name="./util/boolean_array.c" />
-      <File name="./util/omc_error.c" />
-      <File name="./util/omc_file.c" />
       <File name="./util/division.c" />
+      <File name="./util/doubleEndedList.c" />
       <File name="./util/generic_array.c" />
       <File name="./util/index_spec.c" />
       <File name="./util/integer_array.c" />
+      <File name="./util/jacobian_util.c" />
       <File name="./util/list.c" />
+      <File name="./util/modelica_string_lit.c" />
       <File name="./util/modelica_string.c" />
-      <File name="./util/real_array.c" />
-      <File name="./util/ringbuffer.c" />
-      <File name="./util/string_array.c" />
-      <File name="./util/utility.c" />
-      <File name="./util/varinfo.c" />
       <File name="./util/ModelicaUtilities.c" />
+      <File name="./util/omc_error.c" />
+      <File name="./util/omc_file.c" />
+      <File name="./util/omc_init.c" />
+      <File name="./util/omc_mmap.c" />
       <File name="./util/omc_msvc.c" />
       <File name="./util/omc_numbers.c" />
       <File name="./util/parallel_helper.c" />
-      <File name="./util/simulation_options.c" />
       <File name="./util/rational.c" />
-      <File name="./util/modelica_string_lit.c" />
-      <File name="./util/omc_init.c" />
-      <File name="./util/omc_mmap.c" />
-      <File name="./util/jacobian_util.c" />
+      <File name="./util/real_array.c" />
+      <File name="./util/ringbuffer.c" />
+      <File name="./util/simulation_options.c" />
+      <File name="./util/string_array.c" />
+      <File name="./util/utility.c" />
+      <File name="./util/varinfo.c" />
       <File name="./math-support/pivot.c" />
-      <File name="./simulation/simulation_info_json.c" />
-      <File name="./simulation/options.c" />
-      <File name="./simulation/simulation_omc_assert.c" />
       <File name="./simulation/omc_simulation_util.c" />
+      <File name="./simulation/options.c" />
+      <File name="./simulation/simulation_info_json.c" />
+      <File name="./simulation/simulation_omc_assert.c" />
       <File name="./simulation/solver/delay.c" />
       <File name="./simulation/solver/fmi_events.c" />
-      <File name="./simulation/solver/omc_math.c" />
       <File name="./simulation/solver/model_help.c" />
+      <File name="./simulation/solver/omc_math.c" />
+      <File name="./simulation/solver/spatialDistribution.c" />
       <File name="./simulation/solver/stateset.c" />
       <File name="./simulation/solver/synchronous.c" />
       <File name="./simulation/solver/initialization/initialization.c" />
@@ -111,6 +114,7 @@
       <File name="DualMassOscillator_System2_15syn.c" />
       <File name="DualMassOscillator_System2_16dae.c" />
       <File name="DualMassOscillator_System2_17inl.c" />
+      <File name="DualMassOscillator_System2_18spd.c" />
       <File name="DualMassOscillator_System2_init_fmu.c" />
       <File name="DualMassOscillator_System2_FMU.c" />
       <File name="./util/read_matlab4.c" />
@@ -120,38 +124,40 @@
       <File name="gc/omc_gc.c" />
       <File name="./util/base_array.c" />
       <File name="./util/boolean_array.c" />
-      <File name="./util/omc_error.c" />
-      <File name="./util/omc_file.c" />
       <File name="./util/division.c" />
+      <File name="./util/doubleEndedList.c" />
       <File name="./util/generic_array.c" />
       <File name="./util/index_spec.c" />
       <File name="./util/integer_array.c" />
+      <File name="./util/jacobian_util.c" />
       <File name="./util/list.c" />
+      <File name="./util/modelica_string_lit.c" />
       <File name="./util/modelica_string.c" />
-      <File name="./util/real_array.c" />
-      <File name="./util/ringbuffer.c" />
-      <File name="./util/string_array.c" />
-      <File name="./util/utility.c" />
-      <File name="./util/varinfo.c" />
       <File name="./util/ModelicaUtilities.c" />
+      <File name="./util/omc_error.c" />
+      <File name="./util/omc_file.c" />
+      <File name="./util/omc_init.c" />
+      <File name="./util/omc_mmap.c" />
       <File name="./util/omc_msvc.c" />
       <File name="./util/omc_numbers.c" />
       <File name="./util/parallel_helper.c" />
-      <File name="./util/simulation_options.c" />
       <File name="./util/rational.c" />
-      <File name="./util/modelica_string_lit.c" />
-      <File name="./util/omc_init.c" />
-      <File name="./util/omc_mmap.c" />
-      <File name="./util/jacobian_util.c" />
+      <File name="./util/real_array.c" />
+      <File name="./util/ringbuffer.c" />
+      <File name="./util/simulation_options.c" />
+      <File name="./util/string_array.c" />
+      <File name="./util/utility.c" />
+      <File name="./util/varinfo.c" />
       <File name="./math-support/pivot.c" />
-      <File name="./simulation/simulation_info_json.c" />
-      <File name="./simulation/options.c" />
-      <File name="./simulation/simulation_omc_assert.c" />
       <File name="./simulation/omc_simulation_util.c" />
+      <File name="./simulation/options.c" />
+      <File name="./simulation/simulation_info_json.c" />
+      <File name="./simulation/simulation_omc_assert.c" />
       <File name="./simulation/solver/delay.c" />
       <File name="./simulation/solver/fmi_events.c" />
-      <File name="./simulation/solver/omc_math.c" />
       <File name="./simulation/solver/model_help.c" />
+      <File name="./simulation/solver/omc_math.c" />
+      <File name="./simulation/solver/spatialDistribution.c" />
       <File name="./simulation/solver/stateset.c" />
       <File name="./simulation/solver/synchronous.c" />
       <File name="./simulation/solver/initialization/initialization.c" />
@@ -250,7 +256,7 @@
   </ScalarVariable>
   <!-- Index of variable = "5" -->
   <ScalarVariable
-    name="der(der(mass2.flange_a.s))"
+    name="der(der(mass2.flange_b.s))"
     valueReference="4"
     description="Absolute position of flange"
     >
@@ -258,23 +264,23 @@
   </ScalarVariable>
   <!-- Index of variable = "6" -->
   <ScalarVariable
-    name="der(der(mass2.flange_b.s))"
+    name="der(der(move.s))"
     valueReference="5"
-    description="Absolute position of flange"
+    description="Distance between flange and support (= flange.s - support.s)"
     >
     <Real/>
   </ScalarVariable>
   <!-- Index of variable = "7" -->
   <ScalarVariable
-    name="der(der(move.s))"
+    name="der(der(sd2.flange_b.s))"
     valueReference="6"
-    description="Distance between flange and support (= flange.s - support.s)"
+    description="Absolute position of flange"
     >
     <Real/>
   </ScalarVariable>
   <!-- Index of variable = "8" -->
   <ScalarVariable
-    name="der(mass2.flange_a.s)"
+    name="der(mass2.flange_b.s)"
     valueReference="7"
     description="Absolute position of flange"
     >
@@ -282,33 +288,33 @@
   </ScalarVariable>
   <!-- Index of variable = "9" -->
   <ScalarVariable
-    name="der(mass2.flange_b.s)"
+    name="der(mass2.s)"
     valueReference="8"
-    description="Absolute position of flange"
+    description="Absolute position of center of component (s = flange_a.s + L/2 = flange_b.s - L/2)"
     >
     <Real/>
   </ScalarVariable>
   <!-- Index of variable = "10" -->
   <ScalarVariable
-    name="der(mass2.s)"
+    name="der(mass2.v)"
     valueReference="9"
-    description="Absolute position of center of component (s = flange_a.s + L/2 = flange_b.s - L/2)"
+    description="Absolute velocity of component"
     >
     <Real/>
   </ScalarVariable>
   <!-- Index of variable = "11" -->
   <ScalarVariable
-    name="der(mass2.v)"
+    name="der(move.s)"
     valueReference="10"
-    description="Absolute velocity of component"
+    description="Distance between flange and support (= flange.s - support.s)"
     >
     <Real/>
   </ScalarVariable>
   <!-- Index of variable = "12" -->
   <ScalarVariable
-    name="der(move.s)"
+    name="der(sd2.flange_b.s)"
     valueReference="11"
-    description="Distance between flange and support (= flange.s - support.s)"
+    description="Absolute position of flange"
     >
     <Real/>
   </ScalarVariable>
@@ -353,7 +359,7 @@
   </ScalarVariable>
   <!-- Index of variable = "18" -->
   <ScalarVariable
-    name="mass2.flange_a.s"
+    name="mass2.flange_b.s"
     valueReference="17"
     description="Absolute position of flange"
     >
@@ -361,59 +367,59 @@
   </ScalarVariable>
   <!-- Index of variable = "19" -->
   <ScalarVariable
-    name="mass2.flange_b.s"
+    name="mass2.s"
     valueReference="18"
-    description="Absolute position of flange"
+    description="Absolute position of center of component (s = flange_a.s + L/2 = flange_b.s - L/2)"
     >
     <Real unit="m"/>
   </ScalarVariable>
   <!-- Index of variable = "20" -->
   <ScalarVariable
-    name="mass2.s"
-    valueReference="19"
-    description="Absolute position of center of component (s = flange_a.s + L/2 = flange_b.s - L/2)"
-    >
-    <Real unit="m"/>
-  </ScalarVariable>
-  <!-- Index of variable = "21" -->
-  <ScalarVariable
     name="mass2.v"
-    valueReference="20"
+    valueReference="19"
     description="Absolute velocity of component"
     >
     <Real unit="m/s"/>
   </ScalarVariable>
-  <!-- Index of variable = "22" -->
+  <!-- Index of variable = "21" -->
   <ScalarVariable
     name="move.s"
-    valueReference="21"
+    valueReference="20"
     description="Distance between flange and support (= flange.s - support.s)"
     >
     <Real unit="m"/>
   </ScalarVariable>
-  <!-- Index of variable = "23" -->
+  <!-- Index of variable = "22" -->
   <ScalarVariable
     name="move.s_support"
-    valueReference="22"
+    valueReference="21"
     description="Absolute position of support flange"
     initial="exact">
     <Real start="0.0" unit="m"/>
   </ScalarVariable>
-  <!-- Index of variable = "24" -->
+  <!-- Index of variable = "23" -->
   <ScalarVariable
     name="sd2.f_c"
-    valueReference="23"
+    valueReference="22"
     description="Spring force"
+    >
+    <Real unit="N"/>
+  </ScalarVariable>
+  <!-- Index of variable = "24" -->
+  <ScalarVariable
+    name="sd2.f_d"
+    valueReference="23"
+    description="Damping force"
     >
     <Real unit="N"/>
   </ScalarVariable>
   <!-- Index of variable = "25" -->
   <ScalarVariable
-    name="sd2.f_d"
+    name="sd2.flange_b.s"
     valueReference="24"
-    description="Damping force"
+    description="Absolute position of flange"
     >
-    <Real unit="N"/>
+    <Real unit="m"/>
   </ScalarVariable>
   <!-- Index of variable = "26" -->
   <ScalarVariable
@@ -741,13 +747,21 @@
   </ScalarVariable>
   <!-- Index of variable = "62" -->
   <ScalarVariable
+    name="mass2.flange_a.s"
+    valueReference="24"
+    description="Absolute position of flange"
+    >
+    <Real unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "63" -->
+  <ScalarVariable
     name="mass2.flange_b.f"
     valueReference="28"
     description="Cut force directed into flange"
     >
     <Real unit="N"/>
   </ScalarVariable>
-  <!-- Index of variable = "63" -->
+  <!-- Index of variable = "64" -->
   <ScalarVariable
     name="move.flange.f"
     valueReference="14"
@@ -755,7 +769,7 @@
     >
     <Real unit="N"/>
   </ScalarVariable>
-  <!-- Index of variable = "64" -->
+  <!-- Index of variable = "65" -->
   <ScalarVariable
     name="move.flange.s"
     valueReference="33"
@@ -763,7 +777,7 @@
     >
     <Real unit="m"/>
   </ScalarVariable>
-  <!-- Index of variable = "65" -->
+  <!-- Index of variable = "66" -->
   <ScalarVariable
     name="move.u[1]"
     valueReference="33"
@@ -771,7 +785,7 @@
     >
     <Real/>
   </ScalarVariable>
-  <!-- Index of variable = "66" -->
+  <!-- Index of variable = "67" -->
   <ScalarVariable
     name="move.u[2]"
     valueReference="32"
@@ -779,7 +793,7 @@
     >
     <Real/>
   </ScalarVariable>
-  <!-- Index of variable = "67" -->
+  <!-- Index of variable = "68" -->
   <ScalarVariable
     name="move.u[3]"
     valueReference="15"
@@ -787,7 +801,7 @@
     >
     <Real/>
   </ScalarVariable>
-  <!-- Index of variable = "68" -->
+  <!-- Index of variable = "69" -->
   <ScalarVariable
     name="sd2.f"
     valueReference="14"
@@ -795,15 +809,15 @@
     >
     <Real unit="N"/>
   </ScalarVariable>
-  <!-- Index of variable = "69" -->
+  <!-- Index of variable = "70" -->
   <ScalarVariable
     name="sd2.flange_a.f"
-    valueReference="69"
+    valueReference="70"
     description="Cut force directed into flange"
     >
     <Real unit="N"/>
   </ScalarVariable>
-  <!-- Index of variable = "70" -->
+  <!-- Index of variable = "71" -->
   <ScalarVariable
     name="sd2.flange_a.s"
     valueReference="33"
@@ -811,21 +825,13 @@
     >
     <Real unit="m"/>
   </ScalarVariable>
-  <!-- Index of variable = "71" -->
+  <!-- Index of variable = "72" -->
   <ScalarVariable
     name="sd2.flange_b.f"
     valueReference="14"
     description="Cut force directed into flange"
     >
     <Real unit="N"/>
-  </ScalarVariable>
-  <!-- Index of variable = "72" -->
-  <ScalarVariable
-    name="sd2.flange_b.s"
-    valueReference="17"
-    description="Absolute position of flange"
-    >
-    <Real unit="m"/>
   </ScalarVariable>
   <!-- Index of variable = "73" -->
   <ScalarVariable
@@ -838,7 +844,7 @@
   <!-- Index of variable = "74" -->
   <ScalarVariable
     name="sd3.flange_a.s"
-    valueReference="18"
+    valueReference="17"
     description="Absolute position of flange"
     >
     <Real unit="m"/>
@@ -861,7 +867,7 @@
   <!-- Index of variable = "77" -->
   <ScalarVariable
     name="x2"
-    valueReference="19"
+    valueReference="18"
     >
     <Real/>
   </ScalarVariable>
@@ -871,9 +877,9 @@
     valueReference="0"
     description="Priority to use s and v as states"
     variability="fixed"
-    causality="parameter"
+    causality="calculatedParameter"
     >
-    <Enumeration declaredType="StateSelect" start="3"/>
+    <Enumeration declaredType="StateSelect"/>
   </ScalarVariable>
   <!-- Index of variable = "79" -->
   <ScalarVariable
@@ -935,17 +941,18 @@
       <Unknown index="4" dependencies="1 2 33 34" dependenciesKind="dependent dependent dependent dependent" />
     </Derivatives>
     <InitialUnknowns>
-      <Unknown index="1" dependencies="23 41 42" dependenciesKind="dependent dependent dependent" />
+      <Unknown index="1" dependencies="22 41 46" dependenciesKind="dependent dependent dependent" />
       <Unknown index="3" dependencies="2" dependenciesKind="dependent" />
-      <Unknown index="4" dependencies="2 16 23 33 38 41 42 51" dependenciesKind="dependent dependent dependent dependent dependent dependent dependent dependent" />
-      <Unknown index="15" dependencies="16 33 41 42 51" dependenciesKind="dependent dependent dependent dependent dependent" />
-      <Unknown index="37" dependencies="23" dependenciesKind="dependent" />
-      <Unknown index="43" dependencies="78" dependenciesKind="dependent" />
+      <Unknown index="4" dependencies="2 16 22 33 38 41 46 51" dependenciesKind="dependent dependent dependent dependent dependent dependent dependent dependent" />
+      <Unknown index="15" dependencies="16 33 41 46 51" dependenciesKind="dependent dependent dependent dependent dependent" />
+      <Unknown index="37" dependencies="22" dependenciesKind="dependent" />
+      <Unknown index="43" dependencies="42" dependenciesKind="dependent" />
       <Unknown index="44" dependencies="35" dependenciesKind="dependent" />
       <Unknown index="45" dependencies="47" dependenciesKind="dependent" />
       <Unknown index="48" dependencies="36" dependenciesKind="dependent" />
       <Unknown index="49" dependencies="52" dependenciesKind="dependent" />
-      <Unknown index="50" dependencies="23" dependenciesKind="dependent" />
+      <Unknown index="50" dependencies="22" dependenciesKind="dependent" />
+      <Unknown index="78" dependencies="" dependenciesKind="" />
       <Unknown index="79" dependencies="" dependenciesKind="" />
       <Unknown index="80" dependencies="" dependenciesKind="" />
       <Unknown index="81" dependencies="" dependenciesKind="" />
