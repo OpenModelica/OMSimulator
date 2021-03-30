@@ -2540,6 +2540,12 @@ oms_status_enu_t oms::System::solveAlgLoop(DirectedGraph& graph, int loopNumber)
 oms_status_enu_t oms::System::rename(const oms::ComRef& newCref)
 {
   this->cref = newCref;
+  this->renameConnectors();
+
+  // update subsystem connector owner
+  for (const auto &it : subsystems)
+    it.second->renameConnectors();
+
   return oms_status_ok;
 }
 
@@ -2557,6 +2563,7 @@ oms_status_enu_t oms::System::rename(const ComRef& cref, const ComRef& newCref)
   if (subsystem != subsystems.end())
   {
     subsystem->second->rename(tail, newCref);
+    subsystem->second->values.renameValues(newCref); // rename values in ssv files
     this->renameConnections(cref, newCref);
     subsystems[newCref] = subsystem->second;
     subsystems.erase(subsystem);  // delete the old cref from the lookup
@@ -2572,6 +2579,7 @@ oms_status_enu_t oms::System::rename(const ComRef& cref, const ComRef& newCref)
   if (component != components.end())
   {
     component->second->rename(newCref);
+    component->second->renameValues(newCref); // rename values in ssv files
     this->renameConnections(cref, newCref);
     components[newCref] = component->second;
     components.erase(component);  // delete the old cref from the lookup
@@ -2587,6 +2595,22 @@ oms_status_enu_t oms::System::renameConnections(const ComRef &cref, const ComRef
   for (const auto &connection : connections)
     if (connection)
       connection->rename(cref, newCref);
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::System::renameConnectors()
+{
+  // update the connector owner with new cref
+  for (const auto &connector : connectors)
+  {
+    if (connector)
+    {
+      exportConnectors[getFullCref() + connector->getName()] = exportConnectors[connector->getOwner() + connector->getName()]; // add newCref with value
+      exportConnectors.erase(connector->getOwner() + connector->getName()); // remove the old look up
+      connector->renameConnectors(getFullCref());
+    }
+  }
 
   return oms_status_ok;
 }

@@ -494,3 +494,36 @@ void oms::Values::importParameterMapping(const pugi::xml_node& parameterMapping)
       mappedEntry.insert(std::make_pair(source, it->attribute("target").as_string()));
   }
 }
+
+oms_status_enu_t oms::Values::renameValues(const oms::ComRef& newCref)
+{
+  // skip this if there is nothing to export
+  if (this->empty())
+    return oms_status_ok;
+
+  for (const auto &r : realStartValues)
+  {
+    ComRef tail(r.first);
+    ComRef front = tail.pop_front();
+    realStartValues[newCref + tail] = r.second; // update the newCref
+    realStartValues.erase(r.first); // delete the old cref
+  }
+
+  for (const auto &i : integerStartValues)
+  {
+    ComRef tail(i.first);
+    ComRef front = tail.pop_front();
+    integerStartValues[newCref + tail] = i.second; // update the newCref
+    integerStartValues.erase(i.first); // delete the old cref
+  }
+
+  for (const auto &b : booleanStartValues)
+  {
+    ComRef tail(b.first);
+    ComRef front = tail.pop_front();
+    integerStartValues[newCref + tail] = b.second; // update the newCref
+    integerStartValues.erase(b.first); // delete the old cref
+  }
+
+  return oms_status_ok;
+}

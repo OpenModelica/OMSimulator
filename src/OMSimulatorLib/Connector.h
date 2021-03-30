@@ -86,6 +86,8 @@ namespace oms
     bool isTypeInteger() const { return oms_signal_type_integer == type || oms_signal_type_enum == type; }
     bool isTypeBoolean() const { return oms_signal_type_boolean == type; }
 
+    oms_status_enu_t renameConnectors(const oms::ComRef& newCref);
+
   private:
     friend bool operator==(const Connector& v1, const Connector& v2);
     friend bool operator!=(const Connector& v1, const Connector& v2);

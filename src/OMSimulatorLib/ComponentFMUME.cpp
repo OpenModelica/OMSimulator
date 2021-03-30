@@ -1207,3 +1207,9 @@ void oms::ComponentFMUME::getFilteredSignals(std::vector<Connector>& filteredSig
       filteredSignals.push_back(allVariables[i].makeConnector(this->getFullCref()));
   }
 }
+
+oms_status_enu_t oms::ComponentFMUME::renameValues(const ComRef& newCref)
+{
+  return values.renameValues(newCref);
+}
+
