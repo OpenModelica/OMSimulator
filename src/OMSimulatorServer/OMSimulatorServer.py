@@ -35,6 +35,7 @@ class Server:
     self._context = zmq.Context()
     self._model = oms.importFile(model)
     self._mutex = threading.Lock()
+    self._start = False
     self._pause = interactive
     self._socket_rep = None
     self._socket_pub = None
@@ -50,6 +51,12 @@ class Server:
       self.print('flag --endpoint-rep is mandatory in interactive simulation mode')
       sys.exit(1)
 
+    # connect the PUB socket
+    if endpoint_pub:
+      self._socket_pub = self._context.socket(zmq.PUB)  #pylint: disable=no-member
+      self._socket_pub.connect(endpoint_pub)
+      self.print('PUB socket connected to {}'.format(endpoint_pub))
+
     # connet the REP socket
     if endpoint_rep:
       self._socket_rep = self._context.socket(zmq.REP)  #pylint: disable=no-member
@@ -58,22 +65,26 @@ class Server:
       self.print('REP socket connected to {}'.format(endpoint_rep))
       self._thread = threading.Thread(target=self._main, daemon=True)
       self._thread.start()
+      
+      # wait for start message from client
+      while True:
+        if self._start:
+          # send signals data when client is ready
+          self._signals = {}
+          signalFilter = self._model.exportSnapshot(':resources/signalFilter.xml')
+          root = ET.fromstring(signalFilter)
+          for var in root[0][0]:
+            name = var.attrib['name']
+            type_ = var.attrib['type']
+            kind = var.attrib['kind']
+            self._signals[name] = {'type': type_, 'kind': kind}
+          self.pub_msg('signals', self._signals)
+          break
+        else:
+          time.sleep(0.3)
 
-    # connect the PUB socket
-    if endpoint_pub:
-      self._socket_pub = self._context.socket(zmq.PUB)  #pylint: disable=no-member
-      self._socket_pub.connect(endpoint_pub)
-      self.print('PUB socket connected to {}'.format(endpoint_pub))
-
-    self._signals = {}
-    signalFilter = self._model.exportSnapshot(':resources/signalFilter.xml')
-    root = ET.fromstring(signalFilter)
-    for var in root[0][0]:
-      name = var.attrib['name']
-      type_ = var.attrib['type']
-      kind = var.attrib['kind']
-      self._signals[name] = {'type': type_, 'kind': kind}
-    self.pub_msg('signals', self._signals)
+    # run simulation thread
+    self.run()
 
   def print(self, msg):
     print('server:  {}'.format(msg), flush=True)
@@ -81,7 +92,10 @@ class Server:
   def pub_msg(self, topic, msg: dict):
     if self._socket_pub:
       msg_ = mogrify(topic, msg)
-      self._socket_pub.send_string(msg_)
+      try:
+        self._socket_pub.send_string(msg_)
+      except zmq.error.ZMQError as error:
+        self.print('Error publishing: ' + str(error))
 
   def _main(self):
     alive = True
@@ -89,7 +103,7 @@ class Server:
       try:
         msg = self._socket_rep.recv_json()
       except zmq.error.Again as error:
-        self.print('recv: ' + str(error))
+        #self.print('recv: ' + str(error))
         continue
 
       fcn = msg['fcn'] if 'fcn' in msg else ''
@@ -97,6 +111,9 @@ class Server:
 
       if 'simulation' == fcn:
         arg = msg['arg']
+        if 'start' == arg:
+          with self._mutex:
+            self._start = True
         if 'pause' == arg:
           with self._mutex:
             self._pause = True
@@ -108,7 +125,7 @@ class Server:
           with self._mutex:
             self._alive = False
 
-      answer = json.dumps({'status': 'ack' if ok else 'nack', 'fcn': fcn})
+      answer = {'status': 'ack' if ok else 'nack', 'fcn': fcn}
       try:
         self._socket_rep.send_json(answer)
       except zmq.error.ZMQError as error:
@@ -126,12 +143,11 @@ class Server:
     self._model.initialize()
 
     while True:
-      progress = math.floor((time_-startTime) / (stopTime-startTime) * 100)
-      self.pub_msg('status', {'progress': progress})
-
       if self._pause:
         time.sleep(0.3)
       else:
+        progress = math.floor((time_-startTime) / (stopTime-startTime) * 100)
+        self.pub_msg('status', {'progress': progress})
         with self._mutex:
           self._model.doStep()
           time_ = self._model.time
@@ -162,7 +178,6 @@ def _main():
     oms.setTempDirectory(args.temp)
 
   server = Server(args.model, args.result_file, args.interactive, args.endpoint_pub, args.endpoint_rep)
-  server.run()
 
 if __name__ == '__main__':
   _main()
