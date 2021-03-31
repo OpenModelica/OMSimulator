@@ -35,7 +35,6 @@ class Server:
     self._context = zmq.Context()
     self._model = oms.importFile(model)
     self._mutex = threading.Lock()
-    self._start = False
     self._pause = interactive
     self._socket_rep = None
     self._socket_pub = None
@@ -65,26 +64,16 @@ class Server:
       self.print('REP socket connected to {}'.format(endpoint_rep))
       self._thread = threading.Thread(target=self._main, daemon=True)
       self._thread.start()
-      
-      # wait for start message from client
-      while True:
-        if self._start:
-          # send signals data when client is ready
-          self._signals = {}
-          signalFilter = self._model.exportSnapshot(':resources/signalFilter.xml')
-          root = ET.fromstring(signalFilter)
-          for var in root[0][0]:
-            name = var.attrib['name']
-            type_ = var.attrib['type']
-            kind = var.attrib['kind']
-            self._signals[name] = {'type': type_, 'kind': kind}
-          self.pub_msg('signals', self._signals)
-          break
-        else:
-          time.sleep(0.3)
 
-    # run simulation thread
-    self.run()
+    # extract all available signals
+    self._signals = {}
+    signalFilter = self._model.exportSnapshot(':resources/signalFilter.xml')
+    root = ET.fromstring(signalFilter)
+    for var in root[0][0]:
+      name = var.attrib['name']
+      type_ = var.attrib['type']
+      kind = var.attrib['kind']
+      self._signals[name] = {'type': type_, 'kind': kind}
 
   def print(self, msg):
     print('server:  {}'.format(msg), flush=True)
@@ -107,25 +96,28 @@ class Server:
         continue
 
       fcn = msg['fcn'] if 'fcn' in msg else ''
-      ok = False
+      answer = {'status': 'nack', 'error': 'unknown'}
 
       if 'simulation' == fcn:
         arg = msg['arg']
-        if 'start' == arg:
-          with self._mutex:
-            self._start = True
         if 'pause' == arg:
           with self._mutex:
             self._pause = True
+          answer = {'status': 'ack'}
         elif 'continue' == arg:
           with self._mutex:
             self._pause = False
+          answer = {'status': 'ack'}
         elif 'end' == arg:
           alive = False
           with self._mutex:
             self._alive = False
+          answer = {'status': 'ack'}
+      elif 'signals' == fcn:
+        arg = msg['arg']
+        if 'available' == arg:
+          answer = {'status': 'ack', 'result', self._signals}
 
-      answer = {'status': 'ack' if ok else 'nack', 'fcn': fcn}
       try:
         self._socket_rep.send_json(answer)
       except zmq.error.ZMQError as error:
@@ -178,6 +170,8 @@ def _main():
     oms.setTempDirectory(args.temp)
 
   server = Server(args.model, args.result_file, args.interactive, args.endpoint_pub, args.endpoint_rep)
+  # run simulation thread
+  self.run()
 
 if __name__ == '__main__':
   _main()
