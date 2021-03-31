@@ -2563,6 +2563,7 @@ oms_status_enu_t oms::System::rename(const ComRef& cref, const ComRef& newCref)
   if (subsystem != subsystems.end())
   {
     subsystem->second->rename(tail, newCref);
+    subsystem->second->values.renameValues(newCref);
     this->renameConnections(cref, newCref);
     subsystems[newCref] = subsystem->second;
     subsystems.erase(subsystem);  // delete the old cref from the lookup
