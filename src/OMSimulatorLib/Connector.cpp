@@ -265,6 +265,16 @@ void oms::Connector::setName(const oms::ComRef& name)
   strcpy(this->name, str.c_str());
 }
 
+void oms::Connector::setOwner(const ComRef& owner)
+{
+  if (this->owner)
+    delete[] this->owner;
+
+  std::string str(owner);
+  this->owner = new char[str.size()+1];
+  strcpy(this->owner, str.c_str());
+}
+
 void oms::Connector::setGeometry(const oms::ssd::ConnectorGeometry *newGeometry)
 {
   if (this->geometry)
@@ -340,22 +350,4 @@ std::string oms::Connector::getCausalityString() const
   default:
     return std::string("unknown");
   }
-}
-
-oms_status_enu_t oms::Connector::renameConnectors(const ComRef& newCref)
-{
-  oms::ComRef tailA(this->owner);
-  tailA.pop_front();
-  tailA.pop_front();
-
-  std::string str(newCref);
-  // check for subsystems (e.g) model.root.foo => newCref + foo
-  if (!tailA.isEmpty())
-    std::string str(newCref + tailA);
-
-  if (this->owner) delete[] this->owner;
-  this->owner = new char[str.size()+1];
-  strcpy(this->owner, str.c_str());
-
-  return oms_status_ok;
 }

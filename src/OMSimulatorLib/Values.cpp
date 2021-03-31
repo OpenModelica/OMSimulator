@@ -497,10 +497,6 @@ void oms::Values::importParameterMapping(const pugi::xml_node& parameterMapping)
 
 oms_status_enu_t oms::Values::renameValues(const oms::ComRef& newCref)
 {
-  // skip this if there is nothing to export
-  if (this->empty())
-    return oms_status_ok;
-
   for (const auto &r : realStartValues)
   {
     ComRef tail(r.first);

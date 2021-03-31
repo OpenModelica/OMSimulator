@@ -122,7 +122,6 @@ namespace oms
 
     virtual void getFilteredSignals(std::vector<Connector>& filteredSignals) const = 0;
 
-    virtual oms_status_enu_t renameValues(const ComRef& newCref) { return oms_status_ok; }
 
   protected:
     Component(const ComRef& cref, oms_component_enu_t type, System* parentSystem, const std::string& path);
@@ -130,6 +129,8 @@ namespace oms
     // stop the compiler generating methods copying the object
     Component(Component const&);            ///< not implemented
     Component& operator=(Component const&); ///< not implemented
+
+    virtual oms_status_enu_t renameValues(const ComRef& newCref) { return oms_status_ok; }
 
   protected:
     DirectedGraph initialUnknownsGraph;

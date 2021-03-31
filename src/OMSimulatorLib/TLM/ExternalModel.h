@@ -74,7 +74,6 @@ namespace oms
     oms_status_enu_t removeSignalsFromResults(const char* regex);
 
     void getFilteredSignals(std::vector<Connector>& filteredSignals) const {}
-    oms_status_enu_t renameValues(const ComRef& newCref) {return oms_status_ok;}
 
   protected:
     ExternalModel(const oms::ComRef& cref, System* parentSystem, const std::string& path, const std::string& startscript);

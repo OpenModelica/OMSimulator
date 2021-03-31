@@ -67,6 +67,7 @@ namespace oms
     operator std::string() const {return std::string(name);}
 
     void setName(const oms::ComRef& name);
+    void setOwner(const oms::ComRef& owner);
     void setGeometry(const oms::ssd::ConnectorGeometry* newGeometry);
 
     const oms_causality_enu_t getCausality() const {return causality;}
@@ -85,8 +86,6 @@ namespace oms
     bool isTypeReal() const { return oms_signal_type_real == type; }
     bool isTypeInteger() const { return oms_signal_type_integer == type || oms_signal_type_enum == type; }
     bool isTypeBoolean() const { return oms_signal_type_boolean == type; }
-
-    oms_status_enu_t renameConnectors(const oms::ComRef& newCref);
 
   private:
     friend bool operator==(const Connector& v1, const Connector& v2);

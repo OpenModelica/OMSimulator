@@ -233,5 +233,6 @@ oms_status_enu_t oms::Component::deleteConnector(const ComRef& cref)
 oms_status_enu_t oms::Component::rename(const oms::ComRef& newCref)
 {
   this->cref = newCref;
+  this->renameValues(newCref); // rename values in ssv files (only for FMUs)
   return oms_status_ok;
 }

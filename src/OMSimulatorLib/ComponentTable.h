@@ -82,7 +82,6 @@ namespace oms
     oms_status_enu_t restoreState();
 
     void getFilteredSignals(std::vector<Connector>& filteredSignals) const;
-    oms_status_enu_t renameValues(const ComRef& newCref) {return oms_status_ok;}
 
   protected:
     ComponentTable(const ComRef& cref, System* parentSystem, const std::string& path);

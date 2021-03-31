@@ -2563,7 +2563,6 @@ oms_status_enu_t oms::System::rename(const ComRef& cref, const ComRef& newCref)
   if (subsystem != subsystems.end())
   {
     subsystem->second->rename(tail, newCref);
-    subsystem->second->values.renameValues(newCref); // rename values in ssv files
     this->renameConnections(cref, newCref);
     subsystems[newCref] = subsystem->second;
     subsystems.erase(subsystem);  // delete the old cref from the lookup
@@ -2579,7 +2578,6 @@ oms_status_enu_t oms::System::rename(const ComRef& cref, const ComRef& newCref)
   if (component != components.end())
   {
     component->second->rename(newCref);
-    component->second->renameValues(newCref); // rename values in ssv files
     this->renameConnections(cref, newCref);
     components[newCref] = component->second;
     components.erase(component);  // delete the old cref from the lookup
@@ -2608,7 +2606,7 @@ oms_status_enu_t oms::System::renameConnectors()
     {
       exportConnectors[getFullCref() + connector->getName()] = exportConnectors[connector->getOwner() + connector->getName()]; // add newCref with value
       exportConnectors.erase(connector->getOwner() + connector->getName()); // remove the old look up
-      connector->renameConnectors(getFullCref());
+      connector->setOwner(getFullCref());
     }
   }
 
