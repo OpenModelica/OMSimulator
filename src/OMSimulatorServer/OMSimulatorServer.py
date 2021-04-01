@@ -116,7 +116,7 @@ class Server:
       elif 'signals' == fcn:
         arg = msg['arg']
         if 'available' == arg:
-          answer = {'status': 'ack', 'result', self._signals}
+          answer = {'status': 'ack', 'result': self._signals}
 
       try:
         self._socket_rep.send_json(answer)
@@ -171,7 +171,7 @@ def _main():
 
   server = Server(args.model, args.result_file, args.interactive, args.endpoint_pub, args.endpoint_rep)
   # run simulation thread
-  self.run()
+  server.run()
 
 if __name__ == '__main__':
   _main()
