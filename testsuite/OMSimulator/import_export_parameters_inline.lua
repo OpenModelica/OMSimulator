@@ -118,8 +118,6 @@ oms_terminate("import_export_parameters")
 oms_delete("import_export_parameters")
 
 -- Result:
--- warning: [P: resources/0002_P.fmu] The FMU lists 0 initial unknowns but actually contains 1 initial unknowns as per the variable definitions.
--- info:    [P: resources/0002_P.fmu] The FMU contains bad initial unknowns. This might cause problems, e.g. wrong simulation results.
 -- error:   [addConnection] Connector addP.k1 is already connected to k_cref
 -- <?xml version="1.0"?>
 -- <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="import_export_parameters" version="1.0">
@@ -310,8 +308,6 @@ oms_delete("import_export_parameters")
 -- 	</ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>
 --
--- warning: [P: resources/0002_P.fmu] The FMU lists 0 initial unknowns but actually contains 1 initial unknowns as per the variable definitions.
--- info:    [P: resources/0002_P.fmu] The FMU contains bad initial unknowns. This might cause problems, e.g. wrong simulation results.
 -- info:    model doesn't contain any continuous state
 -- info:      Parameter settings
 -- info:      import_export_parameters.co_sim.addP.k1     : 10.0
@@ -350,6 +346,6 @@ oms_delete("import_export_parameters")
 -- info:      import_export_parameters.co_sim.k_cref      : 30.0
 -- info:      import_export_parameters.co_sim.Output_cref : -600.0
 -- info:      import_export_parameters.co_sim.foo.F_cref  : 40.0
--- info:    2 warnings
+-- info:    0 warnings
 -- info:    1 errors
 -- endResult

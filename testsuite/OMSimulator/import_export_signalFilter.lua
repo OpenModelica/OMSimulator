@@ -72,10 +72,6 @@ oms_delete("model")
 
 
 -- Result:
--- warning: [Gain: resources/0001_Gain.fmu] The FMU lists 0 initial unknowns but actually contains 1 initial unknowns as per the variable definitions.
--- info:    [Gain: resources/0001_Gain.fmu] The FMU contains bad initial unknowns. This might cause problems, e.g. wrong simulation results.
--- warning: [Gain: resources/0001_Gain.fmu] The FMU lists 0 initial unknowns but actually contains 1 initial unknowns as per the variable definitions.
--- info:    [Gain: resources/0001_Gain.fmu] The FMU contains bad initial unknowns. This might cause problems, e.g. wrong simulation results.
 -- <?xml version="1.0"?>
 -- <oms:snapshot
 --   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
@@ -281,6 +277,4 @@ oms_delete("model")
 -- "time", "model.root.Gain.u", "model.root.System2.Input_1", "model.root.Gain.k"
 -- 0, 0, 30, 1
 --
--- info:    2 warnings
--- info:    0 errors
 -- endResult

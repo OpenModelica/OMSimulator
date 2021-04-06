@@ -1,15 +1,15 @@
 {"format":"Transformational debugger info","version":1,
 "info":{"name":"ASSCExample.Class1","description":""},
 "variables":{
-"closeToMax":{"comment":"","kind":"variable","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"<interactive>","lineStart":6,"lineEnd":6,"colStart":5,"colEnd":20},"within":["Real"]}},
-"max":{"comment":"","kind":"variable","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"<interactive>","lineStart":4,"lineEnd":4,"colStart":5,"colEnd":46},"within":["Real"]}}
+"closeToMax":{"comment":"","kind":"variable","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"<interactive>","lineStart":6,"lineEnd":6,"colStart":5,"colEnd":20}}},
+"max":{"comment":"","kind":"variable","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"<interactive>","lineStart":4,"lineEnd":4,"colStart":5,"colEnd":46}}}
 },
 "equations":[{"eqIndex":0,"tag":"dummy"},
-{"eqIndex":1,"section":"initial","tag":"assign","defines":["eventTime"],"uses":[],"equation":["2.3"],"source":{"info":{"file":"<interactive>","lineStart":5,"lineEnd":5,"colStart":5,"colEnd":23},"within":["Real"]}},
+{"eqIndex":1,"section":"initial","tag":"assign","defines":["eventTime"],"uses":[],"equation":["2.3"],"source":{"info":{"file":"<interactive>","lineStart":5,"lineEnd":5,"colStart":5,"colEnd":23}}},
 {"eqIndex":2,"tag":"alias","equation":[4],"section":"initial"},
 {"eqIndex":3,"tag":"alias","equation":[5],"section":"initial"},
 {"eqIndex":4,"section":"regular","tag":"assign","defines":["max"],"uses":["time"],"equation":["if time < 2.3 then 2.0 else 5.0"],"source":{"info":{"file":"","lineStart":0,"lineEnd":0,"colStart":0,"colEnd":0}}},
-{"eqIndex":5,"section":"regular","tag":"assign","defines":["closeToMax"],"uses":["max"],"equation":["-0.1 + max"],"source":{"info":{"file":"<interactive>","lineStart":9,"lineEnd":9,"colStart":5,"colEnd":23},"within":["ASSCExample.Class1"]}},
+{"eqIndex":5,"section":"regular","tag":"assign","defines":["closeToMax"],"uses":["max"],"equation":["-0.1 + max"],"source":{"info":{"file":"<interactive>","lineStart":9,"lineEnd":9,"colStart":5,"colEnd":23}}},
 {"eqIndex":6,"tag":"alias","equation":[1],"section":"parameter"}
 ],
 "functions":[

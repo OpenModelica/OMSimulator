@@ -1,13 +1,13 @@
 {"format":"Transformational debugger info","version":1,
 "info":{"name":"Modelica.Blocks.Sources.Constant","description":"Generate constant signal of type Real"},
 "variables":{
-"y":{"comment":"Connector of Real output signal","kind":"variable","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"/home/andreas/workspace/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Interfaces.mo","lineStart":300,"lineEnd":301,"colStart":5,"colEnd":56},"within":["Real"]}},
-"$outputAlias_y":{"comment":"Connector of Real output signal","kind":"parameter","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"/home/andreas/workspace/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Interfaces.mo","lineStart":300,"lineEnd":301,"colStart":5,"colEnd":56},"within":["Real"]}}
+"y":{"comment":"Connector of Real output signal","kind":"variable","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"/home/andreas/workspace/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Interfaces.mo","lineStart":300,"lineEnd":301,"colStart":5,"colEnd":56}}},
+"$outputAlias_y":{"comment":"Connector of Real output signal","kind":"parameter","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"/home/andreas/workspace/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Interfaces.mo","lineStart":300,"lineEnd":301,"colStart":5,"colEnd":56}}}
 },
 "equations":[{"eqIndex":0,"tag":"dummy"},
 {"eqIndex":1,"tag":"alias","equation":[2],"section":"initial"},
 {"eqIndex":2,"section":"regular","tag":"assign","defines":["y"],"uses":["k"],"equation":["k"],"source":{"info":{"file":"","lineStart":0,"lineEnd":0,"colStart":0,"colEnd":0}}},
-{"eqIndex":3,"section":"parameter","tag":"assign","defines":["$outputAlias_y"],"uses":["k"],"equation":["k"],"source":{"info":{"file":"/home/andreas/workspace/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Interfaces.mo","lineStart":300,"lineEnd":301,"colStart":5,"colEnd":56},"within":["Real"]}}
+{"eqIndex":3,"section":"parameter","tag":"assign","defines":["$outputAlias_y"],"uses":["k"],"equation":["k"],"source":{"info":{"file":"/home/andreas/workspace/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Interfaces.mo","lineStart":300,"lineEnd":301,"colStart":5,"colEnd":56}}}
 ],
 "functions":[
 ]

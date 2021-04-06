@@ -65,8 +65,6 @@ oms_terminate("exportConnectors")
 oms_delete("exportConnectors")
 
 -- Result:
--- warning: [Gain: resources/0001_Gain.fmu] The FMU lists 0 initial unknowns but actually contains 1 initial unknowns as per the variable definitions.
--- info:    [Gain: resources/0001_Gain.fmu] The FMU contains bad initial unknowns. This might cause problems, e.g. wrong simulation results.
 -- info:  Before Setting Start Values
 -- info:      exportConnectors.Root.C1                    : 0.0
 -- info:      exportConnectors.Root.C3                    : 0.0
@@ -170,6 +168,4 @@ oms_delete("exportConnectors")
 -- 	</ssd:DefaultExperiment>
 -- </ssd:SystemStructureDescription>
 --
--- info:    1 warnings
--- info:    0 errors
 -- endResult

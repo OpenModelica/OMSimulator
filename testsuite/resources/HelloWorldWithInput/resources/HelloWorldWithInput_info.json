@@ -1,17 +1,17 @@
 {"format":"Transformational debugger info","version":1,
 "info":{"name":"HelloWorldWithInput","description":""},
 "variables":{
-"x":{"comment":"","kind":"state","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"<interactive>","lineStart":6,"lineEnd":6,"colStart":3,"colEnd":36},"within":["Real"]}},
-"der(x)":{"comment":"","kind":"derivative","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"<interactive>","lineStart":6,"lineEnd":6,"colStart":3,"colEnd":36},"within":["Real"]}},
-"u":{"comment":"","kind":"variable","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"<interactive>","lineStart":3,"lineEnd":3,"colStart":3,"colEnd":15},"within":["Real"]}},
-"u":{"comment":"","kind":"variable","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"<interactive>","lineStart":3,"lineEnd":3,"colStart":3,"colEnd":15},"within":["Real"]}},
-"a":{"comment":"","kind":"parameter","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"<interactive>","lineStart":4,"lineEnd":4,"colStart":3,"colEnd":24},"within":["Real"]}}
+"x":{"comment":"","kind":"state","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"<interactive>","lineStart":6,"lineEnd":6,"colStart":3,"colEnd":36}}},
+"der(x)":{"comment":"","kind":"derivative","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"<interactive>","lineStart":6,"lineEnd":6,"colStart":3,"colEnd":36}}},
+"u":{"comment":"","kind":"variable","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"<interactive>","lineStart":3,"lineEnd":3,"colStart":3,"colEnd":15}}},
+"u":{"comment":"","kind":"variable","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"<interactive>","lineStart":3,"lineEnd":3,"colStart":3,"colEnd":15}}},
+"a":{"comment":"","kind":"parameter","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"<interactive>","lineStart":4,"lineEnd":4,"colStart":3,"colEnd":24}}}
 },
 "equations":[{"eqIndex":0,"tag":"dummy"},
 {"eqIndex":1,"section":"initial","tag":"assign","defines":["x"],"uses":["x_start"],"equation":["x_start"],"source":{"info":{"file":"","lineStart":0,"lineEnd":0,"colStart":0,"colEnd":0}}},
 {"eqIndex":2,"tag":"alias","equation":[3],"section":"initial"},
-{"eqIndex":3,"section":"regular","tag":"assign","defines":["der(x)"],"uses":["u","x","a"],"equation":["a * x + u"],"source":{"info":{"file":"<interactive>","lineStart":8,"lineEnd":8,"colStart":3,"colEnd":19},"within":["HelloWorldWithInput"]}},
-{"eqIndex":4,"section":"start","tag":"assign","defines":["$START.x"],"uses":["x_start"],"equation":["x_start"],"source":{"info":{"file":"<interactive>","lineStart":6,"lineEnd":6,"colStart":3,"colEnd":36},"within":["Real"]}}
+{"eqIndex":3,"section":"regular","tag":"assign","defines":["der(x)"],"uses":["u","x","a"],"equation":["a * x + u"],"source":{"info":{"file":"<interactive>","lineStart":8,"lineEnd":8,"colStart":3,"colEnd":19}}},
+{"eqIndex":4,"section":"start","tag":"assign","defines":["$START.x"],"uses":["x_start"],"equation":["x_start"],"source":{"info":{"file":"<interactive>","lineStart":6,"lineEnd":6,"colStart":3,"colEnd":36}}}
 ],
 "functions":[
 ]

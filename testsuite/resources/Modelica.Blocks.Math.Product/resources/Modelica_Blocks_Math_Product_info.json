@@ -1,13 +1,13 @@
 {"format":"Transformational debugger info","version":1,
 "info":{"name":"Modelica.Blocks.Math.Product","description":"Output product of the two inputs"},
 "variables":{
-"u1":{"comment":"Connector of Real input signal 1","kind":"variable","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"/home/andreas/workspace/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Interfaces.mo","lineStart":342,"lineEnd":343,"colStart":5,"colEnd":57},"within":["Real"]}},
-"y":{"comment":"Connector of Real output signal","kind":"variable","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"/home/andreas/workspace/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Interfaces.mo","lineStart":346,"lineEnd":347,"colStart":5,"colEnd":56},"within":["Real"]}},
-"u1":{"comment":"Connector of Real input signal 1","kind":"variable","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"/home/andreas/workspace/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Interfaces.mo","lineStart":342,"lineEnd":343,"colStart":5,"colEnd":57},"within":["Real"]}}
+"u1":{"comment":"Connector of Real input signal 1","kind":"variable","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"/home/andreas/workspace/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Interfaces.mo","lineStart":342,"lineEnd":343,"colStart":5,"colEnd":57}}},
+"y":{"comment":"Connector of Real output signal","kind":"variable","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"/home/andreas/workspace/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Interfaces.mo","lineStart":346,"lineEnd":347,"colStart":5,"colEnd":56}}},
+"u1":{"comment":"Connector of Real input signal 1","kind":"variable","type":"Real","unit":"","displayUnit":"","source":{"info":{"file":"/home/andreas/workspace/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Interfaces.mo","lineStart":342,"lineEnd":343,"colStart":5,"colEnd":57}}}
 },
 "equations":[{"eqIndex":0,"tag":"dummy"},
 {"eqIndex":1,"tag":"alias","equation":[2],"section":"initial"},
-{"eqIndex":2,"section":"regular","tag":"assign","defines":["y"],"uses":["u2","u1"],"equation":["u1 * u2"],"source":{"info":{"file":"/home/andreas/workspace/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Math.mo","lineStart":1037,"lineEnd":1037,"colStart":5,"colEnd":14},"within":["Modelica.Blocks.Math.Product"]}}
+{"eqIndex":2,"section":"regular","tag":"assign","defines":["y"],"uses":["u2","u1"],"equation":["u1 * u2"],"source":{"info":{"file":"/home/andreas/workspace/OpenModelica/build/lib/omlibrary/Modelica 3.2.3/Blocks/Math.mo","lineStart":1037,"lineEnd":1037,"colStart":5,"colEnd":14}}}
 ],
 "functions":[
 ]
