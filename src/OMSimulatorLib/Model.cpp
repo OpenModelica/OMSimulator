@@ -179,7 +179,7 @@ oms_status_enu_t oms::Model::loadSnapshot(const pugi::xml_node& node)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Model::importSnapshot(const char* snapshot_)
+oms_status_enu_t oms::Model::importSnapshot(const char* snapshot_, char** newCref)
 {
   if (!validState(oms_modelState_virgin))
     return logError_ModelInWrongState(getCref());
@@ -187,6 +187,9 @@ oms_status_enu_t oms::Model::importSnapshot(const char* snapshot_)
   Snapshot snapshot;
   snapshot.import(snapshot_);
   //snapshot.debugPrintAll();
+
+  // set the newCref for the snapshot, this should be done here at the top before importing fullsnapshot, as the newcref will be overwritten by oldcref
+  *newCref = mallocAndCopyString(snapshot.getNewCref());
 
   if (snapshot.isPartialSnapshot())
   {
