@@ -71,6 +71,7 @@ print(snapshot)
 -- Case 1 - reference
 -- <?xml version="1.0"?>
 -- <oms:snapshot
+--   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
 --   partial="false">
 --   <oms:file
 --     name="SystemStructure.ssd">
@@ -233,6 +234,7 @@ print(snapshot)
 -- Case 1 - re-imported
 -- <?xml version="1.0"?>
 -- <oms:snapshot
+--   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
 --   partial="false">
 --   <oms:file
 --     name="SystemStructure.ssd">
@@ -395,6 +397,7 @@ print(snapshot)
 -- Case 2 - re-imported
 -- <?xml version="1.0"?>
 -- <oms:snapshot
+--   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
 --   partial="false">
 --   <oms:file
 --     name="SystemStructure.ssd">
@@ -527,6 +530,7 @@ print(snapshot)
 -- Case 3 - re-imported
 -- <?xml version="1.0"?>
 -- <oms:snapshot
+--   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
 --   partial="false">
 --   <oms:file
 --     name="SystemStructure.ssd">
@@ -664,6 +668,7 @@ print(snapshot)
 -- Case 4 - re-imported
 -- <?xml version="1.0"?>
 -- <oms:snapshot
+--   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
 --   partial="false">
 --   <oms:file
 --     name="SystemStructure.ssd">
@@ -796,6 +801,7 @@ print(snapshot)
 -- Case 5 - re-imported
 -- <?xml version="1.0"?>
 -- <oms:snapshot
+--   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
 --   partial="false">
 --   <oms:file
 --     name="SystemStructure.ssd">

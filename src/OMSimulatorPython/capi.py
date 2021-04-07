@@ -52,7 +52,7 @@ class capi:
     self.obj.oms_export.restype = ctypes.c_int
     self.obj.oms_exportDependencyGraphs.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_exportDependencyGraphs.restype = ctypes.c_int
-    self.obj.oms_exportSnapshot.argtypes = [ctypes.c_char_p]
+    self.obj.oms_exportSnapshot.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_char_p)]
     self.obj.oms_exportSnapshot.restype = ctypes.c_int
     self.obj.oms_exportSSMTemplate.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_exportSSMTemplate.restype = ctypes.c_int
