@@ -179,7 +179,7 @@ oms_status_enu_t oms::Model::loadSnapshot(const pugi::xml_node& node)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Model::importSnapshot(const oms::ComRef& cref, const char* snapshot_)
+oms_status_enu_t oms::Model::importSnapshot(const char* snapshot_)
 {
   if (!validState(oms_modelState_virgin))
     return logError_ModelInWrongState(getCref());
@@ -193,7 +193,7 @@ oms_status_enu_t oms::Model::importSnapshot(const oms::ComRef& cref, const char*
     char* fullsnapshot;
     // get full snapshot
     exportSnapshot("", &fullsnapshot);
-    snapshot.importPartialSnapshot(cref, fullsnapshot);
+    snapshot.importPartialSnapshot(fullsnapshot);
     free(fullsnapshot);
   }
 

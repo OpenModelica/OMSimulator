@@ -66,7 +66,7 @@ namespace oms
     pugi::xml_node getTemplateResourceNodeSSV(const filesystem::path& filename);
     pugi::xml_node getTemplateResourceNodeSignalFilter(const filesystem::path& filename);
     oms_status_enu_t exportPartialSnapshot(const ComRef& cref, Snapshot& partialSnapshot);
-    oms_status_enu_t importPartialSnapshot(const ComRef& cref, const char* fullsnapshot);
+    oms_status_enu_t importPartialSnapshot(const char* fullsnapshot);
 
     void debugPrintNode(const filesystem::path& filename) const;
     void debugPrintAll() const;

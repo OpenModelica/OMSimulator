@@ -32,7 +32,7 @@ snapshot = oms_exportSnapshot("snapshot:SystemStructure.ssd")
 oms_delete("snapshot.root.add")
 
 print("Case 2 - re-imported")
-newcref, status = oms_importSnapshot("snapshot:SystemStructure.ssd", snapshot)
+newcref, status = oms_importSnapshot("snapshot", snapshot)
 snapshot = oms_exportSnapshot("snapshot")
 print(snapshot)
 
@@ -42,7 +42,7 @@ snapshot = oms_exportSnapshot("snapshot:resources/snapshot.ssv")
 oms_setReal("snapshot.root.add.u1", 10)
 
 print("Case 3 - re-imported")
-newcref, status = oms_importSnapshot("snapshot:resources/snapshot.ssv", snapshot)
+newcref, status = oms_importSnapshot("snapshot", snapshot)
 snapshot = oms_exportSnapshot("snapshot")
 print(snapshot)
 
@@ -51,7 +51,7 @@ snapshot = oms_exportSnapshot("snapshot.root:SystemStructure.ssd")
 oms_delete("snapshot.root.add")
 
 print("Case 4 - re-imported")
-newcref, status = oms_importSnapshot("snapshot.root:SystemStructure.ssd", snapshot)
+newcref, status = oms_importSnapshot("snapshot", snapshot)
 snapshot = oms_exportSnapshot("snapshot")
 print(snapshot)
 
@@ -59,7 +59,7 @@ print(snapshot)
 snapshot = oms_exportSnapshot("snapshot.root.add:SystemStructure.ssd")
 
 print("Case 5 - re-imported")
-newcref, status = oms_importSnapshot("snapshot.root.add:SystemStructure.ssd", snapshot)
+newcref, status = oms_importSnapshot("snapshot", snapshot)
 snapshot = oms_exportSnapshot("snapshot")
 print(snapshot)
 

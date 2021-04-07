@@ -277,11 +277,8 @@ oms_status_enu_t oms::Snapshot::exportPartialSnapshot(const ComRef& cref, Snapsh
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Snapshot::importPartialSnapshot(const ComRef& cref, const char* fullsnapshot)
+oms_status_enu_t oms::Snapshot::importPartialSnapshot(const char* fullsnapshot)
 {
-  ComRef subCref(cref);
-  std::string suffix = subCref.pop_suffix();
-
   // copy the partial snapshot to new doc
   pugi::xml_document copy;
   copy.append_copy(doc.first_child());
@@ -291,16 +288,16 @@ oms_status_enu_t oms::Snapshot::importPartialSnapshot(const ComRef& cref, const 
 
   pugi::xml_node partialsnapshot = copy.document_element(); // oms:snapshot
   std::string partialSnapshotfilename = partialsnapshot.child(oms::ssp::Version1_0::oms_file).attribute("name").as_string();
+  std::string nodeName = partialsnapshot.child(oms::ssp::Version1_0::oms_file).attribute("node").as_string();
 
   // copy only single file
-  if (!suffix.empty() && subCref.isEmpty())
+  if (!partialSnapshotfilename.empty() && nodeName.empty())
   {
     pugi::xml_node oms_snapshot = doc.document_element(); // oms:snapshot
     for (pugi::xml_node node : oms_snapshot.children())
     {
       std::string filename = node.attribute("name").as_string();
-      //if ((filename == partialSnapshotfilename) && (filename == cref.c_str()))
-      if (filename == suffix && filename == partialSnapshotfilename)
+      if (filename == partialSnapshotfilename)
       {
         oms_snapshot.remove_child(node);
         // replace with partialsnapshot
@@ -309,10 +306,13 @@ oms_status_enu_t oms::Snapshot::importPartialSnapshot(const ComRef& cref, const 
     }
   }
 
-  // check cref if to filter component: subCref
-  if (!subCref.isEmpty() && !suffix.empty())
+  // check node name if to filter component: subCref
+  if (!partialSnapshotfilename.empty() && !nodeName.empty())
   {
-    ComRef tail(subCref);
+    ComRef ident = ComRef(nodeName);
+    ident.pop_front(); // remove model name
+
+    ComRef tail(ident);
     ComRef front = tail.pop_front();
 
     // get SystemStructure.ssd
