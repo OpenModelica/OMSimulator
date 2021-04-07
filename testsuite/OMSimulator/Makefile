@@ -10,6 +10,7 @@ exportConnectorsToResultFile.lua \
 exportSSMTemplate.lua \
 exportSSMTemplate.py \
 exportSSVTemplate.lua \
+exportSnapshotSSP.lua \
 import_export_parameters_inline.lua \
 import_export_parameters_to_ssv.lua \
 import_export_signalFilter.lua \

@@ -62,7 +62,8 @@ namespace oms
     virtual ~Component();
 
     virtual oms_status_enu_t addSignalsToResults(const char* regex) = 0;
-    virtual oms_status_enu_t exportToSSD(pugi::xml_node& node, pugi::xml_node& ssvNode, Snapshot& snapshot) const = 0;
+    virtual oms_status_enu_t exportToSSD(pugi::xml_node& node, Snapshot& snapshot) const = 0;
+    virtual oms_status_enu_t exportToSSV(pugi::xml_node& ssvNode) { return logError_NotImplemented; }
     virtual oms_status_enu_t initialize() = 0;
     virtual oms_status_enu_t instantiate() = 0;
     virtual oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultFile) = 0;

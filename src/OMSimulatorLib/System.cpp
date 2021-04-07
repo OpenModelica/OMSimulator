@@ -396,7 +396,7 @@ oms_status_enu_t oms::System::listUnconnectedConnectors(char** contents) const
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::System::exportToSSD(pugi::xml_node& node, pugi::xml_node& ssvNode, Snapshot& snapshot) const
+oms_status_enu_t oms::System::exportToSSD(pugi::xml_node& node, Snapshot& snapshot) const
 {
   node.append_attribute("name") = this->getCref().c_str();
 
@@ -414,14 +414,10 @@ oms_status_enu_t oms::System::exportToSSD(pugi::xml_node& node, pugi::xml_node& 
     }
   }
 
-  // export top level parameter bindings
-  if (Flags::ExportParametersInline()) // export as inline
+  // export as inline
+  if (Flags::ExportParametersInline())
   {
     values.exportToSSD(node);
-  }
-  else
-  {
-    values.exportToSSV(ssvNode); // export to ssv file
   }
 
   if (subelements.size() > 1)
@@ -430,13 +426,13 @@ oms_status_enu_t oms::System::exportToSSD(pugi::xml_node& node, pugi::xml_node& 
     for (const auto& subsystem : subsystems)
     {
       pugi::xml_node system_node = elements_node.append_child(oms::ssp::Draft20180219::ssd::system);
-      if (oms_status_ok != subsystem.second->exportToSSD(system_node, ssvNode, snapshot))
+      if (oms_status_ok != subsystem.second->exportToSSD(system_node, snapshot))
         return logError("export of system failed");
     }
     for (const auto& component : components)
     {
       pugi::xml_node component_node = elements_node.append_child(oms::ssp::Draft20180219::ssd::component);
-      if (oms_status_ok != component.second->exportToSSD(component_node, ssvNode, snapshot))
+      if (oms_status_ok != component.second->exportToSSD(component_node, snapshot))
         return logError("export of component failed");
     }
   }
@@ -502,6 +498,21 @@ oms_status_enu_t oms::System::exportToSSD(pugi::xml_node& node, pugi::xml_node& 
   //export ssd:SimulationInformation to end, in order to make it valid with easy-ssp
   if (oms_status_ok != this->exportToSSD_SimulationInformation(oms_annotation_node))
     return logError("export of system SimulationInformation failed");
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::System::exportToSSV(Snapshot& snapshot) const
+{
+  pugi::xml_node ssvNode = snapshot.getTemplateResourceNodeSSV("resources/" + std::string(parentModel->getCref()) + ".ssv", "parameters");
+
+  values.exportToSSV(ssvNode);
+
+  for (const auto& subsystem : subsystems)
+    subsystem.second->values.exportToSSV(ssvNode);
+
+  for (const auto& component : components)
+    component.second->exportToSSV(ssvNode);
 
   return oms_status_ok;
 }

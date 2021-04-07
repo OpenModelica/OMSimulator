@@ -179,32 +179,44 @@ void oms::Snapshot::debugPrintAll() const
   doc.save(std::cout, "  ", pugi::format_indent|pugi::format_indent_attributes, pugi::encoding_utf8);
 }
 
-pugi::xml_node oms::Snapshot::getTemplateResourceNodeSSD(const filesystem::path& filename)
+pugi::xml_node oms::Snapshot::getTemplateResourceNodeSSD(const filesystem::path& filename, const ComRef& cref)
 {
   pugi::xml_node new_node = newResourceNode(filename);
-  new_node.append_attribute("xmlns:ssc") = "http://ssp-standard.org/SSP1/SystemStructureCommon";
-  new_node.append_attribute("xmlns:ssd") = "http://ssp-standard.org/SSP1/SystemStructureDescription";
-  new_node.append_attribute("xmlns:ssv") = "http://ssp-standard.org/SSP1/SystemStructureParameterValues";
-  new_node.append_attribute("xmlns:ssm") = "http://ssp-standard.org/SSP1/SystemStructureParameterMapping";
-  new_node.append_attribute("xmlns:ssb") = "http://ssp-standard.org/SSP1/SystemStructureSignalDictionary";
-  new_node.append_attribute("xmlns:oms") = "https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd";
-  // new_node.append_attribute("name") = this->getCref().c_str();
-  new_node.append_attribute("version") = "1.0";
+  pugi::xml_node ssdNode = new_node.append_child(oms::ssp::Draft20180219::ssd::system_structure_description);
+  ssdNode.append_attribute("xmlns:ssc") = "http://ssp-standard.org/SSP1/SystemStructureCommon";
+  ssdNode.append_attribute("xmlns:ssd") = "http://ssp-standard.org/SSP1/SystemStructureDescription";
+  ssdNode.append_attribute("xmlns:ssv") = "http://ssp-standard.org/SSP1/SystemStructureParameterValues";
+  ssdNode.append_attribute("xmlns:ssm") = "http://ssp-standard.org/SSP1/SystemStructureParameterMapping";
+  ssdNode.append_attribute("xmlns:ssb") = "http://ssp-standard.org/SSP1/SystemStructureSignalDictionary";
+  ssdNode.append_attribute("xmlns:oms") = "https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd";
+  ssdNode.append_attribute("name") = cref.c_str();
+  ssdNode.append_attribute("version") = "1.0";
 
-  return new_node;
+  return ssdNode;
 }
 
-pugi::xml_node oms::Snapshot::getTemplateResourceNodeSSV(const filesystem::path& filename)
+pugi::xml_node oms::Snapshot::getTemplateResourceNodeSSV(const filesystem::path& filename, const std::string& cref)
 {
   pugi::xml_node new_node = newResourceNode(filename);
   pugi::xml_node node_parameterset = new_node.append_child(oms::ssp::Version1_0::ssv::parameter_set);
   node_parameterset.append_attribute("xmlns:ssc") = "http://ssp-standard.org/SSP1/SystemStructureCommon";
   node_parameterset.append_attribute("xmlns:ssv") = "http://ssp-standard.org/SSP1/SystemStructureParameterValues";
   node_parameterset.append_attribute("version") = "1.0";
-  node_parameterset.append_attribute("name") = "parameters";
+  node_parameterset.append_attribute("name") = cref.c_str();
   pugi::xml_node node_parameters = node_parameterset.append_child(oms::ssp::Version1_0::ssv::parameters);
 
   return node_parameters;
+}
+
+pugi::xml_node oms::Snapshot::getTemplateResourceNodeSSM(const filesystem::path& filename)
+{
+  pugi::xml_node new_node = newResourceNode(filename);
+  pugi::xml_node node_parameterMapping = new_node.append_child(oms::ssp::Version1_0::ssm::parameter_mapping);
+  node_parameterMapping.append_attribute("xmlns:ssc") = "http://ssp-standard.org/SSP1/SystemStructureCommon";
+  node_parameterMapping.append_attribute("xmlns:ssm") = "http://ssp-standard.org/SSP1/SystemStructureParameterMapping";
+  node_parameterMapping.append_attribute("version") = "1.0";
+
+  return node_parameterMapping;
 }
 
 pugi::xml_node oms::Snapshot::getTemplateResourceNodeSignalFilter(const filesystem::path& filename)

@@ -73,23 +73,23 @@ namespace oms
     oms_status_enu_t rename(const ComRef& cref, const ComRef& newCref);
     oms_status_enu_t list(const ComRef& cref, char** contents);
     oms_status_enu_t addSystem(const ComRef& cref, oms_system_enu_t type);
-    oms_status_enu_t exportToSSD(pugi::xml_node& node, pugi::xml_node& ssvNode, Snapshot& snapshot) const;
+    oms_status_enu_t exportToSSD(Snapshot& snapshot) const;
     oms_status_enu_t exportSnapshot(const ComRef& cref, char** contents);
     oms_status_enu_t exportSSVTemplate(const ComRef& cref, const std::string& filename);
     oms_status_enu_t exportSSMTemplate(const ComRef& cref, const std::string& filename);
-    void exportSignalFilter(pugi::xml_node &signalfilter) const;
+    void exportSignalFilter(Snapshot& snapshot) const;
     oms_status_enu_t importFromSnapshot(const Snapshot& snapshot);
     oms_status_enu_t importSnapshot(const char* snapshot, char** newCref);
     oms_status_enu_t importSignalFilter(const std::string& filename, const Snapshot& snapshot);
     oms_status_enu_t exportToFile(const std::string& filename) const;
     oms_system_enu_t getSystemType(const pugi::xml_node& node, const std::string& sspVersion);
     oms_system_enu_t getSystemTypeHelper(const pugi::xml_node& node, const std::string& sspVersion);
-    oms_status_enu_t updateParameterBindingsToSSD(pugi::xml_node& node, pugi::xml_node& ssvNode, bool isTopSystemOrModel) const;
+    oms_status_enu_t updateParameterBindingsToSSD(pugi::xml_node& node, bool isTopSystemOrModel) const;
     void copyResources(bool copy_resources) {this->copy_resources = copy_resources;}
     bool copyResources() {return copy_resources;}
 
     oms::Element** getElements() {return &elements[0];}
-    void getAllResources(std::vector<std::string>& resources) const;
+    void getAllResources(std::vector<std::string>& resources, Snapshot& snapshot) const;
 
     oms_status_enu_t instantiate();
     oms_status_enu_t initialize();
