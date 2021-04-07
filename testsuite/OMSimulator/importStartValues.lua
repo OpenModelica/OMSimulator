@@ -33,6 +33,7 @@ oms_delete("importStartValues")
 -- warning: Wrong/deprecated content detected but successfully loaded. Please re-export the SSP file to avoid this message.
 -- <?xml version="1.0"?>
 -- <oms:snapshot
+--   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
 --   partial="false">
 --   <oms:file
 --     name="SystemStructure.ssd">

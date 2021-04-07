@@ -41,6 +41,7 @@ oms::Snapshot::Snapshot(bool partial)
   // set the document with the root node <oms:snapshot>
   doc.append_child(oms::ssp::Version1_0::snap_shot);
   pugi::xml_node oms_snapshot = doc.document_element();
+  oms_snapshot.append_attribute("xmlns:oms") = "https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd";
   oms_snapshot.append_attribute("partial") = partial ? "true" : "false";
 }
 

@@ -84,6 +84,12 @@ class Model:
     if Types.Status(status) != Types.Status.OK:
       raise Exception('error {}'.format(Types.Status(status)))
 
+  def exportSnapshot(self, ident: str):
+    contents, status = Scope._capi.exportSnapshot(self.cref + '.' + ident)
+    if Types.Status(status) != Types.Status.OK:
+      raise Exception('error {}'.format(Types.Status(status)))
+    return contents
+
   @property
   def cref(self):
     return self._cref
