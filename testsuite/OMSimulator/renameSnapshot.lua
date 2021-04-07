@@ -56,6 +56,7 @@ print(snapshot)
 -- Case 1 - reference
 -- <?xml version="1.0"?>
 -- <oms:snapshot
+--   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
 --   partial="false">
 --   <oms:file
 --     name="SystemStructure.ssd">
@@ -253,6 +254,7 @@ print(snapshot)
 -- Case 2 - rename System
 -- <?xml version="1.0"?>
 -- <oms:snapshot
+--   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
 --   partial="false">
 --   <oms:file
 --     name="SystemStructure.ssd">
@@ -450,6 +452,7 @@ print(snapshot)
 -- Case 3 - rename subSystem
 -- <?xml version="1.0"?>
 -- <oms:snapshot
+--   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
 --   partial="false">
 --   <oms:file
 --     name="SystemStructure.ssd">
@@ -647,6 +650,7 @@ print(snapshot)
 -- Case 4 - rename subModules
 -- <?xml version="1.0"?>
 -- <oms:snapshot
+--   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
 --   partial="false">
 --   <oms:file
 --     name="SystemStructure.ssd">
