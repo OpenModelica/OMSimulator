@@ -122,7 +122,6 @@ namespace oms
 
     virtual void getFilteredSignals(std::vector<Connector>& filteredSignals) const = 0;
 
-
   protected:
     Component(const ComRef& cref, oms_component_enu_t type, System* parentSystem, const std::string& path);
 

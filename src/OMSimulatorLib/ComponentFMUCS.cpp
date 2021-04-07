@@ -1251,5 +1251,5 @@ void oms::ComponentFMUCS::getFilteredSignals(std::vector<Connector>& filteredSig
 
 oms_status_enu_t oms::ComponentFMUCS::renameValues(const ComRef& newCref)
 {
-  return values.renameValues(newCref);
+  return values.rename(newCref);
 }

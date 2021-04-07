@@ -495,7 +495,7 @@ void oms::Values::importParameterMapping(const pugi::xml_node& parameterMapping)
   }
 }
 
-oms_status_enu_t oms::Values::renameValues(const oms::ComRef& newCref)
+oms_status_enu_t oms::Values::rename(const oms::ComRef& newCref)
 {
   for (const auto &r : realStartValues)
   {
