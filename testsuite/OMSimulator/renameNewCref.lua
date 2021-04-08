@@ -39,6 +39,9 @@ systemSnapshot = [[
     </oms:snapshot>
 ]]
 
+newcref, status = oms_importSnapshot("model", systemSnapshot)
+print(newcref)
+
 componentSnapshot = [[
     <?xml version="1.0"?>
     <oms:snapshot
@@ -79,13 +82,8 @@ componentSnapshot = [[
     </oms:snapshot>
 ]]
 
-newcref, status = oms_importSnapshot("model", systemSnapshot)
-print(newcref)
-
 newcref, status = oms_importSnapshot("model", componentSnapshot)
 print(newcref)
-
-
 
 -- Result:
 -- root_3
