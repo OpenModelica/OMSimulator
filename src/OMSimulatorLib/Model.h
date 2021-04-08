@@ -125,6 +125,8 @@ namespace oms
 
     oms_status_enu_t loadSnapshot(const pugi::xml_node& node);
 
+    oms_status_enu_t setNewCref(const std::string& cref, char** newCref);
+
   private: // methods
     Model(const ComRef& cref, const std::string& tempDir);
 

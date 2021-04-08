@@ -11,45 +11,16 @@ oms_newModel("model")
 oms_addSystem("model.root", oms_system_wc)
 oms_addSubModel("model.root.gain", "../resources/Modelica.Blocks.Math.Gain.fmu")
 
+-- error snapshot as subcomponent gain is missing
 systemSnapshot = [[
-  <?xml version="1.0"?>
+    <?xml version="1.0"?>
     <oms:snapshot
       partial="true">
       <oms:file
         name="SystemStructure.ssd"
         node="model.root">
         <ssd:System
-          name="root">
-          <ssd:Elements>
-            <ssd:Component
-              name="gain"
-              type="application/x-fmu-sharedlibrary"
-              source="resources/0001_gain.fmu">
-              <ssd:Connectors>
-                <ssd:Connector
-                  name="u"
-                  kind="input">
-                  <ssc:Real />
-                  <ssd:ConnectorGeometry
-                    x="0.000000"
-                    y="0.500000" />
-                </ssd:Connector>
-                <ssd:Connector
-                  name="y"
-                  kind="output">
-                  <ssc:Real />
-                  <ssd:ConnectorGeometry
-                    x="1.000000"
-                    y="0.500000" />
-                </ssd:Connector>
-                <ssd:Connector
-                  name="k"
-                  kind="parameter">
-                  <ssc:Real />
-                </ssd:Connector>
-              </ssd:Connectors>
-            </ssd:Component>
-          </ssd:Elements>
+          name="root_3">
           <ssd:Annotations>
             <ssc:Annotation
               type="org.openmodelica">
@@ -67,7 +38,8 @@ systemSnapshot = [[
         </ssd:System>
       </oms:file>
     </oms:snapshot>
-  ]]
+]]
+
 
 newcref, status = oms_importSnapshot("model", systemSnapshot)
 print(newcref)
@@ -111,12 +83,15 @@ componentSnapshot = [[
       </oms:file>
     </oms:snapshot>
 ]]
-
+-- error case, gain_1 cannot be set as newCref because snapshot does not have
 newcref, status = oms_importSnapshot("model", componentSnapshot)
 print(newcref)
 
 
 -- Result:
--- root
--- gain_1
+-- root_3
+-- error:   [setNewCref] NewCref not set for "gain_1" as it could not be associated with snapshot
+-- 
+-- info:    0 warnings
+-- info:    1 errors
 -- endResult
