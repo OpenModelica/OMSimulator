@@ -225,14 +225,10 @@ oms::ComRef oms::Snapshot::getRootCref() const
     if ("SystemStructure.ssd" != it.attribute("name").as_string())
       continue;
 
-    oms::ComRef rootCref(it.attribute("node").as_string());
-    oms::ComRef newCref(it.first_child().attribute("name").as_string());
-    // TODO: FIX
-
-    return newCref;
+    return oms::ComRef(it.first_child().attribute("name").as_string());
   }
 
-  return "";
+  return oms::ComRef();
 }
 
 oms_status_enu_t oms::Snapshot::exportPartialSnapshot(const ComRef& cref, Snapshot& partialSnapshot)

@@ -191,7 +191,7 @@ oms_status_enu_t oms::Model::importSnapshot(const char* snapshot_, char** newCre
   // get the new root cref from the snapshot, this should be done here
   // at the top before importing the full snapshot, as the new cref
   // will be overwritten
-  oms::ComRef rootCref = snapshot.getRootCref();
+  new_root_cref = snapshot.getRootCref();
 
   if (snapshot.isPartialSnapshot())
   {
@@ -219,7 +219,7 @@ oms_status_enu_t oms::Model::importSnapshot(const char* snapshot_, char** newCre
 
   bool old_copyResources = copyResources();
   copyResources(false);
-  oms_status_enu_t status = importFromSnapshot(snapshot, rootCref, newCref);
+  oms_status_enu_t status = importFromSnapshot(snapshot);
   copyResources(old_copyResources);
 
   if (oms_status_ok != status)
@@ -233,6 +233,9 @@ oms_status_enu_t oms::Model::importSnapshot(const char* snapshot_, char** newCre
     delete old_root_system;
     old_root_system = NULL;
   }
+
+  if (newCref)
+    *newCref = (char*)new_root_cref.c_str();
 
   return oms_status_ok;
 }
@@ -584,7 +587,7 @@ oms_status_enu_t oms::Model::exportToSSD(pugi::xml_node& node, pugi::xml_node& s
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Model::importFromSnapshot(const Snapshot& snapshot, oms::ComRef newRootCref, char** newCref)
+oms_status_enu_t oms::Model::importFromSnapshot(const Snapshot& snapshot)
 {
   pugi::xml_node ssdNode = snapshot.getResourceNode("SystemStructure.ssd");
   if (!ssdNode)

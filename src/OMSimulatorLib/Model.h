@@ -160,6 +160,8 @@ namespace oms
     bool isolatedFMU = false;
 
     ctpl::thread_pool* pool = nullptr;
+
+    ComRef new_root_cref;
   };
 }
 
