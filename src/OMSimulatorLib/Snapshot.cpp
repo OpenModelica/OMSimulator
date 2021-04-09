@@ -216,10 +216,10 @@ pugi::xml_node oms::Snapshot::getTemplateResourceNodeSignalFilter(const filesyst
   return oms_signalFilter;
 }
 
-std::string oms::Snapshot::getNewCref() const
+void oms::Snapshot::setNewCref()
 {
   pugi::xml_node oms_snapshot = doc.document_element(); // oms:snapshot
-  return oms_snapshot.first_child().first_child().attribute("name").as_string();
+  newCref = oms_snapshot.first_child().first_child().attribute("name").as_string();
 }
 
 oms_status_enu_t oms::Snapshot::exportPartialSnapshot(const ComRef& cref, Snapshot& partialSnapshot)

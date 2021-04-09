@@ -78,7 +78,7 @@ namespace oms
     oms_status_enu_t exportSSVTemplate(const ComRef& cref, const std::string& filename);
     oms_status_enu_t exportSSMTemplate(const ComRef& cref, const std::string& filename);
     void exportSignalFilter(pugi::xml_node &signalfilter) const;
-    oms_status_enu_t importFromSnapshot(const Snapshot& snapshot);
+    oms_status_enu_t importFromSnapshot(const Snapshot& snapshot, char** newCref);
     oms_status_enu_t importSnapshot(const char* snapshot, char** newCref);
     oms_status_enu_t importSignalFilter(const std::string& filename, const Snapshot& snapshot);
     oms_status_enu_t exportToFile(const std::string& filename) const;
@@ -124,8 +124,6 @@ namespace oms
     ctpl::thread_pool& getThreadPool() {assert(pool); return *pool;}
 
     oms_status_enu_t loadSnapshot(const pugi::xml_node& node);
-
-    oms_status_enu_t setNewCref(const std::string& cref, char** newCref);
 
   private: // methods
     Model(const ComRef& cref, const std::string& tempDir);

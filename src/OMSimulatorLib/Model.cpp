@@ -159,9 +159,11 @@ oms_status_enu_t oms::Model::loadSnapshot(const pugi::xml_node& node)
   snapshot.importResourceNode("SystemStructure.ssd", node);
   //snapshot.debugPrintAll();
 
+  char** newCref = NULL; // temporary workaround
+
   bool old_copyResources = copyResources();
   copyResources(false);
-  oms_status_enu_t status = importFromSnapshot(snapshot);
+  oms_status_enu_t status = importFromSnapshot(snapshot, newCref);
   copyResources(old_copyResources);
 
   if (oms_status_ok != status)
@@ -188,8 +190,8 @@ oms_status_enu_t oms::Model::importSnapshot(const char* snapshot_, char** newCre
   snapshot.import(snapshot_);
   //snapshot.debugPrintAll();
 
-  // get the newCref for the snapshot, this should be done here at the top before importing fullsnapshot, as the newcref will be overwritten by oldcref
-  std::string newCref_ = snapshot.getNewCref();
+  // set the newCref for the snapshot, this should be done here at the top before importing fullsnapshot, as the newcref will be overwritten by oldcref
+  snapshot.setNewCref();
 
   if (snapshot.isPartialSnapshot())
   {
@@ -217,7 +219,7 @@ oms_status_enu_t oms::Model::importSnapshot(const char* snapshot_, char** newCre
 
   bool old_copyResources = copyResources();
   copyResources(false);
-  oms_status_enu_t status = importFromSnapshot(snapshot);
+  oms_status_enu_t status = importFromSnapshot(snapshot, newCref);
   copyResources(old_copyResources);
 
   if (oms_status_ok != status)
@@ -232,48 +234,7 @@ oms_status_enu_t oms::Model::importSnapshot(const char* snapshot_, char** newCre
     old_root_system = NULL;
   }
 
-  // set the newCref
-  setNewCref(newCref_, newCref);
-
   return oms_status_ok;
-}
-
-oms_status_enu_t oms::Model::setNewCref(const std::string& newCref_, char** newCref)
-{
-  // model cref
-  if (newCref_ == std::string(this->getCref()))
-  {
-    *newCref = (char*)this->getCref().c_str();
-    return oms_status_ok;
-  }
-  // top level system cref
-  else if (newCref_ == std::string(system->getCref()))
-  {
-    *newCref = (char*)system->getCref().c_str();
-    return oms_status_ok;
-  }
-  else
-  {
-    // subsystem cref
-    for (const auto &susbsystem : system->getSubSystems())
-    {
-      if (newCref_ == std::string(susbsystem.second->getCref()))
-      {
-        *newCref = (char*)susbsystem.second->getCref().c_str();
-        return oms_status_ok;
-      }
-    }
-    // component cref
-    for (const auto &component : system->getComponents())
-    {
-      if (newCref_ == std::string(component.second->getCref()))
-      {
-        *newCref = (char*)component.second->getCref().c_str();
-        return oms_status_ok;
-      }
-    }
-  }
-  return logError("NewCref not set for \"" + newCref_ + "\" as it could not be associated with snapshot");
 }
 
 oms::System* oms::Model::getSystem(const oms::ComRef& cref)
@@ -623,7 +584,7 @@ oms_status_enu_t oms::Model::exportToSSD(pugi::xml_node& node, pugi::xml_node& s
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Model::importFromSnapshot(const Snapshot& snapshot)
+oms_status_enu_t oms::Model::importFromSnapshot(const Snapshot& snapshot, char** newCref)
 {
   pugi::xml_node ssdNode = snapshot.getResourceNode("SystemStructure.ssd");
   if (!ssdNode)
@@ -635,6 +596,10 @@ oms_status_enu_t oms::Model::importFromSnapshot(const Snapshot& snapshot)
   {
     logWarning_deprecated;
   }
+
+  // set newCref for model
+  if (snapshot.getNewCref() == std::string(this->getCref()))
+    *newCref = (char*)this->getCref().c_str();
 
   for(pugi::xml_node_iterator it = ssdNode.begin(); it != ssdNode.end(); ++it)
   {
@@ -653,7 +618,11 @@ oms_status_enu_t oms::Model::importFromSnapshot(const Snapshot& snapshot)
       if (!system)
         return oms_status_error;
 
-      if (oms_status_ok != system->importFromSnapshot(*it, sspVersion, snapshot))
+      // set newCref for top level system
+      if (snapshot.getNewCref() == std::string(system->getCref()))
+        *newCref = (char*)system->getCref().c_str();
+
+      if (oms_status_ok != system->importFromSnapshot(*it, sspVersion, snapshot, newCref))
         return oms_status_error;
     }
     else if (name == oms::ssp::Draft20180219::ssd::default_experiment)

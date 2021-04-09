@@ -70,7 +70,9 @@ namespace oms
 
     void debugPrintNode(const filesystem::path& filename) const;
     void debugPrintAll() const;
-    std::string getNewCref() const;
+
+    void setNewCref();
+    std::string getNewCref() const {return newCref;}
 
     oms_status_enu_t deleteResourceNode(const filesystem::path& filename);
 
@@ -86,6 +88,7 @@ namespace oms
 
   private:
    pugi::xml_document doc; // snapshot document
+   std::string newCref = "";
   };
 }
 
