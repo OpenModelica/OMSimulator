@@ -113,6 +113,8 @@ namespace oms
     ComponentFMUME(ComponentFMUME const& copy);            ///< not implemented
     ComponentFMUME& operator=(ComponentFMUME const& copy); ///< not implemented
 
+    oms_status_enu_t renameValues(const ComRef& newCref);
+
   private:
     jm_callbacks callbacks;
     fmi2_callback_functions_t callbackFunctions;

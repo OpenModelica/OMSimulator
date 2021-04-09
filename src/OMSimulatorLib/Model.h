@@ -79,7 +79,7 @@ namespace oms
     oms_status_enu_t exportSSMTemplate(const ComRef& cref, const std::string& filename);
     void exportSignalFilter(pugi::xml_node &signalfilter) const;
     oms_status_enu_t importFromSnapshot(const Snapshot& snapshot);
-    oms_status_enu_t importSnapshot(const oms::ComRef& cref, const char* snapshot);
+    oms_status_enu_t importSnapshot(const char* snapshot, char** newCref);
     oms_status_enu_t importSignalFilter(const std::string& filename, const Snapshot& snapshot);
     oms_status_enu_t exportToFile(const std::string& filename) const;
     oms_system_enu_t getSystemType(const pugi::xml_node& node, const std::string& sspVersion);
@@ -160,6 +160,8 @@ namespace oms
     bool isolatedFMU = false;
 
     ctpl::thread_pool* pool = nullptr;
+
+    ComRef new_root_cref;
   };
 }
 

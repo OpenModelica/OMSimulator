@@ -1248,3 +1248,8 @@ void oms::ComponentFMUCS::getFilteredSignals(std::vector<Connector>& filteredSig
       filteredSignals.push_back(allVariables[i].makeConnector(this->getFullCref()));
   }
 }
+
+oms_status_enu_t oms::ComponentFMUCS::renameValues(const ComRef& newCref)
+{
+  return values.rename(newCref);
+}

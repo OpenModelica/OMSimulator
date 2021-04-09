@@ -179,7 +179,7 @@ oms_status_enu_t oms::Model::loadSnapshot(const pugi::xml_node& node)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Model::importSnapshot(const oms::ComRef& cref, const char* snapshot_)
+oms_status_enu_t oms::Model::importSnapshot(const char* snapshot_, char** newCref)
 {
   if (!validState(oms_modelState_virgin))
     return logError_ModelInWrongState(getCref());
@@ -188,12 +188,17 @@ oms_status_enu_t oms::Model::importSnapshot(const oms::ComRef& cref, const char*
   snapshot.import(snapshot_);
   //snapshot.debugPrintAll();
 
+  // get the new root cref from the snapshot, this should be done here
+  // at the top before importing the full snapshot, as the new cref
+  // will be overwritten
+  new_root_cref = snapshot.getRootCref();
+
   if (snapshot.isPartialSnapshot())
   {
     char* fullsnapshot;
     // get full snapshot
     exportSnapshot("", &fullsnapshot);
-    snapshot.importPartialSnapshot(cref, fullsnapshot);
+    snapshot.importPartialSnapshot(fullsnapshot);
     free(fullsnapshot);
   }
 
@@ -228,6 +233,9 @@ oms_status_enu_t oms::Model::importSnapshot(const oms::ComRef& cref, const char*
     delete old_root_system;
     old_root_system = NULL;
   }
+
+  if (newCref)
+    *newCref = (char*)new_root_cref.c_str();
 
   return oms_status_ok;
 }

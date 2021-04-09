@@ -61,6 +61,7 @@ namespace oms
     oms_status_enu_t exportToSSMTemplate(pugi::xml_node& ssmNode, const ComRef& cref);  ///< start values read from modelDescription.xml and creates a ssm template
 
     oms_status_enu_t parseModelDescription(const filesystem::path& root); ///< path without the filename, i.e. modelDescription.xml
+    oms_status_enu_t rename(const oms::ComRef& newCref);
 
   private:
     oms_status_enu_t exportStartValuesHelper(pugi::xml_node& node) const;

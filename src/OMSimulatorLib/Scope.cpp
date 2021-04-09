@@ -435,24 +435,11 @@ oms_status_enu_t oms::Scope::importSnapshot(const oms::ComRef& cref, const char*
   if (newCref)
     *newCref = NULL;
 
-  oms::ComRef tail(cref);
-  oms::ComRef front = tail.pop_front();
-
-  oms::ComRef modelCref(front);
-  modelCref.pop_suffix();
-
-  oms::Model* model = oms::Scope::GetInstance().getModel(modelCref);
+  oms::Model* model = oms::Scope::GetInstance().getModel(cref);
   if (!model)
-    return logError_ModelNotInScope(front);
+    return logError_ModelNotInScope(cref);
 
-  oms_status_enu_t status;
-  if (tail.isEmpty() && front.hasSuffix())
-    status = model->importSnapshot(oms::ComRef(":" + front.suffix()), snapshot);
-  else
-    status = model->importSnapshot(tail, snapshot);
-
-  if (newCref)
-    *newCref = (char*)getModel(modelCref)->getCref().c_str();
+  oms_status_enu_t status = model->importSnapshot(snapshot, newCref);
 
   return status;
 }

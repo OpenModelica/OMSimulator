@@ -265,6 +265,16 @@ void oms::Connector::setName(const oms::ComRef& name)
   strcpy(this->name, str.c_str());
 }
 
+void oms::Connector::setOwner(const ComRef& owner)
+{
+  if (this->owner)
+    delete[] this->owner;
+
+  std::string str(owner);
+  this->owner = new char[str.size()+1];
+  strcpy(this->owner, str.c_str());
+}
+
 void oms::Connector::setGeometry(const oms::ssd::ConnectorGeometry *newGeometry)
 {
   if (this->geometry)

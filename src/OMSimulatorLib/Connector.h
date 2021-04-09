@@ -67,6 +67,7 @@ namespace oms
     operator std::string() const {return std::string(name);}
 
     void setName(const oms::ComRef& name);
+    void setOwner(const oms::ComRef& owner);
     void setGeometry(const oms::ssd::ConnectorGeometry* newGeometry);
 
     const oms_causality_enu_t getCausality() const {return causality;}
