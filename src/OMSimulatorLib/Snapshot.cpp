@@ -216,10 +216,23 @@ pugi::xml_node oms::Snapshot::getTemplateResourceNodeSignalFilter(const filesyst
   return oms_signalFilter;
 }
 
-void oms::Snapshot::setNewCref()
+oms::ComRef oms::Snapshot::getRootCref() const
 {
   pugi::xml_node oms_snapshot = doc.document_element(); // oms:snapshot
-  newCref = oms_snapshot.first_child().first_child().attribute("name").as_string();
+
+  for (const auto& it : oms_snapshot.children())
+  {
+    if ("SystemStructure.ssd" != it.attribute("name").as_string())
+      continue;
+
+    oms::ComRef rootCref(it.attribute("node").as_string());
+    oms::ComRef newCref(it.first_child().attribute("name").as_string());
+    // TODO: FIX
+
+    return newCref;
+  }
+
+  return "";
 }
 
 oms_status_enu_t oms::Snapshot::exportPartialSnapshot(const ComRef& cref, Snapshot& partialSnapshot)

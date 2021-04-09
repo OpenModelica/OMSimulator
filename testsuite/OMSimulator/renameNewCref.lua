@@ -19,7 +19,7 @@ systemSnapshot = [[
         name="SystemStructure.ssd"
         node="model.root">
         <ssd:System
-          name="root_3">
+          name="root">
           <ssd:Elements>
             <ssd:Component
               name="gain"
@@ -117,6 +117,6 @@ print(newcref)
 
 
 -- Result:
--- root_3
+-- root
 -- gain_1
 -- endResult

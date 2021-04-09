@@ -233,7 +233,7 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
 
   // snapshot.debugPrintAll();
 
-  oms_status_enu_t status = model->importFromSnapshot(snapshot, _cref);
+  oms_status_enu_t status = model->importFromSnapshot(snapshot);
   model->copyResources(old_copyResources);
 
   Scope::GetInstance().setWorkingDirectory(cd);
@@ -245,7 +245,7 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
   }
 
   if (_cref)
-    *_cref = (char *)model->getCref().c_str();
+    *_cref = (char*)model->getCref().c_str();
 
   return oms_status_ok;
 }

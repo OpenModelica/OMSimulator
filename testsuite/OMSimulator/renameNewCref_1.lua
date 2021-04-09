@@ -90,5 +90,8 @@ print(newcref)
 
 -- Result:
 -- root_3
---
+-- error:   [setNewCref] NewCref not set for "gain_1" as it could not be associated with snapshot
+-- 
+-- info:    0 warnings
+-- info:    1 errors
 -- endResult

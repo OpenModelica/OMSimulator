@@ -506,7 +506,7 @@ oms_status_enu_t oms::System::exportToSSD(pugi::xml_node& node, pugi::xml_node& 
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::System::importFromSnapshot(const pugi::xml_node& node, const std::string& sspVersion, const Snapshot& snapshot, char** newCref)
+oms_status_enu_t oms::System::importFromSnapshot(const pugi::xml_node& node, const std::string& sspVersion, const Snapshot& snapshot)
 {
   std::map<std::string, std::string> startValuesFileSources;  ///< ssvFileSource mapped with ssmFilesource if mapping is provided, otherwise only ssvFilesource entry is made
 
@@ -629,11 +629,7 @@ oms_status_enu_t oms::System::importFromSnapshot(const pugi::xml_node& node, con
           if (!system)
             return oms_status_error;
 
-          // set newCref for subsystems
-          if (snapshot.getNewCref() == std::string(system->getCref()))
-            *newCref = (char *)system->getCref().c_str();
-
-          if (oms_status_ok != system->importFromSnapshot(*itElements, sspVersion, snapshot, newCref))
+          if (oms_status_ok != system->importFromSnapshot(*itElements, sspVersion, snapshot))
             return oms_status_error;
         }
         else if (name == oms::ssp::Draft20180219::ssd::component)
@@ -747,10 +743,6 @@ oms_status_enu_t oms::System::importFromSnapshot(const pugi::xml_node& node, con
 #endif
           if (component)
           {
-            // set newCref for components
-            if (snapshot.getNewCref() == std::string(component->getCref()))
-              *newCref = (char *)component->getCref().c_str();
-
             components[component->getCref()] = component;
             subelements.back() = reinterpret_cast<oms_element_t*>(component->getElement());
             subelements.push_back(NULL);
