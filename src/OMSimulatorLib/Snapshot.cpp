@@ -221,7 +221,7 @@ oms::ComRef oms::Snapshot::getRootCref() const
   pugi::xml_node oms_snapshot = doc.document_element(); // oms:snapshot
 
   for (const auto& it : oms_snapshot.children())
-    if ("SystemStructure.ssd" == it.attribute("name").as_string())
+    if ("SystemStructure.ssd" == std::string(it.attribute("name").as_string()))
       return oms::ComRef(it.first_child().attribute("name").as_string());
 
   return oms::ComRef();
