@@ -244,6 +244,9 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
     return oms_status_error;
   }
 
+  if (_cref)
+    *_cref = (char *)model->getCref().c_str();
+
   return oms_status_ok;
 }
 

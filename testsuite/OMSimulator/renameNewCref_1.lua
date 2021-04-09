@@ -5,7 +5,7 @@
 -- mac: no
 
 oms_setCommandLineOption("--suppressPath=true")
-oms_setTempDirectory("./rename_lua/")
+oms_setTempDirectory("./rename_new_cref_01_lua/")
 
 oms_newModel("model")
 oms_addSystem("model.root", oms_system_wc)
