@@ -47,11 +47,11 @@ tlm.UpperPendulumFG \
 tlm.UpperPendulumFG \
 
 SSPs = \
-importStartValues \
+embrace \
+import_hierarchical_ssv_sources \
 importParameterMapping \
 importParameterMappingInline \
-import_hierarchical_ssv_sources \
-
+importStartValues \
 
 MOSs = \
 ASSCExample.mos \
@@ -65,7 +65,7 @@ HelloWorld.mos \
 Lin2DimODE.mos \
 MassSpring.mos \
 
-.PHONY: all generateFMUs 
+.PHONY: all generateFMUs
 
 all:
 	@echo
