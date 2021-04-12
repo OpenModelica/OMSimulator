@@ -1,4 +1,9 @@
-# -*- coding: utf-8 -*-
+## status: correct
+## teardown_command:
+## linux: yes
+## mingw: yes
+## win: yes
+## mac: yes
 """
 Created on Mon Dec 21 10:30:26 2020
 
@@ -6,15 +11,15 @@ Created on Mon Dec 21 10:30:26 2020
 """
 import OMSimulator
 
-#OMSimulator.OMSimulator()   
+#OMSimulator.OMSimulator()
 oms=OMSimulator.OMSimulator()
 a=oms.getVersion()
-print(a)
+#print(a)
 oms.setCommandLineOption("--suppressPath=true  --wallTime=true --progressBar=true")
 
 
-oms.importFile("Embrace.ssp")
-oms.addSubModel("model.root.BC", "CONOPS.csv")
+oms.importFile("../resources/embrace.ssp")
+oms.addSubModel("model.root.BC", "../resources/CONOPS.csv")
 
 ##----------------- Connections to BC files ----------------------------
 #BC -> Consumer
@@ -62,3 +67,6 @@ print("info:      model.root.ECS_HW.pipeA.L               : " , oms.getReal("mod
 oms.simulate("model")
 oms.terminate("model")
 oms.delete("model")
+
+## Result:
+## endResult
