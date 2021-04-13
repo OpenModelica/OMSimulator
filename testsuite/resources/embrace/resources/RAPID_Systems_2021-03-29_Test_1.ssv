@@ -1,0 +1,517 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ssv:ParameterSet xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" name="product_mainAssembly">
+  <Units>
+    <Unit name="m">
+      <BaseUnit m="1"/>
+    </Unit>
+    <Unit name="deg">
+      <BaseUnit rad="0.017453292519943301"/>
+    </Unit>
+    <Unit name="kg/m3">
+      <BaseUnit kg="1" m="3"/>
+    </Unit>
+    <Unit name="m3">
+      <BaseUnit m="3"/>
+    </Unit>
+    <Unit name="kg">
+      <BaseUnit kg="1"/>
+    </Unit>
+  </Units>
+  <ssv:Parameters>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.parameterSet_inputParameters.parameter_pipeRadius">
+      <ssv:Real unit="[m]" value="0.005"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.parameterSet_inputParameters.parameter_pipeThickness">
+      <ssv:Real unit="[m]" value="0.001"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.parameterSet_inputParameters.parameter_bendRadius">
+      <ssv:Real unit="[m]" value="0.035"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.parameterSet_inputParameters.parameter_testReal">
+      <ssv:Real unit="Unit Not Applicable" value="2.5"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.parameterSet_inputParameters.parameter_testInteger">
+      <ssv:Integer unit="Unit Not Applicable" value="7"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.parameterSet_inputParameters.parameter_testBoolean">
+      <ssv:Boolean unit="Unit Not Applicable" value="1"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.parameterSet_outputParameters.parameter_pipeLength">
+      <ssv:Real unit="[m]" value="0.976535328081166"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_Point_1.parameter_coordinateX">
+      <ssv:Real unit="[m]" value="5"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_Point_1.parameter_coordinateY">
+      <ssv:Real unit="[m]" value="0.25"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_Point_1.parameter_coordinateZ">
+      <ssv:Real unit="[m]" value="3"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_Point_2.parameter_coordinateX">
+      <ssv:Real unit="[m]" value="5"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_Point_2.parameter_coordinateY">
+      <ssv:Real unit="[m]" value="0.25"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_Point_2.parameter_coordinateZ">
+      <ssv:Real unit="[m]" value="3"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_Point_3.parameter_coordinateX">
+      <ssv:Real unit="[m]" value="5"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_Point_3.parameter_coordinateY">
+      <ssv:Real unit="[m]" value="0.25"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_Point_3.parameter_coordinateZ">
+      <ssv:Real unit="[m]" value="3"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_Point_4.parameter_coordinateX">
+      <ssv:Real unit="[m]" value="5"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_Point_4.parameter_coordinateY">
+      <ssv:Real unit="[m]" value="0.25"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_Point_4.parameter_coordinateZ">
+      <ssv:Real unit="[m]" value="3"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_Point_5.parameter_coordinateX">
+      <ssv:Real unit="[m]" value="5"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_Point_5.parameter_coordinateY">
+      <ssv:Real unit="[m]" value="0.25"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_Point_5.parameter_coordinateZ">
+      <ssv:Real unit="[m]" value="3"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_Point_6.parameter_coordinateX">
+      <ssv:Real unit="[m]" value="5"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_Point_6.parameter_coordinateY">
+      <ssv:Real unit="[m]" value="0.25"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_Point_6.parameter_coordinateZ">
+      <ssv:Real unit="[m]" value="3"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_Point_7.parameter_coordinateX">
+      <ssv:Real unit="[m]" value="5"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_Point_7.parameter_coordinateY">
+      <ssv:Real unit="[m]" value="0.25"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_Point_7.parameter_coordinateZ">
+      <ssv:Real unit="[m]" value="3"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_Point_8.parameter_coordinateX">
+      <ssv:Real unit="[m]" value="5"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_Point_8.parameter_coordinateY">
+      <ssv:Real unit="[m]" value="0.25"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_Point_8.parameter_coordinateZ">
+      <ssv:Real unit="[m]" value="3"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_Point_9.parameter_coordinateX">
+      <ssv:Real unit="[m]" value="5"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_Point_9.parameter_coordinateY">
+      <ssv:Real unit="[m]" value="0.25"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_Point_9.parameter_coordinateZ">
+      <ssv:Real unit="[m]" value="3"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_Point_10.parameter_coordinateX">
+      <ssv:Real unit="[m]" value="5"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_Point_10.parameter_coordinateY">
+      <ssv:Real unit="[m]" value="0.25"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_Point_10.parameter_coordinateZ">
+      <ssv:Real unit="[m]" value="3"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_1.parameter_innerAngle">
+      <ssv:Real unit="[rad]" value="2.29109600593786"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_1.parameter_absoluteAngle">
+      <ssv:Real unit="[rad]" value="0.850496647651943"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_2.parameter_innerAngle">
+      <ssv:Real unit="[rad]" value="1.72997532817341"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_2.parameter_absoluteAngle">
+      <ssv:Real unit="[rad]" value="1.41161732541639"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_3.parameter_innerAngle">
+      <ssv:Real unit="[rad]" value="2.36370227982391"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_3.parameter_absoluteAngle">
+      <ssv:Real unit="[rad]" value="0.777890373765877"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_4.parameter_innerAngle">
+      <ssv:Real unit="[rad]" value="2.87064580325138"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_4.parameter_absoluteAngle">
+      <ssv:Real unit="[rad]" value="0.270946850338421"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_5.parameter_innerAngle">
+      <ssv:Real unit="[rad]" value="2.80160030642727"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_5.parameter_absoluteAngle">
+      <ssv:Real unit="[rad]" value="0.339992347162515"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_6.parameter_innerAngle">
+      <ssv:Real unit="[rad]" value="2.91951075168432"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_6.parameter_absoluteAngle">
+      <ssv:Real unit="[rad]" value="0.222081901905479"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_7.parameter_innerAngle">
+      <ssv:Real unit="[rad]" value="2.81932324724354"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_7.parameter_absoluteAngle">
+      <ssv:Real unit="[rad]" value="0.32226940634625"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_8.parameter_innerAngle">
+      <ssv:Real unit="[rad]" value="1.53131922190053"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_8.parameter_absoluteAngle">
+      <ssv:Real unit="[rad]" value="1.61027343168926"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_pipeLength.parameter_pipeLength">
+      <ssv:Real unit="[m]" value="0.976535328081166"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe1.geometricalSet_systemsInfoExp.parameterSet_pipeLength.parameter_noOfBends">
+      <ssv:Integer unit="Unit Not Applicable" value="8"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.parameterSet_inputParameters.parameter_pipeRadius">
+      <ssv:Real unit="[m]" value="0.005"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.parameterSet_inputParameters.parameter_pipeThickness">
+      <ssv:Real unit="[m]" value="0.001"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.parameterSet_inputParameters.parameter_bendRadius">
+      <ssv:Real unit="[m]" value="0.035"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.parameterSet_outputParameters.parameter_pipeLength">
+      <ssv:Real unit="[m]" value="1.15989904821013"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_Point_1.parameter_coordinateX">
+      <ssv:Real unit="[m]" value="5"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_Point_1.parameter_coordinateY">
+      <ssv:Real unit="[m]" value="0.25"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_Point_1.parameter_coordinateZ">
+      <ssv:Real unit="[m]" value="3"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_Point_2.parameter_coordinateX">
+      <ssv:Real unit="[m]" value="5"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_Point_2.parameter_coordinateY">
+      <ssv:Real unit="[m]" value="0.25"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_Point_2.parameter_coordinateZ">
+      <ssv:Real unit="[m]" value="3"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_Point_3.parameter_coordinateX">
+      <ssv:Real unit="[m]" value="5"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_Point_3.parameter_coordinateY">
+      <ssv:Real unit="[m]" value="0.25"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_Point_3.parameter_coordinateZ">
+      <ssv:Real unit="[m]" value="3"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_Point_4.parameter_coordinateX">
+      <ssv:Real unit="[m]" value="5"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_Point_4.parameter_coordinateY">
+      <ssv:Real unit="[m]" value="0.25"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_Point_4.parameter_coordinateZ">
+      <ssv:Real unit="[m]" value="3"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_Point_5.parameter_coordinateX">
+      <ssv:Real unit="[m]" value="5"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_Point_5.parameter_coordinateY">
+      <ssv:Real unit="[m]" value="0.25"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_Point_5.parameter_coordinateZ">
+      <ssv:Real unit="[m]" value="3"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_Point_6.parameter_coordinateX">
+      <ssv:Real unit="[m]" value="5"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_Point_6.parameter_coordinateY">
+      <ssv:Real unit="[m]" value="0.25"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_Point_6.parameter_coordinateZ">
+      <ssv:Real unit="[m]" value="3"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_Point_7.parameter_coordinateX">
+      <ssv:Real unit="[m]" value="5"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_Point_7.parameter_coordinateY">
+      <ssv:Real unit="[m]" value="0.25"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_Point_7.parameter_coordinateZ">
+      <ssv:Real unit="[m]" value="3"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_Point_8.parameter_coordinateX">
+      <ssv:Real unit="[m]" value="5"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_Point_8.parameter_coordinateY">
+      <ssv:Real unit="[m]" value="0.25"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_Point_8.parameter_coordinateZ">
+      <ssv:Real unit="[m]" value="3"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_Point_9.parameter_coordinateX">
+      <ssv:Real unit="[m]" value="5"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_Point_9.parameter_coordinateY">
+      <ssv:Real unit="[m]" value="0.25"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_Point_9.parameter_coordinateZ">
+      <ssv:Real unit="[m]" value="3"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_Point_10.parameter_coordinateX">
+      <ssv:Real unit="[m]" value="5"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_Point_10.parameter_coordinateY">
+      <ssv:Real unit="[m]" value="0.25"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_Point_10.parameter_coordinateZ">
+      <ssv:Real unit="[m]" value="3"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_1.parameter_innerAngle">
+      <ssv:Real unit="[rad]" value="1.57079632679488"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_1.parameter_absoluteAngle">
+      <ssv:Real unit="[rad]" value="1.57079632679488"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_2.parameter_innerAngle">
+      <ssv:Real unit="[rad]" value="2.36370227982391"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_2.parameter_absoluteAngle">
+      <ssv:Real unit="[rad]" value="0.777890373765877"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_3.parameter_innerAngle">
+      <ssv:Real unit="[rad]" value="2.36370227982391"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_3.parameter_absoluteAngle">
+      <ssv:Real unit="[rad]" value="0.777890373765877"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_4.parameter_innerAngle">
+      <ssv:Real unit="[rad]" value="2.87064580325138"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_4.parameter_absoluteAngle">
+      <ssv:Real unit="[rad]" value="0.270946850338421"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_5.parameter_innerAngle">
+      <ssv:Real unit="[rad]" value="2.80160030642727"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_5.parameter_absoluteAngle">
+      <ssv:Real unit="[rad]" value="0.339992347162515"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_6.parameter_innerAngle">
+      <ssv:Real unit="[rad]" value="2.91951075168432"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_6.parameter_absoluteAngle">
+      <ssv:Real unit="[rad]" value="0.222081901905479"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_7.parameter_innerAngle">
+      <ssv:Real unit="[rad]" value="2.56550408467376"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_7.parameter_absoluteAngle">
+      <ssv:Real unit="[rad]" value="0.576088568916034"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_8.parameter_innerAngle">
+      <ssv:Real unit="[rad]" value="1.33810337271858"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_8.parameter_absoluteAngle">
+      <ssv:Real unit="[rad]" value="1.80348928087121"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_pipeLength.parameter_pipeLength">
+      <ssv:Real unit="[m]" value="1.15989904821013"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_testPipe2.geometricalSet_systemsInfoExp.parameterSet_pipeLength.parameter_noOfBends">
+      <ssv:Integer unit="Unit Not Applicable" value="8"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_valve1.parameterSet_inputParameters.parameter_pipeRadius">
+      <ssv:Real unit="[m]" value="0.01"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_valve1.parameterSet_inputParameters.parameter_pipeThickness">
+      <ssv:Real unit="[m]" value="0.001"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly1.part_valve1.parameterSet_outputParameters.parameter_valveLength">
+      <ssv:Real unit="[m]" value="0.05"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.parameterSet_inputParameters.parameter_pipeRadius">
+      <ssv:Real unit="[m]" value="0.005"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.parameterSet_inputParameters.parameter_pipeThickness">
+      <ssv:Real unit="[m]" value="0.001"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.parameterSet_inputParameters.parameter_bendRadius">
+      <ssv:Real unit="[m]" value="0.035"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.parameterSet_inputParameters.parameter_testReal">
+      <ssv:Real unit="Unit Not Applicable" value="2.5"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.parameterSet_inputParameters.parameter_testInteger">
+      <ssv:Integer unit="Unit Not Applicable" value="7"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.parameterSet_inputParameters.parameter_testBoolean">
+      <ssv:Boolean unit="Unit Not Applicable" value="1"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.parameterSet_outputParameters.parameter_pipeLength">
+      <ssv:Real unit="[m]" value="1.03292033746682"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_1.parameter_coordinateX">
+      <ssv:Real unit="[m]" value="11.83"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_1.parameter_coordinateY">
+      <ssv:Real unit="[m]" value="0.96"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_1.parameter_coordinateZ">
+      <ssv:Real unit="[m]" value="4.19"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_2.parameter_coordinateX">
+      <ssv:Real unit="[m]" value="11.82"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_2.parameter_coordinateY">
+      <ssv:Real unit="[m]" value="0.96"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_2.parameter_coordinateZ">
+      <ssv:Real unit="[m]" value="4.34"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_3.parameter_coordinateX">
+      <ssv:Real unit="[m]" value="11.82"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_3.parameter_coordinateY">
+      <ssv:Real unit="[m]" value="1.07"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_3.parameter_coordinateZ">
+      <ssv:Real unit="[m]" value="4.34"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_4.parameter_coordinateX">
+      <ssv:Real unit="[m]" value="11.86"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_4.parameter_coordinateY">
+      <ssv:Real unit="[m]" value="1.135"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_4.parameter_coordinateZ">
+      <ssv:Real unit="[m]" value="4.29"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_5.parameter_coordinateX">
+      <ssv:Real unit="[m]" value="11.86"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_5.parameter_coordinateY">
+      <ssv:Real unit="[m]" value="1.21"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_5.parameter_coordinateZ">
+      <ssv:Real unit="[m]" value="4.29"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_6.parameter_coordinateX">
+      <ssv:Real unit="[m]" value="11.83"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_6.parameter_coordinateY">
+      <ssv:Real unit="[m]" value="1.39"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_6.parameter_coordinateZ">
+      <ssv:Real unit="[m]" value="4.25"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_7.parameter_coordinateX">
+      <ssv:Real unit="[m]" value="11.835"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_7.parameter_coordinateY">
+      <ssv:Real unit="[m]" value="1.44"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_7.parameter_coordinateZ">
+      <ssv:Real unit="[m]" value="4.25"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_8.parameter_coordinateX">
+      <ssv:Real unit="[m]" value="11.88"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_8.parameter_coordinateY">
+      <ssv:Real unit="[m]" value="1.575"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_8.parameter_coordinateZ">
+      <ssv:Real unit="[m]" value="4.25"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_9.parameter_coordinateX">
+      <ssv:Real unit="[m]" value="11.885"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_9.parameter_coordinateY">
+      <ssv:Real unit="[m]" value="1.7"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_9.parameter_coordinateZ">
+      <ssv:Real unit="[m]" value="4.23"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_10.parameter_coordinateX">
+      <ssv:Real unit="[m]" value="11.75"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_10.parameter_coordinateY">
+      <ssv:Real unit="[m]" value="1.7"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_10.parameter_coordinateZ">
+      <ssv:Real unit="[m]" value="4.23"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_1.parameter_innerAngle">
+      <ssv:Real unit="[rad]" value="1.57079632679488"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_1.parameter_absoluteAngle">
+      <ssv:Real unit="[rad]" value="1.57079632679488"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_2.parameter_innerAngle">
+      <ssv:Real unit="[rad]" value="2.36370227982391"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_2.parameter_absoluteAngle">
+      <ssv:Real unit="[rad]" value="0.777890373765877"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_3.parameter_innerAngle">
+      <ssv:Real unit="[rad]" value="2.36370227982391"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_3.parameter_absoluteAngle">
+      <ssv:Real unit="[rad]" value="0.777890373765877"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_4.parameter_innerAngle">
+      <ssv:Real unit="[rad]" value="2.87064580325138"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_4.parameter_absoluteAngle">
+      <ssv:Real unit="[rad]" value="0.270946850338421"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_5.parameter_innerAngle">
+      <ssv:Real unit="[rad]" value="2.80160030642727"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_5.parameter_absoluteAngle">
+      <ssv:Real unit="[rad]" value="0.339992347162515"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_6.parameter_innerAngle">
+      <ssv:Real unit="[rad]" value="2.91951075168432"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_6.parameter_absoluteAngle">
+      <ssv:Real unit="[rad]" value="0.222081901905479"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_7.parameter_innerAngle">
+      <ssv:Real unit="[rad]" value="2.81932324724354"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_7.parameter_absoluteAngle">
+      <ssv:Real unit="[rad]" value="0.32226940634625"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_8.parameter_innerAngle">
+      <ssv:Real unit="[rad]" value="1.53131922190053"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_8.parameter_absoluteAngle">
+      <ssv:Real unit="[rad]" value="1.61027343168926"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_pipeLength.parameter_pipeLength">
+      <ssv:Real unit="[m]" value="1.03292033746682"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="product_subAssembly2.part_testPipe.geometricalSet_systemsInfoExp.parameterSet_pipeLength.parameter_noOfBends">
+      <ssv:Integer unit="Unit Not Applicable" value="8"/>
+    </ssv:Parameter>
+  </ssv:Parameters>
+</ssv:ParameterSet>

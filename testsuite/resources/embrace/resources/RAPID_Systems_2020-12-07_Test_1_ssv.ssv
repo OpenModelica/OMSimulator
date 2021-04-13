@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ssv:ParameterSet xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" name="part_testPipe">
+  <ssv:Parameters>
+    <ssv:Parameter name="part_testPipe.parameterSet_inputParameters.parameter_pipeRadius">
+      <ssv:Real value="5" unit="[mm]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.parameterSet_inputParameters.parameter_pipeThickness">
+      <ssv:Real value="1" unit="[mm]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.parameterSet_inputParameters.parameter_bendRadius">
+      <ssv:Real value="35" unit="[mm]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.parameterSet_inputParameters.parameter_testReal">
+      <ssv:Real value="2.5" unit="Unit Not Applicable" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.parameterSet_inputParameters.parameter_testInteger">
+      <ssv:Integer value="7" unit="Unit Not Applicable" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.parameterSet_inputParameters.parameter_testBoolean">
+      <ssv:Boolean value="1" unit="Unit Not Applicable" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.parameterSet_outputParameters.parameter_pipeLength">
+      <ssv:Real value="1.03292033746682" unit="[m]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_1.parameter_coordinateX">
+      <ssv:Real value="11830" unit="[mm]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_1.parameter_coordinateY">
+      <ssv:Real value="960" unit="[mm]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_1.parameter_coordinateZ">
+      <ssv:Real value="4190" unit="[mm]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_2.parameter_coordinateX">
+      <ssv:Real value="11820" unit="[mm]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_2.parameter_coordinateY">
+      <ssv:Real value="960" unit="[mm]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_2.parameter_coordinateZ">
+      <ssv:Real value="4340" unit="[mm]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_3.parameter_coordinateX">
+      <ssv:Real value="11820" unit="[mm]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_3.parameter_coordinateY">
+      <ssv:Real value="1070" unit="[mm]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_3.parameter_coordinateZ">
+      <ssv:Real value="4340" unit="[mm]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_4.parameter_coordinateX">
+      <ssv:Real value="11860" unit="[mm]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_4.parameter_coordinateY">
+      <ssv:Real value="1135" unit="[mm]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_4.parameter_coordinateZ">
+      <ssv:Real value="4290" unit="[mm]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_5.parameter_coordinateX">
+      <ssv:Real value="11860" unit="[mm]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_5.parameter_coordinateY">
+      <ssv:Real value="1210" unit="[mm]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_5.parameter_coordinateZ">
+      <ssv:Real value="4290" unit="[mm]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_6.parameter_coordinateX">
+      <ssv:Real value="11830" unit="[mm]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_6.parameter_coordinateY">
+      <ssv:Real value="1390" unit="[mm]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_6.parameter_coordinateZ">
+      <ssv:Real value="4250" unit="[mm]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_7.parameter_coordinateX">
+      <ssv:Real value="11835" unit="[mm]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_7.parameter_coordinateY">
+      <ssv:Real value="1440" unit="[mm]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_7.parameter_coordinateZ">
+      <ssv:Real value="4250" unit="[mm]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_8.parameter_coordinateX">
+      <ssv:Real value="11880" unit="[mm]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_8.parameter_coordinateY">
+      <ssv:Real value="1575" unit="[mm]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_8.parameter_coordinateZ">
+      <ssv:Real value="4250" unit="[mm]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_9.parameter_coordinateX">
+      <ssv:Real value="11885" unit="[mm]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_9.parameter_coordinateY">
+      <ssv:Real value="1700" unit="[mm]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_9.parameter_coordinateZ">
+      <ssv:Real value="4230" unit="[mm]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_10.parameter_coordinateX">
+      <ssv:Real value="11750" unit="[mm]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_10.parameter_coordinateY">
+      <ssv:Real value="1700" unit="[mm]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_Point_10.parameter_coordinateZ">
+      <ssv:Real value="4230" unit="[mm]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_1.parameter_innerAngle">
+      <ssv:Real value="89.9999999999989" unit="[deg]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_1.parameter_absoluteAngle">
+      <ssv:Real value="89.9999999999989" unit="[deg]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_2.parameter_innerAngle">
+      <ssv:Real value="135.430164659361" unit="[deg]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_2.parameter_absoluteAngle">
+      <ssv:Real value="44.5698353406389" unit="[deg]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_3.parameter_innerAngle">
+      <ssv:Real value="135.430164659361" unit="[deg]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_3.parameter_absoluteAngle">
+      <ssv:Real value="44.5698353406389" unit="[deg]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_4.parameter_innerAngle">
+      <ssv:Real value="164.475889003246" unit="[deg]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_4.parameter_absoluteAngle">
+      <ssv:Real value="15.5241109967543" unit="[deg]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_5.parameter_innerAngle">
+      <ssv:Real value="160.519873440841" unit="[deg]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_5.parameter_absoluteAngle">
+      <ssv:Real value="19.4801265591588" unit="[deg]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_6.parameter_innerAngle">
+      <ssv:Real value="167.275644314578" unit="[deg]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_6.parameter_absoluteAngle">
+      <ssv:Real value="12.7243556854223" unit="[deg]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_7.parameter_innerAngle">
+      <ssv:Real value="161.535323150173" unit="[deg]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_7.parameter_absoluteAngle">
+      <ssv:Real value="18.4646768498267" unit="[deg]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_8.parameter_innerAngle">
+      <ssv:Real value="87.7381285021576" unit="[deg]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_pipeBendAngle_8.parameter_absoluteAngle">
+      <ssv:Real value="92.2618714978424" unit="[deg]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_pipeLength.parameter_pipeLength">
+      <ssv:Real value="1032.92033746682" unit="[mm]" comment="Comment goes here"/>
+    </ssv:Parameter>
+    <ssv:Parameter name="part_testPipe.geometricalSet_systemsInfoExp.parameterSet_pipeLength.parameter_noOfBends">
+      <ssv:Integer value="8" unit="Unit Not Applicable" comment="Comment goes here"/>
+    </ssv:Parameter>
+  </ssv:Parameters>
+</ssv:ParameterSet>
