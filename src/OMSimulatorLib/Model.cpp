@@ -312,14 +312,6 @@ oms_status_enu_t oms::Model::list(const oms::ComRef& cref, char** contents)
   {
     isTopSystemOrModel = true;
     exportToSSD(snapshot);
-    // update parameterBindings in ssd
-    if (!Flags::ExportParametersInline())
-    {
-      pugi::xml_node ssdNode = snapshot.getResourceNode("SystemStructure.ssd");
-      pugi::xml_node system_node = ssdNode.child(oms::ssp::Draft20180219::ssd::system);
-      updateParameterBindingsToSSD(system_node, true);
-      // TODO ssm file
-    }
     doc.append_copy(snapshot.getResourceNode("SystemStructure.ssd"));
   }
   else
@@ -339,12 +331,6 @@ oms_status_enu_t oms::Model::list(const oms::ComRef& cref, char** contents)
       pugi::xml_node system_node = ssdNode.append_child(oms::ssp::Draft20180219::ssd::system);
 
       subsystem->exportToSSD(system_node, snapshot);
-      // update parameterBindings in ssd
-      if (!Flags::ExportParametersInline())
-      {
-        updateParameterBindingsToSSD(system_node, true);
-        // TODO ssm file
-      }
       doc.append_copy(snapshot.getResourceNode("SystemStructure.ssd").first_child());
     }
     else
@@ -380,10 +366,6 @@ oms_status_enu_t oms::Model::exportSnapshot(const oms::ComRef& cref, char** cont
   if (!Flags::ExportParametersInline())
   {
     system->exportToSSV(snapshot);
-    // update parameterBindings in ssd
-    pugi::xml_node ssdNode = snapshot.getResourceNode("SystemStructure.ssd");
-    pugi::xml_node system_node = ssdNode.child(oms::ssp::Draft20180219::ssd::system);
-    updateParameterBindingsToSSD(system_node, true);
     // TODO ssm file
   }
 
@@ -739,10 +721,6 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
   if (!Flags::ExportParametersInline())
   {
     system->exportToSSV(snapshot);
-    // update parameterBindings in ssd
-    pugi::xml_node ssdNode = snapshot.getResourceNode("SystemStructure.ssd");
-    pugi::xml_node system_node = ssdNode.child(oms::ssp::Draft20180219::ssd::system);
-    updateParameterBindingsToSSD(system_node, true);
     // TODO ssm file
   }
 

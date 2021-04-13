@@ -251,6 +251,14 @@ oms_status_enu_t oms::Values::exportStartValuesHelper(pugi::xml_node& node) cons
   return oms_status_ok;
 }
 
+void oms::Values::exportParameterBindings(pugi::xml_node &node, const ComRef &cref) const
+{
+  pugi::xml_node node_parameters_bindings = node.append_child(oms::ssp::Version1_0::ssd::parameter_bindings);
+  pugi::xml_node node_parameter_binding = node_parameters_bindings.append_child(oms::ssp::Version1_0::ssd::parameter_binding);
+  std::string ssvFileName = "resources/" + std::string(cref) + ".ssv";
+  node_parameter_binding.append_attribute("source") = ssvFileName.c_str();
+}
+
 /*
  * returns mapped cref if entry found associated with parameter mapping,
  * otherwise return the default cref
