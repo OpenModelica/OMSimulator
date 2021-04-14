@@ -62,8 +62,9 @@ namespace oms
     void getResources(std::vector<std::string>& resources) const;
     pugi::xml_node getResourceNode(const filesystem::path& filename) const;
 
-    pugi::xml_node getTemplateResourceNodeSSD(const filesystem::path& filename);
-    pugi::xml_node getTemplateResourceNodeSSV(const filesystem::path& filename);
+    pugi::xml_node getTemplateResourceNodeSSD(const filesystem::path& filename, const ComRef& cref);
+    pugi::xml_node getTemplateResourceNodeSSV(const filesystem::path& filename, const std::string& cref);
+    pugi::xml_node getTemplateResourceNodeSSM(const filesystem::path& filename);
     pugi::xml_node getTemplateResourceNodeSignalFilter(const filesystem::path& filename);
     oms_status_enu_t exportPartialSnapshot(const ComRef& cref, Snapshot& partialSnapshot);
     oms_status_enu_t importPartialSnapshot(const char* fullsnapshot);

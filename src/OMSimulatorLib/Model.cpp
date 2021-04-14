@@ -302,31 +302,17 @@ oms_status_enu_t oms::Model::list(const oms::ComRef& cref, char** contents)
 
   xmlStringWriter writer;
   pugi::xml_document doc;
-  pugi::xml_document ssvdoc;
 
   Snapshot snapshot;
   // check for toplevelSystem or Model to update parameterbindings in ssd
   bool isTopSystemOrModel = false;
 
-  // generate XML declaration for ssv file
-  pugi::xml_node ssvDeclarationNode = ssvdoc.append_child(pugi::node_declaration);
-  ssvDeclarationNode.append_attribute("version") = "1.0";
-  ssvDeclarationNode.append_attribute("encoding") = "UTF-8";
-
-  pugi::xml_node node_parameterset = ssvdoc.append_child(oms::ssp::Version1_0::ssv::parameter_set);
-  node_parameterset.append_attribute("version") = "1.0";
-  node_parameterset.append_attribute("name") = "parameters";
-  pugi::xml_node node_parameters = node_parameterset.append_child(oms::ssp::Version1_0::ssv::parameters);
-
   // list model
   if (cref.isEmpty())
   {
     isTopSystemOrModel = true;
-    pugi::xml_node node = doc.append_child(oms::ssp::Draft20180219::ssd::system_structure_description);
-    exportToSSD(node, node_parameters, snapshot);
-    // update parameterBindings in ssd
-    pugi::xml_node system_node = node.child(oms::ssp::Draft20180219::ssd::system);
-    updateParameterBindingsToSSD(system_node, node_parameters, isTopSystemOrModel);
+    exportToSSD(snapshot);
+    doc.append_copy(snapshot.getResourceNode("SystemStructure.ssd"));
   }
   else
   {
@@ -341,10 +327,11 @@ oms_status_enu_t oms::Model::list(const oms::ComRef& cref, char** contents)
 
     if (subsystem)
     {
-      pugi::xml_node node = doc.append_child(oms::ssp::Draft20180219::ssd::system);
-      subsystem->exportToSSD(node, node_parameters, snapshot);
-      // update parameterBindings in ssd
-      updateParameterBindingsToSSD(node, node_parameters, isTopSystemOrModel);
+      pugi::xml_node ssdNode = snapshot.getTemplateResourceNodeSSD("SystemStructure.ssd", this->getCref());
+      pugi::xml_node system_node = ssdNode.append_child(oms::ssp::Draft20180219::ssd::system);
+
+      subsystem->exportToSSD(system_node, snapshot);
+      doc.append_copy(snapshot.getResourceNode("SystemStructure.ssd").first_child());
     }
     else
     {
@@ -353,8 +340,11 @@ oms_status_enu_t oms::Model::list(const oms::ComRef& cref, char** contents)
       if (!component)
         return logError("error");
 
-      pugi::xml_node node = doc.append_child(oms::ssp::Draft20180219::ssd::system);
-      component->exportToSSD(node, node_parameters, snapshot);
+      pugi::xml_node ssdNode = snapshot.getTemplateResourceNodeSSD("SystemStructure.ssd", this->getCref());
+      pugi::xml_node system_node = ssdNode.append_child(oms::ssp::Draft20180219::ssd::system);
+
+      component->exportToSSD(system_node, snapshot);
+      doc.append_copy(snapshot.getResourceNode("SystemStructure.ssd").first_child());
     }
   }
 
@@ -362,6 +352,7 @@ oms_status_enu_t oms::Model::list(const oms::ComRef& cref, char** contents)
   *contents = mallocAndCopyString(writer.result);
   if (!*contents)
     return oms_status_fatal;
+
   return oms_status_ok;
 }
 
@@ -369,29 +360,16 @@ oms_status_enu_t oms::Model::exportSnapshot(const oms::ComRef& cref, char** cont
 {
   Snapshot snapshot;
 
-  pugi::xml_node oms_ssd = snapshot.newResourceNode("SystemStructure.ssd");
-  pugi::xml_node ssdNode = oms_ssd.append_child(oms::ssp::Draft20180219::ssd::system_structure_description);
+  exportToSSD(snapshot);
 
-  pugi::xml_node ssvNode = snapshot.getTemplateResourceNodeSSV("resources/" + std::string(this->getCref()) + ".ssv");
-
-  exportToSSD(ssdNode, ssvNode, snapshot);
-
-  pugi::xml_node oms_signalFilter = snapshot.getTemplateResourceNodeSignalFilter(signalFilterFilename);
-  exportSignalFilter(oms_signalFilter);
-
-  // update ssv file if exist
+  // export to ssv file if Flag set
   if (!Flags::ExportParametersInline())
   {
-    // update parameterBindings in ssd
-    pugi::xml_node system_node = ssdNode.child(oms::ssp::Draft20180219::ssd::system);
-    updateParameterBindingsToSSD(system_node, ssvNode, true);
+    system->exportToSSV(snapshot);
     // TODO ssm file
   }
-  else
-  {
-    // delete ssv node from <oms:snapshot> if flag not set
-    snapshot.deleteResourceNode("resources/" + std::string(this->getCref()) + ".ssv");
-  }
+
+  exportSignalFilter(snapshot);
 
   if (cref.isEmpty())
     return snapshot.writeDocument(contents);
@@ -408,6 +386,10 @@ oms_status_enu_t oms::Model::exportSSVTemplate(const oms::ComRef& cref, const st
   oms::ComRef front = tail.pop_front();
 
   pugi::xml_document ssvdoc;
+  // generate XML declaration for ssm file
+  pugi::xml_node ssvDeclarationNode = ssvdoc.append_child(pugi::node_declaration);
+  ssvDeclarationNode.append_attribute("version") = "1.0";
+  ssvDeclarationNode.append_attribute("encoding") = "UTF-8";
 
   std::string extension = "";
   if (filename.length() > 4)
@@ -416,24 +398,14 @@ oms_status_enu_t oms::Model::exportSSVTemplate(const oms::ComRef& cref, const st
   if (extension != ".ssv")
     return logError("filename extension must be \".ssv\"; no other formats are supported");
 
-  // generate XML declaration for ssv file
-  pugi::xml_node ssvDeclarationNode = ssvdoc.append_child(pugi::node_declaration);
-  ssvDeclarationNode.append_attribute("version") = "1.0";
-  ssvDeclarationNode.append_attribute("encoding") = "UTF-8";
-
-  pugi::xml_node node_parameterset = ssvdoc.append_child(oms::ssp::Version1_0::ssv::parameter_set);
-  node_parameterset.append_attribute("xmlns:ssc") = "http://ssp-standard.org/SSP1/SystemStructureCommon";
-  node_parameterset.append_attribute("xmlns:ssv") = "http://ssp-standard.org/SSP1/SystemStructureParameterValues";
-
-  node_parameterset.append_attribute("version") = "1.0";
-  node_parameterset.append_attribute("name") = "modelDescriptionStartValues";
-  pugi::xml_node node_parameters = node_parameterset.append_child(oms::ssp::Version1_0::ssv::parameters);
+  Snapshot snapshot;
+  pugi::xml_node ssvNode = snapshot.getTemplateResourceNodeSSV("template.ssv", "modelDescriptionStartValues");
 
   for (const auto& component : system->getComponents())
   {
     if(component.first == tail || cref.isEmpty()) // allow querying single component or whole model
     {
-      if (oms_status_ok != component.second->exportToSSVTemplate(node_parameters))
+      if (oms_status_ok != component.second->exportToSSVTemplate(ssvNode))
       {
         return logError("export of ssv template failed for component " + std::string(system->getFullCref()+std::string(component.first)));
       }
@@ -441,6 +413,7 @@ oms_status_enu_t oms::Model::exportSSVTemplate(const oms::ComRef& cref, const st
   }
 
   //ssvdoc.save(std::cout);
+  ssvdoc.append_copy(snapshot.getResourceNode("template.ssv"));
 
   if (!ssvdoc.save_file(filename.c_str()))
     return logError("failed to export  \"" + filename + "\" (for model \"" + std::string(this->getCref()) + "\")");
@@ -454,6 +427,10 @@ oms_status_enu_t oms::Model::exportSSMTemplate(const oms::ComRef& cref, const st
   oms::ComRef front = tail.pop_front();
 
   pugi::xml_document ssmdoc;
+  // generate XML declaration for ssm file
+  pugi::xml_node ssmDeclarationNode = ssmdoc.append_child(pugi::node_declaration);
+  ssmDeclarationNode.append_attribute("version") = "1.0";
+  ssmDeclarationNode.append_attribute("encoding") = "UTF-8";
 
   std::string extension = "";
   if (filename.length() > 4)
@@ -462,22 +439,14 @@ oms_status_enu_t oms::Model::exportSSMTemplate(const oms::ComRef& cref, const st
   if (extension != ".ssm")
     return logError("filename extension must be \".ssm\"; no other formats are supported");
 
-  // generate XML declaration for ssv file
-  pugi::xml_node ssmDeclarationNode = ssmdoc.append_child(pugi::node_declaration);
-  ssmDeclarationNode.append_attribute("version") = "1.0";
-  ssmDeclarationNode.append_attribute("encoding") = "UTF-8";
-
-  pugi::xml_node node_parameterMapping = ssmdoc.append_child(oms::ssp::Version1_0::ssm::parameter_mapping);
-  node_parameterMapping.append_attribute("xmlns:ssc") = "http://ssp-standard.org/SSP1/SystemStructureCommon";
-  node_parameterMapping.append_attribute("xmlns:ssm") = "http://ssp-standard.org/SSP1/SystemStructureParameterMapping";
-
-  node_parameterMapping.append_attribute("version") = "1.0";
+  Snapshot snapshot;
+  pugi::xml_node ssmNode = snapshot.getTemplateResourceNodeSSM("template.ssm");
 
   for (const auto& component : system->getComponents())
   {
     if(component.first == tail || cref.isEmpty()) // allow querying single component or whole model
     {
-      if (oms_status_ok != component.second->exportToSSMTemplate(node_parameterMapping))
+      if (oms_status_ok != component.second->exportToSSMTemplate(ssmNode))
       {
         return logError("export of ssm template failed for component " + std::string(system->getFullCref()+std::string(component.first)));
       }
@@ -485,6 +454,7 @@ oms_status_enu_t oms::Model::exportSSMTemplate(const oms::ComRef& cref, const st
   }
 
   //ssmdoc.save(std::cout);
+  ssmdoc.append_copy(snapshot.getResourceNode("template.ssm"));
 
   if (!ssmdoc.save_file(filename.c_str()))
     return logError("failed to export  \"" + filename + "\" (for model \"" + std::string(this->getCref()) + "\")");
@@ -498,12 +468,10 @@ oms_status_enu_t oms::Model::exportSSMTemplate(const oms::ComRef& cref, const st
  *     <ssd:ParameterBinding source="resources/import_export_parameters.ssv" />
  * </ssd:ParameterBindings>
  */
-oms_status_enu_t oms::Model::updateParameterBindingsToSSD(pugi::xml_node& node, pugi::xml_node& ssvNode, bool isTopSystemOrModel) const
+oms_status_enu_t oms::Model::updateParameterBindingsToSSD(pugi::xml_node& node, bool isTopSystemOrModel) const
 {
-  int parameterNodeCount = std::distance(ssvNode.begin(), ssvNode.end());
-
   // check parameter bindings exist and export to ssv file and also update the ssd file with parameterBindings at the top level
-  if (parameterNodeCount > 0 && isTopSystemOrModel)
+  if (isTopSystemOrModel)
   {
     // update the ssd with the top level parameterBindings (e.g)  <ParameterBinding source="resources/ControlledTemperature.ssv">
     for(pugi::xml_node_iterator it = node.begin(); it != node.end(); ++it)
@@ -548,26 +516,18 @@ oms_status_enu_t oms::Model::addSystem(const oms::ComRef& cref, oms_system_enu_t
   return logError("wrong input \"" + std::string(front) + "\" != \"" + std::string(system->getCref()) + "\"");
 }
 
-oms_status_enu_t oms::Model::exportToSSD(pugi::xml_node& node, pugi::xml_node& ssvNode, Snapshot& snapshot) const
+oms_status_enu_t oms::Model::exportToSSD(Snapshot& snapshot) const
 {
-  node.append_attribute("xmlns:ssc") = "http://ssp-standard.org/SSP1/SystemStructureCommon";
-  node.append_attribute("xmlns:ssd") = "http://ssp-standard.org/SSP1/SystemStructureDescription";
-  node.append_attribute("xmlns:ssv") = "http://ssp-standard.org/SSP1/SystemStructureParameterValues";
-  node.append_attribute("xmlns:ssm") = "http://ssp-standard.org/SSP1/SystemStructureParameterMapping";
-  node.append_attribute("xmlns:ssb") = "http://ssp-standard.org/SSP1/SystemStructureSignalDictionary";
-  node.append_attribute("xmlns:oms") = "https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd";
-
-  node.append_attribute("name") = this->getCref().c_str();
-  node.append_attribute("version") = "1.0";
+  pugi::xml_node ssdNode = snapshot.getTemplateResourceNodeSSD("SystemStructure.ssd", this->getCref());
 
   if (system)
   {
-    pugi::xml_node system_node = node.append_child(oms::ssp::Draft20180219::ssd::system);
-    if (oms_status_ok != system->exportToSSD(system_node, ssvNode, snapshot))
+    pugi::xml_node system_node = ssdNode.append_child(oms::ssp::Draft20180219::ssd::system);
+    if (oms_status_ok != system->exportToSSD(system_node, snapshot))
       return logError("export of system failed");
   }
 
-  pugi::xml_node default_experiment = node.append_child(oms::ssp::Draft20180219::ssd::default_experiment);
+  pugi::xml_node default_experiment = ssdNode.append_child(oms::ssp::Draft20180219::ssd::default_experiment);
   default_experiment.append_attribute("startTime") = std::to_string(startTime).c_str();
   default_experiment.append_attribute("stopTime") = std::to_string(stopTime).c_str();
 
@@ -745,8 +705,6 @@ oms_system_enu_t oms::Model::getSystemTypeHelper(const pugi::xml_node& node, con
 
 oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
 {
-  pugi::xml_document doc;
-  pugi::xml_document ssvdoc;
 
   Snapshot snapshot;
 
@@ -757,79 +715,16 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
   if (extension != ".ssp")
     return logError("filename extension must be \".ssp\"; no other formats are supported");
 
-  // generate XML declaration
-  pugi::xml_node declarationNode = doc.append_child(pugi::node_declaration);
-  declarationNode.append_attribute("version") = "1.0";
-  declarationNode.append_attribute("encoding") = "UTF-8";
+  exportToSSD(snapshot);
 
-  pugi::xml_node node = doc.append_child(oms::ssp::Draft20180219::ssd::system_structure_description);
-
-  // generate XML declaration for ssv file
-  pugi::xml_node ssvDeclarationNode = ssvdoc.append_child(pugi::node_declaration);
-  ssvDeclarationNode.append_attribute("version") = "1.0";
-  ssvDeclarationNode.append_attribute("encoding") = "UTF-8";
-
-  pugi::xml_node node_parameterset = ssvdoc.append_child(oms::ssp::Version1_0::ssv::parameter_set);
-  node_parameterset.append_attribute("xmlns:ssc") = "http://ssp-standard.org/SSP1/SystemStructureCommon";
-  node_parameterset.append_attribute("xmlns:ssv") = "http://ssp-standard.org/SSP1/SystemStructureParameterValues";
-
-  node_parameterset.append_attribute("version") = "1.0";
-  node_parameterset.append_attribute("name") = "parameters";
-  pugi::xml_node node_parameters = node_parameterset.append_child(oms::ssp::Version1_0::ssv::parameters);
-
-  exportToSSD(node, node_parameters, snapshot);
-
-  filesystem::path ssdPath = filesystem::path(tempDir) / "SystemStructure.ssd";
-
-  // check for parameter-bindings are defined, (i.e) count the child nodes node_parameters in ssvdoc
-  int parameterNodeCount = std::distance(node_parameters.begin(), node_parameters.end());
-  std::string ssvFileName = "";
-
-  std::vector<std::string> resources;
-
-  // check parameter bindings exist and export to ssv file and also update the ssd file with parameterBindings at the top level
-  if (parameterNodeCount > 0)
+  // export to ssv if flag set
+  if (!Flags::ExportParametersInline())
   {
-    ssvFileName = "resources/" + std::string(this->getCref()) + ".ssv";
-    resources.push_back(ssvFileName);
-
-    filesystem::path ssvPath = filesystem::path(tempDir) /  ssvFileName;
-    //std::cout << "\n ssvPath  : " << ssvPath << " filename : " << ssvFileName;
-    ssvdoc.save_file(ssvPath.string().c_str());
-
-    // update the ssd with the top level parameterBindings (e.g)  <ParameterBinding source="resources/ControlledTemperature.ssv">
-    for(pugi::xml_node_iterator it = node.begin(); it != node.end(); ++it)
-    {
-      pugi::xml_node node_elements = it->child(oms::ssp::Draft20180219::ssd::elements);
-      if (node_elements) // insert the parameter bindings before <ssd:Elements>
-      {
-        pugi::xml_node node_parameters_bindings = it->insert_child_before(oms::ssp::Version1_0::ssd::parameter_bindings, node_elements);
-        pugi::xml_node node_parameter_binding  = node_parameters_bindings.append_child(oms::ssp::Version1_0::ssd::parameter_binding);
-        node_parameter_binding.append_attribute("source") = ssvFileName.c_str();
-        break;
-      }
-    }
+    system->exportToSSV(snapshot);
+    // TODO ssm file
   }
 
-  // signal Filter
-  pugi::xml_document signalFilterdoc;
-  // generate XML declaration for signal filter
-  pugi::xml_node signalFilterNode = signalFilterdoc.append_child(pugi::node_declaration);
-  signalFilterNode.append_attribute("version") = "1.0";
-  signalFilterNode.append_attribute("encoding") = "UTF-8";
-
-  pugi::xml_node oms_signalFilter = signalFilterdoc.append_child(oms::ssp::Version1_0::oms_signalFilter);
-  oms_signalFilter.append_attribute("version") = "1.0";
-
-  exportSignalFilter(oms_signalFilter);
-
-  filesystem::path signalFilterFilePath = filesystem::path(tempDir) / signalFilterFilename;
-  signalFilterdoc.save_file(signalFilterFilePath.string().c_str());
-
-  //doc.save(std::cout);
-
-  if (!doc.save_file(ssdPath.string().c_str()))
-    return logError("failed to export \"" + ssdPath.string() + "\" (for model \"" + std::string(this->getCref()) + "\")");
+  exportSignalFilter(snapshot);
 
   // Usage: minizip [-o] [-a] [-0 to -9] [-p password] [-j] file.zip [files_to_add]
   //        -o  Overwrite existing file.zip
@@ -839,7 +734,8 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
   //        -9  Compress better
   //        -j  exclude path. store only the file name
 
-  getAllResources(resources);
+  std::vector<std::string> resources;
+  getAllResources(resources, snapshot);
 
   std::string cd = Scope::GetInstance().getWorkingDirectory();
   Scope::GetInstance().setWorkingDirectory(tempDir);
@@ -862,10 +758,19 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
   return oms_status_ok;
 }
 
-void oms::Model::getAllResources(std::vector<std::string>& resources) const
+void oms::Model::getAllResources(std::vector<std::string>& resources, Snapshot& snapshot) const
 {
-  resources.push_back("SystemStructure.ssd");
-  resources.push_back(signalFilterFilename);
+  // get all files from snapshot and save the document (eg.) ssd, ssv and signalFilter
+  snapshot.getResources(resources);
+  for (auto const &filename : resources)
+  {
+    //std::cout << "\n resources Nodes : " << filename;
+    pugi::xml_document doc;
+    doc.append_copy(snapshot.getResourceNode(filename));
+    filesystem::path filepath = filesystem::path(tempDir) /  filename;
+    if (!doc.save_file(filepath.string().c_str()))
+      logError("failed to export \"" + filepath.string() + "\" (for file \"" + filename + "\")");
+  }
 
   if (system)
     system->getAllResources(resources);
@@ -1218,17 +1123,19 @@ oms_status_enu_t oms::Model::removeSignalsFromResults(const char* regex)
   return oms_status_ok;
 }
 
-void oms::Model::exportSignalFilter(pugi::xml_node &node) const
+void oms::Model::exportSignalFilter(Snapshot& snapshot) const
 {
   if (!system)
     return;
+
+  pugi::xml_node oms_signalFilter = snapshot.getTemplateResourceNodeSignalFilter(signalFilterFilename);
 
   std::vector<oms::Connector> filteredSignals;
   system->getFilteredSignals(filteredSignals);
 
   for (auto const& signal : filteredSignals)
   {
-    pugi::xml_node oms_variable = node.append_child(oms::ssp::Version1_0::oms_Variable);
+    pugi::xml_node oms_variable = oms_signalFilter.append_child(oms::ssp::Version1_0::oms_Variable);
     oms_variable.append_attribute("name") = signal.getFullName().c_str();
     oms_variable.append_attribute("type") = signal.getTypeString().c_str();
     oms_variable.append_attribute("kind") = signal.getCausalityString().c_str();

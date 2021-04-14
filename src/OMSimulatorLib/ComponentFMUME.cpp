@@ -302,7 +302,7 @@ oms::Component* oms::ComponentFMUME::NewComponent(const pugi::xml_node& node, om
   return component;
 }
 
-oms_status_enu_t oms::ComponentFMUME::exportToSSD(pugi::xml_node& node, pugi::xml_node& ssvNode, Snapshot& snapshot) const
+oms_status_enu_t oms::ComponentFMUME::exportToSSD(pugi::xml_node& node, Snapshot& snapshot) const
 {
 #if !defined(NO_TLM)
   if (tlmbusconnectors[0])
@@ -334,12 +334,13 @@ oms_status_enu_t oms::ComponentFMUME::exportToSSD(pugi::xml_node& node, pugi::xm
   {
     values.exportToSSD(node);
   }
-  else
-  {
-    values.exportToSSV(ssvNode); // export to ssv file
-  }
 
   return oms_status_ok;
+}
+
+oms_status_enu_t oms::ComponentFMUME::exportToSSV(pugi::xml_node& ssvNode)
+{
+  return values.exportToSSV(ssvNode);
 }
 
 oms_status_enu_t oms::ComponentFMUME::exportToSSVTemplate(pugi::xml_node& ssvNode)
