@@ -83,15 +83,12 @@ componentSnapshot = [[
       </oms:file>
     </oms:snapshot>
 ]]
--- error case, gain_1 cannot be set as newCref because snapshot does not have
+
 newcref, status = oms_importSnapshot("model", componentSnapshot)
 print(newcref)
 
 
 -- Result:
 -- root_3
--- error:   [setNewCref] NewCref not set for "gain_1" as it could not be associated with snapshot
--- 
--- info:    0 warnings
--- info:    1 errors
+-- gain_1
 -- endResult

@@ -216,9 +216,6 @@ oms_status_enu_t oms::Model::importSnapshot(const char* snapshot_, char** newCre
   ComRef new_cref = ComRef(ssdNode.attribute("name").as_string());
   std::string ssdVersion = ssdNode.attribute("version").as_string();
 
-  if (new_cref != getCref())
-    return logError("this API cannot be used to rename a model");
-
   if (ssdVersion != "Draft20180219" && ssdVersion != "1.0")
     logWarning("Unknown SSD version: " + ssdVersion);
 
@@ -244,6 +241,10 @@ oms_status_enu_t oms::Model::importSnapshot(const char* snapshot_, char** newCre
 
   if (newCref)
     *newCref = (char*)new_root_cref.c_str();
+
+  // rename model
+  if (new_cref != getCref())
+    Scope::GetInstance().renameModel(getCref(), new_cref);
 
   return oms_status_ok;
 }
