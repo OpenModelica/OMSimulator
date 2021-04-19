@@ -14,6 +14,11 @@ oms_addSystem("model.root", oms_system_wc)
 oms_addConnector("model.root.input1", oms_causality_input, oms_signal_type_real)
 oms_addConnector("model.root.output", oms_causality_output, oms_signal_type_real)
 
+oms_addSystem("model.root.System1", oms_system_sc)
+oms_addConnector("model.root.System1.input1", oms_causality_input, oms_signal_type_real)
+
+oms_addSubModel("model.root.add", "../resources/Modelica.Blocks.Math.Add.fmu")
+
 oms_rename("model", "model_3")
 
 src = oms_exportSnapshot("model_3")
@@ -50,6 +55,75 @@ print(src)
 --             <ssc:Real />
 --           </ssd:Connector>
 --         </ssd:Connectors>
+--         <ssd:Elements>
+--           <ssd:System
+--             name="System1">
+--             <ssd:Connectors>
+--               <ssd:Connector
+--                 name="input1"
+--                 kind="input">
+--                 <ssc:Real />
+--               </ssd:Connector>
+--             </ssd:Connectors>
+--             <ssd:Annotations>
+--               <ssc:Annotation
+--                 type="org.openmodelica">
+--                 <oms:Annotations>
+--                   <oms:SimulationInformation>
+--                     <oms:VariableStepSolver
+--                       description="cvode"
+--                       absoluteTolerance="0.000100"
+--                       relativeTolerance="0.000100"
+--                       minimumStepSize="0.000100"
+--                       maximumStepSize="0.100000"
+--                       initialStepSize="0.000100" />
+--                   </oms:SimulationInformation>
+--                 </oms:Annotations>
+--               </ssc:Annotation>
+--             </ssd:Annotations>
+--           </ssd:System>
+--           <ssd:Component
+--             name="add"
+--             type="application/x-fmu-sharedlibrary"
+--             source="resources/0001_add.fmu">
+--             <ssd:Connectors>
+--               <ssd:Connector
+--                 name="u1"
+--                 kind="input">
+--                 <ssc:Real />
+--                 <ssd:ConnectorGeometry
+--                   x="0.000000"
+--                   y="0.333333" />
+--               </ssd:Connector>
+--               <ssd:Connector
+--                 name="u2"
+--                 kind="input">
+--                 <ssc:Real />
+--                 <ssd:ConnectorGeometry
+--                   x="0.000000"
+--                   y="0.666667" />
+--               </ssd:Connector>
+--               <ssd:Connector
+--                 name="y"
+--                 kind="output">
+--                 <ssc:Real />
+--                 <ssd:ConnectorGeometry
+--                   x="1.000000"
+--                   y="0.500000" />
+--               </ssd:Connector>
+--               <ssd:Connector
+--                 name="k1"
+--                 kind="parameter">
+--                 <ssc:Real />
+--               </ssd:Connector>
+--               <ssd:Connector
+--                 name="k2"
+--                 kind="parameter">
+--                 <ssc:Real />
+--               </ssd:Connector>
+--             </ssd:Connectors>
+--           </ssd:Component>
+--         </ssd:Elements>
 --         <ssd:Annotations>
 --           <ssc:Annotation
 --             type="org.openmodelica">
@@ -95,6 +169,30 @@ print(src)
 --         name="model_3.root.output"
 --         type="Real"
 --         kind="output" />
+--       <oms:Variable
+--         name="model_3.root.add.u1"
+--         type="Real"
+--         kind="input" />
+--       <oms:Variable
+--         name="model_3.root.add.u2"
+--         type="Real"
+--         kind="input" />
+--       <oms:Variable
+--         name="model_3.root.add.y"
+--         type="Real"
+--         kind="output" />
+--       <oms:Variable
+--         name="model_3.root.add.k1"
+--         type="Real"
+--         kind="parameter" />
+--       <oms:Variable
+--         name="model_3.root.add.k2"
+--         type="Real"
+--         kind="parameter" />
+--       <oms:Variable
+--         name="model_3.root.System1.input1"
+--         type="Real"
+--         kind="input" />
 --     </oms:SignalFilter>
 --   </oms:file>
 -- </oms:snapshot>

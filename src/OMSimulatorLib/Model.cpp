@@ -119,7 +119,12 @@ oms_status_enu_t oms::Model::rename(const oms::ComRef& cref)
     return logError(std::string(cref) + " is not a valid ident");
 
   this->cref = cref;
-  system->renameConnectors();
+
+  if (system)
+    system->renameConnectors();
+    for (const auto & it:system->getSubSystems())
+      it.second->renameConnectors();
+
   return oms_status_ok;
 }
 
