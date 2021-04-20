@@ -121,9 +121,11 @@ oms_status_enu_t oms::Model::rename(const oms::ComRef& cref)
   this->cref = cref;
 
   if (system)
+  {
     system->renameConnectors();
     for (const auto & it:system->getSubSystems())
       it.second->renameConnectors();
+  }
 
   return oms_status_ok;
 }
