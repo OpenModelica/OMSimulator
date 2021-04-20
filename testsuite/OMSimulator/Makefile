@@ -27,6 +27,7 @@ partialSnapshot.lua \
 PI_Controller.lua \
 QuarterCarModel.DisplacementDisplacement.lua \
 rename.lua \
+renameModel.lua \
 renameSnapshot.lua \
 renameNewCref.lua \
 setExternalInputs.lua \
