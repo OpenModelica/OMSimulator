@@ -229,6 +229,7 @@ oms_status_enu_t oms::SystemSC::initialize()
 {
   clock.reset();
   CallClock callClock(clock);
+  bool illegalNominals = false;
 
   if (oms_status_ok != updateDependencyGraphs())
     return oms_status_error;
@@ -256,12 +257,25 @@ oms_status_enu_t oms::SystemSC::initialize()
       if (oms_status_ok != status) return status;
       status = fmus[i]->getNominalsOfContinuousStates(states_nominal[i]);
       if (oms_status_ok != status) return status;
+      // Check if nominals are greater 0
+      for(int l=0; l<nStates[i]; l++)
+      {
+        if (states_nominal[i][l]<= 0)
+        {
+          illegalNominals = true;
+          logError(std::string(fmus[i]->getFullCref()) + ": nominal[" + std::to_string(l) + "]=" + std::to_string(states_nominal[i][l]) + " not greater than zero.");
+        }
+      }
     }
     if (fmus[i]->getNumberOfEventIndicators() > 0)
     {
       status = fmus[i]->getEventindicators(event_indicators[i]);
       if (oms_status_ok != status) return status;
     }
+  }
+  if(illegalNominals)
+  {
+    return oms_status_error;
   }
 
   if (oms_solver_sc_cvode == solverMethod)
