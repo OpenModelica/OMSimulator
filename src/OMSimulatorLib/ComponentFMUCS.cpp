@@ -283,8 +283,10 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const pugi::xml_node& node, om
     else if(name == oms::ssp::Version1_0::ssd::parameter_bindings)
     {
       // set parameter bindings associated with the component
+      Values resources;
       std::string tempdir = parentSystem->getModel().getTempDirectory();
-      component->values.importFromSnapshot(*it, sspVersion, snapshot);
+      resources.importFromSnapshot(*it, sspVersion, snapshot);
+      component->values.parameterResources.push_back(resources);
     }
     else
     {
@@ -328,10 +330,7 @@ oms_status_enu_t oms::ComponentFMUCS::exportToSSD(pugi::xml_node& node, Snapshot
         return oms_status_error;
 
   // export ParameterBindings at component level
-  if (Flags::ExportParametersInline()) // export as inline
-  {
-    values.exportToSSD(node);
-  }
+  values.exportParameterBindings(node, snapshot);
 
   return oms_status_ok;
 }

@@ -414,16 +414,7 @@ oms_status_enu_t oms::System::exportToSSD(pugi::xml_node& node, Snapshot& snapsh
     }
   }
 
-  // export as inline
-  if (Flags::ExportParametersInline())
-  {
-    values.exportToSSD(node);
-  }
-  // export top level parameterBindings in ssv file
-  else if (std::string(node.parent().name()) == oms::ssp::Draft20180219::ssd::system_structure_description)
-  {
-    values.exportParameterBindings(node, parentModel->getCref());
-  }
+  values.exportParameterBindings(node, snapshot);
 
   if (subelements.size() > 1)
   {
@@ -512,6 +503,13 @@ oms_status_enu_t oms::System::exportToSSV(Snapshot& snapshot) const
   pugi::xml_node ssvNode = snapshot.getTemplateResourceNodeSSV("resources/" + std::string(parentModel->getCref()) + ".ssv", "parameters");
 
   values.exportToSSV(ssvNode);
+  for (const auto& it : values.resourceFiles)
+  {
+    for (const auto & val : values.realStartValues)
+    {
+      std::cout << "\n" << it << ":" << val.first.c_str() << "=" << val.second;
+    }
+  }
 
   for (const auto& subsystem : subsystems)
     subsystem.second->values.exportToSSV(ssvNode);
@@ -546,6 +544,7 @@ oms_status_enu_t oms::System::importFromSnapshot(const pugi::xml_node& node, con
       // top-level parameter bindings belonging to
       // <ssd:SystemStructureDescription> provided either as inline or
       // .ssv files
+      Values resources; // create a list of <parameterBidings>
       if (parent_node == oms::ssp::Draft20180219::ssd::system_structure_description)
       {
         // check for multiple ssv files or parameter bindings
@@ -557,7 +556,7 @@ oms_status_enu_t oms::System::importFromSnapshot(const pugi::xml_node& node, con
           if (ssvFileSource.empty()) // inline parameterBinding
           {
             std::string tempdir = getModel().getTempDirectory();
-            if (oms_status_ok != values.importFromSnapshot(*it, sspVersion, snapshot))
+            if (oms_status_ok != resources.importFromSnapshot(*it, sspVersion, snapshot))
               return logError("Failed to import " + std::string(oms::ssp::Version1_0::ssd::parameter_bindings));
           }
           else
@@ -575,6 +574,8 @@ oms_status_enu_t oms::System::importFromSnapshot(const pugi::xml_node& node, con
             {
               startValuesFileSources[ssvFileSource] = "";
             }
+            // import the top level parameter bindings
+            resources.importFromSnapshot(*it, sspVersion, snapshot);
           }
         }
       }
@@ -582,9 +583,11 @@ oms_status_enu_t oms::System::importFromSnapshot(const pugi::xml_node& node, con
       // hierarchical level parameter bindings belonging to
       // <ssd:Elements> provided either as inline or .csv files
       {
-        if (oms_status_ok != values.importFromSnapshot(*it, sspVersion, snapshot))
+        if (oms_status_ok != resources.importFromSnapshot(*it, sspVersion, snapshot))
             return logError("Failed to import " + std::string(oms::ssp::Version1_0::ssd::parameter_bindings));
       }
+      // add the list of <parameterBindings>
+      values.parameterResources.push_back(resources);
     }
     else if (name == oms::ssp::Draft20180219::ssd::connections)
     {
@@ -774,6 +777,7 @@ oms_status_enu_t oms::System::importFromSnapshot(const pugi::xml_node& node, con
       // check for ssv file sources exist and set the values before the connections
       for (auto const& ssvSource : startValuesFileSources)
       {
+        // add the resource files
         importStartValuesFromSSV(ssvSource.first, ssvSource.second, snapshot);
       }
     }
@@ -2026,6 +2030,8 @@ oms_status_enu_t oms::System::setReal(const ComRef& cref, double value)
 
   oms::ComRef tail(cref);
   oms::ComRef head = tail.pop_front();
+
+  //values.updateResources(cref, value);
 
   auto subsystem = subsystems.find(head);
   if (subsystem != subsystems.end())

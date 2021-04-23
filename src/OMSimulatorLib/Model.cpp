@@ -375,12 +375,12 @@ oms_status_enu_t oms::Model::exportSnapshot(const oms::ComRef& cref, char** cont
 
   exportToSSD(snapshot);
 
-  // export to ssv file if Flag set
-  if (!Flags::ExportParametersInline())
-  {
-    system->exportToSSV(snapshot);
-    // TODO ssm file
-  }
+  // // export to ssv file if Flag set
+  // if (!Flags::ExportParametersInline())
+  // {
+  //   system->exportToSSV(snapshot);
+  //   // TODO ssm file
+  // }
 
   exportSignalFilter(snapshot);
 

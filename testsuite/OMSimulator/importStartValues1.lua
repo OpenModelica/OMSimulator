@@ -1,5 +1,5 @@
 -- status: correct
--- teardown_command: rm -rf importStartValues-lua/
+-- teardown_command: rm -rf importStartValues_01_lua/
 -- linux: yes
 -- mingw: yes
 -- win: no
@@ -7,9 +7,9 @@
 
 oms_setCommandLineOption("--suppressPath=true")
 
-oms_setTempDirectory("./importStartValues-lua/")
+oms_setTempDirectory("./importStartValues_01_lua/")
 
-oms_importFile("../resources/importStartValues.ssp");
+oms_importFile("../resources/importStartValues1.ssp");
 
 src1 = oms_exportSnapshot("importStartValues")
 print(src1)
@@ -54,10 +54,34 @@ oms_delete("importStartValues")
 --             kind="input">
 --             <ssc:Real />
 --           </ssd:Connector>
+--           <ssd:Connector
+--             name="C2"
+--             kind="input">
+--             <ssc:Real />
+--           </ssd:Connector>
 --         </ssd:Connectors>
 --         <ssd:ParameterBindings>
+--           <ssd:ParameterBinding>
+--             <ssd:ParameterValues>
+--               <ssv:ParameterSet
+--                 version="1.0"
+--                 name="parameters">
+--                 <ssv:Parameters>
+--                   <ssv:Parameter
+--                     name="C2">
+--                     <ssv:Real
+--                       value="-100" />
+--                   </ssv:Parameter>
+--                 </ssv:Parameters>
+--               </ssv:ParameterSet>
+--             </ssd:ParameterValues>
+--           </ssd:ParameterBinding>
 --           <ssd:ParameterBinding
---             source="resources/importStartValues.ssv" />
+--             source="resources/Root.ssv" />
+--         </ssd:ParameterBindings>
+--         <ssd:ParameterBindings>
+--           <ssd:ParameterBinding
+--             source="resources/System1.ssv" />
 --         </ssd:ParameterBindings>
 --         <ssd:Elements>
 --           <ssd:System
@@ -74,11 +98,33 @@ oms_delete("importStartValues")
 --                 <ssc:Real />
 --               </ssd:Connector>
 --               <ssd:Connector
+--                 name="k1"
+--                 kind="parameter">
+--                 <ssc:Real />
+--               </ssd:Connector>
+--               <ssd:Connector
 --                 name="C3"
 --                 kind="output">
 --                 <ssc:Real />
 --               </ssd:Connector>
 --             </ssd:Connectors>
+--             <ssd:ParameterBindings>
+--               <ssd:ParameterBinding>
+--                 <ssd:ParameterValues>
+--                   <ssv:ParameterSet
+--                     version="1.0"
+--                     name="parameters">
+--                     <ssv:Parameters>
+--                       <ssv:Parameter
+--                         name="k1">
+--                         <ssv:Real
+--                           value="-200" />
+--                       </ssv:Parameter>
+--                     </ssv:Parameters>
+--                   </ssv:ParameterSet>
+--                 </ssd:ParameterValues>
+--               </ssd:ParameterBinding>
+--             </ssd:ParameterBindings>
 --             <ssd:Annotations>
 --               <ssc:Annotation
 --                 type="org.openmodelica">
@@ -131,7 +177,7 @@ oms_delete("importStartValues")
 --     </ssd:SystemStructureDescription>
 --   </oms:file>
 --   <oms:file
---     name="resources/importStartValues.ssv">
+--     name="resources/Root.ssv">
 --     <ssv:ParameterSet
 --       xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
 --       xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
@@ -143,6 +189,17 @@ oms_delete("importStartValues")
 --           <ssv:Real
 --             value="-10.5" />
 --         </ssv:Parameter>
+--       </ssv:Parameters>
+--     </ssv:ParameterSet>
+--   </oms:file>
+--   <oms:file
+--     name="resources/System1.ssv">
+--     <ssv:ParameterSet
+--       xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
+--       xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
+--       version="1.0"
+--       name="parameters">
+--       <ssv:Parameters>
 --         <ssv:Parameter
 --           name="System1.C2">
 --           <ssv:Real
@@ -165,11 +222,19 @@ oms_delete("importStartValues")
 --         type="Real"
 --         kind="input" />
 --       <oms:Variable
+--         name="importStartValues.root.C2"
+--         type="Real"
+--         kind="input" />
+--       <oms:Variable
 --         name="importStartValues.root.System1.C1"
 --         type="Real"
 --         kind="input" />
 --       <oms:Variable
 --         name="importStartValues.root.System1.C2"
+--         type="Real"
+--         kind="parameter" />
+--       <oms:Variable
+--         name="importStartValues.root.System1.k1"
 --         type="Real"
 --         kind="parameter" />
 --       <oms:Variable
@@ -179,7 +244,7 @@ oms_delete("importStartValues")
 --     </oms:SignalFilter>
 --   </oms:file>
 -- </oms:snapshot>
---
+-- 
 -- info:    model doesn't contain any continuous state
 -- info:    Result file: importStartValues_res.mat (bufferSize=10)
 -- info:    5 warnings

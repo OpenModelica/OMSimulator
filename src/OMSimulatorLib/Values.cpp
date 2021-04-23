@@ -52,7 +52,24 @@ oms::Values::~Values()
 
 oms_status_enu_t oms::Values::setReal(const ComRef& cref, double value)
 {
+  // std::cout << "\nTop setReal: " << cref.c_str() << "=" << value;
+
   realStartValues[cref] = value;
+  // for (const auto &it : allresources)
+  // {
+  //   std::cout << "\nsetReal: " << it.first;
+  //   auto val = it.second;
+  //   for (auto &v : val.realStartValues)
+  //   {
+  //     std::cout << "\n setReal_1 :" << it.first << ":" << cref.c_str()  << "=" << value << " = >" << v.first.c_str() << "=" << v.second;
+  //     if (cref == v.first)
+  //     {
+  //       std::cout << "\n matched cref: " << v.first.c_str();
+  //       val.realStartValues[cref] = value;
+  //     }
+  //   }
+  //   allresources[it.first] = val;
+  // }
   return oms_status_ok;
 }
 
@@ -126,10 +143,11 @@ oms_status_enu_t oms::Values::importFromSnapshot(const pugi::xml_node& node, con
 {
   for (pugi::xml_node parameterBindingNode = node.child(oms::ssp::Version1_0::ssd::parameter_binding); parameterBindingNode; parameterBindingNode = parameterBindingNode.next_sibling(oms::ssp::Version1_0::ssd::parameter_binding))
   {
+    Values resources; // create a new value object for each parameter binding node
     std::string ssvFile = parameterBindingNode.attribute("source").as_string();
-
     if (!ssvFile.empty()) // parameter binding provided with .ssv file
     {
+      //resourceFiles.push_back(ssvFile);
       pugi::xml_node parameterSet = snapshot.getResourceNode(ssvFile);
       if (!parameterSet)
         return logError("loading <oms:file> \"" + ssvFile + "\" from <oms:snapshot> failed");
@@ -149,10 +167,12 @@ oms_status_enu_t oms::Values::importFromSnapshot(const pugi::xml_node& node, con
           if (!ssm_parameterMapping)
             return logError("loading <oms:file> \"" + ssmFileSource + "\" from <oms:snapshot> failed");
 
-          importParameterMapping(ssm_parameterMapping);
+          resources.importParameterMapping(ssm_parameterMapping);
         }
       }
-      importStartValuesHelper(parameters);
+      resources.importStartValuesHelper(parameters);
+      // add the mapped ssv parameter binding node
+      allresources[ssvFile] = resources;
     }
     else // inline ParameterBindings
     {
@@ -168,9 +188,11 @@ oms_status_enu_t oms::Values::importFromSnapshot(const pugi::xml_node& node, con
       pugi::xml_node ssm_parameterMapping = ssd_parameterMapping.child(oms::ssp::Version1_0::ssm::parameter_mapping);
 
       if (ssm_parameterMapping)
-        importParameterMapping(ssm_parameterMapping);
+        resources.importParameterMapping(ssm_parameterMapping);
 
-      importStartValuesHelper(parameters);
+      resources.importStartValuesHelper(parameters);
+      // add the mapped inline parameter binding node
+      allresources["inline"] = resources;
     }
   }
 
@@ -251,12 +273,52 @@ oms_status_enu_t oms::Values::exportStartValuesHelper(pugi::xml_node& node) cons
   return oms_status_ok;
 }
 
-void oms::Values::exportParameterBindings(pugi::xml_node &node, const ComRef &cref) const
+void oms::Values::exportParameterBindings(pugi::xml_node &node, Snapshot &snapshot) const
 {
-  pugi::xml_node node_parameters_bindings = node.append_child(oms::ssp::Version1_0::ssd::parameter_bindings);
-  pugi::xml_node node_parameter_binding = node_parameters_bindings.append_child(oms::ssp::Version1_0::ssd::parameter_binding);
-  std::string ssvFileName = "resources/" + std::string(cref) + ".ssv";
-  node_parameter_binding.append_attribute("source") = ssvFileName.c_str();
+  for (const auto & it: parameterResources)
+  {
+    pugi::xml_node node_parameters_bindings = node.append_child(oms::ssp::Version1_0::ssd::parameter_bindings);
+    for (const auto & res: it.allresources)
+    {
+      if (res.first == "inline")
+      {
+        // export as inline
+        pugi::xml_node node_parameter_binding = node_parameters_bindings.append_child(oms::ssp::Version1_0::ssd::parameter_binding);
+        pugi::xml_node node_parameter_values = node_parameter_binding.append_child(oms::ssp::Version1_0::ssd::parameter_values);
+        pugi::xml_node node_parameterset = node_parameter_values.append_child(oms::ssp::Version1_0::ssv::parameter_set);
+        node_parameterset.append_attribute("version") = "1.0";
+        node_parameterset.append_attribute("name") = "parameters";
+        pugi::xml_node node_parameters = node_parameterset.append_child(oms::ssp::Version1_0::ssv::parameters);
+        res.second.exportStartValuesHelper(node_parameters);
+      }
+      else
+      {
+        // export to ssv file
+        pugi::xml_node node_parameter_binding = node_parameters_bindings.append_child(oms::ssp::Version1_0::ssd::parameter_binding);
+        node_parameter_binding.append_attribute("source") = res.first.c_str();
+        pugi::xml_node ssvNode = snapshot.getTemplateResourceNodeSSV(res.first, "parameters");
+        res.second.exportToSSV(ssvNode);
+      }
+
+    }
+  }
+}
+
+
+void oms::Values::updateResources(const ComRef& cref, double value)
+{
+  for (const auto &it : allresources)
+  {
+    auto val = it.second;
+    for (auto &v : val.realStartValues)
+    {
+      if (cref == v.first)
+      {
+        val.realStartValues[cref] = value;
+      }
+    }
+    allresources[it.first] = val;
+  }
 }
 
 /*
