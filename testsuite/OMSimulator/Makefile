@@ -6,6 +6,7 @@ deleteStartValues.lua \
 deleteStartValuesInSSV.lua \
 DualMassOscillator.lua \
 Enumeration.lua \
+Enumeration2.lua \
 exportConnectorsToResultFile.lua \
 exportSSMTemplate.lua \
 exportSSMTemplate.py \
