@@ -1087,7 +1087,7 @@ oms_status_enu_t oms::System::addConnection(const oms::ComRef& crefA, const oms:
   {
     // allow non-real connections to tables
   }
-  else if(conA->getType() == oms_signal_type_integer && conB->getType() == oms_signal_type_enum)
+  else if((conA->getType() == oms_signal_type_integer && conB->getType() == oms_signal_type_enum) || (conA->getType() == oms_signal_type_enum && conB->getType() == oms_signal_type_integer))
   {
     // allow integer connection to enum types
   }
