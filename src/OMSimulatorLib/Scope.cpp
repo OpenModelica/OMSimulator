@@ -439,7 +439,7 @@ oms_status_enu_t oms::Scope::importSnapshot(const oms::ComRef& cref, const char*
   if (!model)
     return logError_ModelNotInScope(cref);
 
-  oms_status_enu_t status = model->importSnapshot(snapshot, newCref);
+  oms_status_enu_t status = model->importSnapshot(cref, snapshot, newCref);
 
   return status;
 }
