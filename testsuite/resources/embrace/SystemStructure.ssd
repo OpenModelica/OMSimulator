@@ -9,110 +9,17 @@
 		<ssd:Elements>
 			<ssd:Component name="ECS_SW" type="application/x-fmu-sharedlibrary" source="resources/0002_ECS_SW.fmu">
 				<ssd:Connectors>
-					<ssd:Connector name="TLiquid" kind="input">
+					<ssd:Connector name="Input.TLiquid" kind="input">
 						<ssc:Real />
 						<ssd:ConnectorGeometry x="0.000000" y="0.333333" />
 					</ssd:Connector>
-					<ssd:Connector name="WGT_ON_WHL" kind="input">
-						<ssc:Real />
+					<ssd:Connector name="Input.Aircraft_State" kind="input">
+						<ssc:Enumeration />
 						<ssd:ConnectorGeometry x="0.000000" y="0.666667" />
 					</ssd:Connector>
 					<ssd:Connector name="TCoolingPack" kind="output">
 						<ssc:Real />
 						<ssd:ConnectorGeometry x="1.000000" y="0.500000" />
-					</ssd:Connector>
-					<ssd:Connector name="PID.k" kind="parameter">
-						<ssc:Real />
-					</ssd:Connector>
-					<ssd:Connector name="PID.Ti" kind="parameter">
-						<ssc:Real />
-					</ssd:Connector>
-					<ssd:Connector name="PID.Td" kind="parameter">
-						<ssc:Real />
-					</ssd:Connector>
-					<ssd:Connector name="PID.yMax" kind="parameter">
-						<ssc:Real />
-					</ssd:Connector>
-					<ssd:Connector name="PID.wp" kind="parameter">
-						<ssc:Real />
-					</ssd:Connector>
-					<ssd:Connector name="PID.wd" kind="parameter">
-						<ssc:Real />
-					</ssd:Connector>
-					<ssd:Connector name="PID.Ni" kind="parameter">
-						<ssc:Real />
-					</ssd:Connector>
-					<ssd:Connector name="PID.Nd" kind="parameter">
-						<ssc:Real />
-					</ssd:Connector>
-					<ssd:Connector name="PID.kFF" kind="parameter">
-						<ssc:Real />
-					</ssd:Connector>
-					<ssd:Connector name="PID.xi_start" kind="parameter">
-						<ssc:Real />
-					</ssd:Connector>
-					<ssd:Connector name="PID.xd_start" kind="parameter">
-						<ssc:Real />
-					</ssd:Connector>
-					<ssd:Connector name="PID.y_start" kind="parameter">
-						<ssc:Real />
-					</ssd:Connector>
-					<ssd:Connector name="PID.addP.k2" kind="parameter">
-						<ssc:Real />
-					</ssd:Connector>
-					<ssd:Connector name="PID.P.k" kind="parameter">
-						<ssc:Real />
-					</ssd:Connector>
-					<ssd:Connector name="PID.addPID.k1" kind="parameter">
-						<ssc:Real />
-					</ssd:Connector>
-					<ssd:Connector name="PID.addPID.k2" kind="parameter">
-						<ssc:Real />
-					</ssd:Connector>
-					<ssd:Connector name="PID.addPID.k3" kind="parameter">
-						<ssc:Real />
-					</ssd:Connector>
-					<ssd:Connector name="PID.Dzero.k" kind="parameter">
-						<ssc:Real />
-					</ssd:Connector>
-					<ssd:Connector name="PID.FFzero.k" kind="parameter">
-						<ssc:Real />
-					</ssd:Connector>
-					<ssd:Connector name="PID.addFF.k1" kind="parameter">
-						<ssc:Real />
-					</ssd:Connector>
-					<ssd:Connector name="PID.addI.k1" kind="parameter">
-						<ssc:Real />
-					</ssd:Connector>
-					<ssd:Connector name="PID.addI.k2" kind="parameter">
-						<ssc:Real />
-					</ssd:Connector>
-					<ssd:Connector name="PID.addI.k3" kind="parameter">
-						<ssc:Real />
-					</ssd:Connector>
-					<ssd:Connector name="PID.addSat.k1" kind="parameter">
-						<ssc:Real />
-					</ssd:Connector>
-					<ssd:Connector name="PID.addSat.k2" kind="parameter">
-						<ssc:Real />
-					</ssd:Connector>
-					<ssd:Connector name="refTempLiquid.k" kind="parameter">
-						<ssc:Real />
-					</ssd:Connector>
-					<ssd:Connector name="add.k1" kind="parameter">
-						<ssc:Real />
-					</ssd:Connector>
-					<ssd:Connector name="add.k2" kind="parameter">
-						<ssc:Real />
-					</ssd:Connector>
-					<ssd:Connector name="refTempLiquidOnGnd.k" kind="parameter">
-						<ssc:Real />
-					</ssd:Connector>
-					<ssd:Connector name="greaterThreshold1.threshold" kind="parameter">
-						<ssc:Real />
-					</ssd:Connector>
-					<ssd:Connector name="refTempLiquid1.k" kind="parameter">
-						<ssc:Real />
 					</ssd:Connector>
 				</ssd:Connectors>
 			</ssd:Component>
@@ -878,6 +785,26 @@
 					</ssd:Connector>
 				</ssd:Connectors>
 			</ssd:Component>
+			<ssd:Component name="AdaptionUnit" type="application/x-fmu-sharedlibrary" source="resources/0005_AdaptionUnit.fmu">
+				<ssd:Connectors>
+					<ssd:Connector name="Aircraft_State" kind="input">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="0.000000" y="0.333333" />
+					</ssd:Connector>
+					<ssd:Connector name="LHexTout" kind="input">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="0.000000" y="0.666667" />
+					</ssd:Connector>
+					<ssd:Connector name="sWsignals.TLiquid" kind="output">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="1.000000" y="0.333333" />
+					</ssd:Connector>
+					<ssd:Connector name="sWsignals.Aircraft_State" kind="output">
+						<ssc:Integer />
+						<ssd:ConnectorGeometry x="1.000000" y="0.666667" />
+					</ssd:Connector>
+				</ssd:Connectors>
+			</ssd:Component>
 		</ssd:Elements>
 		<ssd:Connections>
 			<ssd:Connection startElement="Consumer" startConnector="consumerFeed.p" endElement="ECS_HW" endConnector="consumerFeed.p" />
@@ -894,7 +821,9 @@
 			<ssd:Connection startElement="ECS_HW" startConnector="consumerFeed.hn" endElement="Consumer" endConnector="consumerFeed.hn" />
 			<ssd:Connection startElement="ECS_HW" startConnector="consumerRet.m" endElement="Consumer" endConnector="consumerRet.m" />
 			<ssd:Connection startElement="ECS_HW" startConnector="consumerRet.hn" endElement="Consumer" endConnector="consumerRet.hn" />
-			<ssd:Connection startElement="ECS_HW" startConnector="LHexTout" endElement="ECS_SW" endConnector="TLiquid" />
+			<ssd:Connection startElement="ECS_HW" startConnector="LHexTout" endElement="AdaptionUnit" endConnector="LHexTout" />
+			<ssd:Connection startElement="AdaptionUnit" startConnector="sWsignals.Aircraft_State" endElement="ECS_SW" endConnector="Input.Aircraft_State" />
+			<ssd:Connection startElement="AdaptionUnit" startConnector="sWsignals.TLiquid" endElement="ECS_SW" endConnector="Input.TLiquid" />
 			<ssd:Connection startElement="ECS_SW" startConnector="TCoolingPack" endElement="ECS_HW" endConnector="reqCoolingTemperature" />
 			<ssd:Connection startElement="Atmos" startConnector="Tamb" endElement="Consumer" endConnector="Tamb" />
 			<ssd:Connection startElement="Atmos" startConnector="Pamb" endElement="Consumer" endConnector="Pamb" />
