@@ -187,7 +187,7 @@ oms_status_enu_t oms::Model::loadSnapshot(const pugi::xml_node& node)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Model::importSnapshot(const oms::ComRef& cref, const char* snapshot_, char** newCref)
+oms_status_enu_t oms::Model::importSnapshot(const char* snapshot_, char** newCref)
 {
   if (!validState(oms_modelState_virgin))
     return logError_ModelInWrongState(getCref());
@@ -217,7 +217,7 @@ oms_status_enu_t oms::Model::importSnapshot(const oms::ComRef& cref, const char*
   std::string ssdVersion = ssdNode.attribute("version").as_string();
 
   // check new_cref exists in scope
-  if (new_cref != cref && Scope::GetInstance().getModel(new_cref))
+  if (new_cref != getCref() && Scope::GetInstance().getModel(new_cref))
     return logError("renaming model name \"" + std::string(new_cref) + "\" failed as it already exists in the scope");
 
   if (ssdVersion != "Draft20180219" && ssdVersion != "1.0")
