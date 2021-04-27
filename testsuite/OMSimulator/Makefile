@@ -31,6 +31,8 @@ rename.lua \
 renameModel.lua \
 renameSnapshot.lua \
 renameNewCref.lua \
+renameNewCref_1.lua \
+renameNewCref_2.lua \
 setExternalInputs.lua \
 simulation.lua \
 simulation.py \
