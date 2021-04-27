@@ -55,7 +55,6 @@ namespace oms
   public:
     static oms_status_enu_t SetCommandLineOption(const std::string& cmd);
 
-    static oms_alg_solver_enu_t AlgLoopSolver() {return GetInstance().algLoopSolver;}
     static bool AddParametersToCSV() {return GetInstance().addParametersToCSV;}
     static bool DefaultModeIsCS() {return GetInstance().defaultModeIsCS;}
     static bool DeleteTempFiles() {return GetInstance().deleteTempFiles;}
@@ -70,10 +69,12 @@ namespace oms
     static bool StripRoot() {return GetInstance().stripRoot;}
     static bool SuppressPath() {return GetInstance().suppressPath;}
     static bool WallTime() {return GetInstance().wallTime;}
+    static bool ZeroNominal() {return GetInstance().zeroNominal;}
     static double StartTime() {return GetInstance().startTime;}
     static double StopTime() {return GetInstance().stopTime;}
     static double Timeout() {return GetInstance().timeout;}
     static double Tolerance() {return GetInstance().tolerance;}
+    static oms_alg_solver_enu_t AlgLoopSolver() {return GetInstance().algLoopSolver;}
     static oms_solver_enu_t MasterAlgorithm() {return GetInstance().masterAlgorithm;}
     static oms_solver_enu_t Solver() {return GetInstance().solver;}
     static std::string ResultFile() {return GetInstance().resultFile;}
@@ -84,7 +85,6 @@ namespace oms
 
   private:
     bool addParametersToCSV;
-    oms_alg_solver_enu_t algLoopSolver;
     bool defaultModeIsCS;
     bool deleteTempFiles;
     bool emitEvents;
@@ -98,10 +98,12 @@ namespace oms
     bool stripRoot;
     bool suppressPath;
     bool wallTime;
+    bool zeroNominal;
     double startTime;
     double stopTime;
     double timeout;
     double tolerance;
+    oms_alg_solver_enu_t algLoopSolver;
     oms_solver_enu_t masterAlgorithm;
     oms_solver_enu_t solver;
     std::string resultFile;
@@ -167,7 +169,8 @@ namespace oms
       {"--tolerance", "", "Specifies the relative tolerance", re_double, Flags::Tolerance, false},
       {"--version", "-v", "Displays version information", re_void, Flags::Version, false},
       {"--wallTime", "", "Add wall time information for to the result file (true, [false])", re_bool, Flags::WallTime, false},
-      {"--workingDir", "", "Specifies the working directory", re_default, Flags::WorkingDir, false}
+      {"--workingDir", "", "Specifies the working directory", re_default, Flags::WorkingDir, false},
+      {"--zeroNominal", "", "Using this flag, FMUs with invalid nominal values will be accepted and the invalid nominal values will be replaced with 1.0", re_bool, Flags::ZeroNominal, false}
     };
 
     static oms_status_enu_t AddParametersToCSV(const std::string& value);
@@ -205,6 +208,7 @@ namespace oms
     static oms_status_enu_t Version(const std::string& value);
     static oms_status_enu_t WallTime(const std::string& value);
     static oms_status_enu_t WorkingDir(const std::string& value);
+    static oms_status_enu_t ZeroNominal(const std::string& value);
   };
 }
 

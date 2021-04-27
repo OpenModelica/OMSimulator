@@ -87,6 +87,7 @@ void oms::Flags::setDefaults()
   timeout = 0.0;
   tolerance = 1e-4;
   wallTime = false;
+  zeroNominal = false;
 }
 
 oms::Flags& oms::Flags::GetInstance()
@@ -448,5 +449,11 @@ oms_status_enu_t oms::Flags::WorkingDir(const std::string& value)
 oms_status_enu_t oms::Flags::WallTime(const std::string& value)
 {
   GetInstance().wallTime = (value == "true");
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Flags::ZeroNominal(const std::string& value)
+{
+  GetInstance().zeroNominal = (value == "true");
   return oms_status_ok;
 }
