@@ -218,7 +218,7 @@ oms_status_enu_t oms::Model::importSnapshot(const char* snapshot_, char** newCre
 
   // check new_cref exists in scope
   if (new_cref != getCref() && Scope::GetInstance().getModel(new_cref))
-    return logError("renaming model name \"" + std::string(new_cref) + "\" failed as it already exists in the scope");
+    return logError("Renaming the model \"" + std::string(getCref()) + "\" to \"" + std::string(new_cref) + "\" failed because another model with the same name already exists in the scope.");
 
   if (ssdVersion != "Draft20180219" && ssdVersion != "1.0")
     logWarning("Unknown SSD version: " + ssdVersion);

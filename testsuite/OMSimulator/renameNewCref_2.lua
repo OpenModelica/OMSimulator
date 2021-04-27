@@ -144,7 +144,7 @@ snapshot = oms_exportSnapshot("model_7")
 print(snapshot)
 
 -- Result:
--- error:   [importSnapshot] renaming model name "model_4" failed as it already exists in the scope
+-- error:   [importSnapshot] Renaming the model "model" to "model_4" failed because another model with the same name already exists in the scope.
 -- model_5
 -- <?xml version="1.0"?>
 -- <oms:snapshot
