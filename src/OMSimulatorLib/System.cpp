@@ -503,13 +503,6 @@ oms_status_enu_t oms::System::exportToSSV(Snapshot& snapshot) const
   pugi::xml_node ssvNode = snapshot.getTemplateResourceNodeSSV("resources/" + std::string(parentModel->getCref()) + ".ssv", "parameters");
 
   values.exportToSSV(ssvNode);
-  for (const auto& it : values.resourceFiles)
-  {
-    for (const auto & val : values.realStartValues)
-    {
-      std::cout << "\n" << it << ":" << val.first.c_str() << "=" << val.second;
-    }
-  }
 
   for (const auto& subsystem : subsystems)
     subsystem.second->values.exportToSSV(ssvNode);
@@ -1903,19 +1896,47 @@ oms_status_enu_t oms::System::getReal(const ComRef& cref, double& value)
   {
     if (connector && connector->getName() == cref && connector->isTypeReal())
     {
-      oms::ComRef ident = getValidCref(cref);
-      // check any external input are set and return the value, otherwise return the startValue
-      if (oms_modelState_simulation == getModel().getModelState() && values.realValues[ident] != 0.0)
+      // getReal from local resources
+      if (!values.parameterResources.empty())
       {
-        value = values.realValues[ident];
+        if (oms_status_ok == values.getRealResources(cref, value, true, getModel().getModelState()))
+        {
+          return oms_status_ok;
+        }
+        else
+        {
+          value = 0.0;
+          return oms_status_ok;
+        }
+      }
+      // getReal from top level resources
+      else if (getParentSystem() && getParentSystem()->hasResources())
+      {
+        if (oms_status_ok == getParentSystem()->getRealResources(getCref()+cref, value, true, getModel().getModelState()))
+        {
+          return oms_status_ok;
+        }
+        else
+        {
+          value = 0.0;
+          return oms_status_ok;
+        }
+      }
+      // no resources available, getReal from inline
+      else
+      {
+        if (oms_modelState_simulation == getModel().getModelState() && values.realValues[cref] != 0.0)
+        {
+          value = values.realValues[cref];
+          return oms_status_ok;
+        }
+        auto realValue = values.realStartValues.find(cref);
+        if (realValue != values.realStartValues.end())
+          value = realValue->second;
+        else
+          value = 0.0; // default value
         return oms_status_ok;
       }
-      auto realValue = values.realStartValues.find(ident);
-      if (realValue != values.realStartValues.end())
-        value = realValue->second;
-      else
-        value = 0.0; // default value
-      return oms_status_ok;
     }
   }
 
@@ -1926,6 +1947,11 @@ oms_status_enu_t oms::System::getReal(const ComRef& cref, double& value)
   }
 
   return logError_UnknownSignal(getFullCref() + cref);
+}
+
+oms_status_enu_t oms::System::getRealResources(const ComRef& cref, double& value, bool externalInput, oms_modelState_enu_t modelState)
+{
+  return values.getRealResources(cref, value, externalInput, modelState);
 }
 
 /*
@@ -2031,8 +2057,6 @@ oms_status_enu_t oms::System::setReal(const ComRef& cref, double value)
   oms::ComRef tail(cref);
   oms::ComRef head = tail.pop_front();
 
-  //values.updateResources(cref, value);
-
   auto subsystem = subsystems.find(head);
   if (subsystem != subsystems.end())
     return subsystem->second->setReal(tail, value);
@@ -2041,22 +2065,53 @@ oms_status_enu_t oms::System::setReal(const ComRef& cref, double value)
   if (component != components.end())
     return component->second->setReal(tail, value);
 
-  for (auto& connector : connectors)
+  for (auto &connector: connectors)
+  {
     if (connector && connector->getName() == cref && connector->isTypeReal())
     {
-      oms::ComRef ident = getValidCref(cref);
-      // set external inputs, after initialization
-      if (oms_modelState_simulation == getModel().getModelState())
+      // check for local resources available
+      if (!values.parameterResources.empty())
       {
-        values.realValues[ident] = value;
+        return values.setRealResources(cref, value, getFullCref(), true, getModel().getModelState(), connector->isOutput());
+      }
+      // check for resources in top level system
+      else if (getParentSystem() && getParentSystem()->hasResources())
+      {
+        //return getParentSystem()->setRealSystemResources(getCref()+cref, value, connector->isOutput());
+        return getParentSystem()->setRealResources(getCref() + cref, value, true, getModel().getModelState(), connector->isOutput());
       }
       else
       {
-        values.setReal(ident, value);
+        //TODO inline parameter settings
+        //std::cout << "\n set inline parameters";
+        // set external inputs, after initialization
+        if (oms_modelState_simulation == getModel().getModelState())
+        {
+          values.realValues[cref] = value;
+        }
+        else
+        {
+          values.setReal(cref, value);
+        }
+        return oms_status_ok;
       }
-      return oms_status_ok;
     }
+  }
+
   return logError_UnknownSignal(getFullCref() + cref);
+}
+
+bool oms::System::hasResources()
+{
+  if (!values.parameterResources.empty())
+    return true;
+
+  return false;
+}
+
+oms_status_enu_t oms::System::setRealResources(const ComRef& cref, double value, bool externalInput, oms_modelState_enu_t modelState, bool output)
+{
+  return values.setRealResources(cref, value, getFullCref(), externalInput, modelState, output);
 }
 
 oms_status_enu_t oms::System::getReals(const std::vector<oms::ComRef> &sr, std::vector<double> &values)

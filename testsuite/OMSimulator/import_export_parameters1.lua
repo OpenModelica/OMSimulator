@@ -10,14 +10,35 @@ oms_setTempDirectory("./import_export_parameters_01_lua/")
 
 oms_importFile("../resources/import_export_parameters1.ssp");
 
--- TODO update of new values
+-- update of new values
 oms_setReal("import_export_parameters.co_sim.Input_cref", -3.7)
 oms_setReal("import_export_parameters.co_sim.addP.k1", -60)
 oms_setReal("import_export_parameters.co_sim.addI.k2", -150)
+oms_setReal("import_export_parameters.co_sim.foo.F_cref", -55)
+
+-- set new value in resources
+oms_setReal("import_export_parameters.co_sim.Input1", -1000)
+oms_setReal("import_export_parameters.co_sim.addP.u1", 300)
 
 
 src = oms_exportSnapshot("import_export_parameters")
 print(src)
+
+print("info:      Virgin Parameter settings")
+print("info:      import_export_parameters.co_sim.addP.k1     : " .. oms_getReal("import_export_parameters.co_sim.addP.k1"))
+print("info:      import_export_parameters.co_sim.addP.k2     : " .. oms_getReal("import_export_parameters.co_sim.addP.k2"))
+print("info:      import_export_parameters.co_sim.addP.u1     : " .. oms_getReal("import_export_parameters.co_sim.addP.u1"))
+print("info:      import_export_parameters.co_sim.addI.k2     : " .. oms_getReal("import_export_parameters.co_sim.addI.k2"))
+print("info:      import_export_parameters.co_sim.addI.k3     : " .. oms_getReal("import_export_parameters.co_sim.addI.k3"))
+
+-- Top level cref's
+print("info:      Virgin-Top-System-Level-Vars")
+print("info:      import_export_parameters.co_sim.Input_cref  : " .. oms_getReal("import_export_parameters.co_sim.Input_cref"))
+print("info:      import_export_parameters.co_sim.Input1      : " .. oms_getReal("import_export_parameters.co_sim.Input1"))
+print("info:      import_export_parameters.co_sim.T_cref      : " .. oms_getReal("import_export_parameters.co_sim.T_cref"))
+print("info:      import_export_parameters.co_sim.k_cref      : " .. oms_getReal("import_export_parameters.co_sim.k_cref"))
+print("info:      import_export_parameters.co_sim.Output_cref : " .. oms_getReal("import_export_parameters.co_sim.Output_cref"))
+print("info:      import_export_parameters.co_sim.foo.F_cref  : " .. oms_getReal("import_export_parameters.co_sim.foo.F_cref"))
 
 oms_instantiate("import_export_parameters")
 
@@ -27,9 +48,12 @@ print("info:      import_export_parameters.co_sim.addP.k2     : " .. oms_getReal
 print("info:      import_export_parameters.co_sim.addP.u1     : " .. oms_getReal("import_export_parameters.co_sim.addP.u1"))
 print("info:      import_export_parameters.co_sim.addP.y      : " .. oms_getReal("import_export_parameters.co_sim.addP.y"))
 print("info:      import_export_parameters.co_sim.addI.k2     : " .. oms_getReal("import_export_parameters.co_sim.addI.k2"))
+print("info:      import_export_parameters.co_sim.addI.k3     : " .. oms_getReal("import_export_parameters.co_sim.addI.k3"))
+
 -- Top level cref's
 print("info:      Top-System-Level-Vars")
 print("info:      import_export_parameters.co_sim.Input_cref  : " .. oms_getReal("import_export_parameters.co_sim.Input_cref"))
+print("info:      import_export_parameters.co_sim.Input1      : " .. oms_getReal("import_export_parameters.co_sim.Input1"))
 print("info:      import_export_parameters.co_sim.T_cref      : " .. oms_getReal("import_export_parameters.co_sim.T_cref"))
 print("info:      import_export_parameters.co_sim.k_cref      : " .. oms_getReal("import_export_parameters.co_sim.k_cref"))
 print("info:      import_export_parameters.co_sim.Output_cref : " .. oms_getReal("import_export_parameters.co_sim.Output_cref"))
@@ -42,9 +66,12 @@ print("info:      import_export_parameters.co_sim.addP.k2     : " .. oms_getReal
 print("info:      import_export_parameters.co_sim.addP.u1     : " .. oms_getReal("import_export_parameters.co_sim.addP.u1"))
 print("info:      import_export_parameters.co_sim.addP.y      : " .. oms_getReal("import_export_parameters.co_sim.addP.y"))
 print("info:      import_export_parameters.co_sim.addI.k2     : " .. oms_getReal("import_export_parameters.co_sim.addI.k2"))
+print("info:      import_export_parameters.co_sim.addI.k3     : " .. oms_getReal("import_export_parameters.co_sim.addI.k3"))
+
 -- Top level cref's
 print("info:      Top-System-Level-Vars")
 print("info:      import_export_parameters.co_sim.Input_cref  : " .. oms_getReal("import_export_parameters.co_sim.Input_cref"))
+print("info:      import_export_parameters.co_sim.Input1      : " .. oms_getReal("import_export_parameters.co_sim.Input1"))
 print("info:      import_export_parameters.co_sim.T_cref      : " .. oms_getReal("import_export_parameters.co_sim.T_cref"))
 print("info:      import_export_parameters.co_sim.k_cref      : " .. oms_getReal("import_export_parameters.co_sim.k_cref"))
 print("info:      import_export_parameters.co_sim.Output_cref : " .. oms_getReal("import_export_parameters.co_sim.Output_cref"))
@@ -57,10 +84,12 @@ print("info:      import_export_parameters.co_sim.addP.k2     : " .. oms_getReal
 print("info:      import_export_parameters.co_sim.addP.u1     : " .. oms_getReal("import_export_parameters.co_sim.addP.u1"))
 print("info:      import_export_parameters.co_sim.addP.y      : " .. oms_getReal("import_export_parameters.co_sim.addP.y"))
 print("info:      import_export_parameters.co_sim.addI.k2     : " .. oms_getReal("import_export_parameters.co_sim.addI.k2"))
+print("info:      import_export_parameters.co_sim.addI.k3     : " .. oms_getReal("import_export_parameters.co_sim.addI.k3"))
 
 -- Top level cref's
 print("info:      Top-System-Level-Vars")
 print("info:      import_export_parameters.co_sim.Input_cref  : " .. oms_getReal("import_export_parameters.co_sim.Input_cref"))
+print("info:      import_export_parameters.co_sim.Input1      : " .. oms_getReal("import_export_parameters.co_sim.Input1"))
 print("info:      import_export_parameters.co_sim.T_cref      : " .. oms_getReal("import_export_parameters.co_sim.T_cref"))
 print("info:      import_export_parameters.co_sim.k_cref      : " .. oms_getReal("import_export_parameters.co_sim.k_cref"))
 print("info:      import_export_parameters.co_sim.Output_cref : " .. oms_getReal("import_export_parameters.co_sim.Output_cref"))
@@ -70,6 +99,8 @@ oms_terminate("import_export_parameters")
 oms_delete("import_export_parameters")
 
 -- Result:
+-- warning: signal "import_export_parameters.co_sim.Input1" is not found in the list of resource files, it will be updated in the first resource file by default.
+-- warning: signal "import_export_parameters.co_sim.addP.u1" is not found in the list of resource files, it will be updated in the first resource file by default.
 -- <?xml version="1.0"?>
 -- <oms:snapshot
 --   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
@@ -90,6 +121,11 @@ oms_delete("import_export_parameters")
 --         <ssd:Connectors>
 --           <ssd:Connector
 --             name="Input_cref"
+--             kind="input">
+--             <ssc:Real />
+--           </ssd:Connector>
+--           <ssd:Connector
+--             name="Input1"
 --             kind="input">
 --             <ssc:Real />
 --           </ssd:Connector>
@@ -335,7 +371,12 @@ oms_delete("import_export_parameters")
 --         <ssv:Parameter
 --           name="foo.F_cref">
 --           <ssv:Real
---             value="40" />
+--             value="-55" />
+--         </ssv:Parameter>
+--         <ssv:Parameter
+--           name="addP.u1">
+--           <ssv:Real
+--             value="300" />
 --         </ssv:Parameter>
 --         <ssv:Parameter
 --           name="addP.k2">
@@ -345,12 +386,12 @@ oms_delete("import_export_parameters")
 --         <ssv:Parameter
 --           name="addP.k1">
 --           <ssv:Real
---             value="10" />
+--             value="-60" />
 --         </ssv:Parameter>
 --         <ssv:Parameter
 --           name="addI.k2">
 --           <ssv:Real
---             value="2" />
+--             value="-150" />
 --         </ssv:Parameter>
 --         <ssv:Parameter
 --           name="T_cref">
@@ -360,7 +401,12 @@ oms_delete("import_export_parameters")
 --         <ssv:Parameter
 --           name="Input_cref">
 --           <ssv:Real
---             value="-20" />
+--             value="-3.7000000000000002" />
+--         </ssv:Parameter>
+--         <ssv:Parameter
+--           name="Input1">
+--           <ssv:Real
+--             value="-1000" />
 --         </ssv:Parameter>
 --       </ssv:Parameters>
 --     </ssv:ParameterSet>
@@ -452,20 +498,35 @@ oms_delete("import_export_parameters")
 --     </oms:SignalFilter>
 --   </oms:file>
 -- </oms:snapshot>
---
+-- 
+-- info:      Virgin Parameter settings
+-- info:      import_export_parameters.co_sim.addP.k1     : -60.0
+-- info:      import_export_parameters.co_sim.addP.k2     : -1.0
+-- info:      import_export_parameters.co_sim.addP.u1     : 300.0
+-- info:      import_export_parameters.co_sim.addI.k2     : -150.0
+-- info:      import_export_parameters.co_sim.addI.k3     : 1.0
+-- info:      Virgin-Top-System-Level-Vars
+-- info:      import_export_parameters.co_sim.Input_cref  : -3.7
+-- info:      import_export_parameters.co_sim.Input1      : -1000.0
+-- info:      import_export_parameters.co_sim.T_cref      : 20.0
+-- info:      import_export_parameters.co_sim.k_cref      : 30.0
+-- info:      import_export_parameters.co_sim.Output_cref : 0.0
+-- info:      import_export_parameters.co_sim.foo.F_cref  : -55.0
 -- info:    model doesn't contain any continuous state
 -- info:      Parameter settings
 -- info:      import_export_parameters.co_sim.addP.k1     : -60.0
 -- info:      import_export_parameters.co_sim.addP.k2     : -1.0
--- info:      import_export_parameters.co_sim.addP.u1     : 0.0
--- info:      import_export_parameters.co_sim.addP.y      : -0.0
+-- info:      import_export_parameters.co_sim.addP.u1     : 300.0
+-- info:      import_export_parameters.co_sim.addP.y      : -18000.0
 -- info:      import_export_parameters.co_sim.addI.k2     : -150.0
+-- info:      import_export_parameters.co_sim.addI.k3     : 1.0
 -- info:      Top-System-Level-Vars
 -- info:      import_export_parameters.co_sim.Input_cref  : -3.7
+-- info:      import_export_parameters.co_sim.Input1      : -1000.0
 -- info:      import_export_parameters.co_sim.T_cref      : 20.0
 -- info:      import_export_parameters.co_sim.k_cref      : 30.0
 -- info:      import_export_parameters.co_sim.Output_cref : 0.0
--- info:      import_export_parameters.co_sim.foo.F_cref  : 40.0
+-- info:      import_export_parameters.co_sim.foo.F_cref  : -55.0
 -- info:    Result file: import_export_parameters.mat (bufferSize=100)
 -- info:    Initialization
 -- info:      import_export_parameters.co_sim.addP.k1     : 30.0
@@ -473,22 +534,28 @@ oms_delete("import_export_parameters")
 -- info:      import_export_parameters.co_sim.addP.u1     : -3.7
 -- info:      import_export_parameters.co_sim.addP.y      : -111.0
 -- info:      import_export_parameters.co_sim.addI.k2     : 20.0
+-- info:      import_export_parameters.co_sim.addI.k3     : 1.0
 -- info:      Top-System-Level-Vars
 -- info:      import_export_parameters.co_sim.Input_cref  : -3.7
+-- info:      import_export_parameters.co_sim.Input1      : -1000.0
 -- info:      import_export_parameters.co_sim.T_cref      : 20.0
 -- info:      import_export_parameters.co_sim.k_cref      : 30.0
 -- info:      import_export_parameters.co_sim.Output_cref : -111.0
--- info:      import_export_parameters.co_sim.foo.F_cref  : 40.0
+-- info:      import_export_parameters.co_sim.foo.F_cref  : -55.0
 -- info:    Simulation
 -- info:      import_export_parameters.co_sim.addP.k1     : 30.0
 -- info:      import_export_parameters.co_sim.addP.k2     : -1.0
 -- info:      import_export_parameters.co_sim.addP.u1     : -3.7
 -- info:      import_export_parameters.co_sim.addP.y      : -111.0
 -- info:      import_export_parameters.co_sim.addI.k2     : 20.0
+-- info:      import_export_parameters.co_sim.addI.k3     : 1.0
 -- info:      Top-System-Level-Vars
 -- info:      import_export_parameters.co_sim.Input_cref  : -3.7
+-- info:      import_export_parameters.co_sim.Input1      : -1000.0
 -- info:      import_export_parameters.co_sim.T_cref      : 20.0
 -- info:      import_export_parameters.co_sim.k_cref      : 30.0
 -- info:      import_export_parameters.co_sim.Output_cref : -111.0
--- info:      import_export_parameters.co_sim.foo.F_cref  : 40.0
+-- info:      import_export_parameters.co_sim.foo.F_cref  : -55.0
+-- info:    2 warnings
+-- info:    0 errors
 -- endResult

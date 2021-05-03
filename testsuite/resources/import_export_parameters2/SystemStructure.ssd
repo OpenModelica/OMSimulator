@@ -5,6 +5,9 @@
             <ssd:Connector name="Input_cref" kind="input">
                 <ssc:Real />
             </ssd:Connector>
+			<ssd:Connector name="Input1" kind="input">
+				<ssc:Real />
+			</ssd:Connector>
             <ssd:Connector name="Output_cref" kind="output">
                 <ssc:Real />
             </ssd:Connector>

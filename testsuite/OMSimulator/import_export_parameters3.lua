@@ -1,20 +1,19 @@
 -- status: correct
--- teardown_command: rm -rf import_export_parameters_02_lua/
+-- teardown_command: rm -rf import_export_parameters_03_lua/
 -- linux: no
 -- mingw: yes
 -- win: no
 -- mac: no
 
 oms_setCommandLineOption("--suppressPath=true")
-oms_setTempDirectory("./import_export_parameters_02_lua/")
+oms_setTempDirectory("./import_export_parameters_03_lua/")
 
-oms_importFile("../resources/import_export_parameters2.ssp");
+oms_importFile("../resources/import_export_parameters3.ssp");
 
 -- update of new values
 oms_setReal("import_export_parameters.co_sim.Input_cref", -3.7)
 oms_setReal("import_export_parameters.co_sim.addP.k1", -60)
 oms_setReal("import_export_parameters.co_sim.addI.k2", -150)
-oms_setReal("import_export_parameters.co_sim.foo.F_cref", -55)
 
 -- set new value in resources
 oms_setReal("import_export_parameters.co_sim.Input1", -1000)
@@ -145,8 +144,36 @@ oms_delete("import_export_parameters")
 --           </ssd:Connector>
 --         </ssd:Connectors>
 --         <ssd:ParameterBindings>
---           <ssd:ParameterBinding
---             source="resources/cosim.ssv" />
+--           <ssd:ParameterBinding>
+--             <ssd:ParameterValues>
+--               <ssv:ParameterSet
+--                 version="1.0"
+--                 name="parameters">
+--                 <ssv:Parameters>
+--                   <ssv:Parameter
+--                     name="k_cref">
+--                     <ssv:Real
+--                       value="30" />
+--                   </ssv:Parameter>
+--                   <ssv:Parameter
+--                     name="T_cref">
+--                     <ssv:Real
+--                       value="20" />
+--                   </ssv:Parameter>
+--                   <ssv:Parameter
+--                     name="Input_cref">
+--                     <ssv:Real
+--                       value="-3.7000000000000002" />
+--                   </ssv:Parameter>
+--                   <ssv:Parameter
+--                     name="Input1">
+--                     <ssv:Real
+--                       value="-1000" />
+--                   </ssv:Parameter>
+--                 </ssv:Parameters>
+--               </ssv:ParameterSet>
+--             </ssd:ParameterValues>
+--           </ssd:ParameterBinding>
 --         </ssd:ParameterBindings>
 --         <ssd:Elements>
 --           <ssd:System
@@ -159,8 +186,21 @@ oms_delete("import_export_parameters")
 --               </ssd:Connector>
 --             </ssd:Connectors>
 --             <ssd:ParameterBindings>
---               <ssd:ParameterBinding
---                 source="resources/foo.ssv" />
+--               <ssd:ParameterBinding>
+--                 <ssd:ParameterValues>
+--                   <ssv:ParameterSet
+--                     version="1.0"
+--                     name="parameters">
+--                     <ssv:Parameters>
+--                       <ssv:Parameter
+--                         name="F_cref">
+--                         <ssv:Real
+--                           value="40" />
+--                       </ssv:Parameter>
+--                     </ssv:Parameters>
+--                   </ssv:ParameterSet>
+--                 </ssd:ParameterValues>
+--               </ssd:ParameterBinding>
 --             </ssd:ParameterBindings>
 --             <ssd:Annotations>
 --               <ssc:Annotation
@@ -220,8 +260,31 @@ oms_delete("import_export_parameters")
 --               </ssd:Connector>
 --             </ssd:Connectors>
 --             <ssd:ParameterBindings>
---               <ssd:ParameterBinding
---                 source="resources/addP.ssv" />
+--               <ssd:ParameterBinding>
+--                 <ssd:ParameterValues>
+--                   <ssv:ParameterSet
+--                     version="1.0"
+--                     name="parameters">
+--                     <ssv:Parameters>
+--                       <ssv:Parameter
+--                         name="u1">
+--                         <ssv:Real
+--                           value="300" />
+--                       </ssv:Parameter>
+--                       <ssv:Parameter
+--                         name="k2">
+--                         <ssv:Real
+--                           value="-1" />
+--                       </ssv:Parameter>
+--                       <ssv:Parameter
+--                         name="k1">
+--                         <ssv:Real
+--                           value="-60" />
+--                       </ssv:Parameter>
+--                     </ssv:Parameters>
+--                   </ssv:ParameterSet>
+--                 </ssd:ParameterValues>
+--               </ssd:ParameterBinding>
 --             </ssd:ParameterBindings>
 --           </ssd:Component>
 --           <ssd:Component
@@ -278,8 +341,21 @@ oms_delete("import_export_parameters")
 --               </ssd:Connector>
 --             </ssd:Connectors>
 --             <ssd:ParameterBindings>
---               <ssd:ParameterBinding
---                 source="resources/addI.ssv" />
+--               <ssd:ParameterBinding>
+--                 <ssd:ParameterValues>
+--                   <ssv:ParameterSet
+--                     version="1.0"
+--                     name="parameters">
+--                     <ssv:Parameters>
+--                       <ssv:Parameter
+--                         name="k2">
+--                         <ssv:Real
+--                           value="-150" />
+--                       </ssv:Parameter>
+--                     </ssv:Parameters>
+--                   </ssv:ParameterSet>
+--                 </ssd:ParameterValues>
+--               </ssd:ParameterBinding>
 --             </ssd:ParameterBindings>
 --           </ssd:Component>
 --           <ssd:Component
@@ -356,7 +432,7 @@ oms_delete("import_export_parameters")
 --             type="org.openmodelica">
 --             <oms:Annotations>
 --               <oms:SimulationInformation
---                 resultFile="import_export_parameters.mat"
+--                 resultFile="import_export_parameters_inline.mat"
 --                 loggingInterval="0.000000"
 --                 bufferSize="100"
 --                 signalFilter="resources/signalFilter.xml" />
@@ -365,95 +441,6 @@ oms_delete("import_export_parameters")
 --         </ssd:Annotations>
 --       </ssd:DefaultExperiment>
 --     </ssd:SystemStructureDescription>
---   </oms:file>
---   <oms:file
---     name="resources/cosim.ssv">
---     <ssv:ParameterSet
---       xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
---       xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
---       version="1.0"
---       name="parameters">
---       <ssv:Parameters>
---         <ssv:Parameter
---           name="k_cref">
---           <ssv:Real
---             value="30" />
---         </ssv:Parameter>
---         <ssv:Parameter
---           name="T_cref">
---           <ssv:Real
---             value="20" />
---         </ssv:Parameter>
---         <ssv:Parameter
---           name="Input_cref">
---           <ssv:Real
---             value="-3.7000000000000002" />
---         </ssv:Parameter>
---         <ssv:Parameter
---           name="Input1">
---           <ssv:Real
---             value="-1000" />
---         </ssv:Parameter>
---       </ssv:Parameters>
---     </ssv:ParameterSet>
---   </oms:file>
---   <oms:file
---     name="resources/foo.ssv">
---     <ssv:ParameterSet
---       xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
---       xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
---       version="1.0"
---       name="parameters">
---       <ssv:Parameters>
---         <ssv:Parameter
---           name="F_cref">
---           <ssv:Real
---             value="-55" />
---         </ssv:Parameter>
---       </ssv:Parameters>
---     </ssv:ParameterSet>
---   </oms:file>
---   <oms:file
---     name="resources/addP.ssv">
---     <ssv:ParameterSet
---       xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
---       xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
---       version="1.0"
---       name="parameters">
---       <ssv:Parameters>
---         <ssv:Parameter
---           name="u1">
---           <ssv:Real
---             value="300" />
---         </ssv:Parameter>
---         <ssv:Parameter
---           name="k2">
---           <ssv:Real
---             value="-1" />
---         </ssv:Parameter>
---         <ssv:Parameter
---           name="k1">
---           <ssv:Real
---             value="-60" />
---         </ssv:Parameter>
---       </ssv:Parameters>
---     </ssv:ParameterSet>
---   </oms:file>
---   <oms:file
---     name="resources/addI.ssv">
---     <ssv:ParameterSet
---       xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
---       xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
---       version="1.0"
---       name="parameters">
---       <ssv:Parameters>
---         <ssv:Parameter
---           name="k2">
---           <ssv:Real
---             value="-150" />
---         </ssv:Parameter>
---       </ssv:Parameters>
---     </ssv:ParameterSet>
 --   </oms:file>
 --   <oms:file
 --     name="resources/signalFilter.xml">
@@ -542,7 +529,7 @@ oms_delete("import_export_parameters")
 --     </oms:SignalFilter>
 --   </oms:file>
 -- </oms:snapshot>
--- 
+--
 -- info:      Virgin Parameter settings
 -- info:      import_export_parameters.co_sim.addP.k1     : -60.0
 -- info:      import_export_parameters.co_sim.addP.k2     : -1.0
@@ -555,7 +542,7 @@ oms_delete("import_export_parameters")
 -- info:      import_export_parameters.co_sim.T_cref      : 20.0
 -- info:      import_export_parameters.co_sim.k_cref      : 30.0
 -- info:      import_export_parameters.co_sim.Output_cref : 0.0
--- info:      import_export_parameters.co_sim.foo.F_cref  : -55.0
+-- info:      import_export_parameters.co_sim.foo.F_cref  : 40.0
 -- info:    model doesn't contain any continuous state
 -- info:      Parameter settings
 -- info:      import_export_parameters.co_sim.addP.k1     : -60.0
@@ -570,8 +557,8 @@ oms_delete("import_export_parameters")
 -- info:      import_export_parameters.co_sim.T_cref      : 20.0
 -- info:      import_export_parameters.co_sim.k_cref      : 30.0
 -- info:      import_export_parameters.co_sim.Output_cref : 0.0
--- info:      import_export_parameters.co_sim.foo.F_cref  : -55.0
--- info:    Result file: import_export_parameters.mat (bufferSize=100)
+-- info:      import_export_parameters.co_sim.foo.F_cref  : 40.0
+-- info:    Result file: import_export_parameters_inline.mat (bufferSize=100)
 -- info:    Initialization
 -- info:      import_export_parameters.co_sim.addP.k1     : 30.0
 -- info:      import_export_parameters.co_sim.addP.k2     : -1.0
@@ -585,7 +572,7 @@ oms_delete("import_export_parameters")
 -- info:      import_export_parameters.co_sim.T_cref      : 20.0
 -- info:      import_export_parameters.co_sim.k_cref      : 30.0
 -- info:      import_export_parameters.co_sim.Output_cref : -111.0
--- info:      import_export_parameters.co_sim.foo.F_cref  : -55.0
+-- info:      import_export_parameters.co_sim.foo.F_cref  : 40.0
 -- info:    Simulation
 -- info:      import_export_parameters.co_sim.addP.k1     : 30.0
 -- info:      import_export_parameters.co_sim.addP.k2     : -1.0
@@ -599,7 +586,7 @@ oms_delete("import_export_parameters")
 -- info:      import_export_parameters.co_sim.T_cref      : 20.0
 -- info:      import_export_parameters.co_sim.k_cref      : 30.0
 -- info:      import_export_parameters.co_sim.Output_cref : -111.0
--- info:      import_export_parameters.co_sim.foo.F_cref  : -55.0
+-- info:      import_export_parameters.co_sim.foo.F_cref  : 40.0
 -- info:    2 warnings
 -- info:    0 errors
 -- endResult

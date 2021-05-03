@@ -532,24 +532,96 @@ oms_status_enu_t oms::ComponentFMUME::instantiate()
   if (jm_status_error == jmstatus)
     return logError_FMUCall("fmi2_import_instantiate", this);
 
-  // set start values
-  for (const auto& v : values.booleanStartValues)
+  // set start values from local resources
+  if (!values.parameterResources.empty())
   {
-    oms::ComRef cref = getValidCref(v.first);
-    if (oms_status_ok != setBoolean(cref, v.second))
-      return logError("Failed to set start value for " + std::string(v.first));
+    for (const auto &it : values.parameterResources)
+    {
+      for (const auto &res : it.allresources)
+      {
+        for (const auto &v : res.second.booleanStartValues)
+        {
+          oms::ComRef cref = getValidCref(v.first);
+          if (oms_status_ok != setBoolean(cref, v.second))
+            return logError("Failed to set start value for " + std::string(v.first));
+        }
+        for (const auto &v : res.second.integerStartValues)
+        {
+          oms::ComRef cref = getValidCref(v.first);
+          if (oms_status_ok != setInteger(cref, v.second))
+            return logError("Failed to set start value for " + std::string(v.first));
+        }
+        for (const auto &v : res.second.realStartValues)
+        {
+          oms::ComRef cref = getValidCref(v.first);
+          if (oms_status_ok != setReal(cref, v.second))
+            return logError("Failed to set start value for " + std::string(v.first));
+        }
+      }
+    }
   }
-  for (const auto& v : values.integerStartValues)
+  // set start values from top level resources
+  else if (getParentSystem() && getParentSystem()->hasResources())
   {
-    oms::ComRef cref = getValidCref(v.first);
-    if (oms_status_ok != setInteger(cref, v.second))
-      return logError("Failed to set start value for " + std::string(v.first));
+    Values values = getParentSystem()->getValues();
+    for (const auto &it : values.parameterResources)
+    {
+      for (const auto &res : it.allresources)
+      {
+        for (const auto &v : res.second.booleanStartValues)
+        {
+          oms::ComRef tail(v.first);
+          oms::ComRef head = tail.pop_front();
+          if (head == getCref())
+          {
+            if (oms_status_ok != setBoolean(tail, v.second))
+              return logError("Failed to set start value for " + std::string(v.first));
+          }
+        }
+        for (const auto &v : res.second.integerStartValues)
+        {
+          oms::ComRef tail(v.first);
+          oms::ComRef head = tail.pop_front();
+          if (head == getCref())
+          {
+            if (oms_status_ok != setInteger(tail, v.second))
+              return logError("Failed to set start value for " + std::string(v.first));
+          }
+        }
+        for (const auto &v : res.second.realStartValues)
+        {
+          oms::ComRef tail(v.first);
+          oms::ComRef head = tail.pop_front();
+          if (head == getCref())
+          {
+            if (oms_status_ok != setReal(tail, v.second))
+              return logError("Failed to set start value for " + std::string(v.first));
+          }
+        }
+      }
+    }
   }
-  for (const auto& v : values.realStartValues)
+  // set start values from inline resources
+  else
   {
-    oms::ComRef cref = getValidCref(v.first);
-    if (oms_status_ok != setReal(cref, v.second))
-      return logError("Failed to set start value for " + std::string(v.first));
+    for (const auto &v : values.booleanStartValues)
+    {
+      oms::ComRef cref = getValidCref(v.first);
+      if (oms_status_ok != setBoolean(cref, v.second))
+        return logError("Failed to set start value for " + std::string(v.first));
+    }
+    for (const auto &v : values.integerStartValues)
+    {
+      oms::ComRef cref = getValidCref(v.first);
+      if (oms_status_ok != setInteger(cref, v.second))
+        return logError("Failed to set start value for " + std::string(v.first));
+    }
+    for (const auto &v : values.realStartValues)
+    {
+      oms::ComRef cref = getValidCref(v.first);
+      if (oms_status_ok != setReal(cref, v.second))
+        return logError("Failed to set start value for " + std::string(v.first));
+    }
   }
 
   // enterInitialization
@@ -830,23 +902,46 @@ oms_status_enu_t oms::ComponentFMUME::getReal(const ComRef& cref, double& value)
   if (oms_modelState_virgin == getModel().getModelState())
   {
     // check for start values exist, priority over modeldescription.xml start values
-    auto realValue = values.realStartValues.find(cref);
-    if (realValue != values.realStartValues.end())
+    if (!values.parameterResources.empty())  // search in local resources
     {
-      value = realValue->second;
-      return oms_status_ok;
-    }
-    else
-    {
-      // search in modelDescription.xml
-      auto realValue = values.modelDescriptionRealStartValues.find(cref);
-      if (realValue != values.modelDescriptionRealStartValues.end())
+      if (oms_status_ok == values.getRealResources(cref, value, false, oms_modelState_virgin))
       {
-        value = realValue->second;
         return oms_status_ok;
       }
+      // search in modelDescription.xml
+      else if (oms_status_ok == values.getRealFromModeldescription(cref, value))
+      {
+        return oms_status_ok;
+      }
+
+      return logError("no start value set or available for signal: " + std::string(getFullCref() + cref));
     }
-    return logError("no start value set or available for signal: " + std::string(getFullCref() + cref));
+    else if (getParentSystem() && getParentSystem()->hasResources())  // search in top level resources
+    {
+      if (oms_status_ok == getParentSystem()->getRealResources(getCref()+cref, value, false, oms_modelState_virgin))
+      {
+        return oms_status_ok;
+      }
+      // search in modelDescription.xml
+      else if(oms_status_ok == values.getRealFromModeldescription(cref, value))
+      {
+        return oms_status_ok;
+      }
+
+      return logError("no start value set or available for signal: " + std::string(getFullCref() + cref));
+    }
+    else // search inline
+    {
+      // check for start values exist, priority over modeldescription.xml start values
+      if (oms_status_ok == values.getReal(cref, value))
+      {
+        return oms_status_ok;
+      }
+      else
+      {
+        return values.getRealFromModeldescription(cref, value);
+      }
+    }
   }
 
   int j=-1;
@@ -970,14 +1065,20 @@ oms_status_enu_t oms::ComponentFMUME::setReal(const ComRef& cref, double value)
 
   if (oms_modelState_virgin == getModel().getModelState())
   {
-    if (Flags::ExportParametersInline())
+    // check for local resources available
+    if (!values.parameterResources.empty())
     {
-      values.setReal(allVariables[j].getCref(), value);
+      return values.setRealResources(cref, value, getFullCref(), false, oms_modelState_virgin, false);
+    }
+    // check for resources in top level system
+    else if (getParentSystem()->hasResources())
+    {
+      return getParentSystem()->setRealResources(getCref()+cref, value, false, oms_modelState_virgin, false);
     }
     else
     {
-      // append startValues with prefix (e.g) addP.K1
-      values.setReal(getCref()+allVariables[j].getCref(), value);
+      //inline parameter settings
+      values.setReal(cref, value);
     }
   }
   else

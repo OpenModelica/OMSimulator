@@ -187,6 +187,13 @@ namespace oms
 
     void getFilteredSignals(std::vector<Connector>& filteredSignals) const;
 
+    Values getValues() {return values;}
+
+    bool hasResources(); ///< returns is the system or subsystem or submodule have parameter resources either as ssv or inline
+
+    oms_status_enu_t setRealResources(const ComRef& cref, double value, bool externalInput, oms_modelState_enu_t modelState, bool isOutput);
+    oms_status_enu_t getRealResources(const ComRef& cref, double& value, bool externalInput, oms_modelState_enu_t modelState);
+
   protected: // methods
     System(const ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem, oms_solver_enu_t solverMethod);
 

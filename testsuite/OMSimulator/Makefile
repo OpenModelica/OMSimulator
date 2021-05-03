@@ -16,6 +16,8 @@ import_export_parameters_inline.lua \
 import_export_parameters_to_ssv.lua \
 import_export_parameters1.lua \
 import_export_parameters2.lua \
+import_export_parameters3.lua \
+import_export_parameters4.lua \
 import_export_signalFilter.lua \
 import_export_snapshot.lua \
 import_export.lua \

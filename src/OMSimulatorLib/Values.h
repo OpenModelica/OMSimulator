@@ -52,6 +52,14 @@ namespace oms
     oms_status_enu_t setInteger(const ComRef& cref, int value);
     oms_status_enu_t setBoolean(const ComRef& cref, bool value);
 
+    oms_status_enu_t getReal(const ComRef& cref, double& value);
+    oms_status_enu_t getInteger(const ComRef& cref, int& value);
+    oms_status_enu_t getBoolean(const ComRef& cref, bool& value);
+
+    oms_status_enu_t setRealResources(const ComRef& cref, double value, const ComRef& fullCref, bool externalInput, oms_modelState_enu_t modelState, bool isOutput);
+    oms_status_enu_t getRealResources(const ComRef& cref, double& value, bool externalInput, oms_modelState_enu_t modelState);
+    oms_status_enu_t getRealFromModeldescription(const ComRef& cref, double& value);
+
     oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
     oms_status_enu_t importFromSnapshot(const pugi::xml_node& node, const std::string& sspVersion, const Snapshot& snapshot);
     oms_status_enu_t deleteStartValue(const ComRef& cref);
@@ -64,8 +72,6 @@ namespace oms
     oms_status_enu_t rename(const oms::ComRef& oldCref, const oms::ComRef& newCref);
 
     void exportParameterBindings(pugi::xml_node& node, Snapshot& snapshot) const;
-
-    void updateResources(const ComRef& cref, double value);
 
   private:
     oms_status_enu_t exportStartValuesHelper(pugi::xml_node& node) const;
@@ -90,8 +96,6 @@ namespace oms
     std::map<ComRef, bool> modelDescriptionBooleanStartValues;  ///< boolean start values read from modelDescription.xml
 
     std::multimap<ComRef, ComRef> mappedEntry;  ///< parameter names and values provided in the parameter source are to be mapped to the parameters of the component or system
-    std::vector<std::string> resourceFiles;
-    std::map<std::string, std::map<ComRef, double>> test;
 
     std::vector<Values> parameterResources; ///< list of parameter resources provided inline or .ssv files
     std::map<std::string, Values> allresources; ///< mapped resources either inline or ssv
