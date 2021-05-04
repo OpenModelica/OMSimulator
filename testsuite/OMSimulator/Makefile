@@ -28,6 +28,8 @@ partialSnapshot.lua \
 PI_Controller.lua \
 QuarterCarModel.DisplacementDisplacement.lua \
 rename.lua \
+renameValues1.lua \
+renameValues2.lua \
 renameModel.lua \
 renameSnapshot.lua \
 renameNewCref.lua \

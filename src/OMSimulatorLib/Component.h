@@ -130,7 +130,7 @@ namespace oms
     Component(Component const&);            ///< not implemented
     Component& operator=(Component const&); ///< not implemented
 
-    virtual oms_status_enu_t renameValues(const ComRef& newCref) { return oms_status_ok; }
+    virtual oms_status_enu_t renameValues(const ComRef& oldCref, const ComRef& newCref) { return oms_status_ok; }
 
   protected:
     DirectedGraph initialUnknownsGraph;
