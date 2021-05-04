@@ -114,7 +114,7 @@ namespace oms
     ComponentFMUME(ComponentFMUME const& copy);            ///< not implemented
     ComponentFMUME& operator=(ComponentFMUME const& copy); ///< not implemented
 
-    oms_status_enu_t renameValues(const ComRef& newCref);
+    oms_status_enu_t renameValues(const ComRef& oldCref, const ComRef& newCref);
 
   private:
     jm_callbacks callbacks;

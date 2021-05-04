@@ -117,7 +117,7 @@ namespace oms
     ComponentFMUCS(ComponentFMUCS const& copy);            ///< not implemented
     ComponentFMUCS& operator=(ComponentFMUCS const& copy); ///< not implemented
 
-    oms_status_enu_t renameValues(const ComRef& newCref);
+    oms_status_enu_t renameValues(const ComRef& oldCref, const ComRef& newCref);
 
   private:
     jm_callbacks callbacks;
