@@ -503,6 +503,17 @@ oms_status_enu_t oms::Model::updateParameterBindingsToSSD(pugi::xml_node& node, 
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::Model::addResources(const oms::ComRef& cref)
+{
+  ComRef subCref(cref);
+  std::string fileName = "resources/" + subCref.pop_suffix();
+
+  if (system)
+    return system->addResources(subCref, fileName);
+
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms::Model::addSystem(const oms::ComRef& cref, oms_system_enu_t type)
 {
   if (cref.isValidIdent() && !system)

@@ -110,6 +110,8 @@ namespace oms
 
     void getFilteredSignals(std::vector<Connector>& filteredSignals) const;
 
+    oms_status_enu_t addResources(std::string& filename);
+
   protected:
     ComponentFMUCS(const ComRef& cref, System* parentSystem, const std::string& fmuPath);
 

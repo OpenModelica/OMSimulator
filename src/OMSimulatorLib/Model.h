@@ -73,6 +73,8 @@ namespace oms
     oms_status_enu_t rename(const ComRef& cref, const ComRef& newCref);
     oms_status_enu_t list(const ComRef& cref, char** contents);
     oms_status_enu_t addSystem(const ComRef& cref, oms_system_enu_t type);
+    oms_status_enu_t addResources(const ComRef& cref);
+
     oms_status_enu_t exportToSSD(Snapshot& snapshot) const;
     oms_status_enu_t exportSnapshot(const ComRef& cref, char** contents);
     oms_status_enu_t exportSSVTemplate(const ComRef& cref, const std::string& filename);

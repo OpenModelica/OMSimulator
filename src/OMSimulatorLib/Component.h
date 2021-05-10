@@ -91,6 +91,7 @@ namespace oms
     virtual oms_status_enu_t setReal(const ComRef& cref, double value) { return logError_NotImplemented; }
     virtual oms_status_enu_t setRealInputDerivative(const ComRef& cref, const SignalDerivative& der) { return logError_NotImplemented; }
     virtual oms_status_enu_t stepUntil(double stopTime) { return oms_status_ok; }
+    virtual oms_status_enu_t addResources(std::string& filename) { return oms_status_ok; }
 
     const ComRef& getCref() const { return cref; }
     ComRef getFullCref() const;

@@ -655,6 +655,23 @@ oms::ComRef oms::ComponentFMUCS::getValidCref(ComRef cref)
   return tail;
 }
 
+oms_status_enu_t oms::ComponentFMUCS::addResources(std::string& filename)
+{
+  Values resources;
+  if (values.parameterResources.empty())
+  {
+    resources.allresources[filename] = resources;
+    values.parameterResources.push_back(resources);
+  }
+  else
+  {
+    // generate empty ssv file, if more resources are added to same level
+    values.parameterResources[0].allresources[filename] = resources;
+  }
+
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms::ComponentFMUCS::initialize()
 {
   clock.reset();
