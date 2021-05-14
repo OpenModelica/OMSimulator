@@ -1,6 +1,6 @@
 # OMSimulator [![License: OSMC-PL](https://img.shields.io/badge/license-OSMC--PL-lightgrey.svg)](OSMC-License.txt)
 
-The OMSimulator project is a FMI-based co-simulation environment that supports ordinary (i.e., non-delayed) and TLM connections.
+The OpenModelica FMI & SSP-based co-simulation environment.
 
 ## Downloads
 
@@ -21,7 +21,7 @@ Python needs to be version 3.8 or above.
 
 ## Documentation
 
-The latest documentation is avilable as [pdf](https://openmodelica.org/doc/OMSimulator/master/OMSimulator.pdf) and [html](https://openmodelica.org/doc/OMSimulator/master/html/).
+The latest documentation is available as [pdf](https://openmodelica.org/doc/OMSimulator/master/OMSimulator.pdf) and [html](https://openmodelica.org/doc/OMSimulator/master/html/).
 For OMSimulatorLib a [Doxygen source code documentation](https://openmodelica.org/doc/OMSimulator/master/OMSimulatorLib/) is available as well.
 
 ## Dependencies
