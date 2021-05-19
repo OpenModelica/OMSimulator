@@ -350,6 +350,21 @@ oms_status_enu_t oms::System::addResources(const ComRef& cref, std::string& file
   if (component != components.end())
     return component->second->addResources(filename);
 
+  /*check for adding resources to components in subsystems
+    e.g root.system1.add
+    oms_addResources("root.system1.add:add.ssv")
+  */
+  ComRef tailA(tail);
+  ComRef frontA = tailA.pop_front();
+
+  System* system = this->getSystem(frontA);
+  if (!system)
+    return logError("System \"" + std::string(getFullCref()) + "\" does not contain subSystem \"" + std::string(frontA) + "\"");
+
+  auto componentA = system->components.find(tailA);
+  if (componentA != components.end())
+    return componentA->second->addResources(filename);
+
   return logError("failed for \"" + std::string(getFullCref() + cref) + "\""  + " as the identifier could not be resolved to a system or subsystem or component");
 }
 

@@ -41,7 +41,7 @@ oms_setReal("addResources.root.Input2", 50)
 src = oms_exportSnapshot("addResources")
 print(src)
 
-print("info:      Virgin Parameter settings")
+print("info:    Virgin Parameter settings")
 print("info:      addResources.root.Input1     : " .. oms_getReal("addResources.root.Input1"))
 print("info:      addResources.root.Input2     : " .. oms_getReal("addResources.root.Input2"))
 print("info:      addResources.root.system1.C1 : " .. oms_getReal("addResources.root.system1.C1"))
@@ -50,7 +50,7 @@ print("info:      addResources.root.Gain.k     : " .. oms_getReal("addResources.
 
 oms_instantiate("addResources")
 
-print("info:      Parameter settings")
+print("info:    Parameter settings")
 print("info:      addResources.root.Input1     : " .. oms_getReal("addResources.root.Input1"))
 print("info:      addResources.root.Input2     : " .. oms_getReal("addResources.root.Input2"))
 print("info:      addResources.root.system1.C1 : " .. oms_getReal("addResources.root.system1.C1"))
@@ -275,14 +275,14 @@ oms_delete("addResources")
 --   </oms:file>
 -- </oms:snapshot>
 --
--- info:      Virgin Parameter settings
+-- info:    Virgin Parameter settings
 -- info:      addResources.root.Input1     : 10.0
 -- info:      addResources.root.Input2     : 50.0
 -- info:      addResources.root.system1.C1 : -10.0
 -- info:      addResources.root.system1.C2 : 0.0
 -- info:      addResources.root.Gain.k     : 27.0
 -- info:    model doesn't contain any continuous state
--- info:      Parameter settings
+-- info:    Parameter settings
 -- info:      addResources.root.Input1     : 10.0
 -- info:      addResources.root.Input2     : 50.0
 -- info:      addResources.root.system1.C1 : -10.0
