@@ -540,130 +540,24 @@ oms_status_enu_t oms::ComponentFMUCS::instantiate()
     {
       for (const auto &res : it.allresources)
       {
-        for (const auto &v : res.second.booleanStartValues)
-        {
-          oms::ComRef cref = getValidCref(v.first);
-          if (oms_status_ok != setBoolean(cref, v.second))
-            return logError("Failed to set start value for " + std::string(v.first));
-        }
-        for (const auto &v : res.second.integerStartValues)
-        {
-          oms::ComRef cref = getValidCref(v.first);
-          if (oms_status_ok != setInteger(cref, v.second))
-            return logError("Failed to set start value for " + std::string(v.first));
-        }
-        for (const auto &v : res.second.realStartValues)
-        {
-          oms::ComRef cref = getValidCref(v.first);
-          if (oms_status_ok != setReal(cref, v.second))
-            return logError("Failed to set start value for " + std::string(v.first));
-        }
+        setResourcesHelper1(res.second);
       }
     }
   }
   // set start values from root resources
   else if (getParentSystem() && getParentSystem()->hasResources())
   {
-    Values values = getParentSystem()->getValues();
-    for (const auto &it : values.parameterResources)
-    {
-      for (const auto &res : it.allresources)
-      {
-        for (const auto &v : res.second.booleanStartValues)
-        {
-          oms::ComRef tail(v.first);
-          oms::ComRef head = tail.pop_front();
-          if (head == getCref())
-          {
-            if (oms_status_ok != setBoolean(tail, v.second))
-              return logError("Failed to set start value for " + std::string(v.first));
-          }
-        }
-        for (const auto &v : res.second.integerStartValues)
-        {
-          oms::ComRef tail(v.first);
-          oms::ComRef head = tail.pop_front();
-          if (head == getCref())
-          {
-            if (oms_status_ok != setInteger(tail, v.second))
-              return logError("Failed to set start value for " + std::string(v.first));
-          }
-        }
-        for (const auto &v : res.second.realStartValues)
-        {
-          oms::ComRef tail(v.first);
-          oms::ComRef head = tail.pop_front();
-          if (head == getCref())
-          {
-            if (oms_status_ok != setReal(tail, v.second))
-              return logError("Failed to set start value for " + std::string(v.first));
-          }
-        }
-      }
-    }
+    setResourcesHelper2(getParentSystem()->getValues());
   }
   // set start values from top level root resources
   else if (getParentSystem()->getParentSystem() && getParentSystem()->getParentSystem()->hasResources())
   {
-    Values values = getParentSystem()->getParentSystem()->getValues();
-    for (const auto &it : values.parameterResources)
-    {
-      for (const auto &res : it.allresources)
-      {
-        for (const auto &v : res.second.booleanStartValues)
-        {
-          oms::ComRef tail(v.first);
-          oms::ComRef head = tail.pop_front();
-          if (head == getCref())
-          {
-            if (oms_status_ok != setBoolean(tail, v.second))
-              return logError("Failed to set start value for " + std::string(v.first));
-          }
-        }
-        for (const auto &v : res.second.integerStartValues)
-        {
-          oms::ComRef tail(v.first);
-          oms::ComRef head = tail.pop_front();
-          if (head == getCref())
-          {
-            if (oms_status_ok != setInteger(tail, v.second))
-              return logError("Failed to set start value for " + std::string(v.first));
-          }
-        }
-        for (const auto &v : res.second.realStartValues)
-        {
-          oms::ComRef tail(v.first);
-          oms::ComRef head = tail.pop_front();
-          if (head == getCref())
-          {
-            if (oms_status_ok != setReal(tail, v.second))
-              return logError("Failed to set start value for " + std::string(v.first));
-          }
-        }
-      }
-    }
+    setResourcesHelper2(getParentSystem()->getParentSystem()->getValues());
   }
   // set start values from inline resources
   else
   {
-    for (const auto &v : values.booleanStartValues)
-    {
-      oms::ComRef cref = getValidCref(v.first);
-      if (oms_status_ok != setBoolean(cref, v.second))
-        return logError("Failed to set start value for " + std::string(v.first));
-    }
-    for (const auto &v : values.integerStartValues)
-    {
-      oms::ComRef cref = getValidCref(v.first);
-      if (oms_status_ok != setInteger(cref, v.second))
-        return logError("Failed to set start value for " + std::string(v.first));
-    }
-    for (const auto &v : values.realStartValues)
-    {
-      oms::ComRef cref = getValidCref(v.first);
-      if (oms_status_ok != setReal(cref, v.second))
-        return logError("Failed to set start value for " + std::string(v.first));
-    }
+    setResourcesHelper1(values);
   }
 
   // enterInitialization
@@ -679,6 +573,71 @@ oms_status_enu_t oms::ComponentFMUCS::instantiate()
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::ComponentFMUCS::setResourcesHelper1(Values values)
+{
+  for (const auto &v : values.booleanStartValues)
+  {
+    oms::ComRef cref = getValidCref(v.first);
+    if (oms_status_ok != setBoolean(cref, v.second))
+      return logError("Failed to set start value for " + std::string(v.first));
+  }
+  for (const auto &v : values.integerStartValues)
+  {
+    oms::ComRef cref = getValidCref(v.first);
+    if (oms_status_ok != setInteger(cref, v.second))
+      return logError("Failed to set start value for " + std::string(v.first));
+  }
+  for (const auto &v : values.realStartValues)
+  {
+    oms::ComRef cref = getValidCref(v.first);
+    if (oms_status_ok != setReal(cref, v.second))
+      return logError("Failed to set start value for " + std::string(v.first));
+  }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::ComponentFMUCS::setResourcesHelper2(Values values)
+{
+  for (const auto &it : values.parameterResources)
+  {
+    for (const auto &res : it.allresources)
+    {
+      for (const auto &v : res.second.booleanStartValues)
+      {
+        oms::ComRef tail(v.first);
+        oms::ComRef head = tail.pop_front();
+        if (head == getCref())
+        {
+          if (oms_status_ok != setBoolean(tail, v.second))
+            return logError("Failed to set start value for " + std::string(v.first));
+        }
+      }
+      for (const auto &v : res.second.integerStartValues)
+      {
+        oms::ComRef tail(v.first);
+        oms::ComRef head = tail.pop_front();
+        if (head == getCref())
+        {
+          if (oms_status_ok != setInteger(tail, v.second))
+            return logError("Failed to set start value for " + std::string(v.first));
+        }
+      }
+      for (const auto &v : res.second.realStartValues)
+      {
+        oms::ComRef tail(v.first);
+        oms::ComRef head = tail.pop_front();
+        if (head == getCref())
+        {
+          if (oms_status_ok != setReal(tail, v.second))
+            return logError("Failed to set start value for " + std::string(v.first));
+        }
+      }
+    }
+  }
+
+  return oms_status_ok;
+}
 
 /*
  * function which returns validCrefs
