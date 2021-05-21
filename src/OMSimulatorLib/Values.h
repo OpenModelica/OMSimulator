@@ -56,7 +56,7 @@ namespace oms
     oms_status_enu_t getInteger(const ComRef& cref, int& value);
     oms_status_enu_t getBoolean(const ComRef& cref, bool& value);
 
-    oms_status_enu_t setRealResources(const ComRef& cref, double value, const ComRef& fullCref, bool externalInput, oms_modelState_enu_t modelState, bool isOutput);
+    oms_status_enu_t setRealResources(const ComRef& cref, double value, const ComRef& fullCref, bool externalInput, oms_modelState_enu_t modelState);
     oms_status_enu_t getRealResources(const ComRef& cref, double& value, bool externalInput, oms_modelState_enu_t modelState);
     oms_status_enu_t getRealFromModeldescription(const ComRef& cref, double& value);
 

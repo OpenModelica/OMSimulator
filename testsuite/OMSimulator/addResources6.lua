@@ -76,9 +76,6 @@ oms_delete("addResources")
 
 
 -- Result:
--- warning: signal "addResources.root.system1.C1" is not found in the list of resource files, it will be updated in the first resource file by default.
--- warning: signal "addResources.root.system1.C2" is not found in the list of resource files, it will be updated in the first resource file by default.
--- warning: signal "addResources.root.system1.add.k1" is not found in the list of resource files, it will be updated in the first resource file by default.
 -- <?xml version="1.0"?>
 -- <oms:snapshot
 --   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
@@ -429,6 +426,4 @@ oms_delete("addResources")
 -- info:      addResources.root.system2.C1      : -20.0
 -- info:      addResources.root.system2.C2      : -30.0
 -- info:      addResources.root.system2.add2.k1 : 49.5
--- info:    3 warnings
--- info:    0 errors
 -- endResult

@@ -97,8 +97,6 @@ oms_terminate("import_export_parameters")
 oms_delete("import_export_parameters")
 
 -- Result:
--- warning: signal "import_export_parameters.co_sim.Input1" is not found in the list of resource files, it will be updated in the first resource file by default.
--- warning: signal "import_export_parameters.co_sim.addP.u1" is not found in the list of resource files, it will be updated in the first resource file by default.
 -- <?xml version="1.0"?>
 -- <oms:snapshot
 --   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
@@ -587,6 +585,4 @@ oms_delete("import_export_parameters")
 -- info:      import_export_parameters.co_sim.k_cref      : 30.0
 -- info:      import_export_parameters.co_sim.Output_cref : -111.0
 -- info:      import_export_parameters.co_sim.foo.F_cref  : 40.0
--- info:    2 warnings
--- info:    0 errors
 -- endResult

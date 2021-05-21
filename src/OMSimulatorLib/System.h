@@ -192,7 +192,7 @@ namespace oms
 
     bool hasResources(); ///< returns is the system or subsystem or submodule have parameter resources either as ssv or inline
 
-    oms_status_enu_t setRealResources(const ComRef& cref, double value, bool externalInput, oms_modelState_enu_t modelState, bool isOutput);
+    oms_status_enu_t setRealResources(const ComRef& cref, double value, bool externalInput, oms_modelState_enu_t modelState);
     oms_status_enu_t getRealResources(const ComRef& cref, double& value, bool externalInput, oms_modelState_enu_t modelState);
 
   protected: // methods

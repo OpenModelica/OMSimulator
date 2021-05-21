@@ -104,7 +104,7 @@ oms_status_enu_t oms::Values::getBoolean(const ComRef& cref, bool& value)
   return oms_status_error;
 }
 
-oms_status_enu_t oms::Values::setRealResources(const ComRef& cref, double value, const ComRef& fullCref, bool externalInput, oms_modelState_enu_t modelState, bool output)
+oms_status_enu_t oms::Values::setRealResources(const ComRef& cref, double value, const ComRef& fullCref, bool externalInput, oms_modelState_enu_t modelState)
 {
   bool resourceAvailable = false;
   for (auto &it : parameterResources)
@@ -131,9 +131,6 @@ oms_status_enu_t oms::Values::setRealResources(const ComRef& cref, double value,
 
   if (!resourceAvailable)
   {
-    if (!output)
-      logWarning("signal \"" + std::string(fullCref+cref) + "\" is not found in the list of resource files, it will be updated in the first resource file by default.");
-
     auto &it = parameterResources.front();
     for (auto &res : it.allresources)
     {

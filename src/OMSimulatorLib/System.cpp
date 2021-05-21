@@ -2120,13 +2120,13 @@ oms_status_enu_t oms::System::setReal(const ComRef& cref, double value)
       // check for local resources available
       if (!values.parameterResources.empty())
       {
-        return values.setRealResources(cref, value, getFullCref(), true, getModel().getModelState(), connector->isOutput());
+        return values.setRealResources(cref, value, getFullCref(), true, getModel().getModelState());
       }
       // check for resources in top level system
       else if (getParentSystem() && getParentSystem()->hasResources())
       {
         //return getParentSystem()->setRealSystemResources(getCref()+cref, value, connector->isOutput());
-        return getParentSystem()->setRealResources(getCref() + cref, value, true, getModel().getModelState(), connector->isOutput());
+        return getParentSystem()->setRealResources(getCref() + cref, value, true, getModel().getModelState());
       }
       else
       {
@@ -2157,9 +2157,9 @@ bool oms::System::hasResources()
   return false;
 }
 
-oms_status_enu_t oms::System::setRealResources(const ComRef& cref, double value, bool externalInput, oms_modelState_enu_t modelState, bool output)
+oms_status_enu_t oms::System::setRealResources(const ComRef& cref, double value, bool externalInput, oms_modelState_enu_t modelState)
 {
-  return values.setRealResources(cref, value, getFullCref(), externalInput, modelState, output);
+  return values.setRealResources(cref, value, getFullCref(), externalInput, modelState);
 }
 
 oms_status_enu_t oms::System::getReals(const std::vector<oms::ComRef> &sr, std::vector<double> &values)

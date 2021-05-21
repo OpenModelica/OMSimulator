@@ -83,10 +83,6 @@ oms_terminate("addResources")
 oms_delete("addResources")
 
 -- Result:
--- warning: signal "addResources.root.Input1" is not found in the list of resource files, it will be updated in the first resource file by default.
--- warning: signal "addResources.root.system1.C1" is not found in the list of resource files, it will be updated in the first resource file by default.
--- warning: signal "addResources.root.Gain.k" is not found in the list of resource files, it will be updated in the first resource file by default.
--- warning: signal "addResources.root.Input2" is not found in the list of resource files, it will be updated in the first resource file by default.
 -- <?xml version="1.0"?>
 -- <oms:snapshot
 --   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
@@ -337,6 +333,4 @@ oms_delete("addResources")
 -- info:      addResources.root.system1.C1 : -10.0
 -- info:      addResources.root.system1.C2 : 0.0
 -- info:      addResources.root.Gain.k     : 27.0
--- info:    4 warnings
--- info:    0 errors
 -- endResult
