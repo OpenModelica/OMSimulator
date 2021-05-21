@@ -14,12 +14,14 @@ function readFile(filename)
   f:close()
 end
 
-oms_setCommandLineOption("--suppressPath=true --skipCSVHeader=true --addParametersToCSV=true --exportParametersInline=false")
+oms_setCommandLineOption("--suppressPath=true --skipCSVHeader=true --addParametersToCSV=true")
 oms_setTempDirectory("./import_export_signalFilter-lua/")
 
 oms_newModel("model")
 
 oms_addSystem("model.root", oms_system_wc)
+
+oms_addResources("model.root:model.ssv")
 
 oms_addSystem("model.root.System1", oms_system_sc)
 

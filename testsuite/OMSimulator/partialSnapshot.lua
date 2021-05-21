@@ -4,11 +4,13 @@
 -- win: no
 -- mac: no
 
-oms_setCommandLineOption("--suppressPath=true --exportParametersInline=false")
+oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./partial_snapshot_lua/")
 
 oms_newModel("snapshot")
 oms_addSystem("snapshot.root", oms_system_wc)
+
+oms_addResources("snapshot.root:snapshot.ssv")
 
 oms_addConnector("snapshot.root.C1", oms_causality_input, oms_signal_type_real)
 oms_setReal("snapshot.root.C1", -10)
@@ -161,11 +163,6 @@ print(snapshot)
 --       name="parameters">
 --       <ssv:Parameters>
 --         <ssv:Parameter
---           name="C1">
---           <ssv:Real
---             value="-10" />
---         </ssv:Parameter>
---         <ssv:Parameter
 --           name="add.u1">
 --           <ssv:Real
 --             value="10" />
@@ -174,6 +171,11 @@ print(snapshot)
 --           name="add.k1">
 --           <ssv:Real
 --             value="30" />
+--         </ssv:Parameter>
+--         <ssv:Parameter
+--           name="C1">
+--           <ssv:Real
+--             value="-10" />
 --         </ssv:Parameter>
 --       </ssv:Parameters>
 --     </ssv:ParameterSet>
@@ -329,11 +331,6 @@ print(snapshot)
 --       name="parameters">
 --       <ssv:Parameters>
 --         <ssv:Parameter
---           name="C1">
---           <ssv:Real
---             value="-10" />
---         </ssv:Parameter>
---         <ssv:Parameter
 --           name="add.u1">
 --           <ssv:Real
 --             value="10" />
@@ -342,6 +339,11 @@ print(snapshot)
 --           name="add.k1">
 --           <ssv:Real
 --             value="30" />
+--         </ssv:Parameter>
+--         <ssv:Parameter
+--           name="C1">
+--           <ssv:Real
+--             value="-10" />
 --         </ssv:Parameter>
 --       </ssv:Parameters>
 --     </ssv:ParameterSet>

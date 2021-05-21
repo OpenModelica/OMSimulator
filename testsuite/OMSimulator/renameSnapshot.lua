@@ -5,11 +5,13 @@
 -- win: no
 -- mac: no
 
-oms_setCommandLineOption("--suppressPath=true --exportParametersInline=false")
+oms_setCommandLineOption("--suppressPath=true")
 status = oms_setTempDirectory("./rename_snapshot_lua/")
 
 oms_newModel("renameSnapshot")
 oms_addSystem("renameSnapshot.root", oms_system_wc)
+
+oms_addResources("renameSnapshot.root:renameSnapshot.ssv")
 
 oms_addConnector("renameSnapshot.root.C1", oms_causality_input, oms_signal_type_real)
 oms_setReal("renameSnapshot.root.C1", -10)
