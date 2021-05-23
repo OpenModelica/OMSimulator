@@ -69,26 +69,31 @@ class Model:
       raise Exception('error {}'.format(Types.Status(status)))
     return value
 
-  def setBoolean(self, cref: str, value: bool):
+  def setBoolean(self, cref: str, value: bool) -> None:
     status = Scope._capi.setBoolean(self.cref + '.' + cref, value)
     if Types.Status(status) != Types.Status.OK:
       raise Exception('error {}'.format(Types.Status(status)))
 
-  def setInteger(self, cref: str, value: int):
+  def setInteger(self, cref: str, value: int) -> None:
     status = Scope._capi.setInteger(self.cref + '.' + cref, value)
     if Types.Status(status) != Types.Status.OK:
       raise Exception('error {}'.format(Types.Status(status)))
 
-  def setReal(self, cref: str, value: float):
+  def setReal(self, cref: str, value: float) -> None:
     status = Scope._capi.setReal(self.cref + '.' + cref, value)
     if Types.Status(status) != Types.Status.OK:
       raise Exception('error {}'.format(Types.Status(status)))
 
-  def exportSnapshot(self, ident: str):
+  def exportSnapshot(self, ident: str) -> str:
     contents, status = Scope._capi.exportSnapshot(self.cref + '.' + ident)
     if Types.Status(status) != Types.Status.OK:
       raise Exception('error {}'.format(Types.Status(status)))
     return contents
+
+  def setLoggingInterval(self, loggingInterval: float) -> None:
+    status = Scope._capi.setLoggingInterval(self.cref, loggingInterval)
+    if Types.Status(status) != Types.Status.OK:
+      raise Exception('error {}'.format(Types.Status(status)))
 
   @property
   def cref(self):
