@@ -819,7 +819,7 @@ oms_status_enu_t oms::System::importFromSnapshot(const pugi::xml_node& node, con
       for (auto const& ssvSource : startValuesFileSources)
       {
         // add the resource files
-        importStartValuesFromSSV(ssvSource.first, ssvSource.second, snapshot);
+        //importStartValuesFromSSV(ssvSource.first, ssvSource.second, snapshot);
       }
     }
     else if (name == oms::ssp::Draft20180219::ssd::annotations)

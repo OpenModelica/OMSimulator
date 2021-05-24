@@ -319,33 +319,33 @@ oms_delete("import_hierarchical_ssv_sources")
 --     </oms:SignalFilter>
 --   </oms:file>
 -- </oms:snapshot>
--- 
+--
 -- info:    model doesn't contain any continuous state
 -- info:    model doesn't contain any continuous state
 -- info:    model doesn't contain any continuous state
 -- info:    Instantiation
--- info:      import_hierarchical_ssv_sources.root.System1.Input_1     : 0.0
--- info:      import_hierarchical_ssv_sources.root.System1.parameter_1 : 0.0
--- info:      import_hierarchical_ssv_sources.root.System2.Input_1     : 0.0
--- info:      import_hierarchical_ssv_sources.root.System2.Input_2     : 0.0
--- info:      import_hierarchical_ssv_sources.root.System2.parameter_1 : 0.0
--- info:      import_hierarchical_ssv_sources.root.System3.Input_1     : 0.0
--- info:      import_hierarchical_ssv_sources.root.System3.parameter_1 : 0.0
+-- info:      import_hierarchical_ssv_sources.root.System1.Input_1     : -10.0
+-- info:      import_hierarchical_ssv_sources.root.System1.parameter_1 : -20.0
+-- info:      import_hierarchical_ssv_sources.root.System2.Input_1     : -30.0
+-- info:      import_hierarchical_ssv_sources.root.System2.Input_2     : -100.0
+-- info:      import_hierarchical_ssv_sources.root.System2.parameter_1 : -40.0
+-- info:      import_hierarchical_ssv_sources.root.System3.Input_1     : -70.0
+-- info:      import_hierarchical_ssv_sources.root.System3.parameter_1 : -70.0
 -- info:    Result file: import_hierarchical_ssv_sources_res.mat (bufferSize=10)
 -- info:    Initialization
--- info:      import_hierarchical_ssv_sources.root.System1.Input_1     : 0.0
--- info:      import_hierarchical_ssv_sources.root.System1.parameter_1 : 0.0
--- info:      import_hierarchical_ssv_sources.root.System2.Input_1     : 0.0
--- info:      import_hierarchical_ssv_sources.root.System2.Input_2     : 0.0
--- info:      import_hierarchical_ssv_sources.root.System2.parameter_1 : 0.0
--- info:      import_hierarchical_ssv_sources.root.System3.Input_1     : 0.0
--- info:      import_hierarchical_ssv_sources.root.System3.parameter_1 : 0.0
+-- info:      import_hierarchical_ssv_sources.root.System1.Input_1     : -10.0
+-- info:      import_hierarchical_ssv_sources.root.System1.parameter_1 : -20.0
+-- info:      import_hierarchical_ssv_sources.root.System2.Input_1     : -30.0
+-- info:      import_hierarchical_ssv_sources.root.System2.Input_2     : -100.0
+-- info:      import_hierarchical_ssv_sources.root.System2.parameter_1 : -40.0
+-- info:      import_hierarchical_ssv_sources.root.System3.Input_1     : -70.0
+-- info:      import_hierarchical_ssv_sources.root.System3.parameter_1 : -70.0
 -- info:    Simulate
--- info:      import_hierarchical_ssv_sources.root.System1.Input_1     : 0.0
--- info:      import_hierarchical_ssv_sources.root.System1.parameter_1 : 0.0
--- info:      import_hierarchical_ssv_sources.root.System2.Input_1     : 0.0
--- info:      import_hierarchical_ssv_sources.root.System2.Input_2     : 0.0
--- info:      import_hierarchical_ssv_sources.root.System2.parameter_1 : 0.0
--- info:      import_hierarchical_ssv_sources.root.System3.Input_1     : 0.0
--- info:      import_hierarchical_ssv_sources.root.System3.parameter_1 : 0.0
+-- info:      import_hierarchical_ssv_sources.root.System1.Input_1     : -10.0
+-- info:      import_hierarchical_ssv_sources.root.System1.parameter_1 : -20.0
+-- info:      import_hierarchical_ssv_sources.root.System2.Input_1     : -30.0
+-- info:      import_hierarchical_ssv_sources.root.System2.Input_2     : -100.0
+-- info:      import_hierarchical_ssv_sources.root.System2.parameter_1 : -40.0
+-- info:      import_hierarchical_ssv_sources.root.System3.Input_1     : -70.0
+-- info:      import_hierarchical_ssv_sources.root.System3.parameter_1 : -70.0
 -- endResult

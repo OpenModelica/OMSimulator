@@ -57,7 +57,9 @@ oms_delete("importStartValues")
 --         </ssd:Connectors>
 --         <ssd:ParameterBindings>
 --           <ssd:ParameterBinding
---             source="resources/importStartValues.ssv" />
+--             source="resources/Root.ssv" />
+--           <ssd:ParameterBinding
+--             source="resources/System1.ssv" />
 --         </ssd:ParameterBindings>
 --         <ssd:Elements>
 --           <ssd:System
@@ -131,7 +133,7 @@ oms_delete("importStartValues")
 --     </ssd:SystemStructureDescription>
 --   </oms:file>
 --   <oms:file
---     name="resources/importStartValues.ssv">
+--     name="resources/Root.ssv">
 --     <ssv:ParameterSet
 --       xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
 --       xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
@@ -143,6 +145,17 @@ oms_delete("importStartValues")
 --           <ssv:Real
 --             value="-10.5" />
 --         </ssv:Parameter>
+--       </ssv:Parameters>
+--     </ssv:ParameterSet>
+--   </oms:file>
+--   <oms:file
+--     name="resources/System1.ssv">
+--     <ssv:ParameterSet
+--       xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
+--       xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
+--       version="1.0"
+--       name="parameters">
+--       <ssv:Parameters>
 --         <ssv:Parameter
 --           name="System1.C2">
 --           <ssv:Real
