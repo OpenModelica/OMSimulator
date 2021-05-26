@@ -2,8 +2,11 @@ TEST = ../rtest -v
 
 TESTFILES = \
 deleteConnector.lua \
+deleteConnector1.lua \
 deleteStartValues.lua \
 deleteStartValuesInSSV.lua \
+deleteStartValuesInSSV1.lua \
+deleteStartValuesInSSV2.lua \
 DualMassOscillator.lua \
 Enumeration.lua \
 Enumeration2.lua \

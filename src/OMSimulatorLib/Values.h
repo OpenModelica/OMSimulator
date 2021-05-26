@@ -63,6 +63,7 @@ namespace oms
     oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
     oms_status_enu_t importFromSnapshot(const pugi::xml_node& node, const std::string& sspVersion, const Snapshot& snapshot);
     oms_status_enu_t deleteStartValue(const ComRef& cref);
+    oms_status_enu_t deleteStartValueInResources(const ComRef& cref);
 
     oms_status_enu_t exportToSSV(pugi::xml_node& ssvNode) const;
     void exportToSSVTemplate(pugi::xml_node& ssvNode, const ComRef& cref);  ///< start values read from modelDescription.xml and creates a ssv template

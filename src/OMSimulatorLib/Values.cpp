@@ -210,6 +210,44 @@ oms_status_enu_t oms::Values::deleteStartValue(const ComRef& cref)
   return oms_status_error;
 }
 
+oms_status_enu_t oms::Values::deleteStartValueInResources(const ComRef& cref)
+{
+  oms::ComRef signal(cref);
+  signal.pop_suffix("start");
+
+  for (auto &it : parameterResources)
+  {
+    for (auto &res : it.allresources)
+    {
+      // reals
+      auto realValue = res.second.realStartValues.find(signal);
+      if (realValue != res.second.realStartValues.end())
+      {
+        res.second.realStartValues.erase(realValue);
+        return oms_status_ok;
+      }
+
+      // integers
+      auto integerValue = res.second.integerStartValues.find(signal);
+      if (integerValue != res.second.integerStartValues.end())
+      {
+        res.second.integerStartValues.erase(integerValue);
+        return oms_status_ok;
+      }
+
+      // booleans
+      auto boolValue = res.second.booleanStartValues.find(signal);
+      if (boolValue != res.second.booleanStartValues.end())
+      {
+        res.second.booleanStartValues.erase(boolValue);
+        return oms_status_ok;
+      }
+    }
+  }
+
+  return oms_status_error;
+}
+
 oms_status_enu_t oms::Values::exportToSSD(pugi::xml_node& node) const
 {
   // skip this if there is nothing to export

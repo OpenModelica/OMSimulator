@@ -1648,8 +1648,25 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
     // check cref has ":start" suffix at the end to delete only start values
     if (front.hasSuffix("start"))
     {
-      if (oms_status_ok != values.deleteStartValue(getValidCref(front)))
-        return logWarning("failed to delete start value \"" + std::string(getFullCref()+front) + "\"" + " because the identifier couldn't be resolved to any system signal");
+      // check for local resources
+      if (!values.parameterResources.empty())
+      {
+        if (oms_status_ok != values.deleteStartValueInResources(front))
+          return logWarning("failed to delete start value \"" + std::string(getFullCref()+front) + "\"" + " because the identifier couldn't be resolved to any system signal");
+      }
+      // check from top level resources
+      else if (getParentSystem() && getParentSystem()->hasResources())
+      {
+        if (oms_status_ok != getParentSystem()->values.deleteStartValueInResources(getCref()+front))
+          return logWarning("failed to delete start value \"" + std::string(getFullCref()+front) + "\"" + " because the identifier couldn't be resolved to any system signal");
+      }
+      // inline
+      else
+      {
+        if (oms_status_ok != values.deleteStartValue(front))
+          return logWarning("failed to delete start value \"" + std::string(getFullCref()+front) + "\"" + " because the identifier couldn't be resolved to any system signal");
+      }
+
       return oms_status_ok;
     }
 
@@ -1676,7 +1693,18 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
       if (connectors[i]->getName() == front)
       {
         // delete startValues associated with the Connector
-        values.deleteStartValue(getValidCref(front));
+        if (!values.parameterResources.empty()) // check for local resources
+        {
+          values.deleteStartValueInResources(front);
+        }
+        else if (getParentSystem() && getParentSystem()->hasResources()) // check from top level resources
+        {
+          getParentSystem()->values.deleteStartValueInResources(getCref() + front);
+        }
+        else // inline
+        {
+          values.deleteStartValue(front);
+        }
         deleteAllConectionsTo(front);
         exportConnectors.erase(front);
         delete connectors[i];
@@ -1690,7 +1718,18 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
       if (busconnectors[i]->getName() == front)
       {
         // delete startValues associated with the Connector
-        values.deleteStartValue(getValidCref(front));
+        if (!values.parameterResources.empty()) // check for local resources
+        {
+          values.deleteStartValueInResources(front);
+        }
+        else if (getParentSystem() && getParentSystem()->hasResources()) // check from top level resources
+        {
+          getParentSystem()->values.deleteStartValueInResources(getCref() + front);
+        }
+        else // inline
+        {
+          values.deleteStartValue(front);
+        }
         deleteAllConectionsTo(front);
         exportConnectors.erase(front);
         delete busconnectors[i];
@@ -1704,7 +1743,18 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
       if (tlmbusconnectors[i]->getName() == front)
       {
         // delete startValues associated with the Connector
-        values.deleteStartValue(getValidCref(front));
+        if (!values.parameterResources.empty()) // check for local resources
+        {
+          values.deleteStartValueInResources(front);
+        }
+        else if (getParentSystem() && getParentSystem()->hasResources()) // check from top level resources
+        {
+          getParentSystem()->values.deleteStartValueInResources(getCref() + front);
+        }
+        else // inline
+        {
+          values.deleteStartValue(front);
+        }
         deleteAllConectionsTo(front);
         exportConnectors.erase(front);
         delete tlmbusconnectors[i];
@@ -1730,11 +1780,6 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
       // check cref has ":start" suffix at the end to delete only start values
       if (tail.hasSuffix("start"))
       {
-        // add prefix to cref start values if ssv file is used (e.g) k1:start -> addP.k1:start
-        if(!Flags::ExportParametersInline())
-        {
-          tail = cref;
-        }
         if (oms_status_ok != component->second->deleteStartValue(tail))
           return logWarning("failed to delete start value \"" + std::string(getFullCref()+cref) + "\"" + " because the identifier couldn't be resolved to any component signal");
         return oms_status_ok;
@@ -1960,7 +2005,7 @@ oms_status_enu_t oms::System::getReal(const ComRef& cref, double& value)
       // getReal from top level resources
       else if (getParentSystem() && getParentSystem()->hasResources())
       {
-        if (oms_status_ok == getParentSystem()->getRealResources(getCref()+cref, value, true, getModel().getModelState()))
+        if (oms_status_ok == getParentSystem()->values.getRealResources(getCref()+cref, value, true, getModel().getModelState()))
         {
           return oms_status_ok;
         }
@@ -1995,11 +2040,6 @@ oms_status_enu_t oms::System::getReal(const ComRef& cref, double& value)
   }
 
   return logError_UnknownSignal(getFullCref() + cref);
-}
-
-oms_status_enu_t oms::System::getRealResources(const ComRef& cref, double& value, bool externalInput, oms_modelState_enu_t modelState)
-{
-  return values.getRealResources(cref, value, externalInput, modelState);
 }
 
 /*
@@ -2126,12 +2166,10 @@ oms_status_enu_t oms::System::setReal(const ComRef& cref, double value)
       else if (getParentSystem() && getParentSystem()->hasResources())
       {
         //return getParentSystem()->setRealSystemResources(getCref()+cref, value, connector->isOutput());
-        return getParentSystem()->setRealResources(getCref() + cref, value, true, getModel().getModelState());
+        return getParentSystem()->values.setRealResources(getCref() + cref, value, getParentSystem()->getFullCref(), true, getModel().getModelState());
       }
       else
       {
-        //TODO inline parameter settings
-        //std::cout << "\n set inline parameters";
         // set external inputs, after initialization
         if (oms_modelState_simulation == getModel().getModelState())
         {
@@ -2155,11 +2193,6 @@ bool oms::System::hasResources()
     return true;
 
   return false;
-}
-
-oms_status_enu_t oms::System::setRealResources(const ComRef& cref, double value, bool externalInput, oms_modelState_enu_t modelState)
-{
-  return values.setRealResources(cref, value, getFullCref(), externalInput, modelState);
 }
 
 oms_status_enu_t oms::System::getReals(const std::vector<oms::ComRef> &sr, std::vector<double> &values)

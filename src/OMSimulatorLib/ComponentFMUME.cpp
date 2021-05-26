@@ -936,7 +936,7 @@ oms_status_enu_t oms::ComponentFMUME::getReal(const ComRef& cref, double& value)
     }
     else if (getParentSystem() && getParentSystem()->hasResources())  // search in root resources
     {
-      if (oms_status_ok == getParentSystem()->getRealResources(getCref()+cref, value, false, oms_modelState_virgin))
+      if (oms_status_ok == getParentSystem()->getValues().getRealResources(getCref()+cref, value, false, oms_modelState_virgin))
       {
         return oms_status_ok;
       }
@@ -950,7 +950,7 @@ oms_status_enu_t oms::ComponentFMUME::getReal(const ComRef& cref, double& value)
     }
     else if (getParentSystem()->getParentSystem() && getParentSystem()->getParentSystem()->hasResources())  // search in top level root resources
     {
-      if (oms_status_ok == getParentSystem()->getParentSystem()->getRealResources(getCref()+cref, value, false, oms_modelState_virgin))
+      if (oms_status_ok == getParentSystem()->getParentSystem()->getValues().getRealResources(getCref()+cref, value, false, oms_modelState_virgin))
       {
         return oms_status_ok;
       }
@@ -1072,7 +1072,27 @@ oms_status_enu_t oms::ComponentFMUME::setInteger(const ComRef& cref, int value)
 
 oms_status_enu_t oms::ComponentFMUME::deleteStartValue(const ComRef& cref)
 {
-  return values.deleteStartValue(cref);
+  // check for local resources
+  if (!values.parameterResources.empty())
+  {
+    return values.deleteStartValueInResources(cref);
+  }
+  // check for resources in root
+  else if (getParentSystem() && getParentSystem()->hasResources())
+  {
+    return getParentSystem()->getValues().deleteStartValueInResources(getCref()+cref);
+  }
+  // check for resources in top level root
+  else if (getParentSystem()->getParentSystem() && getParentSystem()->getParentSystem()->hasResources())
+  {
+    return getParentSystem()->getParentSystem()->getValues().deleteStartValueInResources(getCref()+cref);
+  }
+  else
+  {
+    return values.deleteStartValue(cref);
+  }
+
+  return oms_status_error;
 }
 
 oms_status_enu_t oms::ComponentFMUME::setReal(const ComRef& cref, double value)
@@ -1105,12 +1125,12 @@ oms_status_enu_t oms::ComponentFMUME::setReal(const ComRef& cref, double value)
     // check for resources in root
     else if (getParentSystem() && getParentSystem()->hasResources())
     {
-      return getParentSystem()->setRealResources(getCref()+cref, value, false, oms_modelState_virgin);
+      return getParentSystem()->getValues().setRealResources(getCref()+cref, value, getParentSystem()->getFullCref(), false, oms_modelState_virgin);
     }
     // check for resources in top level root
     else if (getParentSystem()->getParentSystem() && getParentSystem()->getParentSystem()->hasResources())
     {
-      return getParentSystem()->getParentSystem()->setRealResources(getCref()+cref, value, false, oms_modelState_virgin);
+      return getParentSystem()->getParentSystem()->getValues().setRealResources(getCref()+cref, value, getParentSystem()->getParentSystem()->getFullCref(), false, oms_modelState_virgin);
     }
     else
     {
