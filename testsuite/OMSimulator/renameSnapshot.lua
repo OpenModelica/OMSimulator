@@ -195,11 +195,6 @@ print(snapshot)
 --       name="parameters">
 --       <ssv:Parameters>
 --         <ssv:Parameter
---           name="C1">
---           <ssv:Real
---             value="-10" />
---         </ssv:Parameter>
---         <ssv:Parameter
 --           name="foo.Input1">
 --           <ssv:Real
 --             value="-20" />
@@ -213,6 +208,11 @@ print(snapshot)
 --           name="add.k1">
 --           <ssv:Real
 --             value="30" />
+--         </ssv:Parameter>
+--         <ssv:Parameter
+--           name="C1">
+--           <ssv:Real
+--             value="-10" />
 --         </ssv:Parameter>
 --       </ssv:Parameters>
 --     </ssv:ParameterSet>
@@ -393,11 +393,6 @@ print(snapshot)
 --       name="parameters">
 --       <ssv:Parameters>
 --         <ssv:Parameter
---           name="C1">
---           <ssv:Real
---             value="-10" />
---         </ssv:Parameter>
---         <ssv:Parameter
 --           name="foo.Input1">
 --           <ssv:Real
 --             value="-20" />
@@ -411,6 +406,11 @@ print(snapshot)
 --           name="add.k1">
 --           <ssv:Real
 --             value="30" />
+--         </ssv:Parameter>
+--         <ssv:Parameter
+--           name="C1">
+--           <ssv:Real
+--             value="-10" />
 --         </ssv:Parameter>
 --       </ssv:Parameters>
 --     </ssv:ParameterSet>
@@ -591,11 +591,6 @@ print(snapshot)
 --       name="parameters">
 --       <ssv:Parameters>
 --         <ssv:Parameter
---           name="C1">
---           <ssv:Real
---             value="-10" />
---         </ssv:Parameter>
---         <ssv:Parameter
 --           name="foo_1.Input1">
 --           <ssv:Real
 --             value="-20" />
@@ -609,6 +604,11 @@ print(snapshot)
 --           name="add.k1">
 --           <ssv:Real
 --             value="30" />
+--         </ssv:Parameter>
+--         <ssv:Parameter
+--           name="C1">
+--           <ssv:Real
+--             value="-10" />
 --         </ssv:Parameter>
 --       </ssv:Parameters>
 --     </ssv:ParameterSet>
@@ -789,11 +789,6 @@ print(snapshot)
 --       name="parameters">
 --       <ssv:Parameters>
 --         <ssv:Parameter
---           name="C1">
---           <ssv:Real
---             value="-10" />
---         </ssv:Parameter>
---         <ssv:Parameter
 --           name="foo_1.Input1">
 --           <ssv:Real
 --             value="-20" />
@@ -807,6 +802,11 @@ print(snapshot)
 --           name="add_1.k1">
 --           <ssv:Real
 --             value="30" />
+--         </ssv:Parameter>
+--         <ssv:Parameter
+--           name="C1">
+--           <ssv:Real
+--             value="-10" />
 --         </ssv:Parameter>
 --       </ssv:Parameters>
 --     </ssv:ParameterSet>

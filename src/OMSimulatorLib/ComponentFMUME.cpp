@@ -1368,5 +1368,25 @@ void oms::ComponentFMUME::getFilteredSignals(std::vector<Connector>& filteredSig
 
 oms_status_enu_t oms::ComponentFMUME::renameValues(const ComRef& oldCref, const ComRef& newCref)
 {
-  return values.rename(oldCref, newCref);
+  // check for local resources
+  if (!values.parameterResources.empty())
+  {
+    return values.renameInResources(oldCref, newCref);
+  }
+  // check for resources in root
+  else if (getParentSystem() && getParentSystem()->hasResources())
+  {
+    return getParentSystem()->getValues().renameInResources(oldCref, newCref);
+  }
+  // check for resources in top level root
+  else if (getParentSystem()->getParentSystem() && getParentSystem()->getParentSystem()->hasResources())
+  {
+    return getParentSystem()->getParentSystem()->getValues().renameInResources(oldCref, newCref);
+  }
+  else
+  {
+    return values.rename(oldCref, newCref);
+  }
+
+  return oms_status_error;
 }

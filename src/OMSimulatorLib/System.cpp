@@ -2721,7 +2721,21 @@ oms_status_enu_t oms::System::rename(const ComRef& cref, const ComRef& newCref)
   if (subsystem != subsystems.end())
   {
     subsystem->second->rename(tail, newCref);
-    subsystem->second->values.rename(cref, newCref);
+    // rename values
+    if (subsystem->second->hasResources()) // check for local resources
+    {
+      subsystem->second->values.renameInResources(cref, newCref);
+    }
+    // top level root resources
+    else if(subsystem->second->getParentSystem() && subsystem->second->getParentSystem()->hasResources())
+    {
+      subsystem->second->getParentSystem()->values.renameInResources(cref, newCref);
+    }
+    // inline resources
+    else
+    {
+      subsystem->second->values.rename(cref, newCref);
+    }
     this->renameConnections(cref, newCref);
     subsystems[newCref] = subsystem->second;
     subsystems.erase(subsystem);  // delete the old cref from the lookup

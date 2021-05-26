@@ -71,6 +71,7 @@ namespace oms
 
     oms_status_enu_t parseModelDescription(const filesystem::path& root); ///< path without the filename, i.e. modelDescription.xml
     oms_status_enu_t rename(const oms::ComRef& oldCref, const oms::ComRef& newCref);
+    oms_status_enu_t renameInResources(const oms::ComRef& oldCref, const oms::ComRef& newCref);
 
     void exportParameterBindings(pugi::xml_node& node, Snapshot& snapshot) const;
 

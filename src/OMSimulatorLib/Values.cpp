@@ -723,3 +723,46 @@ oms_status_enu_t oms::Values::rename(const oms::ComRef& oldCref, const oms::ComR
 
   return oms_status_ok;
 }
+
+oms_status_enu_t oms::Values::renameInResources(const oms::ComRef& oldCref, const oms::ComRef& newCref)
+{
+  for (auto &it : parameterResources)
+  {
+    for (auto &res : it.allresources)
+    {
+      for (const auto &r : res.second.realStartValues)
+      {
+        ComRef tail(r.first);
+        ComRef front = tail.pop_front();
+        if (oldCref == front)
+        {
+          res.second.realStartValues[newCref + tail] = r.second; // update the newCref
+          res.second.realStartValues.erase(r.first);             // delete the old cref
+        }
+      }
+
+      for (const auto &i : res.second.integerStartValues)
+      {
+        ComRef tail(i.first);
+        ComRef front = tail.pop_front();
+        if (oldCref == front)
+        {
+          res.second.integerStartValues[newCref + tail] = i.second; // update the newCref
+          res.second.integerStartValues.erase(i.first);             // delete the old cref
+        }
+      }
+
+      for (const auto &b : booleanStartValues)
+      {
+        ComRef tail(b.first);
+        ComRef front = tail.pop_front();
+        if (oldCref == front)
+        {
+          res.second.booleanStartValues[newCref + tail] = b.second; // update the newCref
+          res.second.booleanStartValues.erase(b.first);             // delete the old cref
+        }
+      }
+    }
+  }
+  return oms_status_ok;
+}
