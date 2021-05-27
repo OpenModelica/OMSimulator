@@ -423,6 +423,7 @@ void oms::Values::exportParameterBindings(pugi::xml_node &node, Snapshot &snapsh
           node_parameterset.append_attribute("name") = "parameters";
           pugi::xml_node node_parameters = node_parameterset.append_child(oms::ssp::Version1_0::ssv::parameters);
           res.second.exportStartValuesHelper(node_parameters);
+          res.second.exportParameterMappingInline(node_parameter_binding);
         }
         else
         {
