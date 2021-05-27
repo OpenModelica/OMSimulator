@@ -75,6 +75,8 @@ namespace oms
 
     void exportParameterBindings(pugi::xml_node& node, Snapshot& snapshot) const;
 
+    bool hasResources(); ///< returns if the system or subsystem or submodule have parameter resources either as ssv or inline
+
   private:
     oms_status_enu_t exportStartValuesHelper(pugi::xml_node& node) const;
     void exportParameterMappingInline(pugi::xml_node& node) const;

@@ -190,8 +190,6 @@ namespace oms
 
     Values& getValues() { return values; }
 
-    bool hasResources(); ///< returns if the system or subsystem or submodule have parameter resources either as ssv or inline
-
   protected: // methods
     System(const ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem, oms_solver_enu_t solverMethod);
 

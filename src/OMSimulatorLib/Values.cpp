@@ -766,3 +766,11 @@ oms_status_enu_t oms::Values::renameInResources(const oms::ComRef& oldCref, cons
   }
   return oms_status_ok;
 }
+
+bool oms::Values::hasResources()
+{
+  if (!parameterResources.empty())
+    return true;
+
+  return false;
+}

@@ -534,7 +534,7 @@ oms_status_enu_t oms::ComponentFMUCS::instantiate()
     return logError_FMUCall("fmi2_import_instantiate", this);
 
   // set start values from local resources
-  if (!values.parameterResources.empty())
+  if (values.hasResources())
   {
     for (const auto &it : values.parameterResources)
     {
@@ -545,12 +545,12 @@ oms_status_enu_t oms::ComponentFMUCS::instantiate()
     }
   }
   // set start values from root resources
-  else if (getParentSystem() && getParentSystem()->hasResources())
+  else if (getParentSystem() && getParentSystem()->getValues().hasResources())
   {
     setResourcesHelper2(getParentSystem()->getValues());
   }
   // set start values from top level root resources
-  else if (getParentSystem()->getParentSystem() && getParentSystem()->getParentSystem()->hasResources())
+  else if (getParentSystem()->getParentSystem() && getParentSystem()->getParentSystem()->getValues().hasResources())
   {
     setResourcesHelper2(getParentSystem()->getParentSystem()->getValues());
   }
@@ -658,7 +658,7 @@ oms::ComRef oms::ComponentFMUCS::getValidCref(ComRef cref)
 oms_status_enu_t oms::ComponentFMUCS::addResources(std::string& filename)
 {
   Values resources;
-  if (values.parameterResources.empty())
+  if (!values.hasResources())
   {
     resources.allresources[filename] = resources;
     values.parameterResources.push_back(resources);
@@ -925,7 +925,7 @@ oms_status_enu_t oms::ComponentFMUCS::getReal(const ComRef& cref, double& value)
   if (oms_modelState_virgin == getModel().getModelState())
   {
     // check for start values exist, priority over modeldescription.xml start values
-    if (!values.parameterResources.empty())  // search in local resources
+    if (values.hasResources())  // search in local resources
     {
       if (oms_status_ok == values.getRealResources(cref, value, false, oms_modelState_virgin))
       {
@@ -939,7 +939,7 @@ oms_status_enu_t oms::ComponentFMUCS::getReal(const ComRef& cref, double& value)
 
       return logError("no start value set or available for signal: " + std::string(getFullCref() + cref));
     }
-    else if (getParentSystem() && getParentSystem()->hasResources())  // search in root resources
+    else if (getParentSystem() && getParentSystem()->getValues().hasResources())  // search in root resources
     {
       if (oms_status_ok == getParentSystem()->getValues().getRealResources(getCref()+cref, value, false, oms_modelState_virgin))
       {
@@ -953,7 +953,7 @@ oms_status_enu_t oms::ComponentFMUCS::getReal(const ComRef& cref, double& value)
 
       return logError("no start value set or available for signal: " + std::string(getFullCref() + cref));
     }
-    else if (getParentSystem()->getParentSystem() && getParentSystem()->getParentSystem()->hasResources())  // search in top level root resources
+    else if (getParentSystem()->getParentSystem() && getParentSystem()->getParentSystem()->getValues().hasResources())  // search in top level root resources
     {
       if (oms_status_ok == getParentSystem()->getParentSystem()->getValues().getRealResources(getCref()+cref, value, false, oms_modelState_virgin))
       {
@@ -1148,17 +1148,18 @@ oms_status_enu_t oms::ComponentFMUCS::setReal(const ComRef& cref, double value)
   if (oms_modelState_virgin == getModel().getModelState())
   {
     // check for local resources available
-    if (!values.parameterResources.empty())
+    if (values.hasResources())
     {
+      //std::cout << "\n local resources : " << getCref().c_str() << "=" << values.hasResources();
       return values.setRealResources(cref, value, getFullCref(), false, oms_modelState_virgin);
     }
     // check for resources in root
-    else if (getParentSystem() && getParentSystem()->hasResources())
+    else if (getParentSystem() && getParentSystem()->getValues().hasResources())
     {
       return getParentSystem()->getValues().setRealResources(getCref()+cref, value, getParentSystem()->getFullCref(), false, oms_modelState_virgin);
     }
     // check for resources in top level root
-    else if (getParentSystem()->getParentSystem() && getParentSystem()->getParentSystem()->hasResources())
+    else if (getParentSystem()->getParentSystem() && getParentSystem()->getParentSystem()->getValues().hasResources())
     {
       return getParentSystem()->getParentSystem()->getValues().setRealResources(getCref()+cref, value, getParentSystem()->getParentSystem()->getFullCref(), false, oms_modelState_virgin);
     }
@@ -1181,17 +1182,17 @@ oms_status_enu_t oms::ComponentFMUCS::setReal(const ComRef& cref, double value)
 oms_status_enu_t oms::ComponentFMUCS::deleteStartValue(const ComRef& cref)
 {
   // check for local resources
-  if (!values.parameterResources.empty())
+  if (values.hasResources())
   {
     return values.deleteStartValueInResources(cref);
   }
   // check for resources in root
-  else if (getParentSystem() && getParentSystem()->hasResources())
+  else if (getParentSystem() && getParentSystem()->getValues().hasResources())
   {
     return getParentSystem()->getValues().deleteStartValueInResources(getCref()+cref);
   }
   // check for resources in top level root
-  else if (getParentSystem()->getParentSystem() && getParentSystem()->getParentSystem()->hasResources())
+  else if (getParentSystem()->getParentSystem() && getParentSystem()->getParentSystem()->getValues().hasResources())
   {
     return getParentSystem()->getParentSystem()->getValues().deleteStartValueInResources(getCref()+cref);
   }
@@ -1409,17 +1410,17 @@ void oms::ComponentFMUCS::getFilteredSignals(std::vector<Connector>& filteredSig
 oms_status_enu_t oms::ComponentFMUCS::renameValues(const ComRef& oldCref, const ComRef& newCref)
 {
   // check for local resources
-  if (!values.parameterResources.empty())
+  if (values.hasResources())
   {
     return values.renameInResources(oldCref, newCref);
   }
   // check for resources in root
-  else if (getParentSystem() && getParentSystem()->hasResources())
+  else if (getParentSystem() && getParentSystem()->getValues().hasResources())
   {
     return getParentSystem()->getValues().renameInResources(oldCref, newCref);
   }
   // check for resources in top level root
-  else if (getParentSystem()->getParentSystem() && getParentSystem()->getParentSystem()->hasResources())
+  else if (getParentSystem()->getParentSystem() && getParentSystem()->getParentSystem()->getValues().hasResources())
   {
     return getParentSystem()->getParentSystem()->getValues().renameInResources(oldCref, newCref);
   }

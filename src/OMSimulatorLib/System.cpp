@@ -329,7 +329,7 @@ oms_status_enu_t oms::System::addResources(const ComRef& cref, std::string& file
   {
     // top level system and subsystems
     Values resources;
-    if (values.parameterResources.empty())
+    if (!values.hasResources())
     {
       resources.allresources[filename] = resources;
       values.parameterResources.push_back(resources);
@@ -1649,13 +1649,13 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
     if (front.hasSuffix("start"))
     {
       // check for local resources
-      if (!values.parameterResources.empty())
+      if (values.hasResources())
       {
         if (oms_status_ok != values.deleteStartValueInResources(front))
           return logWarning("failed to delete start value \"" + std::string(getFullCref()+front) + "\"" + " because the identifier couldn't be resolved to any system signal");
       }
       // check from top level resources
-      else if (getParentSystem() && getParentSystem()->hasResources())
+      else if (getParentSystem() && getParentSystem()->values.hasResources())
       {
         if (oms_status_ok != getParentSystem()->values.deleteStartValueInResources(getCref()+front))
           return logWarning("failed to delete start value \"" + std::string(getFullCref()+front) + "\"" + " because the identifier couldn't be resolved to any system signal");
@@ -1693,11 +1693,11 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
       if (connectors[i]->getName() == front)
       {
         // delete startValues associated with the Connector
-        if (!values.parameterResources.empty()) // check for local resources
+        if (values.hasResources()) // check for local resources
         {
           values.deleteStartValueInResources(front);
         }
-        else if (getParentSystem() && getParentSystem()->hasResources()) // check from top level resources
+        else if (getParentSystem() && getParentSystem()->values.hasResources()) // check from top level resources
         {
           getParentSystem()->values.deleteStartValueInResources(getCref() + front);
         }
@@ -1718,11 +1718,11 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
       if (busconnectors[i]->getName() == front)
       {
         // delete startValues associated with the Connector
-        if (!values.parameterResources.empty()) // check for local resources
+        if (values.hasResources()) // check for local resources
         {
           values.deleteStartValueInResources(front);
         }
-        else if (getParentSystem() && getParentSystem()->hasResources()) // check from top level resources
+        else if (getParentSystem() && getParentSystem()->values.hasResources()) // check from top level resources
         {
           getParentSystem()->values.deleteStartValueInResources(getCref() + front);
         }
@@ -1743,11 +1743,11 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
       if (tlmbusconnectors[i]->getName() == front)
       {
         // delete startValues associated with the Connector
-        if (!values.parameterResources.empty()) // check for local resources
+        if (values.hasResources()) // check for local resources
         {
           values.deleteStartValueInResources(front);
         }
-        else if (getParentSystem() && getParentSystem()->hasResources()) // check from top level resources
+        else if (getParentSystem() && getParentSystem()->values.hasResources()) // check from top level resources
         {
           getParentSystem()->values.deleteStartValueInResources(getCref() + front);
         }
@@ -1990,7 +1990,7 @@ oms_status_enu_t oms::System::getReal(const ComRef& cref, double& value)
     if (connector && connector->getName() == cref && connector->isTypeReal())
     {
       // getReal from local resources
-      if (!values.parameterResources.empty())
+      if (values.hasResources())
       {
         if (oms_status_ok == values.getRealResources(cref, value, true, getModel().getModelState()))
         {
@@ -2003,7 +2003,7 @@ oms_status_enu_t oms::System::getReal(const ComRef& cref, double& value)
         }
       }
       // getReal from top level resources
-      else if (getParentSystem() && getParentSystem()->hasResources())
+      else if (getParentSystem() && getParentSystem()->values.hasResources())
       {
         if (oms_status_ok == getParentSystem()->values.getRealResources(getCref()+cref, value, true, getModel().getModelState()))
         {
@@ -2158,12 +2158,12 @@ oms_status_enu_t oms::System::setReal(const ComRef& cref, double value)
     if (connector && connector->getName() == cref && connector->isTypeReal())
     {
       // check for local resources available
-      if (!values.parameterResources.empty())
+      if (values.hasResources())
       {
         return values.setRealResources(cref, value, getFullCref(), true, getModel().getModelState());
       }
       // check for resources in top level system
-      else if (getParentSystem() && getParentSystem()->hasResources())
+      else if (getParentSystem() && getParentSystem()->values.hasResources())
       {
         //return getParentSystem()->setRealSystemResources(getCref()+cref, value, connector->isOutput());
         return getParentSystem()->values.setRealResources(getCref() + cref, value, getParentSystem()->getFullCref(), true, getModel().getModelState());
@@ -2185,14 +2185,6 @@ oms_status_enu_t oms::System::setReal(const ComRef& cref, double value)
   }
 
   return logError_UnknownSignal(getFullCref() + cref);
-}
-
-bool oms::System::hasResources()
-{
-  if (!values.parameterResources.empty())
-    return true;
-
-  return false;
 }
 
 oms_status_enu_t oms::System::getReals(const std::vector<oms::ComRef> &sr, std::vector<double> &values)
@@ -2722,12 +2714,12 @@ oms_status_enu_t oms::System::rename(const ComRef& cref, const ComRef& newCref)
   {
     subsystem->second->rename(tail, newCref);
     // rename values
-    if (subsystem->second->hasResources()) // check for local resources
+    if (subsystem->second->values.hasResources()) // check for local resources
     {
       subsystem->second->values.renameInResources(cref, newCref);
     }
     // top level root resources
-    else if(subsystem->second->getParentSystem() && subsystem->second->getParentSystem()->hasResources())
+    else if(subsystem->second->getParentSystem() && subsystem->second->getParentSystem()->values.hasResources())
     {
       subsystem->second->getParentSystem()->values.renameInResources(cref, newCref);
     }
