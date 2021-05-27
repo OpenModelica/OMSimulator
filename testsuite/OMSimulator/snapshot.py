@@ -8,11 +8,13 @@
 from OMSimulator import OMSimulator
 oms = OMSimulator()
 
-oms.setCommandLineOption("--suppressPath=true --exportParametersInline=false")
+oms.setCommandLineOption("--suppressPath=true")
 oms.setTempDirectory("./snapshot-py/")
 
 oms.newModel("snapshot")
 oms.addSystem("snapshot.root", oms.system_wc)
+
+oms.addResources("snapshot.root:snapshot.ssv")
 
 oms.addConnector("snapshot.root.C1", oms.input, oms.signal_type_real)
 oms.setReal("snapshot.root.C1", -10)
@@ -146,11 +148,6 @@ oms.delete("snapshot")
 ##       name="parameters">
 ##       <ssv:Parameters>
 ##         <ssv:Parameter
-##           name="C1">
-##           <ssv:Real
-##             value="-10" />
-##         </ssv:Parameter>
-##         <ssv:Parameter
 ##           name="add.u1">
 ##           <ssv:Real
 ##             value="10" />
@@ -159,6 +156,11 @@ oms.delete("snapshot")
 ##           name="add.k1">
 ##           <ssv:Real
 ##             value="30" />
+##         </ssv:Parameter>
+##         <ssv:Parameter
+##           name="C1">
+##           <ssv:Real
+##             value="-10" />
 ##         </ssv:Parameter>
 ##       </ssv:Parameters>
 ##     </ssv:ParameterSet>
