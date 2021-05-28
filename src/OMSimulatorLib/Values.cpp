@@ -142,6 +142,80 @@ oms_status_enu_t oms::Values::setRealResources(const ComRef& cref, double value,
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::Values::setIntegerResources(const ComRef& cref, int value, const ComRef& fullCref, bool externalInput, oms_modelState_enu_t modelState)
+{
+  bool resourceAvailable = false;
+  for (auto &it : parameterResources)
+  {
+    for (auto &res : it.allresources)
+    {
+      //update the value in all resources, so that same cref in multiple ssv can be updated, this can result in duplication
+      auto integerValue = res.second.integerStartValues.find(cref);
+      if (integerValue != res.second.integerStartValues.end())
+      {
+        if (oms_modelState_simulation == modelState && externalInput)
+        {
+          res.second.integerValues[cref] = value;
+        }
+        else
+        {
+          res.second.setInteger(cref, value);
+        }
+        resourceAvailable = true;
+      }
+    }
+  }
+
+  if (!resourceAvailable)
+  {
+    auto &it = parameterResources.front();
+    for (auto &res : it.allresources)
+    {
+      // insert the new signal at the first resource available
+      res.second.setInteger(cref, value);
+      break;
+    }
+  }
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Values::setBooleanResources(const ComRef& cref, bool value, const ComRef& fullCref, bool externalInput, oms_modelState_enu_t modelState)
+{
+  bool resourceAvailable = false;
+  for (auto &it : parameterResources)
+  {
+    for (auto &res : it.allresources)
+    {
+      //update the value in all resources, so that same cref in multiple ssv can be updated, this can result in duplication
+      auto boolValue = res.second.booleanStartValues.find(cref);
+      if (boolValue != res.second.booleanStartValues.end())
+      {
+        if (oms_modelState_simulation == modelState && externalInput)
+        {
+          res.second.booleanValues[cref] = value;
+        }
+        else
+        {
+          res.second.setBoolean(cref, value);
+        }
+        resourceAvailable = true;
+      }
+    }
+  }
+
+  if (!resourceAvailable)
+  {
+    auto &it = parameterResources.front();
+    for (auto &res : it.allresources)
+    {
+      // insert the new signal at the first resource available
+      res.second.setBoolean(cref, value);
+      break;
+    }
+  }
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms::Values::getRealResources(const ComRef& cref, double& value, bool externalInput, oms_modelState_enu_t modelState)
 {
   for (auto &it: parameterResources)
@@ -165,6 +239,52 @@ oms_status_enu_t oms::Values::getRealResources(const ComRef& cref, double& value
   return oms_status_error;
 }
 
+oms_status_enu_t oms::Values::getIntegerResources(const ComRef& cref, int& value, bool externalInput, oms_modelState_enu_t modelState)
+{
+  for (auto &it: parameterResources)
+  {
+    for (auto &res: it.allresources)
+    {
+      if (externalInput && oms_modelState_simulation == modelState && res.second.integerValues[cref] != 0.0)
+      {
+        value = res.second.integerValues[cref];
+        return oms_status_ok;
+      }
+      auto integerValue = res.second.integerStartValues.find(cref);
+      if (integerValue != res.second.integerStartValues.end())
+      {
+        value = integerValue->second;
+        return oms_status_ok;
+      }
+    }
+  }
+
+  return oms_status_error;
+}
+
+oms_status_enu_t oms::Values::getBooleanResources(const ComRef& cref, bool& value, bool externalInput, oms_modelState_enu_t modelState)
+{
+  for (auto &it: parameterResources)
+  {
+    for (auto &res: it.allresources)
+    {
+      if (externalInput && oms_modelState_simulation == modelState && res.second.booleanValues[cref] != 0.0)
+      {
+        value = res.second.booleanValues[cref];
+        return oms_status_ok;
+      }
+      auto booleanValue = res.second.booleanStartValues.find(cref);
+      if (booleanValue != res.second.booleanStartValues.end())
+      {
+        value = booleanValue->second;
+        return oms_status_ok;
+      }
+    }
+  }
+
+  return oms_status_error;
+}
+
 oms_status_enu_t oms::Values::getRealFromModeldescription(const ComRef& cref, double& value)
 {
   // search in modelDescription.xml
@@ -172,6 +292,32 @@ oms_status_enu_t oms::Values::getRealFromModeldescription(const ComRef& cref, do
   if (realValue != modelDescriptionRealStartValues.end())
   {
     value = realValue->second;
+    return oms_status_ok;
+  }
+
+  return oms_status_error;
+}
+
+oms_status_enu_t oms::Values::getIntegerFromModeldescription(const ComRef& cref, int& value)
+{
+  // search in modelDescription.xml
+  auto integerValue = modelDescriptionIntegerStartValues.find(cref);
+  if (integerValue != modelDescriptionIntegerStartValues.end())
+  {
+    value = integerValue->second;
+    return oms_status_ok;
+  }
+
+  return oms_status_error;
+}
+
+oms_status_enu_t oms::Values::getBooleanFromModeldescription(const ComRef& cref, bool& value)
+{
+  // search in modelDescription.xml
+  auto boolValue = modelDescriptionBooleanStartValues.find(cref);
+  if (boolValue != modelDescriptionBooleanStartValues.end())
+  {
+    value = boolValue->second;
     return oms_status_ok;
   }
 

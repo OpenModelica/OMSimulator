@@ -1911,19 +1911,50 @@ oms_status_enu_t oms::System::getBoolean(const ComRef& cref, bool& value)
   {
     if (connector && connector->getName() == cref && connector->isTypeBoolean())
     {
-      oms::ComRef ident = getValidCref(cref);
-      // check any external input are set and return the value, otherwise return the startValue
-      if (oms_modelState_simulation == getModel().getModelState() && values.booleanValues[ident] != 0.0)
+      // getBoolean from local resources
+      if (values.hasResources())
       {
-        value = values.booleanValues[ident];
-        return oms_status_ok;
+        if (oms_status_ok == values.getBooleanResources(cref, value, true, getModel().getModelState()))
+        {
+          return oms_status_ok;
+        }
+        else
+        {
+          value = 0; // default value of boolean ?
+          return oms_status_ok;
+        }
       }
-      auto booleanValue = values.booleanStartValues.find(ident);
-      if (booleanValue != values.booleanStartValues.end())
-        value = booleanValue->second;
+      // getBoolean from top level resources
+      else if (getParentSystem() && getParentSystem()->values.hasResources())
+      {
+        if (oms_status_ok == getParentSystem()->values.getBooleanResources(getCref()+cref, value, true, getModel().getModelState()))
+        {
+          return oms_status_ok;
+        }
+        else
+        {
+          value = 0; // default value
+          return oms_status_ok;
+        }
+      }
+      // no resources available, getBoolean from inline
       else
-        value = 0; // default value
-      return oms_status_ok;
+      {
+        if (oms_modelState_simulation == getModel().getModelState() && values.booleanValues[cref] != 0)
+        {
+          value = values.booleanValues[cref];
+          return oms_status_ok;
+        }
+        if (oms_status_ok == values.getBoolean(cref, value))
+        {
+          return oms_status_ok;
+        }
+        else
+        {
+          value = 0; // default value
+          return oms_status_ok;
+        }
+      }
     }
   }
 
@@ -1950,19 +1981,50 @@ oms_status_enu_t oms::System::getInteger(const ComRef& cref, int& value)
   {
     if (connector && connector->getName() == cref && connector->isTypeInteger())
     {
-      oms::ComRef ident = getValidCref(cref);
-      // check any external input are set and return the value, otherwise return the startValue
-      if (oms_modelState_simulation == getModel().getModelState() && values.integerValues[ident] != 0.0)
+      // getInteger from local resources
+      if (values.hasResources())
       {
-        value = values.integerValues[ident];
-        return oms_status_ok;
+        if (oms_status_ok == values.getIntegerResources(cref, value, true, getModel().getModelState()))
+        {
+          return oms_status_ok;
+        }
+        else
+        {
+          value = 0; // default value
+          return oms_status_ok;
+        }
       }
-      auto integerValue = values.integerStartValues.find(ident);
-      if (integerValue != values.integerStartValues.end())
-        value = integerValue->second;
+      // getInteger from top level resources
+      else if (getParentSystem() && getParentSystem()->values.hasResources())
+      {
+        if (oms_status_ok == getParentSystem()->values.getIntegerResources(getCref()+cref, value, true, getModel().getModelState()))
+        {
+          return oms_status_ok;
+        }
+        else
+        {
+          value = 0; // default value
+          return oms_status_ok;
+        }
+      }
+      // no resources available, getInteger from inline
       else
-        value = 0; // default value
-      return oms_status_ok;
+      {
+        if (oms_modelState_simulation == getModel().getModelState() && values.integerValues[cref] != 0)
+        {
+          value = values.integerValues[cref];
+          return oms_status_ok;
+        }
+        if (oms_status_ok == values.getInteger(cref, value))
+        {
+          return oms_status_ok;
+        }
+        else
+        {
+          value = 0; // default value
+          return oms_status_ok;
+        }
+      }
     }
   }
 
@@ -1998,7 +2060,7 @@ oms_status_enu_t oms::System::getReal(const ComRef& cref, double& value)
         }
         else
         {
-          value = 0.0;
+          value = 0.0; // default value
           return oms_status_ok;
         }
       }
@@ -2011,7 +2073,7 @@ oms_status_enu_t oms::System::getReal(const ComRef& cref, double& value)
         }
         else
         {
-          value = 0.0;
+          value = 0.0; // default value
           return oms_status_ok;
         }
       }
@@ -2023,12 +2085,15 @@ oms_status_enu_t oms::System::getReal(const ComRef& cref, double& value)
           value = values.realValues[cref];
           return oms_status_ok;
         }
-        auto realValue = values.realStartValues.find(cref);
-        if (realValue != values.realStartValues.end())
-          value = realValue->second;
+        if (oms_status_ok == values.getReal(cref, value))
+        {
+          return oms_status_ok;
+        }
         else
+        {
           value = 0.0; // default value
-        return oms_status_ok;
+          return oms_status_ok;
+        }
       }
     }
   }
@@ -2086,17 +2151,29 @@ oms_status_enu_t oms::System::setBoolean(const ComRef& cref, bool value)
   for (auto& connector : connectors)
     if (connector && connector->getName() == cref && connector->isTypeBoolean())
     {
-      oms::ComRef ident = getValidCref(cref);
-      // set external inputs, after initialization
-      if (oms_modelState_simulation == getModel().getModelState())
+      // check for local resources available
+      if (values.hasResources())
       {
-        values.booleanValues[ident] = value;
+        return values.setBooleanResources(cref, value, getFullCref(), true, getModel().getModelState());
+      }
+      // check for resources in top level system
+      else if (getParentSystem() && getParentSystem()->values.hasResources())
+      {
+        return getParentSystem()->values.setBooleanResources(getCref() + cref, value, getParentSystem()->getFullCref(), true, getModel().getModelState());
       }
       else
       {
-        values.setBoolean(ident, value);
+        // set external inputs, after initialization
+        if (oms_modelState_simulation == getModel().getModelState())
+        {
+          values.booleanValues[cref] = value;
+        }
+        else
+        {
+          values.setBoolean(cref, value);
+        }
+        return oms_status_ok;
       }
-      return oms_status_ok;
     }
 
   return logError_UnknownSignal(getFullCref() + cref);
@@ -2121,17 +2198,29 @@ oms_status_enu_t oms::System::setInteger(const ComRef& cref, int value)
   for (auto& connector : connectors)
     if (connector && connector->getName() == cref && connector->isTypeInteger())
     {
-      oms::ComRef ident = getValidCref(cref);
-      // set external inputs, after initialization
-      if (oms_modelState_simulation == getModel().getModelState())
+      // check for local resources available
+      if (values.hasResources())
       {
-        values.integerValues[ident] = value;
+        return values.setIntegerResources(cref, value, getFullCref(), true, getModel().getModelState());
+      }
+      // check for resources in top level system
+      else if (getParentSystem() && getParentSystem()->values.hasResources())
+      {
+        return getParentSystem()->values.setIntegerResources(getCref() + cref, value, getParentSystem()->getFullCref(), true, getModel().getModelState());
       }
       else
       {
-        values.setInteger(ident, value);
+        // set external inputs, after initialization
+        if (oms_modelState_simulation == getModel().getModelState())
+        {
+          values.integerValues[cref] = value;
+        }
+        else
+        {
+          values.setInteger(cref, value);
+        }
+        return oms_status_ok;
       }
-      return oms_status_ok;
     }
 
   return logError_UnknownSignal(getFullCref() + cref);

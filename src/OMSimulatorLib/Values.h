@@ -57,8 +57,16 @@ namespace oms
     oms_status_enu_t getBoolean(const ComRef& cref, bool& value);
 
     oms_status_enu_t setRealResources(const ComRef& cref, double value, const ComRef& fullCref, bool externalInput, oms_modelState_enu_t modelState);
+    oms_status_enu_t setIntegerResources(const ComRef& cref, int value, const ComRef& fullCref, bool externalInput, oms_modelState_enu_t modelState);
+    oms_status_enu_t setBooleanResources(const ComRef& cref, bool value, const ComRef& fullCref, bool externalInput, oms_modelState_enu_t modelState);
+
     oms_status_enu_t getRealResources(const ComRef& cref, double& value, bool externalInput, oms_modelState_enu_t modelState);
+    oms_status_enu_t getIntegerResources(const ComRef& cref, int& value, bool externalInput, oms_modelState_enu_t modelState);
+    oms_status_enu_t getBooleanResources(const ComRef& cref, bool& value, bool externalInput, oms_modelState_enu_t modelState);
+
     oms_status_enu_t getRealFromModeldescription(const ComRef& cref, double& value);
+    oms_status_enu_t getIntegerFromModeldescription(const ComRef& cref, int& value);
+    oms_status_enu_t getBooleanFromModeldescription(const ComRef& cref, bool& value);
 
     oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
     oms_status_enu_t importFromSnapshot(const pugi::xml_node& node, const std::string& sspVersion, const Snapshot& snapshot);

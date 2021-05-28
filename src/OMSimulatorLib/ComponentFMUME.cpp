@@ -775,23 +775,60 @@ oms_status_enu_t oms::ComponentFMUME::getBoolean(const ComRef& cref, bool& value
   if (oms_modelState_virgin == getModel().getModelState())
   {
     // check for start values exist, priority over modeldescription.xml start values
-    auto booleanValue = values.booleanStartValues.find(cref);
-    if (booleanValue != values.booleanStartValues.end())
+    if (values.hasResources())  // search in local resources
     {
-      value = booleanValue->second;
-      return oms_status_ok;
-    }
-    else
-    {
-      // search in modelDescription.xml
-      auto booleanValue = values.modelDescriptionBooleanStartValues.find(cref);
-      if (booleanValue != values.modelDescriptionBooleanStartValues.end())
+      if (oms_status_ok == values.getBooleanResources(cref, value, false, oms_modelState_virgin))
       {
-        value = booleanValue->second;
         return oms_status_ok;
       }
+      // search in modelDescription.xml
+      else if (oms_status_ok == values.getBooleanFromModeldescription(cref, value))
+      {
+        return oms_status_ok;
+      }
+
+      return logError("no start value set or available for signal: " + std::string(getFullCref() + cref));
     }
-    return logError("no start value provided or available for signal: " + std::string(getFullCref() + cref));
+    else if (getParentSystem() && getParentSystem()->getValues().hasResources())  // search in root resources
+    {
+      if (oms_status_ok == getParentSystem()->getValues().getBooleanResources(getCref()+cref, value, false, oms_modelState_virgin))
+      {
+        return oms_status_ok;
+      }
+      // search in modelDescription.xml
+      else if(oms_status_ok == values.getBooleanFromModeldescription(cref, value))
+      {
+        return oms_status_ok;
+      }
+
+      return logError("no start value set or available for signal: " + std::string(getFullCref() + cref));
+    }
+    else if (getParentSystem()->getParentSystem() && getParentSystem()->getParentSystem()->getValues().hasResources())  // search in top level root resources
+    {
+      if (oms_status_ok == getParentSystem()->getParentSystem()->getValues().getBooleanResources(getCref()+cref, value, false, oms_modelState_virgin))
+      {
+        return oms_status_ok;
+      }
+      // search in modelDescription.xml
+      else if(oms_status_ok == values.getBooleanFromModeldescription(cref, value))
+      {
+        return oms_status_ok;
+      }
+
+      return logError("no start value set or available for signal: " + std::string(getFullCref() + cref));
+    }
+    else // search inline
+    {
+      // check for start values exist, priority over modeldescription.xml start values
+      if (oms_status_ok == values.getBoolean(cref, value))
+      {
+        return oms_status_ok;
+      }
+      else
+      {
+        return values.getBooleanFromModeldescription(cref, value);
+      }
+    }
   }
 
   int j=-1;
@@ -828,23 +865,60 @@ oms_status_enu_t oms::ComponentFMUME::getInteger(const ComRef& cref, int& value)
   if (oms_modelState_virgin == getModel().getModelState())
   {
     // check for start values exist, priority over modeldescription.xml start values
-    auto integerValue = values.integerStartValues.find(cref);
-    if (integerValue != values.integerStartValues.end())
+    if (values.hasResources())  // search in local resources
     {
-      value = integerValue->second;
-      return oms_status_ok;
-    }
-    else
-    {
-      // search in modelDescription.xml
-      auto integerValue = values.modelDescriptionIntegerStartValues.find(cref);
-      if (integerValue != values.modelDescriptionIntegerStartValues.end())
+      if (oms_status_ok == values.getIntegerResources(cref, value, false, oms_modelState_virgin))
       {
-        value = integerValue->second;
         return oms_status_ok;
       }
+      // search in modelDescription.xml
+      else if (oms_status_ok == values.getIntegerFromModeldescription(cref, value))
+      {
+        return oms_status_ok;
+      }
+
+      return logError("no start value set or available for signal: " + std::string(getFullCref() + cref));
     }
-    return logError("no start value set or available for signal: " + std::string(getFullCref() + cref));
+    else if (getParentSystem() && getParentSystem()->getValues().hasResources())  // search in root resources
+    {
+      if (oms_status_ok == getParentSystem()->getValues().getIntegerResources(getCref()+cref, value, false, oms_modelState_virgin))
+      {
+        return oms_status_ok;
+      }
+      // search in modelDescription.xml
+      else if(oms_status_ok == values.getIntegerFromModeldescription(cref, value))
+      {
+        return oms_status_ok;
+      }
+
+      return logError("no start value set or available for signal: " + std::string(getFullCref() + cref));
+    }
+    else if (getParentSystem()->getParentSystem() && getParentSystem()->getParentSystem()->getValues().hasResources())  // search in top level root resources
+    {
+      if (oms_status_ok == getParentSystem()->getParentSystem()->getValues().getIntegerResources(getCref()+cref, value, false, oms_modelState_virgin))
+      {
+        return oms_status_ok;
+      }
+      // search in modelDescription.xml
+      else if(oms_status_ok == values.getIntegerFromModeldescription(cref, value))
+      {
+        return oms_status_ok;
+      }
+
+      return logError("no start value set or available for signal: " + std::string(getFullCref() + cref));
+    }
+    else // search inline
+    {
+      // check for start values exist, priority over modeldescription.xml start values
+      if (oms_status_ok == values.getInteger(cref, value))
+      {
+        return oms_status_ok;
+      }
+      else
+      {
+        return values.getIntegerFromModeldescription(cref, value);
+      }
+    }
   }
 
   int j=-1;
@@ -1011,14 +1085,25 @@ oms_status_enu_t oms::ComponentFMUME::setBoolean(const ComRef& cref, bool value)
 
   if (oms_modelState_virgin == getModel().getModelState())
   {
-    if (Flags::ExportParametersInline())
+    // check for local resources available
+    if (values.hasResources())
     {
-      values.setBoolean(allVariables[j].getCref(), value);
+      return values.setBooleanResources(cref, value, getFullCref(), false, oms_modelState_virgin);
+    }
+    // check for resources in root
+    else if (getParentSystem() && getParentSystem()->getValues().hasResources())
+    {
+      return getParentSystem()->getValues().setBooleanResources(getCref()+cref, value, getParentSystem()->getFullCref(), false, oms_modelState_virgin);
+    }
+    // check for resources in top level root
+    else if (getParentSystem()->getParentSystem() && getParentSystem()->getParentSystem()->getValues().hasResources())
+    {
+      return getParentSystem()->getParentSystem()->getValues().setBooleanResources(getCref()+cref, value, getParentSystem()->getParentSystem()->getFullCref(), false, oms_modelState_virgin);
     }
     else
     {
-      // append startValues with prefix (e.g) addP.K1
-      values.setBoolean(getCref()+allVariables[j].getCref(), value);
+      //inline parameter settings
+      values.setBoolean(cref, value);
     }
   }
   else
@@ -1050,14 +1135,25 @@ oms_status_enu_t oms::ComponentFMUME::setInteger(const ComRef& cref, int value)
 
   if (oms_modelState_virgin == getModel().getModelState())
   {
-    if (Flags::ExportParametersInline())
+    // check for local resources available
+    if (values.hasResources())
     {
-      values.setInteger(allVariables[j].getCref(), value);
+      return values.setIntegerResources(cref, value, getFullCref(), false, oms_modelState_virgin);
+    }
+    // check for resources in root
+    else if (getParentSystem() && getParentSystem()->getValues().hasResources())
+    {
+      return getParentSystem()->getValues().setIntegerResources(getCref()+cref, value, getParentSystem()->getFullCref(), false, oms_modelState_virgin);
+    }
+    // check for resources in top level root
+    else if (getParentSystem()->getParentSystem() && getParentSystem()->getParentSystem()->getValues().hasResources())
+    {
+      return getParentSystem()->getParentSystem()->getValues().setIntegerResources(getCref()+cref, value, getParentSystem()->getParentSystem()->getFullCref(), false, oms_modelState_virgin);
     }
     else
     {
-      // append startValues with prefix (e.g) addP.K1
-      values.setInteger(getCref()+allVariables[j].getCref(), value);
+      //inline parameter settings
+      values.setInteger(cref, value);
     }
   }
   else
