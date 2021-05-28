@@ -2107,30 +2107,6 @@ oms_status_enu_t oms::System::getReal(const ComRef& cref, double& value)
   return logError_UnknownSignal(getFullCref() + cref);
 }
 
-/*
- * function which returns valid cref for which are needed to set StartValues
- * if ExportParametersInline is set return the default cref
- * else when importing from ssv , check for cref belongs to toplevel System or SubSystem
- */
-oms::ComRef oms::System::getValidCref(const ComRef& cref)
-{
-  oms::ComRef ident;
-  if (Flags::ExportParametersInline())
-  {
-    ident = cref;
-  }
-  else
-  {
-    std::string s = std::string(getFullCref());
-    int count  = std::count(s.begin(), s.end(), '.');
-    // count > 1 means subsystems (e.g.) A.B.C else Top level System (e.g) A.B
-    if (count > 1)
-      ident = getCref() + cref;
-    else
-      ident = cref;
-  }
-  return ident;
-}
 
 oms_status_enu_t oms::System::setBoolean(const ComRef& cref, bool value)
 {

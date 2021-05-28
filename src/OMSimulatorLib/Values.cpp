@@ -578,6 +578,7 @@ void oms::Values::exportParameterBindings(pugi::xml_node &node, Snapshot &snapsh
           node_parameter_binding.append_attribute("source") = res.first.c_str();
           pugi::xml_node ssvNode = snapshot.getTemplateResourceNodeSSV(res.first, "parameters");
           res.second.exportToSSV(ssvNode);
+          // TODO export ssm file
         }
       }
     }

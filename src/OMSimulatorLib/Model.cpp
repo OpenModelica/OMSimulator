@@ -374,14 +374,6 @@ oms_status_enu_t oms::Model::exportSnapshot(const oms::ComRef& cref, char** cont
   Snapshot snapshot;
 
   exportToSSD(snapshot);
-
-  // // export to ssv file if Flag set
-  // if (!Flags::ExportParametersInline())
-  // {
-  //   system->exportToSSV(snapshot);
-  //   // TODO ssm file
-  // }
-
   exportSignalFilter(snapshot);
 
   if (cref.isEmpty())
@@ -740,14 +732,6 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
     return logError("filename extension must be \".ssp\"; no other formats are supported");
 
   exportToSSD(snapshot);
-
-  // export to ssv if flag set
-  if (!Flags::ExportParametersInline())
-  {
-    system->exportToSSV(snapshot);
-    // TODO ssm file
-  }
-
   exportSignalFilter(snapshot);
 
   // Usage: minizip [-o] [-a] [-0 to -9] [-p password] [-j] file.zip [files_to_add]

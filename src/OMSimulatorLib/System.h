@@ -199,7 +199,6 @@ namespace oms
 
   private: // methods
     oms_status_enu_t importFromSSD_ConnectionGeometry(const pugi::xml_node& node, const ComRef& crefA, const ComRef& crefB);
-    oms::ComRef getValidCref(const ComRef& cref);
     oms_status_enu_t importTLMBus(const pugi::xml_node& node, Component* component);
     oms_status_enu_t importBusConnectorSignals(const pugi::xml_node& node);
     oms_status_enu_t importBusConnectorGeometry(const pugi::xml_node& node);

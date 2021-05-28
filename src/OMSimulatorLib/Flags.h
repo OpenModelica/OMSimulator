@@ -59,7 +59,6 @@ namespace oms
     static bool DefaultModeIsCS() {return GetInstance().defaultModeIsCS;}
     static bool DeleteTempFiles() {return GetInstance().deleteTempFiles;}
     static bool EmitEvents() {return GetInstance().emitEvents;}
-    static bool ExportParametersInline() {return GetInstance().exportParametersInline;}
     static bool IgnoreInitialUnknowns() {return GetInstance().ignoreInitialUnknowns;}
     static bool InputExtrapolation() {return GetInstance().inputExtrapolation;}
     static bool ProgressBar() {return GetInstance().progressBar;}
@@ -88,7 +87,6 @@ namespace oms
     bool defaultModeIsCS;
     bool deleteTempFiles;
     bool emitEvents;
-    bool exportParametersInline;
     bool ignoreInitialUnknowns;
     bool inputExtrapolation;
     bool progressBar;
@@ -141,7 +139,6 @@ namespace oms
       {"--clearAllOptions", "", "Reset all flags to default values", re_void, Flags::ClearAllOptions, false},
       {"--deleteTempFiles", "", "Deletes temp files as soon as they are no longer needed ([true], false)", re_bool, Flags::DeleteTempFiles, false},
       {"--emitEvents", "", "Specifies whether events should be emitted or not ([true], false)", re_bool, Flags::EmitEvents, false},
-      {"--exportParametersInline", "", "Export ParameterBindings inline with .ssd file, ", re_default, Flags::ExportParametersInline, false},
       {"--fetchAllVars", "", "Workaround for certain FMUs that do not update all internal dependencies automatically", re_default, Flags::FetchAllVars, false},
       {"--help", "-h", "Displays the help text", re_void, Flags::Help, true},
       {"--ignoreInitialUnknowns", "", "Ignore the initial unknowns from the modelDescription.xml (true, [false])", re_bool, Flags::IgnoreInitialUnknowns, false},
@@ -178,7 +175,6 @@ namespace oms
     static oms_status_enu_t ClearAllOptions(const std::string& value);
     static oms_status_enu_t DeleteTempFiles(const std::string& value);
     static oms_status_enu_t EmitEvents(const std::string& value);
-    static oms_status_enu_t ExportParametersInline(const std::string& value);
     static oms_status_enu_t FetchAllVars(const std::string& value);
     static oms_status_enu_t Filename(const std::string& value);
     static oms_status_enu_t Help(const std::string& value);
