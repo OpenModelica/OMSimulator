@@ -76,6 +76,7 @@ namespace oms
     oms_status_enu_t deleteResourceNode(const filesystem::path& filename);
 
     oms_status_enu_t writeDocument(char** contents);
+    oms_status_enu_t writeResourceNode(const filesystem::path& filename, const filesystem::path& path) const;
 
   private:
     oms_status_enu_t importPartialResourceNode(const filesystem::path& filename, const filesystem::path& nodename, const pugi::xml_node& node);
