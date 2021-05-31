@@ -36,27 +36,60 @@ readFile("gain1.ssm")
 
 -- Result:
 -- <?xml version="1.0" encoding="UTF-8"?>
--- <ssm:ParameterMapping xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" version="1.0">
--- 	<ssm:MappingEntry source="" target="add.u2" />
--- 	<ssm:MappingEntry source="" target="add.u1" />
--- 	<ssm:MappingEntry source="" target="add.k2" />
--- 	<ssm:MappingEntry source="" target="add.k1" />
--- 	<ssm:MappingEntry source="" target="Gain.u" />
--- 	<ssm:MappingEntry source="" target="Gain.k" />
+-- <ssm:ParameterMapping
+--   xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
+--   xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping"
+--   version="1.0">
+--   <ssm:MappingEntry
+--     source=""
+--     target="add.u2" />
+--   <ssm:MappingEntry
+--     source=""
+--     target="add.u1" />
+--   <ssm:MappingEntry
+--     source=""
+--     target="add.k2" />
+--   <ssm:MappingEntry
+--     source=""
+--     target="add.k1" />
+--   <ssm:MappingEntry
+--     source=""
+--     target="Gain.u" />
+--   <ssm:MappingEntry
+--     source=""
+--     target="Gain.k" />
 -- </ssm:ParameterMapping>
 --
 -- <?xml version="1.0" encoding="UTF-8"?>
--- <ssm:ParameterMapping xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" version="1.0">
--- 	<ssm:MappingEntry source="" target="add.u2" />
--- 	<ssm:MappingEntry source="" target="add.u1" />
--- 	<ssm:MappingEntry source="" target="add.k2" />
--- 	<ssm:MappingEntry source="" target="add.k1" />
+-- <ssm:ParameterMapping
+--   xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
+--   xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping"
+--   version="1.0">
+--   <ssm:MappingEntry
+--     source=""
+--     target="add.u2" />
+--   <ssm:MappingEntry
+--     source=""
+--     target="add.u1" />
+--   <ssm:MappingEntry
+--     source=""
+--     target="add.k2" />
+--   <ssm:MappingEntry
+--     source=""
+--     target="add.k1" />
 -- </ssm:ParameterMapping>
 --
 -- <?xml version="1.0" encoding="UTF-8"?>
--- <ssm:ParameterMapping xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" version="1.0">
--- 	<ssm:MappingEntry source="" target="Gain.u" />
--- 	<ssm:MappingEntry source="" target="Gain.k" />
+-- <ssm:ParameterMapping
+--   xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
+--   xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping"
+--   version="1.0">
+--   <ssm:MappingEntry
+--     source=""
+--     target="Gain.u" />
+--   <ssm:MappingEntry
+--     source=""
+--     target="Gain.k" />
 -- </ssm:ParameterMapping>
 --
 -- endResult

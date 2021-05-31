@@ -772,7 +772,7 @@ void oms::Model::writeAllResourcesToFilesystem(std::vector<std::string>& resourc
   snapshot.getResources(resources);
   for (auto const &filename : resources)
   {
-    if (!snapshot.writeResourceNode(filename, filesystem::path(tempDir)))
+    if (oms_status_ok != snapshot.writeResourceNode(filename, filesystem::path(tempDir)))
       logError("failed to export \"" + filename + " to directory " + tempDir);
   }
 
