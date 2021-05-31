@@ -83,7 +83,10 @@ oms_delete("import_hierarchical_ssv_sources")
 --             </ssd:Connectors>
 --             <ssd:ParameterBindings>
 --               <ssd:ParameterBinding
---                 source="resources/import_hierarchical_ssv_sources_system3.ssv" />
+--                 source="resources/import_hierarchical_ssv_sources_system3.ssv">
+--                 <ssd:ParameterMapping
+--                   source="resources/import_hierarchical_ssv_sources_system3.ssm" />
+--               </ssd:ParameterBinding>
 --             </ssd:ParameterBindings>
 --             <ssd:Annotations>
 --               <ssc:Annotation
@@ -241,6 +244,20 @@ oms_delete("import_hierarchical_ssv_sources")
 --         </ssv:Parameter>
 --       </ssv:Parameters>
 --     </ssv:ParameterSet>
+--   </oms:file>
+--   <oms:file
+--     name="resources/import_hierarchical_ssv_sources_system3.ssm">
+--     <ssm:ParameterMapping
+--       xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
+--       xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping"
+--       version="1.0">
+--       <ssm:MappingEntry
+--         source="system3_start_values"
+--         target="Input_1" />
+--       <ssm:MappingEntry
+--         source="system3_start_values"
+--         target="parameter_1" />
+--     </ssm:ParameterMapping>
 --   </oms:file>
 --   <oms:file
 --     name="resources/import_hierarchical_ssv_sources_system2.ssv">

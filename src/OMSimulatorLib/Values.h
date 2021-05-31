@@ -88,6 +88,7 @@ namespace oms
   private:
     oms_status_enu_t exportStartValuesHelper(pugi::xml_node& node) const;
     void exportParameterMappingInline(pugi::xml_node& node) const;
+    void exportParameterMappingToSSM(pugi::xml_node& node) const;
     oms_status_enu_t importStartValuesHelper(const pugi::xml_node& parameters);
 
     void importParameterMapping(const pugi::xml_node& parameterMapping);
@@ -111,6 +112,7 @@ namespace oms
 
     std::vector<Values> parameterResources; ///< list of parameter resources provided inline or .ssv files
     std::map<std::string, Values> allresources; ///< mapped resources either inline or ssv
+    std::string ssmFile = ""; ///< mapped ssm files associated with ssv files;
   };
 }
 

@@ -443,7 +443,7 @@ oms_status_enu_t oms::Values::importFromSnapshot(const pugi::xml_node& node, con
           pugi::xml_node ssm_parameterMapping = snapshot.getResourceNode(ssmFileSource);
           if (!ssm_parameterMapping)
             return logError("loading <oms:file> \"" + ssmFileSource + "\" from <oms:snapshot> failed");
-
+          resources.ssmFile = ssmFileSource;
           resources.importParameterMapping(ssm_parameterMapping);
         }
       }
@@ -578,7 +578,14 @@ void oms::Values::exportParameterBindings(pugi::xml_node &node, Snapshot &snapsh
           node_parameter_binding.append_attribute("source") = res.first.c_str();
           pugi::xml_node ssvNode = snapshot.getTemplateResourceNodeSSV(res.first, "parameters");
           res.second.exportToSSV(ssvNode);
-          // TODO export ssm file
+          // export SSM file if exist
+          if (!res.second.ssmFile.empty())
+          {
+            pugi::xml_node ssd_parameter_mapping = node_parameter_binding.append_child(oms::ssp::Version1_0::ssd::parameter_mapping);
+            ssd_parameter_mapping.append_attribute("source") = res.second.ssmFile.c_str();
+            pugi::xml_node ssmNode = snapshot.getTemplateResourceNodeSSM(res.second.ssmFile);
+            res.second.exportParameterMappingToSSM(ssmNode);
+          }
         }
       }
     }
@@ -620,6 +627,19 @@ void oms::Values::exportParameterMappingInline(pugi::xml_node& node) const
   for (const auto& it : mappedEntry)
   {
     pugi::xml_node ssm_mapping_entry = ssm_parameter_mapping.append_child(oms::ssp::Version1_0::ssm::parameter_mapping_entry);
+    ssm_mapping_entry.append_attribute("source") = it.first.c_str();
+    ssm_mapping_entry.append_attribute("target") = it.second.c_str();
+  }
+}
+
+void oms::Values::exportParameterMappingToSSM(pugi::xml_node& node) const
+{
+  if (mappedEntry.empty())
+    return;
+
+  for (const auto& it : mappedEntry)
+  {
+    pugi::xml_node ssm_mapping_entry = node.append_child(oms::ssp::Version1_0::ssm::parameter_mapping_entry);
     ssm_mapping_entry.append_attribute("source") = it.first.c_str();
     ssm_mapping_entry.append_attribute("target") = it.second.c_str();
   }
