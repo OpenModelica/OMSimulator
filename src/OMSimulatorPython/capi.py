@@ -24,6 +24,8 @@ class capi:
     self.obj.oms_addConnectorToTLMBus.restype = ctypes.c_int
     self.obj.oms_addExternalModel.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_addExternalModel.restype = ctypes.c_int
+    self.obj.oms_addResources.argtypes = [ctypes.c_char_p]
+    self.obj.oms_addResources.restype = ctypes.c_int
     self.obj.oms_addSignalsToResults.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_addSignalsToResults.restype = ctypes.c_int
     self.obj.oms_addSubModel.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
@@ -168,6 +170,8 @@ class capi:
     return self.obj.oms_addConnectorToTLMBus(busCref.encode(), connectorCref.encode(), type_.encode())
   def addExternalModel(self, cref, path, startscript):
     return self.obj.oms_addExternalModel(cref.encode(), path.encode(), startscript.encode())
+  def addResources(self, crefA):
+    return self.obj.oms_addResources(crefA.encode())
   def addSignalsToResults(self, cref, regex):
     return self.obj.oms_addSignalsToResults(cref.encode(), regex.encode())
   def addSubModel(self, cref, fmuPath):

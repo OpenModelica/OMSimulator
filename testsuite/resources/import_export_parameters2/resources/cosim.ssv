@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<ssv:ParameterSet xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" version="1.0" name="parameters">
+	<ssv:Parameters>
+		<ssv:Parameter name="k_cref">
+			<ssv:Real value="30" />
+		</ssv:Parameter>
+		<ssv:Parameter name="T_cref">
+			<ssv:Real value="20" />
+		</ssv:Parameter>
+		<ssv:Parameter name="Input_cref">
+			<ssv:Real value="-20" />
+		</ssv:Parameter>
+	</ssv:Parameters>
+</ssv:ParameterSet>

@@ -5,12 +5,15 @@
 -- win: no
 -- mac: no
 
-oms_setCommandLineOption("--suppressPath=true --exportParametersInline=false")
+oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./exportsnapshotssp_lua/")
 
 oms_newModel("exportSnapshotSSP")
 
 oms_addSystem("exportSnapshotSSP.root", oms_system_wc)
+
+oms_addResources("exportSnapshotSSP.root:exportSnapshotSSP.ssv")
+
 oms_addConnector("exportSnapshotSSP.root.Input1", oms_causality_input, oms_signal_type_real)
 oms_setReal("exportSnapshotSSP.root.Input1", 10)
 

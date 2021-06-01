@@ -5,12 +5,15 @@
 -- win: no
 -- mac: no
 
-oms_setCommandLineOption("--suppressPath=true --exportParametersInline=false")
+oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./import_export_parameters_lua/")
 
 oms_newModel("import_export_parameters")
 
 oms_addSystem("import_export_parameters.co_sim", oms_system_wc)
+
+oms_addResources("import_export_parameters.co_sim:import_export_parameters.ssv")
+
 oms_addConnector("import_export_parameters.co_sim.Input_cref", oms_causality_input, oms_signal_type_real)
 oms_addConnector("import_export_parameters.co_sim.Output_cref", oms_causality_output, oms_signal_type_real)
 oms_addConnector("import_export_parameters.co_sim.T_cref", oms_causality_parameter, oms_signal_type_real)

@@ -35,57 +35,93 @@ readFile("gain.ssv")
 
 -- Result:
 -- <?xml version="1.0" encoding="UTF-8"?>
--- <ssv:ParameterSet xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" version="1.0" name="modelDescriptionStartValues">
--- 	<ssv:Parameters>
--- 		<ssv:Parameter name="add.u2">
--- 			<ssv:Real value="0" />
--- 		</ssv:Parameter>
--- 		<ssv:Parameter name="add.u1">
--- 			<ssv:Real value="0" />
--- 		</ssv:Parameter>
--- 		<ssv:Parameter name="add.k2">
--- 			<ssv:Real value="1" />
--- 		</ssv:Parameter>
--- 		<ssv:Parameter name="add.k1">
--- 			<ssv:Real value="1" />
--- 		</ssv:Parameter>
--- 		<ssv:Parameter name="Gain.u">
--- 			<ssv:Real value="0" />
--- 		</ssv:Parameter>
--- 		<ssv:Parameter name="Gain.k">
--- 			<ssv:Real value="1" />
--- 		</ssv:Parameter>
--- 	</ssv:Parameters>
+-- <ssv:ParameterSet
+--   xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
+--   xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
+--   version="1.0"
+--   name="modelDescriptionStartValues">
+--   <ssv:Parameters>
+--     <ssv:Parameter
+--       name="add.u2">
+--       <ssv:Real
+--         value="0" />
+--     </ssv:Parameter>
+--     <ssv:Parameter
+--       name="add.u1">
+--       <ssv:Real
+--         value="0" />
+--     </ssv:Parameter>
+--     <ssv:Parameter
+--       name="add.k2">
+--       <ssv:Real
+--         value="1" />
+--     </ssv:Parameter>
+--     <ssv:Parameter
+--       name="add.k1">
+--       <ssv:Real
+--         value="1" />
+--     </ssv:Parameter>
+--     <ssv:Parameter
+--       name="Gain.u">
+--       <ssv:Real
+--         value="0" />
+--     </ssv:Parameter>
+--     <ssv:Parameter
+--       name="Gain.k">
+--       <ssv:Real
+--         value="1" />
+--     </ssv:Parameter>
+--   </ssv:Parameters>
 -- </ssv:ParameterSet>
 --
 -- <?xml version="1.0" encoding="UTF-8"?>
--- <ssv:ParameterSet xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" version="1.0" name="modelDescriptionStartValues">
--- 	<ssv:Parameters>
--- 		<ssv:Parameter name="add.u2">
--- 			<ssv:Real value="0" />
--- 		</ssv:Parameter>
--- 		<ssv:Parameter name="add.u1">
--- 			<ssv:Real value="0" />
--- 		</ssv:Parameter>
--- 		<ssv:Parameter name="add.k2">
--- 			<ssv:Real value="1" />
--- 		</ssv:Parameter>
--- 		<ssv:Parameter name="add.k1">
--- 			<ssv:Real value="1" />
--- 		</ssv:Parameter>
--- 	</ssv:Parameters>
+-- <ssv:ParameterSet
+--   xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
+--   xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
+--   version="1.0"
+--   name="modelDescriptionStartValues">
+--   <ssv:Parameters>
+--     <ssv:Parameter
+--       name="add.u2">
+--       <ssv:Real
+--         value="0" />
+--     </ssv:Parameter>
+--     <ssv:Parameter
+--       name="add.u1">
+--       <ssv:Real
+--         value="0" />
+--     </ssv:Parameter>
+--     <ssv:Parameter
+--       name="add.k2">
+--       <ssv:Real
+--         value="1" />
+--     </ssv:Parameter>
+--     <ssv:Parameter
+--       name="add.k1">
+--       <ssv:Real
+--         value="1" />
+--     </ssv:Parameter>
+--   </ssv:Parameters>
 -- </ssv:ParameterSet>
 --
 -- <?xml version="1.0" encoding="UTF-8"?>
--- <ssv:ParameterSet xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" version="1.0" name="modelDescriptionStartValues">
--- 	<ssv:Parameters>
--- 		<ssv:Parameter name="Gain.u">
--- 			<ssv:Real value="0" />
--- 		</ssv:Parameter>
--- 		<ssv:Parameter name="Gain.k">
--- 			<ssv:Real value="1" />
--- 		</ssv:Parameter>
--- 	</ssv:Parameters>
+-- <ssv:ParameterSet
+--   xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
+--   xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
+--   version="1.0"
+--   name="modelDescriptionStartValues">
+--   <ssv:Parameters>
+--     <ssv:Parameter
+--       name="Gain.u">
+--       <ssv:Real
+--         value="0" />
+--     </ssv:Parameter>
+--     <ssv:Parameter
+--       name="Gain.k">
+--       <ssv:Real
+--         value="1" />
+--     </ssv:Parameter>
+--   </ssv:Parameters>
 -- </ssv:ParameterSet>
 --
 -- endResult

@@ -52,9 +52,26 @@ namespace oms
     oms_status_enu_t setInteger(const ComRef& cref, int value);
     oms_status_enu_t setBoolean(const ComRef& cref, bool value);
 
+    oms_status_enu_t getReal(const ComRef& cref, double& value);
+    oms_status_enu_t getInteger(const ComRef& cref, int& value);
+    oms_status_enu_t getBoolean(const ComRef& cref, bool& value);
+
+    oms_status_enu_t setRealResources(const ComRef& cref, double value, const ComRef& fullCref, bool externalInput, oms_modelState_enu_t modelState);
+    oms_status_enu_t setIntegerResources(const ComRef& cref, int value, const ComRef& fullCref, bool externalInput, oms_modelState_enu_t modelState);
+    oms_status_enu_t setBooleanResources(const ComRef& cref, bool value, const ComRef& fullCref, bool externalInput, oms_modelState_enu_t modelState);
+
+    oms_status_enu_t getRealResources(const ComRef& cref, double& value, bool externalInput, oms_modelState_enu_t modelState);
+    oms_status_enu_t getIntegerResources(const ComRef& cref, int& value, bool externalInput, oms_modelState_enu_t modelState);
+    oms_status_enu_t getBooleanResources(const ComRef& cref, bool& value, bool externalInput, oms_modelState_enu_t modelState);
+
+    oms_status_enu_t getRealFromModeldescription(const ComRef& cref, double& value);
+    oms_status_enu_t getIntegerFromModeldescription(const ComRef& cref, int& value);
+    oms_status_enu_t getBooleanFromModeldescription(const ComRef& cref, bool& value);
+
     oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
     oms_status_enu_t importFromSnapshot(const pugi::xml_node& node, const std::string& sspVersion, const Snapshot& snapshot);
     oms_status_enu_t deleteStartValue(const ComRef& cref);
+    oms_status_enu_t deleteStartValueInResources(const ComRef& cref);
 
     oms_status_enu_t exportToSSV(pugi::xml_node& ssvNode) const;
     void exportToSSVTemplate(pugi::xml_node& ssvNode, const ComRef& cref);  ///< start values read from modelDescription.xml and creates a ssv template
@@ -62,12 +79,16 @@ namespace oms
 
     oms_status_enu_t parseModelDescription(const filesystem::path& root); ///< path without the filename, i.e. modelDescription.xml
     oms_status_enu_t rename(const oms::ComRef& oldCref, const oms::ComRef& newCref);
+    oms_status_enu_t renameInResources(const oms::ComRef& oldCref, const oms::ComRef& newCref);
 
-    void exportParameterBindings(pugi::xml_node& node, const oms::ComRef& Cref) const;
+    void exportParameterBindings(pugi::xml_node& node, Snapshot& snapshot) const;
+
+    bool hasResources(); ///< returns if the system or subsystem or submodule have parameter resources either as ssv or inline
 
   private:
     oms_status_enu_t exportStartValuesHelper(pugi::xml_node& node) const;
     void exportParameterMappingInline(pugi::xml_node& node) const;
+    void exportParameterMappingToSSM(pugi::xml_node& node) const;
     oms_status_enu_t importStartValuesHelper(const pugi::xml_node& parameters);
 
     void importParameterMapping(const pugi::xml_node& parameterMapping);
@@ -88,6 +109,10 @@ namespace oms
     std::map<ComRef, bool> modelDescriptionBooleanStartValues;  ///< boolean start values read from modelDescription.xml
 
     std::multimap<ComRef, ComRef> mappedEntry;  ///< parameter names and values provided in the parameter source are to be mapped to the parameters of the component or system
+
+    std::vector<Values> parameterResources; ///< list of parameter resources provided inline or .ssv files
+    std::map<std::string, Values> allresources; ///< mapped resources either inline or ssv
+    std::string ssmFile = ""; ///< mapped ssm files associated with ssv files;
   };
 }
 

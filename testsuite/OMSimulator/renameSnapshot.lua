@@ -5,11 +5,13 @@
 -- win: no
 -- mac: no
 
-oms_setCommandLineOption("--suppressPath=true --exportParametersInline=false")
+oms_setCommandLineOption("--suppressPath=true")
 status = oms_setTempDirectory("./rename_snapshot_lua/")
 
 oms_newModel("renameSnapshot")
 oms_addSystem("renameSnapshot.root", oms_system_wc)
+
+oms_addResources("renameSnapshot.root:renameSnapshot.ssv")
 
 oms_addConnector("renameSnapshot.root.C1", oms_causality_input, oms_signal_type_real)
 oms_setReal("renameSnapshot.root.C1", -10)
@@ -193,11 +195,6 @@ print(snapshot)
 --       name="parameters">
 --       <ssv:Parameters>
 --         <ssv:Parameter
---           name="C1">
---           <ssv:Real
---             value="-10" />
---         </ssv:Parameter>
---         <ssv:Parameter
 --           name="foo.Input1">
 --           <ssv:Real
 --             value="-20" />
@@ -211,6 +208,11 @@ print(snapshot)
 --           name="add.k1">
 --           <ssv:Real
 --             value="30" />
+--         </ssv:Parameter>
+--         <ssv:Parameter
+--           name="C1">
+--           <ssv:Real
+--             value="-10" />
 --         </ssv:Parameter>
 --       </ssv:Parameters>
 --     </ssv:ParameterSet>
@@ -391,11 +393,6 @@ print(snapshot)
 --       name="parameters">
 --       <ssv:Parameters>
 --         <ssv:Parameter
---           name="C1">
---           <ssv:Real
---             value="-10" />
---         </ssv:Parameter>
---         <ssv:Parameter
 --           name="foo.Input1">
 --           <ssv:Real
 --             value="-20" />
@@ -409,6 +406,11 @@ print(snapshot)
 --           name="add.k1">
 --           <ssv:Real
 --             value="30" />
+--         </ssv:Parameter>
+--         <ssv:Parameter
+--           name="C1">
+--           <ssv:Real
+--             value="-10" />
 --         </ssv:Parameter>
 --       </ssv:Parameters>
 --     </ssv:ParameterSet>
@@ -589,11 +591,6 @@ print(snapshot)
 --       name="parameters">
 --       <ssv:Parameters>
 --         <ssv:Parameter
---           name="C1">
---           <ssv:Real
---             value="-10" />
---         </ssv:Parameter>
---         <ssv:Parameter
 --           name="foo_1.Input1">
 --           <ssv:Real
 --             value="-20" />
@@ -607,6 +604,11 @@ print(snapshot)
 --           name="add.k1">
 --           <ssv:Real
 --             value="30" />
+--         </ssv:Parameter>
+--         <ssv:Parameter
+--           name="C1">
+--           <ssv:Real
+--             value="-10" />
 --         </ssv:Parameter>
 --       </ssv:Parameters>
 --     </ssv:ParameterSet>
@@ -787,11 +789,6 @@ print(snapshot)
 --       name="parameters">
 --       <ssv:Parameters>
 --         <ssv:Parameter
---           name="C1">
---           <ssv:Real
---             value="-10" />
---         </ssv:Parameter>
---         <ssv:Parameter
 --           name="foo_1.Input1">
 --           <ssv:Real
 --             value="-20" />
@@ -805,6 +802,11 @@ print(snapshot)
 --           name="add_1.k1">
 --           <ssv:Real
 --             value="30" />
+--         </ssv:Parameter>
+--         <ssv:Parameter
+--           name="C1">
+--           <ssv:Real
+--             value="-10" />
 --         </ssv:Parameter>
 --       </ssv:Parameters>
 --     </ssv:ParameterSet>

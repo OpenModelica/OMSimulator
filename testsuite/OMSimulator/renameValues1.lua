@@ -6,11 +6,13 @@
 -- mac: no
 
 
-oms_setCommandLineOption("--suppressPath=true --exportParametersInline=false")
+oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./rename_values_01_lua/")
 
 oms_newModel("renamevalues")
 oms_addSystem("renamevalues.root", oms_system_wc)
+
+oms_addResources("renamevalues.root:renamevalues.ssv")
 
 oms_addSystem("renamevalues.root.system1", oms_system_sc)
 

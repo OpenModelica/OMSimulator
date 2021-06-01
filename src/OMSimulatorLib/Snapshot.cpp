@@ -406,3 +406,34 @@ oms_status_enu_t oms::Snapshot::writeDocument(char** contents)
   doc.save(writer, "  ", pugi::format_indent|pugi::format_indent_attributes, pugi::encoding_utf8);
   return writer.copy(contents);
 }
+
+oms_status_enu_t oms::Snapshot::writeResourceNode(const filesystem::path& filename, const filesystem::path& path) const
+{
+  class : public pugi::xml_writer
+  {
+  public:
+    virtual void write(const void* data, size_t size)
+    {
+      result += std::string(static_cast<const char*>(data), size);
+    }
+
+    oms_status_enu_t copy(char** contents)
+    {
+      *contents = mallocAndCopyString(result);
+      if (!*contents)
+        return oms_status_error;
+
+      return oms_status_ok;
+    }
+
+  private:
+    std::string result;
+  } writer;
+
+  pugi::xml_document doc;
+  doc.append_copy(getResourceNode(filename));
+  filesystem::path filepath = path / filename;
+  if (!doc.save_file(filepath.string().c_str(), "  ", pugi::format_indent|pugi::format_indent_attributes, pugi::encoding_utf8))
+    return oms_status_error;
+  return oms_status_ok;
+}

@@ -68,6 +68,262 @@ oms_status_enu_t oms::Values::setBoolean(const ComRef& cref, bool value)
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::Values::getReal(const ComRef& cref, double& value)
+{
+  auto realValue = realStartValues.find(cref);
+  if (realValue != realStartValues.end())
+  {
+    value = realValue->second;
+    return oms_status_ok;
+  }
+
+  return oms_status_error;
+}
+
+oms_status_enu_t oms::Values::getInteger(const ComRef& cref, int& value)
+{
+  auto integerValue = integerStartValues.find(cref);
+  if (integerValue != integerStartValues.end())
+  {
+    value = integerValue->second;
+    return oms_status_ok;
+  }
+
+  return oms_status_error;
+}
+
+oms_status_enu_t oms::Values::getBoolean(const ComRef& cref, bool& value)
+{
+  auto boolValue = booleanStartValues.find(cref);
+  if (boolValue != booleanStartValues.end())
+  {
+    value = boolValue->second;
+    return oms_status_ok;
+  }
+
+  return oms_status_error;
+}
+
+oms_status_enu_t oms::Values::setRealResources(const ComRef& cref, double value, const ComRef& fullCref, bool externalInput, oms_modelState_enu_t modelState)
+{
+  bool resourceAvailable = false;
+  for (auto &it : parameterResources)
+  {
+    for (auto &res : it.allresources)
+    {
+      //update the value in all resources, so that same cref in multiple ssv can be updated, this can result in duplication
+      auto realValue = res.second.realStartValues.find(cref);
+      if (realValue != res.second.realStartValues.end())
+      {
+        if (oms_modelState_simulation == modelState && externalInput)
+        {
+          res.second.realValues[cref] = value;
+        }
+        else
+        {
+          res.second.setReal(cref, value);
+        }
+        resourceAvailable = true;
+        // return oms_status_ok; return here to avoid updating the same value in different ssv file
+      }
+    }
+  }
+
+  if (!resourceAvailable)
+  {
+    auto &it = parameterResources.front();
+    for (auto &res : it.allresources)
+    {
+      // insert the new signal at the first resource available
+      res.second.setReal(cref, value);
+      break;
+    }
+  }
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Values::setIntegerResources(const ComRef& cref, int value, const ComRef& fullCref, bool externalInput, oms_modelState_enu_t modelState)
+{
+  bool resourceAvailable = false;
+  for (auto &it : parameterResources)
+  {
+    for (auto &res : it.allresources)
+    {
+      //update the value in all resources, so that same cref in multiple ssv can be updated, this can result in duplication
+      auto integerValue = res.second.integerStartValues.find(cref);
+      if (integerValue != res.second.integerStartValues.end())
+      {
+        if (oms_modelState_simulation == modelState && externalInput)
+        {
+          res.second.integerValues[cref] = value;
+        }
+        else
+        {
+          res.second.setInteger(cref, value);
+        }
+        resourceAvailable = true;
+      }
+    }
+  }
+
+  if (!resourceAvailable)
+  {
+    auto &it = parameterResources.front();
+    for (auto &res : it.allresources)
+    {
+      // insert the new signal at the first resource available
+      res.second.setInteger(cref, value);
+      break;
+    }
+  }
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Values::setBooleanResources(const ComRef& cref, bool value, const ComRef& fullCref, bool externalInput, oms_modelState_enu_t modelState)
+{
+  bool resourceAvailable = false;
+  for (auto &it : parameterResources)
+  {
+    for (auto &res : it.allresources)
+    {
+      //update the value in all resources, so that same cref in multiple ssv can be updated, this can result in duplication
+      auto boolValue = res.second.booleanStartValues.find(cref);
+      if (boolValue != res.second.booleanStartValues.end())
+      {
+        if (oms_modelState_simulation == modelState && externalInput)
+        {
+          res.second.booleanValues[cref] = value;
+        }
+        else
+        {
+          res.second.setBoolean(cref, value);
+        }
+        resourceAvailable = true;
+      }
+    }
+  }
+
+  if (!resourceAvailable)
+  {
+    auto &it = parameterResources.front();
+    for (auto &res : it.allresources)
+    {
+      // insert the new signal at the first resource available
+      res.second.setBoolean(cref, value);
+      break;
+    }
+  }
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Values::getRealResources(const ComRef& cref, double& value, bool externalInput, oms_modelState_enu_t modelState)
+{
+  for (auto &it: parameterResources)
+  {
+    for (auto &res: it.allresources)
+    {
+      if (externalInput && oms_modelState_simulation == modelState && res.second.realValues[cref] != 0.0)
+      {
+        value = res.second.realValues[cref];
+        return oms_status_ok;
+      }
+      auto realValue = res.second.realStartValues.find(cref);
+      if (realValue != res.second.realStartValues.end())
+      {
+        value = realValue->second;
+        return oms_status_ok;
+      }
+    }
+  }
+
+  return oms_status_error;
+}
+
+oms_status_enu_t oms::Values::getIntegerResources(const ComRef& cref, int& value, bool externalInput, oms_modelState_enu_t modelState)
+{
+  for (auto &it: parameterResources)
+  {
+    for (auto &res: it.allresources)
+    {
+      if (externalInput && oms_modelState_simulation == modelState && res.second.integerValues[cref] != 0.0)
+      {
+        value = res.second.integerValues[cref];
+        return oms_status_ok;
+      }
+      auto integerValue = res.second.integerStartValues.find(cref);
+      if (integerValue != res.second.integerStartValues.end())
+      {
+        value = integerValue->second;
+        return oms_status_ok;
+      }
+    }
+  }
+
+  return oms_status_error;
+}
+
+oms_status_enu_t oms::Values::getBooleanResources(const ComRef& cref, bool& value, bool externalInput, oms_modelState_enu_t modelState)
+{
+  for (auto &it: parameterResources)
+  {
+    for (auto &res: it.allresources)
+    {
+      if (externalInput && oms_modelState_simulation == modelState && res.second.booleanValues[cref] != 0.0)
+      {
+        value = res.second.booleanValues[cref];
+        return oms_status_ok;
+      }
+      auto booleanValue = res.second.booleanStartValues.find(cref);
+      if (booleanValue != res.second.booleanStartValues.end())
+      {
+        value = booleanValue->second;
+        return oms_status_ok;
+      }
+    }
+  }
+
+  return oms_status_error;
+}
+
+oms_status_enu_t oms::Values::getRealFromModeldescription(const ComRef& cref, double& value)
+{
+  // search in modelDescription.xml
+  auto realValue = modelDescriptionRealStartValues.find(cref);
+  if (realValue != modelDescriptionRealStartValues.end())
+  {
+    value = realValue->second;
+    return oms_status_ok;
+  }
+
+  return oms_status_error;
+}
+
+oms_status_enu_t oms::Values::getIntegerFromModeldescription(const ComRef& cref, int& value)
+{
+  // search in modelDescription.xml
+  auto integerValue = modelDescriptionIntegerStartValues.find(cref);
+  if (integerValue != modelDescriptionIntegerStartValues.end())
+  {
+    value = integerValue->second;
+    return oms_status_ok;
+  }
+
+  return oms_status_error;
+}
+
+oms_status_enu_t oms::Values::getBooleanFromModeldescription(const ComRef& cref, bool& value)
+{
+  // search in modelDescription.xml
+  auto boolValue = modelDescriptionBooleanStartValues.find(cref);
+  if (boolValue != modelDescriptionBooleanStartValues.end())
+  {
+    value = boolValue->second;
+    return oms_status_ok;
+  }
+
+  return oms_status_error;
+}
+
 oms_status_enu_t oms::Values::deleteStartValue(const ComRef& cref)
 {
   oms::ComRef signal(cref);
@@ -100,6 +356,44 @@ oms_status_enu_t oms::Values::deleteStartValue(const ComRef& cref)
   return oms_status_error;
 }
 
+oms_status_enu_t oms::Values::deleteStartValueInResources(const ComRef& cref)
+{
+  oms::ComRef signal(cref);
+  signal.pop_suffix("start");
+
+  for (auto &it : parameterResources)
+  {
+    for (auto &res : it.allresources)
+    {
+      // reals
+      auto realValue = res.second.realStartValues.find(signal);
+      if (realValue != res.second.realStartValues.end())
+      {
+        res.second.realStartValues.erase(realValue);
+        return oms_status_ok;
+      }
+
+      // integers
+      auto integerValue = res.second.integerStartValues.find(signal);
+      if (integerValue != res.second.integerStartValues.end())
+      {
+        res.second.integerStartValues.erase(integerValue);
+        return oms_status_ok;
+      }
+
+      // booleans
+      auto boolValue = res.second.booleanStartValues.find(signal);
+      if (boolValue != res.second.booleanStartValues.end())
+      {
+        res.second.booleanStartValues.erase(boolValue);
+        return oms_status_ok;
+      }
+    }
+  }
+
+  return oms_status_error;
+}
+
 oms_status_enu_t oms::Values::exportToSSD(pugi::xml_node& node) const
 {
   // skip this if there is nothing to export
@@ -126,10 +420,11 @@ oms_status_enu_t oms::Values::importFromSnapshot(const pugi::xml_node& node, con
 {
   for (pugi::xml_node parameterBindingNode = node.child(oms::ssp::Version1_0::ssd::parameter_binding); parameterBindingNode; parameterBindingNode = parameterBindingNode.next_sibling(oms::ssp::Version1_0::ssd::parameter_binding))
   {
+    Values resources; // create a new value object for each parameter binding node
     std::string ssvFile = parameterBindingNode.attribute("source").as_string();
-
     if (!ssvFile.empty()) // parameter binding provided with .ssv file
     {
+      //resourceFiles.push_back(ssvFile);
       pugi::xml_node parameterSet = snapshot.getResourceNode(ssvFile);
       if (!parameterSet)
         return logError("loading <oms:file> \"" + ssvFile + "\" from <oms:snapshot> failed");
@@ -148,11 +443,13 @@ oms_status_enu_t oms::Values::importFromSnapshot(const pugi::xml_node& node, con
           pugi::xml_node ssm_parameterMapping = snapshot.getResourceNode(ssmFileSource);
           if (!ssm_parameterMapping)
             return logError("loading <oms:file> \"" + ssmFileSource + "\" from <oms:snapshot> failed");
-
-          importParameterMapping(ssm_parameterMapping);
+          resources.ssmFile = ssmFileSource;
+          resources.importParameterMapping(ssm_parameterMapping);
         }
       }
-      importStartValuesHelper(parameters);
+      resources.importStartValuesHelper(parameters);
+      // add the mapped ssv parameter binding node
+      allresources[ssvFile] = resources;
     }
     else // inline ParameterBindings
     {
@@ -168,9 +465,11 @@ oms_status_enu_t oms::Values::importFromSnapshot(const pugi::xml_node& node, con
       pugi::xml_node ssm_parameterMapping = ssd_parameterMapping.child(oms::ssp::Version1_0::ssm::parameter_mapping);
 
       if (ssm_parameterMapping)
-        importParameterMapping(ssm_parameterMapping);
+        resources.importParameterMapping(ssm_parameterMapping);
 
-      importStartValuesHelper(parameters);
+      resources.importStartValuesHelper(parameters);
+      // add the mapped inline parameter binding node
+      allresources["inline"] = resources;
     }
   }
 
@@ -251,12 +550,51 @@ oms_status_enu_t oms::Values::exportStartValuesHelper(pugi::xml_node& node) cons
   return oms_status_ok;
 }
 
-void oms::Values::exportParameterBindings(pugi::xml_node &node, const ComRef &cref) const
+void oms::Values::exportParameterBindings(pugi::xml_node &node, Snapshot &snapshot) const
 {
-  pugi::xml_node node_parameters_bindings = node.append_child(oms::ssp::Version1_0::ssd::parameter_bindings);
-  pugi::xml_node node_parameter_binding = node_parameters_bindings.append_child(oms::ssp::Version1_0::ssd::parameter_binding);
-  std::string ssvFileName = "resources/" + std::string(cref) + ".ssv";
-  node_parameter_binding.append_attribute("source") = ssvFileName.c_str();
+  if (!parameterResources.empty())
+  {
+    for (const auto &it : parameterResources)
+    {
+      pugi::xml_node node_parameters_bindings = node.append_child(oms::ssp::Version1_0::ssd::parameter_bindings);
+      for (const auto &res : it.allresources)
+      {
+        if (res.first == "inline")
+        {
+          // export as inline
+          pugi::xml_node node_parameter_binding = node_parameters_bindings.append_child(oms::ssp::Version1_0::ssd::parameter_binding);
+          pugi::xml_node node_parameter_values = node_parameter_binding.append_child(oms::ssp::Version1_0::ssd::parameter_values);
+          pugi::xml_node node_parameterset = node_parameter_values.append_child(oms::ssp::Version1_0::ssv::parameter_set);
+          node_parameterset.append_attribute("version") = "1.0";
+          node_parameterset.append_attribute("name") = "parameters";
+          pugi::xml_node node_parameters = node_parameterset.append_child(oms::ssp::Version1_0::ssv::parameters);
+          res.second.exportStartValuesHelper(node_parameters);
+          res.second.exportParameterMappingInline(node_parameter_binding);
+        }
+        else
+        {
+          // export to ssv file
+          pugi::xml_node node_parameter_binding = node_parameters_bindings.append_child(oms::ssp::Version1_0::ssd::parameter_binding);
+          node_parameter_binding.append_attribute("source") = res.first.c_str();
+          pugi::xml_node ssvNode = snapshot.getTemplateResourceNodeSSV(res.first, "parameters");
+          res.second.exportToSSV(ssvNode);
+          // export SSM file if exist
+          if (!res.second.ssmFile.empty())
+          {
+            pugi::xml_node ssd_parameter_mapping = node_parameter_binding.append_child(oms::ssp::Version1_0::ssd::parameter_mapping);
+            ssd_parameter_mapping.append_attribute("source") = res.second.ssmFile.c_str();
+            pugi::xml_node ssmNode = snapshot.getTemplateResourceNodeSSM(res.second.ssmFile);
+            res.second.exportParameterMappingToSSM(ssmNode);
+          }
+        }
+      }
+    }
+  }
+  else
+  {
+    // inline parameters
+    exportToSSD(node);
+  }
 }
 
 /*
@@ -289,6 +627,19 @@ void oms::Values::exportParameterMappingInline(pugi::xml_node& node) const
   for (const auto& it : mappedEntry)
   {
     pugi::xml_node ssm_mapping_entry = ssm_parameter_mapping.append_child(oms::ssp::Version1_0::ssm::parameter_mapping_entry);
+    ssm_mapping_entry.append_attribute("source") = it.first.c_str();
+    ssm_mapping_entry.append_attribute("target") = it.second.c_str();
+  }
+}
+
+void oms::Values::exportParameterMappingToSSM(pugi::xml_node& node) const
+{
+  if (mappedEntry.empty())
+    return;
+
+  for (const auto& it : mappedEntry)
+  {
+    pugi::xml_node ssm_mapping_entry = node.append_child(oms::ssp::Version1_0::ssm::parameter_mapping_entry);
     ssm_mapping_entry.append_attribute("source") = it.first.c_str();
     ssm_mapping_entry.append_attribute("target") = it.second.c_str();
   }
@@ -539,4 +890,55 @@ oms_status_enu_t oms::Values::rename(const oms::ComRef& oldCref, const oms::ComR
   }
 
   return oms_status_ok;
+}
+
+oms_status_enu_t oms::Values::renameInResources(const oms::ComRef& oldCref, const oms::ComRef& newCref)
+{
+  for (auto &it : parameterResources)
+  {
+    for (auto &res : it.allresources)
+    {
+      for (const auto &r : res.second.realStartValues)
+      {
+        ComRef tail(r.first);
+        ComRef front = tail.pop_front();
+        if (oldCref == front)
+        {
+          res.second.realStartValues[newCref + tail] = r.second; // update the newCref
+          res.second.realStartValues.erase(r.first);             // delete the old cref
+        }
+      }
+
+      for (const auto &i : res.second.integerStartValues)
+      {
+        ComRef tail(i.first);
+        ComRef front = tail.pop_front();
+        if (oldCref == front)
+        {
+          res.second.integerStartValues[newCref + tail] = i.second; // update the newCref
+          res.second.integerStartValues.erase(i.first);             // delete the old cref
+        }
+      }
+
+      for (const auto &b : booleanStartValues)
+      {
+        ComRef tail(b.first);
+        ComRef front = tail.pop_front();
+        if (oldCref == front)
+        {
+          res.second.booleanStartValues[newCref + tail] = b.second; // update the newCref
+          res.second.booleanStartValues.erase(b.first);             // delete the old cref
+        }
+      }
+    }
+  }
+  return oms_status_ok;
+}
+
+bool oms::Values::hasResources()
+{
+  if (!parameterResources.empty())
+    return true;
+
+  return false;
 }

@@ -5,11 +5,13 @@
 -- win: no
 -- mac: no
 
-oms_setCommandLineOption("--suppressPath=true --exportParametersInline=false")
+oms_setCommandLineOption("--suppressPath=true")
 status = oms_setTempDirectory("./import_export_snapshot_lua/")
 
 oms_newModel("import_export_snapshot")
 oms_addSystem("import_export_snapshot.root", oms_system_wc)
+
+oms_addResources("import_export_snapshot.root:import_export_snapshot.ssv")
 
 oms_addConnector("import_export_snapshot.root.C1", oms_causality_input, oms_signal_type_real)
 oms_setReal("import_export_snapshot.root.C1", -10)
@@ -150,11 +152,6 @@ oms_delete("import_export_snapshot")
 --       name="parameters">
 --       <ssv:Parameters>
 --         <ssv:Parameter
---           name="C1">
---           <ssv:Real
---             value="-10" />
---         </ssv:Parameter>
---         <ssv:Parameter
 --           name="add.u1">
 --           <ssv:Real
 --             value="10" />
@@ -163,6 +160,11 @@ oms_delete("import_export_snapshot")
 --           name="add.k1">
 --           <ssv:Real
 --             value="30" />
+--         </ssv:Parameter>
+--         <ssv:Parameter
+--           name="C1">
+--           <ssv:Real
+--             value="-10" />
 --         </ssv:Parameter>
 --       </ssv:Parameters>
 --     </ssv:ParameterSet>

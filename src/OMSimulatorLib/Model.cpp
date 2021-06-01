@@ -374,14 +374,6 @@ oms_status_enu_t oms::Model::exportSnapshot(const oms::ComRef& cref, char** cont
   Snapshot snapshot;
 
   exportToSSD(snapshot);
-
-  // export to ssv file if Flag set
-  if (!Flags::ExportParametersInline())
-  {
-    system->exportToSSV(snapshot);
-    // TODO ssm file
-  }
-
   exportSignalFilter(snapshot);
 
   if (cref.isEmpty())
@@ -428,7 +420,7 @@ oms_status_enu_t oms::Model::exportSSVTemplate(const oms::ComRef& cref, const st
   //ssvdoc.save(std::cout);
   ssvdoc.append_copy(snapshot.getResourceNode("template.ssv"));
 
-  if (!ssvdoc.save_file(filename.c_str()))
+  if (!ssvdoc.save_file(filename.c_str(), "  ", pugi::format_indent|pugi::format_indent_attributes, pugi::encoding_utf8))
     return logError("failed to export  \"" + filename + "\" (for model \"" + std::string(this->getCref()) + "\")");
 
   return oms_status_ok;
@@ -469,7 +461,7 @@ oms_status_enu_t oms::Model::exportSSMTemplate(const oms::ComRef& cref, const st
   //ssmdoc.save(std::cout);
   ssmdoc.append_copy(snapshot.getResourceNode("template.ssm"));
 
-  if (!ssmdoc.save_file(filename.c_str()))
+  if (!ssmdoc.save_file(filename.c_str(), "  ", pugi::format_indent|pugi::format_indent_attributes, pugi::encoding_utf8))
     return logError("failed to export  \"" + filename + "\" (for model \"" + std::string(this->getCref()) + "\")");
 
   return oms_status_ok;
@@ -499,6 +491,17 @@ oms_status_enu_t oms::Model::updateParameterBindingsToSSD(pugi::xml_node& node, 
       }
     }
   }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Model::addResources(const oms::ComRef& cref)
+{
+  ComRef subCref(cref);
+  std::string fileName = "resources/" + subCref.pop_suffix();
+
+  if (system)
+    return system->addResources(subCref, fileName);
 
   return oms_status_ok;
 }
@@ -729,14 +732,6 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
     return logError("filename extension must be \".ssp\"; no other formats are supported");
 
   exportToSSD(snapshot);
-
-  // export to ssv if flag set
-  if (!Flags::ExportParametersInline())
-  {
-    system->exportToSSV(snapshot);
-    // TODO ssm file
-  }
-
   exportSignalFilter(snapshot);
 
   // Usage: minizip [-o] [-a] [-0 to -9] [-p password] [-j] file.zip [files_to_add]
@@ -748,7 +743,7 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
   //        -j  exclude path. store only the file name
 
   std::vector<std::string> resources;
-  getAllResources(resources, snapshot);
+  writeAllResourcesToFilesystem(resources, snapshot);
 
   std::string cd = Scope::GetInstance().getWorkingDirectory();
   Scope::GetInstance().setWorkingDirectory(tempDir);
@@ -771,18 +766,14 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
   return oms_status_ok;
 }
 
-void oms::Model::getAllResources(std::vector<std::string>& resources, Snapshot& snapshot) const
+void oms::Model::writeAllResourcesToFilesystem(std::vector<std::string>& resources, Snapshot& snapshot) const
 {
   // get all files from snapshot and save the document (eg.) ssd, ssv and signalFilter
   snapshot.getResources(resources);
   for (auto const &filename : resources)
   {
-    //std::cout << "\n resources Nodes : " << filename;
-    pugi::xml_document doc;
-    doc.append_copy(snapshot.getResourceNode(filename));
-    filesystem::path filepath = filesystem::path(tempDir) /  filename;
-    if (!doc.save_file(filepath.string().c_str()))
-      logError("failed to export \"" + filepath.string() + "\" (for file \"" + filename + "\")");
+    if (oms_status_ok != snapshot.writeResourceNode(filename, filesystem::path(tempDir)))
+      logError("failed to export \"" + filename + " to directory " + tempDir);
   }
 
   if (system)

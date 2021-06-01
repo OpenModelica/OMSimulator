@@ -122,6 +122,7 @@ namespace oms
     oms_status_enu_t setConnectorGeometry(const ComRef& cref, const oms::ssd::ConnectorGeometry* geometry);
     oms_status_enu_t setConnectionGeometry(const ComRef &crefA, const ComRef &crefB, const oms::ssd::ConnectionGeometry* geometry);
     oms_status_enu_t addBus(const ComRef& cref);
+    oms_status_enu_t addResources(const ComRef& cref, std::string& filename);
     oms_status_enu_t addConnectorToBus(const ComRef& busCref, const ComRef& connectorCref);
     oms_status_enu_t deleteConnectorFromBus(const ComRef& busCref, const ComRef& connectorCref);
     oms_status_enu_t setBusGeometry(const ComRef& cref, const oms::ssd::ConnectorGeometry* geometry);
@@ -187,6 +188,8 @@ namespace oms
 
     void getFilteredSignals(std::vector<Connector>& filteredSignals) const;
 
+    Values& getValues() { return values; }
+
   protected: // methods
     System(const ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem, oms_solver_enu_t solverMethod);
 
@@ -196,12 +199,9 @@ namespace oms
 
   private: // methods
     oms_status_enu_t importFromSSD_ConnectionGeometry(const pugi::xml_node& node, const ComRef& crefA, const ComRef& crefB);
-    oms::ComRef getValidCref(const ComRef& cref);
     oms_status_enu_t importTLMBus(const pugi::xml_node& node, Component* component);
     oms_status_enu_t importBusConnectorSignals(const pugi::xml_node& node);
     oms_status_enu_t importBusConnectorGeometry(const pugi::xml_node& node);
-    oms_status_enu_t importStartValuesFromSSV(const std::string& ssvPath, const std::string ssmPath, const Snapshot& snapshot);
-    void importParameterMappingFromSSM(const std::string& ssmPath, const Snapshot& snapshot, std::multimap<ComRef, ComRef>& mappedEntry);
 
   protected: // attributes
     double time;

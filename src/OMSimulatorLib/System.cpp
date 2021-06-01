@@ -320,6 +320,54 @@ oms_status_enu_t oms::System::addSubModel(const oms::ComRef& cref, const std::st
   return system->addSubModel(tail, path);
 }
 
+oms_status_enu_t oms::System::addResources(const ComRef& cref, std::string& filename)
+{
+  ComRef tail(cref);
+  ComRef front = tail.pop_front();
+
+  if (tail.isEmpty())
+  {
+    // top level system and subsystems
+    Values resources;
+    if (!values.hasResources())
+    {
+      resources.allresources[filename] = resources;
+      values.parameterResources.push_back(resources);
+    }
+    else
+    {
+      // generate empty ssv file, if more resources are added to same level
+      values.parameterResources[0].allresources[filename] = resources;
+    }
+    return oms_status_ok;
+  }
+
+  auto subsystem = subsystems.find(tail);
+  if (subsystem != subsystems.end())
+    return subsystem->second->addResources(tail, filename);
+
+  auto component = components.find(tail);
+  if (component != components.end())
+    return component->second->addResources(filename);
+
+  /*check for adding resources to components in subsystems
+    e.g root.system1.add
+    oms_addResources("root.system1.add:add.ssv")
+  */
+  ComRef tailA(tail);
+  ComRef frontA = tailA.pop_front();
+
+  System* system = this->getSystem(frontA);
+  if (!system)
+    return logError("System \"" + std::string(getFullCref()) + "\" does not contain subSystem \"" + std::string(frontA) + "\"");
+
+  auto componentA = system->components.find(tailA);
+  if (componentA != components.end())
+    return componentA->second->addResources(filename);
+
+  return logError("failed for \"" + std::string(getFullCref() + cref) + "\""  + " as the identifier could not be resolved to a system or subsystem or component");
+}
+
 oms_status_enu_t oms::System::listUnconnectedConnectors(char** contents) const
 {
   if (!contents)
@@ -414,16 +462,7 @@ oms_status_enu_t oms::System::exportToSSD(pugi::xml_node& node, Snapshot& snapsh
     }
   }
 
-  // export as inline
-  if (Flags::ExportParametersInline())
-  {
-    values.exportToSSD(node);
-  }
-  // export top level parameterBindings in ssv file
-  else if (std::string(node.parent().name()) == oms::ssp::Draft20180219::ssd::system_structure_description)
-  {
-    values.exportParameterBindings(node, parentModel->getCref());
-  }
+  values.exportParameterBindings(node, snapshot);
 
   if (subelements.size() > 1)
   {
@@ -540,51 +579,15 @@ oms_status_enu_t oms::System::importFromSnapshot(const pugi::xml_node& node, con
       geometry.importFromSSD(*it);
       setGeometry(geometry);
     }
-    else if(name == oms::ssp::Version1_0::ssd::parameter_bindings)
+    else if (name == oms::ssp::Version1_0::ssd::parameter_bindings) // parameter bindings provided either as inline or .ssv files
     {
-      std::string parent_node = it->parent().parent().name();
-      // top-level parameter bindings belonging to
-      // <ssd:SystemStructureDescription> provided either as inline or
-      // .ssv files
-      if (parent_node == oms::ssp::Draft20180219::ssd::system_structure_description)
-      {
-        // check for multiple ssv files or parameter bindings
-        for (pugi::xml_node parameterBindingNode = it->child(oms::ssp::Version1_0::ssd::parameter_binding); parameterBindingNode; parameterBindingNode = parameterBindingNode.next_sibling(oms::ssp::Version1_0::ssd::parameter_binding))
-        {
-          std::string ssvFileSource = parameterBindingNode.attribute("source").as_string();
+      Values resources; // create a list of <ssd:ParameterBindings>
+      if (oms_status_ok != resources.importFromSnapshot(*it, sspVersion, snapshot))
+        return logError("Failed to import " + std::string(oms::ssp::Version1_0::ssd::parameter_bindings));
 
-          // set parameter bindings associated with the system
-          if (ssvFileSource.empty()) // inline parameterBinding
-          {
-            std::string tempdir = getModel().getTempDirectory();
-            if (oms_status_ok != values.importFromSnapshot(*it, sspVersion, snapshot))
-              return logError("Failed to import " + std::string(oms::ssp::Version1_0::ssd::parameter_bindings));
-          }
-          else
-          {
-            // store the ssv and ssm files and process it later while handling the connection, so all the components are loaded
-            pugi::xml_node parameterMapping = parameterBindingNode.child(oms::ssp::Version1_0::ssd::parameter_mapping);
-
-            // check for parameterMapping (e.g) <ssd:ParameterMapping>
-            if (parameterMapping)
-            {
-              std::string ssmFileSource = parameterMapping.attribute("source").as_string();
-              startValuesFileSources[ssvFileSource] = ssmFileSource;
-            }
-            else // no parameter mapping
-            {
-              startValuesFileSources[ssvFileSource] = "";
-            }
-          }
-        }
-      }
-      else
-      // hierarchical level parameter bindings belonging to
-      // <ssd:Elements> provided either as inline or .csv files
-      {
-        if (oms_status_ok != values.importFromSnapshot(*it, sspVersion, snapshot))
-            return logError("Failed to import " + std::string(oms::ssp::Version1_0::ssd::parameter_bindings));
-      }
+      // add the list of <parameterBindings>
+      values.parameterResources.push_back(resources);
+      // TODO generate warning for signals in ssv files that do not belong to system, subsystem or fmus
     }
     else if (name == oms::ssp::Draft20180219::ssd::connections)
     {
@@ -769,12 +772,6 @@ oms_status_enu_t oms::System::importFromSnapshot(const pugi::xml_node& node, con
         }
         else
           return logError("wrong xml schema detected: " + name);
-      }
-
-      // check for ssv file sources exist and set the values before the connections
-      for (auto const& ssvSource : startValuesFileSources)
-      {
-        importStartValuesFromSSV(ssvSource.first, ssvSource.second, snapshot);
       }
     }
     else if (name == oms::ssp::Draft20180219::ssd::annotations)
@@ -1603,8 +1600,25 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
     // check cref has ":start" suffix at the end to delete only start values
     if (front.hasSuffix("start"))
     {
-      if (oms_status_ok != values.deleteStartValue(getValidCref(front)))
-        return logWarning("failed to delete start value \"" + std::string(getFullCref()+front) + "\"" + " because the identifier couldn't be resolved to any system signal");
+      // check for local resources
+      if (values.hasResources())
+      {
+        if (oms_status_ok != values.deleteStartValueInResources(front))
+          return logWarning("failed to delete start value \"" + std::string(getFullCref()+front) + "\"" + " because the identifier couldn't be resolved to any system signal");
+      }
+      // check from top level resources
+      else if (getParentSystem() && getParentSystem()->values.hasResources())
+      {
+        if (oms_status_ok != getParentSystem()->values.deleteStartValueInResources(getCref()+front))
+          return logWarning("failed to delete start value \"" + std::string(getFullCref()+front) + "\"" + " because the identifier couldn't be resolved to any system signal");
+      }
+      // inline
+      else
+      {
+        if (oms_status_ok != values.deleteStartValue(front))
+          return logWarning("failed to delete start value \"" + std::string(getFullCref()+front) + "\"" + " because the identifier couldn't be resolved to any system signal");
+      }
+
       return oms_status_ok;
     }
 
@@ -1631,7 +1645,18 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
       if (connectors[i]->getName() == front)
       {
         // delete startValues associated with the Connector
-        values.deleteStartValue(getValidCref(front));
+        if (values.hasResources()) // check for local resources
+        {
+          values.deleteStartValueInResources(front);
+        }
+        else if (getParentSystem() && getParentSystem()->values.hasResources()) // check from top level resources
+        {
+          getParentSystem()->values.deleteStartValueInResources(getCref() + front);
+        }
+        else // inline
+        {
+          values.deleteStartValue(front);
+        }
         deleteAllConectionsTo(front);
         exportConnectors.erase(front);
         delete connectors[i];
@@ -1645,7 +1670,18 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
       if (busconnectors[i]->getName() == front)
       {
         // delete startValues associated with the Connector
-        values.deleteStartValue(getValidCref(front));
+        if (values.hasResources()) // check for local resources
+        {
+          values.deleteStartValueInResources(front);
+        }
+        else if (getParentSystem() && getParentSystem()->values.hasResources()) // check from top level resources
+        {
+          getParentSystem()->values.deleteStartValueInResources(getCref() + front);
+        }
+        else // inline
+        {
+          values.deleteStartValue(front);
+        }
         deleteAllConectionsTo(front);
         exportConnectors.erase(front);
         delete busconnectors[i];
@@ -1659,7 +1695,18 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
       if (tlmbusconnectors[i]->getName() == front)
       {
         // delete startValues associated with the Connector
-        values.deleteStartValue(getValidCref(front));
+        if (values.hasResources()) // check for local resources
+        {
+          values.deleteStartValueInResources(front);
+        }
+        else if (getParentSystem() && getParentSystem()->values.hasResources()) // check from top level resources
+        {
+          getParentSystem()->values.deleteStartValueInResources(getCref() + front);
+        }
+        else // inline
+        {
+          values.deleteStartValue(front);
+        }
         deleteAllConectionsTo(front);
         exportConnectors.erase(front);
         delete tlmbusconnectors[i];
@@ -1685,11 +1732,6 @@ oms_status_enu_t oms::System::delete_(const oms::ComRef& cref)
       // check cref has ":start" suffix at the end to delete only start values
       if (tail.hasSuffix("start"))
       {
-        // add prefix to cref start values if ssv file is used (e.g) k1:start -> addP.k1:start
-        if(!Flags::ExportParametersInline())
-        {
-          tail = cref;
-        }
         if (oms_status_ok != component->second->deleteStartValue(tail))
           return logWarning("failed to delete start value \"" + std::string(getFullCref()+cref) + "\"" + " because the identifier couldn't be resolved to any component signal");
         return oms_status_ok;
@@ -1821,19 +1863,50 @@ oms_status_enu_t oms::System::getBoolean(const ComRef& cref, bool& value)
   {
     if (connector && connector->getName() == cref && connector->isTypeBoolean())
     {
-      oms::ComRef ident = getValidCref(cref);
-      // check any external input are set and return the value, otherwise return the startValue
-      if (oms_modelState_simulation == getModel().getModelState() && values.booleanValues[ident] != 0.0)
+      // getBoolean from local resources
+      if (values.hasResources())
       {
-        value = values.booleanValues[ident];
-        return oms_status_ok;
+        if (oms_status_ok == values.getBooleanResources(cref, value, true, getModel().getModelState()))
+        {
+          return oms_status_ok;
+        }
+        else
+        {
+          value = 0; // default value of boolean ?
+          return oms_status_ok;
+        }
       }
-      auto booleanValue = values.booleanStartValues.find(ident);
-      if (booleanValue != values.booleanStartValues.end())
-        value = booleanValue->second;
+      // getBoolean from top level resources
+      else if (getParentSystem() && getParentSystem()->values.hasResources())
+      {
+        if (oms_status_ok == getParentSystem()->values.getBooleanResources(getCref()+cref, value, true, getModel().getModelState()))
+        {
+          return oms_status_ok;
+        }
+        else
+        {
+          value = 0; // default value
+          return oms_status_ok;
+        }
+      }
+      // no resources available, getBoolean from inline
       else
-        value = 0; // default value
-      return oms_status_ok;
+      {
+        if (oms_modelState_simulation == getModel().getModelState() && values.booleanValues[cref] != 0)
+        {
+          value = values.booleanValues[cref];
+          return oms_status_ok;
+        }
+        if (oms_status_ok == values.getBoolean(cref, value))
+        {
+          return oms_status_ok;
+        }
+        else
+        {
+          value = 0; // default value
+          return oms_status_ok;
+        }
+      }
     }
   }
 
@@ -1860,19 +1933,50 @@ oms_status_enu_t oms::System::getInteger(const ComRef& cref, int& value)
   {
     if (connector && connector->getName() == cref && connector->isTypeInteger())
     {
-      oms::ComRef ident = getValidCref(cref);
-      // check any external input are set and return the value, otherwise return the startValue
-      if (oms_modelState_simulation == getModel().getModelState() && values.integerValues[ident] != 0.0)
+      // getInteger from local resources
+      if (values.hasResources())
       {
-        value = values.integerValues[ident];
-        return oms_status_ok;
+        if (oms_status_ok == values.getIntegerResources(cref, value, true, getModel().getModelState()))
+        {
+          return oms_status_ok;
+        }
+        else
+        {
+          value = 0; // default value
+          return oms_status_ok;
+        }
       }
-      auto integerValue = values.integerStartValues.find(ident);
-      if (integerValue != values.integerStartValues.end())
-        value = integerValue->second;
+      // getInteger from top level resources
+      else if (getParentSystem() && getParentSystem()->values.hasResources())
+      {
+        if (oms_status_ok == getParentSystem()->values.getIntegerResources(getCref()+cref, value, true, getModel().getModelState()))
+        {
+          return oms_status_ok;
+        }
+        else
+        {
+          value = 0; // default value
+          return oms_status_ok;
+        }
+      }
+      // no resources available, getInteger from inline
       else
-        value = 0; // default value
-      return oms_status_ok;
+      {
+        if (oms_modelState_simulation == getModel().getModelState() && values.integerValues[cref] != 0)
+        {
+          value = values.integerValues[cref];
+          return oms_status_ok;
+        }
+        if (oms_status_ok == values.getInteger(cref, value))
+        {
+          return oms_status_ok;
+        }
+        else
+        {
+          value = 0; // default value
+          return oms_status_ok;
+        }
+      }
     }
   }
 
@@ -1899,19 +2003,50 @@ oms_status_enu_t oms::System::getReal(const ComRef& cref, double& value)
   {
     if (connector && connector->getName() == cref && connector->isTypeReal())
     {
-      oms::ComRef ident = getValidCref(cref);
-      // check any external input are set and return the value, otherwise return the startValue
-      if (oms_modelState_simulation == getModel().getModelState() && values.realValues[ident] != 0.0)
+      // getReal from local resources
+      if (values.hasResources())
       {
-        value = values.realValues[ident];
-        return oms_status_ok;
+        if (oms_status_ok == values.getRealResources(cref, value, true, getModel().getModelState()))
+        {
+          return oms_status_ok;
+        }
+        else
+        {
+          value = 0.0; // default value
+          return oms_status_ok;
+        }
       }
-      auto realValue = values.realStartValues.find(ident);
-      if (realValue != values.realStartValues.end())
-        value = realValue->second;
+      // getReal from top level resources
+      else if (getParentSystem() && getParentSystem()->values.hasResources())
+      {
+        if (oms_status_ok == getParentSystem()->values.getRealResources(getCref()+cref, value, true, getModel().getModelState()))
+        {
+          return oms_status_ok;
+        }
+        else
+        {
+          value = 0.0; // default value
+          return oms_status_ok;
+        }
+      }
+      // no resources available, getReal from inline
       else
-        value = 0.0; // default value
-      return oms_status_ok;
+      {
+        if (oms_modelState_simulation == getModel().getModelState() && values.realValues[cref] != 0.0)
+        {
+          value = values.realValues[cref];
+          return oms_status_ok;
+        }
+        if (oms_status_ok == values.getReal(cref, value))
+        {
+          return oms_status_ok;
+        }
+        else
+        {
+          value = 0.0; // default value
+          return oms_status_ok;
+        }
+      }
     }
   }
 
@@ -1924,30 +2059,6 @@ oms_status_enu_t oms::System::getReal(const ComRef& cref, double& value)
   return logError_UnknownSignal(getFullCref() + cref);
 }
 
-/*
- * function which returns valid cref for which are needed to set StartValues
- * if ExportParametersInline is set return the default cref
- * else when importing from ssv , check for cref belongs to toplevel System or SubSystem
- */
-oms::ComRef oms::System::getValidCref(const ComRef& cref)
-{
-  oms::ComRef ident;
-  if (Flags::ExportParametersInline())
-  {
-    ident = cref;
-  }
-  else
-  {
-    std::string s = std::string(getFullCref());
-    int count  = std::count(s.begin(), s.end(), '.');
-    // count > 1 means subsystems (e.g.) A.B.C else Top level System (e.g) A.B
-    if (count > 1)
-      ident = getCref() + cref;
-    else
-      ident = cref;
-  }
-  return ident;
-}
 
 oms_status_enu_t oms::System::setBoolean(const ComRef& cref, bool value)
 {
@@ -1968,17 +2079,29 @@ oms_status_enu_t oms::System::setBoolean(const ComRef& cref, bool value)
   for (auto& connector : connectors)
     if (connector && connector->getName() == cref && connector->isTypeBoolean())
     {
-      oms::ComRef ident = getValidCref(cref);
-      // set external inputs, after initialization
-      if (oms_modelState_simulation == getModel().getModelState())
+      // check for local resources available
+      if (values.hasResources())
       {
-        values.booleanValues[ident] = value;
+        return values.setBooleanResources(cref, value, getFullCref(), true, getModel().getModelState());
+      }
+      // check for resources in top level system
+      else if (getParentSystem() && getParentSystem()->values.hasResources())
+      {
+        return getParentSystem()->values.setBooleanResources(getCref() + cref, value, getParentSystem()->getFullCref(), true, getModel().getModelState());
       }
       else
       {
-        values.setBoolean(ident, value);
+        // set external inputs, after initialization
+        if (oms_modelState_simulation == getModel().getModelState())
+        {
+          values.booleanValues[cref] = value;
+        }
+        else
+        {
+          values.setBoolean(cref, value);
+        }
+        return oms_status_ok;
       }
-      return oms_status_ok;
     }
 
   return logError_UnknownSignal(getFullCref() + cref);
@@ -2003,17 +2126,29 @@ oms_status_enu_t oms::System::setInteger(const ComRef& cref, int value)
   for (auto& connector : connectors)
     if (connector && connector->getName() == cref && connector->isTypeInteger())
     {
-      oms::ComRef ident = getValidCref(cref);
-      // set external inputs, after initialization
-      if (oms_modelState_simulation == getModel().getModelState())
+      // check for local resources available
+      if (values.hasResources())
       {
-        values.integerValues[ident] = value;
+        return values.setIntegerResources(cref, value, getFullCref(), true, getModel().getModelState());
+      }
+      // check for resources in top level system
+      else if (getParentSystem() && getParentSystem()->values.hasResources())
+      {
+        return getParentSystem()->values.setIntegerResources(getCref() + cref, value, getParentSystem()->getFullCref(), true, getModel().getModelState());
       }
       else
       {
-        values.setInteger(ident, value);
+        // set external inputs, after initialization
+        if (oms_modelState_simulation == getModel().getModelState())
+        {
+          values.integerValues[cref] = value;
+        }
+        else
+        {
+          values.setInteger(cref, value);
+        }
+        return oms_status_ok;
       }
-      return oms_status_ok;
     }
 
   return logError_UnknownSignal(getFullCref() + cref);
@@ -2035,21 +2170,37 @@ oms_status_enu_t oms::System::setReal(const ComRef& cref, double value)
   if (component != components.end())
     return component->second->setReal(tail, value);
 
-  for (auto& connector : connectors)
+  for (auto &connector: connectors)
+  {
     if (connector && connector->getName() == cref && connector->isTypeReal())
     {
-      oms::ComRef ident = getValidCref(cref);
-      // set external inputs, after initialization
-      if (oms_modelState_simulation == getModel().getModelState())
+      // check for local resources available
+      if (values.hasResources())
       {
-        values.realValues[ident] = value;
+        return values.setRealResources(cref, value, getFullCref(), true, getModel().getModelState());
+      }
+      // check for resources in top level system
+      else if (getParentSystem() && getParentSystem()->values.hasResources())
+      {
+        //return getParentSystem()->setRealSystemResources(getCref()+cref, value, connector->isOutput());
+        return getParentSystem()->values.setRealResources(getCref() + cref, value, getParentSystem()->getFullCref(), true, getModel().getModelState());
       }
       else
       {
-        values.setReal(ident, value);
+        // set external inputs, after initialization
+        if (oms_modelState_simulation == getModel().getModelState())
+        {
+          values.realValues[cref] = value;
+        }
+        else
+        {
+          values.setReal(cref, value);
+        }
+        return oms_status_ok;
       }
-      return oms_status_ok;
     }
+  }
+
   return logError_UnknownSignal(getFullCref() + cref);
 }
 
@@ -2426,92 +2577,6 @@ oms_status_enu_t oms::System::addAlgLoop(oms_ssc_t SCC, const int algLoopNum)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::System::importStartValuesFromSSV(const std::string& ssvPath, const std::string ssmPath, const Snapshot& snapshot)
-{
-  // mapping between a parameter in the source and a parameter of the system or component being parametrized
-  std::multimap<ComRef, ComRef> mappedEntry;
-
-  if (!ssmPath.empty())
-    importParameterMappingFromSSM(ssmPath, snapshot, mappedEntry);
-
-  pugi::xml_node parameterSet = snapshot.getResourceNode(ssvPath);
-  pugi::xml_node parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
-
-  for (pugi::xml_node_iterator it = parameters.begin(); it != parameters.end(); ++it)
-  {
-    std::string name = it->name();
-    std::vector<ComRef> mappedcrefs;
-    if (name == oms::ssp::Version1_0::ssv::parameter)
-    {
-      ComRef cref = ComRef(it->attribute("name").as_string());
-      // check cref has any mapping entry
-      if (!mappedEntry.empty())
-      {
-        auto mapfind = mappedEntry.equal_range(cref);
-        for (auto it = mapfind.first; it != mapfind.second; ++it)
-        {
-          mappedcrefs.push_back(it->second);
-        }
-      }
-
-      if (it->child(oms::ssp::Version1_0::ssv::real_type))
-      {
-        double value = it->child(oms::ssp::Version1_0::ssv::real_type).attribute("value").as_double();
-        if (!mappedcrefs.empty())
-        {
-          for (const auto &mappedcref : mappedcrefs)
-          {
-            setReal(mappedcref, value);
-          }
-        }
-        else
-        {
-          // no mapping entry found, apply the default cref found in ssv file
-          setReal(cref, value);
-        }
-      }
-      else if (it->child(oms::ssp::Version1_0::ssv::integer_type))
-      {
-        int value = it->child(oms::ssp::Version1_0::ssv::integer_type).attribute("value").as_int();
-        if (!mappedcrefs.empty())
-        {
-          for (const auto &mappedcref : mappedcrefs)
-          {
-            setInteger(mappedcref, value);
-          }
-        }
-        else
-        {
-          // no mapping entry found, apply the default cref found in ssv file
-          setInteger(cref, value);
-        }
-      }
-      else if (it->child(oms::ssp::Version1_0::ssv::boolean_type))
-      {
-        bool value = it->child(oms::ssp::Version1_0::ssv::boolean_type).attribute("value").as_bool();
-        if (!mappedcrefs.empty())
-        {
-          for (const auto &mappedcref : mappedcrefs)
-          {
-            setBoolean(mappedcref, value);
-          }
-        }
-        else
-        {
-          // no mapping entry found, apply the default cref found in ssv file
-          setBoolean(cref, value);
-        }
-      }
-      else
-      {
-        logError("Failed to import " + std::string(oms::ssp::Version1_0::ssv::parameter) + ":Unknown ParameterBinding-type");
-      }
-    }
-  }
-
-  return oms_status_ok;
-}
-
 oms_status_enu_t oms::System::updateAlgebraicLoops(const std::vector< oms_ssc_t >& sortedConnections)
 {
   // Instantiate loops
@@ -2532,21 +2597,6 @@ oms_status_enu_t oms::System::updateAlgebraicLoops(const std::vector< oms_ssc_t 
   return oms_status_ok;
 }
 
-void oms::System::importParameterMappingFromSSM(const std::string& ssmPath, const Snapshot& snapshot, std::multimap<ComRef, ComRef>& mappedEntry)
-{
-  pugi::xml_node parameterMapping = snapshot.getResourceNode(ssmPath);
-
-  for (pugi::xml_node_iterator it = parameterMapping.begin(); it != parameterMapping.end(); ++it)
-  {
-    std::string name = it->name();
-    if (oms::ssp::Version1_0::ssm::parameter_mapping_entry == name)
-    {
-      ComRef source(it->attribute("source").as_string());
-      if (!source.isEmpty())
-        mappedEntry.insert(std::make_pair(source, it->attribute("target").as_string()));
-    }
-  }
-}
 
 oms_status_enu_t oms::System::solveAlgLoop(DirectedGraph& graph, int loopNumber)
 {
@@ -2579,7 +2629,21 @@ oms_status_enu_t oms::System::rename(const ComRef& cref, const ComRef& newCref)
   if (subsystem != subsystems.end())
   {
     subsystem->second->rename(tail, newCref);
-    subsystem->second->values.rename(cref, newCref);
+    // rename values
+    if (subsystem->second->values.hasResources()) // check for local resources
+    {
+      subsystem->second->values.renameInResources(cref, newCref);
+    }
+    // top level root resources
+    else if(subsystem->second->getParentSystem() && subsystem->second->getParentSystem()->values.hasResources())
+    {
+      subsystem->second->getParentSystem()->values.renameInResources(cref, newCref);
+    }
+    // inline resources
+    else
+    {
+      subsystem->second->values.rename(cref, newCref);
+    }
     this->renameConnections(cref, newCref);
     subsystems[newCref] = subsystem->second;
     subsystems.erase(subsystem);  // delete the old cref from the lookup
