@@ -45,6 +45,8 @@ oms_addResources("addResources.root.system2.add2:add2.ssv")
 
 oms_setReal("addResources.root.system2.add2.k1", 49.5)
 
+oms_setResultFile("addResources", "addResources7.mat", 10)
+
 src = oms_exportSnapshot("addResources")
 print(src)
 
@@ -283,7 +285,7 @@ oms_delete("addResources")
 --             type="org.openmodelica">
 --             <oms:Annotations>
 --               <oms:SimulationInformation
---                 resultFile="addResources_res.mat"
+--                 resultFile="addResources7.mat"
 --                 loggingInterval="0.000000"
 --                 bufferSize="10"
 --                 signalFilter="resources/signalFilter.xml" />
@@ -445,7 +447,7 @@ oms_delete("addResources")
 -- info:      addResources.root.system2.C1      : -20.0
 -- info:      addResources.root.system2.C2      : -30.0
 -- info:      addResources.root.system2.add2.k1 : 49.5
--- info:    Result file: addResources_res.mat (bufferSize=10)
+-- info:    Result file: addResources7.mat (bufferSize=10)
 -- info:    Initialization
 -- info:      addResources.root.system1.C1      : -10.5
 -- info:      addResources.root.system1.C2      : -20.5

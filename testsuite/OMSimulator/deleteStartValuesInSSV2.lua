@@ -38,6 +38,8 @@ oms_addResources("deleteStartValuesInSSV.Root.Gain:gain.ssv")
 
 oms_setReal("deleteStartValuesInSSV.Root.Gain.k", 40.0)
 
+oms_setResultFile("deleteStartValuesInSSV", "deleteStartValuesInSSV2.mat", 10)
+
 src = oms_exportSnapshot("deleteStartValuesInSSV")
 print(src)
 
@@ -189,7 +191,7 @@ oms_delete("deleteStartValuesInSSV")
 --             type="org.openmodelica">
 --             <oms:Annotations>
 --               <oms:SimulationInformation
---                 resultFile="deleteStartValuesInSSV_res.mat"
+--                 resultFile="deleteStartValuesInSSV2.mat"
 --                 loggingInterval="0.000000"
 --                 bufferSize="10"
 --                 signalFilter="resources/signalFilter.xml" />

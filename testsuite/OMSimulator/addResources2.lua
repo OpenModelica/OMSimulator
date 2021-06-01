@@ -38,6 +38,8 @@ oms_importFile("addResources2.ssp")
 
 oms_setReal("addResources.root.Input2", 50)
 
+oms_setResultFile("addResources", "addResources2.mat", 10)
+
 src = oms_exportSnapshot("addResources")
 print(src)
 
@@ -194,7 +196,7 @@ oms_delete("addResources")
 --             type="org.openmodelica">
 --             <oms:Annotations>
 --               <oms:SimulationInformation
---                 resultFile="addResources_res.mat"
+--                 resultFile="addResources2.mat"
 --                 loggingInterval="0.000000"
 --                 bufferSize="10"
 --                 signalFilter="resources/signalFilter.xml" />
@@ -284,7 +286,7 @@ oms_delete("addResources")
 -- info:      addResources.root.system1.C1 : -10.0
 -- info:      addResources.root.system1.C2 : 0.0
 -- info:      addResources.root.Gain.k     : 27.0
--- info:    Result file: addResources_res.mat (bufferSize=10)
+-- info:    Result file: addResources2.mat (bufferSize=10)
 -- info:    Initialization
 -- info:      addResources.root.Input1     : 10.0
 -- info:      addResources.root.Input2     : 50.0

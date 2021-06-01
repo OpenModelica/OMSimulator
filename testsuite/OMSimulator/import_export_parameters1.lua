@@ -20,6 +20,7 @@ oms_setReal("import_export_parameters.co_sim.foo.F_cref", -55)
 oms_setReal("import_export_parameters.co_sim.Input1", -1000)
 oms_setReal("import_export_parameters.co_sim.addP.u1", 300)
 
+oms_setResultFile("import_export_parameters", "import_export_parameters1.mat", 100)
 
 src = oms_exportSnapshot("import_export_parameters")
 print(src)
@@ -343,7 +344,7 @@ oms_delete("import_export_parameters")
 --             type="org.openmodelica">
 --             <oms:Annotations>
 --               <oms:SimulationInformation
---                 resultFile="import_export_parameters.mat"
+--                 resultFile="import_export_parameters1.mat"
 --                 loggingInterval="0.000000"
 --                 bufferSize="100"
 --                 signalFilter="resources/signalFilter.xml" />
@@ -525,7 +526,7 @@ oms_delete("import_export_parameters")
 -- info:      import_export_parameters.co_sim.k_cref      : 30.0
 -- info:      import_export_parameters.co_sim.Output_cref : 0.0
 -- info:      import_export_parameters.co_sim.foo.F_cref  : -55.0
--- info:    Result file: import_export_parameters.mat (bufferSize=100)
+-- info:    Result file: import_export_parameters1.mat (bufferSize=100)
 -- info:    Initialization
 -- info:      import_export_parameters.co_sim.addP.k1     : 30.0
 -- info:      import_export_parameters.co_sim.addP.k2     : -1.0

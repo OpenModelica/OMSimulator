@@ -35,6 +35,8 @@ oms_setReal("deleteConnector.Root.System1.Gain.k", 30.0)
 oms_addConnection("deleteConnector.Root.System2.C3", "deleteConnector.Root.System1.C1")
 oms_addConnection("deleteConnector.Root.System2.C4", "deleteConnector.Root.System1.C2")
 
+oms_setResultFile("deleteConnector", "deleteConnector1.mat", 10)
+
 src = oms_exportSnapshot("deleteConnector")
 print(src)
 
@@ -228,7 +230,7 @@ oms_delete("deleteConnector")
 --             type="org.openmodelica">
 --             <oms:Annotations>
 --               <oms:SimulationInformation
---                 resultFile="deleteConnector_res.mat"
+--                 resultFile="deleteConnector1.mat"
 --                 loggingInterval="0.000000"
 --                 bufferSize="10"
 --                 signalFilter="resources/signalFilter.xml" />
