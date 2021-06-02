@@ -53,18 +53,33 @@ oms::Values::~Values()
 oms_status_enu_t oms::Values::setReal(const ComRef& cref, double value)
 {
   realStartValues[cref] = value;
+  // update start values in ssv template
+  auto realValue = modelDescriptionRealStartValues.find(cref);
+  if (realValue != modelDescriptionRealStartValues.end())
+    modelDescriptionRealStartValues[cref] = value;
+
   return oms_status_ok;
 }
 
 oms_status_enu_t oms::Values::setInteger(const ComRef& cref, int value)
 {
   integerStartValues[cref] = value;
+  // update start values in ssv template
+  auto integerValue = modelDescriptionIntegerStartValues.find(cref);
+  if (integerValue != modelDescriptionIntegerStartValues.end())
+    modelDescriptionIntegerStartValues[cref] = value;
+
   return oms_status_ok;
 }
 
 oms_status_enu_t oms::Values::setBoolean(const ComRef& cref, bool value)
 {
   booleanStartValues[cref] = value;
+  // update start values in ssv template
+  auto boolValue = modelDescriptionBooleanStartValues.find(cref);
+  if (boolValue != modelDescriptionBooleanStartValues.end())
+    modelDescriptionBooleanStartValues[cref] = value;
+
   return oms_status_ok;
 }
 
