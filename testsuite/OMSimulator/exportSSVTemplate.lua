@@ -21,7 +21,10 @@ oms_newModel("test")
 oms_addSystem("test.Root", oms_system_wc)
 
 oms_addSubModel("test.Root.Gain", "../resources/Modelica.Blocks.Math.Gain.fmu")
+oms_setReal("test.Root.Gain.k", 27)
+
 oms_addSubModel("test.Root.add", "../resources/Modelica.Blocks.Math.Add.fmu")
+oms_setReal("test.Root.add.k1", -20)
 
 oms_exportSSVTemplate("test", "template.ssv")
 readFile("template.ssv")
@@ -59,7 +62,7 @@ readFile("gain.ssv")
 --     <ssv:Parameter
 --       name="add.k1">
 --       <ssv:Real
---         value="1" />
+--         value="-20" />
 --     </ssv:Parameter>
 --     <ssv:Parameter
 --       name="Gain.u">
@@ -69,7 +72,7 @@ readFile("gain.ssv")
 --     <ssv:Parameter
 --       name="Gain.k">
 --       <ssv:Real
---         value="1" />
+--         value="27" />
 --     </ssv:Parameter>
 --   </ssv:Parameters>
 -- </ssv:ParameterSet>
@@ -99,7 +102,7 @@ readFile("gain.ssv")
 --     <ssv:Parameter
 --       name="add.k1">
 --       <ssv:Real
---         value="1" />
+--         value="-20" />
 --     </ssv:Parameter>
 --   </ssv:Parameters>
 -- </ssv:ParameterSet>
@@ -119,7 +122,7 @@ readFile("gain.ssv")
 --     <ssv:Parameter
 --       name="Gain.k">
 --       <ssv:Real
---         value="1" />
+--         value="27" />
 --     </ssv:Parameter>
 --   </ssv:Parameters>
 -- </ssv:ParameterSet>
