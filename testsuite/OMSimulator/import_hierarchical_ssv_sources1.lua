@@ -8,12 +8,13 @@
 oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./import_hierarchical_ssv_sources_01_lua/")
 
-oms_importFile("../resources/import_hierarchical_ssv_sources.ssp");
+model = oms_importFile("../resources/import_hierarchical_ssv_sources.ssp");
+oms_setResultFile(model, "")
 
-src = oms_exportSnapshot("import_hierarchical_ssv_sources")
+src = oms_exportSnapshot(model)
 print(src)
 
-oms_instantiate("import_hierarchical_ssv_sources")
+oms_instantiate(model)
 
 print("info:    Instantiation")
 print("info:      import_hierarchical_ssv_sources.root.System1.Input_1     : " .. oms_getReal("import_hierarchical_ssv_sources.root.System1.Input_1"))
@@ -24,7 +25,7 @@ print("info:      import_hierarchical_ssv_sources.root.System2.parameter_1 : " .
 print("info:      import_hierarchical_ssv_sources.root.System3.Input_1     : " .. oms_getReal("import_hierarchical_ssv_sources.root.System3.Input_1"))
 print("info:      import_hierarchical_ssv_sources.root.System3.parameter_1 : " .. oms_getReal("import_hierarchical_ssv_sources.root.System3.parameter_1"))
 
-oms_initialize("import_hierarchical_ssv_sources")
+oms_initialize(model)
 print("info:    Initialization")
 print("info:      import_hierarchical_ssv_sources.root.System1.Input_1     : " .. oms_getReal("import_hierarchical_ssv_sources.root.System1.Input_1"))
 print("info:      import_hierarchical_ssv_sources.root.System1.parameter_1 : " .. oms_getReal("import_hierarchical_ssv_sources.root.System1.parameter_1"))
@@ -34,7 +35,7 @@ print("info:      import_hierarchical_ssv_sources.root.System2.parameter_1 : " .
 print("info:      import_hierarchical_ssv_sources.root.System3.Input_1     : " .. oms_getReal("import_hierarchical_ssv_sources.root.System3.Input_1"))
 print("info:      import_hierarchical_ssv_sources.root.System3.parameter_1 : " .. oms_getReal("import_hierarchical_ssv_sources.root.System3.parameter_1"))
 
-oms_simulate("import_hierarchical_ssv_sources")
+oms_simulate(model)
 print("info:    Simulate")
 print("info:      import_hierarchical_ssv_sources.root.System1.Input_1     : " .. oms_getReal("import_hierarchical_ssv_sources.root.System1.Input_1"))
 print("info:      import_hierarchical_ssv_sources.root.System1.parameter_1 : " .. oms_getReal("import_hierarchical_ssv_sources.root.System1.parameter_1"))
@@ -44,8 +45,8 @@ print("info:      import_hierarchical_ssv_sources.root.System2.parameter_1 : " .
 print("info:      import_hierarchical_ssv_sources.root.System3.Input_1     : " .. oms_getReal("import_hierarchical_ssv_sources.root.System3.Input_1"))
 print("info:      import_hierarchical_ssv_sources.root.System3.parameter_1 : " .. oms_getReal("import_hierarchical_ssv_sources.root.System3.parameter_1"))
 
-oms_terminate("import_hierarchical_ssv_sources")
-oms_delete("import_hierarchical_ssv_sources")
+oms_terminate(model)
+oms_delete(model)
 
 
 -- Result:
@@ -219,9 +220,9 @@ oms_delete("import_hierarchical_ssv_sources")
 --             type="org.openmodelica">
 --             <oms:Annotations>
 --               <oms:SimulationInformation
---                 resultFile="import_hierarchical_ssv_sources_res.mat"
+--                 resultFile=""
 --                 loggingInterval="0.000000"
---                 bufferSize="10"
+--                 bufferSize="1"
 --                 signalFilter="resources/signalFilter.xml" />
 --             </oms:Annotations>
 --           </ssc:Annotation>
@@ -348,7 +349,7 @@ oms_delete("import_hierarchical_ssv_sources")
 -- info:      import_hierarchical_ssv_sources.root.System2.parameter_1 : -40.0
 -- info:      import_hierarchical_ssv_sources.root.System3.Input_1     : -70.0
 -- info:      import_hierarchical_ssv_sources.root.System3.parameter_1 : -70.0
--- info:    Result file: import_hierarchical_ssv_sources_res.mat (bufferSize=10)
+-- info:    No result file will be created
 -- info:    Initialization
 -- info:      import_hierarchical_ssv_sources.root.System1.Input_1     : -10.0
 -- info:      import_hierarchical_ssv_sources.root.System1.parameter_1 : -20.0
