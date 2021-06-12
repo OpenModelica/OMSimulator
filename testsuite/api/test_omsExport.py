@@ -52,7 +52,7 @@ printStatus(status, 0)
 printStatus(status, 0)
 print(src, flush=True)
 
-status= oms.export("model", "model.ssp")
+status= oms.export("model", "model1.ssp")
 printStatus(status, 0)
 
 
