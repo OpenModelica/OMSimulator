@@ -4,24 +4,15 @@ The OpenModelica FMI & SSP-based co-simulation environment.
 
 ## Downloads
 
-### Full package
+OMSimulator can be installed as stand-alone application, as C library to be linked into custom applications, and as python package. OMSimulator is also shipped with the OpenModelica installer, which also includes OMEdit as the graphical editor.
 
-Pre-compiled binaries are available for [Windows, Linux, and Mac](https://build.openmodelica.org/omsimulator/).
-
-Besides the stable versions, you can also [download](https://test.openmodelica.org/jenkins/job/OMSimulator/job/master/lastSuccessfulBuild/artifact/) the latest development version.
-
-### Python
-
-Installation using `pip` is recommended:
-
-```bash
-pip3 install OMSimulator
-```
-Python needs to be version 3.8 or above.
+* [OpenModelica](https://openmodelica.org/)
+* [Stand-alone package](https://build.openmodelica.org/omsimulator/)
+* Python 3.8+: `pip3 install OMSimulator`
 
 ## Documentation
 
-The latest documentation is available as [pdf](https://openmodelica.org/doc/OMSimulator/master/OMSimulator.pdf) and [html](https://openmodelica.org/doc/OMSimulator/master/html/).
+The latest documentation is available as [pdf](https://openmodelica.org/doc/OMSimulator/master/OMSimulator.pdf) and [html](https://openmodelica.org/doc/OMSimulator/master/html/) versions.
 For OMSimulatorLib a [Doxygen source code documentation](https://openmodelica.org/doc/OMSimulator/master/OMSimulatorLib/) is available as well.
 
 ## Dependencies
