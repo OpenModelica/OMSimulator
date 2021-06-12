@@ -52,14 +52,17 @@ else()
     message(STATUS "Using std::regex, the gcc/clang compiler is good enough")
 ENDIF()
 
-# adrpo: for some strange reson we need -latomic on 32bit Linux
-IF("${ABI}" STREQUAL "LINUX32")
-    message(WARNING, "Using -latomic -lboost_atomic for ${ABI}")
-    set(LIB_ATOMIC atomic)
-    set(LIB_BOOST_ATOMIC atomic)
+# We need -latomic on some Linux versions, so let's link it on all Linux to make sure it works
+IF("${ABI}" MATCHES "^LINUX")
+    find_package(GccAtomic)
+    IF (GCCLIBATOMIC_FOUND)
+      set(LIB_ATOMIC "${GCCLIBATOMIC_LIBRARY}")
+      set(LIB_BOOST_ATOMIC atomic)
+      message(STATUS "Using ${LIB_ATOMIC} -lboost_atomic for ${ABI}")
+    ENDIF (GCCLIBATOMIC_FOUND)
 ELSE()
     message(STATUS "ABI is: ${ABI}")
-ENDIF("${ABI}" STREQUAL "LINUX32")
+ENDIF("${ABI}" MATCHES "^LINUX")
 
 # Enable verbose output from Makefile builds
 set(CMAKE_VERBOSE_MAKEFILE ON)
