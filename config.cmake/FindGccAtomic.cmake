@@ -23,19 +23,7 @@
 
 # I'm also putting "atomic.so.1" because at least FC19 and Ubuntu's repo don't create
 # "libatomic.so" symlink. They only have libatomic.so.1.0.0 and libatomic.so.1 symlink. No idea why.
-FIND_LIBRARY(GCCLIBATOMIC_LIBRARY NAMES atomic atomic.so.1 libatomic.so.1
-  HINTS
-  $ENV{HOME}/local/lib64
-  $ENV{HOME}/local/lib
-  /usr/local/lib64
-  /usr/local/lib
-  /opt/local/lib64
-  /opt/local/lib
-  /usr/lib64
-  /usr/lib
-  /lib64
-  /lib
-)
+FIND_LIBRARY(GCCLIBATOMIC_LIBRARY NAMES atomic atomic.so.1 libatomic.so.1)
 
 IF (GCCLIBATOMIC_LIBRARY)
     SET(GCCLIBATOMIC_FOUND TRUE)
