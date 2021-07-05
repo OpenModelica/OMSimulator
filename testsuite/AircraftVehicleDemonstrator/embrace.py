@@ -15,8 +15,8 @@ import OMSimulator
 oms = OMSimulator.OMSimulator()
 oms.setCommandLineOption("--suppressPath=true  --wallTime=true")
 
-print(oms.importFile("../resources/embrace.ssp"))
-print(oms.addSubModel("model.root.BC", "../resources/CONOPS.csv"))
+oms.importFile("../resources/embrace.ssp")
+oms.addSubModel("model.root.BC", "../resources/CONOPS.csv")
 
 #----------------- Connections to BC files -----------------
 #BC -> Consumer
