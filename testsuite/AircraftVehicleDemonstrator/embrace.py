@@ -1,4 +1,5 @@
 ## status: correct
+## teardown_command: rm SystemStructure.ssd event.dot init.dot sim_results.mat simulation.dot
 ## linux: yes
 ## mingw: no
 ## win: no
