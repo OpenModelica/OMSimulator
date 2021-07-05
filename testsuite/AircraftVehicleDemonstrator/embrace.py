@@ -1,5 +1,4 @@
 ## status: correct
-## teardown_command: rm SystemStructure.ssd event.dot init.dot sim_results.mat simulation.dot
 ## linux: yes
 ## mingw: no
 ## win: no
@@ -12,14 +11,12 @@ Created on Mon Dec 21 10:30:26 2020
 """
 import OMSimulator
 
-#OMSimulator.OMSimulator()
 oms = OMSimulator.OMSimulator()
-print(oms.getVersion())
-oms.setCommandLineOption("--suppressPath=true  --wallTime=true")
+oms.setCommandLineOption("--suppressPath=true  --wallTime=false")
 
 
-oms.importFile("Embrace.ssp")
-oms.addSubModel("model.root.BC", "CONOPS.csv")
+print(oms.importFile("../resources/embrace.ssp"))
+print(oms.addSubModel("model.root.BC", "../resources/CONOPS.csv"))
 
 ##----------------- Connections to BC files ----------------------------
 #BC -> Consumer
@@ -67,16 +64,8 @@ oms.terminate("model")
 oms.delete("model")
 
 ## Result:
-## error:   [setInteger] Unknown signal "model.root.ECS_HW.pipeB1.looptype"
+## warning: [ECS_SW: resources/0002_ECS_SW.fmu] The FMU lists 0 initial unknowns but actually contains 1 initial unknowns as per the variable definitions.
+## info:    [ECS_SW: resources/0002_ECS_SW.fmu] The FMU contains bad initial unknowns. This might cause problems, e.g. wrong simulation results.
 ## info:    Result file: sim_results.mat (bufferSize=1)
-## error:   [getReal] Unknown signal "model.root.ECS_HW.pipeB1.L"
-## info:    Initialize:
-## info:      model.root.ECS_HW.coolinPackAir.looptype:  2
-## info:      model.root.ECS_SW.PID.k                 :  5.0
-## info:      model.root.ECS_SW.PID.k                 :  10.0
-## info:      model.root.ECS_HW.pipeB1.L              :  0.0
-## info:      model.root.ECS_HW.pipeB.L               :  0.976535328081166
-## info:      model.root.ECS_HW.pipeA.L               :  0.976535328081166
-## info:    0 warnings
-## info:    2 errors
+## Terminated
 ## endResult
