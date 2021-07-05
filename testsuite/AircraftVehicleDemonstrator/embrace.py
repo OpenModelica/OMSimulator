@@ -45,7 +45,7 @@ oms.setInteger("model.root.ECS_HW.pipeA.looptype", 2)
 
 #simulation settings
 oms.setResultFile("model", "sim_results.mat")
-oms.setStopTime("model", 1200)
+oms.setStopTime("model", 12)
 oms.setFixedStepSize("model", 1e-3)
 oms.setLoggingInterval("model", 1)
 oms.exportDependencyGraphs("model.root", "init.dot", "event.dot", "simulation.dot")
