@@ -13,7 +13,7 @@ Created on Mon Dec 21 10:30:26 2020
 import OMSimulator
 
 oms = OMSimulator.OMSimulator()
-oms.setCommandLineOption("--suppressPath=true  --wallTime=true")
+oms.setCommandLineOption("--suppressPath=true --wallTime=true --ignoreInitialUnknowns=true")
 
 oms.importFile("../resources/embrace.ssp")
 oms.addSubModel("model.root.BC", "../resources/CONOPS.csv")
@@ -64,8 +64,7 @@ oms.terminate("model")
 oms.delete("model")
 
 ## Result:
-## warning: [ECS_SW: resources/0002_ECS_SW.fmu] The FMU lists 0 initial unknowns but actually contains 1 initial unknowns as per the variable definitions.
-## info:    [ECS_SW: resources/0002_ECS_SW.fmu] The FMU contains bad initial unknowns. This might cause problems, e.g. wrong simulation results.
+## warning: [ECS_SW: resources/0002_ECS_SW.fmu] The dependencies of the initial unknowns defined in the FMU are ignored because the flag --ignoreInitialUnknowns is active. Instead, all the initial unknowns will depend on all inputs.
 ## info:    Result file: sim_results.mat (bufferSize=1)
 ## info:    Initialize:
 ## info:      model.root.ECS_HW.coolinPackAir.looptype:  2
@@ -73,4 +72,6 @@ oms.delete("model")
 ## info:      model.root.ECS_HW.pipeC.L               :  1.0
 ## info:      model.root.ECS_HW.pipeB.L               :  0.976535328081166
 ## info:      model.root.ECS_HW.pipeA.L               :  0.976535328081166
+## info:    1 warnings
+## info:    0 errors
 ## endResult
