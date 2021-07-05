@@ -67,5 +67,10 @@ oms.delete("model")
 ## warning: [ECS_SW: resources/0002_ECS_SW.fmu] The FMU lists 0 initial unknowns but actually contains 1 initial unknowns as per the variable definitions.
 ## info:    [ECS_SW: resources/0002_ECS_SW.fmu] The FMU contains bad initial unknowns. This might cause problems, e.g. wrong simulation results.
 ## info:    Result file: sim_results.mat (bufferSize=1)
-## Terminated
+## info:    Initialize:
+## info:      model.root.ECS_HW.coolinPackAir.looptype:  2
+## info:      model.root.ECS_HW.eCS.MaxCoolPower.k    :  5.0
+## info:      model.root.ECS_HW.pipeC.L               :  1.0
+## info:      model.root.ECS_HW.pipeB.L               :  0.976535328081166
+## info:      model.root.ECS_HW.pipeA.L               :  0.976535328081166
 ## endResult
