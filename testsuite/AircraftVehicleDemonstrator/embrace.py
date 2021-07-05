@@ -13,29 +13,28 @@ Created on Mon Dec 21 10:30:26 2020
 import OMSimulator
 
 oms = OMSimulator.OMSimulator()
-oms.setCommandLineOption("--suppressPath=true  --wallTime=false")
-
+oms.setCommandLineOption("--suppressPath=true  --wallTime=true")
 
 print(oms.importFile("../resources/embrace.ssp"))
 print(oms.addSubModel("model.root.BC", "../resources/CONOPS.csv"))
 
-##----------------- Connections to BC files ----------------------------
+#----------------- Connections to BC files -----------------
 #BC -> Consumer
 oms.addConnection("model.root.Consumer.Alt", "model.root.BC.Alt")
 oms.addConnection("model.root.Consumer.Mach", "model.root.BC.Mach")
 oms.addConnection("model.root.Consumer.heatLoad", "model.root.BC.heatLoad")
 
-# #BC -> ECS_HW
+#BC -> ECS_HW
 oms.addConnection("model.root.ECS_HW.Alt", "model.root.BC.Alt")
 oms.addConnection("model.root.ECS_HW.Mach", "model.root.BC.Mach")
 
-# #BC -> ECS_SW
+#BC -> ECS_SW
 oms.addConnection("model.root.BC.Aircraft_state", "model.root.AdaptionUnit.Aircraft_State")
 
-# #BC -> Atmos
+#BC -> Atmos
 oms.addConnection("model.root.Atmos.Alt", "model.root.BC.Alt")
 oms.addConnection("model.root.Atmos.Ma", "model.root.BC.Mach")
-# #-----------------------------------------------------------------------
+#-----------------------------------------------------------
 
 #set params
 oms.setReal("model.root.ECS_HW.eCS.MaxCoolPower.k", 5)
@@ -44,7 +43,7 @@ oms.setInteger("model.root.ECS_HW.phSrc.looptype", 2)
 oms.setInteger("model.root.ECS_HW.pipeB.looptype", 2)
 oms.setInteger("model.root.ECS_HW.pipeA.looptype", 2)
 
-# #simulation settings
+#simulation settings
 oms.setResultFile("model", "sim_results.mat")
 oms.setStopTime("model", 1200)
 oms.setFixedStepSize("model", 1e-3)
