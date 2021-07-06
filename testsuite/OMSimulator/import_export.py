@@ -2,7 +2,7 @@
 ## teardown_command: rm -rf import_export-py/ test-py.ssp
 ## linux: yes
 ## mingw32: yes
--- mingw64: yes
+## mingw64: yes
 ## win: no
 ## mac: no
 

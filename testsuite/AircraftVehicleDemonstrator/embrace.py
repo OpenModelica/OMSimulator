@@ -2,7 +2,7 @@
 ## teardown_command: rm SystemStructure.ssd event.dot init.dot sim_results.mat simulation.dot
 ## linux: yes
 ## mingw32: no
--- mingw64: no
+## mingw64: no
 ## win: no
 ## mac: no
 

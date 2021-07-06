@@ -1,7 +1,7 @@
 ## status: correct
 ## linux: yes
 ## mingw32: yes
--- mingw64: yes
+## mingw64: yes
 ## win: no
 ## mac: no
 

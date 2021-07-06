@@ -2,7 +2,7 @@
 ## teardown_command: rm -rf test03-py/ test_res.mat
 ## linux: yes
 ## mingw32: yes
--- mingw64: yes
+## mingw64: yes
 ## win: no
 ## mac: no
 

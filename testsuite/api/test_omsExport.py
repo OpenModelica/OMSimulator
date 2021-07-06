@@ -3,7 +3,7 @@
 ## linux: yes
 ## linux32: yes
 ## mingw32: yes
--- mingw64: yes
+## mingw64: yes
 ## win: no
 ## mac: no
 

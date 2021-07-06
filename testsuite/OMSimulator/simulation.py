@@ -2,7 +2,7 @@
 ## teardown_command: rm -rf simulation-py/ test_init1.dot test_sim1.dot test_event1.dot test.mat
 ## linux: yes
 ## mingw32: no
--- mingw64: no
+## mingw64: no
 ## win: no
 ## mac: no
 
