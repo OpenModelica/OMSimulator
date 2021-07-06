@@ -15,7 +15,12 @@ if ($cwd =~ m/(.*)testsuite\/(.+)$/) {
   $dirname = $2;
   $os = `uname`;
   if ($os =~ /MINGW/) {
-    $PLATFORM = "mingw";
+    if ($os =~ /MINGW64/) {
+      $PLATFORM = "mingw64";
+    }
+    else {
+      $PLATFORM = "mingw32";
+    }
   }
   else {
     if ($os =~ /Darwin/) {
@@ -300,7 +305,8 @@ sub dofile
         "linux"   => "yes",
         "linux32" => "",
         "win"     => "",
-        "mingw"   => "",
+        "mingw32" => "",
+        "mingw64" => "",
         "mac"     => "");
     $expected = $expectedPrefix . "tmp_expected-" . $f;
     $got = $gotPrefix . "_tmp_got-" . $f;

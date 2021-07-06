@@ -1,7 +1,8 @@
 -- status: correct
 -- teardown_command: rm -rf AircraftVehicleDemonstrator_tmp/ AircraftVehicleDemonstrator.log AircraftVehicleDemonstrator*.dot AircraftVehicleDemonstrator_res.mat
 -- linux: no
--- mingw: yes
+-- mingw32: yes
+-- mingw64: yes
 -- win: no
 -- mac: no
 

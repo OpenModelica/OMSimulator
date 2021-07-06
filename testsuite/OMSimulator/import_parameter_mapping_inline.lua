@@ -1,7 +1,8 @@
 -- status: correct
 -- teardown_command: rm -rf import_parameter_mapping_inline_lua/
 -- linux: yes
--- mingw: yes
+-- mingw32: yes
+-- mingw64: yes
 -- win: no
 -- mac: no
 
