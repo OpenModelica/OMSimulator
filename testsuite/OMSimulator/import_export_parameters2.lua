@@ -1,7 +1,8 @@
 -- status: correct
 -- teardown_command: rm -rf import_export_parameters_02_lua/
 -- linux: no
--- mingw: yes
+-- mingw32: yes
+-- mingw64: yes
 -- win: no
 -- mac: no
 

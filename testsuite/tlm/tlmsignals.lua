@@ -1,7 +1,8 @@
 -- status: correct
 -- teardown_command: rm -rf tlmsignals.log tlmsignals-lua/ tlmsignals.run tlmsignals.csv tlmsignals_res.mat
 -- linux: yes
--- mingw: no
+-- mingw32: no
+-- mingw64: no
 -- mac: no
 
 oms_setLogFile("tlmsignals.log")

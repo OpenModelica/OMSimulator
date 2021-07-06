@@ -1,7 +1,8 @@
 -- status: correct
 -- teardown_command: rm -rf import_hierarchical_ssv_sources_01_lua/
 -- linux: yes
--- mingw: yes
+-- mingw32: yes
+-- mingw64: yes
 -- win: no
 -- mac: no
 

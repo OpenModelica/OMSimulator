@@ -1,7 +1,8 @@
 -- status: correct
 -- teardown_command: rm -rf simulation-lua/ test_init2.dot test_event2.dot test_sim2.dot test_res.mat
 -- linux: yes
--- mingw: no
+-- mingw32: no
+-- mingw64: no
 -- win: no
 -- mac: no
 

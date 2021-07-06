@@ -2,7 +2,8 @@
 -- teardown_command: rm -rf import_export_signalFilter-lua/ model_res.csv
 -- linux: yes
 -- linux32: yes
--- mingw: yes
+-- mingw32: yes
+-- mingw64: yes
 -- win: no
 -- mac: no
 
