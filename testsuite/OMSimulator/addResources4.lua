@@ -1,7 +1,8 @@
 -- status: correct
 -- teardown_command: rm -rf addResources_04_lua/
 -- linux: yes
--- mingw: yes
+-- mingw32: yes
+-- mingw64: yes
 -- win: no
 -- mac: no
 
@@ -380,7 +381,7 @@ oms_delete("addResources")
 --     </oms:SignalFilter>
 --   </oms:file>
 -- </oms:snapshot>
--- 
+--
 -- info:    Virgin Parameter settings
 -- info:      addResources.root.system1.C1      : -10.5
 -- info:      addResources.root.system1.C2      : -20.5

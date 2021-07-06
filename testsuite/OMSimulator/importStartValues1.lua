@@ -1,7 +1,8 @@
 -- status: correct
 -- teardown_command: rm -rf importStartValues_01_lua/
 -- linux: yes
--- mingw: yes
+-- mingw32: yes
+-- mingw64: yes
 -- win: no
 -- mac: no
 
@@ -244,7 +245,7 @@ oms_delete("importStartValues")
 --     </oms:SignalFilter>
 --   </oms:file>
 -- </oms:snapshot>
--- 
+--
 -- info:    model doesn't contain any continuous state
 -- info:    Result file: importStartValues_res.mat (bufferSize=10)
 -- info:    5 warnings

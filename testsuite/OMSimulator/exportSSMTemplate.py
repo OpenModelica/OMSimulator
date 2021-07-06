@@ -1,7 +1,8 @@
 ## status: correct
 ## teardown_command: rm -rf exportssmtemplate_py/ add2.ssm gain2.ssm template2.ssm
 ## linux: yes
-## mingw: yes
+## mingw32: yes
+## mingw64: yes
 ## win: no
 ## mac: no
 

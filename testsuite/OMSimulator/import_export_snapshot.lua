@@ -1,7 +1,8 @@
 -- status: correct
 -- teardown_command: rm -rf import_export_snapshot_lua/ import_export_snapshot.ssp
 -- linux: yes
--- mingw: yes
+-- mingw32: yes
+-- mingw64: yes
 -- win: no
 -- mac: no
 

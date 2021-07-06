@@ -1,7 +1,8 @@
 -- status: correct
 -- teardown_command: rm -rf tlm1d.log tlm1d-lua/ tlm1d.csv tlm1d.run tlm1d_res.mat
 -- linux: yes
--- mingw: no
+-- mingw32: no
+-- mingw64: no
 -- mac: no
 
 oms_setLogFile("tlm1d.log")

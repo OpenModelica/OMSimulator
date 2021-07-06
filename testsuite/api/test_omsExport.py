@@ -2,7 +2,8 @@
 ## teardown_command: rm -rf test_omsExport-py/
 ## linux: yes
 ## linux32: yes
-## mingw: yes
+## mingw32: yes
+## mingw64: yes
 ## win: no
 ## mac: no
 

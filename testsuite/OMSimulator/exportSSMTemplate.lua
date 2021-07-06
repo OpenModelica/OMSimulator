@@ -1,7 +1,8 @@
 -- status: correct
 -- teardown_command: rm -rf exportssmtemplate_lua/ add1.ssm gain1.ssm template1.ssm
 -- linux: yes
--- mingw: yes
+-- mingw32: yes
+-- mingw64: yes
 -- win: no
 -- mac: no
 

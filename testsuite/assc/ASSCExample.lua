@@ -1,7 +1,8 @@
 -- status: correct
 -- teardown_command: rm -rf Example_res.mat Example.log
 -- linux: yes
--- mingw: yes
+-- mingw32: yes
+-- mingw64: yes
 -- win: no
 
 oms_setCommandLineOption("--suppressPath=true --stripRoot=true")

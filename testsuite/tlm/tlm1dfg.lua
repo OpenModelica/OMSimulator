@@ -1,7 +1,8 @@
 -- status: correct
 -- teardown_command: rm -rf tlm1dfg.log tlm1dfg-lua/ tlm1dfg.csv tlm1dfg.run tlm1dfg_res.mat
 -- linux: yes
--- mingw: no
+-- mingw32: no
+-- mingw64: no
 -- mac: no
 
 oms_setLogFile("tlm1dfg.log")

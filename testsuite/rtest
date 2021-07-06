@@ -15,18 +15,25 @@ if ($cwd =~ m/(.*)testsuite\/(.+)$/) {
   $dirname = $2;
   $os = `uname`;
   if ($os =~ /MINGW/) {
-    $PLATFORM = "mingw";
+    if ($os =~ /MINGW64/) {
+      $PLATFORM = "mingw";
+      $TEST_PLATFORM = "mingw64";
+    }
+    else {
+      $PLATFORM = "mingw";
+      $TEST_PLATFORM = "mingw32";
+    }
   }
   else {
     if ($os =~ /Darwin/) {
       $PLATFORM = "mac";
+      $TEST_PLATFORM = $PLATFORM;
     }
     else {
       $PLATFORM = "linux";
+      $TEST_PLATFORM = $PLATFORM;
     }
   }
-
-  $TEST_PLATFORM = $PLATFORM;
 
   if ($SUPERPROJECT) {
     $OMCDIFF = "$prefix/../build/bin/omc-diff";
@@ -300,7 +307,8 @@ sub dofile
         "linux"   => "yes",
         "linux32" => "",
         "win"     => "",
-        "mingw"   => "",
+        "mingw32" => "",
+        "mingw64" => "",
         "mac"     => "");
     $expected = $expectedPrefix . "tmp_expected-" . $f;
     $got = $gotPrefix . "_tmp_got-" . $f;

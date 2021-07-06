@@ -1,7 +1,8 @@
 -- status: correct
 -- teardown_command: rm -rf rename_values_02_lua/
 -- linux: yes
--- mingw: yes
+-- mingw32: yes
+-- mingw64: yes
 -- win: no
 -- mac: no
 
