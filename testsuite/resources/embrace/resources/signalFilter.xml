@@ -1,105 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <oms:SignalFilter version="1.0">
-	<oms:Variable name="model.root.ECS_SW.TLiquid" type="Real" kind="input" />
+	<oms:Variable name="model.root.ECS_SW.Input.TLiquid" type="Real" kind="input" />
+	<oms:Variable name="model.root.ECS_SW.Input.Aircraft_State" type="Enumeration" kind="input" />
 	<oms:Variable name="model.root.ECS_SW.TCoolingPack" type="Real" kind="output" />
-	<oms:Variable name="model.root.ECS_SW.PID.u_s" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.u_m" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.y" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.controlError" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.controllerType" type="Enumeration" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.k" type="Real" kind="parameter" />
-	<oms:Variable name="model.root.ECS_SW.PID.Ti" type="Real" kind="parameter" />
-	<oms:Variable name="model.root.ECS_SW.PID.Td" type="Real" kind="parameter" />
-	<oms:Variable name="model.root.ECS_SW.PID.yMax" type="Real" kind="parameter" />
-	<oms:Variable name="model.root.ECS_SW.PID.yMin" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.wp" type="Real" kind="parameter" />
-	<oms:Variable name="model.root.ECS_SW.PID.wd" type="Real" kind="parameter" />
-	<oms:Variable name="model.root.ECS_SW.PID.Ni" type="Real" kind="parameter" />
-	<oms:Variable name="model.root.ECS_SW.PID.Nd" type="Real" kind="parameter" />
-	<oms:Variable name="model.root.ECS_SW.PID.withFeedForward" type="Bool" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.kFF" type="Real" kind="parameter" />
-	<oms:Variable name="model.root.ECS_SW.PID.initType" type="Enumeration" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.xi_start" type="Real" kind="parameter" />
-	<oms:Variable name="model.root.ECS_SW.PID.xd_start" type="Real" kind="parameter" />
-	<oms:Variable name="model.root.ECS_SW.PID.y_start" type="Real" kind="parameter" />
-	<oms:Variable name="model.root.ECS_SW.PID.homotopyType" type="Enumeration" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.strict" type="Bool" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.limitsAtInit" type="Bool" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.addP.u1" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.addP.u2" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.addP.y" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.addP.k1" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.addP.k2" type="Real" kind="parameter" />
-	<oms:Variable name="model.root.ECS_SW.PID.P.k" type="Real" kind="parameter" />
-	<oms:Variable name="model.root.ECS_SW.PID.P.u" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.P.y" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.gainPID.k" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.gainPID.u" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.gainPID.y" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.addPID.k1" type="Real" kind="parameter" />
-	<oms:Variable name="model.root.ECS_SW.PID.addPID.k2" type="Real" kind="parameter" />
-	<oms:Variable name="model.root.ECS_SW.PID.addPID.k3" type="Real" kind="parameter" />
-	<oms:Variable name="model.root.ECS_SW.PID.addPID.u1" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.addPID.u2" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.addPID.u3" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.addPID.y" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.limiter.uMax" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.limiter.uMin" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.limiter.strict" type="Bool" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.limiter.homotopyType" type="Enumeration" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.limiter.limitsAtInit" type="Bool" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.limiter.u" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.limiter.y" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.limiter.simplifiedExpr" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.Dzero.k" type="Real" kind="parameter" />
-	<oms:Variable name="model.root.ECS_SW.PID.Dzero.y" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.FFzero.k" type="Real" kind="parameter" />
-	<oms:Variable name="model.root.ECS_SW.PID.FFzero.y" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.addFF.u1" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.addFF.u2" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.addFF.y" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.addFF.k1" type="Real" kind="parameter" />
-	<oms:Variable name="model.root.ECS_SW.PID.addFF.k2" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.I.k" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.I.initType" type="Enumeration" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.I.y_start" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.I.u" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.I.y" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.der(PID.I.y)" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.addI.k1" type="Real" kind="parameter" />
-	<oms:Variable name="model.root.ECS_SW.PID.addI.k2" type="Real" kind="parameter" />
-	<oms:Variable name="model.root.ECS_SW.PID.addI.k3" type="Real" kind="parameter" />
-	<oms:Variable name="model.root.ECS_SW.PID.addI.u1" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.addI.u2" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.addI.u3" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.addI.y" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.addSat.u1" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.addSat.u2" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.addSat.y" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.addSat.k1" type="Real" kind="parameter" />
-	<oms:Variable name="model.root.ECS_SW.PID.addSat.k2" type="Real" kind="parameter" />
-	<oms:Variable name="model.root.ECS_SW.PID.gainTrack.k" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.gainTrack.u" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.PID.gainTrack.y" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.refTempLiquid.k" type="Real" kind="parameter" />
-	<oms:Variable name="model.root.ECS_SW.refTempLiquid.y" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.add.u1" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.add.u2" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.add.y" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.add.k1" type="Real" kind="parameter" />
-	<oms:Variable name="model.root.ECS_SW.add.k2" type="Real" kind="parameter" />
-	<oms:Variable name="model.root.ECS_SW.WGT_ON_WHL" type="Real" kind="input" />
-	<oms:Variable name="model.root.ECS_SW.switch1.u1" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.switch1.u2" type="Bool" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.switch1.u3" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.switch1.y" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.refTempLiquidOnGnd.k" type="Real" kind="parameter" />
-	<oms:Variable name="model.root.ECS_SW.refTempLiquidOnGnd.y" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.greaterThreshold1.threshold" type="Real" kind="parameter" />
-	<oms:Variable name="model.root.ECS_SW.greaterThreshold1.u" type="Real" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.greaterThreshold1.y" type="Bool" kind="unknown" />
-	<oms:Variable name="model.root.ECS_SW.refTempLiquid1.k" type="Real" kind="parameter" />
-	<oms:Variable name="model.root.ECS_SW.refTempLiquid1.y" type="Real" kind="unknown" />
 	<oms:Variable name="model.root.ECS_HW.AirToL_HEX.h1.p" type="Real" kind="unknown" />
 	<oms:Variable name="model.root.ECS_HW.AirToL_HEX.h1.m" type="Real" kind="unknown" />
 	<oms:Variable name="model.root.ECS_HW.AirToL_HEX.h1.h" type="Real" kind="unknown" />
@@ -1443,4 +1346,10 @@
 	<oms:Variable name="model.root.Atmos.Alt" type="Real" kind="input" />
 	<oms:Variable name="model.root.Atmos.Ma" type="Real" kind="input" />
 	<oms:Variable name="model.root.Atmos.DTisa" type="Real" kind="parameter" />
+	<oms:Variable name="model.root.AdaptionUnit.sWsignals.TLiquid" type="Real" kind="output" />
+	<oms:Variable name="model.root.AdaptionUnit.sWsignals.Aircraft_State" type="Integer" kind="output" />
+	<oms:Variable name="model.root.AdaptionUnit.Aircraft_State" type="Real" kind="input" />
+	<oms:Variable name="model.root.AdaptionUnit.LHexTout" type="Real" kind="input" />
+	<oms:Variable name="model.root.AdaptionUnit.realToInteger.u" type="Real" kind="unknown" />
+	<oms:Variable name="model.root.AdaptionUnit.realToInteger.y" type="Integer" kind="unknown" />
 </oms:SignalFilter>
