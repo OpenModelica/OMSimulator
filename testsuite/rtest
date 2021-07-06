@@ -16,22 +16,24 @@ if ($cwd =~ m/(.*)testsuite\/(.+)$/) {
   $os = `uname`;
   if ($os =~ /MINGW/) {
     if ($os =~ /MINGW64/) {
-      $PLATFORM = "mingw64";
+      $PLATFORM = "mingw";
+      $TEST_PLATFORM = "mingw64";
     }
     else {
-      $PLATFORM = "mingw32";
+      $PLATFORM = "mingw";
+      $TEST_PLATFORM = "mingw32";
     }
   }
   else {
     if ($os =~ /Darwin/) {
       $PLATFORM = "mac";
+      $TEST_PLATFORM = $PLATFORM;
     }
     else {
       $PLATFORM = "linux";
+      $TEST_PLATFORM = $PLATFORM;
     }
   }
-
-  $TEST_PLATFORM = $PLATFORM;
 
   if ($SUPERPROJECT) {
     $OMCDIFF = "$prefix/../build/bin/omc-diff";
