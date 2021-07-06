@@ -277,7 +277,7 @@ oms_status_enu_t oms::System::addSubSystem(const oms::ComRef& cref, oms_system_e
 
 oms_status_enu_t oms::System::addSubModel(const oms::ComRef& cref, const std::string& path)
 {
-  std::string absPath = std::filesystem::absolute(path).string();
+  std::string absPath = oms_absolute(path).string();
 
   if (cref.isValidIdent())
   {

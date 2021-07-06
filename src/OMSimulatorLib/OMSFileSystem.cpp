@@ -141,8 +141,7 @@ filesystem::path oms_unique_path(const std::string& prefix)
   for(int i=0; i<8; i++)
     s += std::string(1, lt[rand() % size]);
 
-  filesystem::path p(s);
-  return p;
+  return filesystem::path(s);
 }
 
 void oms_copy_file(const filesystem::path& from, const filesystem::path& to)
@@ -158,6 +157,15 @@ void oms_copy_file(const filesystem::path& from, const filesystem::path& to)
   filesystem::copy_file(from, to, filesystem::copy_options::overwrite_existing);
 #else
   filesystem::copy_file(from, to, filesystem::copy_option::overwrite_if_exists);
+#endif
+}
+
+filesystem::path oms_absolute(const filesystem::path& p)
+{
+#if OMC_STD_FS == 1
+  return filesystem::absolute(p);
+#else
+  return p;
 #endif
 }
 

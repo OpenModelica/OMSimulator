@@ -10,11 +10,13 @@ namespace filesystem = std::filesystem;
 #define OMC_STD_FS 1
 #endif
 #endif
+
 #if !defined(OMC_STD_FS) && __has_include(<experimental/filesystem>)
 #include <experimental/filesystem>
 namespace filesystem = std::experimental::filesystem::v1;
 #define OMC_STD_FS 1
 #endif
+
 #endif
 
 #if OMC_STD_FS == 1
@@ -22,7 +24,6 @@ namespace filesystem = std::experimental::filesystem::v1;
 #define OMS_RECURSIVE_DIRECTORY_ITERATOR(path) (filesystem::recursive_directory_iterator{path})
 
 #else // boost part
-
 
 #include <string>
 #include <boost/version.hpp>
@@ -47,7 +48,6 @@ namespace filesystem = std::experimental::filesystem::v1;
 #define OMS_RECURSIVE_DIRECTORY_ITERATOR(path) (filesystem::recursive_directory_iterator{path})
 #endif
 
-
 #include <boost/filesystem.hpp>
 namespace filesystem = boost::filesystem;
 #endif
@@ -57,5 +57,6 @@ filesystem::path oms_canonical(filesystem::path p);
 void oms_copy_file(const filesystem::path& from, const filesystem::path& to);
 filesystem::path oms_unique_path(const std::string& prefix);
 filesystem::path naive_uncomplete(const filesystem::path& path, const filesystem::path& base);
+filesystem::path oms_absolute(const filesystem::path& p);
 
 #endif
