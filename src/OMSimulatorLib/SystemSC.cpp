@@ -38,6 +38,7 @@
 #include "Model.h"
 #include "ssd/Tags.h"
 
+#include <sstream>
 
 int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
@@ -134,16 +135,23 @@ oms_status_enu_t oms::SystemSC::setSolverMethod(std::string solver)
 
 oms_status_enu_t oms::SystemSC::exportToSSD_SimulationInformation(pugi::xml_node& node) const
 {
+  std::ostringstream ssAbsoluteTolerance, ssRelativeTolerance, ssMinimumStepSize, ssMaximumStepSize, ssInitialStepSize;
+  ssAbsoluteTolerance << absoluteTolerance;
+  ssRelativeTolerance << relativeTolerance;
+  ssMinimumStepSize << minimumStepSize;
+  ssMaximumStepSize << maximumStepSize;
+  ssInitialStepSize << initialStepSize;
+
   /* ssd:SimulationInformation should be added as vendor specific annotations from Version 1.0 */
   pugi::xml_node node_simulation_information = node.append_child(oms::ssp::Version1_0::simulation_information);
 
   pugi::xml_node node_solver = node_simulation_information.append_child(oms::ssp::Version1_0::VariableStepSolver);
   node_solver.append_attribute("description") = getSolverName().c_str();
-  node_solver.append_attribute("absoluteTolerance") = std::to_string(absoluteTolerance).c_str();
-  node_solver.append_attribute("relativeTolerance") = std::to_string(relativeTolerance).c_str();
-  node_solver.append_attribute("minimumStepSize") = std::to_string(minimumStepSize).c_str();
-  node_solver.append_attribute("maximumStepSize") = std::to_string(maximumStepSize).c_str();
-  node_solver.append_attribute("initialStepSize") = std::to_string(initialStepSize).c_str();
+  node_solver.append_attribute("absoluteTolerance") = ssAbsoluteTolerance.str().c_str();
+  node_solver.append_attribute("relativeTolerance") = ssRelativeTolerance.str().c_str();
+  node_solver.append_attribute("minimumStepSize") = ssMinimumStepSize.str().c_str();
+  node_solver.append_attribute("maximumStepSize") = ssMaximumStepSize.str().c_str();
+  node_solver.append_attribute("initialStepSize") = ssInitialStepSize.str().c_str();
 
   return oms_status_ok;
 }
@@ -299,7 +307,7 @@ oms_status_enu_t oms::SystemSC::initialize()
     if (!solverData.cvode.abstol) logError("SUNDIALS_ERROR: N_VNew_Serial() failed - returned NULL pointer");
     for (int j=0, k=0; j < fmus.size(); ++j)
       for (size_t i=0; i < nStates[j]; ++i, ++k)
-        NV_Ith_S(solverData.cvode.abstol, k) = 0.01*relativeTolerance*states_nominal[j][i];
+        NV_Ith_S(solverData.cvode.abstol, k) = 0.01*absoluteTolerance*states_nominal[j][i];
     //N_VPrint_Serial(solverData.cvode.abstol);
 
     // Call CVodeCreate to create the solver memory and specify the

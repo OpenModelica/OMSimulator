@@ -32,6 +32,7 @@ def generateLua(modelName, testFMUDir, resultDir, fmiType):
   startTime = "0.0"
   stopTime = "1.0"
   relTol = str(default_tolerance)
+  absTol = str(default_tolerance)
   interval = 10000
   inputCSV = ""
   refOptFile = os.path.join(testFMUDir, modelName + "_ref.opt")
@@ -46,6 +47,10 @@ def generateLua(modelName, testFMUDir, resultDir, fmiType):
   if "RelTol" in df.index:
     if not df.loc["RelTol", 1] == 0:
       relTol = str(df.loc["RelTol", 1])
+
+  if "AbsTol" in df.index:
+    if not df.loc["AbsTol", 1] == 0:
+      absTol = str(df.loc["AbsTol", 1])
 
   maximumStepSize = str((float(stopTime) - float(startTime))/interval)
   if "StepSize" in df.index:
@@ -89,9 +94,9 @@ def generateLua(modelName, testFMUDir, resultDir, fmiType):
   f.write("oms_setResultFile(\"model\", \"" + modelName + "_out.csv\")\n")
   f.write("oms_setStartTime(\"model\", " + startTime + ")\n")
   f.write("oms_setStopTime(\"model\", " + stopTime + ")\n")
-  f.write("oms_setTolerance(\"model\", " + relTol + ")\n")
+  f.write("oms_setTolerance(\"model\", " + absTol + ", " + relTol + ")\n")
   if fmiType == "me":
-    f.write("oms_setVariableStepSize(\"model\", 1e-3*" + maximumStepSize + ", 1e-3*" + maximumStepSize + ", " + maximumStepSize + ")\n")
+    f.write("oms_setVariableStepSize(\"model\", 1e-12, 1e-12, " + maximumStepSize + ")\n")
   elif fmiType == "cs":
     f.write("oms_setFixedStepSize(\"model\", " + maximumStepSize +")\n")
 
