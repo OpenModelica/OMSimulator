@@ -43,61 +43,8 @@ extern "C"
 #endif
 #endif
 
-#if OMC_STD_FS == 1
-// We have C++17; it has temp_directory_path and canonical
-filesystem::path oms_temp_directory_path(void)
-{
-  return filesystem::temp_directory_path();
-}
-
-filesystem::path oms_canonical(filesystem::path p)
-{
-  return filesystem::canonical(p);
-}
-#else
-
+#if !defined(OMC_STD_FS)
 #include <cstdlib>
-
-#if (BOOST_VERSION >= 104600) // no temp_directory_path in boost < 1.46
-filesystem::path oms_temp_directory_path(void) {
-  return filesystem::temp_directory_path();
-}
-filesystem::path oms_canonical(filesystem::path p) {
-  return filesystem::canonical(p);
-}
-#else
-filesystem::path oms_temp_directory_path(void)
-{
-#if (_WIN32)
-  char* val = (char*)malloc(sizeof(char)*(MAX_PATH + 1));
-  if (!val)
-  {
-    logError("Out of memory");
-    return NULL;
-  }
-  GetTempPath(MAX_PATH, val);
-
-  filesystem::path p((val!=0) ? val : "/tmp");
-  if (val) free(val);
-  return p;
-#else
-  const char* val = 0;
-
-  (val = std::getenv("TMPDIR" )) ||
-  (val = std::getenv("TMP"    )) ||
-  (val = std::getenv("TEMP"   )) ||
-  (val = std::getenv("TEMPDIR"));
-
-  filesystem::path p((val!=0) ? val : "/tmp");
-  return p;
-#endif // win32
-}
-
-filesystem::path oms_canonical(filesystem::path p)
-{
-  return p;
-}
-#endif
 #endif
 
 // https://svn.boost.org/trac10/ticket/1976
@@ -160,12 +107,51 @@ void oms_copy_file(const filesystem::path& from, const filesystem::path& to)
 #endif
 }
 
-filesystem::path oms_absolute(const filesystem::path& p)
+filesystem::path oms_canonical(const filesystem::path& p)
 {
-#if OMC_STD_FS == 1
-  return filesystem::absolute(p);
+#if OMC_STD_FS == 1 // C++17: it has temp_directory_path and canonical
+  return filesystem::canonical(p);
+#elif (BOOST_VERSION >= 104600) // boost part
+  return filesystem::canonical(p);
 #else
   return p;
+#endif
+}
+
+filesystem::path oms_absolute(const filesystem::path& p)
+{
+  return filesystem::absolute(p);
+}
+
+filesystem::path oms_temp_directory_path(void)
+{
+#if OMC_STD_FS == 1 // C++17: it has temp_directory_path and canonical
+  return filesystem::temp_directory_path();
+#elif (BOOST_VERSION >= 104600) // boost part
+  return filesystem::temp_directory_path();
+#else // no temp_directory_path in boost < 1.46
+#if (_WIN32)
+  char* val = (char*)malloc(sizeof(char)*(MAX_PATH + 1));
+  if (!val)
+  {
+    logError("Out of memory");
+    return NULL;
+  }
+  GetTempPath(MAX_PATH, val);
+
+  filesystem::path p((val!=0) ? val : "/tmp");
+  if (val) free(val);
+  return p;
+#else // _WIN32
+  const char* val = 0;
+
+  (val = std::getenv("TMPDIR" )) ||
+  (val = std::getenv("TMP"    )) ||
+  (val = std::getenv("TEMP"   )) ||
+  (val = std::getenv("TEMPDIR"));
+
+  return filesystem::path((val!=0) ? val : "/tmp");
+#endif // _WIN32
 #endif
 }
 
