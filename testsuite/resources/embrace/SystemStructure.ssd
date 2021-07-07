@@ -5,7 +5,7 @@
             		<ssd:ParameterBinding source="resources/RAPID_Systems_2021-03-29_Test_1.ssv">
                 		<ssd:ParameterMapping source="resources/ECS_HW.ssm"/>
             		</ssd:ParameterBinding>
-        	</ssd:ParameterBindings>	
+        	</ssd:ParameterBindings>
 		<ssd:Elements>
 			<ssd:Component name="ECS_SW" type="application/x-fmu-sharedlibrary" source="resources/0002_ECS_SW.fmu">
 				<ssd:Connectors>
@@ -834,7 +834,7 @@
 			<ssc:Annotation type="org.openmodelica">
 				<oms:Annotations>
 					<oms:SimulationInformation>
-						<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+						<oms:FixedStepMaster description="oms-ma" stepSize="0.001000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
 					</oms:SimulationInformation>
 				</oms:Annotations>
 			</ssc:Annotation>
