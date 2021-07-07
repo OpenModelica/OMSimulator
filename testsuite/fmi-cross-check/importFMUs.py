@@ -28,11 +28,11 @@ def generateLua(modelName, testFMUDir, resultDir, fmiType):
   luaFilePath = os.path.join(resultDir, modelName + ".lua")
 
   # Set OMSimulator settings
-  tempDir = "temp"
+  tempDir = "/temp/cross-check/"
   startTime = "0.0"
   stopTime = "1.0"
   relTol = str(default_tolerance)
-  interval = 1000
+  interval = 10000
   inputCSV = ""
   refOptFile = os.path.join(testFMUDir, modelName + "_ref.opt")
   df = pd.read_csv(refOptFile, delimiter=',', index_col=0, header=None)

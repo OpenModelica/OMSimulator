@@ -217,9 +217,9 @@ namespace oms
 
     double absoluteTolerance = 1e-4;
     double relativeTolerance = 1e-4;
-    double minimumStepSize = 1e-4;
-    double maximumStepSize = 1e-1;
-    double initialStepSize = 1e-4;
+    double minimumStepSize = 1e-12;
+    double maximumStepSize = 1e-3;
+    double initialStepSize = 1e-6;
 
     std::unordered_map<unsigned int /*result file var ID*/, unsigned int /*allVariables ID*/> resultFileMapping;
     std::unordered_map<ComRef, bool> exportConnectors;
