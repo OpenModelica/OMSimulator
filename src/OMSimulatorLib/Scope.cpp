@@ -270,15 +270,7 @@ oms_status_enu_t oms::Scope::setTempDirectory(const std::string& newTempDir)
     }
 
     filesystem::path path(newTempDirWorkaround.c_str());
-    try
-    {
-      path = oms_canonical(path);
-    }
-    catch (std::exception e)
-    {
-      // do nothing, canonical fails if the directory contains a junction or a symlink!
-      // https://svn.boost.org/trac10/ticket/11138
-    }
+    path = oms_canonical(path);
 
     this->tempDir = path.string();
 
@@ -301,15 +293,7 @@ oms_status_enu_t oms::Scope::setWorkingDirectory(const std::string& newWorkingDi
       return logError("Set working directory to \"" + newWorkingDir + "\" failed");
 
     filesystem::path path(newWorkingDir.c_str());
-    try
-    {
-      path = oms_canonical(path);
-    }
-    catch (const std::exception&)
-    {
-      // do nothing, canonical fails if the directory contains a junction or a symlink!
-      // https://svn.boost.org/trac10/ticket/11138
-    }
+    path = oms_canonical(path);
 
     filesystem::current_path(path);
 

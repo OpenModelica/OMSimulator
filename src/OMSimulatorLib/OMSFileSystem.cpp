@@ -110,9 +110,27 @@ void oms_copy_file(const filesystem::path& from, const filesystem::path& to)
 filesystem::path oms_canonical(const filesystem::path& p)
 {
 #if OMC_STD_FS == 1 // C++17: it has temp_directory_path and canonical
-  return filesystem::canonical(p);
+  try
+  {
+    return filesystem::canonical(p);
+  }
+  catch (const std::exception&)
+  {
+    // do nothing, canonical fails if the directory contains a junction or a symlink!
+    // https://svn.boost.org/trac10/ticket/11138
+    return p;
+  }
 #elif (BOOST_VERSION >= 104600) // boost part
-  return filesystem::canonical(p);
+  try
+  {
+    return filesystem::canonical(p);
+  }
+  catch (const std::exception&)
+  {
+    // do nothing, canonical fails if the directory contains a junction or a symlink!
+    // https://svn.boost.org/trac10/ticket/11138
+    return p;
+  }
 #else
   return p;
 #endif
