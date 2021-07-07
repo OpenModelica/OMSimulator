@@ -89,9 +89,10 @@ def generateLua(modelName, testFMUDir, resultDir, fmiType):
   f.write("oms_setStartTime(\"model\", " + startTime + ")\n")
   f.write("oms_setStopTime(\"model\", " + stopTime + ")\n")
   f.write("oms_setTolerance(\"model\", " + relTol + ")\n")
-  f.write("initialStepSize, minimumStepSize, maximumStepSize, status = oms_getVariableStepSize(\"model\")\n")
-  f.write("oms_setVariableStepSize(\"model\", " + maximumStepSize + ", minimumStepSize, " + maximumStepSize + ")\n")
-  f.write("oms_setFixedStepSize(\"model\", " + maximumStepSize +")\n")
+  if fmiType == "me":
+    f.write("oms_setVariableStepSize(\"model\", 1e-2*" + maximumStepSize + ", 1e-3*" + maximumStepSize + ", " + maximumStepSize + ")\n")
+  elif fmiType == "cs":
+    f.write("oms_setFixedStepSize(\"model\", " + maximumStepSize +")\n")
 
   f.write("\n-- Instantiate, initialize and simulate\n")
   f.write("oms_instantiate(\"model\")\n")
