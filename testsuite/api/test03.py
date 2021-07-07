@@ -91,7 +91,7 @@ oms.delete("test")
 ## 			<ssc:Annotation type="org.openmodelica">
 ## 				<oms:Annotations>
 ## 					<oms:SimulationInformation>
-## 						<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+## 						<oms:FixedStepMaster description="oms-ma" stepSize="0.001000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
 ## 					</oms:SimulationInformation>
 ## 				</oms:Annotations>
 ## 			</ssc:Annotation>
@@ -142,7 +142,7 @@ oms.delete("test")
 ## 			<ssc:Annotation type="org.openmodelica">
 ## 				<oms:Annotations>
 ## 					<oms:SimulationInformation>
-## 						<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+## 						<oms:FixedStepMaster description="oms-ma" stepSize="0.001000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
 ## 					</oms:SimulationInformation>
 ## 				</oms:Annotations>
 ## 			</ssc:Annotation>

@@ -97,11 +97,11 @@ oms_delete(model)
 --                   <oms:SimulationInformation>
 --                     <oms:VariableStepSolver
 --                       description="cvode"
---                       absoluteTolerance="0.000100"
---                       relativeTolerance="0.000100"
---                       minimumStepSize="0.000100"
---                       maximumStepSize="0.100000"
---                       initialStepSize="0.000100" />
+--                       absoluteTolerance="0.0001"
+--                       relativeTolerance="0.0001"
+--                       minimumStepSize="0.0001"
+--                       maximumStepSize="0.1"
+--                       initialStepSize="0.0001" />
 --                   </oms:SimulationInformation>
 --                 </oms:Annotations>
 --               </ssc:Annotation>
@@ -152,11 +152,11 @@ oms_delete(model)
 --                   <oms:SimulationInformation>
 --                     <oms:VariableStepSolver
 --                       description="cvode"
---                       absoluteTolerance="0.000100"
---                       relativeTolerance="0.000100"
---                       minimumStepSize="0.000100"
---                       maximumStepSize="0.100000"
---                       initialStepSize="0.000100" />
+--                       absoluteTolerance="0.0001"
+--                       relativeTolerance="0.0001"
+--                       minimumStepSize="0.0001"
+--                       maximumStepSize="0.1"
+--                       initialStepSize="0.0001" />
 --                   </oms:SimulationInformation>
 --                 </oms:Annotations>
 --               </ssc:Annotation>
@@ -187,11 +187,11 @@ oms_delete(model)
 --                   <oms:SimulationInformation>
 --                     <oms:VariableStepSolver
 --                       description="cvode"
---                       absoluteTolerance="0.000100"
---                       relativeTolerance="0.000100"
---                       minimumStepSize="0.000100"
---                       maximumStepSize="0.100000"
---                       initialStepSize="0.000100" />
+--                       absoluteTolerance="0.0001"
+--                       relativeTolerance="0.0001"
+--                       minimumStepSize="0.0001"
+--                       maximumStepSize="0.1"
+--                       initialStepSize="0.0001" />
 --                   </oms:SimulationInformation>
 --                 </oms:Annotations>
 --               </ssc:Annotation>

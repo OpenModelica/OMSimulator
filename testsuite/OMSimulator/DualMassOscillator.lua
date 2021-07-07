@@ -25,7 +25,7 @@ oms_addConnection("DualMassOscillator.root.system1.a1", "DualMassOscillator.root
 -- simulation settings
 oms_setResultFile("DualMassOscillator", "DualMassOscillator.mat", 100)
 oms_setStopTime("DualMassOscillator", 10.0)
-oms_setFixedStepSize("DualMassOscillator.root", 1e-3)
+oms_setVariableStepSize("DualMassOscillator.root", 1e-12, 1e-12, 1e-3)
 
 oms_instantiate("DualMassOscillator")
 oms_setReal("DualMassOscillator.root.system1.x1_start", 0.0)
@@ -45,15 +45,15 @@ oms_terminate("DualMassOscillator")
 oms_delete("DualMassOscillator")
 
 -- Result:
--- info:    maximum step size for 'DualMassOscillator.root': 0.100000
+-- info:    maximum step size for 'DualMassOscillator.root': 0.001000
 -- info:    Result file: DualMassOscillator.mat (bufferSize=100)
 -- info:    Initialization
 -- info:      system1.x1: 0.0
 -- info:      system2.x2: 0.5
 -- info:    Simulation
--- info:      system1.x1: 0.050988622308801
--- info:      system2.x2: 0.03162781956834
+-- info:      system1.x1: 0.051037644866066
+-- info:      system2.x2: 0.031639500249976
 -- info:    Final Statistics for 'DualMassOscillator.root':
---          NumSteps = 262 NumRhsEvals  = 293 NumLinSolvSetups = 25
---          NumNonlinSolvIters = 292 NumNonlinSolvConvFails = 0 NumErrTestFails = 2
+--          NumSteps = 10007 NumRhsEvals  = 10008 NumLinSolvSetups = 507
+--          NumNonlinSolvIters = 10007 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
 -- endResult
