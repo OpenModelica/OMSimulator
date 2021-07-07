@@ -277,28 +277,27 @@ oms_status_enu_t oms::System::addSubSystem(const oms::ComRef& cref, oms_system_e
 
 oms_status_enu_t oms::System::addSubModel(const oms::ComRef& cref, const std::string& path)
 {
-  std::string absPath = oms_absolute(path).string();
-
   if (cref.isValidIdent())
   {
     if (!validCref(cref))
       return logError_AlreadyInScope(getFullCref() + cref);
 
-    if (!filesystem::exists(absPath))
-      return logError("file does not exist: \"" + absPath + "\"");
+    filesystem::path path_ = oms_canonical(path);
+    if (!filesystem::exists(path_))
+      return logError("file does not exist: \"" + path + "\"");
 
     Component* component = NULL;
 
     std::string extension = "";
-    if (absPath.length() > 4)
-      extension = absPath.substr(absPath.length() - 4);
+    if (path.length() > 4)
+      extension = path.substr(path.length() - 4);
 
     if (extension == ".fmu" && oms_system_wc == type)
-      component = ComponentFMUCS::NewComponent(cref, this, absPath);
+      component = ComponentFMUCS::NewComponent(cref, this, path_.string());
     else if (extension == ".fmu" && oms_system_sc == type)
-      component = ComponentFMUME::NewComponent(cref, this, absPath);
+      component = ComponentFMUME::NewComponent(cref, this, path_.string());
     else if (extension == ".csv" || extension == ".mat")
-      component = ComponentTable::NewComponent(cref, this, absPath);
+      component = ComponentTable::NewComponent(cref, this, path_.string());
     else
       return logError("supported sub-model formats are \".fmu\", \".csv\", \".mat\"");
 
@@ -319,7 +318,7 @@ oms_status_enu_t oms::System::addSubModel(const oms::ComRef& cref, const std::st
   if (!system)
     return logError("System \"" + std::string(getFullCref()) + "\" does not contain system \"" + std::string(front) + "\"");
 
-  return system->addSubModel(tail, absPath);
+  return system->addSubModel(tail, path);
 }
 
 oms_status_enu_t oms::System::addResources(const ComRef& cref, std::string& filename)
