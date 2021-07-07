@@ -1,8 +1,9 @@
 import os
-import sys
 import shutil
 import subprocess
+import sys
 import time
+
 import pandas as pd
 
 # Global vars
@@ -31,7 +32,7 @@ def generateLua(modelName, testFMUDir, resultDir, fmiType):
   startTime = "0.0"
   stopTime = "1.0"
   relTol = str(default_tolerance)
-  interval = 500
+  interval = 1000
   inputCSV = ""
   refOptFile = os.path.join(testFMUDir, modelName + "_ref.opt")
   df = pd.read_csv(refOptFile, delimiter=',', index_col=0, header=None)
@@ -90,7 +91,7 @@ def generateLua(modelName, testFMUDir, resultDir, fmiType):
   f.write("oms_setStopTime(\"model\", " + stopTime + ")\n")
   f.write("oms_setTolerance(\"model\", " + relTol + ")\n")
   if fmiType == "me":
-    f.write("oms_setVariableStepSize(\"model\", 1e-2*" + maximumStepSize + ", 1e-3*" + maximumStepSize + ", " + maximumStepSize + ")\n")
+    f.write("oms_setVariableStepSize(\"model\", 1e-3*" + maximumStepSize + ", 1e-3*" + maximumStepSize + ", " + maximumStepSize + ")\n")
   elif fmiType == "cs":
     f.write("oms_setFixedStepSize(\"model\", " + maximumStepSize +")\n")
 
