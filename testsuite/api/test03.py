@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm -rf test03-py/ test_res.mat
+## teardown_command: rm -rf test03py/ test03py_res.mat
 ## linux: yes
 ## mingw32: yes
 ## mingw64: yes
@@ -11,7 +11,7 @@ from OMSimulator import OMSimulator
 oms = OMSimulator()
 
 oms.setCommandLineOption("--suppressPath=true")
-oms.setTempDirectory("./test03-py/")
+oms.setTempDirectory("./test03py/")
 
 def printStatus(status, expected):
   cmp = ""
@@ -30,37 +30,37 @@ def printStatus(status, expected):
 
 
 
-oms.newModel("test")
-oms.addSystem("test.eoo", oms.system_wc)
-oms.addSubModel("test.eoo.source", "../resources/Modelica.Blocks.Sources.Sine.fmu")
+oms.newModel("test03py")
+oms.addSystem("test03py.eoo", oms.system_wc)
+oms.addSubModel("test03py.eoo.source", "../resources/Modelica.Blocks.Sources.Sine.fmu")
 
 ## save snapshot
-src, status = oms.list("test")
+src, status = oms.list("test03py")
 print(src, flush=True)
 
 ## change model
-oms.addSystem("test.eoo.goo", oms.system_sc)
-oms.delete("test.eoo.source")
-oms.addSubModel("test.eoo.source", "../resources/Modelica.Blocks.Sources.Constant.fmu")
+oms.addSystem("test03py.eoo.goo", oms.system_sc)
+oms.delete("test03py.eoo.source")
+oms.addSubModel("test03py.eoo.source", "../resources/Modelica.Blocks.Sources.Constant.fmu")
 
 ## restore model from snapshot
-newCref, status = oms.loadSnapshot("test", src)
+newCref, status = oms.loadSnapshot("test03py", src)
 printStatus(status, 0)
 
-src, status = oms.list("test")
+src, status = oms.list("test03py")
 print(src, flush=True)
 
-oms.instantiate("test")
-oms.initialize("test")
-oms.simulate("test")
-oms.terminate("test")
+oms.instantiate("test03py")
+oms.initialize("test03py")
+oms.simulate("test03py")
+oms.terminate("test03py")
 
-oms.delete("test")
+oms.delete("test03py")
 
 
 ## Result:
 ## <?xml version="1.0"?>
-## <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="test" version="1.0">
+## <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="test03py" version="1.0">
 ## 	<ssd:System name="eoo">
 ## 		<ssd:Elements>
 ## 			<ssd:Component name="source" type="application/x-fmu-sharedlibrary" source="resources/0001_source.fmu">
@@ -91,7 +91,7 @@ oms.delete("test")
 ## 			<ssc:Annotation type="org.openmodelica">
 ## 				<oms:Annotations>
 ## 					<oms:SimulationInformation>
-## 						<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+## 						<oms:FixedStepMaster description="oms-ma" stepSize="0.001000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
 ## 					</oms:SimulationInformation>
 ## 				</oms:Annotations>
 ## 			</ssc:Annotation>
@@ -101,7 +101,7 @@ oms.delete("test")
 ## 		<ssd:Annotations>
 ## 			<ssc:Annotation type="org.openmodelica">
 ## 				<oms:Annotations>
-## 					<oms:SimulationInformation resultFile="test_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="resources/signalFilter.xml" />
+## 					<oms:SimulationInformation resultFile="test03py_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="resources/signalFilter.xml" />
 ## 				</oms:Annotations>
 ## 			</ssc:Annotation>
 ## 		</ssd:Annotations>
@@ -111,7 +111,7 @@ oms.delete("test")
 ## error:   [getResourceNode] Failed to find node "resources/signalFilter.xml"
 ## status:  [correct] ok
 ## <?xml version="1.0"?>
-## <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="test" version="1.0">
+## <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="test03py" version="1.0">
 ## 	<ssd:System name="eoo">
 ## 		<ssd:Elements>
 ## 			<ssd:Component name="source" type="application/x-fmu-sharedlibrary" source="resources/0001_source.fmu">
@@ -142,7 +142,7 @@ oms.delete("test")
 ## 			<ssc:Annotation type="org.openmodelica">
 ## 				<oms:Annotations>
 ## 					<oms:SimulationInformation>
-## 						<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+## 						<oms:FixedStepMaster description="oms-ma" stepSize="0.001000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
 ## 					</oms:SimulationInformation>
 ## 				</oms:Annotations>
 ## 			</ssc:Annotation>
@@ -152,14 +152,14 @@ oms.delete("test")
 ## 		<ssd:Annotations>
 ## 			<ssc:Annotation type="org.openmodelica">
 ## 				<oms:Annotations>
-## 					<oms:SimulationInformation resultFile="test_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="resources/signalFilter.xml" />
+## 					<oms:SimulationInformation resultFile="test03py_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="resources/signalFilter.xml" />
 ## 				</oms:Annotations>
 ## 			</ssc:Annotation>
 ## 		</ssd:Annotations>
 ## 	</ssd:DefaultExperiment>
 ## </ssd:SystemStructureDescription>
 ##
-## info:    Result file: test_res.mat (bufferSize=10)
+## info:    Result file: test03py_res.mat (bufferSize=10)
 ## info:    0 warnings
 ## info:    1 errors
 ## endResult

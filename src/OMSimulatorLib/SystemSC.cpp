@@ -38,6 +38,7 @@
 #include "Model.h"
 #include "ssd/Tags.h"
 
+#include <sstream>
 
 int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
@@ -134,16 +135,23 @@ oms_status_enu_t oms::SystemSC::setSolverMethod(std::string solver)
 
 oms_status_enu_t oms::SystemSC::exportToSSD_SimulationInformation(pugi::xml_node& node) const
 {
+  std::ostringstream ssAbsoluteTolerance, ssRelativeTolerance, ssMinimumStepSize, ssMaximumStepSize, ssInitialStepSize;
+  ssAbsoluteTolerance << absoluteTolerance;
+  ssRelativeTolerance << relativeTolerance;
+  ssMinimumStepSize << minimumStepSize;
+  ssMaximumStepSize << maximumStepSize;
+  ssInitialStepSize << initialStepSize;
+
   /* ssd:SimulationInformation should be added as vendor specific annotations from Version 1.0 */
   pugi::xml_node node_simulation_information = node.append_child(oms::ssp::Version1_0::simulation_information);
 
   pugi::xml_node node_solver = node_simulation_information.append_child(oms::ssp::Version1_0::VariableStepSolver);
   node_solver.append_attribute("description") = getSolverName().c_str();
-  node_solver.append_attribute("absoluteTolerance") = std::to_string(absoluteTolerance).c_str();
-  node_solver.append_attribute("relativeTolerance") = std::to_string(relativeTolerance).c_str();
-  node_solver.append_attribute("minimumStepSize") = std::to_string(minimumStepSize).c_str();
-  node_solver.append_attribute("maximumStepSize") = std::to_string(maximumStepSize).c_str();
-  node_solver.append_attribute("initialStepSize") = std::to_string(initialStepSize).c_str();
+  node_solver.append_attribute("absoluteTolerance") = ssAbsoluteTolerance.str().c_str();
+  node_solver.append_attribute("relativeTolerance") = ssRelativeTolerance.str().c_str();
+  node_solver.append_attribute("minimumStepSize") = ssMinimumStepSize.str().c_str();
+  node_solver.append_attribute("maximumStepSize") = ssMaximumStepSize.str().c_str();
+  node_solver.append_attribute("initialStepSize") = ssInitialStepSize.str().c_str();
 
   return oms_status_ok;
 }
@@ -299,7 +307,7 @@ oms_status_enu_t oms::SystemSC::initialize()
     if (!solverData.cvode.abstol) logError("SUNDIALS_ERROR: N_VNew_Serial() failed - returned NULL pointer");
     for (int j=0, k=0; j < fmus.size(); ++j)
       for (size_t i=0; i < nStates[j]; ++i, ++k)
-        NV_Ith_S(solverData.cvode.abstol, k) = 0.01*relativeTolerance*states_nominal[j][i];
+        NV_Ith_S(solverData.cvode.abstol, k) = 0.01*absoluteTolerance*states_nominal[j][i];
     //N_VPrint_Serial(solverData.cvode.abstol);
 
     // Call CVodeCreate to create the solver memory and specify the
@@ -335,28 +343,26 @@ oms_status_enu_t oms::SystemSC::initialize()
     flag = CVodeSetLinearSolver(solverData.cvode.mem, solverData.cvode.linSol, solverData.cvode.J);
     if (flag < 0) logError("SUNDIALS_ERROR: CVDense() failed with flag = " + std::to_string(flag));
 
-    const fmi2_real_t stopTime = 1.0;
-    double max_h = (stopTime - time) / 10.0;
-    logInfo("maximum step size for '" + std::string(getFullCref()) + "': " + std::to_string(max_h));
-    flag = CVodeSetMaxStep(solverData.cvode.mem, max_h);
+    logInfo("maximum step size for '" + std::string(getFullCref()) + "': " + std::to_string(maximumStepSize));
+    flag = CVodeSetMaxStep(solverData.cvode.mem, maximumStepSize);
     if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetMaxStep() failed with flag = " + std::to_string(flag));
 
     // further settings from cpp runtime
-    flag = CVodeSetInitStep(solverData.cvode.mem, 1e-6);        // INITIAL STEPSIZE
+    flag = CVodeSetInitStep(solverData.cvode.mem, initialStepSize);  // INITIAL STEPSIZE
     if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetInitStep() failed with flag = " + std::to_string(flag));
-    flag = CVodeSetMaxOrd(solverData.cvode.mem, 5);             // MAXIMUM ORDER
+    flag = CVodeSetMaxOrd(solverData.cvode.mem, 5);                  // MAXIMUM ORDER
     if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetMaxOrd() failed with flag = " + std::to_string(flag));
-    flag = CVodeSetMaxConvFails(solverData.cvode.mem, 100);     // MAXIMUM NUMBER OF NONLINEAR CONVERGENCE FAILURES
+    flag = CVodeSetMaxConvFails(solverData.cvode.mem, 100);          // MAXIMUM NUMBER OF NONLINEAR CONVERGENCE FAILURES
     if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetMaxConvFails() failed with flag = " + std::to_string(flag));
-    flag = CVodeSetStabLimDet(solverData.cvode.mem, true);      // STABILITY DETECTION
+    flag = CVodeSetStabLimDet(solverData.cvode.mem, true);           // STABILITY DETECTION
     if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetStabLimDet() failed with flag = " + std::to_string(flag));
-    flag = CVodeSetMinStep(solverData.cvode.mem, 1e-12);        // MINIMUM STEPSIZE
+    flag = CVodeSetMinStep(solverData.cvode.mem, minimumStepSize);   // MINIMUM STEPSIZE
     if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetMinStep() failed with flag = " + std::to_string(flag));
-    flag = CVodeSetMaxNonlinIters(solverData.cvode.mem, 5);     // MAXIMUM NUMBER OF ITERATIONS
+    flag = CVodeSetMaxNonlinIters(solverData.cvode.mem, 5);          // MAXIMUM NUMBER OF ITERATIONS
     if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetMaxNonlinIters() failed with flag = " + std::to_string(flag));
-    flag = CVodeSetMaxErrTestFails(solverData.cvode.mem, 100);  // MAXIMUM NUMBER OF ERROR TEST FAILURES
+    flag = CVodeSetMaxErrTestFails(solverData.cvode.mem, 100);       // MAXIMUM NUMBER OF ERROR TEST FAILURES
     if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetMaxErrTestFails() failed with flag = " + std::to_string(flag));
-    flag = CVodeSetMaxNumSteps(solverData.cvode.mem, 1000);     // MAXIMUM NUMBER OF STEPS
+    flag = CVodeSetMaxNumSteps(solverData.cvode.mem, 1000);          // MAXIMUM NUMBER OF STEPS
     if (flag < 0) logError("SUNDIALS_ERROR: CVodeSetMaxNumSteps() failed with flag = " + std::to_string(flag));
   }
 

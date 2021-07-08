@@ -15,7 +15,6 @@ oms_addConnector("exportConnectors.Root.C1", oms_causality_input, oms_signal_typ
 oms_addConnector("exportConnectors.Root.C2", oms_causality_output, oms_signal_type_real)
 oms_addConnector("exportConnectors.Root.C3", oms_causality_parameter, oms_signal_type_real)
 
-
 -- oms_addSystem("exportConnectors.Root.System1", oms_system_sc)
 -- oms_addConnector("exportConnectors.Root.System1.T1", oms_causality_input, oms_signal_type_real)
 
@@ -152,7 +151,7 @@ oms_delete("exportConnectors")
 -- 			<ssc:Annotation type="org.openmodelica">
 -- 				<oms:Annotations>
 -- 					<oms:SimulationInformation>
--- 						<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+-- 						<oms:FixedStepMaster description="oms-ma" stepSize="0.001000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
 -- 					</oms:SimulationInformation>
 -- 				</oms:Annotations>
 -- 			</ssc:Annotation>

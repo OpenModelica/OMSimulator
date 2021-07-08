@@ -89,11 +89,11 @@ oms_delete("importStartValues")
 --                   <oms:SimulationInformation>
 --                     <oms:VariableStepSolver
 --                       description="euler"
---                       absoluteTolerance="0.000100"
---                       relativeTolerance="0.000100"
---                       minimumStepSize="0.000100"
---                       maximumStepSize="0.100000"
---                       initialStepSize="0.000100" />
+--                       absoluteTolerance="0.0001"
+--                       relativeTolerance="0.0001"
+--                       minimumStepSize="0.0001"
+--                       maximumStepSize="0.1"
+--                       initialStepSize="0.0001" />
 --                   </oms:SimulationInformation>
 --                 </oms:Annotations>
 --               </ssc:Annotation>
@@ -107,7 +107,7 @@ oms_delete("importStartValues")
 --               <oms:SimulationInformation>
 --                 <oms:FixedStepMaster
 --                   description="oms-ma"
---                   stepSize="0.100000"
+--                   stepSize="0.001000"
 --                   absoluteTolerance="0.000100"
 --                   relativeTolerance="0.000100" />
 --               </oms:SimulationInformation>

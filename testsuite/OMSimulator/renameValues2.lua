@@ -1,65 +1,64 @@
 -- status: correct
--- teardown_command: rm -rf rename_values_02_lua/
+-- teardown_command: rm -rf renameValues2_lua/
 -- linux: yes
 -- mingw32: yes
 -- mingw64: yes
 -- win: no
 -- mac: no
 
-
 oms_setCommandLineOption("--suppressPath=true")
-oms_setTempDirectory("./rename_values_02_lua/")
+oms_setTempDirectory("./renameValues2_lua/")
 
-oms_newModel("renamevalues")
-oms_addSystem("renamevalues.root", oms_system_wc)
+oms_newModel("renameValues2")
+oms_addSystem("renameValues2.root", oms_system_wc)
 
-oms_addSystem("renamevalues.root.system1", oms_system_sc)
+oms_addSystem("renameValues2.root.system1", oms_system_sc)
 
-oms_addConnector("renamevalues.root.system1.k1", oms_causality_parameter, oms_signal_type_real)
-oms_setReal("renamevalues.root.system1.k1", -10)
+oms_addConnector("renameValues2.root.system1.k1", oms_causality_parameter, oms_signal_type_real)
+oms_setReal("renameValues2.root.system1.k1", -10)
 
-oms_addSubModel("renamevalues.root.add_1", "../resources/Modelica.Blocks.Math.Add.fmu")
-oms_setReal("renamevalues.root.add_1.k1", 10)
-oms_setReal("renamevalues.root.add_1.k2", 20)
-oms_setReal("renamevalues.root.add_1.u1", 40)
+oms_addSubModel("renameValues2.root.add_1", "../resources/Modelica.Blocks.Math.Add.fmu")
+oms_setReal("renameValues2.root.add_1.k1", 10)
+oms_setReal("renameValues2.root.add_1.k2", 20)
+oms_setReal("renameValues2.root.add_1.u1", 40)
 
-oms_addSubModel("renamevalues.root.add_2", "../resources/Modelica.Blocks.Math.Add.fmu")
+oms_addSubModel("renameValues2.root.add_2", "../resources/Modelica.Blocks.Math.Add.fmu")
 
-oms_addConnection("renamevalues.root.add_1.y", "renamevalues.root.add_2.u1")
+oms_addConnection("renameValues2.root.add_1.y", "renameValues2.root.add_2.u1")
 
-oms_export("renamevalues", "renamevalues2.ssp")
+oms_export("renameValues2", "renamevalues2.ssp")
 
-oms_terminate("renamevalues")
-oms_delete("renamevalues")
+oms_terminate("renameValues2")
+oms_delete("renameValues2")
 
 oms_importFile("renamevalues2.ssp")
 
-oms_rename("renamevalues.root.add_1", "add_3")
-oms_rename("renamevalues.root.system1", "system2")
+oms_rename("renameValues2.root.add_1", "add_3")
+oms_rename("renameValues2.root.system1", "system2")
 
-src = oms_exportSnapshot("renamevalues")
+src = oms_exportSnapshot("renameValues2")
 print(src)
 
-oms_instantiate("renamevalues")
+oms_instantiate("renameValues2")
 print("info:      Instantiation")
-print("info:      renamevalues.root.system2.k1     : " .. oms_getReal("renamevalues.root.system2.k1"))
-print("info:      renamevalues.root.add_3.k1       : " .. oms_getReal("renamevalues.root.add_3.k1"))
-print("info:      renamevalues.root.add_3.k2       : " .. oms_getReal("renamevalues.root.add_3.k2"))
-print("info:      renamevalues.root.add_3.u1       : " .. oms_getReal("renamevalues.root.add_3.u1"))
+print("info:      renameValues2.root.system2.k1     : " .. oms_getReal("renameValues2.root.system2.k1"))
+print("info:      renameValues2.root.add_3.k1       : " .. oms_getReal("renameValues2.root.add_3.k1"))
+print("info:      renameValues2.root.add_3.k2       : " .. oms_getReal("renameValues2.root.add_3.k2"))
+print("info:      renameValues2.root.add_3.u1       : " .. oms_getReal("renameValues2.root.add_3.u1"))
 
-oms_initialize("renamevalues")
+oms_initialize("renameValues2")
 print("info:      Initialization")
-print("info:      renamevalues.root.system2.k1     : " .. oms_getReal("renamevalues.root.system2.k1"))
-print("info:      renamevalues.root.add_3.k1       : " .. oms_getReal("renamevalues.root.add_3.k1"))
-print("info:      renamevalues.root.add_3.k2       : " .. oms_getReal("renamevalues.root.add_3.k2"))
-print("info:      renamevalues.root.add_3.u1       : " .. oms_getReal("renamevalues.root.add_3.u1"))
+print("info:      renameValues2.root.system2.k1     : " .. oms_getReal("renameValues2.root.system2.k1"))
+print("info:      renameValues2.root.add_3.k1       : " .. oms_getReal("renameValues2.root.add_3.k1"))
+print("info:      renameValues2.root.add_3.k2       : " .. oms_getReal("renameValues2.root.add_3.k2"))
+print("info:      renameValues2.root.add_3.u1       : " .. oms_getReal("renameValues2.root.add_3.u1"))
 
-oms_simulate("renamevalues")
+oms_simulate("renameValues2")
 print("info:      Simulation")
-print("info:      renamevalues.root.system2.k1     : " .. oms_getReal("renamevalues.root.system2.k1"))
-print("info:      renamevalues.root.add_3.k1       : " .. oms_getReal("renamevalues.root.add_3.k1"))
-print("info:      renamevalues.root.add_3.k2       : " .. oms_getReal("renamevalues.root.add_3.k2"))
-print("info:      renamevalues.root.add_3.u1       : " .. oms_getReal("renamevalues.root.add_3.u1"))
+print("info:      renameValues2.root.system2.k1     : " .. oms_getReal("renameValues2.root.system2.k1"))
+print("info:      renameValues2.root.add_3.k1       : " .. oms_getReal("renameValues2.root.add_3.k1"))
+print("info:      renameValues2.root.add_3.k2       : " .. oms_getReal("renameValues2.root.add_3.k2"))
+print("info:      renameValues2.root.add_3.u1       : " .. oms_getReal("renameValues2.root.add_3.u1"))
 
 
 -- Result:
@@ -76,7 +75,7 @@ print("info:      renamevalues.root.add_3.u1       : " .. oms_getReal("renameval
 --       xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping"
 --       xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary"
 --       xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
---       name="renamevalues"
+--       name="renameValues2"
 --       version="1.0">
 --       <ssd:System
 --         name="root">
@@ -114,11 +113,11 @@ print("info:      renamevalues.root.add_3.u1       : " .. oms_getReal("renameval
 --                   <oms:SimulationInformation>
 --                     <oms:VariableStepSolver
 --                       description="cvode"
---                       absoluteTolerance="0.000100"
---                       relativeTolerance="0.000100"
---                       minimumStepSize="0.000100"
---                       maximumStepSize="0.100000"
---                       initialStepSize="0.000100" />
+--                       absoluteTolerance="0.0001"
+--                       relativeTolerance="0.0001"
+--                       minimumStepSize="1e-12"
+--                       maximumStepSize="0.001"
+--                       initialStepSize="1e-06" />
 --                   </oms:SimulationInformation>
 --                 </oms:Annotations>
 --               </ssc:Annotation>
@@ -248,7 +247,7 @@ print("info:      renamevalues.root.add_3.u1       : " .. oms_getReal("renameval
 --               <oms:SimulationInformation>
 --                 <oms:FixedStepMaster
 --                   description="oms-ma"
---                   stepSize="0.100000"
+--                   stepSize="0.001000"
 --                   absoluteTolerance="0.000100"
 --                   relativeTolerance="0.000100" />
 --               </oms:SimulationInformation>
@@ -264,7 +263,7 @@ print("info:      renamevalues.root.add_3.u1       : " .. oms_getReal("renameval
 --             type="org.openmodelica">
 --             <oms:Annotations>
 --               <oms:SimulationInformation
---                 resultFile="renamevalues_res.mat"
+--                 resultFile="renameValues2_res.mat"
 --                 loggingInterval="0.000000"
 --                 bufferSize="10"
 --                 signalFilter="resources/signalFilter.xml" />
@@ -279,47 +278,47 @@ print("info:      renamevalues.root.add_3.u1       : " .. oms_getReal("renameval
 --     <oms:SignalFilter
 --       version="1.0">
 --       <oms:Variable
---         name="renamevalues.root.add_3.u1"
+--         name="renameValues2.root.add_3.u1"
 --         type="Real"
 --         kind="input" />
 --       <oms:Variable
---         name="renamevalues.root.add_3.u2"
+--         name="renameValues2.root.add_3.u2"
 --         type="Real"
 --         kind="input" />
 --       <oms:Variable
---         name="renamevalues.root.add_3.y"
+--         name="renameValues2.root.add_3.y"
 --         type="Real"
 --         kind="output" />
 --       <oms:Variable
---         name="renamevalues.root.add_3.k1"
+--         name="renameValues2.root.add_3.k1"
 --         type="Real"
 --         kind="parameter" />
 --       <oms:Variable
---         name="renamevalues.root.add_3.k2"
+--         name="renameValues2.root.add_3.k2"
 --         type="Real"
 --         kind="parameter" />
 --       <oms:Variable
---         name="renamevalues.root.add_2.u1"
+--         name="renameValues2.root.add_2.u1"
 --         type="Real"
 --         kind="input" />
 --       <oms:Variable
---         name="renamevalues.root.add_2.u2"
+--         name="renameValues2.root.add_2.u2"
 --         type="Real"
 --         kind="input" />
 --       <oms:Variable
---         name="renamevalues.root.add_2.y"
+--         name="renameValues2.root.add_2.y"
 --         type="Real"
 --         kind="output" />
 --       <oms:Variable
---         name="renamevalues.root.add_2.k1"
+--         name="renameValues2.root.add_2.k1"
 --         type="Real"
 --         kind="parameter" />
 --       <oms:Variable
---         name="renamevalues.root.add_2.k2"
+--         name="renameValues2.root.add_2.k2"
 --         type="Real"
 --         kind="parameter" />
 --       <oms:Variable
---         name="renamevalues.root.system2.k1"
+--         name="renameValues2.root.system2.k1"
 --         type="Real"
 --         kind="parameter" />
 --     </oms:SignalFilter>
@@ -328,19 +327,19 @@ print("info:      renamevalues.root.add_3.u1       : " .. oms_getReal("renameval
 --
 -- info:    model doesn't contain any continuous state
 -- info:      Instantiation
--- info:      renamevalues.root.system2.k1     : -10.0
--- info:      renamevalues.root.add_3.k1       : 10.0
--- info:      renamevalues.root.add_3.k2       : 20.0
--- info:      renamevalues.root.add_3.u1       : 40.0
--- info:    Result file: renamevalues_res.mat (bufferSize=10)
+-- info:      renameValues2.root.system2.k1     : -10.0
+-- info:      renameValues2.root.add_3.k1       : 10.0
+-- info:      renameValues2.root.add_3.k2       : 20.0
+-- info:      renameValues2.root.add_3.u1       : 40.0
+-- info:    Result file: renameValues2_res.mat (bufferSize=10)
 -- info:      Initialization
--- info:      renamevalues.root.system2.k1     : -10.0
--- info:      renamevalues.root.add_3.k1       : 10.0
--- info:      renamevalues.root.add_3.k2       : 20.0
--- info:      renamevalues.root.add_3.u1       : 40.0
+-- info:      renameValues2.root.system2.k1     : -10.0
+-- info:      renameValues2.root.add_3.k1       : 10.0
+-- info:      renameValues2.root.add_3.k2       : 20.0
+-- info:      renameValues2.root.add_3.u1       : 40.0
 -- info:      Simulation
--- info:      renamevalues.root.system2.k1     : -10.0
--- info:      renamevalues.root.add_3.k1       : 10.0
--- info:      renamevalues.root.add_3.k2       : 20.0
--- info:      renamevalues.root.add_3.u1       : 40.0
+-- info:      renameValues2.root.system2.k1     : -10.0
+-- info:      renameValues2.root.add_3.k1       : 10.0
+-- info:      renameValues2.root.add_3.k2       : 20.0
+-- info:      renameValues2.root.add_3.u1       : 40.0
 -- endResult

@@ -2,6 +2,7 @@ import os
 import shutil
 import subprocess
 import sys
+import tempfile
 import time
 
 import pandas as pd
@@ -14,6 +15,9 @@ ulimitOMSimulator = 60
 default_tolerance = 1e-8
 reltolDiffMinMax = 1e-4
 rangeDelta = 0.002
+tempDir = os.path.join(tempfile.gettempdir(), 'cross-check')
+if sys.platform == "win32":
+  tempDir = tempDir.replace("\\", "\\\\")
 
 def generateLua(modelName, testFMUDir, resultDir, fmiType):
   """Generate Lua Script that will be called by OMSimulator.
@@ -21,18 +25,17 @@ def generateLua(modelName, testFMUDir, resultDir, fmiType):
   Returns path to generated Lua file.
   """
   # Get some paths
-  testFMU = os.path.relpath(os.path.join(testFMUDir, modelName + ".fmu"), resultDir)
+  testFMU = modelName + ".fmu"
   if sys.platform == "win32":
     testFMU = testFMU.replace("\\", "\\\\")
-  inputCSV = os.path.relpath(os.path.join(testFMUDir, modelName + "_in.csv"), resultDir)
   luaFilePath = os.path.join(resultDir, modelName + ".lua")
 
   # Set OMSimulator settings
-  tempDir = "temp"
   startTime = "0.0"
   stopTime = "1.0"
   relTol = str(default_tolerance)
-  interval = 1000
+  absTol = str(default_tolerance)
+  maximumStepSize = "1e-5"
   inputCSV = ""
   refOptFile = os.path.join(testFMUDir, modelName + "_ref.opt")
   df = pd.read_csv(refOptFile, delimiter=',', index_col=0, header=None)
@@ -47,7 +50,10 @@ def generateLua(modelName, testFMUDir, resultDir, fmiType):
     if not df.loc["RelTol", 1] == 0:
       relTol = str(df.loc["RelTol", 1])
 
-  maximumStepSize = str((float(stopTime) - float(startTime))/interval)
+  if "AbsTol" in df.index:
+    if not df.loc["AbsTol", 1] == 0:
+      absTol = str(df.loc["AbsTol", 1])
+
   if "StepSize" in df.index:
     if not df.loc["StepSize", 1] == 0:
       maximumStepSize = str(df.loc["StepSize", 1])
@@ -89,9 +95,9 @@ def generateLua(modelName, testFMUDir, resultDir, fmiType):
   f.write("oms_setResultFile(\"model\", \"" + modelName + "_out.csv\")\n")
   f.write("oms_setStartTime(\"model\", " + startTime + ")\n")
   f.write("oms_setStopTime(\"model\", " + stopTime + ")\n")
-  f.write("oms_setTolerance(\"model\", " + relTol + ")\n")
+  f.write("oms_setTolerance(\"model\", " + absTol + ", " + relTol + ")\n")
   if fmiType == "me":
-    f.write("oms_setVariableStepSize(\"model\", 1e-3*" + maximumStepSize + ", 1e-3*" + maximumStepSize + ", " + maximumStepSize + ")\n")
+    f.write("oms_setVariableStepSize(\"model\", 1e-12, 1e-12, " + maximumStepSize + ")\n")
   elif fmiType == "cs":
     f.write("oms_setFixedStepSize(\"model\", " + maximumStepSize +")\n")
 
@@ -119,14 +125,10 @@ def simulateFMU(omsimulator, testFMUDir, resultDir, modelName, fmiType, luaFile)
   Will save outputs to "OMSimulator_out.log", "OMSimulator_err.log" and "OMSimulator_exp.log".
   Return call comand cmd.
   """
-  tempDir = os.path.join(resultDir,"temp")
-  intervals = "500"
-
   # Run lua file with OMSimulator via shell
   cmd = ["--stripRoot=true",
           "--skipCSVHeader=true",
           "--addParametersToCSV=true",
-          "--intervals=" + intervals,
           "--suppressPath=true",
           "--timeout=" + str(ulimitOMSimulator),
           os.path.relpath(luaFile, resultDir)]
@@ -161,7 +163,7 @@ def simulateFMU(omsimulator, testFMUDir, resultDir, modelName, fmiType, luaFile)
     exitCode = 1
 
   # Delete temp files
-  shutil.rmtree(tempDir, ignore_errors=True)
+  #shutil.rmtree(tempDir, ignore_errors=True)
 
   return cmd
 
@@ -192,6 +194,10 @@ def importFMU(crossCheckDir, testFMUDir, resultDir, modelName, fmiType, omsimula
 
   os.makedirs(resultDir, exist_ok = True)
 
+  # Copy FMU next to Lua file
+  testFMU = os.path.abspath(os.path.join(testFMUDir, modelName + ".fmu"))
+  shutil.copy(testFMU, resultDir)
+
   # Generate lua file
   luaFile = generateLua(modelName, testFMUDir, resultDir, fmiType)
 
@@ -217,6 +223,14 @@ def simulateWithOMSimulator(crossCheckDir, platform, omsimulator, omsVersion):
 
   # Make sure we are in crossCheckDir
   os.chdir(crossCheckDir)
+
+  # Clean up possible existing result files and temp dir
+  tempDir = os.path.join(tempfile.gettempdir(), 'cross-check')
+  shutil.rmtree(tempDir, ignore_errors=True)
+  for fmiVersion in ["2.0"]:
+    for fmiType in ["me", "cs"]:
+      path = os.path.join(crossCheckDir, "results", fmiVersion, fmiType, platform, "OMSimulator", omsVersion)
+      shutil.rmtree(path, ignore_errors=True)
 
   # Get start time
   t_sec = time.time()
