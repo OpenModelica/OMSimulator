@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm -rf test01-py/
+## teardown_command: rm -rf test01py/
 ## linux: yes
 ## mingw32: yes
 ## mingw64: yes
@@ -10,7 +10,7 @@ from OMSimulator import OMSimulator
 oms = OMSimulator()
 
 oms.setCommandLineOption("--suppressPath=true")
-oms.setTempDirectory("./test01-py/")
+oms.setTempDirectory("./test01py/")
 
 def printStatus(status, expected):
   cmp = ""
@@ -27,52 +27,52 @@ def printStatus(status, expected):
     status = "error"
   print("status:  [%s] %s" % (cmp, status), flush=True)
 
-status = oms.newModel("test")
+status = oms.newModel("test01py")
 printStatus(status, 0)
 
-status = oms.addSystem("test", oms.system_tlm)
+status = oms.addSystem("test01py", oms.system_tlm)
 printStatus(status, 3)
 
-status = oms.addSystem("test.foo", oms.system_wc)
+status = oms.addSystem("test01py.foo", oms.system_wc)
 printStatus(status, 0)
 
-status = oms.addSystem("test.foo.goo", oms.system_sc)
+status = oms.addSystem("test01py.foo.goo", oms.system_sc)
 printStatus(status, 0)
 
-status = oms.addSystem("test.foo.hoo", oms.system_wc)
+status = oms.addSystem("test01py.foo.hoo", oms.system_wc)
 printStatus(status, 3)
 
-src, status = oms.list("test")
+src, status = oms.list("test01py")
 print(src, flush=True)
 
-src, status = oms.list("test.foo")
+src, status = oms.list("test01py.foo")
 print(src, flush=True)
 
-src, status = oms.list("test.foo.goo")
+src, status = oms.list("test01py.foo.goo")
 print(src, flush=True)
 
-status = oms.newModel("test")
+status = oms.newModel("test01py")
 printStatus(status, 3)
 
-status = oms.rename("test", "foo")
+status = oms.rename("test01py", "foo")
 printStatus(status, 0)
 
-status = oms.newModel("test")
+status = oms.newModel("test01py")
 printStatus(status, 0)
 
-status = oms.delete("test")
+status = oms.delete("test01py")
 printStatus(status, 0)
 
 status = oms.delete("foo")
 printStatus(status, 0)
 
-status = oms.newModel("test")
+status = oms.newModel("test01py")
 printStatus(status, 0)
 
-src, status = oms.list("test")
+src, status = oms.list("test01py")
 print(src, flush=True)
 
-status = oms.delete("test")
+status = oms.delete("test01py")
 printStatus(status, 0)
 
 status = oms.delete("foo")
@@ -80,14 +80,14 @@ printStatus(status, 3)
 
 ## Result:
 ## status:  [correct] ok
-## error:   [addSystem] Model "test" does not contain any system
+## error:   [addSystem] Model "test01py" does not contain any system
 ## status:  [correct] error
 ## status:  [correct] ok
 ## status:  [correct] ok
 ## error:   [NewSystem] A WC system must be the root system or a subsystem of a TLM system.
 ## status:  [correct] error
 ## <?xml version="1.0"?>
-## <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="test" version="1.0">
+## <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="test01py" version="1.0">
 ## 	<ssd:System name="foo">
 ## 		<ssd:Elements>
 ## 			<ssd:System name="goo">
@@ -116,7 +116,7 @@ printStatus(status, 3)
 ## 		<ssd:Annotations>
 ## 			<ssc:Annotation type="org.openmodelica">
 ## 				<oms:Annotations>
-## 					<oms:SimulationInformation resultFile="test_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="resources/signalFilter.xml" />
+## 					<oms:SimulationInformation resultFile="test01py_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="resources/signalFilter.xml" />
 ## 				</oms:Annotations>
 ## 			</ssc:Annotation>
 ## 		</ssd:Annotations>
@@ -162,7 +162,7 @@ printStatus(status, 3)
 ## 	</ssd:Annotations>
 ## </ssd:System>
 ##
-## error:   [newModel] "test" already exists in the scope
+## error:   [newModel] "test01py" already exists in the scope
 ## status:  [correct] error
 ## status:  [correct] ok
 ## status:  [correct] ok
@@ -170,12 +170,12 @@ printStatus(status, 3)
 ## status:  [correct] ok
 ## status:  [correct] ok
 ## <?xml version="1.0"?>
-## <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="test" version="1.0">
+## <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="test01py" version="1.0">
 ## 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
 ## 		<ssd:Annotations>
 ## 			<ssc:Annotation type="org.openmodelica">
 ## 				<oms:Annotations>
-## 					<oms:SimulationInformation resultFile="test_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="resources/signalFilter.xml" />
+## 					<oms:SimulationInformation resultFile="test01py_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="resources/signalFilter.xml" />
 ## 				</oms:Annotations>
 ## 			</ssc:Annotation>
 ## 		</ssd:Annotations>
