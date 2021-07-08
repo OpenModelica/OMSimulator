@@ -167,7 +167,7 @@ oms_delete("importStartValues")
 --             type="org.openmodelica">
 --             <oms:Annotations>
 --               <oms:SimulationInformation
---                 resultFile="importStartValues_res.mat"
+--                 resultFile="importStartValues1_res.mat"
 --                 loggingInterval="0.000000"
 --                 bufferSize="10"
 --                 signalFilter="resources/signalFilter.xml" />
@@ -247,7 +247,7 @@ oms_delete("importStartValues")
 -- </oms:snapshot>
 --
 -- info:    model doesn't contain any continuous state
--- info:    Result file: importStartValues_res.mat (bufferSize=10)
+-- info:    Result file: importStartValues1_res.mat (bufferSize=10)
 -- info:    5 warnings
 -- info:    0 errors
 -- endResult
