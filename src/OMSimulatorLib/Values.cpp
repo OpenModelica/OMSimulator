@@ -881,9 +881,8 @@ oms_status_enu_t oms::Values::rename(const oms::ComRef& oldCref, const oms::ComR
       //logInfo("old:   " + std::string(it->first));
       //logInfo("new:   " + std::string(newCref + tail));
       //logInfo("value: " + std::to_string(it->second));
-      double value = it->second;
-      it = realStartValues.erase(it);             // delete the old cref
-      realStartValues[newCref + tail] = value;    // update the newCref
+      realStartValues[newCref + tail] = it->second;  // update the newCref
+      it = realStartValues.erase(it);                // delete the old cref
     }
     else
     {
@@ -901,9 +900,8 @@ oms_status_enu_t oms::Values::rename(const oms::ComRef& oldCref, const oms::ComR
       //logInfo("old:   " + std::string(it->first));
       //logInfo("new:   " + std::string(newCref + tail));
       //logInfo("value: " + std::to_string(it->second));
-      int value = it->second;
-      it = integerStartValues.erase(it);             // delete the old cref
-      integerStartValues[newCref + tail] = value;    // update the newCref
+      integerStartValues[newCref + tail] = it->second;  // update the newCref
+      it = integerStartValues.erase(it);                // delete the old cref
     }
     else
     {
@@ -921,9 +919,8 @@ oms_status_enu_t oms::Values::rename(const oms::ComRef& oldCref, const oms::ComR
       //logInfo("old:   " + std::string(it->first));
       //logInfo("new:   " + std::string(newCref + tail));
       //logInfo("value: " + std::to_string(it->second));
-      bool value = it->second;
-      it = booleanStartValues.erase(it);             // delete the old cref
-      booleanStartValues[newCref + tail] = value;    // update the newCref
+      booleanStartValues[newCref + tail] = it->second;  // update the newCref
+      it = booleanStartValues.erase(it);                // delete the old cref
     }
     else
     {
@@ -950,9 +947,8 @@ oms_status_enu_t oms::Values::renameInResources(const oms::ComRef& oldCref, cons
           //logInfo("old:   " + std::string(it->first));
           //logInfo("new:   " + std::string(newCref + tail));
           //logInfo("value: " + std::to_string(it->second));
-          double value = it->second;
-          it = res.second.realStartValues.erase(it);             // delete the old cref
-          res.second.realStartValues[newCref + tail] = value;    // update the newCref
+          res.second.realStartValues[newCref + tail] = it->second;  // update the newCref
+          it = res.second.realStartValues.erase(it);                // delete the old cref
         }
         else
         {
@@ -970,9 +966,8 @@ oms_status_enu_t oms::Values::renameInResources(const oms::ComRef& oldCref, cons
           //logInfo("old:   " + std::string(it->first));
           //logInfo("new:   " + std::string(newCref + tail));
           //logInfo("value: " + std::to_string(it->second));
-          int value = it->second;
-          it = res.second.integerStartValues.erase(it);             // delete the old cref
-          res.second.integerStartValues[newCref + tail] = value;    // update the newCref
+          res.second.integerStartValues[newCref + tail] = it->second;  // update the newCref
+          it = res.second.integerStartValues.erase(it);                // delete the old cref
         }
         else
         {
@@ -990,9 +985,8 @@ oms_status_enu_t oms::Values::renameInResources(const oms::ComRef& oldCref, cons
           //logInfo("old:   " + std::string(it->first));
           //logInfo("new:   " + std::string(newCref + tail));
           //logInfo("value: " + std::to_string(it->second));
-          bool value = it->second;
-          it = res.second.booleanStartValues.erase(it);             // delete the old cref
-          res.second.booleanStartValues[newCref + tail] = value;    // update the newCref
+          res.second.booleanStartValues[newCref + tail] = it->second; // update the newCref
+          it = res.second.booleanStartValues.erase(it);               // delete the old cref
         }
         else
         {
