@@ -221,6 +221,12 @@ def simulateWithOMSimulator(crossCheckDir, platform, omsimulator, omsVersion):
   # Make sure we are in crossCheckDir
   os.chdir(crossCheckDir)
 
+  # Clean up possible existing result files
+  for fmiVersion in ["2.0"]:
+    for fmiType in ["me", "cs"]:
+      path = os.path.join(crossCheckDir, "results", fmiVersion, fmiType, platform, "OMSimulator", omsVersion)
+      shutil.rmtree(path, ignore_errors=True)
+
   # Get start time
   t_sec = time.time()
 
