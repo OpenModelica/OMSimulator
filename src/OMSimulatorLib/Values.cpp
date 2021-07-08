@@ -871,36 +871,60 @@ void oms::Values::importParameterMapping(const pugi::xml_node& parameterMapping)
 
 oms_status_enu_t oms::Values::rename(const oms::ComRef& oldCref, const oms::ComRef& newCref)
 {
-  for (const auto &r : realStartValues)
+  for (auto it=realStartValues.cbegin(); it != realStartValues.cend() /* not hoisted */; /* no increment */)
   {
-    ComRef tail(r.first);
+    // renaming the keys
+    ComRef tail(it->first);
     ComRef front = tail.pop_front();
     if (oldCref == front)
     {
-      realStartValues[newCref + tail] = r.second; // update the newCref
-      realStartValues.erase(r.first); // delete the old cref
+      //logInfo("old:   " + std::string(it->first));
+      //logInfo("new:   " + std::string(newCref + tail));
+      //logInfo("value: " + std::to_string(it->second));
+      realStartValues[newCref + tail] = it->second;  // update the newCref
+      it = realStartValues.erase(it);                // delete the old cref
+    }
+    else
+    {
+      ++it;
     }
   }
 
-  for (const auto &i : integerStartValues)
+  for (auto it=integerStartValues.cbegin(); it != integerStartValues.cend() /* not hoisted */; /* no increment */)
   {
-    ComRef tail(i.first);
+    // renaming the keys
+    ComRef tail(it->first);
     ComRef front = tail.pop_front();
     if (oldCref == front)
     {
-      integerStartValues[newCref + tail] = i.second; // update the newCref
-      integerStartValues.erase(i.first);             // delete the old cref
+      //logInfo("old:   " + std::string(it->first));
+      //logInfo("new:   " + std::string(newCref + tail));
+      //logInfo("value: " + std::to_string(it->second));
+      integerStartValues[newCref + tail] = it->second;  // update the newCref
+      it = integerStartValues.erase(it);                // delete the old cref
+    }
+    else
+    {
+      ++it;
     }
   }
 
-  for (const auto &b : booleanStartValues)
+  for (auto it=booleanStartValues.cbegin(); it != booleanStartValues.cend() /* not hoisted */; /* no increment */)
   {
-    ComRef tail(b.first);
+    // renaming the keys
+    ComRef tail(it->first);
     ComRef front = tail.pop_front();
     if (oldCref == front)
     {
-      booleanStartValues[newCref + tail] = b.second; // update the newCref
-      booleanStartValues.erase(b.first);             // delete the old cref
+      //logInfo("old:   " + std::string(it->first));
+      //logInfo("new:   " + std::string(newCref + tail));
+      //logInfo("value: " + std::to_string(it->second));
+      booleanStartValues[newCref + tail] = it->second;  // update the newCref
+      it = booleanStartValues.erase(it);                // delete the old cref
+    }
+    else
+    {
+      ++it;
     }
   }
 
@@ -913,36 +937,60 @@ oms_status_enu_t oms::Values::renameInResources(const oms::ComRef& oldCref, cons
   {
     for (auto &res : it.allresources)
     {
-      for (const auto &r : res.second.realStartValues)
+      for (auto it=res.second.realStartValues.cbegin(); it != res.second.realStartValues.cend() /* not hoisted */; /* no increment */)
       {
-        ComRef tail(r.first);
+        // renaming the keys
+        ComRef tail(it->first);
         ComRef front = tail.pop_front();
         if (oldCref == front)
         {
-          res.second.realStartValues[newCref + tail] = r.second; // update the newCref
-          res.second.realStartValues.erase(r.first);             // delete the old cref
+          //logInfo("old:   " + std::string(it->first));
+          //logInfo("new:   " + std::string(newCref + tail));
+          //logInfo("value: " + std::to_string(it->second));
+          res.second.realStartValues[newCref + tail] = it->second;  // update the newCref
+          it = res.second.realStartValues.erase(it);                // delete the old cref
+        }
+        else
+        {
+          ++it;
         }
       }
 
-      for (const auto &i : res.second.integerStartValues)
+      for (auto it=res.second.integerStartValues.cbegin(); it != res.second.integerStartValues.cend() /* not hoisted */; /* no increment */)
       {
-        ComRef tail(i.first);
+        // renaming the keys
+        ComRef tail(it->first);
         ComRef front = tail.pop_front();
         if (oldCref == front)
         {
-          res.second.integerStartValues[newCref + tail] = i.second; // update the newCref
-          res.second.integerStartValues.erase(i.first);             // delete the old cref
+          //logInfo("old:   " + std::string(it->first));
+          //logInfo("new:   " + std::string(newCref + tail));
+          //logInfo("value: " + std::to_string(it->second));
+          res.second.integerStartValues[newCref + tail] = it->second;  // update the newCref
+          it = res.second.integerStartValues.erase(it);                // delete the old cref
+        }
+        else
+        {
+          ++it;
         }
       }
 
-      for (const auto &b : booleanStartValues)
+      for (auto it=res.second.booleanStartValues.cbegin(); it != res.second.booleanStartValues.cend() /* not hoisted */; /* no increment */)
       {
-        ComRef tail(b.first);
+        // renaming the keys
+        ComRef tail(it->first);
         ComRef front = tail.pop_front();
         if (oldCref == front)
         {
-          res.second.booleanStartValues[newCref + tail] = b.second; // update the newCref
-          res.second.booleanStartValues.erase(b.first);             // delete the old cref
+          //logInfo("old:   " + std::string(it->first));
+          //logInfo("new:   " + std::string(newCref + tail));
+          //logInfo("value: " + std::to_string(it->second));
+          res.second.booleanStartValues[newCref + tail] = it->second; // update the newCref
+          it = res.second.booleanStartValues.erase(it);               // delete the old cref
+        }
+        else
+        {
+          ++it;
         }
       }
     }

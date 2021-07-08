@@ -239,7 +239,7 @@ printStatus(status, 0)
 -- 								</oms:Bus>
 -- 							</oms:Buses>
 -- 							<oms:SimulationInformation>
--- 								<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+-- 								<oms:FixedStepMaster description="oms-ma" stepSize="0.001000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
 -- 							</oms:SimulationInformation>
 -- 						</oms:Annotations>
 -- 					</ssc:Annotation>
@@ -269,7 +269,7 @@ printStatus(status, 0)
 -- 							<ssc:Annotation type="org.openmodelica">
 -- 								<oms:Annotations>
 -- 									<oms:SimulationInformation>
--- 										<oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
+-- 										<oms:VariableStepSolver description="cvode" absoluteTolerance="0.0001" relativeTolerance="0.0001" minimumStepSize="1e-12" maximumStepSize="0.001" initialStepSize="1e-06" />
 -- 									</oms:SimulationInformation>
 -- 								</oms:Annotations>
 -- 							</ssc:Annotation>
@@ -323,7 +323,7 @@ printStatus(status, 0)
 -- 								</oms:Bus>
 -- 							</oms:Buses>
 -- 							<oms:SimulationInformation>
--- 								<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+-- 								<oms:FixedStepMaster description="oms-ma" stepSize="0.001000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
 -- 							</oms:SimulationInformation>
 -- 						</oms:Annotations>
 -- 					</ssc:Annotation>
@@ -408,7 +408,7 @@ printStatus(status, 0)
 -- 								</oms:Bus>
 -- 							</oms:Buses>
 -- 							<oms:SimulationInformation>
--- 								<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+-- 								<oms:FixedStepMaster description="oms-ma" stepSize="0.001000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
 -- 							</oms:SimulationInformation>
 -- 						</oms:Annotations>
 -- 					</ssc:Annotation>
@@ -438,7 +438,7 @@ printStatus(status, 0)
 -- 							<ssc:Annotation type="org.openmodelica">
 -- 								<oms:Annotations>
 -- 									<oms:SimulationInformation>
--- 										<oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
+-- 										<oms:VariableStepSolver description="cvode" absoluteTolerance="0.0001" relativeTolerance="0.0001" minimumStepSize="1e-12" maximumStepSize="0.001" initialStepSize="1e-06" />
 -- 									</oms:SimulationInformation>
 -- 								</oms:Annotations>
 -- 							</ssc:Annotation>
@@ -492,7 +492,7 @@ printStatus(status, 0)
 -- 								</oms:Bus>
 -- 							</oms:Buses>
 -- 							<oms:SimulationInformation>
--- 								<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+-- 								<oms:FixedStepMaster description="oms-ma" stepSize="0.001000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
 -- 							</oms:SimulationInformation>
 -- 						</oms:Annotations>
 -- 					</ssc:Annotation>

@@ -131,7 +131,7 @@ printStatus(status, 0)
 -- 							</oms:Bus>
 -- 						</oms:Buses>
 -- 						<oms:SimulationInformation>
--- 							<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+-- 							<oms:FixedStepMaster description="oms-ma" stepSize="0.001000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
 -- 						</oms:SimulationInformation>
 -- 					</oms:Annotations>
 -- 				</ssc:Annotation>
@@ -162,7 +162,7 @@ printStatus(status, 0)
 -- 							</oms:Bus>
 -- 						</oms:Buses>
 -- 						<oms:SimulationInformation>
--- 							<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+-- 							<oms:FixedStepMaster description="oms-ma" stepSize="0.001000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
 -- 						</oms:SimulationInformation>
 -- 					</oms:Annotations>
 -- 				</ssc:Annotation>
@@ -215,7 +215,7 @@ printStatus(status, 0)
 -- 							</oms:Bus>
 -- 						</oms:Buses>
 -- 						<oms:SimulationInformation>
--- 							<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+-- 							<oms:FixedStepMaster description="oms-ma" stepSize="0.001000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
 -- 						</oms:SimulationInformation>
 -- 					</oms:Annotations>
 -- 				</ssc:Annotation>
@@ -245,7 +245,7 @@ printStatus(status, 0)
 -- 							</oms:Bus>
 -- 						</oms:Buses>
 -- 						<oms:SimulationInformation>
--- 							<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+-- 							<oms:FixedStepMaster description="oms-ma" stepSize="0.001000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
 -- 						</oms:SimulationInformation>
 -- 					</oms:Annotations>
 -- 				</ssc:Annotation>
