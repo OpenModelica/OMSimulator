@@ -2,6 +2,7 @@ import os
 import shutil
 import subprocess
 import sys
+import tempfile
 import time
 
 import pandas as pd
@@ -14,6 +15,7 @@ ulimitOMSimulator = 60
 default_tolerance = 1e-8
 reltolDiffMinMax = 1e-4
 rangeDelta = 0.002
+tempDir = os.path.join(tempfile.gettempdir(), 'cross-check')
 
 def generateLua(modelName, testFMUDir, resultDir, fmiType):
   """Generate Lua Script that will be called by OMSimulator.
@@ -28,7 +30,6 @@ def generateLua(modelName, testFMUDir, resultDir, fmiType):
   luaFilePath = os.path.join(resultDir, modelName + ".lua")
 
   # Set OMSimulator settings
-  tempDir = "/temp/cross-check/"
   startTime = "0.0"
   stopTime = "1.0"
   relTol = str(default_tolerance)
@@ -159,6 +160,9 @@ def simulateFMU(omsimulator, testFMUDir, resultDir, modelName, fmiType, luaFile)
   # Check if result file was generated
   if (not os.path.isfile(os.path.join(resultDir,  modelName+"_out.csv"))) and (exitCode == 0):
     exitCode = 1
+
+  # Delete temp files
+  #shutil.rmtree(tempDir, ignore_errors=True)
 
   return cmd
 
