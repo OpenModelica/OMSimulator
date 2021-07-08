@@ -919,8 +919,8 @@ oms_status_enu_t oms::Values::renameInResources(const oms::ComRef& oldCref, cons
         ComRef front = tail.pop_front();
         if (oldCref == front)
         {
-          res.second.realStartValues[newCref + tail] = r.second; // update the newCref
           res.second.realStartValues.erase(r.first);             // delete the old cref
+          res.second.realStartValues[newCref + tail] = r.second; // update the newCref
         }
       }
 
@@ -930,8 +930,8 @@ oms_status_enu_t oms::Values::renameInResources(const oms::ComRef& oldCref, cons
         ComRef front = tail.pop_front();
         if (oldCref == front)
         {
-          res.second.integerStartValues[newCref + tail] = i.second; // update the newCref
           res.second.integerStartValues.erase(i.first);             // delete the old cref
+          res.second.integerStartValues[newCref + tail] = i.second; // update the newCref
         }
       }
 
@@ -941,8 +941,8 @@ oms_status_enu_t oms::Values::renameInResources(const oms::ComRef& oldCref, cons
         ComRef front = tail.pop_front();
         if (oldCref == front)
         {
-          res.second.booleanStartValues[newCref + tail] = b.second; // update the newCref
           res.second.booleanStartValues.erase(b.first);             // delete the old cref
+          res.second.booleanStartValues[newCref + tail] = b.second; // update the newCref
         }
       }
     }
