@@ -16,6 +16,8 @@ default_tolerance = 1e-8
 reltolDiffMinMax = 1e-4
 rangeDelta = 0.002
 tempDir = os.path.join(tempfile.gettempdir(), 'cross-check')
+if sys.platform == "win32":
+  tempDir = tempDir.replace("\\", "\\\\")
 
 def generateLua(modelName, testFMUDir, resultDir, fmiType):
   """Generate Lua Script that will be called by OMSimulator.
