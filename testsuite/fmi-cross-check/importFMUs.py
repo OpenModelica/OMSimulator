@@ -196,7 +196,6 @@ def importFMU(crossCheckDir, testFMUDir, resultDir, modelName, fmiType, omsimula
 
   # Copy FMU next to Lua file
   testFMU = os.path.abspath(os.path.join(testFMUDir, modelName + ".fmu"))
-  print("\nCopy " + testFMU + " to " + resultDir + "\n")
   shutil.copy(testFMU, resultDir)
 
   # Generate lua file
