@@ -25,10 +25,9 @@ def generateLua(modelName, testFMUDir, resultDir, fmiType):
   Returns path to generated Lua file.
   """
   # Get some paths
-  testFMU = os.path.relpath(os.path.join(testFMUDir, modelName + ".fmu"), resultDir)
+  testFMU = modelName + ".fmu"
   if sys.platform == "win32":
     testFMU = testFMU.replace("\\", "\\\\")
-  inputCSV = os.path.relpath(os.path.join(testFMUDir, modelName + "_in.csv"), resultDir)
   luaFilePath = os.path.join(resultDir, modelName + ".lua")
 
   # Set OMSimulator settings
@@ -195,6 +194,11 @@ def importFMU(crossCheckDir, testFMUDir, resultDir, modelName, fmiType, omsimula
 
   os.makedirs(resultDir, exist_ok = True)
 
+  # Copy FMU next to Lua file
+  testFMU = os.path.abspath(os.path.join(testFMUDir, modelName + ".fmu"))
+  print("\nCopy " + testFMU + " to " + resultDir + "\n")
+  shutil.copy(testFMU, resultDir)
+
   # Generate lua file
   luaFile = generateLua(modelName, testFMUDir, resultDir, fmiType)
 
@@ -221,7 +225,9 @@ def simulateWithOMSimulator(crossCheckDir, platform, omsimulator, omsVersion):
   # Make sure we are in crossCheckDir
   os.chdir(crossCheckDir)
 
-  # Clean up possible existing result files
+  # Clean up possible existing result files and temp dir
+  tempDir = os.path.join(tempfile.gettempdir(), 'cross-check')
+  shutil.rmtree(tempDir, ignore_errors=True)
   for fmiVersion in ["2.0"]:
     for fmiType in ["me", "cs"]:
       path = os.path.join(crossCheckDir, "results", fmiVersion, fmiType, platform, "OMSimulator", omsVersion)
