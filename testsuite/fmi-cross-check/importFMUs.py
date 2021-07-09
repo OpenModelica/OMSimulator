@@ -163,7 +163,7 @@ def simulateFMU(omsimulator, testFMUDir, resultDir, modelName, fmiType, luaFile)
     exitCode = 1
 
   # Delete temp files
-  #shutil.rmtree(tempDir, ignore_errors=True)
+  shutil.rmtree(tempDir, ignore_errors=True)
 
   return cmd
 
