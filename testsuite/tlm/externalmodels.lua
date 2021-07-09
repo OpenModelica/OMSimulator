@@ -1,9 +1,9 @@
 -- status: correct
--- teardown_command: rm -rf externalmodels-lua/
+-- teardown_command: rm -rf externalmodels_lua/
 -- linux: yes
 -- mingw32: yes
 -- mingw64: yes
--- win: no
+-- win: yes
 -- mac: no
 
 oms_setCommandLineOption("--suppressPath=true")
@@ -26,7 +26,9 @@ function printStatus(status, expected)
   print("status:  [" .. cmp .. "] " .. status)
 end
 
-status = oms_setTempDirectory("./externalmodels-lua/")
+status = oms_setTempDirectory("./externalmodels_lua/")
+printStatus(status, 0)
+status = oms_setWorkingDirectory("./externalmodels_lua/")
 printStatus(status, 0)
 
 status = oms_newModel("model")
@@ -57,6 +59,7 @@ status = oms_delete("model")
 
 
 -- Result:
+-- status:  [correct] ok
 -- status:  [correct] ok
 -- status:  [correct] ok
 -- status:  [correct] ok

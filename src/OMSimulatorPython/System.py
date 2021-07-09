@@ -35,3 +35,36 @@ class System:
     status = Scope._capi.addConnection(new_conA, new_conB)
     if Types.Status(status) != Types.Status.OK:
       raise Exception('error {}'.format(Types.Status(status)))
+
+  def getBoolean(self, cref: str):
+    value, status = Scope._capi.getBoolean(self.cref + '.' + cref)
+    if Types.Status(status) != Types.Status.OK:
+      raise Exception('error {}'.format(Types.Status(status)))
+    return value
+
+  def getInteger(self, cref: str):
+    value, status = Scope._capi.getInteger(self.cref + '.' + cref)
+    if Types.Status(status) != Types.Status.OK:
+      raise Exception('error {}'.format(Types.Status(status)))
+    return value
+
+  def getReal(self, cref: str):
+    value, status = Scope._capi.getReal(self.cref + '.' + cref)
+    if Types.Status(status) != Types.Status.OK:
+      raise Exception('error {}'.format(Types.Status(status)))
+    return value
+
+  def setBoolean(self, cref: str, value: bool) -> None:
+    status = Scope._capi.setBoolean(self.cref + '.' + cref, value)
+    if Types.Status(status) != Types.Status.OK:
+      raise Exception('error {}'.format(Types.Status(status)))
+
+  def setInteger(self, cref: str, value: int) -> None:
+    status = Scope._capi.setInteger(self.cref + '.' + cref, value)
+    if Types.Status(status) != Types.Status.OK:
+      raise Exception('error {}'.format(Types.Status(status)))
+
+  def setReal(self, cref: str, value: float) -> None:
+    status = Scope._capi.setReal(self.cref + '.' + cref, value)
+    if Types.Status(status) != Types.Status.OK:
+      raise Exception('error {}'.format(Types.Status(status)))

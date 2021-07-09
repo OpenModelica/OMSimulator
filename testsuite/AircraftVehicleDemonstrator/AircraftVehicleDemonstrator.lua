@@ -3,7 +3,7 @@
 -- linux: no
 -- mingw32: no
 -- mingw64: yes
--- win: no
+-- win: yes
 -- mac: no
 
 oms_setCommandLineOption("--suppressPath=true --ignoreInitialUnknowns=true")

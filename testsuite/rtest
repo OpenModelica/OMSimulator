@@ -213,6 +213,9 @@ sub runone
     }
     if ($ext eq '.py') {
       $sim_exe="OMSimulatorPython3";
+      if ($TEST_PLATFORM eq 'win') {
+        $sim_exe="OMSimulatorPython3.bat";
+      }
     }
 
     $log = "$tmpdir/log-$f";

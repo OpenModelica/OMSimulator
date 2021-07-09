@@ -3,7 +3,7 @@
 -- linux: yes
 -- mingw32: yes
 -- mingw64: yes
--- win: no
+-- win: yes
 
 oms_setCommandLineOption("--suppressPath=true --stripRoot=true")
 oms_setTempDirectory("./ASSCExample-lua/")
