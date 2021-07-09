@@ -35,7 +35,6 @@ def generateLua(modelName, testFMUDir, resultDir, fmiType):
   stopTime = "1.0"
   relTol = str(default_tolerance)
   absTol = str(default_tolerance)
-  maximumStepSize = "1e-5"
   inputCSV = ""
   refOptFile = os.path.join(testFMUDir, modelName + "_ref.opt")
   df = pd.read_csv(refOptFile, delimiter=',', index_col=0, header=None)
@@ -54,6 +53,7 @@ def generateLua(modelName, testFMUDir, resultDir, fmiType):
     if not df.loc["AbsTol", 1] == 0:
       absTol = str(df.loc["AbsTol", 1])
 
+  maximumStepSize = str((float(stopTime) - float(startTime)) / 500)
   if "StepSize" in df.index:
     if not df.loc["StepSize", 1] == 0:
       maximumStepSize = str(df.loc["StepSize", 1])
