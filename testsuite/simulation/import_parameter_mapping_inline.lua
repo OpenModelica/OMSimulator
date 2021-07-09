@@ -8,8 +8,9 @@
 
 oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./import_parameter_mapping_inline_lua/")
+oms_setWorkingDirectory("./import_parameter_mapping_inline_lua/")
 
-oms_importFile("../resources/importParameterMappingInline.ssp");
+oms_importFile("../../resources/importParameterMappingInline.ssp");
 
 src, status = oms_list("import_parameter_mapping")
 print(src)

@@ -1,4 +1,5 @@
 -- status: correct
+-- teardown_command: rm -rf deleteConnector1_lua/
 -- linux: yes
 -- mingw32: yes
 -- mingw64: yes
@@ -6,7 +7,8 @@
 -- mac: yes
 
 oms_setCommandLineOption("--suppressPath=true")
-oms_setTempDirectory("./deleteConnector_01_lua/")
+oms_setTempDirectory("./deleteConnector1_lua/")
+oms_setWorkingDirectory("./deleteConnector1_lua/")
 
 oms_newModel("deleteConnector")
 
@@ -30,7 +32,7 @@ oms_addConnector("deleteConnector.Root.System2.C4", oms_causality_output, oms_si
 oms_setReal("deleteConnector.Root.System2.C3", 20.0)
 oms_setReal("deleteConnector.Root.System2.C4", 30.0)
 
-oms_addSubModel("deleteConnector.Root.System1.Gain", "../resources/Modelica.Blocks.Math.Gain.fmu")
+oms_addSubModel("deleteConnector.Root.System1.Gain", "../../resources/Modelica.Blocks.Math.Gain.fmu")
 oms_setReal("deleteConnector.Root.System1.Gain.k", 30.0)
 
 oms_addConnection("deleteConnector.Root.System2.C3", "deleteConnector.Root.System1.C1")

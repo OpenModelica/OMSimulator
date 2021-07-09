@@ -1,4 +1,5 @@
 -- status: correct
+-- teardown_command: rm -rf deleteStartValues_lua/
 -- linux: yes
 -- mingw32: yes
 -- mingw64: yes
@@ -7,6 +8,7 @@
 
 oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./deleteStartValues_lua/")
+oms_setWorkingDirectory("./deleteStartValues_lua/")
 
 oms_newModel("deleteStartValues")
 
@@ -29,7 +31,7 @@ oms_addConnector("deleteStartValues.Root.System2.C4", oms_causality_output, oms_
 oms_setReal("deleteStartValues.Root.System2.C3", 20.0)
 oms_setReal("deleteStartValues.Root.System2.C4", 30.0)
 
-oms_addSubModel("deleteStartValues.Root.System1.Gain", "../resources/Modelica.Blocks.Math.Gain.fmu")
+oms_addSubModel("deleteStartValues.Root.System1.Gain", "../../resources/Modelica.Blocks.Math.Gain.fmu")
 
 --oms_setReal("deleteStartValues.Root.System1.Gain.k:start", 30.0) // this is allowed before initialization
 --oms_setReal("deleteStartValues.Root.System1.Gain.k", 20.0) // allowed only if model is initialized, we are allowed to provide different value after initialization

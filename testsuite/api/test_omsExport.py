@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm -rf test_omsExport-py/
+## teardown_command: rm -rf test_omsExport_py/
 ## linux: yes
 ## linux32: yes
 ## mingw32: yes
@@ -11,7 +11,8 @@ from OMSimulator import OMSimulator
 oms = OMSimulator()
 
 oms.setCommandLineOption("--suppressPath=true")
-oms.setTempDirectory("./test_omsExport-py/")
+oms.setTempDirectory("./test_omsExport_py/")
+oms.setWorkingDirectory("./test_omsExport_py/")
 
 def printStatus(status, expected):
   cmp = ""

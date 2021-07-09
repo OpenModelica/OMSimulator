@@ -1,4 +1,5 @@
 -- status: correct
+-- teardown_command: rm -rf Enumeration2_lua/
 -- linux: yes
 -- mingw32: yes
 -- mingw64: yes
@@ -6,12 +7,13 @@
 -- mac: no
 
 oms_setCommandLineOption("--suppressPath=true")
-oms_setTempDirectory("./temp-Enumeration2/")
+oms_setTempDirectory("./Enumeration2_lua/")
+oms_setWorkingDirectory("./Enumeration2_lua/")
 
 oms_newModel("test")
 oms_addSystem("test.root", oms_system_sc)
-oms_addSubModel("test.root.A", "../resources/Int1.fmu")
-oms_addSubModel("test.root.B", "../resources/Enum1.fmu")
+oms_addSubModel("test.root.A", "../../resources/Int1.fmu")
+oms_addSubModel("test.root.B", "../../resources/Enum1.fmu")
 
 -- valid connection
 oms_addConnection("test.root.B.u", "test.root.A.y")

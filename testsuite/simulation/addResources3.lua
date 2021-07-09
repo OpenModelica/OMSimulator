@@ -1,5 +1,5 @@
 -- status: correct
--- teardown_command: rm -rf addResources_03_lua/
+-- teardown_command: rm -rf addResources3_lua/
 -- linux: yes
 -- mingw32: yes
 -- mingw64: yes
@@ -7,7 +7,8 @@
 -- mac: no
 
 oms_setCommandLineOption("--suppressPath=true")
-oms_setTempDirectory("./addResources_03_lua/")
+oms_setTempDirectory("./addResources3_lua/")
+oms_setWorkingDirectory("./addResources3_lua/")
 
 oms_newModel("addResources")
 
@@ -23,7 +24,7 @@ oms_addResources("addResources.root.system1:system1.ssv")
 oms_setReal("addResources.root.system1.C1", -10.5)
 oms_setReal("addResources.root.system1.C2", -20.5)
 
-oms_addSubModel("addResources.root.system1.add", "../resources/Modelica.Blocks.Math.Add.fmu")
+oms_addSubModel("addResources.root.system1.add", "../../resources/Modelica.Blocks.Math.Add.fmu")
 oms_setReal("addResources.root.system1.add.k1", 45)
 
 
@@ -37,7 +38,7 @@ oms_addResources("addResources.root.system2:system2.ssv")
 oms_setReal("addResources.root.system2.C1", -20)
 oms_setReal("addResources.root.system2.C2", -30)
 
-oms_addSubModel("addResources.root.system2.add2", "../resources/Modelica.Blocks.Math.Add.fmu")
+oms_addSubModel("addResources.root.system2.add2", "../../resources/Modelica.Blocks.Math.Add.fmu")
 oms_setReal("addResources.root.system2.add2.k1", 49.5)
 
 oms_setResultFile("addResources", "addResources3.mat", 10)

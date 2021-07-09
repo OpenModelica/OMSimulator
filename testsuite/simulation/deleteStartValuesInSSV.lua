@@ -1,4 +1,5 @@
 -- status: correct
+-- teardown_command: rm -rf deleteStartValuesInSSV_lua/
 -- linux: yes
 -- mingw32: yes
 -- mingw64: yes
@@ -8,6 +9,7 @@
 oms_setCommandLineOption("--suppressPath=true")
 
 oms_setTempDirectory("./deleteStartValuesInSSV_lua/")
+oms_setWorkingDirectory("./deleteStartValuesInSSV_lua/")
 
 oms_newModel("deleteStartValuesInSSV")
 
@@ -29,7 +31,7 @@ oms_setReal("deleteStartValuesInSSV.Root.System1.C1", 20.0)
 oms_setReal("deleteStartValuesInSSV.Root.System1.C2", 30.0)
 
 -- add submodel
-oms_addSubModel("deleteStartValuesInSSV.Root.System1.Gain", "../resources/Modelica.Blocks.Math.Gain.fmu")
+oms_addSubModel("deleteStartValuesInSSV.Root.System1.Gain", "../../resources/Modelica.Blocks.Math.Gain.fmu")
 oms_setReal("deleteStartValuesInSSV.Root.System1.Gain.k", 40.0)
 
 src = oms_list("deleteStartValuesInSSV")

@@ -8,8 +8,9 @@
 
 oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./import_hierarchical_ssv_sources_lua/")
+oms_setWorkingDirectory("./import_hierarchical_ssv_sources_lua/")
 
-oms_importFile("../resources/import_hierarchical_ssv_sources.ssp");
+oms_importFile("../../resources/import_hierarchical_ssv_sources.ssp");
 
 oms_instantiate("import_hierarchical_ssv_sources")
 

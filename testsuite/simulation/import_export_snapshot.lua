@@ -1,5 +1,5 @@
 -- status: correct
--- teardown_command: rm -rf import_export_snapshot_lua/ import_export_snapshot.ssp
+-- teardown_command: rm -rf import_export_snapshot_lua/
 -- linux: yes
 -- mingw32: yes
 -- mingw64: yes
@@ -7,7 +7,8 @@
 -- mac: no
 
 oms_setCommandLineOption("--suppressPath=true")
-status = oms_setTempDirectory("./import_export_snapshot_lua/")
+oms_setTempDirectory("./import_export_snapshot_lua/")
+oms_setWorkingDirectory("./import_export_snapshot_lua/")
 
 oms_newModel("import_export_snapshot")
 oms_addSystem("import_export_snapshot.root", oms_system_wc)
@@ -17,7 +18,7 @@ oms_addResources("import_export_snapshot.root:import_export_snapshot.ssv")
 oms_addConnector("import_export_snapshot.root.C1", oms_causality_input, oms_signal_type_real)
 oms_setReal("import_export_snapshot.root.C1", -10)
 
-oms_addSubModel("import_export_snapshot.root.add", "../resources/Modelica.Blocks.Math.Add.fmu")
+oms_addSubModel("import_export_snapshot.root.add", "../../resources/Modelica.Blocks.Math.Add.fmu")
 oms_setReal("import_export_snapshot.root.add.u1", 10)
 oms_setReal("import_export_snapshot.root.add.k1", 30)
 

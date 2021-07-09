@@ -1,4 +1,5 @@
 -- status: correct
+-- teardown_command: rm -rf exportConnectorsToResultFile_lua/
 -- linux: yes
 -- mingw32: yes
 -- mingw64: yes
@@ -6,7 +7,8 @@
 -- mac: no
 
 oms_setCommandLineOption("--suppressPath=true")
-oms_setTempDirectory("./exportConnectors/")
+oms_setTempDirectory("./exportConnectorsToResultFile_lua/")
+oms_setWorkingDirectory("./exportConnectorsToResultFile_lua/")
 
 oms_newModel("exportConnectors")
 
@@ -18,7 +20,7 @@ oms_addConnector("exportConnectors.Root.C3", oms_causality_parameter, oms_signal
 -- oms_addSystem("exportConnectors.Root.System1", oms_system_sc)
 -- oms_addConnector("exportConnectors.Root.System1.T1", oms_causality_input, oms_signal_type_real)
 
-oms_addSubModel("exportConnectors.Root.Gain", "../resources/Modelica.Blocks.Math.Gain.fmu")
+oms_addSubModel("exportConnectors.Root.Gain", "../../resources/Modelica.Blocks.Math.Gain.fmu")
 
 print("info:  Before Setting Start Values")
 print("info:      exportConnectors.Root.C1                    : " .. oms_getReal("exportConnectors.Root.C1"))

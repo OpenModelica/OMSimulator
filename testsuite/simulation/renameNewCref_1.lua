@@ -1,16 +1,18 @@
 -- status: correct
+-- teardown_command: rm -rf renameNewCref_1_lua/
 -- linux: yes
 -- mingw32: yes
 -- mingw64: yes
--- win: no
--- mac: no
+-- win: yes
+-- mac: yes
 
 oms_setCommandLineOption("--suppressPath=true")
-oms_setTempDirectory("./rename_new_cref_01_lua/")
+oms_setTempDirectory("./renameNewCref_1_lua/")
+oms_setWorkingDirectory("./renameNewCref_1_lua/")
 
 oms_newModel("model")
 oms_addSystem("model.root", oms_system_wc)
-oms_addSubModel("model.root.gain", "../resources/Modelica.Blocks.Math.Gain.fmu")
+oms_addSubModel("model.root.gain", "../../resources/Modelica.Blocks.Math.Gain.fmu")
 
 -- error snapshot as subcomponent gain is missing
 systemSnapshot = [[
@@ -87,7 +89,6 @@ componentSnapshot = [[
 
 newcref, status = oms_importSnapshot("model", componentSnapshot)
 print(newcref)
-
 
 -- Result:
 -- root_3

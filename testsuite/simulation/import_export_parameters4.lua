@@ -1,5 +1,5 @@
 -- status: correct
--- teardown_command: rm -rf import_export_parameters_04_lua/
+-- teardown_command: rm -rf import_export_parameters4_lua/
 -- linux: yes
 -- mingw32: yes
 -- mingw64: yes
@@ -7,7 +7,8 @@
 -- mac: no
 
 oms_setCommandLineOption("--suppressPath=true")
-oms_setTempDirectory("./import_export_parameters_04_lua/")
+oms_setTempDirectory("./import_export_parameters4_lua/")
+oms_setWorkingDirectory("./import_export_parameters4_lua/")
 
 oms_newModel("import_export_parameters")
 
@@ -28,7 +29,7 @@ oms_addConnector("import_export_parameters.co_sim.foo.F_cref", oms_causality_par
 oms_setReal("import_export_parameters.co_sim.foo.F_cref", -40.0)
 
 -- instantiate FMUs
-oms_addSubModel("import_export_parameters.co_sim.addP", "../resources/Modelica.Blocks.Math.Add.fmu")
+oms_addSubModel("import_export_parameters.co_sim.addP", "../../resources/Modelica.Blocks.Math.Add.fmu")
 oms_setReal("import_export_parameters.co_sim.addP.k1", 60)
 oms_setReal("import_export_parameters.co_sim.addP.k2", 150)
 

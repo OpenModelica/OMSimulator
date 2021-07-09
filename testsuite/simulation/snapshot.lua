@@ -1,4 +1,5 @@
 -- status: correct
+-- teardown_command: rm -rf snapshot_lua/
 -- linux: yes
 -- mingw32: yes
 -- mingw64: yes
@@ -6,7 +7,8 @@
 -- mac: no
 
 oms_setCommandLineOption("--suppressPath=true")
-oms_setTempDirectory("./snapshot/")
+oms_setTempDirectory("./snapshot_lua/")
+oms_setWorkingDirectory("./snapshot_lua/")
 
 oms_newModel("snapshot")
 oms_addSystem("snapshot.root", oms_system_wc)
@@ -16,7 +18,7 @@ oms_addResources("snapshot.root:snapshot.ssv")
 oms_addConnector("snapshot.root.C1", oms_causality_input, oms_signal_type_real)
 oms_setReal("snapshot.root.C1", -10)
 
-oms_addSubModel("snapshot.root.add", "../resources/Modelica.Blocks.Math.Add.fmu")
+oms_addSubModel("snapshot.root.add", "../../resources/Modelica.Blocks.Math.Add.fmu")
 oms_setReal("snapshot.root.add.u1", 10)
 oms_setReal("snapshot.root.add.k1", 30)
 

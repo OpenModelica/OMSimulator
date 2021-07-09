@@ -1,5 +1,5 @@
 -- status: correct
--- teardown_command: rm -rf rename_model
+-- teardown_command: rm -rf renameModel_lua/
 -- linux: yes
 -- mingw32: yes
 -- mingw64: yes
@@ -7,7 +7,8 @@
 -- mac: no
 
 oms_setCommandLineOption("--suppressPath=true")
-oms_setTempDirectory("./rename_model/")
+oms_setTempDirectory("./renameModel_lua/")
+oms_setWorkingDirectory("./renameModel_lua/")
 
 oms_newModel("model")
 
@@ -18,7 +19,7 @@ oms_addConnector("model.root.output", oms_causality_output, oms_signal_type_real
 oms_addSystem("model.root.System1", oms_system_sc)
 oms_addConnector("model.root.System1.input1", oms_causality_input, oms_signal_type_real)
 
-oms_addSubModel("model.root.add", "../resources/Modelica.Blocks.Math.Add.fmu")
+oms_addSubModel("model.root.add", "../../resources/Modelica.Blocks.Math.Add.fmu")
 
 oms_rename("model", "model_3")
 

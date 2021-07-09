@@ -1,5 +1,5 @@
 -- status: correct
--- teardown_command: rm -rf import_export_signalFilter-lua/ model_res.csv
+-- teardown_command: rm -rf import_export_signalFilter_lua/
 -- linux: yes
 -- linux32: yes
 -- mingw32: yes
@@ -16,7 +16,8 @@ function readFile(filename)
 end
 
 oms_setCommandLineOption("--suppressPath=true --skipCSVHeader=true --addParametersToCSV=true")
-oms_setTempDirectory("./import_export_signalFilter-lua/")
+oms_setTempDirectory("./import_export_signalFilter_lua/")
+oms_setWorkingDirectory("./import_export_signalFilter_lua/")
 
 oms_newModel("model")
 
@@ -40,7 +41,7 @@ oms_addConnector("model.root.System2.parameter_1", oms_causality_parameter, oms_
 oms_setReal("model.root.System2.Input_1", 30)
 oms_setReal("model.root.System2.parameter_1", 40)
 
-oms_addSubModel("model.root.Gain", "../resources/Modelica.Blocks.Math.Gain.fmu")
+oms_addSubModel("model.root.Gain", "../../resources/Modelica.Blocks.Math.Gain.fmu")
 
 oms_removeSignalsFromResults("model", ".*")
 

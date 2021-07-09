@@ -1,4 +1,5 @@
 -- status: correct
+-- teardown_command: rm -rf multipleConnections_lua/
 -- linux: yes
 -- mingw32: yes
 -- mingw64: yes
@@ -6,7 +7,8 @@
 -- mac: no
 
 oms_setCommandLineOption("--suppressPath=true")
-oms_setTempDirectory("./multipleinputconnections/")
+oms_setTempDirectory("./multipleConnections_lua/")
+oms_setWorkingDirectory("./multipleConnections_lua/")
 
 oms_newModel("model")
 
@@ -24,8 +26,8 @@ oms_setReal("model.System.parameter1", 30)
 oms_setReal("model.System.parameter1", 40)
 
 -- instantiate FMUs
-oms_addSubModel("model.System.add", "../resources/Modelica.Blocks.Math.Add.fmu")
-oms_addSubModel("model.System.gain", "../resources/Modelica.Blocks.Math.Gain.fmu")
+oms_addSubModel("model.System.add", "../../resources/Modelica.Blocks.Math.Add.fmu")
+oms_addSubModel("model.System.gain", "../../resources/Modelica.Blocks.Math.Gain.fmu")
 
 -- valid connections, inputs -> multiple components inputs
 oms_addConnection("model.System.Input1", "model.System.add.u1")

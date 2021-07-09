@@ -1,5 +1,5 @@
 -- status: correct
--- teardown_command: rm -rf exportsnapshotssp_lua/
+-- teardown_command: rm -rf exportSnapshotSSP_lua/
 -- linux: yes
 -- mingw32: yes
 -- mingw64: yes
@@ -7,7 +7,8 @@
 -- mac: no
 
 oms_setCommandLineOption("--suppressPath=true")
-oms_setTempDirectory("./exportsnapshotssp_lua/")
+oms_setTempDirectory("./exportSnapshotSSP_lua/")
+oms_setWorkingDirectory("./exportSnapshotSSP_lua/")
 
 oms_newModel("exportSnapshotSSP")
 
@@ -18,7 +19,7 @@ oms_addResources("exportSnapshotSSP.root:exportSnapshotSSP.ssv")
 oms_addConnector("exportSnapshotSSP.root.Input1", oms_causality_input, oms_signal_type_real)
 oms_setReal("exportSnapshotSSP.root.Input1", 10)
 
-oms_addSubModel("exportSnapshotSSP.root.Gain", "../resources/Modelica.Blocks.Math.Gain.fmu")
+oms_addSubModel("exportSnapshotSSP.root.Gain", "../../resources/Modelica.Blocks.Math.Gain.fmu")
 oms_setReal("exportSnapshotSSP.root.Gain.k", 27)
 
 -- snapshot = oms_exportSnapshot("exportSnapshotSSP")

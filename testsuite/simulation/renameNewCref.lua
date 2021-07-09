@@ -1,4 +1,5 @@
 -- status: correct
+-- teardown_command: rm -rf renameNewCref_lua/
 -- linux: yes
 -- mingw32: yes
 -- mingw64: yes
@@ -6,11 +7,12 @@
 -- mac: no
 
 oms_setCommandLineOption("--suppressPath=true")
-oms_setTempDirectory("./rename_new_cref_lua/")
+oms_setTempDirectory("./renameNewCref_lua/")
+oms_setWorkingDirectory("./renameNewCref_lua/")
 
 oms_newModel("model")
 oms_addSystem("model.root", oms_system_wc)
-oms_addSubModel("model.root.gain", "../resources/Modelica.Blocks.Math.Gain.fmu")
+oms_addSubModel("model.root.gain", "../../resources/Modelica.Blocks.Math.Gain.fmu")
 
 systemSnapshot = [[
   <?xml version="1.0"?>

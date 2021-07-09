@@ -1,5 +1,5 @@
 -- status: correct
--- teardown_command: rm -rf import_parameter_mapping_ssm_lua/
+-- teardown_command: rm -rf import_parameter_mapping_from_ssm_lua/
 -- linux: yes
 -- mingw32: yes
 -- mingw64: yes
@@ -7,9 +7,10 @@
 -- mac: no
 
 oms_setCommandLineOption("--suppressPath=true")
-oms_setTempDirectory("./import_parameter_mapping_ssm_lua/")
+oms_setTempDirectory("./import_parameter_mapping_from_ssm_lua/")
+oms_setWorkingDirectory("./import_parameter_mapping_from_ssm_lua/")
 
-oms_importFile("../resources/importParameterMapping.ssp");
+oms_importFile("../../resources/importParameterMapping.ssp");
 
 src = oms_exportSnapshot("import_parameter_mapping");
 print(src)

@@ -1,4 +1,5 @@
 -- status: correct
+-- teardown_command: rm -rf renameNewCref_2_lua/
 -- linux: yes
 -- mingw32: yes
 -- mingw64: yes
@@ -6,7 +7,8 @@
 -- mac: no
 
 oms_setCommandLineOption("--suppressPath=true")
-oms_setTempDirectory("./rename_new_cref_02_lua/")
+oms_setTempDirectory("./renameNewCref_2_lua/")
+oms_setWorkingDirectory("./renameNewCref_2_lua/")
 
 oms_newModel("model")
 oms_newModel("model_4")

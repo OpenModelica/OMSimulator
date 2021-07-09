@@ -1,5 +1,5 @@
 -- status: correct
--- teardown_command: rm -rf table-lua/ table_res.mat
+-- teardown_command: rm -rf table_lua/
 -- linux: yes
 -- mingw32: yes
 -- mingw64: yes
@@ -7,7 +7,8 @@
 -- mac: yes
 
 oms_setCommandLineOption("--suppressPath=true")
-oms_setTempDirectory("./table-lua/")
+oms_setTempDirectory("./table_lua/")
+oms_setWorkingDirectory("./table_lua/")
 
 systems = {oms_system_wc, oms_system_sc}
 for _,system in ipairs(systems) do
@@ -15,7 +16,7 @@ for _,system in ipairs(systems) do
   oms_addSystem("table.root", system)
 
   -- instantiate table
-  oms_addSubModel("table.root.A", "../resources/table.csv")
+  oms_addSubModel("table.root.A", "../../resources/table.csv")
 
   oms_instantiate("table")
   oms_initialize("table")
@@ -24,7 +25,7 @@ for _,system in ipairs(systems) do
   oms_terminate("table")
   oms_delete("table")
 
-  if 1 == oms_compareSimulationResults("../resources/table.csv", "table_res.mat", "table.root.A.y", 1e-4, 1e-4) then
+  if 1 == oms_compareSimulationResults("../../resources/table.csv", "table_res.mat", "table.root.A.y", 1e-4, 1e-4) then
     print("system is equal")
   else
     print("system is not equal")

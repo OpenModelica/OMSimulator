@@ -1,5 +1,5 @@
 -- status: correct
--- teardown_command: rm -rf import_export_parameters_lua/
+-- teardown_command: rm -rf import_export_parameters_to_ssv_lua/
 -- linux: yes
 -- mingw32: yes
 -- mingw64: yes
@@ -7,7 +7,8 @@
 -- mac: no
 
 oms_setCommandLineOption("--suppressPath=true")
-oms_setTempDirectory("./import_export_parameters_lua/")
+oms_setTempDirectory("./import_export_parameters_to_ssv_lua/")
+oms_setWorkingDirectory("./import_export_parameters_to_ssv_lua/")
 
 oms_newModel("import_export_parameters")
 
@@ -30,9 +31,9 @@ oms_addConnector("import_export_parameters.co_sim.foo.F_cref", oms_causality_par
 oms_setReal("import_export_parameters.co_sim.foo.F_cref", 40.0)
 
 -- instantiate FMUs
-oms_addSubModel("import_export_parameters.co_sim.addP", "../resources/Modelica.Blocks.Math.Add.fmu")
-oms_addSubModel("import_export_parameters.co_sim.P", "../resources/Modelica.Blocks.Math.Gain.fmu")
-oms_addSubModel("import_export_parameters.co_sim.addI", "../resources/Modelica.Blocks.Math.Add3.fmu")
+oms_addSubModel("import_export_parameters.co_sim.addP", "../../resources/Modelica.Blocks.Math.Add.fmu")
+oms_addSubModel("import_export_parameters.co_sim.P", "../../resources/Modelica.Blocks.Math.Gain.fmu")
+oms_addSubModel("import_export_parameters.co_sim.addI", "../../resources/Modelica.Blocks.Math.Add3.fmu")
 
 -- TODO check all allowed connections
 -- System.Parameter to Element.Parameter

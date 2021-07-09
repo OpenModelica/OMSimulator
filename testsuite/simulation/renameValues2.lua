@@ -8,6 +8,7 @@
 
 oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./renameValues2_lua/")
+oms_setWorkingDirectory("./renameValues2_lua/")
 
 oms_newModel("renameValues2")
 oms_addSystem("renameValues2.root", oms_system_wc)
@@ -17,12 +18,12 @@ oms_addSystem("renameValues2.root.system1", oms_system_sc)
 oms_addConnector("renameValues2.root.system1.k1", oms_causality_parameter, oms_signal_type_real)
 oms_setReal("renameValues2.root.system1.k1", -10)
 
-oms_addSubModel("renameValues2.root.add_1", "../resources/Modelica.Blocks.Math.Add.fmu")
+oms_addSubModel("renameValues2.root.add_1", "../../resources/Modelica.Blocks.Math.Add.fmu")
 oms_setReal("renameValues2.root.add_1.k1", 10)
 oms_setReal("renameValues2.root.add_1.k2", 20)
 oms_setReal("renameValues2.root.add_1.u1", 40)
 
-oms_addSubModel("renameValues2.root.add_2", "../resources/Modelica.Blocks.Math.Add.fmu")
+oms_addSubModel("renameValues2.root.add_2", "../../resources/Modelica.Blocks.Math.Add.fmu")
 
 oms_addConnection("renameValues2.root.add_1.y", "renameValues2.root.add_2.u1")
 

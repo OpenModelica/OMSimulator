@@ -1,4 +1,5 @@
 -- status: correct
+-- teardown_command: rm -rf setExternalInputs_lua/
 -- linux: yes
 -- mingw32: yes
 -- mingw64: yes
@@ -7,12 +8,13 @@
 
 oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./setExternalInputs_lua/")
+oms_setWorkingDirectory("./setExternalInputs_lua/")
 
 oms_newModel("setExternalInputs")
 
 oms_addSystem("setExternalInputs.Root", oms_system_wc)
 
-oms_addSubModel("setExternalInputs.Root.Gain", "../resources/Modelica.Blocks.Math.Gain.fmu")
+oms_addSubModel("setExternalInputs.Root.Gain", "../../resources/Modelica.Blocks.Math.Gain.fmu")
 
 oms_setStopTime("setExternalInputs", 5.0)
 

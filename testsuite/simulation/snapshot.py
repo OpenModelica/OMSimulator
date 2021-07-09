@@ -1,4 +1,5 @@
 ## status: correct
+## teardown_command: rm -rf snapshot_py/
 ## linux: yes
 ## mingw32: yes
 ## mingw64: yes
@@ -10,7 +11,8 @@ from OMSimulator import OMSimulator
 oms = OMSimulator()
 
 oms.setCommandLineOption("--suppressPath=true")
-oms.setTempDirectory("./snapshot-py/")
+oms.setTempDirectory("./snapshot_py/")
+oms.setWorkingDirectory("./snapshot_py/")
 
 oms.newModel("snapshot")
 oms.addSystem("snapshot.root", oms.system_wc)
@@ -20,7 +22,7 @@ oms.addResources("snapshot.root:snapshot.ssv")
 oms.addConnector("snapshot.root.C1", oms.input, oms.signal_type_real)
 oms.setReal("snapshot.root.C1", -10)
 
-oms.addSubModel("snapshot.root.add", "../resources/Modelica.Blocks.Math.Add.fmu")
+oms.addSubModel("snapshot.root.add", "../../resources/Modelica.Blocks.Math.Add.fmu")
 oms.setReal("snapshot.root.add.u1", 10)
 oms.setReal("snapshot.root.add.k1", 30)
 

@@ -1,5 +1,5 @@
 -- status: correct
--- teardown_command: rm -rf importStartValues_01_lua/
+-- teardown_command: rm -rf importStartValues1_lua/
 -- linux: yes
 -- mingw32: yes
 -- mingw64: yes
@@ -8,9 +8,10 @@
 
 oms_setCommandLineOption("--suppressPath=true")
 
-oms_setTempDirectory("./importStartValues_01_lua/")
+oms_setTempDirectory("./importStartValues1_lua/")
+oms_setWorkingDirectory("./importStartValues1_lua/")
 
-oms_importFile("../resources/importStartValues1.ssp");
+oms_importFile("../../resources/importStartValues1.ssp");
 
 src1 = oms_exportSnapshot("importStartValues")
 print(src1)

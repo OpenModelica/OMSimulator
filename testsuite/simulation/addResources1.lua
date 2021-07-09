@@ -1,5 +1,5 @@
 -- status: correct
--- teardown_command: rm -rf addResources_01_lua/
+-- teardown_command: rm -rf addResources1_lua/
 -- linux: yes
 -- mingw32: yes
 -- mingw64: yes
@@ -7,7 +7,8 @@
 -- mac: no
 
 oms_setCommandLineOption("--suppressPath=true")
-oms_setTempDirectory("./addResources_01_lua/")
+oms_setTempDirectory("./addResources1_lua/")
+oms_setWorkingDirectory("./addResources1_lua/")
 
 oms_newModel("addResources")
 
@@ -29,7 +30,7 @@ oms_addResources("addResources.root.system1:system1.ssv")
 
 
 oms_setReal("addResources.root.system1.C1", -10)
-oms_addSubModel("addResources.root.Gain", "../resources/Modelica.Blocks.Math.Gain.fmu")
+oms_addSubModel("addResources.root.Gain", "../../resources/Modelica.Blocks.Math.Gain.fmu")
 
 -- add resources to submodule
 oms_addResources("addResources.root.Gain:gain.ssv")
