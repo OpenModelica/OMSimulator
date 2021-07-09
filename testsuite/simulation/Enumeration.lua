@@ -1,4 +1,5 @@
 -- status: correct
+-- teardown_command: rm -rf Enumeration_lua/
 -- linux: yes
 -- mingw32: yes
 -- mingw64: yes
@@ -7,11 +8,12 @@
 
 oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./Enumeration_lua/")
+oms_setWorkingDirectory("./Enumeration_lua/")
 
 oms_newModel("Enumeration")
 oms_addSystem("Enumeration.root", oms_system_sc)
-oms_addSubModel("Enumeration.root.A", "../resources/Int1.fmu")
-oms_addSubModel("Enumeration.root.B", "../resources/Enum1.fmu")
+oms_addSubModel("Enumeration.root.A", "../../resources/Int1.fmu")
+oms_addSubModel("Enumeration.root.B", "../../resources/Enum1.fmu")
 
 -- integer to enumeration
 oms_addConnection("Enumeration.root.A.y", "Enumeration.root.B.u")

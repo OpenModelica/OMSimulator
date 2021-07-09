@@ -1,5 +1,5 @@
 -- status: correct
--- teardown_command: rm -rf PI_Controller-lua/ PI_Controller_init.dot PI_Controller_sim.dot PI_Controller_res.mat PI_Controller.ssp
+-- teardown_command: rm -rf PI_Controller-lua/
 -- linux: yes
 -- mingw32: yes
 -- mingw64: yes
@@ -8,20 +8,21 @@
 
 oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./PI_Controller-lua/")
+oms_setWorkingDirectory("./PI_Controller-lua/")
 
 oms_newModel("PI_Controller")
 oms_addSystem("PI_Controller.co_sim", oms_system_wc)
 
 -- instantiate FMUs
-oms_addSubModel("PI_Controller.co_sim.addP", "../resources/Modelica.Blocks.Math.Add.fmu")
-oms_addSubModel("PI_Controller.co_sim.P", "../resources/Modelica.Blocks.Math.Gain.fmu")
-oms_addSubModel("PI_Controller.co_sim.addI", "../resources/Modelica.Blocks.Math.Add3.fmu")
-oms_addSubModel("PI_Controller.co_sim.I", "../resources/Modelica.Blocks.Continuous.Integrator.fmu")
-oms_addSubModel("PI_Controller.co_sim.addPI", "../resources/Modelica.Blocks.Math.Add.fmu")
-oms_addSubModel("PI_Controller.co_sim.gainPI", "../resources/Modelica.Blocks.Math.Gain.fmu")
-oms_addSubModel("PI_Controller.co_sim.limiter", "../resources/Modelica.Blocks.Nonlinear.Limiter.fmu")
-oms_addSubModel("PI_Controller.co_sim.addSat", "../resources/Modelica.Blocks.Math.Add.fmu")
-oms_addSubModel("PI_Controller.co_sim.gainTrack", "../resources/Modelica.Blocks.Math.Gain.fmu")
+oms_addSubModel("PI_Controller.co_sim.addP", "../../resources/Modelica.Blocks.Math.Add.fmu")
+oms_addSubModel("PI_Controller.co_sim.P", "../../resources/Modelica.Blocks.Math.Gain.fmu")
+oms_addSubModel("PI_Controller.co_sim.addI", "../../resources/Modelica.Blocks.Math.Add3.fmu")
+oms_addSubModel("PI_Controller.co_sim.I", "../../resources/Modelica.Blocks.Continuous.Integrator.fmu")
+oms_addSubModel("PI_Controller.co_sim.addPI", "../../resources/Modelica.Blocks.Math.Add.fmu")
+oms_addSubModel("PI_Controller.co_sim.gainPI", "../../resources/Modelica.Blocks.Math.Gain.fmu")
+oms_addSubModel("PI_Controller.co_sim.limiter", "../../resources/Modelica.Blocks.Nonlinear.Limiter.fmu")
+oms_addSubModel("PI_Controller.co_sim.addSat", "../../resources/Modelica.Blocks.Math.Add.fmu")
+oms_addSubModel("PI_Controller.co_sim.gainTrack", "../../resources/Modelica.Blocks.Math.Gain.fmu")
 
 -- add connections
 oms_addConnection("PI_Controller.co_sim.addP.y", "PI_Controller.co_sim.P.u")
@@ -36,8 +37,8 @@ oms_addConnection("PI_Controller.co_sim.addSat.y", "PI_Controller.co_sim.gainTra
 oms_addConnection("PI_Controller.co_sim.gainTrack.y", "PI_Controller.co_sim.addI.u3")
 
 -- instantiate lookup table
-oms_addSubModel("PI_Controller.co_sim.setpoint", "../resources/setpoint.csv")
-oms_addSubModel("PI_Controller.co_sim.driveTrain", "../resources/drivetrain.csv")
+oms_addSubModel("PI_Controller.co_sim.setpoint", "../../resources/setpoint.csv")
+oms_addSubModel("PI_Controller.co_sim.driveTrain", "../../resources/drivetrain.csv")
 
 -- add connections
 oms_addConnection("PI_Controller.co_sim.setpoint.speed", "PI_Controller.co_sim.addP.u1")

@@ -1,13 +1,14 @@
 -- status: correct
+-- teardown_command: rm -rf exportSSVTemplate_lua/
 -- linux: yes
 -- mingw32: yes
 -- mingw64: yes
--- win: no
--- mac: no
+-- win: yes
+-- mac: yes
 
 oms_setCommandLineOption("--suppressPath=true")
-oms_setTempDirectory("./exportssvtemplate_lua/")
-
+oms_setTempDirectory("./exportSSVTemplate_lua/")
+oms_setWorkingDirectory("./exportSSVTemplate_lua/")
 
 function readFile(filename)
   local f = assert(io.open(filename, "r"))
@@ -16,26 +17,26 @@ function readFile(filename)
   f:close()
 end
 
+oms_newModel("exportSSVTemplate")
 
-oms_newModel("test")
+oms_addSystem("exportSSVTemplate.Root", oms_system_wc)
 
-oms_addSystem("test.Root", oms_system_wc)
+oms_addSubModel("exportSSVTemplate.Root.Gain", "../../resources/Modelica.Blocks.Math.Gain.fmu")
+oms_setReal("exportSSVTemplate.Root.Gain.k", 27)
 
-oms_addSubModel("test.Root.Gain", "../resources/Modelica.Blocks.Math.Gain.fmu")
-oms_setReal("test.Root.Gain.k", 27)
+oms_addSubModel("exportSSVTemplate.Root.add", "../../resources/Modelica.Blocks.Math.Add.fmu")
+oms_setReal("exportSSVTemplate.Root.add.k1", -20)
 
-oms_addSubModel("test.Root.add", "../resources/Modelica.Blocks.Math.Add.fmu")
-oms_setReal("test.Root.add.k1", -20)
-
-oms_exportSSVTemplate("test", "template.ssv")
+oms_exportSSVTemplate("exportSSVTemplate", "template.ssv")
 readFile("template.ssv")
 
-oms_exportSSVTemplate("test.Root.add", "add.ssv")
+oms_exportSSVTemplate("exportSSVTemplate.Root.add", "add.ssv")
 readFile("add.ssv")
 
-oms_exportSSVTemplate("test.Root.Gain", "gain.ssv")
+oms_exportSSVTemplate("exportSSVTemplate.Root.Gain", "gain.ssv")
 readFile("gain.ssv")
 
+oms_delete("exportSSVTemplate")
 
 -- Result:
 -- <?xml version="1.0" encoding="UTF-8"?>

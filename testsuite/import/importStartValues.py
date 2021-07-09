@@ -16,7 +16,6 @@ model = oms.importFile('../resources/importStartValues.ssp')
 src1 = model.exportSnapshot()
 print(src1)
 
-model.terminate()
 model.delete()
 
 ## Result:
