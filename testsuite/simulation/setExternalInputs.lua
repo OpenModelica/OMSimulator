@@ -1,10 +1,10 @@
 -- status: correct
 -- teardown_command: rm -rf setExternalInputs_lua/
 -- linux: yes
+-- mac: no
 -- mingw32: yes
 -- mingw64: yes
 -- win: yes
--- mac: yes
 
 oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./setExternalInputs_lua/")
