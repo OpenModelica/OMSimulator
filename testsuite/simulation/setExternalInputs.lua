@@ -3,8 +3,8 @@
 -- linux: yes
 -- mingw32: yes
 -- mingw64: yes
--- win: no
--- mac: no
+-- win: yes
+-- mac: yes
 
 oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./setExternalInputs_lua/")
