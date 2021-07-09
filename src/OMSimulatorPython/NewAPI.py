@@ -22,6 +22,11 @@ def setTempDirectory(dir: str) -> None:
   if Types.Status(status) != Types.Status.OK:
     raise Exception('error {}'.format(Types.Status(status)))
 
+def setWorkingDirectory(dir: str) -> None:
+  status = Scope._capi.setWorkingDirectory(dir)
+  if Types.Status(status) != Types.Status.OK:
+    raise Exception('error {}'.format(Types.Status(status)))
+
 def setCommandLineOption(cmd: str) -> None:
   status = Scope._capi.setCommandLineOption(cmd)
   if Types.Status(status) != Types.Status.OK:

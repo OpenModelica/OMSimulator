@@ -13,7 +13,7 @@ oms.setTempDirectory("./exportSSVTemplate_py/")
 oms.setWorkingDirectory("./exportSSVTemplate_py/")
 
 model = oms.newModel("exportSSVTemplate")
-root = model.addSystem("root", oms.system_wc)
+root = model.addSystem("root", oms.Types.System.WC)
 
 root.addSubModel("Gain", "../../resources/Modelica.Blocks.Math.Gain.fmu")
 root.setReal("Gain.k", 27)
@@ -75,7 +75,7 @@ model.delete()
 ##     </ssv:Parameter>
 ##   </ssv:Parameters>
 ## </ssv:ParameterSet>
---
+##
 ## <?xml version="1.0" encoding="UTF-8"?>
 ## <ssv:ParameterSet
 ##   xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
@@ -105,7 +105,7 @@ model.delete()
 ##     </ssv:Parameter>
 ##   </ssv:Parameters>
 ## </ssv:ParameterSet>
---
+##
 ## <?xml version="1.0" encoding="UTF-8"?>
 ## <ssv:ParameterSet
 ##   xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
@@ -125,5 +125,5 @@ model.delete()
 ##     </ssv:Parameter>
 ##   </ssv:Parameters>
 ## </ssv:ParameterSet>
---
+##
 ## endResult

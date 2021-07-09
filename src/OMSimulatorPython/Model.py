@@ -90,6 +90,11 @@ class Model:
       raise Exception('error {}'.format(Types.Status(status)))
     return contents
 
+  def exportSSVTemplate(self, ident: str, filename: str) -> None:
+    status = Scope._capi.exportSSVTemplate(self.cref + ('.' + ident if ident else ''), filename)
+    if Types.Status(status) != Types.Status.OK:
+      raise Exception('error {}'.format(Types.Status(status)))
+
   def setLoggingInterval(self, loggingInterval: float) -> None:
     status = Scope._capi.setLoggingInterval(self.cref, loggingInterval)
     if Types.Status(status) != Types.Status.OK:
