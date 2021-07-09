@@ -2,6 +2,7 @@ TEST = ../rtest -v
 
 TESTFILES = \
 exportSSVTemplate.lua \
+exportSSVTemplate.py \
 
 # Run make failingtest
 FAILINGTESTFILES = \
