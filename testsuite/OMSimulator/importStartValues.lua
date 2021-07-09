@@ -3,14 +3,13 @@
 -- linux: yes
 -- mingw32: yes
 -- mingw64: yes
--- win: no
--- mac: no
+-- win: yes
+-- mac: yes
 
 oms_setCommandLineOption("--suppressPath=true")
-
 oms_setTempDirectory("./importStartValues-lua/")
 
-oms_importFile("../resources/importStartValues.ssp");
+oms_importFile("../resources/importStartValues.ssp")
 
 src1 = oms_exportSnapshot("importStartValues")
 print(src1)

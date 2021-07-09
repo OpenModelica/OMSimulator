@@ -84,8 +84,8 @@ class Model:
     if Types.Status(status) != Types.Status.OK:
       raise Exception('error {}'.format(Types.Status(status)))
 
-  def exportSnapshot(self, ident: str) -> str:
-    contents, status = Scope._capi.exportSnapshot(self.cref + '.' + ident)
+  def exportSnapshot(self, ident: str = None) -> str:
+    contents, status = Scope._capi.exportSnapshot(self.cref + ('.' + ident if ident else ''))
     if Types.Status(status) != Types.Status.OK:
       raise Exception('error {}'.format(Types.Status(status)))
     return contents
