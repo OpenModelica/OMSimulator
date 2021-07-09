@@ -289,10 +289,17 @@ oms_status_enu_t oms::Scope::setWorkingDirectory(const std::string& newWorkingDi
 {
   try
   {
-    if (!filesystem::is_directory(newWorkingDir))
-      return logError("Set working directory to \"" + newWorkingDir + "\" failed");
+    std::string newWorkingDirWorkaround = newWorkingDir;
+#if defined(__MINGW32__)
+    // create_directory() behaves different with clang 11 than gcc for path with trailing "/"
+    if('/' == newWorkingDirWorkaround.back()) {
+      newWorkingDirWorkaround.pop_back();
+    }
+#endif
+    if (!filesystem::is_directory(newWorkingDirWorkaround))
+      return logError("Set working directory to \"" + newWorkingDirWorkaround + "\" failed");
 
-    filesystem::path path(newWorkingDir.c_str());
+    filesystem::path path(newWorkingDirWorkaround.c_str());
     path = oms_canonical(path);
 
     filesystem::current_path(path);
