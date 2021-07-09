@@ -1,10 +1,10 @@
 ## status: correct
 ## teardown_command: rm -rf importStartValues-py/
 ## linux: yes
+## mac: no
 ## mingw32: yes
 ## mingw64: yes
 ## win: yes
-## mac: yes
 
 import OMSimulator as oms
 
