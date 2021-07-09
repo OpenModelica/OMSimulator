@@ -214,7 +214,7 @@ sub runone
     if ($ext eq '.py') {
       $sim_exe="OMSimulatorPython3";
       if ($TEST_PLATFORM eq 'win') {
-        $sim_exe="OMSimulator.bat";
+        $sim_exe="OMSimulatorPython3.bat";
       }
     }
 
