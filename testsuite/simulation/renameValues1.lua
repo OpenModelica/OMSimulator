@@ -107,7 +107,7 @@ print("info:      renameValues1.root.add_3.u1       : " .. oms_getReal("renameVa
 --                       relativeTolerance="0.0001"
 --                       minimumStepSize="1e-12"
 --                       maximumStepSize="0.001"
---                       initialStepSize="1e-6" />
+--                       initialStepSize="1e-06" />
 --                   </oms:SimulationInformation>
 --                 </oms:Annotations>
 --               </ssc:Annotation>

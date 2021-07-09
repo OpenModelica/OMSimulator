@@ -80,10 +80,12 @@ printStatus(status, 0)
 ## Result:
 ## status:  [correct] ok
 ## status:  [correct] ok
-## warning: [A: resources/0001_A.fmu] The FMU lists 0 initial unknowns but actually contains 1 initial unknowns as per the variable definitions.
+## warning: [A: resources/0001_A.fmu] The FMU lists 0 initial unknowns but actually exposes 1 initial unknowns.
+##          The following unknowns are missing: 2: y
 ## info:    [A: resources/0001_A.fmu] The FMU contains bad initial unknowns. This might cause problems, e.g. wrong simulation results.
 ## status:  [correct] ok
-## warning: [B: resources/0002_B.fmu] The FMU lists 0 initial unknowns but actually contains 1 initial unknowns as per the variable definitions.
+## warning: [B: resources/0002_B.fmu] The FMU lists 0 initial unknowns but actually exposes 1 initial unknowns.
+##          The following unknowns are missing: 2: y
 ## info:    [B: resources/0002_B.fmu] The FMU contains bad initial unknowns. This might cause problems, e.g. wrong simulation results.
 ## status:  [correct] ok
 ## status:  [correct] ok

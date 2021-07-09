@@ -277,3 +277,11 @@ void oms::DirectedGraph::calculateSortedConnections()
 
   sortedConnectionsAreValid = true;
 }
+
+void oms::DirectedGraph::dumpNodes() const
+{
+  std::string msg = "";
+  for (int i = 0; i < nodes.size(); ++i)
+    msg += std::to_string(i+1) + ": " + std::string(nodes[i].getName()) + "\n";
+  logInfo(msg);
+}
