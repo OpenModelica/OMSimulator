@@ -202,16 +202,16 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::
   for (auto const& v : component->allVariables)
   {
     if (v.isInput())
-      component->inputs.push_back(v);
+      component->inputs.push_back(v.getIndex());
     else if (v.isOutput())
     {
-      component->outputs.push_back(v);
+      component->outputs.push_back(v.getIndex());
       component->outputsGraph.addNode(Connector(oms_causality_output, v.getType(), v.getCref(), component->getFullCref()));
     }
     else if (v.isParameter())
-      component->parameters.push_back(v);
+      component->parameters.push_back(v.getIndex());
     else if (v.isCalculatedParameter())
-      component->calculatedParameters.push_back(v);
+      component->calculatedParameters.push_back(v.getIndex());
 
     if (v.isInitialUnknown())
       component->initialUnknownsGraph.addNode(Connector(v.getCausality(), v.getType(), v.getCref(), component->getFullCref()));
@@ -223,18 +223,18 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::
   while (component->connectors.size() > 0 && NULL == component->connectors.back())
     component->connectors.pop_back();
 
-  int i = 1;
+  int j = 1;
   int size = 1 + component->inputs.size();
-  for (const auto& v : component->inputs)
-    component->connectors.push_back(new Connector(oms_causality_input, v.getType(), v.getCref(), component->getFullCref(), i++/(double)size));
-  i = 1;
+  for (const auto& i : component->inputs)
+    component->connectors.push_back(new Connector(oms_causality_input, component->allVariables[i].getType(), component->allVariables[i].getCref(), component->getFullCref(), j++/(double)size));
+  j = 1;
   size = 1 + component->outputs.size();
-  for (const auto& v : component->outputs)
-    component->connectors.push_back(new Connector(oms_causality_output, v.getType(), v.getCref(), component->getFullCref(), i++/(double)size));
-  for (const auto& v : component->parameters)
-    component->connectors.push_back(new Connector(oms_causality_parameter, v.getType(), v.getCref(), component->getFullCref()));
-  for (const auto& v : component->calculatedParameters)
-    component->connectors.push_back(new Connector(oms_causality_calculatedParameter, v.getType(), v.getCref(), component->getFullCref()));
+  for (const auto& i : component->outputs)
+    component->connectors.push_back(new Connector(oms_causality_output, component->allVariables[i].getType(), component->allVariables[i].getCref(), component->getFullCref(), j++/(double)size));
+  for (const auto& i : component->parameters)
+    component->connectors.push_back(new Connector(oms_causality_parameter, component->allVariables[i].getType(), component->allVariables[i].getCref(), component->getFullCref()));
+  for (const auto& i : component->calculatedParameters)
+    component->connectors.push_back(new Connector(oms_causality_calculatedParameter, component->allVariables[i].getType(), component->allVariables[i].getCref(), component->getFullCref()));
   component->connectors.push_back(NULL);
   component->element.setConnectors(&component->connectors[0]);
 
@@ -440,8 +440,8 @@ oms_status_enu_t oms::ComponentFMUCS::initializeDependencyGraph_initialUnknowns(
       for (int i=0; i < N; i++)
       {
         logDebug(std::string(getCref()) + ": " + getPath() + " initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + " depends on all inputs");
-        for (int j=0; j < inputs.size(); j++)
-          initialUnknownsGraph.addEdge(inputs[j].makeConnector(this->getFullCref()), initialUnknownsGraph.getNodes()[i]);
+        for (const auto& j : inputs)
+          initialUnknownsGraph.addEdge(allVariables[j].makeConnector(this->getFullCref()), initialUnknownsGraph.getNodes()[i]);
       }
       return oms_status_ok;
     }
@@ -484,8 +484,8 @@ oms_status_enu_t oms::ComponentFMUCS::initializeDependencyGraph_initialUnknowns(
     else if ((startIndex[i] + 1 == startIndex[i+1]) && (dependency[startIndex[i]] == 0))
     {
       logDebug(std::string(getCref()) + ": " + getPath() + " initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + " depends on all inputs");
-      for (int j = 0; j < inputs.size(); j++)
-        initialUnknownsGraph.addEdge(inputs[j].makeConnector(this->getFullCref()), initialUnknownsGraph.getNodes()[i]);
+      for (const auto& j : inputs)
+        initialUnknownsGraph.addEdge(allVariables[j].makeConnector(this->getFullCref()), initialUnknownsGraph.getNodes()[i]);
     }
     else
     {
@@ -524,17 +524,18 @@ oms_status_enu_t oms::ComponentFMUCS::initializeDependencyGraph_outputs()
     return oms_status_ok;
   }
 
-  for (int i = 0; i < outputs.size(); i++)
+  for (int i=0; i < outputs.size(); i++)
   {
+    Variable& output = allVariables[outputs[i]];
     if (startIndex[i] == startIndex[i + 1])
     {
-      logDebug(std::string(getCref()) + ": " + getPath() + " output " + std::string(outputs[i]) + " has no dependencies");
+      logDebug(std::string(getCref()) + ": " + getPath() + " output " + std::string(output) + " has no dependencies");
     }
     else if ((startIndex[i] + 1 == startIndex[i + 1]) && (dependency[startIndex[i]] == 0))
     {
-      logDebug(std::string(getCref()) + ": " + getPath() + " output " + std::string(outputs[i]) + " depends on all");
-      for (int j = 0; j < inputs.size(); j++)
-        outputsGraph.addEdge(inputs[j].makeConnector(this->getFullCref()), outputs[i].makeConnector(this->getFullCref()));
+      logDebug(std::string(getCref()) + ": " + getPath() + " output " + std::string(output) + " depends on all");
+      for (const auto& j : inputs)
+        outputsGraph.addEdge(allVariables[j].makeConnector(this->getFullCref()), output.makeConnector(this->getFullCref()));
     }
     else
     {
@@ -542,11 +543,11 @@ oms_status_enu_t oms::ComponentFMUCS::initializeDependencyGraph_outputs()
       {
         if (dependency[j] < 1 || dependency[j] > allVariables.size())
         {
-          logWarning("Output " + std::string(outputs[i]) + " has bad dependency on variable with index " + std::to_string(dependency[j]) + " which couldn't be resolved");
+          logWarning("Output " + std::string(output) + " has bad dependency on variable with index " + std::to_string(dependency[j]) + " which couldn't be resolved");
           return logError(std::string(getCref()) + ": erroneous dependencies detected in modelDescription.xml");
         }
-        logDebug(std::string(getCref()) + ": " + getPath() + " output " + std::string(outputs[i]) + " depends on " + std::string(allVariables[dependency[j] - 1]));
-        outputsGraph.addEdge(allVariables[dependency[j] - 1].makeConnector(this->getFullCref()), outputs[i].makeConnector(this->getFullCref()));
+        logDebug(std::string(getCref()) + ": " + getPath() + " output " + std::string(output) + " depends on " + std::string(allVariables[dependency[j] - 1]));
+        outputsGraph.addEdge(allVariables[dependency[j] - 1].makeConnector(this->getFullCref()), output.makeConnector(this->getFullCref()));
       }
     }
   }
