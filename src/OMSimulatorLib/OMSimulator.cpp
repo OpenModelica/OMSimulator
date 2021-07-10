@@ -1058,24 +1058,20 @@ static int do_simulation(std::string model, std::chrono::duration<double> timeou
   return 0;
 }
 
-oms_status_enu_t oms_RunFile(const char* filename_)
+oms_status_enu_t oms_RunFile(const char* filename)
 {
   oms_status_enu_t status;
-  std::string filename(filename_);
-  std::string type = "";
-  if (filename.length() > 4)
-    type = filename.substr(filename.length() - 4);
-  else
-    return logError("Not able to process file '" + filename + "'\nUse OMSimulator --help for more information.");
+  filesystem::path path(filename);
+  std::string type = path.extension().string();
 
   if (type == ".fmu")
   {
     std::string modelName("model");
     std::string systemName = modelName + ".root";
-    std::string fmuName = systemName + ".fmu";
+    std::string fmuName = systemName + (oms::ComRef::isValidIdent(path.stem().string()) ? ("." + path.stem().string()) : ".fmu");
     oms_fmi_kind_enu_t kind;
 
-    status = oms_extractFMIKind(filename.c_str(), &kind);
+    status = oms_extractFMIKind(filename, &kind);
     if (oms_status_ok != status) return logError("oms_extractFMIKind failed");
 
     status = oms_newModel(modelName.c_str());
@@ -1092,7 +1088,7 @@ oms_status_enu_t oms_RunFile(const char* filename_)
       status = oms_addSystem(systemName.c_str(), (kind == oms_fmi_kind_cs) ? oms_system_wc : oms_system_sc);
     if (oms_status_ok != status) return logError("oms_addSystem failed");
 
-    status = oms_addSubModel(fmuName.c_str(), filename.c_str());
+    status = oms_addSubModel(fmuName.c_str(), filename);
     if (oms_status_ok != status) return logError("oms_addSubModel failed");
 
     if (oms::Flags::ResultFile() != "<default>")
@@ -1114,7 +1110,7 @@ oms_status_enu_t oms_RunFile(const char* filename_)
   else if (type == ".ssp")
   {
     char* cref;
-    oms_importFile(filename.c_str(), &cref);
+    oms_importFile(filename, &cref);
 
     if (oms::Flags::ResultFile() != "<default>")
       oms_setResultFile(cref, oms::Flags::ResultFile().c_str(), 1);
@@ -1133,7 +1129,7 @@ oms_status_enu_t oms_RunFile(const char* filename_)
     lua_State *L = luaL_newstate();
     luaL_openlibs(L);
     luaopen_OMSimulatorLua(L);
-    if (luaL_loadfile(L, filename.c_str()))
+    if (luaL_loadfile(L, filename))
       return logError(lua_tostring(L, -1));
 
     if (lua_pcall(L, 0, 0, 0))
@@ -1145,7 +1141,7 @@ oms_status_enu_t oms_RunFile(const char* filename_)
 #endif
   }
   else
-    return logError("Not able to process file '" + filename + "'\nUse OMSimulator --help for more information.");
+    return logError("Not able to process file '" + std::string(filename) + "'\nUse OMSimulator --help for more information.");
 
   return oms_status_ok;
 }
