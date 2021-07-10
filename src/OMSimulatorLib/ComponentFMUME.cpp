@@ -38,10 +38,12 @@
 #include "ssd/Tags.h"
 #include "System.h"
 #include "SystemSC.h"
+#include "SystemTLM.h"
 
 #include <fmilib.h>
 #include <JM/jm_portability.h>
 #include <RegEx.h>
+#include <unordered_set>
 
 oms::ComponentFMUME::ComponentFMUME(const ComRef& cref, System* parentSystem, const std::string& fmuPath)
   : oms::Component(cref, oms_component_fmu, parentSystem, fmuPath), fmuInfo(fmuPath)
@@ -142,49 +144,62 @@ oms::Component* oms::ComponentFMUME::NewComponent(const oms::ComRef& cref, oms::
   // create a list of all variables
   fmi2_import_variable_list_t *varList = fmi2_import_get_variable_list(component->fmu, 0);
   size_t varListSize = fmi2_import_get_variable_list_size(varList);
-  logDebug(std::to_string(varListSize) + " variables");
   component->allVariables.reserve(varListSize);
   component->exportVariables.reserve(varListSize);
   for (size_t i = 0; i < varListSize; ++i)
   {
     fmi2_import_variable_t* var = fmi2_import_get_variable(varList, i);
     oms::Variable v(var);
-    component->allVariables.push_back(v);
-    component->exportVariables.push_back(true);
-  }
-  fmi2_import_free_variable_list(varList);
-
-  // mark states
-  varList = fmi2_import_get_derivatives_list(component->fmu);
-  varListSize = fmi2_import_get_variable_list_size(varList);
-  logDebug(std::to_string(varListSize) + " states");
-  for (size_t i = 0; i < varListSize; ++i)
-  {
-    fmi2_import_variable_t* var = fmi2_import_get_variable(varList, i);
-    fmi2_import_real_variable_t* varReal = fmi2_import_get_variable_as_real(var);
-    fmi2_import_variable_t* varState = (fmi2_import_variable_t*)fmi2_import_get_real_variable_derivative_of(varReal);
-    if (varState)
+    if (v.getIndex() != i)
     {
-      // IMPORTANT: vr is not unique!!! Do lookup with proper index or name
-      size_t originalIndex = fmi2_import_get_variable_original_order(varState);
-      if (originalIndex < 0 || originalIndex >= component->allVariables.size())
-      {
-        logError("Couldn't find " + std::string(fmi2_import_get_variable_name(varState)));
-        fmi2_import_free_variable_list(varList);
-        delete component;
-        return NULL;
-      }
-      component->allVariables[originalIndex].markAsState(fmi2_import_get_variable_original_order(var));
-    }
-    else
-    {
-      logError("Couldn't map " + std::string(fmi2_import_get_variable_name(var)) + " to the corresponding state variable");
+      logError("Index mismatch " + std::to_string(v.getIndex()) + " != " + std::to_string(i) + ".\nPlease report the problem to the dev team: https://github.com/OpenModelica/OMSimulator/issues/new?assignees=&labels=&template=bug_report.md");
       fmi2_import_free_variable_list(varList);
       delete component;
       return NULL;
     }
+    component->allVariables.push_back(v);
+    if (v.isDer())
+      component->derivatives.push_back(v.getIndex());
+    component->exportVariables.push_back(true);
   }
   fmi2_import_free_variable_list(varList);
+
+  // check derivatives
+  varList = fmi2_import_get_derivatives_list(component->fmu);
+  varListSize = fmi2_import_get_variable_list_size(varList);
+  if (varListSize != component->derivatives.size())
+  {
+    std::unordered_set <unsigned int> setA_fmilib;
+    for (size_t i=0; i < varListSize; ++i)
+    {
+      fmi2_import_variable_t* var = fmi2_import_get_variable(varList, i);
+      size_t originalIndex = fmi2_import_get_variable_original_order(var);
+      setA_fmilib.insert(originalIndex);
+    }
+
+    std::string missing_der = "";
+    for (const auto& i : component->derivatives)
+    {
+      if (setA_fmilib.find(i) == setA_fmilib.end())
+      {
+        if (!missing_der.empty())
+          missing_der += ", ";
+        missing_der += std::to_string(i+1) + ": " + std::string(component->allVariables[i].getCref());
+      }
+    }
+
+    logWarning("[" + std::string(component->getCref()) + ": " + component->getPath() + "] The FMU lists " + std::to_string(varListSize) + " state derivatives but actually exposes " + std::to_string(component->derivatives.size()) + " state derivatives.\nThe following derivatives are missing: " + missing_der);
+  }
+  fmi2_import_free_variable_list(varList);
+
+  // mark states
+  logDebug(std::to_string(varListSize) + " states");
+  for (const auto& i : component->derivatives)
+  {
+    // IMPORTANT: vr is not unique!!! Do lookup with proper index or name
+    size_t state_index = component->allVariables[i].getStateIndex();
+    component->allVariables[state_index].markAsState(i);
+  }
 
   // create some special variable maps
   for (auto const& v : component->allVariables)
@@ -370,7 +385,28 @@ oms_status_enu_t oms::ComponentFMUME::initializeDependencyGraph_initialUnknowns(
   if (N != N_fmilib)
   {
     if (!Flags::IgnoreInitialUnknowns())
-      logWarning("[" + std::string(getCref()) + ": " + getPath() + "] The FMU lists " + std::to_string(N_fmilib) + " initial unknowns but actually contains " + std::to_string(N) + " initial unknowns as per the variable definitions.");
+    {
+      std::unordered_set <unsigned int> setA_fmilib;
+      for (size_t i=0; i < N_fmilib; ++i)
+      {
+        fmi2_xml_variable_t* var_fmilib = fmi2_import_get_variable(initialUnknowns, i);
+        size_t originalIndex = fmi2_import_get_variable_original_order(var_fmilib);
+        setA_fmilib.insert(originalIndex);
+      }
+
+      std::string missing_unknowns = "";
+      for (auto &v : allVariables)
+      {
+        if (v.isInitialUnknown() && setA_fmilib.find(v.getIndex()) == setA_fmilib.end())
+        {
+          if (!missing_unknowns.empty())
+            missing_unknowns += ", ";
+          missing_unknowns += std::to_string(v.getIndex()+1) + ": " + std::string(v.getCref());
+        }
+      }
+
+      logWarning("[" + std::string(getCref()) + ": " + getPath() + "] The FMU lists " + std::to_string(N_fmilib) + " initial unknowns but actually exposes " + std::to_string(N) + " initial unknowns.\nThe following unknowns are missing: " + missing_unknowns);
+    }
     badInitialUnknowns = true;
   }
 
