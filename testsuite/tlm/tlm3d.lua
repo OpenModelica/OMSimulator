@@ -5,7 +5,7 @@
 -- mingw64: no
 -- mac: no
 
-oms_setLogFile("tlm3d.log")
+--oms_setLogFile("tlm3d.log")
 oms_setTempDirectory("./tlm3d-lua")
 
 oms_newModel("model");
