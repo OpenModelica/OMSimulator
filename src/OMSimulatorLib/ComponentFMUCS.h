@@ -90,8 +90,6 @@ namespace oms
     oms_status_enu_t setFmuTime(double time) {this->time = time; return oms_status_ok;}
     fmi2_import_t* getFMU() {return fmu;}
     std::vector<Variable> getAllVariables() {return allVariables;}
-    std::vector<Variable> getInputs() {return inputs;}
-    std::vector<Variable> getOutputs() {return outputs;}
 
     oms_status_enu_t getRealOutputDerivative(const ComRef& cref, SignalDerivative& der);
     oms_status_enu_t setRealInputDerivative(const ComRef& cref, const SignalDerivative& der);
@@ -132,12 +130,12 @@ namespace oms
     FMUInfo fmuInfo;
 
     std::vector<Variable> allVariables;
-    std::vector<Variable> inputs;
-    std::vector<Variable> outputs;
-    std::vector<Variable> parameters;
-    std::vector<Variable> calculatedParameters;
-    std::vector<bool> exportVariables;
+    std::vector<unsigned int> calculatedParameters;
     std::vector<unsigned int> derivatives;
+    std::vector<unsigned int> inputs;
+    std::vector<unsigned int> outputs;
+    std::vector<unsigned int> parameters;
+    std::vector<bool> exportVariables;
 
     Values values; ///< start values defined before instantiating the FMU and external inputs defined after initialization
 

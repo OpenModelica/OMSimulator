@@ -133,12 +133,12 @@ namespace oms
     FMUInfo fmuInfo;
 
     std::vector<Variable> allVariables;
-    std::vector<Variable> inputs;
-    std::vector<Variable> outputs;
-    std::vector<Variable> parameters;
-    std::vector<Variable> calculatedParameters;
-    std::vector<bool> exportVariables;
+    std::vector<unsigned int> calculatedParameters;
     std::vector<unsigned int> derivatives;
+    std::vector<unsigned int> inputs;
+    std::vector<unsigned int> outputs;
+    std::vector<unsigned int> parameters;
+    std::vector<bool> exportVariables;
 
     Values values; ///< start values defined before instantiating the FMU and external inputs defined after initialization
 
