@@ -148,7 +148,7 @@ oms::Component* oms::ComponentFMUME::NewComponent(const oms::ComRef& cref, oms::
   for (size_t i = 0; i < varListSize; ++i)
   {
     fmi2_import_variable_t* var = fmi2_import_get_variable(varList, i);
-    oms::Variable v(var, i + 1);
+    oms::Variable v(var);
     component->allVariables.push_back(v);
     component->exportVariables.push_back(true);
   }
@@ -174,7 +174,7 @@ oms::Component* oms::ComponentFMUME::NewComponent(const oms::ComRef& cref, oms::
         delete component;
         return NULL;
       }
-      component->allVariables[originalIndex].markAsState();
+      component->allVariables[originalIndex].markAsState(fmi2_import_get_variable_original_order(var));
     }
     else
     {

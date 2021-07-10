@@ -45,10 +45,11 @@ namespace oms
   class Variable
   {
   public:
-    Variable(fmi2_import_variable_t* var, unsigned int index);
+    Variable(fmi2_import_variable_t* var);
     ~Variable();
 
-    void markAsState() { is_state = true; }
+    void markAsState(size_t der_index) { is_state = true; this->der_index = der_index; }
+    unsigned int getStateIndex() const { return state_index; }
 
     // causality attribute
     bool isParameter() const { return fmi2_causality_enu_parameter == causality; }
@@ -98,7 +99,9 @@ namespace oms
     bool is_state;
     bool is_der;
     oms_signal_type_enu_t type;
-    unsigned int index; ///< index origin = 1
+    unsigned int index; ///< index origin = 0
+    size_t state_index; ///< index origin = 0
+    size_t der_index; ///< index origin = 0
 
     friend bool operator==(const oms::Variable& v1, const oms::Variable& v2);
     friend bool operator!=(const oms::Variable& v1, const oms::Variable& v2);

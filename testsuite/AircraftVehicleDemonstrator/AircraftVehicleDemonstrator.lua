@@ -176,9 +176,13 @@ for _,var in ipairs(vars) do
 end
 
 -- Result:
+-- warning: [cockpit: resources/0003_cockpit.fmu] The FMU lists 16 state derivatives but actually exposes 18 state derivatives.
+--          The following derivatives are missing: 33: concealed15, 37: concealed19
 -- warning: [cockpit: resources/0003_cockpit.fmu] The dependencies of the initial unknowns defined in the FMU are ignored because the flag --ignoreInitialUnknowns is active. Instead, all the initial unknowns will depend on all inputs.
 -- warning: [consumer_A: resources/0004_consumer_A.fmu] The dependencies of the initial unknowns defined in the FMU are ignored because the flag --ignoreInitialUnknowns is active. Instead, all the initial unknowns will depend on all inputs.
 -- warning: [consumer_B: resources/0005_consumer_B.fmu] The dependencies of the initial unknowns defined in the FMU are ignored because the flag --ignoreInitialUnknowns is active. Instead, all the initial unknowns will depend on all inputs.
+-- warning: [eCS_Generic_Export: resources/0006_eCS_Generic_Export.fmu] The FMU lists 738 state derivatives but actually exposes 811 state derivatives.
+--          The following derivatives are missing: 135: concealed19, 147: concealed31, 169: concealed53, 179: concealed63, 189: concealed73, 225: concealed109, 241: concealed125, 253: concealed137, 275: concealed159, 329: concealed213, 377: concealed261, 385: concealed269, 395: concealed279, 411: concealed295, 431: concealed315, 441: concealed325, 451: concealed335, 457: concealed341, 473: concealed357, 483: concealed367, 491: concealed375, 503: concealed387, 515: concealed399, 525: concealed409, 579: concealed463, 619: concealed503, 667: concealed551, 675: concealed559, 685: concealed569, 701: concealed585, 721: concealed605, 757: concealed641, 767: concealed651, 809: concealed693, 851: concealed735, 861: concealed745, 893: concealed777, 923: concealed807, 931: concealed815, 959: concealed843, 979: concealed863, 1021: concealed905, 1061: concealed945, 1069: concealed953, 1079: concealed963, 1095: concealed979, 1109: concealed993, 1123: concealed1007, 1137: concealed1021, 1151: concealed1035, 1165: concealed1049, 1175: concealed1059, 1185: concealed1069, 1227: concealed1111, 1261: concealed1145, 1269: concealed1153, 1281: concealed1165, 1291: concealed1175, 1311: concealed1195, 1323: concealed1207, 1333: concealed1217, 1373: concealed1257, 1403: concealed1287, 1415: concealed1299, 1441: concealed1325, 1457: concealed1341, 1487: concealed1371, 1507: concealed1391, 1549: concealed1433, 1559: concealed1443, 1569: concealed1453, 1579: concealed1463, 1589: concealed1473
 -- warning: [eCS_Generic_Export: resources/0006_eCS_Generic_Export.fmu] The dependencies of the initial unknowns defined in the FMU are ignored because the flag --ignoreInitialUnknowns is active. Instead, all the initial unknowns will depend on all inputs.
 -- warning: [eCS_SW: resources/0007_eCS_SW.fmu] The dependencies of the initial unknowns defined in the FMU are ignored because the flag --ignoreInitialUnknowns is active. Instead, all the initial unknowns will depend on all inputs.
 -- warning: [engine: resources/0008_engine.fmu] The dependencies of the initial unknowns defined in the FMU are ignored because the flag --ignoreInitialUnknowns is active. Instead, all the initial unknowns will depend on all inputs.
@@ -187,6 +191,6 @@ end
 -- info:    AircraftVehicleDemonstrator.root.engine.pB.p is equal
 -- info:    AircraftVehicleDemonstrator.root.eCS_Generic_Export.Meas_PACK_TEMP is equal
 -- info:    AircraftVehicleDemonstrator.root.eCS_Generic_Export.Meas_PACK_PRESS is equal
--- info:    7 warnings
+-- info:    9 warnings
 -- info:    0 errors
 -- endResult

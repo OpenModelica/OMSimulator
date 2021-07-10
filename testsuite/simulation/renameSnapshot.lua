@@ -502,7 +502,7 @@ print(snapshot)
 --                       relativeTolerance="0.0001"
 --                       minimumStepSize="1e-12"
 --                       maximumStepSize="0.001"
---                       initialStepSize="1e-6" />
+--                       initialStepSize="1e-06" />
 --                   </oms:SimulationInformation>
 --                 </oms:Annotations>
 --               </ssc:Annotation>
@@ -557,7 +557,7 @@ print(snapshot)
 --               <oms:SimulationInformation>
 --                 <oms:FixedStepMaster
 --                   description="oms-ma"
---                   stepSize="0.001"
+--                   stepSize="0.001000"
 --                   absoluteTolerance="0.000100"
 --                   relativeTolerance="0.000100" />
 --               </oms:SimulationInformation>
@@ -700,7 +700,7 @@ print(snapshot)
 --                       relativeTolerance="0.0001"
 --                       minimumStepSize="1e-12"
 --                       maximumStepSize="0.001"
---                       initialStepSize="1e-6" />
+--                       initialStepSize="1e-06" />
 --                   </oms:SimulationInformation>
 --                 </oms:Annotations>
 --               </ssc:Annotation>

@@ -72,6 +72,8 @@ namespace oms
     const std::vector<Connector>& getNodes() const {return nodes;}
     const oms_ssc_t& getEdges() const {return edges;}
 
+    void dumpNodes() const;
+
   private:
     std::deque< std::vector<int> > getSCCs();
     void calculateSortedConnections();

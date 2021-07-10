@@ -37,8 +37,8 @@
 #include <JM/jm_portability.h>
 
 
-oms::Variable::Variable(fmi2_import_variable_t* var, unsigned int index)
-  : is_state(false), is_der(false), cref(fmi2_import_get_variable_name(var)), index(index)
+oms::Variable::Variable(fmi2_import_variable_t* var)
+  : der_index(0), state_index(0), is_state(false), is_der(false), cref(fmi2_import_get_variable_name(var)), index(fmi2_import_get_variable_original_order(var))
 {
   // extract the attributes
   description = fmi2_import_get_variable_description(var) ? fmi2_import_get_variable_description(var) : "";
@@ -76,7 +76,10 @@ oms::Variable::Variable(fmi2_import_variable_t* var, unsigned int index)
     fmi2_import_real_variable_t* varReal = fmi2_import_get_variable_as_real(var);
     fmi2_import_variable_t* varState = (fmi2_import_variable_t*)fmi2_import_get_real_variable_derivative_of(varReal);
     if (varState)
+    {
       is_der = true;
+      state_index = fmi2_import_get_variable_original_order(varState);
+    }
   }
 }
 
