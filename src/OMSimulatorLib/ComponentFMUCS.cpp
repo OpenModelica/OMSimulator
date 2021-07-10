@@ -141,7 +141,6 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::
   // create a list of all variables
   fmi2_import_variable_list_t *varList = fmi2_import_get_variable_list(component->fmu, 0);
   size_t varListSize = fmi2_import_get_variable_list_size(varList);
-  logDebug(std::to_string(varListSize) + " variables");
   component->allVariables.reserve(varListSize);
   component->exportVariables.reserve(varListSize);
   for (size_t i = 0; i < varListSize; ++i)
@@ -162,7 +161,7 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::
   }
   fmi2_import_free_variable_list(varList);
 
-  // mark states
+  // check derivatives
   varList = fmi2_import_get_derivatives_list(component->fmu);
   varListSize = fmi2_import_get_variable_list_size(varList);
   if (varListSize != component->derivatives.size())
@@ -189,6 +188,8 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::
     logWarning("[" + std::string(component->getCref()) + ": " + component->getPath() + "] The FMU lists " + std::to_string(varListSize) + " state derivatives but actually exposes " + std::to_string(component->derivatives.size()) + " state derivatives.\nThe following derivatives are missing: " + missing_der);
   }
   fmi2_import_free_variable_list(varList);
+
+  // mark states
   logDebug(std::to_string(varListSize) + " states");
   for (const auto& i : component->derivatives)
   {

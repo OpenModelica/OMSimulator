@@ -138,6 +138,7 @@ namespace oms
     std::vector<Variable> parameters;
     std::vector<Variable> calculatedParameters;
     std::vector<bool> exportVariables;
+    std::vector<unsigned int> derivatives;
 
     Values values; ///< start values defined before instantiating the FMU and external inputs defined after initialization
 
