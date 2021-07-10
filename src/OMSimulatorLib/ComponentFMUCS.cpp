@@ -148,6 +148,13 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::
   {
     fmi2_import_variable_t* var = fmi2_import_get_variable(varList, i);
     oms::Variable v(var);
+    if (v.getIndex() != i)
+    {
+      logError("Index mismatch " + std::to_string(v.getIndex()) + " != " + std::to_string(i) + ".\nPlease report the problem to the dev team: https://github.com/OpenModelica/OMSimulator/issues/new?assignees=&labels=&template=bug_report.md");
+      fmi2_import_free_variable_list(varList);
+      delete component;
+      return NULL;
+    }
     component->allVariables.push_back(v);
     if (v.isDer())
       component->derivatives.push_back(v.getIndex());
