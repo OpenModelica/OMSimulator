@@ -1096,7 +1096,6 @@ oms_status_enu_t oms_RunFile(const char* filename)
     oms_setStartTime(modelName.c_str(), oms::Flags::StartTime());
     oms_setStopTime(modelName.c_str(), oms::Flags::StopTime());
     oms_setTolerance(modelName.c_str(), oms::Flags::Tolerance(), oms::Flags::Tolerance());
-    oms_setFixedStepSize(systemName.c_str(), (oms::Flags::StopTime() - oms::Flags::StartTime()) / (oms::Flags::Intervals()-1));
     if (kind == oms_fmi_kind_me_and_cs)
       oms_setSolver(systemName.c_str(), oms::Flags::DefaultModeIsCS() ? oms::Flags::MasterAlgorithm() : oms::Flags::Solver());
     else
