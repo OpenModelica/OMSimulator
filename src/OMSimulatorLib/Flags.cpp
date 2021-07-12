@@ -411,6 +411,11 @@ std::vector<std::string> split(const std::string& s, char delim)
 oms_status_enu_t oms::Flags::StepSize(const std::string& value)
 {
   std::vector<std::string> options = split(value, ',');
+
+  for (const auto& option : options)
+    if (atof(option.c_str()) <= 0.0)
+      return logError("The step size value must be a greater than zero: " + option);
+
   if (options.size() > 1)
   {
     GetInstance().initialStepSize = atof(options[0].c_str());
