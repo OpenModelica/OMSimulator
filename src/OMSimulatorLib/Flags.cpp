@@ -410,15 +410,15 @@ std::vector<std::string> split(const std::string& s, char delim)
 
 oms_status_enu_t oms::Flags::StepSize(const std::string& value)
 {
-  std::vector<std::string> stepSize = split(value, ',');
-  if (stepSize.size() > 1)
+  std::vector<std::string> options = split(value, ',');
+  if (options.size() > 1)
   {
-    GetInstance().initialStepSize = atof(stepSize[0].c_str());
-    GetInstance().minimumStepSize = atof(stepSize[1].c_str());
-    GetInstance().maximumStepSize = atof(stepSize[2].c_str());
+    GetInstance().initialStepSize = atof(options[0].c_str());
+    GetInstance().minimumStepSize = atof(options[1].c_str());
+    GetInstance().maximumStepSize = atof(options[2].c_str());
   }
   else
-    GetInstance().maximumStepSize = atof(stepSize[0].c_str());
+    GetInstance().maximumStepSize = atof(options[0].c_str());
   return oms_status_ok;
 }
 
