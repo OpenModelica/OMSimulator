@@ -786,7 +786,7 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime)
   fmi2_status_t fmi_status;
   double startTime = time;
   if (Flags::ProgressBar())
-    logInfo("stepUntil [" + std::to_string(startTime) + "; " + std::to_string(stopTime) + "]");
+    logInfo("step WC system [" + std::to_string(startTime) + "; " + std::to_string(stopTime) + "] with step size [" + std::to_string(initialStepSize) + "; " + std::to_string(minimumStepSize) + "; " + std::to_string(maximumStepSize) + "]");
 
   if (isTopLevelSystem())
     getModel().emit(time);
@@ -840,7 +840,7 @@ oms_status_enu_t oms::SystemWC::stepUntilASSC(double stopTime)
 
   double startTime = time;
   if (Flags::ProgressBar())
-    logInfo("stepUntil [" + std::to_string(startTime) + "; " + std::to_string(stopTime) + "]");
+    logInfo("step WC system [" + std::to_string(startTime) + "; " + std::to_string(stopTime) + "] with step size [" + std::to_string(initialStepSize) + "; " + std::to_string(minimumStepSize) + "; " + std::to_string(maximumStepSize) + "]");
 
   // main simulation loop
   oms_status_enu_t status = oms_status_ok;

@@ -69,6 +69,9 @@ namespace oms
     static bool SuppressPath() {return GetInstance().suppressPath;}
     static bool WallTime() {return GetInstance().wallTime;}
     static bool ZeroNominal() {return GetInstance().zeroNominal;}
+    static double InitialStepSize() {return GetInstance().initialStepSize;}
+    static double MaximumStepSize() {return GetInstance().maximumStepSize;}
+    static double MinimumStepSize() {return GetInstance().minimumStepSize;}
     static double StartTime() {return GetInstance().startTime;}
     static double StopTime() {return GetInstance().stopTime;}
     static double Timeout() {return GetInstance().timeout;}
@@ -97,6 +100,9 @@ namespace oms
     bool suppressPath;
     bool wallTime;
     bool zeroNominal;
+    double initialStepSize;
+    double maximumStepSize;
+    double minimumStepSize;
     double startTime;
     double stopTime;
     double timeout;
@@ -131,6 +137,7 @@ namespace oms
     const std::string re_double = "((\\+|-)?[[:digit:]]+)(\\.(([[:digit:]]+)?))?((e|E)((\\+|-)?)[[:digit:]]+)?";
     const std::string re_number = "[[:digit:]]+";
     const std::string re_filename = ".+(\\.fmu|\\.ssp|\\.lua)";
+    const std::string re_stepSize = "((\\+|-)?[[:digit:]]+)(\\.(([[:digit:]]+)?))?((e|E)((\\+|-)?)[[:digit:]]+)?(,((\\+|-)?[[:digit:]]+)(\\.(([[:digit:]]+)?))?((e|E)((\\+|-)?)[[:digit:]]+)?,((\\+|-)?[[:digit:]]+)(\\.(([[:digit:]]+)?))?((e|E)((\\+|-)?)[[:digit:]]+)?)?";
 
     const std::vector<Flag> flags = {
       {"", "", "FMU or SSP file", re_filename, Flags::Filename, false},
@@ -158,6 +165,7 @@ namespace oms
       {"--solver", "", "Specifies the integration method (euler, [cvode])", re_default, Flags::Solver, false},
       {"--solverStats", "", "Adds solver stats to the result file, e.g. step size; not supported for all solvers (true, [false])", re_bool, Flags::SolverStats, false},
       {"--startTime", "-s", "Specifies the start time", re_double, Flags::StartTime, false},
+      {"--stepSize", "", "Specifies the step size (<step size> or <init step,min step,max step>)", re_stepSize, Flags::StepSize, false},
       {"--stopTime", "-t", "Specifies the stop time", re_double, Flags::StopTime, false},
       {"--stripRoot", "", "Removes the root system prefix from all exported signals (true, [false])", re_bool, Flags::StripRoot, false},
       {"--suppressPath", "", "Supresses path information in info messages; especially useful for testing ([true], false)", re_bool, Flags::SuppressPath, false},
@@ -195,6 +203,7 @@ namespace oms
     static oms_status_enu_t Solver(const std::string& value);
     static oms_status_enu_t SolverStats(const std::string& value);
     static oms_status_enu_t StartTime(const std::string& value);
+    static oms_status_enu_t StepSize(const std::string& value);
     static oms_status_enu_t StopTime(const std::string& value);
     static oms_status_enu_t StripRoot(const std::string& value);
     static oms_status_enu_t SuppressPath(const std::string& value);

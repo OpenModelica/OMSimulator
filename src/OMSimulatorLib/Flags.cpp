@@ -38,6 +38,8 @@
 #include "OMSimulator.h"
 #include "Scope.h"
 #include "System.h"
+#include "Util.h"
+
 #include <iomanip>
 #include <iostream>
 #include <RegEx.h>
@@ -67,11 +69,14 @@ void oms::Flags::setDefaults()
   deleteTempFiles = true;
   emitEvents = true;
   ignoreInitialUnknowns = false;
+  initialStepSize = 1e-6;
   inputExtrapolation = false;
   intervals = 100;
   masterAlgorithm = oms_solver_wc_ma;
   maxEventIteration = 100;
+  maximumStepSize = 1e-3;
   maxLoopIteration = 10;
+  minimumStepSize = 1e-12;
   numProcs = 1;
   progressBar = false;
   realTime = false;
@@ -388,6 +393,37 @@ oms_status_enu_t oms::Flags::SolverStats(const std::string& value)
 oms_status_enu_t oms::Flags::StartTime(const std::string& value)
 {
   GetInstance().startTime = atof(value.c_str());
+  return oms_status_ok;
+}
+
+std::vector<std::string> split(const std::string& s, char delim)
+{
+  std::vector<std::string> result;
+  std::stringstream ss(s);
+  std::string item;
+
+  while (getline(ss, item, delim))
+    result.push_back(item);
+
+  return result;
+}
+
+oms_status_enu_t oms::Flags::StepSize(const std::string& value)
+{
+  std::vector<std::string> options = split(value, ',');
+
+  for (const auto& option : options)
+    if (atof(option.c_str()) <= 0.0)
+      return logError("The step size value must be a greater than zero: " + option);
+
+  if (options.size() > 1)
+  {
+    GetInstance().initialStepSize = atof(options[0].c_str());
+    GetInstance().minimumStepSize = atof(options[1].c_str());
+    GetInstance().maximumStepSize = atof(options[2].c_str());
+  }
+  else
+    GetInstance().maximumStepSize = atof(options[0].c_str());
   return oms_status_ok;
 }
 
