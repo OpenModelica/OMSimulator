@@ -35,8 +35,8 @@ def generateLua(modelName, testFMUDir, resultDir, fmiType):
   stopTime = 1.0
   relTol = 1e-6
   absTol = 1e-6
-  inputCSV = os.path.join(fmuDir, modelName + '_in.csv')
-  refOptFile = os.path.join(fmuDir, modelName + '_ref.opt')
+  inputCSV = os.path.join(testFMUDir, modelName + '_in.csv')
+  refOptFile = os.path.join(testFMUDir, modelName + '_ref.opt')
 
   df = pd.read_csv(refOptFile, delimiter=',', index_col=0, header=None)
 
