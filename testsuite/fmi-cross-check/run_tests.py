@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+#./../OpenModelica/OMSimulator/testsuite/fmi-cross-check/run_tests.py --root=. --platform=linux64 --oms=.omsimulator/OMSimulator-linux-amd64-v2.1.1/bin/OMSimulator --version=v2.1.1
+#find ./results/2.0/*/linux64/OMSimulator/v2.1.1/ -name "passed" | wc -l
 
 import argparse
 import os
