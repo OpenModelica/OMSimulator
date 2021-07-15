@@ -167,12 +167,12 @@ def constructDF(crossCheckDir, platform, omsVersion):
             try:
               output = open(os.path.join(resultDir, "OMSimulator_out.log"), "r").read()
             except:
-              output = ""
+              continue
 
             try:
               error = open(os.path.join(resultDir, "OMSimulator_err.log"), "r").read()
             except:
-              error = ""
+              continue
 
             resultsCorrect = os.path.isfile(os.path.join(resultDir, "passed"))
 
