@@ -25,9 +25,7 @@ def generateLua(modelName, testFMUDir, resultDir, fmiType):
   Returns path to generated Lua file.
   """
   # Get some paths
-  testFMU = modelName + ".fmu"
-  if sys.platform == "win32":
-    testFMU = testFMU.replace("\\", "\\\\")
+  testFMU = os.path.join(testFMUDir, modelName + ".fmu")
   luaFilePath = os.path.join(resultDir, modelName + ".lua")
 
   # Set OMSimulator settings
@@ -87,9 +85,9 @@ def generateLua(modelName, testFMUDir, resultDir, fmiType):
   f.write('oms_addSystem(\'model.root\', ' + systemType + ')\n')
 
   f.write('\n-- instantiate FMU\n')
-  f.write('oms_addSubModel(\'model.root.fmu\', \'../../../../../../../../../' + fmuPath + '\')\n')
+  f.write('oms_addSubModel(\'model.root.fmu\', \'../../../../../../../../../' + testFMU.replace("\\", "\\\\") + '\')\n')
   if len(inputs) > 0:
-    f.write('oms_addSubModel(\'model.root.input\', \'../../../../../../../../../' + inputCSV + '\')\n')
+    f.write('oms_addSubModel(\'model.root.input\', \'../../../../../../../../../' + inputCSV.replace("\\", "\\\\") + '\')\n')
 
   if len(inputs) > 0:
     f.write('\n-- connect inputs to FMU\n')
