@@ -31,83 +31,88 @@ def generateLua(modelName, testFMUDir, resultDir, fmiType):
   luaFilePath = os.path.join(resultDir, modelName + ".lua")
 
   # Set OMSimulator settings
-  startTime = "0.0"
-  stopTime = "1.0"
-  relTol = str(default_tolerance)
-  absTol = str(default_tolerance)
-  inputCSV = ""
+  startTime = 0.0
+  stopTime = 1.0
+  relTol = 1e-6
+  absTol = 1e-6
+  inputCSV = os.path.join(testFMUDir, modelName + "_in.csv")
   refOptFile = os.path.join(testFMUDir, modelName + "_ref.opt")
+
   df = pd.read_csv(refOptFile, delimiter=',', index_col=0, header=None)
 
-  if "StartTime" in df.index:
-    startTime = str(df.loc["StartTime", 1])
+  if 'StartTime' in df.index:
+    startTime = df.loc['StartTime', 1]
 
-  if "StopTime" in df.index:
-    stopTime = str(df.loc["StopTime", 1])
+  if 'StopTime' in df.index:
+    stopTime = df.loc['StopTime', 1]
 
-  if "RelTol" in df.index:
-    if not df.loc["RelTol", 1] == 0:
-      relTol = str(df.loc["RelTol", 1])
+  if 'RelTol' in df.index:
+    if not df.loc['RelTol', 1] == 0:
+      relTol = df.loc['RelTol', 1]
 
-  if "AbsTol" in df.index:
-    if not df.loc["AbsTol", 1] == 0:
-      absTol = str(df.loc["AbsTol", 1])
+  if 'AbsTol' in df.index:
+    if not df.loc['AbsTol', 1] == 0:
+      absTol = df.loc['AbsTol', 1]
 
-  maximumStepSize = str((float(stopTime) - float(startTime)) / 500)
-  if "StepSize" in df.index:
-    if not df.loc["StepSize", 1] == 0:
-      maximumStepSize = str(df.loc["StepSize", 1])
+  stepSize = (stopTime - startTime) / 500
+  if 'StepSize' in df.index:
+    if not df.loc['StepSize', 1] == 0:
+      stepSize = df.loc['StepSize', 1]
 
-  # Check for input file
+  outputIntervalLength = (stopTime - startTime) / 500
+  if 'OutputIntervalLength' in df.index:
+    if not df.loc['OutputIntervalLength', 1] == 0:
+      outputIntervalLength = df.loc['OutputIntervalLength', 1]
+
+  # input file
   inputs = []
   if os.path.isfile(inputCSV):
     df = pd.read_csv(inputCSV, delimiter=',')
     inputs = list(df.columns.values[1:])
-    if debugPrint:
-      print("Model " + testFMU + " has inputs\n")
+    print('  * test has inputs:{}'.format(inputs))
 
-  # System type
-  if fmiType == "me":
-    systemType = "oms_system_sc"
-  elif fmiType == "cs":
-    systemType = "oms_system_wc"
+  # system type
+  if fmiType == 'me':
+    systemType = 'oms_system_sc'
+  elif fmiType == 'cs':
+    systemType = 'oms_system_wc'
   else:
     raise Exception("Unsupportet FMU type \"" + fmiType + "\"\n")
 
   f = open(luaFilePath, "w")
 
-  f.write("-- Lua file for " + modelName + ".fmu\n")
-  f.write("oms_setTempDirectory(\""+tempDir+"\")\n")
-  f.write("oms_newModel(\"model\")\n")
-  f.write("oms_addSystem(\"model.root\", " + systemType + ")\n")
+  f.write('-- lua file for ' + modelName + '.fmu\n')
+  f.write('oms_setTempDirectory(\''+tempDir+'\')\n')
+  f.write('oms_newModel(\'model\')\n')
+  f.write('oms_addSystem(\'model.root\', ' + systemType + ')\n')
 
-  f.write("\n-- instantiate FMU\n")
-  if os.path.isfile(inputCSV):
-    f.write("oms_addSubModel(\"model.root.input\", \"" + inputCSV + "\")\n")
-  f.write("oms_addSubModel(\"model.root.fmu\", \"" + testFMU + "\")\n")
+  f.write('\n-- instantiate FMU\n')
+  f.write('oms_addSubModel(\'model.root.fmu\', \'' + testFMU + '\')\n')
+  if len(inputs) > 0:
+    f.write('oms_addSubModel(\'model.root.input\', \'' + inputCSV + '\')\n')
 
   if len(inputs) > 0:
-    f.write("\n-- Connect inputs to FMU\n")
-    for inp in inputs:
-      f.write("oms_addConnection(\"model.root.input." + inp + "\", \"model.root.fmu." + inp + "\")\n")
+    f.write('\n-- connect inputs to FMU\n')
+    for input in inputs:
+      f.write('oms_addConnection(\'model.root.input.' + input + '\', \'model.root.fmu.' + input + '\')\n')
 
-  f.write("\n-- Simulation settings\n")
-  f.write("oms_setResultFile(\"model\", \"" + modelName + "_out.csv\")\n")
-  f.write("oms_setStartTime(\"model\", " + startTime + ")\n")
-  f.write("oms_setStopTime(\"model\", " + stopTime + ")\n")
-  f.write("oms_setTolerance(\"model\", " + absTol + ", " + relTol + ")\n")
-  if fmiType == "me":
-    f.write("oms_setVariableStepSize(\"model\", 1e-12, 1e-12, " + maximumStepSize + ")\n")
-  elif fmiType == "cs":
-    f.write("oms_setFixedStepSize(\"model\", " + maximumStepSize +")\n")
+  f.write('\n-- simulation settings\n')
+  f.write('oms_setResultFile(\'model\', \'' + modelName + '_out.csv\')\n')
+  f.write(f'oms_setLoggingInterval(\'model\', {outputIntervalLength})\n')
+  f.write(f'oms_setStartTime(\'model\', {startTime})\n')
+  f.write(f'oms_setStopTime(\'model\', {stopTime})\n')
+  f.write(f'oms_setTolerance(\'model\', {absTol}, {relTol})\n')
+  if fmiType == 'me':
+    f.write(f'oms_setVariableStepSize(\'model\', 1e-12, 1e-12, {stepSize})\n')
+  elif fmiType == 'cs':
+    f.write(f'oms_setFixedStepSize(\'model\', {stepSize})\n')
 
-  f.write("\n-- Instantiate, initialize and simulate\n")
-  f.write("oms_instantiate(\"model\")\n")
-  f.write("oms_initialize(\"model\")\n")
-  f.write("oms_simulate(\"model\")\n")
-  f.write("oms_terminate(\"model\")\n")
-  f.write("oms_delete(\"model\")\n")
-
+  f.write('\n-- instantiate, initialize and simulate\n')
+  f.write('oms_instantiate(\'model\')\n')
+  f.write('oms_initialize(\'model\')\n')
+  f.write('oms_simulate(\'model\')\n')
+  f.write('oms_terminate(\'model\')\n')
+  f.write('oms_delete(\'model\')\n')
   f.close()
 
   expFile = open(os.path.join(resultDir, "OMSimulator_exp.log"), "w")
@@ -119,24 +124,27 @@ def generateLua(modelName, testFMUDir, resultDir, fmiType):
   return luaFilePath
 
 
-def simulateFMU(omsimulator, testFMUDir, resultDir, modelName, fmiType, luaFile):
+def simulateFMU(omsimulator, resultDir, modelName, luaFile):
   """Import and simulate a FMU with OMSimulator
   Run given luaFile with given OMSimulator executable and measure time.
   Will save outputs to "OMSimulator_out.log", "OMSimulator_err.log" and "OMSimulator_exp.log".
   Return call comand cmd.
   """
   # Run lua file with OMSimulator via shell
-  cmd = ["--stripRoot=true",
+  cmd = omsimulator + [
+          f'--workingDir={resultDir}',
+          "--stripRoot=true",
           "--skipCSVHeader=true",
           "--addParametersToCSV=true",
           "--suppressPath=true",
           "--timeout=" + str(ulimitOMSimulator),
-          os.path.relpath(luaFile, resultDir)]
+          luaFile]
 
   # Call OMSimulator and measure time
   simTimeStart = time.time()
-  proc = subprocess.Popen(omsimulator+cmd, cwd=resultDir, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-  cmd = ' '.join(omsimulator+cmd)
+  print(cmd)
+  proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  cmd = ' '.join(cmd)
   simTime = time.time() - simTimeStart
   (out, err) = proc.communicate()
   exitCode = proc.returncode
@@ -190,19 +198,23 @@ def importFMU(crossCheckDir, testFMUDir, resultDir, modelName, fmiType, omsimula
   print("Testing " + os.path.relpath(testFMU, crossCheckDir))
 
   if not os.path.isfile(testFMU):
-    raise Exception("FMU \"" + testFMU + "\" not found!")
+    print("FMU \"" + testFMU + "\" not found!")
+    return
 
   os.makedirs(resultDir, exist_ok = True)
 
   # Copy FMU next to Lua file
   testFMU = os.path.abspath(os.path.join(testFMUDir, modelName + ".fmu"))
   shutil.copy(testFMU, resultDir)
+  inputCsv = os.path.abspath(os.path.join(testFMUDir, modelName + "_in.csv"))
+  if os.path.exists(inputCsv):
+    shutil.copy(inputCsv, resultDir)
 
   # Generate lua file
   luaFile = generateLua(modelName, testFMUDir, resultDir, fmiType)
 
   # Simulate FMU with OMSimulator
-  cmd = simulateFMU(omsimulator,testFMUDir, resultDir, modelName, fmiType, luaFile)
+  cmd = simulateFMU(omsimulator, resultDir, modelName, luaFile)
 
   # Generate README
   createREADME(resultDir, modelName, cmd, luaFile)
@@ -224,7 +236,7 @@ def simulateWithOMSimulator(crossCheckDir, platform, omsimulator, omsVersion):
   # Make sure we are in crossCheckDir
   os.chdir(crossCheckDir)
 
-  # Clean up possible existing result files and temp dir
+  # clean up temp directory
   tempDir = os.path.join(tempfile.gettempdir(), 'cross-check')
   shutil.rmtree(tempDir, ignore_errors=True)
   for fmiVersion in ["2.0"]:
