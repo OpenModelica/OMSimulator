@@ -146,7 +146,7 @@ def constructDF(crossCheckDir, platform, omsVersion):
     for fmiType in ["me", "cs"]:
       toolsDir = os.path.join(crossCheckDir, "fmus", fmiVersion, fmiType, platform)
       for exportingToolID in os.listdir(toolsDir):
-        versionsDir = os.path.join(toolsDir, exportingToolID) 
+        versionsDir = os.path.join(toolsDir, exportingToolID)
         for exportingToolVersion in os.listdir(versionsDir):
           fmusDir = os.path.join(versionsDir, exportingToolVersion)
           for modelName in os.listdir(fmusDir):
@@ -154,7 +154,7 @@ def constructDF(crossCheckDir, platform, omsVersion):
             if ignoreNotCompliantWithLatestRules:
               if os.path.isfile(os.path.join(crossCheckDir, "fmus", fmiVersion, fmiType, platform, exportingToolID, exportingToolVersion, modelName, "notCompliantWithLatestRules")):
                 continue
-            
+
             testFMUDir = os.path.join(crossCheckDir, "fmus", fmiVersion, fmiType, platform,         \
                                       exportingToolID, exportingToolVersion, modelName)
             resultDir = os.path.join(crossCheckDir, "results", fmiVersion, fmiType,                 \
@@ -164,8 +164,15 @@ def constructDF(crossCheckDir, platform, omsVersion):
             # Check for result file
             canSimulate = os.path.isfile(os.path.join(resultDir, modelName + "_out.csv"))
 
-            output = open(os.path.join(resultDir, "OMSimulator_out.log"), "r").read()
-            error = open(os.path.join(resultDir, "OMSimulator_err.log"), "r").read()
+            try:
+              output = open(os.path.join(resultDir, "OMSimulator_out.log"), "r").read()
+            except:
+              output = ""
+
+            try:
+              error = open(os.path.join(resultDir, "OMSimulator_err.log"), "r").read()
+            except:
+              error = ""
 
             resultsCorrect = os.path.isfile(os.path.join(resultDir, "passed"))
 
