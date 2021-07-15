@@ -1,8 +1,10 @@
 import os
 import sys
-import pandas as pd
+import traceback
 
+import pandas as pd
 from OMPython import OMCSessionZMQ
+
 # Start omc
 omc = OMCSessionZMQ()
 omc.sendExpression('getVersion()')
@@ -91,7 +93,10 @@ def validateResult(testFMUDir, resultDir, modelName, fmiType):
       open(os.path.join(resultDir,"rejected"), "w").close()
       print("\t REJECTED")
     else:
-      open(os.path.join(resultDir,"failed"), "w").close()
+      try:
+        open(os.path.join(resultDir,"failed"), "w").close()
+      except:
+        print(f"\t {traceback.format_exc()}")
       print("\t FAILED")
     return
 
@@ -143,7 +148,7 @@ def validateGeneratedResults(crossCheckDir, platform, omsVersion):
     for fmiType in ["me", "cs"]:
       toolsDir = os.path.join(crossCheckDir, "fmus", fmiVersion, fmiType, platform)
       for exportingToolID in os.listdir(toolsDir):
-        versionsDir = os.path.join(toolsDir, exportingToolID) 
+        versionsDir = os.path.join(toolsDir, exportingToolID)
         for exportingToolVersion in os.listdir(versionsDir):
           fmusDir = os.path.join(versionsDir, exportingToolVersion)
           for modelName in os.listdir(fmusDir):
