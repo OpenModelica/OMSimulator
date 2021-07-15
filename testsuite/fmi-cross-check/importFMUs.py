@@ -25,7 +25,9 @@ def generateLua(modelName, testFMUDir, resultDir, fmiType):
   Returns path to generated Lua file.
   """
   # Get some paths
-  testFMU = os.path.join(testFMUDir, modelName + ".fmu")
+  testFMU = modelName + ".fmu"
+  if sys.platform == "win32":
+    testFMU = testFMU.replace("\\", "\\\\")
   luaFilePath = os.path.join(resultDir, modelName + ".lua")
 
   # Set OMSimulator settings
@@ -33,8 +35,8 @@ def generateLua(modelName, testFMUDir, resultDir, fmiType):
   stopTime = 1.0
   relTol = 1e-6
   absTol = 1e-6
-  inputCSV = os.path.join(testFMUDir, modelName + '_in.csv')
-  refOptFile = os.path.join(testFMUDir, modelName + '_ref.opt')
+  inputCSV = os.path.join(testFMUDir, modelName + "_in.csv")
+  refOptFile = os.path.join(testFMUDir, modelName + "_ref.opt")
 
   df = pd.read_csv(refOptFile, delimiter=',', index_col=0, header=None)
 
@@ -85,9 +87,9 @@ def generateLua(modelName, testFMUDir, resultDir, fmiType):
   f.write('oms_addSystem(\'model.root\', ' + systemType + ')\n')
 
   f.write('\n-- instantiate FMU\n')
-  f.write('oms_addSubModel(\'model.root.fmu\', \'../../../../../../../../../' + testFMU.replace("\\", "\\\\") + '\')\n')
+  f.write('oms_addSubModel(\'model.root.fmu\', \'' + testFMU + '\')\n')
   if len(inputs) > 0:
-    f.write('oms_addSubModel(\'model.root.input\', \'../../../../../../../../../' + inputCSV.replace("\\", "\\\\") + '\')\n')
+    f.write('oms_addSubModel(\'model.root.input\', \'' + inputCSV + '\')\n')
 
   if len(inputs) > 0:
     f.write('\n-- connect inputs to FMU\n')
@@ -129,7 +131,7 @@ def simulateFMU(omsimulator, resultDir, modelName, luaFile):
   Return call comand cmd.
   """
   # Run lua file with OMSimulator via shell
-  cmd = [omsimulator,
+  cmd = omsimulator + [
           f'--workingDir={resultDir}',
           "--stripRoot=true",
           "--skipCSVHeader=true",
@@ -140,7 +142,8 @@ def simulateFMU(omsimulator, resultDir, modelName, luaFile):
 
   # Call OMSimulator and measure time
   simTimeStart = time.time()
-  proc = subprocess.Popen(cmd, cwd=resultDir, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  print(cmd)
+  proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   cmd = ' '.join(cmd)
   simTime = time.time() - simTimeStart
   (out, err) = proc.communicate()
@@ -198,6 +201,13 @@ def importFMU(crossCheckDir, testFMUDir, resultDir, modelName, fmiType, omsimula
     raise Exception("FMU \"" + testFMU + "\" not found!")
 
   os.makedirs(resultDir, exist_ok = True)
+
+  # Copy FMU next to Lua file
+  testFMU = os.path.abspath(os.path.join(testFMUDir, modelName + ".fmu"))
+  shutil.copy(testFMU, resultDir)
+  inputCsv = os.path.abspath(os.path.join(testFMUDir, modelName + "_in.csv"))
+  if os.path.exists(inputCsv):
+    shutil.copy(inputCsv, resultDir)
 
   # Generate lua file
   luaFile = generateLua(modelName, testFMUDir, resultDir, fmiType)
