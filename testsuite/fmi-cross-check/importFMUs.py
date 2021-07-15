@@ -199,6 +199,7 @@ def importFMU(crossCheckDir, testFMUDir, resultDir, modelName, fmiType, omsimula
 
   if not os.path.isfile(testFMU):
     print("FMU \"" + testFMU + "\" not found!")
+    return
 
   os.makedirs(resultDir, exist_ok = True)
 
