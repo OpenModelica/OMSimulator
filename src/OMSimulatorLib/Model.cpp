@@ -506,6 +506,17 @@ oms_status_enu_t oms::Model::newResources(const oms::ComRef& cref)
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::Model::deleteResources(const oms::ComRef& cref)
+{
+  ComRef subCref(cref);
+  std::string fileName = "resources/" + subCref.pop_suffix();
+
+  if (system)
+    return system->deleteResources(subCref, fileName);
+
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms::Model::addSystem(const oms::ComRef& cref, oms_system_enu_t type)
 {
   if (cref.isValidIdent() && !system)

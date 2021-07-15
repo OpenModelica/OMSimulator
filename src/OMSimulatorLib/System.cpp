@@ -373,6 +373,28 @@ oms_status_enu_t oms::System::newResources(const ComRef& cref, std::string& file
   return logError("failed for \"" + std::string(getFullCref() + cref) + "\""  + " as the identifier could not be resolved to a system or subsystem or component");
 }
 
+oms_status_enu_t oms::System::deleteResources(const ComRef& cref, std::string& filename)
+{
+  ComRef tail(cref);
+  ComRef front = tail.pop_front();
+
+  if (tail.isEmpty())
+  {
+    if (values.hasResources())
+      return values.deleteReferencesInSSD(filename);
+  }
+
+  auto subsystem = subsystems.find(tail);
+  if (subsystem != subsystems.end())
+    return subsystem->second->deleteResources(tail, filename);
+
+  auto component = components.find(tail);
+  if (component != components.end())
+    return component->second->deleteReferencesInSSD(filename);
+
+  return oms_status_error;
+}
+
 oms_status_enu_t oms::System::listUnconnectedConnectors(char** contents) const
 {
   if (!contents)

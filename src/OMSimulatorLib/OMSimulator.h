@@ -79,6 +79,7 @@ OMSAPI oms_status_enu_t OMSCALL oms_delete(const char* cref);
 OMSAPI oms_status_enu_t OMSCALL oms_deleteConnection(const char* crefA, const char* crefB);
 OMSAPI oms_status_enu_t OMSCALL oms_deleteConnectorFromBus(const char* busCref, const char* connectorCref);
 OMSAPI oms_status_enu_t OMSCALL oms_deleteConnectorFromTLMBus(const char* busCref, const char* connectorCref);
+OMSAPI oms_status_enu_t OMSCALL oms_deleteResources(const char* cref);
 OMSAPI oms_status_enu_t OMSCALL oms_doStep(const char* cref);
 OMSAPI oms_status_enu_t OMSCALL oms_export(const char* cref, const char* filename);
 OMSAPI oms_status_enu_t OMSCALL oms_exportDependencyGraphs(const char* cref, const char* initialization, const char* event, const char* simulation);

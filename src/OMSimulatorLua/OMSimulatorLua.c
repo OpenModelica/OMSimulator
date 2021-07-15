@@ -206,6 +206,20 @@ static int OMSimulatorLua_oms_delete(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms_deleteResources(const char* cref);
+static int OMSimulatorLua_oms_deleteResources(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* cref = lua_tostring(L, 1);
+  oms_status_enu_t status = oms_deleteResources(cref);
+
+  lua_pushinteger(L, status);
+  return 1;
+}
+
 //oms_status_enu_t oms_export(const char* cref, const char* filename);
 static int OMSimulatorLua_oms_export(lua_State *L)
 {
@@ -1285,6 +1299,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms_deleteConnection);
   REGISTER_LUA_CALL(oms_deleteConnectorFromBus);
   REGISTER_LUA_CALL(oms_deleteConnectorFromTLMBus);
+  REGISTER_LUA_CALL(oms_deleteResources);
   REGISTER_LUA_CALL(oms_export);
   REGISTER_LUA_CALL(oms_exportDependencyGraphs);
   REGISTER_LUA_CALL(oms_exportSnapshot);
