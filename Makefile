@@ -19,6 +19,8 @@ STATIC ?= OFF
 BUILD_TYPE ?= Release
 
 detected_OS ?= $(shell uname -s)
+# check architecture type 32 or 64 bit
+detected_arch ?= $(shell uname -m)
 
 ifeq ($(detected_OS),Darwin)
 	BUILD_DIR := build/mac
@@ -58,7 +60,8 @@ else
 	INSTALL_DIR := install/linux
 	CMAKE_TARGET=-DCMAKE_SYSTEM_NAME=$(detected_OS)
 # if empty is LINUX64, else LINUX32
-ifneq (,$(filter i386% i486% i586% i686%,$(host_short)))
+# ifneq (,$(filter i386% i486% i586% i686%,$(host_short)))
+ifneq (,$(filter $(detected_arch),i386 i486 i586 i686))
 	export ABI := LINUX32
 else
 	export ABI := LINUX64
