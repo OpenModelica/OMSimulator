@@ -170,5 +170,10 @@ ELSE ()
   install(TARGETS OMSimulatorLib DESTINATION lib/${HOST_SHORT})
 ENDIF ()
 
+## Copy libxml2 libraries to lib for linux32
+IF ("${ABI}" MATCHES "LINUX32")
+ install(DIRECTORY ../../3rdParty/libxml2/install/linux/lib/ DESTINATION lib FILES_MATCHING PATTERN "*xml2.so*" PATTERN "cmake" EXCLUDE PATTERN "pkgconfig" EXCLUDE PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ)
+ENDIF()
+
 install(TARGETS OMSimulatorLib_static DESTINATION lib/${HOST_SHORT})
 install(FILES OMSimulator.h Types.h DESTINATION include)
