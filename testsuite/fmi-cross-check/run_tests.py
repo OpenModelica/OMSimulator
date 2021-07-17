@@ -85,8 +85,7 @@ def executeLuaScript(luaScriptPath, resultDir, modelName, oms):
          '--timeout=60',
          modelName + '.lua']
 
-  # call OMSimulator and measure time
-  print(f'  * {" ".join(cmd)}')
+  # call OMSimulator
   proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   (out, err) = proc.communicate()
   exitCode = proc.returncode
@@ -183,6 +182,11 @@ def generateLuaScript(modelName, fmuDir, resultDir, fmiType, tempDir):
     print(f'  * Unsupportet FMU type {fmiType}')
     return ''
 
+  copy_fmu = True
+
+  if copy_fmu:
+    shutil.copy(fmuPath, resultDir)
+
   tempDir = tempDir.replace('\\', '\\\\')
   luaScriptPath = os.path.join(resultDir, modelName + '.lua')
   f = open(luaScriptPath, 'w')
@@ -193,7 +197,10 @@ def generateLuaScript(modelName, fmuDir, resultDir, fmiType, tempDir):
   f.write('oms_addSystem(\'model.root\', ' + systemType + ')\n')
 
   f.write('\n-- instantiate FMU\n')
-  f.write('oms_addSubModel(\'model.root.fmu\', \'../../../../../../../../../' + fmuPath + '\')\n')
+  if copy_fmu:
+    f.write('oms_addSubModel(\'model.root.fmu\', \'' + modelName + '.fmu\')\n')
+  else:
+    f.write('oms_addSubModel(\'model.root.fmu\', \'../../../../../../../../../' + fmuPath + '\')\n')
   if len(inputs) > 0:
     f.write('oms_addSubModel(\'model.root.input\', \'../../../../../../../../../' + inputCSV + '\')\n')
 
@@ -226,6 +233,7 @@ def generateLuaScript(modelName, fmuDir, resultDir, fmiType, tempDir):
 def runTest(modelName, fmuDir, resultDir, fmiType, oms, omc, tempDir):
   fmuPath = os.path.join(fmuDir, modelName + '.fmu')
   print('Testing {}'.format(fmuPath))
+  print('  * result dir: {}'.format(resultDir))
 
   os.makedirs(resultDir)
 
@@ -249,13 +257,25 @@ def runTest(modelName, fmuDir, resultDir, fmiType, oms, omc, tempDir):
 def _main():
   # parse command-line arguments
   parser = argparse.ArgumentParser(description='fmi-cross-check with OMSimulator', allow_abbrev=False)
-  parser.add_argument('--root', default='..', type=str, help='Root directory of the fmi-cross-check repository')
-  parser.add_argument('--version', default='v2.1.1', type=str, help='OMSimulator version')
-  parser.add_argument('--platform', default='win64', type=str, help='Platform to test')
-  parser.add_argument('--oms', default='.omsimulator/OMSimulator-mingw64-v2.1.1/bin/OMSimulator.exe', type=str, help='Path to OMSimulator')
+  parser.add_argument('--exporting-tool', default='', type=str, help='Path to temp directory')
+  parser.add_argument('--fmi-type', default='', type=str, help='Path to temp directory')
   parser.add_argument('--omc', default='omc', type=str, help='Path to omc')
+  parser.add_argument('--oms', default='', type=str, help='Path to OMSimulator')
+  parser.add_argument('--platform', default='', type=str, help='Platform to test')
+  parser.add_argument('--root', default='.', type=str, help='Root directory of the fmi-cross-check repository')
   parser.add_argument('--temp', default='', type=str, help='Path to temp directory')
+  parser.add_argument('--version', default='', type=str, help='OMSimulator version')
   args = parser.parse_args()
+
+  if not args.oms:
+    print("Argument --oms is required")
+    return
+  if not args.platform:
+    print("Argument --platform is required")
+    return
+  if not args.version:
+    print("Argument --version is required")
+    return
 
   # make sure we are in the fmi-cross-check directory
   rootDir = args.root
@@ -275,9 +295,9 @@ def _main():
 
   # generate new results
   for fmiVersion in ['2.0']:
-    for fmiType in ['me', 'cs']:
+    for fmiType in ['me', 'cs'] if not args.fmi_type else [args.fmi_type]:
       toolsDir = os.path.join('fmus', fmiVersion, fmiType, args.platform)
-      for exportingToolID in os.listdir(toolsDir):
+      for exportingToolID in os.listdir(toolsDir) if not args.exporting_tool else [args.exporting_tool]:
         versionsDir = os.path.join(toolsDir, exportingToolID)
         for exportingToolVersion in os.listdir(versionsDir):
           fmusDir = os.path.join(versionsDir, exportingToolVersion)
@@ -294,6 +314,10 @@ def _main():
               os.remove(os.path.join(resultDir, 'compare_results.mos'))
             files_in_directory = os.listdir(resultDir)
             filtered_files = [file for file in files_in_directory if file.endswith(".csv")]
+            for file in filtered_files:
+              path_to_file = os.path.join(resultDir, file)
+              os.remove(path_to_file)
+            filtered_files = [file for file in files_in_directory if file.endswith(".fmu")]
             for file in filtered_files:
               path_to_file = os.path.join(resultDir, file)
               os.remove(path_to_file)
