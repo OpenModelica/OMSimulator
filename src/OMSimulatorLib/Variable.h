@@ -95,6 +95,7 @@ namespace oms
     std::string description;
     fmi2_value_reference_t vr;
     fmi2_causality_enu_t causality;
+    fmi2_variability_enu_t variability;
     fmi2_initial_enu_t initialProperty;
     bool is_state;
     bool is_der;
