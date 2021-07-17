@@ -108,18 +108,18 @@ def executeLuaScript(luaScriptPath, resultDir, modelName, oms):
     if VERBOSE:
       readme.write('Stdout:\n')
       readme.write('```\n')
-      readme.write(out.decode())
+      readme.write(out.decode(errors='ignore'))
       readme.write('```\n\n')
       readme.write('Stderr:\n')
       readme.write('```\n')
-      readme.write(err.decode())
+      readme.write(err.decode(errors='ignore'))
       readme.write('```\n\n')
 
   if exitCode != 0:
     print(f'  * exit code {exitCode}')
     print('  -> failed')
     with open(os.path.join(resultDir, 'failed'), 'w') as f:
-      f.write(err.decode())
+      f.write(err.decode(errors='ignore'))
     return
 
   # check if result file was generated
@@ -127,10 +127,10 @@ def executeLuaScript(luaScriptPath, resultDir, modelName, oms):
     print('  * no result file generated')
     print('  -> failed')
     with open(os.path.join(resultDir, 'failed'), 'w') as f:
-      f.write(err.decode())
+      f.write(err.decode(errors='ignore'))
     return
 
-def generateLuaScript(modelName, fmuDir, resultDir, fmiType):
+def generateLuaScript(modelName, fmuDir, resultDir, fmiType, tempDir):
   # Get some paths
   fmuPath = os.path.join(fmuDir, modelName + '.fmu')
 
@@ -183,7 +183,6 @@ def generateLuaScript(modelName, fmuDir, resultDir, fmiType):
     print(f'  * Unsupportet FMU type {fmiType}')
     return ''
 
-  tempDir = os.path.join(tempfile.gettempdir(), 'cross-check')
   tempDir = tempDir.replace('\\', '\\\\')
   luaScriptPath = os.path.join(resultDir, modelName + '.lua')
   f = open(luaScriptPath, 'w')
@@ -224,7 +223,7 @@ def generateLuaScript(modelName, fmuDir, resultDir, fmiType):
 
   return luaScriptPath
 
-def runTest(modelName, fmuDir, resultDir, fmiType, oms, omc):
+def runTest(modelName, fmuDir, resultDir, fmiType, oms, omc, tempDir):
   fmuPath = os.path.join(fmuDir, modelName + '.fmu')
   print('Testing {}'.format(fmuPath))
 
@@ -237,7 +236,7 @@ def runTest(modelName, fmuDir, resultDir, fmiType, oms, omc):
       f.write('FMU not found\n')
     return
 
-  luaScriptPath = generateLuaScript(modelName, fmuDir, resultDir, fmiType)
+  luaScriptPath = generateLuaScript(modelName, fmuDir, resultDir, fmiType, tempDir)
   if not luaScriptPath:
     print('  -> skipped')
     return
@@ -255,14 +254,17 @@ def _main():
   parser.add_argument('--platform', default='win64', type=str, help='Platform to test')
   parser.add_argument('--oms', default='.omsimulator/OMSimulator-mingw64-v2.1.1/bin/OMSimulator.exe', type=str, help='Path to OMSimulator')
   parser.add_argument('--omc', default='omc', type=str, help='Path to omc')
+  parser.add_argument('--temp', default='', type=str, help='Path to temp directory')
   args = parser.parse_args()
 
   # make sure we are in the fmi-cross-check directory
   rootDir = args.root
   os.chdir(rootDir)
 
+  tempDir = args.temp if args.temp else tempfile.gettempdir()
+  tempDir = os.path.join(tempDir, 'cross-check')
+
   # clean up temp directory
-  tempDir = os.path.join(tempfile.gettempdir(), 'cross-check')
   shutil.rmtree(tempDir, ignore_errors=True)
 
   # clean up previous results
@@ -285,7 +287,7 @@ def _main():
             if os.path.isfile(os.path.join(fmuDir, 'notCompliantWithLatestRules')):
               print('Skipping {} because of notCompliantWithLatestRules file'.format(fmuDir))
               continue
-            runTest(modelName, fmuDir, resultDir, fmiType, args.oms, args.omc)
+            runTest(modelName, fmuDir, resultDir, fmiType, args.oms, args.omc, tempDir)
             if os.path.exists(os.path.join(resultDir, modelName + '.lua')):
               os.remove(os.path.join(resultDir, modelName + '.lua'))
             if os.path.exists(os.path.join(resultDir, 'compare_results.mos')):
