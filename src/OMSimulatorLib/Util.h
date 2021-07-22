@@ -72,7 +72,7 @@ static inline bool almostEqualRelativeAndAbs(double a, double b, double reltol=D
     return true;
 
   if (diff <= fmax(fabs(a), fabs(b)) * reltol)
-    return false;
+    return true;
 
   return false;
 }
