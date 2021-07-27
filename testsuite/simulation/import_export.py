@@ -160,8 +160,10 @@ printStatus(status, 0)
 ## status:  [correct] ok
 ## status:  [correct] ok
 ## status:  [correct] ok
-## warning: [A: resources/0001_A.fmu] The FMU doesn't specify initial unknowns.
-## warning: [A: resources/0001_A.fmu] The dependencies of the initial unknowns defined in the FMU are ignored and instead all the initial unknowns will depend on all inputs.
+## warning: [A: resources/0001_A.fmu] The FMU lists 0 initial unknowns and exposes 2 initial unknowns.
+##            * 1: _D_cse1 is missing
+##            * 2: y is missing
+## info:    [A: resources/0001_A.fmu] The FMU contains bad initial unknowns. This might cause problems, e.g. wrong simulation results.
 ## status:  [correct] ok
 ## status:  [correct] ok
 ## status:  [correct] ok
@@ -360,8 +362,10 @@ printStatus(status, 0)
 ##
 ## status:  [correct] ok
 ## status:  [correct] ok
-## warning: [A: resources/0001_A.fmu] The FMU doesn't specify initial unknowns.
-## warning: [A: resources/0001_A.fmu] The dependencies of the initial unknowns defined in the FMU are ignored and instead all the initial unknowns will depend on all inputs.
+## warning: [A: resources/0001_A.fmu] The FMU lists 0 initial unknowns and exposes 2 initial unknowns.
+##            * 1: _D_cse1 is missing
+##            * 2: y is missing
+## info:    [A: resources/0001_A.fmu] The FMU contains bad initial unknowns. This might cause problems, e.g. wrong simulation results.
 ## status:  [correct] ok
 ## status:  [correct] ok
 ## <?xml version="1.0"?>
@@ -528,6 +532,6 @@ printStatus(status, 0)
 ## </ssd:SystemStructureDescription>
 ##
 ## status:  [correct] ok
-## info:    4 warnings
+## info:    2 warnings
 ## info:    0 errors
 ## endResult

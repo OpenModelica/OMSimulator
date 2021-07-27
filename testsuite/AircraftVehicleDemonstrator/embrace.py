@@ -14,7 +14,7 @@ Created on Mon Dec 21 10:30:26 2020
 import OMSimulator
 
 oms = OMSimulator.OMSimulator()
-oms.setCommandLineOption("--suppressPath=true --wallTime=true --ignoreInitialUnknowns=true")
+oms.setCommandLineOption("--suppressPath=true --wallTime=true --ignoreInitialUnknowns=false")
 oms.setTempDirectory("./embrace/")
 oms.setWorkingDirectory("./embrace/")
 

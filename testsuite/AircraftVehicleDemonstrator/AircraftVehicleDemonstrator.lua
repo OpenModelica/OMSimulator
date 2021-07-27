@@ -6,7 +6,7 @@
 -- win: yes
 -- mac: no
 
-oms_setCommandLineOption("--suppressPath=true --ignoreInitialUnknowns=true")
+oms_setCommandLineOption("--suppressPath=true --ignoreInitialUnknowns=false")
 oms_setTempDirectory("./AircraftVehicleDemonstrator_tmp/")
 
 oms_newModel("AircraftVehicleDemonstrator")
