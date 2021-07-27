@@ -67,11 +67,6 @@ oms.terminate("embrace")
 oms.delete("embrace")
 
 ## Result:
-## warning: [ECS_SW: resources/0002_ECS_SW.fmu] The dependencies of the initial unknowns defined in the FMU are ignored because the flag --ignoreInitialUnknowns is active. Instead, all the initial unknowns will depend on all inputs.
-## warning: [ECS_HW: resources/0001_ECS_HW.fmu] The FMU lists 57 state derivatives but actually exposes 60 state derivatives.
-##          The following derivatives are missing: 486: nodePumpToHEX.vp, 520: nodeHEXToPipeA.vp, 901: nodeAirOutlet.vp
-## warning: [Consumer: resources/0003_Consumer.fmu] The FMU lists 19 state derivatives but actually exposes 21 state derivatives.
-##          The following derivatives are missing: 206: nodePipeAToConsumer.vp, 240: nodeConsumerToPipeB.vp
 ## info:    Result file: sim_results.mat (bufferSize=1)
 ## info:    Initialize:
 ## info:      embrace.root.ECS_HW.coolinPackAir.looptype:  2
@@ -79,6 +74,4 @@ oms.delete("embrace")
 ## info:      embrace.root.ECS_HW.pipeC.L               :  1.0
 ## info:      embrace.root.ECS_HW.pipeB.L               :  0.976535328081166
 ## info:      embrace.root.ECS_HW.pipeA.L               :  0.976535328081166
-## info:    3 warnings
-## info:    0 errors
 ## endResult
