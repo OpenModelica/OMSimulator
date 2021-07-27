@@ -417,18 +417,19 @@ oms_status_enu_t oms::ComponentFMUCS::initializeDependencyGraph_initialUnknowns(
     }
   }
 
-  if (badInitialUnknowns)
+  if (badInitialUnknowns && N_ModelStructure > 0)
     logWarning("[" + std::string(getCref()) + ": " + getPath() + "] The FMU lists " + std::to_string(N_ModelStructure) + " initial unknowns and exposes " + std::to_string(N) + " initial unknowns." + missing_unknowns);
 
   fmi2_import_free_variable_list(initialUnknowns_ModelStructure);
 
   if (badInitialUnknowns)
   {
-    if(!Flags::IgnoreInitialUnknowns())
+    if(!Flags::IgnoreInitialUnknowns() && N_ModelStructure > 0)
       logInfo("[" + std::string(getCref()) + ": " + getPath() + "] The FMU contains bad initial unknowns. This might cause problems, e.g. wrong simulation results.");
     else
     {
-      logWarning("[" + std::string(getCref()) + ": " + getPath() + "] The dependencies of the initial unknowns defined in the FMU are ignored because the flag --ignoreInitialUnknowns is active. Instead, all the initial unknowns will depend on all inputs.");
+      if (N_ModelStructure > 0)
+        logWarning("[" + std::string(getCref()) + ": " + getPath() + "] The dependencies of the initial unknowns defined in the FMU are ignored because the flag --ignoreInitialUnknowns is active. Instead, all the initial unknowns will depend on all inputs.");
       for (int i=0; i < N; i++)
       {
         logDebug(std::string(getCref()) + ": " + getPath() + " initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + " depends on all inputs");

@@ -107,9 +107,6 @@ oms_terminate("PI_Controller")
 oms_delete("PI_Controller")
 
 -- Result:
--- warning: [limiter: resources/0007_limiter.fmu] The FMU lists 5 initial unknowns and exposes 6 initial unknowns.
---            * 5: simplifiedExpr is missing
--- info:    [limiter: resources/0007_limiter.fmu] The FMU contains bad initial unknowns. This might cause problems, e.g. wrong simulation results.
 -- info:    Parameter settings
 -- info:      PI_Controller.co_sim.addP.k1: 1.0
 -- info:      PI_Controller.co_sim.addP.k2: -1.0
@@ -126,6 +123,4 @@ oms_delete("PI_Controller")
 -- info:    Simulation
 -- info:      limiter.u: -10.041439549286
 -- info:      limiter.y: -10.041439549286
--- info:    1 warnings
--- info:    0 errors
 -- endResult
