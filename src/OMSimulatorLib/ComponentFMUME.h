@@ -90,7 +90,7 @@ namespace oms
 
     oms_status_enu_t doEventIteration();
 
-    size_t getNumberOfContinuousStates() const {return nContinuousStates;}
+    size_t getNumberOfContinuousStates() const {return derivatives.size();}
     size_t getNumberOfEventIndicators() const {return nEventIndicators;}
     oms_status_enu_t getContinuousStates(double* states);
     oms_status_enu_t setContinuousStates(double* states);
@@ -120,6 +120,8 @@ namespace oms
 
     oms_status_enu_t renameValues(const ComRef& oldCref, const ComRef& newCref);
 
+    void dumpInitialUnknowns();
+
   private:
     jm_callbacks callbacks;
     fmi2_callback_functions_t callbackFunctions;
@@ -127,7 +129,6 @@ namespace oms
     fmi2_import_t* fmu = NULL;
 
     fmi2_event_info_t eventInfo;
-    size_t nContinuousStates;
     size_t nEventIndicators;
 
     FMUInfo fmuInfo;

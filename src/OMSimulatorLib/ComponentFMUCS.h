@@ -121,6 +121,8 @@ namespace oms
 
     oms_status_enu_t renameValues(const ComRef& oldCref, const ComRef& newCref);
 
+    void dumpInitialUnknowns();
+
   private:
     jm_callbacks callbacks;
     fmi2_callback_functions_t callbackFunctions;
