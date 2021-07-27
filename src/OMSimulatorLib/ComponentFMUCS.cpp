@@ -155,47 +155,29 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::
       return NULL;
     }
     component->allVariables.push_back(v);
-    if (v.isDer())
-      component->derivatives.push_back(v.getIndex());
     component->exportVariables.push_back(true);
   }
   fmi2_import_free_variable_list(varList);
 
-  // check derivatives
+  // extract continuous-time derivatives
   varList = fmi2_import_get_derivatives_list(component->fmu);
   varListSize = fmi2_import_get_variable_list_size(varList);
-  if (varListSize != component->derivatives.size())
+  for (size_t i = 0; i < varListSize; ++i)
   {
-    std::unordered_set <unsigned int> setA_fmilib;
-    for (size_t i=0; i < varListSize; ++i)
-    {
-      fmi2_import_variable_t* var = fmi2_import_get_variable(varList, i);
-      size_t originalIndex = fmi2_import_get_variable_original_order(var);
-      setA_fmilib.insert(originalIndex);
-    }
-
-    std::string missing_der = "";
-    for (const auto& i : component->derivatives)
-    {
-      if (setA_fmilib.find(i) == setA_fmilib.end())
-      {
-        if (!missing_der.empty())
-          missing_der += ", ";
-        missing_der += std::to_string(i+1) + ": " + std::string(component->allVariables[i].getCref());
-      }
-    }
-
-    logWarning("[" + std::string(component->getCref()) + ": " + component->getPath() + "] The FMU lists " + std::to_string(varListSize) + " state derivatives but actually exposes " + std::to_string(component->derivatives.size()) + " state derivatives.\nThe following derivatives are missing: " + missing_der);
+    fmi2_import_variable_t* var = fmi2_import_get_variable(varList, i);
+    size_t originalIndex = fmi2_import_get_variable_original_order(var);
+    component->allVariables[originalIndex].markAsContinuousTimeDer();
+    component->derivatives.push_back(originalIndex);
   }
   fmi2_import_free_variable_list(varList);
 
-  // mark states
-  logDebug(std::to_string(varListSize) + " states");
-  for (const auto& i : component->derivatives)
+  // mark states and continuous-time states
+  for (size_t i = 0; i < component->allVariables.size(); ++i)
   {
-    // IMPORTANT: vr is not unique!!! Do lookup with proper index or name
-    size_t state_index = component->allVariables[i].getStateIndex();
-    component->allVariables[state_index].markAsState(i);
+    if (component->allVariables[i].isContinuousTimeDer())
+      component->allVariables[component->allVariables[i].getStateIndex()].markAsContinuousTimeState(i);
+    else if (component->allVariables[i].isDer())
+      component->allVariables[component->allVariables[i].getStateIndex()].markAsState(i);
   }
 
   // create some special variable maps

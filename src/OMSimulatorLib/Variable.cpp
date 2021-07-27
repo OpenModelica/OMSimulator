@@ -72,7 +72,7 @@ oms::Variable::Variable(fmi2_import_variable_t* var)
   }
 
   // mark derivatives
-  if (oms_signal_type_real == type && variability == fmi2_variability_enu_continuous)
+  if (oms_signal_type_real == type)
   {
     fmi2_import_real_variable_t* varReal = fmi2_import_get_variable_as_real(var);
     fmi2_import_variable_t* varState = (fmi2_import_variable_t*)fmi2_import_get_real_variable_derivative_of(varReal);
