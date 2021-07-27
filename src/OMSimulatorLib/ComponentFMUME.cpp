@@ -419,7 +419,7 @@ oms_status_enu_t oms::ComponentFMUME::initializeDependencyGraph_initialUnknowns(
     }
   }
 
-  if (badInitialUnknowns && N_ModelStructure > 0)
+  if (badInitialUnknowns && !Flags::IgnoreInitialUnknowns() && N_ModelStructure > 0)
     logWarning("[" + std::string(getCref()) + ": " + getPath() + "] The FMU lists " + std::to_string(N_ModelStructure) + " initial unknowns and exposes " + std::to_string(N) + " initial unknowns." + missing_unknowns);
 
   fmi2_import_free_variable_list(initialUnknowns_ModelStructure);
