@@ -348,25 +348,48 @@ oms_status_enu_t oms::ComponentFMUCS::exportToSSMTemplate(pugi::xml_node& ssmNod
   return oms_status_ok;
 }
 
+void oms::ComponentFMUCS::dumpInitialUnknowns()
+{
+  std::string str = "";
+  int n=0;
+  for (auto &v : allVariables)
+  {
+    if (v.isInitialUnknown())
+    {
+      n++;
+      if (!str.empty())
+        str += ", ";
+      str += std::to_string(v.getIndex()+1) + ": " + std::string(v.getCref());
+    }
+  }
+  logInfo("[" + std::string(getCref()) + ": " + getPath() + "] The FMU contains " + std::to_string(n) + " initial unknowns: " + str);
+}
+
 oms_status_enu_t oms::ComponentFMUCS::initializeDependencyGraph_initialUnknowns()
 {
   if (initialUnknownsGraph.getEdges().size() > 0)
     return logError(std::string(getCref()) + ": " + getPath() + " is already initialized");
 
   int N=initialUnknownsGraph.getNodes().size();
+  //dumpInitialUnknowns();
 
   // Check if initial unknowns from modelDescription.xml are the same as in initialUnknownsGraph
   fmi2_import_variable_list_t* initialUnknowns;
   initialUnknowns = fmi2_import_get_initial_unknowns_list(fmu);
-  size_t N_fmilib = fmi2_import_get_variable_list_size(initialUnknowns);
+  size_t N_ModelStructure = fmi2_import_get_variable_list_size(initialUnknowns);
   bool badInitialUnknowns = false;
 
-  if (N != N_fmilib)
+  if (N_ModelStructure == 0 && N != N_ModelStructure)
+  {
+    logWarning("[" + std::string(getCref()) + ": " + getPath() + "] The FMU doesn't specify initial unknowns.");
+    badInitialUnknowns = true;
+  }
+  else if (N != N_ModelStructure)
   {
     if (!Flags::IgnoreInitialUnknowns())
     {
       std::unordered_set <unsigned int> setA_fmilib;
-      for (size_t i=0; i < N_fmilib; ++i)
+      for (size_t i=0; i < N_ModelStructure; ++i)
       {
         fmi2_xml_variable_t* var_fmilib = fmi2_import_get_variable(initialUnknowns, i);
         size_t originalIndex = fmi2_import_get_variable_original_order(var_fmilib);
@@ -384,12 +407,12 @@ oms_status_enu_t oms::ComponentFMUCS::initializeDependencyGraph_initialUnknowns(
         }
       }
 
-      logWarning("[" + std::string(getCref()) + ": " + getPath() + "] The FMU lists " + std::to_string(N_fmilib) + " initial unknowns but actually exposes " + std::to_string(N) + " initial unknowns.\nThe following unknowns are missing: " + missing_unknowns);
+      logWarning("[" + std::string(getCref()) + ": " + getPath() + "] The FMU lists " + std::to_string(N_ModelStructure) + " initial unknowns but actually exposes " + std::to_string(N) + " initial unknowns.\nThe following unknowns are missing: " + missing_unknowns);
     }
     badInitialUnknowns = true;
   }
 
-  for (size_t i=0; i < N_fmilib; ++i)
+  for (size_t i=0; i < N_ModelStructure; ++i)
   {
     fmi2_xml_variable_t* var_fmilib = fmi2_import_get_variable(initialUnknowns, i);
     size_t originalIndex = fmi2_import_get_variable_original_order(var_fmilib);
@@ -414,19 +437,14 @@ oms_status_enu_t oms::ComponentFMUCS::initializeDependencyGraph_initialUnknowns(
 
   if (badInitialUnknowns)
   {
-    if(!Flags::IgnoreInitialUnknowns())
-      logInfo("[" + std::string(getCref()) + ": " + getPath() + "] The FMU contains bad initial unknowns. This might cause problems, e.g. wrong simulation results.");
-    else
+    logWarning("[" + std::string(getCref()) + ": " + getPath() + "] The dependencies of the initial unknowns defined in the FMU are ignored and instead all the initial unknowns will depend on all inputs.");
+    for (int i=0; i < N; i++)
     {
-      logWarning("[" + std::string(getCref()) + ": " + getPath() + "] The dependencies of the initial unknowns defined in the FMU are ignored because the flag --ignoreInitialUnknowns is active. Instead, all the initial unknowns will depend on all inputs.");
-      for (int i=0; i < N; i++)
-      {
-        logDebug(std::string(getCref()) + ": " + getPath() + " initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + " depends on all inputs");
-        for (const auto& j : inputs)
-          initialUnknownsGraph.addEdge(allVariables[j].makeConnector(this->getFullCref()), initialUnknownsGraph.getNodes()[i]);
-      }
-      return oms_status_ok;
+      logDebug(std::string(getCref()) + ": " + getPath() + " initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + " depends on all inputs");
+      for (const auto& j : inputs)
+        initialUnknownsGraph.addEdge(allVariables[j].makeConnector(this->getFullCref()), initialUnknownsGraph.getNodes()[i]);
     }
+    return oms_status_ok;
   }
 
   size_t *startIndex=NULL, *dependency=NULL;
@@ -457,7 +475,7 @@ oms_status_enu_t oms::ComponentFMUCS::initializeDependencyGraph_initialUnknowns(
   //  buffer += "factorKind[" + std::to_string(i) + "] = " + std::string(fmi2_dependency_factor_kind_to_string((fmi2_dependency_factor_kind_enu_t)factorKind[i])) + "\n";
   //logInfo(buffer);
 
-  for (int i=0; i < N_fmilib; i++)
+  for (int i=0; i < N_ModelStructure; i++)
   {
     if (startIndex[i] == startIndex[i+1])
     {
