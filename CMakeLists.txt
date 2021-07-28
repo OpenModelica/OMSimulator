@@ -155,8 +155,8 @@ set(CTPL_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/CTPL)
 
 ##########################
 # Configuring for minizip
-set(MINIZIP_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/zlib/install/${PLATFORM_STRING}/include)
-set(MINIZIP_LIBRARYDIR ${PROJECT_SOURCE_DIR}/3rdParty/zlib/install/${PLATFORM_STRING}/lib)
+set(MINIZIP_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/minizip/install/${PLATFORM_STRING}/include)
+set(MINIZIP_LIBRARYDIR ${PROJECT_SOURCE_DIR}/3rdParty/minizip/install/${PLATFORM_STRING}/lib)
 
 ##########################
 # Configuring for Python
