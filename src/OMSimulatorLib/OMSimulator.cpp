@@ -1598,7 +1598,7 @@ oms_status_enu_t oms_extractFMIKind(const char* filename, oms_fmi_kind_enu_t* ki
 
   const char* modelDescription = (const char*)::miniunz_onefile_to_memory(filename, "modelDescription.xml");
   if (!modelDescription)
-    return logError("failed to extract modelDescription.xml from \"" + std::string(filename) + "\"");
+    return logError("failed to extract \"modelDescription.xml\" from \"" + std::string(filename) + "\"");
 
   oms::Snapshot snapshot;
   oms_status_enu_t status = snapshot.importResourceMemory("modelDescription.xml", modelDescription);

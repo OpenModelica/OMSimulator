@@ -141,12 +141,10 @@ oms_status_enu_t oms::Scope::exportModel(const oms::ComRef& cref, const std::str
   return model->exportToFile(filename);
 }
 
-oms_status_enu_t oms::Scope::miniunz(const std::string& filename, const std::string& extractdir, bool systemStructure)
+oms_status_enu_t oms::Scope::miniunz(const std::string& filename, const std::string& extractdir)
 {
-  // This function is used to extract (1) complete SSP/FMU files or to extract
-  // (2) the SystemStructure.ssd from an SSP file:
-  //     (1) miniunz -xo <filename> -d <extractdir>
-  //     (2) miniunz -xo <filename> SystemStructure.ssd -d <extractdir>
+  // This function is used to extract complete SSP/FMU files:
+  //        miniunz -xo <filename> -d <extractdir>
 
   // Usage: miniunz [-e] [-x] [-v] [-l] [-o] [-p password] file.zip [file_to_extr.] [-d extractdir]
   //        -e  Extract without pathname (junk paths)
@@ -159,14 +157,12 @@ oms_status_enu_t oms::Scope::miniunz(const std::string& filename, const std::str
 
   std::string cd = Scope::GetInstance().getWorkingDirectory();
 
-  int argc = systemStructure ? 6 : 5;
+  int argc = 5;
   char **argv = new char*[argc];
   int i=0;
   argv[i++] = (char*)"miniunz";
   argv[i++] = (char*)"-xo";
   argv[i++] = (char*)filename.c_str();
-  if (systemStructure)
-    argv[i++] = (char*)"SystemStructure.ssd";
   argv[i++] = (char*)"-d";
   argv[i++] = (char*)extractdir.c_str();
   int status = ::miniunz(argc, argv);
@@ -195,13 +191,17 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
   if (extension != ".ssp")
     return logError("filename extension must be \".ssp\"; no other formats are supported");
 
-  // extract SystemStructure.ssd to temp
-  filesystem::path temp_root(getTempDirectory());
-  if (oms_status_ok != oms::Scope::miniunz(filename, temp_root.string(), true))
-    return logError("failed to extract \"SystemStructure.ssd\" from \"" + filename + "\"");
+  // extract SystemStructure.ssd to memory
+  const char* systemStructure = (const char*)::miniunz_onefile_to_memory(filename.c_str(), "SystemStructure.ssd");
+  if (!systemStructure)
+    return logError("failed to extract \"SystemStructure.ssd\" from \"" + std::string(filename) + "\"");
 
   Snapshot snapshot;
-  snapshot.importResourceFile("SystemStructure.ssd", temp_root);
+  oms_status_enu_t status = snapshot.importResourceMemory("SystemStructure.ssd", systemStructure);
+  ::miniunz_free((void*)systemStructure);
+  if (oms_status_ok != status)
+    return logError("Failed to import");
+
   const pugi::xml_node node = snapshot.getResourceNode("SystemStructure.ssd");
   if (!node)
     return logError("failed to load \"SystemStructure.ssd\"");
@@ -217,7 +217,7 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
     logWarning("Unknown SSD version: " + ssdVersion);
 
   // extract the ssp file
-  oms::Scope::miniunz(filename, model->getTempDirectory(), false);
+  oms::Scope::miniunz(filename, model->getTempDirectory());
 
   std::string cd = Scope::GetInstance().getWorkingDirectory();
   Scope::GetInstance().setWorkingDirectory(model->getTempDirectory());
@@ -233,7 +233,7 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
 
   // snapshot.debugPrintAll();
 
-  oms_status_enu_t status = model->importFromSnapshot(snapshot);
+  status = model->importFromSnapshot(snapshot);
   model->copyResources(old_copyResources);
 
   Scope::GetInstance().setWorkingDirectory(cd);
