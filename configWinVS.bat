@@ -124,7 +124,7 @@ IF EXIST "3rdParty\minizip\build\win\" RMDIR /S /Q 3rdParty\minizip\build\win
 IF EXIST "3rdParty\minizip\install\win\" RMDIR /S /Q 3rdParty\minizip\install\win
 MKDIR 3rdParty\minizip\build\win
 CD 3rdParty\minizip\build\win
-cmake.exe -G %OMS_VS_VERSION% ..\..\minizip\ -DCMAKE_INSTALL_PREFIX=..\..\install\win
+cmake.exe -G %OMS_VS_VERSION% ..\..\src\ -DCMAKE_INSTALL_PREFIX=..\..\install\win
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 CD ..\..\..\..
 ECHO # build minizip
