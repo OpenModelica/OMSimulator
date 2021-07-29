@@ -123,7 +123,7 @@ else
 	CMAKE_BOOST_ROOT="-DBOOST_ROOT=$(BOOST_ROOT)"
 endif
 
-.PHONY: OMSimulator OMSimulatorCore config-OMSimulator config-fmil config-lua config-zlib config-cvode config-kinsol config-3rdParty distclean testsuite doc doc-html doc-doxygen OMTLMSimulator OMTLMSimulatorClean RegEx pip
+.PHONY: OMSimulator OMSimulatorCore config-OMSimulator config-fmil config-lua config-minizip config-cvode config-kinsol config-3rdParty distclean testsuite doc doc-html doc-doxygen OMTLMSimulator OMTLMSimulatorClean RegEx pip
 
 OMSimulator:
 	@echo OS: $(detected_OS)
@@ -195,7 +195,7 @@ RegEx: 3rdParty/RegEx/OMSRegEx$(EEXT)
 	@echo "Please checkout the 3rdParty submodule, e.g. using \"git submodule update --init 3rdParty\", and try again."
 	@false
 
-config-3rdParty: 3rdParty/README.md config-fmil config-lua config-zlib config-cvode config-kinsol config-libxml2
+config-3rdParty: 3rdParty/README.md config-fmil config-lua config-minizip config-cvode config-kinsol config-libxml2
 
 config-OMSimulator: $(BUILD_DIR)/Makefile
 $(BUILD_DIR)/Makefile: RegEx CMakeLists.txt
@@ -224,23 +224,15 @@ config-lua: 3rdParty/Lua/$(INSTALL_DIR)/liblua.a
 	@echo
 	$(MAKE) -C 3rdParty/Lua $(LUA_EXTRA_FLAGS)
 
-config-zlib: 3rdParty/zlib/$(INSTALL_DIR)/libminizip.a
-3rdParty/zlib/$(INSTALL_DIR)/libzlibstatic.a: 3rdParty/zlib/$(BUILD_DIR)/zlib/Makefile
-	$(MAKE) -C 3rdParty/zlib/$(BUILD_DIR)/zlib/ install
-3rdParty/zlib/$(INSTALL_DIR)/libminizip.a: 3rdParty/zlib/$(INSTALL_DIR)/libzlibstatic.a 3rdParty/zlib/$(BUILD_DIR)/minizip/Makefile
-	$(MAKE) -C 3rdParty/zlib/$(BUILD_DIR)/minizip/ install
-3rdParty/zlib/$(BUILD_DIR)/zlib/Makefile:
+config-minizip: 3rdParty/minizip/$(INSTALL_DIR)/libminizip.a
+3rdParty/minizip/$(INSTALL_DIR)/libminizip.a: 3rdParty/minizip/$(BUILD_DIR)/Makefile
+	$(MAKE) -C 3rdParty/minizip/$(BUILD_DIR)/ install
+3rdParty/minizip/$(BUILD_DIR)/Makefile:
 	@echo
-	@echo "# config zlib library"
+	@echo "# config minizip"
 	@echo
-	$(MKDIR) 3rdParty/zlib/$(BUILD_DIR)/zlib
-	cd 3rdParty/zlib/$(BUILD_DIR)/zlib && $(CMAKE) $(CMAKE_TARGET) ../../../zlib-1.2.11 -DCMAKE_INSTALL_PREFIX=../../../$(INSTALL_DIR)
-3rdParty/zlib/$(BUILD_DIR)/minizip/Makefile:
-	@echo
-	@echo "# config zlib minizip"
-	@echo
-	$(MKDIR) 3rdParty/zlib/$(BUILD_DIR)/minizip
-	cd 3rdParty/zlib/$(BUILD_DIR)/minizip && $(CMAKE) $(CMAKE_TARGET) ../../../minizip -DCMAKE_INSTALL_PREFIX=../../../$(INSTALL_DIR)
+	$(MKDIR) 3rdParty/minizip/$(BUILD_DIR)/
+	cd 3rdParty/minizip/$(BUILD_DIR)/ && $(CMAKE) $(CMAKE_TARGET) ../../src -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR)
 
 config-cvode: 3rdParty/cvode/$(INSTALL_DIR)/lib/libsundials_cvode.a
 3rdParty/cvode/$(INSTALL_DIR)/lib/libsundials_cvode.a: 3rdParty/cvode/$(BUILD_DIR)/Makefile

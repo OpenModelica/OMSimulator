@@ -5,12 +5,12 @@ set(CMAKE_INSTALL_RPATH "$ORIGIN/../lib/${HOST_SHORT}:$ORIGIN/")
 include_directories(../OMSimulatorLib)
 
 link_directories(
+  ${MINIZIP_LIBRARYDIR}
   ${FMILibrary_LIBRARYDIR}
   ${LUALibrary_LIBRARYDIR}
   ${CVODELibrary_LIBRARYDIR}
   ${KINSOLLibrary_LIBRARYDIR}
-  ${Boost_LIBRARY_DIRS}
-  ${MINIZIP_LIBRARYDIR})
+  ${Boost_LIBRARY_DIRS})
 IF (OMTLM)
   link_directories(${OMTLMSIMULATORLIB_LIBRARYDIR})
 ENDIF ()
