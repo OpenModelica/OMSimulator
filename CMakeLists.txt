@@ -125,6 +125,11 @@ ELSE()
 ENDIF()
 
 ##########################
+# Configuring for zip/minizip
+set(MINIZIP_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/minizip/install/${PLATFORM_STRING}/include)
+set(MINIZIP_LIBRARYDIR ${PROJECT_SOURCE_DIR}/3rdParty/minizip/install/${PLATFORM_STRING}/lib)
+
+##########################
 # Configuring for FMILibrary
 set(FMILibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/FMIL/install/${PLATFORM_STRING})
 find_package(FMILibrary REQUIRED)
@@ -152,11 +157,6 @@ set(PUGIXML_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/PugiXml)
 ##########################
 # Configuring for CTPL
 set(CTPL_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/CTPL)
-
-##########################
-# Configuring for minizip
-set(MINIZIP_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/minizip/install/${PLATFORM_STRING}/include)
-set(MINIZIP_LIBRARYDIR ${PROJECT_SOURCE_DIR}/3rdParty/minizip/install/${PLATFORM_STRING}/lib)
 
 ##########################
 # Configuring for Python

@@ -109,13 +109,13 @@ include_directories(
   ../../3rdParty/RegEx
   ../OMSimulatorLib
   ../OMSimulatorLua
+  ${MINIZIP_INCLUDEDIR}
   ${Boost_INCLUDE_DIRS}
   ${CTPL_INCLUDEDIR}
   ${CVODELibrary_INCLUDEDIR}
   ${FMILibrary_INCLUDEDIR}
   ${KINSOLLibrary_INCLUDEDIR}
   ${LUALibrary_INCLUDEDIR}
-  ${MINIZIP_INCLUDEDIR}
   ${OMTLM_SOURCES}
   ${PUGIXML_INCLUDEDIR})
 IF (OMTLM)
@@ -126,12 +126,12 @@ IF (OMTLM)
 ENDIF (OMTLM)
 
 link_directories(
+  ${MINIZIP_LIBRARYDIR}
   ${FMILibrary_LIBRARYDIR}
   ${LUALibrary_LIBRARYDIR}
   ${CVODELibrary_LIBRARYDIR}
   ${KINSOLLibrary_LIBRARYDIR}
-  ${Boost_LIBRARY_DIRS}
-  ${MINIZIP_LIBRARYDIR})
+  ${Boost_LIBRARY_DIRS})
 IF (OMTLM)
   link_directories(${OMTLMSIMULATORLIB_LIBRARYDIR})
 ENDIF ()
@@ -156,8 +156,8 @@ IF (WIN32 AND MSVC)
   add_definitions(-DBOOST_ALL_DYN_LINK)
 ENDIF ()
 
-target_link_libraries(OMSimulatorLib fmilib sundials_kinsol sundials_cvode sundials_nvecserial minizip ${LIB_ATOMIC} ${Boost_LIBRARIES} ${OMTLM_LINKFLAGS} ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} ${CPP_FS_LIBS})
-target_link_libraries(OMSimulatorLib_static fmilib sundials_kinsol sundials_cvode sundials_nvecserial minizip lua ${CMAKE_DL_LIBS} ${LIB_ATOMIC} ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} ${OMTLM_LINKFLAGS} ${CPP_FS_LIBS})
+target_link_libraries(OMSimulatorLib minizip fmilib sundials_kinsol sundials_cvode sundials_nvecserial ${LIB_ATOMIC} ${Boost_LIBRARIES} ${OMTLM_LINKFLAGS} ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} ${CPP_FS_LIBS})
+target_link_libraries(OMSimulatorLib_static minizip fmilib sundials_kinsol sundials_cvode sundials_nvecserial lua ${CMAKE_DL_LIBS} ${LIB_ATOMIC} ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} ${OMTLM_LINKFLAGS} ${CPP_FS_LIBS})
 
 IF (WIN32 AND MINGW)
   target_link_libraries(OMSimulatorLib shlwapi)
