@@ -1596,13 +1596,13 @@ oms_status_enu_t oms_extractFMIKind(const char* filename, oms_fmi_kind_enu_t* ki
   if (!kind)
     return logError("Invalid argument \"kind=NULL\"");
 
-  const char* modelDescription = (const char*)::miniunz_onefile_to_memory(filename, "modelDescription.xml");
+  const char* modelDescription = ::miniunz_onefile_to_memory(filename, "modelDescription.xml");
   if (!modelDescription)
     return logError("failed to extract \"modelDescription.xml\" from \"" + std::string(filename) + "\"");
 
   oms::Snapshot snapshot;
   oms_status_enu_t status = snapshot.importResourceMemory("modelDescription.xml", modelDescription);
-  ::miniunz_free((void*)modelDescription);
+  ::miniunz_free(modelDescription);
   if (oms_status_ok != status)
     return logError("Failed to import");
   const pugi::xml_node node = snapshot.getResourceNode("modelDescription.xml");

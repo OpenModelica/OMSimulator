@@ -192,13 +192,13 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
     return logError("filename extension must be \".ssp\"; no other formats are supported");
 
   // extract SystemStructure.ssd to memory
-  const char* systemStructure = (const char*)::miniunz_onefile_to_memory(filename.c_str(), "SystemStructure.ssd");
+  const char* systemStructure = ::miniunz_onefile_to_memory(filename.c_str(), "SystemStructure.ssd");
   if (!systemStructure)
     return logError("failed to extract \"SystemStructure.ssd\" from \"" + std::string(filename) + "\"");
 
   Snapshot snapshot;
   oms_status_enu_t status = snapshot.importResourceMemory("SystemStructure.ssd", systemStructure);
-  ::miniunz_free((void*)systemStructure);
+  ::miniunz_free(systemStructure);
   if (oms_status_ok != status)
     return logError("Failed to import");
 
