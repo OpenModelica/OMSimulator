@@ -74,7 +74,11 @@ endif
 
 # use cmake from above if is set, otherwise cmake
 ifeq ($(CMAKE),)
-	CMAKE=CC="$(CC)" CXX="$(CXX)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS)" CXXFLAGS="$(CXXFLAGS)" cmake
+	ifeq (, $(shell which cmake3))
+		CMAKE=CC="$(CC)" CXX="$(CXX)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS)" CXXFLAGS="$(CXXFLAGS)" cmake
+	else
+		CMAKE=CC="$(CC)" CXX="$(CXX)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS)" CXXFLAGS="$(CXXFLAGS)" cmake3
+	endif
 endif
 
 # Should we install everything into the OMBUILDDIR?
@@ -97,9 +101,7 @@ ifeq ($(detected_OS),Darwin)
 	EXTRA_CMAKE=-DCMAKE_MACOSX_RPATH=ON -DCMAKE_INSTALL_RPATH="`pwd`/$(TOP_INSTALL_DIR)/lib/$(HOST_SHORT_OMC)"
 endif
 
-ifeq ($(CROSS_TRIPLE),)
-  CMAKE=cmake $(CMAKE_TARGET)
-else
+ifneq ($(CROSS_TRIPLE),)
   LUA_EXTRA_FLAGS=CC=$(CC) CXX=$(CXX) RANLIB=$(CROSS_TRIPLE)-ranlib detected_OS=$(detected_OS)
   OMTLM := OFF
   LIBXML2 := OFF
@@ -108,7 +110,6 @@ else
   FMIL_FLAGS ?=
   AR ?= $(CROSS_TRIPLE)-ar
   RANLIB ?= $(CROSS_TRIPLE)-ranlib
-  CMAKE=cmake $(CMAKE_TARGET)
   ifeq (MINGW,$(findstring MINGW,$(detected_OS)))
     CMAKE_TARGET=-G "Unix Makefiles" -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_RC_COMPILER=$(CROSS_TRIPLE)-windres
   endif
@@ -260,6 +261,7 @@ config-xerces: 3rdParty/xerces/$(INSTALL_DIR)/lib/libxerces-c.a
 3rdParty/xerces/$(BUILD_DIR)/Makefile: 3rdParty/xerces/CMakeLists.txt
 	@echo
 	@echo "# config xerces"
+	@echo "# $(CMAKE)"
 	@echo
 	$(MKDIR) 3rdParty/xerces/$(BUILD_DIR)
 	cd 3rdParty/xerces/$(BUILD_DIR) && $(CMAKE) $(CMAKE_TARGET) ../.. -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) -DBUILD_SHARED_LIBS:BOOL=OFF
