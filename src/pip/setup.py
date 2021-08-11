@@ -38,9 +38,15 @@ import tempfile
 from distutils.command.build_py import build_py
 from distutils.dir_util import copy_tree
 
-import requests
 from setuptools import setup
 
+## check for requests package, if not found force install it through pip (e.g) "python -m pip install requests"
+try:
+  import requests
+except ImportError as e:
+  print(e.args, "Trying to install package \"requests\" from pip \"python -m pip install requests\"")
+  import subprocess, sys
+  subprocess.call([sys.executable,'-m', 'pip', 'install','requests'])
 
 # override build_py, for compiling and copying the dlls
 class my_build_py(build_py):
@@ -132,6 +138,7 @@ setup(
   author_email = 'openmodelicadevelopers@ida.liu.se',
   license = "BSD, OSMC-PL 1.2, GPL (user's choice)",
   url = 'http://openmodelica.org/',
+  setup_requires = ['requests'],
   install_requires = ['requests'],
   packages = ['OMSimulator'],
   cmdclass = {'build_py': my_build_py},
