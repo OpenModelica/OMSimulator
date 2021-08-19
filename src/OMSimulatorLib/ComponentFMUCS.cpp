@@ -705,6 +705,8 @@ oms_status_enu_t oms::ComponentFMUCS::deleteReferencesInSSD(const std::string& f
 {
   if (values.hasResources())
     return values.deleteReferencesInSSD(filename);
+
+  return oms_status_error;
 }
 
 oms_status_enu_t oms::ComponentFMUCS::initialize()
