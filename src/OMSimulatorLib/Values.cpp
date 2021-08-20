@@ -591,10 +591,9 @@ void oms::Values::exportParameterBindings(pugi::xml_node &node, Snapshot &snapsh
       if (!it.allresources.empty())
       {
         bool nodeSet = true;
-        //pugi::xml_node node_parameters_bindings = node.append_child(oms::ssp::Version1_0::ssd::parameter_bindings);
+        pugi::xml_node node_parameters_bindings;
         for (const auto &res : it.allresources)
         {
-          pugi::xml_node node_parameters_bindings;
           if (nodeSet && res.second.linkResources)
           {
             node_parameters_bindings = node.append_child(oms::ssp::Version1_0::ssd::parameter_bindings);
