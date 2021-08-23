@@ -189,7 +189,12 @@ oms_status_enu_t oms_deleteResources(const char* cref_)
   if (!model)
     return logError_ModelNotInScope(front);
 
-  return model->deleteResources(tail);
+  if (tail.isEmpty())
+  {
+    return model->deleteResourcesInSSP(front.pop_suffix());
+  }
+  else
+    return model->deleteReferencesInSSD(tail);
 }
 
 oms_status_enu_t oms_export(const char* cref, const char* filename)

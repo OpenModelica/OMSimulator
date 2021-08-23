@@ -506,13 +506,21 @@ oms_status_enu_t oms::Model::newResources(const oms::ComRef& cref)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Model::deleteResources(const oms::ComRef& cref)
+oms_status_enu_t oms::Model::deleteReferencesInSSD(const oms::ComRef& cref)
 {
   ComRef subCref(cref);
   std::string fileName = "resources/" + subCref.pop_suffix();
 
   if (system)
-    return system->deleteResources(subCref, fileName);
+    return system->deleteReferencesInSSD(subCref, fileName);
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Model::deleteResourcesInSSP(const std::string & filename)
+{
+  if (system)
+    return system->deleteResourcesInSSP("resources/"+ filename);
 
   return oms_status_ok;
 }

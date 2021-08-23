@@ -735,6 +735,14 @@ oms_status_enu_t oms::ComponentFMUME::deleteReferencesInSSD(const std::string& f
   return oms_status_error;
 }
 
+oms_status_enu_t oms::ComponentFMUME::deleteResourcesInSSP(const std::string& filename)
+{
+  if (values.hasResources())
+    return values.deleteResourcesInSSP(filename);
+
+  return oms_status_error;
+}
+
 oms_status_enu_t oms::ComponentFMUME::initialize()
 {
   clock.reset();

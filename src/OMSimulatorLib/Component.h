@@ -94,6 +94,7 @@ namespace oms
     virtual oms_status_enu_t newResources(std::string& filename) { return logError_NotImplemented; }
     virtual oms_status_enu_t addResources(std::string& filename) { return logError_NotImplemented; }
     virtual oms_status_enu_t deleteReferencesInSSD(const std::string& filename) {return oms_status_ok;}
+    virtual oms_status_enu_t deleteResourcesInSSP(const std::string& filename) {return oms_status_ok;}
 
     const ComRef& getCref() const { return cref; }
     ComRef getFullCref() const;

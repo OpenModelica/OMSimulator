@@ -57,9 +57,6 @@ oms_deleteResources("deleteResources.root.system1:system1.ssv")
 -- delete only the references
 oms_deleteResources("deleteResources.root.Gain:gain.ssv")
 
--- TODO delete from resources and all refereences
--- oms_deleteResources("deleteResources:gain.ssv")
-
 -- adding new resources to exisiting API, -- skip it as of now
 -- oms_deleteResources2("deleteResources", "newResources.ssv")
 

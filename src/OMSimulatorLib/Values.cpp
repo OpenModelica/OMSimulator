@@ -417,7 +417,25 @@ oms_status_enu_t oms::Values::deleteReferencesInSSD(const std::string &filename)
     {
       if (res.first.c_str() == filename)
       {
-        res.second.linkResources = false;
+        res.second.linkResources = false;  //unlink the references
+        return oms_status_ok;
+      }
+    }
+  }
+
+  return oms_status_error;
+}
+
+oms_status_enu_t oms::Values::deleteResourcesInSSP(const std::string &filename)
+{
+  for (auto &it : parameterResources)
+  {
+    for (auto &res : it.allresources)
+    {
+      if (res.first.c_str() == filename)
+      {
+        res.second.linkResources = false; //unlink the references
+        it.allresources.erase(filename); // delete the resouces
         return oms_status_ok;
       }
     }

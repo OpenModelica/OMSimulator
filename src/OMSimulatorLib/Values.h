@@ -74,6 +74,7 @@ namespace oms
     oms_status_enu_t deleteStartValueInResources(const ComRef& cref);
 
     oms_status_enu_t deleteReferencesInSSD(const std::string& filename);
+    oms_status_enu_t deleteResourcesInSSP(const std::string& filename);
 
     oms_status_enu_t exportToSSV(pugi::xml_node& ssvNode) const;
     void exportToSSVTemplate(pugi::xml_node& ssvNode, const ComRef& cref);  ///< start values read from modelDescription.xml and creates a ssv template

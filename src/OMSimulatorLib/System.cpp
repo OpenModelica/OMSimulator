@@ -373,7 +373,7 @@ oms_status_enu_t oms::System::newResources(const ComRef& cref, std::string& file
   return logError("failed for \"" + std::string(getFullCref() + cref) + "\""  + " as the identifier could not be resolved to a system or subsystem or component");
 }
 
-oms_status_enu_t oms::System::deleteResources(const ComRef& cref, std::string& filename)
+oms_status_enu_t oms::System::deleteReferencesInSSD(const ComRef& cref, std::string& filename)
 {
   ComRef tail(cref);
   ComRef front = tail.pop_front();
@@ -386,13 +386,39 @@ oms_status_enu_t oms::System::deleteResources(const ComRef& cref, std::string& f
 
   auto subsystem = subsystems.find(tail);
   if (subsystem != subsystems.end())
-    return subsystem->second->deleteResources(tail, filename);
+    return subsystem->second->deleteReferencesInSSD(tail, filename);
 
   auto component = components.find(tail);
   if (component != components.end())
     return component->second->deleteReferencesInSSD(filename);
 
-  return oms_status_error;
+  return logError("failed to delete References in ssd as \"" + std::string(getFullCref() + cref + ":" + filename) + "\""  + " as the identifier could not be resolved to a system or subsystem or component");
+}
+
+oms_status_enu_t oms::System::deleteResourcesInSSP(const std::string& filename)
+{
+  if (values.hasResources())
+  {
+    if (oms_status_ok == values.deleteResourcesInSSP(filename))
+      return oms_status_ok;
+  }
+  // search in subsytems
+  for (const auto &subsystem : subsystems)
+  {
+    if (subsystem.second->values.hasResources())
+    {
+      if (oms_status_ok == subsystem.second->values.deleteResourcesInSSP(filename))
+        return oms_status_ok;
+    }
+  }
+  // search in component
+  for (const auto& component : components)
+  {
+    if (oms_status_ok == component.second->deleteResourcesInSSP(filename))
+      return oms_status_ok;
+  }
+
+  return logError("failed to delete Resources in SSP because the filename \"" + filename + "\"" + " couldn't be resolved to any system or subsystem or component in the model");
 }
 
 oms_status_enu_t oms::System::listUnconnectedConnectors(char** contents) const
