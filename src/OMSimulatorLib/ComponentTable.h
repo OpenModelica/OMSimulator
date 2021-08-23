@@ -97,6 +97,7 @@ namespace oms
     std::unordered_map<unsigned int /*result file var ID*/, unsigned int /*allVariables ID*/> resultFileMapping;
     double time;
     double storedTime;
+    size_t lastIndex = 1;
   };
 }
 

@@ -204,7 +204,11 @@ oms_status_enu_t oms::ComponentTable::getReal(const oms::ComRef& cref, double& v
   else
     pSeries = series[cref];
 
-  for (int i=1; i<pSeries->length; ++i)
+  // check if lastIndex isn't in the future (e.g. due to rollback)
+  if (series[cref]->time[lastIndex-1] > time)
+    lastIndex = 1;
+
+  for (int i=lastIndex; i<pSeries->length; ++i)
   {
     if (pSeries->time[i-1] == time)
     {
@@ -236,7 +240,11 @@ oms_status_enu_t oms::ComponentTable::getInteger(const oms::ComRef& cref, int& v
   else if (series[cref]->time[0] > time)
     return logError("out of range (cref=" + std::string(cref) + ", time=" + std::to_string(time) + " cannot be less than first time point in table " + std::to_string(series[cref]->time[0]) + ")");
 
-  for (int i=0; i<series[cref]->length; ++i)
+  // check if lastIndex isn't in the future (e.g. due to rollback)
+  if (series[cref]->time[lastIndex-1] > time)
+    lastIndex = 1;
+
+  for (int i=lastIndex-1; i<series[cref]->length; ++i)
   {
     if (time == series[cref]->time[i])
     {
@@ -267,7 +275,11 @@ oms_status_enu_t oms::ComponentTable::getBoolean(const oms::ComRef& cref, bool& 
   else if (series[cref]->time[0] > time)
     return logError("out of range (cref=" + std::string(cref) + ", time=" + std::to_string(time) + " cannot be less than first time point in table " + std::to_string(series[cref]->time[0]) + ")");
 
-  for (int i=0; i<series[cref]->length; ++i)
+  // check if lastIndex isn't in the future (e.g. due to rollback)
+  if (series[cref]->time[lastIndex-1] > time)
+    lastIndex = 1;
+
+  for (int i=lastIndex-1; i<series[cref]->length; ++i)
   {
     if (time == series[cref]->time[i])
     {
@@ -293,7 +305,11 @@ oms_status_enu_t oms::ComponentTable::getRealOutputDerivative(const ComRef& cref
   if (series.find(cref) == series.end())
     series[cref] = resultReader->getSeries(cref.c_str());
 
-  for (int i=1; i<series[cref]->length; ++i)
+  // check if lastIndex isn't in the future (e.g. due to rollback)
+  if (series[cref]->time[lastIndex-1] > time)
+    lastIndex = 1;
+
+  for (int i=lastIndex; i<series[cref]->length; ++i)
   {
     if ((series[cref]->time[i-1] <= time && series[cref]->time[i] > time) ||
         (series[cref]->time[i] == time && i == series[cref]->length-1))
