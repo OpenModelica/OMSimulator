@@ -340,7 +340,7 @@ oms_status_enu_t oms::ComponentTable::getRealOutputDerivative(const ComRef& cref
   for (; lastIndex<pSeries->length; ++lastIndex)
   {
     if ((pSeries->time[lastIndex] <= time && pSeries->time[lastIndex+1] > time) ||
-        (pSeries->time[lastIndex+1] == time && lastIndex == pSeries->length-1))
+        (pSeries->time[lastIndex+1] == time && lastIndex == pSeries->length))
     {
       double m = (pSeries->value[lastIndex+1] - pSeries->value[lastIndex]) / (pSeries->time[lastIndex+1] - pSeries->time[lastIndex]);
       value = SignalDerivative(m);
