@@ -127,7 +127,7 @@ pipeline {
             }
           }
           environment {
-            OMSFLAGS = "OMTLM=OFF"
+            OMSFLAGS = "CMAKE=cmake3 OMTLM=OFF"
           }
           steps {
             buildOMS()
