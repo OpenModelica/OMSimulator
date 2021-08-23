@@ -205,20 +205,20 @@ oms_status_enu_t oms::ComponentTable::getReal(const oms::ComRef& cref, double& v
     pSeries = series[cref];
 
   // check if lastIndex isn't in the future (e.g. due to rollback)
-  if (series[cref]->time[lastIndex-1] > time)
-    lastIndex = 1;
+  if (series[cref]->time[lastIndex] > time)
+    lastIndex = 0;
 
-  for (int i=lastIndex; i<pSeries->length; ++i)
+  for (; lastIndex<pSeries->length; ++lastIndex)
   {
-    if (pSeries->time[i-1] == time)
+    if (pSeries->time[lastIndex] == time)
     {
-      value = pSeries->value[i-1];
+      value = pSeries->value[lastIndex];
       return oms_status_ok;
     }
-    else if (pSeries->time[i-1] <= time && pSeries->time[i] >= time)
+    else if (pSeries->time[lastIndex] <= time && pSeries->time[lastIndex+1] >= time)
     {
-      double m = (pSeries->value[i] - pSeries->value[i-1]) / (pSeries->time[i] - pSeries->time[i-1]);
-      value = pSeries->value[i-1] + (time - pSeries->time[i-1]) * m;
+      double m = (pSeries->value[lastIndex+1] - pSeries->value[lastIndex]) / (pSeries->time[lastIndex+1] - pSeries->time[lastIndex]);
+      value = pSeries->value[lastIndex] + (time - pSeries->time[lastIndex]) * m;
       return oms_status_ok;
     }
   }
@@ -242,18 +242,18 @@ oms_status_enu_t oms::ComponentTable::getInteger(const oms::ComRef& cref, int& v
 
   // check if lastIndex isn't in the future (e.g. due to rollback)
   if (series[cref]->time[lastIndex-1] > time)
-    lastIndex = 1;
+    lastIndex = 0;
 
-  for (int i=lastIndex-1; i<series[cref]->length; ++i)
+  for (; lastIndex<series[cref]->length; ++lastIndex)
   {
-    if (time == series[cref]->time[i])
+    if (time == series[cref]->time[lastIndex])
     {
-      value = series[cref]->value[i];
+      value = series[cref]->value[lastIndex];
       return oms_status_ok;
     }
-    else if (i > 0 && time < series[cref]->time[i])
+    else if (lastIndex > 0 && time < series[cref]->time[lastIndex+1])
     {
-      value = series[cref]->value[i-1];
+      value = series[cref]->value[lastIndex];
       return oms_status_ok;
     }
   }
@@ -277,18 +277,18 @@ oms_status_enu_t oms::ComponentTable::getBoolean(const oms::ComRef& cref, bool& 
 
   // check if lastIndex isn't in the future (e.g. due to rollback)
   if (series[cref]->time[lastIndex-1] > time)
-    lastIndex = 1;
+    lastIndex = 0;
 
-  for (int i=lastIndex-1; i<series[cref]->length; ++i)
+  for (; lastIndex<series[cref]->length; ++lastIndex)
   {
-    if (time == series[cref]->time[i])
+    if (time == series[cref]->time[lastIndex])
     {
-      value = series[cref]->value[i];
+      value = series[cref]->value[lastIndex];
       return oms_status_ok;
     }
-    else if (i > 0 && time < series[cref]->time[i])
+    else if (lastIndex > 0 && time < series[cref]->time[lastIndex+1])
     {
-      value = series[cref]->value[i-1];
+      value = series[cref]->value[lastIndex];
       return oms_status_ok;
     }
   }
@@ -307,14 +307,14 @@ oms_status_enu_t oms::ComponentTable::getRealOutputDerivative(const ComRef& cref
 
   // check if lastIndex isn't in the future (e.g. due to rollback)
   if (series[cref]->time[lastIndex-1] > time)
-    lastIndex = 1;
+    lastIndex = 0;
 
-  for (int i=lastIndex; i<series[cref]->length; ++i)
+  for (; lastIndex<series[cref]->length; ++lastIndex)
   {
-    if ((series[cref]->time[i-1] <= time && series[cref]->time[i] > time) ||
-        (series[cref]->time[i] == time && i == series[cref]->length-1))
+    if ((series[cref]->time[lastIndex] <= time && series[cref]->time[lastIndex+1] > time) ||
+        (series[cref]->time[lastIndex+1] == time && lastIndex == series[cref]->length-1))
     {
-      double m = (series[cref]->value[i] - series[cref]->value[i-1]) / (series[cref]->time[i] - series[cref]->time[i-1]);
+      double m = (series[cref]->value[lastIndex+1] - series[cref]->value[lastIndex]) / (series[cref]->time[lastIndex+1] - series[cref]->time[lastIndex]);
       value = SignalDerivative(m);
       return oms_status_ok;
     }
