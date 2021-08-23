@@ -209,7 +209,7 @@ oms_status_enu_t oms::ComponentTable::getReal(const oms::ComRef& cref, double& v
   else
     pSeries = series[cref];
 
-  // check if lastIndex isn't in the future (e.g. due to rollback)
+  // check that lastIndex isn't in the future (e.g. due to rollback)
   if (pSeries->time[lastIndex] > time)
     lastIndex = 0;
 
@@ -251,7 +251,7 @@ oms_status_enu_t oms::ComponentTable::getInteger(const oms::ComRef& cref, int& v
   else
     pSeries = series[cref];
 
-  // check if lastIndex isn't in the future (e.g. due to rollback)
+  // check that lastIndex isn't in the future (e.g. due to rollback)
   if (pSeries->time[lastIndex-1] > time)
     lastIndex = 0;
 
@@ -262,9 +262,9 @@ oms_status_enu_t oms::ComponentTable::getInteger(const oms::ComRef& cref, int& v
       value = pSeries->value[lastIndex];
       return oms_status_ok;
     }
-    else if (lastIndex > 0 && time < pSeries->time[lastIndex+1])
+    else if (lastIndex > 0 && time < pSeries->time[lastIndex])
     {
-      value = pSeries->value[lastIndex];
+      value = pSeries->value[lastIndex-1];
       return oms_status_ok;
     }
   }
@@ -292,7 +292,7 @@ oms_status_enu_t oms::ComponentTable::getBoolean(const oms::ComRef& cref, bool& 
   else
     pSeries = series[cref];
 
-  // check if lastIndex isn't in the future (e.g. due to rollback)
+  // check that lastIndex isn't in the future (e.g. due to rollback)
   if (pSeries->time[lastIndex-1] > time)
     lastIndex = 0;
 
@@ -303,9 +303,9 @@ oms_status_enu_t oms::ComponentTable::getBoolean(const oms::ComRef& cref, bool& 
       value = pSeries->value[lastIndex];
       return oms_status_ok;
     }
-    else if (lastIndex > 0 && time < pSeries->time[lastIndex+1])
+    else if (lastIndex > 0 && time < pSeries->time[lastIndex])
     {
-      value = pSeries->value[lastIndex];
+      value = pSeries->value[lastIndex-1];
       return oms_status_ok;
     }
   }
@@ -333,7 +333,7 @@ oms_status_enu_t oms::ComponentTable::getRealOutputDerivative(const ComRef& cref
   else
     pSeries = series[cref];
 
-  // check if lastIndex isn't in the future (e.g. due to rollback)
+  // check that lastIndex isn't in the future (e.g. due to rollback)
   if (pSeries->time[lastIndex-1] > time)
     lastIndex = 0;
 
