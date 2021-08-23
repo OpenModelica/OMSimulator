@@ -195,20 +195,26 @@ oms_status_enu_t oms::ComponentTable::getReal(const oms::ComRef& cref, double& v
   if (!resultReader)
     logError("the table isn't initialized properly");
 
+  ResultReader::Series* pSeries;
   if (series.find(cref) == series.end())
-    series[cref] = resultReader->getSeries(cref.c_str());
-
-  for (int i=1; i<series[cref]->length; ++i)
   {
-    if (series[cref]->time[i-1] == time)
+    pSeries = resultReader->getSeries(cref.c_str());
+    series[cref] = pSeries;
+  }
+  else
+    pSeries = series[cref];
+
+  for (int i=1; i<pSeries->length; ++i)
+  {
+    if (pSeries->time[i-1] == time)
     {
-      value = series[cref]->value[i-1];
+      value = pSeries->value[i-1];
       return oms_status_ok;
     }
-    else if (series[cref]->time[i-1] <= time && series[cref]->time[i] >= time)
+    else if (pSeries->time[i-1] <= time && pSeries->time[i] >= time)
     {
-      double m = (series[cref]->value[i] - series[cref]->value[i-1]) / (series[cref]->time[i] - series[cref]->time[i-1]);
-      value = series[cref]->value[i-1] + (time - series[cref]->time[i-1]) * m;
+      double m = (pSeries->value[i] - pSeries->value[i-1]) / (pSeries->time[i] - pSeries->time[i-1]);
+      value = pSeries->value[i-1] + (time - pSeries->time[i-1]) * m;
       return oms_status_ok;
     }
   }
