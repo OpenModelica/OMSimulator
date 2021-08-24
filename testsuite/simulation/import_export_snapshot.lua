@@ -13,7 +13,7 @@ oms_setWorkingDirectory("./import_export_snapshot_lua/")
 oms_newModel("import_export_snapshot")
 oms_addSystem("import_export_snapshot.root", oms_system_wc)
 
-oms_addResources("import_export_snapshot.root:import_export_snapshot.ssv")
+oms_newResources("import_export_snapshot.root:import_export_snapshot.ssv")
 
 oms_addConnector("import_export_snapshot.root.C1", oms_causality_input, oms_signal_type_real)
 oms_setReal("import_export_snapshot.root.C1", -10)

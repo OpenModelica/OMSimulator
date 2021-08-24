@@ -13,7 +13,7 @@ oms_setWorkingDirectory("./renameValues1_lua/")
 oms_newModel("renameValues1")
 oms_addSystem("renameValues1.root", oms_system_wc)
 
-oms_addResources("renameValues1.root:renameValues1.ssv")
+oms_newResources("renameValues1.root:renameValues1.ssv")
 
 oms_addSystem("renameValues1.root.system1", oms_system_sc)
 

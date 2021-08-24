@@ -69,7 +69,6 @@ class OMSimulator:
     self.addConnectorToBus = Scope._capi.addConnectorToBus
     self.addConnectorToTLMBus = Scope._capi.addConnectorToTLMBus
     self.addExternalModel = Scope._capi.addExternalModel
-    self.addResources = Scope._capi.addResources
     self.addSignalsToResults = Scope._capi.addSignalsToResults
     self.addSubModel = Scope._capi.addSubModel
     self.addSystem = Scope._capi.addSystem
@@ -106,6 +105,7 @@ class OMSimulator:
     self.list = Scope._capi.list
     self.listUnconnectedConnectors = Scope._capi.listUnconnectedConnectors
     self.loadSnapshot = Scope._capi.loadSnapshot
+    self.newResources = Scope._capi.newResources
     self.removeSignalsFromResults = Scope._capi.removeSignalsFromResults
     self.rename = Scope._capi.rename
     self.reset = Scope._capi.reset
