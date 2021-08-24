@@ -59,6 +59,9 @@ oms_deleteResources("deleteResources:gain.ssv")
 
 -- adding new resources to exisiting API, -- skip it as of now
 -- oms_deleteResources2("deleteResources", "newResources.ssv")
+-- oms_newResources("deleteResources.root:root.ssv") --- empty file , renaming the API
+
+-- oms_addResources("deleteResources.root:root.ssv", "path to exissting file") -- :root.ssv, renaming the file with new name from file system
 
 -- snapshot after deleting references and resources
 src = oms_exportSnapshot("deleteResources")
