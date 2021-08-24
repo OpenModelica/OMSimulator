@@ -99,9 +99,6 @@ class Server:
       fcn = msg['fcn'] if 'fcn' in msg else ''
       answer = {'status': 'nack', 'error': 'unknown'}
 
-      # {'arg': 'enable', 'cref': 'TestSimulation.Root.CauerLowPassSC.C1.C', 'fcn': 'signals'}
-      # {'arg': 'disable', 'cref': 'TestSimulation.Root.CauerLowPassSC.C1.C', 'fcn': 'signals'}
-
       if 'simulation' == fcn:
         arg = msg['arg']
         if 'pause' == arg:
