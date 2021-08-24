@@ -74,11 +74,7 @@ endif
 
 # use cmake from above if is set, otherwise cmake
 ifeq ($(CMAKE),)
-	ifeq (, $(shell which cmake3))
-		CMAKE=CC="$(CC)" CXX="$(CXX)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS)" CXXFLAGS="$(CXXFLAGS)" cmake
-	else
-		CMAKE=CC="$(CC)" CXX="$(CXX)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS)" CXXFLAGS="$(CXXFLAGS)" cmake3
-	endif
+	CMAKE=cmake
 endif
 
 # Should we install everything into the OMBUILDDIR?
