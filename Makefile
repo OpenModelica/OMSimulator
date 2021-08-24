@@ -257,7 +257,6 @@ config-xerces: 3rdParty/xerces/$(INSTALL_DIR)/lib/libxerces-c.a
 3rdParty/xerces/$(BUILD_DIR)/Makefile: 3rdParty/xerces/CMakeLists.txt
 	@echo
 	@echo "# config xerces"
-	@echo "# $(CMAKE)"
 	@echo
 	$(MKDIR) 3rdParty/xerces/$(BUILD_DIR)
 	cd 3rdParty/xerces/$(BUILD_DIR) && $(CMAKE) $(CMAKE_TARGET) ../.. -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) -DBUILD_SHARED_LIBS:BOOL=OFF
