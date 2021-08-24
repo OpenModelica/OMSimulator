@@ -15,7 +15,7 @@ oms_newModel("deleteStartValuesInSSV")
 
 oms_addSystem("deleteStartValuesInSSV.Root", oms_system_wc)
 
-oms_addResources("deleteStartValuesInSSV.Root:deleteStartValuesInSSV.ssv")
+oms_newResources("deleteStartValuesInSSV.Root:deleteStartValuesInSSV.ssv")
 
 oms_addConnector("deleteStartValuesInSSV.Root.C1", oms_causality_input, oms_signal_type_real)
 oms_addConnector("deleteStartValuesInSSV.Root.C2", oms_causality_output, oms_signal_type_real)

@@ -18,14 +18,14 @@ oms_addSystem("addResources.root.system1", oms_system_wc);
 oms_addConnector("addResources.root.system1.C1", oms_causality_input, oms_signal_type_real)
 oms_addConnector("addResources.root.system1.C2", oms_causality_input, oms_signal_type_real)
 -- add local resources for system1
-oms_addResources("addResources.root.system1:system1.ssv")
+oms_newResources("addResources.root.system1:system1.ssv")
 
 oms_setReal("addResources.root.system1.C1", -10.5)
 oms_setReal("addResources.root.system1.C2", -20.5)
 
 oms_addSubModel("addResources.root.system1.add", "../resources/Modelica.Blocks.Math.Add.fmu")
 -- add local resources for submodule system1.add
-oms_addResources("addResources.root.system1.add:add.ssv")
+oms_newResources("addResources.root.system1.add:add.ssv")
 
 oms_setReal("addResources.root.system1.add.k1", 45)
 
@@ -35,14 +35,14 @@ oms_addSystem("addResources.root.system2", oms_system_wc);
 oms_addConnector("addResources.root.system2.C1", oms_causality_input, oms_signal_type_real)
 oms_addConnector("addResources.root.system2.C2", oms_causality_input, oms_signal_type_real)
 -- add local resources for system2
-oms_addResources("addResources.root.system2:system2.ssv")
+oms_newResources("addResources.root.system2:system2.ssv")
 
 oms_setReal("addResources.root.system2.C1", -20)
 oms_setReal("addResources.root.system2.C2", -30)
 
 oms_addSubModel("addResources.root.system2.add2", "../resources/Modelica.Blocks.Math.Add.fmu")
 -- add local resources for submodule system2.add2
-oms_addResources("addResources.root.system2.add2:add2.ssv")
+oms_newResources("addResources.root.system2.add2:add2.ssv")
 
 oms_setReal("addResources.root.system2.add2.k1", 49.5)
 

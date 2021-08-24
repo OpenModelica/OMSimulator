@@ -17,7 +17,7 @@ oms.setWorkingDirectory("./snapshot_py/")
 oms.newModel("snapshot")
 oms.addSystem("snapshot.root", oms.system_wc)
 
-oms.addResources("snapshot.root:snapshot.ssv")
+oms.newResources("snapshot.root:snapshot.ssv")
 
 oms.addConnector("snapshot.root.C1", oms.input, oms.signal_type_real)
 oms.setReal("snapshot.root.C1", -10)

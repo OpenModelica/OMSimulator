@@ -412,15 +412,15 @@ static int OMSimulatorLua_oms_compareSimulationResults(lua_State *L)
   return 1;
 }
 
-//oms_status_enu_t oms_addResources(const char* cref);
-static int OMSimulatorLua_oms_addResources(lua_State *L)
+//oms_status_enu_t oms_newResources(const char* cref);
+static int OMSimulatorLua_oms_newResources(lua_State *L)
 {
   if (lua_gettop(L) != 1)
     return luaL_error(L, "expecting exactly 1 argument");
   luaL_checktype(L, 1, LUA_TSTRING);
 
   const char* cref = lua_tostring(L, 1);
-  oms_status_enu_t status = oms_addResources(cref);
+  oms_status_enu_t status = oms_newResources(cref);
 
   lua_pushinteger(L, status);
   return 1;
@@ -1272,7 +1272,6 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms_addDynamicValueIndicator);
   REGISTER_LUA_CALL(oms_addEventIndicator);
   REGISTER_LUA_CALL(oms_addExternalModel);
-  REGISTER_LUA_CALL(oms_addResources);
   REGISTER_LUA_CALL(oms_addSignalsToResults);
   REGISTER_LUA_CALL(oms_addStaticValueIndicator);
   REGISTER_LUA_CALL(oms_addSubModel);
@@ -1311,6 +1310,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms_listUnconnectedConnectors);
   REGISTER_LUA_CALL(oms_loadSnapshot);
   REGISTER_LUA_CALL(oms_newModel);
+  REGISTER_LUA_CALL(oms_newResources);
   REGISTER_LUA_CALL(oms_removeSignalsFromResults);
   REGISTER_LUA_CALL(oms_rename);
   REGISTER_LUA_CALL(oms_reset);

@@ -14,7 +14,7 @@ oms_newModel("exportSnapshotSSP")
 
 oms_addSystem("exportSnapshotSSP.root", oms_system_wc)
 
-oms_addResources("exportSnapshotSSP.root:exportSnapshotSSP.ssv")
+oms_newResources("exportSnapshotSSP.root:exportSnapshotSSP.ssv")
 
 oms_addConnector("exportSnapshotSSP.root.Input1", oms_causality_input, oms_signal_type_real)
 oms_setReal("exportSnapshotSSP.root.Input1", 10)

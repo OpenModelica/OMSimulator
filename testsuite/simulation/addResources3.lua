@@ -19,7 +19,7 @@ oms_addSystem("addResources.root.system1", oms_system_wc);
 oms_addConnector("addResources.root.system1.C1", oms_causality_input, oms_signal_type_real)
 oms_addConnector("addResources.root.system1.C2", oms_causality_input, oms_signal_type_real)
 -- add root resources
-oms_addResources("addResources.root.system1:system1.ssv")
+oms_newResources("addResources.root.system1:system1.ssv")
 
 oms_setReal("addResources.root.system1.C1", -10.5)
 oms_setReal("addResources.root.system1.C2", -20.5)
@@ -33,7 +33,7 @@ oms_addSystem("addResources.root.system2", oms_system_wc);
 oms_addConnector("addResources.root.system2.C1", oms_causality_input, oms_signal_type_real)
 oms_addConnector("addResources.root.system2.C2", oms_causality_input, oms_signal_type_real)
 -- add root resources
-oms_addResources("addResources.root.system2:system2.ssv")
+oms_newResources("addResources.root.system2:system2.ssv")
 
 oms_setReal("addResources.root.system2.C1", -20)
 oms_setReal("addResources.root.system2.C2", -30)

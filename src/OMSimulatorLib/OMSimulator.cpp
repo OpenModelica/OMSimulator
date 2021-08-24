@@ -279,7 +279,7 @@ oms_status_enu_t oms_importSnapshot(const char* cref, const char* snapshot, char
   return oms::Scope::GetInstance().importSnapshot(oms::ComRef(cref), snapshot, newCref);
 }
 
-oms_status_enu_t oms_addResources(const char* cref_)
+oms_status_enu_t oms_newResources(const char* cref_)
 {
   oms::ComRef tail(cref_);
   oms::ComRef front = tail.pop_front();
@@ -291,7 +291,7 @@ oms_status_enu_t oms_addResources(const char* cref_)
   if (!model)
     return logError_ModelNotInScope(front);
 
-  return model->addResources(tail);
+  return model->newResources(tail);
 }
 
 oms_status_enu_t oms_addSystem(const char* cref_, oms_system_enu_t type)

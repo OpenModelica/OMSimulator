@@ -14,7 +14,7 @@ oms_newModel("addResources")
 oms_addSystem("addResources.root", oms_system_tlm)
 
 -- add only top level root resources
-oms_addResources("addResources.root:root.ssv")
+oms_newResources("addResources.root:root.ssv")
 
 -- add subsystem system1
 oms_addSystem("addResources.root.system1", oms_system_wc);

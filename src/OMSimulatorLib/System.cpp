@@ -325,7 +325,7 @@ oms_status_enu_t oms::System::addSubModel(const oms::ComRef& cref, const std::st
   return system->addSubModel(tail, path);
 }
 
-oms_status_enu_t oms::System::addResources(const ComRef& cref, std::string& filename)
+oms_status_enu_t oms::System::newResources(const ComRef& cref, std::string& filename)
 {
   ComRef tail(cref);
   ComRef front = tail.pop_front();
@@ -349,15 +349,15 @@ oms_status_enu_t oms::System::addResources(const ComRef& cref, std::string& file
 
   auto subsystem = subsystems.find(tail);
   if (subsystem != subsystems.end())
-    return subsystem->second->addResources(tail, filename);
+    return subsystem->second->newResources(tail, filename);
 
   auto component = components.find(tail);
   if (component != components.end())
-    return component->second->addResources(filename);
+    return component->second->newResources(filename);
 
   /*check for adding resources to components in subsystems
     e.g root.system1.add
-    oms_addResources("root.system1.add:add.ssv")
+    oms_newResources("root.system1.add:add.ssv")
   */
   ComRef tailA(tail);
   ComRef frontA = tailA.pop_front();
@@ -368,7 +368,7 @@ oms_status_enu_t oms::System::addResources(const ComRef& cref, std::string& file
 
   auto componentA = system->components.find(tailA);
   if (componentA != components.end())
-    return componentA->second->addResources(filename);
+    return componentA->second->newResources(filename);
 
   return logError("failed for \"" + std::string(getFullCref() + cref) + "\""  + " as the identifier could not be resolved to a system or subsystem or component");
 }
