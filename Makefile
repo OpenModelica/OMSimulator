@@ -74,7 +74,7 @@ endif
 
 # use cmake from above if is set, otherwise cmake
 ifeq ($(CMAKE),)
-	CMAKE=CC="$(CC)" CXX="$(CXX)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS)" CXXFLAGS="$(CXXFLAGS)" cmake
+	CMAKE=cmake
 endif
 
 # Should we install everything into the OMBUILDDIR?
@@ -97,9 +97,7 @@ ifeq ($(detected_OS),Darwin)
 	EXTRA_CMAKE=-DCMAKE_MACOSX_RPATH=ON -DCMAKE_INSTALL_RPATH="`pwd`/$(TOP_INSTALL_DIR)/lib/$(HOST_SHORT_OMC)"
 endif
 
-ifeq ($(CROSS_TRIPLE),)
-  CMAKE=cmake $(CMAKE_TARGET)
-else
+ifneq ($(CROSS_TRIPLE),)
   LUA_EXTRA_FLAGS=CC=$(CC) CXX=$(CXX) RANLIB=$(CROSS_TRIPLE)-ranlib detected_OS=$(detected_OS)
   OMTLM := OFF
   LIBXML2 := OFF
@@ -108,7 +106,6 @@ else
   FMIL_FLAGS ?=
   AR ?= $(CROSS_TRIPLE)-ar
   RANLIB ?= $(CROSS_TRIPLE)-ranlib
-  CMAKE=cmake $(CMAKE_TARGET)
   ifeq (MINGW,$(findstring MINGW,$(detected_OS)))
     CMAKE_TARGET=-G "Unix Makefiles" -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_RC_COMPILER=$(CROSS_TRIPLE)-windres
   endif
@@ -123,7 +120,7 @@ else
 	CMAKE_BOOST_ROOT="-DBOOST_ROOT=$(BOOST_ROOT)"
 endif
 
-.PHONY: OMSimulator OMSimulatorCore config-OMSimulator config-fmil config-lua config-minizip config-cvode config-kinsol config-3rdParty distclean testsuite doc doc-html doc-doxygen OMTLMSimulator OMTLMSimulatorClean RegEx pip
+.PHONY: OMSimulator OMSimulatorCore config-OMSimulator config-fmil config-lua config-minizip config-cvode config-kinsol config-xerces config-3rdParty distclean testsuite doc doc-html doc-doxygen OMTLMSimulator OMTLMSimulatorClean RegEx pip
 
 OMSimulator:
 	@echo OS: $(detected_OS)
@@ -195,7 +192,7 @@ RegEx: 3rdParty/RegEx/OMSRegEx$(EEXT)
 	@echo "Please checkout the 3rdParty submodule, e.g. using \"git submodule update --init 3rdParty\", and try again."
 	@false
 
-config-3rdParty: 3rdParty/README.md config-fmil config-lua config-minizip config-cvode config-kinsol config-libxml2
+config-3rdParty: 3rdParty/README.md config-fmil config-lua config-minizip config-cvode config-kinsol config-libxml2 config-xerces
 
 config-OMSimulator: $(BUILD_DIR)/Makefile
 $(BUILD_DIR)/Makefile: RegEx CMakeLists.txt
@@ -254,6 +251,16 @@ config-kinsol: 3rdParty/kinsol/$(INSTALL_DIR)/lib/libsundials_kinsol.a
 	$(MKDIR) 3rdParty/kinsol/$(BUILD_DIR)
 	cd 3rdParty/kinsol/$(BUILD_DIR) && $(CMAKE) $(CMAKE_TARGET) ../.. -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) -DEXAMPLES_ENABLE:BOOL=0 -DBUILD_SHARED_LIBS:BOOL=0 $(CMAKE_FPIC)
 
+config-xerces: 3rdParty/xerces/$(INSTALL_DIR)/lib/libxerces-c.a
+3rdParty/xerces/$(INSTALL_DIR)/lib/libxerces-c.a: 3rdParty/xerces/$(BUILD_DIR)/Makefile
+	$(MAKE) -C 3rdParty/xerces/$(BUILD_DIR)/ install
+3rdParty/xerces/$(BUILD_DIR)/Makefile: 3rdParty/xerces/CMakeLists.txt
+	@echo
+	@echo "# config xerces"
+	@echo
+	$(MKDIR) 3rdParty/xerces/$(BUILD_DIR)
+	cd 3rdParty/xerces/$(BUILD_DIR) && $(CMAKE) $(CMAKE_TARGET) ../.. -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) -DBUILD_SHARED_LIBS:BOOL=OFF
+
 ifeq ($(LIBXML2),OFF)
 config-libxml2:
 	@echo
@@ -286,6 +293,8 @@ distclean:
 	$(RM) 3rdParty/cvode/$(INSTALL_DIR)
 	$(RM) 3rdParty/kinsol/$(BUILD_DIR)
 	$(RM) 3rdParty/kinsol/$(INSTALL_DIR)
+	$(RM) 3rdParty/xerces/$(BUILD_DIR)
+	$(RM) 3rdParty/xerces/$(INSTALL_DIR)
 
 testsuite:
 	@echo
