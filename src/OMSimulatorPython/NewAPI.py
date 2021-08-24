@@ -48,3 +48,21 @@ def setLogFile(path: str, size=None) -> None:
     raise Exception('error {}'.format(Types.Status(status)))
   if size:
     setMaxLogFileSize(size)
+
+def getReal(cref: str) -> float:
+  value, status = Scope._capi.getReal(cref)
+  if Types.Status(status) != Types.Status.OK:
+    raise Exception('error {}'.format(Types.Status(status)))
+  return value
+
+def getInteger(cref: str) -> int:
+  value, status = Scope._capi.getInteger(cref)
+  if Types.Status(status) != Types.Status.OK:
+    raise Exception('error {}'.format(Types.Status(status)))
+  return value
+
+def getBoolean(cref: str) -> bool:
+  value, status = Scope._capi.getBoolean(cref)
+  if Types.Status(status) != Types.Status.OK:
+    raise Exception('error {}'.format(Types.Status(status)))
+  return value

@@ -39,6 +39,7 @@ class Server:
     self._socket_rep = None
     self._socket_pub = None
     self._thread = None
+    self._activeSignals = set()
 
     if result_file:
       self._model.resultFile = result_file
@@ -98,6 +99,9 @@ class Server:
       fcn = msg['fcn'] if 'fcn' in msg else ''
       answer = {'status': 'nack', 'error': 'unknown'}
 
+      # {'arg': 'enable', 'cref': 'TestSimulation.Root.CauerLowPassSC.C1.C', 'fcn': 'signals'}
+      # {'arg': 'disable', 'cref': 'TestSimulation.Root.CauerLowPassSC.C1.C', 'fcn': 'signals'}
+
       if 'simulation' == fcn:
         arg = msg['arg']
         if 'pause' == arg:
@@ -117,6 +121,12 @@ class Server:
         arg = msg['arg']
         if 'available' == arg:
           answer = {'status': 'ack', 'result': self._signals}
+        elif 'enable' == arg:
+          self._activeSignals.add(msg['cref'])
+          answer = {'status': 'ack'}
+        elif 'disable' == arg:
+          self._activeSignals.remove(msg['cref'])
+          answer = {'status': 'ack'}
 
       try:
         self._socket_rep.send_json(answer)
@@ -140,6 +150,16 @@ class Server:
       else:
         progress = math.floor((time_-startTime) / (stopTime-startTime) * 100)
         self.pub_msg('status', {'progress': progress})
+        if self._activeSignals:
+          self.pub_msg('results', {'time': time_})
+          for signal in self._activeSignals:
+            type_ = self._signals[signal]['type']
+            if type_ == 'Real':
+              self.pub_msg('results', {signal: oms.getReal(signal)})
+            elif type_ == 'Integer':
+              self.pub_msg('results', {signal: oms.getInteger(signal)})
+            elif type_ == 'Boolean':
+              self.pub_msg('results', {signal: oms.getBoolean(signal)})
         with self._mutex:
           self._model.doStep()
           time_ = self._model.time
