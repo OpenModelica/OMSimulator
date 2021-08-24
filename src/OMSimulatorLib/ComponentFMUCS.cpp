@@ -684,7 +684,7 @@ oms::ComRef oms::ComponentFMUCS::getValidCref(ComRef cref)
   return tail;
 }
 
-oms_status_enu_t oms::ComponentFMUCS::addResources(std::string& filename)
+oms_status_enu_t oms::ComponentFMUCS::newResources(std::string& filename)
 {
   Values resources;
   if (!values.hasResources())

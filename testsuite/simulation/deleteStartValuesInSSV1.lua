@@ -17,7 +17,7 @@ oms_addSystem("deleteStartValuesInSSV.Root", oms_system_wc)
 oms_addConnector("deleteStartValuesInSSV.Root.C1", oms_causality_input, oms_signal_type_real)
 oms_addConnector("deleteStartValuesInSSV.Root.C2", oms_causality_output, oms_signal_type_real)
 
-oms_addResources("deleteStartValuesInSSV.Root:root.ssv")
+oms_newResources("deleteStartValuesInSSV.Root:root.ssv")
 
 oms_setReal("deleteStartValuesInSSV.Root.C1", 10.0)
 oms_setReal("deleteStartValuesInSSV.Root.C2", 15.0)
@@ -26,7 +26,7 @@ oms_setReal("deleteStartValuesInSSV.Root.C2", 15.0)
 oms_addSystem("deleteStartValuesInSSV.Root.System1", oms_system_sc)
 oms_addConnector("deleteStartValuesInSSV.Root.System1.C1", oms_causality_input, oms_signal_type_real)
 oms_addConnector("deleteStartValuesInSSV.Root.System1.C2", oms_causality_input, oms_signal_type_real)
-oms_addResources("deleteStartValuesInSSV.Root.System1:system1.ssv")
+oms_newResources("deleteStartValuesInSSV.Root.System1:system1.ssv")
 
 oms_setReal("deleteStartValuesInSSV.Root.System1.C1", 20.0)
 oms_setReal("deleteStartValuesInSSV.Root.System1.C2", 30.0)

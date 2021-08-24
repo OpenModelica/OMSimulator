@@ -23,7 +23,7 @@ oms_newModel("model")
 
 oms_addSystem("model.root", oms_system_wc)
 
-oms_addResources("model.root:model.ssv")
+oms_newResources("model.root:model.ssv")
 
 oms_addSystem("model.root.System1", oms_system_sc)
 

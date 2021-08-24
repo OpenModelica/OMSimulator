@@ -17,7 +17,7 @@ oms_addConnector("addResources.root.Input1", oms_causality_input, oms_signal_typ
 oms_addConnector("addResources.root.Input2", oms_causality_input, oms_signal_type_real)
 
 -- add Top level resources
-oms_addResources("addResources.root:root.ssv")
+oms_newResources("addResources.root:root.ssv")
 
 oms_setReal("addResources.root.Input1", 10)
 
@@ -26,14 +26,14 @@ oms_addConnector("addResources.root.system1.C1", oms_causality_input, oms_signal
 oms_addConnector("addResources.root.system1.C2", oms_causality_input, oms_signal_type_real)
 
 -- add resources to subsystem
-oms_addResources("addResources.root.system1:system1.ssv")
+oms_newResources("addResources.root.system1:system1.ssv")
 
 
 oms_setReal("addResources.root.system1.C1", -10)
 oms_addSubModel("addResources.root.Gain", "../../resources/Modelica.Blocks.Math.Gain.fmu")
 
 -- add resources to submodule
-oms_addResources("addResources.root.Gain:gain.ssv")
+oms_newResources("addResources.root.Gain:gain.ssv")
 
 oms_setReal("addResources.root.Gain.k", 27)
 

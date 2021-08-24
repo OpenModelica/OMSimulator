@@ -710,7 +710,7 @@ oms_status_enu_t oms::ComponentFMUME::doEventIteration()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::ComponentFMUME::addResources(std::string& filename)
+oms_status_enu_t oms::ComponentFMUME::newResources(std::string& filename)
 {
   Values resources;
   if (!values.hasResources())
