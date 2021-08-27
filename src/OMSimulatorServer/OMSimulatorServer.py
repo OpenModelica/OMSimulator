@@ -148,15 +148,16 @@ class Server:
         progress = math.floor((time_-startTime) / (stopTime-startTime) * 100)
         self.pub_msg('status', {'progress': progress})
         if self._activeSignals:
-          self.pub_msg('results', {'time': time_})
+          results = {'time': time_}
           for signal in self._activeSignals:
             type_ = self._signals[signal]['type']
             if type_ == 'Real':
-              self.pub_msg('results', {signal: oms.getReal(signal)})
+              results[signal] = oms.getReal(signal)
             elif type_ == 'Integer':
-              self.pub_msg('results', {signal: oms.getInteger(signal)})
+              results[signal] = oms.getInteger(signal)
             elif type_ == 'Boolean':
-              self.pub_msg('results', {signal: oms.getBoolean(signal)})
+              results[signal] = oms.getBoolean(signal)
+          self.pub_msg('results', results)
         with self._mutex:
           self._model.doStep()
           time_ = self._model.time
