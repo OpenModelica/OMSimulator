@@ -44,6 +44,16 @@ class Server:
     if result_file:
       self._model.resultFile = result_file
 
+    # extract all available signals
+    self._signals = {}
+    signalFilter = self._model.exportSnapshot(':resources/signalFilter.xml')
+    root = ET.fromstring(signalFilter)
+    for var in root[0][0]:
+      name = var.attrib['name']
+      type_ = var.attrib['type']
+      kind = var.attrib['kind']
+      self._signals[name] = {'type': type_, 'kind': kind}
+
     self.print('OMS Server {}'.format(__version__))
     self.print('ZMQ {}'.format(zmq.zmq_version()))
 
@@ -65,16 +75,6 @@ class Server:
       self.print('REP socket connected to {}'.format(endpoint_rep))
       self._thread = threading.Thread(target=self._main, daemon=True)
       self._thread.start()
-
-    # extract all available signals
-    self._signals = {}
-    signalFilter = self._model.exportSnapshot(':resources/signalFilter.xml')
-    root = ET.fromstring(signalFilter)
-    for var in root[0][0]:
-      name = var.attrib['name']
-      type_ = var.attrib['type']
-      kind = var.attrib['kind']
-      self._signals[name] = {'type': type_, 'kind': kind}
 
   def print(self, msg):
     print('server:  {}'.format(msg), flush=True)
