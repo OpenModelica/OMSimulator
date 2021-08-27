@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<ssv:ParameterSet
+  xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
+  xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
+  version="1.0"
+  name="parameters">
+  <ssv:Parameters>
+    <ssv:Parameter
+      name="Input2">
+      <ssv:Real
+        value="-50" />
+    </ssv:Parameter>
+    <ssv:Parameter
+      name="Input1">
+      <ssv:Real
+        value="-10" />
+    </ssv:Parameter>
+  </ssv:Parameters>
+</ssv:ParameterSet>

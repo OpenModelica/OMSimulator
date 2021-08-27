@@ -17,7 +17,7 @@ oms_addConnector("deleteResources.root.Input1", oms_causality_input, oms_signal_
 oms_addConnector("deleteResources.root.Input2", oms_causality_input, oms_signal_type_real)
 
 -- add Top level resources
-oms_addResources("deleteResources.root:root.ssv")
+oms_newResources("deleteResources.root:root.ssv")
 
 oms_setReal("deleteResources.root.Input1", 10)
 oms_setReal("deleteResources.root.Input2", 50)
@@ -27,13 +27,13 @@ oms_addConnector("deleteResources.root.system1.C1", oms_causality_input, oms_sig
 oms_addConnector("deleteResources.root.system1.C2", oms_causality_input, oms_signal_type_real)
 
 -- add resources to subsystem
-oms_addResources("deleteResources.root.system1:system1.ssv")
+oms_newResources("deleteResources.root.system1:system1.ssv")
 oms_setReal("deleteResources.root.system1.C1", -10)
 
 oms_addSubModel("deleteResources.root.Gain", "../../resources/Modelica.Blocks.Math.Gain.fmu")
 
 -- add resources to submodule
-oms_addResources("deleteResources.root.Gain:gain.ssv")
+oms_newResources("deleteResources.root.Gain:gain.ssv")
 
 oms_setReal("deleteResources.root.Gain.k", 27)
 
@@ -56,12 +56,6 @@ oms_deleteResources("deleteResources:root.ssv")
 oms_deleteResources("deleteResources:system1.ssv")
 -- delete references and resources
 oms_deleteResources("deleteResources:gain.ssv")
-
--- adding new resources to exisiting API, -- skip it as of now
--- oms_deleteResources2("deleteResources", "newResources.ssv")
--- oms_newResources("deleteResources.root:root.ssv") --- empty file , renaming the API
-
--- oms_addResources("deleteResources.root:root.ssv", "path to exissting file") -- :root.ssv, renaming the file with new name from file system
 
 -- snapshot after deleting references and resources
 src = oms_exportSnapshot("deleteResources")

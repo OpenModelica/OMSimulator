@@ -440,6 +440,22 @@ static int OMSimulatorLua_oms_newResources(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms_addResources(const char* cref, const char* path);
+static int OMSimulatorLua_oms_addResources(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+
+  const char* cref = lua_tostring(L, 1);
+  const char* path = lua_tostring(L, 2);
+  oms_status_enu_t status = oms_addResources(cref, path);
+
+  lua_pushinteger(L, status);
+  return 1;
+}
+
 //oms_status_enu_t oms_addSystem(const char* cref, oms_system_enu_t type);
 static int OMSimulatorLua_oms_addSystem(lua_State *L)
 {
@@ -1286,6 +1302,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms_addDynamicValueIndicator);
   REGISTER_LUA_CALL(oms_addEventIndicator);
   REGISTER_LUA_CALL(oms_addExternalModel);
+  REGISTER_LUA_CALL(oms_addResources);
   REGISTER_LUA_CALL(oms_addSignalsToResults);
   REGISTER_LUA_CALL(oms_addStaticValueIndicator);
   REGISTER_LUA_CALL(oms_addSubModel);

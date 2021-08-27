@@ -325,7 +325,7 @@ oms_status_enu_t oms::System::addSubModel(const oms::ComRef& cref, const std::st
   return system->addSubModel(tail, path);
 }
 
-oms_status_enu_t oms::System::newResources(const ComRef& cref, std::string& filename)
+oms_status_enu_t oms::System::newResources(const ComRef& cref, const std::string& filename, bool isExternalresources)
 {
   ComRef tail(cref);
   ComRef front = tail.pop_front();
@@ -337,11 +337,13 @@ oms_status_enu_t oms::System::newResources(const ComRef& cref, std::string& file
     if (!values.hasResources())
     {
       resources.allresources[filename] = resources;
+      resources.isExternalSSV = isExternalresources;
       values.parameterResources.push_back(resources);
     }
     else
     {
       // generate empty ssv file, if more resources are added to same level
+      resources.isExternalSSV = isExternalresources;
       values.parameterResources[0].allresources[filename] = resources;
     }
     return oms_status_ok;

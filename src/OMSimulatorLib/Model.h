@@ -74,7 +74,7 @@ namespace oms
     oms_status_enu_t list(const ComRef& cref, char** contents);
     oms_status_enu_t addSystem(const ComRef& cref, oms_system_enu_t type);
     oms_status_enu_t newResources(const ComRef& cref);
-    oms_status_enu_t addResources(const ComRef& cref);
+    oms_status_enu_t addResources(const ComRef& cref, const std::string& path);
     oms_status_enu_t deleteReferencesInSSD(const ComRef& cref);
     oms_status_enu_t deleteResourcesInSSP(const std::string& filename);
     oms_status_enu_t exportToSSD(Snapshot& snapshot) const;
@@ -160,6 +160,8 @@ namespace oms
 
     std::string resultFilename; ///< default <name>_res.mat
     std::string signalFilterFilename = "resources/signalFilter.xml";
+
+    std::vector<std::string> externalResources;  ///< list of external ssv or ssm resources from filesystem
 
     bool isolatedFMU = false;
 

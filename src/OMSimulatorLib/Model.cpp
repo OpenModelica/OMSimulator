@@ -498,10 +498,38 @@ oms_status_enu_t oms::Model::updateParameterBindingsToSSD(pugi::xml_node& node, 
 oms_status_enu_t oms::Model::newResources(const oms::ComRef& cref)
 {
   ComRef subCref(cref);
-  std::string fileName = "resources/" + subCref.pop_suffix();
+  const std::string fileName = "resources/" + subCref.pop_suffix();
 
   if (system)
     return system->newResources(subCref, fileName);
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Model::addResources(const oms::ComRef& cref, const std::string& path)
+{
+  filesystem::path path_ = oms_canonical(path);
+  if (!filesystem::exists(path_))
+    return logError("file does not exist: \"" + path + "\"");
+
+  ComRef subCref(cref);
+  std::string fileName = subCref.pop_suffix();
+
+  // get the filename from path, if no name provided
+  if (fileName.empty())
+  {
+    filesystem::path path_(path);
+    fileName = path_.filename().generic_string();
+  }
+
+  // copy the file to temp directory
+  filesystem::path temp_root(getTempDirectory());
+  filesystem::path temp_temp = temp_root / "temp";
+  filesystem::path relFMUPath = filesystem::path("resources/" + fileName);
+  filesystem::path absFMUPath = temp_root / relFMUPath;
+  oms_copy_file(filesystem::path(path), absFMUPath);
+  // push to external resources
+  externalResources.push_back("resources/"+ fileName);
 
   return oms_status_ok;
 }
@@ -797,6 +825,15 @@ void oms::Model::writeAllResourcesToFilesystem(std::vector<std::string>& resourc
 
   if (system)
     system->getAllResources(resources);
+
+  // check for external resources added at model level
+  if (!externalResources.empty())
+  {
+    for (const auto &file : externalResources)
+    {
+      resources.push_back(file);
+    }
+  }
 }
 
 oms_status_enu_t oms::Model::setStartTime(double value)

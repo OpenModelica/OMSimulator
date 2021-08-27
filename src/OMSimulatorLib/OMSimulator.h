@@ -66,6 +66,7 @@ OMSAPI oms_status_enu_t OMSCALL oms_addConnectorToTLMBus(const char* busCref, co
 OMSAPI oms_status_enu_t OMSCALL oms_addDynamicValueIndicator(const char* signal, const char* lower, const char* upper, double stepSize);
 OMSAPI oms_status_enu_t OMSCALL oms_addEventIndicator(const char* signal);
 OMSAPI oms_status_enu_t OMSCALL oms_addExternalModel(const char* cref, const char* path, const char* startscript);
+OMSAPI oms_status_enu_t OMSCALL oms_addResources(const char* cref, const char* path);
 OMSAPI oms_status_enu_t OMSCALL oms_addSignalsToResults(const char* cref, const char* regex);
 OMSAPI oms_status_enu_t OMSCALL oms_addStaticValueIndicator(const char* signal, double lower, double upper, double stepSize);
 OMSAPI oms_status_enu_t OMSCALL oms_addSubModel(const char* cref, const char* fmuPath);
