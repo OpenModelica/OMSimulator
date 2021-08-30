@@ -710,17 +710,19 @@ oms_status_enu_t oms::ComponentFMUME::doEventIteration()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::ComponentFMUME::newResources(const std::string& filename)
+oms_status_enu_t oms::ComponentFMUME::newResources(const std::string& filename, bool externalResources)
 {
   Values resources;
   if (!values.hasResources())
   {
     resources.allresources[filename] = resources;
+    resources.isExternalSSV = externalResources; // set if resources is "external" or "newResources", if "external" only references will be set in ssd
     values.parameterResources.push_back(resources);
   }
   else
   {
     // generate empty ssv file, if more resources are added to same level
+    resources.isExternalSSV = externalResources; // set if resources is "external" or "newResources", if "external" only references will be set in ssd
     values.parameterResources[0].allresources[filename] = resources;
   }
 

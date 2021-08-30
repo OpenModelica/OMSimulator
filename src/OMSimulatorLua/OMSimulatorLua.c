@@ -440,6 +440,20 @@ static int OMSimulatorLua_oms_newResources(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms_referenceResources(const char* cref);
+static int OMSimulatorLua_oms_referenceResources(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* cref = lua_tostring(L, 1);
+  oms_status_enu_t status = oms_referenceResources(cref);
+
+  lua_pushinteger(L, status);
+  return 1;
+}
+
 //oms_status_enu_t oms_addResources(const char* cref, const char* path);
 static int OMSimulatorLua_oms_addResources(lua_State *L)
 {
@@ -1346,6 +1360,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms_removeSignalsFromResults);
   REGISTER_LUA_CALL(oms_rename);
   REGISTER_LUA_CALL(oms_reset);
+  REGISTER_LUA_CALL(oms_referenceResources);
   REGISTER_LUA_CALL(oms_setBoolean);
   REGISTER_LUA_CALL(oms_setCommandLineOption);
   REGISTER_LUA_CALL(oms_setFixedStepSize);

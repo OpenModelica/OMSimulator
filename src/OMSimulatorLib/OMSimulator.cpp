@@ -197,6 +197,21 @@ oms_status_enu_t oms_deleteResources(const char* cref_)
     return model->deleteReferencesInSSD(tail);
 }
 
+oms_status_enu_t oms_referenceResources(const char* cref_)
+{
+  oms::ComRef tail(cref_);
+  oms::ComRef front = tail.pop_front();
+
+  oms::ComRef modelCref(front);
+  modelCref.pop_suffix();
+
+  oms::Model* model = oms::Scope::GetInstance().getModel(modelCref);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  return model->referenceResources(tail);
+}
+
 oms_status_enu_t oms_export(const char* cref, const char* filename)
 {
   return oms::Scope::GetInstance().exportModel(oms::ComRef(cref), std::string(filename));

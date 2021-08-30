@@ -325,7 +325,7 @@ oms_status_enu_t oms::System::addSubModel(const oms::ComRef& cref, const std::st
   return system->addSubModel(tail, path);
 }
 
-oms_status_enu_t oms::System::newResources(const ComRef& cref, const std::string& filename, bool isExternalresources)
+oms_status_enu_t oms::System::newResources(const ComRef& cref, const std::string& filename, bool externalresources)
 {
   ComRef tail(cref);
   ComRef front = tail.pop_front();
@@ -337,13 +337,13 @@ oms_status_enu_t oms::System::newResources(const ComRef& cref, const std::string
     if (!values.hasResources())
     {
       resources.allresources[filename] = resources;
-      resources.isExternalSSV = isExternalresources;
+      resources.isExternalSSV = externalresources; // set if resources is "external" or "newResources", if "external" only references will be set in ssd
       values.parameterResources.push_back(resources);
     }
     else
     {
       // generate empty ssv file, if more resources are added to same level
-      resources.isExternalSSV = isExternalresources;
+      resources.isExternalSSV = externalresources; // set if resources is "external" or "newResources", if "external" only references will be set in ssd
       values.parameterResources[0].allresources[filename] = resources;
     }
     return oms_status_ok;
@@ -351,11 +351,11 @@ oms_status_enu_t oms::System::newResources(const ComRef& cref, const std::string
 
   auto subsystem = subsystems.find(tail);
   if (subsystem != subsystems.end())
-    return subsystem->second->newResources(tail, filename);
+    return subsystem->second->newResources(tail, filename, externalresources);
 
   auto component = components.find(tail);
   if (component != components.end())
-    return component->second->newResources(filename);
+    return component->second->newResources(filename, externalresources);
 
   /*check for adding resources to components in subsystems
     e.g root.system1.add
@@ -370,7 +370,7 @@ oms_status_enu_t oms::System::newResources(const ComRef& cref, const std::string
 
   auto componentA = system->components.find(tailA);
   if (componentA != components.end())
-    return componentA->second->newResources(filename);
+    return componentA->second->newResources(filename, externalresources);
 
   return logError("failed for \"" + std::string(getFullCref() + cref) + "\""  + " as the identifier could not be resolved to a system or subsystem or component");
 }
@@ -422,6 +422,7 @@ oms_status_enu_t oms::System::deleteResourcesInSSP(const std::string& filename)
 
   return logError("failed to delete Resources in SSP because the filename \"" + filename + "\"" + " couldn't be resolved to any system or subsystem or component in the model");
 }
+
 
 oms_status_enu_t oms::System::listUnconnectedConnectors(char** contents) const
 {

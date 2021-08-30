@@ -128,6 +128,7 @@ OMSAPI oms_status_enu_t OMSCALL oms_newResources(const char* cref);
 OMSAPI oms_status_enu_t OMSCALL oms_removeSignalsFromResults(const char* cref, const char* regex);
 OMSAPI oms_status_enu_t OMSCALL oms_rename(const char* cref, const char* newCref);
 OMSAPI oms_status_enu_t OMSCALL oms_reset(const char* cref);
+OMSAPI oms_status_enu_t OMSCALL oms_referenceResources(const char* cref);
 OMSAPI oms_status_enu_t OMSCALL oms_RunFile(const char* filename);
 OMSAPI oms_status_enu_t OMSCALL oms_setBoolean(const char* cref, bool value);
 OMSAPI oms_status_enu_t OMSCALL oms_setBusGeometry(const char* bus, const ssd_connector_geometry_t* geometry);
