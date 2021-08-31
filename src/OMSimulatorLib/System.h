@@ -129,7 +129,7 @@ namespace oms
     oms_status_enu_t addExternalModel(const ComRef &cref, std::string path, std::string startscript);
     oms_status_enu_t delete_(const ComRef& cref);
     oms_status_enu_t deleteAllConectionsTo(const ComRef& cref);
-    oms_status_enu_t deleteReferencesInSSD(const ComRef& cref, std::string& filename);
+    oms_status_enu_t deleteReferencesInSSD(const ComRef& cref, const std::string& filename);
     oms_status_enu_t deleteResourcesInSSP(const std::string& filename);
 
     bool isConnected(const ComRef& cref) const;

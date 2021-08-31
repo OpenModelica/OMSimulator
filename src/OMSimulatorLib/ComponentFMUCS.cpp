@@ -689,7 +689,7 @@ oms_status_enu_t oms::ComponentFMUCS::newResources(const std::string& filename, 
   Values resources;
   if (!values.hasResources())
   {
-    resources.allresources[filename] = resources;
+    resources.allresources["resources/" + filename] = resources;
     resources.isExternalSSV = externalResources; // set if resources is "external" or "newResources", if "external" only references will be set in ssd
     values.parameterResources.push_back(resources);
   }
@@ -697,7 +697,7 @@ oms_status_enu_t oms::ComponentFMUCS::newResources(const std::string& filename, 
   {
     // generate empty ssv file, if more resources are added to same level
     resources.isExternalSSV = externalResources; // set if resources is "external" or "newResources", if "external" only references will be set in ssd
-    values.parameterResources[0].allresources[filename] = resources;
+    values.parameterResources[0].allresources["resources/" + filename] = resources;
   }
 
   return oms_status_ok;

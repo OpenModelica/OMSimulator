@@ -7,8 +7,8 @@
 -- mac: no
 
 oms_setCommandLineOption("--suppressPath=true")
-oms_setTempDirectory("./deleteResources2_lua/")
-oms_setWorkingDirectory("./deleteResources2_lua/")
+oms_setTempDirectory("./deleteReferences1_lua/")
+oms_setWorkingDirectory("./deleteReferences1_lua/")
 
 oms_newModel("deleteResources")
 
@@ -37,27 +37,30 @@ oms_newResources("deleteResources.root.Gain:gain.ssv")
 
 oms_setReal("deleteResources.root.Gain.k", 27)
 
-oms_setResultFile("deleteResources", "deleteResources2.mat", 10)
+oms_setResultFile("deleteResources", "deleteResources1.mat", 10)
 
-oms_export("deleteResources", "deleteResources2.ssp")
+oms_export("deleteResources", "deleteResources1.ssp")
 
 oms_terminate("deleteResources")
 oms_delete("deleteResources")
 
-oms_importFile("deleteResources2.ssp")
+oms_importFile("deleteResources1.ssp")
 
 -- print original snapshot
 src = oms_exportSnapshot("deleteResources")
 print(src)
 
--- delete references and resources
-oms_deleteResources("deleteResources:root.ssv")
--- delete references and resources
-oms_deleteResources("deleteResources:system1.ssv")
--- delete references and resources
-oms_deleteResources("deleteResources:gain.ssv")
+-- delete only the references
+oms_deleteResources("deleteResources.root:root.ssv")
+-- delete only the references
+oms_deleteResources("deleteResources.root.system1:system1.ssv")
+-- delete only the references
+oms_deleteResources("deleteResources.root.Gain:gain.ssv")
 
--- snapshot after deleting references and resources
+-- adding new resources to exisiting API, -- skip it as of now
+-- oms_deleteResources2("deleteResources", "newResources.ssv")
+
+-- snapshot after deleting references
 src = oms_exportSnapshot("deleteResources")
 print(src)
 
@@ -190,7 +193,7 @@ oms_delete("deleteResources")
 --             type="org.openmodelica">
 --             <oms:Annotations>
 --               <oms:SimulationInformation
---                 resultFile="deleteResources2.mat"
+--                 resultFile="deleteResources1.mat"
 --                 loggingInterval="0.000000"
 --                 bufferSize="10"
 --                 signalFilter="resources/signalFilter.xml" />
@@ -402,7 +405,7 @@ oms_delete("deleteResources")
 --             type="org.openmodelica">
 --             <oms:Annotations>
 --               <oms:SimulationInformation
---                 resultFile="deleteResources2.mat"
+--                 resultFile="deleteResources1.mat"
 --                 loggingInterval="0.000000"
 --                 bufferSize="10"
 --                 signalFilter="resources/signalFilter.xml" />
@@ -411,6 +414,59 @@ oms_delete("deleteResources")
 --         </ssd:Annotations>
 --       </ssd:DefaultExperiment>
 --     </ssd:SystemStructureDescription>
+--   </oms:file>
+--   <oms:file
+--     name="resources/root.ssv">
+--     <ssv:ParameterSet
+--       xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
+--       xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
+--       version="1.0"
+--       name="parameters">
+--       <ssv:Parameters>
+--         <ssv:Parameter
+--           name="Input2">
+--           <ssv:Real
+--             value="50" />
+--         </ssv:Parameter>
+--         <ssv:Parameter
+--           name="Input1">
+--           <ssv:Real
+--             value="10" />
+--         </ssv:Parameter>
+--       </ssv:Parameters>
+--     </ssv:ParameterSet>
+--   </oms:file>
+--   <oms:file
+--     name="resources/system1.ssv">
+--     <ssv:ParameterSet
+--       xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
+--       xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
+--       version="1.0"
+--       name="parameters">
+--       <ssv:Parameters>
+--         <ssv:Parameter
+--           name="C1">
+--           <ssv:Real
+--             value="-10" />
+--         </ssv:Parameter>
+--       </ssv:Parameters>
+--     </ssv:ParameterSet>
+--   </oms:file>
+--   <oms:file
+--     name="resources/gain.ssv">
+--     <ssv:ParameterSet
+--       xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
+--       xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
+--       version="1.0"
+--       name="parameters">
+--       <ssv:Parameters>
+--         <ssv:Parameter
+--           name="k">
+--           <ssv:Real
+--             value="27" />
+--         </ssv:Parameter>
+--       </ssv:Parameters>
+--     </ssv:ParameterSet>
 --   </oms:file>
 --   <oms:file
 --     name="resources/signalFilter.xml">
