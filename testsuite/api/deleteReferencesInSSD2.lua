@@ -8,7 +8,7 @@
 
 oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./deleteReferences2_lua/")
-oms_setWorkingDirectory("./deleteReferences1_lua/")
+oms_setWorkingDirectory("./deleteReferences2_lua/")
 
 oms_newModel("deleteResources")
 
