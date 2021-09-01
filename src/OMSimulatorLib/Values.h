@@ -117,7 +117,7 @@ namespace oms
     std::map<std::string, Values> allresources; ///< mapped resources either inline or ssv
     std::string ssmFile = ""; ///< mapped ssm files associated with ssv files;
     bool linkResources = true;
-    bool isExternalSSV = false;
+    bool externalResources = false;
   };
 }
 

@@ -107,7 +107,7 @@ namespace oms
 
     void getFilteredSignals(std::vector<Connector>& filteredSignals) const;
 
-    oms_status_enu_t newResources(const std::string& filename, bool externalResources);
+    oms_status_enu_t newResources(const std::string& ssvFilename, const std::string& ssmFilename, bool externalResources);
     oms_status_enu_t setResourcesHelper1(Values value);
     oms_status_enu_t setResourcesHelper2(Values value);
 

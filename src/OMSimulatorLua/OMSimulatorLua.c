@@ -440,15 +440,23 @@ static int OMSimulatorLua_oms_newResources(lua_State *L)
   return 1;
 }
 
-//oms_status_enu_t oms_referenceResources(const char* cref);
+//oms_status_enu_t oms_referenceResources(const char* cref, const char* ssmFile);
 static int OMSimulatorLua_oms_referenceResources(lua_State *L)
 {
-  if (lua_gettop(L) != 1)
-    return luaL_error(L, "expecting exactly 1 argument");
+  if (lua_gettop(L) != 1 && lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 1 or 2 argument");
   luaL_checktype(L, 1, LUA_TSTRING);
 
   const char* cref = lua_tostring(L, 1);
-  oms_status_enu_t status = oms_referenceResources(cref);
+
+  const char* ssmFile = "";
+  if (lua_gettop(L) == 2)
+  {
+    luaL_checktype(L, 2, LUA_TSTRING);
+    ssmFile = lua_tostring(L, 2);
+  }
+
+  oms_status_enu_t status = oms_referenceResources(cref, ssmFile);
 
   lua_pushinteger(L, status);
   return 1;

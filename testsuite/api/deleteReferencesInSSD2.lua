@@ -64,7 +64,7 @@ oms_delete("deleteResources")
 
 -- Result:
 -- error:   [deleteReferencesInSSD] reference file not provided for "deleteResources.root", hence deleting reference file cannot be done. Provide a valid reference file eg: "model.root:test1.ssv"
--- error:   [deleteReferencesInSSD] filename extension for "deleteResources.root:root.ss" must be ".ssp" or ".ssm", no other formats are supported
+-- error:   [deleteReferencesInSSD] filename extension for "deleteResources.root:root.ss" must be ".ssv" or ".ssm", no other formats are supported
 -- error:   [deleteReferencesInSSD] failed to delete references in ssd, as the reference file "deleteResources.root:root1.ssv" could not be resolved to a system or subsystem or component
 -- error:   [deleteReferencesInSSD] failed to delete references in ssd, as the reference file "deleteResources.root.system2:system1.ssv" could not be resolved to a system or subsystem or component
 -- error:   [deleteReferencesInSSD] failed to delete references in ssd, as the reference file "deleteResources.root.Gain:gain1.ssv" could not be resolved to a system or subsystem or component

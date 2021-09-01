@@ -638,12 +638,12 @@ void oms::Values::exportParameterBindings(pugi::xml_node &node, Snapshot &snapsh
               node_parameter_binding = node_parameters_bindings.append_child(oms::ssp::Version1_0::ssd::parameter_binding);
               node_parameter_binding.append_attribute("source") = res.first.c_str();
             }
-            //std::cout << "\n export To SSV file :" << res.first.c_str() << "=" << res.second.isExternalSSV;
+            //std::cout << "\n export To SSV file :" << res.first.c_str() << "=" << res.second.isExternalSSV << "=" << res.second.ssmFile;
             /*
             export ssv file only for newResources and not external ssv files,
             as they will be copied directly to resources folder and only the references must be updated in ssd
             */
-            if (!res.second.isExternalSSV)
+            if (!res.second.externalResources)
             {
               pugi::xml_node ssvNode = snapshot.getTemplateResourceNodeSSV(res.first, "parameters");
               res.second.exportToSSV(ssvNode);
@@ -656,8 +656,11 @@ void oms::Values::exportParameterBindings(pugi::xml_node &node, Snapshot &snapsh
                 pugi::xml_node ssd_parameter_mapping = node_parameter_binding.append_child(oms::ssp::Version1_0::ssd::parameter_mapping);
                 ssd_parameter_mapping.append_attribute("source") = res.second.ssmFile.c_str();
               }
-              pugi::xml_node ssmNode = snapshot.getTemplateResourceNodeSSM(res.second.ssmFile);
-              res.second.exportParameterMappingToSSM(ssmNode);
+              if (!res.second.externalResources)
+              {
+                pugi::xml_node ssmNode = snapshot.getTemplateResourceNodeSSM(res.second.ssmFile);
+                res.second.exportParameterMappingToSSM(ssmNode);
+              }
             }
           }
         }

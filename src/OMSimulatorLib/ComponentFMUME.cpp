@@ -710,20 +710,24 @@ oms_status_enu_t oms::ComponentFMUME::doEventIteration()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::ComponentFMUME::newResources(const std::string& filename, bool externalResources)
+oms_status_enu_t oms::ComponentFMUME::newResources(const std::string& ssvFilename, const std::string& ssmFilename, bool externalResources)
 {
   Values resources;
   if (!values.hasResources())
   {
-    resources.allresources["resources/" + filename] = resources;
-    resources.isExternalSSV = externalResources; // set if resources is "external" or "newResources", if "external" only references will be set in ssd
+    resources.allresources["resources/" + ssvFilename] = resources;
+    resources.externalResources = externalResources; // set if resources is "external" or "newResources", if "external" only references will be set in ssd
+    if(!ssmFilename.empty())
+      resources.ssmFile = "resources/" + ssmFilename;
     values.parameterResources.push_back(resources);
   }
   else
   {
     // generate empty ssv file, if more resources are added to same level
-    resources.isExternalSSV = externalResources; // set if resources is "external" or "newResources", if "external" only references will be set in ssd
-    values.parameterResources[0].allresources["resources/" + filename] = resources;
+    resources.externalResources = externalResources; // set if resources is "external" or "newResources", if "external" only references will be set in ssd
+    if(!ssmFilename.empty())
+      resources.ssmFile = "resources/" + ssmFilename;
+    values.parameterResources[0].allresources["resources/" + ssvFilename] = resources;
   }
 
   return oms_status_ok;

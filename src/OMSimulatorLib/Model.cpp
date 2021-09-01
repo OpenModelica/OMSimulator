@@ -507,8 +507,8 @@ oms_status_enu_t oms::Model::newResources(const oms::ComRef& cref)
   if (fileName.length() > 4)
     extension = fileName.substr(fileName.length() - 4);
 
-  if (extension != ".ssv" && extension != ".ssm")
-    return logError("filename extension for \"" + std::string(getCref() + cref) + "\" must be \".ssp\" or \".ssm\", no other formats are supported");
+  if (extension != ".ssv")
+    return logError("filename extension for \"" + std::string(getCref() + cref) + "\" must be \".ssv\", no other formats are supported");
 
   if (system)
     return system->newResources(subCref, fileName);
@@ -544,7 +544,7 @@ oms_status_enu_t oms::Model::addResources(const oms::ComRef& cref, const std::st
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Model::referenceResources(const oms::ComRef& cref)
+oms_status_enu_t oms::Model::referenceResources(const oms::ComRef& cref, const std::string& ssmFile)
 {
   ComRef subCref(cref);
   std::string fileName = subCref.pop_suffix();
@@ -552,15 +552,24 @@ oms_status_enu_t oms::Model::referenceResources(const oms::ComRef& cref)
   if (fileName.empty())
     return logError("reference file not provided for \"" + std::string(getCref() + cref) + "\", hence switching reference file to a new \".ssv\" or \".ssm\" cannot be done.");
 
-  std::string extension = "";
+  std::string ssvExtension = "";
   if (fileName.length() > 4)
-    extension = fileName.substr(fileName.length() - 4);
+    ssvExtension = fileName.substr(fileName.length() - 4);
 
-  if (extension != ".ssv" && extension != ".ssm")
-    return logError("filename extension for \"" + std::string(getCref() + cref) + "\" must be \".ssp\" or \".ssm\", no other formats are supported");
+  if (ssvExtension != ".ssv")
+    return logError("filename extension for \"" + std::string(getCref() + cref) + "\" must be \".ssv\", no other formats are supported");
+
+  if (!ssmFile.empty())
+  {
+    std::string ssmExtension = "";
+    if (ssmFile.length() > 4)
+      ssmExtension = ssmFile.substr(fileName.length() - 4);
+    if (ssmExtension != ".ssm")
+      return logError("filename extension for \"" + std::string(getCref() + cref) + "\" must be \".ssm\", no other formats are supported");
+  }
 
   if (system)
-    return system->newResources(subCref, fileName, true);
+    return system->newResources(subCref, fileName, ssmFile, true);
 
   return oms_status_ok;
 }
@@ -578,7 +587,7 @@ oms_status_enu_t oms::Model::deleteReferencesInSSD(const oms::ComRef& cref)
     extension = fileName.substr(fileName.length() - 4);
 
   if (extension != ".ssv" && extension != ".ssm")
-    return logError("filename extension for \"" + std::string(getCref() + cref) + "\" must be \".ssp\" or \".ssm\", no other formats are supported");
+    return logError("filename extension for \"" + std::string(getCref() + cref) + "\" must be \".ssv\" or \".ssm\", no other formats are supported");
 
   if (system)
     return system->deleteReferencesInSSD(subCref, fileName);
@@ -596,7 +605,7 @@ oms_status_enu_t oms::Model::deleteResourcesInSSP(const std::string & fileName)
     extension = fileName.substr(fileName.length() - 4);
 
   if (extension != ".ssv" && extension != ".ssm")
-    return logError("filename extension for \"" + std::string(getCref()) + ":" + fileName + "\" must be \".ssp\" or \".ssm\", no other formats are supported");
+    return logError("filename extension for \"" + std::string(getCref()) + ":" + fileName + "\" must be \".ssv\" or \".ssm\", no other formats are supported");
 
   if (system)
     return system->deleteResourcesInSSP(fileName);

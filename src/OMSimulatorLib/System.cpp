@@ -325,7 +325,7 @@ oms_status_enu_t oms::System::addSubModel(const oms::ComRef& cref, const std::st
   return system->addSubModel(tail, path);
 }
 
-oms_status_enu_t oms::System::newResources(const ComRef& cref, const std::string& filename, bool externalresources)
+oms_status_enu_t oms::System::newResources(const ComRef& cref, const std::string& ssvFilename, const std::string& ssmFilename, bool externalResources)
 {
   ComRef tail(cref);
   ComRef front = tail.pop_front();
@@ -336,26 +336,30 @@ oms_status_enu_t oms::System::newResources(const ComRef& cref, const std::string
     Values resources;
     if (!values.hasResources())
     {
-      resources.allresources["resources/" + filename] = resources;
-      resources.isExternalSSV = externalresources; // set if resources is "external" or "newResources", if "external" only references will be set in ssd
+      resources.allresources["resources/" + ssvFilename] = resources;
+      resources.externalResources = externalResources; // set if resources is "external" or "newResources", if "external" only references will be set in ssd
+      if (!ssmFilename.empty())
+        resources.ssmFile = "resources/"+ ssmFilename;
       values.parameterResources.push_back(resources);
     }
     else
     {
       // generate empty ssv file, if more resources are added to same level
-      resources.isExternalSSV = externalresources; // set if resources is "external" or "newResources", if "external" only references will be set in ssd
-      values.parameterResources[0].allresources["resources/" + filename] = resources;
+      resources.externalResources = externalResources; // set if resources is "external" or "newResources", if "external" only references will be set in ssd
+      if (!ssmFilename.empty())
+        resources.ssmFile = "resources/"+ ssmFilename;
+      values.parameterResources[0].allresources["resources/" + ssvFilename] = resources;
     }
     return oms_status_ok;
   }
 
   auto subsystem = subsystems.find(tail);
   if (subsystem != subsystems.end())
-    return subsystem->second->newResources(tail, filename, externalresources);
+    return subsystem->second->newResources(tail, ssvFilename, ssmFilename, externalResources);
 
   auto component = components.find(tail);
   if (component != components.end())
-    return component->second->newResources(filename, externalresources);
+    return component->second->newResources(ssvFilename, ssmFilename, externalResources);
 
   /*check for adding resources to components in subsystems
     e.g root.system1.add
@@ -370,9 +374,9 @@ oms_status_enu_t oms::System::newResources(const ComRef& cref, const std::string
 
   auto componentA = system->components.find(tailA);
   if (componentA != components.end())
-    return componentA->second->newResources(filename, externalresources);
+    return componentA->second->newResources(ssvFilename, ssmFilename, externalResources);
 
-  return logError("failed for \"" + std::string(getModel().getCref() + cref) + ":" + filename + "\""  + " as the identifier could not be resolved to a system or subsystem or component");
+  return logError("failed for \"" + std::string(getModel().getCref() + cref) + ":" + ssvFilename + "\""  + " as the identifier could not be resolved to a system or subsystem or component");
 }
 
 oms_status_enu_t oms::System::deleteReferencesInSSD(const ComRef& cref, const std::string& filename)

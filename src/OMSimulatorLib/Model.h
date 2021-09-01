@@ -77,7 +77,7 @@ namespace oms
     oms_status_enu_t addResources(const ComRef& cref, const std::string& path);
     oms_status_enu_t deleteReferencesInSSD(const ComRef& cref);
     oms_status_enu_t deleteResourcesInSSP(const std::string& filename);
-    oms_status_enu_t referenceResources(const ComRef& cref);
+    oms_status_enu_t referenceResources(const ComRef& cref, const std::string& ssmFile);
     oms_status_enu_t exportToSSD(Snapshot& snapshot) const;
     oms_status_enu_t exportSnapshot(const ComRef& cref, char** contents);
     oms_status_enu_t exportSSVTemplate(const ComRef& cref, const std::string& filename);

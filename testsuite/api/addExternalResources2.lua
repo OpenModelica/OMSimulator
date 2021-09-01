@@ -22,10 +22,8 @@ oms_addResources("import_parameter_mapping", "../../resources/external_import_pa
 
 -- delete the ssv references
 oms_deleteResources("import_parameter_mapping.co_sim:import_parameter_mapping.ssv")
--- switch with new references
-oms_referenceResources("import_parameter_mapping.co_sim:external_import_parameter_mapping.ssv")
--- TODO reference ssm file
---oms_referenceResources("import_parameter_mapping.co_sim:external_import_parameter_mapping.ssm")
+-- switch with new references, ssv and ssm file
+oms_referenceResources("import_parameter_mapping.co_sim:external_import_parameter_mapping.ssv", "external_import_parameter_mapping.ssm") -- optional second argument for ssm f
 
 -- export the file with added resources and new references
 oms_export("import_parameter_mapping", "importParameterMapping.ssp")
@@ -414,7 +412,10 @@ oms_delete("import_parameter_mapping")
 --         </ssd:Connectors>
 --         <ssd:ParameterBindings>
 --           <ssd:ParameterBinding
---             source="resources/external_import_parameter_mapping.ssv" />
+--             source="resources/external_import_parameter_mapping.ssv">
+--             <ssd:ParameterMapping
+--               source="resources/external_import_parameter_mapping.ssm" />
+--           </ssd:ParameterBinding>
 --         </ssd:ParameterBindings>
 --         <ssd:Elements>
 --           <ssd:System
@@ -573,6 +574,41 @@ oms_delete("import_parameter_mapping")
 --         </ssv:Parameter>
 --       </ssv:Parameters>
 --     </ssv:ParameterSet>
+--   </oms:file>
+--   <oms:file
+--     name="resources/external_import_parameter_mapping.ssm">
+--     <ssm:ParameterMapping
+--       xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
+--       xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping"
+--       version="1.0">
+--       <ssm:MappingEntry
+--         source="cosim_parameters"
+--         target="parameter_1" />
+--       <ssm:MappingEntry
+--         source="cosim_parameters"
+--         target="System1.parameter_1" />
+--       <ssm:MappingEntry
+--         source="cosim_parameters"
+--         target="System2.parameter_1" />
+--       <ssm:MappingEntry
+--         source="cosim_input"
+--         target="Input_1" />
+--       <ssm:MappingEntry
+--         source="cosim_input"
+--         target="Input_2" />
+--       <ssm:MappingEntry
+--         source="cosim_input"
+--         target="System1.Input_1" />
+--       <ssm:MappingEntry
+--         source="cosim_input"
+--         target="System1.Input_2" />
+--       <ssm:MappingEntry
+--         source="cosim_input"
+--         target="System2.Input_1" />
+--       <ssm:MappingEntry
+--         source="cosim_input"
+--         target="System2.Input_2" />
+--     </ssm:ParameterMapping>
 --   </oms:file>
 --   <oms:file
 --     name="resources/signalFilter.xml">
