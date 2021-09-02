@@ -3,6 +3,8 @@ TEST = ../rtest -v
 TESTFILES = \
 addExternalResources1.lua \
 addExternalResources2.lua \
+addExternalResources3.py \
+addExternalResources4.py \
 buses.lua \
 buses.py \
 connections.lua \
