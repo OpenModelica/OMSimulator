@@ -171,6 +171,11 @@ ELSE()
 ENDIF()
 
 ##########################
+# Configuring for Xerces
+set(XERCESLibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/xerces/install/${PLATFORM_STRING})
+find_package (XERCESLibrary REQUIRED)
+
+##########################
 # Configuration for OMTLMSimulatorLib
 option(OMTLM "Enable the OMTLMSimulator module." ON)
 IF(OMTLM)

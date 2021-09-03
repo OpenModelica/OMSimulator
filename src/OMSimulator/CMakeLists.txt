@@ -8,6 +8,7 @@ link_directories(
   ${MINIZIP_LIBRARYDIR}
   ${FMILibrary_LIBRARYDIR}
   ${LUALibrary_LIBRARYDIR}
+  ${XERCESLibrary_LIBRARYDIR}
   ${CVODELibrary_LIBRARYDIR}
   ${KINSOLLibrary_LIBRARYDIR}
   ${Boost_LIBRARY_DIRS})

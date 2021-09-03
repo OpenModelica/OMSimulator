@@ -70,6 +70,16 @@ extern "C"
 }
 #endif
 
+#include <xercesc/parsers/XercesDOMParser.hpp>
+#include <xercesc/dom/DOM.hpp>
+#include <xercesc/sax/HandlerBase.hpp>
+#include <xercesc/util/XMLString.hpp>
+#include <xercesc/util/PlatformUtils.hpp>
+#include <fstream>
+#include <sstream>
+
+XERCES_CPP_NAMESPACE_USE;
+
 const char* oms_getVersion()
 {
   return oms_git_version;
@@ -1656,6 +1666,9 @@ oms_status_enu_t oms_extractFMIKind(const char* filename, oms_fmi_kind_enu_t* ki
   if (oms_status_ok != status)
     return logError("Failed to import");
   const pugi::xml_node node = snapshot.getResourceNode("modelDescription.xml");
+
+  //XercesDOMParser domParser;
+  //XMLPlatformUtils::Initialize();
 
   bool cs = (std::string(node.child("CoSimulation").attribute("modelIdentifier").as_string()) != "");
   bool me = (std::string(node.child("ModelExchange").attribute("modelIdentifier").as_string()) != "");
