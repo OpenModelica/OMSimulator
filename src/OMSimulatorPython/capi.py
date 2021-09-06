@@ -24,6 +24,8 @@ class capi:
     self.obj.oms_addConnectorToTLMBus.restype = ctypes.c_int
     self.obj.oms_addExternalModel.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_addExternalModel.restype = ctypes.c_int
+    self.obj.oms_addResources.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_addResources.restype = ctypes.c_int
     self.obj.oms_addSignalsToResults.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_addSignalsToResults.restype = ctypes.c_int
     self.obj.oms_addSubModel.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
@@ -46,6 +48,8 @@ class capi:
     self.obj.oms_deleteConnectorFromBus.restype = ctypes.c_int
     self.obj.oms_deleteConnectorFromTLMBus.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_deleteConnectorFromTLMBus.restype = ctypes.c_int
+    self.obj.oms_deleteResources.argtypes = [ctypes.c_char_p]
+    self.obj.oms_deleteResources.restype = ctypes.c_int
     self.obj.oms_doStep.argtypes = [ctypes.c_char_p]
     self.obj.oms_doStep.restype = ctypes.c_int
     self.obj.oms_export.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
@@ -104,6 +108,8 @@ class capi:
     self.obj.oms_newModel.restype = ctypes.c_int
     self.obj.oms_newResources.argtypes = [ctypes.c_char_p]
     self.obj.oms_newResources.restype = ctypes.c_int
+    self.obj.oms_referenceResources.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_referenceResources.restype = ctypes.c_int
     self.obj.oms_removeSignalsFromResults.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_removeSignalsFromResults.restype = ctypes.c_int
     self.obj.oms_rename.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
@@ -170,6 +176,8 @@ class capi:
     return self.obj.oms_addConnectorToTLMBus(busCref.encode(), connectorCref.encode(), type_.encode())
   def addExternalModel(self, cref, path, startscript):
     return self.obj.oms_addExternalModel(cref.encode(), path.encode(), startscript.encode())
+  def addResources(self, cref, path):
+    return self.obj.oms_addResources(cref.encode(), path.encode())
   def addSignalsToResults(self, cref, regex):
     return self.obj.oms_addSignalsToResults(cref.encode(), regex.encode())
   def addSubModel(self, cref, fmuPath):
@@ -192,6 +200,8 @@ class capi:
     return self.obj.oms_deleteConnectorFromBus(busCref.encode(), connectorCref.encode())
   def deleteConnectorFromTLMBus(self, busCref, connectorCref):
     return self.obj.oms_deleteConnectorFromTLMBus(busCref.encode(), connectorCref.encode())
+  def deleteResources(self, crefA):
+    return self.obj.oms_deleteResources(crefA.encode())
   def doStep(self, cref):
     return self.obj.oms_doStep(cref.encode())
   def export(self, cref, filename):
@@ -289,6 +299,8 @@ class capi:
     return self.obj.oms_newModel(cref.encode())
   def newResources(self, crefA):
     return self.obj.oms_newResources(crefA.encode())
+  def referenceResources(self, crefA, crefB=""):
+    return self.obj.oms_referenceResources(crefA.encode(), crefB.encode())
   def removeSignalsFromResults(self, cref, regex):
     return self.obj.oms_removeSignalsFromResults(cref.encode(), regex.encode())
   def rename(self, cref, newcref):

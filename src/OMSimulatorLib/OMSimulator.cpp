@@ -177,6 +177,41 @@ oms_status_enu_t oms_delete(const char* cref)
   return model->delete_(tail);
 }
 
+oms_status_enu_t oms_deleteResources(const char* cref_)
+{
+  oms::ComRef tail(cref_);
+  oms::ComRef front = tail.pop_front();
+
+  oms::ComRef modelCref(front);
+  modelCref.pop_suffix();
+
+  oms::Model* model = oms::Scope::GetInstance().getModel(modelCref);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  if (tail.isEmpty())
+  {
+    return model->deleteResourcesInSSP(front.pop_suffix());
+  }
+  else
+    return model->deleteReferencesInSSD(tail);
+}
+
+oms_status_enu_t oms_referenceResources(const char* cref_, const char* ssmFile)
+{
+  oms::ComRef tail(cref_);
+  oms::ComRef front = tail.pop_front();
+
+  oms::ComRef modelCref(front);
+  modelCref.pop_suffix();
+
+  oms::Model* model = oms::Scope::GetInstance().getModel(modelCref);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  return model->referenceResources(tail, std::string(ssmFile));
+}
+
 oms_status_enu_t oms_export(const char* cref, const char* filename)
 {
   return oms::Scope::GetInstance().exportModel(oms::ComRef(cref), std::string(filename));
@@ -292,6 +327,21 @@ oms_status_enu_t oms_newResources(const char* cref_)
     return logError_ModelNotInScope(front);
 
   return model->newResources(tail);
+}
+
+oms_status_enu_t oms_addResources(const char* cref_, const char* path)
+{
+  oms::ComRef tail(cref_);
+  oms::ComRef front = tail.pop_front();
+
+  oms::ComRef modelCref(front);
+  modelCref.pop_suffix();
+
+  oms::Model* model = oms::Scope::GetInstance().getModel(modelCref);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  return model->addResources(front, path);
 }
 
 oms_status_enu_t oms_addSystem(const char* cref_, oms_system_enu_t type)

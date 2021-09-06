@@ -122,13 +122,16 @@ namespace oms
     oms_status_enu_t setConnectorGeometry(const ComRef& cref, const oms::ssd::ConnectorGeometry* geometry);
     oms_status_enu_t setConnectionGeometry(const ComRef &crefA, const ComRef &crefB, const oms::ssd::ConnectionGeometry* geometry);
     oms_status_enu_t addBus(const ComRef& cref);
-    oms_status_enu_t newResources(const ComRef& cref, std::string& filename);
+    oms_status_enu_t newResources(const ComRef& cref, const std::string& ssvFilename, const std::string& ssmFilename = "", bool externalresources = false);
     oms_status_enu_t addConnectorToBus(const ComRef& busCref, const ComRef& connectorCref);
     oms_status_enu_t deleteConnectorFromBus(const ComRef& busCref, const ComRef& connectorCref);
     oms_status_enu_t setBusGeometry(const ComRef& cref, const oms::ssd::ConnectorGeometry* geometry);
     oms_status_enu_t addExternalModel(const ComRef &cref, std::string path, std::string startscript);
     oms_status_enu_t delete_(const ComRef& cref);
     oms_status_enu_t deleteAllConectionsTo(const ComRef& cref);
+    oms_status_enu_t deleteReferencesInSSD(const ComRef& cref, const std::string& filename);
+    oms_status_enu_t deleteResourcesInSSP(const std::string& filename);
+
     bool isConnected(const ComRef& cref) const;
     Model& getModel();
     System* getParentSystem() const {return parentSystem;}

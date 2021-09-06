@@ -409,6 +409,41 @@ oms_status_enu_t oms::Values::deleteStartValueInResources(const ComRef& cref)
   return oms_status_error;
 }
 
+oms_status_enu_t oms::Values::deleteReferencesInSSD(const std::string &filename)
+{
+  for (auto &it : parameterResources)
+  {
+    for (auto &res : it.allresources)
+    {
+      if (res.first.c_str() == "resources/"+ filename)
+      {
+        res.second.linkResources = false;  //unlink the references
+        return oms_status_ok;
+      }
+    }
+  }
+
+  return oms_status_error;
+}
+
+oms_status_enu_t oms::Values::deleteResourcesInSSP(const std::string &filename)
+{
+  for (auto &it : parameterResources)
+  {
+    for (auto &res : it.allresources)
+    {
+      if (res.first.c_str() == "resources/"+ filename)
+      {
+        res.second.linkResources = false; //unlink the references
+        it.allresources.erase("resources/"+ filename); // delete the resouces
+        return oms_status_ok;
+      }
+    }
+  }
+
+  return oms_status_error;
+}
+
 oms_status_enu_t oms::Values::exportToSSD(pugi::xml_node& node) const
 {
   // skip this if there is nothing to export
@@ -571,35 +606,62 @@ void oms::Values::exportParameterBindings(pugi::xml_node &node, Snapshot &snapsh
   {
     for (const auto &it : parameterResources)
     {
-      pugi::xml_node node_parameters_bindings = node.append_child(oms::ssp::Version1_0::ssd::parameter_bindings);
-      for (const auto &res : it.allresources)
+      if (!it.allresources.empty())
       {
-        if (res.first == "inline")
+        bool nodeSet = true;
+        pugi::xml_node node_parameters_bindings;
+        for (const auto &res : it.allresources)
         {
-          // export as inline
-          pugi::xml_node node_parameter_binding = node_parameters_bindings.append_child(oms::ssp::Version1_0::ssd::parameter_binding);
-          pugi::xml_node node_parameter_values = node_parameter_binding.append_child(oms::ssp::Version1_0::ssd::parameter_values);
-          pugi::xml_node node_parameterset = node_parameter_values.append_child(oms::ssp::Version1_0::ssv::parameter_set);
-          node_parameterset.append_attribute("version") = "1.0";
-          node_parameterset.append_attribute("name") = "parameters";
-          pugi::xml_node node_parameters = node_parameterset.append_child(oms::ssp::Version1_0::ssv::parameters);
-          res.second.exportStartValuesHelper(node_parameters);
-          res.second.exportParameterMappingInline(node_parameter_binding);
-        }
-        else
-        {
-          // export to ssv file
-          pugi::xml_node node_parameter_binding = node_parameters_bindings.append_child(oms::ssp::Version1_0::ssd::parameter_binding);
-          node_parameter_binding.append_attribute("source") = res.first.c_str();
-          pugi::xml_node ssvNode = snapshot.getTemplateResourceNodeSSV(res.first, "parameters");
-          res.second.exportToSSV(ssvNode);
-          // export SSM file if exist
-          if (!res.second.ssmFile.empty())
+          if (nodeSet && res.second.linkResources)
           {
-            pugi::xml_node ssd_parameter_mapping = node_parameter_binding.append_child(oms::ssp::Version1_0::ssd::parameter_mapping);
-            ssd_parameter_mapping.append_attribute("source") = res.second.ssmFile.c_str();
-            pugi::xml_node ssmNode = snapshot.getTemplateResourceNodeSSM(res.second.ssmFile);
-            res.second.exportParameterMappingToSSM(ssmNode);
+            node_parameters_bindings = node.append_child(oms::ssp::Version1_0::ssd::parameter_bindings);
+            nodeSet = false;
+          }
+          if (res.first == "inline")
+          {
+            // export as inline
+            pugi::xml_node node_parameter_binding = node_parameters_bindings.append_child(oms::ssp::Version1_0::ssd::parameter_binding);
+            pugi::xml_node node_parameter_values = node_parameter_binding.append_child(oms::ssp::Version1_0::ssd::parameter_values);
+            pugi::xml_node node_parameterset = node_parameter_values.append_child(oms::ssp::Version1_0::ssv::parameter_set);
+            node_parameterset.append_attribute("version") = "1.0";
+            node_parameterset.append_attribute("name") = "parameters";
+            pugi::xml_node node_parameters = node_parameterset.append_child(oms::ssp::Version1_0::ssv::parameters);
+            res.second.exportStartValuesHelper(node_parameters);
+            res.second.exportParameterMappingInline(node_parameter_binding);
+          }
+          else
+          {
+            // export to ssv file
+            pugi::xml_node node_parameter_binding;
+            if (res.second.linkResources)
+            {
+              node_parameter_binding = node_parameters_bindings.append_child(oms::ssp::Version1_0::ssd::parameter_binding);
+              node_parameter_binding.append_attribute("source") = res.first.c_str();
+            }
+            //std::cout << "\n export To SSV file :" << res.first.c_str() << "=" << res.second.isExternalSSV << "=" << res.second.ssmFile;
+            /*
+            export ssv file only for newResources and not external ssv files,
+            as they will be copied directly to resources folder and only the references must be updated in ssd
+            */
+            if (!res.second.externalResources)
+            {
+              pugi::xml_node ssvNode = snapshot.getTemplateResourceNodeSSV(res.first, "parameters");
+              res.second.exportToSSV(ssvNode);
+            }
+            // export SSM file if exist
+            if (!res.second.ssmFile.empty())
+            {
+              if (res.second.linkResources)
+              {
+                pugi::xml_node ssd_parameter_mapping = node_parameter_binding.append_child(oms::ssp::Version1_0::ssd::parameter_mapping);
+                ssd_parameter_mapping.append_attribute("source") = res.second.ssmFile.c_str();
+              }
+              if (!res.second.externalResources)
+              {
+                pugi::xml_node ssmNode = snapshot.getTemplateResourceNodeSSM(res.second.ssmFile);
+                res.second.exportParameterMappingToSSM(ssmNode);
+              }
+            }
           }
         }
       }

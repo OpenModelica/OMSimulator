@@ -710,21 +710,43 @@ oms_status_enu_t oms::ComponentFMUME::doEventIteration()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::ComponentFMUME::newResources(std::string& filename)
+oms_status_enu_t oms::ComponentFMUME::newResources(const std::string& ssvFilename, const std::string& ssmFilename, bool externalResources)
 {
   Values resources;
   if (!values.hasResources())
   {
-    resources.allresources[filename] = resources;
+    resources.allresources["resources/" + ssvFilename] = resources;
+    resources.externalResources = externalResources; // set if resources is "external" or "newResources", if "external" only references will be set in ssd
+    if(!ssmFilename.empty())
+      resources.ssmFile = "resources/" + ssmFilename;
     values.parameterResources.push_back(resources);
   }
   else
   {
     // generate empty ssv file, if more resources are added to same level
-    values.parameterResources[0].allresources[filename] = resources;
+    resources.externalResources = externalResources; // set if resources is "external" or "newResources", if "external" only references will be set in ssd
+    if(!ssmFilename.empty())
+      resources.ssmFile = "resources/" + ssmFilename;
+    values.parameterResources[0].allresources["resources/" + ssvFilename] = resources;
   }
 
   return oms_status_ok;
+}
+
+oms_status_enu_t oms::ComponentFMUME::deleteReferencesInSSD(const std::string& filename)
+{
+  if (values.hasResources())
+    return values.deleteReferencesInSSD(filename);
+
+  return oms_status_error;
+}
+
+oms_status_enu_t oms::ComponentFMUME::deleteResourcesInSSP(const std::string& filename)
+{
+  if (values.hasResources())
+    return values.deleteResourcesInSSP(filename);
+
+  return oms_status_error;
 }
 
 oms_status_enu_t oms::ComponentFMUME::initialize()

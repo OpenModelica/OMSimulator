@@ -1,10 +1,18 @@
 TEST = ../rtest -v
 
 TESTFILES = \
+addExternalResources1.lua \
+addExternalResources2.lua \
+addExternalResources3.py \
+addExternalResources4.py \
 buses.lua \
 buses.py \
 connections.lua \
 connections.py \
+deleteReferencesInSSD1.lua \
+deleteReferencesInSSD2.lua \
+deleteResourcesInSSP1.lua \
+deleteResourcesInSSP2.lua \
 test_omsExport.lua \
 test_omsExport.py \
 test01.lua \
