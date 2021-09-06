@@ -8,7 +8,7 @@ find_library(XERCESLibrary_LIBRARY
   HINTS ${XERCESLibrary_ROOT}
 )
 
-if (XERCESLibrary_LIBRARY)
+if (XERCESLibrary_ROOT)
   message(STATUS "Found XERCES")
   set(XERCESLibrary_INCLUDEDIR ${XERCESLibrary_ROOT}/include)
   set(XERCESLibrary_LIBRARYDIR ${XERCESLibrary_ROOT}/lib)
@@ -17,12 +17,7 @@ if (XERCESLibrary_LIBRARY)
   message(STATUS "XercesC_LIBRARIES:          " ${XERCESLibrary_LIBRARYDIR})
 else()
   message(STATUS "Unable to find the requested Xerces Library" )
-  if(XERCESLibrary_FIND_REQUIRED)
-  message(STATUS "Unable to find the requested XERCESLibrary" )
   message(STATUS "Looked in XERCESLibrary_ROOT ${XERCESLibrary_ROOT}" )
   message(SEND_ERROR "Could not find xerces. Make sure you have set the XERCESLibrary_ROOT in the CMakeFile.txt to point to your XERCESLibrary installation." )
-  else()
-    message(STATUS "XERCESLibrary - NOT Found" )
-  endif(XERCESLibrary_FIND_REQUIRED)
 endif()
 
