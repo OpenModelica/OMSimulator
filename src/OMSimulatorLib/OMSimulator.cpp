@@ -70,15 +70,15 @@ extern "C"
 }
 #endif
 
-#include <xercesc/parsers/XercesDOMParser.hpp>
-#include <xercesc/dom/DOM.hpp>
-#include <xercesc/sax/HandlerBase.hpp>
-#include <xercesc/util/XMLString.hpp>
-#include <xercesc/util/PlatformUtils.hpp>
-#include <fstream>
-#include <sstream>
+// #include <xercesc/parsers/XercesDOMParser.hpp>
+// #include <xercesc/dom/DOM.hpp>
+// #include <xercesc/sax/HandlerBase.hpp>
+// #include <xercesc/util/XMLString.hpp>
+// #include <xercesc/util/PlatformUtils.hpp>
+// #include <fstream>
+// #include <sstream>
 
-XERCES_CPP_NAMESPACE_USE;
+// XERCES_CPP_NAMESPACE_USE;
 
 const char* oms_getVersion()
 {
