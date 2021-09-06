@@ -1,0 +1,852 @@
+<?xml version="1.0"?>
+<ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="model" version="1.0">
+	<ssd:System name="root">
+			<ssd:ParameterBindings>
+            		<ssd:ParameterBinding source="resources/ECS_Conf2.ssv">
+                		<ssd:ParameterMapping source="resources/ECS_HW.ssm"/>
+            		</ssd:ParameterBinding>
+        	</ssd:ParameterBindings>	
+		<ssd:Elements>
+			<ssd:Component name="ECS_SW" type="application/x-fmu-sharedlibrary" source="resources/0002_ECS_SW.fmu">
+				<ssd:Connectors>
+					<ssd:Connector name="Input.TLiquid" kind="input">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="0.000000" y="0.333333" />
+					</ssd:Connector>
+					<ssd:Connector name="Input.Aircraft_State" kind="input">
+						<ssc:Enumeration />
+						<ssd:ConnectorGeometry x="0.000000" y="0.666667" />
+					</ssd:Connector>
+					<ssd:Connector name="TCoolingPack" kind="output">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="1.000000" y="0.500000" />
+					</ssd:Connector>
+				</ssd:Connectors>
+			</ssd:Component>
+			<ssd:Component name="ECS_HW" type="application/x-fmu-sharedlibrary" source="resources/0001_ECS_HW.fmu">
+				<ssd:Connectors>
+					<ssd:Connector name="Alt" kind="input">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="0.000000" y="0.062500" />
+					</ssd:Connector>
+					<ssd:Connector name="Mach" kind="input">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="0.000000" y="0.125000" />
+					</ssd:Connector>
+					<ssd:Connector name="Tamb" kind="input">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="0.000000" y="0.187500" />
+					</ssd:Connector>
+					<ssd:Connector name="Pamb" kind="input">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="0.000000" y="0.250000" />
+					</ssd:Connector>
+					<ssd:Connector name="consumerFeed.p" kind="input">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="0.000000" y="0.312500" />
+					</ssd:Connector>
+					<ssd:Connector name="consumerFeed.h" kind="input">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="0.000000" y="0.375000" />
+					</ssd:Connector>
+					<ssd:Connector name="consumerFeed.X[1]" kind="input">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="0.000000" y="0.437500" />
+					</ssd:Connector>
+					<ssd:Connector name="consumerFeed.X[2]" kind="input">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="0.000000" y="0.500000" />
+					</ssd:Connector>
+					<ssd:Connector name="consumerFeed.X[3]" kind="input">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="0.000000" y="0.562500" />
+					</ssd:Connector>
+					<ssd:Connector name="consumerRet.p" kind="input">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="0.000000" y="0.625000" />
+					</ssd:Connector>
+					<ssd:Connector name="consumerRet.h" kind="input">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="0.000000" y="0.687500" />
+					</ssd:Connector>
+					<ssd:Connector name="consumerRet.X[1]" kind="input">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="0.000000" y="0.750000" />
+					</ssd:Connector>
+					<ssd:Connector name="consumerRet.X[2]" kind="input">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="0.000000" y="0.812500" />
+					</ssd:Connector>
+					<ssd:Connector name="consumerRet.X[3]" kind="input">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="0.000000" y="0.875000" />
+					</ssd:Connector>
+					<ssd:Connector name="reqCoolingTemperature" kind="input">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="0.000000" y="0.937500" />
+					</ssd:Connector>
+					<ssd:Connector name="consumerFeed.m" kind="output">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="1.000000" y="0.166667" />
+					</ssd:Connector>
+					<ssd:Connector name="consumerFeed.hn" kind="output">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="1.000000" y="0.333333" />
+					</ssd:Connector>
+					<ssd:Connector name="consumerRet.m" kind="output">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="1.000000" y="0.500000" />
+					</ssd:Connector>
+					<ssd:Connector name="consumerRet.hn" kind="output">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="1.000000" y="0.666667" />
+					</ssd:Connector>
+					<ssd:Connector name="LHexTout" kind="output">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="1.000000" y="0.833333" />
+					</ssd:Connector>
+					<ssd:Connector name="AirToL_HEX.looptypRed" kind="parameter">
+						<ssc:Integer />
+					</ssd:Connector>
+					<ssd:Connector name="AirToL_HEX.looptypBlue" kind="parameter">
+						<ssc:Integer />
+					</ssd:Connector>
+					<ssd:Connector name="AirToL_HEX.Kst" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="AirToL_HEX.Kexp" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="AirToL_HEX.fgst" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="AirToL_HEX.h" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="AirToL_HEX.b" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="AirToL_HEX.l" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="AirToL_HEX.hotrat" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="AirToL_HEX.Dhh" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="AirToL_HEX.Dhc" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="AirToL_HEX.typ" kind="parameter">
+						<ssc:Integer />
+					</ssd:Connector>
+					<ssd:Connector name="AirToL_HEX.M" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="AirToL_HEX.V" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="cd.medhot" kind="parameter">
+						<ssc:Integer />
+					</ssd:Connector>
+					<ssd:Connector name="cd.medcold" kind="parameter">
+						<ssc:Integer />
+					</ssd:Connector>
+					<ssd:Connector name="cd.medintrm1" kind="parameter">
+						<ssc:Integer />
+					</ssd:Connector>
+					<ssd:Connector name="cd.medintrm2" kind="parameter">
+						<ssc:Integer />
+					</ssd:Connector>
+					<ssd:Connector name="cd.gin[1]" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="cd.gin[2]" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="cd.gin[3]" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="cd.Timp" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="cd.Tbnd" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="cd.damp" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="cd.P0" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="cd.DPlin" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="cd.mmin" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="cd.mnode" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="cd.Tfill" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="fd.Tamb_start" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="fd.Pamb_start" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="fd.Ma_start" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="fd.Alt_start" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="fd.Nx_start" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="fd.Ny_start" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="fd.Nz_start" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="fd.Tbay" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="fd.Nx_filt.k" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="fd.Ny_filt.k" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="fd.Pamb_filt.k" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="fd.Nz_filt.k" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="fd.Tamb_filt.k" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="fd.Ma_filt.k" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="fd.Alt_filt.k" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="fd.gain.k" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="pipeA.looptype" kind="parameter">
+						<ssc:Integer />
+					</ssd:Connector>
+					<ssd:Connector name="pipeA.Dh" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="pipeA.L" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="pipeA.rgh" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="pipeA.z" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="pipeA.Text_at_Tfric_0" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="pipeA.Text_at_Tfric_100" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="pipeA.tao_Tfrict" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="pipeA.Text_local" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="pipeA.hext" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="pipeA.MCp" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="pipeA.delayMax" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="pipeB.looptype" kind="parameter">
+						<ssc:Integer />
+					</ssd:Connector>
+					<ssd:Connector name="pipeB.Dh" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="pipeB.L" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="pipeB.rgh" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="pipeB.z" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="pipeB.Text_at_Tfric_0" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="pipeB.Text_at_Tfric_100" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="pipeB.tao_Tfrict" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="pipeB.Text_local" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="pipeB.hext" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="pipeB.MCp" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="pipeB.delayMax" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="const1.k" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="const3.k" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="const4.k" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="pumpSK01955_1.looptype" kind="parameter">
+						<ssc:Integer />
+					</ssd:Connector>
+					<ssd:Connector name="pumpSK01955_1.M" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="pumpSK01955_1.qpump" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="pumpSK01955_1.hA" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="pumpSK01955_1.MF" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="nodePumpToHEX.looptype" kind="parameter">
+						<ssc:Integer />
+					</ssd:Connector>
+					<ssd:Connector name="nodePumpToHEX.X[1]" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="nodePumpToHEX.X[2]" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="nodePumpToHEX.X[3]" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="nodeHEXToPipeA.looptype" kind="parameter">
+						<ssc:Integer />
+					</ssd:Connector>
+					<ssd:Connector name="nodeHEXToPipeA.X[1]" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="nodeHEXToPipeA.X[2]" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="nodeHEXToPipeA.X[3]" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="phSrc.looptype" kind="parameter">
+						<ssc:Integer />
+					</ssd:Connector>
+					<ssd:Connector name="phSrc.Pin" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="phSrc.Tin" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="phSrc.X[1]" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="phSrc.X[2]" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="phSrc.X[3]" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="coolinPackAir.looptype" kind="parameter">
+						<ssc:Integer />
+					</ssd:Connector>
+					<ssd:Connector name="coolinPackAir.X[1]" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="coolinPackAir.X[2]" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="coolinPackAir.X[3]" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="eCS.RelCool.verboseRead" kind="parameter">
+						<ssc:Boolean />
+					</ssd:Connector>
+					<ssd:Connector name="eCS.MaxCoolPower.k" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="eCS.firstOrder.k" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="eCS.firstOrder.T" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="eCS.firstOrder.y_start" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="eCS.MaxMassFlow.verboseRead" kind="parameter">
+						<ssc:Boolean />
+					</ssd:Connector>
+					<ssd:Connector name="eCS.firstOrder1.k" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="eCS.firstOrder1.T" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="eCS.firstOrder1.y_start" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="eCS.CP_Air.k" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="eCS.MinFlow.k" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="eCS.gain.k" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="eCS.m2km.k" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="nodeAirOutlet.looptype" kind="parameter">
+						<ssc:Integer />
+					</ssd:Connector>
+					<ssd:Connector name="nodeAirOutlet.X[1]" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="nodeAirOutlet.X[2]" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="nodeAirOutlet.X[3]" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="pipeC.looptype" kind="parameter">
+						<ssc:Integer />
+					</ssd:Connector>
+					<ssd:Connector name="pipeC.Dh" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="pipeC.L" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="pipeC.rgh" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="pipeC.z" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="pipeC.Text_at_Tfric_0" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="pipeC.Text_at_Tfric_100" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="pipeC.tao_Tfrict" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="pipeC.Text_local" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="pipeC.hext" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="pipeC.MCp" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="pipeC.delayMax" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="coolingTemp.currentMinCoolingTemp.k1" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="coolingTemp.currentMinCoolingTemp.k2" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="acc2_1.looptype" kind="parameter">
+						<ssc:Integer />
+					</ssd:Connector>
+					<ssd:Connector name="acc2_1.X[1]" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="acc2_1.X[2]" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="acc2_1.X[3]" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="acc2_1.Vacc" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="acc2_1.Vacc0" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="acc2_1.pempty" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="acc2_1.pfull" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+				</ssd:Connectors>
+			</ssd:Component>
+			<ssd:Component name="Consumer" type="application/x-fmu-sharedlibrary" source="resources/0003_Consumer.fmu">
+				<ssd:Connectors>
+					<ssd:Connector name="consumerRet.m" kind="input">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="0.000000" y="0.100000" />
+					</ssd:Connector>
+					<ssd:Connector name="consumerRet.hn" kind="input">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="0.000000" y="0.200000" />
+					</ssd:Connector>
+					<ssd:Connector name="consumerFeed.m" kind="input">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="0.000000" y="0.300000" />
+					</ssd:Connector>
+					<ssd:Connector name="consumerFeed.hn" kind="input">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="0.000000" y="0.400000" />
+					</ssd:Connector>
+					<ssd:Connector name="Alt" kind="input">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="0.000000" y="0.500000" />
+					</ssd:Connector>
+					<ssd:Connector name="Mach" kind="input">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="0.000000" y="0.600000" />
+					</ssd:Connector>
+					<ssd:Connector name="Tamb" kind="input">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="0.000000" y="0.700000" />
+					</ssd:Connector>
+					<ssd:Connector name="Pamb" kind="input">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="0.000000" y="0.800000" />
+					</ssd:Connector>
+					<ssd:Connector name="heatLoad" kind="input">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="0.000000" y="0.900000" />
+					</ssd:Connector>
+					<ssd:Connector name="consumerRet.p" kind="output">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="1.000000" y="0.076923" />
+					</ssd:Connector>
+					<ssd:Connector name="consumerRet.h" kind="output">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="1.000000" y="0.153846" />
+					</ssd:Connector>
+					<ssd:Connector name="consumerRet.X[1]" kind="output">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="1.000000" y="0.230769" />
+					</ssd:Connector>
+					<ssd:Connector name="consumerRet.X[2]" kind="output">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="1.000000" y="0.307692" />
+					</ssd:Connector>
+					<ssd:Connector name="consumerRet.X[3]" kind="output">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="1.000000" y="0.384615" />
+					</ssd:Connector>
+					<ssd:Connector name="consumerFeed.p" kind="output">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="1.000000" y="0.461538" />
+					</ssd:Connector>
+					<ssd:Connector name="consumerFeed.h" kind="output">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="1.000000" y="0.538462" />
+					</ssd:Connector>
+					<ssd:Connector name="consumerFeed.X[1]" kind="output">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="1.000000" y="0.615385" />
+					</ssd:Connector>
+					<ssd:Connector name="consumerFeed.X[2]" kind="output">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="1.000000" y="0.692308" />
+					</ssd:Connector>
+					<ssd:Connector name="consumerFeed.X[3]" kind="output">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="1.000000" y="0.769231" />
+					</ssd:Connector>
+					<ssd:Connector name="inletTemp" kind="output">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="1.000000" y="0.846154" />
+					</ssd:Connector>
+					<ssd:Connector name="outletTemp" kind="output">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="1.000000" y="0.923077" />
+					</ssd:Connector>
+					<ssd:Connector name="fd.Tamb_start" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="fd.Pamb_start" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="fd.Ma_start" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="fd.Alt_start" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="fd.Nx_start" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="fd.Ny_start" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="fd.Nz_start" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="fd.Tbay" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="fd.Nx_filt.k" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="fd.Ny_filt.k" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="fd.Pamb_filt.k" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="fd.Nz_filt.k" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="fd.Tamb_filt.k" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="fd.Ma_filt.k" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="fd.Alt_filt.k" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="fd.gain.k" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="cd.medhot" kind="parameter">
+						<ssc:Integer />
+					</ssd:Connector>
+					<ssd:Connector name="cd.medcold" kind="parameter">
+						<ssc:Integer />
+					</ssd:Connector>
+					<ssd:Connector name="cd.medintrm1" kind="parameter">
+						<ssc:Integer />
+					</ssd:Connector>
+					<ssd:Connector name="cd.medintrm2" kind="parameter">
+						<ssc:Integer />
+					</ssd:Connector>
+					<ssd:Connector name="cd.gin[1]" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="cd.gin[2]" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="cd.gin[3]" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="cd.Timp" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="cd.Tbnd" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="cd.damp" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="cd.P0" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="cd.DPlin" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="cd.mmin" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="cd.mnode" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="cd.Tfill" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="ConsumerA.looptype" kind="parameter">
+						<ssc:Integer />
+					</ssd:Connector>
+					<ssd:Connector name="ConsumerA.Dh" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="ConsumerA.Afact" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="ConsumerA.L" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="ConsumerA.rgh" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="ConsumerA.z" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="ConsumerA.Text_at_Tfric_0" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="ConsumerA.Text_at_Tfric_100" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="ConsumerA.tao_Tfrict" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="ConsumerA.Text_local" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="ConsumerA.hext" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="ConsumerA.MCp" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="ConsumerA.Vin" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="nodePipeAToConsumer.looptype" kind="parameter">
+						<ssc:Integer />
+					</ssd:Connector>
+					<ssd:Connector name="nodePipeAToConsumer.X[1]" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="nodePipeAToConsumer.X[2]" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="nodePipeAToConsumer.X[3]" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="nodeConsumerToPipeB.looptype" kind="parameter">
+						<ssc:Integer />
+					</ssd:Connector>
+					<ssd:Connector name="nodeConsumerToPipeB.X[1]" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="nodeConsumerToPipeB.X[2]" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="nodeConsumerToPipeB.X[3]" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="const1.k" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="const3.k" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="const4.k" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+				</ssd:Connectors>
+			</ssd:Component>
+			<ssd:Component name="Atmos" type="application/x-fmu-sharedlibrary" source="resources/0004_Atmos.fmu">
+				<ssd:Connectors>
+					<ssd:Connector name="Alt" kind="input">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="0.000000" y="0.333333" />
+					</ssd:Connector>
+					<ssd:Connector name="Ma" kind="input">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="0.000000" y="0.666667" />
+					</ssd:Connector>
+					<ssd:Connector name="Tamb" kind="output">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="1.000000" y="0.333333" />
+					</ssd:Connector>
+					<ssd:Connector name="Pamb" kind="output">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="1.000000" y="0.666667" />
+					</ssd:Connector>
+					<ssd:Connector name="DTisa" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+				</ssd:Connectors>
+			</ssd:Component>
+			<ssd:Component name="AdaptionUnit" type="application/x-fmu-sharedlibrary" source="resources/0005_AdaptionUnit.fmu">
+				<ssd:Connectors>
+					<ssd:Connector name="Aircraft_State" kind="input">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="0.000000" y="0.333333" />
+					</ssd:Connector>
+					<ssd:Connector name="LHexTout" kind="input">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="0.000000" y="0.666667" />
+					</ssd:Connector>
+					<ssd:Connector name="sWsignals.TLiquid" kind="output">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="1.000000" y="0.333333" />
+					</ssd:Connector>
+					<ssd:Connector name="sWsignals.Aircraft_State" kind="output">
+						<ssc:Integer />
+						<ssd:ConnectorGeometry x="1.000000" y="0.666667" />
+					</ssd:Connector>
+				</ssd:Connectors>
+			</ssd:Component>
+		</ssd:Elements>
+		<ssd:Connections>
+			<ssd:Connection startElement="Consumer" startConnector="consumerFeed.p" endElement="ECS_HW" endConnector="consumerFeed.p" />
+			<ssd:Connection startElement="Consumer" startConnector="consumerFeed.h" endElement="ECS_HW" endConnector="consumerFeed.h" />
+			<ssd:Connection startElement="Consumer" startConnector="consumerFeed.X[1]" endElement="ECS_HW" endConnector="consumerFeed.X[1]" />
+			<ssd:Connection startElement="Consumer" startConnector="consumerFeed.X[2]" endElement="ECS_HW" endConnector="consumerFeed.X[2]" />
+			<ssd:Connection startElement="Consumer" startConnector="consumerFeed.X[3]" endElement="ECS_HW" endConnector="consumerFeed.X[3]" />
+			<ssd:Connection startElement="Consumer" startConnector="consumerRet.p" endElement="ECS_HW" endConnector="consumerRet.p" />
+			<ssd:Connection startElement="Consumer" startConnector="consumerRet.h" endElement="ECS_HW" endConnector="consumerRet.h" />
+			<ssd:Connection startElement="Consumer" startConnector="consumerRet.X[1]" endElement="ECS_HW" endConnector="consumerRet.X[1]" />
+			<ssd:Connection startElement="Consumer" startConnector="consumerRet.X[2]" endElement="ECS_HW" endConnector="consumerRet.X[2]" />
+			<ssd:Connection startElement="Consumer" startConnector="consumerRet.X[3]" endElement="ECS_HW" endConnector="consumerRet.X[3]" />
+			<ssd:Connection startElement="ECS_HW" startConnector="consumerFeed.m" endElement="Consumer" endConnector="consumerFeed.m" />
+			<ssd:Connection startElement="ECS_HW" startConnector="consumerFeed.hn" endElement="Consumer" endConnector="consumerFeed.hn" />
+			<ssd:Connection startElement="ECS_HW" startConnector="consumerRet.m" endElement="Consumer" endConnector="consumerRet.m" />
+			<ssd:Connection startElement="ECS_HW" startConnector="consumerRet.hn" endElement="Consumer" endConnector="consumerRet.hn" />
+			<ssd:Connection startElement="ECS_HW" startConnector="LHexTout" endElement="AdaptionUnit" endConnector="LHexTout" />
+			<ssd:Connection startElement="AdaptionUnit" startConnector="sWsignals.Aircraft_State" endElement="ECS_SW" endConnector="Input.Aircraft_State" />
+			<ssd:Connection startElement="AdaptionUnit" startConnector="sWsignals.TLiquid" endElement="ECS_SW" endConnector="Input.TLiquid" />
+			<ssd:Connection startElement="ECS_SW" startConnector="TCoolingPack" endElement="ECS_HW" endConnector="reqCoolingTemperature" />
+			<ssd:Connection startElement="Atmos" startConnector="Tamb" endElement="Consumer" endConnector="Tamb" />
+			<ssd:Connection startElement="Atmos" startConnector="Pamb" endElement="Consumer" endConnector="Pamb" />
+			<ssd:Connection startElement="Atmos" startConnector="Tamb" endElement="ECS_HW" endConnector="Tamb" />
+			<ssd:Connection startElement="Atmos" startConnector="Pamb" endElement="ECS_HW" endConnector="Pamb" />
+		</ssd:Connections>
+		<ssd:Annotations>
+			<ssc:Annotation type="org.openmodelica">
+				<oms:Annotations>
+					<oms:SimulationInformation>
+						<oms:FixedStepMaster description="oms-ma" stepSize="0.100000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+					</oms:SimulationInformation>
+				</oms:Annotations>
+			</ssc:Annotation>
+		</ssd:Annotations>
+	</ssd:System>
+	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
+		<ssd:Annotations>
+			<ssc:Annotation type="org.openmodelica">
+				<oms:Annotations>
+					<oms:SimulationInformation resultFile="model_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="resources/signalFilter.xml" />
+				</oms:Annotations>
+			</ssc:Annotation>
+		</ssd:Annotations>
+	</ssd:DefaultExperiment>
+</ssd:SystemStructureDescription>
