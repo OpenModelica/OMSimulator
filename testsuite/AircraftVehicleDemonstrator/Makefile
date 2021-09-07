@@ -3,6 +3,7 @@ TEST = ../rtest -v
 TESTFILES = \
 AircraftVehicleDemonstrator.lua \
 embrace.py \
+embrace_test2Conf.py \
 
 # Run make failingtest
 FAILINGTESTFILES = \

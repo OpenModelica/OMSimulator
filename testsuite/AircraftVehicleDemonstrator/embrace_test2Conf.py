@@ -19,7 +19,7 @@ oms.setTempDirectory("./embrace_twoConf/")
 oms.setWorkingDirectory("./embrace_twoConf/")
 
 
-oms.importFile("../../resources/Embrace_TwoConf.ssp")
+oms.importFile("../../resources/embrace_TwoConf.ssp")
 oms.addSubModel("model.root.BC", "../../resources/CONOPS.csv")
 
 ##----------------- Connections to BC files ----------------------------
