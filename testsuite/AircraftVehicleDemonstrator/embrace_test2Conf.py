@@ -1,36 +1,26 @@
-# -*- coding: utf-8 -*-
+## status: correct
+## teardown_command: rm -rf embrace/
+## linux: yes
+## mingw32: no
+## mingw64: no
+## win: no
+## mac: no
+
 """
 Created on Mon Dec 21 10:30:26 2020
 
 @author: robha67
 """
 
-#----To make it work locally
-import os 
-#import time
-#from start import mainopt
-#import complexpy
-#import objfunc7
-#import numpy as np
-
-
-
-#def build_model():
-#tic1 = time.process_time()
-
-# os.chdir("C:/OMResults")
-
 import OMSimulator
-
-#OMSimulator.OMSimulator()   
 oms=OMSimulator.OMSimulator()
-a=oms.getVersion()
-print(a)
-oms.setCommandLineOption("--suppressPath=true  --wallTime=true --progressBar=true")
+oms.setCommandLineOption("--suppressPath=true --wallTime=true --ignoreInitialUnknowns=false")
+oms.setTempDirectory("./embrace_twoConf/")
+oms.setWorkingDirectory("./embrace_twoConf/")
 
 
-oms.importFile("Embrace_TwoConf.ssp")
-oms.addSubModel("model.root.BC", "CONOPS.csv")
+oms.importFile("../../resources/Embrace_TwoConf.ssp")
+oms.addSubModel("model.root.BC", "../../resources/CONOPS.csv")
 
 ##----------------- Connections to BC files ----------------------------
 #BC -> Consumer
