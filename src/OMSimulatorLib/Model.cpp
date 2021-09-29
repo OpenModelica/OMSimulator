@@ -883,6 +883,14 @@ void oms::Model::writeAllResourcesToFilesystem(std::vector<std::string>& resourc
       logError("failed to export \"" + filename + " to directory " + tempDir);
   }
 
+  // export the unreferenced ssv and ssm files to ssp, this must be extended to export all unreferenced resources
+  for (auto & it : importedResources)
+  {
+    auto file = std::find(resources.begin(), resources.end(), "resources/"+ it);
+    if (file == resources.end())
+      resources.push_back("resources/"+ it); // export unreferenced resources
+  }
+
   if (system)
     system->getAllResources(resources);
 

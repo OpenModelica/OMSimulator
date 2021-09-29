@@ -13,6 +13,7 @@ deleteReferencesInSSD1.lua \
 deleteReferencesInSSD2.lua \
 deleteResourcesInSSP1.lua \
 deleteResourcesInSSP2.lua \
+importExportAllResources.lua \
 test_omsExport.lua \
 test_omsExport.py \
 test01.lua \

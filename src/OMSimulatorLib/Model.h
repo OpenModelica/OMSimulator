@@ -130,6 +130,8 @@ namespace oms
 
     oms_status_enu_t loadSnapshot(const pugi::xml_node& node);
 
+    std::vector<std::string> importedResources;  ///< list of imported resources from ssp
+
   private: // methods
     Model(const ComRef& cref, const std::string& tempDir);
 
