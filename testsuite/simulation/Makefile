@@ -7,6 +7,7 @@ deleteStartValues.lua \
 deleteStartValuesInSSV.lua \
 deleteStartValuesInSSV1.lua \
 deleteStartValuesInSSV2.lua \
+deleteReferencesAndStartValues.lua \
 DualMassOscillator.lua \
 Enumeration.lua \
 Enumeration2.lua \

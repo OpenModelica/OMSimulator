@@ -569,7 +569,8 @@ oms_status_enu_t oms::ComponentFMUCS::instantiate()
     {
       for (const auto &res : it.allresources)
       {
-        setResourcesHelper1(res.second);
+        if (res.second.linkResources) // set values only if resources are linked in ssd
+          setResourcesHelper1(res.second);
       }
     }
   }
@@ -634,32 +635,41 @@ oms_status_enu_t oms::ComponentFMUCS::setResourcesHelper2(Values values)
     {
       for (const auto &v : res.second.booleanStartValues)
       {
-        oms::ComRef tail(v.first);
-        oms::ComRef head = tail.pop_front();
-        if (head == getCref())
+        if (res.second.linkResources) // set values only if resources are linked in ssd
         {
-          if (oms_status_ok != setBoolean(tail, v.second))
-            return logError("Failed to set start value for " + std::string(v.first));
+          oms::ComRef tail(v.first);
+          oms::ComRef head = tail.pop_front();
+          if (head == getCref())
+          {
+            if (oms_status_ok != setBoolean(tail, v.second))
+              return logError("Failed to set start value for " + std::string(v.first));
+          }
         }
       }
       for (const auto &v : res.second.integerStartValues)
       {
-        oms::ComRef tail(v.first);
-        oms::ComRef head = tail.pop_front();
-        if (head == getCref())
+        if (res.second.linkResources) // set values only if resources are linked in ssd
         {
-          if (oms_status_ok != setInteger(tail, v.second))
-            return logError("Failed to set start value for " + std::string(v.first));
+          oms::ComRef tail(v.first);
+          oms::ComRef head = tail.pop_front();
+          if (head == getCref())
+          {
+            if (oms_status_ok != setInteger(tail, v.second))
+              return logError("Failed to set start value for " + std::string(v.first));
+          }
         }
       }
       for (const auto &v : res.second.realStartValues)
       {
-        oms::ComRef tail(v.first);
-        oms::ComRef head = tail.pop_front();
-        if (head == getCref())
+        if (res.second.linkResources) // set values only if resources are linked in ssd
         {
-          if (oms_status_ok != setReal(tail, v.second))
-            return logError("Failed to set start value for " + std::string(v.first));
+          oms::ComRef tail(v.first);
+          oms::ComRef head = tail.pop_front();
+          if (head == getCref())
+          {
+            if (oms_status_ok != setReal(tail, v.second))
+              return logError("Failed to set start value for " + std::string(v.first));
+          }
         }
       }
     }

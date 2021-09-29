@@ -239,14 +239,20 @@ oms_status_enu_t oms::Values::getRealResources(const ComRef& cref, double& value
     {
       if (externalInput && oms_modelState_simulation == modelState && res.second.realValues[cref] != 0.0)
       {
-        value = res.second.realValues[cref];
-        return oms_status_ok;
+        if (res.second.linkResources)
+        {
+          value = res.second.realValues[cref];
+          return oms_status_ok;
+        }
       }
       auto realValue = res.second.realStartValues.find(cref);
       if (realValue != res.second.realStartValues.end())
       {
-        value = realValue->second;
-        return oms_status_ok;
+        if (res.second.linkResources)
+        {
+          value = realValue->second;
+          return oms_status_ok;
+        }
       }
     }
   }
@@ -262,14 +268,20 @@ oms_status_enu_t oms::Values::getIntegerResources(const ComRef& cref, int& value
     {
       if (externalInput && oms_modelState_simulation == modelState && res.second.integerValues[cref] != 0.0)
       {
-        value = res.second.integerValues[cref];
-        return oms_status_ok;
+        if (res.second.linkResources)
+        {
+          value = res.second.integerValues[cref];
+          return oms_status_ok;
+        }
       }
       auto integerValue = res.second.integerStartValues.find(cref);
       if (integerValue != res.second.integerStartValues.end())
       {
-        value = integerValue->second;
-        return oms_status_ok;
+        if (res.second.linkResources)
+        {
+          value = integerValue->second;
+          return oms_status_ok;
+        }
       }
     }
   }
@@ -285,14 +297,20 @@ oms_status_enu_t oms::Values::getBooleanResources(const ComRef& cref, bool& valu
     {
       if (externalInput && oms_modelState_simulation == modelState && res.second.booleanValues[cref] != 0.0)
       {
-        value = res.second.booleanValues[cref];
-        return oms_status_ok;
+        if (res.second.linkResources)
+        {
+          value = res.second.booleanValues[cref];
+          return oms_status_ok;
+        }
       }
       auto booleanValue = res.second.booleanStartValues.find(cref);
       if (booleanValue != res.second.booleanStartValues.end())
       {
-        value = booleanValue->second;
-        return oms_status_ok;
+        if (res.second.linkResources)
+        {
+          value = booleanValue->second;
+          return oms_status_ok;
+        }
       }
     }
   }
