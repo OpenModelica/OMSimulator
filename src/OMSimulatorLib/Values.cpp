@@ -486,8 +486,18 @@ oms_status_enu_t oms::Values::exportToSSD(pugi::xml_node& node) const
 
 oms_status_enu_t oms::Values::importFromSnapshot(const Snapshot &snapshot, const std::string& ssvFilename, const std::string& ssmFilename)
 {
-  pugi::xml_node parameterSet = snapshot.getResourceNode(ssvFilename);
+  // import new ssm references
+  if (!ssmFilename.empty())
+  {
+    pugi::xml_node ssm_parameterMapping = snapshot.getResourceNode(ssmFilename);
+    if (!ssm_parameterMapping)
+      return logError("loading <oms:file> \"" + ssmFilename + "\" from <oms:snapshot> failed");
 
+    importParameterMapping(ssm_parameterMapping);
+  }
+
+  // import new ssv references
+  pugi::xml_node parameterSet = snapshot.getResourceNode(ssvFilename);
   if (!parameterSet)
     return logError("loading <oms:file> \"" + ssvFilename + "\" from <oms:snapshot> failed");
 

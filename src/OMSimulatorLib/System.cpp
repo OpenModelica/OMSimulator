@@ -338,10 +338,16 @@ oms_status_enu_t oms::System::newResources(const ComRef& cref, const std::string
     {
       Snapshot snapshot;
       snapshot.importResourceFile(ssvFilename, getModel().getTempDirectory() + "/resources");
+
+      // import ssm file, if provided
+      if (!ssmFilename.empty())
+        snapshot.importResourceFile(ssmFilename, getModel().getTempDirectory() + "/resources");
+
       //snapshot.debugPrintAll();
       if (oms_status_ok != resources.importFromSnapshot(snapshot, ssvFilename, ssmFilename))
         return logError("referenceResources failed for \"" + std::string(getFullCref()) + ":" + ssvFilename + "\"");
     }
+
     if (!values.hasResources())
     {
       resources.allresources["resources/" + ssvFilename] = resources;
