@@ -70,6 +70,7 @@ namespace oms
 
     oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
     oms_status_enu_t importFromSnapshot(const pugi::xml_node& node, const std::string& sspVersion, const Snapshot& snapshot);
+    oms_status_enu_t importFromSnapshot(const Snapshot& snapshot, const std::string& ssvFilePath, const std::string& ssmFilename);
     oms_status_enu_t deleteStartValue(const ComRef& cref);
     oms_status_enu_t deleteStartValueInResources(const ComRef& cref);
 
@@ -117,7 +118,6 @@ namespace oms
     std::map<std::string, Values> allresources; ///< mapped resources either inline or ssv
     std::string ssmFile = ""; ///< mapped ssm files associated with ssv files;
     bool linkResources = true;
-    bool externalResources = false;
   };
 }
 
