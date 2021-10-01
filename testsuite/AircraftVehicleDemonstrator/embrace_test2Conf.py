@@ -56,7 +56,7 @@ oms.setInteger("model.root.ECS_HW.pipeA.looptype", 2)
 
 ##simulation settings
 oms.setResultFile("model", "sim_results_ECS_Conf1.mat")
-oms.setStopTime("model", 1200)
+oms.setStopTime("model", 12)
 oms.setFixedStepSize("model", 1e-3)
 oms.setLoggingInterval("model", 1)
 oms.exportDependencyGraphs("model.root","init.dot","event.dot","simulation.dot")
@@ -74,3 +74,13 @@ oms.simulate("model")
 
 oms.terminate("model")
 oms.delete("model")
+
+## Result:
+## info:    Result file: sim_results_ECS_Conf1.mat (bufferSize=1)
+## info:    Initialize:
+## info:      model.root.ECS_HW.coolinPackAir.looptype:  2
+## info:      model.root.ECS_HW.eCS.MaxCoolPower.k    :  5.0
+## info:      model.root.ECS_HW.pipeC.L               :  1.0
+## info:      model.root.ECS_HW.pipeB.L               :  7.41248272578546
+## info:      model.root.ECS_HW.pipeA.L               :  7.39290438403619
+## endResult
