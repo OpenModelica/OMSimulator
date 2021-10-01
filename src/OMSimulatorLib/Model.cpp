@@ -563,9 +563,9 @@ oms_status_enu_t oms::Model::referenceResources(const oms::ComRef& cref, const s
   {
     std::string ssmExtension = "";
     if (ssmFile.length() > 4)
-      ssmExtension = ssmFile.substr(fileName.length() - 4);
+      ssmExtension = ssmFile.substr(ssmFile.length() - 4);
     if (ssmExtension != ".ssm")
-      return logError("filename extension for \"" + std::string(getCref() + cref) + "\" must be \".ssm\", no other formats are supported");
+      return logError("filename extension for \"" + ssmFile + "\" must be \".ssm\", no other formats are supported");
   }
 
   if (system)

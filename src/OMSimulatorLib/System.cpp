@@ -334,10 +334,23 @@ oms_status_enu_t oms::System::newResources(const ComRef& cref, const std::string
   {
     // top level system and subsystems
     Values resources;
+    if (externalResources) // check of external resources and override the start values with new references
+    {
+      Snapshot snapshot;
+      snapshot.importResourceFile(ssvFilename, getModel().getTempDirectory() + "/resources");
+
+      // import ssm file, if provided
+      if (!ssmFilename.empty())
+        snapshot.importResourceFile(ssmFilename, getModel().getTempDirectory() + "/resources");
+
+      //snapshot.debugPrintAll();
+      if (oms_status_ok != resources.importFromSnapshot(snapshot, ssvFilename, ssmFilename))
+        return logError("oms_referenceResources failed for \"" + std::string(getFullCref()) + ":" + ssvFilename + "\"");
+    }
+
     if (!values.hasResources())
     {
       resources.allresources["resources/" + ssvFilename] = resources;
-      resources.externalResources = externalResources; // set if resources is "external" or "newResources", if "external" only references will be set in ssd
       if (!ssmFilename.empty())
         resources.ssmFile = "resources/"+ ssmFilename;
       values.parameterResources.push_back(resources);
@@ -345,7 +358,6 @@ oms_status_enu_t oms::System::newResources(const ComRef& cref, const std::string
     else
     {
       // generate empty ssv file, if more resources are added to same level
-      resources.externalResources = externalResources; // set if resources is "external" or "newResources", if "external" only references will be set in ssd
       if (!ssmFilename.empty())
         resources.ssmFile = "resources/"+ ssmFilename;
       values.parameterResources[0].allresources["resources/" + ssvFilename] = resources;

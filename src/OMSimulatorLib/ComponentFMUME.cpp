@@ -568,7 +568,8 @@ oms_status_enu_t oms::ComponentFMUME::instantiate()
     {
       for (const auto &res : it.allresources)
       {
-        setResourcesHelper1(res.second);
+        if (res.second.linkResources) // set values only if resources are linked in ssd
+          setResourcesHelper1(res.second);
       }
     }
   }
@@ -640,32 +641,41 @@ oms_status_enu_t oms::ComponentFMUME::setResourcesHelper2(Values values)
     {
       for (const auto &v : res.second.booleanStartValues)
       {
-        oms::ComRef tail(v.first);
-        oms::ComRef head = tail.pop_front();
-        if (head == getCref())
+        if (res.second.linkResources) // set values only if resources are linked in ssd
         {
-          if (oms_status_ok != setBoolean(tail, v.second))
-            return logError("Failed to set start value for " + std::string(v.first));
+          oms::ComRef tail(v.first);
+          oms::ComRef head = tail.pop_front();
+          if (head == getCref())
+          {
+            if (oms_status_ok != setBoolean(tail, v.second))
+              return logError("Failed to set start value for " + std::string(v.first));
+          }
         }
       }
       for (const auto &v : res.second.integerStartValues)
       {
-        oms::ComRef tail(v.first);
-        oms::ComRef head = tail.pop_front();
-        if (head == getCref())
+        if (res.second.linkResources) // set values only if resources are linked in ssd
         {
-          if (oms_status_ok != setInteger(tail, v.second))
-            return logError("Failed to set start value for " + std::string(v.first));
+          oms::ComRef tail(v.first);
+          oms::ComRef head = tail.pop_front();
+          if (head == getCref())
+          {
+            if (oms_status_ok != setInteger(tail, v.second))
+              return logError("Failed to set start value for " + std::string(v.first));
+          }
         }
       }
       for (const auto &v : res.second.realStartValues)
       {
-        oms::ComRef tail(v.first);
-        oms::ComRef head = tail.pop_front();
-        if (head == getCref())
+        if (res.second.linkResources) // set values only if resources are linked in ssd
         {
-          if (oms_status_ok != setReal(tail, v.second))
-            return logError("Failed to set start value for " + std::string(v.first));
+          oms::ComRef tail(v.first);
+          oms::ComRef head = tail.pop_front();
+          if (head == getCref())
+          {
+            if (oms_status_ok != setReal(tail, v.second))
+              return logError("Failed to set start value for " + std::string(v.first));
+          }
         }
       }
     }
@@ -713,10 +723,22 @@ oms_status_enu_t oms::ComponentFMUME::doEventIteration()
 oms_status_enu_t oms::ComponentFMUME::newResources(const std::string& ssvFilename, const std::string& ssmFilename, bool externalResources)
 {
   Values resources;
+  if (externalResources) // check of external resources and override the start values with new references
+  {
+    Snapshot snapshot;
+    snapshot.importResourceFile(ssvFilename, getModel().getTempDirectory() + "/resources");
+
+    // import ssm file, if provided
+    if (!ssmFilename.empty())
+      snapshot.importResourceFile(ssmFilename, getModel().getTempDirectory() + "/resources");
+
+    if (oms_status_ok != resources.importFromSnapshot(snapshot, ssvFilename, ssmFilename))
+      return logError("referenceResources failed for \"" + std::string(getFullCref()) + ":" + ssvFilename + "\"");
+  }
+
   if (!values.hasResources())
   {
     resources.allresources["resources/" + ssvFilename] = resources;
-    resources.externalResources = externalResources; // set if resources is "external" or "newResources", if "external" only references will be set in ssd
     if(!ssmFilename.empty())
       resources.ssmFile = "resources/" + ssmFilename;
     values.parameterResources.push_back(resources);
@@ -724,7 +746,6 @@ oms_status_enu_t oms::ComponentFMUME::newResources(const std::string& ssvFilenam
   else
   {
     // generate empty ssv file, if more resources are added to same level
-    resources.externalResources = externalResources; // set if resources is "external" or "newResources", if "external" only references will be set in ssd
     if(!ssmFilename.empty())
       resources.ssmFile = "resources/" + ssmFilename;
     values.parameterResources[0].allresources["resources/" + ssvFilename] = resources;
