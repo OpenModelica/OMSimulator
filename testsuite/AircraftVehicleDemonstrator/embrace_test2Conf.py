@@ -20,6 +20,13 @@ oms.setWorkingDirectory("./embrace_twoConf/")
 
 
 oms.importFile("../../resources/embrace_TwoConf.ssp")
+
+#Switch ssv file to ECS_Conf1.ssv
+## delete the ssv references
+oms.deleteResources("model.root:ECS_Conf2.ssv")
+## switch with new references, ssv and ssm file
+oms.referenceResources("model.root:ECS_Conf1.ssv", "ECS_HW.ssm")
+
 oms.addSubModel("model.root.BC", "../../resources/CONOPS.csv")
 
 ##----------------- Connections to BC files ----------------------------
@@ -47,8 +54,8 @@ oms.setInteger("model.root.ECS_HW.phSrc.looptype", 2)
 oms.setInteger("model.root.ECS_HW.pipeB.looptype", 2)
 oms.setInteger("model.root.ECS_HW.pipeA.looptype", 2)
 
-# #simulation settings
-oms.setResultFile("model", "sim_results_ECS_Conf2.mat")
+##simulation settings
+oms.setResultFile("model", "sim_results_ECS_Conf1.mat")
 oms.setStopTime("model", 1200)
 oms.setFixedStepSize("model", 1e-3)
 oms.setLoggingInterval("model", 1)
@@ -56,22 +63,6 @@ oms.exportDependencyGraphs("model.root","init.dot","event.dot","simulation.dot")
 
 oms.instantiate("model")
 oms.initialize("model")
-print("info:    Initialize:")
-print("info:      model.root.ECS_HW.coolinPackAir.looptype: " , oms.getInteger("model.root.ECS_HW.coolinPackAir.looptype")[0])
-print("info:      model.root.ECS_HW.eCS.MaxCoolPower.k    : " , oms.getReal("model.root.ECS_HW.eCS.MaxCoolPower.k")[0])
-print("info:      model.root.ECS_HW.pipeC.L               : " , oms.getReal("model.root.ECS_HW.pipeC.L")[0])
-print("info:      model.root.ECS_HW.pipeB.L               : " , oms.getReal("model.root.ECS_HW.pipeB.L")[0])
-print("info:      model.root.ECS_HW.pipeA.L               : " , oms.getReal("model.root.ECS_HW.pipeA.L")[0])
-
-oms.simulate("model")
-
-#------------Switch SSV file and Simulate again------------------
-#Switch ssv file to ECS_Conf1.ssv
-oms.setResultFile("model", "sim_results_ECS_Conf1.mat")
-oms.setStopTime("model", 1200)
-oms.setFixedStepSize("model", 1e-3)
-oms.setLoggingInterval("model", 1)
-oms.exportDependencyGraphs("model.root","init.dot","event.dot","simulation.dot")
 print("info:    Initialize:")
 print("info:      model.root.ECS_HW.coolinPackAir.looptype: " , oms.getInteger("model.root.ECS_HW.coolinPackAir.looptype")[0])
 print("info:      model.root.ECS_HW.eCS.MaxCoolPower.k    : " , oms.getReal("model.root.ECS_HW.eCS.MaxCoolPower.k")[0])
