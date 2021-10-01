@@ -37,6 +37,7 @@ partialSnapshot.lua \
 PI_Controller.lua \
 QuarterCarModel.DisplacementDisplacement.lua \
 referenceResources1.lua \
+referenceResources2.lua \
 rename.lua \
 renameValues1.lua \
 renameValues2.lua \

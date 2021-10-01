@@ -57,7 +57,7 @@ oms_addResources("referenceResources1", "../../resources/externalGain.ssv")
 -- delete references
 oms_deleteResources("referenceResources1.root:root.ssv")
 -- switch with new references
-oms_referenceResources("referenceResources1.root:externalRoot.ssv")
+oms_referenceResources("referenceResources1.root:externalRoot1.ssv")
 
 -- delete only the references
 oms_deleteResources("referenceResources1.root.system1:system1.ssv")
@@ -393,5 +393,5 @@ oms_delete("referenceResources1")
 --     </oms:SignalFilter>
 --   </oms:file>
 -- </oms:snapshot>
--- 
+--
 -- endResult

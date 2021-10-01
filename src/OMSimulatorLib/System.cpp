@@ -345,7 +345,7 @@ oms_status_enu_t oms::System::newResources(const ComRef& cref, const std::string
 
       //snapshot.debugPrintAll();
       if (oms_status_ok != resources.importFromSnapshot(snapshot, ssvFilename, ssmFilename))
-        return logError("referenceResources failed for \"" + std::string(getFullCref()) + ":" + ssvFilename + "\"");
+        return logError("oms_referenceResources failed for \"" + std::string(getFullCref()) + ":" + ssvFilename + "\"");
     }
 
     if (!values.hasResources())
