@@ -206,6 +206,20 @@ static int OMSimulatorLua_oms_delete(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms_deleteResources(const char* cref);
+static int OMSimulatorLua_oms_deleteResources(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* cref = lua_tostring(L, 1);
+  oms_status_enu_t status = oms_deleteResources(cref);
+
+  lua_pushinteger(L, status);
+  return 1;
+}
+
 //oms_status_enu_t oms_export(const char* cref, const char* filename);
 static int OMSimulatorLua_oms_export(lua_State *L)
 {
@@ -412,15 +426,53 @@ static int OMSimulatorLua_oms_compareSimulationResults(lua_State *L)
   return 1;
 }
 
-//oms_status_enu_t oms_addResources(const char* cref);
-static int OMSimulatorLua_oms_addResources(lua_State *L)
+//oms_status_enu_t oms_newResources(const char* cref);
+static int OMSimulatorLua_oms_newResources(lua_State *L)
 {
   if (lua_gettop(L) != 1)
     return luaL_error(L, "expecting exactly 1 argument");
   luaL_checktype(L, 1, LUA_TSTRING);
 
   const char* cref = lua_tostring(L, 1);
-  oms_status_enu_t status = oms_addResources(cref);
+  oms_status_enu_t status = oms_newResources(cref);
+
+  lua_pushinteger(L, status);
+  return 1;
+}
+
+//oms_status_enu_t oms_referenceResources(const char* cref, const char* ssmFile);
+static int OMSimulatorLua_oms_referenceResources(lua_State *L)
+{
+  if (lua_gettop(L) != 1 && lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 1 or 2 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* cref = lua_tostring(L, 1);
+
+  const char* ssmFile = "";
+  if (lua_gettop(L) == 2)
+  {
+    luaL_checktype(L, 2, LUA_TSTRING);
+    ssmFile = lua_tostring(L, 2);
+  }
+
+  oms_status_enu_t status = oms_referenceResources(cref, ssmFile);
+
+  lua_pushinteger(L, status);
+  return 1;
+}
+
+//oms_status_enu_t oms_addResources(const char* cref, const char* path);
+static int OMSimulatorLua_oms_addResources(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+
+  const char* cref = lua_tostring(L, 1);
+  const char* path = lua_tostring(L, 2);
+  oms_status_enu_t status = oms_addResources(cref, path);
 
   lua_pushinteger(L, status);
   return 1;
@@ -1286,6 +1338,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms_deleteConnection);
   REGISTER_LUA_CALL(oms_deleteConnectorFromBus);
   REGISTER_LUA_CALL(oms_deleteConnectorFromTLMBus);
+  REGISTER_LUA_CALL(oms_deleteResources);
   REGISTER_LUA_CALL(oms_export);
   REGISTER_LUA_CALL(oms_exportDependencyGraphs);
   REGISTER_LUA_CALL(oms_exportSnapshot);
@@ -1311,9 +1364,11 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms_listUnconnectedConnectors);
   REGISTER_LUA_CALL(oms_loadSnapshot);
   REGISTER_LUA_CALL(oms_newModel);
+  REGISTER_LUA_CALL(oms_newResources);
   REGISTER_LUA_CALL(oms_removeSignalsFromResults);
   REGISTER_LUA_CALL(oms_rename);
   REGISTER_LUA_CALL(oms_reset);
+  REGISTER_LUA_CALL(oms_referenceResources);
   REGISTER_LUA_CALL(oms_setBoolean);
   REGISTER_LUA_CALL(oms_setCommandLineOption);
   REGISTER_LUA_CALL(oms_setFixedStepSize);

@@ -14,7 +14,7 @@ oms_newModel("deleteConnector")
 
 oms_addSystem("deleteConnector.Root", oms_system_wc)
 
-oms_addResources("deleteConnector.Root:deleteConnector.ssv")
+oms_newResources("deleteConnector.Root:deleteConnector.ssv")
 
 oms_addConnector("deleteConnector.Root.C1", oms_causality_input, oms_signal_type_real)
 oms_addConnector("deleteConnector.Root.C2", oms_causality_output, oms_signal_type_real)

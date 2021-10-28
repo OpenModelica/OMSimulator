@@ -109,9 +109,12 @@ namespace oms
 
     void getFilteredSignals(std::vector<Connector>& filteredSignals) const;
 
-    oms_status_enu_t addResources(std::string& filename);
+    oms_status_enu_t newResources(const std::string& ssvFilename, const std::string& ssmFilename, bool externalResources);
     oms_status_enu_t setResourcesHelper1(Values value);
     oms_status_enu_t setResourcesHelper2(Values value);
+
+    oms_status_enu_t deleteReferencesInSSD(const std::string& filename);
+    oms_status_enu_t deleteResourcesInSSP(const std::string& filename);
 
   protected:
     ComponentFMUCS(const ComRef& cref, System* parentSystem, const std::string& fmuPath);
@@ -121,6 +124,8 @@ namespace oms
     ComponentFMUCS& operator=(ComponentFMUCS const& copy); ///< not implemented
 
     oms_status_enu_t renameValues(const ComRef& oldCref, const ComRef& newCref);
+
+    void dumpInitialUnknowns();
 
   private:
     jm_callbacks callbacks;

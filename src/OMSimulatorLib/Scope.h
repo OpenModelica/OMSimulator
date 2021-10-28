@@ -77,7 +77,7 @@ namespace oms
     std::string getWorkingDirectory();
 
   protected:
-    static oms_status_enu_t miniunz(const std::string& filename, const std::string& extractdir, bool systemStructure);
+    static oms_status_enu_t miniunz(const std::string& filename, const std::string& extractdir);
 
   private:
     std::vector<Model*> models; ///< last element is always NULL

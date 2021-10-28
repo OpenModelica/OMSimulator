@@ -70,8 +70,12 @@ namespace oms
 
     oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
     oms_status_enu_t importFromSnapshot(const pugi::xml_node& node, const std::string& sspVersion, const Snapshot& snapshot);
+    oms_status_enu_t importFromSnapshot(const Snapshot& snapshot, const std::string& ssvFilePath, const std::string& ssmFilename);
     oms_status_enu_t deleteStartValue(const ComRef& cref);
     oms_status_enu_t deleteStartValueInResources(const ComRef& cref);
+
+    oms_status_enu_t deleteReferencesInSSD(const std::string& filename);
+    oms_status_enu_t deleteResourcesInSSP(const std::string& filename);
 
     oms_status_enu_t exportToSSV(pugi::xml_node& ssvNode) const;
     void exportToSSVTemplate(pugi::xml_node& ssvNode, const ComRef& cref);  ///< start values read from modelDescription.xml and creates a ssv template
@@ -113,6 +117,7 @@ namespace oms
     std::vector<Values> parameterResources; ///< list of parameter resources provided inline or .ssv files
     std::map<std::string, Values> allresources; ///< mapped resources either inline or ssv
     std::string ssmFile = ""; ///< mapped ssm files associated with ssv files;
+    bool linkResources = true;
   };
 }
 

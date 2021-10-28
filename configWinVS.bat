@@ -66,9 +66,10 @@ IF NOT EXIST install\\win\\lib MKDIR install\\win\\lib
 IF ["%TARGET%"]==["clean"] GOTO clean
 IF ["%TARGET%"]==["fmil"] GOTO fmil
 IF ["%TARGET%"]==["lua"] GOTO lua
-IF ["%TARGET%"]==["zlib"] GOTO zlib
+IF ["%TARGET%"]==["minizip"] GOTO minizip
 IF ["%TARGET%"]==["cvode"] GOTO cvode
 IF ["%TARGET%"]==["kinsol"] GOTO kinsol
+IF ["%TARGET%"]==["xerces"] GOTO xerces
 IF ["%TARGET%"]==["pthread"] GOTO pthread
 IF ["%TARGET%"]==["libxml2"] GOTO libxml2
 IF ["%TARGET%"]==["boost"] GOTO boost
@@ -117,29 +118,21 @@ EXIT /B 0
 :: -- build Lua -----------------------
 
 
-:: -- build zlib ----------------------
-:zlib
-ECHO # config zlib
-IF EXIST "3rdParty\zlib\build\win\" RMDIR /S /Q 3rdParty\zlib\build\win
-IF EXIST "3rdParty\zlib\install\win\" RMDIR /S /Q 3rdParty\zlib\install\win
-MKDIR 3rdParty\zlib\build\win\zlib
-CD 3rdParty\zlib\build\win\zlib
-cmake.exe -G %OMS_VS_VERSION% ..\..\..\zlib-1.2.11\ -DCMAKE_INSTALL_PREFIX=..\..\..\install\win
+:: -- build minizip ----------------------
+:minizip
+ECHO # config minizip
+IF EXIST "3rdParty\minizip\build\win\" RMDIR /S /Q 3rdParty\minizip\build\win
+IF EXIST "3rdParty\minizip\install\win\" RMDIR /S /Q 3rdParty\minizip\install\win
+MKDIR 3rdParty\minizip\build\win
+CD 3rdParty\minizip\build\win
+cmake.exe -G %OMS_VS_VERSION% ..\..\src\ -DCMAKE_INSTALL_PREFIX=..\..\install\win
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-CD ..\..\..\..\..
-MKDIR 3rdParty\zlib\build\win\minizip
-CD 3rdParty\zlib\build\win\minizip
-cmake.exe -G %OMS_VS_VERSION% ..\..\..\minizip\ -DCMAKE_INSTALL_PREFIX=..\..\..\install\win
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-CD ..\..\..\..\..
-ECHO # build zlib
-msbuild.exe "3rdParty\zlib\build\win\zlib\INSTALL.vcxproj" /t:Build /p:configuration=Release /maxcpucount
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
+CD ..\..\..\..
 ECHO # build minizip
-msbuild.exe "3rdParty\zlib\build\win\minizip\INSTALL.vcxproj" /t:Build /p:configuration=Release /maxcpucount
+msbuild.exe "3rdParty\minizip\build\win\INSTALL.vcxproj" /t:Build /p:configuration=Release /maxcpucount
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 EXIT /B 0
-:: -- build zlib ----------------------
+:: -- build minizip ----------------------
 
 
 :: -- config cvode --------------------
@@ -174,6 +167,23 @@ msbuild.exe "3rdParty\kinsol\build\win\INSTALL.vcxproj" /t:Build /p:configuratio
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 EXIT /B 0
 :: -- config kinsol -------------------
+
+
+:: -- config xerces -------------------
+:xerces
+ECHO # config xerces
+IF EXIST "3rdParty\xerces\build\win\" RMDIR /S /Q 3rdParty\xerces\build\win
+IF EXIST "3rdParty\xerces\install\win\" RMDIR /S /Q 3rdParty\xerces\install\win
+MKDIR 3rdParty\xerces\build\win
+CD 3rdParty\xerces\build\win
+cmake.exe -G %OMS_VS_VERSION% ..\.. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_INSTALL_PREFIX=..\..\install\win -DBUILD_SHARED_LIBS:BOOL=OFF
+IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
+CD ..\..\..\..
+ECHO # build xerces
+msbuild.exe "3rdParty\xerces\build\win\INSTALL.vcxproj" /t:Build /p:configuration=Release /maxcpucount
+IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
+EXIT /B 0
+:: -- config xerces -------------------
 
 
 :: -- pthread -------------------------
@@ -244,11 +254,13 @@ START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% fmil"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% lua"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% zlib"
+START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% minizip"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% cvode"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% kinsol"
+IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
+START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% xerces"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% pthread"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail

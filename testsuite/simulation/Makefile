@@ -7,6 +7,7 @@ deleteStartValues.lua \
 deleteStartValuesInSSV.lua \
 deleteStartValuesInSSV1.lua \
 deleteStartValuesInSSV2.lua \
+deleteReferencesAndStartValues.lua \
 DualMassOscillator.lua \
 Enumeration.lua \
 Enumeration2.lua \
@@ -35,6 +36,8 @@ multipleConnections.lua \
 partialSnapshot.lua \
 PI_Controller.lua \
 QuarterCarModel.DisplacementDisplacement.lua \
+referenceResources1.lua \
+referenceResources2.lua \
 rename.lua \
 renameValues1.lua \
 renameValues2.lua \

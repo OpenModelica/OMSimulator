@@ -39,9 +39,20 @@ class Server:
     self._socket_rep = None
     self._socket_pub = None
     self._thread = None
+    self._activeSignals = set()
 
     if result_file:
       self._model.resultFile = result_file
+
+    # extract all available signals
+    self._signals = {}
+    signalFilter = self._model.exportSnapshot(':resources/signalFilter.xml')
+    root = ET.fromstring(signalFilter)
+    for var in root[0][0]:
+      name = var.attrib['name']
+      type_ = var.attrib['type']
+      kind = var.attrib['kind']
+      self._signals[name] = {'type': type_, 'kind': kind}
 
     self.print('OMS Server {}'.format(__version__))
     self.print('ZMQ {}'.format(zmq.zmq_version()))
@@ -64,16 +75,6 @@ class Server:
       self.print('REP socket connected to {}'.format(endpoint_rep))
       self._thread = threading.Thread(target=self._main, daemon=True)
       self._thread.start()
-
-    # extract all available signals
-    self._signals = {}
-    signalFilter = self._model.exportSnapshot(':resources/signalFilter.xml')
-    root = ET.fromstring(signalFilter)
-    for var in root[0][0]:
-      name = var.attrib['name']
-      type_ = var.attrib['type']
-      kind = var.attrib['kind']
-      self._signals[name] = {'type': type_, 'kind': kind}
 
   def print(self, msg):
     print('server:  {}'.format(msg), flush=True)
@@ -117,6 +118,12 @@ class Server:
         arg = msg['arg']
         if 'available' == arg:
           answer = {'status': 'ack', 'result': self._signals}
+        elif 'enable' == arg:
+          self._activeSignals.add(msg['cref'])
+          answer = {'status': 'ack'}
+        elif 'disable' == arg:
+          self._activeSignals.remove(msg['cref'])
+          answer = {'status': 'ack'}
 
       try:
         self._socket_rep.send_json(answer)
@@ -140,6 +147,17 @@ class Server:
       else:
         progress = math.floor((time_-startTime) / (stopTime-startTime) * 100)
         self.pub_msg('status', {'progress': progress})
+        if self._activeSignals:
+          results = {'time': time_}
+          for signal in self._activeSignals:
+            type_ = self._signals[signal]['type']
+            if type_ == 'Real':
+              results[signal] = oms.getReal(signal)
+            elif type_ == 'Integer':
+              results[signal] = oms.getInteger(signal)
+            elif type_ == 'Boolean':
+              results[signal] = oms.getBoolean(signal)
+          self.pub_msg('results', results)
         with self._mutex:
           self._model.doStep()
           time_ = self._model.time

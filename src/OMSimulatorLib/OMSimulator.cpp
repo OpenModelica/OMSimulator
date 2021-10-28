@@ -177,6 +177,41 @@ oms_status_enu_t oms_delete(const char* cref)
   return model->delete_(tail);
 }
 
+oms_status_enu_t oms_deleteResources(const char* cref_)
+{
+  oms::ComRef tail(cref_);
+  oms::ComRef front = tail.pop_front();
+
+  oms::ComRef modelCref(front);
+  modelCref.pop_suffix();
+
+  oms::Model* model = oms::Scope::GetInstance().getModel(modelCref);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  if (tail.isEmpty())
+  {
+    return model->deleteResourcesInSSP(front.pop_suffix());
+  }
+  else
+    return model->deleteReferencesInSSD(tail);
+}
+
+oms_status_enu_t oms_referenceResources(const char* cref_, const char* ssmFile)
+{
+  oms::ComRef tail(cref_);
+  oms::ComRef front = tail.pop_front();
+
+  oms::ComRef modelCref(front);
+  modelCref.pop_suffix();
+
+  oms::Model* model = oms::Scope::GetInstance().getModel(modelCref);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  return model->referenceResources(tail, std::string(ssmFile));
+}
+
 oms_status_enu_t oms_export(const char* cref, const char* filename)
 {
   return oms::Scope::GetInstance().exportModel(oms::ComRef(cref), std::string(filename));
@@ -279,7 +314,7 @@ oms_status_enu_t oms_importSnapshot(const char* cref, const char* snapshot, char
   return oms::Scope::GetInstance().importSnapshot(oms::ComRef(cref), snapshot, newCref);
 }
 
-oms_status_enu_t oms_addResources(const char* cref_)
+oms_status_enu_t oms_newResources(const char* cref_)
 {
   oms::ComRef tail(cref_);
   oms::ComRef front = tail.pop_front();
@@ -291,7 +326,22 @@ oms_status_enu_t oms_addResources(const char* cref_)
   if (!model)
     return logError_ModelNotInScope(front);
 
-  return model->addResources(tail);
+  return model->newResources(tail);
+}
+
+oms_status_enu_t oms_addResources(const char* cref_, const char* path)
+{
+  oms::ComRef tail(cref_);
+  oms::ComRef front = tail.pop_front();
+
+  oms::ComRef modelCref(front);
+  modelCref.pop_suffix();
+
+  oms::Model* model = oms::Scope::GetInstance().getModel(modelCref);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  return model->addResources(front, path);
 }
 
 oms_status_enu_t oms_addSystem(const char* cref_, oms_system_enu_t type)
@@ -1596,34 +1646,14 @@ oms_status_enu_t oms_extractFMIKind(const char* filename, oms_fmi_kind_enu_t* ki
   if (!kind)
     return logError("Invalid argument \"kind=NULL\"");
 
-  // Usage: miniunz [-e] [-x] [-v] [-l] [-o] [-p password] file.zip [file_to_extr.] [-d extractdir]
-  //        -e  Extract without pathname (junk paths)
-  //        -x  Extract with pathname
-  //        -v  list files
-  //        -l  list files
-  //        -d  directory to extract into
-  //        -o  overwrite files without prompting
-  //        -p  extract crypted file using password
-
-  std::string cd = oms::Scope::GetInstance().getWorkingDirectory();
-  int argc = 6;
-  char **argv = new char*[argc];
-  int i=0;
-  argv[i++] = (char*)"miniunz";
-  argv[i++] = (char*)"-xo";
-  argv[i++] = (char*)filename;
-  argv[i++] = (char*)"modelDescription.xml";
-  argv[i++] = (char*)"-d";
-  argv[i++] = (char*)oms::Scope::GetInstance().getTempDirectory().c_str();
-  int status = ::miniunz(argc, argv);
-  delete[] argv;
-  oms::Scope::GetInstance().setWorkingDirectory(cd);
-
-  if (status != 0)
-    return logError("failed to extract modelDescription.xml from \"" + std::string(filename) + "\"");
+  const char* modelDescription = ::miniunz_onefile_to_memory(filename, "modelDescription.xml");
+  if (!modelDescription)
+    return logError("failed to extract \"modelDescription.xml\" from \"" + std::string(filename) + "\"");
 
   oms::Snapshot snapshot;
-  if (oms_status_ok != snapshot.importResourceFile("modelDescription.xml", oms::Scope::GetInstance().getTempDirectory()))
+  oms_status_enu_t status = snapshot.importResourceMemory("modelDescription.xml", modelDescription);
+  ::miniunz_free(modelDescription);
+  if (oms_status_ok != status)
     return logError("Failed to import");
   const pugi::xml_node node = snapshot.getResourceNode("modelDescription.xml");
 

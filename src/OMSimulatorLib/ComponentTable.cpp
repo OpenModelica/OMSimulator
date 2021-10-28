@@ -195,20 +195,35 @@ oms_status_enu_t oms::ComponentTable::getReal(const oms::ComRef& cref, double& v
   if (!resultReader)
     logError("the table isn't initialized properly");
 
+  ResultReader::Series* pSeries;
   if (series.find(cref) == series.end())
-    series[cref] = resultReader->getSeries(cref.c_str());
-
-  for (int i=1; i<series[cref]->length; ++i)
   {
-    if (series[cref]->time[i-1] == time)
+    pSeries = resultReader->getSeries(cref.c_str());
+    series[cref] = pSeries;
+
+    if (pSeries->length < 1)
+      return logError("empty table");
+    else if (pSeries->time[0] > time)
+      return logError("out of range (cref=" + std::string(cref) + ", time=" + std::to_string(time) + " cannot be less than first time point in table " + std::to_string(pSeries->time[0]) + ")");
+  }
+  else
+    pSeries = series[cref];
+
+  // check that lastIndex isn't in the future (e.g. due to rollback)
+  if (pSeries->time[lastIndex] > time)
+    lastIndex = 0;
+
+  for (; lastIndex<pSeries->length; ++lastIndex)
+  {
+    if (pSeries->time[lastIndex] == time)
     {
-      value = series[cref]->value[i-1];
+      value = pSeries->value[lastIndex];
       return oms_status_ok;
     }
-    else if (series[cref]->time[i-1] <= time && series[cref]->time[i] >= time)
+    else if (pSeries->time[lastIndex] <= time && pSeries->time[lastIndex+1] >= time)
     {
-      double m = (series[cref]->value[i] - series[cref]->value[i-1]) / (series[cref]->time[i] - series[cref]->time[i-1]);
-      value = series[cref]->value[i-1] + (time - series[cref]->time[i-1]) * m;
+      double m = (pSeries->value[lastIndex+1] - pSeries->value[lastIndex]) / (pSeries->time[lastIndex+1] - pSeries->time[lastIndex]);
+      value = pSeries->value[lastIndex] + (time - pSeries->time[lastIndex]) * m;
       return oms_status_ok;
     }
   }
@@ -222,24 +237,34 @@ oms_status_enu_t oms::ComponentTable::getInteger(const oms::ComRef& cref, int& v
   if (!resultReader)
     logError("the table isn't initialized properly");
 
+  ResultReader::Series* pSeries;
   if (series.find(cref) == series.end())
-    series[cref] = resultReader->getSeries(cref.c_str());
-
-  if (series[cref]->length < 1)
-    return logError("empty table");
-  else if (series[cref]->time[0] > time)
-    return logError("out of range (cref=" + std::string(cref) + ", time=" + std::to_string(time) + " cannot be less than first time point in table " + std::to_string(series[cref]->time[0]) + ")");
-
-  for (int i=0; i<series[cref]->length; ++i)
   {
-    if (time == series[cref]->time[i])
+    pSeries = resultReader->getSeries(cref.c_str());
+    series[cref] = pSeries;
+
+    if (pSeries->length < 1)
+      return logError("empty table");
+    else if (pSeries->time[0] > time)
+      return logError("out of range (cref=" + std::string(cref) + ", time=" + std::to_string(time) + " cannot be less than first time point in table " + std::to_string(pSeries->time[0]) + ")");
+  }
+  else
+    pSeries = series[cref];
+
+  // check that lastIndex isn't in the future (e.g. due to rollback)
+  if (pSeries->time[lastIndex-1] > time)
+    lastIndex = 0;
+
+  for (; lastIndex<pSeries->length; ++lastIndex)
+  {
+    if (time == pSeries->time[lastIndex])
     {
-      value = series[cref]->value[i];
+      value = pSeries->value[lastIndex];
       return oms_status_ok;
     }
-    else if (i > 0 && time < series[cref]->time[i])
+    else if (lastIndex > 0 && time < pSeries->time[lastIndex])
     {
-      value = series[cref]->value[i-1];
+      value = pSeries->value[lastIndex-1];
       return oms_status_ok;
     }
   }
@@ -253,24 +278,34 @@ oms_status_enu_t oms::ComponentTable::getBoolean(const oms::ComRef& cref, bool& 
   if (!resultReader)
     logError("the table isn't initialized properly");
 
+  ResultReader::Series* pSeries;
   if (series.find(cref) == series.end())
-    series[cref] = resultReader->getSeries(cref.c_str());
-
-  if (series[cref]->length < 1)
-    return logError("empty table");
-  else if (series[cref]->time[0] > time)
-    return logError("out of range (cref=" + std::string(cref) + ", time=" + std::to_string(time) + " cannot be less than first time point in table " + std::to_string(series[cref]->time[0]) + ")");
-
-  for (int i=0; i<series[cref]->length; ++i)
   {
-    if (time == series[cref]->time[i])
+    pSeries = resultReader->getSeries(cref.c_str());
+    series[cref] = pSeries;
+
+    if (pSeries->length < 1)
+      return logError("empty table");
+    else if (pSeries->time[0] > time)
+      return logError("out of range (cref=" + std::string(cref) + ", time=" + std::to_string(time) + " cannot be less than first time point in table " + std::to_string(pSeries->time[0]) + ")");
+  }
+  else
+    pSeries = series[cref];
+
+  // check that lastIndex isn't in the future (e.g. due to rollback)
+  if (pSeries->time[lastIndex-1] > time)
+    lastIndex = 0;
+
+  for (; lastIndex<pSeries->length; ++lastIndex)
+  {
+    if (time == pSeries->time[lastIndex])
     {
-      value = series[cref]->value[i];
+      value = pSeries->value[lastIndex];
       return oms_status_ok;
     }
-    else if (i > 0 && time < series[cref]->time[i])
+    else if (lastIndex > 0 && time < pSeries->time[lastIndex])
     {
-      value = series[cref]->value[i-1];
+      value = pSeries->value[lastIndex-1];
       return oms_status_ok;
     }
   }
@@ -284,15 +319,30 @@ oms_status_enu_t oms::ComponentTable::getRealOutputDerivative(const ComRef& cref
   if (!resultReader)
     logError("the table isn't initialized properly");
 
+  ResultReader::Series* pSeries;
   if (series.find(cref) == series.end())
-    series[cref] = resultReader->getSeries(cref.c_str());
-
-  for (int i=1; i<series[cref]->length; ++i)
   {
-    if ((series[cref]->time[i-1] <= time && series[cref]->time[i] > time) ||
-        (series[cref]->time[i] == time && i == series[cref]->length-1))
+    pSeries = resultReader->getSeries(cref.c_str());
+    series[cref] = pSeries;
+
+    if (pSeries->length < 1)
+      return logError("empty table");
+    else if (pSeries->time[0] > time)
+      return logError("out of range (cref=" + std::string(cref) + ", time=" + std::to_string(time) + " cannot be less than first time point in table " + std::to_string(pSeries->time[0]) + ")");
+  }
+  else
+    pSeries = series[cref];
+
+  // check that lastIndex isn't in the future (e.g. due to rollback)
+  if (pSeries->time[lastIndex-1] > time)
+    lastIndex = 0;
+
+  for (; lastIndex<pSeries->length; ++lastIndex)
+  {
+    if ((pSeries->time[lastIndex] <= time && pSeries->time[lastIndex+1] > time) ||
+        (pSeries->time[lastIndex+1] == time && lastIndex == pSeries->length))
     {
-      double m = (series[cref]->value[i] - series[cref]->value[i-1]) / (series[cref]->time[i] - series[cref]->time[i-1]);
+      double m = (pSeries->value[lastIndex+1] - pSeries->value[lastIndex]) / (pSeries->time[lastIndex+1] - pSeries->time[lastIndex]);
       value = SignalDerivative(m);
       return oms_status_ok;
     }

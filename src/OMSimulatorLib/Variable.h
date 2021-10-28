@@ -49,6 +49,9 @@ namespace oms
     ~Variable();
 
     void markAsState(size_t der_index) { is_state = true; this->der_index = der_index; }
+    void markAsContinuousTimeState(size_t der_index) { is_continuous_time_state = true; this->der_index = der_index; }
+    void markAsContinuousTimeDer() { is_continuous_time_der = true; }
+
     unsigned int getStateIndex() const { return state_index; }
 
     // causality attribute
@@ -59,6 +62,8 @@ namespace oms
     bool isLocal() const { return fmi2_causality_enu_local == causality; }
     bool isState() const { return is_state; }
     bool isDer() const { return is_der; }
+    bool isContinuousTimeState() const { return is_continuous_time_state; }
+    bool isContinuousTimeDer() const { return is_continuous_time_der; }
     bool isIndependent() const { return fmi2_causality_enu_independent == causality; }
 
     // initial attribute
@@ -69,8 +74,8 @@ namespace oms
     bool isInitialUnknown() const {
       return (isOutput() && (isApprox() || isCalculated()))
         || (isCalculatedParameter())
-        || (isState() && (isApprox() || isCalculated()))
-        || (isDer() && (isApprox() || isCalculated()));
+        || (isContinuousTimeState() && (isApprox() || isCalculated()))
+        || (isContinuousTimeDer() && (isApprox() || isCalculated()));
     }
 
     const ComRef& getCref() const { return cref; }
@@ -95,9 +100,12 @@ namespace oms
     std::string description;
     fmi2_value_reference_t vr;
     fmi2_causality_enu_t causality;
+    fmi2_variability_enu_t variability;
     fmi2_initial_enu_t initialProperty;
     bool is_state;
     bool is_der;
+    bool is_continuous_time_state;
+    bool is_continuous_time_der;
     oms_signal_type_enu_t type;
     unsigned int index; ///< index origin = 0
     size_t state_index; ///< index origin = 0

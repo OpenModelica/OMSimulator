@@ -138,10 +138,9 @@ oms::Component* oms::ComponentFMUME::NewComponent(const oms::ComRef& cref, oms::
   component->callbackFunctions.componentEnvironment = component->fmu;
   component->callbackFunctions.stepFinished = NULL;
 
-  component->nContinuousStates = fmi2_import_get_number_of_continuous_states(component->fmu);
   component->nEventIndicators = fmi2_import_get_number_of_event_indicators(component->fmu);
 
-  // create a list of all variables
+    // create a list of all variables
   fmi2_import_variable_list_t *varList = fmi2_import_get_variable_list(component->fmu, 0);
   size_t varListSize = fmi2_import_get_variable_list_size(varList);
   component->allVariables.reserve(varListSize);
@@ -158,47 +157,29 @@ oms::Component* oms::ComponentFMUME::NewComponent(const oms::ComRef& cref, oms::
       return NULL;
     }
     component->allVariables.push_back(v);
-    if (v.isDer())
-      component->derivatives.push_back(v.getIndex());
     component->exportVariables.push_back(true);
   }
   fmi2_import_free_variable_list(varList);
 
-  // check derivatives
+  // extract continuous-time derivatives
   varList = fmi2_import_get_derivatives_list(component->fmu);
   varListSize = fmi2_import_get_variable_list_size(varList);
-  if (varListSize != component->derivatives.size())
+  for (size_t i = 0; i < varListSize; ++i)
   {
-    std::unordered_set <unsigned int> setA_fmilib;
-    for (size_t i=0; i < varListSize; ++i)
-    {
-      fmi2_import_variable_t* var = fmi2_import_get_variable(varList, i);
-      size_t originalIndex = fmi2_import_get_variable_original_order(var);
-      setA_fmilib.insert(originalIndex);
-    }
-
-    std::string missing_der = "";
-    for (const auto& i : component->derivatives)
-    {
-      if (setA_fmilib.find(i) == setA_fmilib.end())
-      {
-        if (!missing_der.empty())
-          missing_der += ", ";
-        missing_der += std::to_string(i+1) + ": " + std::string(component->allVariables[i].getCref());
-      }
-    }
-
-    logWarning("[" + std::string(component->getCref()) + ": " + component->getPath() + "] The FMU lists " + std::to_string(varListSize) + " state derivatives but actually exposes " + std::to_string(component->derivatives.size()) + " state derivatives.\nThe following derivatives are missing: " + missing_der);
+    fmi2_import_variable_t* var = fmi2_import_get_variable(varList, i);
+    size_t originalIndex = fmi2_import_get_variable_original_order(var);
+    component->allVariables[originalIndex].markAsContinuousTimeDer();
+    component->derivatives.push_back(originalIndex);
   }
   fmi2_import_free_variable_list(varList);
 
-  // mark states
-  logDebug(std::to_string(varListSize) + " states");
-  for (const auto& i : component->derivatives)
+  // mark states and continuous-time states
+  for (size_t i = 0; i < component->allVariables.size(); ++i)
   {
-    // IMPORTANT: vr is not unique!!! Do lookup with proper index or name
-    size_t state_index = component->allVariables[i].getStateIndex();
-    component->allVariables[state_index].markAsState(i);
+    if (component->allVariables[i].isContinuousTimeDer())
+      component->allVariables[component->allVariables[i].getStateIndex()].markAsContinuousTimeState(i);
+    else if (component->allVariables[i].isDer())
+      component->allVariables[component->allVariables[i].getStateIndex()].markAsState(i);
   }
 
   // create some special variable maps
@@ -369,77 +350,88 @@ oms_status_enu_t oms::ComponentFMUME::exportToSSMTemplate(pugi::xml_node& ssmNod
   return oms_status_ok;
 }
 
+void oms::ComponentFMUME::dumpInitialUnknowns()
+{
+  std::string str = "";
+  int n=0;
+  for (auto &v : allVariables)
+  {
+    if (v.isInitialUnknown())
+    {
+      n++;
+      if (!str.empty())
+        str += ", ";
+      str += std::to_string(v.getIndex()+1) + ": " + std::string(v.getCref());
+    }
+  }
+  logInfo("[" + std::string(getCref()) + ": " + getPath() + "] The FMU contains " + std::to_string(n) + " initial unknowns: " + str);
+}
+
 oms_status_enu_t oms::ComponentFMUME::initializeDependencyGraph_initialUnknowns()
 {
   if (initialUnknownsGraph.getEdges().size() > 0)
     return logError(std::string(getCref()) + ": " + getPath() + " is already initialized");
 
-  int N=initialUnknownsGraph.getNodes().size();
+  //dumpInitialUnknowns();
 
   // Check if initial unknowns from modelDescription.xml are the same as in initialUnknownsGraph
-  fmi2_import_variable_list_t* initialUnknowns;
-  initialUnknowns = fmi2_import_get_initial_unknowns_list(fmu);
-  size_t N_fmilib = fmi2_import_get_variable_list_size(initialUnknowns);
+  fmi2_import_variable_list_t* initialUnknowns_ModelStructure;
+  initialUnknowns_ModelStructure = fmi2_import_get_initial_unknowns_list(fmu);
+  size_t N_ModelStructure = fmi2_import_get_variable_list_size(initialUnknowns_ModelStructure);
+  size_t N = initialUnknownsGraph.getNodes().size();
+
   bool badInitialUnknowns = false;
 
-  if (N != N_fmilib)
+  std::unordered_set <unsigned int> setA_ModelStructure;
+  for (size_t i=0; i < N_ModelStructure; ++i)
   {
-    if (!Flags::IgnoreInitialUnknowns())
-    {
-      std::unordered_set <unsigned int> setA_fmilib;
-      for (size_t i=0; i < N_fmilib; ++i)
-      {
-        fmi2_xml_variable_t* var_fmilib = fmi2_import_get_variable(initialUnknowns, i);
-        size_t originalIndex = fmi2_import_get_variable_original_order(var_fmilib);
-        setA_fmilib.insert(originalIndex);
-      }
-
-      std::string missing_unknowns = "";
-      for (auto &v : allVariables)
-      {
-        if (v.isInitialUnknown() && setA_fmilib.find(v.getIndex()) == setA_fmilib.end())
-        {
-          if (!missing_unknowns.empty())
-            missing_unknowns += ", ";
-          missing_unknowns += std::to_string(v.getIndex()+1) + ": " + std::string(v.getCref());
-        }
-      }
-
-      logWarning("[" + std::string(getCref()) + ": " + getPath() + "] The FMU lists " + std::to_string(N_fmilib) + " initial unknowns but actually exposes " + std::to_string(N) + " initial unknowns.\nThe following unknowns are missing: " + missing_unknowns);
-    }
-    badInitialUnknowns = true;
+    fmi2_xml_variable_t* var_ModelStructure = fmi2_import_get_variable(initialUnknowns_ModelStructure, i);
+    size_t originalIndex = fmi2_import_get_variable_original_order(var_ModelStructure);
+    setA_ModelStructure.insert(originalIndex);
   }
 
-  for (size_t i=0; i < N_fmilib; ++i)
+  std::string missing_unknowns = "";
+  for (auto &v : allVariables)
   {
-    fmi2_xml_variable_t* var_fmilib = fmi2_import_get_variable(initialUnknowns, i);
-    size_t originalIndex = fmi2_import_get_variable_original_order(var_fmilib);
+    if (v.isInitialUnknown() && setA_ModelStructure.find(v.getIndex()) == setA_ModelStructure.end())
+    {
+      badInitialUnknowns = true;
+      missing_unknowns += "\n  * " + std::to_string(v.getIndex()+1) + ": " + std::string(v.getCref()) + " is missing";
+    }
+  }
+
+  for (size_t i=0; i < N_ModelStructure; ++i)
+  {
+    fmi2_xml_variable_t* var_ModelStructure = fmi2_import_get_variable(initialUnknowns_ModelStructure, i);
+    size_t originalIndex = fmi2_import_get_variable_original_order(var_ModelStructure);
     const Variable& var_oms = allVariables[originalIndex];
-    oms::ComRef name_fmilib(fmi2_import_get_variable_name(var_fmilib));
+    oms::ComRef name_fmilib(fmi2_import_get_variable_name(var_ModelStructure));
 
     if (var_oms.getCref() != name_fmilib)
     {
-      if (!Flags::IgnoreInitialUnknowns())
-        logWarning("[" + std::string(getCref()) + ": " + getPath() + "] Variable " + std::string(var_oms.getCref()) + " with index " + std::to_string(originalIndex+1) + " could not be found.");
+      missing_unknowns += "\n  * " + std::to_string(originalIndex+1) + ": " + std::string(var_oms.getCref()) + " could not be found";
       badInitialUnknowns = true;
     }
     else if (!var_oms.isInitialUnknown())
     {
-      if (!Flags::IgnoreInitialUnknowns())
-        logWarning("[" + std::string(getCref()) + ": " + getPath() + "] Variable " + std::string(var_oms.getCref()) + " with index " + std::to_string(originalIndex+1) + " is falsely listed as initial unknown.");
+      missing_unknowns += "\n  * " + std::to_string(originalIndex+1) + ": " + std::string(var_oms.getCref()) + " is wrongly listed";
       badInitialUnknowns = true;
     }
   }
 
-  fmi2_import_free_variable_list(initialUnknowns);
+  if (badInitialUnknowns && !Flags::IgnoreInitialUnknowns() && N_ModelStructure > 0)
+    logWarning("[" + std::string(getCref()) + ": " + getPath() + "] The FMU lists " + std::to_string(N_ModelStructure) + " initial unknowns and exposes " + std::to_string(N) + " initial unknowns." + missing_unknowns);
+
+  fmi2_import_free_variable_list(initialUnknowns_ModelStructure);
 
   if (badInitialUnknowns)
   {
-    if(!Flags::IgnoreInitialUnknowns())
+    if(!Flags::IgnoreInitialUnknowns() && N_ModelStructure > 0)
       logInfo("[" + std::string(getCref()) + ": " + getPath() + "] The FMU contains bad initial unknowns. This might cause problems, e.g. wrong simulation results.");
     else
     {
-      logWarning("[" + std::string(getCref()) + ": " + getPath() + "] The dependencies of the initial unknowns defined in the FMU are ignored because the flag --ignoreInitialUnknowns is active. Instead, all the initial unknowns will depend on all inputs.");
+      if (N_ModelStructure > 0)
+        logWarning("[" + std::string(getCref()) + ": " + getPath() + "] The dependencies of the initial unknowns defined in the FMU are ignored because the flag --ignoreInitialUnknowns is active. Instead, all the initial unknowns will depend on all inputs.");
       for (int i=0; i < N; i++)
       {
         logDebug(std::string(getCref()) + ": " + getPath() + " initial unknown " + std::string(initialUnknownsGraph.getNodes()[i]) + " depends on all inputs");
@@ -478,7 +470,7 @@ oms_status_enu_t oms::ComponentFMUME::initializeDependencyGraph_initialUnknowns(
   //  buffer += "factorKind[" + std::to_string(i) + "] = " + std::string(fmi2_dependency_factor_kind_to_string((fmi2_dependency_factor_kind_enu_t)factorKind[i])) + "\n";
   //logInfo(buffer);
 
-  for (int i=0; i < N_fmilib; i++)
+  for (int i=0; i < N_ModelStructure; i++)
   {
     if (startIndex[i] == startIndex[i+1])
     {
@@ -576,7 +568,8 @@ oms_status_enu_t oms::ComponentFMUME::instantiate()
     {
       for (const auto &res : it.allresources)
       {
-        setResourcesHelper1(res.second);
+        if (res.second.linkResources) // set values only if resources are linked in ssd
+          setResourcesHelper1(res.second);
       }
     }
   }
@@ -648,32 +641,41 @@ oms_status_enu_t oms::ComponentFMUME::setResourcesHelper2(Values values)
     {
       for (const auto &v : res.second.booleanStartValues)
       {
-        oms::ComRef tail(v.first);
-        oms::ComRef head = tail.pop_front();
-        if (head == getCref())
+        if (res.second.linkResources) // set values only if resources are linked in ssd
         {
-          if (oms_status_ok != setBoolean(tail, v.second))
-            return logError("Failed to set start value for " + std::string(v.first));
+          oms::ComRef tail(v.first);
+          oms::ComRef head = tail.pop_front();
+          if (head == getCref())
+          {
+            if (oms_status_ok != setBoolean(tail, v.second))
+              return logError("Failed to set start value for " + std::string(v.first));
+          }
         }
       }
       for (const auto &v : res.second.integerStartValues)
       {
-        oms::ComRef tail(v.first);
-        oms::ComRef head = tail.pop_front();
-        if (head == getCref())
+        if (res.second.linkResources) // set values only if resources are linked in ssd
         {
-          if (oms_status_ok != setInteger(tail, v.second))
-            return logError("Failed to set start value for " + std::string(v.first));
+          oms::ComRef tail(v.first);
+          oms::ComRef head = tail.pop_front();
+          if (head == getCref())
+          {
+            if (oms_status_ok != setInteger(tail, v.second))
+              return logError("Failed to set start value for " + std::string(v.first));
+          }
         }
       }
       for (const auto &v : res.second.realStartValues)
       {
-        oms::ComRef tail(v.first);
-        oms::ComRef head = tail.pop_front();
-        if (head == getCref())
+        if (res.second.linkResources) // set values only if resources are linked in ssd
         {
-          if (oms_status_ok != setReal(tail, v.second))
-            return logError("Failed to set start value for " + std::string(v.first));
+          oms::ComRef tail(v.first);
+          oms::ComRef head = tail.pop_front();
+          if (head == getCref())
+          {
+            if (oms_status_ok != setReal(tail, v.second))
+              return logError("Failed to set start value for " + std::string(v.first));
+          }
         }
       }
     }
@@ -718,21 +720,54 @@ oms_status_enu_t oms::ComponentFMUME::doEventIteration()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::ComponentFMUME::addResources(std::string& filename)
+oms_status_enu_t oms::ComponentFMUME::newResources(const std::string& ssvFilename, const std::string& ssmFilename, bool externalResources)
 {
   Values resources;
+  if (externalResources) // check of external resources and override the start values with new references
+  {
+    Snapshot snapshot;
+    snapshot.importResourceFile(ssvFilename, getModel().getTempDirectory() + "/resources");
+
+    // import ssm file, if provided
+    if (!ssmFilename.empty())
+      snapshot.importResourceFile(ssmFilename, getModel().getTempDirectory() + "/resources");
+
+    if (oms_status_ok != resources.importFromSnapshot(snapshot, ssvFilename, ssmFilename))
+      return logError("referenceResources failed for \"" + std::string(getFullCref()) + ":" + ssvFilename + "\"");
+  }
+
   if (!values.hasResources())
   {
-    resources.allresources[filename] = resources;
+    resources.allresources["resources/" + ssvFilename] = resources;
+    if(!ssmFilename.empty())
+      resources.ssmFile = "resources/" + ssmFilename;
     values.parameterResources.push_back(resources);
   }
   else
   {
     // generate empty ssv file, if more resources are added to same level
-    values.parameterResources[0].allresources[filename] = resources;
+    if(!ssmFilename.empty())
+      resources.ssmFile = "resources/" + ssmFilename;
+    values.parameterResources[0].allresources["resources/" + ssvFilename] = resources;
   }
 
   return oms_status_ok;
+}
+
+oms_status_enu_t oms::ComponentFMUME::deleteReferencesInSSD(const std::string& filename)
+{
+  if (values.hasResources())
+    return values.deleteReferencesInSSD(filename);
+
+  return oms_status_error;
+}
+
+oms_status_enu_t oms::ComponentFMUME::deleteResourcesInSSP(const std::string& filename)
+{
+  if (values.hasResources())
+    return values.deleteResourcesInSSP(filename);
+
+  return oms_status_error;
 }
 
 oms_status_enu_t oms::ComponentFMUME::initialize()
@@ -1387,7 +1422,7 @@ oms_status_enu_t oms::ComponentFMUME::updateSignals(ResultWriter& resultWriter)
 oms_status_enu_t oms::ComponentFMUME::getContinuousStates(double* states)
 {
   CallClock callClock(clock);
-  fmi2_status_t fmistatus = fmi2_import_get_continuous_states(fmu, states, nContinuousStates);
+  fmi2_status_t fmistatus = fmi2_import_get_continuous_states(fmu, states, getNumberOfContinuousStates());
   if (fmi2_status_ok != fmistatus)
     return logError_FMUCall("fmi2_import_get_continuous_states", this);
   return oms_status_ok;
@@ -1396,7 +1431,7 @@ oms_status_enu_t oms::ComponentFMUME::getContinuousStates(double* states)
 oms_status_enu_t oms::ComponentFMUME::setContinuousStates(double* states)
 {
   CallClock callClock(clock);
-  fmi2_status_t fmistatus = fmi2_import_set_continuous_states(fmu, states, nContinuousStates);
+  fmi2_status_t fmistatus = fmi2_import_set_continuous_states(fmu, states, getNumberOfContinuousStates());
   if (fmi2_status_ok != fmistatus)
     return logError_FMUCall("fmi2_import_set_continuous_states", this);
   return oms_status_ok;
@@ -1405,7 +1440,7 @@ oms_status_enu_t oms::ComponentFMUME::setContinuousStates(double* states)
 oms_status_enu_t oms::ComponentFMUME::getDerivatives(double* derivatives)
 {
   CallClock callClock(clock);
-  fmi2_status_t fmistatus = fmi2_import_get_derivatives(fmu, derivatives, nContinuousStates);
+  fmi2_status_t fmistatus = fmi2_import_get_derivatives(fmu, derivatives, getNumberOfContinuousStates());
   if (fmi2_status_ok != fmistatus)
     return logError_FMUCall("fmi2_import_get_derivatives", this);
   return oms_status_ok;
@@ -1414,7 +1449,7 @@ oms_status_enu_t oms::ComponentFMUME::getDerivatives(double* derivatives)
 oms_status_enu_t oms::ComponentFMUME::getNominalsOfContinuousStates(double* nominals)
 {
   CallClock callClock(clock);
-  fmi2_status_t fmistatus = fmi2_import_get_nominals_of_continuous_states(fmu, nominals, nContinuousStates);
+  fmi2_status_t fmistatus = fmi2_import_get_nominals_of_continuous_states(fmu, nominals, getNumberOfContinuousStates());
   if (fmi2_status_ok != fmistatus)
     return logError_FMUCall("fmi2_import_get_nominals_of_continuous_states", this);
   return oms_status_ok;

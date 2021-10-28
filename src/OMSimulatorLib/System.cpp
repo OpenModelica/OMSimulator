@@ -325,7 +325,7 @@ oms_status_enu_t oms::System::addSubModel(const oms::ComRef& cref, const std::st
   return system->addSubModel(tail, path);
 }
 
-oms_status_enu_t oms::System::addResources(const ComRef& cref, std::string& filename)
+oms_status_enu_t oms::System::newResources(const ComRef& cref, const std::string& ssvFilename, const std::string& ssmFilename, bool externalResources)
 {
   ComRef tail(cref);
   ComRef front = tail.pop_front();
@@ -334,44 +334,114 @@ oms_status_enu_t oms::System::addResources(const ComRef& cref, std::string& file
   {
     // top level system and subsystems
     Values resources;
+    if (externalResources) // check of external resources and override the start values with new references
+    {
+      Snapshot snapshot;
+      snapshot.importResourceFile(ssvFilename, getModel().getTempDirectory() + "/resources");
+
+      // import ssm file, if provided
+      if (!ssmFilename.empty())
+        snapshot.importResourceFile(ssmFilename, getModel().getTempDirectory() + "/resources");
+
+      //snapshot.debugPrintAll();
+      if (oms_status_ok != resources.importFromSnapshot(snapshot, ssvFilename, ssmFilename))
+        return logError("oms_referenceResources failed for \"" + std::string(getFullCref()) + ":" + ssvFilename + "\"");
+    }
+
     if (!values.hasResources())
     {
-      resources.allresources[filename] = resources;
+      resources.allresources["resources/" + ssvFilename] = resources;
+      if (!ssmFilename.empty())
+        resources.ssmFile = "resources/"+ ssmFilename;
       values.parameterResources.push_back(resources);
     }
     else
     {
       // generate empty ssv file, if more resources are added to same level
-      values.parameterResources[0].allresources[filename] = resources;
+      if (!ssmFilename.empty())
+        resources.ssmFile = "resources/"+ ssmFilename;
+      values.parameterResources[0].allresources["resources/" + ssvFilename] = resources;
     }
     return oms_status_ok;
   }
 
   auto subsystem = subsystems.find(tail);
   if (subsystem != subsystems.end())
-    return subsystem->second->addResources(tail, filename);
+    return subsystem->second->newResources(tail, ssvFilename, ssmFilename, externalResources);
 
   auto component = components.find(tail);
   if (component != components.end())
-    return component->second->addResources(filename);
+    return component->second->newResources(ssvFilename, ssmFilename, externalResources);
 
   /*check for adding resources to components in subsystems
     e.g root.system1.add
-    oms_addResources("root.system1.add:add.ssv")
+    oms_newResources("root.system1.add:add.ssv")
   */
   ComRef tailA(tail);
   ComRef frontA = tailA.pop_front();
 
   System* system = this->getSystem(frontA);
   if (!system)
-    return logError("System \"" + std::string(getFullCref()) + "\" does not contain subSystem \"" + std::string(frontA) + "\"");
+    return logError("System \"" + std::string(getFullCref()) + "\" does not contain subsystem or component \"" + std::string(frontA) + "\"");
 
   auto componentA = system->components.find(tailA);
   if (componentA != components.end())
-    return componentA->second->addResources(filename);
+    return componentA->second->newResources(ssvFilename, ssmFilename, externalResources);
 
-  return logError("failed for \"" + std::string(getFullCref() + cref) + "\""  + " as the identifier could not be resolved to a system or subsystem or component");
+  return logError("failed for \"" + std::string(getModel().getCref() + cref) + ":" + ssvFilename + "\""  + " as the identifier could not be resolved to a system or subsystem or component");
 }
+
+oms_status_enu_t oms::System::deleteReferencesInSSD(const ComRef& cref, const std::string& filename)
+{
+  ComRef tail(cref);
+  ComRef front = tail.pop_front();
+
+  if (tail.isEmpty())
+  {
+    if (values.hasResources())
+      if (oms_status_ok == values.deleteReferencesInSSD(filename))
+        return oms_status_ok;
+  }
+
+  auto subsystem = subsystems.find(tail);
+  if (subsystem != subsystems.end())
+    return subsystem->second->deleteReferencesInSSD(tail, filename);
+
+  auto component = components.find(tail);
+  if (component != components.end())
+    if (oms_status_ok == component->second->deleteReferencesInSSD(filename))
+      return oms_status_ok;
+
+  return logError("failed to delete references in ssd, as the reference file \"" + std::string(getModel().getCref() + cref) + ":" + filename + "\""  + " could not be resolved to a system or subsystem or component");
+}
+
+oms_status_enu_t oms::System::deleteResourcesInSSP(const std::string& filename)
+{
+  // search in top level system
+  if (values.hasResources())
+  {
+    if (oms_status_ok == values.deleteResourcesInSSP(filename))
+      return oms_status_ok;
+  }
+  // search in subsytems
+  for (const auto &subsystem : subsystems)
+  {
+    if (subsystem.second->values.hasResources())
+    {
+      if (oms_status_ok == subsystem.second->values.deleteResourcesInSSP(filename))
+        return oms_status_ok;
+    }
+  }
+  // search in component
+  for (const auto& component : components)
+  {
+    if (oms_status_ok == component.second->deleteResourcesInSSP(filename))
+      return oms_status_ok;
+  }
+
+  return logError("failed to delete resources in ssp, as the reference file \"" + std::string(getModel().getCref()) + ":" + filename + "\""  + " could not be resolved to a system or subsystem or component");
+}
+
 
 oms_status_enu_t oms::System::listUnconnectedConnectors(char** contents) const
 {

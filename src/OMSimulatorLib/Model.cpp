@@ -495,13 +495,120 @@ oms_status_enu_t oms::Model::updateParameterBindingsToSSD(pugi::xml_node& node, 
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Model::addResources(const oms::ComRef& cref)
+oms_status_enu_t oms::Model::newResources(const oms::ComRef& cref)
 {
   ComRef subCref(cref);
-  std::string fileName = "resources/" + subCref.pop_suffix();
+  const std::string fileName = subCref.pop_suffix();
+
+  if (fileName.empty())
+    return logError("resource file not provided for \"" + std::string(getCref()+cref) + "\", Provide a valid reference file eg: \"model.root:test1.ssv\"");
+
+  std::string extension = "";
+  if (fileName.length() > 4)
+    extension = fileName.substr(fileName.length() - 4);
+
+  if (extension != ".ssv")
+    return logError("filename extension for \"" + std::string(getCref() + cref) + "\" must be \".ssv\", no other formats are supported");
 
   if (system)
-    return system->addResources(subCref, fileName);
+    return system->newResources(subCref, fileName);
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Model::addResources(const oms::ComRef& cref, const std::string& path)
+{
+  filesystem::path path_ = oms_canonical(path);
+  if (!filesystem::exists(path_))
+    return logError("file does not exist: \"" + path + "\"");
+
+  ComRef subCref(cref);
+  std::string fileName = subCref.pop_suffix();
+
+  // get the filename from path, if no name provided
+  if (fileName.empty())
+  {
+    filesystem::path path_(path);
+    fileName = path_.filename().generic_string();
+  }
+
+  // copy the file to temp directory
+  filesystem::path temp_root(getTempDirectory());
+  filesystem::path temp_temp = temp_root / "temp";
+  filesystem::path relFMUPath = filesystem::path("resources/" + fileName);
+  filesystem::path absFMUPath = temp_root / relFMUPath;
+  oms_copy_file(filesystem::path(path), absFMUPath);
+  // push to external resources
+  externalResources.push_back("resources/"+ fileName);
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Model::referenceResources(const oms::ComRef& cref, const std::string& ssmFile)
+{
+  ComRef subCref(cref);
+  std::string fileName = subCref.pop_suffix();
+
+  if (fileName.empty())
+    return logError("reference file not provided for \"" + std::string(getCref() + cref) + "\", hence switching reference file to a new \".ssv\" or \".ssm\" cannot be done.");
+
+  std::string ssvExtension = "";
+  if (fileName.length() > 4)
+    ssvExtension = fileName.substr(fileName.length() - 4);
+
+  if (ssvExtension != ".ssv")
+    return logError("filename extension for \"" + std::string(getCref() + cref) + "\" must be \".ssv\", no other formats are supported");
+
+  if (!ssmFile.empty())
+  {
+    std::string ssmExtension = "";
+    if (ssmFile.length() > 4)
+      ssmExtension = ssmFile.substr(ssmFile.length() - 4);
+    if (ssmExtension != ".ssm")
+      return logError("filename extension for \"" + ssmFile + "\" must be \".ssm\", no other formats are supported");
+  }
+
+  if (system)
+    return system->newResources(subCref, fileName, ssmFile, true);
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Model::deleteReferencesInSSD(const oms::ComRef& cref)
+{
+  ComRef subCref(cref);
+  std::string fileName = subCref.pop_suffix();
+
+  if (fileName.empty())
+    return logError("reference file not provided for \"" + std::string(getCref()+cref) + "\", hence deleting reference file cannot be done. Provide a valid reference file eg: \"model.root:test1.ssv\"");
+
+  std::string extension = "";
+  if (fileName.length() > 4)
+    extension = fileName.substr(fileName.length() - 4);
+
+  if (extension != ".ssv" && extension != ".ssm")
+    return logError("filename extension for \"" + std::string(getCref() + cref) + "\" must be \".ssv\" or \".ssm\", no other formats are supported");
+
+  if (system)
+    return system->deleteReferencesInSSD(subCref, fileName);
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Model::deleteResourcesInSSP(const std::string & fileName)
+{
+  if (fileName.empty())
+    return logError("reference file not provided for \"" + std::string(getCref()) + "\", hence deleting resource file cannot be done. Provide a valid reference file eg: \"model:test1.ssv\"");
+
+  std::string extension = "";
+  if (fileName.length() > 4)
+    extension = fileName.substr(fileName.length() - 4);
+
+  if (extension != ".ssv" && extension != ".ssm")
+    return logError("filename extension for \"" + std::string(getCref()) + ":" + fileName + "\" must be \".ssv\" or \".ssm\", no other formats are supported");
+
+  if (system)
+    return system->deleteResourcesInSSP(fileName);
 
   return oms_status_ok;
 }
@@ -776,8 +883,25 @@ void oms::Model::writeAllResourcesToFilesystem(std::vector<std::string>& resourc
       logError("failed to export \"" + filename + " to directory " + tempDir);
   }
 
+  // export the unreferenced ssv and ssm files to ssp, this must be extended to export all unreferenced resources
+  for (auto & it : importedResources)
+  {
+    auto file = std::find(resources.begin(), resources.end(), "resources/"+ it);
+    if (file == resources.end())
+      resources.push_back("resources/"+ it); // export unreferenced resources
+  }
+
   if (system)
     system->getAllResources(resources);
+
+  // check for external resources added at model level
+  if (!externalResources.empty())
+  {
+    for (const auto &file : externalResources)
+    {
+      resources.push_back(file);
+    }
+  }
 }
 
 oms_status_enu_t oms::Model::setStartTime(double value)

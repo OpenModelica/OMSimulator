@@ -38,13 +38,14 @@
 
 
 oms::Variable::Variable(fmi2_import_variable_t* var)
-  : der_index(0), state_index(0), is_state(false), is_der(false), cref(fmi2_import_get_variable_name(var)), index(fmi2_import_get_variable_original_order(var))
+  : der_index(0), state_index(0), is_state(false), is_der(false), is_continuous_time_state(false), is_continuous_time_der(false), cref(fmi2_import_get_variable_name(var)), index(fmi2_import_get_variable_original_order(var))
 {
   // extract the attributes
   description = fmi2_import_get_variable_description(var) ? fmi2_import_get_variable_description(var) : "";
   trim(description);
   vr = fmi2_import_get_variable_vr(var);
   causality = fmi2_import_get_causality(var);
+  variability = fmi2_import_get_variability(var);
   initialProperty = fmi2_import_get_initial(var);
 
   switch (fmi2_import_get_variable_base_type(var))

@@ -80,6 +80,7 @@ class OMSimulator:
     self.deleteConnection = Scope._capi.deleteConnection
     self.deleteConnectorFromBus = Scope._capi.deleteConnectorFromBus
     self.deleteConnectorFromTLMBus = Scope._capi.deleteConnectorFromTLMBus
+    self.deleteResources = Scope._capi.deleteResources
     self.doStep = Scope._capi.doStep
     self.export = Scope._capi.export
     self.exportDependencyGraphs = Scope._capi.exportDependencyGraphs
@@ -106,6 +107,8 @@ class OMSimulator:
     self.list = Scope._capi.list
     self.listUnconnectedConnectors = Scope._capi.listUnconnectedConnectors
     self.loadSnapshot = Scope._capi.loadSnapshot
+    self.newResources = Scope._capi.newResources
+    self.referenceResources = Scope._capi.referenceResources
     self.removeSignalsFromResults = Scope._capi.removeSignalsFromResults
     self.rename = Scope._capi.rename
     self.reset = Scope._capi.reset

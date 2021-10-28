@@ -14,7 +14,7 @@ oms_newModel("import_export_parameters")
 
 oms_addSystem("import_export_parameters.co_sim", oms_system_wc)
 
-oms_addResources("import_export_parameters.co_sim:import_export_parameters.ssv")
+oms_newResources("import_export_parameters.co_sim:import_export_parameters.ssv")
 
 oms_addConnector("import_export_parameters.co_sim.Input_cref", oms_causality_input, oms_signal_type_real)
 oms_addConnector("import_export_parameters.co_sim.Output_cref", oms_causality_output, oms_signal_type_real)

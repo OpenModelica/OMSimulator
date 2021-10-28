@@ -17,7 +17,7 @@ oms_addConnector("addResources.root.Input1", oms_causality_input, oms_signal_typ
 oms_addConnector("addResources.root.Input2", oms_causality_input, oms_signal_type_real)
 
 -- add only top level resources
-oms_addResources("addResources.root:root.ssv")
+oms_newResources("addResources.root:root.ssv")
 
 oms_setReal("addResources.root.Input1", 10)
 
