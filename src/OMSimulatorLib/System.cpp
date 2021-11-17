@@ -350,9 +350,9 @@ oms_status_enu_t oms::System::newResources(const ComRef& cref, const std::string
 
     if (!values.hasResources())
     {
-      resources.allresources["resources/" + ssvFilename] = resources;
       if (!ssmFilename.empty())
         resources.ssmFile = "resources/"+ ssmFilename;
+      resources.allresources["resources/" + ssvFilename] = resources;
       values.parameterResources.push_back(resources);
     }
     else
