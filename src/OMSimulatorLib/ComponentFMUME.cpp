@@ -44,6 +44,8 @@
 #include <JM/jm_portability.h>
 #include <RegEx.h>
 #include <unordered_set>
+#include <cmath>
+
 
 oms::ComponentFMUME::ComponentFMUME(const ComRef& cref, System* parentSystem, const std::string& fmuPath)
   : oms::Component(cref, oms_component_fmu, parentSystem, fmuPath), fmuInfo(fmuPath)
