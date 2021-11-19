@@ -5,6 +5,7 @@ addExternalResources1.lua \
 addExternalResources2.lua \
 addExternalResources3.py \
 addExternalResources4.py \
+addExternalResources5.lua \
 buses.lua \
 buses.py \
 connections.lua \

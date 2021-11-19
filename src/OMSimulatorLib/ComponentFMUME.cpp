@@ -738,9 +738,9 @@ oms_status_enu_t oms::ComponentFMUME::newResources(const std::string& ssvFilenam
 
   if (!values.hasResources())
   {
-    resources.allresources["resources/" + ssvFilename] = resources;
     if(!ssmFilename.empty())
       resources.ssmFile = "resources/" + ssmFilename;
+    resources.allresources["resources/" + ssvFilename] = resources;
     values.parameterResources.push_back(resources);
   }
   else
