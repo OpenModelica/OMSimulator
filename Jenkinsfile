@@ -728,6 +728,7 @@ void partest(cache=true, extraArgs='') {
 
   sh ("""#!/bin/bash -x
   ulimit -t 1500
+  ulimit -v 6291456 # Max 6GB per process
 
   cd testsuite/partest
   ./runtests.pl ${env.ASAN ? "-asan": ""} ${env.ASAN ? "-j1": "-j${numPhysicalCPU()}"} -nocolour ${env.BRANCH_NAME == "master" ? "-notlm" : ""} -with-xml ${params.RUNTESTS_FLAG} ${extraArgs}
