@@ -99,6 +99,7 @@ bool oms::ResultWriter::create(const std::string& filename, double startTime, do
     return false;
 
   data_2 = new double[bufferSize*(signals.size() + 1)];
+  memset (data_2, 0, sizeof(double)*bufferSize*(signals.size() + 1));
   nEmits = 0;
   return true;
 }
