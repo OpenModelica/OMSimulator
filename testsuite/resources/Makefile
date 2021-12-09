@@ -43,8 +43,6 @@ tlm.mass \
 tlm.massSpring \
 tlm.source \
 tlm.UpperPendulum \
-tlm.UpperPendulumFG \
-tlm.UpperPendulumFG \
 
 SSPs = \
 embrace \
