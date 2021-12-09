@@ -9,6 +9,7 @@ pipeline {
   parameters {
     booleanParam(name: 'MSVC64', defaultValue: true, description: 'Build with MSVC64 (often hangs)')
     booleanParam(name: 'MINGW32', defaultValue: false, description: 'Build with MINGW32')
+    booleanParam(name: 'LINUX64-ASAN', defaultValue: false, description: 'Build with linux64 asan')
     booleanParam(name: 'SUBMODULE_UPDATE', defaultValue: false, description: 'Allow pull request to update submodules (disabled by default due to common user errors)')
     booleanParam(name: 'UPLOAD_BUILD_OPENMODELICA', defaultValue: false, description: 'Upload install artifacts to build.openmodelica.org/omsimulator. Activates MINGW32 as well.')
     string(name: 'RUNTESTS_FLAG', defaultValue: '', description: 'runtests.pl flag')
@@ -71,6 +72,10 @@ pipeline {
           }
         }
         stage('linux64-asan') {
+          when {
+            expression { return params.LINUX64-ASAN }
+            beforeAgent true
+          }
           stages {
             stage('build') {
               agent {
