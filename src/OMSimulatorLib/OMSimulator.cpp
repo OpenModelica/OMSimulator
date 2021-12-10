@@ -1178,11 +1178,17 @@ oms_status_enu_t oms_RunFile(const char* filename)
     lua_State *L = luaL_newstate();
     luaL_openlibs(L);
     luaopen_OMSimulatorLua(L);
-    if (luaL_loadfile(L, filename))
-      return logError(lua_tostring(L, -1));
+    if (luaL_loadfile(L, filename)) {
+      logError(lua_tostring(L, -1));
+      lua_close(L);
+      return oms_status_error;
+    }
 
-    if (lua_pcall(L, 0, 0, 0))
-      return logError(lua_tostring(L, -1));
+    if (lua_pcall(L, 0, 0, 0)) {
+      logError(lua_tostring(L, -1));
+      lua_close(L);
+      return oms_status_error;
+    }
 
     lua_close(L);
 #else
