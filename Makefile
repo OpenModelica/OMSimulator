@@ -128,7 +128,7 @@ OMSimulator:
 	@echo LIBXML2: $(LIBXML2)
 	@echo "# make OMSimulator"
 	@echo
-	@$(MAKE) CC="$(CXX)" CXX="$(CXX)" OMTLMSimulator
+	@$(MAKE) CC="$(CC)" CXX="$(CXX)" OMTLMSimulator
 	@$(MAKE) OMSimulatorCore
 	test ! -z "$(DISABLE_RUN_OMSIMULATOR_VERSION)" || $(TOP_INSTALL_DIR)/bin/OMSimulator --version
 
