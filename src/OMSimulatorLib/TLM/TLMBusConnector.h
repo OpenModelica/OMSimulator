@@ -19,24 +19,24 @@ namespace oms
 class Component;
 class System;
 
-typedef struct  {
+typedef struct oms_tlm_sigrefs_signal_t {
     int y = 0;
 } oms_tlm_sigrefs_signal_t;
 
-typedef struct  {
+typedef struct oms_tlm_sigrefs_1d_t {
     int x = 0;
     int v = 1;
     int f = 2;
 } oms_tlm_sigrefs_1d_t;
 
-typedef struct  {
+typedef struct oms_tlm_sigrefs_1d_cg_t {
     int x = 0;
     int v = 1;
     int c = 2;
     int Z = 3;
 } oms_tlm_sigrefs_1d_cg_t;
 
-typedef struct  {
+typedef struct oms_tlm_sigrefs_1d_fg_t {
     int x = 0;
     int v = 1;
     std::vector<int> c = {2,3,4,5,6,7,8,9,10,11};
@@ -44,7 +44,7 @@ typedef struct  {
     int Z = 22;
 } oms_tlm_sigrefs_1d_fg_t;
 
-typedef struct  {
+typedef struct oms_tlm_sigrefs_2d_t {
     std::vector<int> x   = {0,1};
     std::vector<int> phi = {2};
     std::vector<int> v   = {3,4};
@@ -52,7 +52,7 @@ typedef struct  {
     std::vector<int> f   = {6,7,8};
 } oms_tlm_sigrefs_2d_t;
 
-typedef struct  {
+typedef struct oms_tlm_sigrefs_3d_t {
     std::vector<int> x = {0,1,2};
     std::vector<int> A = {3,4,5,6,7,8,9,10,11};
     std::vector<int> v = {12,13,14};
@@ -60,7 +60,7 @@ typedef struct  {
     std::vector<int> f = {18,19,20,21,22,23};
 } oms_tlm_sigrefs_3d_t;
 
-typedef struct  {
+typedef struct oms_tlm_sigrefs_3d_cg_t {
     std::vector<int> x = {0,1,2};
     std::vector<int> A = {3,4,5,6,7,8,9,10,11};
     std::vector<int> v = {12,13,14};
@@ -70,7 +70,7 @@ typedef struct  {
     int Zr = 25;
 } oms_tlm_sigrefs_3d_cg_t;
 
-typedef struct  {
+typedef struct oms_tlm_sigrefs_3d_fg_t {
     std::vector<int> x =  {0,1,2};
     std::vector<int> A =  {3,4,5,6,7,8,9,10,11};
     std::vector<int> v =  {12,13,14};
