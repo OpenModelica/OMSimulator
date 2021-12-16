@@ -141,6 +141,20 @@ oms_status_enu_t oms::Scope::exportModel(const oms::ComRef& cref, const std::str
   return model->exportToFile(filename);
 }
 
+oms_status_enu_t oms::Scope::exportModelFMU(const oms::ComRef& cref, const std::string& filename)
+{
+  oms_status_enu_t status = oms_status_ok;
+  oms::Model* model = getModel(cref);
+  if (!model)
+    return logError("Model \"" + std::string(cref) + "\" does not exist in the scope");
+
+  status = model->exportToFile(filename + ".ssp");
+  if (status != oms_status_ok)
+    return logError("Model \"" + std::string(cref) + "\" could not be exported as SSP embedded in an FMU");
+  return model->exportToFMU(filename);
+}
+
+
 oms_status_enu_t oms::Scope::miniunz(const std::string& filename, const std::string& extractdir)
 {
   // This function is used to extract complete SSP/FMU files:

@@ -97,3 +97,10 @@ const char* oms::ssp::Version1_0::ssc::annotation                      = "ssc:An
 
 const char* oms::ssp::Version1_0::ssm::parameter_mapping               = "ssm:ParameterMapping";
 const char* oms::ssp::Version1_0::ssm::parameter_mapping_entry         = "ssm:MappingEntry";
+
+const char* oms::fmu::fmiModelDescription                              = "fmiModelDescription";
+const char* oms::fmu::CoSimulation                                     = "CoSimulation";
+const char* oms::fmu::DefaultExperiment                                = "DefaultExperiment";
+const char* oms::fmu::ModelVariables                                   = "ModelVariables";
+const char* oms::fmu::ScalarVariable                                   = "ScalarVariable";
+const char* oms::fmu::ModelStructure                                   = "ModelStructure";

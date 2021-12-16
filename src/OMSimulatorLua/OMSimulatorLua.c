@@ -236,6 +236,23 @@ static int OMSimulatorLua_oms_export(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms_export_fmu(const char* cref, const char* filename);
+static int OMSimulatorLua_oms_export_fmu(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 arguments");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+
+  const char* cref = lua_tostring(L, 1);
+  const char* filename = lua_tostring(L, 2);
+  oms_status_enu_t status = oms_export_fmu(cref, filename);
+
+  lua_pushinteger(L, status);
+  return 1;
+}
+
+
 //oms_status_enu_t oms_importFile(const char* filename, const char** cref);
 static int OMSimulatorLua_oms_importFile(lua_State *L)
 {

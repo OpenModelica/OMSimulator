@@ -437,3 +437,18 @@ oms_status_enu_t oms::Snapshot::writeResourceNode(const filesystem::path& filena
     return oms_status_error;
   return oms_status_ok;
 }
+
+pugi::xml_node oms::Snapshot::getModelDescriptionNode(const filesystem::path& filename, const ComRef& cref)
+{
+  pugi::xml_node new_node = newResourceNode(filename);
+  pugi::xml_node xmlNode = new_node.append_child(oms::fmu::fmiModelDescription);
+  xmlNode.append_attribute("fmiVersion") = "2.0";
+  xmlNode.append_attribute("modelName") = cref.c_str();
+  xmlNode.append_attribute("guid") = "{aaaaaaaa-bbbb-cccc-eeee-45729bd9f89b}";
+  xmlNode.append_attribute("description") = std::string("FMU wrapper for SSP model") + std::string(cref.c_str());
+  xmlNode.append_attribute("generationTool")="OMSimulator";
+  xmlNode.append_attribute("generationDateAndTime") = "2021";
+  xmlNode.append_attribute("variableNamingConvention")="structured";
+  xmlNode.append_attribute("numberOfEventIndicators")="0";
+  return xmlNode;
+}

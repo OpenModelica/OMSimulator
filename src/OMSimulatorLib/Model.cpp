@@ -873,6 +873,69 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::Model::exportToFMU(const std::string& filename) const
+{
+
+  Snapshot snapshot;
+
+  std::string extension = "";
+  if (filename.length() > 4)
+    extension = filename.substr(filename.length() - 4);
+
+  if (extension != ".fmu")
+    return logError("filename extension must be \".fmu\"; no other formats are supported");
+
+  pugi::xml_node xmlNode = snapshot.getModelDescriptionNode("modelDescription.xml", this->getCref());
+
+  if (system)
+  {
+    pugi::xml_node system_node = xmlNode.append_child(oms::fmu::CoSimulation);
+    if (oms_status_ok != system->exportToFMU(system_node, snapshot))
+      return logError("export of system failed");
+  }
+
+  pugi::xml_node default_experiment = xmlNode.append_child(oms::fmu::DefaultExperiment);
+  default_experiment.append_attribute("startTime") = std::to_string(startTime).c_str();
+  default_experiment.append_attribute("stopTime") = std::to_string(stopTime).c_str();
+
+  // export openmodelica_default_experiment as vendor annotations
+  pugi::xml_node node_annotations = default_experiment.append_child(oms::ssp::Draft20180219::ssd::annotations);
+  pugi::xml_node node_annotation = node_annotations.append_child(oms::ssp::Version1_0::ssc::annotation);
+  node_annotation.append_attribute("type") =  oms::ssp::Draft20180219::annotation_type;
+  pugi::xml_node oms_annotation_node = node_annotation.append_child(oms::ssp::Version1_0::oms_annotations);
+  pugi::xml_node oms_simulation_information = oms_annotation_node.append_child(oms::ssp::Version1_0::simulation_information);
+  //pugi::xml_node oms_default_experiment = oms_simulation_information.append_child("DefaultExperiment");
+
+  oms_simulation_information.append_attribute("resultFile") = resultFilename.c_str();
+  oms_simulation_information.append_attribute("loggingInterval") = std::to_string(loggingInterval).c_str();
+  oms_simulation_information.append_attribute("bufferSize") = std::to_string(bufferSize).c_str();
+  oms_simulation_information.append_attribute("signalFilter") = signalFilterFilename.c_str();
+
+  // add the ssp to the resources folder
+  std::vector<std::string> resources;
+  resources.push_back(filename + ".ssp");
+
+  std::string cd = Scope::GetInstance().getWorkingDirectory();
+  Scope::GetInstance().setWorkingDirectory(tempDir);
+  int argc = 4 + resources.size();
+  char **argv = new char*[argc];
+  int i=0;
+  argv[i++] = (char*)"minizip";
+  argv[i++] = (char*)"-o";
+  argv[i++] = (char*)"-1";
+  argv[i++] = (char*)"temp/model.fmu";
+  for (const auto& file : resources)
+    argv[i++]=(char*)file.c_str();
+  minizip(argc, argv);
+  delete[] argv;
+  Scope::GetInstance().setWorkingDirectory(cd);
+
+  filesystem::path full_path = filesystem::path(tempDir) / "temp/model.fmu";
+  oms_copy_file(full_path, filesystem::path(filename));
+
+  return oms_status_ok;
+}
+
 void oms::Model::writeAllResourcesToFilesystem(std::vector<std::string>& resources, Snapshot& snapshot) const
 {
   // get all files from snapshot and save the document (eg.) ssd, ssv and signalFilter

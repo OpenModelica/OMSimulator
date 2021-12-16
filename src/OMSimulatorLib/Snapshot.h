@@ -69,6 +69,8 @@ namespace oms
     oms_status_enu_t exportPartialSnapshot(const ComRef& cref, Snapshot& partialSnapshot);
     oms_status_enu_t importPartialSnapshot(const char* fullsnapshot);
 
+    pugi::xml_node getModelDescriptionNode(const filesystem::path& filename, const ComRef& cref);
+
     void debugPrintNode(const filesystem::path& filename) const;
     void debugPrintAll() const;
     oms::ComRef getRootCref() const;

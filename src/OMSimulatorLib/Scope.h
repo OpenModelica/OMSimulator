@@ -63,6 +63,7 @@ namespace oms
     oms_status_enu_t deleteModel(const ComRef& cref);
     oms_status_enu_t renameModel(const ComRef& cref, const ComRef& newCref);
     oms_status_enu_t exportModel(const ComRef& cref, const std::string& filename);
+    oms_status_enu_t exportModelFMU(const ComRef& cref, const std::string& filename);
     oms_status_enu_t importModel(const std::string& filename, char** cref);
     oms_status_enu_t setTempDirectory(const std::string& newTempDir);
     oms_status_enu_t setWorkingDirectory(const std::string& newWorkingDir);

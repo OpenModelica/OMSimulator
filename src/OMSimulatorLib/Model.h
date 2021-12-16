@@ -87,6 +87,7 @@ namespace oms
     oms_status_enu_t importSnapshot(const char* snapshot, char** newCref);
     oms_status_enu_t importSignalFilter(const std::string& filename, const Snapshot& snapshot);
     oms_status_enu_t exportToFile(const std::string& filename) const;
+    oms_status_enu_t exportToFMU(const std::string& filename) const;
     oms_system_enu_t getSystemType(const pugi::xml_node& node, const std::string& sspVersion);
     oms_system_enu_t getSystemTypeHelper(const pugi::xml_node& node, const std::string& sspVersion);
     oms_status_enu_t updateParameterBindingsToSSD(pugi::xml_node& node, bool isTopSystemOrModel) const;

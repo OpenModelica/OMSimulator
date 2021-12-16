@@ -217,6 +217,11 @@ oms_status_enu_t oms_export(const char* cref, const char* filename)
   return oms::Scope::GetInstance().exportModel(oms::ComRef(cref), std::string(filename));
 }
 
+oms_status_enu_t oms_export_fmu(const char* cref, const char* filename)
+{
+  return oms::Scope::GetInstance().exportModelFMU(oms::ComRef(cref), std::string(filename));
+}
+
 oms_status_enu_t oms_faultInjection(const char* signal, oms_fault_type_enu_t faultType, double faultValue)
 {
   oms::ComRef tail(signal);

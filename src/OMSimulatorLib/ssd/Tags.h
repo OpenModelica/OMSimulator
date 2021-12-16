@@ -122,6 +122,15 @@ namespace oms
 
     }
   }
+  namespace fmu
+  {
+    extern const char* fmiModelDescription;
+    extern const char* CoSimulation;
+    extern const char* DefaultExperiment;
+    extern const char* ModelVariables;
+    extern const char* ScalarVariable;
+    extern const char* ModelStructure;
+  }
 }
 
 #endif
