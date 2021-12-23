@@ -445,7 +445,8 @@ pugi::xml_node oms::Snapshot::getModelDescriptionNode(const filesystem::path& fi
   xmlNode.append_attribute("fmiVersion") = "2.0";
   xmlNode.append_attribute("modelName") = cref.c_str();
   xmlNode.append_attribute("guid") = "{aaaaaaaa-bbbb-cccc-eeee-45729bd9f89b}";
-  xmlNode.append_attribute("description") = std::string("FMU wrapper for SSP model") + std::string(cref.c_str());
+  std::string s = std::string("FMU wrapper for SSP model:") + std::string(cref.c_str());
+  xmlNode.append_attribute("description") = s.c_str();
   xmlNode.append_attribute("generationTool")="OMSimulator";
   xmlNode.append_attribute("generationDateAndTime") = "2021";
   xmlNode.append_attribute("variableNamingConvention")="structured";

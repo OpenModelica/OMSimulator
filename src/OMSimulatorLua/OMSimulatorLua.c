@@ -1373,6 +1373,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms_deleteConnectorFromTLMBus);
   REGISTER_LUA_CALL(oms_deleteResources);
   REGISTER_LUA_CALL(oms_export);
+  REGISTER_LUA_CALL(oms_export_fmu);
   REGISTER_LUA_CALL(oms_exportDependencyGraphs);
   REGISTER_LUA_CALL(oms_exportSnapshot);
   REGISTER_LUA_CALL(oms_exportSSVTemplate);

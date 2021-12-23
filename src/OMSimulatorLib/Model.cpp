@@ -891,29 +891,18 @@ oms_status_enu_t oms::Model::exportToFMU(const std::string& filename) const
   {
     pugi::xml_node system_node = xmlNode.append_child(oms::fmu::CoSimulation);
     if (oms_status_ok != system->exportToFMU(system_node, snapshot))
-      return logError("export of system failed");
+      return logError("export of system as FMU failed");
   }
 
   pugi::xml_node default_experiment = xmlNode.append_child(oms::fmu::DefaultExperiment);
   default_experiment.append_attribute("startTime") = std::to_string(startTime).c_str();
   default_experiment.append_attribute("stopTime") = std::to_string(stopTime).c_str();
 
-  // export openmodelica_default_experiment as vendor annotations
-  pugi::xml_node node_annotations = default_experiment.append_child(oms::ssp::Draft20180219::ssd::annotations);
-  pugi::xml_node node_annotation = node_annotations.append_child(oms::ssp::Version1_0::ssc::annotation);
-  node_annotation.append_attribute("type") =  oms::ssp::Draft20180219::annotation_type;
-  pugi::xml_node oms_annotation_node = node_annotation.append_child(oms::ssp::Version1_0::oms_annotations);
-  pugi::xml_node oms_simulation_information = oms_annotation_node.append_child(oms::ssp::Version1_0::simulation_information);
-  //pugi::xml_node oms_default_experiment = oms_simulation_information.append_child("DefaultExperiment");
-
-  oms_simulation_information.append_attribute("resultFile") = resultFilename.c_str();
-  oms_simulation_information.append_attribute("loggingInterval") = std::to_string(loggingInterval).c_str();
-  oms_simulation_information.append_attribute("bufferSize") = std::to_string(bufferSize).c_str();
-  oms_simulation_information.append_attribute("signalFilter") = signalFilterFilename.c_str();
-
   // add the ssp to the resources folder
   std::vector<std::string> resources;
-  resources.push_back(filename + ".ssp");
+  resources.push_back("modelDescription.xml");
+  resources.push_back("resources/" + filename + ".ssp");
+  writeFMUResourcesToFilesystem(resources, snapshot);
 
   std::string cd = Scope::GetInstance().getWorkingDirectory();
   Scope::GetInstance().setWorkingDirectory(tempDir);
@@ -1358,4 +1347,14 @@ oms_status_enu_t oms::Model::importSignalFilter(const std::string& filename, con
   }
 
   return oms_status_ok;
+}
+
+
+void oms::Model::writeFMUResourcesToFilesystem(std::vector<std::string>& resources, Snapshot& snapshot) const
+{
+  for (auto const &filename : resources)
+  {
+    if (oms_status_ok != snapshot.writeResourceNode(filename, filesystem::path(tempDir)))
+      logError("failed to export \"" + filename + " to directory " + tempDir);
+  }
 }
