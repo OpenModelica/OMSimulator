@@ -81,6 +81,8 @@ namespace oms
     oms_status_enu_t setInteger(const ComRef& cref, int value);
     oms_status_enu_t setReal(const ComRef& cref, double value);
 
+    oms_status_enu_t getDirectionalDerivative(const ComRef& cref, double& value);
+
     oms_status_enu_t deleteStartValue(const ComRef& cref);
 
     oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultFile);

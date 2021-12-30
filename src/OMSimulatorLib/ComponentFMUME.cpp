@@ -1141,6 +1141,12 @@ oms_status_enu_t oms::ComponentFMUME::getReal(const ComRef& cref, double& value)
   return getReal(vr, value);
 }
 
+oms_status_enu_t oms::ComponentFMUME::getDirectionalDerivative(const ComRef& cref, double& value)
+{
+  // TODO implement the getDirectionalDerivative table
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms::ComponentFMUME::setBoolean(const ComRef& cref, bool value)
 {
   CallClock callClock(clock);

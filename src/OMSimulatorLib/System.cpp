@@ -2134,6 +2134,24 @@ oms_status_enu_t oms::System::getReal(const ComRef& cref, double& value)
   return logError_UnknownSignal(getFullCref() + cref);
 }
 
+oms_status_enu_t oms::System::getDirectionalDerivative(const ComRef& cref, double& value)
+{
+  if (!getModel().validState(oms_modelState_virgin|oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
+    return logError_ModelInWrongState(getModel().getCref());
+
+  oms::ComRef tail(cref);
+  oms::ComRef head = tail.pop_front();
+
+  auto subsystem = subsystems.find(head);
+  if (subsystem != subsystems.end())
+    return logError("getDirectionalDerivative is computed only for fmu signals");
+
+  auto component = components.find(head);
+  if (component != components.end())
+    return component->second->getDirectionalDerivative(tail, value);
+
+  return logError_UnknownSignal(getFullCref() + cref);
+}
 
 oms_status_enu_t oms::System::setBoolean(const ComRef& cref, bool value)
 {
