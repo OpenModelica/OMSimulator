@@ -981,7 +981,7 @@ oms_status_enu_t oms::Values::parseModelDescription(const filesystem::path& root
           std::string dependencies = initialUnknowns.attribute("dependencies").as_string();
           std::vector<int> dependenciesList;
           parseModelStructureDependencies(dependencies, dependenciesList);
-          modelStructureDerivatives[index] = dependenciesList;
+          modelStructureInitialUnknowns[index] = dependenciesList;
         }
       }
     }

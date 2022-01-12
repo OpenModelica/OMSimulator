@@ -1144,6 +1144,9 @@ oms_status_enu_t oms::ComponentFMUME::getReal(const ComRef& cref, double& value)
 oms_status_enu_t oms::ComponentFMUME::getDirectionalDerivative(const ComRef& cref, double& value)
 {
   // TODO implement the getDirectionalDerivative table
+  if (!getModel().validState(oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
+    return logError_ModelInWrongState(getModel().getCref());
+
   return oms_status_ok;
 }
 
