@@ -1226,7 +1226,7 @@ oms_status_enu_t oms::ComponentFMUCS::getDirectionalDerivative(const ComRef& cre
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::ComponentFMUCS::getDirectionalDerivativeHeper(int &index, std::vector<int> &dependencyList, double &value)
+oms_status_enu_t oms::ComponentFMUCS::getDirectionalDerivativeHeper(const int &index, const std::vector<int> &dependencyList, double &value)
 {
   fmi2_value_reference_t vr_unknown = allVariables[index].getValueReference();
 

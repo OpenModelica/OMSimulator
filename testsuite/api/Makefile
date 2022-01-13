@@ -14,6 +14,8 @@ deleteReferencesInSSD1.lua \
 deleteReferencesInSSD2.lua \
 deleteResourcesInSSP1.lua \
 deleteResourcesInSSP2.lua \
+getDirectionalDerivative_CS.lua \
+getDirectionalDerivative_ME.lua \
 importExportAllResources.lua \
 test_omsExport.lua \
 test_omsExport.py \
