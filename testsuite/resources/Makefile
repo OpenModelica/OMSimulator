@@ -27,6 +27,7 @@ Modelica.Blocks.Sources.Clock \
 Modelica.Blocks.Sources.Constant \
 Modelica.Blocks.Sources.Sine \
 Modelica.Blocks.Sources.Step \
+Modelica.Electrical.Analog.Examples.CauerLowPassAnalog \
 QuarterCarModel.DisplacementDisplacement.Chassis \
 QuarterCarModel.DisplacementDisplacement.Wheel \
 QuarterCarModel.DisplacementForce.Chassis \
