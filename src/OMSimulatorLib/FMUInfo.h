@@ -56,6 +56,8 @@ namespace oms
     bool getCanInterpolateInputs() const {return canInterpolateInputs;}
     bool getCanGetAndSetFMUstate() const {return canGetAndSetFMUstate;}
     unsigned int getMaxOutputDerivativeOrder() const {return maxOutputDerivativeOrder;}
+    bool getProvidesDirectionalDerivative() const {return providesDirectionalDerivative;}
+    std::string getGenerationTool() const {return std::string(generationTool);}
 
   private:
     // methods to copy the object

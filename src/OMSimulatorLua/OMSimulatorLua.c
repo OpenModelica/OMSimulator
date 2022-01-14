@@ -647,6 +647,22 @@ static int OMSimulatorLua_oms_getReal(lua_State *L)
   return 2;
 }
 
+//oms_status_enu_t oms_getDirectionalDerivative(const char* cref, double* value);
+static int OMSimulatorLua_oms_getDirectionalDerivative(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* cref = lua_tostring(L, 1);
+  double value = 0.0;
+
+  oms_status_enu_t status = oms_getDirectionalDerivative(cref, &value);
+  lua_pushnumber(L, value);
+  lua_pushinteger(L, status);
+  return 2;
+}
+
 //OMSAPI oms_status_enu_t OMSCALL oms_getSolver(const char* cref, oms_solver_enu_t* solver);
 static int OMSimulatorLua_oms_getSolver(lua_State *L)
 {
@@ -1346,6 +1362,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms_exportSSMTemplate);
   REGISTER_LUA_CALL(oms_faultInjection);
   REGISTER_LUA_CALL(oms_getBoolean);
+  REGISTER_LUA_CALL(oms_getDirectionalDerivative);
   REGISTER_LUA_CALL(oms_getFixedStepSize);
   REGISTER_LUA_CALL(oms_getInteger);
   REGISTER_LUA_CALL(oms_getModelState);

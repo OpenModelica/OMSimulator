@@ -1141,6 +1141,102 @@ oms_status_enu_t oms::ComponentFMUME::getReal(const ComRef& cref, double& value)
   return getReal(vr, value);
 }
 
+oms_status_enu_t oms::ComponentFMUME::getDirectionalDerivative(const ComRef &cref, double &value)
+{
+  // TODO implement the getDirectionalDerivative table
+  if (!getModel().validState(oms_modelState_instantiated | oms_modelState_initialization | oms_modelState_simulation))
+    return logError_ModelInWrongState(getModel().getCref());
+
+  if (!getFMUInfo()->getProvidesDirectionalDerivative())
+    return logError("It is not possible to compute directionalDerivative for signal \"" + std::string(getFullCref() + cref) + "\" as providesDirectionalDerivative is false or not provieded in modelDescription.xml");
+
+  int j = -1;
+  for (size_t i = 0; i < allVariables.size(); i++)
+  {
+    if (allVariables[i].getCref() == cref && allVariables[i].isTypeReal())
+    {
+      j = i;
+      break;
+    }
+  }
+
+  if (!fmu || j < 0)
+    return logError_UnknownSignal(getFullCref() + cref);
+
+  if (oms_modelState_instantiated == getModel().getModelState())
+  {
+    if (getFMUInfo()->getGenerationTool().substr(0, 12) == "OpenModelica")
+      logWarning("It is not possible to get partial derivatives of OpenModelica generated fmus during initialization mode, getting directional derivative after intialization is possible");
+
+    // check index exist in ModelStructure inititalUnknowns
+    auto index = values.modelStructureInitialUnknowns.find(j + 1);
+    if (index == values.modelStructureInitialUnknowns.end())
+      return logError("Signal \"" + std::string(getFullCref() + cref) + "\" could not be resolved to an <InitialUnknowns> index in <ModelStructure>");
+
+    // get dependencylist from <InitialUnknowns> in <ModelStructure>
+    std::vector<int> dependencyList = values.modelStructureInitialUnknowns[j + 1];
+    getDirectionalDerivativeHeper(j, dependencyList, value);
+  }
+
+  if (oms_modelState_simulation == getModel().getModelState())
+  {
+    if (!allVariables[j].isOutput() && !allVariables[j].isState() && !allVariables[j].isDer())
+      return logError("Signal \"" + std::string(getFullCref() + cref) + "\" could not be resolved to an output or state or derivates after initalization");
+
+    // <Outputs>
+    if (allVariables[j].isOutput())
+    {
+      // check index exist in ModelStructure inititalUnknowns
+      auto index = values.modelStructureOutputs.find(j + 1);
+      if (index == values.modelStructureOutputs.end())
+        return logError("Signal \"" + std::string(getFullCref() + cref) + "\" could not be resolved to an <Outputs> index in <ModelStructure>");
+
+      // get dependencylist from <Outputs> in <ModelStructure>
+      std::vector<int> dependencyList = values.modelStructureOutputs[j + 1];
+      getDirectionalDerivativeHeper(j, dependencyList, value);
+    }
+
+    // <Derivatives>
+    if (allVariables[j].isState() || allVariables[j].isDer())
+    {
+      // check index exist in ModelStructure inititalUnknowns
+      auto index = values.modelStructureDerivatives.find(j + 1);
+      if (index == values.modelStructureDerivatives.end())
+        return logError("Signal \"" + std::string(getFullCref() + cref) + "\" could not be resolved to an <Derivatives> index in <ModelStructure>");
+
+      // get dependencylist from <Derivatives> in <ModelStructure>
+      std::vector<int> dependencyList = values.modelStructureDerivatives[j + 1];
+      getDirectionalDerivativeHeper(j, dependencyList, value);
+    }
+  }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::ComponentFMUME::getDirectionalDerivativeHeper(const int &index, const std::vector<int> &dependencyList, double &value)
+{
+  fmi2_value_reference_t vr_unknown = allVariables[index].getValueReference();
+
+  fmi2_value_reference_t *vr_known = 0;
+  vr_known = (fmi2_value_reference_t *)calloc(dependencyList.size(), sizeof(fmi2_value_reference_t *));
+
+  fmi2_real_t *dvknown = 0;
+  dvknown = (fmi2_real_t *)calloc(dependencyList.size(), sizeof(fmi2_real_t *));
+
+  for (int i = 0; i < dependencyList.size(); i++)
+  {
+    vr_known[i] = allVariables[dependencyList[i] - 1].getValueReference();
+    dvknown[i] = 1.0;
+  }
+
+  fmi2_import_get_directional_derivative(fmu, &vr_unknown, 1, vr_known, dependencyList.size(), dvknown, &value);
+
+  free(vr_known);
+  free(dvknown);
+
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms::ComponentFMUME::setBoolean(const ComRef& cref, bool value)
 {
   CallClock callClock(clock);

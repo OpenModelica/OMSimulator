@@ -95,6 +95,8 @@ namespace oms
     void exportParameterMappingToSSM(pugi::xml_node& node) const;
     oms_status_enu_t importStartValuesHelper(const pugi::xml_node& parameters);
 
+    void parseModelStructureDependencies(std::string &dependencies, std::vector<int>& dependencyList);
+
     void importParameterMapping(const pugi::xml_node& parameterMapping);
     oms::ComRef getMappedCrefEntry(const ComRef& cref) const;
     bool empty() const;
@@ -111,6 +113,10 @@ namespace oms
     std::map<ComRef, double> modelDescriptionRealStartValues;   ///< real start values read from modelDescription.xml
     std::map<ComRef, int> modelDescriptionIntegerStartValues;   ///< integer start values read from modelDescription.xml
     std::map<ComRef, bool> modelDescriptionBooleanStartValues;  ///< boolean start values read from modelDescription.xml
+
+    std::map<int, std::vector<int>> modelStructureOutputs;   ///< output and its dependencies from <ModelStructure>
+    std::map<int, std::vector<int>> modelStructureDerivatives;   ///< derivatives and its dependencies from <ModelStructure>
+    std::map<int, std::vector<int>> modelStructureInitialUnknowns;   ///< initialUnknowns and its dependencies from <ModelStructure>
 
     std::multimap<ComRef, ComRef> mappedEntry;  ///< parameter names and values provided in the parameter source are to be mapped to the parameters of the component or system
 

@@ -943,8 +943,61 @@ oms_status_enu_t oms::Values::parseModelDescription(const filesystem::path& root
         }
       }
     }
+    if (name == "ModelStructure")
+    {
+      //ModelStructure-Outputs
+      pugi::xml_node modelStructureOutputNode = it->child("Outputs");
+      if (modelStructureOutputNode)
+      {
+        for (pugi::xml_node output = modelStructureOutputNode.child("Unknown"); output; output = output.next_sibling("Unknown"))
+        {
+          int index = output.attribute("index").as_int();
+          std::string dependencies = output.attribute("dependencies").as_string();
+          std::vector<int> dependenciesList;
+          parseModelStructureDependencies(dependencies, dependenciesList);
+          modelStructureOutputs[index] = dependenciesList;
+        }
+      }
+      // ModelStructure-derivatives
+      pugi::xml_node modelStructureDerivativeNode = it->child("Derivatives");
+      if (modelStructureDerivativeNode)
+      {
+        for (pugi::xml_node derivative = modelStructureDerivativeNode.child("Unknown"); derivative; derivative = derivative.next_sibling("Unknown"))
+        {
+          int index = derivative.attribute("index").as_int();
+          std::string dependencies = derivative.attribute("dependencies").as_string();
+          std::vector<int> dependenciesList;
+          parseModelStructureDependencies(dependencies, dependenciesList);
+          modelStructureDerivatives[index] = dependenciesList;
+        }
+      }
+      // ModelStructure-initialUnknowns
+      pugi::xml_node modelStructureInitialUnknownsNode = it->child("InitialUnknowns");
+      if (modelStructureInitialUnknownsNode)
+      {
+        for (pugi::xml_node initialUnknowns = modelStructureInitialUnknownsNode.child("Unknown"); initialUnknowns; initialUnknowns = initialUnknowns.next_sibling("Unknown"))
+        {
+          int index = initialUnknowns.attribute("index").as_int();
+          std::string dependencies = initialUnknowns.attribute("dependencies").as_string();
+          std::vector<int> dependenciesList;
+          parseModelStructureDependencies(dependencies, dependenciesList);
+          modelStructureInitialUnknowns[index] = dependenciesList;
+        }
+      }
+    }
   }
   return oms_status_ok;
+}
+
+void oms::Values::parseModelStructureDependencies(std::string &dependencies, std::vector<int> &dependencyList)
+{
+  std::stringstream ss(dependencies);
+  std::string temp;
+  while (std::getline(ss, temp, ' '))
+  {
+    if (!temp.empty())
+      dependencyList.push_back(std::stoi(temp));
+  }
 }
 
 void oms::Values::importParameterMapping(const pugi::xml_node& parameterMapping)
