@@ -89,6 +89,7 @@ class OMSimulator:
     self.exportSSVTemplate = Scope._capi.exportSSVTemplate
     self.faultInjection = Scope._capi.faultInjection
     self.getBoolean = Scope._capi.getBoolean
+    self.getDirectionalDerivative = Scope._capi.getDirectionalDerivative
     self.getFixedStepSize = Scope._capi.getFixedStepSize
     self.getInteger = Scope._capi.getInteger
     self.getReal = Scope._capi.getReal

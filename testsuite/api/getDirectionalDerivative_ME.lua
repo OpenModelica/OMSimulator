@@ -24,11 +24,11 @@ oms_initialize("model")
 oms_getDirectionalDerivative("model.root.CauerLowPassAnalog.der(C1.v2)")
 
 print("info:    Partial Derivatives after Initialization")
-print("info:      model.root.CauerLowPassAnalog.der(C1.v)      : " .. oms_getDirectionalDerivative("model.root.CauerLowPassAnalog.der(C1.v)"))
-print("info:      model.root.CauerLowPassAnalog.der(C3.v)      : " .. oms_getDirectionalDerivative("model.root.CauerLowPassAnalog.der(C3.v)"))
-print("info:      model.root.CauerLowPassAnalog.der(C5.v)      : " .. oms_getDirectionalDerivative("model.root.CauerLowPassAnalog.der(C5.v)"))
-print("info:      model.root.CauerLowPassAnalog.der(L1.i)      : " .. oms_getDirectionalDerivative("model.root.CauerLowPassAnalog.der(L1.i)"))
-print("info:      model.root.CauerLowPassAnalog.der(L2.i)      : " .. oms_getDirectionalDerivative("model.root.CauerLowPassAnalog.der(L2.i)"))
+print("info:      model.root.CauerLowPassAnalog.der(C1.v): " .. oms_getDirectionalDerivative("model.root.CauerLowPassAnalog.der(C1.v)"))
+print("info:      model.root.CauerLowPassAnalog.der(C3.v): " .. oms_getDirectionalDerivative("model.root.CauerLowPassAnalog.der(C3.v)"))
+print("info:      model.root.CauerLowPassAnalog.der(C5.v): " .. oms_getDirectionalDerivative("model.root.CauerLowPassAnalog.der(C5.v)"))
+print("info:      model.root.CauerLowPassAnalog.der(L1.i): " .. oms_getDirectionalDerivative("model.root.CauerLowPassAnalog.der(L1.i)"))
+print("info:      model.root.CauerLowPassAnalog.der(L2.i): " .. oms_getDirectionalDerivative("model.root.CauerLowPassAnalog.der(L2.i)"))
 
 
 oms_terminate("model")
@@ -40,12 +40,12 @@ oms_delete("model")
 -- info:    Result file: getDirectionalDerivatives_ME.mat (bufferSize=10)
 -- error:   [getDirectionalDerivative] Unknown signal "model.root.CauerLowPassAnalog.der(C1.v2)"
 -- info:    Partial Derivatives after Initialization
--- info:      model.root.CauerLowPassAnalog.der(C1.v)      : -1.5314025977626
--- info:      model.root.CauerLowPassAnalog.der(C3.v)      : -0.17304778059739
--- info:      model.root.CauerLowPassAnalog.der(C5.v)      : -0.092632949922437
--- info:      model.root.CauerLowPassAnalog.der(L1.i)      : 0.0
--- info:      model.root.CauerLowPassAnalog.der(L2.i)      : 0.0
-    -- info:    Final Statistics for 'model.root':
+-- info:      model.root.CauerLowPassAnalog.der(C1.v): -1.5314025977626
+-- info:      model.root.CauerLowPassAnalog.der(C3.v): -0.17304778059739
+-- info:      model.root.CauerLowPassAnalog.der(C5.v): -0.092632949922437
+-- info:      model.root.CauerLowPassAnalog.der(L1.i): 0.0
+-- info:      model.root.CauerLowPassAnalog.der(L2.i): 0.0
+-- info:    Final Statistics for 'model.root':
 --          NumSteps = 0 NumRhsEvals  = 0 NumLinSolvSetups = 0
 --          NumNonlinSolvIters = 0 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
 -- info:    0 warnings
