@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm -rf getDirectionalDerivative_CS_py/
+## teardown_command: rm -rf getDirectionalDerivative_ME_py/
 ## linux: no
 ## mingw32: no
 ## mingw64: yes
@@ -11,7 +11,7 @@ from OMSimulator import OMSimulator
 oms = OMSimulator()
 
 oms.setCommandLineOption("--suppressPath=true")
-oms.setTempDirectory("./getDirectionalDerivative_CS_py/")
+oms.setTempDirectory("./getDirectionalDerivative_ME_py/")
 
 oms.newModel("model")
 
