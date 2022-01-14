@@ -572,7 +572,7 @@ oms_status_enu_t oms::ComponentFMUCS::instantiate()
       for (const auto &res : it.allresources)
       {
         if (res.second.linkResources) // set values only if resources are linked in ssd
-            setResourcesHelper1(res.second);
+          setResourcesHelper1(res.second);
       }
     }
   }
