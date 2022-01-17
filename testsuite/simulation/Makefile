@@ -15,6 +15,8 @@ exportConnectorsToResultFile.lua \
 exportSSMTemplate.lua \
 exportSSMTemplate.py \
 exportSnapshotSSP.lua \
+fmi_attributes_01.lua \
+fmi_attributes_02.lua \
 import_export_parameters_inline.lua \
 import_export_parameters_to_ssv.lua \
 import_export_parameters1.lua \
