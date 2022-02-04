@@ -96,7 +96,7 @@ namespace oms
 
     oms::Element** getElements() {return &elements[0];}
     void writeAllResourcesToFilesystem(std::vector<std::string>& resources, Snapshot& snapshot) const;
-    void writeFMUResourcesToFilesystem(std::vector<std::string>& resources, Snapshot& snapshot) const;
+    void writeFMUResourcesToFilesystem(std::vector<std::string>& resources, Snapshot& snapshot, std::string tempPath) const;
 
     oms_status_enu_t instantiate();
     oms_status_enu_t initialize();

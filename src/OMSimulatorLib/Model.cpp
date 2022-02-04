@@ -746,7 +746,12 @@ oms_status_enu_t oms::Model::importFromSnapshot(const Snapshot& snapshot)
       }
     }
     else
-      return logError("wrong xml schema detected");
+    {
+      if (name.substr(0,4) != "ssd:") {
+        logError(std::string("element: ") + name + std::string(" does not start with namespace: ssd:"));
+      }
+      return logError(std::string("wrong xml schema detected, element: ") + name + std::string(" is not recongnized."));
+    }
   }
 
   return oms_status_ok;
@@ -875,8 +880,8 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
 
 oms_status_enu_t oms::Model::exportToFMU(const std::string& filename) const
 {
-
   Snapshot snapshot;
+  oms_status_enu_t status = oms_status_ok;
 
   std::string extension = "";
   if (filename.length() > 4)
@@ -885,7 +890,48 @@ oms_status_enu_t oms::Model::exportToFMU(const std::string& filename) const
   if (extension != ".fmu")
     return logError("filename extension must be \".fmu\"; no other formats are supported");
 
-  pugi::xml_node xmlNode = snapshot.getModelDescriptionNode("modelDescription.xml", this->getCref());
+  std::string sref = std::string(getCref().c_str()) + "_FMU";
+  oms::ComRef newCref(sref.c_str());
+  Model *m = NewModel(newCref);
+
+  std::string binariesDir = m->getTempDirectory() + "/binaries";
+  std::string sourcesDir = m->getTempDirectory() + "/sources";
+
+  if (!filesystem::create_directory(binariesDir))
+  {
+    return logError("Failed to create binaries/ directory for the model \"" + std::string(newCref) + "\"");
+  }
+  if (!filesystem::create_directory(sourcesDir))
+  {
+    return logError("Failed to create sources/ directory for the model \"" + std::string(newCref) + "\"");
+  }
+
+  std::ofstream glue;
+  glue.open (filesystem::path(sourcesDir) / "glue.c");
+  glue << "#include <stdio.h>" << std::endl;
+  glue << "\
+  #include <fmiTypes.h>\n\
+  \
+  " << std::endl;
+
+  glue.close();
+  glue.open (filesystem::path(binariesDir) / "glue.dll");
+  glue << "#include <stdio.h>" << std::endl;
+  glue << "#include <fmiTypes.h>" << std::endl;
+  glue.close();
+
+  std::string fn = filename.substr(0, filename.length() - 4);
+  std::string sspFile = fn + ".ssp";
+    // copy the file to temp directory
+  filesystem::path temp_root(m->getTempDirectory());
+  filesystem::path ssp_path = temp_root / filesystem::path("resources") / sspFile;
+  std::string sspPath = ssp_path.generic_string();
+  // first build an SSP
+  status = exportToFile(sspPath);
+  if (status != oms_status_ok)
+    return logError("Model \"" + std::string(getCref()) + "\" could not be exported as SSP embedded in an FMU");
+
+  pugi::xml_node xmlNode = snapshot.getModelDescriptionNode("modelDescription.xml", m->getCref());
 
   if (system)
   {
@@ -898,14 +944,20 @@ oms_status_enu_t oms::Model::exportToFMU(const std::string& filename) const
   default_experiment.append_attribute("startTime") = std::to_string(startTime).c_str();
   default_experiment.append_attribute("stopTime") = std::to_string(stopTime).c_str();
 
+  std::string resourceFile = std::string("resources/") + sspFile;
+
   // add the ssp to the resources folder
   std::vector<std::string> resources;
   resources.push_back("modelDescription.xml");
-  resources.push_back("resources/" + filename + ".ssp");
-  writeFMUResourcesToFilesystem(resources, snapshot);
+  // write the resources in the other model
+  writeFMUResourcesToFilesystem(resources, snapshot, m->getTempDirectory());
+  // the resources/Model.ssp is already there
+  resources.push_back(resourceFile);
+  resources.push_back("binaries/glue.dll");
+  resources.push_back("sources/glue.c");
 
   std::string cd = Scope::GetInstance().getWorkingDirectory();
-  Scope::GetInstance().setWorkingDirectory(tempDir);
+  Scope::GetInstance().setWorkingDirectory(m->getTempDirectory());
   int argc = 4 + resources.size();
   char **argv = new char*[argc];
   int i=0;
@@ -919,9 +971,10 @@ oms_status_enu_t oms::Model::exportToFMU(const std::string& filename) const
   delete[] argv;
   Scope::GetInstance().setWorkingDirectory(cd);
 
-  filesystem::path full_path = filesystem::path(tempDir) / "temp/model.fmu";
+  filesystem::path full_path = filesystem::path(m->getTempDirectory()) / "temp/model.fmu";
   oms_copy_file(full_path, filesystem::path(filename));
-
+  if (m)
+    delete m;
   return oms_status_ok;
 }
 
@@ -1350,11 +1403,11 @@ oms_status_enu_t oms::Model::importSignalFilter(const std::string& filename, con
 }
 
 
-void oms::Model::writeFMUResourcesToFilesystem(std::vector<std::string>& resources, Snapshot& snapshot) const
+void oms::Model::writeFMUResourcesToFilesystem(std::vector<std::string>& resources, Snapshot& snapshot, std::string tempPath) const
 {
   for (auto const &filename : resources)
   {
-    if (oms_status_ok != snapshot.writeResourceNode(filename, filesystem::path(tempDir)))
-      logError("failed to export \"" + filename + " to directory " + tempDir);
+    if (oms_status_ok != snapshot.writeResourceNode(filename, filesystem::path(tempPath)))
+      logError("failed to export \"" + filename + " to directory " + tempPath);
   }
 }

@@ -409,27 +409,6 @@ oms_status_enu_t oms::Snapshot::writeDocument(char** contents)
 
 oms_status_enu_t oms::Snapshot::writeResourceNode(const filesystem::path& filename, const filesystem::path& path) const
 {
-  class : public pugi::xml_writer
-  {
-  public:
-    virtual void write(const void* data, size_t size)
-    {
-      result += std::string(static_cast<const char*>(data), size);
-    }
-
-    oms_status_enu_t copy(char** contents)
-    {
-      *contents = mallocAndCopyString(result);
-      if (!*contents)
-        return oms_status_error;
-
-      return oms_status_ok;
-    }
-
-  private:
-    std::string result;
-  } writer;
-
   pugi::xml_document doc;
   doc.append_copy(getResourceNode(filename));
   filesystem::path filepath = path / filename;
@@ -444,7 +423,7 @@ pugi::xml_node oms::Snapshot::getModelDescriptionNode(const filesystem::path& fi
   pugi::xml_node xmlNode = new_node.append_child(oms::fmu::fmiModelDescription);
   xmlNode.append_attribute("fmiVersion") = "2.0";
   xmlNode.append_attribute("modelName") = cref.c_str();
-  xmlNode.append_attribute("guid") = "{aaaaaaaa-bbbb-cccc-eeee-45729bd9f89b}";
+  xmlNode.append_attribute("guid") = "{0b2f3b44-2334-44ab-ba6a-53bcd986cd34}";
   std::string s = std::string("FMU wrapper for SSP model:") + std::string(cref.c_str());
   xmlNode.append_attribute("description") = s.c_str();
   xmlNode.append_attribute("generationTool")="OMSimulator";

@@ -147,10 +147,7 @@ oms_status_enu_t oms::Scope::exportModelFMU(const oms::ComRef& cref, const std::
   oms::Model* model = getModel(cref);
   if (!model)
     return logError("Model \"" + std::string(cref) + "\" does not exist in the scope");
-
-  status = model->exportToFile(filename + ".ssp");
-  if (status != oms_status_ok)
-    return logError("Model \"" + std::string(cref) + "\" could not be exported as SSP embedded in an FMU");
+  // then export the FMU
   return model->exportToFMU(filename);
 }
 
