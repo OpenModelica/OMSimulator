@@ -9,7 +9,7 @@
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/install/mingw/bin/OMSimulator",
-      "args": ["VehPropFA.ssp"], // ["test_OM.lua"],
+      "args": ["test_OM.lua"], // ["VehPropFA.ssp"],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}/test/",
       "environment": [],

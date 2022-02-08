@@ -440,3 +440,13 @@ void oms::ComponentTable::getFilteredSignals(std::vector<Connector>& filteredSig
       filteredSignals.push_back(Connector(oms_causality_output, oms_signal_type_real, x.first, this->getFullCref()));
   }
 }
+
+oms_status_enu_t oms::ComponentTable::exportToFMU(pugi::xml_node& node, Snapshot& snapshot, int *valueReference) const
+{
+  for (const auto& connector : connectors)
+    if (connector && (connector->isInput() || connector->isOutput()))
+      if (oms_status_ok != connector->exportToFMU(node, valueReference))
+        return oms_status_error;
+
+  return oms_status_ok;
+}

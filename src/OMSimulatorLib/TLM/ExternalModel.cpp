@@ -152,3 +152,9 @@ oms_status_enu_t oms::ExternalModel::removeSignalsFromResults(const char* regex)
 {
   return logError_NotImplemented;
 }
+
+oms_status_enu_t oms::ExternalModel::exportToFMU(pugi::xml_node& node, Snapshot& snapshot, int *valueReference) const
+{
+  // do nothing for this one
+  return oms_status_ok;
+}

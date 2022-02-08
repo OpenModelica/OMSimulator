@@ -427,8 +427,8 @@ pugi::xml_node oms::Snapshot::getModelDescriptionNode(const filesystem::path& fi
   std::string s = std::string("FMU wrapper for SSP model:") + std::string(cref.c_str());
   xmlNode.append_attribute("description") = s.c_str();
   xmlNode.append_attribute("generationTool")="OMSimulator";
-  xmlNode.append_attribute("generationDateAndTime") = "2021";
-  xmlNode.append_attribute("variableNamingConvention")="structured";
-  xmlNode.append_attribute("numberOfEventIndicators")="0";
+  xmlNode.append_attribute("generationDateAndTime") = "2022";
+  xmlNode.append_attribute("variableNamingConvention") = "structured";
+  xmlNode.append_attribute("numberOfEventIndicators") = "0";
   return xmlNode;
 }

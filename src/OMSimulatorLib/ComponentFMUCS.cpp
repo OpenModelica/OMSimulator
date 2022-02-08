@@ -1704,3 +1704,17 @@ oms_status_enu_t oms::ComponentFMUCS::renameValues(const ComRef& oldCref, const 
 
   return oms_status_error;
 }
+
+
+oms_status_enu_t oms::ComponentFMUCS::exportToFMU(pugi::xml_node& node, Snapshot& snapshot, int *valueReference) const
+{
+  for (const auto& connector : connectors)
+    if (connector && (connector->isInput() || connector->isOutput()))
+    {
+      if (oms_status_ok != connector->exportToFMU(node, valueReference))
+        return oms_status_error;
+    }
+
+  return oms_status_ok;
+}
+

@@ -64,6 +64,7 @@ namespace oms
     oms_status_enu_t exportToSSV(pugi::xml_node& ssvNode);
     oms_status_enu_t exportToSSVTemplate(pugi::xml_node& ssvNode);
     oms_status_enu_t exportToSSMTemplate(pugi::xml_node& ssmNode);
+    oms_status_enu_t exportToFMU(pugi::xml_node& node, Snapshot& snapshot, int *valueReference) const;
     oms_status_enu_t instantiate();
     oms_status_enu_t initialize();
     oms_status_enu_t terminate();

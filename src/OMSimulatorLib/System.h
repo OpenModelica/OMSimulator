@@ -98,7 +98,7 @@ namespace oms
     bool validCref(const ComRef& cref);
     oms_status_enu_t exportToSSD(pugi::xml_node& node, Snapshot& snapshot) const;
     oms_status_enu_t exportToSSV(Snapshot& snapshot) const;
-    oms_status_enu_t exportToFMU(pugi::xml_node& node, Snapshot& snapshot) const;
+    oms_status_enu_t exportToFMU(pugi::xml_node& modelVariables, pugi::xml_node& modelStructure, Snapshot& snapshot, int *valueReference) const;
     oms_status_enu_t importFromSnapshot(const pugi::xml_node& node, const std::string& sspVersion, const Snapshot& snapshot);
     void setGeometry(const ssd::ElementGeometry& geometry) {element.setGeometry(&geometry);}
     oms_status_enu_t addConnector(const ComRef& cref, oms_causality_enu_t causality, oms_signal_type_enu_t type);

@@ -351,3 +351,59 @@ std::string oms::Connector::getCausalityString() const
     return std::string("unknown");
   }
 }
+
+oms_status_enu_t oms::Connector::exportToFMU(pugi::xml_node &root, int* valueReference) const
+{
+  pugi::xml_node scalarVariableNode = root.append_child(oms::fmu::ScalarVariable);
+  scalarVariableNode.append_attribute("name") = std::string(getFullName()).c_str();
+  scalarVariableNode.append_attribute("valueReference") = (std::to_string(*valueReference)).c_str();
+  (*valueReference)++;
+  pugi::xml_node ty;
+
+  switch (this->causality)
+  {
+  case oms_causality_input:
+    scalarVariableNode.append_attribute("causality") = "input";
+    break;
+  case oms_causality_output:
+    scalarVariableNode.append_attribute("causality") = "output";
+    break;
+  // ignore anything that is not input or output!
+  default:
+    break;
+  }
+
+  switch (this->type)
+  {
+  case oms_signal_type_boolean:
+    ty = scalarVariableNode.append_child(oms::fmu::Boolean);
+    if (this->causality == oms_causality_input)
+      ty.append_attribute("start") = "false";
+    break;
+  case oms_signal_type_enum:
+    ty = scalarVariableNode.append_child(oms::fmu::Integer);
+    if (this->causality == oms_causality_input)
+      ty.append_attribute("start") = "1";
+    break;
+  case oms_signal_type_integer:
+    ty = scalarVariableNode.append_child(oms::fmu::Integer);
+    if (this->causality == oms_causality_input)
+      ty.append_attribute("start") = "0";
+    break;
+  case oms_signal_type_real:
+    ty = scalarVariableNode.append_child(oms::fmu::Real);
+    if (this->causality == oms_causality_input)
+      ty.append_attribute("start") = "0.0";
+    break;
+  case oms_signal_type_string:
+    ty = scalarVariableNode.append_child(oms::fmu::String);
+    if (this->causality == oms_causality_input)
+      ty.append_attribute("start") = "";
+    break;
+  default:
+    logError("Failed to export " + std::string(oms::ssp::Draft20180219::ssd::connector) + " as FMU ScalarVariable");
+    break;
+  }
+  
+  return oms_status_ok;
+}

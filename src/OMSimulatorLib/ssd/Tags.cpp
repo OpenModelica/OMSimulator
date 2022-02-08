@@ -104,3 +104,7 @@ const char* oms::fmu::DefaultExperiment                                = "Defaul
 const char* oms::fmu::ModelVariables                                   = "ModelVariables";
 const char* oms::fmu::ScalarVariable                                   = "ScalarVariable";
 const char* oms::fmu::ModelStructure                                   = "ModelStructure";
+const char* oms::fmu::Real                                             = "Real";
+const char* oms::fmu::Integer                                          = "Integer";
+const char* oms::fmu::Boolean                                          = "Boolean";
+const char* oms::fmu::String                                           = "String";

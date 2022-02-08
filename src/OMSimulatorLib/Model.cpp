@@ -895,9 +895,19 @@ oms_status_enu_t oms::Model::exportToFMU(const std::string& filename) const
   Model *m = NewModel(newCref);
 
   std::string binariesDir = m->getTempDirectory() + "/binaries";
+  std::string binariesDirWin32 = m->getTempDirectory() + "/binaries/win32";
+  std::string binariesDirWin64 = m->getTempDirectory() + "/binaries/win64";
+  std::string binariesDirLin32 = m->getTempDirectory() + "/binaries/linux32";
+  std::string binariesDirLin64 = m->getTempDirectory() + "/binaries/linux64";
+
   std::string sourcesDir = m->getTempDirectory() + "/sources";
 
-  if (!filesystem::create_directory(binariesDir))
+  if (!filesystem::create_directory(binariesDir) ||
+      !filesystem::create_directory(binariesDirWin32) ||
+      !filesystem::create_directory(binariesDirWin64) ||
+      !filesystem::create_directory(binariesDirLin32) ||
+      !filesystem::create_directory(binariesDirLin64)
+      )
   {
     return logError("Failed to create binaries/ directory for the model \"" + std::string(newCref) + "\"");
   }
@@ -932,17 +942,29 @@ oms_status_enu_t oms::Model::exportToFMU(const std::string& filename) const
     return logError("Model \"" + std::string(getCref()) + "\" could not be exported as SSP embedded in an FMU");
 
   pugi::xml_node xmlNode = snapshot.getModelDescriptionNode("modelDescription.xml", m->getCref());
+  pugi::xml_node coSimulationNode = xmlNode.append_child(oms::fmu::CoSimulation);
+  coSimulationNode.append_attribute("modelIdentifier") = m->getCref().c_str();
+  coSimulationNode.append_attribute("needsExecutionTool") = "false";
+  coSimulationNode.append_attribute("canInterpolateInputs") = "false";
+  coSimulationNode.append_attribute("maxOutputDerivativeOrder") = "1";
+  coSimulationNode.append_attribute("canRunAsynchronuously") = "false";
+  coSimulationNode.append_attribute("canBeInstantiatedOnlyOncePerProcess") = "false";
+  coSimulationNode.append_attribute("canNotUseMemoryManagementFunctions") = "false";
+  coSimulationNode.append_attribute("canGetAndSetFMUstate") = "false";
+  coSimulationNode.append_attribute("canSerializeFMUstate") = "false";
+
+  pugi::xml_node defaultExperimentNode = xmlNode.append_child(oms::fmu::DefaultExperiment);
+  defaultExperimentNode.append_attribute("startTime") = std::to_string(startTime).c_str();
+  defaultExperimentNode.append_attribute("stopTime") = std::to_string(stopTime).c_str();
 
   if (system)
   {
-    pugi::xml_node system_node = xmlNode.append_child(oms::fmu::CoSimulation);
-    if (oms_status_ok != system->exportToFMU(system_node, snapshot))
+    pugi::xml_node modelVariablesNode = xmlNode.append_child(oms::fmu::ModelVariables);
+    pugi::xml_node modelStructureNode = xmlNode.append_child(oms::fmu::ModelStructure);
+    int valueReference = 0;
+    if (oms_status_ok != system->exportToFMU(modelVariablesNode, modelStructureNode, snapshot, &valueReference))
       return logError("export of system as FMU failed");
   }
-
-  pugi::xml_node default_experiment = xmlNode.append_child(oms::fmu::DefaultExperiment);
-  default_experiment.append_attribute("startTime") = std::to_string(startTime).c_str();
-  default_experiment.append_attribute("stopTime") = std::to_string(stopTime).c_str();
 
   std::string resourceFile = std::string("resources/") + sspFile;
 
@@ -953,7 +975,7 @@ oms_status_enu_t oms::Model::exportToFMU(const std::string& filename) const
   writeFMUResourcesToFilesystem(resources, snapshot, m->getTempDirectory());
   // the resources/Model.ssp is already there
   resources.push_back(resourceFile);
-  resources.push_back("binaries/glue.dll");
+  resources.push_back("binaries/win64/glue.dll");
   resources.push_back("sources/glue.c");
 
   std::string cd = Scope::GetInstance().getWorkingDirectory();
