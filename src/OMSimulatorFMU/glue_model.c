@@ -39,7 +39,7 @@ const char* fmi_get_version()
 
 fmi2Status fmi_set_debug_logging(fmi2Component c, fmi2Boolean loggingOn)
 {
-	component_ptr_t comp = (fmi2Component)c;
+	component_ptr_t comp = (component_ptr_t)c;
 	if (comp == NULL) {
 		return fmi2Fatal;
 	} else {
@@ -50,7 +50,7 @@ fmi2Status fmi_set_debug_logging(fmi2Component c, fmi2Boolean loggingOn)
 
 fmi2Status fmi_get_real(fmi2Component c, const fmi2ValueReference vr[], size_t nvr, fmi2Real value[])
 {
-	component_ptr_t comp = (fmi2Component)c;
+	component_ptr_t comp = (component_ptr_t)c;
 	if (comp == NULL) 
     {
 		return fmi2Fatal;
@@ -68,7 +68,7 @@ fmi2Status fmi_get_real(fmi2Component c, const fmi2ValueReference vr[], size_t n
 
 fmi2Status fmi_get_integer(fmi2Component c, const fmi2ValueReference vr[], size_t nvr, fmi2Integer value[])
 {
-	component_ptr_t comp = (fmi2Component)c;
+	component_ptr_t comp = (component_ptr_t)c;
 	if (comp == NULL) 
     {
 		return fmi2Fatal;
@@ -86,7 +86,7 @@ fmi2Status fmi_get_integer(fmi2Component c, const fmi2ValueReference vr[], size_
 
 fmi2Status fmi_get_boolean(fmi2Component c, const fmi2ValueReference vr[], size_t nvr, fmi2Boolean value[])
 {
-	component_ptr_t comp = (fmi2Component)c;
+	component_ptr_t comp = (component_ptr_t)c;
 	if (comp == NULL) 
     {
 		return fmi2Fatal;
@@ -104,7 +104,7 @@ fmi2Status fmi_get_boolean(fmi2Component c, const fmi2ValueReference vr[], size_
 
 fmi2Status fmi_get_string(fmi2Component c, const fmi2ValueReference vr[], size_t nvr, fmi2String  value[])
 {
-	component_ptr_t comp = (fmi2Component)c;
+	component_ptr_t comp = (component_ptr_t)c;
 	if (comp == NULL) 
     {
 		return fmi2Fatal;
@@ -122,7 +122,7 @@ fmi2Status fmi_get_string(fmi2Component c, const fmi2ValueReference vr[], size_t
 
 fmi2Status fmi_set_real(fmi2Component c, const fmi2ValueReference vr[], size_t nvr, const fmi2Real value[])
 {
-	component_ptr_t comp = (fmi2Component)c;
+	component_ptr_t comp = (component_ptr_t)c;
 	if (comp == NULL) 
     {
 		return fmi2Fatal;
@@ -140,7 +140,7 @@ fmi2Status fmi_set_real(fmi2Component c, const fmi2ValueReference vr[], size_t n
 
 fmi2Status fmi_set_integer(fmi2Component c, const fmi2ValueReference vr[], size_t nvr, const fmi2Integer value[])
 {
-    component_ptr_t comp = (fmi2Component)c;
+    component_ptr_t comp = (component_ptr_t)c;
     if (comp == NULL)
     {
         return fmi2Fatal;
@@ -153,7 +153,7 @@ fmi2Status fmi_set_integer(fmi2Component c, const fmi2ValueReference vr[], size_
 
 fmi2Status fmi_set_boolean(fmi2Component c, const fmi2ValueReference vr[], size_t nvr, const fmi2Boolean value[])
 {
-	component_ptr_t comp = (fmi2Component)c;
+	component_ptr_t comp = (component_ptr_t)c;
 	if (comp == NULL) 
     {
 		return fmi2Fatal;
@@ -171,7 +171,7 @@ fmi2Status fmi_set_boolean(fmi2Component c, const fmi2ValueReference vr[], size_
 
 fmi2Status fmi_set_string(fmi2Component c, const fmi2ValueReference vr[], size_t nvr, const fmi2String  value[])
 {
-	component_ptr_t comp = (fmi2Component)c;
+	component_ptr_t comp = (component_ptr_t)c;
 	if (comp == NULL) 
     {
 		return fmi2Fatal;
@@ -257,7 +257,7 @@ fmi2Component fmi_instantiate(fmi2String instanceName, fmi2Type fmuType,
 void fmi_free_instance(fmi2Component c)
 {
 	int i;
-	component_ptr_t comp = (fmi2Component)c;
+	component_ptr_t comp = (component_ptr_t)c;
 	for(i = 0; i < N_STRING; i++) {
 		comp->functions->freeMemory((void*)(comp->strings[i]));
 		comp->strings[i] = 0;
@@ -270,7 +270,7 @@ fmi2Status fmi_setup_experiment(fmi2Component c, fmi2Boolean toleranceDefined,
                                fmi2Boolean stopTimeDefined,
                                fmi2Real stopTime)
 {
-    component_ptr_t comp = (fmi2Component)c;
+    component_ptr_t comp = (component_ptr_t)c;
 
     if (comp == NULL) 
     {
@@ -297,7 +297,7 @@ fmi2Status fmi_enter_initialization_mode(fmi2Component c)
     } 
     else 
     {
-        calc_initialize(c);
+        calc_initialize((component_ptr_t)c);
         return fmi2OK;
     }
 }
@@ -314,7 +314,7 @@ fmi2Status fmi_enter_event_mode(fmi2Component c)
 
 fmi2Status fmi_new_discrete_states(fmi2Component c, fmi2EventInfo* eventInfo)
 {
-	component_ptr_t comp = (fmi2Component)c;
+	component_ptr_t comp = (component_ptr_t)c;
 	if (comp == NULL) 
     {
 		return fmi2Fatal;
@@ -335,7 +335,7 @@ fmi2Status fmi_enter_continuous_time_mode(fmi2Component c)
 
 fmi2Status fmi_set_time(fmi2Component c, fmi2Real fmitime)
 {
-	component_ptr_t comp = (fmi2Component)c;
+	component_ptr_t comp = (component_ptr_t)c;
 	if (comp == NULL) 
     {
 		return fmi2Fatal;
@@ -349,7 +349,7 @@ fmi2Status fmi_set_time(fmi2Component c, fmi2Real fmitime)
 
 fmi2Status fmi_set_continuous_states(fmi2Component c, const fmi2Real x[], size_t nx)
 {
-	component_ptr_t comp = (fmi2Component)c;
+	component_ptr_t comp = (component_ptr_t)c;
 	if (comp == NULL) 
     {
 		return fmi2Fatal;
@@ -369,7 +369,7 @@ fmi2Status fmi_completed_integrator_step(fmi2Component c,
   fmi2Boolean noSetFMUStatePriorToCurrentPoint,
   fmi2Boolean* enterEventMode, fmi2Boolean* terminateSimulation)
 {
-	component_ptr_t comp = (fmi2Component)c;
+	component_ptr_t comp = (component_ptr_t)c;
 	if (comp == NULL) 
     {
 		return fmi2Fatal;
@@ -383,7 +383,7 @@ fmi2Status fmi_completed_integrator_step(fmi2Component c,
 
 fmi2Status fmi_get_derivatives(fmi2Component c, fmi2Real derivatives[] , size_t nx)
 {
-	component_ptr_t comp = (fmi2Component)c;
+	component_ptr_t comp = (component_ptr_t)c;
 	if (comp == NULL) 
     {
 		return fmi2Fatal;
@@ -403,7 +403,7 @@ fmi2Status fmi_get_derivatives(fmi2Component c, fmi2Real derivatives[] , size_t 
 
 fmi2Status fmi_get_event_indicators(fmi2Component c, fmi2Real eventIndicators[], size_t ni)
 {
-	component_ptr_t comp = (fmi2Component)c;
+	component_ptr_t comp = (component_ptr_t)c;
 	if (comp == NULL) 
     {
 		return fmi2Fatal;
@@ -424,7 +424,7 @@ fmi2Status fmi_get_event_indicators(fmi2Component c, fmi2Real eventIndicators[],
 
 fmi2Status fmi_get_continuous_states(fmi2Component c, fmi2Real states[], size_t nx)
 {
-	component_ptr_t comp = (fmi2Component)c;
+	component_ptr_t comp = (component_ptr_t)c;
 	if (comp == NULL) 
     {
 		return fmi2Fatal;
@@ -443,7 +443,7 @@ fmi2Status fmi_get_continuous_states(fmi2Component c, fmi2Real states[], size_t 
 
 fmi2Status fmi_get_nominals_of_continuousstates(fmi2Component c, fmi2Real x_nominal[], size_t nx)
 {
-	component_ptr_t comp = (fmi2Component)c;
+	component_ptr_t comp = (component_ptr_t)c;
 	if (comp == NULL) 
     {
 		return fmi2Fatal;
@@ -461,7 +461,7 @@ fmi2Status fmi_get_nominals_of_continuousstates(fmi2Component c, fmi2Real x_nomi
 
 fmi2Status fmi_terminate(fmi2Component c)
 {
-	component_ptr_t comp = (fmi2Component)c;
+	component_ptr_t comp = (component_ptr_t)c;
 	if (comp == NULL) 
     {
 		return fmi2Fatal;
@@ -493,7 +493,7 @@ fmi2Status fmi_set_real_input_derivatives(fmi2Component c, const fmi2ValueRefere
 
 fmi2Status fmi_get_real_output_derivatives(fmi2Component c, const fmi2ValueReference vr[], size_t nvr, const fmi2Integer order[], fmi2Real value[])
 {
-	component_ptr_t comp	= (fmi2Component)c;
+	component_ptr_t comp	= (component_ptr_t)c;
 	size_t k;
 
 	for (k = 0; k < nvr; k++) 
@@ -511,7 +511,7 @@ fmi2Status fmi_cancel_step(fmi2Component c)
 
 fmi2Status fmi_do_step(fmi2Component c, fmi2Real currentCommunicationPoint, fmi2Real communicationStepSize, fmi2Boolean newStep)
 {
-	component_ptr_t comp	= (fmi2Component)c;
+	component_ptr_t comp	= (component_ptr_t)c;
 
 	if (comp == NULL) 
     {

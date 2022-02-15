@@ -44,6 +44,8 @@
 #include <minizip.h>
 #include <thread>
 
+std::string getExecutablePath(void);
+
 oms::Model::Model(const oms::ComRef& cref, const std::string& tempDir)
   : cref(cref), tempDir(tempDir), resultFilename(std::string(cref) + "_res.mat")
 {
@@ -918,16 +920,7 @@ oms_status_enu_t oms::Model::exportToFMU(const std::string& filename) const
 
   std::ofstream glue;
   glue.open (filesystem::path(sourcesDir) / "glue.c");
-  glue << "#include <stdio.h>" << std::endl;
-  glue << "\
-  #include <fmiTypes.h>\n\
-  \
-  " << std::endl;
-
-  glue.close();
-  glue.open (filesystem::path(binariesDir) / "glue.dll");
-  glue << "#include <stdio.h>" << std::endl;
-  glue << "#include <fmiTypes.h>" << std::endl;
+  glue << "/* dummy */" << std::endl;
   glue.close();
 
   std::string fn = filename.substr(0, filename.length() - 4);
@@ -943,7 +936,7 @@ oms_status_enu_t oms::Model::exportToFMU(const std::string& filename) const
 
   pugi::xml_node xmlNode = snapshot.getModelDescriptionNode("modelDescription.xml", m->getCref());
   pugi::xml_node coSimulationNode = xmlNode.append_child(oms::fmu::CoSimulation);
-  coSimulationNode.append_attribute("modelIdentifier") = m->getCref().c_str();
+  coSimulationNode.append_attribute("modelIdentifier") = "glue";
   coSimulationNode.append_attribute("needsExecutionTool") = "false";
   coSimulationNode.append_attribute("canInterpolateInputs") = "false";
   coSimulationNode.append_attribute("maxOutputDerivativeOrder") = "1";
@@ -967,6 +960,7 @@ oms_status_enu_t oms::Model::exportToFMU(const std::string& filename) const
   }
 
   std::string resourceFile = std::string("resources/") + sspFile;
+  oms_copy_file(filesystem::path(getExecutablePath()) / "glue.dll", filesystem::path(binariesDirWin64) / "glue.dll");
 
   // add the ssp to the resources folder
   std::vector<std::string> resources;
@@ -1432,4 +1426,22 @@ void oms::Model::writeFMUResourcesToFilesystem(std::vector<std::string>& resourc
     if (oms_status_ok != snapshot.writeResourceNode(filename, filesystem::path(tempPath)))
       logError("failed to export \"" + filename + " to directory " + tempPath);
   }
+}
+
+#include <windows.h>
+
+std::string getExecutablePath(void)
+{
+  std::vector<char> pathBuf; 
+  DWORD copied = 0;
+  do {
+    pathBuf.resize(pathBuf.size() + MAX_PATH);
+    copied = GetModuleFileName(0, &pathBuf.at(0), pathBuf.size());
+  } while( copied >= pathBuf.size() );
+
+  pathBuf.resize(copied);
+
+  std::string path(pathBuf.begin(),pathBuf.end());
+  path = path.substr(0, path.size() - 15);
+  return strdup(path.c_str());
 }

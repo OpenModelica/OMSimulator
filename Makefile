@@ -120,9 +120,9 @@ else
 	CMAKE_BOOST_ROOT="-DBOOST_ROOT=$(BOOST_ROOT)"
 endif
 
-.PHONY: OMSimulator OMSimulatorCore config-OMSimulator config-fmil config-lua config-minizip config-cvode config-kinsol config-xerces config-3rdParty distclean testsuite doc doc-html doc-doxygen OMTLMSimulator OMTLMSimulatorClean RegEx pip
+.PHONY: OMSimulator OMSimulatorCore OMSimulatorFMU config-OMSimulator config-fmil config-lua config-minizip config-cvode config-kinsol config-xerces config-3rdParty distclean testsuite doc doc-html doc-doxygen OMTLMSimulator OMTLMSimulatorClean RegEx pip
 
-OMSimulator:
+OMSimulator: OMSimulatorFMU
 	@echo OS: $(detected_OS)
 	@echo TLM: $(OMTLM)
 	@echo LIBXML2: $(LIBXML2)
@@ -149,6 +149,16 @@ pip:
 	@echo
 	@echo "# Run the following command to upload the package"
 	@echo "> twine upload src/pip/install/dist/$(shell ls src/pip/install/dist/ -Art | tail -n 1)"
+
+OMSimulatorFMU: 
+	@echo
+	@echo "# make OMSimulatorFMU"
+	@echo
+	$(MAKE) -C src/OMSimulatorFMU
+	@$(MKDIR) $(TOP_INSTALL_DIR)/lib/$(HOST_SHORT_OMC)
+	@$(MKDIR) $(TOP_INSTALL_DIR)/bin
+	cp src/OMSimulatorFMU/glue$(FEXT) $(TOP_INSTALL_DIR)/lib/$(HOST_SHORT_OMC)
+	cp src/OMSimulatorFMU/glue$(FEXT) $(TOP_INSTALL_DIR)/bin
 
 ifeq ($(OMTLM),ON)
 OMTLMSimulator: RegEx
