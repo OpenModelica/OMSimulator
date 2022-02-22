@@ -2,8 +2,8 @@
 ## teardown_command: rm -rf equationPair-py/
 ## linux: yes
 ## mingw32: no
-## mingw64: no
-## win: no
+## mingw64: yes
+## win: yes
 ## mac: no
 
 import OMSimulator as oms
