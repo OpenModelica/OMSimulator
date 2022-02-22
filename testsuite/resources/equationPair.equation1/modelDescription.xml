@@ -2,10 +2,10 @@
 <fmiModelDescription
   fmiVersion="2.0"
   modelName="equationPair.equation1"
-  guid="{0578e144-8020-4100-976d-6671dc693e6d}"
+  guid="{9a92e2cc-ff62-4793-bd3b-b6ee7045f4b5}"
   description=""
-  generationTool="OpenModelica Compiler OMCompiler v1.19.0-dev.584+gf7516f6d3a"
-  generationDateAndTime="2022-02-22T19:09:18Z"
+  generationTool="OpenModelica Compiler OpenModelica v1.19.0-dev-610-g2cc9be161c (64-bit)"
+  generationDateAndTime="2022-02-22T20:10:53Z"
   variableNamingConvention="structured"
   numberOfEventIndicators="0">
   <CoSimulation
