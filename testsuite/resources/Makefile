@@ -12,6 +12,8 @@ ASSCExample.Class2 \
 DualMassOscillator.System1 \
 DualMassOscillator.System2 \
 Enum1 \
+equationPair.equation1 \
+equationPair.equation2 \
 HelloWorld \
 HelloWorldWithInput \
 Int1 \
@@ -59,15 +61,16 @@ importExportAllResources \
 
 MOSs = \
 ASSCExample.mos \
+Blocks.mos \
 DualMassOscillator.mos \
 Enumeration.mos \
-HelloWorldWithInput.mos \
-Mass.mos \
-QuarterCarModel.mos \
-Blocks.mos \
+equationPair.mos \
 HelloWorld.mos \
+HelloWorldWithInput.mos \
 Lin2DimODE.mos \
+Mass.mos \
 MassSpring.mos \
+QuarterCarModel.mos \
 
 .PHONY: all generateFMUs
 
