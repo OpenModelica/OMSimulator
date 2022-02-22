@@ -67,6 +67,7 @@ void oms::Flags::setDefaults()
   algLoopSolver = oms_alg_solver_fixedpoint;
   defaultModeIsCS = false;
   deleteTempFiles = true;
+  dumpAlgLoops = false;
   emitEvents = true;
   ignoreInitialUnknowns = false;
   initialStepSize = 1e-6;
@@ -204,6 +205,12 @@ oms_status_enu_t oms::Flags::ClearAllOptions(const std::string& value)
 oms_status_enu_t oms::Flags::DeleteTempFiles(const std::string& value)
 {
   GetInstance().deleteTempFiles = (value == "true");
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Flags::DumpAlgLoops(const std::string& value)
+{
+  GetInstance().dumpAlgLoops = (value == "true");
   return oms_status_ok;
 }
 
