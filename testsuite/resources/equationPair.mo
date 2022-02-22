@@ -11,7 +11,7 @@ package equationPair
    Modelica.Blocks.Interfaces.RealInput x2;
    Modelica.Blocks.Interfaces.RealOutput x1;
   equation
-    x1-6*x2=4;
+    x1 - 6*x2 = 4;
     annotation (experiment(StopTime=0));
   end equation2;
 
