@@ -39,12 +39,11 @@
 #include <deque>
 #include <fstream>
 #include <iostream>
-#include <sstream>
+#include <set>
 #include <sstream>
 #include <stack>
 #include <stdlib.h>
 #include <string>
-#include <unordered_set>
 
 oms::DirectedGraph::DirectedGraph()
 {
@@ -257,7 +256,7 @@ void oms::DirectedGraph::calculateSortedConnections()
   std::deque< std::vector<int> > components = getSCCs();
   oms_ssc_t SCC;
   sortedConnections.clear();
-  std::unordered_set<std::string> component_names;
+  std::set<std::string> component_names;
 
   for (int i = 0; i < components.size(); ++i)
   {
