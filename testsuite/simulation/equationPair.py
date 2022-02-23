@@ -1,6 +1,6 @@
 ## status: correct
 ## teardown_command: rm -rf equationPair-py/
-## linux: yes
+## linux: no
 ## mingw32: no
 ## mingw64: yes
 ## win: yes
