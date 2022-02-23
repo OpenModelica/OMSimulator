@@ -35,14 +35,16 @@
 #include "Util.h"
 #include "Variable.h"
 
-#include <iostream>
-#include <string>
-#include <fstream>
-#include <sstream>
-#include <stdlib.h>
-#include <stack>
 #include <algorithm>
 #include <deque>
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <sstream>
+#include <stack>
+#include <stdlib.h>
+#include <string>
+#include <unordered_set>
 
 oms::DirectedGraph::DirectedGraph()
 {
@@ -255,24 +257,36 @@ void oms::DirectedGraph::calculateSortedConnections()
   std::deque< std::vector<int> > components = getSCCs();
   oms_ssc_t SCC;
   sortedConnections.clear();
+  std::unordered_set<std::string> component_names;
 
   for (int i = 0; i < components.size(); ++i)
   {
     SCC.clear();
+    component_names.clear();
     for (int j = 0; j < components[i].size(); ++j)
     {
       Connector conA = nodes[edges[components[i][j]].first];
       Connector conB = nodes[edges[components[i][j]].second];
 
       if (oms::Connection::isValid(conA.getName(), conB.getName(), conA, conB))
+      {
         SCC.push_back(std::pair<int, int>(edges[components[i][j]]));
+        component_names.insert(conA.getOwner());
+        component_names.insert(conB.getOwner());
+      }
     }
 
     if (SCC.size() > 0)
       sortedConnections.push_back(SCC);
 
     if (SCC.size() > 1)
-      logWarning("Alg. loop (size " + std::to_string(SCC.size()) + ")");
+    {
+      std::stringstream ss;
+      ss << "Alg. loop (size " << SCC.size() << ")" << std::endl;
+      for (const auto& name: component_names)
+        ss << "  " << name << std::endl;
+      logInfo(ss.str());
+    }
   }
 
   sortedConnectionsAreValid = true;
