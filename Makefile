@@ -192,7 +192,7 @@ RegEx: 3rdParty/RegEx/OMSRegEx$(EEXT)
 	@echo "Please checkout the 3rdParty submodule, e.g. using \"git submodule update --init 3rdParty\", and try again."
 	@false
 
-config-3rdParty: 3rdParty/README.md config-fmil config-lua config-minizip config-cvode config-kinsol config-libxml2
+config-3rdParty: 3rdParty/README.md config-fmil config-lua config-minizip config-cvode config-kinsol config-libxml2 config-xerces
 
 config-OMSimulator: $(BUILD_DIR)/Makefile
 $(BUILD_DIR)/Makefile: RegEx CMakeLists.txt

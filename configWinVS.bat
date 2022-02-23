@@ -260,6 +260,8 @@ START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% cvode"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% kinsol"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
+START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% xerces"
+IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% pthread"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% libxml2"
