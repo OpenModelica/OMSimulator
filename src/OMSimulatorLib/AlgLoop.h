@@ -55,12 +55,12 @@ namespace oms
 
   class KinsolSolver
   {
-    public:
+  public:
     ~KinsolSolver();
     static KinsolSolver* NewKinsolSolver(const int algLoopNum, const unsigned int size, double absoluteTolerance);
     oms_status_enu_t kinsolSolve(System& syst, DirectedGraph& graph);
 
-    private:
+  private:
     /* tolerances */
     double fnormtol;        /* function tolerance */
 
@@ -72,7 +72,7 @@ namespace oms
 
     /* kinsol internal data */
     void* kinsolMemory;
-    void* userData;
+    void* user_data;
     int size;
 
     /* linear solver data */
@@ -81,9 +81,10 @@ namespace oms
     SUNMatrix J;            /* (Non-)Sparse matrix template for cloning matrices needed within linear solver */
 
     /* member function */
-    static int nlsKinsolResiduals(N_Vector uu, N_Vector fval, void *userData);
-    static void sundialsErrorHandlerFunction(int error_code, const char *module, const char *function, char *msg, void *userData);
-    static void sundialsInfoHandlerFunction(const char *module, const char *function, char *msg, void *userData);
+    static int nlsKinsolJac(N_Vector u, N_Vector fu, SUNMatrix J, void *user_data, N_Vector tmp1, N_Vector tmp2);
+    static int nlsKinsolResiduals(N_Vector u, N_Vector fval, void *user_data);
+    static void sundialsErrorHandlerFunction(int error_code, const char *module, const char *function, char *msg, void *user_data);
+    static void sundialsInfoHandlerFunction(const char *module, const char *function, char *msg, void *user_data);
   };
 
   class AlgLoop
