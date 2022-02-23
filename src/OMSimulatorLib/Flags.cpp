@@ -64,7 +64,7 @@ oms::Flags::~Flags()
 void oms::Flags::setDefaults()
 {
   addParametersToCSV = false;
-  algLoopSolver = oms_alg_solver_fixedpoint;
+  algLoopSolver = oms_alg_solver_kinsol;
   defaultModeIsCS = false;
   deleteTempFiles = true;
   dumpAlgLoops = false;

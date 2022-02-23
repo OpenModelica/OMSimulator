@@ -12,6 +12,7 @@ DualMassOscillator.lua \
 Enumeration.lua \
 Enumeration2.lua \
 equationPair.py \
+equationPair_fixedpoint.py \
 exportConnectorsToResultFile.lua \
 exportSnapshotSSP.lua \
 exportSSMTemplate.lua \
