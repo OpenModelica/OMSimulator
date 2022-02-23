@@ -34,7 +34,9 @@ model.terminate()
 model.delete()
 
 ## Result:
-## warning: Alg. loop (size 2)
+## info:    Alg. loop (size 2)
+##            equationPair.root.equation1
+##            equationPair.root.equation2
 ## info:    iteration 1
 ##          inputs:
 ##            equation2.x2: 8.4
@@ -128,6 +130,4 @@ model.delete()
 ## info:    No result file will be created
 ## x1: 4.5572 (res:  7.54e-13)
 ## x1: 0.0928 (res: -4.45e-05)
-## info:    1 warnings
-## info:    0 errors
 ## endResult
