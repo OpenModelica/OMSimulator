@@ -456,12 +456,12 @@ print(src)
 ##         <ssv:Parameter
 ##           name="Input2">
 ##           <ssv:Real
-##             value="-50" />
+##             value="-500" />
 ##         </ssv:Parameter>
 ##         <ssv:Parameter
 ##           name="Input1">
 ##           <ssv:Real
-##             value="-10" />
+##             value="-100" />
 ##         </ssv:Parameter>
 ##       </ssv:Parameters>
 ##     </ssv:ParameterSet>
@@ -477,7 +477,7 @@ print(src)
 ##         <ssv:Parameter
 ##           name="C1">
 ##           <ssv:Real
-##             value="-10" />
+##             value="-30" />
 ##         </ssv:Parameter>
 ##       </ssv:Parameters>
 ##     </ssv:ParameterSet>

@@ -70,6 +70,7 @@ namespace oms
 
     oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
     oms_status_enu_t importFromSnapshot(const pugi::xml_node& node, const std::string& sspVersion, const Snapshot& snapshot);
+    oms_status_enu_t importFromSnapshot(const Snapshot& snapshot, const std::string& ssvFilePath, const std::string& ssmFilename);
     oms_status_enu_t deleteStartValue(const ComRef& cref);
     oms_status_enu_t deleteStartValueInResources(const ComRef& cref);
 
@@ -94,6 +95,8 @@ namespace oms
     void exportParameterMappingToSSM(pugi::xml_node& node) const;
     oms_status_enu_t importStartValuesHelper(const pugi::xml_node& parameters);
 
+    void parseModelStructureDependencies(std::string &dependencies, std::vector<int>& dependencyList);
+
     void importParameterMapping(const pugi::xml_node& parameterMapping);
     oms::ComRef getMappedCrefEntry(const ComRef& cref) const;
     bool empty() const;
@@ -111,13 +114,16 @@ namespace oms
     std::map<ComRef, int> modelDescriptionIntegerStartValues;   ///< integer start values read from modelDescription.xml
     std::map<ComRef, bool> modelDescriptionBooleanStartValues;  ///< boolean start values read from modelDescription.xml
 
+    std::map<int, std::vector<int>> modelStructureOutputs;   ///< output and its dependencies from <ModelStructure>
+    std::map<int, std::vector<int>> modelStructureDerivatives;   ///< derivatives and its dependencies from <ModelStructure>
+    std::map<int, std::vector<int>> modelStructureInitialUnknowns;   ///< initialUnknowns and its dependencies from <ModelStructure>
+
     std::multimap<ComRef, ComRef> mappedEntry;  ///< parameter names and values provided in the parameter source are to be mapped to the parameters of the component or system
 
     std::vector<Values> parameterResources; ///< list of parameter resources provided inline or .ssv files
     std::map<std::string, Values> allresources; ///< mapped resources either inline or ssv
     std::string ssmFile = ""; ///< mapped ssm files associated with ssv files;
     bool linkResources = true;
-    bool externalResources = false;
   };
 }
 

@@ -3,6 +3,7 @@ TEST = ../rtest -v
 TESTFILES = \
 deleteConnector.lua \
 deleteConnector1.lua \
+deleteReferencesAndStartValues.lua \
 deleteStartValues.lua \
 deleteStartValuesInSSV.lua \
 deleteStartValuesInSSV1.lua \
@@ -10,10 +11,11 @@ deleteStartValuesInSSV2.lua \
 DualMassOscillator.lua \
 Enumeration.lua \
 Enumeration2.lua \
+equationPair.py \
 exportConnectorsToResultFile.lua \
+exportSnapshotSSP.lua \
 exportSSMTemplate.lua \
 exportSSMTemplate.py \
-exportSnapshotSSP.lua \
 import_export_parameters_inline.lua \
 import_export_parameters_to_ssv.lua \
 import_export_parameters1.lua \
@@ -35,14 +37,16 @@ multipleConnections.lua \
 partialSnapshot.lua \
 PI_Controller.lua \
 QuarterCarModel.DisplacementDisplacement.lua \
+referenceResources1.lua \
+referenceResources2.lua \
 rename.lua \
-renameValues1.lua \
-renameValues2.lua \
 renameModel.lua \
-renameSnapshot.lua \
-renameNewCref.lua \
 renameNewCref_1.lua \
 renameNewCref_2.lua \
+renameNewCref.lua \
+renameSnapshot.lua \
+renameValues1.lua \
+renameValues2.lua \
 setExternalInputs.lua \
 simulation.lua \
 simulation.py \

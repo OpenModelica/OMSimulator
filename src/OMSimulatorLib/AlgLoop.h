@@ -50,6 +50,7 @@ namespace oms
     System*         syst;
     DirectedGraph*  graph;
     const int       algLoopNumber;
+    unsigned int    iteration;
   }KINSOL_USER_DATA;
 
   class KinsolSolver

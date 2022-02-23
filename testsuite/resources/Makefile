@@ -12,6 +12,8 @@ ASSCExample.Class2 \
 DualMassOscillator.System1 \
 DualMassOscillator.System2 \
 Enum1 \
+equationPair.equation1 \
+equationPair.equation2 \
 HelloWorld \
 HelloWorldWithInput \
 Int1 \
@@ -27,6 +29,7 @@ Modelica.Blocks.Sources.Clock \
 Modelica.Blocks.Sources.Constant \
 Modelica.Blocks.Sources.Sine \
 Modelica.Blocks.Sources.Step \
+Modelica.Electrical.Analog.Examples.CauerLowPassAnalog \
 QuarterCarModel.DisplacementDisplacement.Chassis \
 QuarterCarModel.DisplacementDisplacement.Wheel \
 QuarterCarModel.DisplacementForce.Chassis \
@@ -43,8 +46,6 @@ tlm.mass \
 tlm.massSpring \
 tlm.source \
 tlm.UpperPendulum \
-tlm.UpperPendulumFG \
-tlm.UpperPendulumFG \
 
 SSPs = \
 embrace \
@@ -56,18 +57,20 @@ importStartValues1 \
 import_export_parameters1 \
 import_export_parameters2 \
 import_export_parameters3 \
+importExportAllResources \
 
 MOSs = \
 ASSCExample.mos \
+Blocks.mos \
 DualMassOscillator.mos \
 Enumeration.mos \
-HelloWorldWithInput.mos \
-Mass.mos \
-QuarterCarModel.mos \
-Blocks.mos \
+equationPair.mos \
 HelloWorld.mos \
+HelloWorldWithInput.mos \
 Lin2DimODE.mos \
+Mass.mos \
 MassSpring.mos \
+QuarterCarModel.mos \
 
 .PHONY: all generateFMUs
 

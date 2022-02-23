@@ -8,7 +8,7 @@
     <ssv:Parameter
       name="C1">
       <ssv:Real
-        value="-10" />
+        value="-30" />
     </ssv:Parameter>
   </ssv:Parameters>
 </ssv:ParameterSet>

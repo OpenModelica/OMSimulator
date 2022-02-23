@@ -44,6 +44,8 @@
 #include <JM/jm_portability.h>
 #include <RegEx.h>
 #include <unordered_set>
+#include <cmath>
+
 
 oms::ComponentFMUME::ComponentFMUME(const ComRef& cref, System* parentSystem, const std::string& fmuPath)
   : oms::Component(cref, oms_component_fmu, parentSystem, fmuPath), fmuInfo(fmuPath)
@@ -568,7 +570,8 @@ oms_status_enu_t oms::ComponentFMUME::instantiate()
     {
       for (const auto &res : it.allresources)
       {
-        setResourcesHelper1(res.second);
+        if (res.second.linkResources) // set values only if resources are linked in ssd
+          setResourcesHelper1(res.second);
       }
     }
   }
@@ -640,32 +643,41 @@ oms_status_enu_t oms::ComponentFMUME::setResourcesHelper2(Values values)
     {
       for (const auto &v : res.second.booleanStartValues)
       {
-        oms::ComRef tail(v.first);
-        oms::ComRef head = tail.pop_front();
-        if (head == getCref())
+        if (res.second.linkResources) // set values only if resources are linked in ssd
         {
-          if (oms_status_ok != setBoolean(tail, v.second))
-            return logError("Failed to set start value for " + std::string(v.first));
+          oms::ComRef tail(v.first);
+          oms::ComRef head = tail.pop_front();
+          if (head == getCref())
+          {
+            if (oms_status_ok != setBoolean(tail, v.second))
+              return logError("Failed to set start value for " + std::string(v.first));
+          }
         }
       }
       for (const auto &v : res.second.integerStartValues)
       {
-        oms::ComRef tail(v.first);
-        oms::ComRef head = tail.pop_front();
-        if (head == getCref())
+        if (res.second.linkResources) // set values only if resources are linked in ssd
         {
-          if (oms_status_ok != setInteger(tail, v.second))
-            return logError("Failed to set start value for " + std::string(v.first));
+          oms::ComRef tail(v.first);
+          oms::ComRef head = tail.pop_front();
+          if (head == getCref())
+          {
+            if (oms_status_ok != setInteger(tail, v.second))
+              return logError("Failed to set start value for " + std::string(v.first));
+          }
         }
       }
       for (const auto &v : res.second.realStartValues)
       {
-        oms::ComRef tail(v.first);
-        oms::ComRef head = tail.pop_front();
-        if (head == getCref())
+        if (res.second.linkResources) // set values only if resources are linked in ssd
         {
-          if (oms_status_ok != setReal(tail, v.second))
-            return logError("Failed to set start value for " + std::string(v.first));
+          oms::ComRef tail(v.first);
+          oms::ComRef head = tail.pop_front();
+          if (head == getCref())
+          {
+            if (oms_status_ok != setReal(tail, v.second))
+              return logError("Failed to set start value for " + std::string(v.first));
+          }
         }
       }
     }
@@ -713,18 +725,29 @@ oms_status_enu_t oms::ComponentFMUME::doEventIteration()
 oms_status_enu_t oms::ComponentFMUME::newResources(const std::string& ssvFilename, const std::string& ssmFilename, bool externalResources)
 {
   Values resources;
+  if (externalResources) // check of external resources and override the start values with new references
+  {
+    Snapshot snapshot;
+    snapshot.importResourceFile(ssvFilename, getModel().getTempDirectory() + "/resources");
+
+    // import ssm file, if provided
+    if (!ssmFilename.empty())
+      snapshot.importResourceFile(ssmFilename, getModel().getTempDirectory() + "/resources");
+
+    if (oms_status_ok != resources.importFromSnapshot(snapshot, ssvFilename, ssmFilename))
+      return logError("referenceResources failed for \"" + std::string(getFullCref()) + ":" + ssvFilename + "\"");
+  }
+
   if (!values.hasResources())
   {
-    resources.allresources["resources/" + ssvFilename] = resources;
-    resources.externalResources = externalResources; // set if resources is "external" or "newResources", if "external" only references will be set in ssd
     if(!ssmFilename.empty())
       resources.ssmFile = "resources/" + ssmFilename;
+    resources.allresources["resources/" + ssvFilename] = resources;
     values.parameterResources.push_back(resources);
   }
   else
   {
     // generate empty ssv file, if more resources are added to same level
-    resources.externalResources = externalResources; // set if resources is "external" or "newResources", if "external" only references will be set in ssd
     if(!ssmFilename.empty())
       resources.ssmFile = "resources/" + ssmFilename;
     values.parameterResources[0].allresources["resources/" + ssvFilename] = resources;
@@ -1116,6 +1139,102 @@ oms_status_enu_t oms::ComponentFMUME::getReal(const ComRef& cref, double& value)
 
   fmi2_value_reference_t vr = allVariables[j].getValueReference();
   return getReal(vr, value);
+}
+
+oms_status_enu_t oms::ComponentFMUME::getDirectionalDerivative(const ComRef &cref, double &value)
+{
+  // TODO implement the getDirectionalDerivative table
+  if (!getModel().validState(oms_modelState_instantiated | oms_modelState_initialization | oms_modelState_simulation))
+    return logError_ModelInWrongState(getModel().getCref());
+
+  if (!getFMUInfo()->getProvidesDirectionalDerivative())
+    return logError("It is not possible to compute directionalDerivative for signal \"" + std::string(getFullCref() + cref) + "\" as providesDirectionalDerivative is false or not provieded in modelDescription.xml");
+
+  int j = -1;
+  for (size_t i = 0; i < allVariables.size(); i++)
+  {
+    if (allVariables[i].getCref() == cref && allVariables[i].isTypeReal())
+    {
+      j = i;
+      break;
+    }
+  }
+
+  if (!fmu || j < 0)
+    return logError_UnknownSignal(getFullCref() + cref);
+
+  if (oms_modelState_instantiated == getModel().getModelState())
+  {
+    if (getFMUInfo()->getGenerationTool().substr(0, 12) == "OpenModelica")
+      logWarning("It is not possible to get partial derivatives of OpenModelica generated fmus during initialization mode, getting directional derivative after intialization is possible");
+
+    // check index exist in ModelStructure inititalUnknowns
+    auto index = values.modelStructureInitialUnknowns.find(j + 1);
+    if (index == values.modelStructureInitialUnknowns.end())
+      return logError("Signal \"" + std::string(getFullCref() + cref) + "\" could not be resolved to an <InitialUnknowns> index in <ModelStructure>");
+
+    // get dependencylist from <InitialUnknowns> in <ModelStructure>
+    std::vector<int> dependencyList = values.modelStructureInitialUnknowns[j + 1];
+    getDirectionalDerivativeHeper(j, dependencyList, value);
+  }
+
+  if (oms_modelState_simulation == getModel().getModelState())
+  {
+    if (!allVariables[j].isOutput() && !allVariables[j].isState() && !allVariables[j].isDer())
+      return logError("Signal \"" + std::string(getFullCref() + cref) + "\" could not be resolved to an output or state or derivates after initalization");
+
+    // <Outputs>
+    if (allVariables[j].isOutput())
+    {
+      // check index exist in ModelStructure inititalUnknowns
+      auto index = values.modelStructureOutputs.find(j + 1);
+      if (index == values.modelStructureOutputs.end())
+        return logError("Signal \"" + std::string(getFullCref() + cref) + "\" could not be resolved to an <Outputs> index in <ModelStructure>");
+
+      // get dependencylist from <Outputs> in <ModelStructure>
+      std::vector<int> dependencyList = values.modelStructureOutputs[j + 1];
+      getDirectionalDerivativeHeper(j, dependencyList, value);
+    }
+
+    // <Derivatives>
+    if (allVariables[j].isState() || allVariables[j].isDer())
+    {
+      // check index exist in ModelStructure inititalUnknowns
+      auto index = values.modelStructureDerivatives.find(j + 1);
+      if (index == values.modelStructureDerivatives.end())
+        return logError("Signal \"" + std::string(getFullCref() + cref) + "\" could not be resolved to an <Derivatives> index in <ModelStructure>");
+
+      // get dependencylist from <Derivatives> in <ModelStructure>
+      std::vector<int> dependencyList = values.modelStructureDerivatives[j + 1];
+      getDirectionalDerivativeHeper(j, dependencyList, value);
+    }
+  }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::ComponentFMUME::getDirectionalDerivativeHeper(const int &index, const std::vector<int> &dependencyList, double &value)
+{
+  fmi2_value_reference_t vr_unknown = allVariables[index].getValueReference();
+
+  fmi2_value_reference_t *vr_known = 0;
+  vr_known = (fmi2_value_reference_t *)calloc(dependencyList.size(), sizeof(fmi2_value_reference_t *));
+
+  fmi2_real_t *dvknown = 0;
+  dvknown = (fmi2_real_t *)calloc(dependencyList.size(), sizeof(fmi2_real_t *));
+
+  for (int i = 0; i < dependencyList.size(); i++)
+  {
+    vr_known[i] = allVariables[dependencyList[i] - 1].getValueReference();
+    dvknown[i] = 1.0;
+  }
+
+  fmi2_import_get_directional_derivative(fmu, &vr_unknown, 1, vr_known, dependencyList.size(), dvknown, &value);
+
+  free(vr_known);
+  free(dvknown);
+
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms::ComponentFMUME::setBoolean(const ComRef& cref, bool value)

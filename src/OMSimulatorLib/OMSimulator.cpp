@@ -1188,11 +1188,17 @@ oms_status_enu_t oms_RunFile(const char* filename)
     lua_State *L = luaL_newstate();
     luaL_openlibs(L);
     luaopen_OMSimulatorLua(L);
-    if (luaL_loadfile(L, filename))
-      return logError(lua_tostring(L, -1));
+    if (luaL_loadfile(L, filename)) {
+      logError(lua_tostring(L, -1));
+      lua_close(L);
+      return oms_status_error;
+    }
 
-    if (lua_pcall(L, 0, 0, 0))
-      return logError(lua_tostring(L, -1));
+    if (lua_pcall(L, 0, 0, 0)) {
+      logError(lua_tostring(L, -1));
+      lua_close(L);
+      return oms_status_error;
+    }
 
     lua_close(L);
 #else
@@ -1300,6 +1306,23 @@ oms_status_enu_t oms_getReal(const char* cref, double* value)
     return logError_SystemNotInModel(model->getCref(), front);
 
   return system->getReal(tail, *value);
+}
+
+oms_status_enu_t oms_getDirectionalDerivative(const char* cref, double* value)
+{
+  oms::ComRef tail(cref);
+  oms::ComRef front = tail.pop_front();
+
+  oms::Model* model = oms::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  front = tail.pop_front();
+  oms::System* system = model->getSystem(front);
+  if (!system)
+    return logError_SystemNotInModel(model->getCref(), front);
+
+  return system->getDirectionalDerivative(tail, *value);
 }
 
 oms_status_enu_t oms_getResultFile(const char* cref_, char** filename, int* bufferSize)

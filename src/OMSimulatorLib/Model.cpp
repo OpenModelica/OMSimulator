@@ -563,9 +563,9 @@ oms_status_enu_t oms::Model::referenceResources(const oms::ComRef& cref, const s
   {
     std::string ssmExtension = "";
     if (ssmFile.length() > 4)
-      ssmExtension = ssmFile.substr(fileName.length() - 4);
+      ssmExtension = ssmFile.substr(ssmFile.length() - 4);
     if (ssmExtension != ".ssm")
-      return logError("filename extension for \"" + std::string(getCref() + cref) + "\" must be \".ssm\", no other formats are supported");
+      return logError("filename extension for \"" + ssmFile + "\" must be \".ssm\", no other formats are supported");
   }
 
   if (system)
@@ -883,6 +883,14 @@ void oms::Model::writeAllResourcesToFilesystem(std::vector<std::string>& resourc
       logError("failed to export \"" + filename + " to directory " + tempDir);
   }
 
+  // export the unreferenced ssv and ssm files to ssp, this must be extended to export all unreferenced resources
+  for (auto & it : importedResources)
+  {
+    auto file = std::find(resources.begin(), resources.end(), "resources/"+ it);
+    if (file == resources.end())
+      resources.push_back("resources/"+ it); // export unreferenced resources
+  }
+
   if (system)
     system->getAllResources(resources);
 
@@ -960,7 +968,7 @@ oms_status_enu_t oms::Model::initialize()
   clock.reset();
   clock.tic();
 
-  lastEmit = startTime;
+  lastEmit = startTime - 1.0;
 
   if (!resultFilename.empty())
   {
@@ -1163,6 +1171,10 @@ oms_status_enu_t oms::Model::emit(double time, bool force, bool* emitted)
   if (!force && time < lastEmit + loggingInterval)
     return oms_status_ok;
   if (!force && time <= lastEmit)
+    return oms_status_ok;
+
+  // Skip rhs of events if --emitEvents=true
+  if (!Flags::EmitEvents() && lastEmit == time)
     return oms_status_ok;
 
   if (system)

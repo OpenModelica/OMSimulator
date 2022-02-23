@@ -45,6 +45,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <cmath>
 
 namespace oms
 {
@@ -84,6 +85,9 @@ namespace oms
     oms_status_enu_t setBoolean(const ComRef& cref, bool value);
     oms_status_enu_t setInteger(const ComRef& cref, int value);
     oms_status_enu_t setReal(const ComRef& cref, double value);
+
+    oms_status_enu_t getDirectionalDerivative(const ComRef& cref, double& value);
+    oms_status_enu_t getDirectionalDerivativeHeper(const int& index, const std::vector<int>& dependencyList, double& value);
 
     oms_status_enu_t deleteStartValue(const ComRef& cref);
 

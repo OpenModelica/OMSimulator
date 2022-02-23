@@ -58,6 +58,7 @@ namespace oms
     static bool AddParametersToCSV() {return GetInstance().addParametersToCSV;}
     static bool DefaultModeIsCS() {return GetInstance().defaultModeIsCS;}
     static bool DeleteTempFiles() {return GetInstance().deleteTempFiles;}
+    static bool DumpAlgLoops() {return GetInstance().dumpAlgLoops;}
     static bool EmitEvents() {return GetInstance().emitEvents;}
     static bool IgnoreInitialUnknowns() {return GetInstance().ignoreInitialUnknowns;}
     static bool InputExtrapolation() {return GetInstance().inputExtrapolation;}
@@ -89,6 +90,7 @@ namespace oms
     bool addParametersToCSV;
     bool defaultModeIsCS;
     bool deleteTempFiles;
+    bool dumpAlgLoops;
     bool emitEvents;
     bool ignoreInitialUnknowns;
     bool inputExtrapolation;
@@ -145,6 +147,7 @@ namespace oms
       {"--algLoopSolver", "", "Specifies the alg. loop solver method ([fixedpoint], kinsol) used for algebraic loops spanning over multiple components.", re_default, Flags::AlgLoopSolver, false},
       {"--clearAllOptions", "", "Reset all flags to default values", re_void, Flags::ClearAllOptions, false},
       {"--deleteTempFiles", "", "Deletes temp files as soon as they are no longer needed ([true], false)", re_bool, Flags::DeleteTempFiles, false},
+      {"--dumpAlgLoops", "", "Dump information for alg loops (true, [false])", re_bool, Flags::DumpAlgLoops, false},
       {"--emitEvents", "", "Specifies whether events should be emitted or not ([true], false)", re_bool, Flags::EmitEvents, false},
       {"--fetchAllVars", "", "Workaround for certain FMUs that do not update all internal dependencies automatically", re_default, Flags::FetchAllVars, false},
       {"--help", "-h", "Displays the help text", re_void, Flags::Help, true},
@@ -161,7 +164,7 @@ namespace oms
       {"--realTime", "", "Experimental feature for (soft) real-time co-simulation (true, [false])", re_bool, Flags::RealTime, false},
       {"--resultFile", "-r", "Specifies the name of the output result file", re_default, Flags::ResultFile, false},
       {"--setInputDerivatives", "", "Deprecated; see '--inputExtrapolation'", re_bool, Flags::SetInputDerivatives, false},
-      {"--skipCSVHeader", "", "Skip exporting the scv delimiter in the header (true, [false]), ", re_default, Flags::SkipCSVHeader, false},
+      {"--skipCSVHeader", "", "Skip exporting the scv delimiter in the header ([true], false), ", re_default, Flags::SkipCSVHeader, false},
       {"--solver", "", "Specifies the integration method (euler, [cvode])", re_default, Flags::Solver, false},
       {"--solverStats", "", "Adds solver stats to the result file, e.g. step size; not supported for all solvers (true, [false])", re_bool, Flags::SolverStats, false},
       {"--startTime", "-s", "Specifies the start time", re_double, Flags::StartTime, false},
@@ -182,6 +185,7 @@ namespace oms
     static oms_status_enu_t AlgLoopSolver(const std::string& value);
     static oms_status_enu_t ClearAllOptions(const std::string& value);
     static oms_status_enu_t DeleteTempFiles(const std::string& value);
+    static oms_status_enu_t DumpAlgLoops(const std::string& value);
     static oms_status_enu_t EmitEvents(const std::string& value);
     static oms_status_enu_t FetchAllVars(const std::string& value);
     static oms_status_enu_t Filename(const std::string& value);

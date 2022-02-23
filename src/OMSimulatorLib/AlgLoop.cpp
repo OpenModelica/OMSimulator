@@ -36,6 +36,8 @@
 #include "Flags.h"
 #include "System.h"
 
+#include <sstream>
+
 /**
  * @brief Check flag returned by KINSOL function and log error
  *
@@ -127,40 +129,67 @@ int oms::KinsolSolver::nlsKinsolResiduals(N_Vector uu, N_Vector fval, void *user
   AlgLoop* algLoop = syst->getAlgLoop(kinsoluserData->algLoopNumber);
   DirectedGraph* graph = kinsoluserData->graph;
   const oms_ssc_t SCC = algLoop->getSCC();
+  kinsoluserData->iteration++;
 
   const int size = SCC.size();
   double maxRes;
   oms_status_enu_t status;
+  std::stringstream ss;
+
+  if (Flags::DumpAlgLoops())
+  {
+    ss << "iteration " << std::to_string(kinsoluserData->iteration) << std::endl;
+    ss << "inputs:" << std::endl;
+  }
 
   // Set values from uu
   for (int i=0; i<size; ++i)
   {
     int output = SCC[i].second;
     status = syst->setReal(graph->getNodes()[output].getName(), uu_data[i]);
+    if (Flags::DumpAlgLoops())
+      ss << "  " << graph->getNodes()[output].getName().c_str() << ": " << uu_data[i] << std::endl;
     if (status == oms_status_discard || status == oms_status_error || status == oms_status_warning)
     {
+      logInfo("iteration " + std::to_string(kinsoluserData->iteration) + ": recoverable error (1)");
       return 1 /* recoverable error */;
     }
     else if (status == oms_status_fatal)
     {
+      logInfo("iteration " + std::to_string(kinsoluserData->iteration) + ": not recoverable error (1)");
       return -1 /* not recoverable error */;
     }
   }
+
+  if (Flags::DumpAlgLoops())
+    ss << "outputs:" << std::endl;
 
   // Get updated values and calulate residual
   for (int i=0; i<size; ++i)
   {
     int output = SCC[i].first;
     status = syst->getReal(graph->getNodes()[output].getName(), fval_data[i]);
+    if (Flags::DumpAlgLoops())
+      ss << "  " << graph->getNodes()[output].getName().c_str() << ": " << fval_data[i] << std::endl;
     if (status == oms_status_discard || status == oms_status_error || status == oms_status_warning)
     {
+      logInfo("iteration " + std::to_string(kinsoluserData->iteration) + ": recoverable error (2)");
       return 1 /* recoverable error */;
     }
     else if (status == oms_status_fatal)
     {
+      logInfo("iteration " + std::to_string(kinsoluserData->iteration) + ": not recoverable error (2)");
       return -1 /* not recoverable error */;
     }
     fval_data[i] = fval_data[i] - uu_data[i];
+  }
+
+  if (Flags::DumpAlgLoops())
+  {
+    ss << "residuals:" << std::endl;
+    for (int i=0; i<size; ++i)
+      ss << "  res[" << i << "]: " << fval_data[i] << std::endl;
+    logInfo(ss.str());
   }
 
   return 0 /* success */;
@@ -221,7 +250,7 @@ oms::KinsolSolver* oms::KinsolSolver::NewKinsolSolver(const int algLoopNum, cons
   }
 
   /* Set user data given to KINSOL */
-  kinsolSolver->userData = new KINSOL_USER_DATA{/*.syst=*/NULL, /*.graph=*/NULL, /*.algLoopNumber=*/algLoopNum};
+  kinsolSolver->userData = new KINSOL_USER_DATA{/*.syst=*/NULL, /*.graph=*/NULL, /*.algLoopNumber=*/algLoopNum, /*.iteration=*/0};
   flag = KINSetUserData(kinsolSolver->kinsolMemory, kinsolSolver->userData);
   if (!checkFlag(flag, "KINSetUserData")) return NULL;
 
@@ -302,6 +331,7 @@ oms_status_enu_t oms::KinsolSolver::kinsolSolve(System& syst, DirectedGraph& gra
   KINSOL_USER_DATA* kinsolUserData = (KINSOL_USER_DATA*) userData;
   kinsolUserData->syst = &syst;
   kinsolUserData->graph = &graph;
+  kinsolUserData->iteration = 0;
   AlgLoop* algLoop = syst.getAlgLoop(kinsolUserData->algLoopNumber);
   const oms_ssc_t SCC = algLoop->getSCC();
 
@@ -438,6 +468,7 @@ oms_status_enu_t oms::AlgLoop::fixPointIteration(System& syst, DirectedGraph& gr
 
   do
   {
+    std::stringstream ss;
     it++;
     // get old values
     for (int i=0; i<size; ++i)
@@ -461,6 +492,18 @@ oms_status_enu_t oms::AlgLoop::fixPointIteration(System& syst, DirectedGraph& gr
       }
     }
 
+    if (Flags::DumpAlgLoops())
+    {
+      ss << "iteration " << std::to_string(it) << std::endl;
+      ss << "inputs:" << std::endl;
+      for (int i=0; i<size; ++i)
+      {
+        const int input = SCC[i].second;
+        ss << "  " << graph.getNodes()[input].getName().c_str() << ": " << res[i] << std::endl;
+      }
+      ss << "outputs:" << std::endl;
+    }
+
     // calculate residuals
     maxRes = 0.0;
     double value;
@@ -474,9 +517,21 @@ oms_status_enu_t oms::AlgLoop::fixPointIteration(System& syst, DirectedGraph& gr
       }
       res[i] -= value;
 
+      if (Flags::DumpAlgLoops())
+        ss << "  " << graph.getNodes()[output].getName().c_str() << ": " << value << std::endl;
+
       if (fabs(res[i]) > maxRes)
         maxRes = fabs(res[i]);
     }
+
+    if (Flags::DumpAlgLoops())
+    {
+      ss << "residuals:" << std::endl;
+      for (int i=0; i<size; ++i)
+        ss << "  res[" << i << "]: " << res[i] << std::endl;
+      logInfo(ss.str());
+    }
+
   } while(maxRes > absoluteTolerance && it < maxIterations);
 
   delete[] res;

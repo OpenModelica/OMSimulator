@@ -522,7 +522,7 @@ oms_status_enu_t oms::SystemSC::doStep()
       logDebug("Event detected in FMU \"" + std::string(fmus[i]->getFullCref()) + "\" at time=" + std::to_string(time));
 
       // emit the left limit of the event (if it hasn't already been emitted)
-      if (Flags::EmitEvents() && isTopLevelSystem())
+      if (isTopLevelSystem())
         getModel().emit(time, false);
 
       fmistatus = fmi2_import_enter_event_mode(fmus[i]->getFMU());
@@ -555,7 +555,7 @@ oms_status_enu_t oms::SystemSC::doStep()
 
       // emit the right limit of the event
       updateInputs(eventGraph);
-      if (Flags::EmitEvents() && isTopLevelSystem())
+      if (isTopLevelSystem())
         getModel().emit(time, true);
 
       // restart event iteration from the beginning

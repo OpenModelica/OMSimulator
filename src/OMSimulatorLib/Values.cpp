@@ -239,14 +239,20 @@ oms_status_enu_t oms::Values::getRealResources(const ComRef& cref, double& value
     {
       if (externalInput && oms_modelState_simulation == modelState && res.second.realValues[cref] != 0.0)
       {
-        value = res.second.realValues[cref];
-        return oms_status_ok;
+        if (res.second.linkResources)
+        {
+          value = res.second.realValues[cref];
+          return oms_status_ok;
+        }
       }
       auto realValue = res.second.realStartValues.find(cref);
       if (realValue != res.second.realStartValues.end())
       {
-        value = realValue->second;
-        return oms_status_ok;
+        if (res.second.linkResources)
+        {
+          value = realValue->second;
+          return oms_status_ok;
+        }
       }
     }
   }
@@ -262,14 +268,20 @@ oms_status_enu_t oms::Values::getIntegerResources(const ComRef& cref, int& value
     {
       if (externalInput && oms_modelState_simulation == modelState && res.second.integerValues[cref] != 0.0)
       {
-        value = res.second.integerValues[cref];
-        return oms_status_ok;
+        if (res.second.linkResources)
+        {
+          value = res.second.integerValues[cref];
+          return oms_status_ok;
+        }
       }
       auto integerValue = res.second.integerStartValues.find(cref);
       if (integerValue != res.second.integerStartValues.end())
       {
-        value = integerValue->second;
-        return oms_status_ok;
+        if (res.second.linkResources)
+        {
+          value = integerValue->second;
+          return oms_status_ok;
+        }
       }
     }
   }
@@ -285,14 +297,20 @@ oms_status_enu_t oms::Values::getBooleanResources(const ComRef& cref, bool& valu
     {
       if (externalInput && oms_modelState_simulation == modelState && res.second.booleanValues[cref] != 0.0)
       {
-        value = res.second.booleanValues[cref];
-        return oms_status_ok;
+        if (res.second.linkResources)
+        {
+          value = res.second.booleanValues[cref];
+          return oms_status_ok;
+        }
       }
       auto booleanValue = res.second.booleanStartValues.find(cref);
       if (booleanValue != res.second.booleanStartValues.end())
       {
-        value = booleanValue->second;
-        return oms_status_ok;
+        if (res.second.linkResources)
+        {
+          value = booleanValue->second;
+          return oms_status_ok;
+        }
       }
     }
   }
@@ -462,6 +480,30 @@ oms_status_enu_t oms::Values::exportToSSD(pugi::xml_node& node) const
 
   exportStartValuesHelper(node_parameters);
   exportParameterMappingInline(node_parameter_binding);
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Values::importFromSnapshot(const Snapshot &snapshot, const std::string& ssvFilename, const std::string& ssmFilename)
+{
+  // import new ssm references
+  if (!ssmFilename.empty())
+  {
+    pugi::xml_node ssm_parameterMapping = snapshot.getResourceNode(ssmFilename);
+    if (!ssm_parameterMapping)
+      return logError("loading <oms:file> \"" + ssmFilename + "\" from <oms:snapshot> failed");
+
+    importParameterMapping(ssm_parameterMapping);
+  }
+
+  // import new ssv references
+  pugi::xml_node parameterSet = snapshot.getResourceNode(ssvFilename);
+  if (!parameterSet)
+    return logError("loading <oms:file> \"" + ssvFilename + "\" from <oms:snapshot> failed");
+
+  pugi::xml_node parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
+
+  importStartValuesHelper(parameters);
 
   return oms_status_ok;
 }
@@ -638,16 +680,10 @@ void oms::Values::exportParameterBindings(pugi::xml_node &node, Snapshot &snapsh
               node_parameter_binding = node_parameters_bindings.append_child(oms::ssp::Version1_0::ssd::parameter_binding);
               node_parameter_binding.append_attribute("source") = res.first.c_str();
             }
-            //std::cout << "\n export To SSV file :" << res.first.c_str() << "=" << res.second.isExternalSSV << "=" << res.second.ssmFile;
-            /*
-            export ssv file only for newResources and not external ssv files,
-            as they will be copied directly to resources folder and only the references must be updated in ssd
-            */
-            if (!res.second.externalResources)
-            {
-              pugi::xml_node ssvNode = snapshot.getTemplateResourceNodeSSV(res.first, "parameters");
-              res.second.exportToSSV(ssvNode);
-            }
+            //std::cout << "\n export To SSV file :" << res.first.c_str() << "=" << res.second.ssmFile;
+            pugi::xml_node ssvNode = snapshot.getTemplateResourceNodeSSV(res.first, "parameters");
+            res.second.exportToSSV(ssvNode);
+
             // export SSM file if exist
             if (!res.second.ssmFile.empty())
             {
@@ -656,11 +692,8 @@ void oms::Values::exportParameterBindings(pugi::xml_node &node, Snapshot &snapsh
                 pugi::xml_node ssd_parameter_mapping = node_parameter_binding.append_child(oms::ssp::Version1_0::ssd::parameter_mapping);
                 ssd_parameter_mapping.append_attribute("source") = res.second.ssmFile.c_str();
               }
-              if (!res.second.externalResources)
-              {
-                pugi::xml_node ssmNode = snapshot.getTemplateResourceNodeSSM(res.second.ssmFile);
-                res.second.exportParameterMappingToSSM(ssmNode);
-              }
+              pugi::xml_node ssmNode = snapshot.getTemplateResourceNodeSSM(res.second.ssmFile);
+              res.second.exportParameterMappingToSSM(ssmNode);
             }
           }
         }
@@ -910,8 +943,61 @@ oms_status_enu_t oms::Values::parseModelDescription(const filesystem::path& root
         }
       }
     }
+    if (name == "ModelStructure")
+    {
+      //ModelStructure-Outputs
+      pugi::xml_node modelStructureOutputNode = it->child("Outputs");
+      if (modelStructureOutputNode)
+      {
+        for (pugi::xml_node output = modelStructureOutputNode.child("Unknown"); output; output = output.next_sibling("Unknown"))
+        {
+          int index = output.attribute("index").as_int();
+          std::string dependencies = output.attribute("dependencies").as_string();
+          std::vector<int> dependenciesList;
+          parseModelStructureDependencies(dependencies, dependenciesList);
+          modelStructureOutputs[index] = dependenciesList;
+        }
+      }
+      // ModelStructure-derivatives
+      pugi::xml_node modelStructureDerivativeNode = it->child("Derivatives");
+      if (modelStructureDerivativeNode)
+      {
+        for (pugi::xml_node derivative = modelStructureDerivativeNode.child("Unknown"); derivative; derivative = derivative.next_sibling("Unknown"))
+        {
+          int index = derivative.attribute("index").as_int();
+          std::string dependencies = derivative.attribute("dependencies").as_string();
+          std::vector<int> dependenciesList;
+          parseModelStructureDependencies(dependencies, dependenciesList);
+          modelStructureDerivatives[index] = dependenciesList;
+        }
+      }
+      // ModelStructure-initialUnknowns
+      pugi::xml_node modelStructureInitialUnknownsNode = it->child("InitialUnknowns");
+      if (modelStructureInitialUnknownsNode)
+      {
+        for (pugi::xml_node initialUnknowns = modelStructureInitialUnknownsNode.child("Unknown"); initialUnknowns; initialUnknowns = initialUnknowns.next_sibling("Unknown"))
+        {
+          int index = initialUnknowns.attribute("index").as_int();
+          std::string dependencies = initialUnknowns.attribute("dependencies").as_string();
+          std::vector<int> dependenciesList;
+          parseModelStructureDependencies(dependencies, dependenciesList);
+          modelStructureInitialUnknowns[index] = dependenciesList;
+        }
+      }
+    }
   }
   return oms_status_ok;
+}
+
+void oms::Values::parseModelStructureDependencies(std::string &dependencies, std::vector<int> &dependencyList)
+{
+  std::stringstream ss(dependencies);
+  std::string temp;
+  while (std::getline(ss, temp, ' '))
+  {
+    if (!temp.empty())
+      dependencyList.push_back(std::stoi(temp));
+  }
 }
 
 void oms::Values::importParameterMapping(const pugi::xml_node& parameterMapping)
