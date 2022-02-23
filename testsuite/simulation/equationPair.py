@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm -rf equationPair-py/
+## teardown_command: rm -rf equationPair/
 ## linux: no
 ## mingw32: no
 ## mingw64: yes
@@ -9,7 +9,7 @@
 import OMSimulator as oms
 
 oms.setCommandLineOption("--suppressPath=true --algLoopSolver=kinsol --dumpAlgLoops=true")
-oms.setTempDirectory("./equationPair-py/")
+oms.setTempDirectory("./equationPair/")
 
 model = oms.newModel("equationPair")
 root = model.addSystem('root', oms.Types.System.WC)
