@@ -1,0 +1,19 @@
+setCommandLineOptions("-d=-disableDirectionalDerivatives,fmuExperimental"); getErrorString();
+
+loadString("
+model fmidertest
+  input Real u1(start=1);
+  input Real u2(start=2);
+  output Real y;
+  Real x;
+initial equation
+  x = u1*u2 + (u1 + u2)/2;
+equation
+  der(x) = x*u1^2;
+  y = x + u1*u2 + x;
+end fmidertest;
+");
+
+buildModelFMU(fmidertest, version="2.0", fmuType="me_cs", fileNamePrefix="fmidertest"); getErrorString();
+
+system("zip -qd fmidertest.fmu sources/* && unzip -o fmidertest.fmu -d fmidertest/");
