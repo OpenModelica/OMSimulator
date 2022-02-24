@@ -1170,9 +1170,6 @@ oms_status_enu_t oms::ComponentFMUCS::getDirectionalDerivative(const ComRef& cre
 
   if (oms_modelState_instantiated == getModel().getModelState())
   {
-    if (getFMUInfo()->getGenerationTool().substr(0, 12) == "OpenModelica")
-      logWarning("It is not possible to get partial derivatives of OpenModelica generated fmus during initialization mode, getting directional derivative after intialization is possible");
-
     // check index exist in ModelStructure inititalUnknowns
     auto index = values.modelStructureInitialUnknowns.find(j+1);
     if (index == values.modelStructureInitialUnknowns.end())

@@ -1143,7 +1143,6 @@ oms_status_enu_t oms::ComponentFMUME::getReal(const ComRef& cref, double& value)
 
 oms_status_enu_t oms::ComponentFMUME::getDirectionalDerivative(const ComRef &cref, double &value)
 {
-  // TODO implement the getDirectionalDerivative table
   if (!getModel().validState(oms_modelState_instantiated | oms_modelState_initialization | oms_modelState_simulation))
     return logError_ModelInWrongState(getModel().getCref());
 
@@ -1165,9 +1164,6 @@ oms_status_enu_t oms::ComponentFMUME::getDirectionalDerivative(const ComRef &cre
 
   if (oms_modelState_instantiated == getModel().getModelState())
   {
-    if (getFMUInfo()->getGenerationTool().substr(0, 12) == "OpenModelica")
-      logWarning("It is not possible to get partial derivatives of OpenModelica generated fmus during initialization mode, getting directional derivative after intialization is possible");
-
     // check index exist in ModelStructure inititalUnknowns
     auto index = values.modelStructureInitialUnknowns.find(j + 1);
     if (index == values.modelStructureInitialUnknowns.end())
