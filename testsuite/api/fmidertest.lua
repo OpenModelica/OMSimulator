@@ -37,7 +37,7 @@ oms_delete("model")
 -- Result:
 -- info:    Partial Derivatives during Initialization
 -- info:      model.root.fmidertest.x     : 4.0
--- info:      model.root.fmidertest.der(x): 4.0
+-- info:      model.root.fmidertest.der(x): 11.0
 -- info:      model.root.fmidertest.y     : 11.0
 -- info:    Result file: fmidertest_CS.mat (bufferSize=10)
 -- info:    Partial Derivatives after Initialization
