@@ -2,10 +2,10 @@
 <fmiModelDescription
   fmiVersion="2.0"
   modelName="fmidertest"
-  guid="{d32349dd-1922-4d96-8e20-7de84cad4cf7}"
+  guid="{cbd23953-b493-4776-a742-46106cae59bf}"
   description=""
-  generationTool="OpenModelica Compiler OpenModelica v1.19.0-dev-622-ga00489cc19 (64-bit)"
-  generationDateAndTime="2022-02-25T11:39:06Z"
+  generationTool="OpenModelica Compiler OpenModelica v1.19.0-dev-626-g64d8413db0 (64-bit)"
+  generationDateAndTime="2022-02-25T17:32:35Z"
   variableNamingConvention="structured"
   numberOfEventIndicators="0">
   <ModelExchange
