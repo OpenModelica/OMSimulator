@@ -95,7 +95,7 @@ OMSAPI oms_status_enu_t OMSCALL oms_getBus(const char* cref, oms_busconnector_t*
 OMSAPI oms_status_enu_t OMSCALL oms_getComponentType(const char* cref, oms_component_enu_t* type);
 OMSAPI oms_status_enu_t OMSCALL oms_getConnections(const char* cref, oms_connection_t*** connections);
 OMSAPI oms_status_enu_t OMSCALL oms_getConnector(const char* cref, oms_connector_t** connector);
-OMSAPI oms_status_enu_t OMSCALL oms_getDirectionalDerivative(const char* cref, const char* cref_, double* value);
+OMSAPI oms_status_enu_t OMSCALL oms_getDirectionalDerivative(const char* unknownCref, const char* knownCref, double* value);
 OMSAPI oms_status_enu_t OMSCALL oms_getElement(const char* cref, oms_element_t** element);
 OMSAPI oms_status_enu_t OMSCALL oms_getElements(const char* cref, oms_element_t*** elements);
 OMSAPI oms_status_enu_t OMSCALL oms_getExternalModelInfo(const char* cref, const oms_external_tlm_model_info_t** externalModelInfo);

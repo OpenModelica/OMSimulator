@@ -46,11 +46,18 @@ oms_delete("model")
 
 -- Result:
 -- info:    Partial Derivatives during Initialization
--- info:      model.root.fmidertest.x     : 4.0
--- info:      model.root.fmidertest.der(x): 11.0
--- info:      model.root.fmidertest.y     : 11.0
+-- info:      model.root.fmidertest.x w.r.t u1     : 2.5
+-- info:      model.root.fmidertest.x w.r.t u2     : 1.5
+-- info:      model.root.fmidertest.der(x) w.r.t u1: 9.5
+-- info:      model.root.fmidertest.der(x) w.r.t u2: 1.5
+-- info:      model.root.fmidertest.y w.r.t u1     : 7.0
+-- info:      model.root.fmidertest.y w.r.t u2     : 4.0
+-- info:    Partial Derivatives during Initialization sum of Jacobians
+-- info:      model.root.fmidertest.x              : 4.0
+-- info:      model.root.fmidertest.der(x)         : 11.0
+-- info:      model.root.fmidertest.y              : 11.0
 -- info:    Result file: fmidertest_CS.mat (bufferSize=10)
 -- info:    Partial Derivatives after Initialization
--- info:      model.root.fmidertest.der(x): 8.0
--- info:      model.root.fmidertest.y     : 5.0
+-- info:      model.root.fmidertest.der(x)         : 8.0
+-- info:      model.root.fmidertest.y              : 5.0
 -- endResult
