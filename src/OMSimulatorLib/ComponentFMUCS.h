@@ -87,7 +87,7 @@ namespace oms
     oms_status_enu_t setReal(const ComRef& cref, double value);
 
     oms_status_enu_t getDirectionalDerivative(const ComRef& unknownCref, const ComRef& knownCref, double& value);
-    oms_status_enu_t getDirectionalDerivativeHeper(const int& unknownIndex, const int& knownindex, const std::vector<int>& dependencyList, double& value);
+    oms_status_enu_t getDirectionalDerivativeHeper(const int unknownIndex, const int knownindex, const std::vector<int>& dependencyList, double& value);
 
     oms_status_enu_t deleteStartValue(const ComRef& cref);
 

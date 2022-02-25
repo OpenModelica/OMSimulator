@@ -1236,32 +1236,24 @@ oms_status_enu_t oms::ComponentFMUCS::getDirectionalDerivative(const ComRef& unk
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::ComponentFMUCS::getDirectionalDerivativeHeper(const int &unknownIndex, const int &knownIndex, const std::vector<int> &dependencyList, double &value)
+oms_status_enu_t oms::ComponentFMUCS::getDirectionalDerivativeHeper(const int unknownIndex, const int knownIndex, const std::vector<int> &dependencyList, double &value)
 {
   fmi2_value_reference_t vr_unknown = allVariables[unknownIndex].getValueReference();
-  fmi2_value_reference_t *vr_known = 0;
-  vr_known = (fmi2_value_reference_t *)calloc(dependencyList.size(), sizeof(fmi2_value_reference_t *));
-
-  fmi2_real_t *dvknown = 0;
-  dvknown = (fmi2_real_t *)calloc(dependencyList.size(), sizeof(fmi2_real_t *));
+  fmi2_value_reference_t *vr_known = (fmi2_value_reference_t *)calloc(dependencyList.size(), sizeof(fmi2_value_reference_t *));
+  fmi2_real_t *dvknown = (fmi2_real_t *)calloc(dependencyList.size(), sizeof(fmi2_real_t *));
 
   for (int i = 0; i < dependencyList.size(); i++)
   {
     vr_known[i] = allVariables[dependencyList[i] - 1].getValueReference();
-    // knownIndex not provided, set all the seedVector to 1.0 and  return sum of jacobians
-    if (knownIndex < 0)
-    {
+
+    // The knownIndex is < 0 if not specified. In this case, we
+    // calculate the sum of the row, which means we set all seed
+    // values to 1.0. Otherwise we just set the explicitly provided
+    // element to 1.0.
+    if (knownIndex < 0 || (dependencyList[i] == knownIndex + 1))
       dvknown[i] = 1.0;
-    }
-    // set provided seed vector = 1.0 else 0.0
-    else if (knownIndex > 0 && (dependencyList[i] == knownIndex + 1))
-    {
-      dvknown[i] = 1.0;
-    }
     else
-    {
       dvknown[i] = 0.0;
-    }
   }
 
   fmi2_import_get_directional_derivative(fmu, &vr_unknown, 1, vr_known, dependencyList.size(), dvknown, &value);
