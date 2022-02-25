@@ -14,6 +14,7 @@ deleteReferencesInSSD1.lua \
 deleteReferencesInSSD2.lua \
 deleteResourcesInSSP1.lua \
 deleteResourcesInSSP2.lua \
+fmidertest.lua \
 getDirectionalDerivative_CS.lua \
 getDirectionalDerivative_ME.lua \
 getDirectionalDerivative_CS.py \

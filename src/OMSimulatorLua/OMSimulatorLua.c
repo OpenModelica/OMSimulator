@@ -647,17 +647,23 @@ static int OMSimulatorLua_oms_getReal(lua_State *L)
   return 2;
 }
 
-//oms_status_enu_t oms_getDirectionalDerivative(const char* cref, double* value);
+//oms_status_enu_t oms_getDirectionalDerivative(const ComRef& unknownCref, const ComRef& knownCref, double* value);
 static int OMSimulatorLua_oms_getDirectionalDerivative(lua_State *L)
 {
-  if (lua_gettop(L) != 1)
-    return luaL_error(L, "expecting exactly 1 argument");
+  if (lua_gettop(L) != 1 && lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 1 or 2 argument");
   luaL_checktype(L, 1, LUA_TSTRING);
 
-  const char* cref = lua_tostring(L, 1);
+  const char* unknownCref = lua_tostring(L, 1);
+  const char* knownCref = "";
+  if (lua_gettop(L) == 2)
+  {
+    luaL_checktype(L, 2, LUA_TSTRING);
+    knownCref = lua_tostring(L, 2);
+  }
   double value = 0.0;
 
-  oms_status_enu_t status = oms_getDirectionalDerivative(cref, &value);
+  oms_status_enu_t status = oms_getDirectionalDerivative(unknownCref, knownCref, &value);
   lua_pushnumber(L, value);
   lua_pushinteger(L, status);
   return 2;
