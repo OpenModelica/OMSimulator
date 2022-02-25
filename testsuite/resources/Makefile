@@ -14,6 +14,7 @@ DualMassOscillator.System2 \
 Enum1 \
 equationPair.equation1 \
 equationPair.equation2 \
+fmidertest \
 HelloWorld \
 HelloWorldWithInput \
 Int1 \
@@ -65,6 +66,7 @@ Blocks.mos \
 DualMassOscillator.mos \
 Enumeration.mos \
 equationPair.mos \
+fmidertest.mos \
 HelloWorld.mos \
 HelloWorldWithInput.mos \
 Lin2DimODE.mos \

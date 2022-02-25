@@ -66,7 +66,7 @@ class capi:
     self.obj.oms_faultInjection.restype = ctypes.c_int
     self.obj.oms_getBoolean.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_bool)]
     self.obj.oms_getBoolean.restype = ctypes.c_int
-    self.obj.oms_getDirectionalDerivative.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_double)]
+    self.obj.oms_getDirectionalDerivative.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.POINTER(ctypes.c_double)]
     self.obj.oms_getDirectionalDerivative.restype = ctypes.c_int
     self.obj.oms_getFixedStepSize.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_double)]
     self.obj.oms_getFixedStepSize.restype = ctypes.c_int
@@ -224,9 +224,9 @@ class capi:
     value = ctypes.c_bool()
     status = self.obj.oms_getBoolean(cref.encode(), ctypes.byref(value))
     return [value.value, status]
-  def getDirectionalDerivative(self, cref):
+  def getDirectionalDerivative(self, crefA, crefB=""):
     value = ctypes.c_double()
-    status = self.obj.oms_getDirectionalDerivative(cref.encode(), ctypes.byref(value))
+    status = self.obj.oms_getDirectionalDerivative(crefA.encode(), crefB.encode(), ctypes.byref(value))
     return [value.value, status]
   def getFixedStepSize(self, cref):
     value = ctypes.c_double()
