@@ -1147,7 +1147,7 @@ oms_status_enu_t oms::ComponentFMUCS::getReal(const ComRef& cref, double& value)
 }
 
 
-oms_status_enu_t oms::ComponentFMUCS::getDirectionalDerivative(const ComRef& cref, double& value)
+oms_status_enu_t oms::ComponentFMUCS::getDirectionalDerivative(const ComRef& cref, const ComRef& cref_, double& value)
 {
   if (!getModel().validState(oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
     return logError_ModelInWrongState(getModel().getCref());
@@ -1165,6 +1165,20 @@ oms_status_enu_t oms::ComponentFMUCS::getDirectionalDerivative(const ComRef& cre
     }
   }
 
+  // check for knownIndex, if provided
+  int knownIndex = -1;
+  if (!cref_.isEmpty())
+  {
+    for (size_t i = 0; i < allVariables.size(); i++)
+    {
+      if (allVariables[i].getCref() == cref_ && allVariables[i].isTypeReal())
+      {
+        knownIndex = i;
+        break;
+      }
+    }
+  }
+
   if (!fmu || j < 0)
     return logError_UnknownSignal(getFullCref() + cref);
 
@@ -1177,7 +1191,7 @@ oms_status_enu_t oms::ComponentFMUCS::getDirectionalDerivative(const ComRef& cre
 
     //get dependencylist from <InitialUnknowns> in <ModelStructure>
     std::vector<int> dependencyList = values.modelStructureInitialUnknowns[j+1];
-    getDirectionalDerivativeHeper(j, dependencyList, value);
+    getDirectionalDerivativeHeper(j, knownIndex, dependencyList, value);
   }
 
   if (oms_modelState_simulation == getModel().getModelState())
@@ -1195,9 +1209,8 @@ oms_status_enu_t oms::ComponentFMUCS::getDirectionalDerivative(const ComRef& cre
 
       // get dependencylist from <Outputs> in <ModelStructure>
       std::vector<int> dependencyList = values.modelStructureOutputs[j + 1];
-      getDirectionalDerivativeHeper(j, dependencyList, value);
+      getDirectionalDerivativeHeper(j, knownIndex, dependencyList, value);
     }
-
     // <Derivatives>
     if (allVariables[j].isState() || allVariables[j].isDer())
     {
@@ -1208,7 +1221,7 @@ oms_status_enu_t oms::ComponentFMUCS::getDirectionalDerivative(const ComRef& cre
 
       // get dependencylist from <Derivatives> in <ModelStructure>
       std::vector<int> dependencyList = values.modelStructureDerivatives[j + 1];
-      getDirectionalDerivativeHeper(j, dependencyList, value);
+      getDirectionalDerivativeHeper(j, knownIndex, dependencyList, value);
     }
   }
 
@@ -1223,10 +1236,9 @@ oms_status_enu_t oms::ComponentFMUCS::getDirectionalDerivative(const ComRef& cre
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::ComponentFMUCS::getDirectionalDerivativeHeper(const int &index, const std::vector<int> &dependencyList, double &value)
+oms_status_enu_t oms::ComponentFMUCS::getDirectionalDerivativeHeper(const int &index, const int &knownIndex, const std::vector<int> &dependencyList, double &value)
 {
   fmi2_value_reference_t vr_unknown = allVariables[index].getValueReference();
-
   fmi2_value_reference_t *vr_known = 0;
   vr_known = (fmi2_value_reference_t *)calloc(dependencyList.size(), sizeof(fmi2_value_reference_t *));
 
@@ -1236,7 +1248,20 @@ oms_status_enu_t oms::ComponentFMUCS::getDirectionalDerivativeHeper(const int &i
   for (int i = 0; i < dependencyList.size(); i++)
   {
     vr_known[i] = allVariables[dependencyList[i] - 1].getValueReference();
-    dvknown[i] = 1.0;
+    // knownIndex not provided, set all the seedVector to 1.0 and  return sum of jacobians
+    if (knownIndex < 0)
+    {
+      dvknown[i] = 1.0;
+    }
+    // set only provided seed vector = 1.0
+    else if (knownIndex > 0 && (dependencyList[i] == knownIndex + 1))
+    {
+      dvknown[i] = 1.0;
+    }
+    else
+    {
+      dvknown[i] = 0.0;
+    }
   }
 
   fmi2_import_get_directional_derivative(fmu, &vr_unknown, 1, vr_known, dependencyList.size(), dvknown, &value);

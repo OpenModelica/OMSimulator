@@ -1298,7 +1298,7 @@ oms_status_enu_t oms_getReal(const char* cref, double* value)
   return system->getReal(tail, *value);
 }
 
-oms_status_enu_t oms_getDirectionalDerivative(const char* cref, double* value)
+oms_status_enu_t oms_getDirectionalDerivative(const char* cref, const char* cref_, double* value)
 {
   oms::ComRef tail(cref);
   oms::ComRef front = tail.pop_front();
@@ -1312,7 +1312,7 @@ oms_status_enu_t oms_getDirectionalDerivative(const char* cref, double* value)
   if (!system)
     return logError_SystemNotInModel(model->getCref(), front);
 
-  return system->getDirectionalDerivative(tail, *value);
+  return system->getDirectionalDerivative(tail, cref_, *value);
 }
 
 oms_status_enu_t oms_getResultFile(const char* cref_, char** filename, int* bufferSize)

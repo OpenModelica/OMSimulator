@@ -20,16 +20,26 @@ oms_setResultFile("model", "fmidertest_CS.mat", 10)
 oms_instantiate("model")
 
 print("info:    Partial Derivatives during Initialization")
-print("info:      model.root.fmidertest.x     : " .. oms_getDirectionalDerivative("model.root.fmidertest.x"))
-print("info:      model.root.fmidertest.der(x): " .. oms_getDirectionalDerivative("model.root.fmidertest.der(x)"))
-print("info:      model.root.fmidertest.y     : " .. oms_getDirectionalDerivative("model.root.fmidertest.y"))
+print("info:      model.root.fmidertest.x w.r.t u1     : " .. oms_getDirectionalDerivative("model.root.fmidertest.x", "u1"))
+print("info:      model.root.fmidertest.x w.r.t u2     : " .. oms_getDirectionalDerivative("model.root.fmidertest.x", "u2"))
+
+print("info:      model.root.fmidertest.der(x) w.r.t u1: " .. oms_getDirectionalDerivative("model.root.fmidertest.der(x)", "u1"))
+print("info:      model.root.fmidertest.der(x) w.r.t u2: " .. oms_getDirectionalDerivative("model.root.fmidertest.der(x)", "u2"))
+
+print("info:      model.root.fmidertest.y w.r.t u1     : " .. oms_getDirectionalDerivative("model.root.fmidertest.y", "u1"))
+print("info:      model.root.fmidertest.y w.r.t u2     : " .. oms_getDirectionalDerivative("model.root.fmidertest.y", "u2"))
+
+print("info:    Partial Derivatives during Initialization sum of Jacobians")
+print("info:      model.root.fmidertest.x              : " .. oms_getDirectionalDerivative("model.root.fmidertest.x"))
+print("info:      model.root.fmidertest.der(x)         : " .. oms_getDirectionalDerivative("model.root.fmidertest.der(x)"))
+print("info:      model.root.fmidertest.y              : " .. oms_getDirectionalDerivative("model.root.fmidertest.y"))
 
 oms_initialize("model")
 
 
 print("info:    Partial Derivatives after Initialization")
-print("info:      model.root.fmidertest.der(x): " .. oms_getDirectionalDerivative("model.root.fmidertest.der(x)"))
-print("info:      model.root.fmidertest.y     : " .. oms_getDirectionalDerivative("model.root.fmidertest.y"))
+print("info:      model.root.fmidertest.der(x)         : " .. oms_getDirectionalDerivative("model.root.fmidertest.der(x)"))
+print("info:      model.root.fmidertest.y              : " .. oms_getDirectionalDerivative("model.root.fmidertest.y"))
 
 oms_terminate("model")
 oms_delete("model")

@@ -2134,7 +2134,7 @@ oms_status_enu_t oms::System::getReal(const ComRef& cref, double& value)
   return logError_UnknownSignal(getFullCref() + cref);
 }
 
-oms_status_enu_t oms::System::getDirectionalDerivative(const ComRef& cref, double& value)
+oms_status_enu_t oms::System::getDirectionalDerivative(const ComRef& cref, const ComRef& cref_, double& value)
 {
   if (!getModel().validState(oms_modelState_virgin|oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
     return logError_ModelInWrongState(getModel().getCref());
@@ -2148,7 +2148,7 @@ oms_status_enu_t oms::System::getDirectionalDerivative(const ComRef& cref, doubl
 
   auto component = components.find(head);
   if (component != components.end())
-    return component->second->getDirectionalDerivative(tail, value);
+    return component->second->getDirectionalDerivative(tail, cref_, value);
 
   return logError_UnknownSignal(getFullCref() + cref);
 }
