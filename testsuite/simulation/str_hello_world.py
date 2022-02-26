@@ -1,6 +1,6 @@
 ## status: correct
 ## teardown_command: rm -rf str_hello_world/
-## linux: yes
+## linux: no
 ## mingw32: no
 ## mingw64: yes
 ## win: yes
@@ -35,4 +35,11 @@ model.terminate()
 model.delete()
 
 ## Result:
+## info:    No result file will be created
+## a: Hello
+## b: World
+## c: Hello World!
+## a: Hello
+## b: World
+## c: Hello World!
 ## endResult

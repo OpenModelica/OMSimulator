@@ -1146,6 +1146,97 @@ oms_status_enu_t oms::ComponentFMUCS::getReal(const ComRef& cref, double& value)
   return getReal(vr, value);
 }
 
+oms_status_enu_t oms::ComponentFMUCS::getString(const fmi2_value_reference_t& vr, std::string& value)
+{
+  CallClock callClock(clock);
+  fmi2_string_t str;
+  if (fmi2_status_ok != fmi2_import_get_string(fmu, &vr, 1, &str))
+    return oms_status_error;
+
+  value = std::string(str);
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::ComponentFMUCS::getString(const ComRef& cref, std::string& value)
+{
+  CallClock callClock(clock);
+
+  if (oms_modelState_virgin == getModel().getModelState())
+  {
+    // check for start values exist, priority over modeldescription.xml start values
+    if (values.hasResources())  // search in local resources
+    {
+      if (oms_status_ok == values.getStringResources(cref, value, false, oms_modelState_virgin))
+      {
+        return oms_status_ok;
+      }
+      // search in modelDescription.xml
+      else if (oms_status_ok == values.getStringFromModeldescription(cref, value))
+      {
+        return oms_status_ok;
+      }
+
+      return logError("no start value set or available for signal: " + std::string(getFullCref() + cref));
+    }
+    else if (getParentSystem() && getParentSystem()->getValues().hasResources())  // search in root resources
+    {
+      if (oms_status_ok == getParentSystem()->getValues().getStringResources(getCref()+cref, value, false, oms_modelState_virgin))
+      {
+        return oms_status_ok;
+      }
+      // search in modelDescription.xml
+      else if(oms_status_ok == values.getStringFromModeldescription(cref, value))
+      {
+        return oms_status_ok;
+      }
+
+      return logError("no start value set or available for signal: " + std::string(getFullCref() + cref));
+    }
+    else if (getParentSystem()->getParentSystem() && getParentSystem()->getParentSystem()->getValues().hasResources())  // search in top level root resources
+    {
+      if (oms_status_ok == getParentSystem()->getParentSystem()->getValues().getStringResources(getCref()+cref, value, false, oms_modelState_virgin))
+      {
+        return oms_status_ok;
+      }
+      // search in modelDescription.xml
+      else if(oms_status_ok == values.getStringFromModeldescription(cref, value))
+      {
+        return oms_status_ok;
+      }
+
+      return logError("no start value set or available for signal: " + std::string(getFullCref() + cref));
+    }
+    else // search inline
+    {
+      // check for start values exist, priority over modeldescription.xml start values
+      if (oms_status_ok == values.getString(cref, value))
+      {
+        return oms_status_ok;
+      }
+      else
+      {
+        return values.getStringFromModeldescription(cref, value);
+      }
+    }
+  }
+
+  int j=-1;
+  for (size_t i = 0; i < allVariables.size(); i++)
+  {
+    if (allVariables[i].getCref() == cref && allVariables[i].isTypeString())
+    {
+      j = i;
+      break;
+    }
+  }
+
+  if (!fmu || j < 0)
+    return logError_UnknownSignal(getFullCref() + cref);
+
+  fmi2_value_reference_t vr = allVariables[j].getValueReference();
+  return getString(vr, value);
+}
 
 oms_status_enu_t oms::ComponentFMUCS::getDirectionalDerivative(const ComRef& unknownCref, const ComRef& knownCref, double& value)
 {

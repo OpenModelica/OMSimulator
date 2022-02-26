@@ -372,6 +372,19 @@ oms_status_enu_t oms::Values::getRealFromModeldescription(const ComRef& cref, do
   return oms_status_error;
 }
 
+oms_status_enu_t oms::Values::getStringFromModeldescription(const ComRef& cref, std::string& value)
+{
+  // search in modelDescription.xml
+  auto stringValue = modelDescriptionStringStartValues.find(cref);
+  if (stringValue != modelDescriptionStringStartValues.end())
+  {
+    value = stringValue->second;
+    return oms_status_ok;
+  }
+
+  return oms_status_error;
+}
+
 oms_status_enu_t oms::Values::getIntegerFromModeldescription(const ComRef& cref, int& value)
 {
   // search in modelDescription.xml
