@@ -11,8 +11,8 @@ deleteStartValuesInSSV2.lua \
 DualMassOscillator.lua \
 Enumeration.lua \
 Enumeration2.lua \
-equationPair.py \
 equationPair_fixedpoint.py \
+equationPair.py \
 exportConnectorsToResultFile.lua \
 exportSnapshotSSP.lua \
 exportSSMTemplate.lua \
@@ -53,6 +53,7 @@ simulation.lua \
 simulation.py \
 snapshot.lua \
 snapshot.py \
+str_hello_world.py \
 table.lua \
 
 # Run make failingtest

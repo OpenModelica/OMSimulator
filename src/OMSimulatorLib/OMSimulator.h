@@ -108,6 +108,7 @@ OMSAPI oms_status_enu_t OMSCALL oms_getResultFile(const char* cref, char** filen
 OMSAPI oms_status_enu_t OMSCALL oms_getSolver(const char* cref, oms_solver_enu_t* solver);
 OMSAPI oms_status_enu_t OMSCALL oms_getStartTime(const char* cref, double* startTime);
 OMSAPI oms_status_enu_t OMSCALL oms_getStopTime(const char* cref, double* stopTime);
+OMSAPI oms_status_enu_t OMSCALL oms_getString(const char* cref, char** value);
 OMSAPI oms_status_enu_t OMSCALL oms_getSubModelPath(const char* cref, char** path);
 OMSAPI oms_status_enu_t OMSCALL oms_getSystemType(const char* cref, oms_system_enu_t* type);
 OMSAPI oms_status_enu_t OMSCALL oms_getTime(const char* cref, double* time);

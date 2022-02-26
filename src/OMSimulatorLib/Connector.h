@@ -83,9 +83,10 @@ namespace oms
     bool isParameter() const { return oms_causality_parameter == causality; }
     bool isCalculatedParameter() const { return oms_causality_calculatedParameter == causality; }
 
-    bool isTypeReal() const { return oms_signal_type_real == type; }
-    bool isTypeInteger() const { return oms_signal_type_integer == type || oms_signal_type_enum == type; }
     bool isTypeBoolean() const { return oms_signal_type_boolean == type; }
+    bool isTypeInteger() const { return oms_signal_type_integer == type || oms_signal_type_enum == type; }
+    bool isTypeReal() const { return oms_signal_type_real == type; }
+    bool isTypeString() const { return oms_signal_type_string == type; }
 
   private:
     friend bool operator==(const Connector& v1, const Connector& v2);

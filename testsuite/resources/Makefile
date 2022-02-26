@@ -35,6 +35,7 @@ QuarterCarModel.DisplacementDisplacement.Chassis \
 QuarterCarModel.DisplacementDisplacement.Wheel \
 QuarterCarModel.DisplacementForce.Chassis \
 QuarterCarModel.DisplacementForce.Wheel \
+str_hello_world \
 tlm.adder \
 tlm.CoarseGrained1_1D \
 tlm.CoarseGrained2_1D \
@@ -73,6 +74,7 @@ Lin2DimODE.mos \
 Mass.mos \
 MassSpring.mos \
 QuarterCarModel.mos \
+str_hello_world.mos \
 
 .PHONY: all generateFMUs
 

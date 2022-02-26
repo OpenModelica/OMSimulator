@@ -95,6 +95,18 @@ oms_status_enu_t oms::Values::getReal(const ComRef& cref, double& value)
   return oms_status_error;
 }
 
+oms_status_enu_t oms::Values::getString(const ComRef& cref, std::string& value)
+{
+  auto stringValue = stringStartValues.find(cref);
+  if (stringValue != stringStartValues.end())
+  {
+    value = stringValue->second;
+    return oms_status_ok;
+  }
+
+  return oms_status_error;
+}
+
 oms_status_enu_t oms::Values::getInteger(const ComRef& cref, int& value)
 {
   auto integerValue = integerStartValues.find(cref);
@@ -266,7 +278,7 @@ oms_status_enu_t oms::Values::getIntegerResources(const ComRef& cref, int& value
   {
     for (auto &res: it.allresources)
     {
-      if (externalInput && oms_modelState_simulation == modelState && res.second.integerValues[cref] != 0.0)
+      if (externalInput && oms_modelState_simulation == modelState && res.second.integerValues[cref] != 0)
       {
         if (res.second.linkResources)
         {
@@ -295,7 +307,7 @@ oms_status_enu_t oms::Values::getBooleanResources(const ComRef& cref, bool& valu
   {
     for (auto &res: it.allresources)
     {
-      if (externalInput && oms_modelState_simulation == modelState && res.second.booleanValues[cref] != 0.0)
+      if (externalInput && oms_modelState_simulation == modelState && res.second.booleanValues[cref] != false)
       {
         if (res.second.linkResources)
         {
@@ -318,6 +330,35 @@ oms_status_enu_t oms::Values::getBooleanResources(const ComRef& cref, bool& valu
   return oms_status_error;
 }
 
+oms_status_enu_t oms::Values::getStringResources(const ComRef& cref, std::string& value, bool externalInput, oms_modelState_enu_t modelState)
+{
+  for (auto &it: parameterResources)
+  {
+    for (auto &res: it.allresources)
+    {
+      if (externalInput && oms_modelState_simulation == modelState && res.second.stringValues[cref] != "")
+      {
+        if (res.second.linkResources)
+        {
+          value = res.second.stringValues[cref];
+          return oms_status_ok;
+        }
+      }
+      auto stringValue = res.second.stringStartValues.find(cref);
+      if (stringValue != res.second.stringStartValues.end())
+      {
+        if (res.second.linkResources)
+        {
+          value = stringValue->second;
+          return oms_status_ok;
+        }
+      }
+    }
+  }
+
+  return oms_status_error;
+}
+
 oms_status_enu_t oms::Values::getRealFromModeldescription(const ComRef& cref, double& value)
 {
   // search in modelDescription.xml
@@ -325,6 +366,19 @@ oms_status_enu_t oms::Values::getRealFromModeldescription(const ComRef& cref, do
   if (realValue != modelDescriptionRealStartValues.end())
   {
     value = realValue->second;
+    return oms_status_ok;
+  }
+
+  return oms_status_error;
+}
+
+oms_status_enu_t oms::Values::getStringFromModeldescription(const ComRef& cref, std::string& value)
+{
+  // search in modelDescription.xml
+  auto stringValue = modelDescriptionStringStartValues.find(cref);
+  if (stringValue != modelDescriptionStringStartValues.end())
+  {
+    value = stringValue->second;
     return oms_status_ok;
   }
 

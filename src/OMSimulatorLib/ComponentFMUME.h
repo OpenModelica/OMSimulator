@@ -77,6 +77,8 @@ namespace oms
     oms_status_enu_t getInteger(const fmi2_value_reference_t& vr, int& value);
     oms_status_enu_t getReal(const ComRef& cref, double& value);
     oms_status_enu_t getReal(const fmi2_value_reference_t& vr, double& value);
+    oms_status_enu_t getString(const ComRef& cref, std::string& value);
+    oms_status_enu_t getString(const fmi2_value_reference_t& vr, std::string& value);
     oms_status_enu_t setBoolean(const ComRef& cref, bool value);
     oms_status_enu_t setInteger(const ComRef& cref, int value);
     oms_status_enu_t setReal(const ComRef& cref, double value);
