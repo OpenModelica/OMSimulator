@@ -35,6 +35,7 @@ QuarterCarModel.DisplacementDisplacement.Chassis \
 QuarterCarModel.DisplacementDisplacement.Wheel \
 QuarterCarModel.DisplacementForce.Chassis \
 QuarterCarModel.DisplacementForce.Wheel \
+str_hello_world \
 tlm.adder \
 tlm.CoarseGrained1_1D \
 tlm.CoarseGrained2_1D \
