@@ -1,0 +1,11 @@
+loadString("
+model str_hello_world
+  parameter String a = \"Hello\";
+  parameter String b = \"World\";
+  parameter String c = a + \" \" + b + \"!\";
+end str_hello_world;
+"); getErrorString();
+
+buildModelFMU(str_hello_world, version="2.0", fmuType="me_cs", fileNamePrefix="str_hello_world"); getErrorString();
+
+system("zip -qd str_hello_world.fmu sources/* && unzip -o str_hello_world.fmu -d str_hello_world/");

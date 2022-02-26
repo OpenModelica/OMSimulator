@@ -73,6 +73,7 @@ Lin2DimODE.mos \
 Mass.mos \
 MassSpring.mos \
 QuarterCarModel.mos \
+str_hello_world.mos \
 
 .PHONY: all generateFMUs
 
