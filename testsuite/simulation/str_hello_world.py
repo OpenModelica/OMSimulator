@@ -25,6 +25,8 @@ model.instantiate()
 print(f'a: {model.getString("root.fmu.a")}')
 print(f'b: {model.getString("root.fmu.b")}')
 print(f'c: {model.getString("root.fmu.c")}')
+model.setString("root.fmu.b", "OMSimulator")
+print(f'c: {model.getString("root.fmu.c")}')
 
 model.initialize()
 print(f'a: {model.getString("root.fmu.a")}')
@@ -39,7 +41,8 @@ model.delete()
 ## a: Hello
 ## b: World
 ## c: Hello World!
+## c: Hello OMSimulator!
 ## a: Hello
-## b: World
-## c: Hello World!
+## b: OMSimulator
+## c: Hello OMSimulator!
 ## endResult

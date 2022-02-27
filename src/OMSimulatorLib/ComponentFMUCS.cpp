@@ -1557,6 +1557,60 @@ oms_status_enu_t oms::ComponentFMUCS::setReal(const ComRef& cref, double value)
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::ComponentFMUCS::setString(const ComRef& cref, const std::string& value)
+{
+  CallClock callClock(clock);
+  int j=-1;
+  for (size_t i = 0; i < allVariables.size(); i++)
+  {
+    if (allVariables[i].getCref() == cref && allVariables[i].isTypeString())
+    {
+      j = i;
+      break;
+    }
+  }
+
+  if (!fmu || j < 0)
+    return logError_UnknownSignal(getFullCref() + cref);
+
+  if (getModel().validState(oms_modelState_virgin|oms_modelState_enterInstantiation|oms_modelState_instantiated))
+    if (allVariables[j].isCalculated() || allVariables[j].isIndependent())
+      return logWarning("It is not allowed to provide a start value if initial=\"calculated\" or causality=\"independent\".");
+
+  if (oms_modelState_virgin == getModel().getModelState())
+  {
+    // check for local resources available
+    if (values.hasResources())
+    {
+      return values.setStringResources(cref, value, getFullCref(), false, oms_modelState_virgin);
+    }
+    // check for resources in root
+    else if (getParentSystem() && getParentSystem()->getValues().hasResources())
+    {
+      return getParentSystem()->getValues().setStringResources(getCref()+cref, value, getParentSystem()->getFullCref(), false, oms_modelState_virgin);
+    }
+    // check for resources in top level root
+    else if (getParentSystem()->getParentSystem() && getParentSystem()->getParentSystem()->getValues().hasResources())
+    {
+      return getParentSystem()->getParentSystem()->getValues().setStringResources(getCref()+cref, value, getParentSystem()->getParentSystem()->getFullCref(), false, oms_modelState_virgin);
+    }
+    else
+    {
+      //inline parameter settings
+      values.setString(cref, value);
+    }
+  }
+  else
+  {
+    fmi2_value_reference_t vr = allVariables[j].getValueReference();
+    fmi2_string_t value_ = value.c_str();
+    if (fmi2_status_ok != fmi2_import_set_string(fmu, &vr, 1, &value_))
+      return oms_status_error;
+  }
+
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms::ComponentFMUCS::deleteStartValue(const ComRef& cref)
 {
   // check for local resources

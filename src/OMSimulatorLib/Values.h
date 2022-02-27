@@ -48,18 +48,20 @@ namespace oms
     Values();
     ~Values();
 
-    oms_status_enu_t setReal(const ComRef& cref, double value);
-    oms_status_enu_t setInteger(const ComRef& cref, int value);
     oms_status_enu_t setBoolean(const ComRef& cref, bool value);
+    oms_status_enu_t setInteger(const ComRef& cref, int value);
+    oms_status_enu_t setReal(const ComRef& cref, double value);
+    oms_status_enu_t setString(const ComRef& cref, const std::string& value);
 
     oms_status_enu_t getBoolean(const ComRef& cref, bool& value);
     oms_status_enu_t getInteger(const ComRef& cref, int& value);
     oms_status_enu_t getReal(const ComRef& cref, double& value);
     oms_status_enu_t getString(const ComRef& cref, std::string& value);
 
-    oms_status_enu_t setRealResources(const ComRef& cref, double value, const ComRef& fullCref, bool externalInput, oms_modelState_enu_t modelState);
-    oms_status_enu_t setIntegerResources(const ComRef& cref, int value, const ComRef& fullCref, bool externalInput, oms_modelState_enu_t modelState);
     oms_status_enu_t setBooleanResources(const ComRef& cref, bool value, const ComRef& fullCref, bool externalInput, oms_modelState_enu_t modelState);
+    oms_status_enu_t setIntegerResources(const ComRef& cref, int value, const ComRef& fullCref, bool externalInput, oms_modelState_enu_t modelState);
+    oms_status_enu_t setRealResources(const ComRef& cref, double value, const ComRef& fullCref, bool externalInput, oms_modelState_enu_t modelState);
+    oms_status_enu_t setStringResources(const ComRef& cref, const std::string& value, const ComRef& fullCref, bool externalInput, oms_modelState_enu_t modelState);
 
     oms_status_enu_t getBooleanResources(const ComRef& cref, bool& value, bool externalInput, oms_modelState_enu_t modelState);
     oms_status_enu_t getIntegerResources(const ComRef& cref, int& value, bool externalInput, oms_modelState_enu_t modelState);

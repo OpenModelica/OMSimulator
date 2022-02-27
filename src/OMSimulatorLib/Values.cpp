@@ -53,6 +53,7 @@ oms::Values::~Values()
 oms_status_enu_t oms::Values::setReal(const ComRef& cref, double value)
 {
   realStartValues[cref] = value;
+
   // update start values in ssv template
   auto realValue = modelDescriptionRealStartValues.find(cref);
   if (realValue != modelDescriptionRealStartValues.end())
@@ -64,6 +65,7 @@ oms_status_enu_t oms::Values::setReal(const ComRef& cref, double value)
 oms_status_enu_t oms::Values::setInteger(const ComRef& cref, int value)
 {
   integerStartValues[cref] = value;
+
   // update start values in ssv template
   auto integerValue = modelDescriptionIntegerStartValues.find(cref);
   if (integerValue != modelDescriptionIntegerStartValues.end())
@@ -75,10 +77,23 @@ oms_status_enu_t oms::Values::setInteger(const ComRef& cref, int value)
 oms_status_enu_t oms::Values::setBoolean(const ComRef& cref, bool value)
 {
   booleanStartValues[cref] = value;
+
   // update start values in ssv template
   auto boolValue = modelDescriptionBooleanStartValues.find(cref);
   if (boolValue != modelDescriptionBooleanStartValues.end())
     modelDescriptionBooleanStartValues[cref] = value;
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Values::setString(const ComRef& cref, const std::string& value)
+{
+  stringStartValues[cref] = value;
+
+  // update start values in ssv template
+  auto stringValue = modelDescriptionStringStartValues.find(cref);
+  if (stringValue != modelDescriptionStringStartValues.end())
+    modelDescriptionStringStartValues[cref] = value;
 
   return oms_status_ok;
 }
@@ -163,6 +178,40 @@ oms_status_enu_t oms::Values::setRealResources(const ComRef& cref, double value,
     {
       // insert the new signal at the first resource available
       res.second.setReal(cref, value);
+      break;
+    }
+  }
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Values::setStringResources(const ComRef& cref, const std::string& value, const ComRef& fullCref, bool externalInput, oms_modelState_enu_t modelState)
+{
+  bool resourceAvailable = false;
+  for (auto &it : parameterResources)
+  {
+    for (auto &res : it.allresources)
+    {
+      //update the value in all resources, so that same cref in multiple ssv can be updated, this can result in duplication
+      auto stringValue = res.second.stringStartValues.find(cref);
+      if (stringValue != res.second.stringStartValues.end())
+      {
+        if (oms_modelState_simulation == modelState && externalInput)
+          res.second.stringValues[cref] = value;
+        else
+          res.second.setString(cref, value);
+        resourceAvailable = true;
+        // return oms_status_ok; return here to avoid updating the same value in different ssv file
+      }
+    }
+  }
+
+  if (!resourceAvailable)
+  {
+    auto &it = parameterResources.front();
+    for (auto &res : it.allresources)
+    {
+      // insert the new signal at the first resource available
+      res.second.setString(cref, value);
       break;
     }
   }

@@ -1575,6 +1575,23 @@ oms_status_enu_t oms_setStopTime(const char* cref, double stopTime)
   return model->setStopTime(stopTime);
 }
 
+oms_status_enu_t oms_setString(const char* cref, const char* value)
+{
+  oms::ComRef tail(cref);
+  oms::ComRef front = tail.pop_front();
+
+  oms::Model* model = oms::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  front = tail.pop_front();
+  oms::System* system = model->getSystem(front);
+  if (!system)
+    return logError_SystemNotInModel(model->getCref(), front);
+
+  return system->setString(tail, value);
+}
+
 oms_status_enu_t oms_getTime(const char* cref, double* time)
 {
   oms::ComRef tail(cref);

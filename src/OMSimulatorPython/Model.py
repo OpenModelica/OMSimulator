@@ -90,6 +90,11 @@ class Model:
     if Types.Status(status) != Types.Status.OK:
       raise Exception('error {}'.format(Types.Status(status)))
 
+  def setString(self, cref: str, value: str) -> None:
+    status = Scope._capi.setString(self.cref + '.' + cref, value)
+    if Types.Status(status) != Types.Status.OK:
+      raise Exception('error {}'.format(Types.Status(status)))
+
   def exportSnapshot(self, ident: str = None) -> str:
     contents, status = Scope._capi.exportSnapshot(self.cref + ('.' + ident if ident else ''))
     if Types.Status(status) != Types.Status.OK:

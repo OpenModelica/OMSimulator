@@ -151,6 +151,7 @@ OMSAPI oms_status_enu_t OMSCALL oms_setResultFile(const char* cref, const char* 
 OMSAPI oms_status_enu_t OMSCALL oms_setSolver(const char* cref, oms_solver_enu_t solver);
 OMSAPI oms_status_enu_t OMSCALL oms_setStartTime(const char* cref, double startTime);
 OMSAPI oms_status_enu_t OMSCALL oms_setStopTime(const char* cref, double stopTime);
+OMSAPI oms_status_enu_t OMSCALL oms_setString(const char* cref, const char* value);
 OMSAPI oms_status_enu_t OMSCALL oms_setTempDirectory(const char* newTempDir);
 OMSAPI oms_status_enu_t OMSCALL oms_setTLMBusGeometry(const char* bus, const ssd_connector_geometry_t* geometry);
 OMSAPI oms_status_enu_t OMSCALL oms_setTLMConnectionParameters(const char* crefA, const char* crefB, const oms_tlm_connection_parameters_t* parameters);

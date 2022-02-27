@@ -2349,6 +2349,52 @@ oms_status_enu_t oms::System::setReal(const ComRef& cref, double value)
   return logError_UnknownSignal(getFullCref() + cref);
 }
 
+oms_status_enu_t oms::System::setString(const ComRef& cref, const std::string& value)
+{
+  if (!getModel().validState(oms_modelState_virgin|oms_modelState_enterInstantiation|oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
+    return logError_ModelInWrongState(getModel().getCref());
+
+  oms::ComRef tail(cref);
+  oms::ComRef head = tail.pop_front();
+
+  auto subsystem = subsystems.find(head);
+  if (subsystem != subsystems.end())
+    return subsystem->second->setString(tail, value);
+
+  auto component = components.find(head);
+  if (component != components.end())
+    return component->second->setString(tail, value);
+
+  for (auto &connector: connectors)
+  {
+    if (connector && connector->getName() == cref && connector->isTypeString())
+    {
+      // check for local resources available
+      if (values.hasResources())
+      {
+        return values.setStringResources(cref, value, getFullCref(), true, getModel().getModelState());
+      }
+      // check for resources in top level system
+      else if (getParentSystem() && getParentSystem()->values.hasResources())
+      {
+        //return getParentSystem()->setRealSystemResources(getCref()+cref, value, connector->isOutput());
+        return getParentSystem()->values.setStringResources(getCref() + cref, value, getParentSystem()->getFullCref(), true, getModel().getModelState());
+      }
+      else
+      {
+        // set external inputs, after initialization
+        if (oms_modelState_simulation == getModel().getModelState())
+          values.stringValues[cref] = value;
+        else
+          values.setString(cref, value);
+        return oms_status_ok;
+      }
+    }
+  }
+
+  return logError_UnknownSignal(getFullCref() + cref);
+}
+
 oms_status_enu_t oms::System::getReals(const std::vector<oms::ComRef> &sr, std::vector<double> &values)
 {
   oms_status_enu_t status = oms_status_ok;
