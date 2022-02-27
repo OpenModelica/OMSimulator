@@ -148,6 +148,8 @@ class capi:
     self.obj.oms_setStartTime.restype = ctypes.c_int
     self.obj.oms_setStopTime.argtypes = [ctypes.c_char_p, ctypes.c_double]
     self.obj.oms_setStopTime.restype = ctypes.c_int
+    self.obj.oms_setString.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_setString.restype = ctypes.c_int
     self.obj.oms_setTempDirectory.argtypes = [ctypes.c_char_p]
     self.obj.oms_setTempDirectory.restype = ctypes.c_int
     self.obj.oms_setTLMPositionAndOrientation.argtypes = [ctypes.c_char_p, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double]
@@ -351,6 +353,8 @@ class capi:
     return self.obj.oms_setStartTime(cref.encode(), startTime)
   def setStopTime(self, cref, stopTime):
     return self.obj.oms_setStopTime(cref.encode(), stopTime)
+  def setString(self, signal, value):
+    return self.obj.oms_setString(signal.encode(), value.encode())
   def setTempDirectory(self, newTempDir):
     return self.obj.oms_setTempDirectory(newTempDir.encode())
   def setTLMPositionAndOrientation(self, cref, x1, x2, x3, A11, A12, A13, A21, A22, A23, A31, A32, A33):
