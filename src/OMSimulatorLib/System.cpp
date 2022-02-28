@@ -2665,7 +2665,7 @@ oms_status_enu_t oms::System::addAlgLoop(oms_ssc_t SCC, const int algLoopNum)
     algLoops.clear();
     loopsNeedUpdate = false;
   }
-  algLoops.push_back( AlgLoop( Flags::AlgLoopSolver(), absoluteTolerance, SCC, algLoopNum ));
+  algLoops.push_back( AlgLoop(Flags::AlgLoopSolver(), absoluteTolerance, SCC, algLoopNum));
 
   return oms_status_ok;
 }

@@ -49,35 +49,15 @@ model.delete()
 ##            res[1]: 50.4
 ## info:    iteration 2
 ##          inputs:
-##            equation2.x2: 8.4
-##            equation1.x1: 4
-##          outputs:
-##            equation1.x2: 2
-##            equation2.x1: 54.4
-##          residuals:
-##            res[0]: -6.4
-##            res[1]: 50.4
-## info:    iteration 3
-##          inputs:
-##            equation2.x2: 8.4
-##            equation1.x1: 4
-##          outputs:
-##            equation1.x2: 2
-##            equation2.x1: 54.4
-##          residuals:
-##            res[0]: -6.4
-##            res[1]: 50.4
-## info:    iteration 4
-##          inputs:
-##            equation2.x2: 0.0990098
+##            equation2.x2: 0.0990099
 ##            equation1.x1: 4.59406
 ##          outputs:
-##            equation1.x2: -0.0421528
+##            equation1.x2: -0.0421527
 ##            equation2.x1: 4.59406
 ##          residuals:
 ##            res[0]: -0.141163
-##            res[1]: -3.76973e-07
-## info:    iteration 5
+##            res[1]: -9.76996e-15
+## info:    iteration 3
 ##          inputs:
 ##            equation2.x2: 0.0920217
 ##            equation1.x1: 4.55213
@@ -86,8 +66,8 @@ model.delete()
 ##            equation2.x1: 4.55213
 ##          residuals:
 ##            res[0]: 0.0192237
-##            res[1]: -3.17355e-10
-## info:    iteration 6
+##            res[1]: 0
+## info:    iteration 4
 ##          inputs:
 ##            equation2.x2: 0.0929733
 ##            equation1.x1: 4.55784
@@ -96,8 +76,8 @@ model.delete()
 ##            equation2.x1: 4.55784
 ##          residuals:
 ##            res[0]: -0.00253517
-##            res[1]: 4.32179e-11
-## info:    iteration 7
+##            res[1]: 8.88178e-16
+## info:    iteration 5
 ##          inputs:
 ##            equation2.x2: 0.0928478
 ##            equation1.x1: 4.55709
@@ -106,8 +86,8 @@ model.delete()
 ##            equation2.x1: 4.55709
 ##          residuals:
 ##            res[0]: 0.000335825
-##            res[1]: -5.69944e-12
-## info:    iteration 8
+##            res[1]: -8.88178e-16
+## info:    iteration 6
 ##          inputs:
 ##            equation2.x2: 0.0928644
 ##            equation1.x1: 4.55719
@@ -116,8 +96,8 @@ model.delete()
 ##            equation2.x1: 4.55719
 ##          residuals:
 ##            res[0]: -4.44595e-05
-##            res[1]: 7.54063e-13
-## info:    iteration 9
+##            res[1]: 0
+## info:    iteration 7
 ##          inputs:
 ##            equation2.x2: 0.0928644
 ##            equation1.x1: 4.55719
@@ -126,8 +106,8 @@ model.delete()
 ##            equation2.x1: 4.55719
 ##          residuals:
 ##            res[0]: -4.44595e-05
-##            res[1]: 7.54063e-13
+##            res[1]: 0
 ## info:    No result file will be created
-## x1: 4.5572 (res:  7.54e-13)
+## x1: 4.5572 (res:  0.00e+00)
 ## x1: 0.0928 (res: -4.45e-05)
 ## endResult

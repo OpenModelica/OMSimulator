@@ -297,6 +297,8 @@ oms::KinsolSolver* oms::KinsolSolver::NewKinsolSolver(const int algLoopNum, cons
 
   logDebug("Create new KinsolSolver object for algebraic loop number " + std::to_string(algLoopNum));
 
+  bool useDirectionalDerivative = true;
+
   kinsolSolver->size = size;
 
   /* Allocate memory */
@@ -351,8 +353,10 @@ oms::KinsolSolver* oms::KinsolSolver::NewKinsolSolver(const int algLoopNum, cons
   if (!checkFlag(flag, "KINSetLinearSolver")) return NULL;
 
   /* Set Jacobian for linear solver */
-  //flag = KINSetJacFn(kinsolSolver->kinsolMemory, NULL); /* Use KINSOLs internal difference quotient function for Jacobian approximation */
-  flag = KINSetJacFn(kinsolSolver->kinsolMemory, nlsKinsolJac); /* Use symbolic Jacobian */
+  if (useDirectionalDerivative)
+    flag = KINSetJacFn(kinsolSolver->kinsolMemory, nlsKinsolJac); /* Use symbolic Jacobian */
+  else
+    flag = KINSetJacFn(kinsolSolver->kinsolMemory, NULL); /* Use KINSOLs internal difference quotient function for Jacobian approximation */
   if (!checkFlag(flag, "KINSetJacFn")) return NULL;
 
   /* Set function-norm stopping tolerance */
