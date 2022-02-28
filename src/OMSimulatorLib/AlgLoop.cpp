@@ -206,10 +206,10 @@ int oms::KinsolSolver::nlsKinsolResiduals(N_Vector u, N_Vector fval, void *user_
   // Set values from u
   for (int i=0; i<size; ++i)
   {
-    int output = SCC[i].second;
-    status = syst->setReal(graph->getNodes()[output].getName(), u_data[i]);
+    int input = SCC[i].second;
+    status = syst->setReal(graph->getNodes()[input].getName(), u_data[i]);
     if (Flags::DumpAlgLoops())
-      ss << "  " << graph->getNodes()[output].getName().c_str() << ": " << u_data[i] << std::endl;
+      ss << "  " << graph->getNodes()[input].getName().c_str() << ": " << u_data[i] << std::endl;
     if (status == oms_status_discard || status == oms_status_error || status == oms_status_warning)
     {
       logInfo("iteration " + std::to_string(kinsoluserData->iteration) + ": recoverable error (1)");
