@@ -139,26 +139,31 @@ int oms::KinsolSolver::nlsKinsolJac(N_Vector u, N_Vector fu, SUNMatrix J, void *
   oms_status_enu_t status;
   double *u_data = NV_DATA_S(u);
 
-  // set inputs
-  for (int i=0; i<size; ++i)
+  for(int j=0; j<size; j++)
   {
-    const int input = SCC[i].second;
-    status = syst->setReal(graph->getNodes()[input].getName(), u_data[i]);
-    if (status == oms_status_discard || status == oms_status_error || status == oms_status_warning)
+    const int output = SCC[j].first;
+    const oms::ComRef& crefOutput = graph->getNodes()[output].getName();
+    const int input = SCC[j].second;
+    const oms::ComRef& crefInput = graph->getNodes()[input].getName();
+    // res[j] = output - input
+    // std::cout << "res[" << j << "] = " << std::string(crefOutput) << " - " << std::string(crefInput) << std::endl;
+
+    for(int i=0; i<size; i++)
     {
-      logInfo("recoverable error (1)");
-      return 1; /* recoverable error */
-    }
-    else if (status == oms_status_fatal)
-    {
-      logInfo("not recoverable error (1)");
-      return -1; /* not recoverable error */
+      double der = 0.0;
+      const int input_col = SCC[i].second;
+      oms::ComRef crefInput_col = graph->getNodes()[input_col].getName();
+      oms::ComRef front = crefInput_col.pop_front();
+
+      if (front == crefOutput.front())
+        if (oms_status_ok != syst->getDirectionalDerivative(crefOutput, crefInput_col, der))
+          return logError("not recoverable error");
+      if (input_col == input)
+        der -= 1.0;
+
+      SM_ELEMENT_D(J, j, i) = der;
     }
   }
-
-  for(int j=0; j<size; j++)
-    for(int i=0; i<size; i++)
-      SM_ELEMENT_D(J, i, j) = 0.0;
 
   return 0;
 }
