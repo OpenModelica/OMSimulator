@@ -67,6 +67,7 @@ void oms::Flags::setDefaults()
   algLoopSolver = oms_alg_solver_kinsol;
   defaultModeIsCS = false;
   deleteTempFiles = true;
+  directionalDerivatives = true;
   dumpAlgLoops = false;
   emitEvents = true;
   ignoreInitialUnknowns = false;
@@ -205,6 +206,12 @@ oms_status_enu_t oms::Flags::ClearAllOptions(const std::string& value)
 oms_status_enu_t oms::Flags::DeleteTempFiles(const std::string& value)
 {
   GetInstance().deleteTempFiles = (value == "true");
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Flags::DirectionalDerivatives(const std::string& value)
+{
+  GetInstance().directionalDerivatives = (value == "true");
   return oms_status_ok;
 }
 

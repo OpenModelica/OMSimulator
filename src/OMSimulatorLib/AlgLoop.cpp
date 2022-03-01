@@ -351,7 +351,7 @@ oms::KinsolSolver* oms::KinsolSolver::NewKinsolSolver(const int algLoopNum, cons
   if (!checkFlag(flag, "KINSetLinearSolver")) return NULL;
 
   /* Set Jacobian for linear solver */
-  if (useDirectionalDerivative)
+  if (useDirectionalDerivative && Flags::DirectionalDerivatives())
     flag = KINSetJacFn(kinsolSolver->kinsolMemory, nlsKinsolJac); /* Use symbolic Jacobian */
   else
     flag = KINSetJacFn(kinsolSolver->kinsolMemory, NULL); /* Use KINSOLs internal difference quotient function for Jacobian approximation */
