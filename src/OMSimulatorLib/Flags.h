@@ -58,6 +58,7 @@ namespace oms
     static bool AddParametersToCSV() {return GetInstance().addParametersToCSV;}
     static bool DefaultModeIsCS() {return GetInstance().defaultModeIsCS;}
     static bool DeleteTempFiles() {return GetInstance().deleteTempFiles;}
+    static bool DirectionalDerivatives() {return GetInstance().directionalDerivatives;}
     static bool DumpAlgLoops() {return GetInstance().dumpAlgLoops;}
     static bool EmitEvents() {return GetInstance().emitEvents;}
     static bool IgnoreInitialUnknowns() {return GetInstance().ignoreInitialUnknowns;}
@@ -90,6 +91,7 @@ namespace oms
     bool addParametersToCSV;
     bool defaultModeIsCS;
     bool deleteTempFiles;
+    bool directionalDerivatives;
     bool dumpAlgLoops;
     bool emitEvents;
     bool ignoreInitialUnknowns;
@@ -147,6 +149,7 @@ namespace oms
       {"--algLoopSolver", "", "Specifies the alg. loop solver method (fixedpoint, [kinsol]) used for algebraic loops spanning over multiple components.", re_default, Flags::AlgLoopSolver, false},
       {"--clearAllOptions", "", "Reset all flags to default values", re_void, Flags::ClearAllOptions, false},
       {"--deleteTempFiles", "", "Deletes temp files as soon as they are no longer needed ([true], false)", re_bool, Flags::DeleteTempFiles, false},
+      {"--directionalDerivatives", "", "Specifies whether directional derivatives should be used to calculate the Jacobian for alg. loops or if a numerical approximation should be used instead ([true], false)", re_bool, Flags::DirectionalDerivatives, false},
       {"--dumpAlgLoops", "", "Dump information for alg loops (true, [false])", re_bool, Flags::DumpAlgLoops, false},
       {"--emitEvents", "", "Specifies whether events should be emitted or not ([true], false)", re_bool, Flags::EmitEvents, false},
       {"--fetchAllVars", "", "Workaround for certain FMUs that do not update all internal dependencies automatically", re_default, Flags::FetchAllVars, false},
@@ -185,6 +188,7 @@ namespace oms
     static oms_status_enu_t AlgLoopSolver(const std::string& value);
     static oms_status_enu_t ClearAllOptions(const std::string& value);
     static oms_status_enu_t DeleteTempFiles(const std::string& value);
+    static oms_status_enu_t DirectionalDerivatives(const std::string& value);
     static oms_status_enu_t DumpAlgLoops(const std::string& value);
     static oms_status_enu_t EmitEvents(const std::string& value);
     static oms_status_enu_t FetchAllVars(const std::string& value);

@@ -244,7 +244,7 @@ std::deque< std::vector<int> > oms::DirectedGraph::getSCCs()
   return components;
 }
 
-const std::vector< oms_ssc_t >& oms::DirectedGraph::getSortedConnections()
+const std::vector<oms_ssc_t>& oms::DirectedGraph::getSortedConnections()
 {
   if (!sortedConnectionsAreValid)
     calculateSortedConnections();
@@ -256,12 +256,12 @@ void oms::DirectedGraph::calculateSortedConnections()
   std::deque< std::vector<int> > components = getSCCs();
   oms_ssc_t SCC;
   sortedConnections.clear();
-  std::set<std::string> component_names;
+  std::set<oms::ComRef> component_names_local;
 
   for (int i = 0; i < components.size(); ++i)
   {
     SCC.clear();
-    component_names.clear();
+    component_names_local.clear();
     for (int j = 0; j < components[i].size(); ++j)
     {
       Connector conA = nodes[edges[components[i][j]].first];
@@ -270,10 +270,12 @@ void oms::DirectedGraph::calculateSortedConnections()
       if (oms::Connection::isValid(conA.getName(), conB.getName(), conA, conB))
       {
         SCC.push_back(std::pair<int, int>(edges[components[i][j]]));
-        component_names.insert(conA.getOwner());
-        component_names.insert(conB.getOwner());
+        component_names_local.insert(conA.getOwner());
+        component_names_local.insert(conB.getOwner());
       }
     }
+
+    this->component_names.push_back(component_names_local);
 
     if (SCC.size() > 0)
       sortedConnections.push_back(SCC);
@@ -282,8 +284,8 @@ void oms::DirectedGraph::calculateSortedConnections()
     {
       std::stringstream ss;
       ss << "Alg. loop (size " << SCC.size() << ")" << std::endl;
-      for (const auto& name: component_names)
-        ss << "  " << name << std::endl;
+      for (const auto& name: component_names_local)
+        ss << "  " << std::string(name) << std::endl;
       logInfo(ss.str());
     }
   }

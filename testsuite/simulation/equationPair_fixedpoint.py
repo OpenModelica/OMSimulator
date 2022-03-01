@@ -37,8 +37,8 @@ finally:
 
 ## Result:
 ## info:    Alg. loop (size 2)
-##            equationPair.root.equation1
 ##            equationPair.root.equation2
+##            equationPair.root.equation1
 ## info:    iteration 1
 ##          inputs:
 ##            equation2.x2: 8.4

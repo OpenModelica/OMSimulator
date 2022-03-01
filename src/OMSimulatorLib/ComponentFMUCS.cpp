@@ -1273,7 +1273,7 @@ oms_status_enu_t oms::ComponentFMUCS::getDirectionalDerivative(const ComRef& unk
   if (!fmu || j < 0)
     return logError_UnknownSignal(getFullCref() + unknownCref);
 
-  if (oms_modelState_instantiated == getModel().getModelState())
+  if (oms_modelState_instantiated == getModel().getModelState() || oms_modelState_initialization == getModel().getModelState())
   {
     // check index exist in ModelStructure inititalUnknowns
     auto index = values.modelStructureInitialUnknowns.find(j+1);
@@ -1317,9 +1317,9 @@ oms_status_enu_t oms::ComponentFMUCS::getDirectionalDerivative(const ComRef& unk
   }
 
   // fmi2_value_reference_t vr_unknown[1] = {5};
-	// fmi2_value_reference_t vr_known[4] = {0, 2, 3, 4};
-	// fmi2_real_t dvknown[4] = {1.0, 1.0, 1.0, 1.0};
-	// fmi2_real_t val;
+  // fmi2_value_reference_t vr_known[4] = {0, 2, 3, 4};
+  // fmi2_real_t dvknown[4] = {1.0, 1.0, 1.0, 1.0};
+  // fmi2_real_t val;
   // std::cout << "Get directional derivative_static_1: " << val << std::endl;
   // fmi2_import_get_directional_derivative(fmu, vr_unknown, 1, vr_known, 4, dvknown, &val);
   // std::cout << "\nGet directional derivative_static_2: " << val << std::endl;

@@ -55,12 +55,12 @@ namespace oms
 
   class KinsolSolver
   {
-    public:
+  public:
     ~KinsolSolver();
-    static KinsolSolver* NewKinsolSolver(const int algLoopNum, const unsigned int size, double absoluteTolerance);
+    static KinsolSolver* NewKinsolSolver(const int algLoopNum, const unsigned int size, double absoluteTolerance, const bool useDirectionalDerivative);
     oms_status_enu_t kinsolSolve(System& syst, DirectedGraph& graph);
 
-    private:
+  private:
     /* tolerances */
     double fnormtol;        /* function tolerance */
 
@@ -72,7 +72,7 @@ namespace oms
 
     /* kinsol internal data */
     void* kinsolMemory;
-    void* userData;
+    void* user_data;
     int size;
 
     /* linear solver data */
@@ -81,22 +81,23 @@ namespace oms
     SUNMatrix J;            /* (Non-)Sparse matrix template for cloning matrices needed within linear solver */
 
     /* member function */
-    static int nlsKinsolResiduals(N_Vector uu, N_Vector fval, void *userData);
-    static void sundialsErrorHandlerFunction(int error_code, const char *module, const char *function, char *msg, void *userData);
-    static void sundialsInfoHandlerFunction(const char *module, const char *function, char *msg, void *userData);
+    static int nlsKinsolJac(N_Vector u, N_Vector fu, SUNMatrix J, void *user_data, N_Vector tmp1, N_Vector tmp2);
+    static int nlsKinsolResiduals(N_Vector u, N_Vector fval, void *user_data);
+    static void sundialsErrorHandlerFunction(int error_code, const char *module, const char *function, char *msg, void *user_data);
+    static void sundialsInfoHandlerFunction(const char *module, const char *function, char *msg, void *user_data);
   };
 
   class AlgLoop
   {
-    public:
-    AlgLoop(oms_alg_solver_enu_t method, double absTol, oms_ssc_t SCC, const int systNumber);
+  public:
+    AlgLoop(oms_alg_solver_enu_t method, double absTol, oms_ssc_t SCC, const int systNumber, const bool useDirectionalDerivative);
 
     oms_ssc_t getSCC() {return SCC;}
     oms_status_enu_t solveAlgLoop(System& syst, DirectedGraph& graph);
     std::string getAlgSolverName();
     std::string dumpLoopVars(DirectedGraph& graph);
 
-    private:
+  private:
     oms_alg_solver_enu_t algSolverMethod;
     oms_status_enu_t fixPointIteration(System& syst, DirectedGraph& graph);
 
@@ -109,4 +110,4 @@ namespace oms
   };
 }
 
-#endif // _OMS_ALGLOOP_H_
+#endif

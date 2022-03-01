@@ -50,9 +50,10 @@ inline bool checkFlag(int flag, std::string functionName)
 {
   if (flag < 0)
   {
-    logError("SUNDIALS_ERROR: " + functionName + "() failed with flag = " + std::to_string(flag));
+    logError("SUNDIALS_ERROR: " + functionName + " failed with flag = " + std::to_string(flag));
     return false;
   }
+  logDebug("SUNDIALS_INFO: " + functionName + " failed with flag = " + std::to_string(flag));
   return true;
 }
 
@@ -63,25 +64,25 @@ inline bool checkFlag(int flag, std::string functionName)
  * @param module      Name of the module reporting the error.
  * @param function    Name of the function in which the error occurred.
  * @param msg         Error Message.
- * @param userData    Pointer to user data. Unused.
+ * @param user_data   Pointer to user data. Unused.
  */
 void oms::KinsolSolver::sundialsErrorHandlerFunction(int errorCode, const char *module,
                                                      const char *function, char *msg,
-                                                     void *userData)
+                                                     void *user_data)
 {
   KINSOL_USER_DATA* kinsolUserData;
   std::string systNum = "unknown";
   std::string mod = module;
   std::string func = function;
 
-  if (userData != NULL) {
-    kinsolUserData = (KINSOL_USER_DATA *)userData;
+  if (user_data != NULL)
+  {
+    kinsolUserData = (KINSOL_USER_DATA *)user_data;
     systNum = std::to_string(kinsolUserData->algLoopNumber);
   }
 
   logError("SUNDIALS_ERROR: [system] " + systNum + " [module] " + mod + " | [function] " + func
-          +" | [error_code] " + std::to_string(errorCode));
-  logError(msg);
+           + " | [error_code] " + std::to_string(errorCode) + "\n" + std::string(msg));
 }
 
 /**
@@ -92,39 +93,106 @@ void oms::KinsolSolver::sundialsErrorHandlerFunction(int errorCode, const char *
  * @param module      Name of the module reporting the information.
  * @param function    Name of the function reporting the information.
  * @param msg         Message.
- * @param userData   Pointer to user data. Unused.
+ * @param user_data   Pointer to user data. Unused.
  */
 void oms::KinsolSolver::sundialsInfoHandlerFunction(const char *module, const char *function,
-                                                    char *msg, void *userData)
+                                                    char *msg, void *user_data)
 {
   KINSOL_USER_DATA* kinsolUserData;
   std::string systNum = "unknown";
   std::string mod = module;
   std::string func = function;
 
-  if (userData != NULL) {
-    kinsolUserData = (KINSOL_USER_DATA *)userData;
+  if (user_data != NULL) {
+    kinsolUserData = (KINSOL_USER_DATA *)user_data;
     systNum = std::to_string(kinsolUserData->algLoopNumber);
   }
 
-  logDebug("SUNDIALS_INFO: [system] " + systNum + " [module] " + mod + " | [function] " + func);
-  logDebug(msg);
+  logDebug("SUNDIALS_INFO: [system] " + systNum + " [module] " + mod + " | [function] " + func + "\n" + std::string(msg));
+}
+
+/**
+ * @brief Jacobian function for KINSOL
+ *
+ * @param u     is the current (unscaled) iterate
+ * @param fu    is the current value of the vector F(u)
+ * @param J     is the output approximate Jacobian matrix, J = ∂F/∂u,
+ *              of type SUNMatrix
+ * @param data  is a pointer to user data, the same as the user data
+ *              parameter passed to KINSetUserData
+ * @param tmp1  pointer to memory allocated for variables of type
+ *              N_Vector which can be used by the KINJacFn function as
+ *              temporary storage or work space
+ * @param tmp2  pointer to memory allocated for variables of type
+ *              N_Vector which can be used by the KINJacFn function as
+ *              temporary storage or work space
+ * @return int  A function of type KINLsJacFn should return 0 if
+ *              successful or a non-zero value otherwise
+ */
+int oms::KinsolSolver::nlsKinsolJac(N_Vector u, N_Vector fu, SUNMatrix J, void *user_data, N_Vector tmp1, N_Vector tmp2)
+{
+  KINSOL_USER_DATA* kinsoluserData = (KINSOL_USER_DATA*) user_data;
+  System* syst = kinsoluserData->syst;
+  AlgLoop* algLoop = syst->getAlgLoop(kinsoluserData->algLoopNumber);
+  DirectedGraph* graph = kinsoluserData->graph;
+  const oms_ssc_t SCC = algLoop->getSCC();
+  const int size = SCC.size();
+
+  oms_status_enu_t status;
+  double *u_data = NV_DATA_S(u);
+
+  for(int j=0; j<size; j++)
+  {
+    const int output = SCC[j].first;
+    const oms::ComRef& crefOutput = graph->getNodes()[output].getName();
+    const int input = SCC[j].second;
+    const oms::ComRef& crefInput = graph->getNodes()[input].getName();
+    // res[j] = output - input
+    // std::cout << "res[" << j << "] = " << std::string(crefOutput) << " - " << std::string(crefInput) << std::endl;
+
+    for(int i=0; i<size; i++)
+    {
+      double der = 0.0;
+      const int input_col = SCC[i].second;
+      oms::ComRef crefInput_col = graph->getNodes()[input_col].getName();
+      oms::ComRef front = crefInput_col.pop_front();
+
+      if (front == crefOutput.front())
+        if (oms_status_ok != syst->getDirectionalDerivative(crefOutput, crefInput_col, der))
+          return logError("not recoverable error");
+      if (input_col == input)
+        der -= 1.0;
+
+      SM_ELEMENT_D(J, j, i) = der;
+    }
+  }
+
+  return 0;
 }
 
 /**
  * @brief Residual function for KINSOL
  *
- * @param uu          Input value
- * @param fval        Contains residual at output
- * @param userData    Pointer to user data to access System, AlgLoop, Directed Graph and CSS as well as getReal and setReal
- * @return int        Return 0 on success, 1 if an recoverable error occured, -1 if a fatal error occured.
+ * This function computes F(u) (or G(u) for fixed-point iteration and
+ * Anderson acceleration) for a given value of the vector u.
+ *
+ * @param u          is the current value of the variable vector, u
+ * @param fval       is the output vector F(u)
+ * @param user_data  a is a pointer to user data, the pointer user
+ *                   data passed to KINSetUserData
+ * @return int       A KINSysFn function should return 0 if
+ *                   successful, a positive value if a recoverable
+ *                   error occurred (in which case kinsol will attempt
+ *                   to correct), or a negative value if it failed
+ *                   unrecoverably (in which case the solution process
+ *                   is halted and KIN SYSFUNC FAIL is returned).
  */
-int oms::KinsolSolver::nlsKinsolResiduals(N_Vector uu, N_Vector fval, void *userData)
+int oms::KinsolSolver::nlsKinsolResiduals(N_Vector u, N_Vector fval, void *user_data)
 {
-  double *uu_data = NV_DATA_S(uu);
+  double *u_data = NV_DATA_S(u);
   double *fval_data = NV_DATA_S(fval);
 
-  KINSOL_USER_DATA* kinsoluserData = (KINSOL_USER_DATA*) userData;
+  KINSOL_USER_DATA* kinsoluserData = (KINSOL_USER_DATA*) user_data;
   System* syst = kinsoluserData->syst;
   AlgLoop* algLoop = syst->getAlgLoop(kinsoluserData->algLoopNumber);
   DirectedGraph* graph = kinsoluserData->graph;
@@ -142,13 +210,13 @@ int oms::KinsolSolver::nlsKinsolResiduals(N_Vector uu, N_Vector fval, void *user
     ss << "inputs:" << std::endl;
   }
 
-  // Set values from uu
+  // Set values from u
   for (int i=0; i<size; ++i)
   {
-    int output = SCC[i].second;
-    status = syst->setReal(graph->getNodes()[output].getName(), uu_data[i]);
+    int input = SCC[i].second;
+    status = syst->setReal(graph->getNodes()[input].getName(), u_data[i]);
     if (Flags::DumpAlgLoops())
-      ss << "  " << graph->getNodes()[output].getName().c_str() << ": " << uu_data[i] << std::endl;
+      ss << "  " << graph->getNodes()[input].getName().c_str() << ": " << u_data[i] << std::endl;
     if (status == oms_status_discard || status == oms_status_error || status == oms_status_warning)
     {
       logInfo("iteration " + std::to_string(kinsoluserData->iteration) + ": recoverable error (1)");
@@ -181,7 +249,7 @@ int oms::KinsolSolver::nlsKinsolResiduals(N_Vector uu, N_Vector fval, void *user
       logInfo("iteration " + std::to_string(kinsoluserData->iteration) + ": not recoverable error (2)");
       return -1 /* not recoverable error */;
     }
-    fval_data[i] = fval_data[i] - uu_data[i];
+    fval_data[i] = fval_data[i] - u_data[i];
   }
 
   if (Flags::DumpAlgLoops())
@@ -212,7 +280,7 @@ oms::KinsolSolver::~KinsolSolver()
   SUNMatDestroy(this->J);
   N_VDestroy_Serial(this->y);
 
-  delete((KINSOL_USER_DATA*)(this->userData));
+  delete((KINSOL_USER_DATA*)(this->user_data));
 }
 
 /**
@@ -223,7 +291,7 @@ oms::KinsolSolver::~KinsolSolver()
  * @param absoluteTolerance     Tolerance used for solving the loop
  * @return oms::KinsolSolver*   Retruns pointer to KinsolSolver object
  */
-oms::KinsolSolver* oms::KinsolSolver::NewKinsolSolver(const int algLoopNum, const unsigned int size, double absoluteTolerance)
+oms::KinsolSolver* oms::KinsolSolver::NewKinsolSolver(const int algLoopNum, const unsigned int size, double absoluteTolerance, const bool useDirectionalDerivative)
 {
   int flag;
   int printLevel;
@@ -250,24 +318,27 @@ oms::KinsolSolver* oms::KinsolSolver::NewKinsolSolver(const int algLoopNum, cons
   }
 
   /* Set user data given to KINSOL */
-  kinsolSolver->userData = new KINSOL_USER_DATA{/*.syst=*/NULL, /*.graph=*/NULL, /*.algLoopNumber=*/algLoopNum, /*.iteration=*/0};
-  flag = KINSetUserData(kinsolSolver->kinsolMemory, kinsolSolver->userData);
+  kinsolSolver->user_data = new KINSOL_USER_DATA{/*.syst=*/NULL, /*.graph=*/NULL, /*.algLoopNumber=*/algLoopNum, /*.iteration=*/0};
+  flag = KINSetUserData(kinsolSolver->kinsolMemory, kinsolSolver->user_data);
   if (!checkFlag(flag, "KINSetUserData")) return NULL;
 
   /* Set error handler and print level */
-  if (Log::DebugEnabled()) {
+  if (Log::DebugEnabled())
+  {
     logDebug("SUNDIALS KINSOL: Set print level to maximum.");
     printLevel = 3;
-  } else {
+  }
+  else
+  {
     printLevel = 0;
   }
   flag = KINSetPrintLevel(kinsolSolver->kinsolMemory, printLevel);
   if (!checkFlag(flag, "KINSetPrintLevel")) return NULL;
 
-  flag = KINSetErrHandlerFn(kinsolSolver->kinsolMemory, sundialsErrorHandlerFunction, kinsolSolver->userData);
+  flag = KINSetErrHandlerFn(kinsolSolver->kinsolMemory, sundialsErrorHandlerFunction, kinsolSolver->user_data);
   if (!checkFlag(flag, "KINSetErrHandlerFn")) return NULL;
 
-  flag = KINSetInfoHandlerFn(kinsolSolver->kinsolMemory, sundialsInfoHandlerFunction, kinsolSolver->userData);
+  flag = KINSetInfoHandlerFn(kinsolSolver->kinsolMemory, sundialsInfoHandlerFunction, kinsolSolver->user_data);
   if (!checkFlag(flag, "KINSetInfoHandlerFn")) return NULL;
 
   /* Initialize KINSOL object */
@@ -285,7 +356,10 @@ oms::KinsolSolver* oms::KinsolSolver::NewKinsolSolver(const int algLoopNum, cons
   if (!checkFlag(flag, "KINSetLinearSolver")) return NULL;
 
   /* Set Jacobian for linear solver */
-  flag = KINSetJacFn(kinsolSolver->kinsolMemory, NULL); /* Use KINSOLs internal difference quotient function for Jacobian approximation */
+  if (useDirectionalDerivative && Flags::DirectionalDerivatives())
+    flag = KINSetJacFn(kinsolSolver->kinsolMemory, nlsKinsolJac); /* Use symbolic Jacobian */
+  else
+    flag = KINSetJacFn(kinsolSolver->kinsolMemory, NULL); /* Use KINSOLs internal difference quotient function for Jacobian approximation */
   if (!checkFlag(flag, "KINSetJacFn")) return NULL;
 
   /* Set function-norm stopping tolerance */
@@ -328,7 +402,7 @@ oms::KinsolSolver* oms::KinsolSolver::NewKinsolSolver(const int algLoopNum, cons
 oms_status_enu_t oms::KinsolSolver::kinsolSolve(System& syst, DirectedGraph& graph)
 {
   /* Update user data */
-  KINSOL_USER_DATA* kinsolUserData = (KINSOL_USER_DATA*) userData;
+  KINSOL_USER_DATA* kinsolUserData = (KINSOL_USER_DATA*) user_data;
   kinsolUserData->syst = &syst;
   kinsolUserData->graph = &graph;
   kinsolUserData->iteration = 0;
@@ -364,24 +438,16 @@ oms_status_enu_t oms::KinsolSolver::kinsolSolve(System& syst, DirectedGraph& gra
   flag = KINSol(kinsolMemory,   /* KINSol memory block */
                 initialGuess,   /* initial guess on input; solution vector */
                 KIN_NONE,       /* global strategy choice: Basic newton iteration */
-                uScale,         /* scaling vector, for the variable uu */
+                uScale,         /* scaling vector, for the variable u */
                 fScale);        /* scaling vector for function values fval */
-  if (flag < 0)
-  {
-    logError("SUNDIALS_ERROR: KINSol() failed with flag = " + std::to_string(flag));
-    return oms_status_error;
-  }
-  else
-  {
-    logDebug("SUNDIALS_INFO: KINSol() succeded with flag = " + std::to_string(flag));
-  }
+  if (!checkFlag(flag, "KINSol")) return oms_status_error;
 
   /* Check solution */
-  flag = nlsKinsolResiduals(initialGuess, fTmp, userData);
+  flag = nlsKinsolResiduals(initialGuess, fTmp, user_data);
   fNormValue = N_VWL2Norm(fTmp, fTmp);
   if ( fNormValue > fnormtol )
   {
-    logWarning("Solution of algebraic loop " + std::to_string(((KINSOL_USER_DATA *)userData)->algLoopNumber) + "not within precission given by fnormtol: " + std::to_string(fnormtol));
+    logWarning("Solution of algebraic loop " + std::to_string(((KINSOL_USER_DATA *)user_data)->algLoopNumber) + "not within precission given by fnormtol: " + std::to_string(fnormtol));
     logDebug("2-norm of residual of solution: " + std::to_string(fNormValue));
     return oms_status_warning;
   }
@@ -400,7 +466,7 @@ oms_status_enu_t oms::KinsolSolver::kinsolSolve(System& syst, DirectedGraph& gra
  * @param scc     Strong Connected Componten, a vector of connected
  * @param number
  */
-oms::AlgLoop::AlgLoop(oms_alg_solver_enu_t method, double absTol, oms_ssc_t scc, const int number): absoluteTolerance(absTol), SCC(scc), systNumber(number)
+oms::AlgLoop::AlgLoop(oms_alg_solver_enu_t method, double absTol, oms_ssc_t scc, const int number, const bool useDirectionalDerivative): absoluteTolerance(absTol), SCC(scc), systNumber(number)
 {
   switch (method)
   {
@@ -415,7 +481,7 @@ oms::AlgLoop::AlgLoop(oms_alg_solver_enu_t method, double absTol, oms_ssc_t scc,
 
   if (method == oms_alg_solver_kinsol)
   {
-    kinsolData = KinsolSolver::NewKinsolSolver(systNumber, SCC.size(), absoluteTolerance);
+    kinsolData = KinsolSolver::NewKinsolSolver(systNumber, SCC.size(), absoluteTolerance, useDirectionalDerivative);
     if (kinsolData==NULL)
     {
       logError("NewKinsolSolver() failed. Aborting!");
@@ -574,18 +640,20 @@ std::string oms::AlgLoop::getAlgSolverName(void)
 std::string oms::AlgLoop::dumpLoopVars(DirectedGraph& graph)
 {
   const int size = SCC.size();
-  std::string varNames = "\t";
+  std::string varNames = "";
   int output;
 
   for (int i=0; i<size-1; ++i)
   {
+    varNames.append("  ");
     output = SCC[i].first;
     varNames.append(graph.getNodes()[output].getName().c_str());
     varNames.append(" -> ");
     output = SCC[i].second;
     varNames.append(graph.getNodes()[output].getName().c_str());
-    varNames.append("\n\t");
+    varNames.append("\n");
   }
+  varNames.append("  ");
   output = SCC[size-1].first;
   varNames.append(graph.getNodes()[output].getName().c_str());
   varNames.append(" -> ");

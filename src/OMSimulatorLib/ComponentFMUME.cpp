@@ -1268,7 +1268,7 @@ oms_status_enu_t oms::ComponentFMUME::getDirectionalDerivative(const ComRef& unk
   if (!fmu || j < 0)
     return logError_UnknownSignal(getFullCref() + unknownCref);
 
-  if (oms_modelState_instantiated == getModel().getModelState())
+  if (oms_modelState_instantiated == getModel().getModelState() || oms_modelState_initialization == getModel().getModelState())
   {
     // check index exist in ModelStructure inititalUnknowns
     auto index = values.modelStructureInitialUnknowns.find(j + 1);
