@@ -84,6 +84,8 @@ class capi:
     self.obj.oms_getStartTime.restype = ctypes.c_int
     self.obj.oms_getStopTime.argtypes = [ctypes.c_char_p]
     self.obj.oms_getStopTime.restype = ctypes.c_int
+    self.obj.oms_getString.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_char_p)]
+    self.obj.oms_getString.restype = ctypes.c_int
     self.obj.oms_getSystemType.argtypes = [ctypes.c_char_p]
     self.obj.oms_getSystemType.restype = ctypes.c_int
     self.obj.oms_getTime.argtypes = [ctypes.c_char_p]
@@ -100,7 +102,7 @@ class capi:
     self.obj.oms_initialize.restype = ctypes.c_int
     self.obj.oms_instantiate.argtypes = [ctypes.c_char_p]
     self.obj.oms_instantiate.restype = ctypes.c_int
-    self.obj.oms_list.argtypes = [ctypes.c_char_p]
+    self.obj.oms_list.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_char_p)]
     self.obj.oms_list.restype = ctypes.c_int
     self.obj.oms_listUnconnectedConnectors.argtypes = [ctypes.c_char_p]
     self.obj.oms_listUnconnectedConnectors.restype = ctypes.c_int
@@ -146,6 +148,8 @@ class capi:
     self.obj.oms_setStartTime.restype = ctypes.c_int
     self.obj.oms_setStopTime.argtypes = [ctypes.c_char_p, ctypes.c_double]
     self.obj.oms_setStopTime.restype = ctypes.c_int
+    self.obj.oms_setString.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_setString.restype = ctypes.c_int
     self.obj.oms_setTempDirectory.argtypes = [ctypes.c_char_p]
     self.obj.oms_setTempDirectory.restype = ctypes.c_int
     self.obj.oms_setTLMPositionAndOrientation.argtypes = [ctypes.c_char_p, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double]
@@ -211,6 +215,7 @@ class capi:
   def exportDependencyGraphs(self, cref, initialization, event, simulation):
     return self.obj.oms_exportDependencyGraphs(cref.encode(), initialization.encode(), event.encode(), simulation.encode())
   def exportSnapshot(self, ident):
+    '''TODO: oms_freeMemory'''
     contents = ctypes.c_char_p()
     status = self.obj.oms_exportSnapshot(ident.encode(), ctypes.byref(contents))
     return [contents.value.decode('utf-8') if contents.value else None, status]
@@ -261,6 +266,11 @@ class capi:
     stopTime = ctypes.c_double()
     status = self.obj.oms_getStopTime(cref.encode(), ctypes.byref(stopTime))
     return [stopTime.value, status]
+  def getString(self, cref):
+    '''TODO: oms_freeMemory'''
+    value = ctypes.c_char_p()
+    status = self.obj.oms_getString(cref.encode(), ctypes.byref(value))
+    return [value.value.decode('utf-8') if value.value else None, status]
   def getSystemType(self, cref):
     type_ = ctypes.c_int()
     status = self.obj.oms_getSystemType(cref.encode(), ctypes.byref(type_))
@@ -290,10 +300,12 @@ class capi:
   def instantiate(self, cref):
     return self.obj.oms_instantiate(cref.encode())
   def list(self, ident):
+    '''TODO: oms_freeMemory'''
     contents = ctypes.c_char_p()
     status = self.obj.oms_list(ident.encode(), ctypes.byref(contents))
     return [contents.value.decode('utf-8') if contents.value else None, status]
   def listUnconnectedConnectors(self, ident):
+    '''TODO: oms_freeMemory'''
     contents = ctypes.c_char_p()
     status = self.obj.oms_listUnconnectedConnectors(ident.encode(), ctypes.byref(contents))
     return [contents.value.decode('utf-8') if contents.value else None, status]
@@ -341,6 +353,8 @@ class capi:
     return self.obj.oms_setStartTime(cref.encode(), startTime)
   def setStopTime(self, cref, stopTime):
     return self.obj.oms_setStopTime(cref.encode(), stopTime)
+  def setString(self, signal, value):
+    return self.obj.oms_setString(signal.encode(), value.encode())
   def setTempDirectory(self, newTempDir):
     return self.obj.oms_setTempDirectory(newTempDir.encode())
   def setTLMPositionAndOrientation(self, cref, x1, x2, x3, A11, A12, A13, A21, A22, A23, A31, A32, A33):

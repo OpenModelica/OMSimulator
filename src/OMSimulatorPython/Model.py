@@ -69,6 +69,12 @@ class Model:
       raise Exception('error {}'.format(Types.Status(status)))
     return value
 
+  def getString(self, cref: str):
+    value, status = Scope._capi.getString(self.cref + '.' + cref)
+    if Types.Status(status) != Types.Status.OK:
+      raise Exception('error {}'.format(Types.Status(status)))
+    return value
+
   def setBoolean(self, cref: str, value: bool) -> None:
     status = Scope._capi.setBoolean(self.cref + '.' + cref, value)
     if Types.Status(status) != Types.Status.OK:
@@ -81,6 +87,11 @@ class Model:
 
   def setReal(self, cref: str, value: float) -> None:
     status = Scope._capi.setReal(self.cref + '.' + cref, value)
+    if Types.Status(status) != Types.Status.OK:
+      raise Exception('error {}'.format(Types.Status(status)))
+
+  def setString(self, cref: str, value: str) -> None:
+    status = Scope._capi.setString(self.cref + '.' + cref, value)
     if Types.Status(status) != Types.Status.OK:
       raise Exception('error {}'.format(Types.Status(status)))
 

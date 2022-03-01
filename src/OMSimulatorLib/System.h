@@ -151,9 +151,11 @@ namespace oms
     oms_status_enu_t getBoolean(const ComRef& cref, bool& value);
     oms_status_enu_t getInteger(const ComRef& cref, int& value);
     oms_status_enu_t getReal(const ComRef& cref, double& value);
+    oms_status_enu_t getString(const ComRef& cref, std::string& value);
     oms_status_enu_t setBoolean(const ComRef& cref, bool value);
     oms_status_enu_t setInteger(const ComRef& cref, int value);
     oms_status_enu_t setReal(const ComRef& cref, double value);
+    oms_status_enu_t setString(const ComRef& cref, const std::string& value);
 
     oms_status_enu_t getReals(const std::vector<ComRef> &crefs, std::vector<double> &values);
     oms_status_enu_t setReals(const std::vector<ComRef> &crefs, std::vector<double> values);

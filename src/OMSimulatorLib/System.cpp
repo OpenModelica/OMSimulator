@@ -2134,6 +2134,58 @@ oms_status_enu_t oms::System::getReal(const ComRef& cref, double& value)
   return logError_UnknownSignal(getFullCref() + cref);
 }
 
+oms_status_enu_t oms::System::getString(const ComRef& cref, std::string& value)
+{
+  if (!getModel().validState(oms_modelState_virgin|oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
+    return logError_ModelInWrongState(getModel().getCref());
+
+  oms::ComRef tail(cref);
+  oms::ComRef head = tail.pop_front();
+
+  auto subsystem = subsystems.find(head);
+  if (subsystem != subsystems.end())
+    return subsystem->second->getString(tail, value);
+
+  auto component = components.find(head);
+  if (component != components.end())
+    return component->second->getString(tail, value);
+
+  for (auto& connector : connectors)
+  {
+    if (connector && connector->getName() == cref && connector->isTypeString())
+    {
+      // getString from local resources
+      if (values.hasResources())
+      {
+        if (oms_status_ok != values.getStringResources(cref, value, true, getModel().getModelState()))
+          value = ""; // default value
+        return oms_status_ok;
+      }
+      // getString from top level resources
+      else if (getParentSystem() && getParentSystem()->values.hasResources())
+      {
+        if (oms_status_ok != getParentSystem()->values.getStringResources(getCref() + cref, value, true, getModel().getModelState()))
+          value = ""; // default value
+        return oms_status_ok;
+      }
+      // no resources available, getString from inline
+      else
+      {
+        if (oms_modelState_simulation == getModel().getModelState() && values.stringValues[cref] != "")
+        {
+          value = values.stringValues[cref];
+          return oms_status_ok;
+        }
+        if (oms_status_ok != values.getString(cref, value))
+          value = 0.0; // default value
+        return oms_status_ok;
+      }
+    }
+  }
+
+  return logError_UnknownSignal(getFullCref() + cref);
+}
+
 oms_status_enu_t oms::System::getDirectionalDerivative(const ComRef& unknownCref, const ComRef& knownCref, double& value)
 {
   if (!getModel().validState(oms_modelState_virgin|oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
@@ -2289,6 +2341,52 @@ oms_status_enu_t oms::System::setReal(const ComRef& cref, double value)
         {
           values.setReal(cref, value);
         }
+        return oms_status_ok;
+      }
+    }
+  }
+
+  return logError_UnknownSignal(getFullCref() + cref);
+}
+
+oms_status_enu_t oms::System::setString(const ComRef& cref, const std::string& value)
+{
+  if (!getModel().validState(oms_modelState_virgin|oms_modelState_enterInstantiation|oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
+    return logError_ModelInWrongState(getModel().getCref());
+
+  oms::ComRef tail(cref);
+  oms::ComRef head = tail.pop_front();
+
+  auto subsystem = subsystems.find(head);
+  if (subsystem != subsystems.end())
+    return subsystem->second->setString(tail, value);
+
+  auto component = components.find(head);
+  if (component != components.end())
+    return component->second->setString(tail, value);
+
+  for (auto &connector: connectors)
+  {
+    if (connector && connector->getName() == cref && connector->isTypeString())
+    {
+      // check for local resources available
+      if (values.hasResources())
+      {
+        return values.setStringResources(cref, value, getFullCref(), true, getModel().getModelState());
+      }
+      // check for resources in top level system
+      else if (getParentSystem() && getParentSystem()->values.hasResources())
+      {
+        //return getParentSystem()->setRealSystemResources(getCref()+cref, value, connector->isOutput());
+        return getParentSystem()->values.setStringResources(getCref() + cref, value, getParentSystem()->getFullCref(), true, getModel().getModelState());
+      }
+      else
+      {
+        // set external inputs, after initialization
+        if (oms_modelState_simulation == getModel().getModelState())
+          values.stringValues[cref] = value;
+        else
+          values.setString(cref, value);
         return oms_status_ok;
       }
     }

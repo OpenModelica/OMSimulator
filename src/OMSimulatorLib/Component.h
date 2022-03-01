@@ -82,6 +82,7 @@ namespace oms
     virtual oms_status_enu_t getBoolean(const ComRef& cref, bool& value) { return logError_NotImplemented; }
     virtual oms_status_enu_t getInteger(const ComRef& cref, int& value) { return logError_NotImplemented; }
     virtual oms_status_enu_t getReal(const ComRef& cref, double& value) { return logError_NotImplemented; }
+    virtual oms_status_enu_t getString(const ComRef& cref, std::string& value) { return logError_NotImplemented; }
     virtual oms_status_enu_t getRealOutputDerivative(const ComRef& cref, SignalDerivative& der) { return logError_NotImplemented; }
     virtual oms_status_enu_t getDirectionalDerivative(const ComRef& unknownCref, const ComRef& knownCref, double& value) { return logError_NotImplemented; }
     virtual oms_status_enu_t restoreState() { return logError_NotImplemented; }
@@ -90,6 +91,7 @@ namespace oms
     virtual oms_status_enu_t setFaultInjection(const ComRef& signal, oms_fault_type_enu_t faultType, double faultValue) { return oms_status_error; }
     virtual oms_status_enu_t setInteger(const ComRef& cref, int value) { return logError_NotImplemented; }
     virtual oms_status_enu_t setReal(const ComRef& cref, double value) { return logError_NotImplemented; }
+    virtual oms_status_enu_t setString(const ComRef& cref, const std::string& value) { return logError_NotImplemented; }
     virtual oms_status_enu_t setRealInputDerivative(const ComRef& cref, const SignalDerivative& der) { return logError_NotImplemented; }
     virtual oms_status_enu_t stepUntil(double stopTime) { return oms_status_ok; }
     virtual oms_status_enu_t newResources(const std::string& ssvFileName, const std::string& ssmFileName, bool externalResources) { return logError_NotImplemented; }

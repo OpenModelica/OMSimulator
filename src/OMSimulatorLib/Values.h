@@ -48,25 +48,30 @@ namespace oms
     Values();
     ~Values();
 
-    oms_status_enu_t setReal(const ComRef& cref, double value);
-    oms_status_enu_t setInteger(const ComRef& cref, int value);
     oms_status_enu_t setBoolean(const ComRef& cref, bool value);
+    oms_status_enu_t setInteger(const ComRef& cref, int value);
+    oms_status_enu_t setReal(const ComRef& cref, double value);
+    oms_status_enu_t setString(const ComRef& cref, const std::string& value);
 
-    oms_status_enu_t getReal(const ComRef& cref, double& value);
-    oms_status_enu_t getInteger(const ComRef& cref, int& value);
     oms_status_enu_t getBoolean(const ComRef& cref, bool& value);
+    oms_status_enu_t getInteger(const ComRef& cref, int& value);
+    oms_status_enu_t getReal(const ComRef& cref, double& value);
+    oms_status_enu_t getString(const ComRef& cref, std::string& value);
 
-    oms_status_enu_t setRealResources(const ComRef& cref, double value, const ComRef& fullCref, bool externalInput, oms_modelState_enu_t modelState);
-    oms_status_enu_t setIntegerResources(const ComRef& cref, int value, const ComRef& fullCref, bool externalInput, oms_modelState_enu_t modelState);
     oms_status_enu_t setBooleanResources(const ComRef& cref, bool value, const ComRef& fullCref, bool externalInput, oms_modelState_enu_t modelState);
+    oms_status_enu_t setIntegerResources(const ComRef& cref, int value, const ComRef& fullCref, bool externalInput, oms_modelState_enu_t modelState);
+    oms_status_enu_t setRealResources(const ComRef& cref, double value, const ComRef& fullCref, bool externalInput, oms_modelState_enu_t modelState);
+    oms_status_enu_t setStringResources(const ComRef& cref, const std::string& value, const ComRef& fullCref, bool externalInput, oms_modelState_enu_t modelState);
 
-    oms_status_enu_t getRealResources(const ComRef& cref, double& value, bool externalInput, oms_modelState_enu_t modelState);
-    oms_status_enu_t getIntegerResources(const ComRef& cref, int& value, bool externalInput, oms_modelState_enu_t modelState);
     oms_status_enu_t getBooleanResources(const ComRef& cref, bool& value, bool externalInput, oms_modelState_enu_t modelState);
+    oms_status_enu_t getIntegerResources(const ComRef& cref, int& value, bool externalInput, oms_modelState_enu_t modelState);
+    oms_status_enu_t getRealResources(const ComRef& cref, double& value, bool externalInput, oms_modelState_enu_t modelState);
+    oms_status_enu_t getStringResources(const ComRef& cref, std::string& value, bool externalInput, oms_modelState_enu_t modelState);
 
-    oms_status_enu_t getRealFromModeldescription(const ComRef& cref, double& value);
-    oms_status_enu_t getIntegerFromModeldescription(const ComRef& cref, int& value);
     oms_status_enu_t getBooleanFromModeldescription(const ComRef& cref, bool& value);
+    oms_status_enu_t getIntegerFromModeldescription(const ComRef& cref, int& value);
+    oms_status_enu_t getRealFromModeldescription(const ComRef& cref, double& value);
+    oms_status_enu_t getStringFromModeldescription(const ComRef& cref, std::string& value);
 
     oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
     oms_status_enu_t importFromSnapshot(const pugi::xml_node& node, const std::string& sspVersion, const Snapshot& snapshot);
@@ -102,21 +107,24 @@ namespace oms
     bool empty() const;
 
   public:
-    std::map<ComRef, double> realStartValues;  ///< parameters and start values defined before instantiating the FMU
-    std::map<ComRef, int> integerStartValues;  ///< parameters and start values defined before instantiating the FMU
-    std::map<ComRef, bool> booleanStartValues; ///< parameters and start values defined before instantiating the FMU
+    std::map<ComRef, bool> booleanStartValues;        ///< parameters and start values defined before instantiating the FMU
+    std::map<ComRef, double> realStartValues;         ///< parameters and start values defined before instantiating the FMU
+    std::map<ComRef, int> integerStartValues;         ///< parameters and start values defined before instantiating the FMU
+    std::map<ComRef, std::string> stringStartValues;  ///< parameters and start values defined before instantiating the FMU
 
-    std::map<ComRef, double> realValues;  ///< real input values defined after initialization
-    std::map<ComRef, int> integerValues;  ///< integer input values defined after initialization
-    std::map<ComRef, bool> booleanValues; ///< boolean input values defined after initialization
+    std::map<ComRef, bool> booleanValues;        ///< input values defined after initialization
+    std::map<ComRef, double> realValues;         ///< input values defined after initialization
+    std::map<ComRef, int> integerValues;         ///< input values defined after initialization
+    std::map<ComRef, std::string> stringValues;  ///< input values defined after initialization
 
-    std::map<ComRef, double> modelDescriptionRealStartValues;   ///< real start values read from modelDescription.xml
-    std::map<ComRef, int> modelDescriptionIntegerStartValues;   ///< integer start values read from modelDescription.xml
-    std::map<ComRef, bool> modelDescriptionBooleanStartValues;  ///< boolean start values read from modelDescription.xml
+    std::map<ComRef, bool> modelDescriptionBooleanStartValues;        ///< start values read from modelDescription.xml
+    std::map<ComRef, double> modelDescriptionRealStartValues;         ///< start values read from modelDescription.xml
+    std::map<ComRef, int> modelDescriptionIntegerStartValues;         ///< start values read from modelDescription.xml
+    std::map<ComRef, std::string> modelDescriptionStringStartValues;  ///< start values read from modelDescription.xml
 
-    std::map<int, std::vector<int>> modelStructureOutputs;   ///< output and its dependencies from <ModelStructure>
-    std::map<int, std::vector<int>> modelStructureDerivatives;   ///< derivatives and its dependencies from <ModelStructure>
-    std::map<int, std::vector<int>> modelStructureInitialUnknowns;   ///< initialUnknowns and its dependencies from <ModelStructure>
+    std::map<int, std::vector<int>> modelStructureOutputs;          ///< output and its dependencies from <ModelStructure>
+    std::map<int, std::vector<int>> modelStructureDerivatives;      ///< derivatives and its dependencies from <ModelStructure>
+    std::map<int, std::vector<int>> modelStructureInitialUnknowns;  ///< initialUnknowns and its dependencies from <ModelStructure>
 
     std::multimap<ComRef, ComRef> mappedEntry;  ///< parameter names and values provided in the parameter source are to be mapped to the parameters of the component or system
 

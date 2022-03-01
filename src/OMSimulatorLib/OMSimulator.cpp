@@ -40,6 +40,7 @@
 #include "Logging.h"
 #include "MatReader.h"
 #include "Model.h"
+#include "OMSString.h"
 #include "ResultReader.h"
 #include "Scope.h"
 #include "SignalDerivative.h"
@@ -53,15 +54,15 @@
 #endif
 #include "Types.h"
 #include "Version.h"
+
+#include <chrono>
+#include <condition_variable>
+#include <iostream>
 #include <miniunz.h>
+#include <mutex>
 #include <pugixml.hpp>
 #include <string>
-
-#include <iostream>
-#include <chrono>
 #include <thread>
-#include <mutex>
-#include <condition_variable>
 
 #if defined(OMS_STATIC)
 extern "C"
@@ -1533,6 +1534,35 @@ oms_status_enu_t oms_getStopTime(const char* cref, double* stopTime)
   return oms_status_ok;
 }
 
+oms_status_enu_t oms_getString(const char* cref, char** value)
+{
+  if (!value)
+    return logError("Null-pointer passed to oms_getString");
+  *value = nullptr;
+
+  oms::ComRef tail(cref);
+  oms::ComRef front = tail.pop_front();
+
+  oms::Model* model = oms::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  front = tail.pop_front();
+  oms::System* system = model->getSystem(front);
+  if (!system)
+    return logError_SystemNotInModel(model->getCref(), front);
+
+  std::string value_;
+  oms_status_enu_t status = system->getString(tail, value_);
+  if (oms_status_ok != status)
+    return status;
+
+  *value = oms::mallocAndCopyString(value_);
+  if (!*value)
+    return oms_status_fatal;
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms_setStopTime(const char* cref, double stopTime)
 {
   oms::ComRef tail(cref);
@@ -1543,6 +1573,23 @@ oms_status_enu_t oms_setStopTime(const char* cref, double stopTime)
     return logError_ModelNotInScope(front);
 
   return model->setStopTime(stopTime);
+}
+
+oms_status_enu_t oms_setString(const char* cref, const char* value)
+{
+  oms::ComRef tail(cref);
+  oms::ComRef front = tail.pop_front();
+
+  oms::Model* model = oms::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  front = tail.pop_front();
+  oms::System* system = model->getSystem(front);
+  if (!system)
+    return logError_SystemNotInModel(model->getCref(), front);
+
+  return system->setString(tail, value);
 }
 
 oms_status_enu_t oms_getTime(const char* cref, double* time)

@@ -85,9 +85,10 @@ namespace oms
     oms_signal_type_enu_t getType() const { return type; }
     const std::string& getDescription() const { return description; }
 
-    bool isTypeReal() const { return oms_signal_type_real == type; }
-    bool isTypeInteger() const { return oms_signal_type_integer == type || oms_signal_type_enum == type; }
     bool isTypeBoolean() const { return oms_signal_type_boolean == type; }
+    bool isTypeInteger() const { return oms_signal_type_integer == type || oms_signal_type_enum == type; }
+    bool isTypeReal() const { return oms_signal_type_real == type; }
+    bool isTypeString() const { return oms_signal_type_string == type; }
 
     std::string getCausalityString() const { return std::string(fmi2_causality_to_string(causality)); }
     oms_causality_enu_t getCausality() const;
