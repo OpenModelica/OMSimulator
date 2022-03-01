@@ -2658,7 +2658,7 @@ oms::AlgLoop* oms::System::getAlgLoop(const int systemNumber)
   return &algLoops[systemNumber];
 }
 
-oms_status_enu_t oms::System::addAlgLoop(oms_ssc_t SCC, const int algLoopNum)
+oms_status_enu_t oms::System::addAlgLoop(oms_ssc_t SCC, const int algLoopNum, DirectedGraph& graph)
 {
   if (loopsNeedUpdate)
   {
@@ -2666,37 +2666,44 @@ oms_status_enu_t oms::System::addAlgLoop(oms_ssc_t SCC, const int algLoopNum)
     loopsNeedUpdate = false;
   }
 
-  algLoops.push_back( AlgLoop(Flags::AlgLoopSolver(), absoluteTolerance, SCC, algLoopNum, getAllDirectionalDerivatives()));
+  algLoops.push_back( AlgLoop(Flags::AlgLoopSolver(), absoluteTolerance, SCC, algLoopNum, getAllDirectionalDerivatives(graph)));
 
   return oms_status_ok;
 }
 
 /*
- * check all fmus have providesDirectionalDerivative = true or false, to be used by kinsolSolver
+ * check all Strongly Connected fmus have providesDirectionalDerivative = true or false, to be used by kinsolSolver
  * returns true if all fmu have providesDirectionalDerivative = "true" else "false"
 */
-bool oms::System::getAllDirectionalDerivatives()
+bool oms::System::getAllDirectionalDerivatives(DirectedGraph& graph)
 {
   bool useDirectionalDerivative = false;
+  // get Strongly connected FMU's
+  std::set<std::string> scc_component_names = graph.getStronglyConnectedComponents();
+
   for (const auto &component : components)
   {
     if (oms_component_fmu == component.second->getType())
     {
-      if (!component.second->getFMUInfo()->getProvidesDirectionalDerivative())
+      // check if FMU is Strongly Connected
+      if (std::find(scc_component_names.begin(), scc_component_names.end(), (getFullCref() + component.first)) != scc_component_names.end())
       {
-        useDirectionalDerivative = false;
-        break;
-      }
-      else
-      {
-        useDirectionalDerivative = true;
+        if (!component.second->getFMUInfo()->getProvidesDirectionalDerivative())
+        {
+          useDirectionalDerivative = false;
+          break;
+        }
+        else
+        {
+          useDirectionalDerivative = true;
+        }
       }
     }
   }
   return useDirectionalDerivative;
 }
 
-oms_status_enu_t oms::System::updateAlgebraicLoops(const std::vector< oms_ssc_t >& sortedConnections)
+oms_status_enu_t oms::System::updateAlgebraicLoops(const std::vector< oms_ssc_t >& sortedConnections,  DirectedGraph & graph)
 {
   // Instantiate loops
   if (loopsNeedUpdate)
@@ -2706,7 +2713,7 @@ oms_status_enu_t oms::System::updateAlgebraicLoops(const std::vector< oms_ssc_t 
     {
       if (sortedConnections[i].size() > 1)
       {
-        addAlgLoop(sortedConnections[i], systCount);
+        addAlgLoop(sortedConnections[i], systCount, graph);
         systCount++;
       }
     }

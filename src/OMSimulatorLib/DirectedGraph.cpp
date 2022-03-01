@@ -256,7 +256,6 @@ void oms::DirectedGraph::calculateSortedConnections()
   std::deque< std::vector<int> > components = getSCCs();
   oms_ssc_t SCC;
   sortedConnections.clear();
-  std::set<std::string> component_names;
 
   for (int i = 0; i < components.size(); ++i)
   {

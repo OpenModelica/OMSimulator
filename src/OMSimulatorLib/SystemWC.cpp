@@ -993,7 +993,7 @@ oms_status_enu_t oms::SystemWC::updateInputs(oms::DirectedGraph& graph)
 
   // input := output
   const std::vector< oms_ssc_t >& sortedConnections = graph.getSortedConnections();
-  updateAlgebraicLoops(sortedConnections);
+  updateAlgebraicLoops(sortedConnections, graph);
 
   for(int i=0; i < sortedConnections.size(); i++)
   {

@@ -180,8 +180,8 @@ namespace oms
     oms_solver_enu_t getSolver() {return solverMethod;}
 
     AlgLoop* getAlgLoop(const int systemNumber);
-    oms_status_enu_t addAlgLoop(oms_ssc_t SCC, const int algLoopNum);
-    oms_status_enu_t updateAlgebraicLoops(const std::vector< oms_ssc_t >& sortedConnections);
+    oms_status_enu_t addAlgLoop(oms_ssc_t SCC, const int algLoopNum, DirectedGraph& graph);
+    oms_status_enu_t updateAlgebraicLoops(const std::vector< oms_ssc_t >& sortedConnections, DirectedGraph & graph);
     oms_status_enu_t solveAlgLoop(DirectedGraph& graph, int loopNumber);
 
     bool useThreadPool();
@@ -193,7 +193,7 @@ namespace oms
 
     void getFilteredSignals(std::vector<Connector>& filteredSignals) const;
 
-    bool getAllDirectionalDerivatives();   ///< returns true if all fmu have providesDirectionalDerivative = "true" else "false"
+    bool getAllDirectionalDerivatives(DirectedGraph& graph);   ///< returns true if all fmu have providesDirectionalDerivative = "true" else "false"
 
     Values& getValues() { return values; }
 
