@@ -72,7 +72,7 @@ namespace oms
 
     const std::vector<Connector>& getNodes() const {return nodes;}
     const oms_ssc_t& getEdges() const {return edges;}
-    const std::set<std::string>& getStronglyConnectedComponents() const {return component_names;}
+    const std::set<oms::ComRef>& getStronglyConnectedComponents(int i) const { return component_names[i]; }
 
     void dumpNodes() const;
 
@@ -87,7 +87,7 @@ namespace oms
     std::vector<Connector> nodes;
     oms_ssc_t edges;
 
-    std::set<std::string> component_names;
+    std::vector< std::set<oms::ComRef> > component_names;
     std::vector< std::vector<int> > G;
     std::vector< oms_ssc_t > sortedConnections;
     bool sortedConnectionsAreValid;

@@ -89,7 +89,7 @@ namespace oms
 
   class AlgLoop
   {
-    public:
+  public:
     AlgLoop(oms_alg_solver_enu_t method, double absTol, oms_ssc_t SCC, const int systNumber, const bool useDirectionalDerivative);
 
     oms_ssc_t getSCC() {return SCC;}
@@ -97,7 +97,7 @@ namespace oms
     std::string getAlgSolverName();
     std::string dumpLoopVars(DirectedGraph& graph);
 
-    private:
+  private:
     oms_alg_solver_enu_t algSolverMethod;
     oms_status_enu_t fixPointIteration(System& syst, DirectedGraph& graph);
 
@@ -110,4 +110,4 @@ namespace oms
   };
 }
 
-#endif // _OMS_ALGLOOP_H_
+#endif

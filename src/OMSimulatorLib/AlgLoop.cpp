@@ -53,6 +53,7 @@ inline bool checkFlag(int flag, std::string functionName)
     logError("SUNDIALS_ERROR: " + functionName + " failed with flag = " + std::to_string(flag));
     return false;
   }
+  logDebug("SUNDIALS_INFO: " + functionName + " failed with flag = " + std::to_string(flag));
   return true;
 }
 
@@ -74,7 +75,8 @@ void oms::KinsolSolver::sundialsErrorHandlerFunction(int errorCode, const char *
   std::string mod = module;
   std::string func = function;
 
-  if (user_data != NULL) {
+  if (user_data != NULL)
+  {
     kinsolUserData = (KINSOL_USER_DATA *)user_data;
     systNum = std::to_string(kinsolUserData->algLoopNumber);
   }
@@ -321,10 +323,13 @@ oms::KinsolSolver* oms::KinsolSolver::NewKinsolSolver(const int algLoopNum, cons
   if (!checkFlag(flag, "KINSetUserData")) return NULL;
 
   /* Set error handler and print level */
-  if (Log::DebugEnabled()) {
+  if (Log::DebugEnabled())
+  {
     logDebug("SUNDIALS KINSOL: Set print level to maximum.");
     printLevel = 3;
-  } else {
+  }
+  else
+  {
     printLevel = 0;
   }
   flag = KINSetPrintLevel(kinsolSolver->kinsolMemory, printLevel);
@@ -435,15 +440,7 @@ oms_status_enu_t oms::KinsolSolver::kinsolSolve(System& syst, DirectedGraph& gra
                 KIN_NONE,       /* global strategy choice: Basic newton iteration */
                 uScale,         /* scaling vector, for the variable u */
                 fScale);        /* scaling vector for function values fval */
-  if (flag < 0)
-  {
-    logError("SUNDIALS_ERROR: KINSol() failed with flag = " + std::to_string(flag));
-    return oms_status_error;
-  }
-  else
-  {
-    logDebug("SUNDIALS_INFO: KINSol() succeded with flag = " + std::to_string(flag));
-  }
+  if (!checkFlag(flag, "KINSol")) return oms_status_error;
 
   /* Check solution */
   flag = nlsKinsolResiduals(initialGuess, fTmp, user_data);
@@ -643,18 +640,20 @@ std::string oms::AlgLoop::getAlgSolverName(void)
 std::string oms::AlgLoop::dumpLoopVars(DirectedGraph& graph)
 {
   const int size = SCC.size();
-  std::string varNames = "\t";
+  std::string varNames = "";
   int output;
 
   for (int i=0; i<size-1; ++i)
   {
+    varNames.append("  ");
     output = SCC[i].first;
     varNames.append(graph.getNodes()[output].getName().c_str());
     varNames.append(" -> ");
     output = SCC[i].second;
     varNames.append(graph.getNodes()[output].getName().c_str());
-    varNames.append("\n\t");
+    varNames.append("\n");
   }
+  varNames.append("  ");
   output = SCC[size-1].first;
   varNames.append(graph.getNodes()[output].getName().c_str());
   varNames.append(" -> ");
