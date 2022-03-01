@@ -193,6 +193,8 @@ namespace oms
 
     void getFilteredSignals(std::vector<Connector>& filteredSignals) const;
 
+    bool getAllDirectionalDerivatives();   ///< returns true if all fmu have providesDirectionalDerivative = "true" else "false"
+
     Values& getValues() { return values; }
 
   protected: // methods

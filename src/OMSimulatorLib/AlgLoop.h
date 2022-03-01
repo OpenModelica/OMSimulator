@@ -57,7 +57,7 @@ namespace oms
   {
   public:
     ~KinsolSolver();
-    static KinsolSolver* NewKinsolSolver(const int algLoopNum, const unsigned int size, double absoluteTolerance);
+    static KinsolSolver* NewKinsolSolver(const int algLoopNum, const unsigned int size, double absoluteTolerance, const bool useDirectionalDerivative);
     oms_status_enu_t kinsolSolve(System& syst, DirectedGraph& graph);
 
   private:
@@ -90,7 +90,7 @@ namespace oms
   class AlgLoop
   {
     public:
-    AlgLoop(oms_alg_solver_enu_t method, double absTol, oms_ssc_t SCC, const int systNumber);
+    AlgLoop(oms_alg_solver_enu_t method, double absTol, oms_ssc_t SCC, const int systNumber, const bool useDirectionalDerivative);
 
     oms_ssc_t getSCC() {return SCC;}
     oms_status_enu_t solveAlgLoop(System& syst, DirectedGraph& graph);

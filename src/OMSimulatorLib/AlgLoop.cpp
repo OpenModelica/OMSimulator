@@ -289,15 +289,13 @@ oms::KinsolSolver::~KinsolSolver()
  * @param absoluteTolerance     Tolerance used for solving the loop
  * @return oms::KinsolSolver*   Retruns pointer to KinsolSolver object
  */
-oms::KinsolSolver* oms::KinsolSolver::NewKinsolSolver(const int algLoopNum, const unsigned int size, double absoluteTolerance)
+oms::KinsolSolver* oms::KinsolSolver::NewKinsolSolver(const int algLoopNum, const unsigned int size, double absoluteTolerance, const bool useDirectionalDerivative)
 {
   int flag;
   int printLevel;
   KinsolSolver* kinsolSolver = new KinsolSolver();
 
   logDebug("Create new KinsolSolver object for algebraic loop number " + std::to_string(algLoopNum));
-
-  bool useDirectionalDerivative = true;
 
   kinsolSolver->size = size;
 
@@ -471,7 +469,7 @@ oms_status_enu_t oms::KinsolSolver::kinsolSolve(System& syst, DirectedGraph& gra
  * @param scc     Strong Connected Componten, a vector of connected
  * @param number
  */
-oms::AlgLoop::AlgLoop(oms_alg_solver_enu_t method, double absTol, oms_ssc_t scc, const int number): absoluteTolerance(absTol), SCC(scc), systNumber(number)
+oms::AlgLoop::AlgLoop(oms_alg_solver_enu_t method, double absTol, oms_ssc_t scc, const int number, const bool useDirectionalDerivative): absoluteTolerance(absTol), SCC(scc), systNumber(number)
 {
   switch (method)
   {
@@ -486,7 +484,7 @@ oms::AlgLoop::AlgLoop(oms_alg_solver_enu_t method, double absTol, oms_ssc_t scc,
 
   if (method == oms_alg_solver_kinsol)
   {
-    kinsolData = KinsolSolver::NewKinsolSolver(systNumber, SCC.size(), absoluteTolerance);
+    kinsolData = KinsolSolver::NewKinsolSolver(systNumber, SCC.size(), absoluteTolerance, useDirectionalDerivative);
     if (kinsolData==NULL)
     {
       logError("NewKinsolSolver() failed. Aborting!");
