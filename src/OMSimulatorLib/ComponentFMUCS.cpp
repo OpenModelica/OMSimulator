@@ -1244,7 +1244,7 @@ oms_status_enu_t oms::ComponentFMUCS::getDirectionalDerivative(const ComRef& unk
     return logError_ModelInWrongState(getModel().getCref());
 
   if (!getFMUInfo()->getProvidesDirectionalDerivative())
-    return logError("It is not possible to compute directionalDerivative for signal \"" + std::string(getFullCref() + unknownCref) + "\" as providesDirectionalDerivative is false or not provieded in modelDescription.xml");
+    return logError("FMU \"" + std::string(getFullCref()) + "\" doesn't support directional derivatives (providesDirectionalDerivative = false in modelDescription.xml)");
 
   int j = -1;
   for (size_t i = 0; i < allVariables.size(); i++)
