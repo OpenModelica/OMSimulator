@@ -41,6 +41,11 @@ class Model:
     if Types.Status(status) != Types.Status.OK:
       raise Exception('error {}'.format(Types.Status(status)))
 
+  def stepUntil(self, stopTime: float):
+    status = Scope._capi.stepUntil(self.cref, stopTime)
+    if Types.Status(status) != Types.Status.OK:
+      raise Exception('error {}'.format(Types.Status(status)))
+
   def terminate(self):
     status = Scope._capi.terminate(self.cref)
     if Types.Status(status) != Types.Status.OK:

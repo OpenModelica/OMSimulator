@@ -915,9 +915,6 @@ oms_status_enu_t oms::Model::setStartTime(double value)
 
 oms_status_enu_t oms::Model::setStopTime(double value)
 {
-  if (!validState(oms_modelState_virgin|oms_modelState_enterInstantiation|oms_modelState_instantiated))
-    return logError_ModelInWrongState(getCref());
-
   stopTime = value;
   return oms_status_ok;
 }
@@ -1084,6 +1081,9 @@ oms_status_enu_t oms::Model::stepUntil(double stopTime)
     clock.toc();
     return logError("Model doesn't contain a system");
   }
+
+  if (stopTime > getStopTime())
+    setStopTime(stopTime);
 
   oms_status_enu_t status = system->stepUntil(stopTime);
   emit(stopTime, true);
