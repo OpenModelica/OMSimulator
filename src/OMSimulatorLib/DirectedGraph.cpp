@@ -276,11 +276,13 @@ void oms::DirectedGraph::calculateSortedConnections()
     }
 
     if (SCC.size() > 0)
+    {
       sortedConnections.push_back(SCC);
+      this->component_names.push_back(component_names_local);
+    }
 
     if (SCC.size() > 1)
     {
-      this->component_names.push_back(component_names_local);
       std::stringstream ss;
       ss << "Alg. loop (size " << SCC.size() << ")" << std::endl;
       for (const auto& name: component_names_local)
