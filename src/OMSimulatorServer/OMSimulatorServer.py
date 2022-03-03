@@ -145,7 +145,11 @@ class Server:
       if self._pause:
         time.sleep(0.3)
       else:
-        progress = math.floor((time_-startTime) / (stopTime-startTime) * 100)
+        try:
+          progress = math.floor((time_-startTime) / (stopTime-startTime) * 100)
+        except ZeroDivisionError:
+          progress = 100
+
         self.pub_msg('status', {'progress': progress})
         if self._activeSignals:
           results = {'time': time_}
