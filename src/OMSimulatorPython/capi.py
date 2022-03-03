@@ -64,6 +64,8 @@ class capi:
     self.obj.oms_exportSSVTemplate.restype = ctypes.c_int
     self.obj.oms_faultInjection.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_double]
     self.obj.oms_faultInjection.restype = ctypes.c_int
+    self.obj.oms_freeMemory.argtypes = [ctypes.c_void_p]
+    self.obj.oms_freeMemory.restype = None
     self.obj.oms_getBoolean.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_bool)]
     self.obj.oms_getBoolean.restype = ctypes.c_int
     self.obj.oms_getDirectionalDerivative.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.POINTER(ctypes.c_double)]
@@ -215,10 +217,11 @@ class capi:
   def exportDependencyGraphs(self, cref, initialization, event, simulation):
     return self.obj.oms_exportDependencyGraphs(cref.encode(), initialization.encode(), event.encode(), simulation.encode())
   def exportSnapshot(self, ident):
-    '''TODO: oms_freeMemory'''
     contents = ctypes.c_char_p()
     status = self.obj.oms_exportSnapshot(ident.encode(), ctypes.byref(contents))
-    return [contents.value.decode('utf-8') if contents.value else None, status]
+    contents_ = contents.value.decode('utf-8') if contents.value else None
+    self.obj.oms_freeMemory(contents)
+    return [contents_, status]
   def exportSSMTemplate(self, ident, filename):
     return self.obj.oms_exportSSMTemplate(ident.encode(), filename.encode())
   def exportSSVTemplate(self, ident, filename):
