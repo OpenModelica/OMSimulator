@@ -64,6 +64,8 @@ class capi:
     self.obj.oms_exportSSVTemplate.restype = ctypes.c_int
     self.obj.oms_faultInjection.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_double]
     self.obj.oms_faultInjection.restype = ctypes.c_int
+    self.obj.oms_freeMemory.argtypes = [ctypes.c_void_p]
+    self.obj.oms_freeMemory.restype = None
     self.obj.oms_getBoolean.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_bool)]
     self.obj.oms_getBoolean.restype = ctypes.c_int
     self.obj.oms_getDirectionalDerivative.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.POINTER(ctypes.c_double)]
@@ -215,10 +217,11 @@ class capi:
   def exportDependencyGraphs(self, cref, initialization, event, simulation):
     return self.obj.oms_exportDependencyGraphs(cref.encode(), initialization.encode(), event.encode(), simulation.encode())
   def exportSnapshot(self, ident):
-    '''TODO: oms_freeMemory'''
     contents = ctypes.c_char_p()
     status = self.obj.oms_exportSnapshot(ident.encode(), ctypes.byref(contents))
-    return [contents.value.decode('utf-8') if contents.value else None, status]
+    contents_ = contents.value.decode('utf-8') if contents.value else None
+    self.obj.oms_freeMemory(contents)
+    return [contents_, status]
   def exportSSMTemplate(self, ident, filename):
     return self.obj.oms_exportSSMTemplate(ident.encode(), filename.encode())
   def exportSSVTemplate(self, ident, filename):
@@ -267,10 +270,11 @@ class capi:
     status = self.obj.oms_getStopTime(cref.encode(), ctypes.byref(stopTime))
     return [stopTime.value, status]
   def getString(self, cref):
-    '''TODO: oms_freeMemory'''
     value = ctypes.c_char_p()
     status = self.obj.oms_getString(cref.encode(), ctypes.byref(value))
-    return [value.value.decode('utf-8') if value.value else None, status]
+    value_ = value.value.decode('utf-8') if value.value else None
+    self.obj.oms_freeMemory(value)
+    return [value_, status]
   def getSystemType(self, cref):
     type_ = ctypes.c_int()
     status = self.obj.oms_getSystemType(cref.encode(), ctypes.byref(type_))
@@ -300,15 +304,17 @@ class capi:
   def instantiate(self, cref):
     return self.obj.oms_instantiate(cref.encode())
   def list(self, ident):
-    '''TODO: oms_freeMemory'''
     contents = ctypes.c_char_p()
     status = self.obj.oms_list(ident.encode(), ctypes.byref(contents))
-    return [contents.value.decode('utf-8') if contents.value else None, status]
+    contents_ = contents.value.decode('utf-8') if contents.value else None
+    self.obj.oms_freeMemory(contents)
+    return [contents_, status]
   def listUnconnectedConnectors(self, ident):
-    '''TODO: oms_freeMemory'''
     contents = ctypes.c_char_p()
     status = self.obj.oms_listUnconnectedConnectors(ident.encode(), ctypes.byref(contents))
-    return [contents.value.decode('utf-8') if contents.value else None, status]
+    contents_ = contents.value.decode('utf-8') if contents.value else None
+    self.obj.oms_freeMemory(contents)
+    return [contents_, status]
   def loadSnapshot(self, ident, snapshot):
     newCref = ctypes.c_char_p()
     status = self.obj.oms_loadSnapshot(ident.encode(), snapshot.encode(), ctypes.byref(newCref))
