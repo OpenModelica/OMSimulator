@@ -51,6 +51,7 @@ tlm.UpperPendulum \
 
 SSPs = \
 embrace \
+embrace_TwoConf \
 import_hierarchical_ssv_sources \
 importParameterMapping \
 importParameterMappingInline \
