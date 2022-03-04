@@ -7,7 +7,6 @@ import math
 import sys
 import threading
 import time
-import xml.etree.ElementTree as ET
 
 import OMSimulator as oms
 import zmq
@@ -31,6 +30,9 @@ def mogrify(topic: str, msg: dict):
 
 class Server:
   def __init__(self, model, result_file, interactive, endpoint_pub, endpoint_rep):
+    self.print('OMS Server {}'.format(__version__))
+    self.print('ZMQ {}'.format(zmq.zmq_version()))
+
     self._alive = True
     self._context = zmq.Context()
     self._model = oms.importFile(model)
@@ -45,17 +47,7 @@ class Server:
       self._model.resultFile = result_file
 
     # extract all available signals
-    self._signals = {}
-    signalFilter = self._model.exportSnapshot(':resources/signalFilter.xml')
-    root = ET.fromstring(signalFilter)
-    for var in root[0][0]:
-      name = var.attrib['name']
-      type_ = var.attrib['type']
-      kind = var.attrib['kind']
-      self._signals[name] = {'type': type_, 'kind': kind}
-
-    self.print('OMS Server {}'.format(__version__))
-    self.print('ZMQ {}'.format(zmq.zmq_version()))
+    self._signals = self._model.getAllVariables()
 
     if interactive and not endpoint_rep:
       self.print('flag --endpoint-rep is mandatory in interactive simulation mode')
