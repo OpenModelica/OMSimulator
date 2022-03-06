@@ -26,12 +26,12 @@ def close_socket_gracefully(socket):
 
 def mogrify(topic: str, msg: dict):
   '''Combines a topic identifier and a json representation of a dictionary'''
-  return '%s %s' % (topic, json.dumps(msg))
+  return f'{topic} {json.dumps(msg)}'
 
 class Server:
   def __init__(self, model, result_file, interactive, endpoint_pub, endpoint_rep):
-    self.print('OMS Server {}'.format(__version__))
-    self.print('ZMQ {}'.format(zmq.zmq_version()))
+    self.print(f'OMS Server {__version__}')
+    self.print(f'ZMQ {zmq.zmq_version()}')
 
     self._alive = True
     self._context = zmq.Context()
