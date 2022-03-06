@@ -267,7 +267,7 @@ void oms::DirectedGraph::calculateSortedConnections()
       Connector conA = nodes[edges[components[i][j]].first];
       Connector conB = nodes[edges[components[i][j]].second];
 
-      if (true || oms::Connection::isValid(conA.getName(), conB.getName(), conA, conB))
+      if (oms::Connection::isValid(conA.getName(), conB.getName(), conA, conB))
       {
         SCC.push_back(std::pair<int, int>(edges[components[i][j]]));
         component_names_local.insert(conA.getOwner());
@@ -275,19 +275,21 @@ void oms::DirectedGraph::calculateSortedConnections()
       }
     }
 
+    if (components[i].size() > 1)
+    {
+      std::stringstream ss;
+      ss << "Alg. loop (size " << SCC.size() << "/" << components[i].size() << ")" << std::endl;
+      for (const auto& name: component_names_local)
+        ss << "  " << std::string(name) << std::endl;
+      logInfo(ss.str());
+      if (SCC.size() == 1)
+        SCC.push_back(SCC.front()); // nasty hack! TODO: fix strongly connected components
+    }
+
     if (SCC.size() > 0)
     {
       sortedConnections.push_back(SCC);
       this->component_names.push_back(component_names_local);
-    }
-
-    if (SCC.size() > 1)
-    {
-      std::stringstream ss;
-      ss << "Alg. loop (size " << SCC.size() << ")" << std::endl;
-      for (const auto& name: component_names_local)
-        ss << "  " << std::string(name) << std::endl;
-      logInfo(ss.str());
     }
   }
 
