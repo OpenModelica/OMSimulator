@@ -1,8 +1,13 @@
 #CAPTION#
 getString
--------
+---------
 
 Get string value.
+
+
+Memory is allocated for `value`. The caller is responsible to free it
+using the C-API. The Lua and Python bindings take care of the memory
+and the caller doesn't need to call free.
 #END#
 
 #LUA#

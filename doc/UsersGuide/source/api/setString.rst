@@ -1,6 +1,6 @@
 #CAPTION#
 setString
--------
+---------
 
 Sets the value of a given string signal.
 #END#
