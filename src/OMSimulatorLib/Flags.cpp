@@ -374,12 +374,6 @@ oms_status_enu_t oms::Flags::ResultFile(const std::string& value)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Flags::SetInputDerivatives(const std::string& value)
-{
-  logWarning("--setInputDerivatives is deprecated; use --inputExtrapolation instead");
-  return InputExtrapolation(value);
-}
-
 oms_status_enu_t oms::Flags::SkipCSVHeader(const std::string& value)
 {
   GetInstance().skipCSVHeader = (value == "true");
