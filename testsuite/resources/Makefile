@@ -31,6 +31,8 @@ Modelica.Blocks.Sources.Constant \
 Modelica.Blocks.Sources.Sine \
 Modelica.Blocks.Sources.Step \
 Modelica.Electrical.Analog.Examples.CauerLowPassAnalog \
+nls.cs \
+nls.me \
 QuarterCarModel.DisplacementDisplacement.Chassis \
 QuarterCarModel.DisplacementDisplacement.Wheel \
 QuarterCarModel.DisplacementForce.Chassis \
@@ -74,6 +76,7 @@ HelloWorldWithInput.mos \
 Lin2DimODE.mos \
 Mass.mos \
 MassSpring.mos \
+nls.mos \
 QuarterCarModel.mos \
 str_hello_world.mos \
 
