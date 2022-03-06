@@ -1,7 +1,7 @@
 loadString("
 model nls
-  input Real u;
-  output Real y(start=2.0) = (u-time)^3 + u^2 - u - 1.0;
+  input Real u(start=2.0);
+  output Real y = (u-time)^3 + u^2 - u - 1.0;
 end nls;
 "); getErrorString();
 
