@@ -647,6 +647,26 @@ static int OMSimulatorLua_oms_getReal(lua_State *L)
   return 2;
 }
 
+//oms_status_enu_t oms_getString(const char* cref, char** value);
+static int OMSimulatorLua_oms_getString(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* cref = lua_tostring(L, 1);
+  char* value = NULL;
+  oms_status_enu_t status = oms_getString(cref, &value);
+
+  lua_pushstring(L, value ? value : "");
+  lua_pushinteger(L, status);
+
+  if (value)
+    oms_freeMemory(value);
+  return 2;
+}
+
+
 //oms_status_enu_t oms_getDirectionalDerivative(const ComRef& unknownCref, const ComRef& knownCref, double* value);
 static int OMSimulatorLua_oms_getDirectionalDerivative(lua_State *L)
 {
@@ -729,6 +749,22 @@ static int OMSimulatorLua_oms_setReal(lua_State *L)
   double value = lua_tonumber(L, 2);
 
   oms_status_enu_t status = oms_setReal(cref, value);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
+// oms_status_enu_t oms_setString(const char* cref, const char* value);
+static int OMSimulatorLua_oms_setString(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 arguments");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+
+  const char* cref = lua_tostring(L, 1);
+  const char* value = lua_tostring(L, 2);
+
+  oms_status_enu_t status = oms_setString(cref, value);
   lua_pushinteger(L, status);
   return 1;
 }
@@ -1373,6 +1409,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms_getInteger);
   REGISTER_LUA_CALL(oms_getModelState);
   REGISTER_LUA_CALL(oms_getReal);
+  REGISTER_LUA_CALL(oms_getString);
   REGISTER_LUA_CALL(oms_getSolver);
   REGISTER_LUA_CALL(oms_getStartTime);
   REGISTER_LUA_CALL(oms_getStopTime);
@@ -1404,6 +1441,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms_setRealInputDerivative);
   REGISTER_LUA_CALL(oms_setResultFile);
   REGISTER_LUA_CALL(oms_setSolver);
+  REGISTER_LUA_CALL(oms_setString);
   REGISTER_LUA_CALL(oms_setStartTime);
   REGISTER_LUA_CALL(oms_setStopTime);
   REGISTER_LUA_CALL(oms_setTempDirectory);
