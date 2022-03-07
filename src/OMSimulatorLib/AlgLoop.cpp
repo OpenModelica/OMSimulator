@@ -136,16 +136,16 @@ int oms::KinsolSolver::nlsKinsolJac(N_Vector u, N_Vector fu, SUNMatrix J, void *
   AlgLoop* algLoop = syst->getAlgLoop(kinsoluserData->algLoopNumber);
   DirectedGraph* graph = kinsoluserData->graph;
   const oms_ssc_t SCC = algLoop->getSCC();
-  const int size = SCC.size();
+  const int size = SCC.connections.size();
 
   oms_status_enu_t status;
   double *u_data = NV_DATA_S(u);
 
   for(int j=0; j<size; j++)
   {
-    const int output = SCC[j].first;
+    const int output = SCC.connections[j].first;
     const oms::ComRef& crefOutput = graph->getNodes()[output].getName();
-    const int input = SCC[j].second;
+    const int input = SCC.connections[j].second;
     const oms::ComRef& crefInput = graph->getNodes()[input].getName();
     // res[j] = output - input
     // std::cout << "res[" << j << "] = " << std::string(crefOutput) << " - " << std::string(crefInput) << std::endl;
@@ -153,7 +153,7 @@ int oms::KinsolSolver::nlsKinsolJac(N_Vector u, N_Vector fu, SUNMatrix J, void *
     for(int i=0; i<size; i++)
     {
       double der = 0.0;
-      const int input_col = SCC[i].second;
+      const int input_col = SCC.connections[i].second;
       oms::ComRef crefInput_col = graph->getNodes()[input_col].getName();
       oms::ComRef front = crefInput_col.pop_front();
 
@@ -200,7 +200,7 @@ int oms::KinsolSolver::nlsKinsolResiduals(N_Vector u, N_Vector fval, void *user_
   const oms_ssc_t SCC = algLoop->getSCC();
   kinsoluserData->iteration++;
 
-  const int size = SCC.size();
+  const int size = SCC.connections.size();
   double maxRes;
   oms_status_enu_t status;
   std::stringstream ss;
@@ -214,7 +214,7 @@ int oms::KinsolSolver::nlsKinsolResiduals(N_Vector u, N_Vector fval, void *user_
   // Set values from u
   for (int i=0; i<size; ++i)
   {
-    int input = SCC[i].second;
+    int input = SCC.connections[i].second;
     status = syst->setReal(graph->getNodes()[input].getName(), u_data[i]);
     if (Flags::DumpAlgLoops())
       ss << "  " << graph->getNodes()[input].getName().c_str() << ": " << u_data[i] << std::endl;
@@ -236,7 +236,7 @@ int oms::KinsolSolver::nlsKinsolResiduals(N_Vector u, N_Vector fval, void *user_
   // Get updated values and calulate residual
   for (int i=0; i<size; ++i)
   {
-    int output = SCC[i].first;
+    int output = SCC.connections[i].first;
     status = syst->getReal(graph->getNodes()[output].getName(), fval_data[i]);
     if (Flags::DumpAlgLoops())
       ss << "  " << graph->getNodes()[output].getName().c_str() << ": " << fval_data[i] << std::endl;
@@ -415,7 +415,7 @@ oms_status_enu_t oms::KinsolSolver::kinsolSolve(System& syst, DirectedGraph& gra
 
   logDebug("Solving system " + std::to_string(kinsolUserData->algLoopNumber));
 
-  if (SCC.size() != size)
+  if (SCC.connections.size() != size)
   {
     logError("The size of the loop changed! This shouldn't be possible...");
     throw("Serious problem encountered. Open a ticket!");
@@ -425,7 +425,7 @@ oms_status_enu_t oms::KinsolSolver::kinsolSolve(System& syst, DirectedGraph& gra
   double *initialGuess_data = NV_DATA_S(initialGuess);
   for (int i=0; i < size; i++)
   {
-    int output = SCC[i].first;
+    int output = SCC.connections[i].first;
     if (oms_status_ok != syst.getReal(graph.getNodes()[output].getName(), initialGuess_data[i]))
     {
       return oms_status_error;
@@ -482,7 +482,7 @@ oms::AlgLoop::AlgLoop(oms_alg_solver_enu_t method, double absTol, oms_ssc_t scc,
 
   if (method == oms_alg_solver_kinsol)
   {
-    kinsolData = KinsolSolver::NewKinsolSolver(systNumber, SCC.size(), absoluteTolerance, useDirectionalDerivative);
+    kinsolData = KinsolSolver::NewKinsolSolver(systNumber, SCC.connections.size(), absoluteTolerance, useDirectionalDerivative);
     if (kinsolData==NULL)
     {
       logError("NewKinsolSolver() failed. Aborting!");
@@ -527,7 +527,7 @@ oms_status_enu_t oms::AlgLoop::solveAlgLoop(System& syst, DirectedGraph& graph)
  */
 oms_status_enu_t oms::AlgLoop::fixPointIteration(System& syst, DirectedGraph& graph)
 {
-  const int size = SCC.size();
+  const int size = SCC.connections.size();
   const int maxIterations = Flags::MaxLoopIteration();
   int it=0;
   double maxRes;
@@ -540,7 +540,7 @@ oms_status_enu_t oms::AlgLoop::fixPointIteration(System& syst, DirectedGraph& gr
     // get old values
     for (int i=0; i<size; ++i)
     {
-      int output = SCC[i].first;
+      int output = SCC.connections[i].first;
       if (oms_status_ok != syst.getReal(graph.getNodes()[output].getName(), res[i]))
       {
         delete[] res;
@@ -551,7 +551,7 @@ oms_status_enu_t oms::AlgLoop::fixPointIteration(System& syst, DirectedGraph& gr
     // update inputs
     for (int i=0; i<size; ++i)
     {
-      int input = SCC[i].second;
+      int input = SCC.connections[i].second;
       if (oms_status_ok != syst.setReal(graph.getNodes()[input].getName(), res[i]))
       {
         delete[] res;
@@ -565,7 +565,7 @@ oms_status_enu_t oms::AlgLoop::fixPointIteration(System& syst, DirectedGraph& gr
       ss << "inputs:" << std::endl;
       for (int i=0; i<size; ++i)
       {
-        const int input = SCC[i].second;
+        const int input = SCC.connections[i].second;
         ss << "  " << graph.getNodes()[input].getName().c_str() << ": " << res[i] << std::endl;
       }
       ss << "outputs:" << std::endl;
@@ -576,7 +576,7 @@ oms_status_enu_t oms::AlgLoop::fixPointIteration(System& syst, DirectedGraph& gr
     double value;
     for (int i=0; i<size; ++i)
     {
-      int output = SCC[i].first;
+      int output = SCC.connections[i].first;
       if (oms_status_ok != syst.getReal(graph.getNodes()[output].getName(), value))
       {
         delete[] res;
@@ -640,25 +640,25 @@ std::string oms::AlgLoop::getAlgSolverName(void)
  */
 std::string oms::AlgLoop::dumpLoopVars(DirectedGraph& graph)
 {
-  const int size = SCC.size();
+  const int size = SCC.connections.size();
   std::string varNames = "";
   int output;
 
   for (int i=0; i<size-1; ++i)
   {
     varNames.append("  ");
-    output = SCC[i].first;
+    output = SCC.connections[i].first;
     varNames.append(graph.getNodes()[output].getName().c_str());
     varNames.append(" -> ");
-    output = SCC[i].second;
+    output = SCC.connections[i].second;
     varNames.append(graph.getNodes()[output].getName().c_str());
     varNames.append("\n");
   }
   varNames.append("  ");
-  output = SCC[size-1].first;
+  output = SCC.connections[size-1].first;
   varNames.append(graph.getNodes()[output].getName().c_str());
   varNames.append(" -> ");
-  output = SCC[size-1].second;
+  output = SCC.connections[size-1].second;
   varNames.append(graph.getNodes()[output].getName().c_str());
 
   return varNames;

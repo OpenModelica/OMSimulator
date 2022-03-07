@@ -700,10 +700,10 @@ oms_status_enu_t oms::SystemSC::updateInputs(DirectedGraph& graph)
   for(int i=0; i<sortedConnections.size(); i++)
   {
     // Is this an alg. loop? TODO: Use the boolean "thisIsALoop"
-    if (sortedConnections[i].size() == 1)
+    if (sortedConnections[i].connections.size() == 1)
     {
-      int output = sortedConnections[i][0].first;
-      int input = sortedConnections[i][0].second;
+      int output = sortedConnections[i].connections[0].first;
+      int input = sortedConnections[i].connections[0].second;
 
       if (graph.getNodes()[input].getType() == oms_signal_type_real)
       {

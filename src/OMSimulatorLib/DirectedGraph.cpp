@@ -59,7 +59,7 @@ void oms::DirectedGraph::clear()
   G.clear();
   sortedConnections.clear();
   nodes.clear();
-  edges.clear();
+  edges.connections.clear();
   sortedConnectionsAreValid = true;
 }
 
@@ -93,7 +93,7 @@ void oms::DirectedGraph::addEdge(const oms::Connector& var1, const oms::Connecto
   if (-1 == index2)
     index2 = addNode(var2);
 
-  edges.push_back(std::pair<int, int>(index1, index2));
+  edges.connections.push_back(std::pair<int, int>(index1, index2));
   G[index1].push_back(index2);
   sortedConnectionsAreValid = false;
 }
@@ -125,10 +125,10 @@ void oms::DirectedGraph::dotExport(const std::string& filename)
   }
   dotFile << std::endl;
 
-  for (int i = 0; i < edges.size(); i++)
+  for (int i = 0; i < edges.connections.size(); i++)
   {
-    dotFile << "  " << edges[i].first << " -> " << edges[i].second;
-    if (nodes[edges[i].first].isOutput() && nodes[edges[i].second].isInput())
+    dotFile << "  " << edges.connections[i].first << " -> " << edges.connections[i].second;
+    if (nodes[edges.connections[i].first].isOutput() && nodes[edges.connections[i].second].isInput())
       dotFile << " [color=\"red\"];" << std::endl;
     else
       dotFile << std::endl;
@@ -142,14 +142,14 @@ void oms::DirectedGraph::includeGraph(const oms::DirectedGraph& graph, const oms
   for (int i = 0; i < graph.nodes.size(); i++)
     addNode(graph.nodes[i].addPrefix(prefix));
 
-  for (int i = 0; i < graph.edges.size(); i++)
-    addEdge(graph.nodes[graph.edges[i].first].addPrefix(prefix), graph.nodes[graph.edges[i].second].addPrefix(prefix));
+  for (int i = 0; i < graph.edges.connections.size(); i++)
+    addEdge(graph.nodes[graph.edges.connections[i].first].addPrefix(prefix), graph.nodes[graph.edges.connections[i].second].addPrefix(prefix));
 }
 
 int oms::DirectedGraph::getEdgeIndex(const oms_ssc_t& edges, int from, int to)
 {
-  for (int i = 0; i < edges.size(); ++i)
-    if (edges[i].first == from && edges[i].second == to)
+  for (int i = 0; i < edges.connections.size(); ++i)
+    if (edges.connections[i].first == from && edges.connections[i].second == to)
       return i;
 
   logError("getEdgeIndex failed");
@@ -166,10 +166,10 @@ void oms::DirectedGraph::strongconnect(int v, std::vector< std::vector<int> > G,
   stacked[v] = true;
 
   // Consider successors of v
-  std::vector<int> successors = G[edges[v].second];
+  std::vector<int> successors = G[edges.connections[v].second];
   for (int i = 0; i < successors.size(); ++i)
   {
-    int w = getEdgeIndex(edges, edges[v].second, successors[i]);
+    int w = getEdgeIndex(edges, edges.connections[v].second, successors[i]);
     if (d[w] == -1)
     {
       // Successor w has not yet been visited; recurse on it
@@ -208,7 +208,7 @@ std::deque< std::vector<int> > oms::DirectedGraph::getSCCs()
 {
   //std::cout << "Tarjan's strongly connected components algorithm" << std::endl;
 
-  size_t numVertices = edges.size();
+  size_t numVertices = edges.connections.size();
   int *d = new int[numVertices];
   std::fill(d, d + numVertices, -1);
   int *low = new int[numVertices];
@@ -244,7 +244,7 @@ std::deque< std::vector<int> > oms::DirectedGraph::getSCCs()
   return components;
 }
 
-const std::vector<oms_ssc_t>& oms::DirectedGraph::getSortedConnections()
+const std::vector<oms::oms_ssc_t>& oms::DirectedGraph::getSortedConnections()
 {
   if (!sortedConnectionsAreValid)
     calculateSortedConnections();
@@ -264,12 +264,12 @@ void oms::DirectedGraph::calculateSortedConnections()
     component_names_local.clear();
     for (int j = 0; j < components[i].size(); ++j)
     {
-      Connector conA = nodes[edges[components[i][j]].first];
-      Connector conB = nodes[edges[components[i][j]].second];
+      Connector conA = nodes[edges.connections[components[i][j]].first];
+      Connector conB = nodes[edges.connections[components[i][j]].second];
 
       if (oms::Connection::isValid(conA.getName(), conB.getName(), conA, conB))
       {
-        connections.push_back(std::pair<int, int>(edges[components[i][j]]));
+        connections.push_back(std::pair<int, int>(edges.connections[components[i][j]]));
         component_names_local.insert(conA.getOwner());
         component_names_local.insert(conB.getOwner());
       }
