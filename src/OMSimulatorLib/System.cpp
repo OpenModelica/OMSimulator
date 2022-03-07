@@ -2776,7 +2776,7 @@ oms_status_enu_t oms::System::addAlgLoop(scc_t SCC, const int algLoopNum, Direct
 bool oms::System::supportsDirectionalDerivatives(int i, DirectedGraph& graph)
 {
   // get Strongly connected FMU's
-  std::set<oms::ComRef> scc_component_names = graph.getStronglyConnectedComponents(i);
+  std::set<oms::ComRef> scc_component_names = graph.getSortedConnections()[i].component_names;
 
   for (const auto &component : components)
     if (oms_component_fmu == component.second->getType())

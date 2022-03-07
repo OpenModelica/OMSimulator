@@ -57,6 +57,7 @@ namespace oms
     bool thisIsALoop; // needed because a SSC with just one connection can be a loop! fmu.y -> fmu.u
     unsigned int size;
     unsigned int size_including_internal;
+    std::set<oms::ComRef> component_names;
   };
 
   class DirectedGraph
@@ -78,7 +79,6 @@ namespace oms
 
     const std::vector<Connector>& getNodes() const {return nodes;}
     const scc_t& getEdges() const {return edges;}
-    const std::set<oms::ComRef>& getStronglyConnectedComponents(int i) const { return component_names[i]; }
 
     void dumpNodes() const;
 
@@ -93,7 +93,6 @@ namespace oms
     std::vector<Connector> nodes;
     scc_t edges;
 
-    std::vector< std::set<oms::ComRef> > component_names;
     std::vector< std::vector<int> > G;
     std::vector< scc_t > sortedConnections;
     bool sortedConnectionsAreValid;
