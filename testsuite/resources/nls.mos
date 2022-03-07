@@ -1,4 +1,4 @@
-setCommandLineOptions("-d=-disableDirectionalDerivatives,fmuExperimental"); getErrorString();
+setCommandLineOptions("-d=-disableDirectionalDerivatives,fmuExperimental --fmiSources=false"); getErrorString();
 
 loadString("
 model nls
@@ -9,5 +9,5 @@ end nls;
 
 buildModelFMU(nls, version="2.0", fmuType="me", fileNamePrefix="nls.me"); getErrorString();
 buildModelFMU(nls, version="2.0", fmuType="cs", fileNamePrefix="nls.cs"); getErrorString();
-system("zip -qd nls.me.fmu sources/* && unzip -o nls.me.fmu -d nls.me/");
-system("zip -qd nls.cs.fmu sources/* && unzip -o nls.cs.fmu -d nls.cs/");
+system("unzip -o nls.me.fmu -d nls.me/");
+system("unzip -o nls.cs.fmu -d nls.cs/");
