@@ -254,14 +254,11 @@ const std::vector<oms::scc_t>& oms::DirectedGraph::getSortedConnections()
 void oms::DirectedGraph::calculateSortedConnections()
 {
   std::deque< std::vector<int> > components = getSCCs();
-  std::vector< std::pair<int, int> > connections;
   sortedConnections.clear();
 
   for (int i = 0; i < components.size(); ++i)
   {
     scc_t scc;
-    connections.clear();
-
     for (int j = 0; j < components[i].size(); ++j)
     {
       Connector conA = nodes[edges.connections[components[i][j]].first];
@@ -269,7 +266,7 @@ void oms::DirectedGraph::calculateSortedConnections()
 
       if (oms::Connection::isValid(conA.getName(), conB.getName(), conA, conB))
       {
-        connections.push_back(std::pair<int, int>(edges.connections[components[i][j]]));
+        scc.connections.push_back(std::pair<int, int>(edges.connections[components[i][j]]));
         scc.component_names.insert(conA.getOwner());
         scc.component_names.insert(conB.getOwner());
       }
@@ -277,10 +274,8 @@ void oms::DirectedGraph::calculateSortedConnections()
 
     // size of loop incl. internal connections: components[i].size()
     // size of loop excl. internal connections: connections.size()
-
-    scc.connections = connections;
     scc.thisIsALoop = (components[i].size() > 1);
-    scc.size = connections.size();
+    scc.size = scc.connections.size();
     scc.size_including_internal = components[i].size();
 
     if (scc.size > 0)
