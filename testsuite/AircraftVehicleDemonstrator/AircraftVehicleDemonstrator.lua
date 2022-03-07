@@ -182,7 +182,7 @@ end
 -- warning: [eCS_Generic_Export: resources/0006_eCS_Generic_Export.fmu] The dependencies of the initial unknowns defined in the FMU are ignored because the flag --ignoreInitialUnknowns is active. Instead, all the initial unknowns will depend on all inputs.
 -- warning: [eCS_SW: resources/0007_eCS_SW.fmu] The dependencies of the initial unknowns defined in the FMU are ignored because the flag --ignoreInitialUnknowns is active. Instead, all the initial unknowns will depend on all inputs.
 -- warning: [engine: resources/0008_engine.fmu] The dependencies of the initial unknowns defined in the FMU are ignored because the flag --ignoreInitialUnknowns is active. Instead, all the initial unknowns will depend on all inputs.
--- info:    Alg. loop (size 80 / 1800)
+-- info:    Alg. loop (size 80/1800)
 --            AircraftVehicleDemonstrator.root.engine
 --            AircraftVehicleDemonstrator.root.eCS_SW
 --            AircraftVehicleDemonstrator.root.eCS_Generic_Export

@@ -283,7 +283,7 @@ void oms::DirectedGraph::calculateSortedConnections()
       if (scc.thisIsALoop)
       {
         std::stringstream ss;
-        ss << "Alg. loop (size " << scc.size << " / " << scc.size_including_internal << ")" << std::endl;
+        ss << "Alg. loop (size " << scc.size << "/" << scc.size_including_internal << ")" << std::endl;
         for (const auto& name: scc.component_names)
           ss << "  " << std::string(name) << std::endl;
         logInfo(ss.str());

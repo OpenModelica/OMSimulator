@@ -38,10 +38,10 @@ model.terminate()
 model.delete()
 
 ## Result:
-## info:    Alg. loop (size 1 / 2)
+## info:    Alg. loop (size 1/2)
 ##            nls.root.fmu
 ## info:    No result file will be created
-## info:    Alg. loop (size 1 / 2)
+## info:    Alg. loop (size 1/2)
 ##            nls.root.fmu
 ## u: 2.0000
 ## y: 9.0000
