@@ -1,3 +1,5 @@
+setCommandLineOptions("-d=-disableDirectionalDerivatives,fmuExperimental"); getErrorString();
+
 loadString("
 model nls
   input Real u(start=2.0);
