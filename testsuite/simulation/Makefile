@@ -54,6 +54,7 @@ simulation.py \
 snapshot.lua \
 snapshot.py \
 str_hello_world.py \
+str_hello_world.lua \
 table.lua \
 
 # Run make failingtest
