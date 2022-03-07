@@ -47,7 +47,7 @@ class Server:
       self._model.resultFile = result_file
 
     # extract all available signals
-    self._signals = self._model.getAllVariables()
+    self._signals = self._model.getAllSignals()
 
     if interactive and not endpoint_rep:
       self.print('flag --endpoint-rep is mandatory in interactive simulation mode')

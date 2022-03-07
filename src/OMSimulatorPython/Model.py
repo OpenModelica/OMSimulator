@@ -59,16 +59,16 @@ class Model:
     if Types.Status(status) != Types.Status.OK:
       raise Exception('error {}'.format(Types.Status(status)))
 
-  def getAllVariables(self):
-    signals = {}
+  def getAllSignals(self):
+    allSignals = {}
     signalFilter = self.exportSnapshot(':resources/signalFilter.xml')
     root = ET.fromstring(signalFilter)
     for var in root[0][0]:
       name = var.attrib['name']
       type_ = var.attrib['type']
       kind = var.attrib['kind']
-      signals[name] = {'type': type_, 'kind': kind}
-    return signals
+      allSignals[name] = {'type': type_, 'kind': kind}
+    return allSignals
 
   def getBoolean(self, cref: str):
     value, status = Scope._capi.getBoolean(self.cref + '.' + cref)
