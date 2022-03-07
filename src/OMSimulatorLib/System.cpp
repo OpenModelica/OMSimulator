@@ -2756,7 +2756,7 @@ oms::AlgLoop* oms::System::getAlgLoop(const int systemNumber)
   return &algLoops[systemNumber];
 }
 
-oms_status_enu_t oms::System::addAlgLoop(oms_ssc_t SCC, const int algLoopNum, DirectedGraph& graph, bool supportsDirectionalDerivatives)
+oms_status_enu_t oms::System::addAlgLoop(scc_t SCC, const int algLoopNum, DirectedGraph& graph, bool supportsDirectionalDerivatives)
 {
   if (loopsNeedUpdate)
   {
@@ -2787,7 +2787,7 @@ bool oms::System::supportsDirectionalDerivatives(int i, DirectedGraph& graph)
   return true;
 }
 
-oms_status_enu_t oms::System::updateAlgebraicLoops(const std::vector<oms_ssc_t>& sortedConnections, DirectedGraph& graph)
+oms_status_enu_t oms::System::updateAlgebraicLoops(const std::vector<scc_t>& sortedConnections, DirectedGraph& graph)
 {
   // instantiate loops
   if (loopsNeedUpdate)
@@ -2795,8 +2795,7 @@ oms_status_enu_t oms::System::updateAlgebraicLoops(const std::vector<oms_ssc_t>&
     int systCount = 0;
     for(int i=0; i<sortedConnections.size(); i++)
     {
-      // Is this an alg. loop? TODO: Use the boolean "thisIsALoop"
-      if (sortedConnections[i].connections.size() > 1)
+      if (sortedConnections[i].thisIsALoop)
       {
         addAlgLoop(sortedConnections[i], systCount, graph, supportsDirectionalDerivatives(i, graph));
         systCount++;

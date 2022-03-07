@@ -135,7 +135,7 @@ int oms::KinsolSolver::nlsKinsolJac(N_Vector u, N_Vector fu, SUNMatrix J, void *
   System* syst = kinsoluserData->syst;
   AlgLoop* algLoop = syst->getAlgLoop(kinsoluserData->algLoopNumber);
   DirectedGraph* graph = kinsoluserData->graph;
-  const oms_ssc_t SCC = algLoop->getSCC();
+  const scc_t SCC = algLoop->getSCC();
   const int size = SCC.connections.size();
 
   oms_status_enu_t status;
@@ -197,7 +197,7 @@ int oms::KinsolSolver::nlsKinsolResiduals(N_Vector u, N_Vector fval, void *user_
   System* syst = kinsoluserData->syst;
   AlgLoop* algLoop = syst->getAlgLoop(kinsoluserData->algLoopNumber);
   DirectedGraph* graph = kinsoluserData->graph;
-  const oms_ssc_t SCC = algLoop->getSCC();
+  const scc_t SCC = algLoop->getSCC();
   kinsoluserData->iteration++;
 
   const int size = SCC.connections.size();
@@ -408,7 +408,7 @@ oms_status_enu_t oms::KinsolSolver::kinsolSolve(System& syst, DirectedGraph& gra
   kinsolUserData->graph = &graph;
   kinsolUserData->iteration = 0;
   AlgLoop* algLoop = syst.getAlgLoop(kinsolUserData->algLoopNumber);
-  const oms_ssc_t SCC = algLoop->getSCC();
+  const scc_t SCC = algLoop->getSCC();
 
   int flag;
   double fNormValue;
@@ -467,7 +467,7 @@ oms_status_enu_t oms::KinsolSolver::kinsolSolve(System& syst, DirectedGraph& gra
  * @param scc     Strong Connected Componten, a vector of connected
  * @param number
  */
-oms::AlgLoop::AlgLoop(oms_alg_solver_enu_t method, double absTol, oms_ssc_t scc, const int number, const bool useDirectionalDerivative): absoluteTolerance(absTol), SCC(scc), systNumber(number)
+oms::AlgLoop::AlgLoop(oms_alg_solver_enu_t method, double absTol, scc_t scc, const int number, const bool useDirectionalDerivative): absoluteTolerance(absTol), SCC(scc), systNumber(number)
 {
   switch (method)
   {

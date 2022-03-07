@@ -51,10 +51,12 @@ namespace oms
    *
    * A vector of pairs of connected components.
    */
-  struct oms_ssc_t
+  struct scc_t
   {
     std::vector< std::pair<int, int> > connections;
     bool thisIsALoop; // needed because a SSC with just one connection can be a loop! fmu.y -> fmu.u
+    unsigned int size;
+    unsigned int size_including_internal;
   };
 
   class DirectedGraph
@@ -72,10 +74,10 @@ namespace oms
 
     void includeGraph(const DirectedGraph& graph, const ComRef& prefix);
 
-    const std::vector< oms_ssc_t >& getSortedConnections();
+    const std::vector< scc_t >& getSortedConnections();
 
     const std::vector<Connector>& getNodes() const {return nodes;}
-    const oms_ssc_t& getEdges() const {return edges;}
+    const scc_t& getEdges() const {return edges;}
     const std::set<oms::ComRef>& getStronglyConnectedComponents(int i) const { return component_names[i]; }
 
     void dumpNodes() const;
@@ -85,15 +87,15 @@ namespace oms
     void calculateSortedConnections();
     void strongconnect(int v, std::vector< std::vector<int> > G, int& index, int *d, int *low, std::stack<int>& S, bool *stacked, std::deque< std::vector<int> >& components);
 
-    static int getEdgeIndex(const oms_ssc_t& edges, int from, int to);
+    static int getEdgeIndex(const scc_t& edges, int from, int to);
 
   private:
     std::vector<Connector> nodes;
-    oms_ssc_t edges;
+    scc_t edges;
 
     std::vector< std::set<oms::ComRef> > component_names;
     std::vector< std::vector<int> > G;
-    std::vector< oms_ssc_t > sortedConnections;
+    std::vector< scc_t > sortedConnections;
     bool sortedConnectionsAreValid;
   };
 }

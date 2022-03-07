@@ -146,7 +146,7 @@ void oms::DirectedGraph::includeGraph(const oms::DirectedGraph& graph, const oms
     addEdge(graph.nodes[graph.edges.connections[i].first].addPrefix(prefix), graph.nodes[graph.edges.connections[i].second].addPrefix(prefix));
 }
 
-int oms::DirectedGraph::getEdgeIndex(const oms_ssc_t& edges, int from, int to)
+int oms::DirectedGraph::getEdgeIndex(const scc_t& edges, int from, int to)
 {
   for (int i = 0; i < edges.connections.size(); ++i)
     if (edges.connections[i].first == from && edges.connections[i].second == to)
@@ -244,7 +244,7 @@ std::deque< std::vector<int> > oms::DirectedGraph::getSCCs()
   return components;
 }
 
-const std::vector<oms::oms_ssc_t>& oms::DirectedGraph::getSortedConnections()
+const std::vector<oms::scc_t>& oms::DirectedGraph::getSortedConnections()
 {
   if (!sortedConnectionsAreValid)
     calculateSortedConnections();
@@ -278,22 +278,24 @@ void oms::DirectedGraph::calculateSortedConnections()
     // size of loop incl. internal connections: components[i].size()
     // size of loop excl. internal connections: connections.size()
 
-    oms_ssc_t ssc;
-    ssc.connections = connections;
-    ssc.thisIsALoop = (components[i].size() > 1);
+    scc_t scc;
+    scc.connections = connections;
+    scc.thisIsALoop = (components[i].size() > 1);
+    scc.size = connections.size();
+    scc.size_including_internal = components[i].size();
 
-    if (components[i].size() > 1)
+    if (scc.size > 0)
     {
-      std::stringstream ss;
-      ss << "Alg. loop (size " << connections.size() << ")" << std::endl;
-      for (const auto& name: component_names_local)
-        ss << "  " << std::string(name) << std::endl;
-      logInfo(ss.str());
-    }
+      if (scc.thisIsALoop)
+      {
+        std::stringstream ss;
+        ss << "Alg. loop (size " << scc.size << " / " << scc.size_including_internal << ")" << std::endl;
+        for (const auto& name: component_names_local)
+          ss << "  " << std::string(name) << std::endl;
+        logInfo(ss.str());
+      }
 
-    if (connections.size() > 0)
-    {
-      sortedConnections.push_back(ssc);
+      sortedConnections.push_back(scc);
       this->component_names.push_back(component_names_local);
     }
   }
