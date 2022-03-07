@@ -166,7 +166,6 @@ namespace oms
       {"--progressBar", "", "Shows a progress bar for the simulation progress in the terminal (true, [false])", re_bool, Flags::ProgressBar, false},
       {"--realTime", "", "Experimental feature for (soft) real-time co-simulation (true, [false])", re_bool, Flags::RealTime, false},
       {"--resultFile", "-r", "Specifies the name of the output result file", re_default, Flags::ResultFile, false},
-      {"--setInputDerivatives", "", "Deprecated; see '--inputExtrapolation'", re_bool, Flags::SetInputDerivatives, false},
       {"--skipCSVHeader", "", "Skip exporting the scv delimiter in the header ([true], false), ", re_default, Flags::SkipCSVHeader, false},
       {"--solver", "", "Specifies the integration method (euler, [cvode])", re_default, Flags::Solver, false},
       {"--solverStats", "", "Adds solver stats to the result file, e.g. step size; not supported for all solvers (true, [false])", re_bool, Flags::SolverStats, false},
@@ -206,7 +205,6 @@ namespace oms
     static oms_status_enu_t ProgressBar(const std::string& value);
     static oms_status_enu_t RealTime(const std::string& value);
     static oms_status_enu_t ResultFile(const std::string& value);
-    static oms_status_enu_t SetInputDerivatives(const std::string& value);
     static oms_status_enu_t SkipCSVHeader(const std::string& value);
     static oms_status_enu_t Solver(const std::string& value);
     static oms_status_enu_t SolverStats(const std::string& value);
