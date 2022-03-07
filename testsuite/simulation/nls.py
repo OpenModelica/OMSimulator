@@ -24,7 +24,7 @@ root.addConnection('fmu.u', 'fmu.y')
 model.resultFile = ''
 model.stopTime = 4.0
 
-model.exportDependencyGraphs("nls_init.dot", "nls_event.dot", "nls_sim.dot")
+#model.exportDependencyGraphs("nls_init.dot", "nls_event.dot", "nls_sim.dot")
 
 model.instantiate()
 print(f'u: {model.getReal("root.fmu.u"):.4f}')
