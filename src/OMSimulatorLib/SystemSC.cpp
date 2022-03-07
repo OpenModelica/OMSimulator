@@ -699,6 +699,7 @@ oms_status_enu_t oms::SystemSC::updateInputs(DirectedGraph& graph)
 
   for(int i=0; i<sortedConnections.size(); i++)
   {
+    // Is this an alg. loop? TODO: Use the boolean "thisIsALoop"
     if (sortedConnections[i].size() == 1)
     {
       int output = sortedConnections[i][0].first;

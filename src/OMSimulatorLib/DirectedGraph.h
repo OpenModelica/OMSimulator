@@ -44,15 +44,19 @@
 #include <string>
 #include <vector>
 
-/**
- * @brief Strong connected components data type.
- *
- * A vector of pairs of connected components.
- */
-typedef std::vector< std::pair<int, int> > oms_ssc_t;
-
 namespace oms
 {
+  /**
+   * @brief Strong connected components data type.
+   *
+   * A vector of pairs of connected components.
+   */
+  struct oms_ssc_t
+  {
+    std::vector< std::pair<int, int> > connections;
+    bool thisIsALoop; // needed because a SSC with just one connection can be a loop! fmu.y -> fmu.u
+  };
+
   class DirectedGraph
   {
   public:

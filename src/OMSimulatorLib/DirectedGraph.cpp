@@ -275,15 +275,18 @@ void oms::DirectedGraph::calculateSortedConnections()
       }
     }
 
+    // size of loop incl. internal connections: components[i].size()
+    // size of loop excl. internal connections: SCC.size()
+
+    thisIsALoop = (components[i].size() > 1);
+
     if (components[i].size() > 1)
     {
       std::stringstream ss;
-      ss << "Alg. loop (size " << SCC.size() << "/" << components[i].size() << ")" << std::endl;
+      ss << "Alg. loop (size " << SCC.size() << ")" << std::endl;
       for (const auto& name: component_names_local)
         ss << "  " << std::string(name) << std::endl;
       logInfo(ss.str());
-      if (SCC.size() == 1)
-        SCC.push_back(SCC.front()); // nasty hack! TODO: fix strongly connected components
     }
 
     if (SCC.size() > 0)

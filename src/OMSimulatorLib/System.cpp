@@ -2795,6 +2795,7 @@ oms_status_enu_t oms::System::updateAlgebraicLoops(const std::vector<oms_ssc_t>&
     int systCount = 0;
     for(int i=0; i<sortedConnections.size(); i++)
     {
+      // Is this an alg. loop? TODO: Use the boolean "thisIsALoop"
       if (sortedConnections[i].size() > 1)
       {
         addAlgLoop(sortedConnections[i], systCount, graph, supportsDirectionalDerivatives(i, graph));

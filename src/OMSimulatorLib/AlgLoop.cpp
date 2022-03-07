@@ -164,6 +164,7 @@ int oms::KinsolSolver::nlsKinsolJac(N_Vector u, N_Vector fu, SUNMatrix J, void *
         der -= 1.0;
 
       SM_ELEMENT_D(J, j, i) = der;
+      // std::cout << "J[" << j << ", " << i << "] = " << der << std::endl;
     }
   }
 

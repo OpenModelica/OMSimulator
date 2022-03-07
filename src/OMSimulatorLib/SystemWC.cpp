@@ -894,6 +894,7 @@ oms_status_enu_t oms::SystemWC::getInputs(oms::DirectedGraph& graph, std::vector
   const std::vector< oms_ssc_t >& sortedConnections = graph.getSortedConnections();
   for(int i=0; i < sortedConnections.size(); i++)
   {
+    // Is this an alg. loop? TODO: Use the boolean "thisIsALoop"
     if (sortedConnections[i].size() == 1)
     {
       int input = sortedConnections[i][0].second;
@@ -915,6 +916,7 @@ oms_status_enu_t oms::SystemWC::setInputsDer(oms::DirectedGraph& graph, const st
   const std::vector<oms_ssc_t>& sortedConnections = graph.getSortedConnections();
   for(int i=0; i < sortedConnections.size(); i++)
   {
+    // Is this an alg. loop? TODO: Use the boolean "thisIsALoop"
     if (sortedConnections[i].size() == 1)
     {
       int input = sortedConnections[i][0].second;
@@ -940,6 +942,7 @@ oms_status_enu_t oms::SystemWC::getInputAndOutput(oms::DirectedGraph& graph, std
 
   for(int i=0; i < sortedConnections.size(); i++)
   {
+    // Is this an alg. loop? TODO: Use the boolean "thisIsALoop"
     if (sortedConnections[i].size() == 1)
     {
       logDebug("DEBUGGING: Size of sortedConnections[i] is: "+std::to_string(sortedConnections[i].size()));
@@ -997,6 +1000,7 @@ oms_status_enu_t oms::SystemWC::updateInputs(oms::DirectedGraph& graph)
 
   for(int i=0; i < sortedConnections.size(); i++)
   {
+    // Is this an alg. loop? TODO: Use the boolean "thisIsALoop"
     if (sortedConnections[i].size() == 1)
     {
       int output = sortedConnections[i][0].first;
