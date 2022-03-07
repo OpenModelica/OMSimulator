@@ -1,11 +1,11 @@
-  inflating: nls.me/modelDescription.xml  <?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <fmiModelDescription
   fmiVersion="2.0"
   modelName="nls"
-  guid="{9b5bb077-1162-4ac7-8db0-c0de2167a8a3}"
+  guid="{45114e91-eb9d-45a9-9b64-09c00ba94572}"
   description=""
   generationTool="OpenModelica Compiler OpenModelica v1.19.0-dev-646-g55f5d0ddcc (64-bit)"
-  generationDateAndTime="2022-03-07T20:39:06Z"
+  generationDateAndTime="2022-03-07T23:00:15Z"
   variableNamingConvention="structured"
   numberOfEventIndicators="0">
   <ModelExchange
