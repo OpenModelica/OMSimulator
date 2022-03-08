@@ -1,0 +1,13 @@
+setCommandLineOptions("-d=-disableDirectionalDerivatives,fmuExperimental --fmiSources=false"); getErrorString();
+
+loadString("
+model nls
+  input Real u(start=2.0);
+  output Real y = (u-time)^3 + u^2 - u - 1.0;
+end nls;
+"); getErrorString();
+
+buildModelFMU(nls, version="2.0", fmuType="me", fileNamePrefix="nls.me"); getErrorString();
+buildModelFMU(nls, version="2.0", fmuType="cs", fileNamePrefix="nls.cs"); getErrorString();
+system("unzip -o nls.me.fmu -d nls.me/");
+system("unzip -o nls.cs.fmu -d nls.cs/");

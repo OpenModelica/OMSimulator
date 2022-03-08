@@ -891,12 +891,12 @@ oms_status_enu_t oms::SystemWC::setRealInputDerivative(const ComRef& cref, const
 oms_status_enu_t oms::SystemWC::getInputs(oms::DirectedGraph& graph, std::vector<double>& inputs)
 {
   inputs.clear();
-  const std::vector< oms_ssc_t >& sortedConnections = graph.getSortedConnections();
+  const std::vector< scc_t >& sortedConnections = graph.getSortedConnections();
   for(int i=0; i < sortedConnections.size(); i++)
   {
-    if (sortedConnections[i].size() == 1)
+    if (!sortedConnections[i].thisIsALoop)
     {
-      int input = sortedConnections[i][0].second;
+      int input = sortedConnections[i].connections[0].second;
 
       if (graph.getNodes()[input].getType() == oms_signal_type_real)
       {
@@ -912,12 +912,12 @@ oms_status_enu_t oms::SystemWC::getInputs(oms::DirectedGraph& graph, std::vector
 oms_status_enu_t oms::SystemWC::setInputsDer(oms::DirectedGraph& graph, const std::vector<double>& inputsDer)
 {
   int derI = 0;
-  const std::vector<oms_ssc_t>& sortedConnections = graph.getSortedConnections();
+  const std::vector<scc_t>& sortedConnections = graph.getSortedConnections();
   for(int i=0; i < sortedConnections.size(); i++)
   {
-    if (sortedConnections[i].size() == 1)
+    if (!sortedConnections[i].thisIsALoop)
     {
-      int input = sortedConnections[i][0].second;
+      int input = sortedConnections[i].connections[0].second;
 
       if (graph.getNodes()[input].getType() == oms_signal_type_real)
       {
@@ -932,7 +932,7 @@ oms_status_enu_t oms::SystemWC::setInputsDer(oms::DirectedGraph& graph, const st
 oms_status_enu_t oms::SystemWC::getInputAndOutput(oms::DirectedGraph& graph, std::vector<double>& inputVect, std::vector<double>& outputVect, std::map<ComRef, Component*> FMUcomponents)
 {
   // FMUcomponents in will be list of FMUs that CAN GET FMUs
-  const std::vector< oms_ssc_t >& sortedConnections = graph.getSortedConnections();
+  const std::vector< scc_t >& sortedConnections = graph.getSortedConnections();
   inputVect.clear();
   int inCount = 0;
   outputVect.clear();
@@ -940,14 +940,14 @@ oms_status_enu_t oms::SystemWC::getInputAndOutput(oms::DirectedGraph& graph, std
 
   for(int i=0; i < sortedConnections.size(); i++)
   {
-    if (sortedConnections[i].size() == 1)
+    if (!sortedConnections[i].thisIsALoop)
     {
-      logDebug("DEBUGGING: Size of sortedConnections[i] is: "+std::to_string(sortedConnections[i].size()));
-      int input = sortedConnections[i][0].second;
+      logDebug("DEBUGGING: Size of sortedConnections[i] is: "+std::to_string(sortedConnections[i].connections.size()));
+      int input = sortedConnections[i].connections[0].second;
       oms::ComRef inputName(graph.getNodes()[input].getName());
       oms::ComRef inputModel = inputName.pop_front();
       logDebug(inputModel);
-      int output = sortedConnections[i][0].first;
+      int output = sortedConnections[i].connections[0].first;
       oms::ComRef outputName(graph.getNodes()[output].getName());
       oms::ComRef outputModel = outputName.pop_front();
       logDebug(outputModel);
@@ -992,15 +992,15 @@ oms_status_enu_t oms::SystemWC::updateInputs(oms::DirectedGraph& graph)
   int loopNum = 0;
 
   // input := output
-  const std::vector<oms_ssc_t>& sortedConnections = graph.getSortedConnections();
+  const std::vector<scc_t>& sortedConnections = graph.getSortedConnections();
   updateAlgebraicLoops(sortedConnections, graph);
 
   for(int i=0; i < sortedConnections.size(); i++)
   {
-    if (sortedConnections[i].size() == 1)
+    if (!sortedConnections[i].thisIsALoop)
     {
-      int output = sortedConnections[i][0].first;
-      int input = sortedConnections[i][0].second;
+      int output = sortedConnections[i].connections[0].first;
+      int input = sortedConnections[i].connections[0].second;
 
       if (graph.getNodes()[input].getType() == oms_signal_type_real)
       {

@@ -90,9 +90,9 @@ namespace oms
   class AlgLoop
   {
   public:
-    AlgLoop(oms_alg_solver_enu_t method, double absTol, oms_ssc_t SCC, const int systNumber, const bool useDirectionalDerivative);
+    AlgLoop(oms_alg_solver_enu_t method, double absTol, scc_t SCC, const int systNumber, const bool useDirectionalDerivative);
 
-    oms_ssc_t getSCC() {return SCC;}
+    scc_t getSCC() {return SCC;}
     oms_status_enu_t solveAlgLoop(System& syst, DirectedGraph& graph);
     std::string getAlgSolverName();
     std::string dumpLoopVars(DirectedGraph& graph);
@@ -104,7 +104,7 @@ namespace oms
     KinsolSolver* kinsolData;
 
     /* Loop data */
-    const oms_ssc_t SCC;            ///< Strong connected components
+    const scc_t SCC;            ///< Strong connected components
     const int systNumber;
     double absoluteTolerance;
   };
