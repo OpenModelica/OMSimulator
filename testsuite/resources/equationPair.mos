@@ -1,4 +1,4 @@
-setCommandLineOptions("-d=-disableDirectionalDerivatives,fmuExperimental"); getErrorString();
+setCommandLineOptions("-d=-disableDirectionalDerivatives,fmuExperimental --fmiSources=false"); getErrorString();
 
 loadFile("equationPair.mo"); getErrorString();
 
@@ -11,5 +11,5 @@ platforms := {
 buildModelFMU(equationPair.equation1, version="2.0", fmuType="cs", fileNamePrefix="equationPair.equation1", platforms=platforms); getErrorString();
 buildModelFMU(equationPair.equation2, version="2.0", fmuType="cs", fileNamePrefix="equationPair.equation2", platforms=platforms); getErrorString();
 
-system("zip -qd equationPair.equation1.fmu sources/* && unzip -o equationPair.equation1.fmu -d equationPair.equation1/");
-system("zip -qd equationPair.equation2.fmu sources/* && unzip -o equationPair.equation2.fmu -d equationPair.equation2/");
+system("unzip -o equationPair.equation1.fmu -d equationPair.equation1/");
+system("unzip -o equationPair.equation2.fmu -d equationPair.equation2/");

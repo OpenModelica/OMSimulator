@@ -7,7 +7,14 @@ model nls
 end nls;
 "); getErrorString();
 
-buildModelFMU(nls, version="2.0", fmuType="me", fileNamePrefix="nls.me"); getErrorString();
-buildModelFMU(nls, version="2.0", fmuType="cs", fileNamePrefix="nls.cs"); getErrorString();
+platforms := {
+  "i686-linux-gnu docker run docker.openmodelica.org/build-deps:v1.13-i386",
+  "x86_64-linux-gnu docker run docker.openmodelica.org/build-deps:bionic.nightly.amd64",
+  "i686-w64-mingw32 docker run docker.openmodelica.org/msyscross-omsimulator:v2.0",
+  "x86_64-w64-mingw32 docker run docker.openmodelica.org/msyscross-omsimulator:v2.0"};
+
+buildModelFMU(nls, version="2.0", fmuType="me", fileNamePrefix="nls.me", platforms=platforms); getErrorString();
+buildModelFMU(nls, version="2.0", fmuType="cs", fileNamePrefix="nls.cs", platforms=platforms); getErrorString();
+
 system("unzip -o nls.me.fmu -d nls.me/");
 system("unzip -o nls.cs.fmu -d nls.cs/");
