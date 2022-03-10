@@ -15,6 +15,5 @@ platforms := {
 
 buildModelFMU(nls, version="2.0", fmuType="me", fileNamePrefix="nls.me", platforms=platforms); getErrorString();
 buildModelFMU(nls, version="2.0", fmuType="cs", fileNamePrefix="nls.cs", platforms=platforms); getErrorString();
-
 system("unzip -o nls.me.fmu -d nls.me/");
 system("unzip -o nls.cs.fmu -d nls.cs/");

@@ -2,10 +2,10 @@
 <fmiModelDescription
   fmiVersion="2.0"
   modelName="nls"
-  guid="{45114e91-eb9d-45a9-9b64-09c00ba94572}"
+  guid="{9fc935ab-2eb0-409d-9b46-4845fd09889c}"
   description=""
-  generationTool="OpenModelica Compiler OpenModelica v1.19.0-dev-646-g55f5d0ddcc (64-bit)"
-  generationDateAndTime="2022-03-07T23:00:15Z"
+  generationTool="OpenModelica Compiler v1.19.0-dev-655-g5b39f819ea"
+  generationDateAndTime="2022-03-10T14:13:45Z"
   variableNamingConvention="structured"
   numberOfEventIndicators="0">
   <ModelExchange
