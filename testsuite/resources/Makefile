@@ -18,6 +18,7 @@ fmidertest \
 HelloWorld \
 HelloWorldWithInput \
 Int1 \
+Issue_FMU_update_vars \
 Lin2DimODE \
 Modelica.Blocks.Continuous.Integrator \
 Modelica.Blocks.Math.Add \
@@ -73,6 +74,7 @@ equationPair.mos \
 fmidertest.mos \
 HelloWorld.mos \
 HelloWorldWithInput.mos \
+Issue_FMU_update_vars.mos \
 Lin2DimODE.mos \
 Mass.mos \
 MassSpring.mos \

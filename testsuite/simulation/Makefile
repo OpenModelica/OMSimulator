@@ -34,6 +34,7 @@ import_parameter_mapping_inline.lua \
 importPartialSnapshot.lua \
 importStartValues.lua \
 importStartValues1.lua \
+Issue_FMU_update_vars.py \
 multipleConnections.lua \
 nls.py \
 partialSnapshot.lua \
