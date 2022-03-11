@@ -1,7 +1,7 @@
 ## status: correct
 ## teardown_command: rm -rf nls/
-## linux: no
-## mingw32: no
+## linux: yes
+## mingw32: yes
 ## mingw64: yes
 ## win: yes
 ## mac: no

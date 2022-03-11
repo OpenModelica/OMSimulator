@@ -1,9 +1,15 @@
-setCommandLineOptions("-d=-disableDirectionalDerivatives,fmuExperimental"); getErrorString();
+setCommandLineOptions("-d=-disableDirectionalDerivatives,fmuExperimental --fmiSources=false"); getErrorString();
 
 loadFile("equationPair.mo"); getErrorString();
 
-buildModelFMU(equationPair.equation1, version="2.0", fmuType="cs", fileNamePrefix="equationPair.equation1", platforms={"i686-linux-gnu docker run docker.openmodelica.org/build-deps:v1.13-i386","x86_64-linux-gnu docker run docker.openmodelica.org/build-deps:bionic.nightly.amd64","i686-w64-mingw32 docker run docker.openmodelica.org/msyscross-omsimulator:v2.0","x86_64-w64-mingw32 docker run docker.openmodelica.org/msyscross-omsimulator:v2.0"}); getErrorString();
-buildModelFMU(equationPair.equation2, version="2.0", fmuType="cs", fileNamePrefix="equationPair.equation2", platforms={"i686-linux-gnu docker run docker.openmodelica.org/build-deps:v1.13-i386","x86_64-linux-gnu docker run docker.openmodelica.org/build-deps:bionic.nightly.amd64","i686-w64-mingw32 docker run docker.openmodelica.org/msyscross-omsimulator:v2.0","x86_64-w64-mingw32 docker run docker.openmodelica.org/msyscross-omsimulator:v2.0"}); getErrorString();
+platforms := {
+  "i686-linux-gnu docker run docker.openmodelica.org/build-deps:v1.13-i386",
+  "x86_64-linux-gnu docker run docker.openmodelica.org/build-deps:bionic.nightly.amd64",
+  "i686-w64-mingw32 docker run docker.openmodelica.org/msyscross-omsimulator:v2.0",
+  "x86_64-w64-mingw32 docker run docker.openmodelica.org/msyscross-omsimulator:v2.0"};
 
-system("zip -qd equationPair.equation1.fmu sources/* && unzip -o equationPair.equation1.fmu -d equationPair.equation1/");
-system("zip -qd equationPair.equation2.fmu sources/* && unzip -o equationPair.equation2.fmu -d equationPair.equation2/");
+buildModelFMU(equationPair.equation1, version="2.0", fmuType="cs", fileNamePrefix="equationPair.equation1", platforms=platforms); getErrorString();
+buildModelFMU(equationPair.equation2, version="2.0", fmuType="cs", fileNamePrefix="equationPair.equation2", platforms=platforms); getErrorString();
+
+system("unzip -o equationPair.equation1.fmu -d equationPair.equation1/");
+system("unzip -o equationPair.equation2.fmu -d equationPair.equation2/");

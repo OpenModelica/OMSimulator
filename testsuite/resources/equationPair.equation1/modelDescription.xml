@@ -2,10 +2,10 @@
 <fmiModelDescription
   fmiVersion="2.0"
   modelName="equationPair.equation1"
-  guid="{9a92e2cc-ff62-4793-bd3b-b6ee7045f4b5}"
+  guid="{3d8ed249-ff56-4456-a993-a9f29d1e1bb8}"
   description=""
-  generationTool="OpenModelica Compiler OpenModelica v1.19.0-dev-610-g2cc9be161c (64-bit)"
-  generationDateAndTime="2022-02-22T20:10:53Z"
+  generationTool="OpenModelica Compiler v1.19.0-dev-655-g5b39f819ea"
+  generationDateAndTime="2022-03-09T13:15:34Z"
   variableNamingConvention="structured"
   numberOfEventIndicators="0">
   <CoSimulation
@@ -20,73 +20,6 @@
     canGetAndSetFMUstate="false"
     canSerializeFMUstate="false"
     providesDirectionalDerivative="true">
-    <SourceFiles>
-      <File name="equationPair_equation1.c" />
-      <File name="equationPair_equation1_functions.c" />
-      <File name="equationPair_equation1_records.c" />
-      <File name="equationPair_equation1_01exo.c" />
-      <File name="equationPair_equation1_02nls.c" />
-      <File name="equationPair_equation1_03lsy.c" />
-      <File name="equationPair_equation1_04set.c" />
-      <File name="equationPair_equation1_05evt.c" />
-      <File name="equationPair_equation1_06inz.c" />
-      <File name="equationPair_equation1_07dly.c" />
-      <File name="equationPair_equation1_08bnd.c" />
-      <File name="equationPair_equation1_09alg.c" />
-      <File name="equationPair_equation1_10asr.c" />
-      <File name="equationPair_equation1_11mix.c" />
-      <File name="equationPair_equation1_12jac.c" />
-      <File name="equationPair_equation1_13opt.c" />
-      <File name="equationPair_equation1_14lnz.c" />
-      <File name="equationPair_equation1_15syn.c" />
-      <File name="equationPair_equation1_16dae.c" />
-      <File name="equationPair_equation1_17inl.c" />
-      <File name="equationPair_equation1_18spd.c" />
-      <File name="equationPair_equation1_init_fmu.c" />
-      <File name="equationPair_equation1_FMU.c" />
-      <File name="gc/memory_pool.c" />
-      <File name="gc/omc_gc.c" />
-      <File name="./util/base_array.c" />
-      <File name="./util/boolean_array.c" />
-      <File name="./util/division.c" />
-      <File name="./util/doubleEndedList.c" />
-      <File name="./util/generic_array.c" />
-      <File name="./util/index_spec.c" />
-      <File name="./util/integer_array.c" />
-      <File name="./util/jacobian_util.c" />
-      <File name="./util/list.c" />
-      <File name="./util/modelica_string_lit.c" />
-      <File name="./util/modelica_string.c" />
-      <File name="./util/ModelicaUtilities.c" />
-      <File name="./util/omc_error.c" />
-      <File name="./util/omc_file.c" />
-      <File name="./util/omc_init.c" />
-      <File name="./util/omc_mmap.c" />
-      <File name="./util/omc_msvc.c" />
-      <File name="./util/omc_numbers.c" />
-      <File name="./util/parallel_helper.c" />
-      <File name="./util/rational.c" />
-      <File name="./util/real_array.c" />
-      <File name="./util/ringbuffer.c" />
-      <File name="./util/simulation_options.c" />
-      <File name="./util/string_array.c" />
-      <File name="./util/utility.c" />
-      <File name="./util/varinfo.c" />
-      <File name="./math-support/pivot.c" />
-      <File name="./simulation/omc_simulation_util.c" />
-      <File name="./simulation/options.c" />
-      <File name="./simulation/simulation_info_json.c" />
-      <File name="./simulation/simulation_omc_assert.c" />
-      <File name="./simulation/solver/delay.c" />
-      <File name="./simulation/solver/fmi_events.c" />
-      <File name="./simulation/solver/model_help.c" />
-      <File name="./simulation/solver/omc_math.c" />
-      <File name="./simulation/solver/spatialDistribution.c" />
-      <File name="./simulation/solver/stateset.c" />
-      <File name="./simulation/solver/synchronous.c" />
-      <File name="./simulation/solver/initialization/initialization.c" />
-      <File name="./meta/meta_modelica_catch.c" />
-    </SourceFiles>
   </CoSimulation>
   <LogCategories>
     <Category name="logEvents" description="logEvents" />
