@@ -1065,12 +1065,12 @@ oms_status_enu_t oms::ComponentFMUME::getReal(const ComRef& cref, double& value)
 {
   CallClock callClock(clock);
 
-  if (getModel().validState(oms_modelState_virgin|oms_modelState_enterInstantiation|oms_modelState_instantiated))
+  if (oms_modelState_virgin == getModel().getModelState())
   {
     // check for start values exist, priority over modeldescription.xml start values
     if (values.hasResources())  // search in local resources
     {
-      if (oms_status_ok == values.getRealResources(cref, value, false, getModel().getModelState()))
+      if (oms_status_ok == values.getRealResources(cref, value, false, oms_modelState_virgin))
       {
         return oms_status_ok;
       }
@@ -1084,7 +1084,7 @@ oms_status_enu_t oms::ComponentFMUME::getReal(const ComRef& cref, double& value)
     }
     else if (getParentSystem() && getParentSystem()->getValues().hasResources())  // search in root resources
     {
-      if (oms_status_ok == getParentSystem()->getValues().getRealResources(getCref()+cref, value, false, getModel().getModelState()))
+      if (oms_status_ok == getParentSystem()->getValues().getRealResources(getCref()+cref, value, false, oms_modelState_virgin))
       {
         return oms_status_ok;
       }
@@ -1124,26 +1124,21 @@ oms_status_enu_t oms::ComponentFMUME::getReal(const ComRef& cref, double& value)
     }
   }
 
-  if (getModel().validState(oms_modelState_initialization | oms_modelState_simulation))
+  int j=-1;
+  for (size_t i = 0; i < allVariables.size(); i++)
   {
-    int j = -1;
-    for (size_t i = 0; i < allVariables.size(); i++)
+    if (allVariables[i].getCref() == cref && allVariables[i].isTypeReal())
     {
-      if (allVariables[i].getCref() == cref && allVariables[i].isTypeReal())
-      {
-        j = i;
-        break;
-      }
+      j = i;
+      break;
     }
-
-    if (!fmu || j < 0)
-      return logError_UnknownSignal(getFullCref() + cref);
-
-    fmi2_value_reference_t vr = allVariables[j].getValueReference();
-    return getReal(vr, value);
   }
 
-  return logError("getReal failed for signal for signal " + std::string(getFullCref() + cref));
+  if (!fmu || j < 0)
+    return logError_UnknownSignal(getFullCref() + cref);
+
+  fmi2_value_reference_t vr = allVariables[j].getValueReference();
+  return getReal(vr, value);
 }
 
 oms_status_enu_t oms::ComponentFMUME::getString(const fmi2_value_reference_t& vr, std::string& value)
@@ -1489,27 +1484,25 @@ oms_status_enu_t oms::ComponentFMUME::setReal(const ComRef& cref, double value)
     return logError_UnknownSignal(getFullCref() + cref);
 
   if (getModel().validState(oms_modelState_virgin|oms_modelState_enterInstantiation|oms_modelState_instantiated))
-  {
     if (allVariables[j].isCalculated() || allVariables[j].isIndependent())
       return logWarning("It is not allowed to provide a start value if initial=\"calculated\" or causality=\"independent\".");
 
+  if (oms_modelState_virgin == getModel().getModelState())
+  {
     // check for local resources available
     if (values.hasResources())
     {
-      if (oms_status_ok != values.setRealResources(cref, value, getFullCref(), false, getModel().getModelState()))
-        return logError("msg1");
+      return values.setRealResources(cref, value, getFullCref(), false, oms_modelState_virgin);
     }
     // check for resources in root
     else if (getParentSystem() && getParentSystem()->getValues().hasResources())
     {
-      if (oms_status_ok != getParentSystem()->getValues().setRealResources(getCref()+cref, value, getParentSystem()->getFullCref(), false, getModel().getModelState()))
-        return logError("msg2");
+      return getParentSystem()->getValues().setRealResources(getCref()+cref, value, getParentSystem()->getFullCref(), false, oms_modelState_virgin);
     }
     // check for resources in top level root
     else if (getParentSystem()->getParentSystem() && getParentSystem()->getParentSystem()->getValues().hasResources())
     {
-      if (oms_status_ok != getParentSystem()->getParentSystem()->getValues().setRealResources(getCref()+cref, value, getParentSystem()->getParentSystem()->getFullCref(), false, getModel().getModelState()))
-        return logError("msg3");
+      return getParentSystem()->getParentSystem()->getValues().setRealResources(getCref()+cref, value, getParentSystem()->getParentSystem()->getFullCref(), false, oms_modelState_virgin);
     }
     else
     {
@@ -1517,8 +1510,7 @@ oms_status_enu_t oms::ComponentFMUME::setReal(const ComRef& cref, double value)
       values.setReal(cref, value);
     }
   }
-
-  if (getModel().validState(oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
+  else
   {
     fmi2_value_reference_t vr = allVariables[j].getValueReference();
     if (fmi2_status_ok != fmi2_import_set_real(fmu, &vr, 1, &value))
