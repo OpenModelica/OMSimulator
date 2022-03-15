@@ -1578,6 +1578,31 @@ oms_status_enu_t oms::ComponentFMUME::setString(const ComRef& cref, const std::s
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::ComponentFMUME::setUnit(const ComRef &cref, const std::string &value)
+{
+  // check for local resources available
+  if (values.hasResources())
+  {
+    return values.setUnitResources(cref, value, getFullCref());
+  }
+  // check for resources in root
+  else if (getParentSystem() && getParentSystem()->getValues().hasResources())
+  {
+    return getParentSystem()->getValues().setUnitResources(getCref() + cref, value, getParentSystem()->getFullCref());
+  }
+  // check for resources in top level root
+  else if (getParentSystem()->getParentSystem() && getParentSystem()->getParentSystem()->getValues().hasResources())
+  {
+    return getParentSystem()->getParentSystem()->getValues().setUnitResources(getCref() + cref, value, getParentSystem()->getParentSystem()->getFullCref());
+  }
+  else
+  {
+    // inline unit settings
+    values.setUnit(cref, value);
+  }
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms::ComponentFMUME::registerSignalsForResultFile(ResultWriter& resultFile)
 {
   resultFileMapping.clear();

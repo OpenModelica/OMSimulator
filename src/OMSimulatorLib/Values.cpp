@@ -98,6 +98,18 @@ oms_status_enu_t oms::Values::setString(const ComRef& cref, const std::string& v
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::Values::setUnit(const ComRef& cref, const std::string& value)
+{
+  variableUnits[cref] = value;
+
+  // update unit values in ssv template
+  auto unitValue = modelDescriptionVariableUnits.find(cref);
+  if (unitValue != modelDescriptionVariableUnits.end())
+    modelDescriptionVariableUnits[cref] = value;
+
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms::Values::getReal(const ComRef& cref, double& value)
 {
   auto realValue = realStartValues.find(cref);
@@ -212,6 +224,37 @@ oms_status_enu_t oms::Values::setStringResources(const ComRef& cref, const std::
     {
       // insert the new signal at the first resource available
       res.second.setString(cref, value);
+      break;
+    }
+  }
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Values::setUnitResources(const ComRef& cref, const std::string& value, const ComRef& fullCref)
+{
+  bool resourceAvailable = false;
+  for (auto &it : parameterResources)
+  {
+    for (auto &res : it.allresources)
+    {
+      //update the value in all resources, so that same cref in multiple ssv can be updated, this can result in duplication
+      auto unitValue = res.second.variableUnits.find(cref);
+      if (unitValue != res.second.variableUnits.end())
+      {
+        res.second.setUnit(cref, value);
+        resourceAvailable = true;
+        // return oms_status_ok; return here to avoid updating the same value in different ssv file
+      }
+    }
+  }
+
+  if (!resourceAvailable)
+  {
+    auto &it = parameterResources.front();
+    for (auto &res : it.allresources)
+    {
+      // insert the new signal at the first resource available
+      res.second.setUnit(cref, value);
       break;
     }
   }

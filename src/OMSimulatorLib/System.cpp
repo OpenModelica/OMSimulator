@@ -2399,6 +2399,44 @@ oms_status_enu_t oms::System::setString(const ComRef& cref, const std::string& v
   return logError_UnknownSignal(getFullCref() + cref);
 }
 
+oms_status_enu_t oms::System::setUnit(const ComRef& cref, const std::string& value)
+{
+  oms::ComRef tail(cref);
+  oms::ComRef head = tail.pop_front();
+
+  auto subsystem = subsystems.find(head);
+  if (subsystem != subsystems.end())
+    return subsystem->second->setUnit(tail, value);
+
+  auto component = components.find(head);
+  if (component != components.end())
+    return component->second->setUnit(tail, value);
+
+  for (auto &connector: connectors)
+  {
+    if (connector && connector->getName() == cref)
+    {
+      // check for local resources available
+      if (values.hasResources())
+      {
+        return values.setUnitResources(cref, value, getFullCref());
+      }
+      // check for resources in top level system
+      else if (getParentSystem() && getParentSystem()->values.hasResources())
+      {
+        return getParentSystem()->values.setUnitResources(getCref() + cref, value, getParentSystem()->getFullCref());
+      }
+      else
+      {
+        values.setUnit(cref, value);
+        return oms_status_ok;
+      }
+    }
+  }
+
+  return logError_UnknownSignal(getFullCref() + cref);
+}
+
 oms_status_enu_t oms::System::getReals(const std::vector<oms::ComRef> &sr, std::vector<double> &values)
 {
   oms_status_enu_t status = oms_status_ok;
