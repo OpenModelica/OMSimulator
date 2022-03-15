@@ -126,6 +126,8 @@ namespace oms
     std::map<int, std::vector<int>> modelStructureDerivatives;      ///< derivatives and its dependencies from <ModelStructure>
     std::map<int, std::vector<int>> modelStructureInitialUnknowns;  ///< initialUnknowns and its dependencies from <ModelStructure>
 
+    std::map<ComRef, std::string> modelDescriptionVariableUnits;  ///< variable units read from modeldescription.xml
+
     std::multimap<ComRef, ComRef> mappedEntry;  ///< parameter names and values provided in the parameter source are to be mapped to the parameters of the component or system
 
     std::vector<Values> parameterResources; ///< list of parameter resources provided inline or .ssv files

@@ -352,6 +352,8 @@ oms_status_enu_t oms::System::newResources(const ComRef& cref, const std::string
     {
       if (!ssmFilename.empty())
         resources.ssmFile = "resources/"+ ssmFilename;
+      // copy modeldescriptionVariableUnits to ssv resources which will be used to export units
+      resources.modelDescriptionVariableUnits = values.modelDescriptionVariableUnits;
       resources.allresources["resources/" + ssvFilename] = resources;
       values.parameterResources.push_back(resources);
     }
@@ -360,6 +362,8 @@ oms_status_enu_t oms::System::newResources(const ComRef& cref, const std::string
       // generate empty ssv file, if more resources are added to same level
       if (!ssmFilename.empty())
         resources.ssmFile = "resources/"+ ssmFilename;
+      // copy modeldescriptionVariableUnits to ssv resources which will be used to export units
+      resources.modelDescriptionVariableUnits = values.modelDescriptionVariableUnits;
       values.parameterResources[0].allresources["resources/" + ssvFilename] = resources;
     }
     return oms_status_ok;

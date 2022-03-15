@@ -702,6 +702,10 @@ oms_status_enu_t oms::Values::exportStartValuesHelper(pugi::xml_node& node) cons
       node_parameter.append_attribute("name") = cref.c_str();
       pugi::xml_node node_parameter_type = node_parameter.append_child(oms::ssp::Version1_0::ssv::real_type);
       node_parameter_type.append_attribute("value") = r.second;
+      // check unit exists and add it to ssv
+      auto unit = modelDescriptionVariableUnits.find(cref);
+      if (unit != modelDescriptionVariableUnits.end())
+        node_parameter_type.append_attribute("unit") = unit->second.c_str();
       realEntry.push_back(cref);
     }
   }
@@ -1035,6 +1039,8 @@ oms_status_enu_t oms::Values::parseModelDescription(const filesystem::path& root
         {
           //startValue = scalarVariable.child("Real").attribute("start").as_string();
           modelDescriptionRealStartValues[ComRef(scalarVariable.attribute("name").as_string())] = scalarVariable.child("Real").attribute("start").as_double();
+          if (strlen(scalarVariable.child("Real").attribute("unit").as_string()) != 0)
+            modelDescriptionVariableUnits[ComRef(scalarVariable.attribute("name").as_string())] = scalarVariable.child("Real").attribute("unit").as_string();
         }
         if (strlen(scalarVariable.child("Integer").attribute("start").as_string()) != 0)
         {
