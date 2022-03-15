@@ -75,6 +75,9 @@ namespace oms
     oms_status_enu_t getRealFromModeldescription(const ComRef& cref, double& value);
     oms_status_enu_t getStringFromModeldescription(const ComRef& cref, std::string& value);
 
+    std::string getUnit(ComRef& cref) const;
+    std::string getUnitFromModeldescription(ComRef& cref) const;
+
     oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
     oms_status_enu_t importFromSnapshot(const pugi::xml_node& node, const std::string& sspVersion, const Snapshot& snapshot);
     oms_status_enu_t importFromSnapshot(const Snapshot& snapshot, const std::string& ssvFilePath, const std::string& ssmFilename);

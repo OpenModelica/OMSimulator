@@ -19,6 +19,7 @@ oms_addSubModel("model.root.sine", "../resources/Modelica.Blocks.Sources.Sine.fm
 oms_newResources("model.root.sine:sine.ssv")
 
 oms_setReal("model.root.sine.phase", 27)
+oms_setReal("model.root.sine.amplitude", -100)
 
 oms_setResultFile("model", "")
 
@@ -27,6 +28,7 @@ print(src)
 
 -- change the unit to m
 oms_setUnit("model.root.sine.phase", "m")
+oms_setUnit("model.root.sine.amplitude", "m")
 
 src, status = oms_exportSnapshot("model:resources/sine.ssv")
 print(src)
@@ -55,6 +57,11 @@ oms_delete("model")
 --             value="27"
 --             unit="rad" />
 --         </ssv:Parameter>
+--         <ssv:Parameter
+--           name="amplitude">
+--           <ssv:Real
+--             value="-100" />
+--         </ssv:Parameter>
 --       </ssv:Parameters>
 --     </ssv:ParameterSet>
 --   </oms:file>
@@ -76,6 +83,12 @@ oms_delete("model")
 --           name="phase">
 --           <ssv:Real
 --             value="27"
+--             unit="m" />
+--         </ssv:Parameter>
+--         <ssv:Parameter
+--           name="amplitude">
+--           <ssv:Real
+--             value="-100"
 --             unit="m" />
 --         </ssv:Parameter>
 --       </ssv:Parameters>

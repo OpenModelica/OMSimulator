@@ -477,6 +477,26 @@ oms_status_enu_t oms::Values::getStringFromModeldescription(const ComRef& cref, 
   return oms_status_error;
 }
 
+std::string oms::Values::getUnit(ComRef& cref) const
+{
+  // search in user provided map set
+  auto unitValue = variableUnits.find(cref);
+  if (unitValue != variableUnits.end())
+    return unitValue->second;
+
+  return "";
+}
+
+std::string oms::Values::getUnitFromModeldescription(ComRef& cref) const
+{
+  // search in modelDescription.xml
+  auto unitValue = modelDescriptionVariableUnits.find(cref);
+  if (unitValue != modelDescriptionVariableUnits.end())
+    return unitValue->second;
+
+  return "";
+}
+
 oms_status_enu_t oms::Values::getIntegerFromModeldescription(const ComRef& cref, int& value)
 {
   // search in modelDescription.xml
@@ -745,10 +765,13 @@ oms_status_enu_t oms::Values::exportStartValuesHelper(pugi::xml_node& node) cons
       node_parameter.append_attribute("name") = cref.c_str();
       pugi::xml_node node_parameter_type = node_parameter.append_child(oms::ssp::Version1_0::ssv::real_type);
       node_parameter_type.append_attribute("value") = r.second;
-      // check unit exists and add it to ssv
-      auto unit = modelDescriptionVariableUnits.find(cref);
-      if (unit != modelDescriptionVariableUnits.end())
-        node_parameter_type.append_attribute("unit") = unit->second.c_str();
+
+      // check for units set by user, priority over modeldescription.xml
+      if (!getUnit(cref).empty())
+        node_parameter_type.append_attribute("unit") = getUnit(cref).c_str();
+      else if (!getUnitFromModeldescription(cref).empty()) // get unit from modelDescription.xml if available
+        node_parameter_type.append_attribute("unit") = getUnitFromModeldescription(cref).c_str();
+
       realEntry.push_back(cref);
     }
   }
