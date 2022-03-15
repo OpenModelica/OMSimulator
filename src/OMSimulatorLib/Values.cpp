@@ -101,11 +101,8 @@ oms_status_enu_t oms::Values::setString(const ComRef& cref, const std::string& v
 oms_status_enu_t oms::Values::setUnit(const ComRef& cref, const std::string& value)
 {
   variableUnits[cref] = value;
-
   // update unit values in ssv template
-  auto unitValue = modelDescriptionVariableUnits.find(cref);
-  if (unitValue != modelDescriptionVariableUnits.end())
-    modelDescriptionVariableUnits[cref] = value;
+  modelDescriptionVariableUnits[cref] = value; // override if exists otherwise make a new entry
 
   return oms_status_ok;
 }
@@ -945,6 +942,10 @@ void oms::Values::exportToSSVTemplate(pugi::xml_node& node, const ComRef& cref)
     node_parameter.append_attribute("name") = std::string(cref + r.first).c_str();
     pugi::xml_node node_parameter_type = node_parameter.append_child(oms::ssp::Version1_0::ssv::real_type);
     node_parameter_type.append_attribute("value") = r.second;
+    // check for units available and export to ssv template
+    auto unitValue = modelDescriptionVariableUnits.find(r.first);
+    if (unitValue != modelDescriptionVariableUnits.end())
+      node_parameter_type.append_attribute("unit") = unitValue->second.c_str();
   }
 
   // integerStartValues
