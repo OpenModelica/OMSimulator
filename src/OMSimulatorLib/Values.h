@@ -134,6 +134,8 @@ namespace oms
     std::map<ComRef, std::string> modelDescriptionVariableUnits;  ///< variable units read from modeldescription.xml
     std::map<ComRef, std::string> variableUnits;  ///< variable units set by user
 
+    std::map<std::string, std::map<std::string, std::string>> modeldescriptionUnitDefinitions;  ///< <UnitDefinitions> list read from modeldescription.xml
+
     std::multimap<ComRef, ComRef> mappedEntry;  ///< parameter names and values provided in the parameter source are to be mapped to the parameters of the component or system
 
     std::vector<Values> parameterResources; ///< list of parameter resources provided inline or .ssv files

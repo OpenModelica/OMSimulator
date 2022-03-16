@@ -1092,6 +1092,25 @@ oms_status_enu_t oms::Values::parseModelDescription(const filesystem::path& root
   for(pugi::xml_node_iterator it = node.begin(); it != node.end(); ++it)
   {
     std::string name = it->name();
+    if (name == "UnitDefinitions")
+    {
+      //std::cout << "\nParse Unit Definitions";
+      pugi::xml_node units = node.child("UnitDefinitions");
+      if (units)
+      {
+        for (pugi::xml_node unit = units.child("Unit"); unit; unit = unit.next_sibling("Unit"))
+        {
+          std::string unitName = unit.attribute("name").as_string();
+          pugi::xml_node baseUnitNode = unit.child("BaseUnit");
+          std::map<std::string, std::string> baseUnits;
+          for (pugi::xml_attribute attr = baseUnitNode.first_attribute(); attr; attr = attr.next_attribute())
+          {
+            baseUnits[attr.name()] = attr.value();
+          }
+          modeldescriptionUnitDefinitions[unitName] = baseUnits;
+        }
+      }
+    }
     if(name == "ModelVariables")
     {
       pugi::xml_node scalarVariableNode = node.child("ModelVariables");
