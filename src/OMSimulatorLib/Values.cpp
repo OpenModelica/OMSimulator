@@ -746,22 +746,52 @@ oms_status_enu_t oms::Values::exportToSSV(pugi::xml_node& node) const
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Values::exportUnits(Snapshot &snapshot, std::string filename) const
+oms_status_enu_t oms::Values::exportUnitDefinitions(Snapshot &snapshot, std::string filename) const
 {
-  if (modeldescriptionUnitDefinitions.empty())
+  if (this->empty() || modeldescriptionUnitDefinitions.empty())
     return oms_status_ok;
 
-  pugi::xml_node paramset = snapshot.getResourceNode(filename);
-  pugi::xml_node node_units = paramset.append_child(oms::ssp::Version1_0::ssv::units);
+  pugi::xml_node parameterSet = snapshot.getResourceNode(filename);
+  if (!parameterSet)
+    return logError("loading <oms:file> \"" + filename + "\" from <oms:snapshot> failed");
 
-  for (const auto &it: modeldescriptionUnitDefinitions)
+  pugi::xml_node parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
+
+  bool nodeSet = true;
+  pugi::xml_node node_units;
+  std::vector<std::string> unitList;
+  for (pugi::xml_node_iterator itparameters = parameters.begin(); itparameters != parameters.end(); ++itparameters)
   {
-    pugi::xml_node ssc_unit = node_units.append_child(oms::ssp::Version1_0::ssc::unit);
-    ssc_unit.append_attribute("name") = it.first.c_str();
-    pugi::xml_node ssc_base_unit = ssc_unit.append_child(oms::ssp::Version1_0::ssc::base_unit);
-    for (const auto & baseunit : it.second)
+    if (itparameters->child(oms::ssp::Version1_0::ssv::real_type))
     {
-      ssc_base_unit.append_attribute(baseunit.first.c_str()) = baseunit.second.c_str();
+      std::string unitValue = itparameters->child(oms::ssp::Version1_0::ssv::real_type).attribute("unit").as_string();
+      if (!unitValue.empty() && std::find(unitList.begin(), unitList.end(), unitValue) == unitList.end())
+      {
+        if (nodeSet)
+        {
+          node_units = parameterSet.append_child(oms::ssp::Version1_0::ssv::units);
+          nodeSet = false;
+        }
+        auto it = modeldescriptionUnitDefinitions.find(unitValue);
+        if (it != modeldescriptionUnitDefinitions.end())
+        {
+          pugi::xml_node ssc_unit = node_units.append_child(oms::ssp::Version1_0::ssc::unit);
+          ssc_unit.append_attribute("name") = it->first.c_str();
+          pugi::xml_node ssc_base_unit = ssc_unit.append_child(oms::ssp::Version1_0::ssc::base_unit);
+          for (const auto &baseunit : it->second)
+          {
+            ssc_base_unit.append_attribute(baseunit.first.c_str()) = baseunit.second.c_str();
+          }
+        }
+        else
+        {
+          // export user set units
+          pugi::xml_node ssc_unit = node_units.append_child(oms::ssp::Version1_0::ssc::unit);
+          ssc_unit.append_attribute("name") = unitValue.c_str();
+          pugi::xml_node ssc_base_unit = ssc_unit.append_child(oms::ssp::Version1_0::ssc::base_unit);
+        }
+        unitList.push_back(unitValue);
+      }
     }
   }
   return oms_status_ok;
@@ -874,7 +904,7 @@ void oms::Values::exportParameterBindings(pugi::xml_node &node, Snapshot &snapsh
             //std::cout << "\n export To SSV file :" << res.first.c_str() << "=" << res.second.ssmFile;
             pugi::xml_node ssvNode = snapshot.getTemplateResourceNodeSSV(res.first, "parameters");
             res.second.exportToSSV(ssvNode);
-            res.second.exportUnits(snapshot, res.first);
+            res.second.exportUnitDefinitions(snapshot, res.first);
 
             // export SSM file if exist
             if (!res.second.ssmFile.empty())

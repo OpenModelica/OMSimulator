@@ -20,6 +20,7 @@ oms_newResources("model.root.sine:sine.ssv")
 
 oms_setReal("model.root.sine.phase", 27)
 oms_setReal("model.root.sine.amplitude", -100)
+oms_setReal("model.root.sine.freqHz", -300)
 
 oms_setResultFile("model", "")
 
@@ -58,6 +59,12 @@ oms_delete("model")
 --             unit="rad" />
 --         </ssv:Parameter>
 --         <ssv:Parameter
+--           name="freqHz">
+--           <ssv:Real
+--             value="-300"
+--             unit="Hz" />
+--         </ssv:Parameter>
+--         <ssv:Parameter
 --           name="amplitude">
 --           <ssv:Real
 --             value="-100" />
@@ -65,18 +72,13 @@ oms_delete("model")
 --       </ssv:Parameters>
 --       <ssv:Units>
 --         <ssc:Unit
---           name="Hz">
---           <ssc:BaseUnit
---             s="-1" />
---         </ssc:Unit>
---         <ssc:Unit
 --           name="rad">
 --           <ssc:BaseUnit />
 --         </ssc:Unit>
 --         <ssc:Unit
---           name="s">
+--           name="Hz">
 --           <ssc:BaseUnit
---             s="1" />
+--             s="-1" />
 --         </ssc:Unit>
 --       </ssv:Units>
 --     </ssv:ParameterSet>
@@ -102,6 +104,12 @@ oms_delete("model")
 --             unit="m" />
 --         </ssv:Parameter>
 --         <ssv:Parameter
+--           name="freqHz">
+--           <ssv:Real
+--             value="-300"
+--             unit="Hz" />
+--         </ssv:Parameter>
+--         <ssv:Parameter
 --           name="amplitude">
 --           <ssv:Real
 --             value="-100"
@@ -110,18 +118,13 @@ oms_delete("model")
 --       </ssv:Parameters>
 --       <ssv:Units>
 --         <ssc:Unit
---           name="Hz">
---           <ssc:BaseUnit
---             s="-1" />
---         </ssc:Unit>
---         <ssc:Unit
---           name="rad">
+--           name="m">
 --           <ssc:BaseUnit />
 --         </ssc:Unit>
 --         <ssc:Unit
---           name="s">
+--           name="Hz">
 --           <ssc:BaseUnit
---             s="1" />
+--             s="-1" />
 --         </ssc:Unit>
 --       </ssv:Units>
 --     </ssv:ParameterSet>
