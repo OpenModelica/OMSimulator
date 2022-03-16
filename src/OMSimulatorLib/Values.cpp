@@ -746,6 +746,27 @@ oms_status_enu_t oms::Values::exportToSSV(pugi::xml_node& node) const
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::Values::exportUnits(Snapshot &snapshot, std::string filename) const
+{
+  if (modeldescriptionUnitDefinitions.empty())
+    return oms_status_ok;
+
+  pugi::xml_node paramset = snapshot.getResourceNode(filename);
+  pugi::xml_node node_units = paramset.append_child(oms::ssp::Version1_0::ssv::units);
+
+  for (const auto &it: modeldescriptionUnitDefinitions)
+  {
+    pugi::xml_node ssc_unit = node_units.append_child(oms::ssp::Version1_0::ssc::unit);
+    ssc_unit.append_attribute("name") = it.first.c_str();
+    pugi::xml_node ssc_base_unit = ssc_unit.append_child(oms::ssp::Version1_0::ssc::base_unit);
+    for (const auto & baseunit : it.second)
+    {
+      ssc_base_unit.append_attribute(baseunit.first.c_str()) = baseunit.second.c_str();
+    }
+  }
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms::Values::exportStartValuesHelper(pugi::xml_node& node) const
 {
   // realStartValues
@@ -853,6 +874,7 @@ void oms::Values::exportParameterBindings(pugi::xml_node &node, Snapshot &snapsh
             //std::cout << "\n export To SSV file :" << res.first.c_str() << "=" << res.second.ssmFile;
             pugi::xml_node ssvNode = snapshot.getTemplateResourceNodeSSV(res.first, "parameters");
             res.second.exportToSSV(ssvNode);
+            res.second.exportUnits(snapshot, res.first);
 
             // export SSM file if exist
             if (!res.second.ssmFile.empty())

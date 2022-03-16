@@ -79,12 +79,16 @@ const char* oms::ssp::Version1_0::ssv::parameter_set                   = "ssv:Pa
 const char* oms::ssp::Version1_0::ssv::parameters                      = "ssv:Parameters";
 const char* oms::ssp::Version1_0::ssv::parameter                       = "ssv:Parameter";
 
+const char* oms::ssp::Version1_0::ssv::units                           = "ssv:Units";
+
 const char* oms::ssp::Version1_0::ssc::real_type                       = "ssc:Real";
 const char* oms::ssp::Version1_0::ssc::integer_type                    = "ssc:Integer";
 const char* oms::ssp::Version1_0::ssc::boolean_type                    = "ssc:Boolean";
 const char* oms::ssp::Version1_0::ssc::string_type                     = "ssc:String";
 const char* oms::ssp::Version1_0::ssc::enumeration_type                = "ssc:Enumeration";
 const char* oms::ssp::Version1_0::ssc::binary_type                     = "ssc:Binary";
+const char* oms::ssp::Version1_0::ssc::unit                            = "ssc:Unit";
+const char* oms::ssp::Version1_0::ssc::base_unit                       = "ssc:BaseUnit";
 
 const char* oms::ssp::Version1_0::ssv::real_type                       = "ssv:Real";
 const char* oms::ssp::Version1_0::ssv::integer_type                    = "ssv:Integer";

@@ -718,6 +718,8 @@ oms_status_enu_t oms::ComponentFMUCS::newResources(const std::string& ssvFilenam
       resources.ssmFile = "resources/" + ssmFilename;
     // copy modeldescriptionVariableUnits to ssv resources which will be used to export units
     resources.modelDescriptionVariableUnits = values.modelDescriptionVariableUnits;
+    // copy modeldescriptionVariableUnitDefinitions to ssv resources which will be used to export unit definitions
+    resources.modeldescriptionUnitDefinitions = values.modeldescriptionUnitDefinitions;
     resources.allresources["resources/" + ssvFilename] = resources;
     values.parameterResources.push_back(resources);
   }

@@ -63,6 +63,22 @@ oms_delete("model")
 --             value="-100" />
 --         </ssv:Parameter>
 --       </ssv:Parameters>
+--       <ssv:Units>
+--         <ssc:Unit
+--           name="Hz">
+--           <ssc:BaseUnit
+--             s="-1" />
+--         </ssc:Unit>
+--         <ssc:Unit
+--           name="rad">
+--           <ssc:BaseUnit />
+--         </ssc:Unit>
+--         <ssc:Unit
+--           name="s">
+--           <ssc:BaseUnit
+--             s="1" />
+--         </ssc:Unit>
+--       </ssv:Units>
 --     </ssv:ParameterSet>
 --   </oms:file>
 -- </oms:snapshot>
@@ -92,6 +108,22 @@ oms_delete("model")
 --             unit="m" />
 --         </ssv:Parameter>
 --       </ssv:Parameters>
+--       <ssv:Units>
+--         <ssc:Unit
+--           name="Hz">
+--           <ssc:BaseUnit
+--             s="-1" />
+--         </ssc:Unit>
+--         <ssc:Unit
+--           name="rad">
+--           <ssc:BaseUnit />
+--         </ssc:Unit>
+--         <ssc:Unit
+--           name="s">
+--           <ssc:BaseUnit
+--             s="1" />
+--         </ssc:Unit>
+--       </ssv:Units>
 --     </ssv:ParameterSet>
 --   </oms:file>
 -- </oms:snapshot>
