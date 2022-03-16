@@ -1,5 +1,5 @@
 -- status: correct
--- teardown_command: rm -rf setunits_lua/
+-- teardown_command: rm -rf setunits_01_lua/
 -- linux: yes
 -- mingw32: yes
 -- mingw64: yes
@@ -7,7 +7,7 @@
 -- mac: no
 
 oms_setCommandLineOption("--suppressPath=true")
-oms_setTempDirectory("./setunits_lua/")
+oms_setTempDirectory("./setunits_01_lua/")
 
 oms_newModel("model")
 
