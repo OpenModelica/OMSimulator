@@ -1,3 +1,6 @@
+import typing
+import xml.etree.ElementTree as ET
+
 from OMSimulator import Scope, System, Types
 
 
@@ -60,6 +63,17 @@ class Model:
     status = Scope._capi.reset(self.cref)
     if Types.Status(status) != Types.Status.OK:
       raise Exception('error {}'.format(Types.Status(status)))
+
+  def getAllSignals(self):
+    allSignals = {}
+    signalFilter = self.exportSnapshot(':resources/signalFilter.xml')
+    root = ET.fromstring(signalFilter)
+    for var in root[0][0]:
+      name = var.attrib['name']
+      type_ = var.attrib['type']
+      kind = var.attrib['kind']
+      allSignals[name] = {'type': type_, 'kind': kind}
+    return allSignals
 
   def getBoolean(self, cref: str):
     value, status = Scope._capi.getBoolean(self.cref + '.' + cref)
