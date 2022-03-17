@@ -369,7 +369,7 @@ void oms::ComponentFMUCS::dumpInitialUnknowns()
 
 oms_status_enu_t oms::ComponentFMUCS::initializeDependencyGraph_initialUnknowns()
 {
-  if (initialUnknownsGraph.getEdges().size() > 0)
+  if (initialUnknownsGraph.getEdges().connections.size() > 0)
     return logError(std::string(getCref()) + ": " + getPath() + " is already initialized");
 
   //dumpInitialUnknowns();
@@ -502,7 +502,7 @@ oms_status_enu_t oms::ComponentFMUCS::initializeDependencyGraph_initialUnknowns(
 
 oms_status_enu_t oms::ComponentFMUCS::initializeDependencyGraph_outputs()
 {
-  if (outputsGraph.getEdges().size() > 0)
+  if (outputsGraph.getEdges().connections.size() > 0)
   {
     logError(std::string(getCref()) + ": " + getPath() + " is already initialized.");
     return oms_status_error;

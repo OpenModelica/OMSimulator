@@ -24,6 +24,11 @@ class Model:
       raise Exception('error {}'.format(Types.Status(status)))
     return System.System(new_cref)
 
+  def exportDependencyGraphs(self, initialization: str, event: str, simulation: str) -> None:
+    status = Scope._capi.exportDependencyGraphs(self.cref, initialization, event, simulation)
+    if Types.Status(status) != Types.Status.OK:
+      raise Exception('error {}'.format(Types.Status(status)))
+
   def instantiate(self):
     status = Scope._capi.instantiate(self.cref)
     if Types.Status(status) != Types.Status.OK:

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  fmiVersion="2.0"
+  modelName="nls"
+  guid="{af1098c6-7c21-480e-97b2-513ceb8df9b3}"
+  description=""
+  generationTool="OpenModelica Compiler v1.19.0-dev-655-g5b39f819ea"
+  generationDateAndTime="2022-03-10T14:14:07Z"
+  variableNamingConvention="structured"
+  numberOfEventIndicators="0">
+  <CoSimulation
+    modelIdentifier="nls_cs"
+    needsExecutionTool="false"
+    canHandleVariableCommunicationStepSize="true"
+    canInterpolateInputs="true"
+    maxOutputDerivativeOrder="1"
+    canRunAsynchronuously = "false"
+    canBeInstantiatedOnlyOncePerProcess="false"
+    canNotUseMemoryManagementFunctions="false"
+    canGetAndSetFMUstate="false"
+    canSerializeFMUstate="false"
+    providesDirectionalDerivative="true">
+  </CoSimulation>
+  <LogCategories>
+    <Category name="logEvents" description="logEvents" />
+    <Category name="logSingularLinearSystems" description="logSingularLinearSystems" />
+    <Category name="logNonlinearSystems" description="logNonlinearSystems" />
+    <Category name="logDynamicStateSelection" description="logDynamicStateSelection" />
+    <Category name="logStatusWarning" description="logStatusWarning" />
+    <Category name="logStatusDiscard" description="logStatusDiscard" />
+    <Category name="logStatusError" description="logStatusError" />
+    <Category name="logStatusFatal" description="logStatusFatal" />
+    <Category name="logStatusPending" description="logStatusPending" />
+    <Category name="logAll" description="logAll" />
+    <Category name="logFmi2Call" description="logFmi2Call" />
+  </LogCategories>
+  <DefaultExperiment startTime="0.0" stopTime="1.0" tolerance="1e-06"/>
+  <ModelVariables>
+  <!-- Index of variable = "1" -->
+  <ScalarVariable
+    name="der(_D_outputAlias_y)"
+    valueReference="0"
+    >
+    <Real/>
+  </ScalarVariable>
+  <!-- Index of variable = "2" -->
+  <ScalarVariable
+    name="u"
+    valueReference="3"
+    causality="input"
+    >
+    <Real start="2.0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "3" -->
+  <ScalarVariable
+    name="y"
+    valueReference="4"
+    causality="output"
+    >
+    <Real/>
+  </ScalarVariable>
+  </ModelVariables>
+  <ModelStructure>
+    <Outputs>
+      <Unknown index="3" dependencies="2" dependenciesKind="dependent" />
+    </Outputs>
+    <InitialUnknowns>
+      <Unknown index="3" dependencies="2" dependenciesKind="dependent" />
+    </InitialUnknowns>
+  </ModelStructure>
+</fmiModelDescription>

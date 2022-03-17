@@ -1,7 +1,7 @@
 ## status: correct
 ## teardown_command: rm -rf equationPair_fixedpoint/
-## linux: no
-## mingw32: no
+## linux: yes
+## mingw32: yes
 ## mingw64: yes
 ## win: yes
 ## mac: no
@@ -36,7 +36,7 @@ finally:
   model.delete()
 
 ## Result:
-## info:    Alg. loop (size 2)
+## info:    Alg. loop (size 2/4)
 ##            equationPair.root.equation2
 ##            equationPair.root.equation1
 ## info:    iteration 1

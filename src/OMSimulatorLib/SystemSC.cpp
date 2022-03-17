@@ -694,15 +694,15 @@ oms_status_enu_t oms::SystemSC::updateInputs(DirectedGraph& graph)
   }
 
   // input := output
-  const std::vector< oms_ssc_t >& sortedConnections = graph.getSortedConnections();
+  const std::vector< scc_t >& sortedConnections = graph.getSortedConnections();
   updateAlgebraicLoops(sortedConnections, graph);
 
   for(int i=0; i<sortedConnections.size(); i++)
   {
-    if (sortedConnections[i].size() == 1)
+    if (!sortedConnections[i].thisIsALoop)
     {
-      int output = sortedConnections[i][0].first;
-      int input = sortedConnections[i][0].second;
+      int output = sortedConnections[i].connections[0].first;
+      int input = sortedConnections[i].connections[0].second;
 
       if (graph.getNodes()[input].getType() == oms_signal_type_real)
       {

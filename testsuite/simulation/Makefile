@@ -35,6 +35,7 @@ importPartialSnapshot.lua \
 importStartValues.lua \
 importStartValues1.lua \
 multipleConnections.lua \
+nls.py \
 partialSnapshot.lua \
 PI_Controller.lua \
 QuarterCarModel.DisplacementDisplacement.lua \
@@ -53,8 +54,8 @@ simulation.lua \
 simulation.py \
 snapshot.lua \
 snapshot.py \
-str_hello_world.py \
 str_hello_world.lua \
+str_hello_world.py \
 table.lua \
 
 # Run make failingtest

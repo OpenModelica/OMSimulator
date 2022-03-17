@@ -1,7 +1,7 @@
 ## status: correct
 ## teardown_command: rm -rf equationPair/
-## linux: no
-## mingw32: no
+## linux: yes
+## mingw32: yes
 ## mingw64: yes
 ## win: yes
 ## mac: no
@@ -34,7 +34,7 @@ model.terminate()
 model.delete()
 
 ## Result:
-## info:    Alg. loop (size 2)
+## info:    Alg. loop (size 2/4)
 ##            equationPair.root.equation2
 ##            equationPair.root.equation1
 ## info:    iteration 1
