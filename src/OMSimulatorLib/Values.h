@@ -53,6 +53,7 @@ namespace oms
     oms_status_enu_t setReal(const ComRef& cref, double value);
     oms_status_enu_t setString(const ComRef& cref, const std::string& value);
     oms_status_enu_t setUnit(const ComRef& cref, const std::string& value);
+    void setUnitDefinitions(const ComRef& cref);
 
     oms_status_enu_t getBoolean(const ComRef& cref, bool& value);
     oms_status_enu_t getInteger(const ComRef& cref, int& value);
@@ -134,6 +135,15 @@ namespace oms
 
     std::map<ComRef, std::string> modelDescriptionVariableUnits;  ///< variable units read from modeldescription.xml
     std::map<ComRef, std::string> variableUnits;  ///< variable units set by user
+
+    struct unitDefinitionsToExport
+    {
+      std::string unitName;
+      std::string unitValue;
+      std::map<std::string, std::string> baseUnit;
+      bool exportUnit;
+    };
+    std::vector<unitDefinitionsToExport> unitDefinitionsToExportInSSP; ///< list of unitDefinitions to be exported in ssp
 
     std::map<std::string, std::map<std::string, std::string>> modeldescriptionUnitDefinitions;  ///< <UnitDefinitions> list read from modeldescription.xml
 
