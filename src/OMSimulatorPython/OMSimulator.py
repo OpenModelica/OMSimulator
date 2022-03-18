@@ -1,8 +1,3 @@
-import ctypes
-import os
-import platform
-import sys
-
 from OMSimulator import Scope
 
 
