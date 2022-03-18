@@ -29,7 +29,7 @@ model.stopTime = 0.0
 model.instantiate()
 try:
   model.initialize()
-except:
+except Exception:
   pass
 finally:
   model.terminate()
