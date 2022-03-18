@@ -173,6 +173,7 @@ class capi:
     self.obj.oms_terminate.argtypes = [ctypes.c_char_p]
     self.obj.oms_terminate.restype = ctypes.c_int
 
+
   def addBus(self, crefA):
     return self.obj.oms_addBus(crefA.encode())
   def addConnection(self, crefA, crefB):
