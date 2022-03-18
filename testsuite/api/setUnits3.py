@@ -21,6 +21,7 @@ oms.newResources("model.root.sine:sine.ssv")
 
 oms.setReal("model.root.sine.phase", 27)
 oms.setReal("model.root.sine.amplitude", -100)
+oms.setReal("model.root.sine.freqHz", -300)
 
 oms.setResultFile("model", "")
 
@@ -59,11 +60,28 @@ oms.delete("model")
 ##             unit="rad" />
 ##         </ssv:Parameter>
 ##         <ssv:Parameter
+##           name="freqHz">
+##           <ssv:Real
+##             value="-300"
+##             unit="Hz" />
+##         </ssv:Parameter>
+##         <ssv:Parameter
 ##           name="amplitude">
 ##           <ssv:Real
 ##             value="-100" />
 ##         </ssv:Parameter>
 ##       </ssv:Parameters>
+##       <ssv:Units>
+##         <ssc:Unit
+##           name="rad">
+##           <ssc:BaseUnit />
+##         </ssc:Unit>
+##         <ssc:Unit
+##           name="Hz">
+##           <ssc:BaseUnit
+##             s="-1" />
+##         </ssc:Unit>
+##       </ssv:Units>
 ##     </ssv:ParameterSet>
 ##   </oms:file>
 ## </oms:snapshot>
@@ -87,12 +105,29 @@ oms.delete("model")
 ##             unit="m" />
 ##         </ssv:Parameter>
 ##         <ssv:Parameter
+##           name="freqHz">
+##           <ssv:Real
+##             value="-300"
+##             unit="Hz" />
+##         </ssv:Parameter>
+##         <ssv:Parameter
 ##           name="amplitude">
 ##           <ssv:Real
 ##             value="-100"
 ##             unit="m" />
 ##         </ssv:Parameter>
 ##       </ssv:Parameters>
+##       <ssv:Units>
+##         <ssc:Unit
+##           name="m">
+##           <ssc:BaseUnit />
+##         </ssc:Unit>
+##         <ssc:Unit
+##           name="Hz">
+##           <ssc:BaseUnit
+##             s="-1" />
+##         </ssc:Unit>
+##       </ssv:Units>
 ##     </ssv:ParameterSet>
 ##   </oms:file>
 ## </oms:snapshot>

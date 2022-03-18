@@ -276,9 +276,16 @@ oms_delete("deleteResources")
 --         <ssv:Parameter
 --           name="k">
 --           <ssv:Real
---             value="27" />
+--             value="27"
+--             unit="1" />
 --         </ssv:Parameter>
 --       </ssv:Parameters>
+--       <ssv:Units>
+--         <ssc:Unit
+--           name="1">
+--           <ssc:BaseUnit />
+--         </ssc:Unit>
+--       </ssv:Units>
 --     </ssv:ParameterSet>
 --   </oms:file>
 --   <oms:file

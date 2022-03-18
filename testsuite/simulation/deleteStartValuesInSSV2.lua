@@ -257,9 +257,16 @@ oms_delete("deleteStartValuesInSSV")
 --         <ssv:Parameter
 --           name="k">
 --           <ssv:Real
---             value="40" />
+--             value="40"
+--             unit="1" />
 --         </ssv:Parameter>
 --       </ssv:Parameters>
+--       <ssv:Units>
+--         <ssc:Unit
+--           name="1">
+--           <ssc:BaseUnit />
+--         </ssc:Unit>
+--       </ssv:Units>
 --     </ssv:ParameterSet>
 --   </oms:file>
 --   <oms:file
@@ -354,6 +361,12 @@ oms_delete("deleteStartValuesInSSV")
 --       version="1.0"
 --       name="parameters">
 --       <ssv:Parameters />
+--       <ssv:Units>
+--         <ssc:Unit
+--           name="1">
+--           <ssc:BaseUnit />
+--         </ssc:Unit>
+--       </ssv:Units>
 --     </ssv:ParameterSet>
 --   </oms:file>
 -- </oms:snapshot>
