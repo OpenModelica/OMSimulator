@@ -769,6 +769,22 @@ static int OMSimulatorLua_oms_setString(lua_State *L)
   return 1;
 }
 
+// oms_status_enu_t oms_setUnit(const char* cref, const char* value);
+static int OMSimulatorLua_oms_setUnit(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 arguments");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+
+  const char* cref = lua_tostring(L, 1);
+  const char* value = lua_tostring(L, 2);
+
+  oms_status_enu_t status = oms_setUnit(cref, value);
+  lua_pushinteger(L, status);
+  return 1;
+}
+
 // OMSAPI oms_status_enu_t OMSCALL oms_setRealInputDerivative(const char* cref, double value);
 static int OMSimulatorLua_oms_setRealInputDerivative(lua_State *L)
 {
@@ -1451,6 +1467,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms_setVariableStepSize);
   REGISTER_LUA_CALL(oms_setWorkingDirectory);
   REGISTER_LUA_CALL(oms_simulate);
+  REGISTER_LUA_CALL(oms_setUnit);
   REGISTER_LUA_CALL(oms_stepUntil);
   REGISTER_LUA_CALL(oms_terminate);
 

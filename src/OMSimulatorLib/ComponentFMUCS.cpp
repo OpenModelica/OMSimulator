@@ -333,14 +333,20 @@ oms_status_enu_t oms::ComponentFMUCS::exportToSSD(pugi::xml_node& node, Snapshot
   return oms_status_ok;
 }
 
+void oms::ComponentFMUCS::getFilteredUnitDefinitionsToSSD(std::map<std::string, std::map<std::string, std::string>>& unitDefinitions)
+{
+  return values.getFilteredUnitDefinitionsToSSD(unitDefinitions);
+}
+
 oms_status_enu_t oms::ComponentFMUCS::exportToSSV(pugi::xml_node& ssvNode)
 {
   return values.exportToSSV(ssvNode);
 }
 
-oms_status_enu_t oms::ComponentFMUCS::exportToSSVTemplate(pugi::xml_node& ssvNode)
+oms_status_enu_t oms::ComponentFMUCS::exportToSSVTemplate(pugi::xml_node& ssvNode, Snapshot& snapshot)
 {
   values.exportToSSVTemplate(ssvNode, getCref());
+  values.exportUnitDefinitionsToSSVTemplate(snapshot, "template.ssv");
   return oms_status_ok;
 }
 
@@ -716,6 +722,10 @@ oms_status_enu_t oms::ComponentFMUCS::newResources(const std::string& ssvFilenam
   {
     if(!ssmFilename.empty())
       resources.ssmFile = "resources/" + ssmFilename;
+    // copy modeldescriptionVariableUnits to ssv resources which will be used to export units
+    resources.modelDescriptionVariableUnits = values.modelDescriptionVariableUnits;
+    // copy modeldescriptionVariableUnitDefinitions to ssv resources which will be used to export unit definitions
+    resources.modeldescriptionUnitDefinitions = values.modeldescriptionUnitDefinitions;
     resources.allresources["resources/" + ssvFilename] = resources;
     values.parameterResources.push_back(resources);
   }
@@ -723,7 +733,9 @@ oms_status_enu_t oms::ComponentFMUCS::newResources(const std::string& ssvFilenam
   {
     // generate empty ssv file, if more resources are added to same level
     if(!ssmFilename.empty())
-      resources.ssmFile = "resources/" + ssmFilename;;
+      resources.ssmFile = "resources/" + ssmFilename;
+    // copy modeldescriptionVariableUnits to ssv resources which will be used to export units
+    resources.modelDescriptionVariableUnits = values.modelDescriptionVariableUnits;
     values.parameterResources[0].allresources["resources/" + ssvFilename] = resources;
   }
 
@@ -1608,6 +1620,31 @@ oms_status_enu_t oms::ComponentFMUCS::setString(const ComRef& cref, const std::s
       return oms_status_error;
   }
 
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::ComponentFMUCS::setUnit(const ComRef &cref, const std::string &value)
+{
+  // check for local resources available
+  if (values.hasResources())
+  {
+    return values.setUnitResources(cref, value, getFullCref());
+  }
+  // check for resources in root
+  else if (getParentSystem() && getParentSystem()->getValues().hasResources())
+  {
+    return getParentSystem()->getValues().setUnitResources(getCref() + cref, value, getParentSystem()->getFullCref());
+  }
+  // check for resources in top level root
+  else if (getParentSystem()->getParentSystem() && getParentSystem()->getParentSystem()->getValues().hasResources())
+  {
+    return getParentSystem()->getParentSystem()->getValues().setUnitResources(getCref() + cref, value, getParentSystem()->getParentSystem()->getFullCref());
+  }
+  else
+  {
+    // inline unit settings
+    values.setUnit(cref, value);
+  }
   return oms_status_ok;
 }
 

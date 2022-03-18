@@ -410,7 +410,7 @@ oms_status_enu_t oms::Model::exportSSVTemplate(const oms::ComRef& cref, const st
   {
     if(component.first == tail || cref.isEmpty()) // allow querying single component or whole model
     {
-      if (oms_status_ok != component.second->exportToSSVTemplate(ssvNode))
+      if (oms_status_ok != component.second->exportToSSVTemplate(ssvNode, snapshot))
       {
         return logError("export of ssv template failed for component " + std::string(system->getFullCref()+std::string(component.first)));
       }
@@ -649,6 +649,8 @@ oms_status_enu_t oms::Model::exportToSSD(Snapshot& snapshot) const
     if (oms_status_ok != system->exportToSSD(system_node, snapshot))
       return logError("export of system failed");
   }
+
+  exportUnitDefinitionsToSSD(ssdNode);
 
   pugi::xml_node default_experiment = ssdNode.append_child(oms::ssp::Draft20180219::ssd::default_experiment);
   default_experiment.append_attribute("startTime") = std::to_string(startTime).c_str();
@@ -1271,6 +1273,32 @@ void oms::Model::exportSignalFilter(Snapshot& snapshot) const
     oms_variable.append_attribute("name") = signal.getFullName().c_str();
     oms_variable.append_attribute("type") = signal.getTypeString().c_str();
     oms_variable.append_attribute("kind") = signal.getCausalityString().c_str();
+  }
+}
+
+void oms::Model::exportUnitDefinitionsToSSD(pugi::xml_node& node) const
+{
+  if (!system)
+    return;
+
+  std::map<std::string, std::map<std::string, std::string>> unitDefinitions;
+  for (const auto& component : system->getComponents())
+    component.second->getFilteredUnitDefinitionsToSSD(unitDefinitions);
+
+  if (unitDefinitions.empty())
+    return;
+
+  pugi::xml_node node_units = node.append_child(oms::ssp::Draft20180219::ssd::units);
+
+  for (const auto &it : unitDefinitions)
+  {
+    pugi::xml_node ssc_unit = node_units.append_child(oms::ssp::Version1_0::ssc::unit);
+    ssc_unit.append_attribute("name") = it.first.c_str();
+    pugi::xml_node ssc_base_unit = ssc_unit.append_child(oms::ssp::Version1_0::ssc::base_unit);
+    for (const auto &baseunit : it.second)
+    {
+      ssc_base_unit.append_attribute(baseunit.first.c_str()) = baseunit.second.c_str();
+    }
   }
 }
 

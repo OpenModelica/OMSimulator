@@ -133,7 +133,7 @@ print(src)
 -- 									<ssv:ParameterSet version="1.0" name="parameters">
 -- 										<ssv:Parameters>
 -- 											<ssv:Parameter name="k">
--- 												<ssv:Real value="30" />
+-- 												<ssv:Real value="30" unit="1" />
 -- 											</ssv:Parameter>
 -- 										</ssv:Parameters>
 -- 									</ssv:ParameterSet>

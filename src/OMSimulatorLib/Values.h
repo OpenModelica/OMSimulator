@@ -52,6 +52,9 @@ namespace oms
     oms_status_enu_t setInteger(const ComRef& cref, int value);
     oms_status_enu_t setReal(const ComRef& cref, double value);
     oms_status_enu_t setString(const ComRef& cref, const std::string& value);
+    oms_status_enu_t setUnit(const ComRef& cref, const std::string& value);
+    void setUnitDefinitions(const ComRef& cref);
+    void getFilteredUnitDefinitionsToSSD(std::map<std::string, std::map<std::string, std::string>>& unitDefinitions);
 
     oms_status_enu_t getBoolean(const ComRef& cref, bool& value);
     oms_status_enu_t getInteger(const ComRef& cref, int& value);
@@ -62,6 +65,7 @@ namespace oms
     oms_status_enu_t setIntegerResources(const ComRef& cref, int value, const ComRef& fullCref, bool externalInput, oms_modelState_enu_t modelState);
     oms_status_enu_t setRealResources(const ComRef& cref, double value, const ComRef& fullCref, bool externalInput, oms_modelState_enu_t modelState);
     oms_status_enu_t setStringResources(const ComRef& cref, const std::string& value, const ComRef& fullCref, bool externalInput, oms_modelState_enu_t modelState);
+    oms_status_enu_t setUnitResources(const ComRef& cref, const std::string& value, const ComRef& fullCref);
 
     oms_status_enu_t getBooleanResources(const ComRef& cref, bool& value, bool externalInput, oms_modelState_enu_t modelState);
     oms_status_enu_t getIntegerResources(const ComRef& cref, int& value, bool externalInput, oms_modelState_enu_t modelState);
@@ -73,6 +77,9 @@ namespace oms
     oms_status_enu_t getRealFromModeldescription(const ComRef& cref, double& value);
     oms_status_enu_t getStringFromModeldescription(const ComRef& cref, std::string& value);
 
+    std::string getUnit(ComRef& cref) const;
+    std::string getUnitFromModeldescription(ComRef& cref) const;
+
     oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
     oms_status_enu_t importFromSnapshot(const pugi::xml_node& node, const std::string& sspVersion, const Snapshot& snapshot);
     oms_status_enu_t importFromSnapshot(const Snapshot& snapshot, const std::string& ssvFilePath, const std::string& ssmFilename);
@@ -83,6 +90,10 @@ namespace oms
     oms_status_enu_t deleteResourcesInSSP(const std::string& filename);
 
     oms_status_enu_t exportToSSV(pugi::xml_node& ssvNode) const;
+
+    oms_status_enu_t exportUnitDefinitions(Snapshot &snapshot, std::string filename) const;
+    oms_status_enu_t exportUnitDefinitionsToSSVTemplate(Snapshot &snapshot, std::string filename);
+
     void exportToSSVTemplate(pugi::xml_node& ssvNode, const ComRef& cref);  ///< start values read from modelDescription.xml and creates a ssv template
     oms_status_enu_t exportToSSMTemplate(pugi::xml_node& ssmNode, const ComRef& cref);  ///< start values read from modelDescription.xml and creates a ssm template
 
@@ -125,6 +136,20 @@ namespace oms
     std::map<int, std::vector<int>> modelStructureOutputs;          ///< output and its dependencies from <ModelStructure>
     std::map<int, std::vector<int>> modelStructureDerivatives;      ///< derivatives and its dependencies from <ModelStructure>
     std::map<int, std::vector<int>> modelStructureInitialUnknowns;  ///< initialUnknowns and its dependencies from <ModelStructure>
+
+    std::map<ComRef, std::string> modelDescriptionVariableUnits;  ///< variable units read from modeldescription.xml
+    std::map<ComRef, std::string> variableUnits;  ///< variable units set by user
+
+    struct unitDefinitionsToExport
+    {
+      std::string unitName;
+      std::string unitValue;
+      std::map<std::string, std::string> baseUnit;
+      bool exportUnit;
+    };
+    std::vector<unitDefinitionsToExport> unitDefinitionsToExportInSSP; ///< list of unitDefinitions to be exported in ssp
+
+    std::map<std::string, std::map<std::string, std::string>> modeldescriptionUnitDefinitions;  ///< <UnitDefinitions> list read from modeldescription.xml
 
     std::multimap<ComRef, ComRef> mappedEntry;  ///< parameter names and values provided in the parameter source are to be mapped to the parameters of the component or system
 

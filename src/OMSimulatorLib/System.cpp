@@ -352,6 +352,8 @@ oms_status_enu_t oms::System::newResources(const ComRef& cref, const std::string
     {
       if (!ssmFilename.empty())
         resources.ssmFile = "resources/"+ ssmFilename;
+      // copy modeldescriptionVariableUnits to ssv resources which will be used to export units
+      resources.modelDescriptionVariableUnits = values.modelDescriptionVariableUnits;
       resources.allresources["resources/" + ssvFilename] = resources;
       values.parameterResources.push_back(resources);
     }
@@ -360,6 +362,8 @@ oms_status_enu_t oms::System::newResources(const ComRef& cref, const std::string
       // generate empty ssv file, if more resources are added to same level
       if (!ssmFilename.empty())
         resources.ssmFile = "resources/"+ ssmFilename;
+      // copy modeldescriptionVariableUnits to ssv resources which will be used to export units
+      resources.modelDescriptionVariableUnits = values.modelDescriptionVariableUnits;
       values.parameterResources[0].allresources["resources/" + ssvFilename] = resources;
     }
     return oms_status_ok;
@@ -2387,6 +2391,44 @@ oms_status_enu_t oms::System::setString(const ComRef& cref, const std::string& v
           values.stringValues[cref] = value;
         else
           values.setString(cref, value);
+        return oms_status_ok;
+      }
+    }
+  }
+
+  return logError_UnknownSignal(getFullCref() + cref);
+}
+
+oms_status_enu_t oms::System::setUnit(const ComRef& cref, const std::string& value)
+{
+  oms::ComRef tail(cref);
+  oms::ComRef head = tail.pop_front();
+
+  auto subsystem = subsystems.find(head);
+  if (subsystem != subsystems.end())
+    return subsystem->second->setUnit(tail, value);
+
+  auto component = components.find(head);
+  if (component != components.end())
+    return component->second->setUnit(tail, value);
+
+  for (auto &connector: connectors)
+  {
+    if (connector && connector->getName() == cref)
+    {
+      // check for local resources available
+      if (values.hasResources())
+      {
+        return values.setUnitResources(cref, value, getFullCref());
+      }
+      // check for resources in top level system
+      else if (getParentSystem() && getParentSystem()->values.hasResources())
+      {
+        return getParentSystem()->values.setUnitResources(getCref() + cref, value, getParentSystem()->getFullCref());
+      }
+      else
+      {
+        values.setUnit(cref, value);
         return oms_status_ok;
       }
     }

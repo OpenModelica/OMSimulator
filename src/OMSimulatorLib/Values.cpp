@@ -59,7 +59,45 @@ oms_status_enu_t oms::Values::setReal(const ComRef& cref, double value)
   if (realValue != modelDescriptionRealStartValues.end())
     modelDescriptionRealStartValues[cref] = value;
 
+  setUnitDefinitions(cref);
+
   return oms_status_ok;
+}
+
+/*
+function which sets the unitdefinitions <ssv:Units> or <ssd:Units> which will be exported in ssp
+*/
+void oms::Values::setUnitDefinitions(const ComRef& cref)
+{
+  // search in user provided map set
+  std::string unitname = "";
+  auto unitValue = variableUnits.find(cref);
+  if (unitValue != variableUnits.end())
+    unitname = unitValue->second;
+  else
+  {
+    auto unitValue = modelDescriptionVariableUnits.find(cref);
+    if (unitValue != modelDescriptionVariableUnits.end())
+      unitname = unitValue->second;
+  }
+  if (!unitname.empty())
+  {
+    unitDefinitionsToExport unitToExport = {cref, unitname, modeldescriptionUnitDefinitions[unitname], true};
+    unitDefinitionsToExportInSSP.push_back(unitToExport);
+  }
+}
+
+void oms::Values::getFilteredUnitDefinitionsToSSD(std::map<std::string, std::map<std::string, std::string>>& unitDefinitions)
+{
+  if (unitDefinitionsToExportInSSP.empty())
+    return;
+
+  for(const auto &it: unitDefinitionsToExportInSSP)
+  {
+    auto unitvalue = unitDefinitions.find(it.unitValue);
+    if (unitvalue == unitDefinitions.end())
+      unitDefinitions[it.unitValue] = it.baseUnit;
+  }
 }
 
 oms_status_enu_t oms::Values::setInteger(const ComRef& cref, int value)
@@ -94,6 +132,26 @@ oms_status_enu_t oms::Values::setString(const ComRef& cref, const std::string& v
   auto stringValue = modelDescriptionStringStartValues.find(cref);
   if (stringValue != modelDescriptionStringStartValues.end())
     modelDescriptionStringStartValues[cref] = value;
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Values::setUnit(const ComRef& cref, const std::string& value)
+{
+  variableUnits[cref] = value;
+  // update unit values in ssv template
+  modelDescriptionVariableUnits[cref] = value; // override if exists otherwise make a new entry
+  // update unit Definitions
+  for (auto & it : unitDefinitionsToExportInSSP)
+  {
+    if (it.unitName == cref.c_str())
+    {
+      //std::cout << "\n override the unit:" << it.unitName << "=>" << cref.c_str() << "==>" << value;
+      it.unitValue = value;
+      it.baseUnit = {};
+      break;
+    }
+  }
 
   return oms_status_ok;
 }
@@ -212,6 +270,37 @@ oms_status_enu_t oms::Values::setStringResources(const ComRef& cref, const std::
     {
       // insert the new signal at the first resource available
       res.second.setString(cref, value);
+      break;
+    }
+  }
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Values::setUnitResources(const ComRef& cref, const std::string& value, const ComRef& fullCref)
+{
+  bool resourceAvailable = false;
+  for (auto &it : parameterResources)
+  {
+    for (auto &res : it.allresources)
+    {
+      //update the value in all resources, so that same cref in multiple ssv can be updated, this can result in duplication
+      auto unitValue = res.second.variableUnits.find(cref);
+      if (unitValue != res.second.variableUnits.end())
+      {
+        res.second.setUnit(cref, value);
+        resourceAvailable = true;
+        // return oms_status_ok; return here to avoid updating the same value in different ssv file
+      }
+    }
+  }
+
+  if (!resourceAvailable)
+  {
+    auto &it = parameterResources.front();
+    for (auto &res : it.allresources)
+    {
+      // insert the new signal at the first resource available
+      res.second.setUnit(cref, value);
       break;
     }
   }
@@ -432,6 +521,26 @@ oms_status_enu_t oms::Values::getStringFromModeldescription(const ComRef& cref, 
   }
 
   return oms_status_error;
+}
+
+std::string oms::Values::getUnit(ComRef& cref) const
+{
+  // search in user provided map set
+  auto unitValue = variableUnits.find(cref);
+  if (unitValue != variableUnits.end())
+    return unitValue->second;
+
+  return "";
+}
+
+std::string oms::Values::getUnitFromModeldescription(ComRef& cref) const
+{
+  // search in modelDescription.xml
+  auto unitValue = modelDescriptionVariableUnits.find(cref);
+  if (unitValue != modelDescriptionVariableUnits.end())
+    return unitValue->second;
+
+  return "";
 }
 
 oms_status_enu_t oms::Values::getIntegerFromModeldescription(const ComRef& cref, int& value)
@@ -686,6 +795,80 @@ oms_status_enu_t oms::Values::exportToSSV(pugi::xml_node& node) const
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::Values::exportUnitDefinitions(Snapshot &snapshot, std::string filename) const
+{
+  if (unitDefinitionsToExportInSSP.empty())
+    return oms_status_ok;
+
+  pugi::xml_node parameterSet = snapshot.getResourceNode(filename);
+  if (!parameterSet)
+    return logError("loading <oms:file> \"" + filename + "\" from <oms:snapshot> failed");
+
+  pugi::xml_node node_units = parameterSet.append_child(oms::ssp::Version1_0::ssv::units);
+
+  std::vector<std::string> unitList;
+  for (const auto &it : unitDefinitionsToExportInSSP)
+  {
+    if (it.exportUnit &&  std::find(unitList.begin(), unitList.end(), it.unitValue) == unitList.end())
+    {
+      pugi::xml_node ssc_unit = node_units.append_child(oms::ssp::Version1_0::ssc::unit);
+      ssc_unit.append_attribute("name") = it.unitValue.c_str();
+      pugi::xml_node ssc_base_unit = ssc_unit.append_child(oms::ssp::Version1_0::ssc::base_unit);
+      for (const auto &baseunit : it.baseUnit)
+      {
+        ssc_base_unit.append_attribute(baseunit.first.c_str()) = baseunit.second.c_str();
+      }
+      unitList.push_back(it.unitValue);
+    }
+  }
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Values::exportUnitDefinitionsToSSVTemplate(Snapshot &snapshot, std::string filename)
+{
+  if (modelDescriptionVariableUnits.empty())
+    return oms_status_ok;
+
+  pugi::xml_node parameterSet = snapshot.getResourceNode(filename);
+  if (!parameterSet)
+    return logError("loading <oms:file> \"" + filename + "\" from <oms:snapshot> failed");
+
+  pugi::xml_node node_units;
+  if (!parameterSet.child(oms::ssp::Version1_0::ssv::units))
+    node_units = parameterSet.append_child(oms::ssp::Version1_0::ssv::units);
+  else
+    node_units = parameterSet.last_child();
+
+  for (auto &it : modelDescriptionVariableUnits)
+  {
+    pugi::xml_node nodeExists = node_units.find_child_by_attribute(oms::ssp::Version1_0::ssc::unit, "name", it.second.c_str());
+    // check if node already exist to avoid duplicates of units
+    if (!nodeExists)
+    {
+      auto unitvalue = modeldescriptionUnitDefinitions.find(it.second);
+      if (unitvalue != modeldescriptionUnitDefinitions.end())
+      {
+        pugi::xml_node ssc_unit = node_units.append_child(oms::ssp::Version1_0::ssc::unit);
+        ssc_unit.append_attribute("name") = unitvalue->first.c_str();
+        pugi::xml_node ssc_base_unit = ssc_unit.append_child(oms::ssp::Version1_0::ssc::base_unit);
+        for (const auto &baseunit : unitvalue->second)
+        {
+          ssc_base_unit.append_attribute(baseunit.first.c_str()) = baseunit.second.c_str();
+        }
+      }
+      else
+      {
+        // set user defined units
+        pugi::xml_node ssc_unit = node_units.append_child(oms::ssp::Version1_0::ssc::unit);
+        ssc_unit.append_attribute("name") = it.second.c_str();
+        pugi::xml_node ssc_base_unit = ssc_unit.append_child(oms::ssp::Version1_0::ssc::base_unit);
+      }
+    }
+  }
+
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms::Values::exportStartValuesHelper(pugi::xml_node& node) const
 {
   // realStartValues
@@ -702,6 +885,13 @@ oms_status_enu_t oms::Values::exportStartValuesHelper(pugi::xml_node& node) cons
       node_parameter.append_attribute("name") = cref.c_str();
       pugi::xml_node node_parameter_type = node_parameter.append_child(oms::ssp::Version1_0::ssv::real_type);
       node_parameter_type.append_attribute("value") = r.second;
+
+      // check for units set by user, priority over modeldescription.xml
+      if (!getUnit(cref).empty())
+        node_parameter_type.append_attribute("unit") = getUnit(cref).c_str();
+      else if (!getUnitFromModeldescription(cref).empty()) // get unit from modelDescription.xml if available
+        node_parameter_type.append_attribute("unit") = getUnitFromModeldescription(cref).c_str();
+
       realEntry.push_back(cref);
     }
   }
@@ -786,6 +976,7 @@ void oms::Values::exportParameterBindings(pugi::xml_node &node, Snapshot &snapsh
             //std::cout << "\n export To SSV file :" << res.first.c_str() << "=" << res.second.ssmFile;
             pugi::xml_node ssvNode = snapshot.getTemplateResourceNodeSSV(res.first, "parameters");
             res.second.exportToSSV(ssvNode);
+            res.second.exportUnitDefinitions(snapshot, res.first);
 
             // export SSM file if exist
             if (!res.second.ssmFile.empty())
@@ -875,6 +1066,10 @@ void oms::Values::exportToSSVTemplate(pugi::xml_node& node, const ComRef& cref)
     node_parameter.append_attribute("name") = std::string(cref + r.first).c_str();
     pugi::xml_node node_parameter_type = node_parameter.append_child(oms::ssp::Version1_0::ssv::real_type);
     node_parameter_type.append_attribute("value") = r.second;
+    // check for units available and export to ssv template
+    auto unitValue = modelDescriptionVariableUnits.find(r.first);
+    if (unitValue != modelDescriptionVariableUnits.end())
+      node_parameter_type.append_attribute("unit") = unitValue->second.c_str();
   }
 
   // integerStartValues
@@ -1021,6 +1216,28 @@ oms_status_enu_t oms::Values::parseModelDescription(const filesystem::path& root
   for(pugi::xml_node_iterator it = node.begin(); it != node.end(); ++it)
   {
     std::string name = it->name();
+    if (name == "UnitDefinitions")
+    {
+      //std::cout << "\nParse Unit Definitions";
+      pugi::xml_node units = node.child("UnitDefinitions");
+      if (units)
+      {
+
+        for (pugi::xml_node unit = units.child("Unit"); unit; unit = unit.next_sibling("Unit"))
+        {
+          std::string unitName = unit.attribute("name").as_string();
+          pugi::xml_node baseUnitNode = unit.child("BaseUnit");
+          std::map<std::string, std::string> baseUnits;
+          for (pugi::xml_attribute attr = baseUnitNode.first_attribute(); attr; attr = attr.next_attribute())
+          {
+            baseUnits[attr.name()] = attr.value();
+          }
+          modeldescriptionUnitDefinitions[unitName] = baseUnits;
+          //unitToExport_1 unit_to_export = {"", unitName, baseUnits, false};
+          //exportunitdefinitionToSSp_1.push_back(unit_to_export);
+        }
+      }
+    }
     if(name == "ModelVariables")
     {
       pugi::xml_node scalarVariableNode = node.child("ModelVariables");
@@ -1035,6 +1252,8 @@ oms_status_enu_t oms::Values::parseModelDescription(const filesystem::path& root
         {
           //startValue = scalarVariable.child("Real").attribute("start").as_string();
           modelDescriptionRealStartValues[ComRef(scalarVariable.attribute("name").as_string())] = scalarVariable.child("Real").attribute("start").as_double();
+          if (strlen(scalarVariable.child("Real").attribute("unit").as_string()) != 0)
+            modelDescriptionVariableUnits[ComRef(scalarVariable.attribute("name").as_string())] = scalarVariable.child("Real").attribute("unit").as_string();
         }
         if (strlen(scalarVariable.child("Integer").attribute("start").as_string()) != 0)
         {
