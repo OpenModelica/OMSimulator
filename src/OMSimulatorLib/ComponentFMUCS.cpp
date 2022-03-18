@@ -333,6 +333,17 @@ oms_status_enu_t oms::ComponentFMUCS::exportToSSD(pugi::xml_node& node, Snapshot
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::ComponentFMUCS::exportUnitDefinitionsToSSD(std::map<std::string, std::map<std::string, std::string>>& unitDefinitions)
+{
+  for(const auto &it: values.unitDefinitionsToExportInSSP)
+  {
+    auto unitvalue = unitDefinitions.find(it.unitValue);
+    if (unitvalue == unitDefinitions.end())
+      unitDefinitions[it.unitValue] = it.baseUnit;
+  }
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms::ComponentFMUCS::exportToSSV(pugi::xml_node& ssvNode)
 {
   return values.exportToSSV(ssvNode);

@@ -17,6 +17,7 @@ oms_addSubModel("model.root.sine", "../resources/Modelica.Blocks.Sources.Sine.fm
 
 oms_setReal("model.root.sine.phase", 27)
 oms_setReal("model.root.sine.amplitude", -100)
+oms_setReal("model.root.sine.freqHz", -300)
 
 oms_setResultFile("model", "")
 
@@ -107,6 +108,12 @@ oms_delete("model")
 --                           unit="rad" />
 --                       </ssv:Parameter>
 --                       <ssv:Parameter
+--                         name="freqHz">
+--                         <ssv:Real
+--                           value="-300"
+--                           unit="Hz" />
+--                       </ssv:Parameter>
+--                       <ssv:Parameter
 --                         name="amplitude">
 --                         <ssv:Real
 --                           value="-100" />
@@ -133,6 +140,17 @@ oms_delete("model")
 --           </ssc:Annotation>
 --         </ssd:Annotations>
 --       </ssd:System>
+--       <ssd:Units>
+--         <ssc:Unit
+--           name="Hz">
+--           <ssc:BaseUnit
+--             s="-1" />
+--         </ssc:Unit>
+--         <ssc:Unit
+--           name="rad">
+--           <ssc:BaseUnit />
+--         </ssc:Unit>
+--       </ssd:Units>
 --       <ssd:DefaultExperiment
 --         startTime="0.000000"
 --         stopTime="1.000000">
@@ -254,6 +272,12 @@ oms_delete("model")
 --                           unit="m" />
 --                       </ssv:Parameter>
 --                       <ssv:Parameter
+--                         name="freqHz">
+--                         <ssv:Real
+--                           value="-300"
+--                           unit="Hz" />
+--                       </ssv:Parameter>
+--                       <ssv:Parameter
 --                         name="amplitude">
 --                         <ssv:Real
 --                           value="-100"
@@ -281,6 +305,17 @@ oms_delete("model")
 --           </ssc:Annotation>
 --         </ssd:Annotations>
 --       </ssd:System>
+--       <ssd:Units>
+--         <ssc:Unit
+--           name="Hz">
+--           <ssc:BaseUnit
+--             s="-1" />
+--         </ssc:Unit>
+--         <ssc:Unit
+--           name="m">
+--           <ssc:BaseUnit />
+--         </ssc:Unit>
+--       </ssd:Units>
 --       <ssd:DefaultExperiment
 --         startTime="0.000000"
 --         stopTime="1.000000">
