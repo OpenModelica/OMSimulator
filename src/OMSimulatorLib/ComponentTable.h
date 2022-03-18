@@ -58,6 +58,7 @@ namespace oms
     oms_status_enu_t exportToSSD(pugi::xml_node& node, Snapshot& snapshot) const;
     oms_status_enu_t exportToSSVTemplate(pugi::xml_node& ssvNode) {return oms_status_ok;}
     oms_status_enu_t exportToSSMTemplate(pugi::xml_node& ssmNode) {return oms_status_ok;}
+    oms_status_enu_t exportUnitDefinitionsToSSD(std::map<std::string, std::map<std::string, std::string>>& unitDefinitions) {return oms_status_ok;};
     oms_status_enu_t instantiate();
     oms_status_enu_t initialize() {return oms_status_ok;}
     oms_status_enu_t terminate() {return oms_status_ok;}
