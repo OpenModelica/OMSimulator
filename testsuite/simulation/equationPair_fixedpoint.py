@@ -6,6 +6,8 @@
 ## win: yes
 ## mac: no
 
+import traceback
+
 import OMSimulator as oms
 
 oms.setCommandLineOption("--suppressPath=true --algLoopSolver=fixedpoint --dumpAlgLoops=true --maxLoopIteration=3")
@@ -30,7 +32,7 @@ model.instantiate()
 try:
   model.initialize()
 except Exception:
-  pass
+  print(traceback.format_exc())
 finally:
   model.terminate()
   model.delete()
@@ -71,6 +73,13 @@ finally:
 ##            res[1]: 7064.06
 ## error:   [fixPointIteration] max. number of iterations (3) exceeded at time = 0.000000
 ## error:   [initialize] Initialization of system "equationPair.root" failed
+## Traceback (most recent call last):
+##   File "equationPair_fixedpoint.py", line 33, in <module>
+##     model.initialize()
+##   File "/home/lochel/OpenModelica/build/lib/OMSimulator/Model.py", line 45, in initialize
+##     raise Exception(f'{Types.Status(status)} {Scope._Logging}')
+## Exception: Status.ERROR [(<MessageType.ERROR: 2>, '[fixPointIteration] max. number of iterations (3) exceeded at time = 0.000000'), (<MessageType.ERROR: 2>, '[initialize] Initialization of system "equationPair.root" failed')]
+##
 ## info:    0 warnings
 ## info:    2 errors
 ## endResult

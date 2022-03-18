@@ -7,7 +7,7 @@ def _loggingCallback(message_type, message):
   message_type = Types.MessageType(message_type)
   if message_type in (Types.MessageType.WARNING, Types.MessageType.ERROR):
     message = message.decode("utf-8")
-    _Logging.append(f'{message_type.name}: {message}')
+    _Logging.append((message_type, message))
 
 def clearLoggingBuffer():
   global _Logging
