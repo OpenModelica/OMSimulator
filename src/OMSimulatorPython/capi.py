@@ -132,7 +132,7 @@ class capi:
     self.obj.oms_setInteger.restype = ctypes.c_int
     self.obj.oms_setLogFile.argtypes = [ctypes.c_char_p]
     self.obj.oms_setLogFile.restype = ctypes.c_int
-    self.obj.oms_setLoggingCallback.argtypes = [ctypes.CFUNCTYPE(None, ctypes.c_int, ctypes.c_char_p)]
+    self.obj.oms_setLoggingCallback.argtypes = [ctypes.c_void_p]
     self.obj.oms_setLoggingCallback.restype = None
     self.obj.oms_setLoggingInterval.argtypes = [ctypes.c_char_p, ctypes.c_double]
     self.obj.oms_setLoggingInterval.restype = ctypes.c_int
