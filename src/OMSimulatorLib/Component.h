@@ -64,7 +64,7 @@ namespace oms
     virtual oms_status_enu_t addSignalsToResults(const char* regex) = 0;
     virtual oms_status_enu_t exportToSSD(pugi::xml_node& node, Snapshot& snapshot) const = 0;
     virtual oms_status_enu_t exportToSSV(pugi::xml_node& ssvNode) { return logError_NotImplemented; }
-    virtual oms_status_enu_t exportUnitDefinitionsToSSD(std::map<std::string, std::map<std::string, std::string>>& unitDefinitions) { return logError_NotImplemented; }
+    virtual void getFilteredUnitDefinitionsToSSD(std::map<std::string, std::map<std::string, std::string>>& unitDefinitions) { return ; }
 
     virtual oms_status_enu_t initialize() = 0;
     virtual oms_status_enu_t instantiate() = 0;

@@ -1283,7 +1283,7 @@ void oms::Model::exportUnitDefinitionsToSSD(pugi::xml_node& node) const
 
   std::map<std::string, std::map<std::string, std::string>> unitDefinitions;
   for (const auto& component : system->getComponents())
-    component.second->exportUnitDefinitionsToSSD(unitDefinitions);
+    component.second->getFilteredUnitDefinitionsToSSD(unitDefinitions);
 
   if (unitDefinitions.empty())
     return;

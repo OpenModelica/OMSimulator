@@ -87,6 +87,19 @@ void oms::Values::setUnitDefinitions(const ComRef& cref)
   }
 }
 
+void oms::Values::getFilteredUnitDefinitionsToSSD(std::map<std::string, std::map<std::string, std::string>>& unitDefinitions)
+{
+  if (unitDefinitionsToExportInSSP.empty())
+    return;
+
+  for(const auto &it: unitDefinitionsToExportInSSP)
+  {
+    auto unitvalue = unitDefinitions.find(it.unitValue);
+    if (unitvalue == unitDefinitions.end())
+      unitDefinitions[it.unitValue] = it.baseUnit;
+  }
+}
+
 oms_status_enu_t oms::Values::setInteger(const ComRef& cref, int value)
 {
   integerStartValues[cref] = value;

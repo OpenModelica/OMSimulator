@@ -54,6 +54,7 @@ namespace oms
     oms_status_enu_t setString(const ComRef& cref, const std::string& value);
     oms_status_enu_t setUnit(const ComRef& cref, const std::string& value);
     void setUnitDefinitions(const ComRef& cref);
+    void getFilteredUnitDefinitionsToSSD(std::map<std::string, std::map<std::string, std::string>>& unitDefinitions);
 
     oms_status_enu_t getBoolean(const ComRef& cref, bool& value);
     oms_status_enu_t getInteger(const ComRef& cref, int& value);
