@@ -162,6 +162,8 @@ class capi:
     self.obj.oms_setTLMSocketData.restype = ctypes.c_int
     self.obj.oms_setTolerance.argtypes = [ctypes.c_char_p, ctypes.c_double, ctypes.c_double]
     self.obj.oms_setTolerance.restype = ctypes.c_int
+    self.obj.oms_setUnit.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_setUnit.restype = ctypes.c_int
     self.obj.oms_setVariableStepSize.argtypes = [ctypes.c_char_p, ctypes.c_double, ctypes.c_double, ctypes.c_double]
     self.obj.oms_setVariableStepSize.restype = ctypes.c_int
     self.obj.oms_setWorkingDirectory.argtypes = [ctypes.c_char_p]
@@ -374,6 +376,8 @@ class capi:
     return self.obj.oms_setTLMSocketData(cref.encode(), address.encode(), managerPort, monitorPort)
   def setTolerance(self, cref, absoluteTolerance, relativeTolerance):
     return self.obj.oms_setTolerance(cref.encode(), absoluteTolerance, relativeTolerance)
+  def setUnit(self, signal, value):
+    return self.obj.oms_setUnit(signal.encode(), value.encode())
   def setVariableStepSize(self, cref, initialStepSize, minimumStepSize, maximumStepSize):
     return self.obj.oms_setVariableStepSize(cref.encode(), initialStepSize, minimumStepSize, maximumStepSize)
   def setWorkingDirectory(self, path):

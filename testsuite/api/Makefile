@@ -20,6 +20,9 @@ getDirectionalDerivative_ME.lua \
 getDirectionalDerivative_CS.py \
 getDirectionalDerivative_ME.py \
 importExportAllResources.lua \
+setUnits1.lua \
+setUnits2.lua \
+setUnits3.py \
 test_omsExport.lua \
 test_omsExport.py \
 test01.lua \

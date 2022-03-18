@@ -68,6 +68,8 @@ namespace oms
         extern const char* parameters;
         extern const char* parameter;
 
+        extern const char* units;
+
         extern const char* real_type;
         extern const char* integer_type;
         extern const char* boolean_type;
@@ -85,6 +87,8 @@ namespace oms
         extern const char* enumeration_type;
         extern const char* binary_type;
         extern const char* annotation;
+        extern const char* unit;
+        extern const char* base_unit;
       }
     }
 

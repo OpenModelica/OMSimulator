@@ -62,7 +62,8 @@ namespace oms
 
     oms_status_enu_t exportToSSD(pugi::xml_node& node, Snapshot& snapshot) const;
     oms_status_enu_t exportToSSV(pugi::xml_node& ssvNode);
-    oms_status_enu_t exportToSSVTemplate(pugi::xml_node& ssvNode);
+    void getFilteredUnitDefinitionsToSSD(std::map<std::string, std::map<std::string, std::string>>& unitDefinitions);
+    oms_status_enu_t exportToSSVTemplate(pugi::xml_node& ssvNode, Snapshot& snapshot);
     oms_status_enu_t exportToSSMTemplate(pugi::xml_node& ssmNode);
     oms_status_enu_t instantiate();
     oms_status_enu_t initialize();
@@ -88,6 +89,7 @@ namespace oms
     oms_status_enu_t setInteger(const ComRef& cref, int value);
     oms_status_enu_t setReal(const ComRef& cref, double value);
     oms_status_enu_t setString(const ComRef& cref, const std::string& value);
+    oms_status_enu_t setUnit(const ComRef& cref, const std::string& value);
 
     oms_status_enu_t getDirectionalDerivative(const ComRef& unknownCref, const ComRef& knownCref, double& value);
     oms_status_enu_t getDirectionalDerivativeHeper(const int unknownIndex, const int knownindex, const std::vector<int>& dependencyList, double& value);

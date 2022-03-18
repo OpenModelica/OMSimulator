@@ -337,7 +337,8 @@ oms_delete("referenceResources1")
 --         <ssv:Parameter
 --           name="k">
 --           <ssv:Real
---             value="-35" />
+--             value="-35"
+--             unit="1" />
 --         </ssv:Parameter>
 --       </ssv:Parameters>
 --     </ssv:ParameterSet>
@@ -353,9 +354,16 @@ oms_delete("referenceResources1")
 --         <ssv:Parameter
 --           name="k">
 --           <ssv:Real
---             value="27" />
+--             value="27"
+--             unit="1" />
 --         </ssv:Parameter>
 --       </ssv:Parameters>
+--       <ssv:Units>
+--         <ssc:Unit
+--           name="1">
+--           <ssc:BaseUnit />
+--         </ssc:Unit>
+--       </ssv:Units>
 --     </ssv:ParameterSet>
 --   </oms:file>
 --   <oms:file

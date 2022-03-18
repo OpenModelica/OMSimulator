@@ -27,6 +27,8 @@ oms_setReal("exportSSVTemplate.Root.Gain.k", 27)
 oms_addSubModel("exportSSVTemplate.Root.add", "../../resources/Modelica.Blocks.Math.Add.fmu")
 oms_setReal("exportSSVTemplate.Root.add.k1", -20)
 
+oms_addSubModel("exportSSVTemplate.Root.sine", "../../resources/Modelica.Blocks.Sources.Sine.fmu")
+
 oms_exportSSVTemplate("exportSSVTemplate", "template.ssv")
 readFile("template.ssv")
 
@@ -35,6 +37,13 @@ readFile("add.ssv")
 
 oms_exportSSVTemplate("exportSSVTemplate.Root.Gain", "gain.ssv")
 readFile("gain.ssv")
+
+-- override units in sine.fmu
+oms_setUnit("exportSSVTemplate.Root.sine.amplitude", "m")
+oms_setUnit("exportSSVTemplate.Root.sine.phase", "m")
+
+oms_exportSSVTemplate("exportSSVTemplate.Root.sine", "sine.ssv")
+readFile("sine.ssv")
 
 oms_delete("exportSSVTemplate")
 
@@ -47,6 +56,34 @@ oms_delete("exportSSVTemplate")
 --   name="modelDescriptionStartValues">
 --   <ssv:Parameters>
 --     <ssv:Parameter
+--       name="sine.startTime">
+--       <ssv:Real
+--         value="0"
+--         unit="s" />
+--     </ssv:Parameter>
+--     <ssv:Parameter
+--       name="sine.phase">
+--       <ssv:Real
+--         value="0"
+--         unit="rad" />
+--     </ssv:Parameter>
+--     <ssv:Parameter
+--       name="sine.offset">
+--       <ssv:Real
+--         value="0" />
+--     </ssv:Parameter>
+--     <ssv:Parameter
+--       name="sine.freqHz">
+--       <ssv:Real
+--         value="1"
+--         unit="Hz" />
+--     </ssv:Parameter>
+--     <ssv:Parameter
+--       name="sine.amplitude">
+--       <ssv:Real
+--         value="1" />
+--     </ssv:Parameter>
+--     <ssv:Parameter
 --       name="add.u2">
 --       <ssv:Real
 --         value="0" />
@@ -74,9 +111,30 @@ oms_delete("exportSSVTemplate")
 --     <ssv:Parameter
 --       name="Gain.k">
 --       <ssv:Real
---         value="27" />
+--         value="27"
+--         unit="1" />
 --     </ssv:Parameter>
 --   </ssv:Parameters>
+--   <ssv:Units>
+--     <ssc:Unit
+--       name="s">
+--       <ssc:BaseUnit
+--         s="1" />
+--     </ssc:Unit>
+--     <ssc:Unit
+--       name="rad">
+--       <ssc:BaseUnit />
+--     </ssc:Unit>
+--     <ssc:Unit
+--       name="Hz">
+--       <ssc:BaseUnit
+--         s="-1" />
+--     </ssc:Unit>
+--     <ssc:Unit
+--       name="1">
+--       <ssc:BaseUnit />
+--     </ssc:Unit>
+--   </ssv:Units>
 -- </ssv:ParameterSet>
 --
 -- <?xml version="1.0" encoding="UTF-8"?>
@@ -124,9 +182,71 @@ oms_delete("exportSSVTemplate")
 --     <ssv:Parameter
 --       name="Gain.k">
 --       <ssv:Real
---         value="27" />
+--         value="27"
+--         unit="1" />
 --     </ssv:Parameter>
 --   </ssv:Parameters>
+--   <ssv:Units>
+--     <ssc:Unit
+--       name="1">
+--       <ssc:BaseUnit />
+--     </ssc:Unit>
+--   </ssv:Units>
+-- </ssv:ParameterSet>
+--
+-- <?xml version="1.0" encoding="UTF-8"?>
+-- <ssv:ParameterSet
+--   xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
+--   xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
+--   version="1.0"
+--   name="modelDescriptionStartValues">
+--   <ssv:Parameters>
+--     <ssv:Parameter
+--       name="sine.startTime">
+--       <ssv:Real
+--         value="0"
+--         unit="s" />
+--     </ssv:Parameter>
+--     <ssv:Parameter
+--       name="sine.phase">
+--       <ssv:Real
+--         value="0"
+--         unit="m" />
+--     </ssv:Parameter>
+--     <ssv:Parameter
+--       name="sine.offset">
+--       <ssv:Real
+--         value="0" />
+--     </ssv:Parameter>
+--     <ssv:Parameter
+--       name="sine.freqHz">
+--       <ssv:Real
+--         value="1"
+--         unit="Hz" />
+--     </ssv:Parameter>
+--     <ssv:Parameter
+--       name="sine.amplitude">
+--       <ssv:Real
+--         value="1"
+--         unit="m" />
+--     </ssv:Parameter>
+--   </ssv:Parameters>
+--   <ssv:Units>
+--     <ssc:Unit
+--       name="s">
+--       <ssc:BaseUnit
+--         s="1" />
+--     </ssc:Unit>
+--     <ssc:Unit
+--       name="m">
+--       <ssc:BaseUnit />
+--     </ssc:Unit>
+--     <ssc:Unit
+--       name="Hz">
+--       <ssc:BaseUnit
+--         s="-1" />
+--     </ssc:Unit>
+--   </ssv:Units>
 -- </ssv:ParameterSet>
 --
 -- endResult

@@ -127,6 +127,7 @@ class OMSimulator:
     self.setTLMPositionAndOrientation = Scope._capi.setTLMPositionAndOrientation
     self.setTLMSocketData = Scope._capi.setTLMSocketData
     self.setTolerance = Scope._capi.setTolerance
+    self.setUnit = Scope._capi.setUnit
     self.setVariableStepSize = Scope._capi.setVariableStepSize
     self.setWorkingDirectory = Scope._capi.setWorkingDirectory
     self.simulate = Scope._capi.simulate

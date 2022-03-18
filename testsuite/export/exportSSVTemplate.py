@@ -71,9 +71,16 @@ model.delete()
 ##     <ssv:Parameter
 ##       name="Gain.k">
 ##       <ssv:Real
-##         value="27" />
+##         value="27"
+##         unit="1" />
 ##     </ssv:Parameter>
 ##   </ssv:Parameters>
+##   <ssv:Units>
+##     <ssc:Unit
+##       name="1">
+##       <ssc:BaseUnit />
+##     </ssc:Unit>
+##   </ssv:Units>
 ## </ssv:ParameterSet>
 ##
 ## <?xml version="1.0" encoding="UTF-8"?>
@@ -121,9 +128,16 @@ model.delete()
 ##     <ssv:Parameter
 ##       name="Gain.k">
 ##       <ssv:Real
-##         value="27" />
+##         value="27"
+##         unit="1" />
 ##     </ssv:Parameter>
 ##   </ssv:Parameters>
+##   <ssv:Units>
+##     <ssc:Unit
+##       name="1">
+##       <ssc:BaseUnit />
+##     </ssc:Unit>
+##   </ssv:Units>
 ## </ssv:ParameterSet>
 ##
 ## endResult
