@@ -132,6 +132,8 @@ class capi:
     self.obj.oms_setInteger.restype = ctypes.c_int
     self.obj.oms_setLogFile.argtypes = [ctypes.c_char_p]
     self.obj.oms_setLogFile.restype = ctypes.c_int
+    self.obj.oms_setLoggingCallback.argtypes = [ctypes.CFUNCTYPE(None, ctypes.c_int, ctypes.c_char_p)]
+    self.obj.oms_setLoggingCallback.restype = None
     self.obj.oms_setLoggingInterval.argtypes = [ctypes.c_char_p, ctypes.c_double]
     self.obj.oms_setLoggingInterval.restype = ctypes.c_int
     self.obj.oms_setLoggingLevel.argtypes = [ctypes.c_int]
@@ -170,7 +172,6 @@ class capi:
     self.obj.oms_stepUntil.restype = ctypes.c_int
     self.obj.oms_terminate.argtypes = [ctypes.c_char_p]
     self.obj.oms_terminate.restype = ctypes.c_int
-
 
   def addBus(self, crefA):
     return self.obj.oms_addBus(crefA.encode())
@@ -341,6 +342,9 @@ class capi:
     return self.obj.oms_setInteger(signal.encode(), value)
   def setLogFile(self, filename):
     return self.obj.oms_setLogFile(filename.encode())
+  def setLoggingCallback(self, cb):
+    CALLBACK = ctypes.CFUNCTYPE(None, ctypes.c_int, ctypes.c_char_p)
+    self.obj.oms_setLoggingCallback(CALLBACK(cb))
   def setLoggingInterval(self, cref, loggingInterval):
     return self.obj.oms_setLoggingInterval(cref.encode(), loggingInterval)
   def setLoggingLevel(self, level):

@@ -136,6 +136,7 @@ class OMSimulator:
     self.simulate = Scope._capi.simulate
     self.stepUntil = Scope._capi.stepUntil
     self.terminate = Scope._capi.terminate
+    self.setLoggingCallback = Scope._capi.setLoggingCallback
 
     if temp_directory is not None:
       self.setTempDirectory(temp_directory)

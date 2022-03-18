@@ -17,17 +17,19 @@ class System:
     return Types.System(type_)
 
   def addSystem(self, cref: str, type_: Types.System):
+    Scope.clearLoggingBuffer()
     new_cref = self.cref + '.' + cref
     status = Scope._capi.addSystem(new_cref, type_.value)
     if Types.Status(status) != Types.Status.OK:
-      raise Exception('error {}'.format(Types.Status(status)))
+      raise Exception(f'logging trace: {len(Scope._Logging)} {Scope._Logging}')
     return System(new_cref)
 
   def addSubModel(self, cref: str, path: str):
+    Scope.clearLoggingBuffer()
     new_cref = self.cref + '.' + cref
     status = Scope._capi.addSubModel(new_cref, path)
     if Types.Status(status) != Types.Status.OK:
-      raise Exception('error {}'.format(Types.Status(status)))
+      raise Exception(f'logging trace: {len(Scope._Logging)} {Scope._Logging}')
     return SubModel(new_cref)
 
   def addConnection(self, conA: str, conB: str):
