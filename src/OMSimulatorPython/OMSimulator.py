@@ -113,6 +113,7 @@ class OMSimulator:
     self.setFixedStepSize = Scope._capi.setFixedStepSize
     self.setInteger = Scope._capi.setInteger
     self.setLogFile = Scope._capi.setLogFile
+    self.setLoggingCallback = Scope._capi.setLoggingCallback
     self.setLoggingInterval = Scope._capi.setLoggingInterval
     self.setLoggingLevel = Scope._capi.setLoggingLevel
     self.setMaxLogFileSize = Scope._capi.setMaxLogFileSize
@@ -131,7 +132,6 @@ class OMSimulator:
     self.simulate = Scope._capi.simulate
     self.stepUntil = Scope._capi.stepUntil
     self.terminate = Scope._capi.terminate
-    self.setLoggingCallback = Scope._capi.setLoggingCallback
 
     if temp_directory is not None:
       self.setTempDirectory(temp_directory)
