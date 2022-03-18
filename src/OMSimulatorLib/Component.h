@@ -79,7 +79,7 @@ namespace oms
     virtual const FMUInfo* getFMUInfo() const { return nullptr; }
     virtual oms_status_enu_t deleteStartValue(const ComRef& cref) { return oms_status_ok; }
     virtual oms_status_enu_t exportToSSMTemplate(pugi::xml_node& ssmNode) { return logError_NotImplemented; }
-    virtual oms_status_enu_t exportToSSVTemplate(pugi::xml_node& ssvNode) { return logError_NotImplemented; }
+    virtual oms_status_enu_t exportToSSVTemplate(pugi::xml_node& ssvNode, Snapshot& snapshot) { return logError_NotImplemented; }
     virtual oms_status_enu_t freeState() { return logError_NotImplemented; }
     virtual oms_status_enu_t getBoolean(const ComRef& cref, bool& value) { return logError_NotImplemented; }
     virtual oms_status_enu_t getInteger(const ComRef& cref, int& value) { return logError_NotImplemented; }

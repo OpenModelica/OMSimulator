@@ -824,6 +824,51 @@ oms_status_enu_t oms::Values::exportUnitDefinitions(Snapshot &snapshot, std::str
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::Values::exportUnitDefinitionsToSSVTemplate(Snapshot &snapshot, std::string filename)
+{
+  if (modelDescriptionVariableUnits.empty())
+    return oms_status_ok;
+
+  pugi::xml_node parameterSet = snapshot.getResourceNode(filename);
+  if (!parameterSet)
+    return logError("loading <oms:file> \"" + filename + "\" from <oms:snapshot> failed");
+
+  pugi::xml_node node_units;
+  if (!parameterSet.child(oms::ssp::Version1_0::ssv::units))
+    node_units = parameterSet.append_child(oms::ssp::Version1_0::ssv::units);
+  else
+    node_units = parameterSet.last_child();
+
+  for (auto &it : modelDescriptionVariableUnits)
+  {
+    pugi::xml_node nodeExists = node_units.find_child_by_attribute(oms::ssp::Version1_0::ssc::unit, "name", it.second.c_str());
+    // check if node already exist to avoid duplicates of units
+    if (!nodeExists)
+    {
+      auto unitvalue = modeldescriptionUnitDefinitions.find(it.second);
+      if (unitvalue != modeldescriptionUnitDefinitions.end())
+      {
+        pugi::xml_node ssc_unit = node_units.append_child(oms::ssp::Version1_0::ssc::unit);
+        ssc_unit.append_attribute("name") = unitvalue->first.c_str();
+        pugi::xml_node ssc_base_unit = ssc_unit.append_child(oms::ssp::Version1_0::ssc::base_unit);
+        for (const auto &baseunit : unitvalue->second)
+        {
+          ssc_base_unit.append_attribute(baseunit.first.c_str()) = baseunit.second.c_str();
+        }
+      }
+      else
+      {
+        // set user defined units
+        pugi::xml_node ssc_unit = node_units.append_child(oms::ssp::Version1_0::ssc::unit);
+        ssc_unit.append_attribute("name") = it.second.c_str();
+        pugi::xml_node ssc_base_unit = ssc_unit.append_child(oms::ssp::Version1_0::ssc::base_unit);
+      }
+    }
+  }
+
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms::Values::exportStartValuesHelper(pugi::xml_node& node) const
 {
   // realStartValues

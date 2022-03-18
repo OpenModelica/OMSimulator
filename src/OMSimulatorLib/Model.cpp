@@ -410,7 +410,7 @@ oms_status_enu_t oms::Model::exportSSVTemplate(const oms::ComRef& cref, const st
   {
     if(component.first == tail || cref.isEmpty()) // allow querying single component or whole model
     {
-      if (oms_status_ok != component.second->exportToSSVTemplate(ssvNode))
+      if (oms_status_ok != component.second->exportToSSVTemplate(ssvNode, snapshot))
       {
         return logError("export of ssv template failed for component " + std::string(system->getFullCref()+std::string(component.first)));
       }

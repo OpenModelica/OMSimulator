@@ -90,7 +90,10 @@ namespace oms
     oms_status_enu_t deleteResourcesInSSP(const std::string& filename);
 
     oms_status_enu_t exportToSSV(pugi::xml_node& ssvNode) const;
+
     oms_status_enu_t exportUnitDefinitions(Snapshot &snapshot, std::string filename) const;
+    oms_status_enu_t exportUnitDefinitionsToSSVTemplate(Snapshot &snapshot, std::string filename);
+
     void exportToSSVTemplate(pugi::xml_node& ssvNode, const ComRef& cref);  ///< start values read from modelDescription.xml and creates a ssv template
     oms_status_enu_t exportToSSMTemplate(pugi::xml_node& ssmNode, const ComRef& cref);  ///< start values read from modelDescription.xml and creates a ssm template
 

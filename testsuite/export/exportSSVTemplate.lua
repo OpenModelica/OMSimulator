@@ -40,7 +40,7 @@ readFile("gain.ssv")
 
 -- override units in sine.fmu
 oms_setUnit("exportSSVTemplate.Root.sine.amplitude", "m")
-oms_setUnit("exportSSVTemplate.Root.sine.phase", "m2")
+oms_setUnit("exportSSVTemplate.Root.sine.phase", "m")
 
 oms_exportSSVTemplate("exportSSVTemplate.Root.sine", "sine.ssv")
 readFile("sine.ssv")
@@ -115,6 +115,26 @@ oms_delete("exportSSVTemplate")
 --         unit="1" />
 --     </ssv:Parameter>
 --   </ssv:Parameters>
+--   <ssv:Units>
+--     <ssc:Unit
+--       name="s">
+--       <ssc:BaseUnit
+--         s="1" />
+--     </ssc:Unit>
+--     <ssc:Unit
+--       name="rad">
+--       <ssc:BaseUnit />
+--     </ssc:Unit>
+--     <ssc:Unit
+--       name="Hz">
+--       <ssc:BaseUnit
+--         s="-1" />
+--     </ssc:Unit>
+--     <ssc:Unit
+--       name="1">
+--       <ssc:BaseUnit />
+--     </ssc:Unit>
+--   </ssv:Units>
 -- </ssv:ParameterSet>
 --
 -- <?xml version="1.0" encoding="UTF-8"?>
@@ -166,6 +186,12 @@ oms_delete("exportSSVTemplate")
 --         unit="1" />
 --     </ssv:Parameter>
 --   </ssv:Parameters>
+--   <ssv:Units>
+--     <ssc:Unit
+--       name="1">
+--       <ssc:BaseUnit />
+--     </ssc:Unit>
+--   </ssv:Units>
 -- </ssv:ParameterSet>
 --
 -- <?xml version="1.0" encoding="UTF-8"?>
@@ -185,7 +211,7 @@ oms_delete("exportSSVTemplate")
 --       name="sine.phase">
 --       <ssv:Real
 --         value="0"
---         unit="m2" />
+--         unit="m" />
 --     </ssv:Parameter>
 --     <ssv:Parameter
 --       name="sine.offset">
@@ -205,6 +231,22 @@ oms_delete("exportSSVTemplate")
 --         unit="m" />
 --     </ssv:Parameter>
 --   </ssv:Parameters>
+--   <ssv:Units>
+--     <ssc:Unit
+--       name="s">
+--       <ssc:BaseUnit
+--         s="1" />
+--     </ssc:Unit>
+--     <ssc:Unit
+--       name="m">
+--       <ssc:BaseUnit />
+--     </ssc:Unit>
+--     <ssc:Unit
+--       name="Hz">
+--       <ssc:BaseUnit
+--         s="-1" />
+--     </ssc:Unit>
+--   </ssv:Units>
 -- </ssv:ParameterSet>
 --
 -- endResult

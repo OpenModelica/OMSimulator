@@ -345,9 +345,10 @@ oms_status_enu_t oms::ComponentFMUME::exportToSSV(pugi::xml_node& ssvNode)
   return values.exportToSSV(ssvNode);
 }
 
-oms_status_enu_t oms::ComponentFMUME::exportToSSVTemplate(pugi::xml_node& ssvNode)
+oms_status_enu_t oms::ComponentFMUME::exportToSSVTemplate(pugi::xml_node& ssvNode, Snapshot& snapshot)
 {
   values.exportToSSVTemplate(ssvNode, getCref());
+  values.exportUnitDefinitionsToSSVTemplate(snapshot, "template.ssv");
   return oms_status_ok;
 }
 
