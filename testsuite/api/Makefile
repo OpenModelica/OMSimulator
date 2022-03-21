@@ -20,6 +20,8 @@ getDirectionalDerivative_ME.lua \
 getDirectionalDerivative_CS.py \
 getDirectionalDerivative_ME.py \
 importExportAllResources.lua \
+import_export_units1.lua \
+import_export_units2.lua \
 setUnits1.lua \
 setUnits2.lua \
 setUnits3.py \
