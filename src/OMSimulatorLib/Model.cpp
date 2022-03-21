@@ -705,6 +705,10 @@ oms_status_enu_t oms::Model::importFromSnapshot(const Snapshot& snapshot)
       if (oms_status_ok != system->importFromSnapshot(*it, sspVersion, snapshot))
         return oms_status_error;
     }
+    else if (name == oms::ssp::Draft20180219::ssd::units)
+    {
+      // allow importing unitDefinitions, the unitDefinitions are handled in Values.cpp importFromSnapshot
+    }
     else if (name == oms::ssp::Draft20180219::ssd::default_experiment)
     {
       startTime = it->attribute("startTime").as_double(0.0);

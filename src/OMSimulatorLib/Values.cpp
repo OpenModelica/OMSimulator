@@ -713,15 +713,18 @@ oms_status_enu_t oms::Values::importFromSnapshot(const Snapshot &snapshot, const
   if (!parameterSet)
     return logError("loading <oms:file> \"" + ssvFilename + "\" from <oms:snapshot> failed");
 
+  pugi::xml_node ssv_node_units = parameterSet.child(oms::ssp::Version1_0::ssv::units);
+  importUnitDefinitions(ssv_node_units);
+
   pugi::xml_node parameters = parameterSet.child(oms::ssp::Version1_0::ssv::parameters);
-
   importStartValuesHelper(parameters);
-
   return oms_status_ok;
 }
 
 oms_status_enu_t oms::Values::importFromSnapshot(const pugi::xml_node& node, const std::string& sspVersion, const Snapshot& snapshot)
 {
+  // get the ssdNode to parse UnitDefinitions in "SystemStructure.ssd"
+  pugi::xml_node ssdNode = snapshot.getResourceNode("SystemStructure.ssd");
   for (pugi::xml_node parameterBindingNode = node.child(oms::ssp::Version1_0::ssd::parameter_binding); parameterBindingNode; parameterBindingNode = parameterBindingNode.next_sibling(oms::ssp::Version1_0::ssd::parameter_binding))
   {
     Values resources; // create a new value object for each parameter binding node
@@ -751,6 +754,10 @@ oms_status_enu_t oms::Values::importFromSnapshot(const pugi::xml_node& node, con
           resources.importParameterMapping(ssm_parameterMapping);
         }
       }
+      // import unit definitions from ssv resources
+      pugi::xml_node ssv_node_units = parameterSet.child(oms::ssp::Version1_0::ssv::units);
+      resources.importUnitDefinitions(ssv_node_units);
+
       resources.importStartValuesHelper(parameters);
       // add the mapped ssv parameter binding node
       allresources[ssvFile] = resources;
@@ -770,6 +777,10 @@ oms_status_enu_t oms::Values::importFromSnapshot(const pugi::xml_node& node, con
 
       if (ssm_parameterMapping)
         resources.importParameterMapping(ssm_parameterMapping);
+
+      // import unitdefinitions from ssd
+      pugi::xml_node ssd_node_units = ssdNode.child(oms::ssp::Draft20180219::ssd::units);
+      resources.importUnitDefinitions(ssd_node_units);
 
       resources.importStartValuesHelper(parameters);
       // add the mapped inline parameter binding node
@@ -800,11 +811,23 @@ oms_status_enu_t oms::Values::exportUnitDefinitions(Snapshot &snapshot, std::str
   if (unitDefinitionsToExportInSSP.empty())
     return oms_status_ok;
 
-  pugi::xml_node parameterSet = snapshot.getResourceNode(filename);
-  if (!parameterSet)
-    return logError("loading <oms:file> \"" + filename + "\" from <oms:snapshot> failed");
-
-  pugi::xml_node node_units = parameterSet.append_child(oms::ssp::Version1_0::ssv::units);
+  pugi::xml_node node_units;
+  // export unitDefinitions to ssv resources
+  if (!filename.empty())
+  {
+    pugi::xml_node parameterSet = snapshot.getResourceNode(filename);
+    if (!parameterSet)
+      return logError("loading <oms:file> \"" + filename + "\" from <oms:snapshot> failed");
+    node_units = parameterSet.append_child(oms::ssp::Version1_0::ssv::units);
+  }
+  else
+  {
+    // export unitDefinitions inline
+    pugi::xml_node ssdNode = snapshot.getResourceNode("SystemStructure.ssd");
+    if (!ssdNode)
+      return logError("loading <oms:file> \" SystemStructure.ssd \" from <oms:snapshot> failed");
+    node_units = ssdNode.append_child(oms::ssp::Draft20180219::ssd::units);
+  }
 
   std::vector<std::string> unitList;
   for (const auto &it : unitDefinitionsToExportInSSP)
@@ -963,6 +986,7 @@ void oms::Values::exportParameterBindings(pugi::xml_node &node, Snapshot &snapsh
             pugi::xml_node node_parameters = node_parameterset.append_child(oms::ssp::Version1_0::ssv::parameters);
             res.second.exportStartValuesHelper(node_parameters);
             res.second.exportParameterMappingInline(node_parameter_binding);
+            res.second.exportUnitDefinitions(snapshot, "");
           }
           else
           {
@@ -1153,13 +1177,20 @@ oms_status_enu_t oms::Values::importStartValuesHelper(const pugi::xml_node& para
       if (itparameters->child(oms::ssp::Version1_0::ssv::real_type))
       {
         double value = itparameters->child(oms::ssp::Version1_0::ssv::real_type).attribute("value").as_double();
+        std::string unitValue = itparameters->child(oms::ssp::Version1_0::ssv::real_type).attribute("unit").as_string();
         if (!mappedcrefs.empty())
         {
           for (const auto &mappedcref : mappedcrefs)
+          {
+            if (!unitValue.empty())
+              setUnit(mappedcref, unitValue);
             setReal(mappedcref, value);
+          }
         }
         else
         {
+          if (!unitValue.empty())
+            setUnit(cref, unitValue);
           // no mapping entry found, apply the default cref found in ssv file
           setReal(cref, value);
         }
@@ -1200,6 +1231,24 @@ oms_status_enu_t oms::Values::importStartValuesHelper(const pugi::xml_node& para
   }
 
   return oms_status_ok;
+}
+
+void oms::Values::importUnitDefinitions(const pugi::xml_node& node)
+{
+  if (!node)
+    return;
+
+  for (pugi::xml_node unit = node.child(oms::ssp::Version1_0::ssc::unit); unit; unit = unit.next_sibling(oms::ssp::Version1_0::ssc::unit))
+  {
+    std::string unitName = unit.attribute("name").as_string();
+    pugi::xml_node baseUnitNode = unit.child(oms::ssp::Version1_0::ssc::base_unit);
+    std::map<std::string, std::string> baseUnits;
+    for (pugi::xml_attribute attr = baseUnitNode.first_attribute(); attr; attr = attr.next_attribute())
+    {
+      baseUnits[attr.name()] = attr.value();
+    }
+    modeldescriptionUnitDefinitions[unitName] = baseUnits;
+  }
 }
 
 oms_status_enu_t oms::Values::parseModelDescription(const filesystem::path& root)
