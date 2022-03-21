@@ -251,9 +251,16 @@ oms_delete("deleteResources")
 --         <ssv:Parameter
 --           name="k">
 --           <ssv:Real
---             value="27" />
+--             value="27"
+--             unit="1" />
 --         </ssv:Parameter>
 --       </ssv:Parameters>
+--       <ssv:Units>
+--         <ssc:Unit
+--           name="1">
+--           <ssc:BaseUnit />
+--         </ssc:Unit>
+--       </ssv:Units>
 --     </ssv:ParameterSet>
 --   </oms:file>
 --   <oms:file
@@ -291,7 +298,7 @@ oms_delete("deleteResources")
 --     </oms:SignalFilter>
 --   </oms:file>
 -- </oms:snapshot>
---
+-- 
 -- <?xml version="1.0"?>
 -- <oms:snapshot
 --   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
@@ -463,9 +470,16 @@ oms_delete("deleteResources")
 --         <ssv:Parameter
 --           name="k">
 --           <ssv:Real
---             value="27" />
+--             value="27"
+--             unit="1" />
 --         </ssv:Parameter>
 --       </ssv:Parameters>
+--       <ssv:Units>
+--         <ssc:Unit
+--           name="1">
+--           <ssc:BaseUnit />
+--         </ssc:Unit>
+--       </ssv:Units>
 --     </ssv:ParameterSet>
 --   </oms:file>
 --   <oms:file
@@ -503,5 +517,5 @@ oms_delete("deleteResources")
 --     </oms:SignalFilter>
 --   </oms:file>
 -- </oms:snapshot>
---
+-- 
 -- endResult

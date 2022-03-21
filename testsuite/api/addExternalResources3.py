@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm -rf addExternalResources3_lua/
+## teardown_command: rm -rf addExternalResources3_py/
 ## linux: yes
 ## mingw32: yes
 ## mingw64: yes
@@ -10,8 +10,8 @@ from OMSimulator import OMSimulator
 oms = OMSimulator()
 
 oms.setCommandLineOption("--suppressPath=true")
-oms.setTempDirectory("./addExternalResources3_lua/")
-oms.setWorkingDirectory("./addExternalResources3_lua/")
+oms.setTempDirectory("./addExternalResources3_py/")
+oms.setWorkingDirectory("./addExternalResources3_py/")
 
 oms.newModel("addExternalResources")
 
@@ -269,9 +269,16 @@ print(src)
 ##         <ssv:Parameter
 ##           name="k">
 ##           <ssv:Real
-##             value="27" />
+##             value="27"
+##             unit="1" />
 ##         </ssv:Parameter>
 ##       </ssv:Parameters>
+##       <ssv:Units>
+##         <ssc:Unit
+##           name="1">
+##           <ssc:BaseUnit />
+##         </ssc:Unit>
+##       </ssv:Units>
 ##     </ssv:ParameterSet>
 ##   </oms:file>
 ##   <oms:file
@@ -493,9 +500,16 @@ print(src)
 ##         <ssv:Parameter
 ##           name="k">
 ##           <ssv:Real
-##             value="-35" />
+##             value="-35"
+##             unit="1" />
 ##         </ssv:Parameter>
 ##       </ssv:Parameters>
+##       <ssv:Units>
+##         <ssc:Unit
+##           name="1">
+##           <ssc:BaseUnit />
+##         </ssc:Unit>
+##       </ssv:Units>
 ##     </ssv:ParameterSet>
 ##   </oms:file>
 ##   <oms:file
