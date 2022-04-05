@@ -54,6 +54,15 @@ bool oms::CSVWriter::createFile(const std::string& filename, double startTime, d
     return false;
 
   pFile = fopen(filename.c_str(), "w");
+
+  if (pFile == NULL)
+  {
+    std::string errormsg = "Failed to create result file \"" + filename + "\"";
+    perror(errormsg.c_str());
+    fclose(pFile);
+    return 1;
+  }
+
   if (!Flags::SkipCSVHeader())
     fputs("\"sep=,\"\n", pFile);
 
