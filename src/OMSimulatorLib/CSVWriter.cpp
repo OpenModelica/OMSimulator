@@ -30,15 +30,12 @@
  */
 
 #include "CSVWriter.h"
+
 #include "Flags.h"
 #include "Logging.h"
 #include "ResultWriter.h"
 
-#include <cstring>
-#include <errno.h>
-#include <iostream>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstring>  // strerror
 #include <string>
 
 oms::CSVWriter::CSVWriter(unsigned int bufferSize)
