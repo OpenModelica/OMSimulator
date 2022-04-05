@@ -35,9 +35,8 @@
 #include "MatVer4.h"
 #include "ResultWriter.h"
 #include "Util.h"
-#include <cstring>
-#include <errno.h>
-#include <stdlib.h>
+
+#include <cstring>  // strerror
 #include <string>
 
 #if defined(_MSC_VER) || defined(__MINGW32__) || defined(__MINGW64__)

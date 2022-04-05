@@ -30,11 +30,12 @@
  */
 
 #include "CSVWriter.h"
-#include "ResultWriter.h"
-#include "Flags.h"
 
-#include <iostream>
-#include <stdio.h>
+#include "Flags.h"
+#include "Logging.h"
+#include "ResultWriter.h"
+
+#include <cstring>  // strerror
 #include <string>
 
 oms::CSVWriter::CSVWriter(unsigned int bufferSize)
@@ -54,6 +55,13 @@ bool oms::CSVWriter::createFile(const std::string& filename, double startTime, d
     return false;
 
   pFile = fopen(filename.c_str(), "w");
+
+  if (!pFile)
+  {
+    logError("CSVWriter::createFile: " + std::string(strerror(errno)));
+    return false;
+  }
+
   if (!Flags::SkipCSVHeader())
     fputs("\"sep=,\"\n", pFile);
 
