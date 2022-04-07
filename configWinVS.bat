@@ -200,18 +200,21 @@ EXIT /B 0
 :: -- pthread -------------------------
 
 
-:: -- config libxml2 ------------------
+:: -- config libxml2 -------------------
 :libxml2
 ECHO # config libxml2
-CD 3rdParty\libxml2
-START /B /WAIT CMD /C "buildWinVS.bat %OMS_VS_TARGET%"
+IF EXIST "3rdParty\libxml2\build\win\" RMDIR /S /Q 3rdParty\libxml2\build\win
+IF EXIST "3rdParty\libxml2\install\win\" RMDIR /S /Q 3rdParty\libxml2\install\win
+MKDIR 3rdParty\libxml2\build\win
+CD 3rdParty\libxml2\build\win
+cmake.exe -G %OMS_VS_VERSION% ..\.. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_INSTALL_PREFIX=..\..\install\win -DBUILD_SHARED_LIBS=OFF -DLIBXML2_WITH_PYTHON=OFF -DLIBXML2_WITH_ZLIB=OFF -DLIBXML2_WITH_LZMA=OFF -DLIBXML2_WITH_TESTS=OFF
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-CD ..\..
-ECHO # copy libxml2
-IF NOT EXIST "install\win\bin" MKDIR install\win\bin
-XCOPY /Y /F 3rdParty\libxml2\install\win\bin\libxml2.dll install\win\bin
+CD ..\..\..\..
+ECHO # build libxml2
+msbuild.exe "3rdParty\libxml2\build\win\INSTALL.vcxproj" /t:Build /p:configuration=Release /maxcpucount
+IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 EXIT /B 0
-:: -- config libxml2 ------------------
+:: -- config libxml2 -------------------
 
 
 :: -- copy boost ----------------------
