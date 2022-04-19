@@ -66,7 +66,7 @@ bool oms::CSVWriter::createFile(const std::string& filename, double startTime, d
     fputs("\"sep=,\"\n", pFile);
 
   // first signal is always 'time'
-  fputs("\"time\"", pFile);
+  fputs("time", pFile);
 
   // write signal names to csv file
   for (int i = 0; i < signals.size(); ++i)

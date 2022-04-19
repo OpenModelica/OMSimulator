@@ -278,7 +278,7 @@ oms_delete("model")
 -- info:    Result file: model_res.csv (bufferSize=1)
 --
 --
--- "time", "model.root.Gain.u", "model.root.System2.Input_1", "model.root.Gain.k"
+-- time,model.root.Gain.u,model.root.System2.Input_1,model.root.Gain.k
 -- 0, 0, 30, 1
 --
 -- endResult
