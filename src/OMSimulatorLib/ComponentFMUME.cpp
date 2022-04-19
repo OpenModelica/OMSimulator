@@ -240,6 +240,18 @@ oms::Component* oms::ComponentFMUME::NewComponent(const oms::ComRef& cref, oms::
   // parse modelDescription.xml to get start values before instantiating fmu's
   component->values.parseModelDescription(tempDir);
 
+  // set units to connector
+  for (auto &connector : component->connectors)
+  {
+    if (connector)
+    {
+      oms::ComRef connectorCref = connector->getName();
+      std::string unitName = component->values.getUnitFromModeldescription(connectorCref);
+      if (!unitName.empty())
+        connector->connectorUnits[unitName] = component->values.modeldescriptionUnitDefinitions[unitName];
+    }
+  }
+
   return component;
 }
 
@@ -337,6 +349,23 @@ oms_status_enu_t oms::ComponentFMUME::exportToSSD(pugi::xml_node& node, Snapshot
 
 void oms::ComponentFMUME::getFilteredUnitDefinitionsToSSD(std::map<std::string, std::map<std::string, std::string>>& unitDefinitions)
 {
+  // get units from connectors
+  for (const auto &connector : connectors)
+  {
+    if (connector)
+    {
+      if (!connector->connectorUnits.empty())
+      {
+        for (auto &con : connector->connectorUnits)
+        {
+          auto unitvalue = unitDefinitions.find(con.first);
+          if (unitvalue == unitDefinitions.end())
+            unitDefinitions[con.first] = con.second;
+        }
+      }
+    }
+  }
+
   return values.getFilteredUnitDefinitionsToSSD(unitDefinitions);
 }
 

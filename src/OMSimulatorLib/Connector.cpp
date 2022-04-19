@@ -240,6 +240,9 @@ oms_status_enu_t oms::Connector::exportToSSD(pugi::xml_node &root) const
     break;
   case oms_signal_type_real:
     node.append_child(oms::ssp::Version1_0::ssc::real_type);
+    if (!this->connectorUnits.empty())
+      for (const auto & it : this->connectorUnits)
+        node.child(oms::ssp::Version1_0::ssc::real_type).append_attribute("unit") = it.first.c_str();
     break;
   case oms_signal_type_string:
     node.append_child(oms::ssp::Version1_0::ssc::string_type);
