@@ -1617,6 +1617,18 @@ oms_status_enu_t oms::ComponentFMUME::setString(const ComRef& cref, const std::s
 
 oms_status_enu_t oms::ComponentFMUME::setUnit(const ComRef &cref, const std::string &value)
 {
+  // set units to connectors
+  for (auto &connector : connectors)
+  {
+    if (connector)
+    {
+      if (connector->getName() == cref)
+      {
+        connector->connectorUnits.clear();
+        connector->connectorUnits[value] = {};
+      }
+    }
+  }
   // check for local resources available
   if (values.hasResources())
   {
