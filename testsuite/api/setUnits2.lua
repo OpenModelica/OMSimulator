@@ -37,9 +37,7 @@ oms_delete("model")
 
 
 -- Result:
---
---  baseunits: s=-1
---  baseunits: s=1<?xml version="1.0"?>
+-- <?xml version="1.0"?>
 -- <oms:snapshot
 --   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
 --   partial="false">
@@ -211,9 +209,7 @@ oms_delete("model")
 --   </oms:file>
 -- </oms:snapshot>
 --
---
---  baseunits: s=-1
---  baseunits: s=1<?xml version="1.0"?>
+-- <?xml version="1.0"?>
 -- <oms:snapshot
 --   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
 --   partial="false">

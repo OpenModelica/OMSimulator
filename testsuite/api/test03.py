@@ -119,9 +119,7 @@ oms.delete("test03py")
 ## 	</ssd:DefaultExperiment>
 ## </ssd:SystemStructureDescription>
 ##
-##
-##  baseunits: s=-1
-##  baseunits: s=1error:   [getResourceNode] Failed to find node "resources/signalFilter.xml"
+## error:   [getResourceNode] Failed to find node "resources/signalFilter.xml"
 ## status:  [correct] ok
 ## <?xml version="1.0"?>
 ## <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="test03py" version="1.0">
@@ -183,9 +181,7 @@ oms.delete("test03py")
 ## 	</ssd:DefaultExperiment>
 ## </ssd:SystemStructureDescription>
 ##
-##
-##  baseunits: s=-1
-##  baseunits: s=1info:    Result file: test03py_res.mat (bufferSize=10)
+## info:    Result file: test03py_res.mat (bufferSize=10)
 ## info:    0 warnings
 ## info:    1 errors
 ## endResult
