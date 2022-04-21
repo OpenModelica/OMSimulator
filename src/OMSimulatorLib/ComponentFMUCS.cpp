@@ -277,10 +277,20 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const pugi::xml_node& node, om
     std::string name = it->name();
     if(name == oms::ssp::Draft20180219::ssd::connectors)
     {
+      // get the ssdNode to parse UnitDefinitions in "SystemStructure.ssd"
+      pugi::xml_node ssdNode = snapshot.getResourceNode("SystemStructure.ssd");
+      component->values.importUnitDefinitions(ssdNode);
       // import connectors
       for(pugi::xml_node_iterator itConnectors = (*it).begin(); itConnectors != (*it).end(); ++itConnectors)
       {
         component->connectors.push_back(oms::Connector::NewConnector(*itConnectors, sspVersion, component->getFullCref()));
+        // set units to connector
+        if ((*itConnectors).child(oms::ssp::Version1_0::ssc::real_type))
+        {
+          std::string unitName = (*itConnectors).child(oms::ssp::Version1_0::ssc::real_type).attribute("unit").as_string();
+          if (!unitName.empty())
+            component->connectors.back()->connectorUnits[unitName] = component->values.modeldescriptionUnitDefinitions[unitName];
+        }
       }
     }
     else if(name == oms::ssp::Draft20180219::ssd::element_geometry)
