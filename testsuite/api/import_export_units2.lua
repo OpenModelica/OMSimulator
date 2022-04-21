@@ -36,7 +36,9 @@ src, status = oms_exportSnapshot("model")
 print(src)
 
 -- Result:
--- <?xml version="1.0"?>
+--
+--  baseunits: s=-1
+--  baseunits: s=1<?xml version="1.0"?>
 -- <oms:snapshot
 --   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
 --   partial="false">
@@ -75,7 +77,8 @@ print(src)
 --               <ssd:Connector
 --                 name="freqHz"
 --                 kind="parameter">
---                 <ssc:Real />
+--                 <ssc:Real
+--                   unit="Hz" />
 --               </ssd:Connector>
 --               <ssd:Connector
 --                 name="offset"
@@ -85,12 +88,14 @@ print(src)
 --               <ssd:Connector
 --                 name="phase"
 --                 kind="parameter">
---                 <ssc:Real />
+--                 <ssc:Real
+--                   unit="rad" />
 --               </ssd:Connector>
 --               <ssd:Connector
 --                 name="startTime"
 --                 kind="parameter">
---                 <ssc:Real />
+--                 <ssc:Real
+--                   unit="s" />
 --               </ssd:Connector>
 --             </ssd:Connectors>
 --             <ssd:ParameterBindings>
@@ -148,6 +153,11 @@ print(src)
 --         <ssc:Unit
 --           name="rad">
 --           <ssc:BaseUnit />
+--         </ssc:Unit>
+--         <ssc:Unit
+--           name="s">
+--           <ssc:BaseUnit
+--             s="1" />
 --         </ssc:Unit>
 --       </ssd:Units>
 --       <ssd:DefaultExperiment
@@ -200,7 +210,11 @@ print(src)
 --   </oms:file>
 -- </oms:snapshot>
 --
--- <?xml version="1.0"?>
+--
+--  baseunits: s=-1
+--  baseunits: s=1
+--  baseunits: s=-1
+--  baseunits: s=1<?xml version="1.0"?>
 -- <oms:snapshot
 --   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
 --   partial="false">
@@ -239,7 +253,8 @@ print(src)
 --               <ssd:Connector
 --                 name="freqHz"
 --                 kind="parameter">
---                 <ssc:Real />
+--                 <ssc:Real
+--                   unit="Hz" />
 --               </ssd:Connector>
 --               <ssd:Connector
 --                 name="offset"
@@ -249,12 +264,14 @@ print(src)
 --               <ssd:Connector
 --                 name="phase"
 --                 kind="parameter">
---                 <ssc:Real />
+--                 <ssc:Real
+--                   unit="rad" />
 --               </ssd:Connector>
 --               <ssd:Connector
 --                 name="startTime"
 --                 kind="parameter">
---                 <ssc:Real />
+--                 <ssc:Real
+--                   unit="s" />
 --               </ssd:Connector>
 --             </ssd:Connectors>
 --             <ssd:ParameterBindings>
@@ -312,6 +329,22 @@ print(src)
 --           name="Hz">
 --           <ssc:BaseUnit
 --             s="-1" />
+--         </ssc:Unit>
+--       </ssd:Units>
+--       <ssd:Units>
+--         <ssc:Unit
+--           name="Hz">
+--           <ssc:BaseUnit
+--             s="-1" />
+--         </ssc:Unit>
+--         <ssc:Unit
+--           name="rad">
+--           <ssc:BaseUnit />
+--         </ssc:Unit>
+--         <ssc:Unit
+--           name="s">
+--           <ssc:BaseUnit
+--             s="1" />
 --         </ssc:Unit>
 --       </ssd:Units>
 --       <ssd:DefaultExperiment

@@ -161,7 +161,8 @@ oms_delete("deleteResources")
 --               <ssd:Connector
 --                 name="k"
 --                 kind="parameter">
---                 <ssc:Real />
+--                 <ssc:Real
+--                   unit="1" />
 --               </ssd:Connector>
 --             </ssd:Connectors>
 --             <ssd:ParameterBindings>
@@ -185,6 +186,12 @@ oms_delete("deleteResources")
 --           </ssc:Annotation>
 --         </ssd:Annotations>
 --       </ssd:System>
+--       <ssd:Units>
+--         <ssc:Unit
+--           name="1">
+--           <ssc:BaseUnit />
+--         </ssc:Unit>
+--       </ssd:Units>
 --       <ssd:DefaultExperiment
 --         startTime="0.000000"
 --         stopTime="1.000000">
@@ -298,7 +305,7 @@ oms_delete("deleteResources")
 --     </oms:SignalFilter>
 --   </oms:file>
 -- </oms:snapshot>
--- 
+--
 -- <?xml version="1.0"?>
 -- <oms:snapshot
 --   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
@@ -384,7 +391,8 @@ oms_delete("deleteResources")
 --               <ssd:Connector
 --                 name="k"
 --                 kind="parameter">
---                 <ssc:Real />
+--                 <ssc:Real
+--                   unit="1" />
 --               </ssd:Connector>
 --             </ssd:Connectors>
 --           </ssd:Component>
@@ -404,6 +412,12 @@ oms_delete("deleteResources")
 --           </ssc:Annotation>
 --         </ssd:Annotations>
 --       </ssd:System>
+--       <ssd:Units>
+--         <ssc:Unit
+--           name="1">
+--           <ssc:BaseUnit />
+--         </ssc:Unit>
+--       </ssd:Units>
 --       <ssd:DefaultExperiment
 --         startTime="0.000000"
 --         stopTime="1.000000">
@@ -517,5 +531,5 @@ oms_delete("deleteResources")
 --     </oms:SignalFilter>
 --   </oms:file>
 -- </oms:snapshot>
--- 
+--
 -- endResult

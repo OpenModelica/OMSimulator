@@ -73,16 +73,16 @@ oms.delete("test03py")
 ## 						<ssc:Real />
 ## 					</ssd:Connector>
 ## 					<ssd:Connector name="freqHz" kind="parameter">
-## 						<ssc:Real />
+## 						<ssc:Real unit="Hz" />
 ## 					</ssd:Connector>
 ## 					<ssd:Connector name="offset" kind="parameter">
 ## 						<ssc:Real />
 ## 					</ssd:Connector>
 ## 					<ssd:Connector name="phase" kind="parameter">
-## 						<ssc:Real />
+## 						<ssc:Real unit="rad" />
 ## 					</ssd:Connector>
 ## 					<ssd:Connector name="startTime" kind="parameter">
-## 						<ssc:Real />
+## 						<ssc:Real unit="s" />
 ## 					</ssd:Connector>
 ## 				</ssd:Connectors>
 ## 			</ssd:Component>
@@ -97,6 +97,17 @@ oms.delete("test03py")
 ## 			</ssc:Annotation>
 ## 		</ssd:Annotations>
 ## 	</ssd:System>
+## 	<ssd:Units>
+## 		<ssc:Unit name="Hz">
+## 			<ssc:BaseUnit s="-1" />
+## 		</ssc:Unit>
+## 		<ssc:Unit name="rad">
+## 			<ssc:BaseUnit />
+## 		</ssc:Unit>
+## 		<ssc:Unit name="s">
+## 			<ssc:BaseUnit s="1" />
+## 		</ssc:Unit>
+## 	</ssd:Units>
 ## 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
 ## 		<ssd:Annotations>
 ## 			<ssc:Annotation type="org.openmodelica">
@@ -108,7 +119,9 @@ oms.delete("test03py")
 ## 	</ssd:DefaultExperiment>
 ## </ssd:SystemStructureDescription>
 ##
-## error:   [getResourceNode] Failed to find node "resources/signalFilter.xml"
+##
+##  baseunits: s=-1
+##  baseunits: s=1error:   [getResourceNode] Failed to find node "resources/signalFilter.xml"
 ## status:  [correct] ok
 ## <?xml version="1.0"?>
 ## <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="test03py" version="1.0">
@@ -124,16 +137,16 @@ oms.delete("test03py")
 ## 						<ssc:Real />
 ## 					</ssd:Connector>
 ## 					<ssd:Connector name="freqHz" kind="parameter">
-## 						<ssc:Real />
+## 						<ssc:Real unit="Hz" />
 ## 					</ssd:Connector>
 ## 					<ssd:Connector name="offset" kind="parameter">
 ## 						<ssc:Real />
 ## 					</ssd:Connector>
 ## 					<ssd:Connector name="phase" kind="parameter">
-## 						<ssc:Real />
+## 						<ssc:Real unit="rad" />
 ## 					</ssd:Connector>
 ## 					<ssd:Connector name="startTime" kind="parameter">
-## 						<ssc:Real />
+## 						<ssc:Real unit="s" />
 ## 					</ssd:Connector>
 ## 				</ssd:Connectors>
 ## 			</ssd:Component>
@@ -148,6 +161,17 @@ oms.delete("test03py")
 ## 			</ssc:Annotation>
 ## 		</ssd:Annotations>
 ## 	</ssd:System>
+## 	<ssd:Units>
+## 		<ssc:Unit name="Hz">
+## 			<ssc:BaseUnit s="-1" />
+## 		</ssc:Unit>
+## 		<ssc:Unit name="rad">
+## 			<ssc:BaseUnit />
+## 		</ssc:Unit>
+## 		<ssc:Unit name="s">
+## 			<ssc:BaseUnit s="1" />
+## 		</ssc:Unit>
+## 	</ssd:Units>
 ## 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
 ## 		<ssd:Annotations>
 ## 			<ssc:Annotation type="org.openmodelica">
@@ -159,7 +183,9 @@ oms.delete("test03py")
 ## 	</ssd:DefaultExperiment>
 ## </ssd:SystemStructureDescription>
 ##
-## info:    Result file: test03py_res.mat (bufferSize=10)
+##
+##  baseunits: s=-1
+##  baseunits: s=1info:    Result file: test03py_res.mat (bufferSize=10)
 ## info:    0 warnings
 ## info:    1 errors
 ## endResult

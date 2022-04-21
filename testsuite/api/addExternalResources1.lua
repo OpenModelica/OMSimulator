@@ -176,7 +176,8 @@ print(src)
 --               <ssd:Connector
 --                 name="k"
 --                 kind="parameter">
---                 <ssc:Real />
+--                 <ssc:Real
+--                   unit="1" />
 --               </ssd:Connector>
 --             </ssd:Connectors>
 --             <ssd:ParameterBindings>
@@ -200,6 +201,12 @@ print(src)
 --           </ssc:Annotation>
 --         </ssd:Annotations>
 --       </ssd:System>
+--       <ssd:Units>
+--         <ssc:Unit
+--           name="1">
+--           <ssc:BaseUnit />
+--         </ssc:Unit>
+--       </ssd:Units>
 --       <ssd:DefaultExperiment
 --         startTime="0.000000"
 --         stopTime="1.000000">
@@ -407,7 +414,8 @@ print(src)
 --               <ssd:Connector
 --                 name="k"
 --                 kind="parameter">
---                 <ssc:Real />
+--                 <ssc:Real
+--                   unit="1" />
 --               </ssd:Connector>
 --             </ssd:Connectors>
 --             <ssd:ParameterBindings>
@@ -431,6 +439,12 @@ print(src)
 --           </ssc:Annotation>
 --         </ssd:Annotations>
 --       </ssd:System>
+--       <ssd:Units>
+--         <ssc:Unit
+--           name="1">
+--           <ssc:BaseUnit />
+--         </ssc:Unit>
+--       </ssd:Units>
 --       <ssd:DefaultExperiment
 --         startTime="0.000000"
 --         stopTime="1.000000">

@@ -37,7 +37,9 @@ oms_delete("model")
 
 
 -- Result:
--- <?xml version="1.0"?>
+--
+--  baseunits: s=-1
+--  baseunits: s=1<?xml version="1.0"?>
 -- <oms:snapshot
 --   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
 --   partial="false">
@@ -76,7 +78,8 @@ oms_delete("model")
 --               <ssd:Connector
 --                 name="freqHz"
 --                 kind="parameter">
---                 <ssc:Real />
+--                 <ssc:Real
+--                   unit="Hz" />
 --               </ssd:Connector>
 --               <ssd:Connector
 --                 name="offset"
@@ -86,12 +89,14 @@ oms_delete("model")
 --               <ssd:Connector
 --                 name="phase"
 --                 kind="parameter">
---                 <ssc:Real />
+--                 <ssc:Real
+--                   unit="rad" />
 --               </ssd:Connector>
 --               <ssd:Connector
 --                 name="startTime"
 --                 kind="parameter">
---                 <ssc:Real />
+--                 <ssc:Real
+--                   unit="s" />
 --               </ssd:Connector>
 --             </ssd:Connectors>
 --             <ssd:ParameterBindings>
@@ -150,6 +155,11 @@ oms_delete("model")
 --           name="rad">
 --           <ssc:BaseUnit />
 --         </ssc:Unit>
+--         <ssc:Unit
+--           name="s">
+--           <ssc:BaseUnit
+--             s="1" />
+--         </ssc:Unit>
 --       </ssd:Units>
 --       <ssd:DefaultExperiment
 --         startTime="0.000000"
@@ -201,7 +211,9 @@ oms_delete("model")
 --   </oms:file>
 -- </oms:snapshot>
 --
--- <?xml version="1.0"?>
+--
+--  baseunits: s=-1
+--  baseunits: s=1<?xml version="1.0"?>
 -- <oms:snapshot
 --   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
 --   partial="false">
@@ -235,12 +247,14 @@ oms_delete("model")
 --               <ssd:Connector
 --                 name="amplitude"
 --                 kind="parameter">
---                 <ssc:Real />
+--                 <ssc:Real
+--                   unit="m" />
 --               </ssd:Connector>
 --               <ssd:Connector
 --                 name="freqHz"
 --                 kind="parameter">
---                 <ssc:Real />
+--                 <ssc:Real
+--                   unit="Hz" />
 --               </ssd:Connector>
 --               <ssd:Connector
 --                 name="offset"
@@ -250,12 +264,14 @@ oms_delete("model")
 --               <ssd:Connector
 --                 name="phase"
 --                 kind="parameter">
---                 <ssc:Real />
+--                 <ssc:Real
+--                   unit="m" />
 --               </ssd:Connector>
 --               <ssd:Connector
 --                 name="startTime"
 --                 kind="parameter">
---                 <ssc:Real />
+--                 <ssc:Real
+--                   unit="s" />
 --               </ssd:Connector>
 --             </ssd:Connectors>
 --             <ssd:ParameterBindings>
@@ -314,6 +330,11 @@ oms_delete("model")
 --         <ssc:Unit
 --           name="m">
 --           <ssc:BaseUnit />
+--         </ssc:Unit>
+--         <ssc:Unit
+--           name="s">
+--           <ssc:BaseUnit
+--             s="1" />
 --         </ssc:Unit>
 --       </ssd:Units>
 --       <ssd:DefaultExperiment
