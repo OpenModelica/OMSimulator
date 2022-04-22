@@ -73,16 +73,16 @@ oms.delete("test03py")
 ## 						<ssc:Real />
 ## 					</ssd:Connector>
 ## 					<ssd:Connector name="freqHz" kind="parameter">
-## 						<ssc:Real />
+## 						<ssc:Real unit="Hz" />
 ## 					</ssd:Connector>
 ## 					<ssd:Connector name="offset" kind="parameter">
 ## 						<ssc:Real />
 ## 					</ssd:Connector>
 ## 					<ssd:Connector name="phase" kind="parameter">
-## 						<ssc:Real />
+## 						<ssc:Real unit="rad" />
 ## 					</ssd:Connector>
 ## 					<ssd:Connector name="startTime" kind="parameter">
-## 						<ssc:Real />
+## 						<ssc:Real unit="s" />
 ## 					</ssd:Connector>
 ## 				</ssd:Connectors>
 ## 			</ssd:Component>
@@ -97,6 +97,17 @@ oms.delete("test03py")
 ## 			</ssc:Annotation>
 ## 		</ssd:Annotations>
 ## 	</ssd:System>
+## 	<ssd:Units>
+## 		<ssc:Unit name="Hz">
+## 			<ssc:BaseUnit s="-1" />
+## 		</ssc:Unit>
+## 		<ssc:Unit name="rad">
+## 			<ssc:BaseUnit />
+## 		</ssc:Unit>
+## 		<ssc:Unit name="s">
+## 			<ssc:BaseUnit s="1" />
+## 		</ssc:Unit>
+## 	</ssd:Units>
 ## 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
 ## 		<ssd:Annotations>
 ## 			<ssc:Annotation type="org.openmodelica">
@@ -124,16 +135,16 @@ oms.delete("test03py")
 ## 						<ssc:Real />
 ## 					</ssd:Connector>
 ## 					<ssd:Connector name="freqHz" kind="parameter">
-## 						<ssc:Real />
+## 						<ssc:Real unit="Hz" />
 ## 					</ssd:Connector>
 ## 					<ssd:Connector name="offset" kind="parameter">
 ## 						<ssc:Real />
 ## 					</ssd:Connector>
 ## 					<ssd:Connector name="phase" kind="parameter">
-## 						<ssc:Real />
+## 						<ssc:Real unit="rad" />
 ## 					</ssd:Connector>
 ## 					<ssd:Connector name="startTime" kind="parameter">
-## 						<ssc:Real />
+## 						<ssc:Real unit="s" />
 ## 					</ssd:Connector>
 ## 				</ssd:Connectors>
 ## 			</ssd:Component>
@@ -148,6 +159,17 @@ oms.delete("test03py")
 ## 			</ssc:Annotation>
 ## 		</ssd:Annotations>
 ## 	</ssd:System>
+## 	<ssd:Units>
+## 		<ssc:Unit name="Hz">
+## 			<ssc:BaseUnit s="-1" />
+## 		</ssc:Unit>
+## 		<ssc:Unit name="rad">
+## 			<ssc:BaseUnit />
+## 		</ssc:Unit>
+## 		<ssc:Unit name="s">
+## 			<ssc:BaseUnit s="1" />
+## 		</ssc:Unit>
+## 	</ssd:Units>
 ## 	<ssd:DefaultExperiment startTime="0.000000" stopTime="1.000000">
 ## 		<ssd:Annotations>
 ## 			<ssc:Annotation type="org.openmodelica">

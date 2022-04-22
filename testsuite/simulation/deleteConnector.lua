@@ -124,7 +124,7 @@ print(src)
 -- 								<ssd:ConnectorGeometry x="1.000000" y="0.500000" />
 -- 							</ssd:Connector>
 -- 							<ssd:Connector name="k" kind="parameter">
--- 								<ssc:Real />
+-- 								<ssc:Real unit="1" />
 -- 							</ssd:Connector>
 -- 						</ssd:Connectors>
 -- 						<ssd:ParameterBindings>

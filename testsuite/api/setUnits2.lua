@@ -76,7 +76,8 @@ oms_delete("model")
 --               <ssd:Connector
 --                 name="freqHz"
 --                 kind="parameter">
---                 <ssc:Real />
+--                 <ssc:Real
+--                   unit="Hz" />
 --               </ssd:Connector>
 --               <ssd:Connector
 --                 name="offset"
@@ -86,12 +87,14 @@ oms_delete("model")
 --               <ssd:Connector
 --                 name="phase"
 --                 kind="parameter">
---                 <ssc:Real />
+--                 <ssc:Real
+--                   unit="rad" />
 --               </ssd:Connector>
 --               <ssd:Connector
 --                 name="startTime"
 --                 kind="parameter">
---                 <ssc:Real />
+--                 <ssc:Real
+--                   unit="s" />
 --               </ssd:Connector>
 --             </ssd:Connectors>
 --             <ssd:ParameterBindings>
@@ -149,6 +152,11 @@ oms_delete("model")
 --         <ssc:Unit
 --           name="rad">
 --           <ssc:BaseUnit />
+--         </ssc:Unit>
+--         <ssc:Unit
+--           name="s">
+--           <ssc:BaseUnit
+--             s="1" />
 --         </ssc:Unit>
 --       </ssd:Units>
 --       <ssd:DefaultExperiment
@@ -235,12 +243,14 @@ oms_delete("model")
 --               <ssd:Connector
 --                 name="amplitude"
 --                 kind="parameter">
---                 <ssc:Real />
+--                 <ssc:Real
+--                   unit="m" />
 --               </ssd:Connector>
 --               <ssd:Connector
 --                 name="freqHz"
 --                 kind="parameter">
---                 <ssc:Real />
+--                 <ssc:Real
+--                   unit="Hz" />
 --               </ssd:Connector>
 --               <ssd:Connector
 --                 name="offset"
@@ -250,12 +260,14 @@ oms_delete("model")
 --               <ssd:Connector
 --                 name="phase"
 --                 kind="parameter">
---                 <ssc:Real />
+--                 <ssc:Real
+--                   unit="m" />
 --               </ssd:Connector>
 --               <ssd:Connector
 --                 name="startTime"
 --                 kind="parameter">
---                 <ssc:Real />
+--                 <ssc:Real
+--                   unit="s" />
 --               </ssd:Connector>
 --             </ssd:Connectors>
 --             <ssd:ParameterBindings>
@@ -314,6 +326,11 @@ oms_delete("model")
 --         <ssc:Unit
 --           name="m">
 --           <ssc:BaseUnit />
+--         </ssc:Unit>
+--         <ssc:Unit
+--           name="s">
+--           <ssc:BaseUnit
+--             s="1" />
 --         </ssc:Unit>
 --       </ssd:Units>
 --       <ssd:DefaultExperiment
