@@ -37,6 +37,7 @@
 #include "Types.h"
 
 #include <string>
+#include <map>
 
 #include <pugixml.hpp>
 
@@ -69,6 +70,8 @@ namespace oms
     void setName(const oms::ComRef& name);
     void setOwner(const oms::ComRef& owner);
     void setGeometry(const oms::ssd::ConnectorGeometry* newGeometry);
+
+    std::map<std::string, std::map<std::string, std::string>> connectorUnits;  ///< single entry map which contains unit as key and BaseUnits as value for a connector
 
     const oms_causality_enu_t getCausality() const {return causality;}
     const oms_signal_type_enu_t getType() const {return type;}

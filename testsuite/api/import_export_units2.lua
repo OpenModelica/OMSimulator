@@ -75,7 +75,8 @@ print(src)
 --               <ssd:Connector
 --                 name="freqHz"
 --                 kind="parameter">
---                 <ssc:Real />
+--                 <ssc:Real
+--                   unit="Hz" />
 --               </ssd:Connector>
 --               <ssd:Connector
 --                 name="offset"
@@ -85,12 +86,14 @@ print(src)
 --               <ssd:Connector
 --                 name="phase"
 --                 kind="parameter">
---                 <ssc:Real />
+--                 <ssc:Real
+--                   unit="rad" />
 --               </ssd:Connector>
 --               <ssd:Connector
 --                 name="startTime"
 --                 kind="parameter">
---                 <ssc:Real />
+--                 <ssc:Real
+--                   unit="s" />
 --               </ssd:Connector>
 --             </ssd:Connectors>
 --             <ssd:ParameterBindings>
@@ -148,6 +151,11 @@ print(src)
 --         <ssc:Unit
 --           name="rad">
 --           <ssc:BaseUnit />
+--         </ssc:Unit>
+--         <ssc:Unit
+--           name="s">
+--           <ssc:BaseUnit
+--             s="1" />
 --         </ssc:Unit>
 --       </ssd:Units>
 --       <ssd:DefaultExperiment
@@ -239,7 +247,8 @@ print(src)
 --               <ssd:Connector
 --                 name="freqHz"
 --                 kind="parameter">
---                 <ssc:Real />
+--                 <ssc:Real
+--                   unit="Hz" />
 --               </ssd:Connector>
 --               <ssd:Connector
 --                 name="offset"
@@ -249,12 +258,14 @@ print(src)
 --               <ssd:Connector
 --                 name="phase"
 --                 kind="parameter">
---                 <ssc:Real />
+--                 <ssc:Real
+--                   unit="rad" />
 --               </ssd:Connector>
 --               <ssd:Connector
 --                 name="startTime"
 --                 kind="parameter">
---                 <ssc:Real />
+--                 <ssc:Real
+--                   unit="s" />
 --               </ssd:Connector>
 --             </ssd:Connectors>
 --             <ssd:ParameterBindings>
@@ -312,6 +323,22 @@ print(src)
 --           name="Hz">
 --           <ssc:BaseUnit
 --             s="-1" />
+--         </ssc:Unit>
+--       </ssd:Units>
+--       <ssd:Units>
+--         <ssc:Unit
+--           name="Hz">
+--           <ssc:BaseUnit
+--             s="-1" />
+--         </ssc:Unit>
+--         <ssc:Unit
+--           name="rad">
+--           <ssc:BaseUnit />
+--         </ssc:Unit>
+--         <ssc:Unit
+--           name="s">
+--           <ssc:BaseUnit
+--             s="1" />
 --         </ssc:Unit>
 --       </ssd:Units>
 --       <ssd:DefaultExperiment

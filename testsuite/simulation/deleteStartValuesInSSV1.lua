@@ -137,7 +137,8 @@ oms_delete("deleteStartValuesInSSV")
 --                   <ssd:Connector
 --                     name="k"
 --                     kind="parameter">
---                     <ssc:Real />
+--                     <ssc:Real
+--                       unit="1" />
 --                   </ssd:Connector>
 --                 </ssd:Connectors>
 --               </ssd:Component>

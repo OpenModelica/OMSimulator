@@ -240,6 +240,18 @@ oms::Component* oms::ComponentFMUME::NewComponent(const oms::ComRef& cref, oms::
   // parse modelDescription.xml to get start values before instantiating fmu's
   component->values.parseModelDescription(tempDir);
 
+  // set units to connector
+  for (auto &connector : component->connectors)
+  {
+    if (connector)
+    {
+      oms::ComRef connectorCref = connector->getName();
+      std::string unitName = component->values.getUnitFromModeldescription(connectorCref);
+      if (!unitName.empty())
+        connector->connectorUnits[unitName] = component->values.modeldescriptionUnitDefinitions[unitName];
+    }
+  }
+
   return component;
 }
 
@@ -268,10 +280,20 @@ oms::Component* oms::ComponentFMUME::NewComponent(const pugi::xml_node& node, om
     std::string name = it->name();
     if(name == oms::ssp::Draft20180219::ssd::connectors)
     {
+      // get the ssdNode to parse UnitDefinitions in "SystemStructure.ssd"
+      pugi::xml_node ssdNode = snapshot.getResourceNode("SystemStructure.ssd");
+      component->values.importUnitDefinitions(ssdNode);
       // import connectors
       for(pugi::xml_node_iterator itConnectors = (*it).begin(); itConnectors != (*it).end(); ++itConnectors)
       {
         component->connectors.push_back(oms::Connector::NewConnector(*itConnectors, sspVersion, component->getFullCref()));
+        // set units to connector
+        if ((*itConnectors).child(oms::ssp::Version1_0::ssc::real_type))
+        {
+          std::string unitName = (*itConnectors).child(oms::ssp::Version1_0::ssc::real_type).attribute("unit").as_string();
+          if (!unitName.empty())
+            component->connectors.back()->connectorUnits[unitName] = component->values.modeldescriptionUnitDefinitions[unitName];
+        }
       }
     }
     else if(name == oms::ssp::Draft20180219::ssd::element_geometry)
@@ -337,6 +359,23 @@ oms_status_enu_t oms::ComponentFMUME::exportToSSD(pugi::xml_node& node, Snapshot
 
 void oms::ComponentFMUME::getFilteredUnitDefinitionsToSSD(std::map<std::string, std::map<std::string, std::string>>& unitDefinitions)
 {
+  // get units from connectors
+  for (const auto &connector : connectors)
+  {
+    if (connector)
+    {
+      if (!connector->connectorUnits.empty())
+      {
+        for (auto &con : connector->connectorUnits)
+        {
+          auto unitvalue = unitDefinitions.find(con.first);
+          if (unitvalue == unitDefinitions.end())
+            unitDefinitions[con.first] = con.second;
+        }
+      }
+    }
+  }
+
   return values.getFilteredUnitDefinitionsToSSD(unitDefinitions);
 }
 
@@ -1588,6 +1627,18 @@ oms_status_enu_t oms::ComponentFMUME::setString(const ComRef& cref, const std::s
 
 oms_status_enu_t oms::ComponentFMUME::setUnit(const ComRef &cref, const std::string &value)
 {
+  // set units to connectors
+  for (auto &connector : connectors)
+  {
+    if (connector)
+    {
+      if (connector->getName() == cref)
+      {
+        connector->connectorUnits.clear();
+        connector->connectorUnits[value] = {};
+      }
+    }
+  }
   // check for local resources available
   if (values.hasResources())
   {

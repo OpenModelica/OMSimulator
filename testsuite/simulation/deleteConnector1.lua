@@ -170,7 +170,8 @@ oms_delete("deleteConnector")
 --                   <ssd:Connector
 --                     name="k"
 --                     kind="parameter">
---                     <ssc:Real />
+--                     <ssc:Real
+--                       unit="1" />
 --                   </ssd:Connector>
 --                 </ssd:Connectors>
 --               </ssd:Component>
