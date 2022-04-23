@@ -1,6 +1,6 @@
 -- status: correct
 -- teardown_command: rm -rf tlm3d.log tlm3d-lua/ tlm3d.csv tlm3d.run tlm3d_all.csv
--- linux: yes
+-- linux: no
 -- mingw32: no
 -- mingw64: no
 -- mac: no
