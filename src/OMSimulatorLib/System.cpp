@@ -1182,6 +1182,12 @@ oms_status_enu_t oms::System::addConnection(const oms::ComRef& crefA, const oms:
       return logError("Connector " + std::string(crefB) + " is already connected to " + std::string(connection->getSignalA()));
   }
 
+  // check units in connection
+  if (!oms::Connection::isValidUnits(crefA, crefB, *conA, *conB))
+  {
+    return logError("Unit mismatch in connection: " + std::string(crefA) + " -> " + std::string(crefB));
+  }
+
   // check if the connections are valid, according to the SSP-1.0 allowed connection table
   if (oms::Connection::isValid(crefA, crefB, *conA, *conB))
   {
