@@ -58,6 +58,7 @@ namespace oms
     unsigned int size;
     unsigned int size_including_internal;
     std::set<oms::ComRef> component_names;
+    std::vector<double> factor;
   };
 
   class DirectedGraph
@@ -80,6 +81,7 @@ namespace oms
     const std::vector<Connector>& getNodes() const {return nodes;}
     const scc_t& getEdges() const {return edges;}
 
+    void setUnits(Connector* conA, Connector* conB);
     void dumpNodes() const;
 
   private:

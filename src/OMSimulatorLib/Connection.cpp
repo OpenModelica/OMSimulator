@@ -252,7 +252,7 @@ bool oms::Connection::isValidUnits(const ComRef& crefA, const ComRef& crefB, con
 
 void oms::Connection::getSIUnits(const Connector& connector, std::map<std::string, std::string>& baseUnits)
 {
-  std::vector<std::string> SIunits = {"kg", "m", "s", "A", "K", "mol", "cd", "rad", "factor", "offset"};
+  std::vector<std::string> SIunits = {"kg", "m", "s", "A", "K", "mol", "cd", "rad"};
   for (const auto & unit : SIunits)
   {
     for (const auto & it: connector.connectorUnits)
@@ -261,10 +261,7 @@ void oms::Connection::getSIUnits(const Connector& connector, std::map<std::strin
       if (baseUnit != it.second.end())
         baseUnits[baseUnit->first] = baseUnit->second;
       else
-        if (unit == "factor")
-          baseUnits[unit] = "1.0";
-        else
-          baseUnits[unit] = "0";
+        baseUnits[unit] = "0";
     }
   }
 }

@@ -2,10 +2,10 @@
 <fmiModelDescription
   fmiVersion="2.0"
   modelName="A"
-  guid="{46f371cc-1b2a-420d-bc33-e23a0012d399}"
+  guid="{d9d5452c-f772-4289-99c6-24c16eea539f}"
   description=""
   generationTool="OpenModelica Compiler OpenModelica v1.20.0-dev (64-bit)"
-  generationDateAndTime="2022-04-27T18:37:20Z"
+  generationDateAndTime="2022-05-03T14:11:47Z"
   variableNamingConvention="structured"
   numberOfEventIndicators="0">
   <ModelExchange
@@ -159,6 +159,9 @@
     </SourceFiles>
   </CoSimulation>
   <UnitDefinitions>
+    <Unit name="mm">
+      <BaseUnit m="1" factor="0.001" />
+    </Unit>
     <Unit name="m">
       <BaseUnit m="1" />
     </Unit>
@@ -183,34 +186,55 @@
   <ModelVariables>
   <!-- Index of variable = "1" -->
   <ScalarVariable
-    name="u"
-    valueReference="0"
-    causality="input"
-    >
-    <Real start="1.0" unit="m/s"/>
-  </ScalarVariable>
-  <!-- Index of variable = "2" -->
-  <ScalarVariable
     name="x"
-    valueReference="1"
+    valueReference="0"
     initial="exact">
     <Real start="1.0"/>
   </ScalarVariable>
+  <!-- Index of variable = "2" -->
+  <ScalarVariable
+    name="der(x)"
+    valueReference="1"
+    >
+    <Real derivative="1"/>
+  </ScalarVariable>
   <!-- Index of variable = "3" -->
   <ScalarVariable
-    name="y"
+    name="u"
     valueReference="2"
+    causality="input"
+    >
+    <Real start="5.0" unit="m/s"/>
+  </ScalarVariable>
+  <!-- Index of variable = "4" -->
+  <ScalarVariable
+    name="y"
+    valueReference="3"
     causality="output"
     >
     <Real unit="m"/>
   </ScalarVariable>
+  <!-- Index of variable = "5" -->
+  <ScalarVariable
+    name="y1"
+    valueReference="4"
+    causality="output"
+    >
+    <Real unit="mm"/>
+  </ScalarVariable>
   </ModelVariables>
   <ModelStructure>
     <Outputs>
-      <Unknown index="3" dependencies="" dependenciesKind="" />
+      <Unknown index="4" dependencies="1" dependenciesKind="dependent" />
+      <Unknown index="5" dependencies="3" dependenciesKind="dependent" />
     </Outputs>
+    <Derivatives>
+      <Unknown index="2" dependencies="1" dependenciesKind="dependent" />
+    </Derivatives>
     <InitialUnknowns>
-      <Unknown index="3" dependencies="" dependenciesKind="" />
+      <Unknown index="2" dependencies="1" dependenciesKind="dependent" />
+      <Unknown index="4" dependencies="1" dependenciesKind="dependent" />
+      <Unknown index="5" dependencies="3" dependenciesKind="dependent" />
     </InitialUnknowns>
   </ModelStructure>
 </fmiModelDescription>

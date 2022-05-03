@@ -1907,15 +1907,22 @@ oms_status_enu_t oms::System::updateDependencyGraphs()
       if (validConnection)
       {
         initializationGraph.addEdge(Connector(varA->getCausality(), varA->getType(), connection->getSignalA(), this->getFullCref()), Connector(varB->getCausality(), varB->getType(), connection->getSignalB(), this->getFullCref()));
+        //set units to initialization graph connectors
+        initializationGraph.setUnits(varA, varB);
+
         // Don't include parameter connections in simulation dependencies
         if (!varA->isParameter())
         {
           eventGraph.addEdge(Connector(varA->getCausality(), varA->getType(), connection->getSignalA(), this->getFullCref()), Connector(varB->getCausality(), varB->getType(), connection->getSignalB(), this->getFullCref()));
+          //set units to eventGraph graph connectors
+          eventGraph.setUnits(varA, varB);
         }
         // allow only real connections in Continuous time mode
         if (varA->getType() == oms_signal_type_real && !varA->isParameter())
         {
           simulationGraph.addEdge(Connector(varA->getCausality(), varA->getType(), connection->getSignalA(), this->getFullCref()), Connector(varB->getCausality(), varB->getType(), connection->getSignalB(), this->getFullCref()));
+          //set units to simulationGraph graph connectors
+          simulationGraph.setUnits(varA, varB);
         }
       }
       else
