@@ -2,10 +2,10 @@
 <fmiModelDescription
   fmiVersion="2.0"
   modelName="B"
-  guid="{541453f9-0bbc-4103-9be8-13bab18e3ebb}"
+  guid="{c7130ebe-4889-47c2-abb6-58cb8b936c8b}"
   description=""
   generationTool="OpenModelica Compiler OpenModelica v1.20.0-dev (64-bit)"
-  generationDateAndTime="2022-04-27T18:37:24Z"
+  generationDateAndTime="2022-05-03T14:11:52Z"
   variableNamingConvention="structured"
   numberOfEventIndicators="0">
   <ModelExchange
@@ -191,8 +191,16 @@
   </ScalarVariable>
   <!-- Index of variable = "2" -->
   <ScalarVariable
-    name="y"
+    name="u1"
     valueReference="1"
+    causality="input"
+    >
+    <Real start="1.0" unit="m"/>
+  </ScalarVariable>
+  <!-- Index of variable = "3" -->
+  <ScalarVariable
+    name="y"
+    valueReference="2"
     causality="output"
     >
     <Real unit="m"/>
@@ -200,10 +208,10 @@
   </ModelVariables>
   <ModelStructure>
     <Outputs>
-      <Unknown index="2" dependencies="1" dependenciesKind="dependent" />
+      <Unknown index="3" dependencies="1" dependenciesKind="dependent" />
     </Outputs>
     <InitialUnknowns>
-      <Unknown index="2" dependencies="1" dependenciesKind="dependent" />
+      <Unknown index="3" dependencies="1" dependenciesKind="dependent" />
     </InitialUnknowns>
   </ModelStructure>
 </fmiModelDescription>
