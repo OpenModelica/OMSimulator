@@ -5,6 +5,7 @@ pipeline {
   }
   options {
     newContainerPerStage()
+    buildDiscarder(logRotator(numToKeepStr: "100", artifactNumToKeepStr: "5"))
   }
   parameters {
     booleanParam(name: 'MSVC64', defaultValue: true, description: 'Build with MSVC64 (often hangs)')
