@@ -271,7 +271,7 @@ void oms::DirectedGraph::calculateSortedConnections()
         scc.component_names.insert(conB.getOwner());
         // check for factor in connector units
         if (nodes[edges.connections[components[i][j]].first].connectorUnits.empty() || nodes[edges.connections[components[i][j]].second].connectorUnits.empty())
-          scc.factor.push_back(1.0);
+          scc.factor = 1.0;
         else
         {
           double factorA = 1.0;
@@ -295,7 +295,7 @@ void oms::DirectedGraph::calculateSortedConnections()
             //std::cout << "\n factorB ==> " << conB.getName().c_str() << "==>" << connectorB.first << "==>" << factorB;
           }
           // factor = output_Connector_Factor/ input_Connector_Factor
-          scc.factor.push_back(factorA/factorB);
+          scc.factor = (factorA/factorB);
         }
       }
     }

@@ -1009,7 +1009,7 @@ oms_status_enu_t oms::SystemWC::updateInputs(oms::DirectedGraph& graph)
         /* check for unit conversion and set the value multiplied by factor,
          * by default, factor = 1.0, (e.g) mm to m will be (factor*value) => (10^-3 * value)
         */
-        if (oms_status_ok != setReal(graph.getNodes()[input].getName(), sortedConnections[i].factor[i]*value)) return oms_status_error;
+        if (oms_status_ok != setReal(graph.getNodes()[input].getName(), sortedConnections[i].factor*value)) return oms_status_error;
 
         // derivatives
         if (Flags::InputExtrapolation() && getModel().validState(oms_modelState_simulation))

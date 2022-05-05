@@ -58,7 +58,7 @@ namespace oms
     unsigned int size;
     unsigned int size_including_internal;
     std::set<oms::ComRef> component_names;
-    std::vector<double> factor;
+    double factor;
   };
 
   class DirectedGraph
