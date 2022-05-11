@@ -36,6 +36,8 @@
 
 #include <cstring>
 #include <iostream>
+#include <vector>
+#include <string>
 
 oms::Connection::Connection(const oms::ComRef& conA, const oms::ComRef& conB, oms_connection_type_enu_t type)
 {
@@ -230,6 +232,38 @@ bool oms::Connection::isValid(const ComRef& crefA, const ComRef& crefB, const Co
 
   // both connectors must be valid in order to make the connection valid
   return connectorA && connectorB;
+}
+
+bool oms::Connection::isValidUnits(const ComRef& crefA, const ComRef& crefB, const Connector& conA, const Connector& conB)
+{
+  if (conA.connectorUnits.empty() || conB.connectorUnits.empty())
+    return true;
+
+  std::map<std::string, std::string> connectorAUnits, connectorBUnits;
+
+  getSIUnits(conA, connectorAUnits);
+  getSIUnits(conB, connectorBUnits);
+
+  if (connectorAUnits != connectorBUnits)
+    return false;
+
+  return true;
+}
+
+void oms::Connection::getSIUnits(const Connector& connector, std::map<std::string, std::string>& baseUnits)
+{
+  std::vector<std::string> SIunits = {"kg", "m", "s", "A", "K", "mol", "cd", "rad"};
+  for (const auto & unit : SIunits)
+  {
+    for (const auto & it: connector.connectorUnits)
+    {
+      auto baseUnit = it.second.find(unit);
+      if (baseUnit != it.second.end())
+        baseUnits[baseUnit->first] = baseUnit->second;
+      else
+        baseUnits[unit] = "0";
+    }
+  }
 }
 
 oms_status_enu_t oms::Connection::rename(const ComRef& cref, const ComRef& newCref)

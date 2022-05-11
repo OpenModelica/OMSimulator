@@ -1,4 +1,6 @@
 FMUs = \
+A \
+B \
 AircraftVehicleDemonstrator.Atmosphere_Model_FMU_sf \
 AircraftVehicleDemonstrator.bC \
 AircraftVehicleDemonstrator.cockpit \
@@ -79,6 +81,7 @@ MassSpring.mos \
 nls.mos \
 QuarterCarModel.mos \
 str_hello_world.mos \
+unit.mos \
 
 .PHONY: all generateFMUs
 

@@ -269,8 +269,37 @@ void oms::DirectedGraph::calculateSortedConnections()
         scc.connections.push_back(std::pair<int, int>(edges.connections[components[i][j]]));
         scc.component_names.insert(conA.getOwner());
         scc.component_names.insert(conB.getOwner());
+        // check for factor in connector units
+        if (nodes[edges.connections[components[i][j]].first].connectorUnits.empty() || nodes[edges.connections[components[i][j]].second].connectorUnits.empty())
+          scc.factor = 1.0;
+        else
+        {
+          double factorA = 1.0;
+          double factorB = 1.0;
+          for (const auto & connectorA : nodes[edges.connections[components[i][j]].first].connectorUnits)
+          {
+            for (const auto &baseunit : connectorA.second)
+            {
+              if (baseunit.first == "factor")
+                factorA = std::stod(baseunit.second);
+            }
+            //std::cout << "\n factorA ==> " << conA.getName().c_str() << "==>" << connectorA.first << "==>" << factorA;
+          }
+          for (const auto &connectorB : nodes[edges.connections[components[i][j]].second].connectorUnits)
+          {
+            for (const auto &baseunit : connectorB.second)
+            {
+              if (baseunit.first == "factor")
+                factorB = std::stod(baseunit.second);
+            }
+            //std::cout << "\n factorB ==> " << conB.getName().c_str() << "==>" << connectorB.first << "==>" << factorB;
+          }
+          // factor = output_Connector_Factor/ input_Connector_Factor
+          scc.factor = (factorA/factorB);
+        }
       }
     }
+
 
     // size of loop incl. internal connections: components[i].size()
     // size of loop excl. internal connections: connections.size()
@@ -293,6 +322,35 @@ void oms::DirectedGraph::calculateSortedConnections()
   }
 
   sortedConnectionsAreValid = true;
+}
+
+void oms::DirectedGraph::setUnits(Connector* conA, Connector* conB)
+{
+  /* get the full cref to check the connector owner with nodes
+     (e.g) model.root.A.y1 ==> A.y1
+  */
+  ComRef crefA(conA->getOwner() + conA->getName());
+  ComRef tailA = crefA.pop_front();
+  ComRef tailB = crefA.pop_front();
+
+  ComRef crefB(conB->getOwner() + conB->getName());
+  ComRef tailA1 = crefB.pop_front();
+  ComRef tailB1 = crefB.pop_front();
+
+  for (auto &it : nodes)
+  {
+    // std::cout << "\n after edge:" << it.getName().c_str() << "==>" << crefA.c_str() << "==>" << crefB.c_str();
+    if (it.getName() == crefA)
+    {
+      for (const auto &con : conA->connectorUnits)
+        it.connectorUnits[con.first] = con.second;
+    }
+    if (it.getName() == crefB)
+    {
+      for (const auto &con : conB->connectorUnits)
+        it.connectorUnits[con.first] = con.second;
+    }
+  }
 }
 
 void oms::DirectedGraph::dumpNodes() const

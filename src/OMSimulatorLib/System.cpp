@@ -1182,6 +1182,12 @@ oms_status_enu_t oms::System::addConnection(const oms::ComRef& crefA, const oms:
       return logError("Connector " + std::string(crefB) + " is already connected to " + std::string(connection->getSignalA()));
   }
 
+  // check units in connection
+  if (!oms::Connection::isValidUnits(crefA, crefB, *conA, *conB))
+  {
+    return logError("Unit mismatch in connection: " + std::string(crefA) + " -> " + std::string(crefB));
+  }
+
   // check if the connections are valid, according to the SSP-1.0 allowed connection table
   if (oms::Connection::isValid(crefA, crefB, *conA, *conB))
   {
@@ -1917,6 +1923,25 @@ oms_status_enu_t oms::System::updateDependencyGraphs()
     }
     else
       return logError("invalid connection");
+  }
+
+  // set the units, once all the egdes are added to initialization and simulationGraph
+  for (const auto &connection : connections)
+  {
+    if (!connection || connection->getType() != oms_connection_single)
+      continue;
+    Connector *varA = getConnector(connection->getSignalA());
+    Connector *varB = getConnector(connection->getSignalB());
+    if (varA && varB)
+    {
+      bool validConnection = oms::Connection::isValid(connection->getSignalA(), connection->getSignalB(), *varA, *varB);
+      if (validConnection)
+      {
+        initializationGraph.setUnits(varA, varB);
+        eventGraph.setUnits(varA, varB);
+        simulationGraph.setUnits(varA, varB);
+      }
+    }
   }
 
   return oms_status_ok;

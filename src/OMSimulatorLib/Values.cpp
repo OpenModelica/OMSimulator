@@ -1301,8 +1301,11 @@ oms_status_enu_t oms::Values::parseModelDescription(const filesystem::path& root
         {
           //startValue = scalarVariable.child("Real").attribute("start").as_string();
           modelDescriptionRealStartValues[ComRef(scalarVariable.attribute("name").as_string())] = scalarVariable.child("Real").attribute("start").as_double();
-          if (strlen(scalarVariable.child("Real").attribute("unit").as_string()) != 0)
-            modelDescriptionVariableUnits[ComRef(scalarVariable.attribute("name").as_string())] = scalarVariable.child("Real").attribute("unit").as_string();
+        }
+        // check for units
+        if (strlen(scalarVariable.child("Real").attribute("unit").as_string()) != 0)
+        {
+          modelDescriptionVariableUnits[ComRef(scalarVariable.attribute("name").as_string())] = scalarVariable.child("Real").attribute("unit").as_string();
         }
         if (strlen(scalarVariable.child("Integer").attribute("start").as_string()) != 0)
         {

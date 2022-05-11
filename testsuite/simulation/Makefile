@@ -1,6 +1,7 @@
 TEST = ../rtest -v
 
 TESTFILES = \
+checkUnits.lua \
 deleteConnector.lua \
 deleteConnector1.lua \
 deleteReferencesAndStartValues.lua \
