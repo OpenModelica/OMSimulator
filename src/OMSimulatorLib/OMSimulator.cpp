@@ -213,6 +213,15 @@ oms_status_enu_t oms_referenceResources(const char* cref_, const char* ssmFile)
   return model->referenceResources(tail, std::string(ssmFile));
 }
 
+oms_status_enu_t oms_reduceSSV(const char* cref, const char* ssvfile, const char* ssmfile, const char* filepath)
+{
+  oms::Model* model = oms::Scope::GetInstance().getModel(cref);
+  if (!model)
+    return logError_ModelNotInScope(cref);
+
+  return model->reduceSSV(ssvfile, ssmfile, filepath);
+}
+
 oms_status_enu_t oms_export(const char* cref, const char* filename)
 {
   return oms::Scope::GetInstance().exportModel(oms::ComRef(cref), std::string(filename));

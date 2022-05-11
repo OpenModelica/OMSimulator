@@ -38,6 +38,7 @@
 #include "ResultWriter.h"
 #include "Types.h"
 #include "Snapshot.h"
+#include "Values.h"
 #include <assert.h>
 #include <pugixml.hpp>
 
@@ -78,6 +79,7 @@ namespace oms
     oms_status_enu_t deleteReferencesInSSD(const ComRef& cref);
     oms_status_enu_t deleteResourcesInSSP(const std::string& filename);
     oms_status_enu_t referenceResources(const ComRef& cref, const std::string& ssmFile);
+    oms_status_enu_t reduceSSV(const std::string& ssvfile, const std::string& ssmfile, const std::string& filepath);
     oms_status_enu_t exportToSSD(Snapshot& snapshot) const;
     oms_status_enu_t exportSnapshot(const ComRef& cref, char** contents);
     oms_status_enu_t exportSSVTemplate(const ComRef& cref, const std::string& filename);
@@ -161,6 +163,8 @@ namespace oms
     double loggingInterval = 0.0;
     int bufferSize = 10;
     Clock clock;
+
+    Values values;
 
     std::string resultFilename; ///< default <name>_res.mat
     std::string signalFilterFilename = "resources/signalFilter.xml";
