@@ -1907,22 +1907,15 @@ oms_status_enu_t oms::System::updateDependencyGraphs()
       if (validConnection)
       {
         initializationGraph.addEdge(Connector(varA->getCausality(), varA->getType(), connection->getSignalA(), this->getFullCref()), Connector(varB->getCausality(), varB->getType(), connection->getSignalB(), this->getFullCref()));
-        //set units to initialization graph connectors
-        initializationGraph.setUnits(varA, varB);
-
         // Don't include parameter connections in simulation dependencies
         if (!varA->isParameter())
         {
           eventGraph.addEdge(Connector(varA->getCausality(), varA->getType(), connection->getSignalA(), this->getFullCref()), Connector(varB->getCausality(), varB->getType(), connection->getSignalB(), this->getFullCref()));
-          //set units to eventGraph graph connectors
-          eventGraph.setUnits(varA, varB);
         }
         // allow only real connections in Continuous time mode
         if (varA->getType() == oms_signal_type_real && !varA->isParameter())
         {
           simulationGraph.addEdge(Connector(varA->getCausality(), varA->getType(), connection->getSignalA(), this->getFullCref()), Connector(varB->getCausality(), varB->getType(), connection->getSignalB(), this->getFullCref()));
-          //set units to simulationGraph graph connectors
-          simulationGraph.setUnits(varA, varB);
         }
       }
       else
@@ -1930,6 +1923,25 @@ oms_status_enu_t oms::System::updateDependencyGraphs()
     }
     else
       return logError("invalid connection");
+  }
+
+  // set the units, once all the egdes are added to initialization and simulationGraph
+  for (const auto &connection : connections)
+  {
+    if (!connection || connection->getType() != oms_connection_single)
+      continue;
+    Connector *varA = getConnector(connection->getSignalA());
+    Connector *varB = getConnector(connection->getSignalB());
+    if (varA && varB)
+    {
+      bool validConnection = oms::Connection::isValid(connection->getSignalA(), connection->getSignalB(), *varA, *varB);
+      if (validConnection)
+      {
+        initializationGraph.setUnits(varA, varB);
+        eventGraph.setUnits(varA, varB);
+        simulationGraph.setUnits(varA, varB);
+      }
+    }
   }
 
   return oms_status_ok;

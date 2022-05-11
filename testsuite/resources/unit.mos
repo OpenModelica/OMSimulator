@@ -4,16 +4,19 @@ model A
   input Real u(start = 5.0, unit = \"m/s\");
   output Real y(unit = \"m\");
   output Real y1(unit = \"mm\");
+  output Real y2(unit = \"mm/s\");
   Real x(start=1.0);
 equation
   x = der(x);
   y = x;
   y1 = u;
+  y2 = u;
 end A;
 
 model B
   input Real u(start = 1.0, unit = \"m/s\");
   input Real u1(start = 1.0, unit = \"m\");
+  input Real u2(start = 1.0, unit = \"m/ms\");
   output Real y(unit = \"m\");
 equation
   y = u;

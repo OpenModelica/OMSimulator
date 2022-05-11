@@ -20,6 +20,7 @@ oms_addSubModel("model.root.B", "../resources/B.fmu")
 oms_addConnection("model.root.A.y", "model.root.B.u")
 -- valid connection mm to m
 oms_addConnection("model.root.A.y1", "model.root.B.u1")
+oms_addConnection("model.root.A.y2", "model.root.B.u2")
 
 oms_setResultFile("model", "units.mat")
 
@@ -31,11 +32,15 @@ oms_initialize("model")
 print("info:    Initialization")
 print("info:      model.root.A.y1     : " .. oms_getReal("model.root.A.y1"))
 print("info:      model.root.B.u1     : " .. oms_getReal("model.root.B.u1"))
+print("info:      model.root.A.y2     : " .. oms_getReal("model.root.A.y2"))
+print("info:      model.root.B.u2     : " .. oms_getReal("model.root.B.u2"))
 
 oms_simulate("model")
 print("info:    Simulation")
 print("info:      model.root.A.y1     : " .. oms_getReal("model.root.A.y1"))
 print("info:      model.root.B.u1     : " .. oms_getReal("model.root.B.u1"))
+print("info:      model.root.A.y2     : " .. oms_getReal("model.root.A.y2"))
+print("info:      model.root.B.u2     : " .. oms_getReal("model.root.B.u2"))
 
 oms_terminate("model")
 oms_delete("model")
@@ -48,9 +53,13 @@ oms_delete("model")
 -- info:    Initialization
 -- info:      model.root.A.y1     : 5.0
 -- info:      model.root.B.u1     : 0.005
+-- info:      model.root.A.y2     : 5.0
+-- info:      model.root.B.u2     : 5e-06
 -- info:    Simulation
 -- info:      model.root.A.y1     : 5.0
 -- info:      model.root.B.u1     : 0.005
+-- info:      model.root.A.y2     : 5.0
+-- info:      model.root.B.u2     : 5e-06
 -- info:    0 warnings
 -- info:    1 errors
 -- endResult
