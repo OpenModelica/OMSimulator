@@ -2,10 +2,10 @@
 <fmiModelDescription
   fmiVersion="2.0"
   modelName="B"
-  guid="{c7130ebe-4889-47c2-abb6-58cb8b936c8b}"
+  guid="{9cd6718d-e24c-42be-aa77-0fad437d7316}"
   description=""
   generationTool="OpenModelica Compiler OpenModelica v1.20.0-dev (64-bit)"
-  generationDateAndTime="2022-05-03T14:11:52Z"
+  generationDateAndTime="2022-05-11T16:46:06Z"
   variableNamingConvention="structured"
   numberOfEventIndicators="0">
   <ModelExchange
@@ -159,6 +159,9 @@
     </SourceFiles>
   </CoSimulation>
   <UnitDefinitions>
+    <Unit name="m/ms">
+      <BaseUnit m="1" s="-1" factor="1000.0" />
+    </Unit>
     <Unit name="m">
       <BaseUnit m="1" />
     </Unit>
@@ -199,8 +202,16 @@
   </ScalarVariable>
   <!-- Index of variable = "3" -->
   <ScalarVariable
-    name="y"
+    name="u2"
     valueReference="2"
+    causality="input"
+    >
+    <Real start="1.0" unit="m/ms"/>
+  </ScalarVariable>
+  <!-- Index of variable = "4" -->
+  <ScalarVariable
+    name="y"
+    valueReference="3"
     causality="output"
     >
     <Real unit="m"/>
@@ -208,10 +219,10 @@
   </ModelVariables>
   <ModelStructure>
     <Outputs>
-      <Unknown index="3" dependencies="1" dependenciesKind="dependent" />
+      <Unknown index="4" dependencies="1" dependenciesKind="dependent" />
     </Outputs>
     <InitialUnknowns>
-      <Unknown index="3" dependencies="1" dependenciesKind="dependent" />
+      <Unknown index="4" dependencies="1" dependenciesKind="dependent" />
     </InitialUnknowns>
   </ModelStructure>
 </fmiModelDescription>
