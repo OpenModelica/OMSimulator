@@ -26,6 +26,7 @@ setUnits1.lua \
 setUnits2.lua \
 setUnits3.py \
 reduceSSV.lua \
+reduceSSV.py \
 test_omsExport.lua \
 test_omsExport.py \
 test01.lua \
