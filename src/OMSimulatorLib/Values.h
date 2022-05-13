@@ -96,6 +96,8 @@ namespace oms
     void importUnitDefinitions(const pugi::xml_node& node);
 
     void exportToSSVTemplate(pugi::xml_node& ssvNode, const ComRef& cref);  ///< start values read from modelDescription.xml and creates a ssv template
+    void exportReduceSSV(pugi::xml_node& ssvNode, const ComRef& cref);  ///< reduced SSV file which contains only the referenced crefs in parametermapping
+
     oms_status_enu_t exportToSSMTemplate(pugi::xml_node& ssmNode, const ComRef& cref);  ///< start values read from modelDescription.xml and creates a ssm template
 
     oms_status_enu_t parseModelDescription(const filesystem::path& root); ///< path without the filename, i.e. modelDescription.xml
@@ -116,6 +118,7 @@ namespace oms
 
     void importParameterMapping(const pugi::xml_node& parameterMapping);
     oms::ComRef getMappedCrefEntry(const ComRef& cref) const;
+    bool isEntryReferencedInSSM(const ComRef& cref) const;
     bool empty() const;
 
   public:

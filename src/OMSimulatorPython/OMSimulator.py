@@ -109,6 +109,7 @@ class OMSimulator:
     self.listUnconnectedConnectors = Scope._capi.listUnconnectedConnectors
     self.loadSnapshot = Scope._capi.loadSnapshot
     self.newResources = Scope._capi.newResources
+    self.reduceSSV = Scope._capi.reduceSSV
     self.referenceResources = Scope._capi.referenceResources
     self.removeSignalsFromResults = Scope._capi.removeSignalsFromResults
     self.rename = Scope._capi.rename

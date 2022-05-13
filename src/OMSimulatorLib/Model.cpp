@@ -574,6 +574,49 @@ oms_status_enu_t oms::Model::referenceResources(const oms::ComRef& cref, const s
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::Model::reduceSSV(const std::string& ssvfile, const std::string& ssmfile, const std::string& filepath)
+{
+  filesystem::path ssvpath_ = oms_canonical(ssvfile);
+  if (!filesystem::exists(ssvfile))
+    return logError("ssvfile does not exist: \"" + ssvfile + "\"");
+
+  filesystem::path ssmpath_ = oms_canonical(ssmfile);
+  if (!filesystem::exists(ssmfile))
+    return logError("ssmfile does not exist: \"" + ssmfile + "\"");
+
+  std::string ssvFilename = ssvpath_.filename().generic_string();
+  std::string ssmFilename = ssmpath_.filename().generic_string();
+
+  Snapshot snapshot;
+  snapshot.importResourceFile(ssvFilename, ssvpath_.remove_filename());
+  snapshot.importResourceFile(ssmFilename, ssmpath_.remove_filename());
+
+  values.importFromSnapshot(snapshot, ssvFilename, ssmFilename);
+
+  //snapshot.debugPrintAll();
+
+  pugi::xml_document ssvdoc;
+  // generate XML declaration for ssm file
+  pugi::xml_node ssvDeclarationNode = ssvdoc.append_child(pugi::node_declaration);
+  ssvDeclarationNode.append_attribute("version") = "1.0";
+  ssvDeclarationNode.append_attribute("encoding") = "UTF-8";
+
+  std::string savePath = "";
+  if (filepath.empty())
+    savePath = "reduced.ssv";
+  else
+    savePath = filepath;
+
+  pugi::xml_node ssvNode = snapshot.getTemplateResourceNodeSSV(savePath, "reducedSSV");
+  values.exportReduceSSV(ssvNode, this->getCref());
+  ssvdoc.append_copy(snapshot.getResourceNode(savePath));
+
+  if (!ssvdoc.save_file(savePath.c_str(), "  ", pugi::format_indent|pugi::format_indent_attributes, pugi::encoding_utf8))
+    return logError("failed to export  \"" + savePath + "\" (for model \"" + std::string(this->getCref()) + "\")");
+
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms::Model::deleteReferencesInSSD(const oms::ComRef& cref)
 {
   ComRef subCref(cref);

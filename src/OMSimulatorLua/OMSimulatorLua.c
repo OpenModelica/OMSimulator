@@ -308,6 +308,33 @@ static int OMSimulatorLua_oms_exportSSVTemplate(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms_reduceSSV(const char* ssvfile, const char* ssmfile, const char* filepath);
+static int OMSimulatorLua_oms_reduceSSV(lua_State *L)
+{
+  if (lua_gettop(L) > 4)
+    return luaL_error(L, "expecting exactly 3 or 4 arguments");
+
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+  luaL_checktype(L, 3, LUA_TSTRING);
+
+  const char* cref = lua_tostring(L, 1);
+  const char* ssvfile = lua_tostring(L, 2);
+  const char* ssmfile = lua_tostring(L, 3);
+
+  const char* filepath = "";
+  if (lua_gettop(L) == 4)
+  {
+    luaL_checktype(L, 4, LUA_TSTRING);
+    filepath = lua_tostring(L, 4);
+  }
+
+  oms_status_enu_t status = oms_reduceSSV(cref, ssvfile, ssmfile, filepath);
+
+  lua_pushinteger(L, status);
+  return 1;
+}
+
 //oms_status_enu_t oms_exportSSMTemplate(const char* cref, const char* filename);
 static int OMSimulatorLua_oms_exportSSMTemplate(lua_State *L)
 {
@@ -1445,6 +1472,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms_rename);
   REGISTER_LUA_CALL(oms_reset);
   REGISTER_LUA_CALL(oms_referenceResources);
+  REGISTER_LUA_CALL(oms_reduceSSV);
   REGISTER_LUA_CALL(oms_setBoolean);
   REGISTER_LUA_CALL(oms_setCommandLineOption);
   REGISTER_LUA_CALL(oms_setFixedStepSize);

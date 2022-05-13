@@ -117,6 +117,8 @@ class capi:
     self.obj.oms_newModel.restype = ctypes.c_int
     self.obj.oms_newResources.argtypes = [ctypes.c_char_p]
     self.obj.oms_newResources.restype = ctypes.c_int
+    self.obj.oms_reduceSSV.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_reduceSSV.restype = ctypes.c_int
     self.obj.oms_referenceResources.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_referenceResources.restype = ctypes.c_int
     self.obj.oms_removeSignalsFromResults.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
@@ -328,6 +330,8 @@ class capi:
     return self.obj.oms_newModel(cref.encode())
   def newResources(self, crefA):
     return self.obj.oms_newResources(crefA.encode())
+  def reduceSSV(self, crefA, crefB, crefC, crefD=""):
+    return self.obj.oms_reduceSSV(crefA.encode(), crefB.encode(), crefC.encode(), crefD.encode())
   def referenceResources(self, crefA, crefB=""):
     return self.obj.oms_referenceResources(crefA.encode(), crefB.encode())
   def removeSignalsFromResults(self, cref, regex):
