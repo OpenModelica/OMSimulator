@@ -642,8 +642,6 @@ oms_status_enu_t oms::System::exportToSSV(Snapshot& snapshot) const
 
 oms_status_enu_t oms::System::importFromSnapshot(const pugi::xml_node& node, const std::string& sspVersion, const Snapshot& snapshot)
 {
-  std::map<std::string, std::string> startValuesFileSources;  ///< ssvFileSource mapped with ssmFilesource if mapping is provided, otherwise only ssvFilesource entry is made
-
   for(pugi::xml_node_iterator it = node.begin(); it != node.end(); ++it)
   {
     std::string name = it->name();
