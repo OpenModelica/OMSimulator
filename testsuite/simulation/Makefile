@@ -57,6 +57,7 @@ snapshot.lua \
 snapshot.py \
 str_hello_world.lua \
 str_hello_world.py \
+suppressUnitConversion.lua \
 table.lua \
 
 # Run make failingtest
