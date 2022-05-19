@@ -501,7 +501,7 @@ oms_status_enu_t oms_getSystemType(const char* cref, oms_system_enu_t* type)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms_addConnection(const char *crefA, const char *crefB)
+oms_status_enu_t oms_addConnection(const char *crefA, const char *crefB, bool suppressUnitConversion)
 {
   oms::ComRef tailA(crefA);
   oms::ComRef modelCref = tailA.pop_front();
@@ -521,7 +521,7 @@ oms_status_enu_t oms_addConnection(const char *crefA, const char *crefB)
     return logError_SystemNotInModel(modelCref, systemCref);
   }
 
-  return system->addConnection(tailA,tailB);
+  return system->addConnection(tailA, tailB, suppressUnitConversion);
 }
 
 oms_status_enu_t oms_deleteConnection(const char *crefA, const char *crefB)

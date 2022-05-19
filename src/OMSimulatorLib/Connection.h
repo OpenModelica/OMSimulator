@@ -47,7 +47,7 @@ namespace oms
   class Connection : protected oms_connection_t
   {
   public:
-    Connection(const oms::ComRef& conA, const oms::ComRef& conB, oms_connection_type_enu_t type=oms_connection_single);
+    Connection(const oms::ComRef& conA, const oms::ComRef& conB, bool suppressUnitConversion=false, oms_connection_type_enu_t type=oms_connection_single);
     ~Connection();
 
     // methods to copy the object
@@ -73,6 +73,7 @@ namespace oms
     bool containsSignal(const oms::ComRef& signal) const;
     bool containsSignalB(const oms::ComRef& signal) const;
 
+    bool getSuppressUnitConversion() {return suppressUnitConversion;}
     /**
     * \brief Checks a connection based on SSP-1.0 connection table
     */

@@ -39,7 +39,7 @@
 #include <vector>
 #include <string>
 
-oms::Connection::Connection(const oms::ComRef& conA, const oms::ComRef& conB, oms_connection_type_enu_t type)
+oms::Connection::Connection(const oms::ComRef& conA, const oms::ComRef& conB, bool suppressUnitConversion, oms_connection_type_enu_t type)
 {
   std::string str;
 
@@ -56,6 +56,8 @@ oms::Connection::Connection(const oms::ComRef& conA, const oms::ComRef& conB, om
   this->geometry = reinterpret_cast<ssd_connection_geometry_t*>(new oms::ssd::ConnectionGeometry());
 
   tlmparameters = NULL;
+
+  this->suppressUnitConversion = suppressUnitConversion;
 }
 
 oms::Connection::~Connection()
@@ -81,6 +83,8 @@ oms::Connection::Connection(const oms::Connection& rhs)
   this->geometry = reinterpret_cast<ssd_connection_geometry_t*>(geometry_);
 
   tlmparameters = NULL;
+
+  this->suppressUnitConversion = rhs.suppressUnitConversion;
 }
 
 oms::Connection& oms::Connection::operator=(const oms::Connection& rhs)
@@ -106,6 +110,8 @@ oms::Connection& oms::Connection::operator=(const oms::Connection& rhs)
   this->geometry = reinterpret_cast<ssd_connection_geometry_t*>(geometry_);
 
   setTLMParameters(rhs.tlmparameters);
+
+  this->suppressUnitConversion = rhs.suppressUnitConversion;
 
   return *this;
 }

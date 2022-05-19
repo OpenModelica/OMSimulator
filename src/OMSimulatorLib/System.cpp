@@ -682,7 +682,12 @@ oms_status_enu_t oms::System::importFromSnapshot(const pugi::xml_node& node, con
         ComRef crefB = endConnector;
         if (!endElement.isEmpty())
           crefB = endElement + endConnector;
-        if (oms_status_ok != addConnection(crefA, crefB))
+
+        bool suppressUnitConversion = false;
+        if (itConnectors->attribute("suppressUnitConversion").as_bool())
+          suppressUnitConversion = itConnectors->attribute("suppressUnitConversion").as_bool();
+
+        if (oms_status_ok != addConnection(crefA, crefB, suppressUnitConversion))
           return logError("Failed to import " + std::string(oms::ssp::Draft20180219::ssd::connection));
         else
         {
@@ -1095,7 +1100,7 @@ oms::Connection** oms::System::getConnections(const oms::ComRef& cref)
   return &connections[0];
 }
 
-oms_status_enu_t oms::System::addConnection(const oms::ComRef& crefA, const oms::ComRef& crefB)
+oms_status_enu_t oms::System::addConnection(const oms::ComRef& crefA, const oms::ComRef& crefB, bool suppressUnitConversion)
 {
   oms::ComRef tailA(crefA);
   oms::ComRef headA = tailA.pop_front();
@@ -1108,7 +1113,7 @@ oms_status_enu_t oms::System::addConnection(const oms::ComRef& crefA, const oms:
   {
     auto subsystem = subsystems.find(headA);
     if (subsystem != subsystems.end())
-      return subsystem->second->addConnection(tailA,tailB);
+      return subsystem->second->addConnection(tailA, tailB, suppressUnitConversion);
   }
 
 #if !defined(NO_TLM)
@@ -1121,7 +1126,7 @@ oms_status_enu_t oms::System::addConnection(const oms::ComRef& crefA, const oms:
       return logError_ConnectionExistsAlready(crefA, crefB, this);
 
     // create connection between TLM buses (NOT a TLM connection)
-    connections.back() = new oms::Connection(crefA, crefB, oms_connection_bus);
+    connections.back() = new oms::Connection(crefA, crefB, suppressUnitConversion, oms_connection_bus);
     connections.push_back(NULL);
     return oms_status_ok;
   }
@@ -1144,7 +1149,7 @@ oms_status_enu_t oms::System::addConnection(const oms::ComRef& crefA, const oms:
       return logError_ConnectionExistsAlready(crefA, crefB, this);
 
     // create bus connection
-    connections.back() = new oms::Connection(crefA, crefB, oms_connection_bus);
+    connections.back() = new oms::Connection(crefA, crefB, suppressUnitConversion, oms_connection_bus);
     connections.push_back(NULL);
     return oms_status_ok;
   }
@@ -1191,7 +1196,7 @@ oms_status_enu_t oms::System::addConnection(const oms::ComRef& crefA, const oms:
   // check if the connections are valid, according to the SSP-1.0 allowed connection table
   if (oms::Connection::isValid(crefA, crefB, *conA, *conB))
   {
-    connections.back() = new oms::Connection(crefA, crefB);
+    connections.back() = new oms::Connection(crefA, crefB, suppressUnitConversion);
     connections.push_back(NULL);
   }
   // flipped causality check
@@ -1207,7 +1212,7 @@ oms_status_enu_t oms::System::addConnection(const oms::ComRef& crefA, const oms:
       if (connection && connection->containsSignalB(crefA))
         return logError("Connector " + std::string(crefA) + " is already connected to " + std::string(connection->getSignalA()));
     }
-    connections.back() = new oms::Connection(crefB, crefA);
+    connections.back() = new oms::Connection(crefB, crefA, suppressUnitConversion);
     connections.push_back(NULL);
   }
   else
@@ -1291,7 +1296,7 @@ oms_status_enu_t oms::System::addTLMConnection(const oms::ComRef& crefA, const o
   if (busA && busB)
   {
     //Create bus connection
-    connections.back() = new oms::Connection(crefA, crefB, oms_connection_tlm);
+    connections.back() = new oms::Connection(crefA, crefB, false, oms_connection_tlm);
     connections.back()->setTLMParameters(delay, alpha, linearimpedance, angularimpedance);
     connections.push_back(NULL);
     busA->setDelay(delay);
@@ -1937,9 +1942,9 @@ oms_status_enu_t oms::System::updateDependencyGraphs()
       bool validConnection = oms::Connection::isValid(connection->getSignalA(), connection->getSignalB(), *varA, *varB);
       if (validConnection)
       {
-        initializationGraph.setUnits(varA, varB);
-        eventGraph.setUnits(varA, varB);
-        simulationGraph.setUnits(varA, varB);
+        initializationGraph.setUnits(varA, varB, connection->getSuppressUnitConversion());
+        eventGraph.setUnits(varA, varB, connection->getSuppressUnitConversion());
+        simulationGraph.setUnits(varA, varB, connection->getSuppressUnitConversion());
       }
     }
   }

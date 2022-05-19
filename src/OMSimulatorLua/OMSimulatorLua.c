@@ -850,14 +850,22 @@ static int OMSimulatorLua_oms_addConnector(lua_State *L)
 //oms_status_enu_t oms_addConnection(const char *crefA, const char *crefB);
 static int OMSimulatorLua_oms_addConnection(lua_State *L)
 {
-  if (lua_gettop(L) != 2)
-    return luaL_error(L, "expecting exactly 2 arguments");
+  if (lua_gettop(L) > 3)
+    return luaL_error(L, "expecting exactly 2 or 3 arguments");
   luaL_checktype(L, 1, LUA_TSTRING);
   luaL_checktype(L, 2, LUA_TSTRING);
 
   const char* crefA = lua_tostring(L, 1);
   const char* crefB = lua_tostring(L, 2);
-  oms_status_enu_t status = oms_addConnection(crefA, crefB);
+
+  bool suppressUnitConversion = false;
+  if (lua_gettop(L) == 3)
+  {
+    luaL_checktype(L, 3, LUA_TBOOLEAN);
+    suppressUnitConversion = lua_toboolean(L, 3);
+  }
+
+  oms_status_enu_t status = oms_addConnection(crefA, crefB, suppressUnitConversion);
 
   lua_pushinteger(L, status);
 
