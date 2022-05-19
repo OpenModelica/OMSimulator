@@ -134,6 +134,9 @@ oms_status_enu_t oms::Connection::exportToSSD(pugi::xml_node &root) const
   node.append_attribute("endElement") = endConnectorRef.isEmpty() ? "" : endElementRef.c_str();
   node.append_attribute("endConnector") = endConnectorRef.isEmpty() ? endElementRef.c_str() : endConnectorRef.c_str();
 
+  if (suppressUnitConversion)
+    node.append_attribute("suppressUnitConversion") = suppressUnitConversion;
+
   if(type == oms_connection_tlm)
   {
     node.append_attribute("delay") = std::to_string(tlmparameters->delay).c_str();
