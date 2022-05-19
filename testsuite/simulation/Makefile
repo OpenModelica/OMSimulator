@@ -35,6 +35,7 @@ import_parameter_mapping_inline.lua \
 importPartialSnapshot.lua \
 importStartValues.lua \
 importStartValues1.lua \
+importSuppressUnitConversion.lua \
 multipleConnections.lua \
 nls.py \
 partialSnapshot.lua \

@@ -311,7 +311,7 @@ static int OMSimulatorLua_oms_exportSSVTemplate(lua_State *L)
 //oms_status_enu_t oms_reduceSSV(const char* ssvfile, const char* ssmfile, const char* filepath);
 static int OMSimulatorLua_oms_reduceSSV(lua_State *L)
 {
-  if (lua_gettop(L) > 4)
+  if (lua_gettop(L) != 3 && lua_gettop(L) != 4)
     return luaL_error(L, "expecting exactly 3 or 4 arguments");
 
   luaL_checktype(L, 1, LUA_TSTRING);
@@ -850,7 +850,7 @@ static int OMSimulatorLua_oms_addConnector(lua_State *L)
 //oms_status_enu_t oms_addConnection(const char *crefA, const char *crefB);
 static int OMSimulatorLua_oms_addConnection(lua_State *L)
 {
-  if (lua_gettop(L) > 3)
+  if (lua_gettop(L) != 2 && lua_gettop(L) != 3)
     return luaL_error(L, "expecting exactly 2 or 3 arguments");
   luaL_checktype(L, 1, LUA_TSTRING);
   luaL_checktype(L, 2, LUA_TSTRING);
