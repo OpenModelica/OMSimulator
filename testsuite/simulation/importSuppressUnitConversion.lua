@@ -167,13 +167,13 @@ oms_delete("model")
 --             startConnector="y1"
 --             endElement="B"
 --             endConnector="u1"
---             importsuppressunitConversion="true" />
+--             suppressUnitConversion="true" />
 --           <ssd:Connection
 --             startElement="A"
 --             startConnector="y2"
 --             endElement="B"
 --             endConnector="u2"
---             importsuppressunitConversion="true" />
+--             suppressUnitConversion="true" />
 --         </ssd:Connections>
 --         <ssd:Annotations>
 --           <ssc:Annotation
