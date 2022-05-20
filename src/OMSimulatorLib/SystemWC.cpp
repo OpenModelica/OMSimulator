@@ -768,10 +768,8 @@ oms_status_enu_t oms::SystemWC::doStep()
 
     return oms_status_ok;
   }
-  else
-    return logError("Invalid solver selected");
 
-  return oms_status_error;
+  return logError("Invalid solver selected");
 }
 
 oms_status_enu_t oms::SystemWC::stepUntil(double stopTime)
