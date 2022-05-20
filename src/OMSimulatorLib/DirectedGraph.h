@@ -59,6 +59,7 @@ namespace oms
     unsigned int size_including_internal;
     std::set<oms::ComRef> component_names;
     double factor;
+    bool suppressUnitConversion;
   };
 
   class DirectedGraph
@@ -81,7 +82,7 @@ namespace oms
     const std::vector<Connector>& getNodes() const {return nodes;}
     const scc_t& getEdges() const {return edges;}
 
-    void setUnits(Connector* conA, Connector* conB);
+    void setUnits(Connector* conA, Connector* conB, bool suppressUnitConversion);
     void dumpNodes() const;
 
   private:
@@ -98,6 +99,15 @@ namespace oms
     std::vector< std::vector<int> > G;
     std::vector< scc_t > sortedConnections;
     bool sortedConnectionsAreValid;
+
+    struct suppressUnitConversion
+    {
+      oms::ComRef conA;
+      oms::ComRef conB;
+      bool unitConversion;
+    };
+
+    std::vector<suppressUnitConversion> unitConversion;
   };
 }
 

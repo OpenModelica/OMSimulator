@@ -708,10 +708,15 @@ oms_status_enu_t oms::SystemSC::updateInputs(DirectedGraph& graph)
       {
         double value = 0.0;
         if (oms_status_ok != getReal(graph.getNodes()[output].getName(), value)) return oms_status_error;
-        /* check for unit conversion and set the value multiplied by factor,
+        /* check for unit conversion and suppressUnitConversion and set the value multiplied by factor,
          * by default, factor = 1.0, (e.g) mm to m will be (factor*value) => (10^-3 * value)
         */
-        if (oms_status_ok != setReal(graph.getNodes()[input].getName(), sortedConnections[i].factor*value)) return oms_status_error;
+        if (sortedConnections[i].suppressUnitConversion)
+          value = value;
+        else
+          value = sortedConnections[i].factor*value;
+
+        if (oms_status_ok != setReal(graph.getNodes()[input].getName(), value)) return oms_status_error;
       }
       else if (graph.getNodes()[input].getType() == oms_signal_type_integer || graph.getNodes()[input].getType() == oms_signal_type_enum)
       {

@@ -349,6 +349,7 @@ typedef struct {
   char* conB;                                      ///< Name of connector B
   ssd_connection_geometry_t* geometry;             ///< Geometry information of the connection
   oms_tlm_connection_parameters_t* tlmparameters;  ///< TLM parameters (only for TLM connections)
+  bool suppressUnitConversion;                     ///< boolean to specify automatic unit coversion between connections
 } oms_connection_t;
 
 /**

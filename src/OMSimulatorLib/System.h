@@ -117,7 +117,7 @@ namespace oms
 #endif
     Connection* getConnection(const ComRef& crefA, const ComRef& crefB);
     Connection** getConnections(const ComRef &cref);
-    oms_status_enu_t addConnection(const ComRef& crefA, const ComRef& crefB);
+    oms_status_enu_t addConnection(const ComRef& crefA, const ComRef& crefB, bool suppressUnitConversion = false);
     oms_status_enu_t deleteConnection(const ComRef& crefA, const ComRef& crefB);
     oms_status_enu_t setConnectorGeometry(const ComRef& cref, const oms::ssd::ConnectorGeometry* geometry);
     oms_status_enu_t setConnectionGeometry(const ComRef &crefA, const ComRef &crefB, const oms::ssd::ConnectionGeometry* geometry);

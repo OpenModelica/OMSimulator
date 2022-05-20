@@ -35,6 +35,7 @@ import_parameter_mapping_inline.lua \
 importPartialSnapshot.lua \
 importStartValues.lua \
 importStartValues1.lua \
+importSuppressUnitConversion.lua \
 multipleConnections.lua \
 nls.py \
 partialSnapshot.lua \
@@ -57,6 +58,7 @@ snapshot.lua \
 snapshot.py \
 str_hello_world.lua \
 str_hello_world.py \
+suppressUnitConversion.lua \
 table.lua \
 
 # Run make failingtest

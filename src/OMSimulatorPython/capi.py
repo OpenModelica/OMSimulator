@@ -17,7 +17,7 @@ class capi:
 
     self.obj.oms_addBus.argtypes = [ctypes.c_char_p]
     self.obj.oms_addBus.restype = ctypes.c_int
-    self.obj.oms_addConnection.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_addConnection.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_bool]
     self.obj.oms_addConnection.restype = ctypes.c_int
     self.obj.oms_addConnector.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int]
     self.obj.oms_addConnector.restype = ctypes.c_int
@@ -181,8 +181,8 @@ class capi:
 
   def addBus(self, crefA):
     return self.obj.oms_addBus(crefA.encode())
-  def addConnection(self, crefA, crefB):
-    return self.obj.oms_addConnection(crefA.encode(), crefB.encode())
+  def addConnection(self, crefA, crefB, suppressUnit=False):
+    return self.obj.oms_addConnection(crefA.encode(), crefB.encode(), suppressUnit)
   def addConnector(self, cref, causality, type_):
     return self.obj.oms_addConnector(cref.encode(), causality, type_)
   def addConnectorToBus(self, busCref, connectorCref):

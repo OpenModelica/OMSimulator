@@ -296,6 +296,17 @@ void oms::DirectedGraph::calculateSortedConnections()
           }
           // factor = output_Connector_Factor/ input_Connector_Factor
           scc.factor = (factorA/factorB);
+
+          // set suppressUnitConversion = true or false
+          scc.suppressUnitConversion = false;
+          for (const auto &it : unitConversion)
+          {
+            if (it.conA == conA.getName() && it.conB == conB.getName())
+            {
+              scc.suppressUnitConversion = it.unitConversion;
+              break;
+            }
+          }
         }
       }
     }
@@ -324,7 +335,7 @@ void oms::DirectedGraph::calculateSortedConnections()
   sortedConnectionsAreValid = true;
 }
 
-void oms::DirectedGraph::setUnits(Connector* conA, Connector* conB)
+void oms::DirectedGraph::setUnits(Connector* conA, Connector* conB, bool suppressUnitConversion)
 {
   /* get the full cref to check the connector owner with nodes
      (e.g) model.root.A.y1 ==> A.y1
@@ -336,6 +347,8 @@ void oms::DirectedGraph::setUnits(Connector* conA, Connector* conB)
   ComRef crefB(conB->getOwner() + conB->getName());
   ComRef tailA1 = crefB.pop_front();
   ComRef tailB1 = crefB.pop_front();
+
+  unitConversion.push_back({crefA, crefB, suppressUnitConversion});
 
   for (auto &it : nodes)
   {
