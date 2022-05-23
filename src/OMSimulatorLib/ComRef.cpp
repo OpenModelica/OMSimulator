@@ -35,6 +35,7 @@
 
 #include <assert.h>
 #include <RegEx.h>
+#include <cstring>
 
 const oms_regex re_ident("^[a-zA-Z][a-zA-Z0-9_]*$");
 
