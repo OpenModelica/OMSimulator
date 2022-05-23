@@ -106,10 +106,23 @@ oms_status_enu_t oms::SystemWC::exportToSSD_SimulationInformation(pugi::xml_node
 {
   /* ssd:SimulationInformation should be added as vendor specific annotations from Version 1.0 */
   pugi::xml_node node_simulation_information = node.append_child(oms::ssp::Version1_0::simulation_information);
+  pugi::xml_node node_solver;
 
-  pugi::xml_node node_solver = node_simulation_information.append_child(oms::ssp::Version1_0::FixedStepMaster);
-  node_solver.append_attribute("description") = getSolverName().c_str();
-  node_solver.append_attribute("stepSize") = std::to_string(maximumStepSize).c_str();
+  if (solverMethod == oms_solver_wc_mav || solverMethod == oms_solver_wc_mav2)
+  {
+    node_solver = node_simulation_information.append_child(oms::ssp::Version1_0::VariableStepSolver);
+    node_solver.append_attribute("description") = getSolverName().c_str();
+    node_solver.append_attribute("initialStepSize") = std::to_string(initialStepSize).c_str();
+    node_solver.append_attribute("minimumStepSize") = std::to_string(minimumStepSize).c_str();
+    node_solver.append_attribute("maximumStepSize") = std::to_string(maximumStepSize).c_str();
+  }
+  else if (solverMethod == oms_solver_wc_ma)
+  {
+    node_solver = node_simulation_information.append_child(oms::ssp::Version1_0::FixedStepMaster);
+    node_solver.append_attribute("description") = getSolverName().c_str();
+    node_solver.append_attribute("stepSize") = std::to_string(maximumStepSize).c_str();
+  }
+
   node_solver.append_attribute("absoluteTolerance") = std::to_string(absoluteTolerance).c_str();
   node_solver.append_attribute("relativeTolerance") = std::to_string(relativeTolerance).c_str();
 
@@ -120,22 +133,45 @@ oms_status_enu_t oms::SystemWC::importFromSSD_SimulationInformation(const pugi::
 {
   std::string solverName = "";
   const char* FixedStepMaster = "";
+  const char* VariableStepSolver = "";
 
   pugi::xml_node fixedStepMaster = node.child(oms::ssp::Version1_0::FixedStepMaster);
   if (fixedStepMaster)
   {
-    solverName = fixedStepMaster.attribute("description").as_string();
-    FixedStepMaster = oms::ssp::Version1_0::FixedStepMaster;
+    if (sspVersion == "1.0")
+    {
+      solverName = fixedStepMaster.attribute("description").as_string();
+      FixedStepMaster = oms::ssp::Version1_0::FixedStepMaster;
+    }
+    else
+    {
+      solverName = node.child("FixedStepMaster").attribute("description").as_string();
+      FixedStepMaster = "FixedStepMaster";
+    }
+    initialStepSize = minimumStepSize = maximumStepSize = node.child(FixedStepMaster).attribute("stepSize").as_double();
   }
-  else
+
+  pugi::xml_node variableStepSolver = node.child(oms::ssp::Version1_0::VariableStepSolver);
+  if (variableStepSolver)
   {
-    solverName = node.child("FixedStepMaster").attribute("description").as_string();
-    FixedStepMaster = "FixedStepMaster";
+    if (sspVersion == "1.0")
+    {
+      solverName = variableStepSolver.attribute("description").as_string();
+      VariableStepSolver = oms::ssp::Version1_0::VariableStepSolver;
+    }
+    else
+    {
+      solverName = node.child("VariableStepSolver").attribute("description").as_string();
+      VariableStepSolver = "VariableStepSolver";
+    }
+    minimumStepSize = node.child(VariableStepSolver).attribute("minimumStepSize").as_double();
+    maximumStepSize = node.child(VariableStepSolver).attribute("maximumStepSize").as_double();
+    initialStepSize = node.child(VariableStepSolver).attribute("initialStepSize").as_double();
   }
 
   if (oms_status_ok != setSolverMethod(solverName))
     return oms_status_error;
-  initialStepSize = minimumStepSize = maximumStepSize = node.child(FixedStepMaster).attribute("stepSize").as_double();
+
   absoluteTolerance = node.child(FixedStepMaster).attribute("absoluteTolerance").as_double();
   relativeTolerance = node.child(FixedStepMaster).attribute("relativeTolerance").as_double();
   return oms_status_ok;
