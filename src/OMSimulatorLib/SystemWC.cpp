@@ -149,6 +149,8 @@ oms_status_enu_t oms::SystemWC::importFromSSD_SimulationInformation(const pugi::
       FixedStepMaster = "FixedStepMaster";
     }
     initialStepSize = minimumStepSize = maximumStepSize = node.child(FixedStepMaster).attribute("stepSize").as_double();
+    absoluteTolerance = node.child(FixedStepMaster).attribute("absoluteTolerance").as_double();
+    relativeTolerance = node.child(FixedStepMaster).attribute("relativeTolerance").as_double();
   }
 
   pugi::xml_node variableStepMaster = node.child(oms::ssp::Version1_0::VariableStepMaster);
@@ -167,13 +169,13 @@ oms_status_enu_t oms::SystemWC::importFromSSD_SimulationInformation(const pugi::
     minimumStepSize = node.child(VariableStepMaster).attribute("minimumStepSize").as_double();
     maximumStepSize = node.child(VariableStepMaster).attribute("maximumStepSize").as_double();
     initialStepSize = node.child(VariableStepMaster).attribute("initialStepSize").as_double();
+    absoluteTolerance = node.child(VariableStepMaster).attribute("absoluteTolerance").as_double();
+    relativeTolerance = node.child(VariableStepMaster).attribute("relativeTolerance").as_double();
   }
 
   if (oms_status_ok != setSolverMethod(solverName))
     return oms_status_error;
 
-  absoluteTolerance = node.child(FixedStepMaster).attribute("absoluteTolerance").as_double();
-  relativeTolerance = node.child(FixedStepMaster).attribute("relativeTolerance").as_double();
   return oms_status_ok;
 }
 
