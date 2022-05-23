@@ -17,6 +17,7 @@ Enum1 \
 equationPair.equation1 \
 equationPair.equation2 \
 fmidertest \
+fmi_attributes_19 \
 HelloWorld \
 HelloWorldWithInput \
 Int1 \
