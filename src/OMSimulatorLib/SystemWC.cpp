@@ -133,7 +133,7 @@ oms_status_enu_t oms::SystemWC::importFromSSD_SimulationInformation(const pugi::
 {
   std::string solverName = "";
   const char* FixedStepMaster = "";
-  const char* VariableStepSolver = "";
+  const char* VariableStepMaster = "";
 
   pugi::xml_node fixedStepMaster = node.child(oms::ssp::Version1_0::FixedStepMaster);
   if (fixedStepMaster)
@@ -151,22 +151,22 @@ oms_status_enu_t oms::SystemWC::importFromSSD_SimulationInformation(const pugi::
     initialStepSize = minimumStepSize = maximumStepSize = node.child(FixedStepMaster).attribute("stepSize").as_double();
   }
 
-  pugi::xml_node variableStepSolver = node.child(oms::ssp::Version1_0::VariableStepSolver);
-  if (variableStepSolver)
+  pugi::xml_node variableStepMaster = node.child(oms::ssp::Version1_0::VariableStepMaster);
+  if (variableStepMaster)
   {
     if (sspVersion == "1.0")
     {
-      solverName = variableStepSolver.attribute("description").as_string();
-      VariableStepSolver = oms::ssp::Version1_0::VariableStepSolver;
+      solverName = variableStepMaster.attribute("description").as_string();
+      VariableStepMaster = oms::ssp::Version1_0::VariableStepMaster;
     }
     else
     {
-      solverName = node.child("VariableStepSolver").attribute("description").as_string();
-      VariableStepSolver = "VariableStepSolver";
+      solverName = node.child("VariableStepMaster").attribute("description").as_string();
+      VariableStepMaster = "VariableStepMaster";
     }
-    minimumStepSize = node.child(VariableStepSolver).attribute("minimumStepSize").as_double();
-    maximumStepSize = node.child(VariableStepSolver).attribute("maximumStepSize").as_double();
-    initialStepSize = node.child(VariableStepSolver).attribute("initialStepSize").as_double();
+    minimumStepSize = node.child(VariableStepMaster).attribute("minimumStepSize").as_double();
+    maximumStepSize = node.child(VariableStepMaster).attribute("maximumStepSize").as_double();
+    initialStepSize = node.child(VariableStepMaster).attribute("initialStepSize").as_double();
   }
 
   if (oms_status_ok != setSolverMethod(solverName))

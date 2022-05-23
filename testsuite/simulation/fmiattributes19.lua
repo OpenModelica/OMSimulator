@@ -20,6 +20,12 @@ oms_setResultFile("model", "fmi_attributes.mat")
 oms_setStopTime("model", 10.0)
 oms_setSolver("model", oms_solver_wc_mav)
 
+oms_export("model", "fmi_attributes_19.ssp")
+oms_terminate("model")
+oms_delete("model")
+
+oms_importFile("fmi_attributes_19.ssp")
+
 src, status = oms_exportSnapshot("model")
 print(src)
 
@@ -95,8 +101,8 @@ oms_delete("model")
 --                   initialStepSize="0.000001"
 --                   minimumStepSize="0.000000"
 --                   maximumStepSize="0.001000"
---                   absoluteTolerance="0.000100"
---                   relativeTolerance="0.000100" />
+--                   absoluteTolerance="0.000000"
+--                   relativeTolerance="0.000000" />
 --               </oms:SimulationInformation>
 --             </oms:Annotations>
 --           </ssc:Annotation>
@@ -126,10 +132,6 @@ oms_delete("model")
 --       version="1.0">
 --       <oms:Variable
 --         name="model.root.A.x"
---         type="Real"
---         kind="unknown" />
---       <oms:Variable
---         name="model.root.A.der(x)"
 --         type="Real"
 --         kind="unknown" />
 --       <oms:Variable
