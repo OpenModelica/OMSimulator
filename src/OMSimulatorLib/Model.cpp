@@ -863,7 +863,7 @@ oms_system_enu_t oms::Model::getSystemTypeHelper(const pugi::xml_node& node, con
   {
     systemType = oms_system_sc;
   }
-  else if (std::string(node.child("oms:VariableStepMaster").attribute("description").as_string()) != "" || std::string(node.child("VariableStepMaster").attribute("description").as_string()) != "")
+  else if (std::string(node.child(oms::ssp::Version1_0::VariableStepMaster).attribute("description").as_string()) != "" || std::string(node.child("VariableStepMaster").attribute("description").as_string()) != "")
   {
     systemType = oms_system_wc;
   }

@@ -110,7 +110,7 @@ oms_status_enu_t oms::SystemWC::exportToSSD_SimulationInformation(pugi::xml_node
 
   if (solverMethod == oms_solver_wc_mav || solverMethod == oms_solver_wc_mav2)
   {
-    node_solver = node_simulation_information.append_child(oms::ssp::Version1_0::VariableStepSolver);
+    node_solver = node_simulation_information.append_child(oms::ssp::Version1_0::VariableStepMaster);
     node_solver.append_attribute("description") = getSolverName().c_str();
     node_solver.append_attribute("initialStepSize") = std::to_string(initialStepSize).c_str();
     node_solver.append_attribute("minimumStepSize") = std::to_string(minimumStepSize).c_str();

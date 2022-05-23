@@ -90,7 +90,7 @@ oms_delete("model")
 --             type="org.openmodelica">
 --             <oms:Annotations>
 --               <oms:SimulationInformation>
---                 <oms:VariableStepSolver
+--                 <oms:VariableStepMaster
 --                   description="oms-mav"
 --                   initialStepSize="0.000001"
 --                   minimumStepSize="0.000000"
