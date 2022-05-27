@@ -60,6 +60,7 @@ str_hello_world.lua \
 str_hello_world.py \
 suppressUnitConversion.lua \
 table.lua \
+tankYPipe.lua \
 
 # Run make failingtest
 FAILINGTESTFILES = \
