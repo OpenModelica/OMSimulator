@@ -1,0 +1,61 @@
+
+loadModel(Modelica); getErrorString();
+setCommandLineOptions("-d=newInst,fmuExperimental"); getErrorString();
+
+loadString("
+model tank1
+  parameter Real tankSurface = 2 \"tank area (m^2)\";
+  parameter Real holeSurface = 0.1 \"area of hole at bottom of tank (m^2)\";
+  parameter Real initialLevel = 3 \"initial water level (m)\";
+  constant Real g = 9.81 \"gravitation constant (m/s)\";
+  Modelica.Blocks.Interfaces.RealOutput level(start = initialLevel) \"water level in tank (m)\";
+  Modelica.Blocks.Interfaces.RealOutput outputRate(start = holeSurface * sqrt(2 * g * initialLevel)) \"output flow rate (m^3/s)\";
+  Modelica.Blocks.Interfaces.RealInput inputRate(start = 0.5) \"input flow rate (m^3/s)\";
+equation
+  der(level) = (inputRate - holeSurface * sqrt(2 * g * level)) / tankSurface;
+  outputRate = holeSurface * sqrt(2 * g * level);
+  annotation (experiment(StopTime=100));
+end tank1;
+
+model tank2
+  parameter Real tankSurface = 2 \"tank area (m^2)\";
+  parameter Real holeSurface = 0.1 \"area of hole at bottom of tank (m^2)\";
+  parameter Real initialLevel = 3 \"initial water level (m)\";
+  constant Real g = 9.81 \"gravitation constant (m/s)\";
+  Modelica.Blocks.Interfaces.RealOutput level(start = initialLevel) \"water level in tank (m)\";
+  Modelica.Blocks.Interfaces.RealOutput outputRate(start = holeSurface * sqrt(2 * g * initialLevel)) \"output flow rate (m^3/s)\";
+  Modelica.Blocks.Interfaces.RealInput inputRate(start = 0.1) \"input flow rate (m^3/s)\";
+equation
+  der(level) = (inputRate - holeSurface * sqrt(2 * g * level)) / tankSurface;
+  outputRate = holeSurface * sqrt(2 * g * level);
+  annotation (experiment(StopTime=100));
+end tank2;
+
+model tank3
+  parameter Real tankSurface = 2 \"tank area (m^2)\";
+  parameter Real holeSurface = 0.1 \"area of hole at bottom of tank (m^2)\";
+  parameter Real initialLevel = 3 \"initial water level (m)\";
+  constant Real g = 9.81 \"gravitation constant (m/s)\";
+  Modelica.Blocks.Interfaces.RealOutput level(start = initialLevel) \"water level in tank (m)\";
+  Modelica.Blocks.Interfaces.RealOutput outputRate(start = holeSurface * sqrt(2 * g * initialLevel)) \"output flow rate (m^3/s)\";
+  Modelica.Blocks.Interfaces.RealInput inputRate(start = 0) \"input flow rate (m^3/s)\";
+equation
+  der(level) = (inputRate - holeSurface * sqrt(2 * g * level)) / tankSurface;
+  outputRate = holeSurface * sqrt(2 * g * level);
+  annotation (experiment(StopTime=100));
+end tank3;
+
+model ypipe
+  Modelica.Blocks.Interfaces.RealOutput outputRate(start = 0) \"output flow rate (m^3/s)\";
+  Modelica.Blocks.Interfaces.RealInput inputRate1(start = 0) \"input flow rate #1 (m^3/s)\";
+  Modelica.Blocks.Interfaces.RealInput inputRate2(start = 0) \"input flow rate #2 (m^3/s)\";
+equation
+  outputRate = inputRate1 + inputRate2;
+  annotation (experiment(StopTime=100));
+end ypipe;
+"); getErrorString();
+
+buildModelFMU(tank1, fmuType="cs"); getErrorString();
+buildModelFMU(tank2, fmuType="cs"); getErrorString();
+buildModelFMU(tank3, fmuType="cs"); getErrorString();
+buildModelFMU(ypipe, fmuType="cs"); getErrorString();

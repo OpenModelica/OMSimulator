@@ -41,6 +41,9 @@ QuarterCarModel.DisplacementDisplacement.Wheel \
 QuarterCarModel.DisplacementForce.Chassis \
 QuarterCarModel.DisplacementForce.Wheel \
 str_hello_world \
+tank1 \
+tank2 \
+tank3 \
 tlm.adder \
 tlm.CoarseGrained1_1D \
 tlm.CoarseGrained2_1D \
@@ -53,6 +56,7 @@ tlm.mass \
 tlm.massSpring \
 tlm.source \
 tlm.UpperPendulum \
+ypipe \
 
 SSPs = \
 embrace \
