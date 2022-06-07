@@ -901,6 +901,13 @@ oms_status_enu_t oms::Model::exportToFile(const std::string& filename) const
   std::vector<std::string> resources;
   writeAllResourcesToFilesystem(resources, snapshot);
 
+  /*
+   * remove duplicates resources which is basically a fmu with multiple instances
+   * eg. tank1 => resources/001_tank1.fmu
+   *     tank2 => resources/001_tank1.fmu
+  */
+  resources.erase(std::unique(resources.begin(), resources.end()), resources.end());
+
   std::string cd = Scope::GetInstance().getWorkingDirectory();
   Scope::GetInstance().setWorkingDirectory(tempDir);
   int argc = 4 + resources.size();

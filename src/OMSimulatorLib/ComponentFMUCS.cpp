@@ -40,6 +40,7 @@
 #include "SystemTLM.h"
 #include "SystemWC.h"
 
+#include <miniunz.h>
 #include <fmilib.h>
 #include <JM/jm_portability.h>
 #include <RegEx.h>
@@ -74,9 +75,40 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::
     return NULL;
   }
 
+  const char* modelDescription = ::miniunz_onefile_to_memory(fmuPath.c_str(), "modelDescription.xml");
+  Snapshot snapshot;
+  oms_status_enu_t status = snapshot.importResourceMemory("modelDescription.xml", modelDescription);
+  ::miniunz_free(modelDescription);
+
+  if (oms_status_ok != status)
+  {
+    logError("Failed to import modelDescription.xml for fmu " + fmuPath);
+    return NULL;
+  }
+
+  const pugi::xml_node node = snapshot.getResourceNode("modelDescription.xml");
+  if (!node)
+  {
+    logError("Failed to find root node in modelDescription.xml");
+    return NULL;
+  }
+
+  //snapshot.debugPrintAll();
+
   filesystem::path temp_root(parentSystem->getModel().getTempDirectory());
   filesystem::path temp_temp = temp_root / "temp";
-  filesystem::path relFMUPath = parentSystem->copyResources() ? (filesystem::path("resources") / (parentSystem->getUniqueID() + "_" + std::string(cref) + ".fmu")) : filesystem::path(fmuPath);
+  filesystem::path relFMUPath;
+
+  std::string guid_ = node.attribute("guid").as_string();
+  auto it = parentSystem->fmuGuid.find(guid_);
+  if (it == parentSystem->fmuGuid.end())
+  {
+    relFMUPath = parentSystem->copyResources() ? (filesystem::path("resources") / (parentSystem->getUniqueID() + "_" + std::string(cref) + ".fmu")) : filesystem::path(fmuPath);
+    parentSystem->fmuGuid[guid_] = relFMUPath;
+  }
+  else
+    relFMUPath = parentSystem->fmuGuid[guid_];
+
   filesystem::path absFMUPath = temp_root / relFMUPath;
 
   ComponentFMUCS* component = new ComponentFMUCS(cref, parentSystem, relFMUPath.generic_string());
@@ -91,22 +123,33 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::
 
   // Copy the resource to the temp directory of the model? We don't want have
   // to copy resources if importing an SSP file or snapshot.
-  if (parentSystem->copyResources())
+  if (parentSystem->copyResources() && !filesystem::exists(absFMUPath))
     oms_copy_file(filesystem::path(fmuPath), absFMUPath);
 
   // set temp directory
   filesystem::path tempDir = temp_temp / relFMUPath.stem();
   component->setTempDir(tempDir.string());
-  if (!filesystem::is_directory(tempDir) && !filesystem::create_directory(tempDir))
+
+  bool dirExist = true;
+  if (!filesystem::is_directory(tempDir))
   {
-    logError("Creating temp directory for component \"" + std::string(cref) + "\" failed");
-    return NULL;
+    dirExist = false;
+    if (!filesystem::create_directory(tempDir))
+    {
+      logError("Creating temp directory for component \"" + std::string(cref) + "\" failed");
+      return NULL;
+    }
   }
 
   component->context = fmi_import_allocate_context(&component->callbacks);
 
   // check version of FMU
-  fmi_version_enu_t version = fmi_import_get_fmi_version(component->context, absFMUPath.string().c_str(), component->getTempDir().c_str());
+  fmi_version_enu_t version;
+  if (dirExist)
+    version = fmi_import_get_fmi_version_unzipped(component->context, tempDir.generic_string().c_str());
+  else
+    version = fmi_import_get_fmi_version(component->context, absFMUPath.string().c_str(), component->getTempDir().c_str());
+
   if (fmi_version_2_0_enu != version)
   {
     logError("Unsupported FMI version: " + std::string(fmi_version_to_string(version)));

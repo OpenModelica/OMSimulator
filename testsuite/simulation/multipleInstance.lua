@@ -1,0 +1,458 @@
+-- status: correct
+-- teardown_command: rm -rf multiple_instance_lua/
+-- linux: no
+-- mingw32: no
+-- mingw64: yes
+-- win: no
+-- mac: no
+
+oms_setCommandLineOption("--suppressPath=true")
+oms_setTempDirectory("./multiple_instance_lua/")
+
+oms_newModel("model")
+
+oms_addSystem("model.root", oms_system_wc)
+
+oms_addSubModel("model.root.tank1", "../resources/tank1.fmu")
+oms_addSubModel("model.root.tank2", "../resources/tank1.fmu")
+oms_addSubModel("model.root.tank3", "../resources/tank1.fmu")
+oms_addSubModel("model.root.ypipe", "../resources/ypipe.fmu")
+
+oms_setReal("model.root.tank1.inputRate", 0.5)
+oms_setReal("model.root.tank2.inputRate", 0.1)
+
+oms_addConnection("model.root.tank1.outputRate", "model.root.ypipe.inputRate1")
+oms_addConnection("model.root.tank2.outputRate", "model.root.ypipe.inputRate2")
+oms_addConnection("model.root.ypipe.outputRate", "model.root.tank3.inputRate")
+
+
+oms_setResultFile("model", "multiple_instance_res.mat")
+
+oms_setStopTime("model", 1) -- set the stopTime = 100 to match the testing with EDF
+oms_setSolver("model", oms_solver_wc_mav)
+
+oms_setTolerance("model", 1e-5)
+oms_setVariableStepSize("model",  0.01, 1e-6, 1e-1)  -- settings to check for rollbacks
+
+src, status = oms_exportSnapshot("model")
+print(src)
+
+oms_export("model", "multipleinstance.ssp")
+
+oms_instantiate("model")
+oms_initialize("model")
+oms_simulate("model")
+
+oms_terminate("model")
+oms_delete("model")
+
+
+-- Result:
+-- <?xml version="1.0"?>
+-- <oms:snapshot
+--   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
+--   partial="false">
+--   <oms:file
+--     name="SystemStructure.ssd">
+--     <ssd:SystemStructureDescription
+--       xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
+--       xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription"
+--       xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
+--       xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping"
+--       xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary"
+--       xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
+--       name="model"
+--       version="1.0">
+--       <ssd:System
+--         name="root">
+--         <ssd:Elements>
+--           <ssd:Component
+--             name="ypipe"
+--             type="application/x-fmu-sharedlibrary"
+--             source="resources/0002_ypipe.fmu">
+--             <ssd:Connectors>
+--               <ssd:Connector
+--                 name="inputRate1"
+--                 kind="input">
+--                 <ssc:Real />
+--                 <ssd:ConnectorGeometry
+--                   x="0.000000"
+--                   y="0.333333" />
+--               </ssd:Connector>
+--               <ssd:Connector
+--                 name="inputRate2"
+--                 kind="input">
+--                 <ssc:Real />
+--                 <ssd:ConnectorGeometry
+--                   x="0.000000"
+--                   y="0.666667" />
+--               </ssd:Connector>
+--               <ssd:Connector
+--                 name="outputRate"
+--                 kind="output">
+--                 <ssc:Real />
+--                 <ssd:ConnectorGeometry
+--                   x="1.000000"
+--                   y="0.500000" />
+--               </ssd:Connector>
+--             </ssd:Connectors>
+--           </ssd:Component>
+--           <ssd:Component
+--             name="tank3"
+--             type="application/x-fmu-sharedlibrary"
+--             source="resources/0001_tank1.fmu">
+--             <ssd:Connectors>
+--               <ssd:Connector
+--                 name="inputRate"
+--                 kind="input">
+--                 <ssc:Real />
+--                 <ssd:ConnectorGeometry
+--                   x="0.000000"
+--                   y="0.500000" />
+--               </ssd:Connector>
+--               <ssd:Connector
+--                 name="level"
+--                 kind="output">
+--                 <ssc:Real />
+--                 <ssd:ConnectorGeometry
+--                   x="1.000000"
+--                   y="0.333333" />
+--               </ssd:Connector>
+--               <ssd:Connector
+--                 name="outputRate"
+--                 kind="output">
+--                 <ssc:Real />
+--                 <ssd:ConnectorGeometry
+--                   x="1.000000"
+--                   y="0.666667" />
+--               </ssd:Connector>
+--               <ssd:Connector
+--                 name="holeSurface"
+--                 kind="parameter">
+--                 <ssc:Real />
+--               </ssd:Connector>
+--               <ssd:Connector
+--                 name="initialLevel"
+--                 kind="parameter">
+--                 <ssc:Real />
+--               </ssd:Connector>
+--               <ssd:Connector
+--                 name="tankSurface"
+--                 kind="parameter">
+--                 <ssc:Real />
+--               </ssd:Connector>
+--             </ssd:Connectors>
+--           </ssd:Component>
+--           <ssd:Component
+--             name="tank2"
+--             type="application/x-fmu-sharedlibrary"
+--             source="resources/0001_tank1.fmu">
+--             <ssd:Connectors>
+--               <ssd:Connector
+--                 name="inputRate"
+--                 kind="input">
+--                 <ssc:Real />
+--                 <ssd:ConnectorGeometry
+--                   x="0.000000"
+--                   y="0.500000" />
+--               </ssd:Connector>
+--               <ssd:Connector
+--                 name="level"
+--                 kind="output">
+--                 <ssc:Real />
+--                 <ssd:ConnectorGeometry
+--                   x="1.000000"
+--                   y="0.333333" />
+--               </ssd:Connector>
+--               <ssd:Connector
+--                 name="outputRate"
+--                 kind="output">
+--                 <ssc:Real />
+--                 <ssd:ConnectorGeometry
+--                   x="1.000000"
+--                   y="0.666667" />
+--               </ssd:Connector>
+--               <ssd:Connector
+--                 name="holeSurface"
+--                 kind="parameter">
+--                 <ssc:Real />
+--               </ssd:Connector>
+--               <ssd:Connector
+--                 name="initialLevel"
+--                 kind="parameter">
+--                 <ssc:Real />
+--               </ssd:Connector>
+--               <ssd:Connector
+--                 name="tankSurface"
+--                 kind="parameter">
+--                 <ssc:Real />
+--               </ssd:Connector>
+--             </ssd:Connectors>
+--             <ssd:ParameterBindings>
+--               <ssd:ParameterBinding>
+--                 <ssd:ParameterValues>
+--                   <ssv:ParameterSet
+--                     version="1.0"
+--                     name="parameters">
+--                     <ssv:Parameters>
+--                       <ssv:Parameter
+--                         name="inputRate">
+--                         <ssv:Real
+--                           value="0.10000000000000001" />
+--                       </ssv:Parameter>
+--                     </ssv:Parameters>
+--                   </ssv:ParameterSet>
+--                 </ssd:ParameterValues>
+--               </ssd:ParameterBinding>
+--             </ssd:ParameterBindings>
+--           </ssd:Component>
+--           <ssd:Component
+--             name="tank1"
+--             type="application/x-fmu-sharedlibrary"
+--             source="resources/0001_tank1.fmu">
+--             <ssd:Connectors>
+--               <ssd:Connector
+--                 name="inputRate"
+--                 kind="input">
+--                 <ssc:Real />
+--                 <ssd:ConnectorGeometry
+--                   x="0.000000"
+--                   y="0.500000" />
+--               </ssd:Connector>
+--               <ssd:Connector
+--                 name="level"
+--                 kind="output">
+--                 <ssc:Real />
+--                 <ssd:ConnectorGeometry
+--                   x="1.000000"
+--                   y="0.333333" />
+--               </ssd:Connector>
+--               <ssd:Connector
+--                 name="outputRate"
+--                 kind="output">
+--                 <ssc:Real />
+--                 <ssd:ConnectorGeometry
+--                   x="1.000000"
+--                   y="0.666667" />
+--               </ssd:Connector>
+--               <ssd:Connector
+--                 name="holeSurface"
+--                 kind="parameter">
+--                 <ssc:Real />
+--               </ssd:Connector>
+--               <ssd:Connector
+--                 name="initialLevel"
+--                 kind="parameter">
+--                 <ssc:Real />
+--               </ssd:Connector>
+--               <ssd:Connector
+--                 name="tankSurface"
+--                 kind="parameter">
+--                 <ssc:Real />
+--               </ssd:Connector>
+--             </ssd:Connectors>
+--             <ssd:ParameterBindings>
+--               <ssd:ParameterBinding>
+--                 <ssd:ParameterValues>
+--                   <ssv:ParameterSet
+--                     version="1.0"
+--                     name="parameters">
+--                     <ssv:Parameters>
+--                       <ssv:Parameter
+--                         name="inputRate">
+--                         <ssv:Real
+--                           value="0.5" />
+--                       </ssv:Parameter>
+--                     </ssv:Parameters>
+--                   </ssv:ParameterSet>
+--                 </ssd:ParameterValues>
+--               </ssd:ParameterBinding>
+--             </ssd:ParameterBindings>
+--           </ssd:Component>
+--         </ssd:Elements>
+--         <ssd:Connections>
+--           <ssd:Connection
+--             startElement="tank1"
+--             startConnector="outputRate"
+--             endElement="ypipe"
+--             endConnector="inputRate1" />
+--           <ssd:Connection
+--             startElement="tank2"
+--             startConnector="outputRate"
+--             endElement="ypipe"
+--             endConnector="inputRate2" />
+--           <ssd:Connection
+--             startElement="ypipe"
+--             startConnector="outputRate"
+--             endElement="tank3"
+--             endConnector="inputRate" />
+--         </ssd:Connections>
+--         <ssd:Annotations>
+--           <ssc:Annotation
+--             type="org.openmodelica">
+--             <oms:Annotations>
+--               <oms:SimulationInformation>
+--                 <oms:VariableStepMaster
+--                   description="oms-mav"
+--                   initialStepSize="0.010000"
+--                   minimumStepSize="0.000001"
+--                   maximumStepSize="0.100000"
+--                   absoluteTolerance="0.000010"
+--                   relativeTolerance="0.000010" />
+--               </oms:SimulationInformation>
+--             </oms:Annotations>
+--           </ssc:Annotation>
+--         </ssd:Annotations>
+--       </ssd:System>
+--       <ssd:DefaultExperiment
+--         startTime="0.000000"
+--         stopTime="1.000000">
+--         <ssd:Annotations>
+--           <ssc:Annotation
+--             type="org.openmodelica">
+--             <oms:Annotations>
+--               <oms:SimulationInformation
+--                 resultFile="multiple_instance_res.mat"
+--                 loggingInterval="0.000000"
+--                 bufferSize="1"
+--                 signalFilter="resources/signalFilter.xml" />
+--             </oms:Annotations>
+--           </ssc:Annotation>
+--         </ssd:Annotations>
+--       </ssd:DefaultExperiment>
+--     </ssd:SystemStructureDescription>
+--   </oms:file>
+--   <oms:file
+--     name="resources/signalFilter.xml">
+--     <oms:SignalFilter
+--       version="1.0">
+--       <oms:Variable
+--         name="model.root.ypipe.der(_D_outputAlias_outputRate)"
+--         type="Real"
+--         kind="unknown" />
+--       <oms:Variable
+--         name="model.root.ypipe.inputRate1"
+--         type="Real"
+--         kind="input" />
+--       <oms:Variable
+--         name="model.root.ypipe.inputRate2"
+--         type="Real"
+--         kind="input" />
+--       <oms:Variable
+--         name="model.root.ypipe.outputRate"
+--         type="Real"
+--         kind="output" />
+--       <oms:Variable
+--         name="model.root.tank3._D_outputAlias_level"
+--         type="Real"
+--         kind="unknown" />
+--       <oms:Variable
+--         name="model.root.tank3.der(_D_outputAlias_level)"
+--         type="Real"
+--         kind="unknown" />
+--       <oms:Variable
+--         name="model.root.tank3.der(_D_outputAlias_outputRate)"
+--         type="Real"
+--         kind="unknown" />
+--       <oms:Variable
+--         name="model.root.tank3.inputRate"
+--         type="Real"
+--         kind="input" />
+--       <oms:Variable
+--         name="model.root.tank3.level"
+--         type="Real"
+--         kind="output" />
+--       <oms:Variable
+--         name="model.root.tank3.outputRate"
+--         type="Real"
+--         kind="output" />
+--       <oms:Variable
+--         name="model.root.tank3.holeSurface"
+--         type="Real"
+--         kind="parameter" />
+--       <oms:Variable
+--         name="model.root.tank3.initialLevel"
+--         type="Real"
+--         kind="parameter" />
+--       <oms:Variable
+--         name="model.root.tank3.tankSurface"
+--         type="Real"
+--         kind="parameter" />
+--       <oms:Variable
+--         name="model.root.tank2._D_outputAlias_level"
+--         type="Real"
+--         kind="unknown" />
+--       <oms:Variable
+--         name="model.root.tank2.der(_D_outputAlias_level)"
+--         type="Real"
+--         kind="unknown" />
+--       <oms:Variable
+--         name="model.root.tank2.der(_D_outputAlias_outputRate)"
+--         type="Real"
+--         kind="unknown" />
+--       <oms:Variable
+--         name="model.root.tank2.inputRate"
+--         type="Real"
+--         kind="input" />
+--       <oms:Variable
+--         name="model.root.tank2.level"
+--         type="Real"
+--         kind="output" />
+--       <oms:Variable
+--         name="model.root.tank2.outputRate"
+--         type="Real"
+--         kind="output" />
+--       <oms:Variable
+--         name="model.root.tank2.holeSurface"
+--         type="Real"
+--         kind="parameter" />
+--       <oms:Variable
+--         name="model.root.tank2.initialLevel"
+--         type="Real"
+--         kind="parameter" />
+--       <oms:Variable
+--         name="model.root.tank2.tankSurface"
+--         type="Real"
+--         kind="parameter" />
+--       <oms:Variable
+--         name="model.root.tank1._D_outputAlias_level"
+--         type="Real"
+--         kind="unknown" />
+--       <oms:Variable
+--         name="model.root.tank1.der(_D_outputAlias_level)"
+--         type="Real"
+--         kind="unknown" />
+--       <oms:Variable
+--         name="model.root.tank1.der(_D_outputAlias_outputRate)"
+--         type="Real"
+--         kind="unknown" />
+--       <oms:Variable
+--         name="model.root.tank1.inputRate"
+--         type="Real"
+--         kind="input" />
+--       <oms:Variable
+--         name="model.root.tank1.level"
+--         type="Real"
+--         kind="output" />
+--       <oms:Variable
+--         name="model.root.tank1.outputRate"
+--         type="Real"
+--         kind="output" />
+--       <oms:Variable
+--         name="model.root.tank1.holeSurface"
+--         type="Real"
+--         kind="parameter" />
+--       <oms:Variable
+--         name="model.root.tank1.initialLevel"
+--         type="Real"
+--         kind="parameter" />
+--       <oms:Variable
+--         name="model.root.tank1.tankSurface"
+--         type="Real"
+--         kind="parameter" />
+--     </oms:SignalFilter>
+--   </oms:file>
+-- </oms:snapshot>
+--
+-- info:    Result file: multiple_instance_res.mat (bufferSize=1)
+-- endResult

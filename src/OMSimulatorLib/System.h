@@ -199,6 +199,7 @@ namespace oms
     bool supportsDirectionalDerivatives(int i, DirectedGraph& graph);   ///< returns true if all FMUs support providesDirectionalDerivative
 
     Values& getValues() { return values; }
+    std::map<std::string, filesystem::path> fmuGuid;
 
   protected: // methods
     System(const ComRef& cref, oms_system_enu_t type, Model* parentModel, System* parentSystem, oms_solver_enu_t solverMethod);
