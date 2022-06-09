@@ -37,6 +37,7 @@ importStartValues.lua \
 importStartValues1.lua \
 importSuppressUnitConversion.lua \
 multipleConnections.lua \
+multipleInstance.lua \
 nls.py \
 partialSnapshot.lua \
 PI_Controller.lua \
