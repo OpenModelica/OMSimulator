@@ -61,7 +61,7 @@ oms::ComponentFMUCS::~ComponentFMUCS()
   fmi_import_free_context(context);
 }
 
-oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::System* parentSystem, const std::string& fmuPath)
+oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::System* parentSystem, const std::string& fmuPath, bool useTempDir)
 {
   if (!cref.isValidIdent())
   {
@@ -75,7 +75,16 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::
     return NULL;
   }
 
-  const char* modelDescription = ::miniunz_onefile_to_memory(fmuPath.c_str(), "modelDescription.xml");
+  // parse the modeldescription.xml at top level to get the GUID to check whether instance already exist so we don't need to unpack the fmu
+  const char* modelDescription;
+  if (useTempDir)
+  {
+    filesystem::path tempDirPath = parentSystem->getModel().getTempDirectory() / filesystem::path(fmuPath);
+    modelDescription = ::miniunz_onefile_to_memory(tempDirPath.generic_string().c_str(), "modelDescription.xml");
+  }
+  else
+    modelDescription = ::miniunz_onefile_to_memory(fmuPath.c_str(), "modelDescription.xml");
+
   Snapshot snapshot;
   oms_status_enu_t status = snapshot.importResourceMemory("modelDescription.xml", modelDescription);
   ::miniunz_free(modelDescription);
@@ -307,7 +316,7 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const pugi::xml_node& node, om
     return NULL;
   }
 
-  oms::ComponentFMUCS* component = dynamic_cast<oms::ComponentFMUCS*>(oms::ComponentFMUCS::NewComponent(cref, parentSystem, source));
+  oms::ComponentFMUCS* component = dynamic_cast<oms::ComponentFMUCS*>(oms::ComponentFMUCS::NewComponent(cref, parentSystem, source, true));
   if (!component)
     return NULL;
 
