@@ -195,7 +195,7 @@ print("info:      renameValues2.root.add_3.u1       : " .. oms_getReal("renameVa
 --           <ssd:Component
 --             name="add_2"
 --             type="application/x-fmu-sharedlibrary"
---             source="resources/0002_add_2.fmu">
+--             source="resources/0001_add_1.fmu">
 --             <ssd:Connectors>
 --               <ssd:Connector
 --                 name="u1"
