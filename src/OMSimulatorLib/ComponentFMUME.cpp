@@ -61,7 +61,7 @@ oms::ComponentFMUME::~ComponentFMUME()
   fmi_import_free_context(context);
 }
 
-oms::Component* oms::ComponentFMUME::NewComponent(const oms::ComRef& cref, oms::System* parentSystem, const std::string& fmuPath, bool useTempDir)
+oms::Component* oms::ComponentFMUME::NewComponent(const oms::ComRef& cref, oms::System* parentSystem, const std::string& fmuPath)
 {
   if (!cref.isValidIdent())
   {
@@ -75,50 +75,45 @@ oms::Component* oms::ComponentFMUME::NewComponent(const oms::ComRef& cref, oms::
     return NULL;
   }
 
-  // parse the modeldescription.xml at top level to get the GUID to check whether instance already exist so we don't need to unpack the fmu
-  const char* modelDescription;
-  if (useTempDir)
-  {
-    filesystem::path tempDirPath = parentSystem->getModel().getTempDirectory() / filesystem::path(fmuPath);
-    modelDescription = ::miniunz_onefile_to_memory(tempDirPath.generic_string().c_str(), "modelDescription.xml");
-  }
-  else
-    modelDescription = ::miniunz_onefile_to_memory(fmuPath.c_str(), "modelDescription.xml");
-
-  Snapshot snapshot;
-  oms_status_enu_t status = snapshot.importResourceMemory("modelDescription.xml", modelDescription);
-  ::miniunz_free(modelDescription);
-
-  if (oms_status_ok != status)
-  {
-    logError("Failed to import modelDescription.xml for fmu " + fmuPath);
-    return NULL;
-  }
-
-  const pugi::xml_node node = snapshot.getResourceNode("modelDescription.xml");
-  if (!node)
-  {
-    logError("Failed to find root node in modelDescription.xml");
-    return NULL;
-  }
-
   filesystem::path temp_root(parentSystem->getModel().getTempDirectory());
   filesystem::path temp_temp = temp_root / "temp";
-  filesystem::path relFMUPath;
-
-  std::string guid_ = node.attribute("guid").as_string();
-  auto it = parentSystem->fmuGuid.find(guid_);
-  if (it == parentSystem->fmuGuid.end())
-  {
-    relFMUPath = parentSystem->copyResources() ? (filesystem::path("resources") / (parentSystem->getUniqueID() + "_" + std::string(cref) + ".fmu")) : filesystem::path(fmuPath);
-    parentSystem->fmuGuid[guid_] = relFMUPath;
-  }
-  else
-    relFMUPath = parentSystem->fmuGuid[guid_];
-
+  filesystem::path relFMUPath = parentSystem->copyResources() ? (filesystem::path("resources") / (parentSystem->getUniqueID() + "_" + std::string(cref) + ".fmu")) : filesystem::path(fmuPath);
   filesystem::path absFMUPath = temp_root / relFMUPath;
 
   ComponentFMUME* component = new ComponentFMUME(cref, parentSystem, relFMUPath.generic_string());
+
+  /* parse the modeldescription.xml at top level to get the GUID to check whether instance already exist
+   * so we don't need to unpack the fmu, and also parse start values before instantiating fmu's
+  */
+  std::string guid_ = "";
+  filesystem::path modelDescriptionPath;
+  /*
+  * check for modeldescription path from file system or temp directory
+  * because when importingSnapshot the path will be resources/0001_tank1.fmu
+  */
+  if (parentSystem->copyResources())
+    modelDescriptionPath = fmuPath;
+  else
+    modelDescriptionPath = parentSystem->getModel().getTempDirectory() / filesystem::path(fmuPath);
+
+  component->values.parseModelDescription(modelDescriptionPath, guid_);
+
+  /*
+   * check if instance of an fmu already exist by using guid of the fmu
+   * if instance exist use the existing instance path
+   * eg: tank1 => resources /0001_tank1.fmu
+   *     tank2 => resources /0001_tank1.fmu
+  */
+  auto it = parentSystem->fmuGuid.find(guid_);
+  if (it == parentSystem->fmuGuid.end())
+    parentSystem->fmuGuid[guid_] = relFMUPath;
+  else
+  {
+    // instance exists and update the FMU path to already existing instance
+    relFMUPath = parentSystem->fmuGuid[guid_];
+    absFMUPath = temp_root / relFMUPath;
+    component->setPath(relFMUPath.generic_string());
+  }
 
   component->callbacks.malloc = malloc;
   component->callbacks.calloc = calloc;
@@ -286,9 +281,6 @@ oms::Component* oms::ComponentFMUME::NewComponent(const oms::ComRef& cref, oms::
     delete component;
     return NULL;
   }
-
-  // parse modelDescription.xml to get start values before instantiating fmu's
-  component->values.parseModelDescription(tempDir);
 
   // set units to connector
   for (auto &connector : component->connectors)

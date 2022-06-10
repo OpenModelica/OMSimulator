@@ -111,6 +111,7 @@ namespace oms
     void getAllResources(std::vector<std::string>& resources) const { resources.push_back(path); }
     const std::string& getPath() const { return path; }
     const std::string& getTempDir() const { return tempDir; }
+    void setPath(const std::string& newPath) { this->path = newPath; }
     void setTempDir(const std::string& tempDir) { this->tempDir = tempDir; }
     oms_component_enu_t getType() const { return type; }
     void fetchAllVars(bool enableOption) { fetchAllVars_ = enableOption; }

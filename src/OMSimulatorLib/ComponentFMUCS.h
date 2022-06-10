@@ -56,7 +56,7 @@ namespace oms
   public:
     ~ComponentFMUCS();
 
-    static Component* NewComponent(const ComRef& cref, System* parentSystem, const std::string& fmuPath, bool useTempDir = false);
+    static Component* NewComponent(const ComRef& cref, System* parentSystem, const std::string& fmuPath);
     static Component* NewComponent(const pugi::xml_node& node, System* parentSystem, const std::string& sspVersion, const Snapshot& snapshot);
     const FMUInfo* getFMUInfo() const {return &(this->fmuInfo);}
 

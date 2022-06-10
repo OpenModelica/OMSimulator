@@ -38,6 +38,7 @@
 
 #include <iostream>
 #include <map>
+#include <miniunz.h>
 #include <pugixml.hpp>
 #include <string>
 
@@ -1331,16 +1332,25 @@ void oms::Values::importUnitDefinitions(const pugi::xml_node& node)
   }
 }
 
-oms_status_enu_t oms::Values::parseModelDescription(const filesystem::path& root)
+oms_status_enu_t oms::Values::parseModelDescription(const filesystem::path& root, std::string& guid_)
 {
+
+  const char* modelDescription = ::miniunz_onefile_to_memory(root.generic_string().c_str(), "modelDescription.xml");
+
   Snapshot snapshot;
-  snapshot.importResourceFile("modelDescription.xml", root);
+  oms_status_enu_t status = snapshot.importResourceMemory("modelDescription.xml", modelDescription);
+  ::miniunz_free(modelDescription);
+
+  if (oms_status_ok != status)
+    return logError("Failed to import modelDescription.xml from memory for fmu " + root.generic_string());
+
   const pugi::xml_node node = snapshot.getResourceNode("modelDescription.xml");
 
   if (!node)
-    return logError("Failed to load modelDescription.xml");
+    return logError("Failed to find root node in modelDescription.xml");
 
-  //std::string fmiVersion = node.attribute("fmiVersion").as_string();
+  guid_ = node.attribute("guid").as_string();
+  // std::string fmiVersion = node.attribute("fmiVersion").as_string();
 
   for(pugi::xml_node_iterator it = node.begin(); it != node.end(); ++it)
   {
