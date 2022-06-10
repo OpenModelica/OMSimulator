@@ -40,7 +40,6 @@
 #include "SystemSC.h"
 #include "SystemTLM.h"
 
-#include <miniunz.h>
 #include <fmilib.h>
 #include <JM/jm_portability.h>
 #include <RegEx.h>
