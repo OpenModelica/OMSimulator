@@ -100,7 +100,7 @@ namespace oms
 
     oms_status_enu_t exportToSSMTemplate(pugi::xml_node& ssmNode, const ComRef& cref);  ///< start values read from modelDescription.xml and creates a ssm template
 
-    oms_status_enu_t parseModelDescription(const filesystem::path& root); ///< path without the filename, i.e. modelDescription.xml
+    oms_status_enu_t parseModelDescription(const filesystem::path& root, std::string& guid_); ///< path without the filename, i.e. modelDescription.xml
     oms_status_enu_t rename(const oms::ComRef& oldCref, const oms::ComRef& newCref);
     oms_status_enu_t renameInResources(const oms::ComRef& oldCref, const oms::ComRef& newCref);
 

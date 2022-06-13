@@ -69,7 +69,7 @@ oms_delete("model")
 --           <ssd:Component
 --             name="ypipe"
 --             type="application/x-fmu-sharedlibrary"
---             source="resources/0002_ypipe.fmu">
+--             source="resources/0004_ypipe.fmu">
 --             <ssd:Connectors>
 --               <ssd:Connector
 --                 name="inputRate1"
