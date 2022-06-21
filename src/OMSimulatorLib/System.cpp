@@ -325,6 +325,103 @@ oms_status_enu_t oms::System::addSubModel(const oms::ComRef& cref, const std::st
   return system->addSubModel(tail, path);
 }
 
+oms_status_enu_t oms::System::replaceSubModel(const oms::ComRef& cref, const std::string& path)
+{
+  if (cref.isValidIdent())
+  {
+    if (validCref(cref))
+      return logError("\"" + std::string(getFullCref() + cref) + "\" does not exists in the scope and it cannot be replaced, use oms_addSubModel to add new component");
+
+    filesystem::path path_ = oms_canonical(path);
+    if (!filesystem::exists(path_))
+      return logError("file does not exist: \"" + path + "\"");
+
+    Component* replaceComponent = NULL;
+
+    std::string extension = "";
+    if (path.length() > 4)
+      extension = path.substr(path.length() - 4);
+
+    if (extension == ".fmu" && oms_system_wc == type)
+      replaceComponent = ComponentFMUCS::NewComponent(cref, this, path_.string());
+    else if (extension == ".fmu" && oms_system_sc == type)
+      replaceComponent = ComponentFMUME::NewComponent(cref, this, path_.string());
+    else if (extension == ".csv" || extension == ".mat")
+      replaceComponent = ComponentTable::NewComponent(cref, this, path_.string());
+    else
+      return logError("supported sub-model formats are \".fmu\", \".csv\", \".mat\"");
+
+    if (!replaceComponent)
+      return oms_status_error;
+
+    auto component_ = getComponent(cref);
+    if (component_)
+    {
+      for (auto &connection : connections)
+      {
+        if (connection)
+        {
+          oms::ComRef headA(connection->getSignalA());
+          oms::ComRef tailA = headA.pop_front();
+
+          oms::ComRef headB(connection->getSignalA());
+          oms::ComRef tailB = headB.pop_front();
+          // check the replacing variable is a valid ScalarVariable
+          bool signalA = isValidScalarVariable(component_, replaceComponent, connection, cref, connection->getSignalA().front(), headA, path);
+          bool signalB = isValidScalarVariable(component_, replaceComponent, connection, cref, connection->getSignalB().front(), headB, path);
+
+          // delete the connection, due scalarVariable mismatch in the replaced submodel
+          if (signalA || signalB)
+          {
+            delete connection;
+            connections.pop_back(); // last element is always NULL
+            connection = connections.back();
+            connections.back() = NULL;
+          }
+        }
+      }
+      //delete component
+      delete component_;
+      components[cref] = replaceComponent;
+      subelements.back() = reinterpret_cast<oms_element_t*>(replaceComponent->getElement());
+      subelements.push_back(NULL);
+      element.setSubElements(&subelements[0]);
+    }
+  }
+
+  return oms_status_ok;
+}
+
+/*
+* function which checks a variable has the same scalarVariable attributes from two fmus
+* (e.g) ScalarVariable_A.type = ScalarVariable_B.type
+*       ScalarVariable_A.causality = ScalarVariable_B.causality
+*/
+bool oms::System::isValidScalarVariable(Component* referenceComponent, Component* replacingComponent, Connection* connection, const ComRef& crefA, const ComRef& crefB, const ComRef& signalName, const std::string& path)
+{
+  if (crefA == crefB)
+  {
+    Variable *oldVar = referenceComponent->getVariable(signalName);
+    Variable *replaceVar = replacingComponent->getVariable(signalName);
+    if (!oldVar || !replaceVar)
+    {
+      logWarning("deleting connection \"" + std::string(connection->getSignalA()) + " > " + std::string(connection->getSignalB()) + "\"" + ", as signal \"" + std::string(signalName) + "\"" + " couldn't be resolved to any signal in the replaced submodel \"" + path + "\"");
+      return true;
+    }
+    if (oldVar->getCausality() != replaceVar->getCausality())
+    {
+      logWarning("deleting connection \"" + std::string(connection->getSignalA()) + " -> " + std::string(connection->getSignalB()) + "\"" + ", as signal \"" + std::string(signalName) + "\"" + " has causality mismatch in the replaced submodel \"" + path + "\"");
+      return true;
+    }
+    if (oldVar->getType() != replaceVar->getType())
+    {
+      logWarning("deleting connection \"" + std::string(connection->getSignalA()) + " -> " + std::string(connection->getSignalB()) + "\"" + ", as signal \"" + std::string(signalName) + "\"" + " has type mismatch in the replaced submodel \"" + path + "\"");
+      return true;
+    }
+  }
+  return false;
+}
+
 oms_status_enu_t oms::System::newResources(const ComRef& cref, const std::string& ssvFilename, const std::string& ssmFilename, bool externalResources)
 {
   ComRef tail(cref);
