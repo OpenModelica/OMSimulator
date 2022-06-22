@@ -40,6 +40,9 @@ QuarterCarModel.DisplacementDisplacement.Chassis \
 QuarterCarModel.DisplacementDisplacement.Wheel \
 QuarterCarModel.DisplacementForce.Chassis \
 QuarterCarModel.DisplacementForce.Wheel \
+replaceA \
+replaceB \
+replaceA_extended \
 str_hello_world \
 tank1 \
 tank2 \
@@ -85,6 +88,7 @@ Mass.mos \
 MassSpring.mos \
 nls.mos \
 QuarterCarModel.mos \
+replaceSubmodel.mos \
 str_hello_world.mos \
 unit.mos \
 
