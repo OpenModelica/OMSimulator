@@ -5,6 +5,7 @@ model replaceA
   output Real y;
   output Real dummy;
   Real x(start=1.0);
+  parameter Real t = 3;
 equation
   x = der(x);
   y = u;

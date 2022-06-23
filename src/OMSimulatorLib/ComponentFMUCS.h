@@ -95,6 +95,7 @@ namespace oms
     oms_status_enu_t getDirectionalDerivativeHeper(const int unknownIndex, const int knownindex, const std::vector<int>& dependencyList, double& value);
 
     oms_status_enu_t deleteStartValue(const ComRef& cref);
+    oms_status_enu_t updateOrDeleteStartValueInReplacedComponent();
 
     oms_status_enu_t setFmuTime(double time) {this->time = time; return oms_status_ok;}
     fmi2_import_t* getFMU() {return fmu;}

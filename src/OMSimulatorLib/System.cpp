@@ -354,8 +354,9 @@ oms_status_enu_t oms::System::replaceSubModel(const oms::ComRef& cref, const std
     if (!replaceComponent)
       return oms_status_error;
 
-    auto component_ = getComponent(cref);
-    if (component_)
+    //auto component_ = getComponent(cref);
+    auto component_ = components.find(cref);
+    if (component_ != components.end())
     {
       for (auto &connection : connections)
       {
@@ -367,8 +368,8 @@ oms_status_enu_t oms::System::replaceSubModel(const oms::ComRef& cref, const std
           oms::ComRef headB(connection->getSignalA());
           oms::ComRef tailB = headB.pop_front();
           // check the replacing variable is a valid ScalarVariable
-          bool signalA = isValidScalarVariable(component_, replaceComponent, connection, cref, connection->getSignalA().front(), headA, path);
-          bool signalB = isValidScalarVariable(component_, replaceComponent, connection, cref, connection->getSignalB().front(), headB, path);
+          bool signalA = isValidScalarVariable(component_->second, replaceComponent, connection, cref, connection->getSignalA().front(), headA, path);
+          bool signalB = isValidScalarVariable(component_->second, replaceComponent, connection, cref, connection->getSignalB().front(), headB, path);
 
           // delete the connection, due scalarVariable mismatch in the replaced submodel
           if (signalA || signalB)
@@ -380,8 +381,12 @@ oms_status_enu_t oms::System::replaceSubModel(const oms::ComRef& cref, const std
           }
         }
       }
+      // update or delete the start value in ssv of with the replaced component
+      replaceComponent->updateOrDeleteStartValueInReplacedComponent();
       //delete component
-      delete component_;
+      delete component_->second;
+      components.erase(component_);
+      // update the replaced component
       components[cref] = replaceComponent;
       subelements.back() = reinterpret_cast<oms_element_t*>(replaceComponent->getElement());
       subelements.push_back(NULL);
@@ -405,17 +410,17 @@ bool oms::System::isValidScalarVariable(Component* referenceComponent, Component
     Variable *replaceVar = replacingComponent->getVariable(signalName);
     if (!oldVar || !replaceVar)
     {
-      logWarning("deleting connection \"" + std::string(connection->getSignalA()) + " > " + std::string(connection->getSignalB()) + "\"" + ", as signal \"" + std::string(signalName) + "\"" + " couldn't be resolved to any signal in the replaced submodel \"" + path + "\"");
+      logWarning("deleting connection \"" + std::string(connection->getSignalA()) + " ==> " + std::string(connection->getSignalB()) + "\"" + ", as signal \"" + std::string(signalName) + "\"" + " couldn't be resolved to any signal in the replaced submodel \"" + path + "\"");
       return true;
     }
     if (oldVar->getCausality() != replaceVar->getCausality())
     {
-      logWarning("deleting connection \"" + std::string(connection->getSignalA()) + " -> " + std::string(connection->getSignalB()) + "\"" + ", as signal \"" + std::string(signalName) + "\"" + " has causality mismatch in the replaced submodel \"" + path + "\"");
+      logWarning("deleting connection \"" + std::string(connection->getSignalA()) + " ==> " + std::string(connection->getSignalB()) + "\"" + ", as signal \"" + std::string(signalName) + "\"" + " has causality mismatch in the replaced submodel \"" + path + "\"");
       return true;
     }
     if (oldVar->getType() != replaceVar->getType())
     {
-      logWarning("deleting connection \"" + std::string(connection->getSignalA()) + " -> " + std::string(connection->getSignalB()) + "\"" + ", as signal \"" + std::string(signalName) + "\"" + " has type mismatch in the replaced submodel \"" + path + "\"");
+      logWarning("deleting connection \"" + std::string(connection->getSignalA()) + " ==> " + std::string(connection->getSignalB()) + "\"" + ", as signal \"" + std::string(signalName) + "\"" + " has type mismatch in the replaced submodel \"" + path + "\"");
       return true;
     }
   }

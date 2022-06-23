@@ -1766,6 +1766,32 @@ oms_status_enu_t oms::ComponentFMUCS::deleteStartValue(const ComRef& cref)
   return oms_status_error;
 }
 
+oms_status_enu_t oms::ComponentFMUCS::updateOrDeleteStartValueInReplacedComponent()
+{
+  // check for local resources available
+  if (values.hasResources())
+  {
+    return values.updateOrDeleteStartValueInReplacedComponent(values);
+  }
+  // check for resources in root
+  else if (getParentSystem() && getParentSystem()->getValues().hasResources())
+  {
+    return getParentSystem()->getValues().updateOrDeleteStartValueInReplacedComponent(values);
+  }
+  // check for resources in top level root
+  else if (getParentSystem()->getParentSystem() && getParentSystem()->getParentSystem()->getValues().hasResources())
+  {
+     return getParentSystem()->getParentSystem()->getValues().updateOrDeleteStartValueInReplacedComponent(values);
+  }
+  else
+  {
+    // inline parameter settings
+    //values.setReal(cref, value);
+  }
+
+  return oms_status_error;
+}
+
 oms_status_enu_t oms::ComponentFMUCS::registerSignalsForResultFile(ResultWriter& resultFile)
 {
   resultFileMapping.clear();

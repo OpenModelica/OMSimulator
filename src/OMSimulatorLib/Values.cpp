@@ -602,6 +602,28 @@ oms_status_enu_t oms::Values::deleteStartValue(const ComRef& cref)
   return oms_status_error;
 }
 
+oms_status_enu_t oms::Values::updateOrDeleteStartValueInReplacedComponent(Values& value)
+{
+  for (auto &it : parameterResources)
+  {
+    for (auto &res : it.allresources)
+    {
+      for (auto & name : res.second.realStartValues)
+      {
+        ComRef front(name.first);
+        ComRef tail = front.pop_front();
+        double value_ = 0.0;
+        if (oms_status_ok ==  value.getRealFromModeldescription(front, value_))
+          res.second.realStartValues[name.first] = value_; // update the start value from the replaced component
+        else
+          res.second.realStartValues.erase(name.first); // delete the start value as signal does not exist in replaced component
+      }
+    }
+  }
+
+  return oms_status_error;
+}
+
 oms_status_enu_t oms::Values::deleteStartValueInResources(const ComRef& cref)
 {
   oms::ComRef signal(cref);
