@@ -20,6 +20,7 @@ oms_newResources("model.root:root.ssv")
 
 oms_setReal("model.root.A.u", 10.0)
 oms_setReal("model.root.A.t", -10.0)
+oms_setReal("model.root.B.u1", -13.0)
 
 -- add connections
 oms_addConnection("model.root.A.y", "model.root.B.u")
@@ -33,6 +34,7 @@ print(src)
 print("info:    Before replacing the Model")
 print("info:      model.root.A.u      : " .. oms_getReal("model.root.A.u"))
 print("info:      model.root.B.u      : " .. oms_getReal("model.root.B.u"))
+print("info:      model.root.B.u1     : " .. oms_getReal("model.root.B.u1"))
 
 oms_export("model", "replaceSubmodel2.ssp")
 oms_terminate("model")
@@ -47,6 +49,7 @@ print(src)
 print("info:    After replacing the Model")
 print("info:      model.root.A.u      : " .. oms_getReal("model.root.A.u"))
 print("info:      model.root.B.u      : " .. oms_getReal("model.root.B.u"))
+print("info:      model.root.B.u1     : " .. oms_getReal("model.root.B.u1"))
 
 oms_instantiate("model")
 
@@ -56,6 +59,7 @@ print("info:    Initialize")
 print("info:      model.root.A.u      : " .. oms_getReal("model.root.A.u"))
 print("info:      model.root.A.y      : " .. oms_getReal("model.root.A.y"))
 print("info:      model.root.B.u      : " .. oms_getReal("model.root.B.u"))
+print("info:      model.root.B.u1     : " .. oms_getReal("model.root.B.u1"))
 
 oms_simulate("model")
 
@@ -63,6 +67,7 @@ print("info:    Simulate")
 print("info:      model.root.A.u      : " .. oms_getReal("model.root.A.u"))
 print("info:      model.root.A.y      : " .. oms_getReal("model.root.A.y"))
 print("info:      model.root.B.u      : " .. oms_getReal("model.root.B.u"))
+print("info:      model.root.B.u1     : " .. oms_getReal("model.root.B.u1"))
 
 oms_terminate("model")
 oms_delete("model")
@@ -212,6 +217,11 @@ oms_delete("model")
 --       name="parameters">
 --       <ssv:Parameters>
 --         <ssv:Parameter
+--           name="B.u1">
+--           <ssv:Real
+--             value="-13" />
+--         </ssv:Parameter>
+--         <ssv:Parameter
 --           name="A.u">
 --           <ssv:Real
 --             value="10" />
@@ -271,6 +281,7 @@ oms_delete("model")
 -- info:    Before replacing the Model
 -- info:      model.root.A.u      : 10.0
 -- info:      model.root.B.u      : 1.0
+-- info:      model.root.B.u1     : -13.0
 -- error:   [getVariable] Unknown signal "model.root.A.dummy"
 -- warning: deleting connection "A.dummy ==> B.u1", as signal "dummy" couldn't be resolved to any signal in the replaced submodel "../resources/replaceA_extended.fmu"
 -- <?xml version="1.0"?>
@@ -466,15 +477,18 @@ oms_delete("model")
 -- info:    After replacing the Model
 -- info:      model.root.A.u      : 5.0
 -- info:      model.root.B.u      : 1.0
+-- info:      model.root.B.u1     : -13.0
 -- info:    Result file: replaceSubmodel2.mat (bufferSize=1)
 -- info:    Initialize
 -- info:      model.root.A.u      : 5.0
 -- info:      model.root.A.y      : 5.0
 -- info:      model.root.B.u      : 5.0
+-- info:      model.root.B.u1     : -13.0
 -- info:    Simulate
 -- info:      model.root.A.u      : 5.0
 -- info:      model.root.A.y      : 5.0
 -- info:      model.root.B.u      : 5.0
+-- info:      model.root.B.u1     : -13.0
 -- info:    1 warnings
 -- info:    1 errors
 -- endResult
