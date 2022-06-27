@@ -1,5 +1,5 @@
 -- status: correct
--- teardown_command: rm -rf replacesubmodel_lua/
+-- teardown_command: rm -rf replacesubmodel_02_lua/
 -- linux: no
 -- mingw32: no
 -- mingw64: yes
@@ -7,7 +7,7 @@
 -- mac: no
 
 oms_setCommandLineOption("--suppressPath=true")
-oms_setTempDirectory("./replacesubmodel_lua/")
+oms_setTempDirectory("./replacesubmodel_02_lua/")
 
 oms_newModel("model")
 
@@ -16,6 +16,8 @@ oms_addSystem("model.root", oms_system_wc)
 oms_addSubModel("model.root.A", "../resources/replaceA.fmu")
 oms_addSubModel("model.root.B", "../resources/replaceB.fmu")
 
+oms_newResources("model.root:root.ssv")
+
 oms_setReal("model.root.A.u", 10.0)
 oms_setReal("model.root.A.t", -10.0)
 
@@ -23,31 +25,47 @@ oms_setReal("model.root.A.t", -10.0)
 oms_addConnection("model.root.A.y", "model.root.B.u")
 oms_addConnection("model.root.A.dummy", "model.root.B.u1")
 
-oms_setResultFile("model", "replace.mat")
+oms_setResultFile("model", "replaceSubmodel2.mat")
 
 src, status = oms_exportSnapshot("model")
 print(src)
 
--- print("info:    virgin settings")
--- print("info:      model.root.A.u      : " .. oms_getReal("model.root.A.u"))
--- print("info:      model.root.A.y      : " .. oms_getReal("model.root.A.y"))
--- print("info:      model.root.B.u      : " .. oms_getReal("model.root.B.u"))
+print("info:    Before replacing the Model")
+print("info:      model.root.A.u      : " .. oms_getReal("model.root.A.u"))
+print("info:      model.root.B.u      : " .. oms_getReal("model.root.B.u"))
 
-oms_export("model", "replaceSubmodel.ssp")
+oms_export("model", "replaceSubmodel2.ssp")
 oms_terminate("model")
 oms_delete("model")
 
-oms_importFile("replaceSubmodel.ssp")
+oms_importFile("replaceSubmodel2.ssp")
 
 oms_replaceSubModel("model.root.A", "../resources/replaceA_extended.fmu")
 src, status = oms_exportSnapshot("model")
 print(src)
 
--- oms_instantiate("model")
--- oms_initialize("model")
+print("info:    After replacing the Model")
+print("info:      model.root.A.u      : " .. oms_getReal("model.root.A.u"))
+print("info:      model.root.B.u      : " .. oms_getReal("model.root.B.u"))
 
--- oms_terminate("model")
--- oms_delete("model")
+oms_instantiate("model")
+
+oms_initialize("model")
+
+print("info:    Initialize")
+print("info:      model.root.A.u      : " .. oms_getReal("model.root.A.u"))
+print("info:      model.root.A.y      : " .. oms_getReal("model.root.A.y"))
+print("info:      model.root.B.u      : " .. oms_getReal("model.root.B.u"))
+
+oms_simulate("model")
+
+print("info:    Simulate")
+print("info:      model.root.A.u      : " .. oms_getReal("model.root.A.u"))
+print("info:      model.root.A.y      : " .. oms_getReal("model.root.A.y"))
+print("info:      model.root.B.u      : " .. oms_getReal("model.root.B.u"))
+
+oms_terminate("model")
+oms_delete("model")
 
 -- Result:
 -- <?xml version="1.0"?>
@@ -67,6 +85,10 @@ print(src)
 --       version="1.0">
 --       <ssd:System
 --         name="root">
+--         <ssd:ParameterBindings>
+--           <ssd:ParameterBinding
+--             source="resources/root.ssv" />
+--         </ssd:ParameterBindings>
 --         <ssd:Elements>
 --           <ssd:Component
 --             name="B"
@@ -134,28 +156,6 @@ print(src)
 --                 <ssc:Real />
 --               </ssd:Connector>
 --             </ssd:Connectors>
---             <ssd:ParameterBindings>
---               <ssd:ParameterBinding>
---                 <ssd:ParameterValues>
---                   <ssv:ParameterSet
---                     version="1.0"
---                     name="parameters">
---                     <ssv:Parameters>
---                       <ssv:Parameter
---                         name="u">
---                         <ssv:Real
---                           value="10" />
---                       </ssv:Parameter>
---                       <ssv:Parameter
---                         name="t">
---                         <ssv:Real
---                           value="-10" />
---                       </ssv:Parameter>
---                     </ssv:Parameters>
---                   </ssv:ParameterSet>
---                 </ssd:ParameterValues>
---               </ssd:ParameterBinding>
---             </ssd:ParameterBindings>
 --           </ssd:Component>
 --         </ssd:Elements>
 --         <ssd:Connections>
@@ -193,7 +193,7 @@ print(src)
 --             type="org.openmodelica">
 --             <oms:Annotations>
 --               <oms:SimulationInformation
---                 resultFile="replace.mat"
+--                 resultFile="replaceSubmodel2.mat"
 --                 loggingInterval="0.000000"
 --                 bufferSize="1"
 --                 signalFilter="resources/signalFilter.xml" />
@@ -202,6 +202,27 @@ print(src)
 --         </ssd:Annotations>
 --       </ssd:DefaultExperiment>
 --     </ssd:SystemStructureDescription>
+--   </oms:file>
+--   <oms:file
+--     name="resources/root.ssv">
+--     <ssv:ParameterSet
+--       xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
+--       xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
+--       version="1.0"
+--       name="parameters">
+--       <ssv:Parameters>
+--         <ssv:Parameter
+--           name="A.u">
+--           <ssv:Real
+--             value="10" />
+--         </ssv:Parameter>
+--         <ssv:Parameter
+--           name="A.t">
+--           <ssv:Real
+--             value="-10" />
+--         </ssv:Parameter>
+--       </ssv:Parameters>
+--     </ssv:ParameterSet>
 --   </oms:file>
 --   <oms:file
 --     name="resources/signalFilter.xml">
@@ -247,6 +268,9 @@ print(src)
 --   </oms:file>
 -- </oms:snapshot>
 --
+-- info:    Before replacing the Model
+-- info:      model.root.A.u      : 10.0
+-- info:      model.root.B.u      : 1.0
 -- error:   [getVariable] Unknown signal "model.root.A.dummy"
 -- warning: deleting connection "A.dummy ==> B.u1", as signal "dummy" couldn't be resolved to any signal in the replaced submodel "../resources/replaceA_extended.fmu"
 -- <?xml version="1.0"?>
@@ -266,6 +290,10 @@ print(src)
 --       version="1.0">
 --       <ssd:System
 --         name="root">
+--         <ssd:ParameterBindings>
+--           <ssd:ParameterBinding
+--             source="resources/root.ssv" />
+--         </ssd:ParameterBindings>
 --         <ssd:Elements>
 --           <ssd:Component
 --             name="B"
@@ -365,7 +393,7 @@ print(src)
 --             type="org.openmodelica">
 --             <oms:Annotations>
 --               <oms:SimulationInformation
---                 resultFile="replace.mat"
+--                 resultFile="replaceSubmodel2.mat"
 --                 loggingInterval="0.000000"
 --                 bufferSize="1"
 --                 signalFilter="resources/signalFilter.xml" />
@@ -374,6 +402,22 @@ print(src)
 --         </ssd:Annotations>
 --       </ssd:DefaultExperiment>
 --     </ssd:SystemStructureDescription>
+--   </oms:file>
+--   <oms:file
+--     name="resources/root.ssv">
+--     <ssv:ParameterSet
+--       xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
+--       xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
+--       version="1.0"
+--       name="parameters">
+--       <ssv:Parameters>
+--         <ssv:Parameter
+--           name="A.u">
+--           <ssv:Real
+--             value="5" />
+--         </ssv:Parameter>
+--       </ssv:Parameters>
+--     </ssv:ParameterSet>
 --   </oms:file>
 --   <oms:file
 --     name="resources/signalFilter.xml">
@@ -419,6 +463,18 @@ print(src)
 --   </oms:file>
 -- </oms:snapshot>
 --
+-- info:    After replacing the Model
+-- info:      model.root.A.u      : 5.0
+-- info:      model.root.B.u      : 1.0
+-- info:    Result file: replaceSubmodel2.mat (bufferSize=1)
+-- info:    Initialize
+-- info:      model.root.A.u      : 5.0
+-- info:      model.root.A.y      : 5.0
+-- info:      model.root.B.u      : 5.0
+-- info:    Simulate
+-- info:      model.root.A.u      : 5.0
+-- info:      model.root.A.y      : 5.0
+-- info:      model.root.B.u      : 5.0
 -- info:    1 warnings
 -- info:    1 errors
 -- endResult
