@@ -423,6 +423,11 @@ oms_delete("model")
 --       name="parameters">
 --       <ssv:Parameters>
 --         <ssv:Parameter
+--           name="B.u1">
+--           <ssv:Real
+--             value="-13" />
+--         </ssv:Parameter>
+--         <ssv:Parameter
 --           name="A.u">
 --           <ssv:Real
 --             value="5" />
