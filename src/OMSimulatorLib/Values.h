@@ -84,7 +84,7 @@ namespace oms
     oms_status_enu_t importFromSnapshot(const pugi::xml_node& node, const std::string& sspVersion, const Snapshot& snapshot);
     oms_status_enu_t importFromSnapshot(const Snapshot& snapshot, const std::string& ssvFilePath, const std::string& ssmFilename);
     oms_status_enu_t deleteStartValue(const ComRef& cref);
-    oms_status_enu_t updateOrDeleteStartValueInReplacedComponent(Values& value);
+    oms_status_enu_t updateOrDeleteStartValueInReplacedComponent(Values& value, const ComRef& owner);
     oms_status_enu_t deleteStartValueInResources(const ComRef& cref);
 
     oms_status_enu_t deleteReferencesInSSD(const std::string& filename);

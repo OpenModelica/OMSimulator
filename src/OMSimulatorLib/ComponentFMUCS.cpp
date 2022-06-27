@@ -1771,22 +1771,21 @@ oms_status_enu_t oms::ComponentFMUCS::updateOrDeleteStartValueInReplacedComponen
   // check for local resources available
   if (values.hasResources())
   {
-    return values.updateOrDeleteStartValueInReplacedComponent(values);
+    return values.updateOrDeleteStartValueInReplacedComponent(values, this->getCref());
   }
   // check for resources in root
   else if (getParentSystem() && getParentSystem()->getValues().hasResources())
   {
-    return getParentSystem()->getValues().updateOrDeleteStartValueInReplacedComponent(values);
+    return getParentSystem()->getValues().updateOrDeleteStartValueInReplacedComponent(values, this->getCref());
   }
   // check for resources in top level root
   else if (getParentSystem()->getParentSystem() && getParentSystem()->getParentSystem()->getValues().hasResources())
   {
-     return getParentSystem()->getParentSystem()->getValues().updateOrDeleteStartValueInReplacedComponent(values);
+     return getParentSystem()->getParentSystem()->getValues().updateOrDeleteStartValueInReplacedComponent(values, this->getCref());
   }
   else
   {
-    // inline parameter settings
-    //values.setReal(cref, value);
+    // inline parameter settings, no need to update the values
   }
 
   return oms_status_error;

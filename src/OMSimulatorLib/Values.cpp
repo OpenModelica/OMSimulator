@@ -602,7 +602,7 @@ oms_status_enu_t oms::Values::deleteStartValue(const ComRef& cref)
   return oms_status_error;
 }
 
-oms_status_enu_t oms::Values::updateOrDeleteStartValueInReplacedComponent(Values& value)
+oms_status_enu_t oms::Values::updateOrDeleteStartValueInReplacedComponent(Values& value, const ComRef& owner)
 {
   for (auto &it : parameterResources)
   {
@@ -612,11 +612,14 @@ oms_status_enu_t oms::Values::updateOrDeleteStartValueInReplacedComponent(Values
       {
         ComRef front(name.first);
         ComRef tail = front.pop_front();
-        double value_ = 0.0;
-        if (oms_status_ok ==  value.getRealFromModeldescription(front, value_))
-          res.second.realStartValues[name.first] = value_; // update the start value from the replaced component
-        else
-          res.second.realStartValues.erase(name.first); // delete the start value as signal does not exist in replaced component
+        if (tail == owner)
+        {
+          double value_ = 0.0;
+          if (oms_status_ok == value.getRealFromModeldescription(front, value_))
+            res.second.realStartValues[name.first] = value_; // update the start value from the replaced component
+          else
+            res.second.realStartValues.erase(name.first); // delete the start value as signal does not exist in replaced component
+        }
       }
     }
   }
