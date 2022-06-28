@@ -1766,6 +1766,17 @@ oms_status_enu_t oms::ComponentFMUCS::deleteStartValue(const ComRef& cref)
   return oms_status_error;
 }
 
+oms_status_enu_t oms::ComponentFMUCS::setResources(std::vector<Values>& allResources)
+{
+  this->values.parameterResources = allResources;
+  return oms_status_ok;
+}
+
+std::vector<oms::Values> oms::ComponentFMUCS::getResources()
+{
+  return this->values.parameterResources;
+}
+
 oms_status_enu_t oms::ComponentFMUCS::updateOrDeleteStartValueInReplacedComponent()
 {
   // check for local resources available

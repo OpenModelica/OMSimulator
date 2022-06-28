@@ -612,9 +612,12 @@ oms_status_enu_t oms::Values::updateOrDeleteStartValueInReplacedComponent(Values
       {
         ComRef front(name.first);
         ComRef tail = front.pop_front();
-        if (tail == owner)
+        if (tail == owner || front.isEmpty())
         {
           double value_ = 0.0;
+          // check for front.isEmpty() means local resources and names does not have owner (e.g) A.u1 = u1
+          if (front.isEmpty())
+            front=name.first;
           if (oms_status_ok == value.getRealFromModeldescription(front, value_))
             res.second.realStartValues[name.first] = value_; // update the start value from the replaced component
           else
