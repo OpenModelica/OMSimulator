@@ -1766,13 +1766,13 @@ oms_status_enu_t oms::ComponentFMUCS::deleteStartValue(const ComRef& cref)
   return oms_status_error;
 }
 
-oms_status_enu_t oms::ComponentFMUCS::setResources(std::vector<Values>& allResources)
+oms_status_enu_t oms::ComponentFMUCS::setValuesResources(std::vector<Values>& allValuesResources)
 {
-  this->values.parameterResources = allResources;
+  this->values.parameterResources = allValuesResources;
   return oms_status_ok;
 }
 
-std::vector<oms::Values> oms::ComponentFMUCS::getResources()
+std::vector<oms::Values> oms::ComponentFMUCS::getValuesResources()
 {
   return this->values.parameterResources;
 }

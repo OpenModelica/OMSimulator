@@ -96,8 +96,8 @@ namespace oms
 
     oms_status_enu_t deleteStartValue(const ComRef& cref);
     oms_status_enu_t updateOrDeleteStartValueInReplacedComponent();
-    oms_status_enu_t setResources(std::vector<Values>& allResources);
-    std::vector<Values> getResources();
+    oms_status_enu_t setValuesResources(std::vector<Values>& allValuesResources);
+    std::vector<Values> getValuesResources();
 
     oms_status_enu_t setFmuTime(double time) {this->time = time; return oms_status_ok;}
     fmi2_import_t* getFMU() {return fmu;}
