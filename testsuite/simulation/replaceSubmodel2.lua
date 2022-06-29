@@ -340,7 +340,7 @@ oms_delete("model")
 --           <ssd:Component
 --             name="A"
 --             type="application/x-fmu-sharedlibrary"
---             source="resources/0003_A.fmu">
+--             source="resources/0003_replaceA.fmu">
 --             <ssd:Connectors>
 --               <ssd:Connector
 --                 name="u"

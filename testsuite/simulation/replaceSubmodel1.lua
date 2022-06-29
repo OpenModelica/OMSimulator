@@ -359,7 +359,7 @@ oms_delete("model")
 --           <ssd:Component
 --             name="A"
 --             type="application/x-fmu-sharedlibrary"
---             source="resources/0003_A.fmu">
+--             source="resources/0003_replaceA.fmu">
 --             <ssd:Connectors>
 --               <ssd:Connector
 --                 name="u"
@@ -391,6 +391,23 @@ oms_delete("model")
 --                 <ssc:Real />
 --               </ssd:Connector>
 --             </ssd:Connectors>
+--             <ssd:ParameterBindings>
+--               <ssd:ParameterBinding>
+--                 <ssd:ParameterValues>
+--                   <ssv:ParameterSet
+--                     version="1.0"
+--                     name="parameters">
+--                     <ssv:Parameters>
+--                       <ssv:Parameter
+--                         name="u">
+--                         <ssv:Real
+--                           value="5" />
+--                       </ssv:Parameter>
+--                     </ssv:Parameters>
+--                   </ssv:ParameterSet>
+--                 </ssd:ParameterValues>
+--               </ssd:ParameterBinding>
+--             </ssd:ParameterBindings>
 --           </ssd:Component>
 --         </ssd:Elements>
 --         <ssd:Connections>
