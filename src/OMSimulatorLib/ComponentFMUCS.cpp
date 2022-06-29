@@ -60,7 +60,7 @@ oms::ComponentFMUCS::~ComponentFMUCS()
   fmi_import_free_context(context);
 }
 
-oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::System* parentSystem, const std::string& fmuPath)
+oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::System* parentSystem, const std::string& fmuPath, std::string replaceComponent)
 {
   if (!cref.isValidIdent())
   {
@@ -76,7 +76,7 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::
 
   filesystem::path temp_root(parentSystem->getModel().getTempDirectory());
   filesystem::path temp_temp = temp_root / "temp";
-  filesystem::path relFMUPath = parentSystem->copyResources() ? (filesystem::path("resources") / (parentSystem->getUniqueID() + "_" + std::string(cref) + ".fmu")) : filesystem::path(fmuPath);
+  filesystem::path relFMUPath = parentSystem->copyResources() ? (filesystem::path("resources") / (parentSystem->getUniqueID() + "_" + replaceComponent + std::string(cref) + ".fmu")) : filesystem::path(fmuPath);
   filesystem::path absFMUPath = temp_root / relFMUPath;
 
   ComponentFMUCS* component = new ComponentFMUCS(cref, parentSystem, relFMUPath.generic_string());
@@ -1792,7 +1792,7 @@ oms_status_enu_t oms::ComponentFMUCS::updateOrDeleteStartValueInReplacedComponen
   // check for resources in top level root
   else if (getParentSystem()->getParentSystem() && getParentSystem()->getParentSystem()->getValues().hasResources())
   {
-     return getParentSystem()->getParentSystem()->getValues().updateOrDeleteStartValueInReplacedComponent(values, this->getCref());
+    return getParentSystem()->getParentSystem()->getValues().updateOrDeleteStartValueInReplacedComponent(values, this->getCref());
   }
   else
   {

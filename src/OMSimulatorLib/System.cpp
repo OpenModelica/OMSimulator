@@ -343,7 +343,7 @@ oms_status_enu_t oms::System::replaceSubModel(const oms::ComRef& cref, const std
       extension = path.substr(path.length() - 4);
 
     if (extension == ".fmu" && oms_system_wc == type)
-      replaceComponent = ComponentFMUCS::NewComponent(cref, this, path_.string());
+      replaceComponent = ComponentFMUCS::NewComponent(cref, this, path_.string(), "replace");
     else if (extension == ".fmu" && oms_system_sc == type)
       replaceComponent = ComponentFMUME::NewComponent(cref, this, path_.string());
     else if (extension == ".csv" || extension == ".mat")
