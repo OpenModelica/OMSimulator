@@ -55,6 +55,7 @@ renameValues2.lua \
 replaceSubmodel1.lua \
 replaceSubmodel2.lua \
 replaceSubmodel3.lua \
+replaceSubmodel4.lua \
 setExternalInputs.lua \
 simulation.lua \
 simulation.py \

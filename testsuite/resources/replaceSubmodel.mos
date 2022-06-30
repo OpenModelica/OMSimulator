@@ -16,6 +16,7 @@ model replaceB
   input Real u(start = 1.0);
   input Real u1(start = 1.0);
   output Real y;
+  parameter Real z = 1;
 equation
   y = u;
 end replaceB;

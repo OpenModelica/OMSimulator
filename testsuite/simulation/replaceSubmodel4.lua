@@ -1,5 +1,5 @@
 -- status: correct
--- teardown_command: rm -rf replacesubmodel_02_lua/
+-- teardown_command: rm -rf replacesubmodel_04_lua/
 -- linux: no
 -- mingw32: no
 -- mingw64: yes
@@ -7,52 +7,24 @@
 -- mac: no
 
 oms_setCommandLineOption("--suppressPath=true")
-oms_setTempDirectory("./replacesubmodel_02_lua/")
+oms_setTempDirectory("./replacesubmodel_04_lua/")
 
-oms_newModel("model")
-
-oms_addSystem("model.root", oms_system_wc)
-
-oms_addSubModel("model.root.A", "../resources/replaceA.fmu")
-oms_addSubModel("model.root.B", "../resources/replaceB.fmu")
-
-oms_newResources("model.root:root.ssv")
-
-oms_setReal("model.root.A.u", 10.0)
-oms_setReal("model.root.A.t", -10.0)
-oms_setReal("model.root.B.u1", -13.0)
-oms_setReal("model.root.B.z", -15.0)
-
--- add connections
-oms_addConnection("model.root.A.y", "model.root.B.u")
-oms_addConnection("model.root.A.dummy", "model.root.B.u1")
-
-oms_setResultFile("model", "replaceSubmodel2.mat")
+oms_importFile("../resources/replaceSubmodel4.ssp")
 
 src, status = oms_exportSnapshot("model")
 print(src)
 
 print("info:    Before replacing the Model")
 print("info:      model.root.A.u      : " .. oms_getReal("model.root.A.u"))
+print("info:      model.root.A.t      : " .. oms_getReal("model.root.A.t"))
 print("info:      model.root.B.u      : " .. oms_getReal("model.root.B.u"))
 print("info:      model.root.B.u1     : " .. oms_getReal("model.root.B.u1"))
 print("info:      model.root.B.z      : " .. oms_getReal("model.root.B.z"))
-
-oms_export("model", "replaceSubmodel2.ssp")
-oms_terminate("model")
-oms_delete("model")
-
-oms_importFile("replaceSubmodel2.ssp")
 
 oms_replaceSubModel("model.root.A", "../resources/replaceA_extended.fmu")
+
 src, status = oms_exportSnapshot("model")
 print(src)
-
-print("info:    After replacing the Model")
-print("info:      model.root.A.u      : " .. oms_getReal("model.root.A.u"))
-print("info:      model.root.B.u      : " .. oms_getReal("model.root.B.u"))
-print("info:      model.root.B.u1     : " .. oms_getReal("model.root.B.u1"))
-print("info:      model.root.B.z      : " .. oms_getReal("model.root.B.z"))
 
 oms_instantiate("model")
 
@@ -97,7 +69,10 @@ oms_delete("model")
 --         name="root">
 --         <ssd:ParameterBindings>
 --           <ssd:ParameterBinding
---             source="resources/root.ssv" />
+--             source="resources/root.ssv">
+--             <ssd:ParameterMapping
+--               source="resources/root.ssm" />
+--           </ssd:ParameterBinding>
 --         </ssd:ParameterBindings>
 --         <ssd:Elements>
 --           <ssd:Component
@@ -227,27 +202,42 @@ oms_delete("model")
 --       name="parameters">
 --       <ssv:Parameters>
 --         <ssv:Parameter
---           name="B.z">
+--           name="paramA">
 --           <ssv:Real
---             value="-15" />
+--             value="-10" />
 --         </ssv:Parameter>
 --         <ssv:Parameter
---           name="B.u1">
+--           name="inputB">
 --           <ssv:Real
 --             value="-13" />
 --         </ssv:Parameter>
 --         <ssv:Parameter
---           name="A.u">
+--           name="inputA">
 --           <ssv:Real
 --             value="10" />
 --         </ssv:Parameter>
---         <ssv:Parameter
---           name="A.t">
---           <ssv:Real
---             value="-10" />
---         </ssv:Parameter>
 --       </ssv:Parameters>
 --     </ssv:ParameterSet>
+--   </oms:file>
+--   <oms:file
+--     name="resources/root.ssm">
+--     <ssm:ParameterMapping
+--       xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
+--       xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping"
+--       version="1.0">
+--       <ssm:MappingEntry
+--         source="paramA"
+--         target="A.t" />
+--       <ssm:MappingEntry
+--         source="paramA"
+--         target="B.z" />
+--       <ssm:MappingEntry
+--         source="inputB"
+--         target="B.u1" />
+--       <ssm:MappingEntry
+--         source="inputA"
+--         target="A.u" />
+--     </ssm:ParameterMapping>
 --   </oms:file>
 --   <oms:file
 --     name="resources/signalFilter.xml">
@@ -274,10 +264,6 @@ oms_delete("model")
 --         type="Real"
 --         kind="unknown" />
 --       <oms:Variable
---         name="model.root.A.der(x)"
---         type="Real"
---         kind="unknown" />
---       <oms:Variable
 --         name="model.root.A.dummy"
 --         type="Real"
 --         kind="output" />
@@ -299,9 +285,10 @@ oms_delete("model")
 --
 -- info:    Before replacing the Model
 -- info:      model.root.A.u      : 10.0
+-- info:      model.root.A.t      : -10.0
 -- info:      model.root.B.u      : 1.0
 -- info:      model.root.B.u1     : -13.0
--- info:      model.root.B.z      : -15.0
+-- info:      model.root.B.z      : -10.0
 -- error:   [getVariable] Unknown signal "model.root.A.dummy"
 -- warning: deleting connection "A.dummy ==> B.u1", as signal "dummy" couldn't be resolved to any signal in the replaced submodel "../resources/replaceA_extended.fmu"
 -- <?xml version="1.0"?>
@@ -323,7 +310,10 @@ oms_delete("model")
 --         name="root">
 --         <ssd:ParameterBindings>
 --           <ssd:ParameterBinding
---             source="resources/root.ssv" />
+--             source="resources/root.ssv">
+--             <ssd:ParameterMapping
+--               source="resources/root.ssm" />
+--           </ssd:ParameterBinding>
 --         </ssd:ParameterBindings>
 --         <ssd:Elements>
 --           <ssd:Component
@@ -365,7 +355,7 @@ oms_delete("model")
 --           <ssd:Component
 --             name="A"
 --             type="application/x-fmu-sharedlibrary"
---             source="resources/0003_replaceA.fmu">
+--             source="resources/0001_replaceA.fmu">
 --             <ssd:Connectors>
 --               <ssd:Connector
 --                 name="u"
@@ -448,22 +438,39 @@ oms_delete("model")
 --       name="parameters">
 --       <ssv:Parameters>
 --         <ssv:Parameter
---           name="B.z">
+--           name="paramA">
 --           <ssv:Real
---             value="-15" />
+--             value="-10" />
 --         </ssv:Parameter>
 --         <ssv:Parameter
---           name="B.u1">
+--           name="inputB">
 --           <ssv:Real
 --             value="-13" />
 --         </ssv:Parameter>
 --         <ssv:Parameter
---           name="A.u">
+--           name="inputA">
 --           <ssv:Real
 --             value="5" />
 --         </ssv:Parameter>
 --       </ssv:Parameters>
 --     </ssv:ParameterSet>
+--   </oms:file>
+--   <oms:file
+--     name="resources/root.ssm">
+--     <ssm:ParameterMapping
+--       xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
+--       xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping"
+--       version="1.0">
+--       <ssm:MappingEntry
+--         source="paramA"
+--         target="B.z" />
+--       <ssm:MappingEntry
+--         source="inputB"
+--         target="B.u1" />
+--       <ssm:MappingEntry
+--         source="inputA"
+--         target="A.u" />
+--     </ssm:ParameterMapping>
 --   </oms:file>
 --   <oms:file
 --     name="resources/signalFilter.xml">
@@ -513,24 +520,19 @@ oms_delete("model")
 --   </oms:file>
 -- </oms:snapshot>
 --
--- info:    After replacing the Model
--- info:      model.root.A.u      : 5.0
--- info:      model.root.B.u      : 1.0
--- info:      model.root.B.u1     : -13.0
--- info:      model.root.B.z      : -15.0
 -- info:    Result file: replaceSubmodel2.mat (bufferSize=1)
 -- info:    Initialize
 -- info:      model.root.A.u      : 5.0
 -- info:      model.root.A.y      : 5.0
 -- info:      model.root.B.u      : 5.0
 -- info:      model.root.B.u1     : -13.0
--- info:      model.root.B.z      : -15.0
+-- info:      model.root.B.z      : -10.0
 -- info:    Simulate
 -- info:      model.root.A.u      : 5.0
 -- info:      model.root.A.y      : 5.0
 -- info:      model.root.B.u      : 5.0
 -- info:      model.root.B.u1     : -13.0
--- info:      model.root.B.z      : -15.0
+-- info:      model.root.B.z      : -10.0
 -- info:    1 warnings
 -- info:    1 errors
 -- endResult
