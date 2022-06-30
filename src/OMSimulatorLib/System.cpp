@@ -345,18 +345,15 @@ oms_status_enu_t oms::System::replaceSubModel(const oms::ComRef& cref, const std
     if (extension == ".fmu" && oms_system_wc == type)
       replaceComponent = ComponentFMUCS::NewComponent(cref, this, path_.string(), "replace");
     else if (extension == ".fmu" && oms_system_sc == type)
-      replaceComponent = ComponentFMUME::NewComponent(cref, this, path_.string());
-    else if (extension == ".csv" || extension == ".mat")
-      replaceComponent = ComponentTable::NewComponent(cref, this, path_.string());
+      replaceComponent = ComponentFMUME::NewComponent(cref, this, path_.string(), "replace");
     else
-      return logError("supported sub-model formats are \".fmu\", \".csv\", \".mat\"");
+      return logError("supported sub-model formats are \".fmu\"");
 
     if (!replaceComponent)
       return oms_status_error;
 
-    //auto component_ = getComponent(cref);
-    auto component_ = components.find(cref);
-    if (component_ != components.end())
+    auto component = components.find(cref);
+    if (component != components.end())
     {
       for (auto &connection : connections)
       {
@@ -368,10 +365,10 @@ oms_status_enu_t oms::System::replaceSubModel(const oms::ComRef& cref, const std
           oms::ComRef headB(connection->getSignalA());
           oms::ComRef tailB = headB.pop_front();
           // check the replacing variable is a valid ScalarVariable
-          bool signalA = isValidScalarVariable(component_->second, replaceComponent, connection, cref, connection->getSignalA().front(), headA, path);
-          bool signalB = isValidScalarVariable(component_->second, replaceComponent, connection, cref, connection->getSignalB().front(), headB, path);
+          bool signalA = isValidScalarVariable(component->second, replaceComponent, connection, cref, connection->getSignalA().front(), headA, path);
+          bool signalB = isValidScalarVariable(component->second, replaceComponent, connection, cref, connection->getSignalB().front(), headB, path);
 
-          // delete the connection, due scalarVariable mismatch in the replaced submodel
+          // delete the connection, due to scalarVariable mismatch in the replaced submodel
           if (signalA || signalB)
           {
             delete connection;
@@ -382,14 +379,16 @@ oms_status_enu_t oms::System::replaceSubModel(const oms::ComRef& cref, const std
         }
       }
       // copy all the resources from old component to replacing component
-      std::vector<Values> allResources = component_->second->getValuesResources();
+      std::vector<Values> allResources = component->second->getValuesResources();
       replaceComponent->setValuesResources(allResources);
 
       // update or delete the start value in ssv of with the replaced component
       replaceComponent->updateOrDeleteStartValueInReplacedComponent();
+
       //delete component
-      delete component_->second;
-      components.erase(component_);
+      delete component->second;
+      components.erase(component);
+
       // update the replaced component
       components[cref] = replaceComponent;
       subelements.back() = reinterpret_cast<oms_element_t*>(replaceComponent->getElement());
