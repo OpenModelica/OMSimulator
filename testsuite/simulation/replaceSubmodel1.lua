@@ -19,6 +19,7 @@ oms_addSubModel("model.root.B", "../resources/replaceB.fmu")
 oms_setReal("model.root.A.u", 10.0)
 oms_setReal("model.root.A.t", -10.0)
 oms_setReal("model.root.B.u1", -13.0)
+oms_setReal("model.root.B.z", -15.0)
 
 -- add connections
 oms_addConnection("model.root.A.y", "model.root.B.u")
@@ -33,6 +34,7 @@ print("info:    Before replacing the Model")
 print("info:      model.root.A.u      : " .. oms_getReal("model.root.A.u"))
 print("info:      model.root.B.u      : " .. oms_getReal("model.root.B.u"))
 print("info:      model.root.B.u1     : " .. oms_getReal("model.root.B.u1"))
+print("info:      model.root.B.z      : " .. oms_getReal("model.root.B.z"))
 
 oms_export("model", "replaceSubmodel1.ssp")
 oms_terminate("model")
@@ -48,6 +50,7 @@ print("info:    After replacing the Model")
 print("info:      model.root.A.u      : " .. oms_getReal("model.root.A.u"))
 print("info:      model.root.B.u      : " .. oms_getReal("model.root.B.u"))
 print("info:      model.root.B.u1     : " .. oms_getReal("model.root.B.u1"))
+print("info:      model.root.B.z      : " .. oms_getReal("model.root.B.z"))
 
 oms_instantiate("model")
 oms_initialize("model")
@@ -57,6 +60,7 @@ print("info:      model.root.A.u      : " .. oms_getReal("model.root.A.u"))
 print("info:      model.root.A.y      : " .. oms_getReal("model.root.A.y"))
 print("info:      model.root.B.u      : " .. oms_getReal("model.root.B.u"))
 print("info:      model.root.B.u1     : " .. oms_getReal("model.root.B.u1"))
+print("info:      model.root.B.z      : " .. oms_getReal("model.root.B.z"))
 
 oms_simulate("model")
 
@@ -65,6 +69,7 @@ print("info:      model.root.A.u      : " .. oms_getReal("model.root.A.u"))
 print("info:      model.root.A.y      : " .. oms_getReal("model.root.A.y"))
 print("info:      model.root.B.u      : " .. oms_getReal("model.root.B.u"))
 print("info:      model.root.B.u1     : " .. oms_getReal("model.root.B.u1"))
+print("info:      model.root.B.z      : " .. oms_getReal("model.root.B.z"))
 
 oms_terminate("model")
 oms_delete("model")
@@ -117,6 +122,11 @@ oms_delete("model")
 --                   x="1.000000"
 --                   y="0.500000" />
 --               </ssd:Connector>
+--               <ssd:Connector
+--                 name="z"
+--                 kind="parameter">
+--                 <ssc:Real />
+--               </ssd:Connector>
 --             </ssd:Connectors>
 --             <ssd:ParameterBindings>
 --               <ssd:ParameterBinding>
@@ -125,6 +135,11 @@ oms_delete("model")
 --                     version="1.0"
 --                     name="parameters">
 --                     <ssv:Parameters>
+--                       <ssv:Parameter
+--                         name="z">
+--                         <ssv:Real
+--                           value="-15" />
+--                       </ssv:Parameter>
 --                       <ssv:Parameter
 --                         name="u1">
 --                         <ssv:Real
@@ -257,6 +272,10 @@ oms_delete("model")
 --         type="Real"
 --         kind="output" />
 --       <oms:Variable
+--         name="model.root.B.z"
+--         type="Real"
+--         kind="parameter" />
+--       <oms:Variable
 --         name="model.root.A.x"
 --         type="Real"
 --         kind="unknown" />
@@ -288,6 +307,7 @@ oms_delete("model")
 -- info:      model.root.A.u      : 10.0
 -- info:      model.root.B.u      : 1.0
 -- info:      model.root.B.u1     : -13.0
+-- info:      model.root.B.z      : -15.0
 -- error:   [getVariable] Unknown signal "model.root.A.dummy"
 -- warning: deleting connection "A.dummy ==> B.u1", as signal "dummy" couldn't be resolved to any signal in the replaced submodel "../resources/replaceA_extended.fmu"
 -- <?xml version="1.0"?>
@@ -337,6 +357,11 @@ oms_delete("model")
 --                   x="1.000000"
 --                   y="0.500000" />
 --               </ssd:Connector>
+--               <ssd:Connector
+--                 name="z"
+--                 kind="parameter">
+--                 <ssc:Real />
+--               </ssd:Connector>
 --             </ssd:Connectors>
 --             <ssd:ParameterBindings>
 --               <ssd:ParameterBinding>
@@ -345,6 +370,11 @@ oms_delete("model")
 --                     version="1.0"
 --                     name="parameters">
 --                     <ssv:Parameters>
+--                       <ssv:Parameter
+--                         name="z">
+--                         <ssv:Real
+--                           value="-15" />
+--                       </ssv:Parameter>
 --                       <ssv:Parameter
 --                         name="u1">
 --                         <ssv:Real
@@ -467,6 +497,10 @@ oms_delete("model")
 --         type="Real"
 --         kind="output" />
 --       <oms:Variable
+--         name="model.root.B.z"
+--         type="Real"
+--         kind="parameter" />
+--       <oms:Variable
 --         name="model.root.A.x"
 --         type="Real"
 --         kind="unknown" />
@@ -498,17 +532,20 @@ oms_delete("model")
 -- info:      model.root.A.u      : 5.0
 -- info:      model.root.B.u      : 1.0
 -- info:      model.root.B.u1     : -13.0
+-- info:      model.root.B.z      : -15.0
 -- info:    Result file: replaceSubmodel1.mat (bufferSize=1)
 -- info:    Initialize
 -- info:      model.root.A.u      : 5.0
 -- info:      model.root.A.y      : 5.0
 -- info:      model.root.B.u      : 5.0
 -- info:      model.root.B.u1     : -13.0
+-- info:      model.root.B.z      : -15.0
 -- info:    Simulate
 -- info:      model.root.A.u      : 5.0
 -- info:      model.root.A.y      : 5.0
 -- info:      model.root.B.u      : 5.0
 -- info:      model.root.B.u1     : -13.0
+-- info:      model.root.B.z      : -15.0
 -- info:    1 warnings
 -- info:    1 errors
 -- endResult

@@ -74,6 +74,7 @@ import_export_parameters2 \
 import_export_parameters3 \
 importExportAllResources \
 replaceSubmodel4 \
+replaceSubmodel5 \
 
 MOSs = \
 ASSCExample.mos \

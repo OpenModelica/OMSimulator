@@ -11,11 +11,6 @@
         value="-15" />
     </ssv:Parameter>
     <ssv:Parameter
-      name="inputB">
-      <ssv:Real
-        value="-13" />
-    </ssv:Parameter>
-    <ssv:Parameter
       name="inputA">
       <ssv:Real
         value="10" />

@@ -10,13 +10,6 @@
   version="1.0">
   <ssd:System
     name="root">
-    <ssd:ParameterBindings>
-      <ssd:ParameterBinding
-        source="resources/root.ssv" >
-        <ssd:ParameterMapping
-          source="resources/root.ssm" />
-      </ssd:ParameterBinding>
-    </ssd:ParameterBindings>
     <ssd:Elements>
       <ssd:Component
         name="B"
@@ -89,6 +82,13 @@
             <ssc:Real />
           </ssd:Connector>
         </ssd:Connectors>
+        <ssd:ParameterBindings>
+          <ssd:ParameterBinding
+            source="resources/root.ssv" >
+          <ssd:ParameterMapping
+            source="resources/root.ssm" />
+          </ssd:ParameterBinding>
+        </ssd:ParameterBindings>
       </ssd:Component>
     </ssd:Elements>
     <ssd:Connections>
@@ -126,7 +126,7 @@
         type="org.openmodelica">
         <oms:Annotations>
           <oms:SimulationInformation
-            resultFile="replaceSubmodel4.mat"
+            resultFile="replaceSubmodel5.mat"
             loggingInterval="0.000000"
             bufferSize="1"
             signalFilter="resources/signalFilter.xml" />
