@@ -608,44 +608,50 @@ oms_status_enu_t oms::Values::updateOrDeleteStartValueInReplacedComponent(Values
   {
     for (auto &res : it.allresources)
     {
-      // std::cout << "\n check files : " << res.first.c_str() << "==>" << res.second.ssmFile;
+      // delete the unreferenced signals in ssm file
       if (!res.second.ssmFile.empty())
       {
-        for (auto it = res.second.mappedEntry.begin(); it != res.second.mappedEntry.end();)
+        for (auto mappedCref = res.second.mappedEntry.begin(); mappedCref != res.second.mappedEntry.end();)
         {
-          std::cout << "\n mapping : " << it->first.c_str() << "==>" << it->second.c_str();
-          
-          if(it->second == "A.t")
-          {
-            it = res.second.mappedEntry.erase(it);
-            res.second.realStartValues.erase("A.t");
-          }
-          else
-            ++it;
-        }
-      }
-      //else
-      //{
-
-        for (auto &name : res.second.realStartValues)
-        {
-          ComRef front(name.first);
+          ComRef front(mappedCref->second);
           ComRef tail = front.pop_front();
-          std::cout << "\n deleting start values: " << name.first.c_str();
+          //std::cout << "\n mappingEntry :" << mappedCref->first.c_str() << "==>" << mappedCref->second.c_str();
           if (tail == owner || front.isEmpty())
           {
             double value_ = 0.0;
             // check for front.isEmpty() means local resources and names does not have owner (e.g) A.u1 = u1
             if (front.isEmpty())
-              front = name.first;
-            if (oms_status_ok == value.getRealFromModeldescription(front, value_))
-              res.second.realStartValues[name.first] = value_; // update the start value from the replaced component
-            else
-              if (res.second.ssmFile.empty())
-                res.second.realStartValues.erase(name.first); // delete the start value as signal does not exist in replaced component
+              front = mappedCref->second;
+            if (oms_status_ok != value.getRealFromModeldescription(front, value_))
+            {
+              //res.second.realStartValues.erase("A.t"); // NOTE: should we keep unreferenced signals in ssm and ssv when importing ?
+              mappedCref = res.second.mappedEntry.erase(mappedCref);
+            }
+          }
+          ++ mappedCref;
+        }
+      }
+      // delete the unreferenced signals in ssm file
+
+      for (auto &name : res.second.realStartValues)
+      {
+        ComRef front(name.first);
+        ComRef tail = front.pop_front();
+        if (tail == owner || front.isEmpty())
+        {
+          double value_ = 0.0;
+          // check for front.isEmpty() means local resources and names does not have owner (e.g) A.u1 = u1
+          if (front.isEmpty())
+            front = name.first;
+          if (oms_status_ok == value.getRealFromModeldescription(front, value_))
+            res.second.realStartValues[name.first] = value_; // update the start value from the replaced component
+          else
+          {
+            // if (res.second.ssmFile.empty()) should we keep the unreferenced signals in ssv which does not have any reference in ssm when importing?
+            res.second.realStartValues.erase(name.first); // delete the start value as signal does not exist in replaced component
           }
         }
-      //}
+      }
     }
   }
 
