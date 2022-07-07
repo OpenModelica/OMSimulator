@@ -54,12 +54,6 @@ oms::Values::~Values()
 oms_status_enu_t oms::Values::setReal(const ComRef& cref, double value)
 {
   realStartValues[cref] = value;
-
-  // update start values in ssv template
-  auto realValue = modelDescriptionRealStartValues.find(cref);
-  if (realValue != modelDescriptionRealStartValues.end())
-    modelDescriptionRealStartValues[cref] = value;
-
   setUnitDefinitions(cref);
 
   return oms_status_ok;
@@ -105,22 +99,12 @@ oms_status_enu_t oms::Values::setInteger(const ComRef& cref, int value)
 {
   integerStartValues[cref] = value;
 
-  // update start values in ssv template
-  auto integerValue = modelDescriptionIntegerStartValues.find(cref);
-  if (integerValue != modelDescriptionIntegerStartValues.end())
-    modelDescriptionIntegerStartValues[cref] = value;
-
   return oms_status_ok;
 }
 
 oms_status_enu_t oms::Values::setBoolean(const ComRef& cref, bool value)
 {
   booleanStartValues[cref] = value;
-
-  // update start values in ssv template
-  auto boolValue = modelDescriptionBooleanStartValues.find(cref);
-  if (boolValue != modelDescriptionBooleanStartValues.end())
-    modelDescriptionBooleanStartValues[cref] = value;
 
   return oms_status_ok;
 }
@@ -129,19 +113,65 @@ oms_status_enu_t oms::Values::setString(const ComRef& cref, const std::string& v
 {
   stringStartValues[cref] = value;
 
+  return oms_status_ok;
+}
+
+void oms::Values::updateModelDescriptionRealStartValue(const ComRef& cref, double value)
+{
+  // update start values in ssv template
+  auto realValue = modelDescriptionRealStartValues.find(cref);
+  if (realValue != modelDescriptionRealStartValues.end())
+    modelDescriptionRealStartValues[cref] = value;
+}
+
+void oms::Values::updateModelDescriptionIntegerStartValue(const ComRef& cref, int value)
+{
+  // update start values in ssv template
+  auto integerValue = modelDescriptionIntegerStartValues.find(cref);
+  if (integerValue != modelDescriptionIntegerStartValues.end())
+    modelDescriptionIntegerStartValues[cref] = value;
+}
+
+void oms::Values::updateModelDescriptionBooleanStartValue(const ComRef& cref, bool value)
+{
+  // update start values in ssv template
+  auto boolValue = modelDescriptionBooleanStartValues.find(cref);
+  if (boolValue != modelDescriptionBooleanStartValues.end())
+    modelDescriptionBooleanStartValues[cref] = value;
+}
+
+void oms::Values::updateModelDescriptionStringStartValue(const ComRef& cref, std::string value)
+{
   // update start values in ssv template
   auto stringValue = modelDescriptionStringStartValues.find(cref);
   if (stringValue != modelDescriptionStringStartValues.end())
     modelDescriptionStringStartValues[cref] = value;
+}
 
-  return oms_status_ok;
+void oms::Values::updateModelDescriptionVariableUnit(const ComRef& cref, const std::string& value)
+{
+  modelDescriptionVariableUnits[cref] = value; // override if exists otherwise make a new entry
+  // update unit Definitions
+  for (const auto & it:modeldescriptionUnitDefinitions)
+    if (it.first == cref.c_str())
+      modeldescriptionUnitDefinitions[it.first] = {}; // make the baseUnit empty, as we do not calculate base units
+}
+
+void oms::Values::copyModelDescriptionUnitToResources(Values& value)
+{
+  for (auto &it: parameterResources)
+  {
+    for (auto &res: it.allresources)
+    {
+      res.second.modelDescriptionVariableUnits = value.modelDescriptionVariableUnits;
+      res.second.modeldescriptionUnitDefinitions = value.modeldescriptionUnitDefinitions;
+    }
+  }
 }
 
 oms_status_enu_t oms::Values::setUnit(const ComRef& cref, const std::string& value)
 {
   variableUnits[cref] = value;
-  // update unit values in ssv template
-  modelDescriptionVariableUnits[cref] = value; // override if exists otherwise make a new entry
   // update unit Definitions
   for (auto & it : unitDefinitionsToExportInSSP)
   {

@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm -rf exportSSVTemplate_py/
+## teardown_command: rm -rf exportSSVTemplate_02_py/
 ## linux: yes
 ## mac: no
 ## mingw32: yes
@@ -9,8 +9,8 @@
 import OMSimulator as oms
 
 oms.setCommandLineOption("--suppressPath=true")
-oms.setTempDirectory("./exportSSVTemplate_py/")
-oms.setWorkingDirectory("./exportSSVTemplate_py/")
+oms.setTempDirectory("./exportSSVTemplate_02_py/")
+oms.setWorkingDirectory("./exportSSVTemplate_02_py/")
 
 model = oms.newModel("exportSSVTemplate")
 root = model.addSystem("root", oms.Types.System.WC)
