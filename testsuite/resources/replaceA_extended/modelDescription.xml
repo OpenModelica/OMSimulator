@@ -2,10 +2,10 @@
 <fmiModelDescription
   fmiVersion="2.0"
   modelName="replaceA_extended"
-  guid="{c3200632-18a3-4b55-9245-68418db2219d}"
+  guid="{85679b46-beaa-44ff-9753-ddc64587fdf4}"
   description=""
-  generationTool="OpenModelica Compiler OpenModelica v1.20.0-dev-132-g9cb1b892ed (64-bit)"
-  generationDateAndTime="2022-06-22T10:04:08Z"
+  generationTool="OpenModelica Compiler OpenModelica v1.20.0-dev-185-ge8d0d2d923 (64-bit)"
+  generationDateAndTime="2022-07-12T18:03:05Z"
   variableNamingConvention="structured"
   numberOfEventIndicators="0">
   <ModelExchange
@@ -38,6 +38,7 @@
       <File name="./gc/omc_gc.c" />
       <File name="./util/base_array.c" />
       <File name="./util/boolean_array.c" />
+      <File name="./util/context.c" />
       <File name="./util/division.c" />
       <File name="./util/doubleEndedList.c" />
       <File name="./util/generic_array.c" />
@@ -118,6 +119,7 @@
       <File name="./gc/omc_gc.c" />
       <File name="./util/base_array.c" />
       <File name="./util/boolean_array.c" />
+      <File name="./util/context.c" />
       <File name="./util/division.c" />
       <File name="./util/doubleEndedList.c" />
       <File name="./util/generic_array.c" />
@@ -193,7 +195,7 @@
     valueReference="2"
     causality="input"
     >
-    <Real start="5.0"/>
+    <Real start="7.0"/>
   </ScalarVariable>
   <!-- Index of variable = "4" -->
   <ScalarVariable

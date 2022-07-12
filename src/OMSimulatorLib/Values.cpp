@@ -687,7 +687,10 @@ oms_status_enu_t oms::Values::updateOrDeleteStartValueInReplacedComponent(Values
             if (front.isEmpty())
               front = name.first;
             if (oms_status_ok == value.getRealFromModeldescription(front, value_))
-              res.second.realStartValues[name.first] = value_; // update the start value from the replaced component
+            {
+              // do not update the start values, as value set by user have higher priority
+              //res.second.realStartValues[name.first] = value_; // update the start value from the replaced component
+            }
             else
             {
               // if (res.second.ssmFile.empty()) should we keep the unreferenced signals in ssv which does not have any reference in ssm when importing?
