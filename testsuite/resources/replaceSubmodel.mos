@@ -22,7 +22,7 @@ equation
 end replaceB;
 
 model replaceA_extended
-  input Real u(start = 5.0);
+  input Real u(start = 7.0);
   output Real y;
   output Real y1;
   Real x(start=1.0);

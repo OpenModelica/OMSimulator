@@ -435,7 +435,7 @@ oms.delete("model")
 ##                       <ssv:Parameter
 ##                         name="u">
 ##                         <ssv:Real
-##                           value="5" />
+##                           value="10" />
 ##                       </ssv:Parameter>
 ##                     </ssv:Parameters>
 ##                   </ssv:ParameterSet>
@@ -534,20 +534,20 @@ oms.delete("model")
 ## info:    Result file: replaceSubmodel6.mat (bufferSize=1)
 ##
 ## info:    After replacing the Model
-## info:      model.root.A.u      :  5.0
+## info:      model.root.A.u      :  10.0
 ## info:      model.root.B.u      :  1.0
 ## info:      model.root.B.u1     :  -13.0
 ## info:      model.root.B.z      :  -15.0
 ## info:    Initialize
-## info:      model.root.A.u      :  5.0
-## info:      model.root.A.y      :  5.0
-## info:      model.root.B.u      :  5.0
+## info:      model.root.A.u      :  10.0
+## info:      model.root.A.y      :  10.0
+## info:      model.root.B.u      :  10.0
 ## info:      model.root.B.u1     :  -13.0
 ## info:      model.root.B.z      :  -15.0
 ## info:    Simulate
-## info:      model.root.A.u      :  5.0
-## info:      model.root.A.y      :  5.0
-## info:      model.root.B.u      :  5.0
+## info:      model.root.A.u      :  10.0
+## info:      model.root.A.y      :  10.0
+## info:      model.root.B.u      :  10.0
 ## info:      model.root.B.u1     :  -13.0
 ## info:      model.root.B.z      :  -15.0
 ## info:    1 warnings
