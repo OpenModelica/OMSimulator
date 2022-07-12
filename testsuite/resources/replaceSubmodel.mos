@@ -1,0 +1,40 @@
+
+loadString("
+model replaceA
+  input Real u(start = 5.0);
+  output Real y;
+  output Real dummy;
+  Real x(start=1.0);
+  parameter Real t = 3;
+equation
+  x = der(x);
+  y = u;
+  dummy = u;
+end replaceA;
+
+model replaceB
+  input Real u(start = 1.0);
+  input Real u1(start = 1.0);
+  output Real y;
+  parameter Real z = 1;
+equation
+  y = u;
+end replaceB;
+
+model replaceA_extended
+  input Real u(start = 5.0);
+  output Real y;
+  output Real y1;
+  Real x(start=1.0);
+  parameter Real foo = 3;
+equation
+  x = der(x);
+  y = u;
+  y1 = foo;
+end replaceA_extended;
+
+"); getErrorString();
+
+buildModelFMU(replaceA, version="2.0", fmuType="me_cs"); getErrorString();
+buildModelFMU(replaceB, version="2.0", fmuType="me_cs"); getErrorString();
+buildModelFMU(replaceA_extended, version="2.0", fmuType="me_cs"); getErrorString();

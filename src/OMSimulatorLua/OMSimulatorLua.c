@@ -1133,6 +1133,28 @@ static int OMSimulatorLua_oms_addSubModel(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms_replaceSubModel(const char* cref, const char* fmuPath);
+static int OMSimulatorLua_oms_replaceSubModel(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 arguments");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+
+  const char* cref = lua_tostring(L, 1);
+  const char* fmuPath = lua_tostring(L, 2);
+  oms_status_enu_t status = oms_replaceSubModel(cref, fmuPath);
+
+  if (status!=oms_status_ok)
+  {
+    return luaL_error(L, "oms_replaceSubModel(%s,%s) failed", cref, fmuPath);
+  }
+
+  lua_pushinteger(L, status);
+
+  return 1;
+}
+
 //oms_status_enu_t oms_instantiate(const char* ident);
 static int OMSimulatorLua_oms_instantiate(lua_State *L)
 {
@@ -1478,6 +1500,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms_newResources);
   REGISTER_LUA_CALL(oms_removeSignalsFromResults);
   REGISTER_LUA_CALL(oms_rename);
+  REGISTER_LUA_CALL(oms_replaceSubModel);
   REGISTER_LUA_CALL(oms_reset);
   REGISTER_LUA_CALL(oms_referenceResources);
   REGISTER_LUA_CALL(oms_reduceSSV);

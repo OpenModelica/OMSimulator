@@ -40,6 +40,9 @@ QuarterCarModel.DisplacementDisplacement.Chassis \
 QuarterCarModel.DisplacementDisplacement.Wheel \
 QuarterCarModel.DisplacementForce.Chassis \
 QuarterCarModel.DisplacementForce.Wheel \
+replaceA \
+replaceB \
+replaceA_extended \
 str_hello_world \
 tank1 \
 tank2 \
@@ -70,6 +73,8 @@ import_export_parameters1 \
 import_export_parameters2 \
 import_export_parameters3 \
 importExportAllResources \
+replaceSubmodel4 \
+replaceSubmodel5 \
 
 MOSs = \
 ASSCExample.mos \
@@ -85,6 +90,7 @@ Mass.mos \
 MassSpring.mos \
 nls.mos \
 QuarterCarModel.mos \
+replaceSubmodel.mos \
 str_hello_world.mos \
 unit.mos \
 

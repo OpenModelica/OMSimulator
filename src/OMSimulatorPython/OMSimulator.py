@@ -113,6 +113,7 @@ class OMSimulator:
     self.referenceResources = Scope._capi.referenceResources
     self.removeSignalsFromResults = Scope._capi.removeSignalsFromResults
     self.rename = Scope._capi.rename
+    self.replaceSubModel = Scope._capi.replaceSubModel
     self.reset = Scope._capi.reset
     self.setBoolean = Scope._capi.setBoolean
     self.setCommandLineOption = Scope._capi.setCommandLineOption

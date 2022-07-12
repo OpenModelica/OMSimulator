@@ -60,7 +60,7 @@ oms::ComponentFMUCS::~ComponentFMUCS()
   fmi_import_free_context(context);
 }
 
-oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::System* parentSystem, const std::string& fmuPath)
+oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::System* parentSystem, const std::string& fmuPath, std::string replaceComponent)
 {
   if (!cref.isValidIdent())
   {
@@ -74,9 +74,11 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::
     return NULL;
   }
 
+  // replaceComponent string will be used to avoid name conflicts when replacing a fmu with oms_replaceSubModel(), the default is ""
+
   filesystem::path temp_root(parentSystem->getModel().getTempDirectory());
   filesystem::path temp_temp = temp_root / "temp";
-  filesystem::path relFMUPath = parentSystem->copyResources() ? (filesystem::path("resources") / (parentSystem->getUniqueID() + "_" + std::string(cref) + ".fmu")) : filesystem::path(fmuPath);
+  filesystem::path relFMUPath = parentSystem->copyResources() ? (filesystem::path("resources") / (parentSystem->getUniqueID() + "_" + replaceComponent + std::string(cref) + ".fmu")) : filesystem::path(fmuPath);
   filesystem::path absFMUPath = temp_root / relFMUPath;
 
   ComponentFMUCS* component = new ComponentFMUCS(cref, parentSystem, relFMUPath.generic_string());
@@ -1776,6 +1778,42 @@ oms_status_enu_t oms::ComponentFMUCS::deleteStartValue(const ComRef& cref)
   else
   {
     return values.deleteStartValue(cref);
+  }
+
+  return oms_status_error;
+}
+
+oms_status_enu_t oms::ComponentFMUCS::setValuesResources(std::vector<Values>& allValuesResources)
+{
+  this->values.parameterResources = allValuesResources;
+  return oms_status_ok;
+}
+
+std::vector<oms::Values> oms::ComponentFMUCS::getValuesResources()
+{
+  return this->values.parameterResources;
+}
+
+oms_status_enu_t oms::ComponentFMUCS::updateOrDeleteStartValueInReplacedComponent()
+{
+  // check for local resources available
+  if (values.hasResources())
+  {
+    return values.updateOrDeleteStartValueInReplacedComponent(values, this->getCref());
+  }
+  // check for resources in root
+  else if (getParentSystem() && getParentSystem()->getValues().hasResources())
+  {
+    return getParentSystem()->getValues().updateOrDeleteStartValueInReplacedComponent(values, this->getCref());
+  }
+  // check for resources in top level root
+  else if (getParentSystem()->getParentSystem() && getParentSystem()->getParentSystem()->getValues().hasResources())
+  {
+    return getParentSystem()->getParentSystem()->getValues().updateOrDeleteStartValueInReplacedComponent(values, this->getCref());
+  }
+  else
+  {
+    // inline parameter settings, no need to update the values
   }
 
   return oms_status_error;

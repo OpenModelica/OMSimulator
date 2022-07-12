@@ -56,7 +56,7 @@ namespace oms
   public:
     ~ComponentFMUCS();
 
-    static Component* NewComponent(const ComRef& cref, System* parentSystem, const std::string& fmuPath);
+    static Component* NewComponent(const ComRef& cref, System* parentSystem, const std::string& fmuPath, std::string replaceComponent = "");
     static Component* NewComponent(const pugi::xml_node& node, System* parentSystem, const std::string& sspVersion, const Snapshot& snapshot);
     const FMUInfo* getFMUInfo() const {return &(this->fmuInfo);}
 
@@ -95,6 +95,9 @@ namespace oms
     oms_status_enu_t getDirectionalDerivativeHeper(const int unknownIndex, const int knownindex, const std::vector<int>& dependencyList, double& value);
 
     oms_status_enu_t deleteStartValue(const ComRef& cref);
+    oms_status_enu_t updateOrDeleteStartValueInReplacedComponent();
+    oms_status_enu_t setValuesResources(std::vector<Values>& allValuesResources);
+    std::vector<Values> getValuesResources();
 
     oms_status_enu_t setFmuTime(double time) {this->time = time; return oms_status_ok;}
     fmi2_import_t* getFMU() {return fmu;}

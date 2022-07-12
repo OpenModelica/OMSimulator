@@ -43,6 +43,7 @@
 #include "SignalDerivative.h"
 #include "Snapshot.h"
 #include "Types.h"
+#include "Values.h"
 
 #include <fmilib.h>
 #include <pugixml.hpp>
@@ -78,6 +79,9 @@ namespace oms
     virtual bool getCanGetAndSetState() { return false; }
     virtual const FMUInfo* getFMUInfo() const { return nullptr; }
     virtual oms_status_enu_t deleteStartValue(const ComRef& cref) { return oms_status_ok; }
+    virtual std::vector<Values> getValuesResources() { return{}; }
+    virtual oms_status_enu_t setValuesResources(std::vector<Values>& allResources) { return oms_status_ok; }
+    virtual oms_status_enu_t updateOrDeleteStartValueInReplacedComponent() { return oms_status_ok; }
     virtual oms_status_enu_t exportToSSMTemplate(pugi::xml_node& ssmNode) { return logError_NotImplemented; }
     virtual oms_status_enu_t exportToSSVTemplate(pugi::xml_node& ssvNode, Snapshot& snapshot) { return logError_NotImplemented; }
     virtual oms_status_enu_t freeState() { return logError_NotImplemented; }
