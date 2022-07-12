@@ -1455,6 +1455,8 @@ oms_status_enu_t oms::ComponentFMUME::setBoolean(const ComRef& cref, bool value)
 
   if (oms_modelState_virgin == getModel().getModelState())
   {
+    // update start values in top level Modeldescription.xml to be exported in ssv templates
+    values.updateModelDescriptionBooleanStartValue(cref, value);
     // check for local resources available
     if (values.hasResources())
     {
@@ -1505,6 +1507,8 @@ oms_status_enu_t oms::ComponentFMUME::setInteger(const ComRef& cref, int value)
 
   if (oms_modelState_virgin == getModel().getModelState())
   {
+    // update start values in top level Modeldescription.xml to be exported in ssv templates
+    values.updateModelDescriptionIntegerStartValue(cref, value);
     // check for local resources available
     if (values.hasResources())
     {
@@ -1619,19 +1623,24 @@ oms_status_enu_t oms::ComponentFMUME::setReal(const ComRef& cref, double value)
 
   if (oms_modelState_virgin == getModel().getModelState())
   {
+    // update start values in top level Modeldescription.xml to be exported in ssv templates
+    values.updateModelDescriptionRealStartValue(cref, value);
     // check for local resources available
     if (values.hasResources())
     {
+      values.copyModelDescriptionUnitToResources(values);
       return values.setRealResources(cref, value, getFullCref(), false, oms_modelState_virgin);
     }
     // check for resources in root
     else if (getParentSystem() && getParentSystem()->getValues().hasResources())
     {
+      getParentSystem()->getValues().copyModelDescriptionUnitToResources(values);
       return getParentSystem()->getValues().setRealResources(getCref()+cref, value, getParentSystem()->getFullCref(), false, oms_modelState_virgin);
     }
     // check for resources in top level root
     else if (getParentSystem()->getParentSystem() && getParentSystem()->getParentSystem()->getValues().hasResources())
     {
+      getParentSystem()->getParentSystem()->getValues().copyModelDescriptionUnitToResources(values);
       return getParentSystem()->getParentSystem()->getValues().setRealResources(getCref()+cref, value, getParentSystem()->getParentSystem()->getFullCref(), false, oms_modelState_virgin);
     }
     else
@@ -1672,6 +1681,8 @@ oms_status_enu_t oms::ComponentFMUME::setString(const ComRef& cref, const std::s
 
   if (oms_modelState_virgin == getModel().getModelState())
   {
+    // update start values in top level Modeldescription.xml to be exported in ssv templates
+    values.updateModelDescriptionStringStartValue(cref, value);
     // check for local resources available
     if (values.hasResources())
     {
@@ -1718,6 +1729,10 @@ oms_status_enu_t oms::ComponentFMUME::setUnit(const ComRef &cref, const std::str
       }
     }
   }
+
+  // set unit in top level modeldescription.xml
+  values.updateModelDescriptionVariableUnit(cref, value);
+
   // check for local resources available
   if (values.hasResources())
   {
