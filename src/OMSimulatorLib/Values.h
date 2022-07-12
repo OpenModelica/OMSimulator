@@ -55,6 +55,13 @@ namespace oms
     oms_status_enu_t setUnit(const ComRef& cref, const std::string& value);
     void setUnitDefinitions(const ComRef& cref);
     void getFilteredUnitDefinitionsToSSD(std::map<std::string, std::map<std::string, std::string>>& unitDefinitions);
+    void updateModelDescriptionRealStartValue(const ComRef& cref, double value);
+    void updateModelDescriptionIntegerStartValue(const ComRef& cref, int value);
+    void updateModelDescriptionBooleanStartValue(const ComRef& cref, bool value);
+    void updateModelDescriptionStringStartValue(const ComRef& cref, std::string value);
+
+    void updateModelDescriptionVariableUnit(const ComRef& cref, const std::string& value);
+    void copyModelDescriptionUnitToResources(Values& value);
 
     oms_status_enu_t getBoolean(const ComRef& cref, bool& value);
     oms_status_enu_t getInteger(const ComRef& cref, int& value);

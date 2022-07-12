@@ -408,11 +408,30 @@ oms_status_enu_t oms::Model::exportSSVTemplate(const oms::ComRef& cref, const st
 
   for (const auto& component : system->getComponents())
   {
-    if(component.first == tail || cref.isEmpty()) // allow querying single component or whole model
+    if(component.first == tail || cref.isEmpty() || cref.isValidIdent()) // allow querying single component or whole model
     {
       if (oms_status_ok != component.second->exportToSSVTemplate(ssvNode, snapshot))
       {
         return logError("export of ssv template failed for component " + std::string(system->getFullCref()+std::string(component.first)));
+      }
+    }
+  }
+
+  // check in subsystems
+  ComRef tailA(tail);
+  ComRef frontA = tailA.pop_front();
+
+  //std::cout <<"\n subsystem: " << tailA.c_str() << "==>" << frontA.c_str() << "==>" << cref.c_str();
+  for (const auto &subsytem : system->getSubSystems())
+  {
+    for (const auto &component : subsytem.second->getComponents())
+    {
+      if (component.first == tailA || cref.isEmpty() || (system->getSystem(frontA) && tailA.isEmpty()))
+      {
+        if (oms_status_ok != component.second->exportToSSVTemplate(ssvNode, snapshot))
+        {
+          return logError("export of ssv template failed for component " + std::string(system->getFullCref() + std::string(component.first)));
+        }
       }
     }
   }

@@ -1,5 +1,5 @@
 -- status: correct
--- teardown_command: rm -rf exportSSVTemplate_lua/
+-- teardown_command: rm -rf exportSSVTemplate_01_lua/
 -- linux: yes
 -- mingw32: yes
 -- mingw64: yes
@@ -7,8 +7,8 @@
 -- mac: yes
 
 oms_setCommandLineOption("--suppressPath=true")
-oms_setTempDirectory("./exportSSVTemplate_lua/")
-oms_setWorkingDirectory("./exportSSVTemplate_lua/")
+oms_setTempDirectory("./exportSSVTemplate_01_lua/")
+oms_setWorkingDirectory("./exportSSVTemplate_01_lua/")
 
 function readFile(filename)
   local f = assert(io.open(filename, "r"))
