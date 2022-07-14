@@ -325,11 +325,11 @@ oms_status_enu_t oms::System::addSubModel(const oms::ComRef& cref, const std::st
   return system->addSubModel(tail, path);
 }
 
-oms_status_enu_t oms::System::replaceSubModel(const oms::ComRef& cref, const std::string& path, bool replaceSubModel)
+oms_status_enu_t oms::System::replaceSubModel(const oms::ComRef& cref, const std::string& path, bool dryRun)
 {
   /*
     take the snapshot of entire ssd before replacing,
-    if (replaceSubModel==true)
+    if (dryRun==true)
       showwarnings, reimport the snapshot and replacing is not done
     else
       show warnings and replace is done
@@ -398,7 +398,7 @@ oms_status_enu_t oms::System::replaceSubModel(const oms::ComRef& cref, const std
       // update or delete the start value in ssv of with the replaced component
       replaceComponent->updateOrDeleteStartValueInReplacedComponent();
 
-      if (replaceSubModel)
+      if (dryRun)
       {
         char * newCref = NULL;
         getModel().importSnapshot(fullsnapshot, &newCref);

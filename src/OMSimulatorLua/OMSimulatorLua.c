@@ -1133,7 +1133,7 @@ static int OMSimulatorLua_oms_addSubModel(lua_State *L)
   return 1;
 }
 
-//oms_status_enu_t oms_replaceSubModel(const char* cref, const char* fmuPath, bool replaceSubModel);
+//oms_status_enu_t oms_replaceSubModel(const char* cref, const char* fmuPath, bool dryRun);
 static int OMSimulatorLua_oms_replaceSubModel(lua_State *L)
 {
   if (lua_gettop(L) != 3)
@@ -1144,13 +1144,13 @@ static int OMSimulatorLua_oms_replaceSubModel(lua_State *L)
 
   const char* cref = lua_tostring(L, 1);
   const char* fmuPath = lua_tostring(L, 2);
-  bool replaceSubModel = lua_toboolean(L, 3);
+  bool dryRun = lua_toboolean(L, 3);
 
-  oms_status_enu_t status = oms_replaceSubModel(cref, fmuPath, replaceSubModel);
+  oms_status_enu_t status = oms_replaceSubModel(cref, fmuPath, dryRun);
 
   if (status!=oms_status_ok)
   {
-    return luaL_error(L, "oms_replaceSubModel(%s,%s,%s) failed", cref, fmuPath, replaceSubModel);
+    return luaL_error(L, "oms_replaceSubModel(%s,%s,%s) failed", cref, fmuPath, dryRun);
   }
 
   lua_pushinteger(L, status);
