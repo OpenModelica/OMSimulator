@@ -42,8 +42,7 @@ oms_delete("model")
 
 oms_importFile("replaceSubmodel1.ssp")
 
-count, status = oms_replaceSubModel("model.root.A", "../resources/replaceA_extended.fmu", false)
--- print("info : WarningCount: " .. count)
+oms_replaceSubModel("model.root.A", "../resources/replaceA_extended.fmu", false)
 src, status = oms_exportSnapshot("model")
 print(src)
 
