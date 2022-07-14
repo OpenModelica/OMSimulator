@@ -656,6 +656,7 @@ oms_status_enu_t oms::Values::updateOrDeleteStartValueInReplacedComponent(Values
             {
               //res.second.realStartValues.erase(mappedCref->second); // NOTE: should we keep unreferenced signals in ssm and ssv when importing ?
               mappedCref = res.second.mappedEntry.erase(mappedCref);
+              logWarning("deleting start value \"" + std::string(owner + front) + "\"" + " in \"" + std::string(res.second.ssmFile) + "\""  + " resources, because the identifier couldn't be resolved to any system signal in the replacing model");
             }
           }
           ++ mappedCref;
@@ -695,6 +696,7 @@ oms_status_enu_t oms::Values::updateOrDeleteStartValueInReplacedComponent(Values
             {
               // if (res.second.ssmFile.empty()) should we keep the unreferenced signals in ssv which does not have any reference in ssm when importing?
               res.second.realStartValues.erase(name.first); // delete the start value as signal does not exist in replaced component
+              logWarning("deleting start value \"" + std::string(owner + front) + "\"" + " in \"" + std::string(res.first) + "\""  + " resources, because the identifier couldn't be resolved to any system signal in the replacing model");
             }
           }
         }

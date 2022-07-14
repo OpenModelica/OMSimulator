@@ -325,8 +325,20 @@ oms_status_enu_t oms::System::addSubModel(const oms::ComRef& cref, const std::st
   return system->addSubModel(tail, path);
 }
 
-oms_status_enu_t oms::System::replaceSubModel(const oms::ComRef& cref, const std::string& path)
+oms_status_enu_t oms::System::replaceSubModel(const oms::ComRef& cref, const std::string& path, bool replaceSubModel)
 {
+  /*
+    take the snapshot of entire ssd before replacing,
+    if (replaceSubModel==true)
+      showwarnings, reimport the snapshot and replacing is not done
+    else
+      show warnings and replace is done
+  */
+
+   // get full snapshot
+  char* fullsnapshot = NULL;
+  getModel().exportSnapshot("", &fullsnapshot);
+
   if (cref.isValidIdent())
   {
     if (validCref(cref))
@@ -378,12 +390,20 @@ oms_status_enu_t oms::System::replaceSubModel(const oms::ComRef& cref, const std
           }
         }
       }
+
       // copy all the resources from old component to replacing component
       std::vector<Values> allResources = component->second->getValuesResources();
       replaceComponent->setValuesResources(allResources);
 
       // update or delete the start value in ssv of with the replaced component
       replaceComponent->updateOrDeleteStartValueInReplacedComponent();
+
+      if (replaceSubModel)
+      {
+        char * newCref = NULL;
+        getModel().importSnapshot(fullsnapshot, &newCref);
+        return oms_status_ok;
+      }
 
       //delete component
       delete component->second;
