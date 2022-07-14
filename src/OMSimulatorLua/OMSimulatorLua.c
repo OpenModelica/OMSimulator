@@ -1145,17 +1145,19 @@ static int OMSimulatorLua_oms_replaceSubModel(lua_State *L)
   const char* cref = lua_tostring(L, 1);
   const char* fmuPath = lua_tostring(L, 2);
   bool dryRun = lua_toboolean(L, 3);
+  int warningCount = 0;
 
-  oms_status_enu_t status = oms_replaceSubModel(cref, fmuPath, dryRun);
+  oms_status_enu_t status = oms_replaceSubModel(cref, fmuPath, dryRun, &warningCount);
 
   if (status!=oms_status_ok)
   {
     return luaL_error(L, "oms_replaceSubModel(%s,%s,%s) failed", cref, fmuPath, dryRun);
   }
 
+  lua_pushinteger(L, warningCount);
   lua_pushinteger(L, status);
 
-  return 1;
+  return 2;
 }
 
 //oms_status_enu_t oms_instantiate(const char* ident);
