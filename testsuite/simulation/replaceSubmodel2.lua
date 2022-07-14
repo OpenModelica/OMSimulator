@@ -44,7 +44,7 @@ oms_delete("model")
 
 oms_importFile("replaceSubmodel2.ssp")
 
-oms_replaceSubModel("model.root.A", "../resources/replaceA_extended.fmu")
+oms_replaceSubModel("model.root.A", "../resources/replaceA_extended.fmu", false)
 src, status = oms_exportSnapshot("model")
 print(src)
 
@@ -304,6 +304,7 @@ oms_delete("model")
 -- info:      model.root.B.z      : -15.0
 -- error:   [getVariable] Unknown signal "model.root.A.dummy"
 -- warning: deleting connection "A.dummy ==> B.u1", as signal "dummy" couldn't be resolved to any signal in the replaced submodel "../resources/replaceA_extended.fmu"
+-- warning: deleting start value "A.t" in "resources/root.ssv" resources, because the identifier couldn't be resolved to any system signal in the replacing model
 -- <?xml version="1.0"?>
 -- <oms:snapshot
 --   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
@@ -531,6 +532,6 @@ oms_delete("model")
 -- info:      model.root.B.u      : 10.0
 -- info:      model.root.B.u1     : -13.0
 -- info:      model.root.B.z      : -15.0
--- info:    1 warnings
+-- info:    2 warnings
 -- info:    1 errors
 -- endResult

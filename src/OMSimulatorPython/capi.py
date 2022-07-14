@@ -125,7 +125,7 @@ class capi:
     self.obj.oms_removeSignalsFromResults.restype = ctypes.c_int
     self.obj.oms_rename.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_rename.restype = ctypes.c_int
-    self.obj.oms_replaceSubModel.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_replaceSubModel.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_bool]
     self.obj.oms_replaceSubModel.restype = ctypes.c_int
     self.obj.oms_reset.argtypes = [ctypes.c_char_p]
     self.obj.oms_reset.restype = ctypes.c_int
@@ -340,8 +340,8 @@ class capi:
     return self.obj.oms_removeSignalsFromResults(cref.encode(), regex.encode())
   def rename(self, cref, newcref):
     return self.obj.oms_rename(cref.encode(), newcref.encode())
-  def replaceSubModel(self, cref, fmuPath):
-    return self.obj.oms_replaceSubModel(cref.encode(), fmuPath.encode())
+  def replaceSubModel(self, cref, fmuPath, replaceSubModel):
+    return self.obj.oms_replaceSubModel(cref.encode(), fmuPath.encode(), replaceSubModel)
   def reset(self, cref):
     return self.obj.oms_reset(cref.encode())
   def setBoolean(self, signal, value):
