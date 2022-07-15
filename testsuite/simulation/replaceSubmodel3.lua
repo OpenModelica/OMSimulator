@@ -3,7 +3,7 @@
 -- linux: no
 -- mingw32: no
 -- mingw64: yes
--- win: yes
+-- win: no
 -- mac: no
 
 oms_setCommandLineOption("--suppressPath=true")
