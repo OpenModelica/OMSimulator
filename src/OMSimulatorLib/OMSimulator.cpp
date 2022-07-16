@@ -916,7 +916,7 @@ oms_status_enu_t oms_addSubModel(const char* cref, const char* fmuPath)
   return system->addSubModel(tail, fmuPath);
 }
 
-oms_status_enu_t oms_replaceSubModel(const char* cref, const char* fmuPath)
+oms_status_enu_t oms_replaceSubModel(const char* cref, const char* fmuPath, bool dryRun, int* warningCount)
 {
   oms::ComRef tail(cref);
   oms::ComRef front = tail.pop_front();
@@ -929,7 +929,7 @@ oms_status_enu_t oms_replaceSubModel(const char* cref, const char* fmuPath)
   if (!system)
     return logError_SystemNotInModel(model->getCref(), front);
 
-  return system->replaceSubModel(tail, fmuPath);
+  return system->replaceSubModel(tail, fmuPath, dryRun, *warningCount);
 }
 
 oms_status_enu_t oms_getComponentType(const char* cref, oms_component_enu_t* type)

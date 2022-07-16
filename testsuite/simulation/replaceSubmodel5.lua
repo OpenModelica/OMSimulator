@@ -3,7 +3,7 @@
 -- linux: no
 -- mingw32: no
 -- mingw64: yes
--- win: yes
+-- win: no
 -- mac: no
 
 oms_setCommandLineOption("--suppressPath=true")
@@ -21,7 +21,7 @@ print("info:      model.root.B.u      : " .. oms_getReal("model.root.B.u"))
 print("info:      model.root.B.u1     : " .. oms_getReal("model.root.B.u1"))
 print("info:      model.root.B.z      : " .. oms_getReal("model.root.B.z"))
 
-oms_replaceSubModel("model.root.A", "../resources/replaceA_extended.fmu")
+oms_replaceSubModel("model.root.A", "../resources/replaceA_extended.fmu", false)
 
 src, status = oms_exportSnapshot("model")
 print(src)
@@ -283,6 +283,8 @@ oms_delete("model")
 -- info:      model.root.B.z      : 1.0
 -- error:   [getVariable] Unknown signal "model.root.A.dummy"
 -- warning: deleting connection "A.dummy ==> B.u1", as signal "dummy" couldn't be resolved to any signal in the replaced submodel "../resources/replaceA_extended.fmu"
+-- warning: deleting start value "A.t" in "resources/root.ssm" resources, because the identifier couldn't be resolved to any system signal in the replacing model
+-- warning: deleting start value "A.t" in "resources/root.ssv" resources, because the identifier couldn't be resolved to any system signal in the replacing model
 -- <?xml version="1.0"?>
 -- <oms:snapshot
 --   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
@@ -517,6 +519,6 @@ oms_delete("model")
 -- info:      model.root.B.u      : 10.0
 -- info:      model.root.B.u1     : 1.0
 -- info:      model.root.B.z      : 1.0
--- info:    1 warnings
+-- info:    3 warnings
 -- info:    1 errors
 -- endResult

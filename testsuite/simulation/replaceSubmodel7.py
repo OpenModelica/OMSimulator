@@ -3,7 +3,7 @@
 ## linux: no
 ## mingw32: no
 ## mingw64: yes
-## win: yes
+## win: no
 ## mac: no
 
 from OMSimulator import OMSimulator
@@ -47,7 +47,7 @@ oms.delete("model")
 
 oms.importFile("replaceSubmodel7.ssp")
 
-oms.replaceSubModel("model.root.A", "../resources/replaceA_extended.fmu")
+oms.replaceSubModel("model.root.A", "../resources/replaceA_extended.fmu", False)
 src, status = oms.exportSnapshot("model")
 print(src)
 
@@ -83,6 +83,7 @@ oms.delete("model")
 ## Result:
 ## error:   [getVariable] Unknown signal "model.root.A.dummy"
 ## warning: deleting connection "A.dummy ==> B.u1", as signal "dummy" couldn't be resolved to any signal in the replaced submodel "../resources/replaceA_extended.fmu"
+## warning: deleting start value "A.t" in "resources/root.ssv" resources, because the identifier couldn't be resolved to any system signal in the replacing model
 ## <?xml version="1.0"?>
 ## <oms:snapshot
 ##   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
@@ -534,6 +535,6 @@ oms.delete("model")
 ## info:      model.root.B.u      :  10.0
 ## info:      model.root.B.u1     :  -13.0
 ## info:      model.root.B.z      :  -15.0
-## info:    1 warnings
+## info:    2 warnings
 ## info:    1 errors
 ## endResult

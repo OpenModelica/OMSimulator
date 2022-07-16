@@ -3,7 +3,7 @@
 -- linux: no
 -- mingw32: no
 -- mingw64: yes
--- win: yes
+-- win: no
 -- mac: no
 
 oms_setCommandLineOption("--suppressPath=true")
@@ -37,7 +37,7 @@ oms_delete("model")
 
 oms_importFile("replaceSubmodel8.ssp")
 
-oms_replaceSubModel("model.root.A", "../resources/replaceA_extended.fmu")
+oms_replaceSubModel("model.root.A", "../resources/replaceA_extended.fmu", false)
 src, status = oms_exportSnapshot("model")
 print(src)
 

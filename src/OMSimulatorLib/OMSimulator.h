@@ -130,7 +130,7 @@ OMSAPI oms_status_enu_t OMSCALL oms_newResources(const char* cref);
 OMSAPI oms_status_enu_t OMSCALL oms_reduceSSV(const char* cref, const char* ssvfile, const char* ssmfile, const char* filepath);
 OMSAPI oms_status_enu_t OMSCALL oms_removeSignalsFromResults(const char* cref, const char* regex);
 OMSAPI oms_status_enu_t OMSCALL oms_rename(const char* cref, const char* newCref);
-OMSAPI oms_status_enu_t OMSCALL oms_replaceSubModel(const char* cref, const char* fmuPath);
+OMSAPI oms_status_enu_t OMSCALL oms_replaceSubModel(const char* cref, const char* fmuPath, bool dryRun, int* warningCount);
 OMSAPI oms_status_enu_t OMSCALL oms_reset(const char* cref);
 OMSAPI oms_status_enu_t OMSCALL oms_referenceResources(const char* cref, const char* ssmFile);
 OMSAPI oms_status_enu_t OMSCALL oms_RunFile(const char* filename);

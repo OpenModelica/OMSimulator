@@ -90,7 +90,7 @@ namespace oms
     oms_status_enu_t getDirectionalDerivativeHeper(const int unknownIndex, const int knownIndex, const std::vector<int>& dependencyList, double& value);
 
     oms_status_enu_t deleteStartValue(const ComRef& cref);
-    oms_status_enu_t updateOrDeleteStartValueInReplacedComponent();
+    oms_status_enu_t updateOrDeleteStartValueInReplacedComponent(std::vector<std::string>& warningList);
     oms_status_enu_t setValuesResources(std::vector<Values>& allValuesResources);
     std::vector<Values> getValuesResources();
 

@@ -632,7 +632,7 @@ oms_status_enu_t oms::Values::deleteStartValue(const ComRef& cref)
   return oms_status_error;
 }
 
-oms_status_enu_t oms::Values::updateOrDeleteStartValueInReplacedComponent(Values& value, const ComRef& owner)
+oms_status_enu_t oms::Values::updateOrDeleteStartValueInReplacedComponent(Values& value, const ComRef& owner, std::vector<std::string>& warningList)
 {
   for (auto &it : parameterResources)
   {
@@ -656,6 +656,9 @@ oms_status_enu_t oms::Values::updateOrDeleteStartValueInReplacedComponent(Values
             {
               //res.second.realStartValues.erase(mappedCref->second); // NOTE: should we keep unreferenced signals in ssm and ssv when importing ?
               mappedCref = res.second.mappedEntry.erase(mappedCref);
+              std::string errorMsg = "deleting start value \"" + std::string(owner + front) + "\"" + " in \"" + std::string(res.second.ssmFile) + "\""  + " resources, because the identifier couldn't be resolved to any system signal in the replacing model";
+              logWarning(errorMsg);
+              warningList.push_back(errorMsg);
             }
           }
           ++ mappedCref;
@@ -695,6 +698,9 @@ oms_status_enu_t oms::Values::updateOrDeleteStartValueInReplacedComponent(Values
             {
               // if (res.second.ssmFile.empty()) should we keep the unreferenced signals in ssv which does not have any reference in ssm when importing?
               res.second.realStartValues.erase(name.first); // delete the start value as signal does not exist in replaced component
+              std::string errorMsg = "deleting start value \"" + std::string(owner + front) + "\"" + " in \"" + std::string(res.first) + "\""  + " resources, because the identifier couldn't be resolved to any system signal in the replacing model";
+              logWarning(errorMsg);
+              warningList.push_back(errorMsg);
             }
           }
         }

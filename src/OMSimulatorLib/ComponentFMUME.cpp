@@ -1576,22 +1576,22 @@ std::vector<oms::Values> oms::ComponentFMUME::getValuesResources()
   return this->values.parameterResources;
 }
 
-oms_status_enu_t oms::ComponentFMUME::updateOrDeleteStartValueInReplacedComponent()
+oms_status_enu_t oms::ComponentFMUME::updateOrDeleteStartValueInReplacedComponent(std::vector<std::string>& warningList)
 {
   // check for local resources available
   if (values.hasResources())
   {
-    return values.updateOrDeleteStartValueInReplacedComponent(values, this->getCref());
+    return values.updateOrDeleteStartValueInReplacedComponent(values, this->getCref(), warningList);
   }
   // check for resources in root
   else if (getParentSystem() && getParentSystem()->getValues().hasResources())
   {
-    return getParentSystem()->getValues().updateOrDeleteStartValueInReplacedComponent(values, this->getCref());
+    return getParentSystem()->getValues().updateOrDeleteStartValueInReplacedComponent(values, this->getCref(), warningList);
   }
   // check for resources in top level root
   else if (getParentSystem()->getParentSystem() && getParentSystem()->getParentSystem()->getValues().hasResources())
   {
-    return getParentSystem()->getParentSystem()->getValues().updateOrDeleteStartValueInReplacedComponent(values, this->getCref());
+    return getParentSystem()->getParentSystem()->getValues().updateOrDeleteStartValueInReplacedComponent(values, this->getCref(), warningList);
   }
   else
   {
