@@ -78,6 +78,7 @@ namespace oms
     oms_status_enu_t addResources(const ComRef& cref, const std::string& path);
     oms_status_enu_t deleteReferencesInSSD(const ComRef& cref);
     oms_status_enu_t deleteResourcesInSSP(const std::string& filename);
+    oms_status_enu_t duplicateVariant(const ComRef& crefA, const ComRef& crefB);
     oms_status_enu_t referenceResources(const ComRef& cref, const std::string& ssmFile);
     oms_status_enu_t reduceSSV(const std::string& ssvfile, const std::string& ssmfile, const std::string& filepath);
     oms_status_enu_t exportToSSD(Snapshot& snapshot) const;
@@ -135,6 +136,8 @@ namespace oms
 
     std::vector<std::string> importedResources;  ///< list of imported resources from ssp
 
+    std::vector<char*> listVariants;  ///< list of all variants copied when user create a new variant using oms_duplicateVariant()
+
   private: // methods
     Model(const ComRef& cref, const std::string& tempDir);
 
@@ -168,6 +171,8 @@ namespace oms
 
     std::string resultFilename; ///< default <name>_res.mat
     std::string signalFilterFilename = "resources/signalFilter.xml";
+
+    std::string variantName = "SystemStructure.ssd";  ///< default name
 
     std::vector<std::string> externalResources;  ///< list of external ssv or ssm resources from filesystem
 
