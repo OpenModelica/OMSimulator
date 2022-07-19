@@ -200,7 +200,7 @@ oms_status_enu_t oms::Model::duplicateVariant(const ComRef& crefA, const ComRef&
 
   // set the current variantName
   this->variantName = std::string(crefB) + ".ssd";
-
+  this->signalFilterFilename = "resources/signalFilter_" + std::string(crefB) + ".xml";
   return oms_status_ok;
 }
 
