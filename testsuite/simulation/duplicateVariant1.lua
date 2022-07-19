@@ -271,7 +271,7 @@ oms_delete("model")
 --                 resultFile="model_res.mat"
 --                 loggingInterval="0.000000"
 --                 bufferSize="10"
---                 signalFilter="resources/signalFilter.xml" />
+--                 signalFilter="resources/signalFilter_varA.xml" />
 --             </oms:Annotations>
 --           </ssc:Annotation>
 --         </ssd:Annotations>
@@ -279,7 +279,7 @@ oms_delete("model")
 --     </ssd:SystemStructureDescription>
 --   </oms:file>
 --   <oms:file
---     name="resources/signalFilter.xml">
+--     name="resources/signalFilter_varA.xml">
 --     <oms:SignalFilter
 --       version="1.0">
 --       <oms:Variable
@@ -401,7 +401,7 @@ oms_delete("model")
 --                 resultFile="duplicatevariant1.mat"
 --                 loggingInterval="0.000000"
 --                 bufferSize="1"
---                 signalFilter="resources/signalFilter.xml" />
+--                 signalFilter="resources/signalFilter_varB.xml" />
 --             </oms:Annotations>
 --           </ssc:Annotation>
 --         </ssd:Annotations>
@@ -409,7 +409,7 @@ oms_delete("model")
 --     </ssd:SystemStructureDescription>
 --   </oms:file>
 --   <oms:file
---     name="resources/signalFilter.xml">
+--     name="resources/signalFilter_varB.xml">
 --     <oms:SignalFilter
 --       version="1.0">
 --       <oms:Variable
