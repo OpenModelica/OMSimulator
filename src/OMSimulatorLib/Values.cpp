@@ -1068,7 +1068,7 @@ oms_status_enu_t oms::Values::exportStartValuesHelper(pugi::xml_node& node) cons
   return oms_status_ok;
 }
 
-void oms::Values::exportParameterBindings(pugi::xml_node &node, Snapshot &snapshot) const
+void oms::Values::exportParameterBindings(pugi::xml_node &node, Snapshot &snapshot, std::string variantName) const
 {
   if (!parameterResources.empty())
   {
@@ -1101,26 +1101,48 @@ void oms::Values::exportParameterBindings(pugi::xml_node &node, Snapshot &snapsh
           else
           {
             // export to ssv file
+
+            // check for variants and create a new file name for variants to have their own resources
+            filesystem::path ssvFilePath;
+            if (variantName != "SystemStructure.ssd")
+            {
+              filesystem::path p = res.first;
+              ssvFilePath = "resources/" + std::string(ComRef(variantName).pop_front()) + "_" + p.filename().generic_string();
+            }
+            else
+              ssvFilePath = res.first;
+
             pugi::xml_node node_parameter_binding;
             if (res.second.linkResources)
             {
               node_parameter_binding = node_parameters_bindings.append_child(oms::ssp::Version1_0::ssd::parameter_binding);
-              node_parameter_binding.append_attribute("source") = res.first.c_str();
+              node_parameter_binding.append_attribute("source") = ssvFilePath.generic_string().c_str();
             }
             //std::cout << "\n export To SSV file :" << res.first.c_str() << "=" << res.second.ssmFile;
-            pugi::xml_node ssvNode = snapshot.getTemplateResourceNodeSSV(res.first, "parameters");
+
+            pugi::xml_node ssvNode = snapshot.getTemplateResourceNodeSSV(ssvFilePath, "parameters");
             res.second.exportToSSV(ssvNode);
-            res.second.exportUnitDefinitions(snapshot, res.first);
+            res.second.exportUnitDefinitions(snapshot, ssvFilePath.generic_string());
 
             // export SSM file if exist
             if (!res.second.ssmFile.empty())
             {
+              // check for variants and create a new file name for variants to have their own resources
+              filesystem::path ssmFilePath;
+              if (variantName != "SystemStructure.ssd")
+              {
+                filesystem::path p = res.second.ssmFile;
+                ssmFilePath = "resources/" + std::string(ComRef(variantName).pop_front()) + "_" + p.filename().generic_string();
+              }
+              else
+                ssmFilePath = res.second.ssmFile;
+
               if (res.second.linkResources)
               {
                 pugi::xml_node ssd_parameter_mapping = node_parameter_binding.append_child(oms::ssp::Version1_0::ssd::parameter_mapping);
-                ssd_parameter_mapping.append_attribute("source") = res.second.ssmFile.c_str();
+                ssd_parameter_mapping.append_attribute("source") = ssmFilePath.generic_string().c_str();
               }
-              pugi::xml_node ssmNode = snapshot.getTemplateResourceNodeSSM(res.second.ssmFile);
+              pugi::xml_node ssmNode = snapshot.getTemplateResourceNodeSSM(ssmFilePath);
               res.second.exportParameterMappingToSSM(ssmNode);
             }
           }

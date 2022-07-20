@@ -394,7 +394,7 @@ oms_status_enu_t oms::ComponentFMUCS::exportToSSD(pugi::xml_node& node, Snapshot
         return oms_status_error;
 
   // export ParameterBindings at component level
-  values.exportParameterBindings(node, snapshot);
+  values.exportParameterBindings(node, snapshot, getParentSystem()->getModel().getVariantName());
 
   return oms_status_ok;
 }

@@ -138,6 +138,8 @@ namespace oms
 
     std::vector<char*> listVariants;  ///< list of all variants copied when user create a new variant using oms_duplicateVariant()
 
+    std::string getVariantName() {return variantName;}
+
   private: // methods
     Model(const ComRef& cref, const std::string& tempDir);
 
