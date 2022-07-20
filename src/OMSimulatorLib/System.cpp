@@ -678,7 +678,14 @@ oms_status_enu_t oms::System::exportToSSD(pugi::xml_node& node, Snapshot& snapsh
     }
   }
 
-  values.exportParameterBindings(node, snapshot, parentModel->getVariantName());
+  // get variant name
+  std::string variantName = "";
+  if (parentModel)
+    variantName = parentModel->getVariantName();
+  else
+    variantName = parentSystem->parentModel->getVariantName();
+
+  values.exportParameterBindings(node, snapshot, variantName);
 
   if (subelements.size() > 1)
   {
