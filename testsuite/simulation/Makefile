@@ -12,6 +12,7 @@ deleteStartValuesInSSV2.lua \
 duplicateVariant1.lua \
 duplicateVariant2.lua \
 duplicateVariant3.lua \
+duplicateVariant3.py \
 DualMassOscillator.lua \
 Enumeration.lua \
 Enumeration2.lua \

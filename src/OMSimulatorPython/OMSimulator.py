@@ -82,6 +82,7 @@ class OMSimulator:
     self.deleteConnectorFromTLMBus = Scope._capi.deleteConnectorFromTLMBus
     self.deleteResources = Scope._capi.deleteResources
     self.doStep = Scope._capi.doStep
+    self.duplicateVariant = Scope._capi.duplicateVariant
     self.export = Scope._capi.export
     self.exportDependencyGraphs = Scope._capi.exportDependencyGraphs
     self.exportSnapshot = Scope._capi.exportSnapshot
