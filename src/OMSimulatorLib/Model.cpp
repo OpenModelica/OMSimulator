@@ -360,7 +360,7 @@ oms_status_enu_t oms::Model::list(const oms::ComRef& cref, char** contents)
       pugi::xml_node ssdNode = snapshot.getTemplateResourceNodeSSD("SystemStructure.ssd", this->getCref());
       pugi::xml_node system_node = ssdNode.append_child(oms::ssp::Draft20180219::ssd::system);
 
-      subsystem->exportToSSD(system_node, snapshot);
+      subsystem->exportToSSD(system_node, snapshot, this->variantName);
       doc.append_copy(snapshot.getResourceNode("SystemStructure.ssd").first_child());
     }
     else
@@ -373,7 +373,7 @@ oms_status_enu_t oms::Model::list(const oms::ComRef& cref, char** contents)
       pugi::xml_node ssdNode = snapshot.getTemplateResourceNodeSSD("SystemStructure.ssd", this->getCref());
       pugi::xml_node system_node = ssdNode.append_child(oms::ssp::Draft20180219::ssd::system);
 
-      component->exportToSSD(system_node, snapshot);
+      component->exportToSSD(system_node, snapshot, this->variantName);
       doc.append_copy(snapshot.getResourceNode("SystemStructure.ssd").first_child());
     }
   }
@@ -725,7 +725,7 @@ oms_status_enu_t oms::Model::exportToSSD(Snapshot& snapshot) const
   if (system)
   {
     pugi::xml_node system_node = ssdNode.append_child(oms::ssp::Draft20180219::ssd::system);
-    if (oms_status_ok != system->exportToSSD(system_node, snapshot))
+    if (oms_status_ok != system->exportToSSD(system_node, snapshot, this->variantName))
       return logError("export of system failed");
   }
 
