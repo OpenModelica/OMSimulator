@@ -55,6 +55,8 @@ class capi:
     self.obj.oms_deleteResources.restype = ctypes.c_int
     self.obj.oms_doStep.argtypes = [ctypes.c_char_p]
     self.obj.oms_doStep.restype = ctypes.c_int
+    self.obj.oms_duplicateVariant.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_duplicateVariant.restype = ctypes.c_int
     self.obj.oms_export.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_export.restype = ctypes.c_int
     self.obj.oms_exportDependencyGraphs.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
@@ -221,6 +223,8 @@ class capi:
     return self.obj.oms_deleteResources(crefA.encode())
   def doStep(self, cref):
     return self.obj.oms_doStep(cref.encode())
+  def duplicateVariant(self, crefA, crefB):
+    return self.obj.oms_duplicateVariant(crefA.encode(), crefB.encode())
   def export(self, cref, filename):
     return self.obj.oms_export(cref.encode(), filename.encode())
   def exportDependencyGraphs(self, cref, initialization, event, simulation):

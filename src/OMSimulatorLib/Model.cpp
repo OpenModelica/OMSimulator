@@ -720,7 +720,12 @@ oms_status_enu_t oms::Model::addSystem(const oms::ComRef& cref, oms_system_enu_t
 
 oms_status_enu_t oms::Model::exportToSSD(Snapshot& snapshot) const
 {
-  pugi::xml_node ssdNode = snapshot.getTemplateResourceNodeSSD(this->variantName, this->getCref());
+  pugi::xml_node ssdNode;
+  // check for variants
+  if (this->variantName == "SystemStructure.ssd")
+    ssdNode = snapshot.getTemplateResourceNodeSSD("SystemStructure.ssd", this->getCref());
+  else
+    ssdNode = snapshot.getTemplateResourceNodeSSD(this->variantName, ComRef(this->variantName).pop_front());
 
   if (system)
   {

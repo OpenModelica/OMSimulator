@@ -181,7 +181,7 @@ oms_delete("model")
 --       xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping"
 --       xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary"
 --       xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
---       name="model"
+--       name="varA"
 --       version="1.0">
 --       <ssd:System
 --         name="root">
@@ -311,7 +311,7 @@ oms_delete("model")
 --       xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping"
 --       xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary"
 --       xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
---       name="model"
+--       name="varB"
 --       version="1.0">
 --       <ssd:System
 --         name="root">
