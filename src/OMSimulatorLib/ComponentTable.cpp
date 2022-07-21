@@ -161,7 +161,7 @@ oms::Component* oms::ComponentTable::NewComponent(const pugi::xml_node& node, om
   return component;
 }
 
-oms_status_enu_t oms::ComponentTable::exportToSSD(pugi::xml_node& node, Snapshot& snapshot) const
+oms_status_enu_t oms::ComponentTable::exportToSSD(pugi::xml_node& node, Snapshot& snapshot, std::string variantName) const
 {
   node.append_attribute("name") = this->getCref().c_str();
   node.append_attribute("type") = "application/table";

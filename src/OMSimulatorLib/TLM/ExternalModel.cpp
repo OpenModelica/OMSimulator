@@ -87,7 +87,7 @@ oms_status_enu_t oms::ExternalModel::getRealParameter(const std::string& var, do
   return oms_status_error;
 }
 
-oms_status_enu_t oms::ExternalModel::exportToSSD(pugi::xml_node& node, Snapshot& snapshot) const
+oms_status_enu_t oms::ExternalModel::exportToSSD(pugi::xml_node& node, Snapshot& snapshot, std::string variantName) const
 {
   pugi::xml_node annotations_node = node.append_child(oms::ssp::Draft20180219::ssd::annotations);
   pugi::xml_node annotation_node = annotations_node.append_child(oms::ssp::Version1_0::ssc::annotation);

@@ -112,7 +112,7 @@ namespace oms
     oms_status_enu_t rename(const oms::ComRef& oldCref, const oms::ComRef& newCref);
     oms_status_enu_t renameInResources(const oms::ComRef& oldCref, const oms::ComRef& newCref);
 
-    void exportParameterBindings(pugi::xml_node& node, Snapshot& snapshot) const;
+    void exportParameterBindings(pugi::xml_node& node, Snapshot& snapshot, std::string variantName) const;
 
     bool hasResources(); ///< returns if the system or subsystem or submodule have parameter resources either as ssv or inline
 

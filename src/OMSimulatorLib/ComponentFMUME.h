@@ -57,7 +57,7 @@ namespace oms
     static Component* NewComponent(const pugi::xml_node& node, System* parentSystem,  const std::string& sspVersion, const Snapshot& snapshot);
     const FMUInfo* getFMUInfo() const {return &(this->fmuInfo);}
 
-    oms_status_enu_t exportToSSD(pugi::xml_node& node, Snapshot& snapshot) const;
+    oms_status_enu_t exportToSSD(pugi::xml_node& node, Snapshot& snapshot, std::string variantName) const;
     oms_status_enu_t exportToSSV(pugi::xml_node& ssvNode);
     void getFilteredUnitDefinitionsToSSD(std::map<std::string, std::map<std::string, std::string>>& unitDefinitions);
     oms_status_enu_t exportToSSVTemplate(pugi::xml_node& ssvNode, Snapshot& snapshot);

@@ -916,6 +916,19 @@ oms_status_enu_t oms_addSubModel(const char* cref, const char* fmuPath)
   return system->addSubModel(tail, fmuPath);
 }
 
+oms_status_enu_t oms_duplicateVariant(const char* crefA, const char* crefB)
+{
+  oms::ComRef tail(crefA);
+  oms::ComRef front = tail.pop_front();
+
+  oms::Model* model = oms::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  return model->duplicateVariant(tail, crefB);
+
+}
+
 oms_status_enu_t oms_replaceSubModel(const char* cref, const char* fmuPath, bool dryRun, int* warningCount)
 {
   oms::ComRef tail(cref);

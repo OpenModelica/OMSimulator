@@ -187,6 +187,23 @@ oms_status_enu_t oms::Model::loadSnapshot(const pugi::xml_node& node)
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::Model::duplicateVariant(const ComRef& crefA, const ComRef& crefB)
+{
+  if (!crefA.isEmpty())
+    return logError("only top level model is allowed");
+
+  // copy the current snapshot
+  char* fullsnapshot = NULL;
+  exportSnapshot("", &fullsnapshot);
+
+  listVariants.push_back(fullsnapshot);
+
+  // set the current variantName
+  this->variantName = std::string(crefB) + ".ssd";
+  this->signalFilterFilename = "resources/signalFilter_" + std::string(crefB) + ".xml";
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms::Model::importSnapshot(const char* snapshot_, char** newCref)
 {
   if (!validState(oms_modelState_virgin))
@@ -343,7 +360,7 @@ oms_status_enu_t oms::Model::list(const oms::ComRef& cref, char** contents)
       pugi::xml_node ssdNode = snapshot.getTemplateResourceNodeSSD("SystemStructure.ssd", this->getCref());
       pugi::xml_node system_node = ssdNode.append_child(oms::ssp::Draft20180219::ssd::system);
 
-      subsystem->exportToSSD(system_node, snapshot);
+      subsystem->exportToSSD(system_node, snapshot, this->variantName);
       doc.append_copy(snapshot.getResourceNode("SystemStructure.ssd").first_child());
     }
     else
@@ -356,7 +373,7 @@ oms_status_enu_t oms::Model::list(const oms::ComRef& cref, char** contents)
       pugi::xml_node ssdNode = snapshot.getTemplateResourceNodeSSD("SystemStructure.ssd", this->getCref());
       pugi::xml_node system_node = ssdNode.append_child(oms::ssp::Draft20180219::ssd::system);
 
-      component->exportToSSD(system_node, snapshot);
+      component->exportToSSD(system_node, snapshot, this->variantName);
       doc.append_copy(snapshot.getResourceNode("SystemStructure.ssd").first_child());
     }
   }
@@ -703,12 +720,12 @@ oms_status_enu_t oms::Model::addSystem(const oms::ComRef& cref, oms_system_enu_t
 
 oms_status_enu_t oms::Model::exportToSSD(Snapshot& snapshot) const
 {
-  pugi::xml_node ssdNode = snapshot.getTemplateResourceNodeSSD("SystemStructure.ssd", this->getCref());
+  pugi::xml_node ssdNode = snapshot.getTemplateResourceNodeSSD(this->variantName, this->getCref());
 
   if (system)
   {
     pugi::xml_node system_node = ssdNode.append_child(oms::ssp::Draft20180219::ssd::system);
-    if (oms_status_ok != system->exportToSSD(system_node, snapshot))
+    if (oms_status_ok != system->exportToSSD(system_node, snapshot, this->variantName))
       return logError("export of system failed");
   }
 
@@ -956,6 +973,27 @@ void oms::Model::writeAllResourcesToFilesystem(std::vector<std::string>& resourc
   {
     if (oms_status_ok != snapshot.writeResourceNode(filename, filesystem::path(tempDir)))
       logError("failed to export \"" + filename + " to directory " + tempDir);
+  }
+
+  // get all the variants and its resources
+  // TODO how to handle mutiple resouces with same file name (e.g) resources/signalFilter.xml and other ssv resouces
+  for (auto const & variant : listVariants)
+  {
+    std::vector<std::string> variantResources;
+    Snapshot snapshot_;
+    snapshot_.import(variant);
+    snapshot_.getResources(variantResources);
+    //snapshot_.debugPrintAll();
+    for (auto const &variantfilename : variantResources)
+    {
+      //std::cout << "\n variant resources : " << variantfilename;
+      auto file = std::find(resources.begin(), resources.end(), variantfilename);
+      if (file == resources.end())
+      {
+        resources.push_back(variantfilename);
+        snapshot_.writeResourceNode(variantfilename, filesystem::path(tempDir));
+      }
+    }
   }
 
   // export the unreferenced ssv and ssm files to ssp, this must be extended to export all unreferenced resources

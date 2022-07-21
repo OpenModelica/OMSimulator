@@ -98,7 +98,7 @@ namespace oms
     oms_status_enu_t replaceSubModel(const ComRef& cref, const std::string& fmuPath, bool dryRun, int& warningCount);
     bool isValidScalarVariable(Component* referenceComponent, Component* replacingComponent, Connection* connection, const ComRef& crefA, const ComRef& crefB, const ComRef& signalName, const std::string& path, std::vector<std::string>& warningList);
     bool validCref(const ComRef& cref);
-    oms_status_enu_t exportToSSD(pugi::xml_node& node, Snapshot& snapshot) const;
+    oms_status_enu_t exportToSSD(pugi::xml_node& node, Snapshot& snapshot, std::string variantName) const;
     oms_status_enu_t exportToSSV(Snapshot& snapshot) const;
     oms_status_enu_t importFromSnapshot(const pugi::xml_node& node, const std::string& sspVersion, const Snapshot& snapshot);
     void setGeometry(const ssd::ElementGeometry& geometry) {element.setGeometry(&geometry);}
