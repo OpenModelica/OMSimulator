@@ -220,11 +220,11 @@ oms_status_enu_t oms::Model::listVariants(const oms::ComRef& cref, char** conten
   pugi::xml_node oms_variant = oms_Variants.append_child("oms:variant");
   oms_variant.append_attribute("name") = currentSnapshot.getRootCref().c_str();
 
+  Snapshot variants;
   for (auto const & variant : ssdVariants)
   {
-    pugi::xml_node oms_variant = oms_Variants.append_child("oms:variant");
-    Snapshot variants;
     variants.import(variant);
+    pugi::xml_node oms_variant = oms_Variants.append_child("oms:variant");
     oms_variant.append_attribute("name") = variants.getRootCref().c_str();
   }
 
