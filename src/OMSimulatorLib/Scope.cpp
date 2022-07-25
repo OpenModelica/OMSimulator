@@ -229,12 +229,13 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
   for (const auto &entry : OMS_RECURSIVE_DIRECTORY_ITERATOR(model->getTempDirectory()))
     if (entry.path().has_extension())
     {
+      // TODO collect all the files and sort the ssd variant, because the iteration order is different for windows and linux
       // check for ssd variants
       if (".ssd" == entry.path().extension())
       {
         if (entry.path().filename() != "SystemStructure.ssd")
         {
-          std::cout << "\n Debug print : " << entry.path().filename().generic_string();
+          //std::cout << "\n Debug print : " << entry.path().filename().generic_string();
           Snapshot variants;
           variants.importResourceFile(naive_uncomplete(entry.path(), model->getTempDirectory()), model->getTempDirectory());
           char* variantSnapshot = NULL;
