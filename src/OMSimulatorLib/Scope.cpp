@@ -234,6 +234,7 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
       {
         if (entry.path().filename() != "SystemStructure.ssd")
         {
+          std::cout << "\n Debug print : " << entry.path().filename().generic_string();
           Snapshot variants;
           variants.importResourceFile(naive_uncomplete(entry.path(), model->getTempDirectory()), model->getTempDirectory());
           char* variantSnapshot = NULL;
