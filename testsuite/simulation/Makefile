@@ -40,6 +40,7 @@ importPartialSnapshot.lua \
 importStartValues.lua \
 importStartValues1.lua \
 importSuppressUnitConversion.lua \
+listVariants1.lua \
 multipleConnections.lua \
 multipleInstance.lua \
 nls.py \

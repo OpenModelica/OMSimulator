@@ -272,6 +272,26 @@ static int OMSimulatorLua_oms_list(lua_State *L)
   return 2;
 }
 
+//oms_status_enu_t oms_list(const char* cref, char** contents);
+static int OMSimulatorLua_oms_listVariants(lua_State *L)
+{
+  if (lua_gettop(L) != 1)
+    return luaL_error(L, "expecting exactly 1 argument");
+  luaL_checktype(L, 1, LUA_TSTRING);
+
+  const char* cref = lua_tostring(L, 1);
+  char* contents = NULL;
+  oms_status_enu_t status = oms_listVariants(cref, &contents);
+
+  lua_pushstring(L, contents ? contents : "");
+  lua_pushinteger(L, status);
+
+  if (contents)
+    oms_freeMemory(contents);
+
+  return 2;
+}
+
 //oms_status_enu_t oms_exportSnapshot(const char* cref, char** contents);
 static int OMSimulatorLua_oms_exportSnapshot(lua_State *L)
 {
@@ -1524,6 +1544,7 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms_initialize);
   REGISTER_LUA_CALL(oms_instantiate);
   REGISTER_LUA_CALL(oms_list);
+  REGISTER_LUA_CALL(oms_listVariants);
   REGISTER_LUA_CALL(oms_listUnconnectedConnectors);
   REGISTER_LUA_CALL(oms_loadSnapshot);
   REGISTER_LUA_CALL(oms_newModel);

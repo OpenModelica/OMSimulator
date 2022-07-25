@@ -228,12 +228,21 @@ pugi::xml_node oms::Snapshot::getTemplateResourceNodeSignalFilter(const filesyst
   return oms_signalFilter;
 }
 
+pugi::xml_node oms::Snapshot::getTemplateResourceNodeSSDVariants()
+{
+  pugi::xml_node new_node = newResourceNode("ssdVariants.xml");
+  pugi::xml_node oms_variants = new_node.append_child("oms:Variants");
+  oms_variants.append_attribute("version") = "1.0";
+
+  return oms_variants;
+}
+
 oms::ComRef oms::Snapshot::getRootCref() const
 {
   pugi::xml_node oms_snapshot = doc.document_element(); // oms:snapshot
 
   for (const auto& it : oms_snapshot.children())
-    if ("SystemStructure.ssd" == std::string(it.attribute("name").as_string()))
+    if (".ssd" == filesystem::path(it.attribute("name").as_string()).extension()) // get root cref for all variants of .ssd
       return oms::ComRef(it.first_child().attribute("name").as_string());
 
   return oms::ComRef();

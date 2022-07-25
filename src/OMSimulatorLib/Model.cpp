@@ -196,11 +196,40 @@ oms_status_enu_t oms::Model::duplicateVariant(const ComRef& crefA, const ComRef&
   char* fullsnapshot = NULL;
   exportSnapshot("", &fullsnapshot);
 
-  listVariants.push_back(fullsnapshot);
+  ssdVariants.push_back(fullsnapshot);
 
   // set the current variantName
   this->variantName = std::string(crefB) + ".ssd";
   this->signalFilterFilename = "resources/signalFilter_" + std::string(crefB) + ".xml";
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Model::listVariants(const oms::ComRef& cref, char** contents)
+{
+
+  Snapshot allVariantSnapshot;
+
+  // get the current variant
+  char* fullsnapshot = NULL;
+  exportSnapshot("", &fullsnapshot);
+  Snapshot currentSnapshot;
+  currentSnapshot.import(fullsnapshot);
+
+  pugi::xml_node oms_Variants = allVariantSnapshot.getTemplateResourceNodeSSDVariants();
+
+  pugi::xml_node oms_variant = oms_Variants.append_child("oms:variant");
+  oms_variant.append_attribute("name") = currentSnapshot.getRootCref().c_str();
+
+  for (auto const & variant : ssdVariants)
+  {
+    pugi::xml_node oms_variant = oms_Variants.append_child("oms:variant");
+    Snapshot variants;
+    variants.import(variant);
+    oms_variant.append_attribute("name") = variants.getRootCref().c_str();
+  }
+
+  allVariantSnapshot.writeDocument(contents);
+
   return oms_status_ok;
 }
 
@@ -982,7 +1011,7 @@ void oms::Model::writeAllResourcesToFilesystem(std::vector<std::string>& resourc
 
   // get all the variants and its resources
   // TODO how to handle mutiple resouces with same file name (e.g) resources/signalFilter.xml and other ssv resouces
-  for (auto const & variant : listVariants)
+  for (auto const & variant : ssdVariants)
   {
     std::vector<std::string> variantResources;
     Snapshot snapshot_;

@@ -73,6 +73,7 @@ namespace oms
     oms_status_enu_t rename(const ComRef& cref);
     oms_status_enu_t rename(const ComRef& cref, const ComRef& newCref);
     oms_status_enu_t list(const ComRef& cref, char** contents);
+    oms_status_enu_t listVariants(const ComRef& cref, char** contents);
     oms_status_enu_t addSystem(const ComRef& cref, oms_system_enu_t type);
     oms_status_enu_t newResources(const ComRef& cref);
     oms_status_enu_t addResources(const ComRef& cref, const std::string& path);
@@ -136,7 +137,7 @@ namespace oms
 
     std::vector<std::string> importedResources;  ///< list of imported resources from ssp
 
-    std::vector<char*> listVariants;  ///< list of all variants copied when user create a new variant using oms_duplicateVariant()
+    std::vector<char*> ssdVariants;  ///< list of all variants copied when user create a new variant using oms_duplicateVariant()
 
     std::string getVariantName() {return variantName;}
 
