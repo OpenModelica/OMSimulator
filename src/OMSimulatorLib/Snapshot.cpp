@@ -237,6 +237,14 @@ pugi::xml_node oms::Snapshot::getTemplateResourceNodeSSDVariants()
   return oms_variants;
 }
 
+oms::ComRef oms::Snapshot::getFilename() const
+{
+  pugi::xml_node oms_snapshot = doc.document_element(); // oms:snapshot
+  for (const auto& it : oms_snapshot.children())
+    if (".ssd" == filesystem::path(it.attribute("name").as_string()).extension()) // get root cref for all variants of .ssd
+      return oms::ComRef(it.attribute("name").as_string());
+}
+
 oms::ComRef oms::Snapshot::getRootCref() const
 {
   pugi::xml_node oms_snapshot = doc.document_element(); // oms:snapshot

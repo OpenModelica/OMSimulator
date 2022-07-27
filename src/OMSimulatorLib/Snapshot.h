@@ -73,6 +73,7 @@ namespace oms
     void debugPrintNode(const filesystem::path& filename) const;
     void debugPrintAll() const;
     oms::ComRef getRootCref() const;
+    oms::ComRef getFilename() const;
 
     oms_status_enu_t deleteResourceNode(const filesystem::path& filename);
 

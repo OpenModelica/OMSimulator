@@ -240,7 +240,7 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
           variants.importResourceFile(naive_uncomplete(entry.path(), model->getTempDirectory()), model->getTempDirectory());
           char* variantSnapshot = NULL;
           variants.writeDocument(&variantSnapshot);
-          model->ssdVariants.push_back(variantSnapshot);
+          model->ssdVariants[variants.getRootCref()] = variantSnapshot;
         }
       }
 

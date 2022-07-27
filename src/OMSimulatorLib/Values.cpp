@@ -831,10 +831,10 @@ oms_status_enu_t oms::Values::importFromSnapshot(const Snapshot &snapshot, const
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Values::importFromSnapshot(const pugi::xml_node& node, const std::string& sspVersion, const Snapshot& snapshot)
+oms_status_enu_t oms::Values::importFromSnapshot(const pugi::xml_node& node, const std::string& sspVersion, const Snapshot& snapshot, std::string variantName)
 {
   // get the ssdNode to parse UnitDefinitions in "SystemStructure.ssd"
-  pugi::xml_node ssdNode = snapshot.getResourceNode("SystemStructure.ssd");
+  pugi::xml_node ssdNode = snapshot.getResourceNode(variantName);
   for (pugi::xml_node parameterBindingNode = node.child(oms::ssp::Version1_0::ssd::parameter_binding); parameterBindingNode; parameterBindingNode = parameterBindingNode.next_sibling(oms::ssp::Version1_0::ssd::parameter_binding))
   {
     Values resources; // create a new value object for each parameter binding node
@@ -916,7 +916,7 @@ oms_status_enu_t oms::Values::exportToSSV(pugi::xml_node& node) const
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Values::exportUnitDefinitions(Snapshot &snapshot, std::string filename) const
+oms_status_enu_t oms::Values::exportUnitDefinitions(Snapshot &snapshot, std::string filename, std::string variantName) const
 {
   if (unitDefinitionsToExportInSSP.empty())
     return oms_status_ok;
@@ -933,9 +933,9 @@ oms_status_enu_t oms::Values::exportUnitDefinitions(Snapshot &snapshot, std::str
   else
   {
     // export unitDefinitions inline
-    pugi::xml_node ssdNode = snapshot.getResourceNode("SystemStructure.ssd");
+    pugi::xml_node ssdNode = snapshot.getResourceNode(variantName);
     if (!ssdNode)
-      return logError("loading <oms:file> \" SystemStructure.ssd \" from <oms:snapshot> failed");
+      return logError("loading <oms:file> \"" + variantName  + "\"" + " from <oms:snapshot> failed");
     node_units = ssdNode.append_child(oms::ssp::Draft20180219::ssd::units);
   }
 
@@ -1096,7 +1096,7 @@ void oms::Values::exportParameterBindings(pugi::xml_node &node, Snapshot &snapsh
             pugi::xml_node node_parameters = node_parameterset.append_child(oms::ssp::Version1_0::ssv::parameters);
             res.second.exportStartValuesHelper(node_parameters);
             res.second.exportParameterMappingInline(node_parameter_binding);
-            res.second.exportUnitDefinitions(snapshot, "");
+            res.second.exportUnitDefinitions(snapshot, "", variantName);
           }
           else
           {
@@ -1122,7 +1122,7 @@ void oms::Values::exportParameterBindings(pugi::xml_node &node, Snapshot &snapsh
 
             pugi::xml_node ssvNode = snapshot.getTemplateResourceNodeSSV(ssvFilePath, "parameters");
             res.second.exportToSSV(ssvNode);
-            res.second.exportUnitDefinitions(snapshot, ssvFilePath.generic_string());
+            res.second.exportUnitDefinitions(snapshot, ssvFilePath.generic_string(), variantName);
 
             // export SSM file if exist
             if (!res.second.ssmFile.empty())

@@ -164,7 +164,7 @@ oms_status_enu_t oms::Model::loadSnapshot(const pugi::xml_node& node)
   system = NULL;
 
   Snapshot snapshot; // this is a temporary workaroud, loadSnapshot will be removed later
-  snapshot.importResourceNode("SystemStructure.ssd", node);
+  snapshot.importResourceNode(this->variantName, node);
   //snapshot.debugPrintAll();
 
   bool old_copyResources = copyResources();
@@ -196,12 +196,49 @@ oms_status_enu_t oms::Model::duplicateVariant(const ComRef& crefA, const ComRef&
   char* fullsnapshot = NULL;
   exportSnapshot("", &fullsnapshot);
 
-  ssdVariants.push_back(fullsnapshot);
+  Snapshot snapshot;
+  snapshot.import(fullsnapshot);
+
+  ssdVariants[snapshot.getRootCref()] = fullsnapshot;
 
   // set the current variantName
   this->variantName = std::string(crefB) + ".ssd";
   this->signalFilterFilename = "resources/signalFilter_" + std::string(crefB) + ".xml";
   return oms_status_ok;
+}
+
+oms_status_enu_t oms::Model::activateVariant(const ComRef& crefA, const ComRef& crefB)
+{
+  if (!crefA.isEmpty())
+    return logError("only top level model is allowed");
+
+  // copy the current snapshot for any updates done by user after activating the variant
+  duplicateVariant(crefA, crefB);
+
+  for (auto const & variant : ssdVariants)
+  {
+    Snapshot variants;
+    variants.import(variant.second);
+    if (variants.getRootCref() == crefB)
+    {
+      /* copy the resources to variants, as snapshot contains only .ssd file,
+        at this stage all the imported ssv and ssm and .xml resources are copied to
+        variants, regardless of whether they are referenced in the ssd file or not, otherwise
+        we have to iterate the whole ssd and find the referenced resouces which will be a overhead
+      */
+      for (const auto & file : importedResources)
+        variants.importResourceFile("resources/"+ file, getTempDirectory());
+
+      //variants.debugPrintAll();
+      char *modifiedVariant = NULL;
+      variants.writeDocument(&modifiedVariant);
+      char * newCref = NULL;
+      importSnapshot(modifiedVariant, &newCref);
+      return oms_status_ok;
+    }
+  }
+
+  return logError("ssdVariant \"" + std::string(crefB) + "\"" + " does not exist, use oms_listVariant() to see the available ssd variants");
 }
 
 oms_status_enu_t oms::Model::listVariants(const oms::ComRef& cref, char** contents)
@@ -220,12 +257,12 @@ oms_status_enu_t oms::Model::listVariants(const oms::ComRef& cref, char** conten
   pugi::xml_node oms_variant = oms_Variants.append_child("oms:variant");
   oms_variant.append_attribute("name") = currentSnapshot.getRootCref().c_str();
 
-  Snapshot variants;
+  //Snapshot variants;
   for (auto const & variant : ssdVariants)
   {
-    variants.import(variant);
+    //variants.import(variant.second);
     pugi::xml_node oms_variant = oms_Variants.append_child("oms:variant");
-    oms_variant.append_attribute("name") = variants.getRootCref().c_str();
+    oms_variant.append_attribute("name") = variant.first.c_str();
   }
 
   allVariantSnapshot.writeDocument(contents);
@@ -257,7 +294,7 @@ oms_status_enu_t oms::Model::importSnapshot(const char* snapshot_, char** newCre
   }
 
   // get ssd:SystemStructureDescription
-  pugi::xml_node ssdNode = snapshot.getResourceNode("SystemStructure.ssd");
+  pugi::xml_node ssdNode = snapshot.getResourceNode(this->variantName);
 
   ComRef new_cref = ComRef(ssdNode.attribute("name").as_string());
   std::string ssdVersion = ssdNode.attribute("version").as_string();
@@ -371,7 +408,7 @@ oms_status_enu_t oms::Model::list(const oms::ComRef& cref, char** contents)
   {
     isTopSystemOrModel = true;
     exportToSSD(snapshot);
-    doc.append_copy(snapshot.getResourceNode("SystemStructure.ssd"));
+    doc.append_copy(snapshot.getResourceNode(this->variantName));
   }
   else
   {
@@ -386,11 +423,11 @@ oms_status_enu_t oms::Model::list(const oms::ComRef& cref, char** contents)
 
     if (subsystem)
     {
-      pugi::xml_node ssdNode = snapshot.getTemplateResourceNodeSSD("SystemStructure.ssd", this->getCref());
+      pugi::xml_node ssdNode = snapshot.getTemplateResourceNodeSSD(this->variantName, this->getCref());
       pugi::xml_node system_node = ssdNode.append_child(oms::ssp::Draft20180219::ssd::system);
 
       subsystem->exportToSSD(system_node, snapshot, this->variantName);
-      doc.append_copy(snapshot.getResourceNode("SystemStructure.ssd").first_child());
+      doc.append_copy(snapshot.getResourceNode(this->variantName).first_child());
     }
     else
     {
@@ -399,11 +436,11 @@ oms_status_enu_t oms::Model::list(const oms::ComRef& cref, char** contents)
       if (!component)
         return logError("error");
 
-      pugi::xml_node ssdNode = snapshot.getTemplateResourceNodeSSD("SystemStructure.ssd", this->getCref());
+      pugi::xml_node ssdNode = snapshot.getTemplateResourceNodeSSD(this->variantName, this->getCref());
       pugi::xml_node system_node = ssdNode.append_child(oms::ssp::Draft20180219::ssd::system);
 
       component->exportToSSD(system_node, snapshot, this->variantName);
-      doc.append_copy(snapshot.getResourceNode("SystemStructure.ssd").first_child());
+      doc.append_copy(snapshot.getResourceNode(this->variantName).first_child());
     }
   }
 
@@ -787,9 +824,9 @@ oms_status_enu_t oms::Model::exportToSSD(Snapshot& snapshot) const
 
 oms_status_enu_t oms::Model::importFromSnapshot(const Snapshot& snapshot)
 {
-  pugi::xml_node ssdNode = snapshot.getResourceNode("SystemStructure.ssd");
+  pugi::xml_node ssdNode = snapshot.getResourceNode(this->variantName);
   if (!ssdNode)
-    return logError("loading <oms:file> \"SystemStructure.ssd\" from <oms:snapshot> failed");
+    return logError("loading <oms:file>\"" + this->variantName  + "\"" + "from <oms:snapshot> failed");
 
   std::string sspVersion = ssdNode.attribute("version").as_string();
 
@@ -815,7 +852,7 @@ oms_status_enu_t oms::Model::importFromSnapshot(const Snapshot& snapshot)
       if (!system)
         return oms_status_error;
 
-      if (oms_status_ok != system->importFromSnapshot(*it, sspVersion, snapshot))
+      if (oms_status_ok != system->importFromSnapshot(*it, sspVersion, snapshot, this->variantName))
         return oms_status_error;
     }
     else if (name == oms::ssp::Draft20180219::ssd::units)
@@ -1015,7 +1052,7 @@ void oms::Model::writeAllResourcesToFilesystem(std::vector<std::string>& resourc
   {
     std::vector<std::string> variantResources;
     Snapshot snapshot_;
-    snapshot_.import(variant);
+    snapshot_.import(variant.second);
     snapshot_.getResources(variantResources);
     //snapshot_.debugPrintAll();
     for (auto const &variantfilename : variantResources)

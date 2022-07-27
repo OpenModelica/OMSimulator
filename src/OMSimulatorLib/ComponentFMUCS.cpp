@@ -297,7 +297,7 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::
   return component;
 }
 
-oms::Component* oms::ComponentFMUCS::NewComponent(const pugi::xml_node& node, oms::System* parentSystem, const std::string& sspVersion, const Snapshot& snapshot)
+oms::Component* oms::ComponentFMUCS::NewComponent(const pugi::xml_node& node, oms::System* parentSystem, const std::string& sspVersion, const Snapshot& snapshot, std::string variantName)
 {
   ComRef cref = ComRef(node.attribute("name").as_string());
   std::string type = node.attribute("type").as_string();
@@ -323,7 +323,7 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const pugi::xml_node& node, om
     if(name == oms::ssp::Draft20180219::ssd::connectors)
     {
       // get the ssdNode to parse UnitDefinitions in "SystemStructure.ssd"
-      pugi::xml_node ssdNode = snapshot.getResourceNode("SystemStructure.ssd");
+      pugi::xml_node ssdNode = snapshot.getResourceNode(variantName);
       component->values.importUnitDefinitions(ssdNode);
       // import connectors
       for(pugi::xml_node_iterator itConnectors = (*it).begin(); itConnectors != (*it).end(); ++itConnectors)
@@ -349,7 +349,7 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const pugi::xml_node& node, om
       // set parameter bindings associated with the component
       Values resources;
       std::string tempdir = parentSystem->getModel().getTempDirectory();
-      resources.importFromSnapshot(*it, sspVersion, snapshot);
+      resources.importFromSnapshot(*it, sspVersion, snapshot, variantName);
       component->values.parameterResources.push_back(resources);
     }
     else

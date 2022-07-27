@@ -1153,6 +1153,30 @@ static int OMSimulatorLua_oms_addSubModel(lua_State *L)
   return 1;
 }
 
+//oms_status_enu_t oms_activateVariant(const char* crefA, const char* crefB)
+static int OMSimulatorLua_oms_activateVariant(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 arguments");
+  luaL_checktype(L, 1, LUA_TSTRING);
+  luaL_checktype(L, 2, LUA_TSTRING);
+
+  const char* crefA = lua_tostring(L, 1);
+  const char* crefB = lua_tostring(L, 2);
+
+
+  oms_status_enu_t status = oms_activateVariant(crefA, crefB);
+
+  if (status!=oms_status_ok)
+  {
+    return luaL_error(L, "oms_activateVariant(%s,%s) failed", crefA, crefB);
+  }
+
+  lua_pushinteger(L, status);
+
+  return 1;
+}
+
 //oms_status_enu_t oms_duplicateVariant(const char* crefA, const char* crefB)
 static int OMSimulatorLua_oms_duplicateVariant(lua_State *L)
 {
@@ -1496,6 +1520,7 @@ static int OMSimulatorLua_oms_setFixedStepSize(lua_State *L)
 
 DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
 {
+  REGISTER_LUA_CALL(oms_activateVariant);
   REGISTER_LUA_CALL(oms_addBus);
   REGISTER_LUA_CALL(oms_addConnection);
   REGISTER_LUA_CALL(oms_addConnector);
