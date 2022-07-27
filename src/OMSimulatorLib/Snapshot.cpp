@@ -243,6 +243,8 @@ oms::ComRef oms::Snapshot::getFilename() const
   for (const auto& it : oms_snapshot.children())
     if (".ssd" == filesystem::path(it.attribute("name").as_string()).extension()) // get root cref for all variants of .ssd
       return oms::ComRef(it.attribute("name").as_string());
+
+  return oms::ComRef();
 }
 
 oms::ComRef oms::Snapshot::getRootCref() const
