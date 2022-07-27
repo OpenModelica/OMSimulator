@@ -1,6 +1,6 @@
 -- status: correct
 -- teardown_command: rm -rf listvariant_01_lua/
--- linux: no
+-- linux: yes
 -- mingw32: no
 -- mingw64: yes
 -- win: no
