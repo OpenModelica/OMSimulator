@@ -1472,14 +1472,19 @@ void oms::Model::exportUnitDefinitionsToSSD(pugi::xml_node& node) const
 
   pugi::xml_node node_units = node.append_child(oms::ssp::Draft20180219::ssd::units);
 
+  std::vector<std::string> unitList;
   for (const auto &it : unitDefinitions)
   {
-    pugi::xml_node ssc_unit = node_units.append_child(oms::ssp::Version1_0::ssc::unit);
-    ssc_unit.append_attribute("name") = it.first.c_str();
-    pugi::xml_node ssc_base_unit = ssc_unit.append_child(oms::ssp::Version1_0::ssc::base_unit);
-    for (const auto &baseunit : it.second)
+    if (std::find(unitList.begin(), unitList.end(), it.first) == unitList.end()) // check for duplicates just in case
     {
-      ssc_base_unit.append_attribute(baseunit.first.c_str()) = baseunit.second.c_str();
+      pugi::xml_node ssc_unit = node_units.append_child(oms::ssp::Version1_0::ssc::unit);
+      ssc_unit.append_attribute("name") = it.first.c_str();
+      pugi::xml_node ssc_base_unit = ssc_unit.append_child(oms::ssp::Version1_0::ssc::base_unit);
+      for (const auto &baseunit : it.second)
+      {
+        ssc_base_unit.append_attribute(baseunit.first.c_str()) = baseunit.second.c_str();
+      }
+      unitList.push_back(it.first);
     }
   }
 }
