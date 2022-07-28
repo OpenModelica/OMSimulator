@@ -201,6 +201,9 @@ oms_status_enu_t oms::Model::duplicateVariant(const ComRef& crefA, const ComRef&
 
   ssdVariants[snapshot.getRootCref()] = fullsnapshot;
 
+  // rename the model and all it components to new variant name
+  oms::Scope::GetInstance().renameModel(getCref(), crefB);
+
   // set the current variantName
   this->variantName = std::string(crefB) + ".ssd";
   this->signalFilterFilename = "resources/signalFilter_" + std::string(crefB) + ".xml";
