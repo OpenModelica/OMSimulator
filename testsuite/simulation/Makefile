@@ -1,6 +1,8 @@
 TEST = ../rtest -v
 
 TESTFILES = \
+activateVariant1.lua \
+activateVariant2.lua \
 checkUnits.lua \
 deleteConnector.lua \
 deleteConnector1.lua \
