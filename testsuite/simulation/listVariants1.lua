@@ -16,23 +16,24 @@ oms_addSystem("model.root", oms_system_wc)
 oms_addSubModel("model.root.A", "../resources/Modelica.Blocks.Math.Gain.fmu")
 oms_setReal("model.root.A.k", 10)
 
-oms_duplicateVariant("model", "varA")
-oms_setReal("model.root.A.u", -10)
-
-oms_duplicateVariant("model", "varB")
-oms_setReal("model.root.A.u", -13)
-oms_setReal("model.root.A.k", -100)
-
 oms_setResultFile("model", "listVariant1.mat")
 
+oms_duplicateVariant("model", "varA")
+oms_setReal("varA.root.A.u", -10)
+
+oms_duplicateVariant("varA", "varB")
+oms_setReal("varB.root.A.u", -13)
+oms_setReal("varB.root.A.k", -100)
+
+
 print("Info : List Variants before exporting")
-variants, status = oms_listVariants("model")
+variants, status = oms_listVariants("varB")
 print(variants)
 
-oms_export("model", "listVariant1.ssp")
+oms_export("varB", "listVariant1.ssp")
 
-oms_terminate("model")
-oms_delete("model")
+oms_terminate("varB")
+oms_delete("varB")
 
 oms_importFile("listVariant1.ssp")
 

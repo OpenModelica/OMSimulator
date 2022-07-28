@@ -19,31 +19,33 @@ oms.addSystem("model.root", oms.system_wc)
 oms.addSubModel("model.root.A", "../resources/Modelica.Blocks.Math.Gain.fmu")
 oms.setReal("model.root.A.k", 10)
 
+oms.setResultFile("model", "duplicatevariant4.mat")
+
 ## export SystemStructure.ssd
 src, status = oms.exportSnapshot("model")
 print(src)
 
 oms.duplicateVariant("model", "varA")
-oms.setReal("model.root.A.u", -10)
+oms.setReal("varA.root.A.u", -10)
 
 ## export varA.ssd
-src, status = oms.exportSnapshot("model")
+src, status = oms.exportSnapshot("varA")
 print(src)
 
-oms.duplicateVariant("model", "varB")
-oms.setReal("model.root.A.u", -13)
-oms.setReal("model.root.A.k", -100)
+oms.duplicateVariant("varA", "varB")
+oms.setReal("varB.root.A.u", -13)
+oms.setReal("varB.root.A.k", -100)
 
-oms.setResultFile("model", "duplicatevariant4.mat")
 
 ## export varB.ssd
-src, status = oms.exportSnapshot("model")
+src, status = oms.exportSnapshot("varB")
 print(src)
 
-oms.export("model", "multiVariant4.ssp")
+oms.export("varB", "multiVariant4.ssp")
 
-oms.terminate("model")
-oms.delete("model")
+oms.terminate("varB")
+oms.delete("varB")
+
 
 ## Result:
 ## <?xml version="1.0"?>
@@ -141,9 +143,9 @@ oms.delete("model")
 ##             type="org.openmodelica">
 ##             <oms:Annotations>
 ##               <oms:SimulationInformation
-##                 resultFile="model_res.mat"
+##                 resultFile="duplicatevariant4.mat"
 ##                 loggingInterval="0.000000"
-##                 bufferSize="10"
+##                 bufferSize="1"
 ##                 signalFilter="resources/signalFilter.xml" />
 ##             </oms:Annotations>
 ##           </ssc:Annotation>
@@ -271,9 +273,9 @@ oms.delete("model")
 ##             type="org.openmodelica">
 ##             <oms:Annotations>
 ##               <oms:SimulationInformation
-##                 resultFile="model_res.mat"
+##                 resultFile="duplicatevariant4.mat"
 ##                 loggingInterval="0.000000"
-##                 bufferSize="10"
+##                 bufferSize="1"
 ##                 signalFilter="resources/signalFilter_varA.xml" />
 ##             </oms:Annotations>
 ##           </ssc:Annotation>
@@ -286,15 +288,15 @@ oms.delete("model")
 ##     <oms:SignalFilter
 ##       version="1.0">
 ##       <oms:Variable
-##         name="model.root.A.u"
+##         name="varA.root.A.u"
 ##         type="Real"
 ##         kind="input" />
 ##       <oms:Variable
-##         name="model.root.A.y"
+##         name="varA.root.A.y"
 ##         type="Real"
 ##         kind="output" />
 ##       <oms:Variable
-##         name="model.root.A.k"
+##         name="varA.root.A.k"
 ##         type="Real"
 ##         kind="parameter" />
 ##     </oms:SignalFilter>
@@ -416,15 +418,15 @@ oms.delete("model")
 ##     <oms:SignalFilter
 ##       version="1.0">
 ##       <oms:Variable
-##         name="model.root.A.u"
+##         name="varB.root.A.u"
 ##         type="Real"
 ##         kind="input" />
 ##       <oms:Variable
-##         name="model.root.A.y"
+##         name="varB.root.A.y"
 ##         type="Real"
 ##         kind="output" />
 ##       <oms:Variable
-##         name="model.root.A.k"
+##         name="varB.root.A.k"
 ##         type="Real"
 ##         kind="parameter" />
 ##     </oms:SignalFilter>
