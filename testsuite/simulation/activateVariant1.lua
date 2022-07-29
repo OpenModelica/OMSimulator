@@ -1,6 +1,6 @@
 -- status: correct
 -- teardown_command: rm -rf activatevariant_01_lua/
--- linux: no
+-- linux: yes
 -- mingw32: no
 -- mingw64: yes
 -- win: no
@@ -16,20 +16,19 @@ oms_addSystem("model.root", oms_system_wc)
 oms_addSubModel("model.root.A", "../resources/Modelica.Blocks.Math.Gain.fmu")
 oms_setReal("model.root.A.k", 10)
 
-oms_duplicateVariant("model", "varA")
-oms_setReal("model.root.A.u", -10)
-
-oms_duplicateVariant("model", "varB")
-oms_setReal("model.root.A.u", -13)
-oms_setReal("model.root.A.k", -100)
-
 oms_setResultFile("model", "activateVariant1.mat")
 
+oms_duplicateVariant("model", "varA")
+oms_setReal("varA.root.A.u", -10)
 
-oms_export("model", "activateVariant1.ssp")
+oms_duplicateVariant("varA", "varB")
+oms_setReal("varB.root.A.u", -13)
+oms_setReal("varB.root.A.k", -100)
 
-oms_terminate("model")
-oms_delete("model")
+oms_export("varB", "activateVariant1.ssp")
+
+oms_terminate("varB")
+oms_delete("varB")
 
 oms_importFile("activateVariant1.ssp")
 
@@ -182,9 +181,9 @@ oms_delete("varB")
 --             type="org.openmodelica">
 --             <oms:Annotations>
 --               <oms:SimulationInformation
---                 resultFile="model_res.mat"
+--                 resultFile="activateVariant1.mat"
 --                 loggingInterval="0.000000"
---                 bufferSize="10"
+--                 bufferSize="1"
 --                 signalFilter="resources/signalFilter.xml" />
 --             </oms:Annotations>
 --           </ssc:Annotation>
@@ -315,9 +314,9 @@ oms_delete("varB")
 --             type="org.openmodelica">
 --             <oms:Annotations>
 --               <oms:SimulationInformation
---                 resultFile="model_res.mat"
+--                 resultFile="activateVariant1.mat"
 --                 loggingInterval="0.000000"
---                 bufferSize="10"
+--                 bufferSize="1"
 --                 signalFilter="resources/signalFilter_varA.xml" />
 --             </oms:Annotations>
 --           </ssc:Annotation>
@@ -461,7 +460,20 @@ oms_delete("varB")
 --   <oms:file
 --     name="resources/signalFilter_varB.xml">
 --     <oms:SignalFilter
---       version="1.0" />
+--       version="1.0">
+--       <oms:Variable
+--         name="varB.root.A.u"
+--         type="Real"
+--         kind="input" />
+--       <oms:Variable
+--         name="varB.root.A.y"
+--         type="Real"
+--         kind="output" />
+--       <oms:Variable
+--         name="varB.root.A.k"
+--         type="Real"
+--         kind="parameter" />
+--     </oms:SignalFilter>
 --   </oms:file>
 -- </oms:snapshot>
 --
