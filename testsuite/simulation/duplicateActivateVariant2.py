@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm -rf duplicateactivate_01_lua/
+## teardown_command: rm -rf duplicateactivate_02_py/
 ## linux: yes
 ## mingw32: no
 ## mingw64: yes
@@ -10,7 +10,7 @@ from OMSimulator import OMSimulator
 oms = OMSimulator()
 
 oms.setCommandLineOption("--suppressPath=true")
-oms.setTempDirectory("./duplicateactivate_01_lua/")
+oms.setTempDirectory("./duplicateactivate_02_py/")
 
 oms.newModel("model")
 
