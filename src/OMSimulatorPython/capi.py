@@ -15,6 +15,8 @@ class capi:
     if os.name == 'nt': # Windows
       dllDir.close()
 
+    self.obj.oms_activateVariant.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+    self.obj.oms_activateVariant.restype = ctypes.c_int
     self.obj.oms_addBus.argtypes = [ctypes.c_char_p]
     self.obj.oms_addBus.restype = ctypes.c_int
     self.obj.oms_addConnection.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_bool]
@@ -111,6 +113,8 @@ class capi:
     self.obj.oms_instantiate.restype = ctypes.c_int
     self.obj.oms_list.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_char_p)]
     self.obj.oms_list.restype = ctypes.c_int
+    self.obj.oms_listVariants.argtypes = [ctypes.c_char_p]
+    self.obj.oms_listVariants.restype = ctypes.c_int
     self.obj.oms_listUnconnectedConnectors.argtypes = [ctypes.c_char_p]
     self.obj.oms_listUnconnectedConnectors.restype = ctypes.c_int
     self.obj.oms_loadSnapshot.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.POINTER(ctypes.c_char_p)]
@@ -182,7 +186,8 @@ class capi:
     self.obj.oms_terminate.argtypes = [ctypes.c_char_p]
     self.obj.oms_terminate.restype = ctypes.c_int
 
-
+  def activateVariant(self, crefA, crefB):
+    return self.obj.oms_activateVariant(crefA.encode(), crefB.encode())
   def addBus(self, crefA):
     return self.obj.oms_addBus(crefA.encode())
   def addConnection(self, crefA, crefB, suppressUnit=False):
@@ -319,6 +324,12 @@ class capi:
   def list(self, ident):
     contents = ctypes.c_char_p()
     status = self.obj.oms_list(ident.encode(), ctypes.byref(contents))
+    contents_ = contents.value.decode('utf-8') if contents.value else None
+    self.obj.oms_freeMemory(contents)
+    return [contents_, status]
+  def listVariants(self, ident):
+    contents = ctypes.c_char_p()
+    status = self.obj.oms_listVariants(ident.encode(), ctypes.byref(contents))
     contents_ = contents.value.decode('utf-8') if contents.value else None
     self.obj.oms_freeMemory(contents)
     return [contents_, status]
