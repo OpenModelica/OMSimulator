@@ -1107,7 +1107,12 @@ void oms::Values::exportParameterBindings(pugi::xml_node &node, Snapshot &snapsh
             if (variantName != "SystemStructure.ssd")
             {
               filesystem::path p = res.first;
-              ssvFilePath = "resources/" + std::string(ComRef(variantName).pop_front()) + "_" + p.filename().generic_string();
+              // check variant name already exists in filename
+              if (res.first.find(std::string(ComRef(variantName).pop_front())) != std::string::npos)
+                ssvFilePath = res.first;
+              else
+                ssvFilePath = "resources/" + std::string(ComRef(variantName).pop_front()) + "_" + p.filename().generic_string();
+              //std::cout << "\n ssvFilePath : " << ssvFilePath;
             }
             else
               ssvFilePath = res.first;
@@ -1132,7 +1137,10 @@ void oms::Values::exportParameterBindings(pugi::xml_node &node, Snapshot &snapsh
               if (variantName != "SystemStructure.ssd")
               {
                 filesystem::path p = res.second.ssmFile;
-                ssmFilePath = "resources/" + std::string(ComRef(variantName).pop_front()) + "_" + p.filename().generic_string();
+                if (res.second.ssmFile.find(std::string(ComRef(variantName).pop_front())) != std::string::npos)
+                  ssmFilePath = res.second.ssmFile;
+                else
+                  ssmFilePath = "resources/" + std::string(ComRef(variantName).pop_front()) + "_" + p.filename().generic_string();
               }
               else
                 ssmFilePath = res.second.ssmFile;
