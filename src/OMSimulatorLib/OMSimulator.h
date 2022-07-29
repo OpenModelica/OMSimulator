@@ -58,6 +58,7 @@ extern "C"
 {
 #endif
 
+OMSAPI oms_status_enu_t OMSCALL oms_activateVariant(const char* crefA, const char* crefB);
 OMSAPI oms_status_enu_t OMSCALL oms_addBus(const char* cref);
 OMSAPI oms_status_enu_t OMSCALL oms_addConnection(const char* crefA, const char* crefB, bool suppressUnitConversion);
 OMSAPI oms_status_enu_t OMSCALL oms_addConnector(const char* cref, oms_causality_enu_t causality, oms_signal_type_enu_t type);
@@ -126,6 +127,7 @@ OMSAPI oms_status_enu_t OMSCALL oms_instantiate(const char* cref);
 OMSAPI oms_status_enu_t OMSCALL oms_list(const char* cref, char** contents);
 OMSAPI oms_status_enu_t OMSCALL oms_listUnconnectedConnectors(const char* cref, char** contents);
 OMSAPI oms_status_enu_t OMSCALL oms_loadSnapshot(const char* cref, const char* snapshot, char** newCref);
+OMSAPI oms_status_enu_t OMSCALL oms_listVariants(const char* cref, char** contents);
 OMSAPI oms_status_enu_t OMSCALL oms_newModel(const char* cref);
 OMSAPI oms_status_enu_t OMSCALL oms_newResources(const char* cref);
 OMSAPI oms_status_enu_t OMSCALL oms_reduceSSV(const char* cref, const char* ssvfile, const char* ssmfile, const char* filepath);

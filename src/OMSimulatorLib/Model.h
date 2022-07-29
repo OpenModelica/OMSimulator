@@ -73,12 +73,14 @@ namespace oms
     oms_status_enu_t rename(const ComRef& cref);
     oms_status_enu_t rename(const ComRef& cref, const ComRef& newCref);
     oms_status_enu_t list(const ComRef& cref, char** contents);
+    oms_status_enu_t listVariants(const ComRef& cref, char** contents);
     oms_status_enu_t addSystem(const ComRef& cref, oms_system_enu_t type);
     oms_status_enu_t newResources(const ComRef& cref);
     oms_status_enu_t addResources(const ComRef& cref, const std::string& path);
     oms_status_enu_t deleteReferencesInSSD(const ComRef& cref);
     oms_status_enu_t deleteResourcesInSSP(const std::string& filename);
     oms_status_enu_t duplicateVariant(const ComRef& crefA, const ComRef& crefB);
+    oms_status_enu_t activateVariant(const ComRef& crefA, const ComRef& crefB);
     oms_status_enu_t referenceResources(const ComRef& cref, const std::string& ssmFile);
     oms_status_enu_t reduceSSV(const std::string& ssvfile, const std::string& ssmfile, const std::string& filepath);
     oms_status_enu_t exportToSSD(Snapshot& snapshot) const;
@@ -136,7 +138,7 @@ namespace oms
 
     std::vector<std::string> importedResources;  ///< list of imported resources from ssp
 
-    std::vector<char*> listVariants;  ///< list of all variants copied when user create a new variant using oms_duplicateVariant()
+    std::map<ComRef, char*> ssdVariants;  ///< list of all variants copied when user create a new variant using oms_duplicateVariant()
 
     std::string getVariantName() {return variantName;}
 

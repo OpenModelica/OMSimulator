@@ -88,7 +88,7 @@ namespace oms
     std::string getUnitFromModeldescription(ComRef& cref) const;
 
     oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
-    oms_status_enu_t importFromSnapshot(const pugi::xml_node& node, const std::string& sspVersion, const Snapshot& snapshot);
+    oms_status_enu_t importFromSnapshot(const pugi::xml_node& node, const std::string& sspVersion, const Snapshot& snapshot, std::string variantName);
     oms_status_enu_t importFromSnapshot(const Snapshot& snapshot, const std::string& ssvFilePath, const std::string& ssmFilename);
     oms_status_enu_t deleteStartValue(const ComRef& cref);
     oms_status_enu_t updateOrDeleteStartValueInReplacedComponent(Values& value, const ComRef& owner, std::vector<std::string>& warningList);
@@ -99,7 +99,7 @@ namespace oms
 
     oms_status_enu_t exportToSSV(pugi::xml_node& ssvNode) const;
 
-    oms_status_enu_t exportUnitDefinitions(Snapshot &snapshot, std::string filename) const;
+    oms_status_enu_t exportUnitDefinitions(Snapshot &snapshot, std::string filename, std::string variantName) const;
     oms_status_enu_t exportUnitDefinitionsToSSVTemplate(Snapshot &snapshot, std::string filename);
     void importUnitDefinitions(const pugi::xml_node& node);
 

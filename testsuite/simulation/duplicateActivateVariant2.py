@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm -rf duplicatevariant_04_py/
+## teardown_command: rm -rf duplicateactivate_02_py/
 ## linux: yes
 ## mingw32: no
 ## mingw64: yes
@@ -10,7 +10,7 @@ from OMSimulator import OMSimulator
 oms = OMSimulator()
 
 oms.setCommandLineOption("--suppressPath=true")
-oms.setTempDirectory("./duplicatevariant_04_py/")
+oms.setTempDirectory("./duplicateactivate_02_py/")
 
 oms.newModel("model")
 
@@ -19,35 +19,96 @@ oms.addSystem("model.root", oms.system_wc)
 oms.addSubModel("model.root.A", "../resources/Modelica.Blocks.Math.Gain.fmu")
 oms.setReal("model.root.A.k", 10)
 
-oms.setResultFile("model", "duplicatevariant4.mat")
+oms.setResultFile("model", "duplicateactivate1.mat")
 
-## export SystemStructure.ssd
-src, status = oms.exportSnapshot("model")
-print(src)
+print("info:    Current Variant SystemStructure.ssd")
+print("info:      model.root.A.u      : " , oms.getReal("model.root.A.u")[0])
+print("info:      model.root.A.k      : " , oms.getReal("model.root.A.k")[0])
 
 oms.duplicateVariant("model", "varA")
 oms.setReal("varA.root.A.u", -10)
 
-## export varA.ssd
-src, status = oms.exportSnapshot("varA")
-print(src)
+print("info:    Activate Variant varA")
+print("info:      varA.root.A.u      : " , oms.getReal("varA.root.A.u")[0])
+print("info:      varA.root.A.k      : " , oms.getReal("varA.root.A.k")[0])
 
 oms.duplicateVariant("varA", "varB")
 oms.setReal("varB.root.A.u", -13)
 oms.setReal("varB.root.A.k", -100)
 
+print("info:    Activate Variant varB")
+print("info:      varB.root.A.u      : " , oms.getReal("varB.root.A.u")[0])
+print("info:      varB.root.A.k      : " , oms.getReal("varB.root.A.k")[0])
 
-## export varB.ssd
-src, status = oms.exportSnapshot("varB")
+## activate varB to varA
+oms.activateVariant("varB", "varA")
+print("info:    Reactivate Variant varB to varA ")
+print("info:      varA.root.A.u      : " , oms.getReal("varA.root.A.u")[0])
+print("info:      varA.root.A.k      : " , oms.getReal("varA.root.A.k")[0])
+
+## activate varA to model
+oms.activateVariant("varA", "model")
+print("info:    Reactivate Variant varA to model ")
+print("info:      model.root.A.u      : " , oms.getReal("model.root.A.u")[0])
+print("info:      model.root.A.k      : " , oms.getReal("model.root.A.k")[0])
+
+oms.export("model", "duplicateactivate1.ssp")
+
+oms.terminate("model")
+oms.delete("model")
+
+oms.importFile("duplicateactivate1.ssp")
+variants, status = oms.listVariants("model")
+print(variants)
+
+src, status = oms.exportSnapshot("model")
 print(src)
 
-oms.export("varB", "multiVariant4.ssp")
+oms.activateVariant("model", "varA")
+src, status = oms.exportSnapshot("varA")
+print(src)
+
+oms.activateVariant("varA", "varB")
+src, status = oms.exportSnapshot("varB")
+print(src)
 
 oms.terminate("varB")
 oms.delete("varB")
 
-
 ## Result:
+## info:    Current Variant SystemStructure.ssd
+## info:      model.root.A.u      :  0.0
+## info:      model.root.A.k      :  10.0
+## info:    Activate Variant varA
+## info:      varA.root.A.u      :  -10.0
+## info:      varA.root.A.k      :  10.0
+## info:    Activate Variant varB
+## info:      varB.root.A.u      :  -13.0
+## info:      varB.root.A.k      :  -100.0
+## info:    Reactivate Variant varB to varA
+## info:      varA.root.A.u      :  -10.0
+## info:      varA.root.A.k      :  10.0
+## info:    Reactivate Variant varA to model
+## info:      model.root.A.u      :  0.0
+## info:      model.root.A.k      :  10.0
+## <?xml version="1.0"?>
+## <oms:snapshot
+##   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
+##   partial="false">
+##   <oms:file
+##     name="ssdVariants.xml">
+##     <oms:Variants
+##       version="1.0">
+##       <oms:variant
+##         name="model" />
+##       <oms:variant
+##         name="varB" />
+##       <oms:variant
+##         name="varA" />
+##     </oms:Variants>
+##   </oms:file>
+## </oms:snapshot>
+##
 ## <?xml version="1.0"?>
 ## <oms:snapshot
 ##   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
@@ -143,7 +204,7 @@ oms.delete("varB")
 ##             type="org.openmodelica">
 ##             <oms:Annotations>
 ##               <oms:SimulationInformation
-##                 resultFile="duplicatevariant4.mat"
+##                 resultFile="duplicateactivate1.mat"
 ##                 loggingInterval="0.000000"
 ##                 bufferSize="1"
 ##                 signalFilter="resources/signalFilter.xml" />
@@ -273,7 +334,7 @@ oms.delete("varB")
 ##             type="org.openmodelica">
 ##             <oms:Annotations>
 ##               <oms:SimulationInformation
-##                 resultFile="duplicatevariant4.mat"
+##                 resultFile="duplicateactivate1.mat"
 ##                 loggingInterval="0.000000"
 ##                 bufferSize="1"
 ##                 signalFilter="resources/signalFilter_varA.xml" />
@@ -403,7 +464,7 @@ oms.delete("varB")
 ##             type="org.openmodelica">
 ##             <oms:Annotations>
 ##               <oms:SimulationInformation
-##                 resultFile="duplicatevariant4.mat"
+##                 resultFile="duplicateactivate1.mat"
 ##                 loggingInterval="0.000000"
 ##                 bufferSize="1"
 ##                 signalFilter="resources/signalFilter_varB.xml" />

@@ -1,5 +1,5 @@
 -- status: correct
--- teardown_command: rm -rf duplicatevariant_03_lua/
+-- teardown_command: rm -rf activatevariant_03_lua/
 -- linux: yes
 -- mingw32: no
 -- mingw64: yes
@@ -7,7 +7,7 @@
 -- mac: no
 
 oms_setCommandLineOption("--suppressPath=true")
-oms_setTempDirectory("./duplicatevariant_03_lua/")
+oms_setTempDirectory("./activatevariant_03_lua/")
 
 oms_newModel("model")
 
@@ -18,34 +18,122 @@ oms_newResources("model.root:root1.ssv")
 
 oms_setReal("model.root.A.k", 10)
 
-oms_setResultFile("model", "duplicatevariant3.mat")
-
--- export SystemStructure.ssd
-src, status = oms_exportSnapshot("model")
-print(src)
+oms_setResultFile("model", "activatevariant3.mat")
 
 oms_duplicateVariant("model", "varA")
 oms_setReal("varA.root.A.u", -10)
 
--- export varA.ssd
-src, status = oms_exportSnapshot("varA")
-print(src)
 
 oms_duplicateVariant("varA", "varB")
 oms_setReal("varB.root.A.u", -13)
 oms_setReal("varB.root.A.k", -100)
 
 
--- export varB.ssd
-src, status = oms_exportSnapshot("varB")
-print(src)
-
-oms_export("varB", "multiVariant3.ssp")
+oms_export("varB", "activateVariant3.ssp")
 
 oms_terminate("varB")
 oms_delete("varB")
 
+oms_importFile("activateVariant3.ssp")
+
+variants, status = oms_listVariants("model")
+print(variants)
+
+oms_setReal("model.root.A.u", -100)
+oms_setReal("model.root.A.k", -200)
+
+print("info:    Current Variant SystemStructure.ssd")
+print("info:      model.root.A.u      : " .. oms_getReal("model.root.A.u"))
+print("info:      model.root.A.k      : " .. oms_getReal("model.root.A.k"))
+
+oms_activateVariant("model", "varA")
+
+oms_setReal("varA.root.A.u", -300)
+oms_setReal("varA.root.A.k", -400)
+
+print("info:    activate Variant varA")
+print("info:      varA.root.A.u      : " .. oms_getReal("varA.root.A.u"))
+print("info:      varA.root.A.k      : " .. oms_getReal("varA.root.A.k"))
+
+
+oms_activateVariant("varA", "varB")
+oms_setReal("varB.root.A.u", -500)
+oms_setReal("varB.root.A.k", -600)
+
+print("info:    activate Variant varB")
+print("info:      varB.root.A.u      : " .. oms_getReal("varB.root.A.u"))
+print("info:      varB.root.A.k      : " .. oms_getReal("varB.root.A.k"))
+
+oms_export("varB", "activateVariant3.ssp")
+oms_terminate("varB")
+oms_delete("varB")
+
+oms_importFile("activateVariant3.ssp")
+
+variants, status = oms_listVariants("model")
+print(variants)
+
+src, status = oms_exportSnapshot("model")
+print(src)
+
+oms_activateVariant("model", "varA")
+src, status = oms_exportSnapshot("varA")
+print(src)
+
+oms_activateVariant("varA", "varB")
+src, status = oms_exportSnapshot("varB")
+print(src)
+
+oms_terminate("varB")
+oms_delete("varB")
+
+
 -- Result:
+-- <?xml version="1.0"?>
+-- <oms:snapshot
+--   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
+--   partial="false">
+--   <oms:file
+--     name="ssdVariants.xml">
+--     <oms:Variants
+--       version="1.0">
+--       <oms:variant
+--         name="model" />
+--       <oms:variant
+--         name="varB" />
+--       <oms:variant
+--         name="varA" />
+--     </oms:Variants>
+--   </oms:file>
+-- </oms:snapshot>
+--
+-- info:    Current Variant SystemStructure.ssd
+-- info:      model.root.A.u      : -100.0
+-- info:      model.root.A.k      : -200.0
+-- info:    activate Variant varA
+-- info:      varA.root.A.u      : -300.0
+-- info:      varA.root.A.k      : -400.0
+-- info:    activate Variant varB
+-- info:      varB.root.A.u      : -500.0
+-- info:      varB.root.A.k      : -600.0
+-- <?xml version="1.0"?>
+-- <oms:snapshot
+--   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
+--   partial="false">
+--   <oms:file
+--     name="ssdVariants.xml">
+--     <oms:Variants
+--       version="1.0">
+--       <oms:variant
+--         name="model" />
+--       <oms:variant
+--         name="varB" />
+--       <oms:variant
+--         name="varA" />
+--     </oms:Variants>
+--   </oms:file>
+-- </oms:snapshot>
+--
 -- <?xml version="1.0"?>
 -- <oms:snapshot
 --   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
@@ -127,7 +215,7 @@ oms_delete("varB")
 --             type="org.openmodelica">
 --             <oms:Annotations>
 --               <oms:SimulationInformation
---                 resultFile="duplicatevariant3.mat"
+--                 resultFile="activatevariant3.mat"
 --                 loggingInterval="0.000000"
 --                 bufferSize="1"
 --                 signalFilter="resources/signalFilter.xml" />
@@ -146,9 +234,14 @@ oms_delete("varB")
 --       name="parameters">
 --       <ssv:Parameters>
 --         <ssv:Parameter
+--           name="A.u">
+--           <ssv:Real
+--             value="-100" />
+--         </ssv:Parameter>
+--         <ssv:Parameter
 --           name="A.k">
 --           <ssv:Real
---             value="10" />
+--             value="-200" />
 --         </ssv:Parameter>
 --       </ssv:Parameters>
 --     </ssv:ParameterSet>
@@ -254,7 +347,7 @@ oms_delete("varB")
 --             type="org.openmodelica">
 --             <oms:Annotations>
 --               <oms:SimulationInformation
---                 resultFile="duplicatevariant3.mat"
+--                 resultFile="activatevariant3.mat"
 --                 loggingInterval="0.000000"
 --                 bufferSize="1"
 --                 signalFilter="resources/signalFilter_varA.xml" />
@@ -275,12 +368,12 @@ oms_delete("varB")
 --         <ssv:Parameter
 --           name="A.u">
 --           <ssv:Real
---             value="-10" />
+--             value="-300" />
 --         </ssv:Parameter>
 --         <ssv:Parameter
 --           name="A.k">
 --           <ssv:Real
---             value="10" />
+--             value="-400" />
 --         </ssv:Parameter>
 --       </ssv:Parameters>
 --     </ssv:ParameterSet>
@@ -386,7 +479,7 @@ oms_delete("varB")
 --             type="org.openmodelica">
 --             <oms:Annotations>
 --               <oms:SimulationInformation
---                 resultFile="duplicatevariant3.mat"
+--                 resultFile="activatevariant3.mat"
 --                 loggingInterval="0.000000"
 --                 bufferSize="1"
 --                 signalFilter="resources/signalFilter_varB.xml" />
@@ -407,12 +500,12 @@ oms_delete("varB")
 --         <ssv:Parameter
 --           name="A.u">
 --           <ssv:Real
---             value="-13" />
+--             value="-500" />
 --         </ssv:Parameter>
 --         <ssv:Parameter
 --           name="A.k">
 --           <ssv:Real
---             value="-100" />
+--             value="-600" />
 --         </ssv:Parameter>
 --       </ssv:Parameters>
 --     </ssv:ParameterSet>

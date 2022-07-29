@@ -1,6 +1,9 @@
 TEST = ../rtest -v
 
 TESTFILES = \
+activateVariant1.lua \
+activateVariant2.lua \
+activateVariant3.lua \
 checkUnits.lua \
 deleteConnector.lua \
 deleteConnector1.lua \
@@ -13,6 +16,8 @@ duplicateVariant1.lua \
 duplicateVariant2.lua \
 duplicateVariant3.lua \
 duplicateVariant4.py \
+duplicateActivateVariant1.lua \
+duplicateActivateVariant2.py \
 DualMassOscillator.lua \
 Enumeration.lua \
 Enumeration2.lua \
@@ -40,6 +45,7 @@ importPartialSnapshot.lua \
 importStartValues.lua \
 importStartValues1.lua \
 importSuppressUnitConversion.lua \
+listVariants1.lua \
 multipleConnections.lua \
 multipleInstance.lua \
 nls.py \

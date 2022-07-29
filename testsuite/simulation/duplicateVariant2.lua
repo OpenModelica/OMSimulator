@@ -16,34 +16,34 @@ oms_addSystem("model.root", oms_system_wc)
 oms_addSubModel("model.root.A", "../resources/Modelica.Blocks.Math.Gain.fmu")
 oms_setReal("model.root.A.k", 10)
 
+oms_setResultFile("model", "duplicatevariant2.mat")
+
 -- export SystemStructure.ssd
 src, status = oms_exportSnapshot("model")
 print(src)
 
 oms_duplicateVariant("model", "varA")
-oms_setReal("model.root.A.u", -10)
+oms_setReal("varA.root.A.u", -10)
 
 -- export varA.ssd
-src, status = oms_exportSnapshot("model")
+src, status = oms_exportSnapshot("varA")
 print(src)
 
-oms_duplicateVariant("model", "varB")
-oms_setReal("model.root.A.u", -13)
-oms_setReal("model.root.A.k", -100)
+oms_duplicateVariant("varA", "varB")
+oms_setReal("varB.root.A.u", -13)
+oms_setReal("varB.root.A.k", -100)
 
-oms_removeSignalsFromResults("model", ".*")
-oms_addSignalsToResults("model", "model.root.A.k")
-
-oms_setResultFile("model", "duplicatevariant2.mat")
+oms_removeSignalsFromResults("varB", ".*")
+oms_addSignalsToResults("varB", "varB.root.A.k")
 
 -- export varB.ssd
-src, status = oms_exportSnapshot("model")
+src, status = oms_exportSnapshot("varB")
 print(src)
 
-oms_export("model", "multiVariant2.ssp")
+oms_export("varB", "multiVariant2.ssp")
 
-oms_terminate("model")
-oms_delete("model")
+oms_terminate("varB")
+oms_delete("varB")
 
 -- Result:
 -- <?xml version="1.0"?>
@@ -141,9 +141,9 @@ oms_delete("model")
 --             type="org.openmodelica">
 --             <oms:Annotations>
 --               <oms:SimulationInformation
---                 resultFile="model_res.mat"
+--                 resultFile="duplicatevariant2.mat"
 --                 loggingInterval="0.000000"
---                 bufferSize="10"
+--                 bufferSize="1"
 --                 signalFilter="resources/signalFilter.xml" />
 --             </oms:Annotations>
 --           </ssc:Annotation>
@@ -271,9 +271,9 @@ oms_delete("model")
 --             type="org.openmodelica">
 --             <oms:Annotations>
 --               <oms:SimulationInformation
---                 resultFile="model_res.mat"
+--                 resultFile="duplicatevariant2.mat"
 --                 loggingInterval="0.000000"
---                 bufferSize="10"
+--                 bufferSize="1"
 --                 signalFilter="resources/signalFilter_varA.xml" />
 --             </oms:Annotations>
 --           </ssc:Annotation>
@@ -286,15 +286,15 @@ oms_delete("model")
 --     <oms:SignalFilter
 --       version="1.0">
 --       <oms:Variable
---         name="model.root.A.u"
+--         name="varA.root.A.u"
 --         type="Real"
 --         kind="input" />
 --       <oms:Variable
---         name="model.root.A.y"
+--         name="varA.root.A.y"
 --         type="Real"
 --         kind="output" />
 --       <oms:Variable
---         name="model.root.A.k"
+--         name="varA.root.A.k"
 --         type="Real"
 --         kind="parameter" />
 --     </oms:SignalFilter>
@@ -416,7 +416,7 @@ oms_delete("model")
 --     <oms:SignalFilter
 --       version="1.0">
 --       <oms:Variable
---         name="model.root.A.k"
+--         name="varB.root.A.k"
 --         type="Real"
 --         kind="parameter" />
 --     </oms:SignalFilter>

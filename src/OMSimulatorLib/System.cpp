@@ -784,7 +784,7 @@ oms_status_enu_t oms::System::exportToSSV(Snapshot& snapshot) const
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::System::importFromSnapshot(const pugi::xml_node& node, const std::string& sspVersion, const Snapshot& snapshot)
+oms_status_enu_t oms::System::importFromSnapshot(const pugi::xml_node& node, const std::string& sspVersion, const Snapshot& snapshot, std::string variantName)
 {
   for(pugi::xml_node_iterator it = node.begin(); it != node.end(); ++it)
   {
@@ -803,7 +803,7 @@ oms_status_enu_t oms::System::importFromSnapshot(const pugi::xml_node& node, con
     else if (name == oms::ssp::Version1_0::ssd::parameter_bindings) // parameter bindings provided either as inline or .ssv files
     {
       Values resources; // create a list of <ssd:ParameterBindings>
-      if (oms_status_ok != resources.importFromSnapshot(*it, sspVersion, snapshot))
+      if (oms_status_ok != resources.importFromSnapshot(*it, sspVersion, snapshot, variantName))
         return logError("Failed to import " + std::string(oms::ssp::Version1_0::ssd::parameter_bindings));
 
       // add the list of <parameterBindings>
@@ -874,7 +874,7 @@ oms_status_enu_t oms::System::importFromSnapshot(const pugi::xml_node& node, con
           if (!system)
             return oms_status_error;
 
-          if (oms_status_ok != system->importFromSnapshot(*itElements, sspVersion, snapshot))
+          if (oms_status_ok != system->importFromSnapshot(*itElements, sspVersion, snapshot, variantName))
             return oms_status_error;
         }
         else if (name == oms::ssp::Draft20180219::ssd::component)
@@ -885,9 +885,9 @@ oms_status_enu_t oms::System::importFromSnapshot(const pugi::xml_node& node, con
           if ("application/x-fmu-sharedlibrary" == type || type.empty() && getType() != oms_system_tlm)
           {
             if (getType() == oms_system_wc)
-              component = ComponentFMUCS::NewComponent(*itElements, this, sspVersion, snapshot);
+              component = ComponentFMUCS::NewComponent(*itElements, this, sspVersion, snapshot, variantName);
             else if (getType() == oms_system_sc)
-              component = ComponentFMUME::NewComponent(*itElements, this, sspVersion, snapshot);
+              component = ComponentFMUME::NewComponent(*itElements, this, sspVersion, snapshot, variantName);
             else
               return logError("wrong xml schema detected: " + name);
           }

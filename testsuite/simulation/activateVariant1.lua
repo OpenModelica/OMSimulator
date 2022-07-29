@@ -1,5 +1,5 @@
 -- status: correct
--- teardown_command: rm -rf duplicatevariant_03_lua/
+-- teardown_command: rm -rf activatevariant_01_lua/
 -- linux: yes
 -- mingw32: no
 -- mingw64: yes
@@ -7,45 +7,85 @@
 -- mac: no
 
 oms_setCommandLineOption("--suppressPath=true")
-oms_setTempDirectory("./duplicatevariant_03_lua/")
+oms_setTempDirectory("./activatevariant_01_lua/")
 
 oms_newModel("model")
 
 oms_addSystem("model.root", oms_system_wc)
 
 oms_addSubModel("model.root.A", "../resources/Modelica.Blocks.Math.Gain.fmu")
-oms_newResources("model.root:root1.ssv")
-
 oms_setReal("model.root.A.k", 10)
 
-oms_setResultFile("model", "duplicatevariant3.mat")
-
--- export SystemStructure.ssd
-src, status = oms_exportSnapshot("model")
-print(src)
+oms_setResultFile("model", "activateVariant1.mat")
 
 oms_duplicateVariant("model", "varA")
 oms_setReal("varA.root.A.u", -10)
-
--- export varA.ssd
-src, status = oms_exportSnapshot("varA")
-print(src)
 
 oms_duplicateVariant("varA", "varB")
 oms_setReal("varB.root.A.u", -13)
 oms_setReal("varB.root.A.k", -100)
 
-
--- export varB.ssd
-src, status = oms_exportSnapshot("varB")
-print(src)
-
-oms_export("varB", "multiVariant3.ssp")
+oms_export("varB", "activateVariant1.ssp")
 
 oms_terminate("varB")
 oms_delete("varB")
 
+oms_importFile("activateVariant1.ssp")
+
+variants, status = oms_listVariants("model")
+print(variants)
+
+print("info:    Current Variant SystemStructure.ssd")
+print("info:      model.root.A.u      : " .. oms_getReal("model.root.A.u"))
+print("info:      model.root.A.k      : " .. oms_getReal("model.root.A.k"))
+
+src, status = oms_exportSnapshot("model")
+print(src)
+
+oms_activateVariant("model", "varA")
+
+print("info:    Activate Variant varA")
+print("info:      varA.root.A.u      : " .. oms_getReal("varA.root.A.u"))
+print("info:      varA.root.A.k      : " .. oms_getReal("varA.root.A.k"))
+
+src, status = oms_exportSnapshot("varA")
+print(src)
+
+oms_activateVariant("varA", "varB")
+
+print("info:    Activate Variant varB")
+print("info:      varB.root.A.u      : " .. oms_getReal("varB.root.A.u"))
+print("info:      varB.root.A.k      : " .. oms_getReal("varB.root.A.k"))
+
+src, status = oms_exportSnapshot("varB")
+print(src)
+
+oms_terminate("varB")
+oms_delete("varB")
+
+
 -- Result:
+-- <?xml version="1.0"?>
+-- <oms:snapshot
+--   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
+--   partial="false">
+--   <oms:file
+--     name="ssdVariants.xml">
+--     <oms:Variants
+--       version="1.0">
+--       <oms:variant
+--         name="model" />
+--       <oms:variant
+--         name="varB" />
+--       <oms:variant
+--         name="varA" />
+--     </oms:Variants>
+--   </oms:file>
+-- </oms:snapshot>
+--
+-- info:    Current Variant SystemStructure.ssd
+-- info:      model.root.A.u      : 0.0
+-- info:      model.root.A.k      : 10.0
 -- <?xml version="1.0"?>
 -- <oms:snapshot
 --   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
@@ -63,10 +103,6 @@ oms_delete("varB")
 --       version="1.0">
 --       <ssd:System
 --         name="root">
---         <ssd:ParameterBindings>
---           <ssd:ParameterBinding
---             source="resources/root1.ssv" />
---         </ssd:ParameterBindings>
 --         <ssd:Elements>
 --           <ssd:Component
 --             name="A"
@@ -96,6 +132,24 @@ oms_delete("varB")
 --                   unit="1" />
 --               </ssd:Connector>
 --             </ssd:Connectors>
+--             <ssd:ParameterBindings>
+--               <ssd:ParameterBinding>
+--                 <ssd:ParameterValues>
+--                   <ssv:ParameterSet
+--                     version="1.0"
+--                     name="parameters">
+--                     <ssv:Parameters>
+--                       <ssv:Parameter
+--                         name="k">
+--                         <ssv:Real
+--                           value="10"
+--                           unit="1" />
+--                       </ssv:Parameter>
+--                     </ssv:Parameters>
+--                   </ssv:ParameterSet>
+--                 </ssd:ParameterValues>
+--               </ssd:ParameterBinding>
+--             </ssd:ParameterBindings>
 --           </ssd:Component>
 --         </ssd:Elements>
 --         <ssd:Annotations>
@@ -127,7 +181,7 @@ oms_delete("varB")
 --             type="org.openmodelica">
 --             <oms:Annotations>
 --               <oms:SimulationInformation
---                 resultFile="duplicatevariant3.mat"
+--                 resultFile="activateVariant1.mat"
 --                 loggingInterval="0.000000"
 --                 bufferSize="1"
 --                 signalFilter="resources/signalFilter.xml" />
@@ -136,22 +190,6 @@ oms_delete("varB")
 --         </ssd:Annotations>
 --       </ssd:DefaultExperiment>
 --     </ssd:SystemStructureDescription>
---   </oms:file>
---   <oms:file
---     name="resources/root1.ssv">
---     <ssv:ParameterSet
---       xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
---       xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
---       version="1.0"
---       name="parameters">
---       <ssv:Parameters>
---         <ssv:Parameter
---           name="A.k">
---           <ssv:Real
---             value="10" />
---         </ssv:Parameter>
---       </ssv:Parameters>
---     </ssv:ParameterSet>
 --   </oms:file>
 --   <oms:file
 --     name="resources/signalFilter.xml">
@@ -173,6 +211,9 @@ oms_delete("varB")
 --   </oms:file>
 -- </oms:snapshot>
 --
+-- info:    Activate Variant varA
+-- info:      varA.root.A.u      : -10.0
+-- info:      varA.root.A.k      : 10.0
 -- <?xml version="1.0"?>
 -- <oms:snapshot
 --   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
@@ -190,10 +231,6 @@ oms_delete("varB")
 --       version="1.0">
 --       <ssd:System
 --         name="root">
---         <ssd:ParameterBindings>
---           <ssd:ParameterBinding
---             source="resources/varA_root1.ssv" />
---         </ssd:ParameterBindings>
 --         <ssd:Elements>
 --           <ssd:Component
 --             name="A"
@@ -223,6 +260,29 @@ oms_delete("varB")
 --                   unit="1" />
 --               </ssd:Connector>
 --             </ssd:Connectors>
+--             <ssd:ParameterBindings>
+--               <ssd:ParameterBinding>
+--                 <ssd:ParameterValues>
+--                   <ssv:ParameterSet
+--                     version="1.0"
+--                     name="parameters">
+--                     <ssv:Parameters>
+--                       <ssv:Parameter
+--                         name="u">
+--                         <ssv:Real
+--                           value="-10" />
+--                       </ssv:Parameter>
+--                       <ssv:Parameter
+--                         name="k">
+--                         <ssv:Real
+--                           value="10"
+--                           unit="1" />
+--                       </ssv:Parameter>
+--                     </ssv:Parameters>
+--                   </ssv:ParameterSet>
+--                 </ssd:ParameterValues>
+--               </ssd:ParameterBinding>
+--             </ssd:ParameterBindings>
 --           </ssd:Component>
 --         </ssd:Elements>
 --         <ssd:Annotations>
@@ -254,7 +314,7 @@ oms_delete("varB")
 --             type="org.openmodelica">
 --             <oms:Annotations>
 --               <oms:SimulationInformation
---                 resultFile="duplicatevariant3.mat"
+--                 resultFile="activateVariant1.mat"
 --                 loggingInterval="0.000000"
 --                 bufferSize="1"
 --                 signalFilter="resources/signalFilter_varA.xml" />
@@ -263,27 +323,6 @@ oms_delete("varB")
 --         </ssd:Annotations>
 --       </ssd:DefaultExperiment>
 --     </ssd:SystemStructureDescription>
---   </oms:file>
---   <oms:file
---     name="resources/varA_root1.ssv">
---     <ssv:ParameterSet
---       xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
---       xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
---       version="1.0"
---       name="parameters">
---       <ssv:Parameters>
---         <ssv:Parameter
---           name="A.u">
---           <ssv:Real
---             value="-10" />
---         </ssv:Parameter>
---         <ssv:Parameter
---           name="A.k">
---           <ssv:Real
---             value="10" />
---         </ssv:Parameter>
---       </ssv:Parameters>
---     </ssv:ParameterSet>
 --   </oms:file>
 --   <oms:file
 --     name="resources/signalFilter_varA.xml">
@@ -305,6 +344,9 @@ oms_delete("varB")
 --   </oms:file>
 -- </oms:snapshot>
 --
+-- info:    Activate Variant varB
+-- info:      varB.root.A.u      : -13.0
+-- info:      varB.root.A.k      : -100.0
 -- <?xml version="1.0"?>
 -- <oms:snapshot
 --   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
@@ -322,10 +364,6 @@ oms_delete("varB")
 --       version="1.0">
 --       <ssd:System
 --         name="root">
---         <ssd:ParameterBindings>
---           <ssd:ParameterBinding
---             source="resources/varB_root1.ssv" />
---         </ssd:ParameterBindings>
 --         <ssd:Elements>
 --           <ssd:Component
 --             name="A"
@@ -355,6 +393,29 @@ oms_delete("varB")
 --                   unit="1" />
 --               </ssd:Connector>
 --             </ssd:Connectors>
+--             <ssd:ParameterBindings>
+--               <ssd:ParameterBinding>
+--                 <ssd:ParameterValues>
+--                   <ssv:ParameterSet
+--                     version="1.0"
+--                     name="parameters">
+--                     <ssv:Parameters>
+--                       <ssv:Parameter
+--                         name="u">
+--                         <ssv:Real
+--                           value="-13" />
+--                       </ssv:Parameter>
+--                       <ssv:Parameter
+--                         name="k">
+--                         <ssv:Real
+--                           value="-100"
+--                           unit="1" />
+--                       </ssv:Parameter>
+--                     </ssv:Parameters>
+--                   </ssv:ParameterSet>
+--                 </ssd:ParameterValues>
+--               </ssd:ParameterBinding>
+--             </ssd:ParameterBindings>
 --           </ssd:Component>
 --         </ssd:Elements>
 --         <ssd:Annotations>
@@ -386,7 +447,7 @@ oms_delete("varB")
 --             type="org.openmodelica">
 --             <oms:Annotations>
 --               <oms:SimulationInformation
---                 resultFile="duplicatevariant3.mat"
+--                 resultFile="activateVariant1.mat"
 --                 loggingInterval="0.000000"
 --                 bufferSize="1"
 --                 signalFilter="resources/signalFilter_varB.xml" />
@@ -395,27 +456,6 @@ oms_delete("varB")
 --         </ssd:Annotations>
 --       </ssd:DefaultExperiment>
 --     </ssd:SystemStructureDescription>
---   </oms:file>
---   <oms:file
---     name="resources/varB_root1.ssv">
---     <ssv:ParameterSet
---       xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
---       xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
---       version="1.0"
---       name="parameters">
---       <ssv:Parameters>
---         <ssv:Parameter
---           name="A.u">
---           <ssv:Real
---             value="-13" />
---         </ssv:Parameter>
---         <ssv:Parameter
---           name="A.k">
---           <ssv:Real
---             value="-100" />
---         </ssv:Parameter>
---       </ssv:Parameters>
---     </ssv:ParameterSet>
 --   </oms:file>
 --   <oms:file
 --     name="resources/signalFilter_varB.xml">

@@ -63,6 +63,7 @@ class OMSimulator:
     self.fault_type_const = 2
 
     # map functions
+    self.activateVariant = Scope._capi.activateVariant
     self.addBus = Scope._capi.addBus
     self.addConnection = Scope._capi.addConnection
     self.addConnector = Scope._capi.addConnector
@@ -108,6 +109,7 @@ class OMSimulator:
     self.instantiate = Scope._capi.instantiate
     self.list = Scope._capi.list
     self.listUnconnectedConnectors = Scope._capi.listUnconnectedConnectors
+    self.listVariants = Scope._capi.listVariants
     self.loadSnapshot = Scope._capi.loadSnapshot
     self.newResources = Scope._capi.newResources
     self.reduceSSV = Scope._capi.reduceSSV
