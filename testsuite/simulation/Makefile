@@ -16,6 +16,7 @@ duplicateVariant1.lua \
 duplicateVariant2.lua \
 duplicateVariant3.lua \
 duplicateVariant4.py \
+duplicateActivateVariant1.lua \
 DualMassOscillator.lua \
 Enumeration.lua \
 Enumeration2.lua \

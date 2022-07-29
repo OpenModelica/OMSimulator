@@ -204,9 +204,25 @@ oms_status_enu_t oms::Model::duplicateVariant(const ComRef& crefA, const ComRef&
   // rename the model and all it components to new variant name
   oms::Scope::GetInstance().renameModel(getCref(), crefB);
 
-  // set the current variantName
-  this->variantName = std::string(crefB) + ".ssd";
-  this->signalFilterFilename = "resources/signalFilter_" + std::string(crefB) + ".xml";
+  // set the current variantName and signalFilter name
+
+  // check the variant name already exist in scope which means activating variant from memory
+  auto it = ssdVariants.find(crefB);
+  if (it != ssdVariants.end())
+  {
+    Snapshot variant;
+    variant.import(it->second);
+    // variant.debugPrintAll();
+    this->variantName = variant.getSSDFilename();
+    this->signalFilterFilename = variant.getSignalFilterFilename();
+  }
+  else
+  {
+    // variant does not exist, create a new variant
+    this->variantName = std::string(crefB) + ".ssd";
+    this->signalFilterFilename = "resources/signalFilter_" + std::string(crefB) + ".xml";
+  }
+
   return oms_status_ok;
 }
 

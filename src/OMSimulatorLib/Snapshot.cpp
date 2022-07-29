@@ -237,11 +237,21 @@ pugi::xml_node oms::Snapshot::getTemplateResourceNodeSSDVariants()
   return oms_variants;
 }
 
-oms::ComRef oms::Snapshot::getFilename() const
+oms::ComRef oms::Snapshot::getSSDFilename() const
 {
   pugi::xml_node oms_snapshot = doc.document_element(); // oms:snapshot
   for (const auto& it : oms_snapshot.children())
-    if (".ssd" == filesystem::path(it.attribute("name").as_string()).extension()) // get root cref for all variants of .ssd
+    if (".ssd" == filesystem::path(it.attribute("name").as_string()).extension()) // get filename of variants of .ssd
+      return oms::ComRef(it.attribute("name").as_string());
+
+  return oms::ComRef();
+}
+
+oms::ComRef oms::Snapshot::getSignalFilterFilename() const
+{
+  pugi::xml_node oms_snapshot = doc.document_element(); // oms:snapshot
+  for (const auto& it : oms_snapshot.children())
+    if (".xml" == filesystem::path(it.attribute("name").as_string()).extension()) // get signalFilter filename of variants
       return oms::ComRef(it.attribute("name").as_string());
 
   return oms::ComRef();
