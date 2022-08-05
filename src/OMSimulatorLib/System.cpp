@@ -358,8 +358,10 @@ oms_status_enu_t oms::System::replaceSubModel(const oms::ComRef& cref, const std
       replaceComponent = ComponentFMUCS::NewComponent(cref, this, path_.string(), "replace");
     else if (extension == ".fmu" && oms_system_sc == type)
       replaceComponent = ComponentFMUME::NewComponent(cref, this, path_.string(), "replace");
+    else if (extension == ".csv" || extension == ".mat")
+      replaceComponent = ComponentTable::NewComponent(cref, this, path_.string());
     else
-      return logError("supported sub-model formats are \".fmu\"");
+      return logError("supported sub-model formats are \".fmu\", \".csv\", \".mat\"");
 
     if (!replaceComponent)
       return oms_status_error;
