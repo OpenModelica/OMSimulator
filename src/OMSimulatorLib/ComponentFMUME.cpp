@@ -1596,6 +1596,7 @@ oms_status_enu_t oms::ComponentFMUME::updateOrDeleteStartValueInReplacedComponen
   else
   {
     // inline parameter settings, no need to update the values
+    return oms_status_ok;
   }
 
   return oms_status_error;

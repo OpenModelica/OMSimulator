@@ -335,7 +335,7 @@ oms_status_enu_t oms::System::replaceSubModel(const oms::ComRef& cref, const std
       show warnings and replace is done
   */
 
-   // get full snapshot
+  // get full snapshot
   char* fullsnapshot = NULL;
   getModel().exportSnapshot("", &fullsnapshot);
 
@@ -392,6 +392,9 @@ oms_status_enu_t oms::System::replaceSubModel(const oms::ComRef& cref, const std
           }
         }
       }
+
+      //copy the element geometry position of old component to the replacing component which will be used in OMEdit
+      replaceComponent->getElement()->setGeometry(component->second->getElement()->getGeometry());
 
       // copy all the resources from old component to replacing component
       std::vector<Values> allResources = component->second->getValuesResources();
