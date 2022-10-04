@@ -1,4 +1,5 @@
 .. index:: SSP
+.. _omsimulator-ssp-support :
 
 SSP Support
 ===========
