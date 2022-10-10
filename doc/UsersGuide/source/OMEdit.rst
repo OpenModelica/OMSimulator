@@ -1,4 +1,5 @@
 .. index:: OMEdit
+.. _omedit-graphical-modelling :
 
 Graphical Modelling
 ===================
