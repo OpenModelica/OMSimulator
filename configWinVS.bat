@@ -65,6 +65,7 @@ IF NOT EXIST install\\win\\lib MKDIR install\\win\\lib
 
 IF ["%TARGET%"]==["clean"] GOTO clean
 IF ["%TARGET%"]==["fmil"] GOTO fmil
+IF ["%TARGET%"]==["fmi4c"] GOTO fmi4c
 IF ["%TARGET%"]==["lua"] GOTO lua
 IF ["%TARGET%"]==["minizip"] GOTO minizip
 IF ["%TARGET%"]==["cvode"] GOTO cvode
@@ -102,6 +103,23 @@ msbuild.exe "3rdParty\FMIL\build\win\INSTALL.vcxproj" /t:Build /p:configuration=
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 EXIT /B 0
 :: -- config fmil ---------------------
+
+
+:: -- config fmi4c ---------------------
+:fmi4c
+ECHO # config fmi4c
+IF EXIST "3rdParty\fmi4c\build\win\" RMDIR /S /Q 3rdParty\fmi4c\build\win
+IF EXIST "3rdParty\fmi4c\install\win\" RMDIR /S /Q 3rdParty\fmi4c\install\win
+MKDIR 3rdParty\fmi4c\build\win
+CD 3rdParty\fmi4c\build\win
+cmake.exe -G %OMS_VS_VERSION% ..\.. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) -DFMI4C_BUILD_SHARED=OFF
+IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
+CD ..\..\..\..
+ECHO # build fmi4c
+msbuild.exe "3rdParty\fmi4c\build\win\INSTALL.vcxproj" /t:Build /p:configuration=Release /maxcpucount
+IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
+EXIT /B 0
+:: -- config fmi4c ---------------------
 
 
 :: -- build Lua -----------------------
@@ -251,6 +269,8 @@ START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% clean"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 IF NOT EXIST "3rdParty/README.md" GOTO fail2
 START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% fmil"
+IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
+START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% fmi4c"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% lua"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail

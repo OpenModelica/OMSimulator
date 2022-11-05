@@ -7,6 +7,7 @@ include_directories(../OMSimulatorLib)
 link_directories(
   ${MINIZIP_LIBRARYDIR}
   ${FMILibrary_LIBRARYDIR}
+  ${FMI4c_LIBRARYDIR}
   ${LUALibrary_LIBRARYDIR}
   ${CVODELibrary_LIBRARYDIR}
   ${KINSOLLibrary_LIBRARYDIR}

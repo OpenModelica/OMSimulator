@@ -114,6 +114,7 @@ include_directories(
   ${CTPL_INCLUDEDIR}
   ${CVODELibrary_INCLUDEDIR}
   ${FMILibrary_INCLUDEDIR}
+  ${FMI4c_INCLUDEDIR}
   ${KINSOLLibrary_INCLUDEDIR}
   ${LUALibrary_INCLUDEDIR}
   ${OMTLM_SOURCES}
@@ -128,6 +129,7 @@ ENDIF (OMTLM)
 link_directories(
   ${MINIZIP_LIBRARYDIR}
   ${FMILibrary_LIBRARYDIR}
+  ${FMI4c_LIBRARYDIR}
   ${LUALibrary_LIBRARYDIR}
   ${CVODELibrary_LIBRARYDIR}
   ${KINSOLLibrary_LIBRARYDIR}
@@ -156,8 +158,12 @@ IF (WIN32 AND MSVC)
   add_definitions(-DBOOST_ALL_DYN_LINK)
 ENDIF ()
 
-target_link_libraries(OMSimulatorLib minizip fmilib sundials_kinsol sundials_cvode sundials_nvecserial ${LIB_ATOMIC} ${Boost_LIBRARIES} ${OMTLM_LINKFLAGS} ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} ${CPP_FS_LIBS})
-target_link_libraries(OMSimulatorLib_static minizip fmilib sundials_kinsol sundials_cvode sundials_nvecserial lua ${CMAKE_DL_LIBS} ${LIB_ATOMIC} ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} ${OMTLM_LINKFLAGS} ${CPP_FS_LIBS})
+## set target_compile_definitions when building fmi4c as static, reference fmi4c/cmakeList.txt Line no:71
+target_compile_definitions(OMSimulatorLib PUBLIC FMI4C_STATIC)
+target_compile_definitions(OMSimulatorLib_static PUBLIC FMI4C_STATIC)
+
+target_link_libraries(OMSimulatorLib minizip fmilib fmi4c sundials_kinsol sundials_cvode sundials_nvecserial ${LIB_ATOMIC} ${Boost_LIBRARIES} ${OMTLM_LINKFLAGS} ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} ${CPP_FS_LIBS})
+target_link_libraries(OMSimulatorLib_static minizip fmilib fmi4c sundials_kinsol sundials_cvode sundials_nvecserial lua ${CMAKE_DL_LIBS} ${LIB_ATOMIC} ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} ${OMTLM_LINKFLAGS} ${CPP_FS_LIBS})
 
 IF (WIN32 AND MINGW)
   target_link_libraries(OMSimulatorLib shlwapi)
