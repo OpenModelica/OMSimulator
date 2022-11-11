@@ -41,6 +41,7 @@
 #include "SystemWC.h"
 
 #include <fmilib.h>
+#include <fmi4c.h>
 #include <JM/jm_portability.h>
 #include <RegEx.h>
 #include <unordered_set>
@@ -148,16 +149,29 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::
 
   component->context = fmi_import_allocate_context(&component->callbacks);
 
-  // check version of FMU
+
+  component->fmi4c = fmi4c_loadFmu(absFMUPath.string().c_str(), "Add_me");
+  fmiVersion_t version_ = fmi4c_getFmiVersion(component->fmi4c);
+  std::cout << "\narunVersion : " << version_ << "=>" << absFMUPath.string().c_str() << "==>"<< fmi2_getGuid(component->fmi4c) << "\n";
+
+
+  // // check version of FMU
   fmi_version_enu_t version;
   if (dirExist)
     version = fmi_import_get_fmi_version_unzipped(component->context, tempDir.generic_string().c_str());
   else
     version = fmi_import_get_fmi_version(component->context, absFMUPath.string().c_str(), component->getTempDir().c_str());
 
-  if (fmi_version_2_0_enu != version)
+  // if (fmi_version_2_0_enu != version)
+  // {
+  //   logError("Unsupported FMI version: " + std::string(fmi_version_to_string(version)));
+  //   delete component;
+  //   return NULL;
+  // }
+
+  if (fmiVersion2 != version_)
   {
-    logError("Unsupported FMI version: " + std::string(fmi_version_to_string(version)));
+    logError("Unsupported FMI version: " + version_);
     delete component;
     return NULL;
   }
@@ -180,7 +194,7 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::
   }
 
   // update FMU info
-  component->fmuInfo.update(version, component->fmu);
+  component->fmuInfo.update(version_, component->fmi4c);
 
   component->callbackFunctions.logger = oms::fmi2logger;
   component->callbackFunctions.allocateMemory = calloc;
@@ -294,6 +308,7 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::
         connector->connectorUnits[unitName] = component->values.modeldescriptionUnitDefinitions[unitName];
     }
   }
+
   return component;
 }
 
@@ -639,19 +654,59 @@ oms_status_enu_t oms::ComponentFMUCS::initializeDependencyGraph_outputs()
   return oms_status_ok;
 }
 
+void oms::loggerFmi2(fmi2ComponentEnvironment componentEnvironment,
+                fmi2String instanceName,
+                fmi2Status status,
+                fmi2String category,
+                fmi2String message,
+                ...)
+{
+    // UNUSED(componentEnvironment);
+    // UNUSED(instanceName);
+    // UNUSED(category);
+
+    int logLevel = 0;
+
+    if(status == fmi2OK && logLevel < 4 ||
+        status == fmi2Pending && logLevel < 4 ||
+        status == fmi2Warning && logLevel < 3 ||
+        status == fmi2Discard && logLevel < 3 ||
+        status == fmi2Error && logLevel < 2 ||
+        status == fmi2Fatal && logLevel < 1) {
+        return;
+    }
+
+    va_list args;
+    va_start(args, message);
+    char msgstr[1024];
+    sprintf(msgstr, "%s: %s\n", category, message);
+    printf(msgstr, args);
+    va_end(args);
+}
+
 oms_status_enu_t oms::ComponentFMUCS::instantiate()
 {
-  jm_status_enu_t jmstatus;
-  fmi2_status_t fmistatus;
+  // jm_status_enu_t jmstatus;
+  // fmi2_status_t fmistatus;
 
-  // load the FMU shared library
-  jmstatus = fmi2_import_create_dllfmu(fmu, fmi2_fmu_kind_cs, &callbackFunctions);
-  if (jm_status_error == jmstatus)
-    return logError("Could not load \"" + getPath() + "\" which is associated with \"" + std::string(getFullCref()) + "\"; it may be corrupted or may not support your platform");
+  // // load the FMU shared library
+  // jmstatus = fmi2_import_create_dllfmu(fmu, fmi2_fmu_kind_cs, &callbackFunctions);
+  // if (jm_status_error == jmstatus)
+  //   return logError("Could not load \"" + getPath() + "\" which is associated with \"" + std::string(getFullCref()) + "\"; it may be corrupted or may not support your platform");
 
-  jmstatus = fmi2_import_instantiate(fmu, getCref().c_str(), fmi2_cosimulation, NULL, fmi2_false);
-  if (jm_status_error == jmstatus)
-    return logError_FMUCall("fmi2_import_instantiate", this);
+  // jmstatus = fmi2_import_instantiate(fmu, getCref().c_str(), fmi2_cosimulation, NULL, fmi2_false);
+  // if (jm_status_error == jmstatus)
+  //   return logError_FMUCall("fmi2_import_instantiate", this);
+
+  if (!fmi2_instantiate(fmi4c, fmi2CoSimulation, loggerFmi2, calloc, free, NULL, NULL, fmi2False, fmi2True))
+  {
+    printf("fmi2Instantiate() failed\n");
+    exit(1);
+  }
+  else
+  {
+    std::cout << "\n Fmi4c instantiated successfully";
+  }
 
   // set start values from local resources
   if (values.hasResources())
@@ -685,11 +740,18 @@ oms_status_enu_t oms::ComponentFMUCS::instantiate()
   time = getModel().getStartTime();
   double relativeTolerance = 0.0;
   dynamic_cast<SystemWC*>(getParentSystem())->getTolerance(NULL, &relativeTolerance);
-  fmistatus = fmi2_import_setup_experiment(fmu, fmi2_true, relativeTolerance, time, fmi2_false, 1.0);
-  if (fmi2_status_ok != fmistatus) return logError_FMUCall("fmi2_import_setup_experiment", this);
+  // fmistatus = fmi2_import_setup_experiment(fmu, fmi2_true, relativeTolerance, time, fmi2_false, 1.0);
+  // if (fmi2_status_ok != fmistatus) return logError_FMUCall("fmi2_import_setup_experiment", this);
 
-  fmistatus = fmi2_import_enter_initialization_mode(fmu);
-  if (fmi2_status_ok != fmistatus) return logError_FMUCall("fmi2_import_enter_initialization_mode", this);
+
+  fmi2Status status = fmi2_setupExperiment(fmi4c, fmi2True, relativeTolerance, time, fmi2False, 1.0);
+  if (fmi2OK != status) return logError_FMUCall("fmi2_import_setup_experiment", this);
+
+  // fmistatus = fmi2_import_enter_initialization_mode(fmu);
+  // if (fmi2_status_ok != fmistatus) return logError_FMUCall("fmi2_import_enter_initialization_mode", this);
+
+  fmi2Status status_ = fmi2_enterInitializationMode(fmi4c);
+  if (fmi2OK != status_) return logError_FMUCall("fmi2_enterInitializationMode", this);
 
   return oms_status_ok;
 }
@@ -848,25 +910,31 @@ oms_status_enu_t oms::ComponentFMUCS::initialize()
   clock.reset();
   CallClock callClock(clock);
 
-  fmi2_status_t fmistatus;
+  // fmi2_status_t fmistatus;
 
-  // exitInitialization
-  fmistatus = fmi2_import_exit_initialization_mode(fmu);
-  if (fmi2_status_ok != fmistatus) return logError_FMUCall("fmi2_import_exit_initialization_mode", this);
+  // // exitInitialization
+  // fmistatus = fmi2_import_exit_initialization_mode(fmu);
+  // if (fmi2_status_ok != fmistatus) return logError_FMUCall("fmi2_import_exit_initialization_mode", this);
+
+  fmi2Status status = fmi2_exitInitializationMode(fmi4c);
+  if (fmi2OK != status) return logError_FMUCall("fmi2_exitInitializationMode", this);
 
   return oms_status_ok;
 }
 
 oms_status_enu_t oms::ComponentFMUCS::terminate()
 {
-  freeState();
+  // freeState();
 
-  fmi2_status_t fmistatus = fmi2_import_terminate(fmu);
-  if (fmi2_status_ok != fmistatus)
-    return logError_Termination(getCref());
+  // fmi2_status_t fmistatus = fmi2_import_terminate(fmu);
+  // if (fmi2_status_ok != fmistatus)
+  //   return logError_Termination(getCref());
 
-  fmi2_import_free_instance(fmu);
-  fmi2_import_destroy_dllfmu(fmu);
+  // fmi2_import_free_instance(fmu);
+  // fmi2_import_destroy_dllfmu(fmu);
+    fmi2_terminate(fmi4c);
+    printf("  FMU successfully terminated.\n");
+    fmi2_freeInstance(fmi4c);
   return oms_status_ok;
 }
 
@@ -891,6 +959,7 @@ oms_status_enu_t oms::ComponentFMUCS::reset()
 
 oms_status_enu_t oms::ComponentFMUCS::stepUntil(double stopTime)
 {
+  //std::cout << "\n inside stepUnitl";
   CallClock callClock(clock);
   System *topLevelSystem = getModel().getTopLevelSystem();
 
@@ -919,7 +988,8 @@ oms_status_enu_t oms::ComponentFMUCS::stepUntil(double stopTime)
       }
     }
 
-    fmistatus = fmi2_import_do_step(fmu, time, hdef, fmi2_true);
+    //fmistatus = fmi2_import_do_step(fmu, time, hdef, fmi2_true);
+    fmi2Status status = fmi2_doStep(fmi4c, time, hdef, fmi2True);
     time += hdef;
 
 #if !defined(NO_TLM)
@@ -937,9 +1007,11 @@ oms_status_enu_t oms::ComponentFMUCS::getBoolean(const fmi2_value_reference_t& v
   CallClock callClock(clock);
 
   int value_;
-  if (fmi2_status_ok != fmi2_import_get_boolean(fmu, &vr, 1, &value_))
-    return oms_status_error;
+  // if (fmi2_status_ok != fmi2_import_get_boolean(fmu, &vr, 1, &value_))
+  //   return oms_status_error;
 
+  if (fmi2OK != fmi2_getBoolean(fmi4c, &vr, 1, &value_))
+    return oms_status_error;
   value = value_ ? true : false;
   return oms_status_ok;
 }
@@ -1028,7 +1100,10 @@ oms_status_enu_t oms::ComponentFMUCS::getInteger(const fmi2_value_reference_t& v
 {
   CallClock callClock(clock);
 
-  if (fmi2_status_ok != fmi2_import_get_integer(fmu, &vr, 1, &value))
+  // if (fmi2_status_ok != fmi2_import_get_integer(fmu, &vr, 1, &value))
+  //   return oms_status_error;
+
+  if (fmi2OK != fmi2_getInteger(fmi4c, &vr, 1, &value))
     return oms_status_error;
 
   return oms_status_ok;
@@ -1129,7 +1204,10 @@ oms_status_enu_t oms::ComponentFMUCS::getReal(const fmi2_value_reference_t& vr, 
 {
   CallClock callClock(clock);
 
-  if (fmi2_status_ok != fmi2_import_get_real(fmu, &vr, 1, &value))
+  // if (fmi2_status_ok != fmi2_import_get_real(fmu, &vr, 1, &value))
+  //   return oms_status_error;
+
+  if (fmi2OK != fmi2_getReal(fmi4c, &vr, 1, &value))
     return oms_status_error;
 
   if (std::isnan(value))
@@ -1655,7 +1733,9 @@ oms_status_enu_t oms::ComponentFMUCS::setReal(const ComRef& cref, double value)
   else
   {
     fmi2_value_reference_t vr = allVariables[j].getValueReference();
-    if (fmi2_status_ok != fmi2_import_set_real(fmu, &vr, 1, &value))
+    // if (fmi2_status_ok != fmi2_import_set_real(fmu, &vr, 1, &value))
+    //   return oms_status_error;
+    if (fmi2OK != fmi2_setReal(fmi4c, &vr, 1, &value))
       return oms_status_error;
   }
 

@@ -33,7 +33,7 @@
 
 #include "Logging.h"
 #include "OMSString.h"
-
+#include <iostream>
 
 oms::FMUInfo::FMUInfo(const std::string& path)
 {
@@ -118,5 +118,52 @@ void oms::FMUInfo::update(fmi_version_enu_t version, fmi2_import_t* fmu)
     this->completedIntegratorStepNotNeeded = fmi2_import_get_capability(fmu, fmi2_me_completedIntegratorStepNotNeeded) > 0;
     this->needsExecutionTool = fmi2_import_get_capability(fmu, fmi2_me_needsExecutionTool) > 0;
     this->providesDirectionalDerivative = fmi2_import_get_capability(fmu, fmi2_me_providesDirectionalDerivatives) > 0;
+  }
+}
+
+void oms::FMUInfo::update(fmiVersion_t version, fmiHandle* fmu)
+{
+  if (fmi2_getSupportsCoSimulation(fmu))
+    this->fmiKind = oms_fmi_kind_cs;
+  else if (fmi2_getSupportsModelExchange(fmu))
+    this->fmiKind = oms_fmi_kind_me;
+  else if (fmi2_getSupportsModelExchange(fmu) && fmi2_getSupportsCoSimulation(fmu))
+    this->fmiKind = oms_fmi_kind_me_and_cs;
+
+  this->author = allocateAndCopyString(fmi2_getAuthor(fmu));
+  this->copyright = allocateAndCopyString(fmi2_getCopyright(fmu));
+  this->description = allocateAndCopyString(fmi2_getModelDescription(fmu));
+  this->fmiVersion = allocateAndCopyString(fmi2_getFmiVersion(fmu));
+  this->generationDateAndTime = allocateAndCopyString(fmi2_getGenerationDateAndTime(fmu));
+  this->generationTool = allocateAndCopyString(fmi2_getGenerationTool(fmu));
+  this->guid = allocateAndCopyString(fmi2_getGuid(fmu));
+  //std::cout << "\n check guid: " << this->guid;
+
+  this->license = allocateAndCopyString(fmi2_getLicense(fmu));
+  this->modelName = allocateAndCopyString(fmi2_getModelName(fmu));
+  //this->version = allocateAndCopyString(fmi2_getVersion(fmu));
+
+  if (oms_fmi_kind_cs == fmiKind || oms_fmi_kind_me_and_cs == fmiKind)
+  {
+    this->canBeInstantiatedOnlyOncePerProcess = fmi2cs_getCanBeInstantiatedOnlyOncePerProcess(fmu) > 0;
+    this->canGetAndSetFMUstate = fmi2cs_getCanGetAndSetFMUState(fmu) > 0;
+    this->canNotUseMemoryManagementFunctions = fmi2cs_getCanNotUseMemoryManagementFunctions(fmu) > 0;
+    this->canSerializeFMUstate = fmi2cs_getCanSerializeFMUState(fmu) > 0;
+    this->completedIntegratorStepNotNeeded = false;
+    this->needsExecutionTool = fmi2cs_getNeedsExecutionTool(fmu) > 0;
+    this->providesDirectionalDerivative = fmi2cs_getProvidesDirectionalDerivative(fmu) > 0;
+    this->canInterpolateInputs = fmi2cs_getCanInterpolateInputs(fmu) > 0;
+    this->maxOutputDerivativeOrder = fmi2cs_getMaxOutputDerivativeOrder(fmu);
+  }
+
+  if (oms_fmi_kind_me == fmiKind || oms_fmi_kind_me_and_cs == fmiKind)
+  {
+    this->canBeInstantiatedOnlyOncePerProcess = fmi2me_getCanBeInstantiatedOnlyOncePerProcess(fmu) > 0;
+    this->canGetAndSetFMUstate = fmi2me_getCanGetAndSetFMUState(fmu) > 0;
+    this->canNotUseMemoryManagementFunctions = fmi2me_getCanNotUseMemoryManagementFunctions(fmu) > 0;
+    this->canSerializeFMUstate = fmi2me_getCanSerializeFMUState(fmu) > 0;
+    this->completedIntegratorStepNotNeeded = fmi2me_getCompletedIntegratorStepNotNeeded(fmu) > 0;
+    this->needsExecutionTool = fmi2me_getNeedsExecutionTool(fmu) > 0;
+    this->providesDirectionalDerivative = fmi2me_getProvidesDirectionalDerivative(fmu) > 0;
   }
 }
