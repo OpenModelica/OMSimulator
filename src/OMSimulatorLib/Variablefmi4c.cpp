@@ -29,78 +29,30 @@
  *
  */
 
-#include "Variable.h"
+#include "Variablefmi4c.h"
 
 #include "Logging.h"
 #include "Util.h"
 
-#include <JM/jm_portability.h>
 #include <iostream>
 
-oms::Variable::Variable(fmi2_import_variable_t* var)
-  : der_index(0), state_index(0), is_state(false), is_der(false), is_continuous_time_state(false), is_continuous_time_der(false), cref(fmi2_import_get_variable_name(var)), index(fmi2_import_get_variable_original_order(var))
-{
-  // extract the attributes
-  description = fmi2_import_get_variable_description(var) ? fmi2_import_get_variable_description(var) : "";
-  trim(description);
-  vr = fmi2_import_get_variable_vr(var);
-  causality = fmi2_import_get_causality(var);
-  variability = fmi2_import_get_variability(var);
-  initialProperty = fmi2_import_get_initial(var);
-
-  switch (fmi2_import_get_variable_base_type(var))
-  {
-    case fmi2_base_type_real:
-      type = oms_signal_type_real;
-      break;
-    case fmi2_base_type_int:
-      type = oms_signal_type_integer;
-      break;
-    case fmi2_base_type_bool:
-      type = oms_signal_type_boolean;
-      break;
-    case fmi2_base_type_str:
-      type = oms_signal_type_string;
-      break;
-    case fmi2_base_type_enum:
-      type = oms_signal_type_enum;
-      break;
-    default:
-      logError("Unknown fmi base type");
-      type = oms_signal_type_real;
-      break;
-  }
-
-  // mark derivatives
-  if (oms_signal_type_real == type)
-  {
-    fmi2_import_real_variable_t* varReal = fmi2_import_get_variable_as_real(var);
-    fmi2_import_variable_t* varState = (fmi2_import_variable_t*)fmi2_import_get_real_variable_derivative_of(varReal);
-    if (varState)
-    {
-      is_der = true;
-      state_index = fmi2_import_get_variable_original_order(varState);
-    }
-  }
-}
-
-oms::Variable::Variable(fmiHandle* fmi4c, int index)
+oms::Variablefmi4c::Variablefmi4c(fmiHandle* fmi4c, int index_)
   : der_index(0), state_index(0), is_state(false), is_der(false), is_continuous_time_state(false), is_continuous_time_der(false)
 {
   //std::cout << "\n inside Variable structure";
 
   // extract the attributes
-  fmi2VariableHandle *var = fmi2_getVariableByIndex(fmi4c, index);
+  fmi2VariableHandle *var = fmi2_getVariableByIndex(fmi4c, index_);
 
   cref = fmi2_getVariableName(var);
-  index = index;
+  index = index_;
 
   description = fmi2_getVariableDescription(var) ? fmi2_getVariableDescription(var) : "";
   trim(description);
   vr = fmi2_getVariableValueReference(var);
-  causality_ = fmi2_getVariableCausality(var);
-  variability_ = fmi2_getVariableVariability(var);
-  initialProperty_ = fmi2_getVariableInitial(var);
+  causality = fmi2_getVariableCausality(var);
+  variability = fmi2_getVariableVariability(var);
+  initialProperty = fmi2_getVariableInitial(var);
 
   switch (fmi2_getVariableDataType(var))
   {
@@ -133,32 +85,30 @@ oms::Variable::Variable(fmiHandle* fmi4c, int index)
     {
       is_der = true;
       state_index = derivative_index;
-      if (variability_ == fmi2VariabilityContinuous)
+      if (variability == fmi2VariabilityContinuous)
       {
         is_continuous_time_der = true;
       }
     }
   }
   //std::cout << "\n check variable name :  " << cref.c_str() << "==>" << vr << "==>" << "==>" << is_der << "==>" << state_index;
-
-
 }
 
-oms::Variable::~Variable()
+oms::Variablefmi4c::~Variablefmi4c()
 {
 }
 
-oms_causality_enu_t oms::Variable::getCausality() const
+oms_causality_enu_t oms::Variablefmi4c::getCausality() const
 {
   switch (causality)
   {
-  case fmi2_causality_enu_input:
+  case fmi2CausalityInput:
     return oms_causality_input;
 
-  case fmi2_causality_enu_output:
+  case fmi2CausalityOutput:
     return oms_causality_output;
 
-  case fmi2_causality_enu_parameter:
+  case fmi2CausalityCalculatedParameter:
     return oms_causality_parameter;
 
   default:
@@ -166,12 +116,39 @@ oms_causality_enu_t oms::Variable::getCausality() const
   }
 }
 
-bool oms::operator==(const oms::Variable& v1, const oms::Variable& v2)
+std::string oms::Variablefmi4c::getCausalityString() const
+{
+  switch (causality)
+  {
+  case fmi2CausalityInput:
+    return "input";
+
+  case fmi2CausalityOutput:
+    return "output";
+
+  case fmi2CausalityParameter:
+    return "parameter";
+
+  case fmi2CausalityCalculatedParameter:
+    return "calculatedParameter";
+
+  case fmi2CausalityIndependent:
+    return "independent";
+
+  case fmi2CausalityLocal:
+    return "local";
+
+  default:
+    return "undefined";
+  }
+}
+
+bool oms::operator==(const oms::Variablefmi4c& v1, const oms::Variablefmi4c& v2)
 {
   return v1.cref == v2.cref && v1.vr == v2.vr;
 }
 
-bool oms::operator!=(const oms::Variable& v1, const oms::Variable& v2)
+bool oms::operator!=(const oms::Variablefmi4c& v1, const oms::Variablefmi4c& v2)
 {
   return !(v1 == v2);
 }

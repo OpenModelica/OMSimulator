@@ -36,7 +36,7 @@
 
 #include <string>
 #include <fmilib.h>
-
+#include <fmi4c.h>
 namespace oms
 {
   /**
@@ -49,6 +49,7 @@ namespace oms
     ~FMUInfo();
 
     void update(fmi_version_enu_t version, fmi2_import_t* fmu);
+    void update(fmiVersion_t version, fmiHandle* fmi4c);
 
     std::string getPath() const {return std::string(path);}
     oms_fmi_kind_enu_t getKind() const {return fmiKind;}

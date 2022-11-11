@@ -40,6 +40,7 @@
 #include "Variable.h"
 
 #include <fmilib.h>
+#include <fmi4c.h>
 #include <map>
 #include <pugixml.hpp>
 #include <string>
@@ -50,7 +51,7 @@
 namespace oms
 {
   class System;
-
+  void loggerFmi2(fmi2ComponentEnvironment componentEnvironment, fmi2String instanceName, fmi2Status status, fmi2String category, fmi2String message, ...);
   class ComponentFMUCS : public Component
   {
   public:
@@ -144,7 +145,7 @@ namespace oms
     fmi2_callback_functions_t callbackFunctions;
     fmi_import_context_t* context = NULL;
     fmi2_import_t* fmu = NULL;
-
+    fmiHandle *fmi4c = NULL;
     FMUInfo fmuInfo;
 
     std::vector<Variable> allVariables;

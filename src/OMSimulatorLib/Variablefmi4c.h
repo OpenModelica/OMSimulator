@@ -29,26 +29,24 @@
  *
  */
 
-#ifndef _OMS_VARIABLE_H_
-#define _OMS_VARIABLE_H_
+#ifndef _OMS_VARIABLE_FMI_4C_H_
+#define _OMS_VARIABLE_FMI_4C_H_
 
 #include "ComRef.h"
 #include "Connector.h"
 #include "Types.h"
 
-#include <fmilib.h>
 #include <fmi4c.h>
 #include <string>
 #include <vector>
 
 namespace oms
 {
-  class Variable
+  class Variablefmi4c
   {
   public:
-    Variable(fmi2_import_variable_t* var);
-    Variable(fmiHandle * fmi4c, int index);
-    ~Variable();
+    Variablefmi4c(fmiHandle * fmi4c, int index_);
+    ~Variablefmi4c();
 
     void markAsState(size_t der_index) { is_state = true; this->der_index = der_index; }
     void markAsContinuousTimeState(size_t der_index) { is_continuous_time_state = true; this->der_index = der_index; }
@@ -57,21 +55,21 @@ namespace oms
     unsigned int getStateIndex() const { return state_index; }
 
     // causality attribute
-    bool isParameter() const { return fmi2_causality_enu_parameter == causality; }
-    bool isCalculatedParameter() const { return fmi2_causality_enu_calculated_parameter == causality; }
-    bool isInput() const { return fmi2_causality_enu_input == causality; }
-    bool isOutput() const { return fmi2_causality_enu_output == causality; }
-    bool isLocal() const { return fmi2_causality_enu_local == causality; }
+    bool isParameter() const { return fmi2CausalityParameter == causality; }
+    bool isCalculatedParameter() const { return fmi2CausalityCalculatedParameter == causality; }
+    bool isInput() const { return fmi2CausalityInput == causality; }
+    bool isOutput() const { return fmi2CausalityOutput == causality; }
+    bool isLocal() const { return fmi2CausalityLocal == causality; }
     bool isState() const { return is_state; }
     bool isDer() const { return is_der; }
     bool isContinuousTimeState() const { return is_continuous_time_state; }
     bool isContinuousTimeDer() const { return is_continuous_time_der; }
-    bool isIndependent() const { return fmi2_causality_enu_independent == causality; }
+    bool isIndependent() const { return fmi2CausalityIndependent == causality; }
 
     // initial attribute
-    bool isExact() const { return fmi2_initial_enu_exact == initialProperty; }
-    bool isApprox() const { return fmi2_initial_enu_approx == initialProperty; }
-    bool isCalculated() const { return fmi2_initial_enu_calculated == initialProperty; }
+    bool isExact() const { return fmi2InitialExact == initialProperty; }
+    bool isApprox() const { return fmi2InitialApprox == initialProperty; }
+    bool isCalculated() const { return fmi2InitialCalculated == initialProperty; }
 
     bool isInitialUnknown() const {
       return (isOutput() && (isApprox() || isCalculated()))
@@ -83,7 +81,7 @@ namespace oms
     const ComRef& getCref() const { return cref; }
     operator std::string() const { return std::string(cref); }
 
-    fmi2_value_reference_t getValueReference() const { return vr; }
+    fmi2ValueReference getValueReference() const { return vr; }
     oms_signal_type_enu_t getType() const { return type; }
     const std::string& getDescription() const { return description; }
 
@@ -92,7 +90,7 @@ namespace oms
     bool isTypeReal() const { return oms_signal_type_real == type; }
     bool isTypeString() const { return oms_signal_type_string == type; }
 
-    std::string getCausalityString() const { return std::string(fmi2_causality_to_string(causality)); }
+    std::string getCausalityString() const;
     oms_causality_enu_t getCausality() const;
 
     unsigned int getIndex() const { return index; }
@@ -101,15 +99,10 @@ namespace oms
   private:
     ComRef cref;
     std::string description;
-    fmi2_value_reference_t vr;
-    fmi2_causality_enu_t causality;
-    fmi2_variability_enu_t variability;
-    fmi2_initial_enu_t initialProperty;
-
-    fmi2Causality causality_;
-    fmi2Variability variability_;
-    fmi2Initial initialProperty_;
-
+    fmi2ValueReference vr;
+    fmi2Causality causality;
+    fmi2Variability variability;
+    fmi2Initial initialProperty;
 
     bool is_state;
     bool is_der;
@@ -120,12 +113,12 @@ namespace oms
     size_t state_index; ///< index origin = 0
     size_t der_index; ///< index origin = 0
 
-    friend bool operator==(const oms::Variable& v1, const oms::Variable& v2);
-    friend bool operator!=(const oms::Variable& v1, const oms::Variable& v2);
+    friend bool operator==(const oms::Variablefmi4c& v1, const oms::Variablefmi4c& v2);
+    friend bool operator!=(const oms::Variablefmi4c& v1, const oms::Variablefmi4c& v2);
   };
 
-  bool operator==(const oms::Variable& v1, const oms::Variable& v2);
-  bool operator!=(const oms::Variable& v1, const oms::Variable& v2);
+  bool operator==(const oms::Variablefmi4c& v1, const oms::Variablefmi4c& v2);
+  bool operator!=(const oms::Variablefmi4c& v1, const oms::Variablefmi4c& v2);
 }
 
 #endif
