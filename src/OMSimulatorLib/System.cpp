@@ -378,7 +378,7 @@ oms_status_enu_t oms::System::replaceSubModel(const oms::ComRef& cref, const std
           oms::ComRef headA(connection->getSignalA());
           oms::ComRef tailA = headA.pop_front();
 
-          oms::ComRef headB(connection->getSignalA());
+          oms::ComRef headB(connection->getSignalB());
           oms::ComRef tailB = headB.pop_front();
           // check the replacing variable is a valid ScalarVariable
           bool signalA = isValidScalarVariable(component->second, replaceComponent, connection, cref, connection->getSignalA().front(), headA, path, warningList);

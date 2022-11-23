@@ -72,6 +72,8 @@ replaceSubmodel7.py \
 replaceSubmodel8.lua \
 replaceSubmodel9.lua \
 replaceSubmodel10.lua \
+replaceSubmodel11.py \
+replaceSubmodel12.py \
 setExternalInputs.lua \
 simulation.lua \
 simulation.py \
