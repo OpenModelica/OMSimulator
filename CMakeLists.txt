@@ -133,6 +133,13 @@ set(MINIZIP_LIBRARYDIR ${PROJECT_SOURCE_DIR}/3rdParty/minizip/install/${PLATFORM
 # Configuring for FMILibrary
 #set(FMILibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/FMIL/install/${PLATFORM_STRING})
 #find_package(FMILibrary REQUIRED)
+set(FMILIB_BUILD_TESTS FALSE)
+set(FMILIB_GENERATE_DOXYGEN_DOC FALSE)
+set(FMILIB_BUILD_STATIC_LIB FALSE)
+set(FMILIB_BUILD_SHARED_LIB FALSE)
+set(BUILD_TESTING FALSE)
+set(FMILIB_BUILD_BEFORE_TESTS FALSE)
+add_subdirectory(3rdParty/FMIL)
 
 ##########################
 # Configuring for Lua
