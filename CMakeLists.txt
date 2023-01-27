@@ -131,23 +131,25 @@ set(MINIZIP_LIBRARYDIR ${PROJECT_SOURCE_DIR}/3rdParty/minizip/install/${PLATFORM
 
 ##########################
 # Configuring for FMILibrary
-set(FMILibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/FMIL/install/${PLATFORM_STRING})
-find_package(FMILibrary REQUIRED)
+#set(FMILibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/FMIL/install/${PLATFORM_STRING})
+#find_package(FMILibrary REQUIRED)
 
 ##########################
 # Configuring for Lua
-set(LUALibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/Lua/install/${PLATFORM_STRING})
-find_package(LUALibrary REQUIRED)
+#set(LUALibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/Lua/install/${PLATFORM_STRING})
+#find_package(LUALibrary REQUIRED)
 
 ##########################
 # Configuring for CVODE
-set(CVODELibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/cvode/install/${PLATFORM_STRING})
-find_package(CVODELibrary REQUIRED)
+set(EXAMPLES_ENABLE FALSE)
+set(BUILD_SHARED_LIBS FALSE)
+add_subdirectory(3rdParty/cvode)
 
 ##########################
 # Configuring for KINSOL
-set(KINSOLLibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/kinsol/install/${PLATFORM_STRING})
-find_package(KINSOLLibrary REQUIRED)
+set(EXAMPLES_ENABLE FALSE)
+set(BUILD_SHARED_LIBS FALSE)
+add_subdirectory(3rdParty/kinsol)
 
 ##########################
 # Configuring for PUGIXML
