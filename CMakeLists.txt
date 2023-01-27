@@ -10,7 +10,7 @@ ENDIF()
 
 project(OMSimulator)
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/config.cmake/")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/config.cmake/")
 include(GetGitRevisionDescription)
 git_describe(OMS_VERSION_STRING --tags --abbrev=7 --match=v*.* --exclude=*-dev)
 if (NOT OMS_VERSION_STRING)
