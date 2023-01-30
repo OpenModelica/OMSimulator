@@ -104,6 +104,10 @@ ELSE() # use the freaking CMAKE_CXX_STANDARD*
 ENDIF()
 
 ##########################
+# -fPIC
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+##########################
 # Configuring for Boost
 if (CPP_FS_LIBS STREQUAL "")
   IF(WIN32)
@@ -126,36 +130,76 @@ ENDIF()
 
 ##########################
 # Configuring for zip/minizip
-set(MINIZIP_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/minizip/install/${PLATFORM_STRING}/include)
-set(MINIZIP_LIBRARYDIR ${PROJECT_SOURCE_DIR}/3rdParty/minizip/install/${PLATFORM_STRING}/lib)
+#set(MINIZIP_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/minizip/install/${PLATFORM_STRING}/include)
+#set(MINIZIP_LIBRARYDIR ${PROJECT_SOURCE_DIR}/3rdParty/minizip/install/${PLATFORM_STRING}/lib)
 
 ##########################
 # Configuring for FMILibrary
 #set(FMILibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/FMIL/install/${PLATFORM_STRING})
 #find_package(FMILibrary REQUIRED)
-option(FMILIB_BUILD_BEFORE_TESTS FALSE)
-option(FMILIB_BUILD_SHARED_LIB FALSE)
-option(FMILIB_BUILD_TESTS FALSE)
-option(FMILIB_GENERATE_DOXYGEN_DOC FALSE)
-add_subdirectory(3rdParty/FMIL)
+
+option(FMILIB_BUILD_TESTS "Build tests" OFF)
+option(FMILIB_GENERATE_DOXYGEN_DOC "Generate doxygen doc target" OFF)
+option(FMILIB_BUILD_STATIC_LIB "Build the library as static (lib/a)" ON)
+option(FMILIB_BUILD_SHARED_LIB "Build the library as shared (dll/so/dylib)" OFF)
+add_subdirectory(${PROJECT_SOURCE_DIR}/3rdParty/FMIL)
+
+# For now we deal with FMIL's nonsensical structure here. They really need to
+# fix up their structure as a whole! It is quite non-conventional.
+# They also need to fix their cmake usage. It is their default build system and it is used in
+# very contrived and unusual ways.
+
+# We create a top level 'include' directory that matches their include structure when FMIL is installed-to-be-used.
+# This is how every library should be. That way when you install the library you just change the include
+# path and every include will be resolved as it was during build time.  Ideally it should even be in  'include/FMIL/'
+# but that won't match how they install their files right now.
+file(MAKE_DIRECTORY ${FMILibrary_BINARY_DIR}/include)
+# Do not ask me why the fmilib.h is in the cmake.config directory.
+file(COPY ${FMILibrary_SOURCE_DIR}/Config.cmake/fmilib.h DESTINATION ${FMILibrary_BINARY_DIR}/include)
+
+file(COPY ${FMILibrary_SOURCE_DIR}/src/Import/include/FMI DESTINATION ${FMILibrary_BINARY_DIR}/include)
+file(COPY ${FMILibrary_SOURCE_DIR}/src/Import/include/FMI1 DESTINATION ${FMILibrary_BINARY_DIR}/include)
+file(COPY ${FMILibrary_SOURCE_DIR}/src/Import/include/FMI2 DESTINATION ${FMILibrary_BINARY_DIR}/include)
+
+file(COPY ${FMILibrary_SOURCE_DIR}/src/Util/include/FMI DESTINATION ${FMILibrary_BINARY_DIR}/include)
+file(COPY ${FMILibrary_SOURCE_DIR}/src/Util/include/FMI1 DESTINATION ${FMILibrary_BINARY_DIR}/include)
+file(COPY ${FMILibrary_SOURCE_DIR}/src/Util/include/FMI2 DESTINATION ${FMILibrary_BINARY_DIR}/include)
+file(COPY ${FMILibrary_SOURCE_DIR}/src/Util/include/JM DESTINATION ${FMILibrary_BINARY_DIR}/include)
+
+file(COPY ${FMILibrary_SOURCE_DIR}/ThirdParty/FMI/default/FMI1 DESTINATION ${FMILibrary_BINARY_DIR}/include)
+file(COPY ${FMILibrary_SOURCE_DIR}/ThirdParty/FMI/default/FMI2 DESTINATION ${FMILibrary_BINARY_DIR}/include)
+
+file(COPY ${FMILibrary_BINARY_DIR}/fmilib_config.h DESTINATION ${FMILibrary_BINARY_DIR}/include)
+
+# We give this new directory as include dir for targets that depend on FMIL.
+target_include_directories(fmilib INTERFACE ${FMILibrary_BINARY_DIR}/include)
+target_include_directories(minizip INTERFACE ${PROJECT_SOURCE_DIR}/3rdParty/FMIL/ThirdParty/Minizip/minizip)
 
 ##########################
 # Configuring for Lua
 #set(LUALibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/Lua/install/${PLATFORM_STRING})
 #find_package(LUALibrary REQUIRED)
 add_subdirectory(3rdParty/Lua)
+target_include_directories(lua_static INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/3rdParty/Lua/lua-5.3.4/include)
 
 ##########################
 # Configuring for CVODE
-set(EXAMPLES_ENABLE FALSE)
-set(BUILD_SHARED_LIBS FALSE)
+#set(CVODELibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/cvode/install/${PLATFORM_STRING})
+#find_package(CVODELibrary REQUIRED)
+option(EXAMPLES_ENABLED "Disable examples" OFF)
+option(EXAMPLES_ENABLE_C "Disable examples" OFF)
 add_subdirectory(3rdParty/cvode)
+target_include_directories(sundials_cvode_static INTERFACE ${PROJECT_SOURCE_DIR}/3rdParty/cvode/include)
+target_include_directories(sundials_cvode_static INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/3rdParty/cvode/include)
 
 ##########################
 # Configuring for KINSOL
-set(EXAMPLES_ENABLE FALSE)
-set(BUILD_SHARED_LIBS FALSE)
+#set(KINSOLLibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/kinsol/install/${PLATFORM_STRING})
+#find_package(KINSOLLibrary REQUIRED)
+option(EXAMPLES_ENABLED "Disable examples" OFF)
 add_subdirectory(3rdParty/kinsol)
+target_include_directories(sundials_kinsol_static INTERFACE ${PROJECT_SOURCE_DIR}/3rdParty/kinsol/include)
+target_include_directories(sundials_kinsol_static INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/3rdParty/kinsol/include)
 
 ##########################
 # Configuring for PUGIXML
@@ -214,4 +258,8 @@ add_subdirectory(src/OMSimulatorLib)
 add_subdirectory(src/OMSimulatorLua)
 add_subdirectory(src/OMSimulatorPython)
 add_subdirectory(src/OMSimulatorServer)
-add_subdirectory(src/pip)
+
+option(OMSIMULATOR_PIP "Enable pip" ON)
+if(OMSIMULATOR_PIP)
+  add_subdirectory(src/pip)
+ENDIF(OMSIMULATOR_PIP)

@@ -156,8 +156,8 @@ IF (WIN32 AND MSVC)
   add_definitions(-DBOOST_ALL_DYN_LINK)
 ENDIF ()
 
-target_link_libraries(OMSimulatorLib minizip fmilib sundials_kinsol sundials_cvode sundials_nvecserial ${LIB_ATOMIC} ${Boost_LIBRARIES} ${OMTLM_LINKFLAGS} ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} ${CPP_FS_LIBS})
-target_link_libraries(OMSimulatorLib_static minizip fmilib sundials_kinsol sundials_cvode sundials_nvecserial lua ${CMAKE_DL_LIBS} ${LIB_ATOMIC} ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} ${OMTLM_LINKFLAGS} ${CPP_FS_LIBS})
+target_link_libraries(OMSimulatorLib minizip fmilib sundials_kinsol_static sundials_cvode_static sundials_nvecserial_static ${LIB_ATOMIC} ${Boost_LIBRARIES} ${OMTLM_LINKFLAGS} ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} ${CPP_FS_LIBS})
+target_link_libraries(OMSimulatorLib_static minizip fmilib sundials_kinsol_static sundials_cvode_static sundials_nvecserial_static lua_static ${CMAKE_DL_LIBS} ${LIB_ATOMIC} ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} ${OMTLM_LINKFLAGS} ${CPP_FS_LIBS})
 
 IF (WIN32 AND MINGW)
   target_link_libraries(OMSimulatorLib shlwapi)
