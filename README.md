@@ -48,16 +48,13 @@ Note: Make sure to fetch the submodules, e.g., using `git submodule update --ini
 1. Configure OMSimulator
 
    ```bash
-   make config-3rdParty
-   make config-OMSimulator
+   cmake -G Ninja -S . -B build
    ```
-
-   For the debug configuration add `BUILD_TYPE=Debug` to `make config-OMSimulator`.
 
 1. Build OMSimulator
 
    ```bash
-   make OMSimulator -j4
+   cmake --build build/ --target install
    ```
 
 ### Windows (OMDev mingw)
@@ -70,48 +67,13 @@ Note: Make sure to fetch the submodules, e.g., using `git submodule update --ini
 1. Configure OMSimulator
 
    ```bash
-   make config-3rdParty
-   make config-OMSimulator
+   cmake -G Ninja -S . -B build
    ```
-
-   For the debug configuration add `BUILD_TYPE=Debug` to `make config-OMSimulator`.
 
 1. Build OMSimulator
 
    ```bash
-   make OMSimulator -j4
-   ```
-
-### Windows (Visual Studio)
-
-The following versions of Visual Studio are supported:
-
-- "VS14-Win32" -> "Visual Studio 14 2015"
-- "VS14-Win64" -> "Visual Studio 14 2015 Win64"
-- "VS15-Win32" -> "Visual Studio 15 2017"
-- "VS15-Win64" -> "Visual Studio 15 2017 Win64"
-
-It is not strictly required to install the full Visual Studio IDE. The batch scripts only require *[Visual C++ Build Tools](http://landinghub.visualstudio.com/visual-cpp-build-tools)*.
-
-1. Install boost (VS14: 1.63, VS15: 1.64)
-
-   - Download and install precompiled boost libs, e.g. from [this](https://sourceforge.net/projects/boost/files/boost-binaries/) source
-   - Set environment variable `BOOST_ROOT` to install path, e.g:
-     - `BOOST_ROOT=C:\local\boost_1_64_0`
-
-1. Configure OMSimulator
-
-   ```bash
-   .\configWinVS.bat VS15-Win64
-   ```
-
-   To build the debug version change `CMAKE_BUILD_TYPE` to `Debug` or change the release type in Visual Studio to `debug`.
-
-1. Build OMSimulator
-
-   ```bash
-   .\buildWinVS.bat VS15-Win64
-   ```
+   cmake --build build/ --target install
 
 ## Test your build
 
