@@ -510,10 +510,10 @@ zip -r "../../OMSimulator-win64-`git describe --tags --abbrev=7 --match=v*.* --e
 set BOOST_ROOT=C:\\local\\boost_1_64_0
 set PATH=C:\\bin\\cmake\\bin;%PATH%
 
-cmake.exe -G Ninja -S . -B build
+call configWinVS.bat VS15-Win64
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 
-cmake.exe --build build/ --target install
+call buildWinVS.bat VS15-Win64
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 
 call install\\win\\bin\\OMSimulator.exe --version
@@ -764,8 +764,9 @@ void buildOMS() {
      echo export MAKETHREADS=-j%NUMBER_OF_PROCESSORS%
      echo set -ex
      echo git fetch --tags
-     echo time cmake -G Ninja -S . -B build
-     echo time cmake --build build/ --target install
+     echo time make config-3rdParty ${env.CC ? "CC=" + env.CC : ""} ${env.CXX ? "CXX=" + env.CXX : ""} ${env.OMSFLAGS ?: ""} -j%NUMBER_OF_PROCESSORS%
+     echo time make config-OMSimulator -j%NUMBER_OF_PROCESSORS% ${env.OMSFLAGS ?: ""}
+     echo time make OMSimulator -j%NUMBER_OF_PROCESSORS% ${env.OMSFLAGS ?: ""}
      ) > buildOMSimulatorWindows.sh
 
      set MSYSTEM=${env.MSYSTEM ? env.MSYSTEM : "MINGW64"}
@@ -779,8 +780,9 @@ void buildOMS() {
     ${env.SHELLSTART ?: ""}
     export HOME="${'$'}PWD"
     git fetch --tags
-    cmake -G Ninja -S . -B build
-    cmake --build build/ --target install
+    make config-3rdParty ${env.CC ? "CC=" + env.CC : ""} ${env.CXX ? "CXX=" + env.CXX : ""} ${env.OMSFLAGS ?: ""} -j${nproc}
+    make config-OMSimulator -j${nproc} ${env.ASAN ? "ASAN=ON" : ""} ${env.OMSFLAGS ?: ""}
+    make OMSimulator -j${nproc} ${env.ASAN ? "DISABLE_RUN_OMSIMULATOR_VERSION=1" : ""} ${env.OMSFLAGS ?: ""}
     """
   }
 }
