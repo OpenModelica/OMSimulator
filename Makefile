@@ -16,7 +16,7 @@ else
 	INSTALL_DIR := install/linux
 endif
 
-.PHONY: OMSimulator config-OMSimulator distclean testsuite doc doc-html doc-doxygen pip
+.PHONY: OMSimulator config-OMSimulator config-3rdParty distclean testsuite doc doc-html doc-doxygen pip
 
 OMSimulator:
 	@echo OS: $(detected_OS)
@@ -31,6 +31,11 @@ OMSimulator:
 config-OMSimulator:
 	@echo
 	@echo "# config OMSimulator"
+	@echo
+
+config-3rdParty:
+	@echo
+	@echo "# config 3rdParty"
 	@echo
 
 distclean:
