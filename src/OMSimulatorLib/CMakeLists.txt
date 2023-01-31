@@ -109,13 +109,7 @@ include_directories(
   ../../3rdParty/RegEx
   ../OMSimulatorLib
   ../OMSimulatorLua
-  ${MINIZIP_INCLUDEDIR}
-  ${Boost_INCLUDE_DIRS}
   ${CTPL_INCLUDEDIR}
-  ${CVODELibrary_INCLUDEDIR}
-  ${FMILibrary_INCLUDEDIR}
-  ${KINSOLLibrary_INCLUDEDIR}
-  ${LUALibrary_INCLUDEDIR}
   ${OMTLM_SOURCES}
   ${PUGIXML_INCLUDEDIR})
 IF (OMTLM)
@@ -124,17 +118,6 @@ IF (OMTLM)
     ${OMTLMSIMULATOR_INCLUDEDIR}
     ${OMTLMSIMULATOR_3RDPARTY_INCLUDEDIR})
 ENDIF (OMTLM)
-
-link_directories(
-  ${MINIZIP_LIBRARYDIR}
-  ${FMILibrary_LIBRARYDIR}
-  ${LUALibrary_LIBRARYDIR}
-  ${CVODELibrary_LIBRARYDIR}
-  ${KINSOLLibrary_LIBRARYDIR}
-  ${Boost_LIBRARY_DIRS})
-IF (OMTLM)
-  link_directories(${OMTLMSIMULATORLIB_LIBRARYDIR})
-ENDIF ()
 
 # Shared library version
 add_library(OMSimulatorLib SHARED ${OMSIMULATORLIB_SOURCES})
