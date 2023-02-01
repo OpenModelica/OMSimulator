@@ -133,7 +133,7 @@ IF (WIN32 AND MSVC)
 ELSE ()
   set_target_properties(OMSimulatorLib_static PROPERTIES OUTPUT_NAME OMSimulator)
 ENDIF ()
-set_target_properties(OMSimulatorLib_static PROPERTIES COMPILE_DEFINITIONS "OMS_STATIC")
+target_compile_definitions(OMSimulatorLib_static PUBLIC OMS_STATIC)
 
 IF (WIN32 AND MSVC)
   add_definitions(-DBOOST_ALL_DYN_LINK)
