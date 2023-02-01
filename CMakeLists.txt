@@ -140,8 +140,8 @@ ENDIF()
 
 option(FMILIB_BUILD_TESTS "Build tests" OFF)
 option(FMILIB_GENERATE_DOXYGEN_DOC "Generate doxygen doc target" OFF)
-option(FMILIB_BUILD_STATIC_LIB "Build the library as static (lib/a)" ON)
-option(FMILIB_BUILD_SHARED_LIB "Build the library as shared (dll/so/dylib)" OFF)
+option(FMILIB_BUILD_STATIC_LIB "Build the library as static (lib/a)" OFF)
+option(FMILIB_BUILD_SHARED_LIB "Build the library as shared (dll/so/dylib)" ON)
 add_subdirectory(${PROJECT_SOURCE_DIR}/3rdParty/FMIL)
 
 # For now we deal with FMIL's nonsensical structure here. They really need to
@@ -172,7 +172,8 @@ file(COPY ${FMILibrary_SOURCE_DIR}/ThirdParty/FMI/default/FMI2 DESTINATION ${FMI
 file(COPY ${FMILibrary_BINARY_DIR}/fmilib_config.h DESTINATION ${FMILibrary_BINARY_DIR}/include)
 
 # We give this new directory as include dir for targets that depend on FMIL.
-target_include_directories(fmilib INTERFACE ${FMILibrary_BINARY_DIR}/include)
+target_include_directories(fmilib_shared INTERFACE ${FMILibrary_BINARY_DIR}/include)
+add_library(oms::fmilib ALIAS fmilib_shared)
 target_include_directories(minizip INTERFACE ${PROJECT_SOURCE_DIR}/3rdParty/FMIL/ThirdParty/Minizip/minizip)
 
 ##########################
@@ -256,11 +257,11 @@ ENDIF(OMTLM)
 
 ##########################
 # Add project modules
-add_subdirectory(src/OMSimulator)
+#add_subdirectory(src/OMSimulator)
 add_subdirectory(src/OMSimulatorLib)
-add_subdirectory(src/OMSimulatorLua)
-add_subdirectory(src/OMSimulatorPython)
-add_subdirectory(src/OMSimulatorServer)
+#add_subdirectory(src/OMSimulatorLua)
+#add_subdirectory(src/OMSimulatorPython)
+#add_subdirectory(src/OMSimulatorServer)
 
 option(OMSIMULATOR_PIP "Enable pip" ON)
 if(OMSIMULATOR_PIP)
