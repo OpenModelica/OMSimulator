@@ -64,9 +64,6 @@ ELSE()
     message(STATUS "ABI is: ${ABI}")
 ENDIF("${ABI}" MATCHES "^LINUX")
 
-# Enable verbose output from Makefile builds
-set(CMAKE_VERBOSE_MAKEFILE ON)
-
 ##########################
 # -fPIC
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
