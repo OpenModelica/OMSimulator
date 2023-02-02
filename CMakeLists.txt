@@ -67,42 +67,6 @@ ENDIF("${ABI}" MATCHES "^LINUX")
 # Enable verbose output from Makefile builds
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
-# Use C++ 11 for the whole project
-# cmake < 3.1 doesn't know or respect CMAKE_CXX_STANDARD*
-set(CPP_FS_LIBS "")
-IF (CMAKE_VERSION VERSION_LESS 3.1.0)
-  IF (CMAKE_CXX_FLAGS MATCHES "-std=(c|gnu)[+][+]17")
-    set(CPP_FS_LIBS "-lstdc++fs")
-    message(STATUS "We have C++17 in CXXFLAGS")
-  ELSEIF (CMAKE_COMPILER_IS_GNUCC AND NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 7.1)
-    set(CMAKE_CXX11_STANDARD_COMPILE_OPTION "-std=c++17")
-    set(CMAKE_CXX11_EXTENSION_COMPILE_OPTION "-std=gnu++17")
-    set(CPP_FS_LIBS "-lstdc++fs")
-    message(STATUS "We have C++17 in CXXFLAGS")
-  ELSE()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-    add_definitions(-DWITHOUT_FS)
-    message(STATUS "Using CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS} for setting -std=c++11 without checking if it is supported (old cmake version)")
-  ENDIF ()
-ELSE() # use the freaking CMAKE_CXX_STANDARD*
-  IF (CMAKE_CXX_FLAGS MATCHES "-std=(c|gnu)[+][+]17")
-    set(CMAKE_CXX11_STANDARD_COMPILE_OPTION "")
-    set(CMAKE_CXX11_EXTENSION_COMPILE_OPTION "")
-    set(CPP_FS_LIBS "-lstdc++fs")
-    message(STATUS "Clearing CMAKE_CXX11_STANDARD_COMPILE_OPTION since CMAKE_CXX_FLAGS contained C++17 flags")
-  ELSEIF (CMAKE_COMPILER_IS_GNUCC AND NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 7.1)
-    set(CMAKE_CXX11_STANDARD_COMPILE_OPTION "-std=c++17")
-    set(CMAKE_CXX11_EXTENSION_COMPILE_OPTION "-std=gnu++17")
-    set(CPP_FS_LIBS "-lstdc++fs")
-  ELSE()
-    add_definitions(-DWITHOUT_FS)
-  ENDIF ()
-  set(CMAKE_CXX_STANDARD 11)
-  set(CMAKE_CXX_STANDARD_REQUIRED ON)
-  set(CMAKE_CXX_EXTENSIONS OFF)
-  message(STATUS "Using CMAKE_CXX_STANDARD: ${CMAKE_CXX_STANDARD}, CMAKE_CXX_EXTENSIONS: ${CMAKE_CXX_EXTENSIONS} and CMAKE_CXX_STANDARD_REQUIRED: ${CMAKE_CXX_STANDARD_REQUIRED} for setting ${CMAKE_CXX11_STANDARD_COMPILE_OPTION}")
-ENDIF()
-
 ##########################
 # -fPIC
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
