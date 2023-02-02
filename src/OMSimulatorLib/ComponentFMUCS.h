@@ -149,6 +149,7 @@ namespace oms
     FMUInfo fmuInfo;
 
     std::vector<Variable> allVariables;
+    std::vector<Variable> allVariables_;
     std::vector<unsigned int> calculatedParameters;
     std::vector<unsigned int> derivatives;
     std::vector<unsigned int> inputs;

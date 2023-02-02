@@ -47,7 +47,7 @@ oms::Variable::Variable(fmi2_import_variable_t* var)
   causality = fmi2_import_get_causality(var);
   variability = fmi2_import_get_variability(var);
   initialProperty = fmi2_import_get_initial(var);
-
+  std::cout << "\nVariable.cpp: " << initialProperty;
   switch (fmi2_import_get_variable_base_type(var))
   {
     case fmi2_base_type_real:
@@ -84,16 +84,16 @@ oms::Variable::Variable(fmi2_import_variable_t* var)
   }
 }
 
-oms::Variable::Variable(fmiHandle* fmi4c, int index)
-  : der_index(0), state_index(0), is_state(false), is_der(false), is_continuous_time_state(false), is_continuous_time_der(false)
+oms::Variable::Variable(fmiHandle* fmi4c, int index_)
+  : der_index(0), state_index(0), is_state(false), is_der(false), is_continuous_time_state(false), is_continuous_time_der(false), index(index_)
 {
   //std::cout << "\n inside Variable structure";
 
   // extract the attributes
-  fmi2VariableHandle *var = fmi2_getVariableByIndex(fmi4c, index);
+  fmi2VariableHandle *var = fmi2_getVariableByIndex(fmi4c, index_);
 
   cref = fmi2_getVariableName(var);
-  index = index;
+  //index = index_;
 
   description = fmi2_getVariableDescription(var) ? fmi2_getVariableDescription(var) : "";
   trim(description);
@@ -101,6 +101,10 @@ oms::Variable::Variable(fmiHandle* fmi4c, int index)
   causality_ = fmi2_getVariableCausality(var);
   variability_ = fmi2_getVariableVariability(var);
   initialProperty_ = fmi2_getVariableInitial(var);
+
+  std::cout << "\nVariablefmi4c.cpp:  " << initialProperty_;
+  if (!initialProperty_ )
+    std::cout << "\n initial not present";
 
   switch (fmi2_getVariableDataType(var))
   {
@@ -123,6 +127,62 @@ oms::Variable::Variable(fmiHandle* fmi4c, int index)
       logError("Unknown fmi base type");
       type = oms_signal_type_real;
       break;
+  }
+
+  switch (causality_)
+  {
+  case fmi2CausalityInput:
+    causality = fmi2_causality_enu_input;
+    break;
+  case fmi2CausalityOutput:
+    causality =  fmi2_causality_enu_output;
+    break;
+  case fmi2CausalityParameter:
+    causality =  fmi2_causality_enu_parameter;
+    break;
+  case fmi2CausalityCalculatedParameter:
+    causality =  fmi2_causality_enu_calculated_parameter;
+    break;
+  default:
+    causality = fmi2_causality_enu_unknown;
+  }
+
+  switch (initialProperty_)
+  {
+  case fmi2InitialExact:
+    initialProperty = fmi2_initial_enu_exact;
+    break;
+  case fmi2InitialApprox:
+    initialProperty = fmi2_initial_enu_approx;
+    break;
+  case fmi2InitialCalculated:
+    initialProperty = fmi2_initial_enu_calculated;
+    break;
+  default:
+    initialProperty = fmi2_initial_enu_unknown;
+    break;
+  }
+
+  switch (variability_)
+  {
+  case fmi2VariabilityContinuous:
+    variability = fmi2_variability_enu_continuous;
+    break;
+  case fmi2VariabilityConstant:
+    variability = fmi2_variability_enu_constant;
+    break;
+  case fmi2VariabilityDiscrete:
+    variability = fmi2_variability_enu_discrete;
+    break;
+  case fmi2VariabilityFixed:
+    variability = fmi2_variability_enu_fixed;
+    break;
+  case fmi2VariabilityTunable:
+    variability = fmi2_variability_enu_tunable;
+    break;
+  default:
+    variability = fmi2_variability_enu_unknown;
+    break;
   }
 
   // mark derivatives

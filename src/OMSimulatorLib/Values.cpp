@@ -1581,10 +1581,20 @@ oms_status_enu_t oms::Values::parseModelDescription(const filesystem::path& root
         for (pugi::xml_node initialUnknowns = modelStructureInitialUnknownsNode.child("Unknown"); initialUnknowns; initialUnknowns = initialUnknowns.next_sibling("Unknown"))
         {
           int index = initialUnknowns.attribute("index").as_int();
-          std::string dependencies = initialUnknowns.attribute("dependencies").as_string();
-          std::vector<int> dependenciesList;
-          parseModelStructureDependencies(dependencies, dependenciesList);
-          modelStructureInitialUnknowns[index] = dependenciesList;
+          pugi::xml_attribute dependencynode = initialUnknowns.attribute("dependencies");
+          if (dependencynode)
+          {
+            std::string dependencies = initialUnknowns.attribute("dependencies").as_string();
+            std::vector<int> dependenciesList;
+            parseModelStructureDependencies(dependencies, dependenciesList);
+            modelStructureInitialUnknowns[index] = dependenciesList;
+            modelStructureInitialUnknownsDependencyExist[index] = true;
+          }
+          else
+          {
+            modelStructureInitialUnknowns[index] = {};
+            modelStructureInitialUnknownsDependencyExist[index] = false;
+          }
         }
       }
     }
