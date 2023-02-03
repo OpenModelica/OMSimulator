@@ -2386,6 +2386,63 @@ oms_status_enu_t oms::System::getDirectionalDerivative(const ComRef& unknownCref
   return logError_UnknownSignal(getFullCref() + unknownCref);
 }
 
+oms_status_enu_t oms::System::getState(const ComRef& cref)
+{
+  if (!getModel().validState(oms_modelState_virgin|oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
+    return logError_ModelInWrongState(getModel().getCref());
+
+  oms::ComRef tail(cref);
+  oms::ComRef head = tail.pop_front();
+
+  auto subsystem = subsystems.find(head);
+  if (subsystem != subsystems.end())
+    return logError("getState is computed only for fmu signals");
+
+  auto component = components.find(head);
+  if (component != components.end())
+    return component->second->saveState();
+
+  return logError_UnknownSignal(getFullCref() + cref);
+}
+
+oms_status_enu_t oms::System::setState(const ComRef& cref)
+{
+  if (!getModel().validState(oms_modelState_virgin|oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
+    return logError_ModelInWrongState(getModel().getCref());
+
+  oms::ComRef tail(cref);
+  oms::ComRef head = tail.pop_front();
+
+  auto subsystem = subsystems.find(head);
+  if (subsystem != subsystems.end())
+    return logError("setState is computed only for fmu signals");
+
+  auto component = components.find(head);
+  if (component != components.end())
+    return component->second->restoreState();
+
+  return logError_UnknownSignal(getFullCref() + cref);
+}
+
+oms_status_enu_t oms::System::freeState(const ComRef& cref)
+{
+  if (!getModel().validState(oms_modelState_virgin|oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))
+    return logError_ModelInWrongState(getModel().getCref());
+
+  oms::ComRef tail(cref);
+  oms::ComRef head = tail.pop_front();
+
+  auto subsystem = subsystems.find(head);
+  if (subsystem != subsystems.end())
+    return logError("freeState is computed only for fmu signals");
+
+  auto component = components.find(head);
+  if (component != components.end())
+    return component->second->freeState();
+
+  return logError_UnknownSignal(getFullCref() + cref);
+}
+
 oms_status_enu_t oms::System::setBoolean(const ComRef& cref, bool value)
 {
   if (!getModel().validState(oms_modelState_virgin|oms_modelState_enterInstantiation|oms_modelState_instantiated|oms_modelState_initialization|oms_modelState_simulation))

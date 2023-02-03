@@ -97,6 +97,12 @@ class capi:
     self.obj.oms_getString.restype = ctypes.c_int
     self.obj.oms_getSystemType.argtypes = [ctypes.c_char_p]
     self.obj.oms_getSystemType.restype = ctypes.c_int
+    self.obj.oms_getState.argtypes = [ctypes.c_char_p]
+    self.obj.oms_getState.restype = ctypes.c_int
+    self.obj.oms_setState.argtypes = [ctypes.c_char_p]
+    self.obj.oms_setState.restype = ctypes.c_int
+    self.obj.oms_freeState.argtypes = [ctypes.c_char_p]
+    self.obj.oms_freeState.restype = ctypes.c_int
     self.obj.oms_getTime.argtypes = [ctypes.c_char_p]
     self.obj.oms_getTime.restype = ctypes.c_int
     self.obj.oms_getVariableStepSize.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double)]
@@ -297,6 +303,12 @@ class capi:
     type_ = ctypes.c_int()
     status = self.obj.oms_getSystemType(cref.encode(), ctypes.byref(type_))
     return [type_.value, status]
+  def getState(self, cref):
+    return self.obj.oms_getState(cref.encode())
+  def setState(self, cref):
+    return self.obj.oms_setState(cref.encode())
+  def freeState(self, cref):
+    return self.obj.oms_freeState(cref.encode())
   def getTime(self, cref):
     time = ctypes.c_double()
     status = self.obj.oms_getTime(cref.encode(), ctypes.byref(time))
