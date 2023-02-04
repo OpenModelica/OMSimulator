@@ -1359,6 +1359,57 @@ oms_status_enu_t oms_getReal(const char* cref, double* value)
   return system->getReal(tail, *value);
 }
 
+oms_status_enu_t oms_getState(const char* cref)
+{
+  oms::ComRef tail(cref);
+  oms::ComRef front = tail.pop_front();
+
+  oms::Model* model = oms::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  front = tail.pop_front();
+  oms::System* system = model->getSystem(front);
+  if (!system)
+    return logError_SystemNotInModel(model->getCref(), front);
+
+  return system->getState(tail);
+}
+
+oms_status_enu_t oms_setState(const char* cref)
+{
+  oms::ComRef tail(cref);
+  oms::ComRef front = tail.pop_front();
+
+  oms::Model* model = oms::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  front = tail.pop_front();
+  oms::System* system = model->getSystem(front);
+  if (!system)
+    return logError_SystemNotInModel(model->getCref(), front);
+
+  return system->setState(tail);
+}
+
+oms_status_enu_t oms_freeState(const char* cref)
+{
+  oms::ComRef tail(cref);
+  oms::ComRef front = tail.pop_front();
+
+  oms::Model* model = oms::Scope::GetInstance().getModel(front);
+  if (!model)
+    return logError_ModelNotInScope(front);
+
+  front = tail.pop_front();
+  oms::System* system = model->getSystem(front);
+  if (!system)
+    return logError_SystemNotInModel(model->getCref(), front);
+
+  return system->freeState(tail);
+}
+
 oms_status_enu_t oms_getDirectionalDerivative(const char* unknownCref, const char* knownCref, double* value)
 {
   oms::ComRef tail(unknownCref);

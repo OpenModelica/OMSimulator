@@ -27,6 +27,8 @@ exportConnectorsToResultFile.lua \
 exportSnapshotSSP.lua \
 exportSSMTemplate.lua \
 exportSSMTemplate.py \
+fmuState01.lua \
+fmuState02.py \
 import_export_parameters_inline.lua \
 import_export_parameters_to_ssv.lua \
 import_export_parameters1.lua \

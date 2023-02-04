@@ -113,6 +113,9 @@ OMSAPI oms_status_enu_t OMSCALL oms_getStopTime(const char* cref, double* stopTi
 OMSAPI oms_status_enu_t OMSCALL oms_getString(const char* cref, char** value);
 OMSAPI oms_status_enu_t OMSCALL oms_getSubModelPath(const char* cref, char** path);
 OMSAPI oms_status_enu_t OMSCALL oms_getSystemType(const char* cref, oms_system_enu_t* type);
+OMSAPI oms_status_enu_t OMSCALL oms_getState(const char* cref);
+OMSAPI oms_status_enu_t OMSCALL oms_setState(const char* cref);
+OMSAPI oms_status_enu_t OMSCALL oms_freeState(const char* cref);
 OMSAPI oms_status_enu_t OMSCALL oms_getTime(const char* cref, double* time);
 OMSAPI oms_status_enu_t OMSCALL oms_getTLMBus(const char* cref, oms_tlmbusconnector_t** tlmBusConnector);
 OMSAPI oms_status_enu_t OMSCALL oms_getTLMVariableTypes(oms_tlm_domain_t domain, const int dimensions, const oms_tlm_interpolation_t interpolation, char ***types, char ***descriptions);

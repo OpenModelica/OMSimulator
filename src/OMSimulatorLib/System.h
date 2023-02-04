@@ -166,6 +166,10 @@ namespace oms
 
     oms_status_enu_t getDirectionalDerivative(const ComRef& unknownCref, const ComRef& knownCref, double& value);
 
+    oms_status_enu_t getState(const ComRef& cref);
+    oms_status_enu_t setState(const ComRef& cref);
+    oms_status_enu_t freeState(const ComRef& cref);
+
     oms_status_enu_t rename(const ComRef& newCref); ///< rename the system itself
     oms_status_enu_t rename(const ComRef& cref, const ComRef& newCref); ///< rename any component within the system
     oms_status_enu_t renameConnections(const ComRef& cref, const ComRef& newCref);

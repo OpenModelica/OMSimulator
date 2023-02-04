@@ -100,6 +100,9 @@ class OMSimulator:
     self.getStartTime = Scope._capi.getStartTime
     self.getStopTime = Scope._capi.getStopTime
     self.getSystemType = Scope._capi.getSystemType
+    self.getState = Scope._capi.getState
+    self.setState = Scope._capi.setState
+    self.freeState = Scope._capi.freeState
     self.getTime = Scope._capi.getTime
     self.getVariableStepSize = Scope._capi.getVariableStepSize
     self.getVersion = Scope._capi.getVersion
