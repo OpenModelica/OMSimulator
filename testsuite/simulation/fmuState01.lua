@@ -4,7 +4,7 @@
 -- mac: no
 -- mingw32: yes
 -- mingw64: yes
--- win: yes
+-- win: no
 
 oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./fmuState_lua/")

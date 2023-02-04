@@ -4,7 +4,7 @@
 ## mac: no
 ## mingw32: yes
 ## mingw64: yes
-## win: yes
+## win: no
 
 from OMSimulator import OMSimulator
 oms = OMSimulator()
