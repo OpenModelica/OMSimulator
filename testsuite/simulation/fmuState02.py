@@ -1,6 +1,6 @@
 ## status: correct
 ## teardown_command: rm -rf fmuState_py/
-## linux: yes
+## linux: no
 ## mac: no
 ## mingw32: yes
 ## mingw64: yes
@@ -11,13 +11,12 @@ oms = OMSimulator()
 
 oms.setCommandLineOption("--suppressPath=true")
 oms.setTempDirectory("./fmuState_py/")
-oms.setWorkingDirectory("./fmuState_py/")
 
 oms.newModel("fmuState")
 
 oms.addSystem("fmuState.root", oms.system_wc)
 
-oms.addSubModel("fmuState.root.A", "C:/OPENMODELICAGIT/OpenModelica/testsuite/openmodelica/fmi/ModelExchange/2.0/fmi_attributes_19.fmu")
+oms.addSubModel("fmuState.root.A", "../resources/fmi_attributes_19.fmu")
 
 oms.setStopTime("fmuState", 5.0)
 

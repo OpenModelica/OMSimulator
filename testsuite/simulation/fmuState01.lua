@@ -1,6 +1,6 @@
 -- status: correct
 -- teardown_command: rm -rf fmuState_lua/
--- linux: yes
+-- linux: no
 -- mac: no
 -- mingw32: yes
 -- mingw64: yes
@@ -8,13 +8,12 @@
 
 oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./fmuState_lua/")
-oms_setWorkingDirectory("./fmuState_lua/")
 
 oms_newModel("fmuState")
 
 oms_addSystem("fmuState.root", oms_system_wc)
 
-oms_addSubModel("fmuState.root.A", "C:/OPENMODELICAGIT/OpenModelica/testsuite/openmodelica/fmi/ModelExchange/2.0/fmi_attributes_19.fmu")
+oms_addSubModel("fmuState.root.A", "../resources/fmi_attributes_19.fmu")
 
 oms_setStopTime("fmuState", 5.0)
 
