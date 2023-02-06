@@ -52,12 +52,12 @@ print("info:    Reactivate Variant varA to model ")
 print("info:      model.root.A.u      : " , oms.getReal("model.root.A.u")[0])
 print("info:      model.root.A.k      : " , oms.getReal("model.root.A.k")[0])
 
-oms.export("model", "duplicateactivate1.ssp")
+oms.export("model", "duplicateactivate2.ssp")
 
 oms.terminate("model")
 oms.delete("model")
 
-oms.importFile("duplicateactivate1.ssp")
+oms.importFile("duplicateactivate2.ssp")
 variants, status = oms.listVariants("model")
 print(variants)
 
