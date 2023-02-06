@@ -39,7 +39,7 @@ oms_stepUntil("fmuState", 2.0)
 
 oms_getState("fmuState.root.A")
 oms_setState("fmuState.root.A")
-oms_setState("fmuState.root.A")
+oms_freeState("fmuState.root.A")
 
 print("info: Rollback")
 print("info:      fmuState.root.A.rp1 at time 2.0: " .. oms_getReal("fmuState.root.A.rp1"))
