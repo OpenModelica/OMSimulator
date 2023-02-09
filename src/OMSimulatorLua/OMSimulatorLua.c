@@ -774,7 +774,7 @@ static int OMSimulatorLua_oms_freeState(lua_State *L)
   luaL_checktype(L, 1, LUA_TSTRING);
 
   const char* cref = lua_tostring(L, 1);
-  oms_status_enu_t status = oms_getState(cref);
+  oms_status_enu_t status = oms_freeState(cref);
 
   lua_pushinteger(L, status);
 

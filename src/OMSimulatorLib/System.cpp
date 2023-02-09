@@ -2400,7 +2400,12 @@ oms_status_enu_t oms::System::getState(const ComRef& cref)
 
   auto component = components.find(head);
   if (component != components.end())
-    return component->second->saveState();
+  {
+    if (component->second->getCanGetAndSetState())
+      return component->second->saveState();
+    else
+      return logError("the fmu \"" + std::string(component->second->getFullCref()) + "\" does not support this feature as canGetAndSetState = false in modeldescription.xml");
+  }
 
   return logError_UnknownSignal(getFullCref() + cref);
 }
@@ -2419,7 +2424,12 @@ oms_status_enu_t oms::System::setState(const ComRef& cref)
 
   auto component = components.find(head);
   if (component != components.end())
-    return component->second->restoreState();
+  {
+    if (component->second->getCanGetAndSetState())
+      return component->second->restoreState();
+    else
+      return logError("the fmu \"" + std::string(component->second->getFullCref()) + "\" does not support this feature as canGetAndSetState = false in modeldescription.xml");
+  }
 
   return logError_UnknownSignal(getFullCref() + cref);
 }
@@ -2438,7 +2448,12 @@ oms_status_enu_t oms::System::freeState(const ComRef& cref)
 
   auto component = components.find(head);
   if (component != components.end())
-    return component->second->freeState();
+  {
+    if (component->second->getCanGetAndSetState())
+      return component->second->freeState();
+    else
+      return logError("the fmu \"" + std::string(component->second->getFullCref()) + "\" does not support this feature as canGetAndSetState = false in modeldescription.xml");
+  }
 
   return logError_UnknownSignal(getFullCref() + cref);
 }
