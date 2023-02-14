@@ -34,6 +34,7 @@
 
 #include "Types.h"
 #include <fmilib.h>
+#include <fmi4c.h>
 #include <string>
 
 namespace oms
@@ -43,16 +44,16 @@ namespace oms
   public:
     SignalDerivative();
     SignalDerivative(double der);
-    SignalDerivative(unsigned int order, fmi2_import_t* fmu, fmi2_value_reference_t vr);
+    //SignalDerivative(unsigned int order, fmi2_import_t* fmu, fmi2_value_reference_t vr);
+    SignalDerivative(unsigned int order, fmiHandle* fmu, fmi2ValueReference vr);
     ~SignalDerivative();
-
     // methods to copy the object
     SignalDerivative(const SignalDerivative& rhs);
     SignalDerivative& operator=(const SignalDerivative& rhs);
 
     const unsigned int getMaxDerivativeOrder() const {return order;}
     const double* getDerivatives() const {return values;}
-    oms_status_enu_t setRealInputDerivatives(fmi2_import_t* fmu, fmi2_value_reference_t vr) const;
+    oms_status_enu_t setRealInputDerivatives(fmiHandle* fmu, fmi2ValueReference vr) const;
 
     operator std::string() const;
 

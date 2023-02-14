@@ -137,12 +137,9 @@ void oms::FMUInfo::update(fmiVersion_t version, fmiHandle* fmu)
   this->generationDateAndTime = allocateAndCopyString(fmi2_getGenerationDateAndTime(fmu));
   this->generationTool = allocateAndCopyString(fmi2_getGenerationTool(fmu));
   this->guid = allocateAndCopyString(fmi2_getGuid(fmu));
-  std::cout << "\n check guid: " << this->guid;
-  std::cout << "\n check author: " << this->author;
 
   this->license = allocateAndCopyString(fmi2_getLicense(fmu));
   this->modelName = allocateAndCopyString(fmi2_getModelName(fmu));
-  std::cout << "\n check modelName: " << this->modelName;
   //this->version = allocateAndCopyString(fmi2_getVersion(fmu));
 
   if (oms_fmi_kind_cs == fmiKind || oms_fmi_kind_me_and_cs == fmiKind)
