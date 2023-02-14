@@ -39,7 +39,6 @@
 #include "Values.h"
 #include "Variable.h"
 
-#include <fmilib.h>
 #include <fmi4c.h>
 #include <map>
 #include <pugixml.hpp>
@@ -79,13 +78,13 @@ namespace oms
     Variable* getVariable(const ComRef& cref);
 
     oms_status_enu_t getBoolean(const ComRef& cref, bool& value);
-    oms_status_enu_t getBoolean(const fmi2_value_reference_t& vr, bool& value);
+    oms_status_enu_t getBoolean(const fmi2ValueReference& vr, bool& value);
     oms_status_enu_t getInteger(const ComRef& cref, int& value);
-    oms_status_enu_t getInteger(const fmi2_value_reference_t& vr, int& value);
+    oms_status_enu_t getInteger(const fmi2ValueReference& vr, int& value);
     oms_status_enu_t getReal(const ComRef& cref, double& value);
-    oms_status_enu_t getReal(const fmi2_value_reference_t& vr, double& value);
+    oms_status_enu_t getReal(const fmi2ValueReference& vr, double& value);
     oms_status_enu_t getString(const ComRef& cref, std::string& value);
-    oms_status_enu_t getString(const fmi2_value_reference_t& vr, std::string& value);
+    oms_status_enu_t getString(const fmi2ValueReference& vr, std::string& value);
     oms_status_enu_t setBoolean(const ComRef& cref, bool value);
     oms_status_enu_t setInteger(const ComRef& cref, int value);
     oms_status_enu_t setReal(const ComRef& cref, double value);
@@ -101,7 +100,7 @@ namespace oms
     std::vector<Values> getValuesResources();
 
     oms_status_enu_t setFmuTime(double time) {this->time = time; return oms_status_ok;}
-    fmi2_import_t* getFMU() {return fmu;}
+    //fmi2_import_t* getFMU() {return fmu;}
     std::vector<Variable> getAllVariables() {return allVariables;}
 
     oms_status_enu_t getRealOutputDerivative(const ComRef& cref, SignalDerivative& der);
@@ -141,15 +140,11 @@ namespace oms
     void dumpInitialUnknowns();
 
   private:
-    jm_callbacks callbacks;
-    fmi2_callback_functions_t callbackFunctions;
-    fmi_import_context_t* context = NULL;
-    fmi2_import_t* fmu = NULL;
-    fmiHandle *fmi4c = NULL;
+    fmi2CallbackFunctions callbackFunctions;
+    fmiHandle *fmu = NULL;
     FMUInfo fmuInfo;
 
     std::vector<Variable> allVariables;
-    std::vector<Variable> allVariables_;
     std::vector<unsigned int> calculatedParameters;
     std::vector<unsigned int> derivatives;
     std::vector<unsigned int> inputs;
@@ -163,10 +158,10 @@ namespace oms
 
     double time;
 
-    fmi2_FMU_state_t fmuState = NULL;
+    fmi2FMUstate fmuState = NULL;
     double fmuStateTime;
 
-    std::map<fmi2_value_reference_t, oms_fault_type_t> fib;  ///< fault injection blocks
+    std::map<fmi2ValueReference, oms_fault_type_t> fib;  ///< fault injection blocks
     oms::ComRef getValidCref(ComRef cref);
   };
 }

@@ -47,7 +47,7 @@ oms::Variable::Variable(fmi2_import_variable_t* var)
   causality = fmi2_import_get_causality(var);
   variability = fmi2_import_get_variability(var);
   initialProperty = fmi2_import_get_initial(var);
-  std::cout << "\nVariable.cpp: " << initialProperty;
+  //std::cout << "\nVariable.cpp: " << initialProperty;
   switch (fmi2_import_get_variable_base_type(var))
   {
     case fmi2_base_type_real:
@@ -101,10 +101,9 @@ oms::Variable::Variable(fmiHandle* fmi4c, int index_)
   causality_ = fmi2_getVariableCausality(var);
   variability_ = fmi2_getVariableVariability(var);
   initialProperty_ = fmi2_getVariableInitial(var);
-
-  std::cout << "\nVariablefmi4c.cpp:  " << initialProperty_;
-  if (!initialProperty_ )
-    std::cout << "\n initial not present";
+  //std::cout << "\nVariablefmi4c.cpp:  " << cref.c_str() << "=>" << initialProperty_;
+  // if (!initialProperty_)
+  //   std::cout << "\n initial not present";
 
   switch (fmi2_getVariableDataType(var))
   {
