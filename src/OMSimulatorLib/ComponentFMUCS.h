@@ -100,7 +100,7 @@ namespace oms
     std::vector<Values> getValuesResources();
 
     oms_status_enu_t setFmuTime(double time) {this->time = time; return oms_status_ok;}
-    //fmi2_import_t* getFMU() {return fmu;}
+    fmiHandle* getFMU() {return fmu;}
     std::vector<Variable> getAllVariables() {return allVariables;}
 
     oms_status_enu_t getRealOutputDerivative(const ComRef& cref, SignalDerivative& der);
