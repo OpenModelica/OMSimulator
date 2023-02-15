@@ -617,8 +617,7 @@ oms_status_enu_t oms::ComponentFMUME::instantiate()
     logInfo("fmi2Instantiate() failed");
     exit(1);
   }
-  else
-    logInfo("instantiation successfull");
+  //logInfo("instantiation successfull");
 
   // set start values from local resources
   if (values.hasResources())
