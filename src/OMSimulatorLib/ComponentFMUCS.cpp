@@ -54,7 +54,6 @@ oms::ComponentFMUCS::ComponentFMUCS(const ComRef& cref, System* parentSystem, co
 
 oms::ComponentFMUCS::~ComponentFMUCS()
 {
-  fmi2_terminate(fmu);
   fmi2_freeInstance(fmu);
 }
 
@@ -179,7 +178,7 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::
   // component->callbackFunctions.componentEnvironment = component->fmu;
   // component->callbackFunctions.stepFinished = NULL;
 
-  // create a list of all variables using fmu variable structure
+  // create a list of all variables using fmi4c variable structure
   component->allVariables.reserve(fmi2_getNumberOfVariables(component->fmu));
   component->exportVariables.reserve(fmi2_getNumberOfVariables(component->fmu));
   for (unsigned int i = 0; i < fmi2_getNumberOfVariables(component->fmu); ++i)
@@ -616,13 +615,12 @@ void oms::loggerFmi2(fmi2ComponentEnvironment componentEnvironment,
 
 oms_status_enu_t oms::ComponentFMUCS::instantiate()
 {
-  if (!fmi2_instantiate(fmu, fmi2CoSimulation, loggerFmi2, calloc, free, NULL, NULL, fmi2False, fmi2True))
+  if (!fmi2_instantiate(fmu, fmi2CoSimulation, loggerFmi2, calloc, free, NULL, NULL, fmi2True, fmi2True))
   {
     logInfo("fmi2Instantiate() failed");
     exit(1);
   }
-  else
-    logInfo("instantiation successfull");
+  //logInfo("instantiation successfull");
 
   // set start values from local resources
   if (values.hasResources())
@@ -831,12 +829,11 @@ oms_status_enu_t oms::ComponentFMUCS::initialize()
 oms_status_enu_t oms::ComponentFMUCS::terminate()
 {
   freeState();
-
   fmi2Status fmistatus = fmi2_terminate(fmu);
   if (fmi2OK != fmistatus)
     return logError_Termination(getCref());
 
-  logInfo("FMU successfully terminated");
+  //logInfo("FMU successfully terminated");
   fmi2_freeInstance(fmu);
   return oms_status_ok;
 }
@@ -889,7 +886,6 @@ oms_status_enu_t oms::ComponentFMUCS::stepUntil(double stopTime)
         }
       }
     }
-
     fmi2Status status = fmi2_doStep(fmu, time, hdef, fmi2True);
     time += hdef;
 
