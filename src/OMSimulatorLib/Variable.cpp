@@ -103,8 +103,11 @@ oms_causality_enu_t oms::Variable::getCausality() const
   case fmi2CausalityOutput:
     return oms_causality_output;
 
-  case fmi2CausalityCalculatedParameter:
+  case fmi2CausalityParameter:
     return oms_causality_parameter;
+
+  case fmi2CausalityCalculatedParameter:
+    return oms_causality_calculatedParameter;
 
   default:
     return oms_causality_undefined;
