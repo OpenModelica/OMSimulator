@@ -226,8 +226,8 @@ config-fmi4c: 3rdParty/fmi4c/$(INSTALL_DIR)/lib/libfmi4c.a
 	$(MKDIR) 3rdParty/fmi4c/$(INSTALL_DIR)
 	cd 3rdParty/fmi4c/$(BUILD_DIR) && $(CMAKE) $(CMAKE_TARGET) ../.. -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) -DFMI4C_BUILD_SHARED=OFF -DFMI4C_USE_INCLUDED_ZLIB=OFF
 
-config-zlib: 3rdParty/zlib/$(INSTALL_DIR)/lib/libz.a
-3rdParty/zlib/$(INSTALL_DIR)/lib/libz.a: 3rdParty/zlib/$(BUILD_DIR)/Makefile
+config-zlib: 3rdParty/zlib/$(INSTALL_DIR)/lib/libzlibstatic.a
+3rdParty/zlib/$(INSTALL_DIR)/lib/libzlibstatic.a: 3rdParty/zlib/$(BUILD_DIR)/Makefile
 	$(MAKE) -C 3rdParty/zlib/$(BUILD_DIR)/ install
 3rdParty/zlib/$(BUILD_DIR)/Makefile: 3rdParty/zlib/CMakeLists.txt
 	@echo

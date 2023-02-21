@@ -4,7 +4,7 @@
 # maybe make sure the headers exits too.
 
 find_library(ZLIB_LIBRARY
-  NAMES libzlibstatic
+  NAMES libzlibstatic.a
   HINTS ${ZLIB_ROOT}/lib
   NO_DEFAULT_PATH
 )

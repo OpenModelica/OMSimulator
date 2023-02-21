@@ -128,7 +128,6 @@ ENDIF()
 
 ##########################
 # Configuring for ZIP
-set(ZLIB_USE_STATIC_LIBS ON)
 set(ZLIB_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/zlib/install/${PLATFORM_STRING})
 find_package(ZLIB REQUIRED)
 
