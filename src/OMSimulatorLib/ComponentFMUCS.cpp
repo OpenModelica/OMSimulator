@@ -45,6 +45,7 @@
 #include <unordered_set>
 #include <cmath>
 #include <iostream>
+#include <stdarg.h>
 
 
 oms::ComponentFMUCS::ComponentFMUCS(const ComRef& cref, System* parentSystem, const std::string& fmuPath)
