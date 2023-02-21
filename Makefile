@@ -120,7 +120,7 @@ else
 	CMAKE_BOOST_ROOT="-DBOOST_ROOT=$(BOOST_ROOT)"
 endif
 
-.PHONY: OMSimulator OMSimulatorCore config-OMSimulator config-fmi4c config-lua config-minizip config-cvode config-kinsol config-xerces config-3rdParty distclean testsuite doc doc-html doc-doxygen OMTLMSimulator OMTLMSimulatorClean RegEx pip
+.PHONY: OMSimulator OMSimulatorCore config-OMSimulator config-fmi4c config-lua config-minizip config-zlib config-cvode config-kinsol config-xerces config-3rdParty distclean testsuite doc doc-html doc-doxygen OMTLMSimulator OMTLMSimulatorClean RegEx pip
 
 OMSimulator:
 	@echo OS: $(detected_OS)
@@ -192,7 +192,7 @@ RegEx: 3rdParty/RegEx/OMSRegEx$(EEXT)
 	@echo "Please checkout the 3rdParty submodule, e.g. using \"git submodule update --init 3rdParty\", and try again."
 	@false
 
-config-3rdParty: 3rdParty/README.md config-fmi4c config-lua config-minizip config-cvode config-kinsol config-libxml2
+config-3rdParty: 3rdParty/README.md config-fmi4c config-lua config-minizip config-zlib config-cvode config-kinsol config-libxml2
 
 config-OMSimulator: $(BUILD_DIR)/Makefile
 $(BUILD_DIR)/Makefile: RegEx CMakeLists.txt
