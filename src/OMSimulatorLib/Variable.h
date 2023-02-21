@@ -36,7 +36,6 @@
 #include "Connector.h"
 #include "Types.h"
 
-#include <fmilib.h>
 #include <fmi4c.h>
 #include <string>
 #include <vector>

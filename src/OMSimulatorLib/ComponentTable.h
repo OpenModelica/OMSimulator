@@ -38,7 +38,6 @@
 #include "ResultWriter.h"
 #include "SignalDerivative.h"
 #include "Snapshot.h"
-#include <fmilib.h>
 #include <map>
 #include <pugixml.hpp>
 #include <string>

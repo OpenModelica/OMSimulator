@@ -120,7 +120,7 @@ else
 	CMAKE_BOOST_ROOT="-DBOOST_ROOT=$(BOOST_ROOT)"
 endif
 
-.PHONY: OMSimulator OMSimulatorCore config-OMSimulator config-fmil config-fmi4c config-lua config-minizip config-cvode config-kinsol config-xerces config-3rdParty distclean testsuite doc doc-html doc-doxygen OMTLMSimulator OMTLMSimulatorClean RegEx pip
+.PHONY: OMSimulator OMSimulatorCore config-OMSimulator config-fmi4c config-lua config-minizip config-cvode config-kinsol config-xerces config-3rdParty distclean testsuite doc doc-html doc-doxygen OMTLMSimulator OMTLMSimulatorClean RegEx pip
 
 OMSimulator:
 	@echo OS: $(detected_OS)
@@ -166,7 +166,7 @@ OMTLMSimulator: RegEx
 	test ! `uname` != Darwin || cp OMTLMSimulator/bin/FMIWrapper $(TOP_INSTALL_DIR)/bin/
 	test ! `uname` != Darwin || cp OMTLMSimulator/bin/StartTLMFmiWrapper $(TOP_INSTALL_DIR)/bin/
 
-OMTLMSimulatorStandalone: RegEx config-fmil
+OMTLMSimulatorStandalone: RegEx
 	@echo
 	@echo "# make OMTLMSimulator Standalone"
 	@echo
@@ -192,7 +192,7 @@ RegEx: 3rdParty/RegEx/OMSRegEx$(EEXT)
 	@echo "Please checkout the 3rdParty submodule, e.g. using \"git submodule update --init 3rdParty\", and try again."
 	@false
 
-config-3rdParty: 3rdParty/README.md config-fmil config-fmi4c config-lua config-minizip config-cvode config-kinsol config-libxml2
+config-3rdParty: 3rdParty/README.md config-fmi4c config-lua config-minizip config-cvode config-kinsol config-libxml2
 
 config-OMSimulator: $(BUILD_DIR)/Makefile
 $(BUILD_DIR)/Makefile: RegEx CMakeLists.txt
@@ -224,7 +224,18 @@ config-fmi4c: 3rdParty/fmi4c/$(INSTALL_DIR)/lib/libfmi4c.a
 	@echo
 	$(MKDIR) 3rdParty/fmi4c/$(BUILD_DIR)
 	$(MKDIR) 3rdParty/fmi4c/$(INSTALL_DIR)
-	cd 3rdParty/fmi4c/$(BUILD_DIR) && $(CMAKE) $(CMAKE_TARGET) ../.. -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) -DFMI4C_BUILD_SHARED=OFF
+	cd 3rdParty/fmi4c/$(BUILD_DIR) && $(CMAKE) $(CMAKE_TARGET) ../.. -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) -DFMI4C_BUILD_SHARED=OFF -DFMI4C_USE_INCLUDED_ZLIB=OFF
+
+config-zlib: 3rdParty/zlib/$(INSTALL_DIR)/lib/libz.a
+3rdParty/zlib/$(INSTALL_DIR)/lib/libz.a: 3rdParty/zlib/$(BUILD_DIR)/Makefile
+	$(MAKE) -C 3rdParty/zlib/$(BUILD_DIR)/ install
+3rdParty/zlib/$(BUILD_DIR)/Makefile: 3rdParty/zlib/CMakeLists.txt
+	@echo
+	@echo "# config zlib"
+	@echo
+	$(MKDIR) 3rdParty/zlib/$(BUILD_DIR)
+	$(MKDIR) 3rdParty/zlib/$(INSTALL_DIR)
+	cd 3rdParty/zlib/$(BUILD_DIR) && $(CMAKE) $(CMAKE_TARGET) ../.. -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) -DBUILD_SHARED_LIBS=OFF
 
 config-lua: 3rdParty/Lua/$(INSTALL_DIR)/liblua.a
 3rdParty/Lua/$(INSTALL_DIR)/liblua.a:

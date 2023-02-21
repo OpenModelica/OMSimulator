@@ -54,7 +54,12 @@ oms::ComponentFMUCS::ComponentFMUCS(const ComRef& cref, System* parentSystem, co
 
 oms::ComponentFMUCS::~ComponentFMUCS()
 {
-  fmi2_freeInstance(fmu);
+  // free the fmihandle only if the model is instantitated, otherwise the model class destructor uses terminate() to free the fmihandle
+  if (oms_modelState_instantiated == getModel().getModelState())
+  {
+    fmi2_freeInstance(fmu);
+    fmi4c_freeFmu(fmu);
+  }
 }
 
 oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::System* parentSystem, const std::string& fmuPath, std::string replaceComponent)
@@ -835,6 +840,8 @@ oms_status_enu_t oms::ComponentFMUCS::terminate()
 
   //logInfo("FMU successfully terminated");
   fmi2_freeInstance(fmu);
+  // free the dlls
+  fmi4c_freeFmu(fmu);
   return oms_status_ok;
 }
 
@@ -862,7 +869,6 @@ oms_status_enu_t oms::ComponentFMUCS::stepUntil(double stopTime)
   CallClock callClock(clock);
   System *topLevelSystem = getModel().getTopLevelSystem();
 
-  fmi2_status_t fmistatus;
   double hdef = (stopTime-time) / 1.0;
 
   while (time < stopTime)
@@ -1383,8 +1389,8 @@ oms_status_enu_t oms::ComponentFMUCS::getDirectionalDerivative(const ComRef& unk
 
   // fmi2ValueReference vr_unknown[1] = {5};
   // fmi2ValueReference vr_known[4] = {0, 2, 3, 4};
-  // fmi2_real_t dvknown[4] = {1.0, 1.0, 1.0, 1.0};
-  // fmi2_real_t val;
+  // fmi2Real dvknown[4] = {1.0, 1.0, 1.0, 1.0};
+  // fmi2Real val;
   // std::cout << "Get directional derivative_static_1: " << val << std::endl;
   // fmi2_import_get_directional_derivative(fmu, vr_unknown, 1, vr_known, 4, dvknown, &val);
   // std::cout << "\nGet directional derivative_static_2: " << val << std::endl;
@@ -1396,7 +1402,7 @@ oms_status_enu_t oms::ComponentFMUCS::getDirectionalDerivativeHeper(const int un
 {
   fmi2ValueReference vr_unknown = allVariables[unknownIndex].getValueReference();
   fmi2ValueReference *vr_known = (fmi2ValueReference *)calloc(dependencyList.size(), sizeof(fmi2ValueReference *));
-  fmi2_real_t *dvknown = (fmi2_real_t *)calloc(dependencyList.size(), sizeof(fmi2_real_t *));
+  fmi2Real *dvknown = (fmi2Real *)calloc(dependencyList.size(), sizeof(fmi2Real *));
 
   for (int i = 0; i < dependencyList.size(); i++)
   {
