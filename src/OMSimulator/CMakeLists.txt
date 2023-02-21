@@ -5,9 +5,9 @@ set(CMAKE_INSTALL_RPATH "$ORIGIN/../lib/${HOST_SHORT}:$ORIGIN/")
 include_directories(../OMSimulatorLib)
 
 link_directories(
-  ${MINIZIP_LIBRARYDIR}
-  ${FMILibrary_LIBRARYDIR}
+  ${ZLIB_LIBRARYDIR}
   ${FMI4c_LIBRARYDIR}
+  ${MINIZIP_LIBRARYDIR}
   ${LUALibrary_LIBRARYDIR}
   ${CVODELibrary_LIBRARYDIR}
   ${KINSOLLibrary_LIBRARYDIR}

@@ -127,14 +127,20 @@ ELSE()
 ENDIF()
 
 ##########################
+# Configuring for ZIP
+set(ZLIB_USE_STATIC_LIBS ON)
+set(ZLIB_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/zlib/install/${PLATFORM_STRING})
+find_package(ZLIB REQUIRED)
+
 # Configuring for zip/minizip
 set(MINIZIP_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/minizip/install/${PLATFORM_STRING}/include)
 set(MINIZIP_LIBRARYDIR ${PROJECT_SOURCE_DIR}/3rdParty/minizip/install/${PLATFORM_STRING}/lib)
+## find_package(MINIZIP REQUIRED)
 
 ##########################
 # Configuring for FMILibrary
-set(FMILibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/FMIL/install/${PLATFORM_STRING})
-find_package(FMILibrary REQUIRED)
+# set(FMILibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/FMIL/install/${PLATFORM_STRING})
+# find_package(FMILibrary REQUIRED)
 
 ##########################
 # Configuring for FMI4c

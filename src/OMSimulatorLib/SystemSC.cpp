@@ -203,8 +203,8 @@ oms_status_enu_t oms::SystemSC::instantiate()
     {
       fmus.push_back(dynamic_cast<ComponentFMUME*>(component.second));
 
-      callEventUpdate.push_back(fmi2_false);
-      terminateSimulation.push_back(fmi2_false);
+      callEventUpdate.push_back(fmi2False);
+      terminateSimulation.push_back(fmi2False);
       nStates.push_back(fmus.back()->getNumberOfContinuousStates());
       n_states += nStates.back();
       nEventIndicators.push_back(fmus.back()->getNumberOfEventIndicators());
@@ -632,7 +632,7 @@ oms_status_enu_t oms::SystemSC::doStep()
   // step is complete
   for (int i=0; i < fmus.size(); ++i)
   {
-    fmistatus = fmi2_completedIntegratorStep(fmus[i]->getFMU(), fmi2_true, &callEventUpdate[i], &terminateSimulation[i]);
+    fmistatus = fmi2_completedIntegratorStep(fmus[i]->getFMU(), fmi2True, &callEventUpdate[i], &terminateSimulation[i]);
     if (fmi2OK != fmistatus) return logError_FMUCall("fmi2_completedIntegratorStep", fmus[i]);
   }
 

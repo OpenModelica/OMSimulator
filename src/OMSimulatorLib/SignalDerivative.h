@@ -33,7 +33,6 @@
 #define _OMS_SIGNAL_DERIVATIVE_H_
 
 #include "Types.h"
-#include <fmilib.h>
 #include <fmi4c.h>
 #include <string>
 

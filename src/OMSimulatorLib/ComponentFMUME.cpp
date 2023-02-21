@@ -53,7 +53,12 @@ oms::ComponentFMUME::ComponentFMUME(const ComRef& cref, System* parentSystem, co
 
 oms::ComponentFMUME::~ComponentFMUME()
 {
-  fmi2_freeInstance(fmu);
+  // free the fmihandle only if the model is instantitated, otherwise the model class destructor uses terminate() to free the fmihandle
+  if (oms_modelState_instantiated == getModel().getModelState())
+  {
+    fmi2_freeInstance(fmu);
+    fmi4c_freeFmu(fmu);
+  }
 }
 
 oms::Component* oms::ComponentFMUME::NewComponent(const oms::ComRef& cref, oms::System* parentSystem, const std::string& fmuPath, std::string replaceComponent)
@@ -862,6 +867,8 @@ oms_status_enu_t oms::ComponentFMUME::terminate()
     return logError_Termination(getCref());
 
   fmi2_freeInstance(fmu);
+  // free the dlls
+  fmi4c_freeFmu(fmu);
   return oms_status_ok;
 }
 
@@ -1205,7 +1212,7 @@ oms_status_enu_t oms::ComponentFMUME::getReal(const ComRef& cref, double& value)
 oms_status_enu_t oms::ComponentFMUME::getString(const fmi2ValueReference& vr, std::string& value)
 {
   CallClock callClock(clock);
-  fmi2_string_t str;
+  fmi2String str;
   if (fmi2OK != fmi2_getString(fmu, &vr, 1, &str))
     return oms_status_error;
 
@@ -1380,7 +1387,7 @@ oms_status_enu_t oms::ComponentFMUME::getDirectionalDerivativeHeper(const int un
 {
   fmi2ValueReference vr_unknown = allVariables[unknownIndex].getValueReference();
   fmi2ValueReference *vr_known = (fmi2ValueReference *)calloc(dependencyList.size(), sizeof(fmi2ValueReference *));
-  fmi2_real_t *dvknown = (fmi2_real_t *)calloc(dependencyList.size(), sizeof(fmi2_real_t *));
+  fmi2Real *dvknown = (fmi2Real *)calloc(dependencyList.size(), sizeof(fmi2Real *));
 
   for (int i = 0; i < dependencyList.size(); i++)
   {
@@ -1675,7 +1682,7 @@ oms_status_enu_t oms::ComponentFMUME::setString(const ComRef& cref, const std::s
   else
   {
     fmi2ValueReference vr = allVariables[j].getValueReference();
-    fmi2_string_t value_ = value.c_str();
+    fmi2String value_ = value.c_str();
     if (fmi2OK != fmi2_setString(fmu, &vr, 1, &value_))
       return oms_status_error;
   }
