@@ -192,6 +192,10 @@ oms::Component* oms::ComponentFMUME::NewComponent(const oms::ComRef& cref, oms::
       delete component;
       return NULL;
     }
+    // extract continuous-time derivatives
+    if (v.isContinuousTimeDer())
+      component->derivatives.push_back(v.getIndex());
+
     component->allVariables.push_back(v);
     component->exportVariables.push_back(true);
   }
