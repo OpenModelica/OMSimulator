@@ -192,7 +192,7 @@ RegEx: 3rdParty/RegEx/OMSRegEx$(EEXT)
 	@echo "Please checkout the 3rdParty submodule, e.g. using \"git submodule update --init 3rdParty\", and try again."
 	@false
 
-config-3rdParty: 3rdParty/README.md config-fmi4c config-lua config-minizip config-zlib config-cvode config-kinsol config-libxml2
+config-3rdParty: 3rdParty/README.md config-zlib config-minizip config-fmi4c config-lua config-cvode config-kinsol config-libxml2
 
 config-OMSimulator: $(BUILD_DIR)/Makefile
 $(BUILD_DIR)/Makefile: RegEx CMakeLists.txt
@@ -215,7 +215,7 @@ config-fmil: 3rdParty/FMIL/$(INSTALL_DIR)/lib/libfmilib.a
 	cd 3rdParty/FMIL/$(BUILD_DIR) && $(CMAKE) $(CMAKE_TARGET) ../.. -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) -DFMILIB_BUILD_TESTS:BOOL=0 -DFMILIB_GENERATE_DOXYGEN_DOC:BOOL=0 -DFMILIB_BUILD_STATIC_LIB:BOOL=1 -DFMILIB_BUILD_SHARED_LIB:BOOL=0 -DBUILD_TESTING:BOOL=0 -DFMILIB_BUILD_BEFORE_TESTS:BOOL=0 $(FMIL_FLAGS) -Wno-dev
 
 
-config-fmi4c: 3rdParty/fmi4c/$(INSTALL_DIR)/lib/libfmi4c.a
+config-fmi4c: config-minizip config-zlib 3rdParty/fmi4c/$(INSTALL_DIR)/lib/libfmi4c.a
 3rdParty/fmi4c/$(INSTALL_DIR)/lib/libfmi4c.a: 3rdParty/fmi4c/$(BUILD_DIR)/Makefile
 	$(MAKE) -C 3rdParty/fmi4c/$(BUILD_DIR)/ install VERBOSE=1
 3rdParty/fmi4c/$(BUILD_DIR)/Makefile: 3rdParty/fmi4c/CMakeLists.txt
@@ -224,7 +224,14 @@ config-fmi4c: 3rdParty/fmi4c/$(INSTALL_DIR)/lib/libfmi4c.a
 	@echo
 	$(MKDIR) 3rdParty/fmi4c/$(BUILD_DIR)
 	$(MKDIR) 3rdParty/fmi4c/$(INSTALL_DIR)
-	cd 3rdParty/fmi4c/$(BUILD_DIR) && $(CMAKE) $(CMAKE_TARGET) ../.. -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) -DFMI4C_BUILD_SHARED=OFF -DFMI4C_USE_INCLUDED_ZLIB=OFF
+	cd 3rdParty/fmi4c/$(BUILD_DIR) && $(CMAKE) $(CMAKE_TARGET) ../.. \
+	-DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) \
+	-DFMI4C_BUILD_SHARED=OFF \
+	-DFMI4C_USE_INCLUDED_ZLIB=OFF \
+	-DOMS_ZLIB_INCLUDE_DIR=../zlib/$(INSTALL_DIR)/include \
+	-DOMS_ZLIB_LIBRARY=../zlib/$(INSTALL_DIR)/lib/libzlibstatic.a \
+	-DOMS_MINIZIP_INCLUDE_DIR=../minizip/$(INSTALL_DIR)/include \
+	-DOMS_MINIZIP_LIBRARY=../minizip/$(INSTALL_DIR)/lib/libminizip.a
 
 config-zlib: 3rdParty/zlib/$(INSTALL_DIR)/lib/libzlibstatic.a
 3rdParty/zlib/$(INSTALL_DIR)/lib/libzlibstatic.a: 3rdParty/zlib/$(BUILD_DIR)/Makefile
@@ -244,7 +251,7 @@ config-lua: 3rdParty/Lua/$(INSTALL_DIR)/liblua.a
 	@echo
 	$(MAKE) -C 3rdParty/Lua $(LUA_EXTRA_FLAGS)
 
-config-minizip: 3rdParty/minizip/$(INSTALL_DIR)/libminizip.a
+config-minizip: config-zlib 3rdParty/minizip/$(INSTALL_DIR)/libminizip.a
 3rdParty/minizip/$(INSTALL_DIR)/libminizip.a: 3rdParty/minizip/$(BUILD_DIR)/Makefile
 	$(MAKE) -C 3rdParty/minizip/$(BUILD_DIR)/ install VERBOSE=1
 3rdParty/minizip/$(BUILD_DIR)/Makefile:
