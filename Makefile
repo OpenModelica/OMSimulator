@@ -217,7 +217,7 @@ config-fmil: 3rdParty/FMIL/$(INSTALL_DIR)/lib/libfmilib.a
 
 config-fmi4c: 3rdParty/fmi4c/$(INSTALL_DIR)/lib/libfmi4c.a
 3rdParty/fmi4c/$(INSTALL_DIR)/lib/libfmi4c.a: 3rdParty/fmi4c/$(BUILD_DIR)/Makefile
-	$(MAKE) -C 3rdParty/fmi4c/$(BUILD_DIR)/ install
+	$(MAKE) -C 3rdParty/fmi4c/$(BUILD_DIR)/ install VERBOSE=1
 3rdParty/fmi4c/$(BUILD_DIR)/Makefile: 3rdParty/fmi4c/CMakeLists.txt
 	@echo
 	@echo "# config fmi4c"
@@ -228,7 +228,7 @@ config-fmi4c: 3rdParty/fmi4c/$(INSTALL_DIR)/lib/libfmi4c.a
 
 config-zlib: 3rdParty/zlib/$(INSTALL_DIR)/lib/libzlibstatic.a
 3rdParty/zlib/$(INSTALL_DIR)/lib/libzlibstatic.a: 3rdParty/zlib/$(BUILD_DIR)/Makefile
-	$(MAKE) -C 3rdParty/zlib/$(BUILD_DIR)/ install
+	$(MAKE) -C 3rdParty/zlib/$(BUILD_DIR)/ install VERBOSE=1
 3rdParty/zlib/$(BUILD_DIR)/Makefile: 3rdParty/zlib/CMakeLists.txt
 	@echo
 	@echo "# config zlib"
@@ -246,7 +246,7 @@ config-lua: 3rdParty/Lua/$(INSTALL_DIR)/liblua.a
 
 config-minizip: 3rdParty/minizip/$(INSTALL_DIR)/libminizip.a
 3rdParty/minizip/$(INSTALL_DIR)/libminizip.a: 3rdParty/minizip/$(BUILD_DIR)/Makefile
-	$(MAKE) -C 3rdParty/minizip/$(BUILD_DIR)/ install
+	$(MAKE) -C 3rdParty/minizip/$(BUILD_DIR)/ install VERBOSE=1
 3rdParty/minizip/$(BUILD_DIR)/Makefile:
 	@echo
 	@echo "# config minizip"
