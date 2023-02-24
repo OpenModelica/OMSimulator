@@ -214,7 +214,7 @@ config-fmil: 3rdParty/FMIL/$(INSTALL_DIR)/lib/libfmilib.a
 	$(MKDIR) 3rdParty/FMIL/$(INSTALL_DIR)
 	cd 3rdParty/FMIL/$(BUILD_DIR) && $(CMAKE) $(CMAKE_TARGET) ../.. -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) -DFMILIB_BUILD_TESTS:BOOL=0 -DFMILIB_GENERATE_DOXYGEN_DOC:BOOL=0 -DFMILIB_BUILD_STATIC_LIB:BOOL=1 -DFMILIB_BUILD_SHARED_LIB:BOOL=0 -DBUILD_TESTING:BOOL=0 -DFMILIB_BUILD_BEFORE_TESTS:BOOL=0 $(FMIL_FLAGS) -Wno-dev
 
-
+# use zlib and minizip from OMSimulator 3rdParty by setting OMS_ZLIB_INCLUDE_DIR, OMS_ZLIB_LIBRARY OMS_MINIZIP_INCLUDE_DIR and DOMS_MINIZIP_LIBRARY, see 3rdparty/fmi4c/cmake
 config-fmi4c: config-minizip config-zlib 3rdParty/fmi4c/$(INSTALL_DIR)/lib/libfmi4c.a
 3rdParty/fmi4c/$(INSTALL_DIR)/lib/libfmi4c.a: 3rdParty/fmi4c/$(BUILD_DIR)/Makefile
 	$(MAKE) -C 3rdParty/fmi4c/$(BUILD_DIR)/ install VERBOSE=1

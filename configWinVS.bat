@@ -68,6 +68,7 @@ IF ["%TARGET%"]==["fmil"] GOTO fmil
 IF ["%TARGET%"]==["fmi4c"] GOTO fmi4c
 IF ["%TARGET%"]==["lua"] GOTO lua
 IF ["%TARGET%"]==["minizip"] GOTO minizip
+IF ["%TARGET%"]==["zlib"] GOTO zlib
 IF ["%TARGET%"]==["cvode"] GOTO cvode
 IF ["%TARGET%"]==["kinsol"] GOTO kinsol
 IF ["%TARGET%"]==["xerces"] GOTO xerces
@@ -112,7 +113,8 @@ IF EXIST "3rdParty\fmi4c\build\win\" RMDIR /S /Q 3rdParty\fmi4c\build\win
 IF EXIST "3rdParty\fmi4c\install\win\" RMDIR /S /Q 3rdParty\fmi4c\install\win
 MKDIR 3rdParty\fmi4c\build\win
 CD 3rdParty\fmi4c\build\win
-cmake.exe -G %OMS_VS_VERSION% ..\.. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) -DFMI4C_BUILD_SHARED=OFF
+cmake.exe -G %OMS_VS_VERSION% ..\.. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_INSTALL_PREFIX=..\..\install\win -DFMI4C_BUILD_SHARED=OFF -DFMI4C_USE_INCLUDED_ZLIB=OFF -DOMS_MINIZIP_INCLUDE_DIR=..\minizip\install\win\include -DOMS_MINIZIP_LIBRARY=..\minizip\install\win\lib\minizip.lib -DOMS_ZLIB_INCLUDE_DIR=..\zlib\install\win\include -DOMS_ZLIB_LIBRARY=..\zlib\install\win\lib\zlibstatic.lib
+
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 CD ..\..\..\..
 ECHO # build fmi4c
@@ -152,6 +154,21 @@ IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 EXIT /B 0
 :: -- build minizip ----------------------
 
+:: -- build zlib ----------------------
+:zlib
+ECHO # config zlib
+IF EXIST "3rdParty\zlib\build\win\" RMDIR /S /Q 3rdParty\zlib\build\win
+IF EXIST "3rdParty\zlib\install\win\" RMDIR /S /Q 3rdParty\zlib\install\win
+MKDIR 3rdParty\zlib\build\win
+CD 3rdParty\zlib\build\win
+cmake.exe -G %OMS_VS_VERSION% ..\..\ -DCMAKE_INSTALL_PREFIX=..\..\install\win
+IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
+CD ..\..\..\..
+ECHO # build zlib
+msbuild.exe "3rdParty\zlib\build\win\INSTALL.vcxproj" /t:Build /p:configuration=Release /maxcpucount
+IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
+EXIT /B 0
+:: -- build zlib ----------------------
 
 :: -- config cvode --------------------
 :cvode
@@ -268,13 +285,15 @@ EXIT /B 0
 START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% clean"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 IF NOT EXIST "3rdParty/README.md" GOTO fail2
-START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% fmil"
+@REM START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% fmil"
+@REM IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
+START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% zlib"
+IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
+START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% minizip"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% fmi4c"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% lua"
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% minizip"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% cvode"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
