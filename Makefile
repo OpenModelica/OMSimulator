@@ -10,7 +10,7 @@ ROOT_DIR=$(shell pwd)
 # Option to build LIBXML2 as part of the 3rdParty projects
 LIBXML2 ?= $(OMTLM)
 # Option to enable OMTLM
-OMTLM ?= OFF
+OMTLM ?= ON
 # Option to enable AddressSanitizer
 ASAN ?= OFF
 # Statically link dependencies as much as possible

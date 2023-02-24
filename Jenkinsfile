@@ -761,11 +761,12 @@ void buildOMS() {
      echo export MSYS_WORKSPACE="`cygpath '${WORKSPACE}'`"
      echo echo MSYS_WORKSPACE: \${MSYS_WORKSPACE}
      echo cd \${MSYS_WORKSPACE}
+     echo export MAKETHREADS=-j%NUMBER_OF_PROCESSORS%
      echo set -ex
      echo git fetch --tags
-     echo time make config-3rdParty ${env.CC ? "CC=" + env.CC : ""} ${env.CXX ? "CXX=" + env.CXX : ""} ${env.OMSFLAGS ?: ""}
-     echo time make config-OMSimulator ${env.OMSFLAGS ?: ""}
-     echo time make OMSimulator ${env.OMSFLAGS ?: ""}
+     echo time make config-3rdParty ${env.CC ? "CC=" + env.CC : ""} ${env.CXX ? "CXX=" + env.CXX : ""} ${env.OMSFLAGS ?: ""} -j%NUMBER_OF_PROCESSORS%
+     echo time make config-OMSimulator -j%NUMBER_OF_PROCESSORS% ${env.OMSFLAGS ?: ""}
+     echo time make OMSimulator -j%NUMBER_OF_PROCESSORS% ${env.OMSFLAGS ?: ""}
      ) > buildOMSimulatorWindows.sh
 
      set MSYSTEM=${env.MSYSTEM ? env.MSYSTEM : "MINGW64"}
@@ -779,9 +780,9 @@ void buildOMS() {
     ${env.SHELLSTART ?: ""}
     export HOME="${'$'}PWD"
     git fetch --tags
-    make config-3rdParty ${env.CC ? "CC=" + env.CC : ""} ${env.CXX ? "CXX=" + env.CXX : ""} ${env.OMSFLAGS ?: ""}
-    make config-OMSimulator ${env.ASAN ? "ASAN=ON" : ""} ${env.OMSFLAGS ?: ""}
-    make OMSimulator ${env.ASAN ? "DISABLE_RUN_OMSIMULATOR_VERSION=1" : ""} ${env.OMSFLAGS ?: ""}
+    make config-3rdParty ${env.CC ? "CC=" + env.CC : ""} ${env.CXX ? "CXX=" + env.CXX : ""} ${env.OMSFLAGS ?: ""} -j${nproc}
+    make config-OMSimulator -j${nproc} ${env.ASAN ? "ASAN=ON" : ""} ${env.OMSFLAGS ?: ""}
+    make OMSimulator -j${nproc} ${env.ASAN ? "DISABLE_RUN_OMSIMULATOR_VERSION=1" : ""} ${env.OMSFLAGS ?: ""}
     """
   }
 }
