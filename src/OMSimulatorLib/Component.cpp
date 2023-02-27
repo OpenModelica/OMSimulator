@@ -57,38 +57,44 @@
 //   }
 // }
 
-// void oms::fmi2logger(fmi2_component_environment_t env, fmi2_string_t instanceName, fmi2_status_t status, fmi2_string_t category, fmi2_string_t message, ...)
-// {
-//   if ((status == fmi2_status_ok || status == fmi2_status_pending) && !logDebugEnabled())
-//   {
-//     // When frequently called for debug logging during simulation, avoid costly formatting.
-//     return;
-//   }
+void oms::fmi2logger(fmi2ComponentEnvironment env, fmi2String instanceName, fmi2Status status, fmi2String category, fmi2String message, ...)
+{
+  if ((status == fmi2OK || status == fmi2Pending) && !logDebugEnabled())
+  {
+    // When frequently called for debug logging during simulation, avoid costly formatting.
+    return;
+  }
 
-//   int len;
-//   char msg[1000];
-//   va_list argp;
-//   va_start(argp, message);
-//   len = vsnprintf(msg, 1000, message, argp);
-
-//   switch (status)
-//   {
-//   case fmi2_status_ok:
-//   case fmi2_status_pending:
-//     logDebug(std::string(instanceName) + " (" + category + "): " + msg);
-//     break;
-//   case fmi2_status_warning:
-//     logWarning(std::string(instanceName) + " (" + category + "): " + msg);
-//     break;
-//   case fmi2_status_discard:
-//   case fmi2_status_error:
-//   case fmi2_status_fatal:
-//     logError(std::string(instanceName) + " (" + category + "): " + msg);
-//     break;
-//   default:
-//     logWarning("fmiStatus = " + std::string(fmi2_status_to_string(status)) + "; " + instanceName + " (" + category + "): " + msg);
-//   }
-// }
+  int len;
+  char msg[1000];
+  va_list argp;
+  va_start(argp, message);
+  len = vsnprintf(msg, 1000, message, argp);
+  std::string fmistatus="";
+  switch (status)
+  {
+  case fmi2OK:
+    fmistatus = "Ok";
+  case fmi2Pending:
+    logDebug(std::string(instanceName) + " (" + category + "): " + msg);
+    fmistatus = "Pending";
+    break;
+  case fmi2Warning:
+    logWarning(std::string(instanceName) + " (" + category + "): " + msg);
+    fmistatus = "Warning";
+    break;
+  case fmi2Discard:
+      fmistatus = "Discard";
+  case fmi2Error:
+      fmistatus = "Error";
+  case fmi2Fatal:
+    logError(std::string(instanceName) + " (" + category + "): " + msg);
+    fmistatus = "Fatal";
+    break;
+  default:
+    logWarning("fmiStatus = " + fmistatus + "; " + instanceName + " (" + category + "): " + msg);
+  }
+}
 
 oms::Component::Component(const ComRef& cref, oms_component_enu_t type, System* parentSystem, const std::string& path)
   : element(oms_element_component, cref), cref(cref), type(type), parentSystem(parentSystem), path(path)

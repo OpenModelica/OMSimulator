@@ -50,7 +50,7 @@
 
 namespace oms
 {
-  void loggerFmi3(fmi2ComponentEnvironment componentEnvironment, fmi2String instanceName, fmi2Status status, fmi2String category, fmi2String message, ...);
+  //void loggerFmi3(fmi2ComponentEnvironment componentEnvironment, fmi2String instanceName, fmi2Status status, fmi2String category, fmi2String message, ...);
   class ComponentFMUME : public Component
   {
   public:
@@ -140,9 +140,7 @@ namespace oms
     void dumpInitialUnknowns();
 
   private:
-    // jm_callbacks callbacks;
-    // fmi2_callback_functions_t callbackFunctions;
-    // fmi_import_context_t* context = NULL;
+    fmi2CallbackLogger omsfmi2logger;
     fmiHandle *fmu = NULL;
 
     fmi2EventInfo eventInfo;

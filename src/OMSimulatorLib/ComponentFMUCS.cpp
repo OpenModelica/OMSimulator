@@ -177,6 +177,7 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::
 
   // update FMU info
   component->fmuInfo.update(version, component->fmu);
+  component->omsfmi2logger = oms::fmi2logger;
 
   // component->callbackFunctions.logger = oms::fmi2logger;
   // component->callbackFunctions.allocateMemory = calloc;
@@ -593,39 +594,42 @@ oms_status_enu_t oms::ComponentFMUCS::initializeDependencyGraph_outputs()
   return oms_status_ok;
 }
 
-void oms::loggerFmi2(fmi2ComponentEnvironment componentEnvironment,
-                fmi2String instanceName,
-                fmi2Status status,
-                fmi2String category,
-                fmi2String message,
-                ...)
-{
-    // UNUSED(componentEnvironment);
-    // UNUSED(instanceName);
-    // UNUSED(category);
 
-    int logLevel = 0;
 
-    if(status == fmi2OK && logLevel < 4 ||
-        status == fmi2Pending && logLevel < 4 ||
-        status == fmi2Warning && logLevel < 3 ||
-        status == fmi2Discard && logLevel < 3 ||
-        status == fmi2Error && logLevel < 2 ||
-        status == fmi2Fatal && logLevel < 1) {
-        return;
-    }
 
-    va_list args;
-    va_start(args, message);
-    char msgstr[1024];
-    sprintf(msgstr, "%s: %s\n", category, message);
-    printf(msgstr, args);
-    va_end(args);
-}
+// void oms::loggerFmi2(fmi2ComponentEnvironment componentEnvironment,
+//                 fmi2String instanceName,
+//                 fmi2Status status,
+//                 fmi2String category,
+//                 fmi2String message,
+//                 ...)
+// {
+//     // UNUSED(componentEnvironment);
+//     // UNUSED(instanceName);
+//     // UNUSED(category);
+
+//     int logLevel = 0;
+
+//     if(status == fmi2OK && logLevel < 4 ||
+//         status == fmi2Pending && logLevel < 4 ||
+//         status == fmi2Warning && logLevel < 3 ||
+//         status == fmi2Discard && logLevel < 3 ||
+//         status == fmi2Error && logLevel < 2 ||
+//         status == fmi2Fatal && logLevel < 1) {
+//         return;
+//     }
+
+//     va_list args;
+//     va_start(args, message);
+//     char msgstr[1024];
+//     sprintf(msgstr, "%s: %s\n", category, message);
+//     printf(msgstr, args);
+//     va_end(args);
+// }
 
 oms_status_enu_t oms::ComponentFMUCS::instantiate()
 {
-  if (!fmi2_instantiate(fmu, fmi2CoSimulation, loggerFmi2, calloc, free, NULL, NULL, fmi2True, fmi2True))
+  if (!fmi2_instantiate(fmu, fmi2CoSimulation, omsfmi2logger, calloc, free, NULL, NULL, fmi2True, fmi2True))
   {
     logInfo("fmi2Instantiate() failed");
     exit(1);
