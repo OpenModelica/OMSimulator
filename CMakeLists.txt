@@ -133,8 +133,8 @@ find_package(ZLIB REQUIRED)
 
 # Configuring for minizip
 set(MINIZIP_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/minizip/install/${PLATFORM_STRING})
-set(MINIZIP_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/minizip/install/${PLATFORM_STRING}/include)
-set(MINIZIP_LIBRARYDIR ${PROJECT_SOURCE_DIR}/3rdParty/minizip/install/${PLATFORM_STRING}/lib)
+# set(MINIZIP_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/minizip/install/${PLATFORM_STRING}/include)
+# set(MINIZIP_LIBRARYDIR ${PROJECT_SOURCE_DIR}/3rdParty/minizip/install/${PLATFORM_STRING}/lib)
 find_package(MINIZIP REQUIRED)
 
 ##########################
