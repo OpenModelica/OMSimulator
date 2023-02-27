@@ -1,4 +1,4 @@
-# Update this to have more specific rules for finding the fmi library.
+# Update this to have more specific rules for finding the zlib library.
 # e.g versions, shared or static ...
 # for now this should suffice.
 # maybe make sure the headers exits too.
@@ -21,7 +21,7 @@ else()
   if(ZLIB_FIND_REQUIRED)
     message(STATUS "Unable to find the requested ZLIB" )
     message(STATUS "Looked in ZLIB_ROOT ${ZLIB_ROOT}" )
-    message(SEND_ERROR "Could not find libZLIB. Make sure you have set the ZLIB_ROOT in the CMakeFile.txt to point to your ZLIB installation." )
+    message(SEND_ERROR "Could not find libzlibstatic.a Make sure you have set the ZLIB_ROOT in the CMakeFile.txt to point to your ZLIB installation." )
   else()
     message(STATUS "ZLIB - NOT Found" )
   endif(ZLIB_FIND_REQUIRED)

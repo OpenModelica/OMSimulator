@@ -131,10 +131,11 @@ ENDIF()
 set(ZLIB_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/zlib/install/${PLATFORM_STRING})
 find_package(ZLIB REQUIRED)
 
-# Configuring for zip/minizip
+# Configuring for minizip
+set(MINIZIP_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/minizip/install/${PLATFORM_STRING})
 set(MINIZIP_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/minizip/install/${PLATFORM_STRING}/include)
 set(MINIZIP_LIBRARYDIR ${PROJECT_SOURCE_DIR}/3rdParty/minizip/install/${PLATFORM_STRING}/lib)
-## find_package(MINIZIP REQUIRED)
+find_package(MINIZIP REQUIRED)
 
 ##########################
 # Configuring for FMILibrary
