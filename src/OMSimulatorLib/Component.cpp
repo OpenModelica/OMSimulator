@@ -36,6 +36,7 @@
 #include "OMSFileSystem.h"
 #include "System.h"
 #include "TLMBusConnector.h"
+#include <stdarg.h>
 
 // void oms::fmiLogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message)
 // {
