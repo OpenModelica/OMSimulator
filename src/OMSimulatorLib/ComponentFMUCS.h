@@ -50,7 +50,6 @@
 namespace oms
 {
   class System;
-  //void loggerFmi2(fmi2ComponentEnvironment componentEnvironment, fmi2String instanceName, fmi2Status status, fmi2String category, fmi2String message, ...);
   class ComponentFMUCS : public Component
   {
   public:

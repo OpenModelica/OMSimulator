@@ -39,7 +39,6 @@
 #include "Values.h"
 #include "Variable.h"
 
-//#include <fmilib.h>
 #include <fmi4c.h>
 
 #include <map>
@@ -50,7 +49,6 @@
 
 namespace oms
 {
-  //void loggerFmi3(fmi2ComponentEnvironment componentEnvironment, fmi2String instanceName, fmi2Status status, fmi2String category, fmi2String message, ...);
   class ComponentFMUME : public Component
   {
   public:

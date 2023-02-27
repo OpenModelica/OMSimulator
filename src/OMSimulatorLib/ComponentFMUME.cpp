@@ -44,7 +44,6 @@
 #include <RegEx.h>
 #include <unordered_set>
 #include <cmath>
-#include <stdarg.h>
 
 oms::ComponentFMUME::ComponentFMUME(const ComRef& cref, System* parentSystem, const std::string& fmuPath)
   : oms::Component(cref, oms_component_fmu, parentSystem, fmuPath), fmuInfo(fmuPath)

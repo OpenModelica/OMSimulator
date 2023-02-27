@@ -38,26 +38,6 @@
 #include "TLMBusConnector.h"
 #include <stdarg.h>
 
-// void oms::fmiLogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message)
-// {
-//   switch (log_level)
-//   {
-//   case jm_log_level_info:    // Informative messages
-//     logDebug("module " + std::string(module) + ": " + std::string(message));
-//     break;
-//   case jm_log_level_warning: // Non-critical issues
-//     logWarning("module " + std::string(module) + ": " + std::string(message));
-//     break;
-//   case jm_log_level_error:   // Errors that may be not critical for some FMUs
-//   case jm_log_level_fatal:   // Unrecoverable errors
-//     logError("module " + std::string(module) + ": " + std::string(message));
-//     break;
-//   case jm_log_level_verbose: // Verbose messages
-//   case jm_log_level_debug:   // Debug messages. Only enabled if library is configured with FMILIB_ENABLE_LOG_LEVEL_DEBUG
-//     logDebug("[log level " + std::string(jm_log_level_to_string(log_level)) + "] module " + std::string(module) + ": " + std::string(message));
-//   }
-// }
-
 void oms::fmi2logger(fmi2ComponentEnvironment env, fmi2String instanceName, fmi2Status status, fmi2String category, fmi2String message, ...)
 {
   if ((status == fmi2OK || status == fmi2Pending) && !logDebugEnabled())
