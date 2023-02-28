@@ -116,14 +116,6 @@ oms::Component* oms::ComponentFMUME::NewComponent(const oms::ComRef& cref, oms::
     component->setPath(relFMUPath.generic_string());
   }
 
-  // component->callbacks.malloc = malloc;
-  // component->callbacks.calloc = calloc;
-  // component->callbacks.realloc = realloc;
-  // component->callbacks.free = free;
-  // component->callbacks.logger = oms::fmiLogger;
-  // component->callbacks.log_level = jm_log_level_all;
-  // component->callbacks.context = 0;
-
   // Copy the resource to the temp directory of the model? We don't want have
   // to copy resources if importing an SSP file or snapshot.
   if (parentSystem->copyResources() && !filesystem::exists(absFMUPath))
@@ -171,12 +163,6 @@ oms::Component* oms::ComponentFMUME::NewComponent(const oms::ComRef& cref, oms::
   // update FMU info
   component->fmuInfo.update(version, component->fmu);
   component->omsfmi2logger = oms::fmi2logger;
-
-  // component->callbackFunctions.logger = oms::fmi2logger;
-  // component->callbackFunctions.allocateMemory = calloc;
-  // component->callbackFunctions.freeMemory = free;
-  // component->callbackFunctions.componentEnvironment = component->fmu;
-  // component->callbackFunctions.stepFinished = NULL;
 
   component->nEventIndicators = fmi2_getNumberOfEventIndicators(component->fmu);
 
