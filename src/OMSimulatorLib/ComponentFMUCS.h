@@ -50,6 +50,7 @@
 namespace oms
 {
   class System;
+
   class ComponentFMUCS : public Component
   {
   public:
