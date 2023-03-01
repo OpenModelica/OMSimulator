@@ -68,7 +68,7 @@ void oms::fmi2logger(fmi2ComponentEnvironment env, fmi2String instanceName, fmi2
     logError(std::string(instanceName) + " (" + category + "): " + msg);
     break;
   default:
-    logWarning("fmiStatus = unknown; " + instanceName + " (" + category + "): " + msg);
+    logWarning("fmiStatus = unknown; " + std::string(instanceName) + " (" + category + "): " + msg);
   }
 }
 

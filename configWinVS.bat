@@ -96,7 +96,6 @@ IF EXIST "3rdParty\fmi4c\install\win\" RMDIR /S /Q 3rdParty\fmi4c\install\win
 MKDIR 3rdParty\fmi4c\build\win
 CD 3rdParty\fmi4c\build\win
 cmake.exe -G %OMS_VS_VERSION% ..\.. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_INSTALL_PREFIX=..\..\install\win -DFMI4C_BUILD_SHARED=OFF -DFMI4C_USE_INCLUDED_ZLIB=OFF -DOMS_MINIZIP_INCLUDE_DIR=..\minizip\install\win\include -DOMS_MINIZIP_LIBRARY=..\minizip\install\win\lib\minizip.lib -DOMS_ZLIB_INCLUDE_DIR=..\zlib\install\win\include -DOMS_ZLIB_LIBRARY=..\zlib\install\win\lib\zlibstatic.lib
-
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 CD ..\..\..\..
 ECHO # build fmi4c
