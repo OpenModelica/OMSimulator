@@ -45,6 +45,7 @@ namespace oms
     SignalDerivative(double der);
     SignalDerivative(unsigned int order, fmiHandle* fmu, fmi2ValueReference vr);
     ~SignalDerivative();
+
     // methods to copy the object
     SignalDerivative(const SignalDerivative& rhs);
     SignalDerivative& operator=(const SignalDerivative& rhs);

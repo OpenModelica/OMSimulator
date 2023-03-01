@@ -34,6 +34,7 @@
 #include "Logging.h"
 #include "OMSString.h"
 
+
 oms::FMUInfo::FMUInfo(const std::string& path)
 {
   this->author = nullptr;
