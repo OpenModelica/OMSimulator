@@ -34,8 +34,6 @@
 #include "Logging.h"
 #include "Util.h"
 
-#include <iostream>
-
 oms::Variable::Variable(fmiHandle* fmi4c, int index_)
   : der_index(0), state_index(0), is_state(false), is_der(false), is_continuous_time_state(false), is_continuous_time_der(false), index(index_)
 {

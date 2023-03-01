@@ -45,7 +45,6 @@ namespace oms
   class Variable
   {
   public:
-    //Variable(fmi2_import_variable_t* var);
     Variable(fmiHandle * fmi4c, int index);
     ~Variable();
 
