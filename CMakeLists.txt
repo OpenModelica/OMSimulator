@@ -138,11 +138,6 @@ set(MINIZIP_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/minizip/install/${PLATFORM_STRIN
 find_package(MINIZIP REQUIRED)
 
 ##########################
-# Configuring for FMILibrary
-# set(FMILibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/FMIL/install/${PLATFORM_STRING})
-# find_package(FMILibrary REQUIRED)
-
-##########################
 # Configuring for FMI4c
 set(FMI4c_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/fmi4c/install/${PLATFORM_STRING})
 find_package(FMI4c REQUIRED)

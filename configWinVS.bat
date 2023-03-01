@@ -64,7 +64,6 @@ IF NOT EXIST install\\win MKDIR install\\win
 IF NOT EXIST install\\win\\lib MKDIR install\\win\\lib
 
 IF ["%TARGET%"]==["clean"] GOTO clean
-IF ["%TARGET%"]==["fmil"] GOTO fmil
 IF ["%TARGET%"]==["fmi4c"] GOTO fmi4c
 IF ["%TARGET%"]==["lua"] GOTO lua
 IF ["%TARGET%"]==["minizip"] GOTO minizip
@@ -87,23 +86,6 @@ IF EXIST "build\win\" RMDIR /S /Q build\win && IF NOT ["%ERRORLEVEL%"]==["0"] GO
 IF EXIST "install\win\" RMDIR /S /Q install\win && IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 EXIT /B 0
 :: -- clean ---------------------------
-
-
-:: -- config fmil ---------------------
-:fmil
-ECHO # config fmil
-IF EXIST "3rdParty\FMIL\build\win\" RMDIR /S /Q 3rdParty\FMIL\build\win
-IF EXIST "3rdParty\FMIL\install\win\" RMDIR /S /Q 3rdParty\FMIL\install\win
-MKDIR 3rdParty\FMIL\build\win
-CD 3rdParty\FMIL\build\win
-cmake.exe -G %OMS_VS_VERSION% ..\.. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_INSTALL_PREFIX=..\..\install\win -DFMILIB_BUILD_TESTS:BOOL=0 -DFMILIB_GENERATE_DOXYGEN_DOC:BOOL=0 -DFMILIB_BUILD_STATIC_LIB:BOOL=1 -DFMILIB_BUILD_SHARED_LIB:BOOL=0 -DBUILD_TESTING:BOOL=0 -DFMILIB_BUILD_BEFORE_TESTS:BOOL=0 -Wno-dev
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-CD ..\..\..\..
-ECHO # build fmil
-msbuild.exe "3rdParty\FMIL\build\win\INSTALL.vcxproj" /t:Build /p:configuration=Release /maxcpucount
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-EXIT /B 0
-:: -- config fmil ---------------------
 
 
 :: -- config fmi4c ---------------------
@@ -285,8 +267,6 @@ EXIT /B 0
 START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% clean"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 IF NOT EXIST "3rdParty/README.md" GOTO fail2
-@REM START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% fmil"
-@REM IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% zlib"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% minizip"

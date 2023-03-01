@@ -33,7 +33,6 @@ else ifeq (MINGW32,$(findstring MINGW32,$(detected_OS)))
 	BUILD_DIR := build/mingw
 	INSTALL_DIR := install/mingw
 	CMAKE_TARGET=-G "MSYS Makefiles"
-	FMIL_FLAGS?=-DFMILIB_FMI_PLATFORM=win32
 	LIBXML2 := OFF
 	export ABI := WINDOWS32
 	FEXT=.dll
@@ -45,7 +44,6 @@ else ifeq (MINGW,$(findstring MINGW,$(detected_OS)))
 	BUILD_DIR := build/mingw
 	INSTALL_DIR := install/mingw
 	CMAKE_TARGET=-G "MSYS Makefiles"
-	FMIL_FLAGS?=-DFMILIB_FMI_PLATFORM=win64
 	LIBXML2 := OFF
 	export ABI := WINDOWS64
 	FEXT=.dll
@@ -103,7 +101,6 @@ ifneq ($(CROSS_TRIPLE),)
   LIBXML2 := OFF
   CROSS_TRIPLE_DASH = $(CROSS_TRIPLE)-
   HOST_CROSS_TRIPLE = "--host=$(CROSS_TRIPLE)"
-  FMIL_FLAGS ?=
   AR ?= $(CROSS_TRIPLE)-ar
   RANLIB ?= $(CROSS_TRIPLE)-ranlib
   ifeq (MINGW,$(findstring MINGW,$(detected_OS)))
@@ -202,17 +199,6 @@ $(BUILD_DIR)/Makefile: RegEx CMakeLists.txt
 	$(eval STD_REGEX := $(shell 3rdParty/RegEx/OMSRegEx$(EEXT)))
 	$(MKDIR) $(BUILD_DIR)
 	cd $(BUILD_DIR) && $(CMAKE) $(CMAKE_TARGET) ../.. -DABI=$(ABI) -DSTD_REGEX=$(STD_REGEX) -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DOMTLM:BOOL=$(OMTLM) -DASAN:BOOL=$(ASAN) -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) $(CMAKE_BOOST_ROOT) $(CMAKE_INSTALL_PREFIX) $(HOST_SHORT) $(EXTRA_CMAKE) $(CMAKE_STATIC)
-
-config-fmil: 3rdParty/FMIL/$(INSTALL_DIR)/lib/libfmilib.a
-3rdParty/FMIL/$(INSTALL_DIR)/lib/libfmilib.a: 3rdParty/FMIL/$(BUILD_DIR)/Makefile
-	$(MAKE) -C 3rdParty/FMIL/$(BUILD_DIR)/ install
-3rdParty/FMIL/$(BUILD_DIR)/Makefile: 3rdParty/FMIL/CMakeLists.txt
-	@echo
-	@echo "# config fmil"
-	@echo
-	$(MKDIR) 3rdParty/FMIL/$(BUILD_DIR)
-	$(MKDIR) 3rdParty/FMIL/$(INSTALL_DIR)
-	cd 3rdParty/FMIL/$(BUILD_DIR) && $(CMAKE) $(CMAKE_TARGET) ../.. -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) -DFMILIB_BUILD_TESTS:BOOL=0 -DFMILIB_GENERATE_DOXYGEN_DOC:BOOL=0 -DFMILIB_BUILD_STATIC_LIB:BOOL=1 -DFMILIB_BUILD_SHARED_LIB:BOOL=0 -DBUILD_TESTING:BOOL=0 -DFMILIB_BUILD_BEFORE_TESTS:BOOL=0 $(FMIL_FLAGS) -Wno-dev
 
 # use zlib and minizip from OMSimulator 3rdParty by setting OMS_ZLIB_INCLUDE_DIR, OMS_ZLIB_LIBRARY OMS_MINIZIP_INCLUDE_DIR and DOMS_MINIZIP_LIBRARY, see 3rdparty/fmi4c/cmake
 config-fmi4c: config-minizip config-zlib 3rdParty/fmi4c/$(INSTALL_DIR)/lib/libfmi4c.a
@@ -315,8 +301,6 @@ distclean:
 	@$(MAKE) OMTLMSimulatorClean
 	$(RM) $(BUILD_DIR)
 	$(RM) $(INSTALL_DIR)
-	$(RM) 3rdParty/FMIL/$(BUILD_DIR)
-	$(RM) 3rdParty/FMIL/$(INSTALL_DIR)
 	@$(MAKE) -C 3rdParty/Lua distclean
 	$(RM) 3rdParty/RegEx/OMSRegEx$(EEXT)
 	$(RM) 3rdParty/cvode/$(BUILD_DIR)
