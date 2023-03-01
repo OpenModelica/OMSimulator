@@ -33,7 +33,6 @@
 
 #include "Logging.h"
 #include "OMSString.h"
-#include <iostream>
 
 oms::FMUInfo::FMUInfo(const std::string& path)
 {

@@ -43,7 +43,6 @@ namespace oms
   public:
     SignalDerivative();
     SignalDerivative(double der);
-    //SignalDerivative(unsigned int order, fmi2_import_t* fmu, fmi2_value_reference_t vr);
     SignalDerivative(unsigned int order, fmiHandle* fmu, fmi2ValueReference vr);
     ~SignalDerivative();
     // methods to copy the object
