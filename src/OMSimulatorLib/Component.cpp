@@ -36,7 +36,29 @@
 #include "OMSFileSystem.h"
 #include "System.h"
 #include "TLMBusConnector.h"
+
 #include <stdarg.h>
+
+std::string fmi2_status_to_string(fmi2Status status)
+{
+  switch (status)
+  {
+  case fmi2OK:
+  return "OK";
+  case fmi2Pending:
+  return "Pending";
+  case fmi2Warning:
+  return "Warning";
+  case fmi2Discard:
+  return "Discard";
+  case fmi2Error:
+  return "Error";
+  case fmi2Fatal:
+  return "Fatal";
+  default:
+  return "Unknown";
+  }
+}
 
 void oms::fmi2logger(fmi2ComponentEnvironment env, fmi2String instanceName, fmi2Status status, fmi2String category, fmi2String message, ...)
 {
@@ -51,29 +73,23 @@ void oms::fmi2logger(fmi2ComponentEnvironment env, fmi2String instanceName, fmi2
   va_list argp;
   va_start(argp, message);
   len = vsnprintf(msg, 1000, message, argp);
-  std::string fmistatus="";
+
   switch (status)
   {
   case fmi2OK:
-    fmistatus = "Ok";
   case fmi2Pending:
     logDebug(std::string(instanceName) + " (" + category + "): " + msg);
-    fmistatus = "Pending";
     break;
   case fmi2Warning:
     logWarning(std::string(instanceName) + " (" + category + "): " + msg);
-    fmistatus = "Warning";
     break;
   case fmi2Discard:
-      fmistatus = "Discard";
   case fmi2Error:
-      fmistatus = "Error";
   case fmi2Fatal:
     logError(std::string(instanceName) + " (" + category + "): " + msg);
-    fmistatus = "Fatal";
     break;
   default:
-    logWarning("fmiStatus = " + fmistatus + "; " + instanceName + " (" + category + "): " + msg);
+    logWarning("fmiStatus = " + fmi2_status_to_string(status) + "; " + instanceName + " (" + category + "): " + msg);
   }
 }
 
