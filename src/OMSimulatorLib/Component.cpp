@@ -39,27 +39,6 @@
 
 #include <stdarg.h>
 
-std::string fmi2_status_to_string(fmi2Status status)
-{
-  switch (status)
-  {
-  case fmi2OK:
-  return "OK";
-  case fmi2Pending:
-  return "Pending";
-  case fmi2Warning:
-  return "Warning";
-  case fmi2Discard:
-  return "Discard";
-  case fmi2Error:
-  return "Error";
-  case fmi2Fatal:
-  return "Fatal";
-  default:
-  return "Unknown";
-  }
-}
-
 void oms::fmi2logger(fmi2ComponentEnvironment env, fmi2String instanceName, fmi2Status status, fmi2String category, fmi2String message, ...)
 {
   if ((status == fmi2OK || status == fmi2Pending) && !logDebugEnabled())
@@ -89,7 +68,7 @@ void oms::fmi2logger(fmi2ComponentEnvironment env, fmi2String instanceName, fmi2
     logError(std::string(instanceName) + " (" + category + "): " + msg);
     break;
   default:
-    logWarning("fmiStatus = " + fmi2_status_to_string(status) + "; " + instanceName + " (" + category + "): " + msg);
+    logWarning("fmiStatus = unknown; " + instanceName + " (" + category + "): " + msg);
   }
 }
 
