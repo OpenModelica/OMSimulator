@@ -63,11 +63,12 @@ IF NOT EXIST install\\ MKDIR install
 IF NOT EXIST install\\win MKDIR install\\win
 IF NOT EXIST install\\win\\lib MKDIR install\\win\\lib
 
+@REM do not change the order to be consistent with line 265 config all
 IF ["%TARGET%"]==["clean"] GOTO clean
+IF ["%TARGET%"]==["zlib"] GOTO zlib
+IF ["%TARGET%"]==["minizip"] GOTO minizip
 IF ["%TARGET%"]==["fmi4c"] GOTO fmi4c
 IF ["%TARGET%"]==["lua"] GOTO lua
-IF ["%TARGET%"]==["minizip"] GOTO minizip
-IF ["%TARGET%"]==["zlib"] GOTO zlib
 IF ["%TARGET%"]==["cvode"] GOTO cvode
 IF ["%TARGET%"]==["kinsol"] GOTO kinsol
 IF ["%TARGET%"]==["xerces"] GOTO xerces
