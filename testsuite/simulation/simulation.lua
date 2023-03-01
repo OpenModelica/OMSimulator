@@ -1,6 +1,6 @@
 -- status: correct
 -- teardown_command: rm -rf simulation-lua/ simulation_init.dot simulation_event.dot simulation_sim.dot simulation_res.mat
--- linux: no
+-- linux: yes
 -- mingw32: no
 -- mingw64: no
 -- win: no
@@ -8,7 +8,6 @@
 
 oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./simulation-lua/")
-oms_setWorkingDirectory("./simulation-lua/")
 
 function printStatus(status, expected)
   cmp = ""
@@ -34,10 +33,10 @@ printStatus(status, 0)
 status = oms_addSystem("simulation.co_sim", oms_system_wc)
 printStatus(status, 0)
 
-status = oms_addSubModel("simulation.co_sim.A", "../../resources/tlm.source.fmu")
+status = oms_addSubModel("simulation.co_sim.A", "../resources/Modelica.Blocks.Sources.Sine.fmu")
 printStatus(status, 0)
 
-status = oms_addSubModel("simulation.co_sim.B", "../../resources/tlm.source.fmu")
+status = oms_addSubModel("simulation.co_sim.B", "../resources/Modelica.Blocks.Sources.Sine.fmu")
 printStatus(status, 0)
 
 oms_exportDependencyGraphs("simulation.co_sim", "simulation_init.dot", "simulation_event.dot", "simulation_sim.dot")
@@ -45,16 +44,16 @@ oms_exportDependencyGraphs("simulation.co_sim", "simulation_init.dot", "simulati
 status = oms_instantiate("simulation")
 printStatus(status, 0)
 
-v, status = oms_getReal("simulation.co_sim.A.A")
+v, status = oms_getReal("simulation.co_sim.A.amplitude")
 printStatus(status, 0)
-print("simulation.co_sim.A.A: " .. v)
+print("simulation.co_sim.A.amplitude: " .. v)
 
-status = oms_setReal("simulation.co_sim.A.A", v + 1.0)
+status = oms_setReal("simulation.co_sim.A.amplitude", v + 1.0)
 printStatus(status, 0)
 
-v, status = oms_getReal("simulation.co_sim.A.A")
+v, status = oms_getReal("simulation.co_sim.A.amplitude")
 printStatus(status, 0)
-print("simulation.co_sim.A.A: " .. v)
+print("simulation.co_sim.A.amplitude: " .. v)
 
 status = oms_initialize("simulation")
 printStatus(status, 0)
@@ -83,17 +82,17 @@ printStatus(status, 0)
 -- status:  [correct] ok
 -- status:  [correct] ok
 -- status:  [correct] ok
--- simulation.co_sim.A.A: 1.0
+-- simulation.co_sim.A.amplitude: 1.0
 -- status:  [correct] ok
 -- status:  [correct] ok
--- simulation.co_sim.A.A: 2.0
+-- simulation.co_sim.A.amplitude: 2.0
 -- info:    Result file: simulation_res.mat (bufferSize=10)
 -- status:  [correct] ok
 -- status:  [correct] ok
 -- simulation.co_sim.A.y: 0.0
 -- status:  [correct] ok
 -- status:  [correct] ok
--- simulation.co_sim.A.y: 1.6829419696158
+-- simulation.co_sim.A.y: -4.8985871965894e-16
 -- status:  [correct] ok
 -- status:  [correct] ok
 -- endResult
