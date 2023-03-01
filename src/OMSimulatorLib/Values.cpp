@@ -1555,10 +1555,20 @@ oms_status_enu_t oms::Values::parseModelDescription(const filesystem::path& root
         for (pugi::xml_node output = modelStructureOutputNode.child("Unknown"); output; output = output.next_sibling("Unknown"))
         {
           int index = output.attribute("index").as_int();
-          std::string dependencies = output.attribute("dependencies").as_string();
-          std::vector<int> dependenciesList;
-          parseModelStructureDependencies(dependencies, dependenciesList);
-          modelStructureOutputs[index] = dependenciesList;
+          pugi::xml_attribute dependencynode = output.attribute("dependencies");
+          if (dependencynode)
+          {
+            std::string dependencies = output.attribute("dependencies").as_string();
+            std::vector<int> dependenciesList;
+            parseModelStructureDependencies(dependencies, dependenciesList);
+            modelStructureOutputs[index] = dependenciesList;
+            modelStructureOutputDependencyExist[index] = true;
+          }
+          else
+          {
+            modelStructureOutputs[index] = {};
+            modelStructureOutputDependencyExist[index] = false;
+          }
         }
       }
       // ModelStructure-derivatives
@@ -1568,10 +1578,20 @@ oms_status_enu_t oms::Values::parseModelDescription(const filesystem::path& root
         for (pugi::xml_node derivative = modelStructureDerivativeNode.child("Unknown"); derivative; derivative = derivative.next_sibling("Unknown"))
         {
           int index = derivative.attribute("index").as_int();
-          std::string dependencies = derivative.attribute("dependencies").as_string();
-          std::vector<int> dependenciesList;
-          parseModelStructureDependencies(dependencies, dependenciesList);
-          modelStructureDerivatives[index] = dependenciesList;
+          pugi::xml_attribute dependencynode = derivative.attribute("dependencies");
+          if (dependencynode)
+          {
+            std::string dependencies = derivative.attribute("dependencies").as_string();
+            std::vector<int> dependenciesList;
+            parseModelStructureDependencies(dependencies, dependenciesList);
+            modelStructureDerivatives[index] = dependenciesList;
+            modelStructureDerivativesDependencyExist[index] = true;
+          }
+          else
+          {
+            modelStructureDerivatives[index] = {};
+            modelStructureDerivativesDependencyExist[index] = false;
+          }
         }
       }
       // ModelStructure-initialUnknowns

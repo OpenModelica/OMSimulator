@@ -149,8 +149,8 @@ namespace oms
     std::map<int, std::vector<int>> modelStructureDerivatives;        ///< derivatives and its dependencies from <ModelStructure>
     std::map<int, std::vector<int>> modelStructureInitialUnknowns;    ///< initialUnknowns and its dependencies from <ModelStructure>
 
-    std::map<int, bool> modelStructureOutputDependencyExist;          ///< TODO: NOT IMPLEMENTED!
-    std::map<int, bool> modelStructureDerivativesDependencyExist;     ///< TODO: NOT IMPLEMENTED!
+    std::map<int, bool> modelStructureOutputDependencyExist;
+    std::map<int, bool> modelStructureDerivativesDependencyExist;
     std::map<int, bool> modelStructureInitialUnknownsDependencyExist;
 
     std::map<ComRef, std::string> modelDescriptionVariableUnits;  ///< variable units read from modeldescription.xml
