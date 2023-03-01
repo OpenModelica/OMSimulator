@@ -190,9 +190,6 @@ end
 --            AircraftVehicleDemonstrator.root.consumer_A
 --            AircraftVehicleDemonstrator.root.cockpit
 -- info:    Result file: AircraftVehicleDemonstrator_res.mat (bufferSize=10)
--- info:    Alg. loop (size 15/97)
---            AircraftVehicleDemonstrator.root.eCS_SW
---            AircraftVehicleDemonstrator.root.eCS_Generic_Export
 -- info:    AircraftVehicleDemonstrator.root.engine.pB.p is equal
 -- info:    AircraftVehicleDemonstrator.root.eCS_Generic_Export.Meas_PACK_TEMP is equal
 -- info:    AircraftVehicleDemonstrator.root.eCS_Generic_Export.Meas_PACK_PRESS is equal
