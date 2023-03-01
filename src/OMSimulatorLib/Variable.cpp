@@ -34,35 +34,35 @@
 #include "Logging.h"
 #include "Util.h"
 
-#include <JM/jm_portability.h>
-
-
-oms::Variable::Variable(fmi2_import_variable_t* var)
-  : der_index(0), state_index(0), is_state(false), is_der(false), is_continuous_time_state(false), is_continuous_time_der(false), cref(fmi2_import_get_variable_name(var)), index(fmi2_import_get_variable_original_order(var))
+oms::Variable::Variable(fmiHandle* fmi4c, int index_)
+  : der_index(0), state_index(0), is_state(false), is_der(false), is_continuous_time_state(false), is_continuous_time_der(false), index(index_)
 {
   // extract the attributes
-  description = fmi2_import_get_variable_description(var) ? fmi2_import_get_variable_description(var) : "";
+  fmi2VariableHandle *var = fmi2_getVariableByIndex(fmi4c, index_);
+  cref = fmi2_getVariableName(var);
+  description = fmi2_getVariableDescription(var) ? fmi2_getVariableDescription(var) : "";
   trim(description);
-  vr = fmi2_import_get_variable_vr(var);
-  causality = fmi2_import_get_causality(var);
-  variability = fmi2_import_get_variability(var);
-  initialProperty = fmi2_import_get_initial(var);
+  vr = fmi2_getVariableValueReference(var);
+  causality = fmi2_getVariableCausality(var);
+  variability = fmi2_getVariableVariability(var);
+  // TODO implement the initial attribute table in fmi4c according to FMI specification
+  initialProperty = fmi2_getVariableInitial(var);
 
-  switch (fmi2_import_get_variable_base_type(var))
+  switch (fmi2_getVariableDataType(var))
   {
-    case fmi2_base_type_real:
+    case fmi2DataTypeReal:
       type = oms_signal_type_real;
       break;
-    case fmi2_base_type_int:
+    case fmi2DataTypeInteger:
       type = oms_signal_type_integer;
       break;
-    case fmi2_base_type_bool:
+    case fmi2DataTypeBoolean:
       type = oms_signal_type_boolean;
       break;
-    case fmi2_base_type_str:
+    case fmi2DataTypeString:
       type = oms_signal_type_string;
       break;
-    case fmi2_base_type_enum:
+    case fmi2DataTypeEnumeration:
       type = oms_signal_type_enum;
       break;
     default:
@@ -74,12 +74,15 @@ oms::Variable::Variable(fmi2_import_variable_t* var)
   // mark derivatives
   if (oms_signal_type_real == type)
   {
-    fmi2_import_real_variable_t* varReal = fmi2_import_get_variable_as_real(var);
-    fmi2_import_variable_t* varState = (fmi2_import_variable_t*)fmi2_import_get_real_variable_derivative_of(varReal);
-    if (varState)
+    int derivative_index = fmi2_getVariableDerivativeIndex(var);
+    if (derivative_index != 0)
     {
       is_der = true;
-      state_index = fmi2_import_get_variable_original_order(varState);
+      state_index = derivative_index;
+      if (variability == fmi2VariabilityContinuous)
+      {
+        is_continuous_time_der = true;
+      }
     }
   }
 }
@@ -92,17 +95,47 @@ oms_causality_enu_t oms::Variable::getCausality() const
 {
   switch (causality)
   {
-  case fmi2_causality_enu_input:
+  case fmi2CausalityInput:
     return oms_causality_input;
 
-  case fmi2_causality_enu_output:
+  case fmi2CausalityOutput:
     return oms_causality_output;
 
-  case fmi2_causality_enu_parameter:
+  case fmi2CausalityParameter:
     return oms_causality_parameter;
+
+  case fmi2CausalityCalculatedParameter:
+    return oms_causality_calculatedParameter;
 
   default:
     return oms_causality_undefined;
+  }
+}
+
+std::string oms::Variable::getCausalityString() const
+{
+  switch (causality)
+  {
+  case fmi2CausalityInput:
+    return "input";
+
+  case fmi2CausalityOutput:
+    return "output";
+
+  case fmi2CausalityParameter:
+    return "parameter";
+
+  case fmi2CausalityCalculatedParameter:
+    return "calculatedParameter";
+
+  case fmi2CausalityIndependent:
+    return "independent";
+
+  case fmi2CausalityLocal:
+    return "local";
+
+  default:
+    return "undefined";
   }
 }
 

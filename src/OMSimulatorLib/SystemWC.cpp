@@ -823,7 +823,7 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime)
   ComRef modelName = this->getModel().getCref();
   auto start = std::chrono::steady_clock::now() + std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(time));
 
-  fmi2_status_t fmi_status;
+  fmi2Status fmi_status;
   double startTime = time;
   if (Flags::ProgressBar())
     logInfo("step WC system [" + std::to_string(startTime) + "; " + std::to_string(stopTime) + "] with step size [" + std::to_string(initialStepSize) + "; " + std::to_string(minimumStepSize) + "; " + std::to_string(maximumStepSize) + "]");

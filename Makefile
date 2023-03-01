@@ -33,7 +33,6 @@ else ifeq (MINGW32,$(findstring MINGW32,$(detected_OS)))
 	BUILD_DIR := build/mingw
 	INSTALL_DIR := install/mingw
 	CMAKE_TARGET=-G "MSYS Makefiles"
-	FMIL_FLAGS?=-DFMILIB_FMI_PLATFORM=win32
 	LIBXML2 := OFF
 	export ABI := WINDOWS32
 	FEXT=.dll
@@ -45,7 +44,6 @@ else ifeq (MINGW,$(findstring MINGW,$(detected_OS)))
 	BUILD_DIR := build/mingw
 	INSTALL_DIR := install/mingw
 	CMAKE_TARGET=-G "MSYS Makefiles"
-	FMIL_FLAGS?=-DFMILIB_FMI_PLATFORM=win64
 	LIBXML2 := OFF
 	export ABI := WINDOWS64
 	FEXT=.dll
@@ -103,7 +101,6 @@ ifneq ($(CROSS_TRIPLE),)
   LIBXML2 := OFF
   CROSS_TRIPLE_DASH = $(CROSS_TRIPLE)-
   HOST_CROSS_TRIPLE = "--host=$(CROSS_TRIPLE)"
-  FMIL_FLAGS ?=
   AR ?= $(CROSS_TRIPLE)-ar
   RANLIB ?= $(CROSS_TRIPLE)-ranlib
   ifeq (MINGW,$(findstring MINGW,$(detected_OS)))
@@ -120,7 +117,7 @@ else
 	CMAKE_BOOST_ROOT="-DBOOST_ROOT=$(BOOST_ROOT)"
 endif
 
-.PHONY: OMSimulator OMSimulatorCore config-OMSimulator config-fmil config-lua config-minizip config-cvode config-kinsol config-xerces config-3rdParty distclean testsuite doc doc-html doc-doxygen OMTLMSimulator OMTLMSimulatorClean RegEx pip
+.PHONY: OMSimulator OMSimulatorCore config-OMSimulator config-fmi4c config-lua config-minizip config-zlib config-cvode config-kinsol config-xerces config-3rdParty distclean testsuite doc doc-html doc-doxygen OMTLMSimulator OMTLMSimulatorClean RegEx pip
 
 OMSimulator:
 	@echo OS: $(detected_OS)
@@ -166,7 +163,7 @@ OMTLMSimulator: RegEx
 	test ! `uname` != Darwin || cp OMTLMSimulator/bin/FMIWrapper $(TOP_INSTALL_DIR)/bin/
 	test ! `uname` != Darwin || cp OMTLMSimulator/bin/StartTLMFmiWrapper $(TOP_INSTALL_DIR)/bin/
 
-OMTLMSimulatorStandalone: RegEx config-fmil
+OMTLMSimulatorStandalone: RegEx
 	@echo
 	@echo "# make OMTLMSimulator Standalone"
 	@echo
@@ -192,7 +189,7 @@ RegEx: 3rdParty/RegEx/OMSRegEx$(EEXT)
 	@echo "Please checkout the 3rdParty submodule, e.g. using \"git submodule update --init 3rdParty\", and try again."
 	@false
 
-config-3rdParty: 3rdParty/README.md config-fmil config-lua config-minizip config-cvode config-kinsol config-libxml2
+config-3rdParty: 3rdParty/README.md config-zlib config-minizip config-fmi4c config-lua config-cvode config-kinsol config-libxml2
 
 config-OMSimulator: $(BUILD_DIR)/Makefile
 $(BUILD_DIR)/Makefile: RegEx CMakeLists.txt
@@ -203,16 +200,35 @@ $(BUILD_DIR)/Makefile: RegEx CMakeLists.txt
 	$(MKDIR) $(BUILD_DIR)
 	cd $(BUILD_DIR) && $(CMAKE) $(CMAKE_TARGET) ../.. -DABI=$(ABI) -DSTD_REGEX=$(STD_REGEX) -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DOMTLM:BOOL=$(OMTLM) -DASAN:BOOL=$(ASAN) -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) $(CMAKE_BOOST_ROOT) $(CMAKE_INSTALL_PREFIX) $(HOST_SHORT) $(EXTRA_CMAKE) $(CMAKE_STATIC)
 
-config-fmil: 3rdParty/FMIL/$(INSTALL_DIR)/lib/libfmilib.a
-3rdParty/FMIL/$(INSTALL_DIR)/lib/libfmilib.a: 3rdParty/FMIL/$(BUILD_DIR)/Makefile
-	$(MAKE) -C 3rdParty/FMIL/$(BUILD_DIR)/ install
-3rdParty/FMIL/$(BUILD_DIR)/Makefile: 3rdParty/FMIL/CMakeLists.txt
+# use zlib and minizip from OMSimulator 3rdParty by setting OMS_ZLIB_INCLUDE_DIR, OMS_ZLIB_LIBRARY OMS_MINIZIP_INCLUDE_DIR and DOMS_MINIZIP_LIBRARY, see 3rdparty/fmi4c/cmake
+config-fmi4c: config-minizip config-zlib 3rdParty/fmi4c/$(INSTALL_DIR)/lib/libfmi4c.a
+3rdParty/fmi4c/$(INSTALL_DIR)/lib/libfmi4c.a: 3rdParty/fmi4c/$(BUILD_DIR)/Makefile
+	$(MAKE) -C 3rdParty/fmi4c/$(BUILD_DIR)/ install VERBOSE=1
+3rdParty/fmi4c/$(BUILD_DIR)/Makefile: 3rdParty/fmi4c/CMakeLists.txt
 	@echo
-	@echo "# config fmil"
+	@echo "# config fmi4c"
 	@echo
-	$(MKDIR) 3rdParty/FMIL/$(BUILD_DIR)
-	$(MKDIR) 3rdParty/FMIL/$(INSTALL_DIR)
-	cd 3rdParty/FMIL/$(BUILD_DIR) && $(CMAKE) $(CMAKE_TARGET) ../.. -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) -DFMILIB_BUILD_TESTS:BOOL=0 -DFMILIB_GENERATE_DOXYGEN_DOC:BOOL=0 -DFMILIB_BUILD_STATIC_LIB:BOOL=1 -DFMILIB_BUILD_SHARED_LIB:BOOL=0 -DBUILD_TESTING:BOOL=0 -DFMILIB_BUILD_BEFORE_TESTS:BOOL=0 $(FMIL_FLAGS) -Wno-dev
+	$(MKDIR) 3rdParty/fmi4c/$(BUILD_DIR)
+	$(MKDIR) 3rdParty/fmi4c/$(INSTALL_DIR)
+	cd 3rdParty/fmi4c/$(BUILD_DIR) && $(CMAKE) $(CMAKE_TARGET) ../.. \
+	-DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) \
+	-DFMI4C_BUILD_SHARED=OFF \
+	-DFMI4C_USE_INCLUDED_ZLIB=OFF \
+	-DOMS_ZLIB_INCLUDE_DIR=../zlib/$(INSTALL_DIR)/include \
+	-DOMS_ZLIB_LIBRARY=../zlib/$(INSTALL_DIR)/lib/libzlibstatic.a \
+	-DOMS_MINIZIP_INCLUDE_DIR=../minizip/$(INSTALL_DIR)/include \
+	-DOMS_MINIZIP_LIBRARY=../minizip/$(INSTALL_DIR)/lib/libminizip.a
+
+config-zlib: 3rdParty/zlib/$(INSTALL_DIR)/lib/libzlibstatic.a
+3rdParty/zlib/$(INSTALL_DIR)/lib/libzlibstatic.a: 3rdParty/zlib/$(BUILD_DIR)/Makefile
+	$(MAKE) -C 3rdParty/zlib/$(BUILD_DIR)/ install VERBOSE=1
+3rdParty/zlib/$(BUILD_DIR)/Makefile: 3rdParty/zlib/CMakeLists.txt
+	@echo
+	@echo "# config zlib"
+	@echo
+	$(MKDIR) 3rdParty/zlib/$(BUILD_DIR)
+	$(MKDIR) 3rdParty/zlib/$(INSTALL_DIR)
+	cd 3rdParty/zlib/$(BUILD_DIR) && $(CMAKE) $(CMAKE_TARGET) ../.. -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) -DBUILD_SHARED_LIBS=OFF
 
 config-lua: 3rdParty/Lua/$(INSTALL_DIR)/liblua.a
 3rdParty/Lua/$(INSTALL_DIR)/liblua.a:
@@ -221,9 +237,9 @@ config-lua: 3rdParty/Lua/$(INSTALL_DIR)/liblua.a
 	@echo
 	$(MAKE) -C 3rdParty/Lua $(LUA_EXTRA_FLAGS)
 
-config-minizip: 3rdParty/minizip/$(INSTALL_DIR)/libminizip.a
+config-minizip: config-zlib 3rdParty/minizip/$(INSTALL_DIR)/libminizip.a
 3rdParty/minizip/$(INSTALL_DIR)/libminizip.a: 3rdParty/minizip/$(BUILD_DIR)/Makefile
-	$(MAKE) -C 3rdParty/minizip/$(BUILD_DIR)/ install
+	$(MAKE) -C 3rdParty/minizip/$(BUILD_DIR)/ install VERBOSE=1
 3rdParty/minizip/$(BUILD_DIR)/Makefile:
 	@echo
 	@echo "# config minizip"
@@ -285,8 +301,6 @@ distclean:
 	@$(MAKE) OMTLMSimulatorClean
 	$(RM) $(BUILD_DIR)
 	$(RM) $(INSTALL_DIR)
-	$(RM) 3rdParty/FMIL/$(BUILD_DIR)
-	$(RM) 3rdParty/FMIL/$(INSTALL_DIR)
 	@$(MAKE) -C 3rdParty/Lua distclean
 	$(RM) 3rdParty/RegEx/OMSRegEx$(EEXT)
 	$(RM) 3rdParty/cvode/$(BUILD_DIR)

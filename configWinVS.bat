@@ -63,10 +63,12 @@ IF NOT EXIST install\\ MKDIR install
 IF NOT EXIST install\\win MKDIR install\\win
 IF NOT EXIST install\\win\\lib MKDIR install\\win\\lib
 
+@REM do not change the order to be consistent with line 265 config all
 IF ["%TARGET%"]==["clean"] GOTO clean
-IF ["%TARGET%"]==["fmil"] GOTO fmil
-IF ["%TARGET%"]==["lua"] GOTO lua
+IF ["%TARGET%"]==["zlib"] GOTO zlib
 IF ["%TARGET%"]==["minizip"] GOTO minizip
+IF ["%TARGET%"]==["fmi4c"] GOTO fmi4c
+IF ["%TARGET%"]==["lua"] GOTO lua
 IF ["%TARGET%"]==["cvode"] GOTO cvode
 IF ["%TARGET%"]==["kinsol"] GOTO kinsol
 IF ["%TARGET%"]==["xerces"] GOTO xerces
@@ -87,21 +89,21 @@ EXIT /B 0
 :: -- clean ---------------------------
 
 
-:: -- config fmil ---------------------
-:fmil
-ECHO # config fmil
-IF EXIST "3rdParty\FMIL\build\win\" RMDIR /S /Q 3rdParty\FMIL\build\win
-IF EXIST "3rdParty\FMIL\install\win\" RMDIR /S /Q 3rdParty\FMIL\install\win
-MKDIR 3rdParty\FMIL\build\win
-CD 3rdParty\FMIL\build\win
-cmake.exe -G %OMS_VS_VERSION% ..\.. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_INSTALL_PREFIX=..\..\install\win -DFMILIB_BUILD_TESTS:BOOL=0 -DFMILIB_GENERATE_DOXYGEN_DOC:BOOL=0 -DFMILIB_BUILD_STATIC_LIB:BOOL=1 -DFMILIB_BUILD_SHARED_LIB:BOOL=0 -DBUILD_TESTING:BOOL=0 -DFMILIB_BUILD_BEFORE_TESTS:BOOL=0 -Wno-dev
+:: -- config fmi4c ---------------------
+:fmi4c
+ECHO # config fmi4c
+IF EXIST "3rdParty\fmi4c\build\win\" RMDIR /S /Q 3rdParty\fmi4c\build\win
+IF EXIST "3rdParty\fmi4c\install\win\" RMDIR /S /Q 3rdParty\fmi4c\install\win
+MKDIR 3rdParty\fmi4c\build\win
+CD 3rdParty\fmi4c\build\win
+cmake.exe -G %OMS_VS_VERSION% ..\.. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_INSTALL_PREFIX=..\..\install\win -DFMI4C_BUILD_SHARED=OFF -DFMI4C_USE_INCLUDED_ZLIB=OFF -DOMS_MINIZIP_INCLUDE_DIR=..\minizip\install\win\include -DOMS_MINIZIP_LIBRARY=..\minizip\install\win\lib\minizip.lib -DOMS_ZLIB_INCLUDE_DIR=..\zlib\install\win\include -DOMS_ZLIB_LIBRARY=..\zlib\install\win\lib\zlibstatic.lib
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 CD ..\..\..\..
-ECHO # build fmil
-msbuild.exe "3rdParty\FMIL\build\win\INSTALL.vcxproj" /t:Build /p:configuration=Release /maxcpucount
+ECHO # build fmi4c
+msbuild.exe "3rdParty\fmi4c\build\win\INSTALL.vcxproj" /t:Build /p:configuration=Release /maxcpucount
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 EXIT /B 0
-:: -- config fmil ---------------------
+:: -- config fmi4c ---------------------
 
 
 :: -- build Lua -----------------------
@@ -134,6 +136,21 @@ IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 EXIT /B 0
 :: -- build minizip ----------------------
 
+:: -- build zlib ----------------------
+:zlib
+ECHO # config zlib
+IF EXIST "3rdParty\zlib\build\win\" RMDIR /S /Q 3rdParty\zlib\build\win
+IF EXIST "3rdParty\zlib\install\win\" RMDIR /S /Q 3rdParty\zlib\install\win
+MKDIR 3rdParty\zlib\build\win
+CD 3rdParty\zlib\build\win
+cmake.exe -G %OMS_VS_VERSION% ..\..\ -DCMAKE_INSTALL_PREFIX=..\..\install\win
+IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
+CD ..\..\..\..
+ECHO # build zlib
+msbuild.exe "3rdParty\zlib\build\win\INSTALL.vcxproj" /t:Build /p:configuration=Release /maxcpucount
+IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
+EXIT /B 0
+:: -- build zlib ----------------------
 
 :: -- config cvode --------------------
 :cvode
@@ -250,11 +267,13 @@ EXIT /B 0
 START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% clean"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 IF NOT EXIST "3rdParty/README.md" GOTO fail2
-START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% fmil"
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% lua"
+START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% zlib"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% minizip"
+IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
+START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% fmi4c"
+IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
+START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% lua"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% cvode"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail

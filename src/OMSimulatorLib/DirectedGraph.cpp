@@ -174,14 +174,14 @@ void oms::DirectedGraph::strongconnect(int v, std::vector< std::vector<int> > G,
     {
       // Successor w has not yet been visited; recurse on it
       strongconnect(w, G, index, d, low, S, stacked, components);
-      low[v] = std::min(low[v], low[w]);
+      low[v] = (std::min)(low[v], low[w]); // this is done to make windows compile std::min => (std::min)
     }
     else if (stacked[w])
     {
       // Successor w is in stack S and hence in the current SCC
       // Note: The next line may look odd - but is correct.
       // It says w.index not w.lowlink; that is deliberate and from the original paper
-      low[v] = std::min(low[v], d[w]);
+      low[v] = (std::min)(low[v], d[w]);  // this is done to make windows compile std::min => (std::min)
     }
   }
 

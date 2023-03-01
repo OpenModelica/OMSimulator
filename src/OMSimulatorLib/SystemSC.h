@@ -79,8 +79,8 @@ namespace oms
   private:
     std::vector<ComponentFMUME*> fmus;
 
-    std::vector<fmi2_boolean_t> callEventUpdate;
-    std::vector<fmi2_boolean_t> terminateSimulation;
+    std::vector<fmi2Boolean> callEventUpdate;
+    std::vector<fmi2Boolean> terminateSimulation;
     std::vector<size_t> nStates;
     std::vector<size_t> nEventIndicators;
 

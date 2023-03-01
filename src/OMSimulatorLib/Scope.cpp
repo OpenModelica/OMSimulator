@@ -35,7 +35,7 @@
 #include "System.h"
 #include "Component.h"
 #include "Snapshot.h"
-#include <miniunz.h>
+#include "minizip/miniunz.h"
 #include <time.h>
 #include "ssd/Tags.h"
 

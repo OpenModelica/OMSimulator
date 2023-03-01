@@ -203,8 +203,8 @@ oms_status_enu_t oms::SystemSC::instantiate()
     {
       fmus.push_back(dynamic_cast<ComponentFMUME*>(component.second));
 
-      callEventUpdate.push_back(fmi2_false);
-      terminateSimulation.push_back(fmi2_false);
+      callEventUpdate.push_back(fmi2False);
+      terminateSimulation.push_back(fmi2False);
       nStates.push_back(fmus.back()->getNumberOfContinuousStates());
       n_states += nStates.back();
       nEventIndicators.push_back(fmus.back()->getNumberOfEventIndicators());
@@ -484,25 +484,25 @@ oms_status_enu_t oms::SystemSC::reset()
 oms_status_enu_t oms::SystemSC::doStep()
 {
   const double hdef = maximumStepSize;
-  fmi2_real_t tlast = time;
-  fmi2_real_t tnext = time + hdef;
-  fmi2_status_t fmistatus;
+  fmi2Real tlast = time;
+  fmi2Real tnext = time + hdef;
+  fmi2Status fmistatus;
   oms_status_enu_t status;
 
   // event handling
   for (int i=0; i < fmus.size(); ++i)
   {
-    fmistatus = fmi2_import_set_time(fmus[i]->getFMU(), time);
-    if (fmi2_status_ok != fmistatus) logError_FMUCall("fmi2_import_set_time", fmus[i]);
+    fmistatus = fmi2_setTime(fmus[i]->getFMU(), time);
+    if (fmi2OK != fmistatus) logError_FMUCall("fmi2_setTime", fmus[i]);
 
     // swap event_indicators and event_indicators_prev
     {
-      fmi2_real_t *temp = event_indicators[i];
+      fmi2Real *temp = event_indicators[i];
       event_indicators[i] = event_indicators_prev[i];
       event_indicators_prev[i] = temp;
 
-      fmistatus = fmi2_import_get_event_indicators(fmus[i]->getFMU(), event_indicators[i], nEventIndicators[i]);
-      if (fmi2_status_ok != fmistatus) logError_FMUCall("fmi2_import_get_event_indicators", fmus[i]);
+      fmistatus = fmi2_getEventIndicators(fmus[i]->getFMU(), event_indicators[i], nEventIndicators[i]);
+      if (fmi2OK != fmistatus) logError_FMUCall("fmi2_getEventIndicators", fmus[i]);
     }
 
     // check if an event indicator has triggered
@@ -525,13 +525,13 @@ oms_status_enu_t oms::SystemSC::doStep()
       if (isTopLevelSystem())
         getModel().emit(time, false);
 
-      fmistatus = fmi2_import_enter_event_mode(fmus[i]->getFMU());
-      if (fmi2_status_ok != fmistatus) logError_FMUCall("fmi2_import_enter_event_mode", fmus[i]);
+      fmistatus = fmi2_enterEventMode(fmus[i]->getFMU());
+      if (fmi2OK != fmistatus) logError_FMUCall("fmi2_enterEventMode", fmus[i]);
 
       fmus[i]->doEventIteration();
 
-      fmistatus = fmi2_import_enter_continuous_time_mode(fmus[i]->getFMU());
-      if (fmi2_status_ok != fmistatus) logError_FMUCall("fmi2_import_enter_continuous_time_mode", fmus[i]);
+      fmistatus = fmi2_enterContinuousTimeMode(fmus[i]->getFMU());
+      if (fmi2OK != fmistatus) logError_FMUCall("fmi2_enterContinuousTimeMode", fmus[i]);
       if (nStates[i] > 0)
       {
         status = fmus[i]->getContinuousStates(states[i]);
@@ -569,7 +569,7 @@ oms_status_enu_t oms::SystemSC::doStep()
   }
 
   // calculate step size
-  fmi2_real_t hcur = tnext - tlast;
+  fmi2Real hcur = tnext - tlast;
   const double stopTime = getModel().getStopTime();
   if (tnext > stopTime - hcur / 1e16)
   {
@@ -632,8 +632,8 @@ oms_status_enu_t oms::SystemSC::doStep()
   // step is complete
   for (int i=0; i < fmus.size(); ++i)
   {
-    fmistatus = fmi2_import_completed_integrator_step(fmus[i]->getFMU(), fmi2_true, &callEventUpdate[i], &terminateSimulation[i]);
-    if (fmi2_status_ok != fmistatus) return logError_FMUCall("fmi2_import_completed_integrator_step", fmus[i]);
+    fmistatus = fmi2_completedIntegratorStep(fmus[i]->getFMU(), fmi2True, &callEventUpdate[i], &terminateSimulation[i]);
+    if (fmi2OK != fmistatus) return logError_FMUCall("fmi2_completedIntegratorStep", fmus[i]);
   }
 
   updateInputs(simulationGraph); //pass the continuousTimeMode dependency graph which involves only connections of type Real
@@ -681,8 +681,8 @@ oms_status_enu_t oms::SystemSC::updateInputs(DirectedGraph& graph)
       switch (component.second->getType())
       {
         case oms_component_fmu:
-          if (fmi2_status_ok != fmi2_import_set_time(dynamic_cast<ComponentFMUME*>(component.second)->getFMU(), time))
-            logError_FMUCall("fmi2_import_set_time", dynamic_cast<ComponentFMUME*>(component.second));
+          if (fmi2OK != fmi2_setTime(dynamic_cast<ComponentFMUME*>(component.second)->getFMU(), time))
+            logError_FMUCall("fmi2_setTime", dynamic_cast<ComponentFMUME*>(component.second));
           break;
         case oms_component_table:
           dynamic_cast<ComponentTable*>(component.second)->stepUntil(time);

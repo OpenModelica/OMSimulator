@@ -45,7 +45,7 @@
 #include "Types.h"
 #include "Values.h"
 
-#include <fmilib.h>
+#include <fmi4c.h>
 #include <pugixml.hpp>
 
 namespace oms
@@ -54,8 +54,7 @@ namespace oms
   class Model;
   class Variable;
 
-  void fmiLogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message);
-  void fmi2logger(fmi2_component_environment_t env, fmi2_string_t instanceName, fmi2_status_t status, fmi2_string_t category, fmi2_string_t message, ...);
+  void fmi2logger(fmi2ComponentEnvironment env, fmi2String instanceName, fmi2Status status, fmi2String category, fmi2String message, ...);
 
   class Component
   {

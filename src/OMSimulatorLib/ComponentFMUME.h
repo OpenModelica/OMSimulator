@@ -39,7 +39,8 @@
 #include "Values.h"
 #include "Variable.h"
 
-#include <fmilib.h>
+#include <fmi4c.h>
+
 #include <map>
 #include <pugixml.hpp>
 #include <string>
@@ -73,13 +74,13 @@ namespace oms
     Variable* getVariable(const ComRef& cref);
 
     oms_status_enu_t getBoolean(const ComRef& cref, bool& value);
-    oms_status_enu_t getBoolean(const fmi2_value_reference_t& vr, bool& value);
+    oms_status_enu_t getBoolean(const fmi2ValueReference& vr, bool& value);
     oms_status_enu_t getInteger(const ComRef& cref, int& value);
-    oms_status_enu_t getInteger(const fmi2_value_reference_t& vr, int& value);
+    oms_status_enu_t getInteger(const fmi2ValueReference& vr, int& value);
     oms_status_enu_t getReal(const ComRef& cref, double& value);
-    oms_status_enu_t getReal(const fmi2_value_reference_t& vr, double& value);
+    oms_status_enu_t getReal(const fmi2ValueReference& vr, double& value);
     oms_status_enu_t getString(const ComRef& cref, std::string& value);
-    oms_status_enu_t getString(const fmi2_value_reference_t& vr, std::string& value);
+    oms_status_enu_t getString(const fmi2ValueReference& vr, std::string& value);
     oms_status_enu_t setBoolean(const ComRef& cref, bool value);
     oms_status_enu_t setInteger(const ComRef& cref, int value);
     oms_status_enu_t setReal(const ComRef& cref, double value);
@@ -109,8 +110,8 @@ namespace oms
     oms_status_enu_t getNominalsOfContinuousStates(double* nominals);
     oms_status_enu_t getEventindicators(double* eventindicators);
 
-    fmi2_import_t* getFMU() {return fmu;}
-    fmi2_event_info_t* getEventInfo() {return &eventInfo;}
+    fmiHandle* getFMU() {return fmu;}
+    fmi2EventInfo* getEventInfo() {return &eventInfo;}
 
     bool getCanGetAndSetState() {return getFMUInfo()->getCanGetAndSetFMUstate();}
 
@@ -137,12 +138,10 @@ namespace oms
     void dumpInitialUnknowns();
 
   private:
-    jm_callbacks callbacks;
-    fmi2_callback_functions_t callbackFunctions;
-    fmi_import_context_t* context = NULL;
-    fmi2_import_t* fmu = NULL;
+    fmi2CallbackLogger omsfmi2logger;
+    fmiHandle *fmu = NULL;
 
-    fmi2_event_info_t eventInfo;
+    fmi2EventInfo eventInfo;
     size_t nEventIndicators;
 
     FMUInfo fmuInfo;
@@ -159,7 +158,7 @@ namespace oms
 
     std::unordered_map<unsigned int /*result file var ID*/, unsigned int /*allVariables ID*/> resultFileMapping;
 
-    std::map<fmi2_value_reference_t, oms_fault_type_t> fib;  ///< fault injection blocks
+    std::map<fmi2ValueReference, oms_fault_type_t> fib;  ///< fault injection blocks
     oms::ComRef getValidCref(ComRef cref);
   };
 }

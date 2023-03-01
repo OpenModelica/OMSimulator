@@ -41,7 +41,7 @@
 #include "ssd/Tags.h"
 #include "System.h"
 
-#include <minizip.h>
+#include "minizip/minizip.h"
 #include <thread>
 
 oms::Model::Model(const oms::ComRef& cref, const std::string& tempDir)

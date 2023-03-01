@@ -48,7 +48,7 @@ oms::SignalDerivative::SignalDerivative(double der)
   values[0] = der;
 }
 
-oms::SignalDerivative::SignalDerivative(unsigned int order, fmi2_import_t* fmu, fmi2_value_reference_t vr)
+oms::SignalDerivative::SignalDerivative(unsigned int order, fmiHandle* fmu, fmi2ValueReference vr)
 {
   this->order = order;
   if (this->order == 0)
@@ -56,20 +56,20 @@ oms::SignalDerivative::SignalDerivative(unsigned int order, fmi2_import_t* fmu, 
   else
   {
     values = new double[order];
-    if (fmi2_status_ok != fmi2_import_get_real_output_derivatives(fmu, &vr, 1, (fmi2_integer_t*)&this->order, values))
-      logError("fmi2_import_get_real_output_derivatives failed");
+    if (fmi2OK != fmi2_getRealOutputDerivatives(fmu, &vr, 1, (fmi2Integer*)&this->order, values))
+      logError("fmi2_getRealOutputDerivatives failed");
     else
     {
       for (int i=0; i<order; ++i)
       {
         if (std::isnan(values[i]))
         {
-          logWarning("fmi2_import_get_real_output_derivatives returned NAN");
+          logWarning("fmi2_getRealOutputDerivatives returned NAN");
           values[i] = 0.0;
         }
         if (std::isinf(values[i]))
         {
-          logWarning("fmi2_import_get_real_output_derivatives returned +/-inf");
+          logWarning("fmi2_getRealOutputDerivatives returned +/-inf");
           values[i] = 0.0;
         }
       }
@@ -119,11 +119,11 @@ oms::SignalDerivative& oms::SignalDerivative::operator=(const oms::SignalDerivat
   return *this;
 }
 
-oms_status_enu_t oms::SignalDerivative::setRealInputDerivatives(fmi2_import_t* fmu, fmi2_value_reference_t vr) const
+oms_status_enu_t oms::SignalDerivative::setRealInputDerivatives(fmiHandle* fmu, fmi2ValueReference vr) const
 {
   if (order > 0 && values)
   {
-    if (fmi2_status_ok != fmi2_import_set_real_input_derivatives(fmu, &vr, 1, (fmi2_integer_t*)&order, (fmi2_real_t*)values))
+    if (fmi2OK != fmi2_setRealInputDerivatives(fmu, &vr, 1, (fmi2Integer*)&order, (fmi2Real*)values))
       return oms_status_error;
   }
   return oms_status_ok;

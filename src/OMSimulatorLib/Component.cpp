@@ -37,29 +37,11 @@
 #include "System.h"
 #include "TLMBusConnector.h"
 
-void oms::fmiLogger(jm_callbacks* c, jm_string module, jm_log_level_enu_t log_level, jm_string message)
-{
-  switch (log_level)
-  {
-  case jm_log_level_info:    // Informative messages
-    logDebug("module " + std::string(module) + ": " + std::string(message));
-    break;
-  case jm_log_level_warning: // Non-critical issues
-    logWarning("module " + std::string(module) + ": " + std::string(message));
-    break;
-  case jm_log_level_error:   // Errors that may be not critical for some FMUs
-  case jm_log_level_fatal:   // Unrecoverable errors
-    logError("module " + std::string(module) + ": " + std::string(message));
-    break;
-  case jm_log_level_verbose: // Verbose messages
-  case jm_log_level_debug:   // Debug messages. Only enabled if library is configured with FMILIB_ENABLE_LOG_LEVEL_DEBUG
-    logDebug("[log level " + std::string(jm_log_level_to_string(log_level)) + "] module " + std::string(module) + ": " + std::string(message));
-  }
-}
+#include <stdarg.h>
 
-void oms::fmi2logger(fmi2_component_environment_t env, fmi2_string_t instanceName, fmi2_status_t status, fmi2_string_t category, fmi2_string_t message, ...)
+void oms::fmi2logger(fmi2ComponentEnvironment env, fmi2String instanceName, fmi2Status status, fmi2String category, fmi2String message, ...)
 {
-  if ((status == fmi2_status_ok || status == fmi2_status_pending) && !logDebugEnabled())
+  if ((status == fmi2OK || status == fmi2Pending) && !logDebugEnabled())
   {
     // When frequently called for debug logging during simulation, avoid costly formatting.
     return;
@@ -73,20 +55,20 @@ void oms::fmi2logger(fmi2_component_environment_t env, fmi2_string_t instanceNam
 
   switch (status)
   {
-  case fmi2_status_ok:
-  case fmi2_status_pending:
+  case fmi2OK:
+  case fmi2Pending:
     logDebug(std::string(instanceName) + " (" + category + "): " + msg);
     break;
-  case fmi2_status_warning:
+  case fmi2Warning:
     logWarning(std::string(instanceName) + " (" + category + "): " + msg);
     break;
-  case fmi2_status_discard:
-  case fmi2_status_error:
-  case fmi2_status_fatal:
+  case fmi2Discard:
+  case fmi2Error:
+  case fmi2Fatal:
     logError(std::string(instanceName) + " (" + category + "): " + msg);
     break;
   default:
-    logWarning("fmiStatus = " + std::string(fmi2_status_to_string(status)) + "; " + instanceName + " (" + category + "): " + msg);
+    logWarning("fmiStatus = unknown; " + std::string(instanceName) + " (" + category + "): " + msg);
   }
 }
 
