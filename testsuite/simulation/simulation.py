@@ -2,7 +2,7 @@
 ## teardown_command: rm -rf simulation-py/ test_init1.dot test_sim1.dot test_event1.dot test.mat
 ## linux: yes
 ## mingw32: no
-## mingw64: no
+## mingw64: yes
 ## win: no
 ## mac: no
 
@@ -33,7 +33,7 @@ printStatus(status, 0)
 status = oms.addSystem("test.co_sim", oms.system_wc)
 printStatus(status, 0)
 
-status = oms.addSubModel("simulation.co_sim.A.amplitude", "../resources/Modelica.Blocks.Sources.Sine.fmu")
+status = oms.addSubModel("test.co_sim.A", "../resources/Modelica.Blocks.Sources.Sine.fmu")
 printStatus(status, 0)
 
 status = oms.addSubModel("test.co_sim.B", "../resources/Modelica.Blocks.Sources.Sine.fmu")
@@ -46,30 +46,30 @@ oms.setResultFile("test", "test.mat")
 status = oms.instantiate("test")
 printStatus(status, 0)
 
-v, status = oms.getReal("simulation.co_sim.A.amplitude.A")
+v, status = oms.getReal("test.co_sim.A.amplitude")
 printStatus(status, 0)
-print("simulation.co_sim.A.amplitude.A: %g" % v, flush=True)
+print("test.co_sim.A.amplitude.A: %g" % v, flush=True)
 
-status = oms.setReal("simulation.co_sim.A.amplitude.A", v + 1.0)
+status = oms.setReal("test.co_sim.A.amplitude", v + 1.0)
 printStatus(status, 0)
 
-v, status = oms.getReal("simulation.co_sim.A.amplitude.A")
+v, status = oms.getReal("test.co_sim.A.amplitude")
 printStatus(status, 0)
-print("simulation.co_sim.A.amplitude.A: %g" % v, flush=True)
+print("test.co_sim.A.amplitude.A: %g" % v, flush=True)
 
 status = oms.initialize("test")
 printStatus(status, 0)
 
-v, status = oms.getReal("simulation.co_sim.A.amplitude.y")
+v, status = oms.getReal("test.co_sim.A.y")
 printStatus(status, 0)
-print("simulation.co_sim.A.amplitude.y: %g" % v, flush=True)
+print("test.co_sim.A.amplitude.y: %g" % v, flush=True)
 
 status = oms.simulate("test")
 printStatus(status, 0)
 
-v, status = oms.getReal("simulation.co_sim.A.amplitude.y")
+v, status = oms.getReal("test.co_sim.A.y")
 printStatus(status, 0)
-print("simulation.co_sim.A.amplitude.y: %g" % v, flush=True)
+print("test.co_sim.A.amplitude.y: %g" % v, flush=True)
 
 status = oms.terminate("test")
 printStatus(status, 0)
@@ -84,17 +84,17 @@ printStatus(status, 0)
 ## status:  [correct] ok
 ## status:  [correct] ok
 ## status:  [correct] ok
-## simulation.co_sim.A.amplitude: 1.0
+## test.co_sim.A.amplitude.A: 1
 ## status:  [correct] ok
 ## status:  [correct] ok
-## simulation.co_sim.A.amplitude: 2.0
-## info:    Result file: simulation_res.mat (bufferSize=10)
+## test.co_sim.A.amplitude.A: 2
+## info:    Result file: test.mat (bufferSize=1)
 ## status:  [correct] ok
 ## status:  [correct] ok
-## simulation.co_sim.A.y: 0.0
+## test.co_sim.A.amplitude.y: 0
 ## status:  [correct] ok
 ## status:  [correct] ok
-## simulation.co_sim.A.y: -4.8985871965894e-16
+## test.co_sim.A.amplitude.y: -4.89843e-16
 ## status:  [correct] ok
 ## status:  [correct] ok
 ## endResult
