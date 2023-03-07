@@ -510,6 +510,12 @@ oms_status_enu_t oms::Model::exportSSVTemplate(const oms::ComRef& cref, const st
 
   for (const auto& component : system->getComponents())
   {
+    // skip csv files for top level model and export the remaining fmus in the model
+    if (cref.isEmpty())
+    {
+      if (component.second->getType() == oms_component_table)
+        continue;
+    }
     if(component.first == tail || cref.isEmpty() || cref.isValidIdent()) // allow querying single component or whole model
     {
       if (oms_status_ok != component.second->exportToSSVTemplate(ssvNode, snapshot))
@@ -528,6 +534,12 @@ oms_status_enu_t oms::Model::exportSSVTemplate(const oms::ComRef& cref, const st
   {
     for (const auto &component : subsytem.second->getComponents())
     {
+      // skip csv files for top level model and export the remaining fmus in the model
+      if (cref.isEmpty())
+      {
+        if (component.second->getType() == oms_component_table)
+          continue;
+      }
       if (component.first == tailA || cref.isEmpty() || (system->getSystem(frontA) && tailA.isEmpty()))
       {
         if (oms_status_ok != component.second->exportToSSVTemplate(ssvNode, snapshot))
