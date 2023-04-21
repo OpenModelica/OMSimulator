@@ -32,9 +32,10 @@ as default variant.
 
 #END#
 
-
 #DESCRIPTION#
-  An example of creating a multi-variant modelling is presente below
+An example of creating a multi-variant modelling is presented below
+
+.. code-block:: lua
 
   oms_newModel("model")
   oms_addSystem("model.root", "system_wc")
@@ -45,7 +46,9 @@ as default variant.
   oms_setReal("varB.root.A.param2", "20")
   oms_export("varB", "variant.ssp")
 
-  The variant.ssp file will have the following structure
+The variant.ssp file will have the following structure
+
+.. code-block::
 
   Variant.ssp
       SystemStructure.ssd

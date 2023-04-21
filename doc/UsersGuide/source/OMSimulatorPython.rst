@@ -17,7 +17,7 @@ Installation using ``pip`` is recommended:
 .. index:: OMSimulatorPython; Examples
 
 Examples
-########
+--------
 
 .. code-block:: python
 
@@ -85,12 +85,12 @@ following example is equivalent to the previous one:
 .. index:: OMSimulatorPython; Scripting Commands
 
 Python Scripting Commands
-#########################
+-------------------------
 
 .. include:: OMSimulatorPython.inc
 
 Example: Pi
-###########
+^^^^^^^^^^^
 
 This example uses a simple Modelica model and FMI-based batch
 simulation to approximate the value of pi.

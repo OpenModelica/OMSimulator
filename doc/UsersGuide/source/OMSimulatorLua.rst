@@ -11,7 +11,7 @@ library.
 .. index:: OMSimulatorLua; Examples
 
 Examples
-########
+--------
 
 .. code-block:: lua
 
