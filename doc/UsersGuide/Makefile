@@ -1,7 +1,7 @@
 # Makefile for Sphinx documentation
 #
 
-OMSIMULATOR_ROOT = $(CURDIR)/../../
+OMSIMULATOR_ROOT = $(CURDIR)/../..
 
 # You can set these variables from the command line.
 SPHINXOPTS    =
@@ -22,6 +22,8 @@ else ifeq (MINGW,$(findstring MINGW,$(detected_OS)))
 else
 	INSTALL_DIR := install/linux
 endif
+
+OMSIMULATORHOME := $(OMSIMULATOR_ROOT)/$(INSTALL_DIR)/bin
 
 # Internal variables.
 PAPEROPT_a4     = -D latex_paper_size=a4
@@ -190,6 +192,6 @@ pseudoxml:
 all-dep: source/omsimulator-help.inc
 
 source/omsimulator-help.inc:
-	$(OMSIMULATOR_ROOT)/$(INSTALL_DIR)/bin/OMSimulator --help > "$@.tmp"
+	$(OMSIMULATORHOME)/OMSimulator --help > "$@.tmp"
 	mv "$@.tmp" "$@"
 	cp "$@" source/api/
