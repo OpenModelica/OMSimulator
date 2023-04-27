@@ -17,7 +17,7 @@ See also `FMI documentation <https://openmodelica.org/doc/OpenModelicaUsersGuide
 and `SSP documentation <https://ssp-standard.org/>`_.
 
 .. figure :: images/omedit_01.png
-  :name: omedit-mainwindow-browsers
+  :name: oms-omedit-mainwindow-browsers
 
   OMEdit MainWindow and Browsers.
 

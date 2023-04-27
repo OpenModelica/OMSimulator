@@ -9,7 +9,7 @@ Composite models are imported and exported in the *System Structure Description 
 .. index:: SSP; Bus connections
 
 Bus Connections
-###############
+---------------
 
 Bus connections are saved as annotations to the SSD file. Bus connectors are only allowed in weakly coupled and strongly coupled systems. Bus connections can exist in any system type. Bus connectors are used to hide SSD connectors and bus connections are used to hide existing SSD connections in the graphical user interface. It is not required that all connectors referenced in a bus are connected. One bus may be connected to multiple other buses, and also to SSD connectors.
 
@@ -80,7 +80,7 @@ The example below contains a root system with two subsystems, ``WC1`` and ``WC2`
 .. index:: SSP; TLM Systems
 
 TLM Systems
-###########
+-----------
 
 TLM systems are only allowed on top-level. SSD annotations are used to specify the system type inside the ``ssd:SimulationInformation`` tag, as shown in the example below. Attributes ``ip``, ``managerport`` and ``monitorport`` defines the socket communication, used both to exchange data with external tools and with internal simulation threads.
 
@@ -109,7 +109,7 @@ TLM systems are only allowed on top-level. SSD annotations are used to specify t
 .. index:: SSP; TLM connections
 
 TLM Connections
-###############
+---------------
 
 TLM connections are implemented without regular SSD connections. TLM connections are only allowed in TLM systems. TLM connectors are only allowed in weakly coupled or strongly coupled systems. Both connectors and connections are implemented as SSD annotations in the System tag.
 

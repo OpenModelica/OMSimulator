@@ -9,7 +9,7 @@ OMSimulatorLib library.
 .. index:: OpenModelicaScripting; Examples
 
 Examples
-########
+--------
 
 .. code-block:: modelica
 
@@ -43,6 +43,6 @@ Examples
 .. index:: OpenModelicaScripting; Scripting Commands
 
 OpenModelica Scripting Commands
-###############################
+-------------------------------
 
 .. include:: OMCScripting.inc

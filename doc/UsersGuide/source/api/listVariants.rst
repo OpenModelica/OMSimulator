@@ -29,7 +29,9 @@ This API shows the number of variants available [(e.g). SystemStructure.ssd, Var
 
 
 #DESCRIPTION#
-  An example for finding the number of available variants in a ssp file
+An example for finding the number of available variants in a ssp file
+
+.. code-block:: lua
 
   oms_newModel("model")
   oms_addSystem("model.root", "system_wc")
@@ -39,7 +41,10 @@ This API shows the number of variants available [(e.g). SystemStructure.ssd, Var
 
   oms_listVariants("varB")
 
-  The API will list the available variants like below
+The API will list the available variants like below
+
+.. code-block::
+
   <oms:Variants>
     <oms:variant name="model" />
     <oms:variant name="varB" />
