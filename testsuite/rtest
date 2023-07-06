@@ -17,7 +17,12 @@ if ($cwd =~ m/(.*)testsuite\/(.+)$/) {
   if ($os =~ /MINGW/) {
     if ($os =~ /MINGW64/) {
       $PLATFORM = "mingw";
-      $TEST_PLATFORM = "mingw64";
+        if ($ENV{'MSYSTEM'} =~ /UCRT64/) {
+          $TEST_PLATFORM = "ucrt64";
+        }
+        else {
+          $TEST_PLATFORM = "mingw64";
+        }
     }
     else {
       $PLATFORM = "mingw";

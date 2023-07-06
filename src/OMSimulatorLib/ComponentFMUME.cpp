@@ -148,7 +148,7 @@ oms::Component* oms::ComponentFMUME::NewComponent(const oms::ComRef& cref, oms::
   fmiVersion_t version = fmi4c_getFmiVersion(component->fmu);
   if (fmiVersion2 != version)
   {
-    logError("Unsupported FMI version: " + version);
+    logError("Unsupported FMI version: " + std::to_string(version));
     delete component;
     return NULL;
   }

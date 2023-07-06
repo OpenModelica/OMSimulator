@@ -247,7 +247,6 @@ pipeline {
           }
         }
 
-
         stage('mingw64-gcc') {
           stages {
             stage('build') {
@@ -255,8 +254,10 @@ pipeline {
                 label 'omsimulator-windows'
               }
               environment {
-                PATH = "${env.PATH};C:\\OMDev\\tools\\msys\\mingw64\\bin\\;C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;"
-                OMDEV = "/c/OMDev"
+                OMDEV = "C:\\OMDev"
+                OMDEV_MSYS = "${env.OMDEV}\\tools\\msys"
+                MSYSTEM_DIR_PREFIX = "mingw64"
+                PATH = "${env.PATH};${env.OMDEV_MSYS}\\${env.MSYSTEM_DIR_PREFIX}\\bin\\;C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;"
                 CC = "gcc"
                 CXX = "g++"
                 MSYSTEM = "MINGW64"
@@ -270,17 +271,17 @@ pipeline {
                 writeFile file: "buildZip64.sh", text: """#!/bin/sh
                 set -x -e
                 export PATH="/c/Program Files/TortoiseSVN/bin/:/c/bin/jdk/bin:/c/bin/nsis/:\$PATH:/c/bin/git/bin"
-                cd "${env.WORKSPACE}/install/"
-                zip -r "../OMSimulator-mingw64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *
+                cd "${env.WORKSPACE}/install/mingw"
+                zip -r "../../OMSimulator-${env.MSYSTEM_DIR_PREFIX}-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *
                 """
 
                 bat """
-                C:\\OMDev\\tools\\msys\\usr\\bin\\sh --login -i '${env.WORKSPACE}/buildZip64.sh'
+                ${env.OMDEV_MSYS}\\usr\\bin\\sh --login -i '${env.WORKSPACE}/buildZip64.sh'
                 """
 
-                archiveArtifacts "OMSimulator-mingw64*.zip"
-                stash name: 'mingw64-zip', includes: "OMSimulator-mingw64-*.zip"
-                stash name: 'mingw64-install', includes: "install/**"
+                archiveArtifacts "OMSimulator-${env.MSYSTEM_DIR_PREFIX}*.zip"
+                stash name: "msys64-zip", includes: "OMSimulator-${env.MSYSTEM_DIR_PREFIX}-*.zip"
+                stash name: "msys64-install", includes: "install/mingw/**"
               }
             }
             stage('test') {
@@ -288,16 +289,18 @@ pipeline {
                 label 'omsimulator-windows'
               }
               environment {
-                PATH = "${env.PATH};C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;C:\\OMDev\\tools\\msys\\mingw64\\bin\\"
-                OMDEV = "/c/OMDev"
+                OMDEV = "C:\\OMDev"
+                OMDEV_MSYS = "${env.OMDEV}\\tools\\msys"
+                MSYSTEM_DIR_PREFIX = "mingw64"
+                PATH = "${env.PATH};${env.OMDEV_MSYS}\\${env.MSYSTEM_DIR_PREFIX}\\bin\\;C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;"
                 MSYSTEM = "MINGW64"
                 RUNTESTDB="${env.HOME}/jenkins-cache/runtest/"
               }
               steps {
-                unstash name: 'mingw64-install'
+                unstash name: "msys64-install"
 
                 bat 'hostname'
-                writeFile file: "testMingw64-install.sh", text:"""#!/bin/sh
+                writeFile file: "testMsys64-install.sh", text:"""#!/bin/sh
 set -x -e
 cd "${env.WORKSPACE}"
 export PATH="/c/Program Files/TortoiseSVN/bin/:/c/bin/jdk/bin:/c/bin/nsis/:\$PATH:/c/bin/git/bin"
@@ -309,88 +312,7 @@ cd testsuite/partest
 """
                 bat """
 set PATH=C:\\bin\\cmake\\bin;%PATH%
-C:\\OMDev\\tools\\msys\\usr\\bin\\sh --login -i '${env.WORKSPACE}/testMingw64-install.sh'
-EXIT /b 0
-:fail
-ECHO Something went wrong!
-EXIT /b 1
-"""
-
-                junit 'testsuite/partest/result.xml'
-              }
-            }
-          }
-        }
-
-        stage('mingw32-gcc') {
-          when {
-            anyOf {
-              expression { return shouldWeBuildMINGW32() }
-              expression { return shouldWeUploadArtifacts() }
-              buildingTag()
-            }
-            beforeAgent true
-          }
-          stages {
-            stage('build') {
-              agent {
-                label 'omsimulator-windows'
-              }
-              environment {
-                PATH = "${env.PATH};C:\\OMDev\\tools\\msys\\mingw32\\bin\\;C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;"
-                OMDEV = "/c/OMDev"
-                CC = "gcc"
-                CXX = "g++"
-                MSYSTEM = "MINGW32"
-                VERBOSE = '1'
-              }
-              steps {
-                buildOMS()
-
-                writeFile file: "buildZip32.sh", text: """#!/bin/sh
-                set -x -e
-                export PATH="/c/Program Files/TortoiseSVN/bin/:/c/bin/jdk/bin:/c/bin/nsis/:\$PATH:/c/bin/git/bin"
-                cd "${env.WORKSPACE}/install/"
-                zip -r "../OMSimulator-mingw32-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *
-                """
-
-                bat """
-                C:\\OMDev\\tools\\msys\\usr\\bin\\sh --login -i '${env.WORKSPACE}/buildZip32.sh'
-                EXIT /b 0
-                """
-
-                archiveArtifacts "OMSimulator-mingw32*.zip"
-                stash name: 'mingw32-zip', includes: "OMSimulator-mingw32-*.zip"
-                stash name: 'mingw32-install', includes: "install/**"
-              }
-            }
-            stage('test') {
-              agent {
-                label 'omsimulator-windows'
-              }
-              environment {
-                PATH = "${env.PATH};C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;C:\\OMDev\\tools\\msys\\mingw32\\bin\\"
-                OMDEV = "/c/OMDev"
-                MSYSTEM = "MINGW32"
-                RUNTESTDB="${env.HOME}/jenkins-cache/runtest/"
-              }
-              steps {
-                unstash name: 'mingw32-install'
-
-                bat 'hostname'
-                writeFile file: "testMingw32-install.sh", text:"""#!/bin/sh
-set -x -e
-cd "${env.WORKSPACE}"
-export PATH="/c/Program Files/TortoiseSVN/bin/:/c/bin/jdk/bin:/c/bin/nsis/:\$PATH:/c/bin/git/bin"
-make -C testsuite difftool resources
-cp -f "${env.RUNTESTDB}/"* testsuite/ || true
-find testsuite/ -name "*.lua" -exec sed -i /teardown_command/d {} ";"
-cd testsuite/partest
-./runtests.pl -j\$(nproc) -nocolour -with-xml ${params.RUNTESTS_FLAG}
-"""
-                bat """
-set PATH=C:\\bin\\cmake\\bin;%PATH%
-C:\\OMDev\\tools\\msys\\usr\\bin\\sh --login -i '${env.WORKSPACE}/testMingw32-install.sh'
+${env.OMDEV_MSYS}\\usr\\bin\\sh --login -i '${env.WORKSPACE}/testMsys64-install.sh'
 EXIT /b 0
 :fail
 ECHO Something went wrong!
@@ -408,10 +330,14 @@ EXIT /b 1
             label 'omsimulator-windows'
           }
           environment {
-            PATH = "${env.PATH};C:\\OMDev\\tools\\msys\\mingw64\\bin\\;C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;"
-            VERBOSE = '1'
+            OMDEV = "C:\\OMDev"
+            OMDEV_MSYS = "${env.OMDEV}\\tools\\msys"
+            MSYSTEM_DIR_PREFIX = "mingw64"
+            PATH = "${env.PATH};${env.OMDEV_MSYS}\\${env.MSYSTEM_DIR_PREFIX}\\bin\\;${env.OMDEV_MSYS}\\bin;C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;"
             CC="clang"
             CXX="clang++"
+            MSYSTEM = "MINGW64"
+            VERBOSE = '1'
           }
 
           steps {
@@ -431,8 +357,10 @@ EXIT /b 1
                 label 'omsimulator-windows'
               }
               environment {
-                PATH = "${env.PATH};C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;C:\\OMDev\\tools\\msys\\mingw64\\bin\\"
-                OMDEV = "/c/OMDev"
+                OMDEV = "C:\\OMDev"
+                OMDEV_MSYS = "${env.OMDEV}\\tools\\msys"
+                MSYSTEM_DIR_PREFIX = "mingw64"
+                PATH = "${env.PATH};C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;${env.OMDEV_MSYS}\\${env.MSYSTEM_DIR_PREFIX}\\bin;${env.OMDEV_MSYS}\\bin"
                 MSYSTEM = "MINGW64"
               }
               steps {
@@ -456,7 +384,7 @@ IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 call install\\bin\\OMSimulator.exe --version
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 
-C:\\OMDev\\tools\\msys\\usr\\bin\\sh --login -i '${env.WORKSPACE}/buildZip.sh'
+${env.OMDEV_MSYS}\\usr\\bin\\sh --login -i '${env.WORKSPACE}/buildZip.sh'
 
 EXIT /b 0
 
@@ -475,8 +403,10 @@ EXIT /b 1
                 label 'omsimulator-windows'
               }
               environment {
-                PATH = "${env.PATH};C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;C:\\OMDev\\tools\\msys\\mingw64\\bin\\"
-                OMDEV = "/c/OMDev"
+                OMDEV = "C:\\OMDev"
+                OMDEV_MSYS = "${env.OMDEV}\\tools\\msys"
+                MSYSTEM_DIR_PREFIX = "mingw64"
+                PATH = "${env.PATH};C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;${env.OMDEV_MSYS}\\${env.MSYSTEM_DIR_PREFIX}\\bin\\"
                 MSYSTEM = "MINGW64"
                 RUNTESTDB="${env.HOME}/jenkins-cache/runtest/"
               }
@@ -497,7 +427,7 @@ cd testsuite/partest
                 bat """
 set PATH=C:\\bin\\cmake\\bin;%PATH%
 
-C:\\OMDev\\tools\\msys\\usr\\bin\\sh --login -i '${env.WORKSPACE}/testMSVC64-install.sh'
+${OMDEV_MSYS}\\usr\\bin\\sh --login -i '${env.WORKSPACE}/testMSVC64-install.sh'
 
 EXIT /b 0
 
@@ -512,6 +442,25 @@ EXIT /b 1
           }
         }
 
+      }
+    }
+
+    stage('cross-compilation') {
+      agent {
+        docker {
+          image 'anheuermann/ompython:wine-bionic'
+          label 'linux'
+          alwaysPull true
+        }
+      }
+      environment {
+        HOME = "${env.WORKSPACE}"
+      }
+      steps {
+        unstash name: 'msys64-install'
+        sh """
+        wine64 install/mingw/bin/OMSimulator.exe --version
+        """
       }
     }
 
@@ -577,8 +526,8 @@ EXIT /b 1
           steps {
             unstash name: 'amd64-zip'         // includes: "OMSimulator-linux-amd64-*.tar.gz"
             unstash name: 'arm32-zip'         // includes: "OMSimulator-linux-arm32-*.tar.gz"
-            unstash name: 'mingw32-zip'       // includes: "OMSimulator-mingw32-*.zip"
-            unstash name: 'mingw64-zip'       // includes: "OMSimulator-mingw64-*.zip"
+            unstash name: 'i386-zip'          // includes: "OMSimulator-linux-i386-*.tar.gz"
+            unstash name: 'msys64-zip'        // includes: "OMSimulator-msys64-*.zip"
             unstash name: 'win64-zip'         // includes: "OMSimulator-win64-*.zip"
             unstash name: 'osx-zip'           // includes: "OMSimulator-osx-*.zip"
 
@@ -596,11 +545,8 @@ EXIT /b 1
                       remoteDirectory: "${DEPLOYMENT_PREFIX}linux-amd64/",
                       sourceFiles: 'OMSimulator-linux-amd64-*.tar.gz'),
                     sshTransfer(
-                      remoteDirectory: "${DEPLOYMENT_PREFIX}win-mingw32/",
-                      sourceFiles: 'OMSimulator-mingw32-*.zip'),
-                    sshTransfer(
-                      remoteDirectory: "${DEPLOYMENT_PREFIX}win-mingw64/",
-                      sourceFiles: 'OMSimulator-mingw64-*.zip'),
+                      remoteDirectory: "${DEPLOYMENT_PREFIX}win-msys64/",
+                      sourceFiles: 'OMSimulator-msys64-*.zip'),
                     sshTransfer(
                       remoteDirectory: "${DEPLOYMENT_PREFIX}osx/",
                       sourceFiles: 'OMSimulator-osx-*.zip'),
@@ -668,7 +614,6 @@ def isWindows() {
 void buildOMS() {
   if (isWindows()) {
     bat ("""
-     set OMDEV=C:\\OMDev
      echo on
      (
      echo export MSYS_WORKSPACE="`cygpath '${WORKSPACE}'`"
@@ -681,9 +626,9 @@ void buildOMS() {
      echo cmake --build build/ --parallel %NUMBER_OF_PROCESSORS% --target install -v
      ) > buildOMSimulatorWindows.sh
 
-     set MSYSTEM=${env.MSYSTEM ? env.MSYSTEM : "MINGW64"}
+     set MSYSTEM=${env.MSYSTEM ? env.MSYSTEM : "MSYS64"}
      set MSYS2_PATH_TYPE=inherit
-     %OMDEV%\\tools\\msys\\usr\\bin\\sh --login -c "cd `cygpath '${WORKSPACE}'` && chmod +x buildOMSimulatorWindows.sh && ./buildOMSimulatorWindows.sh && rm -f ./buildOMSimulatorWindows.sh"
+     ${env.OMDEV_MSYS}\\usr\\bin\\sh --login -c "cd `cygpath '${WORKSPACE}'` && chmod +x buildOMSimulatorWindows.sh && ./buildOMSimulatorWindows.sh && rm -f ./buildOMSimulatorWindows.sh"
     """)
   } else {
     echo "running on node: ${env.NODE_NAME}"
