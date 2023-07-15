@@ -153,41 +153,6 @@ pipeline {
             buildOMS()
           }
         }
-        stage('linux32') {
-          agent {
-            dockerfile {
-              additionalBuildArgs '--pull'
-              dir '.CI/cache-32'
-              /* The cache Dockerfile makes /cache/runtest, etc world writable
-               * This is necessary because we run the docker image as a user and need to
-               * be able to have a global caching of the omlibrary parts and the runtest database.
-               * Note that the database is stored in a volume on a per-node basis, so the first time
-               * the tests run on a particular node, they might execute slightly slower
-               */
-              label 'linux'
-              args "--mount type=volume,source=runtest-omsimulator-cache-linux32,target=/cache/runtest"
-            }
-          }
-          environment {
-            RUNTESTDB = "/cache/runtest/"
-          }
-          steps {
-            buildOMS()
-            sh '''
-            # No so-files should ever exist in a bin/ folder
-            ! ls install/linux/bin/*.so 1> /dev/null 2>&1
-            (cd install/linux && tar czf "../../OMSimulator-linux-i386-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.tar.gz" *)
-            '''
-
-            archiveArtifacts "OMSimulator-linux-i386-*.tar.gz"
-            stash name: 'i386-zip', includes: "OMSimulator-linux-i386-*.tar.gz"
-
-            partest()
-
-            // Disable until working
-            // junit 'testsuite/partest/result.xml'
-          }
-        }
         stage('linux-arm32') {
           stages {
             stage('cross-compile') {
@@ -660,7 +625,6 @@ EXIT /b 1
           steps {
             unstash name: 'amd64-zip'         // includes: "OMSimulator-linux-amd64-*.tar.gz"
             unstash name: 'arm32-zip'         // includes: "OMSimulator-linux-arm32-*.tar.gz"
-            unstash name: 'i386-zip'          // includes: "OMSimulator-linux-i386-*.tar.gz"
             unstash name: 'mingw32-zip'       // includes: "OMSimulator-mingw32-*.zip"
             unstash name: 'mingw64-zip'       // includes: "OMSimulator-mingw64-*.zip"
             unstash name: 'win64-zip'         // includes: "OMSimulator-win64-*.zip"
@@ -673,9 +637,6 @@ EXIT /b 1
                 sshPublisherDesc(
                   configName: 'OMSimulator',
                   transfers: [
-                    sshTransfer(
-                      remoteDirectory: "${DEPLOYMENT_PREFIX}linux-i386/",
-                      sourceFiles: 'OMSimulator-linux-i386-*.tar.gz'),
                     sshTransfer(
                       remoteDirectory: "${DEPLOYMENT_PREFIX}linux-arm32/",
                       sourceFiles: 'OMSimulator-linux-arm32-*.tar.gz'),
