@@ -96,7 +96,6 @@ ifeq ($(detected_OS),Darwin)
 endif
 
 ifneq ($(CROSS_TRIPLE),)
-  LUA_EXTRA_FLAGS=CC=$(CC) CXX=$(CXX) RANLIB=$(CROSS_TRIPLE)-ranlib detected_OS=$(detected_OS)
   OMTLM := OFF
   LIBXML2 := OFF
   CROSS_TRIPLE_DASH = $(CROSS_TRIPLE)-
@@ -231,11 +230,14 @@ config-zlib: 3rdParty/zlib/$(INSTALL_DIR)/lib/libzlibstatic.a
 	cd 3rdParty/zlib/$(BUILD_DIR) && $(CMAKE) $(CMAKE_TARGET) ../.. -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) -DBUILD_SHARED_LIBS=OFF
 
 config-lua: 3rdParty/Lua/$(INSTALL_DIR)/liblua.a
-3rdParty/Lua/$(INSTALL_DIR)/liblua.a:
+3rdParty/Lua/$(INSTALL_DIR)/liblua.a: 3rdParty/Lua/$(BUILD_DIR)/Makefile
+	$(MAKE) -C 3rdParty/Lua/$(BUILD_DIR)/ install VERBOSE=1
+3rdParty/Lua/$(BUILD_DIR)/Makefile:
 	@echo
 	@echo "# config Lua"
 	@echo
-	$(MAKE) -C 3rdParty/Lua $(LUA_EXTRA_FLAGS)
+	$(MKDIR) 3rdParty/Lua/$(BUILD_DIR)/
+	cd 3rdParty/Lua/$(BUILD_DIR)/ && $(CMAKE) $(CMAKE_TARGET) ../.. -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) -DLUA_ENABLE_SHARED=OFF -DLUA_ENABLE_TESTING=OFF
 
 config-minizip: config-zlib 3rdParty/minizip/$(INSTALL_DIR)/libminizip.a
 3rdParty/minizip/$(INSTALL_DIR)/libminizip.a: 3rdParty/minizip/$(BUILD_DIR)/Makefile
@@ -301,7 +303,8 @@ distclean:
 	@$(MAKE) OMTLMSimulatorClean
 	$(RM) $(BUILD_DIR)
 	$(RM) $(INSTALL_DIR)
-	@$(MAKE) -C 3rdParty/Lua distclean
+	$(RM) 3rdParty/Lua/$(BUILD_DIR)
+	$(RM) 3rdParty/Lua/$(INSTALL_DIR)
 	$(RM) 3rdParty/RegEx/OMSRegEx$(EEXT)
 	$(RM) 3rdParty/cvode/$(BUILD_DIR)
 	$(RM) 3rdParty/cvode/$(INSTALL_DIR)
