@@ -49,6 +49,7 @@ pipeline {
           environment {
             RUNTESTDB = "/cache/runtest/"
             NPROC = "${numPhysicalCPU}"
+            OMSFLAGS = "CMAKE=/opt/cmake-3.17.2/bin/cmake"
           }
           steps {
             buildOMS()
