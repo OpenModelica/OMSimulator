@@ -284,14 +284,14 @@ config-libxml2:
 	@echo
 else
 config-libxml2: 3rdParty/libxml2/$(INSTALL_DIR)/lib/libxml2.a
-3rdParty/libxml2/$(INSTALL_DIR)/lib/libxml2.a: 3rdParty/libxml2/Makefile
-	$(MAKE) -C 3rdParty/libxml2/ && $(MAKE) -C 3rdParty/libxml2/ install
-3rdParty/libxml2/Makefile:
+3rdParty/libxml2/$(INSTALL_DIR)/lib/libxml2.a: 3rdParty/libxml2/$(BUILD_DIR)/Makefile
+	$(MAKE) -C 3rdParty/libxml2/$(BUILD_DIR)/ install
+3rdParty/libxml2/$(BUILD_DIR)/Makefile: 3rdParty/libxml2/CMakeLists.txt
 	@echo
 	@echo "# config libxml2"
 	@echo
-	$(MKDIR) 3rdParty/libxml2/$(INSTALL_DIR)
-	cd 3rdParty/libxml2 && $(FPIC) ./autogen.sh --prefix="$(ROOT_DIR)/3rdParty/libxml2/$(INSTALL_DIR)" $(DISABLE_SHARED) --without-python --without-zlib --without-lzma $(HOST_CROSS_TRIPLE)
+	$(MKDIR) 3rdParty/libxml2/$(BUILD_DIR)
+	cd 3rdParty/libxml2/$(BUILD_DIR) && $(CMAKE) $(CMAKE_TARGET) ../.. -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) -DBUILD_SHARED_LIBS=OFF -DLIBXML2_WITH_PYTHON=OFF -DLIBXML2_WITH_ZLIB=OFF -DLIBXML2_WITH_LZMA=OFF -DLIBXML2_WITH_TESTS=OFF
 endif
 
 distclean:
@@ -309,6 +309,8 @@ distclean:
 	$(RM) 3rdParty/kinsol/$(INSTALL_DIR)
 	$(RM) 3rdParty/xerces/$(BUILD_DIR)
 	$(RM) 3rdParty/xerces/$(INSTALL_DIR)
+	$(RM) 3rdParty/libxml2/$(BUILD_DIR)
+	$(RM) 3rdParty/libxml2/$(INSTALL_DIR)
 
 testsuite:
 	@echo
