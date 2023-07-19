@@ -10,6 +10,7 @@ pipeline {
   parameters {
     booleanParam(name: 'MSVC64', defaultValue: true, description: 'Build with MSVC64 (often hangs)')
     booleanParam(name: 'MINGW32', defaultValue: false, description: 'Build with MINGW32')
+    booleanParam(name: 'MACOS_ARM64', defaultValue: false, description: 'Build with macOS-arm64 (M1 mac)')
     booleanParam(name: 'LINUX64_ASAN', defaultValue: false, description: 'Build with linux64 asan')
     booleanParam(name: 'SUBMODULE_UPDATE', defaultValue: false, description: 'Allow pull request to update submodules (disabled by default due to common user errors)')
     booleanParam(name: 'UPLOAD_BUILD_OPENMODELICA', defaultValue: false, description: 'Upload install artifacts to build.openmodelica.org/omsimulator. Activates MINGW32 as well.')
@@ -226,6 +227,14 @@ pipeline {
         }
 
         stage('macOS-arm64') {
+          when {
+            anyOf {
+              expression { return shouldWeBuildMacOSArm64() }
+              expression { return shouldWeUploadArtifacts() }
+              buildingTag()
+            }
+            beforeAgent true
+          }
           stages {
             stage('cross-compile') {
               agent {
@@ -782,6 +791,16 @@ def shouldWeBuildMINGW32() {
       return true
     }
     return params.MINGW32
+  }
+  return true
+}
+
+def shouldWeBuildMacOSArm64() {
+  if (isPR()) {
+    if (pullRequest.labels.contains("CI/macOS-arm64")) {
+      return true
+    }
+    return params.MACOS_ARM64
   }
   return true
 }
