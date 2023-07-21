@@ -10,6 +10,7 @@ pipeline {
   parameters {
     booleanParam(name: 'MSVC64', defaultValue: true, description: 'Build with MSVC64 (often hangs)')
     booleanParam(name: 'MINGW32', defaultValue: false, description: 'Build with MINGW32')
+    booleanParam(name: 'MACOS_ARM64', defaultValue: false, description: 'Build with macOS-arm64 (M1 mac)')
     booleanParam(name: 'LINUX64_ASAN', defaultValue: false, description: 'Build with linux64 asan')
     booleanParam(name: 'SUBMODULE_UPDATE', defaultValue: false, description: 'Allow pull request to update submodules (disabled by default due to common user errors)')
     booleanParam(name: 'UPLOAD_BUILD_OPENMODELICA', defaultValue: false, description: 'Upload install artifacts to build.openmodelica.org/omsimulator. Activates MINGW32 as well.')
