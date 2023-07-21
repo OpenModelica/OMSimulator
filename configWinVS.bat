@@ -161,7 +161,7 @@ IF EXIST "3rdParty\sundials-5.4.0\build\win\" RMDIR /S /Q 3rdParty\sundials-5.4.
 IF EXIST "3rdParty\sundials-5.4.0\install\win\" RMDIR /S /Q 3rdParty\sundials-5.4.0\install\win
 MKDIR 3rdParty\sundials-5.4.0\build\win
 CD 3rdParty\sundials-5.4.0\build\win
-cmake.exe -G %OMS_VS_VERSION% ..\.. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_INSTALL_PREFIX=..\..\install\win -DEXAMPLES_ENABLE:BOOL=0 -DBUILD_SHARED_LIBS:BOOL=0
+cmake.exe -G %OMS_VS_VERSION% ..\.. -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_INSTALL_PREFIX=..\..\install\win -DSUNDIALS_BUILD_SHARED_LIBS=OFF -DSUNDIALS_EXAMPLES_ENABLE_C=OFF
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 CD ..\..\..\..
 ECHO # build sundials-5.4.0
