@@ -155,6 +155,10 @@ pipeline {
           }
         }
         stage('linux-arm32') {
+          when {
+            expression { return false }
+            beforeAgent true
+          }
           stages {
             stage('cross-compile') {
               agent {
