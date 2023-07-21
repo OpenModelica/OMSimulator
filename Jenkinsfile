@@ -231,7 +231,6 @@ pipeline {
             anyOf {
               expression { return shouldWeBuildMacOSArm64() }
               expression { return shouldWeUploadArtifacts() }
-              buildingTag()
             }
             beforeAgent true
           }
