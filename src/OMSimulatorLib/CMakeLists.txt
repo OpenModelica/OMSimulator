@@ -151,8 +151,8 @@ target_link_libraries(OMSimulatorLib PUBLIC ${LIB_ATOMIC} ${Boost_LIBRARIES} ${O
 target_link_libraries(OMSimulatorLib_static PUBLIC ${CMAKE_DL_LIBS} ${LIB_ATOMIC} ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} ${OMTLM_LINKFLAGS} ${CPP_FS_LIBS})
 
 IF (WIN32 AND MINGW)
-  target_link_libraries(OMSimulatorLib shlwapi)
-  target_link_libraries(OMSimulatorLib_static shlwapi)
+  target_link_libraries(OMSimulatorLib PUBLIC shlwapi)
+  target_link_libraries(OMSimulatorLib_static PUBLIC shlwapi)
 ENDIF ()
 
 install(TARGETS OMSimulatorLib)
