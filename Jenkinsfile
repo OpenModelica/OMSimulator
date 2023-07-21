@@ -232,7 +232,7 @@ pipeline {
 
         stage('osxcross') {
           when {
-            expression { return false }
+            expression { return shouldWeBuildMacOSArm64() }
             beforeAgent true
           }
           stages {
