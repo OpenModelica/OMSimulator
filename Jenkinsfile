@@ -227,6 +227,14 @@ pipeline {
         }
 
         stage('osxcross') {
+          when {
+            anyOf {
+              expression { return shouldWeBuildMacOSArm64() }
+              expression { return shouldWeUploadArtifacts() }
+              buildingTag()
+            }
+            beforeAgent true
+          }
           stages {
             stage('cross-compile') {
               agent {
