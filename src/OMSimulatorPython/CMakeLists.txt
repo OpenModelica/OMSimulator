@@ -25,7 +25,8 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/__init__.py"
         TYPE BIN)
 
 if(MSVC)
-  install(FILES OMSimulatorPython3.bat TYPE BIN)
+  install(FILES OMSimulatorPython3.bat TYPE BIN
+          PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ)
   install(DIRECTORY ${CMAKE_INSTALL_PREFIX}/bin/
           DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/OMSimulator
           FILES_MATCHING PATTERN "*boost*mt-1*.dll" PATTERN "OMSimulator" EXCLUDE
@@ -34,7 +35,11 @@ if(MSVC)
           DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/OMSimulator
           PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ)
 elseif(MINGW)
-  install(FILES OMSimulatorPython3 OMSimulatorPython3.bat TYPE BIN)
+  install(FILES OMSimulatorPython3 OMSimulatorPython3.bat
+          TYPE BIN
+          PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ)
 else()
-  install(FILES OMSimulatorPython3 TYPE BIN)
+  install(FILES OMSimulatorPython3
+          TYPE BIN
+          PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ)
 endif()
