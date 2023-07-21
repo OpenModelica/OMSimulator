@@ -810,3 +810,13 @@ def shouldWeBuildMINGW32() {
   }
   return true
 }
+
+def shouldWeBuildMacOSArm64() {
+  if (isPR()) {
+    if (pullRequest.labels.contains("CI/macOS-arm64")) {
+      return true
+    }
+    return params.MACOS_ARM64
+  }
+  return true
+}
