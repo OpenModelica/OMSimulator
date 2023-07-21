@@ -106,18 +106,21 @@ EXIT /B 0
 :: -- config fmi4c ---------------------
 
 
-:: -- build Lua -----------------------
-:lua
-ECHO # build Lua
-CD 3rdParty\Lua
-START /B /WAIT CMD /C "buildWinVS.bat %OMS_VS_TARGET%"
+:: -- build Lua ----------------------
+:Lua
+ECHO # config Lua
+IF EXIST "3rdParty\Lua\build\win\" RMDIR /S /Q 3rdParty\Lua\build\win
+IF EXIST "3rdParty\Lua\install\win\" RMDIR /S /Q 3rdParty\Lua\install\win
+MKDIR 3rdParty\Lua\build\win
+CD 3rdParty\Lua\build\win
+cmake.exe -G %OMS_VS_VERSION% ..\.. -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_INSTALL_PREFIX=..\..\install\win -DLUA_ENABLE_SHARED=OFF -DLUA_ENABLE_TESTING=OFF
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-CD ..\..
-ECHO # copy lua
-IF NOT EXIST "install\win\bin" MKDIR install\win\bin
-COPY 3rdParty\lua\install\win\lua.dll install\win\bin
+CD ..\..\..\..
+ECHO # build Lua
+msbuild.exe "3rdParty\Lua\build\win\INSTALL.vcxproj" /t:Build /p:configuration=Release /maxcpucount
+IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 EXIT /B 0
-:: -- build Lua -----------------------
+:: -- build Lua ----------------------
 
 
 :: -- build minizip ----------------------

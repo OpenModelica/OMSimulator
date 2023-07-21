@@ -4,12 +4,12 @@
 # maybe make sure the headers exits too.
 
 find_library(LUALibrary_LIBRARY
-  NAMES lua
-  HINTS ${LUALibrary_ROOT}
+  NAMES lua_static
+  HINTS ${LUALibrary_ROOT}/lib ${LUALibrary_ROOT}/lib/${CMAKE_LIBRARY_ARCHITECTURE}
 )
 
 if(LUALibrary_LIBRARY)
-  set(LUALibrary_LIBRARYDIR ${LUALibrary_ROOT})
+  get_filename_component(LUALibrary_LIBRARYDIR ${LUALibrary_LIBRARY} DIRECTORY)
   set(LUALibrary_INCLUDEDIR ${LUALibrary_ROOT}/include)
   message(STATUS "Found LUA")
   message(STATUS "  LUALibrary_ROOT:       " ${LUALibrary_ROOT})

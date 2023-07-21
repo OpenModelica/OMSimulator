@@ -162,7 +162,7 @@ target_compile_definitions(OMSimulatorLib PUBLIC FMI4C_STATIC)
 target_compile_definitions(OMSimulatorLib_static PUBLIC FMI4C_STATIC)
 
 target_link_libraries(OMSimulatorLib fmi4c minizip zlibstatic sundials_kinsol sundials_cvode sundials_nvecserial ${LIB_ATOMIC} ${Boost_LIBRARIES} ${OMTLM_LINKFLAGS} ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} ${CPP_FS_LIBS})
-target_link_libraries(OMSimulatorLib_static fmi4c minizip zlibstatic sundials_kinsol sundials_cvode sundials_nvecserial lua ${CMAKE_DL_LIBS} ${LIB_ATOMIC} ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} ${OMTLM_LINKFLAGS} ${CPP_FS_LIBS})
+target_link_libraries(OMSimulatorLib_static fmi4c minizip zlibstatic sundials_kinsol sundials_cvode sundials_nvecserial ${LUALibrary_LIBRARY} ${CMAKE_DL_LIBS} ${LIB_ATOMIC} ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} ${OMTLM_LINKFLAGS} ${CPP_FS_LIBS})
 
 IF (WIN32 AND MINGW)
   target_link_libraries(OMSimulatorLib shlwapi)
