@@ -58,7 +58,7 @@
 #include <chrono>
 #include <condition_variable>
 #include <iostream>
-#include "minizip/miniunz.h"
+#include "miniunz.h"
 #include <mutex>
 #include <pugixml.hpp>
 #include <string>

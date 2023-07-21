@@ -10,7 +10,7 @@ ROOT_DIR=$(shell pwd)
 # Option to build LIBXML2 as part of the 3rdParty projects
 LIBXML2 ?= $(OMTLM)
 # Option to enable OMTLM
-OMTLM ?= ON
+OMTLM ?= OFF
 # Option to enable AddressSanitizer
 ASAN ?= OFF
 # Statically link dependencies as much as possible
@@ -78,7 +78,7 @@ endif
 # Should we install everything into the OMBUILDDIR?
 ifeq ($(OMBUILDDIR),)
 	TOP_INSTALL_DIR=$(INSTALL_DIR)
-	CMAKE_INSTALL_PREFIX=
+	CMAKE_INSTALL_PREFIX=-DCMAKE_INSTALL_PREFIX=$(TOP_INSTALL_DIR)
 	HOST_SHORT=
 else
 	TOP_INSTALL_DIR=$(OMBUILDDIR)
@@ -116,7 +116,7 @@ else
 	CMAKE_BOOST_ROOT="-DBOOST_ROOT=$(BOOST_ROOT)"
 endif
 
-.PHONY: OMSimulator OMSimulatorCore config-OMSimulator config-fmi4c config-lua config-minizip config-zlib config-cvode config-kinsol config-xerces config-3rdParty distclean testsuite doc doc-html doc-doxygen OMTLMSimulator OMTLMSimulatorClean RegEx pip
+.PHONY: OMSimulator OMSimulatorCore config-OMSimulator config-xerces config-3rdParty distclean testsuite doc doc-html doc-doxygen OMTLMSimulator OMTLMSimulatorClean RegEx pip
 
 OMSimulator:
 	@echo OS: $(detected_OS)
@@ -188,7 +188,7 @@ RegEx: 3rdParty/RegEx/OMSRegEx$(EEXT)
 	@echo "Please checkout the 3rdParty submodule, e.g. using \"git submodule update --init 3rdParty\", and try again."
 	@false
 
-config-3rdParty: 3rdParty/README.md config-zlib config-minizip config-fmi4c config-lua config-cvode config-kinsol config-libxml2
+config-3rdParty: 3rdParty/README.md
 
 config-OMSimulator: $(BUILD_DIR)/Makefile
 $(BUILD_DIR)/Makefile: RegEx CMakeLists.txt
@@ -198,76 +198,6 @@ $(BUILD_DIR)/Makefile: RegEx CMakeLists.txt
 	$(eval STD_REGEX := $(shell 3rdParty/RegEx/OMSRegEx$(EEXT)))
 	$(MKDIR) $(BUILD_DIR)
 	cd $(BUILD_DIR) && $(CMAKE) $(CMAKE_TARGET) ../.. -DABI=$(ABI) -DSTD_REGEX=$(STD_REGEX) -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DOMTLM:BOOL=$(OMTLM) -DASAN:BOOL=$(ASAN) -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) $(CMAKE_BOOST_ROOT) $(CMAKE_INSTALL_PREFIX) $(HOST_SHORT) $(EXTRA_CMAKE) $(CMAKE_STATIC)
-
-# use zlib and minizip from OMSimulator 3rdParty by setting OMS_ZLIB_INCLUDE_DIR, OMS_ZLIB_LIBRARY OMS_MINIZIP_INCLUDE_DIR and DOMS_MINIZIP_LIBRARY, see 3rdparty/fmi4c/cmake
-config-fmi4c: config-minizip config-zlib 3rdParty/fmi4c/$(INSTALL_DIR)/lib/libfmi4c.a
-3rdParty/fmi4c/$(INSTALL_DIR)/lib/libfmi4c.a: 3rdParty/fmi4c/$(BUILD_DIR)/Makefile
-	$(MAKE) -C 3rdParty/fmi4c/$(BUILD_DIR)/ install VERBOSE=1
-3rdParty/fmi4c/$(BUILD_DIR)/Makefile: 3rdParty/fmi4c/CMakeLists.txt
-	@echo
-	@echo "# config fmi4c"
-	@echo
-	$(MKDIR) 3rdParty/fmi4c/$(BUILD_DIR)
-	$(MKDIR) 3rdParty/fmi4c/$(INSTALL_DIR)
-	cd 3rdParty/fmi4c/$(BUILD_DIR) && $(CMAKE) $(CMAKE_TARGET) ../.. \
-	-DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) \
-	-DFMI4C_BUILD_SHARED=OFF \
-	-DFMI4C_USE_INCLUDED_ZLIB=OFF \
-	-DOMS_ZLIB_INCLUDE_DIR=../zlib/$(INSTALL_DIR)/include \
-	-DOMS_ZLIB_LIBRARY=../zlib/$(INSTALL_DIR)/lib/libzlibstatic.a \
-	-DOMS_MINIZIP_INCLUDE_DIR=../minizip/$(INSTALL_DIR)/include \
-	-DOMS_MINIZIP_LIBRARY=../minizip/$(INSTALL_DIR)/lib/libminizip.a
-
-config-zlib: 3rdParty/zlib/$(INSTALL_DIR)/lib/libzlibstatic.a
-3rdParty/zlib/$(INSTALL_DIR)/lib/libzlibstatic.a: 3rdParty/zlib/$(BUILD_DIR)/Makefile
-	$(MAKE) -C 3rdParty/zlib/$(BUILD_DIR)/ install VERBOSE=1
-3rdParty/zlib/$(BUILD_DIR)/Makefile: 3rdParty/zlib/CMakeLists.txt
-	@echo
-	@echo "# config zlib"
-	@echo
-	$(MKDIR) 3rdParty/zlib/$(BUILD_DIR)
-	$(MKDIR) 3rdParty/zlib/$(INSTALL_DIR)
-	cd 3rdParty/zlib/$(BUILD_DIR) && $(CMAKE) $(CMAKE_TARGET) ../.. -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) -DBUILD_SHARED_LIBS=OFF
-
-config-lua: 3rdParty/Lua/$(INSTALL_DIR)/liblua.a
-3rdParty/Lua/$(INSTALL_DIR)/liblua.a: 3rdParty/Lua/$(BUILD_DIR)/Makefile
-	$(MAKE) -C 3rdParty/Lua/$(BUILD_DIR)/ install VERBOSE=1
-3rdParty/Lua/$(BUILD_DIR)/Makefile:
-	@echo
-	@echo "# config Lua"
-	@echo
-	$(MKDIR) 3rdParty/Lua/$(BUILD_DIR)/
-	cd 3rdParty/Lua/$(BUILD_DIR)/ && $(CMAKE) $(CMAKE_TARGET) ../.. -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) -DLUA_ENABLE_SHARED=OFF -DLUA_ENABLE_TESTING=OFF
-
-config-minizip: config-zlib 3rdParty/minizip/$(INSTALL_DIR)/libminizip.a
-3rdParty/minizip/$(INSTALL_DIR)/libminizip.a: 3rdParty/minizip/$(BUILD_DIR)/Makefile
-	$(MAKE) -C 3rdParty/minizip/$(BUILD_DIR)/ install VERBOSE=1
-3rdParty/minizip/$(BUILD_DIR)/Makefile:
-	@echo
-	@echo "# config minizip"
-	@echo
-	$(MKDIR) 3rdParty/minizip/$(BUILD_DIR)/
-	cd 3rdParty/minizip/$(BUILD_DIR)/ && $(CMAKE) $(CMAKE_TARGET) ../../src -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR)
-
-config-cvode: 3rdParty/cvode/$(INSTALL_DIR)/lib/libsundials_cvode.a
-3rdParty/cvode/$(INSTALL_DIR)/lib/libsundials_cvode.a: 3rdParty/cvode/$(BUILD_DIR)/Makefile
-	$(MAKE) -C 3rdParty/cvode/$(BUILD_DIR)/ install
-3rdParty/cvode/$(BUILD_DIR)/Makefile: 3rdParty/cvode/CMakeLists.txt
-	@echo
-	@echo "# config cvode"
-	@echo
-	$(MKDIR) 3rdParty/cvode/$(BUILD_DIR)
-	cd 3rdParty/cvode/$(BUILD_DIR) && $(CMAKE) $(CMAKE_TARGET) ../.. -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) -DEXAMPLES_ENABLE:BOOL=0 -DBUILD_SHARED_LIBS:BOOL=0 $(CMAKE_FPIC)
-
-config-kinsol: 3rdParty/kinsol/$(INSTALL_DIR)/lib/libsundials_kinsol.a
-3rdParty/kinsol/$(INSTALL_DIR)/lib/libsundials_kinsol.a: 3rdParty/kinsol/$(BUILD_DIR)/Makefile
-	$(MAKE) -C 3rdParty/kinsol/$(BUILD_DIR)/ install
-3rdParty/kinsol/$(BUILD_DIR)/Makefile: 3rdParty/kinsol/CMakeLists.txt
-	@echo
-	@echo "# config kinsol"
-	@echo
-	$(MKDIR) 3rdParty/kinsol/$(BUILD_DIR)
-	cd 3rdParty/kinsol/$(BUILD_DIR) && $(CMAKE) $(CMAKE_TARGET) ../.. -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) -DEXAMPLES_ENABLE:BOOL=0 -DBUILD_SHARED_LIBS:BOOL=0 $(CMAKE_FPIC)
 
 config-xerces: 3rdParty/xerces/$(INSTALL_DIR)/lib/libxerces-c.a
 3rdParty/xerces/$(INSTALL_DIR)/lib/libxerces-c.a: 3rdParty/xerces/$(BUILD_DIR)/Makefile
@@ -279,23 +209,6 @@ config-xerces: 3rdParty/xerces/$(INSTALL_DIR)/lib/libxerces-c.a
 	$(MKDIR) 3rdParty/xerces/$(BUILD_DIR)
 	cd 3rdParty/xerces/$(BUILD_DIR) && $(CMAKE) $(CMAKE_TARGET) ../.. -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) -DBUILD_SHARED_LIBS:BOOL=OFF
 
-ifeq ($(LIBXML2),OFF)
-config-libxml2:
-	@echo
-	@echo "# LIBXML2=OFF => Skipping build of 3rdParty library libxml2 (must be installed on system instead)."
-	@echo
-else
-config-libxml2: 3rdParty/libxml2/$(INSTALL_DIR)/lib/libxml2.a
-3rdParty/libxml2/$(INSTALL_DIR)/lib/libxml2.a: 3rdParty/libxml2/$(BUILD_DIR)/Makefile
-	$(MAKE) -C 3rdParty/libxml2/$(BUILD_DIR)/ install
-3rdParty/libxml2/$(BUILD_DIR)/Makefile: 3rdParty/libxml2/CMakeLists.txt
-	@echo
-	@echo "# config libxml2"
-	@echo
-	$(MKDIR) 3rdParty/libxml2/$(BUILD_DIR)
-	cd 3rdParty/libxml2/$(BUILD_DIR) && $(CMAKE) $(CMAKE_TARGET) ../.. -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) -DBUILD_SHARED_LIBS=OFF -DLIBXML2_WITH_PYTHON=OFF -DLIBXML2_WITH_ZLIB=OFF -DLIBXML2_WITH_LZMA=OFF -DLIBXML2_WITH_TESTS=OFF
-endif
-
 distclean:
 	@echo
 	@echo "# make distclean"
@@ -303,17 +216,9 @@ distclean:
 	@$(MAKE) OMTLMSimulatorClean
 	$(RM) $(BUILD_DIR)
 	$(RM) $(INSTALL_DIR)
-	$(RM) 3rdParty/Lua/$(BUILD_DIR)
-	$(RM) 3rdParty/Lua/$(INSTALL_DIR)
 	$(RM) 3rdParty/RegEx/OMSRegEx$(EEXT)
-	$(RM) 3rdParty/cvode/$(BUILD_DIR)
-	$(RM) 3rdParty/cvode/$(INSTALL_DIR)
-	$(RM) 3rdParty/kinsol/$(BUILD_DIR)
-	$(RM) 3rdParty/kinsol/$(INSTALL_DIR)
 	$(RM) 3rdParty/xerces/$(BUILD_DIR)
 	$(RM) 3rdParty/xerces/$(INSTALL_DIR)
-	$(RM) 3rdParty/libxml2/$(BUILD_DIR)
-	$(RM) 3rdParty/libxml2/$(INSTALL_DIR)
 
 testsuite:
 	@echo

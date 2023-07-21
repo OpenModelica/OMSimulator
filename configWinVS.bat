@@ -69,8 +69,7 @@ IF ["%TARGET%"]==["zlib"] GOTO zlib
 IF ["%TARGET%"]==["minizip"] GOTO minizip
 IF ["%TARGET%"]==["fmi4c"] GOTO fmi4c
 IF ["%TARGET%"]==["lua"] GOTO lua
-IF ["%TARGET%"]==["cvode"] GOTO cvode
-IF ["%TARGET%"]==["kinsol"] GOTO kinsol
+IF ["%TARGET%"]==["sundials"] GOTO sundials
 IF ["%TARGET%"]==["xerces"] GOTO xerces
 IF ["%TARGET%"]==["pthread"] GOTO pthread
 IF ["%TARGET%"]==["libxml2"] GOTO libxml2
@@ -155,38 +154,21 @@ IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 EXIT /B 0
 :: -- build zlib ----------------------
 
-:: -- config cvode --------------------
-:cvode
-ECHO # config cvode
-IF EXIST "3rdParty\cvode\build\win\" RMDIR /S /Q 3rdParty\cvode\build\win
-IF EXIST "3rdParty\cvode\install\win\" RMDIR /S /Q 3rdParty\cvode\install\win
-MKDIR 3rdParty\cvode\build\win
-CD 3rdParty\cvode\build\win
+:: -- config sundials --------------------
+:sundials
+ECHO # config sundials
+IF EXIST "3rdParty\sundials\build\win\" RMDIR /S /Q 3rdParty\sundials\build\win
+IF EXIST "3rdParty\sundials\install\win\" RMDIR /S /Q 3rdParty\sundials\install\win
+MKDIR 3rdParty\sundials\build\win
+CD 3rdParty\sundials\build\win
 cmake.exe -G %OMS_VS_VERSION% ..\.. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_INSTALL_PREFIX=..\..\install\win -DEXAMPLES_ENABLE:BOOL=0 -DBUILD_SHARED_LIBS:BOOL=0
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 CD ..\..\..\..
-ECHO # build cvode
-msbuild.exe "3rdParty\cvode\build\win\INSTALL.vcxproj" /t:Build /p:configuration=Release /maxcpucount
+ECHO # build sundials
+msbuild.exe "3rdParty\sundials\build\win\INSTALL.vcxproj" /t:Build /p:configuration=Release /maxcpucount
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 EXIT /B 0
-:: -- config cvode --------------------
-
-
-:: -- config kinsol -------------------
-:kinsol
-ECHO # config kinsol
-IF EXIST "3rdParty\kinsol\build\win\" RMDIR /S /Q 3rdParty\kinsol\build\win
-IF EXIST "3rdParty\kinsol\install\win\" RMDIR /S /Q 3rdParty\kinsol\install\win
-MKDIR 3rdParty\kinsol\build\win
-CD 3rdParty\kinsol\build\win
-cmake.exe -G %OMS_VS_VERSION% ..\.. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_INSTALL_PREFIX=..\..\install\win -DEXAMPLES_ENABLE:BOOL=0 -DBUILD_SHARED_LIBS:BOOL=0
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-CD ..\..\..\..
-ECHO # build kinsol
-msbuild.exe "3rdParty\kinsol\build\win\INSTALL.vcxproj" /t:Build /p:configuration=Release /maxcpucount
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-EXIT /B 0
-:: -- config kinsol -------------------
+:: -- config sundials --------------------
 
 
 :: -- config xerces -------------------
@@ -281,9 +263,7 @@ START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% fmi4c"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% lua"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% cvode"
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% kinsol"
+START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% sundials"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% pthread"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail

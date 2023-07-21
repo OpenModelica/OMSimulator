@@ -5,7 +5,6 @@ find_package(Threads)
 if (ASAN)
   set(CMAKE_BUILD_TYPE Debug)
 ENDIF ()
-set(CMAKE_INSTALL_RPATH "$ORIGIN/../lib/${HOST_SHORT}:$ORIGIN/")
 
 IF (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror=uninitialized")
@@ -28,78 +27,79 @@ ELSE ()
   set(TLM_STRING "-notlm")
 ENDIF ()
 
-list(APPEND OMSIMULATORLIB_SOURCES AlgLoop.cpp)
-list(APPEND OMSIMULATORLIB_SOURCES BusConnector.cpp)
-list(APPEND OMSIMULATORLIB_SOURCES Clock.cpp)
-list(APPEND OMSIMULATORLIB_SOURCES Clocks.cpp)
-list(APPEND OMSIMULATORLIB_SOURCES Component.cpp)
-list(APPEND OMSIMULATORLIB_SOURCES ComponentFMUCS.cpp)
-list(APPEND OMSIMULATORLIB_SOURCES ComponentFMUME.cpp)
-list(APPEND OMSIMULATORLIB_SOURCES ComponentTable.cpp)
-list(APPEND OMSIMULATORLIB_SOURCES ComRef.cpp)
-list(APPEND OMSIMULATORLIB_SOURCES Connection.cpp)
-list(APPEND OMSIMULATORLIB_SOURCES Connector.cpp)
-list(APPEND OMSIMULATORLIB_SOURCES CSVReader.cpp)
-list(APPEND OMSIMULATORLIB_SOURCES CSVWriter.cpp)
-list(APPEND OMSIMULATORLIB_SOURCES DirectedGraph.cpp)
-list(APPEND OMSIMULATORLIB_SOURCES Element.cpp)
-list(APPEND OMSIMULATORLIB_SOURCES ExternalModelInfo.cpp)
-list(APPEND OMSIMULATORLIB_SOURCES Flags.cpp)
-list(APPEND OMSIMULATORLIB_SOURCES FMUInfo.cpp)
-list(APPEND OMSIMULATORLIB_SOURCES Logging.cpp)
-list(APPEND OMSIMULATORLIB_SOURCES MatReader.cpp)
-list(APPEND OMSIMULATORLIB_SOURCES MatVer4.cpp)
-list(APPEND OMSIMULATORLIB_SOURCES MATWriter.cpp)
-list(APPEND OMSIMULATORLIB_SOURCES Model.cpp)
-list(APPEND OMSIMULATORLIB_SOURCES OMSFileSystem.cpp)
-list(APPEND OMSIMULATORLIB_SOURCES OMSimulator.cpp)
-list(APPEND OMSIMULATORLIB_SOURCES OMSString.cpp)
-list(APPEND OMSIMULATORLIB_SOURCES ResultReader.cpp)
-list(APPEND OMSIMULATORLIB_SOURCES ResultWriter.cpp)
-list(APPEND OMSIMULATORLIB_SOURCES Scope.cpp)
-list(APPEND OMSIMULATORLIB_SOURCES SignalDerivative.cpp)
-list(APPEND OMSIMULATORLIB_SOURCES Snapshot.cpp)
-list(APPEND OMSIMULATORLIB_SOURCES StepSizeConfiguration.cpp)
-list(APPEND OMSIMULATORLIB_SOURCES System.cpp)
-list(APPEND OMSIMULATORLIB_SOURCES SystemSC.cpp)
-list(APPEND OMSIMULATORLIB_SOURCES SystemWC.cpp)
-list(APPEND OMSIMULATORLIB_SOURCES Values.cpp)
-list(APPEND OMSIMULATORLIB_SOURCES Variable.cpp)
-list(APPEND OMSIMULATORLIB_SOURCES ssd/ConnectionGeometry.cpp)
-list(APPEND OMSIMULATORLIB_SOURCES ssd/ConnectorGeometry.cpp)
-list(APPEND OMSIMULATORLIB_SOURCES ssd/ElementGeometry.cpp)
-list(APPEND OMSIMULATORLIB_SOURCES ssd/SystemGeometry.cpp)
-list(APPEND OMSIMULATORLIB_SOURCES ssd/Tags.cpp)
+set(OMSIMULATORLIB_SOURCES
+      AlgLoop.cpp
+      BusConnector.cpp
+      Clock.cpp
+      Clocks.cpp
+      Component.cpp
+      ComponentFMUCS.cpp
+      ComponentFMUME.cpp
+      ComponentTable.cpp
+      ComRef.cpp
+      Connection.cpp
+      Connector.cpp
+      CSVReader.cpp
+      CSVWriter.cpp
+      DirectedGraph.cpp
+      Element.cpp
+      ExternalModelInfo.cpp
+      Flags.cpp
+      FMUInfo.cpp
+      Logging.cpp
+      MatReader.cpp
+      MatVer4.cpp
+      MATWriter.cpp
+      Model.cpp
+      OMSFileSystem.cpp
+      OMSimulator.cpp
+      OMSString.cpp
+      ResultReader.cpp
+      ResultWriter.cpp
+      Scope.cpp
+      SignalDerivative.cpp
+      Snapshot.cpp
+      StepSizeConfiguration.cpp
+      System.cpp
+      SystemSC.cpp
+      SystemWC.cpp
+      Values.cpp
+      Variable.cpp
+      ssd/ConnectionGeometry.cpp
+      ssd/ConnectorGeometry.cpp
+      ssd/ElementGeometry.cpp
+      ssd/SystemGeometry.cpp
+      ssd/Tags.cpp)
 
-IF (OMTLM)
-  list(APPEND OMSIMULATORLIB_SOURCES ${OMTLM_SOURCES}/ExternalModel.cpp)
-  list(APPEND OMSIMULATORLIB_SOURCES ${OMTLM_SOURCES}/SystemTLM.cpp)
-  list(APPEND OMSIMULATORLIB_SOURCES ${OMTLM_SOURCES}/TLMBusConnector.cpp)
-
-  list(APPEND OMSIMULATORLIB_SOURCES ../../OMTLMSimulator/3rdParty/misc/src/Bstring.cc)
-  list(APPEND OMSIMULATORLIB_SOURCES ../../OMTLMSimulator/3rdParty/misc/src/coordTransform.cc)
-  list(APPEND OMSIMULATORLIB_SOURCES ../../OMTLMSimulator/3rdParty/misc/src/double3.cc)
-  list(APPEND OMSIMULATORLIB_SOURCES ../../OMTLMSimulator/3rdParty/misc/src/double33.cc)
-  list(APPEND OMSIMULATORLIB_SOURCES ../../OMTLMSimulator/3rdParty/misc/src/double33s.cc)
-  list(APPEND OMSIMULATORLIB_SOURCES ../../OMTLMSimulator/3rdParty/misc/src/dsyevc3.cc)
-  list(APPEND OMSIMULATORLIB_SOURCES ../../OMTLMSimulator/3rdParty/misc/src/dsyevq3.cc)
-  list(APPEND OMSIMULATORLIB_SOURCES ../../OMTLMSimulator/3rdParty/misc/src/dsyevv3.cc)
-  list(APPEND OMSIMULATORLIB_SOURCES ../../OMTLMSimulator/3rdParty/misc/src/dsytrd3.cc)
-  list(APPEND OMSIMULATORLIB_SOURCES ../../OMTLMSimulator/3rdParty/misc/src/ErrorLog.cc)
-  list(APPEND OMSIMULATORLIB_SOURCES ../../OMTLMSimulator/3rdParty/misc/src/tostr.cc)
-  list(APPEND OMSIMULATORLIB_SOURCES ../../OMTLMSimulator/common/Communication/TLMClientComm.cc)
-  list(APPEND OMSIMULATORLIB_SOURCES ../../OMTLMSimulator/common/Communication/TLMCommUtil.cc)
-  list(APPEND OMSIMULATORLIB_SOURCES ../../OMTLMSimulator/common/Interfaces/TLMInterface.cc)
-  list(APPEND OMSIMULATORLIB_SOURCES ../../OMTLMSimulator/common/Interfaces/TLMInterface1D.cc)
-  list(APPEND OMSIMULATORLIB_SOURCES ../../OMTLMSimulator/common/Interfaces/TLMInterface3D.cc)
-  list(APPEND OMSIMULATORLIB_SOURCES ../../OMTLMSimulator/common/Interfaces/TLMInterfaceSignal.cc)
-  list(APPEND OMSIMULATORLIB_SOURCES ../../OMTLMSimulator/common/Interfaces/TLMInterfaceSignalInput.cc)
-  list(APPEND OMSIMULATORLIB_SOURCES ../../OMTLMSimulator/common/Interfaces/TLMInterfaceSignalOutput.cc)
-  list(APPEND OMSIMULATORLIB_SOURCES ../../OMTLMSimulator/common/Logging/TLMErrorLog.cc)
-  list(APPEND OMSIMULATORLIB_SOURCES ../../OMTLMSimulator/common/Parameters/ComponentParameter.cc)
-  list(APPEND OMSIMULATORLIB_SOURCES ../../OMTLMSimulator/common/Plugin/PluginImplementer.cc)
-  list(APPEND OMSIMULATORLIB_SOURCES ../../OMTLMSimulator/common/Plugin/TLMPlugin.cc)
-ENDIF (OMTLM)
+if(OMTLM)
+  set(OMSIMULATORLIB_SOURCES ${OMSIMULATORLIB_SOURCES}
+        ${OMTLM_SOURCES}/ExternalModel.cpp
+        ${OMTLM_SOURCES}/SystemTLM.cpp
+        ${OMTLM_SOURCES}/TLMBusConnector.cpp
+        ../../OMTLMSimulator/3rdParty/misc/src/Bstring.cc
+        ../../OMTLMSimulator/3rdParty/misc/src/coordTransform.cc
+        ../../OMTLMSimulator/3rdParty/misc/src/double3.cc
+        ../../OMTLMSimulator/3rdParty/misc/src/double33.cc
+        ../../OMTLMSimulator/3rdParty/misc/src/double33s.cc
+        ../../OMTLMSimulator/3rdParty/misc/src/dsyevc3.cc
+        ../../OMTLMSimulator/3rdParty/misc/src/dsyevq3.cc
+        ../../OMTLMSimulator/3rdParty/misc/src/dsyevv3.cc
+        ../../OMTLMSimulator/3rdParty/misc/src/dsytrd3.cc
+        ../../OMTLMSimulator/3rdParty/misc/src/ErrorLog.cc
+        ../../OMTLMSimulator/3rdParty/misc/src/tostr.cc
+        ../../OMTLMSimulator/common/Communication/TLMClientComm.cc
+        ../../OMTLMSimulator/common/Communication/TLMCommUtil.cc
+        ../../OMTLMSimulator/common/Interfaces/TLMInterface.cc
+        ../../OMTLMSimulator/common/Interfaces/TLMInterface1D.cc
+        ../../OMTLMSimulator/common/Interfaces/TLMInterface3D.cc
+        ../../OMTLMSimulator/common/Interfaces/TLMInterfaceSignal.cc
+        ../../OMTLMSimulator/common/Interfaces/TLMInterfaceSignalInput.cc
+        ../../OMTLMSimulator/common/Interfaces/TLMInterfaceSignalOutput.cc
+        ../../OMTLMSimulator/common/Logging/TLMErrorLog.cc
+        ../../OMTLMSimulator/common/Parameters/ComponentParameter.cc
+        ../../OMTLMSimulator/common/Plugin/PluginImplementer.cc
+        ../../OMTLMSimulator/common/Plugin/TLMPlugin.cc)
+endif(OMTLM)
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Version.cpp.in" "${CMAKE_CURRENT_BINARY_DIR}/Version.cpp" @ONLY)
 list(APPEND OMSIMULATORLIB_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/Version.cpp")
@@ -108,16 +108,9 @@ include_directories(
   ../../3rdParty/RegEx
   ../OMSimulatorLib
   ../OMSimulatorLua
-  ${ZLIB_INCLUDEDIR}
-  ${MINIZIP_INCLUDEDIR}
   ${Boost_INCLUDE_DIRS}
   ${CTPL_INCLUDEDIR}
-  ${CVODELibrary_INCLUDEDIR}
-  ${FMI4c_INCLUDEDIR}
-  ${KINSOLLibrary_INCLUDEDIR}
-  ${LUALibrary_INCLUDEDIR}
-  ${OMTLM_SOURCES}
-  ${PUGIXML_INCLUDEDIR})
+  ${OMTLM_SOURCES})
 IF (OMTLM)
   include_directories(
     ${OMTLMSIMULATORLIB_INCLUDEDIR}
@@ -126,12 +119,6 @@ IF (OMTLM)
 ENDIF (OMTLM)
 
 link_directories(
-  ${ZLIB_LIBRARYDIR}
-  ${FMI4c_LIBRARYDIR}
-  ${MINIZIP_LIBRARYDIR}
-  ${LUALibrary_LIBRARYDIR}
-  ${CVODELibrary_LIBRARYDIR}
-  ${KINSOLLibrary_LIBRARYDIR}
   ${Boost_LIBRARY_DIRS})
 IF (OMTLM)
   link_directories(${OMTLMSIMULATORLIB_LIBRARYDIR})
@@ -140,9 +127,9 @@ ENDIF ()
 # Shared library version
 add_library(OMSimulatorLib SHARED ${OMSIMULATORLIB_SOURCES})
 set_target_properties(OMSimulatorLib PROPERTIES OUTPUT_NAME OMSimulator)
-IF (APPLE)
-  set_target_properties(OMSimulatorLib PROPERTIES INSTALL_NAME_DIR "@rpath")
-ENDIF ()
+
+target_include_directories(OMSimulatorLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(OMSimulatorLib PUBLIC sundials_kinsol_static sundials_cvode_static fmi4c minizip zlibstatic pugixml_header_only lua_static)
 
 # Static library version
 add_library(OMSimulatorLib_static STATIC ${OMSIMULATORLIB_SOURCES})
@@ -151,29 +138,23 @@ IF (WIN32 AND MSVC)
 ELSE ()
   set_target_properties(OMSimulatorLib_static PROPERTIES OUTPUT_NAME OMSimulator)
 ENDIF ()
-set_target_properties(OMSimulatorLib_static PROPERTIES COMPILE_DEFINITIONS "OMS_STATIC")
+
+target_compile_definitions(OMSimulatorLib_static PUBLIC OMS_STATIC)
+target_include_directories(OMSimulatorLib_static PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(OMSimulatorLib_static PUBLIC sundials_kinsol_static sundials_cvode_static fmi4c minizip zlibstatic pugixml_header_only lua_static)
 
 IF (WIN32 AND MSVC)
   add_definitions(-DBOOST_ALL_DYN_LINK)
 ENDIF ()
 
-## set target_compile_definitions when building fmi4c as static, reference fmi4c/cmakeList.txt Line no:71
-target_compile_definitions(OMSimulatorLib PUBLIC FMI4C_STATIC)
-target_compile_definitions(OMSimulatorLib_static PUBLIC FMI4C_STATIC)
-
-target_link_libraries(OMSimulatorLib fmi4c minizip zlibstatic sundials_kinsol sundials_cvode sundials_nvecserial ${LIB_ATOMIC} ${Boost_LIBRARIES} ${OMTLM_LINKFLAGS} ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} ${CPP_FS_LIBS})
-target_link_libraries(OMSimulatorLib_static fmi4c minizip zlibstatic sundials_kinsol sundials_cvode sundials_nvecserial ${LUALibrary_LIBRARY} ${CMAKE_DL_LIBS} ${LIB_ATOMIC} ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} ${OMTLM_LINKFLAGS} ${CPP_FS_LIBS})
+target_link_libraries(OMSimulatorLib PUBLIC ${LIB_ATOMIC} ${Boost_LIBRARIES} ${OMTLM_LINKFLAGS} ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} ${CPP_FS_LIBS})
+target_link_libraries(OMSimulatorLib_static PUBLIC ${CMAKE_DL_LIBS} ${LIB_ATOMIC} ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} ${OMTLM_LINKFLAGS} ${CPP_FS_LIBS})
 
 IF (WIN32 AND MINGW)
   target_link_libraries(OMSimulatorLib shlwapi)
   target_link_libraries(OMSimulatorLib_static shlwapi)
 ENDIF ()
 
-IF (WIN32)
-  install(TARGETS OMSimulatorLib DESTINATION bin)
-ELSE ()
-  install(TARGETS OMSimulatorLib DESTINATION lib/${HOST_SHORT})
-ENDIF ()
-
-install(TARGETS OMSimulatorLib_static DESTINATION lib/${HOST_SHORT})
-install(FILES OMSimulator.h Types.h DESTINATION include)
+install(TARGETS OMSimulatorLib)
+install(TARGETS OMSimulatorLib_static)
+install(FILES OMSimulator.h Types.h TYPE INCLUDE)
