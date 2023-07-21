@@ -157,15 +157,15 @@ EXIT /B 0
 :: -- config sundials --------------------
 :sundials
 ECHO # config sundials
-IF EXIST "3rdParty\sundials\build\win\" RMDIR /S /Q 3rdParty\sundials\build\win
-IF EXIST "3rdParty\sundials\install\win\" RMDIR /S /Q 3rdParty\sundials\install\win
-MKDIR 3rdParty\sundials\build\win
-CD 3rdParty\sundials\build\win
+IF EXIST "3rdParty\sundials-5.4.0\build\win\" RMDIR /S /Q 3rdParty\sundials-5.4.0\build\win
+IF EXIST "3rdParty\sundials-5.4.0\install\win\" RMDIR /S /Q 3rdParty\sundials-5.4.0\install\win
+MKDIR 3rdParty\sundials-5.4.0\build\win
+CD 3rdParty\sundials-5.4.0\build\win
 cmake.exe -G %OMS_VS_VERSION% ..\.. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_INSTALL_PREFIX=..\..\install\win -DEXAMPLES_ENABLE:BOOL=0 -DBUILD_SHARED_LIBS:BOOL=0
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 CD ..\..\..\..
-ECHO # build sundials
-msbuild.exe "3rdParty\sundials\build\win\INSTALL.vcxproj" /t:Build /p:configuration=Release /maxcpucount
+ECHO # build sundials-5.4.0
+msbuild.exe "3rdParty\sundials-5.4.0\build\win\INSTALL.vcxproj" /t:Build /p:configuration=Release /maxcpucount
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 EXIT /B 0
 :: -- config sundials --------------------
