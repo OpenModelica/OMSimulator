@@ -226,19 +226,26 @@ pipeline {
           }
         }
 
-        stage('macOS-arm64') {
-          when {
-            anyOf {
-              expression { return shouldWeBuildMacOSArm64() }
-              expression { return shouldWeUploadArtifacts() }
-              buildingTag()
-            }
-            beforeAgent true
-          }
+        stage('osxcross') {
           stages {
             stage('cross-compile') {
               agent {
-                label 'M1'
+                docker {
+                  image 'docker.openmodelica.org/osxcross-omsimulator:v2.0'
+                  label 'linux'
+                  alwaysPull true
+                }
+              }
+              environment {
+                CROSS_TRIPLE = "x86_64-apple-darwin15"
+                CC = "${env.CROSS_TRIPLE}-cc"
+                CXX = "${env.CROSS_TRIPLE}-c++"
+                AR = "${env.CROSS_TRIPLE}-ar"
+                RANLIB = "${env.CROSS_TRIPLE}-ranlib"
+                FMIL_FLAGS = '-DFMILIB_FMI_PLATFORM=darwin64'
+                detected_OS = 'Darwin'
+                VERBOSE = '1'
+                BOOST_ROOT = '/opt/osxcross/macports/pkgs/opt/local/'
               }
               steps {
                 buildOMS()
@@ -257,7 +264,7 @@ pipeline {
                 expression { return false }
               } */
               agent {
-                label 'M1'
+                label 'osx'
               }
               steps {
                 unstash name: 'osx-install'
@@ -269,6 +276,7 @@ pipeline {
             }
           }
         }
+
 
         stage('mingw64-gcc') {
           stages {
