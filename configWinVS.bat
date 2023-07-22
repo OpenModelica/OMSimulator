@@ -65,14 +65,8 @@ IF NOT EXIST install\\win\\lib MKDIR install\\win\\lib
 
 @REM do not change the order to be consistent with line 265 config all
 IF ["%TARGET%"]==["clean"] GOTO clean
-IF ["%TARGET%"]==["zlib"] GOTO zlib
-IF ["%TARGET%"]==["minizip"] GOTO minizip
-IF ["%TARGET%"]==["fmi4c"] GOTO fmi4c
-IF ["%TARGET%"]==["lua"] GOTO lua
-IF ["%TARGET%"]==["sundials"] GOTO sundials
 IF ["%TARGET%"]==["xerces"] GOTO xerces
 IF ["%TARGET%"]==["pthread"] GOTO pthread
-IF ["%TARGET%"]==["libxml2"] GOTO libxml2
 IF ["%TARGET%"]==["boost"] GOTO boost
 IF ["%TARGET%"]==["omsimulator"] GOTO omsimulator
 IF ["%TARGET%"]==["all"] GOTO all
@@ -86,89 +80,6 @@ IF EXIST "build\win\" RMDIR /S /Q build\win && IF NOT ["%ERRORLEVEL%"]==["0"] GO
 IF EXIST "install\win\" RMDIR /S /Q install\win && IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 EXIT /B 0
 :: -- clean ---------------------------
-
-
-:: -- config fmi4c ---------------------
-:fmi4c
-ECHO # config fmi4c
-IF EXIST "3rdParty\fmi4c\build\win\" RMDIR /S /Q 3rdParty\fmi4c\build\win
-IF EXIST "3rdParty\fmi4c\install\win\" RMDIR /S /Q 3rdParty\fmi4c\install\win
-MKDIR 3rdParty\fmi4c\build\win
-CD 3rdParty\fmi4c\build\win
-cmake.exe -G %OMS_VS_VERSION% ..\.. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_INSTALL_PREFIX=..\..\install\win -DFMI4C_BUILD_SHARED=OFF -DFMI4C_USE_INCLUDED_ZLIB=OFF -DOMS_MINIZIP_INCLUDE_DIR=..\minizip\install\win\include -DOMS_MINIZIP_LIBRARY=..\minizip\install\win\lib\minizip.lib -DOMS_ZLIB_INCLUDE_DIR=..\zlib\install\win\include -DOMS_ZLIB_LIBRARY=..\zlib\install\win\lib\zlibstatic.lib
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-CD ..\..\..\..
-ECHO # build fmi4c
-msbuild.exe "3rdParty\fmi4c\build\win\INSTALL.vcxproj" /t:Build /p:configuration=Release /maxcpucount
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-EXIT /B 0
-:: -- config fmi4c ---------------------
-
-
-:: -- build Lua ----------------------
-:Lua
-ECHO # config Lua
-IF EXIST "3rdParty\Lua\build\win\" RMDIR /S /Q 3rdParty\Lua\build\win
-IF EXIST "3rdParty\Lua\install\win\" RMDIR /S /Q 3rdParty\Lua\install\win
-MKDIR 3rdParty\Lua\build\win
-CD 3rdParty\Lua\build\win
-cmake.exe -G %OMS_VS_VERSION% ..\.. -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_INSTALL_PREFIX=..\..\install\win -DLUA_ENABLE_SHARED=OFF -DLUA_ENABLE_TESTING=OFF
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-CD ..\..\..\..
-ECHO # build Lua
-msbuild.exe "3rdParty\Lua\build\win\INSTALL.vcxproj" /t:Build /p:configuration=Release /maxcpucount
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-EXIT /B 0
-:: -- build Lua ----------------------
-
-
-:: -- build minizip ----------------------
-:minizip
-ECHO # config minizip
-IF EXIST "3rdParty\minizip\build\win\" RMDIR /S /Q 3rdParty\minizip\build\win
-IF EXIST "3rdParty\minizip\install\win\" RMDIR /S /Q 3rdParty\minizip\install\win
-MKDIR 3rdParty\minizip\build\win
-CD 3rdParty\minizip\build\win
-cmake.exe -G %OMS_VS_VERSION% ..\..\src\ -DCMAKE_INSTALL_PREFIX=..\..\install\win
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-CD ..\..\..\..
-ECHO # build minizip
-msbuild.exe "3rdParty\minizip\build\win\INSTALL.vcxproj" /t:Build /p:configuration=Release /maxcpucount
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-EXIT /B 0
-:: -- build minizip ----------------------
-
-:: -- build zlib ----------------------
-:zlib
-ECHO # config zlib
-IF EXIST "3rdParty\zlib\build\win\" RMDIR /S /Q 3rdParty\zlib\build\win
-IF EXIST "3rdParty\zlib\install\win\" RMDIR /S /Q 3rdParty\zlib\install\win
-MKDIR 3rdParty\zlib\build\win
-CD 3rdParty\zlib\build\win
-cmake.exe -G %OMS_VS_VERSION% ..\..\ -DCMAKE_INSTALL_PREFIX=..\..\install\win
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-CD ..\..\..\..
-ECHO # build zlib
-msbuild.exe "3rdParty\zlib\build\win\INSTALL.vcxproj" /t:Build /p:configuration=Release /maxcpucount
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-EXIT /B 0
-:: -- build zlib ----------------------
-
-:: -- config sundials --------------------
-:sundials
-ECHO # config sundials
-IF EXIST "3rdParty\sundials-5.4.0\build\win\" RMDIR /S /Q 3rdParty\sundials-5.4.0\build\win
-IF EXIST "3rdParty\sundials-5.4.0\install\win\" RMDIR /S /Q 3rdParty\sundials-5.4.0\install\win
-MKDIR 3rdParty\sundials-5.4.0\build\win
-CD 3rdParty\sundials-5.4.0\build\win
-cmake.exe -G %OMS_VS_VERSION% ..\.. -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_INSTALL_PREFIX=..\..\install\win -DSUNDIALS_BUILD_SHARED_LIBS=OFF -DSUNDIALS_EXAMPLES_ENABLE_C=OFF
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-CD ..\..\..\..
-ECHO # build sundials-5.4.0
-msbuild.exe "3rdParty\sundials-5.4.0\build\win\INSTALL.vcxproj" /t:Build /p:configuration=Release /maxcpucount
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-EXIT /B 0
-:: -- config sundials --------------------
 
 
 :: -- config xerces -------------------
@@ -200,23 +111,6 @@ IF NOT EXIST "install\win\bin" MKDIR install\win\bin
 XCOPY /Y /F 3rdParty\pthread\install\win\lib\pthreadVC2.dll install\win\bin
 EXIT /B 0
 :: -- pthread -------------------------
-
-
-:: -- config libxml2 ------------------
-:libxml2
-ECHO # config libxml2
-IF EXIST "3rdParty\libxml2\build\win\" RMDIR /S /Q 3rdParty\libxml2\build\win
-IF EXIST "3rdParty\libxml2\install\win\" RMDIR /S /Q 3rdParty\libxml2\install\win
-MKDIR 3rdParty\libxml2\build\win
-CD 3rdParty\libxml2\build\win
-cmake.exe -G %OMS_VS_VERSION% ..\.. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_INSTALL_PREFIX=..\..\install\win -DBUILD_SHARED_LIBS=OFF -DLIBXML2_WITH_PYTHON=OFF -DLIBXML2_WITH_ZLIB=OFF -DLIBXML2_WITH_LZMA=OFF -DLIBXML2_WITH_TESTS=OFF -DLIBXML2_WITH_ICONV=OFF
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-CD ..\..\..\..
-ECHO # build libxml2
-msbuild.exe "3rdParty\libxml2\build\win\INSTALL.vcxproj" /t:Build /p:configuration=Release /maxcpucount
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-EXIT /B 0
-:: -- config libxml2 ------------------
 
 
 :: -- copy boost ----------------------
@@ -254,19 +148,7 @@ EXIT /B 0
 START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% clean"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 IF NOT EXIST "3rdParty/README.md" GOTO fail2
-START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% zlib"
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% minizip"
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% fmi4c"
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% lua"
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% sundials"
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% pthread"
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% libxml2"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% boost"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
