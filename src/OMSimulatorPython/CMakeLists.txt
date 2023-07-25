@@ -22,7 +22,7 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/__init__.py"
               "${CMAKE_CURRENT_SOURCE_DIR}/Scope.py"
               "${CMAKE_CURRENT_SOURCE_DIR}/System.py"
               "${CMAKE_CURRENT_SOURCE_DIR}/Types.py"
-        TYPE BIN)
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/OMSimulator)
 
 if(MSVC)
   install(FILES OMSimulatorPython3.bat TYPE BIN

@@ -11,7 +11,7 @@ case "${detected_OS}" in
     ;;
   (MINGW*)
     if [ -z "$PYTHONPATH" ]; then export PYTHONPATH="$SCRIPTPATH:$SCRIPTPATH/../lib"; else export PYTHONPATH="$SCRIPTPATH:$SCRIPTPATH/../lib":$PYTHONPATH; fi
-    if [ -z "$PATH" ]; then export PATH="$SCRIPTPATH:$SCRIPTPATH/../lib"; else export PATH="$SCRIPTPATH:$SCRIPTPATH/../lib":$PATH; fi
+    if [ -z "$PATH" ]; then export PATH="$SCRIPTPATH:$SCRIPTPATH/../bin"; else export PATH="$SCRIPTPATH:$SCRIPTPATH/../bin":$PATH; fi
     ;;
 esac
 

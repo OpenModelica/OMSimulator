@@ -37,8 +37,7 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 endif()
 # omc_add_to_report(CMAKE_INSTALL_PREFIX)
 
-# We prefer to install libs to "<library architecture>/omc" dir inside lib directory (e.g lib/x86_64-linux-gnu/omc/).
-set(CMAKE_INSTALL_LIBDIR "${CMAKE_INSTALL_LIBDIR}/${CMAKE_LIBRARY_ARCHITECTURE}/omc/")
+set(CMAKE_INSTALL_LIBDIR "${CMAKE_INSTALL_LIBDIR}/")
 
 # We prefer to install headers to "include/omc" dir inside.
 set(CMAKE_INSTALL_INCLUDEDIR "${CMAKE_INSTALL_INCLUDEDIR}/")
