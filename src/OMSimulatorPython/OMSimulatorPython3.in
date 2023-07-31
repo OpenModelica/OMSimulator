@@ -1,0 +1,23 @@
+#!/bin/sh
+
+SCRIPT=$(readlink -f "$0")
+SCRIPTPATH=$(dirname "$SCRIPT")
+
+OMS_LIB_DIR="${SCRIPTPATH}/../@CMAKE_INSTALL_LIBDIR@"
+
+# Add the oms install lib directory to PYTHONPATH.
+if [ -z "$PYTHONPATH" ]; then export PYTHONPATH="${OMS_LIB_DIR}"; else export PYTHONPATH="${OMS_LIB_DIR}":$PYTHONPATH; fi
+
+# On Linux, add the oms install LIB dir to LD_LIBRARY_PATH. That is where the shard lib is installed to.
+# On Windows, add the oms install BIN dir to PATH. That is where the dll is installed to.
+detected_OS="$(uname -s)"
+case "${detected_OS}" in
+  (Linux*)
+    if [ -z "$LD_LIBRARY_PATH" ]; then export LD_LIBRARY_PATH="${OMS_LIB_DIR}"; else export LD_LIBRARY_PATH="${OMS_LIB_DIR}":$LD_LIBRARY_PATH; fi
+    ;;
+  (MINGW*)
+    if [ -z "$PATH" ]; then export PATH="$SCRIPTPATH"; else export PATH="$SCRIPTPATH":$PATH; fi
+    ;;
+esac
+
+python3 $@
