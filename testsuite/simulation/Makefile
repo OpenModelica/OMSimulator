@@ -37,8 +37,6 @@ import_export_parameters3.lua \
 import_export_parameters4.lua \
 import_export_signalFilter.lua \
 import_export_snapshot.lua \
-import_export.lua \
-import_export.py \
 import_hierarchical_ssv_sources.lua \
 import_hierarchical_ssv_sources1.lua \
 import_parameter_mapping_from_ssm.lua \

@@ -44,13 +44,13 @@ type, status = oms.getSystemType("test")
 printType(type)
 printStatus(status, 3)
 
-status = oms.addSystem("test.eoo", oms.system_tlm)
+status = oms.addSystem("test.eoo", oms.system_wc)
 printStatus(status, 0)
 
-status = oms.addSystem("test.eoo.foo", oms.system_wc)
+status = oms.addSystem("test.eoo.foo", oms.system_sc)
 printStatus(status, 0)
 
-status = oms.addSystem("test.eoo.foo.goo", oms.system_sc)
+status = oms.addSystem("test.eoo.goo", oms.system_sc)
 printStatus(status, 0)
 
 type, status = oms.getSystemType("test")
@@ -65,7 +65,7 @@ type, status = oms.getSystemType("test.eoo.foo")
 printType(type)
 printStatus(status, 0)
 
-type, status = oms.getSystemType("test.eoo.foo.goo")
+type, status = oms.getSystemType("test.eoo.goo")
 printType(type)
 printStatus(status, 0)
 
@@ -80,11 +80,11 @@ printStatus(status, 0)
 ## status:  [correct] ok
 ## status:  [correct] ok
 ## status:  [correct] ok
-## type: system_tlm
-## status:  [wrong] ok
-## type: system_tlm
-## status:  [correct] ok
 ## type: system_wc
+## status:  [wrong] ok
+## type: system_wc
+## status:  [correct] ok
+## type: system_sc
 ## status:  [correct] ok
 ## type: system_sc
 ## status:  [correct] ok
