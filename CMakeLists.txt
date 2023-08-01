@@ -122,9 +122,6 @@ ENDIF()
 
 add_subdirectory(3rdParty)
 
-##########################
-# Configuring for CTPL
-set(CTPL_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/CTPL)
 
 ##########################
 # Configuring for Python
