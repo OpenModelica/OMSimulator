@@ -74,7 +74,6 @@ include_directories(
   ../../3rdParty/RegEx
   ../OMSimulatorLua
   ${Boost_INCLUDE_DIRS}
-  ${CTPL_INCLUDEDIR}
   ${OMTLM_SOURCES})
 
 link_directories(${Boost_LIBRARY_DIRS})
@@ -84,31 +83,60 @@ add_library(OMSimulatorLib SHARED ${OMSIMULATORLIB_SOURCES})
 set_target_properties(OMSimulatorLib PROPERTIES OUTPUT_NAME OMSimulator)
 
 target_include_directories(OMSimulatorLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(OMSimulatorLib PUBLIC sundials_kinsol_static sundials_cvode_static fmi4c minizip zlibstatic pugixml_header_only lua_static)
+target_link_libraries(OMSimulatorLib
+                        PUBLIC
+                          oms::3rd::kinsol
+                          oms::3rd::cvode
+                          oms::3rd::fmi4c
+                          oms::3rd::minizip
+                          oms::3rd::zlib
+                          oms::3rd::pugixml::header
+                          oms::3rd::lua
+                          oms::3rd::ctpl::header)
+
+target_link_libraries(OMSimulatorLib PUBLIC ${LIB_ATOMIC} ${Boost_LIBRARIES} ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} ${CPP_FS_LIBS})
+
+if(MSVC)
+  target_compile_definitions(OMSimulatorLib PUBLIC BOOST_ALL_DYN_LINK)
+endif()
+
+if(MINGW)
+  target_link_libraries(OMSimulatorLib PUBLIC shlwapi)
+endif()
 
 # Static library version
 add_library(OMSimulatorLib_static STATIC ${OMSIMULATORLIB_SOURCES})
-IF (WIN32 AND MSVC)
+if(MSVC)
   set_target_properties(OMSimulatorLib_static PROPERTIES OUTPUT_NAME OMSimulator_static)
-ELSE ()
+else()
   set_target_properties(OMSimulatorLib_static PROPERTIES OUTPUT_NAME OMSimulator)
-ENDIF ()
+endif()
 
 target_compile_definitions(OMSimulatorLib_static PUBLIC OMS_STATIC)
+
 target_include_directories(OMSimulatorLib_static PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(OMSimulatorLib_static PUBLIC sundials_kinsol_static sundials_cvode_static fmi4c minizip zlibstatic pugixml_header_only lua_static)
+target_link_libraries(OMSimulatorLib_static
+                        PUBLIC
+                          oms::3rd::kinsol
+                          oms::3rd::cvode
+                          oms::3rd::fmi4c
+                          oms::3rd::minizip
+                          oms::3rd::zlib
+                          oms::3rd::pugixml::header
+                          oms::3rd::lua
+                          oms::3rd::ctpl::header)
 
-IF (WIN32 AND MSVC)
-  add_definitions(-DBOOST_ALL_DYN_LINK)
-ENDIF ()
-
-target_link_libraries(OMSimulatorLib PUBLIC ${LIB_ATOMIC} ${Boost_LIBRARIES} ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} ${CPP_FS_LIBS})
 target_link_libraries(OMSimulatorLib_static PUBLIC ${CMAKE_DL_LIBS} ${LIB_ATOMIC} ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} ${CPP_FS_LIBS})
 
-IF (WIN32 AND MINGW)
-  target_link_libraries(OMSimulatorLib PUBLIC shlwapi)
+if(MSVC)
+  target_compile_definitions(OMSimulatorLib_static PUBLIC BOOST_ALL_DYN_LINK)
+endif()
+
+if(MINGW)
   target_link_libraries(OMSimulatorLib_static PUBLIC shlwapi)
-ENDIF ()
+endif()
+
+
 
 install(TARGETS OMSimulatorLib)
 install(TARGETS OMSimulatorLib_static)
