@@ -8,7 +8,10 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/config.cmake/")
 ## If OMSimulator is being built standalone (not as part of OpenModelica)
 ## include the required settings here.
 if(${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
+  set(OMSIMULATOR_STANDALONE ON)
   include(OMSimulatorTopLevelSettings)
+else()
+  set(OMSIMULATOR_STANDALONE OFF)
 endif()
 
 
