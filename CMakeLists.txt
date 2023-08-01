@@ -1,75 +1,17 @@
 message("cmake version is: ${CMAKE_VERSION}")
 
-IF(WIN32 AND MSVC)
-  # VS 2017 requires Boost 1.64 or newer
-  # Boost 1.64 requires CMake 3.8 or newer
-  cmake_minimum_required(VERSION 3.8)
-ELSE()
-  cmake_minimum_required(VERSION 3.14)
-ENDIF()
+cmake_minimum_required(VERSION 3.14)
 
 project(OMSimulator)
-
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-
-find_program(CCACHE_PROGRAM ccache)
-if(CCACHE_PROGRAM)
-  message(STATUS "Found ccache. It will be used for compilation C/C++ sources")
-  set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE_PROGRAM})
-  set(CMAKE_C_COMPILER_LAUNCHER   ${CCACHE_PROGRAM})
-# else()
-#   message(FATAL_ERROR "ccache program not found. It is highly recommended to use ccache for compilation of OpenModelica. Please install ccache and rerun configuration.
-#           You can disable this check by specifying -DOM_USE_CCACHE=OFF to CMake configuration command.")
-endif()
-
-### Installation configurations ###############################################################################
-# Install following GNU conventions (i.e., bin, lib, include, share ...)
-include(GNUInstallDirs)
-
-# Precaution so that users do not install in system folders (e.g. /user/, /usr/local/)
-# unintentionally. If the user has not specified anything default to an install_cmake dir in the root
-# build directory.
-if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-    set(CMAKE_INSTALL_PREFIX "${PROJECT_BINARY_DIR}/install_cmake" CACHE PATH "Default installation directory" FORCE)
-    # Prevent sub-projects from changing it by checking CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT after this
-    set(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT FALSE)
-    message(WARNING "No installation directory specified. Defaulting to: ${CMAKE_INSTALL_PREFIX}")
-endif()
-# omc_add_to_report(CMAKE_INSTALL_PREFIX)
-
-set(CMAKE_INSTALL_LIBDIR "${CMAKE_INSTALL_LIBDIR}/${CMAKE_LIBRARY_ARCHITECTURE}")
-
-# We prefer to install headers to "include/omc" dir inside.
-set(CMAKE_INSTALL_INCLUDEDIR "${CMAKE_INSTALL_INCLUDEDIR}/")
-
-# On macOS we want BUNDLEs (.app) to go to an 'Applications/' directory instead of a 'bin/' directory
-if(APPLE)
-  set(OM_MACOS_INSTALL_BUNDLEDIR "Applications/")
-endif()
-
-## Set the adjusted installation lib directory as an rpath for all installed binaries.
-## Assumes binaries end up in either 'bin' or 'lib' AND also assumes that 'bin' and 'lib' are sibling directories.
-if(APPLE)
-  ## MacOS Bundles end up in bin/<BundleName>.app/Contents/MacOS/
-  ## So make sure that the lib dir is referenced from that location as well
-  set(CMAKE_INSTALL_RPATH "@loader_path/../${CMAKE_INSTALL_LIBDIR};@loader_path/../../../../${CMAKE_INSTALL_LIBDIR}")
-else()
-  set(CMAKE_INSTALL_RPATH "$ORIGIN;$ORIGIN/../${CMAKE_INSTALL_LIBDIR}")
-endif()
-
-## Do not print unnecessary install messages when nothing has actually changed.
-set(CMAKE_INSTALL_MESSAGE LAZY)
-
-
-
-
-
-
-
-
-
-
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/config.cmake/")
+
+## If OMSimulator is being built standalone (not as part of OpenModelica)
+## include the required settings here.
+if(${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
+  include(OMSimulatorTopLevelSettings)
+endif()
+
+
 include(GetGitRevisionDescription)
 if (EXISTS "${CMAKE_SOURCE_DIR}/version.txt")
   file(STRINGS "version.txt" OMS_VERSION_STRING)
@@ -95,16 +37,7 @@ ELSE()
   set(PLATFORM_STRING "linux")
 ENDIF()
 
-# Don't allow in-source build
-IF("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
-  message(FATAL_ERROR "No in-source builds supported. Change to 'build' sub-directory and do 'cmake ..'.")
-ENDIF()
-
 message(STATUS "Platform string: ${PLATFORM_STRING}")
-
-IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-  set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/install/${PLATFORM_STRING} CACHE PATH "Library installation path (don't change)" FORCE)
-ENDIF()
 
 if("${STD_REGEX}" STREQUAL "0")
     message(WARNING, "Using boost::regex instead of std::regex due to old gcc/clang compiler")
@@ -124,9 +57,6 @@ IF("${ABI}" MATCHES "^LINUX")
 ELSE()
     message(STATUS "ABI is: ${ABI}")
 ENDIF("${ABI}" MATCHES "^LINUX")
-
-# Enable verbose output from Makefile builds
-set(CMAKE_VERBOSE_MAKEFILE ON)
 
 # Use C++ 11 for the whole project
 # cmake < 3.1 doesn't know or respect CMAKE_CXX_STANDARD*
@@ -206,37 +136,7 @@ ELSE()
 ENDIF()
 
 ##########################
-# Configuration for OMTLMSimulatorLib
-option(OMTLM "Enable the OMTLMSimulator module." ON)
-IF(OMTLM)
-set(OMTLMSIMULATOR_INCLUDEDIR ${PROJECT_SOURCE_DIR}/OMTLMSimulator/common)
-set(OMTLMSIMULATORLIB_INCLUDEDIR ${PROJECT_SOURCE_DIR}/OMTLMSimulator/common/OMTLMSimulatorLib)
-IF(WIN32)
-  set(OMTLMSIMULATORLIB_LIBRARYDIR ${PROJECT_SOURCE_DIR}/OMTLMSimulator/bin)
-ELSE() # use it from the install folder where is properly installed for MacOS
-  set(OMTLMSIMULATORLIB_LIBRARYDIR ${CMAKE_INSTALL_PREFIX}/lib/${HOST_SHORT})
-ENDIF()
-set(OMTLMSIMULATOR_3RDPARTY_INCLUDEDIR ${PROJECT_SOURCE_DIR}/OMTLMSimulator/3rdParty/misc/include)
-IF(WIN32)
-  IF (MINGW)
-    # adrpo: link with the full path to the dll on MINGW
-    set(OMTLM_LINKFLAGS ${OMTLMSIMULATORLIB_LIBRARYDIR}/libomtlmsimulator.dll wsock32 ws2_32)
-    message(STATUS "OMTLMSimulator enabled: ${OMTLM_LINKFLAGS}")
-  ELSE(MINGW)
-    set(OMTLM_LINKFLAGS omtlmsimulator wsock32 ws2_32)
-  ENDIF(MINGW)
-ELSE(WIN32)
-  set(OMTLM_LINKFLAGS omtlmsimulator)
-ENDIF(WIN32)
-  message(STATUS "OMTLMSimulator enabled.")
-ELSE(OMTLM)
-  set(OMTLM_LINKFLAGS)
-  message(STATUS "OMTLMSimulator disabled.")
-ENDIF(OMTLM)
-
-##########################
 # Add project modules
-# add_subdirectory(OMTLMSimulator)
 add_subdirectory(src/OMSimulatorLib)
 add_subdirectory(src/OMSimulator)
 add_subdirectory(src/OMSimulatorLua)
