@@ -174,7 +174,6 @@ print("info:      model.root_1.add_1.u2           : " .. oms_getReal("model.root
 -- error:   [addConnection] Connection <"add.y", "output"> exists already in system "model.root_1"
 -- error:   [rename] Model "model" does not contain system "root"
 -- error:   [rename] Model "model" does not contain system "root"
--- error:   [getTLMBusConnector] "System_1.output" is not a valid ident
 -- error:   [addConnection] Connector "System_1.output" not found in system "model.root_1"
 -- error:   [rename] failed for "model.root_1.System1" as the identifier could not be resolved to a system or subsystem or component
 -- error:   [rename] failed for "model.root_1.add" as the identifier could not be resolved to a system or subsystem or component
@@ -296,5 +295,5 @@ print("info:      model.root_1.add_1.u2           : " .. oms_getReal("model.root
 -- info:      model.root_1.add_1.u1           : 10.0
 -- info:      model.root_1.add_1.u2           : 0.0
 -- info:    0 warnings
--- info:    7 errors
+-- info:    6 errors
 -- endResult

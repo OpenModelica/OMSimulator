@@ -38,7 +38,7 @@
 
 #include <iostream>
 #include <map>
-#include "minizip/miniunz.h"
+#include "miniunz.h"
 #include <pugixml.hpp>
 #include <string>
 

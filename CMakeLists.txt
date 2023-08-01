@@ -1,16 +1,20 @@
 message("cmake version is: ${CMAKE_VERSION}")
 
-IF(WIN32 AND MSVC)
-  # VS 2017 requires Boost 1.64 or newer
-  # Boost 1.64 requires CMake 3.8 or newer
-  cmake_minimum_required(VERSION 3.8)
-ELSE()
-  cmake_minimum_required(VERSION 2.8)
-ENDIF()
+cmake_minimum_required(VERSION 3.14)
 
 project(OMSimulator)
-
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/config.cmake/")
+
+## If OMSimulator is being built standalone (not as part of OpenModelica)
+## include the required settings here.
+if(${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
+  set(OMSIMULATOR_STANDALONE ON)
+  include(OMSimulatorTopLevelSettings)
+else()
+  set(OMSIMULATOR_STANDALONE OFF)
+endif()
+
+
 include(GetGitRevisionDescription)
 if (EXISTS "${CMAKE_SOURCE_DIR}/version.txt")
   file(STRINGS "version.txt" OMS_VERSION_STRING)
@@ -36,16 +40,7 @@ ELSE()
   set(PLATFORM_STRING "linux")
 ENDIF()
 
-# Don't allow in-source build
-IF("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
-  message(FATAL_ERROR "No in-source builds supported. Change to 'build' sub-directory and do 'cmake ..'.")
-ENDIF()
-
 message(STATUS "Platform string: ${PLATFORM_STRING}")
-
-IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-  set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/install/${PLATFORM_STRING} CACHE PATH "Library installation path (don't change)" FORCE)
-ENDIF()
 
 if("${STD_REGEX}" STREQUAL "0")
     message(WARNING, "Using boost::regex instead of std::regex due to old gcc/clang compiler")
@@ -65,9 +60,6 @@ IF("${ABI}" MATCHES "^LINUX")
 ELSE()
     message(STATUS "ABI is: ${ABI}")
 ENDIF("${ABI}" MATCHES "^LINUX")
-
-# Enable verbose output from Makefile builds
-set(CMAKE_VERBOSE_MAKEFILE ON)
 
 # Use C++ 11 for the whole project
 # cmake < 3.1 doesn't know or respect CMAKE_CXX_STANDARD*
@@ -127,40 +119,8 @@ ELSE()
 ENDIF()
 
 ##########################
-# Configuring for ZIP
-set(ZLIB_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/zlib/install/${PLATFORM_STRING})
-find_package(ZLIB REQUIRED)
 
-# Configuring for minizip
-set(MINIZIP_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/minizip/install/${PLATFORM_STRING})
-# set(MINIZIP_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/minizip/install/${PLATFORM_STRING}/include)
-# set(MINIZIP_LIBRARYDIR ${PROJECT_SOURCE_DIR}/3rdParty/minizip/install/${PLATFORM_STRING}/lib)
-find_package(MINIZIP REQUIRED)
-
-##########################
-# Configuring for FMI4c
-set(FMI4c_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/fmi4c/install/${PLATFORM_STRING})
-find_package(FMI4c REQUIRED)
-
-##########################
-# Configuring for Lua
-set(LUALibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/Lua/install/${PLATFORM_STRING})
-find_package(LUALibrary REQUIRED)
-
-##########################
-# Configuring for CVODE
-set(CVODELibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/cvode/install/${PLATFORM_STRING})
-find_package(CVODELibrary REQUIRED)
-
-##########################
-# Configuring for KINSOL
-set(KINSOLLibrary_ROOT ${PROJECT_SOURCE_DIR}/3rdParty/kinsol/install/${PLATFORM_STRING})
-find_package(KINSOLLibrary REQUIRED)
-
-##########################
-# Configuring for PUGIXML
-add_definitions(-DPUGIXML_HEADER_ONLY)
-set(PUGIXML_INCLUDEDIR ${PROJECT_SOURCE_DIR}/3rdParty/PugiXml)
+add_subdirectory(3rdParty)
 
 ##########################
 # Configuring for CTPL
@@ -179,38 +139,9 @@ ELSE()
 ENDIF()
 
 ##########################
-# Configuration for OMTLMSimulatorLib
-option(OMTLM "Enable the OMTLMSimulator module." ON)
-IF(OMTLM)
-set(OMTLMSIMULATOR_INCLUDEDIR ${PROJECT_SOURCE_DIR}/OMTLMSimulator/common)
-set(OMTLMSIMULATORLIB_INCLUDEDIR ${PROJECT_SOURCE_DIR}/OMTLMSimulator/common/OMTLMSimulatorLib)
-IF(WIN32)
-  set(OMTLMSIMULATORLIB_LIBRARYDIR ${PROJECT_SOURCE_DIR}/OMTLMSimulator/bin)
-ELSE() # use it from the install folder where is properly installed for MacOS
-  set(OMTLMSIMULATORLIB_LIBRARYDIR ${CMAKE_INSTALL_PREFIX}/lib/${HOST_SHORT})
-ENDIF()
-set(OMTLMSIMULATOR_3RDPARTY_INCLUDEDIR ${PROJECT_SOURCE_DIR}/OMTLMSimulator/3rdParty/misc/include)
-IF(WIN32)
-  IF (MINGW)
-    # adrpo: link with the full path to the dll on MINGW
-    set(OMTLM_LINKFLAGS ${OMTLMSIMULATORLIB_LIBRARYDIR}/libomtlmsimulator.dll wsock32 ws2_32)
-    message(STATUS "OMTLMSimulator enabled: ${OMTLM_LINKFLAGS}")
-  ELSE(MINGW)
-    set(OMTLM_LINKFLAGS omtlmsimulator wsock32 ws2_32)
-  ENDIF(MINGW)
-ELSE(WIN32)
-  set(OMTLM_LINKFLAGS omtlmsimulator)
-ENDIF(WIN32)
-  message(STATUS "OMTLMSimulator enabled.")
-ELSE(OMTLM)
-  set(OMTLM_LINKFLAGS)
-  message(STATUS "OMTLMSimulator disabled.")
-ENDIF(OMTLM)
-
-##########################
 # Add project modules
-add_subdirectory(src/OMSimulator)
 add_subdirectory(src/OMSimulatorLib)
+add_subdirectory(src/OMSimulator)
 add_subdirectory(src/OMSimulatorLua)
 add_subdirectory(src/OMSimulatorPython)
 add_subdirectory(src/OMSimulatorServer)
