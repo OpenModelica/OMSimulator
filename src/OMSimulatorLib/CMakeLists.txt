@@ -71,7 +71,6 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Version.cpp.in" "${CMAKE_CURRENT_BIN
 list(APPEND OMSIMULATORLIB_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/Version.cpp")
 
 include_directories(
-  ../../3rdParty/RegEx
   ../OMSimulatorLua
   ${Boost_INCLUDE_DIRS}
   ${OMTLM_SOURCES})
@@ -90,8 +89,9 @@ target_link_libraries(OMSimulatorLib
                           oms::3rd::fmi4c
                           oms::3rd::minizip
                           oms::3rd::zlib
-                          oms::3rd::pugixml::header
                           oms::3rd::lua
+                          oms::3rd::regex
+                          oms::3rd::pugixml::header
                           oms::3rd::ctpl::header)
 
 target_link_libraries(OMSimulatorLib PUBLIC ${LIB_ATOMIC} ${Boost_LIBRARIES} ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} ${CPP_FS_LIBS})
@@ -122,8 +122,9 @@ target_link_libraries(OMSimulatorLib_static
                           oms::3rd::fmi4c
                           oms::3rd::minizip
                           oms::3rd::zlib
-                          oms::3rd::pugixml::header
                           oms::3rd::lua
+                          oms::3rd::regex
+                          oms::3rd::pugixml::header
                           oms::3rd::ctpl::header)
 
 target_link_libraries(OMSimulatorLib_static PUBLIC ${CMAKE_DL_LIBS} ${LIB_ATOMIC} ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} ${CPP_FS_LIBS})
