@@ -125,21 +125,6 @@ pipeline {
             }
           }
         }
-        stage('centos7') {
-          agent {
-            dockerfile {
-              additionalBuildArgs '--pull'
-              dir '.CI/centos7'
-              label 'linux'
-            }
-          }
-          environment {
-            OMSFLAGS = "CMAKE=cmake3 OMTLM=OFF"
-          }
-          steps {
-            buildOMS()
-          }
-        }
         stage('alpine') {
           agent {
             dockerfile {
