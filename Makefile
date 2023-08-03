@@ -107,7 +107,7 @@ else
 	CMAKE_BOOST_ROOT="-DBOOST_ROOT=$(BOOST_ROOT)"
 endif
 
-.PHONY: OMSimulator OMSimulatorCore config-OMSimulator config-xerces config-3rdParty distclean testsuite doc doc-html doc-doxygen OMTLMSimulator OMTLMSimulatorClean RegEx pip
+.PHONY: OMSimulator OMSimulatorCore config-OMSimulator config-xerces config-3rdParty distclean testsuite doc doc-html doc-doxygen OMTLMSimulator OMTLMSimulatorClean pip
 
 OMSimulator:
 	@echo OS: $(detected_OS)
@@ -138,7 +138,7 @@ pip:
 	@echo "> twine upload src/pip/install/dist/$(shell ls src/pip/install/dist/ -Art | tail -n 1)"
 
 ifeq ($(OMTLM),ON)
-OMTLMSimulator: RegEx
+OMTLMSimulator:
 	@echo
 	@echo "# make OMTLMSimulator"
 	@echo
@@ -152,7 +152,7 @@ OMTLMSimulator: RegEx
 	test ! `uname` != Darwin || cp OMTLMSimulator/bin/FMIWrapper $(TOP_INSTALL_DIR)/bin/
 	test ! `uname` != Darwin || cp OMTLMSimulator/bin/StartTLMFmiWrapper $(TOP_INSTALL_DIR)/bin/
 
-OMTLMSimulatorStandalone: RegEx
+OMTLMSimulatorStandalone:
 	@echo
 	@echo "# make OMTLMSimulator Standalone"
 	@echo
@@ -168,11 +168,6 @@ OMTLMSimulatorClean:
 	@echo
 	@$(MAKE) -C OMTLMSimulator clean
 
-# build our RegEx executable that will tell us if we need to use std::regex or boost::regex
-RegEx: 3rdParty/RegEx/OMSRegEx$(EEXT)
-3rdParty/RegEx/OMSRegEx$(EEXT): 3rdParty/RegEx/RegEx.h 3rdParty/RegEx/OMSRegEx.cpp
-	$(MAKE) -C 3rdParty/RegEx
-
 3rdParty/README.md:
 	@echo "Please checkout the 3rdParty submodule, e.g. using \"git submodule update --init 3rdParty\", and try again."
 	@false
@@ -180,13 +175,12 @@ RegEx: 3rdParty/RegEx/OMSRegEx$(EEXT)
 config-3rdParty: 3rdParty/README.md
 
 config-OMSimulator: $(BUILD_DIR)/Makefile
-$(BUILD_DIR)/Makefile: RegEx CMakeLists.txt
+$(BUILD_DIR)/Makefile: CMakeLists.txt
 	@echo
 	@echo "# config OMSimulator"
 	@echo
-	$(eval STD_REGEX := $(shell 3rdParty/RegEx/OMSRegEx$(EEXT)))
 	$(MKDIR) $(BUILD_DIR)
-	$(CMAKE) -S . -B $(BUILD_DIR) $(CMAKE_TARGET) -DSTD_REGEX=$(STD_REGEX) -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DASAN:BOOL=$(ASAN) -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) $(CMAKE_BOOST_ROOT) $(CMAKE_INSTALL_PREFIX) $(HOST_SHORT) $(EXTRA_CMAKE) $(CMAKE_STATIC)
+	$(CMAKE) -S . -B $(BUILD_DIR) $(CMAKE_TARGET) -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DASAN:BOOL=$(ASAN) -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) $(CMAKE_BOOST_ROOT) $(CMAKE_INSTALL_PREFIX) $(HOST_SHORT) $(EXTRA_CMAKE) $(CMAKE_STATIC)
 
 config-xerces: 3rdParty/xerces/$(INSTALL_DIR)/lib/libxerces-c.a
 3rdParty/xerces/$(INSTALL_DIR)/lib/libxerces-c.a: 3rdParty/xerces/$(BUILD_DIR)/Makefile
@@ -205,7 +199,6 @@ distclean:
 	@$(MAKE) OMTLMSimulatorClean
 	$(RM) $(BUILD_DIR)
 	$(RM) $(INSTALL_DIR)
-	$(RM) 3rdParty/RegEx/OMSRegEx$(EEXT)
 	$(RM) 3rdParty/xerces/$(BUILD_DIR)
 	$(RM) 3rdParty/xerces/$(INSTALL_DIR)
 

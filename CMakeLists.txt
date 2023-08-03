@@ -50,13 +50,6 @@ ENDIF()
 
 message(STATUS "Platform string: ${PLATFORM_STRING}")
 
-if("${STD_REGEX}" STREQUAL "0")
-    message(WARNING, "Using boost::regex instead of std::regex due to old gcc/clang compiler")
-    set(LIB_BOOST_REGEX regex)
-else()
-    message(STATUS "Using std::regex, the gcc/clang compiler is good enough")
-ENDIF()
-
 ##########################
 
 add_subdirectory(3rdParty)
