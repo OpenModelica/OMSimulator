@@ -26,7 +26,6 @@ ifeq ($(detected_OS),Darwin)
 	CMAKE_TARGET=-DCMAKE_SYSTEM_NAME=$(detected_OS)
 	LIBXML2 := OFF
 	OMTLM := OFF
-	export ABI := MAC64
 	FEXT=.dylib
 	CMAKE_FPIC=-DCMAKE_C_FLAGS="-fPIC"
 else ifeq (MINGW32,$(findstring MINGW32,$(detected_OS)))
@@ -34,7 +33,6 @@ else ifeq (MINGW32,$(findstring MINGW32,$(detected_OS)))
 	INSTALL_DIR := install/mingw
 	CMAKE_TARGET=-G "MSYS Makefiles"
 	LIBXML2 := OFF
-	export ABI := WINDOWS32
 	FEXT=.dll
 	EEXT=.exe
 	ifeq (clang,$(findstring clang,$(CC)))
@@ -45,7 +43,6 @@ else ifeq (MINGW,$(findstring MINGW,$(detected_OS)))
 	INSTALL_DIR := install/mingw
 	CMAKE_TARGET=-G "MSYS Makefiles"
 	LIBXML2 := OFF
-	export ABI := WINDOWS64
 	FEXT=.dll
 	EEXT=.exe
 	ifeq (clang,$(findstring clang,$(CC)))
@@ -55,12 +52,6 @@ else
 	BUILD_DIR := build/linux
 	INSTALL_DIR := install/linux
 	CMAKE_TARGET=-DCMAKE_SYSTEM_NAME=$(detected_OS)
-# if empty is LINUX64, else LINUX32
-ifneq (,$(filter i386% i486% i586% i686%,$(host_short)))
-	export ABI := LINUX32
-else
-	export ABI := LINUX64
-endif
 	FEXT=.so
 	CMAKE_FPIC=-DCMAKE_C_FLAGS="-fPIC"
 endif
@@ -151,7 +142,6 @@ OMTLMSimulator: RegEx
 	@echo
 	@echo "# make OMTLMSimulator"
 	@echo
-	@echo $(ABI)
 	$(MAKE) -C OMTLMSimulator omtlmlib
 	test ! `uname` != Darwin || $(MAKE) -C OMTLMSimulator/FMIWrapper install
 	@$(MKDIR) $(TOP_INSTALL_DIR)/lib/$(HOST_SHORT_OMC)
@@ -166,7 +156,6 @@ OMTLMSimulatorStandalone: RegEx
 	@echo
 	@echo "# make OMTLMSimulator Standalone"
 	@echo
-	@echo $(ABI)
 	@$(MAKE) -C OMTLMSimulator install
 else
 OMTLMSimulator:
@@ -197,7 +186,7 @@ $(BUILD_DIR)/Makefile: RegEx CMakeLists.txt
 	@echo
 	$(eval STD_REGEX := $(shell 3rdParty/RegEx/OMSRegEx$(EEXT)))
 	$(MKDIR) $(BUILD_DIR)
-	$(CMAKE) -S . -B $(BUILD_DIR) $(CMAKE_TARGET) -DABI=$(ABI) -DSTD_REGEX=$(STD_REGEX) -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DASAN:BOOL=$(ASAN) -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) $(CMAKE_BOOST_ROOT) $(CMAKE_INSTALL_PREFIX) $(HOST_SHORT) $(EXTRA_CMAKE) $(CMAKE_STATIC)
+	$(CMAKE) -S . -B $(BUILD_DIR) $(CMAKE_TARGET) -DSTD_REGEX=$(STD_REGEX) -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DASAN:BOOL=$(ASAN) -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) $(CMAKE_BOOST_ROOT) $(CMAKE_INSTALL_PREFIX) $(HOST_SHORT) $(EXTRA_CMAKE) $(CMAKE_STATIC)
 
 config-xerces: 3rdParty/xerces/$(INSTALL_DIR)/lib/libxerces-c.a
 3rdParty/xerces/$(INSTALL_DIR)/lib/libxerces-c.a: 3rdParty/xerces/$(BUILD_DIR)/Makefile

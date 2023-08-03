@@ -57,18 +57,6 @@ else()
     message(STATUS "Using std::regex, the gcc/clang compiler is good enough")
 ENDIF()
 
-# We need -latomic on some Linux versions, so let's link it on all Linux to make sure it works
-IF("${ABI}" MATCHES "^LINUX")
-    find_package(GccAtomic)
-    IF (GCCLIBATOMIC_FOUND)
-      set(LIB_ATOMIC "${GCCLIBATOMIC_LIBRARY}")
-      set(LIB_BOOST_ATOMIC atomic)
-      message(STATUS "Using ${LIB_ATOMIC} -lboost_atomic for ${ABI}")
-    ENDIF (GCCLIBATOMIC_FOUND)
-ELSE()
-    message(STATUS "ABI is: ${ABI}")
-ENDIF("${ABI}" MATCHES "^LINUX")
-
 ##########################
 
 add_subdirectory(3rdParty)
