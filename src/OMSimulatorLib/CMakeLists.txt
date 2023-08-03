@@ -94,7 +94,7 @@ target_link_libraries(OMSimulatorLib
                           oms::3rd::pugixml::header
                           oms::3rd::ctpl::header)
 
-target_link_libraries(OMSimulatorLib PUBLIC ${LIB_ATOMIC} ${Boost_LIBRARIES} ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(OMSimulatorLib PUBLIC ${Boost_LIBRARIES} ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
 
 if(MSVC)
   target_compile_definitions(OMSimulatorLib PUBLIC BOOST_ALL_DYN_LINK)
@@ -127,7 +127,7 @@ target_link_libraries(OMSimulatorLib_static
                           oms::3rd::pugixml::header
                           oms::3rd::ctpl::header)
 
-target_link_libraries(OMSimulatorLib_static PUBLIC ${CMAKE_DL_LIBS} ${LIB_ATOMIC} ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES})
+target_link_libraries(OMSimulatorLib_static PUBLIC ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES})
 
 if(MSVC)
   target_compile_definitions(OMSimulatorLib_static PUBLIC BOOST_ALL_DYN_LINK)
