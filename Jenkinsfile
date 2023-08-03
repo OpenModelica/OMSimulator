@@ -50,7 +50,6 @@ pipeline {
           environment {
             RUNTESTDB = "/cache/runtest/"
             NPROC = "${numPhysicalCPU}"
-            OMSFLAGS = "CMAKE=/opt/cmake-3.17.2/bin/cmake"
           }
           steps {
             buildOMS()
@@ -123,21 +122,6 @@ pipeline {
                 junit 'testsuite/partest/result.xml'
               }
             }
-          }
-        }
-        stage('centos7') {
-          agent {
-            dockerfile {
-              additionalBuildArgs '--pull'
-              dir '.CI/centos7'
-              label 'linux'
-            }
-          }
-          environment {
-            OMSFLAGS = "CMAKE=cmake3 OMTLM=OFF"
-          }
-          steps {
-            buildOMS()
           }
         }
         stage('alpine') {
