@@ -43,7 +43,6 @@ extern "C"
 #endif
 #endif
 
-// https://svn.boost.org/trac10/ticket/1976
 filesystem::path naive_uncomplete(const filesystem::path& path, const filesystem::path& base)
 {
   if (path.has_root_path())
@@ -110,7 +109,6 @@ filesystem::path oms_canonical(const filesystem::path& p)
   catch (const std::exception&)
   {
     // do nothing, canonical fails if the directory contains a junction or a symlink!
-    // https://svn.boost.org/trac10/ticket/11138
     return p;
   }
 

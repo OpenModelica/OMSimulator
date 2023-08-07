@@ -42,11 +42,7 @@
 #include <assert.h>
 #include <pugixml.hpp>
 
-#if (BOOST_VERSION >= 105300)
-#include <ctpl.h>
-#else // use the standard queue
 #include <ctpl_stl.h>
-#endif
 
 namespace oms
 {
