@@ -21,7 +21,6 @@ For OMSimulatorLib a [Doxygen source code documentation](https://openmodelica.or
 
 ## Dependencies
 
-- [Boost](http://www.boost.org/) (system, filesystem)
 - [cmake](http://www.cmake.org)
 - [Sphinx](http://www.sphinx-doc.org/en/stable/)
 - [readline (if using Lua)](http://git.savannah.gnu.org/cgit/readline.git)
@@ -92,12 +91,6 @@ The following versions of Visual Studio are supported:
 - "VS15-Win64" -> "Visual Studio 15 2017 Win64"
 
 It is not strictly required to install the full Visual Studio IDE. The batch scripts only require *[Visual C++ Build Tools](http://landinghub.visualstudio.com/visual-cpp-build-tools)*.
-
-1. Install boost (VS14: 1.63, VS15: 1.64)
-
-   - Download and install precompiled boost libs, e.g. from [this](https://sourceforge.net/projects/boost/files/boost-binaries/) source
-   - Set environment variable `BOOST_ROOT` to install path, e.g:
-     - `BOOST_ROOT=C:\local\boost_1_64_0`
 
 1. Configure OMSimulator
 

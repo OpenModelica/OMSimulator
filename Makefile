@@ -102,11 +102,6 @@ ifneq ($(CROSS_TRIPLE),)
   DISABLE_RUN_OMSIMULATOR_VERSION ?= 1
 endif
 
-ifeq ($(BOOST_ROOT),)
-else
-	CMAKE_BOOST_ROOT="-DBOOST_ROOT=$(BOOST_ROOT)"
-endif
-
 .PHONY: OMSimulator OMSimulatorCore config-OMSimulator config-xerces config-3rdParty distclean testsuite doc doc-html doc-doxygen OMTLMSimulator OMTLMSimulatorClean pip
 
 OMSimulator:
