@@ -49,11 +49,9 @@ IF ["%OMS_VS_TARGET%"]==["VS15-Win64"] (
 
 
 IF NOT DEFINED CMAKE_BUILD_TYPE SET CMAKE_BUILD_TYPE="Release"
-IF NOT DEFINED BOOST_ROOT SET BOOST_ROOT=C:\local\boost_1_64_0
 
 ECHO.
 SET CMAKE_BUILD_TYPE
-SET BOOST_ROOT
 ECHO.
 :: -- init ----------------------------
 
@@ -67,7 +65,6 @@ IF NOT EXIST install\\win\\lib MKDIR install\\win\\lib
 IF ["%TARGET%"]==["clean"] GOTO clean
 IF ["%TARGET%"]==["xerces"] GOTO xerces
 IF ["%TARGET%"]==["pthread"] GOTO pthread
-IF ["%TARGET%"]==["boost"] GOTO boost
 IF ["%TARGET%"]==["omsimulator"] GOTO omsimulator
 IF ["%TARGET%"]==["all"] GOTO all
 ECHO # Error: No rule to make target '%TARGET%'.
@@ -113,24 +110,6 @@ EXIT /B 0
 :: -- pthread -------------------------
 
 
-:: -- copy boost ----------------------
-:boost
-ECHO # copy boost
-IF NOT EXIST "install\win\bin" MKDIR install\win\bin
-SET CRD=%CD%
-CD %BOOST_ROOT%
-FOR /d %%d in (lib%OMS_VS_PLATFORM%-msvc-*) do (
-  CD %%d
-  FOR /r %%e in (boost_system*,boost_filesystem*) do (
-    XCOPY /Y /F %%e %CRD%\install\win\bin
-  )
-  CD %BOOST_ROOT%
-)
-CD %CRD%
-EXIT /B 0
-:: -- copy boost ----------------------
-
-
 :: -- config OMSimulator --------------
 :omsimulator
 ECHO # config OMSimulator
@@ -149,8 +128,6 @@ START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% clean"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 IF NOT EXIST "3rdParty/README.md" GOTO fail2
 START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% pthread"
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% boost"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% omsimulator"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
