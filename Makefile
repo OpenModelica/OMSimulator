@@ -7,10 +7,6 @@ CP=cp -rf
 MKDIR=mkdir -p
 ROOT_DIR=$(shell pwd)
 
-# Option to build LIBXML2 as part of the 3rdParty projects
-LIBXML2 ?= $(OMTLM)
-# Option to enable OMTLM
-OMTLM ?= OFF
 # Option to enable AddressSanitizer
 ASAN ?= OFF
 # Statically link dependencies as much as possible
@@ -24,15 +20,12 @@ ifeq ($(detected_OS),Darwin)
 	BUILD_DIR := build/mac
 	INSTALL_DIR := install/mac
 	CMAKE_TARGET=-DCMAKE_SYSTEM_NAME=$(detected_OS)
-	LIBXML2 := OFF
-	OMTLM := OFF
 	FEXT=.dylib
 	CMAKE_FPIC=-DCMAKE_C_FLAGS="-fPIC"
 else ifeq (MINGW32,$(findstring MINGW32,$(detected_OS)))
 	BUILD_DIR := build/mingw
 	INSTALL_DIR := install/mingw
 	CMAKE_TARGET=-G "MSYS Makefiles"
-	LIBXML2 := OFF
 	FEXT=.dll
 	EEXT=.exe
 	ifeq (clang,$(findstring clang,$(CC)))
@@ -42,7 +35,6 @@ else ifeq (MINGW,$(findstring MINGW,$(detected_OS)))
 	BUILD_DIR := build/mingw
 	INSTALL_DIR := install/mingw
 	CMAKE_TARGET=-G "MSYS Makefiles"
-	LIBXML2 := OFF
 	FEXT=.dll
 	EEXT=.exe
 	ifeq (clang,$(findstring clang,$(CC)))
@@ -87,8 +79,6 @@ ifeq ($(detected_OS),Darwin)
 endif
 
 ifneq ($(CROSS_TRIPLE),)
-  OMTLM := OFF
-  LIBXML2 := OFF
   CROSS_TRIPLE_DASH = $(CROSS_TRIPLE)-
   HOST_CROSS_TRIPLE = "--host=$(CROSS_TRIPLE)"
   AR ?= $(CROSS_TRIPLE)-ar
@@ -102,15 +92,12 @@ ifneq ($(CROSS_TRIPLE),)
   DISABLE_RUN_OMSIMULATOR_VERSION ?= 1
 endif
 
-.PHONY: OMSimulator OMSimulatorCore config-OMSimulator config-xerces config-3rdParty distclean testsuite doc doc-html doc-doxygen OMTLMSimulator OMTLMSimulatorClean pip
+.PHONY: OMSimulator OMSimulatorCore config-OMSimulator config-xerces config-3rdParty distclean testsuite doc doc-html doc-doxygen pip
 
 OMSimulator:
 	@echo OS: $(detected_OS)
-	@echo TLM: $(OMTLM)
-	@echo LIBXML2: $(LIBXML2)
 	@echo "# make OMSimulator"
 	@echo
-	@$(MAKE) CC="$(CC)" CXX="$(CXX)" OMTLMSimulator
 	@$(MAKE) OMSimulatorCore
 	test ! -z "$(DISABLE_RUN_OMSIMULATOR_VERSION)" || $(TOP_INSTALL_DIR)/bin/OMSimulator --version
 
@@ -131,37 +118,6 @@ pip:
 	@echo
 	@echo "# Run the following command to upload the package"
 	@echo "> twine upload src/pip/install/dist/$(shell ls src/pip/install/dist/ -Art | tail -n 1)"
-
-ifeq ($(OMTLM),ON)
-OMTLMSimulator:
-	@echo
-	@echo "# make OMTLMSimulator"
-	@echo
-	$(MAKE) -C OMTLMSimulator omtlmlib
-	test ! `uname` != Darwin || $(MAKE) -C OMTLMSimulator/FMIWrapper install
-	@$(MKDIR) $(TOP_INSTALL_DIR)/lib/$(HOST_SHORT_OMC)
-	@$(MKDIR) $(TOP_INSTALL_DIR)/bin
-	test ! "$(FEXT)" != ".dll" || cp OMTLMSimulator/bin/libomtlmsimulator$(FEXT) $(TOP_INSTALL_DIR)/lib/$(HOST_SHORT_OMC)
-	test ! "$(detected_OS)" = Darwin || ($(CROSS_TRIPLE_DASH)install_name_tool -id "@rpath/libomtlmsimulator$(FEXT)" $(TOP_INSTALL_DIR)/lib/$(HOST_SHORT_OMC)/libomtlmsimulator$(FEXT))
-	test ! "$(FEXT)" = ".dll" || cp OMTLMSimulator/bin/libomtlmsimulator$(FEXT) $(TOP_INSTALL_DIR)/bin/
-	test ! `uname` != Darwin || cp OMTLMSimulator/bin/FMIWrapper $(TOP_INSTALL_DIR)/bin/
-	test ! `uname` != Darwin || cp OMTLMSimulator/bin/StartTLMFmiWrapper $(TOP_INSTALL_DIR)/bin/
-
-OMTLMSimulatorStandalone:
-	@echo
-	@echo "# make OMTLMSimulator Standalone"
-	@echo
-	@$(MAKE) -C OMTLMSimulator install
-else
-OMTLMSimulator:
-OMTLMSimulatorStandalone:
-endif
-
-OMTLMSimulatorClean:
-	@echo
-	@echo "# clean OMTLMSimulator"
-	@echo
-	@$(MAKE) -C OMTLMSimulator clean
 
 3rdParty/README.md:
 	@echo "Please checkout the 3rdParty submodule, e.g. using \"git submodule update --init 3rdParty\", and try again."
@@ -191,7 +147,6 @@ distclean:
 	@echo
 	@echo "# make distclean"
 	@echo
-	@$(MAKE) OMTLMSimulatorClean
 	$(RM) $(BUILD_DIR)
 	$(RM) $(INSTALL_DIR)
 	$(RM) 3rdParty/xerces/$(BUILD_DIR)
