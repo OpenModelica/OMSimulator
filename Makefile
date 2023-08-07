@@ -102,11 +102,6 @@ ifneq ($(CROSS_TRIPLE),)
   DISABLE_RUN_OMSIMULATOR_VERSION ?= 1
 endif
 
-ifeq ($(BOOST_ROOT),)
-else
-	CMAKE_BOOST_ROOT="-DBOOST_ROOT=$(BOOST_ROOT)"
-endif
-
 .PHONY: OMSimulator OMSimulatorCore config-OMSimulator config-xerces config-3rdParty distclean testsuite doc doc-html doc-doxygen OMTLMSimulator OMTLMSimulatorClean pip
 
 OMSimulator:
@@ -180,7 +175,7 @@ $(BUILD_DIR)/Makefile: CMakeLists.txt
 	@echo "# config OMSimulator"
 	@echo
 	$(MKDIR) $(BUILD_DIR)
-	$(CMAKE) -S . -B $(BUILD_DIR) $(CMAKE_TARGET) -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DASAN:BOOL=$(ASAN) -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) $(CMAKE_BOOST_ROOT) $(CMAKE_INSTALL_PREFIX) $(HOST_SHORT) $(EXTRA_CMAKE) $(CMAKE_STATIC)
+	$(CMAKE) -S . -B $(BUILD_DIR) $(CMAKE_TARGET) -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DASAN:BOOL=$(ASAN) -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) $(CMAKE_INSTALL_PREFIX) $(HOST_SHORT) $(EXTRA_CMAKE) $(CMAKE_STATIC)
 
 config-xerces: 3rdParty/xerces/$(INSTALL_DIR)/lib/libxerces-c.a
 3rdParty/xerces/$(INSTALL_DIR)/lib/libxerces-c.a: 3rdParty/xerces/$(BUILD_DIR)/Makefile

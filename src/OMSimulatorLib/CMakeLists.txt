@@ -20,7 +20,7 @@ ELSEIF (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5
 ENDIF ()
 
 
-set(OMTLM_SOURCES "DummyTLM/")
+set(DUMMY_OMTLM_DIRECTORY "DummyTLM/")
 set(TLM_STRING "-notlm")
 
 set(OMSIMULATORLIB_SOURCES
@@ -70,18 +70,15 @@ set(OMSIMULATORLIB_SOURCES
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Version.cpp.in" "${CMAKE_CURRENT_BINARY_DIR}/Version.cpp" @ONLY)
 list(APPEND OMSIMULATORLIB_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/Version.cpp")
 
-include_directories(
-  ../OMSimulatorLua
-  ${Boost_INCLUDE_DIRS}
-  ${OMTLM_SOURCES})
-
-link_directories(${Boost_LIBRARY_DIRS})
-
 # Shared library version
 add_library(OMSimulatorLib SHARED ${OMSIMULATORLIB_SOURCES})
 set_target_properties(OMSimulatorLib PROPERTIES OUTPUT_NAME OMSimulator)
 
-target_include_directories(OMSimulatorLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(OMSimulatorLib
+                            PUBLIC
+                              ${CMAKE_CURRENT_SOURCE_DIR}
+                              ${DUMMY_OMTLM_DIRECTORY})
+
 target_link_libraries(OMSimulatorLib
                         PUBLIC
                           oms::3rd::kinsol
@@ -94,11 +91,7 @@ target_link_libraries(OMSimulatorLib
                           oms::3rd::pugixml::header
                           oms::3rd::ctpl::header)
 
-target_link_libraries(OMSimulatorLib PUBLIC ${Boost_LIBRARIES} ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
-
-if(MSVC)
-  target_compile_definitions(OMSimulatorLib PUBLIC BOOST_ALL_DYN_LINK)
-endif()
+target_link_libraries(OMSimulatorLib PUBLIC ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
 
 if(MINGW)
   target_link_libraries(OMSimulatorLib PUBLIC shlwapi)
@@ -114,7 +107,11 @@ endif()
 
 target_compile_definitions(OMSimulatorLib_static PUBLIC OMS_STATIC)
 
-target_include_directories(OMSimulatorLib_static PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(OMSimulatorLib_static
+                            PUBLIC
+                              ${CMAKE_CURRENT_SOURCE_DIR}
+                              ${DUMMY_OMTLM_DIRECTORY})
+
 target_link_libraries(OMSimulatorLib_static
                         PUBLIC
                           oms::3rd::kinsol
@@ -127,11 +124,7 @@ target_link_libraries(OMSimulatorLib_static
                           oms::3rd::pugixml::header
                           oms::3rd::ctpl::header)
 
-target_link_libraries(OMSimulatorLib_static PUBLIC ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES})
-
-if(MSVC)
-  target_compile_definitions(OMSimulatorLib_static PUBLIC BOOST_ALL_DYN_LINK)
-endif()
+target_link_libraries(OMSimulatorLib_static PUBLIC ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
 
 if(MINGW)
   target_link_libraries(OMSimulatorLib_static PUBLIC shlwapi)

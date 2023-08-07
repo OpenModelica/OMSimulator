@@ -1,7 +1,5 @@
 project(OMSimulatorLua C)
 
-link_directories(${Boost_LIBRARY_DIRS})
-
 add_library(OMSimulatorLua STATIC OMSimulatorLua.c)
 
 target_link_libraries(OMSimulatorLua PUBLIC OMSimulatorLib)

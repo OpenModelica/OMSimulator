@@ -67,7 +67,7 @@
 #if defined(OMS_STATIC)
 extern "C"
 {
-  #include <OMSimulatorLua.c>
+  #include "../OMSimulatorLua/OMSimulatorLua.c"
 }
 #endif
 
