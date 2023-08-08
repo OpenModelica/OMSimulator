@@ -15,13 +15,7 @@ ifeq ($(shell which $(SPHINXBUILD) >/dev/null 2>&1; echo $$?), 1)
 endif
 
 detected_OS := $(shell uname -s)
-ifeq ($(detected_OS),Darwin)
-	INSTALL_DIR := install/mac
-else ifeq (MINGW,$(findstring MINGW,$(detected_OS)))
-	INSTALL_DIR := install/mingw
-else
-	INSTALL_DIR := install/linux
-endif
+INSTALL_DIR := install/
 
 OMSIMULATORHOME := $(OMSIMULATOR_ROOT)/$(INSTALL_DIR)/bin
 

@@ -58,8 +58,7 @@ ECHO.
 IF NOT EXIST build\\ mkdir build
 IF NOT EXIST build\\win\\ mkdir build\\win
 IF NOT EXIST install\\ MKDIR install
-IF NOT EXIST install\\win MKDIR install\\win
-IF NOT EXIST install\\win\\lib MKDIR install\\win\\lib
+IF NOT EXIST install\\lib MKDIR install\\lib
 
 @REM do not change the order to be consistent with line 265 config all
 IF ["%TARGET%"]==["clean"] GOTO clean
@@ -72,7 +71,7 @@ EXIT /B 1
 :: -- clean ---------------------------
 :clean
 IF EXIST "build\win\" RMDIR /S /Q build\win && IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-IF EXIST "install\win\" RMDIR /S /Q install\win && IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
+IF EXIST "install\" RMDIR /S /Q install\ && IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 EXIT /B 0
 :: -- clean ---------------------------
 
@@ -82,7 +81,7 @@ EXIT /B 0
 ECHO # config OMSimulator
 IF EXIST "build\win\" RMDIR /S /Q build\win
 MKDIR build\win
-cmake.exe -S . -B build\win -G %OMS_VS_VERSION% -DCMAKE_INSTALL_PREFIX=install\win -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_BUILD_TYPE:STRING=%CMAKE_BUILD_TYPE%
+cmake.exe -S . -B build\win -G %OMS_VS_VERSION% -DCMAKE_INSTALL_PREFIX=install\ -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_BUILD_TYPE:STRING=%CMAKE_BUILD_TYPE%
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 CD ..\..
 EXIT /B 0

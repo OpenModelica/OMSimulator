@@ -14,21 +14,18 @@ BUILD_TYPE ?= Release
 
 detected_OS ?= $(shell uname -s)
 
+INSTALL_DIR := install/
 ifeq ($(detected_OS),Darwin)
 	BUILD_DIR := build/mac
-	INSTALL_DIR := install/mac
 	CMAKE_TARGET=-DCMAKE_SYSTEM_NAME=$(detected_OS)
 else ifeq (MINGW32,$(findstring MINGW32,$(detected_OS)))
 	BUILD_DIR := build/mingw
-	INSTALL_DIR := install/mingw
 	CMAKE_TARGET=-G "MSYS Makefiles"
 else ifeq (MINGW,$(findstring MINGW,$(detected_OS)))
 	BUILD_DIR := build/mingw
-	INSTALL_DIR := install/mingw
 	CMAKE_TARGET=-G "MSYS Makefiles"
 else
 	BUILD_DIR := build/linux
-	INSTALL_DIR := install/linux
 	CMAKE_TARGET=-DCMAKE_SYSTEM_NAME=$(detected_OS)
 endif
 

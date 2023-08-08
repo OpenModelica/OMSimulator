@@ -55,7 +55,7 @@ pipeline {
             buildOMS()
             sh '''
             # No so-files should ever exist in a bin/ folder
-            ! ls install/linux/bin/*.so 1> /dev/null 2>&1
+            ! ls install/bin/*.so 1> /dev/null 2>&1
             '''
 
             partest()
@@ -64,13 +64,13 @@ pipeline {
 
             // Temporary debugging
             // archiveArtifacts artifacts: 'testsuite/**/*.log', fingerprint: true
-            sh '(cd install/linux && tar czf "../../OMSimulator-linux-amd64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.tar.gz" *)'
+            sh '(cd install/ && tar czf "../OMSimulator-linux-amd64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.tar.gz" *)'
 
             sh 'make doc doc-html doc-doxygen'
-            sh '(cd install/linux/doc && zip -r "../../../OMSimulator-doc-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *)'
+            sh '(cd install/doc && zip -r "../../OMSimulator-doc-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *)'
             archiveArtifacts artifacts: 'OMSimulator-doc*.zip,OMSimulator-linux-amd64-*.tar.gz', fingerprint: true
             stash name: 'amd64-zip', includes: "OMSimulator-linux-amd64-*.tar.gz"
-            stash name: 'docs', includes: "install/linux/doc/**"
+            stash name: 'docs', includes: "install/doc/**"
           }
         }
         stage('linux64-asan') {
@@ -92,7 +92,7 @@ pipeline {
               }
               steps {
                 buildOMS()
-                stash name: 'asan', includes: "install/linux/**"
+                stash name: 'asan', includes: "install/**"
               }
             }
             stage('test') {
@@ -168,12 +168,12 @@ pipeline {
                 buildOMS()
                 sh '''
                 # No so-files should ever exist in a bin/ folder
-                ! ls install/linux/bin/*.so 1> /dev/null 2>&1
-                (cd install/linux && tar czf "../../OMSimulator-linux-arm32-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.tar.gz" *)
+                ! ls install/bin/*.so 1> /dev/null 2>&1
+                (cd install/ && tar czf "../OMSimulator-linux-arm32-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.tar.gz" *)
                 '''
                 archiveArtifacts "OMSimulator-linux-arm32-*.tar.gz"
                 stash name: 'arm32-zip', includes: "OMSimulator-linux-arm32-*.tar.gz"
-                stash name: 'arm32-install', includes: "install/linux/**"
+                stash name: 'arm32-install', includes: "install/**"
               }
             }
             stage('test') {
@@ -241,12 +241,12 @@ pipeline {
               steps {
                 buildOMS()
                 sh '''
-                (cd install/mac && zip -r "../../OMSimulator-osx-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *)
+                (cd install/ && zip -r "../OMSimulator-osx-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *)
                 '''
 
                 archiveArtifacts "OMSimulator-osx-*.zip"
                 stash name: 'osx-zip', includes: "OMSimulator-osx-*.zip"
-                stash name: 'osx-install', includes: "install/mac/**"
+                stash name: 'osx-install', includes: "install/**"
               }
             }
             stage('test') {
@@ -291,8 +291,8 @@ pipeline {
                 writeFile file: "buildZip64.sh", text: """#!/bin/sh
                 set -x -e
                 export PATH="/c/Program Files/TortoiseSVN/bin/:/c/bin/jdk/bin:/c/bin/nsis/:\$PATH:/c/bin/git/bin"
-                cd "${env.WORKSPACE}/install/mingw"
-                zip -r "../../OMSimulator-mingw64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *
+                cd "${env.WORKSPACE}/install/"
+                zip -r "../OMSimulator-mingw64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *
                 """
 
                 bat """
@@ -301,7 +301,7 @@ pipeline {
 
                 archiveArtifacts "OMSimulator-mingw64*.zip"
                 stash name: 'mingw64-zip', includes: "OMSimulator-mingw64-*.zip"
-                stash name: 'mingw64-install', includes: "install/mingw/**"
+                stash name: 'mingw64-install', includes: "install/**"
               }
             }
             stage('test') {
@@ -371,8 +371,8 @@ EXIT /b 1
                 writeFile file: "buildZip32.sh", text: """#!/bin/sh
                 set -x -e
                 export PATH="/c/Program Files/TortoiseSVN/bin/:/c/bin/jdk/bin:/c/bin/nsis/:\$PATH:/c/bin/git/bin"
-                cd "${env.WORKSPACE}/install/mingw"
-                zip -r "../../OMSimulator-mingw32-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *
+                cd "${env.WORKSPACE}/install/"
+                zip -r "../OMSimulator-mingw32-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *
                 """
 
                 bat """
@@ -382,7 +382,7 @@ EXIT /b 1
 
                 archiveArtifacts "OMSimulator-mingw32*.zip"
                 stash name: 'mingw32-zip', includes: "OMSimulator-mingw32-*.zip"
-                stash name: 'mingw32-install', includes: "install/mingw/**"
+                stash name: 'mingw32-install', includes: "install/**"
               }
             }
             stage('test') {
@@ -461,8 +461,8 @@ EXIT /b 1
                 writeFile file: "buildZip.sh", text: """#!/bin/sh
 set -x -e
 export PATH="/c/Program Files/TortoiseSVN/bin/:/c/bin/jdk/bin:/c/bin/nsis/:\$PATH:/c/bin/git/bin"
-cd "${env.WORKSPACE}/install/win"
-zip -r "../../OMSimulator-win64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *
+cd "${env.WORKSPACE}/install/"
+zip -r "../OMSimulator-win64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *
 """
 
                 retry(2) { bat """
@@ -474,7 +474,7 @@ IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 call buildWinVS.bat VS15-Win64
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 
-call install\\win\\bin\\OMSimulator.exe --version
+call install\\bin\\OMSimulator.exe --version
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 
 C:\\OMDev\\tools\\msys\\usr\\bin\\sh --login -i '${env.WORKSPACE}/buildZip.sh'
@@ -488,7 +488,7 @@ EXIT /b 1
 
                 archiveArtifacts "OMSimulator-win64-*.zip"
                 stash name: 'win64-zip', includes: "OMSimulator-win64-*.zip"
-                stash name: 'win64-install', includes: "install/win/**"
+                stash name: 'win64-install', includes: "install/**"
               }
             }
             stage('test') {
@@ -550,7 +550,7 @@ EXIT /b 1
       steps {
         unstash name: 'mingw64-install'
         sh """
-        wine64 install/mingw/bin/OMSimulator.exe --version
+        wine64 install/bin/OMSimulator.exe --version
         """
       }
     }
@@ -591,8 +591,8 @@ EXIT /b 1
                     sshTransfer(
                       execCommand: "test ! -z '${env.GIT_BRANCH}' && rm -rf '/var/www/doc/OMSimulator/${env.GIT_BRANCH}' && mkdir -p `dirname '/var/www/doc/OMSimulator/.tmp/${env.GIT_BRANCH}'` && mv '/var/www/doc/OMSimulator/.tmp/${env.GIT_BRANCH}' '/var/www/doc/OMSimulator/${env.GIT_BRANCH}'",
                       remoteDirectory: ".tmp/${env.GIT_BRANCH}",
-                      removePrefix: "install/linux/doc",
-                      sourceFiles: 'install/linux/doc/**')
+                      removePrefix: "install/doc",
+                      sourceFiles: 'install/doc/**')
                   ]
                 )
               ]

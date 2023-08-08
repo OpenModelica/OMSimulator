@@ -43,7 +43,7 @@ IF ["%OMS_VS_TARGET%"]==["VS15-Win64"] (
 
 IF NOT DEFINED CMAKE_BUILD_TYPE SET CMAKE_BUILD_TYPE="Release"
 
-MKDIR install\win\bin
+MKDIR install\bin
 
 :: -- build OMSimulator -------------------------------------------------------
 ECHO # build OMSimulator
@@ -51,7 +51,7 @@ msbuild.exe "build\win\INSTALL.vcxproj" /t:Build /p:configuration=%CMAKE_BUILD_T
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 :: -- build OMSimulator -------------------------------------------------------
 
-install\win\bin\OMSimulator.exe --version
+install\bin\OMSimulator.exe --version
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO omsfail
 EXIT /B 0
 
