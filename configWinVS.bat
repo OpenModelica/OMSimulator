@@ -63,7 +63,6 @@ IF NOT EXIST install\\win\\lib MKDIR install\\win\\lib
 
 @REM do not change the order to be consistent with line 265 config all
 IF ["%TARGET%"]==["clean"] GOTO clean
-IF ["%TARGET%"]==["pthread"] GOTO pthread
 IF ["%TARGET%"]==["omsimulator"] GOTO omsimulator
 IF ["%TARGET%"]==["all"] GOTO all
 ECHO # Error: No rule to make target '%TARGET%'.
@@ -76,20 +75,6 @@ IF EXIST "build\win\" RMDIR /S /Q build\win && IF NOT ["%ERRORLEVEL%"]==["0"] GO
 IF EXIST "install\win\" RMDIR /S /Q install\win && IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 EXIT /B 0
 :: -- clean ---------------------------
-
-
-:: -- pthread -------------------------
-:pthread
-ECHO # config pthread
-CD 3rdParty\pthread
-START /B /WAIT CMD /C "buildWinVS.bat %OMS_VS_TARGET%"
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-CD ..\..
-ECHO # copy pthread
-IF NOT EXIST "install\win\bin" MKDIR install\win\bin
-XCOPY /Y /F 3rdParty\pthread\install\win\lib\pthreadVC2.dll install\win\bin
-EXIT /B 0
-:: -- pthread -------------------------
 
 
 :: -- config OMSimulator --------------
@@ -109,8 +94,6 @@ EXIT /B 0
 START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% clean"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 IF NOT EXIST "3rdParty/README.md" GOTO fail2
-START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% pthread"
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% omsimulator"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 EXIT /B 0
