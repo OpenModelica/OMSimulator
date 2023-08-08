@@ -60,7 +60,7 @@ ifneq ($(CROSS_TRIPLE),)
   DISABLE_RUN_OMSIMULATOR_VERSION ?= 1
 endif
 
-.PHONY: OMSimulator OMSimulatorCore config-OMSimulator config-3rdParty distclean testsuite doc doc-html doc-doxygen pip
+.PHONY: OMSimulator OMSimulatorCore config-OMSimulator distclean testsuite doc doc-html doc-doxygen pip
 
 OMSimulator:
 	@echo OS: $(detected_OS)
@@ -86,12 +86,6 @@ pip:
 	@echo
 	@echo "# Run the following command to upload the package"
 	@echo "> twine upload src/pip/install/dist/$(shell ls src/pip/install/dist/ -Art | tail -n 1)"
-
-3rdParty/README.md:
-	@echo "Please checkout the 3rdParty submodule, e.g. using \"git submodule update --init 3rdParty\", and try again."
-	@false
-
-config-3rdParty: 3rdParty/README.md
 
 config-OMSimulator: $(BUILD_DIR)/Makefile
 $(BUILD_DIR)/Makefile: CMakeLists.txt

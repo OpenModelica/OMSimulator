@@ -237,7 +237,6 @@ pipeline {
                 FMIL_FLAGS = '-DFMILIB_FMI_PLATFORM=darwin64'
                 detected_OS = 'Darwin'
                 VERBOSE = '1'
-                BOOST_ROOT = '/opt/osxcross/macports/pkgs/opt/local/'
               }
               steps {
                 buildOMS()
@@ -467,7 +466,6 @@ zip -r "../../OMSimulator-win64-`git describe --tags --abbrev=7 --match=v*.* --e
 """
 
                 retry(2) { bat """
-set BOOST_ROOT=C:\\local\\boost_1_64_0
 set PATH=C:\\bin\\cmake\\bin;%PATH%
 
 call configWinVS.bat VS15-Win64
@@ -518,7 +516,6 @@ cd testsuite/partest
 ./runtests.pl -j\$(nproc) -platform=win -nocolour ${env.BRANCH_NAME == "master" ? "-notlm" : ""} -with-xml ${params.RUNTESTS_FLAG}
 """
                 bat """
-set BOOST_ROOT=C:\\local\\boost_1_64_0
 set PATH=C:\\bin\\cmake\\bin;%PATH%
 
 C:\\OMDev\\tools\\msys\\usr\\bin\\sh --login -i '${env.WORKSPACE}/testMSVC64-install.sh'
@@ -720,7 +717,6 @@ void buildOMS() {
      echo export MAKETHREADS=-j%NUMBER_OF_PROCESSORS%
      echo set -ex
      echo git fetch --tags
-     echo time make config-3rdParty ${env.CC ? "CC=" + env.CC : ""} ${env.CXX ? "CXX=" + env.CXX : ""} ${env.OMSFLAGS ?: ""} -j%NUMBER_OF_PROCESSORS%
      echo time make config-OMSimulator -j%NUMBER_OF_PROCESSORS% ${env.OMSFLAGS ?: ""}
      echo time make OMSimulator -j%NUMBER_OF_PROCESSORS% ${env.OMSFLAGS ?: ""}
      ) > buildOMSimulatorWindows.sh
@@ -736,7 +732,6 @@ void buildOMS() {
     ${env.SHELLSTART ?: ""}
     export HOME="${'$'}PWD"
     git fetch --tags
-    make config-3rdParty ${env.CC ? "CC=" + env.CC : ""} ${env.CXX ? "CXX=" + env.CXX : ""} ${env.OMSFLAGS ?: ""} -j${nproc}
     make config-OMSimulator -j${nproc} ${env.ASAN ? "ASAN=ON" : ""} ${env.OMSFLAGS ?: ""}
     make OMSimulator -j${nproc} ${env.ASAN ? "DISABLE_RUN_OMSIMULATOR_VERSION=1" : ""} ${env.OMSFLAGS ?: ""}
     """
