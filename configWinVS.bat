@@ -63,7 +63,6 @@ IF NOT EXIST install\\win\\lib MKDIR install\\win\\lib
 
 @REM do not change the order to be consistent with line 265 config all
 IF ["%TARGET%"]==["clean"] GOTO clean
-IF ["%TARGET%"]==["xerces"] GOTO xerces
 IF ["%TARGET%"]==["pthread"] GOTO pthread
 IF ["%TARGET%"]==["omsimulator"] GOTO omsimulator
 IF ["%TARGET%"]==["all"] GOTO all
@@ -77,23 +76,6 @@ IF EXIST "build\win\" RMDIR /S /Q build\win && IF NOT ["%ERRORLEVEL%"]==["0"] GO
 IF EXIST "install\win\" RMDIR /S /Q install\win && IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 EXIT /B 0
 :: -- clean ---------------------------
-
-
-:: -- config xerces -------------------
-:xerces
-ECHO # config xerces
-IF EXIST "3rdParty\xerces\build\win\" RMDIR /S /Q 3rdParty\xerces\build\win
-IF EXIST "3rdParty\xerces\install\win\" RMDIR /S /Q 3rdParty\xerces\install\win
-MKDIR 3rdParty\xerces\build\win
-CD 3rdParty\xerces\build\win
-cmake.exe -G %OMS_VS_VERSION% ..\.. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_INSTALL_PREFIX=..\..\install\win -DBUILD_SHARED_LIBS:BOOL=OFF
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-CD ..\..\..\..
-ECHO # build xerces
-msbuild.exe "3rdParty\xerces\build\win\INSTALL.vcxproj" /t:Build /p:configuration=Release /maxcpucount
-IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-EXIT /B 0
-:: -- config xerces -------------------
 
 
 :: -- pthread -------------------------

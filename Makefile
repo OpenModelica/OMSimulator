@@ -9,8 +9,6 @@ ROOT_DIR=$(shell pwd)
 
 # Option to enable AddressSanitizer
 ASAN ?= OFF
-# Statically link dependencies as much as possible
-STATIC ?= OFF
 # Option to switch between Debug and Release builds
 BUILD_TYPE ?= Release
 
@@ -20,37 +18,18 @@ ifeq ($(detected_OS),Darwin)
 	BUILD_DIR := build/mac
 	INSTALL_DIR := install/mac
 	CMAKE_TARGET=-DCMAKE_SYSTEM_NAME=$(detected_OS)
-	FEXT=.dylib
-	CMAKE_FPIC=-DCMAKE_C_FLAGS="-fPIC"
 else ifeq (MINGW32,$(findstring MINGW32,$(detected_OS)))
 	BUILD_DIR := build/mingw
 	INSTALL_DIR := install/mingw
 	CMAKE_TARGET=-G "MSYS Makefiles"
-	FEXT=.dll
-	EEXT=.exe
-	ifeq (clang,$(findstring clang,$(CC)))
-		DISABLE_SHARED = --disable-shared
-	endif
 else ifeq (MINGW,$(findstring MINGW,$(detected_OS)))
 	BUILD_DIR := build/mingw
 	INSTALL_DIR := install/mingw
 	CMAKE_TARGET=-G "MSYS Makefiles"
-	FEXT=.dll
-	EEXT=.exe
-	ifeq (clang,$(findstring clang,$(CC)))
-		DISABLE_SHARED = --disable-shared
-	endif
 else
 	BUILD_DIR := build/linux
 	INSTALL_DIR := install/linux
 	CMAKE_TARGET=-DCMAKE_SYSTEM_NAME=$(detected_OS)
-	FEXT=.so
-	CMAKE_FPIC=-DCMAKE_C_FLAGS="-fPIC"
-endif
-
-ifeq ($(STATIC),ON)
-  # Do not use -DBoost_USE_STATIC_LIBS=ON; it messes up -static in alpine/musl
-  CMAKE_STATIC=-DBUILD_SHARED=OFF
 endif
 
 # use cmake from above if is set, otherwise cmake
@@ -62,20 +41,9 @@ endif
 ifeq ($(OMBUILDDIR),)
 	TOP_INSTALL_DIR=$(INSTALL_DIR)
 	CMAKE_INSTALL_PREFIX=-DCMAKE_INSTALL_PREFIX=$(TOP_INSTALL_DIR)
-	HOST_SHORT=
 else
 	TOP_INSTALL_DIR=$(OMBUILDDIR)
 	CMAKE_INSTALL_PREFIX=-DCMAKE_INSTALL_PREFIX=$(OMBUILDDIR)
-	ifeq ($(host_short),)
-		HOST_SHORT=-DHOST_SHORT=
-	else
-		HOST_SHORT_OMC=$(host_short)/omc
-		HOST_SHORT=-DHOST_SHORT=$(HOST_SHORT_OMC)
-	endif
-endif
-
-ifeq ($(detected_OS),Darwin)
-	EXTRA_CMAKE=-DCMAKE_MACOSX_RPATH=ON -DCMAKE_INSTALL_RPATH="`pwd`/$(TOP_INSTALL_DIR)/lib/$(HOST_SHORT_OMC)"
 endif
 
 ifneq ($(CROSS_TRIPLE),)
@@ -92,7 +60,7 @@ ifneq ($(CROSS_TRIPLE),)
   DISABLE_RUN_OMSIMULATOR_VERSION ?= 1
 endif
 
-.PHONY: OMSimulator OMSimulatorCore config-OMSimulator config-xerces config-3rdParty distclean testsuite doc doc-html doc-doxygen pip
+.PHONY: OMSimulator OMSimulatorCore config-OMSimulator config-3rdParty distclean testsuite doc doc-html doc-doxygen pip
 
 OMSimulator:
 	@echo OS: $(detected_OS)
@@ -133,24 +101,12 @@ $(BUILD_DIR)/Makefile: CMakeLists.txt
 	$(MKDIR) $(BUILD_DIR)
 	$(CMAKE) -S . -B $(BUILD_DIR) $(CMAKE_TARGET) -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DASAN:BOOL=$(ASAN) -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) $(CMAKE_INSTALL_PREFIX) $(HOST_SHORT) $(EXTRA_CMAKE) $(CMAKE_STATIC)
 
-config-xerces: 3rdParty/xerces/$(INSTALL_DIR)/lib/libxerces-c.a
-3rdParty/xerces/$(INSTALL_DIR)/lib/libxerces-c.a: 3rdParty/xerces/$(BUILD_DIR)/Makefile
-	$(MAKE) -C 3rdParty/xerces/$(BUILD_DIR)/ install
-3rdParty/xerces/$(BUILD_DIR)/Makefile: 3rdParty/xerces/CMakeLists.txt
-	@echo
-	@echo "# config xerces"
-	@echo
-	$(MKDIR) 3rdParty/xerces/$(BUILD_DIR)
-	cd 3rdParty/xerces/$(BUILD_DIR) && $(CMAKE) $(CMAKE_TARGET) ../.. -DCMAKE_INSTALL_PREFIX=../../$(INSTALL_DIR) -DBUILD_SHARED_LIBS:BOOL=OFF
-
 distclean:
 	@echo
 	@echo "# make distclean"
 	@echo
 	$(RM) $(BUILD_DIR)
 	$(RM) $(INSTALL_DIR)
-	$(RM) 3rdParty/xerces/$(BUILD_DIR)
-	$(RM) 3rdParty/xerces/$(INSTALL_DIR)
 
 testsuite:
 	@echo
