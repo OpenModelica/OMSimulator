@@ -39,8 +39,8 @@ if ($cwd =~ m/(.*)testsuite\/(.+)$/) {
     $OMCDIFF = "$prefix/../build/bin/omc-diff";
     $BIN = "$prefix/../build/bin/";
   } else {
-    $OMCDIFF = "$prefix/install/$PLATFORM/bin/omc-diff";
-    $BIN = "$prefix/install/$PLATFORM/bin/";
+    $OMCDIFF = "$prefix/install/bin/omc-diff";
+    $BIN = "$prefix/install/bin/";
   }
 } else {
   print "You must run rtest from OMSimulator (was run from $cwd)\n";
@@ -446,7 +446,7 @@ while ($#ARGV >= 0) {
         print "Argument -platform=win is not available if running from the OpenModelica superproject"
       } else {
         $TEST_PLATFORM="win";
-        $BIN = "$prefix/install/win/bin/";
+        $BIN = "$prefix/install/bin/";
       }
     } elsif($arg eq "-platform=linux32") {
       if ($SUPERPROJECT) {
