@@ -93,7 +93,6 @@ EXIT /B 0
 :all
 START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% clean"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
-IF NOT EXIST "3rdParty/README.md" GOTO fail2
 START /B /WAIT CMD /C "%~0 %OMS_VS_TARGET% omsimulator"
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 EXIT /B 0
@@ -102,8 +101,4 @@ EXIT /B 0
 
 :fail
 ECHO Error: Configuring failed for target '%TARGET%'.
-EXIT /B 1
-
-:fail2
-ECHO Error: Please checkout the 3rdParty submodule, e.g. using 'git submodule update --init 3rdParty', and try again.
 EXIT /B 1

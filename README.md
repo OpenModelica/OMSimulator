@@ -28,8 +28,7 @@ For OMSimulatorLib a [Doxygen source code documentation](https://openmodelica.or
   - FMILibrary
   - Lua
   - PugiXML
-  - SUNDIALS CVODE
-  - SUNDIALS KINSOL
+  - Sundials
   - CTPL
 
 ## Compilation
@@ -47,7 +46,6 @@ Note: Make sure to fetch the submodules, e.g., using `git submodule update --ini
 1. Configure OMSimulator
 
    ```bash
-   make config-3rdParty
    make config-OMSimulator
    ```
 
@@ -69,7 +67,6 @@ Note: Make sure to fetch the submodules, e.g., using `git submodule update --ini
 1. Configure OMSimulator
 
    ```bash
-   make config-3rdParty
    make config-OMSimulator
    ```
 
