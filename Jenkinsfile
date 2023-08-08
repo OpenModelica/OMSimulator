@@ -717,8 +717,8 @@ void buildOMS() {
      echo export MAKETHREADS=-j%NUMBER_OF_PROCESSORS%
      echo set -ex
      echo git fetch --tags
-     echo time make config-OMSimulator -j%NUMBER_OF_PROCESSORS% ${env.OMSFLAGS ?: ""}
-     echo time make OMSimulator -j%NUMBER_OF_PROCESSORS% ${env.OMSFLAGS ?: ""}
+     echo cmake -S . -B build/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/ -G "MSYS Makefiles"
+     echo cmake --build build/ --parallel %NUMBER_OF_PROCESSORS% --target install -v
      ) > buildOMSimulatorWindows.sh
 
      set MSYSTEM=${env.MSYSTEM ? env.MSYSTEM : "MINGW64"}
@@ -732,8 +732,8 @@ void buildOMS() {
     ${env.SHELLSTART ?: ""}
     export HOME="${'$'}PWD"
     git fetch --tags
-    make config-OMSimulator -j${nproc} ${env.ASAN ? "ASAN=ON" : ""} ${env.OMSFLAGS ?: ""}
-    make OMSimulator -j${nproc} ${env.ASAN ? "DISABLE_RUN_OMSIMULATOR_VERSION=1" : ""} ${env.OMSFLAGS ?: ""}
+    cmake -S . -B build/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/
+    cmake --build build/ --parallel ${nproc} --target install -v
     """
   }
 }
