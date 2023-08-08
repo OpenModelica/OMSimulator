@@ -28,9 +28,6 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/__init__.py"
 if(MSVC)
   install(FILES OMSimulatorPython3.bat TYPE BIN
           PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ)
-  install(FILES ${CMAKE_INSTALL_PREFIX}/bin/pthreadVC2.dll
-          DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/OMSimulator
-          PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ)
 elseif(MINGW)
   install(FILES "${CMAKE_CURRENT_BINARY_DIR}/OMSimulatorPython3" OMSimulatorPython3.bat
           TYPE BIN
