@@ -732,8 +732,8 @@ void buildOMS() {
     ${env.SHELLSTART ?: ""}
     export HOME="${'$'}PWD"
     git fetch --tags
-    make config-OMSimulator -j${nproc} ${env.ASAN ? "ASAN=ON" : ""} ${env.OMSFLAGS ?: ""}
-    make OMSimulator -j${nproc} ${env.ASAN ? "DISABLE_RUN_OMSIMULATOR_VERSION=1" : ""} ${env.OMSFLAGS ?: ""}
+    cmake -S . -B build/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/
+    cmake --build build/ --parallel ${nproc} --target install -v
     """
   }
 }
