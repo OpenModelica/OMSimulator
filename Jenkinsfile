@@ -468,10 +468,10 @@ zip -r "../OMSimulator-win64-`git describe --tags --abbrev=7 --match=v*.* --excl
                 retry(2) { bat """
 set PATH=C:\\bin\\cmake\\bin;%PATH%
 
-call configWinVS.bat VS15-Win64
+cmake -S . -B build/ -G "Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 
-call buildWinVS.bat VS15-Win64
+cmake --build build/ --parallel %NUMBER_OF_PROCESSORS% --target install -v
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 
 call install\\bin\\OMSimulator.exe --version
@@ -717,7 +717,7 @@ void buildOMS() {
      echo export MAKETHREADS=-j%NUMBER_OF_PROCESSORS%
      echo set -ex
      echo git fetch --tags
-     echo cmake -S . -B build/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/ -G "MSYS Makefiles"
+     echo cmake -S . -B build/ -G "MSYS Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/
      echo cmake --build build/ --parallel %NUMBER_OF_PROCESSORS% --target install -v
      ) > buildOMSimulatorWindows.sh
 
