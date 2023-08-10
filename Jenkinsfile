@@ -471,7 +471,7 @@ set PATH=C:\\bin\\cmake\\bin;%PATH%
 cmake -S . -B build/ -G "Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 
-cmake --build build/ --parallel %NUMBER_OF_PROCESSORS% --target install -v
+cmake --build build/ --config Release --parallel %NUMBER_OF_PROCESSORS% --target install -v
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 
 call install\\bin\\OMSimulator.exe --version
