@@ -59,11 +59,12 @@ pipeline {
 
             sh '(cd install/ && tar czf "../OMSimulator-linux-amd64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.tar.gz" *)'
 
-            sh 'make doc doc-html doc-doxygen'
-            sh '(cd install/doc && zip -r "../../OMSimulator-doc-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *)'
+            sh 'cmake --build build/ --target install-docs'
+            sh '(cd install/share/doc && zip -r "../../../OMSimulator-doc-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *)'
+
             archiveArtifacts artifacts: 'OMSimulator-doc*.zip,OMSimulator-linux-amd64-*.tar.gz', fingerprint: true
             stash name: 'amd64-zip', includes: "OMSimulator-linux-amd64-*.tar.gz"
-            stash name: 'docs', includes: "install/doc/**"
+            stash name: 'docs', includes: "install/share/doc/**"
           }
         }
         stage('linux64-asan') {
@@ -584,8 +585,8 @@ EXIT /b 1
                     sshTransfer(
                       execCommand: "test ! -z '${env.GIT_BRANCH}' && rm -rf '/var/www/doc/OMSimulator/${env.GIT_BRANCH}' && mkdir -p `dirname '/var/www/doc/OMSimulator/.tmp/${env.GIT_BRANCH}'` && mv '/var/www/doc/OMSimulator/.tmp/${env.GIT_BRANCH}' '/var/www/doc/OMSimulator/${env.GIT_BRANCH}'",
                       remoteDirectory: ".tmp/${env.GIT_BRANCH}",
-                      removePrefix: "install/doc",
-                      sourceFiles: 'install/doc/**')
+                      removePrefix: "install/share/doc",
+                      sourceFiles: 'install/share/doc/**')
                   ]
                 )
               ]
