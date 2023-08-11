@@ -75,3 +75,5 @@ add_subdirectory(src/OMSimulatorLua)
 add_subdirectory(src/OMSimulatorPython)
 add_subdirectory(src/OMSimulatorServer)
 add_subdirectory(src/pip)
+
+add_subdirectory(doc)
