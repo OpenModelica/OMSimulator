@@ -1,5 +1,5 @@
 
-find_package(Doxygen COMPONENTS dot)
+find_package(Doxygen)
 find_package(Sphinx)
 
 # If we find either of them then add a custom install target for documentation

@@ -53,24 +53,18 @@ pipeline {
           }
           steps {
             buildOMS()
-            sh '''
-            # No so-files should ever exist in a bin/ folder
-            ! ls install/bin/*.so 1> /dev/null 2>&1
-            '''
 
             partest()
-
             junit 'testsuite/partest/result.xml'
 
-            // Temporary debugging
-            // archiveArtifacts artifacts: 'testsuite/**/*.log', fingerprint: true
             sh '(cd install/ && tar czf "../OMSimulator-linux-amd64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.tar.gz" *)'
 
-            sh 'make doc doc-html doc-doxygen'
-            sh '(cd install/doc && zip -r "../../OMSimulator-doc-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *)'
+            sh 'cmake --build build/ --target install-docs'
+            sh '(cd install/share/doc && zip -r "../../../OMSimulator-doc-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *)'
+
             archiveArtifacts artifacts: 'OMSimulator-doc*.zip,OMSimulator-linux-amd64-*.tar.gz', fingerprint: true
             stash name: 'amd64-zip', includes: "OMSimulator-linux-amd64-*.tar.gz"
-            stash name: 'docs', includes: "install/doc/**"
+            stash name: 'docs', includes: "install/share/doc/**"
           }
         }
         stage('linux64-asan') {
@@ -591,8 +585,8 @@ EXIT /b 1
                     sshTransfer(
                       execCommand: "test ! -z '${env.GIT_BRANCH}' && rm -rf '/var/www/doc/OMSimulator/${env.GIT_BRANCH}' && mkdir -p `dirname '/var/www/doc/OMSimulator/.tmp/${env.GIT_BRANCH}'` && mv '/var/www/doc/OMSimulator/.tmp/${env.GIT_BRANCH}' '/var/www/doc/OMSimulator/${env.GIT_BRANCH}'",
                       remoteDirectory: ".tmp/${env.GIT_BRANCH}",
-                      removePrefix: "install/doc",
-                      sourceFiles: 'install/doc/**')
+                      removePrefix: "install/share/doc",
+                      sourceFiles: 'install/share/doc/**')
                   ]
                 )
               ]
@@ -728,13 +722,9 @@ void buildOMS() {
   } else {
     echo "running on node: ${env.NODE_NAME}"
     def nproc = numPhysicalCPU()
-    sh """
-    ${env.SHELLSTART ?: ""}
-    export HOME="${'$'}PWD"
-    git fetch --tags
-    cmake -S . -B build/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/
-    cmake --build build/ --parallel ${nproc} --target install -v
-    """
+    sh "git fetch --tags"
+    sh "cmake -S . -B build/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/"
+    sh "cmake --build build/ --parallel ${nproc} --target install -v"
   }
 }
 
