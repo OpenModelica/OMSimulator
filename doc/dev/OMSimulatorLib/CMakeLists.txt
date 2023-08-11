@@ -26,10 +26,18 @@ set(DOXYGEN_INTERACTIVE_SVG YES)
 
 set(DOXYGEN_USE_MDFILE_AS_MAINPAGE ${CMAKE_CURRENT_SOURCE_DIR}/mainpage.md)
 
-doxygen_add_docs(doc-doxygen
+doxygen_add_docs(doc-doxygen-html
                 ${PROJECT_SOURCE_DIR}/src/OMSimulatorLib/ ${CMAKE_CURRENT_SOURCE_DIR}/mainpage.md
                 COMMENT "Generating doxygen documentation."
 )
 
-# add_custom_target(doc-doxygen
+# add_custom_target(doc-doxygen-html
 #                   COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile)
+
+
+add_custom_target(install-doxygen-docs
+                  COMMAND ${CMAKE_COMMAND} -E copy_directory
+                        ${CMAKE_CURRENT_BINARY_DIR}/html/
+                        ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DOCDIR}/doxygen/html/)
+
+add_dependencies(install-doxygen-docs doc-doxygen-html)
