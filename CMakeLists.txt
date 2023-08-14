@@ -77,3 +77,10 @@ add_subdirectory(src/OMSimulatorServer)
 add_subdirectory(src/pip)
 
 add_subdirectory(doc)
+
+## Add the testsuite directory (which adds the target testsuite-depends which in turn depends
+## on omc-diff and testssuite-resources) only if OMSimulator is being used standalone.
+if(OMSIMULATOR_STANDALONE)
+  add_subdirectory(testsuite)
+endif()
+
