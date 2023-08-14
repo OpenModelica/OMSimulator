@@ -21,86 +21,104 @@ For OMSimulatorLib a [Doxygen source code documentation](https://openmodelica.or
 
 ## Dependencies
 
+### Tools
+Required
+- A C++ compiler with C++17 support.
 - [cmake](http://www.cmake.org)
-- [Sphinx](http://www.sphinx-doc.org/en/stable/)
+
+Optional
+- [Sphinx](http://www.sphinx-doc.org/en/stable/) for generating documentation.
+- [Doxygen](http://www.sphinx-doc.org/en/stable/) for generating documentation.
+- [GNU Flex](https://github.com/westes/flex) for verifying testsuite results.
+
+### Libraries
 - [readline (if using Lua)](http://git.savannah.gnu.org/cgit/readline.git)
-- [3rdParty subproject](https://github.com/OpenModelica/OMSimulator-3rdParty)
-  - FMILibrary
-  - Lua
-  - PugiXML
-  - Sundials
-  - CTPL
+
 
 ## Compilation
 
-Note: Make sure to fetch the submodules, e.g., using `git submodule update --init`.
+> **Note**
+> Make sure you have fetched and initialized the OMSimulator submodules
 
-### Linux / MacOS
+You can do this in one of two ways
 
-1. Install libxml2-dev
+1. If you have already cloned OMSimulator, then run
 
    ```bash
-   sudo apt-get install libxml2-dev
+   git submodule update --init --recursive
    ```
+1. If you are cloning the repository, then use
+
+   ```bash
+   git clone https://github.com/OpenModelica/OMSimulator.git --recurse-submodules
+   ```
+
+### Linux / MacOS
 
 1. Configure OMSimulator
 
    ```bash
-   make config-OMSimulator
+   cd OMSimulator
+   cmake -S . -B build/ -DCMAKE_INSTALL_PREFIX=install/
    ```
 
-   For the debug configuration add `BUILD_TYPE=Debug` to `make config-OMSimulator`.
-
-1. Build OMSimulator
+2. Build and install OMSimulator
 
    ```bash
-   make OMSimulator -j4
+   cd OMSimulator
+   cmake --build build/ --target install
+   ./install/OMSimulator --version
    ```
 
 ### Windows (OMDev mingw)
 
 1. Setup OMDev
 
-   - Checkout OMDev (OpenModelica Development Environment): `git clone https://openmodelica.org/git/OMDev.git`
+   - Clone OMDev (OpenModelica Development Environment): `git clone https://openmodelica.org/git/OMDev.git`
    - Follow the instructions in `OMDev/INSTALL.txt`
+
+1. Open a MinGW-64 terminal
 
 1. Configure OMSimulator
 
+
    ```bash
-   make config-OMSimulator
+   cd OMSimulator
+   cmake -S . -B build/ -G "MSYS Makefiles" -DCMAKE_INSTALL_PREFIX=install/
    ```
 
-   For the debug configuration add `BUILD_TYPE=Debug` to `make config-OMSimulator`.
-
-1. Build OMSimulator
+1. Build and install OMSimulator
 
    ```bash
-   make OMSimulator -j4
+   cd OMSimulator
+   cmake --build build/ --target install
+   ./install/OMSimulator --version
    ```
 
 ### Windows (Visual Studio)
 
 The following versions of Visual Studio are supported:
 
-- "VS14-Win32" -> "Visual Studio 14 2015"
-- "VS14-Win64" -> "Visual Studio 14 2015 Win64"
-- "VS15-Win32" -> "Visual Studio 15 2017"
-- "VS15-Win64" -> "Visual Studio 15 2017 Win64"
+- Visual Studio 15 2017 Win64 and later
 
-It is not strictly required to install the full Visual Studio IDE. The batch scripts only require *[Visual C++ Build Tools](http://landinghub.visualstudio.com/visual-cpp-build-tools)*.
+It is not strictly required to install the full Visual Studio IDE. The build only requires *[Visual C++ Build Tools](http://landinghub.visualstudio.com/visual-cpp-build-tools)*.
+
+
+1. Open a [Visual Studio command prompt](https://learn.microsoft.com/en-us/visualstudio/ide/reference/command-prompt-powershell?view=vs-2022)
 
 1. Configure OMSimulator
 
    ```bash
-   .\configWinVS.bat VS15-Win64
+   cd OMSimulator
+   cmake -S . -B build/ -DCMAKE_INSTALL_PREFIX=install/
    ```
 
-   To build the debug version change `CMAKE_BUILD_TYPE` to `Debug` or change the release type in Visual Studio to `debug`.
-
-1. Build OMSimulator
+1. Build and install OMSimulator
 
    ```bash
-   .\buildWinVS.bat VS15-Win64
+   cd OMSimulator
+   cmake --build build/ --config Release --target install
+   ./install/OMSimulator.exe --version
    ```
 
 ## Test your build
@@ -108,21 +126,20 @@ It is not strictly required to install the full Visual Studio IDE. The batch scr
 The testsuite of OMSimulator is run on Jenkins for every commit and creating
 [test reports](https://test.openmodelica.org/jenkins/job/OMSimulator/job/master/lastSuccessfulBuild/testReport/).
 The project is tested for the following OS:
-   - linux-arm32
    - linux64 without OMPython
-   - cross-compiled mingw64
+   - mingw64
    - msvc64
    - cross-compiled OSX
 
 In addition the [OpenModelica project](https://github.com/OpenModelica/OpenModelica) has a number of test cases using OMSimulator for FMU simulation that can be find in this [OpenModelica test reports](https://test.openmodelica.org/jenkins/job/OpenModelica/job/master/lastSuccessfulBuild/testReport/).
 
-To verify your build is compiled and installed corrrectly see the following instructions.
+To verify your build is compiled and installed correctly see the following instructions.
 
 ### Linux / MacOS / Windows (OMDev mingw)
 
 1. Build test dependencies
    ```bash
-   make -C testsuite/ difftool resources
+   cmake --build build/ --target testsuite-depends
    ```
 
 2. Run partest
@@ -132,7 +149,8 @@ To verify your build is compiled and installed corrrectly see the following inst
    ./runtests.pl -j4
    ```
    Use `-jN` to test with `N` threads.
-   To disable TLM tests add `-notlm`, to disable Python tests add `-asan`.
+
+   To disable Python tests add `-asan`.
 
 ### Windows (Visual Studio)
 
@@ -140,7 +158,7 @@ We currently have no bat-Script to build and test with CMD, so you have to use O
 
 1. Build test dependencies
    ```bash
-   make -C testsuite/ difftool resources
+   cmake --build build/ --target testsuite-depends
    ```
 
 2. Run partest
