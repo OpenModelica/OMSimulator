@@ -67,7 +67,7 @@ You can do this in one of two ways
    ```bash
    cd OMSimulator
    cmake --build build/ --target install
-   ./install/OMSimulator --version
+   ./install/bin/OMSimulator --version
    ```
 
 ### Windows (OMDev mingw)
@@ -92,7 +92,7 @@ You can do this in one of two ways
    ```bash
    cd OMSimulator
    cmake --build build/ --target install
-   ./install/OMSimulator --version
+   ./install/bin/OMSimulator --version
    ```
 
 ### Windows (Visual Studio)
@@ -118,7 +118,7 @@ It is not strictly required to install the full Visual Studio IDE. The build onl
    ```bash
    cd OMSimulator
    cmake --build build/ --config Release --target install
-   ./install/OMSimulator.exe --version
+   ./install/bin/OMSimulator.exe --version
    ```
 
 ## Test your build
