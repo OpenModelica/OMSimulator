@@ -3,7 +3,7 @@ message("cmake version is: ${CMAKE_VERSION}")
 cmake_minimum_required(VERSION 3.14)
 
 project(OMSimulator)
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/config.cmake/")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/config.cmake/")
 
 
 ### Standards ###############################################################################################
