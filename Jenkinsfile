@@ -210,23 +210,9 @@ pipeline {
             beforeAgent true
           }
           stages {
-            stage('cross-compile') {
+            stage('arm64-macOS') {
               agent {
-                docker {
-                  image 'docker.openmodelica.org/osxcross-omsimulator:v2.0'
-                  label 'linux'
-                  alwaysPull true
-                }
-              }
-              environment {
-                CROSS_TRIPLE = "x86_64-apple-darwin15"
-                CC = "${env.CROSS_TRIPLE}-cc"
-                CXX = "${env.CROSS_TRIPLE}-c++"
-                AR = "${env.CROSS_TRIPLE}-ar"
-                RANLIB = "${env.CROSS_TRIPLE}-ranlib"
-                FMIL_FLAGS = '-DFMILIB_FMI_PLATFORM=darwin64'
-                detected_OS = 'Darwin'
-                VERBOSE = '1'
+                label 'M1'
               }
               steps {
                 buildOMS()

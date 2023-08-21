@@ -56,18 +56,6 @@ add_subdirectory(3rdParty)
 
 
 ##########################
-# Configuring for Python
-find_package(PythonLibs)
-IF(PYTHONLIBS_FOUND)
-  message(STATUS "Found Python")
-  message(STATUS "  PYTHON_VERSION:      " ${PYTHONLIBS_VERSION_STRING})
-  message(STATUS "  PYTHON_LIBRARIES:    " ${PYTHON_LIBRARIES})
-  message(STATUS "  PYTHON_INCLUDE_DIRS: " ${PYTHON_INCLUDE_DIRS})
-ELSE()
-  MESSAGE(WARNING, "Python library not found.")
-ENDIF()
-
-##########################
 # Add project modules
 add_subdirectory(src/OMSimulatorLib)
 add_subdirectory(src/OMSimulator)
