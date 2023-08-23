@@ -447,7 +447,7 @@ zip -r "../OMSimulator-win64-`git describe --tags --abbrev=7 --match=v*.* --excl
                 retry(2) { bat """
 set PATH=C:\\bin\\cmake\\bin;%PATH%
 
-cmake -S . -B build/ -G "Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/
+cmake -S . -B build/ -G "Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/ -DOM_OMS_ENABLE_TESTSUITE:BOOL=ON
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 
 cmake --build build/ --config Release --parallel %NUMBER_OF_PROCESSORS% --target install -v
@@ -696,7 +696,7 @@ void buildOMS() {
      echo export MAKETHREADS=-j%NUMBER_OF_PROCESSORS%
      echo set -ex
      echo git fetch --tags
-     echo cmake -S . -B build/ -G "MSYS Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/
+     echo cmake -S . -B build/ -G "MSYS Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/ -DOM_OMS_ENABLE_TESTSUITE:BOOL=ON
      echo cmake --build build/ --parallel %NUMBER_OF_PROCESSORS% --target install -v
      ) > buildOMSimulatorWindows.sh
 
@@ -708,7 +708,7 @@ void buildOMS() {
     echo "running on node: ${env.NODE_NAME}"
     def nproc = numPhysicalCPU()
     sh "git fetch --tags"
-    sh "cmake -S . -B build/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/"
+    sh "cmake -S . -B build/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/ -DOM_OMS_ENABLE_TESTSUITE:BOOL=ON"
     sh "cmake --build build/ --parallel ${nproc} --target install -v"
   }
 }
