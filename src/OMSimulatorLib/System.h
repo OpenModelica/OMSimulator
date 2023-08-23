@@ -46,7 +46,7 @@
 #if !defined(NO_TLM)
 #include "TLMBusConnector.h"
 #endif
-#include "Types.h"
+#include "OMSimulator/Types.h"
 #include "Values.h"
 
 #include <map>

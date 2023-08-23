@@ -37,7 +37,7 @@
 #include "SignalDerivative.h"
 #include "StepSizeConfiguration.h"
 #include "System.h"
-#include "Types.h"
+#include "OMSimulator/Types.h"
 
 #include <vector>
 

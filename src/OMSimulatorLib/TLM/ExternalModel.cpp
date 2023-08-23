@@ -33,7 +33,7 @@
 #include "Logging.h"
 #include "Element.h"
 #include "ExternalModelInfo.h"
-#include "Types.h"
+#include "OMSimulator/Types.h"
 #include "ssd/Tags.h"
 
 #include <cstring>

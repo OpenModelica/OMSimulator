@@ -36,7 +36,7 @@
 #include "ComRef.h"
 #include "Element.h"
 #include "ResultWriter.h"
-#include "Types.h"
+#include "OMSimulator/Types.h"
 #include "Snapshot.h"
 #include "Values.h"
 #include <assert.h>

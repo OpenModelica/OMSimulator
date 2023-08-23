@@ -34,7 +34,7 @@
 
 #include "ComRef.h"
 #include "Model.h"
-#include "Types.h"
+#include "OMSimulator/Types.h"
 
 #include <map>
 #include <string>

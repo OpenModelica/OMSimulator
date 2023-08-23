@@ -34,7 +34,7 @@
 
 #include "ComRef.h"
 #include "System.h"
-#include "Types.h"
+#include "OMSimulator/Types.h"
 
 #include <cvode/cvode.h>                  /* prototypes for CVODE fcts., consts. */
 #include <nvector/nvector_serial.h>       /* serial N_Vector types, fcts., macros */

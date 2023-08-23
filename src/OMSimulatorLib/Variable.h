@@ -34,7 +34,7 @@
 
 #include "ComRef.h"
 #include "Connector.h"
-#include "Types.h"
+#include "OMSimulator/Types.h"
 
 #include <fmi4c.h>
 #include <string>

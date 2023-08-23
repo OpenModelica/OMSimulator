@@ -81,6 +81,7 @@ target_include_directories(OMSimulatorLib
 
 target_link_libraries(OMSimulatorLib
                         PUBLIC
+                          oms::public_includes
                           oms::3rd::kinsol
                           oms::3rd::cvode
                           oms::3rd::fmi4c
@@ -114,6 +115,7 @@ target_include_directories(OMSimulatorLib_static
 
 target_link_libraries(OMSimulatorLib_static
                         PUBLIC
+                          oms::public_includes
                           oms::3rd::kinsol
                           oms::3rd::cvode
                           oms::3rd::fmi4c
@@ -134,4 +136,3 @@ endif()
 
 install(TARGETS OMSimulatorLib)
 install(TARGETS OMSimulatorLib_static)
-install(FILES OMSimulator.h Types.h TYPE INCLUDE)

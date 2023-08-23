@@ -32,7 +32,7 @@
 #ifndef _OMS_FLAGS_H_
 #define _OMS_FLAGS_H_
 
-#include "Types.h"
+#include "OMSimulator/Types.h"
 #include <string>
 #include <vector>
 #include <map>

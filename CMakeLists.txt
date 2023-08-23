@@ -13,13 +13,10 @@ set(CXX_STANDARD_REQUIRED ON)
 ## Make sure we do not start relying on extensions down the road.
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-## If OMSimulator is being built standalone (not as part of OpenModelica)
+## If OMSimulator is not being built as part of OpenModelica
 ## include the required settings here.
-if(${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
-  set(OMSIMULATOR_STANDALONE ON)
+if(NOT OPENMODELICA_SUPERPROJECT)
   include(OMSimulatorTopLevelSettings)
-else()
-  set(OMSIMULATOR_STANDALONE OFF)
 endif()
 
 
@@ -57,18 +54,23 @@ add_subdirectory(3rdParty)
 
 ##########################
 # Add project modules
+add_subdirectory(include)
 add_subdirectory(src/OMSimulatorLib)
 add_subdirectory(src/OMSimulator)
 add_subdirectory(src/OMSimulatorLua)
 add_subdirectory(src/OMSimulatorPython)
 add_subdirectory(src/OMSimulatorServer)
-add_subdirectory(src/pip)
+
+option(OM_OMS_ENABLE_PIP "create the OMSimulator pip package" OFF)
+if(OM_OMS_ENABLE_PIP)
+  add_subdirectory(src/pip)
+endif()
 
 add_subdirectory(doc)
 
 ## Add the testsuite directory (which adds the target testsuite-depends which in turn depends
 ## on omc-diff and testssuite-resources) only if OMSimulator is being used standalone.
-if(OMSIMULATOR_STANDALONE)
+option(OM_OMS_ENABLE_TESTSUITE "enable the OMSimulator testsuite" OFF)
+if(OM_OMS_ENABLE_TESTSUITE)
   add_subdirectory(testsuite)
 endif()
-

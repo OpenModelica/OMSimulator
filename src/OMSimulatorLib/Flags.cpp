@@ -35,7 +35,7 @@
 #include "ComRef.h"
 #include "Logging.h"
 #include "Model.h"
-#include "OMSimulator.h"
+#include "OMSimulator/OMSimulator.h"
 #include "Scope.h"
 #include "System.h"
 #include "Util.h"
