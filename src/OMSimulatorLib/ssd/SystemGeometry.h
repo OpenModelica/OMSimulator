@@ -32,7 +32,7 @@
 #ifndef _SSD_SYSTEM_GEOMETRY_H_
 #define _SSD_SYSTEM_GEOMETRY_H_
 
-#include "../Types.h"
+#include "OMSimulator/Types.h"
 
 #include <string>
 

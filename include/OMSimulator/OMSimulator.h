@@ -32,7 +32,7 @@
 #ifndef _OMSIMULATOR_H_
 #define _OMSIMULATOR_H_
 
-#include "Types.h"
+#include "OMSimulator/Types.h"
 
 /* define OMSimulatorLib_EXPORTS *only* when building the DLL */
 #if defined(OMS_STATIC)

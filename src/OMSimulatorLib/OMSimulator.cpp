@@ -29,7 +29,7 @@
  *
  */
 
-#include "OMSimulator.h"
+#include "OMSimulator/OMSimulator.h"
 
 #include "Component.h"
 #include "ComRef.h"
@@ -52,7 +52,7 @@
   #include "TLMBusConnector.h"
   #include "ExternalModel.h"
 #endif
-#include "Types.h"
+#include "OMSimulator/Types.h"
 #include "Version.h"
 
 #include <chrono>

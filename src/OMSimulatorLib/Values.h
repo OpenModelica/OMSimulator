@@ -35,7 +35,7 @@
 #include "ComRef.h"
 #include "OMSFileSystem.h"
 #include "Snapshot.h"
-#include "Types.h"
+#include "OMSimulator/Types.h"
 
 #include <map>
 #include <pugixml.hpp>

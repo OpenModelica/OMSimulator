@@ -3,7 +3,7 @@
 #include <lualib.h>
 #include <stdlib.h>
 
-#include <OMSimulator.h>
+#include "OMSimulator/OMSimulator.h"
 
 #define REGISTER_LUA_CALL(name) lua_register(L, #name, OMSimulatorLua_##name)
 #define REGISTER_LUA_ENUM(name) lua_pushnumber(L, name); lua_setglobal(L, #name)

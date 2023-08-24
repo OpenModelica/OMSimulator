@@ -34,7 +34,7 @@
 
 #include "ComRef.h"
 #include "System.h"
-#include "Types.h"
+#include "OMSimulator/Types.h"
 #include "../../OMTLMSimulator/common/Plugin/PluginImplementer.h"
 
 namespace oms

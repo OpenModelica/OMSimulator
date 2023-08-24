@@ -31,7 +31,7 @@
 
 #include "Logging.h"
 #include "Version.h"
-#include "Types.h"
+#include "OMSimulator/Types.h"
 
 #include <cstring>
 #include <ctime>

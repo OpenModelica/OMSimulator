@@ -29,7 +29,7 @@
  *
  */
 
-#include <OMSimulator.h>
+#include "OMSimulator/OMSimulator.h"
 #include <string>
 
 int main(int argc, char *argv[])

@@ -39,7 +39,7 @@
 #if !defined(NO_TLM)
 #include "TLMBusConnector.h"
 #endif
-#include "Types.h"
+#include "OMSimulator/Types.h"
 
 namespace oms
 {

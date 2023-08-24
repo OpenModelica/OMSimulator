@@ -42,7 +42,7 @@
 #include "ResultWriter.h"
 #include "SignalDerivative.h"
 #include "Snapshot.h"
-#include "Types.h"
+#include "OMSimulator/Types.h"
 #include "Values.h"
 
 #include <fmi4c.h>

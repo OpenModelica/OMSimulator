@@ -2,7 +2,7 @@
 #define _OMS_STEP_SIZE_CONFIGURATION_H_
 
 #include "ComRef.h"
-#include "Types.h"
+#include "OMSimulator/Types.h"
 #include <vector>
 
 namespace oms

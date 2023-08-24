@@ -32,7 +32,7 @@
 #ifndef _OMS_SIGNAL_DERIVATIVE_H_
 #define _OMS_SIGNAL_DERIVATIVE_H_
 
-#include "Types.h"
+#include "OMSimulator/Types.h"
 #include <fmi4c.h>
 #include <string>
 
