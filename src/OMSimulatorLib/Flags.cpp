@@ -42,7 +42,7 @@
 
 #include <iomanip>
 #include <iostream>
-#include <RegEx.h>
+#include <regex>
 #include <sstream>
 
 oms::Flags::Flags()
@@ -108,7 +108,7 @@ bool isOption(const std::string& cmd, const std::string& name)
   return (0 == cmd.compare(name));
 }
 
-bool isOptionAndValue(const std::string& cmd, const std::string& name, std::string& value, oms_regex re)
+bool isOptionAndValue(const std::string& cmd, const std::string& name, std::string& value, std::regex re)
 {
   if (0 == cmd.compare(0, name.length()+1, name + "="))
   {
@@ -162,7 +162,7 @@ oms_status_enu_t oms::Flags::SetCommandLineOption(const std::string& cmd)
       value = arg.substr(end+1);
     //logInfo("\"" + value + "\"");
 
-    if (regex_match(value, oms_regex(regex_str)))
+    if (regex_match(value, std::regex(regex_str)))
     {
       oms_status_enu_t status = GetInstance().flags[l->second].fcn(value);
       if (GetInstance().flags[l->second].interrupt || oms_status_ok != status)

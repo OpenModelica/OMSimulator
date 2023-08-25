@@ -37,7 +37,7 @@
 #include "ssd/Tags.h"
 #include "System.h"
 
-#include <RegEx.h>
+#include <regex>
 
 oms::ComponentTable::ComponentTable(const ComRef& cref, System* parentSystem, const std::string& path)
   : oms::Component(cref, oms_component_table, parentSystem, path), resultReader(NULL)
@@ -387,7 +387,7 @@ oms_status_enu_t oms::ComponentTable::updateSignals(ResultWriter& resultWriter)
 
 oms_status_enu_t oms::ComponentTable::addSignalsToResults(const char* regex)
 {
-  oms_regex exp(regex);
+  std::regex exp(regex);
   for (auto& x: exportSeries)
   {
     if (x.second)
@@ -402,7 +402,7 @@ oms_status_enu_t oms::ComponentTable::addSignalsToResults(const char* regex)
 
 oms_status_enu_t oms::ComponentTable::removeSignalsFromResults(const char* regex)
 {
-  oms_regex exp(regex);
+  std::regex exp(regex);
   for (auto& x: exportSeries)
   {
     if (!x.second)

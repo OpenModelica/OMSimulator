@@ -41,7 +41,7 @@
 #include "SystemWC.h"
 
 #include <fmi4c.h>
-#include <RegEx.h>
+#include <regex>
 #include <unordered_set>
 #include <cmath>
 #include <iostream>
@@ -1858,7 +1858,7 @@ oms_status_enu_t oms::ComponentFMUCS::updateSignals(ResultWriter& resultWriter)
 
 oms_status_enu_t oms::ComponentFMUCS::addSignalsToResults(const char* regex)
 {
-  oms_regex exp(regex);
+  std::regex exp(regex);
   for (unsigned int i=0; i<allVariables.size(); ++i)
   {
     if (exportVariables[i])
@@ -1877,7 +1877,7 @@ oms_status_enu_t oms::ComponentFMUCS::addSignalsToResults(const char* regex)
 
 oms_status_enu_t oms::ComponentFMUCS::removeSignalsFromResults(const char* regex)
 {
-  oms_regex exp(regex);
+  std::regex exp(regex);
   for (unsigned int i=0; i<allVariables.size(); ++i)
   {
     if (!exportVariables[i])
