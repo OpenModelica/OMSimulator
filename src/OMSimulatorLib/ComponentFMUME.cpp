@@ -41,7 +41,7 @@
 #include "SystemTLM.h"
 
 #include <fmi4c.h>
-#include <RegEx.h>
+#include <regex>
 #include <unordered_set>
 #include <cmath>
 
@@ -1871,7 +1871,7 @@ oms_status_enu_t oms::ComponentFMUME::getEventindicators(double* eventindicators
 
 oms_status_enu_t oms::ComponentFMUME::addSignalsToResults(const char* regex)
 {
-  oms_regex exp(regex);
+  std::regex exp(regex);
   for (unsigned int i=0; i<allVariables.size(); ++i)
   {
     if (exportVariables[i])
@@ -1890,7 +1890,7 @@ oms_status_enu_t oms::ComponentFMUME::addSignalsToResults(const char* regex)
 
 oms_status_enu_t oms::ComponentFMUME::removeSignalsFromResults(const char* regex)
 {
-  oms_regex exp(regex);
+  std::regex exp(regex);
   for (unsigned int i=0; i<allVariables.size(); ++i)
   {
     if (!exportVariables[i])
