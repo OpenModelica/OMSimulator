@@ -515,25 +515,6 @@ EXIT /b 1
       }
     }
 
-    stage('cross-compilation') {
-      agent {
-        docker {
-          image 'anheuermann/ompython:wine-bionic'
-          label 'linux'
-          alwaysPull true
-        }
-      }
-      environment {
-        HOME = "${env.WORKSPACE}"
-      }
-      steps {
-        unstash name: 'mingw64-install'
-        sh """
-        wine64 install/bin/OMSimulator.exe --version
-        """
-      }
-    }
-
     stage('upload') {
       parallel {
 
