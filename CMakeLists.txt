@@ -21,7 +21,7 @@ endif()
 
 ## If OMSimulator is being built as part of OpenModelica
 ## set the install component to 'omsimulator' for all tagets built by it.
-if(NOT OPENMODELICA_SUPERPROJECT)
+if(OPENMODELICA_SUPERPROJECT)
   set(CMAKE_INSTALL_DEFAULT_COMPONENT_NAME omsimulator)
 endif()
 
