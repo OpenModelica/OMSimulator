@@ -13,10 +13,16 @@ set(CXX_STANDARD_REQUIRED ON)
 ## Make sure we do not start relying on extensions down the road.
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-## If OMSimulator is not being built as part of OpenModelica
+## If OMSimulator is NOT being built as part of OpenModelica
 ## include the required settings here.
 if(NOT OPENMODELICA_SUPERPROJECT)
   include(OMSimulatorTopLevelSettings)
+endif()
+
+## If OMSimulator is being built as part of OpenModelica
+## set the install component to 'omsimulator' for all tagets built by it.
+if(NOT OPENMODELICA_SUPERPROJECT)
+  set(CMAKE_INSTALL_DEFAULT_COMPONENT_NAME omsimulator)
 endif()
 
 
