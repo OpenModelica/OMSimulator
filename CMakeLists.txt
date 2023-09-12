@@ -15,13 +15,13 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 ## If OMSimulator is NOT being built as part of OpenModelica
 ## include the required settings here.
-if(NOT OPENMODELICA_SUPERPROJECT)
+if(NOT OPENMODELICA_NEW_CMAKE_BUILD)
   include(OMSimulatorTopLevelSettings)
 endif()
 
 ## If OMSimulator is being built as part of OpenModelica
 ## set the install component to 'omsimulator' for all tagets built by it.
-if(OPENMODELICA_SUPERPROJECT)
+if(OPENMODELICA_NEW_CMAKE_BUILD)
   set(CMAKE_INSTALL_DEFAULT_COMPONENT_NAME omsimulator)
 endif()
 
