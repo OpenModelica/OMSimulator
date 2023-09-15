@@ -89,6 +89,7 @@ target_link_libraries(OMSimulatorLib
                           oms::3rd::zlib
                           oms::3rd::lua
                           oms::3rd::pugixml::header
+                          oms::3rd::xerces
                           oms::3rd::ctpl::header)
 
 target_link_libraries(OMSimulatorLib PUBLIC ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
@@ -122,6 +123,7 @@ target_link_libraries(OMSimulatorLib_static
                           oms::3rd::zlib
                           oms::3rd::lua
                           oms::3rd::pugixml::header
+                          oms::3rd::xerces
                           oms::3rd::ctpl::header)
 
 target_link_libraries(OMSimulatorLib_static PUBLIC ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
