@@ -75,6 +75,7 @@ set(OM_OMS_TESTSUITE_RESOURCES_SSPS
         ${CMAKE_CURRENT_SOURCE_DIR}/import_export_parameters2
         ${CMAKE_CURRENT_SOURCE_DIR}/import_export_parameters3
         ${CMAKE_CURRENT_SOURCE_DIR}/importExportAllResources
+        ${CMAKE_CURRENT_SOURCE_DIR}/invalidSSP
         ${CMAKE_CURRENT_SOURCE_DIR}/replaceSubmodel4
         ${CMAKE_CURRENT_SOURCE_DIR}/replaceSubmodel5
 )
