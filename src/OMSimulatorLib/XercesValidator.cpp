@@ -121,7 +121,7 @@ oms_status_enu_t oms::XercesValidator::validateSSD(const char *ssd, const std::s
 
   // load the schema
   if (domParser.loadGrammar(filesystem::absolute(schemaFilePath).generic_string().c_str(), Grammar::SchemaGrammarType) == NULL)
-      return logError("could not load the ssd schema file :" + std::string(schemaFilePath));
+      return logError("could not load the ssd schema file: " + filesystem::absolute(schemaFilePath).generic_string());
 
   ParserErrorHandler parserErrorHandler("SystemStructure.ssd", filePath.c_str());
 
