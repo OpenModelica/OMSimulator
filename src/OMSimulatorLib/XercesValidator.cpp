@@ -34,6 +34,7 @@
 #include "Logging.h"
 #include "ssd/Tags.h"
 #include "Util.h"
+#include "OMSFileSystem.h"
 
 #include <iostream>
 #include <map>
@@ -119,7 +120,7 @@ oms_status_enu_t oms::XercesValidator::validateSSD(const char *ssd, const std::s
   XercesDOMParser domParser;
 
   // load the schema
-  if (domParser.loadGrammar(schemaFilePath, Grammar::SchemaGrammarType) == NULL)
+  if (domParser.loadGrammar(filesystem::absolute(schemaFilePath).generic_string().c_str(), Grammar::SchemaGrammarType) == NULL)
       return logError("could not load the ssd schema file :" + std::string(schemaFilePath));
 
   ParserErrorHandler parserErrorHandler("SystemStructure.ssd", filePath.c_str());
