@@ -53,9 +53,6 @@ ENDIF()
 
 message(STATUS "Platform string: ${PLATFORM_STRING}")
 
-### add schema root location which will be used by XercesValidator.cpp
-add_compile_definitions("SCHEMA_ROOT=${CMAKE_SOURCE_DIR}/schema")
-
 ##########################
 
 add_subdirectory(3rdParty)
@@ -76,6 +73,8 @@ if(OM_OMS_ENABLE_PIP)
 endif()
 
 add_subdirectory(doc)
+
+add_subdirectory(schema)
 
 ## Add the testsuite directory (which adds the target testsuite-depends which in turn depends
 ## on omc-diff and testssuite-resources) only if OMSimulator is being used standalone.
