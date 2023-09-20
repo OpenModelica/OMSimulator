@@ -53,6 +53,9 @@ ENDIF()
 
 message(STATUS "Platform string: ${PLATFORM_STRING}")
 
+### add schema root location which will be used by XercesValidator.cpp
+add_compile_definitions("SCHEMA_ROOT=${CMAKE_SOURCE_DIR}/schema")
+
 ##########################
 
 add_subdirectory(3rdParty)

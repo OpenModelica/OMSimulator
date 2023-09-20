@@ -54,6 +54,9 @@
 
 using namespace xercesc_3_2;
 
+#define STRING(x) #x
+#define XSTRING(x) STRING(x)
+
 class ParserErrorHandler : public ErrorHandler
 {
 public:
@@ -116,11 +119,14 @@ oms_status_enu_t oms::XercesValidator::validateSSD(const char *ssd, const std::s
     return oms_status_error;
   }
 
-  const char* schemaFilePath = "../../schema/ssp/SystemStructureDescription.xsd";
+  // get the SCHEMA_ROOT location defined in the cmake
+  filesystem::path schemaRootPath (XSTRING(SCHEMA_ROOT));
+  filesystem::path schemaFilePath = schemaRootPath / "ssp/SystemStructureDescription.xsd";
+
   XercesDOMParser domParser;
 
   // load the schema
-  if (domParser.loadGrammar(filesystem::absolute(schemaFilePath).generic_string().c_str(), Grammar::SchemaGrammarType) == NULL)
+  if (domParser.loadGrammar(schemaFilePath.generic_string().c_str(), Grammar::SchemaGrammarType) == NULL)
       return logError("could not load the ssd schema file: " + filesystem::absolute(schemaFilePath).generic_string());
 
   ParserErrorHandler parserErrorHandler("SystemStructure.ssd", filePath.c_str());
@@ -133,7 +139,8 @@ oms_status_enu_t oms::XercesValidator::validateSSD(const char *ssd, const std::s
   domParser.setValidationSchemaFullChecking(true);
   domParser.setValidationConstraintFatal(true);
   // domParser.setExternalNoNamespaceSchemaLocation(schemaFilePath); // set this for noNameSpace
-  domParser.setExternalSchemaLocation("http://ssp-standard.org/SSP1/SystemStructureDescription ../../schema/ssp/SystemStructureDescription.xsd");
+  std::string ssdTargetNameSpacePath = "http://ssp-standard.org/SSP1/SystemStructureDescription " + schemaFilePath.generic_string();
+  domParser.setExternalSchemaLocation(ssdTargetNameSpacePath.c_str());
 
   xercesc::MemBufInputSource pMemBufIS((const XMLByte*)ssd, std::string(ssd).size() , "ssdfile");
   domParser.parse(pMemBufIS);
