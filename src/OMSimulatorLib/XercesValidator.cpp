@@ -30,6 +30,7 @@
  */
 
 #include "XercesValidator.h"
+#include "whereami.h"
 
 #include "Logging.h"
 #include "ssd/Tags.h"
@@ -53,10 +54,6 @@
 #include <xercesc/sax/SAXParseException.hpp>
 
 using namespace xercesc_3_2;
-
-#define STRING(x) #x
-#define XSTRING(x) STRING(x)
-
 class ParserErrorHandler : public ErrorHandler
 {
 public:
@@ -119,10 +116,28 @@ oms_status_enu_t oms::XercesValidator::validateSSD(const char *ssd, const std::s
     return oms_status_error;
   }
 
-  // get the SCHEMA_ROOT location defined in the cmake
-  filesystem::path schemaRootPath (XSTRING(SCHEMA_ROOT));
-  filesystem::path schemaFilePath = schemaRootPath / "ssp/SystemStructureDescription.xsd";
 
+  int dirname_length;
+  char * path;
+  int length = wai_getExecutablePath(NULL, 0, &dirname_length);
+  if (length > 0)
+  {
+    path = (char*)malloc(length + 1);
+    if (!path)
+      abort();
+    wai_getExecutablePath(path, length, &dirname_length);
+    path[length] = '\0';
+
+    // printf("executable path: %s\n", path);
+    path[dirname_length] = '\0';
+    free(path);
+    // printf("  dirname: %s\n", path);
+    // printf("  basename: %s\n", path + dirname_length + 1);
+  }
+
+  filesystem::path schemaRootPath (path);
+  filesystem::path schemaFilePath = schemaRootPath / "../share/OMSimulator/schema/ssp/SystemStructureDescription.xsd";
+  // std::cout << "schemaPath: " << schemaFilePath.generic_string() << "\n" << filesystem::absolute(schemaFilePath).generic_string() << "\n";
   XercesDOMParser domParser;
 
   // load the schema
