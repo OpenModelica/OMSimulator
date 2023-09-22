@@ -119,13 +119,13 @@ oms_status_enu_t oms::XercesValidator::validateSSD(const char *ssd, const std::s
 
   int dirname_length;
   char * path;
-  int length = wai_getExecutablePath(NULL, 0, &dirname_length);
+  int length = wai_getModulePath(NULL, 0, &dirname_length);
   if (length > 0)
   {
     path = (char*)malloc(length + 1);
     if (!path)
       abort();
-    wai_getExecutablePath(path, length, &dirname_length);
+    wai_getModulePath(path, length, &dirname_length);
     path[length] = '\0';
 
     // printf("executable path: %s\n", path);
@@ -136,8 +136,16 @@ oms_status_enu_t oms::XercesValidator::validateSSD(const char *ssd, const std::s
   }
 
   filesystem::path schemaRootPath (path);
-  filesystem::path schemaFilePath = schemaRootPath / "../share/OMSimulator/schema/ssp/SystemStructureDescription.xsd";
+  filesystem::path schemaFilePath;
+
+  schemaFilePath = schemaRootPath / "../share/OMSimulator/schema/ssp/SystemStructureDescription.xsd";
   // std::cout << "schemaPath: " << schemaFilePath.generic_string() << "\n" << filesystem::absolute(schemaFilePath).generic_string() << "\n";
+
+  // for windows and mingw libOMSimulator.dll is put in "install/bin" directory and for linux and other platforms
+  // the shared libraries are put in "install/lib/x86_64-linux-gnu/", so to find the schema location we have to move two directories back
+  if (!filesystem::exists(schemaFilePath))
+    schemaFilePath = schemaRootPath / "../../share/OMSimulator/schema/ssp/SystemStructureDescription.xsd";
+
   XercesDOMParser domParser;
 
   // load the schema
