@@ -128,11 +128,11 @@ oms_status_enu_t oms::XercesValidator::validateSSD(const char *ssd, const std::s
     wai_getModulePath(path, length, &dirname_length);
     path[length] = '\0';
 
-    // printf("executable path: %s\n", path);
+    //printf("executable path: %s\n", path);
     path[dirname_length] = '\0';
-    free(path);
-    // printf("  dirname: %s\n", path);
-    // printf("  basename: %s\n", path + dirname_length + 1);
+    // free(path);
+    //printf("  dirname: %s\n", path);
+    //printf("  basename: %s\n", path + dirname_length + 1);
   }
 
   filesystem::path schemaRootPath (path);
