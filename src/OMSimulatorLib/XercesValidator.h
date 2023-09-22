@@ -47,6 +47,7 @@ namespace oms
     XercesValidator();
     ~XercesValidator();
     oms_status_enu_t validateSSD(const char * ssd, const std::string& filePath);
+    std::string getExecutablePath();
   };
 }
 

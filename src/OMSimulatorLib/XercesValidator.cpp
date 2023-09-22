@@ -36,6 +36,7 @@
 #include "ssd/Tags.h"
 #include "Util.h"
 #include "OMSFileSystem.h"
+#include "OMSString.h"
 
 #include <iostream>
 #include <map>
@@ -102,6 +103,39 @@ oms::XercesValidator::~XercesValidator()
   XMLPlatformUtils::Terminate();
 }
 
+std::string oms::XercesValidator::getExecutablePath()
+{
+  std::string executablePath = "";
+
+  int dirname_length;
+  int length = wai_getModulePath(NULL, 0, &dirname_length);
+
+  if (length == 0)
+    logError("executable directory name could not be detected");
+
+  char * path;
+  path = (char*)malloc(length + 1);
+
+  if (!path)
+    logError("Could not allocate memory to path");
+
+  wai_getModulePath(path, length, &dirname_length);
+  path[length] = '\0';
+
+  //std::cout << "executable path: " <<  path << "\n";
+
+  path[dirname_length] = '\0';
+  //std::cout << "dirname: "<<  path << "\n";
+  //std::cout << "basename: "<<  path + dirname_length + 1;
+
+  executablePath = oms::allocateAndCopyString(path);
+  free(path);
+
+  return executablePath;
+}
+
+
+
 oms_status_enu_t oms::XercesValidator::validateSSD(const char *ssd, const std::string& filePath)
 {
   try
@@ -116,24 +150,10 @@ oms_status_enu_t oms::XercesValidator::validateSSD(const char *ssd, const std::s
     return oms_status_error;
   }
 
+  std::string path = getExecutablePath();
 
-  int dirname_length;
-  char * path;
-  int length = wai_getModulePath(NULL, 0, &dirname_length);
-  if (length > 0)
-  {
-    path = (char*)malloc(length + 1);
-    if (!path)
-      abort();
-    wai_getModulePath(path, length, &dirname_length);
-    path[length] = '\0';
-
-    //printf("executable path: %s\n", path);
-    path[dirname_length] = '\0';
-    // free(path);
-    //printf("  dirname: %s\n", path);
-    //printf("  basename: %s\n", path + dirname_length + 1);
-  }
+  if (path.empty())
+    return logError("executable path could not be found");
 
   filesystem::path schemaRootPath (path);
   filesystem::path schemaFilePath;
@@ -141,7 +161,8 @@ oms_status_enu_t oms::XercesValidator::validateSSD(const char *ssd, const std::s
   schemaFilePath = schemaRootPath / "../share/OMSimulator/schema/ssp/SystemStructureDescription.xsd";
   // std::cout << "schemaPath: " << schemaFilePath.generic_string() << "\n" << filesystem::absolute(schemaFilePath).generic_string() << "\n";
 
-  // for windows and mingw libOMSimulator.dll is put in "install/bin" directory and for linux and other platforms
+  // this is done if we run the OMSimulator using python extension (e.g) python3 test.py and in this case the executable path is the dll path
+  // for windows and mingw "libOMSimulator.dll" is put in "install/bin" directory and for linux and other platforms
   // the shared libraries are put in "install/lib/x86_64-linux-gnu/", so to find the schema location we have to move two directories back
   if (!filesystem::exists(schemaFilePath))
     schemaFilePath = schemaRootPath / "../../share/OMSimulator/schema/ssp/SystemStructureDescription.xsd";
