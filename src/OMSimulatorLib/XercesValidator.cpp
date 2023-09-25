@@ -33,15 +33,8 @@
 #include "whereami.h"
 
 #include "Logging.h"
-#include "ssd/Tags.h"
-#include "Util.h"
 #include "OMSFileSystem.h"
 #include "OMSString.h"
-
-#include <iostream>
-#include <map>
-#include "miniunz.h"
-#include <string>
 
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/dom/DOM.hpp>
@@ -66,32 +59,28 @@ public:
     filePath = filePath_;
   }
 private:
-    void reportParseException(const SAXParseException &ex)
-    {
-      char *msg = XMLString::transcode(ex.getMessage());
-      logError("invalid " + std::string(fileName) + " detected in file " + "\"" + std::string(filePath) + "\"" + " at line: " + std::to_string(ex.getLineNumber()) + " column: " + std::to_string(ex.getColumnNumber()) + ", " + std::string(msg));
-      XMLString::release(&msg);
-    }
-
+  void reportParseException(const SAXParseException &ex)
+  {
+    char *msg = XMLString::transcode(ex.getMessage());
+    logWarning("invalid " + std::string(fileName) + " detected in file " + "\"" + std::string(filePath) + "\"" + " at line: " + std::to_string(ex.getLineNumber()) + " column: " + std::to_string(ex.getColumnNumber()) + ", " + std::string(msg));
+    XMLString::release(&msg);
+  }
 public:
-    void warning(const SAXParseException &ex)
-    {
-      reportParseException(ex);
-    }
-
-    void error(const SAXParseException &ex)
-    {
-      reportParseException(ex);
-    }
-
-    void fatalError(const SAXParseException &ex)
-    {
-      reportParseException(ex);
-    }
-
-    void resetErrors()
-    {
-    }
+  void warning(const SAXParseException &ex)
+  {
+    reportParseException(ex);
+  }
+  void error(const SAXParseException &ex)
+  {
+    reportParseException(ex);
+  }
+  void fatalError(const SAXParseException &ex)
+  {
+    reportParseException(ex);
+  }
+  void resetErrors()
+  {
+  }
 };
 
 oms::XercesValidator::XercesValidator()
@@ -123,7 +112,6 @@ std::string oms::XercesValidator::getExecutablePath()
   path[length] = '\0';
 
   //std::cout << "executable path: " <<  path << "\n";
-
   path[dirname_length] = '\0';
   //std::cout << "dirname: "<<  path << "\n";
   //std::cout << "basename: "<<  path + dirname_length + 1;
@@ -133,8 +121,6 @@ std::string oms::XercesValidator::getExecutablePath()
 
   return executablePath;
 }
-
-
 
 oms_status_enu_t oms::XercesValidator::validateSSD(const char *ssd, const std::string& filePath)
 {
@@ -190,7 +176,7 @@ oms_status_enu_t oms::XercesValidator::validateSSD(const char *ssd, const std::s
   domParser.parse(pMemBufIS);
 
   if (domParser.getErrorCount() > 0)
-      return logError("SystemStructure.ssd does not conform to the SSP standard schema");
+      return logWarning("\"SystemStructure.ssd\" does not conform to the SSP standard schema");
 
   return oms_status_ok;
 }

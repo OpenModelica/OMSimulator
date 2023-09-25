@@ -16,8 +16,8 @@ model = oms.importFile('../resources/invalidSSP.ssp')
 model.delete()
 
 ## Result:
-## error:   [reportParseException] invalid SystemStructure.ssd detected in file "../resources/invalidSSP.ssp" at line: 16 column: 22, attribute 'type' is not declared for element 'Connector'
-## error:   [validateSSD] SystemStructure.ssd does not conform to the SSP standard schema
-## info:    0 warnings
-## info:    2 errors
+## warning: invalid SystemStructure.ssd detected in file "../resources/invalidSSP.ssp" at line: 16 column: 22, attribute 'type' is not declared for element 'Connector'
+## warning: SystemStructure.ssd does not conform to the SSP standard schema
+## info:    2 warnings
+## info:    0 errors
 ## endResult
