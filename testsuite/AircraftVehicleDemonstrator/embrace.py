@@ -67,7 +67,7 @@ oms.terminate("embrace")
 oms.delete("embrace")
 
 ## Result:
-## warning: invalid "SystemStructure.ssd" detected in file "../../resources/embrace_TwoConf.ssp" at line: 17 column: 26, missing required attribute 'name'
+## warning: invalid "SystemStructure.ssd" detected in file "../../resources/embrace.ssp" at line: 17 column: 26, missing required attribute 'name'
 ## warning: "SystemStructure.ssd" does not conform to the SSP standard schema
 ## info:    Result file: sim_results.mat (bufferSize=1)
 ## info:    Initialize:
