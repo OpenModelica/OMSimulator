@@ -16,12 +16,13 @@ function readFile(filename)
 
 oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./reducessv_01_lua/")
+oms_setWorkingDirectory("./reducessv_01_lua/")
 
 oms_newModel("model")
 
-oms_reduceSSV("model", "../resources/importParameterMapping/resources/import_parameter_mapping.ssv", "../resources/importParameterMapping/resources/import_parameter_mapping.ssm")
+oms_reduceSSV("model", "../../resources/importParameterMapping/resources/import_parameter_mapping.ssv", "../../resources/importParameterMapping/resources/import_parameter_mapping.ssm")
 
-readFile("../resources/importParameterMapping/resources/import_parameter_mapping.ssv")
+readFile("../../resources/importParameterMapping/resources/import_parameter_mapping.ssv")
 readFile("reduced.ssv")
 
 
