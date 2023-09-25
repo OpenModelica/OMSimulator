@@ -62,7 +62,7 @@ private:
   void reportParseException(const SAXParseException &ex)
   {
     char *msg = XMLString::transcode(ex.getMessage());
-    logWarning("invalid " + std::string(fileName) + " detected in file " + "\"" + std::string(filePath) + "\"" + " at line: " + std::to_string(ex.getLineNumber()) + " column: " + std::to_string(ex.getColumnNumber()) + ", " + std::string(msg));
+    logWarning("invalid \"" + std::string(fileName) + "\""  + " detected in file " + "\"" + std::string(filePath) + "\"" + " at line: " + std::to_string(ex.getLineNumber()) + " column: " + std::to_string(ex.getColumnNumber()) + ", " + std::string(msg));
     XMLString::release(&msg);
   }
 public:
