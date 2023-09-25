@@ -74,6 +74,8 @@ endif()
 
 add_subdirectory(doc)
 
+add_subdirectory(schema)
+
 ## Add the testsuite directory (which adds the target testsuite-depends which in turn depends
 ## on omc-diff and testssuite-resources) only if OMSimulator is being used standalone.
 option(OM_OMS_ENABLE_TESTSUITE "enable the OMSimulator testsuite" OFF)

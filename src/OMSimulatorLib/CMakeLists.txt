@@ -61,6 +61,8 @@ set(OMSIMULATORLIB_SOURCES
       SystemWC.cpp
       Values.cpp
       Variable.cpp
+      whereami.c
+      XercesValidator.cpp
       ssd/ConnectionGeometry.cpp
       ssd/ConnectorGeometry.cpp
       ssd/ElementGeometry.cpp

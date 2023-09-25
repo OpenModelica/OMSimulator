@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+    xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping"
+    xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
+    targetNamespace="http://ssp-standard.org/SSP1/SystemStructureParameterMapping">
+    <xs:annotation>
+        <xs:documentation xml:lang="en">
+            This is the normative XML Schema 1.0 schema for the MAP SSP
+            SystemStructureParameterMapping 1.0 format.
+            
+            Version: 1.0
+
+            Copyright 2016 -- 2019 Modelica Association Project "SSP"
+
+            Redistribution and use in source and binary forms, with or
+            without modification, are permitted provided that the
+            following conditions are met:
+
+            1. Redistributions of source code must retain the above
+               copyright notice, this list of conditions and the
+               following disclaimer.
+
+            2. Redistributions in binary form must reproduce the above
+               copyright notice, this list of conditions and the
+               following disclaimer in the documentation and/or other
+               materials provided with the distribution.
+
+            THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+            CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+            INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+            MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+            DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+            CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+            INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+            (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+            GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+            BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+            LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+            (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+            OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+            POSSIBILITY OF SUCH DAMAGE.
+        </xs:documentation>
+    </xs:annotation>
+    
+    <xs:import namespace="http://ssp-standard.org/SSP1/SystemStructureCommon" schemaLocation="SystemStructureCommon.xsd"/>
+    
+    <xs:element name="ParameterMapping">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="MappingEntry" minOccurs="0" maxOccurs="unbounded" type="ssm:TMappingEntry"/>
+                <xs:element name="Annotations" minOccurs="0" type="ssc:TAnnotations"/>
+            </xs:sequence>
+            <xs:attribute name="version" use="required">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        Version of SSM format, 1.0 for this release.
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:normalizedString">
+                        <xs:pattern value="1[.][0-9]+(-.*)?"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+            <xs:attributeGroup ref="ssc:ABaseElement"/>
+            <xs:attributeGroup ref="ssc:ATopLevelMetaData"/>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:complexType name="TMappingEntry">
+        <xs:sequence>
+            <xs:group ref="ssc:GTransformationChoice" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        This optional element specifies a transformation that is to be applied to
+                        the parameter value prior to its application to its target parameter.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:group>
+            <xs:element name="Annotations" minOccurs="0" type="ssc:TAnnotations"/>
+        </xs:sequence>
+        <xs:attributeGroup ref="ssc:ABaseElement"/>
+        <xs:attribute name="source" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">
+                    This attribute specifies the name of the parameter in the parameter source
+                    that is to be mapped to a new name and/or provided with a transformation
+                    in this mapping entry.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="target" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">
+                    This attribute specifies the name of the parameter in the system or
+                    component that is to be parametrized, i.e. that is the target of this
+                    mapping entry.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="suppressUnitConversion" type="xs:boolean" use="optional" default="false">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">
+                    This attribute specifies whether automatic conversions between start
+                    and end connector are performed using unit information potentially
+                    available for both start and end definitions.  If this attribute is
+                    supplied and its value is true, then the environment will not perform
+                    any automatic unit conversions, otherwise automatic unit
+                    conversions can be performed.  This is also useful in conjunction with 
+                    the optional linear transformation supplied via the LinearTransformation
+                    element: With suppressUnitConversion = true, the linear transformation
+                    is performed instead of any unit conversions, whereas otherwise the
+                    linear transformation is performed in addition to any unit conversions.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+   
+</xs:schema>
