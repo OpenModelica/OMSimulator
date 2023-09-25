@@ -76,4 +76,6 @@ oms.delete("embrace")
 ## info:      embrace.root.ECS_HW.pipeC.L               :  1.0
 ## info:      embrace.root.ECS_HW.pipeB.L               :  0.976535328081166
 ## info:      embrace.root.ECS_HW.pipeA.L               :  0.976535328081166
+## info:    2 warnings
+## info:    0 errors
 ## endResult

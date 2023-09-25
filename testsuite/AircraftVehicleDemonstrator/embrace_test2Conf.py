@@ -85,4 +85,6 @@ oms.delete("model")
 ## info:      model.root.ECS_HW.pipeC.L               :  1.0
 ## info:      model.root.ECS_HW.pipeB.L               :  7.41248272578546
 ## info:      model.root.ECS_HW.pipeA.L               :  7.39290438403619
+## info:    2 warnings
+## info:    0 errors
 ## endResult
