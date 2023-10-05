@@ -35,6 +35,7 @@
 #include "Logging.h"
 #include "ssd/Tags.h"
 #include "Util.h"
+#include "XercesValidator.h"
 
 #include <iostream>
 #include <map>
@@ -841,6 +842,10 @@ oms_status_enu_t oms::Values::importFromSnapshot(const pugi::xml_node& node, con
     std::string ssvFile = parameterBindingNode.attribute("source").as_string();
     if (!ssvFile.empty()) // parameter binding provided with .ssv file
     {
+      // validate ssv files against SSP schema
+      XercesValidator xercesValidator;
+      xercesValidator.validateSSP("", ssvFile);
+
       //resourceFiles.push_back(ssvFile);
       pugi::xml_node parameterSet = snapshot.getResourceNode(ssvFile);
       if (!parameterSet)

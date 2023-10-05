@@ -35,6 +35,7 @@
 #include "Logging.h"
 #include "OMSFileSystem.h"
 #include "OMSString.h"
+#include <iostream>
 
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/dom/DOM.hpp>
@@ -122,8 +123,14 @@ std::string oms::XercesValidator::getExecutablePath()
   return executablePath;
 }
 
-oms_status_enu_t oms::XercesValidator::validateSSD(const char *ssd, const std::string& filePath)
+oms_status_enu_t oms::XercesValidator::validateSSP(const char *ssd, const std::string& filePath)
 {
+
+  std::string extension = filesystem::path(filePath).extension().generic_string();
+
+  if (extension != ".ssp" && extension != ".ssv" && extension != ".ssm")
+    return logWarning("filename extension must be \".ssp\" or \".ssv\" or \".ssm\" ; no other formats are supported for SSP validation");
+
   try
   {
     XMLPlatformUtils::Initialize();
@@ -142,9 +149,11 @@ oms_status_enu_t oms::XercesValidator::validateSSD(const char *ssd, const std::s
     return logError("executable path could not be found");
 
   filesystem::path schemaRootPath (path);
-  filesystem::path schemaFilePath;
+  filesystem::path schemaFilePath, schemaSSVPath;
 
   schemaFilePath = schemaRootPath / "../share/OMSimulator/schema/ssp/SystemStructureDescription.xsd";
+  schemaSSVPath = schemaRootPath / "../share/OMSimulator/schema/ssp/SystemStructureParameterValues.xsd";
+
   // std::cout << "schemaPath: " << schemaFilePath.generic_string() << "\n" << filesystem::absolute(schemaFilePath).generic_string() << "\n";
 
   // this is done if we run the OMSimulator using python extension (e.g) python3 test.py and in this case the executable path is the dll path
@@ -159,7 +168,16 @@ oms_status_enu_t oms::XercesValidator::validateSSD(const char *ssd, const std::s
   if (domParser.loadGrammar(schemaFilePath.generic_string().c_str(), Grammar::SchemaGrammarType) == NULL)
       return logError("could not load the ssd schema file: " + filesystem::absolute(schemaFilePath).generic_string());
 
-  ParserErrorHandler parserErrorHandler("SystemStructure.ssd", filePath.c_str());
+  std::string sspVariant = "";
+
+  if (extension == ".ssp")
+    sspVariant = "SystemStructureDescription";
+  else if (extension == ".ssv")
+    sspVariant = "SystemStructureParameterValues";
+  else if (extension == ".ssm")
+    sspVariant = "SystemStructureParameterMapping";
+
+  ParserErrorHandler parserErrorHandler(sspVariant.c_str(), filePath.c_str());
 
   domParser.setErrorHandler(&parserErrorHandler);
   domParser.cacheGrammarFromParse(true);
@@ -170,13 +188,22 @@ oms_status_enu_t oms::XercesValidator::validateSSD(const char *ssd, const std::s
   domParser.setValidationConstraintFatal(true);
   // domParser.setExternalNoNamespaceSchemaLocation(schemaFilePath); // set this for noNameSpace
   std::string ssdTargetNameSpacePath = "http://ssp-standard.org/SSP1/SystemStructureDescription " + schemaFilePath.generic_string();
+  ssdTargetNameSpacePath = ssdTargetNameSpacePath + " http://ssp-standard.org/SSP1/SystemStructureParameterValues " + schemaSSVPath.generic_string();
+
   domParser.setExternalSchemaLocation(ssdTargetNameSpacePath.c_str());
 
-  xercesc::MemBufInputSource pMemBufIS((const XMLByte*)ssd, std::string(ssd).size() , "ssdfile");
-  domParser.parse(pMemBufIS);
+  if (strlen(ssd) > 0)
+  {
+    xercesc::MemBufInputSource pMemBufIS((const XMLByte *)ssd, std::string(ssd).size(), "ssdfile");
+    domParser.parse(pMemBufIS);
+  }
+  else
+  {
+    domParser.parse(filePath.c_str());
+  }
 
   if (domParser.getErrorCount() > 0)
-      return logWarning("\"SystemStructure.ssd\" does not conform to the SSP standard schema");
+    return logWarning( "\"" + sspVariant + "\"" + " does not conform to the SSP standard schema");
 
   return oms_status_ok;
 }
