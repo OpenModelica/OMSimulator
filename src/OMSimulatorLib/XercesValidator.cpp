@@ -149,9 +149,9 @@ oms_status_enu_t oms::XercesValidator::validateSSP(const char *ssd, const std::s
     return logError("executable path could not be found");
 
   filesystem::path schemaRootPath (path);
-  filesystem::path schemaFilePath, schemaSSVPath;
+  filesystem::path schemaSSDPath, schemaSSVPath;
 
-  schemaFilePath = schemaRootPath / "../share/OMSimulator/schema/ssp/SystemStructureDescription.xsd";
+  schemaSSDPath = schemaRootPath / "../share/OMSimulator/schema/ssp/SystemStructureDescription.xsd";
   schemaSSVPath = schemaRootPath / "../share/OMSimulator/schema/ssp/SystemStructureParameterValues.xsd";
 
   // std::cout << "schemaPath: " << schemaFilePath.generic_string() << "\n" << filesystem::absolute(schemaFilePath).generic_string() << "\n";
@@ -159,14 +159,17 @@ oms_status_enu_t oms::XercesValidator::validateSSP(const char *ssd, const std::s
   // this is done if we run the OMSimulator using python extension (e.g) python3 test.py and in this case the executable path is the dll path
   // for windows and mingw "libOMSimulator.dll" is put in "install/bin" directory and for linux and other platforms
   // the shared libraries are put in "install/lib/x86_64-linux-gnu/", so to find the schema location we have to move two directories back
-  if (!filesystem::exists(schemaFilePath))
-    schemaFilePath = schemaRootPath / "../../share/OMSimulator/schema/ssp/SystemStructureDescription.xsd";
+  if (!filesystem::exists(schemaSSDPath))
+  {
+    schemaSSDPath = schemaRootPath / "../../share/OMSimulator/schema/ssp/SystemStructureDescription.xsd";
+    schemaSSVPath = schemaRootPath / "../share/OMSimulator/schema/ssp/SystemStructureParameterValues.xsd";
+  }
 
   XercesDOMParser domParser;
 
   // load the schema
-  if (domParser.loadGrammar(schemaFilePath.generic_string().c_str(), Grammar::SchemaGrammarType) == NULL)
-      return logError("could not load the ssd schema file: " + filesystem::absolute(schemaFilePath).generic_string());
+  if (domParser.loadGrammar(schemaSSDPath.generic_string().c_str(), Grammar::SchemaGrammarType) == NULL)
+    return logError("could not load the ssd schema file: " + filesystem::absolute(schemaSSDPath).generic_string());
 
   std::string sspVariant = "";
 
@@ -187,7 +190,7 @@ oms_status_enu_t oms::XercesValidator::validateSSP(const char *ssd, const std::s
   domParser.setValidationSchemaFullChecking(true);
   domParser.setValidationConstraintFatal(true);
   // domParser.setExternalNoNamespaceSchemaLocation(schemaFilePath); // set this for noNameSpace
-  std::string ssdTargetNameSpacePath = "http://ssp-standard.org/SSP1/SystemStructureDescription " + schemaFilePath.generic_string();
+  std::string ssdTargetNameSpacePath = "http://ssp-standard.org/SSP1/SystemStructureDescription " + schemaSSDPath.generic_string();
   ssdTargetNameSpacePath = ssdTargetNameSpacePath + " http://ssp-standard.org/SSP1/SystemStructureParameterValues " + schemaSSVPath.generic_string();
 
   domParser.setExternalSchemaLocation(ssdTargetNameSpacePath.c_str());
