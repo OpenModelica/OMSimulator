@@ -67,7 +67,7 @@ oms.terminate("embrace")
 oms.delete("embrace")
 
 ## Result:
-## warning: invalid "SystemStructureDescription detected in file "../../resources/embrace.ssp" at line: 17 column: 26, missing required attribute 'name'
+## warning: invalid "SystemStructureDescription" detected in file "../../resources/embrace.ssp" at line: 17 column: 26, missing required attribute 'name'
 ## warning: "SystemStructureDescription" does not conform to the SSP standard schema
 ## info:    Result file: sim_results.mat (bufferSize=1)
 ## info:    Initialize:
