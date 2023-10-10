@@ -1529,15 +1529,17 @@ oms_status_enu_t oms::ComponentFMUME::deleteStartValue(const ComRef& cref)
   return oms_status_error;
 }
 
-oms_status_enu_t oms::ComponentFMUME::setValuesResources(std::vector<Values>& allValuesResources)
+oms_status_enu_t oms::ComponentFMUME::setValuesResources(Values& values)
 {
-  this->values.parameterResources = allValuesResources;
-  return oms_status_ok;
-}
+  // set all ssv and ssm resources from the old component to replacing component
+  this->values.parameterResources = values.parameterResources;
+  // set all user define values from the old component to replacing component as user defined values have higher priority
+  // over modeldescription.xml
+  this->values.realStartValues = values.realStartValues;
+  this->values.integerStartValues = values.integerValues;
+  this->values.booleanStartValues = values.booleanStartValues;
 
-std::vector<oms::Values> oms::ComponentFMUME::getValuesResources()
-{
-  return this->values.parameterResources;
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms::ComponentFMUME::updateOrDeleteStartValueInReplacedComponent(std::vector<std::string>& warningList)

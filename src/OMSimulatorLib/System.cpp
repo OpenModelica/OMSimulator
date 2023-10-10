@@ -399,8 +399,7 @@ oms_status_enu_t oms::System::replaceSubModel(const oms::ComRef& cref, const std
       replaceComponent->getElement()->setGeometry(component->second->getElement()->getGeometry());
 
       // copy all the resources from old component to replacing component
-      std::vector<Values> allResources = component->second->getValuesResources();
-      replaceComponent->setValuesResources(allResources);
+      replaceComponent->setValuesResources(component->second->getValues());
 
       // update or delete the start value in ssv of with the replaced component
       replaceComponent->updateOrDeleteStartValueInReplacedComponent(warningList);
