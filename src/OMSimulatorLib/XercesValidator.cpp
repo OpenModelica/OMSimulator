@@ -213,3 +213,67 @@ oms_status_enu_t oms::XercesValidator::validateSSP(const char *ssd, const std::s
 
   return oms_status_ok;
 }
+
+oms_status_enu_t oms::XercesValidator::validateFMU(const char *modeldescription, const std::string& filePath)
+{
+
+  std::string extension = filesystem::path(filePath).extension().generic_string();
+
+  if (extension != ".fmu")
+    return logWarning("filename extension must be \".fmu\" ; no other formats are supported for fmu validation");
+
+  try
+  {
+    XMLPlatformUtils::Initialize();
+  }
+  catch (const XMLException &toCatch)
+  {
+    char *message = XMLString::transcode(toCatch.getMessage());
+    logError("Xerces error during initialization: "+ std::string(message));
+    XMLString::release(&message);
+    return oms_status_error;
+  }
+
+  std::string path = getExecutablePath();
+
+  if (path.empty())
+    return logError("executable path could not be found");
+
+  filesystem::path schemaRootPath (path);
+  filesystem::path schemaFmiModeldescriptionPath;
+
+  schemaFmiModeldescriptionPath = schemaRootPath / "../share/OMSimulator/schema/fmi2/fmi2ModelDescription.xsd";
+
+  // this is done if we run the OMSimulator using python extension (e.g) python3 test.py and in this case the executable path is the dll path
+  // for windows and mingw "libOMSimulator.dll" is put in "install/bin" directory and for linux and other platforms
+  // the shared libraries are put in "install/lib/x86_64-linux-gnu/", so to find the schema location we have to move two directories back
+  if (!filesystem::exists(schemaFmiModeldescriptionPath))
+  {
+    schemaFmiModeldescriptionPath = schemaRootPath / "../../share/OMSimulator/schema/fmi2/fmi2ModelDescription.xsd";
+  }
+
+  XercesDOMParser domParser;
+
+  // load the schema
+  if (domParser.loadGrammar(schemaFmiModeldescriptionPath.generic_string().c_str(), Grammar::SchemaGrammarType) == NULL)
+    return logError("could not load the ssd schema file: " + filesystem::absolute(schemaFmiModeldescriptionPath).generic_string());
+
+  ParserErrorHandler parserErrorHandler("modeldescription.xml", filePath.c_str());
+
+  domParser.setErrorHandler(&parserErrorHandler);
+  domParser.cacheGrammarFromParse(true);
+  domParser.setValidationScheme(XercesDOMParser::Val_Always);
+  domParser.setDoNamespaces(true);
+  domParser.setDoSchema(true);
+  domParser.setValidationSchemaFullChecking(true);
+  domParser.setValidationConstraintFatal(true);
+  domParser.setExternalNoNamespaceSchemaLocation(schemaFmiModeldescriptionPath.generic_string().c_str()); // set this for noNameSpace
+
+  xercesc::MemBufInputSource pMemBufIS((const XMLByte *)modeldescription, std::string(modeldescription).size(), "modeldescriptionfile");
+  domParser.parse(pMemBufIS);
+
+  if (domParser.getErrorCount() > 0)
+    return logWarning("\"modeldescription.xml\" does not conform to the FMI-2.0 standard schema");
+
+  return oms_status_ok;
+}

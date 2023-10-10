@@ -4,6 +4,7 @@ TESTFILES = \
 validateSSD.py \
 validateSSV.py \
 validateSSM.py \
+validateModeldescription.py \
 
 # Run make failingtest
 FAILINGTESTFILES = \

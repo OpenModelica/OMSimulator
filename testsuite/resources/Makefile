@@ -21,6 +21,7 @@ fmi_attributes_19 \
 HelloWorld \
 HelloWorldWithInput \
 Int1 \
+invalidModeldescription \
 Lin2DimODE \
 Modelica.Blocks.Continuous.Integrator \
 Modelica.Blocks.Math.Add \
