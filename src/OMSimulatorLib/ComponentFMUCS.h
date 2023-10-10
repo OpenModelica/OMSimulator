@@ -77,6 +77,9 @@ namespace oms
 
     Variable* getVariable(const ComRef& cref);
 
+    Values& getValues() { return values; }
+    oms_status_enu_t setValuesResources(Values& values);
+
     oms_status_enu_t getBoolean(const ComRef& cref, bool& value);
     oms_status_enu_t getBoolean(const fmi2ValueReference& vr, bool& value);
     oms_status_enu_t getInteger(const ComRef& cref, int& value);
@@ -96,8 +99,6 @@ namespace oms
 
     oms_status_enu_t deleteStartValue(const ComRef& cref);
     oms_status_enu_t updateOrDeleteStartValueInReplacedComponent(std::vector<std::string>& warningList);
-    oms_status_enu_t setValuesResources(std::vector<Values>& allValuesResources);
-    std::vector<Values> getValuesResources();
 
     oms_status_enu_t setFmuTime(double time) {this->time = time; return oms_status_ok;}
     fmiHandle* getFMU() {return fmu;}
