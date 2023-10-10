@@ -28,8 +28,8 @@ oms_delete("importStartValues")
 
 
 -- Result:
--- warning: invalid "SystemStructure.ssd" detected in file "../../resources/importStartValues1.ssp" at line: 72 column: 33, element 'Elements' is not allowed for content model '((Component|SignalDictionaryReference|System))'
--- warning: "SystemStructure.ssd" does not conform to the SSP standard schema
+-- warning: invalid "SystemStructureDescription" detected in file "../../resources/importStartValues1.ssp" at line: 72 column: 33, element 'Elements' is not allowed for content model '((Component|SignalDictionaryReference|System))'
+-- warning: "SystemStructureDescription" does not conform to the SSP standard schema
 -- warning: Wrong/deprecated content detected but successfully loaded. Please re-export the SSP file to avoid this message.
 -- warning: Wrong/deprecated content detected but successfully loaded. Please re-export the SSP file to avoid this message.
 -- warning: Wrong/deprecated content detected but successfully loaded. Please re-export the SSP file to avoid this message.
@@ -248,7 +248,7 @@ oms_delete("importStartValues")
 --     </oms:SignalFilter>
 --   </oms:file>
 -- </oms:snapshot>
--- 
+--
 -- info:    model doesn't contain any continuous state
 -- info:    Result file: importStartValues1_res.mat (bufferSize=10)
 -- info:    7 warnings

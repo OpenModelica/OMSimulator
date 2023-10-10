@@ -46,7 +46,8 @@ namespace oms
   public:
     XercesValidator();
     ~XercesValidator();
-    oms_status_enu_t validateSSD(const char * ssd, const std::string& filePath);
+    oms_status_enu_t validateSSP(const char * ssd, const std::string& filePath);
+    oms_status_enu_t validateFMU(const char * modeldescription, const std::string& filePath);
     std::string getExecutablePath();
   };
 }

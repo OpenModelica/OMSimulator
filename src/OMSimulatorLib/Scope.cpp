@@ -198,7 +198,7 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
     return logError("failed to extract \"SystemStructure.ssd\" from \"" + std::string(filename) + "\"");
 
   XercesValidator xercesValidator;
-  xercesValidator.validateSSD(systemStructure, filename);
+  xercesValidator.validateSSP(systemStructure, filename);
 
   Snapshot snapshot;
   oms_status_enu_t status = snapshot.importResourceMemory("SystemStructure.ssd", systemStructure);

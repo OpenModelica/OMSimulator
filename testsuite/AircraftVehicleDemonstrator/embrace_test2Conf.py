@@ -76,8 +76,10 @@ oms.terminate("model")
 oms.delete("model")
 
 ## Result:
-## warning: invalid "SystemStructure.ssd" detected in file "../../resources/embrace_TwoConf.ssp" at line: 17 column: 26, missing required attribute 'name'
-## warning: "SystemStructure.ssd" does not conform to the SSP standard schema
+## warning: invalid "SystemStructureDescription" detected in file "../../resources/embrace_TwoConf.ssp" at line: 17 column: 26, missing required attribute 'name'
+## warning: "SystemStructureDescription" does not conform to the SSP standard schema
+## warning: invalid "SystemStructureParameterValues" detected in file "resources/ECS_Conf2.ssv" at line: 3 column: 10, element 'Units' must be qualified
+## warning: "SystemStructureParameterValues" does not conform to the SSP standard schema
 ## info:    Result file: sim_results_ECS_Conf1.mat (bufferSize=1)
 ## info:    Initialize:
 ## info:      model.root.ECS_HW.coolinPackAir.looptype:  2
@@ -85,6 +87,6 @@ oms.delete("model")
 ## info:      model.root.ECS_HW.pipeC.L               :  1.0
 ## info:      model.root.ECS_HW.pipeB.L               :  7.41248272578546
 ## info:      model.root.ECS_HW.pipeA.L               :  7.39290438403619
-## info:    2 warnings
+## info:    4 warnings
 ## info:    0 errors
 ## endResult

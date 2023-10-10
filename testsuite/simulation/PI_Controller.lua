@@ -107,8 +107,8 @@ oms_terminate("PI_Controller")
 oms_delete("PI_Controller")
 
 -- Result:
--- warning: invalid "SystemStructure.ssd" detected in file "PI_Controller.ssp" at line: 78 column: 32, missing required attribute 'name'
--- warning: "SystemStructure.ssd" does not conform to the SSP standard schema
+-- warning: invalid "SystemStructureDescription" detected in file "PI_Controller.ssp" at line: 78 column: 32, missing required attribute 'name'
+-- warning: "SystemStructureDescription" does not conform to the SSP standard schema
 -- info:    Parameter settings
 -- info:      PI_Controller.co_sim.addP.k1: 1.0
 -- info:      PI_Controller.co_sim.addP.k2: -1.0

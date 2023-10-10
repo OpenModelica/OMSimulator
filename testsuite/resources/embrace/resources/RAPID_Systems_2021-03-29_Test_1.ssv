@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ssv:ParameterSet xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" name="product_mainAssembly">
+<ssv:ParameterSet xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" version="1.0" name="product_mainAssembly">
   <Units>
     <Unit name="m">
       <BaseUnit m="1"/>
