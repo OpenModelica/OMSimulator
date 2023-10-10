@@ -2,7 +2,7 @@
 ## teardown_command: rm -rf validateSSV-py/
 ## linux: yes
 ## mac: no
-## mingw32: yes
+## mingw32: no
 ## mingw64: yes
 ## win: yes
 

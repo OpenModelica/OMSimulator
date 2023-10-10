@@ -866,6 +866,12 @@ oms_status_enu_t oms::Values::importFromSnapshot(const pugi::xml_node& node, con
         std::string ssmFileSource = ssd_parameterMapping.attribute("source").as_string();
         if (!ssmFileSource.empty())
         {
+          // validate ssm file only if it exists
+          if (filesystem::exists(ssmFileSource))
+          {
+            XercesValidator xercesValidator;
+            xercesValidator.validateSSP("", ssmFileSource);
+          }
           pugi::xml_node ssm_parameterMapping = snapshot.getResourceNode(ssmFileSource);
           if (!ssm_parameterMapping)
             return logError("loading <oms:file> \"" + ssmFileSource + "\" from <oms:snapshot> failed");

@@ -1,17 +1,17 @@
 ## status: correct
-## teardown_command: rm -rf validateSSP-py/
+## teardown_command: rm -rf validateSSD-py/
 ## linux: yes
 ## mac: no
-## mingw32: yes
+## mingw32: no
 ## mingw64: yes
 ## win: yes
 
 import OMSimulator as oms
 
 oms.setCommandLineOption('--suppressPath=true')
-oms.setTempDirectory('./validateSSP-py/')
+oms.setTempDirectory('./validateSSD-py/')
 
-model = oms.importFile('../resources/invalidSSP.ssp')
+model = oms.importFile('../resources/invalidSSD.ssp')
 
 model.delete()
 

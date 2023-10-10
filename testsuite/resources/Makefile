@@ -73,8 +73,9 @@ import_export_parameters1 \
 import_export_parameters2 \
 import_export_parameters3 \
 importExportAllResources \
-invalidSSP \
+invalidSSD \
 invalidSSV \
+invalidSSM \
 replaceSubmodel4 \
 replaceSubmodel5 \
 

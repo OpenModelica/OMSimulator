@@ -149,10 +149,11 @@ oms_status_enu_t oms::XercesValidator::validateSSP(const char *ssd, const std::s
     return logError("executable path could not be found");
 
   filesystem::path schemaRootPath (path);
-  filesystem::path schemaSSDPath, schemaSSVPath;
+  filesystem::path schemaSSDPath, schemaSSVPath, schemaSSMPath;
 
   schemaSSDPath = schemaRootPath / "../share/OMSimulator/schema/ssp/SystemStructureDescription.xsd";
   schemaSSVPath = schemaRootPath / "../share/OMSimulator/schema/ssp/SystemStructureParameterValues.xsd";
+  schemaSSMPath = schemaRootPath / "../share/OMSimulator/schema/ssp/SystemStructureParameterMapping.xsd";
 
   // std::cout << "schemaPath: " << schemaFilePath.generic_string() << "\n" << filesystem::absolute(schemaFilePath).generic_string() << "\n";
 
@@ -162,7 +163,8 @@ oms_status_enu_t oms::XercesValidator::validateSSP(const char *ssd, const std::s
   if (!filesystem::exists(schemaSSDPath))
   {
     schemaSSDPath = schemaRootPath / "../../share/OMSimulator/schema/ssp/SystemStructureDescription.xsd";
-    schemaSSVPath = schemaRootPath / "../share/OMSimulator/schema/ssp/SystemStructureParameterValues.xsd";
+    schemaSSVPath = schemaRootPath / "../../share/OMSimulator/schema/ssp/SystemStructureParameterValues.xsd";
+    schemaSSMPath = schemaRootPath / "../../share/OMSimulator/schema/ssp/SystemStructureParameterMapping.xsd";
   }
 
   XercesDOMParser domParser;
@@ -192,6 +194,7 @@ oms_status_enu_t oms::XercesValidator::validateSSP(const char *ssd, const std::s
   // domParser.setExternalNoNamespaceSchemaLocation(schemaFilePath); // set this for noNameSpace
   std::string ssdTargetNameSpacePath = "http://ssp-standard.org/SSP1/SystemStructureDescription " + schemaSSDPath.generic_string();
   ssdTargetNameSpacePath = ssdTargetNameSpacePath + " http://ssp-standard.org/SSP1/SystemStructureParameterValues " + schemaSSVPath.generic_string();
+  ssdTargetNameSpacePath = ssdTargetNameSpacePath + " http://ssp-standard.org/SSP1/SystemStructureParameterMapping " + schemaSSMPath.generic_string();
 
   domParser.setExternalSchemaLocation(ssdTargetNameSpacePath.c_str());
 

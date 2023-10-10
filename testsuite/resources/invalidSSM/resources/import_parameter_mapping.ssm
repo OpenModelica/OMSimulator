@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ssm:ParameterMapping xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" version="1.0">
+    <ssm:MappingEntry source="cosim_input" target="Input_1" />
+    <ssm:MappingEntry source="cosim_input" target="Input_2" />
+    <ssm:MappingEntry source="cosim_input" target="System1.Input_1" />
+    <ssm:MappingEntry source="cosim_input" target="System1.Input_2" />
+    <ssm:MappingEntry source="cosim_input" target="System2.Input_1" />
+    <ssm:MappingEntry source="cosim_input" target="System2.Input_2" />
+    <ssm:MappingEntry source="cosim_parameters" target="parameter_1" />
+    <ssm:MappingEntry source="cosim_parameters" target="System1.parameter_1" />
+    <ssm:MappingEntry source="cosim_parameters" target="System2.parameter_1" />
+    <ssm:MappingEntry source="cosim_parameters" destination="System2.parameter_1" />
+</ssm:ParameterMapping>

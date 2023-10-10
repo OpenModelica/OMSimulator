@@ -1,7 +1,9 @@
 TEST = ../rtest -v
 
 TESTFILES = \
-validateSSP.py \
+validateSSD.py \
+validateSSV.py \
+validateSSM.py \
 
 # Run make failingtest
 FAILINGTESTFILES = \
