@@ -842,9 +842,13 @@ oms_status_enu_t oms::Values::importFromSnapshot(const pugi::xml_node& node, con
     std::string ssvFile = parameterBindingNode.attribute("source").as_string();
     if (!ssvFile.empty()) // parameter binding provided with .ssv file
     {
-      // validate ssv files against SSP schema
-      XercesValidator xercesValidator;
-      xercesValidator.validateSSP("", ssvFile);
+      // validate ssv files against SSP schem, only if the file exists, because it is possible we use importSnapShot API
+      // to go back to old states and in this case we should not validate those ssv files in memory until it is exported to a ssp
+      if (filesystem::exists(ssvFile))
+      {
+        XercesValidator xercesValidator;
+        xercesValidator.validateSSP("", ssvFile);
+      }
 
       //resourceFiles.push_back(ssvFile);
       pugi::xml_node parameterSet = snapshot.getResourceNode(ssvFile);
