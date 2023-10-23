@@ -259,6 +259,11 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::
       std::string unitName = component->values.getUnitFromModeldescription(connectorCref);
       if (!unitName.empty())
         connector->connectorUnits[unitName] = component->values.modeldescriptionUnitDefinitions[unitName];
+      
+      // get enumerationTypes
+      std::string enumType = component->values.getEnumerationTypeFromModeldescription(connectorCref);
+      if (!enumType.empty())
+        connector->enumerationName[connectorCref] = enumType;
     }
   }
 
@@ -387,6 +392,11 @@ void oms::ComponentFMUCS::getFilteredUnitDefinitionsToSSD(std::map<std::string, 
   }
 
   return values.getFilteredUnitDefinitionsToSSD(unitDefinitions);
+}
+
+void oms::ComponentFMUCS::getFilteredEnumerationDefinitionsToSSD(std::map<std::string, std::map<std::string, std::string>>& enumerationDefinitions)
+{
+  return values.getFilteredEnumerationDefinitionsToSSD(enumerationDefinitions);
 }
 
 oms_status_enu_t oms::ComponentFMUCS::exportToSSV(pugi::xml_node& ssvNode)

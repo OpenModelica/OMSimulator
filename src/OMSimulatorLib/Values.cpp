@@ -96,6 +96,19 @@ void oms::Values::getFilteredUnitDefinitionsToSSD(std::map<std::string, std::map
   }
 }
 
+void oms::Values::getFilteredEnumerationDefinitionsToSSD(std::map<std::string, std::map<std::string, std::string>>& enumerationDefinitions)
+{
+  if (modeldescriptionTypeDefinitions.empty())
+    return;
+
+  for(const auto &it: modeldescriptionTypeDefinitions)
+  {
+    auto enumType = enumerationDefinitions.find(it.first);
+    if (enumType == enumerationDefinitions.end())
+      enumerationDefinitions[it.first] = it.second;
+  }
+}
+
 oms_status_enu_t oms::Values::setInteger(const ComRef& cref, int value)
 {
   integerStartValues[cref] = value;
@@ -571,6 +584,16 @@ std::string oms::Values::getUnitFromModeldescription(ComRef& cref) const
   auto unitValue = modelDescriptionVariableUnits.find(cref);
   if (unitValue != modelDescriptionVariableUnits.end())
     return unitValue->second;
+
+  return "";
+}
+
+std::string oms::Values::getEnumerationTypeFromModeldescription(ComRef& cref) const
+{
+  // search in modelDescription.xml
+  auto enumType = modeldescriptionEnumeration.find(cref);
+  if (enumType != modeldescriptionEnumeration.end())
+    return enumType->second;
 
   return "";
 }
@@ -1513,6 +1536,21 @@ oms_status_enu_t oms::Values::parseModelDescription(const filesystem::path& root
   for(pugi::xml_node_iterator it = node.begin(); it != node.end(); ++it)
   {
     std::string name = it->name();
+    if (name == "TypeDefinitions")
+    {
+      pugi::xml_node simpleType = it->child("SimpleType");
+      pugi::xml_node Enumeration = simpleType.child("Enumeration");
+      if (Enumeration)
+      {
+        std::map<std::string, std::string> enumerationItems;
+        for (pugi::xml_node enumItem = Enumeration.child("Item"); enumItem; enumItem = enumItem.next_sibling("Item"))
+        {
+          // std::cout << "\n loop: " << enumItem.attribute("name").as_string() << "==>" << enumItem.attribute("value").as_string();
+          enumerationItems[enumItem.attribute("name").as_string()] = enumItem.attribute("value").as_string();
+        }
+        modeldescriptionTypeDefinitions[simpleType.attribute("name").as_string()] = enumerationItems;
+      }
+    }
     if (name == "UnitDefinitions")
     {
       //std::cout << "\nParse Unit Definitions";
@@ -1562,6 +1600,10 @@ oms_status_enu_t oms::Values::parseModelDescription(const filesystem::path& root
         if (strlen(scalarVariable.child("Boolean").attribute("start").as_string()) != 0)
         {
           modelDescriptionBooleanStartValues[scalarVariable.attribute("name").as_string()] = scalarVariable.child("Boolean").attribute("start").as_bool();
+        }
+        if (strlen(scalarVariable.child("Enumeration").attribute("declaredType").as_string()) != 0)
+        {
+          modeldescriptionEnumeration[scalarVariable.attribute("name").as_string()] = scalarVariable.child("Enumeration").attribute("declaredType").as_string();
         }
       }
     }
