@@ -890,6 +890,10 @@ oms_status_enu_t oms::Model::importFromSnapshot(const Snapshot& snapshot)
     {
       // allow importing unitDefinitions, the unitDefinitions are handled in Values.cpp importFromSnapshot
     }
+    else if (name == oms::ssp::Draft20180219::ssd::enumerations)
+    {
+      // allow importing enumerations, the enumerationDefinitions are handled in Values.cpp importFromSnapshot
+    }
     else if (name == oms::ssp::Draft20180219::ssd::default_experiment)
     {
       startTime = it->attribute("startTime").as_double(0.0);
