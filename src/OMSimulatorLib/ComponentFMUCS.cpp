@@ -259,6 +259,11 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::
       std::string unitName = component->values.getUnitFromModeldescription(connectorCref);
       if (!unitName.empty())
         connector->connectorUnits[unitName] = component->values.modeldescriptionUnitDefinitions[unitName];
+
+      // get enumerationTypes
+      std::string enumType = component->values.getEnumerationTypeFromModeldescription(connectorCref);
+      if (!enumType.empty())
+        connector->enumerationName[connectorCref] = enumType;
     }
   }
 
@@ -303,6 +308,16 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const pugi::xml_node& node, om
           std::string unitName = (*itConnectors).child(oms::ssp::Version1_0::ssc::real_type).attribute("unit").as_string();
           if (!unitName.empty())
             component->connectors.back()->connectorUnits[unitName] = component->values.modeldescriptionUnitDefinitions[unitName];
+        }
+        // set enumeration definitions
+        if ((*itConnectors).child(oms::ssp::Version1_0::ssc::enumeration_type))
+        {
+          std::string enumTypeName = (*itConnectors).child(oms::ssp::Version1_0::ssc::enumeration_type).attribute("name").as_string();
+          if (!enumTypeName.empty())
+            component->connectors.back()->enumerationName[component->connectors.back()->getName().c_str()] = enumTypeName;
+
+          // give priority to enum definitions in ssd over modeldescription.xml, it is possible the user might have manually change values in ssd file
+          component->values.importEnumerationDefinitions(ssdNode, enumTypeName);
         }
       }
     }
@@ -387,6 +402,11 @@ void oms::ComponentFMUCS::getFilteredUnitDefinitionsToSSD(std::map<std::string, 
   }
 
   return values.getFilteredUnitDefinitionsToSSD(unitDefinitions);
+}
+
+void oms::ComponentFMUCS::getFilteredEnumerationDefinitionsToSSD(std::map<std::string, std::map<std::string, std::string>>& enumerationDefinitions)
+{
+  return values.getFilteredEnumerationDefinitionsToSSD(enumerationDefinitions);
 }
 
 oms_status_enu_t oms::ComponentFMUCS::exportToSSV(pugi::xml_node& ssvNode)

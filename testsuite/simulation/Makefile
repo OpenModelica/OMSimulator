@@ -26,6 +26,7 @@ equationPair.py \
 exportConnectorsToResultFile.lua \
 exportSnapshotSSP.lua \
 exportSSMTemplate.lua \
+importExportEnumerationDefinition.lua \
 exportSSMTemplate.py \
 fmuState01.lua \
 fmuState02.py \

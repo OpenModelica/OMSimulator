@@ -830,7 +830,7 @@ oms_status_enu_t oms::Model::exportToSSD(Snapshot& snapshot) const
     if (oms_status_ok != system->exportToSSD(system_node, snapshot, this->variantName))
       return logError("export of system failed");
   }
-
+  exportEnumerationDefinitionsToSSD(ssdNode);
   exportUnitDefinitionsToSSD(ssdNode);
 
   pugi::xml_node default_experiment = ssdNode.append_child(oms::ssp::Draft20180219::ssd::default_experiment);
@@ -889,6 +889,10 @@ oms_status_enu_t oms::Model::importFromSnapshot(const Snapshot& snapshot)
     else if (name == oms::ssp::Draft20180219::ssd::units)
     {
       // allow importing unitDefinitions, the unitDefinitions are handled in Values.cpp importFromSnapshot
+    }
+    else if (name == oms::ssp::Draft20180219::ssd::enumerations)
+    {
+      // allow importing enumerations, the enumerationDefinitions are handled in Values.cpp importFromSnapshot
     }
     else if (name == oms::ssp::Draft20180219::ssd::default_experiment)
     {
@@ -1518,6 +1522,34 @@ void oms::Model::exportUnitDefinitionsToSSD(pugi::xml_node& node) const
       unitList.push_back(it.first);
     }
   }
+}
+
+void oms::Model::exportEnumerationDefinitionsToSSD(pugi::xml_node& node) const
+{
+  if (!system)
+    return;
+
+  std::map<std::string, std::map<std::string, std::string>> enumerationDefinitions;
+  for (const auto& component : system->getComponents())
+    component.second->getFilteredEnumerationDefinitionsToSSD(enumerationDefinitions);
+
+  if (enumerationDefinitions.empty())
+    return;
+
+  pugi::xml_node node_enumeration = node.append_child(oms::ssp::Draft20180219::ssd::enumerations);
+
+  for (const auto &it : enumerationDefinitions)
+  {
+    pugi::xml_node ssc_enumeration = node_enumeration.append_child(oms::ssp::Version1_0::ssc::enumeration_type);
+    ssc_enumeration.append_attribute("name") = it.first.c_str();
+    for (const auto & item: it.second)
+    {
+      pugi::xml_node enumItem = ssc_enumeration.append_child(oms::ssp::Version1_0::ssc::enum_item);
+      enumItem.append_attribute("name") = item.first.c_str();
+      enumItem.append_attribute("value") = item.second.c_str();
+    }
+  }
+
 }
 
 oms_status_enu_t oms::Model::importSignalFilter(const std::string& filename, const Snapshot& snapshot)

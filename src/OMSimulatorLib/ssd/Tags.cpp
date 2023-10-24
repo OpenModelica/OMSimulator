@@ -61,7 +61,7 @@ const char* oms::ssp::Draft20180219::ssd::units                        = "ssd:Un
 // version 1.0
 const char* oms::ssp::Version1_0::simulation_information               = "oms:SimulationInformation"; // simulation information must be handled in a vendor specific annotation
 const char* oms::ssp::Version1_0::FixedStepMaster                      = "oms:FixedStepMaster"; // WC-System
-const char* oms::ssp::Version1_0::VariableStepMaster                      = "oms:VariableStepMaster"; // WC-System
+const char* oms::ssp::Version1_0::VariableStepMaster                   = "oms:VariableStepMaster"; // WC-System
 const char* oms::ssp::Version1_0::VariableStepSolver                   = "oms:VariableStepSolver"; // SC-System
 const char* oms::ssp::Version1_0::oms_annotations                      = "oms:Annotations"; // root node for all oms_annotations
 const char* oms::ssp::Version1_0::oms_buses                            = "oms:Buses";
@@ -90,6 +90,7 @@ const char* oms::ssp::Version1_0::ssc::enumeration_type                = "ssc:En
 const char* oms::ssp::Version1_0::ssc::binary_type                     = "ssc:Binary";
 const char* oms::ssp::Version1_0::ssc::unit                            = "ssc:Unit";
 const char* oms::ssp::Version1_0::ssc::base_unit                       = "ssc:BaseUnit";
+const char* oms::ssp::Version1_0::ssc::enum_item                       = "ssc:Item";
 
 const char* oms::ssp::Version1_0::ssv::real_type                       = "ssv:Real";
 const char* oms::ssp::Version1_0::ssv::integer_type                    = "ssv:Integer";
