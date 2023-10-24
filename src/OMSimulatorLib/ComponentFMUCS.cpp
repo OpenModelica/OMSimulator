@@ -309,6 +309,16 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const pugi::xml_node& node, om
           if (!unitName.empty())
             component->connectors.back()->connectorUnits[unitName] = component->values.modeldescriptionUnitDefinitions[unitName];
         }
+        // set enumeration definitions
+        if ((*itConnectors).child(oms::ssp::Version1_0::ssc::enumeration_type))
+        {
+          std::string enumTypeName = (*itConnectors).child(oms::ssp::Version1_0::ssc::enumeration_type).attribute("name").as_string();
+          if (!enumTypeName.empty())
+            component->connectors.back()->enumerationName[component->connectors.back()->getName().c_str()] = enumTypeName;
+
+          // give priority to enum definitions in ssd over modeldescription.xml
+          component->values.importEnumerationDefinitions(ssdNode, enumTypeName);
+        }
       }
     }
     else if(name == oms::ssp::Draft20180219::ssd::element_geometry)

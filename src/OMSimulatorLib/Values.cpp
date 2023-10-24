@@ -1509,6 +1509,29 @@ void oms::Values::importUnitDefinitions(const pugi::xml_node& node)
   }
 }
 
+void oms::Values::importEnumerationDefinitions(const pugi::xml_node& node, std::string& enumTypename)
+{
+
+  if (!node)
+    return;
+
+  pugi::xml_node enumeration = node.child(oms::ssp::Draft20180219::ssd::enumerations);
+
+  for (pugi::xml_node enumItems = enumeration.child(oms::ssp::Version1_0::ssc::enumeration_type); enumItems; enumItems = enumItems.next_sibling(oms::ssp::Version1_0::ssc::enumeration_type))
+  {
+    // entry found
+    if (enumItems.attribute("name").as_string() == enumTypename)
+    {
+      std::map<std::string, std::string> enumerationItems;
+      for (pugi::xml_node enumItem = enumItems.child(oms::ssp::Version1_0::ssc::enum_item); enumItem; enumItem = enumItem.next_sibling(oms::ssp::Version1_0::ssc::enum_item))
+      {
+        enumerationItems[enumItem.attribute("name").as_string()] = enumItem.attribute("value").as_string();
+      }
+      modeldescriptionTypeDefinitions[enumTypename] = enumerationItems;
+    }
+  }
+}
+
 oms_status_enu_t oms::Values::parseModelDescription(const filesystem::path& root, std::string& guid_)
 {
 

@@ -103,6 +103,7 @@ namespace oms
     oms_status_enu_t exportUnitDefinitions(Snapshot &snapshot, std::string filename, std::string variantName) const;
     oms_status_enu_t exportUnitDefinitionsToSSVTemplate(Snapshot &snapshot, std::string filename);
     void importUnitDefinitions(const pugi::xml_node& node);
+    void importEnumerationDefinitions(const pugi::xml_node& node, std::string& enumTypeName);
 
     void exportToSSVTemplate(pugi::xml_node& ssvNode, const ComRef& cref);  ///< start values read from modelDescription.xml and creates a ssv template
     void exportReduceSSV(pugi::xml_node& ssvNode, const ComRef& cref);  ///< reduced SSV file which contains only the referenced crefs in parametermapping

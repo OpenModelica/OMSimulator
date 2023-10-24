@@ -15,8 +15,16 @@ oms_addSystem("model.co_sim", oms_system_wc)
 
 oms_addSubModel("model.co_sim.limiter", "../../resources/Modelica.Blocks.Nonlinear.Limiter.fmu")
 
-snapshot = oms_exportSnapshot("model")
-print(snapshot)
+-- snapshot = oms_exportSnapshot("model")
+-- print(snapshot)
+
+oms_export("model", "enumdef.ssp")
+oms_delete("model")
+
+oms_importFile("enumdef.ssp")
+
+snapshot_ = oms_exportSnapshot("model")
+print(snapshot_)
 
 
 -- Result:
