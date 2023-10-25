@@ -163,10 +163,20 @@ oms_status_enu_t oms::XercesValidator::validateSSP(const char *ssd, const std::s
   // the shared libraries are put in "install/lib/x86_64-linux-gnu/", so to find the schema location we have to move two directories back
   if (!filesystem::exists(schemaSSDPath))
   {
+    // schema path from OMSimulator standalone builds
     schemaSSDPath = schemaRootPath / "../../share/OMSimulator/schema/ssp/SystemStructureDescription.xsd";
     schemaSSVPath = schemaRootPath / "../../share/OMSimulator/schema/ssp/SystemStructureParameterValues.xsd";
     schemaSSMPath = schemaRootPath / "../../share/OMSimulator/schema/ssp/SystemStructureParameterMapping.xsd";
     schemaSSCPath = schemaRootPath / "../../share/OMSimulator/schema/ssp/SystemStructureCommon.xsd";
+  }
+
+  // search schema path from top superproject OpenModelica location, shared libs are put in "build/lib/x86_64-linux-gnu/omc/libOMSimulator.so"
+  if (!filesystem::exists(schemaSSDPath))
+  {
+    schemaSSDPath = schemaRootPath / "../../../share/OMSimulator/schema/ssp/SystemStructureDescription.xsd";
+    schemaSSVPath = schemaRootPath / "../../../share/OMSimulator/schema/ssp/SystemStructureParameterValues.xsd";
+    schemaSSMPath = schemaRootPath / "../../../share/OMSimulator/schema/ssp/SystemStructureParameterMapping.xsd";
+    schemaSSCPath = schemaRootPath / "../../../share/OMSimulator/schema/ssp/SystemStructureCommon.xsd";
   }
 
   XercesDOMParser domParser;
@@ -252,7 +262,14 @@ oms_status_enu_t oms::XercesValidator::validateFMU(const char *modeldescription,
   // the shared libraries are put in "install/lib/x86_64-linux-gnu/", so to find the schema location we have to move two directories back
   if (!filesystem::exists(schemaFmiModeldescriptionPath))
   {
+    // schema path from standalone OMSimulator build
     schemaFmiModeldescriptionPath = schemaRootPath / "../../share/OMSimulator/schema/fmi2/fmi2ModelDescription.xsd";
+  }
+
+  // schema path from top superproject OpenModelica location, shared libs are put in "build/lib/x86_64-linux-gnu/omc/libOMSimulator.so"
+  if (!filesystem::exists(schemaFmiModeldescriptionPath))
+  {
+    schemaFmiModeldescriptionPath = schemaRootPath / "../../../share/OMSimulator/schema/fmi2/fmi2ModelDescription.xsd";
   }
 
   XercesDOMParser domParser;
