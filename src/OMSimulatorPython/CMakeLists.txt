@@ -10,6 +10,17 @@ ELSE ()
   set(OMSIMULATORLIB_STRING "libOMSimulator.so")
 ENDIF ()
 
+## If OMSimulator is being built as part of OpenModelica and that is set by "OPENMODELICA_NEW_CMAKE_BUILD"
+## account for the "omc" directory added in the lib dir (lib/omc/OMSimulator versus lib/OMSimulator)
+## currently this sets the path only for windows
+## TODO fix the paths for linux
+if(OPENMODELICA_NEW_CMAKE_BUILD)
+  set(OMSIMULATOR_PYTHON_RELATIVE_DLL_DIR "../../../bin")
+else()
+  set(OMSIMULATOR_PYTHON_RELATIVE_DLL_DIR "../../bin")
+endif()
+
+
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/__init__.py" "${CMAKE_CURRENT_BINARY_DIR}/__init__.py" @ONLY)
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/capi.py" "${CMAKE_CURRENT_BINARY_DIR}/capi.py" @ONLY)
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/OMSimulatorPython3.in" "${CMAKE_CURRENT_BINARY_DIR}/OMSimulatorPython3" @ONLY)
