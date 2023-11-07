@@ -10,7 +10,7 @@ class capi:
       omslib = os.path.join(dirname, "..", "@OMSIMULATORLIB_STRING@")
 
     if os.name == 'nt': # Windows
-      omslib = os.path.join(dirname, "../../bin/", "@OMSIMULATORLIB_STRING@")
+      omslib = os.path.join(dirname, "@OMSIMULATOR_PYTHON_RELATIVE_DLL_DIR@", "@OMSIMULATORLIB_STRING@")
       dllDir = os.add_dll_directory(os.path.dirname(omslib))
     self.obj=ctypes.CDLL(omslib)
     if os.name == 'nt': # Windows
