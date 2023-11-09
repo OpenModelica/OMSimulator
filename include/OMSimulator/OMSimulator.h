@@ -89,7 +89,7 @@ OMSAPI oms_status_enu_t OMSCALL oms_exportDependencyGraphs(const char* cref, con
 OMSAPI oms_status_enu_t OMSCALL oms_exportSnapshot(const char* cref, char** contents);
 OMSAPI oms_status_enu_t OMSCALL oms_exportSSMTemplate(const char * cref, const char * filename);
 OMSAPI oms_status_enu_t OMSCALL oms_exportSSVTemplate(const char* cref, const char* filename);
-OMSAPI oms_status_enu_t OMSCALL oms_extractFMIKind(const char* filename, oms_fmi_kind_enu_t* kind);
+OMSAPI oms_status_enu_t OMSCALL oms_extractFMIKind(const char* filename, oms_fmi_kind_enu_t* kind, oms_fmu_default_experiment_settings* defaultExperiment);
 OMSAPI oms_status_enu_t OMSCALL oms_fetchExternalModelInterfaces(const char* cref, char*** names, char*** domains, int** dimensions);
 OMSAPI void OMSCALL oms_freeMemory(void* obj);
 OMSAPI oms_status_enu_t OMSCALL oms_getBoolean(const char* cref, bool* value);
