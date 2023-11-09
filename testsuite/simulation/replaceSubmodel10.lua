@@ -8,13 +8,14 @@
 
 oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./replacesubmodel_10_lua/")
+oms_setWorkingDirectory("./replacesubmodel_10_lua/")
 
 oms_newModel("model")
 
 oms_addSystem("model.root", oms_system_wc)
 
-oms_addSubModel("model.root.A", "../resources/replaceA.fmu")
-oms_addSubModel("model.root.B", "../resources/replaceB.fmu")
+oms_addSubModel("model.root.A", "../../resources/replaceA.fmu")
+oms_addSubModel("model.root.B", "../../resources/replaceB.fmu")
 
 oms_newResources("model.root:root.ssv")
 
@@ -45,7 +46,7 @@ oms_delete("model")
 oms_importFile("replaceSubmodel10.ssp")
 
 -- reimport the old snapshot and replacing is not done
-oms_replaceSubModel("model.root.A", "../resources/replaceA_extended.fmu", true)
+oms_replaceSubModel("model.root.A", "../../resources/replaceA_extended.fmu", true)
 src, status = oms_exportSnapshot("model")
 print(src)
 

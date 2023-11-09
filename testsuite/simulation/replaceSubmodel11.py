@@ -11,13 +11,14 @@ oms = OMSimulator()
 
 oms.setCommandLineOption("--suppressPath=true")
 oms.setTempDirectory("./replacesubmodel_11_py/")
+oms.setWokringDirectory("./replacesubmodel_11_py/")
 
 oms.newModel("model")
 
 oms.addSystem("model.root", oms.system_wc)
 
-oms.addSubModel("model.root.A", "../resources/Modelica.Blocks.Sources.Sine.fmu")
-oms.addSubModel("model.root.B", "../resources/Modelica.Blocks.Math.Gain.fmu")
+oms.addSubModel("model.root.A", "../../resources/Modelica.Blocks.Sources.Sine.fmu")
+oms.addSubModel("model.root.B", "../../resources/Modelica.Blocks.Math.Gain.fmu")
 
 ## add connections
 oms.addConnection("model.root.A.y", "model.root.B.u")
@@ -33,7 +34,7 @@ oms.delete("model")
 
 oms.importFile("replaceSubmodel11.ssp")
 
-oms.replaceSubModel("model.root.B", "../resources/Modelica.Blocks.Math.Gain.fmu", False)
+oms.replaceSubModel("model.root.B", "../../resources/Modelica.Blocks.Math.Gain.fmu", False)
 
 src, status = oms.exportSnapshot("model")
 print(src)

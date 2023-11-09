@@ -11,13 +11,14 @@ oms = OMSimulator()
 
 oms.setCommandLineOption("--suppressPath=true")
 oms.setTempDirectory("./replacesubmodel_07_py/")
+oms.setWorkingDirectory("./replacesubmodel_07_py/")
 
 oms.newModel("model")
 
 oms.addSystem("model.root", oms.system_wc)
 
-oms.addSubModel("model.root.A", "../resources/replaceA.fmu")
-oms.addSubModel("model.root.B", "../resources/replaceB.fmu")
+oms.addSubModel("model.root.A", "../../resources/replaceA.fmu")
+oms.addSubModel("model.root.B", "../../resources/replaceB.fmu")
 
 oms.newResources("model.root:root.ssv")
 
@@ -47,7 +48,7 @@ oms.delete("model")
 
 oms.importFile("replaceSubmodel7.ssp")
 
-oms.replaceSubModel("model.root.A", "../resources/replaceA_extended.fmu", False)
+oms.replaceSubModel("model.root.A", "../../resources/replaceA_extended.fmu", False)
 src, status = oms.exportSnapshot("model")
 print(src)
 

@@ -8,15 +8,16 @@
 
 oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./replacesubmodel_03_lua/")
+oms_setWorkingDirectory("./replacesubmodel_03_lua/")
 
 oms_newModel("model")
 
 oms_addSystem("model.root", oms_system_wc)
 
-oms_addSubModel("model.root.A", "../resources/replaceA.fmu")
+oms_addSubModel("model.root.A", "../../resources/replaceA.fmu")
 oms_newResources("model.root.A:replaceA.ssv")
 
-oms_addSubModel("model.root.B", "../resources/replaceB.fmu")
+oms_addSubModel("model.root.B", "../../resources/replaceB.fmu")
 oms_newResources("model.root.B:replaceB.ssv")
 
 oms_setReal("model.root.A.u", 10.0)
@@ -45,7 +46,7 @@ oms_delete("model")
 
 oms_importFile("replaceSubmodel3.ssp")
 
-oms_replaceSubModel("model.root.A", "../resources/replaceA_extended.fmu", false)
+oms_replaceSubModel("model.root.A", "../../resources/replaceA_extended.fmu", false)
 src, status = oms_exportSnapshot("model")
 print(src)
 

@@ -8,8 +8,9 @@
 
 oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./replacesubmodel_04_lua/")
+oms_setWorkingDirectory("./replacesubmodel_04_lua/")
 
-oms_importFile("../resources/replaceSubmodel4.ssp")
+oms_importFile("../../resources/replaceSubmodel4.ssp")
 
 src, status = oms_exportSnapshot("model")
 print(src)
@@ -21,7 +22,7 @@ print("info:      model.root.B.u      : " .. oms_getReal("model.root.B.u"))
 print("info:      model.root.B.u1     : " .. oms_getReal("model.root.B.u1"))
 print("info:      model.root.B.z      : " .. oms_getReal("model.root.B.z"))
 
-oms_replaceSubModel("model.root.A", "../resources/replaceA_extended.fmu", false)
+oms_replaceSubModel("model.root.A", "../../resources/replaceA_extended.fmu", false)
 
 src, status = oms_exportSnapshot("model")
 print(src)
