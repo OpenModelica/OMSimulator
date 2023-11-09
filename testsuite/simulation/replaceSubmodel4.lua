@@ -291,7 +291,7 @@ oms_delete("model")
 -- info:      model.root.B.u1     : -13.0
 -- info:      model.root.B.z      : -15.0
 -- error:   [getVariable] Unknown signal "model.root.A.dummy"
--- warning: deleting connection "A.dummy ==> B.u1", as signal "dummy" couldn't be resolved to any signal in the replaced submodel "../resources/replaceA_extended.fmu"
+-- warning: deleting connection "A.dummy ==> B.u1", as signal "dummy" couldn't be resolved to any signal in the replaced submodel "../../resources/replaceA_extended.fmu"
 -- warning: deleting start value "A.t" in "resources/root.ssm" resources, because the identifier couldn't be resolved to any system signal in the replacing model
 -- warning: deleting start value "A.t" in "resources/root.ssv" resources, because the identifier couldn't be resolved to any system signal in the replacing model
 -- <?xml version="1.0"?>

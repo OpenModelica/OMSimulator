@@ -11,7 +11,7 @@ oms = OMSimulator()
 
 oms.setCommandLineOption("--suppressPath=true")
 oms.setTempDirectory("./replacesubmodel_11_py/")
-oms.setWokringDirectory("./replacesubmodel_11_py/")
+oms.setWorkingDirectory("./replacesubmodel_11_py/")
 
 oms.newModel("model")
 

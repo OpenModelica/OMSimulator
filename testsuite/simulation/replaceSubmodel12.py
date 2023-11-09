@@ -45,7 +45,7 @@ oms.delete("model")
 
 ## Result:
 ## error:   [getVariable] Unknown signal "model.root.B.u"
-## warning: deleting connection "A.y ==> B.u", as signal "u" couldn't be resolved to any signal in the replaced submodel "../resources/Modelica.Blocks.Sources.Step.fmu"
+## warning: deleting connection "A.y ==> B.u", as signal "u" couldn't be resolved to any signal in the replaced submodel "../../resources/Modelica.Blocks.Sources.Step.fmu"
 ## <?xml version="1.0"?>
 ## <oms:snapshot
 ##   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
