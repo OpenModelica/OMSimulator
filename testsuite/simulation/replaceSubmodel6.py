@@ -11,13 +11,14 @@ oms = OMSimulator()
 
 oms.setCommandLineOption("--suppressPath=true")
 oms.setTempDirectory("./replacesubmodel_06_py/")
+oms.setWorkingDirectory("./replacesubmodel_06_py/")
 
 oms.newModel("model")
 
 oms.addSystem("model.root", oms.system_wc)
 
-oms.addSubModel("model.root.A", "../resources/replaceA.fmu")
-oms.addSubModel("model.root.B", "../resources/replaceB.fmu")
+oms.addSubModel("model.root.A", "../../resources/replaceA.fmu")
+oms.addSubModel("model.root.B", "../../resources/replaceB.fmu")
 
 oms.setReal("model.root.A.u", 10.0)
 oms.setReal("model.root.A.t", -10.0)
@@ -45,7 +46,7 @@ oms.delete("model")
 
 oms.importFile("replaceSubmodel6.ssp")
 
-oms.replaceSubModel("model.root.A", "../resources/replaceA_extended.fmu", False)
+oms.replaceSubModel("model.root.A", "../../resources/replaceA_extended.fmu", False)
 
 src, status = oms.exportSnapshot("model")
 print(src)
@@ -81,7 +82,7 @@ oms.delete("model")
 
 ## Result:
 ## error:   [getVariable] Unknown signal "model.root.A.dummy"
-## warning: deleting connection "A.dummy ==> B.u1", as signal "dummy" couldn't be resolved to any signal in the replaced submodel "../resources/replaceA_extended.fmu"
+## warning: deleting connection "A.dummy ==> B.u1", as signal "dummy" couldn't be resolved to any signal in the replaced submodel "../../resources/replaceA_extended.fmu"
 ## warning: deleting start value "A.t" in "inline" resources, because the identifier couldn't be resolved to any system signal in the replacing model
 ## <?xml version="1.0"?>
 ## <oms:snapshot

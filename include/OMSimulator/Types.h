@@ -532,6 +532,16 @@ typedef struct {
   unsigned int maxOutputDerivativeOrder;
 } oms_fmu_info_t;
 
+/*
+ *  FMU default experiment settings from modeldescription.xml
+*/
+typedef struct {
+  double startTime; // default startTime for simulation
+  double stopTime; // default stoptTime for simulation
+  double tolerance; // default relative integration tolerance
+  double stepSize; // default stepSize
+} oms_fmu_default_experiment_settings;
+
 /**
  * \brief External model specific attributes
  */
