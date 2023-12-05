@@ -65,6 +65,10 @@ void oms::Flags::setDefaults()
 {
   addParametersToCSV = false;
   algLoopSolver = oms_alg_solver_kinsol;
+  cvodeMaxErrTestFails = 100;
+  cvodeMaxNLSFails = 100;
+  cvodeMaxNLSIterations = 5;
+  cvodeMaxSteps = 1000;
   defaultModeIsCS = false;
   deleteTempFiles = true;
   directionalDerivatives = true;
@@ -200,6 +204,30 @@ oms_status_enu_t oms::Flags::AlgLoopSolver(const std::string& value)
 oms_status_enu_t oms::Flags::ClearAllOptions(const std::string& value)
 {
   GetInstance().setDefaults();
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Flags::CVODEMaxErrTestFails(const std::string& value)
+{
+  GetInstance().cvodeMaxErrTestFails = atoi(value.c_str());
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Flags::CVODEMaxNLSFailures(const std::string& value)
+{
+  GetInstance().cvodeMaxNLSFails = atoi(value.c_str());
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Flags::CVODEMaxNLSIterations(const std::string& value)
+{
+  GetInstance().cvodeMaxNLSIterations = atoi(value.c_str());
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Flags::CVODEMaxSteps(const std::string& value)
+{
+  GetInstance().cvodeMaxSteps = atoi(value.c_str());
   return oms_status_ok;
 }
 
