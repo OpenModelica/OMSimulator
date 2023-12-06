@@ -56,6 +56,10 @@ namespace oms
     static oms_status_enu_t SetCommandLineOption(const std::string& cmd);
 
     static bool AddParametersToCSV() {return GetInstance().addParametersToCSV;}
+    static int CVODEMaxErrTestFails() {return GetInstance().cvodeMaxErrTestFails;}
+    static int CVODEMaxNLSFailures() {return GetInstance().cvodeMaxNLSFails;}
+    static int CVODEMaxNLSIterations() {return GetInstance().cvodeMaxNLSIterations;}
+    static int CVODEMaxSteps() {return GetInstance().cvodeMaxSteps;}
     static bool DefaultModeIsCS() {return GetInstance().defaultModeIsCS;}
     static bool DeleteTempFiles() {return GetInstance().deleteTempFiles;}
     static bool DirectionalDerivatives() {return GetInstance().directionalDerivatives;}
@@ -89,6 +93,10 @@ namespace oms
 
   private:
     bool addParametersToCSV;
+    int cvodeMaxErrTestFails;
+    int cvodeMaxNLSFails;
+    int cvodeMaxNLSIterations;
+    int cvodeMaxSteps;
     bool defaultModeIsCS;
     bool deleteTempFiles;
     bool directionalDerivatives;
@@ -148,6 +156,10 @@ namespace oms
       {"--addParametersToCSV", "", "Export parameters to .csv file (true, [false])", re_default, Flags::AddParametersToCSV, false},
       {"--algLoopSolver", "", "Specifies the alg. loop solver method (fixedpoint, [kinsol]) used for algebraic loops spanning over multiple components.", re_default, Flags::AlgLoopSolver, false},
       {"--clearAllOptions", "", "Reset all flags to default values", re_void, Flags::ClearAllOptions, false},
+      {"--CVODEMaxErrTestFails", "", "Maximum number of error test failures for CVODE", re_number, Flags::CVODEMaxErrTestFails, false},
+      {"--CVODEMaxNLSFailures", "", "Maximum number of nonlinear convergence failures for CVODE", re_number, Flags::CVODEMaxNLSFailures, false},
+      {"--CVODEMaxNLSIterations", "", "Maximum number of nonlinear solver iterations for CVODE", re_number, Flags::CVODEMaxNLSIterations, false},
+      {"--CVODEMaxSteps", "", "Maximum number of steps for CVODE", re_number, Flags::CVODEMaxSteps, false},
       {"--deleteTempFiles", "", "Deletes temp files as soon as they are no longer needed ([true], false)", re_bool, Flags::DeleteTempFiles, false},
       {"--directionalDerivatives", "", "Specifies whether directional derivatives should be used to calculate the Jacobian for alg. loops or if a numerical approximation should be used instead ([true], false)", re_bool, Flags::DirectionalDerivatives, false},
       {"--dumpAlgLoops", "", "Dump information for alg loops (true, [false])", re_bool, Flags::DumpAlgLoops, false},
@@ -186,6 +198,10 @@ namespace oms
     static oms_status_enu_t AddParametersToCSV(const std::string& value);
     static oms_status_enu_t AlgLoopSolver(const std::string& value);
     static oms_status_enu_t ClearAllOptions(const std::string& value);
+    static oms_status_enu_t CVODEMaxErrTestFails(const std::string& value);
+    static oms_status_enu_t CVODEMaxNLSFailures(const std::string& value);
+    static oms_status_enu_t CVODEMaxNLSIterations(const std::string& value);
+    static oms_status_enu_t CVODEMaxSteps(const std::string& value);
     static oms_status_enu_t DeleteTempFiles(const std::string& value);
     static oms_status_enu_t DirectionalDerivatives(const std::string& value);
     static oms_status_enu_t DumpAlgLoops(const std::string& value);
