@@ -345,6 +345,25 @@ EXIT /b 1
           }
         }
 
+        stage('ucrt64-clang') {
+          agent {
+            label 'omsimulator-windows'
+          }
+          environment {
+            OMDEV = "C:\\OMDev"
+            OMDEV_MSYS = "${env.OMDEV}\\tools\\msys"
+            MSYSTEM_DIR_PREFIX = "ucrt64"
+            PATH = "${env.PATH};${env.OMDEV_MSYS}\\${env.MSYSTEM_DIR_PREFIX}\\bin\\;${env.OMDEV_MSYS}\\usr\\bin;C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;"
+            CC="clang"
+            CXX="clang++"
+            MSYSTEM = "MINGW64"
+            VERBOSE = '1'
+          }
+
+          steps {
+             buildOMS()
+          }
+        }
 
         stage('msvc64') {
           stages {
