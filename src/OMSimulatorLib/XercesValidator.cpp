@@ -179,11 +179,21 @@ oms_status_enu_t oms::XercesValidator::validateSSP(const char *ssd, const std::s
     schemaSSCPath = schemaRootPath / "../../../share/OMSimulator/schema/ssp/SystemStructureCommon.xsd";
   }
 
+  //check schema path location in python pip package, the schemas are copied to "OMSimulator/schema"
+  if (!filesystem::exists(schemaSSDPath))
+  {
+    schemaSSDPath = schemaRootPath / "schema/ssp/SystemStructureDescription.xsd";
+    schemaSSVPath = schemaRootPath / "schema/ssp/SystemStructureParameterValues.xsd";
+    schemaSSMPath = schemaRootPath / "schema/ssp/SystemStructureParameterMapping.xsd";
+    schemaSSCPath = schemaRootPath / "schema/ssp/SystemStructureCommon.xsd";
+  }
+
+
   XercesDOMParser domParser;
 
   // load the schema
   if (domParser.loadGrammar(schemaSSDPath.generic_string().c_str(), Grammar::SchemaGrammarType) == NULL)
-    return logError("could not load the ssd schema file: " + filesystem::absolute(schemaSSDPath).generic_string());
+    return logWarning("could not load the ssd schema file: " + filesystem::absolute(schemaSSDPath).generic_string() + ", hence validation of ssd file will not be perfomed according to SSP Standard");
 
   std::string sspVariant = "";
 
@@ -272,11 +282,17 @@ oms_status_enu_t oms::XercesValidator::validateFMU(const char *modeldescription,
     schemaFmiModeldescriptionPath = schemaRootPath / "../../../share/OMSimulator/schema/fmi2/fmi2ModelDescription.xsd";
   }
 
+  //check schema path location in python pip package, the schemas are copied to "OMSimulator/schema"
+  if (!filesystem::exists(schemaFmiModeldescriptionPath))
+  {
+    schemaFmiModeldescriptionPath = schemaRootPath / "schema/fmi2/fmi2ModelDescription.xsd";
+  }
+
   XercesDOMParser domParser;
 
   // load the schema
   if (domParser.loadGrammar(schemaFmiModeldescriptionPath.generic_string().c_str(), Grammar::SchemaGrammarType) == NULL)
-    return logError("could not load the ssd schema file: " + filesystem::absolute(schemaFmiModeldescriptionPath).generic_string());
+    return logWarning("could not load the FMI schema file: " + filesystem::absolute(schemaFmiModeldescriptionPath).generic_string() + ", hence validation of \"modeldescription.xml\" with FMI 2.0 standard will not be performed");
 
   ParserErrorHandler parserErrorHandler("modeldescription.xml", filePath.c_str());
 
