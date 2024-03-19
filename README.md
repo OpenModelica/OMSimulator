@@ -127,7 +127,7 @@ The testsuite of OMSimulator is run on Jenkins for every commit and creating
 [test reports](https://test.openmodelica.org/jenkins/job/OMSimulator/job/master/lastSuccessfulBuild/testReport/).
 The project is tested for the following OS:
    - linux64 without OMPython
-   - mingw64
+   - mingw-ucrt64
    - msvc64
    - cross-compiled OSX
 
