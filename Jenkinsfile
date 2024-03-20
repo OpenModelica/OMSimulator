@@ -215,7 +215,10 @@ pipeline {
                 label 'M1'
               }
               environment {
-                PATH="/opt/homebrew/bin:/opt/homebrew/opt/openjdk/bin:/usr/local/bin:${env.PATH}"
+                PATH="/opt/homebrew/bin:/opt/homebrew/opt/openjdk/bin:/opt/homebrew/opt/icu4c/bin:/opt/homebrew/opt/icu4c/sbin:/usr/local/bin:${env.PATH}"                
+                PKG_CONFIG_PATH="/opt/homebrew/opt/icu4c/lib/pkgconfig"
+                LDFLAGS="-L/opt/homebrew/opt/icu4c/lib"
+                CPPFLAGS="-I/opt/homebrew/opt/icu4c/include"
               }
               steps {
                 buildOMS()
