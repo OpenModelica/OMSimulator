@@ -1,7 +1,7 @@
 -- status: correct
 -- teardown_command: rm -rf multiple_instance_lua/
 -- linux: no
--- ucrt64: no
+-- ucrt64: yes
 -- win: no
 -- mac: no
 
