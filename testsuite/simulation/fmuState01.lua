@@ -2,7 +2,7 @@
 -- teardown_command: rm -rf fmuState_lua/
 -- linux: no
 -- mac: no
--- ucrt64: no
+-- ucrt64: yes
 -- win: no
 
 oms_setCommandLineOption("--suppressPath=true")

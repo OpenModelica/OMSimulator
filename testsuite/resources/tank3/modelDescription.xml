@@ -2,10 +2,10 @@
 <fmiModelDescription
   fmiVersion="2.0"
   modelName="tank3"
-  guid="{d0df5a3c-8fa5-44ac-a7a9-583216eea9be}"
+  guid="{23d183a6-2f89-4259-9f09-e3cefa395b72}"
   description=""
-  generationTool="OpenModelica Compiler OpenModelica v1.20.0-dev-101-g55feca18f5 (64-bit)"
-  generationDateAndTime="2022-05-27T12:57:16Z"
+  generationTool="OpenModelica Compiler v1.23.0-dev-385-gb786a4f951-cmake"
+  generationDateAndTime="2024-03-20T15:42:18Z"
   variableNamingConvention="structured"
   numberOfEventIndicators="0">
   <CoSimulation
@@ -18,7 +18,7 @@
     canBeInstantiatedOnlyOncePerProcess="false"
     canNotUseMemoryManagementFunctions="false"
     canGetAndSetFMUstate="true"
-    canSerializeFMUstate="false"
+    canSerializeFMUstate="true"
     providesDirectionalDerivative="true">
     <SourceFiles>
       <File name="tank3.c" />
@@ -44,16 +44,16 @@
       <File name="tank3_18spd.c" />
       <File name="tank3_init_fmu.c" />
       <File name="tank3_FMU.c" />
-      <File name="gc/memory_pool.c" />
-      <File name="gc/omc_gc.c" />
+      <File name="./gc/memory_pool.c" />
+      <File name="./gc/omc_gc.c" />
       <File name="./util/base_array.c" />
       <File name="./util/boolean_array.c" />
+      <File name="./util/context.c" />
       <File name="./util/division.c" />
       <File name="./util/doubleEndedList.c" />
       <File name="./util/generic_array.c" />
       <File name="./util/index_spec.c" />
       <File name="./util/integer_array.c" />
-      <File name="./util/jacobian_util.c" />
       <File name="./util/list.c" />
       <File name="./util/modelica_string_lit.c" />
       <File name="./util/modelica_string.c" />
@@ -73,6 +73,7 @@
       <File name="./util/utility.c" />
       <File name="./util/varinfo.c" />
       <File name="./math-support/pivot.c" />
+      <File name="./simulation/jacobian_util.c" />
       <File name="./simulation/omc_simulation_util.c" />
       <File name="./simulation/options.c" />
       <File name="./simulation/simulation_info_json.c" />
@@ -101,7 +102,7 @@
     <Category name="logAll" description="logAll" />
     <Category name="logFmi2Call" description="logFmi2Call" />
   </LogCategories>
-  <DefaultExperiment startTime="0.0" stopTime="100.0" tolerance="1e-06"/>
+  <DefaultExperiment startTime="0.0" stopTime="100.0" tolerance="1e-6" stepSize="0.2"/>
   <ModelVariables>
   <!-- Index of variable = "1" -->
   <ScalarVariable
