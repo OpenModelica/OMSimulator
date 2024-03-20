@@ -9,7 +9,9 @@ pipeline {
   }
   parameters {
     booleanParam(name: 'MSVC64', defaultValue: true, description: 'Build with MSVC64 (often hangs)')
+    booleanParam(name: 'LINUX', defaultValue: true, description: 'Build with LINUX')
     booleanParam(name: 'MINGW_UCRT64', defaultValue: true, description: 'Build with MINGW/UCRT64')
+    booleanParam(name: 'MINGW_UCRT64_CLANG', defaultValue: true, description: 'Build with MINGW/UCRT64 with clang')
     booleanParam(name: 'MACOS_ARM64', defaultValue: false, description: 'Build with macOS-arm64 (M1 mac)')
     booleanParam(name: 'LINUX64_ASAN', defaultValue: false, description: 'Build with linux64 asan')
     booleanParam(name: 'SUBMODULE_UPDATE', defaultValue: false, description: 'Allow pull request to update submodules (disabled by default due to common user errors)')
@@ -32,6 +34,10 @@ pipeline {
     stage('build') {
       parallel {
         stage('linux64') {
+          when {
+            expression { return params.LINUX }
+            beforeAgent true
+          }
           agent {
             dockerfile {
               additionalBuildArgs '--pull'
@@ -118,6 +124,10 @@ pipeline {
           }
         }
         stage('alpine') {
+          when {
+            expression { return params.LINUX }
+            beforeAgent true
+          }
           agent {
             dockerfile {
               additionalBuildArgs '--pull'
@@ -335,6 +345,10 @@ EXIT /b 1
         }
 
         stage('mingw-ucrt64-clang') {
+          when {
+            expression { return params.MINGW_UCRT64_CLANG }
+            beforeAgent true
+          }
           agent {
             label 'omsimulator-windows'
           }
@@ -510,10 +524,10 @@ EXIT /b 1
           }
           steps {
             unstash name: 'amd64-zip'         // includes: "OMSimulator-linux-amd64-*.tar.gz"
-            unstash name: 'arm32-zip'         // includes: "OMSimulator-linux-arm32-*.tar.gz"
+            // unstash name: 'arm32-zip'         // includes: "OMSimulator-linux-arm32-*.tar.gz"
             unstash name: 'mingw-ucrt64-zip'  // includes: "OMSimulator-mingw-ucrt64-*.zip"
             unstash name: 'win64-zip'         // includes: "OMSimulator-win64-*.zip"
-            unstash name: 'osx-zip'           // includes: "OMSimulator-osx-*.zip"
+            // unstash name: 'osx-zip'           // includes: "OMSimulator-osx-*.zip"
 
             sh "ls *.zip *.tar.gz"
 
@@ -522,18 +536,18 @@ EXIT /b 1
                 sshPublisherDesc(
                   configName: 'OMSimulator',
                   transfers: [
-                    sshTransfer(
-                      remoteDirectory: "${DEPLOYMENT_PREFIX}linux-arm32/",
-                      sourceFiles: 'OMSimulator-linux-arm32-*.tar.gz'),
+                    //sshTransfer(
+                    //  remoteDirectory: "${DEPLOYMENT_PREFIX}linux-arm32/",
+                    //  sourceFiles: 'OMSimulator-linux-arm32-*.tar.gz'),
                     sshTransfer(
                       remoteDirectory: "${DEPLOYMENT_PREFIX}linux-amd64/",
                       sourceFiles: 'OMSimulator-linux-amd64-*.tar.gz'),
                     sshTransfer(
                       remoteDirectory: "${DEPLOYMENT_PREFIX}win-mingw-ucrt64/",
                       sourceFiles: 'OMSimulator-mingw-ucrt64-*.zip'),
-                    sshTransfer(
-                      remoteDirectory: "${DEPLOYMENT_PREFIX}osx/",
-                      sourceFiles: 'OMSimulator-osx-*.zip'),
+                    //sshTransfer(
+                    //  remoteDirectory: "${DEPLOYMENT_PREFIX}osx/",
+                    //  sourceFiles: 'OMSimulator-osx-*.zip'),
                     sshTransfer(
                       remoteDirectory: "${DEPLOYMENT_PREFIX}win-msvc64/",
                       sourceFiles: 'OMSimulator-win64-*.zip')
@@ -595,6 +609,16 @@ def isWindows() {
   return !isUnix()
 }
 
+def isMac() {
+  if (isUnix()) {
+    def uname = sh script: 'uname', returnStdout: true
+    if (uname.startsWith("Darwin")) {
+      return true
+    }
+  }
+  return false
+}
+
 void buildOMS() {
   if (isWindows()) {
     bat ("""
@@ -622,8 +646,15 @@ void buildOMS() {
     echo "running on node: ${env.NODE_NAME}"
     def nproc = numPhysicalCPU()
     sh "git fetch --tags"
-    sh "cmake -S . -B build/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/ -DOM_OMS_ENABLE_TESTSUITE:BOOL=ON"
-    sh "cmake --build build/ --parallel ${nproc} --target install -v"
+    if (isMac()) {
+      sh('''#!/bin/zsh -l
+       cmake -S . -B build/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/ -DOM_OMS_ENABLE_TESTSUITE:BOOL=ON
+       cmake --build build/ --parallel ${nproc} --target install -v
+       ''')
+    } else {
+      sh "cmake -S . -B build/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/ -DOM_OMS_ENABLE_TESTSUITE:BOOL=ON"
+      sh "cmake --build build/ --parallel ${nproc} --target install -v"
+    }
   }
 }
 
@@ -680,6 +711,10 @@ def shouldWeBuildMINGW() {
 }
 
 def shouldWeBuildMacOSArm64() {
+  /* M1 Mac takes 4h to do a 10 seconds cmake configure!!!!!
+   * disable the M1 until we find out what the issue is
+   */
+  return false
   if (isPR()) {
     if (pullRequest.labels.contains("CI/macOS-arm64")) {
       return true
