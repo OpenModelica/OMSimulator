@@ -1,8 +1,7 @@
 -- status: correct
 -- teardown_command: rm -rf tankypipe_lua/
 -- linux: no
--- mingw32: no
--- mingw64: yes
+-- ucrt64: no
 -- win: no
 -- mac: no
 

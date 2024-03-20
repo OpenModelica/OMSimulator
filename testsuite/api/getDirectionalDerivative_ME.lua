@@ -1,8 +1,7 @@
 -- status: correct
 -- teardown_command: rm -rf getDirectionalDerivative_ME_lua/
 -- linux: no
--- mingw32: no
--- mingw64: yes
+-- ucrt64: yes
 -- win: yes
 -- mac: no
 

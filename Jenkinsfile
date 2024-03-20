@@ -9,11 +9,11 @@ pipeline {
   }
   parameters {
     booleanParam(name: 'MSVC64', defaultValue: true, description: 'Build with MSVC64 (often hangs)')
-    booleanParam(name: 'MINGW32', defaultValue: false, description: 'Build with MINGW32')
+    booleanParam(name: 'MINGW_UCRT64', defaultValue: true, description: 'Build with MINGW/UCRT64')
     booleanParam(name: 'MACOS_ARM64', defaultValue: false, description: 'Build with macOS-arm64 (M1 mac)')
     booleanParam(name: 'LINUX64_ASAN', defaultValue: false, description: 'Build with linux64 asan')
     booleanParam(name: 'SUBMODULE_UPDATE', defaultValue: false, description: 'Allow pull request to update submodules (disabled by default due to common user errors)')
-    booleanParam(name: 'UPLOAD_BUILD_OPENMODELICA', defaultValue: false, description: 'Upload install artifacts to build.openmodelica.org/omsimulator. Activates MINGW32 as well.')
+    booleanParam(name: 'UPLOAD_BUILD_OPENMODELICA', defaultValue: false, description: 'Upload install artifacts to build.openmodelica.org/omsimulator. Activates MINGW_UCRT64 as well.')
     string(name: 'RUNTESTS_FLAG', defaultValue: '', description: 'runtests.pl flag')
   }
   stages {
@@ -248,84 +248,10 @@ pipeline {
         }
 
 
-        stage('mingw64-gcc') {
-          stages {
-            stage('build') {
-              agent {
-                label 'omsimulator-windows'
-              }
-              environment {
-                PATH = "${env.PATH};C:\\OMDev\\tools\\msys\\mingw64\\bin\\;C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;"
-                OMDEV = "/c/OMDev"
-                CC = "gcc"
-                CXX = "g++"
-                MSYSTEM = "MINGW64"
-                VERBOSE = '1'
-              }
-              steps {
-                bat 'hostname'
-
-                buildOMS()
-
-                writeFile file: "buildZip64.sh", text: """#!/bin/sh
-                set -x -e
-                export PATH="/c/Program Files/TortoiseSVN/bin/:/c/bin/jdk/bin:/c/bin/nsis/:\$PATH:/c/bin/git/bin"
-                cd "${env.WORKSPACE}/install/"
-                zip -r "../OMSimulator-mingw64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *
-                """
-
-                bat """
-                C:\\OMDev\\tools\\msys\\usr\\bin\\sh --login -i '${env.WORKSPACE}/buildZip64.sh'
-                """
-
-                archiveArtifacts "OMSimulator-mingw64*.zip"
-                stash name: 'mingw64-zip', includes: "OMSimulator-mingw64-*.zip"
-                stash name: 'mingw64-install', includes: "install/**"
-              }
-            }
-            stage('test') {
-              agent {
-                label 'omsimulator-windows'
-              }
-              environment {
-                PATH = "${env.PATH};C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;C:\\OMDev\\tools\\msys\\mingw64\\bin\\"
-                OMDEV = "/c/OMDev"
-                MSYSTEM = "MINGW64"
-                RUNTESTDB="${env.HOME}/jenkins-cache/runtest/"
-              }
-              steps {
-                unstash name: 'mingw64-install'
-
-                bat 'hostname'
-                writeFile file: "testMingw64-install.sh", text:"""#!/bin/sh
-set -x -e
-cd "${env.WORKSPACE}"
-export PATH="/c/Program Files/TortoiseSVN/bin/:/c/bin/jdk/bin:/c/bin/nsis/:\$PATH:/c/bin/git/bin"
-make -C testsuite difftool resources
-cp -f "${env.RUNTESTDB}/"* testsuite/ || true
-find testsuite/ -name "*.lua" -exec sed -i /teardown_command/d {} ";"
-cd testsuite/partest
-./runtests.pl -j\$(nproc) -nocolour -with-xml ${params.RUNTESTS_FLAG}
-"""
-                bat """
-set PATH=C:\\bin\\cmake\\bin;%PATH%
-C:\\OMDev\\tools\\msys\\usr\\bin\\sh --login -i '${env.WORKSPACE}/testMingw64-install.sh'
-EXIT /b 0
-:fail
-ECHO Something went wrong!
-EXIT /b 1
-"""
-
-                junit 'testsuite/partest/result.xml'
-              }
-            }
-          }
-        }
-
-        stage('mingw32-gcc') {
+        stage('mingw-ucrt64-gcc') {
           when {
             anyOf {
-              expression { return shouldWeBuildMINGW32() }
+              expression { return shouldWeBuildMINGW() }
               expression { return shouldWeUploadArtifacts() }
               buildingTag()
             }
@@ -337,31 +263,32 @@ EXIT /b 1
                 label 'omsimulator-windows'
               }
               environment {
-                PATH = "${env.PATH};C:\\OMDev\\tools\\msys\\mingw32\\bin\\;C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;"
-                OMDEV = "/c/OMDev"
+                PATH = "C:\\OMDevUCRT\\tools\\msys\\ucrt64\\bin;C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;${env.PATH};"
+                OMDEV = "/c/OMDevUCRT"
                 CC = "gcc"
                 CXX = "g++"
-                MSYSTEM = "MINGW32"
+                MSYSTEM = "UCRT64"
                 VERBOSE = '1'
               }
               steps {
+                bat 'hostname'
+
                 buildOMS()
 
-                writeFile file: "buildZip32.sh", text: """#!/bin/sh
+                writeFile file: "buildZip64.sh", text: """#!/bin/sh
                 set -x -e
                 export PATH="/c/Program Files/TortoiseSVN/bin/:/c/bin/jdk/bin:/c/bin/nsis/:\$PATH:/c/bin/git/bin"
                 cd "${env.WORKSPACE}/install/"
-                zip -r "../OMSimulator-mingw32-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *
+                zip -r "../OMSimulator-mingw-ucrt64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *
                 """
 
                 bat """
-                C:\\OMDev\\tools\\msys\\usr\\bin\\sh --login -i '${env.WORKSPACE}/buildZip32.sh'
-                EXIT /b 0
+                C:\\OMDevUCRT\\tools\\msys\\usr\\bin\\sh --login -i '${env.WORKSPACE}/buildZip64.sh'
                 """
 
-                archiveArtifacts "OMSimulator-mingw32*.zip"
-                stash name: 'mingw32-zip', includes: "OMSimulator-mingw32-*.zip"
-                stash name: 'mingw32-install', includes: "install/**"
+                archiveArtifacts "OMSimulator-mingw-ucrt64*.zip"
+                stash name: 'mingw-ucrt64-zip', includes: "OMSimulator-mingw-ucrt64-*.zip"
+                stash name: 'mingw-ucrt64-install', includes: "install/**"
               }
             }
             stage('test') {
@@ -369,16 +296,16 @@ EXIT /b 1
                 label 'omsimulator-windows'
               }
               environment {
-                PATH = "${env.PATH};C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;C:\\OMDev\\tools\\msys\\mingw32\\bin\\"
-                OMDEV = "/c/OMDev"
-                MSYSTEM = "MINGW32"
+                PATH = "C:\\OMDevUCRT\\tools\\msys\\ucrt64\\bin;C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;${env.PATH};"
+                OMDEV = "/c/OMDevUCRT"
+                MSYSTEM = "UCRT64"
                 RUNTESTDB="${env.HOME}/jenkins-cache/runtest/"
               }
               steps {
-                unstash name: 'mingw32-install'
+                unstash name: 'mingw-ucrt64-install'
 
                 bat 'hostname'
-                writeFile file: "testMingw32-install.sh", text:"""#!/bin/sh
+                writeFile file: "testMinGWUCRT64-install.sh", text:"""#!/bin/sh
 set -x -e
 cd "${env.WORKSPACE}"
 export PATH="/c/Program Files/TortoiseSVN/bin/:/c/bin/jdk/bin:/c/bin/nsis/:\$PATH:/c/bin/git/bin"
@@ -386,11 +313,12 @@ make -C testsuite difftool resources
 cp -f "${env.RUNTESTDB}/"* testsuite/ || true
 find testsuite/ -name "*.lua" -exec sed -i /teardown_command/d {} ";"
 cd testsuite/partest
-./runtests.pl -j\$(nproc) -nocolour -with-xml ${params.RUNTESTS_FLAG}
+perl ./runtests.pl -j\$(nproc) -nocolour -with-xml ${params.RUNTESTS_FLAG}
 """
                 bat """
+If Defined LOCALAPPDATA (echo LOCALAPPDATA: %LOCALAPPDATA%) Else (Set "LOCALAPPDATA=C:\\Users\\OpenModelica\\AppData\\Local")
 set PATH=C:\\bin\\cmake\\bin;%PATH%
-C:\\OMDev\\tools\\msys\\usr\\bin\\sh --login -i '${env.WORKSPACE}/testMingw32-install.sh'
+C:\\OMDevUCRT\\tools\\msys\\usr\\bin\\sh --login -i '${env.WORKSPACE}/testMinGWUCRT64-install.sh'
 EXIT /b 0
 :fail
 ECHO Something went wrong!
@@ -403,12 +331,13 @@ EXIT /b 1
           }
         }
 
-        stage('mingw64-clang') {
+        stage('mingw-ucrt64-clang') {
           agent {
             label 'omsimulator-windows'
           }
           environment {
-            PATH = "${env.PATH};C:\\OMDev\\tools\\msys\\mingw64\\bin\\;C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;"
+            PATH = "C:\\OMDevUCRT\\tools\\msys\\ucrt64\\bin;C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;${env.PATH};"
+            OMDEV = "/c/OMDevUCRT"
             VERBOSE = '1'
             CC="clang"
             CXX="clang++"
@@ -431,9 +360,9 @@ EXIT /b 1
                 label 'omsimulator-windows'
               }
               environment {
-                PATH = "${env.PATH};C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;C:\\OMDev\\tools\\msys\\mingw64\\bin\\"
-                OMDEV = "/c/OMDev"
-                MSYSTEM = "MINGW64"
+                PATH = "C:\\OMDevUCRT\\tools\\msys\\ucrt64\\bin;C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;${env.PATH};"
+                OMDEV = "/c/OMDevUCRT"
+                MSYSTEM = "UCRT64"
               }
               steps {
                 bat 'hostname'
@@ -445,6 +374,7 @@ zip -r "../OMSimulator-win64-`git describe --tags --abbrev=7 --match=v*.* --excl
 """
 
                 retry(2) { bat """
+If Defined LOCALAPPDATA (echo LOCALAPPDATA: %LOCALAPPDATA%) Else (Set "LOCALAPPDATA=C:\\Users\\OpenModelica\\AppData\\Local")
 set PATH=C:\\bin\\cmake\\bin;%PATH%
 
 cmake -S . -B build/ -G "Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/ -DOM_OMS_ENABLE_TESTSUITE:BOOL=ON
@@ -456,7 +386,7 @@ IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 call install\\bin\\OMSimulator.exe --version
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 
-C:\\OMDev\\tools\\msys\\usr\\bin\\sh --login -i '${env.WORKSPACE}/buildZip.sh'
+C:\\OMDevUCRT\\tools\\msys\\usr\\bin\\sh --login -i '${env.WORKSPACE}/buildZip.sh'
 
 EXIT /b 0
 
@@ -475,9 +405,9 @@ EXIT /b 1
                 label 'omsimulator-windows'
               }
               environment {
-                PATH = "${env.PATH};C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;C:\\OMDev\\tools\\msys\\mingw64\\bin\\"
-                OMDEV = "/c/OMDev"
-                MSYSTEM = "MINGW64"
+                PATH = "C:\\OMDevUCRT\\tools\\msys\\ucrt64\\bin;C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;${env.PATH};"
+                OMDEV = "/c/OMDevUCRT"
+                MSYSTEM = "UCRT64"
                 RUNTESTDB="${env.HOME}/jenkins-cache/runtest/"
               }
               steps {
@@ -492,12 +422,13 @@ make -C testsuite difftool resources
 cp -f "${env.RUNTESTDB}/"* testsuite/ || true
 find testsuite/ -name "*.lua" -exec sed -i /teardown_command/d {} ";"
 cd testsuite/partest
-./runtests.pl -j\$(nproc) -platform=win -nocolour -with-xml ${params.RUNTESTS_FLAG}
+perl ./runtests.pl -j\$(nproc) -platform=win -nocolour -with-xml ${params.RUNTESTS_FLAG}
 """
                 bat """
+If Defined LOCALAPPDATA (echo LOCALAPPDATA: %LOCALAPPDATA%) Else (Set "LOCALAPPDATA=C:\\Users\\OpenModelica\\AppData\\Local")
 set PATH=C:\\bin\\cmake\\bin;%PATH%
 
-C:\\OMDev\\tools\\msys\\usr\\bin\\sh --login -i '${env.WORKSPACE}/testMSVC64-install.sh'
+C:\\OMDevUCRT\\tools\\msys\\usr\\bin\\sh --login -i '${env.WORKSPACE}/testMSVC64-install.sh'
 
 EXIT /b 0
 
@@ -577,8 +508,7 @@ EXIT /b 1
           steps {
             unstash name: 'amd64-zip'         // includes: "OMSimulator-linux-amd64-*.tar.gz"
             unstash name: 'arm32-zip'         // includes: "OMSimulator-linux-arm32-*.tar.gz"
-            unstash name: 'mingw32-zip'       // includes: "OMSimulator-mingw32-*.zip"
-            unstash name: 'mingw64-zip'       // includes: "OMSimulator-mingw64-*.zip"
+            unstash name: 'mingw-ucrt64-zip'  // includes: "OMSimulator-mingw-ucrt64-*.zip"
             unstash name: 'win64-zip'         // includes: "OMSimulator-win64-*.zip"
             unstash name: 'osx-zip'           // includes: "OMSimulator-osx-*.zip"
 
@@ -596,11 +526,8 @@ EXIT /b 1
                       remoteDirectory: "${DEPLOYMENT_PREFIX}linux-amd64/",
                       sourceFiles: 'OMSimulator-linux-amd64-*.tar.gz'),
                     sshTransfer(
-                      remoteDirectory: "${DEPLOYMENT_PREFIX}win-mingw32/",
-                      sourceFiles: 'OMSimulator-mingw32-*.zip'),
-                    sshTransfer(
-                      remoteDirectory: "${DEPLOYMENT_PREFIX}win-mingw64/",
-                      sourceFiles: 'OMSimulator-mingw64-*.zip'),
+                      remoteDirectory: "${DEPLOYMENT_PREFIX}win-mingw-ucrt64/",
+                      sourceFiles: 'OMSimulator-mingw-ucrt64-*.zip'),
                     sshTransfer(
                       remoteDirectory: "${DEPLOYMENT_PREFIX}osx/",
                       sourceFiles: 'OMSimulator-osx-*.zip'),
@@ -668,7 +595,8 @@ def isWindows() {
 void buildOMS() {
   if (isWindows()) {
     bat ("""
-     set OMDEV=C:\\OMDev
+     If Defined LOCALAPPDATA (echo LOCALAPPDATA: %LOCALAPPDATA%) Else (Set "LOCALAPPDATA=C:\\Users\\OpenModelica\\AppData\\Local")
+     set OMDEV=C:\\OMDevUCRT
      echo on
      (
      echo export MSYS_WORKSPACE="`cygpath '${WORKSPACE}'`"
@@ -681,8 +609,10 @@ void buildOMS() {
      echo cmake --build build/ --parallel %NUMBER_OF_PROCESSORS% --target install -v
      ) > buildOMSimulatorWindows.sh
 
-     set MSYSTEM=${env.MSYSTEM ? env.MSYSTEM : "MINGW64"}
+     set MSYSTEM=${env.MSYSTEM ? env.MSYSTEM : "UCRT64"}
      set MSYS2_PATH_TYPE=inherit
+     cat buildOMSimulatorWindows.sh
+     echo \$PATH
      %OMDEV%\\tools\\msys\\usr\\bin\\sh --login -c "cd `cygpath '${WORKSPACE}'` && chmod +x buildOMSimulatorWindows.sh && ./buildOMSimulatorWindows.sh && rm -f ./buildOMSimulatorWindows.sh"
     """)
   } else {
@@ -736,12 +666,12 @@ def shouldWeUpdateSubmodules() {
   return params.SUBMODULE_UPDATE
 }
 
-def shouldWeBuildMINGW32() {
+def shouldWeBuildMINGW() {
   if (isPR()) {
-    if (pullRequest.labels.contains("CI/MINGW32")) {
+    if (pullRequest.labels.contains("CI/MINGW_UCRT64")) {
       return true
     }
-    return params.MINGW32
+    return params.MINGW_UCRT64
   }
   return true
 }

@@ -27,7 +27,7 @@ use Term::ANSIColor;
 use List::Util 'shuffle';
 use Cwd;
 use File::Path qw(rmtree);
-use Time::HiRes qw( usleep ualarm gettimeofday tv_interval clock stat );
+use Time::HiRes qw( usleep gettimeofday tv_interval stat );
 
 use Fcntl;
 
@@ -55,6 +55,7 @@ my $withtxt = 0;
 my $have_dwdiff = "";
 my $rebase_test = "";
 my $platform = "";
+my $osname = $^O;
 
 {
   eval { require File::Which; 1; };
@@ -159,6 +160,9 @@ my $test_queue = Thread::Queue->new();
 my $tests_failed :shared = 0;
 my @failed_tests :shared;
 my $testscript = cwd() . "/runtest.pl";
+if ( $osname eq 'MSWin32' ) {
+  $testscript = "perl " . $testscript;
+}
 my $testsuite_root = cwd() . "/../";
 my %test_map :shared;
 
@@ -306,10 +310,14 @@ if ($check_proc_cpu) {
     while(<$in>) {
       $thread_count++ if /processor/;
     }
-  } else { # On OSX, try syscyl
-    my @contents = `sysctl -n hw.ncpu`;
-    if (int($contents[0]) > 0) {
-      $thread_count = int($contents[0]);
+  } else {
+    if ( $osname eq 'MSWin32' ) { # Windows
+      $thread_count = int($ENV{"NUMBER_OF_PROCESSORS"});
+    } else { # On OSX, try syscyl
+      my @contents = `sysctl -n hw.ncpu`;
+      if (int($contents[0]) > 0) {
+        $thread_count = int($contents[0]);
+      }
     }
   }
 }
@@ -413,8 +421,12 @@ if($with_xml) {
 }
 
 # Clean up the temporary rtest directory, so it doesn't get overrun.
-my $username = getpwuid($<);
-my @dirs = glob "/tmp/omc-rtest-$username*";
+my $username = ( $^O ne 'MSWin32' ? getpwuid($<) : undef )
+          || getlogin()
+          || $ENV{'USER'}
+          || 'omtmpuser';
+my $tmpvar=( $^O ne 'MSWin32' ? '/tmp' : $ENV{'TEMP'} );
+my @dirs = glob "$tmpvar/omc-rtest-$username*";
 if (@dirs) {
   rmtree(@dirs);
 }
