@@ -497,7 +497,7 @@ EXIT /b 1
                   transfers: [
                     sshTransfer(execCommand: "rm -rf .tmp/${env.GIT_BRANCH}"),
                     sshTransfer(
-                      execCommand: "test ! -z '${env.GIT_BRANCH}' && rm -rf '/var/www/doc/OMSimulator/${env.GIT_BRANCH}' && mkdir -p `dirname '/var/www/doc/OMSimulator/.tmp/${env.GIT_BRANCH}'` && mv '/var/www/doc/OMSimulator/.tmp/${env.GIT_BRANCH}' '/var/www/doc/OMSimulator/${env.GIT_BRANCH}'",
+                      execCommand: "test ! -z '${env.GIT_BRANCH}' && rm -rf '/var/www/openmodelica.org-documentation/OMSimulator/${env.GIT_BRANCH}' && mkdir -p `dirname '/var/www/openmodelica.org-documentation/OMSimulator/.tmp/${env.GIT_BRANCH}'` && mv '/var/www/openmodelica.org-documentation/OMSimulator/.tmp/${env.GIT_BRANCH}' '/var/www/openmodelica.org-documentation/OMSimulator/${env.GIT_BRANCH}'",
                       remoteDirectory: ".tmp/${env.GIT_BRANCH}",
                       removePrefix: "install/share/doc",
                       sourceFiles: 'install/share/doc/**')
