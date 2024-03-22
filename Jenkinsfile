@@ -225,7 +225,7 @@ pipeline {
                 label 'M1'
               }
               environment {
-                PATH="/opt/homebrew/bin:/opt/homebrew/opt/openjdk/bin:/opt/homebrew/opt/icu4c/bin:/opt/homebrew/opt/icu4c/sbin:/usr/local/bin:${env.PATH}"                
+                PATH="/opt/homebrew/bin:/opt/homebrew/opt/openjdk/bin:/opt/homebrew/opt/icu4c/bin:/opt/homebrew/opt/icu4c/sbin:/usr/local/bin:${env.PATH}"
                 PKG_CONFIG_PATH="/opt/homebrew/opt/icu4c/lib/pkgconfig"
                 LDFLAGS="-L/opt/homebrew/opt/icu4c/lib"
                 CPPFLAGS="-I/opt/homebrew/opt/icu4c/include"
@@ -385,7 +385,7 @@ EXIT /b 1
                 bat 'hostname'
                 writeFile file: "buildZip.sh", text: """#!/bin/sh
 set -x -e
-export PATH="/c/Program Files/TortoiseSVN/bin/:/c/bin/jdk/bin:/c/bin/nsis/:\$PATH:/c/bin/git/bin"
+export PATH="/c/Program Files/TortoiseSVN/bin/:/c/Program Files/Git/bin/:/c/bin/jdk/bin:/c/bin/nsis/:\$PATH:/c/bin/git/bin"
 cd "${env.WORKSPACE}/install/"
 zip -r "../OMSimulator-win64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *
 """
