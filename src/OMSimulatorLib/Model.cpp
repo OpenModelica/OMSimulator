@@ -43,6 +43,7 @@
 
 #include "minizip.h"
 #include <thread>
+#include <algorithm> /* std::unique and std::find are defined here */
 
 oms::Model::Model(const oms::ComRef& cref, const std::string& tempDir)
   : cref(cref), tempDir(tempDir), resultFilename(std::string(cref) + "_res.mat")
