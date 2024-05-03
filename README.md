@@ -12,8 +12,8 @@ OMSimulator can be installed as stand-alone application, as C library to be link
 
 ## Documentation
 
-The latest documentation is available as [pdf](https://openmodelica.org/doc/OMSimulator/master/OMSimulator.pdf) and [html](https://openmodelica.org/doc/OMSimulator/master/html/) versions.
-For OMSimulatorLib a [Doxygen source code documentation](https://openmodelica.org/doc/OMSimulator/master/OMSimulatorLib/) is available as well.
+The latest documentation is available as [pdf](https://openmodelica.org/doc/OMSimulator/master/OMSimulator/UsersGuide/pdf/OMSimulator.pdf) and [html](https://openmodelica.org/doc/OMSimulator/master/OMSimulator/UsersGuide/html/) versions.
+For OMSimulatorLib a [Doxygen source code documentation](https://openmodelica.org/doc/OMSimulator/master/OMSimulator/doxygen/html/index.html) is available as well.
 
 ## FMI cross-check results
 
