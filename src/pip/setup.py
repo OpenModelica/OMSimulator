@@ -70,19 +70,19 @@ class my_build_py(build_py):
 
     # download the zip directory from url
     if (sysconfig.get_platform() == 'linux-x86_64'):
-      response = requests.get('https://build.openmodelica.org/omsimulator/nightly/linux-amd64/OMSimulator-linux-amd64-@OMS_VERSION_STRING@.tar.gz')
+      response = requests.get('https://build.openmodelica.org/omsimulator/nightly/linux-amd64/OMSimulator-linux-amd64-@OMS_VERSION_STRING@.tar.gz', verify=False)
       dllpath  = "lib/x86_64-linux-gnu/libOMSimulator.so"
       sourcePath = "lib/x86_64-linux-gnu/OMSimulator"
     elif (sysconfig.get_platform() == "mingw_x86_64_ucrt" or (sysconfig.get_platform() == 'mingw' and platform.architecture()[0] == '64bit')):
-      response = requests.get('https://build.openmodelica.org/omsimulator/nightly/win-mingw-ucrt64/OMSimulator-mingw-ucrt64-@OMS_VERSION_STRING@.zip')
+      response = requests.get('https://build.openmodelica.org/omsimulator/nightly/win-mingw-ucrt64/OMSimulator-mingw-ucrt64-@OMS_VERSION_STRING@.zip', verify=False)
       dllpath  = "bin/libOMSimulator.dll"
       sourcePath = "lib/OMSimulator"
     elif (sysconfig.get_platform() == 'win-amd64'):
-      response = requests.get('https://build.openmodelica.org/omsimulator/nightly/win-msvc64/OMSimulator-win64-@OMS_VERSION_STRING@.zip')
+      response = requests.get('https://build.openmodelica.org/omsimulator/nightly/win-msvc64/OMSimulator-win64-@OMS_VERSION_STRING@.zip', verify=False)
       dllpath  = "bin/OMSimulator.dll"
       sourcePath = "lib/OMSimulator"
     elif (platform.system() == 'Darwin'):
-      response = requests.get('https://build.openmodelica.org/omsimulator/nightly/osx/OMSimulator-osx-@OMS_VERSION_STRING@.zip')
+      response = requests.get('https://build.openmodelica.org/omsimulator/nightly/osx/OMSimulator-osx-@OMS_VERSION_STRING@.zip', verify=False)
       dllpath  = "lib/libOMSimulator.dylib"
       ## the path needs to be checked, as of now we are not buiding artifacts for macos
       sourcePath = "lib/OMSimulator"
