@@ -10,11 +10,12 @@ ELSE ()
   set(OMSIMULATORLIB_STRING "libOMSimulator.so")
 ENDIF ()
 
-## If OMSimulator is being built as part of OpenModelica and that is set by "OPENMODELICA_NEW_CMAKE_BUILD"
+## If OMSimulator is being built as part of OpenModelica Cmake and that is set by "OPENMODELICA_NEW_CMAKE_BUILD"
+## or OMSimulator is being built as part of OpenModelica Makefile  and that is set by "OPENMODELICA_MAKEFILE_BUILD"
 ## account for the "omc" directory added in the lib dir (lib/omc/OMSimulator versus lib/OMSimulator)
 ## currently this sets the path only for windows
 ## TODO fix the paths for linux
-if(OPENMODELICA_NEW_CMAKE_BUILD)
+if(OPENMODELICA_NEW_CMAKE_BUILD OR "${OPENMODELICA_MAKEFILE_BUILD}" STREQUAL "true")
   set(OMSIMULATOR_PYTHON_RELATIVE_DLL_DIR "../../../bin")
 else()
   set(OMSIMULATOR_PYTHON_RELATIVE_DLL_DIR "../../bin")
