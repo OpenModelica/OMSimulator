@@ -617,6 +617,14 @@ oms_status_enu_t oms::ComponentFMUCS::instantiate()
           setResourcesHelper1(res.second);
       }
     }
+    /*
+      check for parameter entry at system level and override the start values if exist,
+      as system level parameter has highest priority, this is done after checking for
+      local resources because it is possible some parameters have local entry and other
+      parameters have top level system entry
+    */
+    if (getParentSystem() && getParentSystem()->getValues().hasResources())
+      setResourcesHelper2(getParentSystem()->getValues());
   }
   // set start values from root resources
   else if (getParentSystem() && getParentSystem()->getValues().hasResources())
