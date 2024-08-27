@@ -79,6 +79,8 @@ invalidSSV \
 invalidSSM \
 replaceSubmodel4 \
 replaceSubmodel5 \
+toplevelparameter1 \
+toplevelparameter2 \
 
 MOSs = \
 ASSCExample.mos \
