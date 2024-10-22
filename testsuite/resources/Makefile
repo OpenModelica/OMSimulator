@@ -60,6 +60,7 @@ tlm.mass \
 tlm.massSpring \
 tlm.source \
 tlm.UpperPendulum \
+testArray \
 ypipe \
 
 SSPs = \
