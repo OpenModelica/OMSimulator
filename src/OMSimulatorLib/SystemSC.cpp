@@ -534,23 +534,23 @@ oms_status_enu_t oms::SystemSC::doStep()
   switch(solverMethod)
   {
     case oms_solver_sc_explicit_euler:
-      return doStepEuler();
+      return doStepEuler(time + maximumStepSize);
 
     case oms_solver_sc_cvode:
-      return doStepCVODE();
+      return doStepCVODE(time + maximumStepSize);
 
     default:
       return logError_InternalError;
   }
 }
 
-oms_status_enu_t oms::SystemSC::doStepEuler()
+oms_status_enu_t oms::SystemSC::doStepEuler(double stopTime)
 {
   fmi2Status fmistatus;
   oms_status_enu_t status;
 
   // Step 1: Initialize state variables and time
-  const fmi2Real end_time = std::min(time + maximumStepSize, getModel().getStopTime());
+  const fmi2Real end_time = std::min(time + maximumStepSize, stopTime);
   const fmi2Real event_time_tolerance = 1e-4;
 
   logDebug("doStepEuler: " + std::to_string(time) + " -> " + std::to_string(end_time));
@@ -766,13 +766,14 @@ oms_status_enu_t oms::SystemSC::doStepEuler()
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::SystemSC::doStepCVODE()
+oms_status_enu_t oms::SystemSC::doStepCVODE(double stopTime)
 {
   fmi2Status fmistatus;
   oms_status_enu_t status;
-  int flag;
+  int flag = 0;
+  bool tnext_is_event = false;
 
-  const fmi2Real end_time = std::min(time + maximumStepSize, getModel().getStopTime());
+  const fmi2Real end_time = stopTime;
 
   // find next time event
   fmi2Real tnext = end_time+1.0;
@@ -788,16 +789,35 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
       time = end_time;
     }
   }
+
+  tnext_is_event = tnext <= end_time;
+  tnext = std::min(tnext, end_time);
+
   logDebug("tnext: " + std::to_string(tnext));
 
-  while (time < end_time)
-  {
+  //while (time < end_time)
+  //{
     logDebug("CVode: " + std::to_string(time) + " -> " + std::to_string(end_time));
     for (size_t j=0, k=0; j < fmus.size(); ++j)
       for (size_t i=0; i < nStates[j]; ++i, ++k)
         NV_Ith_S(solverData.cvode.y, k) = states[j][i];
 
-    flag = CVode(solverData.cvode.mem, std::min(tnext, end_time), solverData.cvode.y, &time, CV_NORMAL);
+    double cvode_time = tnext;
+    CVodeGetCurrentTime(solverData.cvode.mem, &cvode_time);
+    if (cvode_time < tnext) {
+      flag = CVode(solverData.cvode.mem, tnext, solverData.cvode.y, &cvode_time, CV_ONE_STEP);
+      if (flag < 0)
+        return logError("SUNDIALS_ERROR: CVode() failed with flag = " + std::to_string(flag));
+    }
+
+    if (cvode_time > tnext) {
+      // interpolate result to tnext (this shouldn't take any further steps)
+      flag = CVode(solverData.cvode.mem, tnext, solverData.cvode.y, &cvode_time, CV_NORMAL);
+      if (flag < 0)
+        return logError("SUNDIALS_ERROR: CVode() failed with flag = " + std::to_string(flag));
+    }
+
+    time = cvode_time;
 
     for (size_t i = 0, j=0; i < fmus.size(); ++i)
     {
@@ -809,7 +829,7 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
       if (oms_status_ok != status) return status;
     }
 
-    if (flag == CV_ROOT_RETURN || time == tnext)
+    if (flag == CV_ROOT_RETURN || tnext_is_event && time == tnext)
     {
       logDebug("event found!!! " + std::to_string(time));
 
@@ -839,15 +859,6 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
         if (fmi2OK != fmistatus) logError_FMUCall("fmi2_enterContinuousTimeMode", fmus[i]);
       }
 
-      for (size_t i = 0; i < fmus.size(); ++i)
-      {
-        if (0 == nStates[i])
-          continue;
-
-        status = fmus[i]->getContinuousStates(states[i]);
-        if (oms_status_ok != status) return status;
-      }
-
       // find next time event
       tnext = end_time+1.0;
       for (size_t i = 0; i < fmus.size(); ++i)
@@ -862,6 +873,10 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
           time = end_time;
         }
       }
+
+      tnext_is_event = tnext <= end_time;
+      tnext = std::min(tnext, end_time);
+
       logDebug("tnext: " + std::to_string(tnext));
 
       // emit the right limit of the event
@@ -885,10 +900,10 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
       flag = CVodeReInit(solverData.cvode.mem, time, solverData.cvode.y);
       if (flag < 0) return logError("SUNDIALS_ERROR: CVodeReInit() failed with flag = " + std::to_string(flag));
 
-      continue;
+      return oms_status_ok;
     }
 
-    if (flag == CV_SUCCESS)
+    if (flag >= 0) // Some kind of success
     {
       logDebug("CVode completed successfully at t = " + std::to_string(time));
 
@@ -914,7 +929,7 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
     }
     else
       return logError("CVode failed with flag = " + std::to_string(flag));
-  }
+  //}
 
   return oms_status_ok;
 
@@ -930,14 +945,25 @@ oms_status_enu_t oms::SystemSC::stepUntil(double stopTime)
 
   // main simulation loop
   oms_status_enu_t status = oms_status_ok;
-  while (time < std::min(stopTime, getModel().getStopTime()) && oms_status_ok == status)
+  double endTime = std::min(stopTime, getModel().getStopTime());
+  double lastTime = time;
+  while (time < endTime && oms_status_ok == status)
   {
-    status = doStep();
+    if (solverMethod == oms_solver_sc_explicit_euler)
+      status = doStepEuler(endTime);
+    else if (solverMethod == oms_solver_sc_cvode)
+      status = doStepCVODE(endTime);
+    else
+      return logError_InternalError;
+
     if (status != oms_status_ok)
       logWarning("Bad return code at time " + std::to_string(time));
 
-    if (isTopLevelSystem() && Flags::ProgressBar())
+    if (isTopLevelSystem() && Flags::ProgressBar() && time > lastTime + maximumStepSize)
+    {
       Log::ProgressBar(startTime, stopTime, time);
+      lastTime = time;
+    }
   }
 
   if (isTopLevelSystem() && Flags::ProgressBar())
