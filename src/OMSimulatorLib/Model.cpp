@@ -1553,6 +1553,27 @@ void oms::Model::exportEnumerationDefinitionsToSSD(pugi::xml_node& node) const
 
 }
 
+std::string oms::Model::escapeSpecialCharacters(const std::string& regex)
+{
+  std::string escapedRegex;
+  for (char c : regex)
+  {
+    /* https://github.com/OpenModelica/OMSimulator/issues/1320
+       If the character is a special regex character, add a backslash before it
+      (e.g) model.root.A.a[1] => model\.root\.A\.a\[1\]
+            model.root.testArray.der(x)=>model\.root\.testArray\.der\(x\)
+    */
+    if (c == '.' || c == '[' || c == ']' || c == '(' || c == ')' ||
+        c == '{' || c == '}' || c == '*' || c == '+' || c == '?' ||
+        c == '^' || c == '$' || c == '|')
+    {
+      escapedRegex += '\\'; // Add escape character
+    }
+    escapedRegex += c; // Add the original character
+  }
+  return escapedRegex;
+}
+
 oms_status_enu_t oms::Model::importSignalFilter(const std::string& filename, const Snapshot& snapshot)
 {
   if (".*" == filename) // avoid error messages for older ssp files
@@ -1570,7 +1591,7 @@ oms_status_enu_t oms::Model::importSignalFilter(const std::string& filename, con
   for (pugi::xml_node_iterator it = oms_signalfilter.begin(); it != oms_signalfilter.end(); ++it)
   {
     if (std::string(it->name()) == oms::ssp::Version1_0::oms_Variable)
-      addSignalsToResults(it->attribute("name").as_string());
+      addSignalsToResults(escapeSpecialCharacters(it->attribute("name").as_string()).c_str());
   }
 
   return oms_status_ok;

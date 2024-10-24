@@ -265,6 +265,10 @@ oms_delete("model")
 --         type="Real"
 --         kind="unknown" />
 --       <oms:Variable
+--         name="model.root.A.der(x)"
+--         type="Real"
+--         kind="unknown" />
+--       <oms:Variable
 --         name="model.root.A.u"
 --         type="Real"
 --         kind="input" />

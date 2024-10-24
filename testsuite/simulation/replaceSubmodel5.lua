@@ -256,6 +256,10 @@ oms_delete("model")
 --         type="Real"
 --         kind="unknown" />
 --       <oms:Variable
+--         name="model.root.A.der(x)"
+--         type="Real"
+--         kind="unknown" />
+--       <oms:Variable
 --         name="model.root.A.dummy"
 --         type="Real"
 --         kind="output" />
@@ -505,7 +509,7 @@ oms_delete("model")
 --     </oms:SignalFilter>
 --   </oms:file>
 -- </oms:snapshot>
---
+-- 
 -- info:    Result file: replaceSubmodel5.mat (bufferSize=1)
 -- info:    Initialize
 -- info:      model.root.A.u      : 10.0
