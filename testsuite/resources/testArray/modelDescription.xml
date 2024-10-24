@@ -2,11 +2,11 @@
 <fmiModelDescription
   fmiVersion="2.0"
   modelName="testArray"
-  guid="{ceda6695-63d3-4515-88a1-f315d0c8a025}"
+  guid="{13ed711e-8560-455c-9844-3df620b52293}"
   description=""
   version=""
   generationTool="OpenModelica Compiler OpenModelica v1.25.0-dev-72-g9024c1601a (64-bit)"
-  generationDateAndTime="2024-10-22T11:56:24Z"
+  generationDateAndTime="2024-10-23T13:56:35Z"
   variableNamingConvention="structured"
   numberOfEventIndicators="0">
   <ModelExchange
@@ -185,33 +185,46 @@
   <ModelVariables>
   <!-- Index of variable = "1" -->
   <ScalarVariable
-    name="a[1]"
+    name="x"
     valueReference="0"
     initial="exact">
     <Real start="0.0"/>
   </ScalarVariable>
   <!-- Index of variable = "2" -->
   <ScalarVariable
-    name="a[2]"
+    name="der(x)"
     valueReference="1"
-    initial="exact">
-    <Real start="0.0"/>
+    >
+    <Real derivative="1"/>
   </ScalarVariable>
   <!-- Index of variable = "3" -->
   <ScalarVariable
-    name="a[3]"
+    name="a[1]"
     valueReference="2"
     initial="exact">
     <Real start="0.0"/>
   </ScalarVariable>
   <!-- Index of variable = "4" -->
   <ScalarVariable
-    name="x"
+    name="a[2]"
     valueReference="3"
+    initial="exact">
+    <Real start="0.0"/>
+  </ScalarVariable>
+  <!-- Index of variable = "5" -->
+  <ScalarVariable
+    name="a[3]"
+    valueReference="4"
     initial="exact">
     <Real start="0.0"/>
   </ScalarVariable>
   </ModelVariables>
   <ModelStructure>
+    <Derivatives>
+      <Unknown index="2" dependencies="" dependenciesKind="" />
+    </Derivatives>
+    <InitialUnknowns>
+      <Unknown index="2" dependencies="" dependenciesKind="" />
+    </InitialUnknowns>
   </ModelStructure>
 </fmiModelDescription>

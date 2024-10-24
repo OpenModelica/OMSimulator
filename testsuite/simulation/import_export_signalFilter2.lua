@@ -107,6 +107,14 @@ oms_delete("model")
 --     <oms:SignalFilter
 --       version="1.0">
 --       <oms:Variable
+--         name="model.root.testArray.x"
+--         type="Real"
+--         kind="unknown" />
+--       <oms:Variable
+--         name="model.root.testArray.der(x)"
+--         type="Real"
+--         kind="unknown" />
+--       <oms:Variable
 --         name="model.root.testArray.a[1]"
 --         type="Real"
 --         kind="unknown" />
@@ -118,10 +126,6 @@ oms_delete("model")
 --         name="model.root.testArray.a[3]"
 --         type="Real"
 --         kind="unknown" />
---       <oms:Variable
---         name="model.root.testArray.x"
---         type="Real"
---         kind="unknown" />
 --     </oms:SignalFilter>
 --   </oms:file>
 -- </oms:snapshot>
@@ -131,7 +135,7 @@ oms_delete("model")
 -- info:      model.root.testArray.a[1]     : 1.0
 -- info:      model.root.testArray.a[2]     : 1.0
 -- info:      model.root.testArray.a[3]     : 1.0
--- info:      model.root.testArray.x        : 3.0
+-- info:      model.root.testArray.x        : 0.0
 -- info:    2 warnings
 -- info:    0 errors
 -- endResult
