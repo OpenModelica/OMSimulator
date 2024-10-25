@@ -42,8 +42,6 @@ oms_terminate("model")
 oms_delete("model")
 
 -- Result:
--- warning: invalid "SystemStructureDescription" detected in file "signalFilterVars.ssp" at line: 18 column: 27, element 'Connectors' is not allowed for content model '(Connector+)'
--- warning: "SystemStructureDescription" does not conform to the SSP standard schema
 -- <?xml version="1.0"?>
 -- <oms:snapshot
 --   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
@@ -65,9 +63,7 @@ oms_delete("model")
 --           <ssd:Component
 --             name="testArray"
 --             type="application/x-fmu-sharedlibrary"
---             source="resources/0001_testArray.fmu">
---             <ssd:Connectors />
---           </ssd:Component>
+--             source="resources/0001_testArray.fmu" />
 --         </ssd:Elements>
 --         <ssd:Annotations>
 --           <ssc:Annotation
@@ -136,6 +132,4 @@ oms_delete("model")
 -- info:      model.root.testArray.a[2]     : 1.0
 -- info:      model.root.testArray.a[3]     : 1.0
 -- info:      model.root.testArray.x        : 0.0
--- info:    2 warnings
--- info:    0 errors
 -- endResult
