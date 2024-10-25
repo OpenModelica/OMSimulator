@@ -364,15 +364,18 @@ oms_status_enu_t oms::ComponentFMUME::exportToSSD(pugi::xml_node& node, Snapshot
   node.append_attribute("name") = this->getCref().c_str();
   node.append_attribute("type") = "application/x-fmu-sharedlibrary";
   node.append_attribute("source") = getPath().c_str();
-  pugi::xml_node node_connectors = node.append_child(oms::ssp::Draft20180219::ssd::connectors);
 
   if (element.getGeometry())
     element.getGeometry()->exportToSSD(node);
 
-  for (const auto& connector : connectors)
-    if (connector)
-      if (oms_status_ok != connector->exportToSSD(node_connectors))
-        return oms_status_error;
+  if (connectors.size() > 1)
+  {
+    pugi::xml_node node_connectors = node.append_child(oms::ssp::Draft20180219::ssd::connectors);
+    for (const auto& connector : connectors)
+      if (connector)
+        if (oms_status_ok != connector->exportToSSD(node_connectors))
+          return oms_status_error;
+  }
 
   // export ParameterBindings at component level
   values.exportParameterBindings(node, snapshot, variantName);
