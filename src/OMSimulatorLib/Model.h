@@ -96,7 +96,7 @@ namespace oms
     void copyResources(bool copy_resources) {this->copy_resources = copy_resources;}
     bool copyResources() {return copy_resources;}
 
-    oms::Element** getElements() {return &elements[0];}
+    oms::Element** getElements() {return system ? &elements[0] : nullptr;}
     void writeAllResourcesToFilesystem(std::vector<std::string>& resources, Snapshot& snapshot) const;
 
     oms_status_enu_t instantiate();
