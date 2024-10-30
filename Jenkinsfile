@@ -330,7 +330,7 @@ perl ./runtests.pl -j\$(nproc) -nocolour -with-xml ${params.RUNTESTS_FLAG}
 """
                 bat """
 If Defined LOCALAPPDATA (echo LOCALAPPDATA: %LOCALAPPDATA%) Else (Set "LOCALAPPDATA=C:\\Users\\OpenModelica\\AppData\\Local")
-set PATH=C:\\bin\\cmake\\bin;%PATH%
+set PATH=C:\\OMDevUCRT\\bin\\cmake\\bin\\;%PATH%
 C:\\OMDevUCRT\\tools\\msys\\usr\\bin\\sh --login -i '${env.WORKSPACE}/testMinGWUCRT64-install.sh'
 EXIT /b 0
 :fail
@@ -392,7 +392,7 @@ zip -r "../OMSimulator-win64-`git describe --tags --abbrev=7 --match=v*.* --excl
 
                 retry(2) { bat """
 If Defined LOCALAPPDATA (echo LOCALAPPDATA: %LOCALAPPDATA%) Else (Set "LOCALAPPDATA=C:\\Users\\OpenModelica\\AppData\\Local")
-set PATH=C:\\bin\\cmake\\bin;%PATH%
+set PATH=C:\\OMDevUCRT\\bin\\cmake\\bin;%PATH%
 
 cmake -S . -B build/ -G "Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/ -DOM_OMS_ENABLE_TESTSUITE:BOOL=ON
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
@@ -443,7 +443,7 @@ perl ./runtests.pl -j\$(nproc) -platform=win -nocolour -with-xml ${params.RUNTES
 """
                 bat """
 If Defined LOCALAPPDATA (echo LOCALAPPDATA: %LOCALAPPDATA%) Else (Set "LOCALAPPDATA=C:\\Users\\OpenModelica\\AppData\\Local")
-set PATH=C:\\bin\\cmake\\bin;%PATH%
+set PATH=C:\\OMDevUCRT\\bin\\cmake\\bin;%PATH%
 
 C:\\OMDevUCRT\\tools\\msys\\usr\\bin\\sh --login -i '${env.WORKSPACE}/testMSVC64-install.sh'
 
