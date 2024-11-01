@@ -7,6 +7,7 @@ activateVariant3.lua \
 checkUnits.lua \
 deleteConnector.lua \
 deleteConnector1.lua \
+deleteRootSystem.lua \
 deleteReferencesAndStartValues.lua \
 deleteStartValues.lua \
 deleteStartValuesInSSV.lua \

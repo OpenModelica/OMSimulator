@@ -849,7 +849,9 @@ oms_status_enu_t oms::Model::exportToSSD(Snapshot& snapshot) const
   oms_simulation_information.append_attribute("resultFile") = resultFilename.c_str();
   oms_simulation_information.append_attribute("loggingInterval") = std::to_string(loggingInterval).c_str();
   oms_simulation_information.append_attribute("bufferSize") = std::to_string(bufferSize).c_str();
-  oms_simulation_information.append_attribute("signalFilter") = signalFilterFilename.c_str();
+  // check for root system exist and export signalFilter
+  if (system)
+    oms_simulation_information.append_attribute("signalFilter") = signalFilterFilename.c_str();
 
   return oms_status_ok;
 }
@@ -1576,6 +1578,10 @@ std::string oms::Model::escapeSpecialCharacters(const std::string& regex)
 
 oms_status_enu_t oms::Model::importSignalFilter(const std::string& filename, const Snapshot& snapshot)
 {
+  // check for system and do not import signalFilter if system == NULL
+  if (!system)
+    return oms_status_ok;
+
   if (".*" == filename) // avoid error messages for older ssp files
   {
     addSignalsToResults(".*");
