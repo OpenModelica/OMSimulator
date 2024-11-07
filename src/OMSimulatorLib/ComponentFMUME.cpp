@@ -38,7 +38,6 @@
 #include "ssd/Tags.h"
 #include "System.h"
 #include "SystemSC.h"
-#include "SystemTLM.h"
 
 #include <fmi4c.h>
 #include <regex>
@@ -349,18 +348,6 @@ oms::Component* oms::ComponentFMUME::NewComponent(const pugi::xml_node& node, om
 
 oms_status_enu_t oms::ComponentFMUME::exportToSSD(pugi::xml_node& node, Snapshot& snapshot, std::string variantName) const
 {
-#if !defined(NO_TLM)
-  if (tlmbusconnectors[0])
-  {
-    pugi::xml_node annotations_node = node.append_child(oms::ssp::Draft20180219::ssd::annotations);
-    pugi::xml_node annotation_node = annotations_node.append_child(oms::ssp::Version1_0::ssc::annotation);
-    annotation_node.append_attribute("type") = oms::ssp::Draft20180219::annotation_type;
-    for (const auto& tlmbusconnector : tlmbusconnectors)
-      if (tlmbusconnector)
-        tlmbusconnector->exportToSSD(annotation_node);
-  }
-#endif
-
   node.append_attribute("name") = this->getCref().c_str();
   node.append_attribute("type") = "application/x-fmu-sharedlibrary";
   node.append_attribute("source") = getPath().c_str();

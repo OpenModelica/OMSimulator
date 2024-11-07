@@ -10,7 +10,7 @@ oms_setTempDirectory("./addResources_04_lua/")
 
 oms_newModel("addResources")
 
-oms_addSystem("addResources.root", oms_system_tlm)
+oms_addSystem("addResources.root", oms_system_wc)
 
 -- add only top level root resources
 oms_newResources("addResources.root:root.ssv")

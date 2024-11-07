@@ -55,8 +55,6 @@ oms::Connection::Connection(const oms::ComRef& conA, const oms::ComRef& conB, bo
 
   this->geometry = reinterpret_cast<ssd_connection_geometry_t*>(new oms::ssd::ConnectionGeometry());
 
-  tlmparameters = NULL;
-
   this->suppressUnitConversion = suppressUnitConversion;
 }
 
@@ -64,7 +62,6 @@ oms::Connection::~Connection()
 {
   if (this->conA) delete[] this->conA;
   if (this->conB) delete[] this->conB;
-  if (this->tlmparameters) delete tlmparameters;
   if (this->geometry) delete reinterpret_cast<oms::ssd::ConnectionGeometry*>(this->geometry);
 }
 
@@ -81,8 +78,6 @@ oms::Connection::Connection(const oms::Connection& rhs)
   oms::ssd::ConnectionGeometry* geometry_ = new oms::ssd::ConnectionGeometry();
   *geometry_ = *reinterpret_cast<oms::ssd::ConnectionGeometry*>(rhs.geometry);
   this->geometry = reinterpret_cast<ssd_connection_geometry_t*>(geometry_);
-
-  tlmparameters = NULL;
 
   this->suppressUnitConversion = rhs.suppressUnitConversion;
 }
@@ -109,8 +104,6 @@ oms::Connection& oms::Connection::operator=(const oms::Connection& rhs)
   *geometry_ = *reinterpret_cast<oms::ssd::ConnectionGeometry*>(rhs.geometry);
   this->geometry = reinterpret_cast<ssd_connection_geometry_t*>(geometry_);
 
-  setTLMParameters(rhs.tlmparameters);
-
   this->suppressUnitConversion = rhs.suppressUnitConversion;
 
   return *this;
@@ -121,7 +114,7 @@ oms_status_enu_t oms::Connection::exportToSSD(pugi::xml_node &root) const
   pugi::xml_node node;
   if(type == oms_connection_single)
     node = root.append_child(oms::ssp::Draft20180219::ssd::connection);
-  else if(type == oms_connection_bus || type == oms_connection_tlm)
+  else if(type == oms_connection_bus)
     node = root.append_child(oms::ssp::Draft20180219::bus_connection);
 
   ComRef startConnectorRef(conA);
@@ -137,14 +130,6 @@ oms_status_enu_t oms::Connection::exportToSSD(pugi::xml_node &root) const
   if (suppressUnitConversion)
     node.append_attribute("suppressUnitConversion") = suppressUnitConversion;
 
-  if(type == oms_connection_tlm)
-  {
-    node.append_attribute("delay") = std::to_string(tlmparameters->delay).c_str();
-    node.append_attribute("alpha") = std::to_string(tlmparameters->alpha).c_str();
-    node.append_attribute("linearimpedance") = std::to_string(tlmparameters->linearimpedance).c_str();
-    node.append_attribute("angularimpedance") = std::to_string(tlmparameters->angularimpedance).c_str();
-  }
-
   getGeometry()->exportToSSD(node);
 
   return oms_status_ok;
@@ -157,29 +142,6 @@ void oms::Connection::setGeometry(const oms::ssd::ConnectionGeometry* newGeometr
     delete geometry_;
   geometry_ = new oms::ssd::ConnectionGeometry(*newGeometry, inverse);
   this->geometry = reinterpret_cast<ssd_connection_geometry_t*>(geometry_);
-}
-
-void oms::Connection::setTLMParameters(const oms_tlm_connection_parameters_t* parameters)
-{
-  if (tlmparameters)
-  {
-    delete tlmparameters;
-    tlmparameters = NULL;
-  }
-
-  if (parameters)
-    setTLMParameters(parameters->delay, parameters->alpha, parameters->linearimpedance, parameters->angularimpedance);
-}
-
-void oms::Connection::setTLMParameters(double delay, double alpha, double linearimpedance, double angualrimpedance)
-{
-  if (!tlmparameters)
-    tlmparameters = new oms_tlm_connection_parameters_t;
-
-  tlmparameters->delay = delay;
-  tlmparameters->alpha = alpha;
-  tlmparameters->linearimpedance = linearimpedance;
-  tlmparameters->angularimpedance = angualrimpedance;
 }
 
 bool oms::Connection::isStrictEqual(const oms::ComRef& signalA, const oms::ComRef& signalB) const

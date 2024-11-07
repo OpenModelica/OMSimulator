@@ -168,4 +168,4 @@ We currently have no bat-Script to build and test with CMD, so you have to use O
    ./runtests.pl -j4 -platform=win
    ```
    Use `-jN` to test with `N` threads.
-   To disable TLM tests add `-notlm`, to disable Python tests add `-asan`.
+   To disable Python tests add `-asan`.

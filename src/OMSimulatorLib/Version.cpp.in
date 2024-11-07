@@ -30,7 +30,7 @@
  */
 
 #if defined(NDEBUG)
-  const char* oms_git_version = "OMSimulator @OMS_VERSION_STRING@-@PLATFORM_STRING@@TLM_STRING@";
+  const char* oms_git_version = "OMSimulator @OMS_VERSION_STRING@-@PLATFORM_STRING@";
 #else
-  const char* oms_git_version = "OMSimulator @OMS_VERSION_STRING@-@PLATFORM_STRING@@TLM_STRING@-debug";
+  const char* oms_git_version = "OMSimulator @OMS_VERSION_STRING@-@PLATFORM_STRING@-debug";
 #endif

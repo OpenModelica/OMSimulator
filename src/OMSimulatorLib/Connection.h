@@ -61,9 +61,6 @@ namespace oms
 
     const oms::ssd::ConnectionGeometry* getGeometry() const {return reinterpret_cast<oms::ssd::ConnectionGeometry*>(geometry);}
     void setGeometry(const oms::ssd::ConnectionGeometry* newGeometry, bool inverse=false);
-    void setTLMParameters(const oms_tlm_connection_parameters_t* parameters);
-    void setTLMParameters(double delay, double alpha, double linearimpedance, double angualrimpedance);
-    oms_tlm_connection_parameters_t* getTLMParameters() const {return tlmparameters;}
 
     oms_connection_type_enu_t getType() const {return type;}
 

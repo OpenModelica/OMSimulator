@@ -11,7 +11,7 @@ oms_setWorkingDirectory("./addResources3_lua/")
 
 oms_newModel("addResources")
 
-oms_addSystem("addResources.root", oms_system_tlm)
+oms_addSystem("addResources.root", oms_system_wc)
 
 -- add subsystem system1
 oms_addSystem("addResources.root.system1", oms_system_wc);

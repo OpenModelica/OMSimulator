@@ -1,6 +1,6 @@
 '''OMSimulator
 
-OpenModelica FMI & TLM based simulator'''
+OpenModelica FMI & SSP based simulator'''
 
 from OMSimulator import Scope, Types
 from OMSimulator.Model import Model

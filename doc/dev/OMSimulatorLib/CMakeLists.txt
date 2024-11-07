@@ -8,7 +8,7 @@ set(DOXYGEN_GENERATE_HTML YES)
 set(DOXYGEN_GENERATE_LATEX NO)
 
 set(DOXYGEN_PROJECT_NAME OMSimulatorLib)
-set(DOXYGEN_PROJECT_BRIEF "The OMSimulator project is a FMI-based co-simulation environment that supports ordinary (i.e., non-delayed) and TLM connections.")
+set(DOXYGEN_PROJECT_BRIEF "The OMSimulator project is a FMI-based co-simulation environment.")
 
 set(DOXYGEN_EXTRACT_ALL YES)
 set(DOXYGEN_EXTRACT_PRIVATE YES)

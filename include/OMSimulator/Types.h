@@ -120,7 +120,6 @@ typedef enum {
 
 typedef enum {
   oms_system_none,
-  oms_system_tlm,      ///< TLM System
   oms_system_wc,       ///< Weakly Coupled System
   oms_system_sc        ///< Strongly Coupled System
 } oms_system_enu_t;
@@ -147,7 +146,6 @@ typedef enum {
 typedef enum {
   oms_connection_single, ///< FMI conncection (directed & undelayed signal connection)
   oms_connection_bus,    ///< Bus connection
-  oms_connection_tlm
 } oms_connection_type_enu_t;
 
 /**
@@ -331,24 +329,13 @@ typedef struct {
 } ssd_system_geometry_t;
 
 /**
- * \brief Parameters for TLM connection
- */
-typedef struct {
-  double delay;
-  double alpha;
-  double linearimpedance;
-  double angularimpedance;
-} oms_tlm_connection_parameters_t;
-
-/**
  * \brief Connection between two connectors.
  */
 typedef struct {
-  oms_connection_type_enu_t type;                  ///< Connection type, e.g. TLM
+  oms_connection_type_enu_t type;                  ///< Connection type
   char* conA;                                      ///< Name of connector A
   char* conB;                                      ///< Name of connector B
   ssd_connection_geometry_t* geometry;             ///< Geometry information of the connection
-  oms_tlm_connection_parameters_t* tlmparameters;  ///< TLM parameters (only for TLM connections)
   bool suppressUnitConversion;                     ///< boolean to specify automatic unit coversion between connections
 } oms_connection_t;
 
@@ -373,20 +360,6 @@ typedef struct {
 } oms_busconnector_t;
 
 /**
- * \brief TLM Bus connector
- */
-typedef struct {
-  char* name;
-  ssd_connector_geometry_t* geometry;
-  oms_tlm_domain_t domain;
-  int dimensions;
-  double delay;
-  oms_tlm_interpolation_t interpolation;
-  char** connectornames;
-  char** connectortypes;
-} oms_tlmbusconnector_t;
-
-/**
  * \brief Element (aka ssd:Component)
  */
 typedef struct _oms_element_t{
@@ -395,7 +368,6 @@ typedef struct _oms_element_t{
   struct _oms_element_t** elements;          ///< List (null-terminated array) of all sub-elements
   oms_connector_t** connectors;              ///< List (null-terminated array) of all interface variables: inputs, outputs, and parameters.
   oms_busconnector_t** busconnectors;        ///< List (null-terminated array) of all bus connectors
-  oms_tlmbusconnector_t** tlmbusconnectors;  ///< List (null-terminated array) of all TLM bus connectors
   ssd_element_geometry_t* geometry;          ///< Geometry information of the element
 } oms_element_t;
 

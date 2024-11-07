@@ -30,9 +30,6 @@ end
 status = oms_newModel("test01lua")
 printStatus(status, 0)
 
-status = oms_addSystem("test01lua", oms_system_tlm)
-printStatus(status, 3)
-
 status = oms_addSystem("test01lua.foo", oms_system_wc)
 printStatus(status, 0)
 
