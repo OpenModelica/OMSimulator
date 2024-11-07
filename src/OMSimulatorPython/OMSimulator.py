@@ -55,7 +55,6 @@ class OMSimulator:
     self.addConnection = Scope._capi.addConnection
     self.addConnector = Scope._capi.addConnector
     self.addConnectorToBus = Scope._capi.addConnectorToBus
-    self.addExternalModel = Scope._capi.addExternalModel
     self.addResources = Scope._capi.addResources
     self.addSignalsToResults = Scope._capi.addSignalsToResults
     self.addSubModel = Scope._capi.addSubModel
