@@ -79,7 +79,7 @@ printStatus(status, 3)
 ## status:  [correct] ok
 ## status:  [correct] ok
 ## status:  [correct] ok
-## error:   [NewSystem] A WC system must be the root system or a subsystem of a TLM system.
+## error:   [NewSystem] A WC system must be the root system.
 ## status:  [correct] error
 ## <?xml version="1.0"?>
 ## <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="test01py" version="1.0">
@@ -170,7 +170,7 @@ printStatus(status, 3)
 ## 		<ssd:Annotations>
 ## 			<ssc:Annotation type="org.openmodelica">
 ## 				<oms:Annotations>
-## 					<oms:SimulationInformation resultFile="test01py_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="resources/signalFilter.xml" />
+## 					<oms:SimulationInformation resultFile="test01py_res.mat" loggingInterval="0.000000" bufferSize="10" />
 ## 				</oms:Annotations>
 ## 			</ssc:Annotation>
 ## 		</ssd:Annotations>
