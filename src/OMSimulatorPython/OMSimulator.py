@@ -18,9 +18,8 @@ class OMSimulator:
 
     ## oms_system_enu_t
     self.system_none = 0
-    self.system_tlm = 1
-    self.system_wc = 2
-    self.system_sc = 3
+    self.system_wc = 1
+    self.system_sc = 2
 
     ## oms_causality_enu_t
     self.input = 0
