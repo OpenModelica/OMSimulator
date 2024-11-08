@@ -30,58 +30,58 @@ status = oms.setTempDirectory("./buses-py/")
 printStatus(status, 0)
 
 status = oms.newModel("model")
-status = oms.addSystem("model.tlm", oms.system_wc)
-status = oms.addSystem("model.tlm.wc1", oms.system_sc)
-status = oms.addSystem("model.tlm.wc2", oms.system_sc)
-status = oms.addConnector("model.tlm.wc1.u1", oms.input, oms.signal_type_real)
-status = oms.addConnector("model.tlm.wc1.u2", oms.input, oms.signal_type_real)
-status = oms.addConnector("model.tlm.wc1.y", oms.output, oms.signal_type_real)
-status = oms.addConnector("model.tlm.wc2.y1", oms.output, oms.signal_type_real)
-status = oms.addConnector("model.tlm.wc2.y2", oms.output, oms.signal_type_real)
-status = oms.addConnector("model.tlm.wc2.y3", oms.output, oms.signal_type_real)
-status = oms.addBus("model.tlm.wc1.bus1")
+status = oms.addSystem("model.wc", oms.system_wc)
+status = oms.addSystem("model.wc.sc1", oms.system_sc)
+status = oms.addSystem("model.wc.sc2", oms.system_sc)
+status = oms.addConnector("model.wc.sc1.u1", oms.input, oms.signal_type_real)
+status = oms.addConnector("model.wc.sc1.u2", oms.input, oms.signal_type_real)
+status = oms.addConnector("model.wc.sc1.y", oms.output, oms.signal_type_real)
+status = oms.addConnector("model.wc.sc2.y1", oms.output, oms.signal_type_real)
+status = oms.addConnector("model.wc.sc2.y2", oms.output, oms.signal_type_real)
+status = oms.addConnector("model.wc.sc2.y3", oms.output, oms.signal_type_real)
+status = oms.addBus("model.wc.sc1.bus1")
 printStatus(status, 0)
 
-status = oms.addConnectorToBus("model.tlm.wc1.bus1","model.tlm.wc1.u1")
+status = oms.addConnectorToBus("model.wc.sc1.bus1","model.wc.sc1.u1")
 printStatus(status, 0)
 
-status = oms.addConnectorToBus("model.tlm.wc1.bus1","model.tlm.wc1.u2")
+status = oms.addConnectorToBus("model.wc.sc1.bus1","model.wc.sc1.u2")
 printStatus(status, 0)
 
-status = oms.addConnectorToBus("model.tlm.wc1.bus1","model.tlm.wc2.y1")
+status = oms.addConnectorToBus("model.wc.sc1.bus1","model.wc.sc2.y1")
 printStatus(status, 3)
 
-status = oms.addConnectorToBus("model.tlm.wc1.bus1","model.tlm.wc1.y")
+status = oms.addConnectorToBus("model.wc.sc1.bus1","model.wc.sc1.y")
 printStatus(status, 0)
 
-status = oms.addBus("model.tlm.wc2.bus2")
+status = oms.addBus("model.wc.sc2.bus2")
 printStatus(status, 0)
 
-status = oms.addConnectorToBus("model.tlm.wc2.bus2","model.tlm.wc2.y1")
+status = oms.addConnectorToBus("model.wc.sc2.bus2","model.wc.sc2.y1")
 printStatus(status, 0)
 
-status = oms.addConnectorToBus("model.tlm.wc2.bus2","model.tlm.wc2.y2")
+status = oms.addConnectorToBus("model.wc.sc2.bus2","model.wc.sc2.y2")
 printStatus(status, 0)
 
-status = oms.addConnection("model.tlm.wc1.u1","model.tlm.wc2.y1")
+status = oms.addConnection("model.wc.sc1.u1","model.wc.sc2.y1")
 printStatus(status, 0)
 
-status = oms.addConnection("model.tlm.wc1.bus1","model.tlm.wc2.bus2")
+status = oms.addConnection("model.wc.sc1.bus1","model.wc.sc2.bus2")
 printStatus(status, 0)
 
-status = oms.addConnection("model.tlm.wc1.u2","model.tlm.wc2.y2")
+status = oms.addConnection("model.wc.sc1.u2","model.wc.sc2.y2")
 printStatus(status, 0)
 
-status = oms.addConnection("model.tlm.wc2.bus2","model.tlm.wc1.bus1")
+status = oms.addConnection("model.wc.sc2.bus2","model.wc.sc1.bus1")
 printStatus(status, 3)
 
-src, status = oms.list("model.tlm")
+src, status = oms.list("model.wc")
 print(src, flush=True)
 
-status = oms.deleteConnectorFromBus("model.tlm.wc1.bus1","model.tlm.wc1.y")
+status = oms.deleteConnectorFromBus("model.wc.sc1.bus1","model.wc.sc1.y")
 printStatus(status, 0)
 
-src, status = oms.list("model.tlm")
+src, status = oms.list("model.wc")
 print(src, flush=True)
 
 status = oms.delete("model")
@@ -92,7 +92,7 @@ printStatus(status, 0)
 ## status:  [correct] ok
 ## status:  [correct] ok
 ## status:  [correct] ok
-## error:   [addConnectorToBus] Bus "wc1.bus1" and connector "wc2.y1" do not belong to same system
+## error:   [addConnectorToBus] Bus "sc1.bus1" and connector "sc2.y1" do not belong to same system
 ## status:  [correct] error
 ## status:  [correct] ok
 ## status:  [correct] ok
@@ -101,12 +101,12 @@ printStatus(status, 0)
 ## status:  [correct] ok
 ## status:  [correct] ok
 ## status:  [correct] ok
-## error:   [addConnection] Connection <"wc2.bus2", "wc1.bus1"> exists already in system "model.tlm"
+## error:   [addConnection] Connection <"sc2.bus2", "sc1.bus1"> exists already in system "model.wc"
 ## status:  [correct] error
 ## <?xml version="1.0"?>
-## <ssd:System name="tlm">
+## <ssd:System name="wc">
 ## 	<ssd:Elements>
-## 		<ssd:System name="wc2">
+## 		<ssd:System name="sc2">
 ## 			<ssd:Connectors>
 ## 				<ssd:Connector name="y1" kind="output">
 ## 					<ssc:Real />
@@ -136,7 +136,7 @@ printStatus(status, 0)
 ## 				</ssc:Annotation>
 ## 			</ssd:Annotations>
 ## 		</ssd:System>
-## 		<ssd:System name="wc1">
+## 		<ssd:System name="sc1">
 ## 			<ssd:Connectors>
 ## 				<ssd:Connector name="u1" kind="input">
 ## 					<ssc:Real />
@@ -169,14 +169,14 @@ printStatus(status, 0)
 ## 		</ssd:System>
 ## 	</ssd:Elements>
 ## 	<ssd:Connections>
-## 		<ssd:Connection startElement="wc2" startConnector="y1" endElement="wc1" endConnector="u1" />
-## 		<ssd:Connection startElement="wc2" startConnector="y2" endElement="wc1" endConnector="u2" />
+## 		<ssd:Connection startElement="sc2" startConnector="y1" endElement="sc1" endConnector="u1" />
+## 		<ssd:Connection startElement="sc2" startConnector="y2" endElement="sc1" endConnector="u2" />
 ## 	</ssd:Connections>
 ## 	<ssd:Annotations>
 ## 		<ssc:Annotation type="org.openmodelica">
 ## 			<oms:Annotations>
 ## 				<oms:Connections>
-## 					<oms:Connection startElement="wc1" startConnector="bus1" endElement="wc2" endConnector="bus2" />
+## 					<oms:Connection startElement="sc1" startConnector="bus1" endElement="sc2" endConnector="bus2" />
 ## 				</oms:Connections>
 ## 				<oms:SimulationInformation>
 ## 					<oms:FixedStepMaster description="oms-ma" stepSize="0.001000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
@@ -188,9 +188,9 @@ printStatus(status, 0)
 ##
 ## status:  [correct] ok
 ## <?xml version="1.0"?>
-## <ssd:System name="tlm">
+## <ssd:System name="wc">
 ## 	<ssd:Elements>
-## 		<ssd:System name="wc2">
+## 		<ssd:System name="sc2">
 ## 			<ssd:Connectors>
 ## 				<ssd:Connector name="y1" kind="output">
 ## 					<ssc:Real />
@@ -220,7 +220,7 @@ printStatus(status, 0)
 ## 				</ssc:Annotation>
 ## 			</ssd:Annotations>
 ## 		</ssd:System>
-## 		<ssd:System name="wc1">
+## 		<ssd:System name="sc1">
 ## 			<ssd:Connectors>
 ## 				<ssd:Connector name="u1" kind="input">
 ## 					<ssc:Real />
@@ -252,14 +252,14 @@ printStatus(status, 0)
 ## 		</ssd:System>
 ## 	</ssd:Elements>
 ## 	<ssd:Connections>
-## 		<ssd:Connection startElement="wc2" startConnector="y1" endElement="wc1" endConnector="u1" />
-## 		<ssd:Connection startElement="wc2" startConnector="y2" endElement="wc1" endConnector="u2" />
+## 		<ssd:Connection startElement="sc2" startConnector="y1" endElement="sc1" endConnector="u1" />
+## 		<ssd:Connection startElement="sc2" startConnector="y2" endElement="sc1" endConnector="u2" />
 ## 	</ssd:Connections>
 ## 	<ssd:Annotations>
 ## 		<ssc:Annotation type="org.openmodelica">
 ## 			<oms:Annotations>
 ## 				<oms:Connections>
-## 					<oms:Connection startElement="wc1" startConnector="bus1" endElement="wc2" endConnector="bus2" />
+## 					<oms:Connection startElement="sc1" startConnector="bus1" endElement="sc2" endConnector="bus2" />
 ## 				</oms:Connections>
 ## 				<oms:SimulationInformation>
 ## 					<oms:FixedStepMaster description="oms-ma" stepSize="0.001000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
