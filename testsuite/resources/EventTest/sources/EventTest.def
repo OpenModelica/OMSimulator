@@ -1,0 +1,54 @@
+EXPORTS
+  ;***************************************************
+  ;Common Functions
+  ;****************************************************
+  EventTest_fmiGetTypesPlatform @1
+  EventTest_fmiGetVersion @2
+  EventTest_fmiSetDebugLogging @3
+  EventTest_fmiInstantiate @4
+  EventTest_fmiFreeInstance @5
+  EventTest_fmiSetupExperiment @6
+  EventTest_fmiEnterInitializationMode @7
+  EventTest_fmiExitInitializationMode @8
+  EventTest_fmiTerminate @9
+  EventTest_fmiReset @10
+  EventTest_fmiGetReal @11
+  EventTest_fmiGetInteger @12
+  EventTest_fmiGetBoolean @13
+  EventTest_fmiGetString @14
+  EventTest_fmiSetReal @15
+  EventTest_fmiSetInteger @16
+  EventTest_fmiSetBoolean @17
+  EventTest_fmiSetString @18
+  EventTest_fmiGetFMUstate @19
+  EventTest_fmiSetFMUstate @20
+  EventTest_fmiFreeFMUstate @21
+  EventTest_fmiSerializedFMUstateSize @22
+  EventTest_fmiSerializeFMUstate @23
+  EventTest_fmiDeSerializeFMUstate @24
+  EventTest_fmiGetDirectionalDerivative @25
+  ;***************************************************
+  ;Functions for FMI for Model Exchange
+  ;****************************************************
+  EventTest_fmiEnterEventMode @26
+  EventTest_fmiNewDiscreteStates @27
+  EventTest_fmiEnterContinuousTimeMode @28
+  EventTest_fmiCompletedIntegratorStep @29
+  EventTest_fmiSetTime @30
+  EventTest_fmiSetContinuousStates @31
+  EventTest_fmiGetDerivatives @32
+  EventTest_fmiGetEventIndicators @33
+  EventTest_fmiGetContinuousStates @34
+  EventTest_fmiGetNominalsOfContinuousStates @35
+  ;***************************************************
+  ;Functions for FMI for Co-Simulation
+  ;****************************************************
+  EventTest_fmiSetRealInputDerivatives @36
+  EventTest_fmiGetRealOutputDerivatives @37
+  EventTest_fmiDoStep @38
+  EventTest_fmiCancelStep @39
+  EventTest_fmiGetStatus @40
+  EventTest_fmiGetRealStatus @41
+  EventTest_fmiGetIntegerStatus @42
+  EventTest_fmiGetBooleanStatus @43
+  EventTest_fmiGetStringStatus @44
