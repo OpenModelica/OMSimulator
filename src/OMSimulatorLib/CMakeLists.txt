@@ -19,7 +19,6 @@ ELSEIF (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5
   ENDIF ()
 ENDIF ()
 
-
 set(OMSIMULATORLIB_SOURCES
       AlgLoop.cpp
       BusConnector.cpp
@@ -72,9 +71,7 @@ list(APPEND OMSIMULATORLIB_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/Version.cpp")
 add_library(OMSimulatorLib SHARED ${OMSIMULATORLIB_SOURCES})
 set_target_properties(OMSimulatorLib PROPERTIES OUTPUT_NAME OMSimulator)
 
-target_include_directories(OMSimulatorLib
-                            PUBLIC
-                              ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(OMSimulatorLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(OMSimulatorLib
                         PUBLIC
@@ -105,9 +102,7 @@ endif()
 
 target_compile_definitions(OMSimulatorLib_static PUBLIC OMS_STATIC)
 
-target_include_directories(OMSimulatorLib_static
-                            PUBLIC
-                              ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(OMSimulatorLib_static PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(OMSimulatorLib_static
                         PUBLIC
@@ -127,8 +122,6 @@ target_link_libraries(OMSimulatorLib_static PUBLIC ${CMAKE_DL_LIBS} ${CMAKE_THRE
 if(MINGW)
   target_link_libraries(OMSimulatorLib_static PUBLIC shlwapi)
 endif()
-
-
 
 install(TARGETS OMSimulatorLib)
 install(TARGETS OMSimulatorLib_static)
