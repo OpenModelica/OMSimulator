@@ -22,6 +22,7 @@ set(OM_OMS_TESTSUITE_RESOURCES_FMUS
         ${CMAKE_CURRENT_SOURCE_DIR}/HelloWorld
         ${CMAKE_CURRENT_SOURCE_DIR}/HelloWorldWithInput
         ${CMAKE_CURRENT_SOURCE_DIR}/Int1
+        ${CMAKE_CURRENT_SOURCE_DIR}/invalidModeldescription
         ${CMAKE_CURRENT_SOURCE_DIR}/Lin2DimODE
         ${CMAKE_CURRENT_SOURCE_DIR}/Modelica.Blocks.Continuous.Integrator
         ${CMAKE_CURRENT_SOURCE_DIR}/Modelica.Blocks.Math.Add
@@ -64,6 +65,8 @@ set(OM_OMS_TESTSUITE_RESOURCES_SSPS
         ${CMAKE_CURRENT_SOURCE_DIR}/import_export_parameters3
         ${CMAKE_CURRENT_SOURCE_DIR}/importExportAllResources
         ${CMAKE_CURRENT_SOURCE_DIR}/invalidSSP
+        ${CMAKE_CURRENT_SOURCE_DIR}/invalidSSM
+        ${CMAKE_CURRENT_SOURCE_DIR}/invalidSSD
         ${CMAKE_CURRENT_SOURCE_DIR}/replaceSubmodel4
         ${CMAKE_CURRENT_SOURCE_DIR}/replaceSubmodel5
 )
