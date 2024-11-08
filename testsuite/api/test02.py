@@ -28,9 +28,7 @@ def printStatus(status, expected):
   print("status:  [%s] %s" % (cmp, status), flush=True)
 
 def printType(t):
-  if oms.system_tlm == t:
-    print("type: system_tlm", flush=True)
-  elif oms.system_wc == t:
+  if oms.system_wc == t:
     print("type: system_wc", flush=True)
   elif oms.system_sc == t:
     print("type: system_sc", flush=True)
