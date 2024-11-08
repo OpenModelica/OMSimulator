@@ -499,20 +499,6 @@ typedef struct {
   double stepSize; // default stepSize
 } oms_fmu_default_experiment_settings;
 
-/**
- * \brief External model specific attributes
- */
-typedef struct {
-  /**
-   * Path to the external model file
-   */
-  char* path;
-  /**
-   * Start script for the external model
-   */
-  char* startScript;
-}  oms_external_tlm_model_info_t;
-
 #ifdef __cplusplus
 }
 #endif
