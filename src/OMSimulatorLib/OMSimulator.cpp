@@ -34,7 +34,6 @@
 #include "Component.h"
 #include "ComRef.h"
 #include "Element.h"
-#include "ExternalModelInfo.h"
 #include "Flags.h"
 #include "FMUInfo.h"
 #include "Logging.h"

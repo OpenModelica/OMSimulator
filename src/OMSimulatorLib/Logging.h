@@ -134,7 +134,6 @@ private:
 #define logError_InvalidIdent(cref)                            logError("\"" + std::string(cref) + "\" is not a valid ident")
 #define logError_ModelInWrongState(cref)                       logError("Model \"" + std::string(cref) + "\" is in wrong model state")
 #define logError_ModelNotInScope(cref)                         logError("Model \"" + std::string(cref) + "\" does not exist in the scope")
-#define logError_NotForExternalModels                          logError("Not available for external models")
 #define logError_NotForScSystem                                logError("Not available for strongly coupled systems")
 #define logError_NotImplemented                                logError("Not implemented")
 #define logError_OnlyForModel                                  logError("Only implemented for model identifiers")

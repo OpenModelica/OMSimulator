@@ -110,7 +110,6 @@ namespace oms
     oms_status_enu_t addConnectorToBus(const ComRef& busCref, const ComRef& connectorCref);
     oms_status_enu_t deleteConnectorFromBus(const ComRef& busCref, const ComRef& connectorCref);
     oms_status_enu_t setBusGeometry(const ComRef& cref, const oms::ssd::ConnectorGeometry* geometry);
-    oms_status_enu_t addExternalModel(const ComRef &cref, std::string path, std::string startscript);
     oms_status_enu_t delete_(const ComRef& cref);
     oms_status_enu_t deleteAllConectionsTo(const ComRef& cref);
     oms_status_enu_t deleteReferencesInSSD(const ComRef& cref, const std::string& filename);

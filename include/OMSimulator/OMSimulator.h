@@ -85,7 +85,6 @@ OMSAPI oms_status_enu_t OMSCALL oms_exportSnapshot(const char* cref, char** cont
 OMSAPI oms_status_enu_t OMSCALL oms_exportSSMTemplate(const char * cref, const char * filename);
 OMSAPI oms_status_enu_t OMSCALL oms_exportSSVTemplate(const char* cref, const char* filename);
 OMSAPI oms_status_enu_t OMSCALL oms_extractFMIKind(const char* filename, oms_fmi_kind_enu_t* kind, oms_fmu_default_experiment_settings* defaultExperiment);
-OMSAPI oms_status_enu_t OMSCALL oms_fetchExternalModelInterfaces(const char* cref, char*** names, char*** domains, int** dimensions);
 OMSAPI void OMSCALL oms_freeMemory(void* obj);
 OMSAPI oms_status_enu_t OMSCALL oms_getBoolean(const char* cref, bool* value);
 OMSAPI oms_status_enu_t OMSCALL oms_getBus(const char* cref, oms_busconnector_t** busConnector);
@@ -95,7 +94,6 @@ OMSAPI oms_status_enu_t OMSCALL oms_getConnector(const char* cref, oms_connector
 OMSAPI oms_status_enu_t OMSCALL oms_getDirectionalDerivative(const char* unknownCref, const char* knownCref, double* value);
 OMSAPI oms_status_enu_t OMSCALL oms_getElement(const char* cref, oms_element_t** element);
 OMSAPI oms_status_enu_t OMSCALL oms_getElements(const char* cref, oms_element_t*** elements);
-OMSAPI oms_status_enu_t OMSCALL oms_getExternalModelInfo(const char* cref, const oms_external_tlm_model_info_t** externalModelInfo);
 OMSAPI oms_status_enu_t OMSCALL oms_getFixedStepSize(const char* cref, double* stepSize);
 OMSAPI oms_status_enu_t OMSCALL oms_getFMUInfo(const char* cref, const oms_fmu_info_t** fmuInfo);
 OMSAPI oms_status_enu_t OMSCALL oms_getInteger(const char* cref, int* value);

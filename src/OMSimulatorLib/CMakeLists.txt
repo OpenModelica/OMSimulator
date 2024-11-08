@@ -36,7 +36,6 @@ set(OMSIMULATORLIB_SOURCES
       CSVWriter.cpp
       DirectedGraph.cpp
       Element.cpp
-      ExternalModelInfo.cpp
       Flags.cpp
       FMUInfo.cpp
       Logging.cpp
