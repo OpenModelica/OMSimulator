@@ -27,9 +27,7 @@ function printStatus(status, expected)
 end
 
 function printType(t)
-  if oms_system_tlm == t then
-    print("type: oms_system_tlm")
-  elseif oms_system_wc == t then
+  if oms_system_wc == t then
     print("type: oms_system_wc")
   elseif oms_system_sc == t then
     print("type: oms_system_sc")
