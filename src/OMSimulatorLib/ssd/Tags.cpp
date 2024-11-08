@@ -32,7 +32,6 @@
 #include "Tags.h"
 
 const char* oms::ssp::Draft20180219::annotation_type                   = "org.openmodelica";
-const char* oms::ssp::Draft20180219::tlm_master                        = "oms:TlmMaster";
 const char* oms::ssp::Draft20180219::bus                               = "oms:Bus";
 const char* oms::ssp::Draft20180219::signals                           = "oms:Signals";
 const char* oms::ssp::Draft20180219::signal                            = "oms:Signal";
