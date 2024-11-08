@@ -48,18 +48,6 @@ str_hello_world \
 tank1 \
 tank2 \
 tank3 \
-tlm.adder \
-tlm.CoarseGrained1_1D \
-tlm.CoarseGrained2_1D \
-tlm.FineGrained1_1D \
-tlm.FineGrained2_1D \
-tlm.gain \
-tlm.LowerPendulum \
-tlm.LowerPendulumFG \
-tlm.mass \
-tlm.massSpring \
-tlm.source \
-tlm.UpperPendulum \
 testArray \
 ypipe \
 
