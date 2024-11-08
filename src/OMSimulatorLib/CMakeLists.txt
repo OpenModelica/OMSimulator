@@ -75,8 +75,7 @@ set_target_properties(OMSimulatorLib PROPERTIES OUTPUT_NAME OMSimulator)
 
 target_include_directories(OMSimulatorLib
                             PUBLIC
-                              ${CMAKE_CURRENT_SOURCE_DIR}
-                              ${DUMMY_OMTLM_DIRECTORY})
+                              ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(OMSimulatorLib
                         PUBLIC
@@ -109,8 +108,7 @@ target_compile_definitions(OMSimulatorLib_static PUBLIC OMS_STATIC)
 
 target_include_directories(OMSimulatorLib_static
                             PUBLIC
-                              ${CMAKE_CURRENT_SOURCE_DIR}
-                              ${DUMMY_OMTLM_DIRECTORY})
+                              ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(OMSimulatorLib_static
                         PUBLIC

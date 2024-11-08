@@ -68,12 +68,6 @@ typedef enum {
 } oms_causality_enu_t;
 
 typedef enum {
-  oms_tlm_no_interpolation,
-  oms_tlm_coarse_grained,
-  oms_tlm_fine_grained
-} oms_tlm_interpolation_t;
-
-typedef enum {
   oms_fault_type_bias,      ///< y = y.$original + faultValue
   oms_fault_type_gain,      ///< y = y.$original * faultValue
   oms_fault_type_const      ///< y = faultValue
@@ -83,15 +77,6 @@ typedef struct {
   oms_fault_type_enu_t faultType;
   double faultValue;
 } oms_fault_type_t;
-
-typedef enum {
-  oms_tlm_domain_input,
-  oms_tlm_domain_output,
-  oms_tlm_domain_mechanical,
-  oms_tlm_domain_rotational,
-  oms_tlm_domain_hydraulic,
-  oms_tlm_domain_electric
-} oms_tlm_domain_t;
 
 typedef enum {
   oms_solver_none,

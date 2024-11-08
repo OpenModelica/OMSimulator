@@ -1488,11 +1488,6 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms_stepUntil);
   REGISTER_LUA_CALL(oms_terminate);
 
-  // oms_tlm_interpolation_t
-  REGISTER_LUA_ENUM(oms_tlm_no_interpolation);
-  REGISTER_LUA_ENUM(oms_tlm_coarse_grained);
-  REGISTER_LUA_ENUM(oms_tlm_fine_grained);
-
   // oms_causality_enu_t;
   REGISTER_LUA_ENUM(oms_causality_input);
   REGISTER_LUA_ENUM(oms_causality_output);
@@ -1534,14 +1529,6 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_ENUM(oms_signal_type_integer);
   REGISTER_LUA_ENUM(oms_signal_type_boolean);
   REGISTER_LUA_ENUM(oms_signal_type_string);
-
-  // oms_tlm_domain_t
-  REGISTER_LUA_ENUM(oms_tlm_domain_input);
-  REGISTER_LUA_ENUM(oms_tlm_domain_output);
-  REGISTER_LUA_ENUM(oms_tlm_domain_mechanical);
-  REGISTER_LUA_ENUM(oms_tlm_domain_rotational);
-  REGISTER_LUA_ENUM(oms_tlm_domain_hydraulic);
-  REGISTER_LUA_ENUM(oms_tlm_domain_electric);
 
   // oms_fault_type_enu_t
   REGISTER_LUA_ENUM(oms_fault_type_bias);

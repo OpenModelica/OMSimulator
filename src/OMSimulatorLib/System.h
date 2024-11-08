@@ -99,9 +99,6 @@ namespace oms
     std::string getConnectorOwner(const ComRef& cref) const;
     Connector** getConnectors() {return &connectors[0];}
     BusConnector* getBusConnector(const ComRef& cref);
-    oms_status_enu_t addConnectorToTLMBus(const ComRef& busCref, const ComRef& connectorCref, const std::string type);
-    oms_status_enu_t deleteConnectorFromTLMBus(const ComRef& busCref, const ComRef& connectorCref);
-    oms_status_enu_t setTLMBusGeometry(const ComRef& cref, const oms::ssd::ConnectorGeometry* geometry);
     Connection* getConnection(const ComRef& crefA, const ComRef& crefB);
     Connection** getConnections(const ComRef &cref);
     oms_status_enu_t addConnection(const ComRef& crefA, const ComRef& crefB, bool suppressUnitConversion = false);
@@ -201,7 +198,6 @@ namespace oms
 
   private: // methods
     oms_status_enu_t importFromSSD_ConnectionGeometry(const pugi::xml_node& node, const ComRef& crefA, const ComRef& crefB);
-    oms_status_enu_t importTLMBus(const pugi::xml_node& node, Component* component);
     oms_status_enu_t importBusConnectorSignals(const pugi::xml_node& node);
     oms_status_enu_t importBusConnectorGeometry(const pugi::xml_node& node);
 
