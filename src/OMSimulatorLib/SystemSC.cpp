@@ -483,162 +483,176 @@ oms_status_enu_t oms::SystemSC::reset()
 
 oms_status_enu_t oms::SystemSC::doStep()
 {
-  const double hdef = maximumStepSize;
-  fmi2Real tlast = time;
-  fmi2Real tnext = time + hdef;
   fmi2Status fmistatus;
   oms_status_enu_t status;
 
-  // event handling
-  for (int i=0; i < fmus.size(); ++i)
+  // Step 1: Initialize state variables and time
+  const fmi2Real start_time = time;
+  const fmi2Real end_time = time + maximumStepSize;
+  fmi2Real current_time = start_time;
+
+  logInfo("doStep");
+
+  // Step 2: Retrieve initial state and derivatives
+  for (size_t i=0; i < fmus.size(); ++i)
   {
-    fmistatus = fmi2_setTime(fmus[i]->getFMU(), time);
-    if (fmi2OK != fmistatus) logError_FMUCall("fmi2_setTime", fmus[i]);
+    status = fmus[i]->getContinuousStates(states[i]);
+    if (oms_status_ok != status) return status;
+    status = fmus[i]->getDerivatives(states_der[i]);
+    if (oms_status_ok != status) return status;
+    fmistatus = fmi2_getEventIndicators(fmus[i]->getFMU(), event_indicators_prev[i], nEventIndicators[i]);
+    if (fmi2OK != fmistatus) logError_FMUCall("fmi2_getEventIndicators", fmus[i]);
+  }
 
-    // swap event_indicators and event_indicators_prev
+  fmi2Real step_size = maximumStepSize;
+  fmi2Real event_time = end_time;
+  bool event_detected = false;
+
+  // Backup states for potential rollback
+  std::vector<double *> states_backup;
+  std::vector<double *> states_der_backup;
+
+  for (size_t i=0; i < fmus.size(); ++i)
+  {
+    states_backup.push_back((double*)calloc(nStates[i], sizeof(double)));
+    states_der_backup.push_back((double*)calloc(nStates[i], sizeof(double)));
+  }
+  for (size_t i=0; i < fmus.size(); ++i)
+  {
+    status = fmus[i]->getContinuousStates(states_backup[i]);
+    if (oms_status_ok != status) return status;
+    status = fmus[i]->getDerivatives(states_der_backup[i]);
+    if (oms_status_ok != status) return status;
+  }
+
+  // Step 3: Main integration loop (Euler method)
+  while (current_time < end_time)
+  {
+    fmi2Real h = event_time - current_time;  // Substep size
+    step_size *= 0.5;
+
+    logInfo("h: " + std::to_string(h) + " step_size: " + std::to_string(step_size) + " event_time: " + std::to_string(event_time));
+
+    // a. Evaluate derivatives for each FMU
+    for (size_t i = 0; i < fmus.size(); ++i)
     {
-      fmi2Real *temp = event_indicators[i];
-      event_indicators[i] = event_indicators_prev[i];
-      event_indicators_prev[i] = temp;
+      if (0 == nStates[i])
+        continue;
 
+      for (int k = 0; k < nStates[i]; ++k)
+        states[i][k] = states_backup[i][k] + h * states_der_backup[i][k];
+
+      // set states
+      status = fmus[i]->setContinuousStates(states[i]);
+      if (oms_status_ok != status) return status;
+    }
+
+    // b. Event Detection
+    event_detected = false;
+    for (size_t i = 0; i < fmus.size(); ++i)
+    {
       fmistatus = fmi2_getEventIndicators(fmus[i]->getFMU(), event_indicators[i], nEventIndicators[i]);
       if (fmi2OK != fmistatus) logError_FMUCall("fmi2_getEventIndicators", fmus[i]);
-    }
 
-    // check if an event indicator has triggered
-    int zero_crossing_event = 0;
-    for (int k=0; k < nEventIndicators[i]; k++)
-    {
-      if ((event_indicators[i][k] > 0) != (event_indicators_prev[i][k] > 0))
+      for (int k=0; k < nEventIndicators[i]; k++)
       {
-        zero_crossing_event = 1;
-        break;
+        if ((event_indicators[i][k] > 0) != (event_indicators_prev[i][k] > 0))
+        {
+          logInfo("Event detected");
+          event_detected = true;
+          break;
+        }
       }
     }
 
-    // handle events
-    if (callEventUpdate[i] || zero_crossing_event || (fmus[i]->getEventInfo()->nextEventTimeDefined && time == fmus[i]->getEventInfo()->nextEventTime))
+    // c. Event handling and step advancement
+    if (!event_detected)
     {
-      logDebug("Event detected in FMU \"" + std::string(fmus[i]->getFullCref()) + "\" at time=" + std::to_string(time));
-
-      // emit the left limit of the event (if it hasn't already been emitted)
-      if (isTopLevelSystem())
-        getModel().emit(time, false);
-
-      fmistatus = fmi2_enterEventMode(fmus[i]->getFMU());
-      if (fmi2OK != fmistatus) logError_FMUCall("fmi2_enterEventMode", fmus[i]);
-
-      fmus[i]->doEventIteration();
-
-      fmistatus = fmi2_enterContinuousTimeMode(fmus[i]->getFMU());
-      if (fmi2OK != fmistatus) logError_FMUCall("fmi2_enterContinuousTimeMode", fmus[i]);
-      if (nStates[i] > 0)
+      if (event_time == end_time)
       {
-        status = fmus[i]->getContinuousStates(states[i]);
-        if (oms_status_ok != status) return status;
-        status = fmus[i]->getDerivatives(states_der[i]);
-        if (oms_status_ok != status) return status;
-      }
-      status = fmus[i]->getEventindicators(event_indicators[i]);
-      if (oms_status_ok != status) return status;
+        // Integrate normally to the end time if no events are ahead
+        current_time += h;
+        time = current_time;
+        step_size = maximumStepSize;
 
-      if (oms_solver_sc_cvode == solverMethod)
+        for (int i = 0; i < fmus.size(); ++i)
+        {
+          fmistatus = fmi2_completedIntegratorStep(fmus[i]->getFMU(), fmi2True, &callEventUpdate[i], &terminateSimulation[i]);
+          if (fmi2OK != fmistatus) return logError_FMUCall("fmi2_completedIntegratorStep", fmus[i]);
+        }
+
+        logInfo("Integrate normally to the end time if no events are ahead");
+        return oms_status_ok;
+      }
+      else
       {
-        size_t offset=0;
-        for (size_t k=0; k < i; ++k)
-          offset += nStates[k];
-        for (size_t k=0; k < nStates[i]; ++k)
-          NV_Ith_S(solverData.cvode.y, offset+k) = states[i][k];
-        int flag = CVodeReInit(solverData.cvode.mem, time, solverData.cvode.y);
-        if (flag < 0) logError("SUNDIALS_ERROR: CVodeReInit() failed with flag = " + std::to_string(flag));
+        // Advance to the tentative event time and check again
+        event_time += step_size;
+        logInfo("Advance to the tentative event time and check again");
       }
-
-      // emit the right limit of the event
-      updateInputs(eventGraph);
-      if (isTopLevelSystem())
-        getModel().emit(time, true);
-
-      // restart event iteration from the beginning
-      i=-1;
-      continue;
     }
-
-    // calculate next time step
-    if (fmus[i]->getEventInfo()->nextEventTimeDefined && (tnext >= fmus[i]->getEventInfo()->nextEventTime))
-      tnext = fmus[i]->getEventInfo()->nextEventTime;
-  }
-
-  // calculate step size
-  fmi2Real hcur = tnext - tlast;
-  const double stopTime = getModel().getStopTime();
-  if (tnext > stopTime - hcur / 1e16)
-  {
-    // adjust final step size
-    tnext = stopTime;
-    hcur = tnext - tlast;
-  }
-
-  // logInfo("SystemSC::doStep [" + std::to_string(tlast) + "; " + std::to_string(tnext) + "]");
-
-  // integrate using specified solver
-  if (oms_solver_sc_explicit_euler == solverMethod)
-  {
-    for (int i=0; i < fmus.size(); ++i)
+    else
     {
-      if (0 == nStates[i])
-        continue;
+      if (step_size < 1e-4)
+      {
+        logInfo("Even found!!!");
+        // Event detected: Restore to last "safe" state and integrate directly to event time
 
-      // get state derivatives
-      status = fmus[i]->getDerivatives(states_der[i]);
-      if (oms_status_ok != status) return status;
+        time = current_time;
 
-      for (int k = 0; k < nStates[i]; k++)
-        states[i][k] = states[i][k] + hcur*states_der[i][k];
+        // emit the left limit of the event (if it hasn't already been emitted)
+        if (isTopLevelSystem())
+          getModel().emit(time, false);
 
-      // set states
-      status = fmus[i]->setContinuousStates(states[i]);
-      if (oms_status_ok != status) return status;
+        // Enter event mode and handle discrete state updates for each FMU
+        for (int i = 0; i < fmus.size(); ++i)
+        {
+          fmistatus = fmi2_completedIntegratorStep(fmus[i]->getFMU(), fmi2True, &callEventUpdate[i], &terminateSimulation[i]);
+          if (fmi2OK != fmistatus) return logError_FMUCall("fmi2_completedIntegratorStep", fmus[i]);
+
+          fmistatus = fmi2_enterEventMode(fmus[i]->getFMU());
+          if (fmi2OK != fmistatus) logError_FMUCall("fmi2_enterEventMode", fmus[i]);
+
+          fmus[i]->doEventIteration();
+
+          fmistatus = fmi2_enterContinuousTimeMode(fmus[i]->getFMU());
+          if (fmi2OK != fmistatus) logError_FMUCall("fmi2_enterContinuousTimeMode", fmus[i]);
+
+          if (nStates[i] > 0)
+          {
+            status = fmus[i]->getContinuousStates(states_backup[i]);
+            if (oms_status_ok != status) return status;
+            status = fmus[i]->getDerivatives(states_der_backup[i]);
+            if (oms_status_ok != status) return status;
+          }
+
+          status = fmus[i]->getEventindicators(event_indicators_prev[i]);
+          if (oms_status_ok != status) return status;
+        }
+
+        // emit the right limit of the event
+        updateInputs(eventGraph);
+        if (isTopLevelSystem())
+          getModel().emit(time, true);
+
+        // Reset step size for the next step after handling the event
+        step_size = maximumStepSize;
+        current_time = event_time;
+        event_time = end_time;
+      }
+      else
+      {
+        // Ok, event must be little earlier
+        event_time -= step_size;
+      }
     }
-
-    // set time
-    time = tnext;
   }
-  else if (oms_solver_sc_cvode == solverMethod)
+
+  for (size_t i=0; i < fmus.size(); ++i)
   {
-    double cvode_time = tlast;
-    int flag = CVode(solverData.cvode.mem, tnext, solverData.cvode.y, &cvode_time, CV_NORMAL);
-    if (flag < 0) logError("SUNDIALS_ERROR: CVode() failed with flag = " + std::to_string(flag));
-
-    // set states
-    for (int i=0, j=0; i < fmus.size(); ++i)
-    {
-      if (0 == nStates[i])
-        continue;
-
-      for (int k = 0; k < nStates[i]; k++, j++)
-        states[i][k] = NV_Ith_S(solverData.cvode.y, j);
-
-      // set states
-      status = fmus[i]->setContinuousStates(states[i]);
-      if (oms_status_ok != status) return status;
-    }
-
-    // set time
-    time = cvode_time;
+    free(states_backup[i]);
+    free(states_der_backup[i]);
   }
-  else
-    logError("Unknown solver method");
-
-  // step is complete
-  for (int i=0; i < fmus.size(); ++i)
-  {
-    fmistatus = fmi2_completedIntegratorStep(fmus[i]->getFMU(), fmi2True, &callEventUpdate[i], &terminateSimulation[i]);
-    if (fmi2OK != fmistatus) return logError_FMUCall("fmi2_completedIntegratorStep", fmus[i]);
-  }
-
-  updateInputs(simulationGraph); //pass the continuousTimeMode dependency graph which involves only connections of type Real
-  if (isTopLevelSystem())
-    getModel().emit(time);
 
   return oms_status_ok;
 }
