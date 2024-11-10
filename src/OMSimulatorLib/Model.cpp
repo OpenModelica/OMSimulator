@@ -1264,6 +1264,7 @@ oms_status_enu_t oms::Model::simulate()
   }
 
   oms_status_enu_t status = system->stepUntil(stopTime);
+  emit(stopTime, true);
   clock.toc();
   return status;
 }
@@ -1307,6 +1308,7 @@ oms_status_enu_t oms::Model::stepUntil(double stopTime)
     setStopTime(stopTime);
 
   oms_status_enu_t status = system->stepUntil(stopTime);
+  emit(stopTime, true);
   clock.toc();
   return status;
 }
