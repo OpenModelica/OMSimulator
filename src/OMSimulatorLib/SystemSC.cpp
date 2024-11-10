@@ -578,19 +578,16 @@ oms_status_enu_t oms::SystemSC::doStep()
         time = event_time;
         step_size_adjustment = maximumStepSize;
 
-        // emit the left limit of the event (if it hasn't already been emitted)
-        if (isTopLevelSystem())
-          getModel().emit(time, false);
-
         for (int i = 0; i < fmus.size(); ++i)
         {
           fmistatus = fmi2_completedIntegratorStep(fmus[i]->getFMU(), fmi2True, &callEventUpdate[i], &terminateSimulation[i]);
           if (fmi2OK != fmistatus) return logError_FMUCall("fmi2_completedIntegratorStep", fmus[i]);
         }
 
+        // emit the left limit of the event (if it hasn't already been emitted)
         updateInputs(simulationGraph); //pass the continuousTimeMode dependency graph which involves only connections of type Real
         if (isTopLevelSystem())
-          getModel().emit(time);
+          getModel().emit(time, false);
 
         logDebug("integrate normally to the end time if no events are ahead");
       }
