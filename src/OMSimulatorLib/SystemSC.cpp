@@ -487,9 +487,7 @@ oms_status_enu_t oms::SystemSC::doStep()
   oms_status_enu_t status;
 
   // Step 1: Initialize state variables and time
-  const fmi2Real start_time = time;
   const fmi2Real end_time = time + maximumStepSize;
-  fmi2Real current_time = start_time;
   const fmi2Real event_time_tolerance = 1e-4;
 
   logInfo("doStep");
@@ -527,9 +525,9 @@ oms_status_enu_t oms::SystemSC::doStep()
   }
 
   // Step 3: Main integration loop (Euler method)
-  while (current_time < end_time)
+  while (time < end_time)
   {
-    fmi2Real h = event_time - current_time;  // Substep size, do one step from current_time to the event
+    fmi2Real h = event_time - time;  // Substep size, do one step from current time to the event
     step_size *= 0.5; // reduce the step size in each iteration
 
     logInfo("h: " + std::to_string(h) + " step_size: " + std::to_string(step_size) + " event_time: " + std::to_string(event_time));
@@ -572,8 +570,7 @@ oms_status_enu_t oms::SystemSC::doStep()
       if (event_time == end_time)
       {
         // Integrate normally to the end time if no events are ahead
-        current_time += h;
-        time = current_time;
+        time = event_time;
         step_size = maximumStepSize;
 
         // emit the left limit of the event (if it hasn't already been emitted)
@@ -601,8 +598,9 @@ oms_status_enu_t oms::SystemSC::doStep()
       {
         logInfo("Event found!!! " + std::to_string(event_time));
         // Event detected: Restore to last "safe" state and integrate directly to event time
-
-        time = current_time;
+        time = event_time;
+        step_size = maximumStepSize;
+        event_time = end_time;
 
         // emit the left limit of the event (if it hasn't already been emitted)
         if (isTopLevelSystem())
@@ -638,11 +636,6 @@ oms_status_enu_t oms::SystemSC::doStep()
         updateInputs(eventGraph);
         if (isTopLevelSystem())
           getModel().emit(time, true);
-
-        // Reset step size for the next step after handling the event
-        step_size = maximumStepSize;
-        current_time = event_time;
-        event_time = end_time;
       }
       else
       {
