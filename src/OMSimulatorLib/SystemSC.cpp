@@ -588,6 +588,10 @@ oms_status_enu_t oms::SystemSC::doStep()
           if (fmi2OK != fmistatus) return logError_FMUCall("fmi2_completedIntegratorStep", fmus[i]);
         }
 
+        updateInputs(simulationGraph); //pass the continuousTimeMode dependency graph which involves only connections of type Real
+        if (isTopLevelSystem())
+          getModel().emit(time);
+
         logDebug("integrate normally to the end time if no events are ahead");
       }
       else
