@@ -540,9 +540,11 @@ oms_status_enu_t oms::SystemSC::doStep()
       for (int k = 0; k < nStates[i]; ++k)
         states[i][k] = states_backup[i][k] + step_size * states_der_backup[i][k];
 
-      // set states
       status = fmus[i]->setContinuousStates(states[i]);
       if (oms_status_ok != status) return status;
+
+      fmistatus = fmi2_setTime(fmus[i]->getFMU(), time);
+      if (fmi2OK != fmistatus) logError_FMUCall("fmi2_setTime", fmus[i]);
     }
 
     // b. Event Detection
