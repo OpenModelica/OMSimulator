@@ -490,6 +490,7 @@ oms_status_enu_t oms::SystemSC::doStep()
   const fmi2Real start_time = time;
   const fmi2Real end_time = time + maximumStepSize;
   fmi2Real current_time = start_time;
+  const fmi2Real event_time_tolerance = 1e-4;
 
   logInfo("doStep");
 
@@ -528,8 +529,8 @@ oms_status_enu_t oms::SystemSC::doStep()
   // Step 3: Main integration loop (Euler method)
   while (current_time < end_time)
   {
-    fmi2Real h = event_time - current_time;  // Substep size
-    step_size *= 0.5;
+    fmi2Real h = event_time - current_time;  // Substep size, do one step from current_time to the event
+    step_size *= 0.5; // reduce the step size in each iteration
 
     logInfo("h: " + std::to_string(h) + " step_size: " + std::to_string(step_size) + " event_time: " + std::to_string(event_time));
 
@@ -549,7 +550,7 @@ oms_status_enu_t oms::SystemSC::doStep()
 
     // b. Event Detection
     event_detected = false;
-    for (size_t i = 0; i < fmus.size(); ++i)
+    for (size_t i = 0; i < fmus.size() && !event_detected; ++i)
     {
       fmistatus = fmi2_getEventIndicators(fmus[i]->getFMU(), event_indicators[i], nEventIndicators[i]);
       if (fmi2OK != fmistatus) logError_FMUCall("fmi2_getEventIndicators", fmus[i]);
@@ -575,6 +576,10 @@ oms_status_enu_t oms::SystemSC::doStep()
         time = current_time;
         step_size = maximumStepSize;
 
+        // emit the left limit of the event (if it hasn't already been emitted)
+        if (isTopLevelSystem())
+          getModel().emit(time, false);
+
         for (int i = 0; i < fmus.size(); ++i)
         {
           fmistatus = fmi2_completedIntegratorStep(fmus[i]->getFMU(), fmi2True, &callEventUpdate[i], &terminateSimulation[i]);
@@ -582,7 +587,6 @@ oms_status_enu_t oms::SystemSC::doStep()
         }
 
         logInfo("Integrate normally to the end time if no events are ahead");
-        return oms_status_ok;
       }
       else
       {
@@ -593,9 +597,9 @@ oms_status_enu_t oms::SystemSC::doStep()
     }
     else
     {
-      if (step_size < 1e-4)
+      if (step_size < event_time_tolerance)
       {
-        logInfo("Even found!!!");
+        logInfo("Event found!!! " + std::to_string(event_time));
         // Event detected: Restore to last "safe" state and integrate directly to event time
 
         time = current_time;
