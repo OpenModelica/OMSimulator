@@ -492,32 +492,34 @@ oms_status_enu_t oms::SystemSC::doStep()
 
   logDebug("doStep: " + std::to_string(time) + " -> " + std::to_string(end_time));
 
-  // Step 2: Retrieve initial state and derivatives
-  for (size_t i=0; i < fmus.size(); ++i)
-  {
-    status = fmus[i]->getContinuousStates(states[i]);
-    if (oms_status_ok != status) return status;
-    status = fmus[i]->getDerivatives(states_der[i]);
-    if (oms_status_ok != status) return status;
-    fmistatus = fmi2_getEventIndicators(fmus[i]->getFMU(), event_indicators_prev[i], nEventIndicators[i]);
-    if (fmi2OK != fmistatus) logError_FMUCall("fmi2_getEventIndicators", fmus[i]);
-  }
-
-  // Backup states for potential rollback
+  // Step 2: Backup states for potential rollback
   std::vector<double *> states_backup;
   std::vector<double *> states_der_backup;
 
-  for (size_t i=0; i < fmus.size(); ++i)
+  for (size_t i = 0; i < fmus.size(); ++i)
   {
-    states_backup.push_back((double*)calloc(nStates[i], sizeof(double)));
-    states_der_backup.push_back((double*)calloc(nStates[i], sizeof(double)));
+    if (nStates[i] > 0)
+    {
+      states_backup.push_back((double*)calloc(nStates[i], sizeof(double)));
+      states_der_backup.push_back((double*)calloc(nStates[i], sizeof(double)));
+    }
+    else
+    {
+      states_backup.push_back(nullptr);
+      states_der_backup.push_back(nullptr);
+    }
   }
-  for (size_t i=0; i < fmus.size(); ++i)
+  for (size_t i = 0; i < fmus.size(); ++i)
   {
-    status = fmus[i]->getContinuousStates(states_backup[i]);
-    if (oms_status_ok != status) return status;
-    status = fmus[i]->getDerivatives(states_der_backup[i]);
-    if (oms_status_ok != status) return status;
+    if (nStates[i] > 0)
+    {
+      status = fmus[i]->getContinuousStates(states_backup[i]);
+      if (oms_status_ok != status) return status;
+      status = fmus[i]->getDerivatives(states_der_backup[i]);
+      if (oms_status_ok != status) return status;
+    }
+    fmistatus = fmi2_getEventIndicators(fmus[i]->getFMU(), event_indicators_prev[i], nEventIndicators[i]);
+    if (fmi2OK != fmistatus) logError_FMUCall("fmi2_getEventIndicators", fmus[i]);
   }
 
   fmi2Real step_size_adjustment = maximumStepSize;
@@ -650,8 +652,11 @@ oms_status_enu_t oms::SystemSC::doStep()
 
   for (size_t i=0; i < fmus.size(); ++i)
   {
-    free(states_backup[i]);
-    free(states_der_backup[i]);
+    if (nStates[i] > 0)
+    {
+      free(states_backup[i]);
+      free(states_der_backup[i]);
+    }
   }
 
   return oms_status_ok;
