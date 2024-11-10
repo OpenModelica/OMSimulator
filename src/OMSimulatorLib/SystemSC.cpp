@@ -543,7 +543,7 @@ oms_status_enu_t oms::SystemSC::doStep()
       status = fmus[i]->setContinuousStates(states[i]);
       if (oms_status_ok != status) return status;
 
-      fmistatus = fmi2_setTime(fmus[i]->getFMU(), time);
+      fmistatus = fmi2_setTime(fmus[i]->getFMU(), event_time);
       if (fmi2OK != fmistatus) logError_FMUCall("fmi2_setTime", fmus[i]);
     }
 
