@@ -490,7 +490,7 @@ oms_status_enu_t oms::SystemSC::doStep()
   const fmi2Real end_time = time + maximumStepSize;
   const fmi2Real event_time_tolerance = 1e-4;
 
-  logInfo("doStep");
+  logDebug("doStep: " + std::to_string(time) + " -> " + std::to_string(end_time));
 
   // Step 2: Retrieve initial state and derivatives
   for (size_t i=0; i < fmus.size(); ++i)
@@ -502,10 +502,6 @@ oms_status_enu_t oms::SystemSC::doStep()
     fmistatus = fmi2_getEventIndicators(fmus[i]->getFMU(), event_indicators_prev[i], nEventIndicators[i]);
     if (fmi2OK != fmistatus) logError_FMUCall("fmi2_getEventIndicators", fmus[i]);
   }
-
-  fmi2Real step_size = maximumStepSize;
-  fmi2Real event_time = end_time;
-  bool event_detected = false;
 
   // Backup states for potential rollback
   std::vector<double *> states_backup;
@@ -524,22 +520,25 @@ oms_status_enu_t oms::SystemSC::doStep()
     if (oms_status_ok != status) return status;
   }
 
-  // Step 3: Main integration loop (Euler method)
+  fmi2Real step_size_adjustment = maximumStepSize;
+  fmi2Real event_time = end_time;
+  bool event_detected = false;
+
+  // Step 3: Main integration loop
   while (time < end_time)
   {
-    fmi2Real h = event_time - time;  // Substep size, do one step from current time to the event
-    step_size *= 0.5; // reduce the step size in each iteration
-
-    logInfo("h: " + std::to_string(h) + " step_size: " + std::to_string(step_size) + " event_time: " + std::to_string(event_time));
+    step_size_adjustment *= 0.5; // reduce the step size in each iteration
 
     // a. Evaluate derivatives for each FMU
+    const fmi2Real step_size = event_time - time;  // Substep size, do one step from current time to the event
+    logDebug("step_size: " + std::to_string(step_size) + " | " + std::to_string(time) + " -> " + std::to_string(event_time));
     for (size_t i = 0; i < fmus.size(); ++i)
     {
       if (0 == nStates[i])
         continue;
 
       for (int k = 0; k < nStates[i]; ++k)
-        states[i][k] = states_backup[i][k] + h * states_der_backup[i][k];
+        states[i][k] = states_backup[i][k] + step_size * states_der_backup[i][k];
 
       // set states
       status = fmus[i]->setContinuousStates(states[i]);
@@ -557,7 +556,7 @@ oms_status_enu_t oms::SystemSC::doStep()
       {
         if ((event_indicators[i][k] > 0) != (event_indicators_prev[i][k] > 0))
         {
-          logInfo("Event detected");
+          logDebug("event detected");
           event_detected = true;
           break;
         }
@@ -567,11 +566,13 @@ oms_status_enu_t oms::SystemSC::doStep()
     // c. Event handling and step advancement
     if (!event_detected)
     {
+      logDebug("no event detected");
+
       if (event_time == end_time)
       {
         // Integrate normally to the end time if no events are ahead
         time = event_time;
-        step_size = maximumStepSize;
+        step_size_adjustment = maximumStepSize;
 
         // emit the left limit of the event (if it hasn't already been emitted)
         if (isTopLevelSystem())
@@ -583,23 +584,23 @@ oms_status_enu_t oms::SystemSC::doStep()
           if (fmi2OK != fmistatus) return logError_FMUCall("fmi2_completedIntegratorStep", fmus[i]);
         }
 
-        logInfo("Integrate normally to the end time if no events are ahead");
+        logDebug("integrate normally to the end time if no events are ahead");
       }
       else
       {
         // Advance to the tentative event time and check again
-        event_time += step_size;
-        logInfo("Advance to the tentative event time and check again");
+        event_time += step_size_adjustment;
+        logDebug("advance to the tentative event time and check again");
       }
     }
     else
     {
-      if (step_size < event_time_tolerance)
+      if (step_size_adjustment < event_time_tolerance)
       {
-        logInfo("Event found!!! " + std::to_string(event_time));
+        logDebug("event found!!! " + std::to_string(event_time));
         // Event detected: Restore to last "safe" state and integrate directly to event time
         time = event_time;
-        step_size = maximumStepSize;
+        step_size_adjustment = maximumStepSize;
         event_time = end_time;
 
         // emit the left limit of the event (if it hasn't already been emitted)
@@ -640,7 +641,7 @@ oms_status_enu_t oms::SystemSC::doStep()
       else
       {
         // Ok, event must be little earlier
-        event_time -= step_size;
+        event_time -= step_size_adjustment;
       }
     }
   }
