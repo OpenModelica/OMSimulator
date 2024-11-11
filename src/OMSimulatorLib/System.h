@@ -39,13 +39,9 @@
 #include "Connection.h"
 #include "DirectedGraph.h"
 #include "Element.h"
-#include "ExternalModel.h"
 #include "ResultWriter.h"
 #include "Snapshot.h"
 #include "ssd/ConnectorGeometry.h"
-#if !defined(NO_TLM)
-#include "TLMBusConnector.h"
-#endif
 #include "OMSimulator/Types.h"
 #include "Values.h"
 
@@ -103,16 +99,6 @@ namespace oms
     std::string getConnectorOwner(const ComRef& cref) const;
     Connector** getConnectors() {return &connectors[0];}
     BusConnector* getBusConnector(const ComRef& cref);
-    oms_status_enu_t addTLMConnection(const ComRef& crefA, const ComRef& crefB, double delay, double alpha, double linearimpedance, double angularimpedance);
-    oms_status_enu_t setTLMConnectionParameters(const ComRef &crefA, const ComRef &crefB, const oms_tlm_connection_parameters_t* parameters);
-    oms_status_enu_t addTLMBus(const ComRef& cref, oms_tlm_domain_t domain, const int dimensions, const oms_tlm_interpolation_t interpolation);
-    oms_status_enu_t addConnectorToTLMBus(const ComRef& busCref, const ComRef& connectorCref, const std::string type);
-    oms_status_enu_t deleteConnectorFromTLMBus(const ComRef& busCref, const ComRef& connectorCref);
-    oms_status_enu_t setTLMBusGeometry(const ComRef& cref, const oms::ssd::ConnectorGeometry* geometry);
-#if !defined(NO_TLM)
-    TLMBusConnector *getTLMBusConnector(const ComRef& cref);
-    TLMBusConnector **getTLMBusConnectors() {return &tlmbusconnectors[0];}
-#endif
     Connection* getConnection(const ComRef& crefA, const ComRef& crefB);
     Connection** getConnections(const ComRef &cref);
     oms_status_enu_t addConnection(const ComRef& crefA, const ComRef& crefB, bool suppressUnitConversion = false);
@@ -124,7 +110,6 @@ namespace oms
     oms_status_enu_t addConnectorToBus(const ComRef& busCref, const ComRef& connectorCref);
     oms_status_enu_t deleteConnectorFromBus(const ComRef& busCref, const ComRef& connectorCref);
     oms_status_enu_t setBusGeometry(const ComRef& cref, const oms::ssd::ConnectorGeometry* geometry);
-    oms_status_enu_t addExternalModel(const ComRef &cref, std::string path, std::string startscript);
     oms_status_enu_t delete_(const ComRef& cref);
     oms_status_enu_t deleteAllConectionsTo(const ComRef& cref);
     oms_status_enu_t deleteReferencesInSSD(const ComRef& cref, const std::string& filename);
@@ -212,7 +197,6 @@ namespace oms
 
   private: // methods
     oms_status_enu_t importFromSSD_ConnectionGeometry(const pugi::xml_node& node, const ComRef& crefA, const ComRef& crefB);
-    oms_status_enu_t importTLMBus(const pugi::xml_node& node, Component* component);
     oms_status_enu_t importBusConnectorSignals(const pugi::xml_node& node);
     oms_status_enu_t importBusConnectorGeometry(const pugi::xml_node& node);
 
@@ -251,9 +235,6 @@ namespace oms
     std::vector<Connector*> connectors;  ///< last element is always NULL
     std::vector<oms_element_t*> subelements;  ///< last element is always NULL; don't free it
     std::vector<BusConnector*> busconnectors;
-#if !defined(NO_TLM)
-    std::vector<TLMBusConnector*> tlmbusconnectors;
-#endif
     std::vector<Connection*> connections;  ///< last element is always NULL
 
     bool loopsNeedUpdate = true;

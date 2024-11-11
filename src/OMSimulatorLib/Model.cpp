@@ -999,7 +999,7 @@ oms_system_enu_t oms::Model::getSystemType(const pugi::xml_node& node, const std
 
 oms_system_enu_t oms::Model::getSystemTypeHelper(const pugi::xml_node& node, const std::string& sspVersion)
 {
-  oms_system_enu_t systemType = oms_system_tlm;
+  oms_system_enu_t systemType = oms_system_wc;
   if (std::string(node.child(oms::ssp::Version1_0::VariableStepSolver).attribute("description").as_string()) != "" || std::string(node.child("VariableStepSolver").attribute("description").as_string()) !="")
   {
     systemType = oms_system_sc;

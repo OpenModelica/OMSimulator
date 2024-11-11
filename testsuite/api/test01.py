@@ -30,9 +30,6 @@ def printStatus(status, expected):
 status = oms.newModel("test01py")
 printStatus(status, 0)
 
-status = oms.addSystem("test01py", oms.system_tlm)
-printStatus(status, 3)
-
 status = oms.addSystem("test01py.foo", oms.system_wc)
 printStatus(status, 0)
 
@@ -80,11 +77,9 @@ printStatus(status, 3)
 
 ## Result:
 ## status:  [correct] ok
-## error:   [addSystem] Model "test01py" does not contain any system
-## status:  [correct] error
 ## status:  [correct] ok
 ## status:  [correct] ok
-## error:   [NewSystem] A WC system must be the root system or a subsystem of a TLM system.
+## error:   [NewSystem] A WC system must be the root system.
 ## status:  [correct] error
 ## <?xml version="1.0"?>
 ## <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="test01py" version="1.0">
@@ -186,5 +181,5 @@ printStatus(status, 3)
 ## error:   [deleteModel] Model "foo" does not exist in the scope
 ## status:  [correct] error
 ## info:    0 warnings
-## info:    4 errors
+## info:    3 errors
 ## endResult

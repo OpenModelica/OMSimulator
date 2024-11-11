@@ -35,7 +35,6 @@
 #include "Model.h"
 #include "OMSFileSystem.h"
 #include "System.h"
-#include "TLMBusConnector.h"
 
 #include <stdarg.h>
 
@@ -77,11 +76,6 @@ oms::Component::Component(const ComRef& cref, oms_component_enu_t type, System* 
 {
   connectors.push_back(NULL);
   element.setConnectors(&connectors[0]);
-
-#if !defined(NO_TLM)
-  tlmbusconnectors.push_back(NULL);
-  element.setTLMBusConnectors(&tlmbusconnectors[0]);
-#endif
 }
 
 oms::Component::~Component()
@@ -89,12 +83,6 @@ oms::Component::~Component()
   for (const auto& connector : connectors)
     if (connector)
       delete connector;
-
-#if !defined(NO_TLM)
-  for (const auto tlmbusconnector : tlmbusconnectors)
-    if (tlmbusconnector)
-      delete tlmbusconnector;
-#endif
 }
 
 oms::ComRef oms::Component::getFullCref() const
@@ -105,71 +93,6 @@ oms::ComRef oms::Component::getFullCref() const
 oms::Model& oms::Component::getModel() const
 {
   return parentSystem->getModel();
-}
-
-oms_status_enu_t oms::Component::addTLMBus(const oms::ComRef &cref, oms_tlm_domain_t domain, const int dimensions, const oms_tlm_interpolation_t interpolation)
-{
-#if !defined(NO_TLM)
-  if (!cref.isValidIdent())
-    return logError("Not a valid ident: "+std::string(cref));
-
-  oms::TLMBusConnector* bus = new oms::TLMBusConnector(cref, domain, dimensions, interpolation,nullptr,this);
-  tlmbusconnectors.back() = bus;
-  tlmbusconnectors.push_back(NULL);
-  element.setTLMBusConnectors(&tlmbusconnectors[0]);
-  return oms_status_ok;
-#else
-  return LOG_NO_TLM();
-#endif
-}
-
-#if !defined(NO_TLM)
-oms::TLMBusConnector *oms::Component::getTLMBusConnector(const oms::ComRef &cref)
-{
-  for (auto &tlmbusconnector : tlmbusconnectors)
-    if (tlmbusconnector && tlmbusconnector->getName() == cref)
-      return tlmbusconnector;
-
-  return NULL;
-}
-#endif
-
-oms_status_enu_t oms::Component::addConnectorToTLMBus(const oms::ComRef& busCref, const oms::ComRef& connectorCref, const std::string type)
-{
-#if !defined(NO_TLM)
-  //Check that connector exists in component
-  bool found = false;
-  for (auto& connector : connectors)
-    if (connector && connector->getName() == connectorCref)
-      found = true;
-
-  if (!found)
-    return logError_ConnectorNotInComponent(connectorCref, this);
-
-  for(auto& bus : tlmbusconnectors)
-  {
-    if (bus && bus->getName() == busCref)
-    {
-      return bus->addConnector(connectorCref,type);
-    }
-  }
-  return logError_TlmBusNotInComponent(busCref, this);
-#else
-  return LOG_NO_TLM();
-#endif
-}
-
-oms_status_enu_t oms::Component::deleteConnectorFromTLMBus(const oms::ComRef& busCref, const oms::ComRef& connectorCref)
-{
-#if !defined(NO_TLM)
-  for (auto& bus : tlmbusconnectors)
-    if (bus && bus->getName() == busCref)
-      return bus->deleteConnector(connectorCref);
-
-  return logError_BusNotInComponent(busCref, this);
-#else
-  return LOG_NO_TLM();
-#endif
 }
 
 oms::Connector* oms::Component::getConnector(const ComRef& cref)

@@ -18,9 +18,8 @@ class OMSimulator:
 
     ## oms_system_enu_t
     self.system_none = 0
-    self.system_tlm = 1
-    self.system_wc = 2
-    self.system_sc = 3
+    self.system_wc = 1
+    self.system_sc = 2
 
     ## oms_causality_enu_t
     self.input = 0
@@ -36,19 +35,6 @@ class OMSimulator:
     self.signal_type_string = 3
     self.signal_type_enum = 4
     self.signal_type_bus = 5
-
-    ## tlm_interpolation
-    self.default = 0
-    self.coarsegrained = 1
-    self.finegrained = 2
-
-    ## oms_tlm_domain_t
-    self.tlm_domain_input = 0
-    self.tlm_domain_output = 1
-    self.tlm_domain_mechanical = 2
-    self.tlm_domain_rotational = 3
-    self.tlm_domain_hydraulic = 4
-    self.tlm_domain_electric = 5
 
     ## oms_solver_enu_t
     self.solver_sc_explicit_euler = 2
@@ -68,19 +54,15 @@ class OMSimulator:
     self.addConnection = Scope._capi.addConnection
     self.addConnector = Scope._capi.addConnector
     self.addConnectorToBus = Scope._capi.addConnectorToBus
-    self.addConnectorToTLMBus = Scope._capi.addConnectorToTLMBus
-    self.addExternalModel = Scope._capi.addExternalModel
     self.addResources = Scope._capi.addResources
     self.addSignalsToResults = Scope._capi.addSignalsToResults
     self.addSubModel = Scope._capi.addSubModel
     self.addSystem = Scope._capi.addSystem
-    self.addTLMBus = Scope._capi.addTLMBus
-    self.addTLMConnection = Scope._capi.addTLMConnection
+
     self.compareSimulationResults = Scope._capi.compareSimulationResults
     self.copySystem = Scope._capi.copySystem
     self.deleteConnection = Scope._capi.deleteConnection
     self.deleteConnectorFromBus = Scope._capi.deleteConnectorFromBus
-    self.deleteConnectorFromTLMBus = Scope._capi.deleteConnectorFromTLMBus
     self.deleteResources = Scope._capi.deleteResources
     self.doStep = Scope._capi.doStep
     self.duplicateVariant = Scope._capi.duplicateVariant
@@ -136,8 +118,6 @@ class OMSimulator:
     self.setStartTime = Scope._capi.setStartTime
     self.setStopTime = Scope._capi.setStopTime
     self.setTempDirectory = Scope._capi.setTempDirectory
-    self.setTLMPositionAndOrientation = Scope._capi.setTLMPositionAndOrientation
-    self.setTLMSocketData = Scope._capi.setTLMSocketData
     self.setTolerance = Scope._capi.setTolerance
     self.setUnit = Scope._capi.setUnit
     self.setVariableStepSize = Scope._capi.setVariableStepSize
