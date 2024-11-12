@@ -1,5 +1,5 @@
 -- status: correct
--- teardown_command: rm -rf deleteResources1_lua/
+-- teardown_command: rm -rf deleteResources2_lua/
 -- linux: yes
 -- ucrt64: yes
 -- win: yes
