@@ -5,6 +5,7 @@
 -- ucrt64: yes
 -- win: yes
 -- mac: yes
+-- asan: yes
 
 oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./test_omsExport-lua/")

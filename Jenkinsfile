@@ -13,7 +13,7 @@ pipeline {
     booleanParam(name: 'MINGW_UCRT64', defaultValue: true, description: 'Build with MINGW/UCRT64')
     booleanParam(name: 'MINGW_UCRT64_CLANG', defaultValue: true, description: 'Build with MINGW/UCRT64 with clang')
     booleanParam(name: 'MACOS_ARM64', defaultValue: false, description: 'Build with macOS-arm64 (M1 mac)')
-    booleanParam(name: 'LINUX64_ASAN', defaultValue: false, description: 'Build with linux64 asan')
+    booleanParam(name: 'LINUX64_ASAN', defaultValue: true, description: 'Build with linux64 asan')
     booleanParam(name: 'SUBMODULE_UPDATE', defaultValue: false, description: 'Allow pull request to update submodules (disabled by default due to common user errors)')
     booleanParam(name: 'UPLOAD_BUILD_OPENMODELICA', defaultValue: false, description: 'Upload install artifacts to build.openmodelica.org/omsimulator. Activates MINGW_UCRT64 as well.')
     string(name: 'RUNTESTS_FLAG', defaultValue: '', description: 'runtests.pl flag')
@@ -31,7 +31,7 @@ pipeline {
         submoduleNoChange("3rdParty")
       }
     }
-    stage('build') {
+    stage('build-in-parallel') {
       parallel {
         stage('linux64') {
           when {
@@ -55,6 +55,7 @@ pipeline {
           environment {
             RUNTESTDB = "/cache/runtest/"
             NPROC = "${numPhysicalCPU}"
+            HOME = "/tmp/"
           }
           steps {
             buildOMS()
@@ -77,10 +78,10 @@ pipeline {
             expression { return params.LINUX64_ASAN }
           }
           stages {
-            stage('build') {
+            stage('build-asan') {
               agent {
                 docker {
-                  image 'docker.openmodelica.org/build-deps:v1.13'
+                  image 'docker.openmodelica.org/build-deps:v1.22.2'
                   label 'linux'
                   alwaysPull true
                 }
@@ -88,13 +89,14 @@ pipeline {
               environment {
                 RUNTESTDB = "/cache/runtest/"
                 ASAN = "ON"
+                HOME = "/tmp/"
               }
               steps {
                 buildOMS()
                 stash name: 'asan', includes: "install/**"
               }
             }
-            stage('test') {
+            stage('test-asan') {
               agent {
                 dockerfile {
                   additionalBuildArgs '--pull'
@@ -145,7 +147,7 @@ pipeline {
             beforeAgent true
           }
           stages {
-            stage('cross-compile') {
+            stage('cross-compile-linux-arm32') {
               agent {
                 docker {
                   image 'docker.openmodelica.org/armcross-omsimulator:v2.0'
@@ -162,6 +164,7 @@ pipeline {
                 FMIL_FLAGS = '-DFMILIB_FMI_PLATFORM=arm-linux-gnueabihf'
                 detected_OS = 'Linux'
                 VERBOSE = '1'
+                HOME = "/tmp/"
               }
               steps {
                 sh 'printenv'
@@ -176,7 +179,7 @@ pipeline {
                 stash name: 'arm32-install', includes: "install/**"
               }
             }
-            stage('test') {
+            stage('test-linux-arm32') {
               /* when {
                 beforeAgent true
                 expression { return false }
@@ -220,7 +223,7 @@ pipeline {
             beforeAgent true
           }
           stages {
-            stage('build') {
+            stage('build-M1') {
               agent {
                 label 'M1'
               }
@@ -241,7 +244,7 @@ pipeline {
                 stash name: 'osx-install', includes: "install/**"
               }
             }
-            stage('test') {
+            stage('test-M1') {
               /* when {
                 beforeAgent true
                 expression { return false }
@@ -271,7 +274,7 @@ pipeline {
             beforeAgent true
           }
           stages {
-            stage('build') {
+            stage('build-mingw-ucrt64-gcc') {
               agent {
                 label 'omsimulator-windows'
               }
@@ -292,7 +295,7 @@ pipeline {
                 set -x -e
                 export PATH="/c/Program Files/TortoiseSVN/bin/:/c/bin/jdk/bin:/c/bin/nsis/:\$PATH:/c/bin/git/bin"
                 cd "${env.WORKSPACE}/install/"
-                zip -r "../OMSimulator-mingw-ucrt64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *
+                zip -r "../OMSimulator-mingw-ucrt64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed 's/-/.post/'`.zip" *
                 """
 
                 bat """
@@ -304,7 +307,7 @@ pipeline {
                 stash name: 'mingw-ucrt64-install', includes: "install/**"
               }
             }
-            stage('test') {
+            stage('test-mingw-ucrt64-gcc') {
               agent {
                 label 'omsimulator-windows'
               }
@@ -368,7 +371,7 @@ EXIT /b 1
 
         stage('msvc64') {
           stages {
-            stage('build') {
+            stage('build-msvc64') {
               when {
                 expression { return params.MSVC64 }
                 beforeAgent true
@@ -387,7 +390,7 @@ EXIT /b 1
 set -x -e
 export PATH="/c/Program Files/TortoiseSVN/bin/:/c/Program Files/Git/bin/:/c/bin/jdk/bin:/c/bin/nsis/:\$PATH:/c/bin/git/bin"
 cd "${env.WORKSPACE}/install/"
-zip -r "../OMSimulator-win64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *
+zip -r "../OMSimulator-win64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed 's/-/.post/'`.zip" *
 """
 
                 retry(2) { bat """
@@ -417,7 +420,7 @@ EXIT /b 1
                 stash name: 'win64-install', includes: "install/**"
               }
             }
-            stage('test') {
+            stage('test-msvc64') {
               agent {
                 label 'omsimulator-windows'
               }
@@ -652,7 +655,7 @@ void buildOMS() {
        cmake --build build/ --parallel ${nproc} --target install -v
        ''')
     } else {
-      sh "cmake -S . -B build/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/ -DOM_OMS_ENABLE_TESTSUITE:BOOL=ON"
+      sh "cmake -S . -B build/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/ -DOM_OMS_ENABLE_TESTSUITE:BOOL=ON ${env.ASAN ? '-DASAN=ON': ''}"
       sh "cmake --build build/ --parallel ${nproc} --target install -v"
     }
   }

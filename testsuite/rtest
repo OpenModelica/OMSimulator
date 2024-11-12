@@ -68,6 +68,7 @@ $successes=0;
 $total=0;
 $setbaseline=0;
 $verbose="yes";
+$ASAN="no";
 $returnwitherror=0;
 $pager="cat";
 $diffcmd="diff -U 5 -w";
@@ -353,7 +354,8 @@ sub dofile
         "ucrt64"  => "",
         "mingw32" => "",
         "mingw64" => "",
-        "mac"     => "");
+        "mac"     => "",
+        "asan"    => "");
     $expected = $expectedPrefix . "tmp_expected-" . $f;
     $got = $gotPrefix . "_tmp_got-" . $f;
     $log = "$tmpdir/log-$f";
@@ -449,16 +451,24 @@ sub dofile
       return 1;
     }
 
-    if ($info{$TEST_PLATFORM} eq "yes") {
+    $skip = 0;
+    if ($ASAN eq "yes" && $info{'asan'} ne "yes") {
+      $skip = 1;
+    }
+    if ($info{$TEST_PLATFORM} ne "yes") {
+      $skip = 1;
+    }
+
+    if ($skip) {
+      $status = 0;
+      print "skipped\n";
+    } else {
       if ($setbaseline) {
         setbaselineone $f,%info;
         $status = 0;
       } else {
         $status = runone $f,%info;
       }
-    } else {
-      $status = 0;
-      print "skipped\n";
     }
 
     if ($status == 0) {
@@ -495,6 +505,8 @@ while ($#ARGV >= 0) {
       } else {
         $TEST_PLATFORM="linux32";
       }
+    } elsif ($arg eq "-asan") {
+      $ASAN="yes";
     } elsif ($arg eq "-b") {
       $setbaseline = 1;
     } elsif ($arg eq "-c") {
