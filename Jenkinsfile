@@ -295,7 +295,7 @@ pipeline {
                 set -x -e
                 export PATH="/c/Program Files/TortoiseSVN/bin/:/c/bin/jdk/bin:/c/bin/nsis/:\$PATH:/c/bin/git/bin"
                 cd "${env.WORKSPACE}/install/"
-                zip -r "../OMSimulator-mingw-ucrt64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *
+                zip -r "../OMSimulator-mingw-ucrt64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed 's/-/.post/'`.zip" *
                 """
 
                 bat """
@@ -390,7 +390,7 @@ EXIT /b 1
 set -x -e
 export PATH="/c/Program Files/TortoiseSVN/bin/:/c/Program Files/Git/bin/:/c/bin/jdk/bin:/c/bin/nsis/:\$PATH:/c/bin/git/bin"
 cd "${env.WORKSPACE}/install/"
-zip -r "../OMSimulator-win64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed \'s/-/.post/\'`.zip" *
+zip -r "../OMSimulator-win64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed 's/-/.post/'`.zip" *
 """
 
                 retry(2) { bat """
