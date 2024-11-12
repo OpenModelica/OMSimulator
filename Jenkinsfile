@@ -55,6 +55,7 @@ pipeline {
           environment {
             RUNTESTDB = "/cache/runtest/"
             NPROC = "${numPhysicalCPU}"
+            HOME = "/tmp/"
           }
           steps {
             buildOMS()
@@ -163,6 +164,7 @@ pipeline {
                 FMIL_FLAGS = '-DFMILIB_FMI_PLATFORM=arm-linux-gnueabihf'
                 detected_OS = 'Linux'
                 VERBOSE = '1'
+                HOME = "/tmp/"
               }
               steps {
                 sh 'printenv'
