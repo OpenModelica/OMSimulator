@@ -652,7 +652,7 @@ void buildOMS() {
        cmake --build build/ --parallel ${nproc} --target install -v
        ''')
     } else {
-      sh "cmake -S . -B build/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/ -DOM_OMS_ENABLE_TESTSUITE:BOOL=ON"
+      sh "cmake -S . -B build/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/ -DOM_OMS_ENABLE_TESTSUITE:BOOL=ON ${env.ASAN ? '-DASAN=ON': ''}"
       sh "cmake --build build/ --parallel ${nproc} --target install -v"
     }
   }
