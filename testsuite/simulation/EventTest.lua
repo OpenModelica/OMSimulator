@@ -22,7 +22,6 @@ oms_addSubModel("EventTest.root.model", "../../resources/EventTest.fmu")
 
 -- simulation settings
 oms_setSolver("EventTest.root", oms_solver_sc_explicit_euler)
---oms_setSolver("EventTest.root", oms_solver_sc_cvode)
 oms_setResultFile("EventTest", "EventTest_lua.csv")
 oms_setStopTime("EventTest", 2.0)
 oms_setFixedStepSize("EventTest.root", 1.0)
@@ -31,7 +30,22 @@ oms_instantiate("EventTest")
 oms_setReal("EventTest.root.model.start_height", 0.3)
 oms_initialize("EventTest")
 oms_simulate("EventTest")
+
+readFile("EventTest_lua.csv")
+
+oms_reset("EventTest")
+
+-- simulation settings
+oms_setSolver("EventTest.root", oms_solver_sc_cvode)
+oms_setResultFile("EventTest", "EventTest_lua.csv")
+oms_setStopTime("EventTest", 2.0)
+oms_setFixedStepSize("EventTest.root", 1.0)
+
+oms_setReal("EventTest.root.model.start_height", 0.3)
+oms_initialize("EventTest")
+oms_simulate("EventTest")
 oms_terminate("EventTest")
+
 oms_delete("EventTest")
 
 readFile("EventTest_lua.csv")
@@ -53,6 +67,30 @@ readFile("EventTest_lua.csv")
 -- 1.50018310547, 0.3, -1
 -- 1.80023193359, -4.8828125e-05, -1
 -- 1.80023193359, 0.3, -1
+-- 2, 0.100231933594, -1
+-- 2, 0.100231933594, -1
+--
+-- info:    maximum step size for 'EventTest.root': 1.000000
+-- info:    Result file: EventTest_lua.csv (bufferSize=1)
+-- info:    Final Statistics for 'EventTest.root':
+--          NumSteps = 0 NumRhsEvals  = 0 NumLinSolvSetups = 0
+--          NumNonlinSolvIters = 0 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
+-- time,EventTest.root.model.height,EventTest.root.model.der(height)
+-- 0, 0.3, -1
+-- 0.300018310547, -1.8310546875e-05, -1
+-- 0.300018310547, 0.3, -1
+-- 0.600036621094, -1.8310546875e-05, -1
+-- 0.600036621094, 0.3, -1
+-- 0.900085449219, -4.8828125e-05, -1
+-- 0.900085449219, 0.3, -1
+-- 1, 0.200085449219, -1
+-- 1.20013427734, -4.8828125e-05, -1
+-- 1.20013427734, 0.3, -1
+-- 1.50018310547, -4.8828125e-05, -1
+-- 1.50018310547, 0.3, -1
+-- 1.80023193359, -4.8828125e-05, -1
+-- 1.80023193359, 0.3, -1
+-- 2, 0.100231933594, -1
 -- 2, 0.100231933594, -1
 --
 -- endResult
