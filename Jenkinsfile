@@ -145,7 +145,7 @@ pipeline {
             beforeAgent true
           }
           stages {
-            stage('cross-compile') {
+            stage('cross-compile-linux-arm32') {
               agent {
                 docker {
                   image 'docker.openmodelica.org/armcross-omsimulator:v2.0'
@@ -176,7 +176,7 @@ pipeline {
                 stash name: 'arm32-install', includes: "install/**"
               }
             }
-            stage('test') {
+            stage('test-linux-arm32') {
               /* when {
                 beforeAgent true
                 expression { return false }
