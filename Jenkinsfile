@@ -80,7 +80,7 @@ pipeline {
             stage('build') {
               agent {
                 docker {
-                  image 'docker.openmodelica.org/build-deps:v1.13'
+                  image 'docker.openmodelica.org/build-deps:v1.22.2'
                   label 'linux'
                   alwaysPull true
                 }
