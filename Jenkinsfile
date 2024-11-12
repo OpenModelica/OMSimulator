@@ -31,7 +31,7 @@ pipeline {
         submoduleNoChange("3rdParty")
       }
     }
-    stage('build') {
+    stage('build-in-parallel') {
       parallel {
         stage('linux64') {
           when {
@@ -77,7 +77,7 @@ pipeline {
             expression { return params.LINUX64_ASAN }
           }
           stages {
-            stage('build') {
+            stage('build-asan') {
               agent {
                 docker {
                   image 'docker.openmodelica.org/build-deps:v1.13'
@@ -94,7 +94,7 @@ pipeline {
                 stash name: 'asan', includes: "install/**"
               }
             }
-            stage('test') {
+            stage('test-asan') {
               agent {
                 dockerfile {
                   additionalBuildArgs '--pull'
@@ -220,7 +220,7 @@ pipeline {
             beforeAgent true
           }
           stages {
-            stage('build') {
+            stage('build-M1') {
               agent {
                 label 'M1'
               }
@@ -241,7 +241,7 @@ pipeline {
                 stash name: 'osx-install', includes: "install/**"
               }
             }
-            stage('test') {
+            stage('test-M1') {
               /* when {
                 beforeAgent true
                 expression { return false }
@@ -271,7 +271,7 @@ pipeline {
             beforeAgent true
           }
           stages {
-            stage('build') {
+            stage('build-mingw-ucrt64-gcc') {
               agent {
                 label 'omsimulator-windows'
               }
@@ -304,7 +304,7 @@ pipeline {
                 stash name: 'mingw-ucrt64-install', includes: "install/**"
               }
             }
-            stage('test') {
+            stage('test-mingw-ucrt64-gcc') {
               agent {
                 label 'omsimulator-windows'
               }
@@ -368,7 +368,7 @@ EXIT /b 1
 
         stage('msvc64') {
           stages {
-            stage('build') {
+            stage('build-msvc64') {
               when {
                 expression { return params.MSVC64 }
                 beforeAgent true
@@ -417,7 +417,7 @@ EXIT /b 1
                 stash name: 'win64-install', includes: "install/**"
               }
             }
-            stage('test') {
+            stage('test-msvc64') {
               agent {
                 label 'omsimulator-windows'
               }
