@@ -88,6 +88,7 @@ pipeline {
               environment {
                 RUNTESTDB = "/cache/runtest/"
                 ASAN = "ON"
+                HOME = "/tmp/"
               }
               steps {
                 buildOMS()
