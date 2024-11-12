@@ -4,7 +4,6 @@
 -- ucrt64: yes
 -- win: yes
 -- mac: no
--- asan: yes
 
 oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./addExternalResources1_lua/")
