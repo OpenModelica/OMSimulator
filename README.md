@@ -127,7 +127,6 @@ OMSimulator tests are automatically run on Jenkins, see [latest test reports](ht
    ./runtests.pl -j4
    ```
    - Use `-jN` to specify `N` threads.
-   - Add `-asan` to disable Python tests.
 
 ### Windows (Visual Studio)
 
@@ -144,4 +143,3 @@ Testing requires the OMDev mingw shell:
    ./runtests.pl -j4 -platform=win
    ```
    - Use `-jN` to specify `N` threads.
-   - Add `-asan` to disable Python tests.
