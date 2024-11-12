@@ -36,7 +36,7 @@ $ENV{GC_MARKERS}="1";
 
 my $use_db = 1;
 my $save_db = 1;
-my $asan = 0;
+my $asan = '';
 my $nocolour = '';
 my $count_tests = 0;
 my $run_failing = 0;
@@ -75,7 +75,7 @@ for(@ARGV){
   if(/^-h|--help$/) {
     print("Usage: runtests.pl [OPTION]\n");
     print("\nOptions are:\n");
-    print("  -asan         Skip all python tests.\n");
+    print("  -asan         Run a subset of tests, intended for use with AddressSanitizer (asan).\n");
     print("  -b            Rebase tests in parallel. Use in conjuction with -file=/path/to/file.\n");
     print("  -counttests   Don't run the test; only count them.\n");
     print("  -failing      Run failing tests instead of working.\n");
@@ -90,7 +90,7 @@ for(@ARGV){
     exit 1;
   }
   if(/^-asan$/) {
-    $asan = 1;
+    $asan = '-asan';
   }
   elsif(/^-b$/) {
     $rebase_test = "-b";
@@ -218,11 +218,7 @@ sub add_tests {
   my @tests = split(/\s|=|\\/, shift);
   my $path = shift;
 
-  if ($asan) {
-    @tests = grep(/\.lua|\.xml/, @tests);
-  } else {
-    @tests = grep(/\.lua|\.py|\.xml/, @tests);
-  }
+  @tests = grep(/\.lua|\.py|\.xml/, @tests);
   @tests = map { $_ = ("$path/$_" =~ s/\/\//\//rg) } @tests;
 
   push @test_list, @tests;
@@ -235,7 +231,7 @@ sub run_tests {
     (my $test_dir, my $test) = $test_full =~ /(.*)\/([^\/]*)$/;
 
     my $t0 = [gettimeofday];
-    my $cmd = "$testscript $test_full $have_dwdiff $nocolour $with_xml_cmd $rebase_test $platform";
+    my $cmd = "$testscript $test_full $have_dwdiff $nocolour $with_xml_cmd $rebase_test $platform $asan";
     my $x = system("$cmd") >> 8;
     my $elapsed = tv_interval ( $t0, [gettimeofday]);
 

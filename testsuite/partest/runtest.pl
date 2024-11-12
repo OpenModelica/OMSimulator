@@ -33,6 +33,9 @@ for(@ARGV){
   elsif(/^-platform(.*)$/) {
     $rtest_extra_args = $rtest_extra_args . " " . $_;
   }
+  elsif(/^-asan$/) {
+    $rtest_extra_args = $rtest_extra_args . " " . $_;
+  }
   elsif(/^--with-omc=(.*)$/) {
     $rtest_extra_args = $rtest_extra_args . " --with-omc=$1";
   }
@@ -364,4 +367,3 @@ if ($exit_status == 0) {
   }
   exit $time;
 }
-
