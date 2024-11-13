@@ -103,24 +103,20 @@ std::string oms::XercesValidator::getExecutablePath()
   if (length == 0)
     logError("executable directory name could not be detected");
 
-  char * path;
-  path = (char*)malloc(length + 1);
+   // Use vector to handle memory allocation automatically
+  std::vector<char> path(length + 1); // +1 for null terminator
 
-  if (!path)
-    logError("Could not allocate memory to path");
+  if (wai_getModulePath(path.data(), length, &dirname_length) == 0)
+    logError("Failed to retrieve executable path");
 
-  wai_getModulePath(path, length, &dirname_length);
   path[length] = '\0';
+  path[dirname_length] = '\0';
 
   //std::cout << "executable path: " <<  path << "\n";
-  path[dirname_length] = '\0';
   //std::cout << "dirname: "<<  path << "\n";
   //std::cout << "basename: "<<  path + dirname_length + 1;
 
-  executablePath = oms::allocateAndCopyString(path);
-  free(path);
-
-  return executablePath;
+  return std::string(path.data());
 }
 
 oms_status_enu_t oms::XercesValidator::validateSSP(const char *ssd, const std::string& filePath)
