@@ -53,10 +53,9 @@ oms::ComponentFMUME::~ComponentFMUME()
 {
   // free the fmihandle only if the model is instantitated, otherwise the model class destructor uses terminate() to free the fmihandle
   if (oms_modelState_virgin != getModel().getModelState())
-  {
     fmi2_freeInstance(fmu);
-    fmi4c_freeFmu(fmu);
-  }
+
+  fmi4c_freeFmu(fmu);
 }
 
 oms::Component* oms::ComponentFMUME::NewComponent(const oms::ComRef& cref, oms::System* parentSystem, const std::string& fmuPath, std::string replaceComponent)
@@ -875,8 +874,8 @@ oms_status_enu_t oms::ComponentFMUME::terminate()
     return logError_Termination(getCref());
 
   fmi2_freeInstance(fmu);
-  // free the dlls
   fmi4c_freeFmu(fmu);
+
   return oms_status_ok;
 }
 
