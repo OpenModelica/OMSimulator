@@ -153,9 +153,9 @@ oms::Component* oms::ComponentFMUME::NewComponent(const oms::ComRef& cref, oms::
     return NULL;
   }
 
-  if (!(fmi2_getSupportsModelExchange(component->fmu) || fmi2_getSupportsCoSimulation(component->fmu) &&  fmi2_getSupportsModelExchange(component->fmu)))
+  if (!fmi2_getSupportsModelExchange(component->fmu))
   {
-    logError("FMU \"" + std::string(cref) + "\" doesn't support co-simulation mode.");
+    logError("FMU \"" + std::string(cref) + "\" doesn't support model exchange mode.");
     delete component;
     return NULL;
   }
