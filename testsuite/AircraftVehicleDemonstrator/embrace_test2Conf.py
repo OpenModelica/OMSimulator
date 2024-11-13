@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm -rf embrace/
+## teardown_command: rm -rf embrace_twoConf/
 ## linux: yes
 ## mingw32: no
 ## mingw64: no
