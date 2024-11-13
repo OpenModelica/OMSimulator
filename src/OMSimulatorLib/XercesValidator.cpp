@@ -95,8 +95,6 @@ oms::XercesValidator::~XercesValidator()
 
 std::string oms::XercesValidator::getExecutablePath()
 {
-  std::string executablePath = "";
-
   int dirname_length;
   int length = wai_getModulePath(NULL, 0, &dirname_length);
 
