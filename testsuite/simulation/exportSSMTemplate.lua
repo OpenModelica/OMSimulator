@@ -4,6 +4,7 @@
 -- ucrt64: yes
 -- win: yes
 -- mac: no
+-- asan: yes
 
 oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./exportssmtemplate_lua/")
