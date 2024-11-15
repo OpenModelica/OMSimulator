@@ -175,7 +175,7 @@ sub setbaselineone
       $env =~ s/:/\\;/g;
     }
     unlink "$testTempFile$f";
-    system "$env $ulimit $preload $BIN/$sim_exe $f >>$log 2>&1";
+    system "$env $ulimit $BIN/$sim_exe $f >>$log 2>&1";
     if ($nodelete == 0 && open(TOREMOVE,"<$testTempFile$f")) {
       while(my $line = <TOREMOVE>) {
         $line =~ s/^\s*(.*?)\s*$/$1/;
@@ -276,7 +276,7 @@ sub runone
       $env =~ s/:/\\;/g;
     }
     unlink "$testTempFile$f";
-    system "$env $ulimit $preload $BIN/$sim_exe $f >>$log 2>&1";
+    system "$env $ulimit $BIN/$sim_exe $f >>$log 2>&1";
     $retval = $?;
     if ($nodelete==0 && open(TOREMOVE,"<$testTempFile$f")) {
       while(my $line = <TOREMOVE>) {
