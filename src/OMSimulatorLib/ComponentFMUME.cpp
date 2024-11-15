@@ -51,12 +51,10 @@ oms::ComponentFMUME::ComponentFMUME(const ComRef& cref, System* parentSystem, co
 
 oms::ComponentFMUME::~ComponentFMUME()
 {
-  // free the fmihandle only if the model is instantitated, otherwise the model class destructor uses terminate() to free the fmihandle
   if (oms_modelState_virgin != getModel().getModelState())
-  {
     fmi2_freeInstance(fmu);
-    fmi4c_freeFmu(fmu);
-  }
+
+  fmi4c_freeFmu(fmu);
 }
 
 oms::Component* oms::ComponentFMUME::NewComponent(const oms::ComRef& cref, oms::System* parentSystem, const std::string& fmuPath, std::string replaceComponent)
@@ -152,9 +150,9 @@ oms::Component* oms::ComponentFMUME::NewComponent(const oms::ComRef& cref, oms::
     return NULL;
   }
 
-  if (!(fmi2_getSupportsModelExchange(component->fmu) || fmi2_getSupportsCoSimulation(component->fmu) &&  fmi2_getSupportsModelExchange(component->fmu)))
+  if (!fmi2_getSupportsModelExchange(component->fmu))
   {
-    logError("FMU \"" + std::string(cref) + "\" doesn't support co-simulation mode.");
+    logError("FMU \"" + std::string(cref) + "\" doesn't support model exchange mode.");
     delete component;
     return NULL;
   }
@@ -875,8 +873,7 @@ oms_status_enu_t oms::ComponentFMUME::terminate()
     return logError_Termination(getCref());
 
   fmi2_freeInstance(fmu);
-  // free the dlls
-  fmi4c_freeFmu(fmu);
+
   return oms_status_ok;
 }
 

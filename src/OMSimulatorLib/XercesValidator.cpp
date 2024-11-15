@@ -95,29 +95,19 @@ oms::XercesValidator::~XercesValidator()
 
 std::string oms::XercesValidator::getExecutablePath()
 {
-  std::string executablePath = "";
-
   int dirname_length;
   int length = wai_getModulePath(NULL, 0, &dirname_length);
 
   if (length == 0)
-    logError("executable directory name could not be detected");
+    logError("Path to the current module could not be detected.");
 
-  char * path;
-  path = (char*)malloc(length + 1);
+  char* path = (char*)malloc(length + 1);
 
-  if (!path)
-    logError("Could not allocate memory to path");
+  if (wai_getModulePath(path, length, &dirname_length) == 0)
+    logError("Path to the current module could not be detected.");
 
-  wai_getModulePath(path, length, &dirname_length);
-  path[length] = '\0';
-
-  //std::cout << "executable path: " <<  path << "\n";
   path[dirname_length] = '\0';
-  //std::cout << "dirname: "<<  path << "\n";
-  //std::cout << "basename: "<<  path + dirname_length + 1;
-
-  executablePath = oms::allocateAndCopyString(path);
+  std::string executablePath = path;
   free(path);
 
   return executablePath;

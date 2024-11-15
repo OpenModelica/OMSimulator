@@ -1,9 +1,10 @@
 -- status: correct
--- teardown_command: rm -rf deleteResources1_lua/
+-- teardown_command: rm -rf deleteReferences1_lua/
 -- linux: yes
 -- ucrt64: yes
 -- win: yes
 -- mac: no
+-- asan: yes
 
 oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./deleteReferences1_lua/")
