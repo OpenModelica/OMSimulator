@@ -5,7 +5,6 @@
 ## mingw32: yes
 ## mingw64: yes
 ## win: no
-## asan: yes
 
 from OMSimulator import OMSimulator
 oms = OMSimulator()
