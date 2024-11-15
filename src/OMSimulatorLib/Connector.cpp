@@ -234,6 +234,8 @@ oms_status_enu_t oms::Connector::exportToSSD(pugi::xml_node &root) const
     break;
   case oms_signal_type_enum:
     node.append_child(oms::ssp::Version1_0::ssc::enumeration_type);
+    for (const auto & it : this->enumerationName)
+      node.child(oms::ssp::Version1_0::ssc::enumeration_type).append_attribute("name") = it.second.c_str();
     break;
   case oms_signal_type_integer:
     node.append_child(oms::ssp::Version1_0::ssc::integer_type);

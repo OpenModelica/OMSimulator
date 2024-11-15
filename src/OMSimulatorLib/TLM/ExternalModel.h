@@ -39,7 +39,7 @@
 #include "Option.h"
 #include "ResultWriter.h"
 #include "Snapshot.h"
-#include "Types.h"
+#include "OMSimulator/Types.h"
 #include "Variable.h"
 #include <vector>
 #include <map>

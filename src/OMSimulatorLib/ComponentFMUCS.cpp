@@ -41,7 +41,7 @@
 #include "SystemWC.h"
 
 #include <fmi4c.h>
-#include <RegEx.h>
+#include <regex>
 #include <unordered_set>
 #include <cmath>
 #include <iostream>
@@ -259,6 +259,11 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::
       std::string unitName = component->values.getUnitFromModeldescription(connectorCref);
       if (!unitName.empty())
         connector->connectorUnits[unitName] = component->values.modeldescriptionUnitDefinitions[unitName];
+
+      // get enumerationTypes
+      std::string enumType = component->values.getEnumerationTypeFromModeldescription(connectorCref);
+      if (!enumType.empty())
+        connector->enumerationName[connectorCref] = enumType;
     }
   }
 
@@ -303,6 +308,16 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const pugi::xml_node& node, om
           std::string unitName = (*itConnectors).child(oms::ssp::Version1_0::ssc::real_type).attribute("unit").as_string();
           if (!unitName.empty())
             component->connectors.back()->connectorUnits[unitName] = component->values.modeldescriptionUnitDefinitions[unitName];
+        }
+        // set enumeration definitions
+        if ((*itConnectors).child(oms::ssp::Version1_0::ssc::enumeration_type))
+        {
+          std::string enumTypeName = (*itConnectors).child(oms::ssp::Version1_0::ssc::enumeration_type).attribute("name").as_string();
+          if (!enumTypeName.empty())
+            component->connectors.back()->enumerationName[component->connectors.back()->getName().c_str()] = enumTypeName;
+
+          // give priority to enum definitions in ssd over modeldescription.xml, it is possible the user might have manually change values in ssd file
+          component->values.importEnumerationDefinitions(ssdNode, enumTypeName);
         }
       }
     }
@@ -351,15 +366,18 @@ oms_status_enu_t oms::ComponentFMUCS::exportToSSD(pugi::xml_node& node, Snapshot
   node.append_attribute("name") = this->getCref().c_str();
   node.append_attribute("type") = "application/x-fmu-sharedlibrary";
   node.append_attribute("source") = getPath().c_str();
-  pugi::xml_node node_connectors = node.append_child(oms::ssp::Draft20180219::ssd::connectors);
 
   if (element.getGeometry())
     element.getGeometry()->exportToSSD(node);
 
-  for (const auto& connector : connectors)
-    if (connector)
-      if (oms_status_ok != connector->exportToSSD(node_connectors))
-        return oms_status_error;
+  if (connectors.size() > 1)
+  {
+    pugi::xml_node node_connectors = node.append_child(oms::ssp::Draft20180219::ssd::connectors);
+    for (const auto& connector : connectors)
+      if (connector)
+        if (oms_status_ok != connector->exportToSSD(node_connectors))
+          return oms_status_error;
+  }
 
   // export ParameterBindings at component level
   values.exportParameterBindings(node, snapshot, variantName);
@@ -387,6 +405,11 @@ void oms::ComponentFMUCS::getFilteredUnitDefinitionsToSSD(std::map<std::string, 
   }
 
   return values.getFilteredUnitDefinitionsToSSD(unitDefinitions);
+}
+
+void oms::ComponentFMUCS::getFilteredEnumerationDefinitionsToSSD(std::map<std::string, std::map<std::string, std::string>>& enumerationDefinitions)
+{
+  return values.getFilteredEnumerationDefinitionsToSSD(enumerationDefinitions);
 }
 
 oms_status_enu_t oms::ComponentFMUCS::exportToSSV(pugi::xml_node& ssvNode)
@@ -597,6 +620,14 @@ oms_status_enu_t oms::ComponentFMUCS::instantiate()
           setResourcesHelper1(res.second);
       }
     }
+    /*
+      check for parameter entry at system level and override the start values if exist,
+      as system level parameter has highest priority, this is done after checking for
+      local resources because it is possible some parameters have local entry and other
+      parameters have top level system entry
+    */
+    if (getParentSystem() && getParentSystem()->getValues().hasResources())
+      setResourcesHelper2(getParentSystem()->getValues());
   }
   // set start values from root resources
   else if (getParentSystem() && getParentSystem()->getValues().hasResources())
@@ -1716,15 +1747,17 @@ oms_status_enu_t oms::ComponentFMUCS::deleteStartValue(const ComRef& cref)
   return oms_status_error;
 }
 
-oms_status_enu_t oms::ComponentFMUCS::setValuesResources(std::vector<Values>& allValuesResources)
+oms_status_enu_t oms::ComponentFMUCS::setValuesResources(Values& values)
 {
-  this->values.parameterResources = allValuesResources;
-  return oms_status_ok;
-}
+  // set all ssv and ssm resources from the old component to replacing component
+  this->values.parameterResources = values.parameterResources;
+  // set all user define values from the old component to replacing component as user defined values have higher priority
+  // over modeldescription.xml
+  this->values.realStartValues = values.realStartValues;
+  this->values.integerStartValues = values.integerValues;
+  this->values.booleanStartValues = values.booleanStartValues;
 
-std::vector<oms::Values> oms::ComponentFMUCS::getValuesResources()
-{
-  return this->values.parameterResources;
+  return oms_status_ok;
 }
 
 oms_status_enu_t oms::ComponentFMUCS::updateOrDeleteStartValueInReplacedComponent(std::vector<std::string>& warningList)
@@ -1858,7 +1891,7 @@ oms_status_enu_t oms::ComponentFMUCS::updateSignals(ResultWriter& resultWriter)
 
 oms_status_enu_t oms::ComponentFMUCS::addSignalsToResults(const char* regex)
 {
-  oms_regex exp(regex);
+  std::regex exp(regex);
   for (unsigned int i=0; i<allVariables.size(); ++i)
   {
     if (exportVariables[i])
@@ -1877,7 +1910,7 @@ oms_status_enu_t oms::ComponentFMUCS::addSignalsToResults(const char* regex)
 
 oms_status_enu_t oms::ComponentFMUCS::removeSignalsFromResults(const char* regex)
 {
-  oms_regex exp(regex);
+  std::regex exp(regex);
   for (unsigned int i=0; i<allVariables.size(); ++i)
   {
     if (!exportVariables[i])

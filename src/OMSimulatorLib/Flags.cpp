@@ -35,14 +35,14 @@
 #include "ComRef.h"
 #include "Logging.h"
 #include "Model.h"
-#include "OMSimulator.h"
+#include "OMSimulator/OMSimulator.h"
 #include "Scope.h"
 #include "System.h"
 #include "Util.h"
 
 #include <iomanip>
 #include <iostream>
-#include <RegEx.h>
+#include <regex>
 #include <sstream>
 
 oms::Flags::Flags()
@@ -65,6 +65,10 @@ void oms::Flags::setDefaults()
 {
   addParametersToCSV = false;
   algLoopSolver = oms_alg_solver_kinsol;
+  cvodeMaxErrTestFails = 100;
+  cvodeMaxNLSFails = 100;
+  cvodeMaxNLSIterations = 5;
+  cvodeMaxSteps = 1000;
   defaultModeIsCS = false;
   deleteTempFiles = true;
   directionalDerivatives = true;
@@ -108,7 +112,7 @@ bool isOption(const std::string& cmd, const std::string& name)
   return (0 == cmd.compare(name));
 }
 
-bool isOptionAndValue(const std::string& cmd, const std::string& name, std::string& value, oms_regex re)
+bool isOptionAndValue(const std::string& cmd, const std::string& name, std::string& value, std::regex re)
 {
   if (0 == cmd.compare(0, name.length()+1, name + "="))
   {
@@ -162,7 +166,7 @@ oms_status_enu_t oms::Flags::SetCommandLineOption(const std::string& cmd)
       value = arg.substr(end+1);
     //logInfo("\"" + value + "\"");
 
-    if (regex_match(value, oms_regex(regex_str)))
+    if (regex_match(value, std::regex(regex_str)))
     {
       oms_status_enu_t status = GetInstance().flags[l->second].fcn(value);
       if (GetInstance().flags[l->second].interrupt || oms_status_ok != status)
@@ -200,6 +204,30 @@ oms_status_enu_t oms::Flags::AlgLoopSolver(const std::string& value)
 oms_status_enu_t oms::Flags::ClearAllOptions(const std::string& value)
 {
   GetInstance().setDefaults();
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Flags::CVODEMaxErrTestFails(const std::string& value)
+{
+  GetInstance().cvodeMaxErrTestFails = atoi(value.c_str());
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Flags::CVODEMaxNLSFailures(const std::string& value)
+{
+  GetInstance().cvodeMaxNLSFails = atoi(value.c_str());
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Flags::CVODEMaxNLSIterations(const std::string& value)
+{
+  GetInstance().cvodeMaxNLSIterations = atoi(value.c_str());
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Flags::CVODEMaxSteps(const std::string& value)
+{
+  GetInstance().cvodeMaxSteps = atoi(value.c_str());
   return oms_status_ok;
 }
 

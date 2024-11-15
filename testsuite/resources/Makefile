@@ -21,6 +21,7 @@ fmi_attributes_19 \
 HelloWorld \
 HelloWorldWithInput \
 Int1 \
+invalidModeldescription \
 Lin2DimODE \
 Modelica.Blocks.Continuous.Integrator \
 Modelica.Blocks.Math.Add \
@@ -59,6 +60,7 @@ tlm.mass \
 tlm.massSpring \
 tlm.source \
 tlm.UpperPendulum \
+testArray \
 ypipe \
 
 SSPs = \
@@ -73,8 +75,13 @@ import_export_parameters1 \
 import_export_parameters2 \
 import_export_parameters3 \
 importExportAllResources \
+invalidSSD \
+invalidSSV \
+invalidSSM \
 replaceSubmodel4 \
 replaceSubmodel5 \
+toplevelparameter1 \
+toplevelparameter2 \
 
 MOSs = \
 ASSCExample.mos \

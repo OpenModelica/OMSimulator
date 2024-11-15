@@ -36,17 +36,13 @@
 #include "ComRef.h"
 #include "Element.h"
 #include "ResultWriter.h"
-#include "Types.h"
+#include "OMSimulator/Types.h"
 #include "Snapshot.h"
 #include "Values.h"
 #include <assert.h>
 #include <pugixml.hpp>
 
-#if (BOOST_VERSION >= 105300)
-#include <ctpl.h>
-#else // use the standard queue
 #include <ctpl_stl.h>
-#endif
 
 namespace oms
 {
@@ -89,6 +85,7 @@ namespace oms
     oms_status_enu_t exportSSMTemplate(const ComRef& cref, const std::string& filename);
     void exportSignalFilter(Snapshot& snapshot) const;
     void exportUnitDefinitionsToSSD(pugi::xml_node& node) const;
+    void exportEnumerationDefinitionsToSSD(pugi::xml_node& node) const;
     oms_status_enu_t importFromSnapshot(const Snapshot& snapshot);
     oms_status_enu_t importSnapshot(const char* snapshot, char** newCref);
     oms_status_enu_t importSignalFilter(const std::string& filename, const Snapshot& snapshot);
@@ -99,7 +96,7 @@ namespace oms
     void copyResources(bool copy_resources) {this->copy_resources = copy_resources;}
     bool copyResources() {return copy_resources;}
 
-    oms::Element** getElements() {return &elements[0];}
+    oms::Element** getElements() {return system ? &elements[0] : nullptr;}
     void writeAllResourcesToFilesystem(std::vector<std::string>& resources, Snapshot& snapshot) const;
 
     oms_status_enu_t instantiate();
@@ -125,6 +122,7 @@ namespace oms
     oms_status_enu_t emit(double time, bool force=false, bool* emitted=NULL);
     oms_status_enu_t addSignalsToResults(const char* regex);
     oms_status_enu_t removeSignalsFromResults(const char* regex);
+    std::string escapeSpecialCharacters(const std::string& regex);
 
     bool validState(int validStates) const {return (modelState & validStates);}
 

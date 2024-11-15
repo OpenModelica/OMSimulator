@@ -30,14 +30,15 @@
  */
 
 #include "Scope.h"
-
+#include "XercesValidator.h"
 #include "Flags.h"
 #include "System.h"
 #include "Component.h"
 #include "Snapshot.h"
-#include "minizip/miniunz.h"
+#include "miniunz.h"
 #include <time.h>
 #include "ssd/Tags.h"
+#include <iostream>
 
 oms::Scope::Scope()
   : tempDir(".")
@@ -195,6 +196,9 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
   const char* systemStructure = ::miniunz_onefile_to_memory(filename.c_str(), "SystemStructure.ssd");
   if (!systemStructure)
     return logError("failed to extract \"SystemStructure.ssd\" from \"" + std::string(filename) + "\"");
+
+  XercesValidator xercesValidator;
+  xercesValidator.validateSSP(systemStructure, filename);
 
   Snapshot snapshot;
   oms_status_enu_t status = snapshot.importResourceMemory("SystemStructure.ssd", systemStructure);

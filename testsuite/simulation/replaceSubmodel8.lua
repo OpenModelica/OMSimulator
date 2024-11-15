@@ -1,20 +1,20 @@
 -- status: correct
 -- teardown_command: rm -rf replacesubmodel_08_lua/
 -- linux: no
--- mingw32: no
--- mingw64: yes
+-- ucrt64: yes
 -- win: no
 -- mac: no
 
 oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./replacesubmodel_08_lua/")
+oms_setWorkingDirectory("./replacesubmodel_08_lua/")
 
 oms_newModel("model")
 
 oms_addSystem("model.root", oms_system_wc)
 
-oms_addSubModel("model.root.A", "../resources/replaceA.fmu")
-oms_addSubModel("model.root.B", "../resources/replaceB.fmu")
+oms_addSubModel("model.root.A", "../../resources/replaceA.fmu")
+oms_addSubModel("model.root.B", "../../resources/replaceB.fmu")
 
 -- add connections
 oms_addConnection("model.root.A.y", "model.root.B.u")
@@ -37,7 +37,7 @@ oms_delete("model")
 
 oms_importFile("replaceSubmodel8.ssp")
 
-oms_replaceSubModel("model.root.A", "../resources/replaceA_extended.fmu", false)
+oms_replaceSubModel("model.root.A", "../../resources/replaceA_extended.fmu", false)
 src, status = oms_exportSnapshot("model")
 print(src)
 
@@ -260,7 +260,7 @@ oms_delete("model")
 -- info:      model.root.B.u1     : 1.0
 -- info:      model.root.B.z      : 1.0
 -- error:   [getVariable] Unknown signal "model.root.A.dummy"
--- warning: deleting connection "A.dummy ==> B.u1", as signal "dummy" couldn't be resolved to any signal in the replaced submodel "../resources/replaceA_extended.fmu"
+-- warning: deleting connection "A.dummy ==> B.u1", as signal "dummy" couldn't be resolved to any signal in the replaced submodel "../../resources/replaceA_extended.fmu"
 -- <?xml version="1.0"?>
 -- <oms:snapshot
 --   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"

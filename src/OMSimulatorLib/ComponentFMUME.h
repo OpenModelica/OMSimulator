@@ -61,6 +61,7 @@ namespace oms
     oms_status_enu_t exportToSSD(pugi::xml_node& node, Snapshot& snapshot, std::string variantName) const;
     oms_status_enu_t exportToSSV(pugi::xml_node& ssvNode);
     void getFilteredUnitDefinitionsToSSD(std::map<std::string, std::map<std::string, std::string>>& unitDefinitions);
+    void getFilteredEnumerationDefinitionsToSSD(std::map<std::string, std::map<std::string, std::string>>& enumerationDefinitions);
     oms_status_enu_t exportToSSVTemplate(pugi::xml_node& ssvNode, Snapshot& snapshot);
     oms_status_enu_t exportToSSMTemplate(pugi::xml_node& ssmNode);
     oms_status_enu_t instantiate();
@@ -72,6 +73,9 @@ namespace oms
     oms_status_enu_t initializeDependencyGraph_outputs();
 
     Variable* getVariable(const ComRef& cref);
+
+    Values& getValues() { return values; }
+    oms_status_enu_t setValuesResources(Values& values);
 
     oms_status_enu_t getBoolean(const ComRef& cref, bool& value);
     oms_status_enu_t getBoolean(const fmi2ValueReference& vr, bool& value);
@@ -92,8 +96,6 @@ namespace oms
 
     oms_status_enu_t deleteStartValue(const ComRef& cref);
     oms_status_enu_t updateOrDeleteStartValueInReplacedComponent(std::vector<std::string>& warningList);
-    oms_status_enu_t setValuesResources(std::vector<Values>& allValuesResources);
-    std::vector<Values> getValuesResources();
 
     oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultFile);
     oms_status_enu_t updateSignals(ResultWriter& resultWriter);

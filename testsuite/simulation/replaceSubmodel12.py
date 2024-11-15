@@ -11,13 +11,14 @@ oms = OMSimulator()
 
 oms.setCommandLineOption("--suppressPath=true")
 oms.setTempDirectory("./replacesubmodel_12_py/")
+oms.setWorkingDirectory("./replacesubmodel_12_py/")
 
 oms.newModel("model")
 
 oms.addSystem("model.root", oms.system_wc)
 
-oms.addSubModel("model.root.A", "../resources/Modelica.Blocks.Sources.Sine.fmu")
-oms.addSubModel("model.root.B", "../resources/Modelica.Blocks.Math.Gain.fmu")
+oms.addSubModel("model.root.A", "../../resources/Modelica.Blocks.Sources.Sine.fmu")
+oms.addSubModel("model.root.B", "../../resources/Modelica.Blocks.Math.Gain.fmu")
 
 ## add connections
 oms.addConnection("model.root.A.y", "model.root.B.u")
@@ -33,7 +34,7 @@ oms.delete("model")
 
 oms.importFile("replaceSubmodel12.ssp")
 
-oms.replaceSubModel("model.root.B", "../resources/Modelica.Blocks.Sources.Step.fmu", False)
+oms.replaceSubModel("model.root.B", "../../resources/Modelica.Blocks.Sources.Step.fmu", False)
 
 src, status = oms.exportSnapshot("model")
 print(src)
@@ -44,7 +45,7 @@ oms.delete("model")
 
 ## Result:
 ## error:   [getVariable] Unknown signal "model.root.B.u"
-## warning: deleting connection "A.y ==> B.u", as signal "u" couldn't be resolved to any signal in the replaced submodel "../resources/Modelica.Blocks.Sources.Step.fmu"
+## warning: deleting connection "A.y ==> B.u", as signal "u" couldn't be resolved to any signal in the replaced submodel "../../resources/Modelica.Blocks.Sources.Step.fmu"
 ## <?xml version="1.0"?>
 ## <oms:snapshot
 ##   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"

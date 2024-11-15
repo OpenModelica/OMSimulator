@@ -1,8 +1,7 @@
 -- status: correct
 -- teardown_command: rm -rf simulation-lua/ simulation_init.dot simulation_event.dot simulation_sim.dot simulation_res.mat
 -- linux: yes
--- mingw32: no
--- mingw64: yes
+-- ucrt64: yes
 -- win: no
 -- mac: no
 

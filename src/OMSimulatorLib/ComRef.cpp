@@ -34,10 +34,10 @@
 #include "OMSString.h"
 
 #include <assert.h>
-#include <RegEx.h>
+#include <regex>
 #include <cstring>
 
-const oms_regex re_ident("^[a-zA-Z][a-zA-Z0-9_]*$");
+const std::regex re_ident("^[a-zA-Z][a-zA-Z0-9_]*$");
 
 oms::ComRef::ComRef()
 {
@@ -88,7 +88,7 @@ oms::ComRef oms::ComRef::operator+(const oms::ComRef& rhs) const
 
 bool oms::ComRef::isValidIdent(const std::string& ident)
 {
-  return oms_regex_match(ident, re_ident);
+  return std::regex_match(ident, re_ident);
 }
 
 bool oms::ComRef::isValidIdent() const

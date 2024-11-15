@@ -35,10 +35,11 @@
 #include "Logging.h"
 #include "ssd/Tags.h"
 #include "Util.h"
+#include "XercesValidator.h"
 
 #include <iostream>
 #include <map>
-#include "minizip/miniunz.h"
+#include "miniunz.h"
 #include <pugixml.hpp>
 #include <string>
 
@@ -92,6 +93,19 @@ void oms::Values::getFilteredUnitDefinitionsToSSD(std::map<std::string, std::map
     auto unitvalue = unitDefinitions.find(it.unitValue);
     if (unitvalue == unitDefinitions.end())
       unitDefinitions[it.unitValue] = it.baseUnit;
+  }
+}
+
+void oms::Values::getFilteredEnumerationDefinitionsToSSD(std::map<std::string, std::map<std::string, std::string>>& enumerationDefinitions)
+{
+  if (modeldescriptionTypeDefinitions.empty())
+    return;
+
+  for(const auto &it: modeldescriptionTypeDefinitions)
+  {
+    auto enumType = enumerationDefinitions.find(it.first);
+    if (enumType == enumerationDefinitions.end())
+      enumerationDefinitions[it.first] = it.second;
   }
 }
 
@@ -574,6 +588,16 @@ std::string oms::Values::getUnitFromModeldescription(ComRef& cref) const
   return "";
 }
 
+std::string oms::Values::getEnumerationTypeFromModeldescription(ComRef& cref) const
+{
+  // search in modelDescription.xml
+  auto enumType = modeldescriptionEnumeration.find(cref);
+  if (enumType != modeldescriptionEnumeration.end())
+    return enumType->second;
+
+  return "";
+}
+
 oms_status_enu_t oms::Values::getIntegerFromModeldescription(const ComRef& cref, int& value)
 {
   // search in modelDescription.xml
@@ -841,6 +865,14 @@ oms_status_enu_t oms::Values::importFromSnapshot(const pugi::xml_node& node, con
     std::string ssvFile = parameterBindingNode.attribute("source").as_string();
     if (!ssvFile.empty()) // parameter binding provided with .ssv file
     {
+      // validate ssv files against SSP schem, only if the file exists, because it is possible we use importSnapShot API
+      // to go back to old states and in this case we should not validate those ssv files in memory until it is exported to a ssp
+      if (filesystem::exists(ssvFile))
+      {
+        XercesValidator xercesValidator;
+        xercesValidator.validateSSP("", ssvFile);
+      }
+
       //resourceFiles.push_back(ssvFile);
       pugi::xml_node parameterSet = snapshot.getResourceNode(ssvFile);
       if (!parameterSet)
@@ -857,6 +889,12 @@ oms_status_enu_t oms::Values::importFromSnapshot(const pugi::xml_node& node, con
         std::string ssmFileSource = ssd_parameterMapping.attribute("source").as_string();
         if (!ssmFileSource.empty())
         {
+          // validate ssm file only if it exists
+          if (filesystem::exists(ssmFileSource))
+          {
+            XercesValidator xercesValidator;
+            xercesValidator.validateSSP("", ssmFileSource);
+          }
           pugi::xml_node ssm_parameterMapping = snapshot.getResourceNode(ssmFileSource);
           if (!ssm_parameterMapping)
             return logError("loading <oms:file> \"" + ssmFileSource + "\" from <oms:snapshot> failed");
@@ -1471,10 +1509,37 @@ void oms::Values::importUnitDefinitions(const pugi::xml_node& node)
   }
 }
 
+void oms::Values::importEnumerationDefinitions(const pugi::xml_node& node, std::string& enumTypename)
+{
+
+  if (!node)
+    return;
+
+  pugi::xml_node enumeration = node.child(oms::ssp::Draft20180219::ssd::enumerations);
+
+  for (pugi::xml_node enumItems = enumeration.child(oms::ssp::Version1_0::ssc::enumeration_type); enumItems; enumItems = enumItems.next_sibling(oms::ssp::Version1_0::ssc::enumeration_type))
+  {
+    // entry found
+    if (enumItems.attribute("name").as_string() == enumTypename)
+    {
+      std::map<std::string, std::string> enumerationItems;
+      for (pugi::xml_node enumItem = enumItems.child(oms::ssp::Version1_0::ssc::enum_item); enumItem; enumItem = enumItem.next_sibling(oms::ssp::Version1_0::ssc::enum_item))
+      {
+        enumerationItems[enumItem.attribute("name").as_string()] = enumItem.attribute("value").as_string();
+      }
+      modeldescriptionTypeDefinitions[enumTypename] = enumerationItems;
+    }
+  }
+}
+
 oms_status_enu_t oms::Values::parseModelDescription(const filesystem::path& root, std::string& guid_)
 {
 
   const char* modelDescription = ::miniunz_onefile_to_memory(root.generic_string().c_str(), "modelDescription.xml");
+
+  // validate modeldescription.xml against schema fmi2ModelDescription.xsd
+  XercesValidator xercesValidator;
+  xercesValidator.validateFMU(modelDescription, root.generic_string());
 
   Snapshot snapshot;
   oms_status_enu_t status = snapshot.importResourceMemory("modelDescription.xml", modelDescription);
@@ -1494,6 +1559,21 @@ oms_status_enu_t oms::Values::parseModelDescription(const filesystem::path& root
   for(pugi::xml_node_iterator it = node.begin(); it != node.end(); ++it)
   {
     std::string name = it->name();
+    if (name == "TypeDefinitions")
+    {
+      pugi::xml_node simpleType = it->child("SimpleType");
+      pugi::xml_node Enumeration = simpleType.child("Enumeration");
+      if (Enumeration)
+      {
+        std::map<std::string, std::string> enumerationItems;
+        for (pugi::xml_node enumItem = Enumeration.child("Item"); enumItem; enumItem = enumItem.next_sibling("Item"))
+        {
+          // std::cout << "\n loop: " << enumItem.attribute("name").as_string() << "==>" << enumItem.attribute("value").as_string();
+          enumerationItems[enumItem.attribute("name").as_string()] = enumItem.attribute("value").as_string();
+        }
+        modeldescriptionTypeDefinitions[simpleType.attribute("name").as_string()] = enumerationItems;
+      }
+    }
     if (name == "UnitDefinitions")
     {
       //std::cout << "\nParse Unit Definitions";
@@ -1543,6 +1623,10 @@ oms_status_enu_t oms::Values::parseModelDescription(const filesystem::path& root
         if (strlen(scalarVariable.child("Boolean").attribute("start").as_string()) != 0)
         {
           modelDescriptionBooleanStartValues[scalarVariable.attribute("name").as_string()] = scalarVariable.child("Boolean").attribute("start").as_bool();
+        }
+        if (strlen(scalarVariable.child("Enumeration").attribute("declaredType").as_string()) != 0)
+        {
+          modeldescriptionEnumeration[scalarVariable.attribute("name").as_string()] = scalarVariable.child("Enumeration").attribute("declaredType").as_string();
         }
       }
     }

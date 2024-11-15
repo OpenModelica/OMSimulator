@@ -29,7 +29,7 @@
  *
  */
 
-#include "OMSimulator.h"
+#include "OMSimulator/OMSimulator.h"
 
 #include "Component.h"
 #include "ComRef.h"
@@ -52,13 +52,13 @@
   #include "TLMBusConnector.h"
   #include "ExternalModel.h"
 #endif
-#include "Types.h"
+#include "OMSimulator/Types.h"
 #include "Version.h"
 
 #include <chrono>
 #include <condition_variable>
 #include <iostream>
-#include "minizip/miniunz.h"
+#include "miniunz.h"
 #include <mutex>
 #include <pugixml.hpp>
 #include <string>
@@ -67,7 +67,7 @@
 #if defined(OMS_STATIC)
 extern "C"
 {
-  #include <OMSimulatorLua.c>
+  #include "../OMSimulatorLua/OMSimulatorLua.c"
 }
 #endif
 
@@ -1182,7 +1182,12 @@ oms_status_enu_t oms_RunFile(const char* filename)
     std::string fmuName = systemName + (oms::ComRef::isValidIdent(path.stem().string()) ? ("." + path.stem().string()) : ".fmu");
     oms_fmi_kind_enu_t kind;
 
-    status = oms_extractFMIKind(filename, &kind);
+    /* intialize the defaultExperiment with defaults set in Flags.cpp setDefaults() or
+     * values provided from user from commandLine (e.g) OMSimulator A.fmu --stopTime=10 --stepSize=10
+    */
+    oms_fmu_default_experiment_settings defaultExperiment = {oms::Flags::StartTime(), oms::Flags::StopTime(), oms::Flags::Tolerance(), oms::Flags::MaximumStepSize()};
+
+    status = oms_extractFMIKind(filename, &kind, &defaultExperiment);
     if (oms_status_ok != status) return logError("oms_extractFMIKind failed");
 
     status = oms_newModel(modelName.c_str());
@@ -1204,9 +1209,12 @@ oms_status_enu_t oms_RunFile(const char* filename)
 
     if (oms::Flags::ResultFile() != "<default>")
       oms_setResultFile(modelName.c_str(), oms::Flags::ResultFile().c_str(), 1);
-    oms_setStartTime(modelName.c_str(), oms::Flags::StartTime());
-    oms_setStopTime(modelName.c_str(), oms::Flags::StopTime());
-    oms_setTolerance(modelName.c_str(), oms::Flags::Tolerance(), oms::Flags::Tolerance());
+    oms_setStartTime(modelName.c_str(), defaultExperiment.startTime);
+    oms_setStopTime(modelName.c_str(), defaultExperiment.stopTime);
+    oms_setTolerance(modelName.c_str(), defaultExperiment.tolerance, defaultExperiment.tolerance);
+    // set the maximum stepSize
+    oms_setVariableStepSize(modelName.c_str(), oms::Flags::InitialStepSize(), oms::Flags::MinimumStepSize(), defaultExperiment.stepSize);
+
     if (kind == oms_fmi_kind_me_and_cs)
       oms_setSolver(systemName.c_str(), oms::Flags::DefaultModeIsCS() ? oms::Flags::MasterAlgorithm() : oms::Flags::Solver());
     else
@@ -1839,7 +1847,7 @@ oms_status_enu_t oms_getVariableStepSize(const char* cref, double* initialStepSi
   return oms_status_ok;
 }
 
-oms_status_enu_t oms_extractFMIKind(const char* filename, oms_fmi_kind_enu_t* kind)
+oms_status_enu_t oms_extractFMIKind(const char* filename, oms_fmi_kind_enu_t* kind, oms_fmu_default_experiment_settings* defaultExperiment)
 {
   if (!kind)
     return logError("Invalid argument \"kind=NULL\"");
@@ -1868,6 +1876,37 @@ oms_status_enu_t oms_extractFMIKind(const char* filename, oms_fmi_kind_enu_t* ki
   {
     *kind = oms_fmi_kind_unknown;
     return oms_status_error;
+  }
+
+  // get default experiment settings if exists
+  if (node.child("DefaultExperiment"))
+  {
+    /* give priority for values provided from command line,
+     * if the user overrides those variables then we should take those values
+     * and not the default values from <DefaultExperiment> in modeldescription.xml
+    */
+    if (defaultExperiment->startTime == 0.0)
+    {
+      if (node.child("DefaultExperiment").attribute("startTime").as_string() != "")
+        defaultExperiment->startTime = node.child("DefaultExperiment").attribute("startTime").as_double();
+    }
+    if (defaultExperiment->stopTime == 1.0)
+    {
+      if (node.child("DefaultExperiment").attribute("stopTime").as_string() != "")
+        defaultExperiment->stopTime = node.child("DefaultExperiment").attribute("stopTime").as_double();
+    }
+    if (defaultExperiment->tolerance == 1e-4)
+    {
+      if (node.child("DefaultExperiment").attribute("tolerance").as_string() != "")
+        defaultExperiment->tolerance = node.child("DefaultExperiment").attribute("tolerance").as_double();
+    }
+    if (defaultExperiment->stepSize == 1e-3) // maximumStepSize
+    {
+      if (node.child("DefaultExperiment").attribute("stepSize").as_string() != "")
+        defaultExperiment->stepSize = node.child("DefaultExperiment").attribute("stepSize").as_double();
+      else
+        defaultExperiment->stepSize = (defaultExperiment->stopTime - defaultExperiment->startTime) / 500;
+    }
   }
 
   return oms_status_ok;

@@ -41,8 +41,9 @@
 #include "ssd/Tags.h"
 #include "System.h"
 
-#include "minizip/minizip.h"
+#include "minizip.h"
 #include <thread>
+#include <algorithm> /* std::unique and std::find are defined here */
 
 oms::Model::Model(const oms::ComRef& cref, const std::string& tempDir)
   : cref(cref), tempDir(tempDir), resultFilename(std::string(cref) + "_res.mat")
@@ -830,7 +831,7 @@ oms_status_enu_t oms::Model::exportToSSD(Snapshot& snapshot) const
     if (oms_status_ok != system->exportToSSD(system_node, snapshot, this->variantName))
       return logError("export of system failed");
   }
-
+  exportEnumerationDefinitionsToSSD(ssdNode);
   exportUnitDefinitionsToSSD(ssdNode);
 
   pugi::xml_node default_experiment = ssdNode.append_child(oms::ssp::Draft20180219::ssd::default_experiment);
@@ -848,7 +849,9 @@ oms_status_enu_t oms::Model::exportToSSD(Snapshot& snapshot) const
   oms_simulation_information.append_attribute("resultFile") = resultFilename.c_str();
   oms_simulation_information.append_attribute("loggingInterval") = std::to_string(loggingInterval).c_str();
   oms_simulation_information.append_attribute("bufferSize") = std::to_string(bufferSize).c_str();
-  oms_simulation_information.append_attribute("signalFilter") = signalFilterFilename.c_str();
+  // check for root system exist and export signalFilter
+  if (system)
+    oms_simulation_information.append_attribute("signalFilter") = signalFilterFilename.c_str();
 
   return oms_status_ok;
 }
@@ -889,6 +892,10 @@ oms_status_enu_t oms::Model::importFromSnapshot(const Snapshot& snapshot)
     else if (name == oms::ssp::Draft20180219::ssd::units)
     {
       // allow importing unitDefinitions, the unitDefinitions are handled in Values.cpp importFromSnapshot
+    }
+    else if (name == oms::ssp::Draft20180219::ssd::enumerations)
+    {
+      // allow importing enumerations, the enumerationDefinitions are handled in Values.cpp importFromSnapshot
     }
     else if (name == oms::ssp::Draft20180219::ssd::default_experiment)
     {
@@ -1520,8 +1527,61 @@ void oms::Model::exportUnitDefinitionsToSSD(pugi::xml_node& node) const
   }
 }
 
+void oms::Model::exportEnumerationDefinitionsToSSD(pugi::xml_node& node) const
+{
+  if (!system)
+    return;
+
+  std::map<std::string, std::map<std::string, std::string>> enumerationDefinitions;
+  for (const auto& component : system->getComponents())
+    component.second->getFilteredEnumerationDefinitionsToSSD(enumerationDefinitions);
+
+  if (enumerationDefinitions.empty())
+    return;
+
+  pugi::xml_node node_enumeration = node.append_child(oms::ssp::Draft20180219::ssd::enumerations);
+
+  for (const auto &it : enumerationDefinitions)
+  {
+    pugi::xml_node ssc_enumeration = node_enumeration.append_child(oms::ssp::Version1_0::ssc::enumeration_type);
+    ssc_enumeration.append_attribute("name") = it.first.c_str();
+    for (const auto & item: it.second)
+    {
+      pugi::xml_node enumItem = ssc_enumeration.append_child(oms::ssp::Version1_0::ssc::enum_item);
+      enumItem.append_attribute("name") = item.first.c_str();
+      enumItem.append_attribute("value") = item.second.c_str();
+    }
+  }
+
+}
+
+std::string oms::Model::escapeSpecialCharacters(const std::string& regex)
+{
+  std::string escapedRegex;
+  for (char c : regex)
+  {
+    /* https://github.com/OpenModelica/OMSimulator/issues/1320
+       If the character is a special regex character, add a backslash before it
+      (e.g) model.root.A.a[1] => model\.root\.A\.a\[1\]
+            model.root.testArray.der(x)=>model\.root\.testArray\.der\(x\)
+    */
+    if (c == '.' || c == '[' || c == ']' || c == '(' || c == ')' ||
+        c == '{' || c == '}' || c == '*' || c == '+' || c == '?' ||
+        c == '^' || c == '$' || c == '|')
+    {
+      escapedRegex += '\\'; // Add escape character
+    }
+    escapedRegex += c; // Add the original character
+  }
+  return escapedRegex;
+}
+
 oms_status_enu_t oms::Model::importSignalFilter(const std::string& filename, const Snapshot& snapshot)
 {
+  // check for system and do not import signalFilter if system == NULL
+  if (!system)
+    return oms_status_ok;
+
   if (".*" == filename) // avoid error messages for older ssp files
   {
     addSignalsToResults(".*");
@@ -1537,7 +1597,7 @@ oms_status_enu_t oms::Model::importSignalFilter(const std::string& filename, con
   for (pugi::xml_node_iterator it = oms_signalfilter.begin(); it != oms_signalfilter.end(); ++it)
   {
     if (std::string(it->name()) == oms::ssp::Version1_0::oms_Variable)
-      addSignalsToResults(it->attribute("name").as_string());
+      addSignalsToResults(escapeSpecialCharacters(it->attribute("name").as_string()).c_str());
   }
 
   return oms_status_ok;

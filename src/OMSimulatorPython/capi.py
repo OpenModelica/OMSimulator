@@ -4,15 +4,24 @@ import os
 class capi:
   def __init__(self):
     dirname = os.path.dirname(__file__)
-    omslib = os.path.join(dirname, "@OMSIMULATORLIB_DIR_STRING@", "@OMSIMULATORLIB_STRING@")
-    # attempt to fix #8163 on Linux
-    if not os.path.exists(omslib):
-      omslib = os.path.join(dirname, "..", "@OMSIMULATORLIB_DIR_STRING@", "@OMSIMULATORLIB_STRING@")
+    ## look for dll in the current directory for the python pip package
+    omslib = os.path.join(dirname, "@OMSIMULATORLIB_STRING@")
 
-    if os.name == 'nt': # Windows
-      dllDir = os.add_dll_directory(os.path.dirname(omslib))
+    dllSearchPath = False
+
+    ## look for dll in the OpenModelica top level directory or OMSimulator stand alone directory
+    if not os.path.exists(omslib):
+      if os.name == 'nt': # Windows
+        omslib = os.path.join(dirname, "@OMSIMULATOR_PYTHON_RELATIVE_DLL_DIR@", "@OMSIMULATORLIB_STRING@")
+        dllDir = os.add_dll_directory(os.path.dirname(omslib))
+        dllSearchPath = True
+      else:
+        # attempt to fix #8163 on Linux
+        omslib = os.path.join(dirname, "..", "@OMSIMULATORLIB_STRING@")
+
     self.obj=ctypes.CDLL(omslib)
-    if os.name == 'nt': # Windows
+
+    if os.name == 'nt' and dllSearchPath: # Windows
       dllDir.close()
 
     self.obj.oms_activateVariant.argtypes = [ctypes.c_char_p, ctypes.c_char_p]

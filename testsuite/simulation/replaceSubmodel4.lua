@@ -1,15 +1,15 @@
 -- status: correct
 -- teardown_command: rm -rf replacesubmodel_04_lua/
 -- linux: no
--- mingw32: no
--- mingw64: yes
+-- ucrt64: yes
 -- win: no
 -- mac: no
 
 oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./replacesubmodel_04_lua/")
+oms_setWorkingDirectory("./replacesubmodel_04_lua/")
 
-oms_importFile("../resources/replaceSubmodel4.ssp")
+oms_importFile("../../resources/replaceSubmodel4.ssp")
 
 src, status = oms_exportSnapshot("model")
 print(src)
@@ -21,7 +21,7 @@ print("info:      model.root.B.u      : " .. oms_getReal("model.root.B.u"))
 print("info:      model.root.B.u1     : " .. oms_getReal("model.root.B.u1"))
 print("info:      model.root.B.z      : " .. oms_getReal("model.root.B.z"))
 
-oms_replaceSubModel("model.root.A", "../resources/replaceA_extended.fmu", false)
+oms_replaceSubModel("model.root.A", "../../resources/replaceA_extended.fmu", false)
 
 src, status = oms_exportSnapshot("model")
 print(src)
@@ -264,6 +264,10 @@ oms_delete("model")
 --         type="Real"
 --         kind="unknown" />
 --       <oms:Variable
+--         name="model.root.A.der(x)"
+--         type="Real"
+--         kind="unknown" />
+--       <oms:Variable
 --         name="model.root.A.dummy"
 --         type="Real"
 --         kind="output" />
@@ -290,7 +294,7 @@ oms_delete("model")
 -- info:      model.root.B.u1     : -13.0
 -- info:      model.root.B.z      : -15.0
 -- error:   [getVariable] Unknown signal "model.root.A.dummy"
--- warning: deleting connection "A.dummy ==> B.u1", as signal "dummy" couldn't be resolved to any signal in the replaced submodel "../resources/replaceA_extended.fmu"
+-- warning: deleting connection "A.dummy ==> B.u1", as signal "dummy" couldn't be resolved to any signal in the replaced submodel "../../resources/replaceA_extended.fmu"
 -- warning: deleting start value "A.t" in "resources/root.ssm" resources, because the identifier couldn't be resolved to any system signal in the replacing model
 -- warning: deleting start value "A.t" in "resources/root.ssv" resources, because the identifier couldn't be resolved to any system signal in the replacing model
 -- <?xml version="1.0"?>
@@ -521,7 +525,7 @@ oms_delete("model")
 --     </oms:SignalFilter>
 --   </oms:file>
 -- </oms:snapshot>
---
+-- 
 -- info:    Result file: replaceSubmodel4.mat (bufferSize=1)
 -- info:    Initialize
 -- info:      model.root.A.u      : 10.0

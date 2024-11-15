@@ -67,6 +67,10 @@ oms.terminate("embrace")
 oms.delete("embrace")
 
 ## Result:
+## warning: invalid "SystemStructureDescription" detected in file "../../resources/embrace.ssp" at line: 17 column: 26, missing required attribute 'name'
+## warning: "SystemStructureDescription" does not conform to the SSP standard schema
+## warning: invalid "SystemStructureParameterValues" detected in file "resources/RAPID_Systems_2021-03-29_Test_1.ssv" at line: 3 column: 10, element 'Units' must be qualified
+## warning: "SystemStructureParameterValues" does not conform to the SSP standard schema
 ## info:    Result file: sim_results.mat (bufferSize=1)
 ## info:    Initialize:
 ## info:      embrace.root.ECS_HW.coolinPackAir.looptype:  2
@@ -74,4 +78,6 @@ oms.delete("embrace")
 ## info:      embrace.root.ECS_HW.pipeC.L               :  1.0
 ## info:      embrace.root.ECS_HW.pipeB.L               :  0.976535328081166
 ## info:      embrace.root.ECS_HW.pipeA.L               :  0.976535328081166
+## info:    4 warnings
+## info:    0 errors
 ## endResult

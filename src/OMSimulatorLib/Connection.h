@@ -35,7 +35,7 @@
 #include "ComRef.h"
 #include "Connector.h"
 #include "ssd/ConnectionGeometry.h"
-#include "Types.h"
+#include "OMSimulator/Types.h"
 
 #include <string>
 

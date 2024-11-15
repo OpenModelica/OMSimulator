@@ -41,9 +41,7 @@ oms::Element::Element(oms_element_enu_t type, const oms::ComRef& name)
   this->elements = nullptr;
   this->connectors = nullptr;
   this->busconnectors = nullptr;
-#if !defined(NO_TLM)
   this->tlmbusconnectors = nullptr;
-#endif
   this->geometry = reinterpret_cast<ssd_element_geometry_t*>(new oms::ssd::ElementGeometry());
 }
 

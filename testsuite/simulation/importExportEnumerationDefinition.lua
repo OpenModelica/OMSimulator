@@ -1,0 +1,188 @@
+-- status: correct
+-- teardown_command: rm -rf PI_Controller-lua/
+-- linux: yes
+-- ucrt64: yes
+-- win: yes
+-- mac: no
+
+oms_setCommandLineOption("--suppressPath=true")
+oms_setTempDirectory("./enumdef_lua/")
+oms_setWorkingDirectory("./enumdef_lua/")
+
+oms_newModel("model")
+oms_addSystem("model.co_sim", oms_system_wc)
+
+oms_addSubModel("model.co_sim.limiter", "../../resources/Modelica.Blocks.Nonlinear.Limiter.fmu")
+
+-- snapshot = oms_exportSnapshot("model")
+-- print(snapshot)
+
+oms_export("model", "enumdef.ssp")
+oms_delete("model")
+
+oms_importFile("enumdef.ssp")
+
+snapshot_ = oms_exportSnapshot("model")
+print(snapshot_)
+
+
+-- Result:
+-- <?xml version="1.0"?>
+-- <oms:snapshot
+--   xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
+--   partial="false">
+--   <oms:file
+--     name="SystemStructure.ssd">
+--     <ssd:SystemStructureDescription
+--       xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
+--       xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription"
+--       xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
+--       xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping"
+--       xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary"
+--       xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
+--       name="model"
+--       version="1.0">
+--       <ssd:System
+--         name="co_sim">
+--         <ssd:Elements>
+--           <ssd:Component
+--             name="limiter"
+--             type="application/x-fmu-sharedlibrary"
+--             source="resources/0001_limiter.fmu">
+--             <ssd:Connectors>
+--               <ssd:Connector
+--                 name="u"
+--                 kind="input">
+--                 <ssc:Real />
+--                 <ssd:ConnectorGeometry
+--                   x="0.000000"
+--                   y="0.500000" />
+--               </ssd:Connector>
+--               <ssd:Connector
+--                 name="y"
+--                 kind="output">
+--                 <ssc:Real />
+--                 <ssd:ConnectorGeometry
+--                   x="1.000000"
+--                   y="0.500000" />
+--               </ssd:Connector>
+--               <ssd:Connector
+--                 name="uMax"
+--                 kind="parameter">
+--                 <ssc:Real />
+--               </ssd:Connector>
+--               <ssd:Connector
+--                 name="uMin"
+--                 kind="calculatedParameter">
+--                 <ssc:Real />
+--               </ssd:Connector>
+--               <ssd:Connector
+--                 name="homotopyType"
+--                 kind="calculatedParameter">
+--                 <ssc:Enumeration
+--                   name="Modelica.Blocks.Types.LimiterHomotopy" />
+--               </ssd:Connector>
+--               <ssd:Connector
+--                 name="limitsAtInit"
+--                 kind="calculatedParameter">
+--                 <ssc:Boolean />
+--               </ssd:Connector>
+--               <ssd:Connector
+--                 name="strict"
+--                 kind="calculatedParameter">
+--                 <ssc:Boolean />
+--               </ssd:Connector>
+--             </ssd:Connectors>
+--           </ssd:Component>
+--         </ssd:Elements>
+--         <ssd:Annotations>
+--           <ssc:Annotation
+--             type="org.openmodelica">
+--             <oms:Annotations>
+--               <oms:SimulationInformation>
+--                 <oms:FixedStepMaster
+--                   description="oms-ma"
+--                   stepSize="0.001000"
+--                   absoluteTolerance="0.000100"
+--                   relativeTolerance="0.000100" />
+--               </oms:SimulationInformation>
+--             </oms:Annotations>
+--           </ssc:Annotation>
+--         </ssd:Annotations>
+--       </ssd:System>
+--       <ssd:Enumerations>
+--         <ssc:Enumeration
+--           name="Modelica.Blocks.Types.LimiterHomotopy">
+--           <ssc:Item
+--             name="Linear"
+--             value="2" />
+--           <ssc:Item
+--             name="LowerLimit"
+--             value="4" />
+--           <ssc:Item
+--             name="NoHomotopy"
+--             value="1" />
+--           <ssc:Item
+--             name="UpperLimit"
+--             value="3" />
+--         </ssc:Enumeration>
+--       </ssd:Enumerations>
+--       <ssd:DefaultExperiment
+--         startTime="0.000000"
+--         stopTime="1.000000">
+--         <ssd:Annotations>
+--           <ssc:Annotation
+--             type="org.openmodelica">
+--             <oms:Annotations>
+--               <oms:SimulationInformation
+--                 resultFile="model_res.mat"
+--                 loggingInterval="0.000000"
+--                 bufferSize="10"
+--                 signalFilter="resources/signalFilter.xml" />
+--             </oms:Annotations>
+--           </ssc:Annotation>
+--         </ssd:Annotations>
+--       </ssd:DefaultExperiment>
+--     </ssd:SystemStructureDescription>
+--   </oms:file>
+--   <oms:file
+--     name="resources/signalFilter.xml">
+--     <oms:SignalFilter
+--       version="1.0">
+--       <oms:Variable
+--         name="model.co_sim.limiter.u"
+--         type="Real"
+--         kind="input" />
+--       <oms:Variable
+--         name="model.co_sim.limiter.y"
+--         type="Real"
+--         kind="output" />
+--       <oms:Variable
+--         name="model.co_sim.limiter.uMax"
+--         type="Real"
+--         kind="parameter" />
+--       <oms:Variable
+--         name="model.co_sim.limiter.uMin"
+--         type="Real"
+--         kind="calculatedParameter" />
+--       <oms:Variable
+--         name="model.co_sim.limiter.simplifiedExpr"
+--         type="Real"
+--         kind="unknown" />
+--       <oms:Variable
+--         name="model.co_sim.limiter.homotopyType"
+--         type="Enumeration"
+--         kind="calculatedParameter" />
+--       <oms:Variable
+--         name="model.co_sim.limiter.limitsAtInit"
+--         type="Bool"
+--         kind="calculatedParameter" />
+--       <oms:Variable
+--         name="model.co_sim.limiter.strict"
+--         type="Bool"
+--         kind="calculatedParameter" />
+--     </oms:SignalFilter>
+--   </oms:file>
+-- </oms:snapshot>
+--
+-- endResult

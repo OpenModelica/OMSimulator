@@ -1,20 +1,20 @@
 -- status: correct
 -- teardown_command: rm -rf replacesubmodel_09_lua/
 -- linux: no
--- mingw32: no
--- mingw64: yes
+-- ucrt64: yes
 -- win: no
 -- mac: no
 
 oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./replacesubmodel_09_lua/")
+oms_setWorkingDirectory("./replacesubmodel_09_lua/")
 
 oms_newModel("model")
 
 oms_addSystem("model.root", oms_system_wc)
 
-oms_addSubModel("model.root.A", "../resources/replaceA.fmu")
-oms_addSubModel("model.root.B", "../resources/replaceB.fmu")
+oms_addSubModel("model.root.A", "../../resources/replaceA.fmu")
+oms_addSubModel("model.root.B", "../../resources/replaceB.fmu")
 
 oms_setReal("model.root.A.u", 10.0)
 oms_setReal("model.root.A.t", -10.0)
@@ -43,7 +43,7 @@ oms_delete("model")
 oms_importFile("replaceSubmodel9.ssp")
 
 -- reimport the old snapshot and replacing is not done
-oms_replaceSubModel("model.root.A", "../resources/replaceA_extended.fmu", true)
+oms_replaceSubModel("model.root.A", "../../resources/replaceA_extended.fmu", true)
 src, status = oms_exportSnapshot("model")
 print(src)
 
@@ -310,7 +310,7 @@ oms_delete("model")
 -- info:      model.root.B.u1     : -13.0
 -- info:      model.root.B.z      : -15.0
 -- error:   [getVariable] Unknown signal "model.root.A.dummy"
--- warning: deleting connection "A.dummy ==> B.u1", as signal "dummy" couldn't be resolved to any signal in the replaced submodel "../resources/replaceA_extended.fmu"
+-- warning: deleting connection "A.dummy ==> B.u1", as signal "dummy" couldn't be resolved to any signal in the replaced submodel "../../resources/replaceA_extended.fmu"
 -- warning: deleting start value "A.t" in "inline" resources, because the identifier couldn't be resolved to any system signal in the replacing model
 -- <?xml version="1.0"?>
 -- <oms:snapshot
@@ -514,6 +514,10 @@ oms_delete("model")
 --         kind="parameter" />
 --       <oms:Variable
 --         name="model.root.A.x"
+--         type="Real"
+--         kind="unknown" />
+--       <oms:Variable
+--         name="model.root.A.der(x)"
 --         type="Real"
 --         kind="unknown" />
 --       <oms:Variable

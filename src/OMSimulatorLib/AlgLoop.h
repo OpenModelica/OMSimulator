@@ -34,7 +34,7 @@
 
 #include <string>
 #include <vector>
-#include "Types.h"
+#include "OMSimulator/Types.h"
 #include "DirectedGraph.h"
 
 #include <kinsol/kinsol.h>

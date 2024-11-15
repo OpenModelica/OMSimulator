@@ -19,12 +19,13 @@ oms = OMSimulator()
 
 oms.setCommandLineOption("--suppressPath=true")
 oms.setTempDirectory("./reducessv_01_py/")
+oms.setWorkingDirectory("./reducessv_01_py/")
 
 oms.newModel("model")
 
-oms.reduceSSV("model", "../resources/importParameterMapping/resources/import_parameter_mapping.ssv", "../resources/importParameterMapping/resources/import_parameter_mapping.ssm")
+oms.reduceSSV("model", "../../resources/importParameterMapping/resources/import_parameter_mapping.ssv", "../../resources/importParameterMapping/resources/import_parameter_mapping.ssm")
 
-readFile("../resources/importParameterMapping/resources/import_parameter_mapping.ssv")
+readFile("../../resources/importParameterMapping/resources/import_parameter_mapping.ssv")
 readFile("reduced.ssv")
 
 

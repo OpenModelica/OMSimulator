@@ -37,7 +37,7 @@
 #include "OMTLMSimulatorLib/OMTLMSimulatorLib.h"
 #include "ssd/Tags.h"
 #include "SystemWC.h"
-#include "Types.h"
+#include "OMSimulator/Types.h"
 
 #include <thread>
 #include <algorithm>

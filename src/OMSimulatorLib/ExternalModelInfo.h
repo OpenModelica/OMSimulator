@@ -32,7 +32,7 @@
 #ifndef _OMS_EXTERNAL_MODEL_INFO_H_
 #define _OMS_EXTERNAL_MODEL_INFO_H_
 
-#include "Types.h"
+#include "OMSimulator/Types.h"
 
 #include <string>
 

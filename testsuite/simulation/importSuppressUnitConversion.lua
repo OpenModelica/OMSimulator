@@ -1,8 +1,7 @@
 -- status: correct
 -- teardown_command: rm -rf importsuppressunit_lua/
 -- linux: no
--- mingw32: no
--- mingw64: yes
+-- ucrt64: yes
 -- win: yes
 -- mac: no
 
@@ -263,6 +262,10 @@ oms_delete("model")
 --         kind="output" />
 --       <oms:Variable
 --         name="model.root.A.x"
+--         type="Real"
+--         kind="unknown" />
+--       <oms:Variable
+--         name="model.root.A.der(x)"
 --         type="Real"
 --         kind="unknown" />
 --       <oms:Variable

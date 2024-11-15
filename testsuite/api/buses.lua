@@ -1,8 +1,7 @@
 -- status: correct
 -- teardown_command: rm -rf buses-lua/
 -- linux: yes
--- mingw32: yes
--- mingw64: yes
+-- ucrt64: yes
 -- win: yes
 -- mac: no
 
@@ -30,9 +29,9 @@ status = oms_setTempDirectory("./buses-lua/")
 printStatus(status, 0)
 
 status = oms_newModel("model")
-status = oms_addSystem("model.tlm", oms_system_tlm)
-status = oms_addSystem("model.tlm.wc1", oms_system_wc)
-status = oms_addSystem("model.tlm.wc2", oms_system_wc)
+status = oms_addSystem("model.tlm", oms_system_wc)
+status = oms_addSystem("model.tlm.wc1", oms_system_sc)
+status = oms_addSystem("model.tlm.wc2", oms_system_sc)
 status = oms_addConnector("model.tlm.wc1.u1", oms_causality_input, oms_signal_type_real)
 status = oms_addConnector("model.tlm.wc1.u2", oms_causality_input, oms_signal_type_real)
 status = oms_addConnector("model.tlm.wc1.y", oms_causality_output, oms_signal_type_real)
@@ -131,7 +130,7 @@ printStatus(status, 0)
 -- 							</oms:Bus>
 -- 						</oms:Buses>
 -- 						<oms:SimulationInformation>
--- 							<oms:FixedStepMaster description="oms-ma" stepSize="0.001000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+-- 							<oms:VariableStepSolver description="cvode" absoluteTolerance="0.0001" relativeTolerance="0.0001" minimumStepSize="1e-12" maximumStepSize="0.001" initialStepSize="1e-06" />
 -- 						</oms:SimulationInformation>
 -- 					</oms:Annotations>
 -- 				</ssc:Annotation>
@@ -162,7 +161,7 @@ printStatus(status, 0)
 -- 							</oms:Bus>
 -- 						</oms:Buses>
 -- 						<oms:SimulationInformation>
--- 							<oms:FixedStepMaster description="oms-ma" stepSize="0.001000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+-- 							<oms:VariableStepSolver description="cvode" absoluteTolerance="0.0001" relativeTolerance="0.0001" minimumStepSize="1e-12" maximumStepSize="0.001" initialStepSize="1e-06" />
 -- 						</oms:SimulationInformation>
 -- 					</oms:Annotations>
 -- 				</ssc:Annotation>
@@ -180,7 +179,7 @@ printStatus(status, 0)
 -- 					<oms:Connection startElement="wc1" startConnector="bus1" endElement="wc2" endConnector="bus2" />
 -- 				</oms:Connections>
 -- 				<oms:SimulationInformation>
--- 					<oms:TlmMaster ip="" managerport="0" monitorport="0" />
+-- 					<oms:FixedStepMaster description="oms-ma" stepSize="0.001000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
 -- 				</oms:SimulationInformation>
 -- 			</oms:Annotations>
 -- 		</ssc:Annotation>
@@ -215,7 +214,7 @@ printStatus(status, 0)
 -- 							</oms:Bus>
 -- 						</oms:Buses>
 -- 						<oms:SimulationInformation>
--- 							<oms:FixedStepMaster description="oms-ma" stepSize="0.001000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+-- 							<oms:VariableStepSolver description="cvode" absoluteTolerance="0.0001" relativeTolerance="0.0001" minimumStepSize="1e-12" maximumStepSize="0.001" initialStepSize="1e-06" />
 -- 						</oms:SimulationInformation>
 -- 					</oms:Annotations>
 -- 				</ssc:Annotation>
@@ -245,7 +244,7 @@ printStatus(status, 0)
 -- 							</oms:Bus>
 -- 						</oms:Buses>
 -- 						<oms:SimulationInformation>
--- 							<oms:FixedStepMaster description="oms-ma" stepSize="0.001000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+-- 							<oms:VariableStepSolver description="cvode" absoluteTolerance="0.0001" relativeTolerance="0.0001" minimumStepSize="1e-12" maximumStepSize="0.001" initialStepSize="1e-06" />
 -- 						</oms:SimulationInformation>
 -- 					</oms:Annotations>
 -- 				</ssc:Annotation>
@@ -263,7 +262,7 @@ printStatus(status, 0)
 -- 					<oms:Connection startElement="wc1" startConnector="bus1" endElement="wc2" endConnector="bus2" />
 -- 				</oms:Connections>
 -- 				<oms:SimulationInformation>
--- 					<oms:TlmMaster ip="" managerport="0" monitorport="0" />
+-- 					<oms:FixedStepMaster description="oms-ma" stepSize="0.001000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
 -- 				</oms:SimulationInformation>
 -- 			</oms:Annotations>
 -- 		</ssc:Annotation>

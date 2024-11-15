@@ -1,8 +1,7 @@
 -- status: correct
 -- teardown_command: rm -rf test02-lua/
 -- linux: yes
--- mingw32: yes
--- mingw64: yes
+-- ucrt64: yes
 -- win: yes
 -- mac: no
 
@@ -46,13 +45,13 @@ type, status = oms_getSystemType("test")
 printType(type)
 printStatus(status, 3)
 
-status = oms_addSystem("test.eoo", oms_system_tlm)
+status = oms_addSystem("test.eoo", oms_system_wc)
 printStatus(status, 0)
 
-status = oms_addSystem("test.eoo.foo", oms_system_wc)
+status = oms_addSystem("test.eoo.foo", oms_system_sc)
 printStatus(status, 0)
 
-status = oms_addSystem("test.eoo.foo.goo", oms_system_sc)
+status = oms_addSystem("test.eoo.goo", oms_system_sc)
 printStatus(status, 0)
 
 type, status = oms_getSystemType("test")
@@ -67,7 +66,7 @@ type, status = oms_getSystemType("test.eoo.foo")
 printType(type)
 printStatus(status, 0)
 
-type, status = oms_getSystemType("test.eoo.foo.goo")
+type, status = oms_getSystemType("test.eoo.goo")
 printType(type)
 printStatus(status, 0)
 
@@ -82,11 +81,11 @@ printStatus(status, 0)
 -- status:  [correct] ok
 -- status:  [correct] ok
 -- status:  [correct] ok
--- type: oms_system_tlm
--- status:  [wrong] ok
--- type: oms_system_tlm
--- status:  [correct] ok
 -- type: oms_system_wc
+-- status:  [wrong] ok
+-- type: oms_system_wc
+-- status:  [correct] ok
+-- type: oms_system_sc
 -- status:  [correct] ok
 -- type: oms_system_sc
 -- status:  [correct] ok

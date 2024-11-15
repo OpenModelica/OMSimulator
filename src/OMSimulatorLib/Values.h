@@ -35,7 +35,7 @@
 #include "ComRef.h"
 #include "OMSFileSystem.h"
 #include "Snapshot.h"
-#include "Types.h"
+#include "OMSimulator/Types.h"
 
 #include <map>
 #include <pugixml.hpp>
@@ -55,6 +55,7 @@ namespace oms
     oms_status_enu_t setUnit(const ComRef& cref, const std::string& value);
     void setUnitDefinitions(const ComRef& cref);
     void getFilteredUnitDefinitionsToSSD(std::map<std::string, std::map<std::string, std::string>>& unitDefinitions);
+    void getFilteredEnumerationDefinitionsToSSD(std::map<std::string, std::map<std::string, std::string>>& enumerationDefinitions);
     void updateModelDescriptionRealStartValue(const ComRef& cref, double value);
     void updateModelDescriptionIntegerStartValue(const ComRef& cref, int value);
     void updateModelDescriptionBooleanStartValue(const ComRef& cref, bool value);
@@ -86,7 +87,7 @@ namespace oms
 
     std::string getUnit(ComRef& cref) const;
     std::string getUnitFromModeldescription(ComRef& cref) const;
-
+    std::string getEnumerationTypeFromModeldescription(ComRef& cref) const;
     oms_status_enu_t exportToSSD(pugi::xml_node& node) const;
     oms_status_enu_t importFromSnapshot(const pugi::xml_node& node, const std::string& sspVersion, const Snapshot& snapshot, std::string variantName);
     oms_status_enu_t importFromSnapshot(const Snapshot& snapshot, const std::string& ssvFilePath, const std::string& ssmFilename);
@@ -102,6 +103,7 @@ namespace oms
     oms_status_enu_t exportUnitDefinitions(Snapshot &snapshot, std::string filename, std::string variantName) const;
     oms_status_enu_t exportUnitDefinitionsToSSVTemplate(Snapshot &snapshot, std::string filename);
     void importUnitDefinitions(const pugi::xml_node& node);
+    void importEnumerationDefinitions(const pugi::xml_node& node, std::string& enumTypeName);
 
     void exportToSSVTemplate(pugi::xml_node& ssvNode, const ComRef& cref);  ///< start values read from modelDescription.xml and creates a ssv template
     void exportReduceSSV(pugi::xml_node& ssvNode, const ComRef& cref);  ///< reduced SSV file which contains only the referenced crefs in parametermapping
@@ -166,6 +168,9 @@ namespace oms
     std::vector<unitDefinitionsToExport> unitDefinitionsToExportInSSP; ///< list of unitDefinitions to be exported in ssp
 
     std::map<std::string, std::map<std::string, std::string>> modeldescriptionUnitDefinitions;  ///< <UnitDefinitions> list read from modeldescription.xml
+
+    std::map<std::string, std::map<std::string, std::string>> modeldescriptionTypeDefinitions;  ///< <TypeDefinitions> list read from modeldescription.xml
+    std::map<std::string, std::string> modeldescriptionEnumeration;  ///< enumeration declared type list list read from modeldescription.xml
 
     std::multimap<ComRef, ComRef> mappedEntry;  ///< parameter names and values provided in the parameter source are to be mapped to the parameters of the component or system
 

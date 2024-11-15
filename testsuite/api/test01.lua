@@ -2,8 +2,7 @@
 -- teardown_command: rm -rf test01lua/
 -- linux: yes
 -- linux32: yes
--- mingw32: yes
--- mingw64: yes
+-- ucrt64: yes
 -- win: yes
 -- mac: yes
 
@@ -176,7 +175,7 @@ printStatus(status, 3)
 -- 		<ssd:Annotations>
 -- 			<ssc:Annotation type="org.openmodelica">
 -- 				<oms:Annotations>
--- 					<oms:SimulationInformation resultFile="test01lua_res.mat" loggingInterval="0.000000" bufferSize="10" signalFilter="resources/signalFilter.xml" />
+-- 					<oms:SimulationInformation resultFile="test01lua_res.mat" loggingInterval="0.000000" bufferSize="10" />
 -- 				</oms:Annotations>
 -- 			</ssc:Annotation>
 -- 		</ssd:Annotations>

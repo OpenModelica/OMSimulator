@@ -35,7 +35,7 @@
 #include "ComRef.h"
 #include "OMSFileSystem.h"
 #include "ssd/Tags.h"
-#include "Types.h"
+#include "OMSimulator/Types.h"
 
 #include <pugixml.hpp>
 #include <string>

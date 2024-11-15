@@ -7,6 +7,7 @@ activateVariant3.lua \
 checkUnits.lua \
 deleteConnector.lua \
 deleteConnector1.lua \
+deleteRootSystem.lua \
 deleteReferencesAndStartValues.lua \
 deleteStartValues.lua \
 deleteStartValuesInSSV.lua \
@@ -26,6 +27,7 @@ equationPair.py \
 exportConnectorsToResultFile.lua \
 exportSnapshotSSP.lua \
 exportSSMTemplate.lua \
+importExportEnumerationDefinition.lua \
 exportSSMTemplate.py \
 fmuState01.lua \
 fmuState02.py \
@@ -36,9 +38,8 @@ import_export_parameters2.lua \
 import_export_parameters3.lua \
 import_export_parameters4.lua \
 import_export_signalFilter.lua \
+import_export_signalFilter2.lua \
 import_export_snapshot.lua \
-import_export.lua \
-import_export.py \
 import_hierarchical_ssv_sources.lua \
 import_hierarchical_ssv_sources1.lua \
 import_parameter_mapping_from_ssm.lua \
@@ -76,6 +77,8 @@ replaceSubmodel9.lua \
 replaceSubmodel10.lua \
 replaceSubmodel11.py \
 replaceSubmodel12.py \
+replaceSubmodel13.py \
+replaceSubmodel14.py \
 setExternalInputs.lua \
 simulation.lua \
 simulation.py \

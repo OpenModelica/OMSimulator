@@ -1,8 +1,7 @@
 -- status: correct
 -- teardown_command: rm -rf reducessv_01_lua/
 -- linux: yes
--- mingw32: yes
--- mingw64: yes
+-- ucrt64: yes
 -- win: yes
 -- mac: no
 
@@ -16,12 +15,13 @@ function readFile(filename)
 
 oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./reducessv_01_lua/")
+oms_setWorkingDirectory("./reducessv_01_lua/")
 
 oms_newModel("model")
 
-oms_reduceSSV("model", "../resources/importParameterMapping/resources/import_parameter_mapping.ssv", "../resources/importParameterMapping/resources/import_parameter_mapping.ssm")
+oms_reduceSSV("model", "../../resources/importParameterMapping/resources/import_parameter_mapping.ssv", "../../resources/importParameterMapping/resources/import_parameter_mapping.ssm")
 
-readFile("../resources/importParameterMapping/resources/import_parameter_mapping.ssv")
+readFile("../../resources/importParameterMapping/resources/import_parameter_mapping.ssv")
 readFile("reduced.ssv")
 
 
