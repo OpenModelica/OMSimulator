@@ -607,7 +607,10 @@ oms_status_enu_t oms::SystemSC::doStep()
   {
     double cvode_time = tlast;
     int flag = CVode(solverData.cvode.mem, tnext, solverData.cvode.y, &cvode_time, CV_NORMAL);
-    if (flag < 0) logError("SUNDIALS_ERROR: CVode() failed with flag = " + std::to_string(flag));
+    if (flag < 0) {
+      logError("SUNDIALS_ERROR: CVode() failed with flag = " + std::to_string(flag));
+      return oms_status_error;
+    }
 
     // set states
     for (int i=0, j=0; i < fmus.size(); ++i)
@@ -626,8 +629,10 @@ oms_status_enu_t oms::SystemSC::doStep()
     // set time
     time = cvode_time;
   }
-  else
+  else {
     logError("Unknown solver method");
+    return oms_status_fatal;
+  }
 
   // step is complete
   for (int i=0; i < fmus.size(); ++i)
