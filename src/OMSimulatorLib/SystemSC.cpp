@@ -43,7 +43,6 @@
 
 int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
-  //std::cout << "\n[oms::cvode_rhs] t=" << t << std::endl;
   SystemSC* system = (SystemSC*)user_data;
   oms_status_enu_t status;
   fmi2Status fmistatus;
@@ -65,8 +64,6 @@ int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
     fmistatus = fmi2_setTime(system->fmus[i]->getFMU(), t);
     if (fmi2OK != fmistatus) logError_FMUCall("fmi2_setTime", system->fmus[i]);
   }
-  //std::cout << "[oms::cvode_rhs] y" << std::endl;
-  //N_VPrint_Serial(y);
 
   system->updateInputs(system->eventGraph);
 
@@ -89,11 +86,12 @@ int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
 
 int oms::cvode_roots(realtype t, N_Vector y, realtype *gout, void *user_data)
 {
-  logInfo("cvode_roots at time " + std::to_string(t));
+  //logInfo("cvode_roots at time " + std::to_string(t));
   SystemSC* system = (SystemSC*)user_data;
   oms_status_enu_t status;
   fmi2Status fmistatus;
 
+  // update states in FMUs
   for (int i=0, j=0; i < system->fmus.size(); ++i)
   {
     if (0 == system->nStates[i])
@@ -735,27 +733,37 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
 
   const fmi2Real end_time = time + maximumStepSize;
 
-  logInfo("doStepCVODE: " + std::to_string(time) + " -> " + std::to_string(end_time));
+  //logInfo("doStepCVODE: " + std::to_string(time) + " -> " + std::to_string(end_time));
 
   int flag;
-  while (1) {
-    logInfo("CVode: " + std::to_string(time) + " -> " + std::to_string(end_time));
+  while (time < end_time)
+  {
+    //logInfo("CVode: " + std::to_string(time) + " -> " + std::to_string(end_time));
     flag = CVode(solverData.cvode.mem, end_time, solverData.cvode.y, &time, CV_NORMAL);
 
     if (flag == CV_ROOT_RETURN)
     {
-      logInfo("event found!!! " + std::to_string(time));
+      //logInfo("event found!!! " + std::to_string(time));
+      for (int i = 0; i < fmus.size(); ++i)
+      {
+        fmistatus = fmi2_completedIntegratorStep(fmus[i]->getFMU(), fmi2True, &callEventUpdate[i], &terminateSimulation[i]);
+        if (fmi2OK != fmistatus) return logError_FMUCall("fmi2_completedIntegratorStep", fmus[i]);
 
-      // emit the left limit of the event (if it hasn't already been emitted)
+        if (0 == nStates[i])
+          continue;
+
+        status = fmus[i]->getContinuousStates(states[i]);
+        if (oms_status_ok != status) return status;
+      }
+
+      updateInputs(eventGraph);
+
       if (isTopLevelSystem())
         getModel().emit(time, false);
 
       // Enter event mode and handle discrete state updates for each FMU
       for (int i = 0; i < fmus.size(); ++i)
       {
-        fmistatus = fmi2_completedIntegratorStep(fmus[i]->getFMU(), fmi2True, &callEventUpdate[i], &terminateSimulation[i]);
-        if (fmi2OK != fmistatus) return logError_FMUCall("fmi2_completedIntegratorStep", fmus[i]);
-
         fmistatus = fmi2_enterEventMode(fmus[i]->getFMU());
         if (fmi2OK != fmistatus) logError_FMUCall("fmi2_enterEventMode", fmus[i]);
 
@@ -763,6 +771,19 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
 
         fmistatus = fmi2_enterContinuousTimeMode(fmus[i]->getFMU());
         if (fmi2OK != fmistatus) logError_FMUCall("fmi2_enterContinuousTimeMode", fmus[i]);
+
+        for (size_t i = 0; i < fmus.size(); ++i)
+        {
+          if (0 == nStates[i])
+            continue;
+
+          status = fmus[i]->getContinuousStates(states[i]);
+          if (oms_status_ok != status) return status;
+        }
+
+        for (int j=0, k=0; j < fmus.size(); ++j)
+          for (size_t i=0; i < nStates[j]; ++i, ++k)
+            NV_Ith_S(solverData.cvode.y, k) = states[j][i];
       }
 
       // emit the right limit of the event
@@ -770,20 +791,36 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
       if (isTopLevelSystem())
         getModel().emit(time, true);
 
+      flag = CVodeReInit(solverData.cvode.mem, time, solverData.cvode.y);
+      if (flag < 0) return logError("SUNDIALS_ERROR: CVodeReInit() failed with flag = " + std::to_string(flag));
+
       continue;
     }
 
     if (flag == CV_SUCCESS)
     {
-      logInfo("CVode completed successfully");
-      return oms_status_ok;
+      //logInfo("CVode completed successfully at t = " + std::to_string(time));
+      for (int i = 0; i < fmus.size(); ++i)
+      {
+        fmistatus = fmi2_completedIntegratorStep(fmus[i]->getFMU(), fmi2True, &callEventUpdate[i], &terminateSimulation[i]);
+        if (fmi2OK != fmistatus) return logError_FMUCall("fmi2_completedIntegratorStep", fmus[i]);
+
+        if (0 == nStates[i])
+          continue;
+
+        status = fmus[i]->getContinuousStates(states[i]);
+        if (oms_status_ok != status) return status;
+      }
+
+      if (isTopLevelSystem())
+        getModel().emit(time, false);
     }
     else
-    {
-      logInfo("CVode failed with flag = " + std::to_string(flag));
-      return oms_status_error;
-    }
+      return logError("CVode failed with flag = " + std::to_string(flag));
   }
+
+  return oms_status_ok;
+
 }
 
 oms_status_enu_t oms::SystemSC::stepUntil(double stopTime)
