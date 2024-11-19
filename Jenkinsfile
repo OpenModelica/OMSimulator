@@ -634,15 +634,14 @@ void buildOMS() {
      echo cd \${MSYS_WORKSPACE}
      echo export MAKETHREADS=-j%NUMBER_OF_PROCESSORS%
      echo set -ex
-     echo git fetch --tags
      echo cmake -S . -B build/ -G "MSYS Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/ -DOM_OMS_ENABLE_TESTSUITE:BOOL=ON
      echo cmake --build build/ --parallel %NUMBER_OF_PROCESSORS% --target install -v
      ) > buildOMSimulatorWindows.sh
 
      set MSYSTEM=${env.MSYSTEM ? env.MSYSTEM : "UCRT64"}
      set MSYS2_PATH_TYPE=inherit
-     cat buildOMSimulatorWindows.sh
-     echo \$PATH
+     type buildOMSimulatorWindows.sh
+     echo %PATH%
      %OMDEV%\\tools\\msys\\usr\\bin\\sh --login -c "cd `cygpath '${WORKSPACE}'` && chmod +x buildOMSimulatorWindows.sh && ./buildOMSimulatorWindows.sh && rm -f ./buildOMSimulatorWindows.sh"
     """)
   } else {
