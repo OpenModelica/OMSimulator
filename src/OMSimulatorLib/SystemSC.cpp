@@ -38,8 +38,9 @@
 #include "Model.h"
 #include "ssd/Tags.h"
 
-#include <sstream>
+#include <algorithm>
 #include <cstring>
+#include <sstream>
 
 int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
