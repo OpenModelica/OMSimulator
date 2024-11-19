@@ -39,12 +39,14 @@
 #include "ssd/Tags.h"
 
 #include <sstream>
+#include <cstring>
 
 int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
   //std::cout << "\n[oms::cvode_rhs] t=" << t << std::endl;
   SystemSC* system = (SystemSC*)user_data;
   oms_status_enu_t status;
+  fmi2Status fmistatus;
 
   // update states in FMUs
   for (int i=0, j=0; i < system->fmus.size(); ++i)
@@ -58,6 +60,10 @@ int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
     // set states
     status = system->fmus[i]->setContinuousStates(system->states[i]);
     if (oms_status_ok != status) return status;
+
+    // set time
+    fmistatus = fmi2_setTime(system->fmus[i]->getFMU(), t);
+    if (fmi2OK != fmistatus) logError_FMUCall("fmi2_setTime", system->fmus[i]);
   }
   //std::cout << "[oms::cvode_rhs] y" << std::endl;
   //N_VPrint_Serial(y);
@@ -80,6 +86,45 @@ int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
 
   return 0;
 }
+
+int oms::cvode_roots(realtype t, N_Vector y, realtype *gout, void *user_data)
+{
+  logInfo("cvode_roots at time " + std::to_string(t));
+  SystemSC* system = (SystemSC*)user_data;
+  oms_status_enu_t status;
+  fmi2Status fmistatus;
+
+  for (int i=0, j=0; i < system->fmus.size(); ++i)
+  {
+    if (0 == system->nStates[i])
+      continue;
+
+    for (int k = 0; k < system->nStates[i]; k++, j++)
+      system->states[i][k] = NV_Ith_S(y, j);
+
+    // set states
+    status = system->fmus[i]->setContinuousStates(system->states[i]);
+    if (oms_status_ok != status) return status;
+
+    // set time
+    fmistatus = fmi2_setTime(system->fmus[i]->getFMU(), t);
+    if (fmi2OK != fmistatus) logError_FMUCall("fmi2_setTime", system->fmus[i]);
+  }
+
+  system->updateInputs(system->eventGraph);
+
+  for (size_t i = 0, j=0; i < system->fmus.size(); ++i)
+  {
+    fmistatus = fmi2_getEventIndicators(system->fmus[i]->getFMU(), system->event_indicators[i], system->nEventIndicators[i]);
+    if (fmi2OK != fmistatus) logError_FMUCall("fmi2_getEventIndicators", system->fmus[i]);
+
+    for (size_t k=0; k < system->nEventIndicators[i]; k++, j++)
+      gout[j] = system->event_indicators[i][k];
+  }
+
+  return 0;
+}
+
 
 oms::SystemSC::SystemSC(const ComRef& cref, Model* parentModel, System* parentSystem)
   : oms::System(cref, oms_system_sc, parentModel, parentSystem, oms_solver_sc_cvode)
@@ -253,6 +298,7 @@ oms_status_enu_t oms::SystemSC::initialize()
       return oms_status_error;
 
   oms_status_enu_t status;
+  size_t n_event_indicators = 0;
   for (size_t i=0; i<fmus.size(); ++i)
   {
     // get states and state derivatives
@@ -283,6 +329,7 @@ oms_status_enu_t oms::SystemSC::initialize()
         }
       }
     }
+    n_event_indicators += nEventIndicators[i];
     if (fmus[i]->getNumberOfEventIndicators() > 0)
     {
       status = fmus[i]->getEventindicators(event_indicators[i]);
@@ -323,6 +370,9 @@ oms_status_enu_t oms::SystemSC::initialize()
     // the initial dependent variable vector y.
     flag = CVodeInit(solverData.cvode.mem, cvode_rhs, time, solverData.cvode.y);
     if (flag < 0) logError("SUNDIALS_ERROR: CVodeInit() failed with flag = " + std::to_string(flag));
+
+    flag = CVodeRootInit(solverData.cvode.mem, n_event_indicators, cvode_roots);
+    if (flag != CV_SUCCESS) logError("SUNDIALS_ERROR: CVodeRootInit() failed with flag = " + std::to_string(flag));
 
     // Call CVodeSVtolerances to specify the scalar relative tolerance
     // and vector absolute tolerances
@@ -483,6 +533,21 @@ oms_status_enu_t oms::SystemSC::reset()
 
 oms_status_enu_t oms::SystemSC::doStep()
 {
+  switch(solverMethod)
+  {
+    case oms_solver_sc_explicit_euler:
+      return doStepEuler();
+
+    case oms_solver_sc_cvode:
+      return doStepCVODE();
+
+    default:
+      return logError_InternalError;
+  }
+}
+
+oms_status_enu_t oms::SystemSC::doStepEuler()
+{
   fmi2Status fmistatus;
   oms_status_enu_t status;
 
@@ -490,7 +555,7 @@ oms_status_enu_t oms::SystemSC::doStep()
   const fmi2Real end_time = time + maximumStepSize;
   const fmi2Real event_time_tolerance = 1e-4;
 
-  logDebug("doStep: " + std::to_string(time) + " -> " + std::to_string(end_time));
+  logDebug("doStepEuler: " + std::to_string(time) + " -> " + std::to_string(end_time));
 
   // Step 2: Backup states for potential rollback
   std::vector<double *> states_backup;
@@ -661,6 +726,64 @@ oms_status_enu_t oms::SystemSC::doStep()
   }
 
   return oms_status_ok;
+}
+
+oms_status_enu_t oms::SystemSC::doStepCVODE()
+{
+  fmi2Status fmistatus;
+  oms_status_enu_t status;
+
+  const fmi2Real end_time = time + maximumStepSize;
+
+  logInfo("doStepCVODE: " + std::to_string(time) + " -> " + std::to_string(end_time));
+
+  int flag;
+  while (1) {
+    logInfo("CVode: " + std::to_string(time) + " -> " + std::to_string(end_time));
+    flag = CVode(solverData.cvode.mem, end_time, solverData.cvode.y, &time, CV_NORMAL);
+
+    if (flag == CV_ROOT_RETURN)
+    {
+      logInfo("event found!!! " + std::to_string(time));
+
+      // emit the left limit of the event (if it hasn't already been emitted)
+      if (isTopLevelSystem())
+        getModel().emit(time, false);
+
+      // Enter event mode and handle discrete state updates for each FMU
+      for (int i = 0; i < fmus.size(); ++i)
+      {
+        fmistatus = fmi2_completedIntegratorStep(fmus[i]->getFMU(), fmi2True, &callEventUpdate[i], &terminateSimulation[i]);
+        if (fmi2OK != fmistatus) return logError_FMUCall("fmi2_completedIntegratorStep", fmus[i]);
+
+        fmistatus = fmi2_enterEventMode(fmus[i]->getFMU());
+        if (fmi2OK != fmistatus) logError_FMUCall("fmi2_enterEventMode", fmus[i]);
+
+        fmus[i]->doEventIteration();
+
+        fmistatus = fmi2_enterContinuousTimeMode(fmus[i]->getFMU());
+        if (fmi2OK != fmistatus) logError_FMUCall("fmi2_enterContinuousTimeMode", fmus[i]);
+      }
+
+      // emit the right limit of the event
+      updateInputs(eventGraph);
+      if (isTopLevelSystem())
+        getModel().emit(time, true);
+
+      continue;
+    }
+
+    if (flag == CV_SUCCESS)
+    {
+      logInfo("CVode completed successfully");
+      return oms_status_ok;
+    }
+    else
+    {
+      logInfo("CVode failed with flag = " + std::to_string(flag));
+      return oms_status_error;
+    }
+  }
 }
 
 oms_status_enu_t oms::SystemSC::stepUntil(double stopTime)

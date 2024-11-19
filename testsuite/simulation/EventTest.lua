@@ -72,25 +72,14 @@ readFile("EventTest_lua.csv")
 --
 -- info:    maximum step size for 'EventTest.root': 1.000000
 -- info:    Result file: EventTest_lua.csv (bufferSize=1)
+-- info:    root event detected
+-- info:    CVode completed successfully
+-- info:    CVode completed successfully
 -- info:    Final Statistics for 'EventTest.root':
---          NumSteps = 0 NumRhsEvals  = 0 NumLinSolvSetups = 0
---          NumNonlinSolvIters = 0 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
+--          NumSteps = 2 NumRhsEvals  = 3 NumLinSolvSetups = 1
+--          NumNonlinSolvIters = 2 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
 -- time,EventTest.root.model.height,EventTest.root.model.der(height)
 -- 0, 0.3, -1
--- 0.300018310547, -1.8310546875e-05, -1
--- 0.300018310547, 0.3, -1
--- 0.600036621094, -1.8310546875e-05, -1
--- 0.600036621094, 0.3, -1
--- 0.900085449219, -4.8828125e-05, -1
--- 0.900085449219, 0.3, -1
--- 1, 0.200085449219, -1
--- 1.20013427734, -4.8828125e-05, -1
--- 1.20013427734, 0.3, -1
--- 1.50018310547, -4.8828125e-05, -1
--- 1.50018310547, 0.3, -1
--- 1.80023193359, -4.8828125e-05, -1
--- 1.80023193359, 0.3, -1
--- 2, 0.100231933594, -1
--- 2, 0.100231933594, -1
+-- 2, -1.7, -1
 --
 -- endResult
