@@ -550,7 +550,7 @@ oms_status_enu_t oms::SystemSC::doStepEuler()
   oms_status_enu_t status;
 
   // Step 1: Initialize state variables and time
-  const fmi2Real end_time = time + maximumStepSize;
+  const fmi2Real end_time = std::min(time + maximumStepSize, getModel().getStopTime());
   const fmi2Real event_time_tolerance = 1e-4;
 
   logDebug("doStepEuler: " + std::to_string(time) + " -> " + std::to_string(end_time));
@@ -732,7 +732,7 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
   oms_status_enu_t status;
   int flag;
 
-  const fmi2Real end_time = time + maximumStepSize;
+  const fmi2Real end_time = std::min(time + maximumStepSize, getModel().getStopTime());
 
   //logInfo("doStepCVODE: " + std::to_string(time) + " -> " + std::to_string(end_time));
   while (time < end_time)
@@ -856,6 +856,8 @@ oms_status_enu_t oms::SystemSC::stepUntil(double stopTime)
   while (time < stopTime && oms_status_ok == status)
   {
     status = doStep();
+    if (status != oms_status_ok)
+      logWarning("Bad return code at time " + std::to_string(time));
 
     if (isTopLevelSystem() && Flags::ProgressBar())
       Log::ProgressBar(startTime, stopTime, time);
