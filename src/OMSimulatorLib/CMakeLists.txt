@@ -117,6 +117,8 @@ target_link_libraries(OMSimulatorLib_static
                           oms::3rd::xerces
                           oms::3rd::ctpl::header)
 
+message(STATUS "ICU_LIBRARIES_FOUND: ${ICU_LIBRARIES}")
+
 target_link_libraries(OMSimulatorLib_static PUBLIC ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
 
 if(MINGW)
