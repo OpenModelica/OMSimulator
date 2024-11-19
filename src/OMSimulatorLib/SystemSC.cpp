@@ -748,16 +748,9 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
       {
         fmistatus = fmi2_completedIntegratorStep(fmus[i]->getFMU(), fmi2True, &callEventUpdate[i], &terminateSimulation[i]);
         if (fmi2OK != fmistatus) return logError_FMUCall("fmi2_completedIntegratorStep", fmus[i]);
-
-        if (0 == nStates[i])
-          continue;
-
-        status = fmus[i]->getContinuousStates(states[i]);
-        if (oms_status_ok != status) return status;
       }
 
       updateInputs(eventGraph);
-
       if (isTopLevelSystem())
         getModel().emit(time, false);
 
@@ -771,25 +764,25 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
 
         fmistatus = fmi2_enterContinuousTimeMode(fmus[i]->getFMU());
         if (fmi2OK != fmistatus) logError_FMUCall("fmi2_enterContinuousTimeMode", fmus[i]);
-
-        for (size_t i = 0; i < fmus.size(); ++i)
-        {
-          if (0 == nStates[i])
-            continue;
-
-          status = fmus[i]->getContinuousStates(states[i]);
-          if (oms_status_ok != status) return status;
-        }
-
-        for (int j=0, k=0; j < fmus.size(); ++j)
-          for (size_t i=0; i < nStates[j]; ++i, ++k)
-            NV_Ith_S(solverData.cvode.y, k) = states[j][i];
       }
 
       // emit the right limit of the event
       updateInputs(eventGraph);
       if (isTopLevelSystem())
         getModel().emit(time, true);
+
+      for (size_t i = 0; i < fmus.size(); ++i)
+      {
+        if (0 == nStates[i])
+          continue;
+
+        status = fmus[i]->getContinuousStates(states[i]);
+        if (oms_status_ok != status) return status;
+      }
+
+      for (int j=0, k=0; j < fmus.size(); ++j)
+        for (size_t i=0; i < nStates[j]; ++i, ++k)
+          NV_Ith_S(solverData.cvode.y, k) = states[j][i];
 
       flag = CVodeReInit(solverData.cvode.mem, time, solverData.cvode.y);
       if (flag < 0) return logError("SUNDIALS_ERROR: CVodeReInit() failed with flag = " + std::to_string(flag));
@@ -812,6 +805,7 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
         if (oms_status_ok != status) return status;
       }
 
+      updateInputs(eventGraph);
       if (isTopLevelSystem())
         getModel().emit(time, false);
     }
