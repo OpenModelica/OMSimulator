@@ -19,12 +19,14 @@ if(NOT OPENMODELICA_NEW_CMAKE_BUILD)
   include(OMSimulatorTopLevelSettings)
 endif()
 
+## Define NOMINMAX globally
+add_definitions(-DNOMINMAX)
+
 ## If OMSimulator is being built as part of OpenModelica
 ## set the install component to 'omsimulator' for all tagets built by it.
 if(OPENMODELICA_NEW_CMAKE_BUILD)
   set(CMAKE_INSTALL_DEFAULT_COMPONENT_NAME omsimulator)
 endif()
-
 
 include(GetGitRevisionDescription)
 if (EXISTS "${CMAKE_SOURCE_DIR}/version.txt")
