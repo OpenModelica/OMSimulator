@@ -648,7 +648,7 @@ void buildOMS() {
   } else {
     echo "running on node: ${env.NODE_NAME}"
     def nproc = numPhysicalCPU()
-    sh "git fetch --tags"
+    sh "git fetch --tags || true"
     if (isMac()) {
       sh('''#!/bin/zsh -l
        cmake -S . -B build/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/ -DOM_OMS_ENABLE_TESTSUITE:BOOL=ON
