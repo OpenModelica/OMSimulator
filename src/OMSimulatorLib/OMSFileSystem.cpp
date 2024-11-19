@@ -37,7 +37,6 @@
 extern "C"
 {
 #endif
-#define NOMINMAX
 #include <windows.h>
 #ifdef __cplusplus
 }

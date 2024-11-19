@@ -50,9 +50,9 @@ oms_delete("DualMassOscillator")
 -- info:      system1.x1: 0.0
 -- info:      system2.x2: 0.5
 -- info:    Simulation
--- info:      system1.x1: 0.051122436557575
--- info:      system2.x2: 0.031685106869792
+-- info:      system1.x1: 0.051037644866066
+-- info:      system2.x2: 0.031639500249976
 -- info:    Final Statistics for 'DualMassOscillator.root':
---          NumSteps = 10008 NumRhsEvals  = 10009 NumLinSolvSetups = 508
---          NumNonlinSolvIters = 10008 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
+--          NumSteps = 10007 NumRhsEvals  = 10008 NumLinSolvSetups = 507
+--          NumNonlinSolvIters = 10007 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
 -- endResult
