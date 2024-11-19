@@ -62,6 +62,9 @@ oms::Model::~Model()
   if (system)
     delete system;
 
+  for (auto const & variant : ssdVariants)
+    free(variant.second);
+
   // delete temp directory
   if (Flags::DeleteTempFiles())
   {
@@ -200,6 +203,13 @@ oms_status_enu_t oms::Model::duplicateVariant(const ComRef& crefA, const ComRef&
   Snapshot snapshot;
   snapshot.import(fullsnapshot);
 
+  {
+    auto it = ssdVariants.find(snapshot.getRootCref());
+    if (it != ssdVariants.end())
+    {
+      free(ssdVariants[snapshot.getRootCref()]);
+    }
+  }
   ssdVariants[snapshot.getRootCref()] = fullsnapshot;
 
   // rename the model and all it components to new variant name
@@ -254,6 +264,7 @@ oms_status_enu_t oms::Model::activateVariant(const ComRef& crefA, const ComRef& 
       variants.writeDocument(&modifiedVariant);
       char * newCref = NULL;
       importSnapshot(modifiedVariant, &newCref);
+      free(modifiedVariant);
       return oms_status_ok;
     }
   }
@@ -271,6 +282,7 @@ oms_status_enu_t oms::Model::listVariants(const oms::ComRef& cref, char** conten
   exportSnapshot("", &fullsnapshot);
   Snapshot currentSnapshot;
   currentSnapshot.import(fullsnapshot);
+  free(fullsnapshot);
 
   pugi::xml_node oms_Variants = allVariantSnapshot.getTemplateResourceNodeSSDVariants();
 
