@@ -593,6 +593,13 @@ oms_status_enu_t oms::SystemSC::doStepEuler()
   // Step 3: Main integration loop
   while (time < end_time)
   {
+    fmi2Real tnext = end_time+1.0;
+
+    // find next time event
+    for (int i = 0; i < fmus.size(); ++i)
+      if (fmus[i]->getEventInfo()->nextEventTimeDefined && (tnext > fmus[i]->getEventInfo()->nextEventTime))
+        tnext = fmus[i]->getEventInfo()->nextEventTime;
+
     step_size_adjustment *= 0.5; // reduce the step size in each iteration
 
     // a. Evaluate derivatives for each FMU
@@ -614,7 +621,7 @@ oms_status_enu_t oms::SystemSC::doStepEuler()
     }
 
     // b. Event Detection
-    event_detected = false;
+    event_detected = event_time == tnext;
     for (size_t i = 0; i < fmus.size() && !event_detected; ++i)
     {
       fmistatus = fmi2_getEventIndicators(fmus[i]->getFMU(), event_indicators[i], nEventIndicators[i]);
@@ -738,12 +745,19 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
   //logInfo("doStepCVODE: " + std::to_string(time) + " -> " + std::to_string(end_time));
   while (time < end_time)
   {
+    fmi2Real tnext = end_time+1.0;
+
+    // find next time event
+    for (int i = 0; i < fmus.size(); ++i)
+      if (fmus[i]->getEventInfo()->nextEventTimeDefined && (tnext > fmus[i]->getEventInfo()->nextEventTime))
+        tnext = fmus[i]->getEventInfo()->nextEventTime;
+
     //logInfo("CVode: " + std::to_string(time) + " -> " + std::to_string(end_time));
     for (int j=0, k=0; j < fmus.size(); ++j)
       for (size_t i=0; i < nStates[j]; ++i, ++k)
         NV_Ith_S(solverData.cvode.y, k) = states[j][i];
 
-    flag = CVode(solverData.cvode.mem, end_time, solverData.cvode.y, &time, CV_NORMAL);
+    flag = CVode(solverData.cvode.mem, std::min(tnext, end_time), solverData.cvode.y, &time, CV_NORMAL);
 
     for (int i = 0, j=0; i < fmus.size(); ++i)
     {
@@ -759,7 +773,7 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
       if (fmi2OK != fmistatus) logError_FMUCall("fmi2_setTime", fmus[i]);
     }
 
-    if (flag == CV_ROOT_RETURN)
+    if (flag == CV_ROOT_RETURN || time == tnext)
     {
       //logInfo("event found!!! " + std::to_string(time));
       for (int i = 0; i < fmus.size(); ++i)
