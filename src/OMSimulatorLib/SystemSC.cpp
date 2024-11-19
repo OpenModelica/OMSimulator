@@ -730,16 +730,33 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
 {
   fmi2Status fmistatus;
   oms_status_enu_t status;
+  int flag;
 
   const fmi2Real end_time = time + maximumStepSize;
 
   //logInfo("doStepCVODE: " + std::to_string(time) + " -> " + std::to_string(end_time));
-
-  int flag;
   while (time < end_time)
   {
     //logInfo("CVode: " + std::to_string(time) + " -> " + std::to_string(end_time));
+    for (int j=0, k=0; j < fmus.size(); ++j)
+      for (size_t i=0; i < nStates[j]; ++i, ++k)
+        NV_Ith_S(solverData.cvode.y, k) = states[j][i];
+
     flag = CVode(solverData.cvode.mem, end_time, solverData.cvode.y, &time, CV_NORMAL);
+
+    for (int i = 0, j=0; i < fmus.size(); ++i)
+    {
+      for (int k = 0; k < nStates[i]; k++, j++)
+        states[i][k] = NV_Ith_S(solverData.cvode.y, j);
+
+      // set states
+      status = fmus[i]->setContinuousStates(states[i]);
+      if (oms_status_ok != status) return status;
+
+      // set time
+      fmistatus = fmi2_setTime(fmus[i]->getFMU(), time);
+      if (fmi2OK != fmistatus) logError_FMUCall("fmi2_setTime", fmus[i]);
+    }
 
     if (flag == CV_ROOT_RETURN)
     {
@@ -764,6 +781,15 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
 
         fmistatus = fmi2_enterContinuousTimeMode(fmus[i]->getFMU());
         if (fmi2OK != fmistatus) logError_FMUCall("fmi2_enterContinuousTimeMode", fmus[i]);
+      }
+
+      for (int i = 0; i < fmus.size(); ++i)
+      {
+        if (0 == nStates[i])
+          continue;
+
+        status = fmus[i]->getContinuousStates(states[i]);
+        if (oms_status_ok != status) return status;
       }
 
       // emit the right limit of the event
