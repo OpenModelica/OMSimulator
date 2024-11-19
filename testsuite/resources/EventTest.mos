@@ -1,0 +1,15 @@
+loadString("
+model EventTest
+  parameter Real start_height = 2.0;
+  Real height(fixed=true, start=start_height);
+equation
+  der(height) = -1.0;
+  when height < 0.0 then
+    reinit(height, start_height);
+  end when;
+end EventTest;
+"); getErrorString();
+
+buildModelFMU(EventTest, version="2.0", fmuType="me_cs", fileNamePrefix="EventTest", platforms={"i686-linux-gnu docker run docker.openmodelica.org/build-deps:v1.13-i386","x86_64-linux-gnu docker run docker.openmodelica.org/build-deps:bionic.nightly.amd64","i686-w64-mingw32 docker run docker.openmodelica.org/msyscross-omsimulator:v2.0","x86_64-w64-mingw32 docker run docker.openmodelica.org/msyscross-omsimulator:v2.0"}); getErrorString();
+
+system("zip -qd EventTest.fmu sources/* && unzip -o EventTest.fmu -d EventTest/");
