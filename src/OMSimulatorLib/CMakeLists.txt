@@ -120,6 +120,27 @@ target_link_libraries(OMSimulatorLib_static
 message(STATUS "ICU_FOUND: ${ICU_FOUND}")
 message(STATUS "ICU_LIBRARIES_FOUND: ${ICU_LIBRARIES}")
 
+if (WIN32)
+ file(GLOB ICU_DLL_FILES "C:/OMDev/tools/msys/ucrt64/bin/libicuuc*.dll")
+ message(STATUS "ICU runtime libraries found: ${ICU_DLL_FILES}")
+endif()
+
+if(ICU_FOUND)
+  message(STATUS "ICU libraries found: ${ICU_LIBRARIES}")
+  # Loop over each DLL and copy it to the destination directory
+  if (WIN32)
+    install(FILES ${ICU_DLL_FILES} DESTINATION ${CMAKE_INSTALL_BINDIR})
+    message(STATUS "Copied file from : ${ICU_DLL_FILES} to ${CMAKE_INSTALL_PREFIX}/bin")
+  else()
+    foreach(dll_file IN LISTS ICU_LIBRARIES)
+      get_filename_component(actual_file ${dll_file} REALPATH)
+      install(FILES ${actual_file} DESTINATION "${CMAKE_INSTALL_PREFIX}/bin")
+      message(STATUS "Copied actual file from : ${actual_file} to ${CMAKE_INSTALL_PREFIX}/bin")
+    endforeach()
+  endif()
+endif()
+
+
 target_link_libraries(OMSimulatorLib_static PUBLIC ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} ${ICU_LIBRARIES})
 
 if(MINGW)
@@ -133,15 +154,6 @@ endif()
 #     "C:/OMDev/tools/msys/ucrt64/bin/libicudt74.dll"
 # )
 
-if(ICU_FOUND)
-  message(STATUS "ICU libraries found: ${ICU_LIBRARIES}")
-  # Loop over each DLL and copy it to the destination directory
-  foreach(dll_file IN LISTS ICU_LIBRARIES)
-    get_filename_component(actual_file ${dll_file} REALPATH)
-    install(FILES ${actual_file} DESTINATION "${CMAKE_INSTALL_PREFIX}/bin")
-    message(STATUS "Copied actual file from : ${actual_file} to ${CMAKE_INSTALL_PREFIX}/bin")
-  endforeach()
-endif()
 
 
 install(TARGETS OMSimulatorLib)
