@@ -87,7 +87,7 @@ int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
 
 int oms::cvode_roots(realtype t, N_Vector y, realtype *gout, void *user_data)
 {
-  //logInfo("cvode_roots at time " + std::to_string(t));
+  logDebug("cvode_roots at time " + std::to_string(t));
   SystemSC* system = (SystemSC*)user_data;
   oms_status_enu_t status;
   fmi2Status fmistatus;
@@ -590,15 +590,16 @@ oms_status_enu_t oms::SystemSC::doStepEuler()
   fmi2Real event_time = end_time;
   bool event_detected = false;
 
+  fmi2Real tnext = end_time + 1.0;
+  for (int i = 0; i < fmus.size(); ++i)
+    if (fmus[i]->getEventInfo()->nextEventTimeDefined && (tnext > fmus[i]->getEventInfo()->nextEventTime) && (time < fmus[i]->getEventInfo()->nextEventTime))
+      tnext = fmus[i]->getEventInfo()->nextEventTime;
+
   // Step 3: Main integration loop
   while (time < end_time)
   {
-    fmi2Real tnext = end_time+1.0;
-
-    // find next time event
-    for (int i = 0; i < fmus.size(); ++i)
-      if (fmus[i]->getEventInfo()->nextEventTimeDefined && (tnext > fmus[i]->getEventInfo()->nextEventTime))
-        tnext = fmus[i]->getEventInfo()->nextEventTime;
+    if(tnext < event_time)
+      event_time = tnext;
 
     step_size_adjustment *= 0.5; // reduce the step size in each iteration
 
@@ -671,9 +672,10 @@ oms_status_enu_t oms::SystemSC::doStepEuler()
     }
     else
     {
-      if (step_size_adjustment < event_time_tolerance)
+      if (event_time == tnext || step_size_adjustment < event_time_tolerance)
       {
         logDebug("event found!!! " + std::to_string(event_time));
+
         // Event detected: Restore to last "safe" state and integrate directly to event time
         time = event_time;
         step_size_adjustment = maximumStepSize;
@@ -709,6 +711,13 @@ oms_status_enu_t oms::SystemSC::doStepEuler()
           if (oms_status_ok != status) return status;
         }
 
+        // find next time event
+        tnext = end_time + 1.0;
+        for (int i = 0; i < fmus.size(); ++i)
+          if (fmus[i]->getEventInfo()->nextEventTimeDefined && (tnext > fmus[i]->getEventInfo()->nextEventTime))
+            tnext = fmus[i]->getEventInfo()->nextEventTime;
+        logDebug("tnext: " + std::to_string(tnext));
+
         // emit the right limit of the event
         updateInputs(eventGraph);
         if (isTopLevelSystem())
@@ -742,17 +751,16 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
 
   const fmi2Real end_time = std::min(time + maximumStepSize, getModel().getStopTime());
 
-  //logInfo("doStepCVODE: " + std::to_string(time) + " -> " + std::to_string(end_time));
+  // find next time event
+  fmi2Real tnext = end_time+1.0;
+  for (int i = 0; i < fmus.size(); ++i)
+    if (fmus[i]->getEventInfo()->nextEventTimeDefined && (tnext > fmus[i]->getEventInfo()->nextEventTime))
+      tnext = fmus[i]->getEventInfo()->nextEventTime;
+  logDebug("tnext: " + std::to_string(tnext));
+
   while (time < end_time)
   {
-    fmi2Real tnext = end_time+1.0;
-
-    // find next time event
-    for (int i = 0; i < fmus.size(); ++i)
-      if (fmus[i]->getEventInfo()->nextEventTimeDefined && (tnext > fmus[i]->getEventInfo()->nextEventTime))
-        tnext = fmus[i]->getEventInfo()->nextEventTime;
-
-    //logInfo("CVode: " + std::to_string(time) + " -> " + std::to_string(end_time));
+    logDebug("CVode: " + std::to_string(time) + " -> " + std::to_string(end_time));
     for (int j=0, k=0; j < fmus.size(); ++j)
       for (size_t i=0; i < nStates[j]; ++i, ++k)
         NV_Ith_S(solverData.cvode.y, k) = states[j][i];
@@ -807,6 +815,13 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
         if (oms_status_ok != status) return status;
       }
 
+      // find next time event
+      tnext = end_time+1.0;
+      for (int i = 0; i < fmus.size(); ++i)
+        if (fmus[i]->getEventInfo()->nextEventTimeDefined && (tnext > fmus[i]->getEventInfo()->nextEventTime))
+          tnext = fmus[i]->getEventInfo()->nextEventTime;
+      logDebug("tnext: " + std::to_string(tnext));
+
       // emit the right limit of the event
       updateInputs(eventGraph);
       if (isTopLevelSystem())
@@ -833,7 +848,7 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
 
     if (flag == CV_SUCCESS)
     {
-      //logInfo("CVode completed successfully at t = " + std::to_string(time));
+      logDebug("CVode completed successfully at t = " + std::to_string(time));
       for (int i = 0; i < fmus.size(); ++i)
       {
         fmistatus = fmi2_completedIntegratorStep(fmus[i]->getFMU(), fmi2True, &callEventUpdate[i], &terminateSimulation[i]);
