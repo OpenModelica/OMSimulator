@@ -134,12 +134,13 @@ endif()
 # )
 
 if(ICU_FOUND)
-    message(STATUS "ICU libraries found: ${ICU_LIBRARIES}")
-    # Loop over each DLL and copy it to the destination directory
-    foreach(dll_file IN LISTS ICU_LIBRARIES)
-      install(FILES ${dll_file} DESTINATION "${CMAKE_INSTALL_PREFIX}/bin")
-      message(STATUS "Copied ${dll_file} to ${CMAKE_INSTALL_PREFIX}/bin")
-    endforeach()
+  message(STATUS "ICU libraries found: ${ICU_LIBRARIES}")
+  # Loop over each DLL and copy it to the destination directory
+  foreach(dll_file IN LISTS ICU_LIBRARIES)
+    get_filename_component(actual_file ${dll_file} REALPATH)
+    install(FILES ${actual_file} DESTINATION "${CMAKE_INSTALL_PREFIX}/bin")
+    message(STATUS "Copied actual file from : ${actual_file} to ${CMAKE_INSTALL_PREFIX}/bin")
+  endforeach()
 endif()
 
 
