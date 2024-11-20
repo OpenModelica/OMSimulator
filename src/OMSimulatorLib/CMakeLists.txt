@@ -86,7 +86,7 @@ target_link_libraries(OMSimulatorLib
                           oms::3rd::xerces
                           oms::3rd::ctpl::header)
 
-target_link_libraries(OMSimulatorLib PUBLIC ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(OMSimulatorLib PUBLIC ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} ${ICU_LIBRARIES})
 
 if(MINGW)
   target_link_libraries(OMSimulatorLib PUBLIC shlwapi)
@@ -120,7 +120,7 @@ target_link_libraries(OMSimulatorLib_static
 message(STATUS "ICU_FOUND: ${ICU_FOUND}")
 message(STATUS "ICU_LIBRARIES_FOUND: ${ICU_LIBRARIES}")
 
-target_link_libraries(OMSimulatorLib_static PUBLIC ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(OMSimulatorLib_static PUBLIC ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} ${ICU_LIBRARIES})
 
 if(MINGW)
   target_link_libraries(OMSimulatorLib_static PUBLIC shlwapi)
