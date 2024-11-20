@@ -117,6 +117,7 @@ target_link_libraries(OMSimulatorLib_static
                           oms::3rd::xerces
                           oms::3rd::ctpl::header)
 
+message(STATUS "ICU_FOUND: ${ICU_FOUND}")
 message(STATUS "ICU_LIBRARIES_FOUND: ${ICU_LIBRARIES}")
 
 target_link_libraries(OMSimulatorLib_static PUBLIC ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
@@ -124,6 +125,23 @@ target_link_libraries(OMSimulatorLib_static PUBLIC ${CMAKE_DL_LIBS} ${CMAKE_THRE
 if(MINGW)
   target_link_libraries(OMSimulatorLib_static PUBLIC shlwapi)
 endif()
+
+
+
+# set(ICU_DLL_A_FILES
+#     "C:/OMDev/tools/msys/ucrt64/bin/libicuuc74.dll"
+#     "C:/OMDev/tools/msys/ucrt64/bin/libicudt74.dll"
+# )
+
+if(ICU_FOUND)
+    message(STATUS "ICU libraries found: ${ICU_LIBRARIES}")
+    # Loop over each DLL and copy it to the destination directory
+    foreach(dll_file IN LISTS ICU_LIBRARIES)
+        file(COPY ${dll_file} DESTINATION "${CMAKE_INSTALL_PREFIX}/bin")
+        message(STATUS "Copied ${dll_file} to ${CMAKE_INSTALL_PREFIX}/bin")
+    endforeach()
+endif()
+
 
 install(TARGETS OMSimulatorLib)
 install(TARGETS OMSimulatorLib_static)
