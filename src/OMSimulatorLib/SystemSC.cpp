@@ -455,7 +455,7 @@ oms_status_enu_t oms::SystemSC::terminate()
     logInfo(msg);
 
     SUNMatDestroy(solverData.cvode.J);
-    N_VDestroy(solverData.cvode.liny);
+    N_VDestroy_Serial(solverData.cvode.liny);
     SUNLinSolFree(solverData.cvode.linSol);
     N_VDestroy_Serial(solverData.cvode.y);
     N_VDestroy_Serial(solverData.cvode.abstol);
@@ -521,6 +521,9 @@ oms_status_enu_t oms::SystemSC::reset()
     msg += "NumNonlinSolvIters = " + std::to_string(nni) + " NumNonlinSolvConvFails = " + std::to_string(ncfn) + " NumErrTestFails = " + std::to_string(netf);
     logInfo(msg);
 
+    SUNMatDestroy(solverData.cvode.J);
+    N_VDestroy_Serial(solverData.cvode.liny);
+    SUNLinSolFree(solverData.cvode.linSol);
     N_VDestroy_Serial(solverData.cvode.y);
     N_VDestroy_Serial(solverData.cvode.abstol);
     CVodeFree(&(solverData.cvode.mem));
