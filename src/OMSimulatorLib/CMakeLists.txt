@@ -137,8 +137,8 @@ if(ICU_FOUND)
     message(STATUS "ICU libraries found: ${ICU_LIBRARIES}")
     # Loop over each DLL and copy it to the destination directory
     foreach(dll_file IN LISTS ICU_LIBRARIES)
-        file(COPY ${dll_file} DESTINATION "${CMAKE_INSTALL_PREFIX}/bin")
-        message(STATUS "Copied ${dll_file} to ${CMAKE_INSTALL_PREFIX}/bin")
+      install(FILES ${dll_file} DESTINATION "${CMAKE_INSTALL_PREFIX}/bin")
+      message(STATUS "Copied ${dll_file} to ${CMAKE_INSTALL_PREFIX}/bin")
     endforeach()
 endif()
 
