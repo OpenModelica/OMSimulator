@@ -6,23 +6,6 @@ if (ASAN)
   set(CMAKE_BUILD_TYPE Debug)
 ENDIF ()
 
-if (${PLATFORM_STRING} STREQUAL "linux")
-  message(STATUS "Configuring RPATH for Linux")
-
-  # Set RPATH to include directories relative to the binary
-  set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/bin")
-  set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
-  message(STATUS "CMAKE_INSTALL_RPATH: ${CMAKE_INSTALL_RPATH}")
-
-  # Make sure the linker uses this RPATH setting
-  set(CMAKE_BUILD_RPATH $ENV{CMAKE_INSTALL_RPATH})
-
-  # Add RPATH flags explicitly
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath=${CMAKE_INSTALL_RPATH}")
-  message(STATUS "CMAKE_EXE_LINKER_FLAGS: ${CMAKE_EXE_LINKER_FLAGS}")
-endif()
-
-
 IF (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror=uninitialized")
 ELSEIF (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5.1)
@@ -160,14 +143,6 @@ if(ICU_FOUND)
     else()
       message(WARNING "No DLLs found matching the pattern")
     endif()
-  else()
-    ## copy the actual file from icu libraries without symlink
-    foreach(file IN LISTS ICU_LIBRARIES)
-      get_filename_component(actual_file ${file} REALPATH)
-      install(FILES ${actual_file} DESTINATION "${CMAKE_INSTALL_PREFIX}/bin")
-      install(FILES ${actual_file} DESTINATION "${CMAKE_INSTALL_PREFIX}/lib")
-      message(STATUS "Copied file from : ${actual_file} to ${CMAKE_INSTALL_PREFIX}/bin")
-    endforeach()
   endif()
 endif()
 
