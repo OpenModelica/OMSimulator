@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  fmiVersion="2.0"
+  modelName="Dahlquist"
+  description="This model implements the Dahlquist test equation"
+  generationTool="Reference FMUs (v0.0.36)"
+  generationDateAndTime="2024-10-14T12:04:16.037855+00:00"
+  guid="{221063D2-EF4A-45FE-B954-B5BFEEA9A59B}"
+  numberOfEventIndicators="0">
+
+  <ModelExchange
+    modelIdentifier="Dahlquist"
+    canNotUseMemoryManagementFunctions="true"
+    canGetAndSetFMUstate="true"
+    canSerializeFMUstate="true">
+    <SourceFiles>
+      <File name="all.c"/>
+    </SourceFiles>
+  </ModelExchange>
+
+  <CoSimulation
+    modelIdentifier="Dahlquist"
+    canHandleVariableCommunicationStepSize="true"
+    canNotUseMemoryManagementFunctions="true"
+    canGetAndSetFMUstate="true"
+    canSerializeFMUstate="true">
+    <SourceFiles>
+      <File name="all.c"/>
+    </SourceFiles>
+  </CoSimulation>
+
+  <LogCategories>
+    <Category name="logEvents" description="Log events"/>
+    <Category name="logStatusError" description="Log error messages"/>
+  </LogCategories>
+
+  <DefaultExperiment startTime="0" stopTime="10" stepSize="0.1"/>
+
+  <ModelVariables>
+    <ScalarVariable name="time" valueReference="0" causality="independent" variability="continuous" description="Simulation time">
+      <Real/>
+    </ScalarVariable>
+    <ScalarVariable name="x" valueReference="1" description="the only state" causality="output" variability="continuous" initial="exact">
+      <Real start="1"/>
+    </ScalarVariable>
+    <ScalarVariable name="der(x)" valueReference="2" causality="local" variability="continuous" initial="calculated">
+      <Real derivative="2"/>
+    </ScalarVariable>
+    <ScalarVariable name="k" valueReference="3" causality="parameter" variability="fixed" initial="exact">
+      <Real start="1"/>
+    </ScalarVariable>
+  </ModelVariables>
+
+  <ModelStructure>
+    <Outputs>
+      <Unknown index="2" dependencies=""/>
+    </Outputs>
+    <Derivatives>
+      <Unknown index="3" dependencies="2" dependenciesKind="fixed"/>
+    </Derivatives>
+    <InitialUnknowns>
+      <Unknown index="3" dependencies="2 4" dependenciesKind="dependent dependent"/>
+    </InitialUnknowns>
+  </ModelStructure>
+
+</fmiModelDescription>
