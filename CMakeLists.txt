@@ -68,11 +68,7 @@ add_subdirectory(src/OMSimulator)
 add_subdirectory(src/OMSimulatorLua)
 add_subdirectory(src/OMSimulatorPython)
 add_subdirectory(src/OMSimulatorServer)
-
-option(OM_OMS_ENABLE_PIP "create the OMSimulator pip package" OFF)
-if(OM_OMS_ENABLE_PIP)
-  add_subdirectory(src/pip)
-endif()
+add_subdirectory(src/pip)
 
 add_subdirectory(doc)
 
