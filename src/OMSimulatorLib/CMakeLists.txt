@@ -11,15 +11,17 @@ if (${PLATFORM_STRING} STREQUAL "linux")
 
   # Set RPATH to include directories relative to the binary
   set(CMAKE_INSTALL_RPATH "$ORIGIN:$ORIGIN/../lib")
+
   message(STATUS "CMAKE_INSTALL_RPATH: ${CMAKE_INSTALL_RPATH}")
 
-  # Append paths of linked libraries to the install RPATH
-  set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+  # Make sure the linker uses this RPATH setting
+  set(CMAKE_BUILD_RPATH $ENV{CMAKE_INSTALL_RPATH})
 
-  # Ensure RPATH is preserved during installation
-  set(CMAKE_SKIP_BUILD_RPATH FALSE)
-  set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
+  # Add RPATH flags explicitly
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath=${CMAKE_INSTALL_RPATH}")
+  message(STATUS "CMAKE_EXE_LINKER_FLAGS: ${CMAKE_EXE_LINKER_FLAGS}")
 endif()
+
 
 IF (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror=uninitialized")
