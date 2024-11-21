@@ -797,16 +797,16 @@ static int OMSimulatorLua_oms_getSolver(lua_State *L)
   return 2;
 }
 
-//oms_status_enu_t oms_setBoolean(const char* cref, double* value);
+//oms_status_enu_t oms_setBoolean(const char* cref, bool value);
 static int OMSimulatorLua_oms_setBoolean(lua_State *L)
 {
   if (lua_gettop(L) != 2)
     return luaL_error(L, "expecting exactly 2 arguments");
   luaL_checktype(L, 1, LUA_TSTRING);
-  luaL_checktype(L, 2, LUA_TNUMBER);
+  luaL_checktype(L, 2, LUA_TBOOLEAN);
 
   const char* cref = lua_tostring(L, 1);
-  bool value = lua_tointeger(L, 2);
+  bool value = lua_toboolean(L, 2);
 
   oms_status_enu_t status = oms_setBoolean(cref, value);
   lua_pushinteger(L, status);
