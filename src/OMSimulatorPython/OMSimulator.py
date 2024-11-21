@@ -55,7 +55,8 @@ class OMSimulator:
     self.solver_sc_cvode = 3
     self.solver_wc_ma = 6
     self.solver_wc_mav = 7
-    self.solver_wc_mav2 = 8
+    self.solver_wc_assc = 8
+    self.solver_wc_mav2 = 9
 
     ## oms_fault_type_enu_t
     self.fault_type_bias = 0
