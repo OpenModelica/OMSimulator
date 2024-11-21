@@ -881,11 +881,14 @@ oms_status_enu_t oms::ComponentFMUCS::stepUntil(double stopTime)
     fmi2Status status = fmi2_doStep(fmu, time, hdef, fmi2True);
     time += hdef;
 
-#if !defined(NO_TLM)
-    //Write to TLM sockets if top level system is of TLM type
-    if(topLevelSystem->getType() == oms_system_tlm)
-      reinterpret_cast<SystemTLM*>(topLevelSystem)->writeToSockets(reinterpret_cast<SystemWC*>(getParentSystem()), time, this);
-#endif
+    if (status == fmi2Discard)
+    {
+      getModel().setStopTime(time);
+      logInfo("fmi2_doStep discarded for FMU \"" + std::string(getFullCref()) + "\"");
+      return oms_status_ok;
+    }
+    else if (status != fmi2OK)
+      return logError_FMUCall("fmi2_doStep", this);
   }
   time = stopTime;
   return oms_status_ok;
