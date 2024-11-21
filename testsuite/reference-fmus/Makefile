@@ -2,10 +2,10 @@ TEST = ../rtest -v
 
 TESTFILES = \
 BouncingBall.lua \
+Dahlquist.lua \
 
 # Run make failingtest
 FAILINGTESTFILES = \
-Dahlquist.lua \
 Feedthrough.lua \
 Resource.lua \
 Stair.lua \
