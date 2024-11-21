@@ -552,7 +552,7 @@ oms_status_enu_t oms::SystemWC::doStep()
       tNext = stopTime;
 
     double h = tNext - time;
-    logDebug("doStep: " + std::to_string(time) + " -> " + std::to_string(tNext));
+    logDebug("doStep: " + std::to_string(time) + " -> " + std::to_string(tNext) + ", stopTime " + std::to_string(stopTime) + ", h " + std::to_string(h));
 
     // save component's state
     if (masiMax > 1)
@@ -837,7 +837,7 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime)
 
     // main simulation loop
     oms_status_enu_t status = oms_status_ok;
-    while (time < stopTime)
+    while (time < std::min(stopTime, getModel().getStopTime()) && oms_status_ok == status)
     {
       status = doStep();
 
@@ -856,7 +856,7 @@ oms_status_enu_t oms::SystemWC::stepUntil(double stopTime)
 
     // main simulation loop
     oms_status_enu_t status = oms_status_ok;
-    while (time < stopTime && oms_status_ok == status)
+    while (time < std::min(stopTime, getModel().getStopTime()) && oms_status_ok == status)
     {
       status = doStep();
 
