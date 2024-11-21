@@ -6,10 +6,10 @@ Dahlquist.lua \
 Feedthrough.lua \
 Resource.lua \
 Stair.lua \
+VanDerPol.lua \
 
 # Run make failingtest
 FAILINGTESTFILES = \
-VanDerPol.lua \
 
 # Dependency files that are not .lua or Makefile
 # Add them here or they will be cleaned.
