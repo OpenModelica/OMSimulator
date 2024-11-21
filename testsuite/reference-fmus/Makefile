@@ -4,10 +4,10 @@ TESTFILES = \
 BouncingBall.lua \
 Dahlquist.lua \
 Feedthrough.lua \
+Resource.lua \
 
 # Run make failingtest
 FAILINGTESTFILES = \
-Resource.lua \
 Stair.lua \
 VanDerPol.lua \
 
