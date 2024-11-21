@@ -130,7 +130,7 @@ if(ICU_FOUND)
     message(STATUS "Copied file from : ${ICU_DLL_FILES} to ${CMAKE_INSTALL_PREFIX}/bin")
   else()
     ## copy the actual file from icu libraries without symlink
-    get_filename_component(actual_file ICU_PATH REALPATH)
+    get_filename_component(actual_file ${ICU_PATH} REALPATH)
     install(FILES ${actual_file} DESTINATION "${CMAKE_INSTALL_PREFIX}/bin")
     message(STATUS "Copied file from : ${actual_file} to ${CMAKE_INSTALL_PREFIX}/bin")
   endif()
