@@ -7,9 +7,18 @@ if (ASAN)
 ENDIF ()
 
 if (${PLATFORM_STRING} STREQUAL "linux")
-  message(STATUS "Inside RPath")
+  message(STATUS "Configuring RPATH for Linux")
+
+  # Set RPATH to include directories relative to the binary
+  set(CMAKE_INSTALL_RPATH "$ORIGIN:$ORIGIN/../lib")
+  message(STATUS "CMAKE_INSTALL_RPATH: ${CMAKE_INSTALL_RPATH}")
+
+  # Append paths of linked libraries to the install RPATH
   set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-  set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/bin")
+
+  # Ensure RPATH is preserved during installation
+  set(CMAKE_SKIP_BUILD_RPATH FALSE)
+  set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 endif()
 
 IF (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
@@ -154,6 +163,7 @@ if(ICU_FOUND)
     foreach(file IN LISTS ICU_LIBRARIES)
       get_filename_component(actual_file ${file} REALPATH)
       install(FILES ${actual_file} DESTINATION "${CMAKE_INSTALL_PREFIX}/bin")
+      install(FILES ${actual_file} DESTINATION "${CMAKE_INSTALL_PREFIX}/lib")
       message(STATUS "Copied file from : ${actual_file} to ${CMAKE_INSTALL_PREFIX}/bin")
     endforeach()
   endif()
