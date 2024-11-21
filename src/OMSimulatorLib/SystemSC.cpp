@@ -49,27 +49,27 @@ int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
   fmi2Status fmistatus;
 
   // update states in FMUs
-  for (int i=0, j=0; i < system->fmus.size(); ++i)
+  for (size_t i=0, j=0; i < system->fmus.size(); ++i)
   {
+    // set time
+    fmistatus = fmi2_setTime(system->fmus[i]->getFMU(), t);
+    if (fmi2OK != fmistatus) logError_FMUCall("fmi2_setTime", system->fmus[i]);
+
     if (0 == system->nStates[i])
       continue;
 
-    for (int k = 0; k < system->nStates[i]; k++, j++)
+    for (size_t k = 0; k < system->nStates[i]; k++, j++)
       system->states[i][k] = NV_Ith_S(y, j);
 
     // set states
     status = system->fmus[i]->setContinuousStates(system->states[i]);
     if (oms_status_ok != status) return status;
-
-    // set time
-    fmistatus = fmi2_setTime(system->fmus[i]->getFMU(), t);
-    if (fmi2OK != fmistatus) logError_FMUCall("fmi2_setTime", system->fmus[i]);
   }
 
   system->updateInputs(system->eventGraph);
 
   // get state derivatives
-  for (int j=0, k=0; j < system->fmus.size(); ++j)
+  for (size_t j=0, k=0; j < system->fmus.size(); ++j)
   {
     if (0 == system->nStates[j])
       continue;
@@ -93,21 +93,21 @@ int oms::cvode_roots(realtype t, N_Vector y, realtype *gout, void *user_data)
   fmi2Status fmistatus;
 
   // update states in FMUs
-  for (int i=0, j=0; i < system->fmus.size(); ++i)
+  for (size_t i=0, j=0; i < system->fmus.size(); ++i)
   {
+    // set time
+    fmistatus = fmi2_setTime(system->fmus[i]->getFMU(), t);
+    if (fmi2OK != fmistatus) logError_FMUCall("fmi2_setTime", system->fmus[i]);
+
     if (0 == system->nStates[i])
       continue;
 
-    for (int k = 0; k < system->nStates[i]; k++, j++)
+    for (size_t k = 0; k < system->nStates[i]; k++, j++)
       system->states[i][k] = NV_Ith_S(y, j);
 
     // set states
     status = system->fmus[i]->setContinuousStates(system->states[i]);
     if (oms_status_ok != status) return status;
-
-    // set time
-    fmistatus = fmi2_setTime(system->fmus[i]->getFMU(), t);
-    if (fmi2OK != fmistatus) logError_FMUCall("fmi2_setTime", system->fmus[i]);
   }
 
   system->updateInputs(system->eventGraph);
@@ -312,7 +312,7 @@ oms_status_enu_t oms::SystemSC::initialize()
 
       // Check if nominals are greater 0
       bool illegalNominals = false;
-      for(int l=0; l<nStates[i]; l++)
+      for(size_t l=0; l<nStates[i]; l++)
       {
         if (states_nominal[i][l] <= 0)
         {
@@ -339,19 +339,19 @@ oms_status_enu_t oms::SystemSC::initialize()
   if (oms_solver_sc_cvode == solverMethod)
   {
     size_t n_states = 0;
-    for (int i=0; i < fmus.size(); ++i)
+    for (size_t i=0; i < fmus.size(); ++i)
       n_states += nStates[i];
 
     solverData.cvode.y = N_VNew_Serial(static_cast<long>(n_states));
     if (!solverData.cvode.y) logError("SUNDIALS_ERROR: N_VNew_Serial() failed - returned NULL pointer");
-    for (int j=0, k=0; j < fmus.size(); ++j)
+    for (size_t j=0, k=0; j < fmus.size(); ++j)
       for (size_t i=0; i < nStates[j]; ++i, ++k)
         NV_Ith_S(solverData.cvode.y, k) = states[j][i];
     //N_VPrint_Serial(solverData.cvode.y);
 
     solverData.cvode.abstol = N_VNew_Serial(static_cast<long>(n_states));
     if (!solverData.cvode.abstol) logError("SUNDIALS_ERROR: N_VNew_Serial() failed - returned NULL pointer");
-    for (int j=0, k=0; j < fmus.size(); ++j)
+    for (size_t j=0, k=0; j < fmus.size(); ++j)
       for (size_t i=0; i < nStates[j]; ++i, ++k)
         NV_Ith_S(solverData.cvode.abstol, k) = 0.01*absoluteTolerance*states_nominal[j][i];
     //N_VPrint_Serial(solverData.cvode.abstol);
@@ -594,12 +594,22 @@ oms_status_enu_t oms::SystemSC::doStepEuler()
   bool event_detected = false;
 
   fmi2Real tnext = end_time + 1.0;
-  for (int i = 0; i < fmus.size(); ++i)
+  bool terminated = false;
+  for (size_t i = 0; i < fmus.size(); ++i)
+  {
     if (fmus[i]->getEventInfo()->nextEventTimeDefined && (tnext > fmus[i]->getEventInfo()->nextEventTime) && (time < fmus[i]->getEventInfo()->nextEventTime))
       tnext = fmus[i]->getEventInfo()->nextEventTime;
 
+    if(fmus[i]->getEventInfo()->terminateSimulation)
+    {
+      logInfo("Simulation terminated by FMU " + std::string(fmus[i]->getFullCref()) + " at time " + std::to_string(time));
+      getModel().setStopTime(time);
+      terminated = true;
+    }
+  }
+
   // Step 3: Main integration loop
-  while (time < end_time)
+  while (time < end_time && !terminated)
   {
     if(tnext < event_time)
       event_time = tnext;
@@ -611,27 +621,28 @@ oms_status_enu_t oms::SystemSC::doStepEuler()
     logDebug("step_size: " + std::to_string(step_size) + " | " + std::to_string(time) + " -> " + std::to_string(event_time));
     for (size_t i = 0; i < fmus.size(); ++i)
     {
+      fmistatus = fmi2_setTime(fmus[i]->getFMU(), event_time);
+      if (fmi2OK != fmistatus) logError_FMUCall("fmi2_setTime", fmus[i]);
+
       if (0 == nStates[i])
         continue;
 
-      for (int k = 0; k < nStates[i]; ++k)
+      for (size_t k = 0; k < nStates[i]; ++k)
         states[i][k] = states_backup[i][k] + step_size * states_der_backup[i][k];
 
       status = fmus[i]->setContinuousStates(states[i]);
       if (oms_status_ok != status) return status;
-
-      fmistatus = fmi2_setTime(fmus[i]->getFMU(), event_time);
-      if (fmi2OK != fmistatus) logError_FMUCall("fmi2_setTime", fmus[i]);
     }
 
     // b. Event Detection
     event_detected = event_time == tnext;
+    logDebug("Event detected: " + std::to_string(event_detected));
     for (size_t i = 0; i < fmus.size() && !event_detected; ++i)
     {
       fmistatus = fmi2_getEventIndicators(fmus[i]->getFMU(), event_indicators[i], nEventIndicators[i]);
       if (fmi2OK != fmistatus) logError_FMUCall("fmi2_getEventIndicators", fmus[i]);
 
-      for (int k=0; k < nEventIndicators[i]; k++)
+      for (size_t k=0; k < nEventIndicators[i]; k++)
       {
         if ((event_indicators[i][k] > 0) != (event_indicators_prev[i][k] > 0))
         {
@@ -653,7 +664,7 @@ oms_status_enu_t oms::SystemSC::doStepEuler()
         time = event_time;
         step_size_adjustment = maximumStepSize;
 
-        for (int i = 0; i < fmus.size(); ++i)
+        for (size_t i = 0; i < fmus.size(); ++i)
         {
           fmistatus = fmi2_completedIntegratorStep(fmus[i]->getFMU(), fmi2True, &callEventUpdate[i], &terminateSimulation[i]);
           if (fmi2OK != fmistatus) return logError_FMUCall("fmi2_completedIntegratorStep", fmus[i]);
@@ -689,7 +700,7 @@ oms_status_enu_t oms::SystemSC::doStepEuler()
           getModel().emit(time, false);
 
         // Enter event mode and handle discrete state updates for each FMU
-        for (int i = 0; i < fmus.size(); ++i)
+        for (size_t i = 0; i < fmus.size(); ++i)
         {
           fmistatus = fmi2_completedIntegratorStep(fmus[i]->getFMU(), fmi2True, &callEventUpdate[i], &terminateSimulation[i]);
           if (fmi2OK != fmistatus) return logError_FMUCall("fmi2_completedIntegratorStep", fmus[i]);
@@ -715,11 +726,19 @@ oms_status_enu_t oms::SystemSC::doStepEuler()
         }
 
         // find next time event
-        tnext = end_time + 1.0;
-        for (int i = 0; i < fmus.size(); ++i)
-          if (fmus[i]->getEventInfo()->nextEventTimeDefined && (tnext > fmus[i]->getEventInfo()->nextEventTime))
+        tnext = end_time + 1.234;
+        for (size_t i = 0; i < fmus.size(); ++i)
+        {
+          if (fmus[i]->getEventInfo()->nextEventTimeDefined && (tnext > fmus[i]->getEventInfo()->nextEventTime) && (time < fmus[i]->getEventInfo()->nextEventTime))
             tnext = fmus[i]->getEventInfo()->nextEventTime;
-        logDebug("tnext: " + std::to_string(tnext));
+
+          if(fmus[i]->getEventInfo()->terminateSimulation)
+          {
+            logInfo("Simulation terminated by FMU " + std::string(fmus[i]->getFullCref()) + " at time " + std::to_string(time));
+            getModel().setStopTime(time);
+            terminated = true;
+          }
+        }
 
         // emit the right limit of the event
         updateInputs(eventGraph);
@@ -756,23 +775,32 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
 
   // find next time event
   fmi2Real tnext = end_time+1.0;
-  for (int i = 0; i < fmus.size(); ++i)
+  for (size_t i = 0; i < fmus.size(); ++i)
+  {
     if (fmus[i]->getEventInfo()->nextEventTimeDefined && (tnext > fmus[i]->getEventInfo()->nextEventTime))
       tnext = fmus[i]->getEventInfo()->nextEventTime;
+
+    if(fmus[i]->getEventInfo()->terminateSimulation)
+    {
+      logInfo("Simulation terminated by FMU " + std::string(fmus[i]->getFullCref()) + " at time " + std::to_string(time));
+      getModel().setStopTime(time);
+      time = end_time;
+    }
+  }
   logDebug("tnext: " + std::to_string(tnext));
 
   while (time < end_time)
   {
     logDebug("CVode: " + std::to_string(time) + " -> " + std::to_string(end_time));
-    for (int j=0, k=0; j < fmus.size(); ++j)
+    for (size_t j=0, k=0; j < fmus.size(); ++j)
       for (size_t i=0; i < nStates[j]; ++i, ++k)
         NV_Ith_S(solverData.cvode.y, k) = states[j][i];
 
     flag = CVode(solverData.cvode.mem, std::min(tnext, end_time), solverData.cvode.y, &time, CV_NORMAL);
 
-    for (int i = 0, j=0; i < fmus.size(); ++i)
+    for (size_t i = 0, j=0; i < fmus.size(); ++i)
     {
-      for (int k = 0; k < nStates[i]; k++, j++)
+      for (size_t k = 0; k < nStates[i]; k++, j++)
         states[i][k] = NV_Ith_S(solverData.cvode.y, j);
 
       // set states
@@ -787,7 +815,7 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
     if (flag == CV_ROOT_RETURN || time == tnext)
     {
       //logInfo("event found!!! " + std::to_string(time));
-      for (int i = 0; i < fmus.size(); ++i)
+      for (size_t i = 0; i < fmus.size(); ++i)
       {
         fmistatus = fmi2_completedIntegratorStep(fmus[i]->getFMU(), fmi2True, &callEventUpdate[i], &terminateSimulation[i]);
         if (fmi2OK != fmistatus) return logError_FMUCall("fmi2_completedIntegratorStep", fmus[i]);
@@ -798,7 +826,7 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
         getModel().emit(time, false);
 
       // Enter event mode and handle discrete state updates for each FMU
-      for (int i = 0; i < fmus.size(); ++i)
+      for (size_t i = 0; i < fmus.size(); ++i)
       {
         fmistatus = fmi2_enterEventMode(fmus[i]->getFMU());
         if (fmi2OK != fmistatus) logError_FMUCall("fmi2_enterEventMode", fmus[i]);
@@ -809,7 +837,7 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
         if (fmi2OK != fmistatus) logError_FMUCall("fmi2_enterContinuousTimeMode", fmus[i]);
       }
 
-      for (int i = 0; i < fmus.size(); ++i)
+      for (size_t i = 0; i < fmus.size(); ++i)
       {
         if (0 == nStates[i])
           continue;
@@ -820,9 +848,18 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
 
       // find next time event
       tnext = end_time+1.0;
-      for (int i = 0; i < fmus.size(); ++i)
+      for (size_t i = 0; i < fmus.size(); ++i)
+      {
         if (fmus[i]->getEventInfo()->nextEventTimeDefined && (tnext > fmus[i]->getEventInfo()->nextEventTime))
           tnext = fmus[i]->getEventInfo()->nextEventTime;
+
+        if(fmus[i]->getEventInfo()->terminateSimulation)
+        {
+          logInfo("Simulation terminated by FMU " + std::string(fmus[i]->getFullCref()) + " at time " + std::to_string(time));
+          getModel().setStopTime(time);
+          time = end_time;
+        }
+      }
       logDebug("tnext: " + std::to_string(tnext));
 
       // emit the right limit of the event
@@ -839,7 +876,7 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
         if (oms_status_ok != status) return status;
       }
 
-      for (int j=0, k=0; j < fmus.size(); ++j)
+      for (size_t j=0, k=0; j < fmus.size(); ++j)
         for (size_t i=0; i < nStates[j]; ++i, ++k)
           NV_Ith_S(solverData.cvode.y, k) = states[j][i];
 
@@ -852,7 +889,7 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
     if (flag == CV_SUCCESS)
     {
       logDebug("CVode completed successfully at t = " + std::to_string(time));
-      for (int i = 0; i < fmus.size(); ++i)
+      for (size_t i = 0; i < fmus.size(); ++i)
       {
         fmistatus = fmi2_completedIntegratorStep(fmus[i]->getFMU(), fmi2True, &callEventUpdate[i], &terminateSimulation[i]);
         if (fmi2OK != fmistatus) return logError_FMUCall("fmi2_completedIntegratorStep", fmus[i]);
@@ -886,7 +923,7 @@ oms_status_enu_t oms::SystemSC::stepUntil(double stopTime)
 
   // main simulation loop
   oms_status_enu_t status = oms_status_ok;
-  while (time < stopTime && oms_status_ok == status)
+  while (time < std::min(stopTime, getModel().getStopTime()) && oms_status_ok == status)
   {
     status = doStep();
     if (status != oms_status_ok)
@@ -932,7 +969,7 @@ oms_status_enu_t oms::SystemSC::updateInputs(DirectedGraph& graph)
   const std::vector< scc_t >& sortedConnections = graph.getSortedConnections();
   updateAlgebraicLoops(sortedConnections, graph);
 
-  for(int i=0; i<sortedConnections.size(); i++)
+  for(size_t i=0; i<sortedConnections.size(); i++)
   {
     if (!sortedConnections[i].thisIsALoop)
     {
