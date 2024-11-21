@@ -38,7 +38,6 @@
 #include "ssd/Tags.h"
 #include "System.h"
 #include "SystemSC.h"
-#include "SystemTLM.h"
 
 #include <fmi4c.h>
 #include <regex>
@@ -52,12 +51,10 @@ oms::ComponentFMUME::ComponentFMUME(const ComRef& cref, System* parentSystem, co
 
 oms::ComponentFMUME::~ComponentFMUME()
 {
-  // free the fmihandle only if the model is instantitated, otherwise the model class destructor uses terminate() to free the fmihandle
   if (oms_modelState_virgin != getModel().getModelState())
-  {
     fmi2_freeInstance(fmu);
-    fmi4c_freeFmu(fmu);
-  }
+
+  fmi4c_freeFmu(fmu);
 }
 
 oms::Component* oms::ComponentFMUME::NewComponent(const oms::ComRef& cref, oms::System* parentSystem, const std::string& fmuPath, std::string replaceComponent)
@@ -153,9 +150,9 @@ oms::Component* oms::ComponentFMUME::NewComponent(const oms::ComRef& cref, oms::
     return NULL;
   }
 
-  if (!(fmi2_getSupportsModelExchange(component->fmu) || fmi2_getSupportsCoSimulation(component->fmu) &&  fmi2_getSupportsModelExchange(component->fmu)))
+  if (!fmi2_getSupportsModelExchange(component->fmu))
   {
-    logError("FMU \"" + std::string(cref) + "\" doesn't support co-simulation mode.");
+    logError("FMU \"" + std::string(cref) + "\" doesn't support model exchange mode.");
     delete component;
     return NULL;
   }
@@ -349,30 +346,21 @@ oms::Component* oms::ComponentFMUME::NewComponent(const pugi::xml_node& node, om
 
 oms_status_enu_t oms::ComponentFMUME::exportToSSD(pugi::xml_node& node, Snapshot& snapshot, std::string variantName) const
 {
-#if !defined(NO_TLM)
-  if (tlmbusconnectors[0])
-  {
-    pugi::xml_node annotations_node = node.append_child(oms::ssp::Draft20180219::ssd::annotations);
-    pugi::xml_node annotation_node = annotations_node.append_child(oms::ssp::Version1_0::ssc::annotation);
-    annotation_node.append_attribute("type") = oms::ssp::Draft20180219::annotation_type;
-    for (const auto& tlmbusconnector : tlmbusconnectors)
-      if (tlmbusconnector)
-        tlmbusconnector->exportToSSD(annotation_node);
-  }
-#endif
-
   node.append_attribute("name") = this->getCref().c_str();
   node.append_attribute("type") = "application/x-fmu-sharedlibrary";
   node.append_attribute("source") = getPath().c_str();
-  pugi::xml_node node_connectors = node.append_child(oms::ssp::Draft20180219::ssd::connectors);
 
   if (element.getGeometry())
     element.getGeometry()->exportToSSD(node);
 
-  for (const auto& connector : connectors)
-    if (connector)
-      if (oms_status_ok != connector->exportToSSD(node_connectors))
-        return oms_status_error;
+  if (connectors.size() > 1)
+  {
+    pugi::xml_node node_connectors = node.append_child(oms::ssp::Draft20180219::ssd::connectors);
+    for (const auto& connector : connectors)
+      if (connector)
+        if (oms_status_ok != connector->exportToSSD(node_connectors))
+          return oms_status_error;
+  }
 
   // export ParameterBindings at component level
   values.exportParameterBindings(node, snapshot, variantName);
@@ -645,6 +633,14 @@ oms_status_enu_t oms::ComponentFMUME::instantiate()
           setResourcesHelper1(res.second);
       }
     }
+    /*
+      check for parameter entry at system level and override the start values if exist,
+      as system level parameter has highest priority, this is done after checking for
+      local resources because it is possible some parameters have local entry and other
+      parameters have top level system entry
+    */
+    if (getParentSystem() && getParentSystem()->getValues().hasResources())
+      setResourcesHelper2(getParentSystem()->getValues());
   }
   // set start values from root resources
   else if (getParentSystem() && getParentSystem()->getValues().hasResources())
@@ -877,8 +873,7 @@ oms_status_enu_t oms::ComponentFMUME::terminate()
     return logError_Termination(getCref());
 
   fmi2_freeInstance(fmu);
-  // free the dlls
-  fmi4c_freeFmu(fmu);
+
   return oms_status_ok;
 }
 

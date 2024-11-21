@@ -797,16 +797,16 @@ static int OMSimulatorLua_oms_getSolver(lua_State *L)
   return 2;
 }
 
-//oms_status_enu_t oms_setBoolean(const char* cref, double* value);
+//oms_status_enu_t oms_setBoolean(const char* cref, bool value);
 static int OMSimulatorLua_oms_setBoolean(lua_State *L)
 {
   if (lua_gettop(L) != 2)
     return luaL_error(L, "expecting exactly 2 arguments");
   luaL_checktype(L, 1, LUA_TSTRING);
-  luaL_checktype(L, 2, LUA_TNUMBER);
+  luaL_checktype(L, 2, LUA_TBOOLEAN);
 
   const char* cref = lua_tostring(L, 1);
-  bool value = lua_tointeger(L, 2);
+  bool value = lua_toboolean(L, 2);
 
   oms_status_enu_t status = oms_setBoolean(cref, value);
   lua_pushinteger(L, status);
@@ -969,31 +969,6 @@ static int OMSimulatorLua_oms_addBus(lua_State *L)
   return 1;
 }
 
-//oms_status_enu_t oms_addTLMBus(const char *cref, oms_tlm_domain_t domain, const char *dimension, const char *interpolation)
-static int OMSimulatorLua_oms_addTLMBus(lua_State *L)
-{
-  if (lua_gettop(L) != 3 && lua_gettop(L) != 4)
-    return luaL_error(L, "expecting exactly 3 or 4 arguments");
-  luaL_checktype(L, 1, LUA_TSTRING);
-  luaL_checktype(L, 2, LUA_TNUMBER);
-  luaL_checktype(L, 3, LUA_TNUMBER);
-  if(lua_gettop(L) > 3)
-    luaL_checktype(L, 4, LUA_TNUMBER);
-
-  const char* cref = lua_tostring(L, 1);
-  int domain = lua_tointeger(L, 2);
-  int dimensions = lua_tointeger(L, 3);
-  int interpolation = (int)oms_tlm_no_interpolation;
-  if(lua_gettop(L) > 3)
-    interpolation = lua_tointeger(L, 4);
-
-  oms_status_enu_t status = oms_addTLMBus(cref, (oms_tlm_domain_t)domain, dimensions, (oms_tlm_interpolation_t)interpolation);
-
-  lua_pushinteger(L, status);
-
-  return 1;
-}
-
 //oms_status_enu_t oms_addConnectorToBus(const char *busCref, const char *connectorCref)
 static int OMSimulatorLua_oms_addConnectorToBus(lua_State *L)
 {
@@ -1022,67 +997,6 @@ static int OMSimulatorLua_oms_deleteConnectorFromBus(lua_State *L)
   const char* busCref = lua_tostring(L, 1);
   const char* connectorCref = lua_tostring(L, 2);
   oms_status_enu_t status = oms_deleteConnectorFromBus(busCref,connectorCref);
-
-  lua_pushinteger(L, status);
-
-  return 1;
-}
-
-//oms_status_enu_t oms_addConnectorToTLMBus(const char* busCref, const char* connectorCref, const char* type);
-static int OMSimulatorLua_oms_addConnectorToTLMBus(lua_State *L)
-{
-  if (lua_gettop(L) != 3)
-    return luaL_error(L, "expecting exactly 3 arguments");
-  luaL_checktype(L, 1, LUA_TSTRING);
-  luaL_checktype(L, 2, LUA_TSTRING);
-  luaL_checktype(L, 3, LUA_TSTRING);
-
-  const char* busCref = lua_tostring(L, 1);
-  const char* connectorCref = lua_tostring(L, 2);
-  const char* type = lua_tostring(L, 3);
-  oms_status_enu_t status = oms_addConnectorToTLMBus(busCref,connectorCref,type);
-
-  lua_pushinteger(L, status);
-
-  return 1;
-}
-
-//oms_status_enu_t oms_deleteConnectorFromTLMBus(const char *busCref, const char *connectorCref)
-static int OMSimulatorLua_oms_deleteConnectorFromTLMBus(lua_State *L)
-{
-  if (lua_gettop(L) != 2)
-    return luaL_error(L, "expecting exactly 2 arguments");
-  luaL_checktype(L, 1, LUA_TSTRING);
-  luaL_checktype(L, 2, LUA_TSTRING);
-
-  const char* busCref = lua_tostring(L, 1);
-  const char* connectorCref = lua_tostring(L, 2);
-  oms_status_enu_t status = oms_deleteConnectorFromTLMBus(busCref,connectorCref);
-
-  lua_pushinteger(L, status);
-
-  return 1;
-}
-
-//oms_status_enu_t oms_addTLMConnection(const char *crefA, const char *crefB, double delay, double alpha, double Zf, double Zfr)
-static int OMSimulatorLua_oms_addTLMConnection(lua_State *L)
-{
-  if (lua_gettop(L) != 6)
-    return luaL_error(L, "expecting exactly 6 arguments");
-  luaL_checktype(L, 1, LUA_TSTRING);
-  luaL_checktype(L, 2, LUA_TSTRING);
-  luaL_checktype(L, 3, LUA_TNUMBER);
-  luaL_checktype(L, 4, LUA_TNUMBER);
-  luaL_checktype(L, 5, LUA_TNUMBER);
-  luaL_checktype(L, 6, LUA_TNUMBER);
-
-  const char* crefA = lua_tostring(L, 1);
-  const char* crefB = lua_tostring(L, 2);
-  double delay = lua_tonumber(L, 3);
-  double alpha = lua_tonumber(L, 4);
-  double linearimpedance = lua_tonumber(L, 5);
-  double angularimpedance = lua_tonumber(L, 6);
-  oms_status_enu_t status = oms_addTLMConnection(crefA, crefB, delay, alpha, linearimpedance, angularimpedance);
 
   lua_pushinteger(L, status);
 
@@ -1154,25 +1068,6 @@ static int OMSimulatorLua_oms_addStaticValueIndicator(lua_State *L)
   oms_status_enu_t status = oms_addStaticValueIndicator(signal,lower,upper,stepSize);
 
   lua_pushinteger(L, status);
-  return 1;
-}
-
-//oms_status_enu_t oms_addExternalModel(const char *cref, const char *path, const char *startscript)
-static int OMSimulatorLua_oms_addExternalModel(lua_State *L)
-{
-  if (lua_gettop(L) != 3)
-    return luaL_error(L, "expecting exactly 3 arguments");
-  luaL_checktype(L, 1, LUA_TSTRING);
-  luaL_checktype(L, 2, LUA_TSTRING);
-  luaL_checktype(L, 3, LUA_TSTRING);
-
-  const char* cref = lua_tostring(L, 1);
-  const char* path = lua_tostring(L, 2);
-  const char* startscript = lua_tostring(L, 3);
-  oms_status_enu_t status = oms_addExternalModel(cref, path, startscript);
-
-  lua_pushinteger(L, status);
-
   return 1;
 }
 
@@ -1369,60 +1264,6 @@ static int OMSimulatorLua_oms_getModelState(lua_State *L)
   return 2;
 }
 
-//oms_status_enu_t oms_setTLMSocketData(const char* cref, const char* address, int managerPort, int monitorPort)
-static int OMSimulatorLua_oms_setTLMSocketData(lua_State *L)
-{
-  if (lua_gettop(L) != 4)
-    return luaL_error(L, "expecting exactly 4 arguments");
-  luaL_checktype(L, 1, LUA_TSTRING);
-  luaL_checktype(L, 2, LUA_TSTRING);
-  luaL_checktype(L, 3, LUA_TNUMBER);
-  luaL_checktype(L, 4, LUA_TNUMBER);
-
-  const char *cref =    lua_tostring(L, 1);
-  const char *address = lua_tostring(L, 2);
-  int managerPort =     lua_tonumber(L, 3);
-  int monitorPort =     lua_tonumber(L, 4);
-
-  oms_status_enu_t status = oms_setTLMSocketData(cref, address, managerPort, monitorPort);
-  lua_pushinteger(L, status);
-  return 1;
-}
-
-//oms_status_enu_t oms_setTLMPositionAndOrientation(const char *cref, double x1, double x2, double x3, double A11, double A12, double A13, double A21, double A22, double A23, double A31, double A32, double A33)
-static int OMSimulatorLua_oms_setTLMPositionAndOrientation(lua_State *L)
-{
-  if (lua_gettop(L) != 13)
-    return luaL_error(L, "expecting exactly 13 arguments");
-
-  luaL_checktype(L, 1, LUA_TSTRING);
-  const char *cref =  lua_tostring(L, 1);
-  int i;
-
-  //Position
-  double x[3];
-  for(i=0; i<3; ++i) {
-    luaL_checktype(L, i+2, LUA_TNUMBER);
-    x[i] = lua_tonumber(L, i+2);
-  }
-
-  //Orientation (3x3 matrix, stored as 1x9 vector)
-  double A[9];
-  for(i=0; i<9; ++i) {
-    luaL_checktype(L, i+5, LUA_TNUMBER);
-    A[i] = lua_tonumber(L, i+5);
-  }
-
-  oms_status_enu_t status = oms_setTLMPositionAndOrientation(cref,
-                                                              x[0], x[1], x[2],
-                                                              A[0], A[1], A[2],
-                                                              A[3], A[4], A[5],
-                                                              A[6], A[7], A[8]);
-
-  lua_pushinteger(L, status);
-  return 1;
-}
-
 //oms_status_enu_t oms_setResultFile(const char* cref, const char* filename, unsigned int bufferSize);
 static int OMSimulatorLua_oms_setResultFile(lua_State *L)
 {
@@ -1570,24 +1411,19 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms_addConnection);
   REGISTER_LUA_CALL(oms_addConnector);
   REGISTER_LUA_CALL(oms_addConnectorToBus);
-  REGISTER_LUA_CALL(oms_addConnectorToTLMBus);
   REGISTER_LUA_CALL(oms_addDynamicValueIndicator);
   REGISTER_LUA_CALL(oms_addEventIndicator);
-  REGISTER_LUA_CALL(oms_addExternalModel);
   REGISTER_LUA_CALL(oms_addResources);
   REGISTER_LUA_CALL(oms_addSignalsToResults);
   REGISTER_LUA_CALL(oms_addStaticValueIndicator);
   REGISTER_LUA_CALL(oms_addSubModel);
   REGISTER_LUA_CALL(oms_addSystem);
   REGISTER_LUA_CALL(oms_addTimeIndicator);
-  REGISTER_LUA_CALL(oms_addTLMBus);
-  REGISTER_LUA_CALL(oms_addTLMConnection);
   REGISTER_LUA_CALL(oms_compareSimulationResults);
   REGISTER_LUA_CALL(oms_copySystem);
   REGISTER_LUA_CALL(oms_delete);
   REGISTER_LUA_CALL(oms_deleteConnection);
   REGISTER_LUA_CALL(oms_deleteConnectorFromBus);
-  REGISTER_LUA_CALL(oms_deleteConnectorFromTLMBus);
   REGISTER_LUA_CALL(oms_deleteResources);
   REGISTER_LUA_CALL(oms_duplicateVariant);
   REGISTER_LUA_CALL(oms_export);
@@ -1644,8 +1480,6 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms_setStartTime);
   REGISTER_LUA_CALL(oms_setStopTime);
   REGISTER_LUA_CALL(oms_setTempDirectory);
-  REGISTER_LUA_CALL(oms_setTLMPositionAndOrientation);
-  REGISTER_LUA_CALL(oms_setTLMSocketData);
   REGISTER_LUA_CALL(oms_setTolerance);
   REGISTER_LUA_CALL(oms_setVariableStepSize);
   REGISTER_LUA_CALL(oms_setWorkingDirectory);
@@ -1653,11 +1487,6 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms_setUnit);
   REGISTER_LUA_CALL(oms_stepUntil);
   REGISTER_LUA_CALL(oms_terminate);
-
-  // oms_tlm_interpolation_t
-  REGISTER_LUA_ENUM(oms_tlm_no_interpolation);
-  REGISTER_LUA_ENUM(oms_tlm_coarse_grained);
-  REGISTER_LUA_ENUM(oms_tlm_fine_grained);
 
   // oms_causality_enu_t;
   REGISTER_LUA_ENUM(oms_causality_input);
@@ -1676,7 +1505,6 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
 
   // oms_system_enu_t
   REGISTER_LUA_ENUM(oms_system_none);
-  REGISTER_LUA_ENUM(oms_system_tlm);
   REGISTER_LUA_ENUM(oms_system_wc);
   REGISTER_LUA_ENUM(oms_system_sc);
 
@@ -1701,14 +1529,6 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_ENUM(oms_signal_type_integer);
   REGISTER_LUA_ENUM(oms_signal_type_boolean);
   REGISTER_LUA_ENUM(oms_signal_type_string);
-
-  // oms_tlm_domain_t
-  REGISTER_LUA_ENUM(oms_tlm_domain_input);
-  REGISTER_LUA_ENUM(oms_tlm_domain_output);
-  REGISTER_LUA_ENUM(oms_tlm_domain_mechanical);
-  REGISTER_LUA_ENUM(oms_tlm_domain_rotational);
-  REGISTER_LUA_ENUM(oms_tlm_domain_hydraulic);
-  REGISTER_LUA_ENUM(oms_tlm_domain_electric);
 
   // oms_fault_type_enu_t
   REGISTER_LUA_ENUM(oms_fault_type_bias);

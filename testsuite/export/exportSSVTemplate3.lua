@@ -1,10 +1,10 @@
 -- status: correct
 -- teardown_command: rm -rf exportSSVTemplate_03_lua/
 -- linux: yes
--- mingw32: yes
--- mingw64: yes
+-- ucrt64: yes
 -- win: yes
 -- mac: no
+-- asan: yes
 
 function readFile(filename)
     local f = assert(io.open(filename, "r"))
@@ -185,7 +185,7 @@ oms_delete("model")
 --     </ssc:Unit>
 --   </ssv:Units>
 -- </ssv:ParameterSet>
--- 
+--
 -- <?xml version="1.0" encoding="UTF-8"?>
 -- <ssv:ParameterSet
 --   xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
@@ -239,7 +239,7 @@ oms_delete("model")
 --     </ssc:Unit>
 --   </ssv:Units>
 -- </ssv:ParameterSet>
--- 
+--
 -- <?xml version="1.0" encoding="UTF-8"?>
 -- <ssv:ParameterSet
 --   xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
@@ -266,7 +266,7 @@ oms_delete("model")
 --     </ssc:Unit>
 --   </ssv:Units>
 -- </ssv:ParameterSet>
--- 
+--
 -- <?xml version="1.0" encoding="UTF-8"?>
 -- <ssv:ParameterSet
 --   xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
@@ -335,7 +335,7 @@ oms_delete("model")
 --     </ssc:Unit>
 --   </ssv:Units>
 -- </ssv:ParameterSet>
--- 
+--
 -- <?xml version="1.0" encoding="UTF-8"?>
 -- <ssv:ParameterSet
 --   xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
@@ -389,7 +389,7 @@ oms_delete("model")
 --     </ssc:Unit>
 --   </ssv:Units>
 -- </ssv:ParameterSet>
--- 
+--
 -- <?xml version="1.0" encoding="UTF-8"?>
 -- <ssv:ParameterSet
 --   xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
@@ -416,5 +416,5 @@ oms_delete("model")
 --     </ssc:Unit>
 --   </ssv:Units>
 -- </ssv:ParameterSet>
--- 
+--
 -- endResult

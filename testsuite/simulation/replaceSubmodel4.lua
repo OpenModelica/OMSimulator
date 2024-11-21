@@ -1,8 +1,7 @@
 -- status: correct
 -- teardown_command: rm -rf replacesubmodel_04_lua/
 -- linux: no
--- mingw32: no
--- mingw64: yes
+-- ucrt64: yes
 -- win: no
 -- mac: no
 
@@ -265,6 +264,10 @@ oms_delete("model")
 --         type="Real"
 --         kind="unknown" />
 --       <oms:Variable
+--         name="model.root.A.der(x)"
+--         type="Real"
+--         kind="unknown" />
+--       <oms:Variable
 --         name="model.root.A.dummy"
 --         type="Real"
 --         kind="output" />
@@ -522,7 +525,7 @@ oms_delete("model")
 --     </oms:SignalFilter>
 --   </oms:file>
 -- </oms:snapshot>
---
+-- 
 -- info:    Result file: replaceSubmodel4.mat (bufferSize=1)
 -- info:    Initialize
 -- info:      model.root.A.u      : 10.0

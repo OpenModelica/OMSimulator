@@ -37,7 +37,6 @@
 #include "OMSFileSystem.h"
 #include "ssd/Tags.h"
 #include "System.h"
-#include "SystemTLM.h"
 #include "SystemWC.h"
 
 #include <fmi4c.h>
@@ -54,12 +53,10 @@ oms::ComponentFMUCS::ComponentFMUCS(const ComRef& cref, System* parentSystem, co
 
 oms::ComponentFMUCS::~ComponentFMUCS()
 {
-  // free the fmihandle only if the model is instantitated, otherwise the model class destructor uses terminate() to free the fmihandle
   if (oms_modelState_virgin != getModel().getModelState())
-  {
     fmi2_freeInstance(fmu);
-    fmi4c_freeFmu(fmu);
-  }
+
+  fmi4c_freeFmu(fmu);
 }
 
 oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::System* parentSystem, const std::string& fmuPath, std::string replaceComponent)
@@ -157,7 +154,7 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const oms::ComRef& cref, oms::
     return NULL;
   }
 
-  if (!(fmi2_getSupportsCoSimulation(component->fmu) || fmi2_getSupportsCoSimulation(component->fmu) &&  fmi2_getSupportsModelExchange(component->fmu)))
+  if (!fmi2_getSupportsCoSimulation(component->fmu))
   {
     logError("FMU \"" + std::string(cref) + "\" doesn't support co-simulation mode.");
     delete component;
@@ -351,30 +348,21 @@ oms::Component* oms::ComponentFMUCS::NewComponent(const pugi::xml_node& node, om
 
 oms_status_enu_t oms::ComponentFMUCS::exportToSSD(pugi::xml_node& node, Snapshot& snapshot, std::string variantName) const
 {
-#if !defined(NO_TLM)
-  if (tlmbusconnectors[0])
-  {
-    pugi::xml_node annotations_node = node.append_child(oms::ssp::Draft20180219::ssd::annotations);
-    pugi::xml_node annotation_node = annotations_node.append_child(oms::ssp::Version1_0::ssc::annotation);
-    annotation_node.append_attribute("type") = oms::ssp::Draft20180219::annotation_type;
-    for (const auto& tlmbusconnector : tlmbusconnectors)
-      if (tlmbusconnector)
-        tlmbusconnector->exportToSSD(annotation_node);
-  }
-#endif
-
   node.append_attribute("name") = this->getCref().c_str();
   node.append_attribute("type") = "application/x-fmu-sharedlibrary";
   node.append_attribute("source") = getPath().c_str();
-  pugi::xml_node node_connectors = node.append_child(oms::ssp::Draft20180219::ssd::connectors);
 
   if (element.getGeometry())
     element.getGeometry()->exportToSSD(node);
 
-  for (const auto& connector : connectors)
-    if (connector)
-      if (oms_status_ok != connector->exportToSSD(node_connectors))
-        return oms_status_error;
+  if (connectors.size() > 1)
+  {
+    pugi::xml_node node_connectors = node.append_child(oms::ssp::Draft20180219::ssd::connectors);
+    for (const auto& connector : connectors)
+      if (connector)
+        if (oms_status_ok != connector->exportToSSD(node_connectors))
+          return oms_status_error;
+  }
 
   // export ParameterBindings at component level
   values.exportParameterBindings(node, snapshot, variantName);
@@ -617,6 +605,14 @@ oms_status_enu_t oms::ComponentFMUCS::instantiate()
           setResourcesHelper1(res.second);
       }
     }
+    /*
+      check for parameter entry at system level and override the start values if exist,
+      as system level parameter has highest priority, this is done after checking for
+      local resources because it is possible some parameters have local entry and other
+      parameters have top level system entry
+    */
+    if (getParentSystem() && getParentSystem()->getValues().hasResources())
+      setResourcesHelper2(getParentSystem()->getValues());
   }
   // set start values from root resources
   else if (getParentSystem() && getParentSystem()->getValues().hasResources())
@@ -817,10 +813,8 @@ oms_status_enu_t oms::ComponentFMUCS::terminate()
   if (fmi2OK != fmistatus)
     return logError_Termination(getCref());
 
-  //logInfo("FMU successfully terminated");
   fmi2_freeInstance(fmu);
-  // free the dlls
-  fmi4c_freeFmu(fmu);
+
   return oms_status_ok;
 }
 
@@ -852,12 +846,6 @@ oms_status_enu_t oms::ComponentFMUCS::stepUntil(double stopTime)
 
   while (time < stopTime)
   {
-#if !defined(NO_TLM)
-    //Read from TLM sockets if top level system is of TLM type
-    if(topLevelSystem->getType() == oms_system_tlm)
-      reinterpret_cast<SystemTLM*>(topLevelSystem)->readFromSockets(reinterpret_cast<SystemWC*>(getParentSystem()), time, this);
-#endif
-
     // HACK for certain FMUs
     if (fetchAllVars_)
     {
@@ -874,11 +862,14 @@ oms_status_enu_t oms::ComponentFMUCS::stepUntil(double stopTime)
     fmi2Status status = fmi2_doStep(fmu, time, hdef, fmi2True);
     time += hdef;
 
-#if !defined(NO_TLM)
-    //Write to TLM sockets if top level system is of TLM type
-    if(topLevelSystem->getType() == oms_system_tlm)
-      reinterpret_cast<SystemTLM*>(topLevelSystem)->writeToSockets(reinterpret_cast<SystemWC*>(getParentSystem()), time, this);
-#endif
+    if (status == fmi2Discard)
+    {
+      getModel().setStopTime(time);
+      logInfo("fmi2_doStep discarded for FMU \"" + std::string(getFullCref()) + "\"");
+      return oms_status_ok;
+    }
+    else if (status != fmi2OK)
+      return logError_FMUCall("fmi2_doStep", this);
   }
   time = stopTime;
   return oms_status_ok;

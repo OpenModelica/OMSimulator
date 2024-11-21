@@ -41,7 +41,6 @@ oms::Element::Element(oms_element_enu_t type, const oms::ComRef& name)
   this->elements = nullptr;
   this->connectors = nullptr;
   this->busconnectors = nullptr;
-  this->tlmbusconnectors = nullptr;
   this->geometry = reinterpret_cast<ssd_element_geometry_t*>(new oms::ssd::ElementGeometry());
 }
 
@@ -85,13 +84,6 @@ void oms::Element::setBusConnectors(oms::BusConnector **newBusConnectors)
 {
   this->busconnectors = reinterpret_cast<oms_busconnector_t**>(newBusConnectors);
 }
-
-#if !defined(NO_TLM)
-void oms::Element::setTLMBusConnectors(oms::TLMBusConnector **newBusConnectors)
-{
-  this->tlmbusconnectors = reinterpret_cast<oms_tlmbusconnector_t**>(newBusConnectors);
-}
-#endif
 
 void oms::Element::setSubElements(oms_element_t** subelements)
 {

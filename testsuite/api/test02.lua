@@ -1,8 +1,7 @@
 -- status: correct
 -- teardown_command: rm -rf test02-lua/
 -- linux: yes
--- mingw32: yes
--- mingw64: yes
+-- ucrt64: yes
 -- win: yes
 -- mac: no
 
@@ -28,9 +27,7 @@ function printStatus(status, expected)
 end
 
 function printType(t)
-  if oms_system_tlm == t then
-    print("type: oms_system_tlm")
-  elseif oms_system_wc == t then
+  if oms_system_wc == t then
     print("type: oms_system_wc")
   elseif oms_system_sc == t then
     print("type: oms_system_sc")

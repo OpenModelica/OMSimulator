@@ -1,8 +1,7 @@
 -- status: correct
 -- teardown_command: rm -rf replacesubmodel_10_lua/
 -- linux: no
--- mingw32: no
--- mingw64: yes
+-- ucrt64: yes
 -- win: no
 -- mac: no
 
@@ -500,6 +499,10 @@ oms_delete("model")
 --         kind="parameter" />
 --       <oms:Variable
 --         name="model.root.A.x"
+--         type="Real"
+--         kind="unknown" />
+--       <oms:Variable
+--         name="model.root.A.der(x)"
 --         type="Real"
 --         kind="unknown" />
 --       <oms:Variable

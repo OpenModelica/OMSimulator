@@ -17,11 +17,15 @@ if ($cwd =~ m/(.*)testsuite\/(.+)$/) {
   if ($os =~ /MINGW/) {
     if ($os =~ /MINGW64/) {
       $PLATFORM = "mingw";
-      $TEST_PLATFORM = "mingw64";
-    }
-    else {
-      $PLATFORM = "mingw";
-      $TEST_PLATFORM = "mingw32";
+      if ($ENV{'MSYSTEM'} =~ /UCRT64/) {
+        $TEST_PLATFORM = "ucrt64";
+      } else {
+        print("We do not support mingw64 anymore, only ucrt64");
+        exit 1;
+      }
+    } else {
+      print("We do not support mingw32 anymore!");
+      exit 1;
     }
   }
   else {
@@ -64,13 +68,19 @@ $successes=0;
 $total=0;
 $setbaseline=0;
 $verbose="yes";
+$ASAN="no";
 $returnwitherror=0;
 $pager="cat";
 $diffcmd="diff -U 5 -w";
 $dwdiffcmd="dwdiff '-d()' -l -C 3 -c -L";
 $log="";
 $test_id = int(rand(9999));
-$tmpdir = "/tmp/oms-rtest-".(getpwuid($<)||getlogin()||"unknown")."/$dirname"."tmp_$test_id";
+my $username = ( $^O ne 'MSWin32' ? getpwuid($<) : undef )
+          || getlogin()
+          || $ENV{'USER'}
+          || 'omtmpuser';
+$tmpvar =( $^O ne 'MSWin32' ? '/tmp' : $ENV{'TEMP'} );
+$tmpdir = $tmpvar . "/oms-rtest-".$username."/$dirname"."tmp_$test_id";
 $tmpdir =~ s/\s/_/g;
 system "mkdir -p $tmpdir";
 $gotPrefix = "$tmpdir/equations-got";
@@ -87,6 +97,25 @@ $statusfilter = "all";
 $epsilon = 5e-5;
 $set_modelica_lib = 1;
 $nodelete = 0;
+
+sub isMinGW_UCRT {
+  my $temp = $ENV{'MSYSTEM'};
+  # print("MSYSTEM: " . $temp . "\n");
+  if (defined $temp) {
+    return ($^O eq 'MSWin32') && ($temp eq 'UCRT64');
+  } else {
+    return 0;
+  }
+}
+
+sub isMinGW_MSYS {
+  my $temp = $ENV{'MSYSTEM'};
+  if (defined $temp) {
+    return ($^O eq 'msys') && ($temp eq 'MSYS');
+  } else {
+    return 0;
+  }
+}
 
 sub ulimit_cmd
 {
@@ -118,6 +147,12 @@ sub setbaselineone
       $comment_prefix="##";
       $sim_exe="OMSimulatorPython3";
     }
+
+    $preload="";
+    if ($ASAN eq "yes") {
+      $preload="LD_PRELOAD=`gcc -print-file-name=libasan.so`";
+    }
+
     if ($ext eq '.lua') {
       $comment_prefix="--";
     }
@@ -140,7 +175,7 @@ sub setbaselineone
       $env =~ s/:/\\;/g;
     }
     unlink "$testTempFile$f";
-    system "$env $ulimit $BIN/$sim_exe $f >>$log 2>&1";
+    system "$env $ulimit $preload $BIN/$sim_exe $f >>$log 2>&1";
     if ($nodelete == 0 && open(TOREMOVE,"<$testTempFile$f")) {
       while(my $line = <TOREMOVE>) {
         $line =~ s/^\s*(.*?)\s*$/$1/;
@@ -218,6 +253,11 @@ sub runone
       }
     }
 
+    $preload="";
+    if ($ASAN eq "yes") {
+      $preload="LD_PRELOAD=`gcc -print-file-name=libasan.so`";
+    }
+
     $log = "$tmpdir/log-$f";
     system "rm -f $log";
     if ($setup_command) {
@@ -236,7 +276,7 @@ sub runone
       $env =~ s/:/\\;/g;
     }
     unlink "$testTempFile$f";
-    system "$env $ulimit $BIN/$sim_exe $f >>$log 2>&1";
+    system "$env $ulimit $preload $BIN/$sim_exe $f >>$log 2>&1";
     $retval = $?;
     if ($nodelete==0 && open(TOREMOVE,"<$testTempFile$f")) {
       while(my $line = <TOREMOVE>) {
@@ -271,7 +311,19 @@ sub runone
     while(<LOG>) {
       s/^[ \t]*//;
       s/[ \t]+/ /;
-      print RES $_;
+      $str = $_;
+      # fix generated files on windows
+      if (isMinGW_UCRT() || isMinGW_UCRT()) {
+        # replace /X.mo?_tempNNNN/: -> /
+        $str =~ s/\/[^\/]+\.mos?_temp[\d]+\//\//g;
+      }
+      if ($str =~ /^Unexpected end of \/proc\/mounts line/) {
+        # Ignore; sometimes comes from libhwloc when running docker
+      } elsif ($str =~ /^GC Warning:/) {
+        # Ignore; comes from libgc
+      } else {
+        print RES $str;
+      }
     }
     close LOG;
     close RES;
@@ -310,9 +362,11 @@ sub dofile
         "linux"   => "yes",
         "linux32" => "",
         "win"     => "",
+        "ucrt64"  => "",
         "mingw32" => "",
         "mingw64" => "",
-        "mac"     => "");
+        "mac"     => "",
+        "asan"    => "");
     $expected = $expectedPrefix . "tmp_expected-" . $f;
     $got = $gotPrefix . "_tmp_got-" . $f;
     $log = "$tmpdir/log-$f";
@@ -408,16 +462,24 @@ sub dofile
       return 1;
     }
 
-    if ($info{$TEST_PLATFORM} eq "yes") {
+    $skip = 0;
+    if ($ASAN eq "yes" && $info{'asan'} ne "yes") {
+      $skip = 1;
+    }
+    if ($info{$TEST_PLATFORM} ne "yes") {
+      $skip = 1;
+    }
+
+    if ($skip) {
+      $status = 0;
+      print "skipped\n";
+    } else {
       if ($setbaseline) {
         setbaselineone $f,%info;
         $status = 0;
       } else {
         $status = runone $f,%info;
       }
-    } else {
-      $status = 0;
-      print "skipped\n";
     }
 
     if ($status == 0) {
@@ -454,6 +516,8 @@ while ($#ARGV >= 0) {
       } else {
         $TEST_PLATFORM="linux32";
       }
+    } elsif ($arg eq "-asan") {
+      $ASAN="yes";
     } elsif ($arg eq "-b") {
       $setbaseline = 1;
     } elsif ($arg eq "-c") {

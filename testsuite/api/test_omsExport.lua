@@ -2,10 +2,10 @@
 -- teardown_command: rm -rf test_omsExport-lua/
 -- linux: yes
 -- linux32: yes
--- mingw32: yes
--- mingw64: yes
+-- ucrt64: yes
 -- win: yes
 -- mac: yes
+-- asan: yes
 
 oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./test_omsExport-lua/")

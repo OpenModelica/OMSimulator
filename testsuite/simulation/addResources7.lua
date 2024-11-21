@@ -1,8 +1,7 @@
 -- status: correct
 -- teardown_command: rm -rf addResources_07_lua/
 -- linux: yes
--- mingw32: yes
--- mingw64: yes
+-- ucrt64: yes
 -- win: yes
 -- mac: no
 
@@ -11,10 +10,10 @@ oms_setTempDirectory("./addResources_07_lua/")
 
 oms_newModel("addResources")
 
-oms_addSystem("addResources.root", oms_system_tlm)
+oms_addSystem("addResources.root", oms_system_wc)
 
 -- add subsystem system1
-oms_addSystem("addResources.root.system1", oms_system_wc);
+oms_addSystem("addResources.root.system1", oms_system_sc);
 oms_addConnector("addResources.root.system1.C1", oms_causality_input, oms_signal_type_real)
 oms_addConnector("addResources.root.system1.C2", oms_causality_input, oms_signal_type_real)
 -- add local resources for system1
@@ -31,7 +30,7 @@ oms_setReal("addResources.root.system1.add.k1", 45)
 
 
 -- system2 as inline parameters
-oms_addSystem("addResources.root.system2", oms_system_wc);
+oms_addSystem("addResources.root.system2", oms_system_sc);
 oms_addConnector("addResources.root.system2.C1", oms_causality_input, oms_signal_type_real)
 oms_addConnector("addResources.root.system2.C2", oms_causality_input, oms_signal_type_real)
 -- add local resources for system2
@@ -173,11 +172,13 @@ oms_delete("addResources")
 --                 type="org.openmodelica">
 --                 <oms:Annotations>
 --                   <oms:SimulationInformation>
---                     <oms:FixedStepMaster
---                       description="oms-ma"
---                       stepSize="0.100000"
---                       absoluteTolerance="0.000100"
---                       relativeTolerance="0.000100" />
+--                     <oms:VariableStepSolver
+--                       description="cvode"
+--                       absoluteTolerance="0.0001"
+--                       relativeTolerance="0.0001"
+--                       minimumStepSize="1e-12"
+--                       maximumStepSize="0.001"
+--                       initialStepSize="1e-06" />
 --                   </oms:SimulationInformation>
 --                 </oms:Annotations>
 --               </ssc:Annotation>
@@ -253,11 +254,13 @@ oms_delete("addResources")
 --                 type="org.openmodelica">
 --                 <oms:Annotations>
 --                   <oms:SimulationInformation>
---                     <oms:FixedStepMaster
---                       description="oms-ma"
---                       stepSize="0.100000"
---                       absoluteTolerance="0.000100"
---                       relativeTolerance="0.000100" />
+--                     <oms:VariableStepSolver
+--                       description="cvode"
+--                       absoluteTolerance="0.0001"
+--                       relativeTolerance="0.0001"
+--                       minimumStepSize="1e-12"
+--                       maximumStepSize="0.001"
+--                       initialStepSize="1e-06" />
 --                   </oms:SimulationInformation>
 --                 </oms:Annotations>
 --               </ssc:Annotation>
@@ -269,10 +272,11 @@ oms_delete("addResources")
 --             type="org.openmodelica">
 --             <oms:Annotations>
 --               <oms:SimulationInformation>
---                 <oms:TlmMaster
---                   ip=""
---                   managerport="0"
---                   monitorport="0" />
+--                 <oms:FixedStepMaster
+--                   description="oms-ma"
+--                   stepSize="0.001000"
+--                   absoluteTolerance="0.000100"
+--                   relativeTolerance="0.000100" />
 --               </oms:SimulationInformation>
 --             </oms:Annotations>
 --           </ssc:Annotation>
@@ -441,6 +445,8 @@ oms_delete("addResources")
 -- info:      addResources.root.system2.C1      : -20.0
 -- info:      addResources.root.system2.C2      : -30.0
 -- info:      addResources.root.system2.add2.k1 : 49.5
+-- info:    model doesn't contain any continuous state
+-- info:    model doesn't contain any continuous state
 -- info:    Parameter settings
 -- info:      addResources.root.system1.C1      : -10.5
 -- info:      addResources.root.system1.C2      : -20.5

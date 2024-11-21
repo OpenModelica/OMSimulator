@@ -17,6 +17,8 @@ my $no_colour = 0;
 my $withxml = 0;
 my $rtest_extra_args = "";
 my $test_baseline = 0;
+my $isWSL = (defined $ENV{'WSLENV'} && rindex(Cwd::abs_path(),"/mnt/",0)==0);
+my $osname = $^O;
 
 for(@ARGV){
   if(/--no-colour/) {
@@ -29,6 +31,9 @@ for(@ARGV){
     $rtest_extra_args = $rtest_extra_args . " -c";
   }
   elsif(/^-platform(.*)$/) {
+    $rtest_extra_args = $rtest_extra_args . " " . $_;
+  }
+  elsif(/^-asan$/) {
     $rtest_extra_args = $rtest_extra_args . " " . $_;
   }
   elsif(/^--with-omc=(.*)$/) {
@@ -58,13 +63,28 @@ sub make_link {
   # Depending on how the path is given we need to use different rules for how
   # the symlink should be created.
   for ($file) {
-    if    (/\.\.\/(\w*)\/package.mo/) { symlink("../" . $1, "../" . $1); }
-    elsif (/\.\/(\w*)\/package.mo/)   { symlink("../" . $1, $1); }
-    elsif (/\.\.\/([\w-]*)\//)        { symlink("../" . $1, "../" . $1); }
-    elsif (/^(\w*)\/(.*)/)            { symlink("../" . $1, $1); }
-    elsif (/(.*)/)                    { symlink("../" . $1, $1); }
-    else                              { symlink("../" . $file, $file); }
+    if    (/\.\.\/(\w*)\/package.mo/) { symlink_if_exists("../" . $1, "../" . $1); }
+    elsif (/\.\/(\w*)\/package.mo/)   { symlink_if_exists("../" . $1, $1); }
+    elsif (/\.\.\/([\w-]*)\//)        { symlink_if_exists("../" . $1, "../" . $1); }
+    elsif (/^(\w*)\/(.*)/)            { symlink_if_exists("../" . $1, $1); }
+    elsif (/(.*)/)                    { symlink_if_exists("../" . $1, $1); }
+    else                              { symlink_if_exists("../" . $file, $file); }
   }
+}
+
+# Creates a symbolic link to a file, but only if the file exists.
+sub symlink_if_exists {
+  my $src = shift;
+  my $dst = shift;
+
+  if (-e $src) {
+    # if is Windows we cannot symlink (it seems)
+    if ($isWSL or ($osname eq 'MSWin32')) {
+      link($src, $dst);
+    } else {
+      symlink($src, $dst);
+    }
+   }
 }
 
 # Some tests use libraries that we need to symlink the corresponding headers for.
@@ -218,6 +238,9 @@ my $n = ($test_full =~ tr/\///) - ($sandbox_needed ? 0 : 1);
 my $test_suit_path_rel = "../" x $n;
 
 my $rtest = $test_suit_path_rel . "rtest $rtest_extra_args -v -nolib ";
+if ( $osname eq 'MSWin32' ) {
+  $rtest = "perl " . $rtest;
+}
 
 # Run the testscript and redirect output to a logfile.
 my $cmd = "$rtest $test > $test.test_log 2>&1";
@@ -290,6 +313,8 @@ if ($no_colour) {
   print color 'reset';
 }
 
+close( $test_log );
+
 if ($withxml) {
   my $XMLOUT;
   open $XMLOUT, '>', $xml_log or die "Couldn't open result.xml: $!";
@@ -342,4 +367,3 @@ if ($exit_status == 0) {
   }
   exit $time;
 }
-

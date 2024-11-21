@@ -27,7 +27,7 @@ use Term::ANSIColor;
 use List::Util 'shuffle';
 use Cwd;
 use File::Path qw(rmtree);
-use Time::HiRes qw( usleep ualarm gettimeofday tv_interval clock stat );
+use Time::HiRes qw( usleep gettimeofday tv_interval stat );
 
 use Fcntl;
 
@@ -36,8 +36,7 @@ $ENV{GC_MARKERS}="1";
 
 my $use_db = 1;
 my $save_db = 1;
-my $asan = 0;
-my $notlm = 1;
+my $asan = '';
 my $nocolour = '';
 my $count_tests = 0;
 my $run_failing = 0;
@@ -55,6 +54,7 @@ my $withtxt = 0;
 my $have_dwdiff = "";
 my $rebase_test = "";
 my $platform = "";
+my $osname = $^O;
 
 {
   eval { require File::Which; 1; };
@@ -75,7 +75,7 @@ for(@ARGV){
   if(/^-h|--help$/) {
     print("Usage: runtests.pl [OPTION]\n");
     print("\nOptions are:\n");
-    print("  -asan         Skip all python tests.\n");
+    print("  -asan         Run a subset of tests, intended for use with AddressSanitizer (asan).\n");
     print("  -b            Rebase tests in parallel. Use in conjuction with -file=/path/to/file.\n");
     print("  -counttests   Don't run the test; only count them.\n");
     print("  -failing      Run failing tests instead of working.\n");
@@ -84,14 +84,13 @@ for(@ARGV){
     print("  -nocolour     Don't use colours in output.\n");
     print("  -nodb         Don't store timing data.\n");
     print("  -nosavedb     Don't overwrite stored timing data.\n");
-    print("  -notlm        Skip all tlm tests.\n");
     print("  -platform     Force to use a specific platform, e.g. win or linux32.\n");
     print("  -with-txt     Output TXT log.\n");
     print("  -with-xml     Output XML log.\n");
     exit 1;
   }
   if(/^-asan$/) {
-    $asan = 1;
+    $asan = '-asan';
   }
   elsif(/^-b$/) {
     $rebase_test = "-b";
@@ -117,9 +116,6 @@ for(@ARGV){
   }
   elsif(/^-nosavedb$/) {
     $save_db = 0;
-  }
-  elsif(/^-notlm$/) {
-    $notlm = 1;
   }
   elsif(/^-platform(.*)$/) {
     $platform = $_;
@@ -159,6 +155,9 @@ my $test_queue = Thread::Queue->new();
 my $tests_failed :shared = 0;
 my @failed_tests :shared;
 my $testscript = cwd() . "/runtest.pl";
+if ( $osname eq 'MSWin32' ) {
+  $testscript = "perl " . $testscript;
+}
 my $testsuite_root = cwd() . "/../";
 my %test_map :shared;
 
@@ -171,8 +170,6 @@ if($use_db) {
 sub read_makefile {
   my $dir = shift;
   my $header = shift;
-
-  return if($notlm == 1 and $dir =~ m"/tlm"); # Skip tlm if -notlm is given.
 
   open(my $in, "<", "$dir/Makefile") or die "Couldn't open $dir/Makefile: $!";
 
@@ -221,11 +218,7 @@ sub add_tests {
   my @tests = split(/\s|=|\\/, shift);
   my $path = shift;
 
-  if ($asan) {
-    @tests = grep(/\.lua|\.xml/, @tests);
-  } else {
-    @tests = grep(/\.lua|\.py|\.xml/, @tests);
-  }
+  @tests = grep(/\.lua|\.py|\.xml/, @tests);
   @tests = map { $_ = ("$path/$_" =~ s/\/\//\//rg) } @tests;
 
   push @test_list, @tests;
@@ -238,7 +231,7 @@ sub run_tests {
     (my $test_dir, my $test) = $test_full =~ /(.*)\/([^\/]*)$/;
 
     my $t0 = [gettimeofday];
-    my $cmd = "$testscript $test_full $have_dwdiff $nocolour $with_xml_cmd $rebase_test $platform";
+    my $cmd = "$testscript $test_full $have_dwdiff $nocolour $with_xml_cmd $rebase_test $platform $asan";
     my $x = system("$cmd") >> 8;
     my $elapsed = tv_interval ( $t0, [gettimeofday]);
 
@@ -306,10 +299,14 @@ if ($check_proc_cpu) {
     while(<$in>) {
       $thread_count++ if /processor/;
     }
-  } else { # On OSX, try syscyl
-    my @contents = `sysctl -n hw.ncpu`;
-    if (int($contents[0]) > 0) {
-      $thread_count = int($contents[0]);
+  } else {
+    if ( $osname eq 'MSWin32' ) { # Windows
+      $thread_count = int($ENV{"NUMBER_OF_PROCESSORS"});
+    } else { # On OSX, try syscyl
+      my @contents = `sysctl -n hw.ncpu`;
+      if (int($contents[0]) > 0) {
+        $thread_count = int($contents[0]);
+      }
     }
   }
 }
@@ -413,8 +410,12 @@ if($with_xml) {
 }
 
 # Clean up the temporary rtest directory, so it doesn't get overrun.
-my $username = getpwuid($<);
-my @dirs = glob "/tmp/omc-rtest-$username*";
+my $username = ( $^O ne 'MSWin32' ? getpwuid($<) : undef )
+          || getlogin()
+          || $ENV{'USER'}
+          || 'omtmpuser';
+my $tmpvar=( $^O ne 'MSWin32' ? '/tmp' : $ENV{'TEMP'} );
+my @dirs = glob "$tmpvar/omc-rtest-$username*";
 if (@dirs) {
   rmtree(@dirs);
 }

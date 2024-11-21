@@ -19,10 +19,6 @@ ELSEIF (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 5
   ENDIF ()
 ENDIF ()
 
-
-set(DUMMY_OMTLM_DIRECTORY "DummyTLM/")
-set(TLM_STRING "-notlm")
-
 set(OMSIMULATORLIB_SOURCES
       AlgLoop.cpp
       BusConnector.cpp
@@ -39,7 +35,6 @@ set(OMSIMULATORLIB_SOURCES
       CSVWriter.cpp
       DirectedGraph.cpp
       Element.cpp
-      ExternalModelInfo.cpp
       Flags.cpp
       FMUInfo.cpp
       Logging.cpp
@@ -76,10 +71,7 @@ list(APPEND OMSIMULATORLIB_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/Version.cpp")
 add_library(OMSimulatorLib SHARED ${OMSIMULATORLIB_SOURCES})
 set_target_properties(OMSimulatorLib PROPERTIES OUTPUT_NAME OMSimulator)
 
-target_include_directories(OMSimulatorLib
-                            PUBLIC
-                              ${CMAKE_CURRENT_SOURCE_DIR}
-                              ${DUMMY_OMTLM_DIRECTORY})
+target_include_directories(OMSimulatorLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(OMSimulatorLib
                         PUBLIC
@@ -110,10 +102,7 @@ endif()
 
 target_compile_definitions(OMSimulatorLib_static PUBLIC OMS_STATIC)
 
-target_include_directories(OMSimulatorLib_static
-                            PUBLIC
-                              ${CMAKE_CURRENT_SOURCE_DIR}
-                              ${DUMMY_OMTLM_DIRECTORY})
+target_include_directories(OMSimulatorLib_static PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(OMSimulatorLib_static
                         PUBLIC
@@ -134,7 +123,28 @@ if(MINGW)
   target_link_libraries(OMSimulatorLib_static PUBLIC shlwapi)
 endif()
 
-
+## copy dependent DLL's for mingw artifacts
+if(ICU_FOUND)
+  message(STATUS "ICU_LIBRARIES_FOUND: ${ICU_LIBRARIES}")
+  if (MINGW)
+    list(GET ICU_LIBRARIES 0 ICU_PATH)
+    get_filename_component(DLL_DIR "${ICU_PATH}/../../bin" ABSOLUTE)
+    message(STATUS "DLL_DIR: ${DLL_DIR}")
+    # collect all DLLs matching the pattern
+    file(GLOB DLL_LIST
+              "${DLL_DIR}/libicuuc*.dll"
+              "${DLL_DIR}/libicudt*.dll"
+              "${DLL_DIR}/libstdc++*.dll")
+    # Check if the DLL_LIST is not empty before installing
+    if (DLL_LIST)
+      # Install the files from the list to the 'bin' directory
+      install(FILES ${DLL_LIST} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+      message(STATUS "Copied files from: ${DLL_LIST} to ${CMAKE_INSTALL_PREFIX}/bin")
+    else()
+      message(WARNING "No DLLs found matching the pattern")
+    endif()
+  endif()
+endif()
 
 install(TARGETS OMSimulatorLib)
 install(TARGETS OMSimulatorLib_static)

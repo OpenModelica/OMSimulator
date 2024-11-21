@@ -1,6 +1,5 @@
 FMUs = \
 A \
-B \
 AircraftVehicleDemonstrator.Atmosphere_Model_FMU_sf \
 AircraftVehicleDemonstrator.bC \
 AircraftVehicleDemonstrator.cockpit \
@@ -11,13 +10,18 @@ AircraftVehicleDemonstrator.eCS_SW \
 AircraftVehicleDemonstrator.engine \
 ASSCExample.Class1 \
 ASSCExample.Class2 \
+B \
+BouncingBall \
+Dahlquist \
 DualMassOscillator.System1 \
 DualMassOscillator.System2 \
 Enum1 \
 equationPair.equation1 \
 equationPair.equation2 \
-fmidertest \
+EventTest \
+Feedthrough \
 fmi_attributes_19 \
+fmidertest \
 HelloWorld \
 HelloWorldWithInput \
 Int1 \
@@ -42,24 +46,16 @@ QuarterCarModel.DisplacementDisplacement.Wheel \
 QuarterCarModel.DisplacementForce.Chassis \
 QuarterCarModel.DisplacementForce.Wheel \
 replaceA \
-replaceB \
 replaceA_extended \
+replaceB \
+Resource \
+Stair \
 str_hello_world \
 tank1 \
 tank2 \
 tank3 \
-tlm.adder \
-tlm.CoarseGrained1_1D \
-tlm.CoarseGrained2_1D \
-tlm.FineGrained1_1D \
-tlm.FineGrained2_1D \
-tlm.gain \
-tlm.LowerPendulum \
-tlm.LowerPendulumFG \
-tlm.mass \
-tlm.massSpring \
-tlm.source \
-tlm.UpperPendulum \
+testArray \
+VanDerPol \
 ypipe \
 
 SSPs = \
@@ -79,6 +75,8 @@ invalidSSV \
 invalidSSM \
 replaceSubmodel4 \
 replaceSubmodel5 \
+toplevelparameter1 \
+toplevelparameter2 \
 
 MOSs = \
 ASSCExample.mos \
@@ -86,6 +84,7 @@ Blocks.mos \
 DualMassOscillator.mos \
 Enumeration.mos \
 equationPair.mos \
+EventTest.mos \
 fmidertest.mos \
 HelloWorld.mos \
 HelloWorldWithInput.mos \

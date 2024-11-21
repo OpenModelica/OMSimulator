@@ -1,10 +1,10 @@
 -- status: correct
 -- teardown_command: rm -rf rename_snapshot_lua/ renameSnapshot.ssp
 -- linux: yes
--- mingw32: yes
--- mingw64: yes
+-- ucrt64: yes
 -- win: yes
 -- mac: no
+-- asan: yes
 
 oms_setCommandLineOption("--suppressPath=true")
 status = oms_setTempDirectory("./rename_snapshot_lua/")

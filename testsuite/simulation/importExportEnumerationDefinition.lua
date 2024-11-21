@@ -1,8 +1,7 @@
 -- status: correct
--- teardown_command: rm -rf PI_Controller-lua/
+-- teardown_command: rm -rf enumdef_lua/
 -- linux: yes
--- mingw32: yes
--- mingw64: yes
+-- ucrt64: yes
 -- win: yes
 -- mac: no
 

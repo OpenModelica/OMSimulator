@@ -36,9 +36,6 @@
 #include "ComRef.h"
 #include "Connector.h"
 #include "ssd/ElementGeometry.h"
-#if !defined(NO_TLM)
-#include "TLMBusConnector.h"
-#endif
 #include "OMSimulator/Types.h"
 
 namespace oms
@@ -61,9 +58,6 @@ namespace oms
     void setGeometry(const oms::ssd::ElementGeometry* newGeometry);
     void setConnectors(oms::Connector** newConnectors);
     void setBusConnectors(oms::BusConnector **newBusConnectors);
-#if !defined(NO_TLM)
-    void setTLMBusConnectors(oms::TLMBusConnector **newTLMBusConnectors);
-#endif
     void setSubElements(oms_element_t** subelements);
 
   private:

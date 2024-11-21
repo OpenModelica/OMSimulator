@@ -1,8 +1,7 @@
 -- status: correct
 -- teardown_command: rm -rf activatevariant_03_lua/
 -- linux: yes
--- mingw32: no
--- mingw64: yes
+-- ucrt64: yes
 -- win: no
 -- mac: no
 

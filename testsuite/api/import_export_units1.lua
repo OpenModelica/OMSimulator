@@ -1,10 +1,10 @@
 -- status: correct
 -- teardown_command: rm -rf import_export_unit_01_lua/
 -- linux: yes
--- mingw32: yes
--- mingw64: yes
+-- ucrt64: yes
 -- win: yes
 -- mac: no
+-- asan: yes
 
 oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./import_export_unit_01_lua/")

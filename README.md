@@ -2,170 +2,144 @@
 
 The OpenModelica FMI & SSP-based co-simulation environment.
 
-## Downloads
+## Installation
 
-OMSimulator can be installed as stand-alone application, as C library to be linked into custom applications, and as python package. OMSimulator is also shipped with the OpenModelica installer, which also includes OMEdit as the graphical editor.
+OMSimulator can be used as:
+
+- **Stand-alone application**
+- **C library** for integration into custom applications
+- **Python package** (`pip install OMSimulator`)
+
+OMSimulator is also included with the OpenModelica installer, which includes OMEdit, a graphical editor.
 
 * [OpenModelica](https://openmodelica.org/)
-* [Stand-alone package](https://build.openmodelica.org/omsimulator/)
-* Python 3.8+: `pip3 install OMSimulator`
+* [Standalone package](https://build.openmodelica.org/omsimulator/)
 
 ## Documentation
 
-The latest documentation is available as [pdf](https://openmodelica.org/doc/OMSimulator/master/OMSimulator.pdf) and [html](https://openmodelica.org/doc/OMSimulator/master/html/) versions.
-For OMSimulatorLib a [Doxygen source code documentation](https://openmodelica.org/doc/OMSimulator/master/OMSimulatorLib/) is available as well.
+Latest documentation:
 
-## FMI cross-check results
+- [User Guide PDF](https://openmodelica.org/doc/OMSimulator/master/OMSimulator/UsersGuide/pdf/OMSimulator.pdf)
+- [User Guide HTML](https://openmodelica.org/doc/OMSimulator/master/OMSimulator/UsersGuide/html/)
+- [OMSimulatorLib Doxygen](https://openmodelica.org/doc/OMSimulator/master/OMSimulator/doxygen/html/index.html)
 
-* https://libraries.openmodelica.org/fmi-crosschecking/OMSimulator/history/
+## FMI Cross-Check Results
+
+* [Cross-Check History](https://libraries.openmodelica.org/fmi-crosschecking/OMSimulator/history/)
 
 ## Dependencies
 
-### Tools
-Required
-- A C++ compiler with C++17 support.
-- [cmake](http://www.cmake.org)
+### Required Tools
+- **C++ compiler** with C++17 support
+- **CMake**: [Download here](http://www.cmake.org)
 
-Optional
-- [Sphinx](http://www.sphinx-doc.org/en/stable/) for generating documentation.
-- [Doxygen](http://www.sphinx-doc.org/en/stable/) for generating documentation.
-- [GNU Flex](https://github.com/westes/flex) for verifying testsuite results.
+### Optional Tools
+- **Sphinx**: for documentation ([Download](http://www.sphinx-doc.org/en/stable/))
+- **Doxygen**: for documentation ([Download](https://www.doxygen.nl/))
+- **GNU Flex**: for test suite verification ([GitHub](https://github.com/westes/flex))
 
 ### Libraries
-- [readline (if using Lua)](http://git.savannah.gnu.org/cgit/readline.git)
 
+- **readline** (for Lua support): [Download here](http://git.savannah.gnu.org/cgit/readline.git)
 
-## Compilation
+## Compilation Instructions
 
-> **Note**
-> Make sure you have fetched and initialized the OMSimulator submodules
+### Submodule Initialization
 
-You can do this in one of two ways
+Ensure you have initialized OMSimulator submodules:
 
-1. If you have already cloned OMSimulator, then run
+```bash
+git submodule update --init --recursive
+```
 
-   ```bash
-   git submodule update --init --recursive
-   ```
-1. If you are cloning the repository, then use
+Or, when cloning:
 
-   ```bash
-   git clone https://github.com/OpenModelica/OMSimulator.git --recurse-submodules
-   ```
+```bash
+git clone https://github.com/OpenModelica/OMSimulator.git --recurse-submodules
+```
 
-### Linux / MacOS
+### Build Instructions
 
-1. Configure OMSimulator
+#### Linux / macOS
 
+1. **Configure OMSimulator:**
    ```bash
    cd OMSimulator
    cmake -S . -B build/ -DCMAKE_INSTALL_PREFIX=install/
    ```
 
-2. Build and install OMSimulator
-
+2. **Build and Install:**
    ```bash
-   cd OMSimulator
    cmake --build build/ --target install
    ./install/bin/OMSimulator --version
    ```
 
-### Windows (OMDev mingw)
+#### Windows (OMDev mingw)
 
-1. Setup OMDev
+1. **Set Up OMDev:**
+   - Clone OMDev: `git clone https://openmodelica.org/git/OMDev.git`
+   - Follow the setup instructions in `OMDev/INSTALL.txt`
 
-   - Clone OMDev (OpenModelica Development Environment): `git clone https://openmodelica.org/git/OMDev.git`
-   - Follow the instructions in `OMDev/INSTALL.txt`
-
-1. Open a MinGW-64 terminal
-
-1. Configure OMSimulator
-
-
+2. **Configure OMSimulator:**
    ```bash
    cd OMSimulator
    cmake -S . -B build/ -G "MSYS Makefiles" -DCMAKE_INSTALL_PREFIX=install/
    ```
 
-1. Build and install OMSimulator
-
+3. **Build and Install:**
    ```bash
-   cd OMSimulator
    cmake --build build/ --target install
    ./install/bin/OMSimulator --version
    ```
 
-### Windows (Visual Studio)
+#### Windows (Visual Studio)
 
-The following versions of Visual Studio are supported:
+- Supported: Visual Studio 2017 and later.
+- Required: **Visual C++ Build Tools** ([Download](https://visualstudio.microsoft.com/downloads/))
 
-- Visual Studio 15 2017 Win64 and later
-
-It is not strictly required to install the full Visual Studio IDE. The build only requires *[Visual C++ Build Tools](http://landinghub.visualstudio.com/visual-cpp-build-tools)*.
-
-
-1. Open a [Visual Studio command prompt](https://learn.microsoft.com/en-us/visualstudio/ide/reference/command-prompt-powershell?view=vs-2022)
-
-1. Configure OMSimulator
-
+1. **Open Visual Studio Command Prompt**
+2. **Configure OMSimulator:**
    ```bash
    cd OMSimulator
    cmake -S . -B build/ -DCMAKE_INSTALL_PREFIX=install/
    ```
 
-1. Build and install OMSimulator
-
+3. **Build and Install:**
    ```bash
-   cd OMSimulator
    cmake --build build/ --config Release --target install
    ./install/bin/OMSimulator.exe --version
    ```
 
-## Test your build
+## Testing the Build
 
-The testsuite of OMSimulator is run on Jenkins for every commit and creating
-[test reports](https://test.openmodelica.org/jenkins/job/OMSimulator/job/master/lastSuccessfulBuild/testReport/).
-The project is tested for the following OS:
-   - linux64 without OMPython
-   - mingw64
-   - msvc64
-   - cross-compiled OSX
+OMSimulator tests are automatically run on Jenkins, see [latest test reports](https://test.openmodelica.org/jenkins/job/OMSimulator/job/master/lastSuccessfulBuild/testReport/). To verify your build:
 
-In addition the [OpenModelica project](https://github.com/OpenModelica/OpenModelica) has a number of test cases using OMSimulator for FMU simulation that can be find in this [OpenModelica test reports](https://test.openmodelica.org/jenkins/job/OpenModelica/job/master/lastSuccessfulBuild/testReport/).
+### Linux / macOS / Windows (OMDev mingw)
 
-To verify your build is compiled and installed correctly see the following instructions.
-
-### Linux / MacOS / Windows (OMDev mingw)
-
-1. Build test dependencies
+1. **Build Test Dependencies:**
    ```bash
    cmake --build build/ --target testsuite-depends
    ```
 
-2. Run partest
-
+2. **Run Tests:**
    ```bash
    cd testsuite/partest/
    ./runtests.pl -j4
    ```
-   Use `-jN` to test with `N` threads.
-
-   To disable Python tests add `-asan`.
+   - Use `-jN` to specify `N` threads.
 
 ### Windows (Visual Studio)
 
-We currently have no bat-Script to build and test with CMD, so you have to use OMDev mingw shell for the tests.
+Testing requires the OMDev mingw shell:
 
-1. Build test dependencies
+1. **Build Test Dependencies:**
    ```bash
    cmake --build build/ --target testsuite-depends
    ```
 
-2. Run partest
-
+2. **Run Tests:**
    ```bash
    cd testsuite/partest/
    ./runtests.pl -j4 -platform=win
    ```
-   Use `-jN` to test with `N` threads.
-   To disable TLM tests add `-notlm`, to disable Python tests add `-asan`.
+   - Use `-jN` to specify `N` threads.

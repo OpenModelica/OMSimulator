@@ -1,7 +1,6 @@
 
 set(OM_OMS_TESTSUITE_RESOURCES_FMUS
         ${CMAKE_CURRENT_SOURCE_DIR}/A
-        ${CMAKE_CURRENT_SOURCE_DIR}/B
         ${CMAKE_CURRENT_SOURCE_DIR}/AircraftVehicleDemonstrator.Atmosphere_Model_FMU_sf
         ${CMAKE_CURRENT_SOURCE_DIR}/AircraftVehicleDemonstrator.bC
         ${CMAKE_CURRENT_SOURCE_DIR}/AircraftVehicleDemonstrator.cockpit
@@ -12,16 +11,21 @@ set(OM_OMS_TESTSUITE_RESOURCES_FMUS
         ${CMAKE_CURRENT_SOURCE_DIR}/AircraftVehicleDemonstrator.engine
         ${CMAKE_CURRENT_SOURCE_DIR}/ASSCExample.Class1
         ${CMAKE_CURRENT_SOURCE_DIR}/ASSCExample.Class2
+        ${CMAKE_CURRENT_SOURCE_DIR}/B
+        ${CMAKE_CURRENT_SOURCE_DIR}/BouncingBall
+        ${CMAKE_CURRENT_SOURCE_DIR}/Dahlquist
         ${CMAKE_CURRENT_SOURCE_DIR}/DualMassOscillator.System1
         ${CMAKE_CURRENT_SOURCE_DIR}/DualMassOscillator.System2
         ${CMAKE_CURRENT_SOURCE_DIR}/Enum1
         ${CMAKE_CURRENT_SOURCE_DIR}/equationPair.equation1
         ${CMAKE_CURRENT_SOURCE_DIR}/equationPair.equation2
-        ${CMAKE_CURRENT_SOURCE_DIR}/fmidertest
+        ${CMAKE_CURRENT_SOURCE_DIR}/Feedthrough
         ${CMAKE_CURRENT_SOURCE_DIR}/fmi_attributes_19
+        ${CMAKE_CURRENT_SOURCE_DIR}/fmidertest
         ${CMAKE_CURRENT_SOURCE_DIR}/HelloWorld
         ${CMAKE_CURRENT_SOURCE_DIR}/HelloWorldWithInput
         ${CMAKE_CURRENT_SOURCE_DIR}/Int1
+        ${CMAKE_CURRENT_SOURCE_DIR}/invalidModeldescription
         ${CMAKE_CURRENT_SOURCE_DIR}/Lin2DimODE
         ${CMAKE_CURRENT_SOURCE_DIR}/Modelica.Blocks.Continuous.Integrator
         ${CMAKE_CURRENT_SOURCE_DIR}/Modelica.Blocks.Math.Add
@@ -42,24 +46,15 @@ set(OM_OMS_TESTSUITE_RESOURCES_FMUS
         ${CMAKE_CURRENT_SOURCE_DIR}/QuarterCarModel.DisplacementForce.Chassis
         ${CMAKE_CURRENT_SOURCE_DIR}/QuarterCarModel.DisplacementForce.Wheel
         ${CMAKE_CURRENT_SOURCE_DIR}/replaceA
-        ${CMAKE_CURRENT_SOURCE_DIR}/replaceB
         ${CMAKE_CURRENT_SOURCE_DIR}/replaceA_extended
+        ${CMAKE_CURRENT_SOURCE_DIR}/replaceB
+        ${CMAKE_CURRENT_SOURCE_DIR}/Resource
+        ${CMAKE_CURRENT_SOURCE_DIR}/Stair
         ${CMAKE_CURRENT_SOURCE_DIR}/str_hello_world
         ${CMAKE_CURRENT_SOURCE_DIR}/tank1
         ${CMAKE_CURRENT_SOURCE_DIR}/tank2
         ${CMAKE_CURRENT_SOURCE_DIR}/tank3
-        ${CMAKE_CURRENT_SOURCE_DIR}/tlm.adder
-        ${CMAKE_CURRENT_SOURCE_DIR}/tlm.CoarseGrained1_1D
-        ${CMAKE_CURRENT_SOURCE_DIR}/tlm.CoarseGrained2_1D
-        ${CMAKE_CURRENT_SOURCE_DIR}/tlm.FineGrained1_1D
-        ${CMAKE_CURRENT_SOURCE_DIR}/tlm.FineGrained2_1D
-        ${CMAKE_CURRENT_SOURCE_DIR}/tlm.gain
-        ${CMAKE_CURRENT_SOURCE_DIR}/tlm.LowerPendulum
-        ${CMAKE_CURRENT_SOURCE_DIR}/tlm.LowerPendulumFG
-        ${CMAKE_CURRENT_SOURCE_DIR}/tlm.mass
-        ${CMAKE_CURRENT_SOURCE_DIR}/tlm.massSpring
-        ${CMAKE_CURRENT_SOURCE_DIR}/tlm.source
-        ${CMAKE_CURRENT_SOURCE_DIR}/tlm.UpperPendulum
+        ${CMAKE_CURRENT_SOURCE_DIR}/VanDerPol
         ${CMAKE_CURRENT_SOURCE_DIR}/ypipe
 )
 
@@ -76,6 +71,8 @@ set(OM_OMS_TESTSUITE_RESOURCES_SSPS
         ${CMAKE_CURRENT_SOURCE_DIR}/import_export_parameters3
         ${CMAKE_CURRENT_SOURCE_DIR}/importExportAllResources
         ${CMAKE_CURRENT_SOURCE_DIR}/invalidSSP
+        ${CMAKE_CURRENT_SOURCE_DIR}/invalidSSM
+        ${CMAKE_CURRENT_SOURCE_DIR}/invalidSSD
         ${CMAKE_CURRENT_SOURCE_DIR}/replaceSubmodel4
         ${CMAKE_CURRENT_SOURCE_DIR}/replaceSubmodel5
 )

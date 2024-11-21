@@ -1,10 +1,10 @@
 -- status: correct
 -- teardown_command: rm -rf activatevariant_01_lua/
 -- linux: yes
--- mingw32: no
--- mingw64: yes
+-- ucrt64: yes
 -- win: no
 -- mac: no
+-- asan: yes
 
 oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./activatevariant_01_lua/")

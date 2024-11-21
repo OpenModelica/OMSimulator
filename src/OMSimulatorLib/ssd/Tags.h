@@ -97,7 +97,6 @@ namespace oms
     namespace Draft20180219
     {
       extern const char* annotation_type;
-      extern const char* tlm_master;
       extern const char* bus;
       extern const char* signals;
       extern const char* signal;

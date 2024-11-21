@@ -34,7 +34,6 @@
 #include "Component.h"
 #include "ComRef.h"
 #include "Element.h"
-#include "ExternalModelInfo.h"
 #include "Flags.h"
 #include "FMUInfo.h"
 #include "Logging.h"
@@ -47,11 +46,6 @@
 #include "Snapshot.h"
 #include "System.h"
 #include "SystemWC.h"
-#if !defined(NO_TLM)
-  #include "SystemTLM.h"
-  #include "TLMBusConnector.h"
-  #include "ExternalModel.h"
-#endif
 #include "OMSimulator/Types.h"
 #include "Version.h"
 
@@ -596,31 +590,6 @@ oms_status_enu_t oms_setConnectionGeometry(const char *crefA, const char *crefB,
   return system->setConnectionGeometry(tailA, tailB, reinterpret_cast<const oms::ssd::ConnectionGeometry*>(geometry));
 }
 
-oms_status_enu_t oms_setTLMConnectionParameters(const char* crefA, const char* crefB, const oms_tlm_connection_parameters_t* parameters)
-{
-#if !defined(NO_TLM)
-  oms::ComRef tailA(crefA);
-  oms::ComRef modelCref = tailA.pop_front();
-  oms::ComRef systemCref = tailA.pop_front();
-
-  oms::ComRef tailB(crefB);
-  tailB.pop_front();
-  tailB.pop_front();
-
-  oms::Model* model = oms::Scope::GetInstance().getModel(modelCref);
-  if (!model)
-    return logError_ModelNotInScope(modelCref);
-
-  oms::System* system = model->getSystem(systemCref);
-  if (!system)
-    return logError_SystemNotInModel(modelCref, systemCref);
-
-  return system->setTLMConnectionParameters(tailA, tailB, parameters);
-#else
-  return LOG_NO_TLM();
-#endif
-}
-
 oms_status_enu_t oms_getConnections(const char *cref, oms_connection_t ***connections)
 {
   oms::ComRef tail(cref);
@@ -698,51 +667,6 @@ oms_status_enu_t oms_setBusGeometry(const char* cref, const ssd_connector_geomet
   return system->setBusGeometry(tail, reinterpret_cast<const oms::ssd::ConnectorGeometry*>(geometry));
 }
 
-oms_status_enu_t oms_addTLMBus(const char *cref, oms_tlm_domain_t domain, const int dimensions, const oms_tlm_interpolation_t interpolation)
-{
-#if !defined(NO_TLM)
-  oms::ComRef tail(cref);
-  oms::ComRef modelCref = tail.pop_front();
-  oms::ComRef systemCref = tail.pop_front();
-  oms::Model* model = oms::Scope::GetInstance().getModel(modelCref);
-  if (!model) {
-    return logError_ModelNotInScope(modelCref);
-  }
-  oms::System* system = model->getSystem(systemCref);
-  if (!system) {
-    return logError_SystemNotInModel(modelCref, systemCref);
-  }
-  return system->addTLMBus(tail, domain, dimensions, interpolation);
-#else
-    return LOG_NO_TLM();
-#endif
-}
-
-oms_status_enu_t oms_getTLMBus(const char* cref, oms_tlmbusconnector_t** tlmBusConnector)
-{
-#if !defined(NO_TLM)
-  oms::ComRef tail(cref);
-  oms::ComRef modelCref = tail.pop_front();
-  oms::ComRef systemCref = tail.pop_front();
-
-  oms::Model* model = oms::Scope::GetInstance().getModel(modelCref);
-  if (!model) {
-    return logError_ModelNotInScope(modelCref);
-  }
-
-  oms::System* system = model->getSystem(systemCref);
-  if (!system) {
-    return logError_SystemNotInModel(modelCref, systemCref);
-  }
-
-  oms::TLMBusConnector** tlmBusConnector_ = reinterpret_cast<oms::TLMBusConnector**>(tlmBusConnector);
-  *tlmBusConnector_ = system->getTLMBusConnector(tail);
-  return oms_status_ok;
-#else
-  return LOG_NO_TLM();
-#endif
-}
-
 oms_status_enu_t oms_addConnectorToBus(const char *busCref, const char *connectorCref)
 {
   oms::ComRef busTail(busCref);
@@ -784,130 +708,6 @@ oms_status_enu_t oms_deleteConnectorFromBus(const char *busCref, const char *con
     return logError_SystemNotInModel(modelCref, systemCref);
   }
   return system->deleteConnectorFromBus(busTail, connectorTail);
-}
-
-oms_status_enu_t oms_addConnectorToTLMBus(const char *busCref, const char *connectorCref, const char* type)
-{
-#if !defined(NO_TLM)
-  oms::ComRef busTail(busCref);
-  oms::ComRef modelCref = busTail.pop_front();
-  oms::ComRef systemCref = busTail.pop_front();
-  oms::ComRef connectorTail(connectorCref);
-  if (modelCref != connectorTail.pop_front())
-    return logError_BusAndConnectorNotSameModel(busCref, connectorCref);
-  if (systemCref != connectorTail.pop_front())
-    return logError_BusAndConnectorNotSameSystem(busCref, connectorCref);
-  oms::Model* model = oms::Scope::GetInstance().getModel(modelCref);
-  if (!model) {
-    return logError_ModelNotInScope(modelCref);
-  }
-  oms::System* system = model->getSystem(systemCref);
-  if (!system) {
-    return logError_SystemNotInModel(modelCref, systemCref);
-  }
-  return system->addConnectorToTLMBus(busTail, connectorTail, type);
-#else
-  return LOG_NO_TLM();
-#endif
-}
-
-oms_status_enu_t oms_deleteConnectorFromTLMBus(const char *busCref, const char *connectorCref)
-{
-#if !defined(NO_TLM)
-  logTrace();
-  oms::ComRef busTail(busCref);
-  oms::ComRef modelCref = busTail.pop_front();
-  oms::ComRef systemCref = busTail.pop_front();
-  oms::ComRef connectorTail(connectorCref);
-  if (modelCref != connectorTail.pop_front())
-    return logError_BusAndConnectorNotSameModel(busCref, connectorCref);
-  if (systemCref != connectorTail.pop_front())
-    return logError_BusAndConnectorNotSameSystem(busCref, connectorCref);
-  oms::Model* model = oms::Scope::GetInstance().getModel(modelCref);
-  if (!model) {
-    return logError_ModelNotInScope(modelCref);
-  }
-  oms::System* system = model->getSystem(systemCref);
-  if (!system) {
-    return logError_SystemNotInModel(modelCref, systemCref);
-  }
-  return system->deleteConnectorFromTLMBus(busTail, connectorTail);
-#else
-  return LOG_NO_TLM();
-#endif
-}
-
-oms_status_enu_t oms_setTLMBusGeometry(const char* cref, const ssd_connector_geometry_t* geometry)
-{
-#if !defined(NO_TLM)
-  oms::ComRef tail(cref);
-  oms::ComRef modelCref = tail.pop_front();
-  oms::ComRef systemCref = tail.pop_front();
-
-  oms::Model* model = oms::Scope::GetInstance().getModel(modelCref);
-  if (!model) {
-    return logError_ModelNotInScope(modelCref);
-  }
-
-  oms::System* system = model->getSystem(systemCref);
-  if (!system) {
-    return logError_SystemNotInModel(modelCref, systemCref);
-  }
-
-  return system->setTLMBusGeometry(tail, reinterpret_cast<const oms::ssd::ConnectorGeometry*>(geometry));
-#else
-  return LOG_NO_TLM();
-#endif
-}
-
-oms_status_enu_t oms_addTLMConnection(const char *crefA, const char *crefB, double delay, double alpha, double linearimpedance, double angularimpedance)
-{
-#if !defined(NO_TLM)
-  oms::ComRef tailA(crefA);
-  oms::ComRef modelCref = tailA.pop_front();
-  oms::ComRef systemCref = tailA.pop_front();
-
-  oms::ComRef tailB(crefB);
-  tailB.pop_front();
-  tailB.pop_front();
-
-  oms::Model* model = oms::Scope::GetInstance().getModel(modelCref);
-  if (!model) {
-    return logError_ModelNotInScope(modelCref);
-  }
-
-  oms::System* system = model->getSystem(systemCref);
-  if (!system) {
-    return logError_SystemNotInModel(modelCref, systemCref);
-  }
-
-  return system->addTLMConnection(tailA,tailB,delay,alpha,linearimpedance,angularimpedance);
-#else
-  return LOG_NO_TLM();
-#endif
-}
-
-oms_status_enu_t oms_addExternalModel(const char *cref, const char *path, const char *startscript)
-{
-#if !defined(NO_TLM)
-  oms::ComRef tail(cref);
-  oms::ComRef modelCref = tail.pop_front();
-  oms::ComRef systemCref = tail.pop_front();
-
-  oms::Model* model = oms::Scope::GetInstance().getModel(modelCref);
-  if (!model) {
-    return logError_ModelNotInScope(modelCref);
-  }
-
-  oms::System* system = model->getSystem(systemCref);
-  if (!system) {
-    return logError_SystemNotInModel(modelCref, systemCref);
-  }
-
-  return system->addExternalModel(tail, path, startscript);
-#else
-  return LOG_NO_TLM();
-#endif
 }
 
 oms_status_enu_t oms_addSubModel(const char* cref, const char* fmuPath)
@@ -1009,37 +809,6 @@ oms_status_enu_t oms_getSubModelPath(const char* cref, char** path)
 
   *path = (char*)component->getPath().c_str();
   return oms_status_ok;
-}
-
-oms_status_enu_t oms_getExternalModelInfo(const char* cref, const oms_external_tlm_model_info_t** externalModelInfo)
-{
-#if !defined(NO_TLM)
-  oms::ComRef tail(cref);
-  oms::ComRef front = tail.pop_front();
-
-  oms::Model* model = oms::Scope::GetInstance().getModel(front);
-  if (!model)
-    return logError_ModelNotInScope(front);
-
-  front = tail.pop_front();
-  oms::System* system = model->getSystem(front);
-  if (!system)
-    return logError_SystemNotInModel(model->getCref(), front);
-
-  oms::Component* component = system->getComponent(tail);
-  if (!component)
-    return logError_ComponentNotInSystem(system, tail);
-
-  if (component->getType() == oms_component_external)
-  {
-    *reinterpret_cast<const oms::ExternalModelInfo**>(externalModelInfo) = reinterpret_cast<oms::ExternalModel*>(component)->getExternalModelInfo();
-    return oms_status_ok;
-  }
-
-  return oms_status_error;
-#else
-  return LOG_NO_TLM();
-#endif
 }
 
 oms_status_enu_t oms_getFMUInfo(const char* cref, const oms_fmu_info_t** fmuInfo)
@@ -1279,58 +1048,6 @@ oms_status_enu_t oms_terminate(const char* cref_)
     return logError_ModelNotInScope(cref);
 
   return model->terminate();
-}
-
-oms_status_enu_t oms_setTLMSocketData(const char *cref, const char *address, int managerPort, int monitorPort)
-{
-#if !defined(NO_TLM)
-  oms::ComRef tail(cref);
-  oms::ComRef front = tail.pop_front();
-
-  oms::Model* model = oms::Scope::GetInstance().getModel(front);
-  if (!model)
-    return logError_ModelNotInScope(front);
-
-  front = tail.pop_front();
-  oms::System* system = model->getSystem(front);
-  if (!system)
-    return logError_SystemNotInModel(model->getCref(), front);
-
-  if (system->getType() != oms_system_tlm)
-    return logError_OnlyForSystemTLM;
-
-  oms::SystemTLM* tlmsystem = reinterpret_cast<oms::SystemTLM*>(system);
-  return tlmsystem->setSocketData(address, managerPort, monitorPort);
-#else
-  return LOG_NO_TLM();
-#endif
-}
-
-oms_status_enu_t oms_setTLMPositionAndOrientation(const char *cref, double x1, double x2, double x3, double A11, double A12, double A13, double A21, double A22, double A23, double A31, double A32, double A33)
-{
-#if !defined(NO_TLM)
-  oms::ComRef tail(cref);
-  oms::ComRef front = tail.pop_front();
-
-  oms::Model* model = oms::Scope::GetInstance().getModel(front);
-  if (!model)
-    return logError_ModelNotInScope(front);
-
-  front = tail.pop_front();
-  oms::System* system = model->getSystem(front);
-  if (!system)
-    return logError_SystemNotInModel(model->getCref(), front);
-
-  if (system->getType() != oms_system_tlm)
-    return logError_OnlyForSystemTLM;
-
-  oms::SystemTLM* tlmsystem = reinterpret_cast<oms::SystemTLM*>(system);
-  std::vector<double> x = {x1,x2,x3};
-  std::vector<double> A = {A11,A12,A13,A21,A22,A23,A31,A32,A33};
-  return tlmsystem->setPositionAndOrientation(tail, x, A);
-#else
-  return LOG_NO_TLM();
-#endif
 }
 
 oms_status_enu_t oms_exportDependencyGraphs(const char* cref, const char* initialization, const char* event, const char* simulation)
@@ -1786,31 +1503,6 @@ oms_status_enu_t oms_getModelState(const char* cref, oms_modelState_enu_t* model
   return oms_status_ok;
 }
 
-oms_status_enu_t oms_getTLMVariableTypes(oms_tlm_domain_t domain, const int dimensions, const oms_tlm_interpolation_t interpolation, char ***types, char ***descriptions)
-{
-#if !defined(NO_TLM)
-  std::vector<std::string> variableTypes = oms::TLMBusConnector::getVariableTypes(domain, dimensions, interpolation);
-  (*types) = new char*[variableTypes.size()+1];
-  for(int i=0; i<variableTypes.size(); ++i) {
-    (*types)[i] = new char[variableTypes[i].size()+1];
-    strcpy((*types)[i], variableTypes[i].c_str());
-  }
-  (*types)[variableTypes.size()] = NULL;
-
-  std::vector<std::string> variableDescriptions = oms::TLMBusConnector::getVariableDescriptions(domain, dimensions, interpolation);
-  (*descriptions) = new char*[variableDescriptions.size()+1];
-  for(int i=0; i<variableDescriptions.size(); ++i) {
-    (*descriptions)[i] = new char[variableDescriptions[i].size()+1];
-    strcpy((*descriptions)[i], variableDescriptions[i].c_str());
-  }
-  (*descriptions)[variableDescriptions.size()] = NULL;
-
-  return oms_status_ok;
-#else
-  return LOG_NO_TLM();
-#endif
-}
-
 oms_status_enu_t oms_getTolerance(const char* cref, double* absoluteTolerance, double* relativeTolerance)
 {
   oms::ComRef tail(cref);
@@ -1910,55 +1602,6 @@ oms_status_enu_t oms_extractFMIKind(const char* filename, oms_fmi_kind_enu_t* ki
   }
 
   return oms_status_ok;
-}
-
-oms_status_enu_t oms_fetchExternalModelInterfaces(const char* cref, char*** names, char*** domains, int** dimensions)
-{
-#if !defined(NO_TLM)
-  oms::ComRef tail(cref);
-  oms::ComRef front = tail.pop_front();
-
-  oms::Model* model = oms::Scope::GetInstance().getModel(front);
-  if (!model)
-    return logError_ModelNotInScope(front);
-
-  front = tail.pop_front();
-  oms::System* system = model->getSystem(front);
-  if (!system)
-    return logError_SystemNotInModel(model->getCref(), front);
-
-  if (system->getType() != oms_system_tlm)
-    return logError_OnlyForSystemTLM;
-
-  oms::SystemTLM* tlmsystem = reinterpret_cast<oms::SystemTLM*>(system);
-  std::vector<std::string> namesVec,domainsVec;
-  std::vector<int> dimensionsVec;
-
-  oms_status_enu_t status = tlmsystem->fetchInterfaces(tail,namesVec,dimensionsVec,domainsVec);
-
-  (*names) = new char*[namesVec.size()+1];
-  for(int i=0; i<namesVec.size(); ++i) {
-    (*names)[i] = new char[namesVec[i].size()+1];
-    strcpy((*names)[i], namesVec[i].c_str());
-  }
-  (*names)[namesVec.size()] = nullptr;
-
-  (*domains) = new char*[domainsVec.size()+1];
-  for(int i=0; i<domainsVec.size(); ++i) {
-    (*domains)[i] = new char[domainsVec[i].size()+1];
-    strcpy((*domains)[i], domainsVec[i].c_str());
-  }
-  (*domains)[domainsVec.size()] = nullptr;
-
-  (*dimensions) = new int[dimensionsVec.size()+1];
-  for(int i=0; i<dimensionsVec.size(); ++i) {
-    (*dimensions)[i] = dimensionsVec[i];
-  }
-
-  return status;
-#else
-  return LOG_NO_TLM();
-#endif
 }
 
 oms_status_enu_t oms_setSolver(const char* cref, oms_solver_enu_t solver)

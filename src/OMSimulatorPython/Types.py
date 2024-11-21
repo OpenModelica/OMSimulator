@@ -12,9 +12,8 @@ class Status(Enum):
 class System(Enum):
   'oms_system_enu_t'
   NONE = 0
-  TLM = 1 # TLM system
-  WC = 2 # Weakly Coupled system
-  SC = 3 # Strongly Coupled system
+  WC = 1 # Weakly Coupled system
+  SC = 2 # Strongly Coupled system
 
 class ModelState(Enum):
   'oms_modelState_enu_t'

@@ -45,6 +45,7 @@ namespace oms
   class Model;
   class ComponentFMUME;
   int cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data);
+  int cvode_roots(realtype t, N_Vector y, realtype *gout, void* user_data);
 
   class SystemSC : public System
   {
@@ -68,6 +69,10 @@ namespace oms
     oms_status_enu_t setSolverMethod(std::string);
 
     oms_status_enu_t setSolver(oms_solver_enu_t solver) {if (solver > oms_solver_sc_min && solver < oms_solver_sc_max) {solverMethod=solver; return oms_status_ok;} return oms_status_error;}
+
+  private:
+    oms_status_enu_t doStepEuler();
+    oms_status_enu_t doStepCVODE();
 
   protected:
     SystemSC(const ComRef& cref, Model* parentModel, System* parentSystem);
@@ -111,6 +116,7 @@ namespace oms
     } solverData;
 
     friend int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data);
+    friend int oms::cvode_roots(realtype t, N_Vector y, realtype *gout, void* user_data);
   };
 }
 
