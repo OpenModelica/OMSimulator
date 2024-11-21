@@ -11,12 +11,15 @@ AircraftVehicleDemonstrator.engine \
 ASSCExample.Class1 \
 ASSCExample.Class2 \
 B \
+BouncingBall \
+Dahlquist \
 DualMassOscillator.System1 \
 DualMassOscillator.System2 \
 Enum1 \
 equationPair.equation1 \
 equationPair.equation2 \
 EventTest \
+Feedthrough \
 fmi_attributes_19 \
 fmidertest \
 HelloWorld \
@@ -45,6 +48,8 @@ QuarterCarModel.DisplacementForce.Wheel \
 replaceA \
 replaceA_extended \
 replaceB \
+Resource \
+Stair \
 str_hello_world \
 tank1 \
 tank2 \
@@ -62,6 +67,7 @@ tlm.massSpring \
 tlm.source \
 tlm.UpperPendulum \
 testArray \
+VanDerPol \
 ypipe \
 
 SSPs = \
