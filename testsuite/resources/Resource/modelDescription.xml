@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  fmiVersion="2.0"
+  modelName="Resource"
+  description="This model loads data from a resource file"
+  generationTool="Reference FMUs (v0.0.36)"
+  generationDateAndTime="2024-10-14T12:04:15.948243+00:00"
+  guid="{7b9c2114-2ce5-4076-a138-2cbc69e069e5}"
+  numberOfEventIndicators="0">
+
+  <ModelExchange
+    modelIdentifier="Resource"
+    canNotUseMemoryManagementFunctions="true"
+    canGetAndSetFMUstate="true"
+    canSerializeFMUstate="true">
+    <SourceFiles>
+      <File name="all.c"/>
+    </SourceFiles>
+  </ModelExchange>
+
+  <CoSimulation
+    modelIdentifier="Resource"
+    canHandleVariableCommunicationStepSize="true"
+    canNotUseMemoryManagementFunctions="true"
+    canGetAndSetFMUstate="true"
+    canSerializeFMUstate="true">
+    <SourceFiles>
+      <File name="all.c"/>
+    </SourceFiles>
+  </CoSimulation>
+
+  <LogCategories>
+    <Category name="logEvents" description="Log events"/>
+    <Category name="logStatusError" description="Log error messages"/>
+  </LogCategories>
+
+  <DefaultExperiment startTime="0" stopTime="1"/>
+
+  <ModelVariables>
+    <ScalarVariable name="time" valueReference="0" causality="independent" variability="continuous" description="Simulation time">
+      <Real/>
+    </ScalarVariable>
+    <ScalarVariable name="y" valueReference="1" description="Value of the first character in resources/y.txt" causality="output" variability="discrete">
+      <Integer/>
+    </ScalarVariable>
+  </ModelVariables>
+
+  <ModelStructure>
+    <Outputs>
+      <Unknown index="2"/>
+    </Outputs>
+    <InitialUnknowns>
+      <Unknown index="2"/>
+    </InitialUnknowns>
+  </ModelStructure>
+
+</fmiModelDescription>
