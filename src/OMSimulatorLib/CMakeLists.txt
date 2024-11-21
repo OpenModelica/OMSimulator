@@ -10,8 +10,8 @@ if (${PLATFORM_STRING} STREQUAL "linux")
   message(STATUS "Configuring RPATH for Linux")
 
   # Set RPATH to include directories relative to the binary
-  set(CMAKE_INSTALL_RPATH "$ORIGIN:$ORIGIN/../lib")
-
+  set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/bin")
+  set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
   message(STATUS "CMAKE_INSTALL_RPATH: ${CMAKE_INSTALL_RPATH}")
 
   # Make sure the linker uses this RPATH setting
