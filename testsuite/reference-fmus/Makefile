@@ -5,10 +5,10 @@ BouncingBall.lua \
 Dahlquist.lua \
 Feedthrough.lua \
 Resource.lua \
+Stair.lua \
 
 # Run make failingtest
 FAILINGTESTFILES = \
-Stair.lua \
 VanDerPol.lua \
 
 # Dependency files that are not .lua or Makefile
