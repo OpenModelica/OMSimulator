@@ -86,7 +86,7 @@ target_link_libraries(OMSimulatorLib
                           oms::3rd::xerces
                           oms::3rd::ctpl::header)
 
-target_link_libraries(OMSimulatorLib PUBLIC ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} ${ICU_LIBRARIES})
+target_link_libraries(OMSimulatorLib PUBLIC ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
 
 if(MINGW)
   target_link_libraries(OMSimulatorLib PUBLIC shlwapi)
@@ -117,26 +117,32 @@ target_link_libraries(OMSimulatorLib_static
                           oms::3rd::xerces
                           oms::3rd::ctpl::header)
 
+target_link_libraries(OMSimulatorLib_static PUBLIC ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+
+if(MINGW)
+  target_link_libraries(OMSimulatorLib_static PUBLIC shlwapi)
+endif()
+
+## copy dependent DLL's for artifacts
 if(ICU_FOUND)
   message(STATUS "ICU_LIBRARIES_FOUND: ${ICU_LIBRARIES}")
-  # Get the ICU path from the list
-  list(GET ICU_LIBRARIES 0 ICU_PATH)
-  if (WIN32)
-    get_filename_component(ABS_PATH "${ICU_PATH}/../../bin" ABSOLUTE)
-
-    set(ICUUC_PATH "${ABS_PATH}/libicuuc*.dll")
-    message(STATUS "ICUUC_PATH: ${ICUUC_PATH}")
-
-    set(ICUDT_PATH "${ABS_PATH}/libicudt*.dll")
-    message(STATUS "ICUDT_PATH: ${ICUDT_PATH}")
-
-    file(GLOB ICUUC_FILES ${ICUUC_PATH})
-    install(FILES ${ICUUC_FILES} DESTINATION "${CMAKE_INSTALL_PREFIX}/bin")
-    message(STATUS "Copied file from : ${ICUUC_FILES} to ${CMAKE_INSTALL_PREFIX}/bin")
-
-    file(GLOB ICUDT_FILES ${ICUDT_PATH})
-    install(FILES ${ICUDT_FILES} DESTINATION "${CMAKE_INSTALL_PREFIX}/bin")
-    message(STATUS "Copied file from : ${ICUDT_FILES} to ${CMAKE_INSTALL_PREFIX}/bin")
+  if (MINGW)
+    list(GET ICU_LIBRARIES 0 ICU_PATH)
+    get_filename_component(DLL_DIR "${ICU_PATH}/../../bin" ABSOLUTE)
+    message(STATUS "DLL_DIR: ${DLL_DIR}")
+    # collect all DLLs matching the pattern
+    file(GLOB DLL_LIST
+              "${DLL_DIR}/libicuuc*.dll"
+              "${DLL_DIR}/libicudt*.dll"
+              "${DLL_DIR}/libstdc++*.dll")
+    # Check if the DLL_LIST is not empty before installing
+    if (DLL_LIST)
+      # Install the files from the list to the 'bin' directory
+      install(FILES ${DLL_LIST} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+      message(STATUS "Copied files from: ${DLL_LIST} to ${CMAKE_INSTALL_PREFIX}/bin")
+    else()
+      message(WARNING "No DLLs found matching the pattern")
+    endif()
   else()
     ## copy the actual file from icu libraries without symlink
     foreach(file IN LISTS ICU_LIBRARIES)
@@ -145,13 +151,6 @@ if(ICU_FOUND)
       message(STATUS "Copied file from : ${actual_file} to ${CMAKE_INSTALL_PREFIX}/bin")
     endforeach()
   endif()
-endif()
-
-
-target_link_libraries(OMSimulatorLib_static PUBLIC ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT} ${ICU_LIBRARIES})
-
-if(MINGW)
-  target_link_libraries(OMSimulatorLib_static PUBLIC shlwapi)
 endif()
 
 install(TARGETS OMSimulatorLib)
