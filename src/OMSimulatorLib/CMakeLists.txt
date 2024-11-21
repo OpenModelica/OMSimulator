@@ -123,7 +123,7 @@ if(MINGW)
   target_link_libraries(OMSimulatorLib_static PUBLIC shlwapi)
 endif()
 
-## copy dependent DLL's for artifacts
+## copy dependent DLL's for mingw artifacts
 if(ICU_FOUND)
   message(STATUS "ICU_LIBRARIES_FOUND: ${ICU_LIBRARIES}")
   if (MINGW)
