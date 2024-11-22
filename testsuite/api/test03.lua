@@ -4,6 +4,7 @@
 -- ucrt64: yes
 -- win: yes
 -- mac: no
+-- asan: yes
 
 oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./test03lua/")
@@ -77,7 +78,7 @@ oms_delete("test03lua")
 -- 					<ssd:Connector name="amplitude" kind="parameter">
 -- 						<ssc:Real />
 -- 					</ssd:Connector>
--- 					<ssd:Connector name="freqHz" kind="parameter">
+-- 					<ssd:Connector name="f" kind="parameter">
 -- 						<ssc:Real unit="Hz" />
 -- 					</ssd:Connector>
 -- 					<ssd:Connector name="offset" kind="parameter">
@@ -139,7 +140,7 @@ oms_delete("test03lua")
 -- 					<ssd:Connector name="amplitude" kind="parameter">
 -- 						<ssc:Real />
 -- 					</ssd:Connector>
--- 					<ssd:Connector name="freqHz" kind="parameter">
+-- 					<ssd:Connector name="f" kind="parameter">
 -- 						<ssc:Real unit="Hz" />
 -- 					</ssd:Connector>
 -- 					<ssd:Connector name="offset" kind="parameter">
