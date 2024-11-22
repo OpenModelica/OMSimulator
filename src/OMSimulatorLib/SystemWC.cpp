@@ -1034,20 +1034,20 @@ oms_status_enu_t oms::SystemWC::updateInputs(oms::DirectedGraph& graph)
   const std::vector<scc_t>& sortedConnections = graph.getSortedConnections();
   updateAlgebraicLoops(sortedConnections, graph);
 
-  for(int i=0; i < sortedConnections.size(); i++)
+  for(size_t i=0; i < sortedConnections.size(); i++)
   {
     if (!sortedConnections[i].thisIsALoop)
     {
-      int output = sortedConnections[i].connections[0].first;
-      int input = sortedConnections[i].connections[0].second;
+      size_t output = sortedConnections[i].connections[0].first;
+      size_t input = sortedConnections[i].connections[0].second;
 
       if (graph.getNodes()[input].getType() == oms_signal_type_real)
       {
         double value = 0.0;
         if (oms_status_ok != getReal(graph.getNodes()[output].getName(), value)) return oms_status_error;
-        /* check for unit conversion and suppressUnitConversion and set the value multiplied by factor,
-         * by default, factor = 1.0, (e.g) mm to m will be (factor*value) => (10^-3 * value)
-        */
+
+        // Check for unit conversion and suppressUnitConversion. Set the value multiplied by factor.
+        // By default, factor = 1.0. For example, mm to m will be (factor * value) => (10^-3 * value).
         if (sortedConnections[i].suppressUnitConversion)
           value = value;
         else
