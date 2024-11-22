@@ -20,7 +20,7 @@ oms_addSubModel("model.root.sine", "../resources/Modelica.Blocks.Sources.Sine.fm
 
 oms_setReal("model.root.sine.phase", 27)
 oms_setReal("model.root.sine.amplitude", -100)
-oms_setReal("model.root.sine.freqHz", -300)
+oms_setReal("model.root.sine.f", -300)
 
 oms_setResultFile("model", "")
 
@@ -73,7 +73,7 @@ print(src)
 --                 <ssc:Real />
 --               </ssd:Connector>
 --               <ssd:Connector
---                 name="freqHz"
+--                 name="f"
 --                 kind="parameter">
 --                 <ssc:Real
 --                   unit="Hz" />
@@ -110,7 +110,7 @@ print(src)
 --                           unit="rad" />
 --                       </ssv:Parameter>
 --                       <ssv:Parameter
---                         name="freqHz">
+--                         name="f">
 --                         <ssv:Real
 --                           value="-300"
 --                           unit="Hz" />
@@ -189,7 +189,7 @@ print(src)
 --         type="Real"
 --         kind="parameter" />
 --       <oms:Variable
---         name="model.root.sine.freqHz"
+--         name="model.root.sine.f"
 --         type="Real"
 --         kind="parameter" />
 --       <oms:Variable
@@ -245,7 +245,7 @@ print(src)
 --                 <ssc:Real />
 --               </ssd:Connector>
 --               <ssd:Connector
---                 name="freqHz"
+--                 name="f"
 --                 kind="parameter">
 --                 <ssc:Real
 --                   unit="Hz" />
@@ -282,7 +282,7 @@ print(src)
 --                           unit="rad" />
 --                       </ssv:Parameter>
 --                       <ssv:Parameter
---                         name="freqHz">
+--                         name="f">
 --                         <ssv:Real
 --                           value="-300"
 --                           unit="Hz" />
@@ -361,7 +361,7 @@ print(src)
 --         type="Real"
 --         kind="parameter" />
 --       <oms:Variable
---         name="model.root.sine.freqHz"
+--         name="model.root.sine.f"
 --         type="Real"
 --         kind="parameter" />
 --       <oms:Variable
