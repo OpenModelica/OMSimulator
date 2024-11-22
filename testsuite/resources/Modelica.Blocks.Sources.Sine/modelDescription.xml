@@ -2,51 +2,56 @@
 <fmiModelDescription
   fmiVersion="2.0"
   modelName="Modelica.Blocks.Sources.Sine"
-  guid="{3b75146e-ed88-4815-960c-db13ce1fc022}"
+  guid="{3d2eebc8-4476-490f-a84d-6bbeadf72183}"
   description="Generate sine signal"
-  generationTool="OpenModelica Compiler OMCompiler v1.18.0-dev.192+gc2d2d8d45f"
-  generationDateAndTime="2021-03-29T14:08:21Z"
+  version=""
+  generationTool="OpenModelica Compiler OpenModelica v1.24.2 (64-bit)"
+  generationDateAndTime="2024-11-22T18:37:31Z"
   variableNamingConvention="structured"
   numberOfEventIndicators="1">
   <ModelExchange
-    modelIdentifier="Modelica_Blocks_Sources_Sine">
+    modelIdentifier="Sine"
+    needsExecutionTool="false"
+    completedIntegratorStepNotNeeded="false"
+    canBeInstantiatedOnlyOncePerProcess="false"
+    canNotUseMemoryManagementFunctions="false"
+    canGetAndSetFMUstate="false"
+    canSerializeFMUstate="false"
+    providesDirectionalDerivative="false">
     <SourceFiles>
-      <File name="Modelica_Blocks_Sources_Sine.c" />
-      <File name="Modelica_Blocks_Sources_Sine_functions.c" />
-      <File name="Modelica_Blocks_Sources_Sine_records.c" />
-      <File name="Modelica_Blocks_Sources_Sine_01exo.c" />
-      <File name="Modelica_Blocks_Sources_Sine_02nls.c" />
-      <File name="Modelica_Blocks_Sources_Sine_03lsy.c" />
-      <File name="Modelica_Blocks_Sources_Sine_04set.c" />
-      <File name="Modelica_Blocks_Sources_Sine_05evt.c" />
-      <File name="Modelica_Blocks_Sources_Sine_06inz.c" />
-      <File name="Modelica_Blocks_Sources_Sine_07dly.c" />
-      <File name="Modelica_Blocks_Sources_Sine_08bnd.c" />
-      <File name="Modelica_Blocks_Sources_Sine_09alg.c" />
-      <File name="Modelica_Blocks_Sources_Sine_10asr.c" />
-      <File name="Modelica_Blocks_Sources_Sine_11mix.c" />
-      <File name="Modelica_Blocks_Sources_Sine_12jac.c" />
-      <File name="Modelica_Blocks_Sources_Sine_13opt.c" />
-      <File name="Modelica_Blocks_Sources_Sine_14lnz.c" />
-      <File name="Modelica_Blocks_Sources_Sine_15syn.c" />
-      <File name="Modelica_Blocks_Sources_Sine_16dae.c" />
-      <File name="Modelica_Blocks_Sources_Sine_17inl.c" />
-      <File name="Modelica_Blocks_Sources_Sine_18spd.c" />
-      <File name="Modelica_Blocks_Sources_Sine_init_fmu.c" />
-      <File name="Modelica_Blocks_Sources_Sine_FMU.c" />
-      <File name="./util/read_matlab4.c" />
-      <File name="./util/read_csv.c" />
-      <File name="./util/libcsv.c" />
-      <File name="gc/memory_pool.c" />
-      <File name="gc/omc_gc.c" />
+      <File name="Sine.c" />
+      <File name="Sine_functions.c" />
+      <File name="Sine_records.c" />
+      <File name="Sine_01exo.c" />
+      <File name="Sine_02nls.c" />
+      <File name="Sine_03lsy.c" />
+      <File name="Sine_04set.c" />
+      <File name="Sine_05evt.c" />
+      <File name="Sine_06inz.c" />
+      <File name="Sine_07dly.c" />
+      <File name="Sine_08bnd.c" />
+      <File name="Sine_09alg.c" />
+      <File name="Sine_10asr.c" />
+      <File name="Sine_11mix.c" />
+      <File name="Sine_12jac.c" />
+      <File name="Sine_13opt.c" />
+      <File name="Sine_14lnz.c" />
+      <File name="Sine_15syn.c" />
+      <File name="Sine_16dae.c" />
+      <File name="Sine_17inl.c" />
+      <File name="Sine_18spd.c" />
+      <File name="Sine_init_fmu.c" />
+      <File name="Sine_FMU.c" />
+      <File name="./gc/memory_pool.c" />
+      <File name="./gc/omc_gc.c" />
       <File name="./util/base_array.c" />
       <File name="./util/boolean_array.c" />
+      <File name="./util/context.c" />
       <File name="./util/division.c" />
       <File name="./util/doubleEndedList.c" />
       <File name="./util/generic_array.c" />
       <File name="./util/index_spec.c" />
       <File name="./util/integer_array.c" />
-      <File name="./util/jacobian_util.c" />
       <File name="./util/list.c" />
       <File name="./util/modelica_string_lit.c" />
       <File name="./util/modelica_string.c" />
@@ -66,6 +71,7 @@
       <File name="./util/utility.c" />
       <File name="./util/varinfo.c" />
       <File name="./math-support/pivot.c" />
+      <File name="./simulation/jacobian_util.c" />
       <File name="./simulation/omc_simulation_util.c" />
       <File name="./simulation/options.c" />
       <File name="./simulation/simulation_info_json.c" />
@@ -82,54 +88,51 @@
     </SourceFiles>
   </ModelExchange>
   <CoSimulation
-    modelIdentifier="Modelica_Blocks_Sources_Sine"
+    modelIdentifier="Sine"
     needsExecutionTool="false"
     canHandleVariableCommunicationStepSize="true"
-    canInterpolateInputs="false"
-    maxOutputDerivativeOrder="0"
+    canInterpolateInputs="true"
+    maxOutputDerivativeOrder="1"
     canRunAsynchronuously = "false"
     canBeInstantiatedOnlyOncePerProcess="false"
     canNotUseMemoryManagementFunctions="false"
     canGetAndSetFMUstate="false"
     canSerializeFMUstate="false"
-    >
+    providesDirectionalDerivative="false">
     <SourceFiles>
-      <File name="Modelica_Blocks_Sources_Sine.c" />
-      <File name="Modelica_Blocks_Sources_Sine_functions.c" />
-      <File name="Modelica_Blocks_Sources_Sine_records.c" />
-      <File name="Modelica_Blocks_Sources_Sine_01exo.c" />
-      <File name="Modelica_Blocks_Sources_Sine_02nls.c" />
-      <File name="Modelica_Blocks_Sources_Sine_03lsy.c" />
-      <File name="Modelica_Blocks_Sources_Sine_04set.c" />
-      <File name="Modelica_Blocks_Sources_Sine_05evt.c" />
-      <File name="Modelica_Blocks_Sources_Sine_06inz.c" />
-      <File name="Modelica_Blocks_Sources_Sine_07dly.c" />
-      <File name="Modelica_Blocks_Sources_Sine_08bnd.c" />
-      <File name="Modelica_Blocks_Sources_Sine_09alg.c" />
-      <File name="Modelica_Blocks_Sources_Sine_10asr.c" />
-      <File name="Modelica_Blocks_Sources_Sine_11mix.c" />
-      <File name="Modelica_Blocks_Sources_Sine_12jac.c" />
-      <File name="Modelica_Blocks_Sources_Sine_13opt.c" />
-      <File name="Modelica_Blocks_Sources_Sine_14lnz.c" />
-      <File name="Modelica_Blocks_Sources_Sine_15syn.c" />
-      <File name="Modelica_Blocks_Sources_Sine_16dae.c" />
-      <File name="Modelica_Blocks_Sources_Sine_17inl.c" />
-      <File name="Modelica_Blocks_Sources_Sine_18spd.c" />
-      <File name="Modelica_Blocks_Sources_Sine_init_fmu.c" />
-      <File name="Modelica_Blocks_Sources_Sine_FMU.c" />
-      <File name="./util/read_matlab4.c" />
-      <File name="./util/read_csv.c" />
-      <File name="./util/libcsv.c" />
-      <File name="gc/memory_pool.c" />
-      <File name="gc/omc_gc.c" />
+      <File name="Sine.c" />
+      <File name="Sine_functions.c" />
+      <File name="Sine_records.c" />
+      <File name="Sine_01exo.c" />
+      <File name="Sine_02nls.c" />
+      <File name="Sine_03lsy.c" />
+      <File name="Sine_04set.c" />
+      <File name="Sine_05evt.c" />
+      <File name="Sine_06inz.c" />
+      <File name="Sine_07dly.c" />
+      <File name="Sine_08bnd.c" />
+      <File name="Sine_09alg.c" />
+      <File name="Sine_10asr.c" />
+      <File name="Sine_11mix.c" />
+      <File name="Sine_12jac.c" />
+      <File name="Sine_13opt.c" />
+      <File name="Sine_14lnz.c" />
+      <File name="Sine_15syn.c" />
+      <File name="Sine_16dae.c" />
+      <File name="Sine_17inl.c" />
+      <File name="Sine_18spd.c" />
+      <File name="Sine_init_fmu.c" />
+      <File name="Sine_FMU.c" />
+      <File name="./gc/memory_pool.c" />
+      <File name="./gc/omc_gc.c" />
       <File name="./util/base_array.c" />
       <File name="./util/boolean_array.c" />
+      <File name="./util/context.c" />
       <File name="./util/division.c" />
       <File name="./util/doubleEndedList.c" />
       <File name="./util/generic_array.c" />
       <File name="./util/index_spec.c" />
       <File name="./util/integer_array.c" />
-      <File name="./util/jacobian_util.c" />
       <File name="./util/list.c" />
       <File name="./util/modelica_string_lit.c" />
       <File name="./util/modelica_string.c" />
@@ -149,6 +152,7 @@
       <File name="./util/utility.c" />
       <File name="./util/varinfo.c" />
       <File name="./math-support/pivot.c" />
+      <File name="./simulation/jacobian_util.c" />
       <File name="./simulation/omc_simulation_util.c" />
       <File name="./simulation/options.c" />
       <File name="./simulation/simulation_info_json.c" />
@@ -188,7 +192,7 @@
     <Category name="logAll" />
     <Category name="logFmi2Call" />
   </LogCategories>
-  <DefaultExperiment startTime="0.0" stopTime="1.0" tolerance="1e-06"/>
+  <DefaultExperiment startTime="0.0" stopTime="1.0" tolerance="1e-6" stepSize="0.002"/>
   <ModelVariables>
   <!-- Index of variable = "1" -->
   <ScalarVariable
@@ -211,7 +215,7 @@
   </ScalarVariable>
   <!-- Index of variable = "3" -->
   <ScalarVariable
-    name="freqHz"
+    name="f"
     valueReference="2"
     description="Frequency of sine wave"
     variability="fixed"
