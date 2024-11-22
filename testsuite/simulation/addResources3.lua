@@ -4,6 +4,7 @@
 -- ucrt64: yes
 -- win: yes
 -- mac: no
+-- asan: yes
 
 oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./addResources3_lua/")
@@ -17,6 +18,7 @@ oms_addSystem("addResources.root", oms_system_wc)
 oms_addSystem("addResources.root.system1", oms_system_sc);
 oms_addConnector("addResources.root.system1.C1", oms_causality_input, oms_signal_type_real)
 oms_addConnector("addResources.root.system1.C2", oms_causality_input, oms_signal_type_real)
+
 -- add root resources
 oms_newResources("addResources.root.system1:system1.ssv")
 
@@ -25,7 +27,6 @@ oms_setReal("addResources.root.system1.C2", -20.5)
 
 oms_addSubModel("addResources.root.system1.add", "../../resources/Modelica.Blocks.Math.Add.fmu")
 oms_setReal("addResources.root.system1.add.k1", 45)
-
 
 oms_addSystem("addResources.root.system2", oms_system_sc);
 
@@ -44,7 +45,6 @@ oms_setResultFile("addResources", "addResources3.mat", 10)
 
 src = oms_exportSnapshot("addResources")
 print(src)
-
 
 print("info:    Virgin Parameter settings")
 print("info:      addResources.root.system1.C1      : " .. oms_getReal("addResources.root.system1.C1"))
