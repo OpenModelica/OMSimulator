@@ -73,7 +73,7 @@ oms_delete("exportSSVTemplate")
 --         value="0" />
 --     </ssv:Parameter>
 --     <ssv:Parameter
---       name="sine.freqHz">
+--       name="sine.f">
 --       <ssv:Real
 --         value="1"
 --         unit="Hz" />
@@ -219,7 +219,7 @@ oms_delete("exportSSVTemplate")
 --         value="0" />
 --     </ssv:Parameter>
 --     <ssv:Parameter
---       name="sine.freqHz">
+--       name="sine.f">
 --       <ssv:Real
 --         value="1"
 --         unit="Hz" />
