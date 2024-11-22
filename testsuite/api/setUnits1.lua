@@ -20,7 +20,7 @@ oms_newResources("model.root.sine:sine.ssv")
 
 oms_setReal("model.root.sine.phase", 27)
 oms_setReal("model.root.sine.amplitude", -100)
-oms_setReal("model.root.sine.freqHz", -300)
+oms_setReal("model.root.sine.f", -300)
 
 oms_setResultFile("model", "")
 
@@ -59,7 +59,7 @@ oms_delete("model")
 --             unit="rad" />
 --         </ssv:Parameter>
 --         <ssv:Parameter
---           name="freqHz">
+--           name="f">
 --           <ssv:Real
 --             value="-300"
 --             unit="Hz" />
@@ -104,7 +104,7 @@ oms_delete("model")
 --             unit="m" />
 --         </ssv:Parameter>
 --         <ssv:Parameter
---           name="freqHz">
+--           name="f">
 --           <ssv:Real
 --             value="-300"
 --             unit="Hz" />
