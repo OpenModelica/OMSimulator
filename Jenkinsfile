@@ -279,7 +279,7 @@ pipeline {
                 label 'omsimulator-windows'
               }
               environment {
-                PATH = "C:\\OMDevUCRT\\tools\\msys\\ucrt64\\bin;C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;${env.PATH};"
+                PATH = "C:\\OMDevUCRT\\tools\\msys\\ucrt64\\bin;C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;C:\\Program Files\\Git\\bin;${env.PATH};"
                 OMDEV = "/c/OMDevUCRT"
                 CC = "gcc"
                 CXX = "g++"
@@ -293,7 +293,7 @@ pipeline {
 
                 writeFile file: "buildZip64.sh", text: """#!/bin/sh
                 set -x -e
-                export PATH="/c/Program Files/TortoiseSVN/bin/:/c/bin/jdk/bin:/c/bin/nsis/:\$PATH:/c/bin/git/bin"
+                export PATH="/c/Program Files/TortoiseSVN/bin/:/c/bin/jdk/bin:/c/bin/nsis/:\$PATH:/c/bin/git/bin:/c/Program Files/Git/bin"
                 cd "${env.WORKSPACE}/install/"
                 zip -r "../OMSimulator-mingw-ucrt64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed 's/-/.post/'`.zip" *
                 """
@@ -302,7 +302,7 @@ pipeline {
                 C:\\OMDevUCRT\\tools\\msys\\usr\\bin\\sh --login -i '${env.WORKSPACE}/buildZip64.sh'
                 """
 
-                archiveArtifacts "OMSimulator-mingw-ucrt64*.zip"
+                archiveArtifacts "OMSimulator-mingw-ucrt64-*.zip"
                 stash name: 'mingw-ucrt64-zip', includes: "OMSimulator-mingw-ucrt64-*.zip"
                 stash name: 'mingw-ucrt64-install', includes: "install/**"
               }
@@ -312,7 +312,7 @@ pipeline {
                 label 'omsimulator-windows'
               }
               environment {
-                PATH = "C:\\OMDevUCRT\\tools\\msys\\ucrt64\\bin;C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;${env.PATH};"
+                PATH = "C:\\OMDevUCRT\\tools\\msys\\ucrt64\\bin;C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;C:\\Program Files\\Git\\bin;${env.PATH};"
                 OMDEV = "/c/OMDevUCRT"
                 MSYSTEM = "UCRT64"
                 RUNTESTDB="${env.HOME}/jenkins-cache/runtest/"
@@ -324,7 +324,7 @@ pipeline {
                 writeFile file: "testMinGWUCRT64-install.sh", text:"""#!/bin/sh
 set -x -e
 cd "${env.WORKSPACE}"
-export PATH="/c/Program Files/TortoiseSVN/bin/:/c/bin/jdk/bin:/c/bin/nsis/:\$PATH:/c/bin/git/bin"
+export PATH="/c/Program Files/TortoiseSVN/bin/:/c/bin/jdk/bin:/c/bin/nsis/:\$PATH:/c/bin/git/bin:/c/Program Files/Git/bin"
 make -C testsuite difftool resources
 cp -f "${env.RUNTESTDB}/"* testsuite/ || true
 find testsuite/ -name "*.lua" -exec sed -i /teardown_command/d {} ";"
@@ -356,7 +356,7 @@ EXIT /b 1
             label 'omsimulator-windows'
           }
           environment {
-            PATH = "C:\\OMDevUCRT\\tools\\msys\\ucrt64\\bin;C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;${env.PATH};"
+            PATH = "C:\\OMDevUCRT\\tools\\msys\\ucrt64\\bin;C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;C:\\Program Files\\Git\\bin;${env.PATH};"
             OMDEV = "/c/OMDevUCRT"
             VERBOSE = '1'
             CC="clang"
@@ -380,7 +380,7 @@ EXIT /b 1
                 label 'omsimulator-windows'
               }
               environment {
-                PATH = "C:\\OMDevUCRT\\tools\\msys\\ucrt64\\bin;C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;${env.PATH};"
+                PATH = "C:\\OMDevUCRT\\tools\\msys\\ucrt64\\bin;C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;C:\\Program Files\\Git\\bin;${env.PATH};"
                 OMDEV = "/c/OMDevUCRT"
                 MSYSTEM = "UCRT64"
               }
@@ -388,7 +388,7 @@ EXIT /b 1
                 bat 'hostname'
                 writeFile file: "buildZip.sh", text: """#!/bin/sh
 set -x -e
-export PATH="/c/Program Files/TortoiseSVN/bin/:/c/Program Files/Git/bin/:/c/bin/jdk/bin:/c/bin/nsis/:\$PATH:/c/bin/git/bin"
+export PATH="/c/Program Files/TortoiseSVN/bin/:/c/Program Files/Git/bin/:/c/bin/jdk/bin:/c/bin/nsis/:\$PATH:/c/bin/git/bin:/c/Program Files/Git/bin"
 cd "${env.WORKSPACE}/install/"
 zip -r "../OMSimulator-win64-`git describe --tags --abbrev=7 --match=v*.* --exclude=*-dev | sed 's/-/.post/'`.zip" *
 """
@@ -425,7 +425,7 @@ EXIT /b 1
                 label 'omsimulator-windows'
               }
               environment {
-                PATH = "C:\\OMDevUCRT\\tools\\msys\\ucrt64\\bin;C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;${env.PATH};"
+                PATH = "C:\\OMDevUCRT\\tools\\msys\\ucrt64\\bin;C:\\bin\\git\\bin;C:\\bin\\git\\usr\\bin;C:\\Program Files\\Git\\bin;${env.PATH};"
                 OMDEV = "/c/OMDevUCRT"
                 MSYSTEM = "UCRT64"
                 RUNTESTDB="${env.HOME}/jenkins-cache/runtest/"
@@ -437,7 +437,7 @@ EXIT /b 1
                 writeFile file: "testMSVC64-install.sh", text:"""#!/bin/sh
 set -x -e
 cd "${env.WORKSPACE}"
-export PATH="/c/Program Files/TortoiseSVN/bin/:/c/bin/jdk/bin:/c/bin/nsis/:\$PATH:/c/bin/git/bin"
+export PATH="/c/Program Files/TortoiseSVN/bin/:/c/bin/jdk/bin:/c/bin/nsis/:\$PATH:/c/bin/git/bin:/c/Program Files/Git/bin"
 make -C testsuite difftool resources
 cp -f "${env.RUNTESTDB}/"* testsuite/ || true
 find testsuite/ -name "*.lua" -exec sed -i /teardown_command/d {} ";"
