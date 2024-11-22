@@ -72,7 +72,7 @@ oms.delete("test03py")
 ## 					<ssd:Connector name="amplitude" kind="parameter">
 ## 						<ssc:Real />
 ## 					</ssd:Connector>
-## 					<ssd:Connector name="freqHz" kind="parameter">
+## 					<ssd:Connector name="f" kind="parameter">
 ## 						<ssc:Real unit="Hz" />
 ## 					</ssd:Connector>
 ## 					<ssd:Connector name="offset" kind="parameter">
@@ -134,7 +134,7 @@ oms.delete("test03py")
 ## 					<ssd:Connector name="amplitude" kind="parameter">
 ## 						<ssc:Real />
 ## 					</ssd:Connector>
-## 					<ssd:Connector name="freqHz" kind="parameter">
+## 					<ssd:Connector name="f" kind="parameter">
 ## 						<ssc:Real unit="Hz" />
 ## 					</ssd:Connector>
 ## 					<ssd:Connector name="offset" kind="parameter">
