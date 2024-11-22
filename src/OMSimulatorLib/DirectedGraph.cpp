@@ -271,7 +271,10 @@ void oms::DirectedGraph::calculateSortedConnections()
         scc.component_names.insert(conB.getOwner());
         // check for factor in connector units
         if (nodes[edges.connections[components[i][j]].first].connectorUnits.empty() || nodes[edges.connections[components[i][j]].second].connectorUnits.empty())
+        {
           scc.factor = 1.0;
+          scc.suppressUnitConversion = true;
+        }
         else
         {
           double factorA = 1.0;

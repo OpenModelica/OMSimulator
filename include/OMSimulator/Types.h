@@ -321,7 +321,7 @@ typedef struct {
   char* conA;                                      ///< Name of connector A
   char* conB;                                      ///< Name of connector B
   ssd_connection_geometry_t* geometry;             ///< Geometry information of the connection
-  bool suppressUnitConversion;                     ///< boolean to specify automatic unit coversion between connections
+  bool suppressUnitConversion;                     ///< Boolean to specify if automatic unit conversion between connections should be suppressed
 } oms_connection_t;
 
 /**
