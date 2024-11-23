@@ -4,6 +4,7 @@
 -- ucrt64: yes
 -- win: yes
 -- mac: no
+-- asan: yes
 
 oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./deleteResourcesReferencesAndStartValues_lua/")
@@ -77,11 +78,8 @@ print("info:      deleteResources.root.Gain.k     : " .. oms_getReal("deleteReso
 src = oms_exportSnapshot("deleteResources")
 print(src)
 
-
 oms_terminate("deleteResources")
 oms_delete("deleteResources")
-
-
 
 -- Result:
 -- info:    virgin parameter settings:

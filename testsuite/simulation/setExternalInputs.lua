@@ -4,6 +4,7 @@
 -- mac: no
 -- ucrt64: yes
 -- win: yes
+-- asan: yes
 
 oms_setCommandLineOption("--suppressPath=true")
 oms_setTempDirectory("./setExternalInputs_lua/")

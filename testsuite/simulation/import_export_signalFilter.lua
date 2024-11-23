@@ -5,6 +5,7 @@
 -- ucrt64: yes
 -- win: yes
 -- mac: no
+-- asan: yes
 
 function readFile(filename)
   local f = assert(io.open(filename, "r"))
