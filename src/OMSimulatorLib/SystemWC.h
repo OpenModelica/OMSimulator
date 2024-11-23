@@ -35,7 +35,6 @@
 #include "ComRef.h"
 #include "DirectedGraph.h"
 #include "SignalDerivative.h"
-#include "StepSizeConfiguration.h"
 #include "System.h"
 #include "OMSimulator/Types.h"
 
@@ -60,7 +59,6 @@ namespace oms
     oms_status_enu_t reset();
     oms_status_enu_t doStep();
     oms_status_enu_t stepUntil(double stopTime);
-    oms_status_enu_t stepUntilASSC(double stopTime);
 
     std::string getSolverName() const;
     oms_status_enu_t setSolverMethod(std::string);
@@ -75,12 +73,6 @@ namespace oms
     oms_status_enu_t setRealInputDerivative(const ComRef& cref, const SignalDerivative& der);
     unsigned int getMaxOutputDerivativeOrder();
 
-    // Functions for configuring assc
-    oms_status_enu_t addEventIndicator(const ComRef& signal) {return stepSizeConfiguration.addEventIndicator(signal);}
-    oms_status_enu_t addTimeIndicator(const ComRef& signal) {return stepSizeConfiguration.addTimeIndicator(signal);}
-    oms_status_enu_t addStaticValueIndicator(const ComRef& signal, double lowerBound, double upperBound, double stepSize) {return stepSizeConfiguration.addStaticValueIndicator(signal, lowerBound, upperBound, stepSize);}
-    oms_status_enu_t addDynamicValueIndicator(const ComRef& signal,const ComRef& lower,const ComRef& upper,double stepSize) {return stepSizeConfiguration.addDynamicValueIndicator(signal, lower, upper, stepSize);}
-
     oms_status_enu_t registerSignalsForResultFile(ResultWriter& resultFile);
     oms_status_enu_t updateSignals(ResultWriter& resultFile);
 
@@ -92,8 +84,6 @@ namespace oms
     SystemWC& operator=(SystemWC const& copy); ///< not implemented
 
   private:
-    StepSizeConfiguration stepSizeConfiguration;  ///< Configuration data structure for assc
-
     unsigned int h_id;
     unsigned int roll_iter_id;
     unsigned int max_error_id;
@@ -102,11 +92,6 @@ namespace oms
     double maxError = 0.0;
     double normError = 0.0;
     unsigned int rollBackIt = 0;
-
-    // oms_solver_wc_assc
-    std::vector<std::pair<ComRef, double>> assc_prevDoubleValues;
-    std::vector<std::pair<ComRef, int>> assc_prevIntValues;
-    std::vector<std::pair<ComRef, bool>> assc_prevBoolValues;
 
     // oms_solver_wc_ma
     int masiMax;

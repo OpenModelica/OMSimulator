@@ -61,7 +61,6 @@ Sets the solver method for the given system.
   "OpenModelica.Scripting.oms_solver.oms_solver_wc_min"
   "OpenModelica.Scripting.oms_solver.oms_solver_wc_ma"
   "OpenModelica.Scripting.oms_solver.oms_solver_wc_mav"
-  "OpenModelica.Scripting.oms_solver.oms_solver_wc_assc"
   "OpenModelica.Scripting.oms_solver.oms_solver_wc_mav2"
   "OpenModelica.Scripting.oms_solver.oms_solver_wc_max"
 
