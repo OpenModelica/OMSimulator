@@ -1003,74 +1003,6 @@ static int OMSimulatorLua_oms_deleteConnectorFromBus(lua_State *L)
   return 1;
 }
 
-//oms_status_enu_t oms_addDynamicValueIndicator(const char* signal, const char* lower, const char* upper, double stepSize);
-static int OMSimulatorLua_oms_addDynamicValueIndicator(lua_State *L)
-{
-  if (lua_gettop(L) != 4)
-    return luaL_error(L, "expecting exactly 4 arguments");
-  luaL_checktype(L, 1, LUA_TSTRING);
-  luaL_checktype(L, 2, LUA_TSTRING);
-  luaL_checktype(L, 3, LUA_TSTRING);
-  luaL_checktype(L, 4, LUA_TNUMBER);
-
-  const char* cref = lua_tostring(L, 1);
-  const char* lower = lua_tostring(L, 2);
-  const char* upper = lua_tostring(L, 3);
-  double stepSize = lua_tonumber(L, 4);
-  oms_status_enu_t status = oms_addDynamicValueIndicator(cref, lower, upper, stepSize);
-
-  lua_pushinteger(L, status);
-  return 1;
-}
-
-//oms_status_enu_t oms_addEventIndicator(const char* signal);
-static int OMSimulatorLua_oms_addEventIndicator(lua_State *L)
-{
-  if (lua_gettop(L) != 1)
-    return luaL_error(L, "expecting exactly 1 argument");
-  luaL_checktype(L, 1, LUA_TSTRING);
-
-  const char* cref = lua_tostring(L, 1);
-  oms_status_enu_t status = oms_addEventIndicator(cref);
-
-  lua_pushinteger(L, status);
-  return 1;
-}
-
-//oms_status_enu_t oms_addTimeIndicator(const char* signal);
-static int OMSimulatorLua_oms_addTimeIndicator(lua_State *L)
-{
-  if (lua_gettop(L) != 1)
-    return luaL_error(L, "expecting exactly 1 argument");
-  luaL_checktype(L, 1, LUA_TSTRING);
-
-  const char *ident = lua_tostring(L, 1);
-  oms_status_enu_t status = oms_addTimeIndicator(ident);
-
-  lua_pushinteger(L, status);
-  return 1;
-}
-
-//oms_status_enu_t oms_addStaticValueIndicator(const char* signal, double lower, double upper, double stepSize);
-static int OMSimulatorLua_oms_addStaticValueIndicator(lua_State *L)
-{
-  if (lua_gettop(L) != 4)
-    return luaL_error(L, "expecting exactly 4 arguments");
-  luaL_checktype(L, 1, LUA_TSTRING);
-  luaL_checktype(L, 2, LUA_TNUMBER);
-  luaL_checktype(L, 3, LUA_TNUMBER);
-  luaL_checktype(L, 4, LUA_TNUMBER);
-
-  const char *signal = lua_tostring(L, 1);
-  double lower = lua_tonumber(L, 2);
-  double upper = lua_tonumber(L, 3);
-  double stepSize = lua_tonumber(L, 4);
-  oms_status_enu_t status = oms_addStaticValueIndicator(signal,lower,upper,stepSize);
-
-  lua_pushinteger(L, status);
-  return 1;
-}
-
 //oms_status_enu_t oms_addSubModel(const char* cref, const char* fmuPath);
 static int OMSimulatorLua_oms_addSubModel(lua_State *L)
 {
@@ -1411,14 +1343,10 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms_addConnection);
   REGISTER_LUA_CALL(oms_addConnector);
   REGISTER_LUA_CALL(oms_addConnectorToBus);
-  REGISTER_LUA_CALL(oms_addDynamicValueIndicator);
-  REGISTER_LUA_CALL(oms_addEventIndicator);
   REGISTER_LUA_CALL(oms_addResources);
   REGISTER_LUA_CALL(oms_addSignalsToResults);
-  REGISTER_LUA_CALL(oms_addStaticValueIndicator);
   REGISTER_LUA_CALL(oms_addSubModel);
   REGISTER_LUA_CALL(oms_addSystem);
-  REGISTER_LUA_CALL(oms_addTimeIndicator);
   REGISTER_LUA_CALL(oms_compareSimulationResults);
   REGISTER_LUA_CALL(oms_copySystem);
   REGISTER_LUA_CALL(oms_delete);
@@ -1500,7 +1428,6 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_ENUM(oms_solver_sc_cvode);
   REGISTER_LUA_ENUM(oms_solver_wc_ma);
   REGISTER_LUA_ENUM(oms_solver_wc_mav);
-  REGISTER_LUA_ENUM(oms_solver_wc_assc);
   REGISTER_LUA_ENUM(oms_solver_wc_mav2);
 
   // oms_system_enu_t

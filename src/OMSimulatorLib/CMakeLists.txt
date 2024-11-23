@@ -50,7 +50,6 @@ set(OMSIMULATORLIB_SOURCES
       Scope.cpp
       SignalDerivative.cpp
       Snapshot.cpp
-      StepSizeConfiguration.cpp
       System.cpp
       SystemSC.cpp
       SystemWC.cpp

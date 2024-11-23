@@ -9,8 +9,6 @@ set(OM_OMS_TESTSUITE_RESOURCES_FMUS
         ${CMAKE_CURRENT_SOURCE_DIR}/AircraftVehicleDemonstrator.eCS_Generic_Export
         ${CMAKE_CURRENT_SOURCE_DIR}/AircraftVehicleDemonstrator.eCS_SW
         ${CMAKE_CURRENT_SOURCE_DIR}/AircraftVehicleDemonstrator.engine
-        ${CMAKE_CURRENT_SOURCE_DIR}/ASSCExample.Class1
-        ${CMAKE_CURRENT_SOURCE_DIR}/ASSCExample.Class2
         ${CMAKE_CURRENT_SOURCE_DIR}/B
         ${CMAKE_CURRENT_SOURCE_DIR}/BouncingBall
         ${CMAKE_CURRENT_SOURCE_DIR}/Dahlquist

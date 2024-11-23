@@ -8,8 +8,6 @@ AircraftVehicleDemonstrator.consumer_B \
 AircraftVehicleDemonstrator.eCS_Generic_Export \
 AircraftVehicleDemonstrator.eCS_SW \
 AircraftVehicleDemonstrator.engine \
-ASSCExample.Class1 \
-ASSCExample.Class2 \
 B \
 BouncingBall \
 Dahlquist \
@@ -79,7 +77,6 @@ toplevelparameter1 \
 toplevelparameter2 \
 
 MOSs = \
-ASSCExample.mos \
 Blocks.mos \
 DualMassOscillator.mos \
 Enumeration.mos \
