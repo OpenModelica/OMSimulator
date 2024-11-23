@@ -2,6 +2,7 @@
 <fmiModelDescription
   fmiVersion="2.0"
   modelName="DualMassOscillator.System2"
+<<<<<<< HEAD
   guid="{89675681-4897-4140-b6ca-27909d861d66}"
   description=""
   version=""
@@ -11,6 +12,17 @@
   numberOfEventIndicators="0">
   <ModelExchange
     modelIdentifier="DualMassOscillator_System2"
+=======
+  guid="{ce6da18d-edd0-4255-8e00-53d14457ff68}"
+  description=""
+  version=""
+  generationTool="OpenModelica Compiler OpenModelica v1.24.2 (64-bit)"
+  generationDateAndTime="2024-11-23T14:11:10Z"
+  variableNamingConvention="structured"
+  numberOfEventIndicators="0">
+  <ModelExchange
+    modelIdentifier="System2"
+>>>>>>> 975380c4 (Update DualMassOscillator fmus)
     needsExecutionTool="false"
     completedIntegratorStepNotNeeded="false"
     canBeInstantiatedOnlyOncePerProcess="false"
@@ -19,6 +31,7 @@
     canSerializeFMUstate="false"
     providesDirectionalDerivative="false">
     <SourceFiles>
+<<<<<<< HEAD
       <File name="DualMassOscillator_System2.c" />
       <File name="DualMassOscillator_System2_functions.c" />
       <File name="DualMassOscillator_System2_records.c" />
@@ -42,6 +55,31 @@
       <File name="DualMassOscillator_System2_18spd.c" />
       <File name="DualMassOscillator_System2_init_fmu.c" />
       <File name="DualMassOscillator_System2_FMU.c" />
+=======
+      <File name="System2.c" />
+      <File name="System2_functions.c" />
+      <File name="System2_records.c" />
+      <File name="System2_01exo.c" />
+      <File name="System2_02nls.c" />
+      <File name="System2_03lsy.c" />
+      <File name="System2_04set.c" />
+      <File name="System2_05evt.c" />
+      <File name="System2_06inz.c" />
+      <File name="System2_07dly.c" />
+      <File name="System2_08bnd.c" />
+      <File name="System2_09alg.c" />
+      <File name="System2_10asr.c" />
+      <File name="System2_11mix.c" />
+      <File name="System2_12jac.c" />
+      <File name="System2_13opt.c" />
+      <File name="System2_14lnz.c" />
+      <File name="System2_15syn.c" />
+      <File name="System2_16dae.c" />
+      <File name="System2_17inl.c" />
+      <File name="System2_18spd.c" />
+      <File name="System2_init_fmu.c" />
+      <File name="System2_FMU.c" />
+>>>>>>> 975380c4 (Update DualMassOscillator fmus)
       <File name="./gc/memory_pool.c" />
       <File name="./gc/omc_gc.c" />
       <File name="./util/base_array.c" />
@@ -88,7 +126,7 @@
     </SourceFiles>
   </ModelExchange>
   <CoSimulation
-    modelIdentifier="DualMassOscillator_System2"
+    modelIdentifier="System2"
     needsExecutionTool="false"
     canHandleVariableCommunicationStepSize="true"
     canInterpolateInputs="true"
@@ -100,6 +138,7 @@
     canSerializeFMUstate="false"
     providesDirectionalDerivative="false">
     <SourceFiles>
+<<<<<<< HEAD
       <File name="DualMassOscillator_System2.c" />
       <File name="DualMassOscillator_System2_functions.c" />
       <File name="DualMassOscillator_System2_records.c" />
@@ -123,6 +162,31 @@
       <File name="DualMassOscillator_System2_18spd.c" />
       <File name="DualMassOscillator_System2_init_fmu.c" />
       <File name="DualMassOscillator_System2_FMU.c" />
+=======
+      <File name="System2.c" />
+      <File name="System2_functions.c" />
+      <File name="System2_records.c" />
+      <File name="System2_01exo.c" />
+      <File name="System2_02nls.c" />
+      <File name="System2_03lsy.c" />
+      <File name="System2_04set.c" />
+      <File name="System2_05evt.c" />
+      <File name="System2_06inz.c" />
+      <File name="System2_07dly.c" />
+      <File name="System2_08bnd.c" />
+      <File name="System2_09alg.c" />
+      <File name="System2_10asr.c" />
+      <File name="System2_11mix.c" />
+      <File name="System2_12jac.c" />
+      <File name="System2_13opt.c" />
+      <File name="System2_14lnz.c" />
+      <File name="System2_15syn.c" />
+      <File name="System2_16dae.c" />
+      <File name="System2_17inl.c" />
+      <File name="System2_18spd.c" />
+      <File name="System2_init_fmu.c" />
+      <File name="System2_FMU.c" />
+>>>>>>> 975380c4 (Update DualMassOscillator fmus)
       <File name="./gc/memory_pool.c" />
       <File name="./gc/omc_gc.c" />
       <File name="./util/base_array.c" />
