@@ -3,10 +3,9 @@ setCommandLineOptions("-d=-disableDirectionalDerivatives,fmuExperimental --fmiSo
 loadFile("equationPair.mo"); getErrorString();
 
 platforms := {
-  "i686-linux-gnu docker run docker.openmodelica.org/build-deps:v1.13-i386",
-  "x86_64-linux-gnu docker run docker.openmodelica.org/build-deps:bionic.nightly.amd64",
-  "i686-w64-mingw32 docker run docker.openmodelica.org/msyscross-omsimulator:v2.0",
-  "x86_64-w64-mingw32 docker run docker.openmodelica.org/msyscross-omsimulator:v2.0"};
+  "x86_64-linux-gnu docker run multiarch/crossbuild",
+  "x86_64-w64-mingw32 docker run multiarch/crossbuild"
+};
 
 buildModelFMU(equationPair.equation1, version="2.0", fmuType="cs", fileNamePrefix="equationPair.equation1", platforms=platforms); getErrorString();
 buildModelFMU(equationPair.equation2, version="2.0", fmuType="cs", fileNamePrefix="equationPair.equation2", platforms=platforms); getErrorString();

@@ -55,7 +55,12 @@ equation
 end ypipe;
 "); getErrorString();
 
-buildModelFMU(tank1, fmuType="cs"); getErrorString();
-buildModelFMU(tank2, fmuType="cs"); getErrorString();
-buildModelFMU(tank3, fmuType="cs"); getErrorString();
-buildModelFMU(ypipe, fmuType="cs"); getErrorString();
+buildModelFMU(tank1, fmuType="cs", platforms={"x86_64-linux-gnu docker run multiarch/crossbuild","x86_64-w64-mingw32 docker run multiarch/crossbuild"}); getErrorString();
+buildModelFMU(tank2, fmuType="cs", platforms={"x86_64-linux-gnu docker run multiarch/crossbuild","x86_64-w64-mingw32 docker run multiarch/crossbuild"}); getErrorString();
+buildModelFMU(tank3, fmuType="cs", platforms={"x86_64-linux-gnu docker run multiarch/crossbuild","x86_64-w64-mingw32 docker run multiarch/crossbuild"}); getErrorString();
+buildModelFMU(ypipe, fmuType="cs", platforms={"x86_64-linux-gnu docker run multiarch/crossbuild","x86_64-w64-mingw32 docker run multiarch/crossbuild"}); getErrorString();
+
+system("zip -qd tank1.fmu sources/* && unzip -o tank1.fmu -d tank1/");
+system("zip -qd tank2.fmu sources/* && unzip -o tank2.fmu -d tank2/");
+system("zip -qd tank3.fmu sources/* && unzip -o tank3.fmu -d tank3/");
+system("zip -qd ypipe.fmu sources/* && unzip -o ypipe.fmu -d ypipe/");

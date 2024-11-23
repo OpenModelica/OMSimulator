@@ -1,4 +1,3 @@
-
 loadString("
 model A
   input Real u(start = 5.0, unit = \"m/s\");
@@ -22,5 +21,8 @@ equation
   y = u;
 end B;"); getErrorString();
 
-buildModelFMU(A, version="2.0", fmuType="me_cs"); getErrorString();
-buildModelFMU(B, version="2.0", fmuType="me_cs"); getErrorString();
+buildModelFMU(A, version="2.0", fmuType="me_cs", platforms={"x86_64-linux-gnu docker run multiarch/crossbuild","x86_64-w64-mingw32 docker run multiarch/crossbuild"}); getErrorString();
+buildModelFMU(B, version="2.0", fmuType="me_cs", platforms={"x86_64-linux-gnu docker run multiarch/crossbuild","x86_64-w64-mingw32 docker run multiarch/crossbuild"}); getErrorString();
+
+system("zip -qd A.fmu sources/* && unzip -o A.fmu -d A/");
+system("zip -qd B.fmu sources/* && unzip -o B.fmu -d B/");

@@ -2,14 +2,22 @@
 <fmiModelDescription
   fmiVersion="2.0"
   modelName="DualMassOscillator.System2"
-  guid="{3b496444-57df-48c7-a472-95a1f353457b}"
+  guid="{89675681-4897-4140-b6ca-27909d861d66}"
   description=""
-  generationTool="OpenModelica Compiler OMCompiler v1.18.0-dev.192+gc2d2d8d45f"
-  generationDateAndTime="2021-03-29T14:03:34Z"
+  version=""
+  generationTool="OpenModelica Compiler OpenModelica v1.24.2 (64-bit)"
+  generationDateAndTime="2024-11-23T20:39:19Z"
   variableNamingConvention="structured"
   numberOfEventIndicators="0">
   <ModelExchange
-    modelIdentifier="DualMassOscillator_System2">
+    modelIdentifier="DualMassOscillator_System2"
+    needsExecutionTool="false"
+    completedIntegratorStepNotNeeded="false"
+    canBeInstantiatedOnlyOncePerProcess="false"
+    canNotUseMemoryManagementFunctions="false"
+    canGetAndSetFMUstate="false"
+    canSerializeFMUstate="false"
+    providesDirectionalDerivative="false">
     <SourceFiles>
       <File name="DualMassOscillator_System2.c" />
       <File name="DualMassOscillator_System2_functions.c" />
@@ -34,19 +42,16 @@
       <File name="DualMassOscillator_System2_18spd.c" />
       <File name="DualMassOscillator_System2_init_fmu.c" />
       <File name="DualMassOscillator_System2_FMU.c" />
-      <File name="./util/read_matlab4.c" />
-      <File name="./util/read_csv.c" />
-      <File name="./util/libcsv.c" />
-      <File name="gc/memory_pool.c" />
-      <File name="gc/omc_gc.c" />
+      <File name="./gc/memory_pool.c" />
+      <File name="./gc/omc_gc.c" />
       <File name="./util/base_array.c" />
       <File name="./util/boolean_array.c" />
+      <File name="./util/context.c" />
       <File name="./util/division.c" />
       <File name="./util/doubleEndedList.c" />
       <File name="./util/generic_array.c" />
       <File name="./util/index_spec.c" />
       <File name="./util/integer_array.c" />
-      <File name="./util/jacobian_util.c" />
       <File name="./util/list.c" />
       <File name="./util/modelica_string_lit.c" />
       <File name="./util/modelica_string.c" />
@@ -66,6 +71,7 @@
       <File name="./util/utility.c" />
       <File name="./util/varinfo.c" />
       <File name="./math-support/pivot.c" />
+      <File name="./simulation/jacobian_util.c" />
       <File name="./simulation/omc_simulation_util.c" />
       <File name="./simulation/options.c" />
       <File name="./simulation/simulation_info_json.c" />
@@ -85,14 +91,14 @@
     modelIdentifier="DualMassOscillator_System2"
     needsExecutionTool="false"
     canHandleVariableCommunicationStepSize="true"
-    canInterpolateInputs="false"
-    maxOutputDerivativeOrder="0"
+    canInterpolateInputs="true"
+    maxOutputDerivativeOrder="1"
     canRunAsynchronuously = "false"
     canBeInstantiatedOnlyOncePerProcess="false"
     canNotUseMemoryManagementFunctions="false"
     canGetAndSetFMUstate="false"
     canSerializeFMUstate="false"
-    >
+    providesDirectionalDerivative="false">
     <SourceFiles>
       <File name="DualMassOscillator_System2.c" />
       <File name="DualMassOscillator_System2_functions.c" />
@@ -117,19 +123,16 @@
       <File name="DualMassOscillator_System2_18spd.c" />
       <File name="DualMassOscillator_System2_init_fmu.c" />
       <File name="DualMassOscillator_System2_FMU.c" />
-      <File name="./util/read_matlab4.c" />
-      <File name="./util/read_csv.c" />
-      <File name="./util/libcsv.c" />
-      <File name="gc/memory_pool.c" />
-      <File name="gc/omc_gc.c" />
+      <File name="./gc/memory_pool.c" />
+      <File name="./gc/omc_gc.c" />
       <File name="./util/base_array.c" />
       <File name="./util/boolean_array.c" />
+      <File name="./util/context.c" />
       <File name="./util/division.c" />
       <File name="./util/doubleEndedList.c" />
       <File name="./util/generic_array.c" />
       <File name="./util/index_spec.c" />
       <File name="./util/integer_array.c" />
-      <File name="./util/jacobian_util.c" />
       <File name="./util/list.c" />
       <File name="./util/modelica_string_lit.c" />
       <File name="./util/modelica_string.c" />
@@ -149,6 +152,7 @@
       <File name="./util/utility.c" />
       <File name="./util/varinfo.c" />
       <File name="./math-support/pivot.c" />
+      <File name="./simulation/jacobian_util.c" />
       <File name="./simulation/omc_simulation_util.c" />
       <File name="./simulation/options.c" />
       <File name="./simulation/simulation_info_json.c" />
@@ -177,11 +181,11 @@
     <Unit name="kg">
       <BaseUnit kg="1" />
     </Unit>
-    <Unit name="W">
-      <BaseUnit m="2" s="-3" kg="1" />
-    </Unit>
     <Unit name="N">
       <BaseUnit m="1" s="-2" kg="1" />
+    </Unit>
+    <Unit name="W">
+      <BaseUnit m="2" s="-3" kg="1" />
     </Unit>
     <Unit name="m.s-2">
       <BaseUnit m="1" s="-2" />
@@ -220,7 +224,7 @@
     <Category name="logAll" />
     <Category name="logFmi2Call" />
   </LogCategories>
-  <DefaultExperiment startTime="0.0" stopTime="1.0" tolerance="1e-06"/>
+  <DefaultExperiment startTime="0.0" stopTime="1.0" tolerance="1e-6" stepSize="0.002"/>
   <ModelVariables>
   <!-- Index of variable = "1" -->
   <ScalarVariable
@@ -391,37 +395,13 @@
   </ScalarVariable>
   <!-- Index of variable = "22" -->
   <ScalarVariable
-    name="move.s_support"
-    valueReference="21"
-    description="Absolute position of support flange"
-    initial="exact">
-    <Real start="0.0" unit="m"/>
-  </ScalarVariable>
-  <!-- Index of variable = "23" -->
-  <ScalarVariable
-    name="sd2.f_c"
-    valueReference="22"
-    description="Spring force"
-    >
-    <Real unit="N"/>
-  </ScalarVariable>
-  <!-- Index of variable = "24" -->
-  <ScalarVariable
-    name="sd2.f_d"
-    valueReference="23"
-    description="Damping force"
-    >
-    <Real unit="N"/>
-  </ScalarVariable>
-  <!-- Index of variable = "25" -->
-  <ScalarVariable
     name="sd2.flange_b.s"
     valueReference="24"
     description="Absolute position of flange"
     >
     <Real unit="m"/>
   </ScalarVariable>
-  <!-- Index of variable = "26" -->
+  <!-- Index of variable = "23" -->
   <ScalarVariable
     name="sd2.lossPower"
     valueReference="25"
@@ -429,7 +409,7 @@
     >
     <Real unit="W"/>
   </ScalarVariable>
-  <!-- Index of variable = "27" -->
+  <!-- Index of variable = "24" -->
   <ScalarVariable
     name="sd2.s_rel"
     valueReference="26"
@@ -437,7 +417,7 @@
     >
     <Real unit="m"/>
   </ScalarVariable>
-  <!-- Index of variable = "28" -->
+  <!-- Index of variable = "25" -->
   <ScalarVariable
     name="sd2.v_rel"
     valueReference="27"
@@ -445,7 +425,7 @@
     >
     <Real unit="m/s"/>
   </ScalarVariable>
-  <!-- Index of variable = "29" -->
+  <!-- Index of variable = "26" -->
   <ScalarVariable
     name="sd3.f"
     valueReference="28"
@@ -453,23 +433,7 @@
     >
     <Real unit="N"/>
   </ScalarVariable>
-  <!-- Index of variable = "30" -->
-  <ScalarVariable
-    name="sd3.f_c"
-    valueReference="29"
-    description="Spring force"
-    >
-    <Real unit="N"/>
-  </ScalarVariable>
-  <!-- Index of variable = "31" -->
-  <ScalarVariable
-    name="sd3.f_d"
-    valueReference="30"
-    description="Damping force"
-    >
-    <Real unit="N"/>
-  </ScalarVariable>
-  <!-- Index of variable = "32" -->
+  <!-- Index of variable = "27" -->
   <ScalarVariable
     name="sd3.lossPower"
     valueReference="31"
@@ -477,7 +441,7 @@
     >
     <Real unit="W"/>
   </ScalarVariable>
-  <!-- Index of variable = "33" -->
+  <!-- Index of variable = "28" -->
   <ScalarVariable
     name="v1"
     valueReference="32"
@@ -485,7 +449,7 @@
     >
     <Real start="0.0"/>
   </ScalarVariable>
-  <!-- Index of variable = "34" -->
+  <!-- Index of variable = "29" -->
   <ScalarVariable
     name="x1"
     valueReference="33"
@@ -493,7 +457,7 @@
     >
     <Real start="0.0"/>
   </ScalarVariable>
-  <!-- Index of variable = "35" -->
+  <!-- Index of variable = "30" -->
   <ScalarVariable
     name="c2"
     valueReference="34"
@@ -503,7 +467,7 @@
     >
     <Real start="0.5"/>
   </ScalarVariable>
-  <!-- Index of variable = "36" -->
+  <!-- Index of variable = "31" -->
   <ScalarVariable
     name="c3"
     valueReference="35"
@@ -513,7 +477,7 @@
     >
     <Real start="0.3"/>
   </ScalarVariable>
-  <!-- Index of variable = "37" -->
+  <!-- Index of variable = "32" -->
   <ScalarVariable
     name="fixed.flange.s"
     valueReference="36"
@@ -523,7 +487,7 @@
     >
     <Real unit="m"/>
   </ScalarVariable>
-  <!-- Index of variable = "38" -->
+  <!-- Index of variable = "33" -->
   <ScalarVariable
     name="fixed.s0"
     valueReference="37"
@@ -533,7 +497,7 @@
     >
     <Real start="0.0" unit="m"/>
   </ScalarVariable>
-  <!-- Index of variable = "39" -->
+  <!-- Index of variable = "34" -->
   <ScalarVariable
     name="k2"
     valueReference="38"
@@ -543,7 +507,7 @@
     >
     <Real start="10.0"/>
   </ScalarVariable>
-  <!-- Index of variable = "40" -->
+  <!-- Index of variable = "35" -->
   <ScalarVariable
     name="k3"
     valueReference="39"
@@ -553,7 +517,7 @@
     >
     <Real start="20.0"/>
   </ScalarVariable>
-  <!-- Index of variable = "41" -->
+  <!-- Index of variable = "36" -->
   <ScalarVariable
     name="m2"
     valueReference="40"
@@ -562,7 +526,7 @@
     >
     <Real start="1.0"/>
   </ScalarVariable>
-  <!-- Index of variable = "42" -->
+  <!-- Index of variable = "37" -->
   <ScalarVariable
     name="mass2.L"
     valueReference="41"
@@ -572,7 +536,7 @@
     >
     <Real start="0.0" unit="m"/>
   </ScalarVariable>
-  <!-- Index of variable = "43" -->
+  <!-- Index of variable = "38" -->
   <ScalarVariable
     name="mass2.m"
     valueReference="42"
@@ -582,7 +546,7 @@
     >
     <Real min="0.0" unit="kg"/>
   </ScalarVariable>
-  <!-- Index of variable = "44" -->
+  <!-- Index of variable = "39" -->
   <ScalarVariable
     name="sd2.c"
     valueReference="43"
@@ -592,7 +556,7 @@
     >
     <Real min="0.0" unit="N/m"/>
   </ScalarVariable>
-  <!-- Index of variable = "45" -->
+  <!-- Index of variable = "40" -->
   <ScalarVariable
     name="sd2.d"
     valueReference="44"
@@ -602,7 +566,7 @@
     >
     <Real min="0.0" unit="N.s/m"/>
   </ScalarVariable>
-  <!-- Index of variable = "46" -->
+  <!-- Index of variable = "41" -->
   <ScalarVariable
     name="sd2.s_nominal"
     valueReference="45"
@@ -610,9 +574,9 @@
     variability="fixed"
     causality="parameter"
     >
-    <Real start="0.0001" min="0.0" unit="m"/>
+    <Real start="1e-4" min="0.0" unit="m"/>
   </ScalarVariable>
-  <!-- Index of variable = "47" -->
+  <!-- Index of variable = "42" -->
   <ScalarVariable
     name="sd2.s_rel0"
     valueReference="46"
@@ -622,7 +586,7 @@
     >
     <Real start="0.0" unit="m"/>
   </ScalarVariable>
-  <!-- Index of variable = "48" -->
+  <!-- Index of variable = "43" -->
   <ScalarVariable
     name="sd3.c"
     valueReference="47"
@@ -632,7 +596,7 @@
     >
     <Real min="0.0" unit="N/m"/>
   </ScalarVariable>
-  <!-- Index of variable = "49" -->
+  <!-- Index of variable = "44" -->
   <ScalarVariable
     name="sd3.d"
     valueReference="48"
@@ -642,7 +606,7 @@
     >
     <Real min="0.0" unit="N.s/m"/>
   </ScalarVariable>
-  <!-- Index of variable = "50" -->
+  <!-- Index of variable = "45" -->
   <ScalarVariable
     name="sd3.flange_b.s"
     valueReference="49"
@@ -652,7 +616,7 @@
     >
     <Real unit="m"/>
   </ScalarVariable>
-  <!-- Index of variable = "51" -->
+  <!-- Index of variable = "46" -->
   <ScalarVariable
     name="sd3.s_nominal"
     valueReference="50"
@@ -660,9 +624,9 @@
     variability="fixed"
     causality="parameter"
     >
-    <Real start="0.0001" min="0.0" unit="m"/>
+    <Real start="1e-4" min="0.0" unit="m"/>
   </ScalarVariable>
-  <!-- Index of variable = "52" -->
+  <!-- Index of variable = "47" -->
   <ScalarVariable
     name="sd3.s_rel0"
     valueReference="51"
@@ -672,7 +636,7 @@
     >
     <Real start="0.0" unit="m"/>
   </ScalarVariable>
-  <!-- Index of variable = "53" -->
+  <!-- Index of variable = "48" -->
   <ScalarVariable
     name="x2_start"
     valueReference="52"
@@ -681,7 +645,7 @@
     >
     <Real start="0.5"/>
   </ScalarVariable>
-  <!-- Index of variable = "54" -->
+  <!-- Index of variable = "49" -->
   <ScalarVariable
     name="fixed.flange.f"
     valueReference="54"
@@ -689,7 +653,7 @@
     >
     <Real unit="N"/>
   </ScalarVariable>
-  <!-- Index of variable = "55" -->
+  <!-- Index of variable = "50" -->
   <ScalarVariable
     name="forceSensor.f"
     valueReference="14"
@@ -697,7 +661,7 @@
     >
     <Real unit="N"/>
   </ScalarVariable>
-  <!-- Index of variable = "56" -->
+  <!-- Index of variable = "51" -->
   <ScalarVariable
     name="forceSensor.flange_a.f"
     valueReference="14"
@@ -705,7 +669,7 @@
     >
     <Real unit="N"/>
   </ScalarVariable>
-  <!-- Index of variable = "57" -->
+  <!-- Index of variable = "52" -->
   <ScalarVariable
     name="forceSensor.flange_a.s"
     valueReference="33"
@@ -713,7 +677,7 @@
     >
     <Real unit="m"/>
   </ScalarVariable>
-  <!-- Index of variable = "58" -->
+  <!-- Index of variable = "53" -->
   <ScalarVariable
     name="forceSensor.flange_b.f"
     valueReference="58"
@@ -721,7 +685,7 @@
     >
     <Real unit="N"/>
   </ScalarVariable>
-  <!-- Index of variable = "59" -->
+  <!-- Index of variable = "54" -->
   <ScalarVariable
     name="forceSensor.flange_b.s"
     valueReference="33"
@@ -729,7 +693,7 @@
     >
     <Real unit="m"/>
   </ScalarVariable>
-  <!-- Index of variable = "60" -->
+  <!-- Index of variable = "55" -->
   <ScalarVariable
     name="mass2.a"
     valueReference="16"
@@ -737,7 +701,7 @@
     >
     <Real unit="m/s2"/>
   </ScalarVariable>
-  <!-- Index of variable = "61" -->
+  <!-- Index of variable = "56" -->
   <ScalarVariable
     name="mass2.flange_a.f"
     valueReference="61"
@@ -745,7 +709,7 @@
     >
     <Real unit="N"/>
   </ScalarVariable>
-  <!-- Index of variable = "62" -->
+  <!-- Index of variable = "57" -->
   <ScalarVariable
     name="mass2.flange_a.s"
     valueReference="24"
@@ -753,7 +717,7 @@
     >
     <Real unit="m"/>
   </ScalarVariable>
-  <!-- Index of variable = "63" -->
+  <!-- Index of variable = "58" -->
   <ScalarVariable
     name="mass2.flange_b.f"
     valueReference="28"
@@ -761,7 +725,7 @@
     >
     <Real unit="N"/>
   </ScalarVariable>
-  <!-- Index of variable = "64" -->
+  <!-- Index of variable = "59" -->
   <ScalarVariable
     name="move.flange.f"
     valueReference="14"
@@ -769,7 +733,7 @@
     >
     <Real unit="N"/>
   </ScalarVariable>
-  <!-- Index of variable = "65" -->
+  <!-- Index of variable = "60" -->
   <ScalarVariable
     name="move.flange.s"
     valueReference="33"
@@ -777,7 +741,7 @@
     >
     <Real unit="m"/>
   </ScalarVariable>
-  <!-- Index of variable = "66" -->
+  <!-- Index of variable = "61" -->
   <ScalarVariable
     name="move.u[1]"
     valueReference="33"
@@ -785,7 +749,7 @@
     >
     <Real/>
   </ScalarVariable>
-  <!-- Index of variable = "67" -->
+  <!-- Index of variable = "62" -->
   <ScalarVariable
     name="move.u[2]"
     valueReference="32"
@@ -793,7 +757,7 @@
     >
     <Real/>
   </ScalarVariable>
-  <!-- Index of variable = "68" -->
+  <!-- Index of variable = "63" -->
   <ScalarVariable
     name="move.u[3]"
     valueReference="15"
@@ -801,7 +765,7 @@
     >
     <Real/>
   </ScalarVariable>
-  <!-- Index of variable = "69" -->
+  <!-- Index of variable = "64" -->
   <ScalarVariable
     name="sd2.f"
     valueReference="14"
@@ -809,7 +773,7 @@
     >
     <Real unit="N"/>
   </ScalarVariable>
-  <!-- Index of variable = "70" -->
+  <!-- Index of variable = "65" -->
   <ScalarVariable
     name="sd2.flange_a.f"
     valueReference="70"
@@ -817,7 +781,7 @@
     >
     <Real unit="N"/>
   </ScalarVariable>
-  <!-- Index of variable = "71" -->
+  <!-- Index of variable = "66" -->
   <ScalarVariable
     name="sd2.flange_a.s"
     valueReference="33"
@@ -825,7 +789,7 @@
     >
     <Real unit="m"/>
   </ScalarVariable>
-  <!-- Index of variable = "72" -->
+  <!-- Index of variable = "67" -->
   <ScalarVariable
     name="sd2.flange_b.f"
     valueReference="14"
@@ -833,7 +797,7 @@
     >
     <Real unit="N"/>
   </ScalarVariable>
-  <!-- Index of variable = "73" -->
+  <!-- Index of variable = "68" -->
   <ScalarVariable
     name="sd3.flange_a.f"
     valueReference="73"
@@ -841,7 +805,7 @@
     >
     <Real unit="N"/>
   </ScalarVariable>
-  <!-- Index of variable = "74" -->
+  <!-- Index of variable = "69" -->
   <ScalarVariable
     name="sd3.flange_a.s"
     valueReference="17"
@@ -849,7 +813,7 @@
     >
     <Real unit="m"/>
   </ScalarVariable>
-  <!-- Index of variable = "75" -->
+  <!-- Index of variable = "70" -->
   <ScalarVariable
     name="sd3.flange_b.f"
     valueReference="28"
@@ -857,21 +821,21 @@
     >
     <Real unit="N"/>
   </ScalarVariable>
-  <!-- Index of variable = "76" -->
+  <!-- Index of variable = "71" -->
   <ScalarVariable
     name="v2"
     valueReference="76"
     >
     <Real/>
   </ScalarVariable>
-  <!-- Index of variable = "77" -->
+  <!-- Index of variable = "72" -->
   <ScalarVariable
     name="x2"
     valueReference="18"
     >
     <Real/>
   </ScalarVariable>
-  <!-- Index of variable = "78" -->
+  <!-- Index of variable = "73" -->
   <ScalarVariable
     name="mass2.stateSelect"
     valueReference="0"
@@ -881,7 +845,7 @@
     >
     <Enumeration declaredType="StateSelect"/>
   </ScalarVariable>
-  <!-- Index of variable = "79" -->
+  <!-- Index of variable = "74" -->
   <ScalarVariable
     name="sd2.stateSelect"
     valueReference="1"
@@ -891,7 +855,7 @@
     >
     <Enumeration declaredType="StateSelect"/>
   </ScalarVariable>
-  <!-- Index of variable = "80" -->
+  <!-- Index of variable = "75" -->
   <ScalarVariable
     name="sd3.stateSelect"
     valueReference="2"
@@ -901,7 +865,7 @@
     >
     <Enumeration declaredType="StateSelect"/>
   </ScalarVariable>
-  <!-- Index of variable = "81" -->
+  <!-- Index of variable = "76" -->
   <ScalarVariable
     name="move.useSupport"
     valueReference="0"
@@ -911,21 +875,21 @@
     >
     <Boolean/>
   </ScalarVariable>
-  <!-- Index of variable = "82" -->
+  <!-- Index of variable = "77" -->
   <ScalarVariable
     name="sd2.useHeatPort"
     valueReference="1"
-    description="=true, if heatPort is enabled"
+    description="= true, if heatPort is enabled"
     variability="fixed"
     causality="calculatedParameter"
     >
     <Boolean/>
   </ScalarVariable>
-  <!-- Index of variable = "83" -->
+  <!-- Index of variable = "78" -->
   <ScalarVariable
     name="sd3.useHeatPort"
     valueReference="2"
-    description="=true, if heatPort is enabled"
+    description="= true, if heatPort is enabled"
     variability="fixed"
     causality="calculatedParameter"
     >
@@ -934,30 +898,30 @@
   </ModelVariables>
   <ModelStructure>
     <Outputs>
-      <Unknown index="15" dependencies="1 2 33 34" dependenciesKind="dependent dependent dependent dependent" />
+      <Unknown index="15" dependencies="1 2 28 29" dependenciesKind="dependent dependent dependent dependent" />
     </Outputs>
     <Derivatives>
       <Unknown index="3" dependencies="2" dependenciesKind="dependent" />
-      <Unknown index="4" dependencies="1 2 33 34" dependenciesKind="dependent dependent dependent dependent" />
+      <Unknown index="4" dependencies="1 2 28 29" dependenciesKind="dependent dependent dependent dependent" />
     </Derivatives>
     <InitialUnknowns>
-      <Unknown index="1" dependencies="22 41 46" dependenciesKind="dependent dependent dependent" />
+      <Unknown index="1" dependencies="33 37 48" dependenciesKind="dependent dependent dependent" />
       <Unknown index="3" dependencies="2" dependenciesKind="dependent" />
-      <Unknown index="4" dependencies="2 16 22 33 38 41 46 51" dependenciesKind="dependent dependent dependent dependent dependent dependent dependent dependent" />
-      <Unknown index="15" dependencies="16 33 41 46 51" dependenciesKind="dependent dependent dependent dependent dependent" />
-      <Unknown index="37" dependencies="22" dependenciesKind="dependent" />
-      <Unknown index="43" dependencies="42" dependenciesKind="dependent" />
-      <Unknown index="44" dependencies="35" dependenciesKind="dependent" />
-      <Unknown index="45" dependencies="47" dependenciesKind="dependent" />
-      <Unknown index="48" dependencies="36" dependenciesKind="dependent" />
-      <Unknown index="49" dependencies="52" dependenciesKind="dependent" />
-      <Unknown index="50" dependencies="22" dependenciesKind="dependent" />
+      <Unknown index="4" dependencies="2 28 29 33 37 42 47 48" dependenciesKind="dependent dependent dependent dependent dependent dependent dependent dependent" />
+      <Unknown index="15" dependencies="28 29 37 42 48" dependenciesKind="dependent dependent dependent dependent dependent" />
+      <Unknown index="32" dependencies="33" dependenciesKind="dependent" />
+      <Unknown index="38" dependencies="36" dependenciesKind="dependent" />
+      <Unknown index="39" dependencies="34" dependenciesKind="dependent" />
+      <Unknown index="40" dependencies="30" dependenciesKind="dependent" />
+      <Unknown index="43" dependencies="35" dependenciesKind="dependent" />
+      <Unknown index="44" dependencies="31" dependenciesKind="dependent" />
+      <Unknown index="45" dependencies="33" dependenciesKind="dependent" />
+      <Unknown index="73" dependencies="" dependenciesKind="" />
+      <Unknown index="74" dependencies="" dependenciesKind="" />
+      <Unknown index="75" dependencies="" dependenciesKind="" />
+      <Unknown index="76" dependencies="" dependenciesKind="" />
+      <Unknown index="77" dependencies="" dependenciesKind="" />
       <Unknown index="78" dependencies="" dependenciesKind="" />
-      <Unknown index="79" dependencies="" dependenciesKind="" />
-      <Unknown index="80" dependencies="" dependenciesKind="" />
-      <Unknown index="81" dependencies="" dependenciesKind="" />
-      <Unknown index="82" dependencies="" dependenciesKind="" />
-      <Unknown index="83" dependencies="" dependenciesKind="" />
     </InitialUnknowns>
   </ModelStructure>
 </fmiModelDescription>

@@ -2,10 +2,11 @@
 <fmiModelDescription
   fmiVersion="2.0"
   modelName="tank2"
-  guid="{8d4a506f-fcdd-4950-a825-50ed5f8623c3}"
+  guid="{a4563452-c4bf-40f4-9a35-c4e9fab0b893}"
   description=""
-  generationTool="OpenModelica Compiler v1.23.0-dev-385-gb786a4f951-cmake"
-  generationDateAndTime="2024-03-20T15:41:57Z"
+  version=""
+  generationTool="OpenModelica Compiler OpenModelica v1.24.2 (64-bit)"
+  generationDateAndTime="2024-11-23T21:09:16Z"
   variableNamingConvention="structured"
   numberOfEventIndicators="0">
   <CoSimulation

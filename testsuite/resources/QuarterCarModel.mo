@@ -229,5 +229,5 @@ package QuarterCarModel
         experiment(StopTime=5));
     end CompositeModel;
   end DisplacementForce;
-  annotation (uses(Modelica(version="3.2.3")));
+  annotation (uses(Modelica(version="4.0.0")));
 end QuarterCarModel;

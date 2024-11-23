@@ -86,8 +86,6 @@ fmidertest.mos \
 HelloWorld.mos \
 HelloWorldWithInput.mos \
 Lin2DimODE.mos \
-Mass.mos \
-MassSpring.mos \
 nls.mos \
 QuarterCarModel.mos \
 replaceSubmodel.mos \
@@ -106,4 +104,4 @@ all:
 generateFMUs:
 	@echo
 	@echo generating FMUs with $$(omc --version) from $$(which omc)
-	@for mos in $(MOSs) ; do omc $$mos && rm *.libs *.log *.makefile; done
+	@for mos in $(MOSs) ; do omc $$mos --fmuRuntimeDepends=none && rm *.libs *.log *.makefile; done
