@@ -2,7 +2,7 @@
 -- teardown_command: rm -rf tankypipe_lua/
 -- linux: no
 -- ucrt64: yes
--- win: yes
+-- win: no
 -- mac: no
 
 oms_setCommandLineOption("--suppressPath=true")
