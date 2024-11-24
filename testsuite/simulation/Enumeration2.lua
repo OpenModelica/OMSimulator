@@ -43,7 +43,7 @@ oms_delete("test")
 -- info:    model doesn't contain any continuous state
 -- info:    Instantiation
 -- info:      test.root.A.y     : 2
--- info:      test.root.B.u     : 0
+-- info:      test.root.B.u     : 1
 -- info:    Result file: enumeration2.mat (bufferSize=1)
 -- info:    Initialization
 -- info:      test.root.A.y     : 2
