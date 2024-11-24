@@ -2,22 +2,14 @@
 <fmiModelDescription
   fmiVersion="2.0"
   modelName="fmidertest"
-  guid="{8930f267-77e4-4f23-886b-08a60e258c9c}"
+  guid="{cbd23953-b493-4776-a742-46106cae59bf}"
   description=""
-  version=""
-  generationTool="OpenModelica Compiler OpenModelica v1.24.2 (64-bit)"
-  generationDateAndTime="2024-11-23T20:43:29Z"
+  generationTool="OpenModelica Compiler OpenModelica v1.19.0-dev-626-g64d8413db0 (64-bit)"
+  generationDateAndTime="2022-02-25T17:32:35Z"
   variableNamingConvention="structured"
   numberOfEventIndicators="0">
   <ModelExchange
-    modelIdentifier="fmidertest"
-    needsExecutionTool="false"
-    completedIntegratorStepNotNeeded="false"
-    canBeInstantiatedOnlyOncePerProcess="false"
-    canNotUseMemoryManagementFunctions="false"
-    canGetAndSetFMUstate="true"
-    canSerializeFMUstate="true"
-    providesDirectionalDerivative="true">
+    modelIdentifier="fmidertest" providesDirectionalDerivative="true">
     <SourceFiles>
       <File name="fmidertest.c" />
       <File name="fmidertest_functions.c" />
@@ -42,16 +34,16 @@
       <File name="fmidertest_18spd.c" />
       <File name="fmidertest_init_fmu.c" />
       <File name="fmidertest_FMU.c" />
-      <File name="./gc/memory_pool.c" />
-      <File name="./gc/omc_gc.c" />
+      <File name="gc/memory_pool.c" />
+      <File name="gc/omc_gc.c" />
       <File name="./util/base_array.c" />
       <File name="./util/boolean_array.c" />
-      <File name="./util/context.c" />
       <File name="./util/division.c" />
       <File name="./util/doubleEndedList.c" />
       <File name="./util/generic_array.c" />
       <File name="./util/index_spec.c" />
       <File name="./util/integer_array.c" />
+      <File name="./util/jacobian_util.c" />
       <File name="./util/list.c" />
       <File name="./util/modelica_string_lit.c" />
       <File name="./util/modelica_string.c" />
@@ -71,7 +63,6 @@
       <File name="./util/utility.c" />
       <File name="./util/varinfo.c" />
       <File name="./math-support/pivot.c" />
-      <File name="./simulation/jacobian_util.c" />
       <File name="./simulation/omc_simulation_util.c" />
       <File name="./simulation/options.c" />
       <File name="./simulation/simulation_info_json.c" />
@@ -96,8 +87,8 @@
     canRunAsynchronuously = "false"
     canBeInstantiatedOnlyOncePerProcess="false"
     canNotUseMemoryManagementFunctions="false"
-    canGetAndSetFMUstate="true"
-    canSerializeFMUstate="true"
+    canGetAndSetFMUstate="false"
+    canSerializeFMUstate="false"
     providesDirectionalDerivative="true">
     <SourceFiles>
       <File name="fmidertest.c" />
@@ -123,16 +114,16 @@
       <File name="fmidertest_18spd.c" />
       <File name="fmidertest_init_fmu.c" />
       <File name="fmidertest_FMU.c" />
-      <File name="./gc/memory_pool.c" />
-      <File name="./gc/omc_gc.c" />
+      <File name="gc/memory_pool.c" />
+      <File name="gc/omc_gc.c" />
       <File name="./util/base_array.c" />
       <File name="./util/boolean_array.c" />
-      <File name="./util/context.c" />
       <File name="./util/division.c" />
       <File name="./util/doubleEndedList.c" />
       <File name="./util/generic_array.c" />
       <File name="./util/index_spec.c" />
       <File name="./util/integer_array.c" />
+      <File name="./util/jacobian_util.c" />
       <File name="./util/list.c" />
       <File name="./util/modelica_string_lit.c" />
       <File name="./util/modelica_string.c" />
@@ -152,7 +143,6 @@
       <File name="./util/utility.c" />
       <File name="./util/varinfo.c" />
       <File name="./math-support/pivot.c" />
-      <File name="./simulation/jacobian_util.c" />
       <File name="./simulation/omc_simulation_util.c" />
       <File name="./simulation/options.c" />
       <File name="./simulation/simulation_info_json.c" />
@@ -181,7 +171,7 @@
     <Category name="logAll" description="logAll" />
     <Category name="logFmi2Call" description="logFmi2Call" />
   </LogCategories>
-  <DefaultExperiment startTime="0.0" stopTime="1.0" tolerance="1e-6" stepSize="0.002"/>
+  <DefaultExperiment startTime="0.0" stopTime="1.0" tolerance="1e-06"/>
   <ModelVariables>
   <!-- Index of variable = "1" -->
   <ScalarVariable
