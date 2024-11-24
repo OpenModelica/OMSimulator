@@ -2,14 +2,22 @@
 <fmiModelDescription
   fmiVersion="2.0"
   modelName="Modelica.Blocks.Math.Feedback"
-  guid="{9f0f260a-03a7-460c-9b69-6a914bb64d32}"
+  guid="{fe540fdc-d3fd-41fa-8e2a-4dd258989a6a}"
   description="Output difference between commanded and feedback input"
-  generationTool="OpenModelica Compiler OMCompiler v1.18.0-dev.192+gc2d2d8d45f"
-  generationDateAndTime="2021-03-29T14:06:47Z"
+  version=""
+  generationTool="OpenModelica Compiler OpenModelica v1.24.2 (64-bit)"
+  generationDateAndTime="2024-11-23T20:29:53Z"
   variableNamingConvention="structured"
   numberOfEventIndicators="0">
   <ModelExchange
-    modelIdentifier="Modelica_Blocks_Math_Feedback">
+    modelIdentifier="Modelica_Blocks_Math_Feedback"
+    needsExecutionTool="false"
+    completedIntegratorStepNotNeeded="false"
+    canBeInstantiatedOnlyOncePerProcess="false"
+    canNotUseMemoryManagementFunctions="false"
+    canGetAndSetFMUstate="false"
+    canSerializeFMUstate="false"
+    providesDirectionalDerivative="false">
     <SourceFiles>
       <File name="Modelica_Blocks_Math_Feedback.c" />
       <File name="Modelica_Blocks_Math_Feedback_functions.c" />
@@ -34,19 +42,16 @@
       <File name="Modelica_Blocks_Math_Feedback_18spd.c" />
       <File name="Modelica_Blocks_Math_Feedback_init_fmu.c" />
       <File name="Modelica_Blocks_Math_Feedback_FMU.c" />
-      <File name="./util/read_matlab4.c" />
-      <File name="./util/read_csv.c" />
-      <File name="./util/libcsv.c" />
-      <File name="gc/memory_pool.c" />
-      <File name="gc/omc_gc.c" />
+      <File name="./gc/memory_pool.c" />
+      <File name="./gc/omc_gc.c" />
       <File name="./util/base_array.c" />
       <File name="./util/boolean_array.c" />
+      <File name="./util/context.c" />
       <File name="./util/division.c" />
       <File name="./util/doubleEndedList.c" />
       <File name="./util/generic_array.c" />
       <File name="./util/index_spec.c" />
       <File name="./util/integer_array.c" />
-      <File name="./util/jacobian_util.c" />
       <File name="./util/list.c" />
       <File name="./util/modelica_string_lit.c" />
       <File name="./util/modelica_string.c" />
@@ -66,6 +71,7 @@
       <File name="./util/utility.c" />
       <File name="./util/varinfo.c" />
       <File name="./math-support/pivot.c" />
+      <File name="./simulation/jacobian_util.c" />
       <File name="./simulation/omc_simulation_util.c" />
       <File name="./simulation/options.c" />
       <File name="./simulation/simulation_info_json.c" />
@@ -85,14 +91,14 @@
     modelIdentifier="Modelica_Blocks_Math_Feedback"
     needsExecutionTool="false"
     canHandleVariableCommunicationStepSize="true"
-    canInterpolateInputs="false"
-    maxOutputDerivativeOrder="0"
+    canInterpolateInputs="true"
+    maxOutputDerivativeOrder="1"
     canRunAsynchronuously = "false"
     canBeInstantiatedOnlyOncePerProcess="false"
     canNotUseMemoryManagementFunctions="false"
     canGetAndSetFMUstate="false"
     canSerializeFMUstate="false"
-    >
+    providesDirectionalDerivative="false">
     <SourceFiles>
       <File name="Modelica_Blocks_Math_Feedback.c" />
       <File name="Modelica_Blocks_Math_Feedback_functions.c" />
@@ -117,19 +123,16 @@
       <File name="Modelica_Blocks_Math_Feedback_18spd.c" />
       <File name="Modelica_Blocks_Math_Feedback_init_fmu.c" />
       <File name="Modelica_Blocks_Math_Feedback_FMU.c" />
-      <File name="./util/read_matlab4.c" />
-      <File name="./util/read_csv.c" />
-      <File name="./util/libcsv.c" />
-      <File name="gc/memory_pool.c" />
-      <File name="gc/omc_gc.c" />
+      <File name="./gc/memory_pool.c" />
+      <File name="./gc/omc_gc.c" />
       <File name="./util/base_array.c" />
       <File name="./util/boolean_array.c" />
+      <File name="./util/context.c" />
       <File name="./util/division.c" />
       <File name="./util/doubleEndedList.c" />
       <File name="./util/generic_array.c" />
       <File name="./util/index_spec.c" />
       <File name="./util/integer_array.c" />
-      <File name="./util/jacobian_util.c" />
       <File name="./util/list.c" />
       <File name="./util/modelica_string_lit.c" />
       <File name="./util/modelica_string.c" />
@@ -149,6 +152,7 @@
       <File name="./util/utility.c" />
       <File name="./util/varinfo.c" />
       <File name="./math-support/pivot.c" />
+      <File name="./simulation/jacobian_util.c" />
       <File name="./simulation/omc_simulation_util.c" />
       <File name="./simulation/options.c" />
       <File name="./simulation/simulation_info_json.c" />
@@ -177,12 +181,13 @@
     <Category name="logAll" />
     <Category name="logFmi2Call" />
   </LogCategories>
-  <DefaultExperiment startTime="0.0" stopTime="1.0" tolerance="1e-06"/>
+  <DefaultExperiment startTime="0.0" stopTime="1.0" tolerance="1e-6" stepSize="0.002"/>
   <ModelVariables>
   <!-- Index of variable = "1" -->
   <ScalarVariable
     name="u1"
     valueReference="0"
+    description="Commanded input"
     causality="input"
     >
     <Real start="0.0"/>
@@ -191,6 +196,7 @@
   <ScalarVariable
     name="u2"
     valueReference="1"
+    description="Feedback input"
     causality="input"
     >
     <Real start="0.0"/>

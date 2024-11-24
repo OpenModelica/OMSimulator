@@ -2,14 +2,22 @@
 <fmiModelDescription
   fmiVersion="2.0"
   modelName="A"
-  guid="{1eced1af-e235-47ff-9092-50f0e1a028f3}"
+  guid="{bf793d14-c075-499f-bac7-200dcd81367a}"
   description=""
-  generationTool="OpenModelica Compiler OpenModelica v1.20.0-dev (64-bit)"
-  generationDateAndTime="2022-05-11T16:46:02Z"
+  version=""
+  generationTool="OpenModelica Compiler OpenModelica v1.24.2 (64-bit)"
+  generationDateAndTime="2024-11-23T21:06:01Z"
   variableNamingConvention="structured"
   numberOfEventIndicators="0">
   <ModelExchange
-    modelIdentifier="A">
+    modelIdentifier="A"
+    needsExecutionTool="false"
+    completedIntegratorStepNotNeeded="false"
+    canBeInstantiatedOnlyOncePerProcess="false"
+    canNotUseMemoryManagementFunctions="false"
+    canGetAndSetFMUstate="false"
+    canSerializeFMUstate="false"
+    providesDirectionalDerivative="false">
     <SourceFiles>
       <File name="A.c" />
       <File name="A_functions.c" />
@@ -34,16 +42,16 @@
       <File name="A_18spd.c" />
       <File name="A_init_fmu.c" />
       <File name="A_FMU.c" />
-      <File name="gc/memory_pool.c" />
-      <File name="gc/omc_gc.c" />
+      <File name="./gc/memory_pool.c" />
+      <File name="./gc/omc_gc.c" />
       <File name="./util/base_array.c" />
       <File name="./util/boolean_array.c" />
+      <File name="./util/context.c" />
       <File name="./util/division.c" />
       <File name="./util/doubleEndedList.c" />
       <File name="./util/generic_array.c" />
       <File name="./util/index_spec.c" />
       <File name="./util/integer_array.c" />
-      <File name="./util/jacobian_util.c" />
       <File name="./util/list.c" />
       <File name="./util/modelica_string_lit.c" />
       <File name="./util/modelica_string.c" />
@@ -63,6 +71,7 @@
       <File name="./util/utility.c" />
       <File name="./util/varinfo.c" />
       <File name="./math-support/pivot.c" />
+      <File name="./simulation/jacobian_util.c" />
       <File name="./simulation/omc_simulation_util.c" />
       <File name="./simulation/options.c" />
       <File name="./simulation/simulation_info_json.c" />
@@ -114,16 +123,16 @@
       <File name="A_18spd.c" />
       <File name="A_init_fmu.c" />
       <File name="A_FMU.c" />
-      <File name="gc/memory_pool.c" />
-      <File name="gc/omc_gc.c" />
+      <File name="./gc/memory_pool.c" />
+      <File name="./gc/omc_gc.c" />
       <File name="./util/base_array.c" />
       <File name="./util/boolean_array.c" />
+      <File name="./util/context.c" />
       <File name="./util/division.c" />
       <File name="./util/doubleEndedList.c" />
       <File name="./util/generic_array.c" />
       <File name="./util/index_spec.c" />
       <File name="./util/integer_array.c" />
-      <File name="./util/jacobian_util.c" />
       <File name="./util/list.c" />
       <File name="./util/modelica_string_lit.c" />
       <File name="./util/modelica_string.c" />
@@ -143,6 +152,7 @@
       <File name="./util/utility.c" />
       <File name="./util/varinfo.c" />
       <File name="./math-support/pivot.c" />
+      <File name="./simulation/jacobian_util.c" />
       <File name="./simulation/omc_simulation_util.c" />
       <File name="./simulation/options.c" />
       <File name="./simulation/simulation_info_json.c" />
@@ -185,7 +195,7 @@
     <Category name="logAll" />
     <Category name="logFmi2Call" />
   </LogCategories>
-  <DefaultExperiment startTime="0.0" stopTime="1.0" tolerance="1e-06"/>
+  <DefaultExperiment startTime="0.0" stopTime="1.0" tolerance="1e-6" stepSize="0.002"/>
   <ModelVariables>
   <!-- Index of variable = "1" -->
   <ScalarVariable

@@ -282,5 +282,5 @@ package DualMassOscillator
       Line(points = {{-18, -6}, {18, -6}, {18, -6}, {18, -6}}, color = {0, 0, 127}));
   end CoupledSystemEq;
   annotation(
-    uses(Modelica(version="3.2.3")));
+    uses(Modelica(version="4.0.0")));
 end DualMassOscillator;

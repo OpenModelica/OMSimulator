@@ -44,7 +44,7 @@ oms_delete("Enumeration")
 -- info:    model doesn't contain any continuous state
 -- info:    Instantiation
 -- info:      Enumeration.root.A.y     : 2
--- info:      Enumeration.root.B.u     : 0
+-- info:      Enumeration.root.B.u     : 1
 -- info:    Result file: Enumeration_res.mat (bufferSize=10)
 -- info:    Initialization
 -- info:      Enumeration.root.A.y     : 2

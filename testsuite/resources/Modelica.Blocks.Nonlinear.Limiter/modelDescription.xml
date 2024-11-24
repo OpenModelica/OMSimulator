@@ -2,14 +2,22 @@
 <fmiModelDescription
   fmiVersion="2.0"
   modelName="Modelica.Blocks.Nonlinear.Limiter"
-  guid="{98f075cd-390e-46f5-8ce7-35bb55e0f266}"
+  guid="{4d4085fd-3fab-4468-9052-66923eb7fead}"
   description="Limit the range of a signal"
-  generationTool="OpenModelica Compiler OMCompiler v1.18.0-dev.192+gc2d2d8d45f"
-  generationDateAndTime="2021-03-29T14:09:19Z"
+  version=""
+  generationTool="OpenModelica Compiler OpenModelica v1.24.2 (64-bit)"
+  generationDateAndTime="2024-11-23T20:35:08Z"
   variableNamingConvention="structured"
   numberOfEventIndicators="0">
   <ModelExchange
-    modelIdentifier="Modelica_Blocks_Nonlinear_Limiter">
+    modelIdentifier="Modelica_Blocks_Nonlinear_Limiter"
+    needsExecutionTool="false"
+    completedIntegratorStepNotNeeded="false"
+    canBeInstantiatedOnlyOncePerProcess="false"
+    canNotUseMemoryManagementFunctions="false"
+    canGetAndSetFMUstate="false"
+    canSerializeFMUstate="false"
+    providesDirectionalDerivative="false">
     <SourceFiles>
       <File name="Modelica_Blocks_Nonlinear_Limiter.c" />
       <File name="Modelica_Blocks_Nonlinear_Limiter_functions.c" />
@@ -34,19 +42,16 @@
       <File name="Modelica_Blocks_Nonlinear_Limiter_18spd.c" />
       <File name="Modelica_Blocks_Nonlinear_Limiter_init_fmu.c" />
       <File name="Modelica_Blocks_Nonlinear_Limiter_FMU.c" />
-      <File name="./util/read_matlab4.c" />
-      <File name="./util/read_csv.c" />
-      <File name="./util/libcsv.c" />
-      <File name="gc/memory_pool.c" />
-      <File name="gc/omc_gc.c" />
+      <File name="./gc/memory_pool.c" />
+      <File name="./gc/omc_gc.c" />
       <File name="./util/base_array.c" />
       <File name="./util/boolean_array.c" />
+      <File name="./util/context.c" />
       <File name="./util/division.c" />
       <File name="./util/doubleEndedList.c" />
       <File name="./util/generic_array.c" />
       <File name="./util/index_spec.c" />
       <File name="./util/integer_array.c" />
-      <File name="./util/jacobian_util.c" />
       <File name="./util/list.c" />
       <File name="./util/modelica_string_lit.c" />
       <File name="./util/modelica_string.c" />
@@ -66,6 +71,7 @@
       <File name="./util/utility.c" />
       <File name="./util/varinfo.c" />
       <File name="./math-support/pivot.c" />
+      <File name="./simulation/jacobian_util.c" />
       <File name="./simulation/omc_simulation_util.c" />
       <File name="./simulation/options.c" />
       <File name="./simulation/simulation_info_json.c" />
@@ -85,14 +91,14 @@
     modelIdentifier="Modelica_Blocks_Nonlinear_Limiter"
     needsExecutionTool="false"
     canHandleVariableCommunicationStepSize="true"
-    canInterpolateInputs="false"
-    maxOutputDerivativeOrder="0"
+    canInterpolateInputs="true"
+    maxOutputDerivativeOrder="1"
     canRunAsynchronuously = "false"
     canBeInstantiatedOnlyOncePerProcess="false"
     canNotUseMemoryManagementFunctions="false"
     canGetAndSetFMUstate="false"
     canSerializeFMUstate="false"
-    >
+    providesDirectionalDerivative="false">
     <SourceFiles>
       <File name="Modelica_Blocks_Nonlinear_Limiter.c" />
       <File name="Modelica_Blocks_Nonlinear_Limiter_functions.c" />
@@ -117,19 +123,16 @@
       <File name="Modelica_Blocks_Nonlinear_Limiter_18spd.c" />
       <File name="Modelica_Blocks_Nonlinear_Limiter_init_fmu.c" />
       <File name="Modelica_Blocks_Nonlinear_Limiter_FMU.c" />
-      <File name="./util/read_matlab4.c" />
-      <File name="./util/read_csv.c" />
-      <File name="./util/libcsv.c" />
-      <File name="gc/memory_pool.c" />
-      <File name="gc/omc_gc.c" />
+      <File name="./gc/memory_pool.c" />
+      <File name="./gc/omc_gc.c" />
       <File name="./util/base_array.c" />
       <File name="./util/boolean_array.c" />
+      <File name="./util/context.c" />
       <File name="./util/division.c" />
       <File name="./util/doubleEndedList.c" />
       <File name="./util/generic_array.c" />
       <File name="./util/index_spec.c" />
       <File name="./util/integer_array.c" />
-      <File name="./util/jacobian_util.c" />
       <File name="./util/list.c" />
       <File name="./util/modelica_string_lit.c" />
       <File name="./util/modelica_string.c" />
@@ -149,6 +152,7 @@
       <File name="./util/utility.c" />
       <File name="./util/varinfo.c" />
       <File name="./math-support/pivot.c" />
+      <File name="./simulation/jacobian_util.c" />
       <File name="./simulation/omc_simulation_util.c" />
       <File name="./simulation/options.c" />
       <File name="./simulation/simulation_info_json.c" />
@@ -187,7 +191,7 @@
     <Category name="logAll" />
     <Category name="logFmi2Call" />
   </LogCategories>
-  <DefaultExperiment startTime="0.0" stopTime="1.0" tolerance="1e-06"/>
+  <DefaultExperiment startTime="0.0" stopTime="1.0" tolerance="1e-6" stepSize="0.002"/>
   <ModelVariables>
   <!-- Index of variable = "1" -->
   <ScalarVariable
@@ -229,14 +233,6 @@
   </ScalarVariable>
   <!-- Index of variable = "5" -->
   <ScalarVariable
-    name="simplifiedExpr"
-    valueReference="0"
-    description="Simplified expression for homotopy-based initialization"
-    >
-    <Real/>
-  </ScalarVariable>
-  <!-- Index of variable = "6" -->
-  <ScalarVariable
     name="homotopyType"
     valueReference="0"
     description="Simplified model for homotopy-based initialization"
@@ -245,20 +241,10 @@
     >
     <Enumeration declaredType="Modelica.Blocks.Types.LimiterHomotopy"/>
   </ScalarVariable>
-  <!-- Index of variable = "7" -->
-  <ScalarVariable
-    name="limitsAtInit"
-    valueReference="0"
-    description="Has no longer an effect and is only kept for backwards compatibility (the implementation uses now the homotopy operator)"
-    variability="fixed"
-    causality="calculatedParameter"
-    >
-    <Boolean/>
-  </ScalarVariable>
-  <!-- Index of variable = "8" -->
+  <!-- Index of variable = "6" -->
   <ScalarVariable
     name="strict"
-    valueReference="1"
+    valueReference="0"
     description="= true, if strict limits with noEvent(..)"
     variability="fixed"
     causality="calculatedParameter"
@@ -271,11 +257,10 @@
       <Unknown index="2" dependencies="1" dependenciesKind="dependent" />
     </Outputs>
     <InitialUnknowns>
-      <Unknown index="2" dependencies="1 3" dependenciesKind="dependent dependent" />
+      <Unknown index="2" dependencies="1" dependenciesKind="dependent" />
       <Unknown index="4" dependencies="3" dependenciesKind="dependent" />
+      <Unknown index="5" dependencies="" dependenciesKind="" />
       <Unknown index="6" dependencies="" dependenciesKind="" />
-      <Unknown index="7" dependencies="" dependenciesKind="" />
-      <Unknown index="8" dependencies="" dependenciesKind="" />
     </InitialUnknowns>
   </ModelStructure>
 </fmiModelDescription>

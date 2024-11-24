@@ -1,8 +1,8 @@
-loadModel(Modelica, {"3.2.3"}); getErrorString();
+loadModel(Modelica, {"4.0.0"}); getErrorString();
 loadFile("DualMassOscillator.mo"); getErrorString();
 
-buildModelFMU(DualMassOscillator.System1, version="2.0", fmuType="me_cs", fileNamePrefix="DualMassOscillator.System1", platforms={"i686-linux-gnu docker run docker.openmodelica.org/build-deps:v1.13-i386","x86_64-linux-gnu docker run docker.openmodelica.org/build-deps:bionic.nightly.amd64","i686-w64-mingw32 docker run docker.openmodelica.org/msyscross-omsimulator:v2.0","x86_64-w64-mingw32 docker run docker.openmodelica.org/msyscross-omsimulator:v2.0"}); getErrorString();
-buildModelFMU(DualMassOscillator.System2, version="2.0", fmuType="me_cs", fileNamePrefix="DualMassOscillator.System2", platforms={"i686-linux-gnu docker run docker.openmodelica.org/build-deps:v1.13-i386","x86_64-linux-gnu docker run docker.openmodelica.org/build-deps:bionic.nightly.amd64","i686-w64-mingw32 docker run docker.openmodelica.org/msyscross-omsimulator:v2.0","x86_64-w64-mingw32 docker run docker.openmodelica.org/msyscross-omsimulator:v2.0"}); getErrorString();
+buildModelFMU(DualMassOscillator.System1, version="2.0", fmuType="me_cs", fileNamePrefix="DualMassOscillator.System1", platforms={"x86_64-linux-gnu docker run multiarch/crossbuild","x86_64-w64-mingw32 docker run multiarch/crossbuild"}); getErrorString();
+buildModelFMU(DualMassOscillator.System2, version="2.0", fmuType="me_cs", fileNamePrefix="DualMassOscillator.System2", platforms={"x86_64-linux-gnu docker run multiarch/crossbuild","x86_64-w64-mingw32 docker run multiarch/crossbuild"}); getErrorString();
 
 system("zip -qd DualMassOscillator.System1.fmu sources/* && unzip -o DualMassOscillator.System1.fmu -d DualMassOscillator.System1/");
 system("zip -qd DualMassOscillator.System2.fmu sources/* && unzip -o DualMassOscillator.System2.fmu -d DualMassOscillator.System2/");

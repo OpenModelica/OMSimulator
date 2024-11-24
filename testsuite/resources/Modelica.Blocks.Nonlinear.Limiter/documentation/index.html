@@ -1,0 +1,26 @@
+
+<h1>Modelica.Blocks.Nonlinear.Limiter</h1>
+<p> <i>Limit the range of a signal</i> </p> 
+<h4> <u> Information </u> </h4><html>
+<p>
+The Limiter block passes its input signal as output signal
+as long as the input is within the specified upper and lower
+limits. If this is not the case, the corresponding limits are passed
+as output.
+</p>
+<p>
+The parameter <code>homotopyType</code> in the Advanced tab specifies the
+simplified behaviour if homotopy-based initialization is used:
+</p>
+<ul>
+<li><code>NoHomotopy</code>: the actual expression with limits is used</li>
+<li><code>Linear</code>: a linear behaviour y = u is assumed (default option)</li>
+<li><code>UpperLimit</code>: it is assumed that the output is stuck at the upper limit u = uMax</li>
+<li><code>LowerLimit</code>: it is assumed that the output is stuck at the lower limit u = uMin</li>
+</ul>
+<p>
+If it is known a priori in which region the input signal will be located, this option can help
+a lot by removing one strong nonlinearity from the initialization problem.
+</p>
+</html>
+<h4> <u> Revisions </u> </h4>

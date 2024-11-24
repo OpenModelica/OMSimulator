@@ -1,0 +1,28 @@
+
+<h1>Modelica.Blocks.Continuous.Integrator</h1>
+<p> <i>Output the integral of the input signal with optional reset</i> </p> 
+<h4> <u> Information </u> </h4><html>
+<p>
+This blocks computes output <strong>y</strong> as
+<em>integral</em> of the input <strong>u</strong> multiplied with
+the gain <em>k</em>:
+</p>
+<blockquote><pre>
+    k
+y = - u
+    s
+</pre></blockquote>
+
+<p>
+It might be difficult to initialize the integrator in steady state.
+This is discussed in the description of package
+<a href="modelica://Modelica.Blocks.Continuous#info">Continuous</a>.
+</p>
+
+<p>
+If the <em>reset</em> port is enabled, then the output <strong>y</strong> is reset to <em>set</em>
+or to <em>y_start</em> (if the <em>set</em> port is not enabled), whenever the <em>reset</em>
+port has a rising edge.
+</p>
+</html>
+<h4> <u> Revisions </u> </h4>

@@ -2,14 +2,22 @@
 <fmiModelDescription
   fmiVersion="2.0"
   modelName="Modelica.Blocks.Continuous.Integrator"
-  guid="{6a8a3856-2b32-441e-a9ad-9cb4fc91146c}"
+  guid="{c8dc6af5-013a-4a16-b4dc-8504690091e2}"
   description="Output the integral of the input signal with optional reset"
-  generationTool="OpenModelica Compiler OMCompiler v1.18.0-dev.192+gc2d2d8d45f"
-  generationDateAndTime="2021-03-29T14:09:38Z"
+  version=""
+  generationTool="OpenModelica Compiler OpenModelica v1.24.2 (64-bit)"
+  generationDateAndTime="2024-11-23T20:35:51Z"
   variableNamingConvention="structured"
   numberOfEventIndicators="0">
   <ModelExchange
-    modelIdentifier="Modelica_Blocks_Continuous_Integrator">
+    modelIdentifier="Modelica_Blocks_Continuous_Integrator"
+    needsExecutionTool="false"
+    completedIntegratorStepNotNeeded="false"
+    canBeInstantiatedOnlyOncePerProcess="false"
+    canNotUseMemoryManagementFunctions="false"
+    canGetAndSetFMUstate="false"
+    canSerializeFMUstate="false"
+    providesDirectionalDerivative="false">
     <SourceFiles>
       <File name="Modelica_Blocks_Continuous_Integrator.c" />
       <File name="Modelica_Blocks_Continuous_Integrator_functions.c" />
@@ -34,19 +42,16 @@
       <File name="Modelica_Blocks_Continuous_Integrator_18spd.c" />
       <File name="Modelica_Blocks_Continuous_Integrator_init_fmu.c" />
       <File name="Modelica_Blocks_Continuous_Integrator_FMU.c" />
-      <File name="./util/read_matlab4.c" />
-      <File name="./util/read_csv.c" />
-      <File name="./util/libcsv.c" />
-      <File name="gc/memory_pool.c" />
-      <File name="gc/omc_gc.c" />
+      <File name="./gc/memory_pool.c" />
+      <File name="./gc/omc_gc.c" />
       <File name="./util/base_array.c" />
       <File name="./util/boolean_array.c" />
+      <File name="./util/context.c" />
       <File name="./util/division.c" />
       <File name="./util/doubleEndedList.c" />
       <File name="./util/generic_array.c" />
       <File name="./util/index_spec.c" />
       <File name="./util/integer_array.c" />
-      <File name="./util/jacobian_util.c" />
       <File name="./util/list.c" />
       <File name="./util/modelica_string_lit.c" />
       <File name="./util/modelica_string.c" />
@@ -66,6 +71,7 @@
       <File name="./util/utility.c" />
       <File name="./util/varinfo.c" />
       <File name="./math-support/pivot.c" />
+      <File name="./simulation/jacobian_util.c" />
       <File name="./simulation/omc_simulation_util.c" />
       <File name="./simulation/options.c" />
       <File name="./simulation/simulation_info_json.c" />
@@ -85,14 +91,14 @@
     modelIdentifier="Modelica_Blocks_Continuous_Integrator"
     needsExecutionTool="false"
     canHandleVariableCommunicationStepSize="true"
-    canInterpolateInputs="false"
-    maxOutputDerivativeOrder="0"
+    canInterpolateInputs="true"
+    maxOutputDerivativeOrder="1"
     canRunAsynchronuously = "false"
     canBeInstantiatedOnlyOncePerProcess="false"
     canNotUseMemoryManagementFunctions="false"
     canGetAndSetFMUstate="false"
     canSerializeFMUstate="false"
-    >
+    providesDirectionalDerivative="false">
     <SourceFiles>
       <File name="Modelica_Blocks_Continuous_Integrator.c" />
       <File name="Modelica_Blocks_Continuous_Integrator_functions.c" />
@@ -117,19 +123,16 @@
       <File name="Modelica_Blocks_Continuous_Integrator_18spd.c" />
       <File name="Modelica_Blocks_Continuous_Integrator_init_fmu.c" />
       <File name="Modelica_Blocks_Continuous_Integrator_FMU.c" />
-      <File name="./util/read_matlab4.c" />
-      <File name="./util/read_csv.c" />
-      <File name="./util/libcsv.c" />
-      <File name="gc/memory_pool.c" />
-      <File name="gc/omc_gc.c" />
+      <File name="./gc/memory_pool.c" />
+      <File name="./gc/omc_gc.c" />
       <File name="./util/base_array.c" />
       <File name="./util/boolean_array.c" />
+      <File name="./util/context.c" />
       <File name="./util/division.c" />
       <File name="./util/doubleEndedList.c" />
       <File name="./util/generic_array.c" />
       <File name="./util/index_spec.c" />
       <File name="./util/integer_array.c" />
-      <File name="./util/jacobian_util.c" />
       <File name="./util/list.c" />
       <File name="./util/modelica_string_lit.c" />
       <File name="./util/modelica_string.c" />
@@ -149,6 +152,7 @@
       <File name="./util/utility.c" />
       <File name="./util/varinfo.c" />
       <File name="./math-support/pivot.c" />
+      <File name="./simulation/jacobian_util.c" />
       <File name="./simulation/omc_simulation_util.c" />
       <File name="./simulation/options.c" />
       <File name="./simulation/simulation_info_json.c" />
@@ -192,7 +196,7 @@
     <Category name="logAll" />
     <Category name="logFmi2Call" />
   </LogCategories>
-  <DefaultExperiment startTime="0.0" stopTime="1.0" tolerance="1e-06"/>
+  <DefaultExperiment startTime="0.0" stopTime="1.0" tolerance="1e-6" stepSize="0.002"/>
   <ModelVariables>
   <!-- Index of variable = "1" -->
   <ScalarVariable
@@ -212,14 +216,6 @@
   </ScalarVariable>
   <!-- Index of variable = "3" -->
   <ScalarVariable
-    name="local_set"
-    valueReference="3"
-    causality="output"
-    >
-    <Real/>
-  </ScalarVariable>
-  <!-- Index of variable = "4" -->
-  <ScalarVariable
     name="u"
     valueReference="4"
     description="Connector of Real input signal"
@@ -227,7 +223,7 @@
     >
     <Real start="0.0"/>
   </ScalarVariable>
-  <!-- Index of variable = "5" -->
+  <!-- Index of variable = "4" -->
   <ScalarVariable
     name="y"
     valueReference="5"
@@ -236,7 +232,7 @@
     >
     <Real/>
   </ScalarVariable>
-  <!-- Index of variable = "6" -->
+  <!-- Index of variable = "5" -->
   <ScalarVariable
     name="k"
     valueReference="6"
@@ -246,7 +242,7 @@
     >
     <Real start="1.0" unit="1"/>
   </ScalarVariable>
-  <!-- Index of variable = "7" -->
+  <!-- Index of variable = "6" -->
   <ScalarVariable
     name="y_start"
     valueReference="7"
@@ -256,7 +252,7 @@
     >
     <Real start="0.0"/>
   </ScalarVariable>
-  <!-- Index of variable = "8" -->
+  <!-- Index of variable = "7" -->
   <ScalarVariable
     name="initType"
     valueReference="0"
@@ -266,30 +262,21 @@
     >
     <Enumeration declaredType="Modelica.Blocks.Types.Init"/>
   </ScalarVariable>
-  <!-- Index of variable = "9" -->
-  <ScalarVariable
-    name="local_reset"
-    valueReference="1"
-    variability="discrete"
-    causality="output"
-    >
-    <Boolean/>
-  </ScalarVariable>
-  <!-- Index of variable = "10" -->
+  <!-- Index of variable = "8" -->
   <ScalarVariable
     name="use_reset"
     valueReference="2"
-    description="=true, if reset port enabled"
+    description="= true, if reset port enabled"
     variability="fixed"
     causality="calculatedParameter"
     >
     <Boolean/>
   </ScalarVariable>
-  <!-- Index of variable = "11" -->
+  <!-- Index of variable = "9" -->
   <ScalarVariable
     name="use_set"
     valueReference="3"
-    description="=true, if set port enabled and used as reinitialization value when reset"
+    description="= true, if set port enabled and used as reinitialization value when reset"
     variability="fixed"
     causality="calculatedParameter"
     >
@@ -298,22 +285,18 @@
   </ModelVariables>
   <ModelStructure>
     <Outputs>
-      <Unknown index="3" dependencies="" dependenciesKind="" />
-      <Unknown index="5" dependencies="1" dependenciesKind="dependent" />
-      <Unknown index="9" dependencies="" dependenciesKind="" />
+      <Unknown index="4" dependencies="1" dependenciesKind="dependent" />
     </Outputs>
     <Derivatives>
-      <Unknown index="2" dependencies="4" dependenciesKind="dependent" />
+      <Unknown index="2" dependencies="3" dependenciesKind="dependent" />
     </Derivatives>
     <InitialUnknowns>
-      <Unknown index="1" dependencies="" dependenciesKind="" />
-      <Unknown index="2" dependencies="7" dependenciesKind="dependent" />
-      <Unknown index="3" dependencies="" dependenciesKind="" />
-      <Unknown index="5" dependencies="" dependenciesKind="" />
+      <Unknown index="1" dependencies="6" dependenciesKind="dependent" />
+      <Unknown index="2" dependencies="3 5" dependenciesKind="dependent dependent" />
+      <Unknown index="4" dependencies="6" dependenciesKind="dependent" />
+      <Unknown index="7" dependencies="" dependenciesKind="" />
       <Unknown index="8" dependencies="" dependenciesKind="" />
       <Unknown index="9" dependencies="" dependenciesKind="" />
-      <Unknown index="10" dependencies="" dependenciesKind="" />
-      <Unknown index="11" dependencies="" dependenciesKind="" />
     </InitialUnknowns>
   </ModelStructure>
 </fmiModelDescription>

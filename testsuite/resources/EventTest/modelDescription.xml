@@ -2,11 +2,11 @@
 <fmiModelDescription
   fmiVersion="2.0"
   modelName="EventTest"
-  guid="{2e209521-b55c-45ae-980d-418d0e87300b}"
+  guid="{6801bddd-e3d8-4693-83cc-7b23bbac1629}"
   description=""
   version=""
-  generationTool="OpenModelica Compiler OpenModelica v1.25.0-dev-143-g6a0e852842 (64-bit)"
-  generationDateAndTime="2024-11-08T13:15:25Z"
+  generationTool="OpenModelica Compiler OpenModelica v1.24.2 (64-bit)"
+  generationDateAndTime="2024-11-23T20:42:47Z"
   variableNamingConvention="structured"
   numberOfEventIndicators="1">
   <ModelExchange
