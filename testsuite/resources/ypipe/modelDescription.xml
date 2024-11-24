@@ -2,11 +2,10 @@
 <fmiModelDescription
   fmiVersion="2.0"
   modelName="ypipe"
-  guid="{80a4ae23-5599-4162-87cd-3d4e19d561ed}"
+  guid="{b1f5f57d-07a4-4cbd-a302-981908370360}"
   description=""
-  version=""
-  generationTool="OpenModelica Compiler OpenModelica v1.24.2 (64-bit)"
-  generationDateAndTime="2024-11-23T21:10:42Z"
+  generationTool="OpenModelica Compiler v1.23.0-dev-385-gb786a4f951-cmake"
+  generationDateAndTime="2024-03-20T15:42:40Z"
   variableNamingConvention="structured"
   numberOfEventIndicators="0">
   <CoSimulation
