@@ -3,5 +3,5 @@ FROM docker.openmodelica.org/build-deps:v1.16-i386
 
 # We don't know the uid of the user who will build, so make the /cache directories world writable
 
-RUN apt-get install libasan6 apt install libwayland-dev libxkbcommon-dev xorg-dev && \
+RUN apt-get install libasan6 libwayland-dev libxkbcommon-dev xorg-dev && \
     mkdir -p /cache/runtest/ /cache/omlibrary/ && chmod ugo+rwx /cache/runtest/ /cache/omlibrary/
