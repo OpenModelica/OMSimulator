@@ -88,6 +88,7 @@ class OMSimulator:
     self.getTime = Scope._capi.getTime
     self.getVariableStepSize = Scope._capi.getVariableStepSize
     self.getVersion = Scope._capi.getVersion
+    self.gui = Scope._capi.gui
     self.importFile = Scope._capi.importFile
     self.importSnapshot = Scope._capi.importSnapshot
     self.initialize = Scope._capi.initialize

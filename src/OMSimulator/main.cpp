@@ -32,10 +32,6 @@
 #include "OMSimulator/OMSimulator.h"
 #include <string>
 
-#include "Application.h"
-#include "DemoLayer.h"
-#include "Layer.h"
-
 int main(int argc, char *argv[])
 {
   std::string arg;
@@ -47,16 +43,10 @@ int main(int argc, char *argv[])
   }
 
   if (arg.empty())
-  {
-    Application app("OMSimulator", 800, 600);
-    app.PushLayer(std::make_shared<DemoLayer>(app));
-    app.Run();
-  }
-  else
-  {
-    if (oms_status_ok != oms_setCommandLineOption(arg.c_str()))
-      return 1;
-  }
+    oms_gui();
+
+  if (oms_status_ok != oms_setCommandLineOption(arg.c_str()))
+    return 1;
 
   return 0;
 }

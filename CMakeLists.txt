@@ -55,6 +55,16 @@ ENDIF()
 
 message(STATUS "Platform string: ${PLATFORM_STRING}")
 
+option(OMS_GUI "Enable GUI support" ON)
+
+if (OMS_GUI)
+  add_definitions(-DOMS_GUI)
+  message(STATUS "GUI support enabled")
+else()
+  message(STATUS "GUI support disabled")
+  set(PLATFORM_STRING "${PLATFORM_STRING}-no-gui")
+endif()
+
 ##########################
 
 add_subdirectory(3rdParty)

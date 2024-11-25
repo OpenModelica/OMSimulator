@@ -63,6 +63,10 @@ set(OMSIMULATORLIB_SOURCES
       ssd/SystemGeometry.cpp
       ssd/Tags.cpp)
 
+if (OMS_GUI)
+  list(APPEND OMSIMULATORLIB_SOURCES gui/Application.cpp gui/FPSCounter.cpp)
+endif ()
+
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Version.cpp.in" "${CMAKE_CURRENT_BINARY_DIR}/Version.cpp" @ONLY)
 list(APPEND OMSIMULATORLIB_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/Version.cpp")
 
@@ -90,6 +94,11 @@ target_link_libraries(OMSimulatorLib PUBLIC ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS
 if(MINGW)
   target_link_libraries(OMSimulatorLib PUBLIC shlwapi)
 endif()
+
+if (OMS_GUI)
+  target_link_libraries(OMSimulatorLib PUBLIC oms::3rd::GLFW oms::3rd::imgui)
+  target_include_directories(OMSimulatorLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/gui)
+endif ()
 
 # Static library version
 add_library(OMSimulatorLib_static STATIC ${OMSIMULATORLIB_SOURCES})
@@ -121,6 +130,11 @@ target_link_libraries(OMSimulatorLib_static PUBLIC ${CMAKE_DL_LIBS} ${CMAKE_THRE
 if(MINGW)
   target_link_libraries(OMSimulatorLib_static PUBLIC shlwapi)
 endif()
+
+if (OMS_GUI)
+  target_link_libraries(OMSimulatorLib_static PUBLIC oms::3rd::GLFW oms::3rd::imgui)
+  target_include_directories(OMSimulatorLib_static PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/gui)
+endif ()
 
 ## copy dependent DLL's for mingw artifacts
 if(ICU_FOUND)
