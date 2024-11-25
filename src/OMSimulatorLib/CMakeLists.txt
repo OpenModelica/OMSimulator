@@ -133,7 +133,9 @@ if(ICU_FOUND)
     file(GLOB DLL_LIST
               "${DLL_DIR}/libicuuc*.dll"
               "${DLL_DIR}/libicudt*.dll"
-              "${DLL_DIR}/libstdc++*.dll")
+              "${DLL_DIR}/libstdc++*.dll"
+              "${DLL_DIR}/libwinpthread*.dll"
+              "${DLL_DIR}/libgcc_*.dll")
     # Check if the DLL_LIST is not empty before installing
     if (DLL_LIST)
       # Install the files from the list to the 'bin' directory
