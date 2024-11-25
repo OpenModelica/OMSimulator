@@ -80,10 +80,17 @@ pipeline {
           stages {
             stage('build-asan') {
               agent {
-                docker {
-                  image 'docker.openmodelica.org/build-deps:v1.22.2'
+                dockerfile {
+                  additionalBuildArgs '--pull'
+                  dir '.CI/cache'
+                  /* The cache Dockerfile makes /cache/runtest, etc world writable
+                  * This is necessary because we run the docker image as a user and need to
+                  * be able to have a global caching of the omlibrary parts and the runtest database.
+                  * Note that the database is stored in a volume on a per-node basis, so the first time
+                  * the tests run on a particular node, they might execute slightly slower
+                  */
                   label 'linux'
-                  alwaysPull true
+                  args "--mount type=volume,source=runtest-omsimulator-cache-linux64,target=/cache/runtest"
                 }
               }
               environment {
