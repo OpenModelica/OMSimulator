@@ -61,7 +61,25 @@ namespace oms
 #include <windows.h>
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-  return oms::EntryPoint(__argc, __argv);
+  bool console = false;
+  if (AttachConsole(ATTACH_PARENT_PROCESS))
+  {
+    console = true;
+    FILE *fp;
+    freopen_s(&fp, "CONOUT$", "w", stdout); // Redirect stdout
+    freopen_s(&fp, "CONOUT$", "w", stderr); // Redirect stderr
+    freopen_s(&fp, "CONIN$", "r", stdin);   // Redirect stdin
+  }
+
+  FILE *fp;
+  freopen_s(&fp, "CONOUT$", "w", stdout);
+
+  int return_value = oms::EntryPoint(__argc, __argv);
+
+  if (console)
+    FreeConsole();
+
+  return return_value;
 }
 #else
 int main(int argc, char *argv[])
