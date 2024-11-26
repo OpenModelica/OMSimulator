@@ -108,8 +108,6 @@ class capi:
     self.obj.oms_getVariableStepSize.restype = ctypes.c_int
     self.obj.oms_getVersion.argtypes = None
     self.obj.oms_getVersion.restype = ctypes.c_char_p
-    self.obj.oms_gui.argtypes = None
-    self.obj.oms_gui.restype = ctypes.c_int
     self.obj.oms_importFile.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_char_p)]
     self.obj.oms_importFile.restype = ctypes.c_int
     self.obj.oms_importSnapshot.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.POINTER(ctypes.c_char_p)]
@@ -308,8 +306,6 @@ class capi:
     return [initialStepSize.value, minimumStepSize.value, maximumStepSize.value, status]
   def getVersion(self):
     return self.obj.oms_getVersion().decode('utf-8')
-  def gui(self):
-    return self.obj.oms_gui()
   def importFile(self, filename):
     cref = ctypes.c_char_p()
     status = self.obj.oms_importFile(filename.encode(), ctypes.byref(cref))

@@ -65,26 +65,6 @@ extern "C"
 }
 #endif
 
-#ifdef OMS_GUI
-#include "Application.h"
-#include "DemoLayer.h"
-#include "Layer.h"
-
-oms_status_enu_t oms_gui()
-{
-  Application app(oms_getVersion(), 800, 600);
-  app.PushLayer(std::make_shared<DemoLayer>(app));
-  app.Run();
-  return oms_status_ok;
-}
-#else
-oms_status_enu_t oms_gui()
-{
-  logInfo("OMSimulator was not compiled with GUI support.");
-  return oms_status_ok;
-}
-#endif
-
 const char* oms_getVersion()
 {
   return oms_git_version;

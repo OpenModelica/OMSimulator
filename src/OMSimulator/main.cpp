@@ -32,6 +32,10 @@
 #include "OMSimulator/OMSimulator.h"
 #include <string>
 
+#include "Application.h"
+#include "DemoLayer.h"
+#include "Layer.h"
+
 namespace oms
 {
   int EntryPoint(int argc, char *argv[])
@@ -44,9 +48,13 @@ namespace oms
       arg += argv[i];
     }
 
-    oms_status_enu_t status;
+    oms_status_enu_t status = oms_status_ok;
     if (arg.empty())
-      status = oms_gui();
+    {
+      Application app(oms_getVersion(), 800, 600);
+      app.PushLayer(std::make_shared<DemoLayer>(app));
+      app.Run();
+    }
     else
       status = oms_setCommandLineOption(arg.c_str());
 
