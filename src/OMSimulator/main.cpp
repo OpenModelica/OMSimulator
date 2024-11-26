@@ -36,6 +36,10 @@
 #include "DemoLayer.h"
 #include "Layer.h"
 
+#ifdef _WIN32 || _WIN64
+#include <Windows.h>
+#endif
+
 int main(int argc, char *argv[])
 {
   std::string arg;
@@ -49,6 +53,11 @@ int main(int argc, char *argv[])
   oms_status_enu_t status = oms_status_ok;
   if (arg.empty())
   {
+#ifdef _WIN32 || _WIN64
+    HWND hwnd = GetConsoleWindow();
+    ShowWindow(hwnd, SW_HIDE); // Hide the console window
+#endif
+
     Application app(oms_getVersion(), 800, 600);
     app.PushLayer(std::make_shared<DemoLayer>(app));
     app.Run();
