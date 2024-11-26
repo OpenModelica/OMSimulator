@@ -602,12 +602,11 @@ def shouldWeBuildMacOSArm64() {
   /* M1 Mac takes 4h to do a 10 seconds cmake configure!!!!!
    * disable the M1 until we find out what the issue is
    */
-  return false
   if (isPR()) {
     if (pullRequest.labels.contains("CI/macOS-arm64")) {
       return true
     }
     return params.MACOS_ARM64
   }
-  return true
+  return false
 }
