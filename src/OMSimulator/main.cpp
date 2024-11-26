@@ -36,62 +36,28 @@
 #include "DemoLayer.h"
 #include "Layer.h"
 
-namespace oms
-{
-  int EntryPoint(int argc, char *argv[])
-  {
-    std::string arg;
-    for (int i = 1; i < argc; ++i)
-    {
-      if (!arg.empty())
-        arg += " ";
-      arg += argv[i];
-    }
-
-    oms_status_enu_t status = oms_status_ok;
-    if (arg.empty())
-    {
-      Application app(oms_getVersion(), 800, 600);
-      app.PushLayer(std::make_shared<DemoLayer>(app));
-      app.Run();
-    }
-    else
-      status = oms_setCommandLineOption(arg.c_str());
-
-    if (oms_status_ok != status)
-      return 1;
-
-    return 0;
-  }
-}
-
-#if defined(_MSC_VER)
-#include <windows.h>
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
-{
-  bool console = false;
-  if (AttachConsole(ATTACH_PARENT_PROCESS))
-  {
-    console = true;
-    FILE *fp;
-    freopen_s(&fp, "CONOUT$", "w", stdout); // Redirect stdout
-    freopen_s(&fp, "CONOUT$", "w", stderr); // Redirect stderr
-    freopen_s(&fp, "CONIN$", "r", stdin);   // Redirect stdin
-  }
-
-  FILE *fp;
-  freopen_s(&fp, "CONOUT$", "w", stdout);
-
-  int return_value = oms::EntryPoint(__argc, __argv);
-
-  if (console)
-    FreeConsole();
-
-  return return_value;
-}
-#else
 int main(int argc, char *argv[])
 {
-  return oms::EntryPoint(argc, argv);
+  std::string arg;
+  for (int i = 1; i < argc; ++i)
+  {
+    if (!arg.empty())
+      arg += " ";
+    arg += argv[i];
+  }
+
+  oms_status_enu_t status = oms_status_ok;
+  if (arg.empty())
+  {
+    Application app(oms_getVersion(), 800, 600);
+    app.PushLayer(std::make_shared<DemoLayer>(app));
+    app.Run();
+  }
+  else
+    status = oms_setCommandLineOption(arg.c_str());
+
+  if (oms_status_ok != status)
+    return 1;
+
+  return 0;
 }
-#endif

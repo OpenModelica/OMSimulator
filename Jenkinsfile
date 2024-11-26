@@ -404,7 +404,7 @@ zip -r "../OMSimulator-win64-`git describe --tags --abbrev=7 --match=v*.* --excl
 If Defined LOCALAPPDATA (echo LOCALAPPDATA: %LOCALAPPDATA%) Else (Set "LOCALAPPDATA=C:\\Users\\OpenModelica\\AppData\\Local")
 set PATH=C:\\OMDevUCRT\\bin\\cmake\\bin;%PATH%
 
-cmake -S . -B build/ -G "Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/ -DOM_OMS_ENABLE_TESTSUITE:BOOL=ON
+cmake -S . -B build/ -G "Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/ -DOMS_ENABLE_TESTSUITE:BOOL=ON
 IF NOT ["%ERRORLEVEL%"]==["0"] GOTO fail
 
 cmake --build build/ --config Release --parallel %NUMBER_OF_PROCESSORS% --target install -v
@@ -641,7 +641,7 @@ void buildOMS() {
      echo cd \${MSYS_WORKSPACE}
      echo export MAKETHREADS=-j%NUMBER_OF_PROCESSORS%
      echo set -ex
-     echo cmake -S . -B build/ -G "MSYS Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/ -DOM_OMS_ENABLE_TESTSUITE:BOOL=ON
+     echo cmake -S . -B build/ -G "MSYS Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/ -DOMS_ENABLE_TESTSUITE:BOOL=ON
      echo cmake --build build/ --parallel %NUMBER_OF_PROCESSORS% --target install -v
      ) > buildOMSimulatorWindows.sh
 
@@ -657,11 +657,11 @@ void buildOMS() {
     sh "git fetch --tags"
     if (isMac()) {
       sh('''#!/bin/zsh -l
-       cmake -S . -B build/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/ -DOM_OMS_ENABLE_TESTSUITE:BOOL=ON
+       cmake -S . -B build/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/ -DOMS_ENABLE_TESTSUITE:BOOL=ON
        cmake --build build/ --parallel ${nproc} --target install -v
        ''')
     } else {
-      sh "cmake -S . -B build/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/ -DOM_OMS_ENABLE_TESTSUITE:BOOL=ON ${env.ASAN ? '-DASAN=ON': ''}"
+      sh "cmake -S . -B build/ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install/ -DOMS_ENABLE_TESTSUITE:BOOL=ON ${env.ASAN ? '-DASAN=ON': ''}"
       sh "cmake --build build/ --parallel ${nproc} --target install -v"
     }
   }
