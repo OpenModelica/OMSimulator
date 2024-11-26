@@ -32,18 +32,40 @@
 #include "OMSimulator/OMSimulator.h"
 #include <string>
 
+#include "Application.h"
+#include "DemoLayer.h"
+#include "ScopeLayer.h"
+#include "Layer.h"
+
+namespace oms
+{
+  int EntryPoint(int argc, char *argv[])
+  {
+    Application app(oms_getVersion(), 800, 600);
+    const std::shared_ptr<ScopeLayer> &layer = std::make_shared<ScopeLayer>(app);
+
+    for (int i = 1; i < argc; ++i)
+      layer->LoadModel(argv[i]);
+
+    app.PushLayer(std::make_shared<ScopeLayer>(app));
+#if !defined(NDEBUG)
+    app.PushLayer(std::make_shared<DemoLayer>(app));
+#endif
+    app.Run();
+
+    return 0;
+  }
+}
+
+#if defined(_WIN32) || defined(_WIN64)
+#include <windows.h>
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+{
+  return oms::EntryPoint(__argc, __argv);
+}
+#else
 int main(int argc, char *argv[])
 {
-  std::string arg;
-  for (int i = 1; i < argc; ++i)
-  {
-    if (!arg.empty())
-      arg += " ";
-    arg += argv[i];
-  }
-
-  if (oms_status_ok != oms_setCommandLineOption(arg.c_str()))
-    return 1;
-
-  return 0;
+  return oms::EntryPoint(argc, argv);
 }
+#endif

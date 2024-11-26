@@ -6,31 +6,33 @@ project(OMSimulator)
 
 # Options to enable/disable specific components
 option(OMS_ENABLE_OMSimulator "Enable OMSimulator component" ON)
+option(OMS_ENABLE_OMSimulatorGui "Enable OMSimulator GUI component" ON)
 option(OMS_ENABLE_PIP "Enable pip component" ON)
 option(OMS_ENABLE_TESTSUITE "Enable the OMSimulator testsuite" OFF)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/config.cmake/")
 
-### Standards ###############################################################################################
-## Set the C++ standard to use.
+### Standards ##################################################################
+
+# Set the C++ standard to use.
 set(CMAKE_CXX_STANDARD 17)
 set(CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-## Define NOMINMAX globally
+# Define NOMINMAX globally
 add_definitions(-DNOMINMAX)
 
-## If OMSimulator is NOT being built as part of OpenModelica
-## include the required settings here.
-if(NOT OPENMODELICA_NEW_CMAKE_BUILD)
+if(OPENMODELICA_NEW_CMAKE_BUILD)
+  # If OMSimulator is being built as part of OpenModelica
+  # set the install component to 'omsimulator' for all tagets built by it.
+  set(CMAKE_INSTALL_DEFAULT_COMPONENT_NAME omsimulator)
+else()
+  # If OMSimulator is NOT being built as part of OpenModelica
+  # include the required settings here.
   include(OMSimulatorTopLevelSettings)
 endif()
 
-## If OMSimulator is being built as part of OpenModelica
-## set the install component to 'omsimulator' for all tagets built by it.
-if(OPENMODELICA_NEW_CMAKE_BUILD)
-  set(CMAKE_INSTALL_DEFAULT_COMPONENT_NAME omsimulator)
-endif()
+################################################################################
 
 include(GetGitRevisionDescription)
 if (EXISTS "${CMAKE_SOURCE_DIR}/version.txt")
@@ -47,6 +49,8 @@ STRING(REGEX REPLACE "v(.*)-(.*)" "\\1" OMS_SHORT_VERSION_STRING "${OMS_VERSION_
 
 message(STATUS "OMSimulator version string: ${OMS_VERSION_STRING}")
 
+################################################################################
+
 IF(MSVC)
   set(PLATFORM_STRING "win")
 ELSEIF(MINGW)
@@ -59,7 +63,7 @@ ENDIF()
 
 message(STATUS "Platform string: ${PLATFORM_STRING}")
 
-##########################
+################################################################################
 
 # Add third-party dependencies
 add_subdirectory(3rdParty)
@@ -73,9 +77,12 @@ add_subdirectory(src/OMSimulatorServer)
 add_subdirectory(doc)
 add_subdirectory(schema)
 
-# Conditionally add OMSimulator and pip directories
 if(OMS_ENABLE_OMSimulator)
   add_subdirectory(src/OMSimulator)
+endif()
+
+if(OMS_ENABLE_OMSimulatorGui)
+  add_subdirectory(src/OMSimulatorGui)
 endif()
 
 if(OMS_ENABLE_PIP)

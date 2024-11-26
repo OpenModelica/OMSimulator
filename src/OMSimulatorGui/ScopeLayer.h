@@ -15,6 +15,13 @@ class ScopeLayer : public Layer
 public:
   ScopeLayer(Application &app) : app(app) {}
 
+  void LoadModel(const std::string& path)
+  {
+    char *cref;
+    if (oms_status_ok == oms_importFile(path.c_str(), &cref))
+      models.insert(cref);
+  }
+
   void OnAttach() override
   {
     app.ShowMenubar();
@@ -33,11 +40,7 @@ public:
         wdir_str += "/";
         char const *path = tinyfd_openFileDialog("Open Model File", wdir_str.c_str(), 1, patterns, NULL, 0);
         if (path)
-        {
-          char *cref;
-          if (oms_status_ok == oms_importFile(path, &cref))
-            models.insert(cref);
-        }
+          LoadModel(path);
       }
       ImGui::EndMenu();
     }
