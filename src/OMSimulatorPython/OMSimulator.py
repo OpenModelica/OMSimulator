@@ -43,11 +43,6 @@ class OMSimulator:
     self.solver_wc_mav = 7
     self.solver_wc_mav2 = 8
 
-    ## oms_fault_type_enu_t
-    self.fault_type_bias = 0
-    self.fault_type_gain = 1
-    self.fault_type_const = 2
-
     # map functions
     self.activateVariant = Scope._capi.activateVariant
     self.addBus = Scope._capi.addBus
@@ -71,7 +66,6 @@ class OMSimulator:
     self.exportSnapshot = Scope._capi.exportSnapshot
     self.exportSSMTemplate = Scope._capi.exportSSMTemplate
     self.exportSSVTemplate = Scope._capi.exportSSVTemplate
-    self.faultInjection = Scope._capi.faultInjection
     self.getBoolean = Scope._capi.getBoolean
     self.getDirectionalDerivative = Scope._capi.getDirectionalDerivative
     self.getFixedStepSize = Scope._capi.getFixedStepSize

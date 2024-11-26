@@ -118,8 +118,6 @@ namespace oms
     oms_status_enu_t freeState();
     oms_status_enu_t restoreState();
 
-    oms_status_enu_t setFaultInjection(const ComRef& signal, oms_fault_type_enu_t faultType, double faultValue);
-
     void getFilteredSignals(std::vector<Connector>& filteredSignals) const;
 
     oms_status_enu_t newResources(const std::string& ssvFilename, const std::string& ssmFilename, bool externalResources);
@@ -163,7 +161,6 @@ namespace oms
     fmi2FMUstate fmuState = NULL;
     double fmuStateTime;
 
-    std::map<fmi2ValueReference, oms_fault_type_t> fib;  ///< fault injection blocks
     oms::ComRef getValidCref(ComRef cref);
   };
 }

@@ -2435,24 +2435,6 @@ std::string oms::System::getUniqueID() const
   return str;
 }
 
-oms_status_enu_t oms::System::setFaultInjection(const oms::ComRef& signal, oms_fault_type_enu_t faultType, double faultValue)
-{
-  oms::System* system = NULL;
-
-  oms::ComRef tail(signal);
-  oms::ComRef front = tail.pop_front();
-
-  auto subsystem = subsystems.find(front);
-  if (subsystem != subsystems.end())
-    return subsystem->second->setFaultInjection(tail, faultType, faultValue);
-
-  auto component = components.find(front);
-  if (component != components.end())
-    return component->second->setFaultInjection(tail, faultType, faultValue);
-
-  return oms_status_error;
-}
-
 oms_status_enu_t oms::System::importBusConnectorSignals(const pugi::xml_node& node)
 {
   std::string busname = node.attribute("name").as_string();

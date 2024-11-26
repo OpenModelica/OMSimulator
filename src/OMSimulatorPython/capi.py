@@ -68,8 +68,6 @@ class capi:
     self.obj.oms_exportSSMTemplate.restype = ctypes.c_int
     self.obj.oms_exportSSVTemplate.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
     self.obj.oms_exportSSVTemplate.restype = ctypes.c_int
-    self.obj.oms_faultInjection.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_double]
-    self.obj.oms_faultInjection.restype = ctypes.c_int
     self.obj.oms_freeMemory.argtypes = [ctypes.c_void_p]
     self.obj.oms_freeMemory.restype = None
     self.obj.oms_getBoolean.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_bool)]
@@ -235,8 +233,6 @@ class capi:
     return self.obj.oms_exportSSMTemplate(ident.encode(), filename.encode())
   def exportSSVTemplate(self, ident, filename):
     return self.obj.oms_exportSSVTemplate(ident.encode(), filename.encode())
-  def faultInjection(self, cref, faultType, faultValue):
-    return self.obj.oms_faultInjection(cref.encode(), faultType, faultValue)
   def getBoolean(self, cref):
     value = ctypes.c_bool()
     status = self.obj.oms_getBoolean(cref.encode(), ctypes.byref(value))

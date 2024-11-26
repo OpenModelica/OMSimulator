@@ -612,24 +612,6 @@ static int OMSimulatorLua_oms_getVariableStepSize(lua_State *L)
   return 4;
 }
 
-//OMSAPI oms_status_enu_t OMSCALL oms_faultInjection(const char* signal, oms_fault_type_enu_t faultType, double faultValue);
-static int OMSimulatorLua_oms_faultInjection(lua_State *L)
-{
-  if (lua_gettop(L) != 3)
-    return luaL_error(L, "expecting exactly 3 arguments");
-  luaL_checktype(L, 1, LUA_TSTRING);
-  luaL_checktype(L, 2, LUA_TNUMBER);
-  luaL_checktype(L, 3, LUA_TNUMBER);
-
-  const char* signal = lua_tostring(L, 1);
-  oms_fault_type_enu_t faultType = (oms_fault_type_enu_t)lua_tointeger(L, 2);
-  double faultValue = lua_tonumber(L, 3);
-
-  oms_status_enu_t status = oms_faultInjection(signal, faultType, faultValue);
-  lua_pushinteger(L, status);
-  return 1;
-}
-
 //oms_status_enu_t oms_getBoolean(const char* cref, bool* value);
 static int OMSimulatorLua_oms_getBoolean(lua_State *L)
 {
@@ -1359,7 +1341,6 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_CALL(oms_exportSnapshot);
   REGISTER_LUA_CALL(oms_exportSSVTemplate);
   REGISTER_LUA_CALL(oms_exportSSMTemplate);
-  REGISTER_LUA_CALL(oms_faultInjection);
   REGISTER_LUA_CALL(oms_getBoolean);
   REGISTER_LUA_CALL(oms_getDirectionalDerivative);
   REGISTER_LUA_CALL(oms_getFixedStepSize);
@@ -1456,11 +1437,6 @@ DLLEXPORT int luaopen_OMSimulatorLua(lua_State *L)
   REGISTER_LUA_ENUM(oms_signal_type_integer);
   REGISTER_LUA_ENUM(oms_signal_type_boolean);
   REGISTER_LUA_ENUM(oms_signal_type_string);
-
-  // oms_fault_type_enu_t
-  REGISTER_LUA_ENUM(oms_fault_type_bias);
-  REGISTER_LUA_ENUM(oms_fault_type_gain);
-  REGISTER_LUA_ENUM(oms_fault_type_const);
 
   return 0;
 }
