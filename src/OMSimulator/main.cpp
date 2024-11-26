@@ -32,21 +32,40 @@
 #include "OMSimulator/OMSimulator.h"
 #include <string>
 
+namespace oms
+{
+  int EntryPoint(int argc, char *argv[])
+  {
+    std::string arg;
+    for (int i = 1; i < argc; ++i)
+    {
+      if (!arg.empty())
+        arg += " ";
+      arg += argv[i];
+    }
+
+    oms_status_enu_t status;
+    if (arg.empty())
+      status = oms_gui();
+    else
+      status = oms_setCommandLineOption(arg.c_str());
+
+    if (oms_status_ok != status)
+      return 1;
+
+    return 0;
+  }
+}
+
+#if defined(_WIN32) || defined(_WIN64)
+#include <windows.h>
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+{
+  return oms::EntryPoint(__argc, __argv);
+}
+#else
 int main(int argc, char *argv[])
 {
-  std::string arg;
-  for (int i=1; i<argc; ++i)
-  {
-    if (!arg.empty())
-      arg += " ";
-    arg += argv[i];
-  }
-
-  if (arg.empty())
-    oms_gui();
-
-  if (oms_status_ok != oms_setCommandLineOption(arg.c_str()))
-    return 1;
-
-  return 0;
+  return oms::EntryPoint(argc, argv);
 }
+#endif
