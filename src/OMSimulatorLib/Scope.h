@@ -74,7 +74,7 @@ namespace oms
     oms_status_enu_t importSnapshot(const ComRef& cref, const char* snapshot, char** newCref);
 
     const std::string& getTempDirectory() const {return GetInstance().tempDir;}
-    std::string getWorkingDirectory();
+    const std::string& getWorkingDirectory();
 
   protected:
     static oms_status_enu_t miniunz(const std::string& filename, const std::string& extractdir);
@@ -84,6 +84,7 @@ namespace oms
     std::map<ComRef, unsigned int> models_map;
 
     std::string tempDir;
+    std::string workDir;
   };
 }
 

@@ -34,6 +34,7 @@
 
 #include "Application.h"
 #include "DemoLayer.h"
+#include "ScopeLayer.h"
 #include "Layer.h"
 
 int main(int argc, char *argv[])
@@ -50,7 +51,10 @@ int main(int argc, char *argv[])
   if (arg.empty())
   {
     Application app(oms_getVersion(), 800, 600);
+    app.PushLayer(std::make_shared<ScopeLayer>(app));
+#if !defined(NDEBUG)
     app.PushLayer(std::make_shared<DemoLayer>(app));
+#endif
     app.Run();
   }
   else
