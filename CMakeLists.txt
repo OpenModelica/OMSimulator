@@ -3,24 +3,28 @@ message("cmake version is: ${CMAKE_VERSION}")
 cmake_minimum_required(VERSION 3.14)
 
 project(OMSimulator)
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/config.cmake/")
 
+# Options to enable/disable specific components
+option(OMS_ENABLE_OMSimulator "Enable OMSimulator component" ON)
+option(OMS_ENABLE_PIP "Enable pip component" ON)
+option(OMS_ENABLE_TESTSUITE "Enable the OMSimulator testsuite" OFF)
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/config.cmake/")
 
 ### Standards ###############################################################################################
 ## Set the C++ standard to use.
 set(CMAKE_CXX_STANDARD 17)
 set(CXX_STANDARD_REQUIRED ON)
-## Make sure we do not start relying on extensions down the road.
 set(CMAKE_CXX_EXTENSIONS OFF)
+
+## Define NOMINMAX globally
+add_definitions(-DNOMINMAX)
 
 ## If OMSimulator is NOT being built as part of OpenModelica
 ## include the required settings here.
 if(NOT OPENMODELICA_NEW_CMAKE_BUILD)
   include(OMSimulatorTopLevelSettings)
 endif()
-
-## Define NOMINMAX globally
-add_definitions(-DNOMINMAX)
 
 ## If OMSimulator is being built as part of OpenModelica
 ## set the install component to 'omsimulator' for all tagets built by it.
@@ -57,26 +61,27 @@ message(STATUS "Platform string: ${PLATFORM_STRING}")
 
 ##########################
 
+# Add third-party dependencies
 add_subdirectory(3rdParty)
 
-
-##########################
 # Add project modules
 add_subdirectory(include)
 add_subdirectory(src/OMSimulatorLib)
-add_subdirectory(src/OMSimulator)
 add_subdirectory(src/OMSimulatorLua)
 add_subdirectory(src/OMSimulatorPython)
 add_subdirectory(src/OMSimulatorServer)
-add_subdirectory(src/pip)
-
 add_subdirectory(doc)
-
 add_subdirectory(schema)
 
-## Add the testsuite directory (which adds the target testsuite-depends which in turn depends
-## on omc-diff and testssuite-resources) only if OMSimulator is being used standalone.
-option(OM_OMS_ENABLE_TESTSUITE "enable the OMSimulator testsuite" OFF)
-if(OM_OMS_ENABLE_TESTSUITE)
+# Conditionally add OMSimulator and pip directories
+if(OMS_ENABLE_OMSimulator)
+  add_subdirectory(src/OMSimulator)
+endif()
+
+if(OMS_ENABLE_PIP)
+  add_subdirectory(src/pip)
+endif()
+
+if(OMS_ENABLE_TESTSUITE)
   add_subdirectory(testsuite)
 endif()

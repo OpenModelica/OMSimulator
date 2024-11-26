@@ -32,17 +32,36 @@
 #include "OMSimulator/OMSimulator.h"
 #include <string>
 
+#include "Application.h"
+#include "DemoLayer.h"
+#include "ScopeLayer.h"
+#include "Layer.h"
+
 int main(int argc, char *argv[])
 {
   std::string arg;
-  for (int i=1; i<argc; ++i)
+  for (int i = 1; i < argc; ++i)
   {
     if (!arg.empty())
       arg += " ";
     arg += argv[i];
   }
 
-  if (oms_status_ok != oms_setCommandLineOption(arg.c_str()))
+  oms_status_enu_t status = oms_status_ok;
+  if (arg.empty())
+  {
+    Application app(oms_getVersion(), 800, 600);
+    app.PushLayer(std::make_shared<ScopeLayer>(app));
+#if !defined(NDEBUG)
+    app.PushLayer(std::make_shared<DemoLayer>(app));
+#endif
+    app.Run();
+  }
+  else
+    status = oms_setCommandLineOption(arg.c_str());
+
+  if (oms_status_ok != status)
     return 1;
+
   return 0;
 }

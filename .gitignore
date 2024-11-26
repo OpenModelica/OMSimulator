@@ -5,11 +5,11 @@
 /install/
 /version.txt
 
+imgui.ini
+
 # local files
 /OMSimulator.config
 /OMSimulator.creator
 /OMSimulator.creator.user
 /OMSimulator.files
 /OMSimulator.includes
-
-/issues/

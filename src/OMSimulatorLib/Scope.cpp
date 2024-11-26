@@ -41,7 +41,7 @@
 #include <iostream>
 
 oms::Scope::Scope()
-  : tempDir(".")
+  : tempDir("."), workDir(".")
 {
   // initialize random seed
   srand(time(NULL));
@@ -49,7 +49,7 @@ oms::Scope::Scope()
   this->models.push_back(NULL);
 
   setTempDirectory(tempDir);
-  setWorkingDirectory(".");
+  setWorkingDirectory(workDir);
 }
 
 oms::Scope::~Scope()
@@ -333,9 +333,10 @@ oms_status_enu_t oms::Scope::setWorkingDirectory(const std::string& newWorkingDi
     path = oms_canonical(path);
 
     filesystem::current_path(path);
+    workDir = path.string();
 
     if (!Flags::SuppressPath())
-      logInfo("Set working directory to \"" + path.string() + "\"");
+      logInfo("Set working directory to \"" + workDir + "\"");
 
     return oms_status_ok;
   }
@@ -345,17 +346,18 @@ oms_status_enu_t oms::Scope::setWorkingDirectory(const std::string& newWorkingDi
   }
 }
 
-std::string oms::Scope::getWorkingDirectory()
+const std::string& oms::Scope::getWorkingDirectory()
 {
   try
   {
-    filesystem::path workingDir(filesystem::current_path());
-    return workingDir.string();
+    workDir = filesystem::current_path().string();
+    return workDir;
   }
   catch (const std::exception& e)
   {
     logError("failed to get working directory: " + std::string(e.what()));
-    return "";
+    workDir = "";
+    return workDir;
   }
 }
 

@@ -65,11 +65,6 @@ extern "C"
 }
 #endif
 
-const char* oms_getVersion()
-{
-  return oms_git_version;
-}
-
 void oms_setLoggingCallback(void (*cb)(oms_message_type_enu_t type, const char* message))
 {
   Log::setLoggingCallback(cb);
@@ -1536,6 +1531,17 @@ oms_status_enu_t oms_getVariableStepSize(const char* cref, double* initialStepSi
     return logError_SystemNotInModel(model->getCref(), front);
 
   system->getStepSize(initialStepSize, minimumStepSize, maximumStepSize);
+  return oms_status_ok;
+}
+
+const char* oms_getVersion()
+{
+  return oms_git_version;
+}
+
+oms_status_enu_t oms_getWorkingDirectory(char** workingDir)
+{
+  *workingDir = (char*)oms::Scope::GetInstance().getWorkingDirectory().c_str();
   return oms_status_ok;
 }
 
