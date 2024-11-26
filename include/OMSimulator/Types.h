@@ -68,17 +68,6 @@ typedef enum {
 } oms_causality_enu_t;
 
 typedef enum {
-  oms_fault_type_bias,      ///< y = y.$original + faultValue
-  oms_fault_type_gain,      ///< y = y.$original * faultValue
-  oms_fault_type_const      ///< y = faultValue
-} oms_fault_type_enu_t;
-
-typedef struct {
-  oms_fault_type_enu_t faultType;
-  double faultValue;
-} oms_fault_type_t;
-
-typedef enum {
   oms_solver_none,
   oms_solver_sc_min,
   oms_solver_sc_explicit_euler,

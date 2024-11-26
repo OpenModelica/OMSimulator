@@ -85,7 +85,6 @@ OMSAPI oms_status_enu_t OMSCALL oms_exportSnapshot(const char* cref, char** cont
 OMSAPI oms_status_enu_t OMSCALL oms_exportSSMTemplate(const char * cref, const char * filename);
 OMSAPI oms_status_enu_t OMSCALL oms_exportSSVTemplate(const char* cref, const char* filename);
 OMSAPI oms_status_enu_t OMSCALL oms_extractFMIKind(const char* filename, oms_fmi_kind_enu_t* kind, oms_fmu_default_experiment_settings* defaultExperiment);
-OMSAPI oms_status_enu_t OMSCALL oms_faultInjection(const char* signal, oms_fault_type_enu_t faultType, double faultValue);
 OMSAPI void OMSCALL oms_freeMemory(void* obj);
 OMSAPI oms_status_enu_t OMSCALL oms_freeState(const char* cref);
 OMSAPI oms_status_enu_t OMSCALL oms_getBoolean(const char* cref, bool* value);

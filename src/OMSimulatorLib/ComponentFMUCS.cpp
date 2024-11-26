@@ -1080,29 +1080,6 @@ oms_status_enu_t oms::ComponentFMUCS::getReal(const fmi2ValueReference& vr, doub
   if (std::isinf(value))
     return logError("getReal returned +/-inf");
 
-  // Check for FIB
-  auto block = fib.find(vr);
-  if (block != fib.end())
-  {
-    switch(block->second.faultType)
-    {
-      case oms_fault_type_bias:   // y = y.$original + faultValue
-        value += block->second.faultValue;
-        break;
-
-      case oms_fault_type_gain:   // y = y.$original * faultValue
-        value *= block->second.faultValue;
-        break;
-
-      case oms_fault_type_const:  // y = faultValue
-        value = block->second.faultValue;
-        break;
-
-      default:
-        return logError("Unhandled fault injection block");
-    }
-  }
-
   return oms_status_ok;
 }
 
@@ -1934,29 +1911,6 @@ oms_status_enu_t oms::ComponentFMUCS::restoreState()
   if (fmi2OK != fmistatus) return logError_FMUCall("fmi2_setFMUstate", this);
   time = fmuStateTime;
 
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms::ComponentFMUCS::setFaultInjection(const oms::ComRef& signal, oms_fault_type_enu_t faultType, double faultValue)
-{
-  Variable* var = getVariable(signal);
-
-  if (!var || !var->isOutput())
-    return oms_status_error;
-
-  // remove fib?
-  if ((faultType == oms_fault_type_bias && faultValue == 0.0) ||
-      (faultType == oms_fault_type_gain && faultValue == 1.0))
-  {
-    fib.erase(var->getValueReference());
-  }
-  else
-  {
-    oms_fault_type_t ft;
-    ft.faultType = faultType;
-    ft.faultValue = faultValue;
-    fib[var->getValueReference()] = ft;
-  }
   return oms_status_ok;
 }
 

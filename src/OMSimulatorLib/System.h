@@ -127,7 +127,6 @@ namespace oms
     const DirectedGraph& getInitialUnknownsGraph() {return initializationGraph;}
     const DirectedGraph& getOutputsGraph() {return eventGraph;}
     oms_status_enu_t exportDependencyGraphs(const std::string& pathInitialization, const std::string& pathEvent, const std::string& pathSimulation);
-    oms_status_enu_t setFaultInjection(const ComRef& signal, oms_fault_type_enu_t faultType, double faultValue);
 
     double getTime() const {return time;}
 

@@ -216,23 +216,6 @@ oms_status_enu_t oms_export(const char* cref, const char* filename)
   return oms::Scope::GetInstance().exportModel(oms::ComRef(cref), std::string(filename));
 }
 
-oms_status_enu_t oms_faultInjection(const char* signal, oms_fault_type_enu_t faultType, double faultValue)
-{
-  oms::ComRef tail(signal);
-  oms::ComRef front = tail.pop_front();
-
-  oms::Model* model = oms::Scope::GetInstance().getModel(front);
-  if (!model)
-    return logError_ModelNotInScope(front);
-
-  front = tail.pop_front();
-  oms::System* system = model->getSystem(front);
-  if (!system)
-    return logError_SystemNotInModel(model->getCref(), front);
-
-  return system->setFaultInjection(tail, faultType, faultValue);
-}
-
 oms_status_enu_t oms_importFile(const char* filename, char** cref)
 {
   return oms::Scope::GetInstance().importModel(std::string(filename), cref);

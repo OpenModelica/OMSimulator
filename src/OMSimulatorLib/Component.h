@@ -95,7 +95,6 @@ namespace oms
     virtual oms_status_enu_t restoreState() { return logError_NotImplemented; }
     virtual oms_status_enu_t saveState() { return logError_NotImplemented; }
     virtual oms_status_enu_t setBoolean(const ComRef& cref, bool value) { return logError_NotImplemented; }
-    virtual oms_status_enu_t setFaultInjection(const ComRef& signal, oms_fault_type_enu_t faultType, double faultValue) { return oms_status_error; }
     virtual oms_status_enu_t setInteger(const ComRef& cref, int value) { return logError_NotImplemented; }
     virtual oms_status_enu_t setReal(const ComRef& cref, double value) { return logError_NotImplemented; }
     virtual oms_status_enu_t setString(const ComRef& cref, const std::string& value) { return logError_NotImplemented; }
