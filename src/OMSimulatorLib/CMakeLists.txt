@@ -63,8 +63,6 @@ set(OMSIMULATORLIB_SOURCES
       ssd/SystemGeometry.cpp
       ssd/Tags.cpp)
 
-
-
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Version.cpp.in" "${CMAKE_CURRENT_BINARY_DIR}/Version.cpp" @ONLY)
 list(APPEND OMSIMULATORLIB_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/Version.cpp")
 
