@@ -661,12 +661,23 @@ oms_status_enu_t oms::SystemSC::doStepEuler()
         time = event_time;
         step_size_adjustment = maximumStepSize;
 
+        // set time
+        for (const auto& component : getComponents())
+        {
+          switch (component.second->getType())
+          {
+            case oms_component_fmu:
+              if (fmi2OK != fmi2_setTime(dynamic_cast<ComponentFMUME*>(component.second)->getFMU(), time))
+                logError_FMUCall("fmi2_setTime", dynamic_cast<ComponentFMUME*>(component.second));
+              break;
+            case oms_component_table:
+              dynamic_cast<ComponentTable*>(component.second)->stepUntil(time);
+              break;
+          }
+        }
+
         for (size_t i = 0; i < fmus.size(); ++i)
         {
-          // set time
-          fmistatus = fmi2_setTime(fmus[i]->getFMU(), time);
-          if (fmi2OK != fmistatus) logError_FMUCall("fmi2_setTime", fmus[i]);
-
           fmistatus = fmi2_completedIntegratorStep(fmus[i]->getFMU(), fmi2True, &callEventUpdate[i], &terminateSimulation[i]);
           if (fmi2OK != fmistatus) return logError_FMUCall("fmi2_completedIntegratorStep", fmus[i]);
         }
@@ -700,13 +711,24 @@ oms_status_enu_t oms::SystemSC::doStepEuler()
         if (isTopLevelSystem())
           getModel().emit(time, false);
 
+        // set time
+        for (const auto& component : getComponents())
+        {
+          switch (component.second->getType())
+          {
+            case oms_component_fmu:
+              if (fmi2OK != fmi2_setTime(dynamic_cast<ComponentFMUME*>(component.second)->getFMU(), time))
+                logError_FMUCall("fmi2_setTime", dynamic_cast<ComponentFMUME*>(component.second));
+              break;
+            case oms_component_table:
+              dynamic_cast<ComponentTable*>(component.second)->stepUntil(time);
+              break;
+          }
+        }
+
         // Enter event mode and handle discrete state updates for each FMU
         for (size_t i = 0; i < fmus.size(); ++i)
         {
-          // set time
-          fmistatus = fmi2_setTime(fmus[i]->getFMU(), time);
-          if (fmi2OK != fmistatus) logError_FMUCall("fmi2_setTime", fmus[i]);
-
           fmistatus = fmi2_completedIntegratorStep(fmus[i]->getFMU(), fmi2True, &callEventUpdate[i], &terminateSimulation[i]);
           if (fmi2OK != fmistatus) return logError_FMUCall("fmi2_completedIntegratorStep", fmus[i]);
 
@@ -815,13 +837,25 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
 
     if (flag == CV_ROOT_RETURN || time == tnext)
     {
-      //logInfo("event found!!! " + std::to_string(time));
+      logDebug("event found!!! " + std::to_string(time));
+
+      // set time
+      for (const auto& component : getComponents())
+      {
+        switch (component.second->getType())
+        {
+          case oms_component_fmu:
+            if (fmi2OK != fmi2_setTime(dynamic_cast<ComponentFMUME*>(component.second)->getFMU(), time))
+              logError_FMUCall("fmi2_setTime", dynamic_cast<ComponentFMUME*>(component.second));
+            break;
+          case oms_component_table:
+            dynamic_cast<ComponentTable*>(component.second)->stepUntil(time);
+            break;
+        }
+      }
+
       for (size_t i = 0; i < fmus.size(); ++i)
       {
-        // set time
-        fmistatus = fmi2_setTime(fmus[i]->getFMU(), time);
-        if (fmi2OK != fmistatus) logError_FMUCall("fmi2_setTime", fmus[i]);
-
         fmistatus = fmi2_completedIntegratorStep(fmus[i]->getFMU(), fmi2True, &callEventUpdate[i], &terminateSimulation[i]);
         if (fmi2OK != fmistatus) return logError_FMUCall("fmi2_completedIntegratorStep", fmus[i]);
       }
@@ -894,12 +928,24 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
     if (flag == CV_SUCCESS)
     {
       logDebug("CVode completed successfully at t = " + std::to_string(time));
+
+      // set time
+      for (const auto& component : getComponents())
+      {
+        switch (component.second->getType())
+        {
+          case oms_component_fmu:
+            if (fmi2OK != fmi2_setTime(dynamic_cast<ComponentFMUME*>(component.second)->getFMU(), time))
+              logError_FMUCall("fmi2_setTime", dynamic_cast<ComponentFMUME*>(component.second));
+            break;
+          case oms_component_table:
+            dynamic_cast<ComponentTable*>(component.second)->stepUntil(time);
+            break;
+        }
+      }
+
       for (size_t i = 0; i < fmus.size(); ++i)
       {
-        // set time
-        fmistatus = fmi2_setTime(fmus[i]->getFMU(), time);
-        if (fmi2OK != fmistatus) logError_FMUCall("fmi2_setTime", fmus[i]);
-
         fmistatus = fmi2_completedIntegratorStep(fmus[i]->getFMU(), fmi2True, &callEventUpdate[i], &terminateSimulation[i]);
         if (fmi2OK != fmistatus) return logError_FMUCall("fmi2_completedIntegratorStep", fmus[i]);
 
@@ -953,22 +999,6 @@ oms_status_enu_t oms::SystemSC::updateInputs(DirectedGraph& graph)
   CallClock callClock(clock);
   oms_status_enu_t status;
   int loopNum = 0;
-
-  if (getModel().validState(oms_modelState_simulation))
-  {
-    // update time
-    for (const auto& component : getComponents())
-    {
-      switch (component.second->getType())
-      {
-        case oms_component_table:
-          dynamic_cast<ComponentTable*>(component.second)->stepUntil(time);
-          break;
-        default:
-          break;
-      }
-    }
-  }
 
   // input := output
   const std::vector< scc_t >& sortedConnections = graph.getSortedConnections();
