@@ -51,9 +51,7 @@ int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
   // update states in FMUs
   for (size_t i=0, j=0; i < system->fmus.size(); ++i)
   {
-    // set time
-    fmistatus = fmi2_setTime(system->fmus[i]->getFMU(), t);
-    if (fmi2OK != fmistatus) logError_FMUCall("fmi2_setTime", system->fmus[i]);
+    system->fmus[i]->setTime(t);
 
     if (0 == system->nStates[i])
       continue;
@@ -95,9 +93,7 @@ int oms::cvode_roots(realtype t, N_Vector y, realtype *gout, void *user_data)
   // update states in FMUs
   for (size_t i=0, j=0; i < system->fmus.size(); ++i)
   {
-    // set time
-    fmistatus = fmi2_setTime(system->fmus[i]->getFMU(), t);
-    if (fmi2OK != fmistatus) logError_FMUCall("fmi2_setTime", system->fmus[i]);
+    system->fmus[i]->setTime(t);
 
     if (0 == system->nStates[i])
       continue;
@@ -663,18 +659,7 @@ oms_status_enu_t oms::SystemSC::doStepEuler()
 
         // set time
         for (const auto& component : getComponents())
-        {
-          switch (component.second->getType())
-          {
-            case oms_component_fmu:
-              if (fmi2OK != fmi2_setTime(dynamic_cast<ComponentFMUME*>(component.second)->getFMU(), time))
-                logError_FMUCall("fmi2_setTime", dynamic_cast<ComponentFMUME*>(component.second));
-              break;
-            case oms_component_table:
-              dynamic_cast<ComponentTable*>(component.second)->stepUntil(time);
-              break;
-          }
-        }
+          component.second->setTime(time);
 
         for (size_t i = 0; i < fmus.size(); ++i)
         {
@@ -713,18 +698,7 @@ oms_status_enu_t oms::SystemSC::doStepEuler()
 
         // set time
         for (const auto& component : getComponents())
-        {
-          switch (component.second->getType())
-          {
-            case oms_component_fmu:
-              if (fmi2OK != fmi2_setTime(dynamic_cast<ComponentFMUME*>(component.second)->getFMU(), time))
-                logError_FMUCall("fmi2_setTime", dynamic_cast<ComponentFMUME*>(component.second));
-              break;
-            case oms_component_table:
-              dynamic_cast<ComponentTable*>(component.second)->stepUntil(time);
-              break;
-          }
-        }
+          component.second->setTime(time);
 
         // Enter event mode and handle discrete state updates for each FMU
         for (size_t i = 0; i < fmus.size(); ++i)
@@ -841,18 +815,7 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
 
       // set time
       for (const auto& component : getComponents())
-      {
-        switch (component.second->getType())
-        {
-          case oms_component_fmu:
-            if (fmi2OK != fmi2_setTime(dynamic_cast<ComponentFMUME*>(component.second)->getFMU(), time))
-              logError_FMUCall("fmi2_setTime", dynamic_cast<ComponentFMUME*>(component.second));
-            break;
-          case oms_component_table:
-            dynamic_cast<ComponentTable*>(component.second)->stepUntil(time);
-            break;
-        }
-      }
+        component.second->setTime(time);
 
       for (size_t i = 0; i < fmus.size(); ++i)
       {
@@ -931,18 +894,7 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
 
       // set time
       for (const auto& component : getComponents())
-      {
-        switch (component.second->getType())
-        {
-          case oms_component_fmu:
-            if (fmi2OK != fmi2_setTime(dynamic_cast<ComponentFMUME*>(component.second)->getFMU(), time))
-              logError_FMUCall("fmi2_setTime", dynamic_cast<ComponentFMUME*>(component.second));
-            break;
-          case oms_component_table:
-            dynamic_cast<ComponentTable*>(component.second)->stepUntil(time);
-            break;
-        }
-      }
+        component.second->setTime(time);
 
       for (size_t i = 0; i < fmus.size(); ++i)
       {
