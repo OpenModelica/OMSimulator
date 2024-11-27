@@ -360,7 +360,9 @@ exit_sandbox() if $sandbox_needed;
 if ($exit_status == 0) {
   exit 0;
 } else {
-  if ($time < 1) {
+  if ($time eq "") {
+    exit 1;
+  } elsif ($time < 1) {
     exit 1;
   } elsif ($time > 100) {
     exit 100;
