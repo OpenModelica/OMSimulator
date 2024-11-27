@@ -63,6 +63,7 @@ namespace oms
     oms_status_enu_t reset();
 
     oms_status_enu_t stepUntil(double stopTime) {time = stopTime; return oms_status_ok;}
+    oms_status_enu_t setTime(double time) {this->time = time; return oms_status_ok;}
 
     Variable* getVariable(const ComRef& cref) {logError_NotImplemented; return NULL;}
     oms_status_enu_t getReal(const ComRef& cref, double& value);
