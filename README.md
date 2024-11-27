@@ -27,7 +27,7 @@ Latest documentation:
 
 ### Required Tools
 - **C++ compiler** with C++17 support
-- **CMake**: [Download](http://www.cmake.org)
+- **CMake**: [Download here](http://www.cmake.org)
 
 ### Optional Tools
 - **Sphinx**: for documentation ([Download](http://www.sphinx-doc.org/en/stable/))
@@ -36,7 +36,7 @@ Latest documentation:
 
 ### Libraries
 
-- **readline** (for Lua support): [Download](http://git.savannah.gnu.org/cgit/readline.git)
+- **readline** (for Lua support): [Download here](http://git.savannah.gnu.org/cgit/readline.git)
 
 ## Compilation Instructions
 
