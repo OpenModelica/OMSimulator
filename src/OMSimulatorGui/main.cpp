@@ -32,18 +32,55 @@
 #include "OMSimulator/OMSimulator.h"
 #include <string>
 
-int main(int argc, char *argv[])
+#include "Application.h"
+#include "DemoLayer.h"
+#include "ScopeLayer.h"
+#include "Layer.h"
+
+namespace oms
 {
-  std::string arg;
+  int EntryPoint(const std::vector<std::string> &args)
+  {
+    Application app(oms_getVersion(), 800, 600);
+    const std::shared_ptr<ScopeLayer> &layer = std::make_shared<ScopeLayer>(app);
+
+    for (const auto &arg : args)
+      layer->LoadModel(arg);
+
+    app.PushLayer(layer);
+#if !defined(NDEBUG)
+    app.PushLayer(std::make_shared<DemoLayer>(app));
+#endif
+    app.Run();
+
+    return 0;
+  }
+}
+
+#if defined(_WIN32) || defined(_WIN64)
+#include <windows.h>
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+{
+  std::vector<std::string> args;
+  int argc;
+  LPWSTR *argv = CommandLineToArgvW(GetCommandLineW(), &argc);
   for (int i = 1; i < argc; ++i)
   {
-    if (!arg.empty())
-      arg += " ";
-    arg += argv[i];
+    std::wstring ws(argv[i]);
+    std::string str(ws.begin(), ws.end());
+    args.push_back(str);
   }
+  LocalFree(argv);
 
-  if (oms_status_ok != oms_setCommandLineOption(arg.c_str()))
-    return 1;
-
-  return 0;
+  return oms::EntryPoint(args);
 }
+#else
+int main(int argc, char *argv[])
+{
+  std::vector<std::string> args;
+  for (int i = 1; i < argc; ++i)
+    args.push_back(argv[i]);
+
+  return oms::EntryPoint(args);
+}
+#endif
