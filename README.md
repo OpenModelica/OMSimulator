@@ -23,15 +23,11 @@ Latest documentation:
 - [User Guide HTML](https://openmodelica.org/doc/OMSimulator/master/OMSimulator/UsersGuide/html/)
 - [OMSimulatorLib Doxygen](https://openmodelica.org/doc/OMSimulator/master/OMSimulator/doxygen/html/index.html)
 
-## FMI Cross-Check Results
-
-* [Cross-Check History](https://libraries.openmodelica.org/fmi-crosschecking/OMSimulator/history/)
-
 ## Dependencies
 
 ### Required Tools
 - **C++ compiler** with C++17 support
-- **CMake**: [Download here](http://www.cmake.org)
+- **CMake**: [Download](http://www.cmake.org)
 
 ### Optional Tools
 - **Sphinx**: for documentation ([Download](http://www.sphinx-doc.org/en/stable/))
@@ -40,7 +36,7 @@ Latest documentation:
 
 ### Libraries
 
-- **readline** (for Lua support): [Download here](http://git.savannah.gnu.org/cgit/readline.git)
+- **readline** (for Lua support): [Download](http://git.savannah.gnu.org/cgit/readline.git)
 
 ## Compilation Instructions
 
