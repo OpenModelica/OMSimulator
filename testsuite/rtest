@@ -134,7 +134,6 @@ sub setbaselineone
 {
     my $mismatch = 0;
     my ($f,%info) = @_;
-    my $setup_command = $info{"setup_command"};
     my $cflags = $info{"cflags"};
     my $env = $info{"env"};
     my $teardown_command = $info{"teardown_command"};
@@ -159,12 +158,6 @@ sub setbaselineone
 
     $log = "$tmpdir/log-$f";
     system "rm -f $log";
-    if ($setup_command) {
-      if ( system "$setup_command" ) {
-        print "== Failed to set baseline for $f (system $setup_command failed)";
-        return 1;
-      }
-    }
     if (!$cflags) {
       $cflags = "";
     }
@@ -234,7 +227,6 @@ sub runone
     my $retval = 0;
     my $mismatch = 0;
     my ($f,%info) = @_;
-    my $setup_command = $info{"setup_command"};
     my $cflags = $info{"cflags"};
     my $env = $info{"env"};
     my $teardown_command = $info{"teardown_command"};
@@ -260,12 +252,6 @@ sub runone
 
     $log = "$tmpdir/log-$f";
     system "rm -f $log";
-    if ($setup_command) {
-      if ( system "$setup_command >>$log 2>&1" ) {
-        print " setup_command failed";
-        return 1;
-      }
-    }
     if (!$cflags) {
       $cflags = "";
     }
@@ -288,7 +274,7 @@ sub runone
     if ($teardown_command) {
       system "$teardown_command >>$log 2>&1";
     }
-    my $end_t = time-$start_t;
+    $end_t = time-$start_t;
 
     if ($info{"status"} eq "erroneous") {
       print "erroneous\n";
@@ -355,7 +341,6 @@ sub dofile
     my %info = ("status"   => "unknown",
         "name"     => $f,
         "keywords" => "unknown",
-        "setup_command" => "",
         "env" => "",
         "teardown_command" => "",
         "stack_size" => "",
