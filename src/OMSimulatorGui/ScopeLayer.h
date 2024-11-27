@@ -10,6 +10,9 @@
 
 #include <vector>
 
+#include "Scope.h"
+#include "Model.h"
+
 struct ModelInfo
 {
   std::string name;
@@ -17,16 +20,22 @@ struct ModelInfo
   bool selected;
 };
 
-const char* modelStateToString(oms_modelState_enu_t modelState)
+const char *modelStateToString(oms_modelState_enu_t modelState)
 {
   switch (modelState)
   {
-    case oms_modelState_virgin:             return "virgin";
-    case oms_modelState_enterInstantiation: return "enterInstantiation";
-    case oms_modelState_instantiated:       return "instantiated";
-    case oms_modelState_initialization:     return "initialization";
-    case oms_modelState_simulation:         return "simulation";
-    case oms_modelState_error:              return "error";
+  case oms_modelState_virgin:
+    return "virgin";
+  case oms_modelState_enterInstantiation:
+    return "enterInstantiation";
+  case oms_modelState_instantiated:
+    return "instantiated";
+  case oms_modelState_initialization:
+    return "initialization";
+  case oms_modelState_simulation:
+    return "simulation";
+  case oms_modelState_error:
+    return "error";
   }
   return "unknown";
 }
@@ -79,12 +88,12 @@ public:
           ImGui::TableNextColumn();
           if (ImGui::Button(model.name.c_str()))
           {
-          #if defined(_WIN32)
-            std::string command = "code -n \"" + model.path + "\"";
-          #else
-            std::string command = "code -n \"" + model.path + "\"";
-          #endif
-            system(command.c_str());
+            oms::Model *oms_model = oms::Scope::GetInstance().getModel(model.name);
+            if (oms_model)
+            {
+              std::string command = "code -n \"" + oms_model->getTempDirectory() + "\"";
+              system(command.c_str());
+            }
           }
           ImGui::TableNextColumn();
           oms_modelState_enu_t modelState = oms_modelState_error;
