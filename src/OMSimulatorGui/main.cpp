@@ -64,7 +64,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
   std::vector<std::string> args;
   int argc;
   LPWSTR *argv = CommandLineToArgvW(GetCommandLineW(), &argc);
-  for (int i = 0; i < argc; ++i)
+  for (int i = 1; i < argc; ++i)
   {
     std::wstring ws(argv[i]);
     std::string str(ws.begin(), ws.end());
@@ -78,7 +78,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 int main(int argc, char *argv[])
 {
   std::vector<std::string> args;
-  for (int i = 0; i < argc; ++i)
+  for (int i = 1; i < argc; ++i)
     args.push_back(argv[i]);
 
   return oms::EntryPoint(args);

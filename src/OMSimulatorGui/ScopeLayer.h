@@ -77,7 +77,15 @@ public:
         {
           ImGui::TableNextRow();
           ImGui::TableNextColumn();
-          ImGui::Button(model.name.c_str());
+          if (ImGui::Button(model.name.c_str()))
+          {
+            #if defined(_WIN32)
+                  std::string command = "start code \"" + model.path + "\"";
+            #else
+                  std::string command = "code \"" + model.path + "\"";
+            #endif
+                  system(command.c_str());
+          }
           ImGui::TableNextColumn();
           oms_modelState_enu_t modelState = oms_modelState_error;
           oms_getModelState(model.name.c_str(), &modelState);
