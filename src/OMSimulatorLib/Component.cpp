@@ -46,6 +46,9 @@ void oms::fmi2logger(fmi2ComponentEnvironment env, fmi2String instanceName, fmi2
     return;
   }
 
+  if (Flags::SuppressPath())
+    instanceName = "";
+
   int len;
   char msg[1000];
   va_list argp;
