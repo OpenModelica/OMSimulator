@@ -10,6 +10,7 @@ if(WIN32)
   endif()
 endif()
 
+target_include_directories(OMSimulatorGui PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../OMSimulatorLib)
 target_link_libraries(OMSimulatorGui PUBLIC OMSimulatorLib_static oms::3rd::GLFW oms::3rd::imgui oms::3rd::tinyfd)
 
 install(TARGETS OMSimulatorGui DESTINATION bin)
