@@ -8,18 +8,39 @@
 #include "imgui.h"
 #include "tinyfiledialogs.h"
 
-#include <unordered_set>
+#include <vector>
+
+struct ModelInfo
+{
+  std::string name;
+  std::string path;
+  bool selected;
+};
+
+const char* modelStateToString(oms_modelState_enu_t modelState)
+{
+  switch (modelState)
+  {
+    case oms_modelState_virgin:             return "virgin";
+    case oms_modelState_enterInstantiation: return "enterInstantiation";
+    case oms_modelState_instantiated:       return "instantiated";
+    case oms_modelState_initialization:     return "initialization";
+    case oms_modelState_simulation:         return "simulation";
+    case oms_modelState_error:              return "error";
+  }
+  return "unknown";
+}
 
 class ScopeLayer : public Layer
 {
 public:
   ScopeLayer(Application &app) : app(app) {}
 
-  void LoadModel(const std::string& path)
+  void LoadModel(const std::string &path)
   {
     char *cref;
     if (oms_status_ok == oms_importFile(path.c_str(), &cref))
-      models.insert(cref);
+      models.push_back(ModelInfo{cref, path, false});
   }
 
   void OnAttach() override
@@ -50,9 +71,19 @@ public:
   {
     if (ImGui::Begin("Scope"))
     {
-      for (const auto &model : models)
+      if (ImGui::BeginTable("split2", 2, ImGuiTableFlags_Resizable | ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_Borders))
       {
-        ImGui::Text("%s", model.c_str());
+        for (auto &model : models)
+        {
+          ImGui::TableNextRow();
+          ImGui::TableNextColumn();
+          ImGui::Button(model.name.c_str());
+          ImGui::TableNextColumn();
+          oms_modelState_enu_t modelState = oms_modelState_error;
+          oms_getModelState(model.name.c_str(), &modelState);
+          ImGui::Text(modelStateToString(modelState));
+        }
+        ImGui::EndTable();
       }
       ImGui::End();
     }
@@ -61,5 +92,5 @@ public:
 private:
   Application &app;
 
-  std::unordered_set<std::string> models;
+  std::vector<ModelInfo> models;
 };

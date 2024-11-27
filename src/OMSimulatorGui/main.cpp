@@ -39,15 +39,15 @@
 
 namespace oms
 {
-  int EntryPoint(int argc, char *argv[])
+  int EntryPoint(const std::vector<std::string> &args)
   {
     Application app(oms_getVersion(), 800, 600);
     const std::shared_ptr<ScopeLayer> &layer = std::make_shared<ScopeLayer>(app);
 
-    for (int i = 1; i < argc; ++i)
-      layer->LoadModel(argv[i]);
+    for (const auto &arg : args)
+      layer->LoadModel(arg);
 
-    app.PushLayer(std::make_shared<ScopeLayer>(app));
+    app.PushLayer(layer);
 #if !defined(NDEBUG)
     app.PushLayer(std::make_shared<DemoLayer>(app));
 #endif
@@ -61,11 +61,26 @@ namespace oms
 #include <windows.h>
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-  return oms::EntryPoint(__argc, __argv);
+  std::vector<std::string> args;
+  int argc;
+  LPWSTR *argv = CommandLineToArgvW(GetCommandLineW(), &argc);
+  for (int i = 0; i < argc; ++i)
+  {
+    std::wstring ws(argv[i]);
+    std::string str(ws.begin(), ws.end());
+    args.push_back(str);
+  }
+  LocalFree(argv);
+
+  return oms::EntryPoint(args);
 }
 #else
 int main(int argc, char *argv[])
 {
-  return oms::EntryPoint(argc, argv);
+  std::vector<std::string> args;
+  for (int i = 0; i < argc; ++i)
+    args.push_back(argv[i]);
+
+  return oms::EntryPoint(args);
 }
 #endif
