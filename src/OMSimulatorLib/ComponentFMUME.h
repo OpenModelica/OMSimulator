@@ -90,6 +90,7 @@ namespace oms
     oms_status_enu_t setReal(const ComRef& cref, double value);
     oms_status_enu_t setString(const ComRef& cref, const std::string& value);
     oms_status_enu_t setUnit(const ComRef& cref, const std::string& value);
+    oms_status_enu_t setTime(double time);
 
     oms_status_enu_t getDirectionalDerivative(const ComRef& unknownCref, const ComRef& knownCref, double& value);
     oms_status_enu_t getDirectionalDerivativeHeper(const int unknownIndex, const int knownIndex, const std::vector<int>& dependencyList, double& value);
