@@ -119,7 +119,6 @@ namespace oms
     void setPath(const std::string& newPath) { this->path = newPath; }
     void setTempDir(const std::string& tempDir) { this->tempDir = tempDir; }
     oms_component_enu_t getType() const { return type; }
-    void fetchAllVars(bool enableOption) { fetchAllVars_ = enableOption; }
     System* getParentSystem() const { return parentSystem; }
     Model& getModel() const;
     void setGeometry(const ssd::ElementGeometry& geometry) { element.setGeometry(&geometry); }
@@ -148,7 +147,6 @@ namespace oms
 
     Clock clock;
     unsigned int clock_id;
-    bool fetchAllVars_ = false;
 
   private:
     System* parentSystem;

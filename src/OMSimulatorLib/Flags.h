@@ -164,7 +164,6 @@ namespace oms
       {"--directionalDerivatives", "", "Specifies whether directional derivatives should be used to calculate the Jacobian for alg. loops or if a numerical approximation should be used instead ([true], false)", re_bool, Flags::DirectionalDerivatives, false},
       {"--dumpAlgLoops", "", "Dump information for alg loops (true, [false])", re_bool, Flags::DumpAlgLoops, false},
       {"--emitEvents", "", "Specifies whether events should be emitted or not ([true], false)", re_bool, Flags::EmitEvents, false},
-      {"--fetchAllVars", "", "Workaround for certain FMUs that do not update all internal dependencies automatically", re_default, Flags::FetchAllVars, false},
       {"--help", "-h", "Displays the help text", re_void, Flags::Help, true},
       {"--ignoreInitialUnknowns", "", "Ignore the initial unknowns from the modelDescription.xml (true, [false])", re_bool, Flags::IgnoreInitialUnknowns, false},
       {"--inputExtrapolation", "", "Enables input extrapolation using derivative information (true, [false])", re_bool, Flags::InputExtrapolation, false},
@@ -206,7 +205,6 @@ namespace oms
     static oms_status_enu_t DirectionalDerivatives(const std::string& value);
     static oms_status_enu_t DumpAlgLoops(const std::string& value);
     static oms_status_enu_t EmitEvents(const std::string& value);
-    static oms_status_enu_t FetchAllVars(const std::string& value);
     static oms_status_enu_t Filename(const std::string& value);
     static oms_status_enu_t Help(const std::string& value);
     static oms_status_enu_t IgnoreInitialUnknowns(const std::string& value);
