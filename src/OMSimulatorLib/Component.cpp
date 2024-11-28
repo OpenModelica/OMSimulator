@@ -36,6 +36,7 @@
 #include "OMSFileSystem.h"
 #include "System.h"
 
+#include <cstring>
 #include <stdarg.h>
 
 void oms::fmi2logger(fmi2ComponentEnvironment env, fmi2String instanceName, fmi2Status status, fmi2String category, fmi2String message, ...)
@@ -52,22 +53,39 @@ void oms::fmi2logger(fmi2ComponentEnvironment env, fmi2String instanceName, fmi2
   va_start(argp, message);
   len = vsnprintf(msg, 1000, message, argp);
 
+  if (Flags::SuppressPath())
+  {
+    // Remove path information from instanceName
+    const char* lastSlash = strrchr(instanceName, '/');
+    const char* lastBackslash = strrchr(instanceName, '\\');
+    const char* lastSeparator = lastSlash > lastBackslash ? lastSlash : lastBackslash;
+    if (lastSeparator)
+      instanceName = lastSeparator + 1;
+  }
+
   switch (status)
   {
   case fmi2OK:
+    logDebug("[fmi2OK] " + std::string(instanceName) + "/" + std::string(category) + ": " + msg);
+    break;
   case fmi2Pending:
-    logDebug(std::string(instanceName) + " (" + category + "): " + msg);
+    logDebug("[fmi2Pending] " + std::string(instanceName) + "/" + std::string(category) + ": " + msg);
     break;
   case fmi2Warning:
-    logWarning(std::string(instanceName) + " (" + category + "): " + msg);
+    logWarning("[fmi2Warning] " + std::string(instanceName) + "/" + std::string(category) + ": " + msg);
     break;
   case fmi2Discard:
+    logError("[fmi2Discard] " + std::string(instanceName) + "/" + std::string(category) + ": " + msg);
+    break;
   case fmi2Error:
+    logError("[fmi2Error] " + std::string(instanceName) + "/" + std::string(category) + ": " + msg);
+    break;
   case fmi2Fatal:
-    logError(std::string(instanceName) + " (" + category + "): " + msg);
+    logError("[fmi2Fatal] " + std::string(instanceName) + "/" + std::string(category) + ": " + msg);
     break;
   default:
-    logWarning("fmiStatus = unknown; " + std::string(instanceName) + " (" + category + "): " + msg);
+    logError("[unknown] " + std::string(instanceName) + "/" + std::string(category) + ": " + msg);
+    break;
   }
 }
 
