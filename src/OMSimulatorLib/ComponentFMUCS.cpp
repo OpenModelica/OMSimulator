@@ -846,19 +846,6 @@ oms_status_enu_t oms::ComponentFMUCS::stepUntil(double stopTime)
 
   while (time < stopTime)
   {
-    // HACK for certain FMUs
-    if (fetchAllVars_)
-    {
-      for (auto &v : allVariables)
-      {
-        if (v.isTypeReal())
-        {
-          double realValue;
-          if (oms_status_ok != getReal(v.getCref(), realValue))
-            logError("failed to fetch variable " + std::string(v));
-        }
-      }
-    }
     fmi2Status status = fmi2_doStep(fmu, time, hdef, fmi2True);
     time += hdef;
 

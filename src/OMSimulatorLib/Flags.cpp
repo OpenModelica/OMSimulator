@@ -255,43 +255,6 @@ oms_status_enu_t oms::Flags::EmitEvents(const std::string& value)
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Flags::FetchAllVars(const std::string& value)
-{
-  std::string cref = value;
-  bool enableOption = true;
-  if (value[0] == '-' || value[0] == '+')
-  {
-    enableOption = (value[0] == '+');
-    cref = cref.substr(1);
-  }
-
-  oms::ComRef tail(cref);
-  oms::ComRef front = tail.pop_front();
-
-  oms::Model* model = oms::Scope::GetInstance().getModel(front);
-  if (!model)
-    return logError_ModelNotInScope(front);
-
-  front = tail.pop_front();
-  oms::System* system = model->getSystem(front);
-  if (!system)
-    return logError_SystemNotInModel(model->getCref(), front);
-
-  oms::Component* component = system->getComponent(tail);
-  if (!component)
-    return logError_ComponentNotInSystem(system, tail);
-
-  if (component->getType() != oms_component_fmu)
-    return oms_status_error;
-
-  component->fetchAllVars(enableOption);
-  if (enableOption)
-    logDebug("--fetchAllVars is enabled for " + cref);
-  else
-    logDebug("--fetchAllVars is disabled for " + cref);
-  return oms_status_ok;
-}
-
 oms_status_enu_t oms::Flags::Filename(const std::string& value)
 {
   GetInstance().files.push_back(value);
