@@ -23,10 +23,6 @@ Latest documentation:
 - [User Guide HTML](https://openmodelica.org/doc/OMSimulator/master/OMSimulator/UsersGuide/html/)
 - [OMSimulatorLib Doxygen](https://openmodelica.org/doc/OMSimulator/master/OMSimulator/doxygen/html/index.html)
 
-## FMI Cross-Check Results
-
-* [Cross-Check History](https://libraries.openmodelica.org/fmi-crosschecking/OMSimulator/history/)
-
 ## Dependencies
 
 ### Required Tools
