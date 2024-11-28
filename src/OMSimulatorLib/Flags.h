@@ -29,13 +29,14 @@
  *
  */
 
-#ifndef _OMS_FLAGS_H_
-#define _OMS_FLAGS_H_
+#pragma once
 
 #include "OMSimulator/Types.h"
+
+#include <array>
+#include <map>
 #include <string>
 #include <vector>
-#include <map>
 
 namespace oms
 {
@@ -47,98 +48,51 @@ namespace oms
     void setDefaults();
 
     // stop the compiler generating methods copying the object
-    Flags(Flags const&);            ///< not implemented
-    Flags& operator=(Flags const&); ///< not implemented
-
-    static Flags& GetInstance();
+    Flags(Flags const &);            ///< not implemented
+    Flags &operator=(Flags const &); ///< not implemented
 
   public:
-    static oms_status_enu_t SetCommandLineOption(const std::string& cmd);
+    static Flags &GetInstance();
 
-    static bool AddParametersToCSV() {return GetInstance().addParametersToCSV;}
-    static int CVODEMaxErrTestFails() {return GetInstance().cvodeMaxErrTestFails;}
-    static int CVODEMaxNLSFailures() {return GetInstance().cvodeMaxNLSFails;}
-    static int CVODEMaxNLSIterations() {return GetInstance().cvodeMaxNLSIterations;}
-    static int CVODEMaxSteps() {return GetInstance().cvodeMaxSteps;}
-    static bool DefaultModeIsCS() {return GetInstance().defaultModeIsCS;}
-    static bool DeleteTempFiles() {return GetInstance().deleteTempFiles;}
-    static bool DirectionalDerivatives() {return GetInstance().directionalDerivatives;}
-    static bool DumpAlgLoops() {return GetInstance().dumpAlgLoops;}
-    static bool EmitEvents() {return GetInstance().emitEvents;}
-    static bool IgnoreInitialUnknowns() {return GetInstance().ignoreInitialUnknowns;}
-    static bool InputExtrapolation() {return GetInstance().inputExtrapolation;}
-    static bool ProgressBar() {return GetInstance().progressBar;}
-    static bool RealTime() {return GetInstance().realTime;}
-    static bool SkipCSVHeader() {return GetInstance().skipCSVHeader;}
-    static bool SolverStats() {return GetInstance().solverStats;}
-    static bool StripRoot() {return GetInstance().stripRoot;}
-    static bool SuppressPath() {return GetInstance().suppressPath;}
-    static bool WallTime() {return GetInstance().wallTime;}
-    static bool ZeroNominal() {return GetInstance().zeroNominal;}
-    static double InitialStepSize() {return GetInstance().initialStepSize;}
-    static double MaximumStepSize() {return GetInstance().maximumStepSize;}
-    static double MinimumStepSize() {return GetInstance().minimumStepSize;}
-    static double StartTime() {return GetInstance().startTime;}
-    static double StopTime() {return GetInstance().stopTime;}
-    static double Tolerance() {return GetInstance().tolerance;}
-    static oms_alg_solver_enu_t AlgLoopSolver() {return GetInstance().algLoopSolver;}
-    static oms_solver_enu_t MasterAlgorithm() {return GetInstance().masterAlgorithm;}
-    static oms_solver_enu_t Solver() {return GetInstance().solver;}
-    static std::string ResultFile() {return GetInstance().resultFile;}
-    static unsigned int Intervals() {return GetInstance().intervals;}
-    static unsigned int MaxEventIteration() {return GetInstance().maxEventIteration;}
-    static unsigned int MaxLoopIteration() {return GetInstance().maxLoopIteration;}
-    static unsigned int NumProcs() {return GetInstance().numProcs;}
-    static unsigned int Timeout() {return GetInstance().timeout;}
+    static oms_status_enu_t SetCommandLineOption(const std::string &cmd);
 
-  private:
-    bool addParametersToCSV;
-    int cvodeMaxErrTestFails;
-    int cvodeMaxNLSFails;
-    int cvodeMaxNLSIterations;
-    int cvodeMaxSteps;
-    bool defaultModeIsCS;
-    bool deleteTempFiles;
-    bool directionalDerivatives;
-    bool dumpAlgLoops;
-    bool emitEvents;
-    bool ignoreInitialUnknowns;
-    bool inputExtrapolation;
-    bool progressBar;
-    bool realTime;
-    bool skipCSVHeader;
-    bool solverStats;
-    bool stripRoot;
-    bool suppressPath;
-    bool wallTime;
-    bool zeroNominal;
-    double initialStepSize;
-    double maximumStepSize;
-    double minimumStepSize;
-    double startTime;
-    double stopTime;
-    double tolerance;
-    oms_alg_solver_enu_t algLoopSolver;
-    oms_solver_enu_t masterAlgorithm;
-    oms_solver_enu_t solver;
-    std::string resultFile;
-    unsigned int intervals;
-    unsigned int maxEventIteration;
-    unsigned int maxLoopIteration;
-    unsigned int numProcs;
-    unsigned int timeout;
+    static bool AddParametersToCSV() { return GetInstance().FlagAddParametersToCSV.value == "true"; }
+    static bool DefaultModeIsCS() { return GetInstance().FlagMode.value == "cs"; }
+    static bool DeleteTempFiles() { return GetInstance().FlagDeleteTempFiles.value == "true"; }
+    static bool DirectionalDerivatives() { return GetInstance().FlagDirectionalDerivatives.value == "true"; }
+    static bool DumpAlgLoops() { return GetInstance().FlagDumpAlgLoops.value == "true"; }
+    static bool EmitEvents() { return GetInstance().FlagEmitEvents.value == "true"; }
+    static bool IgnoreInitialUnknowns() { return GetInstance().FlagIgnoreInitialUnknowns.value == "true"; }
+    static bool InputExtrapolation() { return GetInstance().FlagInputExtrapolation.value == "true"; }
+    static bool ProgressBar() { return GetInstance().FlagProgressBar.value == "true"; }
+    static bool RealTime() { return GetInstance().FlagRealTime.value == "true"; }
+    static bool SkipCSVHeader() { return GetInstance().FlagSkipCSVHeader.value == "true"; }
+    static bool SolverStats() { return GetInstance().FlagSolverStats.value == "true"; }
+    static bool StripRoot() { return GetInstance().FlagStripRoot.value == "true"; }
+    static bool SuppressPath() { return GetInstance().FlagSuppressPath.value == "true"; }
+    static bool WallTime() { return GetInstance().FlagWallTime.value == "true"; }
+    static bool ZeroNominal() { return GetInstance().FlagZeroNominal.value == "true"; }
+    static double InitialStepSize();
+    static double MaximumStepSize();
+    static double MinimumStepSize();
+    static double StartTime() { return atof(GetInstance().FlagStartTime.value.c_str()); }
+    static double StopTime() { return atof(GetInstance().FlagStopTime.value.c_str()); }
+    static double Timeout() { return atof(GetInstance().FlagTimeout.value.c_str()); }
+    static double Tolerance() { return atof(GetInstance().FlagTolerance.value.c_str()); }
+    static int CVODEMaxErrTestFails() { return atoi(GetInstance().FlagCVODEMaxErrTestFails.value.c_str()); }
+    static int CVODEMaxNLSFailures() { return atoi(GetInstance().FlagCVODEMaxNLSFailures.value.c_str()); }
+    static int CVODEMaxNLSIterations() { return atoi(GetInstance().FlagCVODEMaxNLSIterations.value.c_str()); }
+    static int CVODEMaxSteps() { return atoi(GetInstance().FlagCVODEMaxSteps.value.c_str()); }
+    static oms_alg_solver_enu_t AlgLoopSolver();
+    static oms_solver_enu_t MasterAlgorithm();
+    static oms_solver_enu_t Solver();
+    static std::string ResultFile() { return GetInstance().FlagResultFile.value; }
+    static unsigned int Intervals() { return atoi(GetInstance().FlagIntervals.value.c_str()); }
+    static unsigned int MaxEventIteration() { return atoi(GetInstance().FlagMaxEventIteration.value.c_str()); }
+    static unsigned int MaxLoopIteration() { return atoi(GetInstance().FlagMaxLoopIteration.value.c_str()); }
+    static unsigned int NumProcs() { return atoi(GetInstance().FlagNumProcs.value.c_str()); }
 
   private:
-    struct Flag
-    {
-      const std::string name;
-      const std::string abbr;
-      const std::string desc;
-      const std::string regex;
-      oms_status_enu_t (*fcn)(const std::string& value);
-      const bool interrupt;
-    };
-
     std::map<std::string, unsigned int> lookup;
     std::vector<std::string> files;
 
@@ -150,91 +104,114 @@ namespace oms
     const std::string re_number = "[[:digit:]]+";
     const std::string re_filename = ".+(\\.fmu|\\.ssp|\\.lua)";
     const std::string re_stepSize = "((\\+|-)?[[:digit:]]+)(\\.(([[:digit:]]+)?))?((e|E)((\\+|-)?)[[:digit:]]+)?(,((\\+|-)?[[:digit:]]+)(\\.(([[:digit:]]+)?))?((e|E)((\\+|-)?)[[:digit:]]+)?,((\\+|-)?[[:digit:]]+)(\\.(([[:digit:]]+)?))?((e|E)((\\+|-)?)[[:digit:]]+)?)?";
+    const std::string re_solver = "(euler|cvode)";
 
-    const std::vector<Flag> flags = {
-      {"", "", "FMU or SSP file", re_filename, Flags::Filename, false},
-      {"--addParametersToCSV", "", "Export parameters to .csv file (true, [false])", re_default, Flags::AddParametersToCSV, false},
-      {"--algLoopSolver", "", "Specifies the alg. loop solver method (fixedpoint, [kinsol]) used for algebraic loops spanning over multiple components.", re_default, Flags::AlgLoopSolver, false},
-      {"--clearAllOptions", "", "Reset all flags to default values", re_void, Flags::ClearAllOptions, false},
-      {"--CVODEMaxErrTestFails", "", "Maximum number of error test failures for CVODE", re_number, Flags::CVODEMaxErrTestFails, false},
-      {"--CVODEMaxNLSFailures", "", "Maximum number of nonlinear convergence failures for CVODE", re_number, Flags::CVODEMaxNLSFailures, false},
-      {"--CVODEMaxNLSIterations", "", "Maximum number of nonlinear solver iterations for CVODE", re_number, Flags::CVODEMaxNLSIterations, false},
-      {"--CVODEMaxSteps", "", "Maximum number of steps for CVODE", re_number, Flags::CVODEMaxSteps, false},
-      {"--deleteTempFiles", "", "Deletes temp files as soon as they are no longer needed ([true], false)", re_bool, Flags::DeleteTempFiles, false},
-      {"--directionalDerivatives", "", "Specifies whether directional derivatives should be used to calculate the Jacobian for alg. loops or if a numerical approximation should be used instead ([true], false)", re_bool, Flags::DirectionalDerivatives, false},
-      {"--dumpAlgLoops", "", "Dump information for alg loops (true, [false])", re_bool, Flags::DumpAlgLoops, false},
-      {"--emitEvents", "", "Specifies whether events should be emitted or not ([true], false)", re_bool, Flags::EmitEvents, false},
-      {"--help", "-h", "Displays the help text", re_void, Flags::Help, true},
-      {"--ignoreInitialUnknowns", "", "Ignore the initial unknowns from the modelDescription.xml (true, [false])", re_bool, Flags::IgnoreInitialUnknowns, false},
-      {"--inputExtrapolation", "", "Enables input extrapolation using derivative information (true, [false])", re_bool, Flags::InputExtrapolation, false},
-      {"--intervals", "-i", "Specifies the number of communication points (arg > 1)", re_number, Flags::Intervals, false},
-      {"--logFile", "-l", "Specifies the logfile (stdout is used if no log file is specified)", re_default, Flags::LogFile, false},
-      {"--logLevel", "", "0 default, 1 debug, 2 debug+trace", re_number, Flags::LogLevel, false},
-      {"--maxEventIteration", "", "Specifies the max. number of iterations for handling a single event", re_number, Flags::MaxEventIteration, false},
-      {"--maxLoopIteration", "", "Specifies the max. number of iterations for solving algebraic loops between system-level components. Internal algebraic loops of components are not affected.", re_number, Flags::MaxLoopIteration, false},
-      {"--mode", "-m", "Forces a certain FMI mode iff the FMU provides cs and me (cs, [me])", re_mode, Flags::Mode, false},
-      {"--numProcs", "-n", "Specifies the max. number of processors to use (0=auto, 1=default)", re_number, Flags::NumProcs, false},
-      {"--progressBar", "", "Shows a progress bar for the simulation progress in the terminal (true, [false])", re_bool, Flags::ProgressBar, false},
-      {"--realTime", "", "Experimental feature for (soft) real-time co-simulation (true, [false])", re_bool, Flags::RealTime, false},
-      {"--resultFile", "-r", "Specifies the name of the output result file", re_default, Flags::ResultFile, false},
-      {"--skipCSVHeader", "", "Skip exporting the scv delimiter in the header ([true], false), ", re_default, Flags::SkipCSVHeader, false},
-      {"--solver", "", "Specifies the integration method (euler, [cvode])", re_default, Flags::Solver, false},
-      {"--solverStats", "", "Adds solver stats to the result file, e.g. step size; not supported for all solvers (true, [false])", re_bool, Flags::SolverStats, false},
-      {"--startTime", "-s", "Specifies the start time", re_double, Flags::StartTime, false},
-      {"--stepSize", "", "Specifies the step size (<step size> or <init step,min step,max step>)", re_stepSize, Flags::StepSize, false},
-      {"--stopTime", "-t", "Specifies the stop time", re_double, Flags::StopTime, false},
-      {"--stripRoot", "", "Removes the root system prefix from all exported signals (true, [false])", re_bool, Flags::StripRoot, false},
-      {"--suppressPath", "", "Supresses path information in info messages; especially useful for testing ([true], false)", re_bool, Flags::SuppressPath, false},
-      {"--tempDir", "", "Specifies the temp directory", re_default, Flags::TempDir, false},
-      {"--timeout", "", "Specifies the maximum allowed time in seconds for running a simulation (0 disables)", re_number, Flags::Timeout, false},
-      {"--tolerance", "", "Specifies the relative tolerance", re_double, Flags::Tolerance, false},
-      {"--version", "-v", "Displays version information", re_void, Flags::Version, false},
-      {"--wallTime", "", "Add wall time information for to the result file (true, [false])", re_bool, Flags::WallTime, false},
-      {"--workingDir", "", "Specifies the working directory", re_default, Flags::WorkingDir, false},
-      {"--zeroNominal", "", "Using this flag, FMUs with invalid nominal values will be accepted and the invalid nominal values will be replaced with 1.0", re_bool, Flags::ZeroNominal, false}
+  public:
+    struct Flag
+    {
+      const std::string name;
+      const std::string abbr;
+      std::string value;
+      const std::string defaultValue;
+      const std::string desc;
+      const std::string regex;
+      oms_status_enu_t (*action)(const std::string &value);
+      const bool interrupt;
+      const bool settings;
+      bool explicitlySet;
     };
 
-    static oms_status_enu_t AddParametersToCSV(const std::string& value);
-    static oms_status_enu_t AlgLoopSolver(const std::string& value);
-    static oms_status_enu_t ClearAllOptions(const std::string& value);
-    static oms_status_enu_t CVODEMaxErrTestFails(const std::string& value);
-    static oms_status_enu_t CVODEMaxNLSFailures(const std::string& value);
-    static oms_status_enu_t CVODEMaxNLSIterations(const std::string& value);
-    static oms_status_enu_t CVODEMaxSteps(const std::string& value);
-    static oms_status_enu_t DeleteTempFiles(const std::string& value);
-    static oms_status_enu_t DirectionalDerivatives(const std::string& value);
-    static oms_status_enu_t DumpAlgLoops(const std::string& value);
-    static oms_status_enu_t EmitEvents(const std::string& value);
-    static oms_status_enu_t Filename(const std::string& value);
-    static oms_status_enu_t Help(const std::string& value);
-    static oms_status_enu_t IgnoreInitialUnknowns(const std::string& value);
-    static oms_status_enu_t InputExtrapolation(const std::string& value);
-    static oms_status_enu_t Intervals(const std::string& value);
-    static oms_status_enu_t LogFile(const std::string& value);
-    static oms_status_enu_t LogLevel(const std::string& value);
-    static oms_status_enu_t MaxEventIteration(const std::string& value);
-    static oms_status_enu_t MaxLoopIteration(const std::string& value);
-    static oms_status_enu_t Mode(const std::string& value);
-    static oms_status_enu_t NumProcs(const std::string& value);
-    static oms_status_enu_t ProgressBar(const std::string& value);
-    static oms_status_enu_t RealTime(const std::string& value);
-    static oms_status_enu_t ResultFile(const std::string& value);
-    static oms_status_enu_t SkipCSVHeader(const std::string& value);
-    static oms_status_enu_t Solver(const std::string& value);
-    static oms_status_enu_t SolverStats(const std::string& value);
-    static oms_status_enu_t StartTime(const std::string& value);
-    static oms_status_enu_t StepSize(const std::string& value);
-    static oms_status_enu_t StopTime(const std::string& value);
-    static oms_status_enu_t StripRoot(const std::string& value);
-    static oms_status_enu_t SuppressPath(const std::string& value);
-    static oms_status_enu_t TempDir(const std::string& value);
-    static oms_status_enu_t Timeout(const std::string& value);
-    static oms_status_enu_t Tolerance(const std::string& value);
-    static oms_status_enu_t Version(const std::string& value);
-    static oms_status_enu_t WallTime(const std::string& value);
-    static oms_status_enu_t WorkingDir(const std::string& value);
-    static oms_status_enu_t ZeroNominal(const std::string& value);
+    Flag FlagFilename{"", "", "", "", "FMU or SSP file to be loaded", re_filename, Flags::Filename, false, false, false};
+    Flag FlagAddParametersToCSV{"--addParametersToCSV", "", "", "false", "Export parameters to a .csv file", re_bool, nullptr, false, false, false};
+    Flag FlagAlgLoopSolver{"--algLoopSolver", "", "", "kinsol", "Specifies the loop solver method (fixedpoint, kinsol) used for algebraic loops spanning multiple components.", re_default, nullptr, false, false, false};
+    Flag FlagClearAllOptions{"--clearAllOptions", "", "", "", "Reset all flags to their default values", re_void, Flags::ClearAllOptions, false, false, false};
+    Flag FlagCVODEMaxErrTestFails{"--CVODEMaxErrTestFails", "", "", "100", "Maximum number of error test failures for CVODE", re_number, nullptr, false, false, false};
+    Flag FlagCVODEMaxNLSFailures{"--CVODEMaxNLSFailures", "", "", "100", "Maximum number of nonlinear convergence failures for CVODE", re_number, nullptr, false, false, false};
+    Flag FlagCVODEMaxNLSIterations{"--CVODEMaxNLSIterations", "", "", "5", "Maximum number of nonlinear solver iterations for CVODE", re_number, nullptr, false, false, false};
+    Flag FlagCVODEMaxSteps{"--CVODEMaxSteps", "", "", "1000", "Maximum number of steps for CVODE", re_number, nullptr, false, false, false};
+    Flag FlagDeleteTempFiles{"--deleteTempFiles", "", "", "true", "Delete temporary files as soon as they are no longer needed", re_bool, nullptr, false, false, false};
+    Flag FlagDirectionalDerivatives{"--directionalDerivatives", "", "", "true", "Use directional derivatives to calculate the Jacobian for algebraic loops", re_bool, nullptr, false, false, false};
+    Flag FlagDumpAlgLoops{"--dumpAlgLoops", "", "", "false", "Dump information for algebraic loops", re_bool, nullptr, false, false, false};
+    Flag FlagEmitEvents{"--emitEvents", "", "", "true", "Emit events during simulation", re_bool, nullptr, false, false, false};
+    Flag FlagHelp{"--help", "-h", "", "", "Display the help text", re_void, Flags::Help, true, false, false};
+    Flag FlagIgnoreInitialUnknowns{"--ignoreInitialUnknowns", "", "", "false", "Ignore initial unknowns from the modelDescription.xml", re_bool, nullptr, false, false, false};
+    Flag FlagInputExtrapolation{"--inputExtrapolation", "", "", "false", "Enable input extrapolation using derivative information", re_bool, nullptr, false, false, false};
+    Flag FlagIntervals{"--intervals", "-i", "", "500", "Specify the number of communication points (arg > 1)", re_number, nullptr, false, false, false};
+    Flag FlagLogFile{"--logFile", "-l", "", "", "Specify the log file (stdout is used if no log file is specified)", re_default, nullptr, false, false, false};
+    Flag FlagLogLevel{"--logLevel", "", "", "0", "Set the log level (0: default, 1: debug, 2: debug+trace)", re_number, nullptr, false, false, false};
+    Flag FlagMasterAlgorithm{"--master", "", "", "ma", "Specify the master algorithm (ma)", re_default, nullptr, false, false, false};
+    Flag FlagMaxEventIteration{"--maxEventIteration", "", "", "100", "Specify the maximum number of iterations for handling a single event", re_number, nullptr, false, false, false};
+    Flag FlagMaxLoopIteration{"--maxLoopIteration", "", "", "10", "Specify the maximum number of iterations for solving algebraic loops between system-level components. Internal algebraic loops of components are not affected.", re_number, nullptr, false, false, false};
+    Flag FlagMode{"--mode", "-m", "", "me", "Force a certain FMI mode if the FMU provides both cs and me (cs, me)", re_mode, nullptr, false, false, false};
+    Flag FlagNumProcs{"--numProcs", "-n", "", "1", "Specify the maximum number of processors to use (0=auto, 1=default)", re_number, nullptr, false, false, false};
+    Flag FlagProgressBar{"--progressBar", "", "", "false", "Show a progress bar for the simulation progress in the terminal", re_bool, nullptr, false, false, false};
+    Flag FlagRealTime{"--realTime", "", "", "false", "Enable experimental feature for (soft) real-time co-simulation", re_bool, nullptr, false, false, false};
+    Flag FlagResultFile{"--resultFile", "-r", "", "<default>", "Specify the name of the output result file", re_default, nullptr, false, false, false};
+    Flag FlagSkipCSVHeader{"--skipCSVHeader", "", "", "true", "Skip exporting the CSV delimiter in the header", re_bool, nullptr, false, false, false};
+    Flag FlagSolver{"--solver", "", "", "cvode", "Specify the integration method (euler, cvode)", re_solver, nullptr, false, false, false};
+    Flag FlagSolverStats{"--solverStats", "", "", "false", "Add solver stats to the result file, e.g., step size; not supported for all solvers", re_bool, nullptr, false, false, false};
+    Flag FlagStartTime{"--startTime", "-s", "", "0", "Specify the start time", re_double, nullptr, false, false, false};
+    Flag FlagStepSize{"--stepSize", "", "", "1e-6,1e-12,1e-3", "Specify the step size (<step size> or <init_step,min_step,max_step>)", re_stepSize, nullptr, false, false, false};
+    Flag FlagStopTime{"--stopTime", "-t", "", "1", "Specify the stop time", re_double, nullptr, false, false, false};
+    Flag FlagStripRoot{"--stripRoot", "", "", "false", "Remove the root system prefix from all exported signals", re_bool, nullptr, false, false, false};
+    Flag FlagSuppressPath{"--suppressPath", "", "", "false", "Suppress path information in info messages; especially useful for testing", re_bool, nullptr, false, false, false};
+    Flag FlagTempDir{"--tempDir", "", "", ".", "Specify the temporary directory", re_default, nullptr, false, true, false};
+    Flag FlagTimeout{"--timeout", "", "", "0", "Specify the maximum allowed time in seconds for running a simulation (0 disables)", re_number, nullptr, false, false, false};
+    Flag FlagTolerance{"--tolerance", "", "", "1e-4", "Specify the relative tolerance", re_double, nullptr, false, false, false};
+    Flag FlagVersion{"--version", "-v", "", "", "Display version information", re_void, Flags::Version, false, false, false};
+    Flag FlagWallTime{"--wallTime", "", "", "false", "Add wall time information to the result file", re_bool, nullptr, false, false, false};
+    Flag FlagWorkingDir{"--workingDir", "", "", ".", "Specify the working directory", re_default, nullptr, false, true, false};
+    Flag FlagZeroNominal{"--zeroNominal", "", "", "false", "Accept FMUs with invalid nominal values and replace the invalid nominal values with 1.0", re_bool, nullptr, false, false, false};
+
+  private:
+    std::array<Flag *, 41> flags = {
+        &FlagFilename,
+        &FlagAddParametersToCSV,
+        &FlagAlgLoopSolver,
+        &FlagClearAllOptions,
+        &FlagCVODEMaxErrTestFails,
+        &FlagCVODEMaxNLSFailures,
+        &FlagCVODEMaxNLSIterations,
+        &FlagCVODEMaxSteps,
+        &FlagDeleteTempFiles,
+        &FlagDirectionalDerivatives,
+        &FlagDumpAlgLoops,
+        &FlagEmitEvents,
+        &FlagHelp,
+        &FlagIgnoreInitialUnknowns,
+        &FlagInputExtrapolation,
+        &FlagIntervals,
+        &FlagLogFile,
+        &FlagLogLevel,
+        &FlagMasterAlgorithm,
+        &FlagMaxEventIteration,
+        &FlagMaxLoopIteration,
+        &FlagMode,
+        &FlagNumProcs,
+        &FlagProgressBar,
+        &FlagRealTime,
+        &FlagResultFile,
+        &FlagSkipCSVHeader,
+        &FlagSolver,
+        &FlagSolverStats,
+        &FlagStartTime,
+        &FlagStepSize,
+        &FlagStopTime,
+        &FlagStripRoot,
+        &FlagSuppressPath,
+        &FlagTempDir,
+        &FlagTimeout,
+        &FlagTolerance,
+        &FlagVersion,
+        &FlagWallTime,
+        &FlagWorkingDir,
+        &FlagZeroNominal};
+
+    static oms_status_enu_t SetFlag(size_t flag_id, const std::string &value);
+
+    static oms_status_enu_t ClearAllOptions(const std::string &value);
+    static oms_status_enu_t Filename(const std::string &value);
+    static oms_status_enu_t Help(const std::string &value);
+    static oms_status_enu_t Version(const std::string &value);
   };
 }
-
-#endif

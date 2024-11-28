@@ -31,15 +31,13 @@
 
 #include "Flags.h"
 
-#include "Component.h"
-#include "ComRef.h"
 #include "Logging.h"
-#include "Model.h"
 #include "OMSimulator/OMSimulator.h"
-#include "Scope.h"
-#include "System.h"
-#include "Util.h"
 
+#include "json.hpp"
+
+#include <filesystem>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <regex>
@@ -49,11 +47,11 @@ oms::Flags::Flags()
 {
   setDefaults();
 
-  for (unsigned int i=0; i<flags.size(); ++i)
+  for (size_t i = 0; i < flags.size(); ++i)
   {
-    lookup[flags[i].name] = i;
-    if (!flags[i].abbr.empty())
-      lookup[flags[i].abbr] = i;
+    lookup[flags[i]->name] = i;
+    if (!flags[i]->abbr.empty())
+      lookup[flags[i]->abbr] = i;
   }
 }
 
@@ -61,93 +59,133 @@ oms::Flags::~Flags()
 {
 }
 
-void oms::Flags::setDefaults()
-{
-  addParametersToCSV = false;
-  algLoopSolver = oms_alg_solver_kinsol;
-  cvodeMaxErrTestFails = 100;
-  cvodeMaxNLSFails = 100;
-  cvodeMaxNLSIterations = 5;
-  cvodeMaxSteps = 1000;
-  defaultModeIsCS = false;
-  deleteTempFiles = true;
-  directionalDerivatives = true;
-  dumpAlgLoops = false;
-  emitEvents = true;
-  ignoreInitialUnknowns = false;
-  initialStepSize = 1e-6;
-  inputExtrapolation = false;
-  intervals = 100;
-  masterAlgorithm = oms_solver_wc_ma;
-  maxEventIteration = 100;
-  maximumStepSize = 1e-3;
-  maxLoopIteration = 10;
-  minimumStepSize = 1e-12;
-  numProcs = 1;
-  progressBar = false;
-  realTime = false;
-  resultFile = "<default>";
-  skipCSVHeader = true;
-  solver = oms_solver_sc_cvode;
-  solverStats = false;
-  startTime = 0.0;
-  stopTime = 1.0;
-  stripRoot = false;
-  suppressPath = true;
-  timeout = 0;
-  tolerance = 1e-4;
-  wallTime = false;
-  zeroNominal = false;
-}
-
-oms::Flags& oms::Flags::GetInstance()
+oms::Flags &oms::Flags::GetInstance()
 {
   // the only instance
   static Flags flags;
   return flags;
 }
 
-bool isOption(const std::string& cmd, const std::string& name)
+void LoadSettings(nlohmann::json &json)
 {
-  return (0 == cmd.compare(name));
+#if defined(_WIN32) || defined(_WIN64)
+  const char *homeDir = getenv("USERPROFILE");
+#else
+  const char *homeDir = getenv("HOME");
+#endif
+  if (homeDir)
+  {
+    std::filesystem::path filePath = std::filesystem::path(homeDir) / ".omsimulator" / "settings.json";
+    if (std::filesystem::exists(filePath))
+    {
+      std::ifstream fileStream(filePath);
+      if (fileStream.is_open())
+      {
+        json = nlohmann::json::parse(fileStream);
+        fileStream.close();
+      }
+    }
+  }
 }
 
-bool isOptionAndValue(const std::string& cmd, const std::string& name, std::string& value, std::regex re)
+void SaveSettings(nlohmann::json &json)
 {
-  if (0 == cmd.compare(0, name.length()+1, name + "="))
+#if defined(_WIN32) || defined(_WIN64)
+  const char *homeDir = getenv("USERPROFILE");
+#else
+  const char *homeDir = getenv("HOME");
+#endif
+  if (homeDir)
   {
-    value = cmd.substr(name.length()+1);
-    return regex_match(value, re);
+    std::filesystem::path path = std::filesystem::path(homeDir) / ".omsimulator";
+    std::filesystem::path filePath = path / "settings.json";
+    std::filesystem::create_directories(path);
+    std::ofstream fileStream(filePath);
+    if (fileStream.is_open())
+    {
+      fileStream << json.dump(2);
+      fileStream.close();
+    }
+    else
+    {
+      logWarning("Failed to open settings.json for writing");
+    }
+  }
+  else
+  {
+    logWarning("HOME environment variable is not set, settings.json couldn't be saved");
+  }
+}
+
+void oms::Flags::setDefaults()
+{
+  nlohmann::json json;
+  LoadSettings(json);
+
+  files.clear();
+  for (auto &flag : flags)
+  {
+    flag->explicitlySet = false;
+
+    if (flag->settings && json.find(flag->name) != json.end())
+      flag->value = json[flag->name];
+    else
+      flag->value = flag->defaultValue;
+  }
+}
+
+oms_status_enu_t oms::Flags::SetFlag(size_t flag_id, const std::string &value)
+{
+  Flag *flag = GetInstance().flags[flag_id];
+
+  std::string regex_str = "^" + flag->regex + "$";
+  if (!regex_match(value, std::regex(regex_str)))
+    return logError("Invalid value: \"" + value + "\" for flag " + flag->name);
+
+  if (flag->explicitlySet && flag->name != "")
+    logWarning("Flag " + flag->name + " is set multiple times");
+
+  flag->value = value;
+  flag->explicitlySet = true;
+
+  if (flag->settings)
+  {
+    nlohmann::json json;
+    LoadSettings(json);
+    json[flag->name] = value;
+    SaveSettings(json);
   }
 
-  return false;
+  if (flag->action)
+    return flag->action(value);
+
+  return oms_status_ok;
 }
 
-oms_status_enu_t oms::Flags::SetCommandLineOption(const std::string& cmd)
+oms_status_enu_t oms::Flags::SetCommandLineOption(const std::string &cmd)
 {
   GetInstance().files.clear();
 
+  // logInfo("Command line: " + cmd);
+
   // split command line arguments
   std::vector<std::string> args;
-  size_t start=0;
-  for (size_t i=0; i<cmd.size()+1; ++i)
+  std::istringstream iss(cmd);
+  std::string token;
+  while (iss >> std::quoted(token))
   {
-    if (cmd[i] == ' ' || cmd[i] == '\0')
-    {
-      if (start+1 < i)
-        args.push_back(cmd.substr(start, i-start));
-      start = i+1;
-    }
+    args.push_back(token);
   }
 
   // process command line arguments
-  for (const auto& arg : args)
+  for (const auto &arg : args)
   {
-    //logInfo("\"" + arg + "\"");
-    size_t end=0;
+    // logInfo("\"" + arg + "\"");
+    size_t end = 0;
     std::string value;
 
-    for (; end<arg.size() && arg[end] != '='; ++end);
+    for (; end < arg.size() && arg[end] != '='; ++end)
+      ;
 
     if (arg[0] != '-')
     {
@@ -160,242 +198,85 @@ oms_status_enu_t oms::Flags::SetCommandLineOption(const std::string& cmd)
     if (l == GetInstance().lookup.end())
       return logError("Unknown flag: \"" + arg + "\"");
 
-    // check argument
-    std::string regex_str = "^" + GetInstance().flags[l->second].regex + "$";
     if (arg[end] == '=')
-      value = arg.substr(end+1);
-    //logInfo("\"" + value + "\"");
+      value = arg.substr(end + 1);
 
-    if (regex_match(value, std::regex(regex_str)))
-    {
-      oms_status_enu_t status = GetInstance().flags[l->second].fcn(value);
-      if (GetInstance().flags[l->second].interrupt || oms_status_ok != status)
-        return status;
-    }
-    else
+    if (oms_status_ok != SetFlag(l->second, value))
       return logError("Invalid value: \"" + arg + "\"");
+
+    if (GetInstance().flags[l->second]->interrupt)
+      return oms_status_ok;
   }
 
   // run Lua scripts, FMUs, SSP files
-  for (const auto& file : GetInstance().files)
-    if (oms_status_ok != oms_RunFile(file.c_str()))
-      return oms_status_error;
-
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms::Flags::AddParametersToCSV(const std::string& value)
-{
-  GetInstance().addParametersToCSV = (value == "true");
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms::Flags::AlgLoopSolver(const std::string& value)
-{
-  if (value == "fixedpoint")
-    GetInstance().algLoopSolver = oms_alg_solver_fixedpoint;
-  else if (value == "kinsol")
-    GetInstance().algLoopSolver = oms_alg_solver_kinsol;
-  else
-    return logError("Invalid solver method");
-  return oms_status_ok;
+  for (const auto &file : GetInstance().files)
+  {
+    oms_status_enu_t status = oms_RunFile(file.c_str());
+    if (oms_status_ok != status)
+      return status;
   }
 
-oms_status_enu_t oms::Flags::ClearAllOptions(const std::string& value)
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::Flags::ClearAllOptions(const std::string &value)
 {
   GetInstance().setDefaults();
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Flags::CVODEMaxErrTestFails(const std::string& value)
-{
-  GetInstance().cvodeMaxErrTestFails = atoi(value.c_str());
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms::Flags::CVODEMaxNLSFailures(const std::string& value)
-{
-  GetInstance().cvodeMaxNLSFails = atoi(value.c_str());
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms::Flags::CVODEMaxNLSIterations(const std::string& value)
-{
-  GetInstance().cvodeMaxNLSIterations = atoi(value.c_str());
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms::Flags::CVODEMaxSteps(const std::string& value)
-{
-  GetInstance().cvodeMaxSteps = atoi(value.c_str());
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms::Flags::DeleteTempFiles(const std::string& value)
-{
-  GetInstance().deleteTempFiles = (value == "true");
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms::Flags::DirectionalDerivatives(const std::string& value)
-{
-  GetInstance().directionalDerivatives = (value == "true");
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms::Flags::DumpAlgLoops(const std::string& value)
-{
-  GetInstance().dumpAlgLoops = (value == "true");
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms::Flags::EmitEvents(const std::string& value)
-{
-  GetInstance().emitEvents = (value == "true");
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms::Flags::Filename(const std::string& value)
+oms_status_enu_t oms::Flags::Filename(const std::string &value)
 {
   GetInstance().files.push_back(value);
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Flags::Help(const std::string& value)
+oms_status_enu_t oms::Flags::Help(const std::string &value)
 {
   std::stringstream ss;
   ss << "Usage: OMSimulator [Options] [Lua script] [FMU] [SSP file]" << std::endl;
   ss << "Options:" << std::endl;
-  for (unsigned int i=0; i<GetInstance().flags.size(); ++i)
+  for (size_t i = 0; i < GetInstance().flags.size(); ++i)
   {
-    if (GetInstance().flags[i].name.empty())
+    if (GetInstance().flags[i]->name.empty())
       continue;
 
-    std::string label = "  " + GetInstance().flags[i].name;
-    if (!GetInstance().flags[i].regex.empty())
+    std::string label = "  " + GetInstance().flags[i]->name;
+    std::string default_value;
+    if (!GetInstance().flags[i]->regex.empty())
     {
-      if (GetInstance().flags[i].regex == GetInstance().re_bool)
+      default_value = GetInstance().flags[i]->defaultValue;
+      if (GetInstance().flags[i]->regex == GetInstance().re_bool)
         label += "=<bool>";
-      else if (GetInstance().flags[i].regex == GetInstance().re_double)
+      else if (GetInstance().flags[i]->regex == GetInstance().re_double)
         label += "=<double>";
-      else if (GetInstance().flags[i].regex == GetInstance().re_number)
+      else if (GetInstance().flags[i]->regex == GetInstance().re_number)
         label += "=<int>";
       else
+      {
         label += "=<arg>";
+        default_value = "\"" + GetInstance().flags[i]->defaultValue + "\"";
+      }
     }
-    if (!GetInstance().flags[i].abbr.empty())
-      label += " [" + GetInstance().flags[i].abbr + "]";
+    if (!GetInstance().flags[i]->abbr.empty())
+      label += " [" + GetInstance().flags[i]->abbr + "]";
 
-    ss << std::left << std::setw(32) << label << "  " << GetInstance().flags[i].desc << std::endl;
+    ss << std::left << std::setw(35) << label
+       << std::left << std::setw(17) << default_value
+       << "  " << GetInstance().flags[i]->desc << std::endl;
   }
 
   logInfo(ss.str());
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Flags::IgnoreInitialUnknowns(const std::string& value)
+oms_status_enu_t oms::Flags::Version(const std::string &value)
 {
-  GetInstance().ignoreInitialUnknowns = (value == "true");
+  std::cout << oms_getVersion() << std::endl;
   return oms_status_ok;
 }
 
-oms_status_enu_t oms::Flags::InputExtrapolation(const std::string& value)
-{
-  GetInstance().inputExtrapolation = (value == "true");
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms::Flags::Intervals(const std::string& value)
-{
-  GetInstance().intervals = atoi(value.c_str());
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms::Flags::LogFile(const std::string& value)
-{
-  oms_setLogFile(value.c_str());
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms::Flags::LogLevel(const std::string& value)
-{
-  oms_setLoggingLevel(atoi(value.c_str()));
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms::Flags::MaxEventIteration(const std::string& value)
-{
-  GetInstance().maxEventIteration = atoi(value.c_str());
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms::Flags::MaxLoopIteration(const std::string& value)
-{
-  GetInstance().maxLoopIteration = atoi(value.c_str());
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms::Flags::Mode(const std::string& value)
-{
-  GetInstance().defaultModeIsCS = (value == "cs");
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms::Flags::NumProcs(const std::string& value)
-{
-  GetInstance().numProcs = atoi(value.c_str());
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms::Flags::ProgressBar(const std::string& value)
-{
-  GetInstance().progressBar = (value == "true");
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms::Flags::RealTime(const std::string& value)
-{
-  GetInstance().realTime = (value == "true");
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms::Flags::ResultFile(const std::string& value)
-{
-  GetInstance().resultFile = value;
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms::Flags::SkipCSVHeader(const std::string& value)
-{
-  GetInstance().skipCSVHeader = (value == "true");
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms::Flags::Solver(const std::string& value)
-{
-  if (value == "euler")
-    GetInstance().solver = oms_solver_sc_explicit_euler;
-  else if (value == "cvode")
-    GetInstance().solver = oms_solver_sc_cvode;
-  else
-    return logError("Invalid solver method");
-
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms::Flags::SolverStats(const std::string& value)
-{
-  GetInstance().solverStats = (value == "true");
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms::Flags::StartTime(const std::string& value)
-{
-  GetInstance().startTime = atof(value.c_str());
-  return oms_status_ok;
-}
-
-std::vector<std::string> split(const std::string& s, char delim)
+std::vector<std::string> split(const std::string &s, char delim)
 {
   std::vector<std::string> result;
   std::stringstream ss(s);
@@ -407,81 +288,84 @@ std::vector<std::string> split(const std::string& s, char delim)
   return result;
 }
 
-oms_status_enu_t oms::Flags::StepSize(const std::string& value)
+double oms::Flags::InitialStepSize()
 {
-  std::vector<std::string> options = split(value, ',');
+  std::vector<std::string> options = split(GetInstance().FlagStepSize.value, ',');
 
-  for (const auto& option : options)
+  for (const auto &option : options)
     if (atof(option.c_str()) <= 0.0)
-      return logError("The step size value must be a greater than zero: " + option);
+      assert(false && "The step size value must be a greater than zero");
 
-  if (options.size() > 1)
-  {
-    GetInstance().initialStepSize = atof(options[0].c_str());
-    GetInstance().minimumStepSize = atof(options[1].c_str());
-    GetInstance().maximumStepSize = atof(options[2].c_str());
-  }
-  else
-    GetInstance().maximumStepSize = atof(options[0].c_str());
-  return oms_status_ok;
+  if (options.size() == 1)
+    return atof(options[0].c_str());
+  else if (options.size() == 3)
+    return atof(options[0].c_str());
+
+  assert(false && "Invalid step size options");
+  return 0.0;  // unreachable; to avoid compiler warning
 }
 
-oms_status_enu_t oms::Flags::StopTime(const std::string& value)
+double oms::Flags::MinimumStepSize()
 {
-  GetInstance().stopTime = atof(value.c_str());
-  return oms_status_ok;
+  std::vector<std::string> options = split(GetInstance().FlagStepSize.value, ',');
+
+  for (const auto &option : options)
+    if (atof(option.c_str()) <= 0.0)
+      assert(false && "The step size value must be a greater than zero");
+
+  if (options.size() == 1)
+    return atof(options[0].c_str());
+  else if (options.size() == 3)
+    return atof(options[1].c_str());
+
+  assert(false && "Invalid step size options");
+  return 0.0;  // unreachable; to avoid compiler warning
 }
 
-oms_status_enu_t oms::Flags::StripRoot(const std::string& value)
+double oms::Flags::MaximumStepSize()
 {
-  GetInstance().stripRoot = (value == "true");
-  return oms_status_ok;
+  std::vector<std::string> options = split(GetInstance().FlagStepSize.value, ',');
+
+  for (const auto &option : options)
+    if (atof(option.c_str()) <= 0.0)
+      assert(false && "The step size value must be a greater than zero");
+
+  if (options.size() == 1)
+    return atof(options[0].c_str());
+  else if (options.size() == 3)
+    return atof(options[2].c_str());
+
+  assert(false && "Invalid step size options");
+  return 0.0;  // unreachable; to avoid compiler warning
 }
 
-oms_status_enu_t oms::Flags::SuppressPath(const std::string& value)
+oms_alg_solver_enu_t oms::Flags::AlgLoopSolver()
 {
-  GetInstance().suppressPath = (value == "true");
-  return oms_status_ok;
+  if (GetInstance().FlagAlgLoopSolver.value == "fixedpoint")
+    return oms_alg_solver_fixedpoint;
+  else if (GetInstance().FlagAlgLoopSolver.value == "kinsol")
+    return oms_alg_solver_kinsol;
+
+  assert(false && "Invalid algebraic loop solver");
+  return oms_alg_solver_kinsol;  // unreachable; to avoid compiler warning
 }
 
-oms_status_enu_t oms::Flags::TempDir(const std::string& value)
+oms_solver_enu_t oms::Flags::MasterAlgorithm()
 {
-  oms_setTempDirectory(value.c_str());
-  return oms_status_ok;
+  if (GetInstance().FlagMasterAlgorithm.value == "ma")
+    return oms_solver_wc_ma;
+
+  assert(false && "Invalid master algorithm");
+  return oms_solver_wc_ma;  // unreachable; to avoid compiler warning
 }
 
-oms_status_enu_t oms::Flags::Timeout(const std::string& value)
+oms_solver_enu_t oms::Flags::Solver()
 {
-  GetInstance().timeout = atoi(value.c_str());
-  return oms_status_ok;
-}
+  if (GetInstance().FlagSolver.value == "euler")
+    return oms_solver_sc_explicit_euler;
+  else if (GetInstance().FlagSolver.value == "cvode")
+    return oms_solver_sc_cvode;
 
-oms_status_enu_t oms::Flags::Tolerance(const std::string& value)
-{
-  GetInstance().tolerance = atof(value.c_str());
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms::Flags::Version(const std::string& value)
-{
-  std::cout << oms_getVersion() << std::endl;
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms::Flags::WorkingDir(const std::string& value)
-{
-  oms_setWorkingDirectory(value.c_str());
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms::Flags::WallTime(const std::string& value)
-{
-  GetInstance().wallTime = (value == "true");
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms::Flags::ZeroNominal(const std::string& value)
-{
-  GetInstance().zeroNominal = (value == "true");
-  return oms_status_ok;
+  assert(false && "Invalid solver");
+  return oms_solver_sc_explicit_euler;  // unreachable; to avoid compiler warning
 }
