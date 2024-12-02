@@ -41,115 +41,118 @@
 #include <stdlib.h>
 #include <string>
 
-class Logging
+namespace
 {
-public:
-  Logging() : filename(""), cb(NULL) {}
-  ~Logging()
+  class Logging
   {
-    // close _log file
-    oms::Log::SetLogFile("");
+  public:
+    Logging() : filename(""), cb(NULL) {}
+    ~Logging()
+    {
+      // close _log file
+      oms::Log::SetLogFile("");
+    }
+
+  private:
+    // stop the compiler generating methods copying the object
+    Logging(Logging const &copy);            ///< not implemented
+    Logging &operator=(Logging const &copy); ///< not implemented
+
+  public:
+    int logLevel;
+    std::string filename;
+    std::ofstream logFile;
+
+    unsigned int numWarnings = 0;
+    unsigned int numErrors = 0;
+    unsigned int numMessages = 0;
+
+    unsigned long limit = 1024 * 1024 * 50;
+    unsigned long size = 0;
+
+    bool progress = false;
+    int percent;
+
+    void (*cb)(oms_message_type_enu_t type, const char *message);
+
+    std::mutex m;
+  };
+
+  Logging _log;
+
+  std::string TimeStr()
+  {
+    time_t rawtime;
+    struct tm *timeinfo;
+    char buffer[64];
+
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+    strftime(buffer, 64, "%a %b %d %H:%M:%S %Y", timeinfo);
+    return std::string(buffer);
   }
 
-private:
-  // stop the compiler generating methods copying the object
-  Logging(Logging const &copy);            ///< not implemented
-  Logging &operator=(Logging const &copy); ///< not implemented
-
-public:
-  int logLevel;
-  std::string filename;
-  std::ofstream logFile;
-
-  unsigned int numWarnings = 0;
-  unsigned int numErrors = 0;
-  unsigned int numMessages = 0;
-
-  unsigned long limit = 1024 * 1024 * 50;
-  unsigned long size = 0;
-
-  bool progress = false;
-  int percent;
-
-  void (*cb)(oms_message_type_enu_t type, const char *message);
-
-  std::mutex m;
-};
-
-Logging _log;
-
-static std::string TimeStr()
-{
-  time_t rawtime;
-  struct tm *timeinfo;
-  char buffer[64];
-
-  time(&rawtime);
-  timeinfo = localtime(&rawtime);
-  strftime(buffer, 64, "%a %b %d %H:%M:%S %Y", timeinfo);
-  return std::string(buffer);
-}
-
-static void PrintStringToStream(std::ostream& stream, const std::string& type, const std::string& msg)
-{
-  oms::Log::TerminateBar();
-
-  std::string timeStamp, padding;
-  if (_log.logFile.is_open())
+  void PrintStringToStream(std::ostream &stream, const std::string &type, const std::string &msg)
   {
-    timeStamp = TimeStr();
-    padding = std::string(timeStamp.size(), ' ');
-    _log.logFile << timeStamp << " | ";
-  }
+    oms::Log::TerminateBar();
 
-  stream << type << ": " << std::string(7 - type.size(), ' ');
-  size_t start = 0, end = 0;
-  bool firstLine = true;
-  std::string buffer;
-  unsigned int nLines = 1;
-  while(end < msg.size())
-  {
-    if (msg[end] == '\n' || msg[end] == '\r')
+    std::string timeStamp, padding;
+    if (_log.logFile.is_open())
     {
-      buffer = msg.substr(start, end-start);
-      end++;
-      start = end;
-      nLines++;
+      timeStamp = TimeStr();
+      padding = std::string(timeStamp.size(), ' ');
+      _log.logFile << timeStamp << " | ";
     }
-    else if (msg[end+1] == '\0')
-    {
-      buffer = msg.substr(start);
-    }
-    end++;
 
-    if (!buffer.empty())
+    stream << type << ": " << std::string(7 - type.size(), ' ');
+    size_t start = 0, end = 0;
+    bool firstLine = true;
+    std::string buffer;
+    unsigned int nLines = 1;
+    while (end < msg.size())
     {
-      if (!firstLine)
+      if (msg[end] == '\n' || msg[end] == '\r')
       {
-        stream << "\n";
-        if (!timeStamp.empty())
-          stream << padding << "   ";
-        stream << "         ";
+        buffer = msg.substr(start, end - start);
+        end++;
+        start = end;
+        nLines++;
       }
-      firstLine = false;
-      stream << buffer;
-      buffer.clear();
+      else if (msg[end + 1] == '\0')
+      {
+        buffer = msg.substr(start);
+      }
+      end++;
+
+      if (!buffer.empty())
+      {
+        if (!firstLine)
+        {
+          stream << "\n";
+          if (!timeStamp.empty())
+            stream << padding << "   ";
+          stream << "         ";
+        }
+        firstLine = false;
+        stream << buffer;
+        buffer.clear();
+      }
     }
-  }
-  stream << std::endl;
+    stream << std::endl;
 
-  if (_log.logFile.is_open())
-  {
-    _log.size += msg.length() + nLines*(12+timeStamp.length());
-
-    if (_log.size > _log.limit)
+    if (_log.logFile.is_open())
     {
-      _log.numWarnings++;
-      stream << timeStamp << " | warning: Log file becomes too big; switching to stdout" << std::endl;
-      std::cout << "info:    Partial logging information has been saved to \"" + _log.filename + "\"" << std::endl;
-      _log.logFile.close();
-      _log.filename = "";
-      _log.size = 0;
+      _log.size += msg.length() + nLines * (12 + timeStamp.length());
+
+      if (_log.size > _log.limit)
+      {
+        _log.numWarnings++;
+        stream << timeStamp << " | warning: Log file becomes too big; switching to stdout" << std::endl;
+        std::cout << "info:    Partial logging information has been saved to \"" + _log.filename + "\"" << std::endl;
+        _log.logFile.close();
+        _log.filename = "";
+        _log.size = 0;
+      }
     }
   }
 }
