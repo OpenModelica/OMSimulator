@@ -73,8 +73,8 @@ namespace oms
   #define logDebug(msg) oms::Log::Debug(msg)
   #define logTrace()    oms::Log::Trace(__func__, __FILE__, __LINE__)
 #else
-  #define logDebugEnabled() ((void)0)
-  #define logTraceEnabled() ((void)0)
+  #define logDebugEnabled() (false)
+  #define logTraceEnabled() (false)
 
   #define logDebug(msg) ((void)0)
   #define logTrace()    ((void)0)
