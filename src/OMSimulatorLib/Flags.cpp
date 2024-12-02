@@ -135,7 +135,7 @@ void oms::Flags::setDefaults()
 
 oms_status_enu_t oms::Flags::SetFlag(size_t flag_id, const std::string &value)
 {
-  Flag *flag = GetInstance().flags[flag_id];
+  _Flag *flag = GetInstance().flags[flag_id];
 
   std::string regex_str = "^" + flag->regex + "$";
   if (!regex_match(value, std::regex(regex_str)))
