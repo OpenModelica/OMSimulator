@@ -324,7 +324,7 @@ oms::KinsolSolver* oms::KinsolSolver::NewKinsolSolver(const int algLoopNum, cons
   if (!checkFlag(flag, "KINSetUserData")) return NULL;
 
   /* Set error handler and print level */
-  if (Log::DebugEnabled())
+  if (logDebugEnabled())
   {
     logDebug("SUNDIALS KINSOL: Set print level to maximum.");
     printLevel = 3;
