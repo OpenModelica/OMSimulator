@@ -71,7 +71,7 @@ void oms_setLoggingCallback(void (*cb)(oms_message_type_enu_t type, const char* 
 
 oms_status_enu_t oms_setLogFile(const char* filename)
 {
-  return oms::Log::setLogFile(filename);
+  return oms::Log::SetLogFile(filename);
 }
 
 oms_status_enu_t oms_setLoggingInterval(const char* cref_, double loggingInterval)
@@ -92,12 +92,12 @@ oms_status_enu_t oms_setLoggingInterval(const char* cref_, double loggingInterva
 
 oms_status_enu_t oms_setLoggingLevel(int logLevel)
 {
-  return oms::Log::setLoggingLevel(logLevel);
+  return oms::Log::SetLoggingLevel(logLevel);
 }
 
 void oms_setMaxLogFileSize(const unsigned long size)
 {
-  oms::Log::setMaxLogFileSize(size);
+  oms::Log::SetMaxLogFileSize(size);
 }
 
 oms_status_enu_t oms_setTempDirectory(const char* newTempDir)

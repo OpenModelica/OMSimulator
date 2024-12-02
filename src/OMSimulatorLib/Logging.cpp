@@ -37,13 +37,9 @@
 #include <ctime>
 #include <fstream>
 #include <iostream>
-#include <stdlib.h>
-
-#include <string>
-#include <fstream>
 #include <mutex>
-
-using namespace std;
+#include <stdlib.h>
+#include <string>
 
 class Logging
 {
@@ -52,11 +48,8 @@ public:
   ~Logging()
   {
     // close _log file
-    setLogFile("");
+    oms::Log::SetLogFile("");
   }
-
-  oms_status_enu_t setLogFile(const std::string &filename);
-  void printStringToStream(std::ostream &stream, const std::string &type, const std::string &msg);
 
 private:
   // stop the compiler generating methods copying the object
@@ -85,11 +78,6 @@ public:
 
 Logging _log;
 
-oms_status_enu_t oms::Log::setLogFile(const std::string &filename)
-{
-  return _log.setLogFile(filename);
-}
-
 std::string TimeStr()
 {
   time_t rawtime;
@@ -102,113 +90,17 @@ std::string TimeStr()
   return std::string(buffer);
 }
 
-void oms::Log::Info(const std::string &msg)
-{
-  std::lock_guard<std::mutex> lock(_log.m);
 
-  _log.numMessages++;
-  std::ostream &stream = _log.logFile.is_open() ? _log.logFile : cout;
-  _log.printStringToStream(stream, "info", msg);
-
-  if (_log.cb)
-    _log.cb(oms_message_info, msg.c_str());
-}
-
-oms_status_enu_t oms::Log::Warning(const std::string &msg)
-{
-  std::lock_guard<std::mutex> lock(_log.m);
-
-  _log.numWarnings++;
-  _log.numMessages++;
-  std::ostream &stream = _log.logFile.is_open() ? _log.logFile : cout;
-  _log.printStringToStream(stream, "warning", msg);
-
-  if (_log.cb)
-    _log.cb(oms_message_warning, msg.c_str());
-
-  return oms_status_warning;
-}
-
-oms_status_enu_t oms::Log::Error(const std::string &msg, const std::string &function)
-{
-  std::lock_guard<std::mutex> lock(_log.m);
-
-  _log.numErrors++;
-  _log.numMessages++;
-  std::ostream &stream = _log.logFile.is_open() ? _log.logFile : cerr;
-  std::string fullMessage = "[" + function + "] " + msg;
-  _log.printStringToStream(stream, "error", fullMessage);
-
-  if (_log.cb)
-    _log.cb(oms_message_error, fullMessage.c_str());
-
-  return oms_status_error;
-}
-
-bool oms::Log::DebugEnabled()
-{
-  return _log.logLevel >= 1;
-}
-
-bool oms::Log::TraceEnabled()
-{
-  return _log.logLevel >= 2;
-}
-
-void oms::Log::Debug(const std::string &msg)
-{
-  std::lock_guard<std::mutex> lock(_log.m);
-
-  if (_log.logLevel < 1)
-    return;
-
-  _log.numMessages++;
-  std::ostream &stream = _log.logFile.is_open() ? _log.logFile : cout;
-  _log.printStringToStream(stream, "debug", msg);
-
-  if (_log.cb)
-    _log.cb(oms_message_debug, msg.c_str());
-}
-
-void oms::Log::Trace(const std::string &function, const std::string &file, const long line)
-{
-  std::lock_guard<std::mutex> lock(_log.m);
-
-  if (_log.logLevel < 2)
-    return;
-
-  _log.numMessages++;
-  std::string msg = function + " (" + file + ":" + std::to_string(line) + ")";
-
-  std::ostream &stream = _log.logFile.is_open() ? _log.logFile : cout;
-  _log.printStringToStream(stream, "trace", msg);
-
-  if (_log.cb)
-    _log.cb(oms_message_trace, msg.c_str());
-}
-
-//////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////
-
-void oms::Log::SetCallback(void (*cb)(oms_message_type_enu_t type, const char *message))
-{
-  _log.cb = cb;
-}
-
-void Logging::printStringToStream(std::ostream &stream, const std::string &type, const std::string &msg)
+void PrintStringToStream(std::ostream& stream, const std::string& type, const std::string& msg)
 {
   oms::Log::TerminateBar();
 
   std::string timeStamp, padding;
-  if (logFile.is_open())
+  if (_log.logFile.is_open())
   {
     timeStamp = TimeStr();
     padding = std::string(timeStamp.size(), ' ');
-    logFile << timeStamp << " | ";
+    _log.logFile << timeStamp << " | ";
   }
 
   stream << type << ": " << std::string(7 - type.size(), ' ');
@@ -216,16 +108,16 @@ void Logging::printStringToStream(std::ostream &stream, const std::string &type,
   bool firstLine = true;
   std::string buffer;
   unsigned int nLines = 1;
-  while (end < msg.size())
+  while(end < msg.size())
   {
     if (msg[end] == '\n' || msg[end] == '\r')
     {
-      buffer = msg.substr(start, end - start);
+      buffer = msg.substr(start, end-start);
       end++;
       start = end;
       nLines++;
     }
-    else if (msg[end + 1] == '\0')
+    else if (msg[end+1] == '\0')
     {
       buffer = msg.substr(start);
     }
@@ -245,55 +137,140 @@ void Logging::printStringToStream(std::ostream &stream, const std::string &type,
       buffer.clear();
     }
   }
-  stream << endl;
+  stream << std::endl;
 
-  if (logFile.is_open())
+  if (_log.logFile.is_open())
   {
-    size += msg.length() + nLines * (12 + timeStamp.length());
+    _log.size += msg.length() + nLines*(12+timeStamp.length());
 
-    if (size > limit)
+    if (_log.size > _log.limit)
     {
-      numWarnings++;
-      stream << timeStamp << " | warning: Log file becomes too big; switching to stdout" << endl;
-      cout << "info:    Partial logging information has been saved to \"" + filename + "\"" << endl;
-      logFile.close();
-      filename = "";
-      size = 0;
+      _log.numWarnings++;
+      stream << timeStamp << " | warning: Log file becomes too big; switching to stdout" << std::endl;
+      std::cout << "info:    Partial logging information has been saved to \"" + _log.filename + "\"" << std::endl;
+      _log.logFile.close();
+      _log.filename = "";
+      _log.size = 0;
     }
   }
 }
 
-oms_status_enu_t Logging::setLogFile(const std::string &filename)
+void oms::Log::Info(const std::string &msg)
 {
-  std::lock_guard<std::mutex> lock(m);
+  std::lock_guard<std::mutex> lock(_log.m);
 
-  if (logFile.is_open())
+  _log.numMessages++;
+  std::ostream &stream = _log.logFile.is_open() ? _log.logFile : std::cout;
+  PrintStringToStream(stream, "info", msg);
+
+  if (_log.cb)
+    _log.cb(oms_message_info, msg.c_str());
+}
+
+oms_status_enu_t oms::Log::Warning(const std::string &msg)
+{
+  std::lock_guard<std::mutex> lock(_log.m);
+
+  _log.numWarnings++;
+  _log.numMessages++;
+  std::ostream &stream = _log.logFile.is_open() ? _log.logFile : std::cout;
+  PrintStringToStream(stream, "warning", msg);
+
+  if (_log.cb)
+    _log.cb(oms_message_warning, msg.c_str());
+
+  return oms_status_warning;
+}
+
+oms_status_enu_t oms::Log::Error(const std::string &msg, const std::string &function)
+{
+  std::lock_guard<std::mutex> lock(_log.m);
+
+  _log.numErrors++;
+  _log.numMessages++;
+  std::ostream &stream = _log.logFile.is_open() ? _log.logFile : std::cerr;
+  std::string fullMessage = "[" + function + "] " + msg;
+  PrintStringToStream(stream, "error", fullMessage);
+
+  if (_log.cb)
+    _log.cb(oms_message_error, fullMessage.c_str());
+
+  return oms_status_error;
+}
+
+bool oms::Log::DebugEnabled()
+{
+  return _log.logLevel >= 1;
+}
+
+void oms::Log::Debug(const std::string &msg)
+{
+  std::lock_guard<std::mutex> lock(_log.m);
+
+  if (_log.logLevel < 1)
+    return;
+
+  _log.numMessages++;
+  std::ostream &stream = _log.logFile.is_open() ? _log.logFile : std::cout;
+  PrintStringToStream(stream, "debug", msg);
+
+  if (_log.cb)
+    _log.cb(oms_message_debug, msg.c_str());
+}
+
+bool oms::Log::TraceEnabled()
+{
+  return _log.logLevel >= 2;
+}
+
+void oms::Log::Trace(const std::string &function, const std::string &file, const long line)
+{
+  std::lock_guard<std::mutex> lock(_log.m);
+
+  if (_log.logLevel < 2)
+    return;
+
+  _log.numMessages++;
+  std::string msg = function + " (" + file + ":" + std::to_string(line) + ")";
+
+  std::ostream &stream = _log.logFile.is_open() ? _log.logFile : std::cout;
+  PrintStringToStream(stream, "trace", msg);
+
+  if (_log.cb)
+    _log.cb(oms_message_trace, msg.c_str());
+}
+
+oms_status_enu_t oms::Log::SetLogFile(const std::string &filename)
+{
+  std::lock_guard<std::mutex> lock(_log.m);
+
+  if (_log.logFile.is_open())
   {
-    printStringToStream(logFile, "info", "Logging completed properly");
-    logFile.close();
-    printStringToStream(cout, "info", "Logging information has been saved to \"" + this->filename + "\"");
+    PrintStringToStream(_log.logFile, "info", "Logging completed properly");
+    _log.logFile.close();
+    PrintStringToStream(std::cout, "info", "Logging information has been saved to \"" + _log.filename + "\"");
   }
 
-  if (numWarnings + numErrors > 0)
+  if (_log.numWarnings + _log.numErrors > 0)
   {
-    printStringToStream(cout, "info", std::to_string(numWarnings) + " warnings");
-    printStringToStream(cout, "info", std::to_string(numErrors) + " errors");
+    PrintStringToStream(std::cout, "info", std::to_string(_log.numWarnings) + " warnings");
+    PrintStringToStream(std::cout, "info", std::to_string(_log.numErrors) + " errors");
   }
 
-  numWarnings = 0;
-  numErrors = 0;
-  numMessages = 0;
-  this->filename = filename;
-  size = 0;
+  _log.numWarnings = 0;
+  _log.numErrors = 0;
+  _log.numMessages = 0;
+  _log.filename = filename;
+  _log.size = 0;
 
   if (!filename.empty())
   {
-    logFile.open(filename.c_str());
-    if (logFile.is_open())
-      printStringToStream(logFile, "info", "Initializing logging (" + std::string(oms_git_version) + ")");
+    _log.logFile.open(filename.c_str());
+    if (_log.logFile.is_open())
+      PrintStringToStream(_log.logFile, "info", "Initializing logging (" + std::string(oms_git_version) + ")");
     else
     {
-      this->filename = "";
+      _log.filename = "";
       return oms_status_error;
     }
   }
@@ -301,12 +278,7 @@ oms_status_enu_t Logging::setLogFile(const std::string &filename)
   return oms_status_ok;
 }
 
-void oms::Log::setMaxLogFileSize(const unsigned long size)
-{
-  _log.limit = 1024 * 1024 * size;
-}
-
-oms_status_enu_t oms::Log::setLoggingLevel(int logLevel)
+oms_status_enu_t oms::Log::SetLoggingLevel(int logLevel)
 {
   if (logLevel < 0 || logLevel > 2)
     return logError("Invalid logging level");
@@ -321,9 +293,19 @@ oms_status_enu_t oms::Log::setLoggingLevel(int logLevel)
   return oms_status_ok;
 }
 
-const int oms::Log::getLoggingLevel()
+const int oms::Log::GetLoggingLevel()
 {
   return _log.logLevel;
+}
+
+void oms::Log::SetMaxLogFileSize(const unsigned long size)
+{
+  _log.limit = 1024 * 1024 * size;
+}
+
+void oms::Log::SetCallback(void (*cb)(oms_message_type_enu_t type, const char *message))
+{
+  _log.cb = cb;
 }
 
 void oms::Log::ProgressBar(double start, double stop, double value)

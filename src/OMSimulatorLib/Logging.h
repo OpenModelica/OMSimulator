@@ -36,11 +36,11 @@
 #include <string>
 
 #ifndef __FUNCTION_NAME__
-#ifdef WIN32 // WINDOWS
-#define __FUNCTION_NAME__ __FUNCTION__
-#else //*NIX
-#define __FUNCTION_NAME__ __func__
-#endif
+  #ifdef WIN32   //WINDOWS
+    #define __FUNCTION_NAME__ __FUNCTION__
+  #else          //*NIX
+    #define __FUNCTION_NAME__ __func__
+  #endif
 #endif
 
 namespace oms
@@ -61,12 +61,12 @@ namespace oms
     void TerminateBar();
 
     void SetCallback(void (*cb)(oms_message_type_enu_t type, const char *message));
-    oms_status_enu_t setLogFile(const std::string &filename);
+    oms_status_enu_t SetLogFile(const std::string &filename);
 
-    oms_status_enu_t setLoggingLevel(int logLevel);
-    const int getLoggingLevel();
+    oms_status_enu_t SetLoggingLevel(int logLevel);
+    const int GetLoggingLevel();
 
-    void setMaxLogFileSize(const unsigned long size);
+    void SetMaxLogFileSize(const unsigned long size);
   }
 }
 
@@ -75,17 +75,17 @@ namespace oms
 #define logError(msg) oms::Log::Error(msg, __func__)
 
 #if !defined(NDEBUG)
-#define logDebugEnabled() oms::Log::DebugEnabled()
-#define logTraceEnabled() oms::Log::TraceEnabled()
+  #define logDebugEnabled() oms::Log::DebugEnabled()
+  #define logTraceEnabled() oms::Log::TraceEnabled()
 
-#define logDebug(msg) oms::Log::Debug(msg)
-#define logTrace() oms::Log::Trace(__FUNCTION_NAME__, __FILE__, __LINE__)
+  #define logDebug(msg) oms::Log::Debug(msg)
+  #define logTrace() oms::Log::Trace(__FUNCTION_NAME__, __FILE__, __LINE__)
 #else
-#define logDebugEnabled() (0)
-#define logTraceEnabled() (0)
+  #define logDebugEnabled() (0)
+  #define logTraceEnabled() (0)
 
-#define logDebug(msg) ((void)0)
-#define logTrace() ((void)0)
+  #define logDebug(msg) ((void)0)
+  #define logTrace() ((void)0)
 #endif
 
 // common error messages
