@@ -29,122 +29,92 @@
  *
  */
 
-#ifndef _OMS_LOGGING_H_
-#define _OMS_LOGGING_H_
+#pragma once
 
 #include "OMSimulator/Types.h"
 
 #include <string>
-#include <fstream>
-#include <mutex>
 
 #ifndef __FUNCTION_NAME__
-  #ifdef WIN32   //WINDOWS
-    #define __FUNCTION_NAME__ __FUNCTION__
-  #else          //*NIX
-    #define __FUNCTION_NAME__ __func__
-  #endif
+#ifdef WIN32 // WINDOWS
+#define __FUNCTION_NAME__ __FUNCTION__
+#else //*NIX
+#define __FUNCTION_NAME__ __func__
+#endif
 #endif
 
-class Log
+namespace oms
 {
-public:
-  static void Info(const std::string& msg);
-  static oms_status_enu_t Warning(const std::string& msg);
-  static oms_status_enu_t Error(const std::string& msg, const std::string& function);
-  static void Debug(const std::string& msg);
-  static void Trace(const std::string& function, const std::string& file, const long line);
+  namespace Log
+  {
+    void Info(const std::string &msg);
+    oms_status_enu_t Warning(const std::string &msg);
+    oms_status_enu_t Error(const std::string &msg, const std::string &function);
 
-  static void ProgressBar(double start, double stop, double value);
-  static void TerminateBar();
+    bool DebugEnabled();
+    bool TraceEnabled();
 
-  static oms_status_enu_t setLogFile(const std::string& filename);
-  static void setMaxLogFileSize(const unsigned long size) {getInstance().limit=1024*1024*size;}
+    void Debug(const std::string &msg);
+    void Trace(const std::string &function, const std::string &file, const long line);
 
-  static void setLoggingCallback(void (*cb)(oms_message_type_enu_t type, const char* message)) {getInstance().cb = cb;}
-  static oms_status_enu_t setLoggingLevel(int logLevel);
-  static const int getLoggingLevel();
+    void ProgressBar(double start, double stop, double value);
+    void TerminateBar();
 
-  static bool DebugEnabled();
-  static bool TraceEnabled();
+    void SetCallback(void (*cb)(oms_message_type_enu_t type, const char *message));
+    oms_status_enu_t setLogFile(const std::string &filename);
 
-private:
-  Log();
-  ~Log();
+    oms_status_enu_t setLoggingLevel(int logLevel);
+    const int getLoggingLevel();
 
-  static Log& getInstance();
-  void printStringToStream(std::ostream& stream, const std::string& type, const std::string& msg);
+    void setMaxLogFileSize(const unsigned long size);
+  }
+}
 
-  // stop the compiler generating methods copying the object
-  Log(Log const& copy);            ///< not implemented
-  Log& operator=(Log const& copy); ///< not implemented
-
-private:
-  int logLevel;
-  std::string filename;
-  std::ofstream logFile;
-  std::mutex m;
-  unsigned int numWarnings;
-  unsigned int numErrors;
-  unsigned int numMessages;
-
-  unsigned long limit = 1024*1024*50;
-  unsigned long size = 0;
-
-  bool progress = false;
-  int percent;
-
-  void (*cb)(oms_message_type_enu_t type, const char* message);
-};
-
-#define logInfo(msg)    Log::Info(msg)
-#define logWarning(msg) Log::Warning(msg)
-#define logError(msg)   Log::Error(msg, __func__)
+#define logInfo(msg) oms::Log::Info(msg)
+#define logWarning(msg) oms::Log::Warning(msg)
+#define logError(msg) oms::Log::Error(msg, __func__)
 
 #if !defined(NDEBUG)
-  // In case some preparation is required
-  #define logDebugEnabled() Log::DebugEnabled()
-  #define logTraceEnabled() Log::TraceEnabled()
+#define logDebugEnabled() oms::Log::DebugEnabled()
+#define logTraceEnabled() oms::Log::TraceEnabled()
 
-  #define logDebug(msg) Log::Debug(msg)
-  #define logTrace()    Log::Trace(__FUNCTION_NAME__, __FILE__, __LINE__)
+#define logDebug(msg) oms::Log::Debug(msg)
+#define logTrace() oms::Log::Trace(__FUNCTION_NAME__, __FILE__, __LINE__)
 #else
-  #define logDebugEnabled() (0)
-  #define logTraceEnabled() (0)
+#define logDebugEnabled() (0)
+#define logTraceEnabled() (0)
 
-  #define logDebug(msg) ((void)0)
-  #define logTrace()    ((void)0)
+#define logDebug(msg) ((void)0)
+#define logTrace() ((void)0)
 #endif
 
 // common error messages
-#define logError_AlreadyInScope(cref)                          logError("\"" + std::string(cref) + "\" already exists in the scope")
-#define logError_BusAndConnectorNotSameModel(bus, connector)   logError("Bus \"" + std::string(bus) + "\" and connector \"" + std::string(connector) + "\" do not belong to same model")
-#define logError_BusAndConnectorNotSameSystem(bus, connector)  logError("Bus \"" + std::string(bus) + "\" and connector \"" + std::string(connector) + "\" do not belong to same system")
-#define logError_BusNotInComponent(cref, component)            logError("Bus connector \"" + std::string(cref) + "\" not found in component \"" + std::string(component->getFullCref()) + "\"")
-#define logError_BusNotInSystem(cref, system)                  logError("Bus connector \"" + std::string(cref) + "\" not found in system \"" + std::string(system->getFullCref()) + "\"")
-#define logError_ComponentNotInSystem(system, component)       logError("System \"" + std::string(system->getFullCref()) + "\" does not contain component \"" + std::string(component) + "\"")
+#define logError_AlreadyInScope(cref) logError("\"" + std::string(cref) + "\" already exists in the scope")
+#define logError_BusAndConnectorNotSameModel(bus, connector) logError("Bus \"" + std::string(bus) + "\" and connector \"" + std::string(connector) + "\" do not belong to same model")
+#define logError_BusAndConnectorNotSameSystem(bus, connector) logError("Bus \"" + std::string(bus) + "\" and connector \"" + std::string(connector) + "\" do not belong to same system")
+#define logError_BusNotInComponent(cref, component) logError("Bus connector \"" + std::string(cref) + "\" not found in component \"" + std::string(component->getFullCref()) + "\"")
+#define logError_BusNotInSystem(cref, system) logError("Bus connector \"" + std::string(cref) + "\" not found in system \"" + std::string(system->getFullCref()) + "\"")
+#define logError_ComponentNotInSystem(system, component) logError("System \"" + std::string(system->getFullCref()) + "\" does not contain component \"" + std::string(component) + "\"")
 #define logError_ConnectionExistsAlready(crefA, crefB, system) logError("Connection <\"" + std::string(crefA) + "\", \"" + std::string(crefB) + "\"> exists already in system \"" + std::string(system->getFullCref()) + "\"")
-#define logError_ConnectionNotInSystem(crefA, crefB, system)   logError("Connection <\"" + std::string(crefA) + "\", \"" + std::string(crefB) + "\"> not found in system \"" + std::string(system->getFullCref()) + "\"")
-#define logError_ConnectorNotInComponent(cref, component)      logError("Connector \"" + std::string(cref) + "\" not found in component \"" + std::string(component->getFullCref()) + "\"")
-#define logError_ConnectorNotInSystem(cref, system)            logError("Connector \"" + std::string(cref) + "\" not found in system \"" + std::string(system->getFullCref()) + "\"")
-#define logError_FMUCall(call, fmu)                            logError(std::string(call) + " failed for FMU \"" + std::string(fmu->getFullCref()) + "\"")
-#define logError_Initialization(system)                        logError("Initialization of system \"" + std::string(system) + "\" failed")
-#define logError_InternalError                                 logError("internal error")
-#define logError_InvalidIdent(cref)                            logError("\"" + std::string(cref) + "\" is not a valid ident")
-#define logError_InvalidIdent(cref)                            logError("\"" + std::string(cref) + "\" is not a valid ident")
-#define logError_ModelInWrongState(cref)                       logError("Model \"" + std::string(cref) + "\" is in wrong model state")
-#define logError_ModelNotInScope(cref)                         logError("Model \"" + std::string(cref) + "\" does not exist in the scope")
-#define logError_NotForScSystem                                logError("Not available for strongly coupled systems")
-#define logError_NotImplemented                                logError("Not implemented")
-#define logError_OnlyForModel                                  logError("Only implemented for model identifiers")
-#define logError_OnlyForRealInputs(cref)                       logError("Signal \"" + std::string(cref) + "\" is not a real input signal")
-#define logError_OnlyForSystemWC                               logError("Only available for WC systems")
-#define logError_ResetFailed(system)                           logError("failed to reset system \"" + std::string(system) + "\" to instantiation mode")
-#define logError_SubSystemNotInSystem(system, subsystem)       logError("System \"" + std::string(system) + "\" does not contain subsystem \"" + std::string(subsystem) + "\"")
-#define logError_SystemNotInModel(model, system)               logError("Model \"" + std::string(model) + "\" does not contain system \"" + std::string(system) + "\"")
-#define logError_Termination(system)                           logError("Termination of system \"" + std::string(system) + "\" failed")
-#define logError_UnknownSignal(cref)                           logError("Unknown signal \"" + std::string(cref) + "\"")
-#define logError_WrongSchema(name)                             logError("Wrong xml schema detected. Unexpected tag \"" + name + "\"")
-#define logWarning_deprecated                                  logWarning("Wrong/deprecated content detected but successfully loaded. Please re-export the SSP file to avoid this message.")
-
-#endif
+#define logError_ConnectionNotInSystem(crefA, crefB, system) logError("Connection <\"" + std::string(crefA) + "\", \"" + std::string(crefB) + "\"> not found in system \"" + std::string(system->getFullCref()) + "\"")
+#define logError_ConnectorNotInComponent(cref, component) logError("Connector \"" + std::string(cref) + "\" not found in component \"" + std::string(component->getFullCref()) + "\"")
+#define logError_ConnectorNotInSystem(cref, system) logError("Connector \"" + std::string(cref) + "\" not found in system \"" + std::string(system->getFullCref()) + "\"")
+#define logError_FMUCall(call, fmu) logError(std::string(call) + " failed for FMU \"" + std::string(fmu->getFullCref()) + "\"")
+#define logError_Initialization(system) logError("Initialization of system \"" + std::string(system) + "\" failed")
+#define logError_InternalError logError("internal error")
+#define logError_InvalidIdent(cref) logError("\"" + std::string(cref) + "\" is not a valid ident")
+#define logError_InvalidIdent(cref) logError("\"" + std::string(cref) + "\" is not a valid ident")
+#define logError_ModelInWrongState(cref) logError("Model \"" + std::string(cref) + "\" is in wrong model state")
+#define logError_ModelNotInScope(cref) logError("Model \"" + std::string(cref) + "\" does not exist in the scope")
+#define logError_NotForScSystem logError("Not available for strongly coupled systems")
+#define logError_NotImplemented logError("Not implemented")
+#define logError_OnlyForModel logError("Only implemented for model identifiers")
+#define logError_OnlyForRealInputs(cref) logError("Signal \"" + std::string(cref) + "\" is not a real input signal")
+#define logError_OnlyForSystemWC logError("Only available for WC systems")
+#define logError_ResetFailed(system) logError("failed to reset system \"" + std::string(system) + "\" to instantiation mode")
+#define logError_SubSystemNotInSystem(system, subsystem) logError("System \"" + std::string(system) + "\" does not contain subsystem \"" + std::string(subsystem) + "\"")
+#define logError_SystemNotInModel(model, system) logError("Model \"" + std::string(model) + "\" does not contain system \"" + std::string(system) + "\"")
+#define logError_Termination(system) logError("Termination of system \"" + std::string(system) + "\" failed")
+#define logError_UnknownSignal(cref) logError("Unknown signal \"" + std::string(cref) + "\"")
+#define logError_WrongSchema(name) logError("Wrong xml schema detected. Unexpected tag \"" + name + "\"")
+#define logWarning_deprecated logWarning("Wrong/deprecated content detected but successfully loaded. Please re-export the SSP file to avoid this message.")
