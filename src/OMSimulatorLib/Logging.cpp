@@ -157,7 +157,7 @@ namespace
   }
 }
 
-void oms::Log::Info(const std::string &msg)
+void oms::Log::Internal::Info(const std::string &msg)
 {
   std::lock_guard<std::mutex> lock(_log.m);
 
@@ -169,7 +169,7 @@ void oms::Log::Info(const std::string &msg)
     _log.cb(oms_message_info, msg.c_str());
 }
 
-oms_status_enu_t oms::Log::Warning(const std::string &msg)
+oms_status_enu_t oms::Log::Internal::Warning(const std::string &msg)
 {
   std::lock_guard<std::mutex> lock(_log.m);
 
@@ -184,7 +184,7 @@ oms_status_enu_t oms::Log::Warning(const std::string &msg)
   return oms_status_warning;
 }
 
-oms_status_enu_t oms::Log::Error(const std::string &msg, const std::string &function)
+oms_status_enu_t oms::Log::Internal::Error(const std::string &msg, const std::string &function)
 {
   std::lock_guard<std::mutex> lock(_log.m);
 
@@ -200,12 +200,12 @@ oms_status_enu_t oms::Log::Error(const std::string &msg, const std::string &func
   return oms_status_error;
 }
 
-bool oms::Log::DebugEnabled()
+bool oms::Log::Internal::DebugEnabled()
 {
   return _log.logLevel >= 1;
 }
 
-void oms::Log::Debug(const std::string &msg)
+void oms::Log::Internal::Debug(const std::string &msg)
 {
   std::lock_guard<std::mutex> lock(_log.m);
 
@@ -220,12 +220,12 @@ void oms::Log::Debug(const std::string &msg)
     _log.cb(oms_message_debug, msg.c_str());
 }
 
-bool oms::Log::TraceEnabled()
+bool oms::Log::Internal::TraceEnabled()
 {
   return _log.logLevel >= 2;
 }
 
-void oms::Log::Trace(const std::string &function, const std::string &file, const long line)
+void oms::Log::Internal::Trace(const std::string &function, const std::string &file, const long line)
 {
   std::lock_guard<std::mutex> lock(_log.m);
 

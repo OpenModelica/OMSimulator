@@ -39,15 +39,20 @@ namespace oms
 {
   namespace Log
   {
-    void Info(const std::string &msg);
-    oms_status_enu_t Warning(const std::string &msg);
-    oms_status_enu_t Error(const std::string &msg, const std::string &function);
+    // The functions in the Internal namespace are not meant to be used directly.
+    // They are intended to be used by the macros defined below.
+    namespace Internal
+    {
+      void Info(const std::string &msg);
+      oms_status_enu_t Warning(const std::string &msg);
+      oms_status_enu_t Error(const std::string &msg, const std::string &function);
 
-    bool DebugEnabled();
-    bool TraceEnabled();
+      bool DebugEnabled();
+      bool TraceEnabled();
 
-    void Debug(const std::string &msg);
-    void Trace(const std::string &function, const std::string &file, const long line);
+      void Debug(const std::string &msg);
+      void Trace(const std::string &function, const std::string &file, const long line);
+    }
 
     void ProgressBar(double start, double stop, double value);
     void TerminateBar();
@@ -62,16 +67,16 @@ namespace oms
   }
 }
 
-#define logInfo(msg)    oms::Log::Info(msg)
-#define logWarning(msg) oms::Log::Warning(msg)
-#define logError(msg)   oms::Log::Error(msg, __func__)
+#define logInfo(msg)    oms::Log::Internal::Info(msg)
+#define logWarning(msg) oms::Log::Internal::Warning(msg)
+#define logError(msg)   oms::Log::Internal::Error(msg, __func__)
 
 #if !defined(NDEBUG)
-  #define logDebugEnabled() oms::Log::DebugEnabled()
-  #define logTraceEnabled() oms::Log::TraceEnabled()
+  #define logDebugEnabled() oms::Log::Internal::DebugEnabled()
+  #define logTraceEnabled() oms::Log::Internal::TraceEnabled()
 
-  #define logDebug(msg) oms::Log::Debug(msg)
-  #define logTrace()    oms::Log::Trace(__func__, __FILE__, __LINE__)
+  #define logDebug(msg) oms::Log::Internal::Debug(msg)
+  #define logTrace()    oms::Log::Internal::Trace(__func__, __FILE__, __LINE__)
 #else
   #define logDebugEnabled() (false)
   #define logTraceEnabled() (false)
