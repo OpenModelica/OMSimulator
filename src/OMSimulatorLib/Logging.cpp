@@ -289,7 +289,7 @@ oms_status_enu_t oms::Log::SetLoggingLevel(int logLevel)
 
 #if defined(NDEBUG)
   if (logLevel > 1)
-    Warning("debug logging is not available");
+    oms::Log::Internal::Warning("debug logging is not available");
 #endif
 
   return oms_status_ok;
