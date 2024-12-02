@@ -78,7 +78,7 @@ public:
 
 Logging _log;
 
-std::string TimeStr()
+static std::string TimeStr()
 {
   time_t rawtime;
   struct tm *timeinfo;
@@ -90,8 +90,7 @@ std::string TimeStr()
   return std::string(buffer);
 }
 
-
-void PrintStringToStream(std::ostream& stream, const std::string& type, const std::string& msg)
+static void PrintStringToStream(std::ostream& stream, const std::string& type, const std::string& msg)
 {
   oms::Log::TerminateBar();
 
