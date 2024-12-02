@@ -35,14 +35,6 @@
 
 #include <string>
 
-#ifndef __FUNCTION_NAME__
-  #ifdef WIN32   //WINDOWS
-    #define __FUNCTION_NAME__ __FUNCTION__
-  #else          //*NIX
-    #define __FUNCTION_NAME__ __func__
-  #endif
-#endif
-
 namespace oms
 {
   namespace Log
@@ -79,13 +71,13 @@ namespace oms
   #define logTraceEnabled() oms::Log::TraceEnabled()
 
   #define logDebug(msg) oms::Log::Debug(msg)
-  #define logTrace() oms::Log::Trace(__FUNCTION_NAME__, __FILE__, __LINE__)
+  #define logTrace() oms::Log::Trace(__func__, __FILE__, __LINE__)
 #else
-  #define logDebugEnabled() (0)
-  #define logTraceEnabled() (0)
+  #define logDebugEnabled() ((void)0)
+  #define logTraceEnabled() ((void)0)
 
   #define logDebug(msg) ((void)0)
-  #define logTrace() ((void)0)
+  #define logTrace()    ((void)0)
 #endif
 
 // common error messages
