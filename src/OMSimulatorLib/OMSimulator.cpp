@@ -55,12 +55,11 @@
 #include "OMSimulator/Types.h"
 #include "Version.h"
 
-#include <chrono>
-#include <condition_variable>
-#include <iostream>
 #include "miniunz.h"
-#include <mutex>
-#include <pugixml.hpp>
+#include "pugixml.hpp"
+
+#include <chrono>
+#include <future>
 #include <string>
 #include <thread>
 
@@ -1169,6 +1168,74 @@ static int do_simulation(std::string model, std::chrono::duration<double> timeou
   return 0;
 }
 
+oms_status_enu_t SimulateSingleFMU(const filesystem::path& path)
+{
+  oms_status_enu_t status;
+  std::string modelName("model");
+  std::string systemName = modelName + ".root";
+  std::string fmuName = systemName + (oms::ComRef::isValidIdent(path.stem().string()) ? ("." + path.stem().string()) : ".fmu");
+  oms_fmi_kind_enu_t kind;
+
+  /* intialize the defaultExperiment with defaults set in Flags.cpp setDefaults() or
+    * values provided from user from commandLine (e.g) OMSimulator A.fmu --stopTime=10 --stepSize=10
+  */
+  oms_fmu_default_experiment_settings defaultExperiment = {oms::Flags::StartTime(), oms::Flags::StopTime(), oms::Flags::Tolerance(), oms::Flags::MaximumStepSize()};
+
+  status = oms_extractFMIKind(path.string().c_str(), &kind, &defaultExperiment);
+  if (oms_status_ok != status) return logError("oms_extractFMIKind failed");
+
+  status = oms_newModel(modelName.c_str());
+  if (oms_status_ok != status) return logError("oms_newModel failed");
+
+  oms::Model* model = oms::Scope::GetInstance().getModel(oms::ComRef(modelName));
+  if (!model)
+    return logError_ModelNotInScope(oms::ComRef(modelName));
+  model->setIsolatedFMUModel();
+
+  if (kind == oms_fmi_kind_me_and_cs)
+    status = oms_addSystem(systemName.c_str(), oms::Flags::DefaultModeIsCS() ? oms_system_wc : oms_system_sc);
+  else
+    status = oms_addSystem(systemName.c_str(), (kind == oms_fmi_kind_cs) ? oms_system_wc : oms_system_sc);
+  if (oms_status_ok != status) return logError("oms_addSystem failed");
+
+  status = oms_addSubModel(fmuName.c_str(), path.string().c_str());
+  if (oms_status_ok != status) return logError("oms_addSubModel failed");
+
+  if (oms::Flags::ResultFile() != "<default>")
+    if(oms_status_ok != oms_setResultFile(modelName.c_str(), oms::Flags::ResultFile().c_str(), 1))
+      return logError("oms_setResultFile failed");
+
+  status = oms_setStartTime(modelName.c_str(), defaultExperiment.startTime);
+  if(oms_status_ok != status) return logError("oms_setStartTime failed");
+  status = oms_setStopTime(modelName.c_str(), defaultExperiment.stopTime);
+  if(oms_status_ok != status) return logError("oms_setStopTime failed");
+  status = oms_setTolerance(modelName.c_str(), defaultExperiment.tolerance, defaultExperiment.tolerance);
+  if(oms_status_ok != status) return logError("oms_setTolerance failed");
+  // set the maximum stepSize
+  status = oms_setVariableStepSize(modelName.c_str(), oms::Flags::InitialStepSize(), oms::Flags::MinimumStepSize(), defaultExperiment.stepSize);
+  if(oms_status_ok != status) return logError("oms_setVariableStepSize failed");
+
+  if (kind == oms_fmi_kind_me_and_cs)
+    status = oms_setSolver(systemName.c_str(), oms::Flags::DefaultModeIsCS() ? oms::Flags::MasterAlgorithm() : oms::Flags::Solver());
+  else
+    status = oms_setSolver(systemName.c_str(), (kind == oms_fmi_kind_cs) ? oms::Flags::MasterAlgorithm() : oms::Flags::Solver());
+  if(oms_status_ok != status) return logError("oms_setSolver failed");
+
+  status = oms_instantiate(modelName.c_str());
+  if(oms_status_ok != status) return logError("oms_instantiate failed");
+  status = oms_initialize(modelName.c_str());
+  if(oms_status_ok != status) return logError("oms_initialize failed");
+  status = oms_simulate(modelName.c_str());
+  if(oms_status_ok != status) return logError("oms_simulate failed");
+
+  status = oms_terminate(modelName.c_str());
+  if(oms_status_ok != status) return logError("oms_terminate failed");
+  status = oms_delete(modelName.c_str());
+  if(oms_status_ok != status) return logError("oms_delete failed");
+
+  return oms_status_ok;
+}
+
 oms_status_enu_t oms_RunFile(const char* filename)
 {
   oms_status_enu_t status;
@@ -1177,52 +1244,17 @@ oms_status_enu_t oms_RunFile(const char* filename)
 
   if (type == ".fmu")
   {
-    std::string modelName("model");
-    std::string systemName = modelName + ".root";
-    std::string fmuName = systemName + (oms::ComRef::isValidIdent(path.stem().string()) ? ("." + path.stem().string()) : ".fmu");
-    oms_fmi_kind_enu_t kind;
+    auto future = std::async(std::launch::async, SimulateSingleFMU, path);
 
-    /* intialize the defaultExperiment with defaults set in Flags.cpp setDefaults() or
-     * values provided from user from commandLine (e.g) OMSimulator A.fmu --stopTime=10 --stepSize=10
-    */
-    oms_fmu_default_experiment_settings defaultExperiment = {oms::Flags::StartTime(), oms::Flags::StopTime(), oms::Flags::Tolerance(), oms::Flags::MaximumStepSize()};
-
-    status = oms_extractFMIKind(filename, &kind, &defaultExperiment);
-    if (oms_status_ok != status) return logError("oms_extractFMIKind failed");
-
-    status = oms_newModel(modelName.c_str());
-    if (oms_status_ok != status) return logError("oms_newModel failed");
-
-    oms::Model* model = oms::Scope::GetInstance().getModel(oms::ComRef(modelName));
-    if (!model)
-      return logError_ModelNotInScope(oms::ComRef(modelName));
-    model->setIsolatedFMUModel();
-
-    if (kind == oms_fmi_kind_me_and_cs)
-      status = oms_addSystem(systemName.c_str(), oms::Flags::DefaultModeIsCS() ? oms_system_wc : oms_system_sc);
+    if (oms::Flags::Timeout() == 0 || future.wait_for(std::chrono::seconds(int(oms::Flags::Timeout()))) == std::future_status::ready)
+      status = future.get();
     else
-      status = oms_addSystem(systemName.c_str(), (kind == oms_fmi_kind_cs) ? oms_system_wc : oms_system_sc);
-    if (oms_status_ok != status) return logError("oms_addSystem failed");
+    {
+      logError("Simulation timed out - cleaning up...");
+      status = oms_status_error;
+      exit(1);
+    }
 
-    status = oms_addSubModel(fmuName.c_str(), filename);
-    if (oms_status_ok != status) return logError("oms_addSubModel failed");
-
-    if (oms::Flags::ResultFile() != "<default>")
-      oms_setResultFile(modelName.c_str(), oms::Flags::ResultFile().c_str(), 1);
-    oms_setStartTime(modelName.c_str(), defaultExperiment.startTime);
-    oms_setStopTime(modelName.c_str(), defaultExperiment.stopTime);
-    oms_setTolerance(modelName.c_str(), defaultExperiment.tolerance, defaultExperiment.tolerance);
-    // set the maximum stepSize
-    oms_setVariableStepSize(modelName.c_str(), oms::Flags::InitialStepSize(), oms::Flags::MinimumStepSize(), defaultExperiment.stepSize);
-
-    if (kind == oms_fmi_kind_me_and_cs)
-      oms_setSolver(systemName.c_str(), oms::Flags::DefaultModeIsCS() ? oms::Flags::MasterAlgorithm() : oms::Flags::Solver());
-    else
-      oms_setSolver(systemName.c_str(), (kind == oms_fmi_kind_cs) ? oms::Flags::MasterAlgorithm() : oms::Flags::Solver());
-
-    status = do_simulation(modelName, std::chrono::duration<double>(oms::Flags::Timeout())) ? oms_status_error : oms_status_ok;
-    oms_terminate(modelName.c_str());
-    oms_delete(modelName.c_str());
     return status;
   }
   else if (type == ".ssp")
