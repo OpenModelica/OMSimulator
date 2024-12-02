@@ -172,7 +172,7 @@ namespace oms
       std::sort(new_flags.begin(), new_flags.end(), [](const FlagBase *a, const FlagBase *b) {
         return a->Name() < b->Name();
       });
-      //logInfo("Registered flag: " + flag->Name());
+      logInfo("Registered flag: " + flag->Name());
     }
   private:
     std::vector<FlagBase*> new_flags;

@@ -915,6 +915,71 @@ static int do_simulation(std::string model, std::chrono::duration<double> timeou
   return 0;
 }
 
+oms_status_enu_t oms_extractFMIKind(const char* filename, oms_fmi_kind_enu_t* kind, oms_fmu_default_experiment_settings* defaultExperiment)
+{
+  if (!kind)
+    return logError("Invalid argument \"kind=NULL\"");
+
+  const char* modelDescription = ::miniunz_onefile_to_memory(filename, "modelDescription.xml");
+  if (!modelDescription)
+    return logError("failed to extract \"modelDescription.xml\" from \"" + std::string(filename) + "\"");
+
+  oms::Snapshot snapshot;
+  oms_status_enu_t status = snapshot.importResourceMemory("modelDescription.xml", modelDescription);
+  ::miniunz_free(modelDescription);
+  if (oms_status_ok != status)
+    return logError("Failed to import");
+  const pugi::xml_node node = snapshot.getResourceNode("modelDescription.xml");
+
+  bool cs = (std::string(node.child("CoSimulation").attribute("modelIdentifier").as_string()) != "");
+  bool me = (std::string(node.child("ModelExchange").attribute("modelIdentifier").as_string()) != "");
+
+  if (me && cs)
+    *kind = oms_fmi_kind_me_and_cs;
+  else if (me)
+    *kind = oms_fmi_kind_me;
+  else if (cs)
+    *kind = oms_fmi_kind_cs;
+  else
+  {
+    *kind = oms_fmi_kind_unknown;
+    return oms_status_error;
+  }
+
+  // get default experiment settings if exists
+  if (node.child("DefaultExperiment"))
+  {
+    /* give priority for values provided from command line,
+     * if the user overrides those variables then we should take those values
+     * and not the default values from <DefaultExperiment> in modeldescription.xml
+    */
+    if (defaultExperiment->startTime == 0.0)
+    {
+      if (node.child("DefaultExperiment").attribute("startTime").as_string() != "")
+        defaultExperiment->startTime = node.child("DefaultExperiment").attribute("startTime").as_double();
+    }
+    if (defaultExperiment->stopTime == 1.0)
+    {
+      if (node.child("DefaultExperiment").attribute("stopTime").as_string() != "")
+        defaultExperiment->stopTime = node.child("DefaultExperiment").attribute("stopTime").as_double();
+    }
+    if (defaultExperiment->tolerance == 1e-4)
+    {
+      if (node.child("DefaultExperiment").attribute("tolerance").as_string() != "")
+        defaultExperiment->tolerance = node.child("DefaultExperiment").attribute("tolerance").as_double();
+    }
+    if (defaultExperiment->stepSize == 1e-3) // maximumStepSize
+    {
+      if (node.child("DefaultExperiment").attribute("stepSize").as_string() != "")
+        defaultExperiment->stepSize = node.child("DefaultExperiment").attribute("stepSize").as_double();
+      else
+        defaultExperiment->stepSize = (defaultExperiment->stopTime - defaultExperiment->startTime) / 500;
+    }
+  }
+
+  return oms_status_ok;
+}
+
 oms_status_enu_t SimulateSingleFMU(const filesystem::path& path)
 {
   oms_status_enu_t status;

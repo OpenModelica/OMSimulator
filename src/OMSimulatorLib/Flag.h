@@ -76,6 +76,7 @@ namespace oms
           f_parseValue(parseValue),
           f_action(action)
     {
+      logInfo("Registering flag " + c_name);
     }
 
     ~Flag() override = default;
@@ -117,5 +118,5 @@ namespace oms
     oms_status_enu_t (*f_action)(const T &value); // action is performed after a new value is accepted
   };
 
-  inline Flag<bool> new_AddParametersToCSV("addParametersToCSV", "", "Export parameters to a .csv file", false, false, false, nullptr, nullptr);
+  extern Flag<bool> new_AddParametersToCSV;
 }

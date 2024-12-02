@@ -34,6 +34,8 @@
 
 #include "Logging.h"
 
+oms::Flag<bool> new_AddParametersToCSV("addParametersToCSV", "", "Export parameters to a .csv file", false, false, false, nullptr, nullptr);
+
 oms::FlagBase::FlagBase(const std::string &name, const std::string &abbr, const std::string &desc, bool interrupt, bool settings)
     : c_name(name),
       c_abbr(abbr),
@@ -42,5 +44,5 @@ oms::FlagBase::FlagBase(const std::string &name, const std::string &abbr, const 
       c_settings(settings)
 {
   oms::Flags::GetInstance().RegisterFlag(this);
-  //logInfo("Registering flag " + c_name);
+  logInfo("Registering flag " + c_name);
 }
