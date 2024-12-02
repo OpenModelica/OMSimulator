@@ -34,6 +34,7 @@
 
 #include "Logging.h"
 
+#include <stdint.h>
 #include <string.h>
 
 oms::MatReader::MatReader(const char* filename)
