@@ -62,16 +62,16 @@ namespace oms
   }
 }
 
-#define logInfo(msg) oms::Log::Info(msg)
+#define logInfo(msg)    oms::Log::Info(msg)
 #define logWarning(msg) oms::Log::Warning(msg)
-#define logError(msg) oms::Log::Error(msg, __func__)
+#define logError(msg)   oms::Log::Error(msg, __func__)
 
 #if !defined(NDEBUG)
   #define logDebugEnabled() oms::Log::DebugEnabled()
   #define logTraceEnabled() oms::Log::TraceEnabled()
 
   #define logDebug(msg) oms::Log::Debug(msg)
-  #define logTrace() oms::Log::Trace(__func__, __FILE__, __LINE__)
+  #define logTrace()    oms::Log::Trace(__func__, __FILE__, __LINE__)
 #else
   #define logDebugEnabled() ((void)0)
   #define logTraceEnabled() ((void)0)
