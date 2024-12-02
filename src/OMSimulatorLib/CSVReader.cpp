@@ -34,7 +34,9 @@
 #include "Logging.h"
 #include "Util.h"
 
-#include <string.h>
+#include <cstring>
+#include <fstream>
+#include <string>
 
 oms::CSVReader::CSVReader(const char* filename)
   : ResultReader(filename)

@@ -29,88 +29,57 @@
  *
  */
 
-#ifndef _OMS_LOGGING_H_
-#define _OMS_LOGGING_H_
+#pragma once
 
 #include "OMSimulator/Types.h"
 
 #include <string>
-#include <fstream>
-#include <mutex>
 
-#ifndef __FUNCTION_NAME__
-  #ifdef WIN32   //WINDOWS
-    #define __FUNCTION_NAME__ __FUNCTION__
-  #else          //*NIX
-    #define __FUNCTION_NAME__ __func__
-  #endif
-#endif
-
-class Log
+namespace oms
 {
-public:
-  static void Info(const std::string& msg);
-  static oms_status_enu_t Warning(const std::string& msg);
-  static oms_status_enu_t Error(const std::string& msg, const std::string& function);
-  static void Debug(const std::string& msg);
-  static void Trace(const std::string& function, const std::string& file, const long line);
+  namespace Log
+  {
+    // The functions in the Internal namespace are not meant to be used directly.
+    // They are intended to be used by the macros defined below.
+    namespace Internal
+    {
+      void Info(const std::string &msg);
+      oms_status_enu_t Warning(const std::string &msg);
+      oms_status_enu_t Error(const std::string &msg, const std::string &function);
 
-  static void ProgressBar(double start, double stop, double value);
-  static void TerminateBar();
+      bool DebugEnabled();
+      bool TraceEnabled();
 
-  static oms_status_enu_t setLogFile(const std::string& filename);
-  static void setMaxLogFileSize(const unsigned long size) {getInstance().limit=1024*1024*size;}
+      void Debug(const std::string &msg);
+      void Trace(const std::string &function, const std::string &file, const long line);
+    }
 
-  static void setLoggingCallback(void (*cb)(oms_message_type_enu_t type, const char* message)) {getInstance().cb = cb;}
-  static oms_status_enu_t setLoggingLevel(int logLevel);
-  static const int getLoggingLevel();
+    void ProgressBar(double start, double stop, double value);
+    void TerminateBar();
 
-  static bool DebugEnabled();
-  static bool TraceEnabled();
+    void SetCallback(void (*cb)(oms_message_type_enu_t type, const char *message));
+    oms_status_enu_t SetLogFile(const std::string &filename);
 
-private:
-  Log();
-  ~Log();
+    oms_status_enu_t SetLoggingLevel(int logLevel);
+    const int GetLoggingLevel();
 
-  static Log& getInstance();
-  void printStringToStream(std::ostream& stream, const std::string& type, const std::string& msg);
+    void SetMaxLogFileSize(const unsigned long size);
+  }
+}
 
-  // stop the compiler generating methods copying the object
-  Log(Log const& copy);            ///< not implemented
-  Log& operator=(Log const& copy); ///< not implemented
-
-private:
-  int logLevel;
-  std::string filename;
-  std::ofstream logFile;
-  std::mutex m;
-  unsigned int numWarnings;
-  unsigned int numErrors;
-  unsigned int numMessages;
-
-  unsigned long limit = 1024*1024*50;
-  unsigned long size = 0;
-
-  bool progress = false;
-  int percent;
-
-  void (*cb)(oms_message_type_enu_t type, const char* message);
-};
-
-#define logInfo(msg)    Log::Info(msg)
-#define logWarning(msg) Log::Warning(msg)
-#define logError(msg)   Log::Error(msg, __func__)
+#define logInfo(msg)    oms::Log::Internal::Info(msg)
+#define logWarning(msg) oms::Log::Internal::Warning(msg)
+#define logError(msg)   oms::Log::Internal::Error(msg, __func__)
 
 #if !defined(NDEBUG)
-  // In case some preparation is required
-  #define logDebugEnabled() Log::DebugEnabled()
-  #define logTraceEnabled() Log::TraceEnabled()
+  #define logDebugEnabled() oms::Log::Internal::DebugEnabled()
+  #define logTraceEnabled() oms::Log::Internal::TraceEnabled()
 
-  #define logDebug(msg) Log::Debug(msg)
-  #define logTrace()    Log::Trace(__FUNCTION_NAME__, __FILE__, __LINE__)
+  #define logDebug(msg) oms::Log::Internal::Debug(msg)
+  #define logTrace()    oms::Log::Internal::Trace(__func__, __FILE__, __LINE__)
 #else
-  #define logDebugEnabled() (0)
-  #define logTraceEnabled() (0)
+  #define logDebugEnabled() (false)
+  #define logTraceEnabled() (false)
 
   #define logDebug(msg) ((void)0)
   #define logTrace()    ((void)0)
@@ -146,5 +115,3 @@ private:
 #define logError_UnknownSignal(cref)                           logError("Unknown signal \"" + std::string(cref) + "\"")
 #define logError_WrongSchema(name)                             logError("Wrong xml schema detected. Unexpected tag \"" + name + "\"")
 #define logWarning_deprecated                                  logWarning("Wrong/deprecated content detected but successfully loaded. Please re-export the SSP file to avoid this message.")
-
-#endif

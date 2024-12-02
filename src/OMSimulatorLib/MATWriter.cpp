@@ -36,7 +36,8 @@
 #include "ResultWriter.h"
 #include "Util.h"
 
-#include <cstring>  // strerror
+#include <cstring>
+#include <stdint.h>
 #include <string>
 
 #if defined(_MSC_VER) || defined(__MINGW32__) || defined(__MINGW64__)
