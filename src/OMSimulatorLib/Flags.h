@@ -80,7 +80,6 @@ namespace oms
     static double MinimumStepSize() {return GetInstance().minimumStepSize;}
     static double StartTime() {return GetInstance().startTime;}
     static double StopTime() {return GetInstance().stopTime;}
-    static double Timeout() {return GetInstance().timeout;}
     static double Tolerance() {return GetInstance().tolerance;}
     static oms_alg_solver_enu_t AlgLoopSolver() {return GetInstance().algLoopSolver;}
     static oms_solver_enu_t MasterAlgorithm() {return GetInstance().masterAlgorithm;}
@@ -90,6 +89,7 @@ namespace oms
     static unsigned int MaxEventIteration() {return GetInstance().maxEventIteration;}
     static unsigned int MaxLoopIteration() {return GetInstance().maxLoopIteration;}
     static unsigned int NumProcs() {return GetInstance().numProcs;}
+    static unsigned int Timeout() {return GetInstance().timeout;}
 
   private:
     bool addParametersToCSV;
@@ -117,7 +117,6 @@ namespace oms
     double minimumStepSize;
     double startTime;
     double stopTime;
-    double timeout;
     double tolerance;
     oms_alg_solver_enu_t algLoopSolver;
     oms_solver_enu_t masterAlgorithm;
@@ -127,6 +126,7 @@ namespace oms
     unsigned int maxEventIteration;
     unsigned int maxLoopIteration;
     unsigned int numProcs;
+    unsigned int timeout;
 
   private:
     struct Flag

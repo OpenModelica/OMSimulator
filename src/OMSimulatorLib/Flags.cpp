@@ -94,7 +94,7 @@ void oms::Flags::setDefaults()
   stopTime = 1.0;
   stripRoot = false;
   suppressPath = true;
-  timeout = 0.0;
+  timeout = 0;
   tolerance = 1e-4;
   wallTime = false;
   zeroNominal = false;
