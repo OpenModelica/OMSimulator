@@ -29,6 +29,10 @@
  *
  */
 
+#include <sstream>
+#include <cmath>
+#include <algorithm>
+
 #include "AlgLoop.h"
 
 #include "Component.h"
@@ -36,7 +40,13 @@
 #include "Flags.h"
 #include "System.h"
 
-#include <sstream>
+#ifdef min
+#undef min
+#endif
+
+#ifdef max
+#undef max
+#endif
 
 /**
  * @brief Check flag returned by KINSOL function and log error
@@ -292,7 +302,7 @@ oms::KinsolSolver::~KinsolSolver()
  * @param absoluteTolerance     Tolerance used for solving the loop
  * @return oms::KinsolSolver*   Retruns pointer to KinsolSolver object
  */
-oms::KinsolSolver* oms::KinsolSolver::NewKinsolSolver(const int algLoopNum, const unsigned int size, double absoluteTolerance, const bool useDirectionalDerivative)
+oms::KinsolSolver* oms::KinsolSolver::NewKinsolSolver(const int algLoopNum, const unsigned int size, double absoluteTolerance, double relativeTolerance, const bool useDirectionalDerivative)
 {
   int flag;
   int printLevel;
@@ -368,6 +378,8 @@ oms::KinsolSolver* oms::KinsolSolver::NewKinsolSolver(const int algLoopNum, cons
   flag = KINSetFuncNormTol(kinsolSolver->kinsolMemory, kinsolSolver->fnormtol);
   if (!checkFlag(flag, "KINSetFuncNormTol")) return NULL;
 
+  kinsolSolver->freltol = relativeTolerance * 0.01;
+
   /* Set scaled-step stopping tolerance */
   flag = KINSetScaledStepTol(kinsolSolver->kinsolMemory, 0.0);
   if (!checkFlag(flag, "KINSetScaledStepTol")) return NULL;
@@ -432,6 +444,10 @@ oms_status_enu_t oms::KinsolSolver::kinsolSolve(System& syst, DirectedGraph& gra
     }
   }
 
+  /* Apply relative tolerance to magnitude of initial guess */
+  fNormValue = std::sqrt(N_VDotProd_Serial(initialGuess, initialGuess));
+  tol = std::max(tol, fNormValue * freltol * tolerance / fnormtol);
+
   /* u and f scaling */
   // TODO: Add scaling that is not only constant ones
 
@@ -468,7 +484,7 @@ oms_status_enu_t oms::KinsolSolver::kinsolSolve(System& syst, DirectedGraph& gra
  * @param scc     Strong Connected Componten, a vector of connected
  * @param number
  */
-oms::AlgLoop::AlgLoop(oms_alg_solver_enu_t method, double absTol, scc_t scc, const int number, const bool useDirectionalDerivative): absoluteTolerance(absTol), SCC(scc), systNumber(number)
+oms::AlgLoop::AlgLoop(oms_alg_solver_enu_t method, double absTol, double relTol, scc_t scc, const int number, const bool useDirectionalDerivative): absoluteTolerance(absTol), SCC(scc), systNumber(number)
 {
   switch (method)
   {
@@ -483,7 +499,7 @@ oms::AlgLoop::AlgLoop(oms_alg_solver_enu_t method, double absTol, scc_t scc, con
 
   if (method == oms_alg_solver_kinsol)
   {
-    kinsolData = KinsolSolver::NewKinsolSolver(systNumber, SCC.connections.size(), absoluteTolerance, useDirectionalDerivative);
+    kinsolData = KinsolSolver::NewKinsolSolver(systNumber, SCC.connections.size(), absoluteTolerance, relTol, useDirectionalDerivative);
     if (kinsolData==NULL)
     {
       logError("NewKinsolSolver() failed. Aborting!");

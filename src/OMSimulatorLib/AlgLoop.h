@@ -57,12 +57,13 @@ namespace oms
   {
   public:
     ~KinsolSolver();
-    static KinsolSolver* NewKinsolSolver(const int algLoopNum, const unsigned int size, double absoluteTolerance, const bool useDirectionalDerivative);
+    static KinsolSolver* NewKinsolSolver(const int algLoopNum, const unsigned int size, double absoluteTolerance, double relativeTolerance, const bool useDirectionalDerivative);
     oms_status_enu_t kinsolSolve(System& syst, DirectedGraph& graph, double tolerance = 0.0);
 
   private:
     /* tolerances */
     double fnormtol;        /* function tolerance */
+    double freltol;         /* relative function tolerance */
 
     /* work arrays */
     N_Vector initialGuess;
@@ -90,7 +91,7 @@ namespace oms
   class AlgLoop
   {
   public:
-    AlgLoop(oms_alg_solver_enu_t method, double absTol, scc_t SCC, const int systNumber, const bool useDirectionalDerivative);
+    AlgLoop(oms_alg_solver_enu_t method, double absTol, double relTol, scc_t SCC, const int systNumber, const bool useDirectionalDerivative);
 
     scc_t getSCC() {return SCC;}
     oms_status_enu_t solveAlgLoop(System& syst, DirectedGraph& graph, double tolerance);
