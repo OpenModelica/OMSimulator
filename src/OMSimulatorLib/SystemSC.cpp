@@ -41,6 +41,7 @@
 #include <algorithm>
 #include <cstring>
 #include <sstream>
+#include <cmath>
 
 int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
@@ -876,6 +877,15 @@ oms_status_enu_t oms::SystemSC::doStepCVODE(double stopTime)
     {
       logDebug("event found!!! " + std::to_string(time));
 
+      for (size_t i = 0; i < fmus.size(); ++i)
+      {
+        if (0 == nStates[i])
+          continue;
+
+        status = fmus[i]->getDerivatives(states_der[i]);
+        if (oms_status_ok != status) return status;
+      }
+      
       // Enter event mode and handle discrete state updates for each FMU
       for (size_t i = 0; i < fmus.size(); ++i)
       {
@@ -913,6 +923,7 @@ oms_status_enu_t oms::SystemSC::doStepCVODE(double stopTime)
       if (isTopLevelSystem())
         getModel().emit(time, true);
 
+      bool resetSolver = false;
       for (size_t i = 0; i < fmus.size(); ++i)
       {
         if (0 == nStates[i])
@@ -920,14 +931,30 @@ oms_status_enu_t oms::SystemSC::doStepCVODE(double stopTime)
 
         status = fmus[i]->getContinuousStates(states[i]);
         if (oms_status_ok != status) return status;
+
+        // Check whether dervative values have changed due to the event
+        std::vector<double> prevDer;
+        prevDer.reserve(nStates[i]);
+        prevDer.assign(states_der[i], states_der[i] + nStates[i]);
+
+        status = fmus[i]->getDerivatives(states_der[i]);
+        if (oms_status_ok != status) return status;
+
+        for (int k = 0; k < nStates[i]; k++) {
+          double diff = states_der[i][k] - prevDer[k];
+          if (fabs(diff) > absoluteTolerance && fabs(diff) > relativeTolerance * fabs(prevDer[k]))
+            resetSolver = true;
+        }
       }
 
       for (size_t j=0, k=0; j < fmus.size(); ++j)
         for (size_t i=0; i < nStates[j]; ++i, ++k)
           NV_Ith_S(solverData.cvode.y, k) = states[j][i];
 
-      flag = CVodeReInit(solverData.cvode.mem, time, solverData.cvode.y);
-      if (flag < 0) return logError("SUNDIALS_ERROR: CVodeReInit() failed with flag = " + std::to_string(flag));
+      if (resetSolver) {
+        flag = CVodeReInit(solverData.cvode.mem, time, solverData.cvode.y);
+        if (flag < 0) return logError("SUNDIALS_ERROR: CVodeReInit() failed with flag = " + std::to_string(flag));
+      }
 
       return oms_status_ok;
     }
