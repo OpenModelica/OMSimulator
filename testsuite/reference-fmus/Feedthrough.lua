@@ -17,7 +17,7 @@ oms_addSubModel("model.root.Feedthrough", "../../resources/Feedthrough.fmu")
 
 oms_setResultFile("model", "Feedthrough-cs.mat")
 oms_setStopTime("model", 10.0)
-oms_setTolerance("model.root", 1e-5, 1e-5)
+oms_setTolerance("model.root", 1e-5)
 
 oms_instantiate("model")
 oms_setBoolean("model.root.Feedthrough.Boolean_input", true)
@@ -44,7 +44,7 @@ oms_addSubModel("model.root.Feedthrough", "../../resources/Feedthrough.fmu")
 
 oms_setResultFile("model", "Feedthrough-me.mat")
 oms_setStopTime("model", 10.0)
-oms_setTolerance("model.root", 1e-5, 1e-5)
+oms_setTolerance("model.root", 1e-5)
 
 oms_instantiate("model")
 oms_setBoolean("model.root.Feedthrough.Boolean_input", true)

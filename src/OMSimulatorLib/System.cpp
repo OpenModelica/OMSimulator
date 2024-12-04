@@ -2494,7 +2494,7 @@ oms_status_enu_t oms::System::addAlgLoop(scc_t SCC, const int algLoopNum, Direct
     loopsNeedUpdate = false;
   }
 
-  algLoops.push_back( AlgLoop(Flags::AlgLoopSolver(), absoluteTolerance, SCC, algLoopNum, supportsDirectionalDerivatives));
+  algLoops.push_back(AlgLoop(Flags::AlgLoopSolver(), relativeTolerance, SCC, algLoopNum, supportsDirectionalDerivatives));
 
   return oms_status_ok;
 }

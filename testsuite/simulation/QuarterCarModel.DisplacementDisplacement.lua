@@ -29,7 +29,7 @@ oms_setStopTime("QuarterCarModel", 1.0)
 --oms_setSolver("QuarterCarModel", oms_solver_wc_mav)
 --oms_setVariableStepSize("QuarterCarModel.DisplacementDisplacement", 1e-2, 1e-2, 1e-2)
 oms_setFixedStepSize("QuarterCarModel.DisplacementDisplacement", 1e-3)
-oms_setTolerance("QuarterCarModel.DisplacementDisplacement", 1e-4, 1e-4)
+oms_setTolerance("QuarterCarModel.DisplacementDisplacement", 1e-4)
 
 oms_instantiate("QuarterCarModel")
 oms_initialize("QuarterCarModel")

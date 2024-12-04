@@ -956,7 +956,7 @@ oms_status_enu_t SimulateSingleFMU(const filesystem::path& path)
   if(oms_status_ok != status) return logError("oms_setStartTime failed");
   status = oms_setStopTime(modelName.c_str(), defaultExperiment.stopTime);
   if(oms_status_ok != status) return logError("oms_setStopTime failed");
-  status = oms_setTolerance(modelName.c_str(), defaultExperiment.tolerance, defaultExperiment.tolerance);
+  status = oms_setTolerance(modelName.c_str(), defaultExperiment.tolerance);
   if(oms_status_ok != status) return logError("oms_setTolerance failed");
   // set the maximum stepSize
   status = oms_setVariableStepSize(modelName.c_str(), oms::Flags::InitialStepSize(), oms::Flags::MinimumStepSize(), defaultExperiment.stepSize);
@@ -1013,7 +1013,7 @@ oms_status_enu_t oms_RunFile(const char* filename)
       oms_setResultFile(cref, oms::Flags::ResultFile().c_str(), 1);
     oms_setStartTime(cref, oms::Flags::StartTime());
     oms_setStopTime(cref, oms::Flags::StopTime());
-    oms_setTolerance(cref, oms::Flags::Tolerance(), oms::Flags::Tolerance());
+    oms_setTolerance(cref, oms::Flags::Tolerance());
 
     status = do_simulation(std::string(cref), std::chrono::duration<double>(oms::Flags::Timeout())) ? oms_status_error : oms_status_ok;
     oms_terminate(cref);
@@ -1513,7 +1513,7 @@ oms_status_enu_t oms_getModelState(const char* cref, oms_modelState_enu_t* model
   return oms_status_ok;
 }
 
-oms_status_enu_t oms_getTolerance(const char* cref, double* absoluteTolerance, double* relativeTolerance)
+oms_status_enu_t oms_getTolerance(const char* cref, double* relativeTolerance)
 {
   oms::ComRef tail(cref);
   oms::ComRef front = tail.pop_front();
@@ -1527,7 +1527,7 @@ oms_status_enu_t oms_getTolerance(const char* cref, double* absoluteTolerance, d
   if (!system)
     return logError_SystemNotInModel(model->getCref(), front);
 
-  system->getTolerance(absoluteTolerance, relativeTolerance);
+  system->getTolerance(relativeTolerance);
   return oms_status_ok;
 }
 
@@ -1641,7 +1641,7 @@ oms_status_enu_t oms_setSolver(const char* cref, oms_solver_enu_t solver)
   return logError_SystemNotInModel(model->getCref(), front);
 }
 
-oms_status_enu_t oms_setTolerance(const char* cref, double absoluteTolerance, double relativeTolerance)
+oms_status_enu_t oms_setTolerance(const char* cref, double relativeTolerance)
 {
   oms::ComRef tail(cref);
   oms::ComRef front = tail.pop_front();
@@ -1652,7 +1652,7 @@ oms_status_enu_t oms_setTolerance(const char* cref, double absoluteTolerance, do
 
   oms::System* system = model->getSystem(tail);
   if (system)
-    return system->setTolerance(absoluteTolerance, relativeTolerance);
+    return system->setTolerance(relativeTolerance);
 
   return logError_SystemNotInModel(model->getCref(), front);
 }

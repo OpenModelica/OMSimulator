@@ -160,9 +160,9 @@ namespace oms
     oms_status_enu_t addSignalsToResults(const char* regex);
     oms_status_enu_t removeSignalsFromResults(const char* regex);
 
-    void getTolerance(double* absoluteTolerance, double* relativeTolerance) const {if (absoluteTolerance) *absoluteTolerance=this->absoluteTolerance; if (relativeTolerance) *relativeTolerance=this->relativeTolerance;}
+    void getTolerance(double* relativeTolerance) const {if (relativeTolerance) *relativeTolerance=this->relativeTolerance;}
     void getStepSize(double* initialStepSize, double* minimumStepSize, double* maximumStepSize) const {if (initialStepSize) *initialStepSize=this->initialStepSize; if (minimumStepSize) *minimumStepSize=this->minimumStepSize; if (maximumStepSize) *maximumStepSize=this->maximumStepSize;}
-    oms_status_enu_t setTolerance(double absoluteTolerance, double relativeTolerance) {this->absoluteTolerance=absoluteTolerance; this->relativeTolerance=relativeTolerance; return oms_status_ok;}
+    oms_status_enu_t setTolerance(double relativeTolerance) {this->relativeTolerance=relativeTolerance; return oms_status_ok;}
     oms_status_enu_t setFixedStepSize(double stepSize) {this->minimumStepSize=this->maximumStepSize=this->initialStepSize=stepSize; return oms_status_ok;}
     oms_status_enu_t setVariableStepSize(double initialStepSize, double minimumStepSize, double maximumStepSize) {this->minimumStepSize=minimumStepSize; this->maximumStepSize=maximumStepSize; this->initialStepSize=initialStepSize; return oms_status_ok;}
     double getMaximumStepSize() {return maximumStepSize;}
@@ -211,7 +211,6 @@ namespace oms
 
     oms_solver_enu_t solverMethod = oms_solver_none;
 
-    double absoluteTolerance = 1e-4;
     double relativeTolerance = 1e-4;
     double minimumStepSize;
     double maximumStepSize;

@@ -289,10 +289,10 @@ oms::KinsolSolver::~KinsolSolver()
  *
  * @param algLoopNum            Number of algebraic loop
  * @param size                  Dimension of algebraic loop
- * @param absoluteTolerance     Tolerance used for solving the loop
+ * @param relativeTolerance     Tolerance used for solving the loop
  * @return oms::KinsolSolver*   Retruns pointer to KinsolSolver object
  */
-oms::KinsolSolver* oms::KinsolSolver::NewKinsolSolver(const int algLoopNum, const unsigned int size, double absoluteTolerance, const bool useDirectionalDerivative)
+oms::KinsolSolver* oms::KinsolSolver::NewKinsolSolver(const int algLoopNum, const unsigned int size, double relativeTolerance, const bool useDirectionalDerivative)
 {
   int flag;
   int printLevel;
@@ -364,7 +364,7 @@ oms::KinsolSolver* oms::KinsolSolver::NewKinsolSolver(const int algLoopNum, cons
   if (!checkFlag(flag, "KINSetJacFn")) return NULL;
 
   /* Set function-norm stopping tolerance */
-  kinsolSolver->fnormtol = absoluteTolerance;
+  kinsolSolver->fnormtol = relativeTolerance;
   flag = KINSetFuncNormTol(kinsolSolver->kinsolMemory, kinsolSolver->fnormtol);
   if (!checkFlag(flag, "KINSetFuncNormTol")) return NULL;
 
@@ -460,14 +460,16 @@ oms_status_enu_t oms::KinsolSolver::kinsolSolve(System& syst, DirectedGraph& gra
 /**
  * @brief Construct a new oms::AlgLoop::AlgLoop object
  *
- * @param method  Specifies used solver for the loop.
- *                Can be `oms_alg_solver_fixedpoint` for fixed-point-iteration
- *                or `oms_alg_solver_kinsol` for SUNDIALS KINSOL
- * @param absTol  Tolerance used for the algebraic solver.
- * @param scc     Strong Connected Componten, a vector of connected
+ * @param method             Specifies used solver for the loop. Can
+ *                           be `oms_alg_solver_fixedpoint` for
+ *                           fixed-point-iteration or
+ *                           `oms_alg_solver_kinsol` for SUNDIALS
+ *                           KINSOL
+ * @param relativeTolerance  Tolerance used for the algebraic solver.
+ * @param scc                Strong Connected Compontents of the loop
  * @param number
  */
-oms::AlgLoop::AlgLoop(oms_alg_solver_enu_t method, double absTol, scc_t scc, const int number, const bool useDirectionalDerivative): absoluteTolerance(absTol), SCC(scc), systNumber(number)
+oms::AlgLoop::AlgLoop(oms_alg_solver_enu_t method, double relativeTolerance, scc_t scc, const int number, const bool useDirectionalDerivative): relativeTolerance(relativeTolerance), SCC(scc), systNumber(number)
 {
   switch (method)
   {
@@ -482,7 +484,7 @@ oms::AlgLoop::AlgLoop(oms_alg_solver_enu_t method, double absTol, scc_t scc, con
 
   if (method == oms_alg_solver_kinsol)
   {
-    kinsolData = KinsolSolver::NewKinsolSolver(systNumber, SCC.connections.size(), absoluteTolerance, useDirectionalDerivative);
+    kinsolData = KinsolSolver::NewKinsolSolver(systNumber, SCC.connections.size(), relativeTolerance, useDirectionalDerivative);
     if (kinsolData==NULL)
     {
       logError("NewKinsolSolver() failed. Aborting!");
@@ -599,7 +601,7 @@ oms_status_enu_t oms::AlgLoop::fixPointIteration(System& syst, DirectedGraph& gr
       logInfo(ss.str());
     }
 
-  } while(maxRes > absoluteTolerance && it < maxIterations);
+  } while(maxRes > relativeTolerance && it < maxIterations);
 
   delete[] res;
 

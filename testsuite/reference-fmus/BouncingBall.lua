@@ -17,7 +17,7 @@ oms_addSubModel("model.root.BouncingBall", "../../resources/BouncingBall.fmu")
 
 oms_setResultFile("model", "BouncingBall-cs.mat")
 oms_setStopTime("model", 3.0)
-oms_setTolerance("model.root", 1e-5, 1e-5)
+oms_setTolerance("model.root", 1e-5)
 
 oms_instantiate("model")
 oms_initialize("model")
@@ -44,7 +44,7 @@ oms_addSubModel("model.root.BouncingBall", "../../resources/BouncingBall.fmu")
 
 oms_setResultFile("model", "BouncingBall-me.mat")
 oms_setStopTime("model", 3.0)
-oms_setTolerance("model.root", 1e-5, 1e-5)
+oms_setTolerance("model.root", 1e-5)
 
 oms_instantiate("model")
 oms_initialize("model")

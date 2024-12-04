@@ -107,22 +107,15 @@ static int OMSimulatorLua_oms_setTempDirectory(lua_State *L)
 
 static int OMSimulatorLua_oms_setTolerance(lua_State *L)
 {
-  if (lua_gettop(L) != 2 && lua_gettop(L) != 3)
-    return luaL_error(L, "expecting exactly 2 or 3 arguments");
+  if (lua_gettop(L) != 2)
+    return luaL_error(L, "expecting exactly 2 arguments");
   luaL_checktype(L, 1, LUA_TSTRING);
   luaL_checktype(L, 2, LUA_TNUMBER);
 
   const char* cref = lua_tostring(L, 1);
-  double absoluteTolerance = lua_tonumber(L, 2);
+  double relativeTolerance = lua_tonumber(L, 2);
 
-  oms_status_enu_t status;
-  if (lua_gettop(L) == 2)
-    status = oms_setTolerance(cref, absoluteTolerance, absoluteTolerance);
-  else
-  {
-    double relativeTolerance = lua_tonumber(L, 3);
-    status = oms_setTolerance(cref, absoluteTolerance, relativeTolerance);
-  }
+  oms_status_enu_t status = oms_setTolerance(cref, relativeTolerance);
 
   lua_pushinteger(L, status);
   return 1;

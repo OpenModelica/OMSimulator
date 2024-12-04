@@ -17,7 +17,7 @@ oms_addSubModel("model.root.Dahlquist", "../../resources/Dahlquist.fmu")
 
 oms_setResultFile("model", "Dahlquist-cs.mat")
 oms_setStopTime("model", 10.0)
-oms_setTolerance("model.root", 1e-5, 1e-5)
+oms_setTolerance("model.root", 1e-5)
 
 oms_instantiate("model")
 oms_initialize("model")
@@ -38,7 +38,7 @@ oms_addSubModel("model.root.Dahlquist", "../../resources/Dahlquist.fmu")
 
 oms_setResultFile("model", "Dahlquist-me.mat")
 oms_setStopTime("model", 10.0)
-oms_setTolerance("model.root", 1e-5, 1e-5)
+oms_setTolerance("model.root", 1e-5)
 
 oms_instantiate("model")
 oms_initialize("model")
