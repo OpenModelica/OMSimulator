@@ -100,7 +100,6 @@ oms_delete("model")
 --                   initialStepSize="0.000001"
 --                   minimumStepSize="0.000000"
 --                   maximumStepSize="0.001000"
---                   absoluteTolerance="0.000100"
 --                   relativeTolerance="0.000100" />
 --               </oms:SimulationInformation>
 --             </oms:Annotations>
