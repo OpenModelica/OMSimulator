@@ -193,7 +193,6 @@ oms_delete("varB")
 --                 <oms:FixedStepMaster
 --                   description="oms-ma"
 --                   stepSize="0.001000"
---                   absoluteTolerance="0.000100"
 --                   relativeTolerance="0.000100" />
 --               </oms:SimulationInformation>
 --             </oms:Annotations>
@@ -325,7 +324,6 @@ oms_delete("varB")
 --                 <oms:FixedStepMaster
 --                   description="oms-ma"
 --                   stepSize="0.001000"
---                   absoluteTolerance="0.000100"
 --                   relativeTolerance="0.000100" />
 --               </oms:SimulationInformation>
 --             </oms:Annotations>
@@ -457,7 +455,6 @@ oms_delete("varB")
 --                 <oms:FixedStepMaster
 --                   description="oms-ma"
 --                   stepSize="0.001000"
---                   absoluteTolerance="0.000100"
 --                   relativeTolerance="0.000100" />
 --               </oms:SimulationInformation>
 --             </oms:Annotations>

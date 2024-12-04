@@ -82,10 +82,10 @@ oms_delete("varB")
 -- info:    Activate Variant varB
 -- info:      varB.root.A.u      : -13.0
 -- info:      varB.root.A.k      : -100.0
--- info:    Reactivate Variant varB to varA
+-- info:    Reactivate Variant varB to varA 
 -- info:      varA.root.A.u      : -10.0
 -- info:      varA.root.A.k      : 10.0
--- info:    Reactivate Variant varA to model
+-- info:    Reactivate Variant varA to model 
 -- info:      model.root.A.u      : 0.0
 -- info:      model.root.A.k      : 10.0
 -- <?xml version="1.0"?>
@@ -180,7 +180,6 @@ oms_delete("varB")
 --                 <oms:FixedStepMaster
 --                   description="oms-ma"
 --                   stepSize="0.001000"
---                   absoluteTolerance="0.000100"
 --                   relativeTolerance="0.000100" />
 --               </oms:SimulationInformation>
 --             </oms:Annotations>
@@ -310,7 +309,6 @@ oms_delete("varB")
 --                 <oms:FixedStepMaster
 --                   description="oms-ma"
 --                   stepSize="0.001000"
---                   absoluteTolerance="0.000100"
 --                   relativeTolerance="0.000100" />
 --               </oms:SimulationInformation>
 --             </oms:Annotations>
@@ -440,7 +438,6 @@ oms_delete("varB")
 --                 <oms:FixedStepMaster
 --                   description="oms-ma"
 --                   stepSize="0.001000"
---                   absoluteTolerance="0.000100"
 --                   relativeTolerance="0.000100" />
 --               </oms:SimulationInformation>
 --             </oms:Annotations>
