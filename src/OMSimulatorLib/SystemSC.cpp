@@ -64,6 +64,8 @@ int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
     if (oms_status_ok != status) return status;
   }
 
+  system->restoreInputs(system->eventGraph, system->initial_guess);
+
   system->updateInputs(system->eventGraph);
 
   // get state derivatives
@@ -105,6 +107,8 @@ int oms::cvode_roots(realtype t, N_Vector y, realtype *gout, void *user_data)
     status = system->fmus[i]->setContinuousStates(system->states[i]);
     if (oms_status_ok != status) return status;
   }
+
+  system->restoreInputs(system->eventGraph, system->initial_guess);
 
   system->updateInputs(system->eventGraph);
 
@@ -610,6 +614,10 @@ oms_status_enu_t oms::SystemSC::doStepEuler(double stopTime)
     if(tnext < event_time)
       event_time = tnext;
 
+    std::vector<double> savedInputs;
+    saveInputs(simulationGraph, savedInputs);
+    saveInputs(eventGraph, initial_guess);
+
     step_size_adjustment *= 0.5; // reduce the step size in each iteration
 
     // a. Evaluate derivatives for each FMU
@@ -670,6 +678,7 @@ oms_status_enu_t oms::SystemSC::doStepEuler(double stopTime)
         }
 
         // emit the left limit of the event (if it hasn't already been emitted)
+        restoreInputs(simulationGraph, savedInputs);
         updateInputs(simulationGraph); //pass the continuousTimeMode dependency graph which involves only connections of type Real
         if (isTopLevelSystem())
           getModel().emit(time, false);
@@ -713,6 +722,7 @@ oms_status_enu_t oms::SystemSC::doStepEuler(double stopTime)
           if (fmi2OK != fmistatus) logError_FMUCall("fmi2_enterContinuousTimeMode", fmus[i]);
         }
         
+        restoreInputs(eventGraph, initial_guess);
         updateInputs(eventGraph);
         
         // emit the right limit of the event
@@ -803,6 +813,9 @@ oms_status_enu_t oms::SystemSC::doStepCVODE(double stopTime)
   //while (time < end_time)
   //{
     logDebug("CVode: " + std::to_string(time) + " -> " + std::to_string(end_time));
+
+    saveInputs(eventGraph, initial_guess);
+
     for (size_t j=0, k=0; j < fmus.size(); ++j)
       for (size_t i=0; i < nStates[j]; ++i, ++k)
         NV_Ith_S(solverData.cvode.y, k) = states[j][i];
@@ -841,6 +854,7 @@ oms_status_enu_t oms::SystemSC::doStepCVODE(double stopTime)
       if (oms_status_ok != status) return status;
     }
 
+    restoreInputs(eventGraph, initial_guess);
     updateInputs(eventGraph);
     if (isTopLevelSystem())
       getModel().emit(time, false);
@@ -854,6 +868,8 @@ oms_status_enu_t oms::SystemSC::doStepCVODE(double stopTime)
     if (flag == CV_ROOT_RETURN || tnext_is_event && time == tnext)
     {
       logDebug("event found!!! " + std::to_string(time));
+
+      saveInputs(eventGraph, initial_guess);
 
       // Enter event mode and handle discrete state updates for each FMU
       for (size_t i = 0; i < fmus.size(); ++i)
@@ -887,8 +903,10 @@ oms_status_enu_t oms::SystemSC::doStepCVODE(double stopTime)
 
       logDebug("tnext: " + std::to_string(tnext));
 
-      // emit the right limit of the event
+      restoreInputs(eventGraph, initial_guess);
       updateInputs(eventGraph);
+
+      // emit the right limit of the event
       if (isTopLevelSystem())
         getModel().emit(time, true);
 
@@ -1016,4 +1034,66 @@ oms_status_enu_t oms::SystemSC::updateInputs(DirectedGraph& graph)
     }
   }
   return oms_status_ok;
+}
+
+oms_status_enu_t oms::SystemSC::saveInputs(DirectedGraph& graph, std::vector<double>& saved_inputs)
+{
+    CallClock callClock(clock);
+    oms_status_enu_t status;
+    int loopNum = 0;
+
+    // input := output
+    const std::vector< scc_t >& sortedConnections = graph.getSortedConnections();
+    updateAlgebraicLoops(sortedConnections, graph);
+
+    saved_inputs.clear();
+
+    for (int i = 0; i < sortedConnections.size(); i++)
+    {
+        if (!sortedConnections[i].thisIsALoop)
+            continue;
+
+        for (std::pair<int, int> conn : sortedConnections[i].connections) {
+            int input = conn.second;
+
+            if (graph.getNodes()[input].getType() == oms_signal_type_real)
+            {
+                double value = 0.0;
+                if (oms_status_ok != getReal(graph.getNodes()[input].getName(), value)) return oms_status_error;
+
+                saved_inputs.push_back(value);
+            }
+        }
+    }
+
+    return oms_status_ok;
+}
+
+oms_status_enu_t oms::SystemSC::restoreInputs(DirectedGraph& graph, const std::vector<double>& saved_inputs)
+{
+    CallClock callClock(clock);
+    oms_status_enu_t status;
+
+    // input := output
+    const std::vector< scc_t >& sortedConnections = graph.getSortedConnections();
+
+    auto it = saved_inputs.cbegin();
+
+    for (int i = 0; i < sortedConnections.size(); i++)
+    {
+        if (!sortedConnections[i].thisIsALoop)
+            continue;
+
+        for (std::pair<int,int> conn : sortedConnections[i].connections) {
+            int input = conn.second;
+
+            if (graph.getNodes()[input].getType() == oms_signal_type_real)
+            {
+                double value = *it++;
+                if (oms_status_ok != setReal(graph.getNodes()[input].getName(), value)) return oms_status_error;
+            }
+        }
+    }
+
+    return oms_status_ok;
 }
