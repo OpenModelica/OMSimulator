@@ -141,7 +141,6 @@ print(src)
 --                   <oms:SimulationInformation>
 --                     <oms:VariableStepSolver
 --                       description="cvode"
---                       absoluteTolerance="0.0001"
 --                       relativeTolerance="0.0001"
 --                       minimumStepSize="1e-12"
 --                       maximumStepSize="0.001"
@@ -193,7 +192,6 @@ print(src)
 --                 <oms:FixedStepMaster
 --                   description="oms-ma"
 --                   stepSize="0.001000"
---                   absoluteTolerance="0.000100"
 --                   relativeTolerance="0.000100" />
 --               </oms:SimulationInformation>
 --             </oms:Annotations>
@@ -379,7 +377,6 @@ print(src)
 --                   <oms:SimulationInformation>
 --                     <oms:VariableStepSolver
 --                       description="cvode"
---                       absoluteTolerance="0.0001"
 --                       relativeTolerance="0.0001"
 --                       minimumStepSize="1e-12"
 --                       maximumStepSize="0.001"
@@ -431,7 +428,6 @@ print(src)
 --                 <oms:FixedStepMaster
 --                   description="oms-ma"
 --                   stepSize="0.001000"
---                   absoluteTolerance="0.000100"
 --                   relativeTolerance="0.000100" />
 --               </oms:SimulationInformation>
 --             </oms:Annotations>

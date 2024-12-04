@@ -15,7 +15,7 @@ oms_addSystem("model.root", oms_system_wc)
 oms_addSubModel("model.root.VanDerPol", "../../resources/VanDerPol.fmu")
 oms_setResultFile("model", "VanDerPol-cs.mat")
 oms_setStopTime("model", 20.0)
-oms_setTolerance("model.root", 1e-5, 1e-5)
+oms_setTolerance("model.root", 1e-5)
 oms_instantiate("model")
 oms_initialize("model")
 oms_simulate("model")
@@ -39,7 +39,7 @@ oms_addSystem("model.root", oms_system_sc)
 oms_addSubModel("model.root.VanDerPol", "../../resources/VanDerPol.fmu")
 oms_setResultFile("model", "VanDerPol-me.mat")
 oms_setStopTime("model", 20.0)
-oms_setTolerance("model.root", 1e-5, 1e-5)
+oms_setTolerance("model.root", 1e-5)
 oms_instantiate("model")
 oms_initialize("model")
 oms_simulate("model")
@@ -65,8 +65,8 @@ end
 -- info:    maximum step size for 'model.root': 0.001000
 -- info:    Result file: VanDerPol-me.mat (bufferSize=1)
 -- info:    Final Statistics for 'model.root':
---          NumSteps = 20005 NumRhsEvals  = 20010 NumLinSolvSetups = 1006
---          NumNonlinSolvIters = 20009 NumNonlinSolvConvFails = 0 NumErrTestFails = 1
+--          NumSteps = 20002 NumRhsEvals  = 20004 NumLinSolvSetups = 1002
+--          NumNonlinSolvIters = 20003 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
 -- signal x0 is equal
 -- signal x1 is equal
 -- endResult

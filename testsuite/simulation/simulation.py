@@ -94,7 +94,7 @@ printStatus(status, 0)
 ## test.co_sim.A.amplitude.y: 0
 ## status:  [correct] ok
 ## status:  [correct] ok
-## test.co_sim.A.amplitude.y: -4.89843e-16
+## test.co_sim.A.amplitude.y: -4.89859e-16
 ## status:  [correct] ok
 ## status:  [correct] ok
 ## endResult

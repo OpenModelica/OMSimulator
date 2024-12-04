@@ -8,31 +8,28 @@ Sets the tolerance for a given model or system.
 #LUA#
 .. code-block:: lua
 
-  status = oms_setTolerance(const char* cref, double tolerance)
-  status = oms_setTolerance(const char* cref, double absoluteTolerance, double relativeTolerance)
+  status = oms_setTolerance(const char* cref, double relativeTolerance)
 
 #END#
 
 #PYTHON#
 .. code-block:: python
 
-  status = oms.setTolerance(const char* cref, double tolerance)
-  status = oms.setTolerance(const char* cref, double absoluteTolerance, double relativeTolerance)
+  status = oms.setTolerance(const char* cref,  double relativeTolerance)
 
 #END#
 
 #CAPI#
 .. code-block:: c
 
-  oms_status_enu_t oms_setTolerance(const char* cref, double absoluteTolerance, double relativeTolerance);
+  oms_status_enu_t oms_setTolerance(const char* cref, double relativeTolerance);
 
 #END#
 
 #OMC#
 .. code-block:: modelica
 
-  status := oms_setTolerance(const char* cref, double tolerance);
-  status := oms_setTolerance(const char* cref, double absoluteTolerance, double relativeTolerance);
+  status := oms_setTolerance(const char* cref, double relativeTolerance);
 
 #END#
 
@@ -45,8 +42,8 @@ i.e. both calls do exactly the same:
 
 .. code-block:: c
 
-  oms_setTolerance("model", absoluteTolerance, relativeTolerance);
-  oms_setTolerance("model.root", absoluteTolerance, relativeTolerance);
+  oms_setTolerance("model", relativeTolerance);
+  oms_setTolerance("model.root", relativeTolerance);
 
 
 Component, e.g. FMUs, pick up the tolerances from there system. That means

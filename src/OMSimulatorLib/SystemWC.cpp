@@ -118,7 +118,6 @@ oms_status_enu_t oms::SystemWC::exportToSSD_SimulationInformation(pugi::xml_node
     node_solver.append_attribute("stepSize") = std::to_string(maximumStepSize).c_str();
   }
 
-  node_solver.append_attribute("absoluteTolerance") = std::to_string(absoluteTolerance).c_str();
   node_solver.append_attribute("relativeTolerance") = std::to_string(relativeTolerance).c_str();
 
   return oms_status_ok;
@@ -144,7 +143,6 @@ oms_status_enu_t oms::SystemWC::importFromSSD_SimulationInformation(const pugi::
       FixedStepMaster = "FixedStepMaster";
     }
     initialStepSize = minimumStepSize = maximumStepSize = node.child(FixedStepMaster).attribute("stepSize").as_double();
-    absoluteTolerance = node.child(FixedStepMaster).attribute("absoluteTolerance").as_double();
     relativeTolerance = node.child(FixedStepMaster).attribute("relativeTolerance").as_double();
   }
 
@@ -164,7 +162,6 @@ oms_status_enu_t oms::SystemWC::importFromSSD_SimulationInformation(const pugi::
     minimumStepSize = node.child(VariableStepMaster).attribute("minimumStepSize").as_double();
     maximumStepSize = node.child(VariableStepMaster).attribute("maximumStepSize").as_double();
     initialStepSize = node.child(VariableStepMaster).attribute("initialStepSize").as_double();
-    absoluteTolerance = node.child(VariableStepMaster).attribute("absoluteTolerance").as_double();
     relativeTolerance = node.child(VariableStepMaster).attribute("relativeTolerance").as_double();
   }
 
@@ -426,6 +423,7 @@ oms_status_enu_t oms::SystemWC::doStep()
       else
         error = fabs(outputVectEnd[n]-outputVect[n]);
 
+      double absoluteTolerance = relativeTolerance*1.0; //TODO: Use nominal values
       logDebug("DEBUGGING: Error is:"+std::to_string(error)+" and Scale factor is: "+std::to_string((fabs(outputVect[n])*relativeTolerance+absoluteTolerance)));
 
       normError = normError+pow(error/(fabs(outputVect[n])*relativeTolerance+absoluteTolerance),2);

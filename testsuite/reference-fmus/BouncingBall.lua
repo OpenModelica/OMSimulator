@@ -17,7 +17,7 @@ oms_addSubModel("model.root.BouncingBall", "../../resources/BouncingBall.fmu")
 
 oms_setResultFile("model", "BouncingBall-cs.mat")
 oms_setStopTime("model", 3.0)
-oms_setTolerance("model.root", 1e-5, 1e-5)
+oms_setTolerance("model.root", 1e-5)
 
 oms_instantiate("model")
 oms_initialize("model")
@@ -44,7 +44,7 @@ oms_addSubModel("model.root.BouncingBall", "../../resources/BouncingBall.fmu")
 
 oms_setResultFile("model", "BouncingBall-me.mat")
 oms_setStopTime("model", 3.0)
-oms_setTolerance("model.root", 1e-5, 1e-5)
+oms_setTolerance("model.root", 1e-5)
 
 oms_instantiate("model")
 oms_initialize("model")
@@ -71,8 +71,8 @@ end
 -- info:    maximum step size for 'model.root': 0.001000
 -- info:    Result file: BouncingBall-me.mat (bufferSize=1)
 -- info:    Final Statistics for 'model.root':
---          NumSteps = 502 NumRhsEvals  = 503 NumLinSolvSetups = 27
---          NumNonlinSolvIters = 502 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
+--          NumSteps = 503 NumRhsEvals  = 504 NumLinSolvSetups = 27
+--          NumNonlinSolvIters = 503 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
 -- signal h is equal
 -- signal v is equal
 -- endResult

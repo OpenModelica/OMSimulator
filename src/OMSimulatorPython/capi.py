@@ -386,8 +386,8 @@ class capi:
     return self.obj.oms_setString(signal.encode(), value.encode())
   def setTempDirectory(self, newTempDir):
     return self.obj.oms_setTempDirectory(newTempDir.encode())
-  def setTolerance(self, cref, absoluteTolerance, relativeTolerance):
-    return self.obj.oms_setTolerance(cref.encode(), absoluteTolerance, relativeTolerance)
+  def setTolerance(self, cref, relativeTolerance):
+    return self.obj.oms_setTolerance(cref.encode(), relativeTolerance)
   def setUnit(self, signal, value):
     return self.obj.oms_setUnit(signal.encode(), value.encode())
   def setVariableStepSize(self, cref, initialStepSize, minimumStepSize, maximumStepSize):

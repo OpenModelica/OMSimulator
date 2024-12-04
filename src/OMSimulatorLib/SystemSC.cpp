@@ -176,7 +176,6 @@ oms_status_enu_t oms::SystemSC::setSolverMethod(std::string solver)
 oms_status_enu_t oms::SystemSC::exportToSSD_SimulationInformation(pugi::xml_node& node) const
 {
   std::ostringstream ssAbsoluteTolerance, ssRelativeTolerance, ssMinimumStepSize, ssMaximumStepSize, ssInitialStepSize;
-  ssAbsoluteTolerance << absoluteTolerance;
   ssRelativeTolerance << relativeTolerance;
   ssMinimumStepSize << minimumStepSize;
   ssMaximumStepSize << maximumStepSize;
@@ -187,7 +186,6 @@ oms_status_enu_t oms::SystemSC::exportToSSD_SimulationInformation(pugi::xml_node
 
   pugi::xml_node node_solver = node_simulation_information.append_child(oms::ssp::Version1_0::VariableStepSolver);
   node_solver.append_attribute("description") = getSolverName().c_str();
-  node_solver.append_attribute("absoluteTolerance") = ssAbsoluteTolerance.str().c_str();
   node_solver.append_attribute("relativeTolerance") = ssRelativeTolerance.str().c_str();
   node_solver.append_attribute("minimumStepSize") = ssMinimumStepSize.str().c_str();
   node_solver.append_attribute("maximumStepSize") = ssMaximumStepSize.str().c_str();
@@ -216,7 +214,6 @@ oms_status_enu_t oms::SystemSC::importFromSSD_SimulationInformation(const pugi::
   if (oms_status_ok != setSolverMethod(solverName))
     return oms_status_error;
 
-  absoluteTolerance = node.child(VariableStepSolver).attribute("absoluteTolerance").as_double();
   relativeTolerance = node.child(VariableStepSolver).attribute("relativeTolerance").as_double();
   minimumStepSize = node.child(VariableStepSolver).attribute("minimumStepSize").as_double();
   maximumStepSize = node.child(VariableStepSolver).attribute("maximumStepSize").as_double();
@@ -349,7 +346,7 @@ oms_status_enu_t oms::SystemSC::initialize()
     if (!solverData.cvode.abstol) logError("SUNDIALS_ERROR: N_VNew_Serial() failed - returned NULL pointer");
     for (size_t j=0, k=0; j < fmus.size(); ++j)
       for (size_t i=0; i < nStates[j]; ++i, ++k)
-        NV_Ith_S(solverData.cvode.abstol, k) = 0.01*absoluteTolerance*states_nominal[j][i];
+        NV_Ith_S(solverData.cvode.abstol, k) = relativeTolerance*states_nominal[j][i];
     //N_VPrint_Serial(solverData.cvode.abstol);
 
     // Call CVodeCreate to create the solver memory and specify the

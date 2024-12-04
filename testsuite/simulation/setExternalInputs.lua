@@ -71,7 +71,7 @@ oms_delete("setExternalInputs")
 -- 			<ssc:Annotation type="org.openmodelica">
 -- 				<oms:Annotations>
 -- 					<oms:SimulationInformation>
--- 						<oms:FixedStepMaster description="oms-ma" stepSize="0.001000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+-- 						<oms:FixedStepMaster description="oms-ma" stepSize="0.001000" relativeTolerance="0.000100" />
 -- 					</oms:SimulationInformation>
 -- 				</oms:Annotations>
 -- 			</ssc:Annotation>

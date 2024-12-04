@@ -168,7 +168,6 @@ oms_delete("model")
 --                 <oms:FixedStepMaster
 --                   description="oms-ma"
 --                   stepSize="0.001000"
---                   absoluteTolerance="0.000100"
 --                   relativeTolerance="0.000100" />
 --               </oms:SimulationInformation>
 --             </oms:Annotations>
@@ -402,7 +401,6 @@ oms_delete("model")
 --                 <oms:FixedStepMaster
 --                   description="oms-ma"
 --                   stepSize="0.001000"
---                   absoluteTolerance="0.000100"
 --                   relativeTolerance="0.000100" />
 --               </oms:SimulationInformation>
 --             </oms:Annotations>
@@ -509,7 +507,7 @@ oms_delete("model")
 --     </oms:SignalFilter>
 --   </oms:file>
 -- </oms:snapshot>
--- 
+--
 -- info:    Result file: replaceSubmodel5.mat (bufferSize=1)
 -- info:    Initialize
 -- info:      model.root.A.u      : 10.0
