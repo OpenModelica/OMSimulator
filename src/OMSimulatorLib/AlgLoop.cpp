@@ -311,6 +311,7 @@ oms::KinsolSolver* oms::KinsolSolver::NewKinsolSolver(const int algLoopNum, cons
   logDebug("Create new KinsolSolver object for algebraic loop number " + std::to_string(algLoopNum));
 
   kinsolSolver->size = size;
+  kinsolSolver->firstSolution = true;
 
   /* Allocate memory */
   kinsolSolver->initialGuess = N_VNew_Serial(kinsolSolver->size);
@@ -448,6 +449,20 @@ oms_status_enu_t oms::KinsolSolver::kinsolSolve(System& syst, DirectedGraph& gra
   fNormValue = std::sqrt(N_VDotProd_Serial(initialGuess, initialGuess));
   tol = std::max(tol, fNormValue * freltol * tolerance / fnormtol);
 
+  /* Check residual for initial guess */
+  nlsKinsolResiduals(initialGuess, fTmp, user_data);
+  fNormValue = std::sqrt(N_VDotProd_Serial(fTmp, fTmp));
+  if (fNormValue > 0.0)
+    tol = std::min(fNormValue, tol); // We already know this is achievable, but let's get in at least one iteration
+  else
+    return oms_status_ok;
+
+  if (!firstSolution) {
+    // Predict a better initial guess
+    SUNLinSolSolve(linSol, J, y, fTmp, tol);
+    N_VLinearSum(1.0, initialGuess, -1.0, y, initialGuess);
+  }
+
   /* u and f scaling */
   // TODO: Add scaling that is not only constant ones
 
@@ -468,6 +483,11 @@ oms_status_enu_t oms::KinsolSolver::kinsolSolve(System& syst, DirectedGraph& gra
     logWarning("Solution of algebraic loop " + std::to_string(((KINSOL_USER_DATA *)user_data)->algLoopNumber) + "not within precission given by fnormtol: " + std::to_string(fnormtol));
     logDebug("2-norm of residual of solution: " + std::to_string(fNormValue));
     return oms_status_warning;
+  }
+
+  if (flag == KIN_SUCCESS) {
+    firstSolution = false;
+    KINSetNoInitSetup(kinsolMemory, SUNTRUE);
   }
 
   logDebug("Solved system " + std::to_string(kinsolUserData->algLoopNumber) + " successfully");

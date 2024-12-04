@@ -81,6 +81,8 @@ namespace oms
     N_Vector y;             /* Template for cloning vectors needed inside linear solver */
     SUNMatrix J;            /* (Non-)Sparse matrix template for cloning matrices needed within linear solver */
 
+    bool firstSolution;
+
     /* member function */
     static int nlsKinsolJac(N_Vector u, N_Vector fu, SUNMatrix J, void *user_data, N_Vector tmp1, N_Vector tmp2);
     static int nlsKinsolResiduals(N_Vector u, N_Vector fval, void *user_data);
