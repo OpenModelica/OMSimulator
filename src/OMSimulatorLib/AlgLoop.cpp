@@ -364,7 +364,7 @@ oms::KinsolSolver* oms::KinsolSolver::NewKinsolSolver(const int algLoopNum, cons
   if (!checkFlag(flag, "KINSetJacFn")) return NULL;
 
   /* Set function-norm stopping tolerance */
-  kinsolSolver->fnormtol = absoluteTolerance;
+  kinsolSolver->fnormtol = 0.01 * absoluteTolerance;
   flag = KINSetFuncNormTol(kinsolSolver->kinsolMemory, kinsolSolver->fnormtol);
   if (!checkFlag(flag, "KINSetFuncNormTol")) return NULL;
 
@@ -400,7 +400,7 @@ oms::KinsolSolver* oms::KinsolSolver::NewKinsolSolver(const int algLoopNum, cons
  *                            `oms_status_warning` if solving was computed, but solution is not within tolerance
  *                            and `oms_status_error` if an error occured.
  */
-oms_status_enu_t oms::KinsolSolver::kinsolSolve(System& syst, DirectedGraph& graph)
+oms_status_enu_t oms::KinsolSolver::kinsolSolve(System& syst, DirectedGraph& graph, double tolerance /*= 0.0*/)
 {
   /* Update user data */
   KINSOL_USER_DATA* kinsolUserData = (KINSOL_USER_DATA*) user_data;
@@ -413,7 +413,7 @@ oms_status_enu_t oms::KinsolSolver::kinsolSolve(System& syst, DirectedGraph& gra
   int flag;
   double fNormValue;
 
-  logDebug("Solving system " + std::to_string(kinsolUserData->algLoopNumber));
+  double tol = tolerance != 0.0 ? tolerance : fnormtol;
 
   if (SCC.connections.size() != size)
   {
@@ -435,6 +435,8 @@ oms_status_enu_t oms::KinsolSolver::kinsolSolve(System& syst, DirectedGraph& gra
   /* u and f scaling */
   // TODO: Add scaling that is not only constant ones
 
+  KINSetFuncNormTol(kinsolMemory, tol);
+
   /* Solve algebraic loop with KINSol() */
   flag = KINSol(kinsolMemory,   /* KINSol memory block */
                 initialGuess,   /* initial guess on input; solution vector */
@@ -444,9 +446,8 @@ oms_status_enu_t oms::KinsolSolver::kinsolSolve(System& syst, DirectedGraph& gra
   if (!checkFlag(flag, "KINSol")) return oms_status_error;
 
   /* Check solution */
-  flag = nlsKinsolResiduals(initialGuess, fTmp, user_data);
-  fNormValue = N_VWL2Norm(fTmp, fTmp);
-  if ( fNormValue > fnormtol )
+  KINGetFuncNorm(kinsolMemory, &fNormValue);
+  if ( fNormValue > tol )
   {
     logWarning("Solution of algebraic loop " + std::to_string(((KINSOL_USER_DATA *)user_data)->algLoopNumber) + "not within precission given by fnormtol: " + std::to_string(fnormtol));
     logDebug("2-norm of residual of solution: " + std::to_string(fNormValue));
@@ -501,7 +502,7 @@ oms::AlgLoop::AlgLoop(oms_alg_solver_enu_t method, double absTol, scc_t scc, con
  * @param graph               Reference to directed graph
  * @return oms_status_enu_t   Returns `oms_status_ok` on success
  */
-oms_status_enu_t oms::AlgLoop::solveAlgLoop(System& syst, DirectedGraph& graph)
+oms_status_enu_t oms::AlgLoop::solveAlgLoop(System& syst, DirectedGraph& graph, double tolerance)
 {
   logDebug("Solving algebraic loop formed by connections\n" + dumpLoopVars(graph));
   logDebug("Using solver " + getAlgSolverName());
@@ -509,9 +510,9 @@ oms_status_enu_t oms::AlgLoop::solveAlgLoop(System& syst, DirectedGraph& graph)
   switch (algSolverMethod)
   {
   case oms_alg_solver_fixedpoint:
-    return fixPointIteration(syst, graph);
+    return fixPointIteration(syst, graph, tolerance);
   case oms_alg_solver_kinsol:
-    return kinsolData->kinsolSolve(syst, graph);
+    return kinsolData->kinsolSolve(syst, graph, tolerance);
   default:
     logError("Invalid algebraic solver method!");
     return oms_status_error;
@@ -525,13 +526,16 @@ oms_status_enu_t oms::AlgLoop::solveAlgLoop(System& syst, DirectedGraph& graph)
  * @param graph
  * @return oms_status_enu_t
  */
-oms_status_enu_t oms::AlgLoop::fixPointIteration(System& syst, DirectedGraph& graph)
+oms_status_enu_t oms::AlgLoop::fixPointIteration(System& syst, DirectedGraph& graph, double tolerance)
 {
   const int size = SCC.connections.size();
   const int maxIterations = Flags::MaxLoopIteration();
   int it=0;
   double maxRes;
   double *res = new double[size]();
+
+  if (tolerance == 0.0 || tolerance > absoluteTolerance)
+    tolerance = absoluteTolerance;
 
   do
   {
@@ -641,7 +645,7 @@ oms_status_enu_t oms::AlgLoop::fixPointIteration(System& syst, DirectedGraph& gr
       logInfo(ss.str());
     }
 
-  } while(maxRes > absoluteTolerance && it < maxIterations);
+  } while(maxRes > tolerance && it < maxIterations);
 
   delete[] res;
 

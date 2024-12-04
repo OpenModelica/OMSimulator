@@ -63,7 +63,7 @@ namespace oms
     oms_status_enu_t doStep();
     oms_status_enu_t stepUntil(double stopTime);
 
-    oms_status_enu_t updateInputs(DirectedGraph& graph);
+    oms_status_enu_t updateInputs(DirectedGraph& graph, double tolerance = 0.0);
 
     std::string getSolverName() const;
     oms_status_enu_t setSolverMethod(std::string);
@@ -107,6 +107,7 @@ namespace oms
       SUNMatrix J;            /* Matrix used by linear solver */
       N_Vector liny;          /* Vector used by linear solver */
       N_Vector abstol;
+      N_Vector ewt;
     };
 
     union SolverData_t

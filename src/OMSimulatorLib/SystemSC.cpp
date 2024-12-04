@@ -44,27 +44,55 @@
 
 int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
+  static const double U = sqrt(DBL_EPSILON);
+
   SystemSC* system = (SystemSC*)user_data;
   oms_status_enu_t status;
   fmi2Status fmistatus;
 
+  // smallest step made by the difference quotient Jacobian evaluation
+  double sigmaMin = 0.0;
+  double fnorm = 0.0;
+
+  double h = 0.0;
+  CVodeGetCurrentStep(system->solverData.cvode.mem, &h);
+
+  size_t maxStates = system->nStates.empty() ? 0 : *std::max_element(system->nStates.begin(), system->nStates.end());
+  std::unique_ptr<double> vs(new double[maxStates]);
+  double* values = vs.get();
+
   // update states in FMUs
-  for (size_t i=0, j=0; i < system->fmus.size(); ++i)
+  size_t j = 0;
+  for (size_t i=0; i < system->fmus.size(); ++i)
   {
     system->fmus[i]->setTime(t);
 
     if (0 == system->nStates[i])
       continue;
 
-    for (size_t k = 0; k < system->nStates[i]; k++, j++)
-      system->states[i][k] = NV_Ith_S(y, j);
+    for (size_t k = 0; k < system->nStates[i]; k++, j++) {
+      values[k] = NV_Ith_S(y, j);
+
+      double w = NV_Ith_S(system->solverData.cvode.ewt, j);
+      double f = system->states_der[i][k] * w;
+      fnorm += f * f;
+
+      // smallest possible difference quotient step size used by CVODE
+      double s = 1.0 / w;
+      if (sigmaMin == 0.0 || s < sigmaMin)
+        sigmaMin = s;
+    }
 
     // set states
-    status = system->fmus[i]->setContinuousStates(system->states[i]);
+    status = system->fmus[i]->setContinuousStates(values);
     if (oms_status_ok != status) return status;
   }
 
-  system->updateInputs(system->eventGraph);
+  if (fnorm > 0.0 && h > 0.0)
+    sigmaMin *= 1000.0 * DBL_EPSILON * h * j * sqrt(fnorm);
+
+  // Solve loops to a sufficient precision for Jacobian calculation
+  system->updateInputs(system->eventGraph, 8 * sigmaMin);
 
   // get state derivatives
   for (size_t j=0, k=0; j < system->fmus.size(); ++j)
@@ -73,11 +101,11 @@ int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
       continue;
 
     // get state derivatives
-    status = system->fmus[j]->getDerivatives(system->states_der[j]);
+    status = system->fmus[j]->getDerivatives(values);
     if (oms_status_ok != status) return status;
 
     for (size_t i=0; i < system->nStates[j]; ++i, ++k)
-      NV_Ith_S(ydot, k) = system->states_der[j][i];
+      NV_Ith_S(ydot, k) = values[i];
   }
 
   return 0;
@@ -347,9 +375,15 @@ oms_status_enu_t oms::SystemSC::initialize()
 
     solverData.cvode.abstol = N_VNew_Serial(static_cast<long>(n_states));
     if (!solverData.cvode.abstol) logError("SUNDIALS_ERROR: N_VNew_Serial() failed - returned NULL pointer");
-    for (size_t j=0, k=0; j < fmus.size(); ++j)
-      for (size_t i=0; i < nStates[j]; ++i, ++k)
-        NV_Ith_S(solverData.cvode.abstol, k) = 0.01*absoluteTolerance*states_nominal[j][i];
+    solverData.cvode.ewt = N_VNew_Serial(static_cast<long>(n_states));
+    if (!solverData.cvode.ewt) logError("SUNDIALS_ERROR: N_VClone() failed - returned NULL pointer");
+    for (size_t j=0, k=0; j < fmus.size(); ++j) {
+      for (size_t i=0; i < nStates[j]; ++i, ++k) {
+        double abstol = absoluteTolerance * states_nominal[j][i];
+        NV_Ith_S(solverData.cvode.abstol, k) = abstol;
+        NV_Ith_S(solverData.cvode.ewt, k) = 1.0 / (relativeTolerance * fabs(states[j][i]) + abstol);
+      }
+    }
     //N_VPrint_Serial(solverData.cvode.abstol);
 
     // Call CVodeCreate to create the solver memory and specify the
@@ -455,6 +489,7 @@ oms_status_enu_t oms::SystemSC::terminate()
     SUNLinSolFree(solverData.cvode.linSol);
     N_VDestroy_Serial(solverData.cvode.y);
     N_VDestroy_Serial(solverData.cvode.abstol);
+    N_VDestroy_Serial(solverData.cvode.ewt);
     CVodeFree(&(solverData.cvode.mem));
     solverData.cvode.mem = NULL;
   }
@@ -824,6 +859,8 @@ oms_status_enu_t oms::SystemSC::doStepCVODE(double stopTime)
 
     time = cvode_time;
 
+    CVodeGetErrWeights(solverData.cvode.mem, solverData.cvode.ewt);
+
     // set time
     for (const auto& component : getComponents())
       component.second->setTime(time);
@@ -847,6 +884,12 @@ oms_status_enu_t oms::SystemSC::doStepCVODE(double stopTime)
     
     for (size_t i = 0; i < fmus.size(); ++i)
     {
+      if (nStates[i] > 0)
+      {
+        status = fmus[i]->getDerivatives(states_der[i]);
+        if (oms_status_ok != status) return status;
+      }
+      
       fmistatus = fmi2_completedIntegratorStep(fmus[i]->getFMU(), fmi2True, &callEventUpdate[i], &terminateSimulation[i]);
       if (fmi2OK != fmistatus) return logError_FMUCall("fmi2_completedIntegratorStep", fmus[i]);
     }
@@ -898,6 +941,8 @@ oms_status_enu_t oms::SystemSC::doStepCVODE(double stopTime)
           continue;
 
         status = fmus[i]->getContinuousStates(states[i]);
+        if (oms_status_ok != status) return status;
+        status = fmus[i]->getDerivatives(states_der[i]);
         if (oms_status_ok != status) return status;
       }
 
@@ -958,7 +1003,7 @@ oms_status_enu_t oms::SystemSC::stepUntil(double stopTime)
   return status;
 }
 
-oms_status_enu_t oms::SystemSC::updateInputs(DirectedGraph& graph)
+oms_status_enu_t oms::SystemSC::updateInputs(DirectedGraph& graph, double tolerance)
 {
   CallClock callClock(clock);
   oms_status_enu_t status;
@@ -1006,7 +1051,7 @@ oms_status_enu_t oms::SystemSC::updateInputs(DirectedGraph& graph)
     }
     else
     {
-      status = solveAlgLoop(graph, loopNum);
+      status = solveAlgLoop(graph, loopNum, tolerance);
       if (oms_status_ok != status)
       {
         forceLoopsToBeUpdated();

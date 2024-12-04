@@ -3110,9 +3110,9 @@ oms_status_enu_t oms::System::updateAlgebraicLoops(const std::vector<scc_t>& sor
 }
 
 
-oms_status_enu_t oms::System::solveAlgLoop(DirectedGraph& graph, int loopNumber)
+oms_status_enu_t oms::System::solveAlgLoop(DirectedGraph& graph, int loopNumber, double tolerance)
 {
-  return algLoops[loopNumber].solveAlgLoop(*this, graph);
+  return algLoops[loopNumber].solveAlgLoop(*this, graph, tolerance);
 }
 
 oms_status_enu_t oms::System::rename(const oms::ComRef& newCref)
