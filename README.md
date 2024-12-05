@@ -33,6 +33,10 @@ The plot above shows the recent coverage report for the **Modelica 4.0.0** libra
 
 > **Note**: Issues may be related to OMSimulator itself or the FMI export process in OpenModelica.
 
+## Build Instructions
+
+To compile the project, please follow the steps outlined in the [BUILD.md](BUILD.md) file.
+
 ## License
 
 This project is licensed under the OSMC Public License. See [OSMC-License.txt](OSMC-License.txt) for details.
