@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
   {
     if (!arg.empty())
       arg += " ";
-    arg += argv[i];
+    arg += "\"" + std::string(argv[i]) + "\"";
   }
 
   if (oms_status_ok != oms_setCommandLineOption(arg.c_str()))

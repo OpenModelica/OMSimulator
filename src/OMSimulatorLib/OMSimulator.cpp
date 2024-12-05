@@ -915,21 +915,109 @@ static int do_simulation(std::string model, std::chrono::duration<double> timeou
   return 0;
 }
 
+
+oms_status_enu_t oms_extractFMIKind(const char* filename, oms_fmi_kind_enu_t* kind, oms_fmu_default_experiment_settings* defaultExperiment, std::string& modelName)
+{
+  if (!kind)
+    return logError("Invalid argument \"kind=NULL\"");
+  if (!defaultExperiment)
+    return logError("Invalid argument \"defaultExperiment=NULL\"");
+
+  const char* modelDescription = ::miniunz_onefile_to_memory(filename, "modelDescription.xml");
+  if (!modelDescription)
+    return logError("failed to extract \"modelDescription.xml\" from \"" + std::string(filename) + "\"");
+
+  oms::Snapshot snapshot;
+  oms_status_enu_t status = snapshot.importResourceMemory("modelDescription.xml", modelDescription);
+  ::miniunz_free(modelDescription);
+  if (oms_status_ok != status)
+    return logError("Failed to import");
+  const pugi::xml_node node = snapshot.getResourceNode("modelDescription.xml");
+
+  bool cs = (std::string(node.child("CoSimulation").attribute("modelIdentifier").as_string()) != "");
+  bool me = (std::string(node.child("ModelExchange").attribute("modelIdentifier").as_string()) != "");
+
+  if (me && cs)
+    *kind = oms_fmi_kind_me_and_cs;
+  else if (me)
+    *kind = oms_fmi_kind_me;
+  else if (cs)
+    *kind = oms_fmi_kind_cs;
+  else
+  {
+    *kind = oms_fmi_kind_unknown;
+    return oms_status_error;
+  }
+
+  // set default values
+  defaultExperiment->startTime = atof(oms::Flags::GetInstance().FlagStartTime.defaultValue.c_str());
+  defaultExperiment->stopTime = atof(oms::Flags::GetInstance().FlagStopTime.defaultValue.c_str());
+  defaultExperiment->tolerance = atof(oms::Flags::GetInstance().FlagTolerance.defaultValue.c_str());
+  defaultExperiment->stepSize = atof(oms::Flags::GetInstance().FlagStepSize.defaultValue.c_str());
+
+  // get default experiment settings if exists
+  if (node.child("DefaultExperiment"))
+  {
+    if (node.child("DefaultExperiment").attribute("startTime").as_string() != "")
+      defaultExperiment->startTime = node.child("DefaultExperiment").attribute("startTime").as_double();
+    if (node.child("DefaultExperiment").attribute("stopTime").as_string() != "")
+      defaultExperiment->stopTime = node.child("DefaultExperiment").attribute("stopTime").as_double();
+    if (node.child("DefaultExperiment").attribute("tolerance").as_string() != "")
+      defaultExperiment->tolerance = node.child("DefaultExperiment").attribute("tolerance").as_double();
+    if (node.child("DefaultExperiment").attribute("stepSize").as_string() != "")
+      defaultExperiment->stepSize = node.child("DefaultExperiment").attribute("stepSize").as_double();
+  }
+
+  // override with command line arguments
+  if (oms::Flags::GetInstance().FlagStartTime.explicitlySet)
+    defaultExperiment->startTime = oms::Flags::StartTime();
+  if (oms::Flags::GetInstance().FlagStopTime.explicitlySet)
+    defaultExperiment->stopTime = oms::Flags::StopTime();
+  if (oms::Flags::GetInstance().FlagTolerance.explicitlySet)
+    defaultExperiment->tolerance = oms::Flags::Tolerance();
+  if (oms::Flags::GetInstance().FlagStepSize.explicitlySet)
+    defaultExperiment->stepSize = oms::Flags::MaximumStepSize();
+
+  modelName = node.attribute("modelName").as_string();
+
+  return oms_status_ok;
+}
+
 oms_status_enu_t SimulateSingleFMU(const filesystem::path& path)
 {
   oms_status_enu_t status;
-  std::string modelName("model");
+
+  oms_fmi_kind_enu_t kind;
+  oms_fmu_default_experiment_settings defaultExperiment;
+  std::string modelName;
+  status = oms_extractFMIKind(path.string().c_str(), &kind, &defaultExperiment, modelName);
+  if (oms_status_ok != status) return logError("oms_extractFMIKind failed");
+
+  if (!oms::ComRef::isValidIdent(modelName))
+  {
+    modelName = "model";
+    if (modelName.find_last_of('.') != std::string::npos)
+    {
+      std::string tail = modelName.substr(modelName.find_last_of('.') + 1);
+      if (oms::ComRef::isValidIdent(tail))
+        modelName = tail;
+    }
+  }
+
+  std::string kind_str;
+  if (kind == oms_fmi_kind_me)
+    kind_str = "model exchange";
+  else if (kind == oms_fmi_kind_cs)
+    kind_str = "co-simulation";
+  else if (kind == oms_fmi_kind_me_and_cs && oms::Flags::DefaultModeIsCS())
+    kind_str = "co-simulation";
+  else if (kind == oms_fmi_kind_me_and_cs && !oms::Flags::DefaultModeIsCS())
+    kind_str = "model-exchange";
+  else
+    return logError("Invalid FMI kind");
+
   std::string systemName = modelName + ".root";
   std::string fmuName = systemName + (oms::ComRef::isValidIdent(path.stem().string()) ? ("." + path.stem().string()) : ".fmu");
-  oms_fmi_kind_enu_t kind;
-
-  /* intialize the defaultExperiment with defaults set in Flags.cpp setDefaults() or
-    * values provided from user from commandLine (e.g) OMSimulator A.fmu --stopTime=10 --stepSize=10
-  */
-  oms_fmu_default_experiment_settings defaultExperiment = {oms::Flags::StartTime(), oms::Flags::StopTime(), oms::Flags::Tolerance(), oms::Flags::MaximumStepSize()};
-
-  status = oms_extractFMIKind(path.string().c_str(), &kind, &defaultExperiment);
-  if (oms_status_ok != status) return logError("oms_extractFMIKind failed");
 
   status = oms_newModel(modelName.c_str());
   if (oms_status_ok != status) return logError("oms_newModel failed");
@@ -967,6 +1055,18 @@ oms_status_enu_t SimulateSingleFMU(const filesystem::path& path)
   else
     status = oms_setSolver(systemName.c_str(), (kind == oms_fmi_kind_cs) ? oms::Flags::MasterAlgorithm() : oms::Flags::Solver());
   if(oms_status_ok != status) return logError("oms_setSolver failed");
+
+  // logInfo a summary of the simulation settings
+  std::string infoString;
+  infoString = "*** FMU Simulation Info ***\n";
+  infoString += " - model:     " + modelName + " (" + kind_str + ")\n";
+  if (!oms::Flags::SuppressPath())
+    infoString += " - path:      " + path.string() + "\n";
+  infoString += " - startTime: " + std::to_string(defaultExperiment.startTime) + "\n";
+  infoString += " - stopTime:  " + std::to_string(defaultExperiment.stopTime) + "\n";
+  infoString += " - tolerance: " + std::to_string(defaultExperiment.tolerance) + "\n";
+  infoString += " - stepSize:  " + std::to_string(defaultExperiment.stepSize) + "\n";
+  logInfo(infoString);
 
   status = oms_instantiate(modelName.c_str());
   if(oms_status_ok != status) return logError("oms_instantiate failed");
@@ -1557,71 +1657,6 @@ const char* oms_getVersion()
 oms_status_enu_t oms_getWorkingDirectory(char** workingDir)
 {
   *workingDir = (char*)oms::Scope::GetInstance().getWorkingDirectory().c_str();
-  return oms_status_ok;
-}
-
-oms_status_enu_t oms_extractFMIKind(const char* filename, oms_fmi_kind_enu_t* kind, oms_fmu_default_experiment_settings* defaultExperiment)
-{
-  if (!kind)
-    return logError("Invalid argument \"kind=NULL\"");
-
-  const char* modelDescription = ::miniunz_onefile_to_memory(filename, "modelDescription.xml");
-  if (!modelDescription)
-    return logError("failed to extract \"modelDescription.xml\" from \"" + std::string(filename) + "\"");
-
-  oms::Snapshot snapshot;
-  oms_status_enu_t status = snapshot.importResourceMemory("modelDescription.xml", modelDescription);
-  ::miniunz_free(modelDescription);
-  if (oms_status_ok != status)
-    return logError("Failed to import");
-  const pugi::xml_node node = snapshot.getResourceNode("modelDescription.xml");
-
-  bool cs = (std::string(node.child("CoSimulation").attribute("modelIdentifier").as_string()) != "");
-  bool me = (std::string(node.child("ModelExchange").attribute("modelIdentifier").as_string()) != "");
-
-  if (me && cs)
-    *kind = oms_fmi_kind_me_and_cs;
-  else if (me)
-    *kind = oms_fmi_kind_me;
-  else if (cs)
-    *kind = oms_fmi_kind_cs;
-  else
-  {
-    *kind = oms_fmi_kind_unknown;
-    return oms_status_error;
-  }
-
-  // get default experiment settings if exists
-  if (node.child("DefaultExperiment"))
-  {
-    /* give priority for values provided from command line,
-     * if the user overrides those variables then we should take those values
-     * and not the default values from <DefaultExperiment> in modeldescription.xml
-    */
-    if (defaultExperiment->startTime == 0.0)
-    {
-      if (node.child("DefaultExperiment").attribute("startTime").as_string() != "")
-        defaultExperiment->startTime = node.child("DefaultExperiment").attribute("startTime").as_double();
-    }
-    if (defaultExperiment->stopTime == 1.0)
-    {
-      if (node.child("DefaultExperiment").attribute("stopTime").as_string() != "")
-        defaultExperiment->stopTime = node.child("DefaultExperiment").attribute("stopTime").as_double();
-    }
-    if (defaultExperiment->tolerance == 1e-4)
-    {
-      if (node.child("DefaultExperiment").attribute("tolerance").as_string() != "")
-        defaultExperiment->tolerance = node.child("DefaultExperiment").attribute("tolerance").as_double();
-    }
-    if (defaultExperiment->stepSize == 1e-3) // maximumStepSize
-    {
-      if (node.child("DefaultExperiment").attribute("stepSize").as_string() != "")
-        defaultExperiment->stepSize = node.child("DefaultExperiment").attribute("stepSize").as_double();
-      else
-        defaultExperiment->stepSize = (defaultExperiment->stopTime - defaultExperiment->startTime) / 500;
-    }
-  }
-
   return oms_status_ok;
 }
 
