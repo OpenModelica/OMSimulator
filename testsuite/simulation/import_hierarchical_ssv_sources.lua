@@ -58,6 +58,9 @@ oms_delete("import_hierarchical_ssv_sources")
 -- info:      import_hierarchical_ssv_sources.root.System2.parameter_1 : -40.0
 -- info:      import_hierarchical_ssv_sources.root.System3.Input_1     : -70.0
 -- info:      import_hierarchical_ssv_sources.root.System3.parameter_1 : -70.0
+-- info:    maximum step size for 'import_hierarchical_ssv_sources.root.System3': 0.100000
+-- info:    maximum step size for 'import_hierarchical_ssv_sources.root.System2': 0.100000
+-- info:    maximum step size for 'import_hierarchical_ssv_sources.root.System1': 0.100000
 -- info:    Result file: import_hierarchical_ssv_sources_res.mat (bufferSize=10)
 -- info:    Initialization
 -- info:      import_hierarchical_ssv_sources.root.System1.Input_1     : -10.0
@@ -75,4 +78,13 @@ oms_delete("import_hierarchical_ssv_sources")
 -- info:      import_hierarchical_ssv_sources.root.System2.parameter_1 : -40.0
 -- info:      import_hierarchical_ssv_sources.root.System3.Input_1     : -70.0
 -- info:      import_hierarchical_ssv_sources.root.System3.parameter_1 : -70.0
+-- info:    Final Statistics for 'import_hierarchical_ssv_sources.root.System3':
+--          NumSteps = 11 NumRhsEvals  = 12 NumLinSolvSetups = 2
+--          NumNonlinSolvIters = 11 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
+-- info:    Final Statistics for 'import_hierarchical_ssv_sources.root.System2':
+--          NumSteps = 11 NumRhsEvals  = 12 NumLinSolvSetups = 2
+--          NumNonlinSolvIters = 11 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
+-- info:    Final Statistics for 'import_hierarchical_ssv_sources.root.System1':
+--          NumSteps = 11 NumRhsEvals  = 12 NumLinSolvSetups = 2
+--          NumNonlinSolvIters = 11 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
 -- endResult

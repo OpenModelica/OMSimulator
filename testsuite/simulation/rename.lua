@@ -177,6 +177,7 @@ print("info:      model.root_1.add_1.u2           : " .. oms_getReal("model.root
 -- error:   [rename] failed for "model.root_1.System1" as the identifier could not be resolved to a system or subsystem or component
 -- error:   [rename] failed for "model.root_1.add" as the identifier could not be resolved to a system or subsystem or component
 -- info:    model doesn't contain any continuous state
+-- info:    maximum step size for 'model.root_1.System_2': 0.001000
 -- info:    Result file: model_res.mat (bufferSize=10)
 -- <?xml version="1.0"?>
 -- <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="model" version="1.0">
@@ -232,7 +233,7 @@ print("info:      model.root_1.add_1.u2           : " .. oms_getReal("model.root
 -- 					<ssc:Annotation type="org.openmodelica">
 -- 						<oms:Annotations>
 -- 							<oms:SimulationInformation>
--- 								<oms:VariableStepSolver description="euler" relativeTolerance="0.0001" minimumStepSize="1e-12" maximumStepSize="0.001" initialStepSize="1e-06" />
+-- 								<oms:VariableStepSolver description="cvode" relativeTolerance="0.0001" minimumStepSize="1e-12" maximumStepSize="0.001" initialStepSize="1e-06" />
 -- 							</oms:SimulationInformation>
 -- 						</oms:Annotations>
 -- 					</ssc:Annotation>
@@ -293,6 +294,9 @@ print("info:      model.root_1.add_1.u2           : " .. oms_getReal("model.root
 -- info:      model.root_1.System_2.input1    : 10.0
 -- info:      model.root_1.add_1.u1           : 10.0
 -- info:      model.root_1.add_1.u2           : 0.0
+-- info:    Final Statistics for 'model.root_1.System_2':
+--          NumSteps = 0 NumRhsEvals  = 0 NumLinSolvSetups = 0
+--          NumNonlinSolvIters = 0 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
 -- info:    0 warnings
 -- info:    6 errors
 -- endResult

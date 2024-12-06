@@ -73,6 +73,7 @@ oms_delete("model")
 -- info:    Feedthrough.Float64_discrete_output: 4.2
 -- info:    Feedthrough.Int32_output: 5
 -- info:    model doesn't contain any continuous state
+-- info:    maximum step size for 'model.root': 0.001000
 -- info:    Result file: Feedthrough-me.mat (bufferSize=1)
 -- info:    Parameter model.root.Feedthrough.String_parameter will not be stored in the result file, because the signal type is not supported
 -- info:    Feedthrough.Boolean_output: 1
@@ -80,4 +81,7 @@ oms_delete("model")
 -- info:    Feedthrough.Float64_continuous_output: 3.1
 -- info:    Feedthrough.Float64_discrete_output: 4.2
 -- info:    Feedthrough.Int32_output: 5
+-- info:    Final Statistics for 'model.root':
+--          NumSteps = 10001 NumRhsEvals  = 10002 NumLinSolvSetups = 501
+--          NumNonlinSolvIters = 10001 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
 -- endResult

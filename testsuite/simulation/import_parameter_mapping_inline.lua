@@ -268,6 +268,8 @@ oms_delete("import_parameter_mapping")
 -- info:      import_parameter_mapping.co_sim.System2.Input_2      : 70.0
 -- info:      import_parameter_mapping.co_sim.System2.parameter_1  : 70.0
 -- info:      import_parameter_mapping.co_sim.System2.parameter_2  : 70.0
+-- info:    maximum step size for 'import_parameter_mapping.co_sim.System2': 0.100000
+-- info:    maximum step size for 'import_parameter_mapping.co_sim.System1': 0.100000
 -- info:    Result file: import_parameter_mapping_res.mat (bufferSize=10)
 -- info:    Initialization
 -- info:      import_parameter_mapping.co_sim.Input_1              : 20.0
@@ -297,4 +299,10 @@ oms_delete("import_parameter_mapping")
 -- info:      import_parameter_mapping.co_sim.System2.Input_2      : 70.0
 -- info:      import_parameter_mapping.co_sim.System2.parameter_1  : 70.0
 -- info:      import_parameter_mapping.co_sim.System2.parameter_2  : 70.0
+-- info:    Final Statistics for 'import_parameter_mapping.co_sim.System2':
+--          NumSteps = 11 NumRhsEvals  = 12 NumLinSolvSetups = 2
+--          NumNonlinSolvIters = 11 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
+-- info:    Final Statistics for 'import_parameter_mapping.co_sim.System1':
+--          NumSteps = 11 NumRhsEvals  = 12 NumLinSolvSetups = 2
+--          NumNonlinSolvIters = 11 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
 -- endResult

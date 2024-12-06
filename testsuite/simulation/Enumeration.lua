@@ -45,6 +45,7 @@ oms_delete("Enumeration")
 -- info:    Instantiation
 -- info:      Enumeration.root.A.y     : 2
 -- info:      Enumeration.root.B.u     : 1
+-- info:    maximum step size for 'Enumeration.root': 0.001000
 -- info:    Result file: Enumeration_res.mat (bufferSize=10)
 -- info:    Initialization
 -- info:      Enumeration.root.A.y     : 2
@@ -52,4 +53,7 @@ oms_delete("Enumeration")
 -- info:    Simulation
 -- info:      Enumeration.root.A.y     : 2
 -- info:      Enumeration.root.B.u     : 2
+-- info:    Final Statistics for 'Enumeration.root':
+--          NumSteps = 1001 NumRhsEvals  = 1002 NumLinSolvSetups = 51
+--          NumNonlinSolvIters = 1001 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
 -- endResult

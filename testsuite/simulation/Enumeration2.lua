@@ -44,6 +44,7 @@ oms_delete("test")
 -- info:    Instantiation
 -- info:      test.root.A.y     : 2
 -- info:      test.root.B.u     : 1
+-- info:    maximum step size for 'test.root': 0.001000
 -- info:    Result file: enumeration2.mat (bufferSize=1)
 -- info:    Initialization
 -- info:      test.root.A.y     : 2
@@ -51,4 +52,7 @@ oms_delete("test")
 -- info:    Simulation
 -- info:      test.root.A.y     : 2
 -- info:      test.root.B.u     : 2
+-- info:    Final Statistics for 'test.root':
+--          NumSteps = 1001 NumRhsEvals  = 1002 NumLinSolvSetups = 51
+--          NumNonlinSolvIters = 1001 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
 -- endResult

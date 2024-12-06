@@ -165,10 +165,10 @@ oms_delete("import_export_parameters")
 --                   <oms:SimulationInformation>
 --                     <oms:VariableStepSolver
 --                       description="cvode"
---                       relativeTolerance="0.000100"
---                       minimumStepSize="0.000100"
---                       maximumStepSize="0.100000"
---                       initialStepSize="0.000100" />
+--                       relativeTolerance="0.0001"
+--                       minimumStepSize="0.0001"
+--                       maximumStepSize="0.1"
+--                       initialStepSize="0.0001" />
 --                   </oms:SimulationInformation>
 --                 </oms:Annotations>
 --               </ssc:Annotation>
@@ -524,6 +524,7 @@ oms_delete("import_export_parameters")
 -- info:      import_export_parameters.co_sim.k_cref      : 30.0
 -- info:      import_export_parameters.co_sim.Output_cref : 0.0
 -- info:      import_export_parameters.co_sim.foo.F_cref  : -55.0
+-- info:    maximum step size for 'import_export_parameters.co_sim.foo': 0.100000
 -- info:    Result file: import_export_parameters1.mat (bufferSize=100)
 -- info:    Initialization
 -- info:      import_export_parameters.co_sim.addP.k1     : 30.0
@@ -553,4 +554,7 @@ oms_delete("import_export_parameters")
 -- info:      import_export_parameters.co_sim.k_cref      : 30.0
 -- info:      import_export_parameters.co_sim.Output_cref : -111.0
 -- info:      import_export_parameters.co_sim.foo.F_cref  : -55.0
+-- info:    Final Statistics for 'import_export_parameters.co_sim.foo':
+--          NumSteps = 41 NumRhsEvals  = 42 NumLinSolvSetups = 3
+--          NumNonlinSolvIters = 41 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
 -- endResult
