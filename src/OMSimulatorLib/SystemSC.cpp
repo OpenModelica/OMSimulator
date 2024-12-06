@@ -83,7 +83,13 @@ int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
 
 int oms::cvode_rhs_algebraic(realtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
+  SystemSC* system = (SystemSC*)user_data;
+
+  for (size_t i=0, j=0; i < system->fmus.size(); ++i)
+    system->fmus[i]->setTime(t);
+
   NV_Ith_S(ydot, 0) = 0.0;
+
   return 0;
 }
 
