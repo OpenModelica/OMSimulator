@@ -332,7 +332,6 @@ oms_status_enu_t oms::SystemSC::initialize()
     if (algebraic)
       n_states = 1;
 
-
     solverData.cvode.y = N_VNew_Serial(static_cast<long>(n_states));
     if (!solverData.cvode.y) logError("SUNDIALS_ERROR: N_VNew_Serial() failed - returned NULL pointer");
 
