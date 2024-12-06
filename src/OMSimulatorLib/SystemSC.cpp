@@ -49,33 +49,26 @@ int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
   fmi2Status fmistatus;
 
   // update states in FMUs
-  for (size_t i=0, j=0; i < system->fmus.size(); ++i)
+  for (size_t i=0, j_y=0, j_ydot=0; i < system->fmus.size(); ++i)
   {
     system->fmus[i]->setTime(t);
 
     if (0 == system->nStates[i])
       continue;
 
-    for (size_t k = 0; k < system->nStates[i]; k++, j++)
-      system->states[i][k] = NV_Ith_S(y, j);
+    for (size_t k = 0; k < system->nStates[i]; k++, j_y++)
+      system->states[i][k] = NV_Ith_S(y, j_y);
 
     // set states
     status = system->fmus[i]->setContinuousStates(system->states[i]);
     if (oms_status_ok != status) return status;
-  }
-
-  // get state derivatives
-  for (size_t j=0, k=0; j < system->fmus.size(); ++j)
-  {
-    if (0 == system->nStates[j])
-      continue;
 
     // get state derivatives
-    status = system->fmus[j]->getDerivatives(system->states_der[j]);
+    status = system->fmus[i]->getDerivatives(system->states_der[i]);
     if (oms_status_ok != status) return status;
 
-    for (size_t i=0; i < system->nStates[j]; ++i, ++k)
-      NV_Ith_S(ydot, k) = system->states_der[j][i];
+    for (size_t k=0; k < system->nStates[i]; ++k, ++j_ydot)
+      NV_Ith_S(ydot, j_ydot) = system->states_der[i][k];
   }
 
   return 0;
@@ -84,8 +77,10 @@ int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
 int oms::cvode_rhs_algebraic(realtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
   SystemSC* system = (SystemSC*)user_data;
+  oms_status_enu_t status;
+  fmi2Status fmistatus;
 
-  for (size_t i=0, j=0; i < system->fmus.size(); ++i)
+  for (size_t i=0; i < system->fmus.size(); ++i)
     system->fmus[i]->setTime(t);
 
   NV_Ith_S(ydot, 0) = 0.0;
@@ -100,27 +95,41 @@ int oms::cvode_roots(realtype t, N_Vector y, realtype *gout, void *user_data)
   oms_status_enu_t status;
   fmi2Status fmistatus;
 
-  // update states in FMUs
-  if (!system->algebraic)
+  for (size_t i=0, j_y=0, j_gout=0; i < system->fmus.size(); ++i)
   {
-    for (size_t i=0, j=0; i < system->fmus.size(); ++i)
-    {
-      system->fmus[i]->setTime(t);
+    system->fmus[i]->setTime(t);
 
-      if (0 == system->nStates[i])
-        continue;
+    if (0 == system->nStates[i])
+      continue;
 
-      for (size_t k = 0; k < system->nStates[i]; k++, j++)
-        system->states[i][k] = NV_Ith_S(y, j);
+    for (size_t k = 0; k < system->nStates[i]; k++, j_y++)
+      system->states[i][k] = NV_Ith_S(y, j_y);
 
-      // set states
-      status = system->fmus[i]->setContinuousStates(system->states[i]);
-      if (oms_status_ok != status) return status;
-    }
+    // set states
+    status = system->fmus[i]->setContinuousStates(system->states[i]);
+    if (oms_status_ok != status) return status;
+
+    fmistatus = fmi2_getEventIndicators(system->fmus[i]->getFMU(), system->event_indicators[i], system->nEventIndicators[i]);
+    if (fmi2OK != fmistatus) logError_FMUCall("fmi2_getEventIndicators", system->fmus[i]);
+
+    for (size_t k=0; k < system->nEventIndicators[i]; k++, j_gout++)
+      gout[j_gout] = system->event_indicators[i][k];
   }
+
+  return 0;
+}
+
+int oms::cvode_roots_algebraic(realtype t, N_Vector y, realtype *gout, void *user_data)
+{
+  logDebug("cvode_roots_algebraic at time " + std::to_string(t));
+  SystemSC* system = (SystemSC*)user_data;
+  oms_status_enu_t status;
+  fmi2Status fmistatus;
 
   for (size_t i = 0, j=0; i < system->fmus.size(); ++i)
   {
+    system->fmus[i]->setTime(t);
+
     fmistatus = fmi2_getEventIndicators(system->fmus[i]->getFMU(), system->event_indicators[i], system->nEventIndicators[i]);
     if (fmi2OK != fmistatus) logError_FMUCall("fmi2_getEventIndicators", system->fmus[i]);
 
@@ -130,7 +139,6 @@ int oms::cvode_roots(realtype t, N_Vector y, realtype *gout, void *user_data)
 
   return 0;
 }
-
 
 oms::SystemSC::SystemSC(const ComRef& cref, Model* parentModel, System* parentSystem)
   : oms::System(cref, oms_system_sc, parentModel, parentSystem, oms_solver_sc_cvode)
@@ -384,7 +392,7 @@ oms_status_enu_t oms::SystemSC::initialize()
     flag = CVodeInit(solverData.cvode.mem, algebraic ? cvode_rhs_algebraic : cvode_rhs, time, solverData.cvode.y);
     if (flag < 0) logError("SUNDIALS_ERROR: CVodeInit() failed with flag = " + std::to_string(flag));
 
-    flag = CVodeRootInit(solverData.cvode.mem, n_event_indicators, cvode_roots);
+    flag = CVodeRootInit(solverData.cvode.mem, n_event_indicators, algebraic ? cvode_roots_algebraic : cvode_roots);
     if (flag != CV_SUCCESS) logError("SUNDIALS_ERROR: CVodeRootInit() failed with flag = " + std::to_string(flag));
 
     // Call CVodeSVtolerances to specify the scalar relative tolerance
