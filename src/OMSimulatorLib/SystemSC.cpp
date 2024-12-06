@@ -77,8 +77,6 @@ int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
 int oms::cvode_rhs_algebraic(realtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
   SystemSC* system = (SystemSC*)user_data;
-  oms_status_enu_t status;
-  fmi2Status fmistatus;
 
   for (size_t i=0; i < system->fmus.size(); ++i)
     system->fmus[i]->setTime(t);
@@ -123,18 +121,17 @@ int oms::cvode_roots_algebraic(realtype t, N_Vector y, realtype *gout, void *use
 {
   logDebug("cvode_roots_algebraic at time " + std::to_string(t));
   SystemSC* system = (SystemSC*)user_data;
-  oms_status_enu_t status;
   fmi2Status fmistatus;
 
-  for (size_t i = 0, j=0; i < system->fmus.size(); ++i)
+  for (size_t i = 0, j_gout=0; i < system->fmus.size(); ++i)
   {
     system->fmus[i]->setTime(t);
 
     fmistatus = fmi2_getEventIndicators(system->fmus[i]->getFMU(), system->event_indicators[i], system->nEventIndicators[i]);
     if (fmi2OK != fmistatus) logError_FMUCall("fmi2_getEventIndicators", system->fmus[i]);
 
-    for (size_t k=0; k < system->nEventIndicators[i]; k++, j++)
-      gout[j] = system->event_indicators[i][k];
+    for (size_t k=0; k < system->nEventIndicators[i]; k++, j_gout++)
+      gout[j_gout] = system->event_indicators[i][k];
   }
 
   return 0;
