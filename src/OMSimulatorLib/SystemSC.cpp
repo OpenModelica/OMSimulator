@@ -97,35 +97,15 @@ int oms::cvode_roots(realtype t, N_Vector y, realtype *gout, void *user_data)
   {
     system->fmus[i]->setTime(t);
 
-    if (0 == system->nStates[i])
-      continue;
+    if (0 != system->nStates[i])
+    {
+      for (size_t k = 0; k < system->nStates[i]; k++, j_y++)
+        system->states[i][k] = NV_Ith_S(y, j_y);
 
-    for (size_t k = 0; k < system->nStates[i]; k++, j_y++)
-      system->states[i][k] = NV_Ith_S(y, j_y);
-
-    // set states
-    status = system->fmus[i]->setContinuousStates(system->states[i]);
-    if (oms_status_ok != status) return status;
-
-    fmistatus = fmi2_getEventIndicators(system->fmus[i]->getFMU(), system->event_indicators[i], system->nEventIndicators[i]);
-    if (fmi2OK != fmistatus) logError_FMUCall("fmi2_getEventIndicators", system->fmus[i]);
-
-    for (size_t k=0; k < system->nEventIndicators[i]; k++, j_gout++)
-      gout[j_gout] = system->event_indicators[i][k];
-  }
-
-  return 0;
-}
-
-int oms::cvode_roots_algebraic(realtype t, N_Vector y, realtype *gout, void *user_data)
-{
-  logDebug("cvode_roots_algebraic at time " + std::to_string(t));
-  SystemSC* system = (SystemSC*)user_data;
-  fmi2Status fmistatus;
-
-  for (size_t i = 0, j_gout=0; i < system->fmus.size(); ++i)
-  {
-    system->fmus[i]->setTime(t);
+      // set states
+      status = system->fmus[i]->setContinuousStates(system->states[i]);
+      if (oms_status_ok != status) return status;
+    }
 
     fmistatus = fmi2_getEventIndicators(system->fmus[i]->getFMU(), system->event_indicators[i], system->nEventIndicators[i]);
     if (fmi2OK != fmistatus) logError_FMUCall("fmi2_getEventIndicators", system->fmus[i]);
@@ -389,7 +369,7 @@ oms_status_enu_t oms::SystemSC::initialize()
     flag = CVodeInit(solverData.cvode.mem, algebraic ? cvode_rhs_algebraic : cvode_rhs, time, solverData.cvode.y);
     if (flag < 0) logError("SUNDIALS_ERROR: CVodeInit() failed with flag = " + std::to_string(flag));
 
-    flag = CVodeRootInit(solverData.cvode.mem, n_event_indicators, algebraic ? cvode_roots_algebraic : cvode_roots);
+    flag = CVodeRootInit(solverData.cvode.mem, n_event_indicators, cvode_roots);
     if (flag != CV_SUCCESS) logError("SUNDIALS_ERROR: CVodeRootInit() failed with flag = " + std::to_string(flag));
 
     // Call CVodeSVtolerances to specify the scalar relative tolerance

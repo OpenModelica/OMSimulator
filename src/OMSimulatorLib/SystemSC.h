@@ -47,7 +47,6 @@ namespace oms
   int cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data);
   int cvode_rhs_algebraic(realtype t, N_Vector y, N_Vector ydot, void* user_data);
   int cvode_roots(realtype t, N_Vector y, realtype *gout, void* user_data);
-  int cvode_roots_algebraic(realtype t, N_Vector y, realtype *gout, void* user_data);
 
   class SystemSC : public System
   {
@@ -122,7 +121,6 @@ namespace oms
     friend int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data);
     friend int oms::cvode_rhs_algebraic(realtype t, N_Vector y, N_Vector ydot, void* user_data);
     friend int oms::cvode_roots(realtype t, N_Vector y, realtype *gout, void* user_data);
-    friend int oms::cvode_roots_algebraic(realtype t, N_Vector y, realtype *gout, void* user_data);
   };
 }
 
