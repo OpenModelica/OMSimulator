@@ -330,6 +330,7 @@ print("info:      renameValues2.root.add_3.u1       : " .. oms_getReal("renameVa
 -- info:      renameValues2.root.add_3.k1       : 10.0
 -- info:      renameValues2.root.add_3.k2       : 20.0
 -- info:      renameValues2.root.add_3.u1       : 40.0
+-- info:    maximum step size for 'renameValues2.root.system2': 0.001000
 -- info:    Result file: renameValues2_res.mat (bufferSize=10)
 -- info:      Initialization
 -- info:      renameValues2.root.system2.k1     : -10.0
@@ -341,4 +342,7 @@ print("info:      renameValues2.root.add_3.u1       : " .. oms_getReal("renameVa
 -- info:      renameValues2.root.add_3.k1       : 10.0
 -- info:      renameValues2.root.add_3.k2       : 20.0
 -- info:      renameValues2.root.add_3.u1       : 40.0
+-- info:    Final Statistics for 'renameValues2.root.system2':
+--          NumSteps = 1001 NumRhsEvals  = 1002 NumLinSolvSetups = 51
+--          NumNonlinSolvIters = 1001 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
 -- endResult

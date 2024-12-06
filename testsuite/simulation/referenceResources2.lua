@@ -102,6 +102,8 @@ oms_delete("import_parameter_mapping")
 -- info:      import_parameter_mapping.co_sim.System2.parameter_2  : 0.0
 -- info:    model doesn't contain any continuous state
 -- info:    model doesn't contain any continuous state
+-- info:    maximum step size for 'import_parameter_mapping.co_sim.System2': 0.100000
+-- info:    maximum step size for 'import_parameter_mapping.co_sim.System1': 0.100000
 -- info:    Result file: referenceResources2.mat (bufferSize=10)
 -- info:    Initialization after switching with new references
 -- info:      import_parameter_mapping.co_sim.Input_1              : -200.0
@@ -223,7 +225,7 @@ oms_delete("import_parameter_mapping")
 --                 <oms:Annotations>
 --                   <oms:SimulationInformation>
 --                     <oms:VariableStepSolver
---                       description="euler"
+--                       description="cvode"
 --                       relativeTolerance="0.0001"
 --                       minimumStepSize="0.0001"
 --                       maximumStepSize="0.1"
@@ -268,7 +270,7 @@ oms_delete("import_parameter_mapping")
 --                 <oms:Annotations>
 --                   <oms:SimulationInformation>
 --                     <oms:VariableStepSolver
---                       description="euler"
+--                       description="cvode"
 --                       relativeTolerance="0.0001"
 --                       minimumStepSize="0.0001"
 --                       maximumStepSize="0.1"
@@ -515,4 +517,10 @@ oms_delete("import_parameter_mapping")
 --   </oms:file>
 -- </oms:snapshot>
 --
+-- info:    Final Statistics for 'import_parameter_mapping.co_sim.System2':
+--          NumSteps = 11 NumRhsEvals  = 12 NumLinSolvSetups = 2
+--          NumNonlinSolvIters = 11 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
+-- info:    Final Statistics for 'import_parameter_mapping.co_sim.System1':
+--          NumSteps = 11 NumRhsEvals  = 12 NumLinSolvSetups = 2
+--          NumNonlinSolvIters = 11 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
 -- endResult

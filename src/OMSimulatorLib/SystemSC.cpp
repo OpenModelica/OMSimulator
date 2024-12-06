@@ -64,8 +64,6 @@ int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
     if (oms_status_ok != status) return status;
   }
 
-  system->updateInputs(system->eventGraph);
-
   // get state derivatives
   for (size_t j=0, k=0; j < system->fmus.size(); ++j)
   {
@@ -83,6 +81,12 @@ int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data)
   return 0;
 }
 
+int oms::cvode_rhs_algebraic(realtype t, N_Vector y, N_Vector ydot, void* user_data)
+{
+  NV_Ith_S(ydot, 0) = 0.0;
+  return 0;
+}
+
 int oms::cvode_roots(realtype t, N_Vector y, realtype *gout, void *user_data)
 {
   logDebug("cvode_roots at time " + std::to_string(t));
@@ -91,22 +95,23 @@ int oms::cvode_roots(realtype t, N_Vector y, realtype *gout, void *user_data)
   fmi2Status fmistatus;
 
   // update states in FMUs
-  for (size_t i=0, j=0; i < system->fmus.size(); ++i)
+  if (!system->algebraic)
   {
-    system->fmus[i]->setTime(t);
+    for (size_t i=0, j=0; i < system->fmus.size(); ++i)
+    {
+      system->fmus[i]->setTime(t);
 
-    if (0 == system->nStates[i])
-      continue;
+      if (0 == system->nStates[i])
+        continue;
 
-    for (size_t k = 0; k < system->nStates[i]; k++, j++)
-      system->states[i][k] = NV_Ith_S(y, j);
+      for (size_t k = 0; k < system->nStates[i]; k++, j++)
+        system->states[i][k] = NV_Ith_S(y, j);
 
-    // set states
-    status = system->fmus[i]->setContinuousStates(system->states[i]);
-    if (oms_status_ok != status) return status;
+      // set states
+      status = system->fmus[i]->setContinuousStates(system->states[i]);
+      if (oms_status_ok != status) return status;
+    }
   }
-
-  system->updateInputs(system->eventGraph);
 
   for (size_t i = 0, j=0; i < system->fmus.size(); ++i)
   {
@@ -255,15 +260,12 @@ oms_status_enu_t oms::SystemSC::instantiate()
   }
 
   if (n_states == 0)
-  {
-    solverMethod = oms_solver_sc_explicit_euler;
     logInfo("model doesn't contain any continuous state");
-  }
 
   if (oms_solver_sc_explicit_euler == solverMethod)
     ;
   else if (oms_solver_sc_cvode == solverMethod)
-    solverData.cvode.mem = NULL;
+    solverData.cvode.mem = nullptr;
   else
     return logError_InternalError;
 
@@ -335,18 +337,31 @@ oms_status_enu_t oms::SystemSC::initialize()
     for (size_t i=0; i < fmus.size(); ++i)
       n_states += nStates[i];
 
+    algebraic = n_states == 0;
+    if (algebraic)
+      n_states = 1;
+
+
     solverData.cvode.y = N_VNew_Serial(static_cast<long>(n_states));
     if (!solverData.cvode.y) logError("SUNDIALS_ERROR: N_VNew_Serial() failed - returned NULL pointer");
-    for (size_t j=0, k=0; j < fmus.size(); ++j)
-      for (size_t i=0; i < nStates[j]; ++i, ++k)
-        NV_Ith_S(solverData.cvode.y, k) = states[j][i];
+
+    if (algebraic)
+      NV_Ith_S(solverData.cvode.y, 0) = 0.0;
+    else
+      for (size_t j=0, k=0; j < fmus.size(); ++j)
+        for (size_t i=0; i < nStates[j]; ++i, ++k)
+          NV_Ith_S(solverData.cvode.y, k) = states[j][i];
     //N_VPrint_Serial(solverData.cvode.y);
 
     solverData.cvode.abstol = N_VNew_Serial(static_cast<long>(n_states));
     if (!solverData.cvode.abstol) logError("SUNDIALS_ERROR: N_VNew_Serial() failed - returned NULL pointer");
-    for (size_t j=0, k=0; j < fmus.size(); ++j)
-      for (size_t i=0; i < nStates[j]; ++i, ++k)
-        NV_Ith_S(solverData.cvode.abstol, k) = relativeTolerance*states_nominal[j][i];
+
+    if (algebraic)
+      NV_Ith_S(solverData.cvode.abstol, 0) = relativeTolerance;
+    else
+      for (size_t j=0, k=0; j < fmus.size(); ++j)
+        for (size_t i=0; i < nStates[j]; ++i, ++k)
+          NV_Ith_S(solverData.cvode.abstol, k) = relativeTolerance*states_nominal[j][i];
     //N_VPrint_Serial(solverData.cvode.abstol);
 
     // Call CVodeCreate to create the solver memory and specify the
@@ -360,7 +375,7 @@ oms_status_enu_t oms::SystemSC::initialize()
     // Call CVodeInit to initialize the integrator memory and specify the
     // user's right hand side function in y'=cvode_rhs(t,y), the inital time T0, and
     // the initial dependent variable vector y.
-    flag = CVodeInit(solverData.cvode.mem, cvode_rhs, time, solverData.cvode.y);
+    flag = CVodeInit(solverData.cvode.mem, algebraic ? cvode_rhs_algebraic : cvode_rhs, time, solverData.cvode.y);
     if (flag < 0) logError("SUNDIALS_ERROR: CVodeInit() failed with flag = " + std::to_string(flag));
 
     flag = CVodeRootInit(solverData.cvode.mem, n_event_indicators, cvode_roots);
@@ -520,7 +535,7 @@ oms_status_enu_t oms::SystemSC::reset()
     N_VDestroy_Serial(solverData.cvode.y);
     N_VDestroy_Serial(solverData.cvode.abstol);
     CVodeFree(&(solverData.cvode.mem));
-    solverData.cvode.mem = NULL;
+    solverData.cvode.mem = nullptr;
   }
 
   return oms_status_ok;
@@ -820,7 +835,7 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
         if (fmi2OK != fmistatus) return logError_FMUCall("fmi2_completedIntegratorStep", fmus[i]);
       }
 
-      updateInputs(eventGraph);
+      // emit the left limit of the event (if it hasn't already been emitted)
       if (isTopLevelSystem())
         getModel().emit(time, false);
 
@@ -831,7 +846,12 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
         if (fmi2OK != fmistatus) logError_FMUCall("fmi2_enterEventMode", fmus[i]);
 
         fmus[i]->doEventIteration();
+      }
 
+      updateInputs(eventGraph);
+
+      for (size_t i = 0; i < fmus.size(); ++i)
+      {
         fmistatus = fmi2_enterContinuousTimeMode(fmus[i]->getFMU());
         if (fmi2OK != fmistatus) logError_FMUCall("fmi2_enterContinuousTimeMode", fmus[i]);
       }
@@ -905,7 +925,7 @@ oms_status_enu_t oms::SystemSC::doStepCVODE()
         if (oms_status_ok != status) return status;
       }
 
-      updateInputs(eventGraph);
+      updateInputs(simulationGraph);
       if (isTopLevelSystem())
         getModel().emit(time, false);
     }

@@ -45,6 +45,7 @@ namespace oms
   class Model;
   class ComponentFMUME;
   int cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data);
+  int cvode_rhs_algebraic(realtype t, N_Vector y, N_Vector ydot, void* user_data);
   int cvode_roots(realtype t, N_Vector y, realtype *gout, void* user_data);
 
   class SystemSC : public System
@@ -95,6 +96,8 @@ namespace oms
     std::vector<double*> event_indicators;
     std::vector<double*> event_indicators_prev;
 
+    bool algebraic = false;
+
     struct SolverDataEuler_t
     {
     };
@@ -116,6 +119,7 @@ namespace oms
     } solverData;
 
     friend int oms::cvode_rhs(realtype t, N_Vector y, N_Vector ydot, void* user_data);
+    friend int oms::cvode_rhs_algebraic(realtype t, N_Vector y, N_Vector ydot, void* user_data);
     friend int oms::cvode_roots(realtype t, N_Vector y, realtype *gout, void* user_data);
   };
 }

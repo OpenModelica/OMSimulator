@@ -36,7 +36,11 @@ end
 -- A.y: 0.0
 -- system is equal
 -- info:    model doesn't contain any continuous state
+-- info:    maximum step size for 'table.root': 0.001000
 -- info:    Result file: table_res.mat (bufferSize=10)
 -- A.y: 0.0
+-- info:    Final Statistics for 'table.root':
+--          NumSteps = 1001 NumRhsEvals  = 1002 NumLinSolvSetups = 51
+--          NumNonlinSolvIters = 1001 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
 -- system is equal
 -- endResult

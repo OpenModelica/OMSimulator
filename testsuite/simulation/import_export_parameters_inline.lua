@@ -327,6 +327,7 @@ oms_delete("import_export_parameters")
 -- info:      import_export_parameters.co_sim.k_cref      : 30.0
 -- info:      import_export_parameters.co_sim.Output_cref : 0.0
 -- info:      import_export_parameters.co_sim.foo.F_cref  : 40.0
+-- info:    maximum step size for 'import_export_parameters.co_sim.foo': 0.001000
 -- info:    Result file: import_export_parameters_inline.mat (bufferSize=100)
 -- info:    Initialization
 -- info:      import_export_parameters.co_sim.addP.k1     : 30.0
@@ -352,6 +353,9 @@ oms_delete("import_export_parameters")
 -- info:      import_export_parameters.co_sim.k_cref      : 30.0
 -- info:      import_export_parameters.co_sim.Output_cref : -600.0
 -- info:      import_export_parameters.co_sim.foo.F_cref  : 40.0
+-- info:    Final Statistics for 'import_export_parameters.co_sim.foo':
+--          NumSteps = 4001 NumRhsEvals  = 4002 NumLinSolvSetups = 201
+--          NumNonlinSolvIters = 4001 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
 -- info:    0 warnings
 -- info:    1 errors
 -- endResult

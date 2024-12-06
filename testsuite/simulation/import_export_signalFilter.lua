@@ -279,10 +279,18 @@ oms_delete("model")
 --
 -- info:    model doesn't contain any continuous state
 -- info:    model doesn't contain any continuous state
+-- info:    maximum step size for 'model.root.System2': 0.001000
+-- info:    maximum step size for 'model.root.System1': 0.001000
 -- info:    Result file: model_res.csv (bufferSize=1)
 --
 --
 -- time,model.root.Gain.u,model.root.System2.Input_1,model.root.Gain.k
 -- 0, 0, 30, 1
 --
+-- info:    Final Statistics for 'model.root.System2':
+--          NumSteps = 0 NumRhsEvals  = 0 NumLinSolvSetups = 0
+--          NumNonlinSolvIters = 0 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
+-- info:    Final Statistics for 'model.root.System1':
+--          NumSteps = 0 NumRhsEvals  = 0 NumLinSolvSetups = 0
+--          NumNonlinSolvIters = 0 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
 -- endResult

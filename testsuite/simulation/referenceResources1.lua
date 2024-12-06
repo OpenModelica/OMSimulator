@@ -104,6 +104,7 @@ oms_delete("referenceResources1")
 -- info:      referenceResources1.root.system1.C2 : 0.0
 -- info:      referenceResources1.root.Gain.k     : 27.0
 -- info:    model doesn't contain any continuous state
+-- info:    maximum step size for 'referenceResources1.root.system1': 0.001000
 -- info:    Result file: referenceResources1.mat (bufferSize=10)
 -- info:    Initialization after switching to new references
 -- info:      referenceResources1.root.Input1     : -100.0
@@ -175,7 +176,7 @@ oms_delete("referenceResources1")
 --                 <oms:Annotations>
 --                   <oms:SimulationInformation>
 --                     <oms:VariableStepSolver
---                       description="euler"
+--                       description="cvode"
 --                       relativeTolerance="0.0001"
 --                       minimumStepSize="1e-12"
 --                       maximumStepSize="0.001"
@@ -407,4 +408,7 @@ oms_delete("referenceResources1")
 --   </oms:file>
 -- </oms:snapshot>
 --
+-- info:    Final Statistics for 'referenceResources1.root.system1':
+--          NumSteps = 1001 NumRhsEvals  = 1002 NumLinSolvSetups = 51
+--          NumNonlinSolvIters = 1001 NumNonlinSolvConvFails = 0 NumErrTestFails = 0
 -- endResult
