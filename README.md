@@ -25,13 +25,12 @@ Latest documentation:
 
 ## Testing and Coverage
 
-OMSimulator tests are automatically run on Jenkins. See the [latest test reports](https://test.openmodelica.org/jenkins/job/OMSimulator/job/master/lastSuccessfulBuild/testReport/).
+OMSimulator's coverage tests provide insights across a wide range of publicly available libraries. For an overview of all tested libraries and their detailed reports, visit the [Coverage Test Overview](https://libraries.openmodelica.org/branches/master-fmi/).
 
-![Coverage Report](https://libraries.openmodelica.org/branches/history/master-fmi/Modelica_4.0.0-recent.svg)
+- [Modelica Standard Library (MSL4) Detailed Report](https://libraries.openmodelica.org/branches/master-fmi/Modelica_4.0.0/Modelica_4.0.0.html)
+- [Modelica Standard Library (MSL4) Coverage Graph](https://libraries.openmodelica.org/branches/history/master-fmi/Modelica_4.0.0-recent.svg)
 
-The plot above shows the recent coverage report for the **Modelica 4.0.0** library over the last 7 runs.
-
-> **Note**: Issues may be related to OMSimulator itself or the FMI export process in OpenModelica.
+> **Note**: Issues may be attributed to OMSimulator itself or the FMI export in OpenModelica.
 
 ## Build Instructions
 
