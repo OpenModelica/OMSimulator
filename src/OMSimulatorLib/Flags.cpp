@@ -119,18 +119,26 @@ void SaveSettings(nlohmann::json &json)
 
 void oms::Flags::setDefaults()
 {
-  nlohmann::json json;
-  LoadSettings(json);
-
   files.clear();
   for (auto &flag : flags)
   {
     flag->explicitlySet = false;
+    flag->value = flag->defaultValue;
+  }
 
-    if (flag->settings && json.find(flag->name) != json.end())
-      flag->value = json[flag->name];
-    else
-      flag->value = flag->defaultValue;
+  try
+  {
+    nlohmann::json json;
+    LoadSettings(json);
+    for (auto &flag : flags)
+    {
+      if (flag->settings && json.find(flag->name) != json.end())
+        flag->value = json[flag->name];
+    }
+  }
+  catch(const std::exception& e)
+  {
+    logWarning("Failed to load settings: " + std::string(e.what()));
   }
 }
 
@@ -150,10 +158,17 @@ oms_status_enu_t oms::Flags::SetFlag(size_t flag_id, const std::string &value)
 
   if (flag->settings)
   {
-    nlohmann::json json;
-    LoadSettings(json);
-    json[flag->name] = value;
-    SaveSettings(json);
+    try
+    {
+      nlohmann::json json;
+      LoadSettings(json);
+      json[flag->name] = value;
+      SaveSettings(json);
+    }
+    catch(const std::exception& e)
+    {
+      logWarning("Failed to save settings: " + std::string(e.what()));
+    }
   }
 
   if (flag->action)
