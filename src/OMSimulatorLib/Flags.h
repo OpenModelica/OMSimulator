@@ -72,9 +72,9 @@ namespace oms
     static bool SuppressPath() { return GetInstance().FlagSuppressPath.value == "true"; }
     static bool WallTime() { return GetInstance().FlagWallTime.value == "true"; }
     static bool ZeroNominal() { return GetInstance().FlagZeroNominal.value == "true"; }
-    static double InitialStepSize();
-    static double MaximumStepSize();
-    static double MinimumStepSize();
+    static double InitialStepSize() { return atof(GetInstance().FlagInitialStepSize.value.c_str()); }
+    static double MaximumStepSize() { return atof(GetInstance().FlagStepSize.value.c_str()); }
+    static double MinimumStepSize() { return atof(GetInstance().FlagMinimumStepSize.value.c_str()); }
     static double StartTime() { return atof(GetInstance().FlagStartTime.value.c_str()); }
     static double StopTime() { return atof(GetInstance().FlagStopTime.value.c_str()); }
     static double Timeout() { return atof(GetInstance().FlagTimeout.value.c_str()); }
@@ -103,7 +103,6 @@ namespace oms
     const std::string re_double = "((\\+|-)?[[:digit:]]+)(\\.(([[:digit:]]+)?))?((e|E)((\\+|-)?)[[:digit:]]+)?";
     const std::string re_number = "[[:digit:]]+";
     const std::string re_filename = ".+(\\.fmu|\\.ssp|\\.lua)";
-    const std::string re_stepSize = "((\\+|-)?[[:digit:]]+)(\\.(([[:digit:]]+)?))?((e|E)((\\+|-)?)[[:digit:]]+)?(,((\\+|-)?[[:digit:]]+)(\\.(([[:digit:]]+)?))?((e|E)((\\+|-)?)[[:digit:]]+)?,((\\+|-)?[[:digit:]]+)(\\.(([[:digit:]]+)?))?((e|E)((\\+|-)?)[[:digit:]]+)?)?";
     const std::string re_solver = "(euler|cvode)";
 
   public:
@@ -135,6 +134,7 @@ namespace oms
     Flag FlagEmitEvents{"--emitEvents", "", "", "true", "Emit events during simulation", re_bool, nullptr, false, false, false};
     Flag FlagHelp{"--help", "-h", "", "", "Display the help text", re_void, Flags::Help, true, false, false};
     Flag FlagIgnoreInitialUnknowns{"--ignoreInitialUnknowns", "", "", "false", "Ignore initial unknowns from the modelDescription.xml", re_bool, nullptr, false, false, false};
+    Flag FlagInitialStepSize{"--initialStepSize", "", "", "1e-6", "Specify the initial step size", re_double, nullptr, false, false, false};
     Flag FlagInputExtrapolation{"--inputExtrapolation", "", "", "false", "Enable input extrapolation using derivative information", re_bool, nullptr, false, false, false};
     Flag FlagIntervals{"--intervals", "-i", "", "500", "Specify the number of communication points (arg > 1)", re_number, nullptr, false, false, false};
     Flag FlagLogFile{"--logFile", "-l", "", "", "Specify the log file (stdout is used if no log file is specified)", re_default, nullptr, false, false, false};
@@ -142,6 +142,7 @@ namespace oms
     Flag FlagMasterAlgorithm{"--master", "", "", "ma", "Specify the master algorithm (ma)", re_default, nullptr, false, false, false};
     Flag FlagMaxEventIteration{"--maxEventIteration", "", "", "100", "Specify the maximum number of iterations for handling a single event", re_number, nullptr, false, false, false};
     Flag FlagMaxLoopIteration{"--maxLoopIteration", "", "", "10", "Specify the maximum number of iterations for solving algebraic loops between system-level components. Internal algebraic loops of components are not affected.", re_number, nullptr, false, false, false};
+    Flag FlagMinimumStepSize{"--minimumStepSize", "", "", "1e-12", "Specify the minimum step size", re_double, nullptr, false, false, false};
     Flag FlagMode{"--mode", "-m", "", "me", "Force a certain FMI mode if the FMU provides both cs and me (cs, me)", re_mode, nullptr, false, false, false};
     Flag FlagNumProcs{"--numProcs", "-n", "", "1", "Specify the maximum number of processors to use (0=auto, 1=default)", re_number, nullptr, false, false, false};
     Flag FlagProgressBar{"--progressBar", "", "", "false", "Show a progress bar for the simulation progress in the terminal", re_bool, nullptr, false, false, false};
@@ -151,7 +152,7 @@ namespace oms
     Flag FlagSolver{"--solver", "", "", "cvode", "Specify the integration method (euler, cvode)", re_solver, nullptr, false, false, false};
     Flag FlagSolverStats{"--solverStats", "", "", "false", "Add solver stats to the result file, e.g., step size; not supported for all solvers", re_bool, nullptr, false, false, false};
     Flag FlagStartTime{"--startTime", "-s", "", "0", "Specify the start time", re_double, nullptr, false, false, false};
-    Flag FlagStepSize{"--stepSize", "", "", "1e-6,1e-12,1e-3", "Specify the step size (<step size> or <init_step,min_step,max_step>)", re_stepSize, nullptr, false, false, false};
+    Flag FlagStepSize{"--stepSize", "", "", "1e-3", "Specify the (maximum) step size", re_double, nullptr, false, false, false};
     Flag FlagStopTime{"--stopTime", "-t", "", "1", "Specify the stop time", re_double, nullptr, false, false, false};
     Flag FlagStripRoot{"--stripRoot", "", "", "false", "Remove the root system prefix from all exported signals", re_bool, nullptr, false, false, false};
     Flag FlagSuppressPath{"--suppressPath", "", "", "false", "Suppress path information in info messages; especially useful for testing", re_bool, nullptr, false, false, false};
@@ -164,7 +165,7 @@ namespace oms
     Flag FlagZeroNominal{"--zeroNominal", "", "", "false", "Accept FMUs with invalid nominal values and replace the invalid nominal values with 1.0", re_bool, nullptr, false, false, false};
 
   private:
-    std::array<Flag *, 41> flags = {
+    std::array<Flag *, 43> flags = {
         &FlagFilename,
         &FlagAddParametersToCSV,
         &FlagAlgLoopSolver,
@@ -179,6 +180,7 @@ namespace oms
         &FlagEmitEvents,
         &FlagHelp,
         &FlagIgnoreInitialUnknowns,
+        &FlagInitialStepSize,
         &FlagInputExtrapolation,
         &FlagIntervals,
         &FlagLogFile,
@@ -186,6 +188,7 @@ namespace oms
         &FlagMasterAlgorithm,
         &FlagMaxEventIteration,
         &FlagMaxLoopIteration,
+        &FlagMinimumStepSize,
         &FlagMode,
         &FlagNumProcs,
         &FlagProgressBar,
