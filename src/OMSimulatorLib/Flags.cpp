@@ -303,57 +303,6 @@ std::vector<std::string> split(const std::string &s, char delim)
   return result;
 }
 
-double oms::Flags::InitialStepSize()
-{
-  std::vector<std::string> options = split(GetInstance().FlagStepSize.value, ',');
-
-  for (const auto &option : options)
-    if (atof(option.c_str()) <= 0.0)
-      assert(false && "The step size value must be a greater than zero");
-
-  if (options.size() == 1)
-    return atof(options[0].c_str());
-  else if (options.size() == 3)
-    return atof(options[0].c_str());
-
-  assert(false && "Invalid step size options");
-  return 0.0;  // unreachable; to avoid compiler warning
-}
-
-double oms::Flags::MinimumStepSize()
-{
-  std::vector<std::string> options = split(GetInstance().FlagStepSize.value, ',');
-
-  for (const auto &option : options)
-    if (atof(option.c_str()) <= 0.0)
-      assert(false && "The step size value must be a greater than zero");
-
-  if (options.size() == 1)
-    return atof(options[0].c_str());
-  else if (options.size() == 3)
-    return atof(options[1].c_str());
-
-  assert(false && "Invalid step size options");
-  return 0.0;  // unreachable; to avoid compiler warning
-}
-
-double oms::Flags::MaximumStepSize()
-{
-  std::vector<std::string> options = split(GetInstance().FlagStepSize.value, ',');
-
-  for (const auto &option : options)
-    if (atof(option.c_str()) <= 0.0)
-      assert(false && "The step size value must be a greater than zero");
-
-  if (options.size() == 1)
-    return atof(options[0].c_str());
-  else if (options.size() == 3)
-    return atof(options[2].c_str());
-
-  assert(false && "Invalid step size options");
-  return 0.0;  // unreachable; to avoid compiler warning
-}
-
 oms_alg_solver_enu_t oms::Flags::AlgLoopSolver()
 {
   if (GetInstance().FlagAlgLoopSolver.value == "fixedpoint")
