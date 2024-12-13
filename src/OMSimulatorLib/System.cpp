@@ -33,6 +33,7 @@
 
 #include "Component.h"
 #include "ComponentFMUCS.h"
+#include "ComponentFMU3CS.h"
 #include "ComponentFMUME.h"
 #include "ComponentTable.h"
 #include "Flags.h"
@@ -43,6 +44,7 @@
 #include "SystemSC.h"
 #include "SystemWC.h"
 #include "Variable.h"
+#include "miniunz.h"
 
 #include <regex>
 
@@ -267,8 +269,13 @@ oms_status_enu_t oms::System::addSubModel(const oms::ComRef& cref, const std::st
     if (path.length() > 4)
       extension = path.substr(path.length() - 4);
 
-    if (extension == ".fmu" && oms_system_wc == type)
+    // unpack the modelDescription.xml in memory to detect the fmiVersion
+    std::string fmiVersion = getFmiVersion(path);
+
+    if (extension == ".fmu" && oms_system_wc == type && fmiVersion == "2.0")
       component = ComponentFMUCS::NewComponent(cref, this, path_.string());
+    else if (extension == ".fmu" && oms_system_wc == type && fmiVersion == "3.0")
+      component = ComponentFMU3CS::NewComponent(cref, this, path_.string());
     else if (extension == ".fmu" && oms_system_sc == type)
       component = ComponentFMUME::NewComponent(cref, this, path_.string());
     else if (extension == ".csv" || extension == ".mat")
@@ -294,6 +301,20 @@ oms_status_enu_t oms::System::addSubModel(const oms::ComRef& cref, const std::st
     return logError("System \"" + std::string(getFullCref()) + "\" does not contain system \"" + std::string(front) + "\"");
 
   return system->addSubModel(tail, path);
+}
+
+std::string oms::System::getFmiVersion(const std::string& path)
+{
+  // unpack the modelDescription.xml in memory to detect the fmiVersion
+  const char* modelDescription = ::miniunz_onefile_to_memory(path.c_str(), "modelDescription.xml");
+  if (!modelDescription)
+    logError("failed to extract \"modelDescription.xml\" from \"" + path + "\"");
+  oms::Snapshot snapshot;
+  oms_status_enu_t status = snapshot.importResourceMemory("modelDescription.xml", modelDescription);
+  const pugi::xml_node node = snapshot.getResourceNode("modelDescription.xml");
+  std::string fmiVersion = node.attribute("fmiVersion").as_string();
+  ::miniunz_free(modelDescription);
+  return fmiVersion;
 }
 
 oms_status_enu_t oms::System::replaceSubModel(const oms::ComRef& cref, const std::string& path, bool dryRun, int& warningCount)

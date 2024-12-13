@@ -10,6 +10,7 @@ AircraftVehicleDemonstrator.eCS_SW \
 AircraftVehicleDemonstrator.engine \
 B \
 BouncingBall \
+BouncingBall3 \
 Dahlquist \
 DualMassOscillator.System1 \
 DualMassOscillator.System2 \
