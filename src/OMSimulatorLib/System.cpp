@@ -270,7 +270,9 @@ oms_status_enu_t oms::System::addSubModel(const oms::ComRef& cref, const std::st
       extension = path.substr(path.length() - 4);
 
     // unpack the modelDescription.xml in memory to detect the fmiVersion
-    std::string fmiVersion = getFmiVersion(path);
+    std::string fmiVersion = "";
+    if (extension == ".fmu")
+      fmiVersion = getFmiVersion(path);
 
     if (extension == ".fmu" && oms_system_wc == type && fmiVersion == "2.0")
       component = ComponentFMUCS::NewComponent(cref, this, path_.string());
