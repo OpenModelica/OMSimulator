@@ -55,6 +55,7 @@ tank2 \
 tank3 \
 testArray \
 VanDerPol \
+VanDerPol3 \
 ypipe \
 
 SSPs = \
