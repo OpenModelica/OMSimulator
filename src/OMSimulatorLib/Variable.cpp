@@ -66,8 +66,8 @@ void oms::Variable::configureFMI2Variable(fmiHandle* fmi4c, int index_)
   description = fmi2_getVariableDescription(var) ? fmi2_getVariableDescription(var) : "";
   trim(description);
   fmi2Vr = fmi2_getVariableValueReference(var);
-  fmi2Causality = fmi2_getVariableCausality(var);
-  fmi2Variability = fmi2_getVariableVariability(var);
+  fmi2Causality_ = fmi2_getVariableCausality(var);
+  fmi2Variability_ = fmi2_getVariableVariability(var);
   // TODO implement the initial attribute table in fmi4c according to FMI specification
   fmi2InitialProperty = fmi2_getVariableInitial(var);
 
@@ -102,7 +102,7 @@ void oms::Variable::configureFMI2Variable(fmiHandle* fmi4c, int index_)
     {
       is_der = true;
       state_index = derivative_index;
-      if (fmi2Variability == fmi2VariabilityContinuous)
+      if (fmi2Variability_ == fmi2VariabilityContinuous)
       {
         is_continuous_time_der = true;
       }
@@ -118,8 +118,8 @@ void oms::Variable::configureFMI3Variable(fmiHandle* fmi4c, int index_)
   description = fmi3_getVariableDescription(var) ? fmi3_getVariableDescription(var) : "";
   trim(description);
   fmi3Vr = fmi3_getVariableValueReference(var);
-  fmi3Causality = fmi3_getVariableCausality(var);
-  fmi3Variability = fmi3_getVariableVariability(var);
+  fmi3Causality_ = fmi3_getVariableCausality(var);
+  fmi3Variability_ = fmi3_getVariableVariability(var);
   // TODO implement the initial attribute table in fmi4c according to FMI specification
   fmi3InitialProperty = fmi3_getVariableInitial(var);
 
@@ -154,7 +154,7 @@ void oms::Variable::configureFMI3Variable(fmiHandle* fmi4c, int index_)
     {
       is_der = true;
       state_index = derivative_index;
-      if (fmi3Variability == fmi3VariabilityContinuous)
+      if (fmi3Variability_ == fmi3VariabilityContinuous)
       {
         is_continuous_time_der = true;
       }
@@ -171,7 +171,7 @@ oms_causality_enu_t oms::Variable::getCausality() const
   if (isFmi2())
   {
     // FMI2
-    switch (fmi2Causality)
+    switch (fmi2Causality_)
     {
     case fmi2CausalityInput:
       return oms_causality_input;
@@ -192,7 +192,7 @@ oms_causality_enu_t oms::Variable::getCausality() const
   else
   {
     // FMI3
-    switch (fmi3Causality)
+    switch (fmi3Causality_)
     {
     case fmi3CausalityInput:
       return oms_causality_input;
@@ -217,7 +217,7 @@ std::string oms::Variable::getCausalityString() const
   if (isFmi2())
   {
     // FMI2
-    switch (fmi2Causality)
+    switch (fmi2Causality_)
     {
     case fmi2CausalityInput:
       return "input";
@@ -238,7 +238,7 @@ std::string oms::Variable::getCausalityString() const
   else
   {
     // FMI3
-    switch (fmi3Causality)
+    switch (fmi3Causality_)
     {
     case fmi3CausalityInput:
       return "input";

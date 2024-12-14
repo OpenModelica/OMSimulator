@@ -58,12 +58,12 @@ namespace oms
     bool isFmi3() const {return fmi3;}
 
     // causality attribute
-    bool isParameter() const { return isFmi2() ? (fmi2CausalityParameter == fmi2Causality) : (fmi3CausalityParameter == fmi3Causality);}
-    bool isCalculatedParameter() const { return isFmi2() ? (fmi2CausalityCalculatedParameter == fmi2Causality) : (fmi3CausalityCalculatedParameter ==fmi3Causality);}
-    bool isInput() const { return isFmi2() ? (fmi2CausalityInput == fmi2Causality) : (fmi3CausalityInput == fmi3Causality);}
-    bool isOutput() const { return isFmi2() ? (fmi2CausalityOutput == fmi2Causality) : (fmi3CausalityOutput == fmi3Causality);}
-    bool isLocal() const { return isFmi2() ? (fmi2CausalityLocal == fmi2Causality) : (fmi3CausalityLocal == fmi3Causality);}
-    bool isIndependent() const { return isFmi2() ? (fmi2CausalityIndependent == fmi2Causality) : (fmi3CausalityIndependent == fmi3Causality);}
+    bool isParameter() const { return isFmi2() ? (fmi2CausalityParameter == fmi2Causality_) : (fmi3CausalityParameter == fmi3Causality_);}
+    bool isCalculatedParameter() const { return isFmi2() ? (fmi2CausalityCalculatedParameter == fmi2Causality_) : (fmi3CausalityCalculatedParameter ==fmi3Causality_);}
+    bool isInput() const { return isFmi2() ? (fmi2CausalityInput == fmi2Causality_) : (fmi3CausalityInput == fmi3Causality_);}
+    bool isOutput() const { return isFmi2() ? (fmi2CausalityOutput == fmi2Causality_) : (fmi3CausalityOutput == fmi3Causality_);}
+    bool isLocal() const { return isFmi2() ? (fmi2CausalityLocal == fmi2Causality_) : (fmi3CausalityLocal == fmi3Causality_);}
+    bool isIndependent() const { return isFmi2() ? (fmi2CausalityIndependent == fmi2Causality_) : (fmi3CausalityIndependent == fmi3Causality_);}
 
     bool isState() const { return is_state; }
     bool isDer() const { return is_der; }
@@ -112,14 +112,14 @@ namespace oms
 
     // FMI 2.0 specific members
     fmi2ValueReference fmi2Vr;
-    fmi2Causality fmi2Causality;
-    fmi2Variability fmi2Variability;
+    fmi2Causality fmi2Causality_;
+    fmi2Variability fmi2Variability_;
     fmi2Initial fmi2InitialProperty;
 
     // FMI 3.0 specific members
     fmi3ValueReference fmi3Vr;
-    fmi3Causality fmi3Causality;
-    fmi3Variability fmi3Variability;
+    fmi3Causality fmi3Causality_;
+    fmi3Variability fmi3Variability_;
     fmi3Initial fmi3InitialProperty;
 
     bool is_state;
