@@ -956,14 +956,36 @@ oms_status_enu_t oms::ComponentFMU3CS::getBoolean(const ComRef& cref, bool& valu
   return getBoolean(vr, value);
 }
 
-oms_status_enu_t oms::ComponentFMU3CS::getInteger(const fmi3ValueReference& vr, int& value)
+oms_status_enu_t oms::ComponentFMU3CS::getInteger(const fmi3ValueReference& vr, int& value, oms_signal_numeric_type_enu_t numericType)
 {
   CallClock callClock(clock);
-  int64_t value_;
 
-  if (fmi3OK != fmi3_getInt64(fmu, &vr, 1, &value_, 1))
-    return oms_status_error;
+   // Temporary variables for different types
+  int64_t value64;
+  int32_t value32;
+  int16_t value16;
+  int8_t value8;
+  uint64_t valueU64;
+  uint32_t valueU32;
+  uint16_t valueU16;
+  uint8_t valueU8;
 
+  switch (numericType)
+  {
+    case oms_signal_numeric_type_INT64:
+      if (fmi3OK != fmi3_getInt64(fmu, &vr, 1, &value64, 1))
+        return oms_status_error;
+      if (value64 < INT_MIN || value64 > INT_MAX)
+        return oms_status_error;  // Value out of range for int
+      value = static_cast<int>(value64);  // Cast to int
+      break;
+    case oms_signal_numeric_type_INT32:
+      if (fmi3OK != fmi3_getInt32(fmu, &vr, 1, &value, 1))
+        return oms_status_error;
+      break;
+    default :
+      return oms_status_error;
+  }
   return oms_status_ok;
 }
 
@@ -1044,7 +1066,7 @@ oms_status_enu_t oms::ComponentFMU3CS::getInteger(const ComRef& cref, int& value
     return logError_UnknownSignal(getFullCref() + cref);
 
   fmi3ValueReference vr = allVariables[j].getValueReferenceFMI3();
-  return getInteger(vr, value);
+  return getInteger(vr, value, allVariables[j].getNumericType());
 }
 
 oms::Variable* oms::ComponentFMU3CS::getVariable(const ComRef& cref)
@@ -1058,12 +1080,28 @@ oms::Variable* oms::ComponentFMU3CS::getVariable(const ComRef& cref)
   return NULL;
 }
 
-oms_status_enu_t oms::ComponentFMU3CS::getReal(const fmi3ValueReference& vr, double& value)
+oms_status_enu_t oms::ComponentFMU3CS::getReal(const fmi3ValueReference& vr, double& value, oms_signal_numeric_type_enu_t numericType)
 {
   CallClock callClock(clock);
 
-  if (fmi3OK != fmi3_getFloat64(fmu, &vr, 1, &value, 1))
-    return oms_status_error;
+  switch (numericType)
+  {
+    case oms_signal_numeric_type_FLOAT64:
+      if (fmi3OK != fmi3_getFloat64(fmu, &vr, 1, &value, 1))
+        return oms_status_error;
+      break;
+
+    case oms_signal_numeric_type_FLOAT32:
+      float value_;
+      if (fmi3OK != fmi3_getFloat32(fmu, &vr, 1, &value_, 1))
+        return oms_status_error;
+      // Convert the float to double and assign to 'value'
+      value = static_cast<double>(value_);
+      break;
+
+    default:
+      oms_status_error;
+  }
 
   if (std::isnan(value))
     return logError("getReal returned NAN");
@@ -1150,7 +1188,7 @@ oms_status_enu_t oms::ComponentFMU3CS::getReal(const ComRef& cref, double& value
     return logError_UnknownSignal(getFullCref() + cref);
 
   fmi3ValueReference vr = allVariables[j].getValueReferenceFMI3();
-  return getReal(vr, value);
+  return getReal(vr, value, allVariables[j].getNumericType());
 }
 
 oms_status_enu_t oms::ComponentFMU3CS::getString(const fmi3ValueReference& vr, std::string& value)
@@ -1508,9 +1546,22 @@ oms_status_enu_t oms::ComponentFMU3CS::setInteger(const ComRef& cref, int value)
   else
   {
     fmi3ValueReference vr = allVariables[j].getValueReferenceFMI3();
-    int64_t value_;
-    if (fmi3OK != fmi3_setInt64(fmu, &vr, 1, &value_, 1))
+    int64_t value64;
+    switch (allVariables[j].getNumericType())
+    {
+    case oms_signal_numeric_type_INT64:
+      value64 = static_cast<int>(value);  // Cast to int
+      if (fmi3OK != fmi3_setInt64(fmu, &vr, 1, &value64, 1))
+        return oms_status_error;
+      break;
+    case oms_signal_numeric_type_INT32:
+      if (fmi3OK != fmi3_setInt32(fmu, &vr, 1, &value, 1))
+        return oms_status_error;
+      break;
+    default:
       return oms_status_error;
+    }
+
   }
 
   return oms_status_ok;
@@ -1567,8 +1618,16 @@ oms_status_enu_t oms::ComponentFMU3CS::setReal(const ComRef& cref, double value)
   else
   {
     fmi3ValueReference vr = allVariables[j].getValueReferenceFMI3();
-    if (fmi3OK != fmi3_setFloat64(fmu, &vr, 1, &value, 1))
-      return oms_status_error;
+    switch (allVariables[j].getNumericType())
+    {
+      case oms_signal_numeric_type_FLOAT64:
+        if (fmi3OK != fmi3_setFloat64(fmu, &vr, 1, &value, 1))
+          return oms_status_error;
+      case oms_signal_numeric_type_FLOAT32:
+        float value_= value;
+        if (fmi3OK != fmi3_setFloat32(fmu, &vr, 1, &value_, 1))
+          return oms_status_error;
+    }
   }
 
   return oms_status_ok;
@@ -1816,13 +1875,13 @@ oms_status_enu_t oms::ComponentFMU3CS::updateSignals(ResultWriter& resultWriter)
     SignalValue_t value;
     if (var.isTypeReal())
     {
-        if (oms_status_ok != getReal(vr, value.realValue))
+      if (oms_status_ok != getReal(vr, value.realValue, var.getNumericType()))
         return logError("failed to fetch variable " + std::string(var.getCref()));
       resultWriter.updateSignal(ID, value);
     }
     else if (var.isTypeInteger())
     {
-      if (oms_status_ok != getInteger(vr, value.intValue))
+      if (oms_status_ok != getInteger(vr, value.intValue, var.getNumericType()))
         return logError("failed to fetch variable " + std::string(var.getCref()));
       resultWriter.updateSignal(ID, value);
     }

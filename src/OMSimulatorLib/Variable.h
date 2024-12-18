@@ -88,6 +88,7 @@ namespace oms
     fmi2ValueReference getValueReference() const { return fmi2Vr; }
     fmi3ValueReference getValueReferenceFMI3() const { return fmi3Vr; }
     oms_signal_type_enu_t getType() const { return type; }
+    oms_signal_numeric_type_enu_t getNumericType() const {return numericType;}
     const std::string& getDescription() const { return description; }
 
     bool isTypeBoolean() const { return oms_signal_type_boolean == type; }
@@ -127,6 +128,7 @@ namespace oms
     bool is_continuous_time_state;
     bool is_continuous_time_der;
     oms_signal_type_enu_t type;
+    oms_signal_numeric_type_enu_t numericType;
     unsigned int index; ///< index origin = 0
     size_t state_index; ///< index origin = 0
     size_t der_index; ///< index origin = 0

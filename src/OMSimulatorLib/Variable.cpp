@@ -89,7 +89,7 @@ void oms::Variable::configureFMI2Variable(fmiHandle* fmi4c, int index_)
       type = oms_signal_type_enum;
       break;
     default:
-      logError("Unknown fmi base type");
+      logError("Unknown fmi base type: " + fmi2_getVariableDataType(var));
       type = oms_signal_type_real;
       break;
   }
@@ -127,9 +127,43 @@ void oms::Variable::configureFMI3Variable(fmiHandle* fmi4c, int index_)
   {
     case fmi3DataTypeFloat64:
       type = oms_signal_type_real;
+      numericType = oms_signal_numeric_type_FLOAT64;
+      break;
+    case fmi3DataTypeFloat32:
+      type = oms_signal_type_real;
+      numericType = oms_signal_numeric_type_FLOAT32;
       break;
     case fmi3DataTypeInt64:
       type = oms_signal_type_integer;
+      numericType = oms_signal_numeric_type_INT64;
+      break;
+    case fmi3DataTypeInt32:
+      type = oms_signal_type_integer;
+      numericType  = oms_signal_numeric_type_INT32;
+      break;
+    case fmi3DataTypeInt16:
+      type = oms_signal_type_integer;
+      numericType  = oms_signal_numeric_type_INT16;
+      break;
+    case fmi3DataTypeInt8:
+      type = oms_signal_type_integer;
+      numericType  = oms_signal_numeric_type_INT8;
+      break;
+    case fmi3DataTypeUInt64:
+      type = oms_signal_type_integer;
+      numericType  = oms_signal_numeric_type_UINT64;
+      break;
+    case fmi3DataTypeUInt32:
+      type = oms_signal_type_integer;
+      numericType  = oms_signal_numeric_type_UINT32;
+      break;
+    case fmi3DataTypeUInt16:
+      type = oms_signal_type_integer;
+      numericType  = oms_signal_numeric_type_UINT16;
+      break;
+    case fmi3DataTypeUInt8:
+      type = oms_signal_type_integer;
+      numericType  = oms_signal_numeric_type_UINT8;
       break;
     case fmi3DataTypeBoolean:
       type = oms_signal_type_boolean;
@@ -141,7 +175,7 @@ void oms::Variable::configureFMI3Variable(fmiHandle* fmi4c, int index_)
       type = oms_signal_type_enum;
       break;
     default:
-      logError("Unknown FMI3 base type");
+      logError("Unknown FMI3 base type for var : " + std::string(cref));
       type = oms_signal_type_real;
       break;
   }

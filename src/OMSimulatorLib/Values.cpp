@@ -1776,7 +1776,7 @@ oms_status_enu_t oms::Values::parseModelDescriptionFmi3(const filesystem::path& 
       }
       for(pugi::xml_node_iterator it_ = modelVariableNode.begin(); it_ != modelVariableNode.end(); ++it_)
       {
-        if (std::string(it_->name()) == "Float64")
+        if (std::string(it_->name()) == "Float64" || std::string(it_->name()) == "Float32")
         {
           // start values
           if (strlen(it_->attribute("start").as_string()) != 0)
@@ -1784,6 +1784,12 @@ oms_status_enu_t oms::Values::parseModelDescriptionFmi3(const filesystem::path& 
           // check for units
           if (strlen(it_->attribute("unit").as_string()) != 0)
             modelDescriptionVariableUnits[ComRef(it_->attribute("name").as_string())] = it_->attribute("unit").as_string();
+        }
+        if (std::string(it_->name()) == "Int32" || std::string(it_->name()) == "Int64")
+        {
+          // start values
+          if (strlen(it_->attribute("start").as_string()) != 0)
+            modelDescriptionIntegerStartValues[ComRef(it_->attribute("name").as_string())] = it_->attribute("start").as_int();
         }
         // TODO check start values for other dataTypes
       }

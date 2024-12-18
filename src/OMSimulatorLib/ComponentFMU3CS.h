@@ -84,9 +84,9 @@ namespace oms
     oms_status_enu_t getBoolean(const ComRef& cref, bool& value);
     oms_status_enu_t getBoolean(const fmi3ValueReference& vr, bool& value);
     oms_status_enu_t getInteger(const ComRef& cref, int& value);
-    oms_status_enu_t getInteger(const fmi3ValueReference& vr, int& value);
+    oms_status_enu_t getInteger(const fmi3ValueReference& vr, int& value, oms_signal_numeric_type_enu_t numericType);
     oms_status_enu_t getReal(const ComRef& cref, double& value);
-    oms_status_enu_t getReal(const fmi3ValueReference& vr, double& value);
+    oms_status_enu_t getReal(const fmi3ValueReference& vr, double& value, oms_signal_numeric_type_enu_t numericType);
     oms_status_enu_t getString(const ComRef& cref, std::string& value);
     oms_status_enu_t getString(const fmi3ValueReference& vr, std::string& value);
     oms_status_enu_t setBoolean(const ComRef& cref, bool value);
