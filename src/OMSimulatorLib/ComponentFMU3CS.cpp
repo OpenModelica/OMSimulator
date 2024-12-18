@@ -973,16 +973,20 @@ oms_status_enu_t oms::ComponentFMU3CS::getInteger(const fmi3ValueReference& vr, 
   switch (numericType)
   {
     case oms_signal_numeric_type_INT64:
+    {
       if (fmi3OK != fmi3_getInt64(fmu, &vr, 1, &value64, 1))
         return oms_status_error;
       if (value64 < INT_MIN || value64 > INT_MAX)
         return oms_status_error;  // Value out of range for int
       value = static_cast<int>(value64);  // Cast to int
       break;
+    }
     case oms_signal_numeric_type_INT32:
+    {
       if (fmi3OK != fmi3_getInt32(fmu, &vr, 1, &value, 1))
         return oms_status_error;
       break;
+    }
     default :
       return oms_status_error;
   }
@@ -1087,20 +1091,22 @@ oms_status_enu_t oms::ComponentFMU3CS::getReal(const fmi3ValueReference& vr, dou
   switch (numericType)
   {
     case oms_signal_numeric_type_FLOAT64:
+    {
       if (fmi3OK != fmi3_getFloat64(fmu, &vr, 1, &value, 1))
         return oms_status_error;
       break;
-
+    }
     case oms_signal_numeric_type_FLOAT32:
+    {
       float value_;
       if (fmi3OK != fmi3_getFloat32(fmu, &vr, 1, &value_, 1))
         return oms_status_error;
       // Convert the float to double and assign to 'value'
       value = static_cast<double>(value_);
       break;
-
+    }
     default:
-      oms_status_error;
+      return oms_status_error;
   }
 
   if (std::isnan(value))
@@ -1549,19 +1555,22 @@ oms_status_enu_t oms::ComponentFMU3CS::setInteger(const ComRef& cref, int value)
     int64_t value64;
     switch (allVariables[j].getNumericType())
     {
-    case oms_signal_numeric_type_INT64:
-      value64 = static_cast<int>(value);  // Cast to int
-      if (fmi3OK != fmi3_setInt64(fmu, &vr, 1, &value64, 1))
+      case oms_signal_numeric_type_INT64:
+      {
+        value64 = static_cast<int>(value); // Cast to int
+        if (fmi3OK != fmi3_setInt64(fmu, &vr, 1, &value64, 1))
+          return oms_status_error;
+        break;
+      }
+      case oms_signal_numeric_type_INT32:
+      {
+        if (fmi3OK != fmi3_setInt32(fmu, &vr, 1, &value, 1))
+          return oms_status_error;
+        break;
+      }
+      default:
         return oms_status_error;
-      break;
-    case oms_signal_numeric_type_INT32:
-      if (fmi3OK != fmi3_setInt32(fmu, &vr, 1, &value, 1))
-        return oms_status_error;
-      break;
-    default:
-      return oms_status_error;
     }
-
   }
 
   return oms_status_ok;
@@ -1621,12 +1630,20 @@ oms_status_enu_t oms::ComponentFMU3CS::setReal(const ComRef& cref, double value)
     switch (allVariables[j].getNumericType())
     {
       case oms_signal_numeric_type_FLOAT64:
+      {
         if (fmi3OK != fmi3_setFloat64(fmu, &vr, 1, &value, 1))
           return oms_status_error;
+        break;
+      }
       case oms_signal_numeric_type_FLOAT32:
-        float value_= value;
+      {
+        float value_= static_cast<float>(value);
         if (fmi3OK != fmi3_setFloat32(fmu, &vr, 1, &value_, 1))
           return oms_status_error;
+        break;
+      }
+      default:
+        return oms_status_error;
     }
   }
 
