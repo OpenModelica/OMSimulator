@@ -3,6 +3,7 @@ TEST = ../../rtest -v
 TESTFILES = \
 BouncingBall.lua \
 VanDerPol.lua \
+Stair.lua \
 
 # Run make failingtest
 FAILINGTESTFILES = \

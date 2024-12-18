@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  fmiVersion="3.0"
+  modelName="Stair"
+  description="This model generates a stair signal using time events"
+  generationTool="Reference FMUs (v0.0.37)"
+  generationDateAndTime="2024-12-09T07:40:35.257610+00:00"
+  instantiationToken="{BD403596-3166-4232-ABC2-132BDF73E644}">
+
+  <ModelExchange
+    modelIdentifier="Stair"
+    canGetAndSetFMUState="true"
+    canSerializeFMUState="true"/>
+
+  <CoSimulation
+    modelIdentifier="Stair"
+    canGetAndSetFMUState="true"
+    canSerializeFMUState="true"
+    canHandleVariableCommunicationStepSize="true"
+    providesIntermediateUpdate="true"
+    canReturnEarlyAfterIntermediateUpdate="true"
+    fixedInternalStepSize="0.2"
+    hasEventMode="true"/>
+
+  <LogCategories>
+    <Category name="logEvents" description="Log events"/>
+    <Category name="logStatusError" description="Log error messages"/>
+  </LogCategories>
+
+  <DefaultExperiment startTime="0" stopTime="10" stepSize="0.2"/>
+
+  <ModelVariables>
+    <Float64 name="time" valueReference="0" causality="independent" variability="continuous" description="Simulation time"/>
+    <Int32 name="counter" valueReference="1" description="counts the seconds" causality="output" variability="discrete" initial="exact" start="1" max="10"/>
+  </ModelVariables>
+
+  <ModelStructure>
+    <Output valueReference="1"/>
+  </ModelStructure>
+
+</fmiModelDescription>

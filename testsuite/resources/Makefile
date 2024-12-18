@@ -49,6 +49,7 @@ replaceA_extended \
 replaceB \
 Resource \
 Stair \
+Stair3 \
 str_hello_world \
 tank1 \
 tank2 \
