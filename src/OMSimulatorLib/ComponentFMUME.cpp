@@ -158,7 +158,7 @@ oms::Component* oms::ComponentFMUME::NewComponent(const oms::ComRef& cref, oms::
   }
 
   // update FMU info
-  component->fmuInfo.update(version, component->fmu);
+  component->fmuInfo.update(oms_component_fmu, component->fmu);
   component->omsfmi2logger = oms::fmi2logger;
 
   component->nEventIndicators = fmi2_getNumberOfEventIndicators(component->fmu);
@@ -168,7 +168,7 @@ oms::Component* oms::ComponentFMUME::NewComponent(const oms::ComRef& cref, oms::
   component->exportVariables.reserve(fmi2_getNumberOfVariables(component->fmu));
   for (unsigned int i = 0; i < fmi2_getNumberOfVariables(component->fmu); ++i)
   {
-    oms::Variable v(component->fmu, i);
+    oms::Variable v(component->fmu, i, oms_component_fmu);
     if (v.getIndex() != i)
     {
       logError("Index mismatch " + std::to_string(v.getIndex()) + " != " + std::to_string(i) + ".\nPlease report the problem to the dev team: https://github.com/OpenModelica/OMSimulator/issues/new?assignees=&labels=&template=bug_report.md");

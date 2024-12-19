@@ -237,6 +237,7 @@ namespace oms
 
     bool loopsNeedUpdate = true;
     std::vector<AlgLoop> algLoops;  ///< vector of algebraic loop objects
+    std::string getFmiVersion(const std::string& path);
   };
 }
 

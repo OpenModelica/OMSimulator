@@ -55,7 +55,7 @@ namespace oms
   class Variable;
 
   void fmi2logger(fmi2ComponentEnvironment env, fmi2String instanceName, fmi2Status status, fmi2String category, fmi2String message, ...);
-
+  void fmi3logger(fmi3InstanceEnvironment env, fmi3Status status, fmi3String category, fmi3String message);
   class Component
   {
   public:

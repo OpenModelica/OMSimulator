@@ -75,7 +75,24 @@ oms::FMUInfo::~FMUInfo()
   if (this->version) delete[] this->version;
 }
 
-void oms::FMUInfo::update(fmiVersion_t version, fmiHandle* fmu)
+void oms::FMUInfo::update(oms_component_enu_t componentType, fmiHandle* fmu)
+{
+  // Check the component type
+  switch (componentType)
+  {
+    case oms_component_fmu: // FMI 2.0
+      updateFMI2Info(fmu);
+      break;
+    case oms_component_fmu3: // FMI 3.0
+      updateFMI3Info(fmu);
+      break;
+    default: // Unsupported type
+      logError("Unsupported component type for Variable constructor");
+  }
+
+}
+
+void oms::FMUInfo::updateFMI2Info(fmiHandle* fmu)
 {
   if (fmi2_getSupportsCoSimulation(fmu))
     this->fmiKind = oms_fmi_kind_cs;
@@ -118,5 +135,61 @@ void oms::FMUInfo::update(fmiVersion_t version, fmiHandle* fmu)
     this->completedIntegratorStepNotNeeded = fmi2me_getCompletedIntegratorStepNotNeeded(fmu) > 0;
     this->needsExecutionTool = fmi2me_getNeedsExecutionTool(fmu) > 0;
     this->providesDirectionalDerivative = fmi2me_getProvidesDirectionalDerivative(fmu) > 0;
+  }
+}
+
+void oms::FMUInfo::updateFMI3Info(fmiHandle* fmu)
+{
+  if (fmi3_supportsCoSimulation(fmu))
+    this->fmiKind = oms_fmi_kind_cs;
+  else if (fmi3_supportsModelExchange(fmu))
+    this->fmiKind = oms_fmi_kind_me;
+  else if (fmi3_supportsModelExchange(fmu) && fmi3_supportsCoSimulation(fmu))
+    this->fmiKind = oms_fmi_kind_me_and_cs;
+
+  this->author = allocateAndCopyString(fmi3_author(fmu));
+  this->copyright = allocateAndCopyString(fmi3_copyright(fmu));
+  this->description = allocateAndCopyString(fmi3_description(fmu));
+  this->fmiVersion = allocateAndCopyString(fmi3_getFmiVersion(fmu));
+  this->generationDateAndTime = allocateAndCopyString(fmi3_generationDateAndTime(fmu));
+  this->generationTool = allocateAndCopyString(fmi3_generationTool(fmu));
+  this->guid = allocateAndCopyString(fmi3_instantiationToken(fmu));
+
+  this->license = allocateAndCopyString(fmi3_license(fmu));
+  this->modelName = allocateAndCopyString(fmi3_modelName(fmu));
+
+  if (oms_fmi_kind_cs == fmiKind || oms_fmi_kind_me_and_cs == fmiKind)
+  {
+
+    this->canBeInstantiatedOnlyOncePerProcess = fmi3cs_getCanBeInstantiatedOnlyOncePerProcess(fmu) > 0;
+    this->canGetAndSetFMUstate = fmi3cs_getCanGetAndSetFMUState(fmu) > 0;
+    this->canSerializeFMUstate = fmi3cs_getCanSerializeFMUState(fmu) > 0;
+    this->completedIntegratorStepNotNeeded = false;
+    this->needsExecutionTool = fmi3cs_getNeedsExecutionTool(fmu) > 0;
+    this->providesDirectionalDerivative = fmi3cs_getProvidesDirectionalDerivative(fmu) > 0;
+    this->maxOutputDerivativeOrder = fmi3cs_getMaxOutputDerivativeOrder(fmu);
+    // TODO handle the following FMI3 CS attributes
+    // providesIntermediateUpdate
+    // mightReturnEarlyFromDoStep
+    // providesEvaluateDiscreteStates
+    // recommendedIntermediateInputSmoothness
+    // canHandleVariableCommunicationStepSize
+    // canReturnEarlyAfterIntermediateUpdate
+    // fixedInternalStepSize
+    // hasEventMode
+  }
+
+  if (oms_fmi_kind_me == fmiKind || oms_fmi_kind_me_and_cs == fmiKind)
+  {
+    this->canBeInstantiatedOnlyOncePerProcess = fmi3me_getCanBeInstantiatedOnlyOncePerProcess(fmu) > 0;
+    this->canGetAndSetFMUstate = fmi3me_getCanGetAndSetFMUState(fmu) > 0;
+    this->canSerializeFMUstate = fmi3me_getCanSerializeFMUState(fmu) > 0;
+    this->completedIntegratorStepNotNeeded = fmi3me_getNeedsCompletedIntegratorStep(fmu) > 0;
+    this->needsExecutionTool = fmi3me_getNeedsExecutionTool(fmu) > 0;
+    this->providesDirectionalDerivative = fmi3me_getProvidesDirectionalDerivative(fmu) > 0;
+    // TODO handle the following FMI3 ME attributes
+    //providesAdjointDerivatives
+    //providesPerElementDependencies
+    //providesEvaluateDiscreteStates
   }
 }

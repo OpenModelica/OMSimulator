@@ -1,0 +1,91 @@
+<html>
+  <head>
+    <title>Stair</title>
+    <style>
+    body {
+        font-family: Helvetica, Arial, Sans-Serif;
+        margin: 2em;
+    }
+
+    div.container {
+        max-width: 750px;
+        margin: auto;
+    }
+
+
+    h1, h2 {
+        border-bottom: 1px solid #eaecef;
+        padding-bottom: .3em;
+    }
+
+    pre {
+        background-color: #f6f8fa;
+        border-radius: 3px;
+        font-size: 85%;
+        line-height: 1.45;
+        overflow: auto;
+        padding: 16px;
+    }
+
+    table {
+        border-collapse: collapse;
+        border-spacing: 0;
+    }
+
+    th, td {
+        font-size: 0.9em;
+        border: 1px solid #dfe2e5;
+        padding: 6px 13px;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+
+      <h1>Stair</h1>
+
+<p>The model generates time events every second and increments the variable <code>counter</code>.</p>
+
+
+      <p>with the variables</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th style="text-align:left;">Variable</th>
+            <th style="text-align:right;">Start</th>
+            <th style="text-align:left;">Unit</th>
+            <th>Causality</th>
+            <th>Variability</th>
+            <th style="text-align:left;">Description</th>
+          </tr>
+        </thead>
+        <tbody>
+                  <tr>
+            <td style="text-align:left;">time</td>
+            <td style="text-align:right;"></td>
+            <td style="text-align:left;"></td>
+            <td>independent</td>
+            <td>continuous</td>
+            <td style="text-align:left;">Simulation time</td>
+          </tr>
+                  <tr>
+            <td style="text-align:left;">counter</td>
+            <td style="text-align:right;">1</td>
+            <td style="text-align:left;"></td>
+            <td>output</td>
+            <td>discrete</td>
+            <td style="text-align:left;">counts the seconds</td>
+          </tr>
+                </tbody>
+      </table>
+
+      <p>The plot shows the trajectories of the output variables computed with <a href="https://github.com/modelica/Reference-FMUs/">fmusim</a>.</p>
+
+      <pre><code>fmusim --interface-type me --solver cvode --output-interval 1 --output-file Stair_out.csv Stair.fmu</code></pre>
+
+      <p><img src="result.svg" alt="plot" /></p>
+
+    </div>
+  </body>
+</html>

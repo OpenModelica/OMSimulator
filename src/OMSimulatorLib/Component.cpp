@@ -89,6 +89,39 @@ void oms::fmi2logger(fmi2ComponentEnvironment env, fmi2String instanceName, fmi2
   }
 }
 
+void oms::fmi3logger(fmi3InstanceEnvironment env, fmi3Status status, fmi3String category, fmi3String message)
+{
+  if (status == fmi3OK && !logDebugEnabled())
+  {
+    // When frequently called for debug logging during simulation, avoid costly formatting.
+    return;
+  }
+
+  std::string msg = message; // Directly use the message as a string.
+
+  switch (status)
+  {
+  case fmi3OK:
+    logDebug("[fmi3OK] " + std::string(category) + ": " + msg);
+    break;
+  case fmi3Warning:
+    logWarning("[fmi3Warning] " + std::string(category) + ": " + msg);
+    break;
+  case fmi3Discard:
+    logError("[fmi3Discard] " + std::string(category) + ": " + msg);
+    break;
+  case fmi3Error:
+    logError("[fmi3Error] " + std::string(category) + ": " + msg);
+    break;
+  case fmi3Fatal:
+    logError("[fmi3Fatal] "  + std::string(category) + ": " + msg);
+    break;
+  default:
+    logError("[unknown] " + std::string(category) + ": " + msg);
+    break;
+  }
+}
+
 oms::Component::Component(const ComRef& cref, oms_component_enu_t type, System* parentSystem, const std::string& path)
   : element(oms_element_component, cref), cref(cref), type(type), parentSystem(parentSystem), path(path)
 {

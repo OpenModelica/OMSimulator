@@ -1,0 +1,353 @@
+<html>
+  <head>
+    <title>Feedthrough</title>
+    <style>
+    body {
+        font-family: Helvetica, Arial, Sans-Serif;
+        margin: 2em;
+    }
+
+    div.container {
+        max-width: 750px;
+        margin: auto;
+    }
+
+
+    h1, h2 {
+        border-bottom: 1px solid #eaecef;
+        padding-bottom: .3em;
+    }
+
+    pre {
+        background-color: #f6f8fa;
+        border-radius: 3px;
+        font-size: 85%;
+        line-height: 1.45;
+        overflow: auto;
+        padding: 16px;
+    }
+
+    table {
+        border-collapse: collapse;
+        border-spacing: 0;
+    }
+
+    th, td {
+        font-size: 0.9em;
+        border: 1px solid #dfe2e5;
+        padding: 6px 13px;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+
+      <h1>Feedthrough</h1>
+
+<p>In order to reproduce the reference results the following parameters need to be set</p>
+
+<pre><code>Float64_fixed_parameter: 1
+String_parameter:        "FMI is awesome!"
+</code></pre>
+
+<p>and the <a href="Feedthrough_in.csv">input signals</a> must be applied.</p>
+
+
+      <p>with the variables</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th style="text-align:left;">Variable</th>
+            <th style="text-align:right;">Start</th>
+            <th style="text-align:left;">Unit</th>
+            <th>Causality</th>
+            <th>Variability</th>
+            <th style="text-align:left;">Description</th>
+          </tr>
+        </thead>
+        <tbody>
+                  <tr>
+            <td style="text-align:left;">time</td>
+            <td style="text-align:right;"></td>
+            <td style="text-align:left;"></td>
+            <td>independent</td>
+            <td>continuous</td>
+            <td style="text-align:left;"></td>
+          </tr>
+                  <tr>
+            <td style="text-align:left;">Float32_continuous_input</td>
+            <td style="text-align:right;">0</td>
+            <td style="text-align:left;"></td>
+            <td>input</td>
+            <td>continuous</td>
+            <td style="text-align:left;"></td>
+          </tr>
+                  <tr>
+            <td style="text-align:left;">Float32_continuous_output</td>
+            <td style="text-align:right;"></td>
+            <td style="text-align:left;"></td>
+            <td>output</td>
+            <td>continuous</td>
+            <td style="text-align:left;"></td>
+          </tr>
+                  <tr>
+            <td style="text-align:left;">Float32_discrete_input</td>
+            <td style="text-align:right;">0</td>
+            <td style="text-align:left;"></td>
+            <td>input</td>
+            <td>discrete</td>
+            <td style="text-align:left;"></td>
+          </tr>
+                  <tr>
+            <td style="text-align:left;">Float32_discrete_output</td>
+            <td style="text-align:right;"></td>
+            <td style="text-align:left;"></td>
+            <td>output</td>
+            <td>discrete</td>
+            <td style="text-align:left;"></td>
+          </tr>
+                  <tr>
+            <td style="text-align:left;">Float64_fixed_parameter</td>
+            <td style="text-align:right;">0</td>
+            <td style="text-align:left;"></td>
+            <td>parameter</td>
+            <td>fixed</td>
+            <td style="text-align:left;"></td>
+          </tr>
+                  <tr>
+            <td style="text-align:left;">Float64_tunable_parameter</td>
+            <td style="text-align:right;">0</td>
+            <td style="text-align:left;"></td>
+            <td>parameter</td>
+            <td>tunable</td>
+            <td style="text-align:left;"></td>
+          </tr>
+                  <tr>
+            <td style="text-align:left;">Float64_continuous_input</td>
+            <td style="text-align:right;">0</td>
+            <td style="text-align:left;"></td>
+            <td>input</td>
+            <td>continuous</td>
+            <td style="text-align:left;"></td>
+          </tr>
+                  <tr>
+            <td style="text-align:left;">Float64_continuous_output</td>
+            <td style="text-align:right;"></td>
+            <td style="text-align:left;"></td>
+            <td>output</td>
+            <td>continuous</td>
+            <td style="text-align:left;"></td>
+          </tr>
+                  <tr>
+            <td style="text-align:left;">Float64_discrete_input</td>
+            <td style="text-align:right;">0</td>
+            <td style="text-align:left;"></td>
+            <td>input</td>
+            <td>discrete</td>
+            <td style="text-align:left;"></td>
+          </tr>
+                  <tr>
+            <td style="text-align:left;">Float64_discrete_output</td>
+            <td style="text-align:right;"></td>
+            <td style="text-align:left;"></td>
+            <td>output</td>
+            <td>discrete</td>
+            <td style="text-align:left;"></td>
+          </tr>
+                  <tr>
+            <td style="text-align:left;">Int8_input</td>
+            <td style="text-align:right;">0</td>
+            <td style="text-align:left;"></td>
+            <td>input</td>
+            <td>discrete</td>
+            <td style="text-align:left;"></td>
+          </tr>
+                  <tr>
+            <td style="text-align:left;">Int8_output</td>
+            <td style="text-align:right;"></td>
+            <td style="text-align:left;"></td>
+            <td>output</td>
+            <td>discrete</td>
+            <td style="text-align:left;"></td>
+          </tr>
+                  <tr>
+            <td style="text-align:left;">UInt8_input</td>
+            <td style="text-align:right;">0</td>
+            <td style="text-align:left;"></td>
+            <td>input</td>
+            <td>discrete</td>
+            <td style="text-align:left;"></td>
+          </tr>
+                  <tr>
+            <td style="text-align:left;">UInt8_output</td>
+            <td style="text-align:right;"></td>
+            <td style="text-align:left;"></td>
+            <td>output</td>
+            <td>discrete</td>
+            <td style="text-align:left;"></td>
+          </tr>
+                  <tr>
+            <td style="text-align:left;">Int16_input</td>
+            <td style="text-align:right;">0</td>
+            <td style="text-align:left;"></td>
+            <td>input</td>
+            <td>discrete</td>
+            <td style="text-align:left;"></td>
+          </tr>
+                  <tr>
+            <td style="text-align:left;">Int16_output</td>
+            <td style="text-align:right;"></td>
+            <td style="text-align:left;"></td>
+            <td>output</td>
+            <td>discrete</td>
+            <td style="text-align:left;"></td>
+          </tr>
+                  <tr>
+            <td style="text-align:left;">UInt16_input</td>
+            <td style="text-align:right;">0</td>
+            <td style="text-align:left;"></td>
+            <td>input</td>
+            <td>discrete</td>
+            <td style="text-align:left;"></td>
+          </tr>
+                  <tr>
+            <td style="text-align:left;">UInt16_output</td>
+            <td style="text-align:right;"></td>
+            <td style="text-align:left;"></td>
+            <td>output</td>
+            <td>discrete</td>
+            <td style="text-align:left;"></td>
+          </tr>
+                  <tr>
+            <td style="text-align:left;">Int32_input</td>
+            <td style="text-align:right;">0</td>
+            <td style="text-align:left;"></td>
+            <td>input</td>
+            <td>discrete</td>
+            <td style="text-align:left;"></td>
+          </tr>
+                  <tr>
+            <td style="text-align:left;">Int32_output</td>
+            <td style="text-align:right;"></td>
+            <td style="text-align:left;"></td>
+            <td>output</td>
+            <td>discrete</td>
+            <td style="text-align:left;"></td>
+          </tr>
+                  <tr>
+            <td style="text-align:left;">UInt32_input</td>
+            <td style="text-align:right;">0</td>
+            <td style="text-align:left;"></td>
+            <td>input</td>
+            <td>discrete</td>
+            <td style="text-align:left;"></td>
+          </tr>
+                  <tr>
+            <td style="text-align:left;">UInt32_output</td>
+            <td style="text-align:right;"></td>
+            <td style="text-align:left;"></td>
+            <td>output</td>
+            <td>discrete</td>
+            <td style="text-align:left;"></td>
+          </tr>
+                  <tr>
+            <td style="text-align:left;">Int64_input</td>
+            <td style="text-align:right;">0</td>
+            <td style="text-align:left;"></td>
+            <td>input</td>
+            <td>discrete</td>
+            <td style="text-align:left;"></td>
+          </tr>
+                  <tr>
+            <td style="text-align:left;">Int64_output</td>
+            <td style="text-align:right;"></td>
+            <td style="text-align:left;"></td>
+            <td>output</td>
+            <td>discrete</td>
+            <td style="text-align:left;"></td>
+          </tr>
+                  <tr>
+            <td style="text-align:left;">UInt64_input</td>
+            <td style="text-align:right;">0</td>
+            <td style="text-align:left;"></td>
+            <td>input</td>
+            <td>discrete</td>
+            <td style="text-align:left;"></td>
+          </tr>
+                  <tr>
+            <td style="text-align:left;">UInt64_output</td>
+            <td style="text-align:right;"></td>
+            <td style="text-align:left;"></td>
+            <td>output</td>
+            <td>discrete</td>
+            <td style="text-align:left;"></td>
+          </tr>
+                  <tr>
+            <td style="text-align:left;">Boolean_input</td>
+            <td style="text-align:right;">false</td>
+            <td style="text-align:left;"></td>
+            <td>input</td>
+            <td>discrete</td>
+            <td style="text-align:left;"></td>
+          </tr>
+                  <tr>
+            <td style="text-align:left;">Boolean_output</td>
+            <td style="text-align:right;"></td>
+            <td style="text-align:left;"></td>
+            <td>output</td>
+            <td>discrete</td>
+            <td style="text-align:left;"></td>
+          </tr>
+                  <tr>
+            <td style="text-align:left;">String_parameter</td>
+            <td style="text-align:right;">Set me!</td>
+            <td style="text-align:left;"></td>
+            <td>parameter</td>
+            <td>fixed</td>
+            <td style="text-align:left;"></td>
+          </tr>
+                  <tr>
+            <td style="text-align:left;">Binary_input</td>
+            <td style="text-align:right;">666f6f</td>
+            <td style="text-align:left;"></td>
+            <td>input</td>
+            <td>discrete</td>
+            <td style="text-align:left;"></td>
+          </tr>
+                  <tr>
+            <td style="text-align:left;">Binary_output</td>
+            <td style="text-align:right;"></td>
+            <td style="text-align:left;"></td>
+            <td>output</td>
+            <td>discrete</td>
+            <td style="text-align:left;"></td>
+          </tr>
+                  <tr>
+            <td style="text-align:left;">Enumeration_input</td>
+            <td style="text-align:right;">1</td>
+            <td style="text-align:left;">None</td>
+            <td>input</td>
+            <td>discrete</td>
+            <td style="text-align:left;"></td>
+          </tr>
+                  <tr>
+            <td style="text-align:left;">Enumeration_output</td>
+            <td style="text-align:right;"></td>
+            <td style="text-align:left;">None</td>
+            <td>output</td>
+            <td>discrete</td>
+            <td style="text-align:left;"></td>
+          </tr>
+                </tbody>
+      </table>
+
+      <p>The plot shows the trajectories of the output variables computed with <a href="https://github.com/modelica/Reference-FMUs/">fmusim</a>.</p>
+
+      <pre><code>fmusim --interface-type me --solver cvode --output-interval 1 --output-file Feedthrough_out.csv Feedthrough.fmu</code></pre>
+
+      <p><img src="result.svg" alt="plot" /></p>
+
+    </div>
+  </body>
+</html>
