@@ -19,6 +19,7 @@ equationPair.equation1 \
 equationPair.equation2 \
 EventTest \
 Feedthrough \
+Feedthrough3 \
 fmi_attributes_19 \
 fmidertest \
 HelloWorld \

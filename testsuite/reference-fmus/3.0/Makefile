@@ -4,6 +4,7 @@ TESTFILES = \
 BouncingBall.lua \
 VanDerPol.lua \
 Stair.lua \
+Feedthrough.lua \
 
 # Run make failingtest
 FAILINGTESTFILES = \
