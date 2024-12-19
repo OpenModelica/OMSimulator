@@ -12,6 +12,7 @@ B \
 BouncingBall \
 BouncingBall3 \
 Dahlquist \
+Dahlquist3 \
 DualMassOscillator.System1 \
 DualMassOscillator.System2 \
 Enum1 \

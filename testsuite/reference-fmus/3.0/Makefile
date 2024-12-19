@@ -5,6 +5,7 @@ BouncingBall.lua \
 VanDerPol.lua \
 Stair.lua \
 Feedthrough.lua \
+Dahlquist.lua \
 
 # Run make failingtest
 FAILINGTESTFILES = \
