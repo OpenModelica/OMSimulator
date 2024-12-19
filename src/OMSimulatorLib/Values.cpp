@@ -1785,11 +1785,30 @@ oms_status_enu_t oms::Values::parseModelDescriptionFmi3(const filesystem::path& 
           if (strlen(it_->attribute("unit").as_string()) != 0)
             modelDescriptionVariableUnits[ComRef(it_->attribute("name").as_string())] = it_->attribute("unit").as_string();
         }
-        if (std::string(it_->name()) == "Int32" || std::string(it_->name()) == "Int64")
+        if (std::string(it_->name()) == "Int64" ||
+            std::string(it_->name()) == "Int32" ||
+            std::string(it_->name()) == "Int16" ||
+            std::string(it_->name()) == "Int8" ||
+            std::string(it_->name()) == "UInt64" ||
+            std::string(it_->name()) == "UInt32" ||
+            std::string(it_->name()) == "UInt16" ||
+            std::string(it_->name()) == "UInt8")
         {
           // start values
           if (strlen(it_->attribute("start").as_string()) != 0)
             modelDescriptionIntegerStartValues[ComRef(it_->attribute("name").as_string())] = it_->attribute("start").as_int();
+        }
+        if (std::string(it_->name()) == "Boolean")
+        {
+          // start values
+          if (strlen(it_->attribute("start").as_string()) != 0)
+            modelDescriptionBooleanStartValues[ComRef(it_->attribute("name").as_string())] = it_->attribute("start").as_bool();
+        }
+        if (std::string(it_->name()) == "String")
+        {
+          // start values
+          if (strlen(it_->attribute("start").as_string()) != 0)
+            modelDescriptionStringStartValues[ComRef(it_->attribute("name").as_string())] = it_->attribute("start").as_string();
         }
         // TODO check start values for other dataTypes
       }

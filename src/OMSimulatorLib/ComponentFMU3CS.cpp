@@ -987,8 +987,50 @@ oms_status_enu_t oms::ComponentFMU3CS::getInteger(const fmi3ValueReference& vr, 
         return oms_status_error;
       break;
     }
+    case oms_signal_numeric_type_INT16:
+    {
+      if (fmi3OK != fmi3_getInt16(fmu, &vr, 1, &value16, 1))
+        return oms_status_error;
+      value = static_cast<int>(value16);
+      break;
+    }
+    case oms_signal_numeric_type_INT8:
+    {
+      if (fmi3OK != fmi3_getInt8(fmu, &vr, 1, &value8, 1))
+        return oms_status_error;
+      value = static_cast<int>(value8);
+      break;
+    }
+    case oms_signal_numeric_type_UINT64:
+    {
+      if (fmi3OK != fmi3_getUInt64(fmu, &vr, 1, &valueU64, 1))
+        return oms_status_error;
+      value = static_cast<int>(valueU64);
+      break;
+    }
+    case oms_signal_numeric_type_UINT32:
+    {
+      if (fmi3OK != fmi3_getUInt32(fmu, &vr, 1, &valueU32, 1))
+        return oms_status_error;
+      value = static_cast<int>(valueU32);
+      break;
+    }
+    case oms_signal_numeric_type_UINT16:
+    {
+      if (fmi3OK != fmi3_getUInt16(fmu, &vr, 1, &valueU16, 1))
+        return oms_status_error;
+      value = static_cast<int>(valueU16);
+      break;
+    }
+    case oms_signal_numeric_type_UINT8:
+    {
+      if (fmi3OK != fmi3_getUInt8(fmu, &vr, 1, &valueU8, 1))
+        return oms_status_error;
+      value = static_cast<int>(valueU8);
+      break;
+    }
     default :
-      return oms_status_error;
+      return logError("Unsupported Numeric Type");
   }
   return oms_status_ok;
 }
@@ -1106,7 +1148,7 @@ oms_status_enu_t oms::ComponentFMU3CS::getReal(const fmi3ValueReference& vr, dou
       break;
     }
     default:
-      return oms_status_error;
+      return logError("UnSupported Numeric Type:");
   }
 
   if (std::isnan(value))
@@ -1553,6 +1595,13 @@ oms_status_enu_t oms::ComponentFMU3CS::setInteger(const ComRef& cref, int value)
   {
     fmi3ValueReference vr = allVariables[j].getValueReferenceFMI3();
     int64_t value64;
+    int32_t value32;
+    int16_t value16;
+    int8_t value8;
+    uint64_t valueU64;
+    uint32_t valueU32;
+    uint16_t valueU16;
+    uint8_t valueU8;
     switch (allVariables[j].getNumericType())
     {
       case oms_signal_numeric_type_INT64:
@@ -1568,9 +1617,52 @@ oms_status_enu_t oms::ComponentFMU3CS::setInteger(const ComRef& cref, int value)
           return oms_status_error;
         break;
       }
+      case oms_signal_numeric_type_INT16:
+      {
+        value16 = static_cast<int>(value);
+        if (fmi3OK != fmi3_setInt16(fmu, &vr, 1, &value16, 1))
+          return oms_status_error;
+        break;
+      }
+
+      case oms_signal_numeric_type_INT8:
+      {
+        value8 = static_cast<int>(value);
+        if (fmi3OK != fmi3_setInt8(fmu, &vr, 1, &value8, 1))
+          return oms_status_error;
+        break;
+      }
+      case oms_signal_numeric_type_UINT64:
+      {
+        valueU64 = static_cast<int>(value);
+        if (fmi3OK != fmi3_setUInt64(fmu, &vr, 1, &valueU64, 1))
+          return oms_status_error;
+        break;
+      }
+      case oms_signal_numeric_type_UINT32:
+      {
+        valueU32 = static_cast<int>(value);
+        if (fmi3OK != fmi3_setUInt32(fmu, &vr, 1, &valueU32, 1))
+          return oms_status_error;
+        break;
+      }
+      case oms_signal_numeric_type_UINT16:
+      {
+        valueU16 = static_cast<int>(value);
+        if (fmi3OK != fmi3_setUInt16(fmu, &vr, 1, &valueU16, 1))
+          return oms_status_error;
+        break;
+      }
+      case oms_signal_numeric_type_UINT8:
+      {
+        valueU8 = static_cast<int>(value);
+        if (fmi3OK != fmi3_setUInt8(fmu, &vr, 1, &valueU8, 1))
+          return oms_status_error;
+        break;
+      }
       default:
-        return oms_status_error;
-    }
+        return logError("Unsupported Numeric Type for var: \"" + std::string(cref.c_str()) + "\"");
+      }
   }
 
   return oms_status_ok;
@@ -1643,7 +1735,7 @@ oms_status_enu_t oms::ComponentFMU3CS::setReal(const ComRef& cref, double value)
         break;
       }
       default:
-        return oms_status_error;
+        return logError("Unsupported Numeric Type for var: \"" + std::string(cref.c_str()) + "\"");
     }
   }
 

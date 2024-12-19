@@ -173,6 +173,7 @@ void oms::Variable::configureFMI3Variable(fmiHandle* fmi4c, int index_)
       break;
     case fmi3DataTypeEnumeration:
       type = oms_signal_type_enum;
+      numericType = oms_signal_numeric_type_INT64;
       break;
     default:
       logError("Unknown FMI3 base type for var : " + std::string(cref));
