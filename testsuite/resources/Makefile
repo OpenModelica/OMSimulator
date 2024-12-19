@@ -50,6 +50,7 @@ replaceA \
 replaceA_extended \
 replaceB \
 Resource \
+Resource3 \
 Stair \
 Stair3 \
 str_hello_world \

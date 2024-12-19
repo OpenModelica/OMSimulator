@@ -6,6 +6,7 @@ VanDerPol.lua \
 Stair.lua \
 Feedthrough.lua \
 Dahlquist.lua \
+Resource.lua \
 
 # Run make failingtest
 FAILINGTESTFILES = \
