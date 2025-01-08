@@ -34,8 +34,6 @@ else
 end
 
 -- Result:
--- info:    vars: time
--- info:    vars: counter
 -- Loading FMI version 3...
 -- info:    Result file: Stair-cs.mat (bufferSize=1)
 -- signal counter is equal
