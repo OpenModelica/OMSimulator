@@ -46,6 +46,8 @@
 #include <thread>
 #include <algorithm> /* std::unique and std::find are defined here */
 
+using namespace xercesc_3_2;
+
 oms::Model::Model(const oms::ComRef& cref, const std::string& tempDir)
   : cref(cref), tempDir(tempDir), resultFilename(std::string(cref) + "_res.mat")
 {
@@ -683,7 +685,7 @@ oms_status_enu_t oms::Model::addResources(const oms::ComRef& cref, const std::st
   std::string extension = filesystem::path(fileName).extension().generic_string();
 
   // initialize validator
-  oms::XercesValidator validator;
+  XercesValidator validator;
 
   // validate the srmd file
   if (extension == ".srmd")
