@@ -200,7 +200,6 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
   if (!systemStructure)
     return logError("failed to extract \"SystemStructure.ssd\" from \"" + std::string(filename) + "\"");
 
-  // TODO: check this out. this validate ssp file.
   XercesValidator xercesValidator;
   xercesValidator.validateSSP(systemStructure, filename);
 

@@ -40,7 +40,7 @@
 #include <map>
 #include <xercesc/parsers/XercesDOMParser.hpp>
 
-XERCES_CPP_NAMESPACE_USE
+using namespace xercesc_3_2;
 
 namespace oms
 {
