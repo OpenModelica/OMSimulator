@@ -688,7 +688,7 @@ oms_status_enu_t oms::Model::addResources(const oms::ComRef& cref, const std::st
   // validate the srmd file
   if (extension == ".srmd")
   {
-    oms_status_enu_t status = validator.validateSRMD(path_);
+    oms_status_enu_t status = validator.validateSRMD(path_.generic_string());
     if (status != oms_status_ok)
       logError("SRMD format validation of \"" + path + "\" failed");
       return status;
