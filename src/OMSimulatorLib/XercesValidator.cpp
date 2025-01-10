@@ -35,6 +35,8 @@
 #include "Logging.h"
 #include "OMSFileSystem.h"
 #include "OMSString.h"
+#include <algorithm>
+#include <unordered_map>
 #include <iostream>
 
 #include <xercesc/parsers/XercesDOMParser.hpp>
@@ -302,4 +304,151 @@ oms_status_enu_t oms::XercesValidator::validateFMU(const char *modeldescription,
     return logWarning("\"modeldescription.xml\" does not conform to the FMI-2.0 standard schema");
 
   return oms_status_ok;
+}
+
+oms_status_enu_t oms::XercesValidator::validateSRMD(const std::string &filePath) {
+  // Validate file extension
+  oms_status_enu_t status = isSupportedExtension(filePath, {".srmd"});
+  if (status != oms_status_ok)
+    return status;
+
+  // Initialize Xerces
+  status = initializeXerces();
+  if (status != oms_status_ok)
+    return status;
+
+  // Retrieve schema paths
+  std::map<std::string, std::string> schemaPaths;
+  const std::vector<std::tuple<std::string, std::string, std::string>> schemaFiles = {
+      {"SystemStructureCommon.xsd","http://ssp-standard.org/SSP1/SystemStructureCommon", "ssp"},
+      {"SSPTraceabilityCommon.xsd","http://ssp-standard.org/SSPTraceability1/SSPTraceabilityCommon", "ssp"},
+      {"SimulationResourceMetaData.xsd","http://ssp-standard.org/SSPTraceability1/SimulationResourceMetaData", "ssp"},
+  };
+  status = resolveSchemaPaths(schemaPaths, schemaFiles);
+  if (status != oms_status_ok)
+    return status;
+
+  // Configure the parser
+  XercesDOMParser domParser;
+
+  ParserErrorHandler parserErrorHandler("SimulationResourceMetaData", filePath.c_str());
+  domParser.setErrorHandler(&parserErrorHandler);
+
+  status = loadSchema(domParser, schemaPaths);
+  if (status != oms_status_ok)
+    return status;
+
+  //iterate and print all 
+
+  // Parse the provided XML
+  status = parseXML(domParser, filePath);
+  if (status != oms_status_ok)
+    return status;
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::XercesValidator::isSupportedExtension(const std::string &filePath, const std::vector<std::string> &validExtensions) {
+  std::string extension = filesystem::path(filePath).extension().generic_string();
+  if (std::find(validExtensions.begin(), validExtensions.end(), extension) == validExtensions.end()) {
+    logWarning("Unsupported file extension: " + extension);
+    return oms_status_warning;
+  }
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::XercesValidator::initializeXerces() {
+  static bool initialized = false; // Tracks if Xerces has already been initialized
+  if (initialized) {
+    return oms_status_ok;
+  }
+
+  try {
+    XMLPlatformUtils::Initialize();
+    initialized = true; // Mark Xerces as initialized
+    return oms_status_ok;
+  } catch (const XMLException &toCatch) {
+    char *message = XMLString::transcode(toCatch.getMessage());
+    logError("Xerces initialization error: " + std::string(message));
+    XMLString::release(&message);
+    return oms_status_error;
+  }
+}
+
+oms_status_enu_t oms::XercesValidator::resolveSchemaPaths(std::map<std::string, std::string> &paths, const std::vector<std::tuple<std::string, std::string, std::string>> &schemaFiles) {
+  std::string basePath = getExecutablePath();
+  if (basePath.empty()) {
+    logError("Executable path could not be found.");
+    return oms_status_error;
+  }
+
+  for (const auto& [file, ns, dir] : schemaFiles) {
+    const std::vector<std::string> potentialRoots = {
+      "../share/OMSimulator/schema/" + dir,
+      "../../share/OMSimulator/schema/" + dir,
+      "../../../share/OMSimulator/schema/" + dir,
+      "schema/" + dir
+    };
+
+    for (const auto &root : potentialRoots) {
+      filesystem::path path = filesystem::path(basePath) / root / file;
+      if (filesystem::exists(path)) {
+        paths[ns] = path.generic_string();
+      }
+    }
+
+    if (paths.find(ns) == paths.end()) {
+      logWarning("Schema file not found: " + file);
+      return oms_status_warning;
+    }
+  }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::XercesValidator::loadSchema(XercesDOMParser &parser, const std::map<std::string, std::string> &schemaPaths) {
+  for (const auto &[namespaceUri, path] : schemaPaths) {
+    if (parser.loadGrammar(path.c_str(), Grammar::SchemaGrammarType, true) == nullptr) {
+      logWarning("Could not load schema file: " + path);
+      return oms_status_warning;
+    }
+  }
+
+  std::string schemaLocation;
+  for (const auto &[namespaceUri, path] : schemaPaths) {
+    schemaLocation += namespaceUri + " " + path + " ";
+  }
+
+  parser.setExternalSchemaLocation(schemaLocation.c_str());
+  parser.cacheGrammarFromParse(true);
+  parser.setValidationScheme(XercesDOMParser::Val_Always);
+  parser.setDoNamespaces(true);
+  parser.setDoSchema(true);
+  parser.setValidationSchemaFullChecking(true);
+  parser.setValidationConstraintFatal(true);
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::XercesValidator::parseXML(XercesDOMParser &parser, const std::string &filePath) {
+  try {
+    parser.parse(filePath.c_str());
+
+    if (parser.getErrorCount() > 0) {
+      logWarning("XML parse error: validation failed.");
+      return oms_status_warning;
+    }
+
+    return oms_status_ok;
+  } catch (const XMLException &e) {
+    char *message = XMLString::transcode(e.getMessage());
+    logError("Xerces parse error: " + std::string(message));
+    XMLString::release(&message);
+    return oms_status_error;
+  } catch (const DOMException &e) {
+    char *message = XMLString::transcode(e.msg);
+    logError("DOM parse error: " + std::string(message));
+    XMLString::release(&message);
+    return oms_status_error;
+  }
 }

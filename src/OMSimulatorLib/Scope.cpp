@@ -185,9 +185,12 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
   if (_cref)
     *_cref = NULL;
 
-  std::string extension = "";
-  if (filename.length() > 4)
-    extension = filename.substr(filename.length() - 4);
+  // TODO: this is a temporary workaround, we need a proper helper function to get the extension, .srmd is bigger that 4 so the old check is not valid
+  std::string extension = filesystem::path(filename).extension().generic_string();
+
+  // std::string extension = "";
+  // if (filename.length() > 4)
+  //   extension = filename.substr(filename.length() - 4);
 
   if (extension != ".ssp")
     return logError("filename extension must be \".ssp\"; no other formats are supported");
@@ -197,6 +200,7 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
   if (!systemStructure)
     return logError("failed to extract \"SystemStructure.ssd\" from \"" + std::string(filename) + "\"");
 
+  // TODO: check this out. this validate ssp file.
   XercesValidator xercesValidator;
   xercesValidator.validateSSP(systemStructure, filename);
 
@@ -257,6 +261,17 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
 
       if (".ssv" == entry.path().extension() || ".ssm" == entry.path().extension() || ".xml" == entry.path().extension())
       {
+        model->importedResources.push_back(entry.path().filename().generic_string());
+        snapshot.importResourceFile(naive_uncomplete(entry.path(), model->getTempDirectory()), model->getTempDirectory());
+      }
+
+      if (".srmd" == entry.path().extension())
+      {
+        oms_status_enu_t status = xercesValidator.validateSRMD(entry.path().generic_string());
+        if (status != oms_status_ok)
+          logError("SRMD format validation of \"" + entry.path().generic_string() + "\" failed");
+          return status;
+        
         model->importedResources.push_back(entry.path().filename().generic_string());
         snapshot.importResourceFile(naive_uncomplete(entry.path(), model->getTempDirectory()), model->getTempDirectory());
       }

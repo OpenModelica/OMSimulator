@@ -40,6 +40,7 @@
 #include "Scope.h"
 #include "ssd/Tags.h"
 #include "System.h"
+#include "XercesValidator.h"
 
 #include "minizip.h"
 #include <thread>
@@ -676,6 +677,21 @@ oms_status_enu_t oms::Model::addResources(const oms::ComRef& cref, const std::st
   {
     filesystem::path path_(path);
     fileName = path_.filename().generic_string();
+  }
+
+  // TODO: this is a temporary workaround, we need a proper helper function to get the extension, .srmd is bigger that 4 so the old check is not valid
+  std::string extension = filesystem::path(fileName).extension().generic_string();
+
+  // initialize validator
+  oms::XercesValidator validator;
+
+  // validate the srmd file
+  if (extension == ".srmd")
+  {
+    oms_status_enu_t status = validator.validateSRMD(path_);
+    if (status != oms_status_ok)
+      logError("SRMD format validation of \"" + path + "\" failed");
+      return status;
   }
 
   // copy the file to temp directory
