@@ -1,0 +1,133 @@
+<?xml version="1.0"?>
+<ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="import_export_parameters" version="1.0">
+	<ssd:System name="co_sim">
+		<ssd:Connectors>
+			<ssd:Connector name="Input_cref" kind="input">
+				<ssc:Real />
+			</ssd:Connector>
+			<ssd:Connector name="Input1" kind="input">
+				<ssc:Real />
+			</ssd:Connector>
+			<ssd:Connector name="Output_cref" kind="output">
+				<ssc:Real />
+			</ssd:Connector>
+			<ssd:Connector name="T_cref" kind="parameter">
+				<ssc:Real />
+			</ssd:Connector>
+			<ssd:Connector name="k_cref" kind="parameter">
+				<ssc:Real />
+			</ssd:Connector>
+		</ssd:Connectors>
+		<ssd:ParameterBindings>
+			<ssd:ParameterBinding source="resources/import_export_parameters.ssv" />
+		</ssd:ParameterBindings>
+		<ssd:Elements>
+			<ssd:System name="foo">
+				<ssd:Connectors>
+					<ssd:Connector name="F_cref" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+				</ssd:Connectors>
+				<ssd:Annotations>
+					<ssc:Annotation type="org.openmodelica">
+						<oms:Annotations>
+							<oms:SimulationInformation>
+								<oms:VariableStepSolver description="cvode" absoluteTolerance="0.000100" relativeTolerance="0.000100" minimumStepSize="0.000100" maximumStepSize="0.100000" initialStepSize="0.000100" />
+							</oms:SimulationInformation>
+						</oms:Annotations>
+					</ssc:Annotation>
+				</ssd:Annotations>
+			</ssd:System>
+			<ssd:Component name="addP" type="application/x-fmu-sharedlibrary" source="resources/0001_addP.fmu">
+				<ssd:Connectors>
+					<ssd:Connector name="u1" kind="input">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="0.000000" y="0.333333" />
+					</ssd:Connector>
+					<ssd:Connector name="u2" kind="input">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="0.000000" y="0.666667" />
+					</ssd:Connector>
+					<ssd:Connector name="y" kind="output">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="1.000000" y="0.500000" />
+					</ssd:Connector>
+					<ssd:Connector name="k1" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="k2" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+				</ssd:Connectors>
+			</ssd:Component>
+			<ssd:Component name="addI" type="application/x-fmu-sharedlibrary" source="resources/0003_addI.fmu">
+				<ssd:Connectors>
+					<ssd:Connector name="u1" kind="input">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="0.000000" y="0.250000" />
+					</ssd:Connector>
+					<ssd:Connector name="u2" kind="input">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="0.000000" y="0.500000" />
+					</ssd:Connector>
+					<ssd:Connector name="u3" kind="input">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="0.000000" y="0.750000" />
+					</ssd:Connector>
+					<ssd:Connector name="y" kind="output">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="1.000000" y="0.500000" />
+					</ssd:Connector>
+					<ssd:Connector name="k1" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="k2" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+					<ssd:Connector name="k3" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+				</ssd:Connectors>
+			</ssd:Component>
+			<ssd:Component name="P" type="application/x-fmu-sharedlibrary" source="resources/0002_P.fmu">
+				<ssd:Connectors>
+					<ssd:Connector name="u" kind="input">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="0.000000" y="0.500000" />
+					</ssd:Connector>
+					<ssd:Connector name="y" kind="output">
+						<ssc:Real />
+						<ssd:ConnectorGeometry x="1.000000" y="0.500000" />
+					</ssd:Connector>
+					<ssd:Connector name="k" kind="parameter">
+						<ssc:Real />
+					</ssd:Connector>
+				</ssd:Connectors>
+			</ssd:Component>
+		</ssd:Elements>
+		<ssd:Connections>
+			<ssd:Connection startElement="" startConnector="T_cref" endElement="addI" endConnector="k2" />
+			<ssd:Connection startElement="" startConnector="k_cref" endElement="addP" endConnector="k1" />
+			<ssd:Connection startElement="" startConnector="Input_cref" endElement="addP" endConnector="u1" />
+			<ssd:Connection startElement="addP" startConnector="y" endElement="" endConnector="Output_cref" />
+		</ssd:Connections>
+		<ssd:Annotations>
+			<ssc:Annotation type="org.openmodelica">
+				<oms:Annotations>
+					<oms:SimulationInformation>
+						<oms:FixedStepMaster description="oms-ma" stepSize="0.001000" absoluteTolerance="0.000100" relativeTolerance="0.000100" />
+					</oms:SimulationInformation>
+				</oms:Annotations>
+			</ssc:Annotation>
+		</ssd:Annotations>
+	</ssd:System>
+	<ssd:DefaultExperiment startTime="0.000000" stopTime="4.000000">
+		<ssd:Annotations>
+			<ssc:Annotation type="org.openmodelica">
+				<oms:Annotations>
+					<oms:SimulationInformation resultFile="import_export_parameters.mat" loggingInterval="0.000000" bufferSize="100" signalFilter="resources/signalFilter.xml" />
+				</oms:Annotations>
+			</ssc:Annotation>
+		</ssd:Annotations>
+	</ssd:DefaultExperiment>
+</ssd:SystemStructureDescription>
