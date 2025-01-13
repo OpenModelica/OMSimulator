@@ -61,7 +61,7 @@ oms::Variable::Variable(fmiHandle* fmi4c, int index_, oms_component_enu_t compon
 void oms::Variable::configureFMI2Variable(fmiHandle* fmi4c, int index_)
 {
   // extract the attributes
-  fmi2VariableHandle *var = fmi2_getVariableByIndex(fmi4c, index_);
+  fmi2VariableHandle *var = fmi2_getVariableByIndex(fmi4c, index_+1);
   cref = fmi2_getVariableName(var);
   description = fmi2_getVariableDescription(var) ? fmi2_getVariableDescription(var) : "";
   trim(description);

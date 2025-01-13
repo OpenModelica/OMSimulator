@@ -460,7 +460,7 @@ oms_status_enu_t oms::ComponentFMUME::initializeDependencyGraph_initialUnknowns(
   for (const auto &it : values.modelStructureInitialUnknowns)
   {
     const Variable &var_oms = allVariables[it.first - 1];
-    fmi2VariableHandle *var = fmi2_getVariableByIndex(fmu, (it.first - 1));
+    fmi2VariableHandle *var = fmi2_getVariableByIndex(fmu, (it.first));
     oms::ComRef name_fmilib = fmi2_getVariableName(var);
     // std::cout << "\nDebug: " << var_oms.getCref().c_str() << "===>" << name_fmilib.c_str() << "===>" << var_oms.isInitialUnknown();
     if (var_oms.getCref() != name_fmilib)
