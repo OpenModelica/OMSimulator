@@ -65,7 +65,6 @@ oms::FMUInfo::~FMUInfo()
   if (this->author) delete[] this->author;
   if (this->copyright) delete[] this->copyright;
   if (this->description) delete[] this->description;
-  if (this->fmiVersion) delete[] this->fmiVersion;
   if (this->generationDateAndTime) delete[] this->generationDateAndTime;
   if (this->generationTool) delete[] this->generationTool;
   if (this->guid) delete[] this->guid;
@@ -104,7 +103,7 @@ void oms::FMUInfo::updateFMI2Info(fmiHandle* fmu)
   this->author = allocateAndCopyString(fmi2_getAuthor(fmu));
   this->copyright = allocateAndCopyString(fmi2_getCopyright(fmu));
   this->description = allocateAndCopyString(fmi2_getModelDescription(fmu));
-  this->fmiVersion = allocateAndCopyString(fmi2_getFmiVersion(fmu));
+  this->fmiVersion = "2.0";
   this->generationDateAndTime = allocateAndCopyString(fmi2_getGenerationDateAndTime(fmu));
   this->generationTool = allocateAndCopyString(fmi2_getGenerationTool(fmu));
   this->guid = allocateAndCopyString(fmi2_getGuid(fmu));
@@ -150,7 +149,7 @@ void oms::FMUInfo::updateFMI3Info(fmiHandle* fmu)
   this->author = allocateAndCopyString(fmi3_author(fmu));
   this->copyright = allocateAndCopyString(fmi3_copyright(fmu));
   this->description = allocateAndCopyString(fmi3_description(fmu));
-  this->fmiVersion = allocateAndCopyString(fmi3_getFmiVersion(fmu));
+  this->fmiVersion = "3.0";
   this->generationDateAndTime = allocateAndCopyString(fmi3_generationDateAndTime(fmu));
   this->generationTool = allocateAndCopyString(fmi3_generationTool(fmu));
   this->guid = allocateAndCopyString(fmi3_instantiationToken(fmu));
