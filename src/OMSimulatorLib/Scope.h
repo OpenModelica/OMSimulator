@@ -76,7 +76,6 @@ namespace oms
     const std::string& getTempDirectory() const {return GetInstance().tempDir;}
     const std::string& getWorkingDirectory();
 
-  protected:
     static oms_status_enu_t miniunz(const std::string& filename, const std::string& extractdir);
 
   private:

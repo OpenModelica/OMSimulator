@@ -38,6 +38,7 @@
 #include "ssd/Tags.h"
 #include "System.h"
 #include "SystemSC.h"
+#include "Scope.h"
 
 #include <fmi4c.h>
 #include <regex>
@@ -133,8 +134,11 @@ oms::Component* oms::ComponentFMUME::NewComponent(const oms::ComRef& cref, oms::
     }
   }
 
-  // load the fmu and parse modelDescription.xml
-  component->fmu = fmi4c_loadFmu(absFMUPath.string().c_str(), tempDir.generic_string().c_str());
+  // unpack the fmu in temp directory
+  oms::Scope::miniunz(modelDescriptionPath.generic_string().c_str(), tempDir.generic_string().c_str());
+
+  // load the unpacked fmu and parse modelDescription.xml
+  component->fmu = fmi4c_loadUnzippedFmu(cref.c_str(), tempDir.generic_string().c_str());
   if (!component->fmu)
   {
     logError("Error parsing modelDescription.xml");
