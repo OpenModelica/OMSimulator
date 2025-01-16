@@ -11,9 +11,8 @@ import OMSimulator as oms
 oms.setCommandLineOption('--suppressPath=true')
 oms.setTempDirectory('./validateSRMD-py/')
 
-model = oms.importFile('../resources/invalidSRMD.ssp')
+oms.importFile('../resources/invalidSRMD.ssp')
 
-model.delete()
 
 ## Result:
 ## warning: invalid "SimulationResourceMetaData" detected in file "/OpenModelica/OMSimulator/testsuite/validate/validateSRMD-lua/import_export_parameters-2sc3pl7p/resources/SRMD_example_D16.srmd" at line: 9 column: 44, no declaration found for element 'OperationalDomain'
