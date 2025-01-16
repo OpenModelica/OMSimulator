@@ -82,6 +82,7 @@ import_export_parameters1 \
 import_export_parameters2 \
 import_export_parameters3 \
 importExportAllResources \
+invalidSRMD \
 invalidSSD \
 invalidSSV \
 invalidSSM \
