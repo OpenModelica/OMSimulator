@@ -1,5 +1,5 @@
 -- status: correct
--- teardown_command: rm -rf BouncingBall-lua/
+-- teardown_command: rm -rf validateSRMD-lua/
 -- linux: yes
 -- ucrt64: yes
 -- win: yes
