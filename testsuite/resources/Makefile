@@ -10,7 +10,9 @@ AircraftVehicleDemonstrator.eCS_SW \
 AircraftVehicleDemonstrator.engine \
 B \
 BouncingBall \
+BouncingBall3 \
 Dahlquist \
+Dahlquist3 \
 DualMassOscillator.System1 \
 DualMassOscillator.System2 \
 Enum1 \
@@ -18,6 +20,7 @@ equationPair.equation1 \
 equationPair.equation2 \
 EventTest \
 Feedthrough \
+Feedthrough3 \
 fmi_attributes_19 \
 fmidertest \
 HelloWorld \
@@ -47,13 +50,16 @@ replaceA \
 replaceA_extended \
 replaceB \
 Resource \
+Resource3 \
 Stair \
+Stair3 \
 str_hello_world \
 tank1 \
 tank2 \
 tank3 \
 testArray \
 VanDerPol \
+VanDerPol3 \
 ypipe \
 
 SSPs = \

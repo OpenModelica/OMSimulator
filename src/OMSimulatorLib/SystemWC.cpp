@@ -33,6 +33,7 @@
 
 #include "Component.h"
 #include "ComponentFMUCS.h"
+#include "ComponentFMU3CS.h"
 #include "Flags.h"
 #include "Model.h"
 #include "ssd/Tags.h"
@@ -395,6 +396,10 @@ oms_status_enu_t oms::SystemWC::doStep()
             if (oms_component_fmu == component.second->getType())
             {
               dynamic_cast<ComponentFMUCS*>(component.second)->setFmuTime(time);
+            }
+            if (oms_component_fmu3 == component.second->getType())
+            {
+              dynamic_cast<ComponentFMU3CS*>(component.second)->setFmuTime(time);
             }
           }
         }

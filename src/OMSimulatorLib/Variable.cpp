@@ -33,20 +33,43 @@
 
 #include "Logging.h"
 #include "Util.h"
+#include <iostream>
 
-oms::Variable::Variable(fmiHandle* fmi4c, int index_)
-  : der_index(0), state_index(0), is_state(false), is_der(false), is_continuous_time_state(false), is_continuous_time_der(false), index(index_)
+oms::Variable::Variable(fmiHandle* fmi4c, int index_, oms_component_enu_t componentType)
+  : der_index(0), state_index(0), is_state(false), is_der(false), is_continuous_time_state(false), is_continuous_time_der(false), index(index_), fmi2(false), fmi3(false), componentType(componentType)
+{
+
+  // Check the component type
+  switch (componentType)
+  {
+    case oms_component_fmu: // FMI 2.0
+      fmi2 = true;
+      configureFMI2Variable(fmi4c, index);
+      break;
+
+    case oms_component_fmu3: // FMI 3.0
+      fmi3 = true;
+      configureFMI3Variable(fmi4c, index);
+      break;
+
+    default: // Unsupported type
+      logError("Unsupported component type for Variable constructor");
+  }
+}
+
+
+void oms::Variable::configureFMI2Variable(fmiHandle* fmi4c, int index_)
 {
   // extract the attributes
-  fmi2VariableHandle *var = fmi2_getVariableByIndex(fmi4c, index_);
+  fmi2VariableHandle *var = fmi2_getVariableByIndex(fmi4c, index_+1);
   cref = fmi2_getVariableName(var);
   description = fmi2_getVariableDescription(var) ? fmi2_getVariableDescription(var) : "";
   trim(description);
-  vr = fmi2_getVariableValueReference(var);
-  causality = fmi2_getVariableCausality(var);
-  variability = fmi2_getVariableVariability(var);
+  fmi2Vr = fmi2_getVariableValueReference(var);
+  fmi2Causality_ = fmi2_getVariableCausality(var);
+  fmi2Variability_ = fmi2_getVariableVariability(var);
   // TODO implement the initial attribute table in fmi4c according to FMI specification
-  initialProperty = fmi2_getVariableInitial(var);
+  fmi2InitialProperty = fmi2_getVariableInitial(var);
 
   switch (fmi2_getVariableDataType(var))
   {
@@ -66,7 +89,7 @@ oms::Variable::Variable(fmiHandle* fmi4c, int index_)
       type = oms_signal_type_enum;
       break;
     default:
-      logError("Unknown fmi base type");
+      logError("Unknown fmi base type: " + fmi2_getVariableDataType(var));
       type = oms_signal_type_real;
       break;
   }
@@ -79,7 +102,94 @@ oms::Variable::Variable(fmiHandle* fmi4c, int index_)
     {
       is_der = true;
       state_index = derivative_index;
-      if (variability == fmi2VariabilityContinuous)
+      if (fmi2Variability_ == fmi2VariabilityContinuous)
+      {
+        is_continuous_time_der = true;
+      }
+    }
+  }
+}
+
+void oms::Variable::configureFMI3Variable(fmiHandle* fmi4c, int index_)
+{
+  // extract the attributes
+  fmi3VariableHandle *var = fmi3_getVariableByIndex(fmi4c, index_+1);
+  cref = fmi3_getVariableName(var);
+  description = fmi3_getVariableDescription(var) ? fmi3_getVariableDescription(var) : "";
+  trim(description);
+  fmi3Vr = fmi3_getVariableValueReference(var);
+  fmi3Causality_ = fmi3_getVariableCausality(var);
+  fmi3Variability_ = fmi3_getVariableVariability(var);
+  // TODO implement the initial attribute table in fmi4c according to FMI specification
+  fmi3InitialProperty = fmi3_getVariableInitial(var);
+
+  switch (fmi3_getVariableDataType(var))
+  {
+    case fmi3DataTypeFloat64:
+      type = oms_signal_type_real;
+      numericType = oms_signal_numeric_type_FLOAT64;
+      break;
+    case fmi3DataTypeFloat32:
+      type = oms_signal_type_real;
+      numericType = oms_signal_numeric_type_FLOAT32;
+      break;
+    case fmi3DataTypeInt64:
+      type = oms_signal_type_integer;
+      numericType = oms_signal_numeric_type_INT64;
+      break;
+    case fmi3DataTypeInt32:
+      type = oms_signal_type_integer;
+      numericType  = oms_signal_numeric_type_INT32;
+      break;
+    case fmi3DataTypeInt16:
+      type = oms_signal_type_integer;
+      numericType  = oms_signal_numeric_type_INT16;
+      break;
+    case fmi3DataTypeInt8:
+      type = oms_signal_type_integer;
+      numericType  = oms_signal_numeric_type_INT8;
+      break;
+    case fmi3DataTypeUInt64:
+      type = oms_signal_type_integer;
+      numericType  = oms_signal_numeric_type_UINT64;
+      break;
+    case fmi3DataTypeUInt32:
+      type = oms_signal_type_integer;
+      numericType  = oms_signal_numeric_type_UINT32;
+      break;
+    case fmi3DataTypeUInt16:
+      type = oms_signal_type_integer;
+      numericType  = oms_signal_numeric_type_UINT16;
+      break;
+    case fmi3DataTypeUInt8:
+      type = oms_signal_type_integer;
+      numericType  = oms_signal_numeric_type_UINT8;
+      break;
+    case fmi3DataTypeBoolean:
+      type = oms_signal_type_boolean;
+      break;
+    case fmi3DataTypeString:
+      type = oms_signal_type_string;
+      break;
+    case fmi3DataTypeEnumeration:
+      type = oms_signal_type_enum;
+      numericType = oms_signal_numeric_type_INT64;
+      break;
+    default:
+      logError("Unknown FMI3 base type for var : " + std::string(cref));
+      type = oms_signal_type_real;
+      break;
+  }
+
+  // mark derivatives
+  if (oms_signal_type_real == type)
+  {
+    int derivative_index = fmi3_getVariableDerivativeIndex(var);
+    if (derivative_index != 0)
+    {
+      is_der = true;
+      state_index = derivative_index;
+      if (fmi3Variability_ == fmi3VariabilityContinuous)
       {
         is_continuous_time_der = true;
       }
@@ -93,55 +203,101 @@ oms::Variable::~Variable()
 
 oms_causality_enu_t oms::Variable::getCausality() const
 {
-  switch (causality)
+  if (isFmi2())
   {
-  case fmi2CausalityInput:
-    return oms_causality_input;
+    // FMI2
+    switch (fmi2Causality_)
+    {
+    case fmi2CausalityInput:
+      return oms_causality_input;
 
-  case fmi2CausalityOutput:
-    return oms_causality_output;
+    case fmi2CausalityOutput:
+      return oms_causality_output;
 
-  case fmi2CausalityParameter:
-    return oms_causality_parameter;
+    case fmi2CausalityParameter:
+      return oms_causality_parameter;
 
-  case fmi2CausalityCalculatedParameter:
-    return oms_causality_calculatedParameter;
+    case fmi2CausalityCalculatedParameter:
+      return oms_causality_calculatedParameter;
 
-  default:
-    return oms_causality_undefined;
+    default:
+      return oms_causality_undefined;
+    }
+  }
+  else
+  {
+    // FMI3
+    switch (fmi3Causality_)
+    {
+    case fmi3CausalityInput:
+      return oms_causality_input;
+
+    case fmi3CausalityOutput:
+      return oms_causality_output;
+
+    case fmi3CausalityParameter:
+      return oms_causality_parameter;
+
+    case fmi3CausalityCalculatedParameter:
+      return oms_causality_calculatedParameter;
+
+    default:
+      return oms_causality_undefined;
+    }
   }
 }
 
 std::string oms::Variable::getCausalityString() const
 {
-  switch (causality)
+  if (isFmi2())
   {
-  case fmi2CausalityInput:
-    return "input";
-
-  case fmi2CausalityOutput:
-    return "output";
-
-  case fmi2CausalityParameter:
-    return "parameter";
-
-  case fmi2CausalityCalculatedParameter:
-    return "calculatedParameter";
-
-  case fmi2CausalityIndependent:
-    return "independent";
-
-  case fmi2CausalityLocal:
-    return "local";
-
-  default:
-    return "undefined";
+    // FMI2
+    switch (fmi2Causality_)
+    {
+    case fmi2CausalityInput:
+      return "input";
+    case fmi2CausalityOutput:
+      return "output";
+    case fmi2CausalityParameter:
+      return "parameter";
+    case fmi2CausalityCalculatedParameter:
+      return "calculatedParameter";
+    case fmi2CausalityIndependent:
+      return "independent";
+    case fmi2CausalityLocal:
+      return "local";
+    default:
+      return "undefined";
+    }
+  }
+  else
+  {
+    // FMI3
+    switch (fmi3Causality_)
+    {
+    case fmi3CausalityInput:
+      return "input";
+    case fmi3CausalityOutput:
+      return "output";
+    case fmi3CausalityParameter:
+      return "parameter";
+    case fmi3CausalityCalculatedParameter:
+      return "calculatedParameter";
+    case fmi3CausalityIndependent:
+      return "independent";
+    case fmi3CausalityLocal:
+      return "local";
+    default:
+      return "undefined";
+    }
   }
 }
 
 bool oms::operator==(const oms::Variable& v1, const oms::Variable& v2)
 {
-  return v1.cref == v2.cref && v1.vr == v2.vr;
+  return v1.cref == v2.cref &&
+        ((v1.isFmi2() && v2.isFmi2() && v1.fmi2Vr == v2.fmi2Vr) ||
+            (v1.isFmi3() && v2.isFmi3() && v1.fmi3Vr == v2.fmi3Vr));
 }
 
 bool oms::operator!=(const oms::Variable& v1, const oms::Variable& v2)

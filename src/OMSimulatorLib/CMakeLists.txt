@@ -26,6 +26,7 @@ set(OMSIMULATORLIB_SOURCES
       Clocks.cpp
       Component.cpp
       ComponentFMUCS.cpp
+      ComponentFMU3CS.cpp
       ComponentFMUME.cpp
       ComponentTable.cpp
       ComRef.cpp

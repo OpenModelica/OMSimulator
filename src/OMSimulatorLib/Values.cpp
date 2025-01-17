@@ -1706,6 +1706,181 @@ oms_status_enu_t oms::Values::parseModelDescription(const filesystem::path& root
   return oms_status_ok;
 }
 
+oms_status_enu_t oms::Values::parseModelDescriptionFmi3(const filesystem::path& root, std::string& guid_)
+{
+
+  const char* modelDescription = ::miniunz_onefile_to_memory(root.generic_string().c_str(), "modelDescription.xml");
+
+  // TODO validate modeldescription.xml against schema fmi3ModelDescription.xsd
+  // XercesValidator xercesValidator;
+  // xercesValidator.validateFMU(modelDescription, root.generic_string());
+
+  Snapshot snapshot;
+  oms_status_enu_t status = snapshot.importResourceMemory("modelDescription.xml", modelDescription);
+  ::miniunz_free(modelDescription);
+
+  if (oms_status_ok != status)
+    return logError("Failed to import modelDescription.xml from memory for fmu " + root.generic_string());
+
+  const pugi::xml_node node = snapshot.getResourceNode("modelDescription.xml");
+
+  if (!node)
+    return logError("Failed to find root node in modelDescription.xml");
+
+  guid_ = node.attribute("instantiationToken").as_string();
+  std::string fmiVersion = node.attribute("fmiVersion").as_string();
+
+  for(pugi::xml_node_iterator it = node.begin(); it != node.end(); ++it)
+  {
+    std::string name = it->name();
+    if (name == "TypeDefinitions")
+    {
+      pugi::xml_node Enumeration = it->child("EnumerationType");
+      if (Enumeration)
+      {
+        std::map<std::string, std::string> enumerationItems;
+        for (pugi::xml_node enumItem = Enumeration.child("Item"); enumItem; enumItem = enumItem.next_sibling("Item"))
+        {
+          enumerationItems[enumItem.attribute("name").as_string()] = enumItem.attribute("value").as_string();
+        }
+        modeldescriptionTypeDefinitions[Enumeration.attribute("name").as_string()] = enumerationItems;
+      }
+    }
+    if (name == "UnitDefinitions")
+    {
+      pugi::xml_node units = node.child("UnitDefinitions");
+      if (units)
+      {
+
+        for (pugi::xml_node unit = units.child("Unit"); unit; unit = unit.next_sibling("Unit"))
+        {
+          std::string unitName = unit.attribute("name").as_string();
+          pugi::xml_node baseUnitNode = unit.child("BaseUnit");
+          std::map<std::string, std::string> baseUnits;
+          for (pugi::xml_attribute attr = baseUnitNode.first_attribute(); attr; attr = attr.next_attribute())
+          {
+            baseUnits[attr.name()] = attr.value();
+          }
+          modeldescriptionUnitDefinitions[unitName] = baseUnits;
+          //unitToExport_1 unit_to_export = {"", unitName, baseUnits, false};
+          //exportunitdefinitionToSSp_1.push_back(unit_to_export);
+        }
+      }
+    }
+    if(name == "ModelVariables")
+    {
+      pugi::xml_node modelVariableNode = node.child("ModelVariables");
+      if (!modelVariableNode)
+      {
+        return logError("Error parsing modelDescription.xml");
+      }
+      for(pugi::xml_node_iterator it_ = modelVariableNode.begin(); it_ != modelVariableNode.end(); ++it_)
+      {
+        if (std::string(it_->name()) == "Float64" || std::string(it_->name()) == "Float32")
+        {
+          // start values
+          if (strlen(it_->attribute("start").as_string()) != 0)
+            modelDescriptionRealStartValues[ComRef(it_->attribute("name").as_string())] = it_->attribute("start").as_double();
+          // check for units
+          if (strlen(it_->attribute("unit").as_string()) != 0)
+            modelDescriptionVariableUnits[ComRef(it_->attribute("name").as_string())] = it_->attribute("unit").as_string();
+        }
+        if (std::string(it_->name()) == "Int64" ||
+            std::string(it_->name()) == "Int32" ||
+            std::string(it_->name()) == "Int16" ||
+            std::string(it_->name()) == "Int8" ||
+            std::string(it_->name()) == "UInt64" ||
+            std::string(it_->name()) == "UInt32" ||
+            std::string(it_->name()) == "UInt16" ||
+            std::string(it_->name()) == "UInt8")
+        {
+          // start values
+          if (strlen(it_->attribute("start").as_string()) != 0)
+            modelDescriptionIntegerStartValues[ComRef(it_->attribute("name").as_string())] = it_->attribute("start").as_int();
+        }
+        if (std::string(it_->name()) == "Boolean")
+        {
+          // start values
+          if (strlen(it_->attribute("start").as_string()) != 0)
+            modelDescriptionBooleanStartValues[ComRef(it_->attribute("name").as_string())] = it_->attribute("start").as_bool();
+        }
+        if (std::string(it_->name()) == "String")
+        {
+          // start values
+          if (strlen(it_->attribute("start").as_string()) != 0)
+            modelDescriptionStringStartValues[ComRef(it_->attribute("name").as_string())] = it_->attribute("start").as_string();
+        }
+        // TODO check start values for other dataTypes
+      }
+    }
+    if (name == "ModelStructure")
+    {
+      for(pugi::xml_node_iterator it_ = it->begin(); it_ != it->end(); ++it_)
+      {
+        //Output
+        if (std::string(it_->name()) == "Output")
+        {
+          int index = it_->attribute("valueReference").as_int();
+          pugi::xml_attribute dependencynode = it_->attribute("dependencies");
+          if (dependencynode)
+          {
+            std::string dependencies = it_->attribute("dependencies").as_string();
+            std::vector<int> dependenciesList;
+            parseModelStructureDependencies(dependencies, dependenciesList);
+            modelStructureOutputs[index] = dependenciesList;
+            modelStructureOutputDependencyExist[index] = true;
+          }
+          else
+          {
+            modelStructureOutputs[index] = {};
+            modelStructureOutputDependencyExist[index] = false;
+          }
+        }
+        // ContinuousStateDerivative
+        if (std::string(it_->name()) == "ContinuousStateDerivative")
+        {
+          int index = it_->attribute("valueReference").as_int();
+          pugi::xml_attribute dependencynode = it_->attribute("dependencies");
+          if (dependencynode)
+          {
+            std::string dependencies = it_->attribute("dependencies").as_string();
+            std::vector<int> dependenciesList;
+            parseModelStructureDependencies(dependencies, dependenciesList);
+            modelStructureDerivatives[index] = dependenciesList;
+            modelStructureDerivativesDependencyExist[index] = true;
+          }
+          else
+          {
+            modelStructureDerivatives[index] = {};
+            modelStructureDerivativesDependencyExist[index] = false;
+          }
+        }
+        // IntialUnknowns
+        if (std::string(it_->name()) == "InitialUnknowns")
+        {
+          int index = it_->attribute("valueReference").as_int();
+          pugi::xml_attribute dependencynode = it_->attribute("dependencies");
+          if (dependencynode)
+          {
+            std::string dependencies = it_->attribute("dependencies").as_string();
+            std::vector<int> dependenciesList;
+            parseModelStructureDependencies(dependencies, dependenciesList);
+            modelStructureInitialUnknowns[index] = dependenciesList;
+            modelStructureInitialUnknownsDependencyExist[index] = true;
+          }
+          else
+          {
+            modelStructureInitialUnknowns[index] = {};
+            modelStructureDerivativesDependencyExist[index] = false;
+          }
+        }
+        //TODO handle other FMI3 types
+      }
+    }
+  }
+  return oms_status_ok;
+}
+
 void oms::Values::parseModelStructureDependencies(std::string &dependencies, std::vector<int> &dependencyList)
 {
   std::stringstream ss(dependencies);

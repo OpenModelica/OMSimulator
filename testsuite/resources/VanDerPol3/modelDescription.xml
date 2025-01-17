@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  fmiVersion="3.0"
+  modelName="van der Pol oscillator"
+  description="This model implements the van der Pol oscillator"
+  generationTool="Reference FMUs (v0.0.37)"
+  generationDateAndTime="2024-12-09T07:40:36.154644+00:00"
+  instantiationToken="{BD403596-3166-4232-ABC2-132BDF73E644}">
+
+  <ModelExchange
+    modelIdentifier="VanDerPol"
+    canGetAndSetFMUState="true"
+    canSerializeFMUState="true"
+    providesDirectionalDerivatives="true"
+    providesAdjointDerivatives="true"/>
+
+  <CoSimulation
+    modelIdentifier="VanDerPol"
+    canGetAndSetFMUState="true"
+    canSerializeFMUState="true"
+    canHandleVariableCommunicationStepSize="true"
+    providesIntermediateUpdate="true"
+    canReturnEarlyAfterIntermediateUpdate="true"
+    fixedInternalStepSize="1e-2"
+    providesDirectionalDerivatives="true"
+    providesAdjointDerivatives="true"/>
+
+  <LogCategories>
+    <Category name="logEvents" description="Log events"/>
+    <Category name="logStatusError" description="Log error messages"/>
+  </LogCategories>
+
+  <DefaultExperiment startTime="0" stopTime="20" stepSize="1e-2"/>
+
+  <ModelVariables>
+    <Float64 name="time" valueReference="0" causality="independent" variability="continuous" description="Simulation time"/>
+    <Float64 name="x0" valueReference="1" description="the first state" causality="output" variability="continuous" initial="exact" start="2"/>
+    <Float64 name="der(x0)" valueReference="2" causality="local" variability="continuous" initial="calculated" derivative="1"/>
+    <Float64 name="x1" valueReference="3" description="the second state" causality="output" variability="continuous" initial="exact" start="0"/>
+    <Float64 name="der(x1)" valueReference="4" causality="local" variability="continuous" initial="calculated" derivative="3"/>
+    <Float64 name="mu" valueReference="5" causality="parameter" variability="fixed" initial="exact" start="1"/>
+  </ModelVariables>
+
+  <ModelStructure>
+    <Output valueReference="1" dependencies=""/>
+    <Output valueReference="3" dependencies=""/>
+    <ContinuousStateDerivative valueReference="2" dependencies="3" dependenciesKind="constant"/>
+    <ContinuousStateDerivative valueReference="4" dependencies="1 3" dependenciesKind="dependent dependent"/>
+    <InitialUnknown valueReference="2" dependencies="3" dependenciesKind="constant"/>
+    <InitialUnknown valueReference="4" dependencies="1 3 5" dependenciesKind="dependent dependent dependent"/>
+  </ModelStructure>
+
+</fmiModelDescription>
