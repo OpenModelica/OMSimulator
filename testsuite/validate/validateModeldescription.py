@@ -16,7 +16,7 @@ oms.setWorkingDirectory("./invalidmodeldescription-py/")
 oms.newModel("model")
 oms.addSystem("model.root", oms.system_wc)
 
-oms.addSubModel("model.root.add", "../../resources/invalidmodeldescription.fmu")
+oms.addSubModel("model.root.add", "../../resources/invalidModeldescription.fmu")
 
 
 ## Result:
