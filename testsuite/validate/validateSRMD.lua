@@ -15,10 +15,10 @@ oms_terminate(model)
 oms_delete(model)
 
 -- Result:
--- warning: invalid "SimulationResourceMetaData" detected in file "resources/SRMD_example_D16.srmd" at line: 0 column: 0, unsupported protocol in URL
--- warning: invalid "SimulationResourceMetaData" detected in file "resources/SRMD_example_D16.srmd" at line: 12 column: 116, fatal error during schema scan
--- warning: Could not load schema file: C:/OPENMODELICAGIT/OpenModelica/build/bin/../share/OMSimulator/schema/ssp/SSPTraceabilityCommon.xsd
--- warning: SRMD format validation of "../../resources/invalidSRMD.ssp" failed
--- info:    4 warnings
--- info:    0 errors
+-- warning: invalid "SimulationResourceMetaData" detected in file "resources/SRMD_example_D16.srmd" at line: 9 column: 44, no declaration found for element 'OperationalDomain'
+-- warning: XML parse error: validation failed.
+-- error:   [importModel] SRMD format validation of "resources/SRMD_example_D16.srmd" failed
+
+-- info:    2 warnings
+-- info:    1 errors
 -- endResult
