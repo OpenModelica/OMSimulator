@@ -268,9 +268,8 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
       {
         oms_status_enu_t status = xercesValidator.validateSRMD(entry.path().generic_string());
         if (status != oms_status_ok)
-          logError("SRMD format validation of \"" + entry.path().generic_string() + "\" failed");
-          return status;
-        
+          logWarning("SRMD format validation of \"" + filesystem::relative(filename).generic_string() + "\" failed");
+
         model->importedResources.push_back(entry.path().filename().generic_string());
         snapshot.importResourceFile(naive_uncomplete(entry.path(), model->getTempDirectory()), model->getTempDirectory());
       }

@@ -231,7 +231,7 @@ oms_status_enu_t oms::XercesValidator::validateSSP(const char *ssd, const std::s
 
 oms_status_enu_t oms::XercesValidator::validateFMU(const char *modeldescription, const std::string& filePath)
 {
-
+  std::string relativeFilePath = filesystem::relative(filePath).generic_string();
   std::string extension = filesystem::path(filePath).extension().generic_string();
 
   if (extension != ".fmu")
@@ -286,7 +286,7 @@ oms_status_enu_t oms::XercesValidator::validateFMU(const char *modeldescription,
   if (domParser.loadGrammar(schemaFmiModeldescriptionPath.generic_string().c_str(), Grammar::SchemaGrammarType) == NULL)
     return logWarning("could not load the FMI schema file: " + filesystem::absolute(schemaFmiModeldescriptionPath).generic_string() + ", hence validation of \"modeldescription.xml\" with FMI 2.0 standard will not be performed");
 
-  ParserErrorHandler parserErrorHandler("modeldescription.xml", filePath.c_str());
+  ParserErrorHandler parserErrorHandler("modeldescription.xml", relativeFilePath.c_str());
 
   domParser.setErrorHandler(&parserErrorHandler);
   domParser.cacheGrammarFromParse(true);
@@ -331,14 +331,15 @@ oms_status_enu_t oms::XercesValidator::validateSRMD(const std::string &filePath)
   // Configure the parser
   XercesDOMParser domParser;
 
-  ParserErrorHandler parserErrorHandler("SimulationResourceMetaData", filePath.c_str());
+  std::string relativeFilePath = filesystem::relative(filePath).generic_string();
+  ParserErrorHandler parserErrorHandler("SimulationResourceMetaData", relativeFilePath.c_str());
   domParser.setErrorHandler(&parserErrorHandler);
 
   status = loadSchema(domParser, schemaPaths);
   if (status != oms_status_ok)
     return status;
 
-  //iterate and print all 
+  //iterate and print all
 
   // Parse the provided XML
   status = parseXML(domParser, filePath);
