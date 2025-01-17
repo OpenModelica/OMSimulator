@@ -17,8 +17,7 @@ oms_delete(model)
 -- Result:
 -- warning: invalid "SimulationResourceMetaData" detected in file "resources/SRMD_example_D16.srmd" at line: 9 column: 44, no declaration found for element 'OperationalDomain'
 -- warning: XML parse error: validation failed.
--- error:   [importModel] SRMD format validation of "resources/SRMD_example_D16.srmd" failed
-
--- info:    2 warnings
--- info:    1 errors
+-- warning: SRMD format validation of "../../resources/invalidSRMD.ssp" failed
+-- info:    3 warnings
+-- info:    0 errors
 -- endResult
