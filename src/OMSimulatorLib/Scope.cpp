@@ -185,12 +185,8 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
   if (_cref)
     *_cref = NULL;
 
-  // TODO: this is a temporary workaround, we need a proper helper function to get the extension, .srmd is bigger that 4 so the old check is not valid
-  std::string extension = filesystem::path(filename).extension().generic_string();
 
-  // std::string extension = "";
-  // if (filename.length() > 4)
-  //   extension = filename.substr(filename.length() - 4);
+  std::string extension = filesystem::path(filename).extension().generic_string();
 
   if (extension != ".ssp")
     return logError("filename extension must be \".ssp\"; no other formats are supported");

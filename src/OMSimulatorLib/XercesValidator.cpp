@@ -323,6 +323,7 @@ oms_status_enu_t oms::XercesValidator::validateSRMD(const std::string &filePath)
       {"SystemStructureCommon.xsd","http://ssp-standard.org/SSP1/SystemStructureCommon", "ssp"},
       {"SSPTraceabilityCommon.xsd","http://ssp-standard.org/SSPTraceability1/SSPTraceabilityCommon", "ssp"},
       {"SimulationResourceMetaData.xsd","http://ssp-standard.org/SSPTraceability1/SimulationResourceMetaData", "ssp"},
+      {"xlink.xsd", "http://www.w3.org/1999/xlink", "ssp"}
   };
   status = resolveSchemaPaths(schemaPaths, schemaFiles);
   if (status != oms_status_ok)

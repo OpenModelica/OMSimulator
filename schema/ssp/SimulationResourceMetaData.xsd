@@ -58,7 +58,7 @@
                         This attribute gives the checksum over the data item this meta data
                         applies to. This is optional information to allow the identification
                         of the data item and the precise algorithm
-                        specifying 
+                        specifying
                         The checksum is calculated using the algorithm indicated by the checksumType attribute.
                     </xs:documentation>
                 </xs:annotation>

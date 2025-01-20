@@ -9,7 +9,7 @@
     elementFormDefault="qualified">
 
     <xs:import namespace="http://ssp-standard.org/SSP1/SystemStructureCommon" schemaLocation="SystemStructureCommon.xsd"/>
-    <xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="https://www.w3.org/XML/2008/06/xlink.xsd"/>
+    <xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="xlink.xsd"/>
 
     <!-- This modification happens to prevent upgrading to version XML 1.1 -->
     <xs:simpleType name="dateTimeStampType">
@@ -70,7 +70,7 @@
                         of an STC modeling element, provided as Keyword Value Pairs (KWP), the meaning
                         of which is interpreted according to the name of the classification provided in
                         the name attribute.
-                        
+
                         This approach can be used, for example, to provide searchable keywords for
                         content, or to assign and track quality or validation level requirements
                         across the STC process, or to maintain variant or other classification
@@ -147,7 +147,7 @@
                                 This attribute provides the name of the type of classification
                                 being provided.  The name should be unique across the Classification
                                 elements of the immediately enclosing element.
-                                
+
                                 In order to ensure uniqueness all types should be identified
                                 with reverse domain name notation (cf. Java package names
                                 or Apple UTIs) of a domain that is controlled by the entity
@@ -202,7 +202,7 @@
                 certain extent:  For example, if the Implementation Phase is designated as having
                 reached the status "Validated", it would create a contradiction if the Requirements
                 Phase has only reached status "Drafted".
-                
+
                 Multiple life cycle information entries can be present, in order to record the
                 historical progression of the life cycle status, however only the last entry in
                 document order, which will also be of the highest maturity, will be considered
@@ -295,7 +295,7 @@
                     if the life cycle stage is not Approved or Archived, but becomes required if the life cycle stage
                     is Approved or Archived. Optionally, digital signatures over this checksum can be provided using
                     Signature elements in the enclosing life cycle entry element.
-                    
+
                     The checksum is calculated using the algorithm indicated by the checksumType attribute.
                 </xs:documentation>
             </xs:annotation>
@@ -382,15 +382,15 @@
                         This element provides an extended link conforming to the XLink
                         specification. It provides detailed relationship information between
                         (parts of) resources or other information relevant to a phase or step.
-                        
+
                         An extended link relates 2 or more locators (which identify a particular
                         piece of information through an URI). It can provide navigation
                         information between these locators through arcs.
-                        
+
                         Locators, arcs and the link itself can further specify their semantic
                         meaning through optional role or arcrole attributes. The SSP
                         Traceability specification currently provides no predefined roles.
-                        
+
                         All individual elements and attributes are as specified in the XLink
                         specification.
                     </xs:documentation>
@@ -511,16 +511,16 @@
                                 the base URI is the URI of the STC, if the sourceBase attribute is
                                 not specified or is specified as STC, and the URI of the referenced
                                 resource if the sourceBase attribute is specified as resource.
-                                
+
                                 This allows the specification of summary sources that reside
                                 inside the resource (e.g. an FMU) through relative URIs.
-                                
+
                                 For summaries that are located alongside the STC, relative URIs
                                 without scheme and authority can and should be used to specify the
                                 summary sources.  For summaries that are packaged inside an SSP
                                 that contains this STC, this is mandatory (in this way, the STC
                                 URIs remain valid after unpacking the SSP into the filesystem).
-                                
+
                                 If the source attribute is missing, the summary is provided
                                 inline as contents of the Content element, which must not be
                                 present otherwise.
@@ -605,16 +605,16 @@
                                 the base URI is the URI of the STC, if the sourceBase attribute is
                                 not specified or is specified as STC, and the URI of the referenced
                                 resource if the sourceBase attribute is specified as resource.
-                                
+
                                 This allows the specification of meta data sources that reside
                                 inside the resource (e.g. an FMU) through relative URIs.
-                                
+
                                 For meta data that are located alongside the STC, relative URIs
                                 without scheme and authority can and should be used to specify the
                                 meta data sources.  For meta data that are packaged inside an SSP
                                 that contains this STC, this is mandatory (in this way, the STC
                                 URIs remain valid after unpacking the SSP into the filesystem).
-                                
+
                                 If the source attribute is missing, the meta data is provided
                                 inline as contents of the Content element, which must not be
                                 present otherwise.
@@ -717,7 +717,7 @@
                     sources.  For resources that are packaged inside an SSP that
                     contains this STC, this is mandatory (in this way, the STC URIs
                     remain valid after unpacking the SSP into the filesystem).
-                    
+
                     If the source attribute is missing, the resource is provided
                     inline as contents of the Content element, which must not be
                     present otherwise.  If the placeholder attribute is true, then
@@ -789,16 +789,16 @@
                     the base URI is the URI of the STC, if the sourceBase attribute is
                     not specified or is specified as STC, and the URI of the referenced
                     resource if the sourceBase attribute is specified as resource.
-                    
+
                     This allows the specification of signature sources that reside
                     inside the resource (e.g. an FMU) through relative URIs.
-                    
+
                     For signatures that are located alongside the STC, relative URIs
                     without scheme and authority can and should be used to specify the
                     signature sources.  For signatures that are packaged inside an SSP
                     that contains this STC, this is mandatory (in this way, the STC
                     URIs remain valid after unpacking the SSP into the filesystem).
-                    
+
                     If the source attribute is missing, the signature is provided
                     inline as contents of the Content element, which must not be
                     present otherwise.
