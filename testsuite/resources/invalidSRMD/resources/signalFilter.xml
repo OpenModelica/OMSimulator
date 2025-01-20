@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<oms:SignalFilter version="1.0">
+	<oms:Variable name="import_export_parameters.co_sim.Input_cref" type="Real" kind="input" />
+	<oms:Variable name="import_export_parameters.co_sim.Output_cref" type="Real" kind="output" />
+	<oms:Variable name="import_export_parameters.co_sim.T_cref" type="Real" kind="parameter" />
+	<oms:Variable name="import_export_parameters.co_sim.k_cref" type="Real" kind="parameter" />
+	<oms:Variable name="import_export_parameters.co_sim.addP.u1" type="Real" kind="input" />
+	<oms:Variable name="import_export_parameters.co_sim.addP.u2" type="Real" kind="input" />
+	<oms:Variable name="import_export_parameters.co_sim.addP.y" type="Real" kind="output" />
+	<oms:Variable name="import_export_parameters.co_sim.addP.k1" type="Real" kind="parameter" />
+	<oms:Variable name="import_export_parameters.co_sim.addP.k2" type="Real" kind="parameter" />
+	<oms:Variable name="import_export_parameters.co_sim.addI.u1" type="Real" kind="input" />
+	<oms:Variable name="import_export_parameters.co_sim.addI.u2" type="Real" kind="input" />
+	<oms:Variable name="import_export_parameters.co_sim.addI.u3" type="Real" kind="input" />
+	<oms:Variable name="import_export_parameters.co_sim.addI.y" type="Real" kind="output" />
+	<oms:Variable name="import_export_parameters.co_sim.addI.k1" type="Real" kind="parameter" />
+	<oms:Variable name="import_export_parameters.co_sim.addI.k2" type="Real" kind="parameter" />
+	<oms:Variable name="import_export_parameters.co_sim.addI.k3" type="Real" kind="parameter" />
+	<oms:Variable name="import_export_parameters.co_sim.P.u" type="Real" kind="input" />
+	<oms:Variable name="import_export_parameters.co_sim.P.y" type="Real" kind="output" />
+	<oms:Variable name="import_export_parameters.co_sim.P.k" type="Real" kind="parameter" />
+	<oms:Variable name="import_export_parameters.co_sim.foo.F_cref" type="Real" kind="parameter" />
+</oms:SignalFilter>

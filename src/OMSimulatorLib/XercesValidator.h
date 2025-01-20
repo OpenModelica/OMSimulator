@@ -38,6 +38,7 @@
 #include "OMSimulator/Types.h"
 
 #include <map>
+#include <xercesc/parsers/XercesDOMParser.hpp>
 
 namespace oms
 {
@@ -49,6 +50,14 @@ namespace oms
     oms_status_enu_t validateSSP(const char * ssd, const std::string& filePath);
     oms_status_enu_t validateFMU(const char * modeldescription, const std::string& filePath);
     std::string getExecutablePath();
+    oms_status_enu_t validateSRMD(const std::string &filePath);
+
+  private:
+    oms_status_enu_t isSupportedExtension(const std::string &filePath, const std::vector<std::string> &validExtensions);
+    oms_status_enu_t initializeXerces();
+    oms_status_enu_t resolveSchemaPaths(std::map<std::string, std::string> &paths, const std::vector<std::tuple<std::string, std::string, std::string>> &schemaFiles);
+    oms_status_enu_t loadSchema(xercesc_3_2::XercesDOMParser &parser, const std::map<std::string, std::string> &schemaPaths);
+    oms_status_enu_t parseXML(xercesc_3_2::XercesDOMParser &parser, const std::string &filePath);
   };
 }
 

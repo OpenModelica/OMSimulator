@@ -185,9 +185,8 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
   if (_cref)
     *_cref = NULL;
 
-  std::string extension = "";
-  if (filename.length() > 4)
-    extension = filename.substr(filename.length() - 4);
+
+  std::string extension = filesystem::path(filename).extension().generic_string();
 
   if (extension != ".ssp")
     return logError("filename extension must be \".ssp\"; no other formats are supported");
@@ -257,6 +256,16 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
 
       if (".ssv" == entry.path().extension() || ".ssm" == entry.path().extension() || ".xml" == entry.path().extension())
       {
+        model->importedResources.push_back(entry.path().filename().generic_string());
+        snapshot.importResourceFile(naive_uncomplete(entry.path(), model->getTempDirectory()), model->getTempDirectory());
+      }
+
+      if (".srmd" == entry.path().extension())
+      {
+        oms_status_enu_t status = xercesValidator.validateSRMD(entry.path().generic_string());
+        if (status != oms_status_ok)
+          logWarning("SRMD format validation of \"" + filesystem::relative(filename).generic_string() + "\" failed");
+
         model->importedResources.push_back(entry.path().filename().generic_string());
         snapshot.importResourceFile(naive_uncomplete(entry.path(), model->getTempDirectory()), model->getTempDirectory());
       }
