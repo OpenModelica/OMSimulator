@@ -43,14 +43,14 @@ oms_terminate("model")
 oms_delete("model")
 
 -- Result:
--- error:   [configureFMI3Variable] Unknown FMI3 base type for var : Binary_input
--- error:   [configureFMI3Variable] Unknown FMI3 base type for var : Binary_output
+-- warning: Unknown FMI3 base type for var : Binary_input
+-- warning: Unknown FMI3 base type for var : Binary_output
 -- Loading FMI version 3...
 -- info:    No result file will be created
 -- info:    model.root.Gain1.u : 15.0
 -- info:    model.root.Gain1.y : 15.0
 -- info:    Feedthrough1.Float64_continuous_input  : 15.0
 -- info:    Feedthrough1.Float64_continuous_output : 15.0
--- info:    0 warnings
--- info:    2 errors
+-- info:    2 warnings
+-- info:    0 errors
 -- endResult
