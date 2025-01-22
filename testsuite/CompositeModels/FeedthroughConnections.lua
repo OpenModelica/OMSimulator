@@ -13,8 +13,8 @@ oms_setWorkingDirectory("./FeedthroughConnections3-lua/")
 oms_newModel("model")
 oms_addSystem("model.root", oms_system_wc)
 
-oms_addSubModel("model.root.Feedthrough1", "../../../resources/Feedthrough3.fmu")
-oms_addSubModel("model.root.Feedthrough2", "../../../resources/Feedthrough3.fmu")
+oms_addSubModel("model.root.Feedthrough1", "../../resources/Feedthrough3.fmu")
+oms_addSubModel("model.root.Feedthrough2", "../../resources/Feedthrough3.fmu")
 
 --connections
 oms_addConnection("model.root.Feedthrough1.Float64_continuous_output", "model.root.Feedthrough2.Float64_continuous_input")

@@ -14,10 +14,10 @@ oms_newModel("model")
 oms_addSystem("model.root", oms_system_wc)
 
 --FMI2.0
-oms_addSubModel("model.root.Gain1", "../../../resources/Modelica.Blocks.Math.Gain.fmu")
+oms_addSubModel("model.root.Gain1", "../../resources/Modelica.Blocks.Math.Gain.fmu")
 
 --FMI3.0
-oms_addSubModel("model.root.Feedthrough1", "../../../resources/Feedthrough3.fmu")
+oms_addSubModel("model.root.Feedthrough1", "../../resources/Feedthrough3.fmu")
 
 --connections (Gain.y (FMI2) --> Feedthrough.Float64_continuous_input (FMI3))
 oms_addConnection("model.root.Gain1.y", "model.root.Feedthrough1.Float64_continuous_input")
