@@ -24,10 +24,10 @@ oms_setResultFile("model", "")
 oms_setStopTime("model", 10.0)
 oms_setTolerance("model.root", 1e-5)
 
-oms_instantiate("model")
-
 oms_setReal("model.root.Feedthrough1.Float64_continuous_input", 3.5)
 oms_setInteger("model.root.Feedthrough1.Int64_input", 7)
+
+oms_instantiate("model")
 
 oms_initialize("model")
 oms_simulate("model")

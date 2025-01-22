@@ -26,9 +26,9 @@ oms_setResultFile("model", "")
 oms_setStopTime("model", 10.0)
 oms_setTolerance("model.root", 1e-5)
 
-oms_instantiate("model")
-
 oms_setReal("model.root.Gain1.u", 15)
+
+oms_instantiate("model")
 
 oms_initialize("model")
 oms_simulate("model")
