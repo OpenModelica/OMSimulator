@@ -5,8 +5,6 @@ BouncingBall.lua \
 VanDerPol.lua \
 Stair.lua \
 Feedthrough.lua \
-FeedthroughConnections.lua \
-connectFmi2AndFmi3.lua \
 Dahlquist.lua \
 Resource.lua \
 
