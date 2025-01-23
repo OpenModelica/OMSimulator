@@ -190,7 +190,7 @@ pugi::xml_node oms::Snapshot::getTemplateResourceNodeSSD(const filesystem::path&
   ssdNode.append_attribute("xmlns:ssb") = "http://ssp-standard.org/SSP1/SystemStructureSignalDictionary";
   ssdNode.append_attribute("xmlns:oms") = "https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd";
   ssdNode.append_attribute("name") = cref.c_str();
-  ssdNode.append_attribute("version") = "1.0";
+  ssdNode.append_attribute("version") = "2.0";
 
   return ssdNode;
 }

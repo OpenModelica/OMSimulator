@@ -5,11 +5,11 @@
     <xs:annotation>
         <xs:documentation xml:lang="en">
             This is the normative XML Schema 1.0 schema for the MAP SSP
-            SystemStructure 1.0 common content across formats.
+            SystemStructure 2.0 common content across formats.
             
-            Version: 1.0
+            Version: 2.0
 
-            Copyright 2016 -- 2019 Modelica Association Project "SSP"
+            Copyright 2016 -- 2024 Modelica Association Project "SSP"
 
             Redistribution and use in source and binary forms, with or
             without modification, are permitted provided that the
@@ -116,6 +116,13 @@
         </xs:attribute>
     </xs:attributeGroup>
     
+    <xs:simpleType name="TGenericInteger">
+        <xs:restriction base="xs:integer">
+            <xs:maxInclusive value="18446744073709551615"/>
+            <xs:minInclusive value="-9223372036854775808"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
     <xs:complexType name="TEnumerations">
         <xs:sequence>
             <xs:element name="Enumeration" minOccurs="1" maxOccurs="unbounded" type="ssc:TEnumeration"/>
@@ -221,7 +228,7 @@
     <xs:complexType name="TAnnotations">
         <xs:sequence maxOccurs="unbounded">
             <xs:element name="Annotation">
-                <xs:complexType>
+                <xs:complexType mixed="true">
                     <xs:sequence>
                         <xs:any namespace="##any" processContents="lax" minOccurs="0"/>
                     </xs:sequence>
@@ -248,6 +255,197 @@
         </xs:sequence>
     </xs:complexType>
     
+    <xs:group name="GMetaData">
+        <xs:sequence>
+            <xs:element name="MetaData" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        This element can specify additional meta data for the given resource. Multiple
+                        (or no) MetaData elements may be present.
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="Content" type="ssc:ContentType" minOccurs="0" maxOccurs="1">
+                            <xs:annotation>
+                                <xs:documentation xml:lang="en">
+                                    This optional element can contain inlined content of the resource meta data. If it
+                                    is present, then the attribute source of the MetaData element must not be present.
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:group ref="ssc:GSignature">
+                            <xs:annotation>
+                                <xs:documentation xml:lang="en">
+                                    This element can contain digital signature information on the meta data referenced
+                                    by the enclosing MetaData element. It is left unspecified what types of signatures
+                                    are used and/or available for now.  Multiple or no signature elements may be present.
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:group>
+                    </xs:sequence>
+                    <xs:attribute name="kind" use="required">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="en">
+                                This attribute indicates the kind of resource meta data that is referenced, i.e.
+                                what role it plays in relation to the resource being described.
+                            </xs:documentation>
+                        </xs:annotation>
+                        <xs:simpleType>
+                            <xs:restriction base="xs:string">
+                                <xs:enumeration value="general"/>
+                                <xs:enumeration value="quality"/>
+                            </xs:restriction>
+                        </xs:simpleType>
+                    </xs:attribute>
+                    <xs:attribute name="type" type="xs:string" use="required">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="en">
+                                This mandatory attribute specifies the MIME type of the resource meta data, which
+                                does not have a default value.  If no specific MIME type can be indicated, then
+                                the type application/octet-stream is to be used.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:attribute>
+                    <xs:attribute name="source" type="xs:anyURI" use="optional">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="en">
+                                This attribute indicates the source of the resource meta data as a
+                                URI (cf. RFC 3986).  The base URI for the resolution of relative URIs
+                                is determined by the sourceBase attribute.
+
+                                If the source attribute is missing, the meta data is provided inline
+                                as contents of a Content element, which must not be present otherwise.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:attribute>
+                    <xs:attribute name="sourceBase" use="optional" default="file">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="en">
+                                Defines the base the source URI is resolved against:  If the attribute
+                                is missing or is specified as file, the source is resolved against the
+                                URI of the containing file.  If the containing model element has a
+                                source attribute, the sourceBase attribute can be specified as resource.
+                                In this case the URI is resolved against the (resolved) source URI of
+                                the containing model element.
+
+                                The last option allows the specification of meta data sources that
+                                reside inside a resource (for example an FMU) through relative URIs.
+                            </xs:documentation>
+                        </xs:annotation>
+                        <xs:simpleType>
+                            <xs:restriction base="xs:string">
+                                <xs:enumeration value="file"/>
+                                <xs:enumeration value="resource"/>
+                            </xs:restriction>
+                        </xs:simpleType>
+                    </xs:attribute>
+                    <xs:attributeGroup ref="ssc:ABaseElement"/>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:group>
+
+    <xs:group name="GSignature">
+        <xs:sequence>
+            <xs:element name="Signature" type="ssc:SignatureType" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        This element can contain digital signature information on the data referenced
+                        by the enclosing element. It is left unspecified what types of signatures
+                        are used and/or available for now.  Multiple or no signature elements may be present.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:group>
+    
+    <xs:complexType name="SignatureType">
+        <xs:sequence>
+            <xs:element name="Content" type="ssc:ContentType" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+        <xs:attribute name="role" use="required">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">
+                    This mandatory attribute specifies the role this signature has in the overall
+                    process. It indicates whether the digital signature is intended to just convey
+                    the authenticity of the information, or whether a claim for suitability of
+                    the information for certain purposes is made.  In the later case, the digital
+                    signature format should include detailed information about what suitability
+                    claims are being made.
+                </xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="authenticity"/>
+                    <xs:enumeration value="suitability"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="type" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">
+                    This mandatory attribute specifies the MIME type of the resource signature, which
+                    does not have a default value.  If no specific MIME type can be indicated, then
+                    the type application/octet-stream is to be used.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="source" type="xs:anyURI" use="optional">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">
+                    This attribute indicates the source of the digital signature as a
+                    URI (cf. RFC 3986).  The base URI for the resolution of relative URIs
+                    is determined by the sourceBase attribute.
+
+                    If the source attribute is missing, the signature must be provided
+                    inline as contents of a Content element, which must not be present
+                    otherwise.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="sourceBase" use="optional" default="file">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">
+                    Defines the base the source URI is resolved against:  If the attribute
+                    is missing or is specified as file, the source is resolved against the
+                    URI of the containing file.  If the containing model element has a
+                    source attribute, the sourceBase attribute can be specified as resource.
+                    In this case the URI is resolved against the (resolved) source URI of
+                    the containing model element.  If the Signature element is contained
+                    within a MetaData element, the sourceBase attribute can be specified as
+                    metaData.  In this case the URI is resolved against the (resolved) URI
+                    of the meta data source.
+
+                    The last two options allow the specification of signature sources that
+                    reside inside a resource (for example an FMU), or the meta data
+                    through relative URIs.
+                </xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="file"/>
+                    <xs:enumeration value="resource"/>
+                    <xs:enumeration value="metaData"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attributeGroup ref="ssc:ABaseElement"/>
+    </xs:complexType>
+
+    <xs:complexType name="ContentType" mixed="true">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">
+                This optional element can contain inlined content of an entity. If it is present,
+                then the attribute source of the enclosing element must not be present.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:choice>
+            <xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:choice>
+        <xs:attributeGroup ref="ssc:ABaseElement"/>
+    </xs:complexType>
+
     <xs:group name="GTypeChoice">
         <xs:choice>
             <xs:annotation>
@@ -276,7 +474,79 @@
                     </xs:attribute>
                 </xs:complexType>
             </xs:element>
+            <xs:element name="Float64">
+                <xs:complexType>
+                    <xs:attribute name="unit" type="xs:string" use="optional">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="en">
+                                This attribute gives the unit of the entity and must
+                                reference one of the unit definitions provided in the Units
+                                element of the containing file.
+                                
+                                If a unit is not supplied, the unit is determined through
+                                default mechanisms: For FMU components, the unit of the
+                                underlying variable would be used, for systems the units
+                                of connected underlying connectors could be used if unambiguous.
+                                If a unit cannot be deduced unambinguously, the user should
+                                be informed of this error.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:attribute>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Float32">
+                <xs:complexType>
+                    <xs:attribute name="unit" type="xs:string" use="optional">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="en">
+                                This attribute gives the unit of the entity and must
+                                reference one of the unit definitions provided in the Units
+                                element of the containing file.
+                                
+                                If a unit is not supplied, the unit is determined through
+                                default mechanisms: For FMU components, the unit of the
+                                underlying variable would be used, for systems the units
+                                of connected underlying connectors could be used if unambiguous.
+                                If a unit cannot be deduced unambinguously, the user should
+                                be informed of this error.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:attribute>
+                </xs:complexType>
+            </xs:element>
             <xs:element name="Integer">
+                <xs:complexType>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Int8">
+                <xs:complexType>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="UInt8">
+                <xs:complexType>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Int16">
+                <xs:complexType>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="UInt16">
+                <xs:complexType>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Int32">
+                <xs:complexType>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="UInt32">
+                <xs:complexType>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Int64">
+                <xs:complexType>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="UInt64">
                 <xs:complexType>
                 </xs:complexType>
             </xs:element>
@@ -319,6 +589,29 @@
                             </xs:documentation>
                         </xs:annotation>
                     </xs:attribute>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Clock">
+                <xs:complexType>
+                  <xs:attribute name="intervalVariability" use="optional">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:normalizedString">
+                        <xs:enumeration value="constant"/>
+                        <xs:enumeration value="fixed"/>
+                        <xs:enumeration value="tunable"/>
+                        <xs:enumeration value="changing"/>
+                        <xs:enumeration value="countdown"/>
+                        <xs:enumeration value="triggered"/>
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:attribute>
+                  <xs:attribute name="intervalDecimal" type="xs:double" use="optional"/>
+                  <xs:attribute name="shiftDecimal" type="xs:double" default="0"/>
+                  <xs:attribute name="supportsFraction" type="xs:boolean" default="false"/>
+                  <xs:attribute name="resolution" type="xs:unsignedLong" use="optional"/>
+                  <xs:attribute name="intervalCounter" type="xs:unsignedLong" use="optional"/>
+                  <xs:attribute name="shiftCounter" type="xs:unsignedLong" default="0"/>
+                  <xs:attribute name="priority" type="xs:unsignedInt" use="optional"/>
                 </xs:complexType>
             </xs:element>
         </xs:choice>
@@ -408,8 +701,8 @@
                 <xs:annotation>
                     <xs:documentation xml:lang="en">
                         This element provides for a transformation of integer parameter values
-                        based on a mapping table and is valid for parameters of integer and 
-                        enumeration type.  Each mapping table entry is provided by a MapEntry
+                        based on a mapping table and is valid for parameters of all integer and 
+                        enumeration types.  Each mapping table entry is provided by a MapEntry
                         element.
                     </xs:documentation>
                 </xs:annotation>
@@ -417,7 +710,7 @@
                     <xs:sequence>
                         <xs:element name="MapEntry" minOccurs="1" maxOccurs="unbounded">
                             <xs:complexType>
-                                <xs:attribute name="source" type="xs:int" use="required">
+                                <xs:attribute name="source" type="ssc:TGenericInteger" use="required">
                                     <xs:annotation>
                                         <xs:documentation xml:lang="en">
                                             This attribute gives the value of the parameter in the
@@ -425,7 +718,7 @@
                                         </xs:documentation>
                                     </xs:annotation>
                                 </xs:attribute>
-                                <xs:attribute name="target" type="xs:int" use="required">
+                                <xs:attribute name="target" type="ssc:TGenericInteger" use="required">
                                     <xs:annotation>
                                         <xs:documentation xml:lang="en">
                                             This attribute gives the value of the parameter to use
@@ -475,6 +768,50 @@
                 </xs:complexType>
             </xs:element>
         </xs:choice>
+    </xs:group>
+    
+    <xs:group name="GDimensions">
+        <xs:sequence>
+            <xs:element name="Dimension" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        This optional element specifies one dimension of an array connector.
+                        If no dimension elements are present in a connector, it is a scalar
+                        connector. The number of dimension elements in a connector provides
+                        the dimensionality of the array.
+                        
+                        Either the size or the sizeConnector attributes CAN be present
+                        on the element, indicating a fixed size, or a size that depends on
+                        the structural parameter or constant referenced by the sizeConnector
+                        attribute.
+                        
+                        If none of the attributes are present, then the size of the dimension
+                        is unspecified at the SSD level. If both attributes are present this
+                        is considered an error.
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:attribute name="size" type="xs:unsignedLong" use="optional">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="en">
+                                This attribute gives the size of this dimension of the
+                                connector as a fixed, unchangeable number.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:attribute>
+                    <xs:attribute name="sizeConnector" type="xs:string" use="optional">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="en">
+                                This attribute references another connector by name, that
+                                gives the size of this dimension of the connector, e.g. a
+                                structural parameter or a constant of the underlying
+                                component that gives the dimension size.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:attribute>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
     </xs:group>
     
 </xs:schema>

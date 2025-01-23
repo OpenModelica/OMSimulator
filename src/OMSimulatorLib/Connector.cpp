@@ -181,7 +181,7 @@ std::string oms::Connector::getTypeString(const pugi::xml_node& node, const std:
   {
     return node.attribute("type").as_string();
   }
-  else if (sspVersion == "1.0")
+  else if (sspVersion == "1.0" || sspVersion == "2.0")
   {
     for(pugi::xml_node_iterator it = node.begin(); it != node.end(); ++it)
     {

@@ -133,7 +133,7 @@ oms_status_enu_t oms::SystemWC::importFromSSD_SimulationInformation(const pugi::
   pugi::xml_node fixedStepMaster = node.child(oms::ssp::Version1_0::FixedStepMaster);
   if (fixedStepMaster)
   {
-    if (sspVersion == "1.0")
+    if (sspVersion == "1.0" || sspVersion == "2.0")
     {
       solverName = fixedStepMaster.attribute("description").as_string();
       FixedStepMaster = oms::ssp::Version1_0::FixedStepMaster;
@@ -150,7 +150,7 @@ oms_status_enu_t oms::SystemWC::importFromSSD_SimulationInformation(const pugi::
   pugi::xml_node variableStepMaster = node.child(oms::ssp::Version1_0::VariableStepMaster);
   if (variableStepMaster)
   {
-    if (sspVersion == "1.0")
+    if (sspVersion == "1.0" || sspVersion == "2.0")
     {
       solverName = variableStepMaster.attribute("description").as_string();
       VariableStepMaster = oms::ssp::Version1_0::VariableStepMaster;
