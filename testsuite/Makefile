@@ -2,7 +2,7 @@
 
 all: difftool resources test
 
-test: api.log AircraftVehicleDemonstrator.log import.log export.log simulation.log reference-fmus.log
+test: api.log AircraftVehicleDemonstrator.log import.log export.log simulation.log reference-fmus.log CompositeModels.log
 
 partest: difftool resources
 	cd partest && time ./runtests.pl -nocolour -with-xml
@@ -20,6 +20,10 @@ api.log: difftool
 AircraftVehicleDemonstrator.log: difftool
 	@$(MAKE) -C AircraftVehicleDemonstrator -f Makefile test > $@
 	@grep == AircraftVehicleDemonstrator.log
+
+CompositeModels.log: difftool
+	@$(MAKE) -C CompositeModels -f Makefile test > $@
+	@grep == CompositeModels.log
 
 import.log: difftool
 	@$(MAKE) -C import -f Makefile test > $@

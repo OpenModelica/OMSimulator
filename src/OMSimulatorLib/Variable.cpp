@@ -89,7 +89,7 @@ void oms::Variable::configureFMI2Variable(fmiHandle* fmi4c, int index_)
       type = oms_signal_type_enum;
       break;
     default:
-      logError("Unknown fmi base type: " + fmi2_getVariableDataType(var));
+      logWarning("Unknown fmi base type: " + fmi2_getVariableDataType(var));
       type = oms_signal_type_real;
       break;
   }
@@ -176,7 +176,7 @@ void oms::Variable::configureFMI3Variable(fmiHandle* fmi4c, int index_)
       numericType = oms_signal_numeric_type_INT64;
       break;
     default:
-      logError("Unknown FMI3 base type for var : " + std::string(cref));
+      logWarning("Unknown FMI3 base type for var : " + std::string(cref));
       type = oms_signal_type_real;
       break;
   }
