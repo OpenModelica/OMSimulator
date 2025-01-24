@@ -52,7 +52,7 @@ oms.delete("snapshot")
 ##       xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary"
 ##       xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
 ##       name="snapshot"
-##       version="1.0">
+##       version="2.0">
 ##       <ssd:System
 ##         name="root">
 ##         <ssd:Connectors>
@@ -170,7 +170,7 @@ oms.delete("snapshot")
 ##   <oms:file
 ##     name="resources/signalFilter.xml">
 ##     <oms:SignalFilter
-##       version="1.0">
+##       version="2.0">
 ##       <oms:Variable
 ##         name="snapshot.root.C1"
 ##         type="Real"

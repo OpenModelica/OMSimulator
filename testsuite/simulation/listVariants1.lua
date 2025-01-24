@@ -52,7 +52,7 @@ oms_delete("model")
 --   <oms:file
 --     name="ssdVariants.xml">
 --     <oms:Variants
---       version="1.0">
+--       version="2.0">
 --       <oms:variant
 --         name="varB" />
 --       <oms:variant
@@ -71,7 +71,7 @@ oms_delete("model")
 --   <oms:file
 --     name="ssdVariants.xml">
 --     <oms:Variants
---       version="1.0">
+--       version="2.0">
 --       <oms:variant
 --         name="model" />
 --       <oms:variant

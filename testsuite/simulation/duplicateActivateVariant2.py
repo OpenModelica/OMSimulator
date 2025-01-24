@@ -85,10 +85,10 @@ oms.delete("varB")
 ## info:    Activate Variant varB
 ## info:      varB.root.A.u      :  -13.0
 ## info:      varB.root.A.k      :  -100.0
-## info:    Reactivate Variant varB to varA 
+## info:    Reactivate Variant varB to varA
 ## info:      varA.root.A.u      :  -10.0
 ## info:      varA.root.A.k      :  10.0
-## info:    Reactivate Variant varA to model 
+## info:    Reactivate Variant varA to model
 ## info:      model.root.A.u      :  0.0
 ## info:      model.root.A.k      :  10.0
 ## <?xml version="1.0"?>
@@ -98,7 +98,7 @@ oms.delete("varB")
 ##   <oms:file
 ##     name="ssdVariants.xml">
 ##     <oms:Variants
-##       version="1.0">
+##       version="2.0">
 ##       <oms:variant
 ##         name="model" />
 ##       <oms:variant
@@ -123,7 +123,7 @@ oms.delete("varB")
 ##       xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary"
 ##       xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
 ##       name="model"
-##       version="1.0">
+##       version="2.0">
 ##       <ssd:System
 ##         name="root">
 ##         <ssd:Elements>
@@ -216,7 +216,7 @@ oms.delete("varB")
 ##   <oms:file
 ##     name="resources/signalFilter.xml">
 ##     <oms:SignalFilter
-##       version="1.0">
+##       version="2.0">
 ##       <oms:Variable
 ##         name="model.root.A.u"
 ##         type="Real"
@@ -247,7 +247,7 @@ oms.delete("varB")
 ##       xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary"
 ##       xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
 ##       name="varA"
-##       version="1.0">
+##       version="2.0">
 ##       <ssd:System
 ##         name="root">
 ##         <ssd:Elements>
@@ -345,7 +345,7 @@ oms.delete("varB")
 ##   <oms:file
 ##     name="resources/signalFilter_varA.xml">
 ##     <oms:SignalFilter
-##       version="1.0">
+##       version="2.0">
 ##       <oms:Variable
 ##         name="varA.root.A.u"
 ##         type="Real"
@@ -376,7 +376,7 @@ oms.delete("varB")
 ##       xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary"
 ##       xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
 ##       name="varB"
-##       version="1.0">
+##       version="2.0">
 ##       <ssd:System
 ##         name="root">
 ##         <ssd:Elements>
@@ -474,7 +474,7 @@ oms.delete("varB")
 ##   <oms:file
 ##     name="resources/signalFilter_varB.xml">
 ##     <oms:SignalFilter
-##       version="1.0">
+##       version="2.0">
 ##       <oms:Variable
 ##         name="varB.root.A.u"
 ##         type="Real"
