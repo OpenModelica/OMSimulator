@@ -744,7 +744,7 @@ oms_status_enu_t oms::Model::reduceSSV(const std::string& ssvfile, const std::st
   pugi::xml_document ssvdoc;
   // generate XML declaration for ssm file
   pugi::xml_node ssvDeclarationNode = ssvdoc.append_child(pugi::node_declaration);
-  ssvDeclarationNode.append_attribute("version") = "1.0";
+  ssvDeclarationNode.append_attribute("version") = "2.0";
   ssvDeclarationNode.append_attribute("encoding") = "UTF-8";
 
   std::string savePath = "";
