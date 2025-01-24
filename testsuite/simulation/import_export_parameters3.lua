@@ -147,7 +147,7 @@ oms_delete("import_export_parameters")
 --           <ssd:ParameterBinding>
 --             <ssd:ParameterValues>
 --               <ssv:ParameterSet
---                 version="1.0"
+--                 version="2.0"
 --                 name="parameters">
 --                 <ssv:Parameters>
 --                   <ssv:Parameter
@@ -189,7 +189,7 @@ oms_delete("import_export_parameters")
 --               <ssd:ParameterBinding>
 --                 <ssd:ParameterValues>
 --                   <ssv:ParameterSet
---                     version="1.0"
+--                     version="2.0"
 --                     name="parameters">
 --                     <ssv:Parameters>
 --                       <ssv:Parameter
@@ -262,7 +262,7 @@ oms_delete("import_export_parameters")
 --               <ssd:ParameterBinding>
 --                 <ssd:ParameterValues>
 --                   <ssv:ParameterSet
---                     version="1.0"
+--                     version="2.0"
 --                     name="parameters">
 --                     <ssv:Parameters>
 --                       <ssv:Parameter
@@ -343,7 +343,7 @@ oms_delete("import_export_parameters")
 --               <ssd:ParameterBinding>
 --                 <ssd:ParameterValues>
 --                   <ssv:ParameterSet
---                     version="1.0"
+--                     version="2.0"
 --                     name="parameters">
 --                     <ssv:Parameters>
 --                       <ssv:Parameter

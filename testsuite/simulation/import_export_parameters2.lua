@@ -369,7 +369,7 @@ oms_delete("import_export_parameters")
 --     <ssv:ParameterSet
 --       xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
 --       xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
---       version="1.0"
+--       version="2.0"
 --       name="parameters">
 --       <ssv:Parameters>
 --         <ssv:Parameter
@@ -400,7 +400,7 @@ oms_delete("import_export_parameters")
 --     <ssv:ParameterSet
 --       xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
 --       xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
---       version="1.0"
+--       version="2.0"
 --       name="parameters">
 --       <ssv:Parameters>
 --         <ssv:Parameter
@@ -416,7 +416,7 @@ oms_delete("import_export_parameters")
 --     <ssv:ParameterSet
 --       xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
 --       xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
---       version="1.0"
+--       version="2.0"
 --       name="parameters">
 --       <ssv:Parameters>
 --         <ssv:Parameter
@@ -442,7 +442,7 @@ oms_delete("import_export_parameters")
 --     <ssv:ParameterSet
 --       xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
 --       xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
---       version="1.0"
+--       version="2.0"
 --       name="parameters">
 --       <ssv:Parameters>
 --         <ssv:Parameter

@@ -68,7 +68,7 @@ errormodelSnapshot = [[
     <oms:file
       name="resources/signalFilter.xml">
       <oms:SignalFilter
-        version="1.0" />
+        version="2.0" />
     </oms:file>
   </oms:snapshot>
 ]]
@@ -130,7 +130,7 @@ correctedModelSnapshot = [[
     <oms:file
       name="resources/signalFilter.xml">
       <oms:SignalFilter
-        version="1.0" />
+        version="2.0" />
     </oms:file>
   </oms:snapshot>
 ]]
