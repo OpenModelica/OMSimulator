@@ -862,9 +862,11 @@ oms_status_enu_t oms::System::importFromSnapshot(const pugi::xml_node& node, con
           // allow component type to be empty, as type is optional according to SSP-1.0 and default type is application/x-fmu-sharedlibrary
           if ("application/x-fmu-sharedlibrary" == type || type.empty())
           {
+            // read the modelDescription.xml in memory to detect the fmiVersion
             std::string source = itElements->attribute("source").as_string();
             filesystem::path modelDescriptionPath = filesystem::path(getModel().getTempDirectory()) / filesystem::path(source);
             std::string fmiVersion = getFmiVersion(modelDescriptionPath.generic_string());
+
             if (getType() == oms_system_wc && fmiVersion == "2.0")
               component = ComponentFMUCS::NewComponent(*itElements, this, sspVersion, snapshot, variantName);
             else if (getType() == oms_system_wc && fmiVersion == "3.0")
