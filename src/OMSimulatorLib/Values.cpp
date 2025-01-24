@@ -820,7 +820,7 @@ oms_status_enu_t oms::Values::exportToSSD(pugi::xml_node& node) const
   pugi::xml_node node_parameter_values = node_parameter_binding.append_child(oms::ssp::Version1_0::ssd::parameter_values);
 
   pugi::xml_node node_parameterset = node_parameter_values.append_child(oms::ssp::Version1_0::ssv::parameter_set);
-  node_parameterset.append_attribute("version") = "1.0";
+  node_parameterset.append_attribute("version") = "2.0";
   node_parameterset.append_attribute("name") = "parameters";
   pugi::xml_node node_parameters = node_parameterset.append_child(oms::ssp::Version1_0::ssv::parameters);
 
@@ -1129,7 +1129,7 @@ void oms::Values::exportParameterBindings(pugi::xml_node &node, Snapshot &snapsh
             pugi::xml_node node_parameter_binding = node_parameters_bindings.append_child(oms::ssp::Version1_0::ssd::parameter_binding);
             pugi::xml_node node_parameter_values = node_parameter_binding.append_child(oms::ssp::Version1_0::ssd::parameter_values);
             pugi::xml_node node_parameterset = node_parameter_values.append_child(oms::ssp::Version1_0::ssv::parameter_set);
-            node_parameterset.append_attribute("version") = "1.0";
+            node_parameterset.append_attribute("version") = "2.0";
             node_parameterset.append_attribute("name") = "parameters";
             pugi::xml_node node_parameters = node_parameterset.append_child(oms::ssp::Version1_0::ssv::parameters);
             res.second.exportStartValuesHelper(node_parameters);

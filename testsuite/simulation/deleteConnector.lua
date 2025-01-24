@@ -57,7 +57,7 @@ print(src)
 
 -- Result:
 -- <?xml version="1.0"?>
--- <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="deleteConnector" version="1.0">
+-- <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="deleteConnector" version="2.0">
 -- 	<ssd:System name="Root">
 -- 		<ssd:Connectors>
 -- 			<ssd:Connector name="C1" kind="input">
@@ -80,7 +80,7 @@ print(src)
 -- 				<ssd:ParameterBindings>
 -- 					<ssd:ParameterBinding>
 -- 						<ssd:ParameterValues>
--- 							<ssv:ParameterSet version="1.0" name="parameters">
+-- 							<ssv:ParameterSet version="2.0" name="parameters">
 -- 								<ssv:Parameters>
 -- 									<ssv:Parameter name="C4">
 -- 										<ssv:Real value="30" />
@@ -130,7 +130,7 @@ print(src)
 -- 						<ssd:ParameterBindings>
 -- 							<ssd:ParameterBinding>
 -- 								<ssd:ParameterValues>
--- 									<ssv:ParameterSet version="1.0" name="parameters">
+-- 									<ssv:ParameterSet version="2.0" name="parameters">
 -- 										<ssv:Parameters>
 -- 											<ssv:Parameter name="k">
 -- 												<ssv:Real value="30" unit="1" />
@@ -182,7 +182,7 @@ print(src)
 -- warning: failed to delete object "deleteConnector.Root.System2.C6" because the identifier couldn't be resolved to any connector, component, system, or model
 -- warning: failed to delete object "deleteConnector.Root.System3" because the identifier couldn't be resolved to any connector, component, system, or model
 -- <?xml version="1.0"?>
--- <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="deleteConnector" version="1.0">
+-- <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="deleteConnector" version="2.0">
 -- 	<ssd:System name="Root">
 -- 		<ssd:Connectors>
 -- 			<ssd:Connector name="C2" kind="output">
@@ -199,7 +199,7 @@ print(src)
 -- 				<ssd:ParameterBindings>
 -- 					<ssd:ParameterBinding>
 -- 						<ssd:ParameterValues>
--- 							<ssv:ParameterSet version="1.0" name="parameters">
+-- 							<ssv:ParameterSet version="2.0" name="parameters">
 -- 								<ssv:Parameters>
 -- 									<ssv:Parameter name="C4">
 -- 										<ssv:Real value="30" />

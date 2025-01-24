@@ -201,7 +201,7 @@ pugi::xml_node oms::Snapshot::getTemplateResourceNodeSSV(const filesystem::path&
   pugi::xml_node node_parameterset = new_node.append_child(oms::ssp::Version1_0::ssv::parameter_set);
   node_parameterset.append_attribute("xmlns:ssc") = "http://ssp-standard.org/SSP1/SystemStructureCommon";
   node_parameterset.append_attribute("xmlns:ssv") = "http://ssp-standard.org/SSP1/SystemStructureParameterValues";
-  node_parameterset.append_attribute("version") = "1.0";
+  node_parameterset.append_attribute("version") = "2.0";
   node_parameterset.append_attribute("name") = cref.c_str();
   pugi::xml_node node_parameters = node_parameterset.append_child(oms::ssp::Version1_0::ssv::parameters);
 
@@ -214,7 +214,7 @@ pugi::xml_node oms::Snapshot::getTemplateResourceNodeSSM(const filesystem::path&
   pugi::xml_node node_parameterMapping = new_node.append_child(oms::ssp::Version1_0::ssm::parameter_mapping);
   node_parameterMapping.append_attribute("xmlns:ssc") = "http://ssp-standard.org/SSP1/SystemStructureCommon";
   node_parameterMapping.append_attribute("xmlns:ssm") = "http://ssp-standard.org/SSP1/SystemStructureParameterMapping";
-  node_parameterMapping.append_attribute("version") = "1.0";
+  node_parameterMapping.append_attribute("version") = "2.0";
 
   return node_parameterMapping;
 }
@@ -223,7 +223,7 @@ pugi::xml_node oms::Snapshot::getTemplateResourceNodeSignalFilter(const filesyst
 {
   pugi::xml_node new_node = newResourceNode(filename);
   pugi::xml_node oms_signalFilter = new_node.append_child(oms::ssp::Version1_0::oms_signalFilter);
-  oms_signalFilter.append_attribute("version") = "1.0";
+  oms_signalFilter.append_attribute("version") = "2.0";
 
   return oms_signalFilter;
 }
@@ -232,7 +232,7 @@ pugi::xml_node oms::Snapshot::getTemplateResourceNodeSSDVariants()
 {
   pugi::xml_node new_node = newResourceNode("ssdVariants.xml");
   pugi::xml_node oms_variants = new_node.append_child("oms:Variants");
-  oms_variants.append_attribute("version") = "1.0";
+  oms_variants.append_attribute("version") = "2.0";
 
   return oms_variants;
 }

@@ -89,7 +89,7 @@ oms_delete("import_parameter_mapping")
 --       xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary"
 --       xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
 --       name="import_parameter_mapping"
---       version="1.0">
+--       version="2.0">
 --       <ssd:System
 --         name="co_sim">
 --         <ssd:Connectors>
@@ -260,7 +260,7 @@ oms_delete("import_parameter_mapping")
 --     <ssv:ParameterSet
 --       xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
 --       xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
---       version="1.0"
+--       version="2.0"
 --       name="parameters">
 --       <ssv:Parameters>
 --         <ssv:Parameter
@@ -291,7 +291,7 @@ oms_delete("import_parameter_mapping")
 --     <ssm:ParameterMapping
 --       xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
 --       xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping"
---       version="1.0">
+--       version="2.0">
 --       <ssm:MappingEntry
 --         source="cosim_parameters"
 --         target="parameter_1" />
@@ -324,7 +324,7 @@ oms_delete("import_parameter_mapping")
 --   <oms:file
 --     name="resources/signalFilter.xml">
 --     <oms:SignalFilter
---       version="1.0">
+--       version="2.0">
 --       <oms:Variable
 --         name="import_parameter_mapping.co_sim.Input_1"
 --         type="Real"

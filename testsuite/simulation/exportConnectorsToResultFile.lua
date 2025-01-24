@@ -90,7 +90,7 @@ oms_delete("exportConnectors")
 -- info:      exportConnectors.Root.C3                    : 4.5
 -- info:      exportConnectors.Root.Gain.u                : 10.5
 -- <?xml version="1.0"?>
--- <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="exportConnectors" version="1.0">
+-- <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="exportConnectors" version="2.0">
 -- 	<ssd:System name="Root">
 -- 		<ssd:Connectors>
 -- 			<ssd:Connector name="C1" kind="input">
@@ -106,7 +106,7 @@ oms_delete("exportConnectors")
 -- 		<ssd:ParameterBindings>
 -- 			<ssd:ParameterBinding>
 -- 				<ssd:ParameterValues>
--- 					<ssv:ParameterSet version="1.0" name="parameters">
+-- 					<ssv:ParameterSet version="2.0" name="parameters">
 -- 						<ssv:Parameters>
 -- 							<ssv:Parameter name="C3">
 -- 								<ssv:Real value="4.5" />
@@ -137,7 +137,7 @@ oms_delete("exportConnectors")
 -- 				<ssd:ParameterBindings>
 -- 					<ssd:ParameterBinding>
 -- 						<ssd:ParameterValues>
--- 							<ssv:ParameterSet version="1.0" name="parameters">
+-- 							<ssv:ParameterSet version="2.0" name="parameters">
 -- 								<ssv:Parameters>
 -- 									<ssv:Parameter name="u">
 -- 										<ssv:Real value="7.5" />

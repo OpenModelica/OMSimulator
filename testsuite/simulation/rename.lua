@@ -77,7 +77,7 @@ print("info:      model.root_1.add_1.u2           : " .. oms_getReal("model.root
 
 -- Result:
 -- <?xml version="1.0"?>
--- <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="model" version="1.0">
+-- <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="model" version="2.0">
 -- 	<ssd:System name="root">
 -- 		<ssd:Connectors>
 -- 			<ssd:Connector name="input1" kind="input">
@@ -90,7 +90,7 @@ print("info:      model.root_1.add_1.u2           : " .. oms_getReal("model.root
 -- 		<ssd:ParameterBindings>
 -- 			<ssd:ParameterBinding>
 -- 				<ssd:ParameterValues>
--- 					<ssv:ParameterSet version="1.0" name="parameters">
+-- 					<ssv:ParameterSet version="2.0" name="parameters">
 -- 						<ssv:Parameters>
 -- 							<ssv:Parameter name="input1">
 -- 								<ssv:Real value="10" />
@@ -180,7 +180,7 @@ print("info:      model.root_1.add_1.u2           : " .. oms_getReal("model.root
 -- info:    maximum step size for 'model.root_1.System_2': 0.001000
 -- info:    Result file: model_res.mat (bufferSize=10)
 -- <?xml version="1.0"?>
--- <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="model" version="1.0">
+-- <ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="model" version="2.0">
 -- 	<ssd:System name="root_1">
 -- 		<ssd:Connectors>
 -- 			<ssd:Connector name="input1" kind="input">
@@ -193,7 +193,7 @@ print("info:      model.root_1.add_1.u2           : " .. oms_getReal("model.root
 -- 		<ssd:ParameterBindings>
 -- 			<ssd:ParameterBinding>
 -- 				<ssd:ParameterValues>
--- 					<ssv:ParameterSet version="1.0" name="parameters">
+-- 					<ssv:ParameterSet version="2.0" name="parameters">
 -- 						<ssv:Parameters>
 -- 							<ssv:Parameter name="output">
 -- 								<ssv:Real value="10" />
@@ -219,7 +219,7 @@ print("info:      model.root_1.add_1.u2           : " .. oms_getReal("model.root
 -- 				<ssd:ParameterBindings>
 -- 					<ssd:ParameterBinding>
 -- 						<ssd:ParameterValues>
--- 							<ssv:ParameterSet version="1.0" name="parameters">
+-- 							<ssv:ParameterSet version="2.0" name="parameters">
 -- 								<ssv:Parameters>
 -- 									<ssv:Parameter name="input1">
 -- 										<ssv:Real value="10" />
