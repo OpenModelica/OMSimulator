@@ -59,7 +59,7 @@ oms_delete("varB")
 --       xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary"
 --       xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
 --       name="model"
---       version="1.0">
+--       version="2.0">
 --       <ssd:System
 --         name="root">
 --         <ssd:ParameterBindings>
@@ -140,7 +140,7 @@ oms_delete("varB")
 --     <ssv:ParameterSet
 --       xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
 --       xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
---       version="1.0"
+--       version="2.0"
 --       name="parameters">
 --       <ssv:Parameters>
 --         <ssv:Parameter
@@ -154,7 +154,7 @@ oms_delete("varB")
 --   <oms:file
 --     name="resources/signalFilter.xml">
 --     <oms:SignalFilter
---       version="1.0">
+--       version="2.0">
 --       <oms:Variable
 --         name="model.root.A.u"
 --         type="Real"
@@ -185,7 +185,7 @@ oms_delete("varB")
 --       xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary"
 --       xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
 --       name="varA"
---       version="1.0">
+--       version="2.0">
 --       <ssd:System
 --         name="root">
 --         <ssd:ParameterBindings>
@@ -266,7 +266,7 @@ oms_delete("varB")
 --     <ssv:ParameterSet
 --       xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
 --       xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
---       version="1.0"
+--       version="2.0"
 --       name="parameters">
 --       <ssv:Parameters>
 --         <ssv:Parameter
@@ -285,7 +285,7 @@ oms_delete("varB")
 --   <oms:file
 --     name="resources/signalFilter_varA.xml">
 --     <oms:SignalFilter
---       version="1.0">
+--       version="2.0">
 --       <oms:Variable
 --         name="varA.root.A.u"
 --         type="Real"
@@ -316,7 +316,7 @@ oms_delete("varB")
 --       xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary"
 --       xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
 --       name="varB"
---       version="1.0">
+--       version="2.0">
 --       <ssd:System
 --         name="root">
 --         <ssd:ParameterBindings>
@@ -397,7 +397,7 @@ oms_delete("varB")
 --     <ssv:ParameterSet
 --       xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
 --       xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
---       version="1.0"
+--       version="2.0"
 --       name="parameters">
 --       <ssv:Parameters>
 --         <ssv:Parameter
@@ -416,7 +416,7 @@ oms_delete("varB")
 --   <oms:file
 --     name="resources/signalFilter_varB.xml">
 --     <oms:SignalFilter
---       version="1.0">
+--       version="2.0">
 --       <oms:Variable
 --         name="varB.root.A.u"
 --         type="Real"

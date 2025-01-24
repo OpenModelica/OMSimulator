@@ -92,7 +92,7 @@ oms_delete("addResources")
 --       xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary"
 --       xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
 --       name="addResources"
---       version="1.0">
+--       version="2.0">
 --       <ssd:System
 --         name="root">
 --         <ssd:Elements>
@@ -114,7 +114,7 @@ oms_delete("addResources")
 --               <ssd:ParameterBinding>
 --                 <ssd:ParameterValues>
 --                   <ssv:ParameterSet
---                     version="1.0"
+--                     version="2.0"
 --                     name="parameters">
 --                     <ssv:Parameters>
 --                       <ssv:Parameter
@@ -177,7 +177,7 @@ oms_delete("addResources")
 --                   <ssd:ParameterBinding>
 --                     <ssd:ParameterValues>
 --                       <ssv:ParameterSet
---                         version="1.0"
+--                         version="2.0"
 --                         name="parameters">
 --                         <ssv:Parameters>
 --                           <ssv:Parameter
@@ -323,7 +323,7 @@ oms_delete("addResources")
 --     <ssv:ParameterSet
 --       xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
 --       xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
---       version="1.0"
+--       version="2.0"
 --       name="parameters">
 --       <ssv:Parameters>
 --         <ssv:Parameter
@@ -347,7 +347,7 @@ oms_delete("addResources")
 --   <oms:file
 --     name="resources/signalFilter.xml">
 --     <oms:SignalFilter
---       version="1.0">
+--       version="2.0">
 --       <oms:Variable
 --         name="addResources.root.system2.C1"
 --         type="Real"

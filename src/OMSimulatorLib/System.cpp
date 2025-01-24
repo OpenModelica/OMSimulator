@@ -862,9 +862,16 @@ oms_status_enu_t oms::System::importFromSnapshot(const pugi::xml_node& node, con
           // allow component type to be empty, as type is optional according to SSP-1.0 and default type is application/x-fmu-sharedlibrary
           if ("application/x-fmu-sharedlibrary" == type || type.empty())
           {
-            if (getType() == oms_system_wc)
+            // read the modelDescription.xml in memory to detect the fmiVersion
+            std::string source = itElements->attribute("source").as_string();
+            filesystem::path modelDescriptionPath = filesystem::path(getModel().getTempDirectory()) / filesystem::path(source);
+            std::string fmiVersion = getFmiVersion(modelDescriptionPath.generic_string());
+
+            if (getType() == oms_system_wc && fmiVersion == "2.0")
               component = ComponentFMUCS::NewComponent(*itElements, this, sspVersion, snapshot, variantName);
-            else if (getType() == oms_system_sc)
+            else if (getType() == oms_system_wc && fmiVersion == "3.0")
+              component = ComponentFMU3CS::NewComponent(*itElements, this, sspVersion, snapshot, variantName);
+            else if (getType() == oms_system_sc && fmiVersion == "2.0")
               component = ComponentFMUME::NewComponent(*itElements, this, sspVersion, snapshot, variantName);
             else
               return logError("wrong xml schema detected: " + name);
@@ -914,7 +921,7 @@ oms_status_enu_t oms::System::importFromSnapshot(const pugi::xml_node& node, con
           name = itAnnotations->name();
 
           // check for oms:simulationInformation from version 1.0
-          if (std::string(name) == oms::ssp::Version1_0::simulation_information && sspVersion == "1.0")
+          if (std::string(name) == oms::ssp::Version1_0::simulation_information && (sspVersion == "1.0" || sspVersion == "2.0"))
           {
             if (oms_status_ok != importFromSSD_SimulationInformation(*itAnnotations, sspVersion))
               return logError("Failed to import " + std::string(oms::ssp::Version1_0::simulation_information));

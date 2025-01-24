@@ -217,7 +217,7 @@ oms_status_enu_t oms::Scope::importModel(const std::string& filename, char** _cr
   if (!model)
     return oms_status_error;
 
-  if (ssdVersion != "Draft20180219" && ssdVersion != "1.0")
+  if (ssdVersion != "Draft20180219" && ssdVersion != "1.0" && ssdVersion != "2.0")
     logWarning("Unknown SSD version: " + ssdVersion);
 
   // extract the ssp file
@@ -436,8 +436,8 @@ oms_status_enu_t oms::Scope::loadSnapshot(const oms::ComRef& cref, const char* s
     return logError("failed to load snapshot, because it would change the model's name but it already exists in the scope");
 
   std::string ssdVersion = node.attribute("version").as_string();
-  if (ssdVersion != "Draft20180219" && ssdVersion != "1.0")
-    return logError("Unknown SSD version \"" + ssdVersion + "\"; supported version are \"1.0\" and \"Draft20180219\".");
+  if (ssdVersion != "Draft20180219" && ssdVersion != "1.0" && ssdVersion != "2.0")
+    return logError("Unknown SSD version \"" + ssdVersion + "\"; supported version are \"1.0\" and \"2.0\" and\"Draft20180219\".");
 
   oms_status_enu_t status = getModel(cref)->loadSnapshot(node);
 

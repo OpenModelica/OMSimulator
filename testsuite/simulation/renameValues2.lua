@@ -77,7 +77,7 @@ print("info:      renameValues2.root.add_3.u1       : " .. oms_getReal("renameVa
 --       xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary"
 --       xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
 --       name="renameValues2"
---       version="1.0">
+--       version="2.0">
 --       <ssd:System
 --         name="root">
 --         <ssd:Elements>
@@ -94,7 +94,7 @@ print("info:      renameValues2.root.add_3.u1       : " .. oms_getReal("renameVa
 --               <ssd:ParameterBinding>
 --                 <ssd:ParameterValues>
 --                   <ssv:ParameterSet
---                     version="1.0"
+--                     version="2.0"
 --                     name="parameters">
 --                     <ssv:Parameters>
 --                       <ssv:Parameter
@@ -167,7 +167,7 @@ print("info:      renameValues2.root.add_3.u1       : " .. oms_getReal("renameVa
 --               <ssd:ParameterBinding>
 --                 <ssd:ParameterValues>
 --                   <ssv:ParameterSet
---                     version="1.0"
+--                     version="2.0"
 --                     name="parameters">
 --                     <ssv:Parameters>
 --                       <ssv:Parameter
@@ -275,7 +275,7 @@ print("info:      renameValues2.root.add_3.u1       : " .. oms_getReal("renameVa
 --   <oms:file
 --     name="resources/signalFilter.xml">
 --     <oms:SignalFilter
---       version="1.0">
+--       version="2.0">
 --       <oms:Variable
 --         name="renameValues2.root.add_3.u1"
 --         type="Real"

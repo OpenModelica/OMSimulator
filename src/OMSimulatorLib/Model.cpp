@@ -335,7 +335,7 @@ oms_status_enu_t oms::Model::importSnapshot(const char* snapshot_, char** newCre
   if (new_cref != getCref() && Scope::GetInstance().getModel(new_cref))
     return logError("Renaming the model \"" + std::string(getCref()) + "\" to \"" + std::string(new_cref) + "\" failed because another model with the same name already exists in the scope.");
 
-  if (ssdVersion != "Draft20180219" && ssdVersion != "1.0")
+  if (ssdVersion != "Draft20180219" && ssdVersion != "1.0" && ssdVersion != "2.0")
     logWarning("Unknown SSD version: " + ssdVersion);
 
   System* old_root_system = system;
@@ -892,7 +892,7 @@ oms_status_enu_t oms::Model::importFromSnapshot(const Snapshot& snapshot)
       oms_system_enu_t systemType = getSystemType(*it, sspVersion);
 
       if (oms_status_ok != addSystem(systemCref, systemType))
-        return oms_status_error;
+        return logError("Unable to add System \"" + std::string(systemCref.c_str()) + "\"");
 
       System* system = getSystem(systemCref);
       if (!system)
@@ -939,7 +939,7 @@ oms_status_enu_t oms::Model::importFromSnapshot(const Snapshot& snapshot)
         {
           name = itAnnotations->name();
           // check for oms_default_experiment from version 1.0
-          if (std::string(name) == oms::ssp::Version1_0::simulation_information  && sspVersion == "1.0")
+          if (std::string(name) == oms::ssp::Version1_0::simulation_information  && (sspVersion == "1.0" || sspVersion == "2.0"))
           {
             resultFilename = itAnnotations->attribute("resultFile").as_string();
             loggingInterval = itAnnotations->attribute("loggingInterval").as_double();
@@ -971,7 +971,7 @@ oms_system_enu_t oms::Model::getSystemType(const pugi::xml_node& node, const std
     }
 
     /* from Version "1.0" simulationInformation is handled in vendor annotation */
-    if (name == oms::ssp::Draft20180219::ssd::annotations  && sspVersion == "1.0")
+    if (name == oms::ssp::Draft20180219::ssd::annotations  && (sspVersion == "1.0" || sspVersion == "2.0"))
     {
       pugi::xml_node annotation_node;
       annotation_node = itElements->child(oms::ssp::Version1_0::ssc::annotation);

@@ -51,7 +51,7 @@ print(src)
 --       xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary"
 --       xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
 --       name="exportSnapshotSSP"
---       version="1.0">
+--       version="2.0">
 --       <ssd:System
 --         name="root">
 --         <ssd:Connectors>
@@ -139,7 +139,7 @@ print(src)
 --     <ssv:ParameterSet
 --       xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
 --       xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
---       version="1.0"
+--       version="2.0"
 --       name="parameters">
 --       <ssv:Parameters>
 --         <ssv:Parameter
@@ -158,7 +158,7 @@ print(src)
 --   <oms:file
 --     name="resources/signalFilter.xml">
 --     <oms:SignalFilter
---       version="1.0">
+--       version="2.0">
 --       <oms:Variable
 --         name="exportSnapshotSSP.root.Input1"
 --         type="Real"

@@ -62,7 +62,7 @@ oms_delete("model")
 --       xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary"
 --       xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
 --       name="model"
---       version="1.0">
+--       version="2.0">
 --       <ssd:System
 --         name="root">
 --         <ssd:Elements>
@@ -235,7 +235,7 @@ oms_delete("model")
 --   <oms:file
 --     name="resources/signalFilter.xml">
 --     <oms:SignalFilter
---       version="1.0">
+--       version="2.0">
 --       <oms:Variable
 --         name="model.root.B.u"
 --         type="Real"

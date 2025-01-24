@@ -33,7 +33,7 @@ model.delete()
 ##       xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary"
 ##       xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd"
 ##       name="importStartValues"
-##       version="1.0">
+##       version="2.0">
 ##       <ssd:System
 ##         name="root">
 ##         <ssd:Connectors>
@@ -123,7 +123,7 @@ model.delete()
 ##     <ssv:ParameterSet
 ##       xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
 ##       xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
-##       version="1.0"
+##       version="2.0"
 ##       name="parameters">
 ##       <ssv:Parameters>
 ##         <ssv:Parameter
@@ -139,7 +139,7 @@ model.delete()
 ##     <ssv:ParameterSet
 ##       xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
 ##       xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues"
-##       version="1.0"
+##       version="2.0"
 ##       name="parameters">
 ##       <ssv:Parameters>
 ##         <ssv:Parameter
@@ -158,7 +158,7 @@ model.delete()
 ##   <oms:file
 ##     name="resources/signalFilter.xml">
 ##     <oms:SignalFilter
-##       version="1.0">
+##       version="2.0">
 ##       <oms:Variable
 ##         name="importStartValues.root.C1"
 ##         type="Real"
