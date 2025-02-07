@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<srmd:SimulationResourceMetaData version="1.0.0" name="Simulation meta data"
+	generationTool="Manual" generationDateAndTime="2024-02-06T13:21:41Z"
+	xmlns:srmd="http://ssp-standard.org/SSPTraceability1/SimulationResourceMetaData"
+	xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
+	xmlns:stc="http://ssp-standard.org/SSPTraceability1/SSPTraceabilityCommon"
+	xmlns:xlink="http://www.w3.org/1999/xlink">
+
+	<OperationalDomain name="initial_domain" >
+		<Annotations>
+			<Annotation type="OD_Information">
+				<Info>
+					Initial hypercube provided by model designer Mr/Mrs. X.
+				</Info>
+			</Annotation>
+		</Annotations>
+
+		<Volume
+			type="hypercube"
+			points="0,0;22000,2.3"
+			variables="Altitude,Mach"/>
+	</OperationalDomain>
+
+	<OperationalDomain name="no_errors_confidence_1" derived="initial_domain" >
+		<Annotations>
+			<Annotation type="OD_Information">
+				<Info>
+					High confidence operational domain of no error requirement,
+					confidence level of 100%.
+				</Info>
+			</Annotation>
+		</Annotations>
+
+		<Volume
+			type="convex_hull"
+			points="10500,0;7000,0;5000,0.1;5000,0.4;6000,2.3;8000,2.3;13000,0.1"
+			variables="Altitude,Mach"/>
+		<Requirement simulation_status="no_errors"/>
+		<Error fraction="0.0">
+		</Error>
+	</OperationalDomain>
+</srmd:SimulationResourceMetaData>

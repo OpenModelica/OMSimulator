@@ -1,0 +1,896 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning" vc:minVersion="1.0"
+    xmlns:stc="http://ssp-standard.org/SSPTraceability1/SSPTraceabilityCommon"
+    xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns="http://ssp-standard.org/SSPTraceability1/SSPTraceabilityCommon"
+    targetNamespace="http://ssp-standard.org/SSPTraceability1/SSPTraceabilityCommon"
+    elementFormDefault="qualified">
+
+    <xs:import namespace="http://ssp-standard.org/SSP1/SystemStructureCommon" schemaLocation="SystemStructureCommon.xsd"/>
+    <xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="xlink.xsd"/>
+
+    <!-- This modification happens to prevent upgrading to version XML 1.1 -->
+    <xs:simpleType name="dateTimeStampType">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(Z|[+\-]\d{2}:\d{2})" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="GeneralInformationType">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">
+                This element is used to encapsulate general information about the
+                simulation task, which is not part of any specific phase or step.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="DerivationChain" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        This element can be used to provide the set of file information that
+                        was used to derive the current file. I.e. if the content of the current
+                        file can be considered to be derived from one or a set of other STC
+                        files, then the top level meta data and DerivationChain information of
+                        those files should be included in their original order as entries in
+                        this file's DerivationChain element.
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="DerivationChainEntry" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                                <xs:attribute name="GUID" type="xs:string" use="required"/>
+                                <xs:attributeGroup ref="ssc:ABaseElement"/>
+                                <xs:attributeGroup ref="ssc:ATopLevelMetaData"/>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                    <xs:attributeGroup ref="ssc:ABaseElement"/>
+                </xs:complexType>
+            </xs:element>
+            <xs:group ref="stc:GResourceOrReference" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="Links" type="stc:LinksType" minOccurs="0"/>
+            <xs:group ref="stc:GElementCommon"/>
+        </xs:sequence>
+        <xs:attributeGroup ref="ssc:ABaseElement"/>
+    </xs:complexType>
+    <xs:group name="GElementCommon">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">
+                Common element content for all modeling elements of the STC file.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Classification" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        This element, which can occur multiple times, provides a set of classifications
+                        of an STC modeling element, provided as Keyword Value Pairs (KWP), the meaning
+                        of which is interpreted according to the name of the classification provided in
+                        the name attribute.
+
+                        This approach can be used, for example, to provide searchable keywords for
+                        content, or to assign and track quality or validation level requirements
+                        across the STC process, or to maintain variant or other classification
+                        content across the process.
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="ClassificationEntry" minOccurs="0" maxOccurs="unbounded">
+                            <xs:annotation>
+                                <xs:documentation xml:lang="en">
+                                    This element provides a keyword value pair entry, with the
+                                    keyword provided through the keyword attribute and the value
+                                    being the contents of the element.
+                                </xs:documentation>
+                            </xs:annotation>
+                            <xs:complexType mixed="true">
+                                <xs:sequence>
+                                    <xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+                                </xs:sequence>
+                                <xs:attribute name="keyword" type="xs:normalizedString" use="required">
+                                    <xs:annotation>
+                                        <xs:documentation xml:lang="en">
+                                            This attribute gives the keyword for the classification entry
+                                            (i.e. keyword value pair).  It is left undefined whether this
+                                            must be unique across the entries of the Classification element,
+                                            or whether repeated entries are allowed.  This will depend on
+                                            the definition of the classification.
+                                        </xs:documentation>
+                                    </xs:annotation>
+                                </xs:attribute>
+                                <xs:attribute name="type" type="xs:string" default="text/plain">
+                                    <xs:annotation>
+                                        <xs:documentation xml:lang="en">
+                                            This optional attribute specifies the MIME type of the value of
+                                            the classification entry, i.e. the element content. It defaults
+                                            to text/plain, but e.g. text/markdown is commonly supported for
+                                            more structured text.
+                                        </xs:documentation>
+                                    </xs:annotation>
+                                </xs:attribute>
+                                <xs:attribute ref="xlink:type" fixed="simple"/>
+                                <xs:attribute ref="xlink:href">
+                                    <xs:annotation>
+                                        <xs:documentation xml:lang="en">
+                                            This attribute gives an optional link for the classification
+                                            entry (i.e. keyword value pair).  This link can be given in
+                                            addition to any content of the classification entry, or it
+                                            can be the sole information of the classification entry.
+                                            The rules will depend on the definition of the classification.
+                                        </xs:documentation>
+                                    </xs:annotation>
+                                </xs:attribute>
+                                <xs:attribute name="linkedType" type="xs:string">
+                                    <xs:annotation>
+                                        <xs:documentation xml:lang="en">
+                                            This optional attribute specifies the MIME type of the resource
+                                            pointed to by the xlink:href attribute of the classification
+                                            entry. There is no default value, i.e. if the attribute is not
+                                            given then other mechanisms to determine the MIME type of the
+                                            resource should be used. If it is given, it shall override any
+                                            other mechanism to determine the MIME type of the referenced
+                                            resource.
+                                        </xs:documentation>
+                                    </xs:annotation>
+                                </xs:attribute>
+                                <xs:attributeGroup ref="ssc:ABaseElement"/>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                    <xs:attribute name="type" type="xs:normalizedString">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="en">
+                                This attribute provides the name of the type of classification
+                                being provided.  The name should be unique across the Classification
+                                elements of the immediately enclosing element.
+
+                                In order to ensure uniqueness all types should be identified
+                                with reverse domain name notation (cf. Java package names
+                                or Apple UTIs) of a domain that is controlled by the entity
+                                defining the semantics and content of the classification.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:attribute>
+                    <xs:attribute ref="xlink:type" fixed="simple"/>
+                    <xs:attribute ref="xlink:href">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="en">
+                                This attribute gives an optional link for the classification
+                                itself.  This link can be given to provide additional,
+                                potentially human readable information on the classification
+                                type that tools can use to provide this information to the
+                                user, especially for unknown classification types.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:attribute>
+                    <xs:attribute name="linkedType" type="xs:string">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="en">
+                                This optional attribute specifies the MIME type of the resource
+                                pointed to by the xlink:href attribute of the classification.
+                                There is no default value, i.e. if the attribute is not given
+                                then other mechanisms to determine the MIME type of the resource
+                                should be used. If it is given, it shall override any other
+                                mechanism to determine the MIME type of the referenced resource.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:attribute>
+                    <xs:attributeGroup ref="ssc:ABaseElement"/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Annotations" type="ssc:TAnnotations" minOccurs="0"/>
+        </xs:sequence>
+    </xs:group>
+
+    <xs:group name="GPhaseCommon">
+        <xs:sequence>
+            <xs:element name="Links" type="stc:LinksType" minOccurs="0"/>
+            <xs:element name="LifeCycleInformation" type="stc:LifeCycleInformationType" minOccurs="0"/>
+            <xs:group ref="stc:GElementCommon"/>
+        </xs:sequence>
+    </xs:group>
+    <xs:complexType name="LifeCycleInformationType">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">
+                This element contains life cycle information about the enclosing phase or or step
+                element.  Due to the inherent dependencies of life cycles, life cycle information
+                at later phases will be dependent on life cycle status of former phases to a
+                certain extent:  For example, if the Implementation Phase is designated as having
+                reached the status "Validated", it would create a contradiction if the Requirements
+                Phase has only reached status "Drafted".
+
+                Multiple life cycle information entries can be present, in order to record the
+                historical progression of the life cycle status, however only the last entry in
+                document order, which will also be of the highest maturity, will be considered
+                valid for the current file contents, earlier states only recording historical
+                data.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Drafted" type="stc:LifeCycleEntryType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        Defines that the subject is in draft state and still in progress. This
+                        can also mean that the information is not complete and is still being
+                        finalized.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Defined" type="stc:LifeCycleEntryType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        Defines that the subject is considered complete and may be subject to
+                        review or validation.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Validated" type="stc:LifeCycleEntryType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        Defines that the subject has been reviewed and validated.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Approved" type="stc:LifeCycleEntryType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        Defines that the subject has been approved based on review and
+                        validation.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Archived" type="stc:LifeCycleEntryType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        Defines that the subject has been set as valid and remains valid for
+                        this instance of the GlueParticle, but may not be reused for similar
+                        steps or phases in other GlueParticles (reuse is not allowed).
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Retracted" type="stc:LifeCycleEntryType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        Defines that the subject has been withdrawn and is considered invalid
+                        or may need to be revised.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+        <xs:attributeGroup ref="ssc:ABaseElement"/>
+    </xs:complexType>
+    <xs:complexType name="LifeCycleEntryType">
+        <xs:sequence>
+            <xs:group ref="stc:GResourceOrReference" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="Responsible" type="stc:ResponsibleType"/>
+            <xs:element name="Signature" type="stc:SignatureType" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        This element can contain digital signature information on the checksum
+                        attribute of the life cycle entry element.  It is left unspecified what types
+                        of signatures are used and/or available for now.  Multiple or no signature elements
+                        may be present.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:group ref="stc:GElementCommon"/>
+        </xs:sequence>
+        <xs:attribute name="date" type="dateTimeStampType" use="required">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">
+                    Timestamp when life cycle entry was assigned. Note that the time stamp data type makes
+                    timezone information mandatory, so that a full ordering of times is possible.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="checksum" type="xs:hexBinary">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">
+                    This attribute gives the checksum over the phase/step information stored in the enclosing
+                    phase/step element, calculated according to the STC specification.  This attribute is optional
+                    if the life cycle stage is not Approved or Archived, but becomes required if the life cycle stage
+                    is Approved or Archived. Optionally, digital signatures over this checksum can be provided using
+                    Signature elements in the enclosing life cycle entry element.
+
+                    The checksum is calculated using the algorithm indicated by the checksumType attribute.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="checksumType" type="xs:string" default="SHA3-256">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">
+                    This attribute gives the algorithm for the calculation of the checksum attribute. MUST be
+                    SHA3-256 for now, indicating a SHA3 256bit secure hash algorithm, as specified in FIPS 202.
+                    In the future other checksum algorithms might be supported.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attributeGroup ref="ssc:ABaseElement"/>
+    </xs:complexType>
+    <xs:complexType name="StepType">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">
+                This type specifies the content of each individual step inside a phase of the overall Simulation Task.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Input" type="stc:ParticleType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        This particle contains any input information relevant to perform a step.
+                   </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Procedure" type="stc:ParticleType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        This particle contains all information how a step should be or has been
+                        performed.
+                   </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Output" type="stc:ParticleType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        This particle contains all relevant work results of the step.
+                   </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Rationale" type="stc:ParticleType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        This particle contains all rationales explaining why the step was
+                        performed in a certain way.
+                   </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Links" type="stc:LinksType" minOccurs="0"/>
+            <xs:element name="LifeCycleInformation" type="stc:LifeCycleInformationType" minOccurs="0"/>
+            <xs:group ref="stc:GElementCommon"/>
+        </xs:sequence>
+        <xs:attributeGroup ref="ssc:ABaseElement"/>
+    </xs:complexType>
+    <xs:complexType name="ParticleType">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">
+                This type specifies the content of each individual particle inside a
+                step of a phase of the overall Simulation Task.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:group ref="stc:GResourceOrReference" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:group ref="stc:GElementCommon"/>
+        </xs:sequence>
+        <xs:attributeGroup ref="ssc:ABaseElement"/>
+    </xs:complexType>
+    <xs:complexType name="LinksType">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">
+                This element provides a set of links that provide more detailed
+                relationship information between parts of resources or other information
+                relevant to a phase or step.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Link" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        This element provides an extended link conforming to the XLink
+                        specification. It provides detailed relationship information between
+                        (parts of) resources or other information relevant to a phase or step.
+
+                        An extended link relates 2 or more locators (which identify a particular
+                        piece of information through an URI). It can provide navigation
+                        information between these locators through arcs.
+
+                        Locators, arcs and the link itself can further specify their semantic
+                        meaning through optional role or arcrole attributes. The SSP
+                        Traceability specification currently provides no predefined roles.
+
+                        All individual elements and attributes are as specified in the XLink
+                        specification.
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="Locator" minOccurs="2" maxOccurs="unbounded">
+                            <xs:annotation>
+                                <xs:documentation xml:lang="en">
+                                    This element provides a locator conforming to the XLink specification.
+                                    It identifies a particular piece of information through an URI, that is
+                                    taking part in the linking relationship. Locators can further specify
+                                    their semantic meaning through an optional role attribute. The SSP
+                                    Traceability specification currently provides no predefined roles.
+                                </xs:documentation>
+                            </xs:annotation>
+                            <xs:complexType>
+                                <xs:attribute ref="xlink:type" fixed="locator"/>
+                                <xs:attribute ref="xlink:href" use="required"/>
+                                <xs:attribute ref="xlink:label"/>
+                                <xs:attribute ref="xlink:title"/>
+                                <xs:attribute ref="xlink:role"/>
+                                <xs:attributeGroup ref="ssc:ABaseElement"/>
+                            </xs:complexType>
+                        </xs:element>
+                        <xs:element name="Arc" minOccurs="0" maxOccurs="unbounded">
+                            <xs:annotation>
+                                <xs:documentation xml:lang="en">
+                                    This element provides an arc conforming to the XLink specification. An
+                                    arc relates sets of locators in a navigable relationship, including
+                                    directionality information.  Arcs can further specify their semantic
+                                    meaning through an optional arcrole attribute. The SSP Traceability
+                                    specification currently provides no predefined roles.
+                                </xs:documentation>
+                            </xs:annotation>
+                            <xs:complexType>
+                                <xs:attribute ref="xlink:type" fixed="arc"/>
+                                <xs:attribute ref="xlink:from"/>
+                                <xs:attribute ref="xlink:to"/>
+                                <xs:attribute ref="xlink:title"/>
+                                <xs:attribute ref="xlink:arcrole"/>
+                                <xs:attributeGroup ref="ssc:ABaseElement"/>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                    <xs:attribute ref="xlink:type" fixed="extended"/>
+                    <xs:attribute ref="xlink:title"/>
+                    <xs:attribute ref="xlink:role"/>
+                    <xs:attributeGroup ref="ssc:ABaseElement"/>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attributeGroup ref="ssc:ABaseElement"/>
+    </xs:complexType>
+    <xs:complexType name="ResourceType">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">
+                This element provides information on one resource that is related to the
+                particular step and particle.  Multiple (or no) resources may be present.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Content" type="stc:ContentType" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        This optional element can contain inlined content of the resource. If it
+                        is present, then the attribute source of the Resource element must not be
+                        present.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Summary" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        This element provides an optional summary of the resource being referenced.  The
+                        summary information is intended for human consumption to get an overview of the
+                        resource content without looking at the content itself.  The summary content can
+                        be provided inline through the Content element, or it can be provided through the
+                        source URI attribute.
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="Content" type="stc:ContentType" minOccurs="0" maxOccurs="1">
+                            <xs:annotation>
+                                <xs:documentation xml:lang="en">
+                                    This optional element can contain inlined content of the resource summary. If it
+                                    is present, then the attribute source of the Summary element must not be present.
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="Signature" type="stc:SignatureType" minOccurs="0" maxOccurs="unbounded">
+                            <xs:annotation>
+                                <xs:documentation xml:lang="en">
+                                    This element can contain digital signature information on the summary referenced
+                                    by the enclosing Summary element. It is left unspecified what types of signatures
+                                    are used and/or available for now.  Multiple or no signature elements may be present.
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:group ref="stc:GElementCommon"/>
+                    </xs:sequence>
+                    <xs:attribute name="type" type="xs:string" use="required">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="en">
+                                This mandatory attribute specifies the MIME type of the resource summary, which
+                                does not have a default value.  If no specific MIME type can be indicated, then
+                                the type application/octet-stream is to be used.  If markdown content is used,
+                                then the type text/markdown shall be used.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:attribute>
+                    <xs:attribute name="source" type="xs:anyURI" use="optional">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="en">
+                                This attribute indicates the source of the resource summary as a
+                                URI (cf. RFC 3986).  For purposes of the resolution of relative URIs
+                                the base URI is the URI of the STC, if the sourceBase attribute is
+                                not specified or is specified as STC, and the URI of the referenced
+                                resource if the sourceBase attribute is specified as resource.
+
+                                This allows the specification of summary sources that reside
+                                inside the resource (e.g. an FMU) through relative URIs.
+
+                                For summaries that are located alongside the STC, relative URIs
+                                without scheme and authority can and should be used to specify the
+                                summary sources.  For summaries that are packaged inside an SSP
+                                that contains this STC, this is mandatory (in this way, the STC
+                                URIs remain valid after unpacking the SSP into the filesystem).
+
+                                If the source attribute is missing, the summary is provided
+                                inline as contents of the Content element, which must not be
+                                present otherwise.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:attribute>
+                    <xs:attribute name="sourceBase" use="optional" default="STC">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="en">
+                                Defines the base the source URI is resolved against:  If the attribute
+                                is missing or is specified as STC, the source is resolved against the
+                                URI of the STC, if the attribute is specified as resource the URI is
+                                resolved against the (resolved) URI of the resource source.
+                            </xs:documentation>
+                        </xs:annotation>
+                        <xs:simpleType>
+                            <xs:restriction base="xs:string">
+                                <xs:enumeration value="STC"/>
+                                <xs:enumeration value="resource"/>
+                            </xs:restriction>
+                        </xs:simpleType>
+                    </xs:attribute>
+                    <xs:attributeGroup ref="ssc:ABaseElement"/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="MetaData" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        This element can specify additional meta data for the given resource. Multiple
+                        (or no) MetaData elements may be present.
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="Content" type="stc:ContentType" minOccurs="0" maxOccurs="1">
+                            <xs:annotation>
+                                <xs:documentation xml:lang="en">
+                                    This optional element can contain inlined content of the resource meta data. If it
+                                    is present, then the attribute source of the MetaData element must not be present.
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="Signature" type="stc:SignatureType" minOccurs="0" maxOccurs="unbounded">
+                            <xs:annotation>
+                                <xs:documentation xml:lang="en">
+                                    This element can contain digital signature information on the meta data referenced
+                                    by the enclosing MetaData element. It is left unspecified what types of signatures
+                                    are used and/or available for now.  Multiple or no signature elements may be present.
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:group ref="stc:GElementCommon"/>
+                    </xs:sequence>
+                    <xs:attribute name="kind" use="required">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="en">
+                                This attribute indicates the kind of resource meta data that is referenced, i.e.
+                                what role it plays in relation to the resource being described.
+                            </xs:documentation>
+                        </xs:annotation>
+                        <xs:simpleType>
+                            <xs:restriction base="xs:string">
+                                <xs:enumeration value="general"/>
+                                <xs:enumeration value="quality"/>
+                            </xs:restriction>
+                        </xs:simpleType>
+                    </xs:attribute>
+                    <xs:attribute name="type" type="xs:string" use="required">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="en">
+                                This mandatory attribute specifies the MIME type of the resource meta data, which
+                                does not have a default value.  If no specific MIME type can be indicated, then
+                                the type application/octet-stream is to be used.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:attribute>
+                    <xs:attribute name="source" type="xs:anyURI" use="optional">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="en">
+                                This attribute indicates the source of the resource meta data as a
+                                URI (cf. RFC 3986).  For purposes of the resolution of relative URIs
+                                the base URI is the URI of the STC, if the sourceBase attribute is
+                                not specified or is specified as STC, and the URI of the referenced
+                                resource if the sourceBase attribute is specified as resource.
+
+                                This allows the specification of meta data sources that reside
+                                inside the resource (e.g. an FMU) through relative URIs.
+
+                                For meta data that are located alongside the STC, relative URIs
+                                without scheme and authority can and should be used to specify the
+                                meta data sources.  For meta data that are packaged inside an SSP
+                                that contains this STC, this is mandatory (in this way, the STC
+                                URIs remain valid after unpacking the SSP into the filesystem).
+
+                                If the source attribute is missing, the meta data is provided
+                                inline as contents of the Content element, which must not be
+                                present otherwise.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:attribute>
+                    <xs:attribute name="sourceBase" use="optional" default="STC">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="en">
+                                Defines the base the source URI is resolved against:  If the attribute
+                                is missing or is specified as STC, the source is resolved against the
+                                URI of the STC, if the attribute is specified as resource the URI is
+                                resolved against the (resolved) URI of the resource source.
+                            </xs:documentation>
+                        </xs:annotation>
+                        <xs:simpleType>
+                            <xs:restriction base="xs:string">
+                                <xs:enumeration value="STC"/>
+                                <xs:enumeration value="resource"/>
+                            </xs:restriction>
+                        </xs:simpleType>
+                    </xs:attribute>
+                    <xs:attributeGroup ref="ssc:ABaseElement"/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="Signature" type="stc:SignatureType" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        This element can contain digital signature information on the resource referenced
+                        by the enclosing Resource element. It is left unspecified what types of signatures
+                        are used and/or available for now.  Multiple or no signature elements may be present.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:group ref="stc:GElementCommon"/>
+        </xs:sequence>
+        <xs:attribute name="kind" use="required">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">
+                    This attribute indicates the kind of resource that is referenced, i.e. what role it
+                    plays in relation to the particle being described.  If no more precise label applies,
+                    the kind document can be used.
+                </xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="document"/>
+                    <xs:enumeration value="requirement"/>
+                    <xs:enumeration value="specification"/>
+                    <xs:enumeration value="model"/>
+                    <xs:enumeration value="parameter"/>
+                    <xs:enumeration value="system"/>
+                    <xs:enumeration value="testcase"/>
+                    <xs:enumeration value="result"/>
+                    <xs:enumeration value="method"/>
+                    <xs:enumeration value="rationale"/>
+                    <xs:enumeration value="report"/>
+                    <xs:enumeration value="request"/>
+                    <xs:enumeration value="delivery"/>
+                    <xs:enumeration value="executable"/>
+                    <xs:enumeration value="configuration"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="scope">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">
+                    This attribute indicates the scope or level that a resource is specific to, i.e. whether the
+                    resource applies at a global, system, subsystem or component level.  The use of this attribute
+                    is optional, i.e. it should only be specified where it makes sense to give this kind of
+                    information.
+                </xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="global"/>
+                    <xs:enumeration value="system"/>
+                    <xs:enumeration value="subsystem"/>
+                    <xs:enumeration value="component"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="type" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">
+                    This mandatory attribute specifies the MIME type of the resource, which does not
+                    have a default value.  If no specific MIME type can be indicated, then the type
+                    application/octet-stream is to be used.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="source" type="xs:anyURI" use="optional">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">
+                    This attribute indicates the source of the resource as a URI
+                    (cf. RFC 3986).  For purposes of the resolution of relative URIs
+                    the base URI is the URI of the STC.  Therefore for resources
+                    that are located alongside the STC, relative URIs without scheme
+                    and authority can and should be used to specify the component
+                    sources.  For resources that are packaged inside an SSP that
+                    contains this STC, this is mandatory (in this way, the STC URIs
+                    remain valid after unpacking the SSP into the filesystem).
+
+                    If the source attribute is missing, the resource is provided
+                    inline as contents of the Content element, which must not be
+                    present otherwise.  If the placeholder attribute is true, then
+                    both the source attribute and the Content element can be missing.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="master" type="xs:anyURI" use="optional">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">
+                    This attribute, if present, indicates the original, canonical master source for the resource.
+                    If it is present, it indicates that the content provided via source attribute and/or Content
+                    element is only a copy of the original, canonical data, and this attributes provides the
+                    URI reference to that original canonical master data.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="placeholder" type="xs:boolean" use="optional" default="false">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">
+                    This attribute, if true, indicates that the given resource is just a placeholder,
+                    meaning that it should be replaced by actual content at a later stage of the process
+                    execution. Any source or Content supplied can be regarded as being provided just for
+                    information in this case. If the placeholder attribute is true, then both the source
+                    attribute and the Content element can be left unspecified to indicate no informational
+                    placeholder content.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attributeGroup ref="ssc:ABaseElement"/>
+    </xs:complexType>
+    <xs:complexType name="SignatureType">
+        <xs:sequence>
+            <xs:element name="Content" type="stc:ContentType" minOccurs="0" maxOccurs="1"/>
+            <xs:group ref="stc:GElementCommon"/>
+        </xs:sequence>
+        <xs:attribute name="role" use="required">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">
+                    This mandatory attribute specifies the role this signature has in the overall
+                    process. It indicates whether the digital signature is intended to just convey
+                    the authenticity of the information, or whether a claim for suitability of
+                    the information for certain purposes is made.  In the later case, the digital
+                    signature format should include detailed information about what suitability
+                    claims are being made.
+                </xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="authenticity"/>
+                    <xs:enumeration value="suitability"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="type" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">
+                    This mandatory attribute specifies the MIME type of the resource signature, which
+                    does not have a default value.  If no specific MIME type can be indicated, then
+                    the type application/octet-stream is to be used.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="source" type="xs:anyURI" use="optional">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">
+                    This attribute indicates the source of the resource signature as a
+                    URI (cf. RFC 3986).  For purposes of the resolution of relative URIs
+                    the base URI is the URI of the STC, if the sourceBase attribute is
+                    not specified or is specified as STC, and the URI of the referenced
+                    resource if the sourceBase attribute is specified as resource.
+
+                    This allows the specification of signature sources that reside
+                    inside the resource (e.g. an FMU) through relative URIs.
+
+                    For signatures that are located alongside the STC, relative URIs
+                    without scheme and authority can and should be used to specify the
+                    signature sources.  For signatures that are packaged inside an SSP
+                    that contains this STC, this is mandatory (in this way, the STC
+                    URIs remain valid after unpacking the SSP into the filesystem).
+
+                    If the source attribute is missing, the signature is provided
+                    inline as contents of the Content element, which must not be
+                    present otherwise.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="sourceBase" use="optional" default="STC">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">
+                    Defines the base the source URI is resolved against:  If the attribute
+                    is missing or is specified as STC, the source is resolved against the
+                    URI of the STC, if the attribute is specified as resource the URI is
+                    resolved against the (resolved) URI of the resource source.
+                </xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="STC"/>
+                    <xs:enumeration value="resource"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attributeGroup ref="ssc:ABaseElement"/>
+    </xs:complexType>
+    <xs:complexType name="ContentType" mixed="true">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">
+                This optional element can contain inlined content of an entity. If it is present,
+                then the attribute source of the enclosing element must not be present.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:choice>
+            <xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:choice>
+        <xs:attributeGroup ref="ssc:ABaseElement"/>
+    </xs:complexType>
+    <xs:complexType name="ResponsibleType">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">
+                This element gives information on the responsible entity for a given step.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:attribute name="organization" type="xs:string">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">
+                    This attribute gives the organization that is responsible for a given step.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="role" type="xs:string">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">
+                    This attribute gives the role of the person that is responsible for a given step.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="name" type="xs:string">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">
+                    This attribute gives the name of the person that is responsible for a given step.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attributeGroup ref="ssc:ABaseElement"/>
+    </xs:complexType>
+    <xs:group name="GResourceOrReference">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">
+                This group provides a choice between a resource and a resource reference, which references
+                a resource defined in another location in the file or somewhere else.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:choice>
+            <xs:element name="Resource" type="stc:ResourceType"/>
+            <xs:element name="ResourceReference">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        This element references a resource element defined in another place, that is
+                        related to the particular step and particle.  The referenced resource is
+                        specified using a URI. The resource reference element conforms to the simple
+                        link type of the XLink specification.
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:group ref="stc:GElementCommon"/>
+                    </xs:sequence>
+                    <xs:attribute ref="xlink:type" fixed="simple"/>
+                    <xs:attribute ref="xlink:href" use="required"/>
+                    <xs:attributeGroup ref="ssc:ABaseElement"/>
+                </xs:complexType>
+            </xs:element>
+        </xs:choice>
+    </xs:group>
+</xs:schema>

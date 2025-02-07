@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning" vc:minVersion="1.0"
+    xmlns:srmd="http://ssp-standard.org/SSPTraceability1/SimulationResourceMetaData"
+    xmlns:stc="http://ssp-standard.org/SSPTraceability1/SSPTraceabilityCommon"
+    xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon"
+    xmlns="http://ssp-standard.org/SSPTraceability1/SimulationResourceMetaData"
+    targetNamespace="http://ssp-standard.org/SSPTraceability1/SimulationResourceMetaData"
+    elementFormDefault="qualified">
+
+    <xs:import namespace="http://ssp-standard.org/SSP1/SystemStructureCommon" schemaLocation="SystemStructureCommon.xsd"/>
+    <xs:import namespace="http://ssp-standard.org/SSPTraceability1/SSPTraceabilityCommon" schemaLocation="SSPTraceabilityCommon.xsd"/>
+
+    <xs:element name="SimulationResourceMetaData">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">
+                This element specifies the structure of a Simulation Resource Meta Data file.
+        </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:group ref="stc:GElementCommon"/>
+            <xs:attribute name="version" use="required">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        Version of SRMD format, 1.0.0 for this release.
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:normalizedString">
+                        <xs:pattern value="[0-9]+[.][0-9]+([.][0-9]+)?(-.*)?"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="name" type="xs:string" use="required">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        This attribute gives the simulation resource meta data a name,
+                        which can be used for purposes of presenting the simulation resource
+                        meta data to the user.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="data" type="xs:anyURI" use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        This optional attribute gives a URI to the data item this
+                        resource meta data applies to. If this attribute is not
+                        present, then the data this resource meta data applies to
+                        is provided outside of the meta data (e.g. by embedding
+                        SRMD into the data format, or providing it as meta data in
+                        an STMD file).
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="checksum" type="xs:hexBinary" use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        This attribute gives the checksum over the data item this meta data
+                        applies to. This is optional information to allow the identification
+                        of the data item and the precise algorithm
+                        specifying
+                        The checksum is calculated using the algorithm indicated by the checksumType attribute.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="checksumType" type="xs:string" use="optional" default="SHA3-256">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        This attribute gives the algorithm for the calculation of the checksum attribute. MUST be
+                        SHA3-256 for now, indicating a SHA3 256bit secure hash algorithm, as specified in FIPS 202.
+                        In the future other checksum algorithms might be supported.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+
+            <xs:attributeGroup ref="ssc:ABaseElement"/>
+            <xs:attributeGroup ref="ssc:ATopLevelMetaData"/>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
