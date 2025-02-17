@@ -1863,8 +1863,8 @@ oms_status_enu_t oms_extractFMIKind(const char* filename, oms_fmi_kind_enu_t* ki
     return logError("Failed to import");
   const pugi::xml_node node = snapshot.getResourceNode("modelDescription.xml");
 
-  bool cs = (std::string(node.child("CoSimulation").attribute("modelIdentifier").as_string()) != "");
-  bool me = (std::string(node.child("ModelExchange").attribute("modelIdentifier").as_string()) != "");
+  bool cs = strcmp(node.child("CoSimulation").attribute("modelIdentifier").as_string(), "");
+  bool me = strcmp(node.child("ModelExchange").attribute("modelIdentifier").as_string(), "");
 
   if (me && cs)
     *kind = oms_fmi_kind_me_and_cs;
@@ -1887,22 +1887,22 @@ oms_status_enu_t oms_extractFMIKind(const char* filename, oms_fmi_kind_enu_t* ki
     */
     if (defaultExperiment->startTime == 0.0)
     {
-      if (node.child("DefaultExperiment").attribute("startTime").as_string() != "")
+      if (strcmp(node.child("DefaultExperiment").attribute("startTime").as_string(), ""))
         defaultExperiment->startTime = node.child("DefaultExperiment").attribute("startTime").as_double();
     }
     if (defaultExperiment->stopTime == 1.0)
     {
-      if (node.child("DefaultExperiment").attribute("stopTime").as_string() != "")
+      if (strcmp(node.child("DefaultExperiment").attribute("stopTime").as_string(), ""))
         defaultExperiment->stopTime = node.child("DefaultExperiment").attribute("stopTime").as_double();
     }
     if (defaultExperiment->tolerance == 1e-4)
     {
-      if (node.child("DefaultExperiment").attribute("tolerance").as_string() != "")
+      if (strcmp(node.child("DefaultExperiment").attribute("tolerance").as_string(), ""))
         defaultExperiment->tolerance = node.child("DefaultExperiment").attribute("tolerance").as_double();
     }
     if (defaultExperiment->stepSize == 1e-3) // maximumStepSize
     {
-      if (node.child("DefaultExperiment").attribute("stepSize").as_string() != "")
+      if (strcmp(node.child("DefaultExperiment").attribute("stepSize").as_string(), ""))
         defaultExperiment->stepSize = node.child("DefaultExperiment").attribute("stepSize").as_double();
       else
         defaultExperiment->stepSize = (defaultExperiment->stopTime - defaultExperiment->startTime) / 500;
