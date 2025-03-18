@@ -1608,6 +1608,10 @@ std::string oms::Model::escapeSpecialCharacters(const std::string& regex)
 
 oms_status_enu_t oms::Model::importSignalFilter(const std::string& filename, const Snapshot& snapshot)
 {
+
+  if (filename.empty())
+    return oms_status_ok;
+
   // check for system and do not import signalFilter if system == NULL
   if (!system)
     return oms_status_ok;
