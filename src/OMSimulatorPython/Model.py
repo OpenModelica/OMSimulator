@@ -135,6 +135,11 @@ class Model:
     if Types.Status(status) != Types.Status.OK:
       raise Exception('error {}'.format(Types.Status(status)))
 
+  def export(self, filename: str) -> None:
+    status = Scope._capi.export(self.cref, filename)
+    if Types.Status(status) != Types.Status.OK:
+      raise Exception('error {}'.format(Types.Status(status)))
+
   @property
   def cref(self):
     return self._cref
