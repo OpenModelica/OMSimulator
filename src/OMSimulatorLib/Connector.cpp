@@ -137,7 +137,7 @@ oms::Connector* oms::Connector::NewConnector(const pugi::xml_node& node, const s
     causality = oms_causality_calculatedParameter;
   else
   {
-    logError("Failed to import connector \"" + std::string(cref) + "\" with causality \"" + causalityString + "\"");
+    logWarning("Failed to import connector \"" + std::string(cref) + "\" with causality \"" + causalityString + "\"");
     return NULL;
   }
 
@@ -155,7 +155,7 @@ oms::Connector* oms::Connector::NewConnector(const pugi::xml_node& node, const s
   // TODO handle "Binary" type for FMI-2.1 see specification
   else
   {
-    logError("Failed to import connector \"" + std::string(cref) + "\" with type \"" + typeString + "\"");
+    logWarning("Failed to import connector \"" + std::string(cref) + "\" with type \"" + typeString + "\"");
     return NULL;
   }
 
