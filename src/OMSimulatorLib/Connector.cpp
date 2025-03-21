@@ -150,6 +150,8 @@ oms::Connector* oms::Connector::NewConnector(const pugi::xml_node& node, const s
     type = oms_signal_type_integer;
   else if (typeString == "Boolean")
     type = oms_signal_type_boolean;
+  else if (typeString == "String")
+    type = oms_signal_type_string;
   else if (typeString == "Enumeration")
     type = oms_signal_type_enum;
   // TODO handle "Binary" type for FMI-2.1 see specification
