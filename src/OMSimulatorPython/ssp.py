@@ -8,7 +8,7 @@ from OMSimulator.ssd import SSD
 
 class SSP:
   def __init__(self, path: str | None = None):
-    self.activeVariantName = None
+    self._activeVariantName = None
     self.variants = dict()
     self.resources = list()
     self.tempSSPDirectory = None
@@ -49,7 +49,7 @@ class SSP:
         self.add(ssd)
 
     # If no variants are present, add a default one
-    if not self.activeVariantName:
+    if not self._activeVariantName:
       self.add(SSD('default'))
 
   def __del__(self):
@@ -57,11 +57,22 @@ class SSP:
       shutil.rmtree(self.tempSSPDirectory)
     print("DEBUG Temp Removed: ", self.tempSSPDirectory)
 
+  @property
+  def activeVariantName(self):
+    return self._activeVariantName
+
+  @activeVariantName.setter
+  def activeVariantName(self, variant_name: str):
+    if variant_name not in self.variants:
+      raise ValueError(f"Variant '{variant_name}' does not exist in the SSP.")
+
+    self._activeVariantName = variant_name
+
   def getActiveVariantName(self):
-    return self.activeVariantName
+    return self._activeVariantName
 
   def getActiveVariant(self):
-    return self.variants[self.activeVariantName]
+    return self.variants[self._activeVariantName]
 
   def getAllVariantNames(self):
     return list(self.variants.keys())
@@ -82,13 +93,13 @@ class SSP:
       raise ValueError(f"Variant '{ssd.name}' already exists in the SSP.")
 
     if not self.variants:
-      self.activeVariantName = ssd.name
+      self._activeVariantName = ssd.name
       print(f"DEBUG: Active variant set to '{ssd.name}'")
     self.variants[ssd.name] = ssd
 
   def list(self):
     for name, ssd in self.variants.items():
-      if name == self.activeVariantName:
+      if name == self._activeVariantName:
         print(f"├── Variant: {name} (Active)")
       else:
         print(f"├── Variant: {name}")
@@ -103,7 +114,7 @@ class SSP:
 
     for name, ssd in self.variants.items():
       ssd_file_path = os.path.join(temp_dir, name + '.ssd')
-      if name == self.activeVariantName:
+      if name == self._activeVariantName:
         ssd_file_path = os.path.join(temp_dir, 'SystemStructure.ssd')
 
       ssd.export(ssd_file_path)
