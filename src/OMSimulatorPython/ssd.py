@@ -153,37 +153,37 @@ class SSD:
       self.value.setString(var)
 
   def list(self, prefix=""):
-    print(f"{prefix}├──   System: {self.name}")
-    print(f"{prefix}├──   Connectors:")
+    print(f"{prefix}|--   System: {self.name}")
+    print(f"{prefix}|--   Connectors:")
     last_prefix = prefix + "     |"  # This is the prefix for nested elements
     for connector in self.connectors:
       connector.list(prefix=last_prefix)
 
     ## list parameters inline
     if not self.value.empty():
-      print(f"{prefix}├──   ParameterBindings:")
-      print(f"{prefix}|     ├── inline:")
+      print(f"{prefix}|--   ParameterBindings:")
+      print(f"{prefix}|     |-- inline:")
       last_prefix = prefix + "     |"  # This is the prefix for nested elements
       self.value.list(prefix= last_prefix)
 
     ## list parameteres in ssv files
     if len(self.parameterResources) > 0:
       for key, resources in self.parameterResources.items():
-        print(f"{prefix}├──   ParameterBindings:")
-        print(f"{prefix}|     ├── {resources.filename}:")
+        print(f"{prefix}|--   ParameterBindings:")
+        print(f"{prefix}|     |-- {resources.filename}:")
         last_prefix = prefix + "     |"  # This is the prefix for nested elements
         resources.list(prefix = last_prefix)
 
     ## list elements
     if len(self.components) > 0:
-      print(f"{prefix}├──   Components:")
+      print(f"{prefix}|--   Components:")
       last_prefix = prefix + "   "  # This is the prefix for nested elements
       for key, component in self.components.items():
         component.list(last_prefix)
 
     ## list connections
     if len(self.connections) > 0:
-      print(f"{prefix}├──   Connections:")
+      print(f"{prefix}|--   Connections:")
       last_prefix = prefix + "     |"  # This is the prefix for nested elements
       for connection in self.connections:
         connection.list(prefix=last_prefix)

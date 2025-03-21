@@ -23,17 +23,17 @@ model2.list()
 
 ## Result:
 ## List SSP file:
-## ├── Variant: default
-## ├──   System: default
-## ├──   Connectors:
-## ├── Variant: Variant-B (Active)
-## ├──   System: Variant-B
-## ├──   Connectors:
+## |-- Variant: default
+## |--   System: default
+## |--   Connectors:
+## |-- Variant: Variant-B (Active)
+## |--   System: Variant-B
+## |--   Connectors:
 ## List SSP file:
-## ├── Variant: Variant-B (Active)
-## ├──   System: Variant-B
-## ├──   Connectors:
-## ├── Variant: default
-## ├──   System: default
-## ├──   Connectors:
+## |-- Variant: Variant-B (Active)
+## |--   System: Variant-B
+## |--   Connectors:
+## |-- Variant: default
+## |--   System: default
+## |--   Connectors:
 ## endResult

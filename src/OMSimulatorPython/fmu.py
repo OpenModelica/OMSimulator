@@ -212,11 +212,11 @@ class FMU:
       self.value.setString(var)
 
   def list(self, prefix=""):
-    print(f"|{prefix}  ├── FMU: ({self.cref})")
-    print(f"|{prefix}  |   ├── path: {self.fmupath}")
+    print(f"|{prefix}  |-- FMU: ({self.cref})")
+    print(f"|{prefix}  |   |-- path: {self.fmupath}")
 
     if len(self.connectors) > 0:
-      print(f"|{prefix}  |   ├── Connectors:")
+      print(f"|{prefix}  |   |-- Connectors:")
       ## export component connectors
       last_prefix = prefix + "  |   |  "  # This is the prefix for nested elements
       for connector in self.connectors:
@@ -226,8 +226,8 @@ class FMU:
 
     ## list parameters inline
     if not self.value.empty():
-      print(f"|{prefix}  |   ├── ParameterBindings:")
-      print(f"|{prefix}  |   |   ├── inline:")
+      print(f"|{prefix}  |   |-- ParameterBindings:")
+      print(f"|{prefix}  |   |   |-- inline:")
       last_prefix = prefix + "  |   |"  # This is the prefix for nested elements
 
       self.value.list(prefix=last_prefix)
@@ -235,8 +235,8 @@ class FMU:
     ## list parameteres in ssv files
     if len(self.parameterResources) > 0:
       for key, resources in self.parameterResources.items():
-        print(f"|{prefix}  |   ├── ParameterBindings:")
-        print(f"|{prefix}  |   |   ├── {resources.filename}:")
+        print(f"|{prefix}  |   |-- ParameterBindings:")
+        print(f"|{prefix}  |   |   |-- {resources.filename}:")
         last_prefix = prefix + "  |   |"  # This is the prefix for nested elements
         resources.list(prefix = last_prefix)
 

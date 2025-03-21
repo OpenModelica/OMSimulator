@@ -37,6 +37,7 @@ class SSP:
       self.resources = [os.path.relpath(os.path.join(root, file), self.tempSSPDirectory)
                         for root, _, files in os.walk(self.tempSSPDirectory)
                         for file in files if not file.endswith('.ssd')]
+
       logging.debug(f"DEBUG ssd_files: {ssd_files}")
       logging.debug(f"DEBUG resources: {self.resources}")
 
@@ -67,6 +68,14 @@ class SSP:
       raise ValueError(f"Variant '{variant_name}' does not exist in the SSP.")
 
     self._activeVariantName = variant_name
+
+  def addResource(self, filename, target_dir='resource/', validation=True):
+    if validation:
+      #if srmd do validation
+      #if ssv do validation
+      pass
+
+    #copy the file
 
   def getActiveVariantName(self):
     return self._activeVariantName
@@ -101,9 +110,9 @@ class SSP:
     print("List SSP file:")
     for name, ssd in self.variants.items():
       if name == self._activeVariantName:
-        print(f"├── Variant: {name} (Active)")
+        print(f"|-- Variant: {name} (Active)")
       else:
-        print(f"├── Variant: {name}")
+        print(f"|-- Variant: {name}")
       ssd.list()
 
   def export(self, filename: str):
