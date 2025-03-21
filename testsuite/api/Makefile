@@ -1,40 +1,7 @@
 TEST = ../rtest -v
 
 TESTFILES = \
-addExternalResources1.lua \
-addExternalResources2.lua \
-addExternalResources3.py \
-addExternalResources4.py \
-addExternalResources5.lua \
-buses.lua \
-buses.py \
-connections.lua \
-connections.py \
-deleteReferencesInSSD1.lua \
-deleteReferencesInSSD2.lua \
-deleteResourcesInSSP1.lua \
-deleteResourcesInSSP2.lua \
-fmidertest.lua \
-getDirectionalDerivative_CS.lua \
-getDirectionalDerivative_ME.lua \
-getDirectionalDerivative_CS.py \
-getDirectionalDerivative_ME.py \
-importExportAllResources.lua \
-import_export_units1.lua \
-import_export_units2.lua \
-setUnits1.lua \
-setUnits2.lua \
-setUnits3.py \
-reduceSSV.lua \
-reduceSSV.py \
-test_omsExport.lua \
-test_omsExport.py \
-test01.lua \
-test01.py \
-test02.lua \
-test02.py \
-test03.lua \
-test03.py \
+create_ssp_file.py \
 
 # Run make failingtest
 FAILINGTESTFILES = \

@@ -28,12 +28,18 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/OMSimulatorPython3.in" "${CMAKE_CURR
 
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/__init__.py"
               "${CMAKE_CURRENT_BINARY_DIR}/capi.py"
-              "${CMAKE_CURRENT_SOURCE_DIR}/Model.py"
-              "${CMAKE_CURRENT_SOURCE_DIR}/NewAPI.py"
-              "${CMAKE_CURRENT_SOURCE_DIR}/OMSimulator.py"
-              "${CMAKE_CURRENT_SOURCE_DIR}/Scope.py"
-              "${CMAKE_CURRENT_SOURCE_DIR}/System.py"
-              "${CMAKE_CURRENT_SOURCE_DIR}/Types.py"
+              "${CMAKE_CURRENT_SOURCE_DIR}/connection.py"
+              "${CMAKE_CURRENT_SOURCE_DIR}/connector.py"
+              "${CMAKE_CURRENT_SOURCE_DIR}/fmu.py"
+              "${CMAKE_CURRENT_SOURCE_DIR}/namespace.py"
+              "${CMAKE_CURRENT_SOURCE_DIR}/ssd.py"
+              "${CMAKE_CURRENT_SOURCE_DIR}/ssp.py"
+              "${CMAKE_CURRENT_SOURCE_DIR}/ssv.py"
+              "${CMAKE_CURRENT_SOURCE_DIR}/types.py"
+              "${CMAKE_CURRENT_SOURCE_DIR}/unit.py"
+              "${CMAKE_CURRENT_SOURCE_DIR}/utils.py"
+              "${CMAKE_CURRENT_SOURCE_DIR}/values.py"
+              "${CMAKE_CURRENT_SOURCE_DIR}/variables.py"
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/OMSimulator)
 
 if(MSVC)
