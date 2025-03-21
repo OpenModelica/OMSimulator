@@ -32,4 +32,4 @@ Copyright (c) 2018-CurrentYear, Open Source Modelica Consortium (OSMC),
 c/o Linköpings universitet, Department of Computer and Information Science,
 SE-58183 Linköping, Sweden.'''
 
-version = capi().getVersion()
+version = capi.capi().getVersion()
