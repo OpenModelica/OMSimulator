@@ -106,7 +106,7 @@ class FMU:
           with fmu.open("modelDescription.xml") as xml_file:
             self.parseModelDescriptionHelper(xml_file)
         else:
-          print("Error: modelDescription.xml not found in FMU", fmu_path)
+          raise FileNotFoundError(f"modelDescription.xml not found in FMU: {fmu_path}")
 
   def parseModelDescription(self):
     try:
@@ -122,6 +122,7 @@ class FMU:
       print("Error: Failed to parse modelDescription.xml.")
     except Exception as e:
       print(f"Unexpected error: {e}")
+      raise
 
   def parseModelDescriptionHelper(self, xml_file : str):
     tree = ET.parse(xml_file)
@@ -162,6 +163,7 @@ class FMU:
         self.variables.append(variable)
     else:
       print("Error: ModelVariables section not found.")
+      raise Exception("ModelVariables section not found in modelDescription.xml")
 
   def parseUnitDefinitions(self, root):
     """

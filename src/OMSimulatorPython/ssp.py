@@ -1,62 +1,66 @@
+import logging
 import os
 import shutil
 import tempfile
 import zipfile
 
-from OMSimulator.ssd import SSD
+from OMSimulator import SSD, CRef
 
-import logging
+logger = logging.getLogger(__name__)
 
 class SSP:
   def __init__(self, path: str | None = None, temp_dir: str | None = None):
     self._activeVariantName = None
-    self.variants = dict()
-    self.resources = list()
+    self.variants = {}
+    self.resources = []
 
     if temp_dir:
       os.makedirs(temp_dir, exist_ok=True)
 
-    self.tempSSPDirectory = tempfile.mkdtemp(dir=temp_dir)
+    self.temp_dir = tempfile.mkdtemp(dir=temp_dir)
+    logger.debug(f"Temporary directory created: {self.temp_dir}")
 
-    logging.debug(f"DEBUG Temp: {self.tempSSPDirectory}")
-
-    # If a ssp file is provided, import it
     if path:
-      if not os.path.isfile(path):
-        raise FileNotFoundError(f"SSP file '{path}' not found")
+      self._extract_ssp(path)
 
-      with zipfile.ZipFile(path, 'r') as ssp_zip:
-        ssp_zip.extractall(self.tempSSPDirectory)
-      logging.debug(f"DEBUG UNZIP: {path} -> {self.tempSSPDirectory}")
-
-      # All variants
-      ssd_files = [f for f in os.listdir(self.tempSSPDirectory) if f.endswith('.ssd') and f != 'SystemStructure.ssd']
-      ssd_files.insert(0, 'SystemStructure.ssd')
-
-      # All resources
-      self.resources = [os.path.relpath(os.path.join(root, file), self.tempSSPDirectory)
-                        for root, _, files in os.walk(self.tempSSPDirectory)
-                        for file in files if not file.endswith('.ssd')]
-
-      logging.debug(f"DEBUG ssd_files: {ssd_files}")
-      logging.debug(f"DEBUG resources: {self.resources}")
-
-      for ssd_file in ssd_files:
-        ssd_file_path = os.path.join(self.tempSSPDirectory, ssd_file)
-        if not os.path.exists(ssd_file_path):
-          raise FileNotFoundError(f"SSD file '{ssd_file_path}' not found!")
-
-        ssd = SSD.importFromFile(ssd_file_path)
-        self.add(ssd)
-
-    # If no variants are present, add a default one
-    if not self._activeVariantName:
+    # Ensure at least one variant exists
+    if self.activeVariantName is None:
       self.add(SSD('default'))
 
   def __del__(self):
-    if self.tempSSPDirectory and os.path.exists(self.tempSSPDirectory):
-      shutil.rmtree(self.tempSSPDirectory)
-    logging.debug(f"DEBUG Temp Removed: {self.tempSSPDirectory}")
+    '''Cleans up temporary files upon deletion'''
+    try:
+      if os.path.exists(self.temp_dir):
+        shutil.rmtree(self.temp_dir)
+        logger.debug(f"Temporary directory removed: {self.temp_dir}")
+    except Exception as e:
+      logger.error(f"Error removing temporary directory {self.temp_dir}: {e}")
+
+  def _extract_ssp(self, path: str):
+    '''Extracts SSP file contents and loads SSD files.'''
+    if not os.path.isfile(path):
+      raise FileNotFoundError(f"SSP file '{path}' not found")
+
+    with zipfile.ZipFile(path, 'r') as ssp_zip:
+      ssp_zip.extractall(self.temp_dir)
+    logger.debug(f"Extracted SSP file: {path} -> {self.temp_dir}")
+
+    ssd_files = [f for f in os.listdir(self.temp_dir) if f.endswith('.ssd') and f != 'SystemStructure.ssd']
+    ssd_files.insert(0, 'SystemStructure.ssd')
+
+    self.resources = [
+      os.path.relpath(os.path.join(root, file), self.temp_dir)
+      for root, _, files in os.walk(self.temp_dir)
+      for file in files if not file.endswith('.ssd')
+    ]
+
+    logger.debug(f"SSD files: {ssd_files}")
+    logger.debug(f"Resources: {self.resources}")
+
+    for ssd_file in ssd_files:
+      ssd_path = os.path.join(self.temp_dir, ssd_file)
+      ssd = SSD.importFromFile(ssd_path)
+      self.add(ssd)
 
   @property
   def activeVariantName(self):
@@ -66,88 +70,107 @@ class SSP:
   def activeVariantName(self, variant_name: str):
     if variant_name not in self.variants:
       raise ValueError(f"Variant '{variant_name}' does not exist in the SSP.")
-
     self._activeVariantName = variant_name
 
-  def addResource(self, filename, target_dir='resource/', validation=True):
-    if validation:
-      #if srmd do validation
-      #if ssv do validation
+  @property
+  def activeVariant(self):
+    return self.variants.get(self.activeVariantName)
+
+  def addResource(self, filename: str, new_name: str | None = None, target_dir='resources/', validate=True):
+    '''Adds a resource file to the SSP.'''
+    new_name = new_name or os.path.basename(filename)
+    resource_path = os.path.join(target_dir, new_name)
+
+    if resource_path in self.resources:
+      raise ValueError(f"Resource '{resource_path}' already exists in the SSP.")
+
+    if validate:
+      # TODO: Implement validation logic
       pass
 
-    #copy the file
+    target_path = os.path.join(self.temp_dir, target_dir)
+    os.makedirs(target_path, exist_ok=True)
+    shutil.copy(filename, os.path.join(target_path, new_name))
 
-  def getActiveVariantName(self):
-    return self._activeVariantName
+    # Append to resources only after a successful copy
+    self.resources.append(resource_path)
 
-  def getActiveVariant(self):
-    return self.variants[self._activeVariantName]
+  def getVariant(self, name=None):
+    '''Returns the specified variant or the active variant.'''
+    if name is None and self.activeVariantName is None:
+      raise ValueError("No active variant set in the SSP.")
+    return self.variants.get(name or self.activeVariantName)
 
   def getAllVariantNames(self):
     return list(self.variants.keys())
 
+  def addComponent(self, cref: CRef, resource: str):
+    if self.activeVariant is None:
+      raise ValueError("No active variant set in the SSP.")
+    self.activeVariant.addComponent(cref, resource)
+
   def add(self, element):
+    '''Adds an SSD or a list of SSDs to the SSP'''
     if isinstance(element, list):
       for item in element:
         self.add(item)
-        return
+      return
 
     if isinstance(element, SSD):
       self._addSSD(element)
     else:
-      raise TypeError(f"SSP class does not support adding instance type of : {type(element)}")
+      raise TypeError(f"SSP class does not support adding instance type of: {type(element)}")
 
   def _addSSD(self, ssd: SSD):
+    '''Handles adding an SSD to the SSP'''
     if ssd.name in self.variants:
-      raise ValueError(f"Variant '{ssd.name}' already exists in the SSP.")
+      if self.variants[ssd.name] is ssd:
+        raise ValueError(f"Variant '{ssd.name}' is already part of the SSP")
+      else:
+        raise ValueError(f"Another variant with name '{ssd.name}' already exists in the SSP.")
 
-    if not self.variants:
-      self._activeVariantName = ssd.name
-      logging.debug(f"DEBUG: Active variant set to '{ssd.name}'")
+    if ssd._model is not None:
+      raise ValueError(f"SSD '{ssd.name}' already belongs to another SSP.")
+
+    ssd._model = self
     self.variants[ssd.name] = ssd
 
+    if self.activeVariantName is None:
+      self.activeVariantName = ssd.name
+      logger.debug(f"Active variant set to '{ssd.name}'")
+
   def list(self):
-    print("List SSP file:")
-    for name, ssd in self.variants.items():
-      if name == self._activeVariantName:
-        print(f"|-- Variant: {name} (Active)")
-      else:
-        print(f"|-- Variant: {name}")
+    '''Lists SSP contents'''
+    print(self)
+    print("|-- Resources:")
+    for resource in self.resources:
+      print(f"|--   {resource}")
+    for ssd in self.variants.values():
       ssd.list()
 
   def export(self, filename: str):
-    temp_dir = 'temp_ssp'
-    os.makedirs(temp_dir, exist_ok=True)
+    '''Exports the SSP to file'''
+    logger.debug(f"Exporting SSP to {filename} using temp directory: {self.temp_dir}")
 
-    resources_dir = os.path.join(temp_dir, 'resources')
-    os.makedirs(resources_dir, exist_ok=True)
+    exported_count = 0
+    for ssd in self.variants.values():
+      if ssd.dirty:
+        exported_count += 1
+        logger.debug(f"Dirty. Exporting SSD '{ssd.name}'")
+        ssd_file_path = os.path.join(self.temp_dir, f"{ssd.name}.ssd")
+        if ssd.name == self.activeVariantName:
+          ssd_file_path = os.path.join(self.temp_dir, 'SystemStructure.ssd')
 
-    for name, ssd in self.variants.items():
-      ssd_file_path = os.path.join(temp_dir, name + '.ssd')
-      if name == self._activeVariantName:
-        ssd_file_path = os.path.join(temp_dir, 'SystemStructure.ssd')
+        ssd.export(ssd_file_path)
 
-      ssd.export(ssd_file_path)
-
-      ssd.exportParameterResources(resources_dir)
-
-      self.copyResourse(resourcedir=resources_dir)
+    if exported_count == 0:
+      logger.debug("No SSDs needed exporting (all were up to date).")
 
     with zipfile.ZipFile(filename, 'w', zipfile.ZIP_DEFLATED) as ssp_zip:
-      for root, _, files in os.walk(temp_dir):
+      for root, _, files in os.walk(self.temp_dir):
         for file in files:
           file_path = os.path.join(root, file)
-          archive_name = os.path.relpath(file_path, temp_dir)
+          archive_name = os.path.relpath(file_path, self.temp_dir)
           ssp_zip.write(file_path, archive_name)
 
-    logging.debug(f"SSP file '{os.path.abspath(filename)}' successfully exported!")
-
-    # Delete temp directory and all its contents
-    if os.path.exists(temp_dir):
-      shutil.rmtree(temp_dir)
-
-  def copyResourse(self, resourcedir):
-    ## copy the fmu's to resource folder
-    for ssd in self.variants.values():
-      for cref, fmu in ssd.getComponents().items():
-        shutil.copy(os.path.abspath(fmu.getFmuPath()), os.path.join(resourcedir, cref+".fmu"))
+    logger.info(f"SSP file '{os.path.abspath(filename)}' successfully exported!")

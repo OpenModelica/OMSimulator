@@ -34,7 +34,7 @@ def parseDefaultExperiment(node, root):
 
 def parseElements(node, temp_dir):
   """Extract components from <ssd:Elements> section"""
-  components = []
+  components = {}
   elements_node = node.find("ssd:Elements", namespaces=namespace.ns)
   if elements_node is None:
     return components
@@ -46,7 +46,7 @@ def parseElements(node, temp_dir):
     fmu = FMU(fmuPath, name)
     # Parse Parameter Bindings
     parseParameterBindings(component, fmu, temp_dir)
-    components.append(fmu)
+    components[name] = fmu
   return components
 
 def parseConnectors(node):
