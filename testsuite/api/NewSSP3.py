@@ -8,11 +8,11 @@
 
 from OMSimulator import SSP, CRef
 
-## This example creates a new SSP file with an FMU instantiated as a component.
+# This example creates a new SSP file with an FMU instantiated as a component.
 
 model = SSP()
-model.addResource('../resources/Modelica.Blocks.Math.Add.fmu', new_name='Add.fmu')
 
+model.addResource('../resources/Modelica.Blocks.Math.Add.fmu', new_name='Add.fmu')
 model.addComponent(CRef('default', 'Add'), 'Add.fmu')
 
 model.list()
@@ -22,10 +22,10 @@ model2 = SSP('NewSSP3.ssp')
 model2.list()
 
 ## Result:
-## <OMSimulator.ssp.SSP object at 0x7f6469c403d0>
+## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
 ## |--   resources/Add.fmu
-## |-- <OMSimulator.ssd.SSD object at 0x7f6469c41a80>
+## |-- <class 'OMSimulator.ssd.SSD'>
 ## |-- Active variant "default": None
 ## |--   System: default
 ## |--   Connectors:

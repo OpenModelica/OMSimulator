@@ -141,7 +141,7 @@ class SSP:
 
   def list(self):
     '''Lists SSP contents'''
-    print(self)
+    print(type(self))
     print("|-- Resources:")
     for resource in self.resources:
       print(f"|--   {resource}")

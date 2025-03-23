@@ -22,33 +22,33 @@ model2 = SSP("create_ssp_file.ssp")
 model2.list()
 
 ## Result:
-## <OMSimulator.ssp.SSP object at 0x7f2816003c10>
+## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
-## |-- <OMSimulator.ssd.SSD object at 0x7f2815f733a0>
+## |-- <class 'OMSimulator.ssd.SSD'>
 ## |-- Inactive variant "default": None
 ## |--   System: default
 ## |--   Connectors:
 ## |--   DefaultExperiment
 ## |--     startTime: 0.0
 ## |--     stopTime: 1.0
-## |-- <OMSimulator.ssd.SSD object at 0x7f28133eabc0>
+## |-- <class 'OMSimulator.ssd.SSD'>
 ## |-- Active variant "Variant-B": None
 ## |--   System: Variant-B
 ## |--   Connectors:
 ## |--   DefaultExperiment
 ## |--     startTime: 0.0
 ## |--     stopTime: 1.0
-## <OMSimulator.ssp.SSP object at 0x7f2815f73430>
+## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
-## |-- <OMSimulator.ssd.SSD object at 0x7f28133ea890>
-## |-- Active variant "Variant-B": /tmp/tmp2q5b5uxn/SystemStructure.ssd
+## |-- <class 'OMSimulator.ssd.SSD'>
+## |-- Active variant "Variant-B": /tmp/tmpvoval71m/SystemStructure.ssd
 ## |--   System: Variant-B
 ## |--   Connectors:
 ## |--   DefaultExperiment
 ## |--     startTime: 0.0
 ## |--     stopTime: 1.0
-## |-- <OMSimulator.ssd.SSD object at 0x7f28133ea770>
-## |-- Inactive variant "default": /tmp/tmp2q5b5uxn/default.ssd
+## |-- <class 'OMSimulator.ssd.SSD'>
+## |-- Inactive variant "default": /tmp/tmpvoval71m/default.ssd
 ## |--   System: default
 ## |--   Connectors:
 ## |--   DefaultExperiment

@@ -67,7 +67,7 @@ class SSD:
 
   def list(self):
     '''Prints the SSD contents.'''
-    print(f"|-- {self}")
+    print(f"|-- {type(self)}")
     if self._model and self._model._activeVariantName == self._name:
       print(f'|-- Active variant "{self._name}": {self._filename}')
     else:
