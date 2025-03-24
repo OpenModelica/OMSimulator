@@ -23,9 +23,13 @@ for var in sorted(fmu.states, key=lambda x: x.name):
   print({'name': var.name, 'signal_type': var.signal_type.name, 'valueReference': var.valueReference, 'variability': var.variability, 'causality': var.causality.name})
 
 ## Result:
-## {'name': 'C1.v', 'valueReference': '0', 'variability': 'continuous', 'causality': 'local'}
-## {'name': 'C3.v', 'valueReference': '1', 'variability': 'continuous', 'causality': 'local'}
-## {'name': 'C5.v', 'valueReference': '2', 'variability': 'continuous', 'causality': 'local'}
-## {'name': 'L1.i', 'valueReference': '3', 'variability': 'continuous', 'causality': 'local'}
-## {'name': 'L2.i', 'valueReference': '4', 'variability': 'continuous', 'causality': 'local'}
+## name Modelica.Electrical.Analog.Examples.CauerLowPassAnalog
+## guid {9a0b11b0-ed40-42af-81be-e0fdf8b841a9}
+## fmi version 2.0
+## States:
+## {'name': CRef['C1.v'], 'signal_type': 'Real', 'valueReference': 0, 'variability': 'continuous', 'causality': 'local'}
+## {'name': CRef['C3.v'], 'signal_type': 'Real', 'valueReference': 1, 'variability': 'continuous', 'causality': 'local'}
+## {'name': CRef['C5.v'], 'signal_type': 'Real', 'valueReference': 2, 'variability': 'continuous', 'causality': 'local'}
+## {'name': CRef['L1.i'], 'signal_type': 'Real', 'valueReference': 3, 'variability': 'continuous', 'causality': 'local'}
+## {'name': CRef['L2.i'], 'signal_type': 'Real', 'valueReference': 4, 'variability': 'continuous', 'causality': 'local'}
 ## endResult

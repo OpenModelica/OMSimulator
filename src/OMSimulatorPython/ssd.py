@@ -6,6 +6,7 @@ from lxml import etree as ET
 from OMSimulator import namespace, utils
 from OMSimulator.system import System
 from OMSimulator.cref import CRef
+from OMSimulator.settings import Settings
 
 logger = logging.getLogger(__name__)
 
@@ -69,9 +70,9 @@ class SSD:
     '''Prints the SSD contents.'''
     print(f"|-- {type(self)}")
     if self._model and self._model._activeVariantName == self._name:
-      print(f'|-- Active variant "{self._name}": {self._filename}')
+      print(f'|-- Active variant "{self._name}": {self._filename if not Settings.suppressPath else "<hidden>"}')
     else:
-      print(f'|-- Inactive variant "{self._name}": {self._filename}')
+      print(f'|-- Inactive variant "{self._name}": {self._filename if not Settings.suppressPath else "<hidden>"}')
 
     if self.system:
       self.system.list()

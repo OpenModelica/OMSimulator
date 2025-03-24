@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm -rf create_ssp_file.ssp tmp-create_ssp_file/
+## teardown_command: rm create_ssp_file.ssp
 ## linux: yes
 ## mingw32: yes
 ## mingw64: yes
@@ -9,9 +9,11 @@
 #import logging
 #logging.basicConfig(level=logging.DEBUG)
 
-from OMSimulator import SSP, SSD
+from OMSimulator import SSP, SSD, Settings
 
-model = SSP(temp_dir="./tmp-create_ssp_file")
+Settings.suppressPath = True
+
+model = SSP()
 variantB = SSD('Variant-B')
 model.add(variantB)
 model.activeVariantName = 'Variant-B'
@@ -25,14 +27,14 @@ model2.list()
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Inactive variant "default": None
+## |-- Inactive variant "default": <hidden>
 ## |--   System: default
 ## |--   Connectors:
 ## |--   DefaultExperiment
 ## |--     startTime: 0.0
 ## |--     stopTime: 1.0
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Active variant "Variant-B": None
+## |-- Active variant "Variant-B": <hidden>
 ## |--   System: Variant-B
 ## |--   Connectors:
 ## |--   DefaultExperiment
@@ -41,14 +43,14 @@ model2.list()
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Active variant "Variant-B": /tmp/tmpvoval71m/SystemStructure.ssd
+## |-- Active variant "Variant-B": <hidden>
 ## |--   System: Variant-B
 ## |--   Connectors:
 ## |--   DefaultExperiment
 ## |--     startTime: 0.0
 ## |--     stopTime: 1.0
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Inactive variant "default": /tmp/tmpvoval71m/default.ssd
+## |-- Inactive variant "default": <hidden>
 ## |--   System: default
 ## |--   Connectors:
 ## |--   DefaultExperiment

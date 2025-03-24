@@ -40,8 +40,9 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/__init__.py"
               "${CMAKE_CURRENT_SOURCE_DIR}/types.py"
               "${CMAKE_CURRENT_SOURCE_DIR}/unit.py"
               "${CMAKE_CURRENT_SOURCE_DIR}/utils.py"
+              "${CMAKE_CURRENT_SOURCE_DIR}/settings.py"
               "${CMAKE_CURRENT_SOURCE_DIR}/values.py"
-              "${CMAKE_CURRENT_SOURCE_DIR}/variables.py"
+              "${CMAKE_CURRENT_SOURCE_DIR}/variable.py"
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/OMSimulator)
 
 if(MSVC)

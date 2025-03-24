@@ -1,12 +1,14 @@
 ## status: correct
-## teardown_command: rm -rf NewSSP3.ssp
+## teardown_command: rm -rf NewSSP3.ssp tmp-NewSSP3/
 ## linux: yes
 ## mingw32: yes
 ## mingw64: yes
 ## win: yes
 ## mac: yes
 
-from OMSimulator import SSP, CRef
+from OMSimulator import SSP, CRef, Settings
+
+Settings.suppressPath = True
 
 # This example creates a new SSP file with an FMU instantiated as a component.
 
@@ -26,7 +28,7 @@ model2.list()
 ## |-- Resources:
 ## |--   resources/Add.fmu
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Active variant "default": None
+## |-- Active variant "default": <hidden>
 ## |--   System: default
 ## |--   Connectors:
 ## |--   Components:
@@ -36,13 +38,13 @@ model2.list()
 ## |--     startTime: 0.0
 ## |--     stopTime: 1.0
 ## Traceback (most recent call last):
-##   File "OMSimulator/testsuite/api/NewSSP3.py", line 19, in <module>
+##   File "OMSimulator/testsuite/api/NewSSP3.py", line 21, in <module>
 ##     model.export('NewSSP3.ssp')
-##   File "OMSimulator/install/lib/x86_64-linux-gnu/OMSimulator/ssp.py", line 164, in export
+##   File "OMSimulator/install/lib/x86_64-linux-gnu/OMSimulator/ssp.py", line 166, in export
 ##     ssd.export(ssd_file_path)
-##   File "OMSimulator/install/lib/x86_64-linux-gnu/OMSimulator/ssd.py", line 92, in export
+##   File "OMSimulator/install/lib/x86_64-linux-gnu/OMSimulator/ssd.py", line 93, in export
 ##     self.system.export(root)
-##   File "OMSimulator/install/lib/x86_64-linux-gnu/OMSimulator/system.py", line 110, in export
+##   File "OMSimulator/install/lib/x86_64-linux-gnu/OMSimulator/system.py", line 105, in export
 ##     raise Exception("Not implemented - need to lookup fmu in ssp resources")
 ## Exception: Not implemented - need to lookup fmu in ssp resources
 ## endResult

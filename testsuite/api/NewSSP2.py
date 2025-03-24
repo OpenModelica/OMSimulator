@@ -1,12 +1,14 @@
 ## status: correct
-## teardown_command: rm -rf NewSSP2.ssp
+## teardown_command: rm NewSSP2.ssp
 ## linux: yes
 ## mingw32: yes
 ## mingw64: yes
 ## win: yes
 ## mac: yes
 
-from OMSimulator import SSD, SSP
+from OMSimulator import SSD, SSP, Settings
+
+Settings.suppressPath = True
 
 # This example creates a new SSP file containing a default SSD file.
 # It then creates another SSD file and adds it to the SSP file using the SSD constructor, referencing the SSP file directly.
@@ -28,14 +30,14 @@ model2.list()
 ## |-- Resources:
 ## |--   resources/Add.fmu
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Inactive variant "default": None
+## |-- Inactive variant "default": <hidden>
 ## |--   System: default
 ## |--   Connectors:
 ## |--   DefaultExperiment
 ## |--     startTime: 0.0
 ## |--     stopTime: 1.0
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Active variant "Variant-B": None
+## |-- Active variant "Variant-B": <hidden>
 ## |--   System: Variant-B
 ## |--   Connectors:
 ## |--   DefaultExperiment
@@ -45,14 +47,14 @@ model2.list()
 ## |-- Resources:
 ## |--   resources/Add.fmu
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Active variant "Variant-B": /tmp/tmpomnpnzxj/SystemStructure.ssd
+## |-- Active variant "Variant-B": <hidden>
 ## |--   System: Variant-B
 ## |--   Connectors:
 ## |--   DefaultExperiment
 ## |--     startTime: 0.0
 ## |--     stopTime: 1.0
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Inactive variant "default": /tmp/tmpomnpnzxj/default.ssd
+## |-- Inactive variant "default": <hidden>
 ## |--   System: default
 ## |--   Connectors:
 ## |--   DefaultExperiment

@@ -1,18 +1,20 @@
 ## status: correct
-## teardown_command: rm -rf NewSSP.ssp
+## teardown_command: rm -rf NewSSP.ssp tmp-NewSSP/
 ## linux: yes
 ## mingw32: yes
 ## mingw64: yes
 ## win: yes
 ## mac: yes
 
-from OMSimulator import SSD, SSP
+from OMSimulator import SSD, SSP, Settings
+
+Settings.suppressPath = True
 
 # This example creates a new SSP file containing a default SSD file.
 # It then creates another SSD file and adds it to the SSP file using the add method.
 # Finally, the SSP file is exported to a new file and re-imported.
 
-model = SSP()
+model = SSP(temp_dir="./tmp-NewSSP/model1/")
 variantB = SSD('Variant-B')
 model.add(variantB)
 model.activeVariantName = 'Variant-B'
@@ -21,7 +23,7 @@ model.addResource('../resources/Modelica.Blocks.Math.Add.fmu', new_name='Add.fmu
 model.list()
 model.export('NewSSP.ssp')
 
-model2 = SSP('NewSSP.ssp')
+model2 = SSP('NewSSP.ssp', temp_dir="./tmp-NewSSP/model2/")
 model2.list()
 
 ## Result:
@@ -29,14 +31,14 @@ model2.list()
 ## |-- Resources:
 ## |--   resources/Add.fmu
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Inactive variant "default": None
+## |-- Inactive variant "default": <hidden>
 ## |--   System: default
 ## |--   Connectors:
 ## |--   DefaultExperiment
 ## |--     startTime: 0.0
 ## |--     stopTime: 1.0
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Active variant "Variant-B": None
+## |-- Active variant "Variant-B": <hidden>
 ## |--   System: Variant-B
 ## |--   Connectors:
 ## |--   DefaultExperiment
@@ -46,14 +48,14 @@ model2.list()
 ## |-- Resources:
 ## |--   resources/Add.fmu
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Active variant "Variant-B": /tmp/tmp4j1cxqzj/SystemStructure.ssd
+## |-- Active variant "Variant-B": <hidden>
 ## |--   System: Variant-B
 ## |--   Connectors:
 ## |--   DefaultExperiment
 ## |--     startTime: 0.0
 ## |--     stopTime: 1.0
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Inactive variant "default": /tmp/tmp4j1cxqzj/default.ssd
+## |-- Inactive variant "default": <hidden>
 ## |--   System: default
 ## |--   Connectors:
 ## |--   DefaultExperiment

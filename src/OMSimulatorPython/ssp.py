@@ -3,8 +3,10 @@ import os
 import shutil
 import tempfile
 import zipfile
+from pathlib import Path
 
 from OMSimulator import SSD, CRef
+from OMSimulator.settings import Settings
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +20,7 @@ class SSP:
       os.makedirs(temp_dir, exist_ok=True)
 
     self.temp_dir = tempfile.mkdtemp(dir=temp_dir)
-    logger.debug(f"Temporary directory created: {self.temp_dir}")
+    logger.info(f"Temporary directory created: {self.temp_dir if not Settings.suppressPath else '<hidden>'}")
 
     if path:
       self._extract_ssp(path)
@@ -32,7 +34,7 @@ class SSP:
     try:
       if os.path.exists(self.temp_dir):
         shutil.rmtree(self.temp_dir)
-        logger.debug(f"Temporary directory removed: {self.temp_dir}")
+        logger.info(f"Temporary directory removed: {self.temp_dir if not Settings.suppressPath else '<hidden>'}")
     except Exception as e:
       logger.error(f"Error removing temporary directory {self.temp_dir}: {e}")
 
