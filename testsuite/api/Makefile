@@ -5,10 +5,10 @@ create_ssp_file.py \
 fmuinfo.py \
 NewSSP.py \
 NewSSP2.py \
-NewSSP3.py \
 
 # Run make failingtest
 FAILINGTESTFILES = \
+NewSSP3.py \
 
 # Dependency files that are not .lua or Makefile
 # Add them here or they will be cleaned.
