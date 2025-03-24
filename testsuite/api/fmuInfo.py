@@ -6,15 +6,21 @@
 ## win: yes
 ## mac: yes
 
-from OMSimulator import FMU
+from OMSimulator import FMU, Variable, SignalType, Causality
 
 # This test case tests the new python API construct
 # FMU which basically loads the FMU and displays the
 # fmuinfo state variables
 
 fmu = FMU('../resources/Modelica.Electrical.Analog.Examples.CauerLowPassAnalog.fmu')
-for var in sorted(fmu.getStateVariables(), key=lambda x: x['name']):
-  print(var)
+
+print('name', fmu.modelName)
+print('guid', fmu.guid)
+print('fmi version', fmu.fmiVersion)
+
+print('States:')
+for var in sorted(fmu.states, key=lambda x: x.name):
+  print({'name': var.name, 'signal_type': var.signal_type.name, 'valueReference': var.valueReference, 'variability': var.variability, 'causality': var.causality.name})
 
 ## Result:
 ## {'name': 'C1.v', 'valueReference': '0', 'variability': 'continuous', 'causality': 'local'}

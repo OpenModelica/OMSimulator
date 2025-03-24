@@ -8,7 +8,7 @@ class CRef:
     return '/'.join(self.names)
 
   def __repr__(self):
-    return f"CRef({self.names})"
+    return f"CRef{self.names}"
 
   def __eq__(self, other):
     return isinstance(other, CRef) and self.names == other.names
@@ -58,3 +58,9 @@ class CRef:
       return None
     else:
       return CRef(*self.names[1:])
+
+  def __lt__(self, other):
+    '''Compare two CRef objects based on their names'''
+    if not isinstance(other, CRef):
+      raise TypeError('Expected a CRef object.')
+    return self.names < other.names

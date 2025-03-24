@@ -4,12 +4,7 @@ import os
 from lxml import etree as ET
 
 from OMSimulator import namespace, utils, CRef
-from OMSimulator.connection import Connection
-from OMSimulator.connector import Connector
-from OMSimulator.fmu import FMU
-from OMSimulator.unit import UnitDefinitions
 from OMSimulator.values import Values
-from OMSimulator.variables import Variable
 
 logger = logging.getLogger(__name__)
 

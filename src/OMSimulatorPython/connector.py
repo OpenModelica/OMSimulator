@@ -1,10 +1,11 @@
 from lxml import etree as ET
 
 from OMSimulator import namespace, types
+from OMSimulator.variable import Causality, SignalType
 
 
 class Connector:
-  def __init__(self, name : str, causality : types.Causality, signal_type : types.SignalType):
+  def __init__(self, name : str, causality : Causality, signal_type : SignalType):
     self.name = name
     self.causality = causality
     self.signal_type = signal_type
@@ -35,45 +36,45 @@ class Connector:
       connectors_type.set("unit", self.unit)
 
   @staticmethod
-  def getCausalityToString(causality_ : types.Causality) -> str:
+  def getCausalityToString(causality_ : Causality) -> str:
     causality_map = {
-        types.Causality.input: "input",
-        types.Causality.output: "output",
-        types.Causality.parameter: "parameter",
-        types.Causality.calculatedParameter: "calculatedParameter"
+        Causality.input: "input",
+        Causality.output: "output",
+        Causality.parameter: "parameter",
+        Causality.calculatedParameter: "calculatedParameter"
     }
     return causality_map.get(causality_, "unknown")
 
   @staticmethod
-  def getSignalTypeToString(signalTypes : types.SignalType) -> str:
+  def getSignalTypeToString(signalTypes : SignalType) -> str:
     signalTypes_map = {
-        types.SignalType.real: "Real",
-        types.SignalType.integer: "Integer",
-        types.SignalType.boolean: "Boolean",
-        types.SignalType.enum: "Enumeration",
-        types.SignalType.string: "String"
+        SignalType.real: "Real",
+        SignalType.integer: "Integer",
+        SignalType.boolean: "Boolean",
+        SignalType.enum: "Enumeration",
+        SignalType.string: "String"
     }
     return signalTypes_map.get(signalTypes, "unknown")
 
   @staticmethod
-  def getCausalityFromString(kind: str) -> types.Causality:
+  def getCausalityFromString(kind: str) -> Causality:
         """Converts a kind string to the corresponding causality enum"""
         kind_map = {
-            "input": types.Causality.input,
-            "output": types.Causality.output,
-            "parameter": types.Causality.parameter,
-            "calculatedParameter": types.Causality.calculatedParameter
+            "input": Causality.input,
+            "output": Causality.output,
+            "parameter": Causality.parameter,
+            "calculatedParameter": Causality.calculatedParameter
         }
         return kind_map.get(kind)
 
   @staticmethod
-  def getSignalTypeFromString(signal_type_str: str) -> types.SignalType:
+  def getSignalTypeFromString(signal_type_str: str) -> SignalType:
         """Converts a signal type string to the corresponding signal type enum"""
         signal_type_map = {
-            "ssc:Real": types.SignalType.real,
-            "ssc:Integer": types.SignalType.integer,
-            "ssc:Boolean": types.SignalType.boolean,
-            "ssc:Enum": types.SignalType.enum,
-            "ssc:String": types.SignalType.string
+            "ssc:Real": SignalType.real,
+            "ssc:Integer": SignalType.integer,
+            "ssc:Boolean": SignalType.boolean,
+            "ssc:Enum": SignalType.enum,
+            "ssc:String": SignalType.string
         }
         return signal_type_map.get(signal_type_str)

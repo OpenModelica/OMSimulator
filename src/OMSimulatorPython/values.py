@@ -1,7 +1,7 @@
 from lxml import etree as ET
 
 from OMSimulator import namespace
-from OMSimulator.unit import UnitDefinitions
+from OMSimulator.unit import Unit
 
 
 class Values:
@@ -92,5 +92,5 @@ class Values:
 
     if len(unitsToExport) > 0 :
       ssv_unit_node = ET.SubElement(node, namespace.tag("ssv", "Units"))
-      unit = UnitDefinitions()
+      unit = Unit()
       unit.exportToSSD(unitsToExport, ssv_unit_node)

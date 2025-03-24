@@ -10,23 +10,6 @@ class ModelState(Enum):
   SIMULATION = 16
   ERROR = 32
 
-class Causality(Enum):
-  "oms_causality_enu_t"
-  input = 0
-  output = 1
-  parameter = 2
-  calculatedParameter = 3
-  bidir = 4
-  undefined = 5
-
-class SignalType(Enum):
-  "oms_signal_type_enu_t"
-  real = 0
-  integer = 1
-  boolean = 2
-  string = 3
-  enum = 4
-
 class Solver(Enum):
   "oms_solver_enu_t"
   oms_solver_sc_explicit_euler = 1

@@ -2,7 +2,7 @@ from lxml import etree as ET
 
 from OMSimulator import namespace
 from OMSimulator.values import Values
-from OMSimulator.variables import Variable
+from OMSimulator.variable import Variable
 
 
 class SSV:
