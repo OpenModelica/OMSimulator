@@ -65,7 +65,7 @@ class System:
       last_prefix = prefix + "   "  # This is the prefix for nested elements
       print(self.components.keys())
       for key, component in self.components.items():
-        print(key, component)
+        print(key, type(component))
 
     ## list connections
     if len(self.connections) > 0:

@@ -32,7 +32,7 @@ model.export('NewSSP3.ssp')
 ## |--   Connectors:
 ## |--   Components:
 ## dict_keys(['Add'])
-## Add <OMSimulator.component.Component object at 0x7f168436a320>
+## Add <class 'OMSimulator.component.Component'>
 ## |--   DefaultExperiment
 ## |--     startTime: 0.0
 ## |--     stopTime: 1.0
