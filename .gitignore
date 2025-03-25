@@ -1,4 +1,5 @@
 # generated directories
+/.env/
 /.vs/
 /.vscode/
 /build/
