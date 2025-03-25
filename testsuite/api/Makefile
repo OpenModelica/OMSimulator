@@ -2,6 +2,7 @@ TEST = ../rtest -v
 
 TESTFILES = \
 create_ssp_file.py \
+cref.py \
 fmuinfo.py \
 NewSSP.py \
 NewSSP2.py \
