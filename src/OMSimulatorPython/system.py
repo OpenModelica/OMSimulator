@@ -6,6 +6,7 @@ from lxml import etree as ET
 from OMSimulator import namespace, utils, CRef
 from OMSimulator.values import Values
 from OMSimulator.component import Component
+from OMSimulator.fmu import FMU
 
 logger = logging.getLogger(__name__)
 
@@ -15,6 +16,7 @@ class System:
     from OMSimulator.ssp import SSP
     self._name = name
     self.connectors = list()
+    self.fmu_instances = dict()
     self.components = dict()
     self.connections = list()
     self.value = Values()
@@ -77,12 +79,18 @@ class System:
 
   def addComponent(self, cref: CRef, resource: str, model):
     cref2 = cref.pop_first(first=self._name)
-
     if resource not in model.resources:
       raise KeyError(f"Key '{resource}' not found in resources, you must first add component to resources")
 
+    # Check if the FMU has already been instantiated for the given resource
+    if resource not in self.fmu_instances:
+      # Instantiate the FMU only if it hasn't been instantiated yet
+      fmu = FMU(model.resources.get(resource))
+      self.fmu_instances[resource] = fmu  # Store the FMU instance to prevent reloading
+
+
     if cref2.is_root():
-      component = Component(cref2.names[0], model.resources.get(resource))
+      component = Component(cref2.names[0], self.fmu_instances[resource])
       self.components[cref2.names[0]] = component
     else:
       raise ValueError(f"Invalid component reference: {cref}")

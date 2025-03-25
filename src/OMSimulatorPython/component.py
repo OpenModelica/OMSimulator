@@ -6,10 +6,9 @@ from OMSimulator.connector import Connector
 from OMSimulator.values import Values
 
 class Component:
-  def __init__(self, name: str, fmupath : str):
+  def __init__(self, name: str, fmu_instance : FMU):
     self.name = name
-    self.fmupath = fmupath
-    self.fmu = FMU(fmupath)
+    self.fmu = fmu_instance
     self.connectors = []
     self.value = Values()
     self.makeConnector()
@@ -24,7 +23,7 @@ class Component:
 
   def list(self, prefix=""):
     print(f"|{prefix}  ├── FMU: ({self.name})")
-    print(f"|{prefix}  |   ├── path: {self.fmupath}")
+    print(f"|{prefix}  |   ├── path: {os.path.basename(self.fmu._fmu_path)}")
 
     if len(self.connectors) > 0:
       print(f"|{prefix}  |   ├── Connectors:")
@@ -55,7 +54,7 @@ class Component:
     component_node = ET.SubElement(node, namespace.tag("ssd", "Component"))
     component_node.set("name", self.name)
     component_node.set("type", "application/x-fmu-sharedlibrary")
-    component_node.set("source", "resources/"+ os.path.basename(self.fmupath))
+    component_node.set("source", "resources/"+ os.path.basename(self.fmu._fmu_path))
 
     if len(self.connectors) > 0:
       connectors_node = ET.SubElement(component_node, namespace.tag("ssd", "Connectors"))
