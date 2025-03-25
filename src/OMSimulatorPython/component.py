@@ -22,6 +22,35 @@ class Component:
         connector.setUnit(var.unit)
         self.connectors.append(connector)
 
+  def list(self, prefix=""):
+    print(f"|{prefix}  ├── FMU: ({self.name})")
+    print(f"|{prefix}  |   ├── path: {self.fmupath}")
+
+    if len(self.connectors) > 0:
+      print(f"|{prefix}  |   ├── Connectors:")
+      ## export component connectors
+      last_prefix = prefix + "  |   |  "  # This is the prefix for nested elements
+      for connector in self.connectors:
+        connector.list(prefix = last_prefix)
+
+    last_prefix = prefix + "   |       "  # This is the prefix for nested elements
+
+    ## list parameters inline
+    if not self.value.empty():
+      print(f"|{prefix}  |   ├── ParameterBindings:")
+      print(f"|{prefix}  |   |   ├── inline:")
+      last_prefix = prefix + "  |   |"  # This is the prefix for nested elements
+
+      self.value.list(prefix=last_prefix)
+
+    ## list parameteres in ssv files
+    if len(self.parameterResources) > 0:
+      for key, resources in self.parameterResources.items():
+        print(f"|{prefix}  |   ├── ParameterBindings:")
+        print(f"|{prefix}  |   |   ├── {resources.filename}:")
+        last_prefix = prefix + "  |   |"  # This is the prefix for nested elements
+        resources.list(prefix = last_prefix)
+
   def exportToSSD(self, node):
     component_node = ET.SubElement(node, namespace.tag("ssd", "Component"))
     component_node.set("name", self.name)

@@ -62,10 +62,10 @@ class System:
     ## list elements
     if len(self.components) > 0:
       print(f"{prefix}|--   Components:")
-      last_prefix = prefix + "   "  # This is the prefix for nested elements
-      print(self.components.keys())
+      last_prefix = prefix + "     |"  # This is the prefix for nested elements
       for key, component in self.components.items():
-        print(key, type(component))
+        # print(key, values)
+        component.list(last_prefix)
 
     ## list connections
     if len(self.connections) > 0:
