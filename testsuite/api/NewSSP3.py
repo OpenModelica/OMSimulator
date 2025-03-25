@@ -12,15 +12,15 @@ Settings.suppressPath = True
 
 # This example creates a new SSP file with an FMU instantiated as a component.
 
-model = SSP(temp_dir="./tmp-NewSSP/model3/")
+model = SSP(temp_dir="./tmp-NewSSP3/")
 model.addResource('../resources/Modelica.Blocks.Math.Add.fmu', new_name='Add.fmu')
 model.addComponent(CRef('default', 'Add'), 'Add.fmu')
 
 model.list()
 model.export('NewSSP3.ssp')
 
-# model2 = SSP('NewSSP3.ssp')
-# model2.list()
+model2 = SSP('NewSSP3.ssp', temp_dir="./tmp-NewSSP3/")
+model2.list()
 
 ## Result:
 ## <class 'OMSimulator.ssp.SSP'>
@@ -33,6 +33,19 @@ model.export('NewSSP3.ssp')
 ## |--   Components:
 ## dict_keys(['Add'])
 ## Add <class 'OMSimulator.component.Component'>
+## |--   DefaultExperiment
+## |--     startTime: 0.0
+## |--     stopTime: 1.0
+## <class 'OMSimulator.ssp.SSP'>
+## |-- Resources:
+## |--   resources/Add.fmu
+## |-- <class 'OMSimulator.ssd.SSD'>
+## |-- Active variant "default": <hidden>
+## |--   System: default
+## |--   Connectors:
+## |--   Components:
+## dict_keys(['Add'])
+## Add <class 'OMSimulator.fmu.FMU'>
 ## |--   DefaultExperiment
 ## |--     startTime: 0.0
 ## |--     stopTime: 1.0

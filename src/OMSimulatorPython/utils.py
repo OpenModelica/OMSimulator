@@ -43,7 +43,7 @@ def parseElements(node, temp_dir):
     comp_type = component.get("type")
     source = component.get("source")
     fmuPath = os.path.join(temp_dir, source)
-    fmu = FMU(fmuPath, name)
+    fmu = FMU(fmuPath)
     # Parse Parameter Bindings
     parseParameterBindings(component, fmu, temp_dir)
     components[name] = fmu
