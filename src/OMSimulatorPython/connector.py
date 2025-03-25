@@ -1,14 +1,16 @@
 from lxml import etree as ET
 
-from OMSimulator import namespace, types
+from OMSimulator import namespace
 from OMSimulator.variable import Causality, SignalType
+from OMSimulator.cref import CRef
+from typing import Union
 
 
 class Connector:
-  def __init__(self, name : str, causality : Causality, signal_type : SignalType):
-    self.name = name
-    self.causality = causality
-    self.signal_type = signal_type
+  def __init__(self, name : Union[str, CRef], causality : Causality, signal_type : SignalType):
+    self.name = CRef(name)
+    self.causality = causality if isinstance(causality, Causality) else Causality[causality]
+    self.signal_type = signal_type if isinstance(signal_type, SignalType) else SignalType[signal_type]
     self.unit = None
 
   def getCref(self):
