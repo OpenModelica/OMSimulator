@@ -31,7 +31,7 @@ class Connector:
 
   def exportToSSD(self, node):
     connector_node = ET.SubElement(node, namespace.tag("ssd", "Connector"))
-    connector_node.set("name", self.name)
+    connector_node.set("name", str(self.name))
     connector_node.set("kind", Connector.getCausalityToString(self.causality))
     connectors_type = ET.SubElement(connector_node, namespace.tag("ssc", Connector.getSignalTypeToString(self.signal_type)))
     if self.unit is not None:
@@ -50,11 +50,11 @@ class Connector:
   @staticmethod
   def getSignalTypeToString(signalTypes : SignalType) -> str:
     signalTypes_map = {
-        SignalType.real: "Real",
-        SignalType.integer: "Integer",
-        SignalType.boolean: "Boolean",
-        SignalType.enum: "Enumeration",
-        SignalType.string: "String"
+        SignalType.Real: "Real",
+        SignalType.Integer: "Integer",
+        SignalType.Boolean: "Boolean",
+        SignalType.Enum: "Enumeration",
+        SignalType.String: "String"
     }
     return signalTypes_map.get(signalTypes, "unknown")
 
@@ -73,10 +73,10 @@ class Connector:
   def getSignalTypeFromString(signal_type_str: str) -> SignalType:
         """Converts a signal type string to the corresponding signal type enum"""
         signal_type_map = {
-            "ssc:Real": SignalType.real,
-            "ssc:Integer": SignalType.integer,
-            "ssc:Boolean": SignalType.boolean,
-            "ssc:Enum": SignalType.enum,
-            "ssc:String": SignalType.string
+            "Real": SignalType.Real,
+            "Integer": SignalType.Integer,
+            "Boolean": SignalType.Boolean,
+            "Enum": SignalType.Enum,
+            "String": SignalType.String
         }
         return signal_type_map.get(signal_type_str)

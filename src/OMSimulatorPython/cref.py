@@ -5,7 +5,7 @@ class CRef:
 
   def __str__(self):
     '''Return the string representation of the component reference.'''
-    return '/'.join(self.names)
+    return '/'.join(str(name) for name in self.names)
 
   def __repr__(self):
     return f"CRef{self.names}"

@@ -5,6 +5,7 @@ from lxml import etree as ET
 
 from OMSimulator import namespace, utils, CRef
 from OMSimulator.values import Values
+from OMSimulator.component import Component
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +63,7 @@ class System:
     if len(self.components) > 0:
       print(f"{prefix}|--   Components:")
       last_prefix = prefix + "   "  # This is the prefix for nested elements
-      print(self.components)
+      print(self.components.keys())
       for key, component in self.components.items():
         print(key, component)
 
@@ -74,11 +75,15 @@ class System:
         connection.list(prefix=last_prefix)
         pass
 
-  def addComponent(self, cref: CRef, resource: str):
+  def addComponent(self, cref: CRef, resource: str, model):
     cref2 = cref.pop_first(first=self._name)
 
+    if resource not in model.resources:
+      raise KeyError(f"Key '{resource}' not found in resources, you must first add component to resources")
+
     if cref2.is_root():
-      self.components[cref2.names[0]] = resource
+      component = Component(cref2.names[0], model.resources.get(resource))
+      self.components[cref2.names[0]] = component
     else:
       raise ValueError(f"Invalid component reference: {cref}")
 
@@ -101,9 +106,9 @@ class System:
     if len(self.components) > 0:
       element_node = ET.SubElement(node, namespace.tag("ssd", "Elements"))
       for key, component in self.components.items():
+        component.exportToSSD(element_node)
         #TODO
-        raise Exception("Not implemented - need to lookup fmu in ssp resources")
-        #component.exportToSSD(key, element_node)
+        ## export parameter resources e.g ssv
 
     ## export connections
     if len(self.connections) > 0:

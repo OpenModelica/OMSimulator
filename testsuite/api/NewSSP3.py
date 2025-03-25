@@ -12,16 +12,15 @@ Settings.suppressPath = True
 
 # This example creates a new SSP file with an FMU instantiated as a component.
 
-model = SSP()
-
+model = SSP(temp_dir="./tmp-NewSSP/model3/")
 model.addResource('../resources/Modelica.Blocks.Math.Add.fmu', new_name='Add.fmu')
 model.addComponent(CRef('default', 'Add'), 'Add.fmu')
 
 model.list()
 model.export('NewSSP3.ssp')
 
-model2 = SSP('NewSSP3.ssp')
-model2.list()
+# model2 = SSP('NewSSP3.ssp')
+# model2.list()
 
 ## Result:
 ## <class 'OMSimulator.ssp.SSP'>

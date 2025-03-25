@@ -14,7 +14,7 @@ class SSP:
   def __init__(self, path: str | None = None, temp_dir: str | None = None):
     self._activeVariantName = None
     self.variants = {}
-    self.resources = []
+    self.resources = {}
 
     if temp_dir:
       os.makedirs(temp_dir, exist_ok=True)
@@ -95,7 +95,7 @@ class SSP:
     shutil.copy(filename, os.path.join(target_path, new_name))
 
     # Append to resources only after a successful copy
-    self.resources.append(resource_path)
+    self.resources[new_name] = os.path.abspath(os.path.join(target_path, new_name))
 
   def getVariant(self, name=None):
     '''Returns the specified variant or the active variant.'''
