@@ -1,11 +1,11 @@
 class CRef:
   def __init__(self, *names):
     '''Initialize a component reference with a list of hierarchical names.'''
-    self.names = list(names)
+    self.names = [str(name) for name in names]
 
   def __str__(self):
     '''Return the string representation of the component reference.'''
-    return '/'.join(str(name) for name in self.names)
+    return '/'.join(self.names)
 
   def __repr__(self):
     return f"CRef{self.names}"
