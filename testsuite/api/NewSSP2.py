@@ -28,7 +28,7 @@ model2.list()
 ## Result:
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
-## |--   resources/Add.fmu
+## |--   Add.fmu
 ## |-- <class 'OMSimulator.ssd.SSD'>
 ## |-- Inactive variant "default": <hidden>
 ## |--   System: default

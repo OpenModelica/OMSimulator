@@ -25,25 +25,15 @@ model.export('NewSSP3.ssp')
 ## Result:
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
-## |--   resources/Add.fmu
+## |--   Add.fmu
 ## |-- <class 'OMSimulator.ssd.SSD'>
 ## |-- Active variant "default": <hidden>
 ## |--   System: default
 ## |--   Connectors:
 ## |--   Components:
-## {'Add': 'Add.fmu'}
-## Add Add.fmu
+## dict_keys(['Add'])
+## Add <OMSimulator.component.Component object at 0x7f168436a320>
 ## |--   DefaultExperiment
 ## |--     startTime: 0.0
 ## |--     stopTime: 1.0
-## Traceback (most recent call last):
-##   File "OMSimulator/testsuite/api/NewSSP3.py", line 21, in <module>
-##     model.export('NewSSP3.ssp')
-##   File "OMSimulator/install/lib/x86_64-linux-gnu/OMSimulator/ssp.py", line 166, in export
-##     ssd.export(ssd_file_path)
-##   File "OMSimulator/install/lib/x86_64-linux-gnu/OMSimulator/ssd.py", line 93, in export
-##     self.system.export(root)
-##   File "OMSimulator/install/lib/x86_64-linux-gnu/OMSimulator/system.py", line 105, in export
-##     raise Exception("Not implemented - need to lookup fmu in ssp resources")
-## Exception: Not implemented - need to lookup fmu in ssp resources
 ## endResult
