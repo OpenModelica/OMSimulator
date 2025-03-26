@@ -18,7 +18,7 @@ model = SSP(temp_dir="./tmp-NewSSP/model1/")
 variantB = SSD('Variant-B')
 model.add(variantB)
 model.activeVariantName = 'Variant-B'
-model.addResource('../resources/Modelica.Blocks.Math.Add.fmu', new_name='Add.fmu')
+model.addResource('../resources/Modelica.Blocks.Math.Add.fmu')
 
 model.list()
 model.export('NewSSP.ssp')
@@ -29,7 +29,7 @@ model2.list()
 ## Result:
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
-## |--   Add.fmu
+## |--   resources/Modelica.Blocks.Math.Add.fmu
 ## |-- <class 'OMSimulator.ssd.SSD'>
 ## |-- Inactive variant "default": <hidden>
 ## |--   System: default
@@ -46,7 +46,7 @@ model2.list()
 ## |--     stopTime: 1.0
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
-## |--   resources/Add.fmu
+## |--   resources/Modelica.Blocks.Math.Add.fmu
 ## |-- <class 'OMSimulator.ssd.SSD'>
 ## |-- Active variant "Variant-B": <hidden>
 ## |--   System: Variant-B

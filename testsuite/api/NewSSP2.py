@@ -17,7 +17,7 @@ Settings.suppressPath = True
 model = SSP()
 variantB = SSD('Variant-B', model=model)
 model.activeVariantName = 'Variant-B'
-model.addResource('../resources/Modelica.Blocks.Math.Add.fmu', new_name='Add.fmu')
+model.addResource('../resources/Modelica.Blocks.Math.Add.fmu', new_name='resources/Add.fmu')
 
 model.list()
 model.export('NewSSP2.ssp')
@@ -28,7 +28,7 @@ model2.list()
 ## Result:
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
-## |--   Add.fmu
+## |--   resources/Add.fmu
 ## |-- <class 'OMSimulator.ssd.SSD'>
 ## |-- Inactive variant "default": <hidden>
 ## |--   System: default

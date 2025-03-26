@@ -12,14 +12,14 @@ from OMSimulator import namespace
 class Component:
   def __init__(self, name: CRef, fmuPath: str, connectors = list()):
     self.name = CRef(name)
-    self.fmuPath = Path(fmuPath)
+    self.fmuPath = fmuPath
     self.connectors = connectors
     self.value = Values() ## TODO propogate Values
     self.parameterResources = {} ## TODO handle ssv resources
 
   def list(self, prefix=""):
     print(f"|{prefix}  |-- FMU: ({self.name})")
-    print(f"|{prefix}  |   |-- path: {self.fmuPath.name}")
+    print(f"|{prefix}  |   |-- path: {self.fmuPath}")
 
     if len(self.connectors) > 0:
       print(f"|{prefix}  |   |-- Connectors:")
@@ -50,7 +50,7 @@ class Component:
     component_node = ET.SubElement(node, namespace.tag("ssd", "Component"))
     component_node.set("name", str(self.name))
     component_node.set("type", "application/x-fmu-sharedlibrary")
-    component_node.set("source", "resources/"+ self.fmuPath.name)
+    component_node.set("source", self.fmuPath)
 
     if len(self.connectors) > 0:
       connectors_node = ET.SubElement(component_node, namespace.tag("ssd", "Connectors"))

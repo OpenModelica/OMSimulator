@@ -13,9 +13,9 @@ Settings.suppressPath = True
 # This example creates a new SSP file with an FMU instantiated as a component.
 
 model = SSP()
-model.addResource('../resources/Modelica.Blocks.Math.Add.fmu', new_name='Add.fmu')
-component1 = model.addComponent(CRef('default', 'Add1'), 'Add.fmu')
-component2 = model.addComponent(CRef('default', 'Add2'), 'Add.fmu')
+model.addResource('../resources/Modelica.Blocks.Math.Add.fmu', new_name='resources/Add.fmu')
+component1 = model.addComponent(CRef('default', 'Add1'), 'resources/Add.fmu')
+component2 = model.addComponent(CRef('default', 'Add2'), 'resources/Add.fmu')
 
 model.list()
 model.export('NewSSP3.ssp')
@@ -26,14 +26,14 @@ model2.list()
 ## Result:
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
-## |--   Add.fmu
+## |--   resources/Add.fmu
 ## |-- <class 'OMSimulator.ssd.SSD'>
 ## |-- Active variant "default": <hidden>
 ## |--   System: default
 ## |--   Connectors:
 ## |--   Components:
 ## |     |  |-- FMU: (Add1)
-## |     |  |   |-- path: Add.fmu
+## |     |  |   |-- path: resources/Add.fmu
 ## |     |  |   |-- Connectors:
 ## |     |  |   |   * (u1, input, Real)
 ## |     |  |   |   * (u2, input, Real)
@@ -41,7 +41,7 @@ model2.list()
 ## |     |  |   |   * (k1, parameter, Real)
 ## |     |  |   |   * (k2, parameter, Real)
 ## |     |  |-- FMU: (Add2)
-## |     |  |   |-- path: Add.fmu
+## |     |  |   |-- path: resources/Add.fmu
 ## |     |  |   |-- Connectors:
 ## |     |  |   |   * (u1, input, Real)
 ## |     |  |   |   * (u2, input, Real)
@@ -60,7 +60,7 @@ model2.list()
 ## |--   Connectors:
 ## |--   Components:
 ## |     |  |-- FMU: (Add1)
-## |     |  |   |-- path: Add.fmu
+## |     |  |   |-- path: resources/Add.fmu
 ## |     |  |   |-- Connectors:
 ## |     |  |   |   * (u1, input, Real)
 ## |     |  |   |   * (u2, input, Real)
@@ -68,7 +68,7 @@ model2.list()
 ## |     |  |   |   * (k1, parameter, Real)
 ## |     |  |   |   * (k2, parameter, Real)
 ## |     |  |-- FMU: (Add2)
-## |     |  |   |-- path: Add.fmu
+## |     |  |   |-- path: resources/Add.fmu
 ## |     |  |   |-- Connectors:
 ## |     |  |   |   * (u1, input, Real)
 ## |     |  |   |   * (u2, input, Real)

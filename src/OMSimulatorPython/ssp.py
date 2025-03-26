@@ -79,24 +79,22 @@ class SSP:
   def activeVariant(self):
     return self.variants.get(self.activeVariantName)
 
-  def addResource(self, filename: str, new_name: str | None = None, target_dir='resources/', validate=True):
+  def addResource(self, filename: str, new_name: str | None = None, validate=True):
     '''Adds a resource file to the SSP.'''
-    new_name = new_name or os.path.basename(filename)
-    resource_path = os.path.join(target_dir, new_name)
 
-    if resource_path in self.resources:
-      raise ValueError(f"Resource '{resource_path}' already exists in the SSP.")
+    new_name = Path(new_name) if new_name else Path('resources') / Path(filename).name
+
+    if new_name in self.resources:
+      raise ValueError(f"Resource '{new_name}' already exists in the SSP.")
 
     if validate:
       # TODO: Implement validation logic
       pass
 
-    target_path = os.path.join(self.temp_dir, target_dir)
-    os.makedirs(target_path, exist_ok=True)
-    shutil.copy(filename, os.path.join(target_path, new_name))
+    os.makedirs((self.temp_dir / new_name).parent, exist_ok=True)
+    shutil.copy(filename, self.temp_dir / new_name)
 
-    # Append to resources only after a successful copy
-    self.resources[new_name] = FMU((Path(target_path) / new_name).resolve())
+    self.resources[new_name] = FMU((self.temp_dir / new_name).resolve())
 
   def getVariant(self, name=None):
     '''Returns the specified variant or the active variant.'''
