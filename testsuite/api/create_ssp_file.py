@@ -18,9 +18,9 @@ variantB = SSD('Variant-B')
 model.add(variantB)
 model.activeVariantName = 'Variant-B'
 model.list()
-model.export("create_ssp_file.ssp")
+model.export('create_ssp_file.ssp')
 
-model2 = SSP("create_ssp_file.ssp")
+model2 = SSP('create_ssp_file.ssp')
 model2.list()
 
 ## Result:

@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm -rf newssp3.ssp
+## teardown_command: rm -rf NewSSP3.ssp
 ## linux: yes
 ## mingw32: yes
 ## mingw64: yes
@@ -18,9 +18,9 @@ component1 = model.addComponent(CRef('default', 'Add1'), 'Add.fmu')
 component2 = model.addComponent(CRef('default', 'Add2'), 'Add.fmu')
 
 model.list()
-model.export("newssp3.ssp")
+model.export('NewSSP3.ssp')
 
-model2 = SSP("newssp3.ssp")
+model2 = SSP('NewSSP3.ssp')
 model2.list()
 
 ## Result:
