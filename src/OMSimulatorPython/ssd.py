@@ -7,6 +7,7 @@ from OMSimulator import namespace, utils
 from OMSimulator.system import System
 from OMSimulator.cref import CRef
 from OMSimulator.settings import Settings
+from OMSimulator.fmu import FMU
 
 logger = logging.getLogger(__name__)
 
@@ -61,10 +62,10 @@ class SSD:
     '''Returns True if the SSD has been modified since the last export.'''
     return True
 
-  def addComponent(self, cref: CRef, resource: str):
+  def addComponent(self, cref: CRef, resource: str, inst = None | FMU):
     if self.system is None:
       raise ValueError("Variant doesn#t contain a system")
-    self.system.addComponent(cref, resource, self._model)
+    self.system.addComponent(cref, resource, inst)
 
   def list(self):
     '''Prints the SSD contents.'''

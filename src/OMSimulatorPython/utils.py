@@ -5,6 +5,7 @@ from OMSimulator import namespace
 from OMSimulator.connector import Connector
 from OMSimulator.fmu import FMU
 from OMSimulator.ssv import SSV
+from OMSimulator.component import Component
 
 
 def _setParameters(parameterValues: dict, obj):
@@ -46,7 +47,7 @@ def parseElements(node, temp_dir):
     fmu = FMU(fmuPath)
     # Parse Parameter Bindings
     parseParameterBindings(component, fmu, temp_dir)
-    components[name] = fmu
+    components[name] = Component(name, fmu._fmu_path, fmu.makeConnectors())
   return components
 
 def parseConnectors(node):

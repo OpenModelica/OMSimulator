@@ -6,6 +6,7 @@ from lxml import etree as ET
 
 from OMSimulator.unit import Unit
 from OMSimulator.variable import Variable
+from OMSimulator.connector import Connector
 
 
 class FMU:
@@ -154,6 +155,15 @@ class FMU:
       }
 
       self._unitDefinitions.append(Unit(name, base_units))
+
+  def makeConnectors(self):
+    connectors = []
+    for var in self.variables:
+      if var.isInput() or var.isOutput() or var.isParameter() or var.isCalculatedParameter():
+        connector = Connector(var.name, var.causality, var.signal_type)
+        connector.setUnit(var.unit)
+        connectors.append(connector)
+    return connectors
 
   def export_units_to_ssd(self, node):
     '''Exports all unit definitions to an SSD XML node.'''

@@ -7,6 +7,7 @@ from pathlib import Path
 
 from OMSimulator import SSD, CRef
 from OMSimulator.settings import Settings
+from OMSimulator.fmu import FMU
 
 logger = logging.getLogger(__name__)
 
@@ -95,7 +96,7 @@ class SSP:
     shutil.copy(filename, os.path.join(target_path, new_name))
 
     # Append to resources only after a successful copy
-    self.resources[new_name] = os.path.abspath(os.path.join(target_path, new_name))
+    self.resources[new_name] = FMU((Path(target_path) / new_name).resolve())
 
   def getVariant(self, name=None):
     '''Returns the specified variant or the active variant.'''
@@ -109,7 +110,13 @@ class SSP:
   def addComponent(self, cref: CRef, resource: str):
     if self.activeVariant is None:
       raise ValueError("No active variant set in the SSP.")
-    self.activeVariant.addComponent(cref, resource)
+
+    ## look up in the resource if exist and then use that instance
+    fmu_inst = None
+    if resource in self.resources:
+      fmu_inst = self.resources[resource]
+
+    self.activeVariant.addComponent(cref, resource, inst=fmu_inst)
 
   def add(self, element):
     '''Adds an SSD or a list of SSDs to the SSP'''

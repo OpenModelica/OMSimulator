@@ -16,7 +16,6 @@ class System:
     from OMSimulator.ssp import SSP
     self._name = name
     self.connectors = list()
-    self.fmu_instances = dict()
     self.components = dict()
     self.connections = list()
     self.value = Values()
@@ -77,20 +76,11 @@ class System:
         connection.list(prefix=last_prefix)
         pass
 
-  def addComponent(self, cref: CRef, resource: str, model):
+  def addComponent(self, cref: CRef, resource: str, inst = None | FMU):
     cref2 = cref.pop_first(first=self._name)
-    if resource not in model.resources:
-      raise KeyError(f"Key '{resource}' not found in resources, you must first add component to resources")
 
-    # Check if the FMU has already been instantiated for the given resource
-    if resource not in self.fmu_instances:
-      # Instantiate the FMU only if it hasn't been instantiated yet
-      fmu = FMU(model.resources.get(resource))
-      self.fmu_instances[resource] = fmu  # Store the FMU instance to prevent reloading
-
-
-    if cref2.is_root():
-      component = Component(cref2.names[0], self.fmu_instances[resource])
+    if cref2.is_root() and inst :
+      component = Component(cref2.names[0], inst._fmu_path, inst.makeConnectors())
       self.components[cref2.names[0]] = component
     else:
       raise ValueError(f"Invalid component reference: {cref}")
