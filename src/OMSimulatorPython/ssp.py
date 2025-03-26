@@ -20,7 +20,7 @@ class SSP:
     if temp_dir:
       os.makedirs(temp_dir, exist_ok=True)
 
-    self.temp_dir = tempfile.mkdtemp(dir=temp_dir)
+    self.temp_dir = Path(tempfile.mkdtemp(dir=temp_dir)).resolve()
     logger.info(f"Temporary directory created: {self.temp_dir if not Settings.suppressPath else '<hidden>'}")
 
     if path:
