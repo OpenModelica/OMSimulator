@@ -2,6 +2,7 @@ from pathlib import Path
 
 from lxml import etree as ET
 from OMSimulator.connector import Connector
+from OMSimulator.cref import CRef
 from OMSimulator.fmu import FMU
 from OMSimulator.values import Values
 
@@ -9,8 +10,8 @@ from OMSimulator import namespace
 
 
 class Component:
-  def __init__(self, name: str, fmuPath: str, connectors = list()):
-    self.name = name
+  def __init__(self, name: CRef, fmuPath: str, connectors = list()):
+    self.name = CRef(name)
     self.fmuPath = Path(fmuPath)
     self.connectors = connectors
     self.value = Values() ## TODO propogate Values
@@ -47,7 +48,7 @@ class Component:
 
   def exportToSSD(self, node):
     component_node = ET.SubElement(node, namespace.tag("ssd", "Component"))
-    component_node.set("name", self.name)
+    component_node.set("name", str(self.name))
     component_node.set("type", "application/x-fmu-sharedlibrary")
     component_node.set("source", "resources/"+ self.fmuPath.name)
 

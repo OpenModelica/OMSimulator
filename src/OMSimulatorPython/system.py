@@ -77,13 +77,14 @@ class System:
         pass
 
   def addComponent(self, cref: CRef, resource: str, inst = None | FMU):
-    cref2 = cref.pop_first(first=self._name)
+    name = cref.pop_first(first=self._name)
 
-    if cref2.is_root() and inst :
-      component = Component(cref2.names[0], inst._fmu_path, inst.makeConnectors())
-      self.components[cref2.names[0]] = component
-    else:
+    if not name.is_root():
       raise ValueError(f"Invalid component reference: {cref}")
+
+    connectors = inst.makeConnectors() if inst else list()
+    component = Component(name, resource, connectors)
+    self.components[name] = component
 
   def export(self, root):
     node = ET.SubElement(root, namespace.tag("ssd", "System"), attrib={"name": self._name})

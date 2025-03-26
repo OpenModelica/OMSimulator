@@ -69,3 +69,9 @@ class CRef:
     if not isinstance(other, CRef):
       raise TypeError('Expected a CRef object.')
     return self.names < other.names
+
+  def __eq__(self, value):
+    return self.names == value.names
+
+  def __hash__(self):
+    return str(self).__hash__()
