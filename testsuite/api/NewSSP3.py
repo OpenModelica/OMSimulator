@@ -12,7 +12,7 @@ Settings.suppressPath = True
 
 # This example creates a new SSP file with an FMU instantiated as a component.
 
-model = SSP(temp_dir="./tmp-NewSSP3/")
+model = SSP()
 model.addResource('../resources/Modelica.Blocks.Math.Add.fmu', new_name='Add.fmu')
 component1 = model.addComponent(CRef('default', 'Add1'), 'Add.fmu')
 component2 = model.addComponent(CRef('default', 'Add2'), 'Add.fmu')
@@ -20,7 +20,7 @@ component2 = model.addComponent(CRef('default', 'Add2'), 'Add.fmu')
 model.list()
 model.export('NewSSP3.ssp')
 
-model2 = SSP('NewSSP3.ssp', temp_dir="./tmp-NewSSP3/")
+model2 = SSP('NewSSP3.ssp')
 model2.list()
 
 ## Result:
@@ -32,17 +32,17 @@ model2.list()
 ## |--   System: default
 ## |--   Connectors:
 ## |--   Components:
-## |     |  ├── FMU: (Add1)
-## |     |  |   ├── path: Add.fmu
-## |     |  |   ├── Connectors:
+## |     |  |── FMU: (Add1)
+## |     |  |   |── path: Add.fmu
+## |     |  |   |── Connectors:
 ## |     |  |   |   * (u1, input, Real)
 ## |     |  |   |   * (u2, input, Real)
 ## |     |  |   |   * (y, output, Real)
 ## |     |  |   |   * (k1, parameter, Real)
 ## |     |  |   |   * (k2, parameter, Real)
-## |     |  ├── FMU: (Add2)
-## |     |  |   ├── path: Add.fmu
-## |     |  |   ├── Connectors:
+## |     |  |── FMU: (Add2)
+## |     |  |   |── path: Add.fmu
+## |     |  |   |── Connectors:
 ## |     |  |   |   * (u1, input, Real)
 ## |     |  |   |   * (u2, input, Real)
 ## |     |  |   |   * (y, output, Real)
@@ -59,17 +59,17 @@ model2.list()
 ## |--   System: default
 ## |--   Connectors:
 ## |--   Components:
-## |     |  ├── FMU: (Add1)
-## |     |  |   ├── path: Add.fmu
-## |     |  |   ├── Connectors:
+## |     |  |── FMU: (Add1)
+## |     |  |   |── path: Add.fmu
+## |     |  |   |── Connectors:
 ## |     |  |   |   * (u1, input, Real)
 ## |     |  |   |   * (u2, input, Real)
 ## |     |  |   |   * (y, output, Real)
 ## |     |  |   |   * (k1, parameter, Real)
 ## |     |  |   |   * (k2, parameter, Real)
-## |     |  ├── FMU: (Add2)
-## |     |  |   ├── path: Add.fmu
-## |     |  |   ├── Connectors:
+## |     |  |── FMU: (Add2)
+## |     |  |   |── path: Add.fmu
+## |     |  |   |── Connectors:
 ## |     |  |   |   * (u1, input, Real)
 ## |     |  |   |   * (u2, input, Real)
 ## |     |  |   |   * (y, output, Real)
