@@ -1,31 +1,35 @@
 ## status: correct
-## teardown_command: rm create_ssp_file.ssp
+## teardown_command: rm -rf NewSSP.ssp tmp-NewSSP/
 ## linux: yes
 ## mingw32: yes
 ## mingw64: yes
 ## win: yes
 ## mac: yes
 
-#import logging
-#logging.basicConfig(level=logging.DEBUG)
-
-from OMSimulator import SSP, SSD, Settings
+from OMSimulator import SSD, SSP, Settings
 
 Settings.suppressPath = True
 
-model = SSP()
+# This example creates a new SSP file containing a default SSD file.
+# It then creates another SSD file and adds it to the SSP file using the add method.
+# Finally, the SSP file is exported to a new file and re-imported.
+
+model = SSP(temp_dir="./tmp-NewSSP/model1/")
 variantB = SSD('Variant-B')
 model.add(variantB)
 model.activeVariantName = 'Variant-B'
-model.list()
-model.export('create_ssp_file.ssp')
+model.addResource('../resources/Modelica.Blocks.Math.Add.fmu')
 
-model2 = SSP('create_ssp_file.ssp')
+model.list()
+model.export('NewSSP.ssp')
+
+model2 = SSP('NewSSP.ssp', temp_dir="./tmp-NewSSP/model2/")
 model2.list()
 
 ## Result:
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
+## |--   resources/Modelica.Blocks.Math.Add.fmu
 ## |-- <class 'OMSimulator.ssd.SSD'>
 ## |-- Inactive variant "default": <hidden>
 ## |--   System: default
@@ -42,6 +46,7 @@ model2.list()
 ## |--     stopTime: 1.0
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
+## |--   resources/Modelica.Blocks.Math.Add.fmu
 ## |-- <class 'OMSimulator.ssd.SSD'>
 ## |-- Active variant "Variant-B": <hidden>
 ## |--   System: Variant-B

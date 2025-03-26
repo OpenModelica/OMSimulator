@@ -149,7 +149,8 @@ setup(
   license = "BSD, OSMC-PL 1.2, GPL (user's choice)",
   url = 'http://openmodelica.org/',
   setup_requires = ['requests'],
-  install_requires = ['requests'],
+  install_requires = ['requests',
+                      'lxml>=5.3.1'],
   packages = ['OMSimulator'],
   cmdclass = {'build_py': my_build_py},
   zip_safe = False
