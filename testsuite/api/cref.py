@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm -rf NewSSP3.ssp tmp-NewSSP3/
+## teardown_command:
 ## linux: yes
 ## mingw32: yes
 ## mingw64: yes
