@@ -1,5 +1,6 @@
 import os
 import xml.etree.ElementTree as ET
+from pathlib import Path
 
 from OMSimulator import namespace
 from OMSimulator.connector import Connector
@@ -33,7 +34,7 @@ def parseDefaultExperiment(node, root):
   ##TODO parse ssd:annotation
   ##TODO parse unit definitions
 
-def parseElements(node, temp_dir):
+def parseElements(node):
   """Extract components from <ssd:Elements> section"""
   components = {}
   elements_node = node.find("ssd:Elements", namespaces=namespace.ns)
@@ -43,11 +44,8 @@ def parseElements(node, temp_dir):
     name = component.get("name")
     comp_type = component.get("type")
     source = component.get("source")
-    fmuPath = os.path.join(temp_dir, source)
-    fmu = FMU(fmuPath)
-    # Parse Parameter Bindings
-    parseParameterBindings(component, fmu, temp_dir)
-    components[name] = Component(name, fmu._fmu_path, fmu.makeConnectors())
+    components[name] = Component(name, source)
+    # TODO: parse connectors etc.
   return components
 
 def parseConnectors(node):

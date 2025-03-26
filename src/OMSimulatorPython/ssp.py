@@ -94,7 +94,7 @@ class SSP:
     os.makedirs((self.temp_dir / new_name).parent, exist_ok=True)
     shutil.copy(filename, self.temp_dir / new_name)
 
-    self.resources[new_name] = FMU((self.temp_dir / new_name).resolve())
+    self.resources[str(new_name)] = FMU((self.temp_dir / new_name).resolve())
 
   def getVariant(self, name=None):
     '''Returns the specified variant or the active variant.'''

@@ -30,7 +30,7 @@ class System:
       system = System(node.get("name"))
       system.connectors = utils.parseConnectors(node)
       utils.parseParameterBindings(node, ssd, temp_dir)
-      system.components = utils.parseElements(node, temp_dir)
+      system.components = utils.parseElements(node)
       utils.parseConnection(node, system)
       return system
 
