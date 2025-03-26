@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm -rf NewSSP.ssp tmp-NewSSP/
+## teardown_command: rm -rf newssp3.ssp
 ## linux: yes
 ## mingw32: yes
 ## mingw64: yes
@@ -12,15 +12,15 @@ Settings.suppressPath = True
 
 # This example creates a new SSP file with an FMU instantiated as a component.
 
-model = SSP(temp_dir="./tmp-NewSSP3/model1/")
+model = SSP()
 model.addResource('../resources/Modelica.Blocks.Math.Add.fmu', new_name='Add.fmu')
 component1 = model.addComponent(CRef('default', 'Add1'), 'Add.fmu')
 component2 = model.addComponent(CRef('default', 'Add2'), 'Add.fmu')
 
 model.list()
-model.export('NewSSP3.ssp')
+model.export("newssp3.ssp")
 
-model2 = SSP('NewSSP3.ssp', temp_dir="./tmp-NewSSP3/model2/")
+model2 = SSP("newssp3.ssp")
 model2.list()
 
 ## Result:
