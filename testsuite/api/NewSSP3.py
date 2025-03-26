@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm -rf NewSSP3.ssp tmp-NewSSP3/
+## teardown_command: rm -rf NewSSP3.ssp
 ## linux: yes
 ## mingw32: yes
 ## mingw64: yes
@@ -32,17 +32,17 @@ model2.list()
 ## |--   System: default
 ## |--   Connectors:
 ## |--   Components:
-## |     |  |── FMU: (Add1)
-## |     |  |   |── path: Add.fmu
-## |     |  |   |── Connectors:
+## |     |  |-- FMU: (Add1)
+## |     |  |   |-- path: Add.fmu
+## |     |  |   |-- Connectors:
 ## |     |  |   |   * (u1, input, Real)
 ## |     |  |   |   * (u2, input, Real)
 ## |     |  |   |   * (y, output, Real)
 ## |     |  |   |   * (k1, parameter, Real)
 ## |     |  |   |   * (k2, parameter, Real)
-## |     |  |── FMU: (Add2)
-## |     |  |   |── path: Add.fmu
-## |     |  |   |── Connectors:
+## |     |  |-- FMU: (Add2)
+## |     |  |   |-- path: Add.fmu
+## |     |  |   |-- Connectors:
 ## |     |  |   |   * (u1, input, Real)
 ## |     |  |   |   * (u2, input, Real)
 ## |     |  |   |   * (y, output, Real)
@@ -59,17 +59,17 @@ model2.list()
 ## |--   System: default
 ## |--   Connectors:
 ## |--   Components:
-## |     |  |── FMU: (Add1)
-## |     |  |   |── path: Add.fmu
-## |     |  |   |── Connectors:
+## |     |  |-- FMU: (Add1)
+## |     |  |   |-- path: Add.fmu
+## |     |  |   |-- Connectors:
 ## |     |  |   |   * (u1, input, Real)
 ## |     |  |   |   * (u2, input, Real)
 ## |     |  |   |   * (y, output, Real)
 ## |     |  |   |   * (k1, parameter, Real)
 ## |     |  |   |   * (k2, parameter, Real)
-## |     |  |── FMU: (Add2)
-## |     |  |   |── path: Add.fmu
-## |     |  |   |── Connectors:
+## |     |  |-- FMU: (Add2)
+## |     |  |   |-- path: Add.fmu
+## |     |  |   |-- Connectors:
 ## |     |  |   |   * (u1, input, Real)
 ## |     |  |   |   * (u2, input, Real)
 ## |     |  |   |   * (y, output, Real)
