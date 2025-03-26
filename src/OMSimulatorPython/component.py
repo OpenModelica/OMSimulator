@@ -1,10 +1,12 @@
-import os
-from lxml import etree as ET
-from OMSimulator import namespace
-from OMSimulator.fmu import FMU
-from OMSimulator.connector import Connector
-from OMSimulator.values import Values
 from pathlib import Path
+
+from lxml import etree as ET
+from OMSimulator.connector import Connector
+from OMSimulator.fmu import FMU
+from OMSimulator.values import Values
+
+from OMSimulator import namespace
+
 
 class Component:
   def __init__(self, name: str, fmuPath: str, connectors = list()):

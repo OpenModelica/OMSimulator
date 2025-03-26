@@ -1,13 +1,13 @@
 import logging
-import os
+from pathlib import Path
 
 from lxml import etree as ET
+from OMSimulator.cref import CRef
+from OMSimulator.fmu import FMU
+from OMSimulator.settings import Settings
+from OMSimulator.system import System
 
 from OMSimulator import namespace, utils
-from OMSimulator.system import System
-from OMSimulator.cref import CRef
-from OMSimulator.settings import Settings
-from OMSimulator.fmu import FMU
 
 logger = logging.getLogger(__name__)
 
@@ -28,15 +28,14 @@ class SSD:
       model.add(self)
 
   @staticmethod
-  def importFromFile(filename: str):
+  def importFromFile(filename: Path):
     '''Imports an SSD file and parses its contents.'''
     try:
-      temp_dir = os.path.dirname(filename)
       tree = ET.parse(filename)
       root = tree.getroot()
       variant_name = root.get("name")
       ssd = SSD(variant_name)
-      ssd._filename = filename
+      ssd._filename = Path(filename).resolve()
 
       system = root.find("ssd:System", namespaces=namespace.ns)
       if system is None:

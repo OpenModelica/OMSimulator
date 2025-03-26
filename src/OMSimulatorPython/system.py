@@ -2,11 +2,11 @@ import logging
 import os
 
 from lxml import etree as ET
-
-from OMSimulator import namespace, utils, CRef
-from OMSimulator.values import Values
 from OMSimulator.component import Component
 from OMSimulator.fmu import FMU
+from OMSimulator.values import Values
+
+from OMSimulator import CRef, namespace, utils
 
 logger = logging.getLogger(__name__)
 
