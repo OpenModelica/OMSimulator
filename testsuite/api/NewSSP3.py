@@ -61,8 +61,20 @@ model2.list()
 ## |--   Components:
 ## |     |  |-- FMU: (Add1)
 ## |     |  |   |-- path: resources/Add.fmu
+## |     |  |   |-- Connectors:
+## |     |  |   |   * (u1, input, Real)
+## |     |  |   |   * (u2, input, Real)
+## |     |  |   |   * (y, output, Real)
+## |     |  |   |   * (k1, parameter, Real)
+## |     |  |   |   * (k2, parameter, Real)
 ## |     |  |-- FMU: (Add2)
 ## |     |  |   |-- path: resources/Add.fmu
+## |     |  |   |-- Connectors:
+## |     |  |   |   * (u1, input, Real)
+## |     |  |   |   * (u2, input, Real)
+## |     |  |   |   * (y, output, Real)
+## |     |  |   |   * (k1, parameter, Real)
+## |     |  |   |   * (k2, parameter, Real)
 ## |--   DefaultExperiment
 ## |--     startTime: 0.0
 ## |--     stopTime: 1.0
