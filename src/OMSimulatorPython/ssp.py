@@ -53,10 +53,9 @@ class SSP:
     ssd_files = [f for f in os.listdir(self.temp_dir) if f.endswith('.ssd') and f != 'SystemStructure.ssd']
     ssd_files.insert(0, 'SystemStructure.ssd')
 
-    # get all resources
     for path in self.temp_dir.rglob('*'):
-      if path.is_file() and path.suffix != '.ssd':
-        self._addResource(path, path.relative_to(self.temp_dir), copy = False)
+      if path.is_file() and not path.suffix == '.ssd':
+        self._addResource(path, path.relative_to(self.temp_dir), copy=False)
 
     logger.debug(f"SSD files: {ssd_files}")
     logger.debug(f"Resources: {self.resources}")
@@ -102,7 +101,6 @@ class SSP:
     if Path(filename).suffix == ".fmu":
       self.resources[str(new_name)] = FMU((self.temp_dir / new_name).resolve())
     else:
-      ## this could be improved on how to stor other resources
       self.resources[Path(filename).name] = new_name
 
   def getVariant(self, name=None):
