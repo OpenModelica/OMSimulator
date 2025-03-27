@@ -53,11 +53,9 @@ class SSP:
     ssd_files = [f for f in os.listdir(self.temp_dir) if f.endswith('.ssd') and f != 'SystemStructure.ssd']
     ssd_files.insert(0, 'SystemStructure.ssd')
 
-    self.resources = [
-      path.relative_to(self.temp_dir)
-      for path in self.temp_dir.rglob('*')
-      if path.is_file() and not path.suffix == '.ssd'
-    ]
+    for path in self.temp_dir.rglob('*'):
+      if path.is_file() and not path.suffix == '.ssd':
+        self._addResource(path, path.relative_to(self.temp_dir), copy=False)
 
     logger.debug(f"SSD files: {ssd_files}")
     logger.debug(f"Resources: {self.resources}")
@@ -82,6 +80,9 @@ class SSP:
     return self.variants.get(self.activeVariantName)
 
   def addResource(self, filename: str, new_name: str | None = None, validate=True):
+    self._addResource(filename, new_name, validate)
+
+  def _addResource(self, filename: str, new_name: str | None = None, validate=True, copy=True):
     '''Adds a resource file to the SSP.'''
 
     new_name = Path(new_name) if new_name else Path('resources') / Path(filename).name
@@ -93,10 +94,14 @@ class SSP:
       # TODO: Implement validation logic
       pass
 
-    os.makedirs((self.temp_dir / new_name).parent, exist_ok=True)
-    shutil.copy(filename, self.temp_dir / new_name)
+    if copy:
+      os.makedirs((self.temp_dir / new_name).parent, exist_ok=True)
+      shutil.copy(filename, self.temp_dir / new_name)
 
-    self.resources[str(new_name)] = FMU((self.temp_dir / new_name).resolve())
+    if Path(filename).suffix == ".fmu":
+      self.resources[str(new_name)] = FMU((self.temp_dir / new_name).resolve())
+    else:
+      self.resources[Path(filename).name] = new_name
 
   def getVariant(self, name=None):
     '''Returns the specified variant or the active variant.'''
