@@ -3,10 +3,9 @@ from pathlib import Path
 from typing import Union
 
 from lxml import etree as ET
-
+from OMSimulator.connector import Connector
 from OMSimulator.unit import Unit
 from OMSimulator.variable import Variable
-from OMSimulator.connector import Connector
 
 
 class FMU:

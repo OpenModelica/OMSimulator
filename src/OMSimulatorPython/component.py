@@ -1,9 +1,5 @@
-from pathlib import Path
-
 from lxml import etree as ET
-from OMSimulator.connector import Connector
 from OMSimulator.cref import CRef
-from OMSimulator.fmu import FMU
 from OMSimulator.values import Values
 
 from OMSimulator import namespace
