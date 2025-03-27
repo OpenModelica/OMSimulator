@@ -1,4 +1,3 @@
-import os
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
@@ -73,7 +72,7 @@ def parseConnectors(node):
         break  # Stop after the first valid type is found
   return connectors
 
-def parseParameterBindings(node, obj, temp_dir):
+def parseParameterBindings(node, obj, temp_dir: Path):
   """Extract and print system parameters"""
   parameterValues={}
   parameter_bindings = node.find("ssd:ParameterBindings", namespaces=namespace.ns)
@@ -81,12 +80,12 @@ def parseParameterBindings(node, obj, temp_dir):
     for binding in parameter_bindings.findall("ssd:ParameterBinding", namespaces=namespace.ns):
       source = binding.get("source")
       if binding.get("source"):
-        ssv_file = os.path.join(temp_dir, source)
+        ssv_file = temp_dir / source
         tree = ET.parse(ssv_file)
         root = tree.getroot()
         parameters = root.find("ssv:Parameters", namespaces=namespace.ns)
         parseParameterBindingHelper(parameters, parameterValues)
-        resources = SSV(os.path.basename(ssv_file))
+        resources = SSV(ssv_file.name)
         _setParameters(parameterValues, resources)
         obj.add(resources)
       else:
@@ -116,8 +115,8 @@ def parseParameterBindingHelper(parameters, parameterValues):
           break  # Stop after first found type
 
 def validateSSP(root, schema_file):
-  module_dir, _ = os.path.split(__file__)
-  schema = ET.XMLSchema(file=os.path.join(module_dir, 'schema', schema_file))
+  module_dir = Path(__file__).parent
+  schema = ET.XMLSchema(file=module_dir / 'schema' / schema_file)
   if not schema.validate(root):
       message = "Failed to validate SystemStructure.ssd:"
       for entry in schema.error_log:

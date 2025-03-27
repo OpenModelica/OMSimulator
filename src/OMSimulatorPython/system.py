@@ -1,5 +1,4 @@
 import logging
-import os
 
 from lxml import etree as ET
 from OMSimulator.component import Component
@@ -26,7 +25,7 @@ class System:
   def importFromNode(node, ssd):
     '''Imports a ssd:System'''
     try:
-      temp_dir, _ = os.path.split(ssd._filename)
+      temp_dir = ssd._filename.parent
       system = System(node.get("name"))
       system.connectors = utils.parseConnectors(node)
       utils.parseParameterBindings(node, ssd, temp_dir)

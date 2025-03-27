@@ -5,9 +5,10 @@ import tempfile
 import zipfile
 from pathlib import Path
 
-from OMSimulator import SSD, CRef
-from OMSimulator.settings import Settings
 from OMSimulator.fmu import FMU
+from OMSimulator.settings import Settings
+
+from OMSimulator import SSD, CRef
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +34,7 @@ class SSP:
   def __del__(self):
     '''Cleans up temporary files upon deletion'''
     try:
-      if os.path.exists(self.temp_dir):
+      if self.temp_dir.exists():
         shutil.rmtree(self.temp_dir)
         logger.info(f"Temporary directory removed: {self.temp_dir if not Settings.suppressPath else '<hidden>'}")
     except Exception as e:
@@ -41,7 +42,8 @@ class SSP:
 
   def _extract_ssp(self, path: str):
     '''Extracts SSP file contents and loads SSD files.'''
-    if not os.path.isfile(path):
+    path = Path(path)
+    if not path.is_file():
       raise FileNotFoundError(f"SSP file '{path}' not found")
 
     with zipfile.ZipFile(path, 'r') as ssp_zip:
@@ -52,16 +54,16 @@ class SSP:
     ssd_files.insert(0, 'SystemStructure.ssd')
 
     self.resources = [
-      os.path.relpath(os.path.join(root, file), self.temp_dir)
-      for root, _, files in os.walk(self.temp_dir)
-      for file in files if not file.endswith('.ssd')
+      path.relative_to(self.temp_dir)
+      for path in self.temp_dir.rglob('*')
+      if path.is_file() and not path.suffix == '.ssd'
     ]
 
     logger.debug(f"SSD files: {ssd_files}")
     logger.debug(f"Resources: {self.resources}")
 
     for ssd_file in ssd_files:
-      ssd_path = os.path.join(self.temp_dir, ssd_file)
+      ssd_path = self.temp_dir / ssd_file
       ssd = SSD.importFromFile(ssd_path)
       self.add(ssd)
 
@@ -164,9 +166,9 @@ class SSP:
       if ssd.dirty:
         exported_count += 1
         logger.debug(f"Dirty. Exporting SSD '{ssd.name}'")
-        ssd_file_path = os.path.join(self.temp_dir, f"{ssd.name}.ssd")
+        ssd_file_path = self.temp_dir / f'{ssd.name}.ssd'
         if ssd.name == self.activeVariantName:
-          ssd_file_path = os.path.join(self.temp_dir, 'SystemStructure.ssd')
+          ssd_file_path = self.temp_dir / 'SystemStructure.ssd'
 
         ssd.export(ssd_file_path)
 
@@ -174,10 +176,9 @@ class SSP:
       logger.debug("No SSDs needed exporting (all were up to date).")
 
     with zipfile.ZipFile(filename, 'w', zipfile.ZIP_DEFLATED) as ssp_zip:
-      for root, _, files in os.walk(self.temp_dir):
-        for file in files:
-          file_path = os.path.join(root, file)
-          archive_name = os.path.relpath(file_path, self.temp_dir)
-          ssp_zip.write(file_path, archive_name)
+      for file in self.temp_dir.rglob('*'):
+        if file.is_file():
+          archive_name = file.relative_to(self.temp_dir)
+          ssp_zip.write(file, archive_name)
 
-    logger.info(f"SSP file '{os.path.abspath(filename)}' successfully exported!")
+    logger.info(f"SSP file '{filename}' successfully exported!")
