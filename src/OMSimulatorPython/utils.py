@@ -3,7 +3,6 @@ from pathlib import Path
 
 from OMSimulator.component import Component
 from OMSimulator.connector import Connector
-from OMSimulator.fmu import FMU
 from OMSimulator.ssv import SSV
 from OMSimulator.variable import SignalType
 
