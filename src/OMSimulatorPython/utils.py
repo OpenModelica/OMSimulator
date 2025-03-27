@@ -1,11 +1,13 @@
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-from OMSimulator import namespace
+from OMSimulator.component import Component
 from OMSimulator.connector import Connector
 from OMSimulator.fmu import FMU
 from OMSimulator.ssv import SSV
-from OMSimulator.component import Component
+from OMSimulator.variable import SignalType
+
+from OMSimulator import namespace
 
 
 def _setParameters(parameterValues: dict, obj):
@@ -66,7 +68,7 @@ def parseConnectors(node):
     for connectortype in ["ssc:Real", "ssc:Integer", "ssc:Boolean"]:  #expected connector types
       if connector.find(connectortype, namespaces=namespace.ns) is not None:
         signal_type = connectortype.split(":")[-1]  # Extracts 'Real, Integer, Boolean'
-        con = Connector(name, kind, Connector.getSignalTypeFromString(signal_type))
+        con = Connector(name, kind, SignalType[signal_type])
         unit = connector.get("unit")
         if unit:
           con.setUnit(unit)

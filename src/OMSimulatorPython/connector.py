@@ -1,9 +1,10 @@
+from typing import Union
+
 from lxml import etree as ET
+from OMSimulator.cref import CRef
+from OMSimulator.variable import Causality, SignalType
 
 from OMSimulator import namespace
-from OMSimulator.variable import Causality, SignalType
-from OMSimulator.cref import CRef
-from typing import Union
 
 
 class Connector:
@@ -68,15 +69,3 @@ class Connector:
             "calculatedParameter": Causality.calculatedParameter
         }
         return kind_map.get(kind)
-
-  @staticmethod
-  def getSignalTypeFromString(signal_type_str: str) -> SignalType:
-        """Converts a signal type string to the corresponding signal type enum"""
-        signal_type_map = {
-            "Real": SignalType.Real,
-            "Integer": SignalType.Integer,
-            "Boolean": SignalType.Boolean,
-            "Enum": SignalType.Enum,
-            "String": SignalType.String
-        }
-        return signal_type_map.get(signal_type_str)
