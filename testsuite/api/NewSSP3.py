@@ -28,7 +28,7 @@ model2.list()
 ## |-- Resources:
 ## |--   resources/Add.fmu
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Active variant "default": <hidden>
+## |-- Active variant "default": None
 ## |--   System: default
 ## |--   Connectors:
 ## |--   Components:
