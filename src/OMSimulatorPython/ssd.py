@@ -99,7 +99,7 @@ class SSD:
       ).decode("utf-8")
       file.write(xml_content)
 
-    logger.info(f"SSD '{self._name}' exported to {filename}")
+    logger.info(f"SSD '{self._name}' exported to {suppress_path_to_str(filename)}")
 
   def _exportDefaultExperiment(self, node):
     '''Exports default experiment settings.'''

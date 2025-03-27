@@ -6,6 +6,9 @@
 ## win: yes
 ## mac: yes
 
+import logging
+logging.basicConfig(level=logging.INFO)
+
 from OMSimulator import SSD, SSP, Settings
 
 Settings.suppressPath = True
@@ -27,6 +30,11 @@ model2 = SSP('NewSSP.ssp', temp_dir="./tmp-NewSSP/model2/")
 model2.list()
 
 ## Result:
+## INFO:OMSimulator.ssp:Temporary directory created: <hidden>
+## INFO:OMSimulator.ssd:SSD 'default' exported to <hidden>
+## INFO:OMSimulator.ssd:SSD 'Variant-B' exported to <hidden>
+## INFO:OMSimulator.ssp:SSP file 'NewSSP.ssp' successfully exported!
+## INFO:OMSimulator.ssp:Temporary directory created: <hidden>
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
 ## |--   resources/Modelica.Blocks.Math.Add.fmu
@@ -48,17 +56,19 @@ model2.list()
 ## |-- Resources:
 ## |--   resources/Modelica.Blocks.Math.Add.fmu
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Active variant "Variant-B": <hidden>/SystemStructure.ssd
+## |-- Active variant "Variant-B": <hidden>
 ## |--   System: Variant-B
 ## |--   Connectors:
 ## |--   DefaultExperiment
 ## |--     startTime: 0.0
 ## |--     stopTime: 1.0
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Inactive variant "default": <hidden>/default.ssd
+## |-- Inactive variant "default": <hidden>
 ## |--   System: default
 ## |--   Connectors:
 ## |--   DefaultExperiment
 ## |--     startTime: 0.0
 ## |--     stopTime: 1.0
+## INFO:OMSimulator.ssp:Temporary directory removed: <hidden>
+## INFO:OMSimulator.ssp:Temporary directory removed: <hidden>
 ## endResult

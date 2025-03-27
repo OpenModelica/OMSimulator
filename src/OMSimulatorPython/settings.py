@@ -12,9 +12,22 @@ Settings = _Settings()
 
 def suppress_path_to_str(path):
   if path is None:
-    return path
+    return str(None)
 
   if Settings.suppressPath:
-    return f'<hidden>/{Path(path).name}'
+    return '<hidden>'
 
-  return str(Path(path))
+  return str(path)
+
+
+def suppress_relative_path_to_str(path, temp_directory):
+  if path is None:
+    return str(None)
+
+  if Settings.suppressPath and temp_directory is not None:
+    return f'<hidden>/{Path(path).relative_to(temp_directory)}'
+
+  if Settings.suppressPath:
+    return '<hidden>'
+
+  return str(path)
