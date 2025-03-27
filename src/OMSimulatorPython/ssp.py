@@ -6,7 +6,7 @@ import zipfile
 from pathlib import Path
 
 from OMSimulator.fmu import FMU
-from OMSimulator.settings import Settings
+from OMSimulator.settings import suppress_path_to_str
 
 from OMSimulator import SSD, CRef
 
@@ -22,7 +22,7 @@ class SSP:
       os.makedirs(temp_dir, exist_ok=True)
 
     self.temp_dir = Path(tempfile.mkdtemp(dir=temp_dir)).resolve()
-    logger.info(f"Temporary directory created: {self.temp_dir if not Settings.suppressPath else '<hidden>'}")
+    logger.info(f"Temporary directory created: {suppress_path_to_str(self.temp_dir)}")
 
     if path:
       self._extract_ssp(path)
@@ -36,7 +36,7 @@ class SSP:
     try:
       if self.temp_dir.exists():
         shutil.rmtree(self.temp_dir)
-        logger.info(f"Temporary directory removed: {self.temp_dir if not Settings.suppressPath else '<hidden>'}")
+        logger.info(f"Temporary directory removed: {suppress_path_to_str(self.temp_dir)}")
     except Exception as e:
       logger.error(f"Error removing temporary directory {self.temp_dir}: {e}")
 

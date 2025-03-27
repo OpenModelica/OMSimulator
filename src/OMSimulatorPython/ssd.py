@@ -4,7 +4,7 @@ from pathlib import Path
 from lxml import etree as ET
 from OMSimulator.cref import CRef
 from OMSimulator.fmu import FMU
-from OMSimulator.settings import Settings
+from OMSimulator.settings import suppress_path_to_str
 from OMSimulator.system import System
 
 from OMSimulator import namespace, utils
@@ -70,9 +70,9 @@ class SSD:
     '''Prints the SSD contents.'''
     print(f"|-- {type(self)}")
     if self._model and self._model._activeVariantName == self._name:
-      print(f'|-- Active variant "{self._name}": {self._filename if not Settings.suppressPath else "<hidden>"}')
+      print(f'|-- Active variant "{self._name}": {suppress_path_to_str(self._filename)}')
     else:
-      print(f'|-- Inactive variant "{self._name}": {self._filename if not Settings.suppressPath else "<hidden>"}')
+      print(f'|-- Inactive variant "{self._name}": {suppress_path_to_str(self._filename)}')
 
     if self.system:
       self.system.list()

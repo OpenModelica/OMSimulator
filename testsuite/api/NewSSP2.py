@@ -30,14 +30,14 @@ model2.list()
 ## |-- Resources:
 ## |--   resources/Add.fmu
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Inactive variant "default": <hidden>
+## |-- Inactive variant "default": None
 ## |--   System: default
 ## |--   Connectors:
 ## |--   DefaultExperiment
 ## |--     startTime: 0.0
 ## |--     stopTime: 1.0
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Active variant "Variant-B": <hidden>
+## |-- Active variant "Variant-B": None
 ## |--   System: Variant-B
 ## |--   Connectors:
 ## |--   DefaultExperiment
@@ -47,14 +47,14 @@ model2.list()
 ## |-- Resources:
 ## |--   resources/Add.fmu
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Active variant "Variant-B": <hidden>
+## |-- Active variant "Variant-B": <hidden>/SystemStructure.ssd
 ## |--   System: Variant-B
 ## |--   Connectors:
 ## |--   DefaultExperiment
 ## |--     startTime: 0.0
 ## |--     stopTime: 1.0
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Inactive variant "default": <hidden>
+## |-- Inactive variant "default": <hidden>/default.ssd
 ## |--   System: default
 ## |--   Connectors:
 ## |--   DefaultExperiment
