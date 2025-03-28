@@ -164,6 +164,9 @@ class FMU:
         connectors.append(connector)
     return connectors
 
+  def varExist(self, cref: str) -> bool:
+    return any(var.name == cref for var in self.variables)
+
   def export_units_to_ssd(self, node):
     '''Exports all unit definitions to an SSD XML node.'''
     for unit in self._unitDefinitions:
