@@ -41,11 +41,11 @@ class Values:
       return
 
     for key, value in self.realStartValues.items():
-      print(f"|{prefix}   | * ({key}, {value[0]}, Real)")
+      print(f"{prefix} ({key}, {value[0]}, Real)")
     for key, var in self.integerStartValues.items():
-      print(f"|{prefix}   | * ({key}, {value}, Integer)")
+      print(f"{prefix} ({key}, {value}, Integer)")
     for key, var in self.booleanStartValues.items():
-      print(f"|{prefix}   | * ({key}, {value}, Boolean)")
+      print(f"{prefix} ({key}, {value}, Boolean)")
 
   def exportToSSD(self, node):
     if self.empty():

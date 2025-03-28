@@ -64,22 +64,32 @@ class SSD:
   def addComponent(self, cref: CRef, resource: str, inst = None | FMU):
     if self.system is None:
       raise ValueError("Variant doesn#t contain a system")
-    return self.system.addComponent(cref, resource, inst)
 
-  def list(self):
+    first = cref.first()
+    if first.str != self.system.name:
+      raise ValueError(f"System '{first}' not found in active variant")
+    return self.system.addComponent(cref.pop_first(), resource, inst)
+
+  def addSystem(self, cref: CRef):
+    if self.system is None:
+      raise ValueError("Variant doesn#t contain a system")
+
+    self.system.addSystem(cref.pop_first(first=self._name))
+
+  def list(self, prefix=""):
     '''Prints the SSD contents.'''
-    print(f"|-- {type(self)}")
+    print(f"{prefix} {type(self)}")
     if self._model and self._model._activeVariantName == self._name:
-      print(f'|-- Active variant "{self._name}": {suppress_path_to_str(self._filename)}')
+      print(f'{prefix} Active variant "{self._name}": {suppress_path_to_str(self._filename)}')
     else:
-      print(f'|-- Inactive variant "{self._name}": {suppress_path_to_str(self._filename)}')
+      print(f'{prefix} Inactive variant "{self._name}": {suppress_path_to_str(self._filename)}')
 
     if self.system:
-      self.system.list()
+      self.system.list(prefix=prefix + " |--")
 
-    print("|--   DefaultExperiment")
-    print(f"|--     startTime: {self.startTime}")
-    print(f"|--     stopTime: {self.stopTime}")
+    print(f"{prefix} DefaultExperiment")
+    print(f"{prefix}   startTime: {self.startTime}")
+    print(f"{prefix}   stopTime: {self.stopTime}")
 
   def export(self, filename: str):
     '''Exports the SSD as an XML file.'''
