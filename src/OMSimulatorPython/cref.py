@@ -8,6 +8,12 @@ class CRef:
       else:
         self.names.append(str(name))
 
+  @property
+  def str(self):
+    if not self.is_root():
+      raise ValueError("Cannot get string representation of non-root CRef.")
+    return self.names[0]
+
   def __str__(self):
     '''Return the string representation of the component reference.'''
     return '/'.join(self.names)
@@ -63,6 +69,13 @@ class CRef:
       return None
     else:
       return CRef(*self.names[1:])
+
+  def first(self):
+    '''Return the first name.'''
+    if len(self.names) == 0:
+      raise ValueError("Empty CRef.")
+
+    return CRef(self.names[0])
 
   def __lt__(self, other):
     '''Compare two CRef objects based on their names'''

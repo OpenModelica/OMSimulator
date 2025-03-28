@@ -123,6 +123,12 @@ class SSP:
 
     self.activeVariant.addComponent(cref, resource, inst=fmu_inst)
 
+  def addSystem(self, cref: CRef):
+    if self.activeVariant is None:
+      raise ValueError("No active variant set in the SSP.")
+
+    self.activeVariant.addSystem(cref)
+
   def add(self, element):
     '''Adds an SSD or a list of SSDs to the SSP'''
     if isinstance(element, list):
@@ -160,7 +166,7 @@ class SSP:
     for resource in self.resources:
       print(f"|--   {resource}")
     for ssd in self.variants.values():
-      ssd.list()
+      ssd.list("|--")
 
   def export(self, filename: str):
     '''Exports the SSP to file'''

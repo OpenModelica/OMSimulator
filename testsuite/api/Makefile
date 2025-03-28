@@ -7,6 +7,7 @@ fmuinfo.py \
 NewSSP.py \
 NewSSP2.py \
 NewSSP3.py \
+NestedSystem.py \
 
 # Run make failingtest
 FAILINGTESTFILES = \
