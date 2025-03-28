@@ -66,7 +66,7 @@ class SSD:
       raise ValueError("Variant doesn’t contain a system")
 
     first = cref.first()
-    if first.str != self.system.name:
+    if str(first) != self.system.name:
         raise ValueError(f"System '{first}' not found in active variant")
     return cref.pop_first()
 

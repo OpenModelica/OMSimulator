@@ -8,11 +8,6 @@ class CRef:
       else:
         self.names.append(str(name))
 
-  @property
-  def str(self) -> str:
-    '''Return the string representation of the root component.'''
-    return str(self)
-
   def __str__(self) -> str:
     '''Return the string representation of the component reference.'''
     return '/'.join(self.names)
