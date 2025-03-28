@@ -82,8 +82,10 @@ class System:
       raise ValueError(f"Invalid component reference: {cref}")
 
     connectors = inst.makeConnectors() if inst else list()
-    component = Component(name, resource, connectors)
+    unitDefinitions = inst._unitDefinitions ## extract unit defintions from fmus
+    component = Component(name, resource, connectors, unitDefinitions)
     self.components[name] = component
+    return component
 
   def export(self, root):
     node = ET.SubElement(root, namespace.tag("ssd", "System"), attrib={"name": self._name})

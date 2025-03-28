@@ -1,15 +1,16 @@
 from lxml import etree as ET
 from OMSimulator.cref import CRef
 from OMSimulator.values import Values
-
+from OMSimulator.variable import Variable
 from OMSimulator import namespace
 
 
 class Component:
-  def __init__(self, name: CRef, fmuPath: str, connectors = list()):
+  def __init__(self, name: CRef, fmuPath: str, connectors = list(), unitDefintions = list()):
     self.name = CRef(name)
     self.fmuPath = fmuPath
     self.connectors = connectors
+    self.unitDefintions = unitDefintions
     self.value = Values() ## TODO propogate Values
     self.parameterResources = {} ## TODO handle ssv resources
 
@@ -61,3 +62,13 @@ class Component:
     if len(self.parameterResources) > 0:
       for key, resources in self.parameterResources.items():
         resources.exportToSSD(component_node)
+
+  def setValue(self, cref:str, value, unit : str = None):
+    if isinstance(value, float):
+      self.value.setReal(cref, value, unit)
+    elif isinstance(value, int):
+      self.value.setInteger(cref, value)
+    elif isinstance(value, bool):
+      self.value.setBoolean(cref, value)
+    elif isinstance(value, str):
+      self.value.setString(cref, value)

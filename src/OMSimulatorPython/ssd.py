@@ -64,7 +64,7 @@ class SSD:
   def addComponent(self, cref: CRef, resource: str, inst = None | FMU):
     if self.system is None:
       raise ValueError("Variant doesn#t contain a system")
-    self.system.addComponent(cref, resource, inst)
+    return self.system.addComponent(cref, resource, inst)
 
   def list(self):
     '''Prints the SSD contents.'''

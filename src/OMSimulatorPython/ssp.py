@@ -121,7 +121,7 @@ class SSP:
     if resource in self.resources:
       fmu_inst = self.resources[resource]
 
-    self.activeVariant.addComponent(cref, resource, inst=fmu_inst)
+    return self.activeVariant.addComponent(cref, resource, inst=fmu_inst)
 
   def add(self, element):
     '''Adds an SSD or a list of SSDs to the SSP'''

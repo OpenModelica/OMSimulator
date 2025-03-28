@@ -14,17 +14,17 @@ class Values:
     self.booleanStartValues = {}
     self.stringStartValues = {}
 
-  def setReal(self, var):
-    self.realStartValues[var.name] = var
+  def setReal(self, name, value, unit):
+    self.realStartValues[name] = (value, unit)
 
-  def setInteger(self, var):
-    self.integerStartValues[var.name] = var
+  def setInteger(self, name, value):
+    self.integerStartValues[name] = value
 
-  def setBoolean(self, var):
-    self.booleanStartValues[var.name] = var
+  def setBoolean(self, name, value):
+    self.booleanStartValues[name] = value
 
-  def setString(self, var):
-    self.stringStartValues[var.name] = var
+  def setString(self, name, value):
+    self.stringStartValues[name] = value
 
   def empty(self) -> bool:
     return not self.realStartValues and not self.integerStartValues and not self.booleanStartValues and not self.stringStartValues
@@ -33,19 +33,19 @@ class Values:
     parameters = {}
     for store in [self.realStartValues, self.integerStartValues, self.booleanStartValues]:
       for key, value in store.items():
-        parameters[key] = value.startValue
+        parameters[key] = value
     return parameters
 
   def list(self, prefix = ""):
     if self.empty():
       return
 
-    for key, var in self.realStartValues.items():
-      print(f"|{prefix}   | * ({key}, {var.startValue}, Real)")
+    for key, value in self.realStartValues.items():
+      print(f"|{prefix}   | * ({key}, {value[0]}, Real)")
     for key, var in self.integerStartValues.items():
-      print(f"|{prefix}   | * ({key}, {var.startValue}, Integer)")
+      print(f"|{prefix}   | * ({key}, {value}, Integer)")
     for key, var in self.booleanStartValues.items():
-      print(f"|{prefix}   | * ({key}, {var.startValue}, Boolean)")
+      print(f"|{prefix}   | * ({key}, {value}, Boolean)")
 
   def exportToSSD(self, node):
     if self.empty():
@@ -61,7 +61,7 @@ class Values:
     self.add_parameters(parameters_node, self.realStartValues, "Real")
     self.add_parameters(parameters_node, self.integerStartValues, "Integer")
     self.add_parameters(parameters_node, self.booleanStartValues, "Boolean")
-    self.exportUnitDefintions(parameter_set_node)
+    #self.exportUnitDefintions(parameter_set_node)
 
   def exportToSSV(self, node):
     if self.empty():
@@ -71,17 +71,21 @@ class Values:
     self.add_parameters(parameters_node, self.realStartValues, "Real")
     self.add_parameters(parameters_node, self.integerStartValues, "Integer")
     self.add_parameters(parameters_node, self.booleanStartValues, "Boolean")
-    self.exportUnitDefintions(node)
+    #self.exportUnitDefintions(node)
 
   def add_parameters(self, parameters_node, values_dict, type_tag):
     """Generic function to add XML parameters based on the value type."""
-    for key, var in values_dict.items():
+    for key, value in values_dict.items():
       parameter_node = ET.SubElement(parameters_node, namespace.tag("ssv", "Parameter"))
       parameter_node.set("name", key)
       parameter_type = ET.SubElement(parameter_node, namespace.tag("ssv", type_tag))
-      parameter_type.set("value", str(var.startValue))
-      if var.unit:
-        parameter_type.set("unit", var.unit)
+      if type_tag == "Real":
+        parameter_type.set("value", str(value[0]))
+        if value[1]: ## set unit if exist
+          parameter_type.set("unit", value[1])
+      else:
+        parameter_type.set("value", str(value))
+
 
   def exportUnitDefintions(self, node):
     unitsToExport = {}
