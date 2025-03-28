@@ -60,8 +60,8 @@ model2.list()
 ## |-- |-- |-- |-- (k1, parameter, Real)
 ## |-- |-- |-- |-- (k2, parameter, Real)
 ## |-- |-- |-- Inline Parameter Bindings:
-## |-- |-- |-- |-- (k1, 2.0, Real)
-## |-- |-- |-- |-- (k2, 3.0, Real)
+## |-- |-- |-- |-- (Real k1, 2.0, None)
+## |-- |-- |-- |-- (Real k2, 3.0, None)
 ## |-- |-- |-- FMU: (Add2)
 ## |-- |-- |-- |-- path: Add.fmu
 ## |-- |-- |-- Connectors:
@@ -71,8 +71,8 @@ model2.list()
 ## |-- |-- |-- |-- (k1, parameter, Real)
 ## |-- |-- |-- |-- (k2, parameter, Real)
 ## |-- |-- |-- Inline Parameter Bindings:
-## |-- |-- |-- |-- (k1, 100.0, Real)
-## |-- |-- |-- |-- (k2, 300.0, Real)
+## |-- |-- |-- |-- (Real k1, 100.0, None)
+## |-- |-- |-- |-- (Real k2, 300.0, None)
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
@@ -93,8 +93,8 @@ model2.list()
 ## |-- |-- |-- |-- (k1, parameter, Real)
 ## |-- |-- |-- |-- (k2, parameter, Real)
 ## |-- |-- |-- Inline Parameter Bindings:
-## |-- |-- |-- |-- (k1, 2.0, Real)
-## |-- |-- |-- |-- (k2, 3.0, Real)
+## |-- |-- |-- |-- (Real k1, 2.0, None)
+## |-- |-- |-- |-- (Real k2, 3.0, None)
 ## |-- |-- |-- FMU: (Add2)
 ## |-- |-- |-- |-- path: Add.fmu
 ## |-- |-- |-- Connectors:
@@ -104,8 +104,8 @@ model2.list()
 ## |-- |-- |-- |-- (k1, parameter, Real)
 ## |-- |-- |-- |-- (k2, parameter, Real)
 ## |-- |-- |-- Inline Parameter Bindings:
-## |-- |-- |-- |-- (k1, 100.0, Real)
-## |-- |-- |-- |-- (k2, 300.0, Real)
+## |-- |-- |-- |-- (Real k1, 100.0, None)
+## |-- |-- |-- |-- (Real k2, 300.0, None)
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0

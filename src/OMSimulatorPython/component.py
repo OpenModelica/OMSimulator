@@ -3,7 +3,7 @@ from pathlib import Path
 from lxml import etree as ET
 from OMSimulator.cref import CRef
 from OMSimulator.values import Values
-from OMSimulator.variable import Variable
+
 from OMSimulator import namespace
 
 
@@ -56,12 +56,5 @@ class Component:
       for key, resources in self.parameterResources.items():
         resources.exportToSSD(component_node)
 
-  def setValue(self, cref:str, value, unit = None):
-    if isinstance(value, float):
-      self.value.setReal(cref, value, unit)
-    elif isinstance(value, int):
-      self.value.setInteger(cref, value)
-    elif isinstance(value, bool):
-      self.value.setBoolean(cref, value)
-    elif isinstance(value, str):
-      self.value.setString(cref, value)
+  def setValue(self, cref:str, value, unit=None):
+    self.value.setValue(cref, value, unit)
