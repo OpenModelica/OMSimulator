@@ -27,7 +27,7 @@ class Connector:
     self.unit = unit
 
   def list(self, prefix=""):
-    print(f"|{prefix} * ({self.name}, {self.getCausalityToString(self.causality)}, {self.getSignalTypeToString(self.signal_type)})")
+    print(f"{prefix} * ({self.name}, {self.getCausalityToString(self.causality)}, {self.getSignalTypeToString(self.signal_type)})")
     pass
 
   def exportToSSD(self, node):

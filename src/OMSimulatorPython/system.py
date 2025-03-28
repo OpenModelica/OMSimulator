@@ -42,40 +42,33 @@ class System:
       raise
 
   def list(self, prefix=""):
-    print(f"{prefix}|--   System: {self.name}")
-    print(f"{prefix}|--   Connectors:")
-    last_prefix = prefix + "     |"  # This is the prefix for nested elements
+    print(f"{prefix} System: {self.name}")
+    print(f"{prefix} Connectors:")
     for connector in self.connectors:
-      connector.list(prefix=last_prefix)
+      connector.list(prefix=prefix + " |--")
 
     ## list parameters inline
     if not self.value.empty():
-      print(f"{prefix}|--   ParameterBindings:")
-      print(f"{prefix}|     |-- inline:")
-      last_prefix = prefix + "     |"  # This is the prefix for nested elements
-      self.value.list(prefix= last_prefix)
+      print(f"{prefix} Inline Parameter Bindings:")
+      self.value.list(prefix=prefix + " |--")
 
     ## list parameteres in ssv files
     if len(self.parameterResources) > 0:
       for key, resources in self.parameterResources.items():
-        print(f"{prefix}|--   ParameterBindings:")
-        print(f"{prefix}|     |-- {resources.filename}:")
-        last_prefix = prefix + "     |"  # This is the prefix for nested elements
-        resources.list(prefix = last_prefix)
+        print(f"{prefix} Parameter Bindings: {resources.filename}")
+        resources.list(prefix=prefix + " |--")
 
     ## list elements
     if len(self.elements) > 0:
-      print(f"{prefix}|--   Elements:")
-      last_prefix = prefix + "     |"  # This is the prefix for nested elements
+      print(f"{prefix} Elements:")
       for element in self.elements.values():
-        element.list(last_prefix)
+        element.list(prefix=prefix + " |--")
 
     ## list connections
     if len(self.connections) > 0:
-      print(f"{prefix}|--   Connections:")
-      last_prefix = prefix + "     |"  # This is the prefix for nested elements
+      print(f"{prefix} Connections:")
       for connection in self.connections:
-        connection.list(prefix=last_prefix)
+        connection.list(prefix=prefix + " |--")
         pass
 
   def addSystem(self, cref: CRef):

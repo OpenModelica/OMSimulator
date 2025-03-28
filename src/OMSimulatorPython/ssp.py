@@ -166,7 +166,7 @@ class SSP:
     for resource in self.resources:
       print(f"|--   {resource}")
     for ssd in self.variants.values():
-      ssd.list()
+      ssd.list("|--")
 
   def export(self, filename: str):
     '''Exports the SSP to file'''

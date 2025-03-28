@@ -28,34 +28,34 @@ model.list()
 ## |--   resources/Add.fmu
 ## |-- <class 'OMSimulator.ssd.SSD'>
 ## |-- Active variant "default": None
-## |--   System: default
-## |--   Connectors:
-## |--   Elements:
-##      ||--   System: sub-system
-##      ||--   Connectors:
-##      ||--   Elements:
-## |     |     |  |-- FMU: (Add2)
-## |     |     |  |   |-- path: resources/Add.fmu
-## |     |     |  |   |-- Connectors:
-## |     |     |  |   |   * (u1, input, Real)
-## |     |     |  |   |   * (u2, input, Real)
-## |     |     |  |   |   * (y, output, Real)
-## |     |     |  |   |   * (k1, parameter, Real)
-## |     |     |  |   |   * (k2, parameter, Real)
-##      ||--   System: sub-system2
-##      ||--   Connectors:
-##      ||--   Elements:
-##      |     ||--   System: sub-sub-system
-##      |     ||--   Connectors:
-## |     |  |-- FMU: (Add1)
-## |     |  |   |-- path: resources/Add.fmu
-## |     |  |   |-- Connectors:
-## |     |  |   |   * (u1, input, Real)
-## |     |  |   |   * (u2, input, Real)
-## |     |  |   |   * (y, output, Real)
-## |     |  |   |   * (k1, parameter, Real)
-## |     |  |   |   * (k2, parameter, Real)
-## |--   DefaultExperiment
-## |--     startTime: 0.0
-## |--     stopTime: 1.0
+## |-- |-- System: default
+## |-- |-- Connectors:
+## |-- |-- Elements:
+## |-- |-- |-- System: sub-system
+## |-- |-- |-- Connectors:
+## |-- |-- |-- Elements:
+## |-- |-- |-- |-- FMU: (Add2)
+## |-- |-- |-- |--   path: resources/Add.fmu
+## |-- |-- |-- |-- Connectors:
+## |-- |-- |-- |-- |-- * (u1, input, Real)
+## |-- |-- |-- |-- |-- * (u2, input, Real)
+## |-- |-- |-- |-- |-- * (y, output, Real)
+## |-- |-- |-- |-- |-- * (k1, parameter, Real)
+## |-- |-- |-- |-- |-- * (k2, parameter, Real)
+## |-- |-- |-- System: sub-system2
+## |-- |-- |-- Connectors:
+## |-- |-- |-- Elements:
+## |-- |-- |-- |-- System: sub-sub-system
+## |-- |-- |-- |-- Connectors:
+## |-- |-- |-- FMU: (Add1)
+## |-- |-- |--   path: resources/Add.fmu
+## |-- |-- |-- Connectors:
+## |-- |-- |-- |-- * (u1, input, Real)
+## |-- |-- |-- |-- * (u2, input, Real)
+## |-- |-- |-- |-- * (y, output, Real)
+## |-- |-- |-- |-- * (k1, parameter, Real)
+## |-- |-- |-- |-- * (k2, parameter, Real)
+## |-- DefaultExperiment
+## |--   startTime: 0.0
+## |--   stopTime: 1.0
 ## endResult

@@ -39,35 +39,35 @@ model2.list()
 ## |--   resources/Add.fmu
 ## |-- <class 'OMSimulator.ssd.SSD'>
 ## |-- Inactive variant "default": None
-## |--   System: default
-## |--   Connectors:
-## |--   DefaultExperiment
-## |--     startTime: 0.0
-## |--     stopTime: 1.0
+## |-- |-- System: default
+## |-- |-- Connectors:
+## |-- DefaultExperiment
+## |--   startTime: 0.0
+## |--   stopTime: 1.0
 ## |-- <class 'OMSimulator.ssd.SSD'>
 ## |-- Active variant "Variant-B": None
-## |--   System: Variant-B
-## |--   Connectors:
-## |--   DefaultExperiment
-## |--     startTime: 0.0
-## |--     stopTime: 1.0
+## |-- |-- System: Variant-B
+## |-- |-- Connectors:
+## |-- DefaultExperiment
+## |--   startTime: 0.0
+## |--   stopTime: 1.0
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
 ## |--   resources/Add.fmu
 ## |-- <class 'OMSimulator.ssd.SSD'>
 ## |-- Active variant "Variant-B": <hidden>
-## |--   System: Variant-B
-## |--   Connectors:
-## |--   DefaultExperiment
-## |--     startTime: 0.0
-## |--     stopTime: 1.0
+## |-- |-- System: Variant-B
+## |-- |-- Connectors:
+## |-- DefaultExperiment
+## |--   startTime: 0.0
+## |--   stopTime: 1.0
 ## |-- <class 'OMSimulator.ssd.SSD'>
 ## |-- Inactive variant "default": <hidden>
-## |--   System: default
-## |--   Connectors:
-## |--   DefaultExperiment
-## |--     startTime: 0.0
-## |--     stopTime: 1.0
+## |-- |-- System: default
+## |-- |-- Connectors:
+## |-- DefaultExperiment
+## |--   startTime: 0.0
+## |--   stopTime: 1.0
 ## INFO:OMSimulator.ssp:Temporary directory removed: <hidden>
 ## INFO:OMSimulator.ssp:Temporary directory removed: <hidden>
 ## endResult
