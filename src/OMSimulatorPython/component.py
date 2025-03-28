@@ -18,7 +18,7 @@ class Component:
 
   def list(self, prefix=""):
     print(f"{prefix} FMU: ({self.name})")
-    print(f"{prefix}   path: {self.fmuPath}")
+    print(f"{prefix} |-- path: {self.fmuPath}")
 
     if len(self.connectors) > 0:
       print(f"{prefix} Connectors:")

@@ -41,7 +41,7 @@ model2.list()
 ## |-- |-- Connectors:
 ## |-- |-- Elements:
 ## |-- |-- |-- FMU: (Add1)
-## |-- |-- |--   path: Add.fmu
+## |-- |-- |-- |-- path: Add.fmu
 ## |-- |-- |-- Connectors:
 ## |-- |-- |-- |-- (u1, input, Real)
 ## |-- |-- |-- |-- (u2, input, Real)
@@ -52,7 +52,7 @@ model2.list()
 ## |-- |-- |-- |-- (k1, 2.0, Real)
 ## |-- |-- |-- |-- (k2, 3.0, Real)
 ## |-- |-- |-- FMU: (Add2)
-## |-- |-- |--   path: Add.fmu
+## |-- |-- |-- |-- path: Add.fmu
 ## |-- |-- |-- Connectors:
 ## |-- |-- |-- |-- (u1, input, Real)
 ## |-- |-- |-- |-- (u2, input, Real)
@@ -63,8 +63,8 @@ model2.list()
 ## |-- |-- |-- |-- (k1, 100.0, Real)
 ## |-- |-- |-- |-- (k2, 300.0, Real)
 ## |-- DefaultExperiment
-## |--   startTime: 0.0
-## |--   stopTime: 1.0
+## |-- |-- startTime: 0.0
+## |-- |-- stopTime: 1.0
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
 ## |--   Add.fmu
@@ -74,7 +74,7 @@ model2.list()
 ## |-- |-- Connectors:
 ## |-- |-- Elements:
 ## |-- |-- |-- FMU: (Add1)
-## |-- |-- |--   path: Add.fmu
+## |-- |-- |-- |-- path: Add.fmu
 ## |-- |-- |-- Connectors:
 ## |-- |-- |-- |-- (u1, input, Real)
 ## |-- |-- |-- |-- (u2, input, Real)
@@ -85,7 +85,7 @@ model2.list()
 ## |-- |-- |-- |-- (k1, 2.0, Real)
 ## |-- |-- |-- |-- (k2, 3.0, Real)
 ## |-- |-- |-- FMU: (Add2)
-## |-- |-- |--   path: Add.fmu
+## |-- |-- |-- |-- path: Add.fmu
 ## |-- |-- |-- Connectors:
 ## |-- |-- |-- |-- (u1, input, Real)
 ## |-- |-- |-- |-- (u2, input, Real)
@@ -96,6 +96,6 @@ model2.list()
 ## |-- |-- |-- |-- (k1, 100.0, Real)
 ## |-- |-- |-- |-- (k2, 300.0, Real)
 ## |-- DefaultExperiment
-## |--   startTime: 0.0
-## |--   stopTime: 1.0
+## |-- |-- startTime: 0.0
+## |-- |-- stopTime: 1.0
 ## endResult

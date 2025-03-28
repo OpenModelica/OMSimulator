@@ -35,7 +35,7 @@ model.list()
 ## |-- |-- |-- Connectors:
 ## |-- |-- |-- Elements:
 ## |-- |-- |-- |-- FMU: (Add2)
-## |-- |-- |-- |--   path: resources/Add.fmu
+## |-- |-- |-- |-- |-- path: resources/Add.fmu
 ## |-- |-- |-- |-- Connectors:
 ## |-- |-- |-- |-- |-- (u1, input, Real)
 ## |-- |-- |-- |-- |-- (u2, input, Real)
@@ -48,7 +48,7 @@ model.list()
 ## |-- |-- |-- |-- System: sub-sub-system
 ## |-- |-- |-- |-- Connectors:
 ## |-- |-- |-- FMU: (Add1)
-## |-- |-- |--   path: resources/Add.fmu
+## |-- |-- |-- |-- path: resources/Add.fmu
 ## |-- |-- |-- Connectors:
 ## |-- |-- |-- |-- (u1, input, Real)
 ## |-- |-- |-- |-- (u2, input, Real)
@@ -56,6 +56,6 @@ model.list()
 ## |-- |-- |-- |-- (k1, parameter, Real)
 ## |-- |-- |-- |-- (k2, parameter, Real)
 ## |-- DefaultExperiment
-## |--   startTime: 0.0
-## |--   stopTime: 1.0
+## |-- |-- startTime: 0.0
+## |-- |-- stopTime: 1.0
 ## endResult

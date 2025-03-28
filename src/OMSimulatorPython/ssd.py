@@ -100,8 +100,8 @@ class SSD:
       self.system.list(prefix=prefix + " |--")
 
     print(f"{prefix} DefaultExperiment")
-    print(f"{prefix}   startTime: {self.startTime}")
-    print(f"{prefix}   stopTime: {self.stopTime}")
+    print(f"{prefix} |-- startTime: {self.startTime}")
+    print(f"{prefix} |-- stopTime: {self.stopTime}")
 
   def export(self, filename: str):
     '''Exports the SSD as an XML file.'''
