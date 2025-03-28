@@ -62,7 +62,7 @@ model2.list()
 ## |-- |-- |-- |-- (k1, parameter, Real)
 ## |-- |-- |-- |-- (k2, parameter, Real)
 ## |-- |-- |-- Inline Parameter Bindings:
-## |-- |-- |-- |-- (k1, 200.0, Real)
+## |-- |-- |-- |-- (k1, 100.0, Real)
 ## |-- |-- |-- |-- (k2, 300.0, Real)
 ## |-- DefaultExperiment
 ## |--   startTime: 0.0
