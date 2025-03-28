@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm -rf setValue3.ssp /
+## teardown_command: rm -rf setValue3.ssp
 ## linux: yes
 ## mingw32: yes
 ## mingw64: yes
