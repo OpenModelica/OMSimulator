@@ -61,23 +61,26 @@ class SSD:
     '''Returns True if the SSD has been modified since the last export.'''
     return True
 
-  def addComponent(self, cref: CRef, resource: str, inst = None | FMU):
+  def _validateCref(self, cref: CRef):
     if self.system is None:
-      raise ValueError("Variant doesn#t contain a system")
+      raise ValueError("Variant doesn’t contain a system")
 
     first = cref.first()
     if first.str != self.system.name:
-      raise ValueError(f"System '{first}' not found in active variant")
-    return self.system.addComponent(cref.pop_first(), resource, inst)
+        raise ValueError(f"System '{first}' not found in active variant")
+    return cref.pop_first()
+
+  def addComponent(self, cref: CRef, resource: str, inst = None | FMU):
+    subcref = self._validateCref(cref)
+    return self.system.addComponent(subcref, resource, inst)
+
+  def _getComponentResourcePath(self, cref: CRef):
+    subcref = self._validateCref(cref)
+    return self.system._getComponentResourcePath(subcref)
 
   def setValue(self, cref: CRef, value, unit = None):
-    if self.system is None:
-      raise ValueError("Variant doesn#t contain a system")
-    first = cref.first()
-    if first.str != self.system.name:
-      raise ValueError(f"System '{first}' not found in active variant")
-
-    self.system.setValue(cref.pop_first(), value, unit)
+    subcref = self._validateCref(cref)
+    self.system.setValue(subcref, value, unit)
 
   def addSystem(self, cref: CRef):
     if self.system is None:
