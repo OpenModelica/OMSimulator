@@ -96,8 +96,7 @@ class System:
         print(cref)
         print(self.elements)
         raise ValueError(f"System '{first}' not found in '{self.name}'")
-      print('Current systen:', self.name)
-      self.elements[first].addComponent(cref, resource, inst)
+      self.elements[first].addComponent(cref.pop_first(), resource, inst)
     else:
       if first in self.elements:
         raise ValueError(f"Component '{first}' already exists in {self.name}")

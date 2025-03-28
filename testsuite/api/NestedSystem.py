@@ -17,8 +17,8 @@ model.addResource('../resources/Modelica.Blocks.Math.Add.fmu', new_name='resourc
 model.addSystem(CRef('default', 'sub-system'))
 model.addSystem(CRef('default', 'sub-system2'))
 model.addSystem(CRef('default', 'sub-system2', 'sub-sub-system'))
-#component1 = model.addComponent(CRef('default', 'Add1'), 'resources/Add.fmu')
-#component2 = model.addComponent(CRef('default', 'sub-system', 'Add2'), 'resources/Add.fmu')
+component1 = model.addComponent(CRef('default', 'Add1'), 'resources/Add.fmu')
+component2 = model.addComponent(CRef('default', 'sub-system', 'Add2'), 'resources/Add.fmu')
 
 model.list()
 
@@ -33,11 +33,28 @@ model.list()
 ## |--   Elements:
 ##      ||--   System: sub-system
 ##      ||--   Connectors:
+##      ||--   Elements:
+## |     |     |  |-- FMU: (Add2)
+## |     |     |  |   |-- path: resources/Add.fmu
+## |     |     |  |   |-- Connectors:
+## |     |     |  |   |   * (u1, input, Real)
+## |     |     |  |   |   * (u2, input, Real)
+## |     |     |  |   |   * (y, output, Real)
+## |     |     |  |   |   * (k1, parameter, Real)
+## |     |     |  |   |   * (k2, parameter, Real)
 ##      ||--   System: sub-system2
 ##      ||--   Connectors:
 ##      ||--   Elements:
 ##      |     ||--   System: sub-sub-system
 ##      |     ||--   Connectors:
+## |     |  |-- FMU: (Add1)
+## |     |  |   |-- path: resources/Add.fmu
+## |     |  |   |-- Connectors:
+## |     |  |   |   * (u1, input, Real)
+## |     |  |   |   * (u2, input, Real)
+## |     |  |   |   * (y, output, Real)
+## |     |  |   |   * (k1, parameter, Real)
+## |     |  |   |   * (k2, parameter, Real)
 ## |--   DefaultExperiment
 ## |--     startTime: 0.0
 ## |--     stopTime: 1.0
