@@ -56,7 +56,7 @@ class Component:
       for key, resources in self.parameterResources.items():
         resources.exportToSSD(component_node)
 
-  def setValue(self, cref:str, value, unit : str = None):
+  def setValue(self, cref:str, value, unit = None):
     if isinstance(value, float):
       self.value.setReal(cref, value, unit)
     elif isinstance(value, int):

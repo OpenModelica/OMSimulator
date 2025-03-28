@@ -77,7 +77,7 @@ class Values:
     """Generic function to add XML parameters based on the value type."""
     for key, value in values_dict.items():
       parameter_node = ET.SubElement(parameters_node, namespace.tag("ssv", "Parameter"))
-      parameter_node.set("name", key)
+      parameter_node.set("name", str(key))
       parameter_type = ET.SubElement(parameter_node, namespace.tag("ssv", type_tag))
       if type_tag == "Real":
         parameter_type.set("value", str(value[0]))

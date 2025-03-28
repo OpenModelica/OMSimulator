@@ -123,6 +123,14 @@ class SSP:
 
     return self.activeVariant.addComponent(cref, resource, inst=fmu_inst)
 
+  def setValue(self, cref: CRef, value, unit = None):
+    if self.activeVariant is None:
+      raise ValueError("No active variant set in the SSP.")
+
+    ## look up in the resource and get the component path
+
+    return self.activeVariant.setValue(cref, value, unit)
+
   def addSystem(self, cref: CRef):
     if self.activeVariant is None:
       raise ValueError("No active variant set in the SSP.")

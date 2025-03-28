@@ -98,6 +98,15 @@ class System:
       self.elements[first] = component
       return component
 
+  def setValue(self, cref: CRef, value, unit = None):
+    first = cref.first()
+    if not cref.is_root():
+      if first not in self.elements:
+        print(cref)
+        print(self.elements)
+        raise ValueError(f"System '{first}' not found in '{self.name}'")
+    self.elements[first].setValue(cref.last(), value, unit)
+
   def export(self, root):
     node = ET.SubElement(root, namespace.tag("ssd", "System"), attrib={"name": self.name})
 

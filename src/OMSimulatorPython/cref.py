@@ -77,6 +77,13 @@ class CRef:
 
     return CRef(self.names[0])
 
+  def last(self):
+    '''Return the last name.'''
+    if len(self.names) == 0:
+      raise ValueError("Empty CRef.")
+
+    return CRef(self.names[-1])
+
   def __lt__(self, other):
     '''Compare two CRef objects based on their names'''
     if not isinstance(other, CRef):

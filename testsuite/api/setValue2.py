@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm NewSSP4.ssp
+## teardown_command: rm -rf setValue2.ssp /
 ## linux: yes
 ## mingw32: yes
 ## mingw64: yes
@@ -11,35 +11,24 @@ from OMSimulator import SSP, CRef, Settings
 Settings.suppressPath = True
 
 # This example creates a new SSP file with an FMU instantiated as a component and
-# set parameter values on the components
+# set parameter values from the model level
 
 model = SSP()
 model.addResource('../resources/Modelica.Blocks.Math.Add.fmu', new_name='Add.fmu')
-root = model.activeVariant
 component1 = model.addComponent(CRef('default', 'Add1'), 'Add.fmu')
-component1.setValue("k1", 2.0)
-component1.setValue("k2", 3.0)
 component2 = model.addComponent(CRef('default', 'Add2'), 'Add.fmu')
-component2.setValue("k1", 100.0)
-component2.setValue("k2", 300.0)
 
+model.setValue(CRef('default', "Add1", "k1"), 2.0)
+model.setValue(CRef('default', "Add1", "k2"), 3.0)
 
-# component1.setValue("param1", 2.0)
-# model.setValue(CRef('default', "Add1", "param1"), 2.0)
-# root.setValue(("Add1", "param1"), 2.0)
-
-# ssv = SSV()
-# ssv.setValue("param1", 3.0)
-# #ssv.export("myfile.ssv")
-# model.addResource(ssv, "resources/myfile.ssv")
-# model.addSSV(CRef('default', 'Add2'), 'resources/myfile.ssv')
-
+model.setValue(CRef('default', "Add2", "k1"), 100.0)
+model.setValue(CRef('default', "Add2", "k2"), 300.0)
 
 
 model.list()
-model.export('NewSSP4.ssp')
+model.export('setValue2.ssp')
 
-model2 = SSP('NewSSP4.ssp')
+model2 = SSP('setValue2.ssp')
 model2.list()
 
 ## Result:
@@ -71,7 +60,7 @@ model2.list()
 ## |-- |-- |-- |-- (k1, parameter, Real)
 ## |-- |-- |-- |-- (k2, parameter, Real)
 ## |-- |-- |-- Inline Parameter Bindings:
-## |-- |-- |-- |-- (k1, 100.0, Real)
+## |-- |-- |-- |-- (k1, 200.0, Real)
 ## |-- |-- |-- |-- (k2, 300.0, Real)
 ## |-- DefaultExperiment
 ## |--   startTime: 0.0
