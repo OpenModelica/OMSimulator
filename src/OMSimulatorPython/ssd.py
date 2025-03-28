@@ -64,7 +64,17 @@ class SSD:
   def addComponent(self, cref: CRef, resource: str, inst = None | FMU):
     if self.system is None:
       raise ValueError("Variant doesn#t contain a system")
-    self.system.addComponent(cref, resource, inst)
+
+    first = cref.first()
+    if first.str != self.system.name:
+      raise ValueError(f"System '{first}' not found in active variant")
+    self.system.addComponent(cref.pop_first(), resource, inst)
+
+  def addSystem(self, cref: CRef):
+    if self.system is None:
+      raise ValueError("Variant doesn#t contain a system")
+
+    self.system.addSystem(cref.pop_first(first=self._name))
 
   def list(self):
     '''Prints the SSD contents.'''

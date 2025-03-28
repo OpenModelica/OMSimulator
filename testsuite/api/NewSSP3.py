@@ -31,7 +31,7 @@ model2.list()
 ## |-- Active variant "default": None
 ## |--   System: default
 ## |--   Connectors:
-## |--   Components:
+## |--   Elements:
 ## |     |  |-- FMU: (Add1)
 ## |     |  |   |-- path: resources/Add.fmu
 ## |     |  |   |-- Connectors:
@@ -58,7 +58,7 @@ model2.list()
 ## |-- Active variant "default": <hidden>
 ## |--   System: default
 ## |--   Connectors:
-## |--   Components:
+## |--   Elements:
 ## |     |  |-- FMU: (Add1)
 ## |     |  |   |-- path: resources/Add.fmu
 ## |     |  |   |-- Connectors:

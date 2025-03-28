@@ -15,11 +15,15 @@ class System:
     from OMSimulator.ssp import SSP
     self._name = name
     self.connectors = list()
-    self.components = dict()
+    self.elements = dict()
     self.connections = list()
     self.value = Values()
     self.parameterResources = dict()
     self.model = model
+
+  @property
+  def name(self):
+    return self._name
 
   @staticmethod
   def importFromNode(node, ssd):
@@ -29,7 +33,7 @@ class System:
       system = System(node.get("name"))
       system.connectors = utils.parseConnectors(node)
       utils.parseParameterBindings(node, ssd, temp_dir)
-      system.components = utils.parseElements(node)
+      system.elements = utils.parseElements(node)
       utils.parseConnection(node, system)
       return system
 
@@ -38,7 +42,7 @@ class System:
       raise
 
   def list(self, prefix=""):
-    print(f"{prefix}|--   System: {self._name}")
+    print(f"{prefix}|--   System: {self.name}")
     print(f"{prefix}|--   Connectors:")
     last_prefix = prefix + "     |"  # This is the prefix for nested elements
     for connector in self.connectors:
@@ -60,12 +64,11 @@ class System:
         resources.list(prefix = last_prefix)
 
     ## list elements
-    if len(self.components) > 0:
-      print(f"{prefix}|--   Components:")
+    if len(self.elements) > 0:
+      print(f"{prefix}|--   Elements:")
       last_prefix = prefix + "     |"  # This is the prefix for nested elements
-      for key, component in self.components.items():
-        # print(key, values)
-        component.list(last_prefix)
+      for element in self.elements.values():
+        element.list(last_prefix)
 
     ## list connections
     if len(self.connections) > 0:
@@ -75,18 +78,35 @@ class System:
         connection.list(prefix=last_prefix)
         pass
 
+  def addSystem(self, cref: CRef):
+    first = cref.first()
+    if not cref.is_root():
+      if first not in self.elements:
+        raise ValueError(f"System '{first}' not found in {self.name}")
+      self.elements[first].addSystem(cref.pop_first())
+    else:
+      if first in self.elements:
+        raise ValueError(f"System '{first}' already exists in {self.name}")
+      self.elements[first] = System(first, model=self.model)
+
   def addComponent(self, cref: CRef, resource: str, inst = None | FMU):
-    name = cref.pop_first(first=self._name)
-
-    if not name.is_root():
-      raise ValueError(f"Invalid component reference: {cref}")
-
-    connectors = inst.makeConnectors() if inst else list()
-    component = Component(name, resource, connectors)
-    self.components[name] = component
+    first = cref.first()
+    if not cref.is_root():
+      if first not in self.elements:
+        print(cref)
+        print(self.elements)
+        raise ValueError(f"System '{first}' not found in '{self.name}'")
+      print('Current systen:', self.name)
+      self.elements[first].addComponent(cref, resource, inst)
+    else:
+      if first in self.elements:
+        raise ValueError(f"Component '{first}' already exists in {self.name}")
+      connectors = inst.makeConnectors() if inst else list()
+      component = Component(first, resource, connectors)
+      self.elements[first] = component
 
   def export(self, root):
-    node = ET.SubElement(root, namespace.tag("ssd", "System"), attrib={"name": self._name})
+    node = ET.SubElement(root, namespace.tag("ssd", "System"), attrib={"name": self.name})
 
     if len(self.connectors) > 0 :
       connectors_node = ET.SubElement(node, namespace.tag("ssd", "Connectors"))
@@ -101,10 +121,10 @@ class System:
           resources.exportToSSD(node)
 
     ## export elements
-    if len(self.components) > 0:
+    if len(self.elements) > 0:
       element_node = ET.SubElement(node, namespace.tag("ssd", "Elements"))
-      for key, component in self.components.items():
-        component.exportToSSD(element_node)
+      for key, element in self.elements.items():
+        element.exportToSSD(element_node)
         #TODO
         ## export parameter resources e.g ssv
 

@@ -36,19 +36,25 @@ def parseDefaultExperiment(node, root):
 
 def parseElements(node):
   """Extract components from <ssd:Elements> section"""
-  components = {}
+  from OMSimulator.system import System
+
+  elements = {}
   elements_node = node.find("ssd:Elements", namespaces=namespace.ns)
   if elements_node is None:
-    return components
+    return elements
   for component in elements_node.findall("ssd:Component", namespaces=namespace.ns):
     name = component.get("name")
     comp_type = component.get("type")
     source = component.get("source")
-    components[name] = Component(name, source)
-    ## parse connectors
-    components[name].connectors = parseConnectors(component)
+    elements[name] = Component(name, source)
+    elements[name].connectors = parseConnectors(component)
     # TODO: parse parameter Bindings.
-  return components
+  for system in elements_node.findall("ssd:System", namespaces=namespace.ns):
+    name = component.get("name")
+    elements[name] = System(name)
+    elements[name].connectors = parseConnectors(system)
+    # TODO: parse parameter Bindings.
+  return elements
 
 def parseConnectors(node):
   """Extract and print system connectors"""
