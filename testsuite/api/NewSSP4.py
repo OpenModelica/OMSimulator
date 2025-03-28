@@ -47,7 +47,7 @@ model2.list()
 ## |-- Resources:
 ## |--   Add.fmu
 ## |-- <class 'OMSimulator.ssd.SSD'>
-## |-- Active variant "default": <hidden>
+## |-- Active variant "default": None
 ## |--   System: default
 ## |--   Connectors:
 ## |--   Components:
@@ -94,6 +94,10 @@ model2.list()
 ## |     |  |   |   * (y, output, Real)
 ## |     |  |   |   * (k1, parameter, Real)
 ## |     |  |   |   * (k2, parameter, Real)
+## |     |  |   |-- ParameterBindings:
+## |     |  |   |   |-- inline:
+## |     |  |   |   | * (k1, 2.0, Real)
+## |     |  |   |   | * (k2, 3.0, Real)
 ## |     |  |-- FMU: (Add2)
 ## |     |  |   |-- path: Add.fmu
 ## |     |  |   |-- Connectors:
@@ -102,6 +106,10 @@ model2.list()
 ## |     |  |   |   * (y, output, Real)
 ## |     |  |   |   * (k1, parameter, Real)
 ## |     |  |   |   * (k2, parameter, Real)
+## |     |  |   |-- ParameterBindings:
+## |     |  |   |   |-- inline:
+## |     |  |   |   | * (k1, 100.0, Real)
+## |     |  |   |   | * (k2, 300.0, Real)
 ## |--   DefaultExperiment
 ## |--     startTime: 0.0
 ## |--     stopTime: 1.0

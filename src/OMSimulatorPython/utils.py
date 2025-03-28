@@ -48,6 +48,7 @@ def parseElements(node):
     ## parse connectors
     components[name].connectors = parseConnectors(component)
     # TODO: parse parameter Bindings.
+    parseParameterBindings(component, components[name])
   return components
 
 def parseConnectors(node):
@@ -75,7 +76,7 @@ def parseConnectors(node):
         break  # Stop after the first valid type is found
   return connectors
 
-def parseParameterBindings(node, obj, temp_dir: Path):
+def parseParameterBindings(node, obj = None, temp_dir: Path = None):
   """Extract and print system parameters"""
   parameterValues={}
   parameter_bindings = node.find("ssd:ParameterBindings", namespaces=namespace.ns)
