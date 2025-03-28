@@ -132,10 +132,11 @@ class SSP:
 
     ## look up in the resource and get the component path
     resource = self._getComponentResourcePath(cref)
-    if resource in self.resources:
-      fmu_inst = self.resources[resource]
-      if not fmu_inst.varExist(cref.last()):
-        raise KeyError(f"Variable '{str(cref.last())}' does not exist in the variables list of component '{resource}'")
+
+    # Check if the resource exists and validate the variable
+    fmu_inst = self.resources.get(resource)
+    if fmu_inst and not fmu_inst.varExist(cref.last()):
+        raise KeyError(f"Variable '{cref.last()}' does not exist in the variables list of component '{resource}'")
 
     self.activeVariant.setValue(cref, value, unit)
 
