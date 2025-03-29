@@ -1,55 +1,45 @@
 from lxml import etree as ET
+from OMSimulator.unit import Unit
 
 from OMSimulator import namespace
-from OMSimulator.unit import Unit
 
 
 class Values:
   def __init__(self):
-    # self.cref = cref
-    # self.value = value
-    self.allResources = {}
-    self.realStartValues = {}
-    self.integerStartValues = {}
-    self.booleanStartValues = {}
-    self.stringStartValues = {}
+    self.start_values = {}
 
-  def setReal(self, var):
-    self.realStartValues[var.name] = var
-
-  def setInteger(self, var):
-    self.integerStartValues[var.name] = var
-
-  def setBoolean(self, var):
-    self.booleanStartValues[var.name] = var
-
-  def setString(self, var):
-    self.stringStartValues[var.name] = var
+  def setValue(self, name, value, unit=None):
+    if unit is not None and not isinstance(value, float):
+      raise TypeError("Unit can only be set for Real values.")
+    self.start_values[name] = (value, unit)
 
   def empty(self) -> bool:
-    return not self.realStartValues and not self.integerStartValues and not self.booleanStartValues and not self.stringStartValues
+    return not self.start_values
 
   def getAllParameters(self):
-    parameters = {}
-    for store in [self.realStartValues, self.integerStartValues, self.booleanStartValues]:
-      for key, value in store.items():
-        parameters[key] = value.startValue
-    return parameters
+    return self.start_values
 
   def list(self, prefix = ""):
     if self.empty():
       return
 
-    for key, var in self.realStartValues.items():
-      print(f"|{prefix}   | * ({key}, {var.startValue}, Real)")
-    for key, var in self.integerStartValues.items():
-      print(f"|{prefix}   | * ({key}, {var.startValue}, Integer)")
-    for key, var in self.booleanStartValues.items():
-      print(f"|{prefix}   | * ({key}, {var.startValue}, Boolean)")
+    for key, (value, unit) in self.start_values.items():
+      if isinstance(value, float):
+        type_tag = "Real"
+      elif isinstance(value, int):
+        type_tag = "Integer"
+      elif isinstance(value, int):
+        type_tag = "Integer"
+      elif isinstance(value, str):
+        type_tag = "String"
+      else:
+        raise TypeError(f"Unsupported type: {type(value)}")
+      print(f"{prefix} ({type_tag} {key}, {value}, {unit})")
 
   def exportToSSD(self, node):
     if self.empty():
       return
+
     parameter_bindings_node = ET.SubElement(node, namespace.tag("ssd", "ParameterBindings"))
     parameter_binding_node = ET.SubElement(parameter_bindings_node, namespace.tag("ssd", "ParameterBinding"))
     parameter_values_node = ET.SubElement(parameter_binding_node, namespace.tag("ssd", "ParameterValues"))
@@ -58,30 +48,36 @@ class Values:
     parameter_set_node.set("name", "parameters")
     parameters_node = ET.SubElement(parameter_set_node, namespace.tag("ssv", "Parameters"))
 
-    self.add_parameters(parameters_node, self.realStartValues, "Real")
-    self.add_parameters(parameters_node, self.integerStartValues, "Integer")
-    self.add_parameters(parameters_node, self.booleanStartValues, "Boolean")
-    self.exportUnitDefintions(parameter_set_node)
+    self.add_parameters(parameters_node)
+    #self.exportUnitDefintions(parameter_set_node)
 
   def exportToSSV(self, node):
     if self.empty():
       return
 
     parameters_node = ET.SubElement(node, namespace.tag("ssv", "Parameters"))
-    self.add_parameters(parameters_node, self.realStartValues, "Real")
-    self.add_parameters(parameters_node, self.integerStartValues, "Integer")
-    self.add_parameters(parameters_node, self.booleanStartValues, "Boolean")
-    self.exportUnitDefintions(node)
+    self.add_parameters(parameters_node)
+    #self.exportUnitDefintions(node)
 
-  def add_parameters(self, parameters_node, values_dict, type_tag):
+  def add_parameters(self, parameters_node):
     """Generic function to add XML parameters based on the value type."""
-    for key, var in values_dict.items():
+    for key, (value, unit) in self.start_values.items():
       parameter_node = ET.SubElement(parameters_node, namespace.tag("ssv", "Parameter"))
-      parameter_node.set("name", key)
+      parameter_node.set("name", str(key))
+      if isinstance(value, float):
+        type_tag = "Real"
+      elif isinstance(value, int):
+        type_tag = "Integer"
+      elif isinstance(value, int):
+        type_tag = "Integer"
+      elif isinstance(value, str):
+        type_tag = "String"
+      else:
+        raise TypeError(f"Unsupported type: {type(value)}")
       parameter_type = ET.SubElement(parameter_node, namespace.tag("ssv", type_tag))
-      parameter_type.set("value", str(var.startValue))
-      if var.unit:
-        parameter_type.set("unit", var.unit)
+      parameter_type.set("value", str(value))
+      if unit is not None:
+        parameter_type.set("unit", unit)
 
   def exportUnitDefintions(self, node):
     unitsToExport = {}

@@ -8,16 +8,17 @@ from OMSimulator import namespace
 
 
 class Component:
-  def __init__(self, name: CRef, fmuPath: Path | str, connectors=None):
+  def __init__(self, name: CRef, fmuPath: Path | str, connectors=None, unitDefinitions=None):
     self.name = CRef(name)
     self.fmuPath = Path(fmuPath)
     self.connectors = connectors or list()
+    self.unitDefinitions = unitDefinitions or list()
     self.value = Values() ## TODO propogate Values
     self.parameterResources = {} ## TODO handle ssv resources
 
   def list(self, prefix=""):
     print(f"{prefix} FMU: ({self.name})")
-    print(f"{prefix}   path: {self.fmuPath}")
+    print(f"{prefix} |-- path: {self.fmuPath}")
 
     if len(self.connectors) > 0:
       print(f"{prefix} Connectors:")
@@ -54,3 +55,6 @@ class Component:
     if len(self.parameterResources) > 0:
       for key, resources in self.parameterResources.items():
         resources.exportToSSD(component_node)
+
+  def setValue(self, cref:str, value, unit=None):
+    self.value.setValue(cref, value, unit)

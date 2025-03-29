@@ -86,16 +86,31 @@ class System:
     first = cref.first()
     if not cref.is_root():
       if first not in self.elements:
-        print(cref)
-        print(self.elements)
         raise ValueError(f"System '{first}' not found in '{self.name}'")
-      self.elements[first].addComponent(cref.pop_first(), resource, inst)
+      return self.elements[first].addComponent(cref.pop_first(), resource, inst)
     else:
       if first in self.elements:
         raise ValueError(f"Component '{first}' already exists in {self.name}")
       connectors = inst.makeConnectors() if inst else list()
       component = Component(first, resource, connectors)
       self.elements[first] = component
+      return component
+
+  def _getComponentResourcePath(self, cref):
+    first = cref.first()
+    if not cref.is_root():
+      if first not in self.elements:
+        raise ValueError(f"System '{first}' not found in '{self.name}'")
+
+    return self.elements[first].fmuPath
+
+  def setValue(self, cref: CRef, value, unit = None):
+    first = cref.first()
+    if not cref.is_root():
+      if first not in self.elements:
+        raise ValueError(f"System '{first}' not found in '{self.name}'")
+
+    self.elements[first].setValue(cref.last(), value, unit)
 
   def export(self, root):
     node = ET.SubElement(root, namespace.tag("ssd", "System"), attrib={"name": self.name})

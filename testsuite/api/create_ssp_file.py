@@ -36,15 +36,15 @@ model2.list()
 ## |-- |-- System: default
 ## |-- |-- Connectors:
 ## |-- DefaultExperiment
-## |--   startTime: 0.0
-## |--   stopTime: 1.0
+## |-- |-- startTime: 0.0
+## |-- |-- stopTime: 1.0
 ## |-- <class 'OMSimulator.ssd.SSD'>
 ## |-- Active variant "Variant-B": None
 ## |-- |-- System: Variant-B
 ## |-- |-- Connectors:
 ## |-- DefaultExperiment
-## |--   startTime: 0.0
-## |--   stopTime: 1.0
+## |-- |-- startTime: 0.0
+## |-- |-- stopTime: 1.0
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
 ## |-- <class 'OMSimulator.ssd.SSD'>
@@ -52,15 +52,15 @@ model2.list()
 ## |-- |-- System: Variant-B
 ## |-- |-- Connectors:
 ## |-- DefaultExperiment
-## |--   startTime: 0.0
-## |--   stopTime: 1.0
+## |-- |-- startTime: 0.0
+## |-- |-- stopTime: 1.0
 ## |-- <class 'OMSimulator.ssd.SSD'>
 ## |-- Inactive variant "default": <hidden>
 ## |-- |-- System: default
 ## |-- |-- Connectors:
 ## |-- DefaultExperiment
-## |--   startTime: 0.0
-## |--   stopTime: 1.0
+## |-- |-- startTime: 0.0
+## |-- |-- stopTime: 1.0
 ## INFO:OMSimulator.ssp:Temporary directory removed: <hidden>
 ## INFO:OMSimulator.ssp:Temporary directory removed: <hidden>
 ## endResult

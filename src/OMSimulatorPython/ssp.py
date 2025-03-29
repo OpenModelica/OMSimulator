@@ -121,7 +121,24 @@ class SSP:
     if resource in self.resources:
       fmu_inst = self.resources[resource]
 
-    self.activeVariant.addComponent(cref, resource, inst=fmu_inst)
+    return self.activeVariant.addComponent(cref, resource, inst=fmu_inst)
+
+  def _getComponentResourcePath(self, cref: CRef):
+    return str(self.activeVariant._getComponentResourcePath(cref))
+
+  def setValue(self, cref: CRef, value, unit = None):
+    if self.activeVariant is None:
+      raise ValueError("No active variant set in the SSP.")
+
+    ## look up in the resource and get the component path
+    resource = self._getComponentResourcePath(cref)
+
+    # Check if the resource exists and validate the variable
+    fmu_inst = self.resources.get(resource)
+    if fmu_inst and not fmu_inst.varExist(cref.last()):
+        raise KeyError(f"Variable '{cref.last()}' does not exist in the variables list of component '{resource}'")
+
+    self.activeVariant.setValue(cref, value, unit)
 
   def addSystem(self, cref: CRef):
     if self.activeVariant is None:

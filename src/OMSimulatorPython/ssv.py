@@ -1,8 +1,7 @@
 from lxml import etree as ET
+from OMSimulator.values import Values
 
 from OMSimulator import namespace
-from OMSimulator.values import Values
-from OMSimulator.variable import Variable
 
 
 class SSV:
@@ -11,17 +10,7 @@ class SSV:
     self.value = Values()
 
   def setValue(self, cref:str, value):
-    var = Variable(cref)
-    var.startValue = value
-
-    if isinstance(value, float):
-      self.value.setReal(var)
-    elif isinstance(value, int):
-      self.value.setInteger(var)
-    elif isinstance(value, bool):
-      self.value.setBoolean(var)
-    elif isinstance(value, str):
-      self.value.setString(var)
+    self.value.setValue(cref, value)
 
   def exportToSSD(self, node):
     parameter_bindings_node = ET.SubElement(node, namespace.tag("ssd", "ParameterBindings"))

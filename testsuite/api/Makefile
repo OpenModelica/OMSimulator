@@ -8,6 +8,9 @@ NewSSP.py \
 NewSSP2.py \
 NewSSP3.py \
 NestedSystem.py \
+setValue1.py \
+setValue2.py \
+setValue3.py \
 
 # Run make failingtest
 FAILINGTESTFILES = \
