@@ -62,7 +62,7 @@ class SSP:
 
     for ssd_file in ssd_files:
       ssd_path = self.temp_dir / ssd_file
-      ssd = SSD.importFromFile(ssd_path)
+      ssd = SSD.importFromFile(ssd_path, self.resources)
       self.add(ssd)
 
   @property

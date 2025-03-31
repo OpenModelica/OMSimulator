@@ -29,7 +29,7 @@ class SSD:
       model.add(self)
 
   @staticmethod
-  def importFromFile(filename: Path):
+  def importFromFile(filename: Path, resources = None):
     '''Imports an SSD file and parses its contents.'''
     try:
       tree = ET.parse(filename)
@@ -42,7 +42,7 @@ class SSD:
       if system is None:
         raise ValueError(f"Invalid SSD file: Missing <ssd:System> in {filename}")
 
-      ssd.system = System.importFromNode(system, ssd)
+      ssd.system = System.importFromNode(system, ssd, resources)
 
       utils.parseDefaultExperiment(root, ssd)
 

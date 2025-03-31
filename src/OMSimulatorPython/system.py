@@ -28,14 +28,14 @@ class System:
     return self._name
 
   @staticmethod
-  def importFromNode(node, ssd):
+  def importFromNode(node, ssd, resources = None):
     '''Imports a ssd:System'''
     try:
       temp_dir = ssd._filename.parent
       system = System(node.get("name"))
       system.connectors = utils.parseConnectors(node)
-      utils.parseParameterBindings(node, ssd, temp_dir)
-      system.elements = utils.parseElements(node)
+      utils.parseParameterBindings(node, ssd, resources)
+      system.elements = utils.parseElements(node, resources)
       utils.parseConnection(node, system)
       return system
 

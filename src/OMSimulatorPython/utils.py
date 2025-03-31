@@ -33,7 +33,7 @@ def parseDefaultExperiment(node, root):
   ##TODO parse ssd:annotation
   ##TODO parse unit definitions
 
-def parseElements(node):
+def parseElements(node, resources = None):
   """Extract components from <ssd:Elements> section"""
   from OMSimulator.system import System
 
@@ -47,12 +47,12 @@ def parseElements(node):
     source = component.get("source")
     elements[name] = Component(name, source)
     elements[name].connectors = parseConnectors(component)
-    parseParameterBindings(component, elements[name])
+    parseParameterBindings(component, elements[name], resources)
   for system in elements_node.findall("ssd:System", namespaces=namespace.ns):
     name = component.get("name")
     elements[name] = System(name)
     elements[name].connectors = parseConnectors(system)
-    parseParameterBindings(system, elements[name])
+    parseParameterBindings(system, elements[name], resources)
   return elements
 
 def parseConnectors(node):
@@ -80,19 +80,16 @@ def parseConnectors(node):
         break  # Stop after the first valid type is found
   return connectors
 
-def parseParameterBindings(node, obj = None, temp_dir: Path = None):
+def parseParameterBindings(node, obj = None, resources = None):
   """Extract and print system parameters"""
   parameter_bindings = node.find("ssd:ParameterBindings", namespaces=namespace.ns)
   if parameter_bindings is not None:
     for binding in parameter_bindings.findall("ssd:ParameterBinding", namespaces=namespace.ns):
       source = binding.get("source")
       if binding.get("source"):
-        ssv_file = temp_dir / source
-        parameterValues = parseSSV(ssv_file)
-        from OMSimulator.ssv import SSV
-        resources = SSV(ssv_file.name)
-        _setParameters(parameterValues, resources)
-        obj.add(resources)
+        ## use the instantiated ssv class to set the parameter Resources
+        if source in resources:
+          obj.parameterResources[source] = resources[source]
       else:
         values = binding.find("ssd:ParameterValues", namespaces=namespace.ns)
         if values is not None:
