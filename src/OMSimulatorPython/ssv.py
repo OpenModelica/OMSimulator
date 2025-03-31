@@ -42,10 +42,6 @@ class SSV:
       file.write(xml)
 
   def importFromSSV(self, filename):
-    parameterValues = {}
-    tree = ET.parse(filename)
-    root = tree.getroot()
-    parameters = root.find("ssv:Parameters", namespaces=namespace.ns)
-    utils.parseParameterBindingHelper(parameters, parameterValues)
+    parameterValues = utils.parseSSV(filename)
     for key, value in parameterValues.items():
       self.setValue(key, value)

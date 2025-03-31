@@ -82,17 +82,13 @@ def parseConnectors(node):
 
 def parseParameterBindings(node, obj = None, temp_dir: Path = None):
   """Extract and print system parameters"""
-  parameterValues={}
   parameter_bindings = node.find("ssd:ParameterBindings", namespaces=namespace.ns)
   if parameter_bindings is not None:
     for binding in parameter_bindings.findall("ssd:ParameterBinding", namespaces=namespace.ns):
       source = binding.get("source")
       if binding.get("source"):
         ssv_file = temp_dir / source
-        tree = ET.parse(ssv_file)
-        root = tree.getroot()
-        parameters = root.find("ssv:Parameters", namespaces=namespace.ns)
-        parseParameterBindingHelper(parameters, parameterValues)
+        parameterValues = parseSSV(ssv_file)
         from OMSimulator.ssv import SSV
         resources = SSV(ssv_file.name)
         _setParameters(parameterValues, resources)
@@ -103,11 +99,18 @@ def parseParameterBindings(node, obj = None, temp_dir: Path = None):
           param_set = values.find("ssv:ParameterSet", namespaces=namespace.ns)
           if param_set is not None:
             parameters = param_set.find("ssv:Parameters", namespaces=namespace.ns)
-            parseParameterBindingHelper(parameters, parameterValues)
+            parameterValues = parseParameterBindingHelper(parameters)
             _setParameters(parameterValues, obj)
 
-def parseParameterBindingHelper(parameters, parameterValues):
+def parseSSV(filename):
+  tree = ET.parse(filename)
+  root = tree.getroot()
+  parameters = root.find("ssv:Parameters", namespaces=namespace.ns)
+  return parseParameterBindingHelper(parameters)
+
+def parseParameterBindingHelper(parameters):
   if parameters is not None:
+    parameterValues={}
     for param in parameters.findall("ssv:Parameter", namespaces=namespace.ns):
       name = param.get("name")
       value_types = {
@@ -122,6 +125,7 @@ def parseParameterBindingHelper(parameters, parameterValues):
           value = value_element.get("value")
           parameterValues[name] = cast_func(value)  # Convert to correct type
           break  # Stop after first found type
+    return parameterValues
 
 def validateSSP(root, schema_file):
   module_dir = Path(__file__).parent
