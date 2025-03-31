@@ -11,10 +11,7 @@ class Connection:
     self.endConnector = endConnector
 
   def list(self, prefix=""):
-    if not self.startElement:
-      print(f"|{prefix} * ({self.startConnector} -> {self.endElement}.{self.endConnector})")
-    else:
-      print(f"|{prefix} * ({self.startElement}.{self.startConnector} -> {self.endElement}.{self.endConnector})")
+    print(f"{prefix} {self.startElement}.{self.startConnector} -> {self.endElement}.{self.endConnector}")
 
   def exportToSSD(self, node):
     connection_node = ET.SubElement(node, namespace.tag("ssd", "Connection"))

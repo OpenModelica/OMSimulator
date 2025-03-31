@@ -2,6 +2,7 @@ import logging
 
 from lxml import etree as ET
 from OMSimulator.component import Component
+from OMSimulator.connection import Connection
 from OMSimulator.fmu import FMU
 from OMSimulator.values import Values
 
@@ -41,6 +42,11 @@ class System:
       logger.error(f"Error parsing System: {e}")
       raise
 
+  def addConnector(self, connector):
+    if connector in self.connectors:
+      raise ValueError(f"Connector '{connector.name}' already exists in {self.name}")
+    self.connectors.append(connector)
+
   def list(self, prefix=""):
     print(f"{prefix} System: {self.name}")
     print(f"{prefix} Connectors:")
@@ -68,8 +74,7 @@ class System:
     if len(self.connections) > 0:
       print(f"{prefix} Connections:")
       for connection in self.connections:
-        print(f"{prefix} |-- {connection[0]}.{connection[1]} -> {connection[2]}.{connection[3]}")
-        pass
+        connection.list(prefix=prefix + " |--")
 
   def addSystem(self, cref: CRef):
     first = cref.first()
@@ -82,7 +87,7 @@ class System:
         raise ValueError(f"System '{first}' already exists in {self.name}")
       self.elements[first] = System(first, model=self.model)
 
-  def addComponent(self, cref: CRef, resource: str, inst = None | FMU):
+  def addComponent(self, cref: CRef, resource: str, inst = None):
     first = cref.first()
     if not cref.is_root():
       if first not in self.elements:
@@ -97,13 +102,14 @@ class System:
       return component
 
   def addConnection(self, startElement : str, startConnector : str, endElement : str, endConnector : str):
-    if (startElement, startConnector, endElement, endConnector) in self.connections:
-      raise ValueError(f"Connection '{startElement}.{startConnector}' to '{endElement}.{endConnector}' already exists")
+    #TODO: Fix this check for Connection class
+    #if (startElement, startConnector, endElement, endConnector) in self.connections:
+    #  raise ValueError(f"Connection '{startElement}.{startConnector}' to '{endElement}.{endConnector}' already exists")
 
-    if (endElement, endConnector, startElement, startConnector) in self.connections:
-      raise ValueError(f"Connection '{startElement}.{startConnector}' to '{endElement}.{endConnector}' already exists")
+    #if (endElement, endConnector, startElement, startConnector) in self.connections:
+    #  raise ValueError(f"Connection '{startElement}.{startConnector}' to '{endElement}.{endConnector}' already exists")
 
-    self.connections.append((startElement, startConnector, endElement, endConnector))
+    self.connections.append(Connection(startElement, startConnector, endElement, endConnector))
 
   def _getComponentResourcePath(self, cref):
     first = cref.first()
