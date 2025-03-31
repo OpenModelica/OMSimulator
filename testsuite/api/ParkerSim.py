@@ -16,7 +16,7 @@ Settings.suppressPath = True
 model = SSP('../resources/ParkerSimPack.ssp', temp_dir="./tmp-ParkerSim/")
 
 print('\nAvailable variants:')
-print(model.variants.keys())
+print(sorted(model.variants.keys()))
 
 print('\nActive variant:')
 model.activeVariant.list()
@@ -28,7 +28,7 @@ model.variants['D16_aero_stimuli'].list()
 ## INFO:OMSimulator.ssp:Temporary directory created: <hidden>
 ##
 ## Available variants:
-## dict_keys(['D16_auto', 'D16_aero_stimuli', 'D16_auto_stimuli', 'D16_aero'])
+## ['D16_aero', 'D16_aero_stimuli', 'D16_auto', 'D16_auto_stimuli']
 ##
 ## Active variant:
 ##  <class 'OMSimulator.ssd.SSD'>
