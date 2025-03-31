@@ -107,9 +107,9 @@ model.variants['D16_aero_stimuli'].list()
 ##  |-- |-- interface_model.uB.in.y -> valve_model.uB
 ##  |-- |-- valve_model.qA -> interface_model.qA.out.y
 ##  |-- |-- valve_model.qB -> interface_model.qB.out.y
-##  |-- |-- None.theta_ref -> interface_model.theta_ref.out.y
-##  |-- |-- valve_model.Debug -> None.Debug
-##  |-- |-- interface_model.theta.in.y -> None.theta
+##  |-- |-- .theta_ref -> interface_model.theta_ref.out.y
+##  |-- |-- valve_model.Debug -> .Debug
+##  |-- |-- interface_model.theta.in.y -> .theta
 ##  DefaultExperiment
 ##  |-- startTime: 0.0
 ##  |-- stopTime: 10.0
@@ -197,13 +197,13 @@ model.variants['D16_aero_stimuli'].list()
 ##  |-- |-- interface_model.uA.in.y -> valve_model.uA
 ##  |-- |-- interface_model.uB.in.y -> valve_model.uB
 ##  |-- |-- valve_model.qTB -> interface_model.qTB.out.y
-##  |-- |-- interface_model.m_dot_TB.in.y -> None.m_dot_TB
+##  |-- |-- interface_model.m_dot_TB.in.y -> .m_dot_TB
 ##  |-- |-- stimuli_model.u.in.y -> interface_model.u.out.y
 ##  |-- |-- stimuli_model.p1.in.y -> valve_model.pB
 ##  |-- |-- stimuli_model.p2.in.y -> valve_model.pTB
-##  |-- |-- valve_model.Debug -> None.Debug
-##  |-- |-- stimuli_model.u.in.y -> None.u
-##  |-- |-- stimuli_model.p1.in.y -> None.p1
+##  |-- |-- valve_model.Debug -> .Debug
+##  |-- |-- stimuli_model.u.in.y -> .u
+##  |-- |-- stimuli_model.p1.in.y -> .p1
 ##  DefaultExperiment
 ##  |-- startTime: 0.0
 ##  |-- stopTime: 20.0
