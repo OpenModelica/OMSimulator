@@ -1,13 +1,16 @@
 from lxml import etree as ET
 from OMSimulator.values import Values
 
-from OMSimulator import namespace
+from OMSimulator import namespace, utils
 from pathlib import Path
 
 class SSV:
-  def __init__(self):
+  def __init__(self, ssv_path : str | None = None):
     self.filename = None
     self.value = Values()
+    if ssv_path:
+      self.filename = Path(ssv_path)
+      self.importFromSSV(self.filename)
 
   def setValue(self, cref:str, value, unit = None):
     self.value.setValue(cref, value, unit)
@@ -15,7 +18,7 @@ class SSV:
   def exportToSSD(self, node):
     parameter_bindings_node = ET.SubElement(node, namespace.tag("ssd", "ParameterBindings"))
     parameter_binding_node = ET.SubElement(parameter_bindings_node, namespace.tag("ssd", "ParameterBinding"))
-    parameter_binding_node.set("source", "resources/"+ self.filename)
+    parameter_binding_node.set("source", "resources/"+ self.filename.name)
 
   def list(self, prefix = ""):
     self.value.list(prefix)
@@ -37,3 +40,12 @@ class SSV:
     self.filename = Path(filename).resolve()
     with open(self.filename, "w", encoding="utf-8") as file:
       file.write(xml)
+
+  def importFromSSV(self, filename):
+    parameterValues = {}
+    tree = ET.parse(filename)
+    root = tree.getroot()
+    parameters = root.find("ssv:Parameters", namespaces=namespace.ns)
+    utils.parseParameterBindingHelper(parameters, parameterValues)
+    for key, value in parameterValues.items():
+      self.setValue(key, value)

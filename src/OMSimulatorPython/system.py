@@ -5,6 +5,7 @@ from OMSimulator.component import Component
 from OMSimulator.connection import Connection
 from OMSimulator.fmu import FMU
 from OMSimulator.values import Values
+from OMSimulator.ssv import SSV
 
 from OMSimulator import CRef, namespace, utils
 
@@ -61,7 +62,7 @@ class System:
     ## list parameteres in ssv files
     if len(self.parameterResources) > 0:
       for key, resources in self.parameterResources.items():
-        print(f"{prefix} Parameter Bindings: {resources.filename}")
+        print(f"{prefix} Parameter Bindings: {resources.filename.name}")
         resources.list(prefix=prefix + " |--")
 
     ## list elements
@@ -100,6 +101,17 @@ class System:
       component = Component(first, resource, connectors)
       self.elements[first] = component
       return component
+
+  def addSSV(self, cref: CRef, resource: str, inst = None | SSV):
+    first = cref.first()
+    if not cref.is_root():
+      if first not in self.elements:
+        raise ValueError(f"System '{first}' not found in '{self.name}'")
+      self.elements[first].parameterResources[first] = inst
+    else:
+      if first not in self.elements:
+        raise ValueError(f"Component '{first}' does not exists in {self.name}")
+      self.elements[first].parameterResources[first] = inst
 
   def addConnection(self, startElement : str, startConnector : str, endElement : str, endConnector : str):
     #TODO: Fix this check for Connection class

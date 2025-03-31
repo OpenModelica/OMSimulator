@@ -3,7 +3,6 @@ from pathlib import Path
 
 from OMSimulator.component import Component
 from OMSimulator.connector import Connector
-from OMSimulator.ssv import SSV
 from OMSimulator.variable import SignalType
 
 from OMSimulator import namespace
@@ -94,6 +93,7 @@ def parseParameterBindings(node, obj = None, temp_dir: Path = None):
         root = tree.getroot()
         parameters = root.find("ssv:Parameters", namespaces=namespace.ns)
         parseParameterBindingHelper(parameters, parameterValues)
+        from OMSimulator.ssv import SSV
         resources = SSV(ssv_file.name)
         _setParameters(parameterValues, resources)
         obj.add(resources)

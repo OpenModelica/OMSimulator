@@ -6,6 +6,7 @@ from OMSimulator.cref import CRef
 from OMSimulator.fmu import FMU
 from OMSimulator.settings import suppress_path_to_str
 from OMSimulator.system import System
+from OMSimulator.ssv import SSV
 
 from OMSimulator import namespace, utils
 
@@ -73,6 +74,10 @@ class SSD:
   def addComponent(self, cref: CRef, resource: str, inst = None | FMU):
     subcref = self._validateCref(cref)
     return self.system.addComponent(subcref, resource, inst)
+
+  def addSSV(self, cref: CRef, resource, inst = None | SSV):
+    subcref = self._validateCref(cref)
+    return self.system.addSSV(subcref, resource, inst)
 
   def _getComponentResourcePath(self, cref: CRef):
     subcref = self._validateCref(cref)

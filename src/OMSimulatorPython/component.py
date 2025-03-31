@@ -38,7 +38,7 @@ class Component:
     ## list parameteres in ssv files
     if len(self.parameterResources) > 0:
       for resources in self.parameterResources.values():
-        print(f"{prefix} Parameter Bindings: {resources.filename}")
+        print(f"{prefix} Parameter Bindings: {resources.filename.name}")
         resources.list(prefix=prefix + " |--")
 
   def exportToSSD(self, node):
