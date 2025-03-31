@@ -4,14 +4,16 @@ OMSimulator
 OpenModelica FMI & SSP based simulator.
 '''
 
-from OMSimulator import capi
+from OMSimulator.connector import Connector
 from OMSimulator.cref import CRef
 from OMSimulator.fmu import FMU
+from OMSimulator.settings import Settings
 from OMSimulator.ssd import SSD
 from OMSimulator.ssp import SSP
 from OMSimulator.system import System
 from OMSimulator.variable import Causality, SignalType, Variable
-from OMSimulator.settings import Settings
+
+from OMSimulator import capi
 
 # Define public API
 __all__ = ['CRef', 'FMU', 'SSD', 'SSP', 'System', 'Causality', 'SignalType', 'Variable' 'Settings']

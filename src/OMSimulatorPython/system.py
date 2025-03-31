@@ -41,6 +41,11 @@ class System:
       logger.error(f"Error parsing System: {e}")
       raise
 
+  def addConnector(self, connector):
+    if connector in self.connectors:
+      raise ValueError(f"Connector '{connector.name}' already exists in {self.name}")
+    self.connectors.append(connector)
+
   def list(self, prefix=""):
     print(f"{prefix} System: {self.name}")
     print(f"{prefix} Connectors:")
@@ -82,7 +87,7 @@ class System:
         raise ValueError(f"System '{first}' already exists in {self.name}")
       self.elements[first] = System(first, model=self.model)
 
-  def addComponent(self, cref: CRef, resource: str, inst = None | FMU):
+  def addComponent(self, cref: CRef, resource: str, inst = None):
     first = cref.first()
     if not cref.is_root():
       if first not in self.elements:
