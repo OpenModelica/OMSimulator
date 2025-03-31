@@ -1,16 +1,7 @@
 TEST = ../rtest -v
 
 TESTFILES = \
-create_ssp_file.py \
-cref.py \
-fmuinfo.py \
-NestedSystem.py \
-NewSSP.py \
-NewSSP2.py \
-NewSSP3.py \
-setValue1.py \
-setValue2.py \
-setValue3.py \
+ParkerSim.py \
 
 # Run make failingtest
 FAILINGTESTFILES = \
