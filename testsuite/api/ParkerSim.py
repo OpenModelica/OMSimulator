@@ -13,31 +13,22 @@ from OMSimulator import SSD, SSP, Settings
 
 Settings.suppressPath = True
 
-# This example creates a new SSP file containing a default SSD file.
-# It then creates another SSD file and adds it to the SSP file using the add method.
-# Finally, the SSP file is exported to a new file and re-imported.
-
 model = SSP('../resources/ParkerSimPack.ssp', temp_dir="./tmp-ParkerSim/")
 
-print('\n')
-print('Available variants:')
+print('\nAvailable variants:')
 print(model.variants.keys())
 
-print('\n')
-print('Active variant:')
+print('\nActive variant:')
 model.activeVariant.list()
 
-print('\n')
-print('Variant D16_aero_stimuli:')
+print('\nVariant D16_aero_stimuli:')
 model.variants['D16_aero_stimuli'].list()
 
 ## Result:
 ## INFO:OMSimulator.ssp:Temporary directory created: <hidden>
 ##
-##
 ## Available variants:
 ## dict_keys(['D16_auto', 'D16_aero_stimuli', 'D16_auto_stimuli', 'D16_aero'])
-##
 ##
 ## Active variant:
 ##  <class 'OMSimulator.ssd.SSD'>
@@ -122,7 +113,6 @@ model.variants['D16_aero_stimuli'].list()
 ##  DefaultExperiment
 ##  |-- startTime: 0.0
 ##  |-- stopTime: 10.0
-##
 ##
 ## Variant D16_aero_stimuli:
 ##  <class 'OMSimulator.ssd.SSD'>
