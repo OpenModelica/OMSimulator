@@ -2,6 +2,7 @@ import logging
 
 from lxml import etree as ET
 from OMSimulator.component import Component
+from OMSimulator.connection import Connection
 from OMSimulator.fmu import FMU
 from OMSimulator.values import Values
 
@@ -73,8 +74,7 @@ class System:
     if len(self.connections) > 0:
       print(f"{prefix} Connections:")
       for connection in self.connections:
-        print(f"{prefix} |-- {connection[0]}.{connection[1]} -> {connection[2]}.{connection[3]}")
-        pass
+        connection.list(prefix=prefix + " |--")
 
   def addSystem(self, cref: CRef):
     first = cref.first()
@@ -102,13 +102,14 @@ class System:
       return component
 
   def addConnection(self, startElement : str, startConnector : str, endElement : str, endConnector : str):
-    if (startElement, startConnector, endElement, endConnector) in self.connections:
-      raise ValueError(f"Connection '{startElement}.{startConnector}' to '{endElement}.{endConnector}' already exists")
+    #TODO: Fix this check for Connection class
+    #if (startElement, startConnector, endElement, endConnector) in self.connections:
+    #  raise ValueError(f"Connection '{startElement}.{startConnector}' to '{endElement}.{endConnector}' already exists")
 
-    if (endElement, endConnector, startElement, startConnector) in self.connections:
-      raise ValueError(f"Connection '{startElement}.{startConnector}' to '{endElement}.{endConnector}' already exists")
+    #if (endElement, endConnector, startElement, startConnector) in self.connections:
+    #  raise ValueError(f"Connection '{startElement}.{startConnector}' to '{endElement}.{endConnector}' already exists")
 
-    self.connections.append((startElement, startConnector, endElement, endConnector))
+    self.connections.append(Connection(startElement, startConnector, endElement, endConnector))
 
   def _getComponentResourcePath(self, cref):
     first = cref.first()
