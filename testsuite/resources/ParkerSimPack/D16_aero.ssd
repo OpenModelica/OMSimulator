@@ -1,0 +1,252 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ssd:SystemStructureDescription xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" name="D16_aero" version="1.0" description="Demonstrator 1.6 aerospace model (for integration in aerospace model)" generationTool="ParkerSSPGenerator" generationDateAndTime="2025-02-10T16:08:27">
+   <ssd:System name="D16_aero" description="Demonstrator 1.6 aerospace model (for integration in aerospace model)">
+      <ssd:Connectors>
+         <ssd:Connector name="u" kind="input" description="Valve input signal">
+            <ssc:Real unit="-"/>
+         </ssd:Connector>
+         <ssd:Connector name="p1" kind="input" description="Valve upstream pressure">
+            <ssc:Real unit="bar"/>
+         </ssd:Connector>
+         <ssd:Connector name="p2" kind="input" description="Valve downstream pressure">
+            <ssc:Real unit="bar"/>
+         </ssd:Connector>
+         <ssd:Connector name="m_dot_TB" kind="output" description="Valve mass flow">
+            <ssc:Real unit="kgps"/>
+         </ssd:Connector>
+         <ssd:Connector name="Debug" kind="output" description="Valve debug channel (0 = OK)">
+            <ssc:Real unit="-"/>
+         </ssd:Connector>
+      </ssd:Connectors>
+      <ssd:Elements>
+         <ssd:Component name="interface_model" type="application/x-fmu-sharedlibrary" source="resources/FMU_16_aero_interface.fmu">
+            <ssd:Connectors>
+               <ssd:Connector name="m_dot_TB.in.y" kind="output" description="">
+                  <ssc:Real unit=""/>
+               </ssd:Connector>
+               <ssd:Connector name="pA.in.y" kind="output" description="">
+                  <ssc:Real unit=""/>
+               </ssd:Connector>
+               <ssd:Connector name="pLin.in.y" kind="output" description="">
+                  <ssc:Real unit=""/>
+               </ssd:Connector>
+               <ssd:Connector name="pLmax.in.y" kind="output" description="">
+                  <ssc:Real unit=""/>
+               </ssd:Connector>
+               <ssd:Connector name="p_P.in.y" kind="output" description="">
+                  <ssc:Real unit=""/>
+               </ssd:Connector>
+               <ssd:Connector name="p_PS.in.y" kind="output" description="">
+                  <ssc:Real unit=""/>
+               </ssd:Connector>
+               <ssd:Connector name="p_TA.in.y" kind="output" description="">
+                  <ssc:Real unit=""/>
+               </ssd:Connector>
+               <ssd:Connector name="p_TP.in.y" kind="output" description="">
+                  <ssc:Real unit=""/>
+               </ssd:Connector>
+               <ssd:Connector name="qTB.out.y" kind="input" description="">
+                  <ssc:Real unit=""/>
+               </ssd:Connector>
+               <ssd:Connector name="u.out.y" kind="input" description="">
+                  <ssc:Real unit=""/>
+               </ssd:Connector>
+               <ssd:Connector name="uA.in.y" kind="output" description="">
+                  <ssc:Real unit=""/>
+               </ssd:Connector>
+               <ssd:Connector name="uB.in.y" kind="output" description="">
+                  <ssc:Real unit=""/>
+               </ssd:Connector>
+            </ssd:Connectors>
+            <ssd:ParameterBindings>
+               <ssd:ParameterBinding>
+                  <ssd:ParameterValues>
+                     <ssv:ParameterSet version="1.0" name="parameters">
+                        <ssv:Parameters>
+                           <ssv:Parameter name="timestep" description="Hopsan time step">
+                              <ssv:Real value="0.001" unit="s"/>
+                           </ssv:Parameter>
+                           <ssv:Parameter name="pT" description="Tank pressure">
+                              <ssv:Real value="1" unit="bar"/>
+                           </ssv:Parameter>
+                           <ssv:Parameter name="pP" description="Pump pressure">
+                              <ssv:Real value="1" unit="bar"/>
+                           </ssv:Parameter>
+                           <ssv:Parameter name="rho" description="Liquid density">
+                              <ssv:Real value="1000" unit="kg/m3"/>
+                           </ssv:Parameter>
+                           <ssv:Parameter name="uB_const" description="Valve input B">
+                              <ssv:Real value="0" unit="mA"/>
+                           </ssv:Parameter>
+                           <ssv:Parameter name="p_PS_const" description="Pilot supply pressure">
+                              <ssv:Real value="35" unit="bar"/>
+                           </ssv:Parameter>
+                        </ssv:Parameters>
+                        <ssv:Units>
+                           <ssc:Unit name="s">
+                              <ssc:BaseUnit s="1" factor="1.0" offset="0.0"/>
+                           </ssc:Unit>
+                           <ssc:Unit name="bar">
+                              <ssc:BaseUnit kg="1" m="-2" factor="1e5" offset="0.0"/>
+                           </ssc:Unit>
+                           <ssc:Unit name="kg/m3">
+                              <ssc:BaseUnit kg="1" m="-3" factor="1" offset="0.0"/>
+                           </ssc:Unit>
+                           <ssc:Unit name="mA">
+                              <ssc:BaseUnit A="1" factor="1e-3" offset="0.0"/>
+                           </ssc:Unit>
+                        </ssv:Units>
+                     </ssv:ParameterSet>
+                  </ssd:ParameterValues>
+               </ssd:ParameterBinding>
+            </ssd:ParameterBindings>
+         </ssd:Component>
+         <ssd:Component name="valve_model" type="application/x-fmu-sharedlibrary" source="resources/L90LS_UD_OS_OS.fmu">
+            <ssd:Connectors>
+               <ssd:Connector name="uA" kind="input" description="Valve input A">
+                  <ssc:Real unit="mA"/>
+               </ssd:Connector>
+               <ssd:Connector name="uB" kind="input" description="Valve input B">
+                  <ssc:Real unit="mA"/>
+               </ssd:Connector>
+               <ssd:Connector name="pP" kind="input" description="Pump pressure">
+                  <ssc:Real unit="bar"/>
+               </ssd:Connector>
+               <ssd:Connector name="pTA" kind="input" description="Tank port A pressure">
+                  <ssc:Real unit="bar"/>
+               </ssd:Connector>
+               <ssd:Connector name="pTB" kind="input" description="Tank port B pressure">
+                  <ssc:Real unit="bar"/>
+               </ssd:Connector>
+               <ssd:Connector name="pA" kind="input" description="Port A pressure">
+                  <ssc:Real unit="bar"/>
+               </ssd:Connector>
+               <ssd:Connector name="pB" kind="input" description="Port B pressure">
+                  <ssc:Real unit="bar"/>
+               </ssd:Connector>
+               <ssd:Connector name="pLin" kind="input" description="Input load pressure">
+                  <ssc:Real unit="bar"/>
+               </ssd:Connector>
+               <ssd:Connector name="pLmax" kind="input" description="Max load pressure">
+                  <ssc:Real unit="bar"/>
+               </ssd:Connector>
+               <ssd:Connector name="qA" kind="output" description="Port A flow">
+                  <ssc:Real unit="L/min"/>
+               </ssd:Connector>
+               <ssd:Connector name="qB" kind="output" description="Port B flow">
+                  <ssc:Real unit="L/min"/>
+               </ssd:Connector>
+               <ssd:Connector name="qP" kind="output" description="Pump flow">
+                  <ssc:Real unit="L/min"/>
+               </ssd:Connector>
+               <ssd:Connector name="qTA" kind="output" description="Tankport A flow">
+                  <ssc:Real unit="L/min"/>
+               </ssd:Connector>
+               <ssd:Connector name="qTB" kind="output" description="Tankport B flow">
+                  <ssc:Real unit="L/min"/>
+               </ssd:Connector>
+               <ssd:Connector name="pL" kind="output" description="Load pressure">
+                  <ssc:Real unit="bar"/>
+               </ssd:Connector>
+               <ssd:Connector name="p_TP" kind="input" description="Pilot tank pressure">
+                  <ssc:Real unit="bar"/>
+               </ssd:Connector>
+               <ssd:Connector name="p_PS" kind="input" description="Pilot pressure supply">
+                  <ssc:Real unit="bar"/>
+               </ssd:Connector>
+               <ssd:Connector name="Debug" kind="output" description="Debug channel (0 = OK)">
+                  <ssc:Real unit=""/>
+               </ssd:Connector>
+            </ssd:Connectors>
+            <ssd:ParameterBindings>
+               <ssd:ParameterBinding>
+                  <ssd:ParameterValues>
+                     <ssv:ParameterSet version="1.0" name="parameters">
+                        <ssv:Parameters>
+                           <ssv:Parameter name="d_A" description="Pilot A damping orifice diameter">
+                              <ssv:Real value="2" unit="mm"/>
+                           </ssv:Parameter>
+                           <ssv:Parameter name="d_B" description="Pilot B damping orifice diameter">
+                              <ssv:Real value="2" unit="mm"/>
+                           </ssv:Parameter>
+                           <ssv:Parameter name="KqMO_PABT_gain" description="Flow trim coefficient Meter-out P-&gt;A">
+                              <ssv:Real value="1" unit="-"/>
+                           </ssv:Parameter>
+                           <ssv:Parameter name="KqMI_PABT_gain" description="Flow trim coefficient Meter-in P-&gt;A">
+                              <ssv:Real value="1" unit="-"/>
+                           </ssv:Parameter>
+                           <ssv:Parameter name="KqMO_PBAT_gain" description="Flow trim coefficient Meter-out P-&gt;B">
+                              <ssv:Real value="1" unit="-"/>
+                           </ssv:Parameter>
+                           <ssv:Parameter name="KqMI_PBAT_gain" description="Flow trim coefficient Meter-in P-&gt;B">
+                              <ssv:Real value="1" unit="-"/>
+                           </ssv:Parameter>
+                        </ssv:Parameters>
+                        <ssv:Units>
+                           <ssc:Unit name="mm">
+                              <ssc:BaseUnit m="1" factor="1e-3"/>
+                           </ssc:Unit>
+                           <ssc:Unit name="-">
+                              <ssc:BaseUnit factor="1" offset="0"/>
+                           </ssc:Unit>
+                        </ssv:Units>
+                     </ssv:ParameterSet>
+                  </ssd:ParameterValues>
+               </ssd:ParameterBinding>
+            </ssd:ParameterBindings>
+         </ssd:Component>
+      </ssd:Elements>
+      <ssd:Connections>
+         <ssd:Connection endConnector="pA" endElement="valve_model" startConnector="pA.in.y" startElement="interface_model"/>
+         <ssd:Connection endConnector="pLmax" endElement="valve_model" startConnector="pLmax.in.y" startElement="interface_model"/>
+         <ssd:Connection endConnector="pLin" endElement="valve_model" startConnector="pLin.in.y" startElement="interface_model"/>
+         <ssd:Connection endConnector="pP" endElement="valve_model" startConnector="p_P.in.y" startElement="interface_model"/>
+         <ssd:Connection endConnector="p_PS" endElement="valve_model" startConnector="p_PS.in.y" startElement="interface_model"/>
+         <ssd:Connection endConnector="pTA" endElement="valve_model" startConnector="p_TA.in.y" startElement="interface_model"/>
+         <ssd:Connection endConnector="p_TP" endElement="valve_model" startConnector="p_TP.in.y" startElement="interface_model"/>
+         <ssd:Connection endConnector="uA" endElement="valve_model" startConnector="uA.in.y" startElement="interface_model"/>
+         <ssd:Connection endConnector="uB" endElement="valve_model" startConnector="uB.in.y" startElement="interface_model"/>
+         <ssd:Connection endConnector="qTB.out.y" endElement="interface_model" startConnector="qTB" startElement="valve_model"/>
+         <ssd:Connection endConnector="m_dot_TB" startConnector="m_dot_TB.in.y" startElement="interface_model"/>
+         <ssd:Connection endConnector="u.out.y" endElement="interface_model" startConnector="u"/>
+         <ssd:Connection endConnector="pB" endElement="valve_model" startConnector="p1"/>
+         <ssd:Connection endConnector="pTB" endElement="valve_model" startConnector="p2"/>
+         <ssd:Connection endConnector="Debug" startConnector="Debug" startElement="valve_model"/>
+      </ssd:Connections>
+      <ssd:Annotations>
+         <ssc:Annotation type="org.openmodelica">
+            <oms:Annotations>
+               <oms:SimulationInformation>
+                  <oms:FixedStepMaster description="oms-ma" stepSize="0.001" absoluteTolerance="0.0001" relativeTolerance="0.0001"/>
+               </oms:SimulationInformation>
+            </oms:Annotations>
+         </ssc:Annotation>
+      </ssd:Annotations>
+   </ssd:System>
+   <ssd:Units>
+      <ssc:Unit name="mA">
+         <ssc:BaseUnit A="1" factor="1e-3"/>
+      </ssc:Unit>
+      <ssc:Unit name="bar">
+         <ssc:BaseUnit kg="1" m="-1" s="-2" factor="1e5" offset="0"/>
+      </ssc:Unit>
+      <ssc:Unit name="L/min">
+         <ssc:BaseUnit m="3" s="-1" factor="6e-4"/>
+      </ssc:Unit>
+      <ssc:Unit name="-">
+         <ssc:BaseUnit factor="1" offset="0.0"/>
+      </ssc:Unit>
+      <ssc:Unit name="kgps">
+         <ssc:BaseUnit kg="1" s="-1" factor="1" offset="0.0"/>
+      </ssc:Unit>
+   </ssd:Units>
+   <ssd:DefaultExperiment startTime="0.0" stopTime="20.0">
+      <ssd:Annotations>
+         <ssc:Annotation type="org.openmodelica">
+            <oms:Annotations>
+               <oms:SimulationInformation resultFile="D16_aero_results.csv" loggingInterval="0.000" bufferSize="10"/>
+            </oms:Annotations>
+         </ssc:Annotation>
+      </ssd:Annotations>
+   </ssd:DefaultExperiment>
+</ssd:SystemStructureDescription>

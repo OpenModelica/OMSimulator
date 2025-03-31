@@ -11,6 +11,7 @@ NestedSystem.py \
 setValue1.py \
 setValue2.py \
 setValue3.py \
+ParkerSim.py \
 
 # Run make failingtest
 FAILINGTESTFILES = \
