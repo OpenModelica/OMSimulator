@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm setValue2.ssp tmp-setValueSSV2/
+## teardown_command: rm setValueSSV2.ssp tmp-setValueSSV2/
 ## linux: yes
 ## mingw32: yes
 ## mingw64: yes
@@ -14,7 +14,7 @@ Settings.suppressPath = True
 # set parameter values to ssv file and reference them in ssp file
 
 model = SSP(temp_dir="./tmp-setValueSSV2/")
-model.addResource('../resources/Modelica.Blocks.Math.Add.fmu', new_name='Add.fmu')
+model.addResource('../resources/Modelica.Blocks.Math.Add.fmu', new_name='resources/Add.fmu')
 # root = model.activeVariant
 component1 = model.addComponent(CRef('default', 'Add1'), 'Add.fmu')
 component2 = model.addComponent(CRef('default', 'Add2'), 'Add.fmu')
@@ -42,9 +42,9 @@ model.addResource("myfile2.ssv", "resources/myfile2.ssv")
 model.addSSV(CRef('default', 'Add2'), 'resources/myfile2.ssv')
 
 model.list()
-model.export('setValue2.ssp')
+model.export('setValueSSV2.ssp')
 
-model2 = SSP('setValue2.ssp')
+model2 = SSP('setValueSSV2.ssp')
 model2.list()
 
 ## Result:
