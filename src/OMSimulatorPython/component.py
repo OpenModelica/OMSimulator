@@ -16,6 +16,11 @@ class Component:
     self.value = Values() ## TODO propogate Values
     self.parameterResources = {} ## TODO handle ssv resources
 
+  def addConnector(self, connector):
+    if connector in self.connectors:
+      raise ValueError(f"Connector '{connector.name}' already exists in {self.name}")
+    self.connectors.append(connector)
+
   def list(self, prefix=""):
     print(f"{prefix} FMU: ({self.name})")
     print(f"{prefix} |-- path: {self.fmuPath}")

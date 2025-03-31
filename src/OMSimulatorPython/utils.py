@@ -19,9 +19,9 @@ def parseConnection(node, root):
   if connections_node is None:
     return
   for connection in connections_node.findall("ssd:Connection", namespaces=namespace.ns):
-    startElement = connection.get("startElement")
+    startElement = connection.get("startElement", '')
     startConnector = connection.get("startConnector")
-    endElement = connection.get("endElement")
+    endElement = connection.get("endElement", '')
     endConnector = connection.get("endConnector")
     root.addConnection(startElement, startConnector, endElement, endConnector)
 
