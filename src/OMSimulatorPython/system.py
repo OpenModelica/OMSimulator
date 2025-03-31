@@ -68,7 +68,7 @@ class System:
     if len(self.connections) > 0:
       print(f"{prefix} Connections:")
       for connection in self.connections:
-        connection.list(prefix=prefix + " |--")
+        print(f"{prefix} |-- {connection[0]}.{connection[1]} -> {connection[2]}.{connection[3]}")
         pass
 
   def addSystem(self, cref: CRef):
@@ -95,6 +95,15 @@ class System:
       component = Component(first, resource, connectors)
       self.elements[first] = component
       return component
+
+  def addConnection(self, startElement : str, startConnector : str, endElement : str, endConnector : str):
+    if (startElement, startConnector, endElement, endConnector) in self.connections:
+      raise ValueError(f"Connection '{startElement}.{startConnector}' to '{endElement}.{endConnector}' already exists")
+
+    if (endElement, endConnector, startElement, startConnector) in self.connections:
+      raise ValueError(f"Connection '{startElement}.{startConnector}' to '{endElement}.{endConnector}' already exists")
+
+    self.connections.append((startElement, startConnector, endElement, endConnector))
 
   def _getComponentResourcePath(self, cref):
     first = cref.first()

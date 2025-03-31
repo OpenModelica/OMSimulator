@@ -6,11 +6,12 @@ from OMSimulator.cref import CRef
 
 class Causality(Enum):
   '''Enumeration for signal causality (oms_causality_enu_t).'''
-  input = 0
-  output = 1
-  parameter = 2
-  calculatedParameter = 3
-  local = 6
+  parameter = 0
+  calculatedParameter = 1
+  input = 2
+  output = 3
+  local = 4
+  independent = 5
 
 
 class SignalType(Enum):
