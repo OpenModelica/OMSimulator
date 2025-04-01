@@ -50,7 +50,7 @@ for filename in files:
 ##       <ssv:Integer value="3"/>
 ##     </ssv:Parameter>
 ##     <ssv:Parameter name="k4">
-##       <ssv:Integer value="False"/>
+##       <ssv:Boolean value="False"/>
 ##     </ssv:Parameter>
 ##     <ssv:Parameter name="param3">
 ##       <ssv:String value="hello"/>
