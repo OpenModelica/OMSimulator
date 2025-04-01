@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm setValueSSV2.ssp tmp-setValueSSV2/
+## teardown_command: rm -rf setValueSSV2.ssp tmp-setValueSSV2/
 ## linux: yes
 ## ucrt64: yes
 ## win: yes
@@ -43,7 +43,7 @@ model.addSSV(CRef('default', 'Add2'), 'resources/myfile2.ssv')
 model.list()
 model.export('setValueSSV2.ssp')
 
-model2 = SSP('setValueSSV2.ssp')
+model2 = SSP('setValueSSV2.ssp' , temp_dir="./tmp-setValueSSV2/model2/")
 model2.list()
 
 ## Result:
