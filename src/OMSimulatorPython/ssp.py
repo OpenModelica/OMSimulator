@@ -200,7 +200,7 @@ class SSP:
     print("|-- Resources:")
     for resource in sorted(self.resources):
       print(f"|--   {resource}")
-    for ssd in sorted(self.variants.values()):
+    for ssd in self.variants.values():
       ssd.list("|--")
 
   def export(self, filename: str):
