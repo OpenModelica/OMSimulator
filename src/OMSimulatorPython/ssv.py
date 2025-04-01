@@ -17,11 +17,6 @@ class SSV:
   def setValue(self, cref:str, value, unit = None):
     self.value.setValue(cref, value, unit)
 
-  def exportToSSD(self, node):
-    parameter_bindings_node = ET.SubElement(node, namespace.tag("ssd", "ParameterBindings"))
-    parameter_binding_node = ET.SubElement(parameter_bindings_node, namespace.tag("ssd", "ParameterBinding"))
-    parameter_binding_node.set("source", "resources/"+ self.filename.name)
-
   def list(self, prefix = ""):
     self.value.list(prefix)
 
