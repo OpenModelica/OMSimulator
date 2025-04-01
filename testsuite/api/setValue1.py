@@ -1,8 +1,7 @@
 ## status: correct
 ## teardown_command: rm setValue1.ssp
 ## linux: yes
-## mingw32: yes
-## mingw64: yes
+## ucrt64: yes
 ## win: yes
 ## mac: yes
 
@@ -53,26 +52,26 @@ model2.list()
 ## |-- |-- Elements:
 ## |-- |-- |-- FMU: (Add1)
 ## |-- |-- |-- |-- path: Add.fmu
-## |-- |-- |-- Connectors:
-## |-- |-- |-- |-- (u1, input, Real)
-## |-- |-- |-- |-- (u2, input, Real)
-## |-- |-- |-- |-- (y, output, Real)
-## |-- |-- |-- |-- (k1, parameter, Real)
-## |-- |-- |-- |-- (k2, parameter, Real)
-## |-- |-- |-- Inline Parameter Bindings:
-## |-- |-- |-- |-- (Real k1, 2.0, None)
-## |-- |-- |-- |-- (Real k2, 3.0, None)
+## |-- |-- |-- |-- Connectors:
+## |-- |-- |-- |-- |-- (u1, input, Real)
+## |-- |-- |-- |-- |-- (u2, input, Real)
+## |-- |-- |-- |-- |-- (y, output, Real)
+## |-- |-- |-- |-- |-- (k1, parameter, Real)
+## |-- |-- |-- |-- |-- (k2, parameter, Real)
+## |-- |-- |-- |-- Inline Parameter Bindings:
+## |-- |-- |-- |-- |-- (Real k1, 2.0, None)
+## |-- |-- |-- |-- |-- (Real k2, 3.0, None)
 ## |-- |-- |-- FMU: (Add2)
 ## |-- |-- |-- |-- path: Add.fmu
-## |-- |-- |-- Connectors:
-## |-- |-- |-- |-- (u1, input, Real)
-## |-- |-- |-- |-- (u2, input, Real)
-## |-- |-- |-- |-- (y, output, Real)
-## |-- |-- |-- |-- (k1, parameter, Real)
-## |-- |-- |-- |-- (k2, parameter, Real)
-## |-- |-- |-- Inline Parameter Bindings:
-## |-- |-- |-- |-- (Real k1, 100.0, None)
-## |-- |-- |-- |-- (Real k2, 300.0, None)
+## |-- |-- |-- |-- Connectors:
+## |-- |-- |-- |-- |-- (u1, input, Real)
+## |-- |-- |-- |-- |-- (u2, input, Real)
+## |-- |-- |-- |-- |-- (y, output, Real)
+## |-- |-- |-- |-- |-- (k1, parameter, Real)
+## |-- |-- |-- |-- |-- (k2, parameter, Real)
+## |-- |-- |-- |-- Inline Parameter Bindings:
+## |-- |-- |-- |-- |-- (Real k1, 100.0, None)
+## |-- |-- |-- |-- |-- (Real k2, 300.0, None)
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
@@ -86,26 +85,26 @@ model2.list()
 ## |-- |-- Elements:
 ## |-- |-- |-- FMU: (Add1)
 ## |-- |-- |-- |-- path: Add.fmu
-## |-- |-- |-- Connectors:
-## |-- |-- |-- |-- (u1, input, Real)
-## |-- |-- |-- |-- (u2, input, Real)
-## |-- |-- |-- |-- (y, output, Real)
-## |-- |-- |-- |-- (k1, parameter, Real)
-## |-- |-- |-- |-- (k2, parameter, Real)
-## |-- |-- |-- Inline Parameter Bindings:
-## |-- |-- |-- |-- (Real k1, 2.0, None)
-## |-- |-- |-- |-- (Real k2, 3.0, None)
+## |-- |-- |-- |-- Connectors:
+## |-- |-- |-- |-- |-- (u1, input, Real)
+## |-- |-- |-- |-- |-- (u2, input, Real)
+## |-- |-- |-- |-- |-- (y, output, Real)
+## |-- |-- |-- |-- |-- (k1, parameter, Real)
+## |-- |-- |-- |-- |-- (k2, parameter, Real)
+## |-- |-- |-- |-- Inline Parameter Bindings:
+## |-- |-- |-- |-- |-- (Real k1, 2.0, None)
+## |-- |-- |-- |-- |-- (Real k2, 3.0, None)
 ## |-- |-- |-- FMU: (Add2)
 ## |-- |-- |-- |-- path: Add.fmu
-## |-- |-- |-- Connectors:
-## |-- |-- |-- |-- (u1, input, Real)
-## |-- |-- |-- |-- (u2, input, Real)
-## |-- |-- |-- |-- (y, output, Real)
-## |-- |-- |-- |-- (k1, parameter, Real)
-## |-- |-- |-- |-- (k2, parameter, Real)
-## |-- |-- |-- Inline Parameter Bindings:
-## |-- |-- |-- |-- (Real k1, 100.0, None)
-## |-- |-- |-- |-- (Real k2, 300.0, None)
+## |-- |-- |-- |-- Connectors:
+## |-- |-- |-- |-- |-- (u1, input, Real)
+## |-- |-- |-- |-- |-- (u2, input, Real)
+## |-- |-- |-- |-- |-- (y, output, Real)
+## |-- |-- |-- |-- |-- (k1, parameter, Real)
+## |-- |-- |-- |-- |-- (k2, parameter, Real)
+## |-- |-- |-- |-- Inline Parameter Bindings:
+## |-- |-- |-- |-- |-- (Real k1, 100.0, None)
+## |-- |-- |-- |-- |-- (Real k2, 300.0, None)
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0

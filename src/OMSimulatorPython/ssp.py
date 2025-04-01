@@ -7,7 +7,7 @@ from pathlib import Path
 
 from OMSimulator.fmu import FMU
 from OMSimulator.settings import suppress_path_to_str
-
+from OMSimulator.ssv import SSV
 from OMSimulator import SSD, CRef
 
 logger = logging.getLogger(__name__)
@@ -62,7 +62,7 @@ class SSP:
 
     for ssd_file in ssd_files:
       ssd_path = self.temp_dir / ssd_file
-      ssd = SSD.importFromFile(ssd_path)
+      ssd = SSD.importFromFile(ssd_path, self.resources)
       self.add(ssd)
 
   @property
@@ -98,8 +98,12 @@ class SSP:
       os.makedirs((self.temp_dir / new_name).parent, exist_ok=True)
       shutil.copy(filename, self.temp_dir / new_name)
 
+    filePath = (self.temp_dir / new_name).resolve()
     if Path(filename).suffix == ".fmu":
-      self.resources[str(new_name)] = FMU((self.temp_dir / new_name).resolve())
+      self.resources[str(new_name)] = FMU(fmu_path = filePath)
+    elif Path(filename).suffix == ".ssv":
+      self.resources[str(new_name)] = SSV(ssv_path = filePath)
+    ##TODO check for .ssv file and if ssv instances provided
     else:
       self.resources[Path(filename).name] = new_name
 
@@ -122,6 +126,16 @@ class SSP:
       fmu_inst = self.resources[resource]
 
     return self.activeVariant.addComponent(cref, resource, inst=fmu_inst)
+
+  def addSSV(self, cref: CRef, resource: str):
+    if self.activeVariant is None:
+      raise ValueError("No active variant set in the SSP.")
+
+    # Check if resource exists; raise an error if it doesn't
+    if resource not in self.resources:
+      raise ValueError(f"Resource '{resource}' does not exist in the SSP resources. Add the resources first using the addResources() API")
+
+    self.activeVariant.addSSV(cref, resource)
 
   def _getComponentResourcePath(self, cref: CRef):
     return str(self.activeVariant._getComponentResourcePath(cref))
@@ -180,7 +194,7 @@ class SSP:
     '''Lists SSP contents'''
     print(type(self))
     print("|-- Resources:")
-    for resource in self.resources:
+    for resource in sorted(self.resources):
       print(f"|--   {resource}")
     for ssd in self.variants.values():
       ssd.list("|--")

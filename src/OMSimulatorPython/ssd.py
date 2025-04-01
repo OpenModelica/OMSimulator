@@ -6,7 +6,8 @@ from OMSimulator.cref import CRef
 from OMSimulator.fmu import FMU
 from OMSimulator.settings import suppress_path_to_str
 from OMSimulator.system import System
-
+from OMSimulator.ssv import SSV
+from OMSimulator.unit import Unit
 from OMSimulator import namespace, utils
 
 logger = logging.getLogger(__name__)
@@ -23,12 +24,12 @@ class SSD:
     self.system = System(name, model=model)
     self.startTime = 0.0
     self.stopTime = 1.0
-
+    self.unitDefinitions = list()
     if model:
       model.add(self)
 
   @staticmethod
-  def importFromFile(filename: Path):
+  def importFromFile(filename: Path, resources = None):
     '''Imports an SSD file and parses its contents.'''
     try:
       tree = ET.parse(filename)
@@ -41,10 +42,10 @@ class SSD:
       if system is None:
         raise ValueError(f"Invalid SSD file: Missing <ssd:System> in {filename}")
 
-      ssd.system = System.importFromNode(system, ssd)
+      ssd.system = System.importFromNode(system, ssd, resources)
 
       utils.parseDefaultExperiment(root, ssd)
-
+      utils.parseUnitDefinitions(root, ssd)
       logger.debug(f"SSD '{variant_name}' successfully imported from {filename}")
       return ssd
 
@@ -74,6 +75,10 @@ class SSD:
     subcref = self._validateCref(cref)
     return self.system.addComponent(subcref, resource, inst)
 
+  def addSSV(self, cref: CRef, resource):
+    subcref = self._validateCref(cref)
+    self.system.addSSV(subcref, resource)
+
   def _getComponentResourcePath(self, cref: CRef):
     subcref = self._validateCref(cref)
     return self.system._getComponentResourcePath(subcref)
@@ -99,6 +104,11 @@ class SSD:
     if self.system:
       self.system.list(prefix=prefix + " |--")
 
+    if self.unitDefinitions:
+      print(f"{prefix} UnitDefinitions:")
+      for unit in self.unitDefinitions:
+        unit.list(prefix=prefix + " |--")
+
     print(f"{prefix} DefaultExperiment")
     print(f"{prefix} |-- startTime: {self.startTime}")
     print(f"{prefix} |-- stopTime: {self.stopTime}")
@@ -113,6 +123,8 @@ class SSD:
     )
 
     self.system.export(root)
+
+    self._exportUnitDefinitions(root)
     self._exportDefaultExperiment(root)
 
     with open(filename, "w", encoding="utf-8") as file:
@@ -122,6 +134,12 @@ class SSD:
       file.write(xml_content)
 
     logger.info(f"SSD '{self._name}' exported to {suppress_path_to_str(filename)}")
+
+  def _exportUnitDefinitions(self, node):
+    '''Exports unit definitions to the given XML node.'''
+    unit_definitions_node = ET.SubElement(node, namespace.tag("ssd", "UnitDefinitions"))
+    for unit in self.unitDefinitions:
+      unit.exportToSSD(unit_definitions_node)
 
   def _exportDefaultExperiment(self, node):
     '''Exports default experiment settings.'''

@@ -5,6 +5,7 @@ from OMSimulator.component import Component
 from OMSimulator.connection import Connection
 from OMSimulator.fmu import FMU
 from OMSimulator.values import Values
+from OMSimulator.ssv import SSV
 
 from OMSimulator import CRef, namespace, utils
 
@@ -27,14 +28,14 @@ class System:
     return self._name
 
   @staticmethod
-  def importFromNode(node, ssd):
+  def importFromNode(node, ssd, resources: dict | None = None):
     '''Imports a ssd:System'''
     try:
       temp_dir = ssd._filename.parent
       system = System(node.get("name"))
       system.connectors = utils.parseConnectors(node)
-      utils.parseParameterBindings(node, ssd, temp_dir)
-      system.elements = utils.parseElements(node)
+      utils.parseParameterBindings(node, ssd, resources)
+      system.elements = utils.parseElements(node, resources)
       utils.parseConnection(node, system)
       return system
 
@@ -61,7 +62,7 @@ class System:
     ## list parameteres in ssv files
     if len(self.parameterResources) > 0:
       for key, resources in self.parameterResources.items():
-        print(f"{prefix} Parameter Bindings: {resources.filename}")
+        print(f"{prefix} Parameter Bindings: {resources.filename.name}")
         resources.list(prefix=prefix + " |--")
 
     ## list elements
@@ -100,6 +101,17 @@ class System:
       component = Component(first, resource, connectors)
       self.elements[first] = component
       return component
+
+  def addSSV(self, cref: CRef, resource: str):
+    first = cref.first()
+    if not cref.is_root():
+      if first not in self.elements:
+        raise ValueError(f"System '{first}' not found in '{self.name}'")
+      self.elements[first].addSSV(cref.pop_first(), resource)
+    else:
+      if first not in self.elements:
+        raise ValueError(f"Component '{first}' not found in {self.name}")
+      self.elements[first].addSSV(resource)
 
   def addConnection(self, startElement : str, startConnector : str, endElement : str, endConnector : str):
     #TODO: Fix this check for Connection class

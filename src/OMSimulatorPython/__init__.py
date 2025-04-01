@@ -11,13 +11,14 @@ from OMSimulator.fmu import FMU
 from OMSimulator.settings import Settings
 from OMSimulator.ssd import SSD
 from OMSimulator.ssp import SSP
+from OMSimulator.ssv import SSV
 from OMSimulator.system import System
 from OMSimulator.variable import Causality, SignalType, Variable
 
 from OMSimulator import capi
 
 # Define public API
-__all__ = ['Connection', 'Connector', 'CRef', 'FMU', 'Settings', 'SSD', 'SSP', 'System', 'Causality', 'SignalType', 'Variable']
+__all__ = ['Connection', 'Connector', 'CRef', 'FMU', 'Settings', 'SSD', 'SSP', 'SSV', 'System', 'Causality', 'SignalType', 'Variable']
 
 __version__ = '@OMS_SHORT_VERSION_STRING@'
 __author__ = 'Open Source Modelica Consortium (OSMC)'

@@ -1,8 +1,7 @@
 ## status: correct
 ## teardown_command:
 ## linux: yes
-## mingw32: yes
-## mingw64: yes
+## ucrt64: yes
 ## win: yes
 ## mac: yes
 
@@ -36,12 +35,12 @@ model.list()
 ## |-- |-- |-- Elements:
 ## |-- |-- |-- |-- FMU: (Add2)
 ## |-- |-- |-- |-- |-- path: resources/Add.fmu
-## |-- |-- |-- |-- Connectors:
-## |-- |-- |-- |-- |-- (u1, input, Real)
-## |-- |-- |-- |-- |-- (u2, input, Real)
-## |-- |-- |-- |-- |-- (y, output, Real)
-## |-- |-- |-- |-- |-- (k1, parameter, Real)
-## |-- |-- |-- |-- |-- (k2, parameter, Real)
+## |-- |-- |-- |-- |-- Connectors:
+## |-- |-- |-- |-- |-- |-- (u1, input, Real)
+## |-- |-- |-- |-- |-- |-- (u2, input, Real)
+## |-- |-- |-- |-- |-- |-- (y, output, Real)
+## |-- |-- |-- |-- |-- |-- (k1, parameter, Real)
+## |-- |-- |-- |-- |-- |-- (k2, parameter, Real)
 ## |-- |-- |-- System: sub-system2
 ## |-- |-- |-- Connectors:
 ## |-- |-- |-- Elements:
@@ -49,12 +48,12 @@ model.list()
 ## |-- |-- |-- |-- Connectors:
 ## |-- |-- |-- FMU: (Add1)
 ## |-- |-- |-- |-- path: resources/Add.fmu
-## |-- |-- |-- Connectors:
-## |-- |-- |-- |-- (u1, input, Real)
-## |-- |-- |-- |-- (u2, input, Real)
-## |-- |-- |-- |-- (y, output, Real)
-## |-- |-- |-- |-- (k1, parameter, Real)
-## |-- |-- |-- |-- (k2, parameter, Real)
+## |-- |-- |-- |-- Connectors:
+## |-- |-- |-- |-- |-- (u1, input, Real)
+## |-- |-- |-- |-- |-- (u2, input, Real)
+## |-- |-- |-- |-- |-- (y, output, Real)
+## |-- |-- |-- |-- |-- (k1, parameter, Real)
+## |-- |-- |-- |-- |-- (k2, parameter, Real)
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
