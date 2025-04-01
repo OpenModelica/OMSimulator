@@ -120,7 +120,8 @@ def parseParameterBindingHelper(parameters):
         value_element = param.find(value_type, namespaces=namespace.ns)
         if value_element is not None:
           value = value_element.get("value")
-          parameterValues[name] = cast_func(value)  # Convert to correct type
+          unit = value_element.get("unit")
+          parameterValues[name] = (cast_func(value), unit)  # Convert to correct type
           break  # Stop after first found type
     return parameterValues
 

@@ -50,7 +50,7 @@ model2.list()
 ## Result:
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
-## |--   Add.fmu
+## |--   resources/Add.fmu
 ## |--   resources/myfile1.ssv
 ## |--   resources/myfile2.ssv
 ## |-- <class 'OMSimulator.ssd.SSD'>
@@ -60,34 +60,22 @@ model2.list()
 ## |-- |-- Elements:
 ## |-- |-- |-- FMU: (Add1)
 ## |-- |-- |-- |-- path: Add.fmu
-## |-- |-- |-- Connectors:
-## |-- |-- |-- |-- (u1, input, Real)
-## |-- |-- |-- |-- (u2, input, Real)
-## |-- |-- |-- |-- (y, output, Real)
-## |-- |-- |-- |-- (k1, parameter, Real)
-## |-- |-- |-- |-- (k2, parameter, Real)
 ## |-- |-- |-- Parameter Bindings: myfile1.ssv
-## |-- |-- |-- |-- (Real k1, 2.0, None)
-## |-- |-- |-- |-- (Real k2, 3.0, None)
+## |-- |-- |-- |-- (Real k1, 2.0, m)
+## |-- |-- |-- |-- (Real k2, 3.0, kg)
 ## |-- |-- |-- |-- (String param3, hello, None)
 ## |-- |-- |-- FMU: (Add2)
 ## |-- |-- |-- |-- path: Add.fmu
-## |-- |-- |-- Connectors:
-## |-- |-- |-- |-- (u1, input, Real)
-## |-- |-- |-- |-- (u2, input, Real)
-## |-- |-- |-- |-- (y, output, Real)
-## |-- |-- |-- |-- (k1, parameter, Real)
-## |-- |-- |-- |-- (k2, parameter, Real)
 ## |-- |-- |-- Parameter Bindings: myfile2.ssv
-## |-- |-- |-- |-- (Real k1, 200.0, None)
-## |-- |-- |-- |-- (Real k2, 300.0, None)
+## |-- |-- |-- |-- (Real k1, 200.0, m)
+## |-- |-- |-- |-- (Real k2, 300.0, kg)
 ## |-- |-- |-- |-- (String param3, ssp, None)
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
-## |--   Add.fmu
+## |--   resources/Add.fmu
 ## |--   resources/myfile1.ssv
 ## |--   resources/myfile2.ssv
 ## |-- <class 'OMSimulator.ssd.SSD'>
@@ -97,27 +85,15 @@ model2.list()
 ## |-- |-- Elements:
 ## |-- |-- |-- FMU: (Add1)
 ## |-- |-- |-- |-- path: Add.fmu
-## |-- |-- |-- Connectors:
-## |-- |-- |-- |-- (u1, input, Real)
-## |-- |-- |-- |-- (u2, input, Real)
-## |-- |-- |-- |-- (y, output, Real)
-## |-- |-- |-- |-- (k1, parameter, Real)
-## |-- |-- |-- |-- (k2, parameter, Real)
 ## |-- |-- |-- Parameter Bindings: myfile1.ssv
-## |-- |-- |-- |-- (Real k1, 2.0, None)
-## |-- |-- |-- |-- (Real k2, 3.0, None)
+## |-- |-- |-- |-- (Real k1, 2.0, m)
+## |-- |-- |-- |-- (Real k2, 3.0, kg)
 ## |-- |-- |-- |-- (String param3, hello, None)
 ## |-- |-- |-- FMU: (Add2)
 ## |-- |-- |-- |-- path: Add.fmu
-## |-- |-- |-- Connectors:
-## |-- |-- |-- |-- (u1, input, Real)
-## |-- |-- |-- |-- (u2, input, Real)
-## |-- |-- |-- |-- (y, output, Real)
-## |-- |-- |-- |-- (k1, parameter, Real)
-## |-- |-- |-- |-- (k2, parameter, Real)
 ## |-- |-- |-- Parameter Bindings: myfile2.ssv
-## |-- |-- |-- |-- (Real k1, 200.0, None)
-## |-- |-- |-- |-- (Real k2, 300.0, None)
+## |-- |-- |-- |-- (Real k1, 200.0, m)
+## |-- |-- |-- |-- (Real k2, 300.0, kg)
 ## |-- |-- |-- |-- (String param3, ssp, None)
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0

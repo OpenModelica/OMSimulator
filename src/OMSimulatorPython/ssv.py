@@ -43,5 +43,5 @@ class SSV:
 
   def importFromSSV(self, filename):
     parameterValues = utils.parseSSV(filename)
-    for key, value in parameterValues.items():
-      self.setValue(key, value)
+    for key, (value, unit) in parameterValues.items():
+      self.setValue(key, value, unit)
