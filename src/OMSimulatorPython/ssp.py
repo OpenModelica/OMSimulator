@@ -135,11 +135,7 @@ class SSP:
     if resource not in self.resources:
       raise ValueError(f"Resource '{resource}' does not exist in the SSP resources. Add the resources first using the addResources() API")
 
-    ssv_inst = None
-    if resource in self.resources:
-      ssv_inst = self.resources[resource]
-
-    return self.activeVariant.addSSV(cref, resource, ssv_inst)
+    self.activeVariant.addSSV(cref, resource)
 
   def _getComponentResourcePath(self, cref: CRef):
     return str(self.activeVariant._getComponentResourcePath(cref))

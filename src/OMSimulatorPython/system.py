@@ -102,16 +102,16 @@ class System:
       self.elements[first] = component
       return component
 
-  def addSSV(self, cref: CRef, resource: str, inst = None | SSV):
+  def addSSV(self, cref: CRef, resource: str):
     first = cref.first()
     if not cref.is_root():
       if first not in self.elements:
         raise ValueError(f"System '{first}' not found in '{self.name}'")
-      self.elements[first].parameterResources[first] = inst
+      self.elements[first].addSSV(cref.pop_first(), resource)
     else:
       if first not in self.elements:
-        raise ValueError(f"Component '{first}' does not exists in {self.name}")
-      self.elements[first].parameterResources[first] = inst
+        raise ValueError(f"Component '{first}' not found in {self.name}")
+      self.elements[first].addSSV(resource)
 
   def addConnection(self, startElement : str, startConnector : str, endElement : str, endConnector : str):
     #TODO: Fix this check for Connection class

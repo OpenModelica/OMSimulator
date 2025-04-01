@@ -14,12 +14,15 @@ class Component:
     self.connectors = connectors or list()
     self.unitDefinitions = unitDefinitions or list()
     self.value = Values() ## TODO propogate Values
-    self.parameterResources = {} ## TODO handle ssv resources
+    self.parameterResources = []
 
   def addConnector(self, connector):
     if connector in self.connectors:
       raise ValueError(f"Connector '{connector.name}' already exists in {self.name}")
     self.connectors.append(connector)
+
+  def addSSV(self, resource: str):
+    self.parameterResources.append(resource)
 
   def list(self, prefix=""):
     print(f"{prefix} FMU: ({self.name})")
@@ -38,9 +41,8 @@ class Component:
 
     ## list parameteres in ssv files
     if len(self.parameterResources) > 0:
-      for resources in self.parameterResources.values():
-        print(f"{prefix} Parameter Bindings: {resources.filename.name}")
-        resources.list(prefix=prefix + " |--")
+      for resource in self.parameterResources:
+        print(f"{prefix} Parameter Bindings: {resource}")
 
   def exportToSSD(self, node):
     component_node = ET.SubElement(node, namespace.tag("ssd", "Component"))
@@ -59,8 +61,10 @@ class Component:
 
     ## export parameters binding to ssd file with reference to ssv file
     if len(self.parameterResources) > 0:
-      for key, resources in self.parameterResources.items():
-        resources.exportToSSD(component_node)
+      for resource in self.parameterResources:
+        parameter_bindings_node = ET.SubElement(component_node, namespace.tag("ssd", "ParameterBindings"))
+        parameter_binding_node = ET.SubElement(parameter_bindings_node, namespace.tag("ssd", "ParameterBinding"))
+        parameter_binding_node.set("source", resource)
 
   def setValue(self, cref:str, value, unit=None):
     self.value.setValue(cref, value, unit)

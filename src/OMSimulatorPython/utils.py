@@ -93,7 +93,7 @@ def parseConnectors(node):
         break  # Stop after the first valid type is found
   return connectors
 
-def parseParameterBindings(node, obj = None, resources = None):
+def parseParameterBindings(node, obj, resources):
   """Extract and print system parameters"""
   parameter_bindings = node.find("ssd:ParameterBindings", namespaces=namespace.ns)
   if parameter_bindings is not None:
@@ -101,8 +101,9 @@ def parseParameterBindings(node, obj = None, resources = None):
       source = binding.get("source")
       if binding.get("source"):
         ## use the instantiated ssv class to set the parameter Resources
-        if source in resources:
-          obj.parameterResources[source] = resources[source]
+        if source not in resources:
+          print("warning: SSV file not found: ", source)
+        obj.addSSV(source)
       else:
         values = binding.find("ssd:ParameterValues", namespaces=namespace.ns)
         if values is not None:

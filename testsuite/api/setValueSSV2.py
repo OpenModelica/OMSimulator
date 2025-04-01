@@ -65,10 +65,7 @@ model2.list()
 ## |-- |-- |-- |-- |-- (y, output, Real)
 ## |-- |-- |-- |-- |-- (k1, parameter, Real)
 ## |-- |-- |-- |-- |-- (k2, parameter, Real)
-## |-- |-- |-- |-- Parameter Bindings: myfile3.ssv
-## |-- |-- |-- |-- |-- (Real k1, 2.0, m)
-## |-- |-- |-- |-- |-- (Real k2, 3.0, kg)
-## |-- |-- |-- |-- |-- (String param3, hello, None)
+## |-- |-- |-- |-- Parameter Bindings: resources/myfile3.ssv
 ## |-- |-- |-- FMU: (Add2)
 ## |-- |-- |-- |-- path: resources/Add.fmu
 ## |-- |-- |-- |-- Connectors:
@@ -77,10 +74,7 @@ model2.list()
 ## |-- |-- |-- |-- |-- (y, output, Real)
 ## |-- |-- |-- |-- |-- (k1, parameter, Real)
 ## |-- |-- |-- |-- |-- (k2, parameter, Real)
-## |-- |-- |-- |-- Parameter Bindings: myfile4.ssv
-## |-- |-- |-- |-- |-- (Real k1, 200.0, m)
-## |-- |-- |-- |-- |-- (Real k2, 300.0, kg)
-## |-- |-- |-- |-- |-- (String param3, ssp, None)
+## |-- |-- |-- |-- Parameter Bindings: resources/myfile4.ssv
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
@@ -102,10 +96,7 @@ model2.list()
 ## |-- |-- |-- |-- |-- (y, output, Real)
 ## |-- |-- |-- |-- |-- (k1, parameter, Real)
 ## |-- |-- |-- |-- |-- (k2, parameter, Real)
-## |-- |-- |-- |-- Parameter Bindings: myfile3.ssv
-## |-- |-- |-- |-- |-- (Real k1, 2.0, m)
-## |-- |-- |-- |-- |-- (Real k2, 3.0, kg)
-## |-- |-- |-- |-- |-- (String param3, hello, None)
+## |-- |-- |-- |-- Parameter Bindings: resources/myfile3.ssv
 ## |-- |-- |-- FMU: (Add2)
 ## |-- |-- |-- |-- path: resources/Add.fmu
 ## |-- |-- |-- |-- Connectors:
@@ -114,10 +105,7 @@ model2.list()
 ## |-- |-- |-- |-- |-- (y, output, Real)
 ## |-- |-- |-- |-- |-- (k1, parameter, Real)
 ## |-- |-- |-- |-- |-- (k2, parameter, Real)
-## |-- |-- |-- |-- Parameter Bindings: myfile4.ssv
-## |-- |-- |-- |-- |-- (Real k1, 200.0, m)
-## |-- |-- |-- |-- |-- (Real k2, 300.0, kg)
-## |-- |-- |-- |-- |-- (String param3, ssp, None)
+## |-- |-- |-- |-- Parameter Bindings: resources/myfile4.ssv
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
