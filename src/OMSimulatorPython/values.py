@@ -28,8 +28,8 @@ class Values:
         type_tag = "Real"
       elif isinstance(value, int):
         type_tag = "Integer"
-      elif isinstance(value, int):
-        type_tag = "Integer"
+      elif isinstance(value, bool):
+        type_tag = "Boolean"
       elif isinstance(value, str):
         type_tag = "String"
       else:

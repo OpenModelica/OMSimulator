@@ -10,8 +10,8 @@ from OMSimulator import namespace
 
 def _setParameters(parameterValues: dict, obj):
   if len(parameterValues) > 0:
-    for key, value in parameterValues.items():
-      obj.setValue(key, value)
+    for key, (value, unit) in parameterValues.items():
+      obj.setValue(key, value, unit)
 
 def parseConnection(node, root):
   connections_node = node.find("ssd:Connections", namespaces=namespace.ns)

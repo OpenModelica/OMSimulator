@@ -16,8 +16,8 @@ Settings.suppressPath = True
 model = SSP(temp_dir="./tmp-setValueSSV2/")
 model.addResource('../resources/Modelica.Blocks.Math.Add.fmu', new_name='resources/Add.fmu')
 # root = model.activeVariant
-component1 = model.addComponent(CRef('default', 'Add1'), 'Add.fmu')
-component2 = model.addComponent(CRef('default', 'Add2'), 'Add.fmu')
+component1 = model.addComponent(CRef('default', 'Add1'), 'resources/Add.fmu')
+component2 = model.addComponent(CRef('default', 'Add2'), 'resources/Add.fmu')
 
 ssv1 = SSV()
 ssv1.setValue("k1", 2.0, "m")
@@ -59,13 +59,25 @@ model2.list()
 ## |-- |-- Connectors:
 ## |-- |-- Elements:
 ## |-- |-- |-- FMU: (Add1)
-## |-- |-- |-- |-- path: Add.fmu
+## |-- |-- |-- |-- path: resources/Add.fmu
+## |-- |-- |-- Connectors:
+## |-- |-- |-- |-- (u1, input, Real)
+## |-- |-- |-- |-- (u2, input, Real)
+## |-- |-- |-- |-- (y, output, Real)
+## |-- |-- |-- |-- (k1, parameter, Real)
+## |-- |-- |-- |-- (k2, parameter, Real)
 ## |-- |-- |-- Parameter Bindings: myfile1.ssv
 ## |-- |-- |-- |-- (Real k1, 2.0, m)
 ## |-- |-- |-- |-- (Real k2, 3.0, kg)
 ## |-- |-- |-- |-- (String param3, hello, None)
 ## |-- |-- |-- FMU: (Add2)
-## |-- |-- |-- |-- path: Add.fmu
+## |-- |-- |-- |-- path: resources/Add.fmu
+## |-- |-- |-- Connectors:
+## |-- |-- |-- |-- (u1, input, Real)
+## |-- |-- |-- |-- (u2, input, Real)
+## |-- |-- |-- |-- (y, output, Real)
+## |-- |-- |-- |-- (k1, parameter, Real)
+## |-- |-- |-- |-- (k2, parameter, Real)
 ## |-- |-- |-- Parameter Bindings: myfile2.ssv
 ## |-- |-- |-- |-- (Real k1, 200.0, m)
 ## |-- |-- |-- |-- (Real k2, 300.0, kg)
@@ -84,13 +96,25 @@ model2.list()
 ## |-- |-- Connectors:
 ## |-- |-- Elements:
 ## |-- |-- |-- FMU: (Add1)
-## |-- |-- |-- |-- path: Add.fmu
+## |-- |-- |-- |-- path: resources/Add.fmu
+## |-- |-- |-- Connectors:
+## |-- |-- |-- |-- (u1, input, Real)
+## |-- |-- |-- |-- (u2, input, Real)
+## |-- |-- |-- |-- (y, output, Real)
+## |-- |-- |-- |-- (k1, parameter, Real)
+## |-- |-- |-- |-- (k2, parameter, Real)
 ## |-- |-- |-- Parameter Bindings: myfile1.ssv
 ## |-- |-- |-- |-- (Real k1, 2.0, m)
 ## |-- |-- |-- |-- (Real k2, 3.0, kg)
 ## |-- |-- |-- |-- (String param3, hello, None)
 ## |-- |-- |-- FMU: (Add2)
-## |-- |-- |-- |-- path: Add.fmu
+## |-- |-- |-- |-- path: resources/Add.fmu
+## |-- |-- |-- Connectors:
+## |-- |-- |-- |-- (u1, input, Real)
+## |-- |-- |-- |-- (u2, input, Real)
+## |-- |-- |-- |-- (y, output, Real)
+## |-- |-- |-- |-- (k1, parameter, Real)
+## |-- |-- |-- |-- (k2, parameter, Real)
 ## |-- |-- |-- Parameter Bindings: myfile2.ssv
 ## |-- |-- |-- |-- (Real k1, 200.0, m)
 ## |-- |-- |-- |-- (Real k2, 300.0, kg)
