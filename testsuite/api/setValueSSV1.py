@@ -13,7 +13,9 @@ Settings.suppressPath = True
 
 ssv1 = SSV()
 ssv1.setValue("k1", 2.0, "m")
-ssv1.setValue("k2", 3.0, "kg")
+ssv1.setValue("k2", 3.0)
+ssv1.setValue("k3", 3)
+ssv1.setValue("k4", False)
 ssv1.setValue("param3", "hello")
 ssv1.export("myfile1.ssv")
 
@@ -42,7 +44,13 @@ for filename in files:
 ##       <ssv:Real value="2.0" unit="m"/>
 ##     </ssv:Parameter>
 ##     <ssv:Parameter name="k2">
-##       <ssv:Real value="3.0" unit="kg"/>
+##       <ssv:Real value="3.0"/>
+##     </ssv:Parameter>
+##     <ssv:Parameter name="k3">
+##       <ssv:Integer value="3"/>
+##     </ssv:Parameter>
+##     <ssv:Parameter name="k4">
+##       <ssv:Integer value="False"/>
 ##     </ssv:Parameter>
 ##     <ssv:Parameter name="param3">
 ##       <ssv:String value="hello"/>

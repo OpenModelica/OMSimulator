@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm -rf setValueSSV2.ssp tmp-setValueSSV2/
+## teardown_command: rm -rf setValueSSV2.ssp tmp-setValueSSV2/ myfile3.ssv myfile4.ssv
 ## linux: yes
 ## ucrt64: yes
 ## win: yes

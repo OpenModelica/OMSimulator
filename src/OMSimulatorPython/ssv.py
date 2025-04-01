@@ -1,8 +1,10 @@
+from pathlib import Path
+
 from lxml import etree as ET
 from OMSimulator.values import Values
 
 from OMSimulator import namespace, utils
-from pathlib import Path
+
 
 class SSV:
   def __init__(self, ssv_path : str | None = None):
