@@ -1,8 +1,7 @@
 ## status: correct
 ## teardown_command: rm myfile1.ssv myfile2.ssv
 ## linux: yes
-## mingw32: yes
-## mingw64: yes
+## ucrt64: yes
 ## win: yes
 ## mac: yes
 

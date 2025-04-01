@@ -1,8 +1,7 @@
 ## status: correct
 ## teardown_command: rm -rf tmp-ParkerSim/
 ## linux: yes
-## mingw32: yes
-## mingw64: yes
+## ucrt64: yes
 ## win: yes
 ## mac: yes
 
@@ -58,13 +57,13 @@ model.variants['D16_aero_stimuli'].list()
 ##  |-- |-- |-- (uA.in.y, output, Real)
 ##  |-- |-- |-- (uB.in.y, output, Real)
 ##  |-- |-- Inline Parameter Bindings:
-##  |-- |-- |-- (Real timestep, 0.001, None)
-##  |-- |-- |-- (Real s_cyl, 1.0, None)
-##  |-- |-- |-- (Real th_min, -15.0, None)
-##  |-- |-- |-- (Real th_max, 15.0, None)
-##  |-- |-- |-- (Real k_p, 130.0, None)
-##  |-- |-- |-- (Real pT, 1.0, None)
-##  |-- |-- |-- (Real pPump, 100.0, None)
+##  |-- |-- |-- (Real timestep, 0.001, s)
+##  |-- |-- |-- (Real s_cyl, 1.0, m)
+##  |-- |-- |-- (Real th_min, -15.0, deg)
+##  |-- |-- |-- (Real th_max, 15.0, deg)
+##  |-- |-- |-- (Real k_p, 130.0, -)
+##  |-- |-- |-- (Real pT, 1.0, bar)
+##  |-- |-- |-- (Real pPump, 100.0, bar)
 ##  |-- |-- FMU: (valve_model)
 ##  |-- |-- |-- path: resources/L90LS_UD_OS_OS.fmu
 ##  |-- |-- Connectors:
@@ -87,12 +86,12 @@ model.variants['D16_aero_stimuli'].list()
 ##  |-- |-- |-- (p_PS, input, Real)
 ##  |-- |-- |-- (Debug, output, Real)
 ##  |-- |-- Inline Parameter Bindings:
-##  |-- |-- |-- (Real d_A, 2.0, None)
-##  |-- |-- |-- (Real d_B, 2.0, None)
-##  |-- |-- |-- (Real KqMO_PABT_gain, 1.0, None)
-##  |-- |-- |-- (Real KqMI_PABT_gain, 1.0, None)
-##  |-- |-- |-- (Real KqMO_PBAT_gain, 1.0, None)
-##  |-- |-- |-- (Real KqMI_PBAT_gain, 1.0, None)
+##  |-- |-- |-- (Real d_A, 2.0, mm)
+##  |-- |-- |-- (Real d_B, 2.0, mm)
+##  |-- |-- |-- (Real KqMO_PABT_gain, 1.0, -)
+##  |-- |-- |-- (Real KqMI_PABT_gain, 1.0, -)
+##  |-- |-- |-- (Real KqMO_PBAT_gain, 1.0, -)
+##  |-- |-- |-- (Real KqMI_PBAT_gain, 1.0, -)
 ##  |-- Connections:
 ##  |-- |-- interface_model.pLin.in.y -> valve_model.pLin
 ##  |-- |-- interface_model.pLmax.in.y -> valve_model.pLmax
@@ -131,11 +130,11 @@ model.variants['D16_aero_stimuli'].list()
 ##  |-- |-- |-- (p2.in.y, output, Real)
 ##  |-- |-- |-- (u.in.y, output, Real)
 ##  |-- |-- Inline Parameter Bindings:
-##  |-- |-- |-- (Real timestep, 0.001, None)
-##  |-- |-- |-- (Real u_0, 0.0, None)
-##  |-- |-- |-- (Real u_max, 1.0, None)
-##  |-- |-- |-- (Real p1_max, 100.0, None)
-##  |-- |-- |-- (Real p2_const, 1.0, None)
+##  |-- |-- |-- (Real timestep, 0.001, s)
+##  |-- |-- |-- (Real u_0, 0.0, -)
+##  |-- |-- |-- (Real u_max, 1.0, -)
+##  |-- |-- |-- (Real p1_max, 100.0, bar)
+##  |-- |-- |-- (Real p2_const, 1.0, bar)
 ##  |-- |-- FMU: (interface_model)
 ##  |-- |-- |-- path: resources/FMU_16_aero_interface.fmu
 ##  |-- |-- Connectors:
@@ -152,12 +151,12 @@ model.variants['D16_aero_stimuli'].list()
 ##  |-- |-- |-- (uA.in.y, output, Real)
 ##  |-- |-- |-- (uB.in.y, output, Real)
 ##  |-- |-- Inline Parameter Bindings:
-##  |-- |-- |-- (Real timestep, 0.001, None)
-##  |-- |-- |-- (Real pT, 1.0, None)
-##  |-- |-- |-- (Real pP, 1.0, None)
-##  |-- |-- |-- (Real rho, 1000.0, None)
-##  |-- |-- |-- (Real uB_const, 0.0, None)
-##  |-- |-- |-- (Real p_PS_const, 35.0, None)
+##  |-- |-- |-- (Real timestep, 0.001, s)
+##  |-- |-- |-- (Real pT, 1.0, bar)
+##  |-- |-- |-- (Real pP, 1.0, bar)
+##  |-- |-- |-- (Real rho, 1000.0, kg/m3)
+##  |-- |-- |-- (Real uB_const, 0.0, mA)
+##  |-- |-- |-- (Real p_PS_const, 35.0, bar)
 ##  |-- |-- FMU: (valve_model)
 ##  |-- |-- |-- path: resources/L90LS_UD_OS_OS.fmu
 ##  |-- |-- Connectors:
@@ -180,12 +179,12 @@ model.variants['D16_aero_stimuli'].list()
 ##  |-- |-- |-- (p_PS, input, Real)
 ##  |-- |-- |-- (Debug, output, Real)
 ##  |-- |-- Inline Parameter Bindings:
-##  |-- |-- |-- (Real d_A, 2.0, None)
-##  |-- |-- |-- (Real d_B, 2.0, None)
-##  |-- |-- |-- (Real KqMO_PABT_gain, 1.0, None)
-##  |-- |-- |-- (Real KqMI_PABT_gain, 1.0, None)
-##  |-- |-- |-- (Real KqMO_PBAT_gain, 1.0, None)
-##  |-- |-- |-- (Real KqMI_PBAT_gain, 1.0, None)
+##  |-- |-- |-- (Real d_A, 2.0, mm)
+##  |-- |-- |-- (Real d_B, 2.0, mm)
+##  |-- |-- |-- (Real KqMO_PABT_gain, 1.0, -)
+##  |-- |-- |-- (Real KqMI_PABT_gain, 1.0, -)
+##  |-- |-- |-- (Real KqMO_PBAT_gain, 1.0, -)
+##  |-- |-- |-- (Real KqMI_PBAT_gain, 1.0, -)
 ##  |-- Connections:
 ##  |-- |-- interface_model.pA.in.y -> valve_model.pA
 ##  |-- |-- interface_model.pLmax.in.y -> valve_model.pLmax
