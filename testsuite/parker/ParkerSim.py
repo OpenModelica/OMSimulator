@@ -109,6 +109,27 @@ model.variants['D16_aero_stimuli'].list()
 ##  |-- |-- .theta_ref -> interface_model.theta_ref.out.y
 ##  |-- |-- valve_model.Debug -> .Debug
 ##  |-- |-- interface_model.theta.in.y -> .theta
+##  UnitDefinitions:
+##  |-- Unit: mA
+##  |-- |-- A: 1
+##  |-- |-- factor: 1e-3
+##  |-- Unit: bar
+##  |-- |-- kg: 1
+##  |-- |-- m: -1
+##  |-- |-- s: -2
+##  |-- |-- factor: 1e5
+##  |-- |-- offset: 0
+##  |-- Unit: L/min
+##  |-- |-- m: 3
+##  |-- |-- s: -1
+##  |-- |-- factor: 6e-4
+##  |-- Unit: deg
+##  |-- |-- rad: 1
+##  |-- |-- factor: 57.29746
+##  |-- |-- offset: 0.0
+##  |-- Unit: -
+##  |-- |-- factor: 1
+##  |-- |-- offset: 0.0
 ##  DefaultExperiment
 ##  |-- startTime: 0.0
 ##  |-- stopTime: 10.0
@@ -203,6 +224,28 @@ model.variants['D16_aero_stimuli'].list()
 ##  |-- |-- valve_model.Debug -> .Debug
 ##  |-- |-- stimuli_model.u.in.y -> .u
 ##  |-- |-- stimuli_model.p1.in.y -> .p1
+##  UnitDefinitions:
+##  |-- Unit: mA
+##  |-- |-- A: 1
+##  |-- |-- factor: 1e-3
+##  |-- Unit: bar
+##  |-- |-- kg: 1
+##  |-- |-- m: -1
+##  |-- |-- s: -2
+##  |-- |-- factor: 1e5
+##  |-- |-- offset: 0
+##  |-- Unit: L/min
+##  |-- |-- m: 3
+##  |-- |-- s: -1
+##  |-- |-- factor: 6e-4
+##  |-- Unit: kgps
+##  |-- |-- kg: 1
+##  |-- |-- s: -1
+##  |-- |-- factor: 1
+##  |-- |-- offset: 0.0
+##  |-- Unit: -
+##  |-- |-- factor: 1
+##  |-- |-- offset: 0.0
 ##  DefaultExperiment
 ##  |-- startTime: 0.0
 ##  |-- stopTime: 20.0

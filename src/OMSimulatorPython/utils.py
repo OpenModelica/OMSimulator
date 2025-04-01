@@ -4,7 +4,7 @@ from pathlib import Path
 from OMSimulator.component import Component
 from OMSimulator.connector import Connector
 from OMSimulator.variable import SignalType
-
+from OMSimulator.unit import Unit
 from OMSimulator import namespace
 
 
@@ -31,7 +31,20 @@ def parseDefaultExperiment(node, root):
   root.startTime = default_experiment.get("startTime")
   root.stopTime = default_experiment.get("stopTime")
   ##TODO parse ssd:annotation
-  ##TODO parse unit definitions
+
+def parseUnitDefinitions(node, root):
+  units_element = node.find("ssd:Units", namespaces=namespace.ns)
+  if units_element is None:
+    return
+  for unit in units_element.findall("ssc:Unit", namespaces=namespace.ns):
+    name = unit.get("name")
+    base_unit = unit.find("ssc:BaseUnit", namespaces=namespace.ns)
+    if base_unit is not None:
+      attributes = {key: base_unit.get(key) for key in base_unit.keys()}
+      # Create a Unit object and add it to the root or system
+      unit_obj = Unit(name, attributes)
+      root.unitDefinitions.append(unit_obj)
+      # print(f"Unit: {name}, Attributes: {attributes}")
 
 def parseElements(node, resources = None):
   """Extract components from <ssd:Elements> section"""

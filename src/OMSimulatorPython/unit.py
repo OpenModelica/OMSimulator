@@ -8,6 +8,12 @@ class Unit:
     self.name = name
     self.baseUnits = baseUnits or {}
 
+  def list(self, prefix=""):
+    '''Lists the unit and its base units.'''
+    print(f"{prefix} Unit: {self.name}")
+    for key, value in self.baseUnits.items():
+      print(f"{prefix} |-- {key}: {value}")
+
   def exportToSSD(self, node):
     '''Exports unit definitions to an XML node.'''
     unit_node = ET.SubElement(node, namespace.tag('ssc', 'Unit'), name=self.name)
