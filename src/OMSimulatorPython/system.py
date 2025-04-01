@@ -28,7 +28,7 @@ class System:
     return self._name
 
   @staticmethod
-  def importFromNode(node, ssd, resources = None):
+  def importFromNode(node, ssd, resources: dict | None = None):
     '''Imports a ssd:System'''
     try:
       temp_dir = ssd._filename.parent
