@@ -22,36 +22,36 @@ ssv1 = SSV()
 ssv1.setValue("k1", 2.0, "m")
 ssv1.setValue("k2", 3.0, "kg")
 ssv1.setValue("param3", "hello")
-ssv1.export("myfile1.ssv")
+ssv1.export("myfile3.ssv")
 
 ssv2 = SSV()
 ssv2.setValue("k1", 200.0, "m")
 ssv2.setValue("k2", 300.0, "kg")
 ssv2.setValue("param3", "ssp")
-ssv2.export("myfile2.ssv")
+ssv2.export("myfile4.ssv")
 
 ## add myfile1.ssv to to ssp resources
-model.addResource("myfile1.ssv", "resources/myfile1.ssv")
+model.addResource("myfile3.ssv", "resources/myfile3.ssv")
 ## reference myfile1.ssv to Add1
-model.addSSV(CRef('default', 'Add1'), 'resources/myfile1.ssv')
+model.addSSV(CRef('default', 'Add1'), 'resources/myfile3.ssv')
 
 ## add myfile2.ssv to to ssp resources
-model.addResource("myfile2.ssv", "resources/myfile2.ssv")
+model.addResource("myfile4.ssv", "resources/myfile4.ssv")
 ## reference myfile2.ssv to Add2
-model.addSSV(CRef('default', 'Add2'), 'resources/myfile2.ssv')
+model.addSSV(CRef('default', 'Add2'), 'resources/myfile4.ssv')
 
 model.list()
 model.export('setValueSSV2.ssp')
 
-model2 = SSP('setValueSSV2.ssp' , temp_dir="./tmp-setValueSSV2/model2/")
+model2 = SSP('setValueSSV2.ssp')
 model2.list()
 
 ## Result:
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
 ## |--   resources/Add.fmu
-## |--   resources/myfile1.ssv
-## |--   resources/myfile2.ssv
+## |--   resources/myfile3.ssv
+## |--   resources/myfile4.ssv
 ## |-- <class 'OMSimulator.ssd.SSD'>
 ## |-- Active variant "default": None
 ## |-- |-- System: default
@@ -65,7 +65,7 @@ model2.list()
 ## |-- |-- |-- |-- (y, output, Real)
 ## |-- |-- |-- |-- (k1, parameter, Real)
 ## |-- |-- |-- |-- (k2, parameter, Real)
-## |-- |-- |-- Parameter Bindings: myfile1.ssv
+## |-- |-- |-- Parameter Bindings: myfile3.ssv
 ## |-- |-- |-- |-- (Real k1, 2.0, m)
 ## |-- |-- |-- |-- (Real k2, 3.0, kg)
 ## |-- |-- |-- |-- (String param3, hello, None)
@@ -77,7 +77,7 @@ model2.list()
 ## |-- |-- |-- |-- (y, output, Real)
 ## |-- |-- |-- |-- (k1, parameter, Real)
 ## |-- |-- |-- |-- (k2, parameter, Real)
-## |-- |-- |-- Parameter Bindings: myfile2.ssv
+## |-- |-- |-- Parameter Bindings: myfile4.ssv
 ## |-- |-- |-- |-- (Real k1, 200.0, m)
 ## |-- |-- |-- |-- (Real k2, 300.0, kg)
 ## |-- |-- |-- |-- (String param3, ssp, None)
@@ -87,8 +87,8 @@ model2.list()
 ## <class 'OMSimulator.ssp.SSP'>
 ## |-- Resources:
 ## |--   resources/Add.fmu
-## |--   resources/myfile1.ssv
-## |--   resources/myfile2.ssv
+## |--   resources/myfile3.ssv
+## |--   resources/myfile4.ssv
 ## |-- <class 'OMSimulator.ssd.SSD'>
 ## |-- Active variant "default": <hidden>
 ## |-- |-- System: default
@@ -102,7 +102,7 @@ model2.list()
 ## |-- |-- |-- |-- (y, output, Real)
 ## |-- |-- |-- |-- (k1, parameter, Real)
 ## |-- |-- |-- |-- (k2, parameter, Real)
-## |-- |-- |-- Parameter Bindings: myfile1.ssv
+## |-- |-- |-- Parameter Bindings: myfile3.ssv
 ## |-- |-- |-- |-- (Real k1, 2.0, m)
 ## |-- |-- |-- |-- (Real k2, 3.0, kg)
 ## |-- |-- |-- |-- (String param3, hello, None)
@@ -114,7 +114,7 @@ model2.list()
 ## |-- |-- |-- |-- (y, output, Real)
 ## |-- |-- |-- |-- (k1, parameter, Real)
 ## |-- |-- |-- |-- (k2, parameter, Real)
-## |-- |-- |-- Parameter Bindings: myfile2.ssv
+## |-- |-- |-- Parameter Bindings: myfile4.ssv
 ## |-- |-- |-- |-- (Real k1, 200.0, m)
 ## |-- |-- |-- |-- (Real k2, 300.0, kg)
 ## |-- |-- |-- |-- (String param3, ssp, None)
