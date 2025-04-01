@@ -198,9 +198,9 @@ class SSP:
     '''Lists SSP contents'''
     print(type(self))
     print("|-- Resources:")
-    for resource in self.resources:
+    for resource in sorted(self.resources):
       print(f"|--   {resource}")
-    for ssd in self.variants.values():
+    for ssd in sorted(self.variants.values()):
       ssd.list("|--")
 
   def export(self, filename: str):
