@@ -26,10 +26,10 @@ class Values:
     for key, (value, unit) in self.start_values.items():
       if isinstance(value, float):
         type_tag = "Real"
+      elif isinstance(value, bool): # Check for boolean first, because it is a subclass of int
+        type_tag = "Boolean"
       elif isinstance(value, int):
         type_tag = "Integer"
-      elif isinstance(value, bool):
-        type_tag = "Boolean"
       elif isinstance(value, str):
         type_tag = "String"
       else:
@@ -66,7 +66,7 @@ class Values:
       parameter_node.set("name", str(key))
       if isinstance(value, float):
         type_tag = "Real"
-      elif isinstance(value, bool): ## check for boolean first, as is a subclass of int, so check for boolean first
+      elif isinstance(value, bool): # Check for boolean first, because it is a subclass of int
         type_tag = "Boolean"
       elif isinstance(value, int):
         type_tag = "Integer"
