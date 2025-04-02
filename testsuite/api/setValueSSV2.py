@@ -51,7 +51,15 @@ model2.list()
 ## |-- Resources:
 ## |--   resources/Add.fmu
 ## |--   resources/myfile3.ssv
+## |--   |-- Parameter Bindings:
+## |--   |-- |-- (Real k1, 2.0, m)
+## |--   |-- |-- (Real k2, 3.0, kg)
+## |--   |-- |-- (String param3, hello, None)
 ## |--   resources/myfile4.ssv
+## |--   |-- Parameter Bindings:
+## |--   |-- |-- (Real k1, 200.0, m)
+## |--   |-- |-- (Real k2, 300.0, kg)
+## |--   |-- |-- (String param3, ssp, None)
 ## |-- <class 'OMSimulator.ssd.SSD'>
 ## |-- Active variant "default": None
 ## |-- |-- System: default
@@ -82,7 +90,15 @@ model2.list()
 ## |-- Resources:
 ## |--   resources/Add.fmu
 ## |--   resources/myfile3.ssv
+## |--   |-- Parameter Bindings:
+## |--   |-- |-- (Real k1, 2.0, m)
+## |--   |-- |-- (Real k2, 3.0, kg)
+## |--   |-- |-- (String param3, hello, None)
 ## |--   resources/myfile4.ssv
+## |--   |-- Parameter Bindings:
+## |--   |-- |-- (Real k1, 200.0, m)
+## |--   |-- |-- (Real k2, 300.0, kg)
+## |--   |-- |-- (String param3, ssp, None)
 ## |-- <class 'OMSimulator.ssd.SSD'>
 ## |-- Active variant "default": <hidden>
 ## |-- |-- System: default
