@@ -124,17 +124,19 @@ class System:
     self.connections.append(Connection(startElement, startConnector, endElement, endConnector))
 
   def _getComponentResourcePath(self, cref):
-    first = cref.first()
-    if first not in self.elements:
-      raise ValueError(f"Element '{first}' not found in '{self.name}'")
+    element_name = cref.first()
+    element = self.elements.get(element_name, None)
 
-    match self.elements[first]:
+    if element is None:
+      raise ValueError(f"Element '{element_name}' not found in System '{self.name}'")
+
+    match element:
       case Component():
-        return self.elements[first].fmuPath
+        return element.fmuPath
       case System():
-        return self.elements[first]._getComponentResourcePath(cref.pop_first())
+        return element._getComponentResourcePath(cref.pop_first())
       case _:
-        raise TypeError(f"Element '{first}' is not a Component or System")
+        raise TypeError(f"Element '{element_name}' is not a Component or System, but {type(element)}")
 
   def setValue(self, cref: CRef, value, unit = None):
     first = cref.first()
