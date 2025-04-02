@@ -1,12 +1,15 @@
+import logging
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
 from OMSimulator.component import Component
 from OMSimulator.connector import Connector
-from OMSimulator.variable import SignalType
 from OMSimulator.unit import Unit
+from OMSimulator.variable import SignalType
+
 from OMSimulator import namespace
 
+logger = logging.getLogger(__name__)
 
 def _setParameters(parameterValues: dict, obj):
   if len(parameterValues) > 0:
@@ -102,7 +105,7 @@ def parseParameterBindings(node, obj, resources):
       if binding.get("source"):
         ## use the instantiated ssv class to set the parameter Resources
         if source not in resources:
-          print("warning: SSV file not found: ", source)
+          logger.warning(f"SSV file not found: {source}")
         obj.addSSV(source)
       else:
         values = binding.find("ssd:ParameterValues", namespaces=namespace.ns)

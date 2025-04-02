@@ -131,9 +131,8 @@ class SSP:
     if self.activeVariant is None:
       raise ValueError("No active variant set in the SSP.")
 
-    # Check if resource exists; raise an error if it doesn't
     if resource not in self.resources:
-      raise ValueError(f"Resource '{resource}' does not exist in the SSP resources. Add the resources first using the addResources() API")
+      logger.warning(f"Resource '{resource}' not found in the SSP resources. Add the resource using the addResource API")
 
     self.activeVariant.addSSV(cref, resource)
 
