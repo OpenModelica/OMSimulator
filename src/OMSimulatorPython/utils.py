@@ -3,7 +3,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 from OMSimulator.component import Component
-from OMSimulator.connector import Connector
+from OMSimulator.connector import Connector, ConnectorGeometry
 from OMSimulator.unit import Unit
 from OMSimulator.variable import Causality, SignalType
 
@@ -75,25 +75,44 @@ def parseConnectors(node):
   """Extract and print system connectors"""
   connectors = []
   connectors_node = node.find("ssd:Connectors", namespaces=namespace.ns)
+
   # No connectors found
   if connectors_node is None:
     return connectors
+
   for connector in connectors_node.findall("ssd:Connector", namespaces=namespace.ns):
     name = connector.get("name")
     kind = connector.get("kind")
     # Convert kind string to enum type
     kind = Causality[kind]
+
     # Find the connector type (Real, Integer, Boolean)
     con = None
-    for connectortype in ["ssc:Real", "ssc:Integer", "ssc:Boolean"]:  #expected connector types
-      if connector.find(connectortype, namespaces=namespace.ns) is not None:
-        signal_type = connectortype.split(":")[-1]  # Extracts 'Real, Integer, Boolean'
+    for connectortype in ["ssc:Real", "ssc:Integer", "ssc:Boolean"]:  # Expected connector types
+      type_element = connector.find(connectortype, namespaces=namespace.ns)
+      if type_element is not None:
+        signal_type = connectortype.split(":")[-1]  # Extracts 'Real', 'Integer', or 'Boolean'
         con = Connector(name, kind, SignalType[signal_type])
-        unit = connector.get("unit")
+        unit = type_element.get("unit")
+        # Set unit if it exists
         if unit:
-          con.setUnit(unit)
-        connectors.append(con)
+            con.setUnit(unit)
+        # print(f"Connector: {name}, Kind: {kind}, SignalType: {signal_type}, Unit: {unit}")
         break  # Stop after the first valid type is found
+
+    # Check if connector has geometry information
+    geometry_element = connector.find("ssd:ConnectorGeometry", namespaces=namespace.ns)
+    if geometry_element is not None:
+      x = geometry_element.get("x")
+      y = geometry_element.get("y")
+      if x and y:
+        con.connectorGeometry = ConnectorGeometry(float(x), float(y))
+        con.connectorGeometry.setX(float(x))  # Set x coordinate
+        con.connectorGeometry.setY(float(y))  # Set y coordinate
+
+    if con:
+      connectors.append(con)
+
   return connectors
 
 def parseParameterBindings(node, obj, resources):

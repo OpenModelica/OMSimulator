@@ -158,9 +158,13 @@ class System:
     if len(self.elements) > 0:
       element_node = ET.SubElement(node, namespace.tag("ssd", "Elements"))
       for key, element in self.elements.items():
-        element.exportToSSD(element_node)
-        #TODO
-        ## export parameter resources e.g ssv
+        if isinstance(element, System):
+          element.export(element_node)
+        elif isinstance(element, Component):
+          element.exportToSSD(element_node)
+        else:
+          # Handle other types of elements if needed
+          logger.error(f"Unknown element type '{type(element)}' for element '{key}'. Skipping export.")
 
     ## export connections
     if len(self.connections) > 0:

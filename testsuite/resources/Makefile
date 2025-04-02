@@ -82,6 +82,7 @@ replaceSubmodel4 \
 replaceSubmodel5 \
 toplevelparameter1 \
 toplevelparameter2 \
+dcmotor \
 
 MOSs = \
 Blocks.mos \
