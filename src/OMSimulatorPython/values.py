@@ -50,7 +50,6 @@ class Values:
     parameters_node = ET.SubElement(parameter_set_node, namespace.tag("ssv", "Parameters"))
 
     self.add_parameters(parameters_node)
-    #self.exportUnitDefintions(parameter_set_node)
 
   def exportToSSV(self, node):
     if self.empty():
@@ -58,7 +57,6 @@ class Values:
 
     parameters_node = ET.SubElement(node, namespace.tag("ssv", "Parameters"))
     self.add_parameters(parameters_node)
-    #self.exportUnitDefintions(node)
 
   def add_parameters(self, parameters_node):
     """Generic function to add XML parameters based on the value type."""
@@ -80,15 +78,3 @@ class Values:
       parameter_type.set("value", str(value))
       if unit is not None:
         parameter_type.set("unit", unit)
-
-  def exportUnitDefintions(self, node):
-    unitsToExport = {}
-    for key, var in self.realStartValues.items():
-      for item in var.unitDefinition:
-        if item.name not in unitsToExport:
-          unitsToExport[item.name] = item.baseUnits
-
-    if len(unitsToExport) > 0 :
-      ssv_unit_node = ET.SubElement(node, namespace.tag("ssv", "Units"))
-      unit = Unit()
-      unit.exportToSSD(unitsToExport, ssv_unit_node)
