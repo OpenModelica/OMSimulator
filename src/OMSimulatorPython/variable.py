@@ -20,7 +20,7 @@ class SignalType(Enum):
   Integer = 1
   Boolean = 2
   String = 3
-  Enum = 4
+  Enumeration = 4
 
 
 class Variable:
