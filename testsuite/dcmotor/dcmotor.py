@@ -5,6 +5,10 @@
 ## win: yes
 ## mac: yes
 
+## This example demonstrates how to export an SSD file from an SSP file.
+## the main purpose of this example is to parse all the elements in the SSD file
+## and export it to a file.
+
 import logging
 logging.basicConfig(level=logging.INFO)
 
