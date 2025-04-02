@@ -43,6 +43,7 @@
 #include "ResultWriter.h"
 #include "Snapshot.h"
 #include "ssd/ConnectorGeometry.h"
+#include "ssd/SystemGeometry.h"
 #if !defined(NO_TLM)
 #include "TLMBusConnector.h"
 #endif
@@ -248,6 +249,8 @@ namespace oms
     Values values;  ///< system level connectors, parameters and their start values defined before instantiating the FMU and external inputs defined after initialization
 
     Element element;
+    ssd::SystemGeometry* system_geometry = NULL;
+
     std::vector<Connector*> connectors;  ///< last element is always NULL
     std::vector<oms_element_t*> subelements;  ///< last element is always NULL; don't free it
     std::vector<BusConnector*> busconnectors;

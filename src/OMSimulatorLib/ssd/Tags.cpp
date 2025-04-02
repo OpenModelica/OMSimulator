@@ -55,6 +55,7 @@ const char* oms::ssp::Draft20180219::ssd::elements                     = "ssd:El
 const char* oms::ssp::Draft20180219::ssd::enumerations                 = "ssd:Enumerations";
 const char* oms::ssp::Draft20180219::ssd::simulation_information       = "ssd:SimulationInformation";
 const char* oms::ssp::Draft20180219::ssd::system                       = "ssd:System";
+const char* oms::ssp::Draft20180219::ssd::system_geometry              = "ssd:SystemGeometry";
 const char* oms::ssp::Draft20180219::ssd::system_structure_description = "ssd:SystemStructureDescription";
 const char* oms::ssp::Draft20180219::ssd::units                        = "ssd:Units";
 

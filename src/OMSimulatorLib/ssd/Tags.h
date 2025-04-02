@@ -121,6 +121,7 @@ namespace oms
         extern const char* elements;
         extern const char* enumerations;
         extern const char* simulation_information;
+        extern const char* system_geometry;
         extern const char* system_structure_description;
         extern const char* system;
         extern const char* units;

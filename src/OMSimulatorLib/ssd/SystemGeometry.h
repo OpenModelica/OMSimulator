@@ -34,6 +34,8 @@
 
 #include "OMSimulator/Types.h"
 
+#include <pugixml.hpp>
+
 #include <string>
 
 namespace oms
@@ -55,6 +57,9 @@ namespace oms
       double getY1() const {return y1;}
       double getX2() const {return x2;}
       double getY2() const {return y2;}
+
+      oms_status_enu_t exportToSSD(pugi::xml_node& root) const;
+      oms_status_enu_t importFromSSD(const pugi::xml_node& node);
     };
   }
 }
