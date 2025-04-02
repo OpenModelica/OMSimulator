@@ -68,20 +68,20 @@ model2.list()
 ## |-- |-- |-- FMU: (Add1)
 ## |-- |-- |-- |-- path: resources/Add.fmu
 ## |-- |-- |-- |-- Connectors:
-## |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real)
-## |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real)
-## |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real)
-## |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real)
-## |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real)
+## |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real, None)
+## |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real, None)
+## |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None)
+## |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None)
+## |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None)
 ## |-- |-- |-- |-- Parameter Bindings: resources/myfile3.ssv
 ## |-- |-- |-- FMU: (Add2)
 ## |-- |-- |-- |-- path: resources/Add.fmu
 ## |-- |-- |-- |-- Connectors:
-## |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real)
-## |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real)
-## |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real)
-## |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real)
-## |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real)
+## |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real, None)
+## |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real, None)
+## |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None)
+## |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None)
+## |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None)
 ## |-- |-- |-- |-- Parameter Bindings: resources/myfile4.ssv
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
@@ -107,20 +107,20 @@ model2.list()
 ## |-- |-- |-- FMU: (Add1)
 ## |-- |-- |-- |-- path: resources/Add.fmu
 ## |-- |-- |-- |-- Connectors:
-## |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real)
-## |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real)
-## |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real)
-## |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real)
-## |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real)
+## |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real, None)
+## |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real, None)
+## |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None)
+## |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None)
+## |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None)
 ## |-- |-- |-- |-- Parameter Bindings: resources/myfile3.ssv
 ## |-- |-- |-- FMU: (Add2)
 ## |-- |-- |-- |-- path: resources/Add.fmu
 ## |-- |-- |-- |-- Connectors:
-## |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real)
-## |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real)
-## |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real)
-## |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real)
-## |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real)
+## |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real, None)
+## |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real, None)
+## |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None)
+## |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None)
+## |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None)
 ## |-- |-- |-- |-- Parameter Bindings: resources/myfile4.ssv
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0

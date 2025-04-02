@@ -11,8 +11,8 @@ class Unit:
   def list(self, prefix=""):
     '''Lists the unit and its base units.'''
     print(f"{prefix} Unit: {self.name}")
-    for key, value in self.baseUnits.items():
-      print(f"{prefix} |-- {key}: {value}")
+    base_units_str = ", ".join(f"{key}: {value}" for key, value in self.baseUnits.items())
+    print(f"{prefix}{prefix} BaseUnit: {base_units_str}")
 
   def exportToSSD(self, node):
     '''Exports unit definitions to an XML node.'''
