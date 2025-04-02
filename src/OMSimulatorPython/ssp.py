@@ -195,6 +195,9 @@ class SSP:
     print("|-- Resources:")
     for resource in sorted(self.resources):
       print(f"|--   {resource}")
+      if isinstance(self.resources[resource], SSV):
+        print(f"|--   |-- Parameter Bindings:")
+        self.resources[resource].list("|--   |-- |--")
     for ssd in self.variants.values():
       ssd.list("|--")
 
