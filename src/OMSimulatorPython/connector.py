@@ -27,45 +27,13 @@ class Connector:
     self.unit = unit
 
   def list(self, prefix=""):
-    print(f"{prefix} ({self.name}, {self.getCausalityToString(self.causality)}, {self.getSignalTypeToString(self.signal_type)})")
+    print(f"{prefix} ({self.name}, {self.causality}, {self.signal_type})")
     pass
 
   def exportToSSD(self, node):
     connector_node = ET.SubElement(node, namespace.tag("ssd", "Connector"))
     connector_node.set("name", str(self.name))
-    connector_node.set("kind", Connector.getCausalityToString(self.causality))
-    connectors_type = ET.SubElement(connector_node, namespace.tag("ssc", Connector.getSignalTypeToString(self.signal_type)))
+    connector_node.set("kind", self.causality.name)
+    connectors_type = ET.SubElement(connector_node, namespace.tag("ssc", self.signal_type.name))
     if self.unit is not None:
       connectors_type.set("unit", self.unit)
-
-  @staticmethod
-  def getCausalityToString(causality_ : Causality) -> str:
-    causality_map = {
-        Causality.input: "input",
-        Causality.output: "output",
-        Causality.parameter: "parameter",
-        Causality.calculatedParameter: "calculatedParameter"
-    }
-    return causality_map.get(causality_, "unknown")
-
-  @staticmethod
-  def getSignalTypeToString(signalTypes : SignalType) -> str:
-    signalTypes_map = {
-        SignalType.Real: "Real",
-        SignalType.Integer: "Integer",
-        SignalType.Boolean: "Boolean",
-        SignalType.Enum: "Enumeration",
-        SignalType.String: "String"
-    }
-    return signalTypes_map.get(signalTypes, "unknown")
-
-  @staticmethod
-  def getCausalityFromString(kind: str) -> Causality:
-        """Converts a kind string to the corresponding causality enum"""
-        kind_map = {
-            "input": Causality.input,
-            "output": Causality.output,
-            "parameter": Causality.parameter,
-            "calculatedParameter": Causality.calculatedParameter
-        }
-        return kind_map.get(kind)

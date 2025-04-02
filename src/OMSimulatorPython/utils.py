@@ -5,7 +5,7 @@ from pathlib import Path
 from OMSimulator.component import Component
 from OMSimulator.connector import Connector
 from OMSimulator.unit import Unit
-from OMSimulator.variable import SignalType
+from OMSimulator.variable import Causality, SignalType
 
 from OMSimulator import namespace
 
@@ -82,7 +82,7 @@ def parseConnectors(node):
     name = connector.get("name")
     kind = connector.get("kind")
     # Convert kind string to enum type
-    kind = Connector.getCausalityFromString(kind)
+    kind = Causality[kind]
     # Find the connector type (Real, Integer, Boolean)
     con = None
     for connectortype in ["ssc:Real", "ssc:Integer", "ssc:Boolean"]:  #expected connector types
