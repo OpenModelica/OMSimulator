@@ -24,16 +24,17 @@ class Values:
       return
 
     for key, (value, unit) in self.start_values.items():
-      if isinstance(value, float):
-        type_tag = "Real"
-      elif isinstance(value, bool): # Check for boolean first, because it is a subclass of int
-        type_tag = "Boolean"
-      elif isinstance(value, int):
-        type_tag = "Integer"
-      elif isinstance(value, str):
-        type_tag = "String"
-      else:
-        raise TypeError(f"Unsupported type: {type(value)}")
+      match value:
+        case float():
+          type_tag = "Real"
+        case bool():  # Check for boolean first, because it is a subclass of int
+          type_tag = "Boolean"
+        case int():
+          type_tag = "Integer"
+        case str():
+          type_tag = "String"
+        case _:
+            raise TypeError(f"Unsupported type: {type(value)}")
       print(f"{prefix} ({type_tag} {key}, {value}, {unit})")
 
   def exportToSSD(self, node):
@@ -64,16 +65,17 @@ class Values:
     for key, (value, unit) in self.start_values.items():
       parameter_node = ET.SubElement(parameters_node, namespace.tag("ssv", "Parameter"))
       parameter_node.set("name", str(key))
-      if isinstance(value, float):
-        type_tag = "Real"
-      elif isinstance(value, bool): # Check for boolean first, because it is a subclass of int
-        type_tag = "Boolean"
-      elif isinstance(value, int):
-        type_tag = "Integer"
-      elif isinstance(value, str):
-        type_tag = "String"
-      else:
-        raise TypeError(f"Unsupported type: {type(value)}")
+      match value:
+        case float():
+          type_tag = "Real"
+        case bool():  # Check for boolean first, because it is a subclass of int
+          type_tag = "Boolean"
+        case int():
+          type_tag = "Integer"
+        case str():
+          type_tag = "String"
+        case _:
+            raise TypeError(f"Unsupported type: {type(value)}")
       parameter_type = ET.SubElement(parameter_node, namespace.tag("ssv", type_tag))
       parameter_type.set("value", str(value))
       if unit is not None:

@@ -125,11 +125,16 @@ class System:
 
   def _getComponentResourcePath(self, cref):
     first = cref.first()
-    if not cref.is_root():
-      if first not in self.elements:
-        raise ValueError(f"System '{first}' not found in '{self.name}'")
+    if first not in self.elements:
+      raise ValueError(f"Element '{first}' not found in '{self.name}'")
 
-    return self.elements[first].fmuPath
+    match self.elements[first]:
+      case Component():
+        return self.elements[first].fmuPath
+      case System():
+        return self.elements[first]._getComponentResourcePath(cref.pop_first())
+      case _:
+        raise TypeError(f"Element '{first}' is not a Component or System")
 
   def setValue(self, cref: CRef, value, unit = None):
     first = cref.first()

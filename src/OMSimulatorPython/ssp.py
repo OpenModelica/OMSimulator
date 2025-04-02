@@ -3,11 +3,13 @@ import os
 import shutil
 import tempfile
 import zipfile
+from collections.abc import Iterable
 from pathlib import Path
 
 from OMSimulator.fmu import FMU
 from OMSimulator.settings import suppress_path_to_str
 from OMSimulator.ssv import SSV
+
 from OMSimulator import SSD, CRef
 
 logger = logging.getLogger(__name__)
@@ -137,7 +139,7 @@ class SSP:
     self.activeVariant.addSSV(cref, resource)
 
   def _getComponentResourcePath(self, cref: CRef):
-    return str(self.activeVariant._getComponentResourcePath(cref))
+    return self.activeVariant._getComponentResourcePath(cref)
 
   def setValue(self, cref: CRef, value, unit = None):
     if self.activeVariant is None:
@@ -160,14 +162,12 @@ class SSP:
     self.activeVariant.addSystem(cref)
 
   def add(self, element):
-    '''Adds an SSD or a list of SSDs to the SSP'''
-    if isinstance(element, list):
-      for item in element:
-        self.add(item)
-      return
-
+    '''Adds an SSD or a list/iterable of SSDs to the SSP.'''
     if isinstance(element, SSD):
       self._addSSD(element)
+    elif isinstance(element, Iterable) and not isinstance(element, (str, bytes)):
+      for item in element:
+        self.add(item)
     else:
       raise TypeError(f"SSP class does not support adding instance type of: {type(element)}")
 
