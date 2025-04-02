@@ -34,28 +34,28 @@ model.variants['D16_aero_stimuli'].list()
 ##  Active variant "D16_auto": <hidden>
 ##  |-- System: D16_auto
 ##  |-- Connectors:
-##  |-- |-- (theta, Causality.output, SignalType.Real)
-##  |-- |-- (theta_ref, Causality.input, SignalType.Real)
-##  |-- |-- (Debug, Causality.output, SignalType.Real)
+##  |-- |-- (theta, Causality.output, SignalType.Real, deg)
+##  |-- |-- (theta_ref, Causality.input, SignalType.Real, deg)
+##  |-- |-- (Debug, Causality.output, SignalType.Real, -)
 ##  |-- Elements:
 ##  |-- |-- FMU: (interface_model)
 ##  |-- |-- |-- path: resources/FMU_16_interface.fmu
 ##  |-- |-- |-- Connectors:
-##  |-- |-- |-- |-- (pA.in.y, Causality.output, SignalType.Real)
-##  |-- |-- |-- |-- (pB.in.y, Causality.output, SignalType.Real)
-##  |-- |-- |-- |-- (pLin.in.y, Causality.output, SignalType.Real)
-##  |-- |-- |-- |-- (pLmax.in.y, Causality.output, SignalType.Real)
-##  |-- |-- |-- |-- (pP.in.y, Causality.output, SignalType.Real)
-##  |-- |-- |-- |-- (pPS.in.y, Causality.output, SignalType.Real)
-##  |-- |-- |-- |-- (pTA.in.y, Causality.output, SignalType.Real)
-##  |-- |-- |-- |-- (pTB.in.y, Causality.output, SignalType.Real)
-##  |-- |-- |-- |-- (p_TP.in.y, Causality.output, SignalType.Real)
-##  |-- |-- |-- |-- (qA.out.y, Causality.input, SignalType.Real)
-##  |-- |-- |-- |-- (qB.out.y, Causality.input, SignalType.Real)
-##  |-- |-- |-- |-- (theta.in.y, Causality.output, SignalType.Real)
-##  |-- |-- |-- |-- (theta_ref.out.y, Causality.input, SignalType.Real)
-##  |-- |-- |-- |-- (uA.in.y, Causality.output, SignalType.Real)
-##  |-- |-- |-- |-- (uB.in.y, Causality.output, SignalType.Real)
+##  |-- |-- |-- |-- (pA.in.y, Causality.output, SignalType.Real, None)
+##  |-- |-- |-- |-- (pB.in.y, Causality.output, SignalType.Real, None)
+##  |-- |-- |-- |-- (pLin.in.y, Causality.output, SignalType.Real, None)
+##  |-- |-- |-- |-- (pLmax.in.y, Causality.output, SignalType.Real, None)
+##  |-- |-- |-- |-- (pP.in.y, Causality.output, SignalType.Real, None)
+##  |-- |-- |-- |-- (pPS.in.y, Causality.output, SignalType.Real, None)
+##  |-- |-- |-- |-- (pTA.in.y, Causality.output, SignalType.Real, None)
+##  |-- |-- |-- |-- (pTB.in.y, Causality.output, SignalType.Real, None)
+##  |-- |-- |-- |-- (p_TP.in.y, Causality.output, SignalType.Real, None)
+##  |-- |-- |-- |-- (qA.out.y, Causality.input, SignalType.Real, None)
+##  |-- |-- |-- |-- (qB.out.y, Causality.input, SignalType.Real, None)
+##  |-- |-- |-- |-- (theta.in.y, Causality.output, SignalType.Real, None)
+##  |-- |-- |-- |-- (theta_ref.out.y, Causality.input, SignalType.Real, None)
+##  |-- |-- |-- |-- (uA.in.y, Causality.output, SignalType.Real, None)
+##  |-- |-- |-- |-- (uB.in.y, Causality.output, SignalType.Real, None)
 ##  |-- |-- |-- Inline Parameter Bindings:
 ##  |-- |-- |-- |-- (Real timestep, 0.001, s)
 ##  |-- |-- |-- |-- (Real s_cyl, 1.0, m)
@@ -67,24 +67,24 @@ model.variants['D16_aero_stimuli'].list()
 ##  |-- |-- FMU: (valve_model)
 ##  |-- |-- |-- path: resources/L90LS_UD_OS_OS.fmu
 ##  |-- |-- |-- Connectors:
-##  |-- |-- |-- |-- (uA, Causality.input, SignalType.Real)
-##  |-- |-- |-- |-- (uB, Causality.input, SignalType.Real)
-##  |-- |-- |-- |-- (pP, Causality.input, SignalType.Real)
-##  |-- |-- |-- |-- (pTA, Causality.input, SignalType.Real)
-##  |-- |-- |-- |-- (pTB, Causality.input, SignalType.Real)
-##  |-- |-- |-- |-- (pA, Causality.input, SignalType.Real)
-##  |-- |-- |-- |-- (pB, Causality.input, SignalType.Real)
-##  |-- |-- |-- |-- (pLin, Causality.input, SignalType.Real)
-##  |-- |-- |-- |-- (pLmax, Causality.input, SignalType.Real)
-##  |-- |-- |-- |-- (qA, Causality.output, SignalType.Real)
-##  |-- |-- |-- |-- (qB, Causality.output, SignalType.Real)
-##  |-- |-- |-- |-- (qP, Causality.output, SignalType.Real)
-##  |-- |-- |-- |-- (qTA, Causality.output, SignalType.Real)
-##  |-- |-- |-- |-- (qTB, Causality.output, SignalType.Real)
-##  |-- |-- |-- |-- (pL, Causality.output, SignalType.Real)
-##  |-- |-- |-- |-- (p_TP, Causality.input, SignalType.Real)
-##  |-- |-- |-- |-- (p_PS, Causality.input, SignalType.Real)
-##  |-- |-- |-- |-- (Debug, Causality.output, SignalType.Real)
+##  |-- |-- |-- |-- (uA, Causality.input, SignalType.Real, mA)
+##  |-- |-- |-- |-- (uB, Causality.input, SignalType.Real, mA)
+##  |-- |-- |-- |-- (pP, Causality.input, SignalType.Real, bar)
+##  |-- |-- |-- |-- (pTA, Causality.input, SignalType.Real, bar)
+##  |-- |-- |-- |-- (pTB, Causality.input, SignalType.Real, bar)
+##  |-- |-- |-- |-- (pA, Causality.input, SignalType.Real, bar)
+##  |-- |-- |-- |-- (pB, Causality.input, SignalType.Real, bar)
+##  |-- |-- |-- |-- (pLin, Causality.input, SignalType.Real, bar)
+##  |-- |-- |-- |-- (pLmax, Causality.input, SignalType.Real, bar)
+##  |-- |-- |-- |-- (qA, Causality.output, SignalType.Real, L/min)
+##  |-- |-- |-- |-- (qB, Causality.output, SignalType.Real, L/min)
+##  |-- |-- |-- |-- (qP, Causality.output, SignalType.Real, L/min)
+##  |-- |-- |-- |-- (qTA, Causality.output, SignalType.Real, L/min)
+##  |-- |-- |-- |-- (qTB, Causality.output, SignalType.Real, L/min)
+##  |-- |-- |-- |-- (pL, Causality.output, SignalType.Real, bar)
+##  |-- |-- |-- |-- (p_TP, Causality.input, SignalType.Real, bar)
+##  |-- |-- |-- |-- (p_PS, Causality.input, SignalType.Real, bar)
+##  |-- |-- |-- |-- (Debug, Causality.output, SignalType.Real, None)
 ##  |-- |-- |-- Inline Parameter Bindings:
 ##  |-- |-- |-- |-- (Real d_A, 2.0, mm)
 ##  |-- |-- |-- |-- (Real d_B, 2.0, mm)
@@ -111,25 +111,15 @@ model.variants['D16_aero_stimuli'].list()
 ##  |-- |-- interface_model.theta.in.y -> .theta
 ##  UnitDefinitions:
 ##  |-- Unit: mA
-##  |-- |-- A: 1
-##  |-- |-- factor: 1e-3
+##  |-- |-- BaseUnit: A: 1, factor: 1e-3
 ##  |-- Unit: bar
-##  |-- |-- kg: 1
-##  |-- |-- m: -1
-##  |-- |-- s: -2
-##  |-- |-- factor: 1e5
-##  |-- |-- offset: 0
+##  |-- |-- BaseUnit: kg: 1, m: -1, s: -2, factor: 1e5, offset: 0
 ##  |-- Unit: L/min
-##  |-- |-- m: 3
-##  |-- |-- s: -1
-##  |-- |-- factor: 6e-4
+##  |-- |-- BaseUnit: m: 3, s: -1, factor: 6e-4
 ##  |-- Unit: deg
-##  |-- |-- rad: 1
-##  |-- |-- factor: 57.29746
-##  |-- |-- offset: 0.0
+##  |-- |-- BaseUnit: rad: 1, factor: 57.29746, offset: 0.0
 ##  |-- Unit: -
-##  |-- |-- factor: 1
-##  |-- |-- offset: 0.0
+##  |-- |-- BaseUnit: factor: 1, offset: 0.0
 ##  DefaultExperiment
 ##  |-- startTime: 0.0
 ##  |-- stopTime: 10.0
@@ -139,17 +129,17 @@ model.variants['D16_aero_stimuli'].list()
 ##  Inactive variant "D16_aero_stimuli": <hidden>
 ##  |-- System: D16_aero_stimuli
 ##  |-- Connectors:
-##  |-- |-- (m_dot_TB, Causality.output, SignalType.Real)
-##  |-- |-- (u, Causality.output, SignalType.Real)
-##  |-- |-- (p1, Causality.output, SignalType.Real)
-##  |-- |-- (Debug, Causality.output, SignalType.Real)
+##  |-- |-- (m_dot_TB, Causality.output, SignalType.Real, kgps)
+##  |-- |-- (u, Causality.output, SignalType.Real, -)
+##  |-- |-- (p1, Causality.output, SignalType.Real, bar)
+##  |-- |-- (Debug, Causality.output, SignalType.Real, -)
 ##  |-- Elements:
 ##  |-- |-- FMU: (stimuli_model)
 ##  |-- |-- |-- path: resources/FMU_16_aero_stimuli.fmu
 ##  |-- |-- |-- Connectors:
-##  |-- |-- |-- |-- (p1.in.y, Causality.output, SignalType.Real)
-##  |-- |-- |-- |-- (p2.in.y, Causality.output, SignalType.Real)
-##  |-- |-- |-- |-- (u.in.y, Causality.output, SignalType.Real)
+##  |-- |-- |-- |-- (p1.in.y, Causality.output, SignalType.Real, None)
+##  |-- |-- |-- |-- (p2.in.y, Causality.output, SignalType.Real, None)
+##  |-- |-- |-- |-- (u.in.y, Causality.output, SignalType.Real, None)
 ##  |-- |-- |-- Inline Parameter Bindings:
 ##  |-- |-- |-- |-- (Real timestep, 0.001, s)
 ##  |-- |-- |-- |-- (Real u_0, 0.0, -)
@@ -159,18 +149,18 @@ model.variants['D16_aero_stimuli'].list()
 ##  |-- |-- FMU: (interface_model)
 ##  |-- |-- |-- path: resources/FMU_16_aero_interface.fmu
 ##  |-- |-- |-- Connectors:
-##  |-- |-- |-- |-- (m_dot_TB.in.y, Causality.output, SignalType.Real)
-##  |-- |-- |-- |-- (pA.in.y, Causality.output, SignalType.Real)
-##  |-- |-- |-- |-- (pLin.in.y, Causality.output, SignalType.Real)
-##  |-- |-- |-- |-- (pLmax.in.y, Causality.output, SignalType.Real)
-##  |-- |-- |-- |-- (p_P.in.y, Causality.output, SignalType.Real)
-##  |-- |-- |-- |-- (p_PS.in.y, Causality.output, SignalType.Real)
-##  |-- |-- |-- |-- (p_TA.in.y, Causality.output, SignalType.Real)
-##  |-- |-- |-- |-- (p_TP.in.y, Causality.output, SignalType.Real)
-##  |-- |-- |-- |-- (qTB.out.y, Causality.input, SignalType.Real)
-##  |-- |-- |-- |-- (u.out.y, Causality.input, SignalType.Real)
-##  |-- |-- |-- |-- (uA.in.y, Causality.output, SignalType.Real)
-##  |-- |-- |-- |-- (uB.in.y, Causality.output, SignalType.Real)
+##  |-- |-- |-- |-- (m_dot_TB.in.y, Causality.output, SignalType.Real, None)
+##  |-- |-- |-- |-- (pA.in.y, Causality.output, SignalType.Real, None)
+##  |-- |-- |-- |-- (pLin.in.y, Causality.output, SignalType.Real, None)
+##  |-- |-- |-- |-- (pLmax.in.y, Causality.output, SignalType.Real, None)
+##  |-- |-- |-- |-- (p_P.in.y, Causality.output, SignalType.Real, None)
+##  |-- |-- |-- |-- (p_PS.in.y, Causality.output, SignalType.Real, None)
+##  |-- |-- |-- |-- (p_TA.in.y, Causality.output, SignalType.Real, None)
+##  |-- |-- |-- |-- (p_TP.in.y, Causality.output, SignalType.Real, None)
+##  |-- |-- |-- |-- (qTB.out.y, Causality.input, SignalType.Real, None)
+##  |-- |-- |-- |-- (u.out.y, Causality.input, SignalType.Real, None)
+##  |-- |-- |-- |-- (uA.in.y, Causality.output, SignalType.Real, None)
+##  |-- |-- |-- |-- (uB.in.y, Causality.output, SignalType.Real, None)
 ##  |-- |-- |-- Inline Parameter Bindings:
 ##  |-- |-- |-- |-- (Real timestep, 0.001, s)
 ##  |-- |-- |-- |-- (Real pT, 1.0, bar)
@@ -181,24 +171,24 @@ model.variants['D16_aero_stimuli'].list()
 ##  |-- |-- FMU: (valve_model)
 ##  |-- |-- |-- path: resources/L90LS_UD_OS_OS.fmu
 ##  |-- |-- |-- Connectors:
-##  |-- |-- |-- |-- (uA, Causality.input, SignalType.Real)
-##  |-- |-- |-- |-- (uB, Causality.input, SignalType.Real)
-##  |-- |-- |-- |-- (pP, Causality.input, SignalType.Real)
-##  |-- |-- |-- |-- (pTA, Causality.input, SignalType.Real)
-##  |-- |-- |-- |-- (pTB, Causality.input, SignalType.Real)
-##  |-- |-- |-- |-- (pA, Causality.input, SignalType.Real)
-##  |-- |-- |-- |-- (pB, Causality.input, SignalType.Real)
-##  |-- |-- |-- |-- (pLin, Causality.input, SignalType.Real)
-##  |-- |-- |-- |-- (pLmax, Causality.input, SignalType.Real)
-##  |-- |-- |-- |-- (qA, Causality.output, SignalType.Real)
-##  |-- |-- |-- |-- (qB, Causality.output, SignalType.Real)
-##  |-- |-- |-- |-- (qP, Causality.output, SignalType.Real)
-##  |-- |-- |-- |-- (qTA, Causality.output, SignalType.Real)
-##  |-- |-- |-- |-- (qTB, Causality.output, SignalType.Real)
-##  |-- |-- |-- |-- (pL, Causality.output, SignalType.Real)
-##  |-- |-- |-- |-- (p_TP, Causality.input, SignalType.Real)
-##  |-- |-- |-- |-- (p_PS, Causality.input, SignalType.Real)
-##  |-- |-- |-- |-- (Debug, Causality.output, SignalType.Real)
+##  |-- |-- |-- |-- (uA, Causality.input, SignalType.Real, mA)
+##  |-- |-- |-- |-- (uB, Causality.input, SignalType.Real, mA)
+##  |-- |-- |-- |-- (pP, Causality.input, SignalType.Real, bar)
+##  |-- |-- |-- |-- (pTA, Causality.input, SignalType.Real, bar)
+##  |-- |-- |-- |-- (pTB, Causality.input, SignalType.Real, bar)
+##  |-- |-- |-- |-- (pA, Causality.input, SignalType.Real, bar)
+##  |-- |-- |-- |-- (pB, Causality.input, SignalType.Real, bar)
+##  |-- |-- |-- |-- (pLin, Causality.input, SignalType.Real, bar)
+##  |-- |-- |-- |-- (pLmax, Causality.input, SignalType.Real, bar)
+##  |-- |-- |-- |-- (qA, Causality.output, SignalType.Real, L/min)
+##  |-- |-- |-- |-- (qB, Causality.output, SignalType.Real, L/min)
+##  |-- |-- |-- |-- (qP, Causality.output, SignalType.Real, L/min)
+##  |-- |-- |-- |-- (qTA, Causality.output, SignalType.Real, L/min)
+##  |-- |-- |-- |-- (qTB, Causality.output, SignalType.Real, L/min)
+##  |-- |-- |-- |-- (pL, Causality.output, SignalType.Real, bar)
+##  |-- |-- |-- |-- (p_TP, Causality.input, SignalType.Real, bar)
+##  |-- |-- |-- |-- (p_PS, Causality.input, SignalType.Real, bar)
+##  |-- |-- |-- |-- (Debug, Causality.output, SignalType.Real, None)
 ##  |-- |-- |-- Inline Parameter Bindings:
 ##  |-- |-- |-- |-- (Real d_A, 2.0, mm)
 ##  |-- |-- |-- |-- (Real d_B, 2.0, mm)
@@ -226,26 +216,15 @@ model.variants['D16_aero_stimuli'].list()
 ##  |-- |-- stimuli_model.p1.in.y -> .p1
 ##  UnitDefinitions:
 ##  |-- Unit: mA
-##  |-- |-- A: 1
-##  |-- |-- factor: 1e-3
+##  |-- |-- BaseUnit: A: 1, factor: 1e-3
 ##  |-- Unit: bar
-##  |-- |-- kg: 1
-##  |-- |-- m: -1
-##  |-- |-- s: -2
-##  |-- |-- factor: 1e5
-##  |-- |-- offset: 0
+##  |-- |-- BaseUnit: kg: 1, m: -1, s: -2, factor: 1e5, offset: 0
 ##  |-- Unit: L/min
-##  |-- |-- m: 3
-##  |-- |-- s: -1
-##  |-- |-- factor: 6e-4
+##  |-- |-- BaseUnit: m: 3, s: -1, factor: 6e-4
 ##  |-- Unit: kgps
-##  |-- |-- kg: 1
-##  |-- |-- s: -1
-##  |-- |-- factor: 1
-##  |-- |-- offset: 0.0
+##  |-- |-- BaseUnit: kg: 1, s: -1, factor: 1, offset: 0.0
 ##  |-- Unit: -
-##  |-- |-- factor: 1
-##  |-- |-- offset: 0.0
+##  |-- |-- BaseUnit: factor: 1, offset: 0.0
 ##  DefaultExperiment
 ##  |-- startTime: 0.0
 ##  |-- stopTime: 20.0
