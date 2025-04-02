@@ -8,20 +8,24 @@ from OMSimulator import namespace
 
 class ConnectorGeometry:
   def __init__(self, x: float, y: float):
-    self.x = x
-    self.y = y
+    self._x = x
+    self._y = y
 
-  def getX(self):
-    return self.x
+  @property
+  def x(self):
+    return self._x
 
-  def getY(self):
-    return self.y
+  @x.setter
+  def x(self, value: float):
+    self._x = value
 
-  def setX(self, x: float):
-    self.x = x
+  @property
+  def y(self):
+    return self._y
 
-  def setY(self, y: float):
-    self.y = y
+  @y.setter
+  def y(self, value: float):
+    self._y = value
 
   def list(self, prefix=""):
     print(f"{prefix} |-- ConnectorGeometry: ({self.x}, {self.y})")

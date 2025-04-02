@@ -107,14 +107,15 @@ def parseConnectors(node):
         break  # Stop after the first valid type is found
 
     # Check if connector has geometry information
-    geometry_element = connector.find("ssd:ConnectorGeometry", namespaces=namespace.ns)
-    if geometry_element is not None:
-      x = geometry_element.get("x")
-      y = geometry_element.get("y")
+    connector_geometry = connector.find("ssd:ConnectorGeometry", namespaces=namespace.ns)
+    if connector_geometry is not None:
+      x = connector_geometry.get("x")
+      y = connector_geometry.get("y")
       if x and y:
-        con.connectorGeometry = ConnectorGeometry(float(x), float(y))
-        con.connectorGeometry.setX(float(x))  # Set x coordinate
-        con.connectorGeometry.setY(float(y))  # Set y coordinate
+        connectorGeometry = ConnectorGeometry(float(x), float(y))
+        connectorGeometry.x = float(x)  # Set x coordinate
+        connectorGeometry.y = float(y)  # Set y coordinate
+        con.connectorGeometry = connectorGeometry
 
     if con:
       connectors.append(con)
