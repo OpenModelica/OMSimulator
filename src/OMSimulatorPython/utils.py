@@ -57,6 +57,16 @@ def parseElements(node, resources = None):
   elements_node = node.find("ssd:Elements", namespaces=namespace.ns)
   if elements_node is None:
     return elements
+
+  # Parse the sub system <ssd:system> in the <ssd:Elements> section
+  for system in elements_node.findall("ssd:System", namespaces=namespace.ns):
+    name = system.get("name")
+    elements[name] = System(name)
+    elements[name].connectors = parseConnectors(system)
+    parseParameterBindings(system, elements[name], resources)
+    elements[name].elements = parseElements(system, resources)  # recursively parse nested elements in the sub-system
+    parseConnection(system, elements[name]) # parse connections for the sub-system
+
   for component in elements_node.findall("ssd:Component", namespaces=namespace.ns):
     name = component.get("name")
     comp_type = component.get("type")
@@ -64,11 +74,7 @@ def parseElements(node, resources = None):
     elements[name] = Component(name, source)
     elements[name].connectors = parseConnectors(component)
     parseParameterBindings(component, elements[name], resources)
-  for system in elements_node.findall("ssd:System", namespaces=namespace.ns):
-    name = component.get("name")
-    elements[name] = System(name)
-    elements[name].connectors = parseConnectors(system)
-    parseParameterBindings(system, elements[name], resources)
+
   return elements
 
 def parseConnectors(node):
