@@ -73,6 +73,9 @@ oms::System::System(const oms::ComRef& cref, oms_system_enu_t type, oms::Model* 
 
 oms::System::~System()
 {
+  if (system_geometry)
+    delete system_geometry;
+
   for (const auto& connector : connectors)
     if (connector)
       delete connector;
@@ -671,6 +674,9 @@ oms_status_enu_t oms::System::exportToSSD(pugi::xml_node& node, Snapshot& snapsh
   if (oms_status_ok != element.getGeometry()->exportToSSD(node))
     return logError("export of system ElementGeometry failed");
 
+  if (system_geometry)
+  system_geometry->exportToSSD(node);
+
   // export top level system connectors
   if (connectors.size() > 1)
   {
@@ -803,6 +809,12 @@ oms_status_enu_t oms::System::importFromSnapshot(const pugi::xml_node& node, con
       oms::ssd::ElementGeometry geometry;
       geometry.importFromSSD(*it);
       setGeometry(geometry);
+    }
+    else if (name == oms::ssp::Draft20180219::ssd::system_geometry)
+    {
+      if (!system_geometry)
+        system_geometry = new oms::ssd::SystemGeometry();
+      system_geometry->importFromSSD(*it);
     }
     else if (name == oms::ssp::Version1_0::ssd::parameter_bindings) // parameter bindings provided either as inline or .ssv files
     {

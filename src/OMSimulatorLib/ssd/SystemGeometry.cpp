@@ -31,6 +31,7 @@
 
 #include "SystemGeometry.h"
 #include "../Logging.h"
+#include "Tags.h"
 
 #include <string.h>
 
@@ -73,4 +74,29 @@ oms::ssd::SystemGeometry& oms::ssd::SystemGeometry::operator=(oms::ssd::SystemGe
   this->y2 = rhs.y2;
 
   return *this;
+}
+
+oms_status_enu_t oms::ssd::SystemGeometry::exportToSSD(pugi::xml_node& root) const
+{
+  // export ssd:ElementGeometry
+  if (x1 != 0.0 && y1 != 0.0 && x2 != 0.0 && y2 != 0.0)
+  {
+    pugi::xml_node node = root.append_child(oms::ssp::Draft20180219::ssd::system_geometry);
+    node.append_attribute("x1") = std::to_string(x1).c_str();
+    node.append_attribute("y1") = std::to_string(y1).c_str();
+    node.append_attribute("x2") = std::to_string(x2).c_str();
+    node.append_attribute("y2") = std::to_string(y2).c_str();
+  }
+
+  return oms_status_ok;
+}
+
+oms_status_enu_t oms::ssd::SystemGeometry::importFromSSD(const pugi::xml_node& node)
+{
+  x1 = node.attribute("x1").as_double();
+  y1 = node.attribute("y1").as_double();
+  x2 = node.attribute("x2").as_double();
+  y2 = node.attribute("y2").as_double();
+
+  return oms_status_ok;
 }
