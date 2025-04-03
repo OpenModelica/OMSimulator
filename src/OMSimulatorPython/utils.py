@@ -3,6 +3,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 from OMSimulator.component import Component
+from OMSimulator.connection import ConnectionGeometry
 from OMSimulator.connector import Connector, ConnectorGeometry
 from OMSimulator.unit import Unit
 from OMSimulator.variable import Causality, SignalType
@@ -26,6 +27,14 @@ def parseConnection(node, root):
     endElement = connection.get("endElement", '')
     endConnector = connection.get("endConnector")
     root.addConnection(startElement, startConnector, endElement, endConnector)
+    connection_geometry = connection.find("ssd:ConnectionGeometry", namespaces=namespace.ns)
+    if connection_geometry is not None:
+      pointsX = connection_geometry.get("pointsX")
+      pointsY = connection_geometry.get("pointsY")
+      # print (f"ConnectionGeometry: pointsX: {pointsX}, pointsY: {pointsY}")
+      if pointsX and pointsY:
+        connectionGeometry = ConnectionGeometry([float(x) for x in pointsX.split()], [float(y) for y in pointsY.split()])
+        root.connections[-1].connectionGeometry = connectionGeometry
 
 def parseDefaultExperiment(node, root):
   default_experiment = node.find("ssd:DefaultExperiment", namespaces=namespace.ns)
