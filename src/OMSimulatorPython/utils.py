@@ -6,7 +6,7 @@ from OMSimulator.component import Component
 from OMSimulator.connector import Connector, ConnectorGeometry
 from OMSimulator.unit import Unit
 from OMSimulator.variable import Causality, SignalType
-
+from OMSimulator.elementgeometry import ElementGeometry
 from OMSimulator import namespace
 
 logger = logging.getLogger(__name__)
@@ -63,6 +63,7 @@ def parseElements(node, resources = None):
     name = system.get("name")
     elements[name] = System(name)
     elements[name].connectors = parseConnectors(system)
+    elements[name].elementgeometry = ElementGeometry.importFromNode(system)
     parseParameterBindings(system, elements[name], resources)
     elements[name].elements = parseElements(system, resources)  # recursively parse nested elements in the sub-system
     parseConnection(system, elements[name]) # parse connections for the sub-system
@@ -73,6 +74,7 @@ def parseElements(node, resources = None):
     source = component.get("source")
     elements[name] = Component(name, source)
     elements[name].connectors = parseConnectors(component)
+    elements[name].elementgeometry = ElementGeometry.importFromNode(component)
     parseParameterBindings(component, elements[name], resources)
 
   return elements

@@ -3,7 +3,7 @@ from pathlib import Path
 from lxml import etree as ET
 from OMSimulator.cref import CRef
 from OMSimulator.values import Values
-
+from OMSimulator.elementgeometry import ElementGeometry
 from OMSimulator import namespace
 
 
@@ -13,6 +13,7 @@ class Component:
     self.fmuPath = Path(fmuPath)
     self.connectors = connectors or list()
     self.unitDefinitions = unitDefinitions or list()
+    self.elementgeometry = None
     self.value = Values() ## TODO propogate Values
     self.parameterResources = []
 
@@ -33,6 +34,11 @@ class Component:
       print(f"{prefix} Connectors:")
       for connector in self.connectors:
         connector.list(prefix=prefix + " |--")
+
+    ## list component element geometry
+    if self.elementgeometry:
+      print(f"{prefix} ElementGeometry:")
+      self.elementgeometry.list(prefix=prefix + " |--")
 
     ## list parameters inline
     if not self.value.empty():
@@ -55,6 +61,10 @@ class Component:
       ## export component connectors
       for connector in self.connectors:
         connector.exportToSSD(connectors_node)
+
+    ## export component element geometry
+    if self.elementgeometry:
+      self.elementgeometry.exportToSSD(component_node)
 
     ## export parameter bindings
     self.value.exportToSSD(component_node)
