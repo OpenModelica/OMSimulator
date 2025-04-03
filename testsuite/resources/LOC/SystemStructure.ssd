@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <ssd:SystemStructureDescription xmlns:ssm="http://ssp-standard.org/SSP1/SystemStructureParameterMapping" xmlns:ssd="http://ssp-standard.org/SSP1/SystemStructureDescription" xmlns:oms="https://raw.githubusercontent.com/OpenModelica/OMSimulator/master/schema/oms.xsd" xmlns:ssc="http://ssp-standard.org/SSP1/SystemStructureCommon" xmlns:ssb="http://ssp-standard.org/SSP1/SystemStructureSignalDictionary" xmlns:opc="https://www.semantum.fi/resources/SSPSimulator/master/schema/OPCServer.xsd" xmlns:ssv="http://ssp-standard.org/SSP1/SystemStructureParameterValues" name="LOCtest" version="1.0" generationTool="Simantics SSP Studio 0.0.4">
+    <ssd:System name="Root">
+      <ssd:Elements>
+        <ssd:Component name="System" type="application/x-fmu-sharedlibrary" source="resources/LOC_SYSTEM_linux.fmu">
+          <ssd:Connectors>
+            <ssd:Connector name="OUTPUT_temperature_lube_oil" kind="output">
+              <ssc:Real/>
+              <ssd:ConnectorGeometry x="0.9468744742359121" y="0.07873826375555514"/>
+            </ssd:Connector>
+            <ssd:Connector name="INPUT_massflow_cold_circuit" kind="input">
+              <ssc:Real/>
+              <ssd:ConnectorGeometry x="0.018902735641236172" y="0.0837066301679081"/>
+            </ssd:Connector>
+            <ssd:Connector name="INPUT_temperature_cold_circuit_inlet" kind="input">
+              <ssc:Real/>
+              <ssd:ConnectorGeometry x="0.023085590598697303" y="0.2651035501726224"/>
+            </ssd:Connector>
+            <ssd:Connector name="OUTPUT_massflow_cold_circuit" kind="output">
+              <ssc:Real/>
+              <ssd:ConnectorGeometry x="0.9686528977150072" y="0.36619396579495367"/>
+            </ssd:Connector>
+            <ssd:Connector name="INPUT_control_valve_position" kind="input">
+              <ssc:Real/>
+              <ssd:ConnectorGeometry x="0.012749496570096453" y="0.5584297564694264"/>
+            </ssd:Connector>
+            <ssd:Connector name="OUTPUT_temperature_cold_circuit_outlet" kind="output">
+              <ssc:Real/>
+              <ssd:ConnectorGeometry x="0.9561043328426237" y="0.7303559285820126"/>
+            </ssd:Connector>
+            <ssd:Connector name="INPUT_engine_load_0_1" kind="input">
+              <ssc:Real/>
+              <ssd:ConnectorGeometry x="0.03618727318202619" y="0.9160562234930608"/>
+            </ssd:Connector>
+          </ssd:Connectors>
+          <ssd:ElementGeometry x2="37.80181659712771" iconRotation="0.0" y1="33.03006284420393" rotation="0.0" iconFixedAspectRatio="false" y2="48.07419782170827" x1="21.872849011536445" iconFlip="false"/>
+        </ssd:Component>
+        <ssd:Component name="Control" type="application/x-fmu-sharedlibrary" source="resources/LOC_CNTRL_custom_linux.fmu">
+          <ssd:Connectors>
+            <ssd:Connector name="INPUT_temperature_lube_oil" kind="input">
+              <ssc:Real/>
+              <ssd:ConnectorGeometry x="0.03316604317951874" y="0.1548984805770274"/>
+            </ssd:Connector>
+            <ssd:Connector name="OUTPUT_control_valve_position" kind="output">
+              <ssc:Real/>
+              <ssd:ConnectorGeometry x="0.9672064193507739" y="0.5241030484171063"/>
+            </ssd:Connector>
+            <ssd:Connector name="SETPOINT_temperature_lube_oil" kind="input">
+              <ssc:Real/>
+              <ssd:ConnectorGeometry x="0.03883032824361354" y="0.8109305350494118"/>
+            </ssd:Connector>
+          </ssd:Connectors>
+          <ssd:ElementGeometry x2="72.72282267983405" iconRotation="0.0" y1="35.36514059188931" rotation="0.0" iconFixedAspectRatio="false" y2="46.16015354186137" x1="57.236339801230514" iconFlip="false"/>
+        </ssd:Component>
+      </ssd:Elements>
+      <ssd:Connections>
+        <ssd:Connection startElement="System" startConnector="OUTPUT_temperature_lube_oil" endElement="Control" endConnector="INPUT_temperature_lube_oil"/>
+        <ssd:Connection endConnector="INPUT_control_valve_position" startConnector="OUTPUT_control_valve_position" endElement="System" startElement="Control">
+          <ssd:ConnectionGeometry pointsX="81.77574387675406 82.38066420731379 13.192901399544702 13.797821730104433" pointsY="40.98528769796143 30.77725711976599 30.62602703712606 41.136517780601366"/>
+        </ssd:Connection>
+      </ssd:Connections>
+      <ssd:SystemGeometry x1="0.0" x2="100.0" y1="0.0" y2="100.0"/>
+      <ssd:Annotations>
+        <ssc:Annotation type="org.openmodelica">
+          <oms:Annotations>
+            <oms:SimulationInformation>
+              <oms:FixedStepMaster absoluteTolerance="1.0E-6" relativeTolerance="1.0E-6" stepSize="1.0E-5" description="oms-ma"/>
+            </oms:SimulationInformation>
+          </oms:Annotations>
+        </ssc:Annotation>
+      </ssd:Annotations>
+    </ssd:System>
+    <ssd:Units>
+      <ssc:Unit name="Kg">
+        <ssc:BaseUnit kg="1"/>
+      </ssc:Unit>
+    </ssd:Units>
+    <ssd:DefaultExperiment startTime="0.0" stopTime="1.0">
+      <ssd:Annotations>
+        <ssc:Annotation type="org.openmodelica">
+          <oms:Annotations>
+            <oms:SimulationInformation signalFilter="resources/signalFilter.xml" loggingInterval="0.0" bufferSize="1076101120" resultFile="model.mat"/>
+          </oms:Annotations>
+        </ssc:Annotation>
+      </ssd:Annotations>
+    </ssd:DefaultExperiment>
+  </ssd:SystemStructureDescription>
