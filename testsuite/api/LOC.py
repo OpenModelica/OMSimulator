@@ -5,14 +5,16 @@
 ## win: yes
 ## mac: yes
 
-from OMSimulator import SSD
+from OMSimulator import SSD, Settings
+
+Settings.suppressPath = True
 
 ssd = SSD.importFromFile('../resources/LOC/SystemStructure.ssd')
 ssd.list()
 
 ## Result:
 ##  <class 'OMSimulator.ssd.SSD'>
-##  Inactive variant "LOCtest": /home/lochel/OMSimulator/testsuite/resources/LOC/SystemStructure.ssd
+##  Inactive variant "LOCtest": <hidden>
 ##  |-- System: Root
 ##  |-- Connectors:
 ##  |-- Elements:
