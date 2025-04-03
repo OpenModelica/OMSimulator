@@ -51,7 +51,7 @@ def parseUnitDefinitions(node, root):
 
 def parseElements(node, resources = None):
   """Extract components from <ssd:Elements> section"""
-  from OMSimulator.system import System
+  from OMSimulator.system import System, SystemGeometry
 
   elements = {}
   elements_node = node.find("ssd:Elements", namespaces=namespace.ns)
@@ -64,6 +64,7 @@ def parseElements(node, resources = None):
     elements[name] = System(name)
     elements[name].connectors = parseConnectors(system)
     elements[name].elementgeometry = ElementGeometry.importFromNode(system)
+    elements[name].systemgeometry = SystemGeometry.importFromNode(system)
     parseParameterBindings(system, elements[name], resources)
     elements[name].elements = parseElements(system, resources)  # recursively parse nested elements in the sub-system
     parseConnection(system, elements[name]) # parse connections for the sub-system

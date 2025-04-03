@@ -12,6 +12,68 @@ from OMSimulator import CRef, namespace, utils
 
 logger = logging.getLogger(__name__)
 
+class SystemGeometry:
+  def __init__(self, x1 : float | None = None, y1 : float | None = None, x2 : float | None = None, y2 : float | None = None):
+    self._x1 = x1
+    self._y1 = y1
+    self._x2 = x2
+    self._y2 = y2
+
+  @property
+  def x1(self):
+    return self._x1
+
+  @x1.setter
+  def x1(self, value: float):
+    self._x1 = value
+
+  @property
+  def y1(self):
+    return self._y1
+
+  @y1.setter
+  def y1(self, value: float):
+    self._y1 = value
+
+  @property
+  def x2(self):
+    return self._x2
+
+  @x2.setter
+  def x2(self, value: float):
+    self._x2 = value
+
+  @property
+  def y2(self):
+    return self._y2
+
+  @y2.setter
+  def y2(self, value: float):
+    self._y2 = value
+
+  def list(self, prefix=""):
+    print(f"{prefix} (x1:{self.x1}, y1:{self.y1}, x2:{self.x2}, y2:{self.y2})")
+
+  def exportToSSD(self, node):
+    """Exports the system geometry to an XML node."""
+    system_geometry_node = ET.SubElement(node, namespace.tag("ssd", "SystemGeometry"))
+    system_geometry_node.set("x1", str(self.x1))
+    system_geometry_node.set("y1", str(self.y1))
+    system_geometry_node.set("x2", str(self.x2))
+    system_geometry_node.set("y2", str(self.y2))
+
+  @staticmethod
+  def importFromNode(node):
+    """Imports system geometry from an XML node."""
+    system_geometry_node = node.find("ssd:SystemGeometry", namespaces=namespace.ns)
+    if system_geometry_node is None:
+      return None
+    x1 = float(system_geometry_node.get("x1", 0))
+    y1 = float(system_geometry_node.get("y1", 0))
+    x2 = float(system_geometry_node.get("x2", 0))
+    y2 = float(system_geometry_node.get("y2", 0))
+
+    return SystemGeometry(x1, y1, x2, y2)
 
 class System:
   def __init__(self, name : str, model=None):
@@ -24,6 +86,7 @@ class System:
     self.parameterResources = dict()
     self.model = model
     self.elementgeometry = None
+    self.systemgeometry = None
 
   @property
   def name(self):
@@ -37,6 +100,7 @@ class System:
       system = System(node.get("name"))
       system.connectors = utils.parseConnectors(node)
       system.elementgeometry = ElementGeometry.importFromNode(node)
+      system.systemgeometry = SystemGeometry.importFromNode(node)
       utils.parseParameterBindings(node, ssd, resources)
       system.elements = utils.parseElements(node, resources)
       utils.parseConnection(node, system)
@@ -83,6 +147,11 @@ class System:
       print(f"{prefix} Connections:")
       for connection in self.connections:
         connection.list(prefix=prefix + " |--")
+
+    ## list system geometry
+    if self.systemgeometry:
+      print(f"{prefix} SystemGeometry:")
+      self.systemgeometry.list(prefix=prefix + " |--")
 
   def addSystem(self, cref: CRef):
     first = cref.first()

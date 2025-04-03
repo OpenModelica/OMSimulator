@@ -113,6 +113,8 @@ model.export('dcmotor.ssp')
 ##  |-- |-- |-- emachine_model.M -> edrive_mass.M_A
 ##  |-- |-- |-- edrive_mass.wA -> emachine_model.w
 ##  |-- |-- |-- edrive_mass.phiA -> emachine_model.phi
+##  |-- |-- SystemGeometry:
+##  |-- |-- |-- (x1:-281.369197, y1:-981.383542, x2:718.194184, y2:-378.573683)
 ##  |-- |-- FMU: (stimuli_model)
 ##  |-- |-- |-- path: resources/stimuli_model.fmu
 ##  |-- |-- |-- Connectors:
@@ -135,6 +137,8 @@ model.export('dcmotor.ssp')
 ##  |-- |-- stimuli_model.M_load -> SuT.M_load
 ##  |-- |-- stimuli_model.U -> SuT.U
 ##  |-- |-- .M_load -> stimuli_model.M_load
+##  |-- SystemGeometry:
+##  |-- |-- (x1:-359.5, y1:-383.0, x2:710.0, y2:198.0)
 ##  UnitDefinitions:
 ##  |-- Unit: Nm
 ##  |-- |-- BaseUnit: kg: 1, m: 2, s: -2, A: 0, K: 0, mol: 0, cd: 0, rad: 0, factor: 1.0, offset: 0.0
