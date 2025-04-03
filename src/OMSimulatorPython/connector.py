@@ -28,7 +28,7 @@ class ConnectorGeometry:
     self._y = value
 
   def list(self, prefix=""):
-    print(f"{prefix} |-- ConnectorGeometry: ({self.x}, {self.y})")
+    print(f"{prefix} |-- ConnectorGeometry: (x:{self.x}, y:{self.y})")
 
   def exportToSSD(self, node):
     geometry_node = ET.SubElement(node, namespace.tag("ssd", "ConnectorGeometry"))

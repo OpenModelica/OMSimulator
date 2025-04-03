@@ -6,6 +6,7 @@ from OMSimulator.connection import Connection
 from OMSimulator.fmu import FMU
 from OMSimulator.values import Values
 from OMSimulator.ssv import SSV
+from OMSimulator.elementgeometry import ElementGeometry
 
 from OMSimulator import CRef, namespace, utils
 
@@ -22,6 +23,7 @@ class System:
     self.value = Values()
     self.parameterResources = dict()
     self.model = model
+    self.elementgeometry = None
 
   @property
   def name(self):
@@ -34,6 +36,7 @@ class System:
       temp_dir = ssd._filename.parent
       system = System(node.get("name"))
       system.connectors = utils.parseConnectors(node)
+      system.elementgeometry = ElementGeometry.importFromNode(node)
       utils.parseParameterBindings(node, ssd, resources)
       system.elements = utils.parseElements(node, resources)
       utils.parseConnection(node, system)
@@ -53,6 +56,10 @@ class System:
     print(f"{prefix} Connectors:")
     for connector in self.connectors:
       connector.list(prefix=prefix + " |--")
+
+    if self.elementgeometry:
+      print(f"{prefix} ElementGeometry:")
+      self.elementgeometry.list(prefix=prefix + " |--")
 
     ## list parameters inline
     if not self.value.empty():
@@ -153,6 +160,10 @@ class System:
       connectors_node = ET.SubElement(node, namespace.tag("ssd", "Connectors"))
       for connector in self.connectors:
         connector.exportToSSD(connectors_node)
+
+      if self.elementgeometry:
+        self.elementgeometry.exportToSSD(node)
+
       ## export parameter bindings
       self.value.exportToSSD(node)
 
