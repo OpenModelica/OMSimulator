@@ -51,6 +51,9 @@ ssd.list()
 ##  |-- Connections:
 ##  |-- |-- System.OUTPUT_temperature_lube_oil -> Control.INPUT_temperature_lube_oil
 ##  |-- |-- Control.OUTPUT_control_valve_position -> System.INPUT_control_valve_position
+##  |-- |-- |-- ConnectionGeometry: (pointsX: [81.77574387675406, 82.38066420731379, 13.192901399544702, 13.797821730104433], pointsY: [40.98528769796143, 30.77725711976599, 30.62602703712606, 41.136517780601366])
+##  |-- SystemGeometry:
+##  |-- |-- (x1:0.0, y1:0.0, x2:100.0, y2:100.0)
 ##  UnitDefinitions:
 ##  |-- Unit: Kg
 ##  |-- |-- BaseUnit: kg: 1

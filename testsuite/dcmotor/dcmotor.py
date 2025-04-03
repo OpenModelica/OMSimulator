@@ -105,14 +105,24 @@ model.export('dcmotor.ssp')
 ##  |-- |-- |-- |-- |-- (Real resistor.R, 0.5, Ohm)
 ##  |-- |-- Connections:
 ##  |-- |-- |-- edrive_mass.wB -> .wB
+##  |-- |-- |-- |-- ConnectionGeometry: (pointsX: [640.0, 640.0], pointsY: [-699.0, -534.157099])
 ##  |-- |-- |-- .M_load -> edrive_mass.M_B
+##  |-- |-- |-- |-- ConnectionGeometry: (pointsX: [-215.0, -215.0, 242.0, 242.0], pointsY: [-719.500032, -856.0, -856.0, -712.0])
 ##  |-- |-- |-- edrive_mass.phiB -> .phiB
+##  |-- |-- |-- |-- ConnectionGeometry: (pointsX: [666.0, 666.0], pointsY: [-739.0, -626.139856])
 ##  |-- |-- |-- .U -> emachine_model.U
+##  |-- |-- |-- |-- ConnectionGeometry: (pointsX: [-188.0, -188.0], pointsY: [-579.510102, -731.5])
 ##  |-- |-- |-- emachine_model.M -> .M_mot
+##  |-- |-- |-- |-- ConnectionGeometry: (pointsX: [193.0, 193.0, 684.0, 684.0], pointsY: [-661.0, -814.5, -815.0, -732.298289])
 ##  |-- |-- |-- emachine_model.I -> .I
+##  |-- |-- |-- |-- ConnectionGeometry: (pointsX: [145.0, 145.0], pointsY: [-747.0, -889.935478])
 ##  |-- |-- |-- emachine_model.M -> edrive_mass.M_A
 ##  |-- |-- |-- edrive_mass.wA -> emachine_model.w
+##  |-- |-- |-- |-- ConnectionGeometry: (pointsX: [565.0, 565.0, -119.0, -119.0], pointsY: [-619.0, -539.0, -538.5, -631.5])
 ##  |-- |-- |-- edrive_mass.phiA -> emachine_model.phi
+##  |-- |-- |-- |-- ConnectionGeometry: (pointsX: [612.0, 611.5, -146.0, -146.0], pointsY: [-659.0, -504.0, -504.0, -681.0])
+##  |-- |-- SystemGeometry:
+##  |-- |-- |-- (x1:-281.369197, y1:-981.383542, x2:718.194184, y2:-378.573683)
 ##  |-- |-- FMU: (stimuli_model)
 ##  |-- |-- |-- path: resources/stimuli_model.fmu
 ##  |-- |-- |-- Connectors:
@@ -131,10 +141,14 @@ model.export('dcmotor.ssp')
 ##  |-- |-- SuT.M_mot -> .M_mot
 ##  |-- |-- SuT.wB -> .wB
 ##  |-- |-- stimuli_model.U -> .U
+##  |-- |-- |-- ConnectionGeometry: (pointsX: [128.0, 128.0], pointsY: [-60.0, 83.183361])
 ##  |-- |-- SuT.I -> .I
 ##  |-- |-- stimuli_model.M_load -> SuT.M_load
 ##  |-- |-- stimuli_model.U -> SuT.U
 ##  |-- |-- .M_load -> stimuli_model.M_load
+##  |-- |-- |-- ConnectionGeometry: (pointsX: [131.0, 131.0], pointsY: [-245.534819, -105.0])
+##  |-- SystemGeometry:
+##  |-- |-- (x1:-359.5, y1:-383.0, x2:710.0, y2:198.0)
 ##  UnitDefinitions:
 ##  |-- Unit: Nm
 ##  |-- |-- BaseUnit: kg: 1, m: 2, s: -2, A: 0, K: 0, mol: 0, cd: 0, rad: 0, factor: 1.0, offset: 0.0
