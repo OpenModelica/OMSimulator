@@ -64,6 +64,17 @@ model.variants['D16_aero_stimuli'].list()
 ##  |-- |-- |-- |-- (Real k_p, 130.0, -)
 ##  |-- |-- |-- |-- (Real pT, 1.0, bar)
 ##  |-- |-- |-- |-- (Real pPump, 100.0, bar)
+##  |-- |-- |-- |-- UnitDefinitions:
+##  |-- |-- |-- |-- |-- Unit: s
+##  |-- |-- |-- |-- |-- |-- BaseUnit: s: 1, factor: 1.0, offset: 0.0
+##  |-- |-- |-- |-- |-- Unit: m
+##  |-- |-- |-- |-- |-- |-- BaseUnit: m: 1, factor: 1e-3, offset: 0.0
+##  |-- |-- |-- |-- |-- Unit: deg
+##  |-- |-- |-- |-- |-- |-- BaseUnit: rad: 1, factor: 57.29746, offset: 0.0
+##  |-- |-- |-- |-- |-- Unit: -
+##  |-- |-- |-- |-- |-- |-- BaseUnit: factor: 1, offset: 0.0
+##  |-- |-- |-- |-- |-- Unit: bar
+##  |-- |-- |-- |-- |-- |-- BaseUnit: kg: 1, m: -2, factor: 1e5, offset: 0.0
 ##  |-- |-- FMU: (valve_model)
 ##  |-- |-- |-- path: resources/L90LS_UD_OS_OS.fmu
 ##  |-- |-- |-- Connectors:
@@ -92,6 +103,11 @@ model.variants['D16_aero_stimuli'].list()
 ##  |-- |-- |-- |-- (Real KqMI_PABT_gain, 1.0, -)
 ##  |-- |-- |-- |-- (Real KqMO_PBAT_gain, 1.0, -)
 ##  |-- |-- |-- |-- (Real KqMI_PBAT_gain, 1.0, -)
+##  |-- |-- |-- |-- UnitDefinitions:
+##  |-- |-- |-- |-- |-- Unit: mm
+##  |-- |-- |-- |-- |-- |-- BaseUnit: m: 1, factor: 1e-3
+##  |-- |-- |-- |-- |-- Unit: -
+##  |-- |-- |-- |-- |-- |-- BaseUnit: factor: 1, offset: 0
 ##  |-- Connections:
 ##  |-- |-- interface_model.pLin.in.y -> valve_model.pLin
 ##  |-- |-- interface_model.pLmax.in.y -> valve_model.pLmax
@@ -146,6 +162,13 @@ model.variants['D16_aero_stimuli'].list()
 ##  |-- |-- |-- |-- (Real u_max, 1.0, -)
 ##  |-- |-- |-- |-- (Real p1_max, 100.0, bar)
 ##  |-- |-- |-- |-- (Real p2_const, 1.0, bar)
+##  |-- |-- |-- |-- UnitDefinitions:
+##  |-- |-- |-- |-- |-- Unit: s
+##  |-- |-- |-- |-- |-- |-- BaseUnit: s: 1, factor: 1.0, offset: 0.0
+##  |-- |-- |-- |-- |-- Unit: -
+##  |-- |-- |-- |-- |-- |-- BaseUnit: factor: 1, offset: 0.0
+##  |-- |-- |-- |-- |-- Unit: bar
+##  |-- |-- |-- |-- |-- |-- BaseUnit: kg: 1, m: -2, factor: 1e5, offset: 0.0
 ##  |-- |-- FMU: (interface_model)
 ##  |-- |-- |-- path: resources/FMU_16_aero_interface.fmu
 ##  |-- |-- |-- Connectors:
@@ -168,6 +191,15 @@ model.variants['D16_aero_stimuli'].list()
 ##  |-- |-- |-- |-- (Real rho, 1000.0, kg/m3)
 ##  |-- |-- |-- |-- (Real uB_const, 0.0, mA)
 ##  |-- |-- |-- |-- (Real p_PS_const, 35.0, bar)
+##  |-- |-- |-- |-- UnitDefinitions:
+##  |-- |-- |-- |-- |-- Unit: s
+##  |-- |-- |-- |-- |-- |-- BaseUnit: s: 1, factor: 1.0, offset: 0.0
+##  |-- |-- |-- |-- |-- Unit: bar
+##  |-- |-- |-- |-- |-- |-- BaseUnit: kg: 1, m: -2, factor: 1e5, offset: 0.0
+##  |-- |-- |-- |-- |-- Unit: kg/m3
+##  |-- |-- |-- |-- |-- |-- BaseUnit: kg: 1, m: -3, factor: 1, offset: 0.0
+##  |-- |-- |-- |-- |-- Unit: mA
+##  |-- |-- |-- |-- |-- |-- BaseUnit: A: 1, factor: 1e-3, offset: 0.0
 ##  |-- |-- FMU: (valve_model)
 ##  |-- |-- |-- path: resources/L90LS_UD_OS_OS.fmu
 ##  |-- |-- |-- Connectors:
@@ -196,6 +228,11 @@ model.variants['D16_aero_stimuli'].list()
 ##  |-- |-- |-- |-- (Real KqMI_PABT_gain, 1.0, -)
 ##  |-- |-- |-- |-- (Real KqMO_PBAT_gain, 1.0, -)
 ##  |-- |-- |-- |-- (Real KqMI_PBAT_gain, 1.0, -)
+##  |-- |-- |-- |-- UnitDefinitions:
+##  |-- |-- |-- |-- |-- Unit: mm
+##  |-- |-- |-- |-- |-- |-- BaseUnit: m: 1, factor: 1e-3
+##  |-- |-- |-- |-- |-- Unit: -
+##  |-- |-- |-- |-- |-- |-- BaseUnit: factor: 1, offset: 0
 ##  |-- Connections:
 ##  |-- |-- interface_model.pA.in.y -> valve_model.pA
 ##  |-- |-- interface_model.pLmax.in.y -> valve_model.pLmax
