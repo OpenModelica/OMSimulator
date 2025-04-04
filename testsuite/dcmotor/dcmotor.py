@@ -20,7 +20,7 @@ model = SSP('../resources/dcmotor.ssp', temp_dir="./tmp-dcmotor/")
 
 print('\nActive variant:')
 model.activeVariant.list()
-
+print("", flush=True)
 model.export('dcmotor.ssp')
 
 ## Result:
@@ -162,9 +162,7 @@ model.export('dcmotor.ssp')
 ##  |-- |-- SuT.M_mot -> .M_mot
 ##  |-- |-- SuT.wB -> .wB
 ##  |-- |-- stimuli_model.U -> .U
-##  |-- |-- |-- ConnectionGeometry: (pointsX: [128.0, 128.0], pointsY: [-60.0, 83.183361])INFO:OMSimulator.ssd:SSD 'DC-Motor' exported to <hidden>
-## INFO:OMSimulator.ssp:SSP file 'dcmotor.ssp' successfully exported!
-##
+##  |-- |-- |-- ConnectionGeometry: (pointsX: [128.0, 128.0], pointsY: [-60.0, 83.183361])
 ##  |-- |-- SuT.I -> .I
 ##  |-- |-- stimuli_model.M_load -> SuT.M_load
 ##  |-- |-- stimuli_model.U -> SuT.U
@@ -188,5 +186,8 @@ model.export('dcmotor.ssp')
 ##  DefaultExperiment
 ##  |-- startTime: 0.0
 ##  |-- stopTime: 1.0
+##
+## INFO:OMSimulator.ssd:SSD 'DC-Motor' exported to <hidden>
+## INFO:OMSimulator.ssp:SSP file 'dcmotor.ssp' successfully exported!
 ## INFO:OMSimulator.ssp:Temporary directory removed: <hidden>
 ## endResult
