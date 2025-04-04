@@ -25,7 +25,7 @@ model.export('dcmotor.ssp')
 
 ## Result:
 ## INFO:OMSimulator.ssp:Temporary directory created: <hidden>
-## 
+##
 ## Active variant:
 ##  <class 'OMSimulator.ssd.SSD'>
 ##  Active variant "DC-Motor": <hidden>
@@ -164,7 +164,7 @@ model.export('dcmotor.ssp')
 ##  |-- |-- stimuli_model.U -> .U
 ##  |-- |-- |-- ConnectionGeometry: (pointsX: [128.0, 128.0], pointsY: [-60.0, 83.183361])INFO:OMSimulator.ssd:SSD 'DC-Motor' exported to <hidden>
 ## INFO:OMSimulator.ssp:SSP file 'dcmotor.ssp' successfully exported!
-## 
+##
 ##  |-- |-- SuT.I -> .I
 ##  |-- |-- stimuli_model.M_load -> SuT.M_load
 ##  |-- |-- stimuli_model.U -> SuT.U
