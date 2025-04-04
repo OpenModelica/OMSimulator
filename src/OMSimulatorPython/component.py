@@ -45,6 +45,12 @@ class Component:
       print(f"{prefix} Inline Parameter Bindings:")
       self.value.list(prefix=prefix + " |--")
 
+    ## list unit definitions
+    if len(self.unitDefinitions) > 0:
+      print(f"{prefix} |-- UnitDefinitions:")
+      for unit in self.unitDefinitions:
+        unit.list(prefix=prefix + " |-- |--")
+
     ## list parameteres in ssv files
     if len(self.parameterResources) > 0:
       for resource in self.parameterResources:
@@ -67,7 +73,7 @@ class Component:
       self.elementgeometry.exportToSSD(component_node)
 
     ## export parameter bindings
-    self.value.exportToSSD(component_node)
+    self.value.exportToSSD(component_node, self.unitDefinitions)
 
     ## export parameters binding to ssd file with reference to ssv file
     if len(self.parameterResources) > 0:

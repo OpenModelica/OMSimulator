@@ -37,7 +37,7 @@ class Values:
             raise TypeError(f"Unsupported type: {type(value)}")
       print(f"{prefix} ({type_tag} {key}, {value}, {unit})")
 
-  def exportToSSD(self, node):
+  def exportToSSD(self, node, unitDefinitions=None):
     if self.empty():
       return
 
@@ -50,6 +50,13 @@ class Values:
     parameters_node = ET.SubElement(parameter_set_node, namespace.tag("ssv", "Parameters"))
 
     self.add_parameters(parameters_node)
+
+    ## export unit definitions
+    if unitDefinitions:
+      unit_definitions_node = ET.SubElement(parameter_set_node, namespace.tag("ssv", "Units"))
+      for unit in unitDefinitions:
+        unit.exportToSSD(unit_definitions_node)
+
 
   def exportToSSV(self, node):
     if self.empty():

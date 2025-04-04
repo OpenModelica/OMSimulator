@@ -44,8 +44,8 @@ def parseDefaultExperiment(node, root):
   root.stopTime = default_experiment.get("stopTime")
   ##TODO parse ssd:annotation
 
-def parseUnitDefinitions(node, root):
-  units_element = node.find("ssd:Units", namespaces=namespace.ns)
+def parseUnitDefinitions(node, root, tagname = "ssd:Units"):
+  units_element = node.find(tagname, namespaces=namespace.ns)
   if units_element is None:
     return
   for unit in units_element.findall("ssc:Unit", namespaces=namespace.ns):
@@ -153,6 +153,24 @@ def parseParameterBindings(node, obj, resources):
             parameters = param_set.find("ssv:Parameters", namespaces=namespace.ns)
             parameterValues = parseParameterBindingHelper(parameters)
             _setParameters(parameterValues, obj)
+
+          units = param_set.find("ssv:Units", namespaces=namespace.ns)
+          parseUnitDefinitions(param_set, obj, tagname="ssv:Units")
+          # if units:
+          #   print("Units found:")
+
+          # Parse units
+          # units = param_set.find("ssv:Units", namespaces=namespace.ns)
+          # if units is not None:
+          #   for unit in units.findall("ssv:Unit", namespaces=namespace.ns):
+          #     name = unit.get("name")
+          #     base_unit = unit.find("ssv:BaseUnit", namespaces=namespace.ns)
+          #     if base_unit is not None:
+          #       attributes = {key: base_unit.get(key) for key in base_unit.keys()}
+          #       # Create a Unit object and add it to the root or system
+          #       unit_obj = Unit(name, attributes)
+          #       obj.unitDefinitions.append(unit_obj)
+          #       print(f"Unit PArameters: {name}, Attributes: {attributes}")
 
 def parseSSV(filename):
   tree = ET.parse(filename)

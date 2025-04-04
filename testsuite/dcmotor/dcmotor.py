@@ -25,9 +25,7 @@ model.export('dcmotor.ssp')
 
 ## Result:
 ## INFO:OMSimulator.ssp:Temporary directory created: <hidden>
-## INFO:OMSimulator.ssd:SSD 'DC-Motor' exported to <hidden>
-## INFO:OMSimulator.ssp:SSP file 'dcmotor.ssp' successfully exported!
-##
+## 
 ## Active variant:
 ##  <class 'OMSimulator.ssd.SSD'>
 ##  Active variant "DC-Motor": <hidden>
@@ -81,6 +79,11 @@ model.export('dcmotor.ssp')
 ##  |-- |-- |-- |-- Inline Parameter Bindings:
 ##  |-- |-- |-- |-- |-- (Real inertia.J, 0.002, kg.m2)
 ##  |-- |-- |-- |-- |-- (Real damper.d, 0.001, N.m.s/rad)
+##  |-- |-- |-- |-- |-- UnitDefinitions:
+##  |-- |-- |-- |-- |-- |-- Unit: N.m.s/rad
+##  |-- |-- |-- |-- |-- |-- |-- BaseUnit: kg: 1, m: 2, s: -1, A: 0, K: 0, mol: 0, cd: 0, rad: -1, factor: 1.0, offset: 0.0
+##  |-- |-- |-- |-- |-- |-- Unit: kg.m2
+##  |-- |-- |-- |-- |-- |-- |-- BaseUnit: kg: 1, m: 2, s: 0, A: 0, K: 0, mol: 0, cd: 0, rad: 0, factor: 1.0, offset: 0.0
 ##  |-- |-- |-- FMU: (emachine_model)
 ##  |-- |-- |-- |-- path: resources/emachine_model.fmu
 ##  |-- |-- |-- |-- Connectors:
@@ -103,6 +106,17 @@ model.export('dcmotor.ssp')
 ##  |-- |-- |-- |-- |-- (Real inductor.L, 0.001, H)
 ##  |-- |-- |-- |-- |-- (Real emf.k, 0.1, N.m/A)
 ##  |-- |-- |-- |-- |-- (Real resistor.R, 0.5, Ohm)
+##  |-- |-- |-- |-- |-- UnitDefinitions:
+##  |-- |-- |-- |-- |-- |-- Unit: N.m/A
+##  |-- |-- |-- |-- |-- |-- |-- BaseUnit: kg: 1, m: 2, s: -2, A: -1, K: 0, mol: 0, cd: 0, rad: 0, factor: 1.0, offset: 0.0
+##  |-- |-- |-- |-- |-- |-- Unit: K
+##  |-- |-- |-- |-- |-- |-- |-- BaseUnit: kg: 0, m: 0, s: 0, A: 0, K: 1, mol: 0, cd: 0, rad: 0, factor: 1.0, offset: 0.0
+##  |-- |-- |-- |-- |-- |-- Unit: Ohm
+##  |-- |-- |-- |-- |-- |-- |-- BaseUnit: kg: 1, m: 2, s: -3, A: -2, K: 0, mol: 0, cd: 0, rad: 0, factor: 1.0, offset: 0.0
+##  |-- |-- |-- |-- |-- |-- Unit: H
+##  |-- |-- |-- |-- |-- |-- |-- BaseUnit: kg: 1, m: 2, s: -2, A: -2, K: 0, mol: 0, cd: 0, rad: 0, factor: 1.0, offset: 0.0
+##  |-- |-- |-- |-- |-- |-- Unit: 1/K
+##  |-- |-- |-- |-- |-- |-- |-- BaseUnit: kg: 0, m: 0, s: 0, A: 0, K: -1, mol: 0, cd: 0, rad: 0, factor: 1.0, offset: 0.0
 ##  |-- |-- Connections:
 ##  |-- |-- |-- edrive_mass.wB -> .wB
 ##  |-- |-- |-- |-- ConnectionGeometry: (pointsX: [640.0, 640.0], pointsY: [-699.0, -534.157099])
@@ -137,11 +151,20 @@ model.export('dcmotor.ssp')
 ##  |-- |-- |-- |-- (Real Voltage_step.startTime, 0.0, s)
 ##  |-- |-- |-- |-- (Real Voltage_step.height, 12.0, V)
 ##  |-- |-- |-- |-- (Real MLoad.k, -0.5, N.m)
+##  |-- |-- |-- |-- UnitDefinitions:
+##  |-- |-- |-- |-- |-- Unit: V
+##  |-- |-- |-- |-- |-- |-- BaseUnit: kg: 1, m: 2, s: -3, A: -1, K: 0, mol: 0, cd: 0, rad: 0, factor: 1.0, offset: 0.0
+##  |-- |-- |-- |-- |-- Unit: N.m
+##  |-- |-- |-- |-- |-- |-- BaseUnit: kg: 1, m: 2, s: -2, A: 0, K: 0, mol: 0, cd: 0, rad: 0, factor: 1.0, offset: 0.0
+##  |-- |-- |-- |-- |-- Unit: s
+##  |-- |-- |-- |-- |-- |-- BaseUnit: kg: 0, m: 0, s: 1, A: 0, K: 0, mol: 0, cd: 0, rad: 0, factor: 1.0, offset: 0.0
 ##  |-- Connections:
 ##  |-- |-- SuT.M_mot -> .M_mot
 ##  |-- |-- SuT.wB -> .wB
 ##  |-- |-- stimuli_model.U -> .U
-##  |-- |-- |-- ConnectionGeometry: (pointsX: [128.0, 128.0], pointsY: [-60.0, 83.183361])
+##  |-- |-- |-- ConnectionGeometry: (pointsX: [128.0, 128.0], pointsY: [-60.0, 83.183361])INFO:OMSimulator.ssd:SSD 'DC-Motor' exported to <hidden>
+## INFO:OMSimulator.ssp:SSP file 'dcmotor.ssp' successfully exported!
+## 
 ##  |-- |-- SuT.I -> .I
 ##  |-- |-- stimuli_model.M_load -> SuT.M_load
 ##  |-- |-- stimuli_model.U -> SuT.U
