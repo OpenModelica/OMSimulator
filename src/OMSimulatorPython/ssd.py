@@ -137,7 +137,7 @@ class SSD:
 
   def _exportUnitDefinitions(self, node):
     '''Exports unit definitions to the given XML node.'''
-    unit_definitions_node = ET.SubElement(node, namespace.tag("ssd", "UnitDefinitions"))
+    unit_definitions_node = ET.SubElement(node, namespace.tag("ssd", "Units"))
     for unit in self.unitDefinitions:
       unit.exportToSSD(unit_definitions_node)
 
