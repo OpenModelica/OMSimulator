@@ -14,20 +14,17 @@ with open('../resources/sim.json', 'r') as file:
   json_data = file.read()
 
 model, status = Capi.instantiateFromJson(json_data)
-print(f'status: {status}')
+print(f'instantiateFromJson: {status}')
 status = Capi.initialize(model)
-print(f'status: {status}')
+print(f'initialize: {status}')
 status = Capi.simulate(model)
-print(f'status: {status}')
-status = Capi.simulate(model)
-print(f'status: {status}')
+print(f'simulate: {status}')
 status = Capi.terminate(model)
-print(f'status: {status}')
+print(f'terminate: {status}')
 
 ## Result:
-## status: Status.ok
-## status: Status.ok
-## status: Status.ok
-## status: Status.ok
-## status: Status.ok
+## instantiateFromJson: Status.ok
+## initialize: Status.ok
+## simulate: Status.ok
+## terminate: Status.ok
 ## endResult
