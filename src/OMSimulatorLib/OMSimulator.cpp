@@ -1695,6 +1695,8 @@ oms_status_enu_t oms_setTolerance(const char* cref, double relativeTolerance)
 
 oms_status_enu_t oms3_instantiateFromJson(char* model_json_desc, void** out_model_ptr)
 {
+  *out_model_ptr = nullptr;
+  logDebug(model_json_desc);
   return oms_status_ok;
 }
 
