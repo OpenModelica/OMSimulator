@@ -51,17 +51,32 @@ class capi:
 
   def getVersion(self):
     return self.obj.oms_getVersion().decode('utf-8')
-  def instantiateFromJson(self, model_json_desc):
+
+  def instantiateFromJson(self, model_json_desc) -> tuple:
+    '''Instantiate a model from a JSON description.'''
     model_ptr = ctypes.c_void_p()
     status = self.obj.oms3_instantiateFromJson(model_json_desc.encode('utf-8'), ctypes.byref(model_ptr))
     if status != Status.ok:
-      return [None, status]
-    return [model_ptr, status]
-  def initialize(self, model):
-    return self.obj.oms3_initialize(model)
-  def simulate(self, model):
-    return self.obj.oms3_simulate(model)
-  def stepUntil(self, model, stopTime):
-    return self.obj.oms3_stepUntil(model, stopTime)
-  def terminate(self, model):
-    return self.obj.oms3_terminate(model)
+      return None, Status(status)
+    return model_ptr, Status(status)
+
+  def initialize(self, model) -> Status:
+    '''Enters initialization mode.'''
+    status = self.obj.oms3_initialize(model)
+    return Status(status)
+
+  def simulate(self, model) -> Status:
+    '''Exits initialization mode and runs the simulation until stopTime is reached.'''
+    status = self.obj.oms3_simulate(model)
+    return Status(status)
+
+  def stepUntil(self, model, stopTime) -> Status:
+    '''Step the simulation until the specified stop time.
+    Note: If the model is in initialization mode, this will exit initialization mode.'''
+    status = self.obj.oms3_stepUntil(model, stopTime)
+    return Status(status)
+
+  def terminate(self, model) -> Status:
+    '''Terminate the simulation and free resources.'''
+    status = self.obj.oms3_terminate(model)
+    return Status(status)
