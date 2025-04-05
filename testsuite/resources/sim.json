@@ -1,25 +1,15 @@
 {
-  "components": [
-    {
-      "name": "Plant",
-      "type": "model exchange",
-      "path": "resources/Plant.fmu"
-    },
-    {
-      "name": "Controller",
-      "type": "co-simulation",
-      "path": "resources/Controller.fmu"
-    },
-    {
-      "name": "Sensor",
-      "type": "model exchange",
-      "path": "resources/Sensor.fmu"
-    }
-  ],
   "simulation units": [
     {
       "components": [
-        "Controller"
+        {
+          "name": "Controller",
+          "type": "co-simulation",
+          "path": "resources/Controller.fmu",
+          "variables": [
+            "output"
+          ]
+        }
       ],
       "solver": {
         "type": "co-simulation"
@@ -28,8 +18,23 @@
     },
     {
       "components": [
-        "Plant",
-        "Sensor"
+        {
+          "name": "Plant",
+          "type": "model exchange",
+          "path": "resources/Plant.fmu",
+          "variables": [
+            "input",
+            "output"
+          ]
+        },
+        {
+          "name": "Sensor",
+          "type": "model exchange",
+          "path": "resources/Sensor.fmu",
+          "variables": [
+            "output"
+          ]
+        }
       ],
       "solver": {
         "type": "CVODE",
@@ -61,24 +66,6 @@
     }
   ],
   "result file": "simulation_result.csv",
-  "signals": [
-    {
-      "element": "Plant",
-      "connector": "output"
-    },
-    {
-      "element": "Sensor",
-      "connector": "output"
-    },
-    {
-      "element": "Controller",
-      "connector": "output"
-    },
-    {
-      "element": "Controller",
-      "connector": "input"
-    }
-  ],
   "simulation settings": {
     "start time": 0.0,
     "stop time": 10.0,
