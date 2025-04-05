@@ -33,7 +33,6 @@
 #define _OMSIMULATOR_H_
 
 #include "OMSimulator/Types.h"
-#include "OMSimulator/OMSimulator3.h"
 
 /* define OMSimulatorLib_EXPORTS *only* when building the DLL */
 #if defined(OMS_STATIC)
@@ -159,6 +158,12 @@ OMSAPI oms_status_enu_t OMSCALL oms_setWorkingDirectory(const char* newWorkingDi
 OMSAPI oms_status_enu_t OMSCALL oms_simulate(const char* cref);
 OMSAPI oms_status_enu_t OMSCALL oms_stepUntil(const char* cref, double stopTime);
 OMSAPI oms_status_enu_t OMSCALL oms_terminate(const char* cref);
+
+OMSAPI oms_status_enu_t OMSCALL oms3_instantiateFromJson(char* model_json_desc, void** out_model_ptr);
+OMSAPI oms_status_enu_t OMSCALL oms3_initialize(void* model);
+OMSAPI oms_status_enu_t OMSCALL oms3_simulate(void* model);
+OMSAPI oms_status_enu_t OMSCALL oms3_stepUntil(void* model, double stopTime);
+OMSAPI oms_status_enu_t OMSCALL oms3_terminate(void* model);
 
 #ifdef __cplusplus
 }
