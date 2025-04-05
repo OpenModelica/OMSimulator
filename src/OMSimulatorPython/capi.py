@@ -80,3 +80,6 @@ class capi:
     '''Terminate the simulation and free resources.'''
     status = self.obj.oms3_terminate(model)
     return Status(status)
+
+
+Capi = capi()
