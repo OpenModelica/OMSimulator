@@ -67,5 +67,3 @@ OMSAPI oms_status_enu_t OMSCALL oms3_terminate(void* model);
 #ifdef __cplusplus
 }
 #endif
-
-#endif
