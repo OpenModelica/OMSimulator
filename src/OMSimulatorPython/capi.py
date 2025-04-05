@@ -185,6 +185,34 @@ class capi:
     self.obj.oms_terminate.argtypes = [ctypes.c_char_p]
     self.obj.oms_terminate.restype = ctypes.c_int
 
+    # oms3 api
+    self.obj.oms3_modelJson.argtypes = [ctypes.c_char_p]
+    self.obj.oms3_modelJson.restype = ctypes.c_void_p
+    self.obj.oms3_instantiate.argtypes = [ctypes.c_void_p]
+    self.obj.oms3_instantiate.restype = ctypes.c_int
+    self.obj.oms3_initialize.argtypes = [ctypes.c_void_p]
+    self.obj.oms3_initialize.restype = ctypes.c_int
+    self.obj.oms3_simulate.argtypes = [ctypes.c_void_p]
+    self.obj.oms3_simulate.restype = ctypes.c_int
+    self.obj.oms3_stepUntil.argtypes = [ctypes.c_void_p, ctypes.c_double]
+    self.obj.oms3_stepUntil.restype = ctypes.c_int
+    self.obj.oms3_terminate.argtypes = [ctypes.c_void_p]
+    self.obj.oms3_terminate.restype = ctypes.c_int
+
+  def oms3_modelJson(self, model_json_desc):
+    return self.obj.oms3_modelJson(model_json_desc.encode('utf-8'))
+  def oms3_instantiate(self, model):
+    return self.obj.oms3_instantiate(model)
+  def oms3_initialize(self, model):
+    return self.obj.oms3_initialize(model)
+  def oms3_simulate(self, model):
+    return self.obj.oms3_simulate(model)
+  def oms3_stepUntil(self, model, stopTime):
+    return self.obj.oms3_stepUntil(model, stopTime)
+  def oms3_terminate(self, model):
+    return self.obj.oms3_terminate(model)
+
+  # oms2 api
   def activateVariant(self, crefA, crefB):
     return self.obj.oms_activateVariant(crefA.encode(), crefB.encode())
   def addBus(self, crefA):
