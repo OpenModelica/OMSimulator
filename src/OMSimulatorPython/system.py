@@ -99,7 +99,7 @@ class System:
     try:
       temp_dir = ssd._filename.parent
       system = System(node.get("name"))
-      system.description = node.get("description", "")
+      system.description = node.get("description")
       system.connectors = utils.parseConnectors(node)
       system.elementgeometry = ElementGeometry.importFromNode(node)
       system.systemgeometry = SystemGeometry.importFromNode(node)

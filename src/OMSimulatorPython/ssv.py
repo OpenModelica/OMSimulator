@@ -14,8 +14,8 @@ class SSV:
       self.filename = Path(ssv_path)
       self.importFromSSV(self.filename)
 
-  def setValue(self, cref:str, value, unit = None):
-    self.value.setValue(cref, value, unit)
+  def setValue(self, cref:str, value, unit = None, description = None):
+    self.value.setValue(cref, value, unit, description)
 
   def list(self, prefix = ""):
     self.value.list(prefix)
@@ -40,5 +40,5 @@ class SSV:
 
   def importFromSSV(self, filename):
     parameterValues = utils.parseSSV(filename)
-    for key, (value, unit) in parameterValues.items():
-      self.setValue(key, value, unit)
+    for key, (value, unit, description) in parameterValues.items():
+      self.setValue(key, value, unit, description)

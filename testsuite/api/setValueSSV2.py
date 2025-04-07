@@ -52,36 +52,36 @@ model2.list()
 ## |--   resources/Add.fmu
 ## |--   resources/myfile3.ssv
 ## |--   |-- Parameter Bindings:
-## |--   |-- |-- (Real k1, 2.0, m)
-## |--   |-- |-- (Real k2, 3.0, kg)
-## |--   |-- |-- (String param3, hello, None)
+## |--   |-- |-- (Real k1, 2.0, m, None)
+## |--   |-- |-- (Real k2, 3.0, kg, None)
+## |--   |-- |-- (String param3, hello, None, None)
 ## |--   resources/myfile4.ssv
 ## |--   |-- Parameter Bindings:
-## |--   |-- |-- (Real k1, 200.0, m)
-## |--   |-- |-- (Real k2, 300.0, kg)
-## |--   |-- |-- (String param3, ssp, None)
+## |--   |-- |-- (Real k1, 200.0, m, None)
+## |--   |-- |-- (Real k2, 300.0, kg, None)
+## |--   |-- |-- (String param3, ssp, None, None)
 ## |-- <class 'OMSimulator.ssd.SSD'>
 ## |-- Active variant "default": None
-## |-- |-- System: default
+## |-- |-- System: default 'None'
 ## |-- |-- Connectors:
 ## |-- |-- Elements:
-## |-- |-- |-- FMU: (Add1)
+## |-- |-- |-- FMU: Add1 'None'
 ## |-- |-- |-- |-- path: resources/Add.fmu
 ## |-- |-- |-- |-- Connectors:
-## |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real, None)
-## |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real, None)
-## |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None)
-## |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None)
-## |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None)
+## |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real, None, Connector of Real input signal 1)
+## |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real, None, Connector of Real input signal 2)
+## |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, Connector of Real output signal)
+## |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, Gain of input signal 1)
+## |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, Gain of input signal 2)
 ## |-- |-- |-- |-- Parameter Bindings: resources/myfile3.ssv
-## |-- |-- |-- FMU: (Add2)
+## |-- |-- |-- FMU: Add2 'None'
 ## |-- |-- |-- |-- path: resources/Add.fmu
 ## |-- |-- |-- |-- Connectors:
-## |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real, None)
-## |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real, None)
-## |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None)
-## |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None)
-## |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None)
+## |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real, None, Connector of Real input signal 1)
+## |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real, None, Connector of Real input signal 2)
+## |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, Connector of Real output signal)
+## |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, Gain of input signal 1)
+## |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, Gain of input signal 2)
 ## |-- |-- |-- |-- Parameter Bindings: resources/myfile4.ssv
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
@@ -91,36 +91,36 @@ model2.list()
 ## |--   resources/Add.fmu
 ## |--   resources/myfile3.ssv
 ## |--   |-- Parameter Bindings:
-## |--   |-- |-- (Real k1, 2.0, m)
-## |--   |-- |-- (Real k2, 3.0, kg)
-## |--   |-- |-- (String param3, hello, None)
+## |--   |-- |-- (Real k1, 2.0, m, None)
+## |--   |-- |-- (Real k2, 3.0, kg, None)
+## |--   |-- |-- (String param3, hello, None, None)
 ## |--   resources/myfile4.ssv
 ## |--   |-- Parameter Bindings:
-## |--   |-- |-- (Real k1, 200.0, m)
-## |--   |-- |-- (Real k2, 300.0, kg)
-## |--   |-- |-- (String param3, ssp, None)
+## |--   |-- |-- (Real k1, 200.0, m, None)
+## |--   |-- |-- (Real k2, 300.0, kg, None)
+## |--   |-- |-- (String param3, ssp, None, None)
 ## |-- <class 'OMSimulator.ssd.SSD'>
 ## |-- Active variant "default": <hidden>
-## |-- |-- System: default
+## |-- |-- System: default 'None'
 ## |-- |-- Connectors:
 ## |-- |-- Elements:
-## |-- |-- |-- FMU: (Add1)
+## |-- |-- |-- FMU: Add1 'None'
 ## |-- |-- |-- |-- path: resources/Add.fmu
 ## |-- |-- |-- |-- Connectors:
-## |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real, None)
-## |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real, None)
-## |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None)
-## |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None)
-## |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None)
+## |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real, None, None)
+## |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real, None, None)
+## |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, None)
+## |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, None)
+## |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, None)
 ## |-- |-- |-- |-- Parameter Bindings: resources/myfile3.ssv
-## |-- |-- |-- FMU: (Add2)
+## |-- |-- |-- FMU: Add2 'None'
 ## |-- |-- |-- |-- path: resources/Add.fmu
 ## |-- |-- |-- |-- Connectors:
-## |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real, None)
-## |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real, None)
-## |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None)
-## |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None)
-## |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None)
+## |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real, None, None)
+## |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real, None, None)
+## |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, None)
+## |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, None)
+## |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, None)
 ## |-- |-- |-- |-- Parameter Bindings: resources/myfile4.ssv
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
