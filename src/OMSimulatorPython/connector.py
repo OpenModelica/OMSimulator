@@ -42,6 +42,7 @@ class Connector:
     self.signal_type = signal_type if isinstance(signal_type, SignalType) else SignalType[signal_type]
     self.unit = None
     self.connectorGeometry = None
+    self.description = None
 
   def getCref(self):
     return self.name
@@ -56,7 +57,7 @@ class Connector:
     self.unit = unit
 
   def list(self, prefix=""):
-    print(f"{prefix} ({self.name}, {self.causality}, {self.signal_type}, {self.unit})")
+    print(f"{prefix} ({self.name}, {self.causality}, {self.signal_type}, {self.unit}, {self.description})")
     if self.connectorGeometry:
       self.connectorGeometry.list(prefix)
 
@@ -67,5 +68,7 @@ class Connector:
     connectors_type = ET.SubElement(connector_node, namespace.tag("ssc", self.signal_type.name))
     if self.unit is not None:
       connectors_type.set("unit", self.unit)
+    if self.description:
+      connectors_type.set("description", self.description)
     if self.connectorGeometry is not None:
       self.connectorGeometry.exportToSSD(connector_node)

@@ -22,6 +22,7 @@ class Connection:
     self.startConnector = startConnector
     self.endElement = endElement
     self.endConnector = endConnector
+    self.description = None
     self.connectionGeometry = None
 
   def list(self, prefix=""):
@@ -35,5 +36,7 @@ class Connection:
     connection_node.set("startConnector", self.startConnector)
     connection_node.set("endElement", self.endElement)
     connection_node.set("endConnector", self.endConnector)
+    if self.description:
+      connection_node.set("description", self.description)
     if self.connectionGeometry:
       self.connectionGeometry.exportToSSD(connection_node)

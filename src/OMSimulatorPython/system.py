@@ -79,6 +79,7 @@ class System:
   def __init__(self, name : str, model=None):
     from OMSimulator.ssp import SSP
     self._name = name
+    self.description = None
     self.connectors = list()
     self.elements = dict()
     self.connections = list()
@@ -98,6 +99,7 @@ class System:
     try:
       temp_dir = ssd._filename.parent
       system = System(node.get("name"))
+      system.description = node.get("description", "")
       system.connectors = utils.parseConnectors(node)
       system.elementgeometry = ElementGeometry.importFromNode(node)
       system.systemgeometry = SystemGeometry.importFromNode(node)
@@ -116,7 +118,7 @@ class System:
     self.connectors.append(connector)
 
   def list(self, prefix=""):
-    print(f"{prefix} System: {self.name}")
+    print(f"{prefix} System: {self.name} '{self.description}'")
     print(f"{prefix} Connectors:")
     for connector in self.connectors:
       connector.list(prefix=prefix + " |--")
@@ -224,7 +226,8 @@ class System:
 
   def export(self, root):
     node = ET.SubElement(root, namespace.tag("ssd", "System"), attrib={"name": self.name})
-
+    if self.description:
+      node.set("description", self.description)
     if len(self.connectors) > 0 :
       connectors_node = ET.SubElement(node, namespace.tag("ssd", "Connectors"))
       for connector in self.connectors:

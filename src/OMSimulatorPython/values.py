@@ -8,10 +8,10 @@ class Values:
   def __init__(self):
     self.start_values = {}
 
-  def setValue(self, name, value, unit=None):
+  def setValue(self, name, value, unit=None, description=None):
     if unit is not None and not isinstance(value, float):
       raise TypeError("Unit can only be set for Real values.")
-    self.start_values[name] = (value, unit)
+    self.start_values[name] = (value, unit, description)
 
   def empty(self) -> bool:
     return not self.start_values
@@ -23,7 +23,7 @@ class Values:
     if self.empty():
       return
 
-    for key, (value, unit) in self.start_values.items():
+    for key, (value, unit, description) in self.start_values.items():
       match value:
         case float():
           type_tag = "Real"
@@ -35,7 +35,7 @@ class Values:
           type_tag = "String"
         case _:
             raise TypeError(f"Unsupported type: {type(value)}")
-      print(f"{prefix} ({type_tag} {key}, {value}, {unit})")
+      print(f"{prefix} ({type_tag} {key}, {value}, {unit}, {description})")
 
   def exportToSSD(self, node, unitDefinitions=None):
     if self.empty():
@@ -67,9 +67,11 @@ class Values:
 
   def add_parameters(self, parameters_node):
     """Generic function to add XML parameters based on the value type."""
-    for key, (value, unit) in self.start_values.items():
+    for key, (value, unit, description) in self.start_values.items():
       parameter_node = ET.SubElement(parameters_node, namespace.tag("ssv", "Parameter"))
       parameter_node.set("name", str(key))
+      if description:
+        parameter_node.set("description", description)
       match value:
         case float():
           type_tag = "Real"
