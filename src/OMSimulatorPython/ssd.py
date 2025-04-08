@@ -46,7 +46,7 @@ class SSD:
       ssd.system = System.importFromNode(system, ssd, resources)
 
       utils.parseDefaultExperiment(root, ssd)
-      utils.parseUnitDefinitions(root, ssd)
+      Unit.importFromNode(root, ssd)
       logger.debug(f"SSD '{variant_name}' successfully imported from {filename}")
       return ssd
 
