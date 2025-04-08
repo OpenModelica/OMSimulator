@@ -15,36 +15,36 @@ ssd.list()
 ## Result:
 ##  <class 'OMSimulator.ssd.SSD'>
 ##  Inactive variant "LOCtest": <hidden>
-##  |-- System: Root
+##  |-- System: Root 'None'
 ##  |-- Connectors:
 ##  |-- Elements:
-##  |-- |-- FMU: (System)
+##  |-- |-- FMU: System 'None'
 ##  |-- |-- |-- path: resources/LOC_SYSTEM_linux.fmu
 ##  |-- |-- |-- Connectors:
-##  |-- |-- |-- |-- (OUTPUT_temperature_lube_oil, Causality.output, SignalType.Real, None)
+##  |-- |-- |-- |-- (OUTPUT_temperature_lube_oil, Causality.output, SignalType.Real, None, None)
 ##  |-- |-- |-- |-- |-- ConnectorGeometry: (x:0.9468744742359121, y:0.07873826375555514)
-##  |-- |-- |-- |-- (INPUT_massflow_cold_circuit, Causality.input, SignalType.Real, None)
+##  |-- |-- |-- |-- (INPUT_massflow_cold_circuit, Causality.input, SignalType.Real, None, None)
 ##  |-- |-- |-- |-- |-- ConnectorGeometry: (x:0.018902735641236172, y:0.0837066301679081)
-##  |-- |-- |-- |-- (INPUT_temperature_cold_circuit_inlet, Causality.input, SignalType.Real, None)
+##  |-- |-- |-- |-- (INPUT_temperature_cold_circuit_inlet, Causality.input, SignalType.Real, None, None)
 ##  |-- |-- |-- |-- |-- ConnectorGeometry: (x:0.023085590598697303, y:0.2651035501726224)
-##  |-- |-- |-- |-- (OUTPUT_massflow_cold_circuit, Causality.output, SignalType.Real, None)
+##  |-- |-- |-- |-- (OUTPUT_massflow_cold_circuit, Causality.output, SignalType.Real, None, None)
 ##  |-- |-- |-- |-- |-- ConnectorGeometry: (x:0.9686528977150072, y:0.36619396579495367)
-##  |-- |-- |-- |-- (INPUT_control_valve_position, Causality.input, SignalType.Real, None)
+##  |-- |-- |-- |-- (INPUT_control_valve_position, Causality.input, SignalType.Real, None, None)
 ##  |-- |-- |-- |-- |-- ConnectorGeometry: (x:0.012749496570096453, y:0.5584297564694264)
-##  |-- |-- |-- |-- (OUTPUT_temperature_cold_circuit_outlet, Causality.output, SignalType.Real, None)
+##  |-- |-- |-- |-- (OUTPUT_temperature_cold_circuit_outlet, Causality.output, SignalType.Real, None, None)
 ##  |-- |-- |-- |-- |-- ConnectorGeometry: (x:0.9561043328426237, y:0.7303559285820126)
-##  |-- |-- |-- |-- (INPUT_engine_load_0_1, Causality.input, SignalType.Real, None)
+##  |-- |-- |-- |-- (INPUT_engine_load_0_1, Causality.input, SignalType.Real, None, None)
 ##  |-- |-- |-- |-- |-- ConnectorGeometry: (x:0.03618727318202619, y:0.9160562234930608)
 ##  |-- |-- |-- ElementGeometry:
 ##  |-- |-- |-- |-- (x1:21.872849011536445, y1:33.03006284420393, x2:37.80181659712771, y2:48.07419782170827, rotation:0.0, icon_source:None, icon_rotation:0.0, icon_flip:False, icon_fixed_aspect_ratio:False)
-##  |-- |-- FMU: (Control)
+##  |-- |-- FMU: Control 'None'
 ##  |-- |-- |-- path: resources/LOC_CNTRL_custom_linux.fmu
 ##  |-- |-- |-- Connectors:
-##  |-- |-- |-- |-- (INPUT_temperature_lube_oil, Causality.input, SignalType.Real, None)
+##  |-- |-- |-- |-- (INPUT_temperature_lube_oil, Causality.input, SignalType.Real, None, None)
 ##  |-- |-- |-- |-- |-- ConnectorGeometry: (x:0.03316604317951874, y:0.1548984805770274)
-##  |-- |-- |-- |-- (OUTPUT_control_valve_position, Causality.output, SignalType.Real, None)
+##  |-- |-- |-- |-- (OUTPUT_control_valve_position, Causality.output, SignalType.Real, None, None)
 ##  |-- |-- |-- |-- |-- ConnectorGeometry: (x:0.9672064193507739, y:0.5241030484171063)
-##  |-- |-- |-- |-- (SETPOINT_temperature_lube_oil, Causality.input, SignalType.Real, None)
+##  |-- |-- |-- |-- (SETPOINT_temperature_lube_oil, Causality.input, SignalType.Real, None, None)
 ##  |-- |-- |-- |-- |-- ConnectorGeometry: (x:0.03883032824361354, y:0.8109305350494118)
 ##  |-- |-- |-- ElementGeometry:
 ##  |-- |-- |-- |-- (x1:57.236339801230514, y1:35.36514059188931, x2:72.72282267983405, y2:46.16015354186137, rotation:0.0, icon_source:None, icon_rotation:0.0, icon_flip:False, icon_fixed_aspect_ratio:False)

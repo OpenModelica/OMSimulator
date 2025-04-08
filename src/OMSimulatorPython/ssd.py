@@ -9,6 +9,7 @@ from OMSimulator.system import System
 from OMSimulator.ssv import SSV
 from OMSimulator.unit import Unit
 from OMSimulator import namespace, utils
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -120,6 +121,8 @@ class SSD:
       nsmap=namespace.ns,
       name=self._name,
       version="2.0",
+      generationTool="OMSimulator",
+      generationDateTime=datetime.now().isoformat()
     )
 
     self.system.export(root)

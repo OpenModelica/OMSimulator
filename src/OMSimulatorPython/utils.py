@@ -14,8 +14,8 @@ logger = logging.getLogger(__name__)
 
 def _setParameters(parameterValues: dict, obj):
   if len(parameterValues) > 0:
-    for key, (value, unit) in parameterValues.items():
-      obj.setValue(key, value, unit)
+    for key, (value, unit, description) in parameterValues.items():
+      obj.setValue(key, value, unit, description)
 
 def parseConnection(node, root):
   connections_node = node.find("ssd:Connections", namespaces=namespace.ns)
@@ -26,7 +26,10 @@ def parseConnection(node, root):
     startConnector = connection.get("startConnector")
     endElement = connection.get("endElement", '')
     endConnector = connection.get("endConnector")
+    description = connection.get("description")
     root.addConnection(startElement, startConnector, endElement, endConnector)
+    if description:
+      root.connections[-1].description = description
     connection_geometry = connection.find("ssd:ConnectionGeometry", namespaces=namespace.ns)
     if connection_geometry is not None:
       pointsX = connection_geometry.get("pointsX")
@@ -50,11 +53,12 @@ def parseUnitDefinitions(node, root, tagname = "ssd:Units"):
     return
   for unit in units_element.findall("ssc:Unit", namespaces=namespace.ns):
     name = unit.get("name")
+    description = unit.get("description")
     base_unit = unit.find("ssc:BaseUnit", namespaces=namespace.ns)
     if base_unit is not None:
       attributes = {key: base_unit.get(key) for key in base_unit.keys()}
       # Create a Unit object and add it to the root or system
-      unit_obj = Unit(name, attributes)
+      unit_obj = Unit(name, attributes, description)
       root.unitDefinitions.append(unit_obj)
       # print(f"Unit: {name}, Attributes: {attributes}")
 
@@ -70,7 +74,9 @@ def parseElements(node, resources = None):
   # Parse the sub system <ssd:system> in the <ssd:Elements> section
   for system in elements_node.findall("ssd:System", namespaces=namespace.ns):
     name = system.get("name")
+    description = system.get("description")
     elements[name] = System(name)
+    elements[name].description = description
     elements[name].connectors = parseConnectors(system)
     elements[name].elementgeometry = ElementGeometry.importFromNode(system)
     elements[name].systemgeometry = SystemGeometry.importFromNode(system)
@@ -82,7 +88,9 @@ def parseElements(node, resources = None):
     name = component.get("name")
     comp_type = component.get("type")
     source = component.get("source")
+    description = component.get("description")
     elements[name] = Component(name, source)
+    elements[name].description = description
     elements[name].connectors = parseConnectors(component)
     elements[name].elementgeometry = ElementGeometry.importFromNode(component)
     parseParameterBindings(component, elements[name], resources)
@@ -101,6 +109,7 @@ def parseConnectors(node):
   for connector in connectors_node.findall("ssd:Connector", namespaces=namespace.ns):
     name = connector.get("name")
     kind = connector.get("kind")
+    description = connector.get("description")
     # Convert kind string to enum type
     kind = Causality[kind]
 
@@ -112,6 +121,8 @@ def parseConnectors(node):
         signal_type = connectortype.split(":")[-1]  # Extracts 'Real', 'Integer', or 'Boolean'
         con = Connector(name, kind, SignalType[signal_type])
         unit = type_element.get("unit")
+        if description:
+          con.description = description
         # Set unit if it exists
         if unit:
             con.setUnit(unit)
@@ -183,6 +194,7 @@ def parseParameterBindingHelper(parameters):
     parameterValues={}
     for param in parameters.findall("ssv:Parameter", namespaces=namespace.ns):
       name = param.get("name")
+      description = param.get("description")
       value_types = {
                       "ssv:Real": float,
                       "ssv:Integer": int,
@@ -194,7 +206,7 @@ def parseParameterBindingHelper(parameters):
         if value_element is not None:
           value = value_element.get("value")
           unit = value_element.get("unit")
-          parameterValues[name] = (cast_func(value), unit)  # Convert to correct type
+          parameterValues[name] = (cast_func(value), unit, description)  # Convert to correct type
           break  # Stop after first found type
     return parameterValues
 
