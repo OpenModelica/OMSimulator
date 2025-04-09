@@ -4,6 +4,8 @@ TESTFILES = \
 create_ssp_file.py \
 cref.py \
 fmuinfo.py \
+invalidSSD.py \
+invalidSSV.py \
 LOC.py \
 NestedSystem.py \
 NewSSP.py \
