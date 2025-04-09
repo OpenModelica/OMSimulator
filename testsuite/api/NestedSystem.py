@@ -36,11 +36,11 @@ model.list()
 ## |-- |-- |-- |-- FMU: Add2 'None'
 ## |-- |-- |-- |-- |-- path: resources/Add.fmu
 ## |-- |-- |-- |-- |-- Connectors:
-## |-- |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real, None, Connector of Real input signal 1)
-## |-- |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real, None, Connector of Real input signal 2)
-## |-- |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, Connector of Real output signal)
-## |-- |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, Gain of input signal 1)
-## |-- |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, Gain of input signal 2)
+## |-- |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real, None, 'Connector of Real input signal 1')
+## |-- |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real, None, 'Connector of Real input signal 2')
+## |-- |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Connector of Real output signal')
+## |-- |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, 'Gain of input signal 1')
+## |-- |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, 'Gain of input signal 2')
 ## |-- |-- |-- System: sub-system2 'None'
 ## |-- |-- |-- Connectors:
 ## |-- |-- |-- Elements:
@@ -49,11 +49,11 @@ model.list()
 ## |-- |-- |-- FMU: Add1 'None'
 ## |-- |-- |-- |-- path: resources/Add.fmu
 ## |-- |-- |-- |-- Connectors:
-## |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real, None, Connector of Real input signal 1)
-## |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real, None, Connector of Real input signal 2)
-## |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, Connector of Real output signal)
-## |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, Gain of input signal 1)
-## |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, Gain of input signal 2)
+## |-- |-- |-- |-- |-- (u1, Causality.input, SignalType.Real, None, 'Connector of Real input signal 1')
+## |-- |-- |-- |-- |-- (u2, Causality.input, SignalType.Real, None, 'Connector of Real input signal 2')
+## |-- |-- |-- |-- |-- (y, Causality.output, SignalType.Real, None, 'Connector of Real output signal')
+## |-- |-- |-- |-- |-- (k1, Causality.parameter, SignalType.Real, None, 'Gain of input signal 1')
+## |-- |-- |-- |-- |-- (k2, Causality.parameter, SignalType.Real, None, 'Gain of input signal 2')
 ## |-- DefaultExperiment
 ## |-- |-- startTime: 0.0
 ## |-- |-- stopTime: 1.0
