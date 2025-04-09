@@ -1,5 +1,5 @@
 import logging
-import xml.etree.ElementTree as ET
+from lxml import etree as ET
 from pathlib import Path
 
 from OMSimulator.component import Component
@@ -87,6 +87,7 @@ def parseParameterBindings(node, obj, resources):
 def parseSSV(filename):
   tree = ET.parse(filename)
   root = tree.getroot()
+  validateSSP(root, filename, "SystemStructureParameterValues.xsd")
   parameters = root.find("ssv:Parameters", namespaces=namespace.ns)
   return parseParameterBindingHelper(parameters)
 
@@ -111,11 +112,11 @@ def parseParameterBindingHelper(parameters):
           break  # Stop after first found type
     return parameterValues
 
-def validateSSP(root, schema_file):
+def validateSSP(root, filename : str, schema_file : str):
   module_dir = Path(__file__).parent
-  schema = ET.XMLSchema(file=module_dir / 'schema' / schema_file)
+  schema = ET.XMLSchema(file=Path(module_dir, 'schema/ssp', schema_file))
   if not schema.validate(root):
-      message = "Failed to validate SystemStructure.ssd:"
-      for entry in schema.error_log:
-          message += "\n%s (line %d, column %d): %s" % (entry.level_name, entry.line, entry.column, entry.message)
-      raise Exception(message)
+    message = f"Failed to validate {Path(filename).name} against schemafile {schema_file}"
+    for entry in schema.error_log:
+      message += "\n%s (line %d, column %d): %s" % (entry.level_name, entry.line, entry.column, entry.message)
+    raise Exception(message)

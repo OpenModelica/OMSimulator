@@ -2,6 +2,7 @@ import logging
 from pathlib import Path
 
 from lxml import etree as ET
+from OMSimulator import capi
 from OMSimulator.cref import CRef
 from OMSimulator.fmu import FMU
 from OMSimulator.settings import suppress_path_to_str
@@ -35,6 +36,7 @@ class SSD:
     try:
       tree = ET.parse(filename)
       root = tree.getroot()
+      utils.validateSSP(root, filename, "SystemStructureDescription.xsd")
       variant_name = root.get("name")
       ssd = SSD(variant_name)
       ssd._filename = Path(filename).resolve()
@@ -121,8 +123,8 @@ class SSD:
       nsmap=namespace.ns,
       name=self._name,
       version="2.0",
-      generationTool="OMSimulator",
-      generationDateTime=datetime.now().isoformat()
+      generationTool= capi.capi().getVersion(),
+      generationDateAndTime=datetime.now().isoformat()
     )
 
     self.system.export(root)
