@@ -1,5 +1,5 @@
 ## status: correct
-## teardown_command: rm -rf invalid-ssd/
+## teardown_command:
 ## linux: yes
 ## ucrt64: yes
 ## win: yes
@@ -16,7 +16,7 @@ from OMSimulator import SSD, SSP, Settings
 
 Settings.suppressPath = True
 
-model = SSP('../resources/invalidSSD.ssp', temp_dir="./invalid-ssd/")
+model = SSP('../resources/invalidSSD.ssp')
 
 ## Result:
 ## INFO:OMSimulator.ssp:Temporary directory created: <hidden>
