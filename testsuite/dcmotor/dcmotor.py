@@ -77,8 +77,8 @@ model.export('dcmotor.ssp')
 ##  |-- |-- |-- |-- ElementGeometry:
 ##  |-- |-- |-- |-- |-- (x1:318.194184, y1:-778.573683, x2:518.194184, y2:-578.573683, rotation:0.0, icon_source:None, icon_rotation:0.0, icon_flip:False, icon_fixed_aspect_ratio:False)
 ##  |-- |-- |-- |-- Inline Parameter Bindings:
-##  |-- |-- |-- |-- |-- (Real inertia.J, 0.002, kg.m2, Moment of inertia)
-##  |-- |-- |-- |-- |-- (Real damper.d, 0.001, N.m.s/rad, Damping constant)
+##  |-- |-- |-- |-- |-- (Real inertia.J, 0.002, kg.m2, 'Moment of inertia')
+##  |-- |-- |-- |-- |-- (Real damper.d, 0.001, N.m.s/rad, 'Damping constant')
 ##  |-- |-- |-- |-- |-- UnitDefinitions:
 ##  |-- |-- |-- |-- |-- |-- Unit: N.m.s/rad
 ##  |-- |-- |-- |-- |-- |-- |-- BaseUnit: kg: 1, m: 2, s: -1, A: 0, K: 0, mol: 0, cd: 0, rad: -1, factor: 1.0, offset: 0.0
@@ -100,12 +100,12 @@ model.export('dcmotor.ssp')
 ##  |-- |-- |-- |-- ElementGeometry:
 ##  |-- |-- |-- |-- |-- (x1:-81.369197, y1:-781.383542, x2:118.630803, y2:-581.383542, rotation:0.0, icon_source:None, icon_rotation:0.0, icon_flip:False, icon_fixed_aspect_ratio:False)
 ##  |-- |-- |-- |-- Inline Parameter Bindings:
-##  |-- |-- |-- |-- |-- (Real resistor.T_ref, 300.15, K, Reference temperature)
-##  |-- |-- |-- |-- |-- (Real resistor.T, 300.15, K, Fixed device temperature if useHeatPort = false)
-##  |-- |-- |-- |-- |-- (Real resistor.alpha, 0.0, 1/K, Temperature coefficient of resistance (R_actual = R*(1 + alpha*(T_heatPort - T_ref)))
-##  |-- |-- |-- |-- |-- (Real inductor.L, 0.001, H, Inductance)
-##  |-- |-- |-- |-- |-- (Real emf.k, 0.1, N.m/A, Transformation coefficient)
-##  |-- |-- |-- |-- |-- (Real resistor.R, 0.5, Ohm, Resistance at temperature T_ref)
+##  |-- |-- |-- |-- |-- (Real resistor.T_ref, 300.15, K, 'Reference temperature')
+##  |-- |-- |-- |-- |-- (Real resistor.T, 300.15, K, 'Fixed device temperature if useHeatPort = false')
+##  |-- |-- |-- |-- |-- (Real resistor.alpha, 0.0, 1/K, 'Temperature coefficient of resistance (R_actual = R*(1 + alpha*(T_heatPort - T_ref))')
+##  |-- |-- |-- |-- |-- (Real inductor.L, 0.001, H, 'Inductance')
+##  |-- |-- |-- |-- |-- (Real emf.k, 0.1, N.m/A, 'Transformation coefficient')
+##  |-- |-- |-- |-- |-- (Real resistor.R, 0.5, Ohm, 'Resistance at temperature T_ref')
 ##  |-- |-- |-- |-- |-- UnitDefinitions:
 ##  |-- |-- |-- |-- |-- |-- Unit: N.m/A
 ##  |-- |-- |-- |-- |-- |-- |-- BaseUnit: kg: 1, m: 2, s: -2, A: -1, K: 0, mol: 0, cd: 0, rad: 0, factor: 1.0, offset: 0.0
@@ -147,10 +147,10 @@ model.export('dcmotor.ssp')
 ##  |-- |-- |-- ElementGeometry:
 ##  |-- |-- |-- |-- (x1:-159.5, y1:-124.0, x2:40.5, y2:-6.0, rotation:0.0, icon_source:None, icon_rotation:0.0, icon_flip:False, icon_fixed_aspect_ratio:False)
 ##  |-- |-- |-- Inline Parameter Bindings:
-##  |-- |-- |-- |-- (Real Voltage_step.offset, 0.0, None, Offset of output signal y)
-##  |-- |-- |-- |-- (Real Voltage_step.startTime, 0.0, s, Output y = offset for time < startTime)
-##  |-- |-- |-- |-- (Real Voltage_step.height, 12.0, V, Height of step)
-##  |-- |-- |-- |-- (Real MLoad.k, -0.5, N.m, Constant output value)
+##  |-- |-- |-- |-- (Real Voltage_step.offset, 0.0, None, 'Offset of output signal y')
+##  |-- |-- |-- |-- (Real Voltage_step.startTime, 0.0, s, 'Output y = offset for time < startTime')
+##  |-- |-- |-- |-- (Real Voltage_step.height, 12.0, V, 'Height of step')
+##  |-- |-- |-- |-- (Real MLoad.k, -0.5, N.m, 'Constant output value')
 ##  |-- |-- |-- |-- UnitDefinitions:
 ##  |-- |-- |-- |-- |-- Unit: V
 ##  |-- |-- |-- |-- |-- |-- BaseUnit: kg: 1, m: 2, s: -3, A: -1, K: 0, mol: 0, cd: 0, rad: 0, factor: 1.0, offset: 0.0

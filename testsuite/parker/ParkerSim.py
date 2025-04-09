@@ -57,13 +57,13 @@ model.variants['D16_aero_stimuli'].list()
 ##  |-- |-- |-- |-- (uA.in.y, Causality.output, SignalType.Real, None, 'None')
 ##  |-- |-- |-- |-- (uB.in.y, Causality.output, SignalType.Real, None, 'None')
 ##  |-- |-- |-- Inline Parameter Bindings:
-##  |-- |-- |-- |-- (Real timestep, 0.001, s, Hopsan time step)
-##  |-- |-- |-- |-- (Real s_cyl, 1.0, m, cylinder stroke)
-##  |-- |-- |-- |-- (Real th_min, -15.0, deg, Min angle)
-##  |-- |-- |-- |-- (Real th_max, 15.0, deg, Max angle)
-##  |-- |-- |-- |-- (Real k_p, 130.0, -, Controller gain)
-##  |-- |-- |-- |-- (Real pT, 1.0, bar, Tank pressure)
-##  |-- |-- |-- |-- (Real pPump, 100.0, bar, Pump pressure)
+##  |-- |-- |-- |-- (Real timestep, 0.001, s, 'Hopsan time step')
+##  |-- |-- |-- |-- (Real s_cyl, 1.0, m, 'cylinder stroke')
+##  |-- |-- |-- |-- (Real th_min, -15.0, deg, 'Min angle')
+##  |-- |-- |-- |-- (Real th_max, 15.0, deg, 'Max angle')
+##  |-- |-- |-- |-- (Real k_p, 130.0, -, 'Controller gain')
+##  |-- |-- |-- |-- (Real pT, 1.0, bar, 'Tank pressure')
+##  |-- |-- |-- |-- (Real pPump, 100.0, bar, 'Pump pressure')
 ##  |-- |-- |-- |-- UnitDefinitions:
 ##  |-- |-- |-- |-- |-- Unit: s
 ##  |-- |-- |-- |-- |-- |-- BaseUnit: s: 1, factor: 1.0, offset: 0.0
@@ -97,12 +97,12 @@ model.variants['D16_aero_stimuli'].list()
 ##  |-- |-- |-- |-- (p_PS, Causality.input, SignalType.Real, bar, 'Pilot pressure supply')
 ##  |-- |-- |-- |-- (Debug, Causality.output, SignalType.Real, None, 'Debug channel (0 = OK)')
 ##  |-- |-- |-- Inline Parameter Bindings:
-##  |-- |-- |-- |-- (Real d_A, 2.0, mm, Pilot A damping orifice diameter)
-##  |-- |-- |-- |-- (Real d_B, 2.0, mm, Pilot B damping orifice diameter)
-##  |-- |-- |-- |-- (Real KqMO_PABT_gain, 1.0, -, Flow trim coefficient Meter-out P->A)
-##  |-- |-- |-- |-- (Real KqMI_PABT_gain, 1.0, -, Flow trim coefficient Meter-in P->A)
-##  |-- |-- |-- |-- (Real KqMO_PBAT_gain, 1.0, -, Flow trim coefficient Meter-out P->B)
-##  |-- |-- |-- |-- (Real KqMI_PBAT_gain, 1.0, -, Flow trim coefficient Meter-in P->B)
+##  |-- |-- |-- |-- (Real d_A, 2.0, mm, 'Pilot A damping orifice diameter')
+##  |-- |-- |-- |-- (Real d_B, 2.0, mm, 'Pilot B damping orifice diameter')
+##  |-- |-- |-- |-- (Real KqMO_PABT_gain, 1.0, -, 'Flow trim coefficient Meter-out P->A')
+##  |-- |-- |-- |-- (Real KqMI_PABT_gain, 1.0, -, 'Flow trim coefficient Meter-in P->A')
+##  |-- |-- |-- |-- (Real KqMO_PBAT_gain, 1.0, -, 'Flow trim coefficient Meter-out P->B')
+##  |-- |-- |-- |-- (Real KqMI_PBAT_gain, 1.0, -, 'Flow trim coefficient Meter-in P->B')
 ##  |-- |-- |-- |-- UnitDefinitions:
 ##  |-- |-- |-- |-- |-- Unit: mm
 ##  |-- |-- |-- |-- |-- |-- BaseUnit: m: 1, factor: 1e-3
@@ -157,11 +157,11 @@ model.variants['D16_aero_stimuli'].list()
 ##  |-- |-- |-- |-- (p2.in.y, Causality.output, SignalType.Real, None, 'None')
 ##  |-- |-- |-- |-- (u.in.y, Causality.output, SignalType.Real, None, 'None')
 ##  |-- |-- |-- Inline Parameter Bindings:
-##  |-- |-- |-- |-- (Real timestep, 0.001, s, Hopsan time step)
-##  |-- |-- |-- |-- (Real u_0, 0.0, -, u ramp base value)
-##  |-- |-- |-- |-- (Real u_max, 1.0, -, u ramp end value)
-##  |-- |-- |-- |-- (Real p1_max, 100.0, bar, p1 Ramp max value)
-##  |-- |-- |-- |-- (Real p2_const, 1.0, bar, p2 pressure (constant))
+##  |-- |-- |-- |-- (Real timestep, 0.001, s, 'Hopsan time step')
+##  |-- |-- |-- |-- (Real u_0, 0.0, -, 'u ramp base value')
+##  |-- |-- |-- |-- (Real u_max, 1.0, -, 'u ramp end value')
+##  |-- |-- |-- |-- (Real p1_max, 100.0, bar, 'p1 Ramp max value')
+##  |-- |-- |-- |-- (Real p2_const, 1.0, bar, 'p2 pressure (constant)')
 ##  |-- |-- |-- |-- UnitDefinitions:
 ##  |-- |-- |-- |-- |-- Unit: s
 ##  |-- |-- |-- |-- |-- |-- BaseUnit: s: 1, factor: 1.0, offset: 0.0
@@ -185,12 +185,12 @@ model.variants['D16_aero_stimuli'].list()
 ##  |-- |-- |-- |-- (uA.in.y, Causality.output, SignalType.Real, None, 'None')
 ##  |-- |-- |-- |-- (uB.in.y, Causality.output, SignalType.Real, None, 'None')
 ##  |-- |-- |-- Inline Parameter Bindings:
-##  |-- |-- |-- |-- (Real timestep, 0.001, s, Hopsan time step)
-##  |-- |-- |-- |-- (Real pT, 1.0, bar, Tank pressure)
-##  |-- |-- |-- |-- (Real pP, 1.0, bar, Pump pressure)
-##  |-- |-- |-- |-- (Real rho, 1000.0, kg/m3, Liquid density)
-##  |-- |-- |-- |-- (Real uB_const, 0.0, mA, Valve input B)
-##  |-- |-- |-- |-- (Real p_PS_const, 35.0, bar, Pilot supply pressure)
+##  |-- |-- |-- |-- (Real timestep, 0.001, s, 'Hopsan time step')
+##  |-- |-- |-- |-- (Real pT, 1.0, bar, 'Tank pressure')
+##  |-- |-- |-- |-- (Real pP, 1.0, bar, 'Pump pressure')
+##  |-- |-- |-- |-- (Real rho, 1000.0, kg/m3, 'Liquid density')
+##  |-- |-- |-- |-- (Real uB_const, 0.0, mA, 'Valve input B')
+##  |-- |-- |-- |-- (Real p_PS_const, 35.0, bar, 'Pilot supply pressure')
 ##  |-- |-- |-- |-- UnitDefinitions:
 ##  |-- |-- |-- |-- |-- Unit: s
 ##  |-- |-- |-- |-- |-- |-- BaseUnit: s: 1, factor: 1.0, offset: 0.0
@@ -222,12 +222,12 @@ model.variants['D16_aero_stimuli'].list()
 ##  |-- |-- |-- |-- (p_PS, Causality.input, SignalType.Real, bar, 'Pilot pressure supply')
 ##  |-- |-- |-- |-- (Debug, Causality.output, SignalType.Real, None, 'Debug channel (0 = OK)')
 ##  |-- |-- |-- Inline Parameter Bindings:
-##  |-- |-- |-- |-- (Real d_A, 2.0, mm, Pilot A damping orifice diameter)
-##  |-- |-- |-- |-- (Real d_B, 2.0, mm, Pilot B damping orifice diameter)
-##  |-- |-- |-- |-- (Real KqMO_PABT_gain, 1.0, -, Flow trim coefficient Meter-out P->A)
-##  |-- |-- |-- |-- (Real KqMI_PABT_gain, 1.0, -, Flow trim coefficient Meter-in P->A)
-##  |-- |-- |-- |-- (Real KqMO_PBAT_gain, 1.0, -, Flow trim coefficient Meter-out P->B)
-##  |-- |-- |-- |-- (Real KqMI_PBAT_gain, 1.0, -, Flow trim coefficient Meter-in P->B)
+##  |-- |-- |-- |-- (Real d_A, 2.0, mm, 'Pilot A damping orifice diameter')
+##  |-- |-- |-- |-- (Real d_B, 2.0, mm, 'Pilot B damping orifice diameter')
+##  |-- |-- |-- |-- (Real KqMO_PABT_gain, 1.0, -, 'Flow trim coefficient Meter-out P->A')
+##  |-- |-- |-- |-- (Real KqMI_PABT_gain, 1.0, -, 'Flow trim coefficient Meter-in P->A')
+##  |-- |-- |-- |-- (Real KqMO_PBAT_gain, 1.0, -, 'Flow trim coefficient Meter-out P->B')
+##  |-- |-- |-- |-- (Real KqMI_PBAT_gain, 1.0, -, 'Flow trim coefficient Meter-in P->B')
 ##  |-- |-- |-- |-- UnitDefinitions:
 ##  |-- |-- |-- |-- |-- Unit: mm
 ##  |-- |-- |-- |-- |-- |-- BaseUnit: m: 1, factor: 1e-3
