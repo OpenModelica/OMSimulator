@@ -65,11 +65,11 @@ class Connector:
     connector_node = ET.SubElement(node, namespace.tag("ssd", "Connector"))
     connector_node.set("name", str(self.name))
     connector_node.set("kind", self.causality.name)
+    if self.description:
+      connector_node.set("description", self.description)
     connectors_type = ET.SubElement(connector_node, namespace.tag("ssc", self.signal_type.name))
     if self.unit is not None:
       connectors_type.set("unit", self.unit)
-    if self.description:
-      connectors_type.set("description", self.description)
     if self.connectorGeometry is not None:
       self.connectorGeometry.exportToSSD(connector_node)
 
