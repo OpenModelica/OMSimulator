@@ -57,7 +57,7 @@ class Connector:
     self.unit = unit
 
   def list(self, prefix=""):
-    print(f"{prefix} ({self.name}, {self.causality}, {self.signal_type}, {self.unit}, {self.description})")
+    print(f"{prefix} ({self.name}, {self.causality}, {self.signal_type}, {self.unit}, '{self.description}')")
     if self.connectorGeometry:
       self.connectorGeometry.list(prefix)
 
